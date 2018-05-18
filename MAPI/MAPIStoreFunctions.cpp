@@ -53,17 +53,17 @@ _Check_return_ HRESULT CallOpenMsgStore(
 }
 
 // Build a server DN.
-string BuildServerDN(
-	const string& szServerName,
-	const string& szPost)
+std::string BuildServerDN(
+	const std::string& szServerName,
+	const std::string& szPost)
 {
-	static string szPre = "/cn=Configuration/cn=Servers/cn="; // STRING_OK
+	static std::string szPre = "/cn=Configuration/cn=Servers/cn="; // STRING_OK
 	return szPre + szServerName + szPost;
 }
 
 _Check_return_ HRESULT GetMailboxTable1(
 	_In_ LPMDB lpMDB,
-	const string& szServerDN,
+	const std::string& szServerDN,
 	ULONG ulFlags,
 	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
 {
@@ -92,7 +92,7 @@ _Check_return_ HRESULT GetMailboxTable1(
 
 _Check_return_ HRESULT GetMailboxTable3(
 	_In_ LPMDB lpMDB,
-	const string& szServerDN,
+	const std::string& szServerDN,
 	ULONG ulOffset,
 	ULONG ulFlags,
 	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
@@ -123,7 +123,7 @@ _Check_return_ HRESULT GetMailboxTable3(
 
 _Check_return_ HRESULT GetMailboxTable5(
 	_In_ LPMDB lpMDB,
-	const string& szServerDN,
+	const std::string& szServerDN,
 	ULONG ulOffset,
 	ULONG ulFlags,
 	_In_opt_ LPGUID lpGuidMDB,
@@ -159,7 +159,7 @@ _Check_return_ HRESULT GetMailboxTable5(
 // Will try IID_IExchangeManageStore3 first and fail back to IID_IExchangeManageStore
 _Check_return_ HRESULT GetMailboxTable(
 	_In_ LPMDB lpMDB,
-	const string& szServerName,
+	const std::string& szServerName,
 	ULONG ulOffset,
 	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
 {
@@ -197,7 +197,7 @@ _Check_return_ HRESULT GetMailboxTable(
 
 _Check_return_ HRESULT GetPublicFolderTable1(
 	_In_ LPMDB lpMDB,
-	const string& szServerDN,
+	const std::string& szServerDN,
 	ULONG ulFlags,
 	_Deref_out_opt_ LPMAPITABLE* lpPFTable)
 {
@@ -226,7 +226,7 @@ _Check_return_ HRESULT GetPublicFolderTable1(
 
 _Check_return_ HRESULT GetPublicFolderTable4(
 	_In_ LPMDB lpMDB,
-	const string& szServerDN,
+	const std::string& szServerDN,
 	ULONG ulOffset,
 	ULONG ulFlags,
 	_Deref_out_opt_ LPMAPITABLE* lpPFTable)
@@ -256,7 +256,7 @@ _Check_return_ HRESULT GetPublicFolderTable4(
 
 _Check_return_ HRESULT GetPublicFolderTable5(
 	_In_ LPMDB lpMDB,
-	const string& szServerDN,
+	const std::string& szServerDN,
 	ULONG ulOffset,
 	ULONG ulFlags,
 	_In_opt_ LPGUID lpGuidMDB,
@@ -288,13 +288,13 @@ _Check_return_ HRESULT GetPublicFolderTable5(
 }
 
 // Get server name from the profile
-string GetServerName(_In_ LPMAPISESSION lpSession)
+std::string GetServerName(_In_ LPMAPISESSION lpSession)
 {
 	auto hRes = S_OK;
 	LPSERVICEADMIN pSvcAdmin = nullptr;
 	LPPROFSECT pGlobalProfSect = nullptr;
 	LPSPropValue lpServerName = nullptr;
-	string serverName;
+	std::string serverName;
 
 	if (!lpSession) return "";
 
@@ -342,8 +342,8 @@ string GetServerName(_In_ LPMAPISESSION lpSession)
 
 _Check_return_ HRESULT CreateStoreEntryID(
 	_In_ LPMDB lpMDB, // open message store
-	const string& lpszMsgStoreDN, // desired message store DN
-	const string& lpszMailboxDN, // desired mailbox DN or NULL
+	const std::string& lpszMsgStoreDN, // desired message store DN
+	const std::string& lpszMailboxDN, // desired mailbox DN or NULL
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	_Out_opt_ ULONG* lpcbEntryID,
 	_Deref_out_opt_ LPENTRYID * lppEntryID)
@@ -381,9 +381,9 @@ _Check_return_ HRESULT CreateStoreEntryID(
 
 _Check_return_ HRESULT CreateStoreEntryID2(
 	_In_ LPMDB lpMDB, // open message store
-	const string& lpszMsgStoreDN, // desired message store DN
-	const string& lpszMailboxDN, // desired mailbox DN or NULL
-	const wstring& smtpAddress,
+	const std::string& lpszMsgStoreDN, // desired message store DN
+	const std::string& lpszMailboxDN, // desired mailbox DN or NULL
+	const std::wstring& smtpAddress,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	_Out_opt_ ULONG* lpcbEntryID,
 	_Deref_out_opt_ LPENTRYID * lppEntryID)
@@ -433,9 +433,9 @@ _Check_return_ HRESULT CreateStoreEntryID2(
 
 _Check_return_ HRESULT CreateStoreEntryID(
 	_In_ LPMDB lpMDB, // open message store
-	const string& lpszMsgStoreDN, // desired message store DN
-	const string& lpszMailboxDN, // desired mailbox DN or NULL
-	const wstring& smtpAddress,
+	const std::string& lpszMsgStoreDN, // desired message store DN
+	const std::string& lpszMailboxDN, // desired mailbox DN or NULL
+	const std::wstring& smtpAddress,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Out_opt_ ULONG* lpcbEntryID,
@@ -499,9 +499,9 @@ _Check_return_ HRESULT CreateStoreEntryID(
 _Check_return_ HRESULT HrMailboxLogon(
 	_In_ LPMAPISESSION lpMAPISession, // MAPI session handle
 	_In_ LPMDB lpMDB, // open message store
-	const string& lpszMsgStoreDN, // desired message store DN
-	const string& lpszMailboxDN, // desired mailbox DN or NULL
-	const wstring& smtpAddress,
+	const std::string& lpszMsgStoreDN, // desired message store DN
+	const std::string& lpszMailboxDN, // desired mailbox DN or NULL
+	const std::wstring& smtpAddress,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Deref_out_opt_ LPMDB* lppMailboxMDB) // ptr to mailbox message store ptr
@@ -597,9 +597,9 @@ _Check_return_ HRESULT OpenDefaultMessageStore(
 _Check_return_ HRESULT OpenOtherUsersMailbox(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMDB lpMDB,
-	const string& szServerName,
-	const string& szMailboxDN,
-	const wstring& smtpAddress,
+	const std::string& szServerName,
+	const std::string& szMailboxDN,
+	const std::wstring& smtpAddress,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Deref_out_opt_ LPMDB* lppOtherUserMDB)
@@ -611,7 +611,7 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 	DebugPrint(DBGGeneric, L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%hs\", Mailbox = \"%hs\", SmtpAddress = \"%ws\"\n", lpMAPISession, lpMDB, szServerName.c_str(), szMailboxDN.c_str(), smtpAddress.c_str());
 	if (!lpMAPISession || !lpMDB || szMailboxDN.empty() || !StoreSupportsManageStore(lpMDB)) return MAPI_E_INVALID_PARAMETER;
 
-	string serverName;
+	std::string serverName;
 	if (szServerName.empty())
 	{
 		// If we weren't given a server name, get one from the profile
@@ -650,8 +650,8 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 _Check_return_ HRESULT OpenMailboxWithPrompt(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMDB lpMDB,
-	const string& szServerName,
-	const wstring& szMailboxDN,
+	const std::string& szServerName,
+	const std::wstring& szMailboxDN,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	_Deref_out_opt_ LPMDB* lppOtherUserMDB)
 {
@@ -808,7 +808,7 @@ _Check_return_ HRESULT OpenMessageStoreGUID(
 
 _Check_return_ HRESULT OpenPublicMessageStore(
 	_In_ LPMAPISESSION lpMAPISession,
-	const string& szServerName,
+	const std::string& szServerName,
 	ULONG ulFlags, // Flags for CreateStoreEntryID
 	_Deref_out_opt_ LPMDB* lppPublicMDB)
 {

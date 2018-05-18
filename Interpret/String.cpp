@@ -7,9 +7,9 @@
 
 namespace strings
 {
-	wstring emptystring = L"";
+	std::wstring emptystring = L"";
 
-	wstring formatV(LPCWSTR szMsg, va_list argList)
+	std::wstring formatV(LPCWSTR szMsg, va_list argList)
 	{
 		auto len = _vscwprintf(szMsg, argList);
 		if (0 != len)
@@ -19,7 +19,7 @@ namespace strings
 			memset(buffer, 0, sizeof(wchar_t)* len);
 			if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg, argList) > 0)
 			{
-				wstring szOut(buffer);
+				std::wstring szOut(buffer);
 				delete[] buffer;
 				return szOut;
 			}
@@ -35,7 +35,7 @@ namespace strings
 #endif
 
 	// Takes format strings with %x %d...
-	wstring format(LPCWSTR szMsg, ...)
+	std::wstring format(LPCWSTR szMsg, ...)
 	{
 		va_list argList;
 		va_start(argList, szMsg);
@@ -54,9 +54,9 @@ namespace strings
 		g_testInstance = hInstance;
 	}
 
-	wstring strings::loadstring(DWORD dwID)
+	std::wstring strings::loadstring(DWORD dwID)
 	{
-		wstring fmtString;
+		std::wstring fmtString;
 		LPWSTR buffer = nullptr;
 		const size_t len = LoadStringW(g_testInstance, dwID, reinterpret_cast<PWCHAR>(&buffer), 0);
 
@@ -68,13 +68,13 @@ namespace strings
 		return fmtString;
 	}
 
-	wstring formatmessageV(LPCWSTR szMsg, va_list argList)
+	std::wstring formatmessageV(LPCWSTR szMsg, va_list argList)
 	{
 		LPWSTR buffer = nullptr;
 		const auto dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, szMsg, 0, 0, reinterpret_cast<LPWSTR>(&buffer), 0, &argList);
 		if (dw)
 		{
-			auto ret = wstring(buffer);
+			auto ret = std::wstring(buffer);
 			(void)LocalFree(buffer);
 			return ret;
 		}
@@ -82,13 +82,13 @@ namespace strings
 		return L"";
 	}
 
-	wstring formatmessagesys(DWORD dwID)
+	std::wstring formatmessagesys(DWORD dwID)
 	{
 		LPWSTR buffer = nullptr;
 		const auto dw = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, dwID, 0, reinterpret_cast<LPWSTR>(&buffer), 0, nullptr);
 		if (dw)
 		{
-			auto ret = wstring(buffer);
+			auto ret = std::wstring(buffer);
 			(void)LocalFree(buffer);
 			return ret;
 		}
@@ -97,7 +97,7 @@ namespace strings
 	}
 
 	// Takes format strings with %1 %2 %3...
-	wstring strings::formatmessage(DWORD dwID, ...)
+	std::wstring strings::formatmessage(DWORD dwID, ...)
 	{
 		va_list argList;
 		va_start(argList, dwID);
@@ -107,7 +107,7 @@ namespace strings
 	}
 
 	// Takes format strings with %1 %2 %3...
-	wstring strings::formatmessage(LPCWSTR szMsg, ...)
+	std::wstring strings::formatmessage(LPCWSTR szMsg, ...)
 	{
 		va_list argList;
 		va_start(argList, szMsg);
@@ -116,7 +116,7 @@ namespace strings
 		return ret;
 	}
 
-	tstring wstringTotstring(const wstring& src)
+	tstring wstringTotstring(const std::wstring& src)
 	{
 #ifdef _UNICODE
 		return src;
@@ -125,12 +125,12 @@ namespace strings
 #endif
 	}
 
-	string wstringTostring(const wstring& src)
+	std::string wstringTostring(const std::wstring& src)
 	{
-		return string(src.begin(), src.end());
+		return std::string (src.begin(), src.end());
 	}
 
-	wstring stringTowstring(const string& src)
+	std::wstring stringTowstring(const std::string & src)
 	{
 		std::wstring dst;
 		dst.reserve(src.length());
@@ -142,7 +142,7 @@ namespace strings
 		return dst;
 	}
 
-	wstring LPCTSTRToWstring(LPCTSTR src)
+	std::wstring LPCTSTRToWstring(LPCTSTR src)
 	{
 #ifdef UNICODE
 		return src ? src : L"";
@@ -153,22 +153,22 @@ namespace strings
 
 	// Careful calling this with string as it *will* lose embedded null
 	// use stringTowstring instead
-	wstring LPCSTRToWstring(LPCSTR src)
+	std::wstring LPCSTRToWstring(LPCSTR src)
 	{
 		if (!src) return L"";
-		string ansi = src;
-		return wstring(ansi.begin(), ansi.end());
+		std::string  ansi = src;
+		return std::wstring(ansi.begin(), ansi.end());
 	}
 
-	wstring wstringToLower(const wstring& src)
+	std::wstring wstringToLower(const std::wstring& src)
 	{
 		auto dst = src;
 		std::transform(src.begin(), src.end(), dst.begin(), towlower);
 		return dst;
 	}
 
-	// Converts a wstring to a ulong. Will return 0 if string is empty or contains non-numeric data.
-	ULONG wstringToUlong(const wstring& src, int radix, bool rejectInvalidCharacters)
+	// Converts a std::wstring to a ulong. Will return 0 if string is empty or contains non-numeric data.
+	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters)
 	{
 		if (src.empty()) return 0;
 
@@ -187,8 +187,8 @@ namespace strings
 		return ulArg;
 	}
 
-	// Converts a wstring to a long. Will return 0 if string is empty or contains non-numeric data.
-	long wstringToLong(const wstring& src, int radix)
+	// Converts a std::wstring to a long. Will return 0 if string is empty or contains non-numeric data.
+	long wstringToLong(const std::wstring& src, int radix)
 	{
 		if (src.empty()) return 0;
 
@@ -204,8 +204,8 @@ namespace strings
 		return lArg;
 	}
 
-	// Converts a wstring to a double. Will return 0 if string is empty or contains non-numeric data.
-	double wstringToDouble(const wstring& src)
+	// Converts a std::wstring to a double. Will return 0 if string is empty or contains non-numeric data.
+	double wstringToDouble(const std::wstring& src)
 	{
 		if (src.empty()) return 0;
 
@@ -221,22 +221,22 @@ namespace strings
 		return dArg;
 	}
 
-	__int64 wstringToInt64(const wstring& src)
+	__int64 wstringToInt64(const std::wstring& src)
 	{
 		if (src.empty()) return 0;
 
 		return _wtoi64(src.c_str());
 	}
 
-	wstring strip(const wstring& str, std::function<bool(const WCHAR&)> func)
+	std::wstring strip(const std::wstring& str, std::function<bool(const WCHAR&)> func)
 	{
-		wstring result;
+		std::wstring result;
 		result.reserve(str.length());
 		remove_copy_if(str.begin(), str.end(), back_inserter(result), func);
 		return result;
 	}
 
-	wstring StripCharacter(const wstring& szString, const WCHAR& character)
+	std::wstring StripCharacter(const std::wstring& szString, const WCHAR& character)
 	{
 		return strip(szString, [character](const WCHAR& chr)
 		{
@@ -244,58 +244,58 @@ namespace strings
 		});
 	}
 
-	wstring StripCarriage(const wstring& szString)
+	std::wstring StripCarriage(const std::wstring& szString)
 	{
 		return strings::StripCharacter(szString, L'\r');
 	}
 
-	wstring CleanString(const wstring& szString)
+	std::wstring CleanString(const std::wstring& szString)
 	{
 		return strip(szString, [](const WCHAR & chr)
 		{
-			return wstring(L", \r\n").find(chr) != wstring::npos;
+			return std::wstring(L", \r\n").find(chr) != std::wstring::npos;
 		});
 	}
 
-	wstring TrimString(const wstring& szString)
+	std::wstring TrimString(const std::wstring& szString)
 	{
 		const auto first = szString.find_first_not_of(' ');
-		if (first == string::npos)
+		if (first == std::string ::npos)
 			return strings::emptystring;
 		const auto last = szString.find_last_not_of(' ');
 		return szString.substr(first, last - first + 1);
 	}
 
-	wstring replace(const wstring& str, std::function<bool(const WCHAR&)> func, const WCHAR& chr)
+	std::wstring replace(const std::wstring& str, std::function<bool(const WCHAR&)> func, const WCHAR& chr)
 	{
-		wstring result;
+		std::wstring result;
 		result.reserve(str.length());
 		replace_copy_if(str.begin(), str.end(), back_inserter(result), func, chr);
 		return result;
 	}
 
-	wstring ScrubStringForXML(const wstring& szString)
+	std::wstring ScrubStringForXML(const std::wstring& szString)
 	{
 		return replace(szString, [](const WCHAR& chr)
 		{
 			// Replace anything less than 0x20 except tab, carriage return and linefeed
-			return chr < 0x20 && wstring(L"\t\r\n").find(chr) == wstring::npos;
+			return chr < 0x20 && std::wstring(L"\t\r\n").find(chr) == std::wstring::npos;
 		}, L'.');
 	}
 
 	// Processes szFileIn, replacing non file system characters with underscores
 	// Do NOT call with full path - just file names
-	wstring SanitizeFileName(const wstring& szFileIn)
+	std::wstring SanitizeFileName(const std::wstring& szFileIn)
 	{
 		return replace(szFileIn, [](const WCHAR& chr)
 		{
-			return wstring(L"^&*-+=[]\\|;:\",<>/?\r\n").find(chr) != wstring::npos;
+			return std::wstring(L"^&*-+=[]\\|;:\",<>/?\r\n").find(chr) != std::wstring::npos;
 		}, L'_');
 	}
 
-	wstring indent(int iIndent)
+	std::wstring indent(int iIndent)
 	{
-		return wstring(iIndent, L'\t');
+		return std::wstring(iIndent, L'\t');
 	}
 
 	bool InvalidCharacter(ULONG chr, bool bMultiLine)
@@ -346,7 +346,7 @@ namespace strings
 		return true;
 	}
 
-	string RemoveInvalidCharactersA(const string& szString, bool bMultiLine)
+	std::string  RemoveInvalidCharactersA(const std::string & szString, bool bMultiLine)
 	{
 		auto szBin(szString);
 		const auto nullTerminated = szBin.back() == '\0';
@@ -359,7 +359,7 @@ namespace strings
 		return szBin;
 	}
 
-	wstring RemoveInvalidCharactersW(const wstring& szString, bool bMultiLine)
+	std::wstring RemoveInvalidCharactersW(const std::wstring& szString, bool bMultiLine)
 	{
 		if (szString.empty()) return szString;
 		auto szBin(szString);
@@ -374,33 +374,33 @@ namespace strings
 	}
 
 	// Converts binary data to a string, assuming source string was unicode
-	wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine)
+	std::wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine)
 	{
 		SBinary bin = { static_cast<ULONG>(lpByte.size()),const_cast<LPBYTE>(lpByte.data()) };
 		return strings::BinToTextStringW(&bin, bMultiLine);
 	}
 
 	// Converts binary data to a string, assuming source string was unicode
-	wstring BinToTextStringW(_In_ const SBinary* lpBin, bool bMultiLine)
+	std::wstring BinToTextStringW(_In_ const SBinary* lpBin, bool bMultiLine)
 	{
 		if (!lpBin || !lpBin->cb || lpBin->cb % sizeof WCHAR || !lpBin->lpb) return L"";
 
-		const wstring szBin(reinterpret_cast<LPWSTR>(lpBin->lpb), lpBin->cb / sizeof WCHAR);
+		const std::wstring szBin(reinterpret_cast<LPWSTR>(lpBin->lpb), lpBin->cb / sizeof WCHAR);
 		return strings::RemoveInvalidCharactersW(szBin, bMultiLine);
 	}
 
-	wstring BinToTextString(const vector<BYTE>& lpByte, bool bMultiLine)
+	std::wstring BinToTextString(const vector<BYTE>& lpByte, bool bMultiLine)
 	{
 		SBinary bin = { static_cast<ULONG>(lpByte.size()),const_cast<LPBYTE>(lpByte.data()) };
 		return strings::BinToTextString(&bin, bMultiLine);
 	}
 
 	// Converts binary data to a string, assuming source string was single byte
-	wstring BinToTextString(_In_ const SBinary* lpBin, bool bMultiLine)
+	std::wstring BinToTextString(_In_ const SBinary* lpBin, bool bMultiLine)
 	{
 		if (!lpBin || !lpBin->cb || !lpBin->lpb) return L"";
 
-		wstring szBin;
+		std::wstring szBin;
 		szBin.reserve(lpBin->cb);
 
 		for (ULONG i = 0; i < lpBin->cb; i++)
@@ -411,9 +411,9 @@ namespace strings
 		return szBin;
 	}
 
-	wstring BinToHexString(_In_opt_count_(cb) const BYTE* lpb, size_t cb, bool bPrependCB)
+	std::wstring BinToHexString(_In_opt_count_(cb) const BYTE* lpb, size_t cb, bool bPrependCB)
 	{
-		wstring lpsz;
+		std::wstring lpsz;
 
 		if (bPrependCB)
 		{
@@ -441,13 +441,13 @@ namespace strings
 		return lpsz;
 	}
 
-	wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB)
+	std::wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB)
 	{
 		SBinary sBin = { static_cast<ULONG>(lpByte.size()), const_cast<LPBYTE>(lpByte.data()) };
 		return strings::BinToHexString(&sBin, bPrependCB);
 	}
 
-	wstring BinToHexString(_In_opt_ const SBinary* lpBin, bool bPrependCB)
+	std::wstring BinToHexString(_In_opt_ const SBinary* lpBin, bool bPrependCB)
 	{
 		if (!lpBin) return L"";
 
@@ -457,7 +457,7 @@ namespace strings
 			bPrependCB);
 	}
 
-	bool stripPrefix(wstring& str, const wstring& prefix)
+	bool stripPrefix(std::wstring& str, const std::wstring& prefix)
 	{
 		const auto length = prefix.length();
 		if (str.compare(0, length, prefix) == 0)
@@ -471,16 +471,16 @@ namespace strings
 
 	// Converts hex string in lpsz to a binary buffer.
 	// If cbTarget != 0, caps the number of bytes converted at cbTarget
-	vector<BYTE> HexStringToBin(_In_ const wstring& input, size_t cbTarget)
+	vector<BYTE> HexStringToBin(_In_ const std::wstring& input, size_t cbTarget)
 	{
 		// If our target is odd, we can't convert
 		if (cbTarget % 2 != 0) return vector<BYTE>();
 
 		// remove junk
-		wstring szJunk = L"\r\n\t -.,\\/'{}`\""; // STRING_OK
+		std::wstring szJunk = L"\r\n\t -.,\\/'{}`\""; // STRING_OK
 		auto lpsz = strip(input, [szJunk](const WCHAR & chr)
 		{
-			return szJunk.find(chr) != wstring::npos;
+			return szJunk.find(chr) != std::wstring::npos;
 		});
 
 		// strip one (and only one) prefix
@@ -531,11 +531,11 @@ namespace strings
 		return nullptr;
 	}
 
-	vector<wstring> split(const wstring& str, const wchar_t delim)
+	vector<std::wstring> split(const std::wstring& str, const wchar_t delim)
 	{
 		auto ss = std::wstringstream(str);
-		wstring item;
-		vector<wstring> elems;
+		std::wstring item;
+		vector<std::wstring> elems;
 		while (getline(ss, item, delim))
 		{
 			elems.push_back(item);
@@ -544,7 +544,7 @@ namespace strings
 		return elems;
 	}
 
-	wstring join(const vector<wstring>& elems, const wstring& delim)
+	std::wstring join(const vector<std::wstring>& elems, const std::wstring& delim)
 	{
 		std::wstringstream ss;
 		for (size_t i = 0; i < elems.size(); ++i)
@@ -557,8 +557,8 @@ namespace strings
 		return ss.str();
 	}
 
-	wstring join(const vector<wstring>& elems, const wchar_t delim)
+	std::wstring join(const vector<std::wstring>& elems, const wchar_t delim)
 	{
-		return strings::join(elems, wstring(1, delim));
+		return strings::join(elems, std::wstring(1, delim));
 	}
 }

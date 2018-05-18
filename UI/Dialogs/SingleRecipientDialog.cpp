@@ -4,7 +4,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <UI/MFCUtilityFunctions.h>
 
-static wstring CLASS = L"SingleRecipientDialog";
+static std::wstring CLASS = L"SingleRecipientDialog";
 
 SingleRecipientDialog::SingleRecipientDialog(
 	_In_ CParentWnd* pParentWnd,

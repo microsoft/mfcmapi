@@ -10,14 +10,14 @@ struct FolderFieldDefinitionCommon
 	DWORD dwDisplay;
 	DWORD iFmt;
 	WORD wszFormulaLength;
-	wstring wszFormula;
+	std::wstring wszFormula;
 };
 
 struct FolderFieldDefinitionA
 {
 	DWORD FieldType;
 	WORD FieldNameLength;
-	string FieldName;
+	std::string FieldName;
 	FolderFieldDefinitionCommon Common;
 };
 
@@ -25,7 +25,7 @@ struct FolderFieldDefinitionW
 {
 	DWORD FieldType;
 	WORD FieldNameLength;
-	wstring FieldName;
+	std::wstring FieldName;
 	FolderFieldDefinitionCommon Common;
 };
 
@@ -36,7 +36,7 @@ public:
 
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	FolderFieldDefinitionCommon BinToFolderFieldDefinitionCommon();
 

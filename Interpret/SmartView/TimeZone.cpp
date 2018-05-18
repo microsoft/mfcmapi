@@ -37,9 +37,9 @@ void TimeZone::Parse()
 	m_stDaylightDate.wMilliseconds = m_Parser.Get<WORD>();
 }
 
-_Check_return_ wstring TimeZone::ToStringInternal()
+_Check_return_ std::wstring TimeZone::ToStringInternal()
 {
-	wstring szTimeZone;
+	std::wstring szTimeZone;
 
 	szTimeZone = strings::formatmessage(IDS_TIMEZONE,
 		m_lBias,

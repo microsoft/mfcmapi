@@ -3,7 +3,7 @@
 #include <Interpret/String.h>
 #include <UI/Controls/SortList/PropListData.h>
 
-static wstring CLASS = L"CPropertySelector";
+static std::wstring CLASS = L"CPropertySelector";
 
 // Property selection dialog
 // Displays a list of known property tags - no add or delete

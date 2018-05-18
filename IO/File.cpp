@@ -12,7 +12,7 @@
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <UI/Dialogs/Editors/Editor.h>
 
-wstring ShortenPath(const wstring& path)
+std::wstring ShortenPath(const std::wstring& path)
 {
 	if (!path.empty())
 	{
@@ -21,7 +21,7 @@ wstring ShortenPath(const wstring& path)
 		size_t cchShortPath = NULL;
 		// Use the short path to give us as much room as possible
 		WC_D(cchShortPath, GetShortPathNameW(path.c_str(), szShortPath, _countof(szShortPath)));
-		wstring ret = szShortPath;
+		std::wstring ret = szShortPath;
 		if (ret.back() != L'\\')
 		{
 			ret += L'\\';
@@ -33,7 +33,7 @@ wstring ShortenPath(const wstring& path)
 	return path;
 }
 
-wstring GetDirectoryPath(HWND hWnd)
+std::wstring GetDirectoryPath(HWND hWnd)
 {
 	WCHAR szPath[MAX_PATH] = { 0 };
 	BROWSEINFOW BrowseInfo = { nullptr };
@@ -73,7 +73,7 @@ wstring GetDirectoryPath(HWND hWnd)
 }
 
 // Opens storage with best access
-_Check_return_ HRESULT MyStgOpenStorage(_In_ const wstring& szMessageFile, bool bBestAccess, _Deref_out_ LPSTORAGE* lppStorage)
+_Check_return_ HRESULT MyStgOpenStorage(_In_ const std::wstring& szMessageFile, bool bBestAccess, _Deref_out_ LPSTORAGE* lppStorage)
 {
 	if (!lppStorage) return MAPI_E_INVALID_PARAMETER;
 	DebugPrint(DBGGeneric, L"MyStgOpenStorage: Opening \"%ws\", bBestAccess == %ws\n", szMessageFile.c_str(), bBestAccess ? L"True" : L"False");
@@ -101,7 +101,7 @@ _Check_return_ HRESULT MyStgOpenStorage(_In_ const wstring& szMessageFile, bool 
 }
 
 // Creates an LPMESSAGE on top of the MSG file
-_Check_return_ HRESULT LoadMSGToMessage(_In_ const wstring& szMessageFile, _Deref_out_opt_ LPMESSAGE* lppMessage)
+_Check_return_ HRESULT LoadMSGToMessage(_In_ const std::wstring& szMessageFile, _Deref_out_opt_ LPMESSAGE* lppMessage)
 {
 	if (!lppMessage) return MAPI_E_INVALID_PARAMETER;
 
@@ -140,7 +140,7 @@ _Check_return_ HRESULT LoadMSGToMessage(_In_ const wstring& szMessageFile, _Dere
 
 // Loads the MSG file into an LPMESSAGE pointer, then copies it into the passed in message
 // lpMessage must be created first
-_Check_return_ HRESULT LoadFromMSG(_In_ const wstring& szMessageFile, _In_ LPMESSAGE lpMessage, HWND hWnd)
+_Check_return_ HRESULT LoadFromMSG(_In_ const std::wstring& szMessageFile, _In_ LPMESSAGE lpMessage, HWND hWnd)
 {
 	auto hRes = S_OK;
 	LPMESSAGE pIMsg = nullptr;
@@ -207,7 +207,7 @@ _Check_return_ HRESULT LoadFromMSG(_In_ const wstring& szMessageFile, _In_ LPMES
 }
 
 // lpMessage must be created first
-_Check_return_ HRESULT LoadFromTNEF(_In_ const wstring& szMessageFile, _In_ LPADRBOOK lpAdrBook, _In_ LPMESSAGE lpMessage)
+_Check_return_ HRESULT LoadFromTNEF(_In_ const std::wstring& szMessageFile, _In_ LPADRBOOK lpAdrBook, _In_ LPMESSAGE lpMessage)
 {
 	auto hRes = S_OK;
 	LPSTREAM lpStream = nullptr;
@@ -274,9 +274,9 @@ _Check_return_ HRESULT LoadFromTNEF(_In_ const wstring& szMessageFile, _In_ LPAD
 }
 
 // Builds a file name out of the passed in message and extension
-wstring BuildFileName(
-	_In_ const wstring& ext,
-	_In_ const wstring& dir,
+std::wstring BuildFileName(
+	_In_ const std::wstring& ext,
+	_In_ const std::wstring& dir,
 	_In_ LPMESSAGE lpMessage)
 {
 	if (!lpMessage) return strings::emptystring;
@@ -305,7 +305,7 @@ wstring BuildFileName(
 		&ulProps,
 		&lpProps));
 
-	wstring subj;
+	std::wstring subj;
 	if (CheckStringProp(&lpProps[ePR_SUBJECT_W], PT_UNICODE))
 	{
 		subj = lpProps[ePR_SUBJECT_W].Value.lpszW;
@@ -329,10 +329,10 @@ wstring BuildFileName(
 
 // The file name we generate should be shorter than MAX_PATH
 // This includes our directory name too!
-wstring BuildFileNameAndPath(
-	_In_ const wstring& szExt,
-	_In_ const wstring& szSubj,
-	_In_ const wstring& szRootPath,
+std::wstring BuildFileNameAndPath(
+	_In_ const std::wstring& szExt,
+	_In_ const std::wstring& szSubj,
+	_In_ const std::wstring& szRootPath,
 	_In_opt_ const LPSBinary lpBin)
 {
 	DebugPrint(DBGGeneric, L"BuildFileNameAndPath ext = \"%ws\"\n", szExt.c_str());
@@ -350,7 +350,7 @@ wstring BuildFileNameAndPath(
 	// Shrink the max path to allow for a -ATTACHxxx extension.
 	auto maxFile = MAX_PATH - cleanRoot.length() - szExt.length() - MAXATTACH;
 
-	wstring cleanSubj;
+	std::wstring cleanSubj;
 	if (!szSubj.empty())
 	{
 		cleanSubj = strings::SanitizeFileName(szSubj);
@@ -363,7 +363,7 @@ wstring BuildFileNameAndPath(
 
 	DebugPrint(DBGGeneric, L"BuildFileNameAndPath cleanSubj = \"%ws\"\n", cleanSubj.c_str());
 
-	wstring szBin;
+	std::wstring szBin;
 	if (lpBin && lpBin->cb)
 	{
 		szBin = L"_" + strings::BinToHexString(lpBin, false);
@@ -419,7 +419,7 @@ void SaveFolderContentsToTXT(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpFolder, bool 
 	}
 }
 
-_Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ const wstring& szPathName, bool bAssoc, bool bUnicode, HWND hWnd)
+_Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ const std::wstring& szPathName, bool bAssoc, bool bUnicode, HWND hWnd)
 {
 	auto hRes = S_OK;
 	LPMAPITABLE lpFolderContents = nullptr;
@@ -572,7 +572,7 @@ void ExportMessages(_In_ const LPMAPIFOLDER lpFolder, HWND hWnd)
 }
 #endif
 
-_Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_ const wstring& szFileName)
+_Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_ const std::wstring& szFileName)
 {
 	if (!pStrmSrc || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
@@ -610,7 +610,7 @@ _Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_ const wstr
 	return hRes;
 }
 
-_Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_ const wstring& szFileName)
+_Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szFileName)
 {
 	auto hRes = S_OK;
 	LPSTREAM pStrmSrc = nullptr;
@@ -646,7 +646,7 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_ const wstring& s
 	return hRes;
 }
 
-_Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(_In_ const wstring& pName,
+_Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(_In_ const std::wstring& pName,
 	DWORD grfMode,
 	DWORD stgfmt,
 	DWORD grfAttrs,
@@ -678,7 +678,7 @@ _Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(_In_ const wstring& p
 		reinterpret_cast<LPSTORAGE*>(ppObjectOpen));
 }
 
-_Check_return_ HRESULT CreateNewMSG(_In_ const wstring& szFileName, bool bUnicode, _Deref_out_opt_ LPMESSAGE* lppMessage, _Deref_out_opt_ LPSTORAGE* lppStorage)
+_Check_return_ HRESULT CreateNewMSG(_In_ const std::wstring& szFileName, bool bUnicode, _Deref_out_opt_ LPMESSAGE* lppMessage, _Deref_out_opt_ LPSTORAGE* lppStorage)
 {
 	if (szFileName.empty() || !lppMessage || !lppStorage) return MAPI_E_INVALID_PARAMETER;
 
@@ -751,7 +751,7 @@ _Check_return_ HRESULT CreateNewMSG(_In_ const wstring& szFileName, bool bUnicod
 
 _Check_return_ HRESULT SaveToMSG(
 	_In_ const LPMAPIFOLDER lpFolder,
-	_In_ const wstring& szPathName,
+	_In_ const std::wstring& szPathName,
 	_In_ const SPropValue& entryID,
 	_In_ const LPSPropValue lpRecordKey,
 	_In_ const LPSPropValue lpSubject,
@@ -804,7 +804,7 @@ _Check_return_ HRESULT SaveToMSG(
 	return hRes;
 }
 
-_Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_ const wstring& szFileName, bool bUnicode, HWND hWnd, bool bAllowUI)
+_Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szFileName, bool bUnicode, HWND hWnd, bool bAllowUI)
 {
 	auto hRes = S_OK;
 	LPSTORAGE pStorage = nullptr;
@@ -855,7 +855,7 @@ _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_ const wstring& s
 	return hRes;
 }
 
-_Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdrBook, _In_ const wstring& szFileName)
+_Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdrBook, _In_ const std::wstring& szFileName)
 {
 	auto hRes = S_OK;
 
@@ -953,7 +953,7 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 	return hRes;
 }
 
-_Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ const wstring& szAttName, HWND hWnd)
+_Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szAttName, HWND hWnd)
 {
 	LPSPropValue pProps = nullptr;
 	auto hRes = S_OK;
@@ -1131,7 +1131,7 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 }
 #endif
 
-_Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_ const wstring& szFileName, bool bUnicode, HWND hWnd)
+_Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_ const std::wstring& szFileName, bool bUnicode, HWND hWnd)
 {
 	auto hRes = S_OK;
 	LPMESSAGE lpAttachMsg = nullptr;
@@ -1156,7 +1156,7 @@ _Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_ const
 	return hRes;
 }
 
-_Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_ const wstring& szFileName)
+_Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_ const std::wstring& szFileName)
 {
 	auto hRes = S_OK;
 	LPSTREAM pStrmSrc = nullptr;
@@ -1193,7 +1193,7 @@ _Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_ cons
 }
 
 // Pretty sure this covers all OLE attachments - we don't need to look at PR_ATTACH_TAG
-_Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_ const wstring& szFileName)
+_Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_ const std::wstring& szFileName)
 {
 	auto hRes = S_OK;
 	LPSTORAGE lpStorageSrc = nullptr;

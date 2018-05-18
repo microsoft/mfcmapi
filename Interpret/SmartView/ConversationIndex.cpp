@@ -75,12 +75,12 @@ void ConversationIndex::Parse()
 	}
 }
 
-_Check_return_ wstring ConversationIndex::ToStringInternal()
+_Check_return_ std::wstring ConversationIndex::ToStringInternal()
 {
-	wstring szConversationIndex;
+	std::wstring szConversationIndex;
 
-	wstring PropString;
-	wstring AltPropString;
+	std::wstring PropString;
+	std::wstring AltPropString;
 	FileTimeToString(m_ftCurrent, PropString, AltPropString);
 	auto szGUID = GUIDToString(&m_guid);
 	szConversationIndex = strings::formatmessage(IDS_CONVERSATIONINDEXHEADER,

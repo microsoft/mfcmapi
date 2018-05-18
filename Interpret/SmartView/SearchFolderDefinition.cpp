@@ -124,9 +124,9 @@ void SearchFolderDefinition::Parse()
 	}
 }
 
-_Check_return_ wstring SearchFolderDefinition::ToStringInternal()
+_Check_return_ std::wstring SearchFolderDefinition::ToStringInternal()
 {
-	wstring szSearchFolderDefinition;
+	std::wstring szSearchFolderDefinition;
 
 	auto szFlags = InterpretNumberAsStringProp(m_Flags, PR_WB_SF_STORAGE_TYPE);
 	szSearchFolderDefinition = strings::formatmessage(IDS_SFDEFINITIONHEADER,

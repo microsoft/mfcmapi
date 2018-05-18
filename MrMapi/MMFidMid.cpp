@@ -7,12 +7,12 @@
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/String.h>
 
-void PrintFolder(const wstring& szFid, const wstring& szFolder)
+void PrintFolder(const std::wstring& szFid, const std::wstring& szFolder)
 {
 	wprintf(L"%-15ws %ws\n", szFid.c_str(), szFolder.c_str());
 }
 
-void PrintMessage(const wstring& szMid, bool fAssociated, const wstring& szSubject, const wstring& szClass)
+void PrintMessage(const std::wstring& szMid, bool fAssociated, const std::wstring& szSubject, const std::wstring& szClass)
 {
 	wprintf(L" %-15ws %wc %ws (%ws)\n", szMid.c_str(), fAssociated ? L'A' : L'R', szSubject.c_str(), szClass.c_str());
 }
@@ -21,7 +21,7 @@ class CFindFidMid : public CMAPIProcessor
 {
 public:
 	CFindFidMid();
-	void InitFidMid(const wstring& szFid, const wstring& szMid, bool bMid);
+	void InitFidMid(const std::wstring& szFid, const std::wstring& szMid, bool bMid);
 
 private:
 	bool ContinueProcessingFolders() override;
@@ -30,9 +30,9 @@ private:
 	void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows) override;
 	bool DoContentsTablePerRowWork(_In_ const LPSRow lpSRow, ULONG ulCurRow) override;
 
-	wstring m_szFid;
-	wstring m_szMid;
-	wstring m_szCurrentFid;
+	std::wstring m_szFid;
+	std::wstring m_szMid;
+	std::wstring m_szCurrentFid;
 
 	bool m_bMid;
 	bool m_fFIDMatch;
@@ -50,7 +50,7 @@ CFindFidMid::CFindFidMid()
 	m_fAssociated = false;
 }
 
-void CFindFidMid::InitFidMid(const wstring& szFid, const wstring& szMid, bool bMid)
+void CFindFidMid::InitFidMid(const std::wstring& szFid, const std::wstring& szMid, bool bMid)
 {
 	m_szFid = szFid;
 	m_szMid = szMid;
@@ -61,13 +61,13 @@ void CFindFidMid::InitFidMid(const wstring& szFid, const wstring& szMid, bool bM
 
 // Passed in Fid matches the found Fid exactly, or matches the tail exactly
 // For instance, both 3-15632 and 15632 will match against an input fid of 15632
-bool MatchFid(const wstring& inputFid, const wstring& currentFid)
+bool MatchFid(const std::wstring& inputFid, const std::wstring& currentFid)
 {
 	if (_wcsicmp(inputFid.c_str(), currentFid.c_str()) == 0) return true;
 
 	auto pos = currentFid.find('-');
-	if (pos == string::npos) return false;
-	auto trimmedFid = currentFid.substr(pos + 1, string::npos);
+	if (pos == std::string::npos) return false;
+	auto trimmedFid = currentFid.substr(pos + 1, std::string::npos);
 	if (_wcsicmp(inputFid.c_str(), trimmedFid.c_str()) == 0)
 	{
 		return true;
@@ -179,9 +179,9 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ const LPSRow lpSRow, ULONG /*ul
 {
 	if (!lpSRow) return false;
 
-	wstring lpszThisMid;
-	wstring lpszSubject;
-	wstring lpszClass;
+	std::wstring lpszThisMid;
+	std::wstring lpszSubject;
+	std::wstring lpszClass;
 
 	auto lpPropMid = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PidTagMid);
 	if (lpPropMid)
@@ -227,10 +227,10 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ const LPSRow lpSRow, ULONG /*ul
 }
 
 void DumpFidMid(
-	_In_ const wstring& lpszProfile,
+	_In_ const std::wstring& lpszProfile,
 	_In_ LPMDB lpMDB,
-	_In_ const wstring& lpszFid,
-	_In_ const wstring& lpszMid,
+	_In_ const std::wstring& lpszFid,
+	_In_ const std::wstring& lpszMid,
 	bool bMid)
 {
 	// FID/MID lookups only succeed online, so go ahead and force it

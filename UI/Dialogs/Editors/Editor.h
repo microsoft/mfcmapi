@@ -43,10 +43,10 @@ public:
 	_Check_return_ HRESULT DisplayDialog();
 
 	// These functions can be used to set up a data editing dialog
-	void SetPromptPostFix(_In_ const wstring& szMsg);
+	void SetPromptPostFix(_In_ const std::wstring& szMsg);
 	void InitPane(ULONG iNum, ViewPane* lpPane);
-	void SetStringA(ULONG i, const string& szMsg) const;
-	void SetStringW(ULONG i, const wstring& szMsg) const;
+	void SetStringA(ULONG i, const std::string& szMsg) const;
+	void SetStringW(ULONG i, const std::wstring& szMsg) const;
 	void SetStringf(ULONG i, LPCWSTR szMsg, ...) const;
 #ifdef CHECKFORMATPARAMS
 #undef SetStringf
@@ -61,7 +61,7 @@ public:
 
 	// Get values after we've done the DisplayDialog
 	ViewPane* GetPane(ULONG iPane) const;
-	wstring GetStringW(ULONG i) const;
+	std::wstring GetStringW(ULONG i) const;
 	_Check_return_ ULONG GetHex(ULONG i) const;
 	_Check_return_ ULONG GetDecimal(ULONG i) const;
 	_Check_return_ ULONG GetPropTag(ULONG i) const;
@@ -72,8 +72,8 @@ public:
 	GUID GetSelectedGUID(ULONG iControl, bool bByteSwapped) const;
 
 	// AddIn functions
-	void SetAddInTitle(const wstring& szTitle);
-	void SetAddInLabel(ULONG i, const wstring& szLabel) const;
+	void SetAddInTitle(const std::wstring& szTitle);
+	void SetAddInLabel(ULONG i, const std::wstring& szLabel) const;
 
 	// Use this function to implement list editing
 	// return true to indicate the entry was changed, false to indicate it was not
@@ -83,14 +83,14 @@ protected:
 	// Functions used by derived classes during init
 	void InsertColumn(ULONG ulListNum, int nCol, UINT uidText) const;
 	void InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulPropType) const;
-	void SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, const wstring& szListString) const;
-	_Check_return_ SortListData* InsertListRow(ULONG iControl, int iRow, const wstring& szText) const;
+	void SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, const std::wstring& szListString) const;
+	_Check_return_ SortListData* InsertListRow(ULONG iControl, int iRow, const std::wstring& szText) const;
 	void ClearList(ULONG iControl) const;
 	void ResizeList(ULONG uControl, bool bSort) const;
 
 	// Functions used by derived classes during handle change events
 	vector<BYTE> GetBinary(ULONG i) const;
-	_Check_return_ string GetStringA(ULONG iControl) const;
+	_Check_return_ std::string GetStringA(ULONG iControl) const;
 	_Check_return_ ULONG GetListCount(ULONG iControl) const;
 	_Check_return_ SortListData* GetListRowData(ULONG iControl, int iRow) const;
 	_Check_return_ bool IsDirty(ULONG iControl) const;
@@ -163,10 +163,10 @@ private:
 
 	// Title bar, prompt and icon
 	UINT m_uidTitle;
-	wstring m_szTitle;
+	std::wstring m_szTitle;
 	UINT m_uidPrompt;
-	wstring m_szPromptPostFix;
-	wstring m_szAddInTitle;
+	std::wstring m_szPromptPostFix;
+	std::wstring m_szAddInTitle;
 	HICON m_hIcon;
 
 	UINT m_uidActionButtonText1;

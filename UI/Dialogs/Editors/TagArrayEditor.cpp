@@ -5,7 +5,7 @@
 #include "PropertyTagEditor.h"
 #include <UI/Controls/SortList/PropListData.h>
 
-static wstring CLASS = L"CTagArrayEditor";
+static std::wstring CLASS = L"CTagArrayEditor";
 
 CTagArrayEditor::CTagArrayEditor(
 	_In_opt_ CWnd* pParentWnd,

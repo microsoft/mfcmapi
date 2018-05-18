@@ -69,7 +69,7 @@ void CMAPIProcessor::InitSortOrder(_In_ const LPSSortOrderSet lpSort)
 
 // Server name MUST be passed
 void CMAPIProcessor::ProcessMailboxTable(
-	_In_ const wstring& szExchangeServerName)
+	_In_ const std::wstring& szExchangeServerName)
 {
 	if (szExchangeServerName.empty()) return;
 	auto hRes = S_OK;
@@ -289,7 +289,7 @@ void CMAPIProcessor::ProcessFolder(bool bDoRegular,
 					DoFolderPerHierarchyTableRowWork(&lpRows->aRow[ulRow]);
 					if (lpRows->aRow[ulRow].lpProps)
 					{
-						wstring szSubFolderOffset; // Holds subfolder name
+						std::wstring szSubFolderOffset; // Holds subfolder name
 
 						auto lpFolderDisplayName = PpropFindProp(
 							lpRows->aRow[ulRow].lpProps,
@@ -627,7 +627,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 // --------------------------------------------------------------------------------- //
 // List Functions
 // --------------------------------------------------------------------------------- //
-void CMAPIProcessor::AddFolderToFolderList(_In_opt_ const LPSBinary lpFolderEID, _In_ const wstring& szFolderOffsetPath)
+void CMAPIProcessor::AddFolderToFolderList(_In_opt_ const LPSBinary lpFolderEID, _In_ const std::wstring& szFolderOffsetPath)
 {
 	FolderNode newNode;
 	newNode.szFolderOffsetPath = szFolderOffsetPath;
@@ -696,7 +696,7 @@ void CMAPIProcessor::FreeFolderList()
 // Worker Functions
 // --------------------------------------------------------------------------------- //
 
-void CMAPIProcessor::BeginMailboxTableWork(_In_ const wstring& /*szExchangeServerName*/)
+void CMAPIProcessor::BeginMailboxTableWork(_In_ const std::wstring& /*szExchangeServerName*/)
 {
 }
 

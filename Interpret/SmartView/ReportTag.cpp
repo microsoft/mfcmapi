@@ -60,9 +60,9 @@ void ReportTag::Parse()
 	}
 }
 
-_Check_return_ wstring ReportTag::ToStringInternal()
+_Check_return_ std::wstring ReportTag::ToStringInternal()
 {
-	wstring szReportTag;
+	std::wstring szReportTag;
 
 	szReportTag = strings::formatmessage(IDS_REPORTTAGHEADER);
 

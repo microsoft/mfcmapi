@@ -2,7 +2,7 @@
 #include <UI/RichEditOleCallback.h>
 #include <UI/UIFunctions.h>
 
-static wstring CLASS = L"CRichEditOleCallback";
+static std::wstring CLASS = L"CRichEditOleCallback";
 
 CRichEditOleCallback::CRichEditOleCallback(HWND hWnd, HWND hWndParent)
 {

@@ -13,7 +13,7 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/GlobalCache.h>
 
-static wstring CLASS = L"CAttachmentsDlg";
+static std::wstring CLASS = L"CAttachmentsDlg";
 
 CAttachmentsDlg::CAttachmentsDlg(
 	_In_ CParentWnd* pParentWnd,

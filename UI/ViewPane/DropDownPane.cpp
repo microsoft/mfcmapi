@@ -4,7 +4,7 @@
 #include <Interpret/InterpretProp2.h>
 #include <UI/UIFunctions.h>
 
-static wstring CLASS = L"DropDownPane";
+static std::wstring CLASS = L"DropDownPane";
 
 DropDownPane* DropDownPane::Create(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly)
 {
@@ -167,7 +167,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	SetDropDownSelection(m_lpszSelectionString);
 }
 
-void DropDownPane::InsertDropString(_In_ const wstring& szText, ULONG ulValue)
+void DropDownPane::InsertDropString(_In_ const std::wstring& szText, ULONG ulValue)
 {
 	m_DropList.push_back({ szText, ulValue });
 }
@@ -180,13 +180,13 @@ void DropDownPane::CommitUIValues()
 	m_bInitialized = false; // must be last
 }
 
-_Check_return_ wstring DropDownPane::GetDropStringUseControl() const
+_Check_return_ std::wstring DropDownPane::GetDropStringUseControl() const
 {
 	auto len = m_DropDown.GetWindowTextLength() + 1;
 	auto buffer = new WCHAR[len];
 	memset(buffer, 0, sizeof(WCHAR)* len);
 	GetWindowTextW(m_DropDown.m_hWnd, buffer, len);
-	wstring szOut = buffer;
+	std::wstring szOut = buffer;
 	delete[] buffer;
 	return szOut;
 }
@@ -239,7 +239,7 @@ GUID DropDownPane::GetSelectedGUID(bool bByteSwapped) const
 	}
 
 	// no match - need to do a lookup
-	wstring szText;
+	std::wstring szText;
 	if (m_bInitialized)
 	{
 		szText = GetDropStringUseControl();
@@ -261,7 +261,7 @@ GUID DropDownPane::GetSelectedGUID(bool bByteSwapped) const
 	return{ 0 };
 }
 
-void DropDownPane::SetDropDownSelection(_In_ const wstring& szText)
+void DropDownPane::SetDropDownSelection(_In_ const std::wstring& szText)
 {
 	m_lpszSelectionString = szText;
 	if (!m_bInitialized) return;

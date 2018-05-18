@@ -28,12 +28,12 @@ CDumpStore::~CDumpStore()
 	if (m_fMailboxTable) CloseFile(m_fMailboxTable);
 }
 
-void CDumpStore::InitMessagePath(_In_ const wstring& szMessageFileName)
+void CDumpStore::InitMessagePath(_In_ const std::wstring& szMessageFileName)
 {
 	m_szMessageFileName = szMessageFileName;
 }
 
-void CDumpStore::InitFolderPathRoot(_In_ const wstring& szFolderPathRoot)
+void CDumpStore::InitFolderPathRoot(_In_ const std::wstring& szFolderPathRoot)
 {
 	m_szFolderPathRoot = szFolderPathRoot;
 	if (m_szFolderPathRoot.length() >= MAXMSGPATH)
@@ -42,7 +42,7 @@ void CDumpStore::InitFolderPathRoot(_In_ const wstring& szFolderPathRoot)
 	}
 }
 
-void CDumpStore::InitMailboxTablePathRoot(_In_ const wstring& szMailboxTablePathRoot)
+void CDumpStore::InitMailboxTablePathRoot(_In_ const std::wstring& szMailboxTablePathRoot)
 {
 	m_szMailboxTablePathRoot = szMailboxTablePathRoot;
 }
@@ -67,7 +67,7 @@ void CDumpStore::DisableEmbeddedAttachments()
 	m_bOutputAttachments = false;
 }
 
-void CDumpStore::BeginMailboxTableWork(_In_ const wstring& szExchangeServerName)
+void CDumpStore::BeginMailboxTableWork(_In_ const std::wstring& szExchangeServerName)
 {
 	if (m_bOutputList) return;
 	auto szTableContentsFile = strings::format(
@@ -237,7 +237,7 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 // Outputs a single message's details to the screen, so as to produce a list of messages
 void OutputMessageList(
 	_In_ const LPSRow lpSRow,
-	_In_ const wstring& szFolderPath,
+	_In_ const std::wstring& szFolderPath,
 	bool bOutputMSG)
 {
 	if (!lpSRow || szFolderPath.empty()) return;
@@ -245,7 +245,7 @@ void OutputMessageList(
 
 	// Get required properties from the message
 	auto lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT_W);
-	wstring szSubj;
+	std::wstring szSubj;
 	if (lpTemp && CheckStringProp(lpTemp, PT_UNICODE))
 	{
 		szSubj = lpTemp->Value.lpszW;
@@ -318,7 +318,7 @@ void CDumpStore::EndContentsTableWork()
 }
 
 // TODO: This fails in unicode builds since PR_RTF_COMPRESSED is always ascii.
-void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBodyTag, _In_ const wstring& szBodyName, bool bWrapEx, ULONG ulCPID)
+void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBodyTag, _In_ const std::wstring& szBodyName, bool bWrapEx, ULONG ulCPID)
 {
 	auto hRes = S_OK;
 	LPSTREAM lpStream = nullptr;
@@ -402,8 +402,8 @@ void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBody
 void OutputMessageXML(
 	_In_ LPMESSAGE lpMessage,
 	_In_ LPVOID lpParentMessageData,
-	_In_ const wstring& szMessageFileName,
-	_In_ const wstring& szFolderPath,
+	_In_ const std::wstring& szMessageFileName,
+	_In_ const std::wstring& szFolderPath,
 	bool bRetryStreamProps,
 	_Deref_out_ LPVOID* lpData)
 {
@@ -458,7 +458,7 @@ void OutputMessageXML(
 	}
 	else
 	{
-		wstring szSubj; // BuildFileNameAndPath will substitute a subject if we don't find one
+		std::wstring szSubj; // BuildFileNameAndPath will substitute a subject if we don't find one
 		LPSBinary lpRecordKey = nullptr;
 
 		auto lpTemp = PpropFindProp(lpAllProps, cValues, PR_SUBJECT_W);
@@ -553,7 +553,7 @@ void OutputMessageXML(
 
 void OutputMessageMSG(
 	_In_ LPMESSAGE lpMessage,
-	_In_ const wstring& szFolderPath)
+	_In_ const std::wstring& szFolderPath)
 {
 	auto hRes = S_OK;
 
@@ -575,7 +575,7 @@ void OutputMessageMSG(
 
 	DebugPrint(DBGGeneric, L"OutputMessageMSG: Saving message to \"%ws\"\n", szFolderPath.c_str());
 
-	wstring szSubj;
+	std::wstring szSubj;
 
 	ULONG cProps = 0;
 	LPSPropValue lpsProps = nullptr;

@@ -68,10 +68,10 @@ FolderFieldDefinitionCommon FolderUserFieldStream::BinToFolderFieldDefinitionCom
 	return common;
 }
 
-_Check_return_ wstring FolderUserFieldStream::ToStringInternal()
+_Check_return_ std::wstring FolderUserFieldStream::ToStringInternal()
 {
-	wstring szFolderUserFieldStream;
-	wstring szTmp;
+	std::wstring szFolderUserFieldStream;
+	std::wstring szTmp;
 
 	szFolderUserFieldStream = strings::formatmessage(
 		IDS_FIELDHEADER,

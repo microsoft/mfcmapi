@@ -4,7 +4,7 @@
 #include <UI/UIFunctions.h>
 #include <UI/DoubleBuffer.h>
 
-static wstring CLASS = L"CFakeSplitter";
+static std::wstring CLASS = L"CFakeSplitter";
 
 enum FakesSplitHitTestValue
 {

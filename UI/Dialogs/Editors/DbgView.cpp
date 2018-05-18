@@ -9,7 +9,7 @@ class CDbgView : public CEditor
 public:
 	CDbgView(_In_ CParentWnd* pParentWnd);
 	virtual ~CDbgView();
-	void AppendText(const wstring& szMsg) const;
+	void AppendText(const std::wstring& szMsg) const;
 
 private:
 	_Check_return_ ULONG HandleChange(UINT nID) override;
@@ -30,7 +30,7 @@ void DisplayDbgView(_In_ CParentWnd* pParentWnd)
 	if (!g_DgbView) g_DgbView = new CDbgView(pParentWnd);
 }
 
-void OutputToDbgView(const wstring& szMsg)
+void OutputToDbgView(const std::wstring& szMsg)
 {
 	if (!g_DgbView) return;
 	g_DgbView->AppendText(szMsg);
@@ -44,7 +44,7 @@ enum __DbgViewFields
 	DBGVIEW_NUMFIELDS, // Must be last
 };
 
-static wstring CLASS = L"CDbgView";
+static std::wstring CLASS = L"CDbgView";
 
 CDbgView::CDbgView(_In_ CParentWnd* pParentWnd) :
 	CEditor(pParentWnd, IDS_DBGVIEW, NULL, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2, IDS_CLEAR, IDS_CLOSE, NULL)
@@ -113,7 +113,7 @@ void CDbgView::OnEditAction2()
 	OnCancel();
 }
 
-void CDbgView::AppendText(const wstring& szMsg) const
+void CDbgView::AppendText(const std::wstring& szMsg) const
 {
 	if (m_bPaused) return;
 

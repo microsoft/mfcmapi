@@ -177,18 +177,18 @@ void LoadSingleAddIn(_In_ _AddIn& addIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoadA
 class CFileList
 {
 public:
-	wstring m_szKey;
+	std::wstring m_szKey;
 	HKEY m_hRootKey;
-	vector<wstring> m_lpList;
+	vector<std::wstring> m_lpList;
 
 #define EXCLUSION_LIST L"AddInExclusionList" // STRING_OK
 #define INCLUSION_LIST L"AddInInclusionList" // STRING_OK
 #define SEPARATOR L";" // STRING_OK
 
 	// Read in registry and build a list of invalid add-in DLLs
-	CFileList(_In_ const wstring& szKey)
+	CFileList(_In_ const std::wstring& szKey)
 	{
-		wstring lpszReg;
+		std::wstring lpszReg;
 
 		m_hRootKey = CreateRootKey();
 		m_szKey = szKey;
@@ -216,7 +216,7 @@ public:
 	~CFileList()
 	{
 		auto hRes = S_OK;
-		wstring szList;
+		std::wstring szList;
 
 		if (!m_lpList.empty())
 		{
@@ -236,14 +236,14 @@ public:
 	}
 
 	// Add the DLL to the list
-	void AddToList(_In_ const wstring& szDLL)
+	void AddToList(_In_ const std::wstring& szDLL)
 	{
 		if (szDLL.empty()) return;
 		m_lpList.push_back(szDLL);
 	}
 
 	// Check this DLL name against the list
-	bool IsOnList(_In_ const wstring& szDLL) const
+	bool IsOnList(_In_ const std::wstring& szDLL) const
 	{
 		if (szDLL.empty()) return true;
 		for (const auto& dll : m_lpList)
@@ -273,7 +273,7 @@ void LoadAddIns()
 		if (!dwDir) return;
 
 		// We got the path to mfcmapi.exe - need to strip it
-		wstring szDir = szFilePath;
+		std::wstring szDir = szFilePath;
 		szDir = szDir.substr(0, szDir.find_last_of(L'\\'));
 
 		CFileList ExclusionList(EXCLUSION_LIST);
@@ -891,7 +891,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 				}
 				else
 				{
-					MyComplexDialog.InitPane(i, TextPane::CreateSingleLinePane(NULL, wstring(lpDialog->lpDialogControls[i].szDefaultText), lpDialog->lpDialogControls[i].bReadOnly));
+					MyComplexDialog.InitPane(i, TextPane::CreateSingleLinePane(NULL, std::wstring(lpDialog->lpDialogControls[i].szDefaultText), lpDialog->lpDialogControls[i].bReadOnly));
 				}
 
 				break;
@@ -1031,7 +1031,7 @@ __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool b
 	}
 }
 
-wstring AddInStructTypeToString(__ParsingTypeEnum iStructType)
+std::wstring AddInStructTypeToString(__ParsingTypeEnum iStructType)
 {
 	for (const auto& smartViewParserType : SmartViewParserTypeArray)
 	{
@@ -1044,7 +1044,7 @@ wstring AddInStructTypeToString(__ParsingTypeEnum iStructType)
 	return L"";
 }
 
-wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+std::wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	// Don't let add-ins hijack our built in types
 	if (iStructType <= IDS_STEND - 1) return L"";
@@ -1066,7 +1066,7 @@ wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cb
 					if (pfnSmartViewParse && pfnFreeParse)
 					{
 						auto szParse = pfnSmartViewParse(szStructType.c_str(), cbBin, lpBin);
-						wstring szRet = szParse;
+						std::wstring szRet = szParse;
 
 						pfnFreeParse(szParse);
 						return szRet;

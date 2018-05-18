@@ -9,7 +9,7 @@ public:
 
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	vector<BYTE> m_Cookie; // 8 characters + NULL terminator
 	DWORD m_Version;
@@ -24,5 +24,5 @@ private:
 	ULONG m_cbMessageSearchKey;
 	vector<BYTE> m_lpMessageSearchKey;
 	ULONG m_cchAnsiText;
-	string m_lpszAnsiText;
+	std::string m_lpszAnsiText;
 };

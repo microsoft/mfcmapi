@@ -66,7 +66,7 @@ HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* 
 HRESULT HrMAPIOpenStoreAndFolder(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ ULONG ulFolder,
-	_In_ wstring lpszFolderPath,
+	_In_ std::wstring lpszFolderPath,
 	_Out_opt_ LPMDB* lppMDB,
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder)
 {
@@ -195,7 +195,7 @@ void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 	MAPIFreeBuffer(lpAllProps);
 }
 
-void PrintObjectProperties(const wstring& szObjType, _In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
+void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
 	auto hRes = S_OK;
 	if (!lpMAPIProp) return;

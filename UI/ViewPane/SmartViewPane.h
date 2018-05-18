@@ -7,7 +7,7 @@ class SmartViewPane : public DropDownPane
 public:
 	static SmartViewPane* Create(UINT uidLabel);
 
-	void SetStringW(const wstring& szMsg);
+	void SetStringW(const std::wstring& szMsg);
 	void DisableDropDown();
 	void SetParser(__ParsingTypeEnum iParser);
 	void Parse(SBinary myBin);

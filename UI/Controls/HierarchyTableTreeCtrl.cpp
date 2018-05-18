@@ -47,7 +47,7 @@ static const SizedSPropTagArray(htNUMCOLS, sptHTCountCols) =
  PR_DELETED_ASSOC_MSG_COUNT
 };
 
-static wstring CLASS = L"CHierarchyTableTreeCtrl";
+static std::wstring CLASS = L"CHierarchyTableTreeCtrl";
 
 CHierarchyTableTreeCtrl::CHierarchyTableTreeCtrl(
 	_In_ CWnd* pCreateParent,
@@ -320,7 +320,7 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 	}
 	else lpRootName = &lpProps[htPR_DISPLAY_NAME_W];
 
-	wstring szName;
+	std::wstring szName;
 
 	// Shouldn't have to check lpRootName for non-NULL since CheckString does it, but prefast is complaining
 	if (lpRootName && CheckStringProp(lpRootName, PT_UNICODE))
@@ -355,7 +355,7 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 }
 
 void CHierarchyTableTreeCtrl::AddNode(
-	_In_ const wstring& szName,
+	_In_ const std::wstring& szName,
 	HTREEITEM hParent,
 	SortListData* lpData,
 	bool bGetTable) const
@@ -383,7 +383,7 @@ void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, boo
 {
 	if (!lpsRow) return;
 
-	wstring szName;
+	std::wstring szName;
 	auto lpName = PpropFindProp(
 		lpsRow->lpProps,
 		lpsRow->cValues,
@@ -593,9 +593,9 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem) const
 	LPSPropValue lpProps = nullptr;
 	ULONG cVals = 0;
 	UINT uiMsg = IDS_STATUSTEXTNOFOLDER;
-	wstring szParam1;
-	wstring szParam2;
-	wstring szParam3;
+	std::wstring szParam1;
+	std::wstring szParam2;
+	std::wstring szParam3;
 
 	DebugPrintEx(DBGHierarchy, CLASS, L"UpdateSelectionUI", L"%p\n", hItem);
 
@@ -1135,7 +1135,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, L
 			tab->row.cValues,
 			PR_DISPLAY_NAME_W);
 
-		wstring szText;
+		std::wstring szText;
 		if (CheckStringProp(lpName, PT_UNICODE))
 		{
 			szText = lpName->Value.lpszW;

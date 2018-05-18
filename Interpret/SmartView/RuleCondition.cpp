@@ -57,9 +57,9 @@ void RuleCondition::Parse()
 	m_Parser.Advance(m_lpRes.GetCurrentOffset());
 }
 
-_Check_return_ wstring RuleCondition::ToStringInternal()
+_Check_return_ std::wstring RuleCondition::ToStringInternal()
 {
-	vector<wstring> ruleCondition;
+	vector<std::wstring> ruleCondition;
 
 	if (m_bExtended)
 	{

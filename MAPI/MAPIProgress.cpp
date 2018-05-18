@@ -3,17 +3,17 @@
 #include "enums.h"
 #include <UI/Dialogs/BaseDialog.h>
 
-static wstring CLASS = L"CMAPIProgress";
+static std::wstring CLASS = L"CMAPIProgress";
 
 #ifdef MRMAPI
-_Check_return_ CMAPIProgress* GetMAPIProgress(const wstring& /*lpszContext*/, _In_ HWND /*hWnd*/)
+_Check_return_ CMAPIProgress* GetMAPIProgress(const std::wstring& /*lpszContext*/, _In_ HWND /*hWnd*/)
 {
 	return NULL;
 }
 #endif
 
 #ifndef MRMAPI
-_Check_return_ CMAPIProgress* GetMAPIProgress(const wstring& lpszContext, _In_ HWND hWnd)
+_Check_return_ CMAPIProgress* GetMAPIProgress(const std::wstring& lpszContext, _In_ HWND hWnd)
 {
 	if (RegKeys[regkeyUSE_IMAPIPROGRESS].ulCurDWORD)
 	{
@@ -25,7 +25,7 @@ _Check_return_ CMAPIProgress* GetMAPIProgress(const wstring& lpszContext, _In_ H
 	return nullptr;
 }
 
-CMAPIProgress::CMAPIProgress(const wstring& lpszContext, _In_ HWND hWnd)
+CMAPIProgress::CMAPIProgress(const std::wstring& lpszContext, _In_ HWND hWnd)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -134,9 +134,9 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpu
 {
 	OutputState(L"SetLimits");
 
-	wstring szMin;
-	wstring szMax;
-	wstring szFlags;
+	std::wstring szMin;
+	std::wstring szMax;
+	std::wstring szFlags;
 
 	if (lpulMin)
 	{
@@ -182,7 +182,7 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpu
 	return S_OK;
 }
 
-void CMAPIProgress::OutputState(const wstring& lpszFunction) const
+void CMAPIProgress::OutputState(const std::wstring& lpszFunction) const
 {
 	DebugPrint(DBGGeneric, L"%ws::%ws(%ws) - Current Values: Min = %u, Max = %u, Flags = %u\n",
 		CLASS.c_str(), lpszFunction.c_str(), m_szContext.c_str(), m_ulMin, m_ulMax, m_ulFlags);

@@ -19,15 +19,15 @@ public:
 	virtual ~SmartViewParser() = default;
 
 	void Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin);
-	_Check_return_ wstring ToString();
+	_Check_return_ std::wstring ToString();
 
 	void DisableJunkParsing();
 	size_t GetCurrentOffset() const;
 	void EnsureParsed();
 
 protected:
-	_Check_return_ wstring JunkDataToString(const vector<BYTE>& lpJunkData) const;
-	_Check_return_ wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const;
+	_Check_return_ std::wstring JunkDataToString(const vector<BYTE>& lpJunkData) const;
+	_Check_return_ std::wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const;
 	_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
 
 	// These functions return pointers to memory backed and cleaned up by SmartViewParser
@@ -41,13 +41,13 @@ protected:
 
 private:
 	virtual void Parse() = 0;
-	virtual _Check_return_ wstring ToStringInternal() = 0;
+	virtual _Check_return_ std::wstring ToStringInternal() = 0;
 
 	bool m_bEnableJunk;
 	bool m_bParsed;
 
 	// We use list instead of vector so our nodes never get reallocated
-	std::list<string> m_stringCache;
-	std::list<wstring> m_wstringCache;
+	std::list<std::string> m_stringCache;
+	std::list<std::wstring> m_wstringCache;
 	std::list<vector<BYTE>> m_binCache;
 };

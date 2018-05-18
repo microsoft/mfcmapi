@@ -167,9 +167,9 @@ PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB)
 }
 
 // Strictly does a lookup in the array. Does not convert otherwise
-_Check_return_ ULONG LookupPropName(_In_ const wstring& lpszPropName)
+_Check_return_ ULONG LookupPropName(_In_ const std::wstring& lpszPropName)
 {
-	wstring trimName = strings::TrimString(lpszPropName);
+	std::wstring trimName = strings::TrimString(lpszPropName);
 	if (trimName.empty()) return 0;
 
 	for (size_t ulCur = 0; ulCur < PropTagArray.size(); ulCur++)
@@ -183,7 +183,7 @@ _Check_return_ ULONG LookupPropName(_In_ const wstring& lpszPropName)
 	return 0;
 }
 
-_Check_return_ ULONG PropNameToPropTag(_In_ const wstring& lpszPropName)
+_Check_return_ ULONG PropNameToPropTag(_In_ const std::wstring& lpszPropName)
 {
 	if (lpszPropName.empty()) return 0;
 
@@ -196,7 +196,7 @@ _Check_return_ ULONG PropNameToPropTag(_In_ const wstring& lpszPropName)
 	return LookupPropName(lpszPropName);
 }
 
-_Check_return_ ULONG PropTypeNameToPropType(_In_ const wstring& lpszPropType)
+_Check_return_ ULONG PropTypeNameToPropType(_In_ const std::wstring& lpszPropType)
 {
 	if (lpszPropType.empty() || PropTypeArray.empty()) return PT_UNSPECIFIED;
 
@@ -219,7 +219,7 @@ _Check_return_ ULONG PropTypeNameToPropType(_In_ const wstring& lpszPropType)
 	return ulPropType;
 }
 
-wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
+std::wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 {
 	GUID nullGUID = { 0 };
 
@@ -242,7 +242,7 @@ wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 		lpGUID->Data4[7]);
 }
 
-wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
+std::wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 {
 	auto szGUID = GUIDToString(lpGUID);
 
@@ -262,7 +262,7 @@ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 	return szGUID + strings::loadstring(IDS_UNKNOWNGUID);
 }
 
-LPCGUID GUIDNameToGUID(_In_ const wstring& szGUID, bool bByteSwapped)
+LPCGUID GUIDNameToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped)
 {
 	LPGUID lpGuidRet = nullptr;
 	LPCGUID lpGUID = nullptr;
@@ -299,12 +299,12 @@ LPCGUID GUIDNameToGUID(_In_ const wstring& szGUID, bool bByteSwapped)
 	return lpGuidRet;
 }
 
-_Check_return_ GUID StringToGUID(_In_ const wstring& szGUID)
+_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID)
 {
 	return StringToGUID(szGUID, false);
 }
 
-_Check_return_ GUID StringToGUID(_In_ const wstring& szGUID, bool bByteSwapped)
+_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped)
 {
 	auto guid = GUID_NULL;
 	if (szGUID.empty()) return guid;
@@ -331,9 +331,9 @@ _Check_return_ GUID StringToGUID(_In_ const wstring& szGUID, bool bByteSwapped)
 }
 
 // Returns string built from NameIDArray
-vector<wstring> NameIDToPropNames(_In_ const LPMAPINAMEID lpNameID)
+vector<std::wstring> NameIDToPropNames(_In_ const LPMAPINAMEID lpNameID)
 {
-	vector<wstring> results;
+	vector<std::wstring> results;
 	if (!lpNameID) return{};
 	if (lpNameID->ulKind != MNID_ID) return{};
 	ULONG ulMatch = ulNoMatch;
@@ -368,7 +368,7 @@ vector<wstring> NameIDToPropNames(_In_ const LPMAPINAMEID lpNameID)
 
 // Interprets a flag value according to a flag name and returns a string
 // Will not return a string if the flag name is not recognized
-wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue)
+std::wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue)
 {
 	ULONG ulCurEntry = 0;
 
@@ -387,7 +387,7 @@ wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue)
 	auto bNeedSeparator = false;
 
 	auto lTempValue = lFlagValue;
-	wstring szTempString;
+	std::wstring szTempString;
 	for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
 	{
 		if (flagFLAG == FlagArray[ulCurEntry].ulFlagType)
@@ -520,14 +520,14 @@ wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue)
  // 0x00040000 FL_LOOSE
 //
 // Since the string is always appended to a prompt we include \r\n at the start
-wstring AllFlagsToString(ULONG ulFlagName, bool bHex)
+std::wstring AllFlagsToString(ULONG ulFlagName, bool bHex)
 {
-	wstring szFlagString;
+	std::wstring szFlagString;
 	if (!ulFlagName) return szFlagString;
 	if (FlagArray.empty()) return szFlagString;
 
 	ULONG ulCurEntry = 0;
-	wstring szTempString;
+	std::wstring szTempString;
 
 	while (ulCurEntry < FlagArray.size() && FlagArray[ulCurEntry].ulFlagName != ulFlagName)
 	{

@@ -260,9 +260,9 @@ void EntryIdStruct::Parse()
 		m_ObjectType = eidtShortTerm;
 }
 
-_Check_return_ wstring EntryIdStruct::ToStringInternal()
+_Check_return_ std::wstring EntryIdStruct::ToStringInternal()
 {
-	wstring szEntryId;
+	std::wstring szEntryId;
 
 	switch (m_ObjectType)
 	{

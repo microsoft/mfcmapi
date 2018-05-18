@@ -24,17 +24,17 @@ public:
 	void OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData);
 	_Check_return_ bool HandleKeyDown(UINT nChar, bool bShift, bool bCtrl, bool bMenu);
 
-	void UpdateTitleBarText(_In_ const wstring& szMsg) const;
+	void UpdateTitleBarText(_In_ const std::wstring& szMsg) const;
 	void UpdateTitleBarText() const;
-	void UpdateStatusBarText(__StatusPaneEnum nPos, _In_ const wstring& szMsg);
+	void UpdateStatusBarText(__StatusPaneEnum nPos, _In_ const std::wstring& szMsg);
 	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg);
 	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1);
-	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, wstring& szParam1, wstring& szParam2, wstring& szParam3);
+	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, std::wstring& szParam1, std::wstring& szParam2, std::wstring& szParam3);
 	void OnOpenEntryID(_In_opt_ LPSBinary lpBin);
 	_Check_return_ CParentWnd* GetParentWnd() const;
 	_Check_return_ CMapiObjects* GetMapiObjects() const;
 
-	static void UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const wstring& status);
+	static void UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const std::wstring& status);
 
 protected:
 	// Overrides called by child classes
@@ -51,7 +51,7 @@ protected:
 	bool m_bIsAB;
 	CSingleMAPIPropListCtrl* m_lpPropDisplay;
 	CFakeSplitter* m_lpFakeSplitter;
-	wstring m_szTitle;
+	std::wstring m_szTitle;
 	LPMAPICONTAINER m_lpContainer;
 	CMapiObjects* m_lpMapiObjects;
 	CParentWnd* m_lpParent;
@@ -91,10 +91,10 @@ private:
 
 	LONG m_cRef;
 	HICON m_hIcon;
-	wstring m_StatusMessages[STATUSBARNUMPANES];
+	std::wstring m_StatusMessages[STATUSBARNUMPANES];
 	int m_StatusWidth[STATUSBARNUMPANES];
 	bool m_bDisplayingMenuText;
-	wstring m_szMenuDisplacedText;
+	std::wstring m_szMenuDisplacedText;
 	CAdviseSink* m_lpBaseAdviseSink;
 	ULONG_PTR m_ulBaseAdviseConnection;
 	ULONG m_ulBaseAdviseObjectType;

@@ -9,7 +9,7 @@
 
 extern CMyWinApp theApp;
 
-static wstring CLASS = L"CEditor";
+static std::wstring CLASS = L"CEditor";
 
 #define NOLIST 0XFFFFFFFF
 
@@ -271,12 +271,12 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 // AddIn functions
-void CEditor::SetAddInTitle(const wstring& szTitle)
+void CEditor::SetAddInTitle(const std::wstring& szTitle)
 {
 	m_szAddInTitle = szTitle;
 }
 
-void CEditor::SetAddInLabel(ULONG i, const wstring& szLabel) const
+void CEditor::SetAddInLabel(ULONG i, const std::wstring& szLabel) const
 {
 	if (INVALIDRANGE(i)) return;
 	auto pane = GetPane(i);
@@ -307,9 +307,9 @@ LRESULT CALLBACK DrawScrollProc(
 BOOL CEditor::OnInitDialog()
 {
 	auto hRes = S_OK;
-	wstring szPrefix;
+	std::wstring szPrefix;
 	auto szPostfix = strings::loadstring(m_uidTitle);
-	wstring szFullString;
+	std::wstring szFullString;
 
 	auto bRet = CMyDialog::OnInitDialog();
 
@@ -597,7 +597,7 @@ int ComputePromptWidth(CEdit* lpPrompt, HDC hdc, int iMaxWidth, int* iLineCount)
 	return cx;
 }
 
-int ComputeCaptionWidth(HDC hdc, const wstring& szTitle, int iMargin)
+int ComputeCaptionWidth(HDC hdc, const std::wstring& szTitle, int iMargin)
 {
 	auto sizeTitle = GetTextExtentPoint32(hdc, szTitle);
 	auto iCaptionWidth = sizeTitle.cx + iMargin; // Allow for some whitespace between the caption and buttons
@@ -996,14 +996,14 @@ ViewPane* CEditor::GetPane(ULONG iPane) const
 	return m_lpControls[iPane];
 }
 
-void CEditor::SetPromptPostFix(_In_ const wstring& szMsg)
+void CEditor::SetPromptPostFix(_In_ const std::wstring& szMsg)
 {
 	m_szPromptPostFix = szMsg;
 	m_bHasPrompt = true;
 }
 
 // Sets string
-void CEditor::SetStringA(ULONG i, const string& szMsg) const
+void CEditor::SetStringA(ULONG i, const std::string& szMsg) const
 {
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
@@ -1013,7 +1013,7 @@ void CEditor::SetStringA(ULONG i, const string& szMsg) const
 }
 
 // Sets string
-void CEditor::SetStringW(ULONG i, const wstring& szMsg) const
+void CEditor::SetStringW(ULONG i, const std::wstring& szMsg) const
 {
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
@@ -1119,7 +1119,7 @@ void CEditor::SetDecimal(ULONG i, ULONG ulVal) const
 	SetStringf(i, L"%u", ulVal); // STRING_OK
 }
 
-void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, const wstring& szListString) const
+void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, const std::wstring& szListString) const
 {
 	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
@@ -1128,7 +1128,7 @@ void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, cons
 	}
 }
 
-_Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, const wstring& szText) const
+_Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, const std::wstring& szText) const
 {
 	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
@@ -1157,7 +1157,7 @@ void CEditor::ResizeList(ULONG iControl, bool bSort) const
 	}
 }
 
-wstring CEditor::GetStringW(ULONG i) const
+std::wstring CEditor::GetStringW(ULONG i) const
 {
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
@@ -1168,7 +1168,7 @@ wstring CEditor::GetStringW(ULONG i) const
 	return strings::emptystring;
 }
 
-_Check_return_ string CEditor::GetStringA(ULONG iControl) const
+_Check_return_ std::string CEditor::GetStringA(ULONG iControl) const
 {
 	auto pane = dynamic_cast<TextPane*>(GetPane(iControl));
 	if (pane)

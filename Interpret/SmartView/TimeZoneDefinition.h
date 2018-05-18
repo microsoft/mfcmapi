@@ -33,14 +33,14 @@ public:
 
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	BYTE m_bMajorVersion;
 	BYTE m_bMinorVersion;
 	WORD m_cbHeader;
 	WORD m_wReserved;
 	WORD m_cchKeyName;
-	wstring m_szKeyName;
+	std::wstring m_szKeyName;
 	WORD m_cRules;
 	vector<TZRule> m_lpTZRule;
 };

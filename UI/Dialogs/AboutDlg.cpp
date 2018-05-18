@@ -11,7 +11,7 @@ void DisplayAboutDlg(_In_ CWnd* lpParentWnd)
 	EC_D_DIALOG(AboutDlg.DoModal());
 }
 
-static wstring CLASS = L"CAboutDlg";
+static std::wstring CLASS = L"CAboutDlg";
 
 CAboutDlg::CAboutDlg(
 	_In_ CWnd* pParentWnd

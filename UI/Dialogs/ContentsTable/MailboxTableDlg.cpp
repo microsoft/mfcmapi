@@ -12,12 +12,12 @@
 #include <Interpret/InterpretProp2.h>
 #include <UI/Controls/SortList/ContentsData.h>
 
-static wstring CLASS = L"CMailboxTableDlg";
+static std::wstring CLASS = L"CMailboxTableDlg";
 
 CMailboxTableDlg::CMailboxTableDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
-	_In_ const wstring& lpszServerName,
+	_In_ const std::wstring& lpszServerName,
 	_In_ LPMAPITABLE lpMAPITable
 ) :
 	CContentsTableDlg(

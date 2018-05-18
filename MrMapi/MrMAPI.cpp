@@ -28,7 +28,7 @@ void InitMFC()
 	AfxWinInit(::GetModuleHandle(nullptr), nullptr, ::GetCommandLine(), 0);
 }
 
-_Check_return_ HRESULT MrMAPILogonEx(const wstring& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession)
+_Check_return_ HRESULT MrMAPILogonEx(const std::wstring& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession)
 {
 	auto hRes = S_OK;
 	auto ulFlags = MAPI_EXTENDED | MAPI_NO_MAIL | MAPI_UNICODE | MAPI_NEW_SESSION;
@@ -955,13 +955,13 @@ void PrintArgs(_In_ MYOPTIONS ProgOpts)
 
 // Returns true if we've done everything we need to do and can exit the program.
 // Returns false to continue work.
-bool LoadMAPIVersion(const wstring& lpszVersion)
+bool LoadMAPIVersion(const std::wstring& lpszVersion)
 {
 	// Load DLLS and get functions from them
 	ImportProcs();
 	DebugPrint(DBGGeneric, L"LoadMAPIVersion(%ws)\n", lpszVersion.c_str());
 
-	wstring szPath;
+	std::wstring szPath;
 	auto paths = GetMAPIPaths();
 	if (lpszVersion == L"0")
 	{
@@ -983,7 +983,7 @@ bool LoadMAPIVersion(const wstring& lpszVersion)
 		{
 			strings::wstringToLower(path);
 
-			if (strings::wstringToLower(path).find(strings::wstringToLower(lpszVersion)) != wstring::npos)
+			if (strings::wstringToLower(path).find(strings::wstringToLower(lpszVersion)) != std::wstring::npos)
 			{
 				szPath = path;
 				break;

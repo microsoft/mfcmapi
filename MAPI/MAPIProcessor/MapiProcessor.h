@@ -13,7 +13,7 @@ These worker functions are intended to be overridden by specialized classes inhe
 struct FolderNode
 {
 	LPSBinary lpFolderEID;
-	wstring szFolderOffsetPath;
+	std::wstring szFolderOffsetPath;
 };
 
 class CMAPIProcessor
@@ -31,7 +31,7 @@ public:
 	void InitSortOrder(_In_ const LPSSortOrderSet lpSort);
 
 	// Processing functions
-	void ProcessMailboxTable(_In_ const wstring& szExchangeServerName);
+	void ProcessMailboxTable(_In_ const std::wstring& szExchangeServerName);
 	void ProcessStore();
 	void ProcessFolders(bool bDoRegular, bool bDoAssociated, bool bDoDescent);
 	void ProcessMessage(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_opt_ LPVOID lpParentMessageData);
@@ -40,11 +40,11 @@ protected:
 	LPMAPISESSION m_lpSession;
 	LPMDB m_lpMDB;
 	LPMAPIFOLDER m_lpFolder;
-	wstring m_szFolderOffset; // Offset to the folder, including trailing slash
+	std::wstring m_szFolderOffset; // Offset to the folder, including trailing slash
 
 private:
 	// Worker functions (dump messages, scan for something, etc)
-	virtual void BeginMailboxTableWork(_In_ const wstring& szExchangeServerName);
+	virtual void BeginMailboxTableWork(_In_ const std::wstring& szExchangeServerName);
 	virtual void DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const LPSRow lpSRow, ULONG ulCurRow);
 	virtual void EndMailboxTableWork();
 
@@ -90,7 +90,7 @@ private:
 
 	// FolderList functions
 	// Add a new node to the end of the folder list
-	void AddFolderToFolderList(_In_opt_ const LPSBinary lpFolderEID, _In_ const wstring& szFolderOffsetPath);
+	void AddFolderToFolderList(_In_opt_ const LPSBinary lpFolderEID, _In_ const std::wstring& szFolderOffsetPath);
 
 	// Call OpenEntry on the first folder in the list, remove it from the list
 	void OpenFirstFolderInList();

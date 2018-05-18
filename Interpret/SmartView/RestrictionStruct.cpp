@@ -31,9 +31,9 @@ void RestrictionStruct::Parse()
 	}
 }
 
-_Check_return_ wstring RestrictionStruct::ToStringInternal()
+_Check_return_ std::wstring RestrictionStruct::ToStringInternal()
 {
-	wstring szRestriction;
+	std::wstring szRestriction;
 
 	szRestriction = strings::formatmessage(IDS_RESTRICTIONDATA);
 	szRestriction += RestrictionToString(m_lpRes, nullptr);

@@ -7,7 +7,7 @@
 
 extern CMyWinApp theApp;
 
-static wstring CLASS = L"CParentWnd";
+static std::wstring CLASS = L"CParentWnd";
 
 // This appears to be the only way to catch a column drag event
 // Since we end up catching for EVERY event, we have to be clever to ensure only

@@ -49,8 +49,8 @@ public:
 	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ const vector<ULONG>& attNumList);
 	_Check_return_ vector<ULONG> GetAttachmentsToCopy() const;
 
-	void SetProfileToCopy(_In_ const string& szProfileName);
-	_Check_return_ string GetProfileToCopy() const;
+	void SetProfileToCopy(_In_ const std::string& szProfileName);
+	_Check_return_ std::string GetProfileToCopy() const;
 
 	_Check_return_ LPMAPIFOLDER GetSourceParentFolder() const;
 
@@ -64,7 +64,7 @@ private:
 	LPMAPIFOLDER m_lpFolderToCopy;
 	ULONG m_ulPropTagToCopy;
 	vector<ULONG> m_attachmentsToCopy;
-	string m_szProfileToCopy;
+	std::string m_szProfileToCopy;
 	LPMAPIFOLDER m_lpSourceParent;
 	LPMAPIPROP m_lpSourcePropObject;
 	bool m_bMAPIInitialized;

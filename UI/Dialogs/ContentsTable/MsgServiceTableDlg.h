@@ -13,7 +13,7 @@ public:
 	CMsgServiceTableDlg(
 		_In_ CParentWnd* pParentWnd,
 		_In_ CMapiObjects* lpMapiObjects,
-		_In_ const string& szProfileName);
+		_In_ const std::string& szProfileName);
 	virtual ~CMsgServiceTableDlg();
 
 private:
@@ -33,7 +33,7 @@ private:
 	void OnOpenProfileSection();
 
 	LPSERVICEADMIN m_lpServiceAdmin;
-	string m_szProfileName;
+	std::string m_szProfileName;
 
 	DECLARE_MESSAGE_MAP()
 };

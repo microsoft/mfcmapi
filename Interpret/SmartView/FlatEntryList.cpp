@@ -39,9 +39,9 @@ void FlatEntryList::Parse()
 	}
 }
 
-_Check_return_ wstring FlatEntryList::ToStringInternal()
+_Check_return_ std::wstring FlatEntryList::ToStringInternal()
 {
-	vector<wstring> flatEntryList;
+	vector<std::wstring> flatEntryList;
 	flatEntryList.push_back(strings::formatmessage(
 		IDS_FELHEADER,
 		m_cEntries,

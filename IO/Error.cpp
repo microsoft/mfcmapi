@@ -100,7 +100,7 @@ void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 #define RETURN_ERR_CASE(err) case (err): return(_T(#err))
 
 // Function to convert error codes to their names
-wstring ErrorNameFromErrorCode(ULONG hrErr)
+std::wstring ErrorNameFromErrorCode(ULONG hrErr)
 {
 	for (ULONG i = 0; i < g_ulErrorArray; i++)
 	{

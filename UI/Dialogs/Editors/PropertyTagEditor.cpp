@@ -6,7 +6,7 @@
 #include <Interpret/Guids.h>
 #include "PropertySelector.h"
 
-static wstring CLASS = L"CPropertyTagEditor";
+static std::wstring CLASS = L"CPropertyTagEditor";
 
 enum __PropTagFields
 {
@@ -216,7 +216,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 
 _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType() const
 {
-	wstring szType;
+	std::wstring szType;
 	auto iCurSel = GetDropDownSelection(PROPTAG_TYPE);
 	if (iCurSel != CB_ERR)
 	{
@@ -358,7 +358,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 	}
 }
 
-void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_ const wstring&szText) const
+void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_ const std::wstring&szText) const
 {
 	auto lpPane = static_cast<DropDownPane*>(GetPane(i));
 	if (lpPane)
@@ -367,7 +367,7 @@ void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_ const wstring&szText
 	}
 }
 
-_Check_return_ wstring CPropertyTagEditor::GetDropStringUseControl(ULONG iControl) const
+_Check_return_ std::wstring CPropertyTagEditor::GetDropStringUseControl(ULONG iControl) const
 {
 	auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
 	if (lpPane)
@@ -389,7 +389,7 @@ _Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG iControl) cons
 	return CB_ERR;
 }
 
-void CPropertyTagEditor::InsertDropString(ULONG iControl, int iRow, _In_ const wstring& szText) const
+void CPropertyTagEditor::InsertDropString(ULONG iControl, int iRow, _In_ const std::wstring& szText) const
 {
 	auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
 	if (lpPane)

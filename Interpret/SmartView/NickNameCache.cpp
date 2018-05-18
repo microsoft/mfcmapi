@@ -161,9 +161,9 @@ _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropC
 	return pspvProperty;
 }
 
-_Check_return_ wstring NickNameCache::ToStringInternal()
+_Check_return_ std::wstring NickNameCache::ToStringInternal()
 {
-	wstring szNickNameCache;
+	std::wstring szNickNameCache;
 
 	szNickNameCache = strings::formatmessage(IDS_NICKNAMEHEADER);
 	szNickNameCache += strings::BinToHexString(m_Metadata1, true);

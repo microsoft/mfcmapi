@@ -24,10 +24,10 @@ private:
 	void PopulateFields(ULONG ulSkipField) const;
 	_Check_return_ ULONG GetSelectedPropType() const;
 	void LookupNamedProp(ULONG ulSkipField, bool bCreate);
-	_Check_return_ wstring GetDropStringUseControl(ULONG iControl) const;
+	_Check_return_ std::wstring GetDropStringUseControl(ULONG iControl) const;
 	_Check_return_ int GetDropDownSelection(ULONG iControl) const;
-	void InsertDropString(ULONG iControl, int iRow, _In_ const wstring& szText) const;
-	void SetDropDownSelection(ULONG i, _In_ const wstring&szText) const;
+	void InsertDropString(ULONG iControl, int iRow, _In_ const std::wstring& szText) const;
+	void SetDropDownSelection(ULONG i, _In_ const std::wstring&szText) const;
 
 	ULONG m_ulPropTag;
 	bool m_bIsAB;

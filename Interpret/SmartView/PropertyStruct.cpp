@@ -39,21 +39,21 @@ void PropertyStruct::Parse()
 	m_Prop = BinToSPropValue(dwPropCount, false);
 }
 
-_Check_return_ wstring PropertyStruct::ToStringInternal()
+_Check_return_ std::wstring PropertyStruct::ToStringInternal()
 {
 	return PropsToString(m_PropCount, m_Prop);
 }
 
-_Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
+_Check_return_ std::wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 {
-	vector<wstring> property;
+	vector<std::wstring> property;
 
 	if (Prop)
 	{
 		for (DWORD i = 0; i < PropCount; i++)
 		{
-			wstring PropString;
-			wstring AltPropString;
+			std::wstring PropString;
+			std::wstring AltPropString;
 
 			property.push_back(strings::formatmessage(IDS_PROPERTYDATAHEADER,
 				i,

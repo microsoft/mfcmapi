@@ -9,7 +9,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Controls/SortList/ContentsData.h>
 
-static wstring CLASS = L"CProviderTableDlg";
+static std::wstring CLASS = L"CProviderTableDlg";
 
 CProviderTableDlg::CProviderTableDlg(
 	_In_ CParentWnd* pParentWnd,

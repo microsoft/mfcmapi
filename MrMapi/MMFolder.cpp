@@ -10,7 +10,7 @@
 // Search folder for entry ID of child folder by name.
 HRESULT HrMAPIFindFolderW(
 	_In_ LPMAPIFOLDER lpFolder, // pointer to folder
-	_In_ const wstring& lpszName, // name of child folder to find
+	_In_ const std::wstring& lpszName, // name of child folder to find
 	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
 {
@@ -81,15 +81,15 @@ HRESULT HrMAPIFindFolderW(
 #define wszDoubleBackslash L"\\\\"
 
 // Converts // to /
-wstring unescape(_In_ wstring lpsz)
+std::wstring unescape(_In_ std::wstring lpsz)
 {
 	DebugPrint(DBGGeneric, L"unescape: working on path \"%ws\"\n", lpsz.c_str());
 
 	size_t index = 0;
-	while (index != string::npos)
+	while (index != std::string::npos)
 	{
 		index = lpsz.find(wszDoubleBackslash, index);
-		if (index == string::npos) break;
+		if (index == std::string::npos) break;
 		lpsz.replace(index, 2, wszBackslashStr);
 		index++;
 	}
@@ -101,7 +101,7 @@ wstring unescape(_In_ wstring lpsz)
 // a hierarchical list of subfolders.
 HRESULT HrMAPIFindSubfolderExW(
 	_In_ LPMAPIFOLDER lpRootFolder, // open root folder
-	const vector<wstring>& FolderList, // hierarchical list of subfolders to navigate
+	const vector<std::wstring>& FolderList, // hierarchical list of subfolders to navigate
 	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
 {
@@ -163,7 +163,7 @@ HRESULT HrMAPIFindSubfolderExW(
 // if matched.
 static HRESULT HrLookupRootFolderW(
 	_In_ LPMDB lpMDB, // pointer to open message store
-	_In_ const wstring& lpszRootFolder, // root folder name only (no separators)
+	_In_ const std::wstring& lpszRootFolder, // root folder name only (no separators)
 	_Out_opt_ ULONG* lpcbeid, // size of entryid
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entryid
 {
@@ -236,7 +236,7 @@ static HRESULT HrLookupRootFolderW(
 // path name.
 HRESULT HrMAPIFindFolderExW(
 	_In_ LPMDB lpMDB, // Open message store
-	_In_ const wstring& lpszFolderPath, // folder path
+	_In_ const std::wstring& lpszFolderPath, // folder path
 	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
 {
@@ -310,7 +310,7 @@ HRESULT HrMAPIFindFolderExW(
 // path name.
 HRESULT HrMAPIOpenFolderExW(
 	_In_ LPMDB lpMDB, // Open message store
-	_In_ const wstring& lpszFolderPath, // folder path
+	_In_ const std::wstring& lpszFolderPath, // folder path
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder) // pointer to folder opened
 {
 	DebugPrint(DBGGeneric, L"HrMAPIOpenFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
@@ -346,10 +346,10 @@ HRESULT HrMAPIOpenFolderExW(
 }
 
 void DumpHierarchyTable(
-	_In_ const wstring& lpszProfile,
+	_In_ const std::wstring& lpszProfile,
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_ ULONG ulFolder,
-	_In_ const wstring& lpszFolder,
+	_In_ const std::wstring& lpszFolder,
 	_In_ ULONG ulDepth)
 {
 	if (0 == ulDepth)
@@ -493,10 +493,10 @@ ULONGLONG ComputeSingleFolderSize(
 }
 
 ULONGLONG ComputeFolderSize(
-	_In_ const wstring& lpszProfile,
+	_In_ const std::wstring& lpszProfile,
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_ ULONG ulFolder,
-	_In_ const wstring& lpszFolder)
+	_In_ const std::wstring& lpszFolder)
 {
 	DebugPrint(DBGGeneric, L"ComputeFolderSize: Calculating size (including subfolders) for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
 	auto hRes = S_OK;
@@ -565,7 +565,7 @@ ULONGLONG ComputeFolderSize(
 
 						if (SUCCEEDED(hRes) && lpSubfolder)
 						{
-							wstring szDisplayName;
+							std::wstring szDisplayName;
 							if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
 							{
 								szDisplayName = lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW;
@@ -591,10 +591,10 @@ ULONGLONG ComputeFolderSize(
 }
 
 void DumpSearchState(
-	_In_ const wstring& lpszProfile,
+	_In_ const std::wstring& lpszProfile,
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_ ULONG ulFolder,
-	_In_ const wstring& lpszFolder)
+	_In_ const std::wstring& lpszFolder)
 {
 	DebugPrint(DBGGeneric, L"DumpSearchState: Outputting search state for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
 

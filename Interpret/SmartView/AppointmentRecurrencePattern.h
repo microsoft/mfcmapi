@@ -13,13 +13,13 @@ struct ExceptionInfo
 	WORD OverrideFlags;
 	WORD SubjectLength;
 	WORD SubjectLength2;
-	string Subject;
+	std::string Subject;
 	DWORD MeetingType;
 	DWORD ReminderDelta;
 	DWORD ReminderSet;
 	WORD LocationLength;
 	WORD LocationLength2;
-	string Location;
+	std::string Location;
 	DWORD BusyStatus;
 	DWORD Attachment;
 	DWORD SubType;
@@ -45,9 +45,9 @@ struct ExtendedException
 	DWORD EndDateTime;
 	DWORD OriginalStartDate;
 	WORD WideCharSubjectLength;
-	wstring WideCharSubject;
+	std::wstring WideCharSubject;
 	WORD WideCharLocationLength;
-	wstring WideCharLocation;
+	std::wstring WideCharLocation;
 	DWORD ReservedBlockEE2Size;
 	vector<BYTE> ReservedBlockEE2;
 };
@@ -63,7 +63,7 @@ public:
 
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	RecurrencePattern m_RecurrencePattern;
 	DWORD m_ReaderVersion2;

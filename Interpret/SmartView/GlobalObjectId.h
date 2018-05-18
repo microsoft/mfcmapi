@@ -8,7 +8,7 @@ public:
 
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	vector<BYTE> m_Id; // 16 bytes
 	WORD m_Year;

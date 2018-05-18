@@ -5,7 +5,7 @@
 #include "PropertyTagEditor.h"
 #include <MAPI/MAPIFunctions.h>
 
-static wstring CLASS = L"CSearchEditor";
+static std::wstring CLASS = L"CSearchEditor";
 
 vector<std::pair<ULONG, ULONG>> FuzzyLevels = {
 	{ IDS_SEARCHSUBSTRING , FL_IGNORECASE | FL_SUBSTRING },

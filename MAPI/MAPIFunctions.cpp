@@ -740,7 +740,7 @@ _Check_return_ HRESULT CopyStringW(_Deref_out_z_ LPWSTR* lpszDestination, _In_z_
 // a particular property that matches the given string
 // If lpParent is passed in, it is used as the allocation parent.
 _Check_return_ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
-	_In_ const wstring& szString,
+	_In_ const std::wstring& szString,
 	ULONG ulFuzzyLevel,
 	_In_opt_ LPVOID lpParent,
 	_Deref_out_opt_ LPSRestriction* lppRes)
@@ -834,7 +834,7 @@ _Check_return_ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
 }
 
 _Check_return_ HRESULT CreateRangeRestriction(ULONG ulPropTag,
-	_In_ const wstring& szString,
+	_In_ const std::wstring& szString,
 	_In_opt_ LPVOID lpParent,
 	_Deref_out_opt_ LPSRestriction* lppRes)
 {
@@ -1911,10 +1911,10 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 _Check_return_ HRESULT SendTestMessage(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMAPIFOLDER lpFolder,
-	_In_ const wstring& szRecipient,
-	_In_ const wstring& szBody,
-	_In_ const wstring& szSubject,
-	_In_ const wstring& szClass)
+	_In_ const std::wstring& szRecipient,
+	_In_ const std::wstring& szBody,
+	_In_ const std::wstring& szSubject,
+	_In_ const std::wstring& szClass)
 {
 	auto hRes = S_OK;
 	LPMESSAGE lpNewMessage = nullptr;
@@ -2248,10 +2248,10 @@ _Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_count_(cbStoreEID) L
 
 const WORD kwBaseOffset = 0xAC00; // Hangul char range (AC00-D7AF)
 // Allocates with new, free with delete[]
-_Check_return_ wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
+_Check_return_ std::wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
 {
 	auto pbSrc = reinterpret_cast<LPBYTE>(rgbID);
-	wstring wzIDEncoded;
+	std::wstring wzIDEncoded;
 
 	// rgbID is the item Entry ID or the attachment ID
 	// cbID is the size in bytes of rgbID
@@ -2264,7 +2264,7 @@ _Check_return_ wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
 	return wzIDEncoded;
 }
 
-_Check_return_ wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer)
+_Check_return_ std::wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer)
 {
 	if (cbBuffer % 2) return strings::emptystring;
 
@@ -2550,10 +2550,10 @@ ULONG g_DisplayNameProps[] =
 };
 
 
-wstring GetTitle(LPMAPIPROP lpMAPIProp)
+std::wstring GetTitle(LPMAPIPROP lpMAPIProp)
 {
 	auto hRes = S_OK;
-	wstring szTitle;
+	std::wstring szTitle;
 	LPSPropValue lpProp = nullptr;
 	auto bFoundName = false;
 

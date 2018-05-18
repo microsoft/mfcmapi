@@ -2,7 +2,7 @@
 #include "Attributes.h"
 #include <sstream>
 
-Attribute::Attribute(const wstring& key, const wstring& value)
+Attribute::Attribute(const std::wstring& key, const std::wstring& value)
 {
 	m_key = key;
 	m_value = value;
@@ -19,27 +19,27 @@ bool Attribute::empty() const
 	return m_key.empty() && m_value.empty();
 }
 
-wstring Attribute::Key() const
+std::wstring Attribute::Key() const
 {
 	return m_key;
 }
 
-wstring Attribute::Value() const
+std::wstring Attribute::Value() const
 {
 	return m_value;
 }
 
-wstring Attribute::toXML() const
+std::wstring Attribute::toXML() const
 {
 	return m_key + L"=\"" + m_value + L"\" ";
 }
 
-void Attributes::AddAttribute(const wstring& key, const wstring& value)
+void Attributes::AddAttribute(const std::wstring& key, const std::wstring& value)
 {
 	m_attributes.push_back(Attribute(key, value));
 }
 
-wstring Attributes::GetAttribute(const wstring& key) const
+std::wstring Attributes::GetAttribute(const std::wstring& key) const
 {
 	for (const auto& attribute : m_attributes)
 	{
@@ -52,7 +52,7 @@ wstring Attributes::GetAttribute(const wstring& key) const
 	return L"";
 }
 
-wstring Attributes::toXML() const
+std::wstring Attributes::toXML() const
 {
 	if (!m_attributes.empty())
 	{

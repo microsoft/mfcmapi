@@ -15,7 +15,7 @@ public:
 
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	DWORD m_lBias; // offset from GMT
 	DWORD m_lStandardBias; // offset from bias during standard time

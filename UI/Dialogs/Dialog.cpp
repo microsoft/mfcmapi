@@ -4,7 +4,7 @@
 #include "ImportProcs.h"
 #include <propkey.h>
 
-static wstring CLASS = L"CMyDialog";
+static std::wstring CLASS = L"CMyDialog";
 
 CMyDialog::CMyDialog() :CDialog()
 {
@@ -55,9 +55,9 @@ int CMyDialog::GetStatusHeight() const
 	return m_iStatusHeight;
 }
 
-wstring FormatHT(LRESULT ht)
+std::wstring FormatHT(LRESULT ht)
 {
-	wstring szRet;
+	std::wstring szRet;
 	switch (ht)
 	{
 	case HTNOWHERE: szRet = L"HTNOWHERE"; break;

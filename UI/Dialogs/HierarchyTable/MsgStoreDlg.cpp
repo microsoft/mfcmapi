@@ -16,7 +16,7 @@
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 
-static wstring CLASS = L"CMsgStoreDlg";
+static std::wstring CLASS = L"CMsgStoreDlg";
 
 CMsgStoreDlg::CMsgStoreDlg(
 	_In_ CParentWnd* pParentWnd,

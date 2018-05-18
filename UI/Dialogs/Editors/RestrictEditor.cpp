@@ -10,7 +10,7 @@
 #include <UI/Controls/SortList/CommentData.h>
 #include <UI/Controls/SortList/BinaryData.h>
 
-static wstring COMPCLASS = L"CResCompareEditor"; // STRING_OK
+static std::wstring COMPCLASS = L"CResCompareEditor"; // STRING_OK
 class CResCompareEditor : public CEditor
 {
 public:
@@ -67,7 +67,7 @@ _Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
 
 // This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
 // So all memory detached from this class is owned by a parent and must not be freed manually
-static wstring CONTENTCLASS = L"CResCombinedEditor"; // STRING_OK
+static std::wstring CONTENTCLASS = L"CResCombinedEditor"; // STRING_OK
 class CResCombinedEditor : public CEditor
 {
 public:
@@ -115,7 +115,7 @@ CResCombinedEditor::CResCombinedEditor(
 	m_lpNewProp = nullptr;
 	m_lpAllocParent = lpAllocParent;
 
-	wstring szFlags;
+	std::wstring szFlags;
 
 	if (RES_CONTENT == m_ulResType)
 	{
@@ -143,8 +143,8 @@ CResCombinedEditor::CResCombinedEditor(
 	if (lpProp) SetHex(4, lpProp->ulPropTag);
 	InitPane(5, TextPane::CreateSingleLinePane(IDS_LPPROPULPROPTAG, lpProp ? TagToString(lpProp->ulPropTag, nullptr, false, true) : strings::emptystring, true));
 
-	wstring szProp;
-	wstring szAltProp;
+	std::wstring szProp;
+	std::wstring szAltProp;
 	if (lpProp) InterpretProp(lpProp, &szProp, &szAltProp);
 	InitPane(6, TextPane::CreateMultiLinePane(IDS_LPPROP, szProp, true));
 	InitPane(7, TextPane::CreateMultiLinePane(IDS_LPPROPALTVIEW, szAltProp, true));
@@ -154,7 +154,7 @@ _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 {
 	auto i = CEditor::HandleChange(nID);
 
-	wstring szFlags;
+	std::wstring szFlags;
 	if (0 == i)
 	{
 		if (RES_CONTENT == m_ulResType)
@@ -214,8 +214,8 @@ void CResCombinedEditor::OnEditAction1()
 	if (S_OK == hRes && lpOutProp)
 	{
 		m_lpNewProp = lpOutProp;
-		wstring szProp;
-		wstring szAltProp;
+		std::wstring szProp;
+		std::wstring szAltProp;
 
 		InterpretProp(m_lpNewProp, &szProp, &szAltProp);
 		SetStringW(6, szProp);
@@ -223,7 +223,7 @@ void CResCombinedEditor::OnEditAction1()
 	}
 }
 
-static wstring BITMASKCLASS = L"CResBitmaskEditor"; // STRING_OK
+static std::wstring BITMASKCLASS = L"CResBitmaskEditor"; // STRING_OK
 class CResBitmaskEditor : public CEditor
 {
 public:
@@ -275,7 +275,7 @@ _Check_return_ ULONG CResBitmaskEditor::HandleChange(UINT nID)
 	return i;
 }
 
-static wstring SIZECLASS = L"CResSizeEditor"; // STRING_OK
+static std::wstring SIZECLASS = L"CResSizeEditor"; // STRING_OK
 class CResSizeEditor : public CEditor
 {
 public:
@@ -327,7 +327,7 @@ _Check_return_ ULONG CResSizeEditor::HandleChange(UINT nID)
 	return i;
 }
 
-static wstring EXISTCLASS = L"CResExistEditor"; // STRING_OK
+static std::wstring EXISTCLASS = L"CResExistEditor"; // STRING_OK
 class CResExistEditor : public CEditor
 {
 public:
@@ -364,7 +364,7 @@ _Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
 
 // This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
 // So all memory detached from this class is owned by a parent and must not be freed manually
-static wstring SUBRESCLASS = L"CResSubResEditor"; // STRING_OK
+static std::wstring SUBRESCLASS = L"CResSubResEditor"; // STRING_OK
 class CResSubResEditor : public CEditor
 {
 public:
@@ -445,7 +445,7 @@ void CResSubResEditor::OnEditAction1()
 
 // This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
 // So all memory detached from this class is owned by a parent and must not be freed manually
-static wstring ANDORCLASS = L"CResAndOrEditor"; // STRING_OK
+static std::wstring ANDORCLASS = L"CResAndOrEditor"; // STRING_OK
 class CResAndOrEditor : public CEditor
 {
 public:
@@ -617,7 +617,7 @@ void CResAndOrEditor::OnOK()
 
 // This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
 // So all memory detached from this class is owned by a parent and must not be freed manually
-static wstring COMMENTCLASS = L"CResCommentEditor"; // STRING_OK
+static std::wstring COMMENTCLASS = L"CResCommentEditor"; // STRING_OK
 class CResCommentEditor : public CEditor
 {
 public:
@@ -706,8 +706,8 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 	ClearList(ulListNum);
 
 	InsertColumn(ulListNum, 0, IDS_SHARP);
-	wstring szProp;
-	wstring szAltProp;
+	std::wstring szProp;
+	std::wstring szAltProp;
 	InsertColumn(ulListNum, 1, IDS_PROPERTY);
 	InsertColumn(ulListNum, 2, IDS_VALUE);
 	InsertColumn(ulListNum, 3, IDS_ALTERNATEVIEW);
@@ -790,8 +790,8 @@ _Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _I
 	// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
 	if (S_OK == hRes && lpData->Comment()->m_lpNewProp)
 	{
-		wstring szTmp;
-		wstring szAltTmp;
+		std::wstring szTmp;
+		std::wstring szAltTmp;
 		SetListString(ulListNum, iItem, 1, TagToString(lpData->Comment()->m_lpNewProp->ulPropTag, nullptr, false, true));
 		InterpretProp(lpData->Comment()->m_lpNewProp, &szTmp, &szAltTmp);
 		SetListString(ulListNum, iItem, 2, szTmp);
@@ -855,7 +855,7 @@ void CResCommentEditor::OnOK()
 // Note that an alloc parent is passed in to CRestrictEditor. If a parent isn't passed, we allocate one ourselves.
 // All other memory allocated in CRestrictEditor is owned by the parent and must not be freed manually
 // If we return (detach) memory to a caller, they must MAPIFreeBuffer only if they did not pass in a parent
-static wstring CLASS = L"CRestrictEditor"; // STRING_OK
+static std::wstring CLASS = L"CRestrictEditor"; // STRING_OK
 // Create an editor for a restriction
 // Takes LPSRestriction lpRes as input
 CRestrictEditor::CRestrictEditor(
@@ -1270,7 +1270,7 @@ HRESULT CRestrictEditor::EditComment(LPSRestriction lpSourceRes)
 
 // Note that no alloc parent is passed in to CCriteriaEditor. So we're completely responsible for freeing any memory we allocate.
 // If we return (detach) memory to a caller, they must MAPIFreeBuffer
-static wstring CRITERIACLASS = L"CCriteriaEditor"; // STRING_OK
+static std::wstring CRITERIACLASS = L"CCriteriaEditor"; // STRING_OK
 #define LISTNUM 4
 CCriteriaEditor::CCriteriaEditor(
 	_In_ CWnd* pParentWnd,
@@ -1427,7 +1427,7 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 	}
 
 	auto hRes = S_OK;
-	wstring szTmp;
+	std::wstring szTmp;
 
 	CEditor BinEdit(
 		this,

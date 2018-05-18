@@ -21,7 +21,7 @@ class AdditionalRenEntryIDs : public SmartViewParser
 {
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 	PersistData BinToPersistData();
 
 	vector<PersistData> m_ppdPersistData;

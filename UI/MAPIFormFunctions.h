@@ -9,7 +9,7 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ CContentsTableListCtrl *lpContentsTableListCtrl,
 	int iItem,
-	_In_ const wstring& szMessageClass,
+	_In_ const std::wstring& szMessageClass,
 	_In_ LPMAPIFOLDER lpFolder);
 _Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
 	_In_ LPMAPISESSION lpMAPISession,

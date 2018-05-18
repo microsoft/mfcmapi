@@ -107,12 +107,12 @@ void PropertyDefinitionStream::Parse()
 	}
 }
 
-_Check_return_ wstring PackedAnsiStringToString(DWORD dwFlags, _In_ PackedAnsiString* ppasString)
+_Check_return_ std::wstring PackedAnsiStringToString(DWORD dwFlags, _In_ PackedAnsiString* ppasString)
 {
 	if (!ppasString) return L"";
 
-	wstring szFieldName;
-	wstring szPackedAnsiString;
+	std::wstring szFieldName;
+	std::wstring szPackedAnsiString;
 
 	szFieldName = strings::formatmessage(dwFlags);
 
@@ -128,12 +128,12 @@ _Check_return_ wstring PackedAnsiStringToString(DWORD dwFlags, _In_ PackedAnsiSt
 	return szPackedAnsiString;
 }
 
-_Check_return_ wstring PackedUnicodeStringToString(DWORD dwFlags, _In_ PackedUnicodeString* ppusString)
+_Check_return_ std::wstring PackedUnicodeStringToString(DWORD dwFlags, _In_ PackedUnicodeString* ppusString)
 {
 	if (!ppusString) return L"";
 
-	wstring szFieldName;
-	wstring szPackedUnicodeString;
+	std::wstring szFieldName;
+	std::wstring szPackedUnicodeString;
 
 	szFieldName = strings::formatmessage(dwFlags);
 
@@ -149,9 +149,9 @@ _Check_return_ wstring PackedUnicodeStringToString(DWORD dwFlags, _In_ PackedUni
 	return szPackedUnicodeString;
 }
 
-_Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
+_Check_return_ std::wstring PropertyDefinitionStream::ToStringInternal()
 {
-	wstring szPropertyDefinitionStream;
+	std::wstring szPropertyDefinitionStream;
 	auto szVersion = InterpretFlags(flagPropDefVersion, m_wVersion);
 
 	szPropertyDefinitionStream = strings::formatmessage(IDS_PROPDEFHEADER,
@@ -185,7 +185,7 @@ _Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
 			}
 			else
 			{
-				wstring szDispidName;
+				std::wstring szDispidName;
 				MAPINAMEID mnid = { nullptr };
 				mnid.lpguid = nullptr;
 				mnid.ulKind = MNID_ID;

@@ -61,19 +61,19 @@ struct MessageDatabaseObject
 {
 	BYTE Version;
 	BYTE Flag;
-	string DLLFileName;
+	std::string DLLFileName;
 	bool bIsExchange;
 	ULONG WrappedFlags;
 	GUID WrappedProviderUID;
 	ULONG WrappedType;
-	string ServerShortname;
-	string MailboxDN;
+	std::string ServerShortname;
+	std::string MailboxDN;
 	ULONG MagicVersion;
 	MDB_STORE_EID_V2 v2;
 	MDB_STORE_EID_V3 v3;
-	string v2DN;
-	wstring v2FQDN;
-	wstring v3SmtpAddress;
+	std::string v2DN;
+	std::wstring v2FQDN;
+	std::wstring v3SmtpAddress;
 	vector<BYTE> v2Reserved; // 2 bytes
 };
 
@@ -88,15 +88,15 @@ struct OneOffRecipientObject
 	DWORD Bitmask;
 	struct Unicode
 	{
-		wstring DisplayName;
-		wstring AddressType;
-		wstring EmailAddress;
+		std::wstring DisplayName;
+		std::wstring AddressType;
+		std::wstring EmailAddress;
 	} Unicode;
 	struct ANSI
 	{
-		string DisplayName;
-		string AddressType;
-		string EmailAddress;
+		std::string DisplayName;
+		std::string AddressType;
+		std::string EmailAddress;
 	} ANSI;
 };
 
@@ -104,7 +104,7 @@ struct AddressBookObject
 {
 	DWORD Version;
 	DWORD Type;
-	string X500DN;
+	std::string X500DN;
 };
 
 class EntryIdStruct;
@@ -132,7 +132,7 @@ public:
 
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	vector<BYTE> m_abFlags; // 4 bytes
 	GUID m_ProviderUID;

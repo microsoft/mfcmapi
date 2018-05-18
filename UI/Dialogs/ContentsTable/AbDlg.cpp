@@ -13,7 +13,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/GlobalCache.h>
 
-static wstring CLASS = L"CAbDlg";
+static std::wstring CLASS = L"CAbDlg";
 
 CAbDlg::CAbDlg(
 	_In_ CParentWnd* pParentWnd,

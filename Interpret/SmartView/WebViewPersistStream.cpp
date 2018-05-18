@@ -46,7 +46,7 @@ void WebViewPersistStream::Parse()
 	}
 }
 
-_Check_return_ wstring WebViewPersistStream::ToStringInternal()
+_Check_return_ std::wstring WebViewPersistStream::ToStringInternal()
 {
 	auto szWebViewPersistStream = strings::formatmessage(IDS_WEBVIEWSTREAMHEADER, m_cWebViews);
 	for (ULONG i = 0; i < m_lpWebViews.size(); i++)

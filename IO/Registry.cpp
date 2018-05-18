@@ -59,7 +59,7 @@ void SetDefaults()
 // -----------------------------------------------------------------------------
 _Check_return_ HRESULT HrGetRegistryValue(
 	_In_ HKEY hKey, // the key.
-	_In_ const wstring& lpszValue, // value name in key.
+	_In_ const std::wstring& lpszValue, // value name in key.
 	_Out_ DWORD* lpType, // where to put type info.
 	_Out_ LPVOID* lppData) // where to put the data.
 {
@@ -109,7 +109,7 @@ _Check_return_ HRESULT HrGetRegistryValue(
 }
 
 // If the value is not set in the registry, return the default value
-DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_ DWORD dwDefaultVal)
+DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ DWORD dwDefaultVal)
 {
 	if (szValue.empty()) return dwDefaultVal;
 	auto hRes = S_OK;
@@ -131,7 +131,7 @@ DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_ DW
 	return ret;
 }
 // If the value is not set in the registry, return the default value
-wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_ const wstring& szDefault)
+std::wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::wstring& szDefault)
 {
 	if (szValue.empty()) return szDefault;
 	auto hRes = S_OK;
@@ -176,7 +176,7 @@ wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_
 
 	if (S_OK == hRes && cb && !(cb % 2) && REG_SZ == dwKeyType && szBuf)
 	{
-		ret = wstring(LPWSTR(szBuf), cb / sizeof WCHAR);
+		ret = std::wstring(LPWSTR(szBuf), cb / sizeof WCHAR);
 	}
 
 	delete[] szBuf;
@@ -223,7 +223,7 @@ void ReadFromRegistry()
 	DebugPrintVersion(DBGVersionBanner);
 }
 
-void WriteDWORDToRegistry(_In_ HKEY hKey, _In_ const wstring& szValueName, DWORD dwValue)
+void WriteDWORDToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, DWORD dwValue)
 {
 	auto hRes = S_OK;
 
@@ -236,7 +236,7 @@ void WriteDWORDToRegistry(_In_ HKEY hKey, _In_ const wstring& szValueName, DWORD
 		sizeof(DWORD)));
 }
 
-void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_ const wstring& szValueName, DWORD dwValue, DWORD dwDefaultValue)
+void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_ const std::wstring& szValueName, DWORD dwValue, DWORD dwDefaultValue)
 {
 	auto hRes = S_OK;
 	if (dwValue != dwDefaultValue)
@@ -252,7 +252,7 @@ void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_ const wstring& szValueName, DWORD 
 	}
 }
 
-void WriteStringToRegistry(_In_ HKEY hKey, _In_ const wstring& szValueName, _In_ const wstring& szValue)
+void WriteStringToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue)
 {
 	auto hRes = S_OK;
 
@@ -269,7 +269,7 @@ void WriteStringToRegistry(_In_ HKEY hKey, _In_ const wstring& szValueName, _In_
 		static_cast<DWORD>(cbValue)));
 }
 
-void CommitStringIfNeeded(_In_ HKEY hKey, _In_ const wstring& szValueName, _In_ const wstring& szValue, _In_ const wstring& szDefaultValue)
+void CommitStringIfNeeded(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue, _In_ const std::wstring& szDefaultValue)
 {
 	auto hRes = S_OK;
 	if (strings::wstringToLower(szValue) != strings::wstringToLower(szDefaultValue))

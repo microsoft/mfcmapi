@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "BinaryParser.h"
 
-static wstring CLASS = L"CBinaryParser";
+static std::wstring CLASS = L"CBinaryParser";
 
 CBinaryParser::CBinaryParser()
 {
@@ -77,7 +77,7 @@ bool CBinaryParser::CheckRemainingBytes(size_t cbBytes) const
 	return true;
 }
 
-string CBinaryParser::GetStringA(size_t cchChar)
+std::string CBinaryParser::GetStringA(size_t cchChar)
 {
 	if (cchChar == -1)
 	{
@@ -87,12 +87,12 @@ string CBinaryParser::GetStringA(size_t cchChar)
 	}
 
 	if (!cchChar || !CheckRemainingBytes(sizeof CHAR * cchChar)) return "";
-	string ret(reinterpret_cast<LPCSTR>(GetCurrentAddress()), cchChar);
+	std::string ret(reinterpret_cast<LPCSTR>(GetCurrentAddress()), cchChar);
 	m_Offset += sizeof CHAR * cchChar;
 	return strings::RemoveInvalidCharactersA(ret);
 }
 
-wstring CBinaryParser::GetStringW(size_t cchChar)
+std::wstring CBinaryParser::GetStringW(size_t cchChar)
 {
 	if (cchChar == -1)
 	{
@@ -102,7 +102,7 @@ wstring CBinaryParser::GetStringW(size_t cchChar)
 	}
 
 	if (!cchChar || !CheckRemainingBytes(sizeof WCHAR * cchChar)) return strings::emptystring;
-	wstring ret(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), cchChar);
+	std::wstring ret(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), cchChar);
 	m_Offset += sizeof WCHAR * cchChar;
 	return strings::RemoveInvalidCharactersW(ret);
 }

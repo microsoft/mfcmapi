@@ -19,13 +19,13 @@ enum __REGOPTIONTYPE
 
 struct __RegKeys
 {
-	wstring szKeyName;
+	std::wstring szKeyName;
 	ULONG ulRegKeyType;
 	ULONG ulRegOptType;
 	DWORD ulDefDWORD;
 	DWORD ulCurDWORD;
-	wstring szDefSTRING;
-	wstring szCurSTRING;
+	std::wstring szDefSTRING;
+	std::wstring szCurSTRING;
 	bool bRefresh;
 	UINT uiOptionsPrompt;
 };
@@ -74,7 +74,7 @@ void ReadFromRegistry();
 
 _Check_return_ HKEY CreateRootKey();
 
-DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_ DWORD dwDefaultVal = 0);
-wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_ const wstring& szDefault = strings::emptystring);
+DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ DWORD dwDefaultVal = 0);
+std::wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::wstring& szDefault = strings::emptystring);
 
-void WriteStringToRegistry(_In_ HKEY hKey, _In_ const wstring& szValueName, _In_ const wstring& szValue);
+void WriteStringToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue);

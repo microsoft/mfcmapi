@@ -446,7 +446,7 @@ void PrintDispIDFromPartialName(_In_opt_z_ LPCWSTR lpszDispIDName, _In_ ULONG ul
 
 void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool bIsDispid, _In_ ULONG ulFlagValue)
 {
-	wstring szFlags;
+	std::wstring szFlags;
 	size_t ulCur = 0;
 	if (bIsDispid)
 	{

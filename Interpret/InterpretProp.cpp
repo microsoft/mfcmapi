@@ -21,7 +21,7 @@ static const char pBase64[] = {
  0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33
 };
 
-vector<BYTE> Base64Decode(const wstring& szEncodedStr)
+vector<BYTE> Base64Decode(const std::wstring& szEncodedStr)
 {
 	auto cchLen = szEncodedStr.length();
 	vector<BYTE> lpb;
@@ -29,11 +29,11 @@ vector<BYTE> Base64Decode(const wstring& szEncodedStr)
 
 	// look for padding at the end
 	auto posEqual = szEncodedStr.find(L"=");
-	if (posEqual != wstring::npos)
+	if (posEqual != std::wstring::npos)
 	{
 		auto suffix = szEncodedStr.substr(posEqual);
 		if (suffix.length() >= 3 ||
-			suffix.find_first_not_of(L"=") != wstring::npos) return lpb;
+			suffix.find_first_not_of(L"=") != std::wstring::npos) return lpb;
 	}
 
 	auto szEncodedStrPtr = szEncodedStr.c_str();
@@ -85,9 +85,9 @@ char pIndex[] = { // and decoding table.
  0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2b, 0x2f
 };
 
-wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const LPBYTE lpSourceBuffer)
+std::wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const LPBYTE lpSourceBuffer)
 {
-	wstring szEncodedStr;
+	std::wstring szEncodedStr;
 	size_t cbBuf = 0;
 
 	// Using integer division to round down here
@@ -121,7 +121,7 @@ wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const LPBYTE lp
 	return szEncodedStr;
 }
 
-wstring CurrencyToString(const CURRENCY& curVal)
+std::wstring CurrencyToString(const CURRENCY& curVal)
 {
 	auto szCur = strings::format(L"%05I64d", curVal.int64); // STRING_OK
 	if (szCur.length() > 4)
@@ -132,10 +132,10 @@ wstring CurrencyToString(const CURRENCY& curVal)
 	return szCur;
 }
 
-wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine)
+std::wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine)
 {
-	wstring szRet;
-	wstring szTemp;
+	std::wstring szRet;
+	std::wstring szTemp;
 
 	auto namePropNames = NameIDToStrings(
 		ulPropTag,
@@ -146,7 +146,7 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 
 	auto propTagNames = PropTagToPropName(ulPropTag, bIsAB);
 
-	wstring szFormatString;
+	std::wstring szFormatString;
 	if (bSingleLine)
 	{
 		szFormatString = L"0x%1!08X! (%2)"; // STRING_OK
@@ -215,9 +215,9 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 	return szRet;
 }
 
-wstring ProblemArrayToString(_In_ const SPropProblemArray& problems)
+std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems)
 {
-	wstring szOut;
+	std::wstring szOut;
 	for (ULONG i = 0; i < problems.cProblem; i++)
 	{
 		auto szTemp = strings::formatmessage(
@@ -232,7 +232,7 @@ wstring ProblemArrayToString(_In_ const SPropProblemArray& problems)
 	return szOut;
 }
 
-wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err)
+std::wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err)
 {
 	auto szOut = strings::formatmessage(
 		ulFlags & MAPI_UNICODE ? IDS_MAPIERRUNICODE : IDS_MAPIERRANSI,
@@ -246,9 +246,9 @@ wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err)
 	return szOut;
 }
 
-wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error)
+std::wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error)
 {
-	wstring szOut;
+	std::wstring szOut;
 	for (ULONG iError = 0; iError < error.cProblem; iError++)
 	{
 		szOut += strings::formatmessage(
@@ -266,7 +266,7 @@ wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error)
 // There may be restrictions with over 100 nested levels, but we're not going to try to parse them
 #define _MaxRestrictionNesting 100
 
-wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel)
+std::wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel)
 {
 	if (!lpRes)
 	{
@@ -277,17 +277,17 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 		return strings::loadstring(IDS_RESDEPTHEXCEEDED);
 	}
 
-	vector<wstring> resString;
-	wstring szProp;
-	wstring szAltProp;
+	vector<std::wstring> resString;
+	std::wstring szProp;
+	std::wstring szAltProp;
 
-	wstring szTabs;
+	std::wstring szTabs;
 	for (ULONG i = 0; i < ulTabLevel; i++)
 	{
 		szTabs += L"\t"; // STRING_OK
 	}
 
-	wstring szPropNum;
+	std::wstring szPropNum;
 	auto szFlags = InterpretFlags(flagRestrictionType, lpRes->rt);
 	resString.push_back(strings::formatmessage(IDS_RESTYPE, szTabs.c_str(), lpRes->rt, szFlags.c_str()));
 
@@ -476,16 +476,16 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 	return strings::join(resString, L"\r\n");
 }
 
-wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
+std::wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
 {
 	return RestrictionToString(lpRes, lpObj, 0);
 }
 
-wstring AdrListToString(_In_ const ADRLIST& adrList)
+std::wstring AdrListToString(_In_ const ADRLIST& adrList)
 {
-	wstring adrstring;
-	wstring szProp;
-	wstring szAltProp;
+	std::wstring adrstring;
+	std::wstring szProp;
+	std::wstring szAltProp;
 	adrstring = strings::formatmessage(IDS_ADRLISTCOUNT, adrList.cEntries);
 
 	for (ULONG i = 0; i < adrList.cEntries; i++)
@@ -508,11 +508,11 @@ wstring AdrListToString(_In_ const ADRLIST& adrList)
 	return adrstring;
 }
 
-_Check_return_ wstring ActionToString(_In_ const ACTION& action)
+_Check_return_ std::wstring ActionToString(_In_ const ACTION& action)
 {
-	wstring actstring;
-	wstring szProp;
-	wstring szAltProp;
+	std::wstring actstring;
+	std::wstring szProp;
+	std::wstring szAltProp;
 	auto szFlags = InterpretFlags(flagAccountType, action.acttype);
 	auto szFlags2 = InterpretFlags(flagRuleFlag, action.ulFlags);
 	actstring = strings::formatmessage(
@@ -637,7 +637,7 @@ _Check_return_ wstring ActionToString(_In_ const ACTION& action)
 	return actstring;
 }
 
-wstring ActionsToString(_In_ const ACTIONS& actions)
+std::wstring ActionsToString(_In_ const ACTIONS& actions)
 {
 	auto szFlags = InterpretFlags(flagRulesVersion, actions.ulVersion);
 	auto actstring = strings::formatmessage(IDS_ACTIONSMEMBERS,
@@ -654,7 +654,7 @@ wstring ActionsToString(_In_ const ACTIONS& actions)
 	return actstring;
 }
 
-void FileTimeToString(_In_ const FILETIME& fileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString)
+void FileTimeToString(_In_ const FILETIME& fileTime, _In_ std::wstring& PropString, _In_opt_ std::wstring& AltPropString)
 {
 	auto hRes = S_OK;
 	SYSTEMTIME SysTime = { 0 };
@@ -707,7 +707,7 @@ wstring* tmpPropString: String representing property value
 wstring* tmpAltPropString: Alternative string representation
 Comment: Add new Property IDs as they become known
 ***************************************************************************/
-void InterpretProp(_In_ const LPSPropValue lpProp, _In_opt_ wstring* PropString, _In_opt_ wstring* AltPropString)
+void InterpretProp(_In_ const LPSPropValue lpProp, _In_opt_ std::wstring* PropString, _In_opt_ std::wstring* AltPropString)
 {
 	if (!lpProp) return;
 
@@ -717,9 +717,9 @@ void InterpretProp(_In_ const LPSPropValue lpProp, _In_opt_ wstring* PropString,
 	if (AltPropString) *AltPropString = parsedProperty.toAltString();
 }
 
-wstring TypeToString(ULONG ulPropTag)
+std::wstring TypeToString(ULONG ulPropTag)
 {
-	wstring tmpPropType;
+	std::wstring tmpPropType;
 
 	auto bNeedInstance = false;
 	if (ulPropTag & MV_INSTANCE)

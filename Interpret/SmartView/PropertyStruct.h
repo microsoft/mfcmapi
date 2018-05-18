@@ -9,10 +9,10 @@ public:
 
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	DWORD m_PropCount;
 	LPSPropValue m_Prop;
 };
 
-_Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop);
+_Check_return_ std::wstring PropsToString(DWORD PropCount, LPSPropValue Prop);

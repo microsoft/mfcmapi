@@ -9,7 +9,7 @@
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <Interpret/InterpretProp2.h>
 
-static wstring CLASS = L"CAclDlg";
+static std::wstring CLASS = L"CAclDlg";
 
 #define ACL_INCLUDE_ID 0x00000001
 #define ACL_INCLUDE_OTHER 0x00000002

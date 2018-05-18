@@ -12,7 +12,7 @@
 
 extern CMyWinApp theApp;
 
-static wstring CLASS = L"CMyMAPIFormViewer";
+static std::wstring CLASS = L"CMyMAPIFormViewer";
 
 CMyMAPIFormViewer::CMyMAPIFormViewer(
 	_In_ HWND hwndParent,

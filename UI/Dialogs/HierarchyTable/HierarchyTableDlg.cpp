@@ -8,7 +8,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
 
-static wstring CLASS = L"CHierarchyTableDlg";
+static std::wstring CLASS = L"CHierarchyTableDlg";
 
 CHierarchyTableDlg::CHierarchyTableDlg(
 	_In_ CParentWnd* pParentWnd,

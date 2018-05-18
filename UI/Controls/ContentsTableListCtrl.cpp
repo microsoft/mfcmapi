@@ -16,7 +16,7 @@
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
-static wstring CLASS = L"CContentsTableListCtrl";
+static std::wstring CLASS = L"CContentsTableListCtrl";
 
 #define NODISPLAYNAME 0xffffffff
 
@@ -379,7 +379,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 	auto hRes = S_OK;
 	HDITEM hdItem = { 0 };
 	auto lpMyHeader = GetHeaderCtrl();
-	wstring szHeaderString;
+	std::wstring szHeaderString;
 	LPMDB lpMDB = nullptr;
 	if (m_lpMapiObjects) lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 
@@ -864,7 +864,7 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 
 			if (ulCol < lpsRowData->cValues)
 			{
-				wstring PropString;
+				std::wstring PropString;
 				auto pProp = &lpsRowData->lpProps[ulCol];
 
 				// If we've got a MAPI_E_NOT_FOUND error, just don't display it.
@@ -1362,7 +1362,7 @@ void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 	{
 		LPMAPIPROP lpMAPIProp = nullptr;
 		SortListData* lpData = nullptr;
-		wstring szTitle;
+		std::wstring szTitle;
 		if (1 == GetSelectedCount())
 		{
 			auto hRes = S_OK;
@@ -1608,7 +1608,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 	return hRes;
 }
 
-void CContentsTableListCtrl::OnOutputTable(const wstring& szFileName) const
+void CContentsTableListCtrl::OnOutputTable(const std::wstring& szFileName) const
 {
 	if (m_bInLoadOp) return;
 	auto fTable = MyOpenFile(szFileName, true);

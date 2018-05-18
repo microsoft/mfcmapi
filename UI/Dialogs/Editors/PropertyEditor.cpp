@@ -101,7 +101,7 @@ _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 	return hRes;
 }
 
-static wstring SVCLASS = L"CPropertyEditor"; // STRING_OK
+static std::wstring SVCLASS = L"CPropertyEditor"; // STRING_OK
 
 // Create an editor for a MAPI property
 CPropertyEditor::CPropertyEditor(
@@ -185,11 +185,11 @@ void CPropertyEditor::InitPropertyControls()
 	auto iStructType = smartView.first;
 	auto szSmartView = smartView.second;
 
-	wstring szTemp1;
-	wstring szTemp2;
+	std::wstring szTemp1;
+	std::wstring szTemp2;
 	CountedTextPane* lpPane = nullptr;
 	size_t cbStr = 0;
-	wstring szGuid;
+	std::wstring szGuid;
 
 	switch (PROP_TYPE(m_ulPropTag))
 	{
@@ -240,7 +240,7 @@ void CPropertyEditor::InitPropertyControls()
 		InitPane(1, CountedTextPane::Create(IDS_BIN, false, IDS_CB));
 		if (m_lpsInputValue && CheckStringProp(m_lpsInputValue, PT_STRING8))
 		{
-			auto lpszA = string(m_lpsInputValue->Value.lpszA);
+			auto lpszA = std::string(m_lpsInputValue->Value.lpszA);
 			SetStringA(0, lpszA);
 
 			lpPane = static_cast<CountedTextPane*>(GetPane(1));
@@ -262,7 +262,7 @@ void CPropertyEditor::InitPropertyControls()
 		InitPane(1, CountedTextPane::Create(IDS_BIN, false, IDS_CB));
 		if (m_lpsInputValue && CheckStringProp(m_lpsInputValue, PT_UNICODE))
 		{
-			auto lpszW = wstring(m_lpsInputValue->Value.lpszW);
+			auto lpszW = std::wstring(m_lpsInputValue->Value.lpszW);
 			SetStringW(0, lpszW);
 
 			lpPane = static_cast<CountedTextPane*>(GetPane(1));
@@ -371,7 +371,7 @@ void CPropertyEditor::InitPropertyControls()
 					lpPane->SetStringW(strings::BinToHexString(&m_lpsInputValue->Value.bin, false));
 				}
 
-				SetStringA(1, string(LPCSTR(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb));
+				SetStringA(1, std::string(LPCSTR(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb));
 			}
 
 			lpPane = static_cast<CountedTextPane*>(GetPane(1));
@@ -623,10 +623,10 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 
 	if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
 
-	wstring szTmpString;
-	wstring szTemp1;
-	wstring szTemp2;
-	wstring szSmartView;
+	std::wstring szTmpString;
+	std::wstring szTemp1;
+	std::wstring szTemp2;
+	std::wstring szSmartView;
 	SPropValue sProp = { 0 };
 
 	short int iVal = 0;
@@ -636,8 +636,8 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	FILETIME ftVal = { 0 };
 	SBinary Bin = { 0 };
 	vector<BYTE> bin;
-	string lpszA;
-	wstring lpszW;
+	std::string lpszA;
+	std::wstring lpszW;
 
 	CountedTextPane* lpPane = nullptr;
 
@@ -760,7 +760,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		if (0 == i || 2 == i)
 		{
 			bin = GetBinary(0);
-			if (0 == i) SetStringA(1, string(LPCSTR(bin.data()), bin.size())); // ansi string
+			if (0 == i) SetStringA(1, std::string(LPCSTR(bin.data()), bin.size())); // ansi string
 			Bin.lpb = bin.data();
 			Bin.cb = ULONG(bin.size());
 		}
@@ -805,7 +805,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		{
 			bin = GetBinary(1);
 
-			SetStringA(0, string(LPCSTR(bin.data()), bin.size()));
+			SetStringA(0, std::string(LPCSTR(bin.data()), bin.size()));
 
 			lpPane = static_cast<CountedTextPane*>(GetPane(0));
 			if (lpPane) lpPane->SetCount(bin.size());
@@ -840,7 +840,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			bin = GetBinary(1);
 			if (!(bin.size() % sizeof(WCHAR)))
 			{
-				SetStringW(0, wstring(LPCWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
+				SetStringW(0, std::wstring(LPCWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
 				if (lpPane) lpPane->SetCount(bin.size() / sizeof(WCHAR));
 			}
 			else

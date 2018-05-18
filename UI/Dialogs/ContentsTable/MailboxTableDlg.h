@@ -12,7 +12,7 @@ public:
 	CMailboxTableDlg(
 		_In_ CParentWnd* pParentWnd,
 		_In_ CMapiObjects* lpMapiObjects,
-		_In_ const wstring& lpszServerName,
+		_In_ const std::wstring& lpszServerName,
 		_In_ LPMAPITABLE lpMAPITable);
 	virtual ~CMailboxTableDlg();
 
@@ -27,7 +27,7 @@ private:
 	// Menu items
 	void OnOpenWithFlags();
 
-	wstring m_lpszServerName;
+	std::wstring m_lpszServerName;
 
 	DECLARE_MESSAGE_MAP()
 };

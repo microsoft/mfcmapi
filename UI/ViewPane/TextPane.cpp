@@ -3,14 +3,14 @@
 #include <Interpret/String.h>
 #include <UI/UIFunctions.h>
 
-static wstring CLASS = L"TextPane";
+static std::wstring CLASS = L"TextPane";
 
 TextPane* TextPane::CreateMultiLinePane(UINT uidLabel, bool bReadOnly)
 {
 	return CreateSingleLinePane(uidLabel, bReadOnly, true);
 }
 
-TextPane* TextPane::CreateMultiLinePane(UINT uidLabel, _In_ const wstring& szVal, bool bReadOnly)
+TextPane* TextPane::CreateMultiLinePane(UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly)
 {
 	return CreateSingleLinePane(uidLabel, szVal, bReadOnly, true);
 }
@@ -27,7 +27,7 @@ TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMu
 	return lpPane;
 }
 
-TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, _In_ const wstring& szVal, bool bReadOnly, bool bMultiLine)
+TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly, bool bMultiLine)
 {
 	auto lpPane = new (std::nothrow) TextPane();
 	if (lpPane)
@@ -256,7 +256,7 @@ void TextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 
 struct FakeStream
 {
-	wstring lpszW;
+	std::wstring lpszW;
 	size_t cbszW;
 	size_t cbCur;
 };
@@ -311,7 +311,7 @@ void TextPane::SetEditBoxText()
 }
 
 // Sets m_lpszW
-void TextPane::SetStringW(const wstring& szMsg)
+void TextPane::SetStringW(const std::wstring& szMsg)
 {
 	m_lpszW = szMsg;
 
@@ -331,7 +331,7 @@ void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
 }
 
 // This is used by the DbgView - don't call any debugger functions here!!!
-void TextPane::AppendString(_In_ const wstring& szMsg)
+void TextPane::AppendString(_In_ const std::wstring& szMsg)
 {
 	m_EditBox.HideSelection(false, true);
 
@@ -362,15 +362,15 @@ void TextPane::SetMultiline()
 	m_bMultiline = true;
 }
 
-wstring TextPane::GetStringW() const
+std::wstring TextPane::GetStringW() const
 {
 	if (m_bCommitted) return m_lpszW;
 	return GetUIValue();
 }
 
-wstring TextPane::GetUIValue() const
+std::wstring TextPane::GetUIValue() const
 {
-	wstring value;
+	std::wstring value;
 	GETTEXTLENGTHEX getTextLength = { 0 };
 	getTextLength.flags = GTL_PRECISE | GTL_NUMCHARS;
 	getTextLength.codepage = 1200;
@@ -410,7 +410,7 @@ wstring TextPane::GetUIValue() const
 				reinterpret_cast<LPARAM>(buffer));
 			if (cchW != 0)
 			{
-				value = wstring(LPWSTR(buffer), cchText);
+				value = std::wstring(LPWSTR(buffer), cchText);
 			}
 			else
 			{
@@ -422,7 +422,7 @@ wstring TextPane::GetUIValue() const
 					reinterpret_cast<LPARAM>(buffer));
 				if (cchW != 0)
 				{
-					value = strings::stringTowstring(string(LPSTR(buffer), cchText));
+					value = strings::stringTowstring(std::string(LPSTR(buffer), cchText));
 				}
 			}
 		}

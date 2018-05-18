@@ -2,7 +2,7 @@
 #include "CountedTextPane.h"
 #include <UI/UIFunctions.h>
 
-static wstring CLASS = L"CountedTextPane";
+static std::wstring CLASS = L"CountedTextPane";
 
 CountedTextPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
 {

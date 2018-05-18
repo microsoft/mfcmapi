@@ -31,7 +31,7 @@ void SDBin::Parse()
 {
 }
 
-_Check_return_ wstring SDBin::ToStringInternal()
+_Check_return_ std::wstring SDBin::ToStringInternal()
 {
 	auto hRes = S_OK;
 	const auto lpSDToParse = m_Parser.GetCurrentAddress();
@@ -51,12 +51,12 @@ _Check_return_ wstring SDBin::ToStringInternal()
 
 	if (m_bFB) acetype = acetypeFreeBusy;
 
-	wstring szDACL;
-	wstring szInfo;
+	std::wstring szDACL;
+	std::wstring szInfo;
 	WC_H(SDToString(lpSDToParse, ulSDToParse, acetype, szDACL, szInfo));
 	auto szFlags = InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse));
 
-	vector<wstring> result;
+	vector<std::wstring> result;
 	result.push_back(strings::formatmessage(IDS_SECURITYDESCRIPTORHEADER) + szInfo);
 	result.push_back(strings::formatmessage(IDS_SECURITYDESCRIPTORVERSION, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), szFlags.c_str()));
 	result.push_back(szDACL);

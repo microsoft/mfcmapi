@@ -18,7 +18,7 @@ private:
 	bool m_bNeedPropRefresh;
 };
 
-static wstring CLASS = L"COptions";
+static std::wstring CLASS = L"COptions";
 
 COptions::COptions(_In_ CWnd* pWnd) :
 	CEditor(pWnd, IDS_SETOPTS, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)

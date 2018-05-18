@@ -8,7 +8,7 @@
 #include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/ContentsData.h>
 
-static wstring CLASS = L"CRecipientsDlg";
+static std::wstring CLASS = L"CRecipientsDlg";
 
 CRecipientsDlg::CRecipientsDlg(
 	_In_ CParentWnd* pParentWnd,

@@ -5,13 +5,13 @@ struct VerbData
 {
 	DWORD VerbType;
 	BYTE DisplayNameCount;
-	string DisplayName;
+	std::string DisplayName;
 	BYTE MsgClsNameCount;
-	string MsgClsName;
+	std::string MsgClsName;
 	BYTE Internal1StringCount;
-	string Internal1String;
+	std::string Internal1String;
 	BYTE DisplayNameCountRepeat;
-	string DisplayNameRepeat;
+	std::string DisplayNameRepeat;
 	DWORD Internal2;
 	BYTE Internal3;
 	DWORD fUseUSHeaders;
@@ -25,9 +25,9 @@ struct VerbData
 struct VerbExtraData
 {
 	BYTE DisplayNameCount;
-	wstring DisplayName;
+	std::wstring DisplayName;
 	BYTE DisplayNameCountRepeat;
-	wstring DisplayNameRepeat;
+	std::wstring DisplayNameRepeat;
 };
 
 class VerbStream : public SmartViewParser
@@ -37,7 +37,7 @@ public:
 
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	WORD m_Version;
 	DWORD m_Count;

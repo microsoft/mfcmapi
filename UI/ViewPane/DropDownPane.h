@@ -7,9 +7,9 @@ public:
 	static DropDownPane* Create(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly);
 	static DropDownPane* CreateGuid(UINT uidLabel, bool bReadOnly);
 
-	void SetDropDownSelection(_In_ const wstring& szText);
-	void InsertDropString(_In_ const wstring& szText, ULONG ulValue);
-	_Check_return_ wstring GetDropStringUseControl() const;
+	void SetDropDownSelection(_In_ const std::wstring& szText);
+	void InsertDropString(_In_ const std::wstring& szText, ULONG ulValue);
+	_Check_return_ std::wstring GetDropStringUseControl() const;
 	_Check_return_ int GetDropDownSelection() const;
 	_Check_return_ DWORD_PTR GetDropDownSelectionValue() const;
 	GUID GetSelectedGUID(bool bByteSwapped) const;
@@ -30,8 +30,8 @@ private:
 	int GetMinWidth(_In_ HDC hdc) override;
 	int GetFixedHeight() override;
 
-	vector<std::pair<wstring, ULONG>> m_DropList;
-	wstring m_lpszSelectionString;
+	vector<std::pair<std::wstring, ULONG>> m_DropList;
+	std::wstring m_lpszSelectionString;
 	int m_iDropSelection;
 	DWORD_PTR m_iDropSelectionValue;
 };

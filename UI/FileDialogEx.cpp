@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include <UI/FileDialogEx.h>
 
-wstring CFileDialogExW::OpenFile(
-	_In_ const wstring& lpszDefExt,
-	_In_ const wstring& lpszFileName,
+std::wstring CFileDialogExW::OpenFile(
+	_In_ const std::wstring& lpszDefExt,
+	_In_ const std::wstring& lpszFileName,
 	DWORD dwFlags,
-	_In_ const wstring& lpszFilter,
+	_In_ const std::wstring& lpszFilter,
 	_In_opt_ CWnd* pParentWnd)
 {
 	auto hRes = S_OK;
@@ -24,14 +24,14 @@ wstring CFileDialogExW::OpenFile(
 		return dlgFilePicker.GetFileName();
 	}
 
-	return wstring();
+	return std::wstring();
 }
 
-vector<wstring> CFileDialogExW::OpenFiles(
-	_In_ const wstring& lpszDefExt,
-	_In_ const wstring& lpszFileName,
+vector<std::wstring> CFileDialogExW::OpenFiles(
+	_In_ const std::wstring& lpszDefExt,
+	_In_ const std::wstring& lpszFileName,
 	DWORD dwFlags,
-	_In_ const wstring& lpszFilter,
+	_In_ const std::wstring& lpszFilter,
 	_In_opt_ CWnd* pParentWnd)
 {
 	auto hRes = S_OK;
@@ -50,14 +50,14 @@ vector<wstring> CFileDialogExW::OpenFiles(
 		return dlgFilePicker.GetFileNames();
 	}
 
-	return vector<wstring>();
+	return vector<std::wstring>();
 }
 
-wstring CFileDialogExW::SaveAs(
-	_In_ const wstring& lpszDefExt,
-	_In_ const wstring& lpszFileName,
+std::wstring CFileDialogExW::SaveAs(
+	_In_ const std::wstring& lpszDefExt,
+	_In_ const std::wstring& lpszFileName,
 	DWORD dwFlags,
-	_In_ const wstring& lpszFilter,
+	_In_ const std::wstring& lpszFilter,
 	_In_opt_ CWnd* pParentWnd)
 {
 	auto hRes = S_OK;
@@ -76,7 +76,7 @@ wstring CFileDialogExW::SaveAs(
 		return dlgFilePicker.GetFileName();
 	}
 
-	return wstring();
+	return std::wstring();
 }
 
 // Make sure OPENFILENAMEEX is the same size regardless of how _WIN32_WINNT is defined
@@ -93,9 +93,9 @@ struct OPENFILENAMEEXW : public OPENFILENAMEW
 
 #define CCHBIGBUFF 8192
 
-vector<wstring> UnpackFileNames(OPENFILENAMEEXW ofn)
+vector<std::wstring> UnpackFileNames(OPENFILENAMEEXW ofn)
 {
-	auto paths = vector<wstring>();
+	auto paths = vector<std::wstring>();
 
 	if ((ofn.Flags & OFN_ALLOWMULTISELECT) == 0)
 	{
@@ -103,7 +103,7 @@ vector<wstring> UnpackFileNames(OPENFILENAMEEXW ofn)
 		return paths;
 	}
 
-	auto strBasePath = wstring(ofn.lpstrFile) + L"\\";
+	auto strBasePath = std::wstring(ofn.lpstrFile) + L"\\";
 	auto lpsz = ofn.lpstrFile;
 	// find char pos after first Delimiter
 	while (*lpsz != L'\0') lpsz = CharNextW(lpsz);
@@ -145,10 +145,10 @@ vector<wstring> UnpackFileNames(OPENFILENAMEEXW ofn)
 
 _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(
 	bool bOpenFileDialog, // true for open, false for FileSaveAs
-	_In_ const wstring& lpszDefExt,
-	_In_ const wstring& lpszFileName,
+	_In_ const std::wstring& lpszDefExt,
+	_In_ const std::wstring& lpszFileName,
 	DWORD dwFlags,
-	_In_ const wstring& lpszFilter,
+	_In_ const std::wstring& lpszFilter,
 	_In_opt_ CWnd* pParentWnd)
 {
 	WCHAR szFileName[_MAX_PATH]; // contains full path name after return
@@ -206,13 +206,13 @@ _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(
 	return bResult ? bResult : IDCANCEL;
 }
 
-wstring CFileDialogExW::GetFileName() const
+std::wstring CFileDialogExW::GetFileName() const
 {
 	if (m_paths.size() >= 1) return m_paths[0];
 	return strings::emptystring;
 }
 
-vector<wstring> CFileDialogExW::GetFileNames() const
+vector<std::wstring> CFileDialogExW::GetFileNames() const
 {
 	return m_paths;
 }

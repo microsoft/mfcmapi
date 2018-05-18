@@ -4,7 +4,7 @@
 #include <MAPI/MapiObjects.h>
 #include <MAPI/GlobalCache.h>
 
-static wstring CLASS = L"CMapiObjects";
+static std::wstring CLASS = L"CMapiObjects";
 // Pass an existing CMapiObjects to make a copy, pass NULL to create a new one from scratch
 CMapiObjects::CMapiObjects(_In_opt_ CMapiObjects *OldMapiObjects)
 {

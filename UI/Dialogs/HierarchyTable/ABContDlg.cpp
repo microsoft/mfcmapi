@@ -5,7 +5,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MapiObjects.h>
 
-static wstring CLASS = L"CAbContDlg";
+static std::wstring CLASS = L"CAbContDlg";
 
 CAbContDlg::CAbContDlg(
 	_In_ CParentWnd* pParentWnd,

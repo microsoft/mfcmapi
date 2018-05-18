@@ -4,7 +4,7 @@
 class CMAPIProgress : public IMAPIProgress
 {
 public:
-	CMAPIProgress(const wstring& lpszContext, _In_ HWND hWnd);
+	CMAPIProgress(const std::wstring& lpszContext, _In_ HWND hWnd);
 	virtual ~CMAPIProgress();
 
 private:
@@ -20,14 +20,14 @@ private:
 	STDMETHODIMP GetMin(ULONG* lpulMin) override;
 	STDMETHODIMP SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpulFlags) override;
 
-	void OutputState(const wstring& lpszFunction) const;
+	void OutputState(const std::wstring& lpszFunction) const;
 
 	LONG m_cRef;
 	ULONG m_ulMin;
 	ULONG m_ulMax;
 	ULONG m_ulFlags;
-	wstring m_szContext;
+	std::wstring m_szContext;
 	HWND m_hWnd;
 };
 
-_Check_return_ CMAPIProgress* GetMAPIProgress(const wstring& lpszContext, _In_ HWND hWnd);
+_Check_return_ CMAPIProgress* GetMAPIProgress(const std::wstring& lpszContext, _In_ HWND hWnd);

@@ -6,7 +6,7 @@
 #include <Interpret/ExtraPropTags.h>
 //#include <Interpret/String.h>
 
-static wstring CLASS = L"CMySecInfo";
+static std::wstring CLASS = L"CMySecInfo";
 
 // The following array defines the permission names for Exchange objects.
 SI_ACCESS siExchangeAccessesFolder[] =
@@ -226,8 +226,8 @@ STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation
 			}
 
 			// Dump our SD
-			wstring szDACL;
-			wstring szInfo;
+			std::wstring szDACL;
+			std::wstring szInfo;
 			EC_H(SDToString(lpSDBuffer, cbSBBuffer, m_acetype, szDACL, szInfo));
 
 			DebugPrint(DBGGeneric, L"sdInfo: %ws\nszDACL: %ws\n", szInfo.c_str(), szDACL.c_str());

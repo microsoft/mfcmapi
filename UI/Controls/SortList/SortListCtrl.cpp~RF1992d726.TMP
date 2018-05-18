@@ -4,7 +4,7 @@
 #include <Interpret/String.h>
 #include <UI/UIFunctions.h>
 
-static std::wstring CLASS = L"CSortListCtrl";
+static wstring CLASS = L"CSortListCtrl";
 
 CSortListCtrl::CSortListCtrl()
 {
@@ -269,12 +269,12 @@ void CSortListCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	*pResult = 0;
 }
 
-_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, const std::wstring& szText) const
+_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, const wstring& szText) const
 {
 	return InsertRow(iRow, szText, 0, 0);
 }
 
-_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, const std::wstring& szText, int iIndent, int iImage) const
+_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, const wstring& szText, int iIndent, int iImage) const
 {
 	auto lpData = new SortListData();
 
@@ -505,9 +505,9 @@ void CSortListCtrl::SortClickedColumn()
 			if (lpData)
 			{
 				// Remove the lpb prefix
-				lpData->szSortText = std::wstring(szText);
+				lpData->szSortText = wstring(szText);
 				auto pos = lpData->szSortText.find(L"lpb: "); // STRING_OK
-				if (pos != std::string::npos)
+				if (pos != string::npos)
 				{
 					lpData->szSortText = lpData->szSortText.substr(pos);
 				}
@@ -657,7 +657,7 @@ _Check_return_ UINT CSortListCtrl::OnGetDlgCode()
 	return iDlgCode;
 }
 
-void CSortListCtrl::SetItemText(int nItem, int nSubItem, const std::wstring& lpszText)
+void CSortListCtrl::SetItemText(int nItem, int nSubItem, const wstring& lpszText)
 {
 	// Remove any whitespace before setting in the list
 	auto szWhitespace = const_cast<LPWSTR>(wcspbrk(lpszText.c_str(), L"\r\n\t")); // STRING_OK
@@ -670,7 +670,7 @@ void CSortListCtrl::SetItemText(int nItem, int nSubItem, const std::wstring& lps
 	(void)CListCtrl::SetItemText(nItem, nSubItem, strings::wstringTotstring(lpszText).c_str());
 }
 
-std::wstring CSortListCtrl::GetItemText(_In_ int nItem, _In_ int nSubItem) const
+wstring CSortListCtrl::GetItemText(_In_ int nItem, _In_ int nSubItem) const
 {
 	return strings::LPCTSTRToWstring(CListCtrl::GetItemText(nItem, nSubItem));
 }

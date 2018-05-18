@@ -194,7 +194,7 @@ void OnQSDisplayAB(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	auto hRes = S_OK;
-	wstring szNicknames;
+	std::wstring szNicknames;
 	LPSPropValue lpsProp = nullptr;
 
 	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGNICKNAME);
@@ -330,7 +330,7 @@ static const SizedSPropTagArray(qNUM_COLS, sptaQuota) =
 	PR_MDB_PROVIDER,
 };
 
-wstring FormatQuota(LPSPropValue lpProp, ULONG ulPropTag, const wstring& szName)
+std::wstring FormatQuota(LPSPropValue lpProp, ULONG ulPropTag, const std::wstring& szName)
 {
 	if (lpProp && lpProp->ulPropTag == ulPropTag)
 	{
@@ -345,7 +345,7 @@ wstring FormatQuota(LPSPropValue lpProp, ULONG ulPropTag, const wstring& szName)
 void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	auto hRes = S_OK;
-	wstring szQuotaString;
+	std::wstring szQuotaString;
 
 	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGQUOTA);
 	lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
@@ -369,7 +369,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		{
 			if (lpProps[qPR_DISPLAY_NAME_W].ulPropTag == PR_DISPLAY_NAME_W)
 			{
-				wstring szDisplayName = lpProps[qPR_DISPLAY_NAME_W].Value.lpszW;
+				std::wstring szDisplayName = lpProps[qPR_DISPLAY_NAME_W].Value.lpszW;
 				if (szDisplayName.empty())
 				{
 					szDisplayName = strings::loadstring(IDS_NOTFOUND);
@@ -501,7 +501,7 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		if (lpPane) lpPane->SetCount(lpThumbnail->Value.bin.cb);
 		MyResults.SetBinary(0, lpThumbnail->Value.bin.lpb, lpThumbnail->Value.bin.cb);
 
-		MyResults.SetStringA(1, string(LPCSTR(lpThumbnail->Value.bin.lpb), lpThumbnail->Value.bin.cb));
+		MyResults.SetStringA(1, std::string(LPCSTR(lpThumbnail->Value.bin.lpb), lpThumbnail->Value.bin.cb));
 	}
 	else
 	{

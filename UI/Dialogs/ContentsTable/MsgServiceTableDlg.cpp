@@ -10,12 +10,12 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Controls/SortList/ContentsData.h>
 
-static wstring CLASS = L"CMsgServiceTableDlg";
+static std::wstring CLASS = L"CMsgServiceTableDlg";
 
 CMsgServiceTableDlg::CMsgServiceTableDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
-	_In_ const string& szProfileName
+	_In_ const std::string& szProfileName
 ) :
 	CContentsTableDlg(
 		pParentWnd,

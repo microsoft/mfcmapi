@@ -25,7 +25,7 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <MAPI/MapiObjects.h>
 
-static wstring CLASS = L"CSingleMAPIPropListCtrl";
+static std::wstring CLASS = L"CSingleMAPIPropListCtrl";
 
 // 26 columns should be enough for anybody
 #define MAX_SORT_COLS 26
@@ -646,8 +646,8 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	}
 
 	auto PropTag = strings::format(L"0x%08X", ulPropTag);
-	wstring PropString;
-	wstring AltPropString;
+	std::wstring PropString;
+	std::wstring AltPropString;
 
 	auto namePropNames = NameIDToStrings(
 		ulPropTag,

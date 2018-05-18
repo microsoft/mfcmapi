@@ -6,7 +6,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 
-static wstring SPECIALFOLDERCLASS = L"SpecialFolderEditor"; // STRING_OK
+static std::wstring SPECIALFOLDERCLASS = L"SpecialFolderEditor"; // STRING_OK
 class SpecialFolderEditor : public CEditor
 {
 public:
@@ -104,8 +104,8 @@ void SpecialFolderEditor::LoadFolders() const
 		InsertColumn(ulListNum, i, g_sfCol[i].ulID, g_sfCol[i].ulType);
 	}
 
-	wstring szTmp;
-	wstring szProp;
+	std::wstring szTmp;
+	std::wstring szProp;
 
 	// This will iterate over all the special folders we know how to get.
 	for (ULONG i = DEFAULT_UNSPECIFIED + 1; i < NUM_DEFAULT_PROPS; i++)
@@ -207,12 +207,12 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 		CEDITOR_BUTTON_OK);
 	MyResults.InitPane(0, TextPane::CreateMultiLinePane(NULL, true));
 
-	wstring szTmp;
+	std::wstring szTmp;
 	auto listPane = static_cast<ListPane*>(GetPane(ulListNum));
 	if (listPane)
 	{
-		wstring szLabel;
-		wstring szData;
+		std::wstring szLabel;
+		std::wstring szData;
 		// We skip the first column, which is just the index
 		for (ULONG i = 1; i < g_ulsfCol; i++)
 		{

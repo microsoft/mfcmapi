@@ -15,7 +15,7 @@ void XID::Parse()
 	m_LocalID = m_Parser.GetBYTES(m_cbLocalId, m_cbLocalId);
 }
 
-_Check_return_ wstring XID::ToStringInternal()
+_Check_return_ std::wstring XID::ToStringInternal()
 {
 	return strings::formatmessage(IDS_XID,
 		GUIDToString(&m_NamespaceGuid).c_str(),

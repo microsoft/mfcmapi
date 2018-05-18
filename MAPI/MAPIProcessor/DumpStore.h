@@ -4,7 +4,7 @@
 
 struct MessageData
 {
-	wstring szFilePath; // Holds file name prepended with path
+	std::wstring szFilePath; // Holds file name prepended with path
 	FILE* fMessageProps;
 	ULONG ulCurAttNum;
 };
@@ -16,9 +16,9 @@ public:
 	CDumpStore();
 	virtual ~CDumpStore();
 
-	void InitMessagePath(_In_ const wstring& szMessageFileName);
-	void InitFolderPathRoot(_In_ const wstring& szFolderPathRoot);
-	void InitMailboxTablePathRoot(_In_ const wstring& szMailboxTablePathRoot);
+	void InitMessagePath(_In_ const std::wstring& szMessageFileName);
+	void InitFolderPathRoot(_In_ const std::wstring& szFolderPathRoot);
+	void InitMailboxTablePathRoot(_In_ const std::wstring& szMailboxTablePathRoot);
 	void EnableMSG();
 	void EnableList();
 	void DisableStreamRetry();
@@ -26,7 +26,7 @@ public:
 
 private:
 	// Worker functions (dump messages, scan for something, etc)
-	void BeginMailboxTableWork(_In_ const wstring& szExchangeServerName) override;
+	void BeginMailboxTableWork(_In_ const std::wstring& szExchangeServerName) override;
 	void DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const LPSRow lpSRow, ULONG ulCurRow) override;
 	void EndMailboxTableWork() override;
 
@@ -50,10 +50,10 @@ private:
 	void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData) override;
 	void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData) override;
 
-	wstring m_szMailboxTablePathRoot;
-	wstring m_szFolderPathRoot;
-	wstring m_szMessageFileName;
-	wstring m_szFolderPath; // Root plus offset
+	std::wstring m_szMailboxTablePathRoot;
+	std::wstring m_szFolderPathRoot;
+	std::wstring m_szMessageFileName;
+	std::wstring m_szFolderPath; // Root plus offset
 
 	FILE* m_fFolderProps;
 	FILE* m_fFolderContents;

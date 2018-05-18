@@ -16,7 +16,7 @@ enum __StreamEditorTypes
 	EDITOR_STREAM_UNICODE,
 };
 
-static wstring CLASS = L"CStreamEditor";
+static std::wstring CLASS = L"CStreamEditor";
 
 ULONG PreferredStreamType(ULONG ulPropTag)
 {
@@ -446,11 +446,11 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 			case EDITOR_RTF:
 			case EDITOR_STREAM_BINARY:
 			default:
-				SetStringA(m_iTextBox, string(LPCSTR(bin.data()), bin.size() / sizeof(CHAR)));
+				SetStringA(m_iTextBox, std::string(LPCSTR(bin.data()), bin.size() / sizeof(CHAR)));
 				if (lpBinPane) lpBinPane->SetCount(bin.size());
 				break;
 			case EDITOR_STREAM_UNICODE:
-				SetStringW(m_iTextBox, wstring(LPWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
+				SetStringW(m_iTextBox, std::wstring(LPWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
 				if (lpBinPane) lpBinPane->SetCount(bin.size());
 				break;
 			}

@@ -7,12 +7,12 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <Interpret/InterpretProp2.h>
 
-static wstring CLASS = L"CPublicFolderTableDlg";
+static std::wstring CLASS = L"CPublicFolderTableDlg";
 
 CPublicFolderTableDlg::CPublicFolderTableDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
-	_In_ const wstring& lpszServerName,
+	_In_ const std::wstring& lpszServerName,
 	_In_ LPMAPITABLE lpMAPITable
 ) :
 	CContentsTableDlg(

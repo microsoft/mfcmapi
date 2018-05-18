@@ -25,7 +25,7 @@ public:
 		int iLargeHeightMargin,
 		int iButtonHeight, // Height of buttons below the control
 		int iEditHeight); // Height of an edit control
-	void SetAddInLabel( const wstring& szLabel);
+	void SetAddInLabel( const std::wstring& szLabel);
 	bool MatchID(UINT nID) const;
 	virtual void UpdateButtons();
 
@@ -33,7 +33,7 @@ protected:
 	int m_iControl; // Number of the view pane in the view - used for callbacks and layout
 	bool m_bInitialized;
 	bool m_bReadOnly;
-	wstring m_szLabel; // Text to push into UI in Initialize
+	std::wstring m_szLabel; // Text to push into UI in Initialize
 	int m_iLabelWidth; // The width of the label
 	CEdit m_Label;
 	UINT m_nID; // Id for matching change notifications back to controls

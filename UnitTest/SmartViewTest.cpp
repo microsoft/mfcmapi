@@ -23,9 +23,9 @@ namespace SmartViewTest
 		{
 			__ParsingTypeEnum structType;
 			bool parseAll;
-			wstring testName;
+			std::wstring testName;
 			vector<BYTE> hex;
-			wstring expected;
+			std::wstring expected;
 		};
 
 		static const bool parse_all = true;
@@ -33,7 +33,7 @@ namespace SmartViewTest
 		static const bool limit_output = true;
 
 		// Assert::AreEqual doesn't do full logging, so we roll our own
-		void AreEqualEx(const wstring& expected, const wstring& actual, const wchar_t* message = nullptr, const __LineInfo* pLineInfo = nullptr) const
+		void AreEqualEx(const std::wstring& expected, const std::wstring& actual, const wchar_t* message = nullptr, const __LineInfo* pLineInfo = nullptr) const
 		{
 			if (expected != actual)
 			{
@@ -107,7 +107,7 @@ namespace SmartViewTest
 		// Resource files saved in unicode have a byte order mark of 0xfffe
 		// We load these in and strip the BOM.
 		// Otherwise we load as ansi and convert to unicode
-		static wstring loadfile(const HMODULE handle, const int name)
+		static std::wstring loadfile(const HMODULE handle, const int name)
 		{
 			const auto rc = ::FindResource(handle, MAKEINTRESOURCE(name), MAKEINTRESOURCE(TEXTFILE));
 			const auto rcData = LoadResource(handle, rc);

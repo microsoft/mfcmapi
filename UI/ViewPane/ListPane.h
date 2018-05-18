@@ -12,8 +12,8 @@ public:
 	static ListPane* CreateCollapsibleListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback);
 
 	ULONG HandleChange(UINT nID) override;
-	void SetListString(ULONG iListRow, ULONG iListCol, const wstring& szListString);
-	_Check_return_ SortListData* InsertRow(int iRow, const wstring& szText) const;
+	void SetListString(ULONG iListRow, ULONG iListCol, const std::wstring& szListString);
+	_Check_return_ SortListData* InsertRow(int iRow, const std::wstring& szText) const;
 	void ClearList();
 	void ResizeList(bool bSort);
 	_Check_return_ ULONG GetItemCount() const;
@@ -22,7 +22,7 @@ public:
 	void InsertColumn(int nCol, UINT uidText);
 	void SetColumnType(int nCol, ULONG ulPropType) const;
 	_Check_return_ bool OnEditListEntry();
-	wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
+	std::wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 	bool IsDirty() override;
 
 private:

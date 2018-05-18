@@ -69,14 +69,14 @@ public:
 	void DeleteAllColumns(bool bShutdown = false);
 	void SetSelectedItem(int iItem);
 	void SortClickedColumn();
-	_Check_return_ SortListData* InsertRow(int iRow, const wstring& szText) const;
-	void SetItemText(int nItem, int nSubItem, const wstring& lpszText);
-	wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
+	_Check_return_ SortListData* InsertRow(int iRow, const std::wstring& szText) const;
+	void SetItemText(int nItem, int nSubItem, const std::wstring& lpszText);
+	std::wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 	void AllowEscapeClose();
 
 protected:
 	void MySetRedraw(bool bRedraw);
-	_Check_return_ SortListData* InsertRow(int iRow, const wstring& szText, int iIndent, int iImage) const;
+	_Check_return_ SortListData* InsertRow(int iRow, const std::wstring& szText, int iIndent, int iImage) const;
 	void FakeClickColumn(int iColumn, bool bSortUp);
 
 	// protected since derived classes need to call the base implementation

@@ -18,7 +18,7 @@ public:
 
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	DWORD m_cWebViews;
 	vector<WebViewPersist> m_lpWebViews;

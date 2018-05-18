@@ -161,7 +161,7 @@ void UninitializeGDI()
 	}
 }
 
-_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const wstring& szMenu)
+_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const std::wstring& szMenu)
 {
 	auto hRes = S_OK;
 	auto lpMenu = new (std::nothrow) MenuEntry;
@@ -426,7 +426,7 @@ _Check_return_ int GetTextHeight(_In_opt_ HWND hwndEdit)
 	return iHeight;
 }
 
-SIZE GetTextExtentPoint32(HDC hdc, const wstring& szText)
+SIZE GetTextExtentPoint32(HDC hdc, const std::wstring& szText)
 {
 	SIZE size = { 0 };
 	GetTextExtentPoint32W(hdc, szText.c_str(), static_cast<int>(szText.length()), &size);
@@ -602,7 +602,7 @@ HBITMAP ScaleBitmap(HBITMAP hBitmap, SCALE& scale)
 
 void DrawSegoeTextW(
 	_In_ HDC hdc,
-	_In_ const wstring& lpchText,
+	_In_ const std::wstring& lpchText,
 	_In_ COLORREF color,
 	_In_ const RECT& rc,
 	bool bBold,
@@ -1572,7 +1572,7 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	db.End(hdc);
 }
 
-wstring GetLBText(HWND hwnd, int nIndex)
+std::wstring GetLBText(HWND hwnd, int nIndex)
 {
 	auto len = ComboBox_GetLBTextLen(hwnd, nIndex) + 1;
 	auto buffer = new TCHAR[len];
@@ -1628,11 +1628,11 @@ void DrawItem(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 void DrawStatus(
 	HWND hwnd,
 	int iStatusHeight,
-	const wstring& szStatusData1,
+	const std::wstring& szStatusData1,
 	int iStatusData1,
-	const wstring& szStatusData2,
+	const std::wstring& szStatusData2,
 	int iStatusData2,
-	const wstring& szStatusInfo)
+	const std::wstring& szStatusInfo)
 {
 	RECT rcStatus = { 0 };
 	GetClientRect(hwnd, &rcStatus);

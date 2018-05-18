@@ -61,7 +61,7 @@ void SIDBin::Parse()
 	}
 }
 
-_Check_return_ wstring SIDBin::ToStringInternal()
+_Check_return_ std::wstring SIDBin::ToStringInternal()
 {
 	auto szDomain = !m_lpSidDomain.empty() ? m_lpSidDomain : strings::formatmessage(IDS_NODOMAIN);
 	auto szName = !m_lpSidName.empty() ? m_lpSidName : strings::formatmessage(IDS_NONAME);

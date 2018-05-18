@@ -2,7 +2,7 @@
 // Output (to File/Debug) functions
 #include <Interpret/String.h>
 
-extern wstring g_szXMLHeader;
+extern std::wstring g_szXMLHeader;
 
 void OpenDebugFile();
 void CloseDebugFile();
@@ -52,11 +52,11 @@ void SetDebugOutputToFile(bool bDoOutput);
 #define fIsSet(ulTag) (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag))
 #define fIsSetv(ulTag) (((ulTag) != DBGNoDebug) && (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
 
-_Check_return_ FILE* MyOpenFile(const wstring& szFileName, bool bNewFile);
-_Check_return_ FILE* MyOpenFileMode(const wstring& szFileName, const wchar_t* mode);
+_Check_return_ FILE* MyOpenFile(const std::wstring& szFileName, bool bNewFile);
+_Check_return_ FILE* MyOpenFileMode(const std::wstring& szFileName, const wchar_t* mode);
 void CloseFile(_In_opt_ FILE* fFile);
 
-void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const wstring& szMsg);
+void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const std::wstring& szMsg);
 void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
@@ -76,7 +76,7 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, LPCWSTR szMsg, ...);
 #define DebugPrint(ulDbgLvl, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), DebugPrint(ulDbgLvl, szMsg, __VA_ARGS__))
 #endif
 
-void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring& szClass, const wstring& szFunc, LPCWSTR szMsg, ...);
+void __cdecl DebugPrintEx(ULONG ulDbgLvl, std::wstring& szClass, const std::wstring& szFunc, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef DebugPrintEx
 #define DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, __VA_ARGS__))
@@ -139,7 +139,7 @@ void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpE
 #define TRACE_RELEASE(__class,__count)
 #endif
 
-void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, const wstring& szValue, bool bWrapCData, int iIndent);
+void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, const std::wstring& szValue, bool bWrapCData, int iIndent);
 void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 

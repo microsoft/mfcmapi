@@ -16,7 +16,7 @@ struct PropertyName
 	GUID Guid;
 	DWORD LID;
 	BYTE NameSize;
-	wstring Name;
+	std::wstring Name;
 };
 
 // [MS-OXORULE]
@@ -40,7 +40,7 @@ public:
 	void Init(bool bExtended);
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	NamedPropertyInformation m_NamedPropertyInformation;
 	RestrictionStruct m_lpRes;

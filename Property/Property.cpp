@@ -3,20 +3,20 @@
 #include <MAPI/ColumnTags.h>
 #include <sstream>
 
-wstring cdataopen = L"<![CDATA[";
-wstring cdataclose = L"]]>";
+std::wstring cdataopen = L"<![CDATA[";
+std::wstring cdataclose = L"]]>";
 
-wstring tagopen(_In_ const wstring& szTag, int iIndent)
+std::wstring tagopen(_In_ const std::wstring& szTag, int iIndent)
 {
 	return strings::indent(iIndent) + L"<" + szTag + L">";
 }
 
-wstring tagclose(_In_ const wstring& szTag, int iIndent)
+std::wstring tagclose(_In_ const std::wstring& szTag, int iIndent)
 {
 	return strings::indent(iIndent) + L"</" + szTag + L">\n";
 }
 
-Parsing::Parsing(const wstring& szParsing, bool bXMLSafe, const Attributes& attributes)
+Parsing::Parsing(const std::wstring& szParsing, bool bXMLSafe, const Attributes& attributes)
 {
 	m_szParsing = szParsing;
 	m_bXMLSafe = bXMLSafe;
@@ -30,7 +30,7 @@ Parsing::Parsing(const Parsing& other)
 	m_attributes = other.m_attributes;
 }
 
-wstring Parsing::toXML(UINT uidTag, int iIndent) const
+std::wstring Parsing::toXML(UINT uidTag, int iIndent) const
 {
 	if (m_szParsing.empty()) return L"";
 
@@ -55,7 +55,7 @@ wstring Parsing::toXML(UINT uidTag, int iIndent) const
 	return szXML.str();
 }
 
-wstring Parsing::toString() const
+std::wstring Parsing::toString() const
 {
 	auto cb = m_attributes.GetAttribute(L"cb");
 	if (!cb.empty())
@@ -86,12 +86,12 @@ void Property::AddMVParsing(const Property& Property)
 	m_AltParsing.push_back(Property.m_AltParsing[0]);
 }
 
-void Property::AddAttribute(const wstring& key, const wstring& value)
+void Property::AddAttribute(const std::wstring& key, const std::wstring& value)
 {
 	m_attributes.AddAttribute(key, value);
 }
 
-wstring Property::toXML(int iIndent) const
+std::wstring Property::toXML(int iIndent) const
 {
 	std::wstringstream szXML;
 	auto mv = m_attributes.GetAttribute(L"mv");
@@ -121,17 +121,17 @@ wstring Property::toXML(int iIndent) const
 	return szXML.str();
 }
 
-wstring Property::toString() const
+std::wstring Property::toString() const
 {
 	return toString(m_MainParsing);
 }
 
-wstring Property::toAltString() const
+std::wstring Property::toAltString() const
 {
 	return toString(m_AltParsing);
 }
 
-wstring Property::toString(const vector<Parsing>& parsings) const
+std::wstring Property::toString(const vector<Parsing>& parsings) const
 {
 	auto mv = m_attributes.GetAttribute(L"mv");
 	if (mv == L"true")

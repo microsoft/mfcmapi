@@ -5,7 +5,7 @@
 #include <UI/Controls/SortList/MVPropData.h>
 #include "PropertyEditor.h"
 
-static wstring MVCLASS = L"CMultiValuePropertyEditor"; // STRING_OK
+static std::wstring MVCLASS = L"CMultiValuePropertyEditor"; // STRING_OK
 
 // Create an editor for a MAPI property
 CMultiValuePropertyEditor::CMultiValuePropertyEditor(
@@ -360,8 +360,8 @@ _Check_return_ bool CMultiValuePropertyEditor::DoListEdit(ULONG /*ulListNum*/, i
 
 void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iMVCount) const
 {
-	wstring szTmp;
-	wstring szAltTmp;
+	std::wstring szTmp;
+	std::wstring szAltTmp;
 
 	InterpretProp(lpProp, &szTmp, &szAltTmp);
 	SetListString(0, iMVCount, 1, szTmp);
@@ -396,7 +396,7 @@ void CMultiValuePropertyEditor::UpdateSmartView() const
 		{
 			WriteMultiValueStringsToSPropValue(static_cast<LPVOID>(lpsProp), lpsProp);
 
-			wstring szSmartView;
+			std::wstring szSmartView;
 			switch (PROP_TYPE(m_ulPropTag))
 			{
 			case PT_MV_LONG:

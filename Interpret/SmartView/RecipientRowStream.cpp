@@ -35,9 +35,9 @@ void RecipientRowStream::Parse()
 	}
 }
 
-_Check_return_ wstring RecipientRowStream::ToStringInternal()
+_Check_return_ std::wstring RecipientRowStream::ToStringInternal()
 {
-	wstring szRecipientRowStream;
+	std::wstring szRecipientRowStream;
 
 	szRecipientRowStream = strings::formatmessage(
 		IDS_RECIPIENTROWSTREAMHEADER,

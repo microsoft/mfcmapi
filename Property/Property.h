@@ -4,14 +4,14 @@
 class Parsing
 {
 public:
-	Parsing(const wstring& szParsing, bool bXMLSafe, Attributes const& attributes);
+	Parsing(const std::wstring& szParsing, bool bXMLSafe, Attributes const& attributes);
 	Parsing(Parsing const& other);
 
-	wstring toXML(UINT uidTag, int iIndent) const;
-	wstring toString() const;
+	std::wstring toXML(UINT uidTag, int iIndent) const;
+	std::wstring toString() const;
 
 private:
-	wstring m_szParsing;
+	std::wstring m_szParsing;
 	bool m_bXMLSafe;
 	Attributes m_attributes;
 };
@@ -22,14 +22,14 @@ public:
 	void AddParsing(const Parsing& mainParsing, const Parsing& altParsing);
 	void AddMVParsing(const Property& Property);
 
-	void AddAttribute(const wstring& key, const wstring& value);
+	void AddAttribute(const std::wstring& key, const std::wstring& value);
 
-	wstring toXML(int iIndent) const;
-	wstring toString() const;
-	wstring toAltString() const;
+	std::wstring toXML(int iIndent) const;
+	std::wstring toString() const;
+	std::wstring toAltString() const;
 
 private:
-	wstring toString(const vector<Parsing>& parsing) const;
+	std::wstring toString(const vector<Parsing>& parsing) const;
 
 	vector<Parsing> m_MainParsing;
 	vector<Parsing> m_AltParsing;

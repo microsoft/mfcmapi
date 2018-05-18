@@ -25,8 +25,8 @@ public:
 		return ret;
 	}
 
-	string GetStringA(size_t cchChar = -1);
-	wstring GetStringW(size_t cchChar = -1);
+	std::string GetStringA(size_t cchChar = -1);
+	std::wstring GetStringW(size_t cchChar = -1);
 	vector<BYTE> GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);
 	vector<BYTE> GetRemainingData();
 

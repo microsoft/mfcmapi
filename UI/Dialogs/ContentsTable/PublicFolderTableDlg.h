@@ -12,7 +12,7 @@ public:
 	CPublicFolderTableDlg(
 		_In_ CParentWnd* pParentWnd,
 		_In_ CMapiObjects* lpMapiObjects,
-		_In_ const wstring& lpszServerName,
+		_In_ const std::wstring& lpszServerName,
 		_In_ LPMAPITABLE lpMAPITable);
 	virtual ~CPublicFolderTableDlg();
 
@@ -23,6 +23,6 @@ private:
 	void OnDisplayItem() override;
 	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
 
-	wstring m_lpszServerName;
+	std::wstring m_lpszServerName;
 };
 

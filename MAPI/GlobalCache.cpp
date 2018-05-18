@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include <MAPI/GlobalCache.h>
 
-static wstring GCCLASS = L"CGlobalCache"; // STRING_OK
+static std::wstring GCCLASS = L"CGlobalCache"; // STRING_OK
 
 CGlobalCache::CGlobalCache()
 {
@@ -154,12 +154,12 @@ _Check_return_ vector<ULONG> CGlobalCache::GetAttachmentsToCopy() const
 	return m_attachmentsToCopy;
 }
 
-void CGlobalCache::SetProfileToCopy(_In_ const string& szProfileName)
+void CGlobalCache::SetProfileToCopy(_In_ const std::string& szProfileName)
 {
 	m_szProfileToCopy = szProfileName;
 }
 
-_Check_return_ string CGlobalCache::GetProfileToCopy() const
+_Check_return_ std::string CGlobalCache::GetProfileToCopy() const
 {
 	return m_szProfileToCopy;
 }

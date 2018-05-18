@@ -34,7 +34,7 @@ void EntryList::Parse()
 	}
 }
 
-_Check_return_ wstring EntryList::ToStringInternal()
+_Check_return_ std::wstring EntryList::ToStringInternal()
 {
 	auto szEntryList = strings::formatmessage(IDS_ENTRYLISTDATA,
 		m_EntryCount,

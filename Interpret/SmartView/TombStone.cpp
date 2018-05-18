@@ -53,9 +53,9 @@ void TombStone::Parse()
 	}
 }
 
-_Check_return_ wstring TombStone::ToStringInternal()
+_Check_return_ std::wstring TombStone::ToStringInternal()
 {
-	wstring szTombstoneString;
+	std::wstring szTombstoneString;
 
 	szTombstoneString = strings::formatmessage(IDS_TOMBSTONEHEADER,
 		m_Identifier,

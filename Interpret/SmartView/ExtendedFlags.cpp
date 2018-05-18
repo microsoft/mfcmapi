@@ -88,7 +88,7 @@ void ExtendedFlags::Parse()
 	}
 }
 
-_Check_return_ wstring ExtendedFlags::ToStringInternal()
+_Check_return_ std::wstring ExtendedFlags::ToStringInternal()
 {
 	auto szExtendedFlags = strings::formatmessage(IDS_EXTENDEDFLAGSHEADER, m_ulNumFlags);
 

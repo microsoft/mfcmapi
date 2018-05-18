@@ -7,7 +7,7 @@
 #include <UI/Dialogs/Editors/StreamEditor.h>
 #include <Interpret/ExtraPropTags.h>
 
-static wstring CLASS = L"SingleMessageDialog";
+static std::wstring CLASS = L"SingleMessageDialog";
 
 SingleMessageDialog::SingleMessageDialog(
 	_In_ CParentWnd* pParentWnd,

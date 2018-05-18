@@ -30,9 +30,9 @@ void TaskAssigners::Parse()
 	}
 }
 
-_Check_return_ wstring TaskAssigners::ToStringInternal()
+_Check_return_ std::wstring TaskAssigners::ToStringInternal()
 {
-	wstring szTaskAssigners;
+	std::wstring szTaskAssigners;
 
 	szTaskAssigners += strings::formatmessage(IDS_TASKASSIGNERSHEADER,
 		m_cAssigners);

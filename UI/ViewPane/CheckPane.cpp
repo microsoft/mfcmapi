@@ -2,7 +2,7 @@
 #include <UI/ViewPane/CheckPane.h>
 #include <UI/UIFunctions.h>
 
-static wstring CLASS = L"CheckPane";
+static std::wstring CLASS = L"CheckPane";
 
 CheckPane* CheckPane::Create(UINT uidLabel, bool bVal, bool bReadOnly)
 {

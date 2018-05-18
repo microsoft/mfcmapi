@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <MAPI/AdviseSink.h>
 
-static wstring CLASS = L"CAdviseSink";
+static std::wstring CLASS = L"CAdviseSink";
 
 CAdviseSink::CAdviseSink(_In_ HWND hWndParent, _In_opt_ HTREEITEM hTreeParent)
 {

@@ -173,10 +173,10 @@ void AppointmentRecurrencePattern::Parse()
 	m_ReservedBlock2 = m_Parser.GetBYTES(m_ReservedBlock2Size, _MaxBytes);
 }
 
-_Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
+_Check_return_ std::wstring AppointmentRecurrencePattern::ToStringInternal()
 {
-	wstring szARP;
-	wstring szTmp;
+	std::wstring szARP;
+	std::wstring szTmp;
 
 	szARP = m_RecurrencePattern.ToString();
 
@@ -272,7 +272,7 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 	{
 		for (size_t i = 0; i < m_ExtendedException.size(); i++)
 		{
-			wstring szExtendedException;
+			std::wstring szExtendedException;
 			if (m_WriterVersion2 >= 0x00003009)
 			{
 				auto szFlags = InterpretNumberAsStringNamedProp(m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue, dispidChangeHighlight, const_cast<LPGUID>(&PSETID_Appointment));

@@ -3,7 +3,7 @@
 #include <Interpret/InterpretProp2.h>
 #include <Interpret/ExtraPropTags.h>
 
-_Check_return_ wstring GetTextualSid(_In_ PSID pSid)
+_Check_return_ std::wstring GetTextualSid(_In_ PSID pSid)
 {
 	// Validate the binary SID.
 	if (!IsValidSid(pSid)) return L"";
@@ -55,10 +55,10 @@ _Check_return_ wstring GetTextualSid(_In_ PSID pSid)
 	return TextualSid;
 }
 
-wstring ACEToString(_In_ void* pACE, eAceType acetype)
+std::wstring ACEToString(_In_ void* pACE, eAceType acetype)
 {
 	auto hRes = S_OK;
-	vector<wstring> aceString;
+	vector<std::wstring> aceString;
 	ACCESS_MASK Mask = 0;
 	DWORD Flags = 0;
 	GUID ObjectType = { 0 };
@@ -139,7 +139,7 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 	auto lpStringSid = GetTextualSid(SidStart);
 	auto szAceType = InterpretFlags(flagACEType, AceType);
 	auto szAceFlags = InterpretFlags(flagACEFlag, AceFlags);
-	wstring szAceMask;
+	std::wstring szAceMask;
 
 	switch (acetype)
 	{
@@ -182,7 +182,7 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 	return strings::join(aceString, L"\r\n");
 }
 
-_Check_return_ HRESULT SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype, _In_ wstring& SDString, _In_ wstring& sdInfo)
+_Check_return_ HRESULT SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype, _In_ std::wstring& SDString, _In_ std::wstring& sdInfo)
 {
 	auto hRes = S_OK;
 	BOOL bValidDACL = false;
@@ -215,7 +215,7 @@ _Check_return_ HRESULT SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cb
 			sizeof ACLSizeInfo,
 			AclSizeInformation));
 
-		vector<wstring> sdString;
+		vector<std::wstring> sdString;
 		for (DWORD i = 0; i < ACLSizeInfo.AceCount; i++)
 		{
 			void* pACE = nullptr;

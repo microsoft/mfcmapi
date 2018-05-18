@@ -69,7 +69,7 @@ HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid);
 
 _Check_return_ int GetEditHeight(_In_opt_ HWND hwndEdit);
 _Check_return_ int GetTextHeight(_In_opt_ HWND hwndEdit);
-SIZE GetTextExtentPoint32(HDC hdc, const wstring& szText);
+SIZE GetTextExtentPoint32(HDC hdc, const std::wstring& szText);
 
 HFONT GetSegoeFont();
 HFONT GetSegoeFontBold();
@@ -99,13 +99,13 @@ void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly);
 struct MenuEntry
 {
 	MSAAMENUINFO m_MSAA; // MSAA info - must be first element.
-	wstring m_pName; // Menu text for display. Empty for separator item.
+	std::wstring m_pName; // Menu text for display. Empty for separator item.
 	BOOL m_bOnMenuBar;
 	ULONG_PTR m_AddInData;
 };
 typedef MenuEntry* LPMENUENTRY;
 
-_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const wstring& szMenu);
+_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const std::wstring& szMenu);
 void ConvertMenuOwnerDraw(_In_ HMENU hMenu, bool bRoot);
 void DeleteMenuEntries(_In_ HMENU hMenu);
 
@@ -136,17 +136,17 @@ void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeade
 // Menu and Combo box
 void MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 void DrawItem(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct);
-wstring GetLBText(HWND hwnd, int nIndex);
+std::wstring GetLBText(HWND hwnd, int nIndex);
 
 // Status Bar
 void DrawStatus(
 	HWND hwnd,
 	int iStatusHeight,
-	const wstring& szStatusData1,
+	const std::wstring& szStatusData1,
 	int iStatusData1,
-	const wstring& szStatusData2,
+	const std::wstring& szStatusData2,
 	int iStatusData2,
-	const wstring& szStatusInfo);
+	const std::wstring& szStatusInfo);
 
 void GetCaptionRects(HWND hWnd,
 	RECT* lprcFullCaption,
@@ -171,7 +171,7 @@ void StyleLabel(_In_ HWND hWnd, uiLabelStyle lsStyle);
 void StyleButton(_In_ HWND hWnd, uiButtonStyle bsStyle);
 void DrawSegoeTextW(
 	_In_ HDC hdc,
-	_In_ const wstring& lpchText,
+	_In_ const std::wstring& lpchText,
 	_In_ COLORREF color,
 	_In_ const RECT& rc,
 	bool bBold,

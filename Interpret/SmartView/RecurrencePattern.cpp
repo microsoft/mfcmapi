@@ -89,9 +89,9 @@ void RecurrencePattern::Parse()
 	m_EndDate = m_Parser.Get<DWORD>();
 }
 
-_Check_return_ wstring RecurrencePattern::ToStringInternal()
+_Check_return_ std::wstring RecurrencePattern::ToStringInternal()
 {
-	wstring szRP;
+	std::wstring szRP;
 
 	auto szRecurFrequency = InterpretFlags(flagRecurFrequency, m_RecurFrequency);
 	auto szPatternType = InterpretFlags(flagPatternType, m_PatternType);
@@ -106,8 +106,8 @@ _Check_return_ wstring RecurrencePattern::ToStringInternal()
 		m_Period,
 		m_SlidingFlag);
 
-	wstring szDOW;
-	wstring szN;
+	std::wstring szDOW;
+	std::wstring szN;
 	switch (m_PatternType)
 	{
 	case rptMinute:

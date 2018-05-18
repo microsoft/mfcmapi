@@ -36,9 +36,9 @@ static const BYTE s_rgbSPlus[] =
 	0x1A, 0x82, 0xE0, 0x08,
 };
 
-_Check_return_ wstring GlobalObjectId::ToStringInternal()
+_Check_return_ std::wstring GlobalObjectId::ToStringInternal()
 {
-	wstring szGlobalObjectId;
+	std::wstring szGlobalObjectId;
 
 	szGlobalObjectId = strings::formatmessage(IDS_GLOBALOBJECTIDHEADER);
 
@@ -55,8 +55,8 @@ _Check_return_ wstring GlobalObjectId::ToStringInternal()
 
 	auto szFlags = InterpretFlags(flagGlobalObjectIdMonth, m_Month);
 
-	wstring PropString;
-	wstring AltPropString;
+	std::wstring PropString;
+	std::wstring AltPropString;
 	FileTimeToString(m_CreationTime, PropString, AltPropString);
 	szGlobalObjectId += strings::formatmessage(IDS_GLOBALOBJECTIDDATA1,
 		m_Year,

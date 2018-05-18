@@ -8,7 +8,7 @@ struct TombstoneRecord
 	DWORD GlobalObjectIdSize;
 	vector<BYTE> lpGlobalObjectId;
 	WORD UsernameSize;
-	string szUsername;
+	std::string szUsername;
 };
 
 class TombStone : public SmartViewParser
@@ -18,7 +18,7 @@ public:
 
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	DWORD m_Identifier;
 	DWORD m_HeaderSize;

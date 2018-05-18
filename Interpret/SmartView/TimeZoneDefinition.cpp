@@ -58,7 +58,7 @@ void TimeZoneDefinition::Parse()
 	}
 }
 
-_Check_return_ wstring TimeZoneDefinition::ToStringInternal()
+_Check_return_ std::wstring TimeZoneDefinition::ToStringInternal()
 {
 	auto szTimeZoneDefinition = strings::formatmessage(IDS_TIMEZONEDEFINITION,
 		m_bMajorVersion,

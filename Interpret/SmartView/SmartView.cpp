@@ -38,11 +38,11 @@
 #include "SDBin.h"
 #include "XID.h"
 
-wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp);
+std::wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp);
 
 // Functions to parse PT_LONG/PT-I2 properties
-_Check_return_ wstring RTimeToSzString(DWORD rTime, bool bLabel);
-_Check_return_ wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);
+_Check_return_ std::wstring RTimeToSzString(DWORD rTime, bool bLabel);
+_Check_return_ std::wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);
 // End: Functions to parse PT_LONG/PT-I2 properties
 
 LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
@@ -197,14 +197,14 @@ _Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTa
 	return FindSmartViewParserForProp(ulLookupPropTag, ulPropNameID, lpguidNamedProp);
 }
 
-std::pair<__ParsingTypeEnum, wstring> InterpretPropSmartView2(_In_opt_ LPSPropValue lpProp, // required property value
+std::pair<__ParsingTypeEnum, std::wstring> InterpretPropSmartView2(_In_opt_ LPSPropValue lpProp, // required property value
 	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 	bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 	bool bMVRow) // did the row come from a MV prop?
 {
-	wstring lpszSmartView;
+	std::wstring lpszSmartView;
 
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp) return std::make_pair(IDS_STNOPARSING, L"");
 
@@ -307,7 +307,7 @@ std::pair<__ParsingTypeEnum, wstring> InterpretPropSmartView2(_In_opt_ LPSPropVa
 	return make_pair(iStructType, lpszSmartView);
 }
 
-wstring InterpretPropSmartView(_In_opt_ LPSPropValue lpProp, // required property value
+std::wstring InterpretPropSmartView(_In_opt_ LPSPropValue lpProp, // required property value
 	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
@@ -318,11 +318,11 @@ wstring InterpretPropSmartView(_In_opt_ LPSPropValue lpProp, // required propert
 	return smartview.second;
 }
 
-wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum  iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
+std::wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum  iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 
-	wstring szResult;
+	std::wstring szResult;
 
 	for (ULONG ulRow = 0; ulRow < myBinArray.cValues; ulRow++)
 	{
@@ -338,14 +338,14 @@ wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum  iS
 	return szResult;
 }
 
-wstring InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag)
+std::wstring InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag)
 {
 	_PV pV = { 0 };
 	pV.ul = ulVal;
 	return InterpretNumberAsString(pV, ulPropTag, NULL, nullptr, nullptr, false);
 }
 
-wstring InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp)
+std::wstring InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp)
 {
 	_PV pV = { 0 };
 	pV.ul = ulVal;
@@ -355,9 +355,9 @@ wstring InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_op
 // Interprets a PT_LONG, PT_I2. or PT_I8 found in lpProp and returns a string
 // Will not return a string if the lpProp is not a PT_LONG/PT_I2/PT_I8 or we don't recognize the property
 // Will use named property details to look up named property flags
-wstring InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPCGUID lpguidNamedProp, bool bLabel)
+std::wstring InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPCGUID lpguidNamedProp, bool bLabel)
 {
-	wstring lpszResultString;
+	std::wstring lpszResultString;
 	if (!ulPropTag) return L"";
 
 	if (PROP_TYPE(ulPropTag) != PT_LONG &&
@@ -396,12 +396,12 @@ wstring InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In
 	return lpszResultString;
 }
 
-wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp)
+std::wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp)
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 
-	wstring szResult;
-	wstring szSmartView;
+	std::wstring szResult;
+	std::wstring szSmartView;
 	auto bHasData = false;
 
 	for (ULONG ulRow = 0; ulRow < myLongArray.cValues; ulRow++)
@@ -426,7 +426,7 @@ wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG u
 	return szResult;
 }
 
-wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
+std::wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 	auto szResultString = AddInSmartView(iStructType, myBin.cb, myBin.lpb);
@@ -458,10 +458,10 @@ wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _I
 	return szResultString;
 }
 
-_Check_return_ wstring RTimeToString(DWORD rTime)
+_Check_return_ std::wstring RTimeToString(DWORD rTime)
 {
-	wstring rTimeString;
-	wstring rTimeAltString;
+	std::wstring rTimeString;
+	std::wstring rTimeAltString;
 	FILETIME fTime = { 0 };
 	LARGE_INTEGER liNumSec = { 0 };
 	liNumSec.LowPart = rTime;
@@ -474,9 +474,9 @@ _Check_return_ wstring RTimeToString(DWORD rTime)
 	return rTimeString;
 }
 
-_Check_return_ wstring RTimeToSzString(DWORD rTime, bool bLabel)
+_Check_return_ std::wstring RTimeToSzString(DWORD rTime, bool bLabel)
 {
-	wstring szRTime;
+	std::wstring szRTime;
 	if (bLabel)
 	{
 		szRTime = L"RTime: "; // STRING_OK
@@ -486,7 +486,7 @@ _Check_return_ wstring RTimeToSzString(DWORD rTime, bool bLabel)
 	return szRTime;
 }
 
-_Check_return_ wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel)
+_Check_return_ std::wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel)
 {
 	if (bLabel)
 	{
@@ -522,7 +522,7 @@ _Check_return_ ULONGLONG UllGetIdGlobcnt(ID id)
 	return ul;
 }
 
-_Check_return_ wstring FidMidToSzString(LONGLONG llID, bool bLabel)
+_Check_return_ std::wstring FidMidToSzString(LONGLONG llID, bool bLabel)
 {
 	auto pid = reinterpret_cast<ID*>(&llID);
 	if (bLabel)

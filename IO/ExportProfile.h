@@ -1,3 +1,3 @@
 #pragma once
 
-void ExportProfile(_In_ const string& szProfile, _In_ const wstring& szProfileSection, bool bByteSwapped, const wstring& szFileName);
+void ExportProfile(_In_ const std::string& szProfile, _In_ const std::wstring& szProfileSection, bool bByteSwapped, const std::wstring& szFileName);

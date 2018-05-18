@@ -90,7 +90,7 @@ PersistData AdditionalRenEntryIDs::BinToPersistData()
 	return persistData;
 }
 
-_Check_return_ wstring AdditionalRenEntryIDs::ToStringInternal()
+_Check_return_ std::wstring AdditionalRenEntryIDs::ToStringInternal()
 {
 	auto szAdditionalRenEntryIDs = strings::formatmessage(IDS_AEIDHEADER, m_ppdPersistData.size());
 

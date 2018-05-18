@@ -5,14 +5,14 @@ struct PackedUnicodeString
 {
 	BYTE cchLength;
 	WORD cchExtendedLength;
-	wstring szCharacters;
+	std::wstring szCharacters;
 };
 
 struct PackedAnsiString
 {
 	BYTE cchLength;
 	WORD cchExtendedLength;
-	string szCharacters;
+	std::string szCharacters;
 };
 
 struct SkipBlock
@@ -27,7 +27,7 @@ struct FieldDefinition
 	WORD wVT;
 	DWORD dwDispid;
 	WORD wNmidNameLength;
-	wstring szNmidName;
+	std::wstring szNmidName;
 	PackedAnsiString pasNameANSI;
 	PackedAnsiString pasFormulaANSI;
 	PackedAnsiString pasValidationRuleANSI;
@@ -45,7 +45,7 @@ public:
 
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	WORD m_wVersion;
 	DWORD m_dwFieldDefinitionCount;

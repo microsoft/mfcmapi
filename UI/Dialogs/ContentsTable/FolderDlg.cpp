@@ -24,7 +24,7 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/GlobalCache.h>
 
-static wstring CLASS = L"CFolderDlg";
+static std::wstring CLASS = L"CFolderDlg";
 
 CFolderDlg::CFolderDlg(
 	_In_ CParentWnd* pParentWnd,
@@ -332,7 +332,7 @@ void CFolderDlg::OnAddOneOffAddress()
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, TextPane::CreateSingleLinePaneID(IDS_DISPLAYNAME, IDS_DISPLAYNAMEVALUE, false));
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, wstring(L"EX"), false)); // STRING_OK
+	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
 	MyData.InitPane(2, TextPane::CreateSingleLinePaneID(IDS_ADDRESS, IDS_ADDRESSVALUE, false));
 	MyData.InitPane(3, TextPane::CreateSingleLinePane(IDS_RECIPTYPE, false));
 	MyData.SetHex(3, MAPI_TO);
@@ -950,7 +950,7 @@ void CFolderDlg::NewSpecialItem(WORD wMenuSelect) const
 	if (lpMAPISession)
 	{
 		ULONG ulFolder = NULL;
-		wstring szClass;
+		std::wstring szClass;
 
 		switch (wMenuSelect)
 		{
@@ -1052,7 +1052,7 @@ void CFolderDlg::OnNewCustomForm()
 
 		if (S_OK == hRes)
 		{
-			wstring szClass;
+			std::wstring szClass;
 			LPSPropValue lpProp = nullptr;
 
 			CEditor MyClass(
@@ -1060,7 +1060,7 @@ void CFolderDlg::OnNewCustomForm()
 				IDS_NEWCUSTOMFORM,
 				IDS_NEWCUSTOMFORMPROMPT2,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyClass.InitPane(0, TextPane::CreateSingleLinePane(IDS_FORMTYPE, wstring(L"IPM.Note"), false)); // STRING_OK
+			MyClass.InitPane(0, TextPane::CreateSingleLinePane(IDS_FORMTYPE, std::wstring(L"IPM.Note"), false)); // STRING_OK
 
 			switch (MyPrompt1.GetDropDown(0))
 			{
@@ -1517,7 +1517,7 @@ void CFolderDlg::OnSaveMessageToFile()
 	{
 		LPCWSTR szExt = nullptr;
 		LPCWSTR szDotExt = nullptr;
-		wstring szFilter;
+		std::wstring szFilter;
 		LPADRBOOK lpAddrBook = nullptr;
 		switch (MyData.GetDropDown(0))
 		{
@@ -1549,7 +1549,7 @@ void CFolderDlg::OnSaveMessageToFile()
 			break;
 		}
 
-		wstring dir;
+		std::wstring dir;
 		auto bPrompt = numSelected == 1 || MyData.GetCheck(1);
 		if (!bPrompt)
 		{
@@ -1778,7 +1778,7 @@ void CFolderDlg::OnSendBulkMail()
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_NUMMESSAGES, false));
 	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_RECIPNAME, false));
 	MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_SUBJECT, false));
-	MyData.InitPane(3, TextPane::CreateSingleLinePane(IDS_CLASS, wstring(L"IPM.Note"), false)); // STRING_OK
+	MyData.InitPane(3, TextPane::CreateSingleLinePane(IDS_CLASS, std::wstring(L"IPM.Note"), false)); // STRING_OK
 	MyData.InitPane(4, TextPane::CreateMultiLinePane(IDS_BODY, false));
 
 	if (!m_lpContainer) return;
@@ -1897,7 +1897,7 @@ void CFolderDlg::OnGetMessageOptions()
 		IDS_MESSAGEOPTIONS,
 		IDS_ADDRESSTYPEPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyAddress.InitPane(0, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, wstring(L"EX"), false)); // STRING_OK
+	MyAddress.InitPane(0, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
 	WC_H(MyAddress.DisplayDialog());
 
 	if (S_OK == hRes)

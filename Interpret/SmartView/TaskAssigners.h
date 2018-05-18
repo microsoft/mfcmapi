@@ -7,8 +7,8 @@ struct TaskAssigner
 	DWORD cbAssigner;
 	ULONG cbEntryID;
 	vector<BYTE> lpEntryID;
-	string szDisplayName;
-	wstring wzDisplayName;
+	std::string szDisplayName;
+	std::wstring wzDisplayName;
 	vector<BYTE> JunkData;
 };
 
@@ -19,7 +19,7 @@ public:
 
 private:
 	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	_Check_return_ std::wstring ToStringInternal() override;
 
 	DWORD m_cAssigners;
 	vector<TaskAssigner> m_lpTaskAssigners;

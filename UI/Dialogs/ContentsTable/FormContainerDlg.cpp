@@ -10,7 +10,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <UI/FileDialogEx.h>
 
-static wstring CLASS = L"CFormContainerDlg";
+static std::wstring CLASS = L"CFormContainerDlg";
 
 CFormContainerDlg::CFormContainerDlg(
 	_In_ CParentWnd* pParentWnd,

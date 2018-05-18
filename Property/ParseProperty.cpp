@@ -6,7 +6,7 @@
 #include <Interpret/InterpretProp.h>
 #include <Interpret/InterpretProp2.h>
 
-wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
+std::wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 {
 	if (PROP_TYPE(lpProp->ulPropTag) != PT_ERROR) return L"";
 	switch (PROP_ID(lpProp->ulPropTag))
@@ -112,11 +112,11 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 	}
 	else
 	{
-		wstring szTmp;
+		std::wstring szTmp;
 		auto bPropXMLSafe = true;
 		Attributes attributes;
 
-		wstring szAltTmp;
+		std::wstring szAltTmp;
 		auto bAltPropXMLSafe = true;
 		Attributes altAttributes;
 

@@ -2,7 +2,7 @@
 #include "ListPane.h"
 #include <UI/UIFunctions.h>
 
-static wstring CLASS = L"ListPane";
+static std::wstring CLASS = L"ListPane";
 
 ListPane* ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
 {
@@ -194,12 +194,12 @@ void ListPane::CommitUIValues()
 {
 }
 
-void ListPane::SetListString(ULONG iListRow, ULONG iListCol, const wstring& szListString)
+void ListPane::SetListString(ULONG iListRow, ULONG iListCol, const std::wstring& szListString)
 {
 	m_List.SetItemText(iListRow, iListCol, szListString);
 }
 
-_Check_return_ SortListData* ListPane::InsertRow(int iRow, const wstring& szText) const
+_Check_return_ SortListData* ListPane::InsertRow(int iRow, const std::wstring& szText) const
 {
 	return m_List.InsertRow(iRow, szText);
 }
@@ -438,7 +438,7 @@ _Check_return_ bool ListPane::OnEditListEntry()
 	return bDidEdit;
 }
 
-wstring ListPane::GetItemText(_In_ int nItem, _In_ int nSubItem) const
+std::wstring ListPane::GetItemText(_In_ int nItem, _In_ int nSubItem) const
 {
 	return m_List.GetItemText(nItem, nSubItem);
 }

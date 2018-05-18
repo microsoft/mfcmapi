@@ -6,7 +6,7 @@
 #include <UI/ViewPane/SmartViewPane.h>
 #include <MAPI/GlobalCache.h>
 
-static wstring CLASS = L"CHexEditor";
+static std::wstring CLASS = L"CHexEditor";
 
 enum __HexEditorFields
 {
@@ -58,7 +58,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 
 	LPBYTE lpb = nullptr;
 	size_t cb = 0;
-	wstring szEncodeStr;
+	std::wstring szEncodeStr;
 	size_t cchEncodeStr = 0;
 	switch (i)
 	{
@@ -104,10 +104,10 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		lpb = bin.data();
 		cb = bin.size();
 
-		SetStringA(HEXED_ANSI, string(LPCSTR(lpb), cb));
+		SetStringA(HEXED_ANSI, std::string(LPCSTR(lpb), cb));
 		if (!(cb % 2)) // Set Unicode String
 		{
-			SetStringW(HEXED_UNICODE, wstring(LPWSTR(lpb), cb / sizeof(WCHAR)));
+			SetStringW(HEXED_UNICODE, std::wstring(LPWSTR(lpb), cb / sizeof(WCHAR)));
 		}
 		else
 		{
@@ -122,11 +122,11 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		auto bin = GetBinary(HEXED_HEX);
 		lpb = bin.data();
 		cb = bin.size();
-		SetStringA(HEXED_ANSI, string(LPCSTR(lpb), cb)); // ansi string
+		SetStringA(HEXED_ANSI, std::string(LPCSTR(lpb), cb)); // ansi string
 
 		if (!(cb % 2)) // Set Unicode String
 		{
-			SetStringW(HEXED_UNICODE, wstring(LPWSTR(lpb), cb / sizeof(WCHAR)));
+			SetStringW(HEXED_UNICODE, std::wstring(LPWSTR(lpb), cb / sizeof(WCHAR)));
 		}
 		else
 		{

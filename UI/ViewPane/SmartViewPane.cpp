@@ -3,7 +3,7 @@
 #include <Interpret/String.h>
 #include <Interpret/SmartView/SmartView.h>
 
-static wstring CLASS = L"SmartViewPane";
+static std::wstring CLASS = L"SmartViewPane";
 
 SmartViewPane* SmartViewPane::Create(UINT uidLabel)
 {
@@ -119,7 +119,7 @@ void SmartViewPane::SetMargins(
 	ViewPane::SetMargins(iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
 }
 
-void SmartViewPane::SetStringW(const wstring& szMsg)
+void SmartViewPane::SetStringW(const std::wstring& szMsg)
 {
 	if (!szMsg.empty())
 	{

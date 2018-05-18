@@ -14,7 +14,7 @@
 #include <UI/Dialogs/Editors/SearchEditor.h>
 #include <Interpret/ExtraPropTags.h>
 
-static wstring CLASS = L"CContentsTableDlg";
+static std::wstring CLASS = L"CContentsTableDlg";
 
 CContentsTableDlg::CContentsTableDlg(
 	_In_ CParentWnd* pParentWnd,

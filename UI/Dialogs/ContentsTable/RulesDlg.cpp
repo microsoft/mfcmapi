@@ -7,7 +7,7 @@
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include "ImportProcs.h"
 
-static wstring CLASS = L"CRulesDlg";
+static std::wstring CLASS = L"CRulesDlg";
 
 #define RULE_INCLUDE_ID 0x00000001
 #define RULE_INCLUDE_OTHER 0x00000002

@@ -15,7 +15,7 @@
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/SortList/ContentsData.h>
 
-static wstring CLASS = L"CProfileListDlg";
+static std::wstring CLASS = L"CProfileListDlg";
 
 CProfileListDlg::CProfileListDlg(
 	_In_ CParentWnd* pParentWnd,
@@ -157,7 +157,7 @@ void CProfileListDlg::OnLaunchProfileWizard()
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_SERVICE, wstring(L"MSEMS"), false)); // STRING_OK
+	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)

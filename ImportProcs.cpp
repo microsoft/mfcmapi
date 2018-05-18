@@ -82,7 +82,7 @@ LPHEAPSETINFORMATION pfnHeapSetInformation = nullptr;
 LPGETMODULEHANDLEEXW pfnGetModuleHandleExW = nullptr;
 
 // Exists to allow some logging
-_Check_return_ HMODULE MyLoadLibraryW(_In_ const wstring& lpszLibFileName)
+_Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName)
 {
 	HMODULE hMod = nullptr;
 	auto hRes = S_OK;
@@ -102,7 +102,7 @@ _Check_return_ HMODULE MyLoadLibraryW(_In_ const wstring& lpszLibFileName)
 
 // Loads szModule at the handle given by lphModule, then looks for szEntryPoint.
 // Will not load a module or entry point twice
-void LoadProc(const wstring& szModule, HMODULE* lphModule, LPCSTR szEntryPoint, FARPROC* lpfn)
+void LoadProc(const std::wstring& szModule, HMODULE* lphModule, LPCSTR szEntryPoint, FARPROC* lpfn)
 {
 	if (!szEntryPoint || !lpfn || !lphModule) return;
 	if (*lpfn) return;
@@ -119,13 +119,13 @@ void LoadProc(const wstring& szModule, HMODULE* lphModule, LPCSTR szEntryPoint, 
 		szEntryPoint));
 }
 
-_Check_return_ HMODULE LoadFromSystemDir(_In_ const wstring& szDLLName)
+_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
 {
 	if (szDLLName.empty()) return nullptr;
 
 	auto hRes = S_OK;
 	HMODULE hModRet = nullptr;
-	wstring szDLLPath;
+	std::wstring szDLLPath;
 	UINT uiRet = NULL;
 
 	static WCHAR szSystemDir[MAX_PATH] = { 0 };
@@ -139,14 +139,14 @@ _Check_return_ HMODULE LoadFromSystemDir(_In_ const wstring& szDLLName)
 		bSystemDirLoaded = true;
 	}
 
-	szDLLPath = wstring(szSystemDir) + L"\\" + szDLLName;
+	szDLLPath = std::wstring(szSystemDir) + L"\\" + szDLLName;
 	DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
 	hModRet = MyLoadLibraryW(szDLLPath);
 
 	return hModRet;
 }
 
-_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const wstring&  szDLLName)
+_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring&  szDLLName)
 {
 	HMODULE hModRet = nullptr;
 
@@ -165,7 +165,7 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const wstring&  szDLLName)
 
 			if (SUCCEEDED(hRes))
 			{
-				auto szFullPath = wstring(szDrive) + wstring(szMAPIPath) + szDLLName;
+				auto szFullPath = std::wstring(szDrive) + std::wstring(szMAPIPath) + szDLLName;
 
 				DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
 				WC_D(hModRet, MyLoadLibraryW(szFullPath));
@@ -194,9 +194,9 @@ void ImportProcs()
 
 // Opens the mail key for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
 // Pass empty string to open the mail key for the default MAPI client
-_Check_return_ HKEY GetMailKey(_In_ const wstring& szClient)
+_Check_return_ HKEY GetMailKey(_In_ const std::wstring& szClient)
 {
-	wstring lpszClient = L"Default";
+	std::wstring lpszClient = L"Default";
 	if (!szClient.empty()) lpszClient = szClient;
 	DebugPrint(DBGLoadLibrary, L"Enter GetMailKey(%ws)\n", lpszClient.c_str());
 	auto hRes = S_OK;
@@ -229,7 +229,7 @@ _Check_return_ HKEY GetMailKey(_In_ const wstring& szClient)
 
 	if (!szClient.empty())
 	{
-		auto szMailKey = wstring(L"Software\\Clients\\Mail\\") + szClient; // STRING_OK
+		auto szMailKey = std::wstring(L"Software\\Clients\\Mail\\") + szClient; // STRING_OK
 
 		if (SUCCEEDED(hRes))
 		{
@@ -247,7 +247,7 @@ _Check_return_ HKEY GetMailKey(_In_ const wstring& szClient)
 
 // Gets MSI IDs for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
 // Pass empty string to get the IDs for the default MAPI client
-void GetMapiMsiIds(_In_ const wstring& szClient, _In_ wstring& lpszComponentID, _In_ wstring& lpszAppLCID, _In_ wstring& lpszOfficeLCID)
+void GetMapiMsiIds(_In_ const std::wstring& szClient, _In_ std::wstring& lpszComponentID, _In_ std::wstring& lpszAppLCID, _In_ std::wstring& lpszOfficeLCID)
 {
 	DebugPrint(DBGLoadLibrary, L"GetMapiMsiIds(%ws)\n", szClient.c_str());
 
@@ -268,14 +268,14 @@ void GetMapiMsiIds(_In_ const wstring& szClient, _In_ wstring& lpszComponentID, 
 	}
 }
 
-wstring GetMAPIPath(const wstring& szClient)
+std::wstring GetMAPIPath(const std::wstring& szClient)
 {
-	wstring lpszPath;
+	std::wstring lpszPath;
 
 	// Find some strings:
-	wstring szComponentID;
-	wstring szAppLCID;
-	wstring szOfficeLCID;
+	std::wstring szComponentID;
+	std::wstring szAppLCID;
+	std::wstring szOfficeLCID;
 
 	GetMapiMsiIds(szClient, szComponentID, szAppLCID, szOfficeLCID);
 
@@ -323,7 +323,7 @@ _Check_return_ STDAPI OpenStreamOnFileW(_In_ LPALLOCATEBUFFER lpAllocateBuffer,
 _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateBuffer,
 	_In_ LPFREEBUFFER lpFreeBuffer,
 	ULONG ulFlags,
-	_In_ const wstring& lpszFileName,
+	_In_ const std::wstring& lpszFileName,
 	_Out_ LPSTREAM FAR * lppStream)
 {
 	auto hRes = OpenStreamOnFileW(

@@ -16,7 +16,7 @@
 #undef DebugPrintEx
 #endif
 
-wstring g_szXMLHeader = L"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
+std::wstring g_szXMLHeader = L"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
 FILE* g_fDebugFile = nullptr;
 
 void OpenDebugFile()
@@ -81,14 +81,14 @@ void SetDebugOutputToFile(bool bDoOutput)
 // quick check to see if we have anything to print - so we can avoid executing the call
 #define EARLYABORT {if (!fFile && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && !fIsSetv(ulDbgLvl)) return;}
 
-_Check_return_ FILE* MyOpenFile(const wstring& szFileName, bool bNewFile)
+_Check_return_ FILE* MyOpenFile(const std::wstring& szFileName, bool bNewFile)
 {
 	auto mode = L"a+"; // STRING_OK
 	if (bNewFile) mode = L"w"; // STRING_OK
 	return MyOpenFileMode(szFileName, mode);
 }
 
-_Check_return_ FILE* MyOpenFileMode(const wstring& szFileName, const wchar_t* mode)
+_Check_return_ FILE* MyOpenFileMode(const std::wstring& szFileName, const wchar_t* mode)
 {
 	FILE* fOut = nullptr;
 
@@ -123,7 +123,7 @@ void CloseFile(_In_opt_ FILE* fFile)
 	if (fFile) fclose(fFile);
 }
 
-void WriteFile(_In_ FILE* fFile, const wstring& szString)
+void WriteFile(_In_ FILE* fFile, const std::wstring& szString)
 {
 	if (!szString.empty())
 	{
@@ -135,7 +135,7 @@ void WriteFile(_In_ FILE* fFile, const wstring& szString)
 void OutputThreadTime(ULONG ulDbgLvl)
 {
 	// Compute current time and thread for a time stamp
-	wstring szThreadTime;
+	std::wstring szThreadTime;
 
 	SYSTEMTIME stLocalTime = {};
 	FILETIME ftLocalTime = {};
@@ -168,7 +168,7 @@ void OutputThreadTime(ULONG ulDbgLvl)
 }
 
 // The root of all debug output - call no debug output functions besides OutputDebugString from here!
-void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const wstring& szMsg)
+void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const std::wstring& szMsg)
 {
 	CHKPARAM;
 	EARLYABORT;
@@ -251,7 +251,7 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, LPCWSTR szMsg, ...)
 	va_end(argList);
 }
 
-void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring& szClass, const wstring& szFunc, LPCWSTR szMsg, ...)
+void __cdecl DebugPrintEx(ULONG ulDbgLvl, std::wstring& szClass, const std::wstring& szFunc, LPCWSTR szMsg, ...)
 {
 	if (!fIsSetv(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
@@ -513,8 +513,8 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 
 	Outputf(ulDbgLvl, fFile, true, L"Dumping %u notifications.\n", cNotify);
 
-	wstring szFlags;
-	wstring szPropNum;
+	std::wstring szFlags;
+	std::wstring szPropNum;
 
 	for (ULONG i = 0; i < cNotify; i++)
 	{
@@ -686,8 +686,8 @@ void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpE
 
 	Outputf(ulDbgLvl, fFile, true, L"Dumping %u entry IDs.\n", lpEntryList->cValues);
 
-	wstring szFlags;
-	wstring szPropNum;
+	std::wstring szFlags;
+	std::wstring szPropNum;
 
 	for (ULONG i = 0; i < lpEntryList->cValues; i++)
 	{
@@ -995,7 +995,7 @@ void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 	Output(ulDbgLvl, fFile, false, L"]]>");
 }
 
-void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, const wstring& szValue, bool bWrapCData, int iIndent)
+void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, const std::wstring& szValue, bool bWrapCData, int iIndent)
 {
 	CHKPARAM;
 	EARLYABORT;

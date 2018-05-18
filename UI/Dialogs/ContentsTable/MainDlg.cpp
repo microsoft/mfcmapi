@@ -24,7 +24,7 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/GlobalCache.h>
 
-static wstring CLASS = L"CMainDlg";
+static std::wstring CLASS = L"CMainDlg";
 
 CMainDlg::CMainDlg(
 	_In_ CParentWnd* pParentWnd,
@@ -1134,7 +1134,7 @@ void CMainDlg::OnLoadMAPI()
 	WC_D(cchDllPath, GetSystemDirectoryW(szDLLPath, _countof(szDLLPath)));
 	if (cchDllPath < _countof(szDLLPath))
 	{
-		auto szFullPath = wstring(szDLLPath) + L"\\mapi32.dll";
+		auto szFullPath = std::wstring(szDLLPath) + L"\\mapi32.dll";
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_PATH, szFullPath, false));
 	}
 
@@ -1275,7 +1275,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 		IDS_QUERYDEFMSGOPT,
 		IDS_ADDRESSTYPEPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, wstring(L"EX"), false)); // STRING_OK
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1304,9 +1304,9 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 
 			if (lpOptions)
 			{
-				wstring szPropString;
-				wstring szProp;
-				wstring szAltProp;
+				std::wstring szPropString;
+				std::wstring szProp;
+				std::wstring szAltProp;
 				for (ULONG i = 0; i < cValues; i++)
 				{
 					InterpretProp(&lpOptions[i], &szProp, &szAltProp);
@@ -1339,7 +1339,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 		IDS_QUERYDEFRECIPOPT,
 		IDS_ADDRESSTYPEPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, wstring(L"EX"), false)); // STRING_OK
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1369,9 +1369,9 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 
 			if (lpOptions)
 			{
-				wstring szPropString;
-				wstring szProp;
-				wstring szAltProp;
+				std::wstring szPropString;
+				std::wstring szProp;
+				std::wstring szAltProp;
 				for (ULONG i = 0; i < cValues; i++)
 				{
 					InterpretProp(&lpOptions[i], &szProp, &szAltProp);
@@ -1571,7 +1571,7 @@ void CMainDlg::OnLaunchProfileWizard()
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_SERVICE, wstring(L"MSEMS"), false)); // STRING_OK
+	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1945,7 +1945,7 @@ void CMainDlg::OnComputeGivenStoreHash()
 
 			auto dwEIDHash = ComputeStoreHash(lpItemEID->cb, lpItemEID->lpb, szPath, wzPath, fPublicExchangeStore);
 
-			wstring szHash;
+			std::wstring szHash;
 			if (dwSigHash)
 			{
 				szHash = strings::formatmessage(IDS_STOREHASHDOUBLEVAL, dwEIDHash, dwSigHash);

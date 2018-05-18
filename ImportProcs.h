@@ -12,14 +12,14 @@ extern LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent;
 extern LPMSIGETFILEVERSION pfnMsiGetFileVersion;
 extern LPSHGETPROPERTYSTOREFORWINDOW pfnSHGetPropertyStoreForWindow;
 
-_Check_return_ HMODULE LoadFromSystemDir(_In_ const wstring& szDLLName);
-_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const wstring& szDLLName);
+_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName);
+_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring& szDLLName);
 
-_Check_return_ HMODULE MyLoadLibraryW(_In_ const wstring& lpszLibFileName);
+_Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName);
 
 void ImportProcs();
 
-wstring GetMAPIPath(const wstring& szClient);
+std::wstring GetMAPIPath(const std::wstring& szClient);
 
 // Exported from StubUtils.cpp
 HMODULE GetMAPIHandle();
@@ -28,7 +28,7 @@ void ForceOutlookMAPI(bool fForce);
 void ForceSystemMAPI(bool fForce);
 void SetMAPIHandle(HMODULE hinstMAPI);
 HMODULE GetPrivateMAPI();
-wstring GetComponentPath(const wstring& szComponent, const wstring& szQualifier, bool fInstall);
+std::wstring GetComponentPath(const std::wstring& szComponent, const std::wstring& szQualifier, bool fInstall);
 
 // Keep this in sync with g_pszOutlookQualifiedComponents
 #define oqcOfficeBegin 0
@@ -43,11 +43,11 @@ wstring GetComponentPath(const wstring& szComponent, const wstring& szQualifier,
 extern WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH];
 
 // Looks up Outlook's path given its qualified component guid
-wstring GetOutlookPath(_In_ const wstring& szCategory, _Out_opt_ bool* lpb64);
+std::wstring GetOutlookPath(_In_ const std::wstring& szCategory, _Out_opt_ bool* lpb64);
 
-vector<wstring> GetMAPIPaths();
-wstring GetInstalledOutlookMAPI(int iOutlook);
-wstring GetMAPISystemDir();
+vector<std::wstring> GetMAPIPaths();
+std::wstring GetInstalledOutlookMAPI(int iOutlook);
+std::wstring GetMAPISystemDir();
 
 _Check_return_ STDAPI HrCopyRestriction(
 	_In_ LPSRestriction lpResSrc, // source restriction ptr
@@ -65,7 +65,7 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateBuffer,
 	_In_ LPFREEBUFFER lpFreeBuffer,
 	ULONG ulFlags,
-	_In_ const wstring& lpszFileName,
+	_In_ const std::wstring& lpszFileName,
 	_Out_ LPSTREAM* lppStream);
 
 void WINAPI MyHeapSetInformation(_In_opt_ HANDLE HeapHandle,

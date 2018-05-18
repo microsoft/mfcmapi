@@ -21,7 +21,7 @@
 #include "Editors/DbgView.h"
 #include "Editors/Options.h"
 
-static wstring CLASS = L"CBaseDialog";
+static std::wstring CLASS = L"CBaseDialog";
 
 CBaseDialog::CBaseDialog(
 	_In_ CParentWnd* pParentWnd,
@@ -542,7 +542,7 @@ void CBaseDialog::OnSize(UINT/* nType*/, int cx, int cy)
 	}
 }
 
-void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, _In_ const wstring& szMsg)
+void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, _In_ const std::wstring& szMsg)
 {
 	if (nPos < STATUSBARNUMPANES) m_StatusMessages[nPos] = szMsg;
 
@@ -556,14 +556,14 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 
 void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1)
 {
-	wstring szParam1;
+	std::wstring szParam1;
 	szParam1 = std::to_wstring(ulParam1);
 	UpdateStatusBarText(nPos, uidMsg, szParam1, strings::emptystring, strings::emptystring);
 }
 
-void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, wstring& szParam1, wstring& szParam2, wstring& szParam3)
+void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, std::wstring& szParam1, std::wstring& szParam2, std::wstring& szParam3)
 {
-	wstring szStatBarString;
+	std::wstring szStatBarString;
 
 	// MAPI Load paths take special handling
 	if (uidMsg >= ID_LOADMAPIMENUMIN && uidMsg <= ID_LOADMAPIMENUMAX)
@@ -600,7 +600,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 	UpdateStatusBarText(nPos, szStatBarString);
 }
 
-void CBaseDialog::UpdateTitleBarText(_In_ const wstring& szMsg) const
+void CBaseDialog::UpdateTitleBarText(_In_ const std::wstring& szMsg) const
 {
 	auto szTitle = strings::formatmessage(IDS_TITLEBARMESSAGE, m_szTitle.c_str(), szMsg.c_str());
 
@@ -616,7 +616,7 @@ void CBaseDialog::UpdateTitleBarText() const
 	::SetWindowTextW(m_hWnd, szTitle.c_str());
 }
 
-void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const wstring& status)
+void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const std::wstring& status)
 {
 	(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, pane, reinterpret_cast<LPARAM>(status.c_str()));
 }
@@ -625,7 +625,7 @@ void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const wstri
 _Check_return_ LRESULT CBaseDialog::msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam)
 {
 	auto iPane = static_cast<__StatusPaneEnum>(wParam);
-	wstring szStr = reinterpret_cast<LPWSTR>(lParam);
+	std::wstring szStr = reinterpret_cast<LPWSTR>(lParam);
 	UpdateStatusBarText(iPane, szStr);
 
 	return S_OK;
@@ -644,13 +644,13 @@ void CBaseDialog::OnHexEditor()
 	new CHexEditor(m_lpParent, m_lpMapiObjects);
 }
 
-wstring GetOutlookVersionString()
+std::wstring GetOutlookVersionString()
 {
 	auto hRes = S_OK;
 
 	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return strings::emptystring;
 
-	wstring szOut;
+	std::wstring szOut;
 
 	for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
 	{

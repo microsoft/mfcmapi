@@ -23,7 +23,7 @@ void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin
 	}
 	else if (lpAllProps)
 	{
-		wstring szBin;
+		std::wstring szBin;
 		if (lpSectBin)
 		{
 			szBin = strings::BinToHexString(lpSectBin, false);
@@ -140,7 +140,7 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 	OutputToFile(fProfile, L"</service>\n");
 }
 
-void ExportProfile(_In_ const string& szProfile, _In_ const wstring& szProfileSection, bool bByteSwapped, const wstring& szFileName)
+void ExportProfile(_In_ const std::string& szProfile, _In_ const std::wstring& szProfileSection, bool bByteSwapped, const std::wstring& szFileName)
 {
 	if (szProfile.empty()) return;
 

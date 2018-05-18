@@ -6,7 +6,7 @@ struct HeaderData
 	ULONG ulTagArrayRow;
 	ULONG ulPropTag;
 	bool bIsAB;
-	wstring szTipString;
+	std::wstring szTipString;
 };
 typedef HeaderData* LPHEADERDATA;
 

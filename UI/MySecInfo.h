@@ -41,5 +41,5 @@ private:
 	LPBYTE m_lpHeader;
 	ULONG m_cbHeader;
 	eAceType m_acetype;
-	wstring m_wszObject;
+	std::wstring m_wszObject;
 };

@@ -44,7 +44,7 @@ void PCL::Parse()
 	}
 }
 
-_Check_return_ wstring PCL::ToStringInternal()
+_Check_return_ std::wstring PCL::ToStringInternal()
 {
 	auto szPCLString = strings::formatmessage(IDS_PCLHEADER, m_cXID);
 

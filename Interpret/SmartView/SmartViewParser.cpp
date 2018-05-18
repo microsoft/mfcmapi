@@ -29,7 +29,7 @@ void SmartViewParser::EnsureParsed()
 	m_bParsed = true;
 }
 
-_Check_return_ wstring SmartViewParser::ToString()
+_Check_return_ std::wstring SmartViewParser::ToString()
 {
 	if (m_Parser.Empty()) return L"";
 	EnsureParsed();
@@ -50,7 +50,7 @@ _Check_return_ wstring SmartViewParser::ToString()
 	return szParsedString;
 }
 
-_Check_return_ wstring SmartViewParser::JunkDataToString(const vector<BYTE>& lpJunkData) const
+_Check_return_ std::wstring SmartViewParser::JunkDataToString(const vector<BYTE>& lpJunkData) const
 {
 	if (!lpJunkData.size()) return strings::emptystring;
 	DebugPrint(DBGSmartView, L"Had 0x%08X = %u bytes left over.\n", static_cast<int>(lpJunkData.size()), static_cast<UINT>(lpJunkData.size()));
@@ -59,7 +59,7 @@ _Check_return_ wstring SmartViewParser::JunkDataToString(const vector<BYTE>& lpJ
 	return szJunk;
 }
 
-_Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const
+_Check_return_ std::wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const
 {
 	if (!cbJunkData || !lpJunkData) return L"";
 	DebugPrint(DBGSmartView, L"Had 0x%08X = %u bytes left over.\n", static_cast<int>(cbJunkData), static_cast<UINT>(cbJunkData));

@@ -1,24 +1,24 @@
 #pragma once
 
 // Base64 functions
-vector<BYTE> Base64Decode(const wstring& szEncodedStr);
-wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const LPBYTE lpSourceBuffer);
+vector<BYTE> Base64Decode(const std::wstring& szEncodedStr);
+std::wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const LPBYTE lpSourceBuffer);
 
-void FileTimeToString(_In_ const FILETIME& fileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString);
+void FileTimeToString(_In_ const FILETIME& fileTime, _In_ std::wstring& PropString, _In_opt_ std::wstring& AltPropString);
 
-wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
-wstring TypeToString(ULONG ulPropTag);
-wstring ProblemArrayToString(_In_ const SPropProblemArray& problems);
-wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err);
-wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error);
+std::wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
+std::wstring TypeToString(ULONG ulPropTag);
+std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems);
+std::wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err);
+std::wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error);
 
 struct NamePropNames
 {
-	wstring name;
-	wstring guid;
-	wstring dasl;
-	wstring bestPidLid;
-	wstring otherPidLid;
+	std::wstring name;
+	std::wstring guid;
+	std::wstring dasl;
+	std::wstring bestPidLid;
+	std::wstring otherPidLid;
 };
 
 NamePropNames NameIDToStrings(
@@ -28,11 +28,11 @@ NamePropNames NameIDToStrings(
 	_In_opt_ const LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 	bool bIsAB); // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 
-wstring CurrencyToString(const CURRENCY& curVal);
+std::wstring CurrencyToString(const CURRENCY& curVal);
 
-wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
-wstring ActionsToString(_In_ const ACTIONS& actions);
+std::wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
+std::wstring ActionsToString(_In_ const ACTIONS& actions);
 
-wstring AdrListToString(_In_ const ADRLIST& adrList);
+std::wstring AdrListToString(_In_ const ADRLIST& adrList);
 
-void InterpretProp(_In_ const LPSPropValue lpProp, _In_opt_ wstring* PropString, _In_opt_ wstring* AltPropString);
+void InterpretProp(_In_ const LPSPropValue lpProp, _In_opt_ std::wstring* PropString, _In_opt_ std::wstring* AltPropString);

@@ -57,20 +57,20 @@ struct MYOPTIONS
 {
 	CmdMode Mode;
 	ULONG ulOptions;
-	wstring lpszUnswitchedOption;
-	wstring lpszProfile;
+	std::wstring lpszUnswitchedOption;
+	std::wstring lpszProfile;
 	ULONG ulTypeNum;
 	ULONG ulSVParser;
-	wstring lpszInput;
-	wstring lpszOutput;
-	wstring lpszSubject;
-	wstring lpszMessageClass;
-	wstring lpszFolderPath;
-	wstring lpszFid;
-	wstring lpszMid;
-	wstring lpszFlagName;
-	wstring lpszVersion;
-	wstring lpszProfileSection;
+	std::wstring lpszInput;
+	std::wstring lpszOutput;
+	std::wstring lpszSubject;
+	std::wstring lpszMessageClass;
+	std::wstring lpszFolderPath;
+	std::wstring lpszFid;
+	std::wstring lpszMid;
+	std::wstring lpszFlagName;
+	std::wstring lpszVersion;
+	std::wstring lpszProfileSection;
 	ULONG ulStore;
 	ULONG ulFolder;
 	ULONG ulMAPIMIMEFlags;
@@ -90,7 +90,7 @@ struct MYOPTIONS
 	MYOPTIONS();
 };
 
-_Check_return_ HRESULT MrMAPILogonEx(const wstring& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession);
+_Check_return_ HRESULT MrMAPILogonEx(const std::wstring& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession);
 _Check_return_ HRESULT OpenExchangeOrDefaultMessageStore(
 							 _In_ LPMAPISESSION lpMAPISession,
 							 _Deref_out_opt_ LPMDB* lppMDB);

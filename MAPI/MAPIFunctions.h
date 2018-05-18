@@ -38,12 +38,12 @@ _Check_return_ HRESULT CopyStringW(_Deref_out_z_ LPWSTR* lpszDestination, _In_z_
 #define CopyString CopyStringA
 #endif
 _Check_return_ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
-	_In_ const wstring& szString,
+	_In_ const std::wstring& szString,
 	ULONG ulFuzzyLevel,
 	_In_opt_ LPVOID lpParent,
 	_Deref_out_opt_ LPSRestriction* lppRes);
 _Check_return_ HRESULT CreateRangeRestriction(ULONG ulPropTag,
-	_In_ const wstring& szString,
+	_In_ const std::wstring& szString,
 	_In_opt_ LPVOID lpParent,
 	_Deref_out_opt_ LPSRestriction* lppRes);
 _Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
@@ -73,10 +73,10 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 _Check_return_ HRESULT SendTestMessage(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMAPIFOLDER lpFolder,
-	_In_ const wstring& szRecipient,
-	_In_ const wstring& szBody,
-	_In_ const wstring& szSubject,
-	_In_ const wstring& szClass);
+	_In_ const std::wstring& szRecipient,
+	_In_ const std::wstring& szBody,
+	_In_ const std::wstring& szSubject,
+	_In_ const std::wstring& szClass);
 _Check_return_ HRESULT WrapStreamForRTF(
 	_In_ LPSTREAM lpCompressedRTFStream,
 	bool bUseWrapEx,
@@ -91,8 +91,8 @@ _Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPr
 
 _Check_return_ bool CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropType);
 _Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_count_(cbStoreEID) LPBYTE pbStoreEID, _In_opt_z_ LPCSTR pszFileName, _In_opt_z_ LPCWSTR pwzFileName, bool bPublicStore);
-_Check_return_ wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID);
-_Check_return_ wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer);
+_Check_return_ std::wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID);
+_Check_return_ std::wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer);
 
 HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 	_In_ MAPIUID const * const puidService,
@@ -156,7 +156,7 @@ STDMETHODIMP GetDefaultFolderEID(
 	_Out_opt_ ULONG* lpcbeid,
 	_Deref_out_opt_ LPENTRYID* lppeid);
 
-wstring GetTitle(LPMAPIPROP lpMAPIProp);
+std::wstring GetTitle(LPMAPIPROP lpMAPIProp);
 bool UnwrapContactEntryID(_In_ ULONG cbIn, _In_ LPBYTE lpbIn, _Out_ ULONG* lpcbOut, _Out_ LPBYTE* lppbOut);
 
 LPSPropTagArray GetExcludedTags(_In_opt_ LPSPropTagArray lpTagArray, _In_opt_ LPMAPIPROP lpProp, bool bIsAB);

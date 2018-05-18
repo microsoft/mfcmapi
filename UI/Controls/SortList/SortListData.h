@@ -30,7 +30,7 @@ public:
 	void InitializeComment(_In_ LPSPropValue lpOldProp);
 	void InitializeBinary(_In_ LPSBinary lpOldBin);
 
-	wstring szSortText;
+	std::wstring szSortText;
 	ULARGE_INTEGER ulSortValue;
 
 	ContentsData* Contents() const;
