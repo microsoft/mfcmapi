@@ -54,7 +54,7 @@ namespace strings
 		g_testInstance = hInstance;
 	}
 
-	std::wstring strings::loadstring(DWORD dwID)
+	std::wstring loadstring(DWORD dwID)
 	{
 		std::wstring fmtString;
 		LPWSTR buffer = nullptr;
@@ -97,7 +97,7 @@ namespace strings
 	}
 
 	// Takes format strings with %1 %2 %3...
-	std::wstring strings::formatmessage(DWORD dwID, ...)
+	std::wstring formatmessage(DWORD dwID, ...)
 	{
 		va_list argList;
 		va_start(argList, dwID);
@@ -107,7 +107,7 @@ namespace strings
 	}
 
 	// Takes format strings with %1 %2 %3...
-	std::wstring strings::formatmessage(LPCWSTR szMsg, ...)
+	std::wstring formatmessage(LPCWSTR szMsg, ...)
 	{
 		va_list argList;
 		va_start(argList, szMsg);
@@ -127,7 +127,7 @@ namespace strings
 
 	std::string wstringTostring(const std::wstring& src)
 	{
-		return std::string (src.begin(), src.end());
+		return std::string(src.begin(), src.end());
 	}
 
 	std::wstring stringTowstring(const std::string & src)
@@ -260,7 +260,7 @@ namespace strings
 	std::wstring TrimString(const std::wstring& szString)
 	{
 		const auto first = szString.find_first_not_of(' ');
-		if (first == std::string ::npos)
+		if (first == std::string::npos)
 			return strings::emptystring;
 		const auto last = szString.find_last_not_of(' ');
 		return szString.substr(first, last - first + 1);

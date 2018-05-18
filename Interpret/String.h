@@ -2,23 +2,18 @@
 #include <string>
 #include <vector>
 
-// Enable this macro to build with parameter checking for format()
-// Do NOT check in with this macro enabled!
-//#define CHECKFORMATPARAMS
-
-namespace std
+namespace strings
 {
+	// Enable this macro to build with parameter checking for format()
+	// Do NOT check in with this macro enabled!
+	//#define CHECKFORMATPARAMS
+
 #ifdef _UNICODE
 	typedef std::wstring tstring;
 #else
-	typedef string tstring;
+	typedef std::string tstring;
 #endif
-}
 
-using std::tstring;
-
-namespace strings
-{
 	extern std::wstring emptystring;
 	void setTestInstance(HINSTANCE hInstance);
 	std::wstring loadstring(DWORD dwID);
