@@ -2,7 +2,7 @@
 
 // Base64 functions
 std::vector<BYTE> Base64Decode(const std::wstring& szEncodedStr);
-std::wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const LPBYTE lpSourceBuffer);
+std::wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const BYTE* lpSourceBuffer);
 
 void FileTimeToString(_In_ const FILETIME& fileTime, _In_ std::wstring& PropString, _In_opt_ std::wstring& AltPropString);
 
@@ -25,14 +25,14 @@ NamePropNames NameIDToStrings(
 	ULONG ulPropTag, // optional 'original' prop tag
 	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-	_In_opt_ const LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+	_In_opt_ const _SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 	bool bIsAB); // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 
 std::wstring CurrencyToString(const CURRENCY& curVal);
 
-std::wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
+std::wstring RestrictionToString(_In_ const _SRestriction* lpRes, _In_opt_ LPMAPIPROP lpObj);
 std::wstring ActionsToString(_In_ const ACTIONS& actions);
 
 std::wstring AdrListToString(_In_ const ADRLIST& adrList);
 
-void InterpretProp(_In_ const LPSPropValue lpProp, _In_opt_ std::wstring* PropString, _In_opt_ std::wstring* AltPropString);
+void InterpretProp(_In_ const _SPropValue* lpProp, _In_opt_ std::wstring* PropString, _In_opt_ std::wstring* AltPropString);

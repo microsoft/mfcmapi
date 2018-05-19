@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "MultiValuePropertyEditor.h"
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/SmartView/SmartView.h>
@@ -30,7 +30,7 @@ CMultiValuePropertyEditor::CMultiValuePropertyEditor(
 	m_ulPropTag = ulPropTag;
 	m_lpsInputValue = lpsPropValue;
 
-	auto szPromptPostFix = strings::format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+	const auto szPromptPostFix = strings::format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 	SetPromptPostFix(szPromptPostFix);
 
 	InitPropertyControls();
@@ -44,12 +44,12 @@ CMultiValuePropertyEditor::~CMultiValuePropertyEditor()
 
 BOOL CMultiValuePropertyEditor::OnInitDialog()
 {
-	auto bRet = CEditor::OnInitDialog();
+	const auto bRet = CEditor::OnInitDialog();
 
 	ReadMultiValueStringsFromProperty();
 	ResizeList(0, false);
 
-	auto smartView = InterpretPropSmartView2(
+	const auto smartView = smartview::InterpretPropSmartView2(
 		m_lpsInputValue,
 		m_lpMAPIProp,
 		nullptr,
@@ -57,11 +57,11 @@ BOOL CMultiValuePropertyEditor::OnInitDialog()
 		m_bIsAB,
 		true);
 
-	auto iStructType = smartView.first;
+	const auto iStructType = smartView.first;
 	auto szSmartView = smartView.second;
 	if (!szSmartView.empty())
 	{
-		auto lpPane = static_cast<SmartViewPane*>(GetPane(1));
+		auto lpPane = dynamic_cast<SmartViewPane*>(GetPane(1));
 		if (lpPane)
 		{
 			lpPane->SetParser(iStructType);
@@ -114,7 +114,7 @@ void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty() const
 	if (!(PROP_TYPE(m_lpsInputValue->ulPropTag) & MV_FLAG)) return;
 
 	// All the MV structures are basically the same, so we can cheat when we pull the count
-	auto cValues = m_lpsInputValue->Value.MVi.cValues;
+	const auto cValues = m_lpsInputValue->Value.MVi.cValues;
 	for (ULONG iMVCount = 0; iMVCount < cValues; iMVCount++)
 	{
 		auto lpData = InsertListRow(0, iMVCount, std::to_wstring(iMVCount));
@@ -173,7 +173,7 @@ void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue(_In_ LPVOID l
 	if (!lpParent || !lpsProp) return;
 
 	auto hRes = S_OK;
-	auto ulNumVals = GetListCount(0);
+	const auto ulNumVals = GetListCount(0);
 
 	lpsProp->ulPropTag = m_ulPropTag;
 	lpsProp->dwAlignPad = NULL;
@@ -236,7 +236,7 @@ void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue(_In_ LPVOID l
 	// Now write our data into the space we allocated
 	for (ULONG iMVCount = 0; iMVCount < ulNumVals; iMVCount++)
 	{
-		auto lpData = GetListRowData(0, iMVCount);
+		const auto lpData = GetListRowData(0, iMVCount);
 
 		if (lpData && lpData->MV())
 		{
@@ -311,7 +311,7 @@ void CMultiValuePropertyEditor::WriteSPropValueToObject() const
 // Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!
 _Check_return_ LPSPropValue CMultiValuePropertyEditor::DetachModifiedSPropValue()
 {
-	auto m_lpRet = m_lpsOutputValue;
+	const auto m_lpRet = m_lpsOutputValue;
 	m_lpsOutputValue = nullptr;
 	return m_lpRet;
 }
@@ -370,7 +370,7 @@ void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iM
 	if (PT_MV_LONG == PROP_TYPE(m_ulPropTag) ||
 		PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
 	{
-		auto szSmartView = InterpretPropSmartView(
+		auto szSmartView = smartview::InterpretPropSmartView(
 			lpProp,
 			m_lpMAPIProp,
 			nullptr,
@@ -385,7 +385,7 @@ void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iM
 void CMultiValuePropertyEditor::UpdateSmartView() const
 {
 	auto hRes = S_OK;
-	auto lpPane = static_cast<SmartViewPane*>(GetPane(1));
+	auto lpPane = dynamic_cast<SmartViewPane*>(GetPane(1));
 	if (lpPane)
 	{
 		LPSPropValue lpsProp = nullptr;
@@ -400,13 +400,13 @@ void CMultiValuePropertyEditor::UpdateSmartView() const
 			switch (PROP_TYPE(m_ulPropTag))
 			{
 			case PT_MV_LONG:
-				szSmartView = InterpretPropSmartView(lpsProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true);
+				szSmartView = smartview::InterpretPropSmartView(lpsProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true);
 				break;
 			case PT_MV_BINARY:
-				auto iStructType = static_cast<__ParsingTypeEnum>(lpPane->GetDropDownSelectionValue());
+				const auto iStructType = static_cast<__ParsingTypeEnum>(lpPane->GetDropDownSelectionValue());
 				if (iStructType)
 				{
-					szSmartView = InterpretMVBinaryAsString(lpsProp->Value.MVbin, iStructType, m_lpMAPIProp);
+					szSmartView = smartview::InterpretMVBinaryAsString(lpsProp->Value.MVbin, iStructType, m_lpMAPIProp);
 				}
 				break;
 			}
@@ -427,13 +427,13 @@ _Check_return_ ULONG CMultiValuePropertyEditor::HandleChange(UINT nID)
 
 	// We check against the list pane first so we can track if it handled the change,
 	// because if it did, we're going to recalculate smart view.
-	auto lpPane = static_cast<ListPane*>(GetPane(0));
+	auto lpPane = dynamic_cast<ListPane*>(GetPane(0));
 	if (lpPane)
 	{
 		i = lpPane->HandleChange(nID);
 	}
 
-	if (-1 == i)
+	if (i == static_cast<ULONG>(-1))
 	{
 		i = CEditor::HandleChange(nID);
 	}

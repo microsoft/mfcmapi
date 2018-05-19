@@ -1,25 +1,25 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 
-#include "MrMAPI/MrMAPI.h"
+#include "MrMapi/MrMAPI.h"
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
 #include <Interpret/InterpretProp2.h>
-#include "MrMAPI/MMAcls.h"
-#include "MrMAPI/MMContents.h"
-#include "MrMAPI/MMErr.h"
-#include "MrMAPI/MMFidMid.h"
-#include "MrMAPI/MMFolder.h"
-#include "MrMAPI/MMProfile.h"
-#include "MrMAPI/MMPropTag.h"
-#include "MrMAPI/MMRules.h"
-#include "MrMAPI/MMSmartView.h"
-#include "MrMAPI/MMStore.h"
-#include "MrMAPI/MMMapiMime.h"
-#include <shlwapi.h>
+#include "MrMapi/MMAcls.h"
+#include "MrMapi/MMContents.h"
+#include "MrMapi/MMErr.h"
+#include "MrMapi/MMFidMid.h"
+#include "MrMapi/MMFolder.h"
+#include "MrMapi/MMProfile.h"
+#include "MrMapi/MMPropTag.h"
+#include "MrMapi/MMRules.h"
+#include "MrMapi/MMSmartView.h"
+#include "MrMapi/MMStore.h"
+#include "MrMapi/MMMapiMime.h"
+#include <Shlwapi.h>
 #include "ImportProcs.h"
 #include <MAPI/MAPIStoreFunctions.h>
-#include "MrMAPI/MMPst.h"
-#include "MrMAPI/MMReceiveFolder.h"
+#include "MrMapi/MMPst.h"
+#include "MrMapi/MMReceiveFolder.h"
 #include <MAPI/NamedPropCache.h>
 
 // Initialize MFC for LoadString support later on
@@ -35,7 +35,7 @@ _Check_return_ HRESULT MrMAPILogonEx(const std::wstring& lpszProfile, _Deref_out
 	if (lpszProfile.empty()) ulFlags |= MAPI_USE_DEFAULT;
 
 	// TODO: profile parameter should be ansi in ansi builds
-	WC_MAPI(MAPILogonEx(NULL, (LPTSTR)(lpszProfile.empty() ? NULL : lpszProfile.c_str()), NULL,
+	WC_MAPI(MAPILogonEx(NULL, LPTSTR((lpszProfile.empty() ? NULL : lpszProfile.c_str())), NULL,
 		ulFlags,
 		lppSession));
 	return hRes;
@@ -212,7 +212,7 @@ void DisplayUsage(BOOL bFull)
 		printf("%6u dispids\n", static_cast<int>(NameIDArray.size()));
 		printf("%6u types\n", static_cast<int>(PropTypeArray.size()));
 		printf("%6u guids\n", static_cast<int>(PropGuidArray.size()));
-		printf("%6u errors\n", g_ulErrorArray);
+		printf("%6lu errors\n", g_ulErrorArray);
 		printf("%6u smart view parsers\n", static_cast<int>(SmartViewParserTypeArray.size()) - 1);
 		printf("\n");
 	}
@@ -437,7 +437,7 @@ void DisplayUsage(BOOL bFull)
 		// Print smart view options
 		for (ULONG i = 1; i < SmartViewParserTypeArray.size(); i++)
 		{
-			_tprintf(_T("   %2u %ws\n"), i, SmartViewParserTypeArray[i].lpszName);
+			_tprintf(_T("   %2lu %ws\n"), i, SmartViewParserTypeArray[i].lpszName);
 		}
 
 		printf("\n");
@@ -445,7 +445,7 @@ void DisplayUsage(BOOL bFull)
 		// Print Folders
 		for (ULONG i = 1; i < NUM_DEFAULT_PROPS; i++)
 		{
-			printf("   %2u %ws\n", i, FolderNames[i]);
+			printf("   %2lu %ws\n", i, FolderNames[i]);
 		}
 
 		printf("\n");
@@ -572,9 +572,9 @@ MYOPTIONS::MYOPTIONS()
 
 OptParser* GetParser(__CommandLineSwitch Switch)
 {
-	for (auto i = 0; i < _countof(g_Parsers); i++)
+	for (auto& g_Parser : g_Parsers)
 	{
-		if (Switch == g_Parsers[i].Switch) return &g_Parsers[i];
+		if (Switch == g_Parser.Switch) return &g_Parser;
 	}
 
 	return nullptr;
@@ -627,8 +627,8 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 
 	for (auto i = 1; i < argc; i++)
 	{
-		auto iSwitch = ParseArgument(argv[i]);
-		auto opt = GetParser(iSwitch);
+		const auto iSwitch = ParseArgument(argv[i]);
+		const auto opt = GetParser(iSwitch);
 
 		if (opt)
 		{
@@ -974,7 +974,7 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 		return true;
 	}
 
-	auto ulVersion = strings::wstringToUlong(lpszVersion, 10);
+	const auto ulVersion = strings::wstringToUlong(lpszVersion, 10);
 	if (ulVersion == 0)
 	{
 		DebugPrint(DBGGeneric, L"Got a string\n");
@@ -1045,7 +1045,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 	RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
 
 	MYOPTIONS ProgOpts;
-	auto bGoodCommandLine = ParseArgs(argc, argv, &ProgOpts);
+	const auto bGoodCommandLine = ParseArgs(argc, argv, &ProgOpts);
 
 	// Must be first after ParseArgs
 	if (ProgOpts.ulOptions & OPT_INITMFC)
@@ -1088,7 +1088,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 			WC_MAPI(MAPIInitialize(NULL));
 			if (FAILED(hRes))
 			{
-				printf("Error initializing MAPI: 0x%08x\n", hRes);
+				printf("Error initializing MAPI: 0x%08lx\n", hRes);
 			}
 			else
 			{
@@ -1099,14 +1099,14 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 		if (bMAPIInit && ProgOpts.ulOptions & OPT_NEEDMAPILOGON)
 		{
 			WC_H(MrMAPILogonEx(ProgOpts.lpszProfile, &ProgOpts.lpMAPISession));
-			if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08x\n", hRes);
+			if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08lx\n", hRes);
 		}
 
 		// If they need a folder get it and store at the same time from the folder id
 		if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & OPT_NEEDFOLDER)
 		{
 			WC_H(HrMAPIOpenStoreAndFolder(ProgOpts.lpMAPISession, ProgOpts.ulFolder, ProgOpts.lpszFolderPath, &ProgOpts.lpMDB, &ProgOpts.lpFolder));
-			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08x\n", hRes);
+			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
 		}
 		else if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & OPT_NEEDSTORE)
 		{
@@ -1116,13 +1116,13 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 				// Decrement by one here on the index since we incremented during parameter parsing
 				// This is so zero indicate they did not specify a store
 				WC_H(OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1, &ProgOpts.lpMDB));
-				if (FAILED(hRes)) printf("OpenStore returned an error: 0x%08x\n", hRes);
+				if (FAILED(hRes)) printf("OpenStore returned an error: 0x%08lx\n", hRes);
 			}
 			else
 			{
 				// If they needed a store but didn't specify, get the default one
 				WC_H(OpenExchangeOrDefaultMessageStore(ProgOpts.lpMAPISession, &ProgOpts.lpMDB));
-				if (FAILED(hRes)) printf("OpenExchangeOrDefaultMessageStore returned an error: 0x%08x\n", hRes);
+				if (FAILED(hRes)) printf("OpenExchangeOrDefaultMessageStore returned an error: 0x%08lx\n", hRes);
 			}
 		}
 

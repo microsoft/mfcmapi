@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <IO/MFCOutput.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
@@ -7,7 +7,9 @@
 #include <Interpret/SmartView/SmartView.h>
 #include <MAPI/ColumnTags.h>
 #include "Property/ParseProperty.h"
-#include <UI/Dialogs/Editors/DbgView.h>
+#ifndef MRMAPI
+#include "UI/Dialogs/Editors/DbgView.h"
+#endif
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
@@ -581,7 +583,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.newmail.ulMessageFlags = 0x%08X", i,
 				lpNotifications[i].info.newmail.ulMessageFlags);
-			szPropNum = InterpretNumberAsStringProp(lpNotifications[i].info.newmail.ulMessageFlags, PR_MESSAGE_FLAGS);
+			szPropNum = smartview::InterpretNumberAsStringProp(lpNotifications[i].info.newmail.ulMessageFlags, PR_MESSAGE_FLAGS);
 			if (!szPropNum.empty())
 			{
 				Outputf(ulDbgLvl, fFile, false, L" = %ws", szPropNum.c_str());
@@ -642,7 +644,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.ulObjType = 0x%08X", i,
 				lpNotifications[i].info.obj.ulObjType);
 
-			szPropNum = InterpretNumberAsStringProp(lpNotifications[i].info.obj.ulObjType, PR_OBJECT_TYPE);
+			szPropNum = smartview::InterpretNumberAsStringProp(lpNotifications[i].info.obj.ulObjType, PR_OBJECT_TYPE);
 			if (!szPropNum.empty())
 			{
 				Outputf(ulDbgLvl, fFile, false, L" = %ws", szPropNum.c_str());
@@ -743,7 +745,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	auto prop = ParseProperty(lpProp);
 	Output(ulDbgLvl, fFile, false, strings::StripCarriage(prop.toXML(iIndent)));
 
-	auto szSmartView = InterpretPropSmartView(
+	auto szSmartView = smartview::InterpretPropSmartView(
 		lpProp,
 		lpObj,
 		nullptr,
@@ -805,7 +807,7 @@ void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_c
 	MAPIFreeBuffer(lpSortedProps);
 }
 
-void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRow lpSRow, _In_opt_ LPMAPIPROP lpObj)
+void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const _SRow* lpSRow, _In_opt_ LPMAPIPROP lpObj)
 {
 	CHKPARAM;
 	EARLYABORT;

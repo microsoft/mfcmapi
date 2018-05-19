@@ -1,7 +1,7 @@
 // Routines used in dumping the contents of the Exchange store
 // in to a log file
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
@@ -70,7 +70,7 @@ void CDumpStore::DisableEmbeddedAttachments()
 void CDumpStore::BeginMailboxTableWork(_In_ const std::wstring& szExchangeServerName)
 {
 	if (m_bOutputList) return;
-	auto szTableContentsFile = strings::format(
+	const auto szTableContentsFile = strings::format(
 		L"%ws\\MAILBOX_TABLE.xml", // STRING_OK
 		m_szMailboxTablePathRoot.c_str());
 	m_fMailboxTable = MyOpenFile(szTableContentsFile, true);
@@ -81,18 +81,18 @@ void CDumpStore::BeginMailboxTableWork(_In_ const std::wstring& szExchangeServer
 	}
 }
 
-void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const LPSRow lpSRow, ULONG /*ulCurRow*/)
+void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const _SRow* lpSRow, ULONG /*ulCurRow*/)
 {
 	if (!lpSRow || !m_fMailboxTable) return;
 	if (m_bOutputList) return;
 	auto hRes = S_OK;
 
-	auto lpEmailAddress = PpropFindProp(
+	const auto lpEmailAddress = PpropFindProp(
 		lpSRow->lpProps,
 		lpSRow->cValues,
 		PR_EMAIL_ADDRESS);
 
-	auto lpDisplayName = PpropFindProp(
+	const auto lpDisplayName = PpropFindProp(
 		lpSRow->lpProps,
 		lpSRow->cValues,
 		PR_DISPLAY_NAME);
@@ -114,7 +114,7 @@ void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const LPSRow lp
 	// build a path for our store's folder output:
 	if (CheckStringProp(lpEmailAddress, PT_TSTRING) && CheckStringProp(lpDisplayName, PT_TSTRING))
 	{
-		auto szTemp = strings::SanitizeFileName(strings::LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
+		const auto szTemp = strings::SanitizeFileName(strings::LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
 
 		m_szFolderPathRoot = m_szMailboxTablePathRoot + L"\\" + szTemp;
 
@@ -158,7 +158,7 @@ void CDumpStore::BeginFolderWork()
 
 	// Dump the folder props to a file
 	// Holds file/path name for folder props
-	auto szFolderPropsFile = m_szFolderPath + L"FOLDER_PROPS.xml"; // STRING_OK
+	const auto szFolderPropsFile = m_szFolderPath + L"FOLDER_PROPS.xml"; // STRING_OK
 	m_fFolderProps = MyOpenFile(szFolderPropsFile, true);
 	if (!m_fFolderProps) return;
 
@@ -190,7 +190,7 @@ void CDumpStore::BeginFolderWork()
 	OutputToFile(m_fFolderProps, L"<HierarchyTable>\n");
 }
 
-void CDumpStore::DoFolderPerHierarchyTableRowWork(_In_ const LPSRow lpSRow)
+void CDumpStore::DoFolderPerHierarchyTableRowWork(_In_ const _SRow* lpSRow)
 {
 	if (m_bOutputList) return;
 	if (!m_fFolderProps || !lpSRow) return;
@@ -222,7 +222,7 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 	}
 
 	// Holds file/path name for contents table output
-	auto szContentsTableFile =
+	const auto szContentsTableFile =
 		ulFlags & MAPI_ASSOCIATED ? m_szFolderPath + L"ASSOCIATED_CONTENTS_TABLE.xml" : m_szFolderPath + L"CONTENTS_TABLE.xml"; // STRING_OK
 	m_fFolderContents = MyOpenFile(szContentsTableFile, true);
 	if (m_fFolderContents)
@@ -236,7 +236,7 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 
 // Outputs a single message's details to the screen, so as to produce a list of messages
 void OutputMessageList(
-	_In_ const LPSRow lpSRow,
+	_In_ const _SRow* lpSRow,
 	_In_ const std::wstring& szFolderPath,
 	bool bOutputMSG)
 {
@@ -266,7 +266,7 @@ void OutputMessageList(
 		lpRecordKey = &lpTemp->Value.bin;
 	}
 
-	auto lpMessageClass = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, CHANGE_PROP_TYPE(PR_MESSAGE_CLASS, PT_UNSPECIFIED));
+	const auto lpMessageClass = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, CHANGE_PROP_TYPE(PR_MESSAGE_CLASS, PT_UNSPECIFIED));
 
 	wprintf(L"\"%ws\"", szSubj.c_str());
 	if (lpMessageClass)
@@ -288,7 +288,7 @@ void OutputMessageList(
 	wprintf(L",\"%ws\"\n", szFileName.c_str());
 }
 
-bool CDumpStore::DoContentsTablePerRowWork(_In_ const LPSRow lpSRow, ULONG ulCurRow)
+bool CDumpStore::DoContentsTablePerRowWork(_In_ const _SRow* lpSRow, ULONG ulCurRow)
 {
 	if (m_bOutputList)
 	{
@@ -500,20 +500,22 @@ void OutputMessageXML(
 				static const SizedSPropTagArray(NUMPROPS, sptCols) =
 				{
 				NUMPROPS,
-				PR_MESSAGE_CLASS_W,
-				PR_SUBJECT_W,
-				PR_SENDER_ADDRTYPE_W,
-				PR_SENDER_EMAIL_ADDRESS_W,
-				PR_MESSAGE_DELIVERY_TIME,
-				PR_ENTRYID,
-				PR_SEARCH_KEY,
-				PR_RECORD_KEY,
-				PR_INTERNET_CPID,
+					{
+						PR_MESSAGE_CLASS_W,
+						PR_SUBJECT_W,
+						PR_SENDER_ADDRTYPE_W,
+						PR_SENDER_EMAIL_ADDRESS_W,
+						PR_MESSAGE_DELIVERY_TIME,
+						PR_ENTRYID,
+						PR_SEARCH_KEY,
+						PR_RECORD_KEY,
+						PR_INTERNET_CPID
+					},
 				};
 
-				for (auto i = 0; i < NUMPROPS; i++)
+				for (unsigned long column : sptCols.aulPropTag)
 				{
-					auto lpTemp = PpropFindProp(lpAllProps, cValues, sptCols.aulPropTag[i]);
+					const auto lpTemp = PpropFindProp(lpAllProps, cValues, column);
 					if (lpTemp)
 					{
 						OutputPropertyToFile(lpMsgData->fMessageProps, lpTemp, lpMessage, bRetryStreamProps);
@@ -529,7 +531,7 @@ void OutputMessageXML(
 			OutputBody(lpMsgData->fMessageProps, lpMessage, PR_RTF_COMPRESSED, L"PR_RTF_COMPRESSED", false, NULL);
 
 			ULONG ulInCodePage = CP_ACP; // picking CP_ACP as our default
-			auto lpTemp = PpropFindProp(lpAllProps, cValues, PR_INTERNET_CPID);
+			const auto lpTemp = PpropFindProp(lpAllProps, cValues, PR_INTERNET_CPID);
 			if (lpTemp && PR_INTERNET_CPID == lpTemp->ulPropTag)
 			{
 				ulInCodePage = lpTemp->Value.l;
@@ -567,8 +569,10 @@ void OutputMessageMSG(
 	static const SizedSPropTagArray(msgNUM_COLS, msgProps) =
 	{
 	msgNUM_COLS,
-	PR_SUBJECT_W,
-	PR_RECORD_KEY
+		{
+			PR_SUBJECT_W,
+			PR_RECORD_KEY
+		}
 	};
 
 	if (!lpMessage || szFolderPath.empty()) return;
@@ -608,7 +612,7 @@ void OutputMessageMSG(
 		WC_H(SaveToMSG(
 			lpMessage,
 			szFileName,
-			fMapiUnicode ? true : false,
+			fMapiUnicode != 0,
 			nullptr,
 			false));
 	}
@@ -639,13 +643,13 @@ bool CDumpStore::BeginRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lp
 	return true;
 }
 
-void CDumpStore::DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ const LPSRow lpSRow, ULONG ulCurRow)
+void CDumpStore::DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ const _SRow* lpSRow, ULONG ulCurRow)
 {
 	if (!lpMessage || !lpData || !lpSRow) return;
 	if (m_bOutputMSG) return; // When outputting message files, no recipient work is needed
 	if (m_bOutputList) return;
 
-	auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
+	const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
 
 	OutputToFilef(lpMsgData->fMessageProps, L"<recipient num=\"0x%08X\">\n", ulCurRow);
 
@@ -671,13 +675,13 @@ bool CDumpStore::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID l
 	return true;
 }
 
-void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ const LPSRow lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow)
+void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ const _SRow* lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow)
 {
 	if (!lpMessage || !lpData || !lpSRow) return;
 	if (m_bOutputMSG) return; // When outputting message files, no attachment work is needed
 	if (m_bOutputList) return;
 
-	auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
+	const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
 
 	lpMsgData->ulCurAttNum = ulCurRow; // set this so we can pull it if this is an embedded message
 
@@ -745,7 +749,7 @@ void CDumpStore::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData
 {
 	if (m_bOutputMSG) return; // When outputting message files, no end message work is needed
 	if (m_bOutputList) return;
-	auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
+	const auto lpMsgData = static_cast<LPMESSAGEDATA>(lpData);
 
 	if (lpMsgData->fMessageProps)
 	{

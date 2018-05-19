@@ -36,7 +36,7 @@ _Check_return_ HRESULT GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
 	_Out_ ULONG* lpcPropNames,
 	_Out_ _Deref_post_cap_(*lpcPropNames) LPMAPINAMEID** lpppPropNames);
 _Check_return_ HRESULT GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
-	_In_opt_ LPSBinary lpMappingSignature,
+	_In_opt_ const _SBinary* lpMappingSignature,
 	_In_ LPSPropTagArray* lppPropTags,
 	_In_opt_ LPGUID lpPropSetGuid,
 	ULONG ulFlags,

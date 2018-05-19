@@ -1,6 +1,7 @@
 #pragma once
 
 #define GUID_ENTRY(guid) {&(guid),L#guid},
+#include "Guids.h"
 
 static GUID_ARRAY_ENTRY g_PropGuidArray[] =
 {
@@ -72,6 +73,6 @@ static GUID_ARRAY_ENTRY g_PropGuidArray[] =
 	GUID_ENTRY(muidOOP)
 	GUID_ENTRY(IID_IAttachmentSecurity)
 	GUID_ENTRY(muidEMSAB)
-	{(LPGUID) pbGlobalProfileSectionGuid, L"pbGlobalProfileSectionGuid"}, // STRING_OK
+	{LPGUID(pbGlobalProfileSectionGuid), L"pbGlobalProfileSectionGuid"}, // STRING_OK
 	GUID_ENTRY(WAB_GUID)
 };

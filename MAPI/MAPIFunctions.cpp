@@ -1,6 +1,6 @@
 // Collection of useful MAPI functions
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
 #include <MAPI/MAPIABFunctions.h>
@@ -194,7 +194,7 @@ _Check_return_ HRESULT CallOpenEntry(
 
 	if (lpUnk)
 	{
-		auto szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
+		auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 		DebugPrint(DBGGeneric, L"OnOpenEntryID: Got object of type 0x%08X = %ws\n", ulObjType, szFlags.c_str());
 		*lppUnk = lpUnk;
 	}
@@ -220,7 +220,7 @@ _Check_return_ HRESULT CallOpenEntry(
 		lpContainer,
 		lpMAPISession,
 		lpSBinary ? lpSBinary->cb : 0,
-		reinterpret_cast<LPENTRYID>(lpSBinary ? lpSBinary->lpb : 0),
+		reinterpret_cast<LPENTRYID>(lpSBinary ? lpSBinary->lpb : nullptr),
 		lpInterface,
 		ulFlags,
 		ulObjTypeRet,
@@ -628,7 +628,7 @@ _Check_return_ HRESULT CopyPropertyAsStream(_In_ LPMAPIPROP lpSourcePropObj,
 //
 // Purpose
 // Allocates a new SBinary and copies psbSrc into it
-_Check_return_ HRESULT CopySBinary(_Out_ LPSBinary psbDest, _In_ const LPSBinary psbSrc, _In_ LPVOID lpParent)
+_Check_return_ HRESULT CopySBinary(_Out_ LPSBinary psbDest, _In_  const _SBinary* psbSrc, _In_ LPVOID lpParent)
 {
 	auto hRes = S_OK;
 
@@ -1505,7 +1505,6 @@ _Check_return_ HRESULT ResendMessages(_In_ LPMAPIFOLDER lpFolder, _In_ HWND hWnd
 	auto hRes = S_OK;
 	LPMAPITABLE lpContentsTable = nullptr;
 	LPSRowSet pRows = nullptr;
-	ULONG i;
 
 	// You define a SPropTagArray array here using the SizedSPropTagArray Macro
 	// This enum will allows you to access portions of the array by a name instead of a number.
@@ -1538,7 +1537,7 @@ _Check_return_ HRESULT ResendMessages(_In_ LPMAPIFOLDER lpFolder, _In_ HWND hWnd
 
 		if (pRows)
 		{
-			if (!FAILED(hRes)) for (i = 0; i < pRows->cRows; i++)
+			if (!FAILED(hRes)) for (ULONG i = 0; i < pRows->cRows; i++)
 			{
 				LPMESSAGE lpMessage = nullptr;
 
@@ -1825,7 +1824,7 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 	if (!FAILED(hRes)) for (auto i = 0; i <= 1; i++)
 	{
 		hRes = S_OK;
-		auto ulFlags = (1 == i ? MAPI_ASSOCIATED : NULL) |
+		const auto ulFlags = (1 == i ? MAPI_ASSOCIATED : NULL) |
 			fMapiUnicode;
 
 		if (lpContentsTable) lpContentsTable->Release();
@@ -2138,7 +2137,7 @@ _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID
 	return hRes;
 }
 
-_Check_return_ bool CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropType)
+_Check_return_ bool CheckStringProp(_In_opt_ const _SPropValue* lpProp, ULONG ulPropType)
 {
 	if (PT_STRING8 != ulPropType && PT_UNICODE != ulPropType)
 	{
@@ -2164,7 +2163,7 @@ _Check_return_ bool CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropTy
 		return false;
 	}
 
-	if (NULL == lpProp->Value.LPSZ)
+	if (nullptr == lpProp->Value.LPSZ)
 	{
 		DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.LPSZ is NULL\n");
 		return false;
@@ -2197,7 +2196,7 @@ _Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_count_(cbStoreEID) L
 	// pbStoreEID is a pointer to the Entry ID
 	// cbStoreEID is the size in bytes of the Entry ID
 	auto pdw = reinterpret_cast<LPDWORD>(pbStoreEID);
-	auto cdw = cbStoreEID / sizeof(DWORD);
+	const auto cdw = cbStoreEID / sizeof(DWORD);
 
 	for (ULONG i = 0; i < cdw; i++)
 	{
@@ -2205,7 +2204,7 @@ _Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_count_(cbStoreEID) L
 	}
 
 	auto pb = reinterpret_cast<LPBYTE>(pdw);
-	auto cb = cbStoreEID % sizeof(DWORD);
+	const auto cb = cbStoreEID % sizeof(DWORD);
 
 	for (ULONG i = 0; i < cb; i++)
 	{
@@ -2268,9 +2267,9 @@ _Check_return_ std::wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE
 {
 	if (cbBuffer % 2) return strings::emptystring;
 
-	auto cbDecodedBuffer = cbBuffer / 2;
+	const auto cbDecodedBuffer = cbBuffer / 2;
 	// Allocate memory for lpDecoded
-	auto lpDecoded = new BYTE[cbDecodedBuffer];
+	const auto lpDecoded = new BYTE[cbDecodedBuffer];
 	if (!lpDecoded) return strings::emptystring;
 
 	// Subtract kwBaseOffset from every character and place result in lpDecoded
@@ -2338,7 +2337,7 @@ HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 
 			if (SUCCEEDED(hRes) && pRows && pRows->cRows)
 			{
-				auto pRow = &pRows->aRow[0];
+				const auto pRow = &pRows->aRow[0];
 
 				if (pEmsmdbUID && pRow)
 				{
@@ -2362,13 +2361,13 @@ HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 bool FExchangePrivateStore(_In_ LPMAPIUID lpmapiuid)
 {
 	if (!lpmapiuid) return false;
-	return IsEqualMAPIUID(lpmapiuid, (LPMAPIUID)pbExchangeProviderPrimaryUserGuid);
+	return IsEqualMAPIUID(lpmapiuid, LPMAPIUID(pbExchangeProviderPrimaryUserGuid));
 }
 
 bool FExchangePublicStore(_In_ LPMAPIUID lpmapiuid)
 {
 	if (!lpmapiuid) return false;
-	return IsEqualMAPIUID(lpmapiuid, (LPMAPIUID)pbExchangeProviderPublicGuid);
+	return IsEqualMAPIUID(lpmapiuid, LPMAPIUID(pbExchangeProviderPublicGuid));
 }
 
 STDMETHODIMP GetEntryIDFromMDB(LPMDB lpMDB, ULONG ulPropTag, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid)
@@ -2593,7 +2592,7 @@ bool UnwrapContactEntryID(_In_ ULONG cbIn, _In_ LPBYTE lpbIn, _Out_ ULONG* lpcbO
 	if (cbIn < sizeof(DIR_ENTRYID)) return false;
 	if (!lpcbOut || !lppbOut || !lpbIn) return false;
 
-	auto lpContabEID = reinterpret_cast<LPCONTAB_ENTRYID>(lpbIn);
+	const auto lpContabEID = reinterpret_cast<LPCONTAB_ENTRYID>(lpbIn);
 
 	switch (lpContabEID->ulType)
 	{

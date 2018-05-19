@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "BaseDialog.h"
 #include <UI/FakeSplitter.h>
 #include <MAPI/MapiObjects.h>
@@ -13,7 +13,7 @@
 #include "AboutDlg.h"
 #include <MAPI/AdviseSink.h>
 #include <Interpret/ExtraPropTags.h>
-#include <msi.h>
+#include <Msi.h>
 #include "ImportProcs.h"
 #include <Interpret/SmartView/SmartView.h>
 #include <MAPI/GlobalCache.h>
@@ -26,8 +26,7 @@ static std::wstring CLASS = L"CBaseDialog";
 CBaseDialog::CBaseDialog(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
-	ULONG ulAddInContext
-) : CMyDialog()
+	ULONG ulAddInContext)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	auto hRes = S_OK;
@@ -62,7 +61,7 @@ CBaseDialog::CBaseDialog(
 CBaseDialog::~CBaseDialog()
 {
 	TRACE_DESTRUCTOR(CLASS);
-	auto hMenu = ::GetMenu(this->m_hWnd);
+	const auto hMenu = ::GetMenu(this->m_hWnd);
 	if (hMenu)
 	{
 		DeleteMenuEntries(hMenu);
@@ -78,7 +77,7 @@ CBaseDialog::~CBaseDialog()
 
 STDMETHODIMP_(ULONG) CBaseDialog::AddRef()
 {
-	auto lCount = InterlockedIncrement(&m_cRef);
+	const auto lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	DebugPrint(DBGRefCount, L"CBaseDialog::AddRef(\"%ws\")\n", m_szTitle.c_str());
 	return lCount;
@@ -86,7 +85,7 @@ STDMETHODIMP_(ULONG) CBaseDialog::AddRef()
 
 STDMETHODIMP_(ULONG) CBaseDialog::Release()
 {
-	auto lCount = InterlockedDecrement(&m_cRef);
+	const auto lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
 	DebugPrint(DBGRefCount, L"CBaseDialog::Release(\"%ws\")\n", m_szTitle.c_str());
 	if (!lCount) delete this;
@@ -117,7 +116,7 @@ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_COMMAND:
 	{
-		auto idFrom = LOWORD(wParam);
+		const auto idFrom = LOWORD(wParam);
 		// idFrom is the menu item selected
 		if (HandleMenu(idFrom)) return S_OK;
 		break;
@@ -178,7 +177,7 @@ void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuReso
 		hMenu = ::CreateMenu();
 	}
 
-	auto hMenuOld = ::GetMenu(m_hWnd);
+	const auto hMenuOld = ::GetMenu(m_hWnd);
 	if (hMenuOld) ::DestroyMenu(hMenuOld);
 	::SetMenu(m_hWnd, hMenu);
 
@@ -190,7 +189,7 @@ void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuReso
 
 	AddMenu(hMenu, IDR_MENU_TOOLS, IDS_TOOLSMENU, static_cast<unsigned>(-1));
 
-	auto hSub = ::GetSubMenu(hMenu, 0);
+	const auto hSub = ::GetSubMenu(hMenu, 0);
 	::AppendMenu(hSub, MF_SEPARATOR, NULL, nullptr);
 	auto szExit = strings::loadstring(IDS_EXIT);
 	::AppendMenuW(hSub, MF_ENABLED | MF_STRING, IDCANCEL, szExit.c_str());
@@ -230,7 +229,7 @@ _Check_return_ bool CBaseDialog::HandleMenu(WORD wMenuSelect)
 
 void CBaseDialog::OnInitMenu(_In_opt_ CMenu* pMenu)
 {
-	auto bMAPIInitialized = CGlobalCache::getInstance().bMAPIInitialized();
+	const auto bMAPIInitialized = CGlobalCache::getInstance().bMAPIInitialized();
 
 	if (pMenu)
 	{
@@ -369,11 +368,11 @@ void CBaseDialog::OnEscHit()
 
 void CBaseDialog::OnOptions()
 {
-	auto ulNiceNamesBefore = RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
-	auto ulSuppressNotFoundBefore = RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
-	auto bNeedPropRefresh = DisplayOptionsDlg(this);
-	auto bNiceNamesChanged = ulNiceNamesBefore != RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
-	auto bSuppressNotFoundChanged = ulSuppressNotFoundBefore != RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
+	const auto ulNiceNamesBefore = RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
+	const auto ulSuppressNotFoundBefore = RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
+	const auto bNeedPropRefresh = DisplayOptionsDlg(this);
+	const auto bNiceNamesChanged = ulNiceNamesBefore != RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
+	const auto bSuppressNotFoundChanged = ulSuppressNotFoundBefore != RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
 	auto hRes = S_OK;
 	auto bResetColumns = false;
 
@@ -381,7 +380,7 @@ void CBaseDialog::OnOptions()
 	{
 		// We check if this worked so we don't refresh the prop list after resetting the top pane
 		// But, if we're a tree view, this won't work at all, so we'll still want to reset props if needed
-		bResetColumns = false != ::SendMessage(m_hWnd, WM_MFCMAPI_RESETCOLUMNS, 0, 0);
+		bResetColumns = static_cast<bool>(::SendMessage(m_hWnd, WM_MFCMAPI_RESETCOLUMNS, 0, 0));
 	}
 
 	if (!bResetColumns && bNeedPropRefresh)
@@ -404,7 +403,7 @@ void CBaseDialog::HandleCopy()
 _Check_return_ bool CBaseDialog::HandlePaste()
 {
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
-	auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+	const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
 
 	if (m_lpPropDisplay && ulStatus & BUFFER_PROPTAG && ulStatus & BUFFER_SOURCEPROPOBJ)
 	{
@@ -430,7 +429,7 @@ void CBaseDialog::OnRefreshView()
 	DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L" Not Implemented\n");
 }
 
-void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData)
+void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData) const
 {
 	auto hRes = S_OK;
 	DebugPrintEx(DBGGeneric, CLASS, L"OnUpdateSingleMAPIPropListCtrl", L"Setting item %p\n", lpMAPIProp);
@@ -468,17 +467,17 @@ void CBaseDialog::OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized)
 
 void CBaseDialog::SetStatusWidths()
 {
-	auto iData1 = !m_StatusMessages[STATUSDATA1].empty();
-	auto iData2 = !m_StatusMessages[STATUSDATA2].empty();
+	const auto iData1 = !m_StatusMessages[STATUSDATA1].empty();
+	const auto iData2 = !m_StatusMessages[STATUSDATA2].empty();
 
 	SIZE sizeData1 = { 0 };
 	SIZE sizeData2 = { 0 };
 	if (iData1 || iData2)
 	{
-		auto hdc = ::GetDC(m_hWnd);
+		const auto hdc = ::GetDC(m_hWnd);
 		if (hdc)
 		{
-			auto hfontOld = ::SelectObject(hdc, GetSegoeFontBold());
+			const auto hfontOld = ::SelectObject(hdc, GetSegoeFontBold());
 
 			if (iData1)
 			{
@@ -495,7 +494,7 @@ void CBaseDialog::SetStatusWidths()
 		}
 	}
 
-	auto nSpacing = GetSystemMetrics(SM_CXEDGE);
+	const auto nSpacing = GetSystemMetrics(SM_CXEDGE);
 
 	auto iWidthData1 = 0;
 	auto iWidthData2 = 0;
@@ -522,8 +521,8 @@ void CBaseDialog::OnSize(UINT/* nType*/, int cx, int cy)
 
 	if (hdwp)
 	{
-		auto iHeight = GetStatusHeight();
-		auto iNewCY = cy - iHeight;
+		const auto iHeight = GetStatusHeight();
+		const auto iNewCY = cy - iHeight;
 		RECT rcStatus = { 0 };
 		::GetClientRect(m_hWnd, &rcStatus);
 		if (rcStatus.bottom - rcStatus.top > iHeight)
@@ -556,8 +555,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 
 void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1)
 {
-	std::wstring szParam1;
-	szParam1 = std::to_wstring(ulParam1);
+	auto szParam1 = std::to_wstring(ulParam1);
 	UpdateStatusBarText(nPos, uidMsg, szParam1, strings::emptystring, strings::emptystring);
 }
 
@@ -580,13 +578,13 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 			&mii));
 		if (mii.dwItemData)
 		{
-			auto lme = reinterpret_cast<LPMENUENTRY>(mii.dwItemData);
+			const auto lme = reinterpret_cast<LPMENUENTRY>(mii.dwItemData);
 			szStatBarString = strings::formatmessage(IDS_LOADMAPISTATUS, lme->m_pName.c_str());
 		}
 	}
 	else
 	{
-		auto lpAddInMenu = GetAddinMenuItem(m_hWnd, uidMsg);
+		const auto lpAddInMenu = GetAddinMenuItem(m_hWnd, uidMsg);
 		if (lpAddInMenu && lpAddInMenu->szHelp)
 		{
 			szStatBarString = lpAddInMenu->szHelp;
@@ -624,8 +622,8 @@ void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const std::
 // WM_MFCMAPI_UPDATESTATUSBAR
 _Check_return_ LRESULT CBaseDialog::msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam)
 {
-	auto iPane = static_cast<__StatusPaneEnum>(wParam);
-	std::wstring szStr = reinterpret_cast<LPWSTR>(lParam);
+	const auto iPane = static_cast<__StatusPaneEnum>(wParam);
+	const std::wstring szStr = reinterpret_cast<LPWSTR>(lParam);
 	UpdateStatusBarText(iPane, szStr);
 
 	return S_OK;
@@ -659,8 +657,8 @@ std::wstring GetOutlookVersionString()
 
 		if (!lpszTempPath.empty())
 		{
-			auto lpszTempVer = new WCHAR[MAX_PATH];
-			auto lpszTempLang = new WCHAR[MAX_PATH];
+			const auto lpszTempVer = new WCHAR[MAX_PATH];
+			const auto lpszTempLang = new WCHAR[MAX_PATH];
 			if (lpszTempVer && lpszTempLang)
 			{
 				UINT ret = 0;
@@ -719,14 +717,15 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 
 	MyEID.InitPane(0, TextPane::CreateSingleLinePane(IDS_EID, strings::BinToHexString(lpBin, false), false));
 
-	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-	MyEID.InitPane(1, CheckPane::Create(IDS_USEMDB, lpMDB ? true : false, lpMDB ? false : true));
+	const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+	MyEID.InitPane(1, CheckPane::Create(IDS_USEMDB, lpMDB != nullptr, lpMDB == nullptr));
 
 	auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
-	MyEID.InitPane(2, CheckPane::Create(IDS_USEAB, lpAB ? true : false, lpAB ? false : true));
+	if (lpAB) MyEID.InitPane(2, CheckPane::Create(IDS_USEAB, true, lpAB == nullptr));
+	else MyEID.InitPane(2, CheckPane::Create(IDS_USEAB, false, lpAB == nullptr));
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-	MyEID.InitPane(3, CheckPane::Create(IDS_SESSION, lpMAPISession ? true : false, lpMAPISession ? false : true));
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	MyEID.InitPane(3, CheckPane::Create(IDS_SESSION, lpMAPISession != nullptr, lpMAPISession == nullptr));
 
 	MyEID.InitPane(4, CheckPane::Create(IDS_PASSMAPIMODIFY, false, false));
 
@@ -736,7 +735,7 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 
 	MyEID.InitPane(7, CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
 
-	MyEID.InitPane(8, CheckPane::Create(IDS_ATTEMPTIADDRBOOKDETAILSCALL, false, lpAB ? false : true));
+	MyEID.InitPane(8, CheckPane::Create(IDS_ATTEMPTIADDRBOOKDETAILSCALL, false, lpAB == nullptr));
 
 	MyEID.InitPane(9, CheckPane::Create(IDS_EIDISCONTAB, false, false));
 
@@ -779,10 +778,10 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 		ULONG ulObjType = NULL;
 
 		EC_H(CallOpenEntry(
-			MyEID.GetCheck(1) ? lpMDB : 0,
-			MyEID.GetCheck(2) ? lpAB : 0,
+			MyEID.GetCheck(1) ? lpMDB : nullptr,
+			MyEID.GetCheck(2) ? lpAB : nullptr,
 			nullptr,
-			MyEID.GetCheck(3) ? lpMAPISession : 0,
+			MyEID.GetCheck(3) ? lpMAPISession : nullptr,
 			static_cast<ULONG>(cbBin),
 			lpEntryID,
 			nullptr,
@@ -794,7 +793,7 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 
 		if (lpUnk)
 		{
-			auto szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
+			auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 			DebugPrint(DBGGeneric, L"OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n", lpUnk, ulObjType, szFlags.c_str());
 
 			LPMAPIPROP lpTemp = nullptr;
@@ -878,7 +877,7 @@ void CBaseDialog::OnCompareEntryIDs()
 	if (SUCCEEDED(hRes))
 	{
 		auto szResult = strings::loadstring(ulResult ? IDS_TRUE : IDS_FALSE);
-		auto szRet = strings::formatmessage(IDS_COMPAREEIDBOOL, ulResult, szResult.c_str());
+		const auto szRet = strings::formatmessage(IDS_COMPAREEIDBOOL, ulResult, szResult.c_str());
 
 		CEditor Result(
 			this,
@@ -916,8 +915,8 @@ void CBaseDialog::OnComputeStoreHash()
 	size_t cbBin = NULL;
 	EC_H(MyStoreEID.GetEntryID(0, MyStoreEID.GetCheck(1), &cbBin, &lpEntryID));
 
-	auto dwHash = ComputeStoreHash(static_cast<ULONG>(cbBin), reinterpret_cast<LPBYTE>(lpEntryID), nullptr, MyStoreEID.GetStringW(2).c_str(), MyStoreEID.GetCheck(3));
-	auto szHash = strings::formatmessage(IDS_STOREHASHVAL, dwHash);
+	const auto dwHash = ComputeStoreHash(static_cast<ULONG>(cbBin), reinterpret_cast<LPBYTE>(lpEntryID), nullptr, MyStoreEID.GetStringW(2).c_str(), MyStoreEID.GetCheck(3));
+	const auto szHash = strings::formatmessage(IDS_STOREHASHVAL, dwHash);
 
 	CEditor Result(
 		this,

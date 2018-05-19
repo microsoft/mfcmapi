@@ -23,17 +23,17 @@ static const char pBase64[] = {
 
 std::vector<BYTE> Base64Decode(const std::wstring& szEncodedStr)
 {
-	auto cchLen = szEncodedStr.length();
+	const auto cchLen = szEncodedStr.length();
 	std::vector<BYTE> lpb;
 	if (cchLen % 4) return lpb;
 
 	// look for padding at the end
-	auto posEqual = szEncodedStr.find(L"=");
+	const auto posEqual = szEncodedStr.find(L'=');
 	if (posEqual != std::wstring::npos)
 	{
 		auto suffix = szEncodedStr.substr(posEqual);
 		if (suffix.length() >= 3 ||
-			suffix.find_first_not_of(L"=") != std::wstring::npos) return lpb;
+			suffix.find_first_not_of(L'=') != std::wstring::npos) return lpb;
 	}
 
 	auto szEncodedStrPtr = szEncodedStr.c_str();
@@ -85,7 +85,7 @@ char pIndex[] = { // and decoding table.
  0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2b, 0x2f
 };
 
-std::wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const LPBYTE lpSourceBuffer)
+std::wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const BYTE* lpSourceBuffer)
 {
 	std::wstring szEncodedStr;
 	size_t cbBuf = 0;
@@ -134,7 +134,6 @@ std::wstring CurrencyToString(const CURRENCY& curVal)
 
 std::wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine)
 {
-	std::wstring szRet;
 	std::wstring szTemp;
 
 	auto namePropNames = NameIDToStrings(
@@ -195,7 +194,7 @@ std::wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB,
 		}
 	}
 
-	szRet = strings::formatmessage(szFormatString.c_str(),
+	std::wstring szRet = strings::formatmessage(szFormatString.c_str(),
 		ulPropTag,
 		TypeToString(ulPropTag).c_str(),
 		propTagNames.bestGuess.c_str(),
@@ -220,13 +219,12 @@ std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems)
 	std::wstring szOut;
 	for (ULONG i = 0; i < problems.cProblem; i++)
 	{
-		auto szTemp = strings::formatmessage(
+		szOut += strings::formatmessage(
 			IDS_PROBLEMARRAY,
 			problems.aProblem[i].ulIndex,
 			TagToString(problems.aProblem[i].ulPropTag, nullptr, false, false).c_str(),
 			problems.aProblem[i].scode,
 			ErrorNameFromErrorCode(problems.aProblem[i].scode).c_str());
-		szOut += szTemp;
 	}
 
 	return szOut;
@@ -266,7 +264,7 @@ std::wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error)
 // There may be restrictions with over 100 nested levels, but we're not going to try to parse them
 #define _MaxRestrictionNesting 100
 
-std::wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel)
+std::wstring RestrictionToString(_In_ const _SRestriction* lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel)
 {
 	if (!lpRes)
 	{
@@ -376,7 +374,7 @@ std::wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAP
 				TagToString(lpRes->res.resProperty.lpProp->ulPropTag, lpObj, false, true).c_str(),
 				szProp.c_str(),
 				szAltProp.c_str()));
-			szPropNum = InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value, lpRes->res.resProperty.lpProp->ulPropTag, NULL, nullptr, nullptr, false);
+			szPropNum = smartview::InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value, lpRes->res.resProperty.lpProp->ulPropTag, NULL, nullptr, nullptr, false);
 			if (!szPropNum.empty())
 			{
 				resString.push_back(strings::formatmessage(IDS_RESPROPPROPFLAGS, szTabs.c_str(), szPropNum.c_str()));
@@ -391,7 +389,7 @@ std::wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAP
 			szFlags.c_str(),
 			lpRes->res.resBitMask.relBMR,
 			lpRes->res.resBitMask.ulMask));
-		szPropNum = InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag);
+		szPropNum = smartview::InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag);
 		if (!szPropNum.empty())
 		{
 			resString.push_back(strings::formatmessage(IDS_RESBITMASKFLAGS, szPropNum.c_str()));
@@ -476,17 +474,16 @@ std::wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAP
 	return strings::join(resString, L"\r\n");
 }
 
-std::wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
+std::wstring RestrictionToString(_In_ const _SRestriction* lpRes, _In_opt_ LPMAPIPROP lpObj)
 {
 	return RestrictionToString(lpRes, lpObj, 0);
 }
 
 std::wstring AdrListToString(_In_ const ADRLIST& adrList)
 {
-	std::wstring adrstring;
 	std::wstring szProp;
 	std::wstring szAltProp;
-	adrstring = strings::formatmessage(IDS_ADRLISTCOUNT, adrList.cEntries);
+	auto adrstring = strings::formatmessage(IDS_ADRLISTCOUNT, adrList.cEntries);
 
 	for (ULONG i = 0; i < adrList.cEntries; i++)
 	{
@@ -510,12 +507,11 @@ std::wstring AdrListToString(_In_ const ADRLIST& adrList)
 
 _Check_return_ std::wstring ActionToString(_In_ const ACTION& action)
 {
-	std::wstring actstring;
 	std::wstring szProp;
 	std::wstring szAltProp;
 	auto szFlags = InterpretFlags(flagAccountType, action.acttype);
 	auto szFlags2 = InterpretFlags(flagRuleFlag, action.ulFlags);
-	actstring = strings::formatmessage(
+	auto actstring = strings::formatmessage(
 		IDS_ACTION,
 		action.acttype,
 		szFlags.c_str(),
@@ -707,7 +703,7 @@ wstring* tmpPropString: String representing property value
 wstring* tmpAltPropString: Alternative string representation
 Comment: Add new Property IDs as they become known
 ***************************************************************************/
-void InterpretProp(_In_ const LPSPropValue lpProp, _In_opt_ std::wstring* PropString, _In_opt_ std::wstring* AltPropString)
+void InterpretProp(_In_ const _SPropValue* lpProp, _In_opt_ std::wstring* PropString, _In_opt_ std::wstring* AltPropString)
 {
 	if (!lpProp) return;
 
@@ -867,7 +863,7 @@ NamePropNames NameIDToStrings(
 	ULONG ulPropTag, // optional 'original' prop tag
 	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-	_In_opt_ const LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+	_In_opt_ const _SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 	bool bIsAB) // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 {
 	auto hRes = S_OK;

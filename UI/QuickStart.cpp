@@ -1,8 +1,8 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/MFCUtilityFunctions.h>
-#include <UI/Dialogs/HierarchyTable/AbContDlg.h>
+#include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/InterpretProp2.h>
 #include <Interpret/SmartView/SmartView.h>
@@ -18,7 +18,7 @@ LPMAPISESSION OpenSessionForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 	if (!lpMapiObjects) return nullptr;
 
-	auto lpMAPISession = lpMapiObjects->LogonGetSession(hwnd); // do not release
+	const auto lpMAPISession = lpMapiObjects->LogonGetSession(hwnd); // do not release
 	if (lpMAPISession)
 	{
 		// Since we've opened a session, populate the store table in the UI
@@ -38,7 +38,7 @@ HRESULT OpenStoreForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ L
 	auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 	if (!lpMapiObjects) return MAPI_E_CALL_FAILED;
 
-	auto lpMAPISession = OpenSessionForQuickStart(lpHostDlg, hwnd); // do not release
+	const auto lpMAPISession = OpenSessionForQuickStart(lpHostDlg, hwnd); // do not release
 	if (lpMAPISession)
 	{
 		LPMDB lpMDB = nullptr;
@@ -55,7 +55,7 @@ HRESULT OpenStoreForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ L
 
 HRESULT OpenABForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPADRBOOK* lppAdrBook)
 {
-	auto hRes = S_OK;
+	const auto hRes = S_OK;
 	if (!lppAdrBook) return MAPI_E_INVALID_PARAMETER;
 	*lppAdrBook = nullptr;
 
@@ -173,10 +173,10 @@ void OnQSDisplayAB(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	auto hRes = S_OK;
 
-	auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
+	const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 	if (!lpMapiObjects) return;
 
-	auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+	const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 	if (!lpParentWnd) return;
 
 	LPADRBOOK lpAdrBook = nullptr;
@@ -235,7 +235,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 					static const SizedSPropTagArray(eidNUM_COLS, eidCols) =
 					{
 						eidNUM_COLS,
-						PR_ENTRYID,
+						{PR_ENTRYID},
 					};
 					WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&eidCols), TBL_BATCH));
 
@@ -256,7 +256,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 								if (lpsProp)
 								{
 									// Get the string interpretation
-									szNicknames = InterpretBinaryAsString(lpsProp->Value.bin, IDS_STNICKNAMECACHE, lpMSG);
+									szNicknames = smartview::InterpretBinaryAsString(lpsProp->Value.bin, IDS_STNICKNAMECACHE, lpMSG);
 								}
 								lpMSG->Release();
 							}
@@ -286,7 +286,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 			if (lpsProp)
 			{
-				auto lpPane = static_cast<CountedTextPane*>(MyResults.GetPane(1));
+				auto lpPane = dynamic_cast<CountedTextPane*>(MyResults.GetPane(1));
 				if (lpPane) lpPane->SetCount(lpsProp->Value.bin.cb);
 				MyResults.SetBinary(1, lpsProp->Value.bin.lpb, lpsProp->Value.bin.cb);
 			}
@@ -317,17 +317,19 @@ enum
 static const SizedSPropTagArray(qNUM_COLS, sptaQuota) =
 {
 	qNUM_COLS,
-	PR_STORE_SUPPORT_MASK,
-	PR_DISPLAY_NAME_W,
-	PR_MESSAGE_SIZE_EXTENDED,
-	PR_STORAGE_QUOTA_LIMIT,
-	PR_PROHIBIT_SEND_QUOTA,
-	PR_PROHIBIT_RECEIVE_QUOTA,
-	PR_MAX_SUBMIT_MESSAGE_SIZE,
-	PR_QUOTA_WARNING,
-	PR_QUOTA_SEND,
-	PR_QUOTA_RECEIVE,
-	PR_MDB_PROVIDER,
+	{
+		PR_STORE_SUPPORT_MASK,
+		PR_DISPLAY_NAME_W,
+		PR_MESSAGE_SIZE_EXTENDED,
+		PR_STORAGE_QUOTA_LIMIT,
+		PR_PROHIBIT_SEND_QUOTA,
+		PR_PROHIBIT_RECEIVE_QUOTA,
+		PR_MAX_SUBMIT_MESSAGE_SIZE,
+		PR_QUOTA_WARNING,
+		PR_QUOTA_SEND,
+		PR_QUOTA_RECEIVE,
+		PR_MDB_PROVIDER
+	},
 };
 
 std::wstring FormatQuota(LPSPropValue lpProp, ULONG ulPropTag, const std::wstring& szName)
@@ -396,7 +398,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 			if (lpProps[qPR_STORE_SUPPORT_MASK].ulPropTag == PR_STORE_SUPPORT_MASK)
 			{
-				auto szFlags = InterpretNumberAsStringProp(lpProps[qPR_STORE_SUPPORT_MASK].Value.l, PR_STORE_SUPPORT_MASK);
+				auto szFlags = smartview::InterpretNumberAsStringProp(lpProps[qPR_STORE_SUPPORT_MASK].Value.l, PR_STORE_SUPPORT_MASK);
 				szQuotaString += strings::formatmessage(IDS_QUOTAMASK, lpProps[qPR_STORE_SUPPORT_MASK].Value.l, szFlags.c_str());
 			}
 
@@ -428,10 +430,10 @@ void OnQSOpenUser(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	auto hRes = S_OK;
 
-	auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
+	const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 	if (!lpMapiObjects) return;
 
-	auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+	const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 	if (!lpParentWnd) return;
 
 	LPADRBOOK lpAdrBook = nullptr;
@@ -463,10 +465,10 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	auto hRes = S_OK;
 	LPSPropValue lpThumbnail = nullptr;
 
-	auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
+	const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 	if (!lpMapiObjects) return;
 
-	auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+	const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 	if (!lpParentWnd) return;
 
 	LPADRBOOK lpAdrBook = nullptr;
@@ -497,7 +499,7 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		MyResults.InitPane(0, CountedTextPane::Create(IDS_HEX, true, IDS_CB));
 		MyResults.InitPane(1, TextPane::CreateCollapsibleTextPane(IDS_ANSISTRING, true));
 
-		auto lpPane = static_cast<CountedTextPane*>(MyResults.GetPane(0));
+		auto lpPane = dynamic_cast<CountedTextPane*>(MyResults.GetPane(0));
 		if (lpPane) lpPane->SetCount(lpThumbnail->Value.bin.cb);
 		MyResults.SetBinary(0, lpThumbnail->Value.bin.lpb, lpThumbnail->Value.bin.cb);
 

@@ -1,85 +1,87 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "WebViewPersistStream.h"
 #include <Interpret/InterpretProp2.h>
 #include <Interpret/ExtraPropTags.h>
 
-WebViewPersistStream::WebViewPersistStream()
+namespace smartview
 {
-	m_cWebViews = 0;
-}
-
-void WebViewPersistStream::Parse()
-{
-	// Run through the parser once to count the number of web view structs
-	for (;;)
+	WebViewPersistStream::WebViewPersistStream()
 	{
-		// Must have at least 2 bytes left to have another struct
-		if (m_Parser.RemainingBytes() < sizeof(DWORD) * 11) break;
-		m_Parser.Advance(sizeof(DWORD) * 10);
-		DWORD cbData;
-		cbData = m_Parser.Get<DWORD>();
-
-		// Must have at least cbData bytes left to be a valid flag
-		if (m_Parser.RemainingBytes() < cbData) break;
-
-		m_Parser.Advance(cbData);
-		m_cWebViews++;
+		m_cWebViews = 0;
 	}
 
-	// Now we parse for real
-	m_Parser.Rewind();
-
-	auto cWebViews = m_cWebViews;
-	if (cWebViews && cWebViews < _MaxEntriesSmall)
+	void WebViewPersistStream::Parse()
 	{
-		for (ULONG i = 0; i < cWebViews; i++)
+		// Run through the parser once to count the number of web view structs
+		for (;;)
 		{
-			WebViewPersist webViewPersist;
-			webViewPersist.dwVersion = m_Parser.Get<DWORD>();
-			webViewPersist.dwType = m_Parser.Get<DWORD>();
-			webViewPersist.dwFlags = m_Parser.Get<DWORD>();
-			webViewPersist.dwUnused = m_Parser.GetBYTES(7 * sizeof(DWORD));
-			webViewPersist.cbData = m_Parser.Get<DWORD>();
-			webViewPersist.lpData = m_Parser.GetBYTES(webViewPersist.cbData, _MaxBytes);
-			m_lpWebViews.push_back(webViewPersist);
+			// Must have at least 2 bytes left to have another struct
+			if (m_Parser.RemainingBytes() < sizeof(DWORD) * 11) break;
+			m_Parser.Advance(sizeof(DWORD) * 10);
+			const auto cbData = m_Parser.Get<DWORD>();
+
+			// Must have at least cbData bytes left to be a valid flag
+			if (m_Parser.RemainingBytes() < cbData) break;
+
+			m_Parser.Advance(cbData);
+			m_cWebViews++;
 		}
-	}
-}
 
-_Check_return_ std::wstring WebViewPersistStream::ToStringInternal()
-{
-	auto szWebViewPersistStream = strings::formatmessage(IDS_WEBVIEWSTREAMHEADER, m_cWebViews);
-	for (ULONG i = 0; i < m_lpWebViews.size(); i++)
-	{
-		auto szVersion = InterpretFlags(flagWebViewVersion, m_lpWebViews[i].dwVersion);
-		auto szType = InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType);
-		auto szFlags = InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags);
+		// Now we parse for real
+		m_Parser.Rewind();
 
-		szWebViewPersistStream += strings::formatmessage(
-			IDS_WEBVIEWHEADER,
-			i,
-			m_lpWebViews[i].dwVersion, szVersion.c_str(),
-			m_lpWebViews[i].dwType, szType.c_str(),
-			m_lpWebViews[i].dwFlags, szFlags.c_str());
-
-		szWebViewPersistStream += strings::BinToHexString(m_lpWebViews[i].dwUnused, true);
-
-		szWebViewPersistStream += strings::formatmessage(IDS_WEBVIEWCBDATA, m_lpWebViews[i].cbData);
-
-		switch (m_lpWebViews[i].dwType)
+		const auto cWebViews = m_cWebViews;
+		if (cWebViews && cWebViews < _MaxEntriesSmall)
 		{
-		case WEBVIEWURL:
-		{
-			szWebViewPersistStream += strings::formatmessage(IDS_WEBVIEWURL);
-			szWebViewPersistStream += strings::BinToTextStringW(m_lpWebViews[i].lpData, false);
-			break;
-		}
-		default:
-			szWebViewPersistStream += strings::formatmessage(IDS_WEBVIEWDATA);
-			szWebViewPersistStream += strings::BinToHexString(m_lpWebViews[i].lpData, true);
-			break;
+			for (ULONG i = 0; i < cWebViews; i++)
+			{
+				WebViewPersist webViewPersist;
+				webViewPersist.dwVersion = m_Parser.Get<DWORD>();
+				webViewPersist.dwType = m_Parser.Get<DWORD>();
+				webViewPersist.dwFlags = m_Parser.Get<DWORD>();
+				webViewPersist.dwUnused = m_Parser.GetBYTES(7 * sizeof(DWORD));
+				webViewPersist.cbData = m_Parser.Get<DWORD>();
+				webViewPersist.lpData = m_Parser.GetBYTES(webViewPersist.cbData, _MaxBytes);
+				m_lpWebViews.push_back(webViewPersist);
+			}
 		}
 	}
 
-	return szWebViewPersistStream;
+	_Check_return_ std::wstring WebViewPersistStream::ToStringInternal()
+	{
+		auto szWebViewPersistStream = strings::formatmessage(IDS_WEBVIEWSTREAMHEADER, m_cWebViews);
+		for (ULONG i = 0; i < m_lpWebViews.size(); i++)
+		{
+			auto szVersion = InterpretFlags(flagWebViewVersion, m_lpWebViews[i].dwVersion);
+			auto szType = InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType);
+			auto szFlags = InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags);
+
+			szWebViewPersistStream += strings::formatmessage(
+				IDS_WEBVIEWHEADER,
+				i,
+				m_lpWebViews[i].dwVersion, szVersion.c_str(),
+				m_lpWebViews[i].dwType, szType.c_str(),
+				m_lpWebViews[i].dwFlags, szFlags.c_str());
+
+			szWebViewPersistStream += strings::BinToHexString(m_lpWebViews[i].dwUnused, true);
+
+			szWebViewPersistStream += strings::formatmessage(IDS_WEBVIEWCBDATA, m_lpWebViews[i].cbData);
+
+			switch (m_lpWebViews[i].dwType)
+			{
+			case WEBVIEWURL:
+			{
+				szWebViewPersistStream += strings::formatmessage(IDS_WEBVIEWURL);
+				szWebViewPersistStream += strings::BinToTextStringW(m_lpWebViews[i].lpData, false);
+				break;
+			}
+			default:
+				szWebViewPersistStream += strings::formatmessage(IDS_WEBVIEWDATA);
+				szWebViewPersistStream += strings::BinToHexString(m_lpWebViews[i].lpData, true);
+				break;
+			}
+		}
+
+		return szWebViewPersistStream;
+	}
 }

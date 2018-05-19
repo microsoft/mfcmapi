@@ -46,7 +46,7 @@ SpecialFolderEditor::~SpecialFolderEditor()
 
 BOOL SpecialFolderEditor::OnInitDialog()
 {
-	auto bRet = CEditor::OnInitDialog();
+	const auto bRet = CEditor::OnInitDialog();
 	LoadFolders();
 	return bRet;
 }
@@ -78,7 +78,7 @@ ULONG g_ulsfCol = _countof(g_sfCol);
 
 void SpecialFolderEditor::LoadFolders() const
 {
-	ULONG ulListNum = 0;
+	const ULONG ulListNum = 0;
 
 	static const SizedSPropTagArray(12, lptaFolderProps) =
 	{
@@ -114,11 +114,11 @@ void SpecialFolderEditor::LoadFolders() const
 		ULONG cb = NULL;
 		LPENTRYID lpeid = nullptr;
 
-		auto lpData = InsertListRow(ulListNum, i - 1, std::to_wstring(i));
+		const auto lpData = InsertListRow(ulListNum, i - 1, std::to_wstring(i));
 		if (lpData)
 		{
 			auto iCol = 1;
-			int iRow = i - 1;
+			const int iRow = i - 1;
 
 			SetListString(ulListNum, iRow, iCol, FolderNames[i]);
 			iCol++;
@@ -147,7 +147,7 @@ void SpecialFolderEditor::LoadFolders() const
 						szTmp.clear();
 						if (PT_LONG == PROP_TYPE(lpProps[ulPropNum].ulPropTag))
 						{
-							szTmp = InterpretNumberAsString(
+							szTmp = smartview::InterpretNumberAsString(
 								lpProps[ulPropNum].Value,
 								lpProps[ulPropNum].ulPropTag,
 								NULL,
@@ -208,16 +208,14 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 	MyResults.InitPane(0, TextPane::CreateMultiLinePane(NULL, true));
 
 	std::wstring szTmp;
-	auto listPane = static_cast<ListPane*>(GetPane(ulListNum));
+	const auto listPane = dynamic_cast<ListPane*>(GetPane(ulListNum));
 	if (listPane)
 	{
-		std::wstring szLabel;
-		std::wstring szData;
 		// We skip the first column, which is just the index
 		for (ULONG i = 1; i < g_ulsfCol; i++)
 		{
-			szLabel = strings::loadstring(g_sfCol[i].ulID);
-			szData = listPane->GetItemText(iItem, i);
+			const std::wstring szLabel = strings::loadstring(g_sfCol[i].ulID);
+			const std::wstring szData = listPane->GetItemText(iItem, i);
 			szTmp += szLabel + L": " + szData + L"\n";
 		}
 	}

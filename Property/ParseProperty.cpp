@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "ParseProperty.h"
 #include "Property.h"
 #include <MAPI/MAPIFunctions.h>
@@ -6,7 +6,7 @@
 #include <Interpret/InterpretProp.h>
 #include <Interpret/InterpretProp2.h>
 
-std::wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
+std::wstring BuildErrorPropString(_In_ const _SPropValue* lpProp)
 {
 	if (PROP_TYPE(lpProp->ulPropTag) != PT_ERROR) return L"";
 	switch (PROP_ID(lpProp->ulPropTag))
@@ -31,7 +31,7 @@ std::wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 	return L"";
 }
 
-Property ParseMVProperty(_In_ LPSPropValue lpProp, ULONG ulMVRow)
+Property ParseMVProperty(_In_ const _SPropValue* lpProp, ULONG ulMVRow)
 {
 	if (!lpProp || ulMVRow > lpProp->Value.MVi.cValues) return Property();
 
@@ -89,7 +89,7 @@ Property ParseMVProperty(_In_ LPSPropValue lpProp, ULONG ulMVRow)
 	return ParseProperty(&sProp);
 }
 
-Property ParseProperty(_In_ LPSPropValue lpProp)
+Property ParseProperty(_In_ const _SPropValue* lpProp)
 {
 	Property properties;
 	if (!lpProp) return properties;
@@ -213,7 +213,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 		case PT_ACTIONS:
 			if (lpProp->Value.lpszA)
 			{
-				auto actions = reinterpret_cast<ACTIONS*>(lpProp->Value.lpszA);
+				const auto actions = reinterpret_cast<ACTIONS*>(lpProp->Value.lpszA);
 				szTmp = ActionsToString(*actions);
 			}
 			else
@@ -228,8 +228,8 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			break;
 		}
 
-		Parsing mainParsing(szTmp, bPropXMLSafe, attributes);
-		Parsing altParsing(szAltTmp, bAltPropXMLSafe, altAttributes);
+		const Parsing mainParsing(szTmp, bPropXMLSafe, attributes);
+		const Parsing altParsing(szAltTmp, bAltPropXMLSafe, altAttributes);
 		properties.AddParsing(mainParsing, altParsing);
 	}
 

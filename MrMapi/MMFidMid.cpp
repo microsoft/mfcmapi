@@ -1,8 +1,8 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "MrMAPI.h"
 #include "MMFidMid.h"
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/MAPIProcessor/MAPIProcessor.h>
+#include <MAPI/MAPIProcessor/MapiProcessor.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/String.h>
@@ -28,7 +28,7 @@ private:
 	bool ShouldProcessContentsTable() override;
 	void BeginFolderWork() override;
 	void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows) override;
-	bool DoContentsTablePerRowWork(_In_ const LPSRow lpSRow, ULONG ulCurRow) override;
+	bool DoContentsTablePerRowWork(_In_ const _SRow* lpSRow, ULONG ulCurRow) override;
 
 	std::wstring m_szFid;
 	std::wstring m_szMid;
@@ -65,15 +65,10 @@ bool MatchFid(const std::wstring& inputFid, const std::wstring& currentFid)
 {
 	if (_wcsicmp(inputFid.c_str(), currentFid.c_str()) == 0) return true;
 
-	auto pos = currentFid.find('-');
+	const auto pos = currentFid.find('-');
 	if (pos == std::string::npos) return false;
 	auto trimmedFid = currentFid.substr(pos + 1, std::string::npos);
-	if (_wcsicmp(inputFid.c_str(), trimmedFid.c_str()) == 0)
-	{
-		return true;
-	}
-
-	return false;
+	return _wcsicmp(inputFid.c_str(), trimmedFid.c_str()) == 0;
 }
 
 void CFindFidMid::BeginFolderWork()
@@ -98,8 +93,10 @@ void CFindFidMid::BeginFolderWork()
 	static const SizedSPropTagArray(NUM_COLS, sptaFolderProps) =
 	{
 	NUM_COLS,
-	PR_DISPLAY_NAME_W,
-	PidTagFolderId
+		{
+			PR_DISPLAY_NAME_W,
+			PidTagFolderId
+		}
 	};
 
 	WC_H_GETPROPS(m_lpFolder->GetProps(
@@ -119,7 +116,7 @@ void CFindFidMid::BeginFolderWork()
 
 	if (lpProps && PidTagFolderId == lpProps[ePidTagFolderId].ulPropTag)
 	{
-		m_szCurrentFid = FidMidToSzString(lpProps[ePidTagFolderId].Value.li.QuadPart, false);
+		m_szCurrentFid = smartview::FidMidToSzString(lpProps[ePidTagFolderId].Value.li.QuadPart, false);
 		DebugPrint(DBGGeneric, L"CFindFidMid::DoFolderPerHierarchyTableRowWork: Found FID %ws for %ws\n", m_szCurrentFid.c_str(), lpszDisplayName);
 	}
 	else
@@ -175,7 +172,7 @@ void CFindFidMid::BeginContentsTableWork(ULONG ulFlags, ULONG /*ulCountRows*/)
 	m_fAssociated = (ulFlags & MAPI_ASSOCIATED) == MAPI_ASSOCIATED;
 }
 
-bool CFindFidMid::DoContentsTablePerRowWork(_In_ const LPSRow lpSRow, ULONG /*ulCurRow*/)
+bool CFindFidMid::DoContentsTablePerRowWork(_In_ const  _SRow* lpSRow, ULONG /*ulCurRow*/)
 {
 	if (!lpSRow) return false;
 
@@ -183,10 +180,10 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ const LPSRow lpSRow, ULONG /*ul
 	std::wstring lpszSubject;
 	std::wstring lpszClass;
 
-	auto lpPropMid = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PidTagMid);
+	const auto lpPropMid = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PidTagMid);
 	if (lpPropMid)
 	{
-		lpszThisMid = FidMidToSzString(lpPropMid->Value.li.QuadPart, false);
+		lpszThisMid = smartview::FidMidToSzString(lpPropMid->Value.li.QuadPart, false);
 		DebugPrint(DBGGeneric, L"CFindFidMid::DoContentsTablePerRowWork: Found MID %ws\n", lpszThisMid.c_str());
 	}
 	else
@@ -206,13 +203,13 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ const LPSRow lpSRow, ULONG /*ul
 			m_fFIDPrinted = true;
 		}
 
-		auto lpPropSubject = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT);
+		const auto lpPropSubject = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT);
 		if (lpPropSubject)
 		{
 			lpszSubject = strings::LPCTSTRToWstring(lpPropSubject->Value.LPSZ);
 		}
 
-		auto lpPropClass = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_MESSAGE_CLASS);
+		const auto lpPropClass = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_MESSAGE_CLASS);
 		if (lpPropClass)
 		{
 			lpszClass = strings::LPCTSTRToWstring(lpPropClass->Value.LPSZ);

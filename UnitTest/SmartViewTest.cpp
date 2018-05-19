@@ -56,8 +56,8 @@ namespace SmartViewTest
 						auto lineErrorCount = 0;
 						for (size_t ch = 0; ch < splitExpected[line].size() && ch < splitActual[line].size() && (lineErrorCount < 10 || !limit_output); ch++)
 						{
-							wchar_t expectedChar = splitExpected[line][ch];
-							wchar_t actualChar = splitActual[line][ch];
+							const auto expectedChar = splitExpected[line][ch];
+							const auto actualChar = splitActual[line][ch];
 							if (expectedChar != actualChar)
 							{
 								lineErrorCount++;
@@ -82,7 +82,7 @@ namespace SmartViewTest
 		{
 			for (auto data : testData)
 			{
-				auto actual = InterpretBinaryAsString({ static_cast<ULONG>(data.hex.size()), data.hex.data() }, data.structType, nullptr);
+				auto actual = smartview::InterpretBinaryAsString({ static_cast<ULONG>(data.hex.size()), data.hex.data() }, data.structType, nullptr);
 				AreEqualEx(data.expected, actual, data.testName.c_str());
 
 				if (data.parseAll)
@@ -92,7 +92,7 @@ namespace SmartViewTest
 						const auto structType = static_cast<__ParsingTypeEnum>(iStruct);
 						try
 						{
-							actual = InterpretBinaryAsString({ static_cast<ULONG>(data.hex.size()), data.hex.data() }, structType, nullptr);
+							actual = smartview::InterpretBinaryAsString({ static_cast<ULONG>(data.hex.size()), data.hex.data() }, structType, nullptr);
 						}
 						catch (int exception)
 						{

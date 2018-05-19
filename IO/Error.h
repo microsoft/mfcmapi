@@ -41,15 +41,15 @@
 // EC_TNEFERR - logs and displays dialog for any errors in a LPSTnefProblemArray
 
 void LogFunctionCall(
-			  HRESULT hRes,
-			  HRESULT hrIgnore,
-			  bool bShowDialog,
-			  bool bMAPICall,
-			  bool bSystemCall,
-			  UINT uidErrorMsg,
-			  _In_opt_z_ LPCSTR szFunction,
-			  _In_z_ LPCSTR szFile,
-			  int iLine);
+	HRESULT hRes,
+	HRESULT hrIgnore,
+	bool bShowDialog,
+	bool bMAPICall,
+	bool bSystemCall,
+	UINT uidErrorMsg,
+	_In_opt_z_ LPCSTR szFunction,
+	_In_z_ LPCSTR szFile,
+	int iLine);
 
 #define CheckHResFn(hRes, hrIgnore, bDisplayDialog, szFunction, uidErrorMsg, szFile, iLine) \
 	LogFunctionCall(hRes, hrIgnore, bDisplayDialog, false, false, uidErrorMsg, szFunction, szFile, iLine)
@@ -84,7 +84,7 @@ void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc);
 #endif
 
 #define EC_H(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckHResFn(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
@@ -92,10 +92,10 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-}
+}}
 
 #define WC_H(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckHResFn(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__);	\
@@ -103,10 +103,10 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-}
+}}
 
 #define EC_MAPI(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckMAPICall(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
@@ -114,10 +114,10 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-}
+}}
 
 #define WC_MAPI(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckMAPICall(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__);	\
@@ -125,10 +125,10 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-}
+}}
 
 #define EC_H_MSG(fnx,uidErrorMsg)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckMAPICall(hRes, NULL, true, #fnx, uidErrorMsg, __FILE__, __LINE__);	\
@@ -136,10 +136,10 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-}
+}}
 
 #define WC_H_MSG(fnx,uidErrorMsg)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckMAPICall(hRes, NULL, false, #fnx, uidErrorMsg, __FILE__, __LINE__);	\
@@ -147,10 +147,10 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-}
+}}
 
 #define EC_W32(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = HRESULT_FROM_WIN32(fnx);	\
 	CheckHResFn(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
@@ -158,10 +158,10 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-}
+}}
 
 #define WC_W32(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = HRESULT_FROM_WIN32(fnx);	\
 	CheckHResFn(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__);	\
@@ -169,10 +169,10 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-}
+}}
 
 #define EC_B(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	if (!(fnx))	\
 	{	\
@@ -182,10 +182,10 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-}
+}}
 
 #define WC_B(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	if (!(fnx))	\
 	{	\
@@ -195,15 +195,15 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-}
+}}
 
 // Used for functions which return 0 on error
 // dwRet will contain the return value - assign to a local if needed for other calls.
 #define EC_D(_ret,fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
-	_ret = (fnx);	\
-	if (!_ret)	\
+	(_ret) = (fnx);	\
+	if (!(_ret))	\
 	{	\
 		hRes = CheckWin32Error(true, __FILE__, __LINE__, #fnx);	\
 	}	\
@@ -211,15 +211,15 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-	_ret = NULL;	\
-}
+	(_ret) = NULL;	\
+}}
 
 // whatever's passed to _ret will contain the return value
 #define WC_D(_ret,fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
-	_ret = (fnx);	\
-	if (!_ret)	\
+	(_ret) = (fnx);	\
+	if (!(_ret))	\
 	{	\
 		hRes = CheckWin32Error(false, __FILE__, __LINE__, #fnx);\
 	}	\
@@ -227,15 +227,15 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-	_ret = NULL;	\
-}
+	(_ret) = NULL;	\
+}}
 
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
 #define EC_H_GETPROPS(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckMAPICall(hRes, MAPI_W_ERRORS_RETURNED, true, #fnx, NULL, __FILE__, __LINE__);	\
@@ -243,10 +243,10 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-}
+}}
 
 #define WC_H_GETPROPS(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckMAPICall(hRes, MAPI_W_ERRORS_RETURNED, false, #fnx, NULL, __FILE__, __LINE__);	\
@@ -254,11 +254,11 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-}
+}}
 
 // some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL. I don't consider these to be errors.
 #define EC_H_CANCEL(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	if (MAPI_E_USER_CANCEL == hRes || MAPI_E_CANCEL == hRes) \
@@ -271,7 +271,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-}
+}}
 
 // Designed to check return values from dialog functions, primarily DoModal
 // These functions use CommDlgExtendedError to get error information

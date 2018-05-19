@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "SmartViewPane.h"
 #include <Interpret/String.h>
 #include <Interpret/SmartView/SmartView.h>
@@ -74,7 +74,7 @@ int SmartViewPane::GetLines()
 void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 {
 	auto hRes = S_OK;
-	auto visibility = !m_bDoDropDown && !m_bHasData ? SW_HIDE : SW_SHOW;
+	const auto visibility = !m_bDoDropDown && !m_bHasData ? SW_HIDE : SW_SHOW;
 	EC_B(m_CollapseButton.ShowWindow(visibility));
 	EC_B(m_Label.ShowWindow(visibility));
 
@@ -152,8 +152,8 @@ void SmartViewPane::SetParser(__ParsingTypeEnum iParser)
 
 void SmartViewPane::Parse(SBinary myBin)
 {
-	auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
-	auto szSmartView = InterpretBinaryAsString(myBin, iStructType, nullptr);
+	const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
+	auto szSmartView = smartview::InterpretBinaryAsString(myBin, iStructType, nullptr);
 
 	m_bHasData = !szSmartView.empty();
 	SetStringW(szSmartView);

@@ -21,7 +21,7 @@ public:
 	STDMETHODIMP_(ULONG) AddRef();
 	STDMETHODIMP_(ULONG) Release();
 
-	void OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData);
+	void OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData) const;
 	_Check_return_ bool HandleKeyDown(UINT nChar, bool bShift, bool bCtrl, bool bMenu);
 
 	void UpdateTitleBarText(_In_ const std::wstring& szMsg) const;
@@ -92,7 +92,7 @@ private:
 	LONG m_cRef;
 	HICON m_hIcon;
 	std::wstring m_StatusMessages[STATUSBARNUMPANES];
-	int m_StatusWidth[STATUSBARNUMPANES];
+	int m_StatusWidth[STATUSBARNUMPANES]{};
 	bool m_bDisplayingMenuText;
 	std::wstring m_szMenuDisplacedText;
 	CAdviseSink* m_lpBaseAdviseSink;

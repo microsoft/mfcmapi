@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "MrMAPI.h"
 #include <Interpret/String.h>
 #include <io.h>
@@ -51,7 +51,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 					Bin.lpb = bin.data();
 				}
 
-				auto szString = InterpretBinaryAsString(Bin, ulStructType, nullptr);
+				auto szString = smartview::InterpretBinaryAsString(Bin, ulStructType, nullptr);
 				if (!szString.empty())
 				{
 					if (fOut)

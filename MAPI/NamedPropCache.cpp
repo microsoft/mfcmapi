@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <MAPI/NamedPropCache.h>
 #include <Interpret/InterpretProp2.h>
 
@@ -129,11 +129,11 @@ NamedPropCacheEntry::~NamedPropCacheEntry()
 // Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
 _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID)
 {
-	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &namedPropCacheEntry)
+	const auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &namedPropCacheEntry)
 	{
 		if (namedPropCacheEntry.ulPropID != ulPropID) return false;
 		if (namedPropCacheEntry.cbSig != cbSig) return false;
-		if (cbSig && memcmp(lpSig, namedPropCacheEntry.lpSig, cbSig)) return false;
+		if (cbSig && memcmp(lpSig, namedPropCacheEntry.lpSig, cbSig) != 0) return false;
 
 		return true;
 	});
@@ -144,7 +144,7 @@ _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSi
 // Given a signature, guid, kind, and value, finds the named prop mapping in the cache
 _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
 {
-	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &namedPropCacheEntry)
+	const auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &namedPropCacheEntry)
 	{
 		if (!namedPropCacheEntry.lpmniName) return false;
 		if (namedPropCacheEntry.lpmniName->ulKind != ulKind) return false;
@@ -152,7 +152,7 @@ _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSi
 		if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry.lpmniName->Kind.lpwstrName, lpwstrName)) return false;;
 		if (0 != memcmp(namedPropCacheEntry.lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
 		if (cbSig != namedPropCacheEntry.cbSig) return false;
-		if (cbSig && memcmp(lpSig, namedPropCacheEntry.lpSig, cbSig)) return false;
+		if (cbSig && memcmp(lpSig, namedPropCacheEntry.lpSig, cbSig) != 0) return false;
 
 		return true;
 	});
@@ -163,7 +163,7 @@ _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSi
 // Given a tag, guid, kind, and value, finds the named prop mapping in the cache
 _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
 {
-	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &namedPropCacheEntry)
+	const auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &namedPropCacheEntry)
 	{
 		if (namedPropCacheEntry.ulPropID != ulPropID) return false;
 		if (!namedPropCacheEntry.lpmniName) return false;
@@ -222,7 +222,7 @@ void AddMappingWithoutSignature(ULONG ulNumProps, // Number of mapped names
 	{
 		if (lppPropNames[ulProp])
 		{
-			auto lpNamedPropCacheEntry = FindCacheEntry(
+			const auto lpNamedPropCacheEntry = FindCacheEntry(
 				PROP_ID(lpTag->aulPropTag[ulProp]),
 				lppPropNames[ulProp]->lpguid,
 				lppPropNames[ulProp]->ulKind,
@@ -251,7 +251,7 @@ _Check_return_ HRESULT CacheGetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
 	// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 	// If we reach the end of the cache and don't have everything, we set up to make a GetNamesFromIDs call.
 
-	auto lpPropTags = *lppPropTags;
+	const auto lpPropTags = *lppPropTags;
 	// First, allocate our results using MAPI
 	LPMAPINAMEID* lppNameIDs = nullptr;
 	EC_H(MAPIAllocateBuffer(sizeof(MAPINAMEID*)* lpPropTags->cValues, reinterpret_cast<LPVOID*>(&lppNameIDs)));
@@ -267,7 +267,7 @@ _Check_return_ HRESULT CacheGetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
 		for (ULONG ulTarget = 0; ulTarget < lpPropTags->cValues; ulTarget++)
 		{
 			// ...check the cache
-			auto lpEntry = FindCacheEntry(cbSig, lpSig, PROP_ID(lpPropTags->aulPropTag[ulTarget]));
+			const auto lpEntry = FindCacheEntry(cbSig, lpSig, PROP_ID(lpPropTags->aulPropTag[ulTarget]));
 
 			if (lpEntry)
 			{
@@ -375,7 +375,7 @@ _Check_return_ HRESULT GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
 }
 
 _Check_return_ HRESULT GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
-	_In_opt_ LPSBinary lpMappingSignature,
+	_In_opt_ const _SBinary* lpMappingSignature,
 	_In_ LPSPropTagArray* lppPropTags,
 	_In_opt_ LPGUID lpPropSetGuid,
 	ULONG ulFlags,
@@ -463,7 +463,7 @@ _Check_return_ HRESULT CacheGetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp,
 		for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
 		{
 			// ...check the cache
-			auto lpEntry = FindCacheEntry(
+			const auto lpEntry = FindCacheEntry(
 				cbSig,
 				lpSig,
 				lppPropNames[ulTarget]->lpguid,
@@ -501,7 +501,7 @@ _Check_return_ HRESULT CacheGetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp,
 					}
 				}
 
-				ULONG ulUncachedTags = 0;
+				const ULONG ulUncachedTags = 0;
 				LPSPropTagArray lpUncachedTags = nullptr;
 
 				EC_H_GETPROPS(lpMAPIProp->GetIDsFromNames(

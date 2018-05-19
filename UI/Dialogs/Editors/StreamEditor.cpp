@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "StreamEditor.h"
 #include <Interpret/InterpretProp2.h>
 #include <MAPI/MAPIFunctions.h>
@@ -24,7 +24,7 @@ ULONG PreferredStreamType(ULONG ulPropTag)
 
 	if (PT_ERROR != ulPropType && PT_UNSPECIFIED != ulPropType) return ulPropTag;
 
-	auto ulPropID = PROP_ID(ulPropTag);
+	const auto ulPropID = PROP_ID(ulPropTag);
 
 	switch (ulPropID)
 	{
@@ -139,7 +139,7 @@ CStreamEditor::CStreamEditor(
 		}
 	}
 
-	auto szPromptPostFix = strings::format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+	const auto szPromptPostFix = strings::format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 	SetPromptPostFix(szPromptPostFix);
 
 	// Let's crack our property open and see what kind of controls we'll need for it
@@ -167,14 +167,14 @@ CStreamEditor::~CStreamEditor()
 // Used to call functions which need to be called AFTER controls are created
 BOOL CStreamEditor::OnInitDialog()
 {
-	auto bRet = CEditor::OnInitDialog();
+	const auto bRet = CEditor::OnInitDialog();
 
 	ReadTextStreamFromProperty();
 
 	if (m_bDoSmartView)
 	{
 		// Load initial smart view here
-		auto lpSmartView = static_cast<SmartViewPane*>(GetPane(m_iSmartViewBox));
+		auto lpSmartView = dynamic_cast<SmartViewPane*>(GetPane(m_iSmartViewBox));
 		if (lpSmartView)
 		{
 			SPropValue sProp = { 0 };
@@ -184,7 +184,7 @@ BOOL CStreamEditor::OnInitDialog()
 			sProp.Value.bin.cb = ULONG(bin.size());
 
 			// TODO: pass in named prop stuff to make this work
-			auto smartView = InterpretPropSmartView2(
+			const auto smartView = smartview::InterpretPropSmartView2(
 				&sProp,
 				m_lpMAPIProp,
 				nullptr,
@@ -222,8 +222,8 @@ void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 
 	if (bWrite)
 	{
-		auto ulStgFlags = STGM_READWRITE;
-		auto ulFlags = MAPI_CREATE | MAPI_MODIFY;
+		const auto ulStgFlags = STGM_READWRITE;
+		const auto ulFlags = MAPI_CREATE | MAPI_MODIFY;
 		ulRTFFlags |= MAPI_MODIFY;
 
 		if (m_bDocFile)
@@ -247,8 +247,8 @@ void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 	}
 	else
 	{
-		auto ulStgFlags = STGM_READ;
-		auto ulFlags = NULL;
+		const auto ulStgFlags = STGM_READ;
+		const auto ulFlags = NULL;
 		WC_MAPI(m_lpMAPIProp->OpenProperty(
 			m_ulPropTag,
 			&IID_IStream,
@@ -338,7 +338,7 @@ void CStreamEditor::ReadTextStreamFromProperty() const
 	// If we don't have a stream to display, put up an error instead
 	if (FAILED(m_StreamError) || !m_lpStream)
 	{
-		auto szStreamErr = strings::formatmessage(
+		const auto szStreamErr = strings::formatmessage(
 			IDS_CANNOTOPENSTREAM,
 			ErrorNameFromErrorCode(m_StreamError).c_str(),
 			m_StreamError);
@@ -356,7 +356,7 @@ void CStreamEditor::ReadTextStreamFromProperty() const
 
 	if (m_lpStream)
 	{
-		auto lpPane = static_cast<TextPane*>(GetPane(m_iBinBox));
+		auto lpPane = dynamic_cast<TextPane*>(GetPane(m_iBinBox));
 		if (lpPane)
 		{
 			return lpPane->SetBinaryStream(m_lpStream);
@@ -408,11 +408,11 @@ void CStreamEditor::WriteTextStreamToProperty()
 
 _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 {
-	auto i = CEditor::HandleChange(nID);
+	const auto i = CEditor::HandleChange(nID);
 
 	if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
 
-	auto lpBinPane = static_cast<CountedTextPane*>(GetPane(m_iBinBox));
+	auto lpBinPane = dynamic_cast<CountedTextPane*>(GetPane(m_iBinBox));
 	if (m_iTextBox == i && lpBinPane)
 	{
 		switch (m_ulEditorType)
@@ -459,7 +459,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 
 	if (m_bDoSmartView)
 	{
-		auto lpSmartView = static_cast<SmartViewPane*>(GetPane(m_iSmartViewBox));
+		auto lpSmartView = dynamic_cast<SmartViewPane*>(GetPane(m_iSmartViewBox));
 		if (lpSmartView)
 		{
 			auto bin = GetBinary(m_iBinBox);
@@ -485,7 +485,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 
 void CStreamEditor::SetEditReadOnly(ULONG iControl) const
 {
-	auto lpPane = static_cast<TextPane*>(GetPane(iControl));
+	auto lpPane = dynamic_cast<TextPane*>(GetPane(iControl));
 	if (lpPane)
 	{
 		lpPane->SetReadOnly();

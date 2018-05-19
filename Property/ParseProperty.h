@@ -1,4 +1,4 @@
 #pragma once
 #include "Property.h"
 
-Property ParseProperty(_In_ LPSPropValue lpProp);
+Property ParseProperty(_In_ const _SPropValue* lpProp);
