@@ -16,7 +16,7 @@ std::wstring BuildFileNameAndPath(
 	_In_ const std::wstring& szExt,
 	_In_ const std::wstring& szSubj,
 	_In_ const std::wstring& szRootPath,
-	_In_opt_ const LPSBinary lpBin);
+	_In_opt_ const _SBinary* lpBin);
 
 _Check_return_ HRESULT LoadMSGToMessage(_In_ const std::wstring& szMessageFile, _Deref_out_opt_ LPMESSAGE* lppMessage);
 
@@ -28,16 +28,16 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ 
 _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szFileName);
 _Check_return_ HRESULT CreateNewMSG(_In_ const std::wstring& szFileName, bool bUnicode, _Deref_out_opt_ LPMESSAGE* lppMessage, _Deref_out_opt_ LPSTORAGE* lppStorage);
 _Check_return_ HRESULT SaveToMSG(
-	_In_ const LPMAPIFOLDER lpFolder,
+	_In_ LPMAPIFOLDER lpFolder,
 	_In_ const std::wstring& szPathName,
 	_In_ const SPropValue& entryID,
-	_In_ const LPSPropValue lpRecordKey,
-	_In_ const LPSPropValue lpSubject,
+	_In_ const _SPropValue* lpRecordKey,
+	_In_ const _SPropValue* lpSubject,
 	bool bUnicode,
 	HWND hWnd);
 _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szFileName, bool bUnicode, HWND hWnd, bool bAllowUI);
 _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdrBook, _In_ const std::wstring& szFileName);
-void ExportMessages(_In_ const LPMAPIFOLDER lpFolder, HWND hWnd);
+void ExportMessages(_In_ LPMAPIFOLDER lpFolder, HWND hWnd);
 
 _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szAttName, HWND hWnd);
 _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWnd);

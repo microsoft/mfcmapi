@@ -1,14 +1,16 @@
-#include "stdafx.h"
+#include <stdafx.h>
 #include <IO/File.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
-#include <UI/FileDialogEx.h>
 #include <MAPI/MAPIProgress.h>
 #include <Interpret/Guids.h>
 #include "ImportProcs.h"
+#ifndef MRMAPI
+#include <UI/FileDialogEx.h>
 #include <UI/MFCUtilityFunctions.h>
-#include <shlobj.h>
+#endif
+#include "shlobj.h"
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <UI/Dialogs/Editors/Editor.h>
 
@@ -53,7 +55,7 @@ std::wstring GetDirectoryPath(HWND hWnd)
 	BrowseInfo.ulFlags = BIF_USENEWUI | BIF_RETURNONLYFSDIRS;
 
 	// Note - I don't initialize COM for this call because MAPIInitialize does this
-	auto lpItemIdList = SHBrowseForFolderW(&BrowseInfo);
+	const auto lpItemIdList = SHBrowseForFolderW(&BrowseInfo);
 	if (lpItemIdList)
 	{
 		EC_B(SHGetPathFromIDListW(lpItemIdList, szPath));
@@ -111,7 +113,7 @@ _Check_return_ HRESULT LoadMSGToMessage(_In_ const std::wstring& szMessageFile, 
 	*lppMessage = nullptr;
 
 	// get memory allocation function
-	auto lpMalloc = MAPIGetDefaultMalloc();
+	const auto lpMalloc = MAPIGetDefaultMalloc();
 	if (lpMalloc)
 	{
 		// Open the compound file
@@ -333,7 +335,7 @@ std::wstring BuildFileNameAndPath(
 	_In_ const std::wstring& szExt,
 	_In_ const std::wstring& szSubj,
 	_In_ const std::wstring& szRootPath,
-	_In_opt_ const LPSBinary lpBin)
+	_In_opt_ const _SBinary*lpBin)
 {
 	DebugPrint(DBGGeneric, L"BuildFileNameAndPath ext = \"%ws\"\n", szExt.c_str());
 	DebugPrint(DBGGeneric, L"BuildFileNameAndPath subj = \"%ws\"\n", szSubj.c_str());
@@ -348,7 +350,7 @@ std::wstring BuildFileNameAndPath(
 
 	// Work with a max path which allows us to add our extension.
 	// Shrink the max path to allow for a -ATTACHxxx extension.
-	auto maxFile = MAX_PATH - cleanRoot.length() - szExt.length() - MAXATTACH;
+	const auto maxFile = MAX_PATH - cleanRoot.length() - szExt.length() - MAXATTACH;
 
 	std::wstring cleanSubj;
 	if (!szSubj.empty())
@@ -378,7 +380,7 @@ std::wstring BuildFileNameAndPath(
 
 	// We couldn't build the string we wanted, so try something shorter
 	// Compute a shorter subject length that should fit.
-	auto maxSubj = maxFile - min(MAXBIN, szBin.length()) - 1;
+	const auto maxSubj = maxFile - min(MAXBIN, szBin.length()) - 1;
 	auto szFile = cleanSubj.substr(0, maxSubj) + szBin.substr(0, MAXBIN);
 	DebugPrint(DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
 	DebugPrint(DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
@@ -408,7 +410,7 @@ void SaveFolderContentsToTXT(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpFolder, bool 
 	if (!szDir.empty())
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-		CDumpStore MyDumpStore;
+		mapiprocessor::CDumpStore MyDumpStore;
 		MyDumpStore.InitMDB(lpMDB);
 		MyDumpStore.InitFolder(lpFolder);
 		MyDumpStore.InitFolderPathRoot(szDir);
@@ -690,7 +692,7 @@ _Check_return_ HRESULT CreateNewMSG(_In_ const std::wstring& szFileName, bool bU
 	*lppStorage = nullptr;
 
 	// get memory allocation function
-	auto pMalloc = MAPIGetDefaultMalloc();
+	const auto pMalloc = MAPIGetDefaultMalloc();
 	if (pMalloc)
 	{
 		STGOPTIONS myOpts = { 0 };
@@ -750,11 +752,11 @@ _Check_return_ HRESULT CreateNewMSG(_In_ const std::wstring& szFileName, bool bU
 }
 
 _Check_return_ HRESULT SaveToMSG(
-	_In_ const LPMAPIFOLDER lpFolder,
+	_In_ LPMAPIFOLDER lpFolder,
 	_In_ const std::wstring& szPathName,
 	_In_ const SPropValue& entryID,
-	_In_ const LPSPropValue lpRecordKey,
-	_In_ const LPSPropValue lpSubject,
+	_In_ const _SPropValue* lpRecordKey,
+	_In_ const _SPropValue* lpSubject,
 	bool bUnicode,
 	HWND hWnd)
 {
@@ -769,36 +771,45 @@ _Check_return_ HRESULT SaveToMSG(
 	DebugPrint(DBGGeneric, L"Source Message =\n");
 	DebugPrintBinary(DBGGeneric, entryID.Value.bin);
 
-	EC_H(CallOpenEntry(
-		nullptr,
-		nullptr,
-		reinterpret_cast<LPMAPICONTAINER>(lpFolder),
-		nullptr,
-		&entryID.Value.bin,
-		nullptr,
-		MAPI_BEST_ACCESS,
-		nullptr,
-		reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
-	if (FAILED(hRes) || !lpMessage) return hRes;
+	LPMAPICONTAINER lpMapiContainer = nullptr;
+	EC_H(lpFolder->QueryInterface(IID_IMAPIContainer, reinterpret_cast<LPVOID*>(&lpMapiContainer)));
 
-	auto szSubj = CheckStringProp(lpSubject, PT_UNICODE) ? lpSubject->Value.lpszW : L"UnknownSubject";
-	LPSBinary recordKey = (lpRecordKey && lpRecordKey->ulPropTag == PR_RECORD_KEY) ? &lpRecordKey->Value.bin : nullptr;
-
-	auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szPathName, recordKey); // STRING_OK
-	if (!szFileName.empty())
+	if (SUCCEEDED(hRes) && lpMapiContainer != nullptr)
 	{
-		DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
-
-		EC_H(SaveToMSG(
-			lpMessage,
-			szFileName,
-			bUnicode,
-			hWnd,
-			false));
-
-		DebugPrint(DBGGeneric, L"Message Saved\n");
+		EC_H(CallOpenEntry(
+			nullptr,
+			nullptr,
+			lpMapiContainer,
+			nullptr,
+			&entryID.Value.bin,
+			nullptr,
+			MAPI_BEST_ACCESS,
+			nullptr,
+			reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
 	}
 
+	if (SUCCEEDED(hRes) && lpMessage != nullptr)
+	{
+		const auto szSubj = CheckStringProp(lpSubject, PT_UNICODE) ? lpSubject->Value.lpszW : L"UnknownSubject";
+		const _SBinary* recordKey = lpRecordKey && lpRecordKey->ulPropTag == PR_RECORD_KEY ? &lpRecordKey->Value.bin : nullptr;
+
+		auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szPathName, recordKey); // STRING_OK
+		if (!szFileName.empty())
+		{
+			DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
+
+			EC_H(SaveToMSG(
+				lpMessage,
+				szFileName,
+				bUnicode,
+				hWnd,
+				false));
+
+			DebugPrint(DBGGeneric, L"Message Saved\n");
+		}
+	}
+
+	if (lpMapiContainer) lpMapiContainer->Release();
 	if (lpMessage) lpMessage->Release();
 
 	return hRes;
@@ -959,7 +970,6 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ const st
 	auto hRes = S_OK;
 	LPMAPITABLE lpAttTbl = nullptr;
 	LPSRowSet pRows = nullptr;
-	ULONG iRow;
 
 	enum
 	{
@@ -1004,7 +1014,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ const st
 			{
 				auto bDirty = false;
 
-				if (!FAILED(hRes)) for (iRow = 0; iRow < pRows->cRows; iRow++)
+				if (!FAILED(hRes)) for (ULONG iRow = 0; iRow < pRows->cRows; iRow++)
 				{
 					hRes = S_OK;
 

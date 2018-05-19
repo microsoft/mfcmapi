@@ -34,7 +34,7 @@ private:
 	void OnAddOneOffAddress();
 	void OnDeleteAttachments();
 	void OnExecuteVerbOnForm();
-	void OnGetPropsUsingLongTermEID();
+	void OnGetPropsUsingLongTermEID() const;
 	void OnLoadFromEML();
 	void OnLoadFromMSG();
 	void OnLoadFromTNEF();

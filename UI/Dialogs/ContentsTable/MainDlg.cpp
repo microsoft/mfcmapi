@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "MainDlg.h"
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
@@ -17,7 +17,7 @@
 #include <UI/Dialogs/AboutDlg.h>
 #include "FormContainerDlg.h"
 #include <UI/FileDialogEx.h>
-#include <MAPI/MAPIMime.h>
+#include "MAPI/MapiMime.h"
 #include <Interpret/InterpretProp2.h>
 #include <UI/QuickStart.h>
 #include <UI/UIFunctions.h>
@@ -115,7 +115,7 @@ void CMainDlg::AddLoadMAPIMenus() const
 	auto hRes = S_OK;
 
 	// Find the submenu with ID_LOADMAPI on it
-	auto hAddInMenu = LocateSubmenu(::GetMenu(m_hWnd), ID_LOADMAPI);
+	const auto hAddInMenu = LocateSubmenu(::GetMenu(m_hWnd), ID_LOADMAPI);
 
 	UINT uidCurMenu = ID_LOADMAPIMENUMIN;
 
@@ -128,7 +128,7 @@ void CMainDlg::AddLoadMAPIMenus() const
 			if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
 
 			DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
-			auto lpMenu = CreateMenuEntry(szPath);
+			const auto lpMenu = CreateMenuEntry(szPath);
 
 			EC_B(AppendMenu(
 				hAddInMenu,
@@ -158,7 +158,7 @@ bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect) const
 		&subMenu));
 	if (subMenu.dwItemData)
 	{
-		auto lme = reinterpret_cast<LPMENUENTRY>(subMenu.dwItemData);
+		const auto lme = reinterpret_cast<LPMENUENTRY>(subMenu.dwItemData);
 		DebugPrint(DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName.c_str());
 		HMODULE hMAPI = nullptr;
 		EC_D(hMAPI, MyLoadLibraryW(lme->m_pName));
@@ -183,8 +183,8 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		LPMAPISESSION lpMAPISession = nullptr;
 		LPADRBOOK lpAddrBook = nullptr;
-		auto bMAPIInitialized = CGlobalCache::getInstance().bMAPIInitialized();
-		auto hMAPI = GetMAPIHandle();
+		const auto bMAPIInitialized = CGlobalCache::getInstance().bMAPIInitialized();
+		const auto hMAPI = GetMAPIHandle();
 		if (m_lpMapiObjects)
 		{
 			// Don't care if these fail
@@ -192,7 +192,7 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 			lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 		}
 
-		auto bInLoadOp = m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading();
+		const auto bInLoadOp = m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading();
 
 		pMenu->EnableMenuItem(ID_LOADMAPI, DIM(!hMAPI && !bInLoadOp));
 		pMenu->EnableMenuItem(ID_UNLOADMAPI, DIM(hMAPI && !bInLoadOp));
@@ -233,7 +233,7 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 
 		if (m_lpContentsTableListCtrl)
 		{
-			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+			const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 			pMenu->EnableMenuItem(ID_OPENSELECTEDSTOREDELETEDFOLDERS, DIM(lpMAPISession && iNumSel));
 			pMenu->EnableMenuItem(ID_SETDEFAULTSTORE, DIM(lpMAPISession && 1 == iNumSel));
 			pMenu->EnableMenuItem(ID_DUMPSTORECONTENTS, DIM(lpMAPISession && 1 == iNumSel));
@@ -400,13 +400,13 @@ _Check_return_ HRESULT CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModify
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-	auto  lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
+	const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 	if (lpListData && lpListData->Contents())
 	{
-		auto lpEntryID = lpListData->Contents()->m_lpEntryID;
+		const auto lpEntryID = lpListData->Contents()->m_lpEntryID;
 		if (lpEntryID)
 		{
 			ULONG ulFlags = NULL;
@@ -522,7 +522,7 @@ void CMainDlg::OnOpenMessageStoreEID()
 	auto hRes = S_OK;
 	if (!m_lpMapiObjects) return;
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	CEditor MyEID(
@@ -593,7 +593,7 @@ void CMainDlg::OnOpenPublicFolders()
 
 	if (!m_lpMapiObjects) return;
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	CEditor MyPrompt(
@@ -632,7 +632,7 @@ void CMainDlg::OnOpenPublicFolderWithDN()
 
 	if (!m_lpMapiObjects) return;
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	CEditor MyPrompt(
@@ -675,10 +675,10 @@ void CMainDlg::OnOpenMailboxWithDN()
 
 	if (!m_lpMapiObjects) return;
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	auto szServerName = GetServerName(lpMAPISession);
+	const auto szServerName = GetServerName(lpMAPISession);
 
 	EC_H(OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 	if (!lpMDB) return;
@@ -739,10 +739,10 @@ void CMainDlg::OnOpenOtherUsersMailboxFromGAL()
 
 	if (!m_lpMapiObjects) return;
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
+	const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 	if (lpAddrBook)
 	{
 		EC_H_CANCEL(OpenOtherUsersMailboxFromGal(
@@ -769,7 +769,7 @@ void CMainDlg::OnOpenSelectedStoreDeletedFolders()
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
@@ -777,7 +777,7 @@ void CMainDlg::OnOpenSelectedStoreDeletedFolders()
 	{
 		if (lpListData && lpListData->Contents())
 		{
-			auto lpItemEID = lpListData->Contents()->m_lpEntryID;
+			const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
 			if (lpItemEID)
 			{
 				auto hRes = S_OK;
@@ -812,7 +812,7 @@ void CMainDlg::OnDumpStoreContents()
 
 	if (!m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
@@ -820,7 +820,7 @@ void CMainDlg::OnDumpStoreContents()
 	{
 		if (lpListData && lpListData->Contents())
 		{
-			auto lpItemEID = lpListData->Contents()->m_lpEntryID;
+			const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
 			if (lpItemEID)
 			{
 				EC_H(CallOpenMsgStore(
@@ -836,7 +836,7 @@ void CMainDlg::OnDumpStoreContents()
 					{
 						CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-						CDumpStore MyDumpStore;
+						mapiprocessor::CDumpStore MyDumpStore;
 						MyDumpStore.InitFolderPathRoot(szDir);
 						MyDumpStore.InitMDB(lpMDB);
 						MyDumpStore.ProcessStore();
@@ -858,10 +858,10 @@ void CMainDlg::OnDumpServerContents()
 
 	if (!m_lpMapiObjects) return;
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	auto szServerName = strings::stringTowstring(GetServerName(lpMAPISession));
+	const auto szServerName = strings::stringTowstring(GetServerName(lpMAPISession));
 
 	CEditor MyData(
 		this,
@@ -879,7 +879,7 @@ void CMainDlg::OnDumpServerContents()
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-			CDumpStore MyDumpStore;
+			mapiprocessor::CDumpStore MyDumpStore;
 			MyDumpStore.InitMailboxTablePathRoot(szDir);
 			MyDumpStore.InitSession(lpMAPISession);
 			MyDumpStore.ProcessMailboxTable(MyData.GetStringW(0));
@@ -938,7 +938,7 @@ void CMainDlg::OnLogoffWithFlags()
 void CMainDlg::OnLogon()
 {
 	if (m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading()) return;
-	ULONG ulFlags = MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI | MAPI_EXPLICIT_PROFILE; // display a profile picker box
+	const ULONG ulFlags = MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI | MAPI_EXPLICIT_PROFILE; // display a profile picker box
 
 	if (!m_lpMapiObjects) return;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -1017,7 +1017,7 @@ void CMainDlg::OnSelectFormContainer()
 
 	if (!m_lpMapiObjects || !m_lpPropDisplay) return;
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
@@ -1034,7 +1034,7 @@ void CMainDlg::OnSelectFormContainer()
 		WC_H(MyFlags.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			auto  ulFlags = MyFlags.GetHex(0);
+			const auto  ulFlags = MyFlags.GetHex(0);
 			EC_H_CANCEL(lpMAPIFormMgr->SelectFormContainer(
 				reinterpret_cast<ULONG_PTR>(m_hWnd),
 				ulFlags,
@@ -1062,7 +1062,7 @@ void CMainDlg::OnOpenFormContainer()
 
 	if (!m_lpMapiObjects || !m_lpPropDisplay) return;
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
@@ -1079,7 +1079,7 @@ void CMainDlg::OnOpenFormContainer()
 		WC_H(MyFlags.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			auto hFrmReg = MyFlags.GetHex(0);
+			const auto hFrmReg = MyFlags.GetHex(0);
 			EC_H_CANCEL(lpMAPIFormMgr->OpenFormContainer(
 				hFrmReg,
 				nullptr,
@@ -1134,7 +1134,7 @@ void CMainDlg::OnLoadMAPI()
 	WC_D(cchDllPath, GetSystemDirectoryW(szDLLPath, _countof(szDLLPath)));
 	if (cchDllPath < _countof(szDLLPath))
 	{
-		auto szFullPath = std::wstring(szDLLPath) + L"\\mapi32.dll";
+		const auto szFullPath = std::wstring(szDLLPath) + L"\\mapi32.dll";
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_PATH, szFullPath, false));
 	}
 
@@ -1171,7 +1171,7 @@ void CMainDlg::OnDisplayMAPIPath()
 	WCHAR szMAPIPath[MAX_PATH] = { 0 };
 
 	DebugPrint(DBGGeneric, L"OnDisplayMAPIPath()\n");
-	auto hMAPI = GetMAPIHandle();
+	const auto hMAPI = GetMAPIHandle();
 
 	CEditor MyData(
 		this,
@@ -1181,7 +1181,7 @@ void CMainDlg::OnDisplayMAPIPath()
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
 	if (hMAPI)
 	{
-		auto dw = GetModuleFileNameW(hMAPI, szMAPIPath, _countof(szMAPIPath));
+		const auto dw = GetModuleFileNameW(hMAPI, szMAPIPath, _countof(szMAPIPath));
 		if (dw)
 		{
 			MyData.SetStringW(0, szMAPIPath);
@@ -1246,7 +1246,7 @@ void CMainDlg::OnFastShutdown()
 	{
 		EC_H_MSG(lpClientShutdown->QueryFastShutdown(), IDS_EDQUERYFASTSHUTDOWNFAILED);
 
-		auto hResNotify = lpClientShutdown->NotifyProcessShutdown();
+		const auto hResNotify = lpClientShutdown->NotifyProcessShutdown();
 		CHECKHRESMSG(hResNotify, IDS_EDNOTIFYPROCESSSHUTDOWNFAILED);
 
 		if (SUCCEEDED(hRes))
@@ -1470,10 +1470,10 @@ void CMainDlg::OnSetDefaultStore()
 	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
+	const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 	if (lpListData && lpListData->Contents())
 	{
-		auto lpItemEID = lpListData->Contents()->m_lpEntryID;
+		const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
 		if (lpItemEID)
 		{
 			CEditor MyData(
@@ -1498,7 +1498,7 @@ void CMainDlg::OnSetDefaultStore()
 
 void CMainDlg::OnIsAttachmentBlocked()
 {
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	auto hRes = S_OK;
@@ -1522,7 +1522,7 @@ void CMainDlg::OnIsAttachmentBlocked()
 				IDS_ISATTBLOCKED,
 				IDS_RESULTOFCALLPROMPT,
 				CEDITOR_BUTTON_OK);
-			auto szResult = strings::loadstring(bBlocked ? IDS_TRUE : IDS_FALSE);
+			const auto szResult = strings::loadstring(bBlocked ? IDS_TRUE : IDS_FALSE);
 			MyResult.InitPane(0, TextPane::CreateSingleLinePane(IDS_RESULT, szResult, true));
 
 			WC_H(MyResult.DisplayDialog());
@@ -1799,7 +1799,7 @@ void CMainDlg::OnConvertMSGToXML()
 
 			if (lpMessage)
 			{
-				CDumpStore MyDumpStore;
+				mapiprocessor::CDumpStore MyDumpStore;
 				MyDumpStore.InitMessagePath(xmlfile);
 				// Just assume this message might have attachments
 				MyDumpStore.ProcessMessage(lpMessage, true, nullptr);
@@ -1820,10 +1820,10 @@ void CMainDlg::OnComputeGivenStoreHash()
 	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
+	const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 	if (lpListData && lpListData->Contents())
 	{
-		auto lpItemEID = lpListData->Contents()->m_lpEntryID;
+		const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
 
 		if (lpItemEID)
 		{
@@ -1943,7 +1943,7 @@ void CMainDlg::OnComputeGivenStoreHash()
 				dwSigHash = ComputeStoreHash(lpMappingSig->Value.bin.cb, lpMappingSig->Value.bin.lpb, nullptr, nullptr, fPublicExchangeStore);
 			}
 
-			auto dwEIDHash = ComputeStoreHash(lpItemEID->cb, lpItemEID->lpb, szPath, wzPath, fPublicExchangeStore);
+			const auto dwEIDHash = ComputeStoreHash(lpItemEID->cb, lpItemEID->lpb, szPath, wzPath, fPublicExchangeStore);
 
 			std::wstring szHash;
 			if (dwSigHash)
@@ -1983,7 +1983,7 @@ void CMainDlg::HandleAddInMenuSingle(
 {
 	if (lpParams)
 	{
-		lpParams->lpMDB = static_cast<LPMDB>(lpMAPIProp);
+		lpParams->lpMDB = dynamic_cast<LPMDB>(lpMAPIProp);
 	}
 
 	InvokeAddInMenu(lpParams);
