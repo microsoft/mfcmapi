@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "ConversationIndex.h"
 #include <Interpret/Guids.h>
-#include <Interpret/InterpretProp.h>
 
 namespace smartview
 {
@@ -81,7 +80,7 @@ namespace smartview
 	{
 		std::wstring PropString;
 		std::wstring AltPropString;
-		FileTimeToString(m_ftCurrent, PropString, AltPropString);
+		strings::FileTimeToString(m_ftCurrent, PropString, AltPropString);
 		auto szGUID = guid::GUIDToString(&m_guid);
 		auto szConversationIndex = strings::formatmessage(IDS_CONVERSATIONINDEXHEADER,
 			m_UnnamedByte,

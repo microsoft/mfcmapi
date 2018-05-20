@@ -61,4 +61,12 @@ namespace strings
 	std::vector<std::wstring> split(const std::wstring& str, wchar_t delim);
 	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim);
 	std::wstring join(const std::vector<std::wstring>& elems, wchar_t delim);
+
+	// Base64 functions
+	std::vector<BYTE> Base64Decode(const std::wstring& szEncodedStr);
+	std::wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const BYTE* lpSourceBuffer);
+
+	std::wstring CurrencyToString(const CURRENCY& curVal);
+
+	void FileTimeToString(_In_ const FILETIME& fileTime, _In_ std::wstring& PropString, _In_opt_ std::wstring& AltPropString);
 }

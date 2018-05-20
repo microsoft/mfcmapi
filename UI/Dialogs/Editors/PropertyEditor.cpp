@@ -286,7 +286,7 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetHex(0, m_lpsInputValue->Value.cur.Hi);
 			SetHex(1, m_lpsInputValue->Value.cur.Lo);
-			SetStringW(2, CurrencyToString(m_lpsInputValue->Value.cur));
+			SetStringW(2, strings::CurrencyToString(m_lpsInputValue->Value.cur));
 		}
 		else
 		{
@@ -415,7 +415,7 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetHex(0, static_cast<int>(m_lpsInputValue->Value.ft.dwLowDateTime));
 			SetHex(1, static_cast<int>(m_lpsInputValue->Value.ft.dwHighDateTime));
-			FileTimeToString(m_lpsInputValue->Value.ft, szTemp1, szTemp2);
+			strings::FileTimeToString(m_lpsInputValue->Value.ft, szTemp1, szTemp2);
 			SetStringW(2, szTemp1);
 		}
 		else
@@ -704,7 +704,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			curVal.Hi = strings::wstringToUlong(szTmpString, 16);
 			szTmpString = GetStringW(1);
 			curVal.Lo = strings::wstringToUlong(szTmpString, 16);
-			SetStringW(2, CurrencyToString(curVal));
+			SetStringW(2, strings::CurrencyToString(curVal));
 		}
 		else if (2 == i)
 		{
@@ -752,7 +752,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		szTmpString = GetStringW(1);
 		ftVal.dwHighDateTime = strings::wstringToUlong(szTmpString, 16);
 
-		FileTimeToString(ftVal, szTemp1, szTemp2);
+		strings::FileTimeToString(ftVal, szTemp1, szTemp2);
 		SetStringW(2, szTemp1);
 		break;
 	case PT_BINARY:

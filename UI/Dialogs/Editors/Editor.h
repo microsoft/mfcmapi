@@ -1,6 +1,7 @@
 #pragma once
 #include <UI/Dialogs/Dialog.h>
 #include <UI/ViewPane/ViewPane.h>
+// These panes aren't all used in Editor.h, but included so that including Editor.h elsewhere enables all pane types
 #include <UI/ViewPane/TextPane.h>
 #include <UI/ViewPane/CheckPane.h>
 #include <UI/ViewPane/DropDownPane.h>
@@ -68,7 +69,7 @@ public:
 	_Check_return_ bool GetCheck(ULONG i) const;
 	_Check_return_ int GetDropDown(ULONG i) const;
 	_Check_return_ DWORD_PTR GetDropDownValue(ULONG i) const;
-	_Check_return_ HRESULT GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lpEID) const;
+	_Check_return_ HRESULT GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID) const;
 	GUID GetSelectedGUID(ULONG iControl, bool bByteSwapped) const;
 
 	// AddIn functions
@@ -86,7 +87,7 @@ protected:
 	void SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, const std::wstring& szListString) const;
 	_Check_return_ SortListData* InsertListRow(ULONG iControl, int iRow, const std::wstring& szText) const;
 	void ClearList(ULONG iControl) const;
-	void ResizeList(ULONG uControl, bool bSort) const;
+	void ResizeList(ULONG iControl, bool bSort) const;
 
 	// Functions used by derived classes during handle change events
 	std::vector<BYTE> GetBinary(ULONG i) const;
@@ -134,53 +135,53 @@ private:
 
 	// List functions and data
 	_Check_return_ bool OnEditListEntry(ULONG ulListNum) const;
-	ULONG m_ulListNum; // Only supporting one list right now - this is the control number for it
+	ULONG m_ulListNum{}; // Only supporting one list right now - this is the control number for it
 
 	// Our UI controls. Only valid during display.
-	bool m_bHasPrompt;
+	bool m_bHasPrompt{};
 	CEdit m_Prompt;
 	CButton m_OkButton;
 	CButton m_ActionButton1;
 	CButton m_ActionButton2;
 	CButton m_ActionButton3;
 	CButton m_CancelButton;
-	ULONG m_cButtons;
+	ULONG m_cButtons{};
 
 	// Variables that get set in the constructor
-	ULONG m_bButtonFlags;
+	ULONG m_bButtonFlags{};
 
 	// Size calculations
-	int m_iMargin;
-	int m_iSideMargin;
-	int m_iSmallHeightMargin;
-	int m_iLargeHeightMargin;
-	int m_iButtonWidth;
-	int m_iEditHeight;
-	int m_iTextHeight;
-	int m_iButtonHeight;
-	int m_iMinWidth;
-	int m_iMinHeight;
+	int m_iMargin{};
+	int m_iSideMargin{};
+	int m_iSmallHeightMargin{};
+	int m_iLargeHeightMargin{};
+	int m_iButtonWidth{};
+	int m_iEditHeight{};
+	int m_iTextHeight{};
+	int m_iButtonHeight{};
+	int m_iMinWidth{};
+	int m_iMinHeight{};
 
 	// Title bar, prompt and icon
-	UINT m_uidTitle;
+	UINT m_uidTitle{};
 	std::wstring m_szTitle;
-	UINT m_uidPrompt;
+	UINT m_uidPrompt{};
 	std::wstring m_szPromptPostFix;
 	std::wstring m_szAddInTitle;
-	HICON m_hIcon;
+	HICON m_hIcon{};
 
-	UINT m_uidActionButtonText1;
-	UINT m_uidActionButtonText2;
-	UINT m_uidActionButtonText3;
+	UINT m_uidActionButtonText1{};
+	UINT m_uidActionButtonText2{};
+	UINT m_uidActionButtonText3{};
 
 	std::vector<ViewPane*> m_lpControls; // array of controls
 
-	bool m_bEnableScroll;
+	bool m_bEnableScroll{};
 	CWnd m_ScrollWindow;
-	HWND m_hWndVertScroll;
-	bool m_bScrollVisible;
+	HWND m_hWndVertScroll{};
+	bool m_bScrollVisible{};
 
-	int m_iScrollClient;
+	int m_iScrollClient{};
 
 	DECLARE_MESSAGE_MAP()
 };

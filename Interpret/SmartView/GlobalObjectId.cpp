@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 #include "GlobalObjectId.h"
-#include <Interpret/InterpretProp.h>
 #include <Interpret/InterpretProp2.h>
 #include <Interpret/ExtraPropTags.h>
 
@@ -57,7 +56,7 @@ namespace smartview
 
 		std::wstring PropString;
 		std::wstring AltPropString;
-		FileTimeToString(m_CreationTime, PropString, AltPropString);
+		strings::FileTimeToString(m_CreationTime, PropString, AltPropString);
 		szGlobalObjectId += strings::formatmessage(IDS_GLOBALOBJECTIDDATA1,
 			m_Year,
 			m_Month, szFlags.c_str(),

@@ -1,8 +1,7 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/UIFunctions.h>
 #include <Interpret/String.h>
-#include <Interpret/InterpretProp.h>
 #include <Interpret/InterpretProp2.h>
 #include <UI/MyWinApp.h>
 #include <UI/Dialogs/AboutDlg.h>
@@ -146,7 +145,7 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		// This makes it easy for me to customize the child control to do what I want
 	case WM_NOTIFY:
 	{
-		auto pHdr = reinterpret_cast<LPNMHDR>(lParam);
+		const auto pHdr = reinterpret_cast<LPNMHDR>(lParam);
 
 		switch (pHdr->code)
 		{
@@ -164,8 +163,8 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	case WM_COMMAND:
 	{
-		auto nCode = HIWORD(wParam);
-		auto idFrom = LOWORD(wParam);
+		const auto nCode = HIWORD(wParam);
+		const auto idFrom = LOWORD(wParam);
 		if (EN_CHANGE == nCode ||
 			CBN_SELCHANGE == nCode ||
 			CBN_EDITCHANGE == nCode)
@@ -189,8 +188,8 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		RECT rect = { 0 };
 		::GetClientRect(m_hWnd, &rect);
-		auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(cBackground));
-		auto bRet = PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
+		const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(cBackground));
+		const auto bRet = PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
 		SelectObject(reinterpret_cast<HDC>(wParam), hOld);
 		return bRet;
 	}
@@ -199,10 +198,10 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		if (!m_bScrollVisible) break;
 
 		static auto s_DeltaTotal = 0;
-		auto zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+		const auto zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
 		s_DeltaTotal += zDelta;
 
-		auto nLines = s_DeltaTotal / WHEEL_DELTA;
+		const auto nLines = s_DeltaTotal / WHEEL_DELTA;
 		s_DeltaTotal -= nLines * WHEEL_DELTA;
 		for (auto i = 0; i != abs(nLines); ++i)
 		{
@@ -215,8 +214,8 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	case WM_VSCROLL:
 	{
-		auto wScrollType = LOWORD(wParam);
-		auto hWndScroll = reinterpret_cast<HWND>(lParam);
+		const auto wScrollType = LOWORD(wParam);
+		const auto hWndScroll = reinterpret_cast<HWND>(lParam);
 		SCROLLINFO si = { 0 };
 
 		si.cbSize = sizeof si;
@@ -224,7 +223,7 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		::GetScrollInfo(hWndScroll, SB_CTL, &si);
 
 		// Save the position for comparison later on.
-		auto yPos = si.nPos;
+		const auto yPos = si.nPos;
 		switch (wScrollType)
 		{
 		case SB_TOP:
@@ -308,10 +307,10 @@ BOOL CEditor::OnInitDialog()
 {
 	auto hRes = S_OK;
 	std::wstring szPrefix;
-	auto szPostfix = strings::loadstring(m_uidTitle);
+	const auto szPostfix = strings::loadstring(m_uidTitle);
 	std::wstring szFullString;
 
-	auto bRet = CMyDialog::OnInitDialog();
+	const auto bRet = CMyDialog::OnInitDialog();
 
 	m_szTitle = szPostfix + m_szAddInTitle;
 	::SetWindowTextW(m_hWnd, m_szTitle.c_str());
@@ -347,9 +346,9 @@ BOOL CEditor::OnInitDialog()
 	}
 
 	// setup to get button widths
-	auto hdc = ::GetDC(m_hWnd);
+	const auto hdc = ::GetDC(m_hWnd);
 	if (!hdc) return false; // fatal error
-	auto hfontOld = SelectObject(hdc, GetSegoeFont());
+	const auto hfontOld = SelectObject(hdc, GetSegoeFont());
 
 	CWnd* pParent = this;
 	if (m_bEnableScroll)
@@ -389,7 +388,7 @@ BOOL CEditor::OnInitDialog()
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_OK)
 	{
-		auto szOk = strings::loadstring(IDS_OK);
+		const auto szOk = strings::loadstring(IDS_OK);
 		EC_B(m_OkButton.Create(
 			strings::wstringTotstring(szOk).c_str(),
 			WS_TABSTOP
@@ -403,7 +402,7 @@ BOOL CEditor::OnInitDialog()
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_ACTION1)
 	{
-		auto szActionButtonText1 = strings::loadstring(m_uidActionButtonText1);
+		const auto szActionButtonText1 = strings::loadstring(m_uidActionButtonText1);
 		EC_B(m_ActionButton1.Create(
 			strings::wstringTotstring(szActionButtonText1).c_str(),
 			WS_TABSTOP
@@ -414,13 +413,13 @@ BOOL CEditor::OnInitDialog()
 			this,
 			IDD_EDITACTION1));
 
-		auto sizeText = GetTextExtentPoint32(hdc, szActionButtonText1);
+		const auto sizeText = GetTextExtentPoint32(hdc, szActionButtonText1);
 		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_ACTION2)
 	{
-		auto szActionButtonText2 = strings::loadstring(m_uidActionButtonText2);
+		const auto szActionButtonText2 = strings::loadstring(m_uidActionButtonText2);
 		EC_B(m_ActionButton2.Create(
 			strings::wstringTotstring(szActionButtonText2).c_str(),
 			WS_TABSTOP
@@ -431,13 +430,13 @@ BOOL CEditor::OnInitDialog()
 			this,
 			IDD_EDITACTION2));
 
-		auto sizeText = GetTextExtentPoint32(hdc, szActionButtonText2);
+		const auto sizeText = GetTextExtentPoint32(hdc, szActionButtonText2);
 		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_ACTION3)
 	{
-		auto szActionButtonText3 = strings::loadstring(m_uidActionButtonText3);
+		const auto szActionButtonText3 = strings::loadstring(m_uidActionButtonText3);
 		EC_B(m_ActionButton3.Create(
 			strings::wstringTotstring(szActionButtonText3).c_str(),
 			WS_TABSTOP
@@ -448,13 +447,13 @@ BOOL CEditor::OnInitDialog()
 			this,
 			IDD_EDITACTION3));
 
-		auto sizeText = GetTextExtentPoint32(hdc, szActionButtonText3);
+		const auto sizeText = GetTextExtentPoint32(hdc, szActionButtonText3);
 		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_CANCEL)
 	{
-		auto szCancel = strings::loadstring(IDS_CANCEL);
+		const auto szCancel = strings::loadstring(IDS_CANCEL);
 		EC_B(m_CancelButton.Create(
 			strings::wstringTotstring(szCancel).c_str(),
 			WS_TABSTOP
@@ -465,7 +464,7 @@ BOOL CEditor::OnInitDialog()
 			this,
 			IDCANCEL));
 
-		auto sizeText = GetTextExtentPoint32(hdc, szCancel);
+		const auto sizeText = GetTextExtentPoint32(hdc, szCancel);
 		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
@@ -511,7 +510,7 @@ void CEditor::OnOK()
 // This should work whether the editor is active/displayed or not
 GUID CEditor::GetSelectedGUID(ULONG iControl, bool bByteSwapped) const
 {
-	auto pane = dynamic_cast<DropDownPane*>(GetPane(iControl));
+	const auto pane = dynamic_cast<DropDownPane*>(GetPane(iControl));
 	if (pane)
 	{
 		return pane->GetSelectedGUID(bByteSwapped);
@@ -576,10 +575,10 @@ int ComputePromptWidth(CEdit* lpPrompt, HDC hdc, int iMaxWidth, int* iLineCount)
 	for (auto i = 0; i < iPromptLineCount; i++)
 	{
 		// length of line i:
-		auto len = lpPrompt->LineLength(lpPrompt->LineIndex(i));
+		const auto len = lpPrompt->LineLength(lpPrompt->LineIndex(i));
 		if (len)
 		{
-			auto szLine = new TCHAR[len + 1];
+			const auto szLine = new TCHAR[len + 1];
 			memset(szLine, 0, len + 1);
 
 			lpPrompt->GetLine(i, szLine, len);
@@ -599,12 +598,12 @@ int ComputePromptWidth(CEdit* lpPrompt, HDC hdc, int iMaxWidth, int* iLineCount)
 
 int ComputeCaptionWidth(HDC hdc, const std::wstring& szTitle, int iMargin)
 {
-	auto sizeTitle = GetTextExtentPoint32(hdc, szTitle);
+	const auto sizeTitle = GetTextExtentPoint32(hdc, szTitle);
 	auto iCaptionWidth = sizeTitle.cx + iMargin; // Allow for some whitespace between the caption and buttons
 
-	auto iIconWidth = GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CXSMICON);
-	auto iButtonsWidth = GetSystemMetrics(SM_CXBORDER) + 3 * GetSystemMetrics(SM_CYSIZE);
-	auto iCaptionMargin = GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CXBORDER);
+	const auto iIconWidth = GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CXSMICON);
+	const auto iButtonsWidth = GetSystemMetrics(SM_CXBORDER) + 3 * GetSystemMetrics(SM_CYSIZE);
+	const auto iCaptionMargin = GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CXBORDER);
 
 	iCaptionWidth += iIconWidth + iButtonsWidth + iCaptionMargin;
 
@@ -620,8 +619,8 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 	// Figure a good width (cx)
 	auto cx = 0;
 
-	auto hdc = ::GetDC(m_hWnd);
-	auto hfontOld = SelectObject(hdc, GetSegoeFont());
+	const auto hdc = ::GetDC(m_hWnd);
+	const auto hfontOld = SelectObject(hdc, GetSegoeFont());
 
 	auto iPromptLineCount = 0;
 	if (m_bHasPrompt)
@@ -707,7 +706,7 @@ void CEditor::OnSetDefaultSize()
 	auto cxFullScreen = rcMaxScreen.Width();
 	auto cyFullScreen = rcMaxScreen.Height();
 
-	SIZE sScreen = { cxFullScreen, cyFullScreen };
+	const SIZE sScreen = { cxFullScreen, cyFullScreen };
 	auto sArea = ComputeWorkArea(sScreen);
 	// inflate the rectangle according to the title bar, border, etc...
 	CRect MyRect(0, 0, sArea.cx, sArea.cy);
@@ -779,7 +778,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 {
 	auto hRes = S_OK;
 	CMyDialog::OnSize(nType, cx, cy);
-	auto iCXMargin = m_iSideMargin;
+	const auto iCXMargin = m_iSideMargin;
 
 	auto iFullWidth = cx - 2 * iCXMargin;
 
@@ -811,8 +810,8 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 
 	if (m_cButtons)
 	{
-		auto iSlotWidth = m_iButtonWidth + m_iMargin;
-		auto iOffset = cx - m_iSideMargin + m_iMargin;
+		const auto iSlotWidth = m_iButtonWidth + m_iMargin;
+		const auto iOffset = cx - m_iSideMargin + m_iMargin;
 		auto iButton = 0;
 
 		// Position buttons at the bottom, on the right
@@ -902,7 +901,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 	{
 		if (iCYBottom - iCYTop < m_iScrollClient)
 		{
-			auto iScrollWidth = GetSystemMetrics(SM_CXVSCROLL);
+			const auto iScrollWidth = GetSystemMetrics(SM_CXVSCROLL);
 			iFullWidth -= iScrollWidth;
 			DebugPrint(DBGDraw, L"CEditor::OnSize Scroll iScrollWidth=%d new iFullWidth=%d\n",
 				iScrollWidth,
@@ -960,7 +959,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 				}
 			}
 
-			auto iControlHeight = iViewHeight + pane->GetFixedHeight();
+			const auto iControlHeight = iViewHeight + pane->GetFixedHeight();
 			pane->SetWindowPos(
 				iCXMargin, // x
 				iCYTop, // y
@@ -975,7 +974,7 @@ void CEditor::DeleteControls()
 {
 	for (const auto& pane : m_lpControls)
 	{
-		if (pane) delete[] pane;
+		delete[] pane;
 	}
 
 	m_lpControls.clear();
@@ -984,7 +983,7 @@ void CEditor::DeleteControls()
 // TODO: Use iNum as a proper accessor name
 void CEditor::InitPane(ULONG iNum, ViewPane* lpPane)
 {
-	auto listPane = dynamic_cast<ListPane*>(lpPane);
+	const auto listPane = dynamic_cast<ListPane*>(lpPane);
 	if (listPane) m_ulListNum = iNum;
 	m_lpControls.push_back(lpPane);
 }
@@ -1087,7 +1086,7 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t
 	*lpcbBin = NULL;
 	*lppEID = nullptr;
 
-	auto hRes = S_OK;
+	const auto hRes = S_OK;
 	auto szString = GetStringW(i);
 
 	if (!szString.empty())
@@ -1095,7 +1094,7 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t
 		std::vector<BYTE> bin;
 		if (bIsBase64) // entry was BASE64 encoded
 		{
-			bin = Base64Decode(szString);
+			bin = strings::Base64Decode(szString);
 		}
 		else // Entry was hexized string
 		{
@@ -1130,7 +1129,7 @@ void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, cons
 
 _Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, const std::wstring& szText) const
 {
-	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
+	const auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
 		return pane->InsertRow(iRow, szText);
@@ -1159,7 +1158,7 @@ void CEditor::ResizeList(ULONG iControl, bool bSort) const
 
 std::wstring CEditor::GetStringW(ULONG i) const
 {
-	auto pane = dynamic_cast<TextPane*>(GetPane(i));
+	const auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
 		return pane->GetStringW();
@@ -1170,7 +1169,7 @@ std::wstring CEditor::GetStringW(ULONG i) const
 
 _Check_return_ std::string CEditor::GetStringA(ULONG iControl) const
 {
-	auto pane = dynamic_cast<TextPane*>(GetPane(iControl));
+	const auto pane = dynamic_cast<TextPane*>(GetPane(iControl));
 	if (pane)
 	{
 		return strings::wstringTostring(pane->GetStringW());
@@ -1181,7 +1180,7 @@ _Check_return_ std::string CEditor::GetStringA(ULONG iControl) const
 
 _Check_return_ ULONG CEditor::GetHex(ULONG i) const
 {
-	auto pane = dynamic_cast<TextPane*>(GetPane(i));
+	const auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
 		return strings::wstringToUlong(pane->GetStringW(), 16);
@@ -1192,7 +1191,7 @@ _Check_return_ ULONG CEditor::GetHex(ULONG i) const
 
 _Check_return_ ULONG CEditor::GetListCount(ULONG iControl) const
 {
-	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
+	const auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
 		return pane->GetItemCount();
@@ -1203,7 +1202,7 @@ _Check_return_ ULONG CEditor::GetListCount(ULONG iControl) const
 
 _Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow) const
 {
-	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
+	const auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
 		return pane->GetItemData(iRow);
@@ -1220,11 +1219,11 @@ _Check_return_ bool CEditor::IsDirty(ULONG iControl) const
 
 _Check_return_ ULONG CEditor::GetPropTag(ULONG i) const
 {
-	auto pane = dynamic_cast<TextPane*>(GetPane(i));
+	const auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
 
-		auto ulTag = PropNameToPropTag(pane->GetStringW());
+		const auto ulTag = PropNameToPropTag(pane->GetStringW());
 
 		// Figure if this is a full tag or just an ID
 		if (ulTag & PROP_TAG_MASK) // Full prop tag
@@ -1241,7 +1240,7 @@ _Check_return_ ULONG CEditor::GetPropTag(ULONG i) const
 
 _Check_return_ ULONG CEditor::GetDecimal(ULONG i) const
 {
-	auto pane = dynamic_cast<TextPane*>(GetPane(i));
+	const auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
 		return strings::wstringToUlong(pane->GetStringW(), 10);
@@ -1252,7 +1251,7 @@ _Check_return_ ULONG CEditor::GetDecimal(ULONG i) const
 
 _Check_return_ bool CEditor::GetCheck(ULONG i) const
 {
-	auto pane = dynamic_cast<CheckPane*>(GetPane(i));
+	const auto pane = dynamic_cast<CheckPane*>(GetPane(i));
 	if (pane)
 	{
 		return pane->GetCheck();
@@ -1263,7 +1262,7 @@ _Check_return_ bool CEditor::GetCheck(ULONG i) const
 
 _Check_return_ int CEditor::GetDropDown(ULONG i) const
 {
-	auto pane = dynamic_cast<DropDownPane*>(GetPane(i));
+	const auto pane = dynamic_cast<DropDownPane*>(GetPane(i));
 	if (pane)
 	{
 		return pane->GetDropDown();
@@ -1274,7 +1273,7 @@ _Check_return_ int CEditor::GetDropDown(ULONG i) const
 
 _Check_return_ DWORD_PTR CEditor::GetDropDownValue(ULONG i) const
 {
-	auto pane = dynamic_cast<DropDownPane*>(GetPane(i));
+	const auto pane = dynamic_cast<DropDownPane*>(GetPane(i));
 	if (pane)
 	{
 		return pane->GetDropDownValue();
@@ -1318,7 +1317,7 @@ _Check_return_ ULONG CEditor::HandleChange(UINT nID)
 		// Or the top level control/view has a control in it that can handle it
 		// In which case stop looking.
 		// We do not return the control number because this is a button event, not an edit change
-		if (-1 != pane->HandleChange(nID))
+		if (pane->HandleChange(nID) != -1)
 		{
 			return static_cast<ULONG>(-1);
 		}

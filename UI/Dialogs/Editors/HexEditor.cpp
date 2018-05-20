@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "HexEditor.h"
 #include <UI/FileDialogEx.h>
 #include "ImportProcs.h"
@@ -52,9 +52,9 @@ void CHexEditor::OnCancel()
 
 _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 {
-	auto i = CEditor::HandleChange(nID);
+	const auto i = CEditor::HandleChange(nID);
 
-	if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
+	if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
 	LPBYTE lpb = nullptr;
 	size_t cb = 0;
@@ -70,7 +70,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		lpb = LPBYTE(text.c_str());
 		cb = text.length() * sizeof(CHAR);
 
-		szEncodeStr = Base64Encode(cb, lpb);
+		szEncodeStr = strings::Base64Encode(cb, lpb);
 		cchEncodeStr = szEncodeStr.length();
 		SetStringW(HEXED_BASE64, szEncodeStr);
 
@@ -85,7 +85,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		lpb = LPBYTE(text.c_str());
 		cb = text.length() * sizeof(WCHAR);
 
-		szEncodeStr = Base64Encode(cb, lpb);
+		szEncodeStr = strings::Base64Encode(cb, lpb);
 		cchEncodeStr = szEncodeStr.length();
 		SetStringW(HEXED_BASE64, szEncodeStr);
 
@@ -100,7 +100,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		szTmpString = strings::CleanString(szTmpString);
 
 		cchEncodeStr = szTmpString.length();
-		auto bin = Base64Decode(szTmpString);
+		auto bin = strings::Base64Decode(szTmpString);
 		lpb = bin.data();
 		cb = bin.size();
 
@@ -133,7 +133,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 			SetStringW(HEXED_UNICODE, L"");
 		}
 
-		szEncodeStr = Base64Encode(cb, lpb);
+		szEncodeStr = strings::Base64Encode(cb, lpb);
 		cchEncodeStr = szEncodeStr.length();
 		SetStringW(HEXED_BASE64, szEncodeStr);
 	}
@@ -145,13 +145,13 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	if (HEXED_SMARTVIEW != i)
 	{
 		// length of base64 encoded string
-		auto lpPane = static_cast<CountedTextPane*>(GetPane(HEXED_BASE64));
+		auto lpPane = dynamic_cast<CountedTextPane*>(GetPane(HEXED_BASE64));
 		if (lpPane)
 		{
 			lpPane->SetCount(cchEncodeStr);
 		}
 
-		lpPane = static_cast<CountedTextPane*>(GetPane(HEXED_HEX));
+		lpPane = dynamic_cast<CountedTextPane*>(GetPane(HEXED_HEX));
 		if (lpPane)
 		{
 			lpPane->SetCount(cb);
@@ -170,7 +170,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 void CHexEditor::UpdateParser() const
 {
 	// Find out how to interpret the data
-	auto lpPane = static_cast<SmartViewPane*>(GetPane(HEXED_SMARTVIEW));
+	auto lpPane = dynamic_cast<SmartViewPane*>(GetPane(HEXED_SMARTVIEW));
 	if (lpPane)
 	{
 		auto bin = GetBinary(HEXED_HEX);
@@ -208,7 +208,7 @@ void CHexEditor::OnEditAction1()
 
 			if (lpStream)
 			{
-				auto lpPane = static_cast<TextPane*>(GetPane(HEXED_HEX));
+				auto lpPane = dynamic_cast<TextPane*>(GetPane(HEXED_HEX));
 				if (lpPane)
 				{
 					lpPane->SetBinaryStream(lpStream);
@@ -247,7 +247,7 @@ void CHexEditor::OnEditAction2()
 
 			if (lpStream)
 			{
-				auto lpPane = static_cast<TextPane*>(GetPane(HEXED_HEX));
+				const auto lpPane = dynamic_cast<TextPane*>(GetPane(HEXED_HEX));
 				if (lpPane)
 				{
 					lpPane->GetBinaryStream(lpStream);
