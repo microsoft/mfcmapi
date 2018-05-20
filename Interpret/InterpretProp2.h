@@ -21,13 +21,7 @@ _Check_return_ ULONG LookupPropName(_In_ const std::wstring& lpszPropName);
 _Check_return_ ULONG PropNameToPropTag(_In_ const std::wstring& lpszPropName);
 _Check_return_ ULONG PropTypeNameToPropType(_In_ const std::wstring& lpszPropType);
 
-std::wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
-std::wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID);
-LPCGUID GUIDNameToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped);
-_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID);
-_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped);
-
-std::vector<std::wstring> NameIDToPropNames(_In_ const LPMAPINAMEID lpNameID);
+std::vector<std::wstring> NameIDToPropNames(_In_ const MAPINAMEID* lpNameID);
 
 std::wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue);
 std::wstring AllFlagsToString(ULONG ulFlagName, bool bHex);

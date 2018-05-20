@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <Interpret/InterpretProp2.h>
 #include <Interpret/String.h>
 #include <unordered_map>
@@ -9,8 +9,8 @@ static WCHAR szPropSeparator[] = L", "; // STRING_OK
 // Compare tag sort order.
 bool CompareTagsSortOrder(int a1, int a2)
 {
-	auto lpTag1 = &PropTagArray[a1];
-	auto lpTag2 = &PropTagArray[a2];;
+	const auto lpTag1 = &PropTagArray[a1];
+	const auto lpTag2 = &PropTagArray[a2];;
 
 	if (lpTag1->ulSortOrder < lpTag2->ulSortOrder) return false;
 	if (lpTag1->ulSortOrder == lpTag2->ulSortOrder)
@@ -42,7 +42,7 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 	auto ulUpperBound = static_cast<ULONG>(MyArray.size() - 1); // size-1 is the last entry
 	auto ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
 	ULONG ulFirstMatch = ulNoMatch;
-	auto ulMaskedTarget = ulTarget & PROP_TAG_MASK;
+	const auto ulMaskedTarget = ulTarget & PROP_TAG_MASK;
 
 	// Short circuit property IDs with the high bit set if bIsAB wasn't passed
 	if (!bIsAB && ulTarget & 0x80000000) return;
@@ -88,9 +88,7 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 			ulFirstMatch = ulFirstMatch - 1;
 		}
 
-		// Grab our matches
-		ULONG ulCur;
-		for (ulCur = ulFirstMatch; ulCur < MyArray.size() && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulCur].ulValue); ulCur++)
+		for (ULONG ulCur = ulFirstMatch; ulCur < MyArray.size() && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulCur].ulValue); ulCur++)
 		{
 			if (ulTarget == MyArray[ulCur].ulValue)
 			{
@@ -114,7 +112,7 @@ PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB)
 {
 	auto ulKey = (bIsAB ? static_cast<ULONG64>(1) << 32 : 0) | ulPropTag;
 
-	auto match = g_PropNames.find(ulKey);
+	const auto match = g_PropNames.find(ulKey);
 	if (match != g_PropNames.end())
 	{
 		return match->second;
@@ -172,11 +170,11 @@ _Check_return_ ULONG LookupPropName(_In_ const std::wstring& lpszPropName)
 	std::wstring trimName = strings::TrimString(lpszPropName);
 	if (trimName.empty()) return 0;
 
-	for (size_t ulCur = 0; ulCur < PropTagArray.size(); ulCur++)
+	for (auto& tag : PropTagArray)
 	{
-		if (0 == lstrcmpiW(trimName.c_str(), PropTagArray[ulCur].lpszName))
+		if (0 == lstrcmpiW(trimName.c_str(), tag.lpszName))
 		{
-			return  PropTagArray[ulCur].ulValue;
+			return tag.ulValue;
 		}
 	}
 
@@ -187,7 +185,7 @@ _Check_return_ ULONG PropNameToPropTag(_In_ const std::wstring& lpszPropName)
 {
 	if (lpszPropName.empty()) return 0;
 
-	auto ulTag = strings::wstringToUlong(lpszPropName, 16);
+	const auto ulTag = strings::wstringToUlong(lpszPropName, 16);
 	if (ulTag != NULL)
 	{
 		return ulTag;
@@ -202,7 +200,7 @@ _Check_return_ ULONG PropTypeNameToPropType(_In_ const std::wstring& lpszPropTyp
 
 	// Check for numbers first before trying the string as an array lookup.
 	// This will translate '0x102' to 0x102, 0x3 to 3, etc.
-	auto ulType = strings::wstringToUlong(lpszPropType, 16);
+	const auto ulType = strings::wstringToUlong(lpszPropType, 16);
 	if (ulType != NULL) return ulType;
 
 	auto ulPropType = PT_UNSPECIFIED;
@@ -219,119 +217,8 @@ _Check_return_ ULONG PropTypeNameToPropType(_In_ const std::wstring& lpszPropTyp
 	return ulPropType;
 }
 
-std::wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
-{
-	GUID nullGUID = { 0 };
-
-	if (!lpGUID)
-	{
-		lpGUID = &nullGUID;
-	}
-
-	return strings::format(L"{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}", // STRING_OK
-		lpGUID->Data1,
-		lpGUID->Data2,
-		lpGUID->Data3,
-		lpGUID->Data4[0],
-		lpGUID->Data4[1],
-		lpGUID->Data4[2],
-		lpGUID->Data4[3],
-		lpGUID->Data4[4],
-		lpGUID->Data4[5],
-		lpGUID->Data4[6],
-		lpGUID->Data4[7]);
-}
-
-std::wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
-{
-	auto szGUID = GUIDToString(lpGUID);
-
-	szGUID += L" = "; // STRING_OK
-
-	if (lpGUID)
-	{
-		for (const auto& guid : PropGuidArray)
-		{
-			if (IsEqualGUID(*lpGUID, *guid.lpGuid))
-			{
-				return szGUID + guid.lpszName;
-			}
-		}
-	}
-
-	return szGUID + strings::loadstring(IDS_UNKNOWNGUID);
-}
-
-LPCGUID GUIDNameToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped)
-{
-	LPGUID lpGuidRet = nullptr;
-	LPCGUID lpGUID = nullptr;
-	GUID guid = { 0 };
-
-	// Try the GUID like PS_* first
-	for (const auto& propGuid : PropGuidArray)
-	{
-		if (0 == lstrcmpiW(szGUID.c_str(), propGuid.lpszName))
-		{
-			lpGUID = propGuid.lpGuid;
-			break;
-		}
-	}
-
-	if (!lpGUID) // no match - try it like a guid {}
-	{
-		guid = StringToGUID(szGUID, bByteSwapped);
-		if (guid != GUID_NULL)
-		{
-			lpGUID = &guid;
-		}
-	}
-
-	if (lpGUID)
-	{
-		lpGuidRet = new GUID;
-		if (lpGuidRet)
-		{
-			memcpy(lpGuidRet, lpGUID, sizeof(GUID));
-		}
-	}
-
-	return lpGuidRet;
-}
-
-_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID)
-{
-	return StringToGUID(szGUID, false);
-}
-
-_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped)
-{
-	auto guid = GUID_NULL;
-	if (szGUID.empty()) return guid;
-
-	auto bin = strings::HexStringToBin(szGUID, sizeof(GUID));
-	if (bin.size() == sizeof(GUID))
-	{
-		memcpy(&guid, bin.data(), sizeof(GUID));
-
-		// Note that we get the bByteSwapped behavior by default. We have to work to get the 'normal' behavior
-		if (!bByteSwapped)
-		{
-			auto lpByte = reinterpret_cast<LPBYTE>(&guid);
-			auto bByte = lpByte[0];
-			lpByte[0] = lpByte[3];
-			lpByte[3] = bByte;
-			bByte = lpByte[1];
-			lpByte[1] = lpByte[2];
-			lpByte[2] = bByte;
-		}
-	}
-
-	return guid;
-}
-
 // Returns string built from NameIDArray
-std::vector<std::wstring> NameIDToPropNames(_In_ const LPMAPINAMEID lpNameID)
+std::vector<std::wstring> NameIDToPropNames(_In_ const _MAPINAMEID* lpNameID)
 {
 	std::vector<std::wstring> results;
 	if (!lpNameID) return{};
@@ -477,7 +364,7 @@ std::wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue)
 		else if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
 		{
 			// find any bits we need to clear
-			auto lClearedBits = FlagArray[ulCurEntry].lFlagValue & lTempValue;
+			const auto lClearedBits = FlagArray[ulCurEntry].lFlagValue & lTempValue;
 			// report what we found
 			if (0 != lClearedBits)
 			{
@@ -614,7 +501,7 @@ _Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag,
 					if (StatInfo.cbSize.LowPart)
 					{
 						LPBYTE lpBuffer = nullptr;
-						auto ulBufferSize = StatInfo.cbSize.LowPart;
+						const auto ulBufferSize = StatInfo.cbSize.LowPart;
 						ULONG ulTrailingNullSize = 0;
 						switch (PROP_TYPE(ulPropTag))
 						{

@@ -115,12 +115,12 @@ _Check_return_ LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDN
 {
 	if (!lpszDispIDName) return nullptr;
 
-	auto entry = find_if(begin(NameIDArray), end(NameIDArray), [&](NAMEID_ARRAY_ENTRY& nameID)
+	const auto entry = find_if(begin(NameIDArray), end(NameIDArray), [&](NAMEID_ARRAY_ENTRY& nameID)
 	{
 		if (0 == wcscmp(nameID.lpszName, lpszDispIDName))
 		{
 			// PSUNKNOWN is used as a placeholder in NameIDArray - don't return matching entries
-			if (!IsEqualGUID(*nameID.lpGuid, PSUNKNOWN)) return true;
+			if (!IsEqualGUID(*nameID.lpGuid, guid::PSUNKNOWN)) return true;
 		}
 
 		return false;
@@ -141,7 +141,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 	// Assume an ID to help with the dispid case
 	NamedID.ulKind = MNID_ID;
 
-	auto iCurSel = GetDropDownSelection(PROPTAG_NAMEPROPKIND);
+	const auto iCurSel = GetDropDownSelection(PROPTAG_NAMEPROPKIND);
 	if (iCurSel != CB_ERR)
 	{
 		if (0 == iCurSel) NamedID.ulKind = MNID_STRING;
@@ -157,7 +157,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 	if (MNID_ID == NamedID.ulKind)
 	{
 		// Now check if that string is a known dispid
-		auto lpNameIDEntry = GetDispIDFromName(szName.c_str());
+		const auto lpNameIDEntry = GetDispIDFromName(szName.c_str());
 
 		// If we matched on a dispid name, use that for our lookup
 		// Note that we should only ever reach this case if the user typed a dispid name
@@ -175,7 +175,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 
 			if (PROPTAG_NAMEPROPGUID != ulSkipField)
 			{
-				SetDropDownSelection(PROPTAG_NAMEPROPGUID, GUIDToString(lpNameIDEntry->lpGuid));
+				SetDropDownSelection(PROPTAG_NAMEPROPGUID, guid::GUIDToString(lpNameIDEntry->lpGuid));
 			}
 
 			// This will accomplish setting the type field
@@ -217,7 +217,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType() const
 {
 	std::wstring szType;
-	auto iCurSel = GetDropDownSelection(PROPTAG_TYPE);
+	const auto iCurSel = GetDropDownSelection(PROPTAG_TYPE);
 	if (iCurSel != CB_ERR)
 	{
 		szType = PropTypeArray[iCurSel].lpszName;
@@ -232,7 +232,7 @@ _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType() const
 
 _Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 {
-	auto i = CEditor::HandleChange(nID);
+	const auto i = CEditor::HandleChange(nID);
 
 	if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
 
@@ -243,15 +243,15 @@ _Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 		break;
 	case PROPTAG_ID: // Prop ID changed
 	{
-		auto szID = GetStringW(PROPTAG_ID);
-		auto ulID = strings::wstringToUlong(szID, 16);
+		const auto szID = GetStringW(PROPTAG_ID);
+		const auto ulID = strings::wstringToUlong(szID, 16);
 
 		m_ulPropTag = PROP_TAG(PROP_TYPE(m_ulPropTag), ulID);
 	}
 	break;
 	case PROPTAG_TYPE: // Prop Type changed
 	{
-		auto ulType = GetSelectedPropType();
+		const auto ulType = GetSelectedPropType();
 
 		m_ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, ulType);
 	}
@@ -340,7 +340,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 
 			if (PROPTAG_NAMEPROPGUID != ulSkipField)
 			{
-				SetDropDownSelection(PROPTAG_NAMEPROPGUID, GUIDToString(lppPropNames[0]->lpguid));
+				SetDropDownSelection(PROPTAG_NAMEPROPGUID, guid::GUIDToString(lppPropNames[0]->lpguid));
 			}
 		}
 		else
@@ -369,7 +369,7 @@ void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_ const std::wstring&s
 
 _Check_return_ std::wstring CPropertyTagEditor::GetDropStringUseControl(ULONG iControl) const
 {
-	auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
+	const auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
 	if (lpPane)
 	{
 		return lpPane->GetDropStringUseControl();
@@ -380,7 +380,7 @@ _Check_return_ std::wstring CPropertyTagEditor::GetDropStringUseControl(ULONG iC
 
 _Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG iControl) const
 {
-	auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
+	const auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
 	if (lpPane)
 	{
 		return lpPane->GetDropDownSelection();

@@ -1,10 +1,12 @@
-#include "stdafx.h"
-#include <MAPI/MAPIMime.h>
+#include "StdAfx.h"
+#include <MAPI/MapiMime.h>
 #include <IO/File.h>
 #include <Interpret/Guids.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include "ImportProcs.h"
+#ifndef MRMAPI
 #include <Interpret/ExtraPropTags.h>
+#endif
 
 _Check_return_ HRESULT ImportEMLToIMessage(
 	_In_z_ LPCWSTR lpszEMLFile,
@@ -20,10 +22,10 @@ _Check_return_ HRESULT ImportEMLToIMessage(
 	auto hRes = S_OK;
 	LPCONVERTERSESSION lpConverter = nullptr;
 
-	EC_H_MSG(CoCreateInstance(CLSID_IConverterSession,
+	EC_H_MSG(CoCreateInstance(guid::CLSID_IConverterSession,
 		nullptr,
 		CLSCTX_INPROC_SERVER,
-		IID_IConverterSession,
+		guid::IID_IConverterSession,
 		reinterpret_cast<LPVOID*>(&lpConverter)),IDS_NOCONVERTERSESSION);
 	if (SUCCEEDED(hRes) && lpConverter)
 	{
@@ -75,10 +77,10 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 
 	LPCONVERTERSESSION lpConverter = nullptr;
 
-	EC_H_MSG(CoCreateInstance(CLSID_IConverterSession,
+	EC_H_MSG(CoCreateInstance(guid::CLSID_IConverterSession,
 		nullptr,
 		CLSCTX_INPROC_SERVER,
-		IID_IConverterSession,
+		guid::IID_IConverterSession,
 		reinterpret_cast<LPVOID*>(&lpConverter)),IDS_NOCONVERTERSESSION);
 	if (SUCCEEDED(hRes) && lpConverter)
 	{
@@ -96,7 +98,7 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 		}
 		if (SUCCEEDED(hRes) && ulWrapLines != USE_DEFAULT_WRAPPING)
 		{
-			EC_MAPI(lpConverter->SetTextWrapping(ulWrapLines != 0 ? true : false, ulWrapLines));
+			EC_MAPI(lpConverter->SetTextWrapping(ulWrapLines != 0, ulWrapLines));
 		}
 
 		if (SUCCEEDED(hRes))
@@ -120,7 +122,7 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 						&lpFileStm));
 					if (SUCCEEDED(hRes) && lpFileStm)
 					{
-						LARGE_INTEGER dwBegin = {0};
+						const LARGE_INTEGER dwBegin = {0};
 						EC_MAPI(lpMimeStm->Seek(dwBegin, STREAM_SEEK_SET, nullptr));
 						if (SUCCEEDED(hRes))
 						{
@@ -232,13 +234,13 @@ _Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CONVERTFLAGS, false));
-	MyData.SetHex(0,CCSF_SMTP);
+	MyData.SetHex(0, CCSF_SMTP);
 	MyData.InitPane(1, CheckPane::Create(IDS_CONVERTDOENCODINGTYPE, false, false));
 	MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_CONVERTENCODINGTYPE, false));
-	MyData.SetHex(2,IET_7BIT);
+	MyData.SetHex(2, IET_7BIT);
 	MyData.InitPane(3, CheckPane::Create(IDS_CONVERTDOMIMESAVETYPE, false, false));
 	MyData.InitPane(4, TextPane::CreateSingleLinePane(IDS_CONVERTMIMESAVETYPE, false));
-	MyData.SetHex(4,SAVE_RFC822);
+	MyData.SetHex(4, SAVE_RFC822);
 	MyData.InitPane(5, CheckPane::Create(IDS_CONVERTDOWRAPLINES, false, false));
 	MyData.InitPane(6, TextPane::CreateSingleLinePane(IDS_CONVERTWRAPLINECOUNT, false));
 	MyData.SetDecimal(6,74);

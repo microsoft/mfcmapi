@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include <MAPI/NamedPropCache.h>
 #include <Interpret/InterpretProp2.h>
+#include "Interpret/Guids.h"
 
 // We keep a list of named prop cache entries
 std::list<NamedPropCacheEntry> g_lpNamedPropCache;
@@ -196,7 +197,7 @@ void AddMapping(ULONG cbSig, // Count bytes of signature
 				auto names = NameIDToPropNames(lppPropNames[ulSource]);
 				if (names.empty())
 				{
-					DebugPrint(DBGNamedPropCacheMisses, L"AddMapping: Caching unknown property 0x%08X %ws\n", lppPropNames[ulSource]->Kind.lID, GUIDToStringAndName(lppPropNames[ulSource]->lpguid).c_str());
+					DebugPrint(DBGNamedPropCacheMisses, L"AddMapping: Caching unknown property 0x%08X %ws\n", lppPropNames[ulSource]->Kind.lID, guid::GUIDToStringAndName(lppPropNames[ulSource]->lpguid).c_str());
 				}
 			}
 

@@ -2,7 +2,7 @@
 #include "RuleCondition.h"
 #include "RestrictionStruct.h"
 #include <Interpret/String.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/Guids.h>
 
 namespace smartview
 {
@@ -86,7 +86,7 @@ namespace smartview
 				ruleCondition.push_back(strings::formatmessage(IDS_RULECONNAMEPROPKIND,
 					m_NamedPropertyInformation.PropertyName[i].Kind));
 
-				ruleCondition.push_back(GUIDToString(&m_NamedPropertyInformation.PropertyName[i].Guid));
+				ruleCondition.push_back(guid::GUIDToString(&m_NamedPropertyInformation.PropertyName[i].Guid));
 
 				if (MNID_ID == m_NamedPropertyInformation.PropertyName[i].Kind)
 				{

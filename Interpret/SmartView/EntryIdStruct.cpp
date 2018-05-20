@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "EntryIdStruct.h"
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/String.h>
@@ -29,26 +29,26 @@ namespace smartview
 			m_ObjectType = eidtEphemeral;
 		}
 		// One Off Recipient
-		else if (!memcmp(&m_ProviderUID, &muidOOP, sizeof(GUID)))
+		else if (!memcmp(&m_ProviderUID, &guid::muidOOP, sizeof(GUID)))
 		{
 			m_ObjectType = eidtOneOff;
 		}
 		// Address Book Recipient
-		else if (!memcmp(&m_ProviderUID, &muidEMSAB, sizeof(GUID)))
+		else if (!memcmp(&m_ProviderUID, &guid::muidEMSAB, sizeof(GUID)))
 		{
 			m_ObjectType = eidtAddressBook;
 		}
 		// Contact Address Book / Personal Distribution List (PDL)
-		else if (!memcmp(&m_ProviderUID, &muidContabDLL, sizeof(GUID)))
+		else if (!memcmp(&m_ProviderUID, &guid::muidContabDLL, sizeof(GUID)))
 		{
 			m_ObjectType = eidtContact;
 		}
 		// message store objects
-		else if (!memcmp(&m_ProviderUID, &muidStoreWrap, sizeof(GUID)))
+		else if (!memcmp(&m_ProviderUID, &guid::muidStoreWrap, sizeof(GUID)))
 		{
 			m_ObjectType = eidtMessageDatabase;
 		}
-		else if (!memcmp(&m_ProviderUID, &WAB_GUID, sizeof(GUID)))
+		else if (!memcmp(&m_ProviderUID, &guid::WAB_GUID, sizeof(GUID)))
 		{
 			m_ObjectType = eidtWAB;
 		}
@@ -319,7 +319,7 @@ namespace smartview
 				m_abFlags[3]);
 		}
 
-		auto szGUID = GUIDToStringAndName(&m_ProviderUID);
+		auto szGUID = guid::GUIDToStringAndName(&m_ProviderUID);
 		szEntryId += strings::formatmessage(IDS_ENTRYIDPROVIDERGUID, szGUID.c_str());
 
 		if (eidtEphemeral == m_ObjectType)
@@ -382,7 +382,7 @@ namespace smartview
 			case CONTAB_ROOT:
 			case CONTAB_CONTAINER:
 			case CONTAB_SUBROOT:
-				szGUID = GUIDToStringAndName(&m_ContactAddressBookObject.muidID);
+				szGUID = guid::GUIDToStringAndName(&m_ContactAddressBookObject.muidID);
 				szEntryId += strings::formatmessage(IDS_ENTRYIDCONTACTADDRESSDATACONTAINER, szGUID.c_str());
 				break;
 			default:
@@ -416,7 +416,7 @@ namespace smartview
 			{
 				auto szWrappedType = InterpretNumberAsStringProp(m_MessageDatabaseObject.WrappedType, PR_PROFILE_OPEN_FLAGS);
 
-				szGUID = GUIDToStringAndName(&m_MessageDatabaseObject.WrappedProviderUID);
+				szGUID = guid::GUIDToStringAndName(&m_MessageDatabaseObject.WrappedProviderUID);
 				szEntryId += strings::formatmessage(IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATA,
 					m_MessageDatabaseObject.WrappedFlags,
 					szGUID.c_str(),
@@ -465,7 +465,7 @@ namespace smartview
 		{
 			auto szType = InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
 
-			auto szDatabaseGUID = GUIDToStringAndName(&m_FolderOrMessage.FolderObject.DatabaseGUID);
+			auto szDatabaseGUID = guid::GUIDToStringAndName(&m_FolderOrMessage.FolderObject.DatabaseGUID);
 
 			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEFOLDERDATA,
 				m_FolderOrMessage.Type, szType.c_str(),
@@ -478,8 +478,8 @@ namespace smartview
 		else if (eidtMessage == m_ObjectType)
 		{
 			auto szType = InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
-			auto szFolderDatabaseGUID = GUIDToStringAndName(&m_FolderOrMessage.MessageObject.FolderDatabaseGUID);
-			auto szMessageDatabaseGUID = GUIDToStringAndName(&m_FolderOrMessage.MessageObject.MessageDatabaseGUID);
+			auto szFolderDatabaseGUID = guid::GUIDToStringAndName(&m_FolderOrMessage.MessageObject.FolderDatabaseGUID);
+			auto szMessageDatabaseGUID = guid::GUIDToStringAndName(&m_FolderOrMessage.MessageObject.MessageDatabaseGUID);
 
 			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEMESSAGEDATA,
 				m_FolderOrMessage.Type, szType.c_str(),

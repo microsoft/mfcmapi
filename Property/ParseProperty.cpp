@@ -4,7 +4,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/InterpretProp2.h>
+#include "Interpret/Guids.h"
 
 std::wstring BuildErrorPropString(_In_ const _SPropValue* lpProp)
 {
@@ -197,7 +197,7 @@ Property ParseProperty(_In_ const _SPropValue* lpProp)
 			break;
 		case PT_CLSID:
 			// TODO: One string matches current behavior - look at splitting to two strings in future change
-			szTmp = GUIDToStringAndName(lpProp->Value.lpguid);
+			szTmp = guid::GUIDToStringAndName(lpProp->Value.lpguid);
 			break;
 		case PT_BINARY:
 			szTmp = strings::BinToHexString(&lpProp->Value.bin, false);

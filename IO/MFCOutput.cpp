@@ -7,6 +7,7 @@
 #include <Interpret/SmartView/SmartView.h>
 #include <MAPI/ColumnTags.h>
 #include "Property/ParseProperty.h"
+#include "Interpret/Guids.h"
 #ifndef MRMAPI
 #include "UI/Dialogs/Editors/DbgView.h"
 #endif
@@ -310,7 +311,7 @@ void _OutputNamedPropID(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPINAMEID 
 			lpName->Kind.lpwstrName);
 	}
 
-	Output(ulDbgLvl, fFile, false, GUIDToStringAndName(lpName->lpguid));
+	Output(ulDbgLvl, fFile, false, guid::GUIDToStringAndName(lpName->lpguid));
 	Output(ulDbgLvl, fFile, false, L"\n");
 }
 

@@ -1,6 +1,6 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "XID.h"
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/Guids.h>
 
 namespace smartview
 {
@@ -20,7 +20,7 @@ namespace smartview
 	_Check_return_ std::wstring XID::ToStringInternal()
 	{
 		return strings::formatmessage(IDS_XID,
-			GUIDToString(&m_NamespaceGuid).c_str(),
+			guid::GUIDToString(&m_NamespaceGuid).c_str(),
 			strings::BinToHexString(m_LocalID, true).c_str());
 	}
 }

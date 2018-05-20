@@ -6,9 +6,11 @@
 #include <Interpret/String.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <Interpret/Guids.h>
-#include <Interpret/InterpretProp2.h>
 #include <Interpret/ExtraPropTags.h>
+#ifndef MRMAPI
 #include <MAPI/MAPIABFunctions.h>
+#include <Interpret/InterpretProp2.h>
+#endif
 
 _Check_return_ HRESULT CallOpenMsgStore(
 	_In_ LPMAPISESSION lpSession,
@@ -136,7 +138,7 @@ _Check_return_ HRESULT GetMailboxTable5(
 	LPEXCHANGEMANAGESTORE5 lpManageStore5 = nullptr;
 
 	EC_MAPI(lpMDB->QueryInterface(
-		IID_IExchangeManageStore5,
+		guid::IID_IExchangeManageStore5,
 		reinterpret_cast<LPVOID*>(&lpManageStore5)));
 
 	if (lpManageStore5)
@@ -269,7 +271,7 @@ _Check_return_ HRESULT GetPublicFolderTable5(
 	LPEXCHANGEMANAGESTORE5 lpManageStore5 = nullptr;
 
 	EC_MAPI(lpMDB->QueryInterface(
-		IID_IExchangeManageStore5,
+		guid::IID_IExchangeManageStore5,
 		reinterpret_cast<LPVOID*>(&lpManageStore5)));
 
 	if (lpManageStore5)
@@ -399,7 +401,7 @@ _Check_return_ HRESULT CreateStoreEntryID2(
 	}
 
 	EC_MAPI(lpMDB->QueryInterface(
-		IID_IExchangeManageStoreEx,
+		guid::IID_IExchangeManageStoreEx,
 		reinterpret_cast<LPVOID*>(&lpXManageStoreEx)));
 
 	if (lpXManageStoreEx)
@@ -748,7 +750,6 @@ _Check_return_ HRESULT OpenMessageStoreGUID(
 {
 	LPMAPITABLE pStoresTbl = nullptr;
 	LPSRowSet pRow = nullptr;
-	ULONG ulRowNum;
 	auto hRes = S_OK;
 
 	enum
@@ -780,7 +781,7 @@ _Check_return_ HRESULT OpenMessageStoreGUID(
 			&pRow));
 		if (pRow)
 		{
-			if (!FAILED(hRes)) for (ulRowNum = 0; ulRowNum < pRow->cRows; ulRowNum++)
+			if (!FAILED(hRes)) for (ULONG ulRowNum = 0; ulRowNum < pRow->cRows; ulRowNum++)
 			{
 				hRes = S_OK;
 				// check to see if we have a folder with a matching GUID
@@ -921,7 +922,7 @@ _Check_return_ bool StoreSupportsManageStoreEx(_In_ LPMDB lpMDB)
 	if (!lpMDB) return false;
 
 	EC_H_MSG(lpMDB->QueryInterface(
-		IID_IExchangeManageStoreEx,
+		guid::IID_IExchangeManageStoreEx,
 		reinterpret_cast<LPVOID*>(&lpIManageStore)),
 		IDS_MANAGESTOREEXNOTSUPPORTED);
 
@@ -939,7 +940,7 @@ _Check_return_ HRESULT HrUnWrapMDB(_In_ LPMDB lpMDBIn, _Deref_out_ LPMDB* lppMDB
 	auto hRes = S_OK;
 	IProxyStoreObject* lpProxyObj = nullptr;
 	LPMDB lpUnwrappedMDB = nullptr;
-	EC_MAPI(lpMDBIn->QueryInterface(IID_IProxyStoreObject, reinterpret_cast<LPVOID*>(&lpProxyObj)));
+	EC_MAPI(lpMDBIn->QueryInterface(guid::IID_IProxyStoreObject, reinterpret_cast<LPVOID*>(&lpProxyObj)));
 	if (SUCCEEDED(hRes) && lpProxyObj)
 	{
 		EC_MAPI(lpProxyObj->UnwrapNoRef(reinterpret_cast<LPVOID*>(&lpUnwrappedMDB)));

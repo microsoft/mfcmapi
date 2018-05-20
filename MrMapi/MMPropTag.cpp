@@ -297,7 +297,7 @@ void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 void PrintGUID(_In_ LPCGUID lpGUID)
 {
 	// PSUNKNOWN isn't a real guid - just a placeholder - don't print it
-	if (!lpGUID || IsEqualGUID(*lpGUID, PSUNKNOWN))
+	if (!lpGUID || IsEqualGUID(*lpGUID, guid::PSUNKNOWN))
 	{
 		printf(",");
 		return;

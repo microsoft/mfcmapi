@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "AppointmentRecurrencePattern.h"
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/InterpretProp2.h>
@@ -209,7 +209,7 @@ namespace smartview
 
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_MEETINGTYPE)
 				{
-					auto szFlags = InterpretNumberAsStringNamedProp(m_ExceptionInfo[i].MeetingType, dispidApptStateFlags, const_cast<LPGUID>(&PSETID_Appointment));
+					auto szFlags = InterpretNumberAsStringNamedProp(m_ExceptionInfo[i].MeetingType, dispidApptStateFlags, const_cast<LPGUID>(&guid::PSETID_Appointment));
 					szExceptionInfo += strings::formatmessage(IDS_ARPEXMEETINGTYPE,
 						i, m_ExceptionInfo[i].MeetingType, szFlags.c_str());
 				}
@@ -236,7 +236,7 @@ namespace smartview
 
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_BUSYSTATUS)
 				{
-					auto szFlags = InterpretNumberAsStringNamedProp(m_ExceptionInfo[i].BusyStatus, dispidBusyStatus, const_cast<LPGUID>(&PSETID_Appointment));
+					auto szFlags = InterpretNumberAsStringNamedProp(m_ExceptionInfo[i].BusyStatus, dispidBusyStatus, const_cast<LPGUID>(&guid::PSETID_Appointment));
 					szExceptionInfo += strings::formatmessage(IDS_ARPEXBUSYSTATUS,
 						i, m_ExceptionInfo[i].BusyStatus, szFlags.c_str());
 				}
@@ -276,7 +276,7 @@ namespace smartview
 				std::wstring szExtendedException;
 				if (m_WriterVersion2 >= 0x00003009)
 				{
-					auto szFlags = InterpretNumberAsStringNamedProp(m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue, dispidChangeHighlight, const_cast<LPGUID>(&PSETID_Appointment));
+					auto szFlags = InterpretNumberAsStringNamedProp(m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue, dispidChangeHighlight, const_cast<LPGUID>(&guid::PSETID_Appointment));
 					szExtendedException += strings::formatmessage(IDS_ARPEXCHANGEHIGHLIGHT,
 						i, m_ExtendedException[i].ChangeHighlight.ChangeHighlightSize,
 						m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue, szFlags.c_str());

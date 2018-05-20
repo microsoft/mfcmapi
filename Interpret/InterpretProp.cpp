@@ -1,4 +1,5 @@
-#include "stdafx.h"
+#include "StdAfx.h"
+#include <Interpret/Guids.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/InterpretProp2.h>
 #include <Interpret/ExtraPropTags.h>
@@ -545,7 +546,7 @@ _Check_return_ std::wstring ActionToString(_In_ const ACTION& action)
 		SBinary sBin = { 0 };
 		sBin.cb = action.actReply.cbEntryId;
 		sBin.lpb = reinterpret_cast<LPBYTE>(action.actReply.lpEntryId);
-		auto szGUID = GUIDToStringAndName(&action.actReply.guidReplyTemplate);
+		auto szGUID = guid::GUIDToStringAndName(&action.actReply.guidReplyTemplate);
 
 		actstring += strings::formatmessage(IDS_ACTIONOPREPLY,
 			strings::BinToHexString(&sBin, true).c_str(),
@@ -775,10 +776,10 @@ NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
 
 	DebugPrint(DBGNamedProp, L"Parsing named property\n");
 	DebugPrint(DBGNamedProp, L"ulPropTag = 0x%08x\n", ulPropTag);
-	namePropNames.guid = GUIDToStringAndName(lpNameID->lpguid);
+	namePropNames.guid = guid::GUIDToStringAndName(lpNameID->lpguid);
 	DebugPrint(DBGNamedProp, L"lpNameID->lpguid = %ws\n", namePropNames.guid.c_str());
 
-	auto szDASLGuid = GUIDToString(lpNameID->lpguid);
+	auto szDASLGuid = guid::GUIDToString(lpNameID->lpguid);
 
 	if (lpNameID->ulKind == MNID_ID)
 	{

@@ -711,7 +711,7 @@ void MergeAddInArrays()
 	DebugPrint(DBGAddInPlumbing, L"Loading default arrays\n");
 	PropTagArray = std::vector<NAME_ARRAY_ENTRY_V2>(std::begin(g_PropTagArray), std::end(g_PropTagArray));
 	PropTypeArray = std::vector<NAME_ARRAY_ENTRY>(std::begin(g_PropTypeArray), std::end(g_PropTypeArray));
-	PropGuidArray = std::vector<GUID_ARRAY_ENTRY>(std::begin(g_PropGuidArray), std::end(g_PropGuidArray));
+	PropGuidArray = std::vector<GUID_ARRAY_ENTRY>(std::begin(guid::g_PropGuidArray), std::end(guid::g_PropGuidArray));
 	NameIDArray = std::vector<NAMEID_ARRAY_ENTRY>(std::begin(g_NameIDArray), std::end(g_NameIDArray));
 	FlagArray = std::vector<FLAG_ARRAY_ENTRY>(std::begin(g_FlagArray), std::end(g_FlagArray));
 	SmartViewParserArray = std::vector<SMARTVIEW_PARSER_ARRAY_ENTRY>(std::begin(smartview::g_SmartViewParserArray), std::end(smartview::g_SmartViewParserArray));

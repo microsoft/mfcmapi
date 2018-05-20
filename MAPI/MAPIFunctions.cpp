@@ -5,7 +5,6 @@
 #include <Interpret/String.h>
 #include <MAPI/MAPIABFunctions.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/InterpretProp2.h>
 #include "ImportProcs.h"
 #include <Interpret/ExtraPropTags.h>
 #include <MAPI/MAPIProgress.h>
@@ -62,7 +61,7 @@ _Check_return_ HRESULT CallOpenEntry(
 
 	if (lpInterface && fIsSet(DBGGeneric))
 	{
-		auto szGuid = GUIDToStringAndName(lpInterface);
+		auto szGuid = guid::GUIDToStringAndName(lpInterface);
 		DebugPrint(DBGGeneric, L"CallOpenEntry: OpenEntry asking for %ws\n", szGuid.c_str());
 	}
 
@@ -1255,7 +1254,7 @@ _Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In
 	IAttachmentSecurity* lpAttachSec = nullptr;
 	BOOL bBlocked = false;
 
-	EC_MAPI(lpMAPISession->QueryInterface(IID_IAttachmentSecurity, reinterpret_cast<LPVOID*>(&lpAttachSec)));
+	EC_MAPI(lpMAPISession->QueryInterface(guid::IID_IAttachmentSecurity, reinterpret_cast<LPVOID*>(&lpAttachSec)));
 	if (SUCCEEDED(hRes) && lpAttachSec)
 	{
 		EC_MAPI(lpAttachSec->IsAttachmentBlocked(pwszFileName, &bBlocked));
@@ -1412,7 +1411,7 @@ _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDe
 
 	for (ULONG i = 0; i < ulNumOneOffIDs; i++)
 	{
-		rgnmid[i].lpguid = const_cast<LPGUID>(&PSETID_Common);
+		rgnmid[i].lpguid = const_cast<LPGUID>(&guid::PSETID_Common);
 		rgnmid[i].ulKind = MNID_ID;
 		rgnmid[i].Kind.lID = aulOneOffIDs[i];
 		rgpnmid[i] = &rgnmid[i];
@@ -2669,7 +2668,7 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 			IDS_COPYPASTEPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_INTERFACE, GUIDToStringAndName(lpGUID), false));
+		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_INTERFACE, guid::GUIDToStringAndName(lpGUID), false));
 		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(1, MAPI_DIALOG);
 
@@ -2677,7 +2676,7 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 
 		if (S_OK == hRes)
 		{
-			auto MyGUID = StringToGUID(MyData.GetStringW(0));
+			auto MyGUID = guid::StringToGUID(MyData.GetStringW(0));
 			lpGUIDLocal = &MyGUID;
 			ulCopyFlags = MyData.GetHex(1);
 			if (hWnd)

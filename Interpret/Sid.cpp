@@ -1,7 +1,8 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <Interpret/Sid.h>
 #include <Interpret/InterpretProp2.h>
 #include <Interpret/ExtraPropTags.h>
+#include "GUIDArray.h"
 
 _Check_return_ std::wstring GetTextualSid(_In_ PSID pSid)
 {
@@ -19,7 +20,7 @@ _Check_return_ std::wstring GetTextualSid(_In_ PSID pSid)
 	// Add 'S' prefix and revision number to the string.
 	auto TextualSid = strings::format(L"S-%lu-", SID_REVISION); // STRING_OK
 
-													   // Add SID identifier authority to the string.
+	// Add SID identifier authority to the string.
 	if (psia->Value[0] != 0 || psia->Value[1] != 0)
 	{
 		TextualSid += strings::format(
@@ -173,9 +174,9 @@ std::wstring ACEToString(_In_ void* pACE, eAceType acetype)
 	if (bObjectFound)
 	{
 		aceString.push_back(strings::formatmessage(IDS_SIDOBJECTYPE));
-		aceString.push_back(GUIDToStringAndName(&ObjectType));
+		aceString.push_back(guid::GUIDToStringAndName(&ObjectType));
 		aceString.push_back(strings::formatmessage(IDS_SIDINHERITEDOBJECTYPE));
-		aceString.push_back(GUIDToStringAndName(&InheritedObjectType));
+		aceString.push_back(guid::GUIDToStringAndName(&InheritedObjectType));
 		aceString.push_back(strings::formatmessage(IDS_SIDFLAGS, Flags));
 	}
 

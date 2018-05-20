@@ -1,4 +1,4 @@
-#include <stdafx.h>
+#include "StdAfx.h"
 #include <IO/File.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
@@ -154,24 +154,26 @@ _Check_return_ HRESULT LoadFromMSG(_In_ const std::wstring& szMessageFile, _In_ 
 	static const SizedSPropTagArray(18, excludeTags) =
 	{
 	18,
-	PR_REPLICA_VERSION,
-	PR_DISPLAY_BCC,
-	PR_DISPLAY_CC,
-	PR_DISPLAY_TO,
-	PR_ENTRYID,
-	PR_MESSAGE_SIZE,
-	PR_PARENT_ENTRYID,
-	PR_RECORD_KEY,
-	PR_STORE_ENTRYID,
-	PR_STORE_RECORD_KEY,
-	PR_MDB_PROVIDER,
-	PR_ACCESS,
-	PR_HASATTACH,
-	PR_OBJECT_TYPE,
-	PR_ACCESS_LEVEL,
-	PR_HAS_NAMED_PROPERTIES,
-	PR_REPLICA_SERVER,
-	PR_HAS_DAMS
+		{
+			PR_REPLICA_VERSION,
+			PR_DISPLAY_BCC,
+			PR_DISPLAY_CC,
+			PR_DISPLAY_TO,
+			PR_ENTRYID,
+			PR_MESSAGE_SIZE,
+			PR_PARENT_ENTRYID,
+			PR_RECORD_KEY,
+			PR_STORE_ENTRYID,
+			PR_STORE_RECORD_KEY,
+			PR_MDB_PROVIDER,
+			PR_ACCESS,
+			PR_HASATTACH,
+			PR_OBJECT_TYPE,
+			PR_ACCESS_LEVEL,
+			PR_HAS_NAMED_PROPERTIES,
+			PR_REPLICA_SERVER,
+			PR_HAS_DAMS
+		}
 	};
 
 	EC_H(LoadMSGToMessage(szMessageFile, &pIMsg));
@@ -227,7 +229,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_ const std::wstring& szMessageFile, _In_
 	static const SizedSPropTagArray(ulNumTNEFExcludeProps, lpPropTnefExcludeArray) =
 	{
 	ulNumTNEFExcludeProps,
-	PR_URL_COMP_NAME
+		{PR_URL_COMP_NAME}
 	};
 
 	// Get a Stream interface on the input TNEF file
@@ -292,8 +294,10 @@ std::wstring BuildFileName(
 	static const SizedSPropTagArray(NUM_COLS, sptaMessageProps) =
 	{
 	NUM_COLS,
-	PR_SUBJECT_W,
-	PR_RECORD_KEY
+		{
+			PR_SUBJECT_W,
+			PR_RECORD_KEY
+		}
 	};
 
 	// Get subject line of message
@@ -438,9 +442,11 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ 
 	static const SizedSPropTagArray(fldNUM_COLS, fldCols) =
 	{
 	fldNUM_COLS,
-	PR_ENTRYID,
-	PR_SUBJECT_W,
-	PR_RECORD_KEY
+		{
+			PR_ENTRYID,
+			PR_SUBJECT_W,
+			PR_RECORD_KEY
+		}
 	};
 
 	if (!lpFolder || szPathName.empty()) return MAPI_E_INVALID_PARAMETER;
@@ -568,7 +574,7 @@ void ExportMessages(_In_ const LPMAPIFOLDER lpFolder, HWND hWnd)
 		}
 
 		lpTable->Release();
-	}
+}
 
 	if (lpRes) MAPIFreeBuffer(lpRes);
 }
@@ -732,7 +738,7 @@ _Check_return_ HRESULT CreateNewMSG(_In_ const std::wstring& szFileName, bool bU
 				// as the storage medium. If the client does not support
 				// CLSID_MailMessage as the compound document, you will have to use
 				// the CLSID that it does support.
-				EC_MAPI(WriteClassStg(pStorage, CLSID_MailMessage));
+				EC_MAPI(WriteClassStg(pStorage, guid::CLSID_MailMessage));
 				if (SUCCEEDED(hRes))
 				{
 					*lppStorage = pStorage;

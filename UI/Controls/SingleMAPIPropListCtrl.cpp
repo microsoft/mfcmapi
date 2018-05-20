@@ -5,6 +5,7 @@
 #include <UI/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
 #include <UI/MySecInfo.h>
+#include <Interpret/Guids.h>
 #include <Interpret/InterpretProp2.h>
 #include <UI/FileDialogEx.h>
 #include "ImportProcs.h"
@@ -1520,7 +1521,7 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 				IDS_COPYPASTEPROMPT,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-			const auto szGuid = GUIDToStringAndName(&IID_IMAPIProp);
+			const auto szGuid = guid::GUIDToStringAndName(&IID_IMAPIProp);
 			MyCopyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_INTERFACE, szGuid, false));
 			MyCopyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 			MyCopyData.SetHex(1, MAPI_DIALOG);
@@ -1528,7 +1529,7 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 			WC_H(MyCopyData.DisplayDialog());
 			if (S_OK == hRes)
 			{
-				auto MyGUID = StringToGUID(MyCopyData.GetStringW(0));
+				auto MyGUID = guid::StringToGUID(MyCopyData.GetStringW(0));
 				LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIProp::CopyProps", m_lpHostDlg->m_hWnd); // STRING_OK
 				auto ulCopyFlags = MyCopyData.GetHex(1);
 
@@ -1787,7 +1788,7 @@ void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 			IDS_PASTENAMEDPROPSPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		const auto szGuid = GUIDToStringAndName(&PS_PUBLIC_STRINGS);
+		const auto szGuid = guid::GUIDToStringAndName(&PS_PUBLIC_STRINGS);
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_GUID, szGuid, false));
 		MyData.InitPane(1, CheckPane::Create(IDS_MAPIMOVE, false, false));
 		MyData.InitPane(2, CheckPane::Create(IDS_MAPINOREPLACE, false, false));
@@ -1798,7 +1799,7 @@ void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 		{
 			ULONG ulObjType = 0;
 			LPMAPIPROP lpSource = nullptr;
-			auto propSetGUID = StringToGUID(MyData.GetStringW(0));
+			auto propSetGUID = guid::StringToGUID(MyData.GetStringW(0));
 
 			if (S_OK == hRes)
 			{

@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "PropertyEditor.h"
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/Guids.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <UI/Controls/SortList/MVPropData.h>
@@ -429,11 +429,11 @@ void CPropertyEditor::InitPropertyControls()
 		InitPane(0, TextPane::CreateSingleLinePane(IDS_GUID, false));
 		if (m_lpsInputValue)
 		{
-			szGuid = GUIDToStringAndName(m_lpsInputValue->Value.lpguid);
+			szGuid = guid::GUIDToStringAndName(m_lpsInputValue->Value.lpguid);
 		}
 		else
 		{
-			szGuid = GUIDToStringAndName(nullptr);
+			szGuid = guid::GUIDToStringAndName(nullptr);
 		}
 
 		SetStringW(0, szGuid);
@@ -554,7 +554,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 				reinterpret_cast<LPVOID*>(&m_lpsOutputValue->Value.lpguid)));
 			if (m_lpsOutputValue->Value.lpguid)
 			{
-				*m_lpsOutputValue->Value.lpguid = StringToGUID(GetStringW(0));
+				*m_lpsOutputValue->Value.lpguid = guid::StringToGUID(GetStringW(0));
 			}
 
 			break;

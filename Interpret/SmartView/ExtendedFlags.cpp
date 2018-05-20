@@ -1,5 +1,6 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "ExtendedFlags.h"
+#include <Interpret/Guids.h>
 #include <Interpret/InterpretProp2.h>
 #include <Interpret/ExtraPropTags.h>
 
@@ -110,7 +111,7 @@ namespace smartview
 					szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATAFLAG, extendedFlag.Data.ExtendedFlags, szFlags.c_str());
 					break;
 				case EFPB_CLSIDID:
-					szFlags = GUIDToString(&extendedFlag.Data.SearchFolderID);
+					szFlags = guid::GUIDToString(&extendedFlag.Data.SearchFolderID);
 					szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATASFID, szFlags.c_str());
 					break;
 				case EFPB_SFTAG:

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/InterpretProp2.h>
@@ -140,7 +140,7 @@ namespace smartview
 
 	_Check_return_ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
 		ULONG ulPropNameID,
-		_In_opt_z_ LPWSTR lpszPropNameString,
+		_In_opt_z_ LPCWSTR lpszPropNameString,
 		_In_opt_ LPCGUID lpguidNamedProp)
 	{
 		const auto ulPropID = PROP_ID(ulPropTag);
@@ -154,15 +154,15 @@ namespace smartview
 			(ulPropNameID || lpszPropNameString))
 		{
 			ULONG ulGuid = NULL;
-			if (*lpguidNamedProp == PSETID_Meeting)        ulGuid = guidPSETID_Meeting;
-			else if (*lpguidNamedProp == PSETID_Address)        ulGuid = guidPSETID_Address;
-			else if (*lpguidNamedProp == PSETID_Task)           ulGuid = guidPSETID_Task;
-			else if (*lpguidNamedProp == PSETID_Appointment)    ulGuid = guidPSETID_Appointment;
-			else if (*lpguidNamedProp == PSETID_Common)         ulGuid = guidPSETID_Common;
-			else if (*lpguidNamedProp == PSETID_Log)            ulGuid = guidPSETID_Log;
-			else if (*lpguidNamedProp == PSETID_PostRss)        ulGuid = guidPSETID_PostRss;
-			else if (*lpguidNamedProp == PSETID_Sharing)        ulGuid = guidPSETID_Sharing;
-			else if (*lpguidNamedProp == PSETID_Note)           ulGuid = guidPSETID_Note;
+			if (*lpguidNamedProp == guid::PSETID_Meeting)        ulGuid = guidPSETID_Meeting;
+			else if (*lpguidNamedProp == guid::PSETID_Address)        ulGuid = guidPSETID_Address;
+			else if (*lpguidNamedProp == guid::PSETID_Task)           ulGuid = guidPSETID_Task;
+			else if (*lpguidNamedProp == guid::PSETID_Appointment)    ulGuid = guidPSETID_Appointment;
+			else if (*lpguidNamedProp == guid::PSETID_Common)         ulGuid = guidPSETID_Common;
+			else if (*lpguidNamedProp == guid::PSETID_Log)            ulGuid = guidPSETID_Log;
+			else if (*lpguidNamedProp == guid::PSETID_PostRss)        ulGuid = guidPSETID_PostRss;
+			else if (*lpguidNamedProp == guid::PSETID_Sharing)        ulGuid = guidPSETID_Sharing;
+			else if (*lpguidNamedProp == guid::PSETID_Note)           ulGuid = guidPSETID_Note;
 
 			if (ulGuid && ulPropNameID)
 			{

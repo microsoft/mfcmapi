@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "PCL.h"
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/Guids.h>
 
 namespace smartview
 {
@@ -58,7 +58,7 @@ namespace smartview
 				szPCLString += strings::formatmessage(IDS_PCLXID,
 					i++,
 					xid.XidSize,
-					GUIDToString(&xid.NamespaceGuid).c_str(),
+					guid::GUIDToString(&xid.NamespaceGuid).c_str(),
 					strings::BinToHexString(xid.LocalID, true).c_str());
 			}
 		}

@@ -1,7 +1,7 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "DropDownPane.h"
+#include <Interpret/Guids.h>
 #include <Interpret/String.h>
-#include <Interpret/InterpretProp2.h>
 #include <UI/UIFunctions.h>
 
 static std::wstring CLASS = L"DropDownPane";
@@ -32,7 +32,7 @@ DropDownPane* DropDownPane::CreateGuid(UINT uidLabel, bool bReadOnly)
 	{
 		for (ULONG iDropNum = 0; iDropNum < PropGuidArray.size(); iDropNum++)
 		{
-			pane->InsertDropString(GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid), iDropNum);
+			pane->InsertDropString(guid::GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid), iDropNum);
 		}
 
 		pane->SetLabel(uidLabel, bReadOnly);
@@ -52,8 +52,8 @@ int DropDownPane::GetMinWidth(_In_ HDC hdc)
 	auto cxDropDown = 0;
 	for (auto iDropString = 0; iDropString < m_DropDown.GetCount(); iDropString++)
 	{
-		auto szDropString = GetLBText(m_DropDown.m_hWnd, iDropString);
-		auto sizeDrop = GetTextExtentPoint32(hdc, szDropString);
+		const auto szDropString = GetLBText(m_DropDown.m_hWnd, iDropString);
+		const auto sizeDrop = GetTextExtentPoint32(hdc, szDropString);
 		cxDropDown = max(cxDropDown, sizeDrop.cx);
 	}
 
@@ -104,7 +104,7 @@ void DropDownPane::SetWindowPos(int x, int y, int width, int /*height*/)
 	// Note - Real height of a combo box is fixed at m_iEditHeight
 	// Height we set here influences the amount of dropdown entries we see
 	// This will give us something between 4 and 10 entries
-	auto ulDrops = static_cast<int>(min(10, 1 + max(m_DropList.size(), 4)));
+	const auto ulDrops = static_cast<int>(min(10, 1 + max(m_DropList.size(), 4)));
 
 	EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
 }
@@ -115,8 +115,8 @@ void DropDownPane::CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 
 	ViewPane::Initialize(iControl, pParent, hdc);
 
-	auto ulDrops = 1 + (m_DropList.size() ? min(m_DropList.size(), 4) : 4);
-	auto dropHeight = ulDrops * (pParent ? GetEditHeight(pParent->m_hWnd) : 0x1e);
+	const auto ulDrops = 1 + (!m_DropList.empty() ? min(m_DropList.size(), 4) : 4);
+	const auto dropHeight = ulDrops * (pParent ? GetEditHeight(pParent->m_hWnd) : 0x1e);
 
 	// m_bReadOnly means you can't type...
 	DWORD dwDropStyle;
@@ -169,7 +169,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 
 void DropDownPane::InsertDropString(_In_ const std::wstring& szText, ULONG ulValue)
 {
-	m_DropList.push_back({ szText, ulValue });
+	m_DropList.emplace_back(szText, ulValue);
 }
 
 void DropDownPane::CommitUIValues()
@@ -182,8 +182,8 @@ void DropDownPane::CommitUIValues()
 
 _Check_return_ std::wstring DropDownPane::GetDropStringUseControl() const
 {
-	auto len = m_DropDown.GetWindowTextLength() + 1;
-	auto buffer = new WCHAR[len];
+	const auto len = m_DropDown.GetWindowTextLength() + 1;
+	const auto buffer = new WCHAR[len];
 	memset(buffer, 0, sizeof(WCHAR)* len);
 	GetWindowTextW(m_DropDown.m_hWnd, buffer, len);
 	std::wstring szOut = buffer;
@@ -204,7 +204,7 @@ _Check_return_ DWORD_PTR DropDownPane::GetDropDownSelectionValue() const
 {
 	if (m_bInitialized)
 	{
-		auto iSel = m_DropDown.GetCurSel();
+		const auto iSel = m_DropDown.GetCurSel();
 
 		if (CB_ERR != iSel)
 		{
@@ -232,7 +232,7 @@ _Check_return_ DWORD_PTR DropDownPane::GetDropDownValue() const
 // This should work whether the editor is active/displayed or not
 GUID DropDownPane::GetSelectedGUID(bool bByteSwapped) const
 {
-	auto iCurSel = GetDropDownSelection();
+	const auto iCurSel = GetDropDownSelection();
 	if (iCurSel != CB_ERR)
 	{
 		return *PropGuidArray[iCurSel].lpGuid;
@@ -250,15 +250,15 @@ GUID DropDownPane::GetSelectedGUID(bool bByteSwapped) const
 		szText = m_lpszSelectionString;
 	}
 
-	auto lpGUID = GUIDNameToGUID(szText, bByteSwapped);
+	const auto lpGUID = guid::GUIDNameToGUID(szText, bByteSwapped);
 	if (lpGUID)
 	{
-		auto guid = *lpGUID;
+		const auto guid = *lpGUID;
 		delete[] lpGUID;
 		return guid;
 	}
 
-	return{ 0 };
+	return { 0 };
 }
 
 void DropDownPane::SetDropDownSelection(_In_ const std::wstring& szText)
@@ -268,7 +268,7 @@ void DropDownPane::SetDropDownSelection(_In_ const std::wstring& szText)
 
 	auto hRes = S_OK;
 	auto text = strings::wstringTotstring(m_lpszSelectionString);
-	auto iSelect = m_DropDown.SelectString(0, text.c_str());
+	const auto iSelect = m_DropDown.SelectString(0, text.c_str());
 
 	// if we can't select, try pushing the text in there
 	// not all dropdowns will support this!

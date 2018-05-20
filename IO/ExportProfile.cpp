@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include <MAPI/MAPIProfileFunctions.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/InterpretProp2.h>
+#include "Interpret/GUIDArray.h"
 
 void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin)
 {
@@ -177,7 +177,7 @@ void ExportProfile(_In_ const std::string& szProfile, _In_ const std::wstring& s
 		{
 			if (!szProfileSection.empty())
 			{
-				auto lpGuid = GUIDNameToGUID(szProfileSection, bByteSwapped);
+				const auto lpGuid = guid::GUIDNameToGUID(szProfileSection, bByteSwapped);
 
 				if (lpGuid)
 				{

@@ -9,7 +9,7 @@
 #include <MAPI/MapiObjects.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/Guids.h>
 #include <UI/Dialogs/HierarchyTable/MsgStoreDlg.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/Dialogs/SingleMessageDialog.h>
@@ -548,7 +548,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 					{
 						bHaveGUID = true;
 
-						MyGUID = StringToGUID(pszGUID);
+						MyGUID = guid::StringToGUID(pszGUID);
 						if (MyGUID == GUID_NULL)
 						{
 							ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
@@ -686,7 +686,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 					{
 						bHaveGUID = true;
 
-						MyGUID = StringToGUID(pszGUID);
+						MyGUID = guid::StringToGUID(pszGUID);
 						if (MyGUID == GUID_NULL)
 						{
 							ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);

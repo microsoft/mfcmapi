@@ -1,5 +1,6 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "FolderUserFieldStream.h"
+#include <Interpret/Guids.h>
 #include <Interpret/InterpretProp2.h>
 #include <Interpret/ExtraPropTags.h>
 
@@ -83,7 +84,7 @@ namespace smartview
 			auto i = 0;
 			for (auto& fieldDefinition : m_FieldDefinitionsA)
 			{
-				auto szGUID = GUIDToString(&fieldDefinition.Common.PropSetGuid);
+				auto szGUID = guid::GUIDToString(&fieldDefinition.Common.PropSetGuid);
 				auto szFieldType = InterpretFlags(flagFolderType, fieldDefinition.FieldType);
 				auto szFieldcap = InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
 
@@ -115,7 +116,7 @@ namespace smartview
 			auto i = 0;
 			for (auto& fieldDefinition : m_FieldDefinitionsW)
 			{
-				auto szGUID = GUIDToString(&fieldDefinition.Common.PropSetGuid);
+				auto szGUID = guid::GUIDToString(&fieldDefinition.Common.PropSetGuid);
 				auto szFieldType = InterpretFlags(flagFolderType, fieldDefinition.FieldType);
 				auto szFieldcap = InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
 

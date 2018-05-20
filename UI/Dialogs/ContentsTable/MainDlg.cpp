@@ -8,7 +8,7 @@
 #include <MAPI/MAPIProfileFunctions.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/MFCUtilityFunctions.h>
-#include <UI/Dialogs/HierarchyTable/AbContDlg.h>
+#include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <IO/File.h>
@@ -18,6 +18,7 @@
 #include "FormContainerDlg.h"
 #include <UI/FileDialogEx.h>
 #include "MAPI/MapiMime.h"
+#include <Interpret/Guids.h>
 #include <Interpret/InterpretProp2.h>
 #include <UI/QuickStart.h>
 #include <UI/UIFunctions.h>
@@ -1868,7 +1869,7 @@ void CMainDlg::OnComputeGivenStoreHash()
 				{
 					if (fIsSet(DBGGeneric))
 					{
-						auto szGUID = GUIDToString(reinterpret_cast<LPCGUID>(&emsmdbUID));
+						auto szGUID = guid::GUIDToString(reinterpret_cast<LPCGUID>(&emsmdbUID));
 						DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %ws\n", szGUID.c_str());
 					}
 

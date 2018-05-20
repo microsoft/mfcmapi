@@ -1,12 +1,12 @@
 // Implementation of the CMyMAPIFormViewer class.
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <UI/MyMAPIFormViewer.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/MAPIFormFunctions.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/Guids.h>
 #include <UI/MyWinApp.h>
 #include <UI/Controls/SortList/ContentsData.h>
 
@@ -89,7 +89,7 @@ STDMETHODIMP CMyMAPIFormViewer::QueryInterface(REFIID riid,
 	LPVOID * ppvObj)
 {
 	DebugPrintEx(DBGFormViewer, CLASS, L"QueryInterface", L"\n");
-	auto szGuid = GUIDToStringAndName(const_cast<LPGUID>(&riid));
+	auto szGuid = guid::GUIDToStringAndName(const_cast<LPGUID>(&riid));
 	DebugPrint(DBGFormViewer, L"GUID Requested: %ws\n", szGuid.c_str());
 
 	*ppvObj = nullptr;
@@ -131,14 +131,14 @@ STDMETHODIMP CMyMAPIFormViewer::QueryInterface(REFIID riid,
 
 STDMETHODIMP_(ULONG) CMyMAPIFormViewer::AddRef()
 {
-	auto lCount = InterlockedIncrement(&m_cRef);
+	const auto lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
 }
 
 STDMETHODIMP_(ULONG) CMyMAPIFormViewer::Release()
 {
-	auto lCount = InterlockedDecrement(&m_cRef);
+	const auto lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
 	if (!lCount) delete this;
 	return lCount;
@@ -218,7 +218,7 @@ STDMETHODIMP CMyMAPIFormViewer::NewMessage(ULONG fComposeInFolder,
 	*ppMessageSite = nullptr;
 	if (ppViewContext) *ppViewContext = nullptr;
 
-	if (fComposeInFolder == false || !pFolderFocus)
+	if (!static_cast<bool>(fComposeInFolder) || !pFolderFocus)
 	{
 		pFolderFocus = m_lpFolder;
 	}
@@ -420,13 +420,13 @@ _Check_return_ HRESULT CMyMAPIFormViewer::SetPersist(_In_opt_ LPMAPIFORM lpForm,
 	static const SizedSPropTagArray(1, sptaFlags) =
 	{
 	1,
-	PR_MESSAGE_FLAGS
+		{PR_MESSAGE_FLAGS}
 	};
 	ULONG cValues = 0L;
 	LPSPropValue lpPropArray = nullptr;
 
 	EC_MAPI(m_lpMessage->GetProps(LPSPropTagArray(&sptaFlags), 0, &cValues, &lpPropArray));
-	auto bComposing = lpPropArray && lpPropArray->Value.l & MSGFLAG_UNSENT;
+	const auto bComposing = lpPropArray && lpPropArray->Value.l & MSGFLAG_UNSENT;
 	MAPIFreeBuffer(lpPropArray);
 
 	if (bComposing && !RegKeys[regkeyALLOW_PERSIST_CACHE].ulCurDWORD)
@@ -520,14 +520,16 @@ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 	static const SizedSPropTagArray(NUM_COLS, sptaShowForm) =
 	{
 	NUM_COLS,
-	PR_MESSAGE_FLAGS,
-	PR_MESSAGE_CLASS_A
+		{
+			PR_MESSAGE_FLAGS,
+			PR_MESSAGE_CLASS_A
+		}
 	};
 
 	auto iNewItem = -1;
 	LPMESSAGE lpNewMessage = nullptr;
 	ULONG ulMessageStatus = NULL;
-	auto bUsedCurrentSite = false;
+	const auto bUsedCurrentSite = false;
 
 	WC_H(GetNextMessage(ulDir, &iNewItem, &ulMessageStatus, &lpNewMessage));
 	if (lpNewMessage)
@@ -632,7 +634,7 @@ STDMETHODIMP CMyMAPIFormViewer::GetSaveStream(ULONG* /*pulFlags*/,
 
 STDMETHODIMP CMyMAPIFormViewer::GetViewStatus(LPULONG lpulStatus)
 {
-	auto hRes = S_OK;
+	const auto hRes = S_OK;
 
 	DebugPrintEx(DBGFormViewer, CLASS, L"GetViewStatus", L"\n");
 	*lpulStatus = NULL;
@@ -687,10 +689,10 @@ _Check_return_ HRESULT CMyMAPIFormViewer::GetNextMessage(
 	}
 	else
 	{
-		auto  lpData = m_lpContentsTableListCtrl->GetSortListData(*piNewItem);
+		const auto lpData = m_lpContentsTableListCtrl->GetSortListData(*piNewItem);
 		if (lpData && lpData->Contents())
 		{
-			auto lpEID = lpData->Contents()->m_lpEntryID;
+			const auto lpEID = lpData->Contents()->m_lpEntryID;
 			if (lpEID)
 			{
 				EC_H(CallOpenEntry(
