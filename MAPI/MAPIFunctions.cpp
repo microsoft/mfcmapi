@@ -2288,7 +2288,7 @@ _Check_return_ std::wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE
 }
 
 HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
-	_In_ MAPIUID const * const puidService,
+	_In_ const MAPIUID* puidService,
 	_Out_opt_ MAPIUID* pEmsmdbUID)
 {
 	if (!puidService) return MAPI_E_INVALID_PARAMETER;

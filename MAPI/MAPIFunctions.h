@@ -95,7 +95,7 @@ _Check_return_ std::wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID);
 _Check_return_ std::wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer);
 
 HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
-	_In_ MAPIUID const * const puidService,
+	_In_ const MAPIUID* puidService,
 	_Out_opt_ MAPIUID* pEmsmdbUID);
 bool FExchangePrivateStore(_In_ LPMAPIUID lpmapiuid);
 bool FExchangePublicStore(_In_ LPMAPIUID lpmapiuid);
@@ -168,6 +168,6 @@ HRESULT HrGetOnePropEx(
 	_In_ LPMAPIPROP lpMAPIProp,
 	_In_ ULONG ulPropTag,
 	_In_ ULONG ulFlags,
-	_Out_ LPSPropValue* lppPropArray);
+	_Out_ LPSPropValue* lppProp);
 
-void ForceRop(_In_ LPMDB lpMAPIProp);
+void ForceRop(_In_ LPMDB lpMDB);
