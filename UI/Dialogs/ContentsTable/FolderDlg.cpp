@@ -1239,7 +1239,7 @@ void CFolderDlg::OnExecuteVerbOnForm()
 			IDS_EXECUTEVERB,
 			IDS_EXECUTEVERBPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_LAST_VERB_EXECUTED), false));
+		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_LAST_VERB_EXECUTED), false));
 
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_VERB, false));
 		MyData.SetDecimal(0, EXCHIVERB_OPEN);

@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "PropertySelector.h"
+#include <StdAfx.h>
+#include <UI/Dialogs/Editors/PropertySelector.h>
 #include <Interpret/String.h>
 #include <UI/Controls/SortList/PropListData.h>
 #include <Interpret/InterpretProp.h>
@@ -50,7 +50,7 @@ BOOL CPropertySelector::OnInitDialog()
 		}
 
 		SetListString(0, ulCurRow, 1, strings::format(L"0x%08X", PropTagArray[i].ulValue)); // STRING_OK
-		SetListString(0, ulCurRow, 2, TypeToString(PropTagArray[i].ulValue));
+		SetListString(0, ulCurRow, 2, interpretprop::TypeToString(PropTagArray[i].ulValue));
 		ulCurRow++;
 	}
 

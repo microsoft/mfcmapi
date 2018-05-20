@@ -1,5 +1,5 @@
 // Displays the recipient table for a message
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "RecipientsDlg.h"
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
@@ -255,7 +255,7 @@ void CRecipientsDlg::OnRecipOptions()
 				adrList.aEntries[0].cValues = adrEntry.cValues;
 				adrList.aEntries[0].rgPropVals = adrEntry.rgPropVals;
 
-				auto szAdrList = AdrListToString(adrList);
+				auto szAdrList = interpretprop::AdrListToString(adrList);
 
 				DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"RecipOptions returned the following ADRLIST:\n");
 				// Note - debug output may be truncated due to limitations of OutputDebugString,

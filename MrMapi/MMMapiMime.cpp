@@ -1,8 +1,8 @@
-#include "stdafx.h"
-#include "MrMAPI.h"
-#include "MMMapiMime.h"
+#include "StdAfx.h"
+#include <MrMapi/MrMAPI.h>
+#include <MrMapi/MMMapiMime.h>
 #include <MAPI/MAPIMime.h>
-#include "ImportProcs.h"
+#include <ImportProcs.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 
@@ -60,7 +60,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 
 	if (0 != ProgOpts.ulConvertFlags)
 	{
-		auto szFlags = InterpretFlags(flagCcsf, ProgOpts.ulConvertFlags);
+		auto szFlags = interpretprop::InterpretFlags(flagCcsf, ProgOpts.ulConvertFlags);
 		if (!szFlags.empty())
 		{
 			printf("   Conversion Flags: %ws\n", szFlags.c_str());
@@ -69,7 +69,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 
 	if (CHECKFLAG(MAPIMIME_ENCODING))
 	{
-		auto szType = InterpretFlags(flagIet, ProgOpts.ulEncodingType);
+		auto szType = interpretprop::InterpretFlags(flagIet, ProgOpts.ulEncodingType);
 		if (!szType.empty())
 		{
 			printf("   Encoding Type: %ws\n", szType.c_str());

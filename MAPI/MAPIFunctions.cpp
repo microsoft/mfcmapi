@@ -1447,7 +1447,7 @@ _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDe
 		{
 			if (lpProbArray)
 			{
-				DebugPrint(DBGNamedProp, L"RemoveOneOff - DeleteProps problem array:\n%ws\n", ProblemArrayToString(*lpProbArray).c_str());
+				DebugPrint(DBGNamedProp, L"RemoveOneOff - DeleteProps problem array:\n%ws\n", interpretprop::ProblemArrayToString(*lpProbArray).c_str());
 			}
 
 			SPropTagArray pTag = { 0 };
@@ -1478,7 +1478,7 @@ _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDe
 					&lpProbArray2));
 				if (S_OK == hRes && lpProbArray2)
 				{
-					DebugPrint(DBGNamedProp, L"RemoveOneOff - SetProps problem array:\n%ws\n", ProblemArrayToString(*lpProbArray2).c_str());
+					DebugPrint(DBGNamedProp, L"RemoveOneOff - SetProps problem array:\n%ws\n", interpretprop::ProblemArrayToString(*lpProbArray2).c_str());
 				}
 
 				MAPIFreeBuffer(lpProbArray2);

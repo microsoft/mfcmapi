@@ -192,7 +192,7 @@ namespace smartview
 		{
 			for (WORD i = 0; i < m_ExceptionInfo.size(); i++)
 			{
-				auto szOverrideFlags = InterpretFlags(flagOverrideFlags, m_ExceptionInfo[i].OverrideFlags);
+				auto szOverrideFlags = interpretprop::InterpretFlags(flagOverrideFlags, m_ExceptionInfo[i].OverrideFlags);
 				auto szExceptionInfo = strings::formatmessage(IDS_ARPEXHEADER,
 					i, m_ExceptionInfo[i].StartDateTime, RTimeToString(m_ExceptionInfo[i].StartDateTime).c_str(),
 					m_ExceptionInfo[i].EndDateTime, RTimeToString(m_ExceptionInfo[i].EndDateTime).c_str(),

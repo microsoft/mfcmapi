@@ -447,7 +447,7 @@ void CMainDlg::OnOpenDefaultMessageStore()
 			IDS_OPENDEFMSGSTORE,
 			IDS_OPENWITHFLAGSPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
+		MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 		MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 		MyPrompt.SetHex(0, NULL);
 		WC_H(MyPrompt.DisplayDialog());
@@ -602,7 +602,7 @@ void CMainDlg::OnOpenPublicFolders()
 		IDS_OPENPUBSTORE,
 		IDS_OPENWITHFLAGSPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
+	MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 	MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 	MyPrompt.SetHex(0, NULL);
 	WC_H(MyPrompt.DisplayDialog());
@@ -641,7 +641,7 @@ void CMainDlg::OnOpenPublicFolderWithDN()
 		IDS_OPENPUBSTORE,
 		IDS_OPENWITHFLAGSPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
+	MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 	MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
 	MyPrompt.InitPane(1, TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 	MyPrompt.SetHex(1, OPENSTORE_PUBLIC);
@@ -1310,10 +1310,10 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 				std::wstring szAltProp;
 				for (ULONG i = 0; i < cValues; i++)
 				{
-					InterpretProp(&lpOptions[i], &szProp, &szAltProp);
+					interpretprop::InterpretProp(&lpOptions[i], &szProp, &szAltProp);
 					szPropString += strings::formatmessage(IDS_OPTIONSSTRUCTURE,
 						i,
-						TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
+						interpretprop::TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
 						szProp.c_str(),
 						szAltProp.c_str());
 				}
@@ -1375,10 +1375,10 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 				std::wstring szAltProp;
 				for (ULONG i = 0; i < cValues; i++)
 				{
-					InterpretProp(&lpOptions[i], &szProp, &szAltProp);
+					interpretprop::InterpretProp(&lpOptions[i], &szProp, &szAltProp);
 					szPropString += strings::formatmessage(IDS_OPTIONSSTRUCTURE,
 						i,
-						TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
+						interpretprop::TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
 						szProp.c_str(),
 						szAltProp.c_str());
 				}

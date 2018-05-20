@@ -1,7 +1,7 @@
 #include "StdAfx.h"
-#include "MrMAPI.h"
-#include "MMStore.h"
-#include "MMFolder.h"
+#include <MrMapi/MrMAPI.h>
+#include <MrMapi/MMStore.h>
+#include <MrMapi/MMFolder.h>
 #include <MAPI/ColumnTags.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
@@ -338,7 +338,7 @@ void DoStore(_In_ MYOPTIONS ProgOpts)
 	// For now, we don't support dispids
 	if (!ProgOpts.lpszUnswitchedOption.empty() && !(ProgOpts.ulOptions & OPT_DODISPID))
 	{
-		ulPropTag = PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
+		ulPropTag = interpretprop::PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
 	}
 
 	LPMDB lpMDB = nullptr;

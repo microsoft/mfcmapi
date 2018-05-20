@@ -55,7 +55,7 @@ namespace smartview
 		std::wstring szDACL;
 		std::wstring szInfo;
 		WC_H(SDToString(lpSDToParse, ulSDToParse, acetype, szDACL, szInfo));
-		auto szFlags = InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse));
+		auto szFlags = interpretprop::InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse));
 
 		std::vector<std::wstring> result;
 		result.push_back(strings::formatmessage(IDS_SECURITYDESCRIPTORHEADER) + szInfo);

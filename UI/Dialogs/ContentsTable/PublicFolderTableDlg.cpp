@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "PublicFolderTableDlg.h"
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
@@ -78,7 +78,7 @@ void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 			IDS_SEARCHCRITERIA,
 			IDS_PFSEARCHCRITERIAPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel, true));
+		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
 
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_NAME, false));
 		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
@@ -87,7 +87,7 @@ void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
 
-		auto szString = MyData.GetStringW(0);
+		const auto szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
 		EC_H(CreatePropertyStringRestriction(
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),

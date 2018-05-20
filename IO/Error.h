@@ -294,7 +294,7 @@ else	\
 {	\
 	if (problemarray)	\
 	{	\
-		std::wstring szProbArray = ProblemArrayToString(*(problemarray));	\
+		std::wstring szProbArray = interpretprop::ProblemArrayToString(*(problemarray));	\
 		ErrDialog(__FILE__,__LINE__,IDS_EDPROBLEMARRAY, szProbArray.c_str());	\
 		DebugPrint(DBGGeneric,L"Problem array:\n%ws\n",szProbArray.c_str());	\
 	}	\
@@ -304,7 +304,7 @@ else	\
 {	\
 	if (problemarray)	\
 	{	\
-		std::wstring szProbArray = ProblemArrayToString(*(problemarray));	\
+		std::wstring szProbArray = interpretprop::ProblemArrayToString(*(problemarray));	\
 		DebugPrint(DBGGeneric,L"Problem array:\n%ws\n",szProbArray.c_str());	\
 	}	\
 }
@@ -313,7 +313,7 @@ else	\
 {	\
 	if (__lperr)	\
 	{	\
-		std::wstring szErr = MAPIErrToString((__ulflags),*(__lperr));	\
+		std::wstring szErr = interpretprop::MAPIErrToString((__ulflags),*(__lperr));	\
 		ErrDialog(__FILE__,__LINE__,IDS_EDMAPIERROR, szErr.c_str());	\
 		DebugPrint(DBGGeneric,L"LPMAPIERROR:\n%ws\n", szErr.c_str());	\
 	}	\
@@ -323,7 +323,7 @@ else	\
 {	\
 	if (problemarray)	\
 	{	\
-		std::wstring szProbArray = TnefProblemArrayToString(*(problemarray));	\
+		std::wstring szProbArray = interpretprop::TnefProblemArrayToString(*(problemarray));	\
 		ErrDialog(__FILE__,__LINE__,IDS_EDTNEFPROBLEMARRAY, szProbArray.c_str());	\
 		DebugPrint(DBGGeneric,L"TNEF Problem array:\n%ws\n",szProbArray.c_str());	\
 	}	\

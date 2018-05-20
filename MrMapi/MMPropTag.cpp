@@ -174,7 +174,7 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 
 	std::vector<ULONG> ulExacts;
 	std::vector<ULONG> ulPartials;
-	FindTagArrayMatches(ulPropTag, true, PropTagArray, ulExacts, ulPartials);
+	interpretprop::FindTagArrayMatches(ulPropTag, true, PropTagArray, ulExacts, ulPartials);
 
 	if (!ulExacts.empty())
 	{
@@ -224,7 +224,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 
 			std::vector<ULONG> ulExacts;
 			std::vector<ULONG> ulPartials;
-			FindTagArrayMatches(PropTagArray[ulExactMatch].ulValue, true, PropTagArray, ulExacts, ulPartials);
+			interpretprop::FindTagArrayMatches(PropTagArray[ulExactMatch].ulValue, true, PropTagArray, ulExacts, ulPartials);
 
 			// We're gonna skip at least one, so only print if we have more than one
 			if (ulExacts.size() > 1)

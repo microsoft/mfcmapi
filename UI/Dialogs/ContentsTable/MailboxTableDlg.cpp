@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "MailboxTableDlg.h"
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
@@ -52,7 +52,7 @@ void CMailboxTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		if (m_lpContentsTableListCtrl)
 		{
-			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+			const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 			pMenu->EnableMenuItem(ID_OPENWITHFLAGS, DIMMSOK(iNumSel));
 		}
 	}
@@ -76,7 +76,7 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
@@ -86,7 +86,7 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 		EC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpGUIDMDB));
 	}
 
-	auto lpSourceMDB = lpMDB ? lpMDB : lpGUIDMDB; // do not release
+	const auto lpSourceMDB = lpMDB ? lpMDB : lpGUIDMDB; // do not release
 
 	if (lpSourceMDB)
 	{
@@ -141,7 +141,7 @@ void CMailboxTableDlg::OnOpenWithFlags()
 		IDS_OPENWITHFLAGS,
 		IDS_OPENWITHFLAGSPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
+	MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 	MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 	MyPrompt.SetHex(0, OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 	WC_H(MyPrompt.DisplayDialog());
@@ -172,7 +172,7 @@ void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 			IDS_SEARCHCRITERIA,
 			IDS_MBSEARCHCRITERIAPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel, true));
+		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
 
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_NAME, false));
 		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
@@ -181,7 +181,7 @@ void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
 
-		auto szString = MyData.GetStringW(0);
+		const auto szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
 		EC_H(CreatePropertyStringRestriction(
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),

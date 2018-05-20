@@ -99,7 +99,7 @@ namespace smartview
 		{
 			for (const auto& extendedFlag : m_pefExtendedFlags)
 			{
-				auto szFlags = InterpretFlags(flagExtendedFolderFlagType, extendedFlag.Id);
+				auto szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlagType, extendedFlag.Id);
 				szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGID,
 					extendedFlag.Id, szFlags.c_str(),
 					extendedFlag.Cb);
@@ -107,7 +107,7 @@ namespace smartview
 				switch (extendedFlag.Id)
 				{
 				case EFPB_FLAGS:
-					szFlags = InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags);
+					szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags);
 					szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATAFLAG, extendedFlag.Data.ExtendedFlags, szFlags.c_str());
 					break;
 				case EFPB_CLSIDID:

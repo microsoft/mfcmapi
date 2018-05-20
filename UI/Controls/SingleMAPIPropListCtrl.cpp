@@ -654,7 +654,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		lpMappingSignature,
 		m_bIsAB);
 
-	auto propTagNames = PropTagToPropName(ulPropTag, m_bIsAB);
+	auto propTagNames = interpretprop::PropTagToPropName(ulPropTag, m_bIsAB);
 
 	if (!propTagNames.bestGuess.empty())
 	{
@@ -676,9 +676,9 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	SetItemText(iRow, pcPROPOTHERNAMES, propTagNames.otherMatches);
 
 	SetItemText(iRow, pcPROPTAG, PropTag);
-	SetItemText(iRow, pcPROPTYPE, TypeToString(ulPropTag));
+	SetItemText(iRow, pcPROPTYPE, interpretprop::TypeToString(ulPropTag));
 
-	InterpretProp(lpsPropToAdd, &PropString, &AltPropString);
+	interpretprop::InterpretProp(lpsPropToAdd, &PropString, &AltPropString);
 	SetItemText(iRow, pcPROPVAL, PropString);
 	SetItemText(iRow, pcPROPVALALT, AltPropString);
 
@@ -1267,7 +1267,7 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 	{
 		DebugPrintEx(DBGGeneric, CLASS, L"OnEditGivenProp", L"editing property 0x%X (= %ws)\n",
 			ulPropTag,
-			TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(),
+			interpretprop::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(),
 				m_bIsAB,
 				true).c_str());
 	}
@@ -1372,7 +1372,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 	{
 		DebugPrintEx(DBGGeneric, CLASS, L"OnEditPropAsStream", L"editing property 0x%X (= %ws) as stream, ulType = 0x%08X, bEditAsRTF = 0x%X\n",
 			ulPropTag,
-			TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str(),
+			interpretprop::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str(),
 			ulType,
 			bEditAsRTF);
 	}

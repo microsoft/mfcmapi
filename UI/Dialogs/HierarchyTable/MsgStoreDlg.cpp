@@ -648,7 +648,7 @@ void CMsgStoreDlg::OnCreateSubFolder()
 		IDS_ADDSUBFOLDER,
 		IDS_ADDSUBFOLDERPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_FOLDER_TYPE), true));
+	MyData.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_FOLDER_TYPE), true));
 	MyData.InitPane(0, TextPane::CreateSingleLinePaneID(IDS_FOLDERNAME, IDS_FOLDERNAMEVALUE, false));
 	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FOLDERTYPE, false));
 	MyData.SetHex(1, FOLDER_GENERIC);

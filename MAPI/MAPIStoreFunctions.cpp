@@ -667,7 +667,7 @@ _Check_return_ HRESULT OpenMailboxWithPrompt(
 		IDS_OPENOTHERUSER,
 		IDS_OPENWITHFLAGSPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
+	MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 	MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, strings::stringTowstring(szServerName), false));
 	MyPrompt.InitPane(1, TextPane::CreateSingleLinePane(IDS_USERDN, szMailboxDN, false));
 	MyPrompt.InitPane(2, TextPane::CreateSingleLinePane(IDS_USER_SMTP_ADDRESS, false));

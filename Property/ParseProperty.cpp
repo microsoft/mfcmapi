@@ -207,14 +207,14 @@ Property ParseProperty(_In_ const _SPropValue* lpProp)
 			attributes.AddAttribute(L"cb", std::to_wstring(lpProp->Value.bin.cb)); // STRING_OK
 			break;
 		case PT_SRESTRICTION:
-			szTmp = RestrictionToString(reinterpret_cast<LPSRestriction>(lpProp->Value.lpszA), nullptr);
+			szTmp = interpretprop::RestrictionToString(reinterpret_cast<LPSRestriction>(lpProp->Value.lpszA), nullptr);
 			bPropXMLSafe = false;
 			break;
 		case PT_ACTIONS:
 			if (lpProp->Value.lpszA)
 			{
 				const auto actions = reinterpret_cast<ACTIONS*>(lpProp->Value.lpszA);
-				szTmp = ActionsToString(*actions);
+				szTmp = interpretprop::ActionsToString(*actions);
 			}
 			else
 			{

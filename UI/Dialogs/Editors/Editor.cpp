@@ -1223,7 +1223,7 @@ _Check_return_ ULONG CEditor::GetPropTag(ULONG i) const
 	if (pane)
 	{
 
-		const auto ulTag = PropNameToPropTag(pane->GetStringW());
+		const auto ulTag = interpretprop::PropNameToPropTag(pane->GetStringW());
 
 		// Figure if this is a full tag or just an ID
 		if (ulTag & PROP_TAG_MASK) // Full prop tag

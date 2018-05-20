@@ -98,12 +98,12 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 			nullptr,
 			m_bIsAB);
 
-		const auto propTagNames = PropTagToPropName(ulNewPropTag, m_bIsAB);
+		const auto propTagNames = interpretprop::PropTagToPropName(ulNewPropTag, m_bIsAB);
 
 		SetListString(ulListNum, iItem, 1, strings::format(L"0x%08X", ulNewPropTag));
 		SetListString(ulListNum, iItem, 2, propTagNames.bestGuess);
 		SetListString(ulListNum, iItem, 3, propTagNames.otherMatches);
-		SetListString(ulListNum, iItem, 4, TypeToString(ulNewPropTag));
+		SetListString(ulListNum, iItem, 4, interpretprop::TypeToString(ulNewPropTag));
 		SetListString(ulListNum, iItem, 5, namePropNames.name);
 		SetListString(ulListNum, iItem, 6, namePropNames.guid);
 
@@ -145,12 +145,12 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum, LPSPropTagArray lpTagA
 				nullptr,
 				m_bIsAB);
 
-			const auto propTagNames = PropTagToPropName(ulPropTag, m_bIsAB);
+			const auto propTagNames = interpretprop::PropTagToPropName(ulPropTag, m_bIsAB);
 
 			SetListString(ulListNum, iTagCount, 1, strings::format(L"0x%08X", ulPropTag));
 			SetListString(ulListNum, iTagCount, 2, propTagNames.bestGuess);
 			SetListString(ulListNum, iTagCount, 3, propTagNames.otherMatches);
-			SetListString(ulListNum, iTagCount, 4, TypeToString(ulPropTag));
+			SetListString(ulListNum, iTagCount, 4, interpretprop::TypeToString(ulPropTag));
 			SetListString(ulListNum, iTagCount, 5, namePropNames.name);
 			SetListString(ulListNum, iTagCount, 6, namePropNames.guid);
 		}

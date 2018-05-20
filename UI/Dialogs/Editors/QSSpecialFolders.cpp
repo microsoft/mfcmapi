@@ -131,7 +131,7 @@ void SpecialFolderEditor::LoadFolders() const
 				eid.ulPropTag = PR_ENTRYID;
 				eid.Value.bin.cb = cb;
 				eid.Value.bin.lpb = reinterpret_cast<LPBYTE>(lpeid);
-				InterpretProp(&eid, &szProp, nullptr);
+				interpretprop::InterpretProp(&eid, &szProp, nullptr);
 				SetListString(ulListNum, iRow, iCol, szProp);
 				iCol++;
 
@@ -159,7 +159,7 @@ void SpecialFolderEditor::LoadFolders() const
 
 						if (szTmp.empty() && PT_ERROR != PROP_TYPE(lpProps[ulPropNum].ulPropTag))
 						{
-							InterpretProp(&lpProps[ulPropNum], &szProp, nullptr);
+							interpretprop::InterpretProp(&lpProps[ulPropNum], &szProp, nullptr);
 							SetListString(ulListNum, iRow, iCol, szProp);
 						}
 						else

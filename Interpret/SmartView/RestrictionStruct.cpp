@@ -36,7 +36,7 @@ namespace smartview
 	_Check_return_ std::wstring RestrictionStruct::ToStringInternal()
 	{
 		auto szRestriction = strings::formatmessage(IDS_RESTRICTIONDATA);
-		szRestriction += RestrictionToString(m_lpRes, nullptr);
+		szRestriction += interpretprop::RestrictionToString(m_lpRes, nullptr);
 
 		return szRestriction;
 	}

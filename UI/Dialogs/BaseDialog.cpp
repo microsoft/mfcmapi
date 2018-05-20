@@ -944,7 +944,7 @@ void CBaseDialog::OnNotificationsOn()
 		IDS_NOTIFICATIONS,
 		IDS_NOTIFICATIONSPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.SetPromptPostFix(AllFlagsToString(flagNotifEventType, true));
+	MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagNotifEventType, true));
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_EID, false));
 	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_ULEVENTMASK, false));
 	MyData.SetHex(1, fnevNewMail);

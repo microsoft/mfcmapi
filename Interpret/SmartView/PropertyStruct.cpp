@@ -60,7 +60,7 @@ namespace smartview
 					i,
 					Prop[i].ulPropTag));
 
-				auto propTagNames = PropTagToPropName(Prop[i].ulPropTag, false);
+				auto propTagNames = interpretprop::PropTagToPropName(Prop[i].ulPropTag, false);
 				if (!propTagNames.bestGuess.empty())
 				{
 					property.push_back(strings::formatmessage(IDS_PROPERTYDATANAME,
@@ -73,7 +73,7 @@ namespace smartview
 						propTagNames.otherMatches.c_str()));
 				}
 
-				InterpretProp(&Prop[i], &PropString, &AltPropString);
+				interpretprop::InterpretProp(&Prop[i], &PropString, &AltPropString);
 				property.push_back(strings::RemoveInvalidCharactersW(strings::formatmessage(IDS_PROPERTYDATA,
 					PropString.c_str(),
 					AltPropString.c_str()), false));

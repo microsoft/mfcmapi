@@ -149,7 +149,7 @@ namespace smartview
 
 	_Check_return_ std::wstring PropertyDefinitionStream::ToStringInternal()
 	{
-		auto szVersion = InterpretFlags(flagPropDefVersion, m_wVersion);
+		auto szVersion = interpretprop::InterpretFlags(flagPropDefVersion, m_wVersion);
 
 		std::wstring szPropertyDefinitionStream = strings::formatmessage(IDS_PROPDEFHEADER,
 			m_wVersion, szVersion.c_str(),
@@ -157,8 +157,8 @@ namespace smartview
 
 		for (DWORD iDef = 0; iDef < m_pfdFieldDefinitions.size(); iDef++)
 		{
-			auto szFlags = InterpretFlags(flagPDOFlag, m_pfdFieldDefinitions[iDef].dwFlags);
-			auto szVarEnum = InterpretFlags(flagVarEnum, m_pfdFieldDefinitions[iDef].wVT);
+			auto szFlags = interpretprop::InterpretFlags(flagPDOFlag, m_pfdFieldDefinitions[iDef].dwFlags);
+			auto szVarEnum = interpretprop::InterpretFlags(flagVarEnum, m_pfdFieldDefinitions[iDef].wVT);
 			szPropertyDefinitionStream += strings::formatmessage(IDS_PROPDEFFIELDHEADER,
 				iDef,
 				m_pfdFieldDefinitions[iDef].dwFlags, szFlags.c_str(),
@@ -169,7 +169,7 @@ namespace smartview
 			{
 				if (m_pfdFieldDefinitions[iDef].dwDispid < 0x8000)
 				{
-					auto propTagNames = PropTagToPropName(m_pfdFieldDefinitions[iDef].dwDispid, false);
+					auto propTagNames = interpretprop::PropTagToPropName(m_pfdFieldDefinitions[iDef].dwDispid, false);
 					if (!propTagNames.bestGuess.empty())
 					{
 						szPropertyDefinitionStream += strings::formatmessage(IDS_PROPDEFDISPIDTAG, propTagNames.bestGuess.c_str());
@@ -187,7 +187,7 @@ namespace smartview
 					mnid.lpguid = nullptr;
 					mnid.ulKind = MNID_ID;
 					mnid.Kind.lID = m_pfdFieldDefinitions[iDef].dwDispid;
-					szDispidName = strings::join(NameIDToPropNames(&mnid), L", ");
+					szDispidName = strings::join(interpretprop::NameIDToPropNames(&mnid), L", ");
 					if (!szDispidName.empty())
 					{
 						szPropertyDefinitionStream += strings::formatmessage(IDS_PROPDEFDISPIDNAMED, szDispidName.c_str());
@@ -209,7 +209,7 @@ namespace smartview
 
 			if (PropDefV2 == m_wVersion)
 			{
-				szFlags = InterpretFlags(flagInternalType, m_pfdFieldDefinitions[iDef].dwInternalType);
+				szFlags = interpretprop::InterpretFlags(flagInternalType, m_pfdFieldDefinitions[iDef].dwInternalType);
 				szPropertyDefinitionStream += strings::formatmessage(IDS_PROPDEFINTERNALTYPE,
 					m_pfdFieldDefinitions[iDef].dwInternalType, szFlags.c_str(),
 					m_pfdFieldDefinitions[iDef].dwSkipBlockCount);

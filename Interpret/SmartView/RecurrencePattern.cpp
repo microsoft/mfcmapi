@@ -93,9 +93,9 @@ namespace smartview
 
 	_Check_return_ std::wstring RecurrencePattern::ToStringInternal()
 	{
-		auto szRecurFrequency = InterpretFlags(flagRecurFrequency, m_RecurFrequency);
-		auto szPatternType = InterpretFlags(flagPatternType, m_PatternType);
-		auto szCalendarType = InterpretFlags(flagCalendarType, m_CalendarType);
+		auto szRecurFrequency = interpretprop::InterpretFlags(flagRecurFrequency, m_RecurFrequency);
+		auto szPatternType = interpretprop::InterpretFlags(flagPatternType, m_PatternType);
+		auto szCalendarType = interpretprop::InterpretFlags(flagCalendarType, m_CalendarType);
 		auto szRP = strings::formatmessage(IDS_RPHEADER,
 			m_ReaderVersion,
 			m_WriterVersion,
@@ -113,7 +113,7 @@ namespace smartview
 		case rptMinute:
 			break;
 		case rptWeek:
-			szDOW = InterpretFlags(flagDOW, m_PatternTypeSpecific.WeekRecurrencePattern);
+			szDOW = interpretprop::InterpretFlags(flagDOW, m_PatternTypeSpecific.WeekRecurrencePattern);
 			szRP += strings::formatmessage(IDS_RPPATTERNWEEK,
 				m_PatternTypeSpecific.WeekRecurrencePattern, szDOW.c_str());
 			break;
@@ -126,16 +126,16 @@ namespace smartview
 			break;
 		case rptMonthNth:
 		case rptHjMonthNth:
-			szDOW = InterpretFlags(flagDOW, m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek);
-			szN = InterpretFlags(flagN, m_PatternTypeSpecific.MonthNthRecurrencePattern.N);
+			szDOW = interpretprop::InterpretFlags(flagDOW, m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek);
+			szN = interpretprop::InterpretFlags(flagN, m_PatternTypeSpecific.MonthNthRecurrencePattern.N);
 			szRP += strings::formatmessage(IDS_RPPATTERNMONTHNTH,
 				m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek, szDOW.c_str(),
 				m_PatternTypeSpecific.MonthNthRecurrencePattern.N, szN.c_str());
 			break;
 		}
 
-		auto szEndType = InterpretFlags(flagEndType, m_EndType);
-		auto szFirstDOW = InterpretFlags(flagFirstDOW, m_FirstDOW);
+		auto szEndType = interpretprop::InterpretFlags(flagEndType, m_EndType);
+		auto szFirstDOW = interpretprop::InterpretFlags(flagFirstDOW, m_FirstDOW);
 
 		szRP += strings::formatmessage(IDS_RPHEADER2,
 			m_EndType, szEndType.c_str(),

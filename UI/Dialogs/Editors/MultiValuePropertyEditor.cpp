@@ -31,7 +31,7 @@ CMultiValuePropertyEditor::CMultiValuePropertyEditor(
 	m_ulPropTag = ulPropTag;
 	m_lpsInputValue = lpsPropValue;
 
-	const auto szPromptPostFix = strings::format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+	const auto szPromptPostFix = strings::format(L"\r\n%ws", interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 	SetPromptPostFix(szPromptPostFix);
 
 	InitPropertyControls();
@@ -364,7 +364,7 @@ void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iM
 	std::wstring szTmp;
 	std::wstring szAltTmp;
 
-	InterpretProp(lpProp, &szTmp, &szAltTmp);
+	interpretprop::InterpretProp(lpProp, &szTmp, &szAltTmp);
 	SetListString(0, iMVCount, 1, szTmp);
 	SetListString(0, iMVCount, 2, szAltTmp);
 

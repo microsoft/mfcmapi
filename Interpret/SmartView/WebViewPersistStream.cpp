@@ -52,9 +52,9 @@ namespace smartview
 		auto szWebViewPersistStream = strings::formatmessage(IDS_WEBVIEWSTREAMHEADER, m_cWebViews);
 		for (ULONG i = 0; i < m_lpWebViews.size(); i++)
 		{
-			auto szVersion = InterpretFlags(flagWebViewVersion, m_lpWebViews[i].dwVersion);
-			auto szType = InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType);
-			auto szFlags = InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags);
+			auto szVersion = interpretprop::InterpretFlags(flagWebViewVersion, m_lpWebViews[i].dwVersion);
+			auto szType = interpretprop::InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType);
+			auto szFlags = interpretprop::InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags);
 
 			szWebViewPersistStream += strings::formatmessage(
 				IDS_WEBVIEWHEADER,

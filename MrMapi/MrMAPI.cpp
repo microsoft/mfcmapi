@@ -703,7 +703,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			// If we have a next argument and it's not an option, parse it as a type
 			if (i + 1 < argc && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				pRunOpts->ulTypeNum = PropTypeNameToPropType(strings::LPCSTRToWstring(argv[i + 1]));
+				pRunOpts->ulTypeNum = interpretprop::PropTypeNameToPropType(strings::LPCSTRToWstring(argv[i + 1]));
 				i++;
 			}
 			break;

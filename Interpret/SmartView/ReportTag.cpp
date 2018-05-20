@@ -68,7 +68,7 @@ namespace smartview
 
 		szReportTag += strings::BinToHexString(m_Cookie, true);
 
-		auto szFlags = InterpretFlags(flagReportTagVersion, m_Version);
+		auto szFlags = interpretprop::InterpretFlags(flagReportTagVersion, m_Version);
 		szReportTag += strings::formatmessage(IDS_REPORTTAGVERSION,
 			m_Version,
 			szFlags.c_str());

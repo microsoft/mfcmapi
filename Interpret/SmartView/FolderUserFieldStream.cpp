@@ -85,8 +85,8 @@ namespace smartview
 			for (auto& fieldDefinition : m_FieldDefinitionsA)
 			{
 				auto szGUID = guid::GUIDToString(&fieldDefinition.Common.PropSetGuid);
-				auto szFieldType = InterpretFlags(flagFolderType, fieldDefinition.FieldType);
-				auto szFieldcap = InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
+				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
+				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
 
 				szTmp = strings::formatmessage(
 					IDS_FIELDANSIFIELD,
@@ -117,8 +117,8 @@ namespace smartview
 			for (auto& fieldDefinition : m_FieldDefinitionsW)
 			{
 				auto szGUID = guid::GUIDToString(&fieldDefinition.Common.PropSetGuid);
-				auto szFieldType = InterpretFlags(flagFolderType, fieldDefinition.FieldType);
-				auto szFieldcap = InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
+				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
+				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
 
 				szTmp = strings::formatmessage(
 					IDS_FIELDUNICODEFIELD,

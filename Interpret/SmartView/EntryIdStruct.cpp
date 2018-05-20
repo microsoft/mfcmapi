@@ -308,13 +308,13 @@ namespace smartview
 		else if (0 == (m_abFlags[1] | m_abFlags[2] | m_abFlags[3]))
 		{
 			szEntryId += strings::formatmessage(IDS_ENTRYIDHEADER2,
-				m_abFlags[0], InterpretFlags(flagEntryId0, m_abFlags[0]).c_str());
+				m_abFlags[0], interpretprop::InterpretFlags(flagEntryId0, m_abFlags[0]).c_str());
 		}
 		else
 		{
 			szEntryId += strings::formatmessage(IDS_ENTRYIDHEADER3,
-				m_abFlags[0], InterpretFlags(flagEntryId0, m_abFlags[0]).c_str(),
-				m_abFlags[1], InterpretFlags(flagEntryId1, m_abFlags[1]).c_str(),
+				m_abFlags[0], interpretprop::InterpretFlags(flagEntryId0, m_abFlags[0]).c_str(),
+				m_abFlags[1], interpretprop::InterpretFlags(flagEntryId1, m_abFlags[1]).c_str(),
 				m_abFlags[2],
 				m_abFlags[3]);
 		}
@@ -324,7 +324,7 @@ namespace smartview
 
 		if (eidtEphemeral == m_ObjectType)
 		{
-			auto szVersion = InterpretFlags(flagExchangeABVersion, m_EphemeralObject.Version);
+			auto szVersion = interpretprop::InterpretFlags(flagExchangeABVersion, m_EphemeralObject.Version);
 			auto szType = InterpretNumberAsStringProp(m_EphemeralObject.Type, PR_DISPLAY_TYPE);
 
 			szEntryId += strings::formatmessage(IDS_ENTRYIDEPHEMERALADDRESSDATA,
@@ -333,7 +333,7 @@ namespace smartview
 		}
 		else if (eidtOneOff == m_ObjectType)
 		{
-			auto szFlags = InterpretFlags(flagOneOffEntryId, m_OneOffRecipientObject.Bitmask);
+			auto szFlags = interpretprop::InterpretFlags(flagOneOffEntryId, m_OneOffRecipientObject.Bitmask);
 			if (MAPI_UNICODE & m_OneOffRecipientObject.Bitmask)
 			{
 				szEntryId += strings::formatmessage(IDS_ONEOFFENTRYIDFOOTERUNICODE,
@@ -353,7 +353,7 @@ namespace smartview
 		}
 		else if (eidtAddressBook == m_ObjectType)
 		{
-			auto szVersion = InterpretFlags(flagExchangeABVersion, m_AddressBookObject.Version);
+			auto szVersion = interpretprop::InterpretFlags(flagExchangeABVersion, m_AddressBookObject.Version);
 			auto szType = InterpretNumberAsStringProp(m_AddressBookObject.Type, PR_DISPLAY_TYPE);
 
 			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEADDRESSDATA,
@@ -364,8 +364,8 @@ namespace smartview
 		// Contact Address Book / Personal Distribution List (PDL)
 		else if (eidtContact == m_ObjectType)
 		{
-			auto szVersion = InterpretFlags(flagContabVersion, m_ContactAddressBookObject.Version);
-			auto szType = InterpretFlags(flagContabType, m_ContactAddressBookObject.Type);
+			auto szVersion = interpretprop::InterpretFlags(flagContabVersion, m_ContactAddressBookObject.Version);
+			auto szType = interpretprop::InterpretFlags(flagContabType, m_ContactAddressBookObject.Type);
 
 			szEntryId += strings::formatmessage(IDS_ENTRYIDCONTACTADDRESSDATAHEAD,
 				m_ContactAddressBookObject.Version, szVersion.c_str(),
@@ -376,7 +376,7 @@ namespace smartview
 			case CONTAB_USER:
 			case CONTAB_DISTLIST:
 				szEntryId += strings::formatmessage(IDS_ENTRYIDCONTACTADDRESSDATAUSER,
-					m_ContactAddressBookObject.Index, InterpretFlags(flagContabIndex, m_ContactAddressBookObject.Index).c_str(),
+					m_ContactAddressBookObject.Index, interpretprop::InterpretFlags(flagContabIndex, m_ContactAddressBookObject.Index).c_str(),
 					m_ContactAddressBookObject.EntryIDCount);
 				break;
 			case CONTAB_ROOT:
@@ -396,7 +396,7 @@ namespace smartview
 		}
 		else if (eidtWAB == m_ObjectType)
 		{
-			szEntryId += strings::formatmessage(IDS_ENTRYIDWRAPPEDENTRYIDDATA, m_WAB.Type, InterpretFlags(flagWABEntryIDType, m_WAB.Type).c_str());
+			szEntryId += strings::formatmessage(IDS_ENTRYIDWRAPPEDENTRYIDDATA, m_WAB.Type, interpretprop::InterpretFlags(flagWABEntryIDType, m_WAB.Type).c_str());
 
 			for (auto& entry : m_WAB.lpEntryID)
 			{
@@ -405,8 +405,8 @@ namespace smartview
 		}
 		else if (eidtMessageDatabase == m_ObjectType)
 		{
-			auto szVersion = InterpretFlags(flagMDBVersion, m_MessageDatabaseObject.Version);
-			auto szFlag = InterpretFlags(flagMDBFlag, m_MessageDatabaseObject.Flag);
+			auto szVersion = interpretprop::InterpretFlags(flagMDBVersion, m_MessageDatabaseObject.Version);
+			auto szFlag = interpretprop::InterpretFlags(flagMDBFlag, m_MessageDatabaseObject.Flag);
 
 			szEntryId += strings::formatmessage(IDS_ENTRYIDMAPIMESSAGESTOREDATA,
 				m_MessageDatabaseObject.Version, szVersion.c_str(),
@@ -429,8 +429,8 @@ namespace smartview
 			{
 			case MDB_STORE_EID_V2_MAGIC:
 			{
-				auto szV2Magic = InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v2.ulMagic);
-				auto szV2Version = InterpretFlags(flagEidVersion, m_MessageDatabaseObject.v2.ulVersion);
+				auto szV2Magic = interpretprop::InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v2.ulMagic);
+				auto szV2Version = interpretprop::InterpretFlags(flagEidVersion, m_MessageDatabaseObject.v2.ulVersion);
 
 				szEntryId += strings::formatmessage(IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV2,
 					m_MessageDatabaseObject.v2.ulMagic, szV2Magic.c_str(),
@@ -446,8 +446,8 @@ namespace smartview
 			break;
 			case MDB_STORE_EID_V3_MAGIC:
 			{
-				auto szV3Magic = InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v3.ulMagic);
-				auto szV3Version = InterpretFlags(flagEidVersion, m_MessageDatabaseObject.v3.ulVersion);
+				auto szV3Magic = interpretprop::InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v3.ulMagic);
+				auto szV3Version = interpretprop::InterpretFlags(flagEidVersion, m_MessageDatabaseObject.v3.ulVersion);
 
 				szEntryId += strings::formatmessage(IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV3,
 					m_MessageDatabaseObject.v3.ulMagic, szV3Magic.c_str(),
@@ -463,7 +463,7 @@ namespace smartview
 		}
 		else if (eidtFolder == m_ObjectType)
 		{
-			auto szType = InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
+			auto szType = interpretprop::InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
 
 			auto szDatabaseGUID = guid::GUIDToStringAndName(&m_FolderOrMessage.FolderObject.DatabaseGUID);
 
@@ -477,7 +477,7 @@ namespace smartview
 		}
 		else if (eidtMessage == m_ObjectType)
 		{
-			auto szType = InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
+			auto szType = interpretprop::InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
 			auto szFolderDatabaseGUID = guid::GUIDToStringAndName(&m_FolderOrMessage.MessageObject.FolderDatabaseGUID);
 			auto szMessageDatabaseGUID = guid::GUIDToStringAndName(&m_FolderOrMessage.MessageObject.MessageDatabaseGUID);
 

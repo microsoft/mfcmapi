@@ -128,7 +128,7 @@ void CSearchEditor::PopulateFields(ULONG ulSkipField) const
 {
 	if (PROPNAME != ulSkipField)
 	{
-		auto propTagNames = PropTagToPropName(m_ulPropTag, false);
+		auto propTagNames = interpretprop::PropTagToPropName(m_ulPropTag, false);
 
 		if (PROP_ID(m_ulPropTag) && !propTagNames.bestGuess.empty())
 		{

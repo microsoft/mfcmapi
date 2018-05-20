@@ -73,7 +73,7 @@ namespace smartview
 
 		for (WORD i = 0; i < m_lpTZRule.size(); i++)
 		{
-			auto szFlags = InterpretFlags(flagTZRule, m_lpTZRule[i].wTZRuleFlags);
+			auto szFlags = interpretprop::InterpretFlags(flagTZRule, m_lpTZRule[i].wTZRuleFlags);
 			szTimeZoneDefinition += strings::formatmessage(IDS_TZRULEHEADER,
 				i,
 				m_lpTZRule[i].bMajorVersion,

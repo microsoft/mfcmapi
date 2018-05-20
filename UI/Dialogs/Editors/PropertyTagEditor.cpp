@@ -227,7 +227,7 @@ _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType() const
 		szType = GetDropStringUseControl(PROPTAG_TYPE);
 	}
 
-	return PropTypeNameToPropType(szType);
+	return interpretprop::PropTypeNameToPropType(szType);
 }
 
 _Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
@@ -286,10 +286,10 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 
 	if (PROPTAG_TAG != ulSkipField) SetHex(PROPTAG_TAG, m_ulPropTag);
 	if (PROPTAG_ID != ulSkipField) SetStringf(PROPTAG_ID, L"0x%04X", PROP_ID(m_ulPropTag)); // STRING_OK
-	if (PROPTAG_TYPE != ulSkipField) SetDropDownSelection(PROPTAG_TYPE, TypeToString(m_ulPropTag));
+	if (PROPTAG_TYPE != ulSkipField) SetDropDownSelection(PROPTAG_TYPE, interpretprop::TypeToString(m_ulPropTag));
 	if (PROPTAG_NAME != ulSkipField)
 	{
-		auto propTagNames = PropTagToPropName(m_ulPropTag, m_bIsAB);
+		auto propTagNames = interpretprop::PropTagToPropName(m_ulPropTag, m_bIsAB);
 
 		if (PROP_ID(m_ulPropTag) && !propTagNames.bestGuess.empty())
 			SetStringf(PROPTAG_NAME, L"%ws (%ws)", propTagNames.bestGuess.c_str(), propTagNames.otherMatches.c_str()); // STRING_OK
@@ -299,7 +299,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 			LoadString(PROPTAG_NAME, IDS_UNKNOWNPROPERTY);
 	}
 
-	if (PROPTAG_TYPESTRING != ulSkipField) SetStringW(PROPTAG_TYPESTRING, TypeToString(m_ulPropTag));
+	if (PROPTAG_TYPESTRING != ulSkipField) SetStringW(PROPTAG_TYPESTRING, interpretprop::TypeToString(m_ulPropTag));
 
 	// Do a named property lookup and fill out fields
 	// But only if PROPTAG_TAG or PROPTAG_ID is what the user changed

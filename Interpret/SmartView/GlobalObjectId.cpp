@@ -52,7 +52,7 @@ namespace smartview
 			szGlobalObjectId += strings::formatmessage(IDS_UNKNOWNGUID);
 		}
 
-		auto szFlags = InterpretFlags(flagGlobalObjectIdMonth, m_Month);
+		auto szFlags = interpretprop::InterpretFlags(flagGlobalObjectIdMonth, m_Month);
 
 		std::wstring PropString;
 		std::wstring AltPropString;

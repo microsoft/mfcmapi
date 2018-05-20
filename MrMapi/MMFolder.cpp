@@ -178,7 +178,7 @@ static HRESULT HrLookupRootFolderW(
 	// Implicitly recognize no root folder as THE root folder
 	if (lpszRootFolder.empty()) return S_OK;
 
-	auto ulPropTag = LookupPropName(lpszRootFolder);
+	auto ulPropTag = interpretprop::LookupPropName(lpszRootFolder);
 	if (!ulPropTag)
 	{
 		// Maybe one of our folder constants was passed.
@@ -621,7 +621,7 @@ void DumpSearchState(
 		}
 		else if (SUCCEEDED(hRes))
 		{
-			auto szFlags = InterpretFlags(flagSearchState, ulSearchState);
+			auto szFlags = interpretprop::InterpretFlags(flagSearchState, ulSearchState);
 			printf("Search state %ws == 0x%08X\n", szFlags.c_str(), ulSearchState);
 			printf("\n");
 			printf("Search Scope:\n");
@@ -640,7 +640,7 @@ void DoFolderProps(_In_ MYOPTIONS ProgOpts)
 {
 	if (ProgOpts.lpFolder)
 	{
-		PrintObjectProperties(L"folderprops", ProgOpts.lpFolder, PropNameToPropTag(ProgOpts.lpszUnswitchedOption));
+		PrintObjectProperties(L"folderprops", ProgOpts.lpFolder, interpretprop::PropNameToPropTag(ProgOpts.lpszUnswitchedOption));
 	}
 }
 

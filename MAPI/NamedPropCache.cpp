@@ -194,7 +194,7 @@ void AddMapping(ULONG cbSig, // Count bytes of signature
 		{
 			if (fIsSet(DBGNamedPropCacheMisses) && lppPropNames[ulSource]->ulKind == MNID_ID)
 			{
-				auto names = NameIDToPropNames(lppPropNames[ulSource]);
+				auto names = interpretprop::NameIDToPropNames(lppPropNames[ulSource]);
 				if (names.empty())
 				{
 					DebugPrint(DBGNamedPropCacheMisses, L"AddMapping: Caching unknown property 0x%08X %ws\n", lppPropNames[ulSource]->Kind.lID, guid::GUIDToStringAndName(lppPropNames[ulSource]->lpguid).c_str());
@@ -643,7 +643,7 @@ NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
 	if (lpNameID->ulKind == MNID_ID)
 	{
 		DebugPrint(DBGNamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
-		auto pidlids = NameIDToPropNames(lpNameID);
+		auto pidlids = interpretprop::NameIDToPropNames(lpNameID);
 
 		if (!pidlids.empty())
 		{

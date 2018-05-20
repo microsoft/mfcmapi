@@ -103,7 +103,7 @@ namespace smartview
 				szAdditionalRenEntryIDs += strings::formatmessage(IDS_AEIDPERSISTELEMENT,
 					iPersistElement,
 					m_ppdPersistData[iPersistElement].wPersistID,
-					InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID).c_str(),
+					interpretprop::InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID).c_str(),
 					m_ppdPersistData[iPersistElement].wDataElementsSize);
 
 				if (m_ppdPersistData[iPersistElement].ppeDataElement.size())
@@ -113,7 +113,7 @@ namespace smartview
 						szAdditionalRenEntryIDs += strings::formatmessage(IDS_AEIDDATAELEMENT,
 							iDataElement,
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
-							InterpretFlags(flagElementID, m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID).c_str(),
+							interpretprop::InterpretFlags(flagElementID, m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID).c_str(),
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize);
 
 						szAdditionalRenEntryIDs += strings::BinToHexString(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData, true);

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <IO/Error.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <Interpret/ErrorArray.h>
@@ -16,7 +16,7 @@ void LogFunctionCall(
 {
 	if (fIsSet(DBGMAPIFunctions) && bMAPICall)
 	{
-		auto szFunctionString = strings::formatmessage(
+		const auto szFunctionString = strings::formatmessage(
 			IDS_FUNCTION,
 			szFile,
 			iLine,
@@ -37,7 +37,7 @@ void LogFunctionCall(
 	// Get our error message if we have one
 	auto szErrorMsg = bSystemCall ? strings::formatmessagesys(uidErrorMsg) : uidErrorMsg ? strings::loadstring(uidErrorMsg) : L"";
 
-	auto szErrString = strings::formatmessage(
+	const auto szErrString = strings::formatmessage(
 		FAILED(hRes) ? IDS_ERRFORMATSTRING : IDS_WARNFORMATSTRING,
 		szErrorMsg.c_str(),
 		ErrorNameFromErrorCode(hRes).c_str(),
@@ -65,8 +65,8 @@ void LogFunctionCall(
 
 _Check_return_ HRESULT CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction)
 {
-	auto dwErr = GetLastError();
-	auto hRes = HRESULT_FROM_WIN32(dwErr);
+	const auto dwErr = GetLastError();
+	const auto hRes = HRESULT_FROM_WIN32(dwErr);
 	LogFunctionCall(hRes, NULL, bDisplayDialog, false, true, dwErr, szFunction, szFile, iLine);
 	return hRes;
 }
@@ -78,10 +78,10 @@ void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 	// Build out error message from the variant argument list
 	va_list argList = nullptr;
 	va_start(argList, uidErrorFmt);
-	auto szErrorBegin = strings::formatV(szErrorFmt.c_str(), argList);
+	const auto szErrorBegin = strings::formatV(szErrorFmt.c_str(), argList);
 	va_end(argList);
 
-	auto szCombo = szErrorBegin + strings::formatmessage(IDS_INFILEONLINE, szFile, iLine);
+	const auto szCombo = szErrorBegin + strings::formatmessage(IDS_INFILEONLINE, szFile, iLine);
 
 	Output(DBGHRes, nullptr, true, szCombo);
 	Output(DBGHRes, nullptr, false, L"\n");

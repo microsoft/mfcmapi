@@ -383,7 +383,7 @@ namespace smartview
 			ulPropID = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp);
 			if (ulPropID)
 			{
-				lpszResultString += InterpretFlags(ulPropID, pV.ul);
+				lpszResultString += interpretprop::InterpretFlags(ulPropID, pV.ul);
 
 				if (bLabel && !lpszResultString.empty())
 				{

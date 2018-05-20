@@ -402,7 +402,7 @@ void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMP
 			Outputf(ulDbgLvl, fFile, true,
 				L"\t\tProperty Name: %ws\n\t\tProperty Type: %ws\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n", // STRING_OK
 				LPWSTR(lpMAPIFormPropArray->aFormProp[i].pszDisplayName),
-				TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
+				interpretprop::TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
 				lpMAPIFormPropArray->aFormProp[i].nSpecialType,
 				lpMAPIFormPropArray->aFormProp[i].u.s1.cfpevAvailable);
 		}
@@ -411,7 +411,7 @@ void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMP
 			Outputf(ulDbgLvl, fFile, true,
 				L"\t\tProperty Name: %hs\n\t\tProperty Type: %ws\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n", // STRING_OK
 				LPSTR(lpMAPIFormPropArray->aFormProp[i].pszDisplayName),
-				TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
+				interpretprop::TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
 				lpMAPIFormPropArray->aFormProp[i].nSpecialType,
 				lpMAPIFormPropArray->aFormProp[i].u.s1.cfpevAvailable);
 		}
@@ -459,7 +459,7 @@ void _OutputPropTagArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagAr
 			true,
 			L"\t\tProp: %u = %ws\n", // STRING_OK
 			uCurProp,
-			TagToString(lpTagsToDump->aulPropTag[uCurProp], nullptr, false, true).c_str());
+			interpretprop::TagToString(lpTagsToDump->aulPropTag[uCurProp], nullptr, false, true).c_str());
 	}
 
 	Output(ulDbgLvl, fFile, true, L"\tEnd Prop Tag List\n");
@@ -522,7 +522,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 	for (ULONG i = 0; i < cNotify; i++)
 	{
 		Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].ulEventType = 0x%08X", i, lpNotifications[i].ulEventType);
-		szFlags = InterpretFlags(flagNotifEventType, lpNotifications[i].ulEventType);
+		szFlags = interpretprop::InterpretFlags(flagNotifEventType, lpNotifications[i].ulEventType);
 		if (!szFlags.empty())
 		{
 			Outputf(ulDbgLvl, fFile, false, L" = %ws", szFlags.c_str());
@@ -545,7 +545,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 			if (lpNotifications[i].info.err.lpMAPIError)
 			{
 				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.err.lpMAPIError = %s\n", i,
-					MAPIErrToString(
+					interpretprop::MAPIErrToString(
 						lpNotifications[i].info.err.ulFlags,
 						*lpNotifications[i].info.err.lpMAPIError).c_str());
 			}
@@ -595,7 +595,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 		case fnevTableModified:
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.tab.ulTableEvent = 0x%08X", i,
 				lpNotifications[i].info.tab.ulTableEvent);
-			szFlags = InterpretFlags(flagTableEventType, lpNotifications[i].info.tab.ulTableEvent);
+			szFlags = interpretprop::InterpretFlags(flagTableEventType, lpNotifications[i].info.tab.ulTableEvent);
 			if (!szFlags.empty())
 			{
 				Outputf(ulDbgLvl, fFile, false, L" = %ws", szFlags.c_str());
@@ -728,9 +728,9 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		}
 	}
 
-	Outputf(ulDbgLvl, fFile, false, L"\t<property tag = \"0x%08X\" type = \"%ws\" >\n", lpProp->ulPropTag, TypeToString(lpProp->ulPropTag).c_str());
+	Outputf(ulDbgLvl, fFile, false, L"\t<property tag = \"0x%08X\" type = \"%ws\" >\n", lpProp->ulPropTag, interpretprop::TypeToString(lpProp->ulPropTag).c_str());
 
-	auto propTagNames = PropTagToPropName(lpProp->ulPropTag, false);
+	auto propTagNames = interpretprop::PropTagToPropName(lpProp->ulPropTag, false);
 	if (!propTagNames.bestGuess.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPBESTGUESS].uidName, propTagNames.bestGuess, false, iIndent);
 	if (!propTagNames.otherMatches.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPOTHERNAMES].uidName, propTagNames.otherMatches, false, iIndent);
 
@@ -859,7 +859,7 @@ void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_opt_ const _SR
 		return;
 	}
 
-	Output(ulDbgLvl, fFile, true, strings::StripCarriage(RestrictionToString(lpRes, lpObj)));
+	Output(ulDbgLvl, fFile, true, strings::StripCarriage(interpretprop::RestrictionToString(lpRes, lpObj)));
 }
 
 #define MAXBYTES 4096

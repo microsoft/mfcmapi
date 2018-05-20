@@ -214,11 +214,11 @@ void CContentsTableListCtrl::GetStatus()
 			CEDITOR_BUTTON_OK);
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, true));
 		MyData.SetHex(0, ulTableStatus);
-		auto szFlags = InterpretFlags(flagTableStatus, ulTableStatus);
+		auto szFlags = interpretprop::InterpretFlags(flagTableStatus, ulTableStatus);
 		MyData.InitPane(1, TextPane::CreateMultiLinePane(IDS_ULTABLESTATUS, szFlags, true));
 		MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_ULTABLETYPE, true));
 		MyData.SetHex(2, ulTableType);
-		szFlags = InterpretFlags(flagTableType, ulTableType);
+		szFlags = interpretprop::InterpretFlags(flagTableType, ulTableType);
 		MyData.InitPane(3, TextPane::CreateMultiLinePane(IDS_ULTABLETYPE, szFlags, true));
 
 		WC_H(MyData.DisplayDialog());
@@ -388,7 +388,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 	}
 	else
 	{
-		const auto propTagNames = PropTagToPropName(ulPropTag, m_bIsAB);
+		const auto propTagNames = interpretprop::PropTagToPropName(ulPropTag, m_bIsAB);
 		szHeaderString = propTagNames.bestGuess;
 		if (szHeaderString.empty())
 		{
@@ -425,7 +425,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 			lpHeaderData->ulTagArrayRow = ulCurTagArrayRow;
 			lpHeaderData->ulPropTag = ulPropTag;
 			lpHeaderData->bIsAB = m_bIsAB;
-			lpHeaderData->szTipString = TagToString(ulPropTag, lpMDB, m_bIsAB, false);
+			lpHeaderData->szTipString = interpretprop::TagToString(ulPropTag, lpMDB, m_bIsAB, false);
 
 			hdItem.lParam = reinterpret_cast<LPARAM>(lpHeaderData);
 			EC_B(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
@@ -877,7 +877,7 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 					continue;
 				}
 
-				InterpretProp(pProp, &PropString, nullptr);
+				interpretprop::InterpretProp(pProp, &PropString, nullptr);
 
 				auto szFlags = smartview::InterpretNumberAsString(pProp->Value, pProp->ulPropTag, NULL, nullptr, nullptr, false);
 				if (!szFlags.empty())

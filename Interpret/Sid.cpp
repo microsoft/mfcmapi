@@ -138,20 +138,20 @@ std::wstring ACEToString(_In_ void* pACE, eAceType acetype)
 	}
 
 	auto lpStringSid = GetTextualSid(SidStart);
-	auto szAceType = InterpretFlags(flagACEType, AceType);
-	auto szAceFlags = InterpretFlags(flagACEFlag, AceFlags);
+	auto szAceType = interpretprop::InterpretFlags(flagACEType, AceType);
+	auto szAceFlags = interpretprop::InterpretFlags(flagACEFlag, AceFlags);
 	std::wstring szAceMask;
 
 	switch (acetype)
 	{
 	case acetypeContainer:
-		szAceMask = InterpretFlags(flagACEMaskContainer, Mask);
+		szAceMask = interpretprop::InterpretFlags(flagACEMaskContainer, Mask);
 		break;
 	case acetypeMessage:
-		szAceMask = InterpretFlags(flagACEMaskNonContainer, Mask);
+		szAceMask = interpretprop::InterpretFlags(flagACEMaskNonContainer, Mask);
 		break;
 	case acetypeFreeBusy:
-		szAceMask = InterpretFlags(flagACEMaskFreeBusy, Mask);
+		szAceMask = interpretprop::InterpretFlags(flagACEMaskFreeBusy, Mask);
 		break;
 	};
 
@@ -200,7 +200,7 @@ _Check_return_ HRESULT SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cb
 		return S_OK;
 	}
 
-	sdInfo = InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf));
+	sdInfo = interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf));
 
 	EC_B(GetSecurityDescriptorDacl(
 		pSecurityDescriptor,

@@ -135,7 +135,7 @@ CPropertyEditor::CPropertyEditor(
 	// So by definition, we're already dirty
 	if (!m_lpsInputValue) m_bDirty = true;
 
-	const auto szPromptPostFix = strings::format(L"%ws%ws", uidPrompt ? L"\r\n" : L"", TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+	const auto szPromptPostFix = strings::format(L"%ws%ws", uidPrompt ? L"\r\n" : L"", interpretprop::TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 	SetPromptPostFix(szPromptPostFix);
 
 	InitPropertyControls();
@@ -441,16 +441,16 @@ void CPropertyEditor::InitPropertyControls()
 		break;
 	case PT_SRESTRICTION:
 		InitPane(0, TextPane::CreateCollapsibleTextPane(IDS_RESTRICTION, true));
-		InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
+		interpretprop::InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
 		SetStringW(0, szTemp1);
 		break;
 	case PT_ACTIONS:
 		InitPane(0, TextPane::CreateCollapsibleTextPane(IDS_ACTIONS, true));
-		InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
+		interpretprop::InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
 		SetStringW(0, szTemp1);
 		break;
 	default:
-		InterpretProp(m_lpsInputValue, &szTemp1, &szTemp2);
+		interpretprop::InterpretProp(m_lpsInputValue, &szTemp1, &szTemp2);
 		InitPane(0, TextPane::CreateCollapsibleTextPane(IDS_VALUE, true));
 		InitPane(1, TextPane::CreateCollapsibleTextPane(IDS_ALTERNATEVIEW, true));
 		SetStringW(IDS_VALUE, szTemp1);

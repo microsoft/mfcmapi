@@ -360,7 +360,7 @@ namespace mapiprocessor
 							CP_ACP, // requesting ANSI code page - check if this will be valid in UNICODE builds
 							&lpRTFUncompressed,
 							&ulStreamFlags));
-						auto szFlags = InterpretFlags(flagStreamFlag, ulStreamFlags);
+						auto szFlags = interpretprop::InterpretFlags(flagStreamFlag, ulStreamFlags);
 						OutputToFilef(fMessageProps, L" ulStreamFlags = \"0x%08X\" szStreamFlags= \"%ws\"", ulStreamFlags, szFlags.c_str());
 						OutputToFilef(fMessageProps, L" CodePageIn = \"%u\" CodePageOut = \"%d\"", ulCPID, CP_ACP);
 					}
