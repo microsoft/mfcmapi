@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "SingleMessageDialog.h"
+#include "StdAfx.h"
+#include <UI/Dialogs/SingleMessageDialog.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/MFCUtilityFunctions.h>
@@ -36,7 +36,7 @@ SingleMessageDialog::~SingleMessageDialog()
 
 BOOL SingleMessageDialog::OnInitDialog()
 {
-	auto bRet = CBaseDialog::OnInitDialog();
+	const auto bRet = CBaseDialog::OnInitDialog();
 
 	if (m_lpMessage)
 	{
@@ -91,7 +91,7 @@ void SingleMessageDialog::OnRTFSync()
 	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_CALLRTFSYNC,
 		IDS_CALLRTFSYNCPROMPT,
@@ -131,7 +131,7 @@ void SingleMessageDialog::OnTestEditBody()
 	{
 		DebugPrint(DBGGeneric, L"Editing body on %p\n", m_lpMessage);
 
-		CStreamEditor MyEditor(
+		editor::CStreamEditor MyEditor(
 			this,
 			IDS_PROPEDITOR,
 			IDS_STREAMEDITORPROMPT,
@@ -161,7 +161,7 @@ void SingleMessageDialog::OnTestEditHTML()
 	{
 		DebugPrint(DBGGeneric, L"Testing HTML on %p\n", m_lpMessage);
 
-		CStreamEditor MyEditor(
+		editor::CStreamEditor MyEditor(
 			this,
 			IDS_PROPEDITOR,
 			IDS_STREAMEDITORPROMPT,
@@ -191,7 +191,7 @@ void SingleMessageDialog::OnTestEditRTF()
 	{
 		DebugPrint(DBGGeneric, L"Testing body on %p\n", m_lpMessage);
 
-		CStreamEditor MyEditor(
+		editor::CStreamEditor MyEditor(
 			this,
 			IDS_PROPEDITOR,
 			IDS_STREAMEDITORPROMPT,

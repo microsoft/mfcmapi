@@ -1,6 +1,6 @@
 // Displays the contents of a single address book
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "ABDlg.h"
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
@@ -68,10 +68,10 @@ void CAbDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu && m_lpContentsTableListCtrl)
 	{
-		auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+		const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
 		pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_ABENTRIES));
 
-		int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+		const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 		pMenu->EnableMenuItem(ID_COPY, DIMMSOK(iNumSel));
 		pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
 		pMenu->EnableMenuItem(ID_DISPLAYDETAILS, DIMMSOK(iNumSel));
@@ -132,7 +132,7 @@ void CAbDlg::OnOpenContact()
 	LPMAPIPROP lpProp = nullptr;
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !m_lpPropDisplay) return;
-	auto lpSession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpSession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpSession) return;
 
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -233,7 +233,7 @@ void CAbDlg::OnOpenOwner()
 void CAbDlg::OnDeleteSelectedItem()
 {
 	auto hRes = S_OK;
-	CEditor Query(
+	editor::CEditor Query(
 		this,
 		IDS_DELETEABENTRY,
 		IDS_DELETEABENTRYPROMPT,
@@ -247,7 +247,7 @@ void CAbDlg::OnDeleteSelectedItem()
 
 		EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
 
-		EC_MAPI((static_cast<LPABCONT>(m_lpContainer))->DeleteEntries(lpEIDs, NULL));
+		EC_MAPI(dynamic_cast<LPABCONT>(m_lpContainer)->DeleteEntries(lpEIDs, NULL));
 
 		MAPIFreeBuffer(lpEIDs);
 	}
@@ -279,11 +279,11 @@ _Check_return_ bool CAbDlg::HandlePaste()
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"pasting address Book entries\n");
 	if (!m_lpContainer) return false;
 
-	auto lpEIDs = CGlobalCache::getInstance().GetABEntriesToCopy();
+	const auto lpEIDs = CGlobalCache::getInstance().GetABEntriesToCopy();
 
 	if (lpEIDs)
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_CALLCOPYENTRIES,
 			IDS_CALLCOPYENTRIESPROMPT,
@@ -297,7 +297,7 @@ _Check_return_ bool CAbDlg::HandlePaste()
 		{
 			LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IABContainer::CopyEntries", m_hWnd); // STRING_OK
 
-			EC_MAPI((static_cast<LPABCONT>(m_lpContainer))->CopyEntries(
+			EC_MAPI(dynamic_cast<LPABCONT>(m_lpContainer)->CopyEntries(
 				lpEIDs,
 				lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 				lpProgress,
@@ -320,7 +320,7 @@ void CAbDlg::OnCreatePropertyStringRestriction()
 
 	if (!m_lpContentsTableListCtrl) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_SEARCHCRITERIA,
 		IDS_ABSEARCHCRITERIAPROMPT,
@@ -352,8 +352,8 @@ void CAbDlg::HandleAddInMenuSingle(
 {
 	if (lpParams)
 	{
-		lpParams->lpAbCont = static_cast<LPABCONT>(m_lpContainer);
-		lpParams->lpMailUser = static_cast<LPMAILUSER>(lpMAPIProp); // OpenItemProp returns LPMAILUSER
+		lpParams->lpAbCont = dynamic_cast<LPABCONT>(m_lpContainer);
+		lpParams->lpMailUser = dynamic_cast<LPMAILUSER>(lpMAPIProp); // OpenItemProp returns LPMAILUSER
 	}
 
 	InvokeAddInMenu(lpParams);

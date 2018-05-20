@@ -292,7 +292,7 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
-	CSearchEditor SearchEditor(PR_SUBJECT_W, m_lpContainer, this);
+	editor::CSearchEditor SearchEditor(PR_SUBJECT_W, m_lpContainer, this);
 	auto hRes = S_OK;
 	WC_H(SearchEditor.DisplayDialog());
 	if (S_OK == hRes)
@@ -302,7 +302,7 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 		{
 			m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
-			if (SearchEditor.GetCheck(CSearchEditor::SearchFields::FINDROW))
+			if (SearchEditor.GetCheck(editor::CSearchEditor::SearchFields::FINDROW))
 			{
 				SetRestrictionType(mfcmapiFINDROW_RESTRICTION);
 			}
@@ -321,7 +321,7 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
-	CPropertyTagEditor MyPropertyTag(
+	editor::CPropertyTagEditor MyPropertyTag(
 		IDS_CREATERANGERES,
 		NULL, // prompt
 		PR_SUBJECT,
@@ -332,7 +332,7 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 	WC_H(MyPropertyTag.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_SEARCHCRITERIA,
 			IDS_RANGESEARCHCRITERIAPROMPT,
@@ -376,7 +376,7 @@ void CContentsTableDlg::OnEditRestriction()
 
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
-	CRestrictEditor MyRestrict(
+	editor::CRestrictEditor MyRestrict(
 		this,
 		nullptr, // No alloc parent - we must MAPIFreeBuffer the result
 		m_lpContentsTableListCtrl->GetRestriction());
@@ -423,7 +423,7 @@ void CContentsTableDlg::OnSortTable()
 
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_SORTTABLE,
 		IDS_SORTTABLEPROMPT1,
@@ -462,7 +462,7 @@ void CContentsTableDlg::OnSortTable()
 
 		for (ULONG i = 0; i < cSorts; i++)
 		{
-			CPropertyTagEditor MyPropertyTag(
+			editor::CPropertyTagEditor MyPropertyTag(
 				NULL, // title
 				NULL, // prompt
 				NULL,
@@ -474,7 +474,7 @@ void CContentsTableDlg::OnSortTable()
 			if (S_OK == hRes)
 			{
 				lpMySortOrders->aSort[i].ulPropTag = MyPropertyTag.GetPropertyTag();
-				CEditor MySortOrderDlg(
+				editor::CEditor MySortOrderDlg(
 					this,
 					IDS_SORTORDER,
 					IDS_SORTORDERPROMPT,
@@ -668,10 +668,10 @@ void CContentsTableDlg::HandleAddInMenuSingle(
 		switch (lpParams->ulAddInContext)
 		{
 		case MENU_CONTEXT_RECIEVE_FOLDER_TABLE:
-			lpParams->lpFolder = static_cast<LPMAPIFOLDER>(lpMAPIProp); // OpenItemProp returns LPMAPIFOLDER
+			lpParams->lpFolder = dynamic_cast<LPMAPIFOLDER>(lpMAPIProp); // OpenItemProp returns LPMAPIFOLDER
 			break;
 		case MENU_CONTEXT_HIER_TABLE:
-			lpParams->lpFolder = static_cast<LPMAPIFOLDER>(lpMAPIProp); // OpenItemProp returns LPMAPIFOLDER
+			lpParams->lpFolder = dynamic_cast<LPMAPIFOLDER>(lpMAPIProp); // OpenItemProp returns LPMAPIFOLDER
 			break;
 		}
 	}

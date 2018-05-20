@@ -1,6 +1,6 @@
 // Collection of useful MAPI Store functions
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
@@ -321,7 +321,7 @@ std::string GetServerName(_In_ LPMAPISESSION lpSession)
 	{
 		hRes = S_OK;
 		// prompt the user to enter a server name
-		CEditor MyData(
+		editor::CEditor MyData(
 			nullptr,
 			IDS_SERVERNAME,
 			IDS_SERVERNAMEMISSINGPROMPT,
@@ -556,7 +556,7 @@ _Check_return_ HRESULT OpenDefaultMessageStore(
 	static const SizedSPropTagArray(NUM_COLS, sptEIDCol) =
 	{
 	NUM_COLS,
-	PR_ENTRYID,
+		{PR_ENTRYID},
 	};
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
@@ -662,7 +662,7 @@ _Check_return_ HRESULT OpenMailboxWithPrompt(
 
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-	CEditor MyPrompt(
+	editor::CEditor MyPrompt(
 		nullptr,
 		IDS_OPENOTHERUSER,
 		IDS_OPENWITHFLAGSPROMPT,
@@ -761,8 +761,10 @@ _Check_return_ HRESULT OpenMessageStoreGUID(
 	static const SizedSPropTagArray(NUM_COLS, sptCols) =
 	{
 	NUM_COLS,
-	PR_ENTRYID,
-	PR_MDB_PROVIDER
+		{
+			PR_ENTRYID,
+			PR_MDB_PROVIDER
+		}
 	};
 
 	*lppMDB = nullptr;

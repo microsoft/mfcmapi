@@ -50,7 +50,7 @@ std::wstring GetInstalledOutlookMAPI(int iOutlook);
 std::wstring GetMAPISystemDir();
 
 _Check_return_ STDAPI HrCopyRestriction(
-	_In_ LPSRestriction lpResSrc, // source restriction ptr
+	_In_ const _SRestriction* lpResSrc, // source restriction ptr
 	_In_opt_ LPVOID lpObject, // ptr to existing MAPI buffer
 	_In_ LPSRestriction* lppResDest // dest restriction buffer ptr
 );

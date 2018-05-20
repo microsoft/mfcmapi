@@ -5,7 +5,7 @@
 #include <Interpret/String.h>
 #include <MAPI/MAPIABFunctions.h>
 #include <Interpret/InterpretProp.h>
-#include "ImportProcs.h"
+#include <ImportProcs.h>
 #include <Interpret/ExtraPropTags.h>
 #include <MAPI/MAPIProgress.h>
 #include <Interpret/Guids.h>
@@ -2628,7 +2628,7 @@ LPSPropTagArray GetExcludedTags(_In_opt_ LPSPropTagArray lpTagArray, _In_opt_ LP
 {
 	auto hRes = S_OK;
 
-	CTagArrayEditor TagEditor(
+	editor::CTagArrayEditor TagEditor(
 		nullptr,
 		IDS_TAGSTOEXCLUDE,
 		IDS_TAGSTOEXCLUDEPROMPT,
@@ -2668,7 +2668,7 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 #ifndef MRMAPI
 	if (bAllowUI)
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			nullptr,
 			IDS_COPYTO,
 			IDS_COPYPASTEPROMPT,

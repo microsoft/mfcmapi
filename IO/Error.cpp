@@ -52,7 +52,7 @@ void LogFunctionCall(
 	if (bShowDialog)
 	{
 #ifndef MRMAPI
-		CEditor Err(
+		editor::CEditor Err(
 			nullptr,
 			ID_PRODUCTNAME,
 			NULL,
@@ -87,7 +87,7 @@ void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 	Output(DBGHRes, nullptr, false, L"\n");
 
 #ifndef MRMAPI
-	CEditor Err(
+	editor::CEditor Err(
 		nullptr,
 		ID_PRODUCTNAME,
 		NULL,

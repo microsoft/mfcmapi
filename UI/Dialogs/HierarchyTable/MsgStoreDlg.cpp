@@ -1,6 +1,6 @@
 // Displays the hierarchy tree of folders in a message store
 #include "StdAfx.h"
-#include "MsgStoreDlg.h"
+#include <UI/Dialogs/HierarchyTable/MsgStoreDlg.h>
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <MAPI/MapiObjects.h>
 #include <MAPI/MAPIFunctions.h>
@@ -380,7 +380,7 @@ _Check_return_ bool CMsgStoreDlg::HandlePaste()
 	}
 	else if (lpMAPIDestFolder && ulStatus & BUFFER_FOLDER)
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_PASTEFOLDER,
 			IDS_PASTEFOLDERPROMPT,
@@ -415,7 +415,7 @@ void CMsgStoreDlg::OnPasteMessages()
 
 	if (lpMAPIDestFolder && lpMAPISourceFolder && lpEIDs)
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_COPYMESSAGE,
 			IDS_COPYMESSAGEPROMPT,
@@ -482,7 +482,7 @@ void CMsgStoreDlg::OnPasteFolder()
 		DebugPrint(DBGGeneric, L"Folder Source Object Parent = %p\n", lpSrcParentFolder);
 		DebugPrint(DBGGeneric, L"Folder Destination Object = %p\n", lpMAPIDestFolder);
 
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_PASTEFOLDER,
 			IDS_PASTEFOLDERNEWNAMEPROMPT,
@@ -571,7 +571,7 @@ void CMsgStoreDlg::OnPasteFolderContents()
 		DebugPrint(DBGGeneric, L"Folder Source Object = %p\n", lpMAPISourceFolder);
 		DebugPrint(DBGGeneric, L"Folder Destination Object = %p\n", lpMAPIDestFolder);
 
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_COPYFOLDERCONTENTS,
 			IDS_PICKOPTIONSPROMPT,
@@ -616,7 +616,7 @@ void CMsgStoreDlg::OnPasteRules()
 		DebugPrint(DBGGeneric, L"Folder Source Object = %p\n", lpMAPISourceFolder);
 		DebugPrint(DBGGeneric, L"Folder Destination Object = %p\n", lpMAPIDestFolder);
 
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_COPYFOLDERRULES,
 			IDS_COPYFOLDERRULESPROMPT,
@@ -643,7 +643,7 @@ void CMsgStoreDlg::OnCreateSubFolder()
 	auto hRes = S_OK;
 	LPMAPIFOLDER lpMAPISubFolder = nullptr;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_ADDSUBFOLDER,
 		IDS_ADDSUBFOLDERPROMPT,
@@ -791,7 +791,7 @@ void CMsgStoreDlg::OnEmptyFolder()
 
 	if (lpMAPIFolderToEmpty)
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_DELETEITEMSANDSUB,
 			IDS_DELETEITEMSANDSUBPROMPT,
@@ -861,7 +861,7 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 		EC_H(GetParentFolder(lpFolderToDelete, lpMDB, &lpParentFolder));
 		if (lpParentFolder)
 		{
-			CEditor MyData(
+			editor::CEditor MyData(
 				this,
 				IDS_DELETEFOLDER,
 				IDS_DELETEFOLDERPROMPT,
@@ -914,7 +914,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 	auto lpMAPIFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiDO_NOT_REQUEST_MODIFY));
 	if (!lpMAPIFolder) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_SAVEFOLDERASMSG,
 		IDS_SAVEFOLDERASMSGPROMPT,
@@ -955,7 +955,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsTextFiles()
 
 	if (lpFolder)
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_SAVEFOLDERASPROPFILES,
 			IDS_PICKOPTIONSPROMPT,
@@ -1005,7 +1005,7 @@ void CMsgStoreDlg::OnSetReceiveFolder()
 	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_SETRECFOLDER,
 		IDS_SETRECFOLDERPROMPT,
@@ -1117,7 +1117,7 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 			&cProps,
 			&lpProps));
 
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_RESTOREDELFOLD,
 			IDS_RESTOREDELFOLDPROMPT,
@@ -1189,7 +1189,7 @@ void CMsgStoreDlg::OnValidateIPMSubtree()
 	LPSPropValue lpProps = nullptr;
 	LPMAPIERROR lpErr = nullptr;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_VALIDATEIPMSUB,
 		IDS_PICKOPTIONSPROMPT,

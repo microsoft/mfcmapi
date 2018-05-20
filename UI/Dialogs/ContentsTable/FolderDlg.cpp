@@ -1,6 +1,6 @@
 // Displays the contents of a folder
 #include "StdAfx.h"
-#include "FolderDlg.h"
+#include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
 #include <MAPI/MAPIFunctions.h>
@@ -12,7 +12,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <IO/File.h>
-#include "AttachmentsDlg.h"
+#include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/MAPIFormFunctions.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/FileDialogEx.h>
@@ -324,7 +324,7 @@ void CFolderDlg::OnAddOneOffAddress()
 	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_ADDONEOFF,
 		NULL,
@@ -449,7 +449,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 	if (!m_lpContainer) return false;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_COPYMESSAGE,
 		IDS_COPYMESSAGEPROMPT,
@@ -589,7 +589,7 @@ void CFolderDlg::OnDeleteAttachments()
 {
 	auto hRes = S_OK;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_DELETEATTACHMENTS,
 		IDS_DELETEATTACHMENTSPROMPT,
@@ -659,7 +659,7 @@ void CFolderDlg::OnDeleteSelectedItem()
 	{
 		const auto bShift = !(GetKeyState(VK_SHIFT) < 0);
 
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_DELETEITEM,
 			IDS_DELETEITEMPROMPT,
@@ -789,7 +789,7 @@ void CFolderDlg::OnLoadFromMSG()
 
 	if (!files.empty())
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_LOADMSG,
 			IDS_LOADMSGPROMPT,
@@ -889,7 +889,7 @@ void CFolderDlg::OnManualResolve()
 	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	CPropertyTagEditor MyPropertyTag(
+	editor::CPropertyTagEditor MyPropertyTag(
 		IDS_MANUALRESOLVE,
 		NULL, // prompt
 		NULL,
@@ -900,7 +900,7 @@ void CFolderDlg::OnManualResolve()
 	WC_H(MyPropertyTag.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_MANUALRESOLVE,
 			IDS_MANUALRESOLVEPROMPT,
@@ -1037,7 +1037,7 @@ void CFolderDlg::OnNewCustomForm()
 
 	if (lpMAPISession)
 	{
-		CEditor MyPrompt1(
+		editor::CEditor MyPrompt1(
 			this,
 			IDS_NEWCUSTOMFORM,
 			IDS_NEWCUSTOMFORMPROMPT1,
@@ -1056,7 +1056,7 @@ void CFolderDlg::OnNewCustomForm()
 			std::wstring szClass;
 			LPSPropValue lpProp = nullptr;
 
-			CEditor MyClass(
+			editor::CEditor MyClass(
 				this,
 				IDS_NEWCUSTOMFORM,
 				IDS_NEWCUSTOMFORMPROMPT2,
@@ -1234,7 +1234,7 @@ void CFolderDlg::OnExecuteVerbOnForm()
 	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (lpMAPISession)
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_EXECUTEVERB,
 			IDS_EXECUTEVERBPROMPT,
@@ -1327,7 +1327,7 @@ void CFolderDlg::OnRemoveOneOff()
 
 	if (!m_lpContentsTableListCtrl) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_REMOVEONEOFF,
 		IDS_REMOVEONEOFFPROMPT,
@@ -1381,7 +1381,7 @@ void CFolderDlg::OnRTFSync()
 
 	if (!m_lpContentsTableListCtrl) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_CALLRTFSYNC,
 		IDS_CALLRTFSYNCPROMPT,
@@ -1492,7 +1492,7 @@ void CFolderDlg::OnSaveMessageToFile()
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnSaveMessageToFile", L"\n");
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_SAVEMESSAGETOFILE,
 		IDS_SAVEMESSAGETOFILEPROMPT,
@@ -1771,7 +1771,7 @@ void CFolderDlg::OnSendBulkMail()
 {
 	auto hRes = S_OK;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_SENDBULKMAIL,
 		IDS_SENDBULKMAILPROMPT,
@@ -1824,7 +1824,7 @@ void CFolderDlg::OnSetReadFlag()
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnSetReadFlag", L"\n");
 
-	CEditor MyFlags(
+	editor::CEditor MyFlags(
 		this,
 		IDS_SETREADFLAG,
 		IDS_SETREADFLAGPROMPT,
@@ -1893,7 +1893,7 @@ void CFolderDlg::OnGetMessageOptions()
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnGetMessageOptions", L"\n");
 
-	CEditor MyAddress(
+	editor::CEditor MyAddress(
 		this,
 		IDS_MESSAGEOPTIONS,
 		IDS_ADDRESSTYPEPROMPT,
@@ -2134,7 +2134,7 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 			NULL,
 			&ulMessageStatus));
 
-		CEditor MyStatus(
+		editor::CEditor MyStatus(
 			this,
 			IDS_MESSAGESTATUS,
 			NULL,
@@ -2155,7 +2155,7 @@ void CFolderDlg::OnSetMessageStatus()
 
 	if (!m_lpContentsTableListCtrl || !m_lpContainer) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_SETMSGSTATUS,
 		IDS_SETMSGSTATUSPROMPT,

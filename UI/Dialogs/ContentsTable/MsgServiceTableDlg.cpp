@@ -1,11 +1,11 @@
 // Displays the list of services in a profile
-#include "stdafx.h"
-#include "MsgServiceTableDlg.h"
+#include "StdAfx.h"
+#include <UI/Dialogs/ContentsTable/MsgServiceTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/MFCUtilityFunctions.h>
-#include "ProviderTableDlg.h"
+#include <UI/Dialogs/ContentsTable/ProviderTableDlg.h>
 #include <MAPI/MAPIProfileFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Controls/SortList/ContentsData.h>
@@ -59,7 +59,7 @@ void CMsgServiceTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		if (m_lpContentsTableListCtrl)
 		{
-			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+			const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_CONFIGUREMSGSERVICE, DIMMSOK(iNumSel));
 		}
@@ -139,7 +139,7 @@ void CMsgServiceTableDlg::OnDisplayItem()
 	{
 		if (lpListData && lpListData->Contents())
 		{
-			auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
+			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)
 			{
 				EC_MAPI(m_lpServiceAdmin->AdminProviders(
@@ -184,7 +184,7 @@ void CMsgServiceTableDlg::OnConfigureMsgService()
 	{
 		if (lpListData && lpListData->Contents())
 		{
-			auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
+			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)
 			{
 				EC_H_CANCEL(m_lpServiceAdmin->ConfigureMsgService(
@@ -210,10 +210,10 @@ _Check_return_ HRESULT CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mf
 
 	if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
-	auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
+	const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 	if (lpListData && lpListData->Contents())
 	{
-		auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
+		const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 		if (lpServiceUID)
 		{
 			EC_H(OpenProfileSection(
@@ -232,7 +232,7 @@ void CMsgServiceTableDlg::OnOpenProfileSection()
 
 	if (!m_lpServiceAdmin) return;
 
-	CEditor MyUID(
+	editor::CEditor MyUID(
 		this,
 		IDS_OPENPROFSECT,
 		IDS_OPENPROFSECTPROMPT,
@@ -285,7 +285,7 @@ void CMsgServiceTableDlg::OnDeleteSelectedItem()
 
 		DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting service from \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
 
-		auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
+		const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 		if (lpServiceUID)
 		{
 			WC_MAPI(m_lpServiceAdmin->DeleteMsgService(

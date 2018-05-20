@@ -383,7 +383,7 @@ _Check_return_ HRESULT DisplayExchangeTable(
 			break;
 		case otACL:
 		{
-			CEditor MyData(
+			editor::CEditor MyData(
 				lpHostDlg,
 				IDS_ACLTABLE,
 				IDS_ACLTABLEPROMPT,
@@ -439,7 +439,7 @@ _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 
 		auto hRes = S_OK;
 
-		CEditor Cancel(
+		editor::CEditor Cancel(
 			cWnd,
 			ID_PRODUCTNAME,
 			IDS_CANCELPROMPT,
@@ -481,7 +481,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 		LPMAPITABLE lpMailboxTable = nullptr;
 		const auto szServerName = strings::stringTowstring(GetServerName(lpMAPISession));
 
-		CEditor MyData(
+		editor::CEditor MyData(
 			static_cast<CWnd*>(lpParent),
 			IDS_DISPLAYMAILBOXTABLE,
 			IDS_SERVERNAMEPROMPT,
@@ -617,7 +617,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 		LPMAPITABLE lpPFTable = nullptr;
 		const auto szServerName = strings::stringTowstring(GetServerName(lpMAPISession));
 
-		CEditor MyData(
+		editor::CEditor MyData(
 			static_cast<CWnd*>(lpParent),
 			IDS_DISPLAYPFTABLE,
 			IDS_DISPLAYPFTABLEPROMPT,
@@ -748,7 +748,7 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 	if (lpMAPIFormMgr)
 	{
 		DebugPrint(DBGForms, L"OnResolveMessageClass: resolving message class\n");
-		CEditor MyData(
+		editor::CEditor MyData(
 			nullptr,
 			IDS_RESOLVECLASS,
 			IDS_RESOLVECLASSPROMPT,

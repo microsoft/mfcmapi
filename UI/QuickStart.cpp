@@ -273,7 +273,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		// Display our dialog
 		if (!szNicknames.empty() && lpsProp)
 		{
-			CEditor MyResults(
+			editor::CEditor MyResults(
 				lpHostDlg,
 				IDS_NICKNAME,
 				NULL,
@@ -411,7 +411,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		lpMDB->Release();
 
 		// Display our dialog
-		CEditor MyResults(
+		editor::CEditor MyResults(
 			lpHostDlg,
 			IDS_QUOTA,
 			NULL,
@@ -487,7 +487,7 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	}
 
 	hRes = S_OK;
-	CEditor MyResults(
+	editor::CEditor MyResults(
 		lpHostDlg,
 		IDS_QSTHUMBNAIL,
 		NULL,
@@ -544,7 +544,7 @@ bool HandleQuickStart(_In_ WORD wMenuSelect, _In_ CMainDlg* lpHostDlg, _In_ HWND
 	case ID_QSCALPERM: OnQSDisplayTable(lpHostDlg, hwnd, DEFAULT_CALENDAR, PR_ACL_TABLE, otACL); return true;
 	case ID_QSNICKNAME: OnQSDisplayNicknameCache(lpHostDlg, hwnd); return true;
 	case ID_QSQUOTA: OnQSDisplayQuota(lpHostDlg, hwnd); return true;
-	case ID_QSCHECKSPECIALFOLDERS: OnQSCheckSpecialFolders(lpHostDlg, hwnd); return true;
+	case ID_QSCHECKSPECIALFOLDERS: editor::OnQSCheckSpecialFolders(lpHostDlg, hwnd); return true;
 	case ID_QSTHUMBNAIL: OnQSLookupThumbail(lpHostDlg, hwnd); return true;
 	case ID_QSOPENUSER: OnQSOpenUser(lpHostDlg, hwnd); return true;
 	}

@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "MainDlg.h"
+#include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
@@ -12,12 +12,12 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <IO/File.h>
-#include "ProfileListDlg.h"
-#include "ImportProcs.h"
+#include <UI/Dialogs/ContentsTable/ProfileListDlg.h>
+#include <ImportProcs.h>
 #include <UI/Dialogs/AboutDlg.h>
-#include "FormContainerDlg.h"
+#include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/FileDialogEx.h>
-#include "MAPI/MapiMime.h"
+#include <MAPI/MapiMime.h>
 #include <Interpret/Guids.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/QuickStart.h>
@@ -442,7 +442,7 @@ void CMainDlg::OnOpenDefaultMessageStore()
 	ULONG ulFlags = NULL;
 	if (StoreSupportsManageStore(lpMDB))
 	{
-		CEditor MyPrompt(
+		editor::CEditor MyPrompt(
 			this,
 			IDS_OPENDEFMSGSTORE,
 			IDS_OPENWITHFLAGSPROMPT,
@@ -526,7 +526,7 @@ void CMainDlg::OnOpenMessageStoreEID()
 	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	CEditor MyEID(
+	editor::CEditor MyEID(
 		this,
 		IDS_OPENSTOREEID,
 		IDS_OPENSTOREEIDPROMPT,
@@ -597,7 +597,7 @@ void CMainDlg::OnOpenPublicFolders()
 	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	CEditor MyPrompt(
+	editor::CEditor MyPrompt(
 		this,
 		IDS_OPENPUBSTORE,
 		IDS_OPENWITHFLAGSPROMPT,
@@ -636,7 +636,7 @@ void CMainDlg::OnOpenPublicFolderWithDN()
 	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	CEditor MyPrompt(
+	editor::CEditor MyPrompt(
 		this,
 		IDS_OPENPUBSTORE,
 		IDS_OPENWITHFLAGSPROMPT,
@@ -864,7 +864,7 @@ void CMainDlg::OnDumpServerContents()
 
 	const auto szServerName = strings::stringTowstring(GetServerName(lpMAPISession));
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_DUMPSERVERPRIVATESTORE,
 		IDS_SERVERNAMEPROMPT,
@@ -913,7 +913,7 @@ void CMainDlg::OnLogoffWithFlags()
 
 	if (!m_lpMapiObjects) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_LOGOFF,
 		IDS_LOGOFFPROMPT,
@@ -956,7 +956,7 @@ void CMainDlg::OnLogonWithFlags()
 
 	if (!m_lpMapiObjects) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_PROFFORMAPILOGON,
 		IDS_PROFFORMAPILOGONPROMPT,
@@ -1024,7 +1024,7 @@ void CMainDlg::OnSelectFormContainer()
 	EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 	if (lpMAPIFormMgr)
 	{
-		CEditor MyFlags(
+		editor::CEditor MyFlags(
 			this,
 			IDS_SELECTFORM,
 			IDS_SELECTFORMPROMPT,
@@ -1069,7 +1069,7 @@ void CMainDlg::OnOpenFormContainer()
 	EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 	if (lpMAPIFormMgr)
 	{
-		CEditor MyFlags(
+		editor::CEditor MyFlags(
 			this,
 			IDS_OPENFORMCONTAINER,
 			IDS_OPENFORMCONTAINERPROMPT,
@@ -1126,7 +1126,7 @@ void CMainDlg::OnLoadMAPI()
 	auto hRes = S_OK;
 	WCHAR szDLLPath[MAX_PATH] = { 0 };
 	UINT cchDllPath = 0;
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_LOADMAPI,
 		IDS_LOADMAPIPROMPT,
@@ -1153,7 +1153,7 @@ void CMainDlg::OnUnloadMAPI()
 {
 	auto hRes = S_OK;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_UNLOADMAPI,
 		IDS_MAPICRASHWARNING,
@@ -1174,7 +1174,7 @@ void CMainDlg::OnDisplayMAPIPath()
 	DebugPrint(DBGGeneric, L"OnDisplayMAPIPath()\n");
 	const auto hMAPI = GetMAPIHandle();
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_MAPIPATHTITLE,
 		NULL,
@@ -1200,7 +1200,7 @@ void CMainDlg::OnMAPIInitialize()
 	auto hRes = S_OK;
 	if (!m_lpMapiObjects) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_MAPIINIT,
 		IDS_MAPIINITPROMPT,
@@ -1219,7 +1219,7 @@ void CMainDlg::OnMAPIUninitialize()
 {
 	auto hRes = S_OK;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_MAPIUNINIT,
 		IDS_MAPICRASHWARNING,
@@ -1271,7 +1271,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_QUERYDEFMSGOPT,
 		IDS_ADDRESSTYPEPROMPT,
@@ -1295,7 +1295,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 
 		if (SUCCEEDED(hRes))
 		{
-			CEditor MyResult(
+			editor::CEditor MyResult(
 				this,
 				IDS_QUERYDEFMSGOPT,
 				IDS_RESULTOFCALLPROMPT,
@@ -1335,7 +1335,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 	auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 	if (!lpAddrBook) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_QUERYDEFRECIPOPT,
 		IDS_ADDRESSTYPEPROMPT,
@@ -1360,7 +1360,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 
 		if (SUCCEEDED(hRes))
 		{
-			CEditor MyResult(
+			editor::CEditor MyResult(
 				this,
 				IDS_QUERYDEFRECIPOPT,
 				IDS_RESULTOFCALLPROMPT,
@@ -1411,7 +1411,7 @@ void CMainDlg::OnQueryIdentity()
 
 	if (cbEntryID && lpEntryID)
 	{
-		CEditor MyPrompt(
+		editor::CEditor MyPrompt(
 			this,
 			IDS_QUERYID,
 			IDS_QUERYIDPROMPT,
@@ -1477,7 +1477,7 @@ void CMainDlg::OnSetDefaultStore()
 		const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
 		if (lpItemEID)
 		{
-			CEditor MyData(
+			editor::CEditor MyData(
 				this,
 				IDS_SETDEFSTORE,
 				IDS_SETDEFSTOREPROMPT,
@@ -1504,7 +1504,7 @@ void CMainDlg::OnIsAttachmentBlocked()
 
 	auto hRes = S_OK;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_ISATTBLOCKED,
 		IDS_ENTERFILENAME,
@@ -1518,7 +1518,7 @@ void CMainDlg::OnIsAttachmentBlocked()
 		EC_H(IsAttachmentBlocked(lpMAPISession, MyData.GetStringW(0).c_str(), &bBlocked));
 		if (SUCCEEDED(hRes))
 		{
-			CEditor MyResult(
+			editor::CEditor MyResult(
 				this,
 				IDS_ISATTBLOCKED,
 				IDS_RESULTOFCALLPROMPT,
@@ -1565,7 +1565,7 @@ void CMainDlg::OnLaunchProfileWizard()
 	if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
 
 	auto hRes = S_OK;
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_LAUNCHPROFWIZ,
 		IDS_LAUNCHPROFWIZPROMPT,
@@ -1960,7 +1960,7 @@ void CMainDlg::OnComputeGivenStoreHash()
 			if (dwSigHash)
 				DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n", dwSigHash);
 
-			CEditor Result(
+			editor::CEditor Result(
 				this,
 				IDS_STOREHASH,
 				NULL,

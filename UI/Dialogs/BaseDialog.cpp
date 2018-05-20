@@ -17,7 +17,7 @@
 #include <ImportProcs.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <MAPI/GlobalCache.h>
-#include "ContentsTable/MainDlg.h"
+#include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <UI/Dialogs/Editors/Options.h>
 
@@ -213,7 +213,7 @@ _Check_return_ bool CBaseDialog::HandleMenu(WORD wMenuSelect)
 	switch (wMenuSelect)
 	{
 	case ID_HEXEDITOR: OnHexEditor(); return true;
-	case ID_DBGVIEW: DisplayDbgView(m_lpParent); return true;
+	case ID_DBGVIEW: editor::DisplayDbgView(m_lpParent); return true;
 	case ID_COMPAREENTRYIDS: OnCompareEntryIDs(); return true;
 	case ID_OPENENTRYID: OnOpenEntryID(nullptr); return true;
 	case ID_COMPUTESTOREHASH: OnComputeStoreHash(); return true;
@@ -290,7 +290,7 @@ _Check_return_ bool CBaseDialog::HandleKeyDown(UINT nChar, bool bShift, bool bCt
 	case 'D':
 		if (bCtrl)
 		{
-			DisplayDbgView(m_lpParent); return true;
+			editor::DisplayDbgView(m_lpParent); return true;
 		}
 		break;
 	case VK_F1:
@@ -370,7 +370,7 @@ void CBaseDialog::OnOptions()
 {
 	const auto ulNiceNamesBefore = RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
 	const auto ulSuppressNotFoundBefore = RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
-	const auto bNeedPropRefresh = DisplayOptionsDlg(this);
+	const auto bNeedPropRefresh = editor::DisplayOptionsDlg(this);
 	const auto bNiceNamesChanged = ulNiceNamesBefore != RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
 	const auto bSuppressNotFoundChanged = ulSuppressNotFoundBefore != RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
 	auto hRes = S_OK;
@@ -639,7 +639,7 @@ _Check_return_ LRESULT CBaseDialog::msgOnClearSingleMAPIPropList(WPARAM /*wParam
 
 void CBaseDialog::OnHexEditor()
 {
-	new CHexEditor(m_lpParent, m_lpMapiObjects);
+	new editor::CHexEditor(m_lpParent, m_lpMapiObjects);
 }
 
 std::wstring GetOutlookVersionString()
@@ -688,7 +688,7 @@ void CBaseDialog::OnOutlookVersion()
 {
 	auto hRes = S_OK;
 
-	CEditor MyEID(
+	editor::CEditor MyEID(
 		this,
 		IDS_OUTLOOKVERSIONTITLE,
 		NULL,
@@ -709,7 +709,7 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 	auto hRes = S_OK;
 	if (!m_lpMapiObjects) return;
 
-	CEditor MyEID(
+	editor::CEditor MyEID(
 		this,
 		IDS_OPENEID,
 		IDS_OPENEIDPROMPT,
@@ -823,7 +823,7 @@ void CBaseDialog::OnCompareEntryIDs()
 	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
 
-	CEditor MyEIDs(
+	editor::CEditor MyEIDs(
 		this,
 		IDS_COMPAREEIDS,
 		IDS_COMPAREEIDSPROMPTS,
@@ -879,7 +879,7 @@ void CBaseDialog::OnCompareEntryIDs()
 		auto szResult = strings::loadstring(ulResult ? IDS_TRUE : IDS_FALSE);
 		const auto szRet = strings::formatmessage(IDS_COMPAREEIDBOOL, ulResult, szResult.c_str());
 
-		CEditor Result(
+		editor::CEditor Result(
 			this,
 			IDS_COMPAREEIDSRESULT,
 			NULL,
@@ -896,7 +896,7 @@ void CBaseDialog::OnComputeStoreHash()
 {
 	auto hRes = S_OK;
 
-	CEditor MyStoreEID(
+	editor::CEditor MyStoreEID(
 		this,
 		IDS_COMPUTESTOREHASH,
 		IDS_COMPUTESTOREHASHPROMPT,
@@ -918,7 +918,7 @@ void CBaseDialog::OnComputeStoreHash()
 	const auto dwHash = ComputeStoreHash(static_cast<ULONG>(cbBin), reinterpret_cast<LPBYTE>(lpEntryID), nullptr, MyStoreEID.GetStringW(2).c_str(), MyStoreEID.GetCheck(3));
 	const auto szHash = strings::formatmessage(IDS_STOREHASHVAL, dwHash);
 
-	CEditor Result(
+	editor::CEditor Result(
 		this,
 		IDS_STOREHASH,
 		NULL,
@@ -939,7 +939,7 @@ void CBaseDialog::OnNotificationsOn()
 	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_NOTIFICATIONS,
 		IDS_NOTIFICATIONSPROMPT,

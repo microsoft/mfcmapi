@@ -1,6 +1,6 @@
 // Collection of useful MAPI functions
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <MAPI/MAPIProfileFunctions.h>
 #include "ImportProcs.h"
 #include <UI/Dialogs/Editors/Editor.h>
@@ -22,7 +22,7 @@ std::wstring LaunchProfileWizard(
 {
 	auto hRes = S_OK;
 	CHAR szProfName[80] = { 0 };
-	ULONG cchProfName = _countof(szProfName);
+	const ULONG cchProfName = _countof(szProfName);
 	LPCSTR szServices[] = { szServiceNameToAdd.c_str(), nullptr };
 
 	DebugPrint(DBGGeneric, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
@@ -54,7 +54,7 @@ void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 
 	DebugPrint(DBGGeneric, L"DisplayMAPISVCPath()\n");
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		pParentWnd,
 		IDS_MAPISVCTITLE,
 		IDS_MAPISVCTEXT,
@@ -324,7 +324,7 @@ _Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni
 void AddServicesToMapiSvcInf()
 {
 	auto hRes = S_OK;
-	CEditor MyData(
+	editor::CEditor MyData(
 		nullptr,
 		IDS_ADDSERVICESTOINF,
 		IDS_ADDSERVICESTOINFPROMPT,
@@ -350,7 +350,7 @@ void AddServicesToMapiSvcInf()
 void RemoveServicesFromMapiSvcInf()
 {
 	auto hRes = S_OK;
-	CEditor MyData(
+	editor::CEditor MyData(
 		nullptr,
 		IDS_REMOVEFROMINF,
 		IDS_REMOVEFROMINFPROMPT,
@@ -405,7 +405,7 @@ _Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmi
 			for (ULONG i = 0; i < lpRowSet->cRows; i++)
 			{
 				hRes = S_OK;
-				auto lpCurRow = &lpRowSet->aRow[i];
+				const auto lpCurRow = &lpRowSet->aRow[i];
 
 				auto lpServiceUID = PpropFindProp(
 					lpCurRow->lpProps,
@@ -474,7 +474,7 @@ _Check_return_ HRESULT HrFindUnmarkedProvider(_In_ LPSERVICEADMIN lpServiceAdmin
 			EC_MAPI(lpProviderTable->QueryRows(1, 0, lpRowSet));
 			if (S_OK == hRes && *lpRowSet && 1 == (*lpRowSet)->cRows)
 			{
-				auto lpCurRow = &(*lpRowSet)->aRow[0];
+				const auto lpCurRow = &(*lpRowSet)->aRow[0];
 
 				auto lpServiceUID = PpropFindProp(
 					lpCurRow->lpProps,
@@ -597,7 +597,7 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 				// should only have one unmarked row
 				if (lpRowSet && lpRowSet->cRows == 1)
 				{
-					auto lpServiceUIDProp = PpropFindProp(
+					const auto lpServiceUIDProp = PpropFindProp(
 						lpRowSet->aRow[0].lpProps,
 						lpRowSet->aRow[0].cValues,
 						PR_SERVICE_UID);
@@ -713,7 +713,7 @@ _Check_return_ HRESULT HrCreateProfile(
 	if (S_OK != hRes)
 	{
 		// Did it fail because a profile of this name already exists?
-		auto hResCheck = HrMAPIProfileExists(lpProfAdmin, lpszProfileName);
+		const auto hResCheck = HrMAPIProfileExists(lpProfAdmin, lpszProfileName);
 		CHECKHRESMSG(hResCheck, IDS_DUPLICATEPROFILE);
 	}
 
@@ -815,7 +815,7 @@ _Check_return_ HRESULT HrMAPIProfileExists(
 			if (!FAILED(hRes)) for (ULONG i = 0; i < lpRows->cRows; i++)
 			{
 				hRes = S_OK;
-				auto lpProp = lpRows->aRow[i].lpProps;
+				const auto lpProp = lpRows->aRow[i].lpProps;
 
 				ULONG ulComp = NULL;
 
@@ -989,9 +989,7 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _I
 			virtual HRESULT STDMETHODCALLTYPE OpenSection(LPMAPIUID, ULONG, LPPROFSECT*) = 0;
 		};
 
-		IOpenSectionHack** ppProfile;
-
-		ppProfile = reinterpret_cast<IOpenSectionHack**>((reinterpret_cast<BYTE*>(lpServiceAdmin) + 0x48));
+		IOpenSectionHack** ppProfile = reinterpret_cast<IOpenSectionHack**>((reinterpret_cast<BYTE*>(lpServiceAdmin) + 0x48));
 
 		// Now, we want to get open the Services Profile Section and store that
 		// interface with the Object

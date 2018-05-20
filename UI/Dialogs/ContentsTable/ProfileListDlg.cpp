@@ -1,5 +1,5 @@
 // Displays the list of profiles
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #include "ProfileListDlg.h"
 #include <UI/Controls/ContentsTableListCtrl.h>
@@ -8,9 +8,8 @@
 #include <MAPI/MAPIProfileFunctions.h>
 #include <UI/FileDialogEx.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include "MsgServiceTableDlg.h"
+#include <UI/Dialogs/ContentsTable/MsgServiceTableDlg.h>
 #include <MAPI/GlobalCache.h>
-#include <IO/File.h>
 #include <IO/ExportProfile.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/SortList/ContentsData.h>
@@ -70,7 +69,7 @@ void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		if (m_lpContentsTableListCtrl)
 		{
-			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+			const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_ADDEXCHANGETOPROFILE, DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_ADDPSTTOPROFILE, DIMMSOK(iNumSel));
@@ -80,7 +79,7 @@ void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_EXPORTPROFILE, DIMMSNOK(iNumSel));
 
 			pMenu->EnableMenuItem(ID_COPY, DIMMSNOK(iNumSel));
-			auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+			const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
 			pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_PROFILE));
 		}
 	}
@@ -150,7 +149,7 @@ void CProfileListDlg::OnDisplayItem()
 void CProfileListDlg::OnLaunchProfileWizard()
 {
 	auto hRes = S_OK;
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_LAUNCHPROFWIZ,
 		IDS_LAUNCHPROFWIZPROMPT,
@@ -191,7 +190,7 @@ void CProfileListDlg::OnAddExchangeToProfile()
 
 	if (!m_lpContentsTableListCtrl) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_NEWEXPROF,
 		IDS_NEWEXPROFPROMPT,
@@ -250,7 +249,7 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 			if (!lpListData || !lpListData->Contents()) break;
 
 			auto hRes = S_OK;
-			CEditor MyFile(
+			editor::CEditor MyFile(
 				this,
 				IDS_PSTPATH,
 				IDS_PSTPATHPROMPT,
@@ -264,7 +263,7 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 			if (S_OK == hRes)
 			{
 				auto szPath = MyFile.GetStringW(0);
-				auto bPasswordSet = MyFile.GetCheck(1);
+				const auto bPasswordSet = MyFile.GetCheck(1);
 				auto szPwd = strings::wstringTostring(MyFile.GetStringW(2));
 
 				DebugPrintEx(DBGGeneric, CLASS, L"AddPSTToProfile", L"Adding PST \"%ws\" to profile \"%hs\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = \"%hs\"\n",
@@ -297,7 +296,7 @@ void CProfileListDlg::OnAddServiceToProfile()
 
 	if (!m_lpContentsTableListCtrl) return;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_NEWSERVICE,
 		IDS_NEWSERVICEPROMPT,
@@ -328,7 +327,7 @@ void CProfileListDlg::OnCreateProfile()
 {
 	auto hRes = S_OK;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_NEWPROF,
 		IDS_NEWPROFPROMPT,
@@ -404,7 +403,7 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 		// Even in failure case, we're still gonna show the dialog
 		hRes = S_OK;
 
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_PROFILESERVERVERSIONTITLE,
 			IDS_PROFILESERVERVERSIONPROMPT,
@@ -463,7 +462,7 @@ void CProfileListDlg::OnSetDefaultProfile()
 	if (!m_lpContentsTableListCtrl) return;
 
 	// Find the highlighted item AttachNum
-	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
+	const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 	if (lpListData && lpListData->Contents())
 	{
 		DebugPrintEx(DBGGeneric, CLASS, L"OnSetDefaultProfile", L"Setting profile \"%hs\" as default\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
@@ -478,7 +477,7 @@ void CProfileListDlg::OnOpenProfileByName()
 {
 	auto hRes = S_OK;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_OPENPROFILE,
 		NULL,
@@ -508,7 +507,7 @@ void CProfileListDlg::HandleCopy()
 	if (!m_lpContentsTableListCtrl) return;
 
 	// Find the highlighted profile
-	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
+	const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 	if (lpListData && lpListData->Contents())
 	{
 		CGlobalCache::getInstance().SetProfileToCopy(lpListData->Contents()->m_szProfileDisplayName);
@@ -524,9 +523,9 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 
-	auto szOldProfile = CGlobalCache::getInstance().GetProfileToCopy();
+	const auto szOldProfile = CGlobalCache::getInstance().GetProfileToCopy();
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_COPYPROFILE,
 		NULL,
@@ -537,7 +536,7 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		auto szNewProfile = strings::wstringTostring(MyData.GetStringW(0));
+		const auto szNewProfile = strings::wstringTostring(MyData.GetStringW(0));
 
 		WC_MAPI(HrCopyProfile(szOldProfile, szNewProfile));
 
@@ -555,10 +554,10 @@ void CProfileListDlg::OnExportProfile()
 	if (!m_lpContentsTableListCtrl) return;
 
 	// Find the highlighted profile
-	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
+	const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 	if (lpListData && lpListData->Contents())
 	{
-		auto szProfileName = strings::stringTowstring(lpListData->Contents()->m_szProfileDisplayName);
+		const auto szProfileName = strings::stringTowstring(lpListData->Contents()->m_szProfileDisplayName);
 
 		auto file = CFileDialogExW::SaveAs(
 			L"xml", // STRING_OK

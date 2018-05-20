@@ -1,5 +1,5 @@
 // Displays the contents of a form container
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "FormContainerDlg.h"
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
@@ -67,7 +67,7 @@ void CFormContainerDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu && m_lpContentsTableListCtrl)
 	{
-		int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+		const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 		pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
@@ -75,7 +75,7 @@ void CFormContainerDlg::OnInitMenu(_In_ CMenu* pMenu)
 
 BOOL CFormContainerDlg::OnInitDialog()
 {
-	auto bRet = CContentsTableDlg::OnInitDialog();
+	const auto bRet = CContentsTableDlg::OnInitDialog();
 
 	if (m_lpContentsTableListCtrl)
 	{
@@ -146,10 +146,10 @@ _Check_return_ HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcm
 
 	*lppMAPIProp = nullptr;
 
-	auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
+	const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 	if (lpListData)
 	{
-		auto lpProp = PpropFindProp(
+		const auto lpProp = PpropFindProp(
 			lpListData->lpSourceProps,
 			lpListData->cSourceProps,
 			PR_MESSAGE_CLASS_A); // ResolveMessageClass requires an ANSI string
@@ -181,7 +181,7 @@ void CFormContainerDlg::OnDeleteSelectedItem()
 		// Find the highlighted item AttachNum
 		if (!lpListData) break;
 
-		auto lpProp = PpropFindProp(
+		const auto lpProp = PpropFindProp(
 			lpListData->lpSourceProps,
 			lpListData->cSourceProps,
 			PR_MESSAGE_CLASS_A); // RemoveForm requires an ANSI string
@@ -207,7 +207,7 @@ void CFormContainerDlg::OnInstallForm()
 	if (!m_lpFormContainer) return;
 
 	DebugPrintEx(DBGForms, CLASS, L"OnInstallForm", L"installing form\n");
-	CEditor MyFlags(
+	editor::CEditor MyFlags(
 		this,
 		IDS_INSTALLFORM,
 		IDS_INSTALLFORMPROMPT,
@@ -226,8 +226,8 @@ void CFormContainerDlg::OnInstallForm()
 			this);
 		if (!files.empty())
 		{
-			auto ulFlags = MyFlags.GetHex(0);
-			auto hwnd = ulFlags & MAPIFORM_INSTALL_DIALOG ? m_hWnd : 0;
+			const auto ulFlags = MyFlags.GetHex(0);
+			auto hwnd = ulFlags & MAPIFORM_INSTALL_DIALOG ? m_hWnd : nullptr;
 			for (auto& lpszPath : files)
 			{
 				hRes = S_OK;
@@ -260,7 +260,7 @@ void CFormContainerDlg::OnRemoveForm()
 	if (!m_lpFormContainer) return;
 
 	DebugPrintEx(DBGForms, CLASS, L"OnRemoveForm", L"removing form\n");
-	CEditor MyClass(
+	editor::CEditor MyClass(
 		this,
 		IDS_REMOVEFORM,
 		IDS_REMOVEFORMPROMPT,
@@ -287,7 +287,7 @@ void CFormContainerDlg::OnResolveMessageClass()
 	if (!m_lpFormContainer) return;
 
 	DebugPrintEx(DBGForms, CLASS, L"OnResolveMessageClass", L"resolving message class\n");
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_RESOLVECLASS,
 		IDS_RESOLVECLASSPROMPT,
@@ -299,7 +299,7 @@ void CFormContainerDlg::OnResolveMessageClass()
 	if (S_OK == hRes)
 	{
 		auto szClass = strings::wstringTostring(MyData.GetStringW(0)); // ResolveMessageClass requires an ANSI string
-		auto ulFlags = MyData.GetHex(1);
+		const auto ulFlags = MyData.GetHex(1);
 		if (!szClass.empty())
 		{
 			LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
@@ -322,7 +322,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 	if (!m_lpFormContainer) return;
 
 	DebugPrintEx(DBGForms, CLASS, L"OnResolveMultipleMessageClasses", L"resolving multiple message classes\n");
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_RESOLVECLASSES,
 		IDS_RESOLVECLASSESPROMPT,
@@ -335,8 +335,8 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 	if (S_OK == hRes)
 	{
 		auto bCancel = false;
-		auto ulNumClasses = MyData.GetDecimal(0);
-		auto ulFlags = MyData.GetHex(1);
+		const auto ulNumClasses = MyData.GetDecimal(0);
+		const auto ulFlags = MyData.GetHex(1);
 		LPSMESSAGECLASSARRAY lpMSGClassArray = nullptr;
 		if (ulNumClasses && ulNumClasses < MAXMessageClassArray)
 		{
@@ -347,7 +347,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 				lpMSGClassArray->cValues = ulNumClasses;
 				for (ULONG i = 0; i < ulNumClasses; i++)
 				{
-					CEditor MyClass(
+					editor::CEditor MyClass(
 						this,
 						IDS_ENTERMSGCLASS,
 						IDS_ENTERMSGCLASSPROMPT,
@@ -406,7 +406,7 @@ void CFormContainerDlg::OnCalcFormPropSet()
 	if (!m_lpFormContainer) return;
 
 	DebugPrintEx(DBGForms, CLASS, L"OnCalcFormPropSet", L"calculating form property set\n");
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_CALCFORMPROPSET,
 		IDS_CALCFORMPROPSETPROMPT,
@@ -417,7 +417,7 @@ void CFormContainerDlg::OnCalcFormPropSet()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		auto ulFlags = MyData.GetHex(0);
+		const auto ulFlags = MyData.GetHex(0);
 
 		LPMAPIFORMPROPARRAY lpFormPropArray = nullptr;
 		DebugPrintEx(DBGForms, CLASS, L"OnCalcFormPropSet",
@@ -443,7 +443,7 @@ void CFormContainerDlg::OnGetDisplay()
 	{
 		auto szDisplayName = strings::LPCTSTRToWstring(lpszDisplayName);
 		DebugPrintEx(DBGForms, CLASS, L"OnGetDisplay", L"Got display name \"%ws\"\n", szDisplayName.c_str());
-		CEditor MyOutput(
+		editor::CEditor MyOutput(
 			this,
 			IDS_GETDISPLAY,
 			IDS_GETDISPLAYPROMPT,
@@ -462,7 +462,7 @@ void CFormContainerDlg::HandleAddInMenuSingle(
 	if (lpParams)
 	{
 		lpParams->lpFormContainer = m_lpFormContainer;
-		lpParams->lpFormInfoProp = static_cast<LPMAPIFORMINFO>(lpMAPIProp); // OpenItemProp returns LPMAPIFORMINFO
+		lpParams->lpFormInfoProp = dynamic_cast<LPMAPIFORMINFO>(lpMAPIProp); // OpenItemProp returns LPMAPIFORMINFO
 	}
 
 	InvokeAddInMenu(lpParams);

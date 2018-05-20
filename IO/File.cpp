@@ -5,12 +5,12 @@
 #include <Interpret/String.h>
 #include <MAPI/MAPIProgress.h>
 #include <Interpret/Guids.h>
-#include "ImportProcs.h"
+#include <ImportProcs.h>
 #ifndef MRMAPI
 #include <UI/FileDialogEx.h>
 #include <UI/MFCUtilityFunctions.h>
 #endif
-#include "shlobj.h"
+#include <ShlObj.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <UI/Dialogs/Editors/Editor.h>
 
@@ -490,10 +490,10 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ 
 }
 
 #ifndef MRMAPI
-void ExportMessages(_In_ const LPMAPIFOLDER lpFolder, HWND hWnd)
+void ExportMessages(_In_ LPMAPIFOLDER lpFolder, HWND hWnd)
 {
 	auto hRes = S_OK;
-	CEditor MyData(
+	editor::CEditor MyData(
 		nullptr,
 		IDS_EXPORTTITLE,
 		IDS_EXPORTPROMPT,
@@ -538,9 +538,11 @@ void ExportMessages(_In_ const LPMAPIFOLDER lpFolder, HWND hWnd)
 			static const SizedSPropTagArray(fldNUM_COLS, fldCols) =
 			{
 				fldNUM_COLS,
-				PR_ENTRYID,
-				PR_SUBJECT_W,
-				PR_RECORD_KEY
+				{
+					PR_ENTRYID,
+					PR_SUBJECT_W,
+					PR_RECORD_KEY
+				}
 			};
 
 			WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&fldCols), TBL_ASYNC));
@@ -841,13 +843,15 @@ _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_ const std::wstri
 		static const SizedSPropTagArray(7, excludeTags) =
 		{
 		7,
-		PR_ACCESS,
-		PR_BODY,
-		PR_RTF_SYNC_BODY_COUNT,
-		PR_RTF_SYNC_BODY_CRC,
-		PR_RTF_SYNC_BODY_TAG,
-		PR_RTF_SYNC_PREFIX_COUNT,
-		PR_RTF_SYNC_TRAILING_COUNT
+			{
+				PR_ACCESS,
+				PR_BODY,
+				PR_RTF_SYNC_BODY_COUNT,
+				PR_RTF_SYNC_BODY_CRC,
+				PR_RTF_SYNC_BODY_TAG,
+				PR_RTF_SYNC_PREFIX_COUNT,
+				PR_RTF_SYNC_TRAILING_COUNT
+			}
 		};
 
 		EC_H(CopyTo(
@@ -883,8 +887,10 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 	static const SizedSPropTagArray(ulNumTNEFIncludeProps, lpPropTnefIncludeArray) =
 	{
 	ulNumTNEFIncludeProps,
-	PR_MESSAGE_RECIPIENTS,
-	PR_ATTACH_DATA_BIN
+		{
+			PR_MESSAGE_RECIPIENTS,
+			PR_ATTACH_DATA_BIN
+		}
 	};
 
 	enum
@@ -894,7 +900,7 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 	static const SizedSPropTagArray(ulNumTNEFExcludeProps, lpPropTnefExcludeArray) =
 	{
 	ulNumTNEFExcludeProps,
-	PR_URL_COMP_NAME
+		{PR_URL_COMP_NAME}
 	};
 
 	if (!lpMessage || !lpAdrBook || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
@@ -986,8 +992,10 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ const st
 	static const SizedSPropTagArray(NUM_COLS, sptAttachTableCols) =
 	{
 	NUM_COLS,
-	PR_ATTACH_NUM,
-	PR_ATTACH_LONG_FILENAME_W
+		{
+			PR_ATTACH_NUM,
+			PR_ATTACH_LONG_FILENAME_W
+		}
 	};
 
 	if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
@@ -1072,7 +1080,6 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 	auto hRes = S_OK;
 	LPMAPITABLE lpAttTbl = nullptr;
 	LPSRowSet pRows = nullptr;
-	ULONG iRow;
 	LPATTACH lpAttach = nullptr;
 
 	enum
@@ -1083,7 +1090,7 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 	static const SizedSPropTagArray(NUM_COLS, sptAttachTableCols) =
 	{
 	NUM_COLS,
-	PR_ATTACH_NUM
+		{PR_ATTACH_NUM}
 	};
 
 	if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
@@ -1110,7 +1117,7 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 
 			if (pRows)
 			{
-				if (!FAILED(hRes)) for (iRow = 0; iRow < pRows->cRows; iRow++)
+				if (!FAILED(hRes)) for (ULONG iRow = 0; iRow < pRows->cRows; iRow++)
 				{
 					lpAttach = nullptr;
 
@@ -1275,7 +1282,6 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 	auto hRes = S_OK;
 	LPSPropValue lpProps = nullptr;
 	ULONG ulProps = 0;
-	INT_PTR iDlgRet = 0;
 
 	enum
 	{
@@ -1288,10 +1294,12 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 	static const SizedSPropTagArray(NUM_COLS, sptaAttachProps) =
 	{
 	NUM_COLS,
-	PR_ATTACH_METHOD,
-	PR_ATTACH_LONG_FILENAME_W,
-	PR_ATTACH_FILENAME_W,
-	PR_DISPLAY_NAME_W
+		{
+			PR_ATTACH_METHOD,
+			PR_ATTACH_LONG_FILENAME_W,
+			PR_ATTACH_FILENAME_W,
+			PR_DISPLAY_NAME_W
+		}
 	};
 
 	if (!lpAttach) return MAPI_E_INVALID_PARAMETER;
@@ -1357,7 +1365,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 				strings::loadstring(IDS_MSGFILES));
 			if (!file.empty())
 			{
-				EC_H(WriteEmbeddedMSGToFile(lpAttach, file, (MAPI_UNICODE == fMapiUnicode) ? true : false, hWnd));
+				EC_H(WriteEmbeddedMSGToFile(lpAttach, file, MAPI_UNICODE == fMapiUnicode, hWnd));
 			}
 		}
 		break;
@@ -1379,7 +1387,6 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 			ErrDialog(__FILE__, __LINE__, IDS_EDUNKNOWNATTMETHOD); break;
 		}
 	}
-	if (iDlgRet == IDCANCEL) hRes = MAPI_E_USER_CANCEL;
 
 	MAPIFreeBuffer(lpProps);
 	return hRes;

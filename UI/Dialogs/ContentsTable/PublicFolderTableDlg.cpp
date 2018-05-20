@@ -62,7 +62,7 @@ void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 	auto hRes = S_OK;
 	LPSRestriction lpRes = nullptr;
 
-	CPropertyTagEditor MyPropertyTag(
+	editor::CPropertyTagEditor MyPropertyTag(
 		IDS_PROPRES, // title
 		NULL, // prompt
 		PR_DISPLAY_NAME,
@@ -73,7 +73,7 @@ void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 	WC_H(MyPropertyTag.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_SEARCHCRITERIA,
 			IDS_PFSEARCHCRITERIAPROMPT,

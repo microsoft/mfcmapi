@@ -1,6 +1,6 @@
 // Displays the list of providers in a message service in a profile
-#include "stdafx.h"
-#include "ProviderTableDlg.h"
+#include "StdAfx.h"
+#include <UI/Dialogs/ContentsTable/ProviderTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
@@ -59,10 +59,10 @@ _Check_return_ HRESULT CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcm
 
 	*lppMAPIProp = nullptr;
 
-	auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
+	const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 	if (lpListData && lpListData->Contents())
 	{
-		auto lpProviderUID = lpListData->Contents()->m_lpProviderUID;
+		const auto lpProviderUID = lpListData->Contents()->m_lpProviderUID;
 		if (lpProviderUID)
 		{
 			EC_H(OpenProfileSection(
@@ -81,7 +81,7 @@ void CProviderTableDlg::OnOpenProfileSection()
 
 	if (!m_lpProviderAdmin) return;
 
-	CEditor MyUID(
+	editor::CEditor MyUID(
 		this,
 		IDS_OPENPROFSECT,
 		IDS_OPENPROFSECTPROMPT,

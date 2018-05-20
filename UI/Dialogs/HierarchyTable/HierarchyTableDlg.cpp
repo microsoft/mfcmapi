@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "HierarchyTableDlg.h"
+#include "StdAfx.h"
+#include <UI/Dialogs/HierarchyTable/HierarchyTableDlg.h>
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <UI/FakeSplitter.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
@@ -70,16 +70,16 @@ void CHierarchyTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		if (m_lpHierarchyTableTreeCtrl)
 		{
-			auto bItemSelected = m_lpHierarchyTableTreeCtrl->IsItemSelected();
+			const auto bItemSelected = m_lpHierarchyTableTreeCtrl->IsItemSelected();
 			pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM, DIM(bItemSelected));
 			pMenu->EnableMenuItem(ID_DISPLAYHIERARCHYTABLE, DIM(bItemSelected));
 			pMenu->EnableMenuItem(ID_EDITSEARCHCRITERIA, DIM(bItemSelected));
 			for (ULONG ulMenu = ID_ADDINMENU; ulMenu < ID_ADDINMENU + m_ulAddInMenuItems; ulMenu++)
 			{
-				auto lpAddInMenu = GetAddinMenuItem(m_hWnd, ulMenu);
+				const auto lpAddInMenu = GetAddinMenuItem(m_hWnd, ulMenu);
 				if (!lpAddInMenu) continue;
 
-				auto ulFlags = lpAddInMenu->ulFlags;
+				const auto ulFlags = lpAddInMenu->ulFlags;
 				UINT uiEnable = MF_ENABLED;
 
 				if (ulFlags & MENU_FLAGS_MULTISELECT && !bItemSelected) uiEnable = MF_GRAYED;
@@ -132,7 +132,7 @@ void CHierarchyTableDlg::OnDisplayHierarchyTable()
 
 	if (lpContainer)
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_DISPLAYHIEARCHYTABLE,
 			IDS_DISPLAYHIEARCHYTABLEPROMPT,
@@ -187,7 +187,7 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 		}
 		else CHECKHRESMSG(hRes, IDS_GETSEARCHCRITERIAFAILED);
 
-		CCriteriaEditor MyCriteria(
+		editor::CCriteriaEditor MyCriteria(
 			this,
 			lpRes,
 			lpEntryList,
@@ -198,7 +198,7 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 		{
 			// make sure the user really wants to call SetSearchCriteria
 			// hard to detect 'dirty' on this dialog so easier just to ask
-			CEditor MyYesNoDialog(
+			editor::CEditor MyYesNoDialog(
 				this,
 				IDS_CALLSETSEARCHCRITERIA,
 				IDS_CALLSETSEARCHCRITERIAPROMPT,
@@ -207,9 +207,9 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 			if (S_OK == hRes)
 			{
 				// do the set search criteria
-				auto lpNewRes = MyCriteria.DetachModifiedSRestriction();
-				auto lpNewEntryList = MyCriteria.DetachModifiedEntryList();
-				auto ulSearchFlags = MyCriteria.GetSearchFlags();
+				const auto lpNewRes = MyCriteria.DetachModifiedSRestriction();
+				const auto lpNewEntryList = MyCriteria.DetachModifiedEntryList();
+				const auto ulSearchFlags = MyCriteria.GetSearchFlags();
 				EC_MAPI(lpMAPIFolder->SetSearchCriteria(
 					lpNewRes,
 					lpNewEntryList,
@@ -224,7 +224,7 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 
 BOOL CHierarchyTableDlg::OnInitDialog()
 {
-	auto bRet = CBaseDialog::OnInitDialog();
+	const auto bRet = CBaseDialog::OnInitDialog();
 
 	if (m_lpFakeSplitter)
 	{
@@ -273,7 +273,7 @@ BOOL CHierarchyTableDlg::PreTranslateMessage(MSG* pMsg)
 		pMsg->message == WM_KEYDOWN &&
 		(pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE))
 	{
-		auto edit = m_lpHierarchyTableTreeCtrl->GetEditControl();
+		const auto edit = m_lpHierarchyTableTreeCtrl->GetEditControl();
 		if (edit)
 		{
 			edit->SendMessage(WM_KEYDOWN, pMsg->wParam, pMsg->lParam);
@@ -300,12 +300,12 @@ _Check_return_ bool CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	LPMAPICONTAINER lpContainer = nullptr;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	auto lpAddInMenu = GetAddinMenuItem(m_hWnd, wMenuSelect);
+	const auto lpAddInMenu = GetAddinMenuItem(m_hWnd, wMenuSelect);
 	if (!lpAddInMenu) return false;
 
-	auto ulFlags = lpAddInMenu->ulFlags;
+	const auto ulFlags = lpAddInMenu->ulFlags;
 
-	auto fRequestModify =
+	const auto fRequestModify =
 		ulFlags & MENU_FLAGS_REQUESTMODIFY ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
 
 	// Get the stuff we need for any case
@@ -338,7 +338,7 @@ _Check_return_ bool CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
 		SRow MyRow = { 0 };
 
 		// If we have a row to give, give it - it's free
-		auto lpData = m_lpHierarchyTableTreeCtrl->GetSelectedItemData();
+		const auto lpData = m_lpHierarchyTableTreeCtrl->GetSelectedItemData();
 		if (lpData)
 		{
 			MyRow.cValues = lpData->cSourceProps;

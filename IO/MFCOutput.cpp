@@ -5,8 +5,8 @@
 #include <Interpret/InterpretProp.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <MAPI/ColumnTags.h>
-#include "Property/ParseProperty.h"
-#include "Interpret/Guids.h"
+#include <Property/ParseProperty.h>
+#include <Interpret/Guids.h>
 #include <MAPI/NamedPropCache.h>
 #ifndef MRMAPI
 #include "UI/Dialogs/Editors/DbgView.h"
@@ -160,7 +160,7 @@ void OutputThreadTime(ULONG ulDbgLvl)
 		ulDbgLvl);
 	OutputDebugStringW(szThreadTime.c_str());
 #ifndef MRMAPI
-	OutputToDbgView(szThreadTime);
+	editor::OutputToDbgView(szThreadTime);
 #endif
 
 	// print to to our debug output log file
@@ -189,7 +189,7 @@ void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const s
 #ifdef MRMAPI
 		wprintf(L"%ws", szMsg.c_str());
 #else
-		OutputToDbgView(szMsg);
+		editor::OutputToDbgView(szMsg);
 #endif
 
 		// print to to our debug output log file

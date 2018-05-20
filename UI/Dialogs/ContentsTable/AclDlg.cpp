@@ -117,7 +117,7 @@ void CAclDlg::OnAddItem()
 {
 	auto hRes = S_OK;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		this,
 		IDS_ACLADDITEM,
 		IDS_ACLADDITEMPROMPT,

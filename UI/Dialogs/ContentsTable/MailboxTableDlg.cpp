@@ -136,7 +136,7 @@ void CMailboxTableDlg::OnOpenWithFlags()
 {
 	auto hRes = S_OK;
 
-	CEditor MyPrompt(
+	editor::CEditor MyPrompt(
 		this,
 		IDS_OPENWITHFLAGS,
 		IDS_OPENWITHFLAGSPROMPT,
@@ -156,7 +156,7 @@ void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 	auto hRes = S_OK;
 	LPSRestriction lpRes = nullptr;
 
-	CPropertyTagEditor MyPropertyTag(
+	editor::CPropertyTagEditor MyPropertyTag(
 		IDS_PROPRES,
 		NULL, // prompt
 		PR_DISPLAY_NAME,
@@ -167,7 +167,7 @@ void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 	WC_H(MyPropertyTag.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_SEARCHCRITERIA,
 			IDS_MBSEARCHCRITERIAPROMPT,

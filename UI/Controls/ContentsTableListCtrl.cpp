@@ -11,7 +11,7 @@
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <process.h>
-#include "SortList/ContentsData.h"
+#include <UI/Controls/SortList/ContentsData.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 #include <MAPI/NamedPropCache.h>
@@ -207,7 +207,7 @@ void CContentsTableListCtrl::GetStatus()
 
 	if (!FAILED(hRes))
 	{
-		CEditor MyData(
+		editor::CEditor MyData(
 			this,
 			IDS_GETSTATUS,
 			IDS_GETSTATUSPROMPT,
@@ -327,7 +327,7 @@ void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor)
 			lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		}
 
-		CTagArrayEditor MyEditor(
+		editor::CTagArrayEditor MyEditor(
 			this,
 			IDS_COLUMNSET,
 			IDS_COLUMNSETPROMPT,

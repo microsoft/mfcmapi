@@ -227,7 +227,7 @@ _Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
 	if (!lpulConvertFlags || !lpet || !lpmst || !lpulWrapLines || !pDoAdrBook) return MAPI_E_INVALID_PARAMETER;
 	auto hRes = S_OK;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		pParentWnd,
 		IDS_CONVERTTOEML,
 		IDS_CONVERTTOEMLPROMPT,
@@ -269,7 +269,7 @@ _Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
 	if (!lpulConvertFlags || !pDoAdrBook || !pDoApply || !phCharSet || !pcSetApplyType) return MAPI_E_INVALID_PARAMETER;
 	auto hRes = S_OK;
 
-	CEditor MyData(
+	editor::CEditor MyData(
 		pParentWnd,
 		IDS_CONVERTFROMEML,
 		IDS_CONVERTFROMEMLPROMPT,
@@ -299,8 +299,8 @@ _Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
 			if (SUCCEEDED(hRes)) *pDoApply = true;
 			*pcSetApplyType = static_cast<CSETAPPLYTYPE>(MyData.GetDecimal(4));
 			if (*pcSetApplyType > CSET_APPLY_TAG_ALL) return MAPI_E_INVALID_PARAMETER;
-			auto ulCodePage = MyData.GetDecimal(2);
-			auto cCharSetType = static_cast<CHARSETTYPE>(MyData.GetDecimal(3));
+			const auto ulCodePage = MyData.GetDecimal(2);
+			const auto cCharSetType = static_cast<CHARSETTYPE>(MyData.GetDecimal(3));
 			if (cCharSetType > CHARSET_WEB) return MAPI_E_INVALID_PARAMETER;
 			EC_H(MyMimeOleGetCodePageCharset(ulCodePage,cCharSetType,phCharSet));
 		}

@@ -1,6 +1,6 @@
-#include <stdafx.h>
-#include "MFCMAPI.h"
-#include "ImportProcs.h"
+#include <StdAfx.h>
+#include <MFCMAPI.h>
+#include <ImportProcs.h>
 #include <Interpret/String.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #ifndef MRMAPI
@@ -834,7 +834,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl SimpleDialog(_In_z_ LPWSTR 
 {
 	auto hRes = S_OK;
 
-	CEditor MySimpleDialog(
+	editor::CEditor MySimpleDialog(
 		nullptr,
 		NULL,
 		NULL,
@@ -859,7 +859,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 	if (lpDialog->ulButtonFlags & ~(CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)) return MAPI_E_INVALID_PARAMETER;
 	auto hRes = S_OK;
 
-	CEditor MyComplexDialog(
+	editor::CEditor MyComplexDialog(
 		nullptr,
 		NULL,
 		NULL,
