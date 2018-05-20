@@ -477,7 +477,6 @@
     <ClInclude Include="..\Interpret\GUIDArray.h" />
     <ClInclude Include="..\Interpret\Guids.h" />
     <ClInclude Include="..\Interpret\InterpretProp.h" />
-    <ClInclude Include="..\Interpret\InterpretProp2.h" />
     <ClInclude Include="..\Interpret\NameIDArray.h" />
     <ClInclude Include="..\Interpret\PropTypeArray.h" />
     <ClInclude Include="..\Interpret\Sid.h" />
@@ -576,7 +575,6 @@
     <ClCompile Include="..\ImportProcs.cpp" />
     <ClCompile Include="..\Interpret\Guids.cpp" />
     <ClCompile Include="..\Interpret\InterpretProp.cpp" />
-    <ClCompile Include="..\Interpret\InterpretProp2.cpp" />
     <ClCompile Include="..\Interpret\Sid.cpp" />
     <ClCompile Include="..\Interpret\SmartView\AdditionalRenEntryIDs.cpp" />
     <ClCompile Include="..\Interpret\SmartView\AppointmentRecurrencePattern.cpp" />

@@ -3,7 +3,7 @@
 #include "MMMapiMime.h"
 #include <MAPI/MAPIMime.h>
 #include "ImportProcs.h"
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 
 #define CHECKFLAG(__flag) ((ProgOpts.ulMAPIMIMEFlags & (__flag)) == (__flag))

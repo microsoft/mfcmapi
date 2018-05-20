@@ -4,6 +4,7 @@
 #include <Interpret/SmartView/SmartView.h>
 #include <UI/Controls/SortList/MVPropData.h>
 #include "PropertyEditor.h"
+#include <Interpret/InterpretProp.h>
 
 static std::wstring MVCLASS = L"CMultiValuePropertyEditor"; // STRING_OK
 

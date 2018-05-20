@@ -3,7 +3,7 @@
 #include <Shlwapi.h>
 #include <Interpret/Guids.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <Interpret/String.h>
 
 // Searches a NAMEID_ARRAY_ENTRY array for a target dispid.

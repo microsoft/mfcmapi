@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include <MAPI/NamedPropCache.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include "Interpret/Guids.h"
 
 // We keep a list of named prop cache entries
@@ -539,8 +539,10 @@ _Check_return_ HRESULT CacheGetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp,
 						}
 					}
 				}
+
 				MAPIFreeBuffer(lpUncachedTags);
 			}
+
 			MAPIFreeBuffer(lppUncachedPropNames);
 
 			if (ulMisses != 0) hRes = MAPI_W_ERRORS_RETURNED;
@@ -599,4 +601,171 @@ _Check_return_ HRESULT GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp,
 	MAPIFreeBuffer(lpProp);
 
 	return hRes;
+}
+
+// TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
+// We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
+NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
+{
+	auto hRes = S_OK;
+	NamePropNames namePropNames;
+
+	// Can't generate strings without a MAPINAMEID structure
+	if (!lpNameID) return namePropNames;
+
+	LPNAMEDPROPCACHEENTRY lpNamedPropCacheEntry = nullptr;
+
+	// If we're using the cache, look up the answer there and return
+	if (fCacheNamedProps())
+	{
+		lpNamedPropCacheEntry = FindCacheEntry(PROP_ID(ulPropTag), lpNameID->lpguid, lpNameID->ulKind, lpNameID->Kind.lID, lpNameID->Kind.lpwstrName);
+		if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->bStringsCached)
+		{
+			namePropNames = lpNamedPropCacheEntry->namePropNames;
+			return namePropNames;
+		}
+
+		// We shouldn't ever get here without a cached entry
+		if (!lpNamedPropCacheEntry)
+		{
+			DebugPrint(DBGNamedProp, L"NameIDToStrings: Failed to find cache entry for ulPropTag = 0x%08X\n", ulPropTag);
+			return namePropNames;
+		}
+	}
+
+	DebugPrint(DBGNamedProp, L"Parsing named property\n");
+	DebugPrint(DBGNamedProp, L"ulPropTag = 0x%08x\n", ulPropTag);
+	namePropNames.guid = guid::GUIDToStringAndName(lpNameID->lpguid);
+	DebugPrint(DBGNamedProp, L"lpNameID->lpguid = %ws\n", namePropNames.guid.c_str());
+
+	auto szDASLGuid = guid::GUIDToString(lpNameID->lpguid);
+
+	if (lpNameID->ulKind == MNID_ID)
+	{
+		DebugPrint(DBGNamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
+		auto pidlids = NameIDToPropNames(lpNameID);
+
+		if (!pidlids.empty())
+		{
+			namePropNames.bestPidLid = pidlids.front();
+			pidlids.erase(pidlids.begin());
+			namePropNames.otherPidLid = strings::join(pidlids, L", ");
+			// Printing hex first gets a nice sort without spacing tricks
+			namePropNames.name = strings::format(L"id: 0x%04X=%d = %ws", // STRING_OK
+				lpNameID->Kind.lID,
+				lpNameID->Kind.lID,
+				namePropNames.bestPidLid.c_str());
+
+			if (!namePropNames.otherPidLid.empty())
+			{
+				namePropNames.name += strings::format(L" (%ws)", namePropNames.otherPidLid.c_str());
+			}
+		}
+		else
+		{
+			// Printing hex first gets a nice sort without spacing tricks
+			namePropNames.name = strings::format(L"id: 0x%04X=%d", // STRING_OK
+				lpNameID->Kind.lID,
+				lpNameID->Kind.lID);
+		}
+
+		namePropNames.dasl = strings::format(L"id/%s/%04X%04X", // STRING_OK
+			szDASLGuid.c_str(),
+			lpNameID->Kind.lID,
+			PROP_TYPE(ulPropTag));
+	}
+	else if (lpNameID->ulKind == MNID_STRING)
+	{
+		// lpwstrName is LPWSTR which means it's ALWAYS unicode
+		// But some folks get it wrong and stuff ANSI data in there
+		// So we check the string length both ways to make our best guess
+		size_t cchShortLen = NULL;
+		size_t cchWideLen = NULL;
+		WC_H(StringCchLengthA(reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
+		WC_H(StringCchLengthW(lpNameID->Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
+
+		if (cchShortLen < cchWideLen)
+		{
+			// this is the *proper* case
+			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%ws\"\n", lpNameID->Kind.lpwstrName);
+			namePropNames.name = lpNameID->Kind.lpwstrName;
+
+			namePropNames.dasl = strings::format(L"string/%ws/%ws", // STRING_OK
+				szDASLGuid.c_str(),
+				lpNameID->Kind.lpwstrName);
+		}
+		else
+		{
+			// this is the case where ANSI data was shoved into a unicode string.
+			DebugPrint(DBGNamedProp, L"Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n");
+			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%hs\"\n", reinterpret_cast<LPCSTR>(lpNameID->Kind.lpwstrName));
+
+			auto szComment = strings::loadstring(IDS_NAMEWASANSI);
+			namePropNames.name = strings::format(L"%hs %ws", reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), szComment.c_str());
+
+			namePropNames.dasl = strings::format(L"string/%ws/%hs", // STRING_OK
+				szDASLGuid.c_str(),
+				LPSTR(lpNameID->Kind.lpwstrName));
+		}
+	}
+
+	// We've built our strings - if we're caching, put them in the cache
+	if (lpNamedPropCacheEntry)
+	{
+		lpNamedPropCacheEntry->namePropNames = namePropNames;
+		lpNamedPropCacheEntry->bStringsCached = true;
+	}
+
+	return namePropNames;
+}
+
+NamePropNames NameIDToStrings(
+	ULONG ulPropTag, // optional 'original' prop tag
+	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
+	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+	_In_opt_ const _SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+	bool bIsAB) // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+{
+	auto hRes = S_OK;
+	NamePropNames namePropNames;
+
+	// Named Props
+	LPMAPINAMEID* lppPropNames = nullptr;
+
+	// If we weren't passed named property information and we need it, look it up
+	// We check bIsAB here - some address book providers return garbage which will crash us
+	if (!lpNameID &&
+		lpMAPIProp && // if we have an object
+		!bIsAB &&
+		RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
+		(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
+	{
+		SPropTagArray tag = { 0 };
+		auto lpTag = &tag;
+		ULONG ulPropNames = 0;
+		tag.cValues = 1;
+		tag.aulPropTag[0] = ulPropTag;
+
+		WC_H_GETPROPS(GetNamesFromIDs(lpMAPIProp,
+			lpMappingSignature,
+			&lpTag,
+			nullptr,
+			NULL,
+			&ulPropNames,
+			&lppPropNames));
+		if (SUCCEEDED(hRes) && ulPropNames == 1 && lppPropNames && lppPropNames[0])
+		{
+			lpNameID = lppPropNames[0];
+		}
+	}
+
+	if (lpNameID)
+	{
+		namePropNames = NameIDToStrings(lpNameID, ulPropTag);
+	}
+
+	// Avoid making the call if we don't have to so we don't accidently depend on MAPI
+	if (lppPropNames) MAPIFreeBuffer(lppPropNames);
+
+	return namePropNames;
 }

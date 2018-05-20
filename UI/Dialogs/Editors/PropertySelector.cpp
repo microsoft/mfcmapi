@@ -2,6 +2,7 @@
 #include "PropertySelector.h"
 #include <Interpret/String.h>
 #include <UI/Controls/SortList/PropListData.h>
+#include <Interpret/InterpretProp.h>
 
 static std::wstring CLASS = L"CPropertySelector";
 
@@ -31,7 +32,7 @@ CPropertySelector::~CPropertySelector()
 
 BOOL CPropertySelector::OnInitDialog()
 {
-	auto bRet = CEditor::OnInitDialog();
+	const auto bRet = CEditor::OnInitDialog();
 
 	InsertColumn(0, 1, IDS_PROPERTYNAMES);
 	InsertColumn(0, 2, IDS_TAG);
@@ -61,7 +62,7 @@ BOOL CPropertySelector::OnInitDialog()
 
 void CPropertySelector::OnOK()
 {
-	auto lpListData = GetSelectedListRowData(0);
+	const auto lpListData = GetSelectedListRowData(0);
 	if (lpListData && lpListData->Prop())
 	{
 		m_ulPropTag = lpListData->Prop()->m_ulPropTag;
@@ -85,7 +86,7 @@ _Check_return_ ULONG CPropertySelector::GetPropertyTag() const
 
 _Check_return_ SortListData* CPropertySelector::GetSelectedListRowData(ULONG iControl) const
 {
-	auto lpPane = static_cast<ListPane*>(GetPane(iControl));
+	const auto lpPane = static_cast<ListPane*>(GetPane(iControl));
 	if (lpPane)
 	{
 		return lpPane->GetSelectedListRowData();

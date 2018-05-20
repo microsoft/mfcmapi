@@ -6,6 +6,7 @@
 #include <UI/Controls/SortList/MVPropData.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include "MultiValuePropertyEditor.h"
+#include <Interpret/InterpretProp.h>
 
 _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 	UINT uidTitle,

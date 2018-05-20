@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "ContentsTableDlg.h"
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/FakeSplitter.h>
@@ -8,11 +8,9 @@
 #include <MAPI/MapiObjects.h>
 #include <UI/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <Interpret/InterpretProp2.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <UI/Dialogs/Editors/SearchEditor.h>
-#include <Interpret/ExtraPropTags.h>
 
 static std::wstring CLASS = L"CContentsTableDlg";
 
@@ -82,7 +80,7 @@ _Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 
 BOOL CContentsTableDlg::OnInitDialog()
 {
-	auto bRet = CBaseDialog::OnInitDialog();
+	const auto bRet = CBaseDialog::OnInitDialog();
 
 	m_lpContentsTableListCtrl = new CContentsTableListCtrl(
 		m_lpFakeSplitter,
@@ -113,7 +111,7 @@ BOOL CContentsTableDlg::OnInitDialog()
 		if (m_lpContentsTable) m_lpContentsTable->Release();
 		m_lpContentsTable = nullptr;
 
-		auto ulFlags =
+		const auto ulFlags =
 			(m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL) |
 			(m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) |
 			fMapiUnicode;
@@ -139,7 +137,7 @@ void CContentsTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 
 	if (m_lpContentsTableListCtrl && m_lpContentsTable)
 	{
-		auto ulPropType = GetMAPIObjectType(m_lpContainer);
+		const auto ulPropType = GetMAPIObjectType(m_lpContainer);
 
 		// Pass the contents table to the list control, but don't render yet - call BuildUIForContentsTable from CreateDialogAndMenu for that
 		WC_H(m_lpContentsTableListCtrl->SetContentsTable(
@@ -169,13 +167,13 @@ void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 {
 	if (m_lpContentsTableListCtrl && pMenu)
 	{
-		int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+		const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 
 		pMenu->EnableMenuItem(ID_CANCELTABLELOAD, DIM(m_lpContentsTableListCtrl->IsLoading()));
 
 		pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM, DIMMSOK(iNumSel));
 
-		auto RestrictionType = m_lpContentsTableListCtrl->GetRestrictionType();
+		const auto RestrictionType = m_lpContentsTableListCtrl->GetRestrictionType();
 		pMenu->CheckMenuItem(ID_APPLYFINDROW, CHECK(mfcmapiFINDROW_RESTRICTION == RestrictionType));
 		pMenu->CheckMenuItem(ID_APPLYRESTRICTION, CHECK(mfcmapiNORMAL_RESTRICTION == RestrictionType));
 		pMenu->CheckMenuItem(ID_CLEARRESTRICTION, CHECK(mfcmapiNO_RESTRICTION == RestrictionType));
@@ -197,10 +195,10 @@ void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 
 		for (ULONG ulMenu = ID_ADDINMENU; ulMenu < ID_ADDINMENU + m_ulAddInMenuItems; ulMenu++)
 		{
-			auto lpAddInMenu = GetAddinMenuItem(m_hWnd, ulMenu);
+			const auto lpAddInMenu = GetAddinMenuItem(m_hWnd, ulMenu);
 			if (!lpAddInMenu) continue;
 
-			auto ulFlags = lpAddInMenu->ulFlags;
+			const auto ulFlags = lpAddInMenu->ulFlags;
 			UINT uiEnable = MF_ENABLED;
 
 			if ((ulFlags & MENU_FLAGS_SINGLESELECT) && iNumSel != 1) uiEnable = MF_GRAYED;
@@ -299,7 +297,7 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 	WC_H(SearchEditor.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		LPSRestriction lpRes = SearchEditor.GetRestriction();
+		const _SRestriction* lpRes = SearchEditor.GetRestriction();
 		if (lpRes)
 		{
 			m_lpContentsTableListCtrl->SetRestriction(lpRes);
@@ -346,7 +344,7 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
 
-		auto szString = MyData.GetStringW(0);
+		const auto szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
 		EC_H(CreateRangeRestriction(
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
@@ -441,9 +439,9 @@ void CContentsTableDlg::OnSortTable()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK != hRes) return;
 
-	auto cSorts = MyData.GetDecimal(0);
-	auto cCategories = MyData.GetDecimal(1);
-	auto cExpanded = MyData.GetDecimal(2);
+	const auto cSorts = MyData.GetDecimal(0);
+	const auto cCategories = MyData.GetDecimal(1);
+	const auto cExpanded = MyData.GetDecimal(2);
 
 	if (cSorts < cCategories || cCategories < cExpanded)
 	{
@@ -563,7 +561,7 @@ _Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESS
 {
 	auto hRes = S_OK;
 
-	if (NULL == lpMessage) return MAPI_E_INVALID_PARAMETER;
+	if (lpMessage == nullptr) return MAPI_E_INVALID_PARAMETER;
 
 	EC_H(DisplayTable(lpMessage, PR_MESSAGE_ATTACHMENTS, otDefault, this));
 
@@ -586,12 +584,12 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	LPMAPIPROP lpMAPIProp = nullptr;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	auto lpAddInMenu = GetAddinMenuItem(m_hWnd, wMenuSelect);
+	const auto lpAddInMenu = GetAddinMenuItem(m_hWnd, wMenuSelect);
 	if (!lpAddInMenu) return false;
 
-	auto ulFlags = lpAddInMenu->ulFlags;
+	const auto ulFlags = lpAddInMenu->ulFlags;
 
-	auto fRequestModify =
+	const auto fRequestModify =
 		(ulFlags & MENU_FLAGS_REQUESTMODIFY) ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
 
 	// Get the stuff we need for any case
@@ -628,7 +626,7 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 		{
 			SRow MyRow = { 0 };
 
-			auto lpData = m_lpContentsTableListCtrl->GetSortListData(item);
+			const auto lpData = m_lpContentsTableListCtrl->GetSortListData(item);
 			// If we have a row to give, give it - it's free
 			if (lpData)
 			{

@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include <Interpret/SmartView/SmartView.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>

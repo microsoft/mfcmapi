@@ -1,9 +1,9 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "MrMAPI.h"
 #include "MMStore.h"
 #include "MMFolder.h"
 #include <MAPI/ColumnTags.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <Interpret/String.h>
@@ -105,7 +105,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 			{
 				hRes = S_OK;
 				LPWSTR szEndPtr = nullptr;
-				auto ulStore = wcstoul(root.c_str(), &szEndPtr, 10);
+				const auto ulStore = wcstoul(root.c_str(), &szEndPtr, 10);
 
 				// Only '\' and NULL are acceptable next characters after our store number
 				if (szEndPtr && (szEndPtr[0] == L'\\' || szEndPtr[0] == L'\0'))

@@ -1,13 +1,13 @@
 // Displays the ACL table for an item
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "AclDlg.h"
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 
 static std::wstring CLASS = L"CAclDlg";
 
@@ -73,7 +73,7 @@ void CAclDlg::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		if (m_lpContentsTableListCtrl)
 		{
-			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+			const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_MODIFYSELECTEDITEM, DIMMSOK(iNumSel));
 		}
@@ -218,7 +218,7 @@ _Check_return_ HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags
 
 	*lppRowList = nullptr;
 	auto hRes = S_OK;
-	int iNumItems = m_lpContentsTableListCtrl->GetSelectedCount();
+	const int iNumItems = m_lpContentsTableListCtrl->GetSelectedCount();
 
 	if (!iNumItems) return S_OK;
 	if (iNumItems > MAXNewROWLIST) return MAPI_E_INVALID_PARAMETER;
@@ -243,7 +243,7 @@ _Check_return_ HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags
 			if (-1 != iSelectedItem)
 			{
 				// TODO: rewrite with GetSelectedItems
-				auto lpData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
+				const auto lpData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 				if (lpData)
 				{
 					if (ulFlags & ACL_INCLUDE_ID && ulFlags & ACL_INCLUDE_OTHER)

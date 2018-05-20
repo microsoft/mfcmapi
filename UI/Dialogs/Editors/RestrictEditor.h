@@ -7,22 +7,22 @@ public:
 	CRestrictEditor(
 		_In_ CWnd* pParentWnd,
 		_In_opt_ LPVOID lpAllocParent,
-		_In_opt_ LPSRestriction lpRes);
+		_In_opt_ const _SRestriction* lpRes);
 	virtual ~CRestrictEditor();
 
 	_Check_return_ LPSRestriction DetachModifiedSRestriction();
 
 private:
 	void OnEditAction1() override;
-	HRESULT CRestrictEditor::EditCompare(LPSRestriction lpSourceRes);
-	HRESULT CRestrictEditor::EditAndOr(LPSRestriction lpSourceRes);
-	HRESULT CRestrictEditor::EditRestrict(LPSRestriction lpSourceRes);
-	HRESULT CRestrictEditor::EditCombined(LPSRestriction lpSourceRes);
-	HRESULT CRestrictEditor::EditBitmask(LPSRestriction lpSourceRes);
-	HRESULT CRestrictEditor::EditSize(LPSRestriction lpSourceRes);
-	HRESULT CRestrictEditor::EditExist(LPSRestriction lpSourceRes);
-	HRESULT CRestrictEditor::EditSubrestriction(LPSRestriction lpSourceRes);
-	HRESULT CRestrictEditor::EditComment(LPSRestriction lpSourceRes);
+	HRESULT EditCompare(LPSRestriction lpSourceRes);
+	HRESULT EditAndOr(LPSRestriction lpSourceRes);
+	HRESULT EditRestrict(LPSRestriction lpSourceRes);
+	HRESULT EditCombined(LPSRestriction lpSourceRes);
+	HRESULT EditBitmask(LPSRestriction lpSourceRes);
+	HRESULT EditSize(LPSRestriction lpSourceRes);
+	HRESULT EditExist(LPSRestriction lpSourceRes);
+	HRESULT EditSubrestriction(LPSRestriction lpSourceRes);
+	HRESULT EditComment(LPSRestriction lpSourceRes);
 	BOOL OnInitDialog() override;
 	_Check_return_ ULONG HandleChange(UINT nID) override;
 	void OnOK() override;
@@ -30,7 +30,7 @@ private:
 	_Check_return_ LPSRestriction GetSourceRes() const;
 
 	// source variables
-	LPSRestriction m_lpRes;
+	const _SRestriction* m_lpRes;
 	LPVOID m_lpAllocParent;
 
 	// output variable
@@ -67,7 +67,7 @@ private:
 	LPSRestriction m_lpNewRes;
 
 	LPENTRYLIST m_lpSourceEntryList;
-	LPENTRYLIST m_lpNewEntryList;
+	LPENTRYLIST m_lpNewEntryList{};
 
 	ULONG m_ulNewSearchFlags;
 };

@@ -6,7 +6,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
 #include <IO/File.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 
 namespace mapiprocessor

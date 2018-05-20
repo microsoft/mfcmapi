@@ -1,10 +1,11 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "QSSpecialFolders.h"
 #include <UI/QuickStart.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
+#include <Interpret/InterpretProp.h>
 
 static std::wstring SPECIALFOLDERCLASS = L"SpecialFolderEditor"; // STRING_OK
 class SpecialFolderEditor : public CEditor

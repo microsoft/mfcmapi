@@ -4,7 +4,7 @@
 #include <UI/MySecInfo.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/ExtraPropTags.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <Interpret/Sid.h>
 
 namespace smartview

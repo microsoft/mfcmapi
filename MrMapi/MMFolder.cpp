@@ -1,9 +1,9 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "MrMAPI.h"
 #include "MMFolder.h"
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/ExtraPropTags.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include "MMStore.h"
 #include <Interpret/String.h>
 
@@ -183,7 +183,7 @@ static HRESULT HrLookupRootFolderW(
 	{
 		// Maybe one of our folder constants was passed.
 		// These are base 10.
-		auto ulFolder = strings::wstringToUlong(lpszRootFolder, 10);
+		const auto ulFolder = strings::wstringToUlong(lpszRootFolder, 10);
 		if (0 < ulFolder && ulFolder < NUM_DEFAULT_PROPS)
 		{
 			WC_H(GetDefaultFolderEID(ulFolder, lpMDB, lpcbeid, lppeid));
@@ -646,7 +646,7 @@ void DoFolderProps(_In_ MYOPTIONS ProgOpts)
 
 void DoFolderSize(_In_ MYOPTIONS ProgOpts)
 {
-	LONGLONG ullSize = ComputeFolderSize(
+	const LONGLONG ullSize = ComputeFolderSize(
 		ProgOpts.lpszProfile,
 		ProgOpts.lpFolder,
 		ProgOpts.ulFolder,

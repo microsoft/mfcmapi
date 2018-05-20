@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "BaseDialog.h"
+#include <StdAfx.h>
+#include <UI/Dialogs/BaseDialog.h>
 #include <UI/FakeSplitter.h>
 #include <MAPI/MapiObjects.h>
 #include <UI/ParentWnd.h>
@@ -9,17 +9,17 @@
 #include <UI/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/InterpretProp2.h>
-#include "AboutDlg.h"
+#include <Interpret/InterpretProp.h>
+#include <UI/Dialogs/AboutDlg.h>
 #include <MAPI/AdviseSink.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Msi.h>
-#include "ImportProcs.h"
+#include <ImportProcs.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <MAPI/GlobalCache.h>
 #include "ContentsTable/MainDlg.h"
-#include "Editors/DbgView.h"
-#include "Editors/Options.h"
+#include <UI/Dialogs/Editors/DbgView.h>
+#include <UI/Dialogs/Editors/Options.h>
 
 static std::wstring CLASS = L"CBaseDialog";
 

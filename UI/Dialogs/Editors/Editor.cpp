@@ -2,7 +2,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/UIFunctions.h>
 #include <Interpret/String.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <UI/MyWinApp.h>
 #include <UI/Dialogs/AboutDlg.h>
 

@@ -6,7 +6,6 @@
 #include <UI/UIFunctions.h>
 #include <MAPI/AdviseSink.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/InterpretProp2.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <Interpret/ExtraPropTags.h>
@@ -15,6 +14,7 @@
 #include "SortList/ContentsData.h"
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
+#include <MAPI/NamedPropCache.h>
 
 static std::wstring CLASS = L"CContentsTableListCtrl";
 
@@ -70,7 +70,7 @@ CContentsTableListCtrl::~CContentsTableListCtrl()
 
 	NotificationOff();
 
-	if (m_lpRes) MAPIFreeBuffer(m_lpRes);
+	if (m_lpRes) MAPIFreeBuffer(const_cast<LPSRestriction>(m_lpRes));
 	if (m_lpContentsTable) m_lpContentsTable->Release();
 	if (m_lpMapiObjects) m_lpMapiObjects->Release();
 	if (m_lpHostDlg) m_lpHostDlg->Release();
@@ -505,13 +505,13 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray l
 	return hRes;
 }
 
-void CContentsTableListCtrl::SetRestriction(_In_opt_ LPSRestriction lpRes)
+void CContentsTableListCtrl::SetRestriction(_In_opt_ const _SRestriction* lpRes)
 {
-	MAPIFreeBuffer(m_lpRes);
+	MAPIFreeBuffer(const_cast<LPSRestriction>(m_lpRes));
 	m_lpRes = lpRes;
 }
 
-_Check_return_ LPSRestriction CContentsTableListCtrl::GetRestriction() const
+_Check_return_ const _SRestriction* CContentsTableListCtrl::GetRestriction() const
 {
 	return m_lpRes;
 }
@@ -544,7 +544,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::ApplyRestriction() const
 		}
 
 		EC_MAPI(m_lpContentsTable->Restrict(
-			m_lpRes,
+			const_cast<LPSRestriction>(m_lpRes),
 			TBL_BATCH));
 	}
 	else
@@ -641,7 +641,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 			DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
 
 			CHECKABORT(WC_MAPI(lpContentsTable->FindRow(
-				lpRes,
+				const_cast<LPSRestriction>(lpRes),
 				BOOKMARK_CURRENT,
 				NULL)));
 

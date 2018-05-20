@@ -9,6 +9,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/FileDialogEx.h>
+#include <Interpret/InterpretProp.h>
 
 static std::wstring CLASS = L"CFormContainerDlg";
 

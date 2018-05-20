@@ -585,7 +585,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Controls\HierarchyTableTreeCtrl.h" />
     <ClInclude Include="ImportProcs.h" />
     <ClInclude Include="Interpret\InterpretProp.h" />
-    <ClInclude Include="Interpret\InterpretProp2.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MailboxTableDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MainDlg.h" />
     <ClInclude Include="MAPI\MAPIABFunctions.h" />
@@ -746,7 +745,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\Controls\HierarchyTableTreeCtrl.cpp" />
     <ClCompile Include="ImportProcs.cpp" />
     <ClCompile Include="Interpret\InterpretProp.cpp" />
-    <ClCompile Include="Interpret\InterpretProp2.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\MailboxTableDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\MainDlg.cpp" />
     <ClCompile Include="MAPI\MAPIABFunctions.cpp" />

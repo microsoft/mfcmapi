@@ -3,7 +3,7 @@
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/String.h>
 #include <Interpret/Guids.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 
 namespace smartview

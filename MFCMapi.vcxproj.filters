@@ -167,12 +167,6 @@
     <ClInclude Include="Interpret\InterpretProp.h">
       <Filter>Source Files\Interpret</Filter>
     </ClInclude>
-    <ClCompile Include="Interpret\InterpretProp2.cpp">
-      <Filter>Source Files\Interpret</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\InterpretProp2.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
     <ClInclude Include="Interpret\NameIDArray.h">
       <Filter>Source Files\Interpret</Filter>
     </ClInclude>

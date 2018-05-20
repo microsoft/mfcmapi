@@ -1,6 +1,6 @@
 // Implementation of the CMyMAPIFormViewer class.
 
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/MyMAPIFormViewer.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/MAPIFormFunctions.h>
@@ -9,6 +9,7 @@
 #include <Interpret/Guids.h>
 #include <UI/MyWinApp.h>
 #include <UI/Controls/SortList/ContentsData.h>
+#include <Interpret/InterpretProp.h>
 
 extern CMyWinApp theApp;
 

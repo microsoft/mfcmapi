@@ -3,11 +3,11 @@
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/InterpretProp2.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <MAPI/ColumnTags.h>
 #include "Property/ParseProperty.h"
 #include "Interpret/Guids.h"
+#include <MAPI/NamedPropCache.h>
 #ifndef MRMAPI
 #include "UI/Dialogs/Editors/DbgView.h"
 #endif
@@ -848,7 +848,7 @@ void _OutputSRowSet(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSe
 	}
 }
 
-void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_opt_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
+void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_opt_ const _SRestriction* lpRes, _In_opt_ LPMAPIPROP lpObj)
 {
 	CHKPARAM;
 	EARLYABORT;

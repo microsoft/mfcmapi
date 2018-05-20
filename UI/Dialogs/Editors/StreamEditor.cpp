@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "StreamEditor.h"
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>

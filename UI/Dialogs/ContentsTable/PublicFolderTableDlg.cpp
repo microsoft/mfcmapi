@@ -5,7 +5,7 @@
 #include <MAPI/ColumnTags.h>
 #include <UI/UIFunctions.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 
 static std::wstring CLASS = L"CPublicFolderTableDlg";
 

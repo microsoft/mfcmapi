@@ -43,8 +43,8 @@ public:
 	_Check_return_ HRESULT SetUIColumns(_In_ LPSPropTagArray lpTags);
 	_Check_return_ bool IsLoading() const;
 	void ClearLoading();
-	void SetRestriction(_In_opt_ LPSRestriction lpRes);
-	_Check_return_ LPSRestriction GetRestriction() const;
+	void SetRestriction(_In_opt_ const _SRestriction* lpRes);
+	_Check_return_ const _SRestriction* GetRestriction() const;
 	_Check_return_ __mfcmapiRestrictionTypeEnum GetRestrictionType() const;
 	void SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
 	_Check_return_ ULONG GetContainerType() const;
@@ -91,7 +91,7 @@ private:
 	UINT m_nIDContextMenu;
 	bool m_bIsAB;
 	bool m_bInLoadOp;
-	LPSRestriction m_lpRes;
+	const _SRestriction* m_lpRes;
 	ULONG m_ulContainerType;
 	CAdviseSink* m_lpAdviseSink;
 	LPMAPITABLE m_lpContentsTable;

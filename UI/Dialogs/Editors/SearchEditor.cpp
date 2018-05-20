@@ -1,9 +1,10 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "SearchEditor.h"
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <Interpret/String.h>
 #include "PropertyTagEditor.h"
 #include <MAPI/MAPIFunctions.h>
+#include <MAPI/NamedPropCache.h>
 
 static std::wstring CLASS = L"CSearchEditor";
 
@@ -33,17 +34,17 @@ CSearchEditor::CSearchEditor(
 	m_lpMAPIProp = lpMAPIProp;
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-	InitPane(SearchFields::PROPNAME, TextPane::CreateSingleLinePane(IDS_PROPNAME, true));
-	InitPane(SearchFields::SEARCHTERM, TextPane::CreateSingleLinePane(IDS_PROPVALUE, false));
-	InitPane(SearchFields::FUZZYLEVEL, DropDownPane::Create(IDS_SEARCHTYPE, 0, nullptr, false));
-	InitPane(SearchFields::FINDROW, CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
+	InitPane(PROPNAME, TextPane::CreateSingleLinePane(IDS_PROPNAME, true));
+	InitPane(SEARCHTERM, TextPane::CreateSingleLinePane(IDS_PROPVALUE, false));
+	InitPane(FUZZYLEVEL, DropDownPane::Create(IDS_SEARCHTYPE, 0, nullptr, false));
+	InitPane(FINDROW, CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
 
 	// initialize our dropdowns here
 	auto ulDropNum = 0;
-	auto lpFuzzyPane = static_cast<DropDownPane*>(GetPane(SearchFields::FUZZYLEVEL));
+	auto lpFuzzyPane = dynamic_cast<DropDownPane*>(GetPane(FUZZYLEVEL));
 	if (lpFuzzyPane)
 	{
-		for (auto fuzzyLevel : FuzzyLevels)
+		for (const auto fuzzyLevel : FuzzyLevels)
 		{
 			lpFuzzyPane->InsertDropString(strings::loadstring(fuzzyLevel.first), ulDropNum++);
 		}
@@ -60,7 +61,7 @@ CSearchEditor::~CSearchEditor()
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
 }
 
-_Check_return_ LPSRestriction CSearchEditor::GetRestriction()
+_Check_return_ const SRestriction* CSearchEditor::GetRestriction() const
 {
 	auto hRes = S_OK;
 	LPSRestriction lpRes = nullptr;
@@ -102,13 +103,13 @@ void CSearchEditor::OnEditAction1()
 
 _Check_return_ ULONG CSearchEditor::HandleChange(UINT nID)
 {
-	auto i = (SearchFields)CEditor::HandleChange(nID);
+	const auto i = static_cast<SearchFields>(CEditor::HandleChange(nID));
 
-	if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
+	if (i == static_cast<SearchFields>(-1)) return static_cast<ULONG>(-1);
 
 	switch (i)
 	{
-	case SearchFields::FUZZYLEVEL:
+	case FUZZYLEVEL:
 		m_ulFuzzyLevel = GetSelectedFuzzyLevel();
 		break;
 	default:
@@ -125,13 +126,13 @@ _Check_return_ ULONG CSearchEditor::HandleChange(UINT nID)
 // Pass NOSKIPFIELD to fill out all fields
 void CSearchEditor::PopulateFields(ULONG ulSkipField) const
 {
-	if (SearchFields::PROPNAME != ulSkipField)
+	if (PROPNAME != ulSkipField)
 	{
 		auto propTagNames = PropTagToPropName(m_ulPropTag, false);
 
 		if (PROP_ID(m_ulPropTag) && !propTagNames.bestGuess.empty())
 		{
-			SetStringW(SearchFields::PROPNAME, propTagNames.bestGuess);
+			SetStringW(PROPNAME, propTagNames.bestGuess);
 		}
 		else
 		{
@@ -143,27 +144,25 @@ void CSearchEditor::PopulateFields(ULONG ulSkipField) const
 				false);
 
 			if (!namePropNames.name.empty())
-				SetStringW(SearchFields::PROPNAME, namePropNames.name);
+				SetStringW(PROPNAME, namePropNames.name);
 			else
-				LoadString(SearchFields::PROPNAME, IDS_UNKNOWNPROPERTY);
+				LoadString(PROPNAME, IDS_UNKNOWNPROPERTY);
 		}
 	}
 }
 
 _Check_return_ ULONG CSearchEditor::GetSelectedFuzzyLevel() const
 {
-	auto lpFuzzyPane = static_cast<DropDownPane*>(GetPane(SearchFields::FUZZYLEVEL));
+	const auto lpFuzzyPane = dynamic_cast<DropDownPane*>(GetPane(FUZZYLEVEL));
 	if (lpFuzzyPane)
 	{
-		auto ulFuzzySelection = lpFuzzyPane->GetDropDownSelection();
+		const auto ulFuzzySelection = lpFuzzyPane->GetDropDownSelection();
 		if (ulFuzzySelection == CB_ERR)
 		{
 			return strings::wstringToUlong(lpFuzzyPane->GetDropStringUseControl(), 16);
 		}
-		else
-		{
-			return FuzzyLevels[ulFuzzySelection].second;
-		}
+
+		return FuzzyLevels[ulFuzzySelection].second;
 	}
 
 	return FL_FULLSTRING;

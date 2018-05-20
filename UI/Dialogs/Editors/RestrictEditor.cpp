@@ -1,8 +1,7 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "RestrictEditor.h"
 #include "PropertyEditor.h"
 #include <Interpret/InterpretProp.h>
-#include <Interpret/InterpretProp2.h>
 #include <MAPI/MAPIFunctions.h>
 #include "ImportProcs.h"
 #include <Interpret/ExtraPropTags.h>
@@ -35,7 +34,7 @@ CResCompareEditor::CResCompareEditor(
 	SetPromptPostFix(AllFlagsToString(flagRelop, false));
 	InitPane(0, TextPane::CreateSingleLinePane(IDS_RELOP, false));
 	SetHex(0, ulRelop);
-	auto szFlags = InterpretFlags(flagRelop, ulRelop);
+	const auto szFlags = InterpretFlags(flagRelop, ulRelop);
 	InitPane(1, TextPane::CreateSingleLinePane(IDS_RELOP, szFlags, true));
 	InitPane(2, TextPane::CreateSingleLinePane(IDS_ULPROPTAG1, false));
 	SetHex(2, ulPropTag1);
@@ -48,20 +47,21 @@ CResCompareEditor::CResCompareEditor(
 
 _Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
 {
-	auto i = CEditor::HandleChange(nID);
+	const auto i = CEditor::HandleChange(nID);
 
-	if (0 == i)
+	if (i == 0)
 	{
 		SetStringW(1, InterpretFlags(flagRelop, GetHex(0)));
 	}
-	else if (2 == i)
+	else if (i == 2)
 	{
 		SetStringW(3, TagToString(GetPropTag(2), nullptr, false, true));
 	}
-	else if (4 == i)
+	else if (i == 4)
 	{
 		SetStringW(5, TagToString(GetPropTag(4), nullptr, false, true));
 	}
+
 	return i;
 }
 
@@ -152,10 +152,10 @@ CResCombinedEditor::CResCombinedEditor(
 
 _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 {
-	auto i = CEditor::HandleChange(nID);
+	const auto i = CEditor::HandleChange(nID);
 
 	std::wstring szFlags;
-	if (0 == i)
+	if (i == 0)
 	{
 		if (RES_CONTENT == m_ulResType)
 		{
@@ -166,11 +166,11 @@ _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 			SetStringW(1, InterpretFlags(flagRelop, GetHex(0)));
 		}
 	}
-	else if (2 == i)
+	else if (i == 2)
 	{
 		SetStringW(3, TagToString(GetPropTag(2), nullptr, false, true));
 	}
-	else if (4 == i)
+	else if (i == 4)
 	{
 		SetStringW(5, TagToString(GetPropTag(4), nullptr, false, true));
 		m_lpOldProp = nullptr;
@@ -178,14 +178,15 @@ _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 		SetStringW(6, L"");
 		SetStringW(7, L"");
 	}
+
 	return i;
 }
 
 _Check_return_ LPSPropValue CResCombinedEditor::DetachModifiedSPropValue()
 {
-	auto m_lpRet = m_lpNewProp;
+	const auto lpRet = m_lpNewProp;
 	m_lpNewProp = nullptr;
-	return m_lpRet;
+	return lpRet;
 }
 
 void CResCombinedEditor::OnEditAction1()
@@ -249,7 +250,7 @@ CResBitmaskEditor::CResBitmaskEditor(
 	SetPromptPostFix(AllFlagsToString(flagBitmask, false));
 	InitPane(0, TextPane::CreateSingleLinePane(IDS_RELBMR, false));
 	SetHex(0, relBMR);
-	auto szFlags = InterpretFlags(flagBitmask, relBMR);
+	const auto szFlags = InterpretFlags(flagBitmask, relBMR);
 	InitPane(1, TextPane::CreateSingleLinePane(IDS_RELBMR, szFlags, true));
 	InitPane(2, TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
 	SetHex(2, ulPropTag);
@@ -261,13 +262,13 @@ CResBitmaskEditor::CResBitmaskEditor(
 
 _Check_return_ ULONG CResBitmaskEditor::HandleChange(UINT nID)
 {
-	auto i = CEditor::HandleChange(nID);
+	const auto i = CEditor::HandleChange(nID);
 
-	if (0 == i)
+	if (i == 0)
 	{
 		SetStringW(1, InterpretFlags(flagBitmask, GetHex(0)));
 	}
-	else if (2 == i)
+	else if (i == 2)
 	{
 		SetStringW(3, TagToString(GetPropTag(2), nullptr, false, true));
 	}
@@ -301,7 +302,7 @@ CResSizeEditor::CResSizeEditor(
 	SetPromptPostFix(AllFlagsToString(flagRelop, false));
 	InitPane(0, TextPane::CreateSingleLinePane(IDS_RELOP, false));
 	SetHex(0, relop);
-	auto szFlags = InterpretFlags(flagRelop, relop);
+	const auto szFlags = InterpretFlags(flagRelop, relop);
 	InitPane(1, TextPane::CreateSingleLinePane(IDS_RELOP, szFlags, true));
 
 	InitPane(2, TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
@@ -314,16 +315,17 @@ CResSizeEditor::CResSizeEditor(
 
 _Check_return_ ULONG CResSizeEditor::HandleChange(UINT nID)
 {
-	auto i = CEditor::HandleChange(nID);
+	const auto i = CEditor::HandleChange(nID);
 
-	if (0 == i)
+	if (i == 0)
 	{
 		SetStringW(1, InterpretFlags(flagRelop, GetHex(0)));
 	}
-	else if (2 == i)
+	else if (i == 2)
 	{
 		SetStringW(3, TagToString(GetPropTag(2), nullptr, false, true));
 	}
+
 	return i;
 }
 
@@ -353,12 +355,13 @@ CResExistEditor::CResExistEditor(
 
 _Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
 {
-	auto i = CEditor::HandleChange(nID);
+	const auto i = CEditor::HandleChange(nID);
 
-	if (0 == i)
+	if (i == 0)
 	{
 		SetStringW(1, TagToString(GetPropTag(0), nullptr, false, true));
 	}
+
 	return i;
 }
 
@@ -407,9 +410,9 @@ CResSubResEditor::CResSubResEditor(
 
 _Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
 {
-	auto i = CEditor::HandleChange(nID);
+	const auto i = CEditor::HandleChange(nID);
 
-	if (0 == i)
+	if (i == 0)
 	{
 		SetStringW(1, TagToString(GetPropTag(0), nullptr, false, true));
 	}
@@ -419,9 +422,9 @@ _Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
 
 _Check_return_ LPSRestriction CResSubResEditor::DetachModifiedSRestriction()
 {
-	auto m_lpRet = m_lpNewRes;
+	const auto lpRet = m_lpNewRes;
 	m_lpNewRes = nullptr;
-	return m_lpRet;
+	return lpRet;
 }
 
 void CResSubResEditor::OnEditAction1()
@@ -487,7 +490,7 @@ CResAndOrEditor::CResAndOrEditor(
 // Used to call functions which need to be called AFTER controls are created
 BOOL CResAndOrEditor::OnInitDialog()
 {
-	auto bRet = CEditor::OnInitDialog();
+	const auto bRet = CEditor::OnInitDialog();
 
 	InitListFromRestriction(0, m_lpRes);
 
@@ -498,9 +501,9 @@ BOOL CResAndOrEditor::OnInitDialog()
 
 _Check_return_ LPSRestriction CResAndOrEditor::DetachModifiedSRestrictionArray()
 {
-	auto m_lpRet = m_lpNewResArray;
+	const auto lpRet = m_lpNewResArray;
 	m_lpNewResArray = nullptr;
-	return m_lpRet;
+	return lpRet;
 }
 
 _Check_return_ ULONG CResAndOrEditor::GetResCount() const
@@ -579,7 +582,7 @@ void CResAndOrEditor::OnOK()
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 
 	LPSRestriction lpNewResArray = nullptr;
-	auto ulNewResCount = GetListCount(0);
+	const auto ulNewResCount = GetListCount(0);
 
 	if (ulNewResCount > ULONG_MAX / sizeof(SRestriction)) return;
 	auto hRes = S_OK;
@@ -592,7 +595,7 @@ void CResAndOrEditor::OnOK()
 	{
 		for (ULONG i = 0; i < ulNewResCount; i++)
 		{
-			auto lpData = GetListRowData(0, i);
+			const auto lpData = GetListRowData(0, i);
 			if (lpData && lpData->Res())
 			{
 				if (lpData->Res()->m_lpNewRes)
@@ -643,7 +646,7 @@ private:
 
 	LPSRestriction m_lpNewCommentRes;
 	LPSPropValue m_lpNewCommentProp;
-	ULONG m_ulNewCommentProp;
+	ULONG m_ulNewCommentProp{};
 };
 
 CResCommentEditor::CResCommentEditor(
@@ -666,7 +669,7 @@ CResCommentEditor::CResCommentEditor(
 // Used to call functions which need to be called AFTER controls are created
 BOOL CResCommentEditor::OnInitDialog()
 {
-	auto bRet = CEditor::OnInitDialog();
+	const auto bRet = CEditor::OnInitDialog();
 
 	InitListFromPropArray(0, m_lpSourceRes->res.resComment.cValues, m_lpSourceRes->res.resComment.lpProp);
 
@@ -684,16 +687,16 @@ _Check_return_ LPSRestriction CResCommentEditor::GetSourceRes() const
 
 _Check_return_ LPSRestriction CResCommentEditor::DetachModifiedSRestriction()
 {
-	auto m_lpRet = m_lpNewCommentRes;
+	const auto lpRet = m_lpNewCommentRes;
 	m_lpNewCommentRes = nullptr;
-	return m_lpRet;
+	return lpRet;
 }
 
 _Check_return_ LPSPropValue CResCommentEditor::DetachModifiedSPropValue()
 {
-	auto m_lpRet = m_lpNewCommentProp;
+	const auto lpRet = m_lpNewCommentProp;
 	m_lpNewCommentProp = nullptr;
-	return m_lpRet;
+	return lpRet;
 }
 
 _Check_return_ ULONG CResCommentEditor::GetSPropValueCount() const
@@ -732,7 +735,7 @@ void CResCommentEditor::OnEditAction1()
 {
 	auto hRes = S_OK;
 
-	auto lpSourceRes = GetSourceRes();
+	const auto lpSourceRes = GetSourceRes();
 
 	CRestrictEditor MyResEditor(
 		this,
@@ -807,7 +810,7 @@ void CResCommentEditor::OnOK()
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 
 	LPSPropValue lpNewCommentProp = nullptr;
-	auto ulNewCommentProp = GetListCount(0);
+	const auto ulNewCommentProp = GetListCount(0);
 
 	auto hRes = S_OK;
 	if (ulNewCommentProp && ulNewCommentProp < ULONG_MAX / sizeof(SPropValue))
@@ -821,7 +824,7 @@ void CResCommentEditor::OnOK()
 		{
 			for (ULONG i = 0; i < ulNewCommentProp; i++)
 			{
-				auto lpData = GetListRowData(0, i);
+				const auto lpData = GetListRowData(0, i);
 				if (lpData && lpData->Comment())
 				{
 					if (lpData->Comment()->m_lpNewProp)
@@ -861,7 +864,7 @@ static std::wstring CLASS = L"CRestrictEditor"; // STRING_OK
 CRestrictEditor::CRestrictEditor(
 	_In_ CWnd* pParentWnd,
 	_In_opt_ LPVOID lpAllocParent,
-	_In_opt_ LPSRestriction lpRes) :
+	_In_opt_ const _SRestriction* lpRes) :
 	CEditor(pParentWnd, IDS_RESED, IDS_RESEDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL, IDS_ACTIONEDITRES, NULL, NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
@@ -918,9 +921,9 @@ CRestrictEditor::~CRestrictEditor()
 // Used to call functions which need to be called AFTER controls are created
 BOOL CRestrictEditor::OnInitDialog()
 {
-	auto bRet = CEditor::OnInitDialog();
+	const auto bRet = CEditor::OnInitDialog();
 
-	auto lpSourceRes = GetSourceRes();
+	const auto lpSourceRes = GetSourceRes();
 
 	if (lpSourceRes)
 	{
@@ -933,7 +936,8 @@ BOOL CRestrictEditor::OnInitDialog()
 
 _Check_return_ LPSRestriction CRestrictEditor::GetSourceRes() const
 {
-	if (m_lpRes && !m_bModified) return m_lpRes;
+	// TODO: full const pass on this editor...
+	if (m_lpRes && !m_bModified) return const_cast<LPSRestriction>(m_lpRes);
 	return m_lpOutputRes;
 }
 
@@ -946,24 +950,24 @@ void CRestrictEditor::OnOK()
 _Check_return_ LPSRestriction CRestrictEditor::DetachModifiedSRestriction()
 {
 	if (!m_bModified) return nullptr;
-	auto m_lpRet = m_lpOutputRes;
+	const auto lpRet = m_lpOutputRes;
 	m_lpOutputRes = nullptr;
-	return m_lpRet;
+	return lpRet;
 }
 
 // CEditor::HandleChange will return the control number of what changed
 // so I can react to it if I need to
 _Check_return_ ULONG CRestrictEditor::HandleChange(UINT nID)
 {
-	auto i = CEditor::HandleChange(nID);
+	const auto i = CEditor::HandleChange(nID);
 
 	// If the restriction type changed
-	if (0 == i)
+	if (i == 0)
 	{
 		if (!m_lpOutputRes) return i;
 		auto hRes = S_OK;
-		auto ulOldResType = m_lpOutputRes->rt;
-		auto ulNewResType = GetHex(i);
+		const auto ulOldResType = m_lpOutputRes->rt;
+		const auto ulNewResType = GetHex(i);
 
 		if (ulOldResType == ulNewResType) return i;
 
@@ -1009,7 +1013,7 @@ _Check_return_ ULONG CRestrictEditor::HandleChange(UINT nID)
 void CRestrictEditor::OnEditAction1()
 {
 	auto hRes = S_OK;
-	auto lpSourceRes = GetSourceRes();
+	const auto lpSourceRes = GetSourceRes();
 	if (!lpSourceRes || !m_lpOutputRes) return;
 
 	switch (lpSourceRes->rt)
@@ -1092,7 +1096,7 @@ HRESULT CRestrictEditor::EditAndOr(LPSRestriction lpSourceRes)
 		m_lpOutputRes->rt = lpSourceRes->rt;
 		m_lpOutputRes->res.resAnd.cRes = MyResEditor.GetResCount();
 
-		auto lpNewResArray = MyResEditor.DetachModifiedSRestrictionArray();
+		const auto lpNewResArray = MyResEditor.DetachModifiedSRestrictionArray();
 		if (lpNewResArray)
 		{
 			// I can do this because our new memory was allocated from a common parent
@@ -1296,7 +1300,7 @@ CCriteriaEditor::CCriteriaEditor(
 	SetPromptPostFix(AllFlagsToString(flagSearchFlag, true));
 	InitPane(0, TextPane::CreateSingleLinePane(IDS_SEARCHSTATE, true));
 	SetHex(0, ulSearchState);
-	auto szFlags = InterpretFlags(flagSearchState, ulSearchState);
+	const auto szFlags = InterpretFlags(flagSearchState, ulSearchState);
 	InitPane(1, TextPane::CreateSingleLinePane(IDS_SEARCHSTATE, szFlags, true));
 	InitPane(2, TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, false));
 	SetHex(2, 0);
@@ -1315,7 +1319,7 @@ CCriteriaEditor::~CCriteriaEditor()
 // Used to call functions which need to be called AFTER controls are created
 BOOL CCriteriaEditor::OnInitDialog()
 {
-	auto bRet = CEditor::OnInitDialog();
+	const auto bRet = CEditor::OnInitDialog();
 
 	InitListFromEntryList(LISTNUM, m_lpSourceEntryList);
 
@@ -1332,9 +1336,9 @@ _Check_return_ LPSRestriction CCriteriaEditor::GetSourceRes() const
 
 _Check_return_ ULONG CCriteriaEditor::HandleChange(UINT nID)
 {
-	auto i = CEditor::HandleChange(nID);
+	const auto i = CEditor::HandleChange(nID);
 
-	if (2 == i)
+	if (i == 2)
 	{
 		SetStringW(3, InterpretFlags(flagSearchFlag, GetHex(i)));
 	}
@@ -1345,17 +1349,17 @@ _Check_return_ ULONG CCriteriaEditor::HandleChange(UINT nID)
 // Whoever gets this MUST MAPIFreeBuffer
 _Check_return_ LPSRestriction CCriteriaEditor::DetachModifiedSRestriction()
 {
-	auto m_lpRet = m_lpNewRes;
+	const auto lpRet = m_lpNewRes;
 	m_lpNewRes = nullptr;
-	return m_lpRet;
+	return lpRet;
 }
 
 // Whoever gets this MUST MAPIFreeBuffer
 _Check_return_ LPENTRYLIST CCriteriaEditor::DetachModifiedEntryList()
 {
-	auto m_lpRet = m_lpNewEntryList;
+	const auto lpRet = m_lpNewEntryList;
 	m_lpNewEntryList = nullptr;
-	return m_lpRet;
+	return lpRet;
 }
 
 _Check_return_ ULONG CCriteriaEditor::GetSearchFlags() const
@@ -1396,7 +1400,7 @@ void CCriteriaEditor::OnEditAction1()
 {
 	auto hRes = S_OK;
 
-	auto lpSourceRes = GetSourceRes();
+	const auto lpSourceRes = GetSourceRes();
 
 	CRestrictEditor MyResEditor(
 		this,
@@ -1406,7 +1410,7 @@ void CCriteriaEditor::OnEditAction1()
 
 	if (S_OK == hRes)
 	{
-		auto lpModRes = MyResEditor.DetachModifiedSRestriction();
+		const auto lpModRes = MyResEditor.DetachModifiedSRestriction();
 		if (lpModRes)
 		{
 			// We didn't pass an alloc parent to CRestrictEditor, so we must free what came back
@@ -1427,7 +1431,6 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 	}
 
 	auto hRes = S_OK;
-	std::wstring szTmp;
 
 	CEditor BinEdit(
 		this,
@@ -1455,7 +1458,7 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		if (lpData->Binary()->m_NewBin.lpb)
 		{
 			lpData->Binary()->m_NewBin.cb = static_cast<ULONG>(bin.size());
-			szTmp = std::to_wstring(lpData->Binary()->m_NewBin.cb);
+			const auto szTmp = std::to_wstring(lpData->Binary()->m_NewBin.cb);
 			SetListString(ulListNum, iItem, 1, szTmp);
 			SetListString(ulListNum, iItem, 2, strings::BinToHexString(&lpData->Binary()->m_NewBin, false));
 			SetListString(ulListNum, iItem, 3, strings::BinToTextString(&lpData->Binary()->m_NewBin, true));
@@ -1469,7 +1472,7 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 void CCriteriaEditor::OnOK()
 {
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
-	auto ulValues = GetListCount(LISTNUM);
+	const auto ulValues = GetListCount(LISTNUM);
 
 	auto hRes = S_OK;
 
@@ -1483,7 +1486,7 @@ void CCriteriaEditor::OnOK()
 
 		for (ULONG i = 0; i < m_lpNewEntryList->cValues; i++)
 		{
-			auto lpData = GetListRowData(LISTNUM, i);
+			const auto lpData = GetListRowData(LISTNUM, i);
 			if (lpData && lpData->Binary())
 			{
 				if (lpData->Binary()->m_NewBin.lpb)

@@ -1,6 +1,6 @@
 // Displays the attachment table for a message
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "AttachmentsDlg.h"
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <IO/File.h>
@@ -12,6 +12,7 @@
 #include "ImportProcs.h"
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/GlobalCache.h>
+#include <Interpret/InterpretProp.h>
 
 static std::wstring CLASS = L"CAttachmentsDlg";
 
@@ -71,8 +72,8 @@ void CAttachmentsDlg::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		if (m_lpContentsTableListCtrl)
 		{
-			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
-			auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+			const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+			const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
 			pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_ATTACHMENTS));
 
 			pMenu->EnableMenuItem(ID_COPY, DIMMSOK(iNumSel));
@@ -95,7 +96,7 @@ void CAttachmentsDlg::OnDisplayItem()
 	if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
 	if (!m_lpAttach) return;
 
-	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
+	const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 	if (lpListData && lpListData->Contents() && ATTACH_EMBEDDED_MSG == lpListData->Contents()->m_ulAttachMethod)
 	{
 		auto hRes = S_OK;
@@ -168,7 +169,7 @@ _Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
 	__mfcmapiModifyEnum /*bModify*/,
 	_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
-	auto hRes = S_OK;
+	const auto hRes = S_OK;
 
 	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
@@ -177,12 +178,12 @@ _Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
 	*lppMAPIProp = nullptr;
 
 	// Find the highlighted item AttachNum
-	auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
+	const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 
 	if (lpListData && lpListData->Contents())
 	{
-		auto ulAttachNum = lpListData->Contents()->m_ulAttachNum;
-		auto ulAttachMethod = lpListData->Contents()->m_ulAttachMethod;
+		const auto ulAttachNum = lpListData->Contents()->m_ulAttachNum;
+		const auto ulAttachMethod = lpListData->Contents()->m_ulAttachMethod;
 
 		// Check for matching cached attachment to avoid reopen
 		if (ulAttachNum != m_ulAttachNum || !m_lpAttach)
@@ -223,7 +224,7 @@ void CAttachmentsDlg::HandleCopy()
 	DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 	if (!m_lpContentsTableListCtrl) return;
 
-	ULONG ulNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
+	const ULONG ulNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 
 	if (ulNumSelected && ulNumSelected < ULONG_MAX / sizeof(ULONG))
 	{
@@ -251,7 +252,7 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+	const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
 	if (!(ulStatus & BUFFER_ATTACHMENTS) || !(ulStatus & BUFFER_SOURCEPROPOBJ)) return false;
 
 	auto lpAttNumList = CGlobalCache::getInstance().GetAttachmentsToCopy();
@@ -396,7 +397,7 @@ void CAttachmentsDlg::OnSaveToFile()
 
 		if (lpListData && lpListData->Contents())
 		{
-			auto ulAttachNum = lpListData->Contents()->m_ulAttachNum;
+			const auto ulAttachNum = lpListData->Contents()->m_ulAttachNum;
 
 			EC_MAPI(m_lpMessage->OpenAttach(
 				ulAttachNum,

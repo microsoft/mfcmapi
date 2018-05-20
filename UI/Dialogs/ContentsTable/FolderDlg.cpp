@@ -20,7 +20,6 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <MAPI/MAPIProgress.h>
 #include <MAPI/MapiMime.h>
-#include <Interpret/InterpretProp2.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/GlobalCache.h>
 

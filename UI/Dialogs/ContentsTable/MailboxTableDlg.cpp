@@ -9,7 +9,7 @@
 #include <UI/UIFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/ContentsData.h>
 
 static std::wstring CLASS = L"CMailboxTableDlg";

@@ -171,3 +171,6 @@ HRESULT HrGetOnePropEx(
 	_Out_ LPSPropValue* lppProp);
 
 void ForceRop(_In_ LPMDB lpMDB);
+
+_Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp);
+_Check_return_ HRESULT GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp);

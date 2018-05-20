@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "AdditionalRenEntryIDs.h"
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 
 namespace smartview

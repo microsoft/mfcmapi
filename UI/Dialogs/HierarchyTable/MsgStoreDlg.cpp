@@ -1,5 +1,5 @@
 // Displays the hierarchy tree of folders in a message store
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "MsgStoreDlg.h"
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <MAPI/MapiObjects.h>
@@ -8,7 +8,6 @@
 #include <UI/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/InterpretProp2.h>
 #include <IO/File.h>
 #include <MAPI/MAPIProgress.h>
 #include <UI/Controls/SortList/NodeData.h>
@@ -39,7 +38,7 @@ CMsgStoreDlg::CMsgStoreDlg(
 
 	if (m_lpMapiObjects)
 	{
-		auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		if (lpMDB)
 		{
 			m_szTitle = GetTitle(lpMDB);
@@ -105,14 +104,14 @@ void CMsgStoreDlg::OnInitMenu(_In_ CMenu* pMenu)
 	if (!pMenu) return;
 
 	LPMDB lpMDB = nullptr;
-	auto bItemSelected = m_lpHierarchyTableTreeCtrl && m_lpHierarchyTableTreeCtrl->IsItemSelected();
+	const auto bItemSelected = m_lpHierarchyTableTreeCtrl && m_lpHierarchyTableTreeCtrl->IsItemSelected();
 
 	if (m_lpMapiObjects)
 	{
 		lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	}
 
-	auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+	const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
 	pMenu->EnableMenuItem(ID_PASTE, DIM((ulStatus != BUFFER_EMPTY) && bItemSelected));
 	pMenu->EnableMenuItem(ID_PASTE_RULES, DIM((ulStatus & BUFFER_FOLDER) && bItemSelected));
 
@@ -156,7 +155,7 @@ void CMsgStoreDlg::OnDisplaySpecialFolder(ULONG ulFolder)
 
 	if (!m_lpMapiObjects) return;
 
-	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+	const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	EC_H(OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
@@ -308,7 +307,7 @@ void CMsgStoreDlg::OnOpenFormContainer()
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl || !m_lpPropDisplay) return;
 
-	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	auto lpMAPIFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
@@ -350,7 +349,7 @@ void CMsgStoreDlg::HandleCopy()
 
 	auto lpMAPISourceFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
 
-	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+	const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	LPMAPIFOLDER lpSrcParentFolder = nullptr;
 	WC_H(GetParentFolder(lpMAPISourceFolder, lpMDB, &lpSrcParentFolder));
 
@@ -370,7 +369,7 @@ _Check_return_ bool CMsgStoreDlg::HandlePaste()
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 	if (!m_lpHierarchyTableTreeCtrl) return false;
 
-	auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+	const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
 
 	// Get the destination Folder
 	auto lpMAPIDestFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
@@ -391,7 +390,7 @@ _Check_return_ bool CMsgStoreDlg::HandlePaste()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			auto bPasteContents = MyData.GetCheck(0);
+			const auto bPasteContents = MyData.GetCheck(0);
 			if (bPasteContents) OnPasteFolderContents();
 			else OnPasteFolder();
 		}
@@ -409,7 +408,7 @@ void CMsgStoreDlg::OnPasteMessages()
 	if (!m_lpHierarchyTableTreeCtrl) return;
 
 	// Get the source Messages
-	auto lpEIDs = CGlobalCache::getInstance().GetMessagesToCopy();
+	const auto lpEIDs = CGlobalCache::getInstance().GetMessagesToCopy();
 	auto lpMAPISourceFolder = CGlobalCache::getInstance().GetSourceParentFolder();
 	// Get the destination Folder
 	auto lpMAPIDestFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
@@ -654,7 +653,7 @@ void CMsgStoreDlg::OnCreateSubFolder()
 	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FOLDERTYPE, false));
 	MyData.SetHex(1, FOLDER_GENERIC);
 	auto szProduct = strings::loadstring(ID_PRODUCTNAME);
-	auto szFolderComment = strings::formatmessage(IDS_FOLDERCOMMENTVALUE, szProduct.c_str());
+	const auto szFolderComment = strings::formatmessage(IDS_FOLDERCOMMENTVALUE, szProduct.c_str());
 	MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_FOLDERCOMMENT, szFolderComment, false));
 	MyData.InitPane(3, CheckPane::Create(IDS_PASSOPENIFEXISTS, false, false));
 
@@ -722,11 +721,11 @@ void CMsgStoreDlg::OnDisplayDeletedContents()
 
 	// Find the highlighted item
 	auto hRes = S_OK;
-	auto lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
+	const auto lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
 
 	if (lpItemEID)
 	{
-		auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		if (lpMDB)
 		{
 			LPMAPIFOLDER lpMAPIFolder = nullptr;
@@ -839,18 +838,18 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-	ULONG bShiftPressed = GetKeyState(VK_SHIFT) < 0;
+	const ULONG bShiftPressed = GetKeyState(VK_SHIFT) < 0;
 
-	auto hItem = m_lpHierarchyTableTreeCtrl->GetSelectedItem();
+	const auto hItem = m_lpHierarchyTableTreeCtrl->GetSelectedItem();
 	if (hItem)
 	{
-		auto lpData = m_lpHierarchyTableTreeCtrl->GetSortListData(hItem);
+		const auto lpData = m_lpHierarchyTableTreeCtrl->GetSortListData(hItem);
 		if (lpData && lpData->Node()) lpItemEID = lpData->Node()->m_lpEntryID;
 	}
 
 	if (!lpItemEID) return;
 
-	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+	const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	auto lpFolderToDelete = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(
@@ -949,7 +948,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsTextFiles()
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+	const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	auto lpFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiDO_NOT_REQUEST_MODIFY));
@@ -1015,7 +1014,7 @@ void CMsgStoreDlg::OnSetReceiveFolder()
 	MyData.InitPane(1, CheckPane::Create(IDS_DELETEASSOCIATION, false, false));
 
 	// Find the highlighted item
-	auto lpEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
+	const auto lpEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
 
 	WC_H(MyData.DisplayDialog());
 
@@ -1066,7 +1065,7 @@ void CMsgStoreDlg::OnResetPermissionsOnItems()
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+	const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 
 	// Find the highlighted item
 	auto lpMAPIFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
@@ -1100,7 +1099,7 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 		PR_ENTRYID
 	};
 
-	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+	const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	auto lpSrcFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
@@ -1200,14 +1199,14 @@ void CMsgStoreDlg::OnValidateIPMSubtree()
 
 	if (!m_lpMapiObjects) return;
 
-	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+	const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	WC_H(MyData.DisplayDialog());
 
 	if (S_OK == hRes)
 	{
-		auto ulFlags = (MyData.GetCheck(0) ? MAPI_FORCE_CREATE : 0) |
+		const auto ulFlags = (MyData.GetCheck(0) ? MAPI_FORCE_CREATE : 0) |
 			(MyData.GetCheck(1) ? MAPI_FULL_IPM_TREE : 0);
 
 		DebugPrintEx(DBGGeneric, CLASS, L"OnValidateIPMSubtree", L"ulFlags = 0x%08X\n", ulFlags);

@@ -1,6 +1,15 @@
 #pragma once
 // Named Property Cache
 
+struct NamePropNames
+{
+	std::wstring name;
+	std::wstring guid;
+	std::wstring dasl;
+	std::wstring bestPidLid;
+	std::wstring otherPidLid;
+};
+
 class NamedPropCacheEntry
 {
 public:
@@ -52,3 +61,10 @@ _Check_return_ inline bool fCacheNamedProps()
 {
 	return RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD != 0;
 }
+
+NamePropNames NameIDToStrings(
+	ULONG ulPropTag, // optional 'original' prop tag
+	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
+	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+	_In_opt_ const _SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+	bool bIsAB); // true if we know we're dealing with an address book property (they can be > 8000 and not named props)

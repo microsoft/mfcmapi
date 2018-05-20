@@ -1,10 +1,9 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/MFCUtilityFunctions.h>
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <Interpret/ExtraPropTags.h>
-#include <Interpret/InterpretProp2.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIABFunctions.h>

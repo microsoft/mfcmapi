@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "GlobalObjectId.h"
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 
 namespace smartview

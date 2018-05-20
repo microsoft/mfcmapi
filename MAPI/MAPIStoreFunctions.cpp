@@ -9,7 +9,7 @@
 #include <Interpret/ExtraPropTags.h>
 #ifndef MRMAPI
 #include <MAPI/MAPIABFunctions.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #endif
 
 _Check_return_ HRESULT CallOpenMsgStore(
@@ -708,7 +708,7 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 
 	if (!lpMAPISession || !lpAddrBook) return MAPI_E_INVALID_PARAMETER;
 
-	auto szServerName = GetServerName(lpMAPISession);
+	const auto szServerName = GetServerName(lpMAPISession);
 
 	WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
 	if (lpPrivateMDB && StoreSupportsManageStore(lpPrivateMDB))

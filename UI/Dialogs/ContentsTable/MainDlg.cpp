@@ -19,7 +19,7 @@
 #include <UI/FileDialogEx.h>
 #include "MAPI/MapiMime.h"
 #include <Interpret/Guids.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <UI/QuickStart.h>
 #include <UI/UIFunctions.h>
 #include <UI/Controls/SortList/ContentsData.h>

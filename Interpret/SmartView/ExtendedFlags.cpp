@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "ExtendedFlags.h"
 #include <Interpret/Guids.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 
 namespace smartview

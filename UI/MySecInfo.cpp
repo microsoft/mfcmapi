@@ -1,10 +1,8 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <UI/MySecInfo.h>
 #include <Interpret/Sid.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/InterpretProp2.h>
 #include <Interpret/ExtraPropTags.h>
-//#include <Interpret/String.h>
 
 static std::wstring CLASS = L"CMySecInfo";
 
@@ -75,7 +73,7 @@ CMySecInfo::CMySecInfo(_In_ LPMAPIPROP lpMAPIProp,
 	if (m_lpMAPIProp)
 	{
 		m_lpMAPIProp->AddRef();
-		auto m_ulObjType = GetMAPIObjectType(m_lpMAPIProp);
+		const auto m_ulObjType = GetMAPIObjectType(m_lpMAPIProp);
 		switch (m_ulObjType)
 		{
 		case MAPI_STORE:
@@ -124,14 +122,14 @@ STDMETHODIMP CMySecInfo::QueryInterface(_In_ REFIID riid,
 
 STDMETHODIMP_(ULONG) CMySecInfo::AddRef()
 {
-	auto lCount = InterlockedIncrement(&m_cRef);
+	const auto lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
 }
 
 STDMETHODIMP_(ULONG) CMySecInfo::Release()
 {
-	auto lCount = InterlockedDecrement(&m_cRef);
+	const auto lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
 	if (!lCount) delete this;
 	return lCount;
@@ -188,15 +186,15 @@ STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation
 
 	if (lpsProp && PROP_TYPE(lpsProp->ulPropTag) == PT_BINARY && lpsProp->Value.bin.lpb)
 	{
-		auto lpSDBuffer = lpsProp->Value.bin.lpb;
-		auto cbSBBuffer = lpsProp->Value.bin.cb;
-		auto pSecDesc = SECURITY_DESCRIPTOR_OF(lpSDBuffer); // will be a pointer into lpPropArray, do not free!
+		const auto lpSDBuffer = lpsProp->Value.bin.lpb;
+		const auto cbSBBuffer = lpsProp->Value.bin.cb;
+		const auto pSecDesc = SECURITY_DESCRIPTOR_OF(lpSDBuffer); // will be a pointer into lpPropArray, do not free!
 
 		if (IsValidSecurityDescriptor(pSecDesc))
 		{
 			if (FCheckSecurityDescriptorVersion(lpSDBuffer))
 			{
-				int cbBuffer = GetSecurityDescriptorLength(pSecDesc);
+				const int cbBuffer = GetSecurityDescriptorLength(pSecDesc);
 				*ppSecurityDescriptor = LocalAlloc(LMEM_FIXED, cbBuffer);
 
 				if (*ppSecurityDescriptor)
@@ -255,7 +253,7 @@ STDMETHODIMP CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*
 	if (!IsValidSecurityDescriptor(pSecurityDescriptor)) return MAPI_E_INVALID_PARAMETER;
 
 	auto dwSDLength = GetSecurityDescriptorLength(pSecurityDescriptor);
-	auto cbBlob = m_cbHeader + dwSDLength;
+	const auto cbBlob = m_cbHeader + dwSDLength;
 	if (cbBlob < m_cbHeader || cbBlob < dwSDLength) return MAPI_E_INVALID_PARAMETER;
 
 	EC_H(MAPIAllocateBuffer(

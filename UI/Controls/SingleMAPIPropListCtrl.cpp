@@ -6,7 +6,7 @@
 #include <UI/UIFunctions.h>
 #include <UI/MySecInfo.h>
 #include <Interpret/Guids.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <UI/FileDialogEx.h>
 #include "ImportProcs.h"
 #include <MAPI/MAPIProgress.h>

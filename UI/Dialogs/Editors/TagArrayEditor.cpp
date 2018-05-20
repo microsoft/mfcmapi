@@ -1,9 +1,9 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "TagArrayEditor.h"
 #include <Interpret/InterpretProp.h>
-#include <Interpret/InterpretProp2.h>
 #include "PropertyTagEditor.h"
 #include <UI/Controls/SortList/PropListData.h>
+#include <MAPI/NamedPropCache.h>
 
 static std::wstring CLASS = L"CTagArrayEditor";
 
@@ -41,7 +41,7 @@ CTagArrayEditor::~CTagArrayEditor()
 // Used to call functions which need to be called AFTER controls are created
 BOOL CTagArrayEditor::OnInitDialog()
 {
-	auto bRet = CEditor::OnInitDialog();
+	const auto bRet = CEditor::OnInitDialog();
 
 	ReadTagArrayToList(0, m_lpSourceTagArray);
 
@@ -73,7 +73,7 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 	}
 
 	auto hRes = S_OK;
-	auto ulOrigPropTag = lpData->Prop()->m_ulPropTag;
+	const auto ulOrigPropTag = lpData->Prop()->m_ulPropTag;
 
 	CPropertyTagEditor MyPropertyTag(
 		NULL, // title
@@ -85,20 +85,20 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 
 	WC_H(MyPropertyTag.DisplayDialog());
 	if (S_OK != hRes) return false;
-	auto ulNewPropTag = MyPropertyTag.GetPropertyTag();
+	const auto ulNewPropTag = MyPropertyTag.GetPropertyTag();
 
 	if (ulNewPropTag != ulOrigPropTag)
 	{
 		lpData->Prop()->m_ulPropTag = ulNewPropTag;
 
-		auto namePropNames = NameIDToStrings(
+		const auto namePropNames = NameIDToStrings(
 			ulNewPropTag,
 			m_lpMAPIProp,
 			nullptr,
 			nullptr,
 			m_bIsAB);
 
-		auto propTagNames = PropTagToPropName(ulNewPropTag, m_bIsAB);
+		const auto propTagNames = PropTagToPropName(ulNewPropTag, m_bIsAB);
 
 		SetListString(ulListNum, iItem, 1, strings::format(L"0x%08X", ulNewPropTag));
 		SetListString(ulListNum, iItem, 2, propTagNames.bestGuess);
@@ -127,25 +127,25 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum, LPSPropTagArray lpTagA
 
 	if (lpTagArray)
 	{
-		auto cValues = lpTagArray->cValues;
+		const auto cValues = lpTagArray->cValues;
 
 		for (ULONG iTagCount = 0; iTagCount < cValues; iTagCount++)
 		{
-			auto ulPropTag = lpTagArray->aulPropTag[iTagCount];
+			const auto ulPropTag = lpTagArray->aulPropTag[iTagCount];
 			auto lpData = InsertListRow(ulListNum, iTagCount, std::to_wstring(iTagCount));
 			if (lpData)
 			{
 				lpData->InitializePropList(ulPropTag);
 			}
 
-			auto namePropNames = NameIDToStrings(
+			const auto namePropNames = NameIDToStrings(
 				ulPropTag,
 				m_lpMAPIProp,
 				nullptr,
 				nullptr,
 				m_bIsAB);
 
-			auto propTagNames = PropTagToPropName(ulPropTag, m_bIsAB);
+			const auto propTagNames = PropTagToPropName(ulPropTag, m_bIsAB);
 
 			SetListString(ulListNum, iTagCount, 1, strings::format(L"0x%08X", ulPropTag));
 			SetListString(ulListNum, iTagCount, 2, propTagNames.bestGuess);
@@ -165,7 +165,7 @@ void CTagArrayEditor::WriteListToTagArray(ULONG ulListNum)
 	if (!IsDirty(ulListNum)) return;
 
 	auto hRes = S_OK;
-	auto ulListCount = GetListCount(ulListNum);
+	const auto ulListCount = GetListCount(ulListNum);
 	EC_H(MAPIAllocateBuffer(
 		CbNewSPropTagArray(ulListCount),
 		reinterpret_cast<LPVOID*>(&m_lpOutputTagArray)));
@@ -175,7 +175,7 @@ void CTagArrayEditor::WriteListToTagArray(ULONG ulListNum)
 
 		for (ULONG iTagCount = 0; iTagCount < m_lpOutputTagArray->cValues; iTagCount++)
 		{
-			auto lpData = GetListRowData(ulListNum, iTagCount);
+			const auto lpData = GetListRowData(ulListNum, iTagCount);
 			if (lpData && lpData->Prop())
 				m_lpOutputTagArray->aulPropTag[iTagCount] = lpData->Prop()->m_ulPropTag;
 		}
@@ -184,7 +184,7 @@ void CTagArrayEditor::WriteListToTagArray(ULONG ulListNum)
 
 _Check_return_ LPSPropTagArray CTagArrayEditor::DetachModifiedTagArray()
 {
-	auto lpRetArray = m_lpOutputTagArray;
+	const auto lpRetArray = m_lpOutputTagArray;
 	m_lpOutputTagArray = nullptr;
 	return lpRetArray;
 }

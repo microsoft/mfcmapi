@@ -1,12 +1,15 @@
 #include "StdAfx.h"
 #include <Interpret/Guids.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/InterpretProp2.h>
 #include <Interpret/ExtraPropTags.h>
 #include <MAPI/NamedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>
 #include "Property/ParseProperty.h"
 #include <Interpret/String.h>
+#include <unordered_map>
+
+#define ulNoMatch 0xffffffff
+static WCHAR szPropSeparator[] = L", "; // STRING_OK
 
 std::wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine)
 {
@@ -577,169 +580,442 @@ std::wstring TypeToString(ULONG ulPropTag)
 	return tmpPropType;
 }
 
-// TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
-// We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
-NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
+// Compare tag sort order.
+bool CompareTagsSortOrder(int a1, int a2)
 {
-	auto hRes = S_OK;
-	NamePropNames namePropNames;
+	const auto lpTag1 = &PropTagArray[a1];
+	const auto lpTag2 = &PropTagArray[a2];;
 
-	// Can't generate strings without a MAPINAMEID structure
-	if (!lpNameID) return namePropNames;
-
-	LPNAMEDPROPCACHEENTRY lpNamedPropCacheEntry = nullptr;
-
-	// If we're using the cache, look up the answer there and return
-	if (fCacheNamedProps())
+	if (lpTag1->ulSortOrder < lpTag2->ulSortOrder) return false;
+	if (lpTag1->ulSortOrder == lpTag2->ulSortOrder)
 	{
-		lpNamedPropCacheEntry = FindCacheEntry(PROP_ID(ulPropTag), lpNameID->lpguid, lpNameID->ulKind, lpNameID->Kind.lID, lpNameID->Kind.lpwstrName);
-		if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->bStringsCached)
-		{
-			namePropNames = lpNamedPropCacheEntry->namePropNames;
-			return namePropNames;
-		}
-
-		// We shouldn't ever get here without a cached entry
-		if (!lpNamedPropCacheEntry)
-		{
-			DebugPrint(DBGNamedProp, L"NameIDToStrings: Failed to find cache entry for ulPropTag = 0x%08X\n", ulPropTag);
-			return namePropNames;
-		}
+		return wcscmp(lpTag1->lpszName, lpTag2->lpszName) > 0 ? false : true;
 	}
-
-	DebugPrint(DBGNamedProp, L"Parsing named property\n");
-	DebugPrint(DBGNamedProp, L"ulPropTag = 0x%08x\n", ulPropTag);
-	namePropNames.guid = guid::GUIDToStringAndName(lpNameID->lpguid);
-	DebugPrint(DBGNamedProp, L"lpNameID->lpguid = %ws\n", namePropNames.guid.c_str());
-
-	auto szDASLGuid = guid::GUIDToString(lpNameID->lpguid);
-
-	if (lpNameID->ulKind == MNID_ID)
-	{
-		DebugPrint(DBGNamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
-		auto pidlids = NameIDToPropNames(lpNameID);
-
-		if (!pidlids.empty())
-		{
-			namePropNames.bestPidLid = pidlids.front();
-			pidlids.erase(pidlids.begin());
-			namePropNames.otherPidLid = strings::join(pidlids, L", ");
-			// Printing hex first gets a nice sort without spacing tricks
-			namePropNames.name = strings::format(L"id: 0x%04X=%d = %ws", // STRING_OK
-				lpNameID->Kind.lID,
-				lpNameID->Kind.lID,
-				namePropNames.bestPidLid.c_str());
-
-			if (!namePropNames.otherPidLid.empty())
-			{
-				namePropNames.name += strings::format(L" (%ws)", namePropNames.otherPidLid.c_str());
-			}
-		}
-		else
-		{
-			// Printing hex first gets a nice sort without spacing tricks
-			namePropNames.name = strings::format(L"id: 0x%04X=%d", // STRING_OK
-				lpNameID->Kind.lID,
-				lpNameID->Kind.lID);
-		}
-
-		namePropNames.dasl = strings::format(L"id/%s/%04X%04X", // STRING_OK
-			szDASLGuid.c_str(),
-			lpNameID->Kind.lID,
-			PROP_TYPE(ulPropTag));
-	}
-	else if (lpNameID->ulKind == MNID_STRING)
-	{
-		// lpwstrName is LPWSTR which means it's ALWAYS unicode
-		// But some folks get it wrong and stuff ANSI data in there
-		// So we check the string length both ways to make our best guess
-		size_t cchShortLen = NULL;
-		size_t cchWideLen = NULL;
-		WC_H(StringCchLengthA(reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
-		WC_H(StringCchLengthW(lpNameID->Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
-
-		if (cchShortLen < cchWideLen)
-		{
-			// this is the *proper* case
-			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%ws\"\n", lpNameID->Kind.lpwstrName);
-			namePropNames.name = lpNameID->Kind.lpwstrName;
-
-			namePropNames.dasl = strings::format(L"string/%ws/%ws", // STRING_OK
-				szDASLGuid.c_str(),
-				lpNameID->Kind.lpwstrName);
-		}
-		else
-		{
-			// this is the case where ANSI data was shoved into a unicode string.
-			DebugPrint(DBGNamedProp, L"Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n");
-			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%hs\"\n", reinterpret_cast<LPCSTR>(lpNameID->Kind.lpwstrName));
-
-			auto szComment = strings::loadstring(IDS_NAMEWASANSI);
-			namePropNames.name = strings::format(L"%hs %ws", reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), szComment.c_str());
-
-			namePropNames.dasl = strings::format(L"string/%ws/%hs", // STRING_OK
-				szDASLGuid.c_str(),
-				LPSTR(lpNameID->Kind.lpwstrName));
-		}
-	}
-
-	// We've built our strings - if we're caching, put them in the cache
-	if (lpNamedPropCacheEntry)
-	{
-		lpNamedPropCacheEntry->namePropNames = namePropNames;
-		lpNamedPropCacheEntry->bStringsCached = true;
-	}
-
-	return namePropNames;
+	return true;
 }
 
-NamePropNames NameIDToStrings(
-	ULONG ulPropTag, // optional 'original' prop tag
-	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-	_In_opt_ const _SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-	bool bIsAB) // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+// Searches an array for a target number.
+// Search is done with a mask
+// Partial matches are those that match with the mask applied
+// Exact matches are those that match without the mask applied
+// lpUlNumPartials will exclude count of exact matches
+// if it wants just the true partial matches.
+// If no hits, then ulNoMatch should be returned for lpulFirstExact and/or lpulFirstPartial
+void FindTagArrayMatches(_In_ ULONG ulTarget,
+	bool bIsAB,
+	const std::vector<NAME_ARRAY_ENTRY_V2>& MyArray,
+	std::vector<ULONG>& ulExacts,
+	std::vector<ULONG>& ulPartials)
 {
-	auto hRes = S_OK;
-	NamePropNames namePropNames;
-
-	// Named Props
-	LPMAPINAMEID* lppPropNames = nullptr;
-
-	// If we weren't passed named property information and we need it, look it up
-	// We check bIsAB here - some address book providers return garbage which will crash us
-	if (!lpNameID &&
-		lpMAPIProp && // if we have an object
-		!bIsAB &&
-		RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
-		(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
+	if (!(ulTarget & PROP_TAG_MASK)) // not dealing with a full prop tag
 	{
-		SPropTagArray tag = { 0 };
-		auto lpTag = &tag;
-		ULONG ulPropNames = 0;
-		tag.cValues = 1;
-		tag.aulPropTag[0] = ulPropTag;
+		ulTarget = PROP_TAG(PT_UNSPECIFIED, ulTarget);
+	}
 
-		WC_H_GETPROPS(GetNamesFromIDs(lpMAPIProp,
-			lpMappingSignature,
-			&lpTag,
-			nullptr,
-			NULL,
-			&ulPropNames,
-			&lppPropNames));
-		if (SUCCEEDED(hRes) && ulPropNames == 1 && lppPropNames && lppPropNames[0])
+	ULONG ulLowerBound = 0;
+	auto ulUpperBound = static_cast<ULONG>(MyArray.size() - 1); // size-1 is the last entry
+	auto ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
+	ULONG ulFirstMatch = ulNoMatch;
+	const auto ulMaskedTarget = ulTarget & PROP_TAG_MASK;
+
+	// Short circuit property IDs with the high bit set if bIsAB wasn't passed
+	if (!bIsAB && ulTarget & 0x80000000) return;
+
+	// Find A partial match
+	while (ulUpperBound - ulLowerBound > 1)
+	{
+		if (ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulMidPoint].ulValue))
 		{
-			lpNameID = lppPropNames[0];
+			ulFirstMatch = ulMidPoint;
+			break;
+		}
+
+		if (ulMaskedTarget < (PROP_TAG_MASK & MyArray[ulMidPoint].ulValue))
+		{
+			ulUpperBound = ulMidPoint;
+		}
+		else if (ulMaskedTarget >(PROP_TAG_MASK & MyArray[ulMidPoint].ulValue))
+		{
+			ulLowerBound = ulMidPoint;
+		}
+
+		ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
+	}
+
+	// When we get down to two points, we may have only checked one of them
+	// Make sure we've checked the other
+	if (ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulUpperBound].ulValue))
+	{
+		ulFirstMatch = ulUpperBound;
+	}
+	else if (ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulLowerBound].ulValue))
+	{
+		ulFirstMatch = ulLowerBound;
+	}
+
+	// Check that we got a match
+	if (ulNoMatch != ulFirstMatch)
+	{
+		// Scan backwards to find the first partial match
+		while (ulFirstMatch > 0 && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulFirstMatch - 1].ulValue))
+		{
+			ulFirstMatch = ulFirstMatch - 1;
+		}
+
+		for (ULONG ulCur = ulFirstMatch; ulCur < MyArray.size() && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulCur].ulValue); ulCur++)
+		{
+			if (ulTarget == MyArray[ulCur].ulValue)
+			{
+				ulExacts.push_back(ulCur);
+			}
+			else
+			{
+				ulPartials.push_back(ulCur);
+			}
+		}
+
+		if (ulExacts.size()) sort(ulExacts.begin(), ulExacts.end(), CompareTagsSortOrder);
+		if (ulPartials.size()) sort(ulPartials.begin(), ulPartials.end(), CompareTagsSortOrder);
+
+	}
+}
+
+std::unordered_map<ULONG64, PropTagNames> g_PropNames;
+
+PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB)
+{
+	auto ulKey = (bIsAB ? static_cast<ULONG64>(1) << 32 : 0) | ulPropTag;
+
+	const auto match = g_PropNames.find(ulKey);
+	if (match != g_PropNames.end())
+	{
+		return match->second;
+	}
+
+	std::vector<ULONG> ulExacts;
+	std::vector<ULONG> ulPartials;
+	FindTagArrayMatches(ulPropTag, bIsAB, PropTagArray, ulExacts, ulPartials);
+
+	PropTagNames entry;
+
+	if (ulExacts.size())
+	{
+		entry.bestGuess = PropTagArray[ulExacts.front()].lpszName;
+		ulExacts.erase(ulExacts.begin());
+
+		for (const auto& ulMatch : ulExacts)
+		{
+			if (!entry.otherMatches.empty())
+			{
+				entry.otherMatches += szPropSeparator;
+			}
+
+			entry.otherMatches += PropTagArray[ulMatch].lpszName;
 		}
 	}
 
-	if (lpNameID)
+	if (ulPartials.size())
 	{
-		namePropNames = NameIDToStrings(lpNameID, ulPropTag);
+		if (entry.bestGuess.empty())
+		{
+			entry.bestGuess = PropTagArray[ulPartials.front()].lpszName;
+			ulPartials.erase(ulPartials.begin());
+		}
+
+		for (const auto& ulMatch : ulPartials)
+		{
+			if (!entry.otherMatches.empty())
+			{
+				entry.otherMatches += szPropSeparator;
+			}
+
+			entry.otherMatches += PropTagArray[ulMatch].lpszName;
+		}
 	}
 
-	// Avoid making the call if we don't have to so we don't accidently depend on MAPI
-	if (lppPropNames) MAPIFreeBuffer(lppPropNames);
+	g_PropNames.insert({ ulKey, entry });
 
-	return namePropNames;
+	return entry;
+}
+
+// Strictly does a lookup in the array. Does not convert otherwise
+_Check_return_ ULONG LookupPropName(_In_ const std::wstring& lpszPropName)
+{
+	std::wstring trimName = strings::TrimString(lpszPropName);
+	if (trimName.empty()) return 0;
+
+	for (auto& tag : PropTagArray)
+	{
+		if (0 == lstrcmpiW(trimName.c_str(), tag.lpszName))
+		{
+			return tag.ulValue;
+		}
+	}
+
+	return 0;
+}
+
+_Check_return_ ULONG PropNameToPropTag(_In_ const std::wstring& lpszPropName)
+{
+	if (lpszPropName.empty()) return 0;
+
+	const auto ulTag = strings::wstringToUlong(lpszPropName, 16);
+	if (ulTag != NULL)
+	{
+		return ulTag;
+	}
+
+	return LookupPropName(lpszPropName);
+}
+
+_Check_return_ ULONG PropTypeNameToPropType(_In_ const std::wstring& lpszPropType)
+{
+	if (lpszPropType.empty() || PropTypeArray.empty()) return PT_UNSPECIFIED;
+
+	// Check for numbers first before trying the string as an array lookup.
+	// This will translate '0x102' to 0x102, 0x3 to 3, etc.
+	const auto ulType = strings::wstringToUlong(lpszPropType, 16);
+	if (ulType != NULL) return ulType;
+
+	auto ulPropType = PT_UNSPECIFIED;
+
+	for (const auto& propType : PropTypeArray)
+	{
+		if (0 == lstrcmpiW(lpszPropType.c_str(), propType.lpszName))
+		{
+			ulPropType = propType.ulValue;
+			break;
+		}
+	}
+
+	return ulPropType;
+}
+
+// Returns string built from NameIDArray
+std::vector<std::wstring> NameIDToPropNames(_In_ const _MAPINAMEID* lpNameID)
+{
+	std::vector<std::wstring> results;
+	if (!lpNameID) return{};
+	if (lpNameID->ulKind != MNID_ID) return{};
+	ULONG ulMatch = ulNoMatch;
+
+	if (NameIDArray.empty()) return{};
+
+	for (ULONG ulCur = 0; ulCur < NameIDArray.size(); ulCur++)
+	{
+		if (NameIDArray[ulCur].lValue == lpNameID->Kind.lID)
+		{
+			ulMatch = ulCur;
+			break;
+		}
+	}
+
+	if (ulNoMatch != ulMatch)
+	{
+		for (auto ulCur = ulMatch; ulCur < NameIDArray.size(); ulCur++)
+		{
+			if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID) break;
+			// We don't acknowledge array entries without guids
+			if (!NameIDArray[ulCur].lpGuid) continue;
+			// But if we weren't asked about a guid, we don't check one
+			if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid, *NameIDArray[ulCur].lpGuid)) continue;
+
+			results.push_back(NameIDArray[ulCur].lpszName);
+		}
+	}
+
+	return results;
+}
+
+// Interprets a flag value according to a flag name and returns a string
+// Will not return a string if the flag name is not recognized
+std::wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue)
+{
+	ULONG ulCurEntry = 0;
+
+	if (FlagArray.empty()) return L"";
+
+	while (ulCurEntry < FlagArray.size() && FlagArray[ulCurEntry].ulFlagName != ulFlagName)
+	{
+		ulCurEntry++;
+	}
+
+	// Don't run off the end of the array
+	if (FlagArray.size() == ulCurEntry) return L"";
+	if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return L"";
+
+	// We've matched our flag name to the array - we SHOULD return a string at this point
+	auto bNeedSeparator = false;
+
+	auto lTempValue = lFlagValue;
+	std::wstring szTempString;
+	for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
+	{
+		if (flagFLAG == FlagArray[ulCurEntry].ulFlagType)
+		{
+			if (FlagArray[ulCurEntry].lFlagValue & lTempValue)
+			{
+				if (bNeedSeparator)
+				{
+					szTempString += L" | "; // STRING_OK
+				}
+
+				szTempString += FlagArray[ulCurEntry].lpszName;
+				lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
+				bNeedSeparator = true;
+			}
+		}
+		else if (flagVALUE == FlagArray[ulCurEntry].ulFlagType)
+		{
+			if (FlagArray[ulCurEntry].lFlagValue == lTempValue)
+			{
+				if (bNeedSeparator)
+				{
+					szTempString += L" | "; // STRING_OK
+				}
+
+				szTempString += FlagArray[ulCurEntry].lpszName;
+				lTempValue = 0;
+				bNeedSeparator = true;
+			}
+		}
+		else if (flagVALUEHIGHBYTES == FlagArray[ulCurEntry].ulFlagType)
+		{
+			if (FlagArray[ulCurEntry].lFlagValue == (lTempValue >> 16 & 0xFFFF))
+			{
+				if (bNeedSeparator)
+				{
+					szTempString += L" | "; // STRING_OK
+				}
+
+				szTempString += FlagArray[ulCurEntry].lpszName;
+				lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 16);
+				bNeedSeparator = true;
+			}
+		}
+		else if (flagVALUE3RDBYTE == FlagArray[ulCurEntry].ulFlagType)
+		{
+			if (FlagArray[ulCurEntry].lFlagValue == (lTempValue >> 8 & 0xFF))
+			{
+				if (bNeedSeparator)
+				{
+					szTempString += L" | "; // STRING_OK
+				}
+
+				szTempString += FlagArray[ulCurEntry].lpszName;
+				lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 8);
+				bNeedSeparator = true;
+			}
+		}
+		else if (flagVALUE4THBYTE == FlagArray[ulCurEntry].ulFlagType)
+		{
+			if (FlagArray[ulCurEntry].lFlagValue == (lTempValue & 0xFF))
+			{
+				if (bNeedSeparator)
+				{
+					szTempString += L" | "; // STRING_OK
+				}
+
+				szTempString += FlagArray[ulCurEntry].lpszName;
+				lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
+				bNeedSeparator = true;
+			}
+		}
+		else if (flagVALUELOWERNIBBLE == FlagArray[ulCurEntry].ulFlagType)
+		{
+			if (FlagArray[ulCurEntry].lFlagValue == (lTempValue & 0x0F))
+			{
+				if (bNeedSeparator)
+				{
+					szTempString += L" | "; // STRING_OK
+				}
+
+				szTempString += FlagArray[ulCurEntry].lpszName;
+				lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
+				bNeedSeparator = true;
+			}
+		}
+		else if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
+		{
+			// find any bits we need to clear
+			const auto lClearedBits = FlagArray[ulCurEntry].lFlagValue & lTempValue;
+			// report what we found
+			if (0 != lClearedBits)
+			{
+				if (bNeedSeparator)
+				{
+					szTempString += L" | "; // STRING_OK
+				}
+
+				szTempString += strings::format(L"0x%X", lClearedBits); // STRING_OK
+																		// clear the bits out
+				lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
+				bNeedSeparator = true;
+			}
+		}
+	}
+
+	// We know if we've found anything already because bNeedSeparator will be true
+	// If bNeedSeparator isn't true, we found nothing and need to tack on
+	// Otherwise, it's true, and we only tack if lTempValue still has something in it
+	if (!bNeedSeparator || lTempValue)
+	{
+		if (bNeedSeparator)
+		{
+			szTempString += L" | "; // STRING_OK
+		}
+
+		szTempString += strings::format(L"0x%X", lTempValue); // STRING_OK
+	}
+
+	return szTempString;
+}
+
+// Returns a list of all known flags/values for a flag name.
+// For instance, for flagFuzzyLevel, would return:
+// \r\n0x00000000 FL_FULLSTRING\r\n\
+ // 0x00000001 FL_SUBSTRING\r\n\
+ // 0x00000002 FL_PREFIX\r\n\
+ // 0x00010000 FL_IGNORECASE\r\n\
+ // 0x00020000 FL_IGNORENONSPACE\r\n\
+ // 0x00040000 FL_LOOSE
+//
+// Since the string is always appended to a prompt we include \r\n at the start
+std::wstring AllFlagsToString(ULONG ulFlagName, bool bHex)
+{
+	std::wstring szFlagString;
+	if (!ulFlagName) return szFlagString;
+	if (FlagArray.empty()) return szFlagString;
+
+	ULONG ulCurEntry = 0;
+	std::wstring szTempString;
+
+	while (ulCurEntry < FlagArray.size() && FlagArray[ulCurEntry].ulFlagName != ulFlagName)
+	{
+		ulCurEntry++;
+	}
+
+	if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return szFlagString;
+
+	// We've matched our flag name to the array - we SHOULD return a string at this point
+	for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
+	{
+		if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
+		{
+			// keep going
+		}
+		else
+		{
+			if (bHex)
+			{
+				szFlagString += strings::formatmessage(IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
+			}
+			else
+			{
+				szFlagString += strings::formatmessage(IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
+			}
+		}
+	}
+
+	return szFlagString;
 }

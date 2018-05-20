@@ -56,7 +56,7 @@ _Check_return_ STDAPI HrCopyRestriction(
 );
 
 _Check_return_ HRESULT HrCopyRestrictionArray(
-	_In_ LPSRestriction lpResSrc, // source restriction
+	_In_ const _SRestriction* lpResSrc, // source restriction
 	_In_ LPVOID lpObject, // ptr to existing MAPI buffer
 	ULONG cRes, // # elements in array
 	_In_count_(cRes) LPSRestriction lpResDest // destination restriction

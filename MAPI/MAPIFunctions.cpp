@@ -329,7 +329,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 	static const SizedSPropTagArray(fldNUM_COLS, fldCols) =
 	{
 	fldNUM_COLS,
-	PR_ENTRYID,
+		{PR_ENTRYID},
 	};
 
 	DebugPrint(DBGGeneric, L"CopyFolderContents: lpSrcFolder = %p, lpDestFolder = %p, bCopyAssociatedContents = %d, bMove = %d\n",
@@ -478,15 +478,17 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 			static const SizedSPropTagArray(9, ruleTags) =
 			{
 			9,
-			PR_RULE_ACTIONS,
-			PR_RULE_CONDITION,
-			PR_RULE_LEVEL,
-			PR_RULE_NAME,
-			PR_RULE_PROVIDER,
-			PR_RULE_PROVIDER_DATA,
-			PR_RULE_SEQUENCE,
-			PR_RULE_STATE,
-			PR_RULE_USER_FLAGS,
+				{
+					PR_RULE_ACTIONS,
+					PR_RULE_CONDITION,
+					PR_RULE_LEVEL,
+					PR_RULE_NAME,
+					PR_RULE_PROVIDER,
+					PR_RULE_PROVIDER_DATA,
+					PR_RULE_SEQUENCE,
+					PR_RULE_STATE,
+					PR_RULE_USER_FLAGS
+				},
 			};
 
 			EC_MAPI(lpTable->SetColumns(LPSPropTagArray(&ruleTags), 0));
@@ -1115,7 +1117,7 @@ _Check_return_ HRESULT GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPM
 	static const SizedSPropTagArray(NUM_COLS, sptaSrcFolder) =
 	{
 	NUM_COLS,
-	PR_PARENT_ENTRYID
+	{PR_PARENT_ENTRYID}
 	};
 
 	// Get PR_PARENT_ENTRYID
@@ -1307,7 +1309,7 @@ _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAss
 	static const SizedSPropTagArray(eidNUM_COLS, eidCols) =
 	{
 	eidNUM_COLS,
-	PR_ENTRYID,
+	{PR_ENTRYID}
 	};
 
 	// Get the table of contents of the folder
@@ -1517,7 +1519,7 @@ _Check_return_ HRESULT ResendMessages(_In_ LPMAPIFOLDER lpFolder, _In_ HWND hWnd
 	static const SizedSPropTagArray(NUM_COLS, sptCols) =
 	{
 	NUM_COLS,
-	PR_ENTRYID
+	{PR_ENTRYID}
 	};
 
 	if (!lpFolder) return MAPI_E_INVALID_PARAMETER;
@@ -1626,16 +1628,20 @@ _Check_return_ HRESULT ResendSingleMessage(
 	static const SizedSPropTagArray(atNUM_COLS, atCols) =
 	{
 	atNUM_COLS,
-	PR_ATTACH_METHOD,
-	PR_ATTACH_NUM,
-	PR_DISPLAY_NAME_W
+		{
+			PR_ATTACH_METHOD,
+			PR_ATTACH_NUM,
+			PR_DISPLAY_NAME_W
+		}
 	};
 
 	static const SizedSPropTagArray(2, atObjs) =
 	{
 	2,
-	PR_MESSAGE_RECIPIENTS,
-	PR_MESSAGE_ATTACHMENTS
+		{
+			PR_MESSAGE_RECIPIENTS,
+			PR_MESSAGE_ATTACHMENTS
+		}
 	};
 
 	if (!lpMessage || !lpFolder) return MAPI_E_INVALID_PARAMETER;
@@ -1814,7 +1820,7 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 	static const SizedSPropTagArray(eidNUM_COLS, eidCols) =
 	{
 	eidNUM_COLS,
-	PR_ENTRYID,
+		{PR_ENTRYID},
 	};
 
 	if (!lpMDB || !lpMAPIFolder) return MAPI_E_INVALID_PARAMETER;
@@ -2759,4 +2765,142 @@ void ForceRop(_In_ LPMDB lpMDB)
 	WC_MAPI(HrGetOneProp(lpMDB, PR_TEST_LINE_SPEED, &lpProp));
 	// No need to worry about errors here - this is just to force rops
 	MAPIFreeBuffer(lpProp);
+}
+
+// Returns LPSPropValue with value of a property
+// Uses GetProps and falls back to OpenProperty if the value is large
+// Free with MAPIFreeBuffer
+_Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
+{
+	if (!lpMAPIProp || !lppProp) return MAPI_E_INVALID_PARAMETER;
+	DebugPrint(DBGGeneric, L"GetLargeProp getting buffer from 0x%08X\n", ulPropTag);
+
+	auto hRes = S_OK;
+	ULONG cValues = 0;
+	LPSPropValue lpPropArray = nullptr;
+	auto bSuccess = false;
+
+	const SizedSPropTagArray(1, sptaBuffer) =
+	{
+		1,
+		{ulPropTag}
+	};
+	*lppProp = nullptr;
+
+	WC_H_GETPROPS(lpMAPIProp->GetProps(LPSPropTagArray(&sptaBuffer), 0, &cValues, &lpPropArray));
+
+	if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag) && MAPI_E_NOT_ENOUGH_MEMORY == lpPropArray->Value.err)
+	{
+		DebugPrint(DBGGeneric, L"GetLargeProp property reported in GetProps as large.\n");
+		MAPIFreeBuffer(lpPropArray);
+		lpPropArray = nullptr;
+		// need to get the data as a stream
+		LPSTREAM lpStream = nullptr;
+
+		WC_MAPI(lpMAPIProp->OpenProperty(
+			ulPropTag,
+			&IID_IStream,
+			STGM_READ,
+			0,
+			reinterpret_cast<LPUNKNOWN*>(&lpStream)));
+		if (SUCCEEDED(hRes) && lpStream)
+		{
+			STATSTG StatInfo = { nullptr };
+			lpStream->Stat(&StatInfo, STATFLAG_NONAME); // find out how much space we need
+
+			// We're not going to try to support MASSIVE properties.
+			if (!StatInfo.cbSize.HighPart)
+			{
+				EC_H(MAPIAllocateBuffer(
+					sizeof(SPropValue),
+					reinterpret_cast<LPVOID*>(&lpPropArray)));
+				if (lpPropArray)
+				{
+					memset(lpPropArray, 0, sizeof(SPropValue));
+					lpPropArray->ulPropTag = ulPropTag;
+
+					if (StatInfo.cbSize.LowPart)
+					{
+						LPBYTE lpBuffer = nullptr;
+						const auto ulBufferSize = StatInfo.cbSize.LowPart;
+						ULONG ulTrailingNullSize = 0;
+						switch (PROP_TYPE(ulPropTag))
+						{
+						case PT_STRING8: ulTrailingNullSize = sizeof(char); break;
+						case PT_UNICODE: ulTrailingNullSize = sizeof(WCHAR); break;
+						case PT_BINARY: break;
+						default: break;
+						}
+
+						EC_H(MAPIAllocateMore(
+							ulBufferSize + ulTrailingNullSize,
+							lpPropArray,
+							reinterpret_cast<LPVOID*>(&lpBuffer)));
+						if (lpBuffer)
+						{
+							memset(lpBuffer, 0, ulBufferSize + ulTrailingNullSize);
+							ULONG ulSizeRead = 0;
+							EC_MAPI(lpStream->Read(lpBuffer, ulBufferSize, &ulSizeRead));
+							if (SUCCEEDED(hRes) && ulSizeRead == ulBufferSize)
+							{
+								switch (PROP_TYPE(ulPropTag))
+								{
+								case PT_STRING8:
+									lpPropArray->Value.lpszA = reinterpret_cast<LPSTR>(lpBuffer);
+									break;
+								case PT_UNICODE:
+									lpPropArray->Value.lpszW = reinterpret_cast<LPWSTR>(lpBuffer);
+									break;
+								case PT_BINARY:
+									lpPropArray->Value.bin.cb = ulBufferSize;
+									lpPropArray->Value.bin.lpb = lpBuffer;
+									break;
+								default: break;
+								}
+
+								bSuccess = true;
+							}
+						}
+					}
+					else bSuccess = true; // if LowPart was NULL, we return the empty buffer
+				}
+			}
+		}
+		if (lpStream) lpStream->Release();
+	}
+	else if (lpPropArray && cValues == 1 && lpPropArray->ulPropTag == ulPropTag)
+	{
+		DebugPrint(DBGGeneric, L"GetLargeProp GetProps found property.\n");
+		bSuccess = true;
+	}
+	else if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag))
+	{
+		DebugPrint(DBGGeneric, L"GetLargeProp GetProps reported property as error 0x%08X.\n", lpPropArray->Value.err);
+	}
+
+	if (bSuccess)
+	{
+		*lppProp = lpPropArray;
+	}
+	else
+	{
+		MAPIFreeBuffer(lpPropArray);
+		if (SUCCEEDED(hRes)) hRes = MAPI_E_CALL_FAILED;
+	}
+
+	return hRes;
+}
+
+// Returns LPSPropValue with value of a binary property
+// Free with MAPIFreeBuffer
+_Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
+{
+	return GetLargeProp(lpMAPIProp, CHANGE_PROP_TYPE(ulPropTag, PT_BINARY), lppProp);
+}
+
+// Returns LPSPropValue with value of a string property
+// Free with MAPIFreeBuffer
+_Check_return_ HRESULT GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
+{
+	return GetLargeProp(lpMAPIProp, CHANGE_PROP_TYPE(ulPropTag, PT_TSTRING), lppProp);
 }

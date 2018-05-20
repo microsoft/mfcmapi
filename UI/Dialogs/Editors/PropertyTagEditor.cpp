@@ -1,6 +1,6 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "PropertyTagEditor.h"
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <Interpret/String.h>
 #include <MAPI/NamedPropCache.h>
 #include <Interpret/Guids.h>
