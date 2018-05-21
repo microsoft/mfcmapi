@@ -376,7 +376,7 @@ namespace editor
 		CResSubResEditor(
 			_In_ CWnd* pParentWnd,
 			ULONG ulSubObject,
-			_In_ LPSRestriction lpRes,
+			_In_ const _SRestriction* lpRes,
 			_In_ LPVOID lpAllocParent);
 
 		void OnEditAction1() override;
@@ -386,14 +386,14 @@ namespace editor
 		_Check_return_ ULONG HandleChange(UINT nID) override;
 
 		LPVOID m_lpAllocParent;
-		LPSRestriction m_lpOldRes;
+		const _SRestriction* m_lpOldRes;
 		LPSRestriction m_lpNewRes;
 	};
 
 	CResSubResEditor::CResSubResEditor(
 		_In_ CWnd* pParentWnd,
 		ULONG ulSubObject,
-		_In_ LPSRestriction lpRes,
+		_In_ const _SRestriction* lpRes,
 		_In_ LPVOID lpAllocParent) :
 		CEditor(pParentWnd, IDS_SUBRESED, IDS_RESEDSUBPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL, IDS_ACTIONEDITRES, NULL, NULL)
 	{
@@ -936,10 +936,9 @@ namespace editor
 		return bRet;
 	}
 
-	_Check_return_ LPSRestriction CRestrictEditor::GetSourceRes() const
+	_Check_return_ const _SRestriction* CRestrictEditor::GetSourceRes() const
 	{
-		// TODO: full const pass on this editor...
-		if (m_lpRes && !m_bModified) return const_cast<LPSRestriction>(m_lpRes);
+		if (m_lpRes && !m_bModified) return m_lpRes;
 		return m_lpOutputRes;
 	}
 

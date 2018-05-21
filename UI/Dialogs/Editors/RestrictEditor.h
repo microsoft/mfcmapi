@@ -29,7 +29,7 @@ namespace editor
 		_Check_return_ ULONG HandleChange(UINT nID) override;
 		void OnOK() override;
 
-		_Check_return_ LPSRestriction GetSourceRes() const;
+		_Check_return_ const _SRestriction* GetSourceRes() const;
 
 		// source variables
 		const _SRestriction* m_lpRes;
