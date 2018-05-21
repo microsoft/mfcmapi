@@ -60,7 +60,7 @@ namespace editor
 		void OnEditAction1() override;
 		BOOL OnInitDialog() override;
 		_Check_return_ ULONG HandleChange(UINT nID) override;
-		void InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lpEntryList) const;
+		void InitListFromEntryList(ULONG ulListNum, _In_ const SBinaryArray* lpEntryList) const;
 		void OnOK() override;
 
 		_Check_return_ const _SRestriction* GetSourceRes() const;

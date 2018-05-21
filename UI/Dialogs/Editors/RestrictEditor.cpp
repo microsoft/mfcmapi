@@ -558,8 +558,7 @@ namespace editor
 		if (!lpData || !lpData->Res()) return false;
 		auto hRes = S_OK;
 
-		auto lpSourceRes = lpData->Res()->m_lpNewRes;
-		if (!lpSourceRes) lpSourceRes = lpData->Res()->m_lpOldRes;
+		const auto lpSourceRes = lpData->Res()->m_lpNewRes ? lpData->Res()->m_lpNewRes : lpData->Res()->m_lpOldRes;
 
 		CRestrictEditor MyResEditor(
 			this,
@@ -1367,7 +1366,7 @@ namespace editor
 		return m_ulNewSearchFlags;
 	}
 
-	void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lpEntryList) const
+	void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ const SBinaryArray* lpEntryList) const
 	{
 		ClearList(ulListNum);
 
