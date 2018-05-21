@@ -74,7 +74,7 @@ void WINAPI MyHeapSetInformation(_In_opt_ HANDLE HeapHandle,
 	_In_ SIZE_T HeapInformationLength);
 
 _Check_return_ STDAPI_(SCODE) MyPropCopyMore(_In_ LPSPropValue lpSPropValueDest,
-	_In_ LPSPropValue lpSPropValueSrc,
+	_In_ const _SPropValue* lpSPropValueSrc,
 	_In_ ALLOCATEMORE * lpfAllocMore,
 	_In_ LPVOID lpvObject);
 

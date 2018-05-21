@@ -24,7 +24,7 @@ SortListData::~SortListData()
 
 void SortListData::Clean()
 {
-	if (m_lpData) delete m_lpData;
+	delete m_lpData;
 	m_lpData = nullptr;
 
 	MAPIFreeBuffer(lpSourceProps);
@@ -156,20 +156,20 @@ void SortListData::InitializeMV(_In_ const _SPropValue* lpProp, ULONG iProp)
 	m_lpData = new MVPropData(lpProp, iProp);
 }
 
-void SortListData::InitializeMV(_In_opt_ LPSPropValue lpProp)
+void SortListData::InitializeMV(_In_opt_ const _SPropValue* lpProp)
 {
 	Clean();
 	m_lpData = new MVPropData(lpProp);
 }
 
-void SortListData::InitializeRes(_In_ LPSRestriction lpOldRes)
+void SortListData::InitializeRes(_In_ const _SRestriction* lpOldRes)
 {
 	Clean();
 	bItemFullyLoaded = true;
 	m_lpData = new ResData(lpOldRes);
 }
 
-void SortListData::InitializeComment(_In_ LPSPropValue lpOldProp)
+void SortListData::InitializeComment(_In_ const _SPropValue* lpOldProp)
 {
 	Clean();
 	bItemFullyLoaded = true;

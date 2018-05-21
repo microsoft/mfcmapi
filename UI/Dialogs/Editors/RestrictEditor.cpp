@@ -639,7 +639,7 @@ namespace editor
 	private:
 		void OnEditAction1() override;
 		BOOL OnInitDialog() override;
-		void InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps) const;
+		void InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) const _SPropValue* lpProps) const;
 		_Check_return_ const _SRestriction* GetSourceRes() const;
 		void OnOK() override;
 
@@ -706,7 +706,7 @@ namespace editor
 		return m_ulNewCommentProp;
 	}
 
-	void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps) const
+	void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) const _SPropValue* lpProps) const
 	{
 		ClearList(ulListNum);
 
@@ -759,8 +759,7 @@ namespace editor
 		if (!m_lpAllocParent) return false;
 		auto hRes = S_OK;
 
-		auto lpSourceProp = lpData->Comment()->m_lpNewProp;
-		if (!lpSourceProp) lpSourceProp = lpData->Comment()->m_lpOldProp;
+		auto lpSourceProp = lpData->Comment()->m_lpNewProp ? lpData->Comment()->m_lpNewProp : lpData->Comment()->m_lpOldProp;
 
 		SPropValue sProp = { 0 };
 

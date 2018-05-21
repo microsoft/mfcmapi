@@ -56,7 +56,7 @@ MVPropData::MVPropData(_In_opt_ const _SPropValue* lpProp, ULONG iProp)
 	}
 }
 
-MVPropData::MVPropData(_In_opt_ LPSPropValue lpProp)
+MVPropData::MVPropData(_In_opt_ const _SPropValue* lpProp)
 {
 	m_val = { 0 };
 	if (!lpProp) return;

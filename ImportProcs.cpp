@@ -251,7 +251,7 @@ void GetMapiMsiIds(_In_ const std::wstring& szClient, _In_ std::wstring& lpszCom
 {
 	DebugPrint(DBGLoadLibrary, L"GetMapiMsiIds(%ws)\n", szClient.c_str());
 
-	auto hKey = GetMailKey(szClient);
+	const auto hKey = GetMailKey(szClient);
 	if (hKey)
 	{
 		lpszComponentID = ReadStringFromRegistry(hKey, L"MSIComponentID"); // STRING_OK
@@ -391,7 +391,7 @@ _Check_return_ STDAPI HrCopyActions(
 	if (!lpActsSrc || !lppActsDst) return MAPI_E_INVALID_PARAMETER;
 	if (lpActsSrc->cActions <= 0 || lpActsSrc->lpAction == nullptr) return MAPI_E_INVALID_PARAMETER;
 
-	auto fNullObject = lpObject == nullptr;
+	const auto fNullObject = lpObject == nullptr;
 	auto hRes = S_OK;
 
 	*lppActsDst = nullptr;
@@ -712,7 +712,7 @@ _Check_return_ STDAPI HrCopyRestriction(
 	*lppResDest = nullptr;
 	if (!lpResSrc) return S_OK;
 
-	auto fNullObject = lpObject == nullptr;
+	const auto fNullObject = lpObject == nullptr;
 	auto hRes = S_OK;
 
 	if (lpObject != nullptr)
@@ -749,7 +749,7 @@ _Check_return_ STDAPI HrCopyRestriction(
 // the calls to HrCopyRestriction and HrCopyActions. Rewriting those functions to accept function pointers is
 // expensive for no benefit here. So if you borrow this code, be careful if you plan on using other allocators.
 _Check_return_ STDAPI_(SCODE) MyPropCopyMore(_In_ LPSPropValue lpSPropValueDest,
-	_In_ LPSPropValue lpSPropValueSrc,
+	_In_ const _SPropValue* lpSPropValueSrc,
 	_In_ ALLOCATEMORE * lpfAllocMore,
 	_In_ LPVOID lpvObject)
 {
@@ -761,7 +761,7 @@ _Check_return_ STDAPI_(SCODE) MyPropCopyMore(_In_ LPSPropValue lpSPropValueDest,
 	{
 		// It's an action or restriction - we know how to copy those:
 		memcpy(reinterpret_cast<BYTE *>(lpSPropValueDest),
-			reinterpret_cast<BYTE *>(lpSPropValueSrc),
+			reinterpret_cast<BYTE *>(const_cast<LPSPropValue>(lpSPropValueSrc)),
 			sizeof(SPropValue));
 		if (PT_SRESTRICTION == PROP_TYPE(lpSPropValueSrc->ulPropTag))
 		{
@@ -784,7 +784,7 @@ _Check_return_ STDAPI_(SCODE) MyPropCopyMore(_In_ LPSPropValue lpSPropValueDest,
 		break;
 	}
 	default:
-		WC_MAPI(PropCopyMore(lpSPropValueDest, lpSPropValueSrc, lpfAllocMore, lpvObject));
+		WC_MAPI(PropCopyMore(lpSPropValueDest, const_cast<LPSPropValue>(lpSPropValueSrc), lpfAllocMore, lpvObject));
 	}
 	return hRes;
 }
