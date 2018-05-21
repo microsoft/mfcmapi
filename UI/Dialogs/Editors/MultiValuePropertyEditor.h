@@ -14,7 +14,7 @@ namespace editor
 			_In_opt_ LPVOID lpAllocParent,
 			_In_opt_ LPMAPIPROP lpMAPIProp,
 			ULONG ulPropTag,
-			_In_opt_ LPSPropValue lpsPropValue);
+			_In_opt_ const _SPropValue* lpsPropValue);
 		virtual ~CMultiValuePropertyEditor();
 
 		// Get values after we've done the DisplayDialog
@@ -37,7 +37,7 @@ namespace editor
 		LPMAPIPROP m_lpMAPIProp;
 		ULONG m_ulPropTag;
 		bool m_bIsAB; // whether the tag is from the AB or not
-		LPSPropValue m_lpsInputValue;
+		const _SPropValue* m_lpsInputValue;
 		LPSPropValue m_lpsOutputValue;
 
 		// all calls to MAPIAllocateMore will use m_lpAllocParent

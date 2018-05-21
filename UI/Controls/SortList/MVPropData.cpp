@@ -1,7 +1,7 @@
-﻿#include "stdafx.h"
-#include "MVPropData.h"
+﻿#include "StdAfx.h"
+#include <UI/Controls/SortList/MVPropData.h>
 
-MVPropData::MVPropData(_In_opt_ LPSPropValue lpProp, ULONG iProp)
+MVPropData::MVPropData(_In_opt_ const _SPropValue* lpProp, ULONG iProp)
 {
 	m_val = { 0 };
 	if (!lpProp) return;

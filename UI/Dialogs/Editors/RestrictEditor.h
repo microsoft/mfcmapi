@@ -16,15 +16,15 @@ namespace editor
 
 	private:
 		void OnEditAction1() override;
-		HRESULT EditCompare(LPSRestriction lpSourceRes);
-		HRESULT EditAndOr(LPSRestriction lpSourceRes);
-		HRESULT EditRestrict(LPSRestriction lpSourceRes);
-		HRESULT EditCombined(LPSRestriction lpSourceRes);
-		HRESULT EditBitmask(LPSRestriction lpSourceRes);
-		HRESULT EditSize(LPSRestriction lpSourceRes);
-		HRESULT EditExist(LPSRestriction lpSourceRes);
-		HRESULT EditSubrestriction(LPSRestriction lpSourceRes);
-		HRESULT EditComment(LPSRestriction lpSourceRes);
+		HRESULT EditCompare(const _SRestriction* lpSourceRes);
+		HRESULT EditAndOr(const _SRestriction* lpSourceRes);
+		HRESULT EditRestrict(const _SRestriction* lpSourceRes);
+		HRESULT EditCombined(const _SRestriction* lpSourceRes);
+		HRESULT EditBitmask(const _SRestriction* lpSourceRes);
+		HRESULT EditSize(const _SRestriction* lpSourceRes);
+		HRESULT EditExist(const _SRestriction* lpSourceRes);
+		HRESULT EditSubrestriction(const _SRestriction* lpSourceRes);
+		HRESULT EditComment(const _SRestriction* lpSourceRes);
 		BOOL OnInitDialog() override;
 		_Check_return_ ULONG HandleChange(UINT nID) override;
 		void OnOK() override;

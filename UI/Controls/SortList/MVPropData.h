@@ -5,7 +5,7 @@
 class MVPropData :public IData
 {
 public:
-	MVPropData(_In_opt_ LPSPropValue lpProp, ULONG iProp);
+	MVPropData(_In_opt_ const _SPropValue* lpProp, ULONG iProp);
 	MVPropData(_In_opt_ LPSPropValue lpNewValue);
 	_PV m_val;
 private:

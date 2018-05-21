@@ -12,7 +12,7 @@ namespace editor
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		bool bMVRow,
-		_In_opt_ LPSPropValue lpsPropValue,
+		_In_opt_ const _SPropValue* lpsPropValue,
 		_Inout_opt_ LPSPropValue* lpNewValue);
 
 	class CPropertyEditor : public CEditor
@@ -27,7 +27,7 @@ namespace editor
 			_In_opt_ LPVOID lpAllocParent,
 			_In_opt_ LPMAPIPROP lpMAPIProp,
 			ULONG ulPropTag,
-			_In_opt_ LPSPropValue lpsPropValue);
+			_In_opt_ const _SPropValue* lpsPropValue);
 		virtual ~CPropertyEditor();
 
 		// Get values after we've done the DisplayDialog
@@ -45,7 +45,7 @@ namespace editor
 		LPMAPIPROP m_lpMAPIProp;
 		ULONG m_ulPropTag;
 		bool m_bIsAB; // whether the tag is from the AB or not
-		LPSPropValue m_lpsInputValue;
+		const _SPropValue* m_lpsInputValue;
 		LPSPropValue m_lpsOutputValue;
 		bool m_bDirty;
 		bool m_bMVRow; // whether this row came from a multivalued property. Used for smart view parsing.

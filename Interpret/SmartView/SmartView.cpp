@@ -7,35 +7,35 @@
 #include <Interpret/Guids.h>
 #include <MAPI/NamedPropCache.h>
 
-#include "SmartViewParser.h"
-#include "PCL.h"
-#include "TombStone.h"
-#include "VerbStream.h"
-#include "NickNameCache.h"
-#include "FolderUserFieldStream.h"
-#include "RecipientRowStream.h"
-#include "WebViewPersistStream.h"
-#include "FlatEntryList.h"
-#include "AdditionalRenEntryIDs.h"
-#include "PropertyDefinitionStream.h"
-#include "SearchFolderDefinition.h"
-#include "EntryList.h"
-#include "RuleCondition.h"
-#include "RestrictionStruct.h"
-#include "PropertyStruct.h"
-#include "EntryIdStruct.h"
-#include "GlobalObjectId.h"
-#include "TaskAssigners.h"
-#include "ConversationIndex.h"
-#include "ReportTag.h"
-#include "TimeZoneDefinition.h"
-#include "TimeZone.h"
-#include "ExtendedFlags.h"
-#include "AppointmentRecurrencePattern.h"
-#include "RecurrencePattern.h"
-#include "SIDBin.h"
-#include "SDBin.h"
-#include "XID.h"
+#include <Interpret/SmartView/SmartViewParser.h>
+#include <Interpret/SmartView/PCL.h>
+#include <Interpret/SmartView/TombStone.h>
+#include <Interpret/SmartView/VerbStream.h>
+#include <Interpret/SmartView/NickNameCache.h>
+#include <Interpret/SmartView/FolderUserFieldStream.h>
+#include <Interpret/SmartView/RecipientRowStream.h>
+#include <Interpret/SmartView/WebViewPersistStream.h>
+#include <Interpret/SmartView/FlatEntryList.h>
+#include <Interpret/SmartView/AdditionalRenEntryIDs.h>
+#include <Interpret/SmartView/PropertyDefinitionStream.h>
+#include <Interpret/SmartView/SearchFolderDefinition.h>
+#include <Interpret/SmartView/EntryList.h>
+#include <Interpret/SmartView/RuleCondition.h>
+#include <Interpret/SmartView/RestrictionStruct.h>
+#include <Interpret/SmartView/PropertyStruct.h>
+#include <Interpret/SmartView/EntryIdStruct.h>
+#include <Interpret/SmartView/GlobalObjectId.h>
+#include <Interpret/SmartView/TaskAssigners.h>
+#include <Interpret/SmartView/ConversationIndex.h>
+#include <Interpret/SmartView/ReportTag.h>
+#include <Interpret/SmartView/TimeZoneDefinition.h>
+#include <Interpret/SmartView/TimeZone.h>
+#include <Interpret/SmartView/ExtendedFlags.h>
+#include <Interpret/SmartView/AppointmentRecurrencePattern.h>
+#include <Interpret/SmartView/RecurrencePattern.h>
+#include <Interpret/SmartView/SIDBin.h>
+#include <Interpret/SmartView/SDBin.h>
+#include <Interpret/SmartView/XID.h>
 
 namespace smartview
 {
@@ -198,7 +198,7 @@ namespace smartview
 		return FindSmartViewParserForProp(ulLookupPropTag, ulPropNameID, lpguidNamedProp);
 	}
 
-	std::pair<__ParsingTypeEnum, std::wstring> InterpretPropSmartView2(_In_opt_ LPSPropValue lpProp, // required property value
+	std::pair<__ParsingTypeEnum, std::wstring> InterpretPropSmartView2(_In_opt_ const _SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups

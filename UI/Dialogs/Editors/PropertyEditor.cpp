@@ -18,12 +18,12 @@ namespace editor
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		bool bMVRow,
-		_In_opt_ LPSPropValue lpsPropValue,
+		_In_opt_ const _SPropValue* lpsPropValue,
 		_Inout_opt_ LPSPropValue* lpNewValue)
 	{
 		auto hRes = S_OK;
-		auto bShouldFreeInputValue = false;
 
+		_SPropValue* sourceProp = nullptr;
 		// We got a MAPI prop object and no input value, go look one up
 		if (lpMAPIProp && !lpsPropValue)
 		{
@@ -32,17 +32,17 @@ namespace editor
 			sTag.aulPropTag[0] = PT_ERROR == PROP_TYPE(ulPropTag) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
 			ULONG ulValues = NULL;
 
-			WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &lpsPropValue));
+			WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
 
 			// Suppress MAPI_E_NOT_FOUND error when the source type is non error
-			if (lpsPropValue &&
-				PT_ERROR == PROP_TYPE(lpsPropValue->ulPropTag) &&
-				MAPI_E_NOT_FOUND == lpsPropValue->Value.err &&
+			if (sourceProp &&
+				PT_ERROR == PROP_TYPE(sourceProp->ulPropTag) &&
+				MAPI_E_NOT_FOUND == sourceProp->Value.err &&
 				PT_ERROR != PROP_TYPE(ulPropTag)
 				)
 			{
-				MAPIFreeBuffer(lpsPropValue);
-				lpsPropValue = nullptr;
+				MAPIFreeBuffer(sourceProp);
+				sourceProp = nullptr;
 			}
 
 			if (MAPI_E_CALL_FAILED == hRes)
@@ -54,10 +54,12 @@ namespace editor
 			// In all cases where we got a value back, we need to reset our property tag to the value we got
 			// This will address when the source is PT_UNSPECIFIED, when the returned value is PT_ERROR,
 			// or any other case where the returned value has a different type than requested
-			if (SUCCEEDED(hRes) && lpsPropValue)
-				ulPropTag = lpsPropValue->ulPropTag;
+			if (SUCCEEDED(hRes) && sourceProp)
+			{
+				ulPropTag = sourceProp->ulPropTag;
+			}
 
-			bShouldFreeInputValue = true;
+			lpsPropValue = sourceProp;
 		}
 		else if (lpsPropValue && !ulPropTag)
 		{
@@ -98,8 +100,7 @@ namespace editor
 			if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
 		}
 
-		if (bShouldFreeInputValue)
-			MAPIFreeBuffer(lpsPropValue);
+		MAPIFreeBuffer(sourceProp);
 
 		return hRes;
 	}
@@ -116,7 +117,7 @@ namespace editor
 		_In_opt_ LPVOID lpAllocParent,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
-		_In_opt_ LPSPropValue lpsPropValue) :
+		_In_opt_ const _SPropValue* lpsPropValue) :
 		CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 	{
 		TRACE_CONSTRUCTOR(SVCLASS);

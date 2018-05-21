@@ -24,7 +24,7 @@ public:
 		ULONG ulContainerFlags);
 	void InitializeNode(_In_ LPSRow lpsRow);
 	void InitializePropList(_In_ ULONG ulPropTag);
-	void InitializeMV(_In_ LPSPropValue lpProp, ULONG iProp);
+	void InitializeMV(_In_ const _SPropValue* lpProp, ULONG iProp);
 	void InitializeMV(_In_opt_ LPSPropValue lpProp);
 	void InitializeRes(_In_ LPSRestriction lpOldRes);
 	void InitializeComment(_In_ LPSPropValue lpOldProp);

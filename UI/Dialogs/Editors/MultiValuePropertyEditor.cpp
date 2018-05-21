@@ -19,7 +19,7 @@ namespace editor
 		_In_opt_ LPVOID lpAllocParent,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
-		_In_opt_ LPSPropValue lpsPropValue) :
+		_In_opt_ const _SPropValue* lpsPropValue) :
 		CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 	{
 		TRACE_CONSTRUCTOR(MVCLASS);

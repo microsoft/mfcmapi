@@ -78,7 +78,7 @@ namespace editor
 			ULONG ulResType,
 			ULONG ulCompare,
 			ULONG ulPropTag,
-			_In_ LPSPropValue lpProp,
+			_In_ const _SPropValue* lpProp,
 			_In_ LPVOID lpAllocParent);
 
 		void OnEditAction1() override;
@@ -89,7 +89,7 @@ namespace editor
 
 		ULONG m_ulResType;
 		LPVOID m_lpAllocParent;
-		LPSPropValue m_lpOldProp;
+		const _SPropValue* m_lpOldProp;
 		LPSPropValue m_lpNewProp;
 	};
 
@@ -98,7 +98,7 @@ namespace editor
 		ULONG ulResType,
 		ULONG ulCompare,
 		ULONG ulPropTag,
-		_In_ LPSPropValue lpProp,
+		_In_ const _SPropValue* lpProp,
 		_In_ LPVOID lpAllocParent) :
 		CEditor(pParentWnd,
 			IDS_RESED,
@@ -456,7 +456,7 @@ namespace editor
 	public:
 		CResAndOrEditor(
 			_In_ CWnd* pParentWnd,
-			_In_ LPSRestriction lpRes,
+			_In_ const _SRestriction* lpRes,
 			_In_ LPVOID lpAllocParent);
 
 		_Check_return_ LPSRestriction DetachModifiedSRestrictionArray();
@@ -465,18 +465,18 @@ namespace editor
 
 	private:
 		BOOL OnInitDialog() override;
-		void InitListFromRestriction(ULONG ulListNum, _In_ LPSRestriction lpRes) const;
+		void InitListFromRestriction(ULONG ulListNum, _In_ const _SRestriction* lpRes) const;
 		void OnOK() override;
 
 		LPVOID m_lpAllocParent;
-		LPSRestriction m_lpRes;
+		const _SRestriction* m_lpRes;
 		LPSRestriction m_lpNewResArray;
 		ULONG m_ulNewResCount;
 	};
 
 	CResAndOrEditor::CResAndOrEditor(
 		_In_ CWnd* pParentWnd,
-		_In_ LPSRestriction lpRes,
+		_In_ const _SRestriction* lpRes,
 		_In_ LPVOID lpAllocParent) :
 		CEditor(pParentWnd, IDS_RESED, IDS_RESEDANDORPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 	{
@@ -513,7 +513,7 @@ namespace editor
 		return m_ulNewResCount;
 	}
 
-	void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestriction lpRes) const
+	void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ const _SRestriction* lpRes) const
 	{
 		if (!lpRes) return;
 
@@ -628,7 +628,7 @@ namespace editor
 	public:
 		CResCommentEditor(
 			_In_ CWnd* pParentWnd,
-			_In_ LPSRestriction lpRes,
+			_In_ const _SRestriction* lpRes,
 			_In_ LPVOID lpAllocParent);
 
 		_Check_return_ LPSRestriction DetachModifiedSRestriction();
@@ -640,11 +640,11 @@ namespace editor
 		void OnEditAction1() override;
 		BOOL OnInitDialog() override;
 		void InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps) const;
-		_Check_return_ LPSRestriction GetSourceRes() const;
+		_Check_return_ const _SRestriction* GetSourceRes() const;
 		void OnOK() override;
 
 		LPVOID m_lpAllocParent;
-		LPSRestriction m_lpSourceRes;
+		const _SRestriction* m_lpSourceRes;
 
 		LPSRestriction m_lpNewCommentRes;
 		LPSPropValue m_lpNewCommentProp;
@@ -653,7 +653,7 @@ namespace editor
 
 	CResCommentEditor::CResCommentEditor(
 		_In_ CWnd* pParentWnd,
-		_In_ LPSRestriction lpRes,
+		_In_ const _SRestriction* lpRes,
 		_In_ LPVOID lpAllocParent) :
 		CEditor(pParentWnd, IDS_COMMENTRESED, IDS_RESEDCOMMENTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL, IDS_ACTIONEDITRES, NULL, NULL)
 	{
@@ -680,7 +680,7 @@ namespace editor
 		return bRet;
 	}
 
-	_Check_return_ LPSRestriction CResCommentEditor::GetSourceRes() const
+	_Check_return_ const _SRestriction* CResCommentEditor::GetSourceRes() const
 	{
 		if (m_lpNewCommentRes) return m_lpNewCommentRes;
 		if (m_lpSourceRes && m_lpSourceRes->res.resComment.lpRes) return m_lpSourceRes->res.resComment.lpRes;
@@ -1064,7 +1064,7 @@ namespace editor
 		}
 	}
 
-	HRESULT CRestrictEditor::EditCompare(LPSRestriction lpSourceRes)
+	HRESULT CRestrictEditor::EditCompare(const _SRestriction* lpSourceRes)
 	{
 		auto hRes = S_OK;
 		CResCompareEditor MyEditor(
@@ -1084,7 +1084,7 @@ namespace editor
 		return hRes;
 	}
 
-	HRESULT CRestrictEditor::EditAndOr(LPSRestriction lpSourceRes)
+	HRESULT CRestrictEditor::EditAndOr(const _SRestriction* lpSourceRes)
 	{
 		auto hRes = S_OK;
 		CResAndOrEditor MyResEditor(
@@ -1110,7 +1110,7 @@ namespace editor
 		return hRes;
 	}
 
-	HRESULT CRestrictEditor::EditRestrict(LPSRestriction lpSourceRes)
+	HRESULT CRestrictEditor::EditRestrict(const _SRestriction* lpSourceRes)
 	{
 		auto hRes = S_OK;
 		CRestrictEditor MyResEditor(
@@ -1129,7 +1129,7 @@ namespace editor
 		return hRes;
 	}
 
-	HRESULT CRestrictEditor::EditCombined(LPSRestriction lpSourceRes)
+	HRESULT CRestrictEditor::EditCombined(const _SRestriction* lpSourceRes)
 	{
 		auto hRes = S_OK;
 		CResCombinedEditor MyEditor(
@@ -1168,7 +1168,7 @@ namespace editor
 		return hRes;
 	}
 
-	HRESULT CRestrictEditor::EditBitmask(LPSRestriction lpSourceRes)
+	HRESULT CRestrictEditor::EditBitmask(const _SRestriction* lpSourceRes)
 	{
 		auto hRes = S_OK;
 		CResBitmaskEditor MyEditor(
@@ -1188,7 +1188,7 @@ namespace editor
 		return hRes;
 	}
 
-	HRESULT CRestrictEditor::EditSize(LPSRestriction lpSourceRes)
+	HRESULT CRestrictEditor::EditSize(const _SRestriction* lpSourceRes)
 	{
 		auto hRes = S_OK;
 		CResSizeEditor MyEditor(
@@ -1208,7 +1208,7 @@ namespace editor
 		return hRes;
 	}
 
-	HRESULT CRestrictEditor::EditExist(LPSRestriction lpSourceRes)
+	HRESULT CRestrictEditor::EditExist(const _SRestriction* lpSourceRes)
 	{
 		auto hRes = S_OK;
 		CResExistEditor MyEditor(
@@ -1226,7 +1226,7 @@ namespace editor
 		return hRes;
 	}
 
-	HRESULT CRestrictEditor::EditSubrestriction(LPSRestriction lpSourceRes)
+	HRESULT CRestrictEditor::EditSubrestriction(const _SRestriction* lpSourceRes)
 	{
 		auto hRes = S_OK;
 		CResSubResEditor MyEditor(
@@ -1247,7 +1247,7 @@ namespace editor
 		return hRes;
 	}
 
-	HRESULT CRestrictEditor::EditComment(LPSRestriction lpSourceRes)
+	HRESULT CRestrictEditor::EditComment(const _SRestriction* lpSourceRes)
 	{
 		auto hRes = S_OK;
 		CResCommentEditor MyResEditor(

@@ -1,12 +1,12 @@
-#include "stdafx.h"
-#include "SortListData.h"
-#include "ContentsData.h"
-#include "NodeData.h"
-#include "PropListData.h"
-#include "MVPropData.h"
-#include "ResData.h"
-#include "CommentData.h"
-#include "BinaryData.h"
+#include "StdAfx.h"
+#include <UI/Controls/SortList/SortListData.h>
+#include <UI/Controls/SortList/ContentsData.h>
+#include <UI/Controls/SortList/NodeData.h>
+#include <UI/Controls/SortList/PropListData.h>
+#include <UI/Controls/SortList/MVPropData.h>
+#include <UI/Controls/SortList/ResData.h>
+#include <UI/Controls/SortList/CommentData.h>
+#include <UI/Controls/SortList/BinaryData.h>
 
 SortListData::SortListData() :
 	cSourceProps(0),
@@ -124,12 +124,12 @@ void SortListData::InitializeNode(_In_ LPSRow lpsRow)
 		PR_INSTANCE_KEY);
 	if (lpInstance) lpInstanceBin = &lpInstance->Value.bin;
 
-	auto lpSubfolders = PpropFindProp(
+	const auto lpSubfolders = PpropFindProp(
 		lpsRow->lpProps,
 		lpsRow->cValues,
 		PR_SUBFOLDERS);
 
-	auto lpContainerFlags = PpropFindProp(
+	const auto lpContainerFlags = PpropFindProp(
 		lpsRow->lpProps,
 		lpsRow->cValues,
 		PR_CONTAINER_FLAGS);
@@ -150,7 +150,7 @@ void SortListData::InitializePropList(_In_ ULONG ulPropTag)
 	m_lpData = new PropListData(ulPropTag);
 }
 
-void SortListData::InitializeMV(_In_ LPSPropValue lpProp, ULONG iProp)
+void SortListData::InitializeMV(_In_ const _SPropValue* lpProp, ULONG iProp)
 {
 	Clean();
 	m_lpData = new MVPropData(lpProp, iProp);
