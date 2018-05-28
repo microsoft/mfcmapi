@@ -97,7 +97,7 @@ namespace dialog
 		{
 			m_lpFakeSplitter->SetPaneOne(m_lpContentsTableListCtrl);
 			m_lpFakeSplitter->SetPercent(static_cast<FLOAT>(0.40));
-			m_lpFakeSplitter->SetSplitType(SplitVertical);
+			m_lpFakeSplitter->SetSplitType(controls::SplitVertical);
 		}
 
 		if (m_lpContainer)

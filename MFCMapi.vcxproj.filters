@@ -92,6 +92,9 @@
     </ClInclude>
     <ClInclude Include="IO\ExportProfile.h" />
     <ClInclude Include="IO\Registry.h" />
+    <ClInclude Include="UI\FakeSplitter.h">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -112,6 +115,9 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClCompile Include="UI\FakeSplitter.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IO\Error.cpp">
@@ -504,12 +510,6 @@
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClInclude Include="UI\DoubleBuffer.h">
-      <Filter>Source Files\UI</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\FakeSplitter.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\FakeSplitter.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
     <ClCompile Include="UI\FileDialogEx.cpp">

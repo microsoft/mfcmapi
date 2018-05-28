@@ -1,10 +1,10 @@
 #pragma once
 class CMapiObjects;
-class CFakeSplitter;
 class CParentWnd;
 class CAdviseSink;
 namespace controls
 {
+	class CFakeSplitter;
 	namespace sortlistctrl
 	{
 		class CSingleMAPIPropListCtrl;
@@ -58,7 +58,7 @@ namespace dialog
 		ULONG m_ulAddInMenuItems;
 		bool m_bIsAB;
 		controls::sortlistctrl::CSingleMAPIPropListCtrl* m_lpPropDisplay;
-		CFakeSplitter* m_lpFakeSplitter;
+		controls::CFakeSplitter* m_lpFakeSplitter;
 		std::wstring m_szTitle;
 		LPMAPICONTAINER m_lpContainer;
 		CMapiObjects* m_lpMapiObjects;

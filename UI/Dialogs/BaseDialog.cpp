@@ -149,7 +149,7 @@ namespace dialog
 
 		SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
-		m_lpFakeSplitter = new CFakeSplitter(this);
+		m_lpFakeSplitter = new controls::CFakeSplitter(this);
 
 		if (m_lpFakeSplitter)
 		{
