@@ -1054,7 +1054,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 			tvi.mask = TVIF_PARAM;
 			tvi.hItem = hItem;
 			TreeView_GetItem(lvcd->nmcd.hdr.hwndFrom, &tvi);
-			const auto lpData = reinterpret_cast<SortListData*>(tvi.lParam);
+			const auto lpData = reinterpret_cast<controls::sortlistdata::SortListData*>(tvi.lParam);
 			if (lpData && lpData->Node() && lpData->Node()->m_lpAdviseSink)
 			{
 				RECT rect = { 0 };

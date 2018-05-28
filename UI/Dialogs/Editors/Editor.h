@@ -82,14 +82,14 @@ namespace dialog
 
 			// Use this function to implement list editing
 			// return true to indicate the entry was changed, false to indicate it was not
-			_Check_return_ virtual bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
+			_Check_return_ virtual bool DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData);
 
 		protected:
 			// Functions used by derived classes during init
 			void InsertColumn(ULONG ulListNum, int nCol, UINT uidText) const;
 			void InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulPropType) const;
 			void SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, const std::wstring& szListString) const;
-			_Check_return_ SortListData* InsertListRow(ULONG iControl, int iRow, const std::wstring& szText) const;
+			_Check_return_ controls::sortlistdata::SortListData* InsertListRow(ULONG iControl, int iRow, const std::wstring& szText) const;
 			void ClearList(ULONG iControl) const;
 			void ResizeList(ULONG iControl, bool bSort) const;
 
@@ -97,7 +97,7 @@ namespace dialog
 			std::vector<BYTE> GetBinary(ULONG i) const;
 			_Check_return_ std::string GetStringA(ULONG iControl) const;
 			_Check_return_ ULONG GetListCount(ULONG iControl) const;
-			_Check_return_ SortListData* GetListRowData(ULONG iControl, int iRow) const;
+			_Check_return_ controls::sortlistdata::SortListData* GetListRowData(ULONG iControl, int iRow) const;
 			_Check_return_ bool IsDirty(ULONG iControl) const;
 
 			// Called to enable/disable buttons based on number of items

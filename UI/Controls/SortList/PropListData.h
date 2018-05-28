@@ -1,9 +1,15 @@
 ﻿#pragma once
-#include "Data.h"
+#include <UI/Controls/SortList/Data.h>
 
-class PropListData :public IData
+namespace controls
 {
-public:
-	PropListData(_In_ ULONG ulPropTag);
-	ULONG m_ulPropTag;
-};
+	namespace sortlistdata
+	{
+		class PropListData :public IData
+		{
+		public:
+			PropListData(_In_ ULONG ulPropTag);
+			ULONG m_ulPropTag;
+		};
+	}
+}

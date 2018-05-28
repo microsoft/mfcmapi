@@ -1,11 +1,11 @@
 #pragma once
-#include "PropertyBag.h"
+#include <PropertyBag/PropertyBag.h>
 #include <UI/Controls/SortList/SortListData.h>
 
 class RowPropertyBag : public IMAPIPropertyBag
 {
 public:
-	RowPropertyBag(SortListData* lpListData);
+	RowPropertyBag(controls::sortlistdata::SortListData* lpListData);
 	virtual ~RowPropertyBag();
 
 	ULONG GetFlags() override;
@@ -36,7 +36,7 @@ public:
 		ULONG ulPropTag) override;
 
 private:
-	SortListData* m_lpListData;
+	controls::sortlistdata::SortListData* m_lpListData;
 
 	ULONG m_cValues;
 	LPSPropValue m_lpProps;

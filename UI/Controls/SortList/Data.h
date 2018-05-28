@@ -1,7 +1,13 @@
 ﻿#pragma once
 
-class IData
+namespace controls
 {
-public:
-	virtual ~IData() {}
-};
+	namespace sortlistdata
+	{
+		class IData
+		{
+		public:
+			virtual ~IData() {}
+		};
+	}
+}

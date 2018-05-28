@@ -230,7 +230,7 @@ namespace dialog
 
 		if (m_lpFakeSplitter)
 		{
-			m_lpHierarchyTableTreeCtrl = new CHierarchyTableTreeCtrl(
+			m_lpHierarchyTableTreeCtrl = new controls::CHierarchyTableTreeCtrl(
 				m_lpFakeSplitter,
 				m_lpMapiObjects,
 				this,

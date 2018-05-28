@@ -1,8 +1,8 @@
-#include "stdafx.h"
-#include "RowPropertyBag.h"
-#include "ImportProcs.h"
+#include <StdAfx.h>
+#include <PropertyBag/RowPropertyBag.h>
+#include <ImportProcs.h>
 
-RowPropertyBag::RowPropertyBag(SortListData* lpListData)
+RowPropertyBag::RowPropertyBag(controls::sortlistdata::SortListData* lpListData)
 {
 	m_lpListData = lpListData;
 	if (lpListData)
@@ -14,9 +14,7 @@ RowPropertyBag::RowPropertyBag(SortListData* lpListData)
 	m_bRowModified = false;
 }
 
-RowPropertyBag::~RowPropertyBag()
-{
-}
+RowPropertyBag::~RowPropertyBag() = default;
 
 ULONG RowPropertyBag::GetFlags()
 {
@@ -35,7 +33,7 @@ bool RowPropertyBag::IsEqual(LPMAPIPROPERTYBAG lpPropBag)
 	if (!lpPropBag) return false;
 	if (GetType() != lpPropBag->GetType()) return false;
 
-	auto lpOther = static_cast<RowPropertyBag*>(lpPropBag);
+	const auto lpOther = static_cast<RowPropertyBag*>(lpPropBag);
 	if (lpOther)
 	{
 		if (m_lpListData != lpOther->m_lpListData) return false;
@@ -62,7 +60,7 @@ _Check_return_ HRESULT RowPropertyBag::GetAllProps(
 	ULONG FAR* lpcValues,
 	LPSPropValue FAR* lppPropArray)
 {
-	if (!lpcValues || ! lppPropArray) return MAPI_E_INVALID_PARAMETER;
+	if (!lpcValues || !lppPropArray) return MAPI_E_INVALID_PARAMETER;
 
 	// Just return what we have
 	*lpcValues = m_cValues;
@@ -109,12 +107,12 @@ _Check_return_ HRESULT RowPropertyBag::SetProps(
 // Entries in the first array trump entries in the second
 // Will also eliminate any duplicates already existing within the arrays
 _Check_return_ HRESULT ConcatLPSPropValue(
-						   ULONG ulVal1,
-						   _In_count_(ulVal1) LPSPropValue lpVal1,
-						   ULONG ulVal2,
-						   _In_count_(ulVal2) LPSPropValue lpVal2,
-						   _Out_ ULONG* lpulRetVal,
-						   _Deref_out_opt_ LPSPropValue* lppRetVal)
+	ULONG ulVal1,
+	_In_count_(ulVal1) LPSPropValue lpVal1,
+	ULONG ulVal2,
+	_In_count_(ulVal2) LPSPropValue lpVal2,
+	_Out_ ULONG* lpulRetVal,
+	_Deref_out_opt_ LPSPropValue* lppRetVal)
 {
 	if (!lpulRetVal || !lppRetVal) return MAPI_E_INVALID_PARAMETER;
 	if (ulVal1 && !lpVal1) return MAPI_E_INVALID_PARAMETER;
@@ -134,7 +132,7 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 		// Only count props in the second array if they're not in the first
 		for (ULONG ulSourceArray = 0; ulSourceArray < ulVal2; ulSourceArray++)
 		{
-			if (!PpropFindProp(lpVal1, ulVal1, CHANGE_PROP_TYPE(lpVal2[ulSourceArray].ulPropTag,PT_UNSPECIFIED)))
+			if (!PpropFindProp(lpVal1, ulVal1, CHANGE_PROP_TYPE(lpVal2[ulSourceArray].ulPropTag, PT_UNSPECIFIED)))
 			{
 				ulNewArraySize++;
 			}
@@ -148,19 +146,19 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 	if (ulNewArraySize)
 	{
 		// Allocate the base array - MyPropCopyMore will allocmore as needed for string/bin/etc
-		EC_H(MAPIAllocateBuffer(ulNewArraySize*sizeof(SPropValue), reinterpret_cast<LPVOID*>(&lpNewArray)));
+		EC_H(MAPIAllocateBuffer(ulNewArraySize * sizeof(SPropValue), reinterpret_cast<LPVOID*>(&lpNewArray)));
 
 		if (SUCCEEDED(hRes) && lpNewArray)
 		{
 			if (ulVal1)
 			{
-				for (ULONG ulSourceArray = 0;ulSourceArray<ulVal1;ulSourceArray++)
+				for (ULONG ulSourceArray = 0; ulSourceArray < ulVal1; ulSourceArray++)
 				{
 					if (!ulTargetArray || // if it's NULL, we haven't added anything yet
 						!PpropFindProp(
-						lpNewArray,
-						ulTargetArray,
-						CHANGE_PROP_TYPE(lpVal1[ulSourceArray].ulPropTag, PT_UNSPECIFIED)))
+							lpNewArray,
+							ulTargetArray,
+							CHANGE_PROP_TYPE(lpVal1[ulSourceArray].ulPropTag, PT_UNSPECIFIED)))
 					{
 						EC_H(MyPropCopyMore(
 							&lpNewArray[ulTargetArray],
@@ -178,13 +176,13 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 
 			if (SUCCEEDED(hRes) && ulVal2)
 			{
-				for (ULONG ulSourceArray = 0;ulSourceArray<ulVal2;ulSourceArray++)
+				for (ULONG ulSourceArray = 0; ulSourceArray < ulVal2; ulSourceArray++)
 				{
 					if (!ulTargetArray || // if it's NULL, we haven't added anything yet
 						!PpropFindProp(
-						lpNewArray,
-						ulTargetArray,
-						CHANGE_PROP_TYPE(lpVal2[ulSourceArray].ulPropTag, PT_UNSPECIFIED)))
+							lpNewArray,
+							ulTargetArray,
+							CHANGE_PROP_TYPE(lpVal2[ulSourceArray].ulPropTag, PT_UNSPECIFIED)))
 					{
 						// make sure we don't overrun.
 						if (ulTargetArray >= ulNewArraySize)

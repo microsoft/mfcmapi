@@ -77,7 +77,7 @@ namespace dialog
 
 		// We're not actually editing the list here - just overriding this to allow double-click
 		// So it's OK to return false
-		_Check_return_ bool CPropertySelector::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ SortListData* /*lpData*/)
+		_Check_return_ bool CPropertySelector::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ controls::sortlistdata::SortListData* /*lpData*/)
 		{
 			OnOK();
 			return false;
@@ -88,7 +88,7 @@ namespace dialog
 			return m_ulPropTag;
 		}
 
-		_Check_return_ SortListData* CPropertySelector::GetSelectedListRowData(ULONG iControl) const
+		_Check_return_ controls::sortlistdata::SortListData* CPropertySelector::GetSelectedListRowData(ULONG iControl) const
 		{
 			const auto lpPane = static_cast<viewpane::ListPane*>(GetPane(iControl));
 			if (lpPane)

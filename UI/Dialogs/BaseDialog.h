@@ -1,12 +1,18 @@
 #pragma once
-class CSingleMAPIPropListCtrl;
 class CMapiObjects;
 class CFakeSplitter;
 class CParentWnd;
 class CAdviseSink;
+namespace controls
+{
+	namespace sortlistctrl
+	{
+		class CSingleMAPIPropListCtrl;
+	}
+}
 
 #include <UI/Dialogs/Dialog.h>
-#include <enums.h>
+#include <Enums.h>
 #include <UI/Controls/SortList/SortListData.h>
 
 namespace dialog
@@ -23,7 +29,7 @@ namespace dialog
 		STDMETHODIMP_(ULONG) AddRef();
 		STDMETHODIMP_(ULONG) Release();
 
-		void OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData) const;
+		void OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ controls::sortlistdata::SortListData* lpListData) const;
 		_Check_return_ bool HandleKeyDown(UINT nChar, bool bShift, bool bCtrl, bool bMenu);
 
 		void UpdateTitleBarText(_In_ const std::wstring& szMsg) const;
@@ -51,7 +57,7 @@ namespace dialog
 		ULONG m_ulAddInContext;
 		ULONG m_ulAddInMenuItems;
 		bool m_bIsAB;
-		CSingleMAPIPropListCtrl* m_lpPropDisplay;
+		controls::sortlistctrl::CSingleMAPIPropListCtrl* m_lpPropDisplay;
 		CFakeSplitter* m_lpFakeSplitter;
 		std::wstring m_szTitle;
 		LPMAPICONTAINER m_lpContainer;

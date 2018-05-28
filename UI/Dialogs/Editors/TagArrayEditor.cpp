@@ -68,7 +68,7 @@ namespace dialog
 			CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 		}
 
-		_Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
+		_Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData) return false;
 			if (!lpData->Prop())

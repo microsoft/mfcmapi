@@ -1,10 +1,10 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 #include "MAPIPropPropertyBag.h"
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/SortListData.h>
 
-MAPIPropPropertyBag::MAPIPropPropertyBag(LPMAPIPROP lpProp, SortListData* lpListData)
+MAPIPropPropertyBag::MAPIPropPropertyBag(LPMAPIPROP lpProp, controls::sortlistdata::SortListData* lpListData)
 {
 	m_lpListData = lpListData;
 	m_lpProp = lpProp;
@@ -34,7 +34,7 @@ bool MAPIPropPropertyBag::IsEqual(LPMAPIPROPERTYBAG lpPropBag)
 	if (!lpPropBag) return false;
 	if (GetType() != lpPropBag->GetType()) return false;
 
-	auto lpOther = static_cast<MAPIPropPropertyBag*>(lpPropBag);
+	const auto lpOther = static_cast<MAPIPropPropertyBag*>(lpPropBag);
 	if (lpOther)
 	{
 		if (m_lpListData != lpOther->m_lpListData) return false;
@@ -53,7 +53,7 @@ _Check_return_ LPMAPIPROP MAPIPropPropertyBag::GetMAPIProp()
 
 _Check_return_ HRESULT MAPIPropPropertyBag::Commit()
 {
-	if (NULL == m_lpProp) return S_OK;
+	if (nullptr == m_lpProp) return S_OK;
 
 	auto hRes = S_OK;
 	WC_H(m_lpProp->SaveChanges(KEEP_OPEN_READWRITE));
@@ -64,7 +64,7 @@ _Check_return_ HRESULT MAPIPropPropertyBag::GetAllProps(
 	ULONG FAR* lpcValues,
 	LPSPropValue FAR* lppPropArray)
 {
-	if (NULL == m_lpProp) return S_OK;
+	if (nullptr == m_lpProp) return S_OK;
 	auto hRes = S_OK;
 	m_bGetPropsSucceeded = false;
 
@@ -107,7 +107,7 @@ _Check_return_ HRESULT MAPIPropPropertyBag::GetProps(
 	ULONG FAR* lpcValues,
 	LPSPropValue FAR* lppPropArray)
 {
-	if (NULL == m_lpProp) return S_OK;
+	if (nullptr == m_lpProp) return S_OK;
 
 	auto hRes = S_OK;
 	WC_H(m_lpProp->GetProps(lpPropTagArray, ulFlags, lpcValues, lppPropArray));
@@ -118,7 +118,7 @@ _Check_return_ HRESULT MAPIPropPropertyBag::GetProp(
 	ULONG ulPropTag,
 	LPSPropValue FAR* lppProp)
 {
-	if (NULL == m_lpProp) return S_OK;
+	if (nullptr == m_lpProp) return S_OK;
 
 	auto hRes = S_OK;
 	WC_MAPI(HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, lppProp));
@@ -129,7 +129,7 @@ _Check_return_ HRESULT MAPIPropPropertyBag::GetProp(
 	// The caller will assume the memory was allocated from them, so copy before handing it back
 	if (MAPI_E_NOT_FOUND == hRes && m_lpListData)
 	{
-		auto lpProp = PpropFindProp(m_lpListData->lpSourceProps, m_lpListData->cSourceProps, ulPropTag);
+		const auto lpProp = PpropFindProp(m_lpListData->lpSourceProps, m_lpListData->cSourceProps, ulPropTag);
 		if (lpProp)
 		{
 			hRes = S_OK;
@@ -153,7 +153,7 @@ _Check_return_ HRESULT MAPIPropPropertyBag::SetProps(
 	ULONG cValues,
 	LPSPropValue lpPropArray)
 {
-	if (NULL == m_lpProp) return S_OK;
+	if (nullptr == m_lpProp) return S_OK;
 
 	auto hRes = S_OK;
 	LPSPropProblemArray lpProblems = nullptr;
@@ -166,7 +166,7 @@ _Check_return_ HRESULT MAPIPropPropertyBag::SetProps(
 _Check_return_ HRESULT MAPIPropPropertyBag::SetProp(
 	LPSPropValue lpProp)
 {
-	if (NULL == m_lpProp) return S_OK;
+	if (nullptr == m_lpProp) return S_OK;
 
 	auto hRes = S_OK;
 	WC_H(HrSetOneProp(m_lpProp, lpProp));
@@ -176,9 +176,9 @@ _Check_return_ HRESULT MAPIPropPropertyBag::SetProp(
 _Check_return_ HRESULT MAPIPropPropertyBag::DeleteProp(
 	ULONG ulPropTag)
 {
-	if (NULL == m_lpProp) return S_OK;
+	if (nullptr == m_lpProp) return S_OK;
 
-	auto hRes = DeleteProperty(m_lpProp, ulPropTag);
+	const auto hRes = DeleteProperty(m_lpProp, ulPropTag);
 	if (hRes == MAPI_E_NOT_FOUND && PROP_TYPE(ulPropTag) == PT_ERROR)
 	{
 		// We failed to delete a property without giving a type.

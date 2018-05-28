@@ -56,7 +56,7 @@ namespace dialog
 			_Check_return_ LPSRestriction DetachModifiedSRestriction();
 			_Check_return_ LPENTRYLIST DetachModifiedEntryList();
 			_Check_return_ ULONG GetSearchFlags() const;
-			_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
+			_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
 
 		private:
 			void OnEditAction1() override;

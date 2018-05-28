@@ -1,6 +1,6 @@
 // Collection of useful MAPI functions
 
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <UI/MAPIFormFunctions.h>
 #include <UI/MyMAPIFormViewer.h>
 
@@ -16,7 +16,7 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 	_In_ HWND hwndParent,
 	_In_ LPMDB lpMDB,
 	_In_ LPMAPISESSION lpMAPISession,
-	_In_ CContentsTableListCtrl *lpContentsTableListCtrl,
+	_In_ controls::sortlistctrl::CContentsTableListCtrl *lpContentsTableListCtrl,
 	int iItem,
 	_In_ const std::wstring& szMessageClass,
 	_In_ LPMAPIFOLDER lpFolder)
@@ -110,7 +110,7 @@ _Check_return_ HRESULT OpenMessageNonModal(
 	_In_ LPMDB lpMDB,
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMAPIFOLDER lpSourceFolder,
-	_In_ CContentsTableListCtrl *lpContentsTableListCtrl,
+	_In_ controls::sortlistctrl::CContentsTableListCtrl *lpContentsTableListCtrl,
 	int iItem,
 	_In_ LPMESSAGE lpMessage,
 	LONG lVerb,
@@ -132,9 +132,11 @@ _Check_return_ HRESULT OpenMessageNonModal(
 	static const SizedSPropTagArray(NUM_COLS, sptaShowForm) =
 	{
 	NUM_COLS,
-	PR_MESSAGE_FLAGS,
-	PR_MESSAGE_CLASS_A,
-	PR_ENTRYID
+		{
+			PR_MESSAGE_FLAGS,
+			PR_MESSAGE_CLASS_A,
+			PR_ENTRYID
+		}
 	};
 
 	if (!lpMessage || !lpMAPISession || !lpSourceFolder) return MAPI_E_INVALID_PARAMETER;
@@ -248,10 +250,12 @@ _Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
 	static const SizedSPropTagArray(NUM_COLS, sptaShowForm) =
 	{
 	NUM_COLS,
-	PR_MESSAGE_FLAGS,
-	PR_MESSAGE_CLASS_A,
-	PR_ACCESS,
-	PR_ENTRYID
+		{
+			PR_MESSAGE_FLAGS,
+			PR_MESSAGE_CLASS_A,
+			PR_ACCESS,
+			PR_ENTRYID
+		}
 	};
 
 	if (!lpMessage || !lpParentFolder || !lpMAPISession || !lpMDB) return MAPI_E_INVALID_PARAMETER;

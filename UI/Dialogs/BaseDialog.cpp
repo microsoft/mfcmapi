@@ -153,7 +153,7 @@ namespace dialog
 
 		if (m_lpFakeSplitter)
 		{
-			m_lpPropDisplay = new CSingleMAPIPropListCtrl(m_lpFakeSplitter, this, m_lpMapiObjects, m_bIsAB);
+			m_lpPropDisplay = new controls::sortlistctrl::CSingleMAPIPropListCtrl(m_lpFakeSplitter, this, m_lpMapiObjects, m_bIsAB);
 
 			if (m_lpPropDisplay)
 				m_lpFakeSplitter->SetPaneTwo(m_lpPropDisplay);
@@ -431,7 +431,7 @@ namespace dialog
 		DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L" Not Implemented\n");
 	}
 
-	void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData) const
+	void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ controls::sortlistdata::SortListData* lpListData) const
 	{
 		auto hRes = S_OK;
 		DebugPrintEx(DBGGeneric, CLASS, L"OnUpdateSingleMAPIPropListCtrl", L"Setting item %p\n", lpMAPIProp);

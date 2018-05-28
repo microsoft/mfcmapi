@@ -21,7 +21,7 @@ CMyMAPIFormViewer::CMyMAPIFormViewer(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_ LPMESSAGE lpMessage,
-	_In_opt_ CContentsTableListCtrl *lpContentsTableListCtrl,
+	_In_opt_ controls::sortlistctrl::CContentsTableListCtrl *lpContentsTableListCtrl,
 	int iItem)
 {
 	TRACE_CONSTRUCTOR(CLASS);

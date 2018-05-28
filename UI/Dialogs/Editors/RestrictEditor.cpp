@@ -463,7 +463,7 @@ namespace dialog
 
 			_Check_return_ LPSRestriction DetachModifiedSRestrictionArray();
 			_Check_return_ ULONG GetResCount() const;
-			_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
+			_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
 
 		private:
 			BOOL OnInitDialog() override;
@@ -522,7 +522,7 @@ namespace dialog
 			ClearList(ulListNum);
 
 			InsertColumn(ulListNum, 0, IDS_SHARP);
-			SortListData* lpData = nullptr;
+			controls::sortlistdata::SortListData* lpData = nullptr;
 			switch (lpRes->rt)
 			{
 			case RES_AND:
@@ -555,7 +555,7 @@ namespace dialog
 			ResizeList(ulListNum, false);
 		}
 
-		_Check_return_ bool CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
+		_Check_return_ bool CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData || !lpData->Res()) return false;
 			auto hRes = S_OK;
@@ -635,7 +635,7 @@ namespace dialog
 			_Check_return_ LPSRestriction DetachModifiedSRestriction();
 			_Check_return_ LPSPropValue DetachModifiedSPropValue();
 			_Check_return_ ULONG GetSPropValueCount() const;
-			_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
+			_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
 
 		private:
 			void OnEditAction1() override;
@@ -754,7 +754,7 @@ namespace dialog
 			}
 		}
 
-		_Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
+		_Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData || !lpData->Comment()) return false;
 			if (!m_lpAllocParent) return false;
@@ -1422,7 +1422,7 @@ namespace dialog
 			}
 		}
 
-		_Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
+		_Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData) return false;
 

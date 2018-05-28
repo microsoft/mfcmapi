@@ -1,7 +1,13 @@
 #pragma once
 // Interface for the CMyMAPIFormViewer class.
 
-class CContentsTableListCtrl;
+namespace controls
+{
+	namespace sortlistctrl
+	{
+		class CContentsTableListCtrl;
+	}
+}
 
 class CMyMAPIFormViewer :
 	public IMAPIMessageSite,
@@ -15,7 +21,7 @@ public:
 		_In_ LPMAPISESSION lpMAPISession,
 		_In_ LPMAPIFOLDER lpFolder,
 		_In_ LPMESSAGE lpMessage,
-		_In_opt_ CContentsTableListCtrl* lpContentsTableListCtrl,
+		_In_opt_ controls::sortlistctrl::CContentsTableListCtrl* lpContentsTableListCtrl,
 		int iItem);
 	virtual ~CMyMAPIFormViewer();
 
@@ -76,7 +82,7 @@ public:
 		LPMAPIFORMADVISESINK pmvns) override;
 	STDMETHODIMP ActivateNext(
 		ULONG ulDir,
-		LPCRECT prcPosRect) override;
+		LPCRECT lpRect) override;
 	STDMETHODIMP GetPrintSetup(
 		ULONG ulFlags,
 		LPFORMPRINTSETUP* lppFormPrintSetup) override;
@@ -109,7 +115,7 @@ private:
 	LPMESSAGE m_lpMessage;
 	LPMDB m_lpMDB;
 	LPMAPISESSION m_lpMAPISession;
-	CContentsTableListCtrl* m_lpContentsTableListCtrl;
+	controls::sortlistctrl::CContentsTableListCtrl* m_lpContentsTableListCtrl;
 	int m_iItem; // index in list control of item being displayed
 	// Set in SetAdviseSink, used in ActivateNext
 	LPMAPIFORMADVISESINK m_lpMapiFormAdviseSink;

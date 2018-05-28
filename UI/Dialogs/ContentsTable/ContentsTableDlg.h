@@ -1,7 +1,13 @@
 #pragma once
 #include <UI/Dialogs/BaseDialog.h>
 
-class CContentsTableListCtrl;
+namespace controls
+{
+	namespace sortlistctrl
+	{
+		class CContentsTableListCtrl;
+	}
+}
 
 namespace dialog
 {
@@ -37,7 +43,7 @@ namespace dialog
 		_Check_return_ HRESULT OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage);
 		_Check_return_ HRESULT OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage);
 
-		CContentsTableListCtrl* m_lpContentsTableListCtrl;
+		controls::sortlistctrl::CContentsTableListCtrl* m_lpContentsTableListCtrl;
 		LPMAPITABLE m_lpContentsTable;
 		ULONG m_ulDisplayFlags;
 

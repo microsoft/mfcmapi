@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/ListPane.h>
 #include <UI/UIFunctions.h>
+#include <utility>
 
 namespace viewpane
 {
@@ -11,7 +12,7 @@ namespace viewpane
 		auto pane = new (std::nothrow) ListPane();
 		if (pane)
 		{
-			pane->Setup(bAllowSort, callback);
+			pane->Setup(bAllowSort, std::move(callback));
 			pane->SetLabel(uidLabel, bReadOnly);
 		}
 
@@ -23,7 +24,7 @@ namespace viewpane
 		auto pane = new (std::nothrow) ListPane();
 		if (pane)
 		{
-			pane->Setup(bAllowSort, callback);
+			pane->Setup(bAllowSort, std::move(callback));
 			pane->SetLabel(uidLabel, bReadOnly);
 			pane->m_bCollapsible = true;
 		}
@@ -42,7 +43,7 @@ namespace viewpane
 	void ListPane::Setup(bool bAllowSort, DoListEditCallback callback)
 	{
 		m_bAllowSort = bAllowSort;
-		m_callback = callback;
+		m_callback = std::move(callback);
 	}
 
 	bool ListPane::IsDirty()
@@ -201,7 +202,7 @@ namespace viewpane
 		m_List.SetItemText(iListRow, iListCol, szListString);
 	}
 
-	_Check_return_ SortListData* ListPane::InsertRow(int iRow, const std::wstring& szText) const
+	_Check_return_ controls::sortlistdata::SortListData* ListPane::InsertRow(int iRow, const std::wstring& szText) const
 	{
 		return m_List.InsertRow(iRow, szText);
 	}
@@ -229,12 +230,12 @@ namespace viewpane
 		return m_List.GetItemCount();
 	}
 
-	_Check_return_ SortListData* ListPane::GetItemData(int iRow) const
+	_Check_return_ controls::sortlistdata::SortListData* ListPane::GetItemData(int iRow) const
 	{
-		return reinterpret_cast<SortListData*>(m_List.GetItemData(iRow));
+		return reinterpret_cast<controls::sortlistdata::SortListData*>(m_List.GetItemData(iRow));
 	}
 
-	_Check_return_ SortListData* ListPane::GetSelectedListRowData() const
+	_Check_return_ controls::sortlistdata::SortListData* ListPane::GetSelectedListRowData() const
 	{
 		const auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 
@@ -260,7 +261,7 @@ namespace viewpane
 		if (lpMyHeader)
 		{
 			hdItem.mask = HDI_LPARAM;
-			auto lpHeaderData = new (std::nothrow) HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
+			auto lpHeaderData = new (std::nothrow) controls::sortlistctrl::HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
 			if (lpHeaderData)
 			{
 				lpHeaderData->ulTagArrayRow = NULL;
@@ -286,13 +287,13 @@ namespace viewpane
 			case IDD_LISTMOVEDOWN:
 			case IDD_LISTMOVETOTOP:
 			case IDD_LISTMOVEUP:
-				EC_B(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 2 ? true : false));
+				EC_B(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 2));
 				break;
 			case IDD_LISTDELETE:
-				EC_B(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1 ? true : false));
+				EC_B(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1));
 				break;
 			case IDD_LISTEDIT:
-				EC_B(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1 ? true : false));
+				EC_B(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1));
 				break;
 			}
 		}

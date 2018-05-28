@@ -112,7 +112,7 @@ namespace dialog
 	typedef HRESULT(CFolderDlg::* LPSIMPLEMULTI)
 		(
 			int iItem,
-			SortListData* lpData
+			controls::sortlistdata::SortListData* lpData
 			);
 
 	_Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
@@ -402,7 +402,7 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnAttachmentProperties(int iItem, _In_ SortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnAttachmentProperties(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
 	{
 		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
@@ -1129,7 +1129,7 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ SortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
 	{
 		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
@@ -1173,7 +1173,7 @@ namespace dialog
 		return hRes;
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ SortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
 	{
 		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
@@ -1281,7 +1281,7 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ SortListData* lpData)
+	_Check_return_ HRESULT CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ controls::sortlistdata::SortListData* lpData)
 	{
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -1299,7 +1299,7 @@ namespace dialog
 		return hRes;
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnRecipientProperties(int iItem, _In_ SortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnRecipientProperties(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
 	{
 		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
@@ -1436,7 +1436,7 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnSaveAttachments(int iItem, _In_ SortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnSaveAttachments(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
 	{
 		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
@@ -2115,7 +2115,7 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortListData* lpData)
+	_Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ controls::sortlistdata::SortListData* lpData)
 	{
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -2207,7 +2207,7 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ SortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
 	{
 		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
@@ -2234,7 +2234,7 @@ namespace dialog
 		return hRes;
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ SortListData* lpData)
+	_Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 	{
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.

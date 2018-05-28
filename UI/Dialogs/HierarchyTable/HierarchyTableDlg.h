@@ -1,9 +1,13 @@
 #pragma once
 #include <UI/Dialogs/BaseDialog.h>
 
-class CHierarchyTableTreeCtrl;
 class CParentWnd;
 class CMapiObjects;
+
+namespace controls
+{
+	class CHierarchyTableTreeCtrl;
+}
 
 namespace dialog
 {
@@ -25,7 +29,7 @@ namespace dialog
 		void CreateDialogAndMenu(UINT nIDMenuResource);
 		void OnInitMenu(_In_ CMenu* pMenu) override;
 
-		CHierarchyTableTreeCtrl* m_lpHierarchyTableTreeCtrl;
+		controls::CHierarchyTableTreeCtrl* m_lpHierarchyTableTreeCtrl;
 		ULONG m_ulDisplayFlags;
 
 	private:

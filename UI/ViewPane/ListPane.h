@@ -5,7 +5,7 @@
 
 namespace viewpane
 {
-	typedef std::function<bool(ULONG, int, SortListData*)> DoListEditCallback;
+	typedef std::function<bool(ULONG, int, controls::sortlistdata::SortListData*)> DoListEditCallback;
 
 	class ListPane : public ViewPane
 	{
@@ -15,12 +15,12 @@ namespace viewpane
 
 		ULONG HandleChange(UINT nID) override;
 		void SetListString(ULONG iListRow, ULONG iListCol, const std::wstring& szListString);
-		_Check_return_ SortListData* InsertRow(int iRow, const std::wstring& szText) const;
+		_Check_return_ controls::sortlistdata::SortListData* InsertRow(int iRow, const std::wstring& szText) const;
 		void ClearList();
 		void ResizeList(bool bSort);
 		_Check_return_ ULONG GetItemCount() const;
-		_Check_return_ SortListData* GetItemData(int iRow) const;
-		_Check_return_ SortListData* GetSelectedListRowData() const;
+		_Check_return_ controls::sortlistdata::SortListData* GetItemData(int iRow) const;
+		_Check_return_ controls::sortlistdata::SortListData* GetSelectedListRowData() const;
 		void InsertColumn(int nCol, UINT uidText);
 		void SetColumnType(int nCol, ULONG ulPropType) const;
 		_Check_return_ bool OnEditListEntry();
@@ -52,18 +52,18 @@ namespace viewpane
 		bool m_bAllowSort;
 
 		DoListEditCallback m_callback;
-		CSortListCtrl m_List;
+		controls::sortlistctrl::CSortListCtrl m_List;
 		static const int LINES_LIST = 6;
 		static const int NUMLISTBUTTONS = 7;
 		CButton m_ButtonArray[NUMLISTBUTTONS];
 		const UINT ListButtons[NUMLISTBUTTONS] = {
-			{ IDD_LISTMOVEDOWN },
-			{ IDD_LISTMOVETOBOTTOM },
-			{ IDD_LISTADD },
-			{ IDD_LISTEDIT },
-			{ IDD_LISTDELETE },
-			{ IDD_LISTMOVETOTOP },
-			{ IDD_LISTMOVEUP },
+			IDD_LISTMOVEDOWN,
+			IDD_LISTMOVETOBOTTOM,
+			IDD_LISTADD,
+			IDD_LISTEDIT,
+			IDD_LISTDELETE,
+			IDD_LISTMOVETOTOP,
+			IDD_LISTMOVEUP,
 		};
 
 		int m_iButtonWidth;

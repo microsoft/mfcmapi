@@ -1131,7 +1131,7 @@ namespace dialog
 			}
 		}
 
-		_Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, const std::wstring& szText) const
+		_Check_return_ controls::sortlistdata::SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, const std::wstring& szText) const
 		{
 			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
 			if (pane)
@@ -1204,7 +1204,7 @@ namespace dialog
 			return 0;
 		}
 
-		_Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow) const
+		_Check_return_ controls::sortlistdata::SortListData* CEditor::GetListRowData(ULONG iControl, int iRow) const
 		{
 			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
 			if (pane)
@@ -1369,7 +1369,7 @@ namespace dialog
 
 		// Will be invoked on both edit button and double-click
 		// return true to indicate the entry was changed, false to indicate it was not
-		_Check_return_ bool CEditor::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ SortListData* /*lpData*/)
+		_Check_return_ bool CEditor::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ controls::sortlistdata::SortListData* /*lpData*/)
 		{
 			// Not Implemented
 			return false;

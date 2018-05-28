@@ -19,7 +19,7 @@ namespace dialog
 				_In_ CWnd* pParentWnd,
 				_In_ LPMDB lpMDB);
 			~SpecialFolderEditor();
-			_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
+			_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
 
 		private:
 			BOOL OnInitDialog() override;
@@ -201,7 +201,7 @@ namespace dialog
 			ResizeList(ulListNum, false);
 		}
 
-		_Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
+		_Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData) return false;
 
