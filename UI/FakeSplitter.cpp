@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <UI/FakeSplitter.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/UIFunctions.h>
@@ -12,9 +12,7 @@ enum FakesSplitHitTestValue
 	SplitterHit = 1
 };
 
-CFakeSplitter::CFakeSplitter(
-	_In_ CBaseDialog *lpHostDlg
-) :CWnd()
+CFakeSplitter::CFakeSplitter(_In_ dialog::CBaseDialog *lpHostDlg)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	auto hRes = S_OK;
@@ -38,7 +36,7 @@ CFakeSplitter::CFakeSplitter(
 	m_iSplitPos = 1;
 
 	WNDCLASSEX wc = { 0 };
-	auto hInst = AfxGetInstanceHandle();
+	const auto hInst = AfxGetInstanceHandle();
 	if (!::GetClassInfoEx(hInst, _T("FakeSplitter"), &wc)) // STRING_OK
 	{
 		wc.cbSize = sizeof wc;
@@ -366,10 +364,10 @@ void CFakeSplitter::OnPaint()
 		}
 
 		// Draw the splitter bar
-		auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? cSolidPen : cDashedPen));
+		const auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? cSolidPen : cDashedPen));
 		MoveToEx(hdc, pts[0].x, pts[0].y, nullptr);
 		LineTo(hdc, pts[1].x, pts[1].y);
-		(void) SelectObject(hdc, hpenOld);
+		(void)SelectObject(hdc, hpenOld);
 
 		db.End(hdc);
 	}

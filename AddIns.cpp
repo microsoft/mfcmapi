@@ -834,7 +834,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl SimpleDialog(_In_z_ LPWSTR 
 {
 	auto hRes = S_OK;
 
-	editor::CEditor MySimpleDialog(
+	dialog::editor::CEditor MySimpleDialog(
 		nullptr,
 		NULL,
 		NULL,
@@ -859,7 +859,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 	if (lpDialog->ulButtonFlags & ~(CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)) return MAPI_E_INVALID_PARAMETER;
 	auto hRes = S_OK;
 
-	editor::CEditor MyComplexDialog(
+	dialog::editor::CEditor MyComplexDialog(
 		nullptr,
 		NULL,
 		NULL,

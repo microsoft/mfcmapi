@@ -27,7 +27,7 @@ CContentsTableListCtrl::CContentsTableListCtrl(
 	_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
 	UINT nIDContextMenu,
 	bool bIsAB,
-	_In_ CContentsTableDlg *lpHostDlg)
+	_In_ dialog::CContentsTableDlg *lpHostDlg)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -207,7 +207,7 @@ void CContentsTableListCtrl::GetStatus()
 
 	if (!FAILED(hRes))
 	{
-		editor::CEditor MyData(
+		dialog::editor::CEditor MyData(
 			this,
 			IDS_GETSTATUS,
 			IDS_GETSTATUSPROMPT,
@@ -327,7 +327,7 @@ void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor)
 			lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		}
 
-		editor::CTagArrayEditor MyEditor(
+		dialog::editor::CTagArrayEditor MyEditor(
 			this,
 			IDS_COLUMNSET,
 			IDS_COLUMNSETPROMPT,
@@ -596,7 +596,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 
 	(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
 	auto szCount = std::to_wstring(lpListCtrl->GetItemCount());
-	CBaseDialog::UpdateStatus(hWndHost, STATUSDATA1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
+	dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSDATA1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
 
 	// potentially lengthy op - check abort before and after
 	CHECKABORT(WC_H(lpListCtrl->ApplyRestriction()));
@@ -622,7 +622,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 
 		if (ulTotal)
 		{
-			CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, strings::formatmessage(IDS_LOADINGITEMS, 0, ulTotal));
+			dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, strings::formatmessage(IDS_LOADINGITEMS, 0, ulTotal));
 		}
 	}
 
@@ -631,7 +631,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	if (!FAILED(hRes)) for (;;)
 	{
 		BREAKONABORT;
-		CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
+		dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
 		hRes = S_OK;
 		if (pRows) FreeProws(pRows);
 		pRows = nullptr;
@@ -678,7 +678,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 			BREAKONABORT; // This check is cheap enough not to be a perf concern anymore
 			if (ulTotal)
 			{
-				CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, strings::formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
+				dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, strings::formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
 			}
 
 			DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Asking to add %p to %u\n", &pRows->aRow[iCurPropRow], iCurListBoxRow);
@@ -696,14 +696,14 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 
 	if (bABORTSET)
 	{
-		CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_TABLELOADCANCELLED));
+		dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_TABLELOADCANCELLED));
 	}
 	else
 	{
-		CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_TABLELOADED));
+		dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_TABLELOADED));
 	}
 
-	CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, strings::emptystring);
+	dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, strings::emptystring);
 	DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"added %u items\n", iCurListBoxRow);
 	DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Releasing pointers.\n");
 

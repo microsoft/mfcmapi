@@ -2,19 +2,22 @@
 // Displays an about dialog
 #include <UI/Dialogs/Dialog.h>
 
-void DisplayAboutDlg(_In_ CWnd* lpParentWnd);
-
-class CAboutDlg : public CMyDialog
+namespace dialog
 {
-public:
-	CAboutDlg(_In_ CWnd* pParentWnd);
-	virtual ~CAboutDlg();
+	void DisplayAboutDlg(_In_ CWnd* lpParentWnd);
 
-private:
-	void OnOK() override;
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
-	BOOL OnInitDialog() override;
+	class CAboutDlg : public CMyDialog
+	{
+	public:
+		CAboutDlg(_In_ CWnd* pParentWnd);
+		virtual ~CAboutDlg();
 
-	CRichEditCtrl m_HelpText;
-	CButton m_DisplayAboutCheck;
-};
+	private:
+		void OnOK() override;
+		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+		BOOL OnInitDialog() override;
+
+		CRichEditCtrl m_HelpText;
+		CButton m_DisplayAboutCheck;
+	};
+}

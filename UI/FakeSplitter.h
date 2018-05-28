@@ -1,7 +1,10 @@
 #pragma once
 // List splitter control which hosts two controls either horizontally or vertically
 
-class CBaseDialog;
+namespace dialog
+{
+	class CBaseDialog;
+}
 
 enum SplitType
 {
@@ -15,7 +18,7 @@ class CFakeSplitter : public CWnd
 {
 public:
 	CFakeSplitter(
-		_In_ CBaseDialog* lpHostDlg);
+		_In_ dialog::CBaseDialog* lpHostDlg);
 	virtual ~CFakeSplitter();
 
 	void SetPaneOne(CWnd* PaneOne);
@@ -35,7 +38,7 @@ private:
 	void StopTracking();
 	void CalcSplitPos();
 
-	CBaseDialog* m_lpHostDlg;
+	dialog::CBaseDialog* m_lpHostDlg;
 	bool m_bTracking;
 	FLOAT m_flSplitPercent;
 	CWnd* m_PaneOne;
@@ -43,8 +46,8 @@ private:
 	int m_iSplitWidth;
 	int m_iSplitPos;
 	SplitType m_SplitType;
-	HCURSOR m_hSplitCursorV;
-	HCURSOR m_hSplitCursorH;
+	HCURSOR m_hSplitCursorV{};
+	HCURSOR m_hSplitCursorH{};
 
 	DECLARE_MESSAGE_MAP()
 };

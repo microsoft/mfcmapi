@@ -12,7 +12,7 @@
 #include <UI/Dialogs/Editors/QSSpecialFolders.h>
 #include <MAPI/MapiObjects.h>
 
-LPMAPISESSION OpenSessionForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
+LPMAPISESSION OpenSessionForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 	if (!lpMapiObjects) return nullptr;
@@ -28,7 +28,7 @@ LPMAPISESSION OpenSessionForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	return nullptr;
 }
 
-HRESULT OpenStoreForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPMDB* lppMDB)
+HRESULT OpenStoreForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPMDB* lppMDB)
 {
 	auto hRes = S_OK;
 	if (!lppMDB) return MAPI_E_INVALID_PARAMETER;
@@ -52,7 +52,7 @@ HRESULT OpenStoreForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ L
 	return hRes;
 }
 
-HRESULT OpenABForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPADRBOOK* lppAdrBook)
+HRESULT OpenABForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPADRBOOK* lppAdrBook)
 {
 	const auto hRes = S_OK;
 	if (!lppAdrBook) return MAPI_E_INVALID_PARAMETER;
@@ -74,7 +74,7 @@ HRESULT OpenABForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPAD
 	return hRes;
 }
 
-void OnQSDisplayFolder(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder)
+void OnQSDisplayFolder(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder)
 {
 	auto hRes = S_OK;
 
@@ -101,7 +101,7 @@ void OnQSDisplayFolder(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFo
 	}
 }
 
-void OnQSDisplayTable(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder, _In_ ULONG ulProp, _In_ ObjectType tType)
+void OnQSDisplayTable(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder, _In_ ULONG ulProp, _In_ ObjectType tType)
 {
 	auto hRes = S_OK;
 
@@ -128,7 +128,7 @@ void OnQSDisplayTable(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFol
 	}
 }
 
-void OnQSDisplayDefaultDir(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
+void OnQSDisplayDefaultDir(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	auto hRes = S_OK;
 
@@ -168,7 +168,7 @@ void OnQSDisplayDefaultDir(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	if (lpAdrBook) lpAdrBook->Release();
 }
 
-void OnQSDisplayAB(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
+void OnQSDisplayAB(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	auto hRes = S_OK;
 
@@ -183,14 +183,14 @@ void OnQSDisplayAB(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	if (SUCCEEDED(hRes) && lpAdrBook)
 	{
 		// call the dialog
-		new CAbContDlg(
+		new dialog::CAbContDlg(
 			lpParentWnd,
 			lpMapiObjects);
 	}
 	if (lpAdrBook) lpAdrBook->Release();
 }
 
-void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
+void OnQSDisplayNicknameCache(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	auto hRes = S_OK;
 	std::wstring szNicknames;
@@ -273,7 +273,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		// Display our dialog
 		if (!szNicknames.empty() && lpsProp)
 		{
-			editor::CEditor MyResults(
+			dialog::editor::CEditor MyResults(
 				lpHostDlg,
 				IDS_NICKNAME,
 				NULL,
@@ -343,7 +343,7 @@ std::wstring FormatQuota(LPSPropValue lpProp, ULONG ulPropTag, const std::wstrin
 
 #define AddFormattedQuota(__TAG) szQuotaString += FormatQuota(&lpProps[q##__TAG], __TAG, L#__TAG);
 
-void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
+void OnQSDisplayQuota(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	auto hRes = S_OK;
 	std::wstring szQuotaString;
@@ -411,7 +411,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		lpMDB->Release();
 
 		// Display our dialog
-		editor::CEditor MyResults(
+		dialog::editor::CEditor MyResults(
 			lpHostDlg,
 			IDS_QUOTA,
 			NULL,
@@ -425,7 +425,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
 }
 
-void OnQSOpenUser(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
+void OnQSOpenUser(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	auto hRes = S_OK;
 
@@ -459,7 +459,7 @@ void OnQSOpenUser(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	if (lpAdrBook) lpAdrBook->Release();
 }
 
-void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
+void OnQSLookupThumbail(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	auto hRes = S_OK;
 	LPSPropValue lpThumbnail = nullptr;
@@ -487,7 +487,7 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	}
 
 	hRes = S_OK;
-	editor::CEditor MyResults(
+	dialog::editor::CEditor MyResults(
 		lpHostDlg,
 		IDS_QSTHUMBNAIL,
 		NULL,
@@ -515,7 +515,7 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	if (lpAdrBook) lpAdrBook->Release();
 }
 
-bool HandleQuickStart(_In_ WORD wMenuSelect, _In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
+bool HandleQuickStart(_In_ WORD wMenuSelect, _In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	switch (wMenuSelect)
 	{
@@ -544,7 +544,7 @@ bool HandleQuickStart(_In_ WORD wMenuSelect, _In_ CMainDlg* lpHostDlg, _In_ HWND
 	case ID_QSCALPERM: OnQSDisplayTable(lpHostDlg, hwnd, DEFAULT_CALENDAR, PR_ACL_TABLE, otACL); return true;
 	case ID_QSNICKNAME: OnQSDisplayNicknameCache(lpHostDlg, hwnd); return true;
 	case ID_QSQUOTA: OnQSDisplayQuota(lpHostDlg, hwnd); return true;
-	case ID_QSCHECKSPECIALFOLDERS: editor::OnQSCheckSpecialFolders(lpHostDlg, hwnd); return true;
+	case ID_QSCHECKSPECIALFOLDERS: dialog::editor::OnQSCheckSpecialFolders(lpHostDlg, hwnd); return true;
 	case ID_QSTHUMBNAIL: OnQSLookupThumbail(lpHostDlg, hwnd); return true;
 	case ID_QSOPENUSER: OnQSOpenUser(lpHostDlg, hwnd); return true;
 	}

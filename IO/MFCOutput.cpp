@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <IO/MFCOutput.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
@@ -160,7 +160,7 @@ void OutputThreadTime(ULONG ulDbgLvl)
 		ulDbgLvl);
 	OutputDebugStringW(szThreadTime.c_str());
 #ifndef MRMAPI
-	editor::OutputToDbgView(szThreadTime);
+	dialog::editor::OutputToDbgView(szThreadTime);
 #endif
 
 	// print to to our debug output log file
@@ -189,7 +189,7 @@ void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const s
 #ifdef MRMAPI
 		wprintf(L"%ws", szMsg.c_str());
 #else
-		editor::OutputToDbgView(szMsg);
+		dialog::editor::OutputToDbgView(szMsg);
 #endif
 
 		// print to to our debug output log file

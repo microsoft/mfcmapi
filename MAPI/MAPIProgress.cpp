@@ -1,6 +1,6 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <MAPI/MAPIProgress.h>
-#include "enums.h"
+#include <Enums.h>
 #include <UI/Dialogs/BaseDialog.h>
 
 static std::wstring CLASS = L"CMAPIProgress";
@@ -17,7 +17,7 @@ _Check_return_ CMAPIProgress* GetMAPIProgress(const std::wstring& lpszContext, _
 {
 	if (RegKeys[regkeyUSE_IMAPIPROGRESS].ulCurDWORD)
 	{
-		auto pProgress = new CMAPIProgress(lpszContext, hWnd);
+		const auto pProgress = new CMAPIProgress(lpszContext, hWnd);
 
 		return pProgress;
 	}
@@ -66,14 +66,14 @@ STDMETHODIMP CMAPIProgress::QueryInterface(REFIID riid,
 
 STDMETHODIMP_(ULONG) CMAPIProgress::AddRef()
 {
-	auto lCount = InterlockedIncrement(&m_cRef);
+	const auto lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
 }
 
 STDMETHODIMP_(ULONG) CMAPIProgress::Release()
 {
-	auto lCount = InterlockedDecrement(&m_cRef);
+	const auto lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
 	if (!lCount) delete this;
 	return lCount;
@@ -88,8 +88,8 @@ _Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount
 
 	if (m_hWnd)
 	{
-		auto iPercent = MulDiv(ulValue - m_ulMin, 100, m_ulMax - m_ulMin);
-		CBaseDialog::UpdateStatus(m_hWnd, STATUSINFOTEXT, strings::formatmessage(IDS_PERCENTLOADED, m_szContext.c_str(), iPercent));
+		const auto iPercent = MulDiv(ulValue - m_ulMin, 100, m_ulMax - m_ulMin);
+		dialog::CBaseDialog::UpdateStatus(m_hWnd, STATUSINFOTEXT, strings::formatmessage(IDS_PERCENTLOADED, m_szContext.c_str(), iPercent));
 	}
 
 	return S_OK;

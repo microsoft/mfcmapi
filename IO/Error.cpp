@@ -54,7 +54,7 @@ namespace error
 		if (bShowDialog)
 		{
 #ifndef MRMAPI
-			editor::CEditor Err(
+			dialog::editor::CEditor Err(
 				nullptr,
 				ID_PRODUCTNAME,
 				NULL,
@@ -89,7 +89,7 @@ namespace error
 		Output(DBGHRes, nullptr, false, L"\n");
 
 #ifndef MRMAPI
-		editor::CEditor Err(
+		dialog::editor::CEditor Err(
 			nullptr,
 			ID_PRODUCTNAME,
 			NULL,

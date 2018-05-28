@@ -1,9 +1,12 @@
 #pragma once
 #include <UI/Controls/SortList/SortListCtrl.h>
-#include "enums.h"
+#include <Enums.h>
 
 class CMapiObjects;
-class CContentsTableDlg;
+namespace dialog
+{
+	class CContentsTableDlg;
+}
 
 class CContentsTableListCtrl : public CSortListCtrl
 {
@@ -15,7 +18,7 @@ public:
 		_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
 		UINT nIDContextMenu,
 		bool bIsAB,
-		_In_ CContentsTableDlg* lpHostDlg);
+		_In_ dialog::CContentsTableDlg* lpHostDlg);
 	virtual ~CContentsTableListCtrl();
 
 	// Initialization
@@ -81,7 +84,7 @@ private:
 	ULONG m_ulDisplayFlags;
 	LONG volatile m_bAbortLoad;
 	HANDLE m_LoadThreadHandle;
-	CContentsTableDlg* m_lpHostDlg;
+	dialog::CContentsTableDlg* m_lpHostDlg;
 	CMapiObjects* m_lpMapiObjects;
 	std::vector<TagNames> m_lpExtraDisplayColumns;
 	LPSPropTagArray m_sptExtraColumnTags;

@@ -1,10 +1,10 @@
 // Defines the class behaviors for the application.
 
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <UI/MyWinApp.h>
 #include <UI/ParentWnd.h>
 #include <MAPI/MapiObjects.h>
-#include "ImportProcs.h"
+#include <ImportProcs.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 
 // The one and only CMyWinApp object
@@ -60,7 +60,7 @@ BOOL CMyWinApp::InitInstance()
 		auto MyObjects = new (std::nothrow) CMapiObjects(nullptr);
 		if (MyObjects)
 		{
-			new CMainDlg(pWnd, MyObjects);
+			new dialog::CMainDlg(pWnd, MyObjects);
 			MyObjects->Release();
 		}
 		pWnd->Release();

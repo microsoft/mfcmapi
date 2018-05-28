@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/HierarchyTable/HierarchyTableDlg.h>
@@ -6,7 +6,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <UI/UIFunctions.h>
 #include <MAPI/AdviseSink.h>
-#include "SortList/NodeData.h"
+#include <UI/Controls/SortList/NodeData.h>
 
 enum
 {
@@ -21,11 +21,13 @@ enum
 static const SizedSPropTagArray(htNUMCOLS, sptHTCols) =
 {
  htNUMCOLS,
- PR_DISPLAY_NAME_W,
- PR_ENTRYID,
- PR_INSTANCE_KEY,
- PR_SUBFOLDERS,
- PR_CONTAINER_FLAGS
+	{
+		PR_DISPLAY_NAME_W,
+		PR_ENTRYID,
+		PR_INSTANCE_KEY,
+		PR_SUBFOLDERS,
+		PR_CONTAINER_FLAGS
+	}
 };
 
 enum
@@ -40,11 +42,13 @@ enum
 static const SizedSPropTagArray(htNUMCOLS, sptHTCountCols) =
 {
  htcNUMCOLS,
- PR_CONTENT_COUNT,
- PR_ASSOC_CONTENT_COUNT,
- PR_DELETED_FOLDER_COUNT,
- PR_DELETED_MSG_COUNT,
- PR_DELETED_ASSOC_MSG_COUNT
+	{
+		PR_CONTENT_COUNT,
+		PR_ASSOC_CONTENT_COUNT,
+		PR_DELETED_FOLDER_COUNT,
+		PR_DELETED_MSG_COUNT,
+		PR_DELETED_ASSOC_MSG_COUNT
+	}
 };
 
 static std::wstring CLASS = L"CHierarchyTableTreeCtrl";
@@ -52,7 +56,7 @@ static std::wstring CLASS = L"CHierarchyTableTreeCtrl";
 CHierarchyTableTreeCtrl::CHierarchyTableTreeCtrl(
 	_In_ CWnd* pCreateParent,
 	_In_ CMapiObjects* lpMapiObjects,
-	_In_ CHierarchyTableDlg *lpHostDlg,
+	_In_ dialog::CHierarchyTableDlg *lpHostDlg,
 	ULONG ulDisplayFlags,
 	UINT nIDContextMenu)
 {
@@ -117,14 +121,14 @@ CHierarchyTableTreeCtrl::~CHierarchyTableTreeCtrl()
 
 STDMETHODIMP_(ULONG) CHierarchyTableTreeCtrl::AddRef()
 {
-	auto lCount = InterlockedIncrement(&m_cRef);
+	const auto lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
 }
 
 STDMETHODIMP_(ULONG) CHierarchyTableTreeCtrl::Release()
 {
-	auto lCount = InterlockedDecrement(&m_cRef);
+	const auto lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
 	if (!lCount) delete this;
 	return lCount;
@@ -151,7 +155,7 @@ END_MESSAGE_MAP()
 LRESULT CHierarchyTableTreeCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	// Read the current hover local, since we need to clear it before we do any drawing
-	auto hItemCurHover = m_hItemCurHover;
+	const auto hItemCurHover = m_hItemCurHover;
 	switch (message)
 	{
 	case WM_MOUSEMOVE:
@@ -368,7 +372,7 @@ void CHierarchyTableTreeCtrl::AddNode(
 	tvInsert.item.mask = TVIF_CHILDREN | TVIF_TEXT;
 	tvInsert.item.cChildren = I_CHILDRENCALLBACK;
 	tvInsert.item.pszText = const_cast<LPWSTR>(szName.c_str());
-	auto hItem = reinterpret_cast<HTREEITEM>(::SendMessage(m_hWnd, TVM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&tvInsert)));
+	const auto hItem = reinterpret_cast<HTREEITEM>(::SendMessage(m_hWnd, TVM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&tvInsert)));
 
 	SetNodeData(m_hWnd, hItem, lpData);
 
@@ -384,7 +388,7 @@ void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, boo
 	if (!lpsRow) return;
 
 	std::wstring szName;
-	auto lpName = PpropFindProp(
+	const auto lpName = PpropFindProp(
 		lpsRow->lpProps,
 		lpsRow->cValues,
 		PR_DISPLAY_NAME_W);
@@ -414,7 +418,7 @@ void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, boo
 _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bRegNotifs) const
 {
 	auto hRes = S_OK;
-	auto lpData = GetSortListData(hItem);
+	const auto lpData = GetSortListData(hItem);
 
 	if (!lpData || !lpData->Node()) return nullptr;
 
@@ -475,7 +479,7 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 				}
 				else if (S_OK == hRes)
 				{
-					auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+					const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 					if (lpMDB)
 					{
 						lpData->Node()->m_lpAdviseSink->SetAdviseTarget(lpMDB);
@@ -543,12 +547,12 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::ExpandNode(HTREEITEM hParent) co
 
 void CHierarchyTableTreeCtrl::OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
-	NMTVDISPINFO* lpDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
+	const auto lpDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
 
 	if (lpDispInfo &&
 		lpDispInfo->item.mask & TVIF_CHILDREN)
 	{
-		auto lpData = reinterpret_cast<SortListData*>(lpDispInfo->item.lParam);
+		const auto lpData = reinterpret_cast<SortListData*>(lpDispInfo->item.lParam);
 
 		if (lpData && lpData->Node())
 		{
@@ -690,7 +694,7 @@ _Check_return_ bool CHierarchyTableTreeCtrl::IsItemSelected() const
 
 void CHierarchyTableTreeCtrl::OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
-	LPNMTREEVIEW pNMTV = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+	const auto pNMTV = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 
 	if (pNMTV && pNMTV->itemNew.hItem)
 	{
@@ -711,7 +715,7 @@ void CHierarchyTableTreeCtrl::OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 void CHierarchyTableTreeCtrl::OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
 	auto hRes = S_OK;
-	TV_DISPINFO* pTVDispInfo = reinterpret_cast<TV_DISPINFO*>(pNMHDR);
+	const auto pTVDispInfo = reinterpret_cast<TV_DISPINFO*>(pNMHDR);
 	*pResult = 0;
 
 	if (!pTVDispInfo || !pTVDispInfo->item.pszText) return;
@@ -745,9 +749,9 @@ void CHierarchyTableTreeCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
 
-	auto bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
-	auto bShiftPressed = GetKeyState(VK_SHIFT) < 0;
-	auto bMenuPressed = GetKeyState(VK_MENU) < 0;
+	const auto bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
+	const auto bShiftPressed = GetKeyState(VK_SHIFT) < 0;
+	const auto bMenuPressed = GetKeyState(VK_MENU) < 0;
 
 	if (!bMenuPressed)
 	{
@@ -794,7 +798,7 @@ void CHierarchyTableTreeCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
 	if (pWnd && -1 == pos.x && -1 == pos.y)
 	{
 		// Find the highlighted item
-		auto item = GetSelectedItem();
+		const auto item = GetSelectedItem();
 
 		if (item)
 		{
@@ -811,7 +815,7 @@ void CHierarchyTableTreeCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
 		UINT uFlags = NULL;
 		auto ptTree = pos;
 		ScreenToClient(&ptTree);
-		auto hClickedItem = HitTest(ptTree, &uFlags);
+		const auto hClickedItem = HitTest(ptTree, &uFlags);
 
 		if (hClickedItem != nullptr && TVHT_ONITEM & uFlags)
 		{
@@ -825,7 +829,7 @@ void CHierarchyTableTreeCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
 _Check_return_ SortListData* CHierarchyTableTreeCtrl::GetSelectedItemData() const
 {
 	// Find the highlighted item
-	auto Item = GetSelectedItem();
+	const auto Item = GetSelectedItem();
 	if (Item)
 	{
 		return GetSortListData(Item);
@@ -842,12 +846,12 @@ _Check_return_ SortListData* CHierarchyTableTreeCtrl::GetSortListData(HTREEITEM 
 _Check_return_ LPSBinary CHierarchyTableTreeCtrl::GetSelectedItemEID() const
 {
 	// Find the highlighted item
-	auto Item = GetSelectedItem();
+	const auto Item = GetSelectedItem();
 
 	// get the EID associated with it
 	if (Item)
 	{
-		auto lpData = GetSortListData(Item);
+		const auto lpData = GetSortListData(Item);
 		if (lpData && lpData->Node())
 			return lpData->Node()->m_lpEntryID;
 	}
@@ -879,7 +883,7 @@ void CHierarchyTableTreeCtrl::GetContainer(
 
 	DebugPrintEx(DBGGeneric, CLASS, L"GetContainer", L"HTREEITEM = %p, bModify = %d, m_ulContainerType = 0x%X\n", Item, bModify, m_ulContainerType);
 
-	auto lpData = GetSortListData(Item);
+	const auto lpData = GetSortListData(Item);
 
 	if (!lpData || !lpData->Node())
 	{
@@ -900,7 +904,7 @@ void CHierarchyTableTreeCtrl::GetContainer(
 	{
 		if (MAPI_ABCONT == m_ulContainerType)
 		{
-			auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
+			const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			if (lpAddrBook)
 			{
 				DebugPrint(DBGGeneric, L"\tCalling OpenEntry on address book with ulFlags = 0x%X\n", ulFlags);
@@ -920,7 +924,7 @@ void CHierarchyTableTreeCtrl::GetContainer(
 		}
 		else if (MAPI_FOLDER == m_ulContainerType)
 		{
-			auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+			const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 			if (lpMDB)
 			{
 				ulFlags = (mfcmapiREQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL) |
@@ -988,7 +992,7 @@ void CHierarchyTableTreeCtrl::OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* 
 	auto hRes = S_OK;
 	*pResult = 0;
 
-	NM_TREEVIEW* pNMTreeView = reinterpret_cast<NM_TREEVIEW*>(pNMHDR);
+	const auto pNMTreeView = reinterpret_cast<NM_TREEVIEW*>(pNMHDR);
 	if (pNMTreeView)
 	{
 		DebugPrintEx(DBGHierarchy, CLASS, L"OnItemExpanding", L"Expanding item %p \"%ws\" action = 0x%08X state = 0x%08X\n", pNMTreeView->itemNew.hItem, strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str(), pNMTreeView->action, pNMTreeView->itemNew.state);
@@ -1005,7 +1009,7 @@ void CHierarchyTableTreeCtrl::OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* 
 // Tree control will call this for every node it deletes.
 void CHierarchyTableTreeCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
-	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+	const auto pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 	if (pNMTreeView)
 	{
 		auto* lpData = reinterpret_cast<SortListData*>(pNMTreeView->itemOld.lParam);
@@ -1016,18 +1020,18 @@ void CHierarchyTableTreeCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 			DebugPrintEx(DBGHierarchy, CLASS, L"OnDeleteItem", L"Unadvising %p, ulAdviseConnection = 0x%08X\n", lpData->Node()->m_lpAdviseSink, static_cast<int>(lpData->Node()->m_ulAdviseConnection));
 		}
 
-		if (lpData) delete lpData;
+		delete lpData;
 
 		if (!m_bShuttingDown)
 		{
 			// Collapse the parent if this is the last child
-			auto hPrev = TreeView_GetPrevSibling(m_hWnd, pNMTreeView->itemOld.hItem);
-			auto hNext = TreeView_GetNextSibling(m_hWnd, pNMTreeView->itemOld.hItem);
+			const auto hPrev = TreeView_GetPrevSibling(m_hWnd, pNMTreeView->itemOld.hItem);
+			const auto hNext = TreeView_GetNextSibling(m_hWnd, pNMTreeView->itemOld.hItem);
 
 			if (!(hPrev || hNext))
 			{
 				DebugPrintEx(DBGHierarchy, CLASS, L"OnDeleteItem", L"%p has no siblings\n", pNMTreeView->itemOld.hItem);
-				auto hParent = TreeView_GetParent(m_hWnd, pNMTreeView->itemOld.hItem);
+				const auto hParent = TreeView_GetParent(m_hWnd, pNMTreeView->itemOld.hItem);
 				TreeView_SetItemState(m_hWnd, hParent, 0, TVIS_EXPANDED | TVIS_EXPANDEDONCE);
 				TVITEM tvItem = { 0 };
 				tvItem.hItem = hParent;
@@ -1052,13 +1056,13 @@ void CHierarchyTableTreeCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 // Otherwise, ditch the notification
 _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnAddItem(WPARAM wParam, LPARAM lParam)
 {
-	auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
-	auto hParent = reinterpret_cast<HTREEITEM>(lParam);
+	const auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
+	const auto hParent = reinterpret_cast<HTREEITEM>(lParam);
 
 	DebugPrintEx(DBGHierarchy, CLASS, L"msgOnAddItem", L"Received message add item under: %p =\"%ws\"\n", hParent, strings::LPCTSTRToWstring(GetItemText(hParent)).c_str());
 
 	// only need to add the node if we're expanded
-	int iState = GetItemState(hParent, NULL);
+	const int iState = GetItemState(hParent, NULL);
 	if (iState & TVIS_EXPANDEDONCE)
 	{
 		auto hRes = S_OK;
@@ -1082,7 +1086,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnAddItem(WPARAM wParam, LPAR
 		tvItem.mask = TVIF_PARAM;
 		if (TreeView_GetItem(m_hWnd, &tvItem) && tvItem.lParam)
 		{
-			auto lpData = reinterpret_cast<SortListData*>(tvItem.lParam);
+			const auto lpData = reinterpret_cast<SortListData*>(tvItem.lParam);
 			if (lpData && lpData->Node())
 			{
 				lpData->Node()->m_cSubfolders = 1;
@@ -1099,9 +1103,9 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnDeleteItem(WPARAM wParam, L
 {
 	auto hRes = S_OK;
 	auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
-	auto hParent = reinterpret_cast<HTREEITEM>(lParam);
+	const auto hParent = reinterpret_cast<HTREEITEM>(lParam);
 
-	auto hItemToDelete = FindNode(
+	const auto hItemToDelete = FindNode(
 		&tab->propIndex.Value.bin,
 		hParent);
 
@@ -1120,9 +1124,9 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, L
 {
 	auto hRes = S_OK;
 	auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
-	auto hParent = reinterpret_cast<HTREEITEM>(lParam);
+	const auto hParent = reinterpret_cast<HTREEITEM>(lParam);
 
-	auto hModifyItem = FindNode(
+	const auto hModifyItem = FindNode(
 		&tab->propIndex.Value.bin,
 		hParent);
 
@@ -1130,7 +1134,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, L
 	{
 		DebugPrintEx(DBGHierarchy, CLASS, L"msgOnModifyItem", L"Received message modify item: %p =\"%ws\"\n", hModifyItem, strings::LPCTSTRToWstring(GetItemText(hModifyItem)).c_str());
 
-		auto lpName = PpropFindProp(
+		const auto lpName = PpropFindProp(
 			tab->row.lpProps,
 			tab->row.cValues,
 			PR_DISPLAY_NAME_W);
@@ -1182,10 +1186,10 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, L
 _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnRefreshTable(WPARAM wParam, LPARAM /*lParam*/)
 {
 	auto hRes = S_OK;
-	auto hRefreshItem = reinterpret_cast<HTREEITEM>(wParam);
+	const auto hRefreshItem = reinterpret_cast<HTREEITEM>(wParam);
 	DebugPrintEx(DBGHierarchy, CLASS, L"msgOnRefreshTable", L"Received message refresh table: %p =\"%ws\"\n", hRefreshItem, strings::LPCTSTRToWstring(GetItemText(hRefreshItem)).c_str());
 
-	int iState = GetItemState(hRefreshItem, NULL);
+	const int iState = GetItemState(hRefreshItem, NULL);
 	if (iState & TVIS_EXPANDED)
 	{
 		auto hChild = GetChildItem(hRefreshItem);
@@ -1199,7 +1203,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnRefreshTable(WPARAM wParam,
 		EC_B(SetItemState(hRefreshItem, NULL, TVIS_EXPANDED | TVIS_EXPANDEDONCE));
 		hRes = S_OK;
 		{
-			auto lpData = GetSortListData(hRefreshItem);
+			const auto lpData = GetSortListData(hRefreshItem);
 
 			if (lpData && lpData->Node())
 			{
@@ -1233,10 +1237,10 @@ _Check_return_ HTREEITEM CHierarchyTableTreeCtrl::FindNode(_In_ LPSBinary lpInst
 
 	while (hCurrent)
 	{
-		auto lpListData = GetSortListData(hCurrent);
+		const auto lpListData = GetSortListData(hCurrent);
 		if (lpListData && lpListData->Node())
 		{
-			auto lpCurInstance = lpListData->Node()->m_lpInstanceKey;
+			const auto lpCurInstance = lpListData->Node()->m_lpInstanceKey;
 			if (lpCurInstance)
 			{
 				if (!memcmp(lpCurInstance->lpb, lpInstance->lpb, lpInstance->cb))

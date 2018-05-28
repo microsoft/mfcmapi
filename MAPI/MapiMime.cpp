@@ -227,7 +227,7 @@ _Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
 	if (!lpulConvertFlags || !lpet || !lpmst || !lpulWrapLines || !pDoAdrBook) return MAPI_E_INVALID_PARAMETER;
 	auto hRes = S_OK;
 
-	editor::CEditor MyData(
+	dialog::editor::CEditor MyData(
 		pParentWnd,
 		IDS_CONVERTTOEML,
 		IDS_CONVERTTOEMLPROMPT,
@@ -269,7 +269,7 @@ _Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
 	if (!lpulConvertFlags || !pDoAdrBook || !pDoApply || !phCharSet || !pcSetApplyType) return MAPI_E_INVALID_PARAMETER;
 	auto hRes = S_OK;
 
-	editor::CEditor MyData(
+	dialog::editor::CEditor MyData(
 		pParentWnd,
 		IDS_CONVERTFROMEML,
 		IDS_CONVERTFROMEMLPROMPT,

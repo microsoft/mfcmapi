@@ -2,15 +2,17 @@
 #include <UI/Controls/SortList/SortListCtrl.h>
 #include "PropertyBag/PropertyBag.h"
 
-class CBaseDialog;
 class CMapiObjects;
+namespace dialog {
+	class CBaseDialog;
+}
 
 class CSingleMAPIPropListCtrl : public CSortListCtrl
 {
 public:
 	CSingleMAPIPropListCtrl(
 		_In_ CWnd* pCreateParent,
-		_In_ CBaseDialog* lpHostDlg,
+		_In_ dialog::CBaseDialog* lpHostDlg,
 		_In_ CMapiObjects* lpMapiObjects,
 		bool bIsAB
 	);
@@ -67,7 +69,7 @@ private:
 	// Custom messages
 	_Check_return_ LRESULT msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
 
-	CBaseDialog* m_lpHostDlg;
+	dialog::CBaseDialog* m_lpHostDlg;
 	bool m_bHaveEverDisplayedSomething;
 	bool m_bIsAB;
 	CMapiObjects* m_lpMapiObjects;

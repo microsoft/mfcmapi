@@ -495,7 +495,7 @@ namespace file
 	void ExportMessages(_In_ LPMAPIFOLDER lpFolder, HWND hWnd)
 	{
 		auto hRes = S_OK;
-		editor::CEditor MyData(
+		dialog::editor::CEditor MyData(
 			nullptr,
 			IDS_EXPORTTITLE,
 			IDS_EXPORTPROMPT,

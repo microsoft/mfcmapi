@@ -26,7 +26,7 @@ _Check_return_ HRESULT DisplayObject(
 	_In_ LPMAPIPROP lpUnk,
 	ULONG ulObjType,
 	ObjectType tType,
-	_In_ CBaseDialog* lpHostDlg)
+	_In_ dialog::CBaseDialog* lpHostDlg)
 {
 	auto hRes = S_OK;
 
@@ -67,7 +67,7 @@ _Check_return_ HRESULT DisplayObject(
 			if (lpMDB) lpMDB->AddRef(); // hold on to this so that...
 			lpMapiObjects->SetMDB(lpTempMDB);
 
-			new CMsgStoreDlg(
+			new dialog::CMsgStoreDlg(
 				lpParentWnd,
 				lpMapiObjects,
 				nullptr,
@@ -95,7 +95,7 @@ _Check_return_ HRESULT DisplayObject(
 				const auto lpMDB = lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
 				{
-					new CMsgStoreDlg(
+					new dialog::CMsgStoreDlg(
 						lpParentWnd,
 						lpMapiObjects,
 						lpTempFolder,
@@ -113,7 +113,7 @@ _Check_return_ HRESULT DisplayObject(
 						{
 							lpMapiObjects->SetMDB(lpNewMDB);
 
-							new CMsgStoreDlg(
+							new dialog::CMsgStoreDlg(
 								lpParentWnd,
 								lpMapiObjects,
 								lpTempFolder,
@@ -128,7 +128,7 @@ _Check_return_ HRESULT DisplayObject(
 			}
 			else if (otContents == tType || otAssocContents == tType)
 			{
-				new CFolderDlg(
+				new dialog::CFolderDlg(
 					lpParentWnd,
 					lpMapiObjects,
 					lpTempFolder,
@@ -141,32 +141,32 @@ _Check_return_ HRESULT DisplayObject(
 	break;
 	// #define MAPI_ABCONT ((ULONG) 0x00000004) /* Address Book Container */
 	case MAPI_ABCONT:
-		new CAbDlg(
+		new dialog::CAbDlg(
 			lpParentWnd,
 			lpMapiObjects,
 			dynamic_cast<LPABCONT>(lpUnk));
 		break;
 		// #define MAPI_MESSAGE ((ULONG) 0x00000005) /* Message */
 	case MAPI_MESSAGE:
-		new SingleMessageDialog(
+		new dialog::SingleMessageDialog(
 			lpParentWnd,
 			lpMapiObjects,
 			dynamic_cast<LPMESSAGE>(lpUnk));
 		break;
 		// #define MAPI_MAILUSER ((ULONG) 0x00000006) /* Individual Recipient */
 	case MAPI_MAILUSER:
-		new SingleRecipientDialog(
+		new dialog::SingleRecipientDialog(
 			lpParentWnd,
 			lpMapiObjects,
 			dynamic_cast<LPMAILUSER>(lpUnk));
 		break;
 		// #define MAPI_DISTLIST ((ULONG) 0x00000008) /* Distribution List Recipient */
 	case MAPI_DISTLIST: // A DistList is really an Address book anyways
-		new SingleRecipientDialog(
+		new dialog::SingleRecipientDialog(
 			lpParentWnd,
 			lpMapiObjects,
 			dynamic_cast<LPMAILUSER>(lpUnk));
-		new CAbDlg(
+		new dialog::CAbDlg(
 			lpParentWnd,
 			lpMapiObjects,
 			dynamic_cast<LPABCONT>(lpUnk));
@@ -196,7 +196,7 @@ _Check_return_ HRESULT DisplayObject(
 _Check_return_ HRESULT DisplayTable(
 	_In_ LPMAPITABLE lpTable,
 	ObjectType tType,
-	_In_ CBaseDialog* lpHostDlg)
+	_In_ dialog::CBaseDialog* lpHostDlg)
 {
 	if (!lpHostDlg) return MAPI_E_INVALID_PARAMETER;
 
@@ -213,7 +213,7 @@ _Check_return_ HRESULT DisplayTable(
 	case otStatus:
 	{
 		if (!lpTable) return MAPI_E_INVALID_PARAMETER;
-		new CContentsTableDlg(
+		new dialog::CContentsTableDlg(
 			lpParentWnd,
 			lpMapiObjects,
 			IDS_STATUSTABLE,
@@ -228,7 +228,7 @@ _Check_return_ HRESULT DisplayTable(
 	case otReceive:
 	{
 		if (!lpTable) return MAPI_E_INVALID_PARAMETER;
-		new CContentsTableDlg(
+		new dialog::CContentsTableDlg(
 			lpParentWnd,
 			lpMapiObjects,
 			IDS_RECEIVEFOLDERTABLE,
@@ -243,7 +243,7 @@ _Check_return_ HRESULT DisplayTable(
 	case otHierarchy:
 	{
 		if (!lpTable) return MAPI_E_INVALID_PARAMETER;
-		new CContentsTableDlg(
+		new dialog::CContentsTableDlg(
 			lpParentWnd,
 			lpMapiObjects,
 			IDS_HIERARCHYTABLE,
@@ -260,7 +260,7 @@ _Check_return_ HRESULT DisplayTable(
 	{
 		if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 		if (otDefault != tType) error::ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
-		new CContentsTableDlg(
+		new dialog::CContentsTableDlg(
 			lpParentWnd,
 			lpMapiObjects,
 			IDS_CONTENTSTABLE,
@@ -281,7 +281,7 @@ _Check_return_ HRESULT DisplayTable(
 	_In_ LPMAPIPROP lpMAPIProp,
 	ULONG ulPropTag,
 	ObjectType tType,
-	_In_ CBaseDialog* lpHostDlg)
+	_In_ dialog::CBaseDialog* lpHostDlg)
 {
 	auto hRes = S_OK;
 	LPMAPITABLE lpTable = nullptr;
@@ -318,14 +318,14 @@ _Check_return_ HRESULT DisplayTable(
 		switch (PROP_ID(ulPropTag))
 		{
 		case PROP_ID(PR_MESSAGE_ATTACHMENTS):
-			new CAttachmentsDlg(
+			new dialog::CAttachmentsDlg(
 				lpHostDlg->GetParentWnd(),
 				lpHostDlg->GetMapiObjects(),
 				lpTable,
 				dynamic_cast<LPMESSAGE>(lpMAPIProp));
 			break;
 		case PROP_ID(PR_MESSAGE_RECIPIENTS):
-			new CRecipientsDlg(
+			new dialog::CRecipientsDlg(
 				lpHostDlg->GetParentWnd(),
 				lpHostDlg->GetMapiObjects(),
 				lpTable,
@@ -349,7 +349,7 @@ _Check_return_ HRESULT DisplayExchangeTable(
 	_In_ LPMAPIPROP lpMAPIProp,
 	ULONG ulPropTag,
 	ObjectType tType,
-	_In_ CBaseDialog* lpHostDlg)
+	_In_ dialog::CBaseDialog* lpHostDlg)
 {
 	auto hRes = S_OK;
 	LPEXCHANGEMODIFYTABLE lpExchTbl = nullptr;
@@ -376,14 +376,14 @@ _Check_return_ HRESULT DisplayExchangeTable(
 		switch (tType)
 		{
 		case otRules:
-			new CRulesDlg(
+			new dialog::CRulesDlg(
 				lpParentWnd,
 				lpMapiObjects,
 				lpExchTbl);
 			break;
 		case otACL:
 		{
-			editor::CEditor MyData(
+			dialog::editor::CEditor MyData(
 				lpHostDlg,
 				IDS_ACLTABLE,
 				IDS_ACLTABLEPROMPT,
@@ -394,7 +394,7 @@ _Check_return_ HRESULT DisplayExchangeTable(
 			WC_H(MyData.DisplayDialog());
 			if (S_OK == hRes)
 			{
-				new CAclDlg(
+				new dialog::CAclDlg(
 					lpParentWnd,
 					lpMapiObjects,
 					lpExchTbl,
@@ -439,7 +439,7 @@ _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 
 		auto hRes = S_OK;
 
-		editor::CEditor Cancel(
+		dialog::editor::CEditor Cancel(
 			cWnd,
 			ID_PRODUCTNAME,
 			IDS_CANCELPROMPT,
@@ -481,7 +481,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 		LPMAPITABLE lpMailboxTable = nullptr;
 		const auto szServerName = strings::stringTowstring(GetServerName(lpMAPISession));
 
-		editor::CEditor MyData(
+		dialog::editor::CEditor MyData(
 			static_cast<CWnd*>(lpParent),
 			IDS_DISPLAYMAILBOXTABLE,
 			IDS_SERVERNAMEPROMPT,
@@ -570,7 +570,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 
 				if (SUCCEEDED(hRes) && lpMailboxTable)
 				{
-					new CMailboxTableDlg(
+					new dialog::CMailboxTableDlg(
 						lpParent,
 						lpMapiObjects,
 						MyData.GetStringW(0),
@@ -618,7 +618,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 		LPMAPITABLE lpPFTable = nullptr;
 		const auto szServerName = strings::stringTowstring(GetServerName(lpMAPISession));
 
-		editor::CEditor MyData(
+		dialog::editor::CEditor MyData(
 			static_cast<CWnd*>(lpParent),
 			IDS_DISPLAYPFTABLE,
 			IDS_DISPLAYPFTABLEPROMPT,
@@ -708,7 +708,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 
 				if (SUCCEEDED(hRes) && lpPFTable)
 				{
-					new CPublicFolderTableDlg(
+					new dialog::CPublicFolderTableDlg(
 						lpParent,
 						lpMapiObjects,
 						MyData.GetStringW(0),
@@ -749,7 +749,7 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 	if (lpMAPIFormMgr)
 	{
 		DebugPrint(DBGForms, L"OnResolveMessageClass: resolving message class\n");
-		editor::CEditor MyData(
+		dialog::editor::CEditor MyData(
 			nullptr,
 			IDS_RESOLVECLASS,
 			IDS_RESOLVECLASSPROMPT,

@@ -1045,7 +1045,7 @@ _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Out_opt_ ULONG* lpcbeid, _Der
 	if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 
 	EC_MAPI(lpMDB->GetReceiveFolder(
-		_T("IPM.Note"), // STRING_OK this is the class of message we want
+		const_cast<LPTSTR>(_T("IPM.Note")), // STRING_OK this is the class of message we want
 		fMapiUnicode, // flags
 		&cbInboxEID, // size and...
 		&lpInboxEID, // value of entry ID
@@ -2628,7 +2628,7 @@ LPSPropTagArray GetExcludedTags(_In_opt_ LPSPropTagArray lpTagArray, _In_opt_ LP
 {
 	auto hRes = S_OK;
 
-	editor::CTagArrayEditor TagEditor(
+	dialog::editor::CTagArrayEditor TagEditor(
 		nullptr,
 		IDS_TAGSTOEXCLUDE,
 		IDS_TAGSTOEXCLUDEPROMPT,
@@ -2668,7 +2668,7 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 #ifndef MRMAPI
 	if (bAllowUI)
 	{
-		editor::CEditor MyData(
+		dialog::editor::CEditor MyData(
 			nullptr,
 			IDS_COPYTO,
 			IDS_COPYPASTEPROMPT,

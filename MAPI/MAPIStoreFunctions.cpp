@@ -321,7 +321,7 @@ std::string GetServerName(_In_ LPMAPISESSION lpSession)
 	{
 		hRes = S_OK;
 		// prompt the user to enter a server name
-		editor::CEditor MyData(
+		dialog::editor::CEditor MyData(
 			nullptr,
 			IDS_SERVERNAME,
 			IDS_SERVERNAMEMISSINGPROMPT,
@@ -662,7 +662,7 @@ _Check_return_ HRESULT OpenMailboxWithPrompt(
 
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-	editor::CEditor MyPrompt(
+	dialog::editor::CEditor MyPrompt(
 		nullptr,
 		IDS_OPENOTHERUSER,
 		IDS_OPENWITHFLAGSPROMPT,

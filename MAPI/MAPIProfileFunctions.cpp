@@ -54,7 +54,7 @@ void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 
 	DebugPrint(DBGGeneric, L"DisplayMAPISVCPath()\n");
 
-	editor::CEditor MyData(
+	dialog::editor::CEditor MyData(
 		pParentWnd,
 		IDS_MAPISVCTITLE,
 		IDS_MAPISVCTEXT,
@@ -102,10 +102,10 @@ std::wstring GetMAPISVCPath()
 
 struct SERVICESINIREC
 {
-	LPWSTR lpszSection;
-	LPWSTR lpszKey;
+	LPCWSTR lpszSection;
+	LPCWSTR lpszKey;
 	ULONG ulKey;
-	LPWSTR lpszValue;
+	LPCWSTR lpszValue;
 };
 
 static SERVICESINIREC aEMSServicesIni[] =
@@ -324,7 +324,7 @@ _Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni
 void AddServicesToMapiSvcInf()
 {
 	auto hRes = S_OK;
-	editor::CEditor MyData(
+	dialog::editor::CEditor MyData(
 		nullptr,
 		IDS_ADDSERVICESTOINF,
 		IDS_ADDSERVICESTOINFPROMPT,
@@ -350,7 +350,7 @@ void AddServicesToMapiSvcInf()
 void RemoveServicesFromMapiSvcInf()
 {
 	auto hRes = S_OK;
-	editor::CEditor MyData(
+	dialog::editor::CEditor MyData(
 		nullptr,
 		IDS_REMOVEFROMINF,
 		IDS_REMOVEFROMINFPROMPT,
@@ -387,7 +387,7 @@ _Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmi
 	static const SizedSPropTagArray(1, pTagUID) =
 	{
 	1,
-	PR_SERVICE_UID
+		{PR_SERVICE_UID}
 	};
 
 	EC_MAPI(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
@@ -425,7 +425,7 @@ _Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmi
 						{
 							SPropValue PropVal;
 							PropVal.ulPropTag = PR_MARKER;
-							PropVal.Value.lpszA = MARKER_STRING;
+							PropVal.Value.lpszA = const_cast<LPSTR>(MARKER_STRING);
 							EC_MAPI(lpSect->SetProps(1, &PropVal, nullptr));
 						}
 						else

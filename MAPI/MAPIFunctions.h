@@ -126,7 +126,7 @@ enum
 };
 
 // Keep this in sync with the NUM_DEFAULT_PROPS enum above
-static LPWSTR FolderNames[] = {
+static LPCWSTR FolderNames[] = {
  L"",
  L"Calendar",
  L"Contacts",

@@ -21,24 +21,24 @@ _Check_return_ HRESULT DisplayObject(
 					  _In_ LPMAPIPROP lpUnk,
 					  ULONG ulObjType,
 					  ObjectType Table,
-					  _In_ CBaseDialog* lpHostDlg);
+					  _In_ dialog::CBaseDialog* lpHostDlg);
 
 _Check_return_ HRESULT DisplayExchangeTable(
 							 _In_ LPMAPIPROP lpMAPIProp,
 							 ULONG ulPropTag,
 							 ObjectType tType,
-							 _In_ CBaseDialog* lpHostDlg);
+							 _In_ dialog::CBaseDialog* lpHostDlg);
 
 _Check_return_ HRESULT DisplayTable(
 					 _In_ LPMAPITABLE lpTable,
 					 ObjectType tType,
-					 _In_ CBaseDialog* lpHostDlg);
+					 _In_ dialog::CBaseDialog* lpHostDlg);
 
 _Check_return_ HRESULT DisplayTable(
 					 _In_ LPMAPIPROP lpMAPIProp,
 					 ULONG ulPropTag,
 					 ObjectType tType,
-					 _In_ CBaseDialog* lpHostDlg);
+					 _In_ dialog::CBaseDialog* lpHostDlg);
 
 _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hRes);
 

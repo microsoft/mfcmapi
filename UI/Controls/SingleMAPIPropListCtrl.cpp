@@ -33,7 +33,7 @@ static std::wstring CLASS = L"CSingleMAPIPropListCtrl";
 
 CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 	_In_ CWnd* pCreateParent,
-	_In_ CBaseDialog *lpHostDlg,
+	_In_ dialog::CBaseDialog *lpHostDlg,
 	_In_ CMapiObjects* lpMapiObjects,
 	bool bIsAB)
 {
@@ -962,7 +962,7 @@ void CSingleMAPIPropListCtrl::FindAllNamedProps()
 #define __UPPERBOUNDDEFAULT 0x8FFF
 #define __UPPERBOUND 0xFFFF
 
-		editor::CEditor MyData(
+		dialog::editor::CEditor MyData(
 			this,
 			IDS_FINDNAMEPROPSLIMIT,
 			IDS_FINDNAMEPROPSLIMITPROMPT,
@@ -1090,7 +1090,7 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 		ulCurrent = (ulUpper + ulLower) / 2;
 	}
 
-	editor::CEditor MyResult(
+	dialog::editor::CEditor MyResult(
 		this,
 		IDS_COUNTNAMEDPROPS,
 		IDS_COUNTNAMEDPROPSPROMPT,
@@ -1152,7 +1152,7 @@ void CSingleMAPIPropListCtrl::OnDeleteProperty()
 	GetSelectedPropTag(&ulPropTag);
 	if (!ulPropTag) return;
 
-	editor::CEditor Query(
+	dialog::editor::CEditor Query(
 		this,
 		IDS_DELETEPROPERTY,
 		IDS_DELETEPROPERTYPROMPT,
@@ -1222,7 +1222,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
 
 	DebugPrint(DBGGeneric, L"Source restriction before editing:\n");
 	DebugPrintRestriction(DBGGeneric, lpResIn, m_lpPropBag->GetMAPIProp());
-	editor::CRestrictEditor MyResEditor(
+	dialog::editor::CRestrictEditor MyResEditor(
 		this,
 		nullptr, // No alloc parent - we must MAPIFreeBuffer the result
 		lpResIn);
@@ -1308,7 +1308,7 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 	if (bUseStream)
 	{
 		hRes = S_OK;
-		editor::CStreamEditor MyEditor(
+		dialog::editor::CStreamEditor MyEditor(
 			this,
 			IDS_PROPEDITOR,
 			IDS_STREAMEDITORPROMPT,
@@ -1330,7 +1330,7 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 
 		hRes = S_OK;
 		LPSPropValue lpModProp = nullptr;
-		WC_H(editor::DisplayPropertyEditor(
+		WC_H(dialog::editor::DisplayPropertyEditor(
 			this,
 			IDS_PROPEDITOR,
 			NULL,
@@ -1386,7 +1386,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 
 	if (bEditAsRTF)
 	{
-		editor::CEditor MyPrompt(
+		dialog::editor::CEditor MyPrompt(
 			this,
 			IDS_USEWRAPEX,
 			IDS_USEWRAPEXPROMPT,
@@ -1411,7 +1411,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 
 				m_lpPropBag->FreeBuffer(lpProp);
 
-				editor::CEditor MyPrompt2(
+				dialog::editor::CEditor MyPrompt2(
 					this,
 					IDS_WRAPEXFLAGS,
 					IDS_WRAPEXFLAGSPROMPT,
@@ -1437,7 +1437,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 
 	if (S_OK == hRes)
 	{
-		editor::CStreamEditor MyEditor(
+		dialog::editor::CStreamEditor MyEditor(
 			this,
 			IDS_PROPEDITOR,
 			IDS_STREAMEDITORPROMPT,
@@ -1484,7 +1484,7 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 	TagArray.cValues = 1;
 	TagArray.aulPropTag[0] = ulSourcePropTag;
 
-	editor::CEditor MyData(
+	dialog::editor::CEditor MyData(
 		this,
 		IDS_PASTEPROP,
 		IDS_PASTEPROPPROMPT,
@@ -1515,7 +1515,7 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 		{
 		case 0:
 		{
-			editor::CEditor MyCopyData(
+			dialog::editor::CEditor MyCopyData(
 				this,
 				IDS_PASTEPROP,
 				IDS_COPYPASTEPROMPT,
@@ -1679,7 +1679,7 @@ void CSingleMAPIPropListCtrl::OnModifyExtraProps()
 
 	auto hRes = S_OK;
 
-	editor::CTagArrayEditor MyTagArrayEditor(
+	dialog::editor::CTagArrayEditor MyTagArrayEditor(
 		this,
 		IDS_EXTRAPROPS,
 		NULL,
@@ -1708,7 +1708,7 @@ void CSingleMAPIPropListCtrl::OnEditGivenProperty()
 	// Display a dialog to get a property number.
 	auto hRes = S_OK;
 
-	editor::CPropertyTagEditor MyPropertyTag(
+	dialog::editor::CPropertyTagEditor MyPropertyTag(
 		IDS_EDITGIVENPROP,
 		NULL, // prompt
 		NULL,
@@ -1729,7 +1729,7 @@ void CSingleMAPIPropListCtrl::OnOpenPropertyAsTable()
 
 	// Display a dialog to get a property number.
 	auto hRes = S_OK;
-	editor::CPropertyTagEditor MyPropertyTag(
+	dialog::editor::CPropertyTagEditor MyPropertyTag(
 		IDS_OPENPROPASTABLE,
 		NULL, // prompt
 		NULL,
@@ -1740,7 +1740,7 @@ void CSingleMAPIPropListCtrl::OnOpenPropertyAsTable()
 	WC_H(MyPropertyTag.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		editor::CEditor MyData(
+		dialog::editor::CEditor MyData(
 			this,
 			IDS_OPENPROPASTABLE,
 			IDS_OPENPROPASTABLEPROMPT,
@@ -1782,7 +1782,7 @@ void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 		&& lpSourceMsgEID
 		&& 1 == lpSourceMsgEID->cValues)
 	{
-		editor::CEditor MyData(
+		dialog::editor::CEditor MyData(
 			this,
 			IDS_PASTENAMEDPROPS,
 			IDS_PASTENAMEDPROPSPROMPT,

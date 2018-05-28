@@ -1,9 +1,12 @@
 #pragma once
-#include "enums.h"
+#include <Enums.h>
 #include <UI/Controls/SortList/SortListData.h>
 
 class CMapiObjects;
-class CHierarchyTableDlg;
+namespace dialog
+{
+	class CHierarchyTableDlg;
+}
 
 class CHierarchyTableTreeCtrl : public CTreeCtrl
 {
@@ -11,7 +14,7 @@ public:
 	CHierarchyTableTreeCtrl(
 		_In_ CWnd* pCreateParent,
 		_In_ CMapiObjects* lpMapiObjects,
-		_In_ CHierarchyTableDlg *lpHostDlg,
+		_In_ dialog::CHierarchyTableDlg *lpHostDlg,
 		ULONG ulDisplayFlags,
 		UINT nIDContextMenu);
 	virtual ~CHierarchyTableTreeCtrl();
@@ -67,7 +70,7 @@ private:
 	_Check_return_ LRESULT msgOnRefreshTable(WPARAM wParam, LPARAM lParam);
 
 	LONG m_cRef;
-	CHierarchyTableDlg* m_lpHostDlg;
+	dialog::CHierarchyTableDlg* m_lpHostDlg;
 	CMapiObjects* m_lpMapiObjects;
 	LPMAPICONTAINER m_lpContainer;
 	ULONG m_ulContainerType;
