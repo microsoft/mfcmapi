@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
@@ -30,7 +30,7 @@ namespace editor
 		m_lpMAPIProp = lpMAPIProp;
 		if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-		InitPane(0, ListPane::Create(IDS_PROPTAGARRAY, false, false, ListEditCallBack(this)));
+		InitPane(0, viewpane::ListPane::Create(IDS_PROPTAGARRAY, false, false, ListEditCallBack(this)));
 	}
 
 	CTagArrayEditor::~CTagArrayEditor()
@@ -203,7 +203,7 @@ namespace editor
 			IDS_QUERYCOLUMNS,
 			IDS_QUERYCOLUMNSPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_QUERYCOLUMNFLAGS, false));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_QUERYCOLUMNFLAGS, false));
 		MyData.SetHex(0, ulQueryColumnFlags);
 
 		WC_H(MyData.DisplayDialog());
@@ -237,7 +237,7 @@ namespace editor
 			IDS_SETCOLUMNS,
 			IDS_SETCOLUMNSPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SETCOLUMNFLAGS, false));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SETCOLUMNFLAGS, false));
 		MyData.SetHex(0, m_ulSetColumnsFlags);
 
 		WC_H(MyData.DisplayDialog());

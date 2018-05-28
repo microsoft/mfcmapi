@@ -19,7 +19,7 @@ namespace editor
 #define CEDITOR_BUTTON_ACTION3 0x00000010
 
 	template<typename T>
-	DoListEditCallback ListEditCallBack(T* editor)
+	viewpane::DoListEditCallback ListEditCallBack(T* editor)
 	{
 		return [editor](auto a, auto b, auto c) {return editor->DoListEdit(a, b, c); };
 	}
@@ -47,7 +47,7 @@ namespace editor
 
 		// These functions can be used to set up a data editing dialog
 		void SetPromptPostFix(_In_ const std::wstring& szMsg);
-		void InitPane(ULONG iNum, ViewPane* lpPane);
+		void InitPane(ULONG iNum, viewpane::ViewPane* lpPane);
 		void SetStringA(ULONG i, const std::string& szMsg) const;
 		void SetStringW(ULONG i, const std::wstring& szMsg) const;
 		void SetStringf(ULONG i, LPCWSTR szMsg, ...) const;
@@ -63,7 +63,7 @@ namespace editor
 		void SetSize(ULONG i, size_t cb) const;
 
 		// Get values after we've done the DisplayDialog
-		ViewPane* GetPane(ULONG iPane) const;
+		viewpane::ViewPane* GetPane(ULONG iPane) const;
 		std::wstring GetStringW(ULONG i) const;
 		_Check_return_ ULONG GetHex(ULONG i) const;
 		_Check_return_ ULONG GetDecimal(ULONG i) const;
@@ -176,7 +176,7 @@ namespace editor
 		UINT m_uidActionButtonText2{};
 		UINT m_uidActionButtonText3{};
 
-		std::vector<ViewPane*> m_lpControls; // array of controls
+		std::vector<viewpane::ViewPane*> m_lpControls{}; // array of controls
 
 		bool m_bEnableScroll{};
 		CWnd m_ScrollWindow;

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/SingleMessageDialog.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
@@ -97,7 +97,7 @@ void SingleMessageDialog::OnRTFSync()
 		IDS_CALLRTFSYNCPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, RTF_SYNC_RTF_CHANGED);
 
 	WC_H(MyData.DisplayDialog());

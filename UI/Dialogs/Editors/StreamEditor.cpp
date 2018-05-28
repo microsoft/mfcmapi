@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/Editors/StreamEditor.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
@@ -146,17 +146,17 @@ namespace editor
 
 		// Let's crack our property open and see what kind of controls we'll need for it
 		// One control for text stream, one for binary
-		InitPane(m_iTextBox, TextPane::CreateCollapsibleTextPane(IDS_STREAMTEXT, false));
+		InitPane(m_iTextBox, viewpane::TextPane::CreateCollapsibleTextPane(IDS_STREAMTEXT, false));
 		if (bUseWrapEx)
 		{
-			InitPane(m_iFlagBox, TextPane::CreateSingleLinePane(IDS_STREAMFLAGS, true));
-			InitPane(m_iCodePageBox, TextPane::CreateSingleLinePane(IDS_CODEPAGE, true));
+			InitPane(m_iFlagBox, viewpane::TextPane::CreateSingleLinePane(IDS_STREAMFLAGS, true));
+			InitPane(m_iCodePageBox, viewpane::TextPane::CreateSingleLinePane(IDS_CODEPAGE, true));
 		}
 
-		InitPane(m_iBinBox, CountedTextPane::Create(IDS_STREAMBIN, false, IDS_CB));
+		InitPane(m_iBinBox, viewpane::CountedTextPane::Create(IDS_STREAMBIN, false, IDS_CB));
 		if (m_bDoSmartView)
 		{
-			InitPane(m_iSmartViewBox, SmartViewPane::Create(IDS_SMARTVIEW));
+			InitPane(m_iSmartViewBox, viewpane::SmartViewPane::Create(IDS_SMARTVIEW));
 		}
 	}
 
@@ -176,7 +176,7 @@ namespace editor
 		if (m_bDoSmartView)
 		{
 			// Load initial smart view here
-			auto lpSmartView = dynamic_cast<SmartViewPane*>(GetPane(m_iSmartViewBox));
+			auto lpSmartView = dynamic_cast<viewpane::SmartViewPane*>(GetPane(m_iSmartViewBox));
 			if (lpSmartView)
 			{
 				SPropValue sProp = { 0 };
@@ -358,7 +358,7 @@ namespace editor
 
 		if (m_lpStream)
 		{
-			auto lpPane = dynamic_cast<TextPane*>(GetPane(m_iBinBox));
+			auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(m_iBinBox));
 			if (lpPane)
 			{
 				return lpPane->SetBinaryStream(m_lpStream);
@@ -414,7 +414,7 @@ namespace editor
 
 		if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
 
-		auto lpBinPane = dynamic_cast<CountedTextPane*>(GetPane(m_iBinBox));
+		auto lpBinPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(m_iBinBox));
 		if (m_iTextBox == i && lpBinPane)
 		{
 			switch (m_ulEditorType)
@@ -461,7 +461,7 @@ namespace editor
 
 		if (m_bDoSmartView)
 		{
-			auto lpSmartView = dynamic_cast<SmartViewPane*>(GetPane(m_iSmartViewBox));
+			auto lpSmartView = dynamic_cast<viewpane::SmartViewPane*>(GetPane(m_iSmartViewBox));
 			if (lpSmartView)
 			{
 				auto bin = GetBinary(m_iBinBox);
@@ -487,7 +487,7 @@ namespace editor
 
 	void CStreamEditor::SetEditReadOnly(ULONG iControl) const
 	{
-		auto lpPane = dynamic_cast<TextPane*>(GetPane(iControl));
+		auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(iControl));
 		if (lpPane)
 		{
 			lpPane->SetReadOnly();

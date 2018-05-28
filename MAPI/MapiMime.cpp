@@ -1,9 +1,9 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <MAPI/MapiMime.h>
 #include <IO/File.h>
 #include <Interpret/Guids.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include "ImportProcs.h"
+#include <ImportProcs.h>
 #ifndef MRMAPI
 #include <Interpret/ExtraPropTags.h>
 #endif
@@ -233,18 +233,18 @@ _Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
 		IDS_CONVERTTOEMLPROMPT,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CONVERTFLAGS, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTFLAGS, false));
 	MyData.SetHex(0, CCSF_SMTP);
-	MyData.InitPane(1, CheckPane::Create(IDS_CONVERTDOENCODINGTYPE, false, false));
-	MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_CONVERTENCODINGTYPE, false));
+	MyData.InitPane(1, viewpane::CheckPane::Create(IDS_CONVERTDOENCODINGTYPE, false, false));
+	MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTENCODINGTYPE, false));
 	MyData.SetHex(2, IET_7BIT);
-	MyData.InitPane(3, CheckPane::Create(IDS_CONVERTDOMIMESAVETYPE, false, false));
-	MyData.InitPane(4, TextPane::CreateSingleLinePane(IDS_CONVERTMIMESAVETYPE, false));
+	MyData.InitPane(3, viewpane::CheckPane::Create(IDS_CONVERTDOMIMESAVETYPE, false, false));
+	MyData.InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTMIMESAVETYPE, false));
 	MyData.SetHex(4, SAVE_RFC822);
-	MyData.InitPane(5, CheckPane::Create(IDS_CONVERTDOWRAPLINES, false, false));
-	MyData.InitPane(6, TextPane::CreateSingleLinePane(IDS_CONVERTWRAPLINECOUNT, false));
+	MyData.InitPane(5, viewpane::CheckPane::Create(IDS_CONVERTDOWRAPLINES, false, false));
+	MyData.InitPane(6, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTWRAPLINECOUNT, false));
 	MyData.SetDecimal(6,74);
-	MyData.InitPane(7, CheckPane::Create(IDS_CONVERTDOADRBOOK, false, false));
+	MyData.InitPane(7, viewpane::CheckPane::Create(IDS_CONVERTDOADRBOOK, false, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -275,19 +275,19 @@ _Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
 		IDS_CONVERTFROMEMLPROMPT,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CONVERTFLAGS, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTFLAGS, false));
 	MyData.SetHex(0,CCSF_SMTP);
-	MyData.InitPane(1, CheckPane::Create(IDS_CONVERTCODEPAGE, false, false));
-	MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_CONVERTCODEPAGE, false));
+	MyData.InitPane(1, viewpane::CheckPane::Create(IDS_CONVERTCODEPAGE, false, false));
+	MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTCODEPAGE, false));
 	MyData.SetDecimal(2,CP_USASCII);
-	MyData.InitPane(3, TextPane::CreateSingleLinePane(IDS_CONVERTCHARSETTYPE, false));
+	MyData.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTCHARSETTYPE, false));
 	MyData.SetDecimal(3,CHARSET_BODY);
-	MyData.InitPane(4, TextPane::CreateSingleLinePane(IDS_CONVERTCHARSETAPPLYTYPE, false));
+	MyData.InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTCHARSETAPPLYTYPE, false));
 	MyData.SetDecimal(4,CSET_APPLY_UNTAGGED);
-	MyData.InitPane(5, CheckPane::Create(IDS_CONVERTDOADRBOOK, false, false));
+	MyData.InitPane(5, viewpane::CheckPane::Create(IDS_CONVERTDOADRBOOK, false, false));
 	if (pbUnicode)
 	{
-		MyData.InitPane(6, CheckPane::Create(IDS_SAVEUNICODE, false, false));
+		MyData.InitPane(6, viewpane::CheckPane::Create(IDS_SAVEUNICODE, false, false));
 	}
 
 	WC_H(MyData.DisplayDialog());

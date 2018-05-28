@@ -1,7 +1,7 @@
 // Displays the ACL table for an item
 
-#include "StdAfx.h"
-#include "AclDlg.h"
+#include <StdAfx.h>
+#include <UI/Dialogs/ContentsTable/AclDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MapiObjects.h>
@@ -123,8 +123,8 @@ void CAclDlg::OnAddItem()
 		IDS_ACLADDITEMPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_MEMBER_RIGHTS), true));
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_USEREID, false));
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_MASKINHEX, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_USEREID, false));
+	MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_MASKINHEX, false));
 	MyData.SetHex(1, 0);
 
 	WC_H(MyData.DisplayDialog());

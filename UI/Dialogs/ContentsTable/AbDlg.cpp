@@ -1,7 +1,7 @@
 // Displays the contents of a single address book
 
-#include "StdAfx.h"
-#include "ABDlg.h"
+#include <StdAfx.h>
+#include <UI/Dialogs/ContentsTable/ABDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
@@ -289,7 +289,7 @@ _Check_return_ bool CAbDlg::HandlePaste()
 			IDS_CALLCOPYENTRIESPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(0, CREATE_CHECK_DUP_STRICT);
 
 		WC_H(MyData.DisplayDialog());
@@ -326,7 +326,7 @@ void CAbDlg::OnCreatePropertyStringRestriction()
 		IDS_ABSEARCHCRITERIAPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_NAME, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK != hRes) return;

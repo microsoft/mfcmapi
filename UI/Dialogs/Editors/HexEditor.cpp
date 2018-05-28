@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/Editors/HexEditor.h>
 #include <UI/FileDialogEx.h>
 #include <ImportProcs.h>
@@ -26,11 +26,11 @@ namespace editor
 		m_lpMapiObjects = lpMapiObjects;
 		if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
 
-		InitPane(HEXED_ANSI, TextPane::CreateCollapsibleTextPane(IDS_ANSISTRING, false));
-		InitPane(HEXED_UNICODE, TextPane::CreateCollapsibleTextPane(IDS_UNISTRING, false));
-		InitPane(HEXED_BASE64, CountedTextPane::Create(IDS_BASE64STRING, false, IDS_CCH));
-		InitPane(HEXED_HEX, CountedTextPane::Create(IDS_HEX, false, IDS_CB));
-		InitPane(HEXED_SMARTVIEW, SmartViewPane::Create(IDS_SMARTVIEW));
+		InitPane(HEXED_ANSI, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ANSISTRING, false));
+		InitPane(HEXED_UNICODE, viewpane::TextPane::CreateCollapsibleTextPane(IDS_UNISTRING, false));
+		InitPane(HEXED_BASE64, viewpane::CountedTextPane::Create(IDS_BASE64STRING, false, IDS_CCH));
+		InitPane(HEXED_HEX, viewpane::CountedTextPane::Create(IDS_HEX, false, IDS_CB));
+		InitPane(HEXED_SMARTVIEW, viewpane::SmartViewPane::Create(IDS_SMARTVIEW));
 		DisplayParentedDialog(pParentWnd, 1000);
 	}
 
@@ -147,13 +147,13 @@ namespace editor
 		if (HEXED_SMARTVIEW != i)
 		{
 			// length of base64 encoded string
-			auto lpPane = dynamic_cast<CountedTextPane*>(GetPane(HEXED_BASE64));
+			auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(HEXED_BASE64));
 			if (lpPane)
 			{
 				lpPane->SetCount(cchEncodeStr);
 			}
 
-			lpPane = dynamic_cast<CountedTextPane*>(GetPane(HEXED_HEX));
+			lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(HEXED_HEX));
 			if (lpPane)
 			{
 				lpPane->SetCount(cb);
@@ -172,7 +172,7 @@ namespace editor
 	void CHexEditor::UpdateParser() const
 	{
 		// Find out how to interpret the data
-		auto lpPane = dynamic_cast<SmartViewPane*>(GetPane(HEXED_SMARTVIEW));
+		auto lpPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(HEXED_SMARTVIEW));
 		if (lpPane)
 		{
 			auto bin = GetBinary(HEXED_HEX);
@@ -210,7 +210,7 @@ namespace editor
 
 				if (lpStream)
 				{
-					auto lpPane = dynamic_cast<TextPane*>(GetPane(HEXED_HEX));
+					auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(HEXED_HEX));
 					if (lpPane)
 					{
 						lpPane->SetBinaryStream(lpStream);
@@ -249,7 +249,7 @@ namespace editor
 
 				if (lpStream)
 				{
-					const auto lpPane = dynamic_cast<TextPane*>(GetPane(HEXED_HEX));
+					const auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(HEXED_HEX));
 					if (lpPane)
 					{
 						lpPane->GetBinaryStream(lpStream);

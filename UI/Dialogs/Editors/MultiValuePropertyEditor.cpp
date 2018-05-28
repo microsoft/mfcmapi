@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "MultiValuePropertyEditor.h"
+#include <StdAfx.h>
+#include <UI/Dialogs/Editors/MultiValuePropertyEditor.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <UI/Controls/SortList/MVPropData.h>
@@ -64,7 +64,7 @@ namespace editor
 		auto szSmartView = smartView.second;
 		if (!szSmartView.empty())
 		{
-			auto lpPane = dynamic_cast<SmartViewPane*>(GetPane(1));
+			auto lpPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
 			if (lpPane)
 			{
 				lpPane->SetParser(iStructType);
@@ -87,11 +87,11 @@ namespace editor
 
 	void CMultiValuePropertyEditor::InitPropertyControls()
 	{
-		InitPane(0, ListPane::Create(IDS_PROPVALUES, false, false, ListEditCallBack(this)));
+		InitPane(0, viewpane::ListPane::Create(IDS_PROPVALUES, false, false, ListEditCallBack(this)));
 		if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag) ||
 			PT_MV_LONG == PROP_TYPE(m_ulPropTag))
 		{
-			auto lpPane = SmartViewPane::Create(IDS_SMARTVIEW);
+			auto lpPane = viewpane::SmartViewPane::Create(IDS_SMARTVIEW);
 			InitPane(1, lpPane);
 
 			if (lpPane && PT_MV_LONG == PROP_TYPE(m_ulPropTag))
@@ -388,7 +388,7 @@ namespace editor
 	void CMultiValuePropertyEditor::UpdateSmartView() const
 	{
 		auto hRes = S_OK;
-		auto lpPane = dynamic_cast<SmartViewPane*>(GetPane(1));
+		auto lpPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
 		if (lpPane)
 		{
 			LPSPropValue lpsProp = nullptr;
@@ -430,7 +430,7 @@ namespace editor
 
 		// We check against the list pane first so we can track if it handled the change,
 		// because if it did, we're going to recalculate smart view.
-		auto lpPane = dynamic_cast<ListPane*>(GetPane(0));
+		auto lpPane = dynamic_cast<viewpane::ListPane*>(GetPane(0));
 		if (lpPane)
 		{
 			i = lpPane->HandleChange(nID);

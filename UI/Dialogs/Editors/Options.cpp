@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/Options.h>
 #include <ImportProcs.h>
@@ -36,20 +36,20 @@ namespace editor
 		{
 			if (regoptCheck == RegKeys[ulReg].ulRegOptType)
 			{
-				InitPane(ulReg, CheckPane::Create(RegKeys[ulReg].uiOptionsPrompt, 0 != RegKeys[ulReg].ulCurDWORD, false));
+				InitPane(ulReg, viewpane::CheckPane::Create(RegKeys[ulReg].uiOptionsPrompt, 0 != RegKeys[ulReg].ulCurDWORD, false));
 			}
 			else if (regoptString == RegKeys[ulReg].ulRegOptType)
 			{
-				InitPane(ulReg, TextPane::CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, RegKeys[ulReg].szCurSTRING, false));
+				InitPane(ulReg, viewpane::TextPane::CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, RegKeys[ulReg].szCurSTRING, false));
 			}
 			else if (regoptStringHex == RegKeys[ulReg].ulRegOptType)
 			{
-				InitPane(ulReg, TextPane::CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, false));
+				InitPane(ulReg, viewpane::TextPane::CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, false));
 				SetHex(ulReg, RegKeys[ulReg].ulCurDWORD);
 			}
 			else if (regoptStringDec == RegKeys[ulReg].ulRegOptType)
 			{
-				InitPane(ulReg, TextPane::CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, false));
+				InitPane(ulReg, viewpane::TextPane::CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, false));
 				SetDecimal(ulReg, RegKeys[ulReg].ulCurDWORD);
 			}
 		}

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include "PublicFolderTableDlg.h"
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
@@ -80,8 +80,8 @@ void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
 
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_NAME, false));
-		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));
+		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
 		MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
 
 		WC_H(MyData.DisplayDialog());

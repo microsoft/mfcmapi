@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/UIFunctions.h>
 #include <Interpret/String.h>
@@ -153,7 +153,7 @@ namespace editor
 			{
 			case NM_DBLCLK:
 			case NM_RETURN:
-				auto pane = dynamic_cast<ListPane*>(GetPane(m_ulListNum));
+				auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(m_ulListNum));
 				if (pane)
 				{
 					(void)pane->HandleChange(IDD_LISTEDIT);
@@ -512,7 +512,7 @@ namespace editor
 	// This should work whether the editor is active/displayed or not
 	GUID CEditor::GetSelectedGUID(ULONG iControl, bool bByteSwapped) const
 	{
-		const auto pane = dynamic_cast<DropDownPane*>(GetPane(iControl));
+		const auto pane = dynamic_cast<viewpane::DropDownPane*>(GetPane(iControl));
 		if (pane)
 		{
 			return pane->GetSelectedGUID(bByteSwapped);
@@ -945,7 +945,7 @@ namespace editor
 			if (pane)
 			{
 				auto iViewHeight = 0;
-				UINT iLines = pane->GetLines();
+				const UINT iLines = pane->GetLines();
 				if (iLines)
 				{
 					iViewHeight = iLines * iLineHeight;
@@ -983,15 +983,15 @@ namespace editor
 	}
 
 	// TODO: Use iNum as a proper accessor name
-	void CEditor::InitPane(ULONG iNum, ViewPane* lpPane)
+	void CEditor::InitPane(ULONG iNum, viewpane::ViewPane* lpPane)
 	{
-		const auto listPane = dynamic_cast<ListPane*>(lpPane);
+		const auto listPane = dynamic_cast<viewpane::ListPane*>(lpPane);
 		if (listPane) m_ulListNum = iNum;
 		m_lpControls.push_back(lpPane);
 	}
 
 	// TODO: Use iPane as a proper accessor name
-	ViewPane* CEditor::GetPane(ULONG iPane) const
+	viewpane::ViewPane* CEditor::GetPane(ULONG iPane) const
 	{
 		if (iPane < 0 || iPane >= m_lpControls.size()) return nullptr;
 		return m_lpControls[iPane];
@@ -1006,7 +1006,7 @@ namespace editor
 	// Sets string
 	void CEditor::SetStringA(ULONG i, const std::string& szMsg) const
 	{
-		auto pane = dynamic_cast<TextPane*>(GetPane(i));
+		auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
 		if (pane)
 		{
 			pane->SetStringW(strings::stringTowstring(szMsg));
@@ -1016,7 +1016,7 @@ namespace editor
 	// Sets string
 	void CEditor::SetStringW(ULONG i, const std::wstring& szMsg) const
 	{
-		auto pane = dynamic_cast<TextPane*>(GetPane(i));
+		auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
 		if (pane)
 		{
 			pane->SetStringW(szMsg);
@@ -1059,7 +1059,7 @@ namespace editor
 	// Updates pane using SetBinary
 	void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
 	{
-		auto pane = dynamic_cast<TextPane*>(GetPane(i));
+		auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
 		if (pane)
 		{
 			pane->SetBinary(lpb, cb);
@@ -1122,7 +1122,7 @@ namespace editor
 
 	void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, const std::wstring& szListString) const
 	{
-		auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
+		auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
 		if (pane)
 		{
 			pane->SetListString(iListRow, iListCol, szListString);
@@ -1131,7 +1131,7 @@ namespace editor
 
 	_Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, const std::wstring& szText) const
 	{
-		const auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
+		const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
 		if (pane)
 		{
 			return pane->InsertRow(iRow, szText);
@@ -1142,7 +1142,7 @@ namespace editor
 
 	void CEditor::ClearList(ULONG iControl) const
 	{
-		auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
+		auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
 		if (pane)
 		{
 			pane->ClearList();
@@ -1151,7 +1151,7 @@ namespace editor
 
 	void CEditor::ResizeList(ULONG iControl, bool bSort) const
 	{
-		auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
+		auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
 		if (pane)
 		{
 			pane->ResizeList(bSort);
@@ -1160,7 +1160,7 @@ namespace editor
 
 	std::wstring CEditor::GetStringW(ULONG i) const
 	{
-		const auto pane = dynamic_cast<TextPane*>(GetPane(i));
+		const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
 		if (pane)
 		{
 			return pane->GetStringW();
@@ -1171,7 +1171,7 @@ namespace editor
 
 	_Check_return_ std::string CEditor::GetStringA(ULONG iControl) const
 	{
-		const auto pane = dynamic_cast<TextPane*>(GetPane(iControl));
+		const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(iControl));
 		if (pane)
 		{
 			return strings::wstringTostring(pane->GetStringW());
@@ -1182,7 +1182,7 @@ namespace editor
 
 	_Check_return_ ULONG CEditor::GetHex(ULONG i) const
 	{
-		const auto pane = dynamic_cast<TextPane*>(GetPane(i));
+		const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
 		if (pane)
 		{
 			return strings::wstringToUlong(pane->GetStringW(), 16);
@@ -1193,7 +1193,7 @@ namespace editor
 
 	_Check_return_ ULONG CEditor::GetListCount(ULONG iControl) const
 	{
-		const auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
+		const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
 		if (pane)
 		{
 			return pane->GetItemCount();
@@ -1204,7 +1204,7 @@ namespace editor
 
 	_Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow) const
 	{
-		const auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
+		const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
 		if (pane)
 		{
 			return pane->GetItemData(iRow);
@@ -1221,7 +1221,7 @@ namespace editor
 
 	_Check_return_ ULONG CEditor::GetPropTag(ULONG i) const
 	{
-		const auto pane = dynamic_cast<TextPane*>(GetPane(i));
+		const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
 		if (pane)
 		{
 
@@ -1242,7 +1242,7 @@ namespace editor
 
 	_Check_return_ ULONG CEditor::GetDecimal(ULONG i) const
 	{
-		const auto pane = dynamic_cast<TextPane*>(GetPane(i));
+		const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
 		if (pane)
 		{
 			return strings::wstringToUlong(pane->GetStringW(), 10);
@@ -1253,7 +1253,7 @@ namespace editor
 
 	_Check_return_ bool CEditor::GetCheck(ULONG i) const
 	{
-		const auto pane = dynamic_cast<CheckPane*>(GetPane(i));
+		const auto pane = dynamic_cast<viewpane::CheckPane*>(GetPane(i));
 		if (pane)
 		{
 			return pane->GetCheck();
@@ -1264,7 +1264,7 @@ namespace editor
 
 	_Check_return_ int CEditor::GetDropDown(ULONG i) const
 	{
-		const auto pane = dynamic_cast<DropDownPane*>(GetPane(i));
+		const auto pane = dynamic_cast<viewpane::DropDownPane*>(GetPane(i));
 		if (pane)
 		{
 			return pane->GetDropDown();
@@ -1275,7 +1275,7 @@ namespace editor
 
 	_Check_return_ DWORD_PTR CEditor::GetDropDownValue(ULONG i) const
 	{
-		const auto pane = dynamic_cast<DropDownPane*>(GetPane(i));
+		const auto pane = dynamic_cast<viewpane::DropDownPane*>(GetPane(i));
 		if (pane)
 		{
 			return pane->GetDropDownValue();
@@ -1286,7 +1286,7 @@ namespace editor
 
 	void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText) const
 	{
-		auto pane = dynamic_cast<ListPane*>(GetPane(ulListNum));
+		auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(ulListNum));
 		if (pane)
 		{
 			pane->InsertColumn(nCol, uidText);
@@ -1295,7 +1295,7 @@ namespace editor
 
 	void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulPropType) const
 	{
-		auto pane = dynamic_cast<ListPane*>(GetPane(ulListNum));
+		auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(ulListNum));
 		if (pane)
 		{
 			pane->InsertColumn(nCol, uidText);
@@ -1341,7 +1341,7 @@ namespace editor
 
 	_Check_return_ bool CEditor::OnEditListEntry(ULONG ulListNum) const
 	{
-		auto pane = dynamic_cast<ListPane*>(GetPane(ulListNum));
+		auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(ulListNum));
 		if (pane)
 		{
 			return pane->OnEditListEntry();

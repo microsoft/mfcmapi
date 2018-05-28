@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <IO/File.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
@@ -501,7 +501,7 @@ namespace file
 			IDS_EXPORTPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_EXPORTSEARCHTERM, false));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EXPORTSEARCHTERM, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;

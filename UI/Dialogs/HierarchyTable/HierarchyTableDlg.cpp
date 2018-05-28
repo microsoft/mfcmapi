@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/HierarchyTable/HierarchyTableDlg.h>
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <UI/FakeSplitter.h>
@@ -137,7 +137,7 @@ void CHierarchyTableDlg::OnDisplayHierarchyTable()
 			IDS_DISPLAYHIEARCHYTABLE,
 			IDS_DISPLAYHIEARCHYTABLEPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, CheckPane::Create(IDS_CONVENIENTDEPTH, false, false));
+		MyData.InitPane(0, viewpane::CheckPane::Create(IDS_CONVENIENTDEPTH, false, false));
 
 		WC_H(MyData.DisplayDialog());
 

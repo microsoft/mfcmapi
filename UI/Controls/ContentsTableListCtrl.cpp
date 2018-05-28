@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
@@ -212,14 +212,14 @@ void CContentsTableListCtrl::GetStatus()
 			IDS_GETSTATUS,
 			IDS_GETSTATUSPROMPT,
 			CEDITOR_BUTTON_OK);
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, true));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, true));
 		MyData.SetHex(0, ulTableStatus);
 		auto szFlags = interpretprop::InterpretFlags(flagTableStatus, ulTableStatus);
-		MyData.InitPane(1, TextPane::CreateMultiLinePane(IDS_ULTABLESTATUS, szFlags, true));
-		MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_ULTABLETYPE, true));
+		MyData.InitPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLESTATUS, szFlags, true));
+		MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLETYPE, true));
 		MyData.SetHex(2, ulTableType);
 		szFlags = interpretprop::InterpretFlags(flagTableType, ulTableType);
-		MyData.InitPane(3, TextPane::CreateMultiLinePane(IDS_ULTABLETYPE, szFlags, true));
+		MyData.InitPane(3, viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLETYPE, szFlags, true));
 
 		WC_H(MyData.DisplayDialog());
 	}

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
@@ -448,7 +448,7 @@ void CMainDlg::OnOpenDefaultMessageStore()
 			IDS_OPENWITHFLAGSPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-		MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
+		MyPrompt.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 		MyPrompt.SetHex(0, NULL);
 		WC_H(MyPrompt.DisplayDialog());
 		if (S_OK == hRes)
@@ -532,12 +532,12 @@ void CMainDlg::OnOpenMessageStoreEID()
 		IDS_OPENSTOREEIDPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyEID.InitPane(0, TextPane::CreateSingleLinePane(IDS_EID, false));
-	MyEID.InitPane(1, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+	MyEID.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EID, false));
+	MyEID.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 	MyEID.SetHex(1, MDB_WRITE);
-	MyEID.InitPane(2, CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
-	MyEID.InitPane(3, CheckPane::Create(IDS_DISPLAYPROPS, false, false));
-	MyEID.InitPane(4, CheckPane::Create(IDS_UNWRAPSTORE, false, false));
+	MyEID.InitPane(2, viewpane::CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
+	MyEID.InitPane(3, viewpane::CheckPane::Create(IDS_DISPLAYPROPS, false, false));
+	MyEID.InitPane(4, viewpane::CheckPane::Create(IDS_UNWRAPSTORE, false, false));
 
 	WC_H(MyEID.DisplayDialog());
 	if (S_OK != hRes) return;
@@ -603,7 +603,7 @@ void CMainDlg::OnOpenPublicFolders()
 		IDS_OPENWITHFLAGSPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-	MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
+	MyPrompt.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 	MyPrompt.SetHex(0, NULL);
 	WC_H(MyPrompt.DisplayDialog());
 	if (S_OK == hRes)
@@ -642,8 +642,8 @@ void CMainDlg::OnOpenPublicFolderWithDN()
 		IDS_OPENWITHFLAGSPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-	MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
-	MyPrompt.InitPane(1, TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
+	MyPrompt.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
+	MyPrompt.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 	MyPrompt.SetHex(1, OPENSTORE_PUBLIC);
 	WC_H(MyPrompt.DisplayDialog());
 	if (S_OK == hRes)
@@ -869,7 +869,7 @@ void CMainDlg::OnDumpServerContents()
 		IDS_DUMPSERVERPRIVATESTORE,
 		IDS_SERVERNAMEPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -918,7 +918,7 @@ void CMainDlg::OnLogoffWithFlags()
 		IDS_LOGOFF,
 		IDS_LOGOFFPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
 	MyData.SetHex(0, MAPI_LOGOFF_UI);
 
 	WC_H(MyData.DisplayDialog());
@@ -961,8 +961,8 @@ void CMainDlg::OnLogonWithFlags()
 		IDS_PROFFORMAPILOGON,
 		IDS_PROFFORMAPILOGONPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_PROFILE, false));
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILE, false));
+	MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
 	MyData.SetHex(1, MAPI_EXTENDED | MAPI_EXPLICIT_PROFILE | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI);
 
 	WC_H(MyData.DisplayDialog());
@@ -1029,7 +1029,7 @@ void CMainDlg::OnSelectFormContainer()
 			IDS_SELECTFORM,
 			IDS_SELECTFORMPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyFlags.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+		MyFlags.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyFlags.SetHex(0, MAPIFORM_SELECT_ALL_REGISTRIES);
 
 		WC_H(MyFlags.DisplayDialog());
@@ -1074,7 +1074,7 @@ void CMainDlg::OnOpenFormContainer()
 			IDS_OPENFORMCONTAINER,
 			IDS_OPENFORMCONTAINERPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyFlags.InitPane(0, TextPane::CreateSingleLinePane(IDS_HFRMREG, false));
+		MyFlags.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_HFRMREG, false));
 		MyFlags.SetHex(0, MAPIFORM_SELECT_ALL_REGISTRIES);
 
 		WC_H(MyFlags.DisplayDialog());
@@ -1136,7 +1136,7 @@ void CMainDlg::OnLoadMAPI()
 	if (cchDllPath < _countof(szDLLPath))
 	{
 		const auto szFullPath = std::wstring(szDLLPath) + L"\\mapi32.dll";
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_PATH, szFullPath, false));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PATH, szFullPath, false));
 	}
 
 	WC_H(MyData.DisplayDialog());
@@ -1179,7 +1179,7 @@ void CMainDlg::OnDisplayMAPIPath()
 		IDS_MAPIPATHTITLE,
 		NULL,
 		CEDITOR_BUTTON_OK);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
 	if (hMAPI)
 	{
 		const auto dw = GetModuleFileNameW(hMAPI, szMAPIPath, _countof(szMAPIPath));
@@ -1189,8 +1189,8 @@ void CMainDlg::OnDisplayMAPIPath()
 		}
 	}
 
-	MyData.InitPane(1, CheckPane::Create(IDS_REGKEY_FORCEOUTLOOKMAPI, 0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD, true));
-	MyData.InitPane(2, CheckPane::Create(IDS_REGKEY_FORCESYSTEMMAPI, 0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD, true));
+	MyData.InitPane(1, viewpane::CheckPane::Create(IDS_REGKEY_FORCEOUTLOOKMAPI, 0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD, true));
+	MyData.InitPane(2, viewpane::CheckPane::Create(IDS_REGKEY_FORCESYSTEMMAPI, 0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD, true));
 
 	WC_H(MyData.DisplayDialog());
 }
@@ -1205,7 +1205,7 @@ void CMainDlg::OnMAPIInitialize()
 		IDS_MAPIINIT,
 		IDS_MAPIINITPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
 	MyData.SetHex(0, NULL);
 
 	WC_H(MyData.DisplayDialog());
@@ -1276,7 +1276,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 		IDS_QUERYDEFMSGOPT,
 		IDS_ADDRESSTYPEPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1300,7 +1300,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 				IDS_QUERYDEFMSGOPT,
 				IDS_RESULTOFCALLPROMPT,
 				CEDITOR_BUTTON_OK);
-			MyResult.InitPane(0, TextPane::CreateSingleLinePane(IDS_COUNTOPTIONS, true));
+			MyResult.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_COUNTOPTIONS, true));
 			MyResult.SetHex(0, cValues);
 
 			if (lpOptions)
@@ -1318,7 +1318,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 						szAltProp.c_str());
 				}
 
-				MyResult.InitPane(1, TextPane::CreateMultiLinePane(IDS_OPTIONS, szPropString, true));
+				MyResult.InitPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_OPTIONS, szPropString, true));
 			}
 
 			WC_H(MyResult.DisplayDialog());
@@ -1340,7 +1340,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 		IDS_QUERYDEFRECIPOPT,
 		IDS_ADDRESSTYPEPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1365,7 +1365,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 				IDS_QUERYDEFRECIPOPT,
 				IDS_RESULTOFCALLPROMPT,
 				CEDITOR_BUTTON_OK);
-			MyResult.InitPane(0, TextPane::CreateSingleLinePane(IDS_COUNTOPTIONS, true));
+			MyResult.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_COUNTOPTIONS, true));
 			MyResult.SetHex(0, cValues);
 
 			if (lpOptions)
@@ -1383,7 +1383,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 						szAltProp.c_str());
 				}
 
-				MyResult.InitPane(1, TextPane::CreateMultiLinePane(IDS_OPTIONS, szPropString, true));
+				MyResult.InitPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_OPTIONS, szPropString, true));
 			}
 
 			WC_H(MyResult.DisplayDialog());
@@ -1416,7 +1416,7 @@ void CMainDlg::OnQueryIdentity()
 			IDS_QUERYID,
 			IDS_QUERYIDPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyPrompt.InitPane(0, CheckPane::Create(IDS_DISPLAYDETAILSDLG, false, false));
+		MyPrompt.InitPane(0, viewpane::CheckPane::Create(IDS_DISPLAYDETAILSDLG, false, false));
 		WC_H(MyPrompt.DisplayDialog());
 		if (S_OK == hRes)
 		{
@@ -1482,7 +1482,7 @@ void CMainDlg::OnSetDefaultStore()
 				IDS_SETDEFSTORE,
 				IDS_SETDEFSTOREPROMPT,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 			MyData.SetHex(0, MAPI_DEFAULT_STORE);
 
 			WC_H(MyData.DisplayDialog());
@@ -1509,7 +1509,7 @@ void CMainDlg::OnIsAttachmentBlocked()
 		IDS_ISATTBLOCKED,
 		IDS_ENTERFILENAME,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FILENAME, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILENAME, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1524,7 +1524,7 @@ void CMainDlg::OnIsAttachmentBlocked()
 				IDS_RESULTOFCALLPROMPT,
 				CEDITOR_BUTTON_OK);
 			const auto szResult = strings::loadstring(bBlocked ? IDS_TRUE : IDS_FALSE);
-			MyResult.InitPane(0, TextPane::CreateSingleLinePane(IDS_RESULT, szResult, true));
+			MyResult.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RESULT, szResult, true));
 
 			WC_H(MyResult.DisplayDialog());
 		}
@@ -1570,9 +1570,9 @@ void CMainDlg::OnLaunchProfileWizard()
 		IDS_LAUNCHPROFWIZ,
 		IDS_LAUNCHPROFWIZPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
+	MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)

@@ -1,8 +1,8 @@
 // Collection of useful MAPI functions
 
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <MAPI/MAPIProfileFunctions.h>
-#include "ImportProcs.h"
+#include <ImportProcs.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/ExtraPropTags.h>
@@ -59,7 +59,7 @@ void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 		IDS_MAPISVCTITLE,
 		IDS_MAPISVCTEXT,
 		CEDITOR_BUTTON_OK);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
 	MyData.SetStringW(0, GetMAPISVCPath());
 
 	WC_H(MyData.DisplayDialog());
@@ -329,8 +329,8 @@ void AddServicesToMapiSvcInf()
 		IDS_ADDSERVICESTOINF,
 		IDS_ADDSERVICESTOINFPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CheckPane::Create(IDS_EXCHANGE, false, false));
-	MyData.InitPane(1, CheckPane::Create(IDS_PST, false, false));
+	MyData.InitPane(0, viewpane::CheckPane::Create(IDS_EXCHANGE, false, false));
+	MyData.InitPane(1, viewpane::CheckPane::Create(IDS_PST, false, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -355,8 +355,8 @@ void RemoveServicesFromMapiSvcInf()
 		IDS_REMOVEFROMINF,
 		IDS_REMOVEFROMINFPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CheckPane::Create(IDS_EXCHANGE, false, false));
-	MyData.InitPane(1, CheckPane::Create(IDS_PST, false, false));
+	MyData.InitPane(0, viewpane::CheckPane::Create(IDS_EXCHANGE, false, false));
+	MyData.InitPane(1, viewpane::CheckPane::Create(IDS_PST, false, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)

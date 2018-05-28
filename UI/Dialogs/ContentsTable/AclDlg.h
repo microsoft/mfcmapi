@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ContentsTableDlg.h"
+#include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
 class CAclDlg : public CContentsTableDlg
 {

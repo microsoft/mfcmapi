@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/ColumnTags.h>
@@ -967,9 +967,9 @@ void CSingleMAPIPropListCtrl::FindAllNamedProps()
 			IDS_FINDNAMEPROPSLIMIT,
 			IDS_FINDNAMEPROPSLIMITPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_LOWERBOUND, false));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_LOWERBOUND, false));
 		MyData.SetHex(0, __LOWERBOUND);
-		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_UPPERBOUND, false));
+		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_UPPERBOUND, false));
 		MyData.SetHex(1, __UPPERBOUNDDEFAULT);
 
 		WC_H(MyData.DisplayDialog());
@@ -1112,10 +1112,10 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 			ulHighestKnown = ulCurrent;
 		}
 
-		MyResult.InitPane(0, TextPane::CreateSingleLinePane(IDS_HIGHESTNAMEDPROPTOTAL, true));
+		MyResult.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_HIGHESTNAMEDPROPTOTAL, true));
 		MyResult.SetDecimal(0, ulHighestKnown - 0x8000);
 
-		MyResult.InitPane(1, TextPane::CreateMultiLinePane(IDS_HIGHESTNAMEDPROPNUM, true));
+		MyResult.InitPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_HIGHESTNAMEDPROPNUM, true));
 
 		if (S_OK == hRes && ulPropNames == 1 && lppPropNames && *lppPropNames)
 		{
@@ -1133,7 +1133,7 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 	}
 	else
 	{
-		MyResult.InitPane(0, TextPane::CreateSingleLinePane(IDS_HIGHESTNAMEDPROPTOTAL, true));
+		MyResult.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_HIGHESTNAMEDPROPTOTAL, true));
 		MyResult.LoadString(0, IDS_HIGHESTNAMEDPROPNOTFOUND);
 	}
 
@@ -1391,7 +1391,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 			IDS_USEWRAPEX,
 			IDS_USEWRAPEXPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyPrompt.InitPane(0, CheckPane::Create(IDS_USEWRAPEX, true, false));
+		MyPrompt.InitPane(0, viewpane::CheckPane::Create(IDS_USEWRAPEX, true, false));
 
 		WC_H(MyPrompt.DisplayDialog());
 		if (S_OK == hRes)
@@ -1416,11 +1416,11 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 					IDS_WRAPEXFLAGS,
 					IDS_WRAPEXFLAGSPROMPT,
 					CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				MyPrompt2.InitPane(0, TextPane::CreateSingleLinePane(IDS_WRAPEXFLAGS, false));
+				MyPrompt2.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_WRAPEXFLAGS, false));
 				MyPrompt2.SetHex(0, MAPI_NATIVE_BODY);
-				MyPrompt2.InitPane(1, TextPane::CreateSingleLinePane(IDS_ULINCODEPAGE, false));
+				MyPrompt2.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULINCODEPAGE, false));
 				MyPrompt2.SetDecimal(1, ulInCodePage);
-				MyPrompt2.InitPane(2, TextPane::CreateSingleLinePane(IDS_ULOUTCODEPAGE, false));
+				MyPrompt2.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULOUTCODEPAGE, false));
 				MyPrompt2.SetDecimal(2, 0);
 
 				WC_H(MyPrompt2.DisplayDialog());
@@ -1495,10 +1495,10 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 	IDS_DDGETSETPROPS,
 	IDS_DDCOPYSTREAM
 	};
-	MyData.InitPane(0, DropDownPane::Create(IDS_COPYSTYLE, _countof(uidDropDown), uidDropDown, true));
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_SOURCEPROP, false));
+	MyData.InitPane(0, viewpane::DropDownPane::Create(IDS_COPYSTYLE, _countof(uidDropDown), uidDropDown, true));
+	MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_SOURCEPROP, false));
 	MyData.SetHex(1, ulSourcePropTag);
-	MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_TARGETPROP, false));
+	MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_TARGETPROP, false));
 	MyData.SetHex(2, ulSourcePropTag);
 
 	WC_H(MyData.DisplayDialog());
@@ -1522,8 +1522,8 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 			const auto szGuid = guid::GUIDToStringAndName(&IID_IMAPIProp);
-			MyCopyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_INTERFACE, szGuid, false));
-			MyCopyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+			MyCopyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_INTERFACE, szGuid, false));
+			MyCopyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 			MyCopyData.SetHex(1, MAPI_DIALOG);
 
 			WC_H(MyCopyData.DisplayDialog());
@@ -1746,7 +1746,7 @@ void CSingleMAPIPropListCtrl::OnOpenPropertyAsTable()
 			IDS_OPENPROPASTABLEPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, CheckPane::Create(IDS_OPENASEXTABLE, false, false));
+		MyData.InitPane(0, viewpane::CheckPane::Create(IDS_OPENASEXTABLE, false, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
@@ -1789,9 +1789,9 @@ void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		const auto szGuid = guid::GUIDToStringAndName(&PS_PUBLIC_STRINGS);
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_GUID, szGuid, false));
-		MyData.InitPane(1, CheckPane::Create(IDS_MAPIMOVE, false, false));
-		MyData.InitPane(2, CheckPane::Create(IDS_MAPINOREPLACE, false, false));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_GUID, szGuid, false));
+		MyData.InitPane(1, viewpane::CheckPane::Create(IDS_MAPIMOVE, false, false));
+		MyData.InitPane(2, viewpane::CheckPane::Create(IDS_MAPINOREPLACE, false, false));
 
 		WC_H(MyData.DisplayDialog());
 

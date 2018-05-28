@@ -1,6 +1,6 @@
 // Collection of useful MAPI Store functions
 
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
@@ -326,7 +326,7 @@ std::string GetServerName(_In_ LPMAPISESSION lpSession)
 			IDS_SERVERNAME,
 			IDS_SERVERNAMEMISSINGPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
 
 		WC_H(MyData.DisplayDialog());
 
@@ -668,12 +668,12 @@ _Check_return_ HRESULT OpenMailboxWithPrompt(
 		IDS_OPENWITHFLAGSPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-	MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, strings::stringTowstring(szServerName), false));
-	MyPrompt.InitPane(1, TextPane::CreateSingleLinePane(IDS_USERDN, szMailboxDN, false));
-	MyPrompt.InitPane(2, TextPane::CreateSingleLinePane(IDS_USER_SMTP_ADDRESS, false));
-	MyPrompt.InitPane(3, TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
+	MyPrompt.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, strings::stringTowstring(szServerName), false));
+	MyPrompt.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_USERDN, szMailboxDN, false));
+	MyPrompt.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_USER_SMTP_ADDRESS, false));
+	MyPrompt.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 	MyPrompt.SetHex(3, ulFlags);
-	MyPrompt.InitPane(4, CheckPane::Create(IDS_FORCESERVER, false, false));
+	MyPrompt.InitPane(4, viewpane::CheckPane::Create(IDS_FORCESERVER, false, false));
 	WC_H(MyPrompt.DisplayDialog());
 	if (S_OK == hRes)
 	{

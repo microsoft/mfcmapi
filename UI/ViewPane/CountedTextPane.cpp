@@ -1,131 +1,134 @@
-#include "stdafx.h"
-#include "CountedTextPane.h"
+#include <StdAfx.h>
+#include <UI/ViewPane/CountedTextPane.h>
 #include <UI/UIFunctions.h>
 
-static std::wstring CLASS = L"CountedTextPane";
-
-CountedTextPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
+namespace viewpane
 {
-	auto lpPane = new (std::nothrow) CountedTextPane();
-	if (lpPane)
+	static std::wstring CLASS = L"CountedTextPane";
+
+	CountedTextPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
 	{
-		lpPane->m_szCountLabel = strings::loadstring(uidCountLabel);
-		lpPane->SetMultiline();
-		lpPane->SetLabel(uidLabel, bReadOnly);
-		lpPane->m_bCollapsible = true;
+		auto lpPane = new (std::nothrow) CountedTextPane();
+		if (lpPane)
+		{
+			lpPane->m_szCountLabel = strings::loadstring(uidCountLabel);
+			lpPane->SetMultiline();
+			lpPane->SetLabel(uidLabel, bReadOnly);
+			lpPane->m_bCollapsible = true;
+		}
+
+		return lpPane;
 	}
 
-	return lpPane;
-}
-
-CountedTextPane::CountedTextPane()
-{
-	m_iCountLabelWidth = 0;
-	m_iCount = 0;
-}
-
-void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
-{
-	auto hRes = S_OK;
-
-	EC_B(m_Count.Create(
-		WS_CHILD
-		| WS_CLIPSIBLINGS
-		| ES_READONLY
-		| WS_VISIBLE,
-		CRect(0, 0, 0, 0),
-		pParent,
-		IDD_COUNTLABEL));
-	SetWindowTextW(m_Count.m_hWnd, m_szCountLabel.c_str());
-	SubclassLabel(m_Count.m_hWnd);
-	StyleLabel(m_Count.m_hWnd, lsPaneHeaderText);
-
-	TextPane::Initialize(iControl, pParent, hdc);
-}
-
-int CountedTextPane::GetMinWidth(_In_ HDC hdc)
-{
-	auto iLabelWidth = TextPane::GetMinWidth(hdc);
-
-	auto szCount = strings::format(L"%ws: 0x%08X = %u", m_szCountLabel.c_str(), static_cast<int>(m_iCount), static_cast<UINT>(m_iCount)); // STRING_OK
-	SetWindowTextW(m_Count.m_hWnd, szCount.c_str());
-
-	auto sizeText = GetTextExtentPoint32(hdc, szCount);
-	m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
-
-	// Button, margin, label, margin, count label
-	auto cx = m_iButtonHeight + m_iSideMargin + iLabelWidth + m_iSideMargin + m_iCountLabelWidth;
-
-	return cx;
-}
-
-int CountedTextPane::GetFixedHeight()
-{
-	auto iHeight = 0;
-	if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
-
-	// Our expand/collapse button
-	iHeight += m_iButtonHeight;
-	// Control label will be next to this
-
-	if (!m_bCollapsed)
+	CountedTextPane::CountedTextPane()
 	{
-		// Small gap before the edit box
-		iHeight += m_iSmallHeightMargin;
+		m_iCountLabelWidth = 0;
+		m_iCount = 0;
 	}
 
-	iHeight += m_iSmallHeightMargin; // Bottom margin
-
-	return iHeight;
-}
-
-int CountedTextPane::GetLines()
-{
-	if (m_bCollapsed)
+	void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		return 0;
+		auto hRes = S_OK;
+
+		EC_B(m_Count.Create(
+			WS_CHILD
+			| WS_CLIPSIBLINGS
+			| ES_READONLY
+			| WS_VISIBLE,
+			CRect(0, 0, 0, 0),
+			pParent,
+			IDD_COUNTLABEL));
+		SetWindowTextW(m_Count.m_hWnd, m_szCountLabel.c_str());
+		SubclassLabel(m_Count.m_hWnd);
+		StyleLabel(m_Count.m_hWnd, lsPaneHeaderText);
+
+		TextPane::Initialize(iControl, pParent, hdc);
 	}
 
-	return LINES_MULTILINEEDIT;
-}
-
-void CountedTextPane::SetWindowPos(int x, int y, int width, int height)
-{
-	auto hRes = S_OK;
-	auto iVariableHeight = height - GetFixedHeight();
-	if (0 != m_iControl)
+	int CountedTextPane::GetMinWidth(_In_ HDC hdc)
 	{
-		y += m_iSmallHeightMargin;
-		height -= m_iSmallHeightMargin;
+		const auto iLabelWidth = TextPane::GetMinWidth(hdc);
+
+		auto szCount = strings::format(L"%ws: 0x%08X = %u", m_szCountLabel.c_str(), static_cast<int>(m_iCount), static_cast<UINT>(m_iCount)); // STRING_OK
+		SetWindowTextW(m_Count.m_hWnd, szCount.c_str());
+
+		const auto sizeText = GetTextExtentPoint32(hdc, szCount);
+		m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
+
+		// Button, margin, label, margin, count label
+		const auto cx = m_iButtonHeight + m_iSideMargin + iLabelWidth + m_iSideMargin + m_iCountLabelWidth;
+
+		return cx;
 	}
 
-	ViewPane::SetWindowPos(x, y, width, height);
-
-	if (!m_bCollapsed)
+	int CountedTextPane::GetFixedHeight()
 	{
-		EC_B(m_Count.ShowWindow(SW_SHOW));
-		EC_B(m_EditBox.ShowWindow(SW_SHOW));
+		auto iHeight = 0;
+		if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
 
-		EC_B(m_Count.SetWindowPos(
-			nullptr,
-			x + width - m_iCountLabelWidth,
-			y,
-			m_iCountLabelWidth,
-			m_iLabelHeight,
-			SWP_NOZORDER));
+		// Our expand/collapse button
+		iHeight += m_iButtonHeight;
+		// Control label will be next to this
 
-		y += m_iLabelHeight + m_iSmallHeightMargin;
+		if (!m_bCollapsed)
+		{
+			// Small gap before the edit box
+			iHeight += m_iSmallHeightMargin;
+		}
 
-		EC_B(m_EditBox.SetWindowPos(NULL, x, y, width, iVariableHeight, SWP_NOZORDER));
+		iHeight += m_iSmallHeightMargin; // Bottom margin
+
+		return iHeight;
 	}
-	else
+
+	int CountedTextPane::GetLines()
 	{
-		EC_B(m_Count.ShowWindow(SW_HIDE));
-		EC_B(m_EditBox.ShowWindow(SW_HIDE));
-	}
-}
+		if (m_bCollapsed)
+		{
+			return 0;
+		}
 
-void CountedTextPane::SetCount(size_t iCount)
-{
-	m_iCount = iCount;
+		return LINES_MULTILINEEDIT;
+	}
+
+	void CountedTextPane::SetWindowPos(int x, int y, int width, int height)
+	{
+		auto hRes = S_OK;
+		const auto iVariableHeight = height - GetFixedHeight();
+		if (0 != m_iControl)
+		{
+			y += m_iSmallHeightMargin;
+			height -= m_iSmallHeightMargin;
+		}
+
+		ViewPane::SetWindowPos(x, y, width, height);
+
+		if (!m_bCollapsed)
+		{
+			EC_B(m_Count.ShowWindow(SW_SHOW));
+			EC_B(m_EditBox.ShowWindow(SW_SHOW));
+
+			EC_B(m_Count.SetWindowPos(
+				nullptr,
+				x + width - m_iCountLabelWidth,
+				y,
+				m_iCountLabelWidth,
+				m_iLabelHeight,
+				SWP_NOZORDER));
+
+			y += m_iLabelHeight + m_iSmallHeightMargin;
+
+			EC_B(m_EditBox.SetWindowPos(NULL, x, y, width, iVariableHeight, SWP_NOZORDER));
+		}
+		else
+		{
+			EC_B(m_Count.ShowWindow(SW_HIDE));
+			EC_B(m_EditBox.ShowWindow(SW_HIDE));
+		}
+	}
+
+	void CountedTextPane::SetCount(size_t iCount)
+	{
+		m_iCount = iCount;
+	}
 }

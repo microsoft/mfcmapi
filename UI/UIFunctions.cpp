@@ -1,7 +1,7 @@
 // Common UI functions for MFCMAPI
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <UI/UIFunctions.h>
-#include "Windowsx.h"
+#include <windowsx.h>
 #include <UI/RichEditOleCallback.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/SortList/NodeData.h>
@@ -124,39 +124,39 @@ void UninitializeGDI()
 	if (g_hFontSegoeBold) DeleteObject(g_hFontSegoeBold);
 	g_hFontSegoeBold = nullptr;
 
-	for (auto i = 0; i < cColorEnd; i++)
+	for (auto& fixedBrush : g_FixedBrushes)
 	{
-		if (g_FixedBrushes[i])
+		if (fixedBrush)
 		{
-			DeleteObject(g_FixedBrushes[i]);
-			g_FixedBrushes[i] = nullptr;
+			DeleteObject(fixedBrush);
+			fixedBrush = nullptr;
 		}
 	}
 
-	for (auto i = 0; i < cUIEnd; i++)
+	for (auto& sysBrush : g_SysBrushes)
 	{
-		if (g_SysBrushes[i])
+		if (sysBrush)
 		{
-			DeleteObject(g_SysBrushes[i]);
-			g_SysBrushes[i] = nullptr;
+			DeleteObject(sysBrush);
+			sysBrush = nullptr;
 		}
 	}
 
-	for (auto i = 0; i < cPenEnd; i++)
+	for (auto& g_Pen : g_Pens)
 	{
-		if (g_Pens[i])
+		if (g_Pen)
 		{
-			DeleteObject(g_Pens[i]);
-			g_Pens[i] = nullptr;
+			DeleteObject(g_Pen);
+			g_Pen = nullptr;
 		}
 	}
 
-	for (auto i = 0; i < cBitmapEnd; i++)
+	for (auto& bitmap : g_Bitmaps)
 	{
-		if (g_Bitmaps[i])
+		if (bitmap)
 		{
-			DeleteObject(g_Bitmaps[i]);
-			g_Bitmaps[i] = nullptr;
+			DeleteObject(bitmap);
+			bitmap = nullptr;
 		}
 	}
 }
@@ -170,7 +170,7 @@ _Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const std::wstring& szMenu)
 		lpMenu->m_MSAA.dwMSAASignature = MSAA_MENU_SIG;
 		lpMenu->m_bOnMenuBar = false;
 
-		auto iLen = szMenu.length();
+		const auto iLen = szMenu.length();
 
 		lpMenu->m_MSAA.pszWText = new (std::nothrow) WCHAR[iLen + 1];
 		if (lpMenu->m_MSAA.pszWText)
@@ -194,14 +194,14 @@ _Check_return_ LPMENUENTRY CreateMenuEntry(UINT iudMenu)
 void DeleteMenuEntry(_In_ LPMENUENTRY lpMenu)
 {
 	if (!lpMenu) return;
-	if (lpMenu->m_MSAA.pszWText) delete[] lpMenu->m_MSAA.pszWText;
+	delete[] lpMenu->m_MSAA.pszWText;
 	delete lpMenu;
 }
 
 void DeleteMenuEntries(_In_ HMENU hMenu)
 {
-	UINT nCount = GetMenuItemCount(hMenu);
-	if (-1 == nCount) return;
+	const UINT nCount = GetMenuItemCount(hMenu);
+	if (nCount == -1) return;
 
 	for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 	{
@@ -225,8 +225,8 @@ void DeleteMenuEntries(_In_ HMENU hMenu)
 // Walk through the menu structure and convert any string entries to owner draw using MENUENTRY
 void ConvertMenuOwnerDraw(_In_ HMENU hMenu, bool bRoot)
 {
-	UINT nCount = GetMenuItemCount(hMenu);
-	if (-1 == nCount) return;
+	const UINT nCount = GetMenuItemCount(hMenu);
+	if (nCount == -1) return;
 
 	for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 	{
@@ -238,7 +238,7 @@ void ConvertMenuOwnerDraw(_In_ HMENU hMenu, bool bRoot)
 		menuiteminfo.dwTypeData = szMenu;
 
 		GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo);
-		auto bOwnerDrawn = (menuiteminfo.fType & MF_OWNERDRAW) != 0;
+		const auto bOwnerDrawn = (menuiteminfo.fType & MF_OWNERDRAW) != 0;
 		if (!bOwnerDrawn)
 		{
 			auto lpMenuEntry = CreateMenuEntry(szMenu);
@@ -266,7 +266,7 @@ void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString)
 	auto szNewString = strings::loadstring(uidNewString);
 
 	DebugPrint(DBGMenu, L"UpdateMenuString: Changing menu item 0x%X on window %p to \"%ws\"\n", uiMenuTag, hWnd, szNewString.c_str());
-	auto hMenu = GetMenu(hWnd);
+	const auto hMenu = GetMenu(hWnd);
 	if (!hMenu) return;
 
 	MENUITEMINFOW MenuInfo = { 0 };
@@ -284,11 +284,11 @@ void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString)
 		&MenuInfo));
 }
 
-void MergeMenu(_In_ HMENU hMenuDestination, _In_ const HMENU hMenuAdd)
+void MergeMenu(_In_ HMENU hMenuDestination, _In_ HMENU hMenuAdd)
 {
 	GetMenuItemCount(hMenuDestination);
 	auto iMenuDestItemCount = GetMenuItemCount(hMenuDestination);
-	auto iMenuAddItemCount = GetMenuItemCount(hMenuAdd);
+	const auto iMenuAddItemCount = GetMenuItemCount(hMenuAdd);
 
 	if (iMenuAddItemCount == 0) return;
 
@@ -299,18 +299,18 @@ void MergeMenu(_In_ HMENU hMenuDestination, _In_ const HMENU hMenuAdd)
 	{
 		GetMenuStringW(hMenuAdd, iLoop, szMenu, _countof(szMenu), MF_BYPOSITION);
 
-		auto hSubMenu = GetSubMenu(hMenuAdd, iLoop);
+		const auto hSubMenu = GetSubMenu(hMenuAdd, iLoop);
 		if (!hSubMenu)
 		{
-			auto nState = GetMenuState(hMenuAdd, iLoop, MF_BYPOSITION);
-			auto nItemID = GetMenuItemID(hMenuAdd, iLoop);
+			const auto nState = GetMenuState(hMenuAdd, iLoop, MF_BYPOSITION);
+			const auto nItemID = GetMenuItemID(hMenuAdd, iLoop);
 
 			AppendMenuW(hMenuDestination, nState, nItemID, szMenu);
 			iMenuDestItemCount++;
 		}
 		else
 		{
-			auto iInsertPosDefault = GetMenuItemCount(hMenuDestination);
+			const auto iInsertPosDefault = GetMenuItemCount(hMenuDestination);
 
 			auto hNewPopupMenu = CreatePopupMenu();
 
@@ -330,7 +330,7 @@ void MergeMenu(_In_ HMENU hMenuDestination, _In_ const HMENU hMenuAdd)
 void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ HWND hWnd, int x, int y)
 {
 	if (!uiClassMenu) uiClassMenu = IDR_MENU_DEFAULT_POPUP;
-	auto hPopup = CreateMenu();
+	const auto hPopup = CreateMenu();
 	auto hContext = ::LoadMenu(nullptr, MAKEINTRESOURCE(uiClassMenu));
 
 	::InsertMenu(
@@ -340,13 +340,13 @@ void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ HWND hWnd, in
 		reinterpret_cast<UINT_PTR>(hContext),
 		_T(""));
 
-	auto hRealPopup = GetSubMenu(hPopup, 0);
+	const auto hRealPopup = GetSubMenu(hPopup, 0);
 
 	if (hRealPopup)
 	{
 		if (uiControlMenu)
 		{
-			auto hAppended = ::LoadMenu(nullptr, MAKEINTRESOURCE(uiControlMenu));
+			const auto hAppended = ::LoadMenu(nullptr, MAKEINTRESOURCE(uiControlMenu));
 			if (hAppended)
 			{
 				MergeMenu(hRealPopup, hAppended);
@@ -370,8 +370,8 @@ void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ HWND hWnd, in
 
 HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid)
 {
-	UINT nCount = GetMenuItemCount(hMenu);
-	if (-1 == nCount) return nullptr;
+	const UINT nCount = GetMenuItemCount(hMenu);
+	if (nCount == -1) return nullptr;
 
 	for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 	{
@@ -385,7 +385,7 @@ HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid)
 
 		if (menuiteminfo.hSubMenu)
 		{
-			auto hSub = LocateSubmenu(menuiteminfo.hSubMenu, uid);
+			const auto hSub = LocateSubmenu(menuiteminfo.hSubMenu, uid);
 			if (hSub) return hSub;
 		}
 	}
@@ -395,7 +395,7 @@ HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid)
 _Check_return_ int GetEditHeight(_In_opt_ HWND hwndEdit)
 {
 	// Calculate the new height for the edit control.
-	auto iHeight =
+	const auto iHeight =
 		GetTextHeight(hwndEdit)
 		+ 2 * GetSystemMetrics(SM_CYFIXEDFRAME) // Adjust for the edit border
 		+ 2 * GetSystemMetrics(SM_CXEDGE); // Adjust for the edit border
@@ -415,7 +415,7 @@ _Check_return_ int GetTextHeight(_In_opt_ HWND hwndEdit)
 	if (hdc)
 	{
 		// Get the metrics for the Segoe font.
-		auto hOldFont = SelectObject(hdc, GetSegoeFont());
+		const auto hOldFont = SelectObject(hdc, GetSegoeFont());
 		WC_B(::GetTextMetrics(hdc, &tmFont));
 		SelectObject(hdc, hOldFont);
 		ReleaseDC(hwndEdit, hdc);
@@ -494,7 +494,7 @@ _Check_return_ HBRUSH GetSysBrush(uiColor uc)
 	// Return a cached brush if we have one
 	if (g_SysBrushes[uc]) return g_SysBrushes[uc];
 	// No cached brush found, cache and return a system brush if requested
-	auto iSysColor = g_SysColors[uc];
+	const auto iSysColor = g_SysColors[uc];
 	if (iSysColor)
 	{
 		g_SysBrushes[uc] = GetSysColorBrush(iSysColor);
@@ -502,7 +502,7 @@ _Check_return_ HBRUSH GetSysBrush(uiColor uc)
 	}
 
 	// No system brush for this color, cache and return a solid brush of the requested color
-	auto mc = g_FixedColors[uc];
+	const auto mc = g_FixedColors[uc];
 	if (g_FixedBrushes[mc]) return g_FixedBrushes[mc];
 	g_FixedBrushes[mc] = CreateSolidBrush(g_Colors[mc]);
 	return g_FixedBrushes[mc];
@@ -511,11 +511,11 @@ _Check_return_ HBRUSH GetSysBrush(uiColor uc)
 _Check_return_ COLORREF MyGetSysColor(uiColor uc)
 {
 	// Return a system color if we have one in g_SysColors
-	auto iSysColor = g_SysColors[uc];
+	const auto iSysColor = g_SysColors[uc];
 	if (iSysColor) return GetSysColor(iSysColor);
 
 	// No system color listed in g_SysColors, return a hard coded color
-	auto mc = g_FixedColors[uc];
+	const auto mc = g_FixedColors[uc];
 	return g_Colors[mc];
 }
 
@@ -561,9 +561,9 @@ HBITMAP GetBitmap(uiBitmap ub)
 
 SCALE GetDPIScale()
 {
-	auto hdcWin = GetWindowDC(nullptr);
-	auto dpiX = GetDeviceCaps(hdcWin, LOGPIXELSX);
-	auto dpiY = GetDeviceCaps(hdcWin, LOGPIXELSY);
+	const auto hdcWin = GetWindowDC(nullptr);
+	const auto dpiX = GetDeviceCaps(hdcWin, LOGPIXELSX);
+	const auto dpiY = GetDeviceCaps(hdcWin, LOGPIXELSY);
 
 	if (hdcWin) DeleteDC(hdcWin);
 	return{ dpiX, dpiY, 96 };
@@ -574,17 +574,17 @@ HBITMAP ScaleBitmap(HBITMAP hBitmap, SCALE& scale)
 	BITMAP bm = { 0 };
 	::GetObject(hBitmap, sizeof(BITMAP), &bm);
 
-	SIZE sizeSrc = { bm.bmWidth, bm.bmHeight };
-	SIZE sizeDst = { scale.x * sizeSrc.cx / scale.denominator, scale.y * sizeSrc.cy / scale.denominator };
+	const SIZE sizeSrc = { bm.bmWidth, bm.bmHeight };
+	const SIZE sizeDst = { scale.x * sizeSrc.cx / scale.denominator, scale.y * sizeSrc.cy / scale.denominator };
 
-	auto hdcWin = GetWindowDC(nullptr);
-	auto hRet = CreateCompatibleBitmap(hdcWin, sizeDst.cx, sizeDst.cy);
+	const auto hdcWin = GetWindowDC(nullptr);
+	const auto hRet = CreateCompatibleBitmap(hdcWin, sizeDst.cx, sizeDst.cy);
 
-	auto hdcSrc = CreateCompatibleDC(hdcWin);
-	auto hdcDst = CreateCompatibleDC(hdcWin);
+	const auto hdcSrc = CreateCompatibleDC(hdcWin);
+	const auto hdcDst = CreateCompatibleDC(hdcWin);
 
-	auto bmpSrc = SelectObject(hdcSrc, hBitmap);
-	auto bmpDst = SelectObject(hdcDst, hRet);
+	const auto bmpSrc = SelectObject(hdcSrc, hBitmap);
+	const auto bmpDst = SelectObject(hdcDst, hRet);
 
 	(void)StretchBlt(hdcDst, 0, 0, sizeDst.cx, sizeDst.cy, hdcSrc, 0, 0, sizeSrc.cx, sizeSrc.cy, SRCCOPY);
 
@@ -609,8 +609,8 @@ void DrawSegoeTextW(
 	_In_ UINT format)
 {
 	DebugPrint(DBGDraw, L"Draw %d, \"%ws\"\n", rc.right - rc.left, lpchText.c_str());
-	auto hfontOld = SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
-	auto crText = SetTextColor(hdc, color);
+	const auto hfontOld = SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
+	const auto crText = SetTextColor(hdc, color);
 	SetBkMode(hdc, TRANSPARENT);
 	auto drawRc = rc;
 	DrawTextW(
@@ -634,7 +634,7 @@ void DrawSegoeTextW(
 // Sets our text color, script, and turns off bold, italic, etc formatting.
 void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly)
 {
-	CHARFORMAT2 cf;
+	CHARFORMAT2 cf{};
 	ZeroMemory(&cf, sizeof cf);
 	cf.cbSize = sizeof cf;
 	cf.dwMask = CFM_COLOR | CFM_FACE | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
@@ -646,7 +646,7 @@ void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly)
 // Lighten the colors of the base, being careful not to overflow
 COLORREF LightColor(COLORREF crBase)
 {
-	auto f = .20;
+	const auto f = .20;
 	auto bRed = static_cast<BYTE>(GetRValue(crBase) + 255 * f);
 	auto bGreen = static_cast<BYTE>(GetGValue(crBase) + 255 * f);
 	auto bBlue = static_cast<BYTE>(GetBValue(crBase) + 255 * f);
@@ -659,8 +659,8 @@ COLORREF LightColor(COLORREF crBase)
 void GradientFillRect(_In_ HDC hdc, RECT rc, uiColor uc)
 {
 	// Gradient fill the background
-	auto crGlow = MyGetSysColor(uc);
-	auto crLightGlow = LightColor(crGlow);
+	const auto crGlow = MyGetSysColor(uc);
+	const auto crLightGlow = LightColor(crGlow);
 
 	TRIVERTEX vertex[2] = { 0 };
 	// Light at the top
@@ -688,9 +688,9 @@ void GradientFillRect(_In_ HDC hdc, RECT rc, uiColor uc)
 
 void DrawFilledPolygon(_In_ HDC hdc, _In_count_(cpt) const POINT *apt, _In_ int cpt, COLORREF cEdge, _In_ HBRUSH hFill)
 {
-	auto hPen = CreatePen(PS_SOLID, 0, cEdge);
-	auto hBrushOld = SelectObject(hdc, hFill);
-	auto hPenOld = SelectObject(hdc, hPen);
+	const auto hPen = CreatePen(PS_SOLID, 0, cEdge);
+	const auto hBrushOld = SelectObject(hdc, hFill);
+	const auto hPenOld = SelectObject(hdc, hPen);
 	Polygon(hdc, apt, cpt);
 	SelectObject(hdc, hPenOld);
 	SelectObject(hdc, hBrushOld);
@@ -713,7 +713,7 @@ LRESULT CALLBACK DrawEditProc(
 		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 	case WM_NCPAINT:
 	{
-		auto hdc = GetWindowDC(hWnd);
+		const auto hdc = GetWindowDC(hWnd);
 		if (hdc)
 		{
 			RECT rc = { 0 };
@@ -725,7 +725,7 @@ LRESULT CALLBACK DrawEditProc(
 
 		// Let the system paint the scroll bar if we have one
 		// Be sure to use window coordinates
-		auto ws = GetWindowLongPtr(hWnd, GWL_STYLE);
+		const auto ws = GetWindowLongPtr(hWnd, GWL_STYLE);
 		if (ws & WS_VSCROLL)
 		{
 			RECT rcScroll = { 0 };
@@ -777,11 +777,11 @@ void CustomDrawList(_In_ LPNMLVCUSTOMDRAW lvcd, _In_ LRESULT* pResult, DWORD_PTR
 {
 	static auto bSelected = false;
 	if (!lvcd) return;
-	auto iItem = lvcd->nmcd.dwItemSpec;
+	const auto iItem = lvcd->nmcd.dwItemSpec;
 
 	// If there's nothing to paint, this is a "fake paint" and we don't want to toggle selection highlight
 	// Toggling selection highlight causes a repaint, so this logic prevents flicker
-	auto bFakePaint = lvcd->nmcd.rc.bottom == 0 &&
+	const auto bFakePaint = lvcd->nmcd.rc.bottom == 0 &&
 		lvcd->nmcd.rc.top == 0 &&
 		lvcd->nmcd.rc.left == 0 &&
 		lvcd->nmcd.rc.right == 0;
@@ -867,10 +867,10 @@ void CustomDrawList(_In_ LPNMLVCUSTOMDRAW lvcd, _In_ LRESULT* pResult, DWORD_PTR
 // Handle highlight glow for list items
 void DrawListItemGlow(_In_ HWND hWnd, UINT itemID)
 {
-	if (-1 == itemID) return;
+	if (itemID == -1) return;
 
 	// If the item already has the selection glow, we don't need to redraw
-	auto bSelected = ListView_GetItemState(hWnd, itemID, LVIS_SELECTED) != 0;
+	const auto bSelected = ListView_GetItemState(hWnd, itemID, LVIS_SELECTED) != 0;
 	if (bSelected) return;
 
 	RECT rcIcon = { 0 };
@@ -902,7 +902,7 @@ void CopyBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, uiColor c
 {
 	RECT rcBM = { 0, 0, iWidth, iHeight };
 
-	auto hbmTarget = CreateCompatibleBitmap(
+	const auto hbmTarget = CreateCompatibleBitmap(
 		hdcSource,
 		iWidth,
 		iHeight);
@@ -930,7 +930,7 @@ void ShiftBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, int offs
 {
 	RECT rcBM = { 0, 0, iWidth, iHeight };
 
-	auto hbmTarget = CreateCompatibleBitmap(
+	const auto hbmTarget = CreateCompatibleBitmap(
 		hdcSource,
 		iWidth,
 		iHeight);
@@ -957,27 +957,27 @@ void ShiftBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, int offs
 // Scales from size of bitmap to size of target rectangle
 void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool bHover, int offset = 0)
 {
-	int iWidth = rcTarget.right - rcTarget.left;
-	int iHeight = rcTarget.bottom - rcTarget.top;
+	const int iWidth = rcTarget.right - rcTarget.left;
+	const int iHeight = rcTarget.bottom - rcTarget.top;
 
 	// hdcBitmap: Load the image
-	auto hdcBitmap = CreateCompatibleDC(hdc);
+	const auto hdcBitmap = CreateCompatibleDC(hdc);
 	// TODO: pass target dimensions here and load the most appropriate bitmap
-	auto hbmBitmap = GetBitmap(iBitmap);
+	const auto hbmBitmap = GetBitmap(iBitmap);
 	(void)SelectObject(hdcBitmap, hbmBitmap);
 
 	BITMAP bm = { 0 };
 	::GetObject(hbmBitmap, sizeof bm, &bm);
 
 	// hdcForeReplace: Create a bitmap compatible with hdc, select it, fill with cFrameSelected, copy from hdcBitmap, with cBitmapTransFore transparent
-	auto hdcForeReplace = CreateCompatibleDC(hdc);
+	const auto hdcForeReplace = CreateCompatibleDC(hdc);
 	CopyBitmap(hdcBitmap, hdcForeReplace, bm.bmWidth, bm.bmHeight, cBitmapTransFore, cFrameSelected);
 
 	// hdcBackReplace: Create a bitmap compatible with hdc, select it, fill with cBackground, copy from hdcForeReplace, with cBitmapTransBack transparent
-	auto hdcBackReplace = CreateCompatibleDC(hdc);
+	const auto hdcBackReplace = CreateCompatibleDC(hdc);
 	CopyBitmap(hdcForeReplace, hdcBackReplace, bm.bmWidth, bm.bmHeight, cBitmapTransBack, bHover ? cGlowBackground : cBackground);
 
-	auto hdcShift = CreateCompatibleDC(hdc);
+	const auto hdcShift = CreateCompatibleDC(hdc);
 	ShiftBitmap(hdcBackReplace, hdcShift, bm.bmWidth, bm.bmHeight, offset, bHover ? cGlowBackground : cBackground);
 
 	// In case the original bitmap dimensions doesn't match our target dimension, we stretch it to fit
@@ -1008,7 +1008,7 @@ void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool 
 void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_ HTREEITEM hItemCurHover)
 {
 	if (!pNMHDR) return;
-	auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
+	const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
 
 	switch (lvcd->nmcd.dwDrawStage)
 	{
@@ -1024,7 +1024,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 		{
 			lvcd->clrTextBk = MyGetSysColor(cBackground);
 			lvcd->clrText = MyGetSysColor(cText);
-			int iState = TreeView_GetItemState(lvcd->nmcd.hdr.hwndFrom, hItem, TVIS_SELECTED);
+			const int iState = TreeView_GetItemState(lvcd->nmcd.hdr.hwndFrom, hItem, TVIS_SELECTED);
 			TreeView_SetItemState(lvcd->nmcd.hdr.hwndFrom, hItem, iState & TVIS_SELECTED ? TVIS_BOLD : NULL, TVIS_BOLD);
 		}
 
@@ -1042,7 +1042,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 	case CDDS_ITEMPOSTPAINT:
 	{
 		// If we've advised on this object, add a little icon to let the user know
-		auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
+		const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
 
 		if (hItem)
 		{
@@ -1054,7 +1054,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 			tvi.mask = TVIF_PARAM;
 			tvi.hItem = hItem;
 			TreeView_GetItem(lvcd->nmcd.hdr.hwndFrom, &tvi);
-			auto lpData = reinterpret_cast<SortListData*>(tvi.lParam);
+			const auto lpData = reinterpret_cast<SortListData*>(tvi.lParam);
 			if (lpData && lpData->Node() && lpData->Node()->m_lpAdviseSink)
 			{
 				RECT rect = { 0 };
@@ -1079,12 +1079,12 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 	tvitem.hItem = hItem;
 	tvitem.mask = TVIF_CHILDREN | TVIF_STATE;
 	TreeView_GetItem(hWnd, &tvitem);
-	auto bHasChildren = tvitem.cChildren != 0;
+	const auto bHasChildren = tvitem.cChildren != 0;
 	if (bHasChildren)
 	{
 		RECT rcButton = { 0 };
 		TreeView_GetItemRect(hWnd, hItem, &rcButton, true);
-		auto triangleSize = (rcButton.bottom - rcButton.top) / 4;
+		const auto triangleSize = (rcButton.bottom - rcButton.top) / 4;
 
 		// Erase the +/- icons
 		// We erase everything to the left of the label
@@ -1099,7 +1099,7 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 		RECT rcTriangle = { 0 };
 
 		POINT tri[3] = { 0 };
-		auto bExpanded = TVIS_EXPANDED == (tvitem.state & TVIS_EXPANDED);
+		const auto bExpanded = TVIS_EXPANDED == (tvitem.state & TVIS_EXPANDED);
 		if (bExpanded)
 		{
 			rcTriangle.top = (rcButton.top + rcButton.bottom) / 2 - (triangleSize - 1);
@@ -1158,7 +1158,7 @@ void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ const RECT& rc, bool bButto
 	POINT tri[3] = { 0 };
 	LONG lCenter = 0;
 	LONG lTop = 0;
-	auto triangleSize = (rc.bottom - rc.top) / 5;
+	const auto triangleSize = (rc.bottom - rc.top) / 5;
 	if (bButton)
 	{
 		lCenter = rc.left + (rc.bottom - rc.top) / 2;
@@ -1237,7 +1237,7 @@ void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ const RECT& 
 		DT_END_ELLIPSIS | DT_SINGLELINE | DT_VCENTER);
 
 	// Draw a line under for some visual separation
-	auto hpenOld = SelectObject(hdc, GetPen(cSolidGreyPen));
+	const auto hpenOld = SelectObject(hdc, GetPen(cSolidGreyPen));
 	MoveToEx(hdc, rcHeader.left, rcHeader.bottom - 1, nullptr);
 	LineTo(hdc, rcHeader.right, rcHeader.bottom - 1);
 	(void)SelectObject(hdc, hpenOld);
@@ -1256,7 +1256,7 @@ void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ const RECT& 
 void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
 	if (!pNMHDR) return;
-	auto lvcd = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
+	const auto lvcd = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 
 	switch (lvcd->dwDrawStage)
 	{
@@ -1275,11 +1275,11 @@ void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 		// Get the rc for the entire header
 		GetClientRect(lvcd->hdr.hwndFrom, &rc);
 		// Get the last item in the header
-		auto iCount = Header_GetItemCount(lvcd->hdr.hwndFrom);
+		const auto iCount = Header_GetItemCount(lvcd->hdr.hwndFrom);
 		if (iCount)
 		{
 			// Find the index of the last item in the header
-			auto iIndex = Header_OrderToIndex(lvcd->hdr.hwndFrom, iCount - 1);
+			const auto iIndex = Header_OrderToIndex(lvcd->hdr.hwndFrom, iCount - 1);
 
 			RECT rcRight = { 0 };
 			// Compute the right edge of the last item
@@ -1335,18 +1335,18 @@ void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemStat
 {
 	FillRect(hDC, &rc, GetSysBrush(cBackground));
 
-	auto bsStyle = reinterpret_cast<intptr_t>(::GetProp(hWnd, BUTTON_STYLE));
+	const auto bsStyle = reinterpret_cast<intptr_t>(::GetProp(hWnd, BUTTON_STYLE));
 	switch (bsStyle)
 	{
 	case bsUnstyled:
 	{
 		WCHAR szButton[255] = { 0 };
 		GetWindowTextW(hWnd, szButton, _countof(szButton));
-		auto iState = static_cast<int>(::SendMessage(hWnd, BM_GETSTATE, NULL, NULL));
-		auto bGlow = (iState & BST_HOT) != 0;
-		auto bPushed = (iState & BST_PUSHED) != 0;
-		auto bDisabled = (itemState & CDIS_DISABLED) != 0;
-		auto bFocused = (itemState & CDIS_FOCUS) != 0;
+		const auto iState = static_cast<int>(::SendMessage(hWnd, BM_GETSTATE, NULL, NULL));
+		const auto bGlow = (iState & BST_HOT) != 0;
+		const auto bPushed = (iState & BST_PUSHED) != 0;
+		const auto bDisabled = (itemState & CDIS_DISABLED) != 0;
+		const auto bFocused = (itemState & CDIS_FOCUS) != 0;
 
 		FrameRect(hDC, &rc, bFocused || bGlow || bPushed ? GetSysBrush(cFrameSelected) : GetSysBrush(cFrameUnselected));
 
@@ -1372,23 +1372,23 @@ void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemStat
 bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
 	if (!pNMHDR) return false;
-	auto lvcd = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
+	const auto lvcd = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 
 	// Ensure we only handle painting for buttons
 	WCHAR szClass[64] = { 0 };
 	GetClassNameW(lvcd->hdr.hwndFrom, szClass, _countof(szClass));
-	if (_wcsicmp(szClass, L"BUTTON")) return false;
+	if (_wcsicmp(szClass, L"BUTTON") != 0) return false;
 
 	switch (lvcd->dwDrawStage)
 	{
 	case CDDS_PREPAINT:
 	{
-		auto lStyle = BS_TYPEMASK & GetWindowLongA(lvcd->hdr.hwndFrom, GWL_STYLE);
+		const auto lStyle = BS_TYPEMASK & GetWindowLongA(lvcd->hdr.hwndFrom, GWL_STYLE);
 
 		*pResult = CDRF_SKIPDEFAULT;
 		if (BS_AUTOCHECKBOX == lStyle)
 		{
-			CheckPane::Draw(lvcd->hdr.hwndFrom, lvcd->hdc, lvcd->rc, lvcd->uItemState);
+			viewpane::CheckPane::Draw(lvcd->hdr.hwndFrom, lvcd->hdc, lvcd->rc, lvcd->uItemState);
 		}
 		else if (BS_PUSHBUTTON == lStyle ||
 			BS_DEFPUSHBUTTON == lStyle)
@@ -1410,18 +1410,18 @@ bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
 	if (!lpMeasureItemStruct) return;
-	auto lpMenuEntry = reinterpret_cast<LPMENUENTRY>(lpMeasureItemStruct->itemData);
+	const auto lpMenuEntry = reinterpret_cast<LPMENUENTRY>(lpMeasureItemStruct->itemData);
 	if (!lpMenuEntry) return;
 
-	auto hdc = GetDC(nullptr);
+	const auto hdc = GetDC(nullptr);
 	if (hdc)
 	{
-		auto hfontOld = SelectObject(hdc, GetSegoeFont());
+		const auto hfontOld = SelectObject(hdc, GetSegoeFont());
 
 		// In order to compute the right width, we need to drop our prefix characters
 		auto szText = strings::StripCharacter(lpMenuEntry->m_MSAA.pszWText, L'&');
 
-		auto size = GetTextExtentPoint32(hdc, szText);
+		const auto size = GetTextExtentPoint32(hdc, szText);
 		lpMeasureItemStruct->itemWidth = size.cx + 4 * GetSystemMetrics(SM_CXEDGE);
 		lpMeasureItemStruct->itemHeight = size.cy + 2 * GetSystemMetrics(SM_CYEDGE);
 
@@ -1455,13 +1455,13 @@ void MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
 	if (!lpDrawItemStruct) return;
-	auto lpMenuEntry = reinterpret_cast<LPMENUENTRY>(lpDrawItemStruct->itemData);
+	const auto lpMenuEntry = reinterpret_cast<LPMENUENTRY>(lpDrawItemStruct->itemData);
 	if (!lpMenuEntry) return;
 
-	auto bSeparator = !lpMenuEntry->m_MSAA.cchWText; // Cheap way to find separators. Revisit if odd effects show.
-	auto bAccel = (lpDrawItemStruct->itemState & ODS_NOACCEL) != 0;
-	auto bHot = (lpDrawItemStruct->itemState & (ODS_HOTLIGHT | ODS_SELECTED)) != 0;
-	auto bDisabled = (lpDrawItemStruct->itemState & (ODS_GRAYED | ODS_DISABLED)) != 0;
+	const auto bSeparator = !lpMenuEntry->m_MSAA.cchWText; // Cheap way to find separators. Revisit if odd effects show.
+	const auto bAccel = (lpDrawItemStruct->itemState & ODS_NOACCEL) != 0;
+	const auto bHot = (lpDrawItemStruct->itemState & (ODS_HOTLIGHT | ODS_SELECTED)) != 0;
+	const auto bDisabled = (lpDrawItemStruct->itemState & (ODS_GRAYED | ODS_DISABLED)) != 0;
 
 	DebugPrint(DBGDraw, L"DrawMenu %d, \"%ws\"\n",
 		lpDrawItemStruct->rcItem.right - lpDrawItemStruct->rcItem.left,
@@ -1503,8 +1503,8 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	if (bSeparator)
 	{
 		InflateRect(&rcText, -3, 0);
-		auto lMid = (rcText.bottom + rcText.top) / 2;
-		auto hpenOld = SelectObject(hdc, GetPen(cSolidGreyPen));
+		const auto lMid = (rcText.bottom + rcText.top) / 2;
+		const auto hpenOld = SelectObject(hdc, GetPen(cSolidGreyPen));
 		MoveToEx(hdc, rcText.left, lMid, nullptr);
 		LineTo(hdc, rcText.right, lMid);
 		(void)SelectObject(hdc, hpenOld);
@@ -1534,11 +1534,11 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 		// Triple buffer the check mark so we can copy it over without the background
 		if (lpDrawItemStruct->itemState & ODS_CHECKED)
 		{
-			UINT nWidth = GetSystemMetrics(SM_CXMENUCHECK);
-			UINT nHeight = GetSystemMetrics(SM_CYMENUCHECK);
+			const UINT nWidth = GetSystemMetrics(SM_CXMENUCHECK);
+			const UINT nHeight = GetSystemMetrics(SM_CYMENUCHECK);
 			RECT rc = { 0 };
-			auto bm = CreateBitmap(nWidth, nHeight, 1, 1, nullptr);
-			auto hdcMem = CreateCompatibleDC(hdc);
+			const auto bm = CreateBitmap(nWidth, nHeight, 1, 1, nullptr);
+			const auto hdcMem = CreateCompatibleDC(hdc);
 
 			SelectObject(hdcMem, bm);
 			SetRect(&rc, 0, 0, nWidth, nHeight);
@@ -1574,8 +1574,8 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 std::wstring GetLBText(HWND hwnd, int nIndex)
 {
-	auto len = ComboBox_GetLBTextLen(hwnd, nIndex) + 1;
-	auto buffer = new TCHAR[len];
+	const auto len = ComboBox_GetLBTextLen(hwnd, nIndex) + 1;
+	const auto buffer = new TCHAR[len];
 	memset(buffer, 0, sizeof(TCHAR)* len);
 	ComboBox_GetLBText(hwnd, nIndex, buffer);
 	auto szOut = strings::LPCTSTRToWstring(buffer);
@@ -1589,8 +1589,8 @@ void DrawComboBox(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	if (lpDrawItemStruct->itemID == -1) return;
 
 	// Get and display the text for the list item.
-	auto szText = GetLBText(lpDrawItemStruct->hwndItem, lpDrawItemStruct->itemID);
-	auto bHot = 0 != (lpDrawItemStruct->itemState & (ODS_FOCUS | ODS_SELECTED));
+	const auto szText = GetLBText(lpDrawItemStruct->hwndItem, lpDrawItemStruct->itemID);
+	const auto bHot = 0 != (lpDrawItemStruct->itemState & (ODS_FOCUS | ODS_SELECTED));
 	auto cBack = cBackground;
 	auto cFore = cText;
 	if (bHot)
@@ -1648,7 +1648,7 @@ void DrawStatus(
 
 	auto rcGrad = rcStatus;
 	auto rcText = rcGrad;
-	auto crFore = MyGetSysColor(cStatusText);
+	const auto crFore = MyGetSysColor(cStatusText);
 
 	// We start painting a little lower to allow our gradiants to line up
 	rcGrad.bottom += GetSystemMetrics(SM_CYSIZEFRAME) - BORDER_VISIBLEWIDTH;
@@ -1701,8 +1701,8 @@ void GetCaptionRects(HWND hWnd,
 	RECT rcCaptionText = { 0 };
 
 	RECT rcWindow = { 0 };
-	auto dwWinStyle = GetWindowStyle(hWnd);
-	auto bThickFrame = WS_THICKFRAME == (dwWinStyle & WS_THICKFRAME);
+	const auto dwWinStyle = GetWindowStyle(hWnd);
+	const auto bThickFrame = WS_THICKFRAME == (dwWinStyle & WS_THICKFRAME);
 
 	GetWindowRect(hWnd, &rcWindow); // Get our non-client size
 	OffsetRect(&rcWindow, -rcWindow.left, -rcWindow.top); // shift the origin to 0 since that's where our DC paints
@@ -1718,7 +1718,7 @@ void GetCaptionRects(HWND hWnd,
 	auto cyFrame = bThickFrame ? cySizeFrame : cyFixedFrame;
 
 	// If padded borders are in effect, we fall back to a single width for both thick and thin frames
-	auto cxPaddedBorder = GetSystemMetrics(SM_CXPADDEDBORDER);
+	const auto cxPaddedBorder = GetSystemMetrics(SM_CXPADDEDBORDER);
 	if (cxPaddedBorder)
 	{
 		cxFrame = cxSizeFrame + cxPaddedBorder;
@@ -1736,9 +1736,9 @@ void GetCaptionRects(HWND hWnd,
 	rcIcon.bottom = rcIcon.top + GetSystemMetrics(SM_CYSMICON);
 	rcIcon.right = rcIcon.left + GetSystemMetrics(SM_CXSMICON);
 
-	auto cxBorder = GetSystemMetrics(SM_CXBORDER);
-	auto cyBorder = GetSystemMetrics(SM_CYBORDER);
-	auto buttonSize = GetSystemMetrics(SM_CYSIZE) - 2 * cyBorder;
+	const auto cxBorder = GetSystemMetrics(SM_CXBORDER);
+	const auto cyBorder = GetSystemMetrics(SM_CYBORDER);
+	const auto buttonSize = GetSystemMetrics(SM_CYSIZE) - 2 * cyBorder;
 
 	rcCloseIcon.top = rcMaxIcon.top = rcMinIcon.top = rcWindow.top + cyFrame + cyBorder;
 	rcCloseIcon.bottom = rcMaxIcon.bottom = rcMinIcon.bottom = rcCloseIcon.top + buttonSize;
@@ -1785,9 +1785,9 @@ void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, LONG_PTR iHitTest, bool
 		hdc = hdcLocal;
 	}
 
-	auto dwWinStyle = GetWindowStyle(hWnd);
-	auto bMinBox = WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX);
-	auto bMaxBox = WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX);
+	const auto dwWinStyle = GetWindowStyle(hWnd);
+	const auto bMinBox = WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX);
+	const auto bMaxBox = WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX);
 
 	RECT rcCloseIcon = { 0 };
 	RECT rcMaxIcon = { 0 };
@@ -1795,9 +1795,9 @@ void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, LONG_PTR iHitTest, bool
 	GetCaptionRects(hWnd, nullptr, nullptr, &rcCloseIcon, &rcMaxIcon, &rcMinIcon, nullptr);
 
 	// Draw our system buttons appropriately
-	auto htClose = HTCLOSE == iHitTest;
-	auto htMax = HTMAXBUTTON == iHitTest;
-	auto htMin = HTMINBUTTON == iHitTest;
+	const auto htClose = HTCLOSE == iHitTest;
+	const auto htMax = HTMAXBUTTON == iHitTest;
+	const auto htMin = HTMINBUTTON == iHitTest;
 
 	DrawBitmap(hdc, rcCloseIcon, cClose, htClose, htClose && !bHover ? 2 : 0);
 
@@ -1816,15 +1816,15 @@ void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, LONG_PTR iHitTest, bool
 
 void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 {
-	auto cxPaddedBorder = GetSystemMetrics(SM_CXPADDEDBORDER);
+	const auto cxPaddedBorder = GetSystemMetrics(SM_CXPADDEDBORDER);
 	auto cxFixedFrame = GetSystemMetrics(SM_CXFIXEDFRAME);
 	auto cyFixedFrame = GetSystemMetrics(SM_CYFIXEDFRAME);
 	auto cxSizeFrame = GetSystemMetrics(SM_CXSIZEFRAME);
 	auto cySizeFrame = GetSystemMetrics(SM_CYSIZEFRAME);
 
-	auto dwWinStyle = GetWindowStyle(hWnd);
-	auto bModal = DS_MODALFRAME == (dwWinStyle & DS_MODALFRAME);
-	auto bThickFrame = WS_THICKFRAME == (dwWinStyle & WS_THICKFRAME);
+	const auto dwWinStyle = GetWindowStyle(hWnd);
+	const auto bModal = DS_MODALFRAME == (dwWinStyle & DS_MODALFRAME);
+	const auto bThickFrame = WS_THICKFRAME == (dwWinStyle & WS_THICKFRAME);
 
 	RECT rcWindow = { 0 };
 	RECT rcClient = { 0 };
@@ -1901,7 +1901,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 
 	// Get a DC where the upper left corner of the window is 0,0
 	// All of our rectangles were computed with this DC in mind
-	auto hdcWin = GetWindowDC(hWnd);
+	const auto hdcWin = GetWindowDC(hWnd);
 	if (hdcWin)
 	{
 		CDoubleBuffer db;
@@ -1921,7 +1921,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 			SRCCOPY);
 
 		// Draw a line under the menu from gutter to gutter
-		auto hpenOld = SelectObject(hdc, GetPen(cSolidGreyPen));
+		const auto hpenOld = SelectObject(hdc, GetPen(cSolidGreyPen));
 		MoveToEx(hdc, rcMenuGutterLeft.right, rcClient.top - 1, nullptr);
 		LineTo(hdc, rcMenuGutterRight.left, rcClient.top - 1);
 		(void)SelectObject(hdc, hpenOld);
@@ -1934,7 +1934,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 		// Draw our icon
 		if (!bModal)
 		{
-			auto hIcon = static_cast<HICON>(::LoadImage(
+			const auto hIcon = static_cast<HICON>(::LoadImage(
 				AfxGetInstanceHandle(),
 				MAKEINTRESOURCE(IDR_MAINFRAME),
 				IMAGE_ICON,
@@ -2021,7 +2021,7 @@ _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, 
 	case WM_CTLCOLORSTATIC:
 	case WM_CTLCOLOREDIT:
 	{
-		auto lsStyle = reinterpret_cast<intptr_t>(::GetProp(reinterpret_cast<HWND>(lParam), LABEL_STYLE));
+		const auto lsStyle = reinterpret_cast<intptr_t>(::GetProp(reinterpret_cast<HWND>(lParam), LABEL_STYLE));
 		auto uiText = cText;
 		auto uiBackground = cBackground;
 
@@ -2031,7 +2031,7 @@ _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, 
 			uiBackground = cPaneHeaderBackground;
 		}
 
-		auto hdc = reinterpret_cast<HDC>(wParam);
+		const auto hdc = reinterpret_cast<HDC>(wParam);
 		if (hdc)
 		{
 			SetTextColor(hdc, MyGetSysColor(uiText));
@@ -2044,7 +2044,7 @@ _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, 
 	}
 	case WM_NOTIFY:
 	{
-		auto pHdr = reinterpret_cast<LPNMHDR>(lParam);
+		const auto pHdr = reinterpret_cast<LPNMHDR>(lParam);
 
 		switch (pHdr->code)
 		{

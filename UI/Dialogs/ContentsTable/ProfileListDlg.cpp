@@ -1,7 +1,6 @@
 // Displays the list of profiles
-#include "StdAfx.h"
-
-#include "ProfileListDlg.h"
+#include <StdAfx.h>
+#include <UI/Dialogs/ContentsTable/ProfileListDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
@@ -154,9 +153,9 @@ void CProfileListDlg::OnLaunchProfileWizard()
 		IDS_LAUNCHPROFWIZ,
 		IDS_LAUNCHPROFWIZPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
+	MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -196,8 +195,8 @@ void CProfileListDlg::OnAddExchangeToProfile()
 		IDS_NEWEXPROFPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_MAILBOXNAME, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
+	MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_MAILBOXNAME, false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -254,9 +253,9 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 				IDS_PSTPATH,
 				IDS_PSTPATHPROMPT,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyFile.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVICE, file, false));
-			MyFile.InitPane(1, CheckPane::Create(IDS_PSTDOPW, false, false));
-			MyFile.InitPane(2, TextPane::CreateSingleLinePane(IDS_PSTPW, false));
+			MyFile.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, file, false));
+			MyFile.InitPane(1, viewpane::CheckPane::Create(IDS_PSTDOPW, false, false));
+			MyFile.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_PSTPW, false));
 
 			WC_H(MyFile.DisplayDialog());
 
@@ -301,8 +300,8 @@ void CProfileListDlg::OnAddServiceToProfile()
 		IDS_NEWSERVICE,
 		IDS_NEWSERVICEPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVICE, false));
-	MyData.InitPane(1, CheckPane::Create(IDS_DISPLAYSERVICEUI, true, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, false));
+	MyData.InitPane(1, viewpane::CheckPane::Create(IDS_DISPLAYSERVICEUI, true, false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -332,7 +331,7 @@ void CProfileListDlg::OnCreateProfile()
 		IDS_NEWPROF,
 		IDS_NEWPROFPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_PROFILE, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILE, false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -409,11 +408,11 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 			IDS_PROFILESERVERVERSIONPROMPT,
 			CEDITOR_BUTTON_OK);
 
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSION, true));
-		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMAJOR, true));
-		MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINOR, true));
-		MyData.InitPane(3, TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONBUILD, true));
-		MyData.InitPane(4, TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINORBUILD, true));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSION, true));
+		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMAJOR, true));
+		MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINOR, true));
+		MyData.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONBUILD, true));
+		MyData.InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINORBUILD, true));
 
 		if (bFoundServerVersion)
 		{
@@ -482,7 +481,7 @@ void CProfileListDlg::OnOpenProfileByName()
 		IDS_OPENPROFILE,
 		NULL,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_OPENPROFILEPROMPT, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_OPENPROFILEPROMPT, false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -531,7 +530,7 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 		NULL,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_COPYPROFILEPROMPT, strings::stringTowstring(szOldProfile), false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_COPYPROFILEPROMPT, strings::stringTowstring(szOldProfile), false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)

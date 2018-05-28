@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
 #include <UI/Dialogs/Editors/PropertyEditor.h>
 #include <Interpret/InterpretProp.h>
@@ -34,17 +34,17 @@ namespace editor
 		TRACE_CONSTRUCTOR(COMPCLASS);
 
 		SetPromptPostFix(interpretprop::AllFlagsToString(flagRelop, false));
-		InitPane(0, TextPane::CreateSingleLinePane(IDS_RELOP, false));
+		InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RELOP, false));
 		SetHex(0, ulRelop);
 		const auto szFlags = interpretprop::InterpretFlags(flagRelop, ulRelop);
-		InitPane(1, TextPane::CreateSingleLinePane(IDS_RELOP, szFlags, true));
-		InitPane(2, TextPane::CreateSingleLinePane(IDS_ULPROPTAG1, false));
+		InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RELOP, szFlags, true));
+		InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG1, false));
 		SetHex(2, ulPropTag1);
-		InitPane(3, TextPane::CreateSingleLinePane(IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag1, nullptr, false, true), true));
+		InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag1, nullptr, false, true), true));
 
-		InitPane(4, TextPane::CreateSingleLinePane(IDS_ULPROPTAG2, false));
+		InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG2, false));
 		SetHex(4, ulPropTag2);
-		InitPane(5, TextPane::CreateSingleLinePane(IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag2, nullptr, false, true), true));
+		InitPane(5, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag2, nullptr, false, true), true));
 	}
 
 	_Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
@@ -123,33 +123,33 @@ namespace editor
 		{
 			SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
 
-			InitPane(0, TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
+			InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
 			SetHex(0, ulCompare);
 			szFlags = interpretprop::InterpretFlags(flagFuzzyLevel, ulCompare);
-			InitPane(1, TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, szFlags, true));
+			InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, szFlags, true));
 		}
 		else if (RES_PROPERTY == m_ulResType)
 		{
 			SetPromptPostFix(interpretprop::AllFlagsToString(flagRelop, false));
-			InitPane(0, TextPane::CreateSingleLinePane(IDS_RELOP, false));
+			InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RELOP, false));
 			SetHex(0, ulCompare);
 			szFlags = interpretprop::InterpretFlags(flagRelop, ulCompare);
-			InitPane(1, TextPane::CreateSingleLinePane(IDS_RELOP, szFlags, true));
+			InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RELOP, szFlags, true));
 		}
 
-		InitPane(2, TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
+		InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
 		SetHex(2, ulPropTag);
-		InitPane(3, TextPane::CreateSingleLinePane(IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+		InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
 
-		InitPane(4, TextPane::CreateSingleLinePane(IDS_LPPROPULPROPTAG, false));
+		InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_LPPROPULPROPTAG, false));
 		if (lpProp) SetHex(4, lpProp->ulPropTag);
-		InitPane(5, TextPane::CreateSingleLinePane(IDS_LPPROPULPROPTAG, lpProp ? interpretprop::TagToString(lpProp->ulPropTag, nullptr, false, true) : strings::emptystring, true));
+		InitPane(5, viewpane::TextPane::CreateSingleLinePane(IDS_LPPROPULPROPTAG, lpProp ? interpretprop::TagToString(lpProp->ulPropTag, nullptr, false, true) : strings::emptystring, true));
 
 		std::wstring szProp;
 		std::wstring szAltProp;
 		if (lpProp) interpretprop::InterpretProp(lpProp, &szProp, &szAltProp);
-		InitPane(6, TextPane::CreateMultiLinePane(IDS_LPPROP, szProp, true));
-		InitPane(7, TextPane::CreateMultiLinePane(IDS_LPPROPALTVIEW, szAltProp, true));
+		InitPane(6, viewpane::TextPane::CreateMultiLinePane(IDS_LPPROP, szProp, true));
+		InitPane(7, viewpane::TextPane::CreateMultiLinePane(IDS_LPPROPALTVIEW, szAltProp, true));
 	}
 
 	_Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
@@ -250,15 +250,15 @@ namespace editor
 		TRACE_CONSTRUCTOR(BITMASKCLASS);
 
 		SetPromptPostFix(interpretprop::AllFlagsToString(flagBitmask, false));
-		InitPane(0, TextPane::CreateSingleLinePane(IDS_RELBMR, false));
+		InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RELBMR, false));
 		SetHex(0, relBMR);
 		const auto szFlags = interpretprop::InterpretFlags(flagBitmask, relBMR);
-		InitPane(1, TextPane::CreateSingleLinePane(IDS_RELBMR, szFlags, true));
-		InitPane(2, TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
+		InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RELBMR, szFlags, true));
+		InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
 		SetHex(2, ulPropTag);
-		InitPane(3, TextPane::CreateSingleLinePane(IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+		InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
 
-		InitPane(4, TextPane::CreateSingleLinePane(IDS_MASK, false));
+		InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_MASK, false));
 		SetHex(4, ulMask);
 	}
 
@@ -302,16 +302,16 @@ namespace editor
 		TRACE_CONSTRUCTOR(SIZECLASS);
 
 		SetPromptPostFix(interpretprop::AllFlagsToString(flagRelop, false));
-		InitPane(0, TextPane::CreateSingleLinePane(IDS_RELOP, false));
+		InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RELOP, false));
 		SetHex(0, relop);
 		const auto szFlags = interpretprop::InterpretFlags(flagRelop, relop);
-		InitPane(1, TextPane::CreateSingleLinePane(IDS_RELOP, szFlags, true));
+		InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RELOP, szFlags, true));
 
-		InitPane(2, TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
+		InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
 		SetHex(2, ulPropTag);
-		InitPane(3, TextPane::CreateSingleLinePane(IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+		InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
 
-		InitPane(4, TextPane::CreateSingleLinePane(IDS_CB, false));
+		InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_CB, false));
 		SetHex(4, cb);
 	}
 
@@ -350,9 +350,9 @@ namespace editor
 	{
 		TRACE_CONSTRUCTOR(EXISTCLASS);
 
-		InitPane(0, TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
+		InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
 		SetHex(0, ulPropTag);
-		InitPane(1, TextPane::CreateSingleLinePane(IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+		InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
 	}
 
 	_Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
@@ -403,11 +403,11 @@ namespace editor
 		m_lpNewRes = nullptr;
 		m_lpAllocParent = lpAllocParent;
 
-		InitPane(0, TextPane::CreateSingleLinePane(IDS_ULSUBOBJECT, false));
+		InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULSUBOBJECT, false));
 		SetHex(0, ulSubObject);
-		InitPane(1, TextPane::CreateSingleLinePane(IDS_ULSUBOBJECT, interpretprop::TagToString(ulSubObject, nullptr, false, true), true));
+		InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULSUBOBJECT, interpretprop::TagToString(ulSubObject, nullptr, false, true), true));
 
-		InitPane(2, TextPane::CreateMultiLinePane(IDS_LPRES, interpretprop::RestrictionToString(lpRes, nullptr), true));
+		InitPane(2, viewpane::TextPane::CreateMultiLinePane(IDS_LPRES, interpretprop::RestrictionToString(lpRes, nullptr), true));
 	}
 
 	_Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
@@ -486,7 +486,7 @@ namespace editor
 		m_ulNewResCount = NULL;
 		m_lpAllocParent = lpAllocParent;
 
-		InitPane(0, ListPane::Create(IDS_SUBRESTRICTIONS, false, false, ListEditCallBack(this)));
+		InitPane(0, viewpane::ListPane::Create(IDS_SUBRESTRICTIONS, false, false, ListEditCallBack(this)));
 	}
 
 	// Used to call functions which need to be called AFTER controls are created
@@ -663,8 +663,8 @@ namespace editor
 		m_lpNewCommentProp = nullptr;
 		m_lpAllocParent = lpAllocParent;
 
-		InitPane(0, ListPane::CreateCollapsibleListPane(IDS_SUBRESTRICTION, false, false, ListEditCallBack(this)));
-		InitPane(1, TextPane::CreateMultiLinePane(IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(m_lpSourceRes->res.resComment.lpRes, nullptr), true));
+		InitPane(0, viewpane::ListPane::CreateCollapsibleListPane(IDS_SUBRESTRICTION, false, false, ListEditCallBack(this)));
+		InitPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(m_lpSourceRes->res.resComment.lpRes, nullptr), true));
 	}
 
 	// Used to call functions which need to be called AFTER controls are created
@@ -770,7 +770,7 @@ namespace editor
 				IDS_TAGPROMPT,
 				true);
 
-			MyTag.InitPane(0, TextPane::CreateSingleLinePane(IDS_TAG, false));
+			MyTag.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_TAG, false));
 
 			WC_H(MyTag.DisplayDialog());
 			if (S_OK != hRes) return false;
@@ -903,9 +903,9 @@ namespace editor
 		}
 
 		SetPromptPostFix(interpretprop::AllFlagsToString(flagRestrictionType, true));
-		InitPane(0, TextPane::CreateSingleLinePane(IDS_RESTRICTIONTYPE, false)); // type as a number
-		InitPane(1, TextPane::CreateSingleLinePane(IDS_RESTRICTIONTYPE, true)); // type as a string (flagRestrictionType)
-		InitPane(2, TextPane::CreateMultiLinePane(IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(GetSourceRes(), nullptr), true));
+		InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RESTRICTIONTYPE, false)); // type as a number
+		InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RESTRICTIONTYPE, true)); // type as a string (flagRestrictionType)
+		InitPane(2, viewpane::TextPane::CreateMultiLinePane(IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(GetSourceRes(), nullptr), true));
 	}
 
 	CRestrictEditor::~CRestrictEditor()
@@ -1297,15 +1297,15 @@ namespace editor
 		m_ulNewSearchFlags = NULL;
 
 		SetPromptPostFix(interpretprop::AllFlagsToString(flagSearchFlag, true));
-		InitPane(0, TextPane::CreateSingleLinePane(IDS_SEARCHSTATE, true));
+		InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SEARCHSTATE, true));
 		SetHex(0, ulSearchState);
 		const auto szFlags = interpretprop::InterpretFlags(flagSearchState, ulSearchState);
-		InitPane(1, TextPane::CreateSingleLinePane(IDS_SEARCHSTATE, szFlags, true));
-		InitPane(2, TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, false));
+		InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_SEARCHSTATE, szFlags, true));
+		InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, false));
 		SetHex(2, 0);
-		InitPane(3, TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, true));
-		InitPane(4, ListPane::CreateCollapsibleListPane(IDS_EIDLIST, false, false, ListEditCallBack(this)));
-		InitPane(5, TextPane::CreateMultiLinePane(IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(m_lpSourceRes, nullptr), true));
+		InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, true));
+		InitPane(4, viewpane::ListPane::CreateCollapsibleListPane(IDS_EIDLIST, false, false, ListEditCallBack(this)));
+		InitPane(5, viewpane::TextPane::CreateMultiLinePane(IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(m_lpSourceRes, nullptr), true));
 	}
 
 	CCriteriaEditor::~CCriteriaEditor()
@@ -1447,7 +1447,7 @@ namespace editor
 			lpSourcebin = &lpData->Binary()->m_NewBin;
 		}
 
-		BinEdit.InitPane(0, TextPane::CreateSingleLinePane(IDS_EID, strings::BinToHexString(lpSourcebin, false), false));
+		BinEdit.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EID, strings::BinToHexString(lpSourcebin, false), false));
 
 		WC_H(BinEdit.DisplayDialog());
 		if (S_OK == hRes)

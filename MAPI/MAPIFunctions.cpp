@@ -1,6 +1,6 @@
 // Collection of useful MAPI functions
 
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
 #include <MAPI/MAPIABFunctions.h>
@@ -2674,8 +2674,8 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 			IDS_COPYPASTEPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_INTERFACE, guid::GUIDToStringAndName(lpGUID), false));
-		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_INTERFACE, guid::GUIDToStringAndName(lpGUID), false));
+		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(1, MAPI_DIALOG);
 
 		WC_H(MyData.DisplayDialog());

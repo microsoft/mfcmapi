@@ -1,5 +1,5 @@
 // Displays the contents of a folder
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
@@ -330,12 +330,12 @@ void CFolderDlg::OnAddOneOffAddress()
 		NULL,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, TextPane::CreateSingleLinePaneID(IDS_DISPLAYNAME, IDS_DISPLAYNAMEVALUE, false));
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
-	MyData.InitPane(2, TextPane::CreateSingleLinePaneID(IDS_ADDRESS, IDS_ADDRESSVALUE, false));
-	MyData.InitPane(3, TextPane::CreateSingleLinePane(IDS_RECIPTYPE, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePaneID(IDS_DISPLAYNAME, IDS_DISPLAYNAMEVALUE, false));
+	MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
+	MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePaneID(IDS_ADDRESS, IDS_ADDRESSVALUE, false));
+	MyData.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_RECIPTYPE, false));
 	MyData.SetHex(3, MAPI_TO);
-	MyData.InitPane(4, TextPane::CreateSingleLinePane(IDS_RECIPCOUNT, false));
+	MyData.InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_RECIPCOUNT, false));
 	MyData.SetDecimal(4, 1);
 
 	WC_H(MyData.DisplayDialog());
@@ -455,12 +455,12 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 		IDS_COPYMESSAGEPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CheckPane::Create(IDS_MESSAGEMOVE, false, false));
+	MyData.InitPane(0, viewpane::CheckPane::Create(IDS_MESSAGEMOVE, false, false));
 	UINT uidDropDown[] = {
 	IDS_DDCOPYMESSAGES,
 	IDS_DDCOPYTO
 	};
-	MyData.InitPane(1, DropDownPane::Create(IDS_COPYINTERFACE, _countof(uidDropDown), uidDropDown, true));
+	MyData.InitPane(1, viewpane::DropDownPane::Create(IDS_COPYINTERFACE, _countof(uidDropDown), uidDropDown, true));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -595,7 +595,7 @@ void CFolderDlg::OnDeleteAttachments()
 		IDS_DELETEATTACHMENTSPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FILENAME, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILENAME, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -671,9 +671,9 @@ void CFolderDlg::OnDeleteSelectedItem()
 		};
 
 		if (bShift)
-			MyData.InitPane(0, DropDownPane::Create(IDS_DELSTYLE, _countof(uidDropDown), uidDropDown, true));
+			MyData.InitPane(0, viewpane::DropDownPane::Create(IDS_DELSTYLE, _countof(uidDropDown), uidDropDown, true));
 		else
-			MyData.InitPane(0, DropDownPane::Create(IDS_DELSTYLE, _countof(uidDropDown) - 1, &uidDropDown[1], true));
+			MyData.InitPane(0, viewpane::DropDownPane::Create(IDS_DELSTYLE, _countof(uidDropDown) - 1, &uidDropDown[1], true));
 
 		WC_H(MyData.DisplayDialog());
 
@@ -799,7 +799,7 @@ void CFolderDlg::OnLoadFromMSG()
 		IDS_DDLOADTOFOLDER,
 		IDS_DDDISPLAYPROPSONLY
 		};
-		MyData.InitPane(0, DropDownPane::Create(IDS_LOADSTYLE, _countof(uidDropDown), uidDropDown, true));
+		MyData.InitPane(0, viewpane::DropDownPane::Create(IDS_LOADSTYLE, _countof(uidDropDown), uidDropDown, true));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
@@ -906,7 +906,7 @@ void CFolderDlg::OnManualResolve()
 			IDS_MANUALRESOLVEPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_DISPLAYNAME, false));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_DISPLAYNAME, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
@@ -1047,7 +1047,7 @@ void CFolderDlg::OnNewCustomForm()
 		IDS_DDFOLDERFORMLIBRARY,
 		IDS_DDORGFORMLIBRARY
 		};
-		MyPrompt1.InitPane(0, DropDownPane::Create(IDS_LOCATIONOFFORM, _countof(uidDropDown), uidDropDown, true));
+		MyPrompt1.InitPane(0, viewpane::DropDownPane::Create(IDS_LOCATIONOFFORM, _countof(uidDropDown), uidDropDown, true));
 
 		WC_H(MyPrompt1.DisplayDialog());
 
@@ -1061,7 +1061,7 @@ void CFolderDlg::OnNewCustomForm()
 				IDS_NEWCUSTOMFORM,
 				IDS_NEWCUSTOMFORMPROMPT2,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyClass.InitPane(0, TextPane::CreateSingleLinePane(IDS_FORMTYPE, std::wstring(L"IPM.Note"), false)); // STRING_OK
+			MyClass.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FORMTYPE, std::wstring(L"IPM.Note"), false)); // STRING_OK
 
 			switch (MyPrompt1.GetDropDown(0))
 			{
@@ -1241,7 +1241,7 @@ void CFolderDlg::OnExecuteVerbOnForm()
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_LAST_VERB_EXECUTED), false));
 
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_VERB, false));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_VERB, false));
 		MyData.SetDecimal(0, EXCHIVERB_OPEN);
 
 		WC_H(MyData.DisplayDialog());
@@ -1332,7 +1332,7 @@ void CFolderDlg::OnRemoveOneOff()
 		IDS_REMOVEONEOFF,
 		IDS_REMOVEONEOFFPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CheckPane::Create(IDS_REMOVEPROPDEFSTREAM, true, false));
+	MyData.InitPane(0, viewpane::CheckPane::Create(IDS_REMOVEPROPDEFSTREAM, true, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1387,7 +1387,7 @@ void CFolderDlg::OnRTFSync()
 		IDS_CALLRTFSYNCPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, RTF_SYNC_RTF_CHANGED);
 
 	WC_H(MyData.DisplayDialog());
@@ -1506,11 +1506,11 @@ void CFolderDlg::OnSaveMessageToFile()
 	IDS_DDEMLFILEUSINGICONVERTERSESSION,
 	IDS_DDTNEFFILE
 	};
-	MyData.InitPane(0, DropDownPane::Create(IDS_FORMATTOSAVEMESSAGE, _countof(uidDropDown), uidDropDown, true));
+	MyData.InitPane(0, viewpane::DropDownPane::Create(IDS_FORMATTOSAVEMESSAGE, _countof(uidDropDown), uidDropDown, true));
 	const auto numSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 	if (numSelected > 1)
 	{
-		MyData.InitPane(1, CheckPane::Create(IDS_EXPORTPROMPTLOCATION, false, false));
+		MyData.InitPane(1, viewpane::CheckPane::Create(IDS_EXPORTPROMPTLOCATION, false, false));
 	}
 
 	WC_H(MyData.DisplayDialog());
@@ -1776,11 +1776,11 @@ void CFolderDlg::OnSendBulkMail()
 		IDS_SENDBULKMAIL,
 		IDS_SENDBULKMAILPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_NUMMESSAGES, false));
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_RECIPNAME, false));
-	MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_SUBJECT, false));
-	MyData.InitPane(3, TextPane::CreateSingleLinePane(IDS_CLASS, std::wstring(L"IPM.Note"), false)); // STRING_OK
-	MyData.InitPane(4, TextPane::CreateMultiLinePane(IDS_BODY, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NUMMESSAGES, false));
+	MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RECIPNAME, false));
+	MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_SUBJECT, false));
+	MyData.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, std::wstring(L"IPM.Note"), false)); // STRING_OK
+	MyData.InitPane(4, viewpane::TextPane::CreateMultiLinePane(IDS_BODY, false));
 
 	if (!m_lpContainer) return;
 
@@ -1830,7 +1830,7 @@ void CFolderDlg::OnSetReadFlag()
 		IDS_SETREADFLAGPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyFlags.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
+	MyFlags.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
 	MyFlags.SetHex(0, CLEAR_READ_FLAG);
 
 	WC_H(MyFlags.DisplayDialog());
@@ -1898,7 +1898,7 @@ void CFolderDlg::OnGetMessageOptions()
 		IDS_MESSAGEOPTIONS,
 		IDS_ADDRESSTYPEPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyAddress.InitPane(0, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
+	MyAddress.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
 	WC_H(MyAddress.DisplayDialog());
 
 	if (S_OK == hRes)
@@ -2139,7 +2139,7 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 			IDS_MESSAGESTATUS,
 			NULL,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyStatus.InitPane(0, TextPane::CreateSingleLinePane(IDS_MESSAGESTATUS, true));
+		MyStatus.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_MESSAGESTATUS, true));
 		MyStatus.SetHex(0, ulMessageStatus);
 
 		WC_H(MyStatus.DisplayDialog());
@@ -2161,8 +2161,8 @@ void CFolderDlg::OnSetMessageStatus()
 		IDS_SETMSGSTATUSPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_STATUSINHEX, false));
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_MASKINHEX, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_STATUSINHEX, false));
+	MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_MASKINHEX, false));
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnSetMessageStatus", L"\n");
 

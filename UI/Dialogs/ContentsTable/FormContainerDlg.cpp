@@ -1,6 +1,6 @@
 // Displays the contents of a form container
-#include "StdAfx.h"
-#include "FormContainerDlg.h"
+#include <StdAfx.h>
+#include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
@@ -212,7 +212,7 @@ void CFormContainerDlg::OnInstallForm()
 		IDS_INSTALLFORM,
 		IDS_INSTALLFORMPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyFlags.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+	MyFlags.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 	MyFlags.SetHex(0, MAPIFORM_INSTALL_DIALOG);
 
 	WC_H(MyFlags.DisplayDialog());
@@ -265,7 +265,7 @@ void CFormContainerDlg::OnRemoveForm()
 		IDS_REMOVEFORM,
 		IDS_REMOVEFORMPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyClass.InitPane(0, TextPane::CreateSingleLinePane(IDS_CLASS, false));
+	MyClass.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
 
 	WC_H(MyClass.DisplayDialog());
 	if (S_OK == hRes)
@@ -292,8 +292,8 @@ void CFormContainerDlg::OnResolveMessageClass()
 		IDS_RESOLVECLASS,
 		IDS_RESOLVECLASSPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CLASS, false));
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
+	MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -327,9 +327,9 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 		IDS_RESOLVECLASSES,
 		IDS_RESOLVECLASSESPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_NUMBER, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NUMBER, false));
 	MyData.SetDecimal(0, 1);
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+	MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -352,7 +352,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 						IDS_ENTERMSGCLASS,
 						IDS_ENTERMSGCLASSPROMPT,
 						CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-					MyClass.InitPane(0, TextPane::CreateSingleLinePane(IDS_CLASS, false));
+					MyClass.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
 
 					WC_H(MyClass.DisplayDialog());
 					if (S_OK == hRes)
@@ -412,7 +412,7 @@ void CFormContainerDlg::OnCalcFormPropSet()
 		IDS_CALCFORMPROPSET,
 		IDS_CALCFORMPROPSETPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, FORMPROPSET_UNION);
 
 	WC_H(MyData.DisplayDialog());
@@ -449,7 +449,7 @@ void CFormContainerDlg::OnGetDisplay()
 			IDS_GETDISPLAY,
 			IDS_GETDISPLAYPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyOutput.InitPane(0, TextPane::CreateSingleLinePane(IDS_GETDISPLAY, szDisplayName, true));
+		MyOutput.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_GETDISPLAY, szDisplayName, true));
 		WC_H(MyOutput.DisplayDialog());
 		MAPIFreeBuffer(lpszDisplayName);
 	}

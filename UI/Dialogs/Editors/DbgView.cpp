@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <UI/ParentWnd.h>
@@ -52,10 +52,10 @@ namespace editor
 		CEditor(pParentWnd, IDS_DBGVIEW, NULL, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2, IDS_CLEAR, IDS_CLOSE, NULL)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		InitPane(DBGVIEW_TAGS, TextPane::CreateSingleLinePane(IDS_REGKEY_DEBUG_TAG, false));
+		InitPane(DBGVIEW_TAGS, viewpane::TextPane::CreateSingleLinePane(IDS_REGKEY_DEBUG_TAG, false));
 		SetHex(DBGVIEW_TAGS, GetDebugLevel());
-		InitPane(DBGVIEW_PAUSE, CheckPane::Create(IDS_PAUSE, false, false));
-		InitPane(DBGVIEW_VIEW, TextPane::CreateMultiLinePane(NULL, true));
+		InitPane(DBGVIEW_PAUSE, viewpane::CheckPane::Create(IDS_PAUSE, false, false));
+		InitPane(DBGVIEW_VIEW, viewpane::TextPane::CreateMultiLinePane(NULL, true));
 		m_bPaused = false;
 		DisplayParentedDialog(pParentWnd, 800);
 	}
@@ -102,7 +102,7 @@ namespace editor
 	// Clear
 	void CDbgView::OnEditAction1()
 	{
-		auto lpPane = static_cast<TextPane*>(GetPane(DBGVIEW_VIEW));
+		auto lpPane = static_cast<viewpane::TextPane*>(GetPane(DBGVIEW_VIEW));
 		if (lpPane)
 		{
 			return lpPane->Clear();
@@ -119,7 +119,7 @@ namespace editor
 	{
 		if (m_bPaused) return;
 
-		auto lpPane = static_cast<TextPane*>(GetPane(DBGVIEW_VIEW));
+		auto lpPane = static_cast<viewpane::TextPane*>(GetPane(DBGVIEW_VIEW));
 		if (lpPane)
 		{
 			lpPane->AppendString(szMsg);

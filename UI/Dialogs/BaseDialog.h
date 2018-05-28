@@ -6,7 +6,7 @@ class CParentWnd;
 class CAdviseSink;
 
 #include <UI/Dialogs/Dialog.h>
-#include "enums.h"
+#include <enums.h>
 #include <UI/Controls/SortList/SortListData.h>
 
 class CBaseDialog : public CMyDialog

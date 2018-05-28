@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/String.h>
@@ -44,18 +44,18 @@ namespace editor
 
 		if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-		InitPane(PROPTAG_TAG, TextPane::CreateSingleLinePane(IDS_PROPTAG, false));
-		InitPane(PROPTAG_ID, TextPane::CreateSingleLinePane(IDS_PROPID, false));
-		InitPane(PROPTAG_TYPE, DropDownPane::Create(IDS_PROPTYPE, 0, nullptr, false));
-		InitPane(PROPTAG_NAME, TextPane::CreateSingleLinePane(IDS_PROPNAME, true));
-		InitPane(PROPTAG_TYPESTRING, TextPane::CreateSingleLinePane(IDS_PROPTYPE, true));
+		InitPane(PROPTAG_TAG, viewpane::TextPane::CreateSingleLinePane(IDS_PROPTAG, false));
+		InitPane(PROPTAG_ID, viewpane::TextPane::CreateSingleLinePane(IDS_PROPID, false));
+		InitPane(PROPTAG_TYPE, viewpane::DropDownPane::Create(IDS_PROPTYPE, 0, nullptr, false));
+		InitPane(PROPTAG_NAME, viewpane::TextPane::CreateSingleLinePane(IDS_PROPNAME, true));
+		InitPane(PROPTAG_TYPESTRING, viewpane::TextPane::CreateSingleLinePane(IDS_PROPTYPE, true));
 
 		// Map named properties if we can, but not for Address Books
 		if (m_lpMAPIProp && !m_bIsAB)
 		{
-			InitPane(PROPTAG_NAMEPROPKIND, DropDownPane::Create(IDS_NAMEPROPKIND, 0, nullptr, true));
-			InitPane(PROPTAG_NAMEPROPNAME, TextPane::CreateSingleLinePane(IDS_NAMEPROPNAME, false));
-			InitPane(PROPTAG_NAMEPROPGUID, DropDownPane::CreateGuid(IDS_NAMEPROPGUID, false));
+			InitPane(PROPTAG_NAMEPROPKIND, viewpane::DropDownPane::Create(IDS_NAMEPROPKIND, 0, nullptr, true));
+			InitPane(PROPTAG_NAMEPROPNAME, viewpane::TextPane::CreateSingleLinePane(IDS_NAMEPROPNAME, false));
+			InitPane(PROPTAG_NAMEPROPGUID, viewpane::DropDownPane::CreateGuid(IDS_NAMEPROPGUID, false));
 		}
 
 		// initialize our dropdowns here
@@ -362,7 +362,7 @@ namespace editor
 
 	void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_ const std::wstring&szText) const
 	{
-		auto lpPane = static_cast<DropDownPane*>(GetPane(i));
+		auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(i));
 		if (lpPane)
 		{
 			return lpPane->SetDropDownSelection(szText);
@@ -371,7 +371,7 @@ namespace editor
 
 	_Check_return_ std::wstring CPropertyTagEditor::GetDropStringUseControl(ULONG iControl) const
 	{
-		const auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
+		const auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(iControl));
 		if (lpPane)
 		{
 			return lpPane->GetDropStringUseControl();
@@ -382,7 +382,7 @@ namespace editor
 
 	_Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG iControl) const
 	{
-		const auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
+		const auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(iControl));
 		if (lpPane)
 		{
 			return lpPane->GetDropDownSelection();
@@ -393,7 +393,7 @@ namespace editor
 
 	void CPropertyTagEditor::InsertDropString(ULONG iControl, int iRow, _In_ const std::wstring& szText) const
 	{
-		auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
+		auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(iControl));
 		if (lpPane)
 		{
 			lpPane->InsertDropString(szText, iRow);

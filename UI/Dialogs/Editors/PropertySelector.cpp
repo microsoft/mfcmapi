@@ -23,7 +23,7 @@ namespace editor
 
 		if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-		InitPane(0, ListPane::Create(IDS_KNOWNPROPTAGS, true, true, ListEditCallBack(this)));
+		InitPane(0, viewpane::ListPane::Create(IDS_KNOWNPROPTAGS, true, true, ListEditCallBack(this)));
 	}
 
 	CPropertySelector::~CPropertySelector()
@@ -88,7 +88,7 @@ namespace editor
 
 	_Check_return_ SortListData* CPropertySelector::GetSelectedListRowData(ULONG iControl) const
 	{
-		const auto lpPane = static_cast<ListPane*>(GetPane(iControl));
+		const auto lpPane = static_cast<viewpane::ListPane*>(GetPane(iControl));
 		if (lpPane)
 		{
 			return lpPane->GetSelectedListRowData();

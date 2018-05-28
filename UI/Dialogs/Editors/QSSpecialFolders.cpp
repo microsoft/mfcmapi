@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/Editors/QSSpecialFolders.h>
 #include <UI/QuickStart.h>
 #include <MAPI/MAPIFunctions.h>
@@ -36,7 +36,7 @@ namespace editor
 		m_lpMDB = lpMDB;
 		if (m_lpMDB) m_lpMDB->AddRef();
 
-		InitPane(0, ListPane::Create(NULL, true, true, ListEditCallBack(this)));
+		InitPane(0, viewpane::ListPane::Create(NULL, true, true, ListEditCallBack(this)));
 	}
 
 	SpecialFolderEditor::~SpecialFolderEditor()
@@ -210,10 +210,10 @@ namespace editor
 			IDS_QSSPECIALFOLDER,
 			NULL,
 			CEDITOR_BUTTON_OK);
-		MyResults.InitPane(0, TextPane::CreateMultiLinePane(NULL, true));
+		MyResults.InitPane(0, viewpane::TextPane::CreateMultiLinePane(NULL, true));
 
 		std::wstring szTmp;
-		const auto listPane = dynamic_cast<ListPane*>(GetPane(ulListNum));
+		const auto listPane = dynamic_cast<viewpane::ListPane*>(GetPane(ulListNum));
 		if (listPane)
 		{
 			// We skip the first column, which is just the index

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/FakeSplitter.h>
@@ -338,8 +338,8 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 			IDS_RANGESEARCHCRITERIAPROMPT,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SUBSTRING, false));
-		MyData.InitPane(1, CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SUBSTRING, false));
+		MyData.InitPane(1, viewpane::CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
@@ -429,12 +429,12 @@ void CContentsTableDlg::OnSortTable()
 		IDS_SORTTABLEPROMPT1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CSORTS, false));
-	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_CCATS, false));
-	MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_CEXPANDED, false));
-	MyData.InitPane(3, CheckPane::Create(IDS_TBLASYNC, false, false));
-	MyData.InitPane(4, CheckPane::Create(IDS_TBLBATCH, false, false));
-	MyData.InitPane(5, CheckPane::Create(IDS_REFRESHAFTERSORT, true, false));
+	MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CSORTS, false));
+	MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_CCATS, false));
+	MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_CEXPANDED, false));
+	MyData.InitPane(3, viewpane::CheckPane::Create(IDS_TBLASYNC, false, false));
+	MyData.InitPane(4, viewpane::CheckPane::Create(IDS_TBLBATCH, false, false));
+	MyData.InitPane(5, viewpane::CheckPane::Create(IDS_REFRESHAFTERSORT, true, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK != hRes) return;
@@ -486,7 +486,7 @@ void CContentsTableDlg::OnSortTable()
 				IDS_DDTABLESORTCATEGMAX,
 				IDS_DDTABLESORTCATEGMIN
 				};
-				MySortOrderDlg.InitPane(0, DropDownPane::Create(IDS_SORTORDER, _countof(uidDropDown), uidDropDown, true));
+				MySortOrderDlg.InitPane(0, viewpane::DropDownPane::Create(IDS_SORTORDER, _countof(uidDropDown), uidDropDown, true));
 
 				WC_H(MySortOrderDlg.DisplayDialog());
 				if (S_OK == hRes)

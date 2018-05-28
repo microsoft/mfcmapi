@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/Editors/SearchEditor.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/String.h>
@@ -36,14 +36,14 @@ namespace editor
 		m_lpMAPIProp = lpMAPIProp;
 		if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-		InitPane(PROPNAME, TextPane::CreateSingleLinePane(IDS_PROPNAME, true));
-		InitPane(SEARCHTERM, TextPane::CreateSingleLinePane(IDS_PROPVALUE, false));
-		InitPane(FUZZYLEVEL, DropDownPane::Create(IDS_SEARCHTYPE, 0, nullptr, false));
-		InitPane(FINDROW, CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
+		InitPane(PROPNAME, viewpane::TextPane::CreateSingleLinePane(IDS_PROPNAME, true));
+		InitPane(SEARCHTERM, viewpane::TextPane::CreateSingleLinePane(IDS_PROPVALUE, false));
+		InitPane(FUZZYLEVEL, viewpane::DropDownPane::Create(IDS_SEARCHTYPE, 0, nullptr, false));
+		InitPane(FINDROW, viewpane::CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
 
 		// initialize our dropdowns here
 		auto ulDropNum = 0;
-		auto lpFuzzyPane = dynamic_cast<DropDownPane*>(GetPane(FUZZYLEVEL));
+		auto lpFuzzyPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(FUZZYLEVEL));
 		if (lpFuzzyPane)
 		{
 			for (const auto fuzzyLevel : FuzzyLevels)
@@ -155,7 +155,7 @@ namespace editor
 
 	_Check_return_ ULONG CSearchEditor::GetSelectedFuzzyLevel() const
 	{
-		const auto lpFuzzyPane = dynamic_cast<DropDownPane*>(GetPane(FUZZYLEVEL));
+		const auto lpFuzzyPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(FUZZYLEVEL));
 		if (lpFuzzyPane)
 		{
 			const auto ulFuzzySelection = lpFuzzyPane->GetDropDownSelection();

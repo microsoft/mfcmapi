@@ -1,5 +1,5 @@
 // Displays the list of providers in a message service in a profile
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ProviderTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MapiObjects.h>
@@ -87,8 +87,8 @@ void CProviderTableDlg::OnOpenProfileSection()
 		IDS_OPENPROFSECTPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyUID.InitPane(0, DropDownPane::CreateGuid(IDS_MAPIUID, false));
-	MyUID.InitPane(1, CheckPane::Create(IDS_MAPIUIDBYTESWAPPED, false, false));
+	MyUID.InitPane(0, viewpane::DropDownPane::CreateGuid(IDS_MAPIUID, false));
+	MyUID.InitPane(1, viewpane::CheckPane::Create(IDS_MAPIUIDBYTESWAPPED, false, false));
 
 	WC_H(MyUID.DisplayDialog());
 	if (S_OK != hRes) return;

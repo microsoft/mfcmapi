@@ -4,7 +4,7 @@ class CSingleMAPIPropListCtrl;
 class CParentWnd;
 class CMapiObjects;
 
-#include "HierarchyTableDlg.h"
+#include <UI/Dialogs/HierarchyTable/HierarchyTableDlg.h>
 
 class CMsgStoreDlg : public CHierarchyTableDlg
 {
