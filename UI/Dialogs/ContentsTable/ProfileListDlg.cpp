@@ -235,7 +235,7 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 {
 	if (!m_lpContentsTableListCtrl) return;
 
-	auto file = CFileDialogExW::OpenFile(
+	auto file = file::CFileDialogExW::OpenFile(
 		L"pst", // STRING_OK
 		strings::emptystring,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -559,7 +559,7 @@ void CProfileListDlg::OnExportProfile()
 	{
 		const auto szProfileName = strings::stringTowstring(lpListData->Contents()->m_szProfileDisplayName);
 
-		auto file = CFileDialogExW::SaveAs(
+		auto file = file::CFileDialogExW::SaveAs(
 			L"xml", // STRING_OK
 			szProfileName + L".xml",
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,

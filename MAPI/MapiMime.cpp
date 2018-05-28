@@ -162,7 +162,7 @@ _Check_return_ HRESULT ConvertEMLToMSG(_In_z_ LPCWSTR lpszEMLFile,
 	LPSTORAGE pStorage = nullptr;
 	LPMESSAGE pMessage = nullptr;
 
-	EC_H(CreateNewMSG(lpszMSGFile, bUnicode, &pMessage, &pStorage));
+	EC_H(file::CreateNewMSG(lpszMSGFile, bUnicode, &pMessage, &pStorage));
 	if (SUCCEEDED(hRes) && pMessage && pStorage)
 	{
 		EC_H(ImportEMLToIMessage(
@@ -198,7 +198,7 @@ _Check_return_ HRESULT ConvertMSGToEML(_In_z_ LPCWSTR lpszMSGFile,
 	auto hRes = S_OK;
 	LPMESSAGE pMessage = nullptr;
 
-	EC_H(LoadMSGToMessage(lpszMSGFile, &pMessage));
+	EC_H(file::LoadMSGToMessage(lpszMSGFile, &pMessage));
 	if (SUCCEEDED(hRes) && pMessage)
 	{
 		EC_H(ExportIMessageToEML(

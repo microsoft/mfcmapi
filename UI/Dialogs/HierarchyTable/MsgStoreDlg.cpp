@@ -925,12 +925,12 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 
 	if (S_OK == hRes)
 	{
-		auto szDir = GetDirectoryPath(m_hWnd);
+		auto szDir = file::GetDirectoryPath(m_hWnd);
 		if (!szDir.empty())
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-			EC_H(SaveFolderContentsToMSG(
+			EC_H(file::SaveFolderContentsToMSG(
 				lpMAPIFolder,
 				szDir,
 				MyData.GetCheck(0) ? true : false,
@@ -968,7 +968,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsTextFiles()
 
 		if (S_OK == hRes)
 		{
-			SaveFolderContentsToTXT(
+			file::SaveFolderContentsToTXT(
 				lpMDB,
 				lpFolder,
 				MyData.GetCheck(1),
@@ -988,7 +988,7 @@ void CMsgStoreDlg::OnExportMessages()
 
 	if (lpFolder)
 	{
-		ExportMessages(lpFolder, m_hWnd);
+		file::ExportMessages(lpFolder, m_hWnd);
 
 		lpFolder->Release();
 	}

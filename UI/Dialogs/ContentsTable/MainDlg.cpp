@@ -832,7 +832,7 @@ void CMainDlg::OnDumpStoreContents()
 					&lpMDB));
 				if (lpMDB)
 				{
-					auto szDir = GetDirectoryPath(m_hWnd);
+					auto szDir = file::GetDirectoryPath(m_hWnd);
 					if (!szDir.empty())
 					{
 						CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -875,7 +875,7 @@ void CMainDlg::OnDumpServerContents()
 
 	if (S_OK == hRes)
 	{
-		auto szDir = GetDirectoryPath(m_hWnd);
+		auto szDir = file::GetDirectoryPath(m_hWnd);
 		if (!szDir.empty())
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -1649,7 +1649,7 @@ void CMainDlg::OnViewMSGProperties()
 	CGlobalCache::getInstance().MAPIInitialize(NULL);
 	if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
 
-	auto file = CFileDialogExW::OpenFile(
+	auto file = file::CFileDialogExW::OpenFile(
 		L"msg", // STRING_OK
 		strings::emptystring,
 		OFN_FILEMUSTEXIST,
@@ -1659,7 +1659,7 @@ void CMainDlg::OnViewMSGProperties()
 	{
 		auto hRes = S_OK;
 		LPMESSAGE lpNewMessage = nullptr;
-		EC_H(LoadMSGToMessage(
+		EC_H(file::LoadMSGToMessage(
 			file,
 			&lpNewMessage));
 		if (lpNewMessage)
@@ -1688,7 +1688,7 @@ void CMainDlg::OnConvertMSGToEML()
 		LPADRBOOK lpAdrBook = nullptr;
 		if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 
-		auto msgfile = CFileDialogExW::OpenFile(
+		auto msgfile = file::CFileDialogExW::OpenFile(
 			L"msg", // STRING_OK
 			strings::emptystring,
 			OFN_FILEMUSTEXIST,
@@ -1696,9 +1696,9 @@ void CMainDlg::OnConvertMSGToEML()
 			this);
 		if (!msgfile.empty())
 		{
-			CFileDialogExW dlgFilePickerEML;
+			file::CFileDialogExW dlgFilePickerEML;
 
-			auto emlfile = CFileDialogExW::SaveAs(
+			auto emlfile = file::CFileDialogExW::SaveAs(
 				L"eml", // STRING_OK
 				strings::emptystring,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -1737,7 +1737,7 @@ void CMainDlg::OnConvertEMLToMSG()
 		LPADRBOOK lpAdrBook = nullptr;
 		if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 
-		auto emlfile = CFileDialogExW::OpenFile(
+		auto emlfile = file::CFileDialogExW::OpenFile(
 			L"eml", // STRING_OK
 			strings::emptystring,
 			OFN_FILEMUSTEXIST,
@@ -1745,7 +1745,7 @@ void CMainDlg::OnConvertEMLToMSG()
 			this);
 		if (!emlfile.empty())
 		{
-			auto msgfile = CFileDialogExW::SaveAs(
+			auto msgfile = file::CFileDialogExW::SaveAs(
 				L"msg", // STRING_OK
 				strings::emptystring,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -1776,7 +1776,7 @@ void CMainDlg::OnConvertMSGToXML()
 
 	auto szFileSpec = strings::loadstring(IDS_MSGFILES);
 
-	auto msgfile = CFileDialogExW::OpenFile(
+	auto msgfile = file::CFileDialogExW::OpenFile(
 		L"msg", // STRING_OK
 		strings::emptystring,
 		OFN_FILEMUSTEXIST,
@@ -1784,9 +1784,9 @@ void CMainDlg::OnConvertMSGToXML()
 		this);
 	if (!msgfile.empty())
 	{
-		CFileDialogExW dlgFilePickerXML;
+		file::CFileDialogExW dlgFilePickerXML;
 
-		auto xmlfile = CFileDialogExW::SaveAs(
+		auto xmlfile = file::CFileDialogExW::SaveAs(
 			L"xml", // STRING_OK
 			strings::emptystring,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -1796,7 +1796,7 @@ void CMainDlg::OnConvertMSGToXML()
 		{
 			LPMESSAGE lpMessage = nullptr;
 
-			EC_H(LoadMSGToMessage(msgfile, &lpMessage));
+			EC_H(file::LoadMSGToMessage(msgfile, &lpMessage));
 
 			if (lpMessage)
 			{

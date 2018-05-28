@@ -256,7 +256,7 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 	if (!(ulStatus & BUFFER_ATTACHMENTS) || !(ulStatus & BUFFER_SOURCEPROPOBJ)) return false;
 
 	auto lpAttNumList = CGlobalCache::getInstance().GetAttachmentsToCopy();
-	auto lpSourceMessage = static_cast<LPMESSAGE>(CGlobalCache::getInstance().GetSourcePropObject());
+	auto lpSourceMessage = dynamic_cast<LPMESSAGE>(CGlobalCache::getInstance().GetSourcePropObject());
 
 	if (!lpAttNumList.empty() && lpSourceMessage)
 	{
@@ -407,7 +407,7 @@ void CAttachmentsDlg::OnSaveToFile()
 
 			if (lpAttach)
 			{
-				WC_H(WriteAttachmentToFile(lpAttach, m_hWnd));
+				WC_H(file::WriteAttachmentToFile(lpAttach, m_hWnd));
 
 				lpAttach->Release();
 				lpAttach = nullptr;
@@ -425,7 +425,7 @@ void CAttachmentsDlg::OnViewEmbeddedMessageProps()
 void CAttachmentsDlg::OnAddAttachment()
 {
 	HRESULT hRes = 0;
-	auto szAttachName = CFileDialogExW::OpenFile(
+	auto szAttachName = file::CFileDialogExW::OpenFile(
 		strings::emptystring,
 		strings::emptystring,
 		NULL,
@@ -501,7 +501,7 @@ void CAttachmentsDlg::HandleAddInMenuSingle(
 	if (lpParams)
 	{
 		lpParams->lpMessage = m_lpMessage;
-		lpParams->lpAttach = static_cast<LPATTACH>(lpMAPIProp); // OpenItemProp returns LPATTACH
+		lpParams->lpAttach = dynamic_cast<LPATTACH>(lpMAPIProp); // OpenItemProp returns LPATTACH
 	}
 
 	InvokeAddInMenu(lpParams);

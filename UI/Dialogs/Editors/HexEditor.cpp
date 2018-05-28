@@ -189,7 +189,7 @@ namespace editor
 		auto hRes = S_OK;
 		if (S_OK == hRes)
 		{
-			auto file = CFileDialogExW::OpenFile(
+			auto file = file::CFileDialogExW::OpenFile(
 				strings::emptystring,
 				strings::emptystring,
 				OFN_FILEMUSTEXIST,
@@ -228,7 +228,7 @@ namespace editor
 		auto hRes = S_OK;
 		if (S_OK == hRes)
 		{
-			auto file = CFileDialogExW::SaveAs(
+			auto file = file::CFileDialogExW::SaveAs(
 				strings::emptystring,
 				strings::emptystring,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,

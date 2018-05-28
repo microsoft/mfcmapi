@@ -218,7 +218,7 @@ void CFormContainerDlg::OnInstallForm()
 	WC_H(MyFlags.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		auto files = CFileDialogExW::OpenFiles(
+		auto files = file::CFileDialogExW::OpenFiles(
 			L"cfg", // STRING_OK
 			strings::emptystring,
 			OFN_FILEMUSTEXIST,
@@ -363,7 +363,8 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 						if (cbClass)
 						{
 							cbClass++; // for the NULL terminator
-							EC_H(MAPIAllocateMore(static_cast<ULONG>(cbClass), lpMSGClassArray, (LPVOID*)&lpMSGClassArray->aMessageClass[i]));
+							EC_H(MAPIAllocateMore(static_cast<ULONG>(cbClass), lpMSGClassArray,
+								reinterpret_cast<LPVOID*>(const_cast<LPSTR*>(&lpMSGClassArray->aMessageClass[i]))));
 							EC_H(StringCbCopyA(const_cast<LPSTR>(lpMSGClassArray->aMessageClass[i]), cbClass, szClass.c_str()));
 						}
 						else bCancel = true;

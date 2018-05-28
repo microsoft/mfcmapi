@@ -59,7 +59,7 @@ void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool b
 	auto hRes = S_OK;
 	LPMESSAGE lpMessage = nullptr;
 
-	WC_H(LoadMSGToMessage(lpszMSGFile, &lpMessage));
+	WC_H(file::LoadMSGToMessage(lpszMSGFile, &lpMessage));
 
 	if (lpMessage)
 	{

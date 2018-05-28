@@ -621,7 +621,7 @@ void CFolderDlg::OnDeleteAttachments()
 
 				if (lpMessage)
 				{
-					EC_H(DeleteAttachments(lpMessage, szAttName, m_hWnd));
+					EC_H(file::DeleteAttachments(lpMessage, szAttName, m_hWnd));
 
 					lpMessage->Release();
 				}
@@ -780,7 +780,7 @@ void CFolderDlg::OnLoadFromMSG()
 	auto hRes = S_OK;
 	LPMESSAGE lpNewMessage = nullptr;
 
-	auto files = CFileDialogExW::OpenFiles(
+	auto files = file::CFileDialogExW::OpenFiles(
 		L"msg", // STRING_OK
 		strings::emptystring,
 		OFN_HIDEREADONLY | OFN_FILEMUSTEXIST,
@@ -817,7 +817,7 @@ void CFolderDlg::OnLoadFromMSG()
 
 					if (lpNewMessage)
 					{
-						EC_H(LoadFromMSG(
+						EC_H(file::LoadFromMSG(
 							lpszPath,
 							lpNewMessage, m_hWnd));
 					}
@@ -826,7 +826,7 @@ void CFolderDlg::OnLoadFromMSG()
 				case 1:
 					if (m_lpPropDisplay)
 					{
-						EC_H(LoadMSGToMessage(
+						EC_H(file::LoadMSGToMessage(
 							lpszPath,
 							&lpNewMessage));
 
@@ -1449,7 +1449,7 @@ _Check_return_ HRESULT CFolderDlg::OnSaveAttachments(int iItem, _In_ SortListDat
 
 	if (lpMessage)
 	{
-		EC_H(WriteAttachmentsToFile(
+		EC_H(file::WriteAttachmentsToFile(
 			lpMessage, m_hWnd));
 
 		lpMessage->Release();
@@ -1467,7 +1467,7 @@ void CFolderDlg::OnSaveFolderContentsAsTextFiles()
 
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	SaveFolderContentsToTXT(
+	file::SaveFolderContentsToTXT(
 		lpMDB,
 		dynamic_cast<LPMAPIFOLDER>(m_lpContainer),
 		(m_ulDisplayFlags & dfAssoc) == 0,
@@ -1482,7 +1482,7 @@ void CFolderDlg::OnExportMessages()
 
 	if (lpFolder)
 	{
-		ExportMessages(lpFolder, m_hWnd);
+		file::ExportMessages(lpFolder, m_hWnd);
 	}
 }
 
@@ -1555,7 +1555,7 @@ void CFolderDlg::OnSaveMessageToFile()
 		if (!bPrompt)
 		{
 			// If we weren't asked to prompt for each item, we still need to ask for a directory
-			dir = GetDirectoryPath(m_hWnd);
+			dir = file::GetDirectoryPath(m_hWnd);
 		}
 
 		auto iItem = m_lpContentsTableListCtrl->GetNextItem(
@@ -1572,12 +1572,12 @@ void CFolderDlg::OnSaveMessageToFile()
 
 			if (lpMessage)
 			{
-				auto filename = BuildFileName(szDotExt, dir, lpMessage);
+				auto filename = file::BuildFileName(szDotExt, dir, lpMessage);
 				DebugPrint(DBGGeneric, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
 
 				if (bPrompt)
 				{
-					filename = CFileDialogExW::SaveAs(
+					filename = file::CFileDialogExW::SaveAs(
 						szExt,
 						filename,
 						OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -1600,13 +1600,13 @@ void CFolderDlg::OnSaveMessageToFile()
 
 					break;
 					case 1:
-						EC_H(SaveToMSG(lpMessage, filename, false, m_hWnd, true));
+						EC_H(file::SaveToMSG(lpMessage, filename, false, m_hWnd, true));
 						break;
 					case 2:
-						EC_H(SaveToMSG(lpMessage, filename, true, m_hWnd, true));
+						EC_H(file::SaveToMSG(lpMessage, filename, true, m_hWnd, true));
 						break;
 					case 3:
-						EC_H(SaveToEML(lpMessage, filename));
+						EC_H(file::SaveToEML(lpMessage, filename));
 						break;
 					case 4:
 					{
@@ -1635,7 +1635,7 @@ void CFolderDlg::OnSaveMessageToFile()
 
 					break;
 					case 5:
-						EC_H(SaveToTNEF(lpMessage, lpAddrBook, filename));
+						EC_H(file::SaveToTNEF(lpMessage, lpAddrBook, filename));
 						break;
 					default:
 						break;
@@ -1677,7 +1677,7 @@ void CFolderDlg::OnLoadFromTNEF()
 	const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 	if (lpAddrBook)
 	{
-		auto files = CFileDialogExW::OpenFiles(
+		auto files = file::CFileDialogExW::OpenFiles(
 			L"tnef", // STRING_OK
 			strings::emptystring,
 			OFN_FILEMUSTEXIST,
@@ -1696,7 +1696,7 @@ void CFolderDlg::OnLoadFromTNEF()
 
 				if (lpNewMessage)
 				{
-					EC_H(LoadFromTNEF(
+					EC_H(file::LoadFromTNEF(
 						lpszPath,
 						lpAddrBook,
 						lpNewMessage));
@@ -1731,7 +1731,7 @@ void CFolderDlg::OnLoadFromEML()
 		LPADRBOOK lpAdrBook = nullptr;
 		if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 
-		auto files = CFileDialogExW::OpenFiles(
+		auto files = file::CFileDialogExW::OpenFiles(
 			L"eml", // STRING_OK
 			strings::emptystring,
 			OFN_FILEMUSTEXIST,

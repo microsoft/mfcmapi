@@ -775,7 +775,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ LPMAPIPRO
 
 void CSingleMAPIPropListCtrl::SavePropsToXML()
 {
-	auto szFileName = CFileDialogExW::SaveAs(
+	auto szFileName = file::CFileDialogExW::SaveAs(
 		L"xml", // STRING_OK
 		L"props.xml", // STRING_OK
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,

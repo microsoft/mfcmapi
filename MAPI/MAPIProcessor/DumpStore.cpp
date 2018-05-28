@@ -286,7 +286,7 @@ namespace mapiprocessor
 		auto szExt = L".xml"; // STRING_OK
 		if (bOutputMSG) szExt = L".msg"; // STRING_OK
 
-		auto szFileName = BuildFileNameAndPath(szExt, szSubj, szFolderPath, lpRecordKey);
+		auto szFileName = file::BuildFileNameAndPath(szExt, szSubj, szFolderPath, lpRecordKey);
 		wprintf(L",\"%ws\"\n", szFileName.c_str());
 	}
 
@@ -483,7 +483,7 @@ namespace mapiprocessor
 				lpRecordKey = &lpTemp->Value.bin;
 			}
 
-			lpMsgData->szFilePath = BuildFileNameAndPath(L".xml", szSubj, szFolderPath, lpRecordKey); // STRING_OK
+			lpMsgData->szFilePath = file::BuildFileNameAndPath(L".xml", szSubj, szFolderPath, lpRecordKey); // STRING_OK
 		}
 
 		if (!lpMsgData->szFilePath.empty())
@@ -606,12 +606,12 @@ namespace mapiprocessor
 			}
 		}
 
-		auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szFolderPath, lpRecordKey); // STRING_OK
+		auto szFileName = file::BuildFileNameAndPath(L".msg", szSubj, szFolderPath, lpRecordKey); // STRING_OK
 		if (!szFileName.empty())
 		{
 			DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
-			WC_H(SaveToMSG(
+			WC_H(file::SaveToMSG(
 				lpMessage,
 				szFileName,
 				fMapiUnicode != 0,

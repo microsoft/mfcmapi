@@ -390,7 +390,7 @@ void CContentsTableDlg::OnEditRestriction()
 void CContentsTableDlg::OnOutputTable()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-	auto szFileName = CFileDialogExW::SaveAs(
+	auto szFileName = file::CFileDialogExW::SaveAs(
 		L"txt", // STRING_OK
 		L"table.txt", // STRING_OK
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
