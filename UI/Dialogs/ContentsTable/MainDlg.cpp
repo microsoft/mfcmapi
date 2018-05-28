@@ -1256,7 +1256,7 @@ void CMainDlg::OnFastShutdown()
 
 			if (SUCCEEDED(hRes))
 			{
-				ErrDialog(__FILE__, __LINE__, IDS_EDDOFASTSHUTDOWNSUCCEEDED);
+				error::ErrDialog(__FILE__, __LINE__, IDS_EDDOFASTSHUTDOWNSUCCEEDED);
 			}
 		}
 	}

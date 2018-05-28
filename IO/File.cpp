@@ -69,7 +69,7 @@ namespace file
 		auto path = ShortenPath(szPath);
 		if (path.length() >= MAXMSGPATH)
 		{
-			ErrDialog(__FILE__, __LINE__, IDS_EDPATHTOOLONG, path.length(), MAXMSGPATH);
+			error::ErrDialog(__FILE__, __LINE__, IDS_EDPATHTOOLONG, path.length(), MAXMSGPATH);
 			return strings::emptystring;
 		}
 
@@ -1386,7 +1386,7 @@ namespace file
 			}
 			break;
 			default:
-				ErrDialog(__FILE__, __LINE__, IDS_EDUNKNOWNATTMETHOD); break;
+				error::ErrDialog(__FILE__, __LINE__, IDS_EDUNKNOWNATTMETHOD); break;
 			}
 		}
 

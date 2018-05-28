@@ -1,10 +1,10 @@
 #include "StdAfx.h"
-#include "ParseProperty.h"
-#include "Property.h"
+#include <Property/ParseProperty.h>
+#include <Property/Property.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/InterpretProp.h>
-#include "Interpret/Guids.h"
+#include <Interpret/Guids.h>
 
 std::wstring BuildErrorPropString(_In_ const _SPropValue* lpProp)
 {
@@ -149,7 +149,7 @@ Property ParseProperty(_In_ const _SPropValue* lpProp)
 			szTmp = std::to_wstring(lpProp->Value.at); // STRING_OK
 			break;
 		case PT_ERROR:
-			szTmp = ErrorNameFromErrorCode(lpProp->Value.err); // STRING_OK
+			szTmp = error::ErrorNameFromErrorCode(lpProp->Value.err); // STRING_OK
 			szAltTmp = BuildErrorPropString(lpProp);
 
 			attributes.AddAttribute(L"err", strings::format(L"0x%08X", lpProp->Value.err)); // STRING_OK

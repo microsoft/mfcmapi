@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "StdAfx.h"
 #include <MAPI/GlobalCache.h>
 
 static std::wstring GCCLASS = L"CGlobalCache"; // STRING_OK
@@ -37,10 +37,10 @@ void CGlobalCache::MAPIInitialize(ULONG ulFlags)
 		}
 		else
 		{
-			ErrDialog(__FILE__, __LINE__,
+			error::ErrDialog(__FILE__, __LINE__,
 				IDS_EDMAPIINITIALIZEFAILED,
 				hRes,
-				ErrorNameFromErrorCode(hRes).c_str());
+				error::ErrorNameFromErrorCode(hRes).c_str());
 		}
 	}
 }

@@ -537,7 +537,7 @@ void CMsgStoreDlg::OnPasteFolder()
 				ulCopyFlags));
 			if (MAPI_E_COLLISION == hRes)
 			{
-				ErrDialog(__FILE__, __LINE__, IDS_EDDUPEFOLDER);
+				error::ErrDialog(__FILE__, __LINE__, IDS_EDDUPEFOLDER);
 			}
 			else CHECKHRESMSG(hRes, IDS_COPYFOLDERFAILED);
 
@@ -1164,11 +1164,11 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 				ulCopyFlags));
 			if (MAPI_E_COLLISION == hRes)
 			{
-				ErrDialog(__FILE__, __LINE__, IDS_EDDUPEFOLDER);
+				error::ErrDialog(__FILE__, __LINE__, IDS_EDDUPEFOLDER);
 			}
 			else if (MAPI_W_PARTIAL_COMPLETION == hRes)
 			{
-				ErrDialog(__FILE__, __LINE__, IDS_EDRESTOREFAILED);
+				error::ErrDialog(__FILE__, __LINE__, IDS_EDRESTOREFAILED);
 			}
 			else CHECKHRESMSG(hRes, IDS_COPYFOLDERFAILED);
 

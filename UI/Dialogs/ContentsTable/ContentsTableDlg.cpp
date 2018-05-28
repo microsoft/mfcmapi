@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "ContentsTableDlg.h"
+#include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/FakeSplitter.h>
 #include <UI/FileDialogEx.h>
@@ -445,7 +445,7 @@ void CContentsTableDlg::OnSortTable()
 
 	if (cSorts < cCategories || cCategories < cExpanded)
 	{
-		ErrDialog(__FILE__, __LINE__, IDS_EDBADSORTS, cSorts, cCategories, cExpanded);
+		error::ErrDialog(__FILE__, __LINE__, IDS_EDBADSORTS, cSorts, cCategories, cExpanded);
 		return;
 	}
 

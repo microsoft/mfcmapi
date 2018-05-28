@@ -848,7 +848,7 @@ void CBaseDialog::OnCompareEntryIDs()
 		1 == MyEIDs.GetDropDown(2) && !lpMAPISession ||
 		2 == MyEIDs.GetDropDown(2) && !lpAB)
 	{
-		ErrDialog(__FILE__, __LINE__, IDS_EDCOMPAREEID);
+		error::ErrDialog(__FILE__, __LINE__, IDS_EDCOMPAREEID);
 		return;
 	}
 	// Get the entry IDs as a binary
@@ -963,7 +963,7 @@ void CBaseDialog::OnNotificationsOn()
 			1 == MyData.GetDropDown(2) && !lpMAPISession ||
 			2 == MyData.GetDropDown(2) && !lpAB)
 		{
-			ErrDialog(__FILE__, __LINE__, IDS_EDADVISE);
+			error::ErrDialog(__FILE__, __LINE__, IDS_EDADVISE);
 			return;
 		}
 

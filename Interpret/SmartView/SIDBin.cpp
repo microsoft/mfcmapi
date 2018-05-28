@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "SIDBin.h"
+#include <Interpret/SmartView/SIDBin.h>
 #include <UI/MySecInfo.h>
 
 namespace smartview
@@ -33,7 +33,7 @@ namespace smartview
 				if (ERROR_NONE_MAPPED != dwErr &&
 					STRSAFE_E_INSUFFICIENT_BUFFER != hRes)
 				{
-					LogFunctionCall(hRes, NULL, false, false, true, dwErr, "LookupAccountSid", __FILE__, __LINE__);
+					error::LogFunctionCall(hRes, NULL, false, false, true, dwErr, "LookupAccountSid", __FILE__, __LINE__);
 				}
 
 				hRes = S_OK;

@@ -259,7 +259,7 @@ _Check_return_ HRESULT DisplayTable(
 	case otDefault:
 	{
 		if (!lpTable) return MAPI_E_INVALID_PARAMETER;
-		if (otDefault != tType) ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
+		if (otDefault != tType) error::ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
 		new CContentsTableDlg(
 			lpParentWnd,
 			lpMapiObjects,
@@ -446,7 +446,7 @@ _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		if (bGotError)
 		{
-			const auto szPrevErr = strings::formatmessage(IDS_PREVIOUSCALL, ErrorNameFromErrorCode(hResPrev).c_str(), hResPrev);
+			const auto szPrevErr = strings::formatmessage(IDS_PREVIOUSCALL, error::ErrorNameFromErrorCode(hResPrev).c_str(), hResPrev);
 			Cancel.InitPane(0, TextPane::CreateSingleLinePane(IDS_ERROR, szPrevErr, true));
 		}
 		WC_H(Cancel.DisplayDialog());
@@ -500,7 +500,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 
 		if (SUCCEEDED(hRes) && 0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(3))
 		{
-			ErrDialog(__FILE__, __LINE__, IDS_EDOFFSETWITHWRONGINTERFACE);
+			error::ErrDialog(__FILE__, __LINE__, IDS_EDOFFSETWITHWRONGINTERFACE);
 		}
 
 		else if (S_OK == hRes)
@@ -520,6 +520,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 					// If we don't do this, we crash when destroying the Mailbox Table Window
 					lpMapiObjects->SetMDB(lpMDB);
 				}
+
 				switch (MyData.GetDropDown(3))
 				{
 				case 0:
@@ -551,7 +552,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 						MyGUID = guid::StringToGUID(pszGUID);
 						if (MyGUID == GUID_NULL)
 						{
-							ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
+							error::ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
 							break;
 						}
 					}
@@ -577,7 +578,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 				}
 				else if (MAPI_E_NO_ACCESS == hRes || MAPI_E_NETWORK_ERROR == hRes)
 				{
-					ErrDialog(__FILE__, __LINE__,
+					error::ErrDialog(__FILE__, __LINE__,
 						IDS_EDGETMAILBOXTABLEFAILED,
 						_T("GetMailboxTable"), _T("GetMailboxTable")); // STRING_OK
 				}
@@ -638,7 +639,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 
 		if (SUCCEEDED(hRes) && 0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(4))
 		{
-			ErrDialog(__FILE__, __LINE__, IDS_EDOFFSETWITHWRONGINTERFACE);
+			error::ErrDialog(__FILE__, __LINE__, IDS_EDOFFSETWITHWRONGINTERFACE);
 		}
 
 		else if (S_OK == hRes)
@@ -689,7 +690,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 						MyGUID = guid::StringToGUID(pszGUID);
 						if (MyGUID == GUID_NULL)
 						{
-							ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
+							error::ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
 							break;
 						}
 					}
@@ -715,7 +716,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 				}
 				else if (MAPI_E_NO_ACCESS == hRes || MAPI_E_NETWORK_ERROR == hRes)
 				{
-					ErrDialog(__FILE__, __LINE__,
+					error::ErrDialog(__FILE__, __LINE__,
 						IDS_EDGETMAILBOXTABLEFAILED,
 						_T("GetPublicFolderTable"), _T("GetPublicFolderTable")); // STRING_OK
 				}

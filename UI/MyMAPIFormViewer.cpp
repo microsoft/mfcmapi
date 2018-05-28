@@ -57,7 +57,7 @@ CMyMAPIFormViewer::CMyMAPIFormViewer(
 
 	if (!m_hwndParent)
 	{
-		ErrDialog(__FILE__, __LINE__, IDS_EDFORMVIEWERNULLPARENT);
+		error::ErrDialog(__FILE__, __LINE__, IDS_EDFORMVIEWERNULLPARENT);
 		DebugPrint(DBGFormViewer, L"Form Viewer created with a NULL parent!\n");
 	}
 }
@@ -584,7 +584,7 @@ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 				}
 				else
 				{
-					ErrDialog(__FILE__, __LINE__, IDS_EDACTIVATENEXT);
+					error::ErrDialog(__FILE__, __LINE__, IDS_EDACTIVATENEXT);
 				}
 			}
 			// We have to load the form from scratch

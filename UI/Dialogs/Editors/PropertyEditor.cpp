@@ -306,7 +306,7 @@ namespace editor
 			if (m_lpsInputValue)
 			{
 				SetHex(0, m_lpsInputValue->Value.err);
-				SetStringW(1, ErrorNameFromErrorCode(m_lpsInputValue->Value.err));
+				SetStringW(1, error::ErrorNameFromErrorCode(m_lpsInputValue->Value.err));
 			}
 
 			break;

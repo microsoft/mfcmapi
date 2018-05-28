@@ -177,7 +177,7 @@ namespace editor
 					else
 					{
 						// We couldn't open the folder - log the error
-						szTmp = strings::formatmessage(IDS_QSSFCANNOTOPEN, ErrorNameFromErrorCode(hRes).c_str(), hRes);
+						szTmp = strings::formatmessage(IDS_QSSFCANNOTOPEN, error::ErrorNameFromErrorCode(hRes).c_str(), hRes);
 						SetListString(ulListNum, iRow, iCol, szTmp);
 					}
 
@@ -187,7 +187,7 @@ namespace editor
 				else
 				{
 					// We couldn't locate the entry ID- log the error
-					szTmp = strings::formatmessage(IDS_QSSFCANNOTLOCATE, ErrorNameFromErrorCode(hRes).c_str(), hRes);
+					szTmp = strings::formatmessage(IDS_QSSFCANNOTLOCATE, error::ErrorNameFromErrorCode(hRes).c_str(), hRes);
 					SetListString(ulListNum, iRow, iCol, szTmp);
 				}
 

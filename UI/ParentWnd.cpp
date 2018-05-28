@@ -1,6 +1,6 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <UI/ParentWnd.h>
-#include "ImportProcs.h"
+#include <ImportProcs.h>
 #include <UI/MyWinApp.h>
 #include <MAPI/NamedPropCache.h>
 #include <UI/UIFunctions.h>
@@ -32,7 +32,7 @@ void CALLBACK MyWinEventProc(
 	{
 		auto hRes = S_OK;
 		// We don't need to wait on the results - just post the message
-		WC_B(::PostMessage(
+		WC_B(PostMessage(
 			hwnd,
 			WM_MFCMAPI_SAVECOLUMNORDERHEADER,
 			WPARAM(NULL),
@@ -114,14 +114,14 @@ _Check_return_ STDMETHODIMP CParentWnd::QueryInterface(REFIID riid,
 
 STDMETHODIMP_(ULONG) CParentWnd::AddRef()
 {
-	auto lCount = InterlockedIncrement(&m_cRef);
+	const auto lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
 }
 
 STDMETHODIMP_(ULONG) CParentWnd::Release()
 {
-	auto lCount = InterlockedDecrement(&m_cRef);
+	const auto lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
 	if (!lCount) delete this;
 	return lCount;

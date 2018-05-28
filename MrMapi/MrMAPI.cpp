@@ -1,25 +1,25 @@
 #include <StdAfx.h>
 
-#include "MrMapi/MrMAPI.h"
+#include <MrMapi/MrMAPI.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
 #include <Interpret/InterpretProp.h>
-#include "MrMapi/MMAcls.h"
-#include "MrMapi/MMContents.h"
-#include "MrMapi/MMErr.h"
-#include "MrMapi/MMFidMid.h"
-#include "MrMapi/MMFolder.h"
-#include "MrMapi/MMProfile.h"
-#include "MrMapi/MMPropTag.h"
-#include "MrMapi/MMRules.h"
-#include "MrMapi/MMSmartView.h"
-#include "MrMapi/MMStore.h"
-#include "MrMapi/MMMapiMime.h"
+#include <MrMapi/MMAcls.h>
+#include <MrMapi/MMContents.h>
+#include <MrMapi/MMErr.h>
+#include <MrMapi/MMFidMid.h>
+#include <MrMapi/MMFolder.h>
+#include <MrMapi/MMProfile.h>
+#include <MrMapi/MMPropTag.h>
+#include <MrMapi/MMRules.h>
+#include <MrMapi/MMSmartView.h>
+#include <MrMapi/MMStore.h>
+#include <MrMapi/MMMapiMime.h>
 #include <Shlwapi.h>
-#include "ImportProcs.h"
+#include <ImportProcs.h>
 #include <MAPI/MAPIStoreFunctions.h>
-#include "MrMapi/MMPst.h"
-#include "MrMapi/MMReceiveFolder.h"
+#include <MrMapi/MMPst.h>
+#include <MrMapi/MMReceiveFolder.h>
 #include <MAPI/NamedPropCache.h>
 
 // Initialize MFC for LoadString support later on
@@ -212,7 +212,7 @@ void DisplayUsage(BOOL bFull)
 		printf("%6u dispids\n", static_cast<int>(NameIDArray.size()));
 		printf("%6u types\n", static_cast<int>(PropTypeArray.size()));
 		printf("%6u guids\n", static_cast<int>(PropGuidArray.size()));
-		printf("%6lu errors\n", g_ulErrorArray);
+		printf("%6lu errors\n", error::g_ulErrorArray);
 		printf("%6u smart view parsers\n", static_cast<int>(SmartViewParserTypeArray.size()) - 1);
 		printf("\n");
 	}

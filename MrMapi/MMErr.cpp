@@ -1,23 +1,23 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 
-#include "MrMAPI.h"
-#include "MMErr.h"
-#include <shlwapi.h>
+#include <MrMapi/MrMAPI.h>
+#include <MrMapi/MMErr.h>
+#include <Shlwapi.h>
 
 void PrintErrFromNum(_In_ ULONG ulError)
 {
-	printf("0x%08X = %ws\n", ulError, ErrorNameFromErrorCode(ulError).c_str());
+	printf("0x%08lX = %ws\n", ulError, error::ErrorNameFromErrorCode(ulError).c_str());
 }
 
 void PrintErrFromName(_In_ const std::wstring& lpszError)
 {
-	auto szErr = lpszError.c_str();
+	const auto szErr = lpszError.c_str();
 
-	for (ULONG i = 0; i < g_ulErrorArray; i++)
+	for (ULONG i = 0; i < error::g_ulErrorArray; i++)
 	{
-		if (0 == lstrcmpiW(szErr, g_ErrorArray[i].lpszName))
+		if (0 == lstrcmpiW(szErr, error::g_ErrorArray[i].lpszName))
 		{
-			printf("0x%08X = %ws\n", g_ErrorArray[i].ulErrorName, szErr);
+			printf("0x%08lX = %ws\n", error::g_ErrorArray[i].ulErrorName, szErr);
 		}
 	}
 }
@@ -29,22 +29,22 @@ void PrintErrFromPartialName(_In_ const std::wstring& lpszError)
 
 	ULONG ulNumMatches = 0;
 
-	for (ULONG ulCur = 0; ulCur < g_ulErrorArray; ulCur++)
+	for (ULONG ulCur = 0; ulCur < error::g_ulErrorArray; ulCur++)
 	{
-		if (lpszError.empty() || 0 != StrStrIW(g_ErrorArray[ulCur].lpszName, lpszError.c_str()))
+		if (lpszError.empty() || nullptr != StrStrIW(error::g_ErrorArray[ulCur].lpszName, lpszError.c_str()))
 		{
-			printf("0x%08X = %ws\n", g_ErrorArray[ulCur].ulErrorName, g_ErrorArray[ulCur].lpszName);
+			printf("0x%08lX = %ws\n", error::g_ErrorArray[ulCur].ulErrorName, error::g_ErrorArray[ulCur].lpszName);
 			ulNumMatches++;
 		}
 	}
 
-	printf("Found %u matches.\n", ulNumMatches);
+	printf("Found %lu matches.\n", ulNumMatches);
 }
 
 void DoErrorParse(_In_ MYOPTIONS ProgOpts)
 {
 	auto lpszErr = ProgOpts.lpszUnswitchedOption;
-	auto ulErrNum = strings::wstringToUlong(lpszErr, ProgOpts.ulOptions & OPT_DODECIMAL ? 10 : 16);
+	const auto ulErrNum = strings::wstringToUlong(lpszErr, ProgOpts.ulOptions & OPT_DODECIMAL ? 10 : 16);
 
 	if (ulErrNum)
 	{

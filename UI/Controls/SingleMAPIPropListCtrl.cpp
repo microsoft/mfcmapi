@@ -12,9 +12,9 @@
 #include <MAPI/MAPIProgress.h>
 #include <MAPI/NamedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>
-#include "PropertyBag/PropertyBag.h"
-#include "PropertyBag/MAPIPropPropertyBag.h"
-#include "PropertyBag/RowPropertyBag.h"
+#include <PropertyBag/PropertyBag.h>
+#include <PropertyBag/MAPIPropPropertyBag.h>
+#include <PropertyBag/RowPropertyBag.h>
 #include <Interpret/String.h>
 #include <UI/Controls/SortList/PropListData.h>
 #include <MAPI/GlobalCache.h>
@@ -982,17 +982,17 @@ void CSingleMAPIPropListCtrl::FindAllNamedProps()
 			DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Walking through all IDs from 0x%X to 0x%X, looking for mappings to names\n", ulLowerBound, ulUpperBound);
 			if (ulLowerBound < __LOWERBOUND)
 			{
-				ErrDialog(__FILE__, __LINE__, IDS_EDLOWERBOUNDTOOLOW, ulLowerBound, __LOWERBOUND);
+				error::ErrDialog(__FILE__, __LINE__, IDS_EDLOWERBOUNDTOOLOW, ulLowerBound, __LOWERBOUND);
 				hRes = MAPI_E_INVALID_PARAMETER;
 			}
 			else if (ulUpperBound > __UPPERBOUND)
 			{
-				ErrDialog(__FILE__, __LINE__, IDS_EDUPPERBOUNDTOOHIGH, ulUpperBound, __UPPERBOUND);
+				error::ErrDialog(__FILE__, __LINE__, IDS_EDUPPERBOUNDTOOHIGH, ulUpperBound, __UPPERBOUND);
 				hRes = MAPI_E_INVALID_PARAMETER;
 			}
 			else if (ulLowerBound > ulUpperBound)
 			{
-				ErrDialog(__FILE__, __LINE__, IDS_EDLOWEROVERUPPER, ulLowerBound, ulUpperBound);
+				error::ErrDialog(__FILE__, __LINE__, IDS_EDLOWEROVERUPPER, ulLowerBound, ulUpperBound);
 				hRes = MAPI_E_INVALID_PARAMETER;
 			}
 			else

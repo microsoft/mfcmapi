@@ -413,7 +413,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 	if (-1 == iRetVal)
 	{
 		// We failed to insert a column header
-		ErrDialog(__FILE__, __LINE__, IDS_EDCOLUMNHEADERFAILED);
+		error::ErrDialog(__FILE__, __LINE__, IDS_EDCOLUMNHEADERFAILED);
 	}
 
 	if (lpMyHeader)
@@ -498,7 +498,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray l
 	// this would be bad
 	if (ulCurHeaderCol < m_ulHeaderColumns)
 	{
-		ErrDialog(__FILE__, __LINE__, IDS_EDTOOMANYCOLUMNS);
+		error::ErrDialog(__FILE__, __LINE__, IDS_EDTOOMANYCOLUMNS);
 	}
 
 	DebugPrintEx(DBGGeneric, CLASS, L"AddColumns", L"Done adding columns\n");
@@ -1282,7 +1282,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 			reinterpret_cast<LPUNKNOWN*>(lppProp)));
 		if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes && RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD)
 		{
-			ErrDialog(__FILE__, __LINE__, IDS_EDMESSAGERAWNOTSUPPORTED);
+			error::ErrDialog(__FILE__, __LINE__, IDS_EDMESSAGERAWNOTSUPPORTED);
 		}
 	}
 

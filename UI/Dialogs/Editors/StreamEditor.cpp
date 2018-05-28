@@ -342,7 +342,7 @@ namespace editor
 		{
 			const auto szStreamErr = strings::formatmessage(
 				IDS_CANNOTOPENSTREAM,
-				ErrorNameFromErrorCode(m_StreamError).c_str(),
+				error::ErrorNameFromErrorCode(m_StreamError).c_str(),
 				m_StreamError);
 			SetStringW(m_iTextBox, szStreamErr);
 			SetEditReadOnly(m_iTextBox);

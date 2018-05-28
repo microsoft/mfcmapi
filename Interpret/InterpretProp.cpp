@@ -105,7 +105,7 @@ namespace interpretprop
 				problems.aProblem[i].ulIndex,
 				TagToString(problems.aProblem[i].ulPropTag, nullptr, false, false).c_str(),
 				problems.aProblem[i].scode,
-				ErrorNameFromErrorCode(problems.aProblem[i].scode).c_str());
+				error::ErrorNameFromErrorCode(problems.aProblem[i].scode).c_str());
 		}
 
 		return szOut;
@@ -119,7 +119,7 @@ namespace interpretprop
 			err.lpszError,
 			err.lpszComponent,
 			err.ulLowLevelError,
-			ErrorNameFromErrorCode(err.ulLowLevelError).c_str(),
+			error::ErrorNameFromErrorCode(err.ulLowLevelError).c_str(),
 			err.ulContext);
 
 		return szOut;
@@ -136,7 +136,7 @@ namespace interpretprop
 				error.aProblem[iError].ulAttribute,
 				TagToString(error.aProblem[iError].ulPropTag, nullptr, false, false).c_str(),
 				error.aProblem[iError].scode,
-				ErrorNameFromErrorCode(error.aProblem[iError].scode).c_str());
+				error::ErrorNameFromErrorCode(error.aProblem[iError].scode).c_str());
 		}
 
 		return szOut;
