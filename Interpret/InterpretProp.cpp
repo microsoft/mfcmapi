@@ -546,7 +546,7 @@ namespace interpretprop
 	{
 		if (!lpProp) return;
 
-		auto parsedProperty = ParseProperty(lpProp);
+		auto parsedProperty = property::ParseProperty(lpProp);
 
 		if (PropString) *PropString = parsedProperty.toString();
 		if (AltPropString) *AltPropString = parsedProperty.toAltString();

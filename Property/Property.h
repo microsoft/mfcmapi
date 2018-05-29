@@ -1,37 +1,40 @@
 #pragma once
-#include "Attributes.h"
+#include <Property/Attributes.h>
 
-class Parsing
+namespace property
 {
-public:
-	Parsing(const std::wstring& szParsing, bool bXMLSafe, Attributes const& attributes);
-	Parsing(Parsing const& other);
+	class Parsing
+	{
+	public:
+		Parsing(const std::wstring& szParsing, bool bXMLSafe, Attributes const& attributes);
+		Parsing(Parsing const& other);
 
-	std::wstring toXML(UINT uidTag, int iIndent) const;
-	std::wstring toString() const;
+		std::wstring toXML(UINT uidTag, int iIndent) const;
+		std::wstring toString() const;
 
-private:
-	std::wstring m_szParsing;
-	bool m_bXMLSafe;
-	Attributes m_attributes;
-};
+	private:
+		std::wstring m_szParsing;
+		bool m_bXMLSafe;
+		Attributes m_attributes;
+	};
 
-class Property
-{
-public:
-	void AddParsing(const Parsing& mainParsing, const Parsing& altParsing);
-	void AddMVParsing(const Property& Property);
+	class Property
+	{
+	public:
+		void AddParsing(const Parsing& mainParsing, const Parsing& altParsing);
+		void AddMVParsing(const Property& Property);
 
-	void AddAttribute(const std::wstring& key, const std::wstring& value);
+		void AddAttribute(const std::wstring& key, const std::wstring& value);
 
-	std::wstring toXML(int iIndent) const;
-	std::wstring toString() const;
-	std::wstring toAltString() const;
+		std::wstring toXML(int iIndent) const;
+		std::wstring toString() const;
+		std::wstring toAltString() const;
 
-private:
-	std::wstring toString(const std::vector<Parsing>& parsing) const;
+	private:
+		std::wstring toString(const std::vector<Parsing>& parsings) const;
 
-	std::vector<Parsing> m_MainParsing;
-	std::vector<Parsing> m_AltParsing;
-	Attributes m_attributes;
-};
+		std::vector<Parsing> m_MainParsing;
+		std::vector<Parsing> m_AltParsing;
+		Attributes m_attributes;
+	};
+}

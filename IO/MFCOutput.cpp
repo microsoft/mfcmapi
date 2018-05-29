@@ -9,7 +9,7 @@
 #include <Interpret/Guids.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #ifndef MRMAPI
-#include "UI/Dialogs/Editors/DbgView.h"
+#include <UI/Dialogs/Editors/DbgView.h>
 #endif
 
 #ifdef CHECKFORMATPARAMS
@@ -743,7 +743,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	if (!namePropNames.guid.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDIID].uidName, namePropNames.guid, false, iIndent);
 	if (!namePropNames.name.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, namePropNames.name, false, iIndent);
 
-	auto prop = ParseProperty(lpProp);
+	auto prop = property::ParseProperty(lpProp);
 	Output(ulDbgLvl, fFile, false, strings::StripCarriage(prop.toXML(iIndent)));
 
 	auto szSmartView = smartview::InterpretPropSmartView(
