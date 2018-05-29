@@ -1,5 +1,5 @@
 #pragma once
-#include "HierarchyTableDlg.h"
+#include <UI/Dialogs/HierarchyTable/HierarchyTableDlg.h>
 
 namespace dialog
 {
@@ -8,7 +8,7 @@ namespace dialog
 	public:
 		CAbContDlg(
 			_In_ CParentWnd* pParentWnd,
-			_In_ CMapiObjects* lpMapiObjects);
+			_In_ cache::CMapiObjects* lpMapiObjects);
 		virtual ~CAbContDlg();
 
 	private:

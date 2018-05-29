@@ -20,7 +20,7 @@
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MrMapi/MMPst.h>
 #include <MrMapi/MMReceiveFolder.h>
-#include <MAPI/NamedPropCache.h>
+#include <MAPI/Cache/NamedPropCache.h>
 
 // Initialize MFC for LoadString support later on
 void InitMFC()
@@ -1191,7 +1191,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 		}
 	}
 
-	UninitializeNamedPropCache();
+	cache::UninitializeNamedPropCache();
 
 	if (bMAPIInit)
 	{

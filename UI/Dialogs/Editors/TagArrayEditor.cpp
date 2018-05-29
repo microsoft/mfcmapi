@@ -3,7 +3,7 @@
 #include <Interpret/InterpretProp.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <UI/Controls/SortList/PropListData.h>
-#include <MAPI/NamedPropCache.h>
+#include <MAPI/Cache/NamedPropCache.h>
 
 namespace dialog
 {
@@ -95,7 +95,7 @@ namespace dialog
 			{
 				lpData->Prop()->m_ulPropTag = ulNewPropTag;
 
-				const auto namePropNames = NameIDToStrings(
+				const auto namePropNames = cache::NameIDToStrings(
 					ulNewPropTag,
 					m_lpMAPIProp,
 					nullptr,
@@ -142,7 +142,7 @@ namespace dialog
 						lpData->InitializePropList(ulPropTag);
 					}
 
-					const auto namePropNames = NameIDToStrings(
+					const auto namePropNames = cache::NameIDToStrings(
 						ulPropTag,
 						m_lpMAPIProp,
 						nullptr,

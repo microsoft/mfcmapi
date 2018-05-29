@@ -8,7 +8,7 @@ namespace dialog
 	public:
 		CAttachmentsDlg(
 			_In_ CParentWnd* pParentWnd,
-			_In_ CMapiObjects* lpMapiObjects,
+			_In_ cache::CMapiObjects* lpMapiObjects,
 			_In_ LPMAPITABLE lpMAPITable,
 			_In_ LPMESSAGE lpMessage);
 		virtual ~CAttachmentsDlg();

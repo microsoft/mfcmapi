@@ -2,7 +2,7 @@
 
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/ParentWnd.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 
 namespace dialog
 {
@@ -13,7 +13,7 @@ namespace dialog
 		public:
 			CHexEditor(
 				_In_ CParentWnd* pParentWnd,
-				_In_ CMapiObjects* lpMapiObjects);
+				_In_ cache::CMapiObjects* lpMapiObjects);
 			virtual ~CHexEditor();
 
 		private:
@@ -26,7 +26,7 @@ namespace dialog
 			void OnOK() override;
 			void OnCancel() override;
 
-			CMapiObjects* m_lpMapiObjects;
+			cache::CMapiObjects* m_lpMapiObjects;
 		};
 	}
 }

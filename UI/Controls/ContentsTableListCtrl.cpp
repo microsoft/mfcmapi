@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/UIFunctions.h>
 #include <MAPI/AdviseSink.h>
@@ -14,7 +14,7 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
-#include <MAPI/NamedPropCache.h>
+#include <MAPI/Cache/NamedPropCache.h>
 
 namespace controls
 {
@@ -26,7 +26,7 @@ namespace controls
 
 		CContentsTableListCtrl::CContentsTableListCtrl(
 			_In_ CWnd* pCreateParent,
-			_In_ CMapiObjects* lpMapiObjects,
+			_In_ cache::CMapiObjects* lpMapiObjects,
 			_In_ LPSPropTagArray sptExtraColumnTags,
 			_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
 			UINT nIDContextMenu,
@@ -396,7 +396,7 @@ namespace controls
 				szHeaderString = propTagNames.bestGuess;
 				if (szHeaderString.empty())
 				{
-					const auto namePropNames = NameIDToStrings(
+					const auto namePropNames = cache::NameIDToStrings(
 						ulPropTag,
 						lpMDB,
 						nullptr,

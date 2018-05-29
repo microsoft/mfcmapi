@@ -16,7 +16,7 @@ namespace dialog
 	public:
 		CContentsTableDlg(
 			_In_ CParentWnd* pParentWnd,
-			_In_ CMapiObjects* lpMapiObjects,
+			_In_ cache::CMapiObjects* lpMapiObjects,
 			UINT uidTitle,
 			__mfcmapiCreateDialogEnum bCreateDialog,
 			_In_opt_ LPMAPITABLE lpContentsTable,

@@ -5,7 +5,7 @@
 #include <UI/FileDialogEx.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <UI/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
@@ -18,7 +18,7 @@ namespace dialog
 
 	CContentsTableDlg::CContentsTableDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		UINT uidTitle,
 		__mfcmapiCreateDialogEnum bCreateDialog,
 		_In_opt_ LPMAPITABLE lpContentsTable,

@@ -4,7 +4,7 @@
 #include <UI/Dialogs/ContentsTable/AclDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <Interpret/InterpretProp.h>
@@ -17,7 +17,7 @@ namespace dialog
 #define ACL_INCLUDE_OTHER 0x00000002
 
 	CAclDlg::CAclDlg(_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPEXCHANGEMODIFYTABLE lpExchTbl,
 		bool fFreeBusyVisible)
 		: CContentsTableDlg(pParentWnd,

@@ -1,10 +1,14 @@
 #pragma once
-#include "ContentsTableDlg.h"
+#include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
 class CParentWnd;
-class CMapiObjects;
+
+namespace
+{
+	class CMapiObjects;
+}
 
 namespace dialog
 {
@@ -13,7 +17,7 @@ namespace dialog
 	public:
 		CRecipientsDlg(
 			_In_ CParentWnd* pParentWnd,
-			_In_ CMapiObjects* lpMapiObjects,
+			_In_ cache::CMapiObjects* lpMapiObjects,
 			_In_ LPMAPITABLE lpMAPITable,
 			_In_ LPMESSAGE lpMessage);
 		virtual ~CRecipientsDlg();

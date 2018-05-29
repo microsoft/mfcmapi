@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include "PublicFolderTableDlg.h"
+#include <UI/Dialogs/ContentsTable/PublicFolderTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/ColumnTags.h>
@@ -13,7 +13,7 @@ namespace dialog
 
 	CPublicFolderTableDlg::CPublicFolderTableDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ const std::wstring& lpszServerName,
 		_In_ LPMAPITABLE lpMAPITable
 	) :

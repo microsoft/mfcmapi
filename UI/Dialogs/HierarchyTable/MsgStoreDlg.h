@@ -1,8 +1,10 @@
 #pragma once
-class CHierarchyTableTreeCtrl;
-class CSingleMAPIPropListCtrl;
 class CParentWnd;
-class CMapiObjects;
+
+namespace cache
+{
+	class CMapiObjects;
+}
 
 #include <UI/Dialogs/HierarchyTable/HierarchyTableDlg.h>
 
@@ -13,7 +15,7 @@ namespace dialog
 	public:
 		CMsgStoreDlg(
 			_In_ CParentWnd* pParentWnd,
-			_In_ CMapiObjects* lpMapiObjects,
+			_In_ cache::CMapiObjects* lpMapiObjects,
 			_In_opt_ LPMAPIFOLDER lpRootFolder,
 			ULONG ulDisplayFlags);
 		virtual ~CMsgStoreDlg();

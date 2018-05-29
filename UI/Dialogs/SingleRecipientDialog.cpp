@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "SingleRecipientDialog.h"
+#include <StdAfx.h>
+#include <UI/Dialogs/SingleRecipientDialog.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/MFCUtilityFunctions.h>
@@ -10,7 +10,7 @@ namespace dialog
 
 	SingleRecipientDialog::SingleRecipientDialog(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_opt_ LPMAILUSER lpMAPIProp) :
 		CBaseDialog(
 			pParentWnd,
@@ -35,7 +35,7 @@ namespace dialog
 
 	BOOL SingleRecipientDialog::OnInitDialog()
 	{
-		auto bRet = CBaseDialog::OnInitDialog();
+		const auto bRet = CBaseDialog::OnInitDialog();
 
 		if (m_lpMailUser)
 		{

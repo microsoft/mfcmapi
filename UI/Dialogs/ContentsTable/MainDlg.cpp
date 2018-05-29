@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
@@ -23,7 +23,7 @@
 #include <UI/QuickStart.h>
 #include <UI/UIFunctions.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/GlobalCache.h>
+#include <MAPI/Cache/GlobalCache.h>
 
 namespace dialog
 {
@@ -31,7 +31,7 @@ namespace dialog
 
 	CMainDlg::CMainDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects
+		_In_ cache::CMapiObjects* lpMapiObjects
 	) :
 		CContentsTableDlg(
 			pParentWnd,
@@ -186,7 +186,7 @@ namespace dialog
 		{
 			LPMAPISESSION lpMAPISession = nullptr;
 			LPADRBOOK lpAddrBook = nullptr;
-			const auto bMAPIInitialized = CGlobalCache::getInstance().bMAPIInitialized();
+			const auto bMAPIInitialized = cache::CGlobalCache::getInstance().bMAPIInitialized();
 			const auto hMAPI = GetMAPIHandle();
 			if (m_lpMapiObjects)
 			{
@@ -1104,8 +1104,8 @@ namespace dialog
 
 	void CMainDlg::OnMAPIOpenLocalFormContainer()
 	{
-		CGlobalCache::getInstance().MAPIInitialize(NULL);
-		if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
+		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
+		if (!cache::CGlobalCache::getInstance().bMAPIInitialized()) return;
 
 		auto hRes = S_OK;
 		LPMAPIFORMCONTAINER lpMAPILocalFormContainer = nullptr;
@@ -1213,7 +1213,7 @@ namespace dialog
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			CGlobalCache::getInstance().MAPIInitialize(MyData.GetHex(0));
+			cache::CGlobalCache::getInstance().MAPIInitialize(MyData.GetHex(0));
 		}
 	}
 
@@ -1230,7 +1230,7 @@ namespace dialog
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			CGlobalCache::getInstance().MAPIUninitialize();
+			cache::CGlobalCache::getInstance().MAPIUninitialize();
 		}
 	}
 
@@ -1538,7 +1538,7 @@ namespace dialog
 		auto hRes = S_OK;
 		LPMAPITABLE lpProfTable = nullptr;
 
-		CGlobalCache::getInstance().MAPIInitialize(NULL);
+		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
 
 		LPPROFADMIN lpProfAdmin = nullptr;
 		EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -1563,8 +1563,8 @@ namespace dialog
 
 	void CMainDlg::OnLaunchProfileWizard()
 	{
-		CGlobalCache::getInstance().MAPIInitialize(NULL);
-		if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
+		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
+		if (!cache::CGlobalCache::getInstance().bMAPIInitialized()) return;
 
 		auto hRes = S_OK;
 		editor::CEditor MyData(
@@ -1648,8 +1648,8 @@ namespace dialog
 	void CMainDlg::OnViewMSGProperties()
 	{
 		if (!m_lpPropDisplay) return;
-		CGlobalCache::getInstance().MAPIInitialize(NULL);
-		if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
+		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
+		if (!cache::CGlobalCache::getInstance().bMAPIInitialized()) return;
 
 		auto file = file::CFileDialogExW::OpenFile(
 			L"msg", // STRING_OK
@@ -1674,8 +1674,8 @@ namespace dialog
 
 	void CMainDlg::OnConvertMSGToEML()
 	{
-		CGlobalCache::getInstance().MAPIInitialize(NULL);
-		if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
+		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
+		if (!cache::CGlobalCache::getInstance().bMAPIInitialized()) return;
 
 		auto hRes = S_OK;
 		ULONG ulConvertFlags = CCSF_SMTP;
@@ -1723,8 +1723,8 @@ namespace dialog
 
 	void CMainDlg::OnConvertEMLToMSG()
 	{
-		CGlobalCache::getInstance().MAPIInitialize(NULL);
-		if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
+		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
+		if (!cache::CGlobalCache::getInstance().bMAPIInitialized()) return;
 
 		auto hRes = S_OK;
 		ULONG ulConvertFlags = CCSF_SMTP;
@@ -1771,8 +1771,8 @@ namespace dialog
 
 	void CMainDlg::OnConvertMSGToXML()
 	{
-		CGlobalCache::getInstance().MAPIInitialize(NULL);
-		if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
+		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
+		if (!cache::CGlobalCache::getInstance().bMAPIInitialized()) return;
 
 		auto hRes = S_OK;
 

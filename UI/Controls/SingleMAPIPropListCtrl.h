@@ -2,7 +2,11 @@
 #include <UI/Controls/SortList/SortListCtrl.h>
 #include <PropertyBag/PropertyBag.h>
 
-class CMapiObjects;
+namespace cache
+{
+	class CMapiObjects;
+}
+
 namespace dialog {
 	class CBaseDialog;
 }
@@ -17,7 +21,7 @@ namespace controls
 			CSingleMAPIPropListCtrl(
 				_In_ CWnd* pCreateParent,
 				_In_ dialog::CBaseDialog* lpHostDlg,
-				_In_ CMapiObjects* lpMapiObjects,
+				_In_ cache::CMapiObjects* lpMapiObjects,
 				bool bIsAB
 			);
 			virtual ~CSingleMAPIPropListCtrl();
@@ -76,7 +80,7 @@ namespace controls
 			dialog::CBaseDialog* m_lpHostDlg;
 			bool m_bHaveEverDisplayedSomething;
 			bool m_bIsAB;
-			CMapiObjects* m_lpMapiObjects;
+			cache::CMapiObjects* m_lpMapiObjects;
 
 			propertybag::LPMAPIPROPERTYBAG m_lpPropBag;
 

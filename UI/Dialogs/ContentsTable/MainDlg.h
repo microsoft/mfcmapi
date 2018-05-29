@@ -4,7 +4,11 @@
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
 class CParentWnd;
-class CMapiObjects;
+
+namespace cache
+{
+	class CMapiObjects;
+}
 
 namespace dialog
 {
@@ -13,7 +17,7 @@ namespace dialog
 	public:
 		CMainDlg(
 			_In_ CParentWnd* pParentWnd,
-			_In_ CMapiObjects* lpMapiObjects);
+			_In_ cache::CMapiObjects* lpMapiObjects);
 		virtual ~CMainDlg();
 
 		// public so CBaseDialog can call it

@@ -2,7 +2,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/MsgServiceTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/MFCUtilityFunctions.h>
 #include <UI/Dialogs/ContentsTable/ProviderTableDlg.h>
@@ -16,7 +16,7 @@ namespace dialog
 
 	CMsgServiceTableDlg::CMsgServiceTableDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ const std::string& szProfileName
 	) :
 		CContentsTableDlg(

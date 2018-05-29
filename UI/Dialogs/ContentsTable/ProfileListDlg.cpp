@@ -2,13 +2,13 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ProfileListDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
 #include <MAPI/MAPIProfileFunctions.h>
 #include <UI/FileDialogEx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/ContentsTable/MsgServiceTableDlg.h>
-#include <MAPI/GlobalCache.h>
+#include <MAPI/Cache/GlobalCache.h>
 #include <IO/ExportProfile.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/SortList/ContentsData.h>
@@ -19,7 +19,7 @@ namespace dialog
 
 	CProfileListDlg::CProfileListDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPITABLE lpMAPITable
 	) :
 		CContentsTableDlg(
@@ -80,7 +80,7 @@ namespace dialog
 				pMenu->EnableMenuItem(ID_EXPORTPROFILE, DIMMSNOK(iNumSel));
 
 				pMenu->EnableMenuItem(ID_COPY, DIMMSNOK(iNumSel));
-				const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+				const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 				pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_PROFILE));
 			}
 		}
@@ -511,7 +511,7 @@ namespace dialog
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 		if (lpListData && lpListData->Contents())
 		{
-			CGlobalCache::getInstance().SetProfileToCopy(lpListData->Contents()->m_szProfileDisplayName);
+			cache::CGlobalCache::getInstance().SetProfileToCopy(lpListData->Contents()->m_szProfileDisplayName);
 		}
 	}
 
@@ -524,7 +524,7 @@ namespace dialog
 
 		DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 
-		const auto szOldProfile = CGlobalCache::getInstance().GetProfileToCopy();
+		const auto szOldProfile = cache::CGlobalCache::getInstance().GetProfileToCopy();
 
 		editor::CEditor MyData(
 			this,

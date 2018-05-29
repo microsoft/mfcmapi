@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/FakeSplitter.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <UI/ParentWnd.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
@@ -16,7 +16,7 @@
 #include <Msi.h>
 #include <ImportProcs.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <MAPI/GlobalCache.h>
+#include <MAPI/Cache/GlobalCache.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <UI/Dialogs/Editors/Options.h>
@@ -27,7 +27,7 @@ namespace dialog
 
 	CBaseDialog::CBaseDialog(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
 		ULONG ulAddInContext)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
@@ -57,7 +57,7 @@ namespace dialog
 		m_ulAddInContext = ulAddInContext;
 		m_ulAddInMenuItems = NULL;
 
-		m_lpMapiObjects = new CMapiObjects(lpMapiObjects);
+		m_lpMapiObjects = new cache::CMapiObjects(lpMapiObjects);
 	}
 
 	CBaseDialog::~CBaseDialog()
@@ -231,7 +231,7 @@ namespace dialog
 
 	void CBaseDialog::OnInitMenu(_In_opt_ CMenu* pMenu)
 	{
-		const auto bMAPIInitialized = CGlobalCache::getInstance().bMAPIInitialized();
+		const auto bMAPIInitialized = cache::CGlobalCache::getInstance().bMAPIInitialized();
 
 		if (pMenu)
 		{
@@ -405,7 +405,7 @@ namespace dialog
 	_Check_return_ bool CBaseDialog::HandlePaste()
 	{
 		DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
-		const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+		const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 
 		if (m_lpPropDisplay && ulStatus & BUFFER_PROPTAG && ulStatus & BUFFER_SOURCEPROPOBJ)
 		{
@@ -1083,7 +1083,7 @@ namespace dialog
 		return m_lpParent;
 	}
 
-	_Check_return_ CMapiObjects* CBaseDialog::GetMapiObjects() const
+	_Check_return_ cache::CMapiObjects* CBaseDialog::GetMapiObjects() const
 	{
 		return m_lpMapiObjects;
 	}

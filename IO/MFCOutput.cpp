@@ -7,7 +7,7 @@
 #include <MAPI/ColumnTags.h>
 #include <Property/ParseProperty.h>
 #include <Interpret/Guids.h>
-#include <MAPI/NamedPropCache.h>
+#include <MAPI/Cache/NamedPropCache.h>
 #ifndef MRMAPI
 #include "UI/Dialogs/Editors/DbgView.h"
 #endif
@@ -734,7 +734,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	if (!propTagNames.bestGuess.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPBESTGUESS].uidName, propTagNames.bestGuess, false, iIndent);
 	if (!propTagNames.otherMatches.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPOTHERNAMES].uidName, propTagNames.otherMatches, false, iIndent);
 
-	auto namePropNames = NameIDToStrings(
+	auto namePropNames = cache::NameIDToStrings(
 		lpProp->ulPropTag,
 		lpObj,
 		nullptr,

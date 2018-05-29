@@ -8,7 +8,7 @@ namespace dialog
 	public:
 		CAbDlg(
 			_In_ CParentWnd* pParentWnd,
-			_In_ CMapiObjects* lpMapiObjects,
+			_In_ cache::CMapiObjects* lpMapiObjects,
 			_In_ LPABCONT lpAdrBook);
 		virtual ~CAbDlg();
 

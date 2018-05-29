@@ -1,8 +1,12 @@
 #pragma once
-#include "ContentsTableDlg.h"
+#include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
 class CParentWnd;
-class CMapiObjects;
+
+namespace
+{
+	class CMapiObjects;
+}
 
 namespace dialog
 {
@@ -11,7 +15,7 @@ namespace dialog
 	public:
 		CFolderDlg(
 			_In_ CParentWnd* pParentWnd,
-			_In_ CMapiObjects* lpMapiObjects,
+			_In_ cache::CMapiObjects* lpMapiObjects,
 			_In_ LPMAPIFOLDER lpMAPIFolder,
 			ULONG ulDisplayFlags);
 		virtual ~CFolderDlg();

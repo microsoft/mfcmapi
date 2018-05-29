@@ -3,7 +3,7 @@
 #include <StdAfx.h>
 #include <UI/MyWinApp.h>
 #include <UI/ParentWnd.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <ImportProcs.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 
@@ -57,7 +57,7 @@ BOOL CMyWinApp::InitInstance()
 	if (pWnd)
 	{
 		m_pMainWnd = static_cast<CWnd *>(pWnd);
-		auto MyObjects = new (std::nothrow) CMapiObjects(nullptr);
+		auto MyObjects = new (std::nothrow) cache::CMapiObjects(nullptr);
 		if (MyObjects)
 		{
 			new dialog::CMainDlg(pWnd, MyObjects);

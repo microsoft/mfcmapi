@@ -2,7 +2,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/MFCUtilityFunctions.h>
@@ -17,7 +17,7 @@ namespace dialog
 
 	CFormContainerDlg::CFormContainerDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPIFORMCONTAINER lpFormContainer
 	) :
 		CContentsTableDlg(

@@ -3,7 +3,7 @@
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <UI/FakeSplitter.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <UI/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
@@ -14,7 +14,7 @@ namespace dialog
 
 	CHierarchyTableDlg::CHierarchyTableDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		UINT uidTitle,
 		_In_opt_ LPUNKNOWN lpRootContainer,
 		ULONG nIDContextMenu,

@@ -10,7 +10,7 @@
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Dialogs/Editors/QSSpecialFolders.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 
 LPMAPISESSION OpenSessionForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {

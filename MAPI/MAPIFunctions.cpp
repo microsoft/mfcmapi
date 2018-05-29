@@ -9,7 +9,7 @@
 #include <Interpret/ExtraPropTags.h>
 #include <MAPI/MAPIProgress.h>
 #include <Interpret/Guids.h>
-#include <MAPI/NamedPropCache.h>
+#include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 
@@ -1419,7 +1419,7 @@ _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDe
 		rgpnmid[i] = &rgnmid[i];
 	}
 
-	EC_H(GetIDsFromNames(lpMessage,
+	EC_H(cache::GetIDsFromNames(lpMessage,
 		ulNumOneOffIDs,
 		rgpnmid,
 		0,
@@ -2091,7 +2091,7 @@ _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID
 		ULONG cProps = 0;
 		LPMAPINAMEID* lppNameIDs = nullptr;
 
-		WC_H(GetNamesFromIDs(lpSource,
+		WC_H(cache::GetNamesFromIDs(lpSource,
 			&lpAllProps,
 			nullptr,
 			0,

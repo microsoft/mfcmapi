@@ -1,8 +1,8 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <UI/ParentWnd.h>
 #include <ImportProcs.h>
 #include <UI/MyWinApp.h>
-#include <MAPI/NamedPropCache.h>
+#include <MAPI/Cache/NamedPropCache.h>
 #include <UI/UIFunctions.h>
 
 extern CMyWinApp theApp;
@@ -89,7 +89,7 @@ CParentWnd::~CParentWnd()
 	UninitializeGDI();
 	UnloadAddIns();
 	if (m_hwinEventHook) UnhookWinEvent(m_hwinEventHook);
-	UninitializeNamedPropCache();
+	cache::UninitializeNamedPropCache();
 	WriteToRegistry();
 	CloseDebugFile();
 	// Since we're killing what m_pMainWnd points to here, we need to clear it

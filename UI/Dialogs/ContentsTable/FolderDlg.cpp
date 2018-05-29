@@ -2,7 +2,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/MAPIABFunctions.h>
@@ -21,7 +21,7 @@
 #include <MAPI/MAPIProgress.h>
 #include <MAPI/MapiMime.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/GlobalCache.h>
+#include <MAPI/Cache/GlobalCache.h>
 
 namespace dialog
 {
@@ -29,7 +29,7 @@ namespace dialog
 
 	CFolderDlg::CFolderDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPIFOLDER lpMAPIFolder,
 		ULONG ulDisplayFlags
 	) :
@@ -233,7 +233,7 @@ namespace dialog
 		{
 			LPMAPISESSION lpMAPISession = nullptr;
 			const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
-			const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+			const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 			pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_MESSAGES));
 
 			if (m_lpMapiObjects)
@@ -438,7 +438,7 @@ namespace dialog
 		EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
 
 		// CGlobalCache takes over ownership of lpEIDs - don't free now
-		CGlobalCache::getInstance().SetMessagesToCopy(lpEIDs, dynamic_cast<LPMAPIFOLDER>(m_lpContainer));
+		cache::CGlobalCache::getInstance().SetMessagesToCopy(lpEIDs, dynamic_cast<LPMAPIFOLDER>(m_lpContainer));
 	}
 
 	_Check_return_ bool CFolderDlg::HandlePaste()
@@ -467,8 +467,8 @@ namespace dialog
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			const auto lpEIDs = CGlobalCache::getInstance().GetMessagesToCopy();
-			auto lpMAPISourceFolder = CGlobalCache::getInstance().GetSourceParentFolder();
+			const auto lpEIDs = cache::CGlobalCache::getInstance().GetMessagesToCopy();
+			auto lpMAPISourceFolder = cache::CGlobalCache::getInstance().GetSourceParentFolder();
 			auto ulMoveMessage = MyData.GetCheck(0) ? MESSAGE_MOVE : 0;
 
 			if (lpEIDs && lpMAPISourceFolder)

@@ -2,7 +2,7 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/String.h>
-#include <MAPI/NamedPropCache.h>
+#include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/Guids.h>
 #include <UI/Dialogs/Editors/PropertySelector.h>
 
@@ -204,7 +204,7 @@ namespace dialog
 			{
 				LPSPropTagArray lpNamedPropTags = nullptr;
 
-				WC_H_GETPROPS(GetIDsFromNames(m_lpMAPIProp,
+				WC_H_GETPROPS(cache::GetIDsFromNames(m_lpMAPIProp,
 					1,
 					&lpNamedID,
 					bCreate ? MAPI_CREATE : 0,
@@ -281,7 +281,7 @@ namespace dialog
 		{
 			auto hRes = S_OK;
 
-			auto namePropNames = NameIDToStrings(
+			auto namePropNames = cache::NameIDToStrings(
 				m_ulPropTag,
 				m_lpMAPIProp,
 				nullptr,
@@ -319,7 +319,7 @@ namespace dialog
 				lpTagArray->cValues = 1;
 				lpTagArray->aulPropTag[0] = m_ulPropTag;
 
-				WC_H_GETPROPS(GetNamesFromIDs(m_lpMAPIProp,
+				WC_H_GETPROPS(cache::GetNamesFromIDs(m_lpMAPIProp,
 					&lpTagArray,
 					NULL,
 					NULL,

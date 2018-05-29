@@ -2,7 +2,11 @@
 #include <UI/Controls/SortList/SortListCtrl.h>
 #include <Enums.h>
 
-class CMapiObjects;
+namespace cache
+{
+	class CMapiObjects;
+}
+
 namespace dialog
 {
 	class CContentsTableDlg;
@@ -17,7 +21,7 @@ namespace controls
 		public:
 			CContentsTableListCtrl(
 				_In_ CWnd* pCreateParent,
-				_In_ CMapiObjects* lpMapiObjects,
+				_In_ cache::CMapiObjects* lpMapiObjects,
 				_In_ LPSPropTagArray sptExtraColumnTags,
 				_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
 				UINT nIDContextMenu,
@@ -89,7 +93,7 @@ namespace controls
 			LONG volatile m_bAbortLoad;
 			HANDLE m_LoadThreadHandle;
 			dialog::CContentsTableDlg* m_lpHostDlg;
-			CMapiObjects* m_lpMapiObjects;
+			cache::CMapiObjects* m_lpMapiObjects;
 			std::vector<TagNames> m_lpExtraDisplayColumns;
 			LPSPropTagArray m_sptExtraColumnTags;
 			ULONG m_ulHeaderColumns;

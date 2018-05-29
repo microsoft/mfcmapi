@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/MailboxTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/ColumnTags.h>
@@ -18,7 +18,7 @@ namespace dialog
 
 	CMailboxTableDlg::CMailboxTableDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ const std::wstring& lpszServerName,
 		_In_ LPMAPITABLE lpMAPITable
 	) :

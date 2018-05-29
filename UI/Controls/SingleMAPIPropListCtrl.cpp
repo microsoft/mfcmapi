@@ -10,21 +10,21 @@
 #include <UI/FileDialogEx.h>
 #include <ImportProcs.h>
 #include <MAPI/MAPIProgress.h>
-#include <MAPI/NamedPropCache.h>
+#include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <PropertyBag/PropertyBag.h>
 #include <PropertyBag/MAPIPropPropertyBag.h>
 #include <PropertyBag/RowPropertyBag.h>
 #include <Interpret/String.h>
 #include <UI/Controls/SortList/PropListData.h>
-#include <MAPI/GlobalCache.h>
+#include <MAPI/Cache/GlobalCache.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
 #include <UI/Dialogs/Editors/StreamEditor.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <UI/Dialogs/Editors/PropertyEditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 
 namespace controls
 {
@@ -38,7 +38,7 @@ namespace controls
 		CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 			_In_ CWnd* pCreateParent,
 			_In_ dialog::CBaseDialog *lpHostDlg,
-			_In_ CMapiObjects* lpMapiObjects,
+			_In_ cache::CMapiObjects* lpMapiObjects,
 			bool bIsAB)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
@@ -181,8 +181,8 @@ namespace controls
 				GetSelectedPropTag(&ulPropTag);
 				const auto bPropSelected = NULL != ulPropTag;
 
-				const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
-				const auto lpEIDsToCopy = CGlobalCache::getInstance().GetMessagesToCopy();
+				const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
+				const auto lpEIDsToCopy = cache::CGlobalCache::getInstance().GetMessagesToCopy();
 				pMenu->EnableMenuItem(ID_PASTE_PROPERTY, DIM(bHasSource && (ulStatus & BUFFER_PROPTAG) && (ulStatus & BUFFER_SOURCEPROPOBJ)));
 				pMenu->EnableMenuItem(ID_COPYTO, DIM(bHasSource && (ulStatus & BUFFER_SOURCEPROPOBJ)));
 				pMenu->EnableMenuItem(ID_PASTE_NAMEDPROPS, DIM(bHasSource && (ulStatus & BUFFER_MESSAGES) && lpEIDsToCopy && 1 == lpEIDsToCopy->cValues));
@@ -391,7 +391,7 @@ namespace controls
 									}
 
 									// Get the names
-									WC_H_GETPROPS(GetNamesFromIDs(m_lpPropBag->GetMAPIProp(),
+									WC_H_GETPROPS(cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(),
 										lpMappingSig ? &lpMappingSig->Value.bin : NULL,
 										&lpTag,
 										NULL,
@@ -651,7 +651,7 @@ namespace controls
 			std::wstring PropString;
 			std::wstring AltPropString;
 
-			auto namePropNames = NameIDToStrings(
+			auto namePropNames = cache::NameIDToStrings(
 				ulPropTag,
 				m_lpPropBag->GetMAPIProp(),
 				lpNameID,
@@ -945,7 +945,7 @@ namespace controls
 			// Exchange can return MAPI_E_NOT_ENOUGH_MEMORY when I call this - give it a try - PSTs support it
 			DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Calling GetIDsFromNames with a NULL\n");
 			LPSPropTagArray lptag = nullptr;
-			WC_H(GetIDsFromNames(m_lpPropBag->GetMAPIProp(),
+			WC_H(cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(),
 				NULL,
 				NULL,
 				NULL,
@@ -1011,7 +1011,7 @@ namespace controls
 							hRes = S_OK;
 							tag.aulPropTag[0] = PROP_TAG(NULL, iTag);
 
-							WC_H(GetNamesFromIDs(m_lpPropBag->GetMAPIProp(),
+							WC_H(cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(),
 								&lptag,
 								NULL,
 								NULL,
@@ -1056,7 +1056,7 @@ namespace controls
 				hRes = S_OK;
 				tag.aulPropTag[0] = PROP_TAG(NULL, ulCurrent);
 
-				WC_H(GetNamesFromIDs(m_lpPropBag->GetMAPIProp(),
+				WC_H(cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(),
 					&lptag,
 					NULL,
 					NULL,
@@ -1070,7 +1070,7 @@ namespace controls
 					if (fIsSet(DBGNamedProp))
 					{
 						DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Found a named property at 0x%04X.\n", ulCurrent);
-						auto namePropNames = NameIDToStrings(
+						auto namePropNames = cache::NameIDToStrings(
 							tag.aulPropTag[0],
 							nullptr,
 							lppPropNames[0],
@@ -1104,7 +1104,7 @@ namespace controls
 				tag.aulPropTag[0] = PROP_TAG(NULL, ulHighestKnown);
 
 				hRes = S_OK;
-				WC_H(GetNamesFromIDs(m_lpPropBag->GetMAPIProp(),
+				WC_H(cache::GetNamesFromIDs(m_lpPropBag->GetMAPIProp(),
 					&lptag,
 					NULL,
 					NULL,
@@ -1123,7 +1123,7 @@ namespace controls
 
 				if (S_OK == hRes && ulPropNames == 1 && lppPropNames && *lppPropNames)
 				{
-					auto namePropNames = NameIDToStrings(
+					auto namePropNames = cache::NameIDToStrings(
 						tag.aulPropTag[0],
 						nullptr,
 						lppPropNames[0],
@@ -1469,7 +1469,7 @@ namespace controls
 			ULONG ulPropTag = NULL;
 			GetSelectedPropTag(&ulPropTag);
 
-			CGlobalCache::getInstance().SetPropertyToCopy(ulPropTag, m_lpPropBag->GetMAPIProp());
+			cache::CGlobalCache::getInstance().SetPropertyToCopy(ulPropTag, m_lpPropBag->GetMAPIProp());
 		}
 
 		void CSingleMAPIPropListCtrl::OnPasteProperty()
@@ -1478,8 +1478,8 @@ namespace controls
 			// TODO: Now that we have property bags, figure out how to generalize this
 			if (!m_lpHostDlg || !m_lpPropBag) return;
 
-			const auto ulSourcePropTag = CGlobalCache::getInstance().GetPropertyToCopy();
-			auto lpSourcePropObj = CGlobalCache::getInstance().GetSourcePropObject();
+			const auto ulSourcePropTag = cache::CGlobalCache::getInstance().GetPropertyToCopy();
+			auto lpSourcePropObj = cache::CGlobalCache::getInstance().GetSourcePropObject();
 			if (!lpSourcePropObj) return;
 
 			auto hRes = S_OK;
@@ -1597,7 +1597,7 @@ namespace controls
 			// for now, we only copy from objects - copying from rows would be difficult to generalize
 			if (!m_lpHostDlg || !m_lpPropBag) return;
 
-			auto lpSourcePropObj = CGlobalCache::getInstance().GetSourcePropObject();
+			auto lpSourcePropObj = cache::CGlobalCache::getInstance().GetSourcePropObject();
 			if (!lpSourcePropObj) return;
 
 			auto hRes = S_OK;
@@ -1679,7 +1679,7 @@ namespace controls
 
 		void CSingleMAPIPropListCtrl::OnModifyExtraProps()
 		{
-			CGlobalCache::getInstance().MAPIInitialize(NULL);
+			cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
 
 			auto hRes = S_OK;
 
@@ -1780,9 +1780,9 @@ namespace controls
 			if (!m_lpPropBag) return;
 
 			auto hRes = S_OK;
-			const auto lpSourceMsgEID = CGlobalCache::getInstance().GetMessagesToCopy();
+			const auto lpSourceMsgEID = cache::CGlobalCache::getInstance().GetMessagesToCopy();
 
-			if (CGlobalCache::getInstance().GetBufferStatus() & BUFFER_MESSAGES
+			if (cache::CGlobalCache::getInstance().GetBufferStatus() & BUFFER_MESSAGES
 				&& lpSourceMsgEID
 				&& 1 == lpSourceMsgEID->cValues)
 			{
@@ -1810,7 +1810,7 @@ namespace controls
 						EC_H(CallOpenEntry(
 							NULL,
 							NULL,
-							CGlobalCache::getInstance().GetSourceParentFolder(),
+							cache::CGlobalCache::getInstance().GetSourceParentFolder(),
 							NULL,
 							lpSourceMsgEID->lpbin,
 							NULL,

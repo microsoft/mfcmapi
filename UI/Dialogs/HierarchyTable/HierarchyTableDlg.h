@@ -2,7 +2,11 @@
 #include <UI/Dialogs/BaseDialog.h>
 
 class CParentWnd;
-class CMapiObjects;
+
+namespace cache
+{
+	class CMapiObjects;
+}
 
 namespace controls
 {
@@ -16,7 +20,7 @@ namespace dialog
 	public:
 		CHierarchyTableDlg(
 			_In_ CParentWnd* pParentWnd,
-			_In_ CMapiObjects* lpMapiObjects,
+			_In_ cache::CMapiObjects* lpMapiObjects,
 			UINT uidTitle,
 			_In_opt_ LPUNKNOWN lpRootContainer,
 			ULONG nIDContextMenu,

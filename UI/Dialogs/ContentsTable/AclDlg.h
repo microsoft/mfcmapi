@@ -9,7 +9,7 @@ namespace dialog
 	public:
 		CAclDlg(
 			_In_ CParentWnd* pParentWnd,
-			_In_ CMapiObjects* lpMapiObjects,
+			_In_ cache::CMapiObjects* lpMapiObjects,
 			_In_ LPEXCHANGEMODIFYTABLE lpExchTbl,
 			bool bFreeBusyVisible);
 		virtual ~CAclDlg();

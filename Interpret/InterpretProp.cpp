@@ -1,10 +1,10 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <Interpret/Guids.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
-#include <MAPI/NamedPropCache.h>
+#include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>
-#include "Property/ParseProperty.h"
+#include <Property/ParseProperty.h>
 #include <Interpret/String.h>
 #include <unordered_map>
 
@@ -17,7 +17,7 @@ namespace interpretprop
 	{
 		std::wstring szTemp;
 
-		auto namePropNames = NameIDToStrings(
+		auto namePropNames = cache::NameIDToStrings(
 			ulPropTag,
 			lpObj,
 			nullptr,

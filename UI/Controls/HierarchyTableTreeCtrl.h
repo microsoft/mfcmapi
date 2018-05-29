@@ -2,7 +2,11 @@
 #include <Enums.h>
 #include <UI/Controls/SortList/SortListData.h>
 
-class CMapiObjects;
+namespace cache
+{
+	class CMapiObjects;
+}
+
 namespace dialog
 {
 	class CHierarchyTableDlg;
@@ -15,7 +19,7 @@ namespace controls
 	public:
 		CHierarchyTableTreeCtrl(
 			_In_ CWnd* pCreateParent,
-			_In_ CMapiObjects* lpMapiObjects,
+			_In_ cache::CMapiObjects* lpMapiObjects,
 			_In_ dialog::CHierarchyTableDlg *lpHostDlg,
 			ULONG ulDisplayFlags,
 			UINT nIDContextMenu);
@@ -73,7 +77,7 @@ namespace controls
 
 		LONG m_cRef;
 		dialog::CHierarchyTableDlg* m_lpHostDlg;
-		CMapiObjects* m_lpMapiObjects;
+		cache::CMapiObjects* m_lpMapiObjects;
 		LPMAPICONTAINER m_lpContainer;
 		ULONG m_ulContainerType;
 		ULONG m_ulDisplayFlags;

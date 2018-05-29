@@ -3,7 +3,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ABDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
@@ -11,7 +11,7 @@
 #include <MAPI/MAPIABFunctions.h>
 #include <MAPI/MAPIProgress.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/GlobalCache.h>
+#include <MAPI/Cache/GlobalCache.h>
 
 namespace dialog
 {
@@ -19,7 +19,7 @@ namespace dialog
 
 	CAbDlg::CAbDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPABCONT lpAdrBook
 	) :
 		CContentsTableDlg(
@@ -70,7 +70,7 @@ namespace dialog
 	{
 		if (pMenu && m_lpContentsTableListCtrl)
 		{
-			const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+			const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 			pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_ABENTRIES));
 
 			const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
@@ -268,7 +268,7 @@ namespace dialog
 		EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
 
 		// CGlobalCache takes over ownership of lpEIDs - don't free now
-		CGlobalCache::getInstance().SetABEntriesToCopy(lpEIDs);
+		cache::CGlobalCache::getInstance().SetABEntriesToCopy(lpEIDs);
 	}
 
 	_Check_return_ bool CAbDlg::HandlePaste()
@@ -281,7 +281,7 @@ namespace dialog
 		DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"pasting address Book entries\n");
 		if (!m_lpContainer) return false;
 
-		const auto lpEIDs = CGlobalCache::getInstance().GetABEntriesToCopy();
+		const auto lpEIDs = cache::CGlobalCache::getInstance().GetABEntriesToCopy();
 
 		if (lpEIDs)
 		{

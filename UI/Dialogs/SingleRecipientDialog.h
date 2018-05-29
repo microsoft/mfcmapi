@@ -1,5 +1,5 @@
 #pragma once
-#include "BaseDialog.h"
+#include <UI/Dialogs/BaseDialog.h>
 
 class CContentsTableListCtrl;
 
@@ -10,7 +10,7 @@ namespace dialog
 	public:
 		SingleRecipientDialog(
 			_In_ CParentWnd* pParentWnd,
-			_In_ CMapiObjects* lpMapiObjects,
+			_In_ cache::CMapiObjects* lpMapiObjects,
 			_In_opt_ LPMAILUSER lpMailUser);
 		virtual ~SingleRecipientDialog();
 

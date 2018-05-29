@@ -1,11 +1,11 @@
 // Displays the rules table for a folder
-#include "stdafx.h"
-#include "RulesDlg.h"
+#include <StdAfx.h>
+#include <UI/Dialogs/ContentsTable/RulesDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include "ImportProcs.h"
+#include <ImportProcs.h>
 
 namespace dialog
 {
@@ -16,7 +16,7 @@ namespace dialog
 
 	CRulesDlg::CRulesDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPEXCHANGEMODIFYTABLE lpExchTbl) :
 		CContentsTableDlg(
 			pParentWnd,
@@ -57,7 +57,7 @@ namespace dialog
 		{
 			if (m_lpContentsTableListCtrl)
 			{
-				int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+				const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 				pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
 				pMenu->EnableMenuItem(ID_MODIFYSELECTEDITEM, DIMMSOK(iNumSel));
 			}
@@ -138,7 +138,7 @@ namespace dialog
 		if (!lppRowList || !m_lpContentsTableListCtrl) return MAPI_E_INVALID_PARAMETER;
 		*lppRowList = nullptr;
 		auto hRes = S_OK;
-		int iNumItems = m_lpContentsTableListCtrl->GetSelectedCount();
+		const int iNumItems = m_lpContentsTableListCtrl->GetSelectedCount();
 
 		if (!iNumItems) return S_OK;
 		if (iNumItems > MAXNewROWLIST) return MAPI_E_INVALID_PARAMETER;
@@ -163,7 +163,7 @@ namespace dialog
 				if (-1 != iSelectedItem)
 				{
 					// TODO: Rewrite with GetSelectedItems
-					auto lpData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
+					const auto lpData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 					if (lpData)
 					{
 						if (ulFlags & RULE_INCLUDE_ID && ulFlags & RULE_INCLUDE_OTHER)

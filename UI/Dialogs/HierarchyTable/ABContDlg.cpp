@@ -1,9 +1,9 @@
 // Displays the hierarchy tree of address books
-#include "stdafx.h"
-#include "AbContDlg.h"
+#include <StdAfx.h>
+#include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 
 namespace dialog
 {
@@ -11,7 +11,7 @@ namespace dialog
 
 	CAbContDlg::CAbContDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects
+		_In_ cache::CMapiObjects* lpMapiObjects
 	) :
 		CHierarchyTableDlg(
 			pParentWnd,
@@ -29,7 +29,7 @@ namespace dialog
 
 		if (m_lpMapiObjects)
 		{
-			auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
+			const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			if (lpAddrBook)
 			{
 				// Open root address book (container).
@@ -63,7 +63,7 @@ namespace dialog
 
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
+		const auto lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
 
 		if (lpItemEID)
 		{
@@ -84,7 +84,7 @@ namespace dialog
 
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
+		const auto lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
 
 		if (lpItemEID)
 		{
@@ -105,7 +105,7 @@ namespace dialog
 	{
 		if (lpParams)
 		{
-			lpParams->lpAbCont = static_cast<LPABCONT>(lpContainer);
+			lpParams->lpAbCont = dynamic_cast<LPABCONT>(lpContainer);
 		}
 
 		InvokeAddInMenu(lpParams);

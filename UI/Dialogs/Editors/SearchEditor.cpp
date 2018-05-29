@@ -4,7 +4,7 @@
 #include <Interpret/String.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/NamedPropCache.h>
+#include <MAPI/Cache/NamedPropCache.h>
 
 namespace dialog
 {
@@ -140,7 +140,7 @@ namespace dialog
 				}
 				else
 				{
-					auto namePropNames = NameIDToStrings(
+					auto namePropNames = cache::NameIDToStrings(
 						m_ulPropTag,
 						m_lpMAPIProp,
 						nullptr,

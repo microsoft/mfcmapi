@@ -2,7 +2,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ProviderTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/MFCUtilityFunctions.h>
 #include <MAPI/MAPIProfileFunctions.h>
@@ -15,7 +15,7 @@ namespace dialog
 
 	CProviderTableDlg::CProviderTableDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPITABLE lpMAPITable,
 		_In_ LPPROVIDERADMIN lpProviderAdmin
 	) :

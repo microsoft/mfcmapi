@@ -5,7 +5,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
 #include <Interpret/Guids.h>
-#include <MAPI/NamedPropCache.h>
+#include <MAPI/Cache/NamedPropCache.h>
 
 #include <Interpret/SmartView/SmartViewParser.h>
 #include <Interpret/SmartView/PCL.h>
@@ -229,7 +229,7 @@ namespace smartview
 			tag.cValues = 1;
 			tag.aulPropTag[0] = lpProp->ulPropTag;
 
-			WC_H_GETPROPS(GetNamesFromIDs(lpMAPIProp,
+			WC_H_GETPROPS(cache::GetNamesFromIDs(lpMAPIProp,
 				lpMappingSignature,
 				&lpTag,
 				nullptr,

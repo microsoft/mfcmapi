@@ -1,5 +1,4 @@
 #pragma once
-class CMapiObjects;
 class CParentWnd;
 class CAdviseSink;
 namespace controls
@@ -9,6 +8,11 @@ namespace controls
 	{
 		class CSingleMAPIPropListCtrl;
 	}
+}
+
+namespace cache
+{
+	class CMapiObjects;
 }
 
 #include <UI/Dialogs/Dialog.h>
@@ -22,7 +26,7 @@ namespace dialog
 	public:
 		CBaseDialog(
 			_In_ CParentWnd* pParentWnd,
-			_In_ CMapiObjects* lpMapiObjects,
+			_In_ cache::CMapiObjects* lpMapiObjects,
 			ULONG ulAddInContext);
 		virtual ~CBaseDialog();
 
@@ -40,7 +44,7 @@ namespace dialog
 		void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, std::wstring& szParam1, std::wstring& szParam2, std::wstring& szParam3);
 		void OnOpenEntryID(_In_opt_ LPSBinary lpBin);
 		_Check_return_ CParentWnd* GetParentWnd() const;
-		_Check_return_ CMapiObjects* GetMapiObjects() const;
+		_Check_return_ cache::CMapiObjects* GetMapiObjects() const;
 
 		static void UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const std::wstring& status);
 
@@ -61,7 +65,7 @@ namespace dialog
 		controls::CFakeSplitter* m_lpFakeSplitter;
 		std::wstring m_szTitle;
 		LPMAPICONTAINER m_lpContainer;
-		CMapiObjects* m_lpMapiObjects;
+		cache::CMapiObjects* m_lpMapiObjects;
 		CParentWnd* m_lpParent;
 
 	private:
@@ -98,7 +102,7 @@ namespace dialog
 		_Check_return_ LRESULT msgOnClearSingleMAPIPropList(WPARAM wParam, LPARAM lParam);
 
 		LONG m_cRef;
-		HICON m_hIcon;
+		HICON m_hIcon{};
 		std::wstring m_StatusMessages[STATUSBARNUMPANES];
 		int m_StatusWidth[STATUSBARNUMPANES]{};
 		bool m_bDisplayingMenuText;

@@ -4,7 +4,7 @@
 #include <ImportProcs.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/ViewPane/SmartViewPane.h>
-#include <MAPI/GlobalCache.h>
+#include <MAPI/Cache/GlobalCache.h>
 
 namespace dialog
 {
@@ -21,7 +21,7 @@ namespace dialog
 			HEXED_SMARTVIEW
 		};
 
-		CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd, _In_ CMapiObjects* lpMapiObjects) :
+		CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects) :
 			CEditor(pParentWnd, IDS_HEXEDITOR, NULL, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 | CEDITOR_BUTTON_ACTION3, IDS_IMPORT, IDS_EXPORT, IDS_CLOSE)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
@@ -199,7 +199,7 @@ namespace dialog
 					this);
 				if (!file.empty())
 				{
-					CGlobalCache::getInstance().MAPIInitialize(NULL);
+					cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
 					LPSTREAM lpStream = nullptr;
 
 					// Get a Stream interface on the input file
@@ -238,7 +238,7 @@ namespace dialog
 					this);
 				if (!file.empty())
 				{
-					CGlobalCache::getInstance().MAPIInitialize(NULL);
+					cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
 					LPSTREAM lpStream = nullptr;
 
 					// Get a Stream interface on the output file

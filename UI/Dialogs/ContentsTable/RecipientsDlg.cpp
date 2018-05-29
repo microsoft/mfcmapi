@@ -1,8 +1,8 @@
 // Displays the recipient table for a message
-#include "StdAfx.h"
-#include "RecipientsDlg.h"
+#include <StdAfx.h>
+#include <UI/Dialogs/ContentsTable/RecipientsDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <Interpret/InterpretProp.h>
@@ -14,7 +14,7 @@ namespace dialog
 
 	CRecipientsDlg::CRecipientsDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPITABLE lpMAPITable,
 		_In_ LPMESSAGE lpMessage
 	) :
@@ -65,7 +65,7 @@ namespace dialog
 		{
 			if (m_lpContentsTableListCtrl)
 			{
-				int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+				const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 				pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
 				pMenu->EnableMenuItem(ID_RECIPOPTIONS, DIMMSOK(1 == iNumSel));
 				pMenu->EnableMenuItem(ID_MODIFYRECIPIENT,
@@ -110,7 +110,7 @@ namespace dialog
 
 		LPADRLIST lpAdrList = nullptr;
 
-		int iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
+		const int iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 
 		if (iNumSelected && iNumSelected < MAXNewADRLIST)
 		{
@@ -137,7 +137,7 @@ namespace dialog
 						lpProp->ulPropTag = PR_ROWID;
 						lpProp->dwAlignPad = 0;
 						// Find the highlighted item AttachNum
-						auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
+						const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 						if (lpListData && lpListData->Contents())
 						{
 							lpProp->Value.l = lpListData->Contents()->m_ulRowID;
@@ -257,7 +257,7 @@ namespace dialog
 					adrList.aEntries[0].cValues = adrEntry.cValues;
 					adrList.aEntries[0].rgPropVals = adrEntry.rgPropVals;
 
-					auto szAdrList = interpretprop::AdrListToString(adrList);
+					const auto szAdrList = interpretprop::AdrListToString(adrList);
 
 					DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"RecipOptions returned the following ADRLIST:\n");
 					// Note - debug output may be truncated due to limitations of OutputDebugString,

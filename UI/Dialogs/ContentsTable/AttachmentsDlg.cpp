@@ -1,17 +1,17 @@
 // Displays the attachment table for a message
 
-#include "StdAfx.h"
-#include "AttachmentsDlg.h"
+#include <StdAfx.h>
+#include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <IO/File.h>
 #include <UI/FileDialogEx.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
 #include <MAPI/MAPIProgress.h>
 #include <UI/MFCUtilityFunctions.h>
-#include "ImportProcs.h"
+#include <ImportProcs.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/GlobalCache.h>
+#include <MAPI/Cache/GlobalCache.h>
 #include <Interpret/InterpretProp.h>
 
 namespace dialog
@@ -20,7 +20,7 @@ namespace dialog
 
 	CAttachmentsDlg::CAttachmentsDlg(
 		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPITABLE lpMAPITable,
 		_In_ LPMESSAGE lpMessage
 	) :
@@ -43,7 +43,7 @@ namespace dialog
 		m_lpAttach = nullptr;
 		m_ulAttachNum = static_cast<ULONG>(-1);
 
-		CreateDialogAndMenu(IDR_MENU_ATTACHMENTS);
+		CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_ATTACHMENTS);
 	}
 
 	CAttachmentsDlg::~CAttachmentsDlg()
@@ -75,7 +75,7 @@ namespace dialog
 			if (m_lpContentsTableListCtrl)
 			{
 				const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
-				const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+				const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 				pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_ATTACHMENTS));
 
 				pMenu->EnableMenuItem(ID_COPY, DIMMSOK(iNumSel));
@@ -240,7 +240,7 @@ namespace dialog
 				}
 			}
 
-			CGlobalCache::getInstance().SetAttachmentsToCopy(m_lpMessage, lpAttNumList);
+			cache::CGlobalCache::getInstance().SetAttachmentsToCopy(m_lpMessage, lpAttNumList);
 		}
 	}
 
@@ -254,11 +254,11 @@ namespace dialog
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		const auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+		const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 		if (!(ulStatus & BUFFER_ATTACHMENTS) || !(ulStatus & BUFFER_SOURCEPROPOBJ)) return false;
 
-		auto lpAttNumList = CGlobalCache::getInstance().GetAttachmentsToCopy();
-		auto lpSourceMessage = dynamic_cast<LPMESSAGE>(CGlobalCache::getInstance().GetSourcePropObject());
+		auto lpAttNumList = cache::CGlobalCache::getInstance().GetAttachmentsToCopy();
+		auto lpSourceMessage = dynamic_cast<LPMESSAGE>(cache::CGlobalCache::getInstance().GetSourcePropObject());
 
 		if (!lpAttNumList.empty() && lpSourceMessage)
 		{

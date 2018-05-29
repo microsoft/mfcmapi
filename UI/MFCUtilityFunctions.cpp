@@ -6,7 +6,7 @@
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/Dialogs/BaseDialog.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/Guids.h>
@@ -460,7 +460,7 @@ _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 }
 
 void DisplayMailboxTable(_In_ CParentWnd* lpParent,
-	_In_ CMapiObjects* lpMapiObjects)
+	_In_ cache::CMapiObjects* lpMapiObjects)
 {
 	if (!lpParent || !lpMapiObjects) return;
 	auto hRes = S_OK;
@@ -597,7 +597,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 }
 
 void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
-	_In_ CMapiObjects* lpMapiObjects)
+	_In_ cache::CMapiObjects* lpMapiObjects)
 {
 	if (!lpParent || !lpMapiObjects) return;
 	auto hRes = S_OK;
@@ -734,7 +734,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 	if (lpPrivateMDB) lpPrivateMDB->Release();
 }
 
-void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
+void ResolveMessageClass(_In_ cache::CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
 {
 	auto hRes = S_OK;
 	LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
@@ -779,7 +779,7 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 	}
 }
 
-void SelectForm(_In_ HWND hWnd, _In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
+void SelectForm(_In_ HWND hWnd, _In_ cache::CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
 {
 	auto hRes = S_OK;
 	LPMAPIFORMMGR lpMAPIFormMgr = nullptr;

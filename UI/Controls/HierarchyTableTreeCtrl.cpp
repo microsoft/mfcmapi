@@ -2,7 +2,7 @@
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/HierarchyTable/HierarchyTableDlg.h>
-#include <MAPI/MapiObjects.h>
+#include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/UIFunctions.h>
 #include <MAPI/AdviseSink.h>
@@ -57,7 +57,7 @@ namespace controls
 
 	CHierarchyTableTreeCtrl::CHierarchyTableTreeCtrl(
 		_In_ CWnd* pCreateParent,
-		_In_ CMapiObjects* lpMapiObjects,
+		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ dialog::CHierarchyTableDlg *lpHostDlg,
 		ULONG ulDisplayFlags,
 		UINT nIDContextMenu)
