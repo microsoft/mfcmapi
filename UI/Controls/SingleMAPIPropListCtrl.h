@@ -11,7 +11,7 @@ namespace controls
 {
 	namespace sortlistctrl
 	{
-		class CSingleMAPIPropListCtrl : public sortlistctrl::CSortListCtrl
+		class CSingleMAPIPropListCtrl : public CSortListCtrl
 		{
 		public:
 			CSingleMAPIPropListCtrl(
@@ -24,7 +24,7 @@ namespace controls
 
 			// Initialization
 			_Check_return_ HRESULT SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ sortlistdata::SortListData* lpListData, bool bIsAB);
-			_Check_return_ HRESULT SetDataSource(_In_opt_ LPMAPIPROPERTYBAG lpPropBag, bool bIsAB);
+			_Check_return_ HRESULT SetDataSource(_In_opt_ propertybag::LPMAPIPROPERTYBAG lpPropBag, bool bIsAB);
 			_Check_return_ HRESULT RefreshMAPIPropList();
 
 			// Selected item accessors
@@ -78,7 +78,7 @@ namespace controls
 			bool m_bIsAB;
 			CMapiObjects* m_lpMapiObjects;
 
-			LPMAPIPROPERTYBAG m_lpPropBag;
+			propertybag::LPMAPIPROPERTYBAG m_lpPropBag;
 
 			// Used to store prop tags added through AddPropsToExtraProps
 			LPSPropTagArray m_sptExtraProps;

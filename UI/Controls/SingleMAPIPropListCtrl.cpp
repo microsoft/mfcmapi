@@ -215,7 +215,7 @@ namespace controls
 					}
 				}
 
-				if (!m_lpPropBag || m_lpPropBag->GetType() == pbRow)
+				if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::pbRow)
 				{
 					pMenu->EnableMenuItem(ID_DELETEPROPERTY, DIM(false));
 				}
@@ -318,7 +318,7 @@ namespace controls
 				if (m_lpHostDlg)
 				{
 					// This flag may be set by a GetProps call, so we make this check AFTER we get our props
-					if (pbBackedByGetProps == m_lpPropBag->GetFlags())
+					if (propertybag::pbBackedByGetProps == m_lpPropBag->GetFlags())
 					{
 						m_lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_PROPSFROMGETPROPS);
 					}
@@ -707,21 +707,21 @@ namespace controls
 
 		_Check_return_ bool CSingleMAPIPropListCtrl::IsModifiedPropVals() const
 		{
-			return pbModified == (m_lpPropBag->GetFlags() & pbModified);
+			return propertybag::pbModified == (m_lpPropBag->GetFlags() & propertybag::pbModified);
 		}
 
 		_Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ sortlistdata::SortListData* lpListData, bool bIsAB)
 		{
 			DebugPrintEx(DBGGeneric, CLASS, L"SetDataSource", L"setting new data source\n");
 
-			LPMAPIPROPERTYBAG lpNewPropBag = nullptr;
+			propertybag::LPMAPIPROPERTYBAG lpNewPropBag = nullptr;
 			if (lpMAPIProp)
 			{
-				lpNewPropBag = new MAPIPropPropertyBag(lpMAPIProp, lpListData);
+				lpNewPropBag = new propertybag::MAPIPropPropertyBag(lpMAPIProp, lpListData);
 			}
 			else if (lpListData)
 			{
-				lpNewPropBag = new RowPropertyBag(lpListData);
+				lpNewPropBag = new propertybag::RowPropertyBag(lpListData);
 			}
 
 			return SetDataSource(lpNewPropBag, bIsAB);
@@ -730,7 +730,7 @@ namespace controls
 		// Load a new list from the IMAPIProp or lpSourceProps object passed in
 		// Most calls to this will come through CBaseDialog::OnUpdateSingleMAPIPropListCtrl, which will preserve the current bIsAB
 		// Exceptions will be where we need to set a specific bIsAB
-		_Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ LPMAPIPROPERTYBAG lpPropBag, bool bIsAB)
+		_Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ propertybag::LPMAPIPROPERTYBAG lpPropBag, bool bIsAB)
 		{
 			auto hRes = S_OK;
 			DebugPrintEx(DBGGeneric, CLASS, L"SetDataSource", L"setting new data source\n");
@@ -1151,7 +1151,7 @@ namespace controls
 			auto hRes = S_OK;
 			ULONG ulPropTag = NULL;
 
-			if (!m_lpPropBag || m_lpPropBag->GetType() == pbRow) return;
+			if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::pbRow) return;
 
 			GetSelectedPropTag(&ulPropTag);
 			if (!ulPropTag) return;
@@ -1859,7 +1859,7 @@ namespace controls
 				MyAddInMenuParams.lpAdrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			}
 
-			if (m_lpPropBag && pbRow == m_lpPropBag->GetType())
+			if (m_lpPropBag && propertybag::pbRow == m_lpPropBag->GetType())
 			{
 				SRow MyRow = { 0 };
 				(void)m_lpPropBag->GetAllProps(&MyRow.cValues, &MyRow.lpProps);
