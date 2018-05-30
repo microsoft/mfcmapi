@@ -1,5 +1,5 @@
 #pragma once
-#include "ContentsTableDlg.h"
+#include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
 namespace dialog
 {

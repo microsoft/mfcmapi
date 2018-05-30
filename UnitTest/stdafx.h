@@ -1,8 +1,8 @@
 #pragma once
 #include "..\StdAfx.h"
-#include "targetver.h"
-#include "CppUnitTest.h"
-#include "Interpret\String.h"
+#include <UnitTest/targetver.h>
+#include <CppUnitTest.h>
+#include <Interpret/String.h>
 
 namespace Microsoft
 {

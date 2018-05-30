@@ -1,7 +1,7 @@
-#include "stdafx.h"
-#include "MrMAPI.h"
+#include <StdAfx.h>
+#include <MrMapi/MrMAPI.h>
 #include <MAPI/ColumnTags.h>
-#include "MMReceiveFolder.h"
+#include <MrMapi/MMReceiveFolder.h>
 
 void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 {
@@ -18,7 +18,7 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 
 	if (lpReceiveFolderTable)
 	{
-		auto sTags = LPSPropTagArray(&sptRECEIVECols);
+		const auto sTags = LPSPropTagArray(&sptRECEIVECols);
 
 		WC_MAPI(lpReceiveFolderTable->SetColumns(sTags, TBL_ASYNC));
 	}

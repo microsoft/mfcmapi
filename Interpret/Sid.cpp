@@ -1,8 +1,8 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <Interpret/Sid.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
-#include "GUIDArray.h"
+#include <Interpret/GUIDArray.h>
 
 _Check_return_ std::wstring GetTextualSid(_In_ PSID pSid)
 {

@@ -1,7 +1,7 @@
-#include "StdAfx.h"
-#include "NickNameCache.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/NickNameCache.h>
 #include <Interpret/String.h>
-#include "PropertyStruct.h"
+#include <Interpret/SmartView/PropertyStruct.h>
 
 namespace smartview
 {

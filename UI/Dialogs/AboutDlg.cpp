@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/AboutDlg.h>
 #include <UI/UIFunctions.h>
 
@@ -38,18 +38,18 @@ namespace dialog
 		RECT rcClient = { 0 };
 		::GetClientRect(m_hWnd, &rcClient);
 
-		auto hWndIcon = ::GetDlgItem(m_hWnd, IDC_STATIC);
+		const auto hWndIcon = ::GetDlgItem(m_hWnd, IDC_STATIC);
 		RECT rcIcon = { 0 };
 		::GetWindowRect(hWndIcon, &rcIcon);
-		auto iMargin = GetSystemMetrics(SM_CXHSCROLL) / 2 + 1;
+		const auto iMargin = GetSystemMetrics(SM_CXHSCROLL) / 2 + 1;
 		::OffsetRect(&rcIcon, iMargin - rcIcon.left, iMargin - rcIcon.top);
 		::MoveWindow(hWndIcon, rcIcon.left, rcIcon.top, rcIcon.right - rcIcon.left, rcIcon.bottom - rcIcon.top, false);
 
-		auto hWndButton = ::GetDlgItem(m_hWnd, IDOK);
+		const auto hWndButton = ::GetDlgItem(m_hWnd, IDOK);
 		RECT rcButton = { 0 };
 		::GetWindowRect(hWndButton, &rcButton);
-		auto iTextHeight = GetTextHeight(m_hWnd);
-		auto iCheckHeight = iTextHeight + GetSystemMetrics(SM_CYEDGE) * 2;
+		const auto iTextHeight = GetTextHeight(m_hWnd);
+		const auto iCheckHeight = iTextHeight + GetSystemMetrics(SM_CYEDGE) * 2;
 		::OffsetRect(&rcButton, rcClient.right - rcButton.right - iMargin, iMargin + ((IDD_ABOUTVERLAST - IDD_ABOUTVERFIRST + 1) * iTextHeight - iCheckHeight) / 2 - rcButton.top);
 		::MoveWindow(hWndButton, rcButton.left, rcButton.top, rcButton.right - rcButton.left, rcButton.bottom - rcButton.top, false);
 
@@ -59,7 +59,7 @@ namespace dialog
 		rcText.right = rcButton.left - iMargin;
 		for (auto i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
 		{
-			auto hWndAboutText = ::GetDlgItem(m_hWnd, i);
+			const auto hWndAboutText = ::GetDlgItem(m_hWnd, i);
 			rcText.top = rcIcon.top + iTextHeight * (i - IDD_ABOUTVERFIRST);
 			rcText.bottom = rcText.top + iTextHeight;
 			::MoveWindow(hWndAboutText, rcText.left, rcText.top, rcText.right - rcText.left, rcText.bottom - rcText.top, false);
@@ -120,7 +120,7 @@ namespace dialog
 		if (dwVerInfoSize)
 		{
 			// If we were able to get the information, process it.
-			auto pbData = new BYTE[dwVerInfoSize];
+			const auto pbData = new BYTE[dwVerInfoSize];
 
 			if (pbData)
 			{
@@ -144,7 +144,7 @@ namespace dialog
 				// Read the file description for the first language/codepage
 				if (S_OK == hRes && lpTranslate)
 				{
-					auto szGetName = strings::format(
+					const auto szGetName = strings::format(
 						L"\\StringFileInfo\\%04x%04x\\", // STRING_OK
 						lpTranslate[0].wLanguage,
 						lpTranslate[0].wCodePage);
@@ -189,7 +189,7 @@ namespace dialog
 			return true;
 		case WM_NOTIFY:
 		{
-			auto lpel = reinterpret_cast<ENLINK*>(lParam);
+			const auto lpel = reinterpret_cast<ENLINK*>(lParam);
 			if (lpel)
 			{
 				switch (lpel->nmhdr.code)
@@ -216,8 +216,8 @@ namespace dialog
 		{
 			RECT rect = { 0 };
 			::GetClientRect(m_hWnd, &rect);
-			auto hOld = ::SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(cBackground));
-			auto bRet = ::PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
+			const auto hOld = ::SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(cBackground));
+			const auto bRet = ::PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
 			::SelectObject(reinterpret_cast<HDC>(wParam), hOld);
 			return bRet;
 		}
@@ -229,7 +229,7 @@ namespace dialog
 	void CAboutDlg::OnOK()
 	{
 		CMyDialog::OnOK();
-		auto iCheckState = m_DisplayAboutCheck.GetCheck();
+		const auto iCheckState = m_DisplayAboutCheck.GetCheck();
 
 		if (BST_CHECKED == iCheckState)
 			RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD = true;

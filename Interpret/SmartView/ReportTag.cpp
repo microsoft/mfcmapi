@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "ReportTag.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/ReportTag.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 

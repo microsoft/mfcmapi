@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <UI/RichEditOleCallback.h>
 #include <UI/UIFunctions.h>
 
@@ -29,14 +29,14 @@ STDMETHODIMP CRichEditOleCallback::QueryInterface(REFIID riid,
 
 STDMETHODIMP_(ULONG) CRichEditOleCallback::AddRef()
 {
-	auto lCount = InterlockedIncrement(&m_cRef);
+	const auto lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
 }
 
 STDMETHODIMP_(ULONG) CRichEditOleCallback::Release()
 {
-	auto lCount = InterlockedDecrement(&m_cRef);
+	const auto lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
 	if (!lCount) delete this;
 	return lCount;
@@ -114,10 +114,10 @@ STDMETHODIMP CRichEditOleCallback::GetContextMenu(WORD /*seltype*/,
 {
 	if (!lphmenu) return E_INVALIDARG;
 	lphmenu = nullptr;
-	auto hContext = LoadMenu(nullptr, MAKEINTRESOURCE(IDR_MENU_RICHEDIT_POPUP));
+	const auto hContext = LoadMenu(nullptr, MAKEINTRESOURCE(IDR_MENU_RICHEDIT_POPUP));
 	if (hContext)
 	{
-		auto hPopup = GetSubMenu(hContext, 0);
+		const auto hPopup = GetSubMenu(hContext, 0);
 		if (hPopup)
 		{
 			ConvertMenuOwnerDraw(hPopup, false);
@@ -138,7 +138,7 @@ STDMETHODIMP CRichEditOleCallback::GetContextMenu(WORD /*seltype*/,
 				ClientToScreen(m_hWnd, &pos);
 			}
 
-			DWORD dwCommand = TrackPopupMenu(hPopup, TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pos.x, pos.y, NULL, m_hWndParent, nullptr);
+			const DWORD dwCommand = TrackPopupMenu(hPopup, TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pos.x, pos.y, NULL, m_hWndParent, nullptr);
 			DeleteMenuEntries(hPopup);
 			(void) ::SendMessage(m_hWnd, dwCommand, static_cast<WPARAM>(0), static_cast<LPARAM>(EM_SETSEL == dwCommand) ? -1 : 0);
 		}

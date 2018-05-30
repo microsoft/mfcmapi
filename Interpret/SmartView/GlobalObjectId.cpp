@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "GlobalObjectId.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/GlobalObjectId.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 

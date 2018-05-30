@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "XID.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/XID.h>
 #include <Interpret/Guids.h>
 
 namespace smartview

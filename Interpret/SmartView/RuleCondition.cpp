@@ -1,6 +1,6 @@
-#include "StdAfx.h"
-#include "RuleCondition.h"
-#include "RestrictionStruct.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/RuleCondition.h>
+#include <Interpret/SmartView/RestrictionStruct.h>
 #include <Interpret/String.h>
 #include <Interpret/Guids.h>
 

@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "FolderUserFieldStream.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/FolderUserFieldStream.h>
 #include <Interpret/Guids.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>

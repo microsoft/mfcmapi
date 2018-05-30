@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <IO/Error.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <Interpret/ErrorArray.h>

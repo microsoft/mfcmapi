@@ -1,6 +1,6 @@
 #pragma once
-#include "SmartViewParser.h"
-#include "RestrictionStruct.h"
+#include <Interpret/SmartView/SmartViewParser.h>
+#include <Interpret/SmartView/RestrictionStruct.h>
 
 namespace smartview
 {

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <MAPI/AdviseSink.h>
 
 static std::wstring CLASS = L"CAdviseSink";
@@ -35,14 +35,14 @@ STDMETHODIMP CAdviseSink::QueryInterface(REFIID riid,
 
 STDMETHODIMP_(ULONG) CAdviseSink::AddRef()
 {
-	auto lCount = InterlockedIncrement(&m_cRef);
+	const auto lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
 }
 
 STDMETHODIMP_(ULONG) CAdviseSink::Release()
 {
-	auto lCount = InterlockedDecrement(&m_cRef);
+	const auto lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
 	if (!lCount) delete this;
 	return lCount;
@@ -71,28 +71,28 @@ STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify,
 			case TABLE_ERROR:
 			case TABLE_CHANGED:
 			case TABLE_RELOAD:
-				EC_H((HRESULT)::SendMessage(m_hWndParent, WM_MFCMAPI_REFRESHTABLE, reinterpret_cast<WPARAM>(m_hTreeParent), 0));
+				EC_H(static_cast<HRESULT>(::SendMessage(m_hWndParent, WM_MFCMAPI_REFRESHTABLE, reinterpret_cast<WPARAM>(m_hTreeParent), 0)));
 				break;
 			case TABLE_ROW_ADDED:
-				EC_H((HRESULT)::SendMessage(
+				EC_H(static_cast<HRESULT>(::SendMessage(
 					m_hWndParent,
 					WM_MFCMAPI_ADDITEM,
 					reinterpret_cast<WPARAM>(&lpNotifications[i].info.tab),
-					reinterpret_cast<LPARAM>(m_hTreeParent)));
+					reinterpret_cast<LPARAM>(m_hTreeParent))));
 				break;
 			case TABLE_ROW_DELETED:
-				EC_H((HRESULT)::SendMessage(
+				EC_H(static_cast<HRESULT>(::SendMessage(
 					m_hWndParent,
 					WM_MFCMAPI_DELETEITEM,
 					reinterpret_cast<WPARAM>(&lpNotifications[i].info.tab),
-					reinterpret_cast<LPARAM>(m_hTreeParent)));
+					reinterpret_cast<LPARAM>(m_hTreeParent))));
 				break;
 			case TABLE_ROW_MODIFIED:
-				EC_H((HRESULT)::SendMessage(
+				EC_H(static_cast<HRESULT>(::SendMessage(
 					m_hWndParent,
 					WM_MFCMAPI_MODIFYITEM,
 					reinterpret_cast<WPARAM>(&lpNotifications[i].info.tab),
-					reinterpret_cast<LPARAM>(m_hTreeParent)));
+					reinterpret_cast<LPARAM>(m_hTreeParent))));
 				break;
 			}
 		}

@@ -1,5 +1,5 @@
 #pragma once
-#include "SmartViewParser.h"
+#include <Interpret/SmartView/SmartViewParser.h>
 #include <MAPIDefs.h>
 
 namespace smartview

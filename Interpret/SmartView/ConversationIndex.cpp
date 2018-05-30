@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "ConversationIndex.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/ConversationIndex.h>
 #include <Interpret/Guids.h>
 
 namespace smartview
@@ -40,7 +40,7 @@ namespace smartview
 		b2 = m_Parser.Get<BYTE>();
 		m_guid.Data3 = static_cast<unsigned short>(b1 << 8 | b2);
 
-		for (unsigned char& i : m_guid.Data4)
+		for (auto& i : m_guid.Data4)
 		{
 			i = m_Parser.Get<BYTE>();
 		}

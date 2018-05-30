@@ -1,6 +1,6 @@
 #pragma once
-#include "SmartViewParser.h"
-#include "EntryList.h"
+#include <Interpret/SmartView/SmartViewParser.h>
+#include <Interpret/SmartView/EntryList.h>
 
 namespace smartview
 {

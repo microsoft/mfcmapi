@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "AppointmentRecurrencePattern.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/AppointmentRecurrencePattern.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>

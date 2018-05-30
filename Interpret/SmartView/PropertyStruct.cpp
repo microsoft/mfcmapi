@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "PropertyStruct.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/PropertyStruct.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/SmartView/SmartView.h>
 

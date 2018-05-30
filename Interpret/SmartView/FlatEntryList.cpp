@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "FlatEntryList.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/FlatEntryList.h>
 
 namespace smartview
 {
@@ -24,7 +24,7 @@ namespace smartview
 				// Size here will be the length of the serialized entry ID
 				// We'll have to round it up to a multiple of 4 to read off padding
 				flatEntryID.dwSize = m_Parser.Get<DWORD>();
-				const size_t ulSize = min(flatEntryID.dwSize, m_Parser.RemainingBytes());
+				const auto ulSize = min(flatEntryID.dwSize, m_Parser.RemainingBytes());
 
 				flatEntryID.lpEntryID.Init(ulSize, m_Parser.GetCurrentAddress());
 

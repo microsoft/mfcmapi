@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "SmartViewParser.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/SmartViewParser.h>
 
 namespace smartview
 {

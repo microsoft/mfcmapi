@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "TombStone.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/TombStone.h>
 #include <Interpret/String.h>
 #include <Interpret/SmartView/SmartView.h>
 

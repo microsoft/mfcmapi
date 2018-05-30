@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 
 #pragma region "USES_IID definitions"
 #define INITGUID
@@ -36,7 +36,7 @@
 
 #include <initguid.h>
 #include <MAPIGuid.h>
-#include "MAPIAux.h"
+#include <MAPIAux.h>
 
 #ifdef EDKGUID_INCLUDED
 #undef EDKGUID_INCLUDED

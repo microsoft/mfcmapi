@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "WebViewPersistStream.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/WebViewPersistStream.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 

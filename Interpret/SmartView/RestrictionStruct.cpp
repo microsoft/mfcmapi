@@ -1,6 +1,6 @@
-#include "StdAfx.h"
-#include "RestrictionStruct.h"
-#include "PropertyStruct.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/RestrictionStruct.h>
+#include <Interpret/SmartView/PropertyStruct.h>
 #include <Interpret/String.h>
 #include <Interpret/InterpretProp.h>
 

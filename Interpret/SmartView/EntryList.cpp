@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "EntryList.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/EntryList.h>
 #include <Interpret/String.h>
 
 namespace smartview
@@ -28,7 +28,7 @@ namespace smartview
 
 				for (DWORD i = 0; i < m_EntryCount; i++)
 				{
-					const size_t cbRemainingBytes = min(m_Entry[i].EntryLength, m_Parser.RemainingBytes());
+					const auto cbRemainingBytes = min(m_Entry[i].EntryLength, m_Parser.RemainingBytes());
 					m_Entry[i].EntryId.Init(cbRemainingBytes, m_Parser.GetCurrentAddress());
 					m_Parser.Advance(cbRemainingBytes);
 				}

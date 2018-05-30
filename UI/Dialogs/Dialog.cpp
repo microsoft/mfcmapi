@@ -1,7 +1,7 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <UI/Dialogs/Dialog.h>
 #include <UI/UIFunctions.h>
-#include "ImportProcs.h"
+#include <ImportProcs.h>
 #include <propkey.h>
 
 namespace dialog
@@ -114,7 +114,7 @@ namespace dialog
 	LRESULT CMyDialog::NCHitTest(WPARAM wParam, LPARAM lParam)
 	{
 		// These are screen coordinates of the mouse pointer
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		const POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		DebugPrint(DBGUI, L"WM_NCHITTEST: pt = %d %d\r\n", pt.x, pt.y);
 
 		auto ht = CDialog::WindowProc(WM_NCHITTEST, wParam, lParam);
@@ -140,7 +140,7 @@ namespace dialog
 		(void)MapWindowPoints(hWnd, nullptr, &pt, 1); // Map our client point to the screen
 		Outputf(DBGUI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
 
-		auto ht = CheckButtons(hWnd, pt);
+		const auto ht = CheckButtons(hWnd, pt);
 		DebugPrint(DBGUI, L"%ws\r\n", FormatHT(ht).c_str());
 		return ht;
 	}
@@ -160,8 +160,7 @@ namespace dialog
 					DebugPrint(DBGUI, L"WM_LBUTTONUP\n");
 					DrawSystemButtons(hWnd, nullptr, HTNOWHERE, false);
 					ReleaseCapture();
-					if (NCHitTestMouse(hWnd, msg.lParam) == iHitTest) return true;
-					return false;
+					return NCHitTestMouse(hWnd, msg.lParam) == iHitTest;
 
 				case WM_MOUSEMOVE:
 					DebugPrint(DBGUI, L"WM_MOUSEMOVE\n");
@@ -232,11 +231,11 @@ namespace dialog
 			if (pfnSHGetPropertyStoreForWindow)
 			{
 				IPropertyStore* pps = nullptr;
-				auto hRes = pfnSHGetPropertyStoreForWindow(m_hWnd, IID_PPV_ARGS(&pps));
+				const auto hRes = pfnSHGetPropertyStoreForWindow(m_hWnd, IID_PPV_ARGS(&pps));
 				if (SUCCEEDED(hRes) && pps) {
 					PROPVARIANT var = { 0 };
 					var.vt = VT_LPWSTR;
-					var.pwszVal = L"Microsoft.MFCMAPI";
+					var.pwszVal = const_cast<LPWSTR>(L"Microsoft.MFCMAPI");
 
 					(void)pps->SetValue(PKEY_AppUserModel_ID, var);
 				}
@@ -271,7 +270,7 @@ namespace dialog
 
 		m_hwndCenteringWindow = GetActiveWindow();
 
-		auto hInst = AfxFindResourceHandle(m_lpszTemplateName, RT_DIALOG);
+		const auto hInst = AfxFindResourceHandle(m_lpszTemplateName, RT_DIALOG);
 		HRSRC hResource = nullptr;
 		EC_D(hResource, ::FindResource(hInst, m_lpszTemplateName, RT_DIALOG));
 		if (hResource)
@@ -280,7 +279,7 @@ namespace dialog
 			EC_D(hTemplate, LoadResource(hInst, hResource));
 			if (hTemplate)
 			{
-				auto lpDialogTemplate = static_cast<LPCDLGTEMPLATE>(LockResource(hTemplate));
+				const auto lpDialogTemplate = static_cast<LPCDLGTEMPLATE>(LockResource(hTemplate));
 				EC_B(CreateDlgIndirect(lpDialogTemplate, m_lpNonModalParent, hInst));
 			}
 		}
@@ -302,7 +301,7 @@ namespace dialog
 			// Cheap cascade effect
 			RECT rc = { 0 };
 			(void) ::GetWindowRect(m_hWndPrevious, &rc);
-			LONG lOffset = GetSystemMetrics(SM_CXSMSIZE);
+			const LONG lOffset = GetSystemMetrics(SM_CXSMSIZE);
 			(void) ::SetWindowPos(m_hWnd, nullptr, rc.left + lOffset, rc.top + lOffset, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 		}
 		else

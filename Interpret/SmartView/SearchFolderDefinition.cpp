@@ -1,7 +1,7 @@
-#include "StdAfx.h"
-#include "SearchFolderDefinition.h"
-#include "RestrictionStruct.h"
-#include "PropertyStruct.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/SearchFolderDefinition.h>
+#include <Interpret/SmartView/RestrictionStruct.h>
+#include <Interpret/SmartView/PropertyStruct.h>
 #include <Interpret/String.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>

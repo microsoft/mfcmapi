@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "MrMAPI.h"
+#include <StdAfx.h>
+#include <MrMapi/MrMAPI.h>
 #include <Interpret/String.h>
 #include <io.h>
 #include <Interpret/SmartView/SmartView.h>

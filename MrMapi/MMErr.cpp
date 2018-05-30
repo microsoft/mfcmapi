@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 
 #include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMErr.h>

@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "MrMAPI.h"
+#include <StdAfx.h>
+#include <MrMapi/MrMAPI.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <IO/File.h>
 

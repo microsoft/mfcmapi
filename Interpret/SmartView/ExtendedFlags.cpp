@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "ExtendedFlags.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/ExtendedFlags.h>
 #include <Interpret/Guids.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>

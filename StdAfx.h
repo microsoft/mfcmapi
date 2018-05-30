@@ -27,7 +27,7 @@
 
 #pragma warning(push)
 #pragma warning(disable: 4091)
-#include <shlobj.h>
+#include <ShlObj.h>
 #pragma warning(pop)
 
 // Safe String handling header
@@ -41,15 +41,15 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(
 #define FREEBUFFER_DEFINED
 #endif
 
-#include <MapiX.h>
-#include <MapiUtil.h>
-#include <MAPIform.h>
+#include <MAPIX.h>
+#include <MAPIUtil.h>
+#include <MAPIForm.h>
 #include <MAPIWz.h>
 #include <MAPIHook.h>
 #include <MSPST.h>
 
-#include <edkmdb.h>
-#include <exchform.h>
+#include <EdkMdb.h>
+#include <ExchForm.h>
 #include <EMSAbTag.h>
 #include <IMessage.h>
 #include <edkguid.h>
@@ -123,22 +123,22 @@ class CAdviseSink;
 // Custom messages - used to ensure actions occur on the right threads.
 
 // Used by CAdviseSink:
-#define WM_MFCMAPI_ADDITEM WM_APP+1
-#define WM_MFCMAPI_DELETEITEM WM_APP+2
-#define WM_MFCMAPI_MODIFYITEM WM_APP+3
-#define WM_MFCMAPI_REFRESHTABLE WM_APP+4
+#define WM_MFCMAPI_ADDITEM (WM_APP+1)
+#define WM_MFCMAPI_DELETEITEM (WM_APP+2)
+#define WM_MFCMAPI_MODIFYITEM (WM_APP+3)
+#define WM_MFCMAPI_REFRESHTABLE (WM_APP+4)
 
 // Used by DwThreadFuncLoadTable
-#define WM_MFCMAPI_THREADADDITEM WM_APP+5
-#define WM_MFCMAPI_UPDATESTATUSBAR WM_APP+6
-#define WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST WM_APP+7
+#define WM_MFCMAPI_THREADADDITEM (WM_APP+5)
+#define WM_MFCMAPI_UPDATESTATUSBAR (WM_APP+6)
+#define WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST (WM_APP+7)
 
 // Used by CSingleMAPIPropListCtrl and CSortHeader
-#define WM_MFCMAPI_SAVECOLUMNORDERHEADER WM_APP+10
-#define WM_MFCMAPI_SAVECOLUMNORDERLIST WM_APP+11
+#define WM_MFCMAPI_SAVECOLUMNORDERHEADER (WM_APP+10)
+#define WM_MFCMAPI_SAVECOLUMNORDERLIST (WM_APP+11)
 
 // Used by CContentsTableDlg
-#define WM_MFCMAPI_RESETCOLUMNS WM_APP+12
+#define WM_MFCMAPI_RESETCOLUMNS (WM_APP+12)
 
 // Definitions for WrapCompressedRTFStreamEx in param for WrapCompressedRTFStreamEX
 // http://msdn2.microsoft.com/en-us/library/bb905293.aspx
@@ -486,9 +486,9 @@ DECLARE_MAPI_INTERFACE_PTR(IExchangeManageStoreEx, LPEXCHANGEMANAGESTOREEX);
 
 #define CbNewROWLIST(_centries) (offsetof(ROWLIST,aEntries) + \
  (_centries)*sizeof(ROWENTRY))
-#define MAXNewROWLIST (ULONG_MAX-offsetof(ROWLIST,aEntries))/sizeof(ROWENTRY)
-#define MAXMessageClassArray (ULONG_MAX - offsetof(SMessageClassArray, aMessageClass))/sizeof(LPCSTR)
-#define MAXNewADRLIST (ULONG_MAX - offsetof(ADRLIST, aEntries))/sizeof(ADRENTRY)
+#define MAXNewROWLIST ((ULONG_MAX-offsetof(ROWLIST,aEntries))/sizeof(ROWENTRY))
+#define MAXMessageClassArray ((ULONG_MAX - offsetof(SMessageClassArray, aMessageClass))/sizeof(LPCSTR))
+#define MAXNewADRLIST ((ULONG_MAX - offsetof(ADRLIST, aEntries))/sizeof(ADRENTRY))
 
 const WORD TZRULE_FLAG_RECUR_CURRENT_TZREG = 0x0001; // see dispidApptTZDefRecur
 const WORD TZRULE_FLAG_EFFECTIVE_TZREG = 0x0002;

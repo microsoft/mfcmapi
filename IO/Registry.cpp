@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <IO/Registry.h>
 
 // Keep this in sync with REGKEYNAMES
@@ -41,15 +41,15 @@ __RegKeys RegKeys[] = {
 void SetDefaults()
 {
 	// Set some defaults to begin with:
-	for (auto i = 0; i < NUMRegKeys; i++)
+	for (auto& regKey : RegKeys)
 	{
-		if (RegKeys[i].ulRegKeyType == regDWORD)
+		if (regKey.ulRegKeyType == regDWORD)
 		{
-			RegKeys[i].ulCurDWORD = RegKeys[i].ulDefDWORD;
+			regKey.ulCurDWORD = regKey.ulDefDWORD;
 		}
-		else if (RegKeys[i].ulRegKeyType == regSTRING)
+		else if (regKey.ulRegKeyType == regSTRING)
 		{
-			RegKeys[i].szCurSTRING = RegKeys[i].szDefSTRING;
+			regKey.szCurSTRING = regKey.szDefSTRING;
 		}
 	}
 }
@@ -198,21 +198,21 @@ void ReadFromRegistry()
 	// Now that we have a root key, go get our values
 	if (hRootKey)
 	{
-		for (auto i = 0; i < NUMRegKeys; i++)
+		for (auto& regKey : RegKeys)
 		{
-			if (RegKeys[i].ulRegKeyType == regDWORD)
+			if (regKey.ulRegKeyType == regDWORD)
 			{
-				RegKeys[i].ulCurDWORD = ReadDWORDFromRegistry(
+				regKey.ulCurDWORD = ReadDWORDFromRegistry(
 					hRootKey,
-					RegKeys[i].szKeyName,
-					RegKeys[i].ulCurDWORD);
+					regKey.szKeyName,
+					regKey.ulCurDWORD);
 			}
-			else if (RegKeys[i].ulRegKeyType == regSTRING)
+			else if (regKey.ulRegKeyType == regSTRING)
 			{
-				RegKeys[i].szCurSTRING = ReadStringFromRegistry(
+				regKey.szCurSTRING = ReadStringFromRegistry(
 					hRootKey,
-					RegKeys[i].szKeyName,
-					RegKeys[i].szCurSTRING);
+					regKey.szKeyName,
+					regKey.szCurSTRING);
 			}
 		}
 
@@ -316,26 +316,26 @@ _Check_return_ HKEY CreateRootKey()
 void WriteToRegistry()
 {
 	auto hRes = S_OK;
-	auto hRootKey = CreateRootKey();
+	const auto hRootKey = CreateRootKey();
 
 	// Now that we have a root key, go set our values
-	for (auto i = 0; i < NUMRegKeys; i++)
+	for (auto& regKey : RegKeys)
 	{
-		if (RegKeys[i].ulRegKeyType == regDWORD)
+		if (regKey.ulRegKeyType == regDWORD)
 		{
 			CommitDWORDIfNeeded(
 				hRootKey,
-				RegKeys[i].szKeyName,
-				RegKeys[i].ulCurDWORD,
-				RegKeys[i].ulDefDWORD);
+				regKey .szKeyName,
+				regKey .ulCurDWORD,
+				regKey .ulDefDWORD);
 		}
-		else if (RegKeys[i].ulRegKeyType == regSTRING)
+		else if (regKey.ulRegKeyType == regSTRING)
 		{
 			CommitStringIfNeeded(
 				hRootKey,
-				RegKeys[i].szKeyName,
-				RegKeys[i].szCurSTRING,
-				RegKeys[i].szDefSTRING);
+				regKey .szKeyName,
+				regKey .szCurSTRING,
+				regKey .szDefSTRING);
 		}
 	}
 

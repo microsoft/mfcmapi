@@ -1,6 +1,6 @@
 #pragma once
-#include "SmartViewParser.h"
-#include "EntryIdStruct.h"
+#include <Interpret/SmartView/SmartViewParser.h>
+#include <Interpret/SmartView/EntryIdStruct.h>
 
 namespace smartview
 {

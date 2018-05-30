@@ -1,14 +1,14 @@
 #pragma once
-#include <WinNT.h>
-#include "SmartViewParser.h"
+#include <winnt.h>
+#include <Interpret/SmartView/SmartViewParser.h>
 
 namespace smartview
 {
 	struct SizedXID
 	{
-		BYTE XidSize;
-		GUID NamespaceGuid;
-		DWORD cbLocalId;
+		BYTE XidSize{};
+		GUID NamespaceGuid{};
+		DWORD cbLocalId{};
 		std::vector<BYTE> LocalID;
 	};
 

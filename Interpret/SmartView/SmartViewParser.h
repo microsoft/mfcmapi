@@ -1,5 +1,5 @@
 #pragma once
-#include "BinaryParser.h"
+#include <Interpret/SmartView/BinaryParser.h>
 
 #define _MaxBytes 0xFFFF
 #define _MaxDepth 50

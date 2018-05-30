@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "EntryIdStruct.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/EntryIdStruct.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/String.h>
 #include <Interpret/Guids.h>

@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "TaskAssigners.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/TaskAssigners.h>
 
 namespace smartview
 {

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <UI/FileDialogEx.h>
 
 namespace file
@@ -176,7 +176,7 @@ namespace file
 
 		ofn.lpstrDefExt = lpszDefExt.c_str();
 		ofn.Flags = dwFlags | OFN_ENABLEHOOK | OFN_EXPLORER;
-		ofn.hwndOwner = pParentWnd ? pParentWnd->m_hWnd : NULL;
+		ofn.hwndOwner = pParentWnd ? pParentWnd->m_hWnd : nullptr;
 
 		// zero out the file buffer for consistent parsing later
 		memset(ofn.lpstrFile, 0, ofn.nMaxFile);

@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "VerbStream.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/VerbStream.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/ExtraPropTags.h>
 

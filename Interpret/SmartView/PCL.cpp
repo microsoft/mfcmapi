@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "PCL.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/PCL.h>
 #include <Interpret/Guids.h>
 
 namespace smartview

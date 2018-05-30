@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "PropertyDefinitionStream.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/PropertyDefinitionStream.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 
@@ -151,7 +151,7 @@ namespace smartview
 	{
 		auto szVersion = interpretprop::InterpretFlags(flagPropDefVersion, m_wVersion);
 
-		std::wstring szPropertyDefinitionStream = strings::formatmessage(IDS_PROPDEFHEADER,
+		auto szPropertyDefinitionStream = strings::formatmessage(IDS_PROPDEFHEADER,
 			m_wVersion, szVersion.c_str(),
 			m_dwFieldDefinitionCount);
 

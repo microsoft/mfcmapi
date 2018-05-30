@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "ImportProcs.h"
+#include <StdAfx.h>
+#include <ImportProcs.h>
 #include <Interpret/String.h>
 
 HMODULE hModAclui = nullptr;

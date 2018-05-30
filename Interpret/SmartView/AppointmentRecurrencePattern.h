@@ -1,6 +1,6 @@
 #pragma once
-#include "SmartViewParser.h"
-#include "RecurrencePattern.h"
+#include <Interpret/SmartView/SmartViewParser.h>
+#include <Interpret/SmartView/RecurrencePattern.h>
 
 namespace smartview
 {

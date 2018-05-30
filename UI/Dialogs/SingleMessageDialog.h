@@ -1,7 +1,7 @@
 #pragma once
 class CContentsTableListCtrl;
 
-#include "BaseDialog.h"
+#include <UI/Dialogs/BaseDialog.h>
 
 namespace dialog
 {

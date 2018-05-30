@@ -1,8 +1,8 @@
-#include "stdafx.h"
-#include "CppUnitTest.h"
-#include "Interpret/SmartView/SmartView.h"
-#include "MFCMAPI.h"
-#include "resource.h"
+#include <StdAfx.h>
+#include <CppUnitTest.h>
+#include <Interpret/SmartView/SmartView.h>
+#include <MFCMAPI.h>
+#include <UnitTest/resource.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

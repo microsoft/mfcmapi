@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <Interpret/String.h>
 #include <locale>
 #include <sstream>

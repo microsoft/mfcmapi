@@ -1,5 +1,5 @@
 #pragma once
-#include "Guids.h"
+#include <Interpret/Guids.h>
 
 namespace guid
 {

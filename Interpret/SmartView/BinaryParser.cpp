@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "BinaryParser.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/BinaryParser.h>
 
 namespace smartview
 {

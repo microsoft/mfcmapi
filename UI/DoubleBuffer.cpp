@@ -1,4 +1,4 @@
-﻿#include "StdAfx.h"
+﻿#include <StdAfx.h>
 #include <UI/DoubleBuffer.h>
 
 CDoubleBuffer::CDoubleBuffer() : m_hdcMem(nullptr), m_hbmpMem(nullptr), m_hdcPaint(nullptr)

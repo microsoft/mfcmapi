@@ -1,13 +1,13 @@
 #pragma once
-#include "SmartViewParser.h"
+#include <Interpret/SmartView/SmartViewParser.h>
 
 namespace smartview
 {
 	// [MS-OXOTASK].pdf
 	struct TaskAssigner
 	{
-		DWORD cbAssigner;
-		ULONG cbEntryID;
+		DWORD cbAssigner{};
+		ULONG cbEntryID{};
 		std::vector<BYTE> lpEntryID;
 		std::string szDisplayName;
 		std::wstring wzDisplayName;
