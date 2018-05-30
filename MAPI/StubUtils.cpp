@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <windows.h>
+#include <Windows.h>
 #include <strsafe.h>
 #include <msi.h>
 #include <winreg.h>
@@ -30,9 +30,6 @@
  * (HKLM\Software\Clients\Mail). This call must be made prior to any MAPI
  * function calls.
  */
-HMODULE GetPrivateMAPI();
-void UnLoadPrivateMAPI();
-void ForceOutlookMAPI(bool fForce);
 
 std::vector<std::wstring> GetInstalledOutlookMAPI();
 
@@ -90,7 +87,7 @@ void SetMAPIHandle(HMODULE hinstMAPI)
 			g_hModPstPrx32 = nullptr;
 		}
 
-		hinstToFree = static_cast<HMODULE>(InterlockedExchangePointer(reinterpret_cast<PVOID volatile *>(&g_hinstMAPI), static_cast<PVOID>(hinstNULL)));
+		hinstToFree = static_cast<HMODULE>(InterlockedExchangePointer(const_cast<PVOID*>(reinterpret_cast<PVOID volatile *>(&g_hinstMAPI)), static_cast<PVOID>(hinstNULL)));
 	}
 	else
 	{
@@ -102,10 +99,10 @@ void SetMAPIHandle(HMODULE hinstMAPI)
 
 		// Code Analysis gives us a C28112 error when we use InterlockedCompareExchangePointer, so we instead exchange, check and exchange back
 		//hinstPrev = (HMODULE)InterlockedCompareExchangePointer(reinterpret_cast<volatile PVOID*>(&g_hinstMAPI), hinstMAPI, hinstNULL);
-		const auto hinstPrev = static_cast<HMODULE>(InterlockedExchangePointer(reinterpret_cast<PVOID volatile *>(&g_hinstMAPI), static_cast<PVOID>(hinstMAPI)));
+		const auto hinstPrev = static_cast<HMODULE>(InterlockedExchangePointer(const_cast<PVOID*>(reinterpret_cast<PVOID volatile *>(&g_hinstMAPI)), static_cast<PVOID>(hinstMAPI)));
 		if (nullptr != hinstPrev)
 		{
-			(void)InterlockedExchangePointer(reinterpret_cast<PVOID volatile *>(&g_hinstMAPI), static_cast<PVOID>(hinstPrev));
+			(void)InterlockedExchangePointer(const_cast<PVOID*>(reinterpret_cast<PVOID volatile *>(&g_hinstMAPI)), static_cast<PVOID>(hinstPrev));
 			hinstToFree = hinstMAPI;
 		}
 
