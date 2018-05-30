@@ -695,7 +695,7 @@ namespace strings
 
 		if (S_OK == hRes)
 		{
-			int iRet = 0;
+			auto iRet = 0;
 			wchar_t szTimeStr[MAX_PATH] = { 0 };
 			wchar_t szDateStr[MAX_PATH] = { 0 };
 

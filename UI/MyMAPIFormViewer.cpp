@@ -696,7 +696,7 @@ _Check_return_ HRESULT CMyMAPIFormViewer::GetNextMessage(
 			const auto lpEID = lpData->Contents()->m_lpEntryID;
 			if (lpEID)
 			{
-				EC_H(CallOpenEntry(
+				EC_H(mapi::CallOpenEntry(
 					m_lpMDB,
 					nullptr,
 					nullptr,

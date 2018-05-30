@@ -511,7 +511,7 @@ namespace dialog
 						}
 					};
 
-					const auto lpTagsToExclude = GetExcludedTags(LPSPropTagArray(&excludeTags), m_lpContainer, m_bIsAB);
+					const auto lpTagsToExclude = mapi::GetExcludedTags(LPSPropTagArray(&excludeTags), m_lpContainer, m_bIsAB);
 
 					if (lpTagsToExclude)
 					{
@@ -519,7 +519,7 @@ namespace dialog
 						{
 							LPMESSAGE lpMessage = nullptr;
 
-							EC_H(CallOpenEntry(
+							EC_H(mapi::CallOpenEntry(
 								nullptr,
 								nullptr,
 								lpMAPISourceFolder,
@@ -705,7 +705,7 @@ namespace dialog
 
 			if (bMove)
 			{
-				EC_H(DeleteToDeletedItems(
+				EC_H(mapi::DeleteToDeletedItems(
 					lpMDB,
 					dynamic_cast<LPMAPIFOLDER>(m_lpContainer),
 					lpEIDs,
@@ -753,7 +753,7 @@ namespace dialog
 				const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
 				{
-					WC_H(CallOpenEntry(
+					WC_H(mapi::CallOpenEntry(
 						lpMDB,
 						nullptr,
 						nullptr,
@@ -958,11 +958,11 @@ namespace dialog
 			switch (wMenuSelect)
 			{
 			case ID_NEW_APPOINTMENT:
-				ulFolder = DEFAULT_CALENDAR;
+				ulFolder = mapi::DEFAULT_CALENDAR;
 				szClass = L"IPM.APPOINTMENT"; // STRING_OK
 				break;
 			case ID_NEW_CONTACT:
-				ulFolder = DEFAULT_CONTACTS;
+				ulFolder = mapi::DEFAULT_CONTACTS;
 				szClass = L"IPM.CONTACT"; // STRING_OK
 				break;
 			case ID_NEW_IPMNOTE:
@@ -972,11 +972,11 @@ namespace dialog
 				szClass = L"IPM.POST"; // STRING_OK
 				break;
 			case ID_NEW_TASK:
-				ulFolder = DEFAULT_TASKS;
+				ulFolder = mapi::DEFAULT_TASKS;
 				szClass = L"IPM.TASK"; // STRING_OK
 				break;
 			case ID_NEW_STICKYNOTE:
-				ulFolder = DEFAULT_NOTES;
+				ulFolder = mapi::DEFAULT_NOTES;
 				szClass = L"IPM.STICKYNOTE"; // STRING_OK
 				break;
 
@@ -985,7 +985,7 @@ namespace dialog
 			LPMAPIFOLDER lpSpecialFolder = nullptr;
 			if (ulFolder)
 			{
-				EC_H(OpenDefaultFolder(ulFolder, lpMDB, &lpSpecialFolder));
+				EC_H(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpSpecialFolder));
 				lpFolder = lpSpecialFolder;
 			}
 			else
@@ -1100,7 +1100,7 @@ namespace dialog
 						if (lpMAPIFormInfo)
 						{
 							EC_MAPI(HrGetOneProp(lpMAPIFormInfo, PR_MESSAGE_CLASS_W, &lpProp));
-							if (CheckStringProp(lpProp, PT_UNICODE))
+							if (mapi::CheckStringProp(lpProp, PT_UNICODE))
 							{
 								szClass = lpProp->Value.lpszW;
 							}
@@ -1290,7 +1290,7 @@ namespace dialog
 
 		if (lpData->Contents()->m_lpEntryID)
 		{
-			EC_H(ResendSingleMessage(
+			EC_H(mapi::ResendSingleMessage(
 				dynamic_cast<LPMAPIFOLDER>(m_lpContainer),
 				lpData->Contents()->m_lpEntryID,
 				m_hWnd));
@@ -1354,7 +1354,7 @@ namespace dialog
 				if (lpMessage)
 				{
 					DebugPrint(DBGGeneric, L"Calling RemoveOneOff on %p, %wsremoving property definition stream\n", lpMessage, MyData.GetCheck(0) ? L"" : L"not ");
-					EC_H(RemoveOneOff(
+					EC_H(mapi::RemoveOneOff(
 						lpMessage,
 						MyData.GetCheck(0)));
 
@@ -1801,7 +1801,7 @@ namespace dialog
 				hRes = S_OK;
 				const auto szTestSubject = strings::formatmessage(IDS_TESTSUBJECT, szSubject.c_str(), i);
 
-				EC_H(SendTestMessage(
+				EC_H(mapi::SendTestMessage(
 					lpMAPISession,
 					dynamic_cast<LPMAPIFOLDER>(m_lpContainer),
 					MyData.GetStringW(1),
@@ -2063,9 +2063,9 @@ namespace dialog
 					// Allocate and fill out properties:
 					lpspvSubject->ulPropTag = PR_SUBJECT;
 
-					if (CheckStringProp(&lpProps[frPR_SUBJECT], PT_TSTRING))
+					if (mapi::CheckStringProp(&lpProps[frPR_SUBJECT], PT_TSTRING))
 					{
-						EC_H(CopyString(
+						EC_H(mapi::CopyString(
 							&lpspvSubject->Value.LPSZ,
 							lpProps[frPR_SUBJECT].Value.LPSZ,
 							lpRes));

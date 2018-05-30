@@ -1,7 +1,8 @@
+
 // Routines used in dumping the contents of the Exchange store
 // in to a log file
 
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
@@ -100,12 +101,12 @@ namespace mapiprocessor
 			PR_DISPLAY_NAME);
 
 		OutputToFile(m_fMailboxTable, L"<mailbox prdisplayname=\"");
-		if (CheckStringProp(lpDisplayName, PT_TSTRING))
+		if (mapi::CheckStringProp(lpDisplayName, PT_TSTRING))
 		{
 			OutputToFile(m_fMailboxTable, strings::LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
 		}
 		OutputToFile(m_fMailboxTable, L"\" premailaddress=\"");
-		if (!CheckStringProp(lpEmailAddress, PT_TSTRING))
+		if (!mapi::CheckStringProp(lpEmailAddress, PT_TSTRING))
 		{
 			OutputToFile(m_fMailboxTable, strings::LPCTSTRToWstring(lpEmailAddress->Value.LPSZ));
 		}
@@ -114,7 +115,7 @@ namespace mapiprocessor
 		OutputSRowToFile(m_fMailboxTable, lpSRow, lpMDB);
 
 		// build a path for our store's folder output:
-		if (CheckStringProp(lpEmailAddress, PT_TSTRING) && CheckStringProp(lpDisplayName, PT_TSTRING))
+		if (mapi::CheckStringProp(lpEmailAddress, PT_TSTRING) && mapi::CheckStringProp(lpDisplayName, PT_TSTRING))
 		{
 			const auto szTemp = strings::SanitizeFileName(strings::LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
 
@@ -170,7 +171,7 @@ namespace mapiprocessor
 		LPSPropValue lpAllProps = nullptr;
 		ULONG cValues = 0L;
 
-		WC_H_GETPROPS(GetPropsNULL(m_lpFolder,
+		WC_H_GETPROPS(mapi::GetPropsNULL(m_lpFolder,
 			fMapiUnicode,
 			&cValues,
 			&lpAllProps));
@@ -248,14 +249,14 @@ namespace mapiprocessor
 		// Get required properties from the message
 		auto lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT_W);
 		std::wstring szSubj;
-		if (lpTemp && CheckStringProp(lpTemp, PT_UNICODE))
+		if (lpTemp && mapi::CheckStringProp(lpTemp, PT_UNICODE))
 		{
 			szSubj = lpTemp->Value.lpszW;
 		}
 		else
 		{
 			lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT_A);
-			if (lpTemp && CheckStringProp(lpTemp, PT_STRING8))
+			if (lpTemp && mapi::CheckStringProp(lpTemp, PT_STRING8))
 			{
 				szSubj = strings::stringTowstring(lpTemp->Value.lpszA);
 			}
@@ -270,7 +271,7 @@ namespace mapiprocessor
 
 		const auto lpMessageClass = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, CHANGE_PROP_TYPE(PR_MESSAGE_CLASS, PT_UNSPECIFIED));
 
-		wprintf(L"\"%ws\"", szSubj.c_str());
+		wprintf(L"\"%ls\"", szSubj.c_str());
 		if (lpMessageClass)
 		{
 			if (PT_STRING8 == PROP_TYPE(lpMessageClass->ulPropTag))
@@ -279,7 +280,7 @@ namespace mapiprocessor
 			}
 			else if (PT_UNICODE == PROP_TYPE(lpMessageClass->ulPropTag))
 			{
-				wprintf(L",\"%ws\"", lpMessageClass->Value.lpszW ? lpMessageClass->Value.lpszW : L"");
+				wprintf(L",\"%ls\"", lpMessageClass->Value.lpszW ? lpMessageClass->Value.lpszW : L"");
 			}
 		}
 
@@ -287,7 +288,7 @@ namespace mapiprocessor
 		if (bOutputMSG) szExt = L".msg"; // STRING_OK
 
 		auto szFileName = file::BuildFileNameAndPath(szExt, szSubj, szFolderPath, lpRecordKey);
-		wprintf(L",\"%ws\"\n", szFileName.c_str());
+		wprintf(L",\"%ls\"\n", szFileName.c_str());
 	}
 
 	bool CDumpStore::DoContentsTablePerRowWork(_In_ const _SRow* lpSRow, ULONG ulCurRow)
@@ -352,7 +353,7 @@ namespace mapiprocessor
 					if (bWrapEx)
 					{
 						ULONG ulStreamFlags = NULL;
-						WC_H(WrapStreamForRTF(
+						WC_H(mapi::WrapStreamForRTF(
 							lpStream,
 							true,
 							MAPI_NATIVE_BODY,
@@ -366,7 +367,7 @@ namespace mapiprocessor
 					}
 					else
 					{
-						WC_H(WrapStreamForRTF(
+						WC_H(mapi::WrapStreamForRTF(
 							lpStream,
 							false,
 							NULL,
@@ -422,7 +423,7 @@ namespace mapiprocessor
 		ULONG cValues = 0L;
 
 		// Get all props, asking for UNICODE string properties
-		WC_H_GETPROPS(GetPropsNULL(lpMessage,
+		WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage,
 			MAPI_UNICODE,
 			&cValues,
 			&lpAllProps));
@@ -431,7 +432,7 @@ namespace mapiprocessor
 			// Didn't like MAPI_UNICODE - fall back
 			hRes = S_OK;
 
-			WC_H_GETPROPS(GetPropsNULL(lpMessage,
+			WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage,
 				NULL,
 				&cValues,
 				&lpAllProps));
@@ -464,14 +465,14 @@ namespace mapiprocessor
 			LPSBinary lpRecordKey = nullptr;
 
 			auto lpTemp = PpropFindProp(lpAllProps, cValues, PR_SUBJECT_W);
-			if (lpTemp && CheckStringProp(lpTemp, PT_UNICODE))
+			if (lpTemp && mapi::CheckStringProp(lpTemp, PT_UNICODE))
 			{
 				szSubj = lpTemp->Value.lpszW;
 			}
 			else
 			{
 				lpTemp = PpropFindProp(lpAllProps, cValues, PR_SUBJECT_A);
-				if (lpTemp && CheckStringProp(lpTemp, PT_STRING8))
+				if (lpTemp && mapi::CheckStringProp(lpTemp, PT_STRING8))
 				{
 					szSubj = strings::stringTowstring(lpTemp->Value.lpszA);
 				}
@@ -515,7 +516,7 @@ namespace mapiprocessor
 						},
 					};
 
-					for (unsigned long column : sptCols.aulPropTag)
+					for (auto column : sptCols.aulPropTag)
 					{
 						const auto lpTemp = PpropFindProp(lpAllProps, cValues, column);
 						if (lpTemp)
@@ -596,7 +597,7 @@ namespace mapiprocessor
 
 		if (cProps == 2 && lpsProps)
 		{
-			if (CheckStringProp(&lpsProps[msgPR_SUBJECT_W], PT_UNICODE))
+			if (mapi::CheckStringProp(&lpsProps[msgPR_SUBJECT_W], PT_UNICODE))
 			{
 				szSubj = lpsProps[msgPR_SUBJECT_W].Value.lpszW;
 			}
@@ -696,7 +697,7 @@ namespace mapiprocessor
 			lpSRow->cValues,
 			PR_ATTACH_FILENAME);
 
-		if (!lpAttachName || !CheckStringProp(lpAttachName, PT_TSTRING))
+		if (!lpAttachName || !mapi::CheckStringProp(lpAttachName, PT_TSTRING))
 		{
 			lpAttachName = PpropFindProp(
 				lpSRow->lpProps,
@@ -704,7 +705,7 @@ namespace mapiprocessor
 				PR_DISPLAY_NAME);
 		}
 
-		if (lpAttachName && CheckStringProp(lpAttachName, PT_TSTRING))
+		if (lpAttachName && mapi::CheckStringProp(lpAttachName, PT_TSTRING))
 			OutputToFile(lpMsgData->fMessageProps, strings::LPCTSTRToWstring(lpAttachName->Value.LPSZ));
 		else
 			OutputToFile(lpMsgData->fMessageProps, L"PR_ATTACH_FILENAME not found");
@@ -721,7 +722,7 @@ namespace mapiprocessor
 			ULONG ulAllProps = 0;
 			LPSPropValue lpAllProps = nullptr;
 			// Let's get all props from the message and dump them.
-			WC_H_GETPROPS(GetPropsNULL(lpAttach,
+			WC_H_GETPROPS(mapi::GetPropsNULL(lpAttach,
 				fMapiUnicode,
 				&ulAllProps,
 				&lpAllProps));

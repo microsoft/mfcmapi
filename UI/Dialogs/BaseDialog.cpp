@@ -752,7 +752,7 @@ namespace dialog
 
 		if (MyEID.GetCheck(9) && lpEnteredEntryID)
 		{
-			(void)UnwrapContactEntryID(static_cast<ULONG>(cbBin), reinterpret_cast<LPBYTE>(lpEnteredEntryID), reinterpret_cast<ULONG*>(&cbBin), reinterpret_cast<LPBYTE*>(&lpEntryID));
+			(void)mapi::UnwrapContactEntryID(static_cast<ULONG>(cbBin), reinterpret_cast<LPBYTE>(lpEnteredEntryID), reinterpret_cast<ULONG*>(&cbBin), reinterpret_cast<LPBYTE*>(&lpEntryID));
 		}
 		else
 		{
@@ -779,7 +779,7 @@ namespace dialog
 			LPUNKNOWN lpUnk = nullptr;
 			ULONG ulObjType = NULL;
 
-			EC_H(CallOpenEntry(
+			EC_H(mapi::CallOpenEntry(
 				MyEID.GetCheck(1) ? lpMDB : nullptr,
 				MyEID.GetCheck(2) ? lpAB : nullptr,
 				nullptr,
@@ -917,7 +917,7 @@ namespace dialog
 		size_t cbBin = NULL;
 		EC_H(MyStoreEID.GetEntryID(0, MyStoreEID.GetCheck(1), &cbBin, &lpEntryID));
 
-		const auto dwHash = ComputeStoreHash(static_cast<ULONG>(cbBin), reinterpret_cast<LPBYTE>(lpEntryID), nullptr, MyStoreEID.GetStringW(2).c_str(), MyStoreEID.GetCheck(3));
+		const auto dwHash = mapi::ComputeStoreHash(static_cast<ULONG>(cbBin), reinterpret_cast<LPBYTE>(lpEntryID), nullptr, MyStoreEID.GetStringW(2).c_str(), MyStoreEID.GetCheck(3));
 		const auto szHash = strings::formatmessage(IDS_STOREHASHVAL, dwHash);
 
 		editor::CEditor Result(
@@ -1015,7 +1015,7 @@ namespace dialog
 				{
 					if (0 == MyData.GetDropDown(2) && lpMDB)
 					{
-						ForceRop(lpMDB);
+						mapi::ForceRop(lpMDB);
 					}
 				}
 				else // if we failed to advise, then we don't need the advise sink object

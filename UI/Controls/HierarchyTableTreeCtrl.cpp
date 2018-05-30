@@ -257,7 +257,7 @@ namespace controls
 		if (!m_lpContainer) return hRes;
 		m_lpContainer->AddRef();
 
-		m_ulContainerType = GetMAPIObjectType(lpMAPIContainer);
+		m_ulContainerType = mapi::GetMAPIObjectType(lpMAPIContainer);
 
 		WC_H(RefreshHierarchyTable());
 		if (MAPI_E_NOT_FOUND == hRes)
@@ -329,7 +329,7 @@ namespace controls
 		std::wstring szName;
 
 		// Shouldn't have to check lpRootName for non-NULL since CheckString does it, but prefast is complaining
-		if (lpRootName && CheckStringProp(lpRootName, PT_UNICODE))
+		if (lpRootName && mapi::CheckStringProp(lpRootName, PT_UNICODE))
 		{
 			szName = lpRootName->Value.lpszW;
 		}
@@ -394,7 +394,7 @@ namespace controls
 			lpsRow->lpProps,
 			lpsRow->cValues,
 			PR_DISPLAY_NAME_W);
-		if (CheckStringProp(lpName, PT_UNICODE))
+		if (mapi::CheckStringProp(lpName, PT_UNICODE))
 		{
 			szName = lpName->Value.lpszW;
 		}
@@ -485,7 +485,7 @@ namespace controls
 						if (lpMDB)
 						{
 							lpData->Node()->m_lpAdviseSink->SetAdviseTarget(lpMDB);
-							ForceRop(lpMDB);
+							mapi::ForceRop(lpMDB);
 						}
 					}
 
@@ -911,7 +911,7 @@ namespace controls
 				{
 					DebugPrint(DBGGeneric, L"\tCalling OpenEntry on address book with ulFlags = 0x%X\n", ulFlags);
 
-					WC_H(CallOpenEntry(
+					WC_H(mapi::CallOpenEntry(
 						nullptr,
 						lpAddrBook,
 						nullptr,
@@ -932,7 +932,7 @@ namespace controls
 					ulFlags = (mfcmapiREQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL) |
 						(m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES | MAPI_NO_CACHE : NULL);
 
-					WC_H(CallOpenEntry(
+					WC_H(mapi::CallOpenEntry(
 						lpMDB,
 						nullptr,
 						nullptr,
@@ -952,7 +952,7 @@ namespace controls
 		{
 			WARNHRESMSG(MAPI_E_CALL_FAILED, IDS_UNKNOWNCONTAINERTYPE);
 			hRes = S_OK;
-			WC_H(CallOpenEntry(
+			WC_H(mapi::CallOpenEntry(
 				nullptr,
 				nullptr,
 				m_lpContainer,
@@ -1142,7 +1142,7 @@ namespace controls
 				PR_DISPLAY_NAME_W);
 
 			std::wstring szText;
-			if (CheckStringProp(lpName, PT_UNICODE))
+			if (mapi::CheckStringProp(lpName, PT_UNICODE))
 			{
 				szText = lpName->Value.lpszW;
 			}

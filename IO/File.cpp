@@ -1,3 +1,4 @@
+
 #include <StdAfx.h>
 #include <IO/File.h>
 #include <Interpret/InterpretProp.h>
@@ -314,7 +315,7 @@ namespace file
 			&lpProps));
 
 		std::wstring subj;
-		if (CheckStringProp(&lpProps[ePR_SUBJECT_W], PT_UNICODE))
+		if (mapi::CheckStringProp(&lpProps[ePR_SUBJECT_W], PT_UNICODE))
 		{
 			subj = lpProps[ePR_SUBJECT_W].Value.lpszW;
 		}
@@ -515,7 +516,7 @@ namespace file
 
 		LPSRestriction lpRes = nullptr;
 		// Allocate and create our SRestriction
-		EC_H(CreatePropertyStringRestriction(
+		EC_H(mapi::CreatePropertyStringRestriction(
 			PR_SUBJECT_W,
 			restrictString,
 			FL_SUBSTRING | FL_IGNORECASE,
@@ -786,7 +787,7 @@ namespace file
 
 		if (SUCCEEDED(hRes) && lpMapiContainer != nullptr)
 		{
-			EC_H(CallOpenEntry(
+			EC_H(mapi::CallOpenEntry(
 				nullptr,
 				nullptr,
 				lpMapiContainer,
@@ -800,8 +801,8 @@ namespace file
 
 		if (SUCCEEDED(hRes) && lpMessage != nullptr)
 		{
-			const auto szSubj = CheckStringProp(lpSubject, PT_UNICODE) ? lpSubject->Value.lpszW : L"UnknownSubject";
-			const _SBinary* recordKey = lpRecordKey && lpRecordKey->ulPropTag == PR_RECORD_KEY ? &lpRecordKey->Value.bin : nullptr;
+			const auto szSubj = mapi::CheckStringProp(lpSubject, PT_UNICODE) ? lpSubject->Value.lpszW : L"UnknownSubject";
+			const auto recordKey = lpRecordKey && lpRecordKey->ulPropTag == PR_RECORD_KEY ? &lpRecordKey->Value.bin : nullptr;
 
 			auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szPathName, recordKey); // STRING_OK
 			if (!szFileName.empty())
@@ -856,7 +857,7 @@ namespace file
 				}
 			};
 
-			EC_H(CopyTo(
+			EC_H(mapi::CopyTo(
 				hWnd,
 				lpMessage,
 				pIMsg,
@@ -1320,15 +1321,15 @@ namespace file
 			auto szName = L"Unknown"; // STRING_OK
 
 			// Get a file name to use
-			if (CheckStringProp(&lpProps[ATTACH_LONG_FILENAME_W], PT_UNICODE))
+			if (mapi::CheckStringProp(&lpProps[ATTACH_LONG_FILENAME_W], PT_UNICODE))
 			{
 				szName = lpProps[ATTACH_LONG_FILENAME_W].Value.lpszW;
 			}
-			else if (CheckStringProp(&lpProps[ATTACH_FILENAME_W], PT_UNICODE))
+			else if (mapi::CheckStringProp(&lpProps[ATTACH_FILENAME_W], PT_UNICODE))
 			{
 				szName = lpProps[ATTACH_FILENAME_W].Value.lpszW;
 			}
-			else if (CheckStringProp(&lpProps[DISPLAY_NAME_W], PT_UNICODE))
+			else if (mapi::CheckStringProp(&lpProps[DISPLAY_NAME_W], PT_UNICODE))
 			{
 				szName = lpProps[DISPLAY_NAME_W].Value.lpszW;
 			}

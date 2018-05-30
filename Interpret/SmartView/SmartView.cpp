@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
@@ -279,7 +279,7 @@ namespace smartview
 
 				WC_MAPI(HrGetOneProp(lpMAPIProp, PR_SUBJECT_W, &lpPropSubject));
 
-				if (CheckStringProp(lpPropSubject, PT_UNICODE) && 0 == wcscmp(lpPropSubject->Value.lpszW, L"IPM.Configuration.Autocomplete"))
+				if (mapi::CheckStringProp(lpPropSubject, PT_UNICODE) && 0 == wcscmp(lpPropSubject->Value.lpszW, L"IPM.Configuration.Autocomplete"))
 				{
 					iStructType = IDS_STNICKNAMECACHE;
 				}
@@ -449,10 +449,10 @@ namespace smartview
 		switch (iStructType)
 		{
 		case IDS_STDECODEENTRYID:
-			szResultString = DecodeID(myBin.cb, myBin.lpb);
+			szResultString = mapi::DecodeID(myBin.cb, myBin.lpb);
 			break;
 		case IDS_STENCODEENTRYID:
-			szResultString = EncodeID(myBin.cb, reinterpret_cast<LPENTRYID>(myBin.lpb));
+			szResultString = mapi::EncodeID(myBin.cb, reinterpret_cast<LPENTRYID>(myBin.lpb));
 			break;
 		}
 
@@ -514,7 +514,7 @@ namespace smartview
 	_Check_return_ ULONGLONG UllGetIdGlobcnt(ID id)
 	{
 		ULONGLONG ul = 0;
-		for (unsigned char i : id.globcnt)
+		for (auto i : id.globcnt)
 		{
 			ul <<= 8;
 			ul += i;

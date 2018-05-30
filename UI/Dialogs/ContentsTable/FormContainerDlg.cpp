@@ -117,7 +117,7 @@ namespace dialog
 					{
 						ULONG ulPropVals = NULL;
 						LPSPropValue lpPropVals = nullptr;
-						EC_H_GETPROPS(GetPropsNULL(lpMAPIFormInfoArray->aFormInfo[i], fMapiUnicode, &ulPropVals, &lpPropVals));
+						EC_H_GETPROPS(mapi::GetPropsNULL(lpMAPIFormInfoArray->aFormInfo[i], fMapiUnicode, &ulPropVals, &lpPropVals));
 						if (lpPropVals)
 						{
 							SRow sRow = { 0 };
@@ -155,7 +155,7 @@ namespace dialog
 				lpListData->lpSourceProps,
 				lpListData->cSourceProps,
 				PR_MESSAGE_CLASS_A); // ResolveMessageClass requires an ANSI string
-			if (CheckStringProp(lpProp, PT_STRING8))
+			if (mapi::CheckStringProp(lpProp, PT_STRING8))
 			{
 				LPMAPIFORMINFO lpFormInfoProp = nullptr;
 				EC_MAPI(m_lpFormContainer->ResolveMessageClass(
@@ -187,7 +187,7 @@ namespace dialog
 				lpListData->lpSourceProps,
 				lpListData->cSourceProps,
 				PR_MESSAGE_CLASS_A); // RemoveForm requires an ANSI string
-			if (CheckStringProp(lpProp, PT_STRING8))
+			if (mapi::CheckStringProp(lpProp, PT_STRING8))
 			{
 				DebugPrintEx(
 					DBGDeleteSelectedItem,

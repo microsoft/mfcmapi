@@ -33,7 +33,7 @@ namespace dialog
 			if (lpAddrBook)
 			{
 				// Open root address book (container).
-				EC_H(CallOpenEntry(
+				EC_H(mapi::CallOpenEntry(
 					NULL, lpAddrBook, NULL, NULL,
 					nullptr,
 					NULL,

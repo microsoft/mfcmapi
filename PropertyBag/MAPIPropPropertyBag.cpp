@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include "MAPIPropPropertyBag.h"
+#include <PropertyBag/MAPIPropPropertyBag.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/SortListData.h>
@@ -72,7 +72,7 @@ namespace propertybag
 
 		if (!RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD)
 		{
-			hRes = GetPropsNULL(m_lpProp,
+			hRes = mapi::GetPropsNULL(m_lpProp,
 				fMapiUnicode,
 				lpcValues,
 				lppPropArray);
@@ -123,7 +123,7 @@ namespace propertybag
 		if (nullptr == m_lpProp) return S_OK;
 
 		auto hRes = S_OK;
-		WC_MAPI(HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, lppProp));
+		WC_MAPI(mapi::HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, lppProp));
 
 		// Special case for profile sections and row properties - we may have a property which was in our row that isn't available on the object
 		// In that case, we'll get MAPI_E_NOT_FOUND, but the property will be present in m_lpListData->lpSourceProps
@@ -180,15 +180,15 @@ namespace propertybag
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
-		const auto hRes = DeleteProperty(m_lpProp, ulPropTag);
+		const auto hRes = mapi::DeleteProperty(m_lpProp, ulPropTag);
 		if (hRes == MAPI_E_NOT_FOUND && PROP_TYPE(ulPropTag) == PT_ERROR)
 		{
 			// We failed to delete a property without giving a type.
 			// If the original type was error, it was quite likely a stream property.
 			// Let's guess some common stream types.
-			if (SUCCEEDED(DeleteProperty(m_lpProp, CHANGE_PROP_TYPE(ulPropTag, PT_BINARY)))) return S_OK;
-			if (SUCCEEDED(DeleteProperty(m_lpProp, CHANGE_PROP_TYPE(ulPropTag, PT_UNICODE)))) return S_OK;
-			if (SUCCEEDED(DeleteProperty(m_lpProp, CHANGE_PROP_TYPE(ulPropTag, PT_STRING8)))) return S_OK;
+			if (SUCCEEDED(mapi::DeleteProperty(m_lpProp, CHANGE_PROP_TYPE(ulPropTag, PT_BINARY)))) return S_OK;
+			if (SUCCEEDED(mapi::DeleteProperty(m_lpProp, CHANGE_PROP_TYPE(ulPropTag, PT_UNICODE)))) return S_OK;
+			if (SUCCEEDED(mapi::DeleteProperty(m_lpProp, CHANGE_PROP_TYPE(ulPropTag, PT_STRING8)))) return S_OK;
 		}
 
 		return hRes;

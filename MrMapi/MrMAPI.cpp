@@ -443,9 +443,9 @@ void DisplayUsage(BOOL bFull)
 		printf("\n");
 		printf("Folders:\n");
 		// Print Folders
-		for (ULONG i = 1; i < NUM_DEFAULT_PROPS; i++)
+		for (ULONG i = 1; i < mapi::NUM_DEFAULT_PROPS; i++)
 		{
-			printf("   %2lu %ws\n", i, FolderNames[i]);
+			printf("   %2lu %ws\n", i, mapi::FolderNames[i]);
 		}
 
 		printf("\n");
@@ -618,7 +618,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 	LPSTR szEndPtr = nullptr;
 
 	pRunOpts->ulTypeNum = ulNoMatch;
-	pRunOpts->ulFolder = DEFAULT_INBOX;
+	pRunOpts->ulFolder = mapi::DEFAULT_INBOX;
 
 	if (!pRunOpts) return false;
 	if (1 == argc) return false;
@@ -667,7 +667,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			if (!pRunOpts->ulFolder)
 			{
 				pRunOpts->lpszFolderPath = strings::LPCSTRToWstring(argv[i + 1]);
-				pRunOpts->ulFolder = DEFAULT_INBOX;
+				pRunOpts->ulFolder = mapi::DEFAULT_INBOX;
 			}
 			i++;
 			break;

@@ -43,7 +43,7 @@ namespace dialog
 		if (m_lpMessage)
 		{
 			// Get a property for the title bar
-			m_szTitle = GetTitle(m_lpMessage);
+			m_szTitle = mapi::GetTitle(m_lpMessage);
 		}
 
 		UpdateTitleBarText();

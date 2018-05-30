@@ -1455,7 +1455,7 @@ namespace dialog
 			if (S_OK == hRes)
 			{
 				auto bin = strings::HexStringToBin(BinEdit.GetStringW(0));
-				lpData->Binary()->m_NewBin.lpb = ByteVectorToMAPI(bin, m_lpNewEntryList);
+				lpData->Binary()->m_NewBin.lpb = mapi::ByteVectorToMAPI(bin, m_lpNewEntryList);
 				if (lpData->Binary()->m_NewBin.lpb)
 				{
 					lpData->Binary()->m_NewBin.cb = static_cast<ULONG>(bin.size());

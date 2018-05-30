@@ -145,9 +145,9 @@ namespace dialog
 		{
 			ULONG cb = 0;
 			LPBYTE lpb = nullptr;
-			if (UnwrapContactEntryID(lpEntryList->lpbin[0].cb, lpEntryList->lpbin[0].lpb, &cb, &lpb))
+			if (mapi::UnwrapContactEntryID(lpEntryList->lpbin[0].cb, lpEntryList->lpbin[0].lpb, &cb, &lpb))
 			{
-				EC_H(CallOpenEntry(
+				EC_H(mapi::CallOpenEntry(
 					NULL,
 					NULL,
 					NULL,

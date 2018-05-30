@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <MAPI/MAPIProcessor/MapiProcessor.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
@@ -125,7 +125,7 @@ namespace mapiprocessor
 
 					const auto lpEmailAddress = PpropFindProp(lpRows->aRow->lpProps, lpRows->aRow->cValues, PR_EMAIL_ADDRESS);
 
-					if (!CheckStringProp(lpEmailAddress, PT_TSTRING)) continue;
+					if (!mapi::CheckStringProp(lpEmailAddress, PT_TSTRING)) continue;
 
 					if (m_lpMDB)
 					{
@@ -300,10 +300,10 @@ namespace mapiprocessor
 								lpRows->aRow[ulRow].cValues,
 								PR_DISPLAY_NAME);
 
-							if (CheckStringProp(lpFolderDisplayName, PT_TSTRING))
+							if (mapi::CheckStringProp(lpFolderDisplayName, PT_TSTRING))
 							{
 								// Clean up the folder name before appending it to the offset
-								szSubFolderOffset = m_szFolderOffset + strings::SanitizeFileName(strings::LPCTSTRToWstring(lpFolderDisplayName->Value.LPSZ)) + L'\\'; // STRING_OK
+								szSubFolderOffset = m_szFolderOffset + strings::SanitizeFileName(strings::LPCTSTRToWstring(lpFolderDisplayName->Value.LPSZ)) + L"\\"; // STRING_OK
 							}
 							else
 							{
@@ -418,7 +418,7 @@ namespace mapiprocessor
 					if (!lpMsgEID) continue;
 
 					LPMESSAGE lpMessage = nullptr;
-					WC_H(CallOpenEntry(
+					WC_H(mapi::CallOpenEntry(
 						nullptr,
 						nullptr,
 						m_lpFolder,
@@ -646,7 +646,7 @@ namespace mapiprocessor
 			WC_H(MAPIAllocateBuffer(
 				static_cast<ULONG>(sizeof(SBinary)),
 				reinterpret_cast<LPVOID*>(&newNode.lpFolderEID)));
-			WC_H(CopySBinary(newNode.lpFolderEID, lpFolderEID, nullptr));
+			WC_H(mapi::CopySBinary(newNode.lpFolderEID, lpFolderEID, nullptr));
 		}
 
 		m_List.push_back(newNode);
@@ -666,10 +666,10 @@ namespace mapiprocessor
 		// loop over nodes until we open one or run out
 		while (!lpFolder && !m_List.empty())
 		{
-			FolderNode node = m_List.front();
+			auto node = m_List.front();
 			hRes = S_OK;
 
-			WC_H(CallOpenEntry(
+			WC_H(mapi::CallOpenEntry(
 				m_lpMDB,
 				nullptr,
 				nullptr,

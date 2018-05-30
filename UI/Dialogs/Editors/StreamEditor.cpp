@@ -317,7 +317,7 @@ namespace dialog
 			}
 			else if (lpTmpStream)
 			{
-				EC_H(WrapStreamForRTF(
+				EC_H(mapi::WrapStreamForRTF(
 					lpTmpStream,
 					m_bUseWrapEx,
 					ulRTFFlags,

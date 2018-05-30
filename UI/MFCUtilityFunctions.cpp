@@ -41,7 +41,7 @@ _Check_return_ HRESULT DisplayObject(
 	// If we weren't passed an object type, go get one - careful! Some objects lie!
 	if (!ulObjType)
 	{
-		ulObjType = GetMAPIObjectType(static_cast<LPMAPIPROP>(lpUnk));
+		ulObjType = mapi::GetMAPIObjectType(static_cast<LPMAPIPROP>(lpUnk));
 	}
 
 	auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);

@@ -21,7 +21,7 @@ namespace controls
 					reinterpret_cast<LPVOID*>(&m_lpEntryID)));
 
 				// Copy the data over
-				WC_H(CopySBinary(
+				WC_H(mapi::CopySBinary(
 					m_lpEntryID,
 					lpEntryID,
 					nullptr));
@@ -32,7 +32,7 @@ namespace controls
 				WC_H(MAPIAllocateBuffer(
 					static_cast<ULONG>(sizeof(SBinary)),
 					reinterpret_cast<LPVOID*>(&m_lpInstanceKey)));
-				WC_H(CopySBinary(
+				WC_H(mapi::CopySBinary(
 					m_lpInstanceKey,
 					lpInstanceKey,
 					nullptr));

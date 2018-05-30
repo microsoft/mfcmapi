@@ -1,10 +1,10 @@
-#include "StdAfx.h"
-#include "MrMAPI.h"
-#include "MMFolder.h"
+#include <StdAfx.h>
+#include <MrMapi/MrMAPI.h>
+#include <MrMapi/MMFolder.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/InterpretProp.h>
-#include "MMStore.h"
+#include <MrMapi/MMStore.h>
 #include <Interpret/String.h>
 
 // Search folder for entry ID of child folder by name.
@@ -184,9 +184,9 @@ static HRESULT HrLookupRootFolderW(
 		// Maybe one of our folder constants was passed.
 		// These are base 10.
 		const auto ulFolder = strings::wstringToUlong(lpszRootFolder, 10);
-		if (0 < ulFolder && ulFolder < NUM_DEFAULT_PROPS)
+		if (0 < ulFolder && ulFolder < mapi::NUM_DEFAULT_PROPS)
 		{
-			WC_H(GetDefaultFolderEID(ulFolder, lpMDB, lpcbeid, lppeid));
+			WC_H(mapi::GetDefaultFolderEID(ulFolder, lpMDB, lpcbeid, lppeid));
 			return hRes;
 		}
 

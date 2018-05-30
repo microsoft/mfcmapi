@@ -1,6 +1,6 @@
-#include "StdAfx.h"
-#include "MrMAPI.h"
-#include "MMFidMid.h"
+#include <StdAfx.h>
+#include <MrMapi/MrMAPI.h>
+#include <MrMapi/MMFidMid.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIProcessor/MapiProcessor.h>
 #include <Interpret/ExtraPropTags.h>
@@ -243,7 +243,7 @@ namespace mapiprocessor
 		if (lpMDB)
 		{
 			// Open root container.
-			WC_H(CallOpenEntry(
+			WC_H(mapi::CallOpenEntry(
 				lpMDB,
 				nullptr,
 				nullptr,

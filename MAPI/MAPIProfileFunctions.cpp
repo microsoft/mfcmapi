@@ -493,7 +493,7 @@ _Check_return_ HRESULT HrFindUnmarkedProvider(_In_ LPSERVICEADMIN lpServiceAdmin
 						ULONG ulPropVal = 0;
 						LPSPropValue lpsPropVal = nullptr;
 						EC_H_GETPROPS(lpSect->GetProps(&pTagArray, NULL, &ulPropVal, &lpsPropVal));
-						if (!(CheckStringProp(lpsPropVal, PROP_TYPE(PR_MARKER)) &&
+						if (!(mapi::CheckStringProp(lpsPropVal, PROP_TYPE(PR_MARKER)) &&
 							!strcmp(lpsPropVal->Value.lpszA, MARKER_STRING)))
 						{
 							// got an unmarked provider - this is our hit
@@ -989,7 +989,7 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _I
 			virtual HRESULT STDMETHODCALLTYPE OpenSection(LPMAPIUID, ULONG, LPPROFSECT*) = 0;
 		};
 
-		IOpenSectionHack** ppProfile = reinterpret_cast<IOpenSectionHack**>((reinterpret_cast<BYTE*>(lpServiceAdmin) + 0x48));
+		const auto ppProfile = reinterpret_cast<IOpenSectionHack**>((reinterpret_cast<BYTE*>(lpServiceAdmin) + 0x48));
 
 		// Now, we want to get open the Services Profile Section and store that
 		// interface with the Object

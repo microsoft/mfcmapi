@@ -312,7 +312,7 @@ std::string GetServerName(_In_ LPMAPISESSION lpSession)
 
 	WC_MAPI(HrGetOneProp(pGlobalProfSect, PR_PROFILE_HOME_SERVER, &lpServerName));
 
-	if (CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
+	if (mapi::CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
 	{
 		serverName = lpServerName->Value.lpszA;
 	}
@@ -718,7 +718,7 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 		{
 			EC_MAPI(HrGetOneProp(lpMailUser, PR_EMAIL_ADDRESS_W, &lpEmailAddress));
 
-			if (CheckStringProp(lpEmailAddress, PT_UNICODE))
+			if (mapi::CheckStringProp(lpEmailAddress, PT_UNICODE))
 			{
 				WC_H(OpenMailboxWithPrompt(
 					lpMAPISession,
@@ -840,7 +840,7 @@ _Check_return_ HRESULT OpenPublicMessageStore(
 		if (server.empty())
 		{
 			EC_MAPI(HrGetOneProp(lpPublicMDBNonAdmin, CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_STRING8), &lpServerName));
-			if (CheckStringProp(lpServerName, PT_STRING8))
+			if (mapi::CheckStringProp(lpServerName, PT_STRING8))
 			{
 				server = lpServerName->Value.lpszA;
 			}

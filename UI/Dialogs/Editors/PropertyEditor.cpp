@@ -243,7 +243,7 @@ namespace dialog
 			case PT_STRING8:
 				InitPane(0, viewpane::CountedTextPane::Create(IDS_ANSISTRING, false, IDS_CCH));
 				InitPane(1, viewpane::CountedTextPane::Create(IDS_BIN, false, IDS_CB));
-				if (m_lpsInputValue && CheckStringProp(m_lpsInputValue, PT_STRING8))
+				if (m_lpsInputValue && mapi::CheckStringProp(m_lpsInputValue, PT_STRING8))
 				{
 					auto lpszA = std::string(m_lpsInputValue->Value.lpszA);
 					SetStringA(0, lpszA);
@@ -265,7 +265,7 @@ namespace dialog
 			case PT_UNICODE:
 				InitPane(0, viewpane::CountedTextPane::Create(IDS_UNISTRING, false, IDS_CCH));
 				InitPane(1, viewpane::CountedTextPane::Create(IDS_BIN, false, IDS_CB));
-				if (m_lpsInputValue && CheckStringProp(m_lpsInputValue, PT_UNICODE))
+				if (m_lpsInputValue && mapi::CheckStringProp(m_lpsInputValue, PT_UNICODE))
 				{
 					auto lpszW = std::wstring(m_lpsInputValue->Value.lpszW);
 					SetStringW(0, lpszW);
@@ -541,13 +541,13 @@ namespace dialog
 					// We read strings out of the hex control in order to preserve any hex level tweaks the user
 					// may have done. The RichEdit control likes throwing them away.
 					bin = strings::HexStringToBin(GetStringW(1));
-					m_lpsOutputValue->Value.lpszA = reinterpret_cast<LPSTR>(ByteVectorToMAPI(bin, m_lpAllocParent));
+					m_lpsOutputValue->Value.lpszA = reinterpret_cast<LPSTR>(mapi::ByteVectorToMAPI(bin, m_lpAllocParent));
 					break;
 				case PT_UNICODE:
 					// We read strings out of the hex control in order to preserve any hex level tweaks the user
 					// may have done. The RichEdit control likes throwing them away.
 					bin = strings::HexStringToBin(GetStringW(1));
-					m_lpsOutputValue->Value.lpszW = reinterpret_cast<LPWSTR>(ByteVectorToMAPI(bin, m_lpAllocParent));
+					m_lpsOutputValue->Value.lpszW = reinterpret_cast<LPWSTR>(mapi::ByteVectorToMAPI(bin, m_lpAllocParent));
 					break;
 				case PT_SYSTIME:
 					m_lpsOutputValue->Value.ft.dwLowDateTime = strings::wstringToUlong(GetStringW(0), 16);
@@ -567,7 +567,7 @@ namespace dialog
 				case PT_BINARY:
 					// remember we already read szTmpString and ulStrLen and found ulStrLen was even
 					bin = strings::HexStringToBin(GetStringW(0));
-					m_lpsOutputValue->Value.bin.lpb = ByteVectorToMAPI(bin, m_lpAllocParent);
+					m_lpsOutputValue->Value.bin.lpb = mapi::ByteVectorToMAPI(bin, m_lpAllocParent);
 					m_lpsOutputValue->Value.bin.cb = static_cast<ULONG>(bin.size());
 					break;
 				default:

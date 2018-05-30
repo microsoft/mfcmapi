@@ -322,7 +322,7 @@ namespace dialog
 			&cbEID,
 			&lpEID));
 
-		EC_H(CallOpenEntry(
+		EC_H(mapi::CallOpenEntry(
 			nullptr,
 			lpAddrBook,
 			nullptr,
@@ -362,7 +362,7 @@ namespace dialog
 			&cbEID,
 			&lpEID));
 
-		EC_H(CallOpenEntry(
+		EC_H(mapi::CallOpenEntry(
 			nullptr,
 			lpAddrBook,
 			nullptr,
@@ -472,7 +472,7 @@ namespace dialog
 
 			if (lpEntryID)
 			{
-				EC_H(CallOpenEntry(
+				EC_H(mapi::CallOpenEntry(
 					nullptr,
 					nullptr,
 					nullptr,
@@ -487,7 +487,7 @@ namespace dialog
 				{
 					EC_MAPI(HrGetOneProp(lpIdentity, PR_EMAIL_ADDRESS_A, &lpMailboxName));
 
-					if (CheckStringProp(lpMailboxName, PT_STRING8))
+					if (mapi::CheckStringProp(lpMailboxName, PT_STRING8))
 					{
 						LPMDB lpAdminMDB = nullptr;
 						EC_H(OpenOtherUsersMailbox(
@@ -1440,7 +1440,7 @@ namespace dialog
 				}
 				else
 				{
-					EC_H(CallOpenEntry(
+					EC_H(mapi::CallOpenEntry(
 						nullptr,
 						nullptr,
 						nullptr,
@@ -1517,7 +1517,7 @@ namespace dialog
 		if (S_OK == hRes)
 		{
 			auto bBlocked = false;
-			EC_H(IsAttachmentBlocked(lpMAPISession, MyData.GetStringW(0).c_str(), &bBlocked));
+			EC_H(mapi::IsAttachmentBlocked(lpMAPISession, MyData.GetStringW(0).c_str(), &bBlocked));
 			if (SUCCEEDED(hRes))
 			{
 				editor::CEditor MyResult(
@@ -1849,8 +1849,8 @@ namespace dialog
 				auto fPrivateExchangeStore = false;
 				if (lpProviderUID)
 				{
-					fPublicExchangeStore = FExchangePublicStore(reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb));
-					fPrivateExchangeStore = FExchangePrivateStore(reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb));
+					fPublicExchangeStore = mapi::FExchangePublicStore(reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb));
+					fPrivateExchangeStore = mapi::FExchangePrivateStore(reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb));
 				}
 
 				auto fCached = false;
@@ -1864,7 +1864,7 @@ namespace dialog
 				// Get profile section
 				if (lpServiceUID)
 				{
-					WC_H(HrEmsmdbUIDFromStore(lpMAPISession,
+					WC_H(mapi::HrEmsmdbUIDFromStore(lpMAPISession,
 						reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
 						&emsmdbUID));
 					if (SUCCEEDED(hRes))
@@ -1943,10 +1943,10 @@ namespace dialog
 				DWORD dwSigHash = NULL;
 				if (lpMappingSig && PT_BINARY == PROP_TYPE(lpMappingSig->ulPropTag))
 				{
-					dwSigHash = ComputeStoreHash(lpMappingSig->Value.bin.cb, lpMappingSig->Value.bin.lpb, nullptr, nullptr, fPublicExchangeStore);
+					dwSigHash = mapi::ComputeStoreHash(lpMappingSig->Value.bin.cb, lpMappingSig->Value.bin.lpb, nullptr, nullptr, fPublicExchangeStore);
 				}
 
-				const auto dwEIDHash = ComputeStoreHash(lpItemEID->cb, lpItemEID->lpb, szPath, wzPath, fPublicExchangeStore);
+				const auto dwEIDHash = mapi::ComputeStoreHash(lpItemEID->cb, lpItemEID->lpb, szPath, wzPath, fPublicExchangeStore);
 
 				std::wstring szHash;
 				if (dwSigHash)

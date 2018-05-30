@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMStore.h>
 #include <MrMapi/MMFolder.h>
@@ -134,7 +134,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 		}
 		else
 		{
-			WC_H(OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
+			WC_H(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
 		}
 	}
 
@@ -219,7 +219,7 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 	}
 	else
 	{
-		WC_H_GETPROPS(GetPropsNULL(lpMAPIProp,
+		WC_H_GETPROPS(mapi::GetPropsNULL(lpMAPIProp,
 			fMapiUnicode,
 			&cValues,
 			&lpAllProps));

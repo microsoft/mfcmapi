@@ -73,7 +73,7 @@ CMySecInfo::CMySecInfo(_In_ LPMAPIPROP lpMAPIProp,
 	if (m_lpMAPIProp)
 	{
 		m_lpMAPIProp->AddRef();
-		const auto m_ulObjType = GetMAPIObjectType(m_lpMAPIProp);
+		const auto m_ulObjType = mapi::GetMAPIObjectType(m_lpMAPIProp);
 		switch (m_ulObjType)
 		{
 		case MAPI_STORE:
@@ -182,7 +182,7 @@ STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation
 
 	*ppSecurityDescriptor = nullptr;
 
-	EC_H(GetLargeBinaryProp(m_lpMAPIProp, m_ulPropTag, &lpsProp));
+	EC_H(mapi::GetLargeBinaryProp(m_lpMAPIProp, m_ulPropTag, &lpsProp));
 
 	if (lpsProp && PROP_TYPE(lpsProp->ulPropTag) == PT_BINARY && lpsProp->Value.bin.lpb)
 	{

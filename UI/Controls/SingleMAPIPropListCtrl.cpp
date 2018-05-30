@@ -567,7 +567,7 @@ namespace controls
 
 			DebugPrintEx(DBGGeneric, CLASS, L"AddPropsToExtraProps", L"adding prop array %p\n", lpPropsToAdd);
 
-			EC_H(ConcatSPropTagArrays(
+			EC_H(mapi::ConcatSPropTagArrays(
 				m_sptExtraProps,
 				lpPropsToAdd,
 				&lpNewExtraProps));
@@ -799,7 +799,7 @@ namespace controls
 
 					OutputToFile(fProps, g_szXMLHeader);
 					OutputToFile(fProps, L"<propertypane>\n");
-					for (int iRow = 0; iRow < iItemCount; iRow++)
+					for (auto iRow = 0; iRow < iItemCount; iRow++)
 					{
 						auto szTemp1 = GetItemText(iRow, pcPROPTAG);
 						auto szTemp2 = GetItemText(iRow, pcPROPTYPE);
@@ -1573,7 +1573,7 @@ namespace controls
 				}
 				break;
 				case 2:
-					EC_H(CopyPropertyAsStream(lpSourcePropObj, m_lpPropBag->GetMAPIProp(), ulSourceTag, ulTargetTag));
+					EC_H(mapi::CopyPropertyAsStream(lpSourcePropObj, m_lpPropBag->GetMAPIProp(), ulSourceTag, ulTargetTag));
 					break;
 				}
 			}
@@ -1602,7 +1602,7 @@ namespace controls
 
 			auto hRes = S_OK;
 
-			EC_H(CopyTo(
+			EC_H(mapi::CopyTo(
 				m_lpHostDlg->m_hWnd,
 				lpSourcePropObj,
 				m_lpPropBag->GetMAPIProp(),
@@ -1807,7 +1807,7 @@ namespace controls
 
 					if (S_OK == hRes)
 					{
-						EC_H(CallOpenEntry(
+						EC_H(mapi::CallOpenEntry(
 							NULL,
 							NULL,
 							cache::CGlobalCache::getInstance().GetSourceParentFolder(),
@@ -1820,7 +1820,7 @@ namespace controls
 
 						if (S_OK == hRes && MAPI_MESSAGE == ulObjType && lpSource)
 						{
-							EC_H(CopyNamedProps(
+							EC_H(mapi::CopyNamedProps(
 								lpSource,
 								&propSetGUID,
 								MyData.GetCheck(1),

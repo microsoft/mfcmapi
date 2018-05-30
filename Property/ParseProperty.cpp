@@ -167,7 +167,7 @@ namespace property
 				szAltTmp = strings::format(L"%I64d", lpProp->Value.li.QuadPart); // STRING_OK
 				break;
 			case PT_STRING8:
-				if (CheckStringProp(lpProp, PT_STRING8))
+				if (mapi::CheckStringProp(lpProp, PT_STRING8))
 				{
 					szTmp = strings::LPCSTRToWstring(lpProp->Value.lpszA);
 					bPropXMLSafe = false;
@@ -181,7 +181,7 @@ namespace property
 				}
 				break;
 			case PT_UNICODE:
-				if (CheckStringProp(lpProp, PT_UNICODE))
+				if (mapi::CheckStringProp(lpProp, PT_UNICODE))
 				{
 					szTmp = lpProp->Value.lpszW;
 					bPropXMLSafe = false;

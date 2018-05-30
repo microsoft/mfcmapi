@@ -40,7 +40,7 @@ namespace dialog
 		if (m_lpMailUser)
 		{
 			// Get a property for the title bar
-			m_szTitle = GetTitle(m_lpMailUser);
+			m_szTitle = mapi::GetTitle(m_lpMailUser);
 		}
 
 		UpdateTitleBarText();

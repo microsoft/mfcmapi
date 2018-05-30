@@ -115,7 +115,7 @@ namespace dialog
 			std::wstring szProp;
 
 			// This will iterate over all the special folders we know how to get.
-			for (ULONG i = DEFAULT_UNSPECIFIED + 1; i < NUM_DEFAULT_PROPS; i++)
+			for (ULONG i = mapi::DEFAULT_UNSPECIFIED + 1; i < mapi::NUM_DEFAULT_PROPS; i++)
 			{
 				auto hRes = S_OK;
 				ULONG cb = NULL;
@@ -127,10 +127,10 @@ namespace dialog
 					auto iCol = 1;
 					const int iRow = i - 1;
 
-					SetListString(ulListNum, iRow, iCol, FolderNames[i]);
+					SetListString(ulListNum, iRow, iCol, mapi::FolderNames[i]);
 					iCol++;
 
-					WC_H(GetDefaultFolderEID(i, m_lpMDB, &cb, &lpeid));
+					WC_H(mapi::GetDefaultFolderEID(i, m_lpMDB, &cb, &lpeid));
 					if (SUCCEEDED(hRes))
 					{
 						SPropValue eid = { 0 };
@@ -142,7 +142,7 @@ namespace dialog
 						iCol++;
 
 						LPMAPIFOLDER lpFolder = nullptr;
-						WC_H(CallOpenEntry(m_lpMDB, NULL, NULL, NULL, cb, lpeid, NULL, NULL, NULL, reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
+						WC_H(mapi::CallOpenEntry(m_lpMDB, NULL, NULL, NULL, cb, lpeid, NULL, NULL, NULL, reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
 						if (SUCCEEDED(hRes) && lpFolder)
 						{
 							ULONG ulProps = 0;
@@ -221,8 +221,8 @@ namespace dialog
 				// We skip the first column, which is just the index
 				for (ULONG i = 1; i < g_ulsfCol; i++)
 				{
-					const std::wstring szLabel = strings::loadstring(g_sfCol[i].ulID);
-					const std::wstring szData = listPane->GetItemText(iItem, i);
+					const auto szLabel = strings::loadstring(g_sfCol[i].ulID);
+					const auto szData = listPane->GetItemText(iItem, i);
 					szTmp += szLabel + L": " + szData + L"\n";
 				}
 			}

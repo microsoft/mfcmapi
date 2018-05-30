@@ -1,6 +1,6 @@
 // Collection of useful MAPI Address Book functions
 
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <MAPI/MAPIABFunctions.h>
 #include <MAPI/MAPIFunctions.h>
 
@@ -277,7 +277,7 @@ _Check_return_ HRESULT GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_
 	if (!lpAdrBook) return MAPI_E_INVALID_PARAMETER;
 
 	// Open root address book (container).
-	EC_H(CallOpenEntry(
+	EC_H(mapi::CallOpenEntry(
 		nullptr,
 		lpAdrBook,
 		nullptr,
@@ -326,8 +326,10 @@ _Check_return_ HRESULT ManualResolve(
 	static const SizedSPropTagArray(abcNUM_COLS, abcCols) =
 	{
 	abcNUM_COLS,
-	PR_ENTRYID,
-	PR_DISPLAY_NAME,
+		{
+			PR_ENTRYID,
+			PR_DISPLAY_NAME
+		},
 	};
 
 	enum
@@ -379,7 +381,7 @@ _Check_return_ HRESULT ManualResolve(
 
 				if (lpABContainer) lpABContainer->Release();
 				lpABContainer = nullptr;
-				EC_H(CallOpenEntry(
+				EC_H(mapi::CallOpenEntry(
 					nullptr,
 					lpAdrBook,
 					nullptr,
@@ -402,7 +404,6 @@ _Check_return_ HRESULT ManualResolve(
 					if (!pTable)
 					{
 						DebugPrint(DBGGeneric, L"ManualResolve: Container did not support contents table\n");
-						if (MAPI_E_NO_SUPPORT == hRes) hRes = S_OK;
 						continue;
 					}
 
@@ -437,12 +438,11 @@ _Check_return_ HRESULT ManualResolve(
 					lpAdrList->aEntries->cValues = 5;
 
 					// Fill out addresslist with required property values.
-					auto pProps = lpAdrList->aEntries->rgPropVals;
-					LPSPropValue pProp; // Just a pointer, do not free.
+					const auto pProps = lpAdrList->aEntries->rgPropVals;
 
-					pProp = &pProps[abPR_ENTRYID];
+					auto pProp = &pProps[abPR_ENTRYID]; // Just a pointer, do not free.
 					pProp->ulPropTag = PR_ENTRYID;
-					EC_H(CopySBinary(&pProp->Value.bin, &lpFoundRow[abPR_ENTRYID].Value.bin, lpAdrList));
+					EC_H(mapi::CopySBinary(&pProp->Value.bin, &lpFoundRow[abPR_ENTRYID].Value.bin, lpAdrList));
 
 					pProp = &pProps[abPR_RECIPIENT_TYPE];
 					pProp->ulPropTag = PR_RECIPIENT_TYPE;
@@ -451,9 +451,9 @@ _Check_return_ HRESULT ManualResolve(
 					pProp = &pProps[abPR_DISPLAY_NAME];
 					pProp->ulPropTag = PR_DISPLAY_NAME;
 
-					if (!CheckStringProp(&lpFoundRow[abPR_DISPLAY_NAME], PT_TSTRING)) continue;
+					if (!mapi::CheckStringProp(&lpFoundRow[abPR_DISPLAY_NAME], PT_TSTRING)) continue;
 
-					EC_H(CopyString(
+					EC_H(mapi::CopyString(
 						&pProp->Value.LPSZ,
 						lpFoundRow[abPR_DISPLAY_NAME].Value.LPSZ,
 						lpAdrList));
@@ -461,9 +461,9 @@ _Check_return_ HRESULT ManualResolve(
 					pProp = &pProps[abPR_ADDRTYPE];
 					pProp->ulPropTag = PR_ADDRTYPE;
 
-					if (!CheckStringProp(&lpFoundRow[abPR_ADDRTYPE], PT_TSTRING)) continue;
+					if (!mapi::CheckStringProp(&lpFoundRow[abPR_ADDRTYPE], PT_TSTRING)) continue;
 
-					EC_H(CopyString(
+					EC_H(mapi::CopyString(
 						&pProp->Value.LPSZ,
 						lpFoundRow[abPR_ADDRTYPE].Value.LPSZ,
 						lpAdrList));
@@ -521,12 +521,14 @@ _Check_return_ HRESULT SearchContentsTableForName(
 	const SizedSPropTagArray(abNUM_COLS, abCols) =
 	{
 	abNUM_COLS,
-	PR_ENTRYID,
-	PR_DISPLAY_NAME_W,
-	PR_RECIPIENT_TYPE,
-	PR_ADDRTYPE_W,
-	PR_DISPLAY_TYPE,
-	PropTagToCompare
+		{
+			PR_ENTRYID,
+			PR_DISPLAY_NAME_W,
+			PR_RECIPIENT_TYPE,
+			PR_ADDRTYPE_W,
+			PR_DISPLAY_TYPE,
+			PropTagToCompare
+		}
 	};
 
 	*lppPropsFound = nullptr;
@@ -573,7 +575,7 @@ _Check_return_ HRESULT SearchContentsTableForName(
 		// An error at this point is an error with the current entry, so we can continue this for statement
 		// Unless it's an allocation error. Those are bad.
 		if (PropTagToCompare == pRows->aRow->lpProps[abPropTagToCompare].ulPropTag &&
-			CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_UNICODE))
+			mapi::CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_UNICODE))
 		{
 			DebugPrint(DBGGeneric, L"SearchContentsTableForName: found \"%ws\"\n", pRows->aRow->lpProps[abPropTagToCompare].Value.lpszW);
 			if (szName == pRows->aRow->lpProps[abPropTagToCompare].Value.lpszW)
@@ -637,7 +639,7 @@ _Check_return_ HRESULT SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Out_opt_
 		{
 			ULONG ulObjType = NULL;
 
-			EC_H(CallOpenEntry(
+			EC_H(mapi::CallOpenEntry(
 				nullptr,
 				lpAdrBook,
 				nullptr,

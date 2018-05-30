@@ -316,7 +316,7 @@ namespace controls
 			if (bAddExtras)
 			{
 				// build an array with the source set and m_sptExtraColumnTags combined
-				EC_H(ConcatSPropTagArrays(
+				EC_H(mapi::ConcatSPropTagArrays(
 					m_sptExtraColumnTags,
 					lpFinalTagArray, // build on the final array we've computed thus far
 					&lpConcatTagArray));
@@ -462,7 +462,7 @@ namespace controls
 					const auto ulExtraColTag = m_sptExtraColumnTags->aulPropTag[ulExtraColRowNum];
 
 					ULONG ulCurTagArrayRow = 0;
-					if (FindPropInPropTagArray(lpCurColTagArray, ulExtraColTag, &ulCurTagArrayRow))
+					if (mapi::FindPropInPropTagArray(lpCurColTagArray, ulExtraColTag, &ulCurTagArrayRow))
 					{
 						hRes = S_OK;
 						EC_H(AddColumn(
@@ -1064,7 +1064,7 @@ namespace controls
 		{
 			*lppEntryIDs = nullptr;
 			auto hRes = S_OK;
-			const UINT iNumItems = GetSelectedCount();
+			const auto iNumItems = GetSelectedCount();
 
 			if (!iNumItems) return S_OK;
 			if (iNumItems > ULONG_MAX / sizeof(SBinary)) return MAPI_E_INVALID_PARAMETER;
@@ -1251,7 +1251,7 @@ namespace controls
 			case MAPI_ABCONT:
 			{
 				const auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
-				WC_H(CallOpenEntry(
+				WC_H(mapi::CallOpenEntry(
 					nullptr,
 					lpAB, // use AB
 					nullptr,
@@ -1274,7 +1274,7 @@ namespace controls
 					lpInterface = &IID_IMessageRaw;
 				}
 
-				WC_H(CallOpenEntry(
+				WC_H(mapi::CallOpenEntry(
 					lpMDB, // use MDB
 					nullptr,
 					nullptr,
@@ -1294,7 +1294,7 @@ namespace controls
 			default:
 			{
 				const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-				WC_H(CallOpenEntry(
+				WC_H(mapi::CallOpenEntry(
 					nullptr,
 					nullptr,
 					nullptr,
@@ -1388,22 +1388,22 @@ namespace controls
 						&& lpProps
 						&& m_ulDisplayNameColumn < cValues)
 					{
-						if (CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_STRING8))
+						if (mapi::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_STRING8))
 						{
 							szTitle = strings::stringTowstring(lpProps[m_ulDisplayNameColumn].Value.lpszA);
 						}
-						else if (CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_UNICODE))
+						else if (mapi::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_UNICODE))
 						{
 							szTitle = lpProps[m_ulDisplayNameColumn].Value.lpszW;
 						}
 						else
 						{
-							szTitle = GetTitle(lpMAPIProp);
+							szTitle = mapi::GetTitle(lpMAPIProp);
 						}
 					}
 					else if (lpMAPIProp)
 					{
-						szTitle = GetTitle(lpMAPIProp);
+						szTitle = mapi::GetTitle(lpMAPIProp);
 					}
 				}
 
@@ -1449,7 +1449,7 @@ namespace controls
 					if (lpMDB)
 					{
 						m_lpAdviseSink->SetAdviseTarget(lpMDB);
-						ForceRop(lpMDB);
+						mapi::ForceRop(lpMDB);
 					}
 				}
 			}

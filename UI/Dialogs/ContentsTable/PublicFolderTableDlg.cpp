@@ -91,7 +91,7 @@ namespace dialog
 
 			const auto szString = MyData.GetStringW(0);
 			// Allocate and create our SRestriction
-			EC_H(CreatePropertyStringRestriction(
+			EC_H(mapi::CreatePropertyStringRestriction(
 				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
 				szString,
 				MyData.GetHex(1),

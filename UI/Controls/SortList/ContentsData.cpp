@@ -32,7 +32,7 @@ namespace controls
 				EC_H(MAPIAllocateBuffer(
 					static_cast<ULONG>(sizeof(SBinary)),
 					reinterpret_cast<LPVOID*>(&m_lpInstanceKey)));
-				EC_H(CopySBinary(m_lpInstanceKey, &lpProp->Value.bin, m_lpInstanceKey));
+				EC_H(mapi::CopySBinary(m_lpInstanceKey, &lpProp->Value.bin, m_lpInstanceKey));
 			}
 
 			// Save the attachment number into lpData
@@ -88,7 +88,7 @@ namespace controls
 				EC_H(MAPIAllocateBuffer(
 					static_cast<ULONG>(sizeof(SBinary)),
 					reinterpret_cast<LPVOID*>(&m_lpEntryID)));
-				EC_H(CopySBinary(m_lpEntryID, &lpProp->Value.bin, m_lpEntryID));
+				EC_H(mapi::CopySBinary(m_lpEntryID, &lpProp->Value.bin, m_lpEntryID));
 			}
 
 			// Save the Longterm Entry ID into lpData
@@ -101,7 +101,7 @@ namespace controls
 				EC_H(MAPIAllocateBuffer(
 					static_cast<ULONG>(sizeof(SBinary)),
 					reinterpret_cast<LPVOID*>(&m_lpLongtermID)));
-				EC_H(CopySBinary(m_lpLongtermID, &lpProp->Value.bin, m_lpLongtermID));
+				EC_H(mapi::CopySBinary(m_lpLongtermID, &lpProp->Value.bin, m_lpLongtermID));
 			}
 
 			// Save the Service ID into lpData
@@ -115,7 +115,7 @@ namespace controls
 				EC_H(MAPIAllocateBuffer(
 					static_cast<ULONG>(sizeof(SBinary)),
 					reinterpret_cast<LPVOID*>(&m_lpServiceUID)));
-				EC_H(CopySBinary(m_lpServiceUID, &lpProp->Value.bin, m_lpServiceUID));
+				EC_H(mapi::CopySBinary(m_lpServiceUID, &lpProp->Value.bin, m_lpServiceUID));
 			}
 
 			// Save the Provider ID into lpData
@@ -129,7 +129,7 @@ namespace controls
 				EC_H(MAPIAllocateBuffer(
 					static_cast<ULONG>(sizeof(SBinary)),
 					reinterpret_cast<LPVOID*>(&m_lpProviderUID)));
-				EC_H(CopySBinary(m_lpProviderUID, &lpProp->Value.bin, m_lpProviderUID));
+				EC_H(mapi::CopySBinary(m_lpProviderUID, &lpProp->Value.bin, m_lpProviderUID));
 			}
 
 			// Save the DisplayName into lpData
@@ -137,7 +137,7 @@ namespace controls
 				lpsRowData->lpProps,
 				lpsRowData->cValues,
 				PR_DISPLAY_NAME_A); // We pull this properties for profiles, which do not support Unicode
-			if (CheckStringProp(lpProp, PT_STRING8))
+			if (mapi::CheckStringProp(lpProp, PT_STRING8))
 			{
 				m_szProfileDisplayName = lpProp->Value.lpszA;
 				DebugPrint(DBGGeneric, L"\tPR_DISPLAY_NAME_A = %hs\n", m_szProfileDisplayName.c_str());
@@ -148,7 +148,7 @@ namespace controls
 				lpsRowData->lpProps,
 				lpsRowData->cValues,
 				PR_EMAIL_ADDRESS);
-			if (CheckStringProp(lpProp, PT_TSTRING))
+			if (mapi::CheckStringProp(lpProp, PT_TSTRING))
 			{
 				m_szDN = strings::LPCTSTRToWstring(lpProp->Value.LPSZ);
 				DebugPrint(DBGGeneric, L"\tPR_EMAIL_ADDRESS = %ws\n", m_szDN.c_str());

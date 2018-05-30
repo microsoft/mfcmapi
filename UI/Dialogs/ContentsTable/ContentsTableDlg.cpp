@@ -103,7 +103,7 @@ namespace dialog
 		if (m_lpContainer)
 		{
 			// Get a property for the title bar
-			m_szTitle = GetTitle(m_lpContainer);
+			m_szTitle = mapi::GetTitle(m_lpContainer);
 
 			if (m_ulDisplayFlags & dfAssoc)
 			{
@@ -139,7 +139,7 @@ namespace dialog
 
 		if (m_lpContentsTableListCtrl && m_lpContentsTable)
 		{
-			const auto ulPropType = GetMAPIObjectType(m_lpContainer);
+			const auto ulPropType = mapi::GetMAPIObjectType(m_lpContainer);
 
 			// Pass the contents table to the list control, but don't render yet - call BuildUIForContentsTable from CreateDialogAndMenu for that
 			WC_H(m_lpContentsTableListCtrl->SetContentsTable(
@@ -299,7 +299,7 @@ namespace dialog
 		WC_H(SearchEditor.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			const _SRestriction* lpRes = SearchEditor.GetRestriction();
+			const auto lpRes = SearchEditor.GetRestriction();
 			if (lpRes)
 			{
 				m_lpContentsTableListCtrl->SetRestriction(lpRes);
@@ -348,7 +348,7 @@ namespace dialog
 
 			const auto szString = MyData.GetStringW(0);
 			// Allocate and create our SRestriction
-			EC_H(CreateRangeRestriction(
+			EC_H(mapi::CreateRangeRestriction(
 				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
 				szString,
 				nullptr,

@@ -43,12 +43,12 @@ namespace dialog
 			const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 			if (lpMDB)
 			{
-				m_szTitle = GetTitle(lpMDB);
+				m_szTitle = mapi::GetTitle(lpMDB);
 
 				if (!m_lpContainer)
 				{
 					// Open root container.
-					EC_H(CallOpenEntry(
+					EC_H(mapi::CallOpenEntry(
 						lpMDB,
 						NULL,
 						NULL,
@@ -160,7 +160,7 @@ namespace dialog
 		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		if (!lpMDB) return;
 
-		EC_H(OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
+		EC_H(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
 
 		if (lpFolder)
 		{
@@ -176,23 +176,23 @@ namespace dialog
 
 	void CMsgStoreDlg::OnDisplayInbox()
 	{
-		OnDisplaySpecialFolder(DEFAULT_INBOX);
+		OnDisplaySpecialFolder(mapi::DEFAULT_INBOX);
 	}
 
 	// See Q171670 INFO: Entry IDs of Outlook Special Folders for more info on these tags
 	void CMsgStoreDlg::OnDisplayCalendarFolder()
 	{
-		OnDisplaySpecialFolder(DEFAULT_CALENDAR);
+		OnDisplaySpecialFolder(mapi::DEFAULT_CALENDAR);
 	}
 
 	void CMsgStoreDlg::OnDisplayContactsFolder()
 	{
-		OnDisplaySpecialFolder(DEFAULT_CONTACTS);
+		OnDisplaySpecialFolder(mapi::DEFAULT_CONTACTS);
 	}
 
 	void CMsgStoreDlg::OnDisplayTasksFolder()
 	{
-		OnDisplaySpecialFolder(DEFAULT_TASKS);
+		OnDisplaySpecialFolder(mapi::DEFAULT_TASKS);
 	}
 
 	void CMsgStoreDlg::OnDisplayReceiveFolderTable()
@@ -353,7 +353,7 @@ namespace dialog
 
 		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		LPMAPIFOLDER lpSrcParentFolder = nullptr;
-		WC_H(GetParentFolder(lpMAPISourceFolder, lpMDB, &lpSrcParentFolder));
+		WC_H(mapi::GetParentFolder(lpMAPISourceFolder, lpMDB, &lpSrcParentFolder));
 
 		cache::CGlobalCache::getInstance().SetFolderToCopy(lpMAPISourceFolder, lpSrcParentFolder);
 
@@ -504,7 +504,7 @@ namespace dialog
 
 			if (lpProps)
 			{
-				if (CheckStringProp(&lpProps[NAME], PT_UNICODE))
+				if (mapi::CheckStringProp(&lpProps[NAME], PT_UNICODE))
 				{
 					DebugPrint(DBGGeneric, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
 					MyData.SetStringW(0, lpProps[NAME].Value.lpszW);
@@ -589,7 +589,7 @@ namespace dialog
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				EC_H(CopyFolderContents(
+				EC_H(mapi::CopyFolderContents(
 					lpMAPISourceFolder,
 					lpMAPIDestFolder,
 					MyData.GetCheck(0), // associated contents
@@ -632,7 +632,7 @@ namespace dialog
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				EC_H(CopyFolderRules(
+				EC_H(mapi::CopyFolderRules(
 					lpMAPISourceFolder,
 					lpMAPIDestFolder,
 					MyData.GetCheck(0))); // move
@@ -733,7 +733,7 @@ namespace dialog
 			if (lpMDB)
 			{
 				LPMAPIFOLDER lpMAPIFolder = nullptr;
-				WC_H(CallOpenEntry(
+				WC_H(mapi::CallOpenEntry(
 					lpMDB,
 					NULL,
 					NULL,
@@ -809,7 +809,7 @@ namespace dialog
 			{
 				if (MyData.GetCheck(2))
 				{
-					EC_H(ManuallyEmptyFolder(lpMAPIFolderToEmpty, MyData.GetCheck(0), MyData.GetCheck(1)));
+					EC_H(mapi::ManuallyEmptyFolder(lpMAPIFolderToEmpty, MyData.GetCheck(0), MyData.GetCheck(1)));
 				}
 				else
 				{
@@ -862,7 +862,7 @@ namespace dialog
 		if (lpFolderToDelete)
 		{
 			LPMAPIFOLDER lpParentFolder = nullptr;
-			EC_H(GetParentFolder(lpFolderToDelete, lpMDB, &lpParentFolder));
+			EC_H(mapi::GetParentFolder(lpFolderToDelete, lpMDB, &lpParentFolder));
 			if (lpParentFolder)
 			{
 				editor::CEditor MyData(
@@ -1055,7 +1055,7 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			EC_H(ResendMessages(lpMAPIFolder, m_hWnd));
+			EC_H(mapi::ResendMessages(lpMAPIFolder, m_hWnd));
 
 			lpMAPIFolder->Release();
 		}
@@ -1076,7 +1076,7 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			EC_H(ResetPermissionsOnItems(lpMDB, lpMAPIFolder));
+			EC_H(mapi::ResetPermissionsOnItems(lpMDB, lpMAPIFolder));
 			lpMAPIFolder->Release();
 		}
 	}
@@ -1113,7 +1113,7 @@ namespace dialog
 		if (lpSrcFolder)
 		{
 			LPMAPIFOLDER lpSrcParentFolder = nullptr;
-			WC_H(GetParentFolder(lpSrcFolder, lpMDB, &lpSrcParentFolder));
+			WC_H(mapi::GetParentFolder(lpSrcFolder, lpMDB, &lpSrcParentFolder));
 			hRes = S_OK;
 
 			// Get required properties from the source folder
@@ -1133,7 +1133,7 @@ namespace dialog
 
 			if (lpProps)
 			{
-				if (CheckStringProp(&lpProps[NAME], PT_UNICODE))
+				if (mapi::CheckStringProp(&lpProps[NAME], PT_UNICODE))
 				{
 					DebugPrint(DBGGeneric, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
 					MyData.SetStringW(0, lpProps[NAME].Value.lpszW);

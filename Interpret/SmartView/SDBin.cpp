@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "SDBin.h"
+#include <StdAfx.h>
+#include <Interpret/SmartView/SDBin.h>
 #include <Interpret/String.h>
 #include <UI/MySecInfo.h>
 #include <MAPI/MAPIFunctions.h>
@@ -40,7 +40,7 @@ namespace smartview
 		m_Parser.Advance(ulSDToParse);
 
 		auto acetype = acetypeMessage;
-		switch (GetMAPIObjectType(m_lpMAPIProp))
+		switch (mapi::GetMAPIObjectType(m_lpMAPIProp))
 		{
 		case MAPI_STORE:
 		case MAPI_ADDRBOOK:

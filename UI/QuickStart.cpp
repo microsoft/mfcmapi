@@ -84,7 +84,7 @@ void OnQSDisplayFolder(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ UL
 	if (lpMDB)
 	{
 		LPMAPIFOLDER lpFolder = nullptr;
-		WC_H(OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
+		WC_H(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
 
 		if (lpFolder)
 		{
@@ -112,7 +112,7 @@ void OnQSDisplayTable(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULO
 	{
 		LPMAPIFOLDER lpFolder = nullptr;
 
-		WC_H(OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
+		WC_H(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
 
 		if (lpFolder)
 		{
@@ -145,7 +145,7 @@ void OnQSDisplayDefaultDir(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			&cbEID,
 			&lpEID));
 
-		WC_H(CallOpenEntry(
+		WC_H(mapi::CallOpenEntry(
 			nullptr,
 			lpAdrBook,
 			nullptr,
@@ -205,7 +205,7 @@ void OnQSDisplayNicknameCache(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	if (lpMDB)
 	{
 		LPMAPIFOLDER lpFolder = nullptr;
-		WC_H(OpenDefaultFolder(DEFAULT_INBOX, lpMDB, &lpFolder));
+		WC_H(mapi::OpenDefaultFolder(mapi::DEFAULT_INBOX, lpMDB, &lpFolder));
 
 		if (lpFolder)
 		{
@@ -246,11 +246,11 @@ void OnQSDisplayNicknameCache(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 						if (lpRows && 1 == lpRows->cRows && PR_ENTRYID == lpRows->aRow[0].lpProps[eidPR_ENTRYID].ulPropTag)
 						{
 							LPMESSAGE lpMSG = nullptr;
-							WC_H(CallOpenEntry(lpMDB, nullptr, nullptr, nullptr, &lpRows->aRow[0].lpProps[eidPR_ENTRYID].Value.bin, nullptr, NULL, nullptr, reinterpret_cast<LPUNKNOWN*>(&lpMSG)));
+							WC_H(mapi::CallOpenEntry(lpMDB, nullptr, nullptr, nullptr, &lpRows->aRow[0].lpProps[eidPR_ENTRYID].Value.bin, nullptr, NULL, nullptr, reinterpret_cast<LPUNKNOWN*>(&lpMSG)));
 
 							if (SUCCEEDED(hRes) && lpMSG)
 							{
-								WC_H(GetLargeBinaryProp(lpMSG, PR_ROAMING_BINARYSTREAM, &lpsProp));
+								WC_H(mapi::GetLargeBinaryProp(lpMSG, PR_ROAMING_BINARYSTREAM, &lpsProp));
 
 								if (lpsProp)
 								{
@@ -480,7 +480,7 @@ void OnQSLookupThumbail(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 		if (SUCCEEDED(hRes) && lpMailUser)
 		{
-			WC_H(GetLargeBinaryProp(lpMailUser, PR_EMS_AB_THUMBNAIL_PHOTO, &lpThumbnail));
+			WC_H(mapi::GetLargeBinaryProp(lpMailUser, PR_EMS_AB_THUMBNAIL_PHOTO, &lpThumbnail));
 		}
 
 		if (lpMailUser) lpMailUser->Release();
@@ -519,29 +519,29 @@ bool HandleQuickStart(_In_ WORD wMenuSelect, _In_ dialog::CMainDlg* lpHostDlg, _
 {
 	switch (wMenuSelect)
 	{
-	case ID_QSINBOX: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_INBOX); return true;
-	case ID_QSCALENDAR: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_CALENDAR); return true;
-	case ID_QSCONTACTS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_CONTACTS); return true;
-	case ID_QSJOURNAL: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_JOURNAL); return true;
-	case ID_QSNOTES: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_NOTES); return true;
-	case ID_QSTASKS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_TASKS); return true;
-	case ID_QSREMINDERS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_REMINDERS); return true;
-	case ID_QSDRAFTS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_DRAFTS); return true;
-	case ID_QSSENTITEMS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_SENTITEMS); return true;
-	case ID_QSOUTBOX: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_OUTBOX); return true;
-	case ID_QSDELETEDITEMS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_DELETEDITEMS); return true;
-	case ID_QSFINDER: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_FINDER); return true;
-	case ID_QSIPM_SUBTREE: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_IPM_SUBTREE); return true;
-	case ID_QSLOCALFREEBUSY: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_LOCALFREEBUSY); return true;
-	case ID_QSCONFLICTS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_CONFLICTS); return true;
-	case ID_QSSYNCISSUES: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_SYNCISSUES); return true;
-	case ID_QSLOCALFAILURES: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_LOCALFAILURES); return true;
-	case ID_QSSERVERFAILURES: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_SERVERFAILURES); return true;
-	case ID_QSJUNKMAIL: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_JUNKMAIL); return true;
-	case ID_QSRULES: OnQSDisplayTable(lpHostDlg, hwnd, DEFAULT_INBOX, PR_RULES_TABLE, otRules); return true;
+	case ID_QSINBOX: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_INBOX); return true;
+	case ID_QSCALENDAR: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR); return true;
+	case ID_QSCONTACTS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_CONTACTS); return true;
+	case ID_QSJOURNAL: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_JOURNAL); return true;
+	case ID_QSNOTES: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_NOTES); return true;
+	case ID_QSTASKS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_TASKS); return true;
+	case ID_QSREMINDERS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_REMINDERS); return true;
+	case ID_QSDRAFTS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_DRAFTS); return true;
+	case ID_QSSENTITEMS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_SENTITEMS); return true;
+	case ID_QSOUTBOX: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_OUTBOX); return true;
+	case ID_QSDELETEDITEMS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_DELETEDITEMS); return true;
+	case ID_QSFINDER: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_FINDER); return true;
+	case ID_QSIPM_SUBTREE: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_IPM_SUBTREE); return true;
+	case ID_QSLOCALFREEBUSY: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_LOCALFREEBUSY); return true;
+	case ID_QSCONFLICTS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_CONFLICTS); return true;
+	case ID_QSSYNCISSUES: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_SYNCISSUES); return true;
+	case ID_QSLOCALFAILURES: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_LOCALFAILURES); return true;
+	case ID_QSSERVERFAILURES: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_SERVERFAILURES); return true;
+	case ID_QSJUNKMAIL: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_JUNKMAIL); return true;
+	case ID_QSRULES: OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_INBOX, PR_RULES_TABLE, otRules); return true;
 	case ID_QSDEFAULTDIR: OnQSDisplayDefaultDir(lpHostDlg, hwnd); return true;
 	case ID_QSAB: OnQSDisplayAB(lpHostDlg, hwnd); return true;
-	case ID_QSCALPERM: OnQSDisplayTable(lpHostDlg, hwnd, DEFAULT_CALENDAR, PR_ACL_TABLE, otACL); return true;
+	case ID_QSCALPERM: OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR, PR_ACL_TABLE, otACL); return true;
 	case ID_QSNICKNAME: OnQSDisplayNicknameCache(lpHostDlg, hwnd); return true;
 	case ID_QSQUOTA: OnQSDisplayQuota(lpHostDlg, hwnd); return true;
 	case ID_QSCHECKSPECIALFOLDERS: dialog::editor::OnQSCheckSpecialFolders(lpHostDlg, hwnd); return true;

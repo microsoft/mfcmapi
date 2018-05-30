@@ -1,9 +1,9 @@
 // Export profile to file
 
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <MAPI/MAPIProfileFunctions.h>
 #include <MAPI/MAPIFunctions.h>
-#include "Interpret/GUIDArray.h"
+#include <Interpret/GUIDArray.h>
 
 void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin)
 {
@@ -13,7 +13,7 @@ void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin
 	LPSPropValue lpAllProps = nullptr;
 	ULONG cValues = 0L;
 
-	WC_H_GETPROPS(GetPropsNULL(lpSect,
+	WC_H_GETPROPS(mapi::GetPropsNULL(lpSect,
 		fMapiUnicode,
 		&cValues,
 		&lpAllProps));
