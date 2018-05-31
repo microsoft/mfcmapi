@@ -11,7 +11,7 @@ namespace file
 		_In_opt_ CWnd* pParentWnd)
 	{
 		auto hRes = S_OK;
-		auto iDlgRet = IDOK;
+		auto iDlgRet = INT_PTR(IDOK);
 		CFileDialogExW dlgFilePicker;
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			true,
@@ -37,7 +37,7 @@ namespace file
 		_In_opt_ CWnd* pParentWnd)
 	{
 		auto hRes = S_OK;
-		auto iDlgRet = IDOK;
+		auto iDlgRet = INT_PTR(IDOK);
 		CFileDialogExW dlgFilePicker;
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			true,
@@ -63,7 +63,7 @@ namespace file
 		_In_opt_ CWnd* pParentWnd)
 	{
 		auto hRes = S_OK;
-		auto iDlgRet = IDOK;
+		auto iDlgRet = INT_PTR(IDOK);
 		CFileDialogExW dlgFilePicker;
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			false,

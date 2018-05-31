@@ -8,7 +8,7 @@ namespace dialog
 	{
 		CAboutDlg AboutDlg(lpParentWnd);
 		auto hRes = S_OK;
-		auto iDlgRet = 0;
+		auto iDlgRet = INT_PTR(0);
 
 		EC_D_DIALOG(AboutDlg.DoModal());
 	}

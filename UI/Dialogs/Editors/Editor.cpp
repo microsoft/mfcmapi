@@ -526,7 +526,7 @@ namespace dialog
 		_Check_return_ HRESULT CEditor::DisplayDialog()
 		{
 			auto hRes = S_OK;
-			auto iDlgRet = 0;
+			auto iDlgRet = INT_PTR(0);
 
 			EC_D_DIALOG(DoModal());
 
