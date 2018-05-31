@@ -2,7 +2,7 @@
 #include <UI/Dialogs/SingleRecipientDialog.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
-#include <UI/MFCUtilityFunctions.h>
+#include <UI/Dialogs/MFCUtilityFunctions.h>
 
 namespace dialog
 {

@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/MAPIFunctions.h>
-#include <UI/MFCUtilityFunctions.h>
+#include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
@@ -91,7 +91,7 @@ void OnQSDisplayFolder(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ UL
 			WC_H(DisplayObject(
 				lpFolder,
 				NULL,
-				otContents,
+				dialog::otContents,
 				lpHostDlg));
 
 			lpFolder->Release();
@@ -101,7 +101,7 @@ void OnQSDisplayFolder(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ UL
 	}
 }
 
-void OnQSDisplayTable(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder, _In_ ULONG ulProp, _In_ ObjectType tType)
+void OnQSDisplayTable(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder, _In_ ULONG ulProp, _In_ dialog::ObjectType tType)
 {
 	auto hRes = S_OK;
 
@@ -159,7 +159,7 @@ void OnQSDisplayDefaultDir(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 		if (lpDefaultDir)
 		{
-			WC_H(DisplayObject(lpDefaultDir, ulObjType, otDefault, lpHostDlg));
+			WC_H(DisplayObject(lpDefaultDir, ulObjType, dialog::otDefault, lpHostDlg));
 
 			lpDefaultDir->Release();
 		}
@@ -449,7 +449,7 @@ void OnQSOpenUser(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			EC_H(DisplayObject(
 				lpMailUser,
 				ulObjType,
-				otDefault,
+				dialog::otDefault,
 				lpHostDlg));
 		}
 
@@ -538,10 +538,10 @@ bool HandleQuickStart(_In_ WORD wMenuSelect, _In_ dialog::CMainDlg* lpHostDlg, _
 	case ID_QSLOCALFAILURES: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_LOCALFAILURES); return true;
 	case ID_QSSERVERFAILURES: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_SERVERFAILURES); return true;
 	case ID_QSJUNKMAIL: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_JUNKMAIL); return true;
-	case ID_QSRULES: OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_INBOX, PR_RULES_TABLE, otRules); return true;
+	case ID_QSRULES: OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_INBOX, PR_RULES_TABLE, dialog::otRules); return true;
 	case ID_QSDEFAULTDIR: OnQSDisplayDefaultDir(lpHostDlg, hwnd); return true;
 	case ID_QSAB: OnQSDisplayAB(lpHostDlg, hwnd); return true;
-	case ID_QSCALPERM: OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR, PR_ACL_TABLE, otACL); return true;
+	case ID_QSCALPERM: OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR, PR_ACL_TABLE, dialog::otACL); return true;
 	case ID_QSNICKNAME: OnQSDisplayNicknameCache(lpHostDlg, hwnd); return true;
 	case ID_QSQUOTA: OnQSDisplayQuota(lpHostDlg, hwnd); return true;
 	case ID_QSCHECKSPECIALFOLDERS: dialog::editor::OnQSCheckSpecialFolders(lpHostDlg, hwnd); return true;

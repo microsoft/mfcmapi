@@ -9,7 +9,7 @@
 #include <ImportProcs.h>
 #ifndef MRMAPI
 #include <UI/FileDialogEx.h>
-#include <UI/MFCUtilityFunctions.h>
+#include <UI/Dialogs/MFCUtilityFunctions.h>
 #endif
 #include <ShlObj.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
@@ -1140,7 +1140,7 @@ namespace file
 							lpAttach = nullptr;
 							if (S_OK != hRes && iRow != pRows->cRows - 1)
 							{
-								if (bShouldCancel(nullptr, hRes)) break;
+								if (dialog::bShouldCancel(nullptr, hRes)) break;
 								hRes = S_OK;
 							}
 						}

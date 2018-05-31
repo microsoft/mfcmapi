@@ -6,7 +6,7 @@
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/HexEditor.h>
-#include <UI/MFCUtilityFunctions.h>
+#include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/InterpretProp.h>

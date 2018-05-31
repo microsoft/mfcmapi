@@ -602,7 +602,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="MAPI\MAPIStoreFunctions.h" />
     <ClInclude Include="MFCMAPI.h" />
     <ClInclude Include="IO\MFCOutput.h" />
-    <ClInclude Include="UI\MFCUtilityFunctions.h" />
+    <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h" />
     <ClInclude Include="UI\Dialogs\Editors\QSSpecialFolders.h" />
     <ClInclude Include="UI\RichEditOleCallback.h" />
     <ClInclude Include="UI\Dialogs\SingleRecipientDialog.h" />
@@ -762,7 +762,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="MAPI\MapiStubLibrary.cpp" />
     <ClCompile Include="MAPI\MAPIStoreFunctions.cpp" />
     <ClCompile Include="IO\MFCOutput.cpp" />
-    <ClCompile Include="UI\MFCUtilityFunctions.cpp" />
+    <ClCompile Include="UI\Dialogs\MFCUtilityFunctions.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\MsgServiceTableDlg.cpp" />
     <ClCompile Include="UI\Dialogs\HierarchyTable\MsgStoreDlg.cpp" />
     <ClCompile Include="UI\MyMAPIFormViewer.cpp" />

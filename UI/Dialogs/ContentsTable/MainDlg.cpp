@@ -7,7 +7,7 @@
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/MAPIProfileFunctions.h>
 #include <MAPI/ColumnTags.h>
-#include <UI/MFCUtilityFunctions.h>
+#include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>

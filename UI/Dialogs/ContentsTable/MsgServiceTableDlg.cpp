@@ -4,7 +4,7 @@
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
-#include <UI/MFCUtilityFunctions.h>
+#include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/ContentsTable/ProviderTableDlg.h>
 #include <MAPI/MAPIProfileFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>

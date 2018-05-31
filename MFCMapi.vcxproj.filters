@@ -107,6 +107,9 @@
     <ClInclude Include="MAPI\Cache\NamedPropCache.h">
       <Filter>Source Files\MAPI\Cache</Filter>
     </ClInclude>
+    <ClInclude Include="UI\MFCUtilityFunctions.h">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -138,6 +141,9 @@
     </ClCompile>
     <ClCompile Include="MAPI\Cache\NamedPropCache.cpp">
       <Filter>Source Files\MAPI\Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\MFCUtilityFunctions.cpp">
+      <Filter>Source Files\UI\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -525,12 +531,6 @@
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClInclude Include="UI\MAPIFormFunctions.h">
-      <Filter>Source Files\UI</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\MFCUtilityFunctions.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\MFCUtilityFunctions.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
     <ClCompile Include="UI\MyMAPIFormViewer.cpp">

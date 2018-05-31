@@ -2,7 +2,7 @@
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/ColumnTags.h>
-#include <UI/MFCUtilityFunctions.h>
+#include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
 #include <UI/MySecInfo.h>
 #include <Interpret/Guids.h>
@@ -1289,7 +1289,7 @@ namespace controls
 				EC_H(DisplayTable(
 					m_lpPropBag->GetMAPIProp(),
 					ulPropTag,
-					otDefault,
+					dialog::otDefault,
 					m_lpHostDlg));
 				return;
 			}
@@ -1645,7 +1645,7 @@ namespace controls
 					EC_H(DisplayTable(
 						m_lpPropBag->GetMAPIProp(),
 						lpProp->ulPropTag,
-						otDefault,
+						dialog::otDefault,
 						m_lpHostDlg));
 				}
 				else if (PT_BINARY == PROP_TYPE(lpProp->ulPropTag) || PT_MV_BINARY == PROP_TYPE(lpProp->ulPropTag))
@@ -1760,7 +1760,7 @@ namespace controls
 						EC_H(DisplayExchangeTable(
 							m_lpPropBag->GetMAPIProp(),
 							CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
-							otDefault,
+							dialog::otDefault,
 							m_lpHostDlg));
 					}
 					else
@@ -1768,7 +1768,7 @@ namespace controls
 						EC_H(DisplayTable(
 							m_lpPropBag->GetMAPIProp(),
 							CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
-							otDefault,
+							dialog::otDefault,
 							m_lpHostDlg));
 					}
 				}

@@ -5,7 +5,7 @@
 #include <MAPI/Cache/MapiObjects.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/ColumnTags.h>
-#include <UI/MFCUtilityFunctions.h>
+#include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/FileDialogEx.h>

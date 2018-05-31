@@ -4,7 +4,7 @@
 #include <UI/FakeSplitter.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/Cache/MapiObjects.h>
-#include <UI/MFCUtilityFunctions.h>
+#include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
 

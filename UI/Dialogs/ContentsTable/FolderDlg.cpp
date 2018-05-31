@@ -8,7 +8,7 @@
 #include <MAPI/MAPIABFunctions.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/ColumnTags.h>
-#include <UI/MFCUtilityFunctions.h>
+#include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <IO/File.h>
