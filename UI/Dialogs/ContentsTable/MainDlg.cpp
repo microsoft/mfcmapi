@@ -118,7 +118,7 @@ namespace dialog
 		auto hRes = S_OK;
 
 		// Find the submenu with ID_LOADMAPI on it
-		const auto hAddInMenu = LocateSubmenu(::GetMenu(m_hWnd), ID_LOADMAPI);
+		const auto hAddInMenu = ui::LocateSubmenu(::GetMenu(m_hWnd), ID_LOADMAPI);
 
 		UINT uidCurMenu = ID_LOADMAPIMENUMIN;
 
@@ -131,7 +131,7 @@ namespace dialog
 				if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
 
 				DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
-				const auto lpMenu = CreateMenuEntry(szPath);
+				const auto lpMenu = ui::CreateMenuEntry(szPath);
 
 				EC_B(AppendMenu(
 					hAddInMenu,
@@ -161,7 +161,7 @@ namespace dialog
 			&subMenu));
 		if (subMenu.dwItemData)
 		{
-			const auto lme = reinterpret_cast<LPMENUENTRY>(subMenu.dwItemData);
+			const auto lme = reinterpret_cast<ui::LPMENUENTRY>(subMenu.dwItemData);
 			DebugPrint(DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName.c_str());
 			HMODULE hMAPI = nullptr;
 			EC_D(hMAPI, MyLoadLibraryW(lme->m_pName));

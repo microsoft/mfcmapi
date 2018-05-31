@@ -192,7 +192,7 @@ namespace dialog
 			{
 				RECT rect = { 0 };
 				::GetClientRect(m_hWnd, &rect);
-				const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(cBackground));
+				const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), ui::GetSysBrush(ui::cBackground));
 				const auto bRet = PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
 				SelectObject(reinterpret_cast<HDC>(wParam), hOld);
 				return bRet;
@@ -295,7 +295,7 @@ namespace dialog
 			DWORD_PTR /*dwRefData*/)
 		{
 			LRESULT lRes = 0;
-			if (HandleControlUI(uMsg, wParam, lParam, &lRes)) return lRes;
+			if (ui::HandleControlUI(uMsg, wParam, lParam, &lRes)) return lRes;
 
 			switch (uMsg)
 			{
@@ -346,13 +346,13 @@ namespace dialog
 					IDC_PROMPT));
 				::SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
 
-				SubclassLabel(m_Prompt.m_hWnd);
+				ui::SubclassLabel(m_Prompt.m_hWnd);
 			}
 
 			// setup to get button widths
 			const auto hdc = ::GetDC(m_hWnd);
 			if (!hdc) return false; // fatal error
-			const auto hfontOld = SelectObject(hdc, GetSegoeFont());
+			const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
 
 			CWnd* pParent = this;
 			if (m_bEnableScroll)
@@ -417,7 +417,7 @@ namespace dialog
 					this,
 					IDD_EDITACTION1));
 
-				const auto sizeText = GetTextExtentPoint32(hdc, szActionButtonText1);
+				const auto sizeText = ui::GetTextExtentPoint32(hdc, szActionButtonText1);
 				m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 			}
 
@@ -434,7 +434,7 @@ namespace dialog
 					this,
 					IDD_EDITACTION2));
 
-				const auto sizeText = GetTextExtentPoint32(hdc, szActionButtonText2);
+				const auto sizeText = ui::GetTextExtentPoint32(hdc, szActionButtonText2);
 				m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 			}
 
@@ -451,7 +451,7 @@ namespace dialog
 					this,
 					IDD_EDITACTION3));
 
-				const auto sizeText = GetTextExtentPoint32(hdc, szActionButtonText3);
+				const auto sizeText = ui::GetTextExtentPoint32(hdc, szActionButtonText3);
 				m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 			}
 
@@ -468,7 +468,7 @@ namespace dialog
 					this,
 					IDCANCEL));
 
-				const auto sizeText = GetTextExtentPoint32(hdc, szCancel);
+				const auto sizeText = ui::GetTextExtentPoint32(hdc, szCancel);
 				m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 			}
 
@@ -479,8 +479,8 @@ namespace dialog
 			m_iButtonWidth += m_iMargin;
 
 			// Compute some constants
-			m_iEditHeight = GetEditHeight(m_hWnd);
-			m_iTextHeight = GetTextHeight(m_hWnd);
+			m_iEditHeight = ui::GetEditHeight(m_hWnd);
+			m_iTextHeight = ui::GetTextHeight(m_hWnd);
 			m_iButtonHeight = m_iTextHeight + GetSystemMetrics(SM_CYEDGE) * 2;
 
 			OnSetDefaultSize();
@@ -526,7 +526,7 @@ namespace dialog
 		_Check_return_ HRESULT CEditor::DisplayDialog()
 		{
 			auto hRes = S_OK;
-			INT_PTR iDlgRet = 0;
+			auto iDlgRet = 0;
 
 			EC_D_DIALOG(DoModal());
 
@@ -602,7 +602,7 @@ namespace dialog
 
 		int ComputeCaptionWidth(HDC hdc, const std::wstring& szTitle, int iMargin)
 		{
-			const auto sizeTitle = GetTextExtentPoint32(hdc, szTitle);
+			const auto sizeTitle = ui::GetTextExtentPoint32(hdc, szTitle);
 			auto iCaptionWidth = sizeTitle.cx + iMargin; // Allow for some whitespace between the caption and buttons
 
 			const auto iIconWidth = GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CXSMICON);
@@ -624,7 +624,7 @@ namespace dialog
 			auto cx = 0;
 
 			const auto hdc = ::GetDC(m_hWnd);
-			const auto hfontOld = SelectObject(hdc, GetSegoeFont());
+			const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
 
 			auto iPromptLineCount = 0;
 			if (m_bHasPrompt)

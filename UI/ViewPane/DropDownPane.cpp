@@ -54,8 +54,8 @@ namespace viewpane
 		auto cxDropDown = 0;
 		for (auto iDropString = 0; iDropString < m_DropDown.GetCount(); iDropString++)
 		{
-			const auto szDropString = GetLBText(m_DropDown.m_hWnd, iDropString);
-			const auto sizeDrop = GetTextExtentPoint32(hdc, szDropString);
+			const auto szDropString = ui::GetLBText(m_DropDown.m_hWnd, iDropString);
+			const auto sizeDrop = ui::GetTextExtentPoint32(hdc, szDropString);
 			cxDropDown = max(cxDropDown, sizeDrop.cx);
 		}
 
@@ -118,7 +118,7 @@ namespace viewpane
 		ViewPane::Initialize(iControl, pParent, hdc);
 
 		const auto ulDrops = 1 + (!m_DropList.empty() ? min(m_DropList.size(), 4) : 4);
-		const auto dropHeight = ulDrops * (pParent ? GetEditHeight(pParent->m_hWnd) : 0x1e);
+		const auto dropHeight = ulDrops * (pParent ? ui::GetEditHeight(pParent->m_hWnd) : 0x1e);
 
 		// m_bReadOnly means you can't type...
 		DWORD dwDropStyle;
@@ -148,7 +148,7 @@ namespace viewpane
 			pParent,
 			m_nID));
 
-		SendMessage(m_DropDown.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(GetSegoeFont()), false);
+		SendMessage(m_DropDown.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 	}
 
 	void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)

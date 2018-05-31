@@ -67,7 +67,7 @@ namespace dialog
 		DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
-		UpdateMenuString(
+		ui::UpdateMenuString(
 			m_hWnd,
 			ID_CREATEPROPERTYSTRINGRESTRICTION,
 			IDS_MBRESMENU);

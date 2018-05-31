@@ -79,7 +79,7 @@ namespace viewpane
 					pParent,
 					ListButtons[iButton]));
 
-				const auto sizeText = GetTextExtentPoint32(hdc, szButtonText);
+				const auto sizeText = ui::GetTextExtentPoint32(hdc, szButtonText);
 				m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 			}
 		}

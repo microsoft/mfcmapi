@@ -184,7 +184,7 @@ namespace controls
 
 		void CSortHeader::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 		{
-			CustomDrawHeader(pNMHDR, pResult);
+			ui::CustomDrawHeader(pNMHDR, pResult);
 		}
 	}
 }

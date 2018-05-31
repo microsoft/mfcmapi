@@ -96,7 +96,7 @@ namespace dialog
 		RECT rcCloseIcon = { 0 };
 		RECT rcMaxIcon = { 0 };
 		RECT rcMinIcon = { 0 };
-		GetCaptionRects(hWnd, nullptr, nullptr, &rcCloseIcon, &rcMaxIcon, &rcMinIcon, nullptr);
+		ui::GetCaptionRects(hWnd, nullptr, nullptr, &rcCloseIcon, &rcMaxIcon, &rcMinIcon, nullptr);
 		DebugPrint(DBGUI, L"rcMinIcon: %d %d %d %d\n", rcMinIcon.left, rcMinIcon.top, rcMinIcon.right, rcMinIcon.bottom);
 		DebugPrint(DBGUI, L"rcMaxIcon: %d %d %d %d\n", rcMaxIcon.left, rcMaxIcon.top, rcMaxIcon.right, rcMaxIcon.bottom);
 		DebugPrint(DBGUI, L"rcCloseIcon: %d %d %d %d\n", rcCloseIcon.left, rcCloseIcon.top, rcCloseIcon.right, rcCloseIcon.bottom);
@@ -126,7 +126,7 @@ namespace dialog
 			if (ht == HTNOWHERE) ht = HTCAPTION;
 		}
 
-		DrawSystemButtons(m_hWnd, nullptr, ht, true);
+		ui::DrawSystemButtons(m_hWnd, nullptr, ht, true);
 		DebugPrint(DBGUI, L"%ws\r\n", FormatHT(ht).c_str());
 		return ht;
 	}
@@ -147,7 +147,7 @@ namespace dialog
 
 	bool DepressSystemButton(HWND hWnd, int iHitTest)
 	{
-		DrawSystemButtons(hWnd, nullptr, iHitTest, false);
+		ui::DrawSystemButtons(hWnd, nullptr, iHitTest, false);
 		SetCapture(hWnd);
 		for (;;)
 		{
@@ -158,13 +158,13 @@ namespace dialog
 				{
 				case WM_LBUTTONUP:
 					DebugPrint(DBGUI, L"WM_LBUTTONUP\n");
-					DrawSystemButtons(hWnd, nullptr, HTNOWHERE, false);
+					ui::DrawSystemButtons(hWnd, nullptr, HTNOWHERE, false);
 					ReleaseCapture();
 					return NCHitTestMouse(hWnd, msg.lParam) == iHitTest;
 
 				case WM_MOUSEMOVE:
 					DebugPrint(DBGUI, L"WM_MOUSEMOVE\n");
-					DrawSystemButtons(hWnd, nullptr, iHitTest, NCHitTestMouse(hWnd, msg.lParam) != iHitTest);
+					ui::DrawSystemButtons(hWnd, nullptr, iHitTest, NCHitTestMouse(hWnd, msg.lParam) != iHitTest);
 
 					break;
 				}
@@ -178,7 +178,7 @@ namespace dialog
 	LRESULT CMyDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		LRESULT lRes = 0;
-		if (HandleControlUI(message, wParam, lParam, &lRes)) return lRes;
+		if (ui::HandleControlUI(message, wParam, lParam, &lRes)) return lRes;
 
 		switch (message)
 		{
@@ -216,14 +216,14 @@ namespace dialog
 		case WM_NCACTIVATE:
 			// Pass -1 to DefWindowProc to signal we do not want our client repainted.
 			lParam = -1;
-			DrawWindowFrame(m_hWnd, !!wParam, m_iStatusHeight);
+			ui::DrawWindowFrame(m_hWnd, !!wParam, m_iStatusHeight);
 			break;
 		case WM_SETTEXT:
 			CDialog::WindowProc(message, wParam, lParam);
-			DrawWindowFrame(m_hWnd, true, m_iStatusHeight);
+			ui::DrawWindowFrame(m_hWnd, true, m_iStatusHeight);
 			return true;
 		case WM_NCPAINT:
-			DrawWindowFrame(m_hWnd, true, m_iStatusHeight);
+			ui::DrawWindowFrame(m_hWnd, true, m_iStatusHeight);
 			return 0;
 		case WM_CREATE:
 			// Ensure all windows group together by enforcing a consistent App User Model ID.
@@ -315,12 +315,12 @@ namespace dialog
 	// Measure menu item widths
 	void CMyDialog::OnMeasureItem(int /*nIDCtl*/, _In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	{
-		MeasureItem(lpMeasureItemStruct);
+		ui::MeasureItem(lpMeasureItemStruct);
 	}
 
 	// Draw menu items
 	void CMyDialog::OnDrawItem(int /*nIDCtl*/, _In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	{
-		DrawItem(lpDrawItemStruct);
+		ui::DrawItem(lpDrawItemStruct);
 	}
 }

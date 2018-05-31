@@ -461,7 +461,7 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 					// Now add each of the menu entries
 					if (SUCCEEDED(hRes))
 					{
-						const auto lpMenu = CreateMenuEntry(addIn.lpMenu[ulMenu].szMenu);
+						const auto lpMenu = ui::CreateMenuEntry(addIn.lpMenu[ulMenu].szMenu);
 						if (lpMenu)
 						{
 							lpMenu->m_AddInData = reinterpret_cast<ULONG_PTR>(&addIn.lpMenu[ulMenu]);
@@ -498,7 +498,7 @@ _Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg)
 		&subMenu) &&
 		subMenu.dwItemData)
 	{
-		return reinterpret_cast<LPMENUITEM>(reinterpret_cast<LPMENUENTRY>(subMenu.dwItemData)->m_AddInData);
+		return reinterpret_cast<LPMENUITEM>(reinterpret_cast<ui::LPMENUENTRY>(subMenu.dwItemData)->m_AddInData);
 	}
 
 	return nullptr;

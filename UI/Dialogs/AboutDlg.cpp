@@ -8,7 +8,7 @@ namespace dialog
 	{
 		CAboutDlg AboutDlg(lpParentWnd);
 		auto hRes = S_OK;
-		INT_PTR iDlgRet = 0;
+		auto iDlgRet = 0;
 
 		EC_D_DIALOG(AboutDlg.DoModal());
 	}
@@ -48,7 +48,7 @@ namespace dialog
 		const auto hWndButton = ::GetDlgItem(m_hWnd, IDOK);
 		RECT rcButton = { 0 };
 		::GetWindowRect(hWndButton, &rcButton);
-		const auto iTextHeight = GetTextHeight(m_hWnd);
+		const auto iTextHeight = ui::GetTextHeight(m_hWnd);
 		const auto iCheckHeight = iTextHeight + GetSystemMetrics(SM_CYEDGE) * 2;
 		::OffsetRect(&rcButton, rcClient.right - rcButton.right - iMargin, iMargin + ((IDD_ABOUTVERLAST - IDD_ABOUTVERFIRST + 1) * iTextHeight - iCheckHeight) / 2 - rcButton.top);
 		::MoveWindow(hWndButton, rcButton.left, rcButton.top, rcButton.right - rcButton.left, rcButton.bottom - rcButton.top, false);
@@ -84,7 +84,7 @@ namespace dialog
 			rcHelpText,
 			this,
 			IDD_HELP));
-		SubclassEdit(m_HelpText.m_hWnd, m_hWnd, true);
+		ui::SubclassEdit(m_HelpText.m_hWnd, m_hWnd, true);
 
 		::SendMessage(m_HelpText.m_hWnd, EM_SETEVENTMASK, NULL, ENM_LINK);
 		::SendMessage(m_HelpText.m_hWnd, EM_AUTOURLDETECT, true, NULL);
@@ -216,7 +216,7 @@ namespace dialog
 		{
 			RECT rect = { 0 };
 			::GetClientRect(m_hWnd, &rect);
-			const auto hOld = ::SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(cBackground));
+			const auto hOld = ::SelectObject(reinterpret_cast<HDC>(wParam), ui::GetSysBrush(ui::cBackground));
 			const auto bRet = ::PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
 			::SelectObject(reinterpret_cast<HDC>(wParam), hOld);
 			return bRet;

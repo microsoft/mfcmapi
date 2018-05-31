@@ -33,7 +33,7 @@ namespace viewpane
 
 		if (m_bCollapsible)
 		{
-			StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? bsUpArrow : bsDownArrow);
+			StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::bsUpArrow : ui::bsDownArrow);
 			m_CollapseButton.SetWindowPos(nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER);
 			x += m_iButtonHeight;
 		}
@@ -79,11 +79,11 @@ namespace viewpane
 			pParent,
 			iCurIDLabel));
 		SetWindowTextW(m_Label.m_hWnd, m_szLabel.c_str());
-		SubclassLabel(m_Label.m_hWnd);
+		ui::SubclassLabel(m_Label.m_hWnd);
 
 		if (m_bCollapsible)
 		{
-			StyleLabel(m_Label.m_hWnd, lsPaneHeaderLabel);
+			StyleLabel(m_Label.m_hWnd, ui::lsPaneHeaderLabel);
 
 			EC_B(m_CollapseButton.Create(
 				NULL,
@@ -104,7 +104,7 @@ namespace viewpane
 
 	int ViewPane::GetMinWidth(_In_ HDC hdc)
 	{
-		const auto sizeText = GetTextExtentPoint32(hdc, m_szLabel);
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
 		m_iLabelWidth = sizeText.cx;
 		DebugPrint(DBGDraw, L"ViewPane::GetMinWidth m_iLabelWidth:%d \"%ws\"\n",
 			m_iLabelWidth,

@@ -107,7 +107,7 @@ namespace controls
 			case WM_PAINT:
 				if (LVS_NOCOLUMNHEADER & GetStyle())
 				{
-					DrawHelpText(m_hWnd, IDS_HELPTEXTSTARTHERE);
+					ui::DrawHelpText(m_hWnd, IDS_HELPTEXTSTARTHERE);
 					return true;
 				}
 
@@ -144,7 +144,7 @@ namespace controls
 				pos = point;
 			}
 
-			DisplayContextMenu(m_nIDContextMenu, IDR_MENU_TABLE, m_lpHostDlg->m_hWnd, pos.x, pos.y);
+			ui::DisplayContextMenu(m_nIDContextMenu, IDR_MENU_TABLE, m_lpHostDlg->m_hWnd, pos.x, pos.y);
 		}
 
 		_Check_return_ ULONG CContentsTableListCtrl::GetContainerType() const

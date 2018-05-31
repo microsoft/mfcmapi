@@ -68,10 +68,10 @@ namespace controls
 				CRect(0, 0, 0, 0), // size doesn't matter
 				pCreateParent,
 				nID));
-			ListView_SetBkColor(m_hWnd, MyGetSysColor(cBackground));
-			ListView_SetTextBkColor(m_hWnd, MyGetSysColor(cBackground));
-			ListView_SetTextColor(m_hWnd, MyGetSysColor(cText));
-			::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(GetSegoeFont()), false);
+			ListView_SetBkColor(m_hWnd, MyGetSysColor(ui::cBackground));
+			ListView_SetTextBkColor(m_hWnd, MyGetSysColor(ui::cBackground));
+			ListView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::cText));
+			::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 
 			SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_INFOTIP | LVS_EX_DOUBLEBUFFER);
 
@@ -80,7 +80,7 @@ namespace controls
 				// At 100% DPI, ideal ImageList height is 16 pixels
 				// At 200%, it's 32, 200% of 16.
 				// So we can use our DPI scale to find out what size ImageList to create.
-				auto scale = GetDPIScale();
+				auto scale = ui::GetDPIScale();
 				const auto imageX = 16 * scale.x / scale.denominator;
 				const auto imageY = 16 * scale.y / scale.denominator;
 				const auto hImageList = ImageList_Create(imageX, imageY, ILC_COLOR32 | ILC_MASK, 1, 1);
@@ -92,8 +92,8 @@ namespace controls
 				// Our bitmap is 32*32, which is already 2x scaled up
 				// So double the denominator to compensate before scaling the bitmap
 				scale.denominator *= 2;
-				const auto hBitmapScaled = ScaleBitmap(hBitmap, scale);
-				m_ImageList.Add(CBitmap::FromHandle(hBitmapScaled), MyGetSysColor(cBitmapTransBack));
+				const auto hBitmapScaled = ui::ScaleBitmap(hBitmap, scale);
+				m_ImageList.Add(CBitmap::FromHandle(hBitmapScaled), ui::MyGetSysColor(ui::cBitmapTransBack));
 
 				SetImageList(&m_ImageList, LVSIL_SMALL);
 				if (hBitmapScaled) DeleteObject(hBitmapScaled);
@@ -116,14 +116,14 @@ namespace controls
 			s_bInTrack = true;
 			s_iTrack = rcHeader.right;
 			s_iHeaderHeight = rcHeader.bottom - rcHeader.top;
-			DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, false);
+			ui::DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, false);
 		}
 
 		void OnEndTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
 		{
 			if (s_bInTrack && pNMHDR)
 			{
-				DrawTrackingBar(pNMHDR->hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, true);
+				ui::DrawTrackingBar(pNMHDR->hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, true);
 			}
 			s_bInTrack = false;
 		}
@@ -137,9 +137,9 @@ namespace controls
 				Header_GetItemRect(pHdr->hdr.hwndFrom, pHdr->iItem, &rcHeader);
 				if (s_iTrack != rcHeader.right)
 				{
-					DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, true);
+					ui::DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, true);
 					s_iTrack = rcHeader.right;
-					DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, false);
+					ui::DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, false);
 				}
 			}
 		}
@@ -213,12 +213,12 @@ namespace controls
 						if (-1 != iItemCur)
 						{
 							m_iItemCurHover = -1;
-							DrawListItemGlow(m_hWnd, iItemCur);
+							ui::DrawListItemGlow(m_hWnd, iItemCur);
 						}
 
 						// Glow the current line - it's important that m_iItemCurHover be set before we draw the glow
 						m_iItemCurHover = lvHitTestInfo.iItem;
-						DrawListItemGlow(m_hWnd, lvHitTestInfo.iItem);
+						ui::DrawListItemGlow(m_hWnd, lvHitTestInfo.iItem);
 
 						TRACKMOUSEEVENT tmEvent = { 0 };
 						tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
@@ -233,7 +233,7 @@ namespace controls
 					if (-1 != iItemCur)
 					{
 						m_iItemCurHover = -1;
-						DrawListItemGlow(m_hWnd, iItemCur);
+						ui::DrawListItemGlow(m_hWnd, iItemCur);
 					}
 				}
 				break;
@@ -243,7 +243,7 @@ namespace controls
 				if (-1 != iItemCur)
 				{
 					m_iItemCurHover = -1;
-					DrawListItemGlow(m_hWnd, iItemCur);
+					ui::DrawListItemGlow(m_hWnd, iItemCur);
 				}
 				break;
 			}
@@ -253,7 +253,7 @@ namespace controls
 		// Override for list item painting
 		void CSortListCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 		{
-			CustomDrawList(reinterpret_cast<LPNMLVCUSTOMDRAW>(pNMHDR), pResult, m_iItemCurHover);
+			ui::CustomDrawList(reinterpret_cast<LPNMLVCUSTOMDRAW>(pNMHDR), pResult, m_iItemCurHover);
 		}
 
 		void CSortListCtrl::OnDeleteAllItems(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)

@@ -59,7 +59,7 @@ CParentWnd::CParentWnd()
 	ImportProcs();
 
 	// Initialize objects for theming
-	InitializeGDI();
+	ui::InitializeGDI();
 
 	m_cRef = 1;
 
@@ -86,7 +86,7 @@ CParentWnd::~CParentWnd()
 	// Since we didn't create a window, we can't call DestroyWindow to let MFC know we're done.
 	// We call AfxPostQuitMessage instead
 	TRACE_DESTRUCTOR(CLASS);
-	UninitializeGDI();
+	ui::UninitializeGDI();
 	UnloadAddIns();
 	if (m_hwinEventHook) UnhookWinEvent(m_hwinEventHook);
 	cache::UninitializeNamedPropCache();

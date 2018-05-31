@@ -106,9 +106,9 @@ namespace controls
 			pRect,
 			pCreateParent,
 			IDC_FOLDER_TREE);
-		TreeView_SetBkColor(m_hWnd, MyGetSysColor(cBackground));
-		TreeView_SetTextColor(m_hWnd, MyGetSysColor(cText));
-		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(GetSegoeFont()), false);
+		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::cBackground));
+		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::cText));
+		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 	}
 
 	CHierarchyTableTreeCtrl::~CHierarchyTableTreeCtrl()
@@ -183,13 +183,14 @@ namespace controls
 				// If this is a new glow, clean up the old glow and track for leaving the control
 				if (hItemCurHover != tvHitTestInfo.hItem)
 				{
-					DrawTreeItemGlow(m_hWnd, tvHitTestInfo.hItem);
+					ui::DrawTreeItemGlow(m_hWnd, tvHitTestInfo.hItem);
 
 					if (hItemCurHover)
 					{
 						m_hItemCurHover = nullptr;
-						DrawTreeItemGlow(m_hWnd, hItemCurHover);
+						ui::DrawTreeItemGlow(m_hWnd, hItemCurHover);
 					}
+
 					m_hItemCurHover = tvHitTestInfo.hItem;
 
 					TRACKMOUSEEVENT tmEvent = { 0 };
@@ -205,7 +206,7 @@ namespace controls
 				if (hItemCurHover)
 				{
 					m_hItemCurHover = nullptr;
-					DrawTreeItemGlow(m_hWnd, hItemCurHover);
+					ui::DrawTreeItemGlow(m_hWnd, hItemCurHover);
 				}
 			}
 			break;
@@ -214,7 +215,7 @@ namespace controls
 			if (hItemCurHover)
 			{
 				m_hItemCurHover = nullptr;
-				DrawTreeItemGlow(m_hWnd, hItemCurHover);
+				ui::DrawTreeItemGlow(m_hWnd, hItemCurHover);
 			}
 
 			return NULL;
@@ -825,7 +826,7 @@ namespace controls
 			}
 		}
 
-		DisplayContextMenu(m_nIDContextMenu, IDR_MENU_HIERARCHY_TABLE, m_lpHostDlg->m_hWnd, pos.x, pos.y);
+		ui::DisplayContextMenu(m_nIDContextMenu, IDR_MENU_HIERARCHY_TABLE, m_lpHostDlg->m_hWnd, pos.x, pos.y);
 	}
 
 	_Check_return_ sortlistdata::SortListData* CHierarchyTableTreeCtrl::GetSelectedItemData() const
@@ -1262,6 +1263,6 @@ namespace controls
 
 	void CHierarchyTableTreeCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
-		CustomDrawTree(pNMHDR, pResult, m_HoverButton, m_hItemCurHover);
+		ui::CustomDrawTree(pNMHDR, pResult, m_HoverButton, m_hItemCurHover);
 	}
 }

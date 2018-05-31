@@ -39,8 +39,8 @@ namespace viewpane
 			pParent,
 			IDD_COUNTLABEL));
 		SetWindowTextW(m_Count.m_hWnd, m_szCountLabel.c_str());
-		SubclassLabel(m_Count.m_hWnd);
-		StyleLabel(m_Count.m_hWnd, lsPaneHeaderText);
+		ui::SubclassLabel(m_Count.m_hWnd);
+		StyleLabel(m_Count.m_hWnd, ui::lsPaneHeaderText);
 
 		TextPane::Initialize(iControl, pParent, hdc);
 	}
@@ -52,7 +52,7 @@ namespace viewpane
 		auto szCount = strings::format(L"%ws: 0x%08X = %u", m_szCountLabel.c_str(), static_cast<int>(m_iCount), static_cast<UINT>(m_iCount)); // STRING_OK
 		SetWindowTextW(m_Count.m_hWnd, szCount.c_str());
 
-		const auto sizeText = GetTextExtentPoint32(hdc, szCount);
+		const auto sizeText = ui::GetTextExtentPoint32(hdc, szCount);
 		m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
 
 		// Button, margin, label, margin, count label

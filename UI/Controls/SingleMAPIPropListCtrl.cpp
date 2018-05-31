@@ -132,7 +132,7 @@ namespace controls
 			case WM_PAINT:
 				if (!m_lpPropBag)
 				{
-					DrawHelpText(m_hWnd, IDS_HELPTEXTNOPROPS);
+					ui::DrawHelpText(m_hWnd, IDS_HELPTEXTNOPROPS);
 					return true;
 				}
 
@@ -934,7 +934,7 @@ namespace controls
 				pos = point;
 			}
 
-			DisplayContextMenu(IDR_MENU_PROPERTY_POPUP, IDR_MENU_MESSAGE_POPUP, m_lpHostDlg->m_hWnd, pos.x, pos.y);
+			ui::DisplayContextMenu(IDR_MENU_PROPERTY_POPUP, IDR_MENU_MESSAGE_POPUP, m_lpHostDlg->m_hWnd, pos.x, pos.y);
 		}
 
 		void CSingleMAPIPropListCtrl::FindAllNamedProps()

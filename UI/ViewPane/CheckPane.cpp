@@ -98,19 +98,19 @@ namespace viewpane
 		rcCheck.top = (rc.bottom - rc.top - lCheck) / 2;
 		rcCheck.bottom = rcCheck.top + lCheck;
 
-		FillRect(hDC, &rc, GetSysBrush(cBackground));
-		FrameRect(hDC, &rcCheck, GetSysBrush(bDisabled ? cFrameUnselected : bGlow || bFocused ? cGlow : cFrameSelected));
+		FillRect(hDC, &rc, GetSysBrush(ui::cBackground));
+		FrameRect(hDC, &rcCheck, GetSysBrush(bDisabled ? ui::cFrameUnselected : bGlow || bFocused ? ui::cGlow : ui::cFrameSelected));
 		if (bChecked)
 		{
 			auto rcFill = rcCheck;
 			const auto deflate = lEdge;
 			InflateRect(&rcFill, -deflate, -deflate);
-			FillRect(hDC, &rcFill, GetSysBrush(cGlow));
+			FillRect(hDC, &rcFill, GetSysBrush(ui::cGlow));
 		}
 
 		auto rcLabel = rc;
 		rcLabel.left = rcCheck.right + lEdge;
-		rcLabel.right = rcLabel.left + GetTextExtentPoint32(hDC, szButton).cx;
+		rcLabel.right = rcLabel.left + ui::GetTextExtentPoint32(hDC, szButton).cx;
 
 		DebugPrint(DBGDraw, L"CheckButton::Draw left:%d width:%d checkwidth:%d space:%d labelwidth:%d (scroll:%d 2frame:%d), \"%ws\"\n",
 			rc.left,
@@ -122,10 +122,10 @@ namespace viewpane
 			2 * GetSystemMetrics(SM_CXFIXEDFRAME),
 			szButton);
 
-		DrawSegoeTextW(
+		ui::DrawSegoeTextW(
 			hDC,
 			szButton,
-			bDisabled ? MyGetSysColor(cTextDisabled) : MyGetSysColor(cText),
+			bDisabled ? ui::MyGetSysColor(ui::cTextDisabled) : ui::MyGetSysColor(ui::cText),
 			rcLabel,
 			false,
 			DT_SINGLELINE | DT_VCENTER);

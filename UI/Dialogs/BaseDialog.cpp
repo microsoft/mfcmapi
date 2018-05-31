@@ -48,7 +48,7 @@ namespace dialog
 		m_lpPropDisplay = nullptr;
 		m_lpFakeSplitter = nullptr;
 		// Let the parent know we have a status bar so we can draw our border correctly
-		SetStatusHeight(GetSystemMetrics(SM_CXSIZEFRAME) + GetTextHeight(::GetDesktopWindow()));
+		SetStatusHeight(GetSystemMetrics(SM_CXSIZEFRAME) + ui::GetTextHeight(::GetDesktopWindow()));
 
 		m_lpParent = pParentWnd;
 		if (m_lpParent) m_lpParent->AddRef();
@@ -66,7 +66,7 @@ namespace dialog
 		const auto hMenu = ::GetMenu(this->m_hWnd);
 		if (hMenu)
 		{
-			DeleteMenuEntries(hMenu);
+			ui::DeleteMenuEntries(hMenu);
 			DestroyMenu(hMenu);
 		}
 
@@ -125,7 +125,7 @@ namespace dialog
 		}
 		case WM_PAINT:
 			// Paint the status, then let the rest draw itself.
-			DrawStatus(
+			ui::DrawStatus(
 				m_hWnd,
 				GetStatusHeight(),
 				m_StatusMessages[STATUSDATA1],
@@ -200,10 +200,10 @@ namespace dialog
 		MENUINFO mi = { 0 };
 		mi.cbSize = sizeof(MENUINFO);
 		mi.fMask = MIM_BACKGROUND;
-		mi.hbrBack = GetSysBrush(cBackground);
+		mi.hbrBack = ui::GetSysBrush(ui::cBackground);
 		::SetMenuInfo(hMenu, &mi);
 
-		ConvertMenuOwnerDraw(hMenu, true);
+		ui::ConvertMenuOwnerDraw(hMenu, true);
 
 		// We're done - force our new menu on screen
 		DrawMenuBar();
@@ -479,16 +479,16 @@ namespace dialog
 			const auto hdc = ::GetDC(m_hWnd);
 			if (hdc)
 			{
-				const auto hfontOld = ::SelectObject(hdc, GetSegoeFontBold());
+				const auto hfontOld = ::SelectObject(hdc, ui::GetSegoeFontBold());
 
 				if (iData1)
 				{
-					sizeData1 = GetTextExtentPoint32(hdc, m_StatusMessages[STATUSDATA1]);
+					sizeData1 = ui::GetTextExtentPoint32(hdc, m_StatusMessages[STATUSDATA1]);
 				}
 
 				if (iData2)
 				{
-					sizeData2 = GetTextExtentPoint32(hdc, m_StatusMessages[STATUSDATA2]);
+					sizeData2 = ui::GetTextExtentPoint32(hdc, m_StatusMessages[STATUSDATA2]);
 				}
 
 				::SelectObject(hdc, hfontOld);
@@ -580,7 +580,7 @@ namespace dialog
 				&mii));
 			if (mii.dwItemData)
 			{
-				const auto lme = reinterpret_cast<LPMENUENTRY>(mii.dwItemData);
+				const auto lme = reinterpret_cast<ui::LPMENUENTRY>(mii.dwItemData);
 				szStatBarString = strings::formatmessage(IDS_LOADMAPISTATUS, lme->m_pName.c_str());
 			}
 		}

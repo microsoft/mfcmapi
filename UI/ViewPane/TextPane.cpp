@@ -97,10 +97,10 @@ namespace viewpane
 			ULONG iBinPos = 0;
 			for (ULONG i = 0; i < cbTempRead; i++)
 			{
-				const BYTE bLow = static_cast<BYTE>(pbTempBuff[i] & 0xf);
-				const BYTE bHigh = static_cast<BYTE>(pbTempBuff[i] >> 4 & 0xf);
-				const CHAR szLow = static_cast<CHAR>(bLow <= 0x9 ? '0' + bLow : 'A' + bLow - 0xa);
-				const CHAR szHigh = static_cast<CHAR>(bHigh <= 0x9 ? '0' + bHigh : 'A' + bHigh - 0xa);
+				const auto bLow = static_cast<BYTE>(pbTempBuff[i] & 0xf);
+				const auto bHigh = static_cast<BYTE>(pbTempBuff[i] >> 4 & 0xf);
+				const auto szLow = static_cast<CHAR>(bLow <= 0x9 ? '0' + bLow : 'A' + bLow - 0xa);
+				const auto szHigh = static_cast<CHAR>(bHigh <= 0x9 ? '0' + bHigh : 'A' + bHigh - 0xa);
 
 				pbBuff[iBinPos] = szHigh;
 				pbBuff[iBinPos + 1] = szLow;
@@ -220,8 +220,8 @@ namespace viewpane
 			CRect(0, 0, 0, 0),
 			pParent,
 			m_nID));
-		SubclassEdit(m_EditBox.m_hWnd, pParent ? pParent->m_hWnd : nullptr, m_bReadOnly);
-		SendMessage(m_EditBox.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(GetSegoeFont()), false);
+		ui::SubclassEdit(m_EditBox.m_hWnd, pParent ? pParent->m_hWnd : nullptr, m_bReadOnly);
+		SendMessage(m_EditBox.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 
 		m_bInitialized = true; // We can now call SetEditBoxText
 
@@ -254,8 +254,8 @@ namespace viewpane
 	struct FakeStream
 	{
 		std::wstring lpszW;
-		size_t cbszW;
-		size_t cbCur;
+		size_t cbszW{};
+		size_t cbCur{};
 	};
 
 	_Check_return_ static DWORD CALLBACK FakeEditStreamReadCallBack(
@@ -350,7 +350,7 @@ namespace viewpane
 
 	void TextPane::SetReadOnly()
 	{
-		m_EditBox.SetBackgroundColor(false, MyGetSysColor(cBackgroundReadOnly));
+		m_EditBox.SetBackgroundColor(false, ui::MyGetSysColor(ui::cBackgroundReadOnly));
 		m_EditBox.SetReadOnly();
 	}
 
