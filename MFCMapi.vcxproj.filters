@@ -107,7 +107,7 @@
     <ClInclude Include="MAPI\Cache\NamedPropCache.h">
       <Filter>Source Files\MAPI\Cache</Filter>
     </ClInclude>
-    <ClInclude Include="UI\MFCUtilityFunctions.h">
+    <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h">
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
@@ -142,7 +142,7 @@
     <ClCompile Include="MAPI\Cache\NamedPropCache.cpp">
       <Filter>Source Files\MAPI\Cache</Filter>
     </ClCompile>
-    <ClCompile Include="UI\MFCUtilityFunctions.cpp">
+    <ClCompile Include="UI\Dialogs\MFCUtilityFunctions.cpp">
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
