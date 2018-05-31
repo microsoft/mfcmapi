@@ -50,11 +50,11 @@ _Check_return_ HRESULT OpenExchangeOrDefaultMessageStore(
 	LPMDB lpMDB = nullptr;
 	*lppMDB = nullptr;
 
-	WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpMDB));
+	WC_H(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpMDB));
 	if (FAILED(hRes) || !lpMDB)
 	{
 		hRes = S_OK;
-		WC_H(OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		WC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 	}
 
 	if (SUCCEEDED(hRes) && lpMDB)

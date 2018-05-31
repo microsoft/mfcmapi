@@ -87,12 +87,12 @@ namespace mapiprocessor
 
 		BeginMailboxTableWork(szExchangeServerName);
 
-		WC_H(OpenMessageStoreGUID(m_lpSession, pbExchangeProviderPrimaryUserGuid, &lpPrimaryMDB));
+		WC_H(mapi::store::OpenMessageStoreGUID(m_lpSession, pbExchangeProviderPrimaryUserGuid, &lpPrimaryMDB));
 
-		if (lpPrimaryMDB && StoreSupportsManageStore(lpPrimaryMDB)) do
+		if (lpPrimaryMDB && mapi::store::StoreSupportsManageStore(lpPrimaryMDB)) do
 		{
 			hRes = S_OK;
-			WC_H(GetMailboxTable(
+			WC_H(mapi::store::GetMailboxTable(
 				lpPrimaryMDB,
 				strings::wstringTostring(szExchangeServerName),
 				ulOffset,
@@ -135,7 +135,7 @@ namespace mapiprocessor
 						hRes = S_OK;
 					}
 
-					WC_H(OpenOtherUsersMailbox(
+					WC_H(mapi::store::OpenOtherUsersMailbox(
 						m_lpSession,
 						lpPrimaryMDB,
 						strings::wstringTostring(szExchangeServerName),

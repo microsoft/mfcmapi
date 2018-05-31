@@ -1973,7 +1973,7 @@ namespace mapi
 			EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray, nullptr));
 
 			DebugPrint(DBGGeneric, L"Adding recipient: %ws.\n", szRecipient.c_str());
-			EC_H(AddRecipient(
+			EC_H(ab::AddRecipient(
 				lpMAPISession,
 				lpNewMessage,
 				szRecipient,

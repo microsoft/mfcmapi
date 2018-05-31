@@ -108,7 +108,7 @@ _Check_return_ HRESULT DisplayObject(
 					if (lpMAPISession)
 					{
 						LPMDB lpNewMDB = nullptr;
-						EC_H(OpenStoreFromMAPIProp(lpMAPISession, static_cast<LPMAPIPROP>(lpUnk), &lpNewMDB));
+						EC_H(mapi::store::OpenStoreFromMAPIProp(lpMAPISession, static_cast<LPMAPIPROP>(lpUnk), &lpNewMDB));
 						if (lpNewMDB)
 						{
 							lpMapiObjects->SetMDB(lpNewMDB);
@@ -469,17 +469,17 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 	const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 
 	// try the 'current' MDB first
-	if (!StoreSupportsManageStore(lpMDB))
+	if (!mapi::store::StoreSupportsManageStore(lpMDB))
 	{
 		// if that MDB doesn't support manage store, try to get one that does
-		EC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
+		EC_H(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
 		lpMDB = lpPrivateMDB;
 	}
 
-	if (lpMDB && StoreSupportsManageStore(lpMDB))
+	if (lpMDB && mapi::store::StoreSupportsManageStore(lpMDB))
 	{
 		LPMAPITABLE lpMailboxTable = nullptr;
-		const auto szServerName = strings::stringTowstring(GetServerName(lpMAPISession));
+		const auto szServerName = strings::stringTowstring(mapi::store::GetServerName(lpMAPISession));
 
 		dialog::editor::CEditor MyData(
 			static_cast<CWnd*>(lpParent),
@@ -505,7 +505,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 
 		else if (S_OK == hRes)
 		{
-			auto szServerDN = BuildServerDN(
+			auto szServerDN = mapi::store::BuildServerDN(
 				strings::wstringTostring(MyData.GetStringW(0)),
 				"");
 			if (!szServerDN.empty())
@@ -524,14 +524,14 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 				switch (MyData.GetDropDown(3))
 				{
 				case 0:
-					EC_H(GetMailboxTable1(
+					EC_H(mapi::store::GetMailboxTable1(
 						lpMDB,
 						szServerDN,
 						fMapiUnicode,
 						&lpMailboxTable));
 					break;
 				case 1:
-					EC_H(GetMailboxTable3(
+					EC_H(mapi::store::GetMailboxTable3(
 						lpMDB,
 						szServerDN,
 						MyData.GetHex(1),
@@ -557,7 +557,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 						}
 					}
 
-					EC_H(GetMailboxTable5(
+					EC_H(mapi::store::GetMailboxTable5(
 						lpMDB,
 						szServerDN,
 						MyData.GetHex(1),
@@ -606,17 +606,17 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 	const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 
 	// try the 'current' MDB first
-	if (!StoreSupportsManageStore(lpMDB))
+	if (!mapi::store::StoreSupportsManageStore(lpMDB))
 	{
 		// if that MDB doesn't support manage store, try to get one that does
-		EC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
+		EC_H(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
 		lpMDB = lpPrivateMDB;
 	}
 
-	if (lpMDB && StoreSupportsManageStore(lpMDB))
+	if (lpMDB && mapi::store::StoreSupportsManageStore(lpMDB))
 	{
 		LPMAPITABLE lpPFTable = nullptr;
-		const auto szServerName = strings::stringTowstring(GetServerName(lpMAPISession));
+		const auto szServerName = strings::stringTowstring(mapi::store::GetServerName(lpMAPISession));
 
 		dialog::editor::CEditor MyData(
 			static_cast<CWnd*>(lpParent),
@@ -644,7 +644,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 
 		else if (S_OK == hRes)
 		{
-			auto szServerDN = BuildServerDN(
+			auto szServerDN = mapi::store::BuildServerDN(
 				strings::wstringTostring(MyData.GetStringW(0)),
 				"");
 			if (!szServerDN.empty())
@@ -663,14 +663,14 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 				switch (MyData.GetDropDown(4))
 				{
 				case 0:
-					EC_H(GetPublicFolderTable1(
+					EC_H(mapi::store::GetPublicFolderTable1(
 						lpMDB,
 						szServerDN,
 						MyData.GetHex(2) | fMapiUnicode,
 						&lpPFTable));
 					break;
 				case 1:
-					EC_H(GetPublicFolderTable4(
+					EC_H(mapi::store::GetPublicFolderTable4(
 						lpMDB,
 						szServerDN,
 						MyData.GetHex(1),
@@ -695,7 +695,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 						}
 					}
 
-					EC_H(GetPublicFolderTable5(
+					EC_H(mapi::store::GetPublicFolderTable5(
 						lpMDB,
 						szServerDN,
 						MyData.GetHex(1),

@@ -38,7 +38,7 @@ HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* 
 				&lpRow));
 			if (SUCCEEDED(hRes) && lpRow && 1 == lpRow->cRows && PR_ENTRYID == lpRow->aRow[0].lpProps[0].ulPropTag)
 			{
-				WC_H(CallOpenMsgStore(
+				WC_H(mapi::store::CallOpenMsgStore(
 					lpMAPISession,
 					NULL,
 					&lpRow->aRow[0].lpProps[0].Value.bin,
@@ -94,7 +94,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 				SBinary Bin = { 0 };
 				Bin.cb = static_cast<ULONG>(bin.size());
 				Bin.lpb = bin.data();
-				WC_H(CallOpenMsgStore(
+				WC_H(mapi::store::CallOpenMsgStore(
 					lpMAPISession,
 					NULL,
 					&Bin,

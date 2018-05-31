@@ -415,7 +415,7 @@ namespace dialog
 				ULONG ulFlags = NULL;
 				if (mfcmapiREQUEST_MODIFY == bModify) ulFlags |= MDB_WRITE;
 
-				EC_H(CallOpenMsgStore(
+				EC_H(mapi::store::CallOpenMsgStore(
 					lpMAPISession,
 					reinterpret_cast<ULONG_PTR>(m_hWnd),
 					lpEntryID,
@@ -437,12 +437,12 @@ namespace dialog
 		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_H(OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		EC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 		if (!lpMDB) return;
 
 		// Now that we have a message store, try to open the Admin version of it
 		ULONG ulFlags = NULL;
-		if (StoreSupportsManageStore(lpMDB))
+		if (mapi::store::StoreSupportsManageStore(lpMDB))
 		{
 			editor::CEditor MyPrompt(
 				this,
@@ -490,7 +490,7 @@ namespace dialog
 					if (mapi::CheckStringProp(lpMailboxName, PT_STRING8))
 					{
 						LPMDB lpAdminMDB = nullptr;
-						EC_H(OpenOtherUsersMailbox(
+						EC_H(mapi::store::OpenOtherUsersMailbox(
 							lpMAPISession,
 							lpMDB,
 							"",
@@ -551,7 +551,7 @@ namespace dialog
 		if (SUCCEEDED(hRes))
 		{
 			LPMDB lpMDB = nullptr;
-			EC_H(CallOpenMsgStore(
+			EC_H(mapi::store::CallOpenMsgStore(
 				lpMAPISession,
 				reinterpret_cast<ULONG_PTR>(m_hWnd),
 				&sBin,
@@ -563,7 +563,7 @@ namespace dialog
 				if (MyEID.GetCheck(4))
 				{
 					LPMDB lpUnwrappedMDB = nullptr;
-					EC_H(HrUnWrapMDB(lpMDB, &lpUnwrappedMDB));
+					EC_H(mapi::store::HrUnWrapMDB(lpMDB, &lpUnwrappedMDB));
 
 					// Ditch the old MDB and substitute the unwrapped one.
 					lpMDB->Release();
@@ -610,7 +610,7 @@ namespace dialog
 		WC_H(MyPrompt.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			EC_H(OpenPublicMessageStore(
+			EC_H(mapi::store::OpenPublicMessageStore(
 				lpMAPISession,
 				"",
 				MyPrompt.GetHex(0),
@@ -651,7 +651,7 @@ namespace dialog
 		if (S_OK == hRes)
 		{
 			LPMDB lpMDB = nullptr;
-			EC_H(OpenPublicMessageStore(
+			EC_H(mapi::store::OpenPublicMessageStore(
 				lpMAPISession,
 				strings::wstringTostring(MyPrompt.GetStringW(0)),
 				MyPrompt.GetHex(1),
@@ -681,14 +681,14 @@ namespace dialog
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		const auto szServerName = GetServerName(lpMAPISession);
+		const auto szServerName = mapi::store::GetServerName(lpMAPISession);
 
-		EC_H(OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		EC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 		if (!lpMDB) return;
 
-		if (StoreSupportsManageStore(lpMDB))
+		if (mapi::store::StoreSupportsManageStore(lpMDB))
 		{
-			WC_H(OpenMailboxWithPrompt(
+			WC_H(mapi::store::OpenMailboxWithPrompt(
 				lpMAPISession,
 				lpMDB,
 				szServerName,
@@ -748,7 +748,7 @@ namespace dialog
 		const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 		if (lpAddrBook)
 		{
-			EC_H_CANCEL(OpenOtherUsersMailboxFromGal(
+			EC_H_CANCEL(mapi::store::OpenOtherUsersMailboxFromGal(
 				lpMAPISession,
 				lpAddrBook,
 				&lpMailboxMDB));
@@ -785,7 +785,7 @@ namespace dialog
 				{
 					auto hRes = S_OK;
 					LPMDB lpMDB = nullptr;
-					EC_H(CallOpenMsgStore(
+					EC_H(mapi::store::CallOpenMsgStore(
 						lpMAPISession,
 						reinterpret_cast<ULONG_PTR>(m_hWnd),
 						lpItemEID,
@@ -826,7 +826,7 @@ namespace dialog
 				const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
 				if (lpItemEID)
 				{
-					EC_H(CallOpenMsgStore(
+					EC_H(mapi::store::CallOpenMsgStore(
 						lpMAPISession,
 						reinterpret_cast<ULONG_PTR>(m_hWnd),
 						lpItemEID,
@@ -864,7 +864,7 @@ namespace dialog
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		const auto szServerName = strings::stringTowstring(GetServerName(lpMAPISession));
+		const auto szServerName = strings::stringTowstring(mapi::store::GetServerName(lpMAPISession));
 
 		editor::CEditor MyData(
 			this,
@@ -1579,7 +1579,7 @@ namespace dialog
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			auto szProfName = LaunchProfileWizard(
+			auto szProfName = mapi::profile::LaunchProfileWizard(
 				m_hWnd,
 				MyData.GetHex(0),
 				strings::wstringTostring(MyData.GetStringW(1)));
@@ -1588,17 +1588,17 @@ namespace dialog
 
 	void CMainDlg::OnGetMAPISVC()
 	{
-		DisplayMAPISVCPath(this);
+		mapi::profile::DisplayMAPISVCPath(this);
 	}
 
 	void CMainDlg::OnAddServicesToMAPISVC()
 	{
-		AddServicesToMapiSvcInf();
+		mapi::profile::AddServicesToMapiSvcInf();
 	}
 
 	void CMainDlg::OnRemoveServicesFromMAPISVC()
 	{
-		RemoveServicesFromMapiSvcInf();
+		mapi::profile::RemoveServicesFromMapiSvcInf();
 	}
 
 	void CMainDlg::OnStatusTable()
@@ -1684,7 +1684,7 @@ namespace dialog
 		ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
 		auto bDoAdrBook = false;
 
-		WC_H(GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
+		WC_H(mapi::mapimime::GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 		if (S_OK == hRes)
 		{
 			LPADRBOOK lpAdrBook = nullptr;
@@ -1708,7 +1708,7 @@ namespace dialog
 					this);
 				if (!emlfile.empty())
 				{
-					EC_H(ConvertMSGToEML(
+					EC_H(mapi::mapimime::ConvertMSGToEML(
 						msgfile.c_str(),
 						emlfile.c_str(),
 						ulConvertFlags,
@@ -1733,7 +1733,7 @@ namespace dialog
 		auto bUnicode = false;
 		HCHARSET hCharSet = nullptr;
 		auto cSetApplyType = CSET_APPLY_UNTAGGED;
-		WC_H(GetConversionFromEMLOptions(this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, &bUnicode));
+		WC_H(mapi::mapimime::GetConversionFromEMLOptions(this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, &bUnicode));
 		if (S_OK == hRes)
 		{
 			LPADRBOOK lpAdrBook = nullptr;
@@ -1755,7 +1755,7 @@ namespace dialog
 					this);
 				if (!msgfile.empty())
 				{
-					EC_H(ConvertEMLToMSG(
+					EC_H(mapi::mapimime::ConvertEMLToMSG(
 						emlfile.c_str(),
 						msgfile.c_str(),
 						ulConvertFlags,

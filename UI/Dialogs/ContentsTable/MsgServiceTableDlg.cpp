@@ -218,7 +218,7 @@ namespace dialog
 			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)
 			{
-				EC_H(OpenProfileSection(
+				EC_H(mapi::profile::OpenProfileSection(
 					m_lpServiceAdmin,
 					lpServiceUID,
 					reinterpret_cast<LPPROFSECT*>(lppMAPIProp)));
@@ -250,7 +250,7 @@ namespace dialog
 		SBinary MapiUID = { sizeof(GUID), reinterpret_cast<LPBYTE>(&guid) };
 
 		LPPROFSECT lpProfSect = nullptr;
-		EC_H(OpenProfileSection(
+		EC_H(mapi::profile::OpenProfileSection(
 			m_lpServiceAdmin,
 			&MapiUID,
 			&lpProfSect));
@@ -306,7 +306,7 @@ namespace dialog
 	{
 		if (lpParams)
 		{
-			lpParams->lpProfSect = static_cast<LPPROFSECT>(lpMAPIProp); // OpenItemProp returns LPPROFSECT
+			lpParams->lpProfSect = dynamic_cast<LPPROFSECT>(lpMAPIProp); // OpenItemProp returns LPPROFSECT
 		}
 
 		InvokeAddInMenu(lpParams);

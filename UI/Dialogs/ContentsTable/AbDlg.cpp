@@ -334,7 +334,7 @@ namespace dialog
 		if (S_OK != hRes) return;
 
 		// Allocate and create our SRestriction
-		EC_H(CreateANRRestriction(
+		EC_H(mapi::ab::CreateANRRestriction(
 			PR_ANR_W,
 			MyData.GetStringW(0),
 			NULL,

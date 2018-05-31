@@ -67,7 +67,7 @@ namespace dialog
 			const auto lpProviderUID = lpListData->Contents()->m_lpProviderUID;
 			if (lpProviderUID)
 			{
-				EC_H(OpenProfileSection(
+				EC_H(mapi::profile::OpenProfileSection(
 					m_lpProviderAdmin,
 					lpProviderUID,
 					reinterpret_cast<LPPROFSECT*>(lppMAPIProp)));
@@ -99,7 +99,7 @@ namespace dialog
 		SBinary MapiUID = { sizeof(GUID), reinterpret_cast<LPBYTE>(&guid) };
 
 		LPPROFSECT lpProfSect = nullptr;
-		EC_H(OpenProfileSection(
+		EC_H(mapi::profile::OpenProfileSection(
 			m_lpProviderAdmin,
 			&MapiUID,
 			&lpProfSect));

@@ -363,7 +363,7 @@ namespace dialog
 				{
 					if (count <= 1)
 					{
-						EC_H(AddOneOffAddress(
+						EC_H(mapi::ab::AddOneOffAddress(
 							lpMAPISession,
 							lpMessage,
 							displayName,
@@ -376,7 +376,7 @@ namespace dialog
 						for (ULONG i = 0; i < count; i++)
 						{
 							const auto countedDisplayName = displayName + std::to_wstring(i);
-							EC_H(AddOneOffAddress(
+							EC_H(mapi::ab::AddOneOffAddress(
 								lpMAPISession,
 								lpMessage,
 								countedDisplayName,
@@ -647,7 +647,7 @@ namespace dialog
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_H(OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		EC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 		if (!lpMDB) return;
 
 		auto bMove = false;
@@ -924,7 +924,7 @@ namespace dialog
 					if (lpMessage)
 					{
 						const auto name = MyData.GetStringW(0);
-						EC_H(ManualResolve(
+						EC_H(mapi::ab::ManualResolve(
 							lpMAPISession,
 							lpMessage,
 							name,
@@ -1618,13 +1618,13 @@ namespace dialog
 							ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
 							auto bDoAdrBook = false;
 
-							EC_H(GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
+							EC_H(mapi::mapimime::GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 							if (S_OK == hRes)
 							{
 								LPADRBOOK lpAdrBook = nullptr;
 								if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 
-								EC_H(ExportIMessageToEML(
+								EC_H(mapi::mapimime::ExportIMessageToEML(
 									lpMessage,
 									filename.c_str(),
 									ulConvertFlags,
@@ -1727,7 +1727,7 @@ namespace dialog
 		auto bDoApply = false;
 		HCHARSET hCharSet = nullptr;
 		auto cSetApplyType = CSET_APPLY_UNTAGGED;
-		WC_H(GetConversionFromEMLOptions(this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, nullptr));
+		WC_H(mapi::mapimime::GetConversionFromEMLOptions(this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, nullptr));
 		if (S_OK == hRes)
 		{
 			LPADRBOOK lpAdrBook = nullptr;
@@ -1752,7 +1752,7 @@ namespace dialog
 
 					if (lpNewMessage)
 					{
-						EC_H(ImportEMLToIMessage(
+						EC_H(mapi::mapimime::ImportEMLToIMessage(
 							lpszPath.c_str(),
 							lpNewMessage,
 							ulConvertFlags,

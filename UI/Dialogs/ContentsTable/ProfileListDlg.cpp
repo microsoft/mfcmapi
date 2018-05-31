@@ -162,7 +162,7 @@ namespace dialog
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			auto szProfName = LaunchProfileWizard(
+			auto szProfName = mapi::profile::LaunchProfileWizard(
 				m_hWnd,
 				MyData.GetHex(0),
 				strings::wstringTostring(MyData.GetStringW(1)));
@@ -172,17 +172,17 @@ namespace dialog
 
 	void CProfileListDlg::OnGetMAPISVC()
 	{
-		DisplayMAPISVCPath(this);
+		mapi::profile::DisplayMAPISVCPath(this);
 	}
 
 	void CProfileListDlg::OnAddServicesToMAPISVC()
 	{
-		AddServicesToMapiSvcInf();
+		mapi::profile::AddServicesToMapiSvcInf();
 	}
 
 	void CProfileListDlg::OnRemoveServicesFromMAPISVC()
 	{
-		RemoveServicesFromMapiSvcInf();
+		mapi::profile::RemoveServicesFromMapiSvcInf();
 	}
 
 	void CProfileListDlg::OnAddExchangeToProfile()
@@ -222,7 +222,7 @@ namespace dialog
 						szMailbox.c_str(),
 						lpListData->Contents()->m_szProfileDisplayName.c_str());
 
-					EC_H(HrAddExchangeToProfile(
+					EC_H(mapi::profile::HrAddExchangeToProfile(
 						reinterpret_cast<ULONG_PTR>(m_hWnd),
 						szServer,
 						szMailbox,
@@ -275,7 +275,7 @@ namespace dialog
 						szPwd.c_str());
 
 					CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-					EC_H(HrAddPSTToProfile(reinterpret_cast<ULONG_PTR>(m_hWnd), bUnicodePST, szPath, lpListData->Contents()->m_szProfileDisplayName, bPasswordSet, szPwd));
+					EC_H(mapi::profile::HrAddPSTToProfile(reinterpret_cast<ULONG_PTR>(m_hWnd), bUnicodePST, szPath, lpListData->Contents()->m_szProfileDisplayName, bPasswordSet, szPwd));
 				}
 			}
 		}
@@ -319,7 +319,7 @@ namespace dialog
 
 				DebugPrintEx(DBGGeneric, CLASS, L"OnAddServiceToProfile", L"Adding service \"%hs\" to profile \"%hs\"\n", szService.c_str(), lpListData->Contents()->m_szProfileDisplayName.c_str());
 
-				EC_H(HrAddServiceToProfile(szService, reinterpret_cast<ULONG_PTR>(m_hWnd), MyData.GetCheck(1) ? SERVICE_UI_ALWAYS : 0, 0, nullptr, lpListData->Contents()->m_szProfileDisplayName));
+				EC_H(mapi::profile::HrAddServiceToProfile(szService, reinterpret_cast<ULONG_PTR>(m_hWnd), MyData.GetCheck(1) ? SERVICE_UI_ALWAYS : 0, 0, nullptr, lpListData->Contents()->m_szProfileDisplayName));
 			}
 		}
 	}
@@ -347,7 +347,7 @@ namespace dialog
 				L"Creating profile \"%hs\"\n", // STRING_OK
 				szProfile.c_str());
 
-			EC_H(HrCreateProfile(szProfile));
+			EC_H(mapi::profile::HrCreateProfile(szProfile));
 
 			// Since we may have created a profile, update even if we failed.
 			OnRefreshView(); // Update the view since we don't have notifications here.
@@ -369,7 +369,7 @@ namespace dialog
 
 			DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting profile \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
 
-			EC_H(HrRemoveProfile(lpListData->Contents()->m_szProfileDisplayName));
+			EC_H(mapi::profile::HrRemoveProfile(lpListData->Contents()->m_szProfileDisplayName));
 		}
 
 		OnRefreshView(); // Update the view since we don't have notifications here.
@@ -391,7 +391,7 @@ namespace dialog
 			DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnGetProfileServiceVersion", L"Getting profile service version for \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 			ULONG ulServerVersion = 0;
-			EXCHANGE_STORE_VERSION_NUM storeVersion = { 0 };
+			mapi::profile::EXCHANGE_STORE_VERSION_NUM storeVersion = { 0 };
 			auto bFoundServerVersion = false;
 			auto bFoundServerFullVersion = false;
 
@@ -468,7 +468,7 @@ namespace dialog
 		{
 			DebugPrintEx(DBGGeneric, CLASS, L"OnSetDefaultProfile", L"Setting profile \"%hs\" as default\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
 
-			EC_H(HrSetDefaultProfile(lpListData->Contents()->m_szProfileDisplayName));
+			EC_H(mapi::profile::HrSetDefaultProfile(lpListData->Contents()->m_szProfileDisplayName));
 
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
@@ -539,7 +539,7 @@ namespace dialog
 		{
 			const auto szNewProfile = strings::wstringTostring(MyData.GetStringW(0));
 
-			WC_MAPI(HrCopyProfile(szOldProfile, szNewProfile));
+			WC_MAPI(mapi::profile::HrCopyProfile(szOldProfile, szNewProfile));
 
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}

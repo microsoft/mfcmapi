@@ -58,7 +58,7 @@ void ExportProfileProvider(FILE* fProfile, int iRow, LPPROVIDERADMIN lpProviderA
 	if (lpProviderUID)
 	{
 		LPPROFSECT lpSect = nullptr;
-		EC_H(OpenProfileSection(
+		EC_H(mapi::profile::OpenProfileSection(
 			lpProviderAdmin,
 			&lpProviderUID->Value.bin,
 			&lpSect));
@@ -91,7 +91,7 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 	if (lpServiceUID)
 	{
 		LPPROFSECT lpSect = nullptr;
-		EC_H(OpenProfileSection(
+		EC_H(mapi::profile::OpenProfileSection(
 			lpServiceAdmin,
 			&lpServiceUID->Value.bin,
 			&lpSect));
@@ -186,7 +186,7 @@ void ExportProfile(_In_ const std::string& szProfile, _In_ const std::wstring& s
 					sBin.cb = sizeof(GUID);
 					sBin.lpb = LPBYTE(lpGuid);
 
-					EC_H(OpenProfileSection(
+					EC_H(mapi::profile::OpenProfileSection(
 						lpServiceAdmin,
 						&sBin,
 						&lpSect));

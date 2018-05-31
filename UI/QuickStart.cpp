@@ -41,7 +41,7 @@ HRESULT OpenStoreForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd,
 	if (lpMAPISession)
 	{
 		LPMDB lpMDB = nullptr;
-		WC_H(OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		WC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 		if (SUCCEEDED(hRes))
 		{
 			*lppMDB = lpMDB;
@@ -442,7 +442,7 @@ void OnQSOpenUser(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		ULONG ulObjType = NULL;
 		LPMAILUSER lpMailUser = nullptr;
 
-		EC_H(SelectUser(lpAdrBook, hwnd, &ulObjType, &lpMailUser));
+		EC_H(mapi::ab::SelectUser(lpAdrBook, hwnd, &ulObjType, &lpMailUser));
 
 		if (SUCCEEDED(hRes) && lpMailUser)
 		{
@@ -476,7 +476,7 @@ void OnQSLookupThumbail(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
 		LPMAILUSER lpMailUser = nullptr;
 
-		EC_H(SelectUser(lpAdrBook, hwnd, nullptr, &lpMailUser));
+		EC_H(mapi::ab::SelectUser(lpAdrBook, hwnd, nullptr, &lpMailUser));
 
 		if (SUCCEEDED(hRes) && lpMailUser)
 		{

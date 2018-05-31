@@ -85,7 +85,7 @@ namespace dialog
 		LPMDB lpGUIDMDB = nullptr;
 		if (!lpMDB)
 		{
-			EC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpGUIDMDB));
+			EC_H(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpGUIDMDB));
 		}
 
 		const auto lpSourceMDB = lpMDB ? lpMDB : lpGUIDMDB; // do not release
@@ -101,7 +101,7 @@ namespace dialog
 				{
 					if (!lpListData->Contents()->m_szDN.empty())
 					{
-						EC_H(OpenOtherUsersMailbox(
+						EC_H(mapi::store::OpenOtherUsersMailbox(
 							lpMAPISession,
 							lpSourceMDB,
 							strings::wstringTostring(m_lpszServerName),
