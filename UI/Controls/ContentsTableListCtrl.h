@@ -12,6 +12,14 @@ namespace dialog
 	class CContentsTableDlg;
 }
 
+namespace mapi
+{
+	namespace mapiui
+	{
+		class CAdviseSink;
+	}
+}
+
 namespace controls
 {
 	namespace sortlistctrl
@@ -104,7 +112,7 @@ namespace controls
 			bool m_bInLoadOp;
 			const _SRestriction* m_lpRes;
 			ULONG m_ulContainerType;
-			CAdviseSink* m_lpAdviseSink;
+			mapi::mapiui::CAdviseSink* m_lpAdviseSink;
 			LPMAPITABLE m_lpContentsTable;
 
 			__mfcmapiRestrictionTypeEnum m_RestrictionType;

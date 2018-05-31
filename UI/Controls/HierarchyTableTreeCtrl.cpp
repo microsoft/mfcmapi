@@ -466,7 +466,7 @@ namespace controls
 				(RegKeys[regkeyHIER_ROOT_NOTIFS].ulCurDWORD || GetRootItem() != hItem))
 			{
 				DebugPrintEx(DBGNotify, CLASS, L"GetHierarchyTable", L"Advise sink for \"%ws\" = %p\n", strings::LPCTSTRToWstring(GetItemText(hItem)).c_str(), hItem);
-				lpData->Node()->m_lpAdviseSink = new CAdviseSink(m_hWnd, hItem);
+				lpData->Node()->m_lpAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, hItem);
 
 				if (lpData->Node()->m_lpAdviseSink)
 				{

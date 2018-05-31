@@ -83,8 +83,6 @@ struct TagNames
 	UINT uidName;
 };
 
-class CAdviseSink;
-
 // Macros to assist in OnInitMenu
 #define CHECK(state) ((state)?MF_CHECKED:MF_UNCHECKED)
 #define DIM(state) ((state)?MF_ENABLED:MF_GRAYED)

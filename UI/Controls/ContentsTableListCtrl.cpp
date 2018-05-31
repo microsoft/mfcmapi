@@ -1428,7 +1428,7 @@ namespace controls
 
 			DebugPrintEx(DBGGeneric, CLASS, L"NotificationOn", L"registering table notification on %p\n", m_lpContentsTable);
 
-			m_lpAdviseSink = new CAdviseSink(m_hWnd, nullptr);
+			m_lpAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
 
 			if (m_lpAdviseSink)
 			{

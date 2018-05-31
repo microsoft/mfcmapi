@@ -1186,7 +1186,7 @@ namespace controls
 
 			DebugPrintEx(DBGGeneric, CLASS, L"OnDisplayPropertyAsSecurityDescriptorPropSheet", L"interpreting 0x%X as Security Descriptor\n", ulPropTag);
 
-			auto MySecInfo = new (std::nothrow) CMySecInfo(m_lpPropBag->GetMAPIProp(), ulPropTag);
+			auto MySecInfo = new (std::nothrow) mapi::mapiui::CMySecInfo(m_lpPropBag->GetMAPIProp(), ulPropTag);
 
 			if (MySecInfo)
 			{

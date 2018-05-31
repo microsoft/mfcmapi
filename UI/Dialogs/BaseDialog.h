@@ -1,6 +1,5 @@
 #pragma once
 class CParentWnd;
-class CAdviseSink;
 namespace controls
 {
 	class CFakeSplitter;
@@ -13,6 +12,14 @@ namespace controls
 namespace cache
 {
 	class CMapiObjects;
+}
+
+namespace mapi
+{
+	namespace mapiui
+	{
+		class CAdviseSink;
+	}
 }
 
 #include <UI/Dialogs/Dialog.h>
@@ -107,7 +114,7 @@ namespace dialog
 		int m_StatusWidth[STATUSBARNUMPANES]{};
 		bool m_bDisplayingMenuText;
 		std::wstring m_szMenuDisplacedText;
-		CAdviseSink* m_lpBaseAdviseSink;
+		mapi::mapiui::CAdviseSink* m_lpBaseAdviseSink;
 		ULONG_PTR m_ulBaseAdviseConnection;
 		ULONG m_ulBaseAdviseObjectType;
 

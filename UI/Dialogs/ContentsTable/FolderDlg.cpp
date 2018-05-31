@@ -995,7 +995,7 @@ namespace dialog
 
 			if (lpFolder)
 			{
-				EC_H(CreateAndDisplayNewMailInFolder(
+				EC_H(mapi::mapiui::CreateAndDisplayNewMailInFolder(
 					m_hWnd,
 					lpMDB,
 					lpMAPISession,
@@ -1115,7 +1115,7 @@ namespace dialog
 				break;
 				}
 
-				EC_H(CreateAndDisplayNewMailInFolder(
+				EC_H(mapi::mapiui::CreateAndDisplayNewMailInFolder(
 					m_hWnd,
 					lpMDB,
 					lpMAPISession,
@@ -1157,7 +1157,7 @@ namespace dialog
 					reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 				if (lpMessage)
 				{
-					EC_H(OpenMessageModal(
+					EC_H(mapi::mapiui::OpenMessageModal(
 						dynamic_cast<LPMAPIFOLDER>(m_lpContainer),
 						lpMAPISession,
 						lpMDB,
@@ -1202,7 +1202,7 @@ namespace dialog
 
 				if (lpMessage)
 				{
-					WC_H(OpenMessageNonModal(
+					WC_H(mapi::mapiui::OpenMessageNonModal(
 						m_hWnd,
 						lpMDB,
 						lpMAPISession,
@@ -1262,7 +1262,7 @@ namespace dialog
 
 					if (lpMessage)
 					{
-						EC_H(OpenMessageNonModal(
+						EC_H(mapi::mapiui::OpenMessageNonModal(
 							m_hWnd,
 							lpMDB,
 							lpMAPISession,

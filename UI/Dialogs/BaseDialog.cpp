@@ -974,7 +974,7 @@ namespace dialog
 			WC_H(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
 			// don't actually care if the returning lpEntryID is NULL - Advise can work with that
 
-			m_lpBaseAdviseSink = new CAdviseSink(m_hWnd, nullptr);
+			m_lpBaseAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
 
 			if (m_lpBaseAdviseSink)
 			{
