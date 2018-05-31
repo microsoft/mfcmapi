@@ -378,7 +378,7 @@ namespace mapi
 					}
 				}
 
-				LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
+				LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
 
 				auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
 
@@ -418,7 +418,7 @@ namespace mapi
 						sbaEID.cValues = 1;
 						sbaEID.lpbin = &pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin;
 
-						LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
+						LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
 
 						auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
 
@@ -980,7 +980,7 @@ namespace mapi
 
 		if (lpWasteFolder)
 		{
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
+			LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
 
 			auto ulCopyFlags = MESSAGE_MOVE;
 
@@ -1746,7 +1746,7 @@ namespace mapi
 
 					DebugPrint(DBGGeneric, L"Copying recipients and attachments to new message.\n");
 
-					LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
+					LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
 
 					EC_MAPI(lpAttachMsg->CopyProps(
 						LPSPropTagArray(&atObjs),
@@ -2052,7 +2052,7 @@ namespace mapi
 			if (bDoMove) ulFlags |= MAPI_MOVE;
 			if (bDoNoReplace) ulFlags |= MAPI_NOREPLACE;
 
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
+			LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
 
 			if (lpProgress)
 				ulFlags |= MAPI_DIALOG;
@@ -2689,7 +2689,7 @@ namespace mapi
 				ulCopyFlags = MyData.GetHex(1);
 				if (hWnd)
 				{
-					lpProgress = GetMAPIProgress(L"CopyTo", hWnd); // STRING_OK
+					lpProgress = mapi::mapiui::GetMAPIProgress(L"CopyTo", hWnd); // STRING_OK
 					if (lpProgress)
 						ulCopyFlags |= MAPI_DIALOG;
 				}

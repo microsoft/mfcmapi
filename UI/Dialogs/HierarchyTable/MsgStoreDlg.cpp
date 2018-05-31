@@ -429,7 +429,7 @@ namespace dialog
 			{
 				auto ulMoveMessage = MyData.GetCheck(0) ? MESSAGE_MOVE : 0;
 
-				LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
+				LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
 
 				if (lpProgress)
 					ulMoveMessage |= MESSAGE_DIALOG;
@@ -520,7 +520,7 @@ namespace dialog
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
+				LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
 
 				auto ulCopyFlags = MAPI_UNICODE;
 				if (MyData.GetCheck(1))
@@ -815,7 +815,7 @@ namespace dialog
 				{
 					auto ulFlags = MyData.GetCheck(0) ? DEL_ASSOCIATED : 0;
 					ulFlags |= MyData.GetCheck(1) ? DELETE_HARD_DELETE : 0;
-					LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::EmptyFolder", m_hWnd); // STRING_OK
+					LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::EmptyFolder", m_hWnd); // STRING_OK
 
 					if (lpProgress)
 						ulFlags |= FOLDER_DIALOG;
@@ -881,7 +881,7 @@ namespace dialog
 					DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Calling DeleteFolder on folder. ulFlags = 0x%08X.\n", ulFlags);
 					DebugPrintBinary(DBGGeneric, *lpItemEID);
 
-					LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::DeleteFolder", m_hWnd); // STRING_OK
+					LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteFolder", m_hWnd); // STRING_OK
 
 					if (lpProgress)
 						ulFlags |= FOLDER_DIALOG;
@@ -1152,7 +1152,7 @@ namespace dialog
 				auto lpCopyRoot = lpSrcParentFolder;
 				if (!lpSrcParentFolder) lpCopyRoot = dynamic_cast<LPMAPIFOLDER>(m_lpContainer);
 
-				LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
+				LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
 
 				auto ulCopyFlags = MAPI_UNICODE | (MyData.GetCheck(1) ? COPY_SUBFOLDERS : 0);
 

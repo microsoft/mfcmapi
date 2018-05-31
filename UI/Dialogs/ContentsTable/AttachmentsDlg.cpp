@@ -283,7 +283,7 @@ namespace dialog
 					EC_MAPI(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
 					if (lpAttDst)
 					{
-						LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IAttach::CopyTo", m_hWnd); // STRING_OK
+						LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IAttach::CopyTo", m_hWnd); // STRING_OK
 
 						// Copy from source to destination
 						EC_MAPI(lpAttSrc->CopyTo(
@@ -344,7 +344,7 @@ namespace dialog
 		for (const auto& attachnum : attachnums)
 		{
 			DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting attachment 0x%08X\n", attachnum);
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMessage::DeleteAttach", m_hWnd); // STRING_OK
+			LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", m_hWnd); // STRING_OK
 			EC_MAPI(m_lpMessage->DeleteAttach(
 				attachnum,
 				lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,

@@ -1534,7 +1534,7 @@ namespace controls
 					if (S_OK == hRes)
 					{
 						auto MyGUID = guid::StringToGUID(MyCopyData.GetStringW(0));
-						LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIProp::CopyProps", m_lpHostDlg->m_hWnd); // STRING_OK
+						LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", m_lpHostDlg->m_hWnd); // STRING_OK
 						auto ulCopyFlags = MyCopyData.GetHex(1);
 
 						if (lpProgress)

@@ -185,7 +185,7 @@ namespace file
 		{
 			LPSPropProblemArray lpProblems = nullptr;
 
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIProp::CopyTo", hWnd); // STRING_OK
+			LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyTo", hWnd); // STRING_OK
 
 			EC_MAPI(pIMsg->CopyTo(
 				0,
@@ -1045,7 +1045,7 @@ namespace file
 						}
 
 						// Open the attachment
-						LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMessage::DeleteAttach", hWnd); // STRING_OK
+						LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", hWnd); // STRING_OK
 
 						EC_MAPI(lpMessage->DeleteAttach(
 							pRows->aRow[iRow].lpProps[ATTACHNUM].Value.l,
