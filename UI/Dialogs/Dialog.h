@@ -10,7 +10,7 @@ namespace dialog
 		CMyDialog();
 		CMyDialog(UINT nIDTemplate, CWnd* pParentWnd = nullptr);
 		virtual ~CMyDialog();
-		void DisplayParentedDialog(CParentWnd* lpNonModalParent, UINT iAutoCenterWidth);
+		void DisplayParentedDialog(ui::CParentWnd* lpNonModalParent, UINT iAutoCenterWidth);
 
 	protected:
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -23,7 +23,7 @@ namespace dialog
 		void OnMeasureItem(int nIDCtl, _In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 		void OnDrawItem(int nIDCtl, _In_ LPDRAWITEMSTRUCT lpDrawItemStruct);
 		LRESULT NCHitTest(WPARAM wParam, LPARAM lParam);
-		CParentWnd* m_lpNonModalParent;
+		ui::CParentWnd* m_lpNonModalParent;
 		CWnd* m_hwndCenteringWindow;
 		UINT m_iAutoCenterWidth;
 		bool m_bStatus;

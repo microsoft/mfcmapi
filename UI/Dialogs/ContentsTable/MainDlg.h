@@ -1,10 +1,6 @@
 #pragma once
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
-class CContentsTableListCtrl;
-class CSingleMAPIPropListCtrl;
-class CParentWnd;
-
 namespace cache
 {
 	class CMapiObjects;
@@ -16,7 +12,7 @@ namespace dialog
 	{
 	public:
 		CMainDlg(
-			_In_ CParentWnd* pParentWnd,
+			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects);
 		virtual ~CMainDlg();
 

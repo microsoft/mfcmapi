@@ -11,7 +11,7 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <Interpret/InterpretProp.h>
 
-extern CMyWinApp theApp;
+extern ui::CMyWinApp theApp;
 
 namespace mapi
 {

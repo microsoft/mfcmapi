@@ -1,5 +1,8 @@
 #pragma once
-class CParentWnd;
+#include <UI/Dialogs/Dialog.h>
+#include <Enums.h>
+#include <UI/Controls/SortList/SortListData.h>
+
 namespace controls
 {
 	class CFakeSplitter;
@@ -22,17 +25,13 @@ namespace mapi
 	}
 }
 
-#include <UI/Dialogs/Dialog.h>
-#include <Enums.h>
-#include <UI/Controls/SortList/SortListData.h>
-
 namespace dialog
 {
 	class CBaseDialog : public CMyDialog
 	{
 	public:
 		CBaseDialog(
-			_In_ CParentWnd* pParentWnd,
+			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects,
 			ULONG ulAddInContext);
 		virtual ~CBaseDialog();
@@ -50,7 +49,7 @@ namespace dialog
 		void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1);
 		void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, std::wstring& szParam1, std::wstring& szParam2, std::wstring& szParam3);
 		void OnOpenEntryID(_In_opt_ LPSBinary lpBin);
-		_Check_return_ CParentWnd* GetParentWnd() const;
+		_Check_return_ ui::CParentWnd* GetParentWnd() const;
 		_Check_return_ cache::CMapiObjects* GetMapiObjects() const;
 
 		static void UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const std::wstring& status);
@@ -73,7 +72,7 @@ namespace dialog
 		std::wstring m_szTitle;
 		LPMAPICONTAINER m_lpContainer;
 		cache::CMapiObjects* m_lpMapiObjects;
-		CParentWnd* m_lpParent;
+		ui::CParentWnd* m_lpParent;
 
 	private:
 		_Check_return_ virtual bool HandleAddInMenu(WORD wMenuSelect);

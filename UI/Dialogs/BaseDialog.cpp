@@ -26,7 +26,7 @@ namespace dialog
 	static std::wstring CLASS = L"CBaseDialog";
 
 	CBaseDialog::CBaseDialog(
-		_In_ CParentWnd* pParentWnd,
+		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
 		ULONG ulAddInContext)
 	{
@@ -1078,7 +1078,7 @@ namespace dialog
 		return false;
 	}
 
-	_Check_return_ CParentWnd* CBaseDialog::GetParentWnd() const
+	_Check_return_ ui::CParentWnd* CBaseDialog::GetParentWnd() const
 	{
 		return m_lpParent;
 	}

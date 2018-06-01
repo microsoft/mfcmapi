@@ -17,7 +17,7 @@ namespace dialog
 	static std::wstring CLASS = L"CContentsTableDlg";
 
 	CContentsTableDlg::CContentsTableDlg(
-		_In_ CParentWnd* pParentWnd,
+		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		UINT uidTitle,
 		__mfcmapiCreateDialogEnum bCreateDialog,

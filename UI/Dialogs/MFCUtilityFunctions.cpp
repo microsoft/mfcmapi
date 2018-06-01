@@ -461,7 +461,7 @@ namespace dialog
 		return false;
 	}
 
-	void DisplayMailboxTable(_In_ CParentWnd* lpParent,
+	void DisplayMailboxTable(_In_ ui::CParentWnd* lpParent,
 		_In_ cache::CMapiObjects* lpMapiObjects)
 	{
 		if (!lpParent || !lpMapiObjects) return;
@@ -598,7 +598,7 @@ namespace dialog
 		if (lpPrivateMDB) lpPrivateMDB->Release();
 	}
 
-	void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
+	void DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent,
 		_In_ cache::CMapiObjects* lpMapiObjects)
 	{
 		if (!lpParent || !lpMapiObjects) return;
@@ -621,7 +621,7 @@ namespace dialog
 			const auto szServerName = strings::stringTowstring(mapi::store::GetServerName(lpMAPISession));
 
 			dialog::editor::CEditor MyData(
-				static_cast<CWnd*>(lpParent),
+				reinterpret_cast<CWnd*>(lpParent),
 				IDS_DISPLAYPFTABLE,
 				IDS_DISPLAYPFTABLEPROMPT,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);

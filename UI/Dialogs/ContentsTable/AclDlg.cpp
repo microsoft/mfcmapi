@@ -16,7 +16,7 @@ namespace dialog
 #define ACL_INCLUDE_ID 0x00000001
 #define ACL_INCLUDE_OTHER 0x00000002
 
-	CAclDlg::CAclDlg(_In_ CParentWnd* pParentWnd,
+	CAclDlg::CAclDlg(_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPEXCHANGEMODIFYTABLE lpExchTbl,
 		bool fFreeBusyVisible)

@@ -259,7 +259,7 @@ namespace dialog
 		return CDialog::WindowProc(message, wParam, lParam);
 	}
 
-	void CMyDialog::DisplayParentedDialog(CParentWnd* lpNonModalParent, UINT iAutoCenterWidth)
+	void CMyDialog::DisplayParentedDialog(ui::CParentWnd* lpNonModalParent, UINT iAutoCenterWidth)
 	{
 		auto hRes = S_OK;
 		m_iAutoCenterWidth = iAutoCenterWidth;

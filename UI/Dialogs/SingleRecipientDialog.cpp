@@ -9,7 +9,7 @@ namespace dialog
 	static std::wstring CLASS = L"SingleRecipientDialog";
 
 	SingleRecipientDialog::SingleRecipientDialog(
-		_In_ CParentWnd* pParentWnd,
+		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_opt_ LPMAILUSER lpMAPIProp) :
 		CBaseDialog(

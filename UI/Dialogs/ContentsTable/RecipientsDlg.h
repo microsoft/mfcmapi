@@ -1,10 +1,6 @@
 #pragma once
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
-class CContentsTableListCtrl;
-class CSingleMAPIPropListCtrl;
-class CParentWnd;
-
 namespace
 {
 	class CMapiObjects;
@@ -16,7 +12,7 @@ namespace dialog
 	{
 	public:
 		CRecipientsDlg(
-			_In_ CParentWnd* pParentWnd,
+			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects,
 			_In_ LPMAPITABLE lpMAPITable,
 			_In_ LPMESSAGE lpMessage);

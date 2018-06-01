@@ -13,7 +13,7 @@ namespace dialog
 	static std::wstring CLASS = L"CRecipientsDlg";
 
 	CRecipientsDlg::CRecipientsDlg(
-		_In_ CParentWnd* pParentWnd,
+		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPITABLE lpMAPITable,
 		_In_ LPMESSAGE lpMessage

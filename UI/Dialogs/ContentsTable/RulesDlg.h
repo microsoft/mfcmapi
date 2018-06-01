@@ -1,8 +1,6 @@
 #pragma once
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
-class CParentWnd;
-
 namespace cache
 {
 	class CMapiObjects;
@@ -14,7 +12,7 @@ namespace dialog
 	{
 	public:
 		CRulesDlg(
-			_In_ CParentWnd* pParentWnd,
+			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects,
 			_In_ LPEXCHANGEMODIFYTABLE lpExchTbl);
 		virtual ~CRulesDlg();

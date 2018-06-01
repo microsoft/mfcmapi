@@ -28,7 +28,7 @@ namespace dialog
 	static std::wstring CLASS = L"CFolderDlg";
 
 	CFolderDlg::CFolderDlg(
-		_In_ CParentWnd* pParentWnd,
+		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPIFOLDER lpMAPIFolder,
 		ULONG ulDisplayFlags

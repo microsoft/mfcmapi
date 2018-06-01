@@ -18,7 +18,7 @@ namespace dialog
 	static std::wstring CLASS = L"CAbDlg";
 
 	CAbDlg::CAbDlg(
-		_In_ CParentWnd* pParentWnd,
+		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPABCONT lpAdrBook
 	) :

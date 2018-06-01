@@ -21,7 +21,7 @@ namespace dialog
 			HEXED_SMARTVIEW
 		};
 
-		CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects) :
+		CHexEditor::CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects) :
 			CEditor(pParentWnd, IDS_HEXEDITOR, NULL, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 | CEDITOR_BUTTON_ACTION3, IDS_IMPORT, IDS_EXPORT, IDS_CLOSE)
 		{
 			TRACE_CONSTRUCTOR(CLASS);

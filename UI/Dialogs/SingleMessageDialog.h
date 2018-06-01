@@ -9,7 +9,7 @@ namespace dialog
 	{
 	public:
 		SingleMessageDialog(
-			_In_ CParentWnd* pParentWnd,
+			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects,
 			_In_opt_ LPMESSAGE lpMAPIProp);
 		virtual ~SingleMessageDialog();

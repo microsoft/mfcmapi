@@ -11,7 +11,7 @@ namespace dialog
 		class CDbgView : public CEditor
 		{
 		public:
-			CDbgView(_In_ CParentWnd* pParentWnd);
+			CDbgView(_In_ ui::CParentWnd* pParentWnd);
 			virtual ~CDbgView();
 			void AppendText(const std::wstring& szMsg) const;
 
@@ -29,7 +29,7 @@ namespace dialog
 		CDbgView* g_DgbView = nullptr;
 
 		// Displays the debug viewer - only one may exist at a time
-		void DisplayDbgView(_In_ CParentWnd* pParentWnd)
+		void DisplayDbgView(_In_ ui::CParentWnd* pParentWnd)
 		{
 			if (!g_DgbView) g_DgbView = new CDbgView(pParentWnd);
 		}
@@ -50,7 +50,7 @@ namespace dialog
 
 		static std::wstring CLASS = L"CDbgView";
 
-		CDbgView::CDbgView(_In_ CParentWnd* pParentWnd) :
+		CDbgView::CDbgView(_In_ ui::CParentWnd* pParentWnd) :
 			CEditor(pParentWnd, IDS_DBGVIEW, NULL, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2, IDS_CLEAR, IDS_CLOSE, NULL)
 		{
 			TRACE_CONSTRUCTOR(CLASS);

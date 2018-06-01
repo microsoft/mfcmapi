@@ -6,7 +6,7 @@
 #include <UI/MyWinApp.h>
 #include <UI/Dialogs/AboutDlg.h>
 
-extern CMyWinApp theApp;
+extern ui::CMyWinApp theApp;
 
 namespace dialog
 {

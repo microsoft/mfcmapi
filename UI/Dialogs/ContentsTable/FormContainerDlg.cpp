@@ -16,7 +16,7 @@ namespace dialog
 	static std::wstring CLASS = L"CFormContainerDlg";
 
 	CFormContainerDlg::CFormContainerDlg(
-		_In_ CParentWnd* pParentWnd,
+		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPIFORMCONTAINER lpFormContainer
 	) :

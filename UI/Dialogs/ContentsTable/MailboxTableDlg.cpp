@@ -17,7 +17,7 @@ namespace dialog
 	static std::wstring CLASS = L"CMailboxTableDlg";
 
 	CMailboxTableDlg::CMailboxTableDlg(
-		_In_ CParentWnd* pParentWnd,
+		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ const std::wstring& lpszServerName,
 		_In_ LPMAPITABLE lpMAPITable
