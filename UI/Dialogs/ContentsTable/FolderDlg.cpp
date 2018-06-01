@@ -2296,6 +2296,6 @@ namespace dialog
 				lpParams->ulCurrentFlags |= MENU_FLAGS_DELETED;
 		}
 
-		InvokeAddInMenu(lpParams);
+		addin::InvokeAddInMenu(lpParams);
 	}
 }

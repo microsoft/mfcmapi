@@ -309,6 +309,6 @@ namespace dialog
 			lpParams->lpProfSect = dynamic_cast<LPPROFSECT>(lpMAPIProp); // OpenItemProp returns LPPROFSECT
 		}
 
-		InvokeAddInMenu(lpParams);
+		addin::InvokeAddInMenu(lpParams);
 	}
 }

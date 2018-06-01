@@ -133,6 +133,6 @@ namespace dialog
 			lpParams->lpProfSect = static_cast<LPPROFSECT>(lpMAPIProp);
 		}
 
-		InvokeAddInMenu(lpParams);
+		addin::InvokeAddInMenu(lpParams);
 	}
 }

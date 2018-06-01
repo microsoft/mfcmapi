@@ -430,7 +430,7 @@ namespace smartview
 	std::wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
 		if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
-		auto szResultString = AddInSmartView(iStructType, myBin.cb, myBin.lpb);
+		auto szResultString = addin::AddInSmartView(iStructType, myBin.cb, myBin.lpb);
 		if (!szResultString.empty())
 		{
 			return szResultString;

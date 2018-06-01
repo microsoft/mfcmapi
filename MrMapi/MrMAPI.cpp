@@ -190,8 +190,6 @@ COMMANDLINE_SWITCH g_Switches[] =
 };
 ULONG g_ulSwitches = _countof(g_Switches);
 
-extern std::vector<_AddIn> g_lpMyAddins;
-
 void DisplayUsage(BOOL bFull)
 {
 	printf("MAPI data collection and parsing tool. Supports property tag lookup, error translation,\n");
@@ -1037,7 +1035,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 	MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 
 	// Set up our property arrays or nothing works
-	MergeAddInArrays();
+	addin::MergeAddInArrays();
 
 	RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD = 1;
 	RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
@@ -1062,7 +1060,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 	if (!(ProgOpts.ulOptions & OPT_NOADDINS))
 	{
 		RegKeys[regkeyLOADADDINS].ulCurDWORD = true;
-		LoadAddIns();
+		addin::LoadAddIns();
 	}
 
 	if (!ProgOpts.lpszVersion.empty())
@@ -1203,6 +1201,6 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 
 	if (!(ProgOpts.ulOptions & OPT_NOADDINS))
 	{
-		UnloadAddIns();
+		addin::UnloadAddIns();
 	}
 }

@@ -96,7 +96,7 @@ namespace SmartViewTest
 						}
 						catch (int exception)
 						{
-							Logger::WriteMessage(strings::format(L"Testing %ws failed at %ws with error 0x%08X\n", data.testName.c_str(), AddInStructTypeToString(structType).c_str(), exception).c_str());
+							Logger::WriteMessage(strings::format(L"Testing %ws failed at %ws with error 0x%08X\n", data.testName.c_str(), addin::AddInStructTypeToString(structType).c_str(), exception).c_str());
 							Assert::Fail();
 						}
 					}
@@ -149,7 +149,7 @@ namespace SmartViewTest
 		TEST_CLASS_INITIALIZE(Initialize_smartview)
 		{
 			// Set up our property arrays or nothing works
-			MergeAddInArrays();
+			addin::MergeAddInArrays();
 
 			RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD = 1;
 			RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD = 1;

@@ -506,6 +506,6 @@ namespace dialog
 			lpParams->lpAttach = dynamic_cast<LPATTACH>(lpMAPIProp); // OpenItemProp returns LPATTACH
 		}
 
-		InvokeAddInMenu(lpParams);
+		addin::InvokeAddInMenu(lpParams);
 	}
 }

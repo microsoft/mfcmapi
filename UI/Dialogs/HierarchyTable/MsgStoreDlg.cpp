@@ -1246,6 +1246,6 @@ namespace dialog
 			lpParams->lpFolder = dynamic_cast<LPMAPIFOLDER>(lpContainer); // GetSelectedContainer returns LPMAPIFOLDER
 		}
 
-		InvokeAddInMenu(lpParams);
+		addin::InvokeAddInMenu(lpParams);
 	}
 }

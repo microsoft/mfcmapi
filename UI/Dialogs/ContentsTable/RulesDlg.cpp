@@ -224,6 +224,6 @@ namespace dialog
 			lpParams->lpExchTbl = m_lpExchTbl;
 		}
 
-		InvokeAddInMenu(lpParams);
+		addin::InvokeAddInMenu(lpParams);
 	}
 }

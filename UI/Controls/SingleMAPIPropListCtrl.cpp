@@ -208,7 +208,7 @@ namespace controls
 				{
 					for (ULONG ulMenu = ID_ADDINPROPERTYMENU;; ulMenu++)
 					{
-						const auto lpAddInMenu = GetAddinMenuItem(m_lpHostDlg->m_hWnd, ulMenu);
+						const auto lpAddInMenu = addin::GetAddinMenuItem(m_lpHostDlg->m_hWnd, ulMenu);
 						if (!lpAddInMenu) break;
 
 						pMenu->EnableMenuItem(ulMenu, DIM(bPropSelected));
@@ -1844,7 +1844,7 @@ namespace controls
 			if (wMenuSelect < ID_ADDINPROPERTYMENU) return false;
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-			const auto lpAddInMenu = GetAddinMenuItem(m_lpHostDlg->m_hWnd, wMenuSelect);
+			const auto lpAddInMenu = addin::GetAddinMenuItem(m_lpHostDlg->m_hWnd, wMenuSelect);
 			if (!lpAddInMenu) return false;
 
 			_AddInMenuParams MyAddInMenuParams = { nullptr };
@@ -1869,7 +1869,7 @@ namespace controls
 
 			GetSelectedPropTag(&MyAddInMenuParams.ulPropTag);
 
-			InvokeAddInMenu(&MyAddInMenuParams);
+			addin::InvokeAddInMenu(&MyAddInMenuParams);
 			return true;
 		}
 	}

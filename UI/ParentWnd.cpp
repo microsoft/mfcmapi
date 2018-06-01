@@ -75,7 +75,7 @@ CParentWnd::CParentWnd()
 	ForceOutlookMAPI(0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
 	ForceSystemMAPI(0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD);
 
-	LoadAddIns();
+	addin::LoadAddIns();
 
 	// Notice we never create a window here!
 	TRACE_CONSTRUCTOR(CLASS);
@@ -87,7 +87,7 @@ CParentWnd::~CParentWnd()
 	// We call AfxPostQuitMessage instead
 	TRACE_DESTRUCTOR(CLASS);
 	ui::UninitializeGDI();
-	UnloadAddIns();
+	addin::UnloadAddIns();
 	if (m_hwinEventHook) UnhookWinEvent(m_hwinEventHook);
 	cache::UninitializeNamedPropCache();
 	WriteToRegistry();

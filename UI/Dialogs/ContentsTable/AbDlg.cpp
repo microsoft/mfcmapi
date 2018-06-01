@@ -358,6 +358,6 @@ namespace dialog
 			lpParams->lpMailUser = dynamic_cast<LPMAILUSER>(lpMAPIProp); // OpenItemProp returns LPMAILUSER
 		}
 
-		InvokeAddInMenu(lpParams);
+		addin::InvokeAddInMenu(lpParams);
 	}
 }

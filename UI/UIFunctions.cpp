@@ -358,7 +358,7 @@ namespace ui
 
 			if (IDR_MENU_PROPERTY_POPUP == uiClassMenu)
 			{
-				(void)ExtendAddInMenu(hRealPopup, MENU_CONTEXT_PROPERTY);
+				(void)addin::ExtendAddInMenu(hRealPopup, MENU_CONTEXT_PROPERTY);
 			}
 
 			ConvertMenuOwnerDraw(hRealPopup, false);

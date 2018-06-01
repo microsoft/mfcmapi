@@ -1989,6 +1989,6 @@ namespace dialog
 			lpParams->lpMDB = dynamic_cast<LPMDB>(lpMAPIProp);
 		}
 
-		InvokeAddInMenu(lpParams);
+		addin::InvokeAddInMenu(lpParams);
 	}
 }

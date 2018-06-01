@@ -468,6 +468,6 @@ namespace dialog
 			lpParams->lpFormInfoProp = dynamic_cast<LPMAPIFORMINFO>(lpMAPIProp); // OpenItemProp returns LPMAPIFORMINFO
 		}
 
-		InvokeAddInMenu(lpParams);
+		addin::InvokeAddInMenu(lpParams);
 	}
 }

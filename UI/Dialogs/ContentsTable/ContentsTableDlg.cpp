@@ -197,7 +197,7 @@ namespace dialog
 
 			for (ULONG ulMenu = ID_ADDINMENU; ulMenu < ID_ADDINMENU + m_ulAddInMenuItems; ulMenu++)
 			{
-				const auto lpAddInMenu = GetAddinMenuItem(m_hWnd, ulMenu);
+				const auto lpAddInMenu = addin::GetAddinMenuItem(m_hWnd, ulMenu);
 				if (!lpAddInMenu) continue;
 
 				const auto ulFlags = lpAddInMenu->ulFlags;
@@ -586,7 +586,7 @@ namespace dialog
 		LPMAPIPROP lpMAPIProp = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		const auto lpAddInMenu = GetAddinMenuItem(m_hWnd, wMenuSelect);
+		const auto lpAddInMenu = addin::GetAddinMenuItem(m_hWnd, wMenuSelect);
 		if (!lpAddInMenu) return false;
 
 		const auto ulFlags = lpAddInMenu->ulFlags;
@@ -678,7 +678,7 @@ namespace dialog
 			}
 		}
 
-		InvokeAddInMenu(lpParams);
+		addin::InvokeAddInMenu(lpParams);
 	}
 
 	// WM_MFCMAPI_RESETCOLUMNS

@@ -108,6 +108,6 @@ namespace dialog
 			lpParams->lpAbCont = dynamic_cast<LPABCONT>(lpContainer);
 		}
 
-		InvokeAddInMenu(lpParams);
+		addin::InvokeAddInMenu(lpParams);
 	}
 }
