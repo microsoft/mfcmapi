@@ -36,6 +36,7 @@
 #define MAPI_E_RECONNECTED MAKE_MAPI_E( 0x125 )
 #define MAPI_E_OFFLINE MAKE_MAPI_E( 0x126 )
 #define MAIL_E_NAMENOTFOUND MAKE_SCODE(SEVERITY_ERROR, 0x0100, 10054)
+#include <strsafe.h>
 
 namespace error
 {

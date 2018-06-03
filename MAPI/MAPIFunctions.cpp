@@ -1,17 +1,16 @@
 // Collection of useful MAPI functions
-
 #include <StdAfx.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
 #include <MAPI/MAPIABFunctions.h>
 #include <Interpret/InterpretProp.h>
-#include <ImportProcs.h>
 #include <Interpret/ExtraPropTags.h>
 #include <MAPI/MAPIProgress.h>
 #include <Interpret/Guids.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
+#include <strsafe.h>
 
 namespace mapi
 {

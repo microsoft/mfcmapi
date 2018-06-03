@@ -7,6 +7,7 @@
 #include <UI/Controls/SortList/NodeData.h>
 #include <UI/ViewPane/CheckPane.h>
 #include <UI/DoubleBuffer.h>
+#include <strsafe.h>
 
 namespace ui
 {

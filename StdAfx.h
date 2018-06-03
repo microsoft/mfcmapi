@@ -30,9 +30,6 @@
 #include <ShlObj.h>
 #pragma warning(pop)
 
-// Safe String handling header
-#include <strsafe.h>
-
 // Fix a build issue with a few versions of the MAPI headers
 #if !defined(FREEBUFFER_DEFINED)
 typedef ULONG(STDAPICALLTYPE FREEBUFFER)(

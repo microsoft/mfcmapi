@@ -2,6 +2,7 @@
 #include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/Guids.h>
+#include <strsafe.h>
 
 namespace cache
 {

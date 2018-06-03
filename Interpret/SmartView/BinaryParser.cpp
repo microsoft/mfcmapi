@@ -1,5 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/BinaryParser.h>
+#include <strsafe.h>
 
 namespace smartview
 {

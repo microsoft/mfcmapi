@@ -3,6 +3,7 @@
 #include <ImportProcs.h>
 #include <Interpret/String.h>
 #include <UI/Dialogs/Editors/Editor.h>
+#include <strsafe.h>
 #ifndef MRMAPI
 #include <UI/UIFunctions.h>
 #endif

@@ -10,6 +10,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <UI/FileDialogEx.h>
 #include <Interpret/InterpretProp.h>
+#include <strsafe.h>
 
 namespace dialog
 {
