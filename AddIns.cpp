@@ -14,6 +14,7 @@
 #include <Interpret/NameIDArray.h>
 #include <Interpret/PropTypeArray.h>
 #include <Interpret/SmartView/SmartViewParsers.h>
+#include <MAPI/StubUtils.h>
 
 std::vector<NAME_ARRAY_ENTRY_V2> PropTagArray;
 std::vector<NAME_ARRAY_ENTRY> PropTypeArray;
@@ -1023,11 +1024,11 @@ namespace addin
 	__declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool bForce)
 	{
 		if (!lphModule) return;
-		*lphModule = GetMAPIHandle();
+		*lphModule = mapistub::GetMAPIHandle();
 		if (!*lphModule && bForce)
 		{
 			// No MAPI loaded - load it
-			*lphModule = GetPrivateMAPI();
+			*lphModule = mapistub::GetPrivateMAPI();
 		}
 	}
 

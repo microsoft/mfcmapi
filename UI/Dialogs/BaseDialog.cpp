@@ -20,6 +20,7 @@
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <UI/Dialogs/Editors/Options.h>
+#include <MAPI/StubUtils.h>
 
 namespace dialog
 {
@@ -655,7 +656,7 @@ namespace dialog
 		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
 		{
 			auto b64 = false;
-			auto lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[i], &b64);
+			auto lpszTempPath = mapistub::GetOutlookPath(mapistub::g_pszOutlookQualifiedComponents[i], &b64);
 
 			if (!lpszTempPath.empty())
 			{

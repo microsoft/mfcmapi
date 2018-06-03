@@ -4,6 +4,7 @@
 #include <UI/MyWinApp.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #include <UI/UIFunctions.h>
+#include <MAPI/StubUtils.h>
 
 extern ui::CMyWinApp theApp;
 
@@ -74,8 +75,8 @@ namespace ui
 			NULL,
 			NULL);
 
-		ForceOutlookMAPI(0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
-		ForceSystemMAPI(0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD);
+		mapistub::ForceOutlookMAPI(0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
+		mapistub::ForceSystemMAPI(0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD);
 
 		addin::LoadAddIns();
 

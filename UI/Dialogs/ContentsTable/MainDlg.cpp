@@ -24,6 +24,7 @@
 #include <UI/UIFunctions.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/Cache/GlobalCache.h>
+#include <MAPI/StubUtils.h>
 
 namespace dialog
 {
@@ -125,7 +126,7 @@ namespace dialog
 		// Now add each of the menu entries
 		if (SUCCEEDED(hRes))
 		{
-			auto paths = GetMAPIPaths();
+			auto paths = mapistub::GetMAPIPaths();
 			for (const auto& szPath : paths)
 			{
 				if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
@@ -165,7 +166,7 @@ namespace dialog
 			output::DebugPrint(DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName.c_str());
 			HMODULE hMAPI = nullptr;
 			EC_D(hMAPI, import::MyLoadLibraryW(lme->m_pName));
-			SetMAPIHandle(hMAPI);
+			mapistub::SetMAPIHandle(hMAPI);
 		}
 
 		return false;
@@ -187,7 +188,7 @@ namespace dialog
 			LPMAPISESSION lpMAPISession = nullptr;
 			LPADRBOOK lpAddrBook = nullptr;
 			const auto bMAPIInitialized = cache::CGlobalCache::getInstance().bMAPIInitialized();
-			const auto hMAPI = GetMAPIHandle();
+			const auto hMAPI = mapistub::GetMAPIHandle();
 			if (m_lpMapiObjects)
 			{
 				// Don't care if these fail
@@ -1145,9 +1146,9 @@ namespace dialog
 		if (S_OK == hRes)
 		{
 			HMODULE hMAPI = nullptr;
-			UnloadPrivateMAPI();
+			mapistub::UnloadPrivateMAPI();
 			EC_D(hMAPI, import::MyLoadLibraryW(MyData.GetStringW(0)));
-			SetMAPIHandle(hMAPI);
+			mapistub::SetMAPIHandle(hMAPI);
 		}
 	}
 
@@ -1164,7 +1165,7 @@ namespace dialog
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			UnloadPrivateMAPI();
+			mapistub::UnloadPrivateMAPI();
 		}
 	}
 
@@ -1174,7 +1175,7 @@ namespace dialog
 		WCHAR szMAPIPath[MAX_PATH] = { 0 };
 
 		output::DebugPrint(DBGGeneric, L"OnDisplayMAPIPath()\n");
-		const auto hMAPI = GetMAPIHandle();
+		const auto hMAPI = mapistub::GetMAPIHandle();
 
 		editor::CEditor MyData(
 			this,

@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <ImportProcs.h>
 #include <Interpret/String.h>
+#include <MAPI/StubUtils.h>
 
 namespace import
 {
@@ -156,7 +157,7 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring&  szDLLName)
 
 	for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
 	{
-		auto szOutlookMAPIPath = GetInstalledOutlookMAPI(i);
+		auto szOutlookMAPIPath = mapistub::GetInstalledOutlookMAPI(i);
 		if (!szOutlookMAPIPath.empty())
 		{
 			auto hRes = S_OK;
@@ -285,7 +286,7 @@ std::wstring GetMAPIPath(const std::wstring& szClient)
 	{
 		if (!szAppLCID.empty())
 		{
-			lpszPath = GetComponentPath(
+			lpszPath = mapistub::GetComponentPath(
 				szComponentID,
 				szAppLCID,
 				false);
@@ -293,7 +294,7 @@ std::wstring GetMAPIPath(const std::wstring& szClient)
 
 		if (lpszPath.empty() && !szOfficeLCID.empty())
 		{
-			lpszPath = GetComponentPath(
+			lpszPath = mapistub::GetComponentPath(
 				szComponentID,
 				szOfficeLCID,
 				false);
@@ -301,7 +302,7 @@ std::wstring GetMAPIPath(const std::wstring& szClient)
 
 		if (lpszPath.empty())
 		{
-			lpszPath = GetComponentPath(
+			lpszPath = mapistub::GetComponentPath(
 				szComponentID,
 				strings::emptystring,
 				false);

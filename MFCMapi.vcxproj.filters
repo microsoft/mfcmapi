@@ -114,6 +114,7 @@
     <ClInclude Include="IO\Registry.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
+    <ClInclude Include="MAPI\StubUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">

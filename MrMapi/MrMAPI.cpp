@@ -21,6 +21,7 @@
 #include <MrMapi/MMPst.h>
 #include <MrMapi/MMReceiveFolder.h>
 #include <MAPI/Cache/NamedPropCache.h>
+#include <MAPI/StubUtils.h>
 
 // Initialize MFC for LoadString support later on
 void InitMFC()
@@ -960,7 +961,7 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 	output::DebugPrint(DBGGeneric, L"LoadMAPIVersion(%ws)\n", lpszVersion.c_str());
 
 	std::wstring szPath;
-	auto paths = GetMAPIPaths();
+	auto paths = mapistub::GetMAPIPaths();
 	if (lpszVersion == L"0")
 	{
 		output::DebugPrint(DBGGeneric, L"Listing MAPI\n");
@@ -994,22 +995,22 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 		switch (ulVersion)
 		{
 		case 1: // system
-			szPath = GetMAPISystemDir();
+			szPath = mapistub::GetMAPISystemDir();
 			break;
 		case 11: // Outlook 2003 (11)
-			szPath = GetInstalledOutlookMAPI(oqcOffice11);
+			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice11);
 			break;
 		case 12: // Outlook 2007 (12)
-			szPath = GetInstalledOutlookMAPI(oqcOffice12);
+			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice12);
 			break;
 		case 14: // Outlook 2010 (14)
-			szPath = GetInstalledOutlookMAPI(oqcOffice14);
+			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice14);
 			break;
 		case 15: // Outlook 2013 (15)
-			szPath = GetInstalledOutlookMAPI(oqcOffice15);
+			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice15);
 			break;
 		case 16: // Outlook 2016 (16)
-			szPath = GetInstalledOutlookMAPI(oqcOffice16);
+			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice16);
 			break;
 		}
 	}
@@ -1020,7 +1021,7 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 		HMODULE hMAPI = nullptr;
 		auto hRes = S_OK;
 		WC_D(hMAPI, import::MyLoadLibraryW(szPath));
-		SetMAPIHandle(hMAPI);
+		mapistub::SetMAPIHandle(hMAPI);
 	}
 
 	return false;

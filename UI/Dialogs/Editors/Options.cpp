@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/Options.h>
-#include <ImportProcs.h>
+#include <MAPI/StubUtils.h>
 
 namespace dialog
 {
@@ -118,8 +118,8 @@ namespace dialog
 			COptions MyOptions(lpParentWnd);
 			MyOptions.DoModal();
 
-			ForceOutlookMAPI(0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
-			ForceSystemMAPI(0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD);
+			mapistub::ForceOutlookMAPI(0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
+			mapistub::ForceSystemMAPI(0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD);
 			return MyOptions.NeedPropRefresh();
 		}
 	}

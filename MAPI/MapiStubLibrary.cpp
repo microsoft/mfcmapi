@@ -1,13 +1,13 @@
 #include <StdAfx.h>
-#include <windows.h>
+#include <Windows.h>
 
-#include <mapi.h>
-#include <mapiform.h>
-#include <mapiutil.h>
-#include <mapival.h>
-#include <mapispi.h>
-#include <imessage.h>
-#include <tnef.h>
+#include <MAPI.h>
+#include <MAPIForm.h>
+#include <MAPIUtil.h>
+#include <MAPIVal.h>
+#include <MAPISPI.h>
+#include <IMessage.h>
+#include <TNEF.h>
 #include <abhelp.h>
 
 #include <strsafe.h>
@@ -44,10 +44,13 @@ struct RTF_WCSRETINFO;
 #define LINKAGE_NO_EXTERN_C /* */
 
 // Forward declares from MapiStubUtil.cpp
-HMODULE GetMAPIHandle();
-HMODULE GetPrivateMAPI();
-void UnloadPrivateMAPI();
-extern volatile ULONG g_ulDllSequenceNum;
+namespace mapistub
+{
+	HMODULE GetMAPIHandle();
+	HMODULE GetPrivateMAPI();
+	void UnloadPrivateMAPI();
+	extern volatile ULONG g_ulDllSequenceNum;
+}
 
 #define DEFINE_STUB_FUNCTION_V0(_linkage, _modifiers, _name, _lookup)	\
 \
@@ -58,15 +61,15 @@ extern volatile ULONG g_ulDllSequenceNum;
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 \
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup);	\
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup);	\
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 \
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle()))	\
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle()))	\
 		{ \
 			_name##VAR(); \
 		} \
@@ -81,15 +84,15 @@ extern volatile ULONG g_ulDllSequenceNum;
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), (LPSTR)(_ordinal));	\
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), (LPSTR)(_ordinal));	\
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle()))	\
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle()))	\
 		{ \
 			_name##VAR(); \
 		} \
@@ -105,15 +108,15 @@ _name, _lookup, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup);	\
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup);	\
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle()))	\
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle()))	\
 		{ \
 			return _name##VAR(); \
 		} \
@@ -133,15 +136,15 @@ _name, _ordinal, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), (LPSTR)(_ordinal));	\
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), (LPSTR)(_ordinal));	\
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(); \
 		} \
@@ -161,15 +164,15 @@ _name, _lookup, _param1_type) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR(a); \
 		} \
@@ -185,15 +188,15 @@ _name, _ordinal, _param1_type) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), (LPSTR)(_ordinal));	\
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), (LPSTR)(_ordinal));	\
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR(a); \
 		} \
@@ -210,15 +213,15 @@ _modifiers, _name, _lookup, _param1_type, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a); \
 		} \
@@ -239,15 +242,15 @@ _modifiers, _name, _ordinal, _param1_type, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), (LPSTR)(_ordinal));	\
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), (LPSTR)(_ordinal));	\
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a); \
 		} \
@@ -268,15 +271,15 @@ _name, _lookup, _param1_type, _param2_type) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR(a, b); \
 		} \
@@ -293,15 +296,15 @@ _name, _ordinal, _param1_type, _param2_type) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), (LPSTR)(_ordinal));	\
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), (LPSTR)(_ordinal));	\
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR(a, b); \
 		} \
@@ -318,15 +321,15 @@ _name, _lookup, _param1_type, _param2_type, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b); \
 		} \
@@ -347,15 +350,15 @@ _name, _ordinal, _param1_type, _param2_type, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), (LPSTR)(_ordinal));	\
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), (LPSTR)(_ordinal));	\
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b); \
 		} \
@@ -377,15 +380,15 @@ _name, _lookup, _param1_type, _param2_type, _param3_type) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR(a, b, c); \
 		} \
@@ -403,15 +406,15 @@ _name, _ordinal, _param1_type, _param2_type, _param3_type) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), (LPSTR)(_ordinal));	\
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), (LPSTR)(_ordinal));	\
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR(a, b, c); \
 		} \
@@ -429,15 +432,15 @@ _name, _lookup, _param1_type, _param2_type, _param3_type, _default)	\
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b, c); \
 		} \
@@ -459,15 +462,15 @@ _name, _ordinal, _param1_type, _param2_type, _param3_type, _default)	\
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), (LPSTR)(_ordinal));	\
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), (LPSTR)(_ordinal));	\
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b, c); \
 		} \
@@ -490,15 +493,15 @@ _param2_type, _param3_type, _param4_type) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR(a, b, c, d); \
 		} \
@@ -517,15 +520,15 @@ _param2_type, _param3_type, _param4_type, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b, c, d); \
 		} \
@@ -548,15 +551,15 @@ _param2_type, _param3_type, _param4_type, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), (LPSTR)(_ordinal));	\
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), (LPSTR)(_ordinal));	\
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b, c, d); \
 		} \
@@ -580,15 +583,15 @@ _param4_type, _param5_type, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b, c, d, e); \
 		} \
@@ -612,15 +615,15 @@ _param4_type, _param5_type, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), (LPSTR)(_ordinal));	\
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), (LPSTR)(_ordinal));	\
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b, c, d, e); \
 		} \
@@ -644,15 +647,15 @@ _param3_type, _param4_type, _param5_type, _param6_type, _default)	\
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b, c, d, e, f); \
 		} \
@@ -677,15 +680,15 @@ _param5_type, _param6_type, _param7_type) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR(a, b, c, d, e, f, g); \
 		} \
@@ -706,15 +709,15 @@ _param4_type, _param5_type, _param6_type, _param7_type, _default)	\
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b, c, d, e, f, g); \
 		} \
@@ -739,15 +742,15 @@ _param4_type, _param5_type, _param6_type, _param7_type, _param8_type, _default)	
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b, c, d, e, f, g, h); \
 		} \
@@ -774,15 +777,15 @@ _param7_type, _param8_type, _param9_type, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b, c, d, e, f, g, h, i); \
 		} \
@@ -809,15 +812,15 @@ _param8_type, _param9_type, _param10_type, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b, c, d, e, f, g, h, i, j); \
 		} \
@@ -845,15 +848,15 @@ _param9_type, _param10_type, _param11Type, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b, c, d, e, f, g, h, i, j, k); \
 		} \
@@ -882,15 +885,15 @@ _param9_type, _param10_type, _param11Type, _param12Type, _default) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			return _name##VAR(a, b, c, d, e, f, g, h, i, j, k, l); \
 		} \
@@ -919,15 +922,15 @@ _param9_type, _param10_type, _param11Type, _param12Type) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), _lookup); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), _lookup); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR(a, b, c, d, e, f, g, h, i, j, k, l); \
 		} \
@@ -952,15 +955,15 @@ _param9_type, _param10_type, _param11Type, _param12Type) \
 		static _name##TYPE _name##VAR = nullptr; \
 		static UINT ulDllSequenceNum = 0; \
 		\
-		if ( (ulDllSequenceNum != g_ulDllSequenceNum) \
-			|| (nullptr == GetMAPIHandle())) \
+		if ( (ulDllSequenceNum != mapistub::g_ulDllSequenceNum) \
+			|| (nullptr == mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR = (_name##TYPE) \
-			::GetProcAddress(GetPrivateMAPI(), (LPSTR)(_ordinal)); \
-			ulDllSequenceNum = g_ulDllSequenceNum; \
+			::GetProcAddress(mapistub::GetPrivateMAPI(), (LPSTR)(_ordinal)); \
+			ulDllSequenceNum = mapistub::g_ulDllSequenceNum; \
 		} \
 		\
-		if ((nullptr != _name##VAR) && (nullptr != GetMAPIHandle())) \
+		if ((nullptr != _name##VAR) && (nullptr != mapistub::GetMAPIHandle())) \
 		{ \
 			_name##VAR(a, b, c, d, e, f, g, h, i, j, k, l); \
 		} \
