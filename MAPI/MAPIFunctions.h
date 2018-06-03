@@ -176,4 +176,28 @@ namespace mapi
 
 	_Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp);
 	_Check_return_ HRESULT GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp);
+
+	_Check_return_ STDAPI HrCopyRestriction(
+		_In_ const _SRestriction* lpResSrc, // source restriction ptr
+		_In_opt_ LPVOID lpObject, // ptr to existing MAPI buffer
+		_In_ LPSRestriction* lppResDest // dest restriction buffer ptr
+	);
+
+	_Check_return_ HRESULT HrCopyRestrictionArray(
+		_In_ const _SRestriction* lpResSrc, // source restriction
+		_In_ LPVOID lpObject, // ptr to existing MAPI buffer
+		ULONG cRes, // # elements in array
+		_In_count_(cRes) LPSRestriction lpResDest // destination restriction
+	);
+
+	_Check_return_ STDAPI_(SCODE) MyPropCopyMore(_In_ LPSPropValue lpSPropValueDest,
+		_In_ const _SPropValue* lpSPropValueSrc,
+		_In_ ALLOCATEMORE * lpfAllocMore,
+		_In_ LPVOID lpvObject);
+
+	_Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateBuffer,
+		_In_ LPFREEBUFFER lpFreeBuffer,
+		ULONG ulFlags,
+		_In_ const std::wstring& lpszFileName,
+		_Out_ LPSTREAM* lppStream);
 }

@@ -9,10 +9,10 @@
 #include <MAPI/ColumnTags.h>
 #include <MAPI/MAPIProgress.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
-#include <ImportProcs.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/Cache/GlobalCache.h>
 #include <Interpret/InterpretProp.h>
+#include <MAPI/MAPIFunctions.h>
 
 namespace dialog
 {
@@ -456,7 +456,7 @@ namespace dialog
 				{
 					LPSTREAM pStreamFile = nullptr;
 
-					EC_MAPI(MyOpenStreamOnFile(
+					EC_MAPI(mapi::MyOpenStreamOnFile(
 						MAPIAllocateBuffer,
 						MAPIFreeBuffer,
 						STGM_READ,

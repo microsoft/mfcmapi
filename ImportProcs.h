@@ -49,34 +49,10 @@ std::vector<std::wstring> GetMAPIPaths();
 std::wstring GetInstalledOutlookMAPI(int iOutlook);
 std::wstring GetMAPISystemDir();
 
-_Check_return_ STDAPI HrCopyRestriction(
-	_In_ const _SRestriction* lpResSrc, // source restriction ptr
-	_In_opt_ LPVOID lpObject, // ptr to existing MAPI buffer
-	_In_ LPSRestriction* lppResDest // dest restriction buffer ptr
-);
-
-_Check_return_ HRESULT HrCopyRestrictionArray(
-	_In_ const _SRestriction* lpResSrc, // source restriction
-	_In_ LPVOID lpObject, // ptr to existing MAPI buffer
-	ULONG cRes, // # elements in array
-	_In_count_(cRes) LPSRestriction lpResDest // destination restriction
-);
-
-_Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateBuffer,
-	_In_ LPFREEBUFFER lpFreeBuffer,
-	ULONG ulFlags,
-	_In_ const std::wstring& lpszFileName,
-	_Out_ LPSTREAM* lppStream);
-
 void WINAPI MyHeapSetInformation(_In_opt_ HANDLE HeapHandle,
 	_In_ HEAP_INFORMATION_CLASS HeapInformationClass,
 	_In_opt_count_(HeapInformationLength) PVOID HeapInformation,
 	_In_ SIZE_T HeapInformationLength);
-
-_Check_return_ STDAPI_(SCODE) MyPropCopyMore(_In_ LPSPropValue lpSPropValueDest,
-	_In_ const _SPropValue* lpSPropValueSrc,
-	_In_ ALLOCATEMORE * lpfAllocMore,
-	_In_ LPVOID lpvObject);
 
 HRESULT WINAPI MyMimeOleGetCodePageCharset(
 	CODEPAGEID cpiCodePage,

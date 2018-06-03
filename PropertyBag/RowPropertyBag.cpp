@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <PropertyBag/RowPropertyBag.h>
-#include <ImportProcs.h>
+#include <MAPI/MAPIFunctions.h>
 
 namespace propertybag
 {
@@ -162,7 +162,7 @@ namespace propertybag
 								ulTargetArray,
 								CHANGE_PROP_TYPE(lpVal1[ulSourceArray].ulPropTag, PT_UNSPECIFIED)))
 						{
-							EC_H(MyPropCopyMore(
+							EC_H(mapi::MyPropCopyMore(
 								&lpNewArray[ulTargetArray],
 								&lpVal1[ulSourceArray],
 								MAPIAllocateMore,
@@ -192,7 +192,7 @@ namespace propertybag
 								hRes = MAPI_E_CALL_FAILED;
 								break;
 							}
-							EC_H(MyPropCopyMore(
+							EC_H(mapi::MyPropCopyMore(
 								&lpNewArray[ulTargetArray],
 								&lpVal2[ulSourceArray],
 								MAPIAllocateMore,

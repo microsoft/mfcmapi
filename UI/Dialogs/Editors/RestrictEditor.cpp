@@ -3,7 +3,6 @@
 #include <UI/Dialogs/Editors/PropertyEditor.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
-#include <ImportProcs.h>
 #include <Interpret/ExtraPropTags.h>
 #include <UI/Controls/SortList/ResData.h>
 #include <UI/Controls/SortList/CommentData.h>
@@ -608,7 +607,7 @@ namespace dialog
 						}
 						else
 						{
-							EC_H(HrCopyRestrictionArray(
+							EC_H(mapi::HrCopyRestrictionArray(
 								lpData->Res()->m_lpOldRes,
 								m_lpAllocParent,
 								1,
@@ -831,7 +830,7 @@ namespace dialog
 						{
 							if (lpData->Comment()->m_lpNewProp)
 							{
-								EC_H(MyPropCopyMore(
+								EC_H(mapi::MyPropCopyMore(
 									&lpNewCommentProp[i],
 									lpData->Comment()->m_lpNewProp,
 									MAPIAllocateMore,
@@ -839,7 +838,7 @@ namespace dialog
 							}
 							else
 							{
-								EC_H(MyPropCopyMore(
+								EC_H(mapi::MyPropCopyMore(
 									&lpNewCommentProp[i],
 									lpData->Comment()->m_lpOldProp,
 									MAPIAllocateMore,
@@ -853,7 +852,7 @@ namespace dialog
 			}
 			if (!m_lpNewCommentRes && m_lpSourceRes && m_lpSourceRes->res.resComment.lpRes)
 			{
-				EC_H(HrCopyRestriction(m_lpSourceRes->res.resComment.lpRes, m_lpAllocParent, &m_lpNewCommentRes));
+				EC_H(mapi::HrCopyRestriction(m_lpSourceRes->res.resComment.lpRes, m_lpAllocParent, &m_lpNewCommentRes));
 			}
 		}
 
@@ -1156,7 +1155,7 @@ namespace dialog
 						sizeof(SPropValue),
 						m_lpAllocParent,
 						reinterpret_cast<LPVOID*>(&m_lpOutputRes->res.resContent.lpProp)));
-					EC_H(MyPropCopyMore(
+					EC_H(mapi::MyPropCopyMore(
 						m_lpOutputRes->res.resContent.lpProp,
 						lpSourceRes->res.resContent.lpProp,
 						MAPIAllocateMore,
@@ -1513,7 +1512,7 @@ namespace dialog
 
 			if (!m_lpNewRes && m_lpSourceRes)
 			{
-				EC_H(HrCopyRestriction(m_lpSourceRes, NULL, &m_lpNewRes))
+				EC_H(mapi::HrCopyRestriction(m_lpSourceRes, NULL, &m_lpNewRes))
 			}
 
 			m_ulNewSearchFlags = GetHex(2);

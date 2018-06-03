@@ -4,6 +4,7 @@
 #include <Interpret/Guids.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <ImportProcs.h>
+#include <MAPI/MAPIFunctions.h>
 #ifndef MRMAPI
 #include <Interpret/ExtraPropTags.h>
 #endif
@@ -35,7 +36,7 @@ namespace mapi
 			{
 				LPSTREAM lpEMLStm = nullptr;
 
-				EC_H(MyOpenStreamOnFile(MAPIAllocateBuffer,
+				EC_H(mapi::MyOpenStreamOnFile(MAPIAllocateBuffer,
 					MAPIFreeBuffer,
 					STGM_READ,
 					lpszEMLFile,
@@ -119,7 +120,7 @@ namespace mapi
 						{
 							LPSTREAM lpFileStm = nullptr;
 
-							EC_H(MyOpenStreamOnFile(MAPIAllocateBuffer,
+							EC_H(mapi::MyOpenStreamOnFile(MAPIAllocateBuffer,
 								MAPIFreeBuffer,
 								STGM_CREATE | STGM_READWRITE,
 								lpszEMLFile,

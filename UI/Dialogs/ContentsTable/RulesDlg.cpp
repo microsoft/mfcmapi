@@ -5,7 +5,7 @@
 #include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <ImportProcs.h>
+#include <MAPI/MAPIFunctions.h>
 
 namespace dialog
 {
@@ -187,7 +187,7 @@ namespace dialog
 										}
 									}
 
-									EC_H(MyPropCopyMore(
+									EC_H(mapi::MyPropCopyMore(
 										&lpTempList->aEntries[iArrayPos].rgPropVals[ulDst],
 										&lpData->lpSourceProps[ulSrc],
 										MAPIAllocateMore,

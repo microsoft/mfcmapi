@@ -1,10 +1,10 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/HexEditor.h>
 #include <UI/FileDialogEx.h>
-#include <ImportProcs.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/ViewPane/SmartViewPane.h>
 #include <MAPI/Cache/GlobalCache.h>
+#include <MAPI/MAPIFunctions.h>
 
 namespace dialog
 {
@@ -203,7 +203,7 @@ namespace dialog
 					LPSTREAM lpStream = nullptr;
 
 					// Get a Stream interface on the input file
-					EC_H(MyOpenStreamOnFile(
+					EC_H(mapi::MyOpenStreamOnFile(
 						MAPIAllocateBuffer,
 						MAPIFreeBuffer,
 						STGM_READ,
@@ -242,7 +242,7 @@ namespace dialog
 					LPSTREAM lpStream = nullptr;
 
 					// Get a Stream interface on the output file
-					EC_H(MyOpenStreamOnFile(
+					EC_H(mapi::MyOpenStreamOnFile(
 						MAPIAllocateBuffer,
 						MAPIFreeBuffer,
 						STGM_CREATE | STGM_READWRITE,

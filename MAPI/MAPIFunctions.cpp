@@ -2906,4 +2906,485 @@ namespace mapi
 	{
 		return GetLargeProp(lpMAPIProp, CHANGE_PROP_TYPE(ulPropTag, PT_TSTRING), lppProp);
 	}
+
+	_Check_return_ HRESULT HrDupPropset(
+		int cprop,
+		_In_count_(cprop) LPSPropValue rgprop,
+		_In_ LPVOID lpObject,
+		_In_ LPSPropValue* prgprop)
+	{
+		ULONG cb = NULL;
+		auto hRes = S_OK;
+
+		// Find out how much memory we need
+		EC_MAPI(ScCountProps(cprop, rgprop, &cb));
+
+		if (SUCCEEDED(hRes) && cb)
+		{
+			// Obtain memory
+			if (lpObject != nullptr)
+			{
+				EC_H(MAPIAllocateMore(cb, lpObject, reinterpret_cast<LPVOID*>(prgprop)));
+			}
+			else
+			{
+				EC_H(MAPIAllocateBuffer(cb, reinterpret_cast<LPVOID*>(prgprop)));
+			}
+
+			if (SUCCEEDED(hRes) && prgprop)
+			{
+				// Copy the properties
+				EC_MAPI(ScCopyProps(cprop, rgprop, *prgprop, &cb));
+			}
+		}
+
+		return hRes;
+	}
+
+	_Check_return_ STDAPI HrCopyRestriction(
+		_In_ const _SRestriction* lpResSrc, // source restriction ptr
+		_In_opt_ LPVOID lpObject, // ptr to existing MAPI buffer
+		_In_ LPSRestriction* lppResDest) // dest restriction buffer ptr
+	{
+		if (!lppResDest) return MAPI_E_INVALID_PARAMETER;
+		*lppResDest = nullptr;
+		if (!lpResSrc) return S_OK;
+
+		const auto fNullObject = lpObject == nullptr;
+		auto hRes = S_OK;
+
+		if (lpObject != nullptr)
+		{
+			WC_H(MAPIAllocateMore(sizeof(SRestriction),
+				lpObject,
+				reinterpret_cast<LPVOID*>(lppResDest)));
+		}
+		else
+		{
+			WC_H(MAPIAllocateBuffer(sizeof(SRestriction),
+				reinterpret_cast<LPVOID*>(lppResDest)));
+			lpObject = *lppResDest;
+		}
+		if (FAILED(hRes)) return hRes;
+		// no short circuit returns after here
+
+		WC_H(HrCopyRestrictionArray(
+			lpResSrc,
+			lpObject,
+			1,
+			*lppResDest));
+
+		if (FAILED(hRes))
+		{
+			if (fNullObject)
+				MAPIFreeBuffer(*lppResDest);
+		}
+
+		return hRes;
+	}
+
+	_Check_return_ HRESULT HrCopyRestrictionArray(
+		_In_ const _SRestriction* lpResSrc, // source restriction
+		_In_ LPVOID lpObject, // ptr to existing MAPI buffer
+		ULONG cRes, // # elements in array
+		_In_count_(cRes) LPSRestriction lpResDest) // destination restriction
+	{
+		if (!lpResSrc || !lpResDest || !lpObject) return MAPI_E_INVALID_PARAMETER;
+		auto hRes = S_OK;
+
+		for (ULONG i = 0; i < cRes; i++)
+		{
+			// Copy all the members over
+			lpResDest[i] = lpResSrc[i];
+
+			// Now fix up the pointers
+			switch (lpResSrc[i].rt)
+			{
+				// Structures for these two types are identical
+			case RES_AND:
+			case RES_OR:
+				if (lpResSrc[i].res.resAnd.cRes && lpResSrc[i].res.resAnd.lpRes)
+				{
+					if (lpResSrc[i].res.resAnd.cRes > ULONG_MAX / sizeof(SRestriction))
+					{
+						hRes = MAPI_E_CALL_FAILED;
+						break;
+					}
+					WC_H(MAPIAllocateMore(sizeof(SRestriction) * lpResSrc[i].res.resAnd.cRes,
+						lpObject,
+						reinterpret_cast<LPVOID*>(&lpResDest[i].res.resAnd.lpRes)));
+					if (FAILED(hRes)) break;
+
+					WC_H(HrCopyRestrictionArray(
+						lpResSrc[i].res.resAnd.lpRes,
+						lpObject,
+						lpResSrc[i].res.resAnd.cRes,
+						lpResDest[i].res.resAnd.lpRes));
+					if (FAILED(hRes)) break;
+				}
+				break;
+
+				// Structures for these two types are identical
+			case RES_NOT:
+			case RES_COUNT:
+				if (lpResSrc[i].res.resNot.lpRes)
+				{
+					WC_H(MAPIAllocateMore(sizeof(SRestriction),
+						lpObject,
+						reinterpret_cast<LPVOID*>(&lpResDest[i].res.resNot.lpRes)));
+					if (FAILED(hRes)) break;
+
+					WC_H(HrCopyRestrictionArray(
+						lpResSrc[i].res.resNot.lpRes,
+						lpObject,
+						1,
+						lpResDest[i].res.resNot.lpRes));
+					if (FAILED(hRes)) break;
+				}
+				break;
+
+				// Structures for these two types are identical
+			case RES_CONTENT:
+			case RES_PROPERTY:
+				if (lpResSrc[i].res.resContent.lpProp)
+				{
+					WC_MAPI(HrDupPropset(
+						1,
+						lpResSrc[i].res.resContent.lpProp,
+						lpObject,
+						&lpResDest[i].res.resContent.lpProp));
+					if (FAILED(hRes)) break;
+				}
+				break;
+
+			case RES_COMPAREPROPS:
+			case RES_BITMASK:
+			case RES_SIZE:
+			case RES_EXIST:
+				break; // Nothing to do.
+
+			case RES_SUBRESTRICTION:
+				if (lpResSrc[i].res.resSub.lpRes)
+				{
+					WC_H(MAPIAllocateMore(sizeof(SRestriction),
+						lpObject,
+						reinterpret_cast<LPVOID*>(&lpResDest[i].res.resSub.lpRes)));
+					if (FAILED(hRes)) break;
+
+					WC_H(HrCopyRestrictionArray(
+						lpResSrc[i].res.resSub.lpRes,
+						lpObject,
+						1,
+						lpResDest[i].res.resSub.lpRes));
+					if (FAILED(hRes)) break;
+				}
+				break;
+
+				// Structures for these two types are identical
+			case RES_COMMENT:
+			case RES_ANNOTATION:
+				if (lpResSrc[i].res.resComment.lpRes)
+				{
+					WC_H(MAPIAllocateMore(sizeof(SRestriction),
+						lpObject,
+						reinterpret_cast<LPVOID*>(&lpResDest[i].res.resComment.lpRes)));
+					if (FAILED(hRes)) break;
+
+					WC_H(HrCopyRestrictionArray(
+						lpResSrc[i].res.resComment.lpRes,
+						lpObject,
+						1,
+						lpResDest[i].res.resComment.lpRes));
+					if (FAILED(hRes)) break;
+				}
+
+				if (lpResSrc[i].res.resComment.cValues && lpResSrc[i].res.resComment.lpProp)
+				{
+					WC_MAPI(mapi::HrDupPropset(
+						lpResSrc[i].res.resComment.cValues,
+						lpResSrc[i].res.resComment.lpProp,
+						lpObject,
+						&lpResDest[i].res.resComment.lpProp));
+					if (FAILED(hRes)) break;
+				}
+				break;
+
+			default:
+				hRes = MAPI_E_INVALID_PARAMETER;
+				break;
+			}
+		}
+
+		return hRes;
+	}
+
+	typedef ACTIONS* LPACTIONS;
+
+	// swiped from EDK rules sample
+	_Check_return_ STDAPI HrCopyActions(
+		_In_ LPACTIONS lpActsSrc, // source action ptr
+		_In_ LPVOID lpObject, // ptr to existing MAPI buffer
+		_In_ LPACTIONS* lppActsDst) // ptr to destination ACTIONS buffer
+	{
+		if (!lpActsSrc || !lppActsDst) return MAPI_E_INVALID_PARAMETER;
+		if (lpActsSrc->cActions <= 0 || lpActsSrc->lpAction == nullptr) return MAPI_E_INVALID_PARAMETER;
+
+		const auto fNullObject = lpObject == nullptr;
+		auto hRes = S_OK;
+
+		*lppActsDst = nullptr;
+
+		if (lpObject != nullptr)
+		{
+			WC_H(MAPIAllocateMore(sizeof(ACTIONS), lpObject, reinterpret_cast<LPVOID*>(lppActsDst)));
+		}
+		else
+		{
+			WC_H(MAPIAllocateBuffer(sizeof(ACTIONS), reinterpret_cast<LPVOID*>(lppActsDst)));
+			lpObject = *lppActsDst;
+		}
+
+		if (FAILED(hRes)) return hRes;
+		// no short circuit returns after here
+
+		auto lpActsDst = *lppActsDst;
+		*lpActsDst = *lpActsSrc;
+		lpActsDst->lpAction = nullptr;
+
+		WC_H(MAPIAllocateMore(sizeof(ACTION) * lpActsDst->cActions,
+			lpObject,
+			reinterpret_cast<LPVOID*>(&lpActsDst->lpAction)));
+		if (SUCCEEDED(hRes) && lpActsDst->lpAction)
+		{
+			// Initialize acttype values for all members of the array to a value
+			// that will not cause deallocation errors should the copy fail.
+			for (ULONG i = 0; i < lpActsDst->cActions; i++)
+				lpActsDst->lpAction[i].acttype = OP_BOUNCE;
+
+			// Now actually copy all the members of the array.
+			for (ULONG i = 0; i < lpActsDst->cActions; i++)
+			{
+				auto lpActDst = &lpActsDst->lpAction[i];
+				auto lpActSrc = &lpActsSrc->lpAction[i];
+
+				*lpActDst = *lpActSrc;
+
+				switch (lpActSrc->acttype)
+				{
+				case OP_MOVE: // actMoveCopy
+				case OP_COPY:
+					if (lpActDst->actMoveCopy.cbStoreEntryId &&
+						lpActDst->actMoveCopy.lpStoreEntryId)
+					{
+						WC_H(MAPIAllocateMore(lpActDst->actMoveCopy.cbStoreEntryId,
+							lpObject,
+							reinterpret_cast<LPVOID*>(&lpActDst->actMoveCopy.lpStoreEntryId)));
+						if (FAILED(hRes)) break;
+
+						memcpy(lpActDst->actMoveCopy.lpStoreEntryId,
+							lpActSrc->actMoveCopy.lpStoreEntryId,
+							lpActSrc->actMoveCopy.cbStoreEntryId);
+					}
+
+
+					if (lpActDst->actMoveCopy.cbFldEntryId &&
+						lpActDst->actMoveCopy.lpFldEntryId)
+					{
+						WC_H(MAPIAllocateMore(lpActDst->actMoveCopy.cbFldEntryId,
+							lpObject,
+							reinterpret_cast<LPVOID*>(&lpActDst->actMoveCopy.lpFldEntryId)));
+						if (FAILED(hRes)) break;
+
+						memcpy(lpActDst->actMoveCopy.lpFldEntryId,
+							lpActSrc->actMoveCopy.lpFldEntryId,
+							lpActSrc->actMoveCopy.cbFldEntryId);
+					}
+
+					break;
+
+				case OP_REPLY: // actReply
+				case OP_OOF_REPLY:
+					if (lpActDst->actReply.cbEntryId &&
+						lpActDst->actReply.lpEntryId)
+					{
+						WC_H(MAPIAllocateMore(lpActDst->actReply.cbEntryId,
+							lpObject,
+							reinterpret_cast<LPVOID*>(&lpActDst->actReply.lpEntryId)));
+						if (FAILED(hRes)) break;
+
+						memcpy(lpActDst->actReply.lpEntryId,
+							lpActSrc->actReply.lpEntryId,
+							lpActSrc->actReply.cbEntryId);
+					}
+					break;
+
+				case OP_DEFER_ACTION: // actDeferAction
+					if (lpActSrc->actDeferAction.pbData &&
+						lpActSrc->actDeferAction.cbData)
+					{
+						WC_H(MAPIAllocateMore(lpActDst->actDeferAction.cbData,
+							lpObject,
+							reinterpret_cast<LPVOID*>(&lpActDst->actDeferAction.pbData)));
+						if (FAILED(hRes)) break;
+
+						memcpy(lpActDst->actDeferAction.pbData,
+							lpActSrc->actDeferAction.pbData,
+							lpActDst->actDeferAction.cbData);
+					}
+					break;
+
+				case OP_FORWARD: // lpadrlist
+				case OP_DELEGATE:
+					lpActDst->lpadrlist = nullptr;
+
+					if (lpActSrc->lpadrlist && lpActSrc->lpadrlist->cEntries)
+					{
+						WC_H(MAPIAllocateMore(CbADRLIST(lpActSrc->lpadrlist),
+							lpObject,
+							reinterpret_cast<LPVOID*>(&lpActDst->lpadrlist)));
+						if (FAILED(hRes)) break;
+
+						lpActDst->lpadrlist->cEntries = lpActSrc->lpadrlist->cEntries;
+
+						// Initialize the new ADRENTRYs and validate cValues.
+						for (ULONG j = 0; j < lpActSrc->lpadrlist->cEntries; j++)
+						{
+							lpActDst->lpadrlist->aEntries[j] = lpActSrc->lpadrlist->aEntries[j];
+							lpActDst->lpadrlist->aEntries[j].rgPropVals = nullptr;
+
+							if (lpActDst->lpadrlist->aEntries[j].cValues == 0)
+							{
+								hRes = MAPI_E_INVALID_PARAMETER;
+								break;
+							}
+						}
+
+						// Copy the rgPropVals.
+						for (ULONG j = 0; j < lpActSrc->lpadrlist->cEntries; j++)
+						{
+							WC_MAPI(HrDupPropset(
+								lpActDst->lpadrlist->aEntries[j].cValues,
+								lpActSrc->lpadrlist->aEntries[j].rgPropVals,
+								lpObject,
+								&lpActDst->lpadrlist->aEntries[j].rgPropVals));
+							if (FAILED(hRes)) break;
+						}
+					}
+
+					break;
+
+				case OP_TAG: // propTag
+					WC_H(MyPropCopyMore(
+						&lpActDst->propTag,
+						&lpActSrc->propTag,
+						MAPIAllocateMore,
+						lpObject));
+					if (FAILED(hRes)) break;
+
+					break;
+
+				case OP_BOUNCE: // scBounceCode
+				case OP_DELETE: // union not used
+				case OP_MARK_AS_READ:
+					break; // Nothing to do!
+
+				default: // error!
+				{
+					hRes = MAPI_E_INVALID_PARAMETER;
+					break;
+				}
+				}
+			}
+		}
+
+		if (FAILED(hRes))
+		{
+			if (fNullObject)
+				MAPIFreeBuffer(*lppActsDst);
+		}
+
+		return hRes;
+	}
+
+	// This augmented PropCopyMore is implicitly tied to the built-in MAPIAllocateMore and MAPIAllocateBuffer through
+	// the calls to HrCopyRestriction and HrCopyActions. Rewriting those functions to accept function pointers is
+	// expensive for no benefit here. So if you borrow this code, be careful if you plan on using other allocators.
+	_Check_return_ STDAPI_(SCODE) MyPropCopyMore(_In_ LPSPropValue lpSPropValueDest,
+		_In_ const _SPropValue* lpSPropValueSrc,
+		_In_ ALLOCATEMORE * lpfAllocMore,
+		_In_ LPVOID lpvObject)
+	{
+		auto hRes = S_OK;
+		switch (PROP_TYPE(lpSPropValueSrc->ulPropTag))
+		{
+		case PT_SRESTRICTION:
+		case PT_ACTIONS:
+		{
+			// It's an action or restriction - we know how to copy those:
+			memcpy(reinterpret_cast<BYTE *>(lpSPropValueDest),
+				reinterpret_cast<BYTE *>(const_cast<LPSPropValue>(lpSPropValueSrc)),
+				sizeof(SPropValue));
+			if (PT_SRESTRICTION == PROP_TYPE(lpSPropValueSrc->ulPropTag))
+			{
+				LPSRestriction lpNewRes = nullptr;
+				WC_H(HrCopyRestriction(
+					reinterpret_cast<LPSRestriction>(lpSPropValueSrc->Value.lpszA),
+					lpvObject,
+					&lpNewRes));
+				lpSPropValueDest->Value.lpszA = reinterpret_cast<LPSTR>(lpNewRes);
+			}
+			else
+			{
+				ACTIONS* lpNewAct = nullptr;
+				WC_H(HrCopyActions(
+					reinterpret_cast<ACTIONS*>(lpSPropValueSrc->Value.lpszA),
+					lpvObject,
+					&lpNewAct));
+				lpSPropValueDest->Value.lpszA = reinterpret_cast<LPSTR>(lpNewAct);
+			}
+			break;
+		}
+		default:
+			WC_MAPI(PropCopyMore(lpSPropValueDest, const_cast<LPSPropValue>(lpSPropValueSrc), lpfAllocMore, lpvObject));
+		}
+		return hRes;
+	}
+
+	// Declaration missing from MAPI headers
+	_Check_return_ STDAPI OpenStreamOnFileW(_In_ LPALLOCATEBUFFER lpAllocateBuffer,
+		_In_ LPFREEBUFFER lpFreeBuffer,
+		ULONG ulFlags,
+		_In_z_ LPCWSTR lpszFileName,
+		_In_opt_z_ LPCWSTR lpszPrefix,
+		_Out_ LPSTREAM FAR * lppStream);
+
+	// Since I never use lpszPrefix, I don't convert it
+	// To make certain of that, I pass NULL for it
+	// If I ever do need this param, I'll have to fix this
+	_Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateBuffer,
+		_In_ LPFREEBUFFER lpFreeBuffer,
+		ULONG ulFlags,
+		_In_ const std::wstring& lpszFileName,
+		_Out_ LPSTREAM FAR * lppStream)
+	{
+		auto hRes = OpenStreamOnFileW(
+			lpAllocateBuffer,
+			lpFreeBuffer,
+			ulFlags,
+			lpszFileName.c_str(),
+			nullptr,
+			lppStream);
+		if (MAPI_E_CALL_FAILED == hRes)
+		{
+			hRes = OpenStreamOnFile(
+				lpAllocateBuffer,
+				lpFreeBuffer,
+				ulFlags,
+				strings::wstringTotstring(lpszFileName).c_str(),
+				nullptr,
+				lppStream);
+		}
+
+		return hRes;
+	}
 }

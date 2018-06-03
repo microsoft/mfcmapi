@@ -236,7 +236,7 @@ namespace file
 		};
 
 		// Get a Stream interface on the input TNEF file
-		EC_H(MyOpenStreamOnFile(
+		EC_H(mapi::MyOpenStreamOnFile(
 			MAPIAllocateBuffer,
 			MAPIFreeBuffer,
 			STGM_READ,
@@ -596,7 +596,7 @@ namespace file
 		// Open an IStream interface and create the file at the
 		// same time. This code will create the file in the
 		// current directory.
-		EC_H(MyOpenStreamOnFile(
+		EC_H(mapi::MyOpenStreamOnFile(
 			MAPIAllocateBuffer,
 			MAPIFreeBuffer,
 			STGM_CREATE | STGM_READWRITE,
@@ -916,7 +916,7 @@ namespace file
 		static auto dwKey = static_cast<WORD>(GetTickCount());
 
 		// Get a Stream interface on the input TNEF file
-		EC_H(MyOpenStreamOnFile(
+		EC_H(mapi::MyOpenStreamOnFile(
 			MAPIAllocateBuffer,
 			MAPIFreeBuffer,
 			STGM_READWRITE | STGM_CREATE,
