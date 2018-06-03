@@ -1,8 +1,14 @@
-﻿#include "stdafx.h"
-#include "CommentData.h"
+﻿#include <StdAfx.h>
+#include <UI/Controls/SortList/CommentData.h>
 
-CommentData::CommentData(_In_ LPSPropValue lpOldProp)
+namespace controls
 {
-	m_lpOldProp = lpOldProp;
-	m_lpNewProp = nullptr;
+	namespace sortlistdata
+	{
+		CommentData::CommentData(_In_ const _SPropValue* lpOldProp)
+		{
+			m_lpOldProp = lpOldProp;
+			m_lpNewProp = nullptr;
+		}
+	}
 }

@@ -1,8 +1,14 @@
-﻿#include "stdafx.h"
-#include "ResData.h"
+﻿#include <StdAfx.h>
+#include <UI/Controls/SortList/ResData.h>
 
-ResData::ResData(_In_ LPSRestriction lpOldRes)
+namespace controls
 {
-	m_lpOldRes = lpOldRes;
-	m_lpNewRes = nullptr;
+	namespace sortlistdata
+	{
+		ResData::ResData(_In_ const _SRestriction* lpOldRes)
+		{
+			m_lpOldRes = lpOldRes;
+			m_lpNewRes = nullptr;
+		}
+	}
 }

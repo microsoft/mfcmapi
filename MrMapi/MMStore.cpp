@@ -1,9 +1,9 @@
-#include "stdafx.h"
-#include "MrMAPI.h"
-#include "MMStore.h"
-#include "MMFolder.h"
+#include <StdAfx.h>
+#include <MrMapi/MrMAPI.h>
+#include <MrMapi/MMStore.h>
+#include <MrMapi/MMFolder.h>
 #include <MAPI/ColumnTags.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <Interpret/String.h>
@@ -38,7 +38,7 @@ HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* 
 				&lpRow));
 			if (SUCCEEDED(hRes) && lpRow && 1 == lpRow->cRows && PR_ENTRYID == lpRow->aRow[0].lpProps[0].ulPropTag)
 			{
-				WC_H(CallOpenMsgStore(
+				WC_H(mapi::store::CallOpenMsgStore(
 					lpMAPISession,
 					NULL,
 					&lpRow->aRow[0].lpProps[0].Value.bin,
@@ -66,7 +66,7 @@ HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* 
 HRESULT HrMAPIOpenStoreAndFolder(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ ULONG ulFolder,
-	_In_ wstring lpszFolderPath,
+	_In_ std::wstring lpszFolderPath,
 	_Out_opt_ LPMDB* lppMDB,
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder)
 {
@@ -74,7 +74,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 	LPMDB lpMDB = nullptr;
 	LPMAPIFOLDER lpFolder = nullptr;
 
-	auto paths = split(lpszFolderPath, L'\\');
+	auto paths = strings::split(lpszFolderPath, L'\\');
 
 	if (lpMAPISession)
 	{
@@ -84,9 +84,9 @@ HRESULT HrMAPIOpenStoreAndFolder(
 			// Skip the '#'
 			auto root = paths[0].substr(1);
 			paths.erase(paths.begin());
-			lpszFolderPath = join(paths, L'\\');
+			lpszFolderPath = strings::join(paths, L'\\');
 
-			auto bin = HexStringToBin(root);
+			auto bin = strings::HexStringToBin(root);
 			// In order for cb to get bigger than 1, the string has to have at least 4 characters
 			// Which is larger than any reasonable store number. So we use that to distinguish.
 			if (bin.size() > 1)
@@ -94,7 +94,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 				SBinary Bin = { 0 };
 				Bin.cb = static_cast<ULONG>(bin.size());
 				Bin.lpb = bin.data();
-				WC_H(CallOpenMsgStore(
+				WC_H(mapi::store::CallOpenMsgStore(
 					lpMAPISession,
 					NULL,
 					&Bin,
@@ -105,7 +105,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 			{
 				hRes = S_OK;
 				LPWSTR szEndPtr = nullptr;
-				auto ulStore = wcstoul(root.c_str(), &szEndPtr, 10);
+				const auto ulStore = wcstoul(root.c_str(), &szEndPtr, 10);
 
 				// Only '\' and NULL are acceptable next characters after our store number
 				if (szEndPtr && (szEndPtr[0] == L'\\' || szEndPtr[0] == L'\0'))
@@ -134,7 +134,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 		}
 		else
 		{
-			WC_H(OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
+			WC_H(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
 		}
 	}
 
@@ -190,17 +190,17 @@ void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 		&cValues,
 		&lpAllProps));
 
-	_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
+	output::_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
 	MAPIFreeBuffer(lpAllProps);
 }
 
-void PrintObjectProperties(const wstring& szObjType, _In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
+void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
 	auto hRes = S_OK;
 	if (!lpMAPIProp) return;
 
-	wprintf(g_szXMLHeader.c_str());
+	wprintf(output::g_szXMLHeader.c_str());
 	wprintf(L"<%ws>\n", szObjType.c_str());
 
 	LPSPropValue lpAllProps = nullptr;
@@ -219,7 +219,7 @@ void PrintObjectProperties(const wstring& szObjType, _In_ LPMAPIPROP lpMAPIProp,
 	}
 	else
 	{
-		WC_H_GETPROPS(GetPropsNULL(lpMAPIProp,
+		WC_H_GETPROPS(mapi::GetPropsNULL(lpMAPIProp,
 			fMapiUnicode,
 			&cValues,
 			&lpAllProps));
@@ -233,7 +233,7 @@ void PrintObjectProperties(const wstring& szObjType, _In_ LPMAPIPROP lpMAPIProp,
 	{
 		wprintf(L"<properties>\n");
 
-		_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
+		output::_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
 		wprintf(L"</properties>\n");
 
@@ -269,13 +269,13 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 	LPMAPITABLE lpStoreTable = nullptr;
 	if (!lpMAPISession) return;
 
-	wprintf(g_szXMLHeader.c_str());
+	wprintf(output::g_szXMLHeader.c_str());
 	wprintf(L"<storetable>\n");
 	WC_MAPI(lpMAPISession->GetMsgStoresTable(0, &lpStoreTable));
 
 	if (lpStoreTable)
 	{
-		auto sTags = LPSPropTagArray(&sptSTORECols);
+		auto sTags = LPSPropTagArray(&columns::sptSTORECols);
 		SPropTagArray sTag = { 0 };
 		if (ulPropTag)
 		{
@@ -313,7 +313,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 					}
 					else
 					{
-						_OutputProperties(DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
+						output::_OutputProperties(DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
 					}
 
 					wprintf(L"</properties>\n");
@@ -338,7 +338,7 @@ void DoStore(_In_ MYOPTIONS ProgOpts)
 	// For now, we don't support dispids
 	if (!ProgOpts.lpszUnswitchedOption.empty() && !(ProgOpts.ulOptions & OPT_DODISPID))
 	{
-		ulPropTag = PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
+		ulPropTag = interpretprop::PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
 	}
 
 	LPMDB lpMDB = nullptr;

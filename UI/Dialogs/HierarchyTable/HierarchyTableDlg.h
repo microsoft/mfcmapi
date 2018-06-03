@@ -1,51 +1,62 @@
 #pragma once
 #include <UI/Dialogs/BaseDialog.h>
 
-class CHierarchyTableTreeCtrl;
 class CParentWnd;
-class CMapiObjects;
 
-class CHierarchyTableDlg : public CBaseDialog
+namespace cache
 {
-public:
-	CHierarchyTableDlg(
-		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
-		UINT uidTitle,
-		_In_opt_ LPUNKNOWN lpRootContainer,
-		ULONG nIDContextMenu,
-		ULONG ulAddInContext
-	);
-	virtual ~CHierarchyTableDlg();
+	class CMapiObjects;
+}
 
-protected:
-	// Overrides from base class
-	void CreateDialogAndMenu(UINT nIDMenuResource);
-	void OnInitMenu(_In_ CMenu* pMenu) override;
+namespace controls
+{
+	class CHierarchyTableTreeCtrl;
+}
 
-	CHierarchyTableTreeCtrl* m_lpHierarchyTableTreeCtrl;
-	ULONG m_ulDisplayFlags;
+namespace dialog
+{
+	class CHierarchyTableDlg : public CBaseDialog
+	{
+	public:
+		CHierarchyTableDlg(
+			_In_ ui::CParentWnd* pParentWnd,
+			_In_ cache::CMapiObjects* lpMapiObjects,
+			UINT uidTitle,
+			_In_opt_ LPUNKNOWN lpRootContainer,
+			ULONG nIDContextMenu,
+			ULONG ulAddInContext
+		);
+		virtual ~CHierarchyTableDlg();
 
-private:
-	virtual void HandleAddInMenuSingle(
-		_In_ LPADDINMENUPARAMS lpParams,
-		_In_opt_ LPMAPIPROP lpMAPIProp,
-		_In_opt_ LPMAPICONTAINER lpContainer);
+	protected:
+		// Overrides from base class
+		void CreateDialogAndMenu(UINT nIDMenuResource);
+		void OnInitMenu(_In_ CMenu* pMenu) override;
 
-	// Overrides from base class
-	_Check_return_ bool HandleAddInMenu(WORD wMenuSelect) override;
-	void OnCancel() override;
-	BOOL OnInitDialog() override;
-	void OnRefreshView() override;
+		controls::CHierarchyTableTreeCtrl* m_lpHierarchyTableTreeCtrl;
+		ULONG m_ulDisplayFlags;
 
-	BOOL PreTranslateMessage(MSG* pMsg) override;
+	private:
+		virtual void HandleAddInMenuSingle(
+			_In_ LPADDINMENUPARAMS lpParams,
+			_In_opt_ LPMAPIPROP lpMAPIProp,
+			_In_opt_ LPMAPICONTAINER lpContainer);
 
-	// Menu items
-	void OnDisplayHierarchyTable();
-	void OnDisplayItem();
-	void OnEditSearchCriteria();
+		// Overrides from base class
+		_Check_return_ bool HandleAddInMenu(WORD wMenuSelect) override;
+		void OnCancel() override;
+		BOOL OnInitDialog() override;
+		void OnRefreshView() override;
 
-	UINT m_nIDContextMenu;
+		BOOL PreTranslateMessage(MSG* pMsg) override;
 
-	DECLARE_MESSAGE_MAP()
-};
+		// Menu items
+		void OnDisplayHierarchyTable();
+		void OnDisplayItem();
+		void OnEditSearchCriteria();
+
+		UINT m_nIDContextMenu;
+
+		DECLARE_MESSAGE_MAP()
+	};
+}

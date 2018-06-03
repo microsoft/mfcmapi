@@ -1,27 +1,30 @@
 #pragma once
-#include "BaseDialog.h"
+#include <UI/Dialogs/BaseDialog.h>
 
 class CContentsTableListCtrl;
 
-class SingleRecipientDialog : public CBaseDialog
+namespace dialog
 {
-public:
-	SingleRecipientDialog(
-		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
-		_In_opt_ LPMAILUSER lpMailUser);
-	virtual ~SingleRecipientDialog();
+	class SingleRecipientDialog : public CBaseDialog
+	{
+	public:
+		SingleRecipientDialog(
+			_In_ ui::CParentWnd* pParentWnd,
+			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_opt_ LPMAILUSER lpMailUser);
+		virtual ~SingleRecipientDialog();
 
-protected:
-	// Overrides from base class
-	void CreateDialogAndMenu(UINT nIDMenuResource);
-	BOOL OnInitDialog() override;
+	protected:
+		// Overrides from base class
+		void CreateDialogAndMenu(UINT nIDMenuResource);
+		BOOL OnInitDialog() override;
 
-private:
-	LPMAILUSER m_lpMailUser;
+	private:
+		LPMAILUSER m_lpMailUser;
 
-	// Menu items
-	void OnRefreshView() override;
+		// Menu items
+		void OnRefreshView() override;
 
-	DECLARE_MESSAGE_MAP()
-};
+		DECLARE_MESSAGE_MAP()
+	};
+}

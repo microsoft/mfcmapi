@@ -1,29 +1,32 @@
 #pragma once
-#include "SmartViewParser.h"
+#include <Interpret/SmartView/SmartViewParser.h>
 
-struct ExtendedFlag
+namespace smartview
 {
-	BYTE Id;
-	BYTE Cb;
-	union
+	struct ExtendedFlag
 	{
-		DWORD ExtendedFlags;
-		GUID SearchFolderID;
-		DWORD SearchFolderTag;
-		DWORD ToDoFolderVersion;
-	} Data;
-	vector<BYTE> lpUnknownData;
-};
+		BYTE Id{};
+		BYTE Cb{};
+		union
+		{
+			DWORD ExtendedFlags;
+			GUID SearchFolderID;
+			DWORD SearchFolderTag;
+			DWORD ToDoFolderVersion;
+		} Data{};
+		std::vector<BYTE> lpUnknownData;
+	};
 
-class ExtendedFlags : public SmartViewParser
-{
-public:
-	ExtendedFlags();
+	class ExtendedFlags : public SmartViewParser
+	{
+	public:
+		ExtendedFlags();
 
-private:
-	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	private:
+		void Parse() override;
+		_Check_return_ std::wstring ToStringInternal() override;
 
-	ULONG m_ulNumFlags;
-	vector<ExtendedFlag> m_pefExtendedFlags;
-};
+		ULONG m_ulNumFlags;
+		std::vector<ExtendedFlag> m_pefExtendedFlags;
+	};
+}

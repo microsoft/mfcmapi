@@ -1,6 +1,6 @@
-#include "stdafx.h"
-#include "MrMAPI.h"
-#include "MMAcls.h"
+#include <StdAfx.h>
+#include <MrMapi/MrMAPI.h>
+#include <MrMapi/MMAcls.h>
 
 void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
 {
@@ -13,18 +13,18 @@ void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
 		// Open the table in an IExchangeModifyTable interface
 		WC_MAPI(lpFolder->OpenProperty(
 			ulPropTag,
-			(LPGUID)&IID_IExchangeModifyTable,
+			const_cast<LPGUID>(&IID_IExchangeModifyTable),
 			0,
 			MAPI_DEFERRED_ERRORS,
-			(LPUNKNOWN*)&lpExchTbl));
+			reinterpret_cast<LPUNKNOWN*>(&lpExchTbl)));
 		if (lpExchTbl)
 		{
 			WC_MAPI(lpExchTbl->GetTable(NULL, &lpTbl));
 		}
 		if (lpTbl)
 		{
-			RegKeys[regkeyDEBUG_TAG].ulCurDWORD |= DBGGeneric;
-			_OutputTable(DBGGeneric, nullptr, lpTbl);
+			registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD |= DBGGeneric;
+			output::_OutputTable(DBGGeneric, nullptr, lpTbl);
 		}
 	}
 

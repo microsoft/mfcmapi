@@ -1,19 +1,22 @@
 #pragma once
-#include "SmartViewParser.h"
+#include <Interpret/SmartView/SmartViewParser.h>
 
-class RestrictionStruct : public SmartViewParser
+namespace smartview
 {
-public:
-	RestrictionStruct();
+	class RestrictionStruct : public SmartViewParser
+	{
+	public:
+		RestrictionStruct();
 
-	void Init(bool bRuleCondition, bool bExtended);
-private:
-	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+		void Init(bool bRuleCondition, bool bExtended);
+	private:
+		void Parse() override;
+		_Check_return_ std::wstring ToStringInternal() override;
 
-	bool BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrRestriction, bool bRuleCondition, bool bExtendedCount);
+		bool BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrRestriction, bool bRuleCondition, bool bExtendedCount);
 
-	bool m_bRuleCondition;
-	bool m_bExtended;
-	LPSRestriction m_lpRes;
-};
+		bool m_bRuleCondition;
+		bool m_bExtended;
+		LPSRestriction m_lpRes;
+	};
+}

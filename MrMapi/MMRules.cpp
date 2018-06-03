@@ -1,7 +1,7 @@
-#include "stdafx.h"
-#include "MrMAPI.h"
-#include "MMRules.h"
-#include "MMAcls.h"
+#include <StdAfx.h>
+#include <MrMapi/MrMAPI.h>
+#include <MrMapi/MMRules.h>
+#include <MrMapi/MMAcls.h>
 
 void DoRules(_In_ MYOPTIONS ProgOpts)
 {

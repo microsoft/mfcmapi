@@ -1,28 +1,31 @@
 #pragma once
-#include "SmartViewParser.h"
+#include <Interpret/SmartView/SmartViewParser.h>
 
-struct PersistElement
+namespace smartview
 {
-	WORD wElementID;
-	WORD wElementDataSize;
-	vector<BYTE> lpbElementData;
-};
+	struct PersistElement
+	{
+		WORD wElementID;
+		WORD wElementDataSize;
+		std::vector<BYTE> lpbElementData;
+	};
 
-struct PersistData
-{
-	WORD wPersistID;
-	WORD wDataElementsSize;
-	vector<PersistElement> ppeDataElement;
+	struct PersistData
+	{
+		WORD wPersistID;
+		WORD wDataElementsSize;
+		std::vector<PersistElement> ppeDataElement;
 
-	vector<BYTE> JunkData;
-};
+		std::vector<BYTE> JunkData;
+	};
 
-class AdditionalRenEntryIDs : public SmartViewParser
-{
-private:
-	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
-	PersistData BinToPersistData();
+	class AdditionalRenEntryIDs : public SmartViewParser
+	{
+	private:
+		void Parse() override;
+		_Check_return_ std::wstring ToStringInternal() override;
+		PersistData BinToPersistData();
 
-	vector<PersistData> m_ppdPersistData;
-};
+		std::vector<PersistData> m_ppdPersistData;
+	};
+}

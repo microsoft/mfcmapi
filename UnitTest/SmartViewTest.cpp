@@ -1,8 +1,8 @@
-#include "stdafx.h"
-#include "CppUnitTest.h"
-#include "Interpret/SmartView/SmartView.h"
-#include "MFCMAPI.h"
-#include "resource.h"
+#include <StdAfx.h>
+#include <CppUnitTest.h>
+#include <Interpret/SmartView/SmartView.h>
+#include <MFCMAPI.h>
+#include <UnitTest/resource.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -23,9 +23,9 @@ namespace SmartViewTest
 		{
 			__ParsingTypeEnum structType;
 			bool parseAll;
-			wstring testName;
-			vector<BYTE> hex;
-			wstring expected;
+			std::wstring testName;
+			std::vector<BYTE> hex;
+			std::wstring expected;
 		};
 
 		static const bool parse_all = true;
@@ -33,43 +33,43 @@ namespace SmartViewTest
 		static const bool limit_output = true;
 
 		// Assert::AreEqual doesn't do full logging, so we roll our own
-		void AreEqualEx(const wstring& expected, const wstring& actual, const wchar_t* message = nullptr, const __LineInfo* pLineInfo = nullptr) const
+		void AreEqualEx(const std::wstring& expected, const std::wstring& actual, const wchar_t* message = nullptr, const __LineInfo* pLineInfo = nullptr) const
 		{
 			if (expected != actual)
 			{
 				if (message != nullptr)
 				{
-					Logger::WriteMessage(format(L"Test: %ws\n", message).c_str());
+					Logger::WriteMessage(strings::format(L"Test: %ws\n", message).c_str());
 				}
 
 				Logger::WriteMessage(L"Diff:\n");
 
-				auto splitExpected = split(expected, L'\n');
-				auto splitActual = split(actual, L'\n');
+				auto splitExpected = strings::split(expected, L'\n');
+				auto splitActual = strings::split(actual, L'\n');
 				auto errorCount = 0;
 				for (size_t line = 0; line < splitExpected.size() && line < splitActual.size() && (errorCount < 4 || !limit_output); line++)
 				{
 					if (splitExpected[line] != splitActual[line])
 					{
 						errorCount++;
-						Logger::WriteMessage(format(L"[%d]\n\"%ws\"\n\"%ws\"\n", line + 1, splitExpected[line].c_str(), splitActual[line].c_str()).c_str());
+						Logger::WriteMessage(strings::format(L"[%d]\n\"%ws\"\n\"%ws\"\n", line + 1, splitExpected[line].c_str(), splitActual[line].c_str()).c_str());
 						auto lineErrorCount = 0;
 						for (size_t ch = 0; ch < splitExpected[line].size() && ch < splitActual[line].size() && (lineErrorCount < 10 || !limit_output); ch++)
 						{
-							wchar_t expectedChar = splitExpected[line][ch];
-							wchar_t actualChar = splitActual[line][ch];
+							const auto expectedChar = splitExpected[line][ch];
+							const auto actualChar = splitActual[line][ch];
 							if (expectedChar != actualChar)
 							{
 								lineErrorCount++;
-								Logger::WriteMessage(format(L"[%d]: %X (%wc) != %X (%wc)\n", ch + 1, expectedChar, expectedChar, actualChar, actualChar).c_str());
+								Logger::WriteMessage(strings::format(L"[%d]: %X (%wc) != %X (%wc)\n", ch + 1, expectedChar, expectedChar, actualChar, actualChar).c_str());
 							}
 						}
 					}
 				}
 
 				Logger::WriteMessage(L"\n");
-				Logger::WriteMessage(format(L"Expected:\n\"%ws\"\n\n", expected.c_str()).c_str());
-				Logger::WriteMessage(format(L"Actual:\n\"%ws\"", actual.c_str()).c_str());
+				Logger::WriteMessage(strings::format(L"Expected:\n\"%ws\"\n\n", expected.c_str()).c_str());
+				Logger::WriteMessage(strings::format(L"Actual:\n\"%ws\"", actual.c_str()).c_str());
 
 				if (assert_on_failure)
 				{
@@ -78,11 +78,11 @@ namespace SmartViewTest
 			}
 		}
 
-		void test(vector<SmartViewTestData> testData) const
+		void test(std::vector<SmartViewTestData> testData) const
 		{
 			for (auto data : testData)
 			{
-				auto actual = InterpretBinaryAsString({ static_cast<ULONG>(data.hex.size()), data.hex.data() }, data.structType, nullptr);
+				auto actual = smartview::InterpretBinaryAsString({ static_cast<ULONG>(data.hex.size()), data.hex.data() }, data.structType, nullptr);
 				AreEqualEx(data.expected, actual, data.testName.c_str());
 
 				if (data.parseAll)
@@ -92,11 +92,11 @@ namespace SmartViewTest
 						const auto structType = static_cast<__ParsingTypeEnum>(iStruct);
 						try
 						{
-							actual = InterpretBinaryAsString({ static_cast<ULONG>(data.hex.size()), data.hex.data() }, structType, nullptr);
+							actual = smartview::InterpretBinaryAsString({ static_cast<ULONG>(data.hex.size()), data.hex.data() }, structType, nullptr);
 						}
 						catch (int exception)
 						{
-							Logger::WriteMessage(format(L"Testing %ws failed at %ws with error 0x%08X\n", data.testName.c_str(), AddInStructTypeToString(structType).c_str(), exception).c_str());
+							Logger::WriteMessage(strings::format(L"Testing %ws failed at %ws with error 0x%08X\n", data.testName.c_str(), addin::AddInStructTypeToString(structType).c_str(), exception).c_str());
 							Assert::Fail();
 						}
 					}
@@ -107,7 +107,7 @@ namespace SmartViewTest
 		// Resource files saved in unicode have a byte order mark of 0xfffe
 		// We load these in and strip the BOM.
 		// Otherwise we load as ansi and convert to unicode
-		static wstring loadfile(const HMODULE handle, const int name)
+		static std::wstring loadfile(const HMODULE handle, const int name)
 		{
 			const auto rc = ::FindResource(handle, MAKEINTRESOURCE(name), MAKEINTRESOURCE(TEXTFILE));
 			const auto rcData = LoadResource(handle, rc);
@@ -123,21 +123,21 @@ namespace SmartViewTest
 			}
 
 			const auto str = std::string(static_cast<const char*>(bytes), cb);
-			return stringTowstring(str);
+			return strings::stringTowstring(str);
 		}
 
-		static vector<SmartViewTestData> loadTestData(std::initializer_list<SmartViewTestResource> resources)
+		static std::vector<SmartViewTestData> loadTestData(std::initializer_list<SmartViewTestResource> resources)
 		{
 			static auto handle = GetModuleHandleW(L"UnitTest.dll");
-			vector<SmartViewTestData> testData;
+			std::vector<SmartViewTestData> testData;
 			for (auto resource : resources)
 			{
 				testData.push_back(SmartViewTestData
 					{
 						resource.structType,
 						resource.parseAll,
-						format(L"%d/%d", resource.hex, resource.expected),
-						HexStringToBin(loadfile(handle, resource.hex)),
+						strings::format(L"%d/%d", resource.hex, resource.expected),
+						strings::HexStringToBin(loadfile(handle, resource.hex)),
 						loadfile(handle, resource.expected)
 					});
 			}
@@ -149,14 +149,14 @@ namespace SmartViewTest
 		TEST_CLASS_INITIALIZE(Initialize_smartview)
 		{
 			// Set up our property arrays or nothing works
-			MergeAddInArrays();
+			addin::MergeAddInArrays();
 
-			RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD = 1;
-			RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
-			RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
-			RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
+			registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD = 1;
+			registry::RegKeys[registry::regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
+			registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
+			registry::RegKeys[registry::regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
 
-			setTestInstance(GetModuleHandleW(L"UnitTest.dll"));
+			strings::setTestInstance(GetModuleHandleW(L"UnitTest.dll"));
 		}
 
 		TEST_METHOD(Test_STADDITIONALRENENTRYIDSEX)

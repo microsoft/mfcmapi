@@ -1,26 +1,29 @@
 #pragma once
-#include "SmartViewParser.h"
+#include <Interpret/SmartView/SmartViewParser.h>
 
-// [MS-OXOTASK].pdf
-struct TaskAssigner
+namespace smartview
 {
-	DWORD cbAssigner;
-	ULONG cbEntryID;
-	vector<BYTE> lpEntryID;
-	string szDisplayName;
-	wstring wzDisplayName;
-	vector<BYTE> JunkData;
-};
+	// [MS-OXOTASK].pdf
+	struct TaskAssigner
+	{
+		DWORD cbAssigner{};
+		ULONG cbEntryID{};
+		std::vector<BYTE> lpEntryID;
+		std::string szDisplayName;
+		std::wstring wzDisplayName;
+		std::vector<BYTE> JunkData;
+	};
 
-class TaskAssigners : public SmartViewParser
-{
-public:
-	TaskAssigners();
+	class TaskAssigners : public SmartViewParser
+	{
+	public:
+		TaskAssigners();
 
-private:
-	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	private:
+		void Parse() override;
+		_Check_return_ std::wstring ToStringInternal() override;
 
-	DWORD m_cAssigners;
-	vector<TaskAssigner> m_lpTaskAssigners;
-};
+		DWORD m_cAssigners;
+		std::vector<TaskAssigner> m_lpTaskAssigners;
+	};
+}

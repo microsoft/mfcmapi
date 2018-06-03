@@ -1,38 +1,44 @@
 #pragma once
+#include <MFCMAPI.h>
 
-// Base64 functions
-vector<BYTE> Base64Decode(const wstring& szEncodedStr);
-wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const LPBYTE lpSourceBuffer);
-
-void FileTimeToString(_In_ const FILETIME& fileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString);
-
-wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
-wstring TypeToString(ULONG ulPropTag);
-wstring ProblemArrayToString(_In_ const SPropProblemArray& problems);
-wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err);
-wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error);
-
-struct NamePropNames
+namespace interpretprop
 {
-	wstring name;
-	wstring guid;
-	wstring dasl;
-	wstring bestPidLid;
-	wstring otherPidLid;
-};
+	std::wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
+	std::wstring TypeToString(ULONG ulPropTag);
+	std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems);
+	std::wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err);
+	std::wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error);
 
-NamePropNames NameIDToStrings(
-	ULONG ulPropTag, // optional 'original' prop tag
-	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-	_In_opt_ const LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-	bool bIsAB); // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+	std::wstring RestrictionToString(_In_ const _SRestriction* lpRes, _In_opt_ LPMAPIPROP lpObj);
+	std::wstring ActionsToString(_In_ const ACTIONS& actions);
 
-wstring CurrencyToString(const CURRENCY& curVal);
+	std::wstring AdrListToString(_In_ const ADRLIST& adrList);
 
-wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
-wstring ActionsToString(_In_ const ACTIONS& actions);
+	void InterpretProp(_In_ const _SPropValue* lpProp, _In_opt_ std::wstring* PropString, _In_opt_ std::wstring* AltPropString);
 
-wstring AdrListToString(_In_ const ADRLIST& adrList);
+#define PROP_TAG_MASK 0xffff0000
+	void FindTagArrayMatches(_In_ ULONG ulTarget,
+		bool bIsAB,
+		const std::vector<NAME_ARRAY_ENTRY_V2>& MyArray,
+		std::vector<ULONG>& ulExacts,
+		std::vector<ULONG>& ulPartials);
 
-void InterpretProp(_In_ const LPSPropValue lpProp, _In_opt_ wstring* PropString, _In_opt_ wstring* AltPropString);
+	struct PropTagNames
+	{
+		std::wstring bestGuess;
+		std::wstring otherMatches;
+	};
+
+	// Function to convert property tags to their names
+	PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB);
+
+	// Strictly does a lookup in the array. Does not convert otherwise
+	_Check_return_ ULONG LookupPropName(_In_ const std::wstring& lpszPropName);
+	_Check_return_ ULONG PropNameToPropTag(_In_ const std::wstring& lpszPropName);
+	_Check_return_ ULONG PropTypeNameToPropType(_In_ const std::wstring& lpszPropType);
+
+	std::vector<std::wstring> NameIDToPropNames(_In_ const MAPINAMEID* lpNameID);
+
+	std::wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue);
+	std::wstring AllFlagsToString(ULONG ulFlagName, bool bHex);
+}

@@ -1,25 +1,28 @@
 #pragma once
-#include "SmartViewParser.h"
-#include "EntryIdStruct.h"
+#include <Interpret/SmartView/SmartViewParser.h>
+#include <Interpret/SmartView/EntryIdStruct.h>
 
-struct FlatEntryID
+namespace smartview
 {
-	DWORD dwSize;
-	EntryIdStruct lpEntryID;
+	struct FlatEntryID
+	{
+		DWORD dwSize;
+		EntryIdStruct lpEntryID;
 
-	vector<BYTE> JunkData;
-};
+		std::vector<BYTE> JunkData;
+	};
 
-class FlatEntryList : public SmartViewParser
-{
-public:
-	FlatEntryList();
+	class FlatEntryList : public SmartViewParser
+	{
+	public:
+		FlatEntryList();
 
-private:
-	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	private:
+		void Parse() override;
+		_Check_return_ std::wstring ToStringInternal() override;
 
-	DWORD m_cEntries;
-	DWORD m_cbEntries;
-	vector<FlatEntryID> m_pEntryIDs;
-};
+		DWORD m_cEntries;
+		DWORD m_cbEntries;
+		std::vector<FlatEntryID> m_pEntryIDs;
+	};
+}

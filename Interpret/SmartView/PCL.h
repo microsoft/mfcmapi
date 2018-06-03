@@ -1,24 +1,27 @@
 #pragma once
-#include <WinNT.h>
-#include "SmartViewParser.h"
+#include <winnt.h>
+#include <Interpret/SmartView/SmartViewParser.h>
 
-struct SizedXID
+namespace smartview
 {
-	BYTE XidSize;
-	GUID NamespaceGuid;
-	DWORD cbLocalId;
-	vector<BYTE> LocalID;
-};
+	struct SizedXID
+	{
+		BYTE XidSize{};
+		GUID NamespaceGuid{};
+		DWORD cbLocalId{};
+		std::vector<BYTE> LocalID;
+	};
 
-class PCL : public SmartViewParser
-{
-public:
-	PCL();
+	class PCL : public SmartViewParser
+	{
+	public:
+		PCL();
 
-private:
-	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	private:
+		void Parse() override;
+		_Check_return_ std::wstring ToStringInternal() override;
 
-	DWORD m_cXID;
-	vector<SizedXID> m_lpXID;
-};
+		DWORD m_cXID;
+		std::vector<SizedXID> m_lpXID;
+	};
+}

@@ -1,39 +1,46 @@
 #pragma once
-#include "ContentsTableDlg.h"
+#include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
 class CParentWnd;
-class CMapiObjects;
 
-class CMsgServiceTableDlg : public CContentsTableDlg
+namespace cache
 {
-public:
+	class CMapiObjects;
+}
 
-	CMsgServiceTableDlg(
-		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
-		_In_ const string& szProfileName);
-	virtual ~CMsgServiceTableDlg();
+namespace dialog
+{
+	class CMsgServiceTableDlg : public CContentsTableDlg
+	{
+	public:
 
-private:
-	// Overrides from base class
-	void HandleAddInMenuSingle(
-		_In_ LPADDINMENUPARAMS lpParams,
-		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ LPMAPICONTAINER lpContainer) override;
-	void OnDeleteSelectedItem() override;
-	void OnDisplayItem() override;
-	void OnRefreshView() override;
-	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
-	void OnInitMenu(_In_ CMenu* pMenu) override;
+		CMsgServiceTableDlg(
+			_In_ ui::CParentWnd* pParentWnd,
+			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_ const std::string& szProfileName);
+		virtual ~CMsgServiceTableDlg();
 
-	// Menu items
-	void OnConfigureMsgService();
-	void OnOpenProfileSection();
+	private:
+		// Overrides from base class
+		void HandleAddInMenuSingle(
+			_In_ LPADDINMENUPARAMS lpParams,
+			_In_ LPMAPIPROP lpMAPIProp,
+			_In_ LPMAPICONTAINER lpContainer) override;
+		void OnDeleteSelectedItem() override;
+		void OnDisplayItem() override;
+		void OnRefreshView() override;
+		_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
+		void OnInitMenu(_In_ CMenu* pMenu) override;
 
-	LPSERVICEADMIN m_lpServiceAdmin;
-	string m_szProfileName;
+		// Menu items
+		void OnConfigureMsgService();
+		void OnOpenProfileSection();
 
-	DECLARE_MESSAGE_MAP()
-};
+		LPSERVICEADMIN m_lpServiceAdmin;
+		std::string m_szProfileName;
+
+		DECLARE_MESSAGE_MAP()
+	};
+}

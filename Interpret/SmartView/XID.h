@@ -1,16 +1,19 @@
 #pragma once
-#include "SmartViewParser.h"
+#include <Interpret/SmartView/SmartViewParser.h>
 
-class XID : public SmartViewParser
+namespace smartview
 {
-public:
-	XID();
+	class XID : public SmartViewParser
+	{
+	public:
+		XID();
 
-private:
-	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	private:
+		void Parse() override;
+		_Check_return_ std::wstring ToStringInternal() override;
 
-	GUID m_NamespaceGuid;
-	size_t m_cbLocalId;
-	vector<BYTE> m_LocalID;
-};
+		GUID m_NamespaceGuid;
+		size_t m_cbLocalId;
+		std::vector<BYTE> m_LocalID;
+	};
+}

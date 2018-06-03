@@ -1,26 +1,27 @@
-#include "stdafx.h"
+#include <StdAfx.h>
 
-#include "MrMAPI/MrMAPI.h"
+#include <MrMapi/MrMAPI.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
-#include <Interpret/InterpretProp2.h>
-#include "MrMAPI/MMAcls.h"
-#include "MrMAPI/MMContents.h"
-#include "MrMAPI/MMErr.h"
-#include "MrMAPI/MMFidMid.h"
-#include "MrMAPI/MMFolder.h"
-#include "MrMAPI/MMProfile.h"
-#include "MrMAPI/MMPropTag.h"
-#include "MrMAPI/MMRules.h"
-#include "MrMAPI/MMSmartView.h"
-#include "MrMAPI/MMStore.h"
-#include "MrMAPI/MMMapiMime.h"
-#include <shlwapi.h>
-#include "ImportProcs.h"
+#include <Interpret/InterpretProp.h>
+#include <MrMapi/MMAcls.h>
+#include <MrMapi/MMContents.h>
+#include <MrMapi/MMErr.h>
+#include <MrMapi/MMFidMid.h>
+#include <MrMapi/MMFolder.h>
+#include <MrMapi/MMProfile.h>
+#include <MrMapi/MMPropTag.h>
+#include <MrMapi/MMRules.h>
+#include <MrMapi/MMSmartView.h>
+#include <MrMapi/MMStore.h>
+#include <MrMapi/MMMapiMime.h>
+#include <Shlwapi.h>
+#include <ImportProcs.h>
 #include <MAPI/MAPIStoreFunctions.h>
-#include "MrMAPI/MMPst.h"
-#include "MrMAPI/MMReceiveFolder.h"
-#include <MAPI/NamedPropCache.h>
+#include <MrMapi/MMPst.h>
+#include <MrMapi/MMReceiveFolder.h>
+#include <MAPI/Cache/NamedPropCache.h>
+#include <MAPI/StubUtils.h>
 
 // Initialize MFC for LoadString support later on
 void InitMFC()
@@ -28,14 +29,14 @@ void InitMFC()
 	AfxWinInit(::GetModuleHandle(nullptr), nullptr, ::GetCommandLine(), 0);
 }
 
-_Check_return_ HRESULT MrMAPILogonEx(const wstring& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession)
+_Check_return_ HRESULT MrMAPILogonEx(const std::wstring& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession)
 {
 	auto hRes = S_OK;
 	auto ulFlags = MAPI_EXTENDED | MAPI_NO_MAIL | MAPI_UNICODE | MAPI_NEW_SESSION;
 	if (lpszProfile.empty()) ulFlags |= MAPI_USE_DEFAULT;
 
 	// TODO: profile parameter should be ansi in ansi builds
-	WC_MAPI(MAPILogonEx(NULL, (LPTSTR)(lpszProfile.empty() ? NULL : lpszProfile.c_str()), NULL,
+	WC_MAPI(MAPILogonEx(NULL, LPTSTR((lpszProfile.empty() ? NULL : lpszProfile.c_str())), NULL,
 		ulFlags,
 		lppSession));
 	return hRes;
@@ -50,11 +51,11 @@ _Check_return_ HRESULT OpenExchangeOrDefaultMessageStore(
 	LPMDB lpMDB = nullptr;
 	*lppMDB = nullptr;
 
-	WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpMDB));
+	WC_H(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpMDB));
 	if (FAILED(hRes) || !lpMDB)
 	{
 		hRes = S_OK;
-		WC_H(OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		WC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 	}
 
 	if (SUCCEEDED(hRes) && lpMDB)
@@ -190,8 +191,6 @@ COMMANDLINE_SWITCH g_Switches[] =
 };
 ULONG g_ulSwitches = _countof(g_Switches);
 
-extern vector<_AddIn> g_lpMyAddins;
-
 void DisplayUsage(BOOL bFull)
 {
 	printf("MAPI data collection and parsing tool. Supports property tag lookup, error translation,\n");
@@ -212,7 +211,7 @@ void DisplayUsage(BOOL bFull)
 		printf("%6u dispids\n", static_cast<int>(NameIDArray.size()));
 		printf("%6u types\n", static_cast<int>(PropTypeArray.size()));
 		printf("%6u guids\n", static_cast<int>(PropGuidArray.size()));
-		printf("%6u errors\n", g_ulErrorArray);
+		printf("%6lu errors\n", error::g_ulErrorArray);
 		printf("%6u smart view parsers\n", static_cast<int>(SmartViewParserTypeArray.size()) - 1);
 		printf("\n");
 	}
@@ -437,15 +436,15 @@ void DisplayUsage(BOOL bFull)
 		// Print smart view options
 		for (ULONG i = 1; i < SmartViewParserTypeArray.size(); i++)
 		{
-			_tprintf(_T("   %2u %ws\n"), i, SmartViewParserTypeArray[i].lpszName);
+			_tprintf(_T("   %2lu %ws\n"), i, SmartViewParserTypeArray[i].lpszName);
 		}
 
 		printf("\n");
 		printf("Folders:\n");
 		// Print Folders
-		for (ULONG i = 1; i < NUM_DEFAULT_PROPS; i++)
+		for (ULONG i = 1; i < mapi::NUM_DEFAULT_PROPS; i++)
 		{
-			printf("   %2u %ws\n", i, FolderNames[i]);
+			printf("   %2lu %ws\n", i, mapi::FolderNames[i]);
 		}
 
 		printf("\n");
@@ -572,9 +571,9 @@ MYOPTIONS::MYOPTIONS()
 
 OptParser* GetParser(__CommandLineSwitch Switch)
 {
-	for (auto i = 0; i < _countof(g_Parsers); i++)
+	for (auto& g_Parser : g_Parsers)
 	{
-		if (Switch == g_Parsers[i].Switch) return &g_Parsers[i];
+		if (Switch == g_Parser.Switch) return &g_Parser;
 	}
 
 	return nullptr;
@@ -618,7 +617,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 	LPSTR szEndPtr = nullptr;
 
 	pRunOpts->ulTypeNum = ulNoMatch;
-	pRunOpts->ulFolder = DEFAULT_INBOX;
+	pRunOpts->ulFolder = mapi::DEFAULT_INBOX;
 
 	if (!pRunOpts) return false;
 	if (1 == argc) return false;
@@ -627,8 +626,8 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 
 	for (auto i = 1; i < argc; i++)
 	{
-		auto iSwitch = ParseArgument(argv[i]);
-		auto opt = GetParser(iSwitch);
+		const auto iSwitch = ParseArgument(argv[i]);
+		const auto opt = GetParser(iSwitch);
 
 		if (opt)
 		{
@@ -666,36 +665,36 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			pRunOpts->ulFolder = strtoul(argv[i + 1], &szEndPtr, 10);
 			if (!pRunOpts->ulFolder)
 			{
-				pRunOpts->lpszFolderPath = LPCSTRToWstring(argv[i + 1]);
-				pRunOpts->ulFolder = DEFAULT_INBOX;
+				pRunOpts->lpszFolderPath = strings::LPCSTRToWstring(argv[i + 1]);
+				pRunOpts->ulFolder = mapi::DEFAULT_INBOX;
 			}
 			i++;
 			break;
 		case switchInput:
-			pRunOpts->lpszInput = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszInput = strings::LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchOutput:
-			pRunOpts->lpszOutput = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszOutput = strings::LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchProfile:
 			// If we have a next argument and it's not an option, parse it as a profile name
 			if (i + 1 < argc && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				pRunOpts->lpszProfile = LPCSTRToWstring(argv[i + 1]);
+				pRunOpts->lpszProfile = strings::LPCSTRToWstring(argv[i + 1]);
 				i++;
 			}
 			break;
 		case switchProfileSection:
-			pRunOpts->lpszProfileSection = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszProfileSection = strings::LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchByteSwapped:
 			pRunOpts->bByteSwapped = true;
 			break;
 		case switchVersion:
-			pRunOpts->lpszVersion = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszVersion = strings::LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 			// Proptag parsing
@@ -703,13 +702,13 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			// If we have a next argument and it's not an option, parse it as a type
 			if (i + 1 < argc && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				pRunOpts->ulTypeNum = PropTypeNameToPropType(LPCSTRToWstring(argv[i + 1]));
+				pRunOpts->ulTypeNum = interpretprop::PropTypeNameToPropType(strings::LPCSTRToWstring(argv[i + 1]));
 				i++;
 			}
 			break;
 		case switchFlag:
 			// If we have a next argument and it's not an option, parse it as a flag
-			pRunOpts->lpszFlagName = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszFlagName = strings::LPCSTRToWstring(argv[i + 1]);
 			pRunOpts->ulFlagValue = strtoul(argv[i + 1], &szEndPtr, 16);
 
 			// Set mode based on whether the flag string was completely parsed as a number
@@ -731,11 +730,11 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			break;
 			// Contents tables
 		case switchSubject:
-			pRunOpts->lpszSubject = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszSubject = strings::LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchMessageClass:
-			pRunOpts->lpszMessageClass = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszMessageClass = strings::LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchRecent:
@@ -746,14 +745,14 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		case switchFid:
 			if (i + 1 < argc  && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				pRunOpts->lpszFid = LPCSTRToWstring(argv[i + 1]);
+				pRunOpts->lpszFid = strings::LPCSTRToWstring(argv[i + 1]);
 				i++;
 			}
 			break;
 		case switchMid:
 			if (i + 1 < argc  && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				pRunOpts->lpszMid = LPCSTRToWstring(argv[i + 1]);
+				pRunOpts->lpszMid = strings::LPCSTRToWstring(argv[i + 1]);
 				i++;
 			}
 			else
@@ -823,7 +822,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		case switchNoSwitch:
 			// naked option without a flag - we only allow one of these
 			if (!pRunOpts->lpszUnswitchedOption.empty()) { bHitError = true; break; } // He's already got one, you see.
-			pRunOpts->lpszUnswitchedOption = LPCSTRToWstring(argv[i]);
+			pRunOpts->lpszUnswitchedOption = strings::LPCSTRToWstring(argv[i]);
 			break;
 		case switchUnknown:
 			// display help
@@ -884,7 +883,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		char strPath[_MAX_PATH];
 		GetCurrentDirectoryA(_MAX_PATH, strPath);
 
-		pRunOpts->lpszOutput = LPCSTRToWstring(strPath);
+		pRunOpts->lpszOutput = strings::LPCSTRToWstring(strPath);
 	}
 
 	// Validate that we have bare minimum to run
@@ -937,53 +936,53 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 
 void PrintArgs(_In_ MYOPTIONS ProgOpts)
 {
-	DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.Mode);
-	DebugPrint(DBGGeneric, L"ulOptions = 0x%08X\n", ProgOpts.ulOptions);
-	DebugPrint(DBGGeneric, L"ulTypeNum = 0x%08X\n", ProgOpts.ulTypeNum);
-	if (!ProgOpts.lpszUnswitchedOption.empty()) DebugPrint(DBGGeneric, L"lpszUnswitchedOption = %ws\n", ProgOpts.lpszUnswitchedOption.c_str());
-	if (!ProgOpts.lpszFlagName.empty()) DebugPrint(DBGGeneric, L"lpszFlagName = %ws\n", ProgOpts.lpszFlagName.c_str());
-	if (!ProgOpts.lpszFolderPath.empty()) DebugPrint(DBGGeneric, L"lpszFolderPath = %ws\n", ProgOpts.lpszFolderPath.c_str());
-	if (!ProgOpts.lpszInput.empty()) DebugPrint(DBGGeneric, L"lpszInput = %ws\n", ProgOpts.lpszInput.c_str());
-	if (!ProgOpts.lpszMessageClass.empty()) DebugPrint(DBGGeneric, L"lpszMessageClass = %ws\n", ProgOpts.lpszMessageClass.c_str());
-	if (!ProgOpts.lpszMid.empty()) DebugPrint(DBGGeneric, L"lpszMid = %ws\n", ProgOpts.lpszMid.c_str());
-	if (!ProgOpts.lpszOutput.empty()) DebugPrint(DBGGeneric, L"lpszOutput = %ws\n", ProgOpts.lpszOutput.c_str());
-	if (!ProgOpts.lpszProfile.empty()) DebugPrint(DBGGeneric, L"lpszProfile = %ws\n", ProgOpts.lpszProfile.c_str());
-	if (!ProgOpts.lpszProfileSection.empty()) DebugPrint(DBGGeneric, L"lpszProfileSection = %ws\n", ProgOpts.lpszProfileSection.c_str());
-	if (!ProgOpts.lpszSubject.empty()) DebugPrint(DBGGeneric, L"lpszSubject = %ws\n", ProgOpts.lpszSubject.c_str());
-	if (!ProgOpts.lpszVersion.empty()) DebugPrint(DBGGeneric, L"lpszVersion = %ws\n", ProgOpts.lpszVersion.c_str());
+	output::DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.Mode);
+	output::DebugPrint(DBGGeneric, L"ulOptions = 0x%08X\n", ProgOpts.ulOptions);
+	output::DebugPrint(DBGGeneric, L"ulTypeNum = 0x%08X\n", ProgOpts.ulTypeNum);
+	if (!ProgOpts.lpszUnswitchedOption.empty()) output::DebugPrint(DBGGeneric, L"lpszUnswitchedOption = %ws\n", ProgOpts.lpszUnswitchedOption.c_str());
+	if (!ProgOpts.lpszFlagName.empty()) output::DebugPrint(DBGGeneric, L"lpszFlagName = %ws\n", ProgOpts.lpszFlagName.c_str());
+	if (!ProgOpts.lpszFolderPath.empty()) output::DebugPrint(DBGGeneric, L"lpszFolderPath = %ws\n", ProgOpts.lpszFolderPath.c_str());
+	if (!ProgOpts.lpszInput.empty()) output::DebugPrint(DBGGeneric, L"lpszInput = %ws\n", ProgOpts.lpszInput.c_str());
+	if (!ProgOpts.lpszMessageClass.empty()) output::DebugPrint(DBGGeneric, L"lpszMessageClass = %ws\n", ProgOpts.lpszMessageClass.c_str());
+	if (!ProgOpts.lpszMid.empty()) output::DebugPrint(DBGGeneric, L"lpszMid = %ws\n", ProgOpts.lpszMid.c_str());
+	if (!ProgOpts.lpszOutput.empty()) output::DebugPrint(DBGGeneric, L"lpszOutput = %ws\n", ProgOpts.lpszOutput.c_str());
+	if (!ProgOpts.lpszProfile.empty()) output::DebugPrint(DBGGeneric, L"lpszProfile = %ws\n", ProgOpts.lpszProfile.c_str());
+	if (!ProgOpts.lpszProfileSection.empty()) output::DebugPrint(DBGGeneric, L"lpszProfileSection = %ws\n", ProgOpts.lpszProfileSection.c_str());
+	if (!ProgOpts.lpszSubject.empty()) output::DebugPrint(DBGGeneric, L"lpszSubject = %ws\n", ProgOpts.lpszSubject.c_str());
+	if (!ProgOpts.lpszVersion.empty()) output::DebugPrint(DBGGeneric, L"lpszVersion = %ws\n", ProgOpts.lpszVersion.c_str());
 }
 
 // Returns true if we've done everything we need to do and can exit the program.
 // Returns false to continue work.
-bool LoadMAPIVersion(const wstring& lpszVersion)
+bool LoadMAPIVersion(const std::wstring& lpszVersion)
 {
 	// Load DLLS and get functions from them
-	ImportProcs();
-	DebugPrint(DBGGeneric, L"LoadMAPIVersion(%ws)\n", lpszVersion.c_str());
+	import::ImportProcs();
+	output::DebugPrint(DBGGeneric, L"LoadMAPIVersion(%ws)\n", lpszVersion.c_str());
 
-	wstring szPath;
-	auto paths = GetMAPIPaths();
+	std::wstring szPath;
+	auto paths = mapistub::GetMAPIPaths();
 	if (lpszVersion == L"0")
 	{
-		DebugPrint(DBGGeneric, L"Listing MAPI\n");
+		output::DebugPrint(DBGGeneric, L"Listing MAPI\n");
 		for (const auto& path : paths)
 		{
 
-			printf("MAPI path: %ws\n", wstringToLower(path).c_str());
+			printf("MAPI path: %ws\n", strings::wstringToLower(path).c_str());
 		}
 		return true;
 	}
 
-	auto ulVersion = wstringToUlong(lpszVersion, 10);
+	const auto ulVersion = strings::wstringToUlong(lpszVersion, 10);
 	if (ulVersion == 0)
 	{
-		DebugPrint(DBGGeneric, L"Got a string\n");
+		output::DebugPrint(DBGGeneric, L"Got a string\n");
 
 		for (const auto& path : paths)
 		{
-			wstringToLower(path);
+			strings::wstringToLower(path);
 
-			if (wstringToLower(path).find(wstringToLower(lpszVersion)) != wstring::npos)
+			if (strings::wstringToLower(path).find(strings::wstringToLower(lpszVersion)) != std::wstring::npos)
 			{
 				szPath = path;
 				break;
@@ -992,37 +991,37 @@ bool LoadMAPIVersion(const wstring& lpszVersion)
 	}
 	else
 	{
-		DebugPrint(DBGGeneric, L"Got a number %u\n", ulVersion);
+		output::DebugPrint(DBGGeneric, L"Got a number %u\n", ulVersion);
 		switch (ulVersion)
 		{
 		case 1: // system
-			szPath = GetMAPISystemDir();
+			szPath = mapistub::GetMAPISystemDir();
 			break;
 		case 11: // Outlook 2003 (11)
-			szPath = GetInstalledOutlookMAPI(oqcOffice11);
+			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice11);
 			break;
 		case 12: // Outlook 2007 (12)
-			szPath = GetInstalledOutlookMAPI(oqcOffice12);
+			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice12);
 			break;
 		case 14: // Outlook 2010 (14)
-			szPath = GetInstalledOutlookMAPI(oqcOffice14);
+			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice14);
 			break;
 		case 15: // Outlook 2013 (15)
-			szPath = GetInstalledOutlookMAPI(oqcOffice15);
+			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice15);
 			break;
 		case 16: // Outlook 2016 (16)
-			szPath = GetInstalledOutlookMAPI(oqcOffice16);
+			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice16);
 			break;
 		}
 	}
 
 	if (!szPath.empty())
 	{
-		DebugPrint(DBGGeneric, L"Found MAPI path %ws\n", szPath.c_str());
+		output::DebugPrint(DBGGeneric, L"Found MAPI path %ws\n", szPath.c_str());
 		HMODULE hMAPI = nullptr;
 		auto hRes = S_OK;
-		WC_D(hMAPI, MyLoadLibraryW(szPath));
-		SetMAPIHandle(hMAPI);
+		WC_D(hMAPI, import::MyLoadLibraryW(szPath));
+		mapistub::SetMAPIHandle(hMAPI);
 	}
 
 	return false;
@@ -1034,18 +1033,18 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 	auto bMAPIInit = false;
 
 	SetDllDirectory(_T(""));
-	MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
+	import::MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 
 	// Set up our property arrays or nothing works
-	MergeAddInArrays();
+	addin::MergeAddInArrays();
 
-	RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD = 1;
-	RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
-	RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
-	RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
+	registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD = 1;
+	registry::RegKeys[registry::regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
+	registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
+	registry::RegKeys[registry::regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
 
 	MYOPTIONS ProgOpts;
-	auto bGoodCommandLine = ParseArgs(argc, argv, &ProgOpts);
+	const auto bGoodCommandLine = ParseArgs(argc, argv, &ProgOpts);
 
 	// Must be first after ParseArgs
 	if (ProgOpts.ulOptions & OPT_INITMFC)
@@ -1055,14 +1054,14 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 
 	if (ProgOpts.ulOptions & OPT_VERBOSE)
 	{
-		RegKeys[regkeyDEBUG_TAG].ulCurDWORD = 0xFFFFFFFF;
+		registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD = 0xFFFFFFFF;
 		PrintArgs(ProgOpts);
 	}
 
 	if (!(ProgOpts.ulOptions & OPT_NOADDINS))
 	{
-		RegKeys[regkeyLOADADDINS].ulCurDWORD = true;
-		LoadAddIns();
+		registry::RegKeys[registry::regkeyLOADADDINS].ulCurDWORD = true;
+		addin::LoadAddIns();
 	}
 
 	if (!ProgOpts.lpszVersion.empty())
@@ -1078,8 +1077,8 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 	{
 		if (ProgOpts.ulOptions & OPT_ONLINE)
 		{
-			RegKeys[regKeyMAPI_NO_CACHE].ulCurDWORD = true;
-			RegKeys[regkeyMDB_ONLINE].ulCurDWORD = true;
+			registry::RegKeys[registry::regKeyMAPI_NO_CACHE].ulCurDWORD = true;
+			registry::RegKeys[registry::regkeyMDB_ONLINE].ulCurDWORD = true;
 		}
 
 		// Log on to MAPI if needed
@@ -1088,7 +1087,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 			WC_MAPI(MAPIInitialize(NULL));
 			if (FAILED(hRes))
 			{
-				printf("Error initializing MAPI: 0x%08x\n", hRes);
+				printf("Error initializing MAPI: 0x%08lx\n", hRes);
 			}
 			else
 			{
@@ -1099,14 +1098,14 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 		if (bMAPIInit && ProgOpts.ulOptions & OPT_NEEDMAPILOGON)
 		{
 			WC_H(MrMAPILogonEx(ProgOpts.lpszProfile, &ProgOpts.lpMAPISession));
-			if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08x\n", hRes);
+			if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08lx\n", hRes);
 		}
 
 		// If they need a folder get it and store at the same time from the folder id
 		if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & OPT_NEEDFOLDER)
 		{
 			WC_H(HrMAPIOpenStoreAndFolder(ProgOpts.lpMAPISession, ProgOpts.ulFolder, ProgOpts.lpszFolderPath, &ProgOpts.lpMDB, &ProgOpts.lpFolder));
-			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08x\n", hRes);
+			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
 		}
 		else if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & OPT_NEEDSTORE)
 		{
@@ -1116,13 +1115,13 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 				// Decrement by one here on the index since we incremented during parameter parsing
 				// This is so zero indicate they did not specify a store
 				WC_H(OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1, &ProgOpts.lpMDB));
-				if (FAILED(hRes)) printf("OpenStore returned an error: 0x%08x\n", hRes);
+				if (FAILED(hRes)) printf("OpenStore returned an error: 0x%08lx\n", hRes);
 			}
 			else
 			{
 				// If they needed a store but didn't specify, get the default one
 				WC_H(OpenExchangeOrDefaultMessageStore(ProgOpts.lpMAPISession, &ProgOpts.lpMDB));
-				if (FAILED(hRes)) printf("OpenExchangeOrDefaultMessageStore returned an error: 0x%08x\n", hRes);
+				if (FAILED(hRes)) printf("OpenExchangeOrDefaultMessageStore returned an error: 0x%08lx\n", hRes);
 			}
 		}
 
@@ -1177,7 +1176,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 			DoPST(ProgOpts);
 			break;
 		case cmdmodeProfile:
-			DoProfile(ProgOpts);
+			output::DoProfile(ProgOpts);
 			break;
 		case cmdmodeReceiveFolder:
 			DoReceiveFolder(ProgOpts);
@@ -1191,7 +1190,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 		}
 	}
 
-	UninitializeNamedPropCache();
+	cache::UninitializeNamedPropCache();
 
 	if (bMAPIInit)
 	{
@@ -1203,6 +1202,6 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 
 	if (!(ProgOpts.ulOptions & OPT_NOADDINS))
 	{
-		UnloadAddIns();
+		addin::UnloadAddIns();
 	}
 }

@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "MrMAPI.h"
+#include <StdAfx.h>
+#include <MrMapi/MrMAPI.h>
 #include <Interpret/String.h>
 #include <io.h>
 #include <Interpret/SmartView/SmartView.h>
@@ -7,7 +7,7 @@
 void DoSmartView(_In_ MYOPTIONS ProgOpts)
 {
 	// Ignore the reg key that disables smart view parsing
-	RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD = true;
+	registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD = true;
 
 	auto ulStructType = IDS_STNOPARSING;
 
@@ -19,11 +19,11 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 	if (ulStructType)
 	{
 		FILE* fOut = nullptr;
-		const auto fIn = MyOpenFileMode(ProgOpts.lpszInput, L"rb");
+		const auto fIn = output::MyOpenFileMode(ProgOpts.lpszInput, L"rb");
 		if (!fIn) printf("Cannot open input file %ws\n", ProgOpts.lpszInput.c_str());
 		if (!ProgOpts.lpszOutput.empty())
 		{
-			fOut = MyOpenFileMode(ProgOpts.lpszOutput, L"wb");
+			fOut = output::MyOpenFileMode(ProgOpts.lpszOutput, L"wb");
 			if (!fOut) printf("Cannot open output file %ws\n", ProgOpts.lpszOutput.c_str());
 		}
 
@@ -38,7 +38,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 				memset(lpbIn, 0, sizeof(BYTE)*(iLength + 1));
 				fread(lpbIn, sizeof(BYTE), iLength, fIn);
 				SBinary Bin = { 0 };
-				vector<BYTE> bin;
+				std::vector<BYTE> bin;
 				if (ProgOpts.ulOptions & OPT_BINARYFILE)
 				{
 					Bin.cb = iLength;
@@ -46,21 +46,21 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 				}
 				else
 				{
-					bin = HexStringToBin(LPCSTRToWstring(reinterpret_cast<LPCSTR>(lpbIn)));
+					bin = strings::HexStringToBin(strings::LPCSTRToWstring(reinterpret_cast<LPCSTR>(lpbIn)));
 					Bin.cb = static_cast<ULONG>(bin.size());
 					Bin.lpb = bin.data();
 				}
 
-				auto szString = InterpretBinaryAsString(Bin, ulStructType, nullptr);
+				auto szString = smartview::InterpretBinaryAsString(Bin, ulStructType, nullptr);
 				if (!szString.empty())
 				{
 					if (fOut)
 					{
-						Output(DBGNoDebug, fOut, false, szString);
+						output::Output(DBGNoDebug, fOut, false, szString);
 					}
 					else
 					{
-						wprintf(L"%ws\n", StripCarriage(szString).c_str());
+						wprintf(L"%ws\n", strings::StripCarriage(szString).c_str());
 					}
 				}
 

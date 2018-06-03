@@ -54,6 +54,9 @@
     <Filter Include="Source Files\UI\Dialogs\HierarchyTable">
       <UniqueIdentifier>{79d3d5f7-6568-44ea-92cc-8bf5d15e2b83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\MAPI\Cache">
+      <UniqueIdentifier>{0c20d465-4fc6-40fb-9f4a-79f52df221a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -90,8 +93,28 @@
     <ClInclude Include="Res\Resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="IO\ExportProfile.h" />
-    <ClInclude Include="IO\Registry.h" />
+    <ClInclude Include="UI\FakeSplitter.h">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="MAPI\Cache\GlobalCache.h">
+      <Filter>Source Files\MAPI\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="MAPI\Cache\MapiObjects.h">
+      <Filter>Source Files\MAPI\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="MAPI\Cache\NamedPropCache.h">
+      <Filter>Source Files\MAPI\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\ExportProfile.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Registry.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="MAPI\StubUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -112,6 +135,21 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClCompile Include="UI\FakeSplitter.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="MAPI\Cache\GlobalCache.cpp">
+      <Filter>Source Files\MAPI\Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="MAPI\Cache\MapiObjects.cpp">
+      <Filter>Source Files\MAPI\Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="MAPI\Cache\NamedPropCache.cpp">
+      <Filter>Source Files\MAPI\Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\MFCUtilityFunctions.cpp">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IO\Error.cpp">
@@ -165,12 +203,6 @@
       <Filter>Source Files\Interpret</Filter>
     </ClCompile>
     <ClInclude Include="Interpret\InterpretProp.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\InterpretProp2.cpp">
-      <Filter>Source Files\Interpret</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\InterpretProp2.h">
       <Filter>Source Files\Interpret</Filter>
     </ClInclude>
     <ClInclude Include="Interpret\NameIDArray.h">
@@ -393,12 +425,6 @@
     <ClInclude Include="MAPI\ColumnTags.h">
       <Filter>Source Files\MAPI</Filter>
     </ClInclude>
-    <ClCompile Include="MAPI\GlobalCache.cpp">
-      <Filter>Source Files\MAPI</Filter>
-    </ClCompile>
-    <ClInclude Include="MAPI\GlobalCache.h">
-      <Filter>Source Files\MAPI</Filter>
-    </ClInclude>
     <ClCompile Include="MAPI\MAPIABFunctions.cpp">
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>
@@ -415,12 +441,6 @@
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>
     <ClInclude Include="MAPI\MapiMime.h">
-      <Filter>Source Files\MAPI</Filter>
-    </ClInclude>
-    <ClCompile Include="MAPI\MapiObjects.cpp">
-      <Filter>Source Files\MAPI</Filter>
-    </ClCompile>
-    <ClInclude Include="MAPI\MapiObjects.h">
       <Filter>Source Files\MAPI</Filter>
     </ClInclude>
     <ClCompile Include="MAPI\MAPIProfileFunctions.cpp">
@@ -444,12 +464,6 @@
     <ClCompile Include="MAPI\MapiStubLibrary.cpp">
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>
-    <ClCompile Include="MAPI\NamedPropCache.cpp">
-      <Filter>Source Files\MAPI</Filter>
-    </ClCompile>
-    <ClInclude Include="MAPI\NamedPropCache.h">
-      <Filter>Source Files\MAPI</Filter>
-    </ClInclude>
     <ClCompile Include="MAPI\StubUtils.cpp">
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>
@@ -512,12 +526,6 @@
     <ClInclude Include="UI\DoubleBuffer.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
-    <ClCompile Include="UI\FakeSplitter.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\FakeSplitter.h">
-      <Filter>Source Files\UI</Filter>
-    </ClInclude>
     <ClCompile Include="UI\FileDialogEx.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
@@ -528,12 +536,6 @@
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClInclude Include="UI\MAPIFormFunctions.h">
-      <Filter>Source Files\UI</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\MFCUtilityFunctions.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\MFCUtilityFunctions.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
     <ClCompile Include="UI\MyMAPIFormViewer.cpp">

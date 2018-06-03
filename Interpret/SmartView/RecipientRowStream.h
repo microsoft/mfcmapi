@@ -1,16 +1,19 @@
 #pragma once
-#include "SmartViewParser.h"
+#include <Interpret/SmartView/SmartViewParser.h>
 
-class RecipientRowStream : public SmartViewParser
+namespace smartview
 {
-public:
-	RecipientRowStream();
+	class RecipientRowStream : public SmartViewParser
+	{
+	public:
+		RecipientRowStream();
 
-private:
-	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	private:
+		void Parse() override;
+		_Check_return_ std::wstring ToStringInternal() override;
 
-	DWORD m_cVersion;
-	DWORD m_cRowCount;
-	LPADRENTRY m_lpAdrEntry;
-};
+		DWORD m_cVersion;
+		DWORD m_cRowCount;
+		LPADRENTRY m_lpAdrEntry;
+	};
+}

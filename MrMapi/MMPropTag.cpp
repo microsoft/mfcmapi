@@ -1,9 +1,9 @@
-#include "stdafx.h"
-#include "MrMAPI.h"
-#include <shlwapi.h>
+#include <StdAfx.h>
+#include <MrMapi/MrMAPI.h>
+#include <Shlwapi.h>
 #include <Interpret/Guids.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <Interpret/InterpretProp2.h>
+#include <Interpret/InterpretProp.h>
 #include <Interpret/String.h>
 
 // Searches a NAMEID_ARRAY_ENTRY array for a target dispid.
@@ -110,7 +110,7 @@ void PrintType(_In_ ULONG ulPropTag)
 		}
 	}
 
-	if (!bFound) printf("0x%04X = Unknown type", PROP_TYPE(ulPropTag));
+	if (!bFound) printf("0x%04lX = Unknown type", PROP_TYPE(ulPropTag));
 
 	if (bNeedInstance) printf(" | MV_INSTANCE");
 }
@@ -121,7 +121,7 @@ void PrintKnownTypes()
 	printf("%-18s%-9s%s\n", "Type", "Hex", "Decimal");
 	for (const auto& propType : PropTypeArray)
 	{
-		printf("%-15ws = 0x%04X = %u\n", propType.lpszName, propType.ulValue, propType.ulValue);
+		printf("%-15ws = 0x%04lX = %lu\n", propType.lpszName, propType.ulValue, propType.ulValue);
 	}
 
 	printf("\n");
@@ -132,7 +132,7 @@ void PrintKnownTypes()
 // Print the tag found in the array at ulRow
 void PrintTag(_In_ ULONG ulRow)
 {
-	printf("0x%08X,%ws,", PropTagArray[ulRow].ulValue, PropTagArray[ulRow].lpszName);
+	printf("0x%08lX,%ws,", PropTagArray[ulRow].ulValue, PropTagArray[ulRow].lpszName);
 	PrintType(PropTagArray[ulRow].ulValue);
 	printf("\n");
 }
@@ -164,7 +164,7 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 		ulPropID = ulPropTag;
 	}
 
-	printf("Property tag 0x%08X:\n", ulPropTag);
+	printf("Property tag 0x%08lX:\n", ulPropTag);
 
 	if (ulPropID & 0x8000)
 	{
@@ -172,11 +172,11 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 		printf("Only trust the following output if this property is known to be an address book property.\n");
 	}
 
-	vector<ULONG> ulExacts;
-	vector<ULONG> ulPartials;
-	FindTagArrayMatches(ulPropTag, true, PropTagArray, ulExacts, ulPartials);
+	std::vector<ULONG> ulExacts;
+	std::vector<ULONG> ulPartials;
+	interpretprop::FindTagArrayMatches(ulPropTag, true, PropTagArray, ulExacts, ulPartials);
 
-	if (ulExacts.size())
+	if (!ulExacts.empty())
 	{
 		printf("\nExact matches:\n");
 		for (const auto& ulCur : ulExacts)
@@ -185,7 +185,7 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 		}
 	}
 
-	if (ulPartials.size())
+	if (!ulPartials.empty())
 	{
 		printf("\nPartial matches:\n");
 		// let's print our partial matches
@@ -220,11 +220,11 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 			}
 
 			// now that we have a match, let's see if we have other tags with the same number
-			auto ulExactMatch = ulCur; // The guy that matched lpszPropName
+			const auto ulExactMatch = ulCur; // The guy that matched lpszPropName
 
-			vector<ULONG> ulExacts;
-			vector<ULONG> ulPartials;
-			FindTagArrayMatches(PropTagArray[ulExactMatch].ulValue, true, PropTagArray, ulExacts, ulPartials);
+			std::vector<ULONG> ulExacts;
+			std::vector<ULONG> ulPartials;
+			interpretprop::FindTagArrayMatches(PropTagArray[ulExactMatch].ulValue, true, PropTagArray, ulExacts, ulPartials);
 
 			// We're gonna skip at least one, so only print if we have more than one
 			if (ulExacts.size() > 1)
@@ -242,7 +242,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 				}
 			}
 
-			if (ulPartials.size())
+			if (!ulPartials.empty())
 			{
 				if (ulNoMatch == ulType)
 				{
@@ -283,7 +283,7 @@ void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 
 	for (ULONG ulCur = 0; ulCur < PropTagArray.size(); ulCur++)
 	{
-		if (!lpszPropName || 0 != StrStrIW(PropTagArray[ulCur].lpszName, lpszPropName))
+		if (!lpszPropName || nullptr != StrStrIW(PropTagArray[ulCur].lpszName, lpszPropName))
 		{
 			if (ulNoMatch != ulType && ulType != PROP_TYPE(PropTagArray[ulCur].ulValue)) continue;
 			PrintTag(ulCur);
@@ -291,19 +291,19 @@ void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 		}
 	}
 
-	printf("Found %u matches.\n", ulNumMatches);
+	printf("Found %lu matches.\n", ulNumMatches);
 }
 
 void PrintGUID(_In_ LPCGUID lpGUID)
 {
 	// PSUNKNOWN isn't a real guid - just a placeholder - don't print it
-	if (!lpGUID || IsEqualGUID(*lpGUID, PSUNKNOWN))
+	if (!lpGUID || IsEqualGUID(*lpGUID, guid::PSUNKNOWN))
 	{
 		printf(",");
 		return;
 	}
 
-	printf("{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
+	printf("{%.8lX-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
 		lpGUID->Data1,
 		lpGUID->Data2,
 		lpGUID->Data3,
@@ -331,7 +331,7 @@ void PrintGUIDs()
 {
 	for (const auto& guid : PropGuidArray)
 	{
-		printf("{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
+		printf("{%.8lX-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
 			guid.lpGuid->Data1,
 			guid.lpGuid->Data2,
 			guid.lpGuid->Data3,
@@ -349,7 +349,7 @@ void PrintGUIDs()
 
 void PrintDispID(_In_ ULONG ulRow)
 {
-	printf("0x%04X,%ws,", NameIDArray[ulRow].lValue, NameIDArray[ulRow].lpszName);
+	printf("0x%04lX,%ws,", NameIDArray[ulRow].lValue, NameIDArray[ulRow].lpszName);
 	PrintGUID(NameIDArray[ulRow].lpGuid);
 	printf(",");
 	if (PT_UNSPECIFIED != NameIDArray[ulRow].ulType)
@@ -371,7 +371,7 @@ void PrintDispIDFromNum(_In_ ULONG ulDispID)
 	ULONG ulNumExacts = NULL;
 	ULONG ulFirstExactMatch = ulNoMatch;
 
-	printf("Dispid tag 0x%04X:\n", ulDispID);
+	printf("Dispid tag 0x%04lX:\n", ulDispID);
 
 	FindNameIDArrayMatches(ulDispID, NameIDArray.data(), static_cast<ULONG>(NameIDArray.size()), &ulNumExacts, &ulFirstExactMatch);
 
@@ -398,7 +398,7 @@ void PrintDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
 			PrintDispID(ulCur);
 
 			// now that we have a match, let's see if we have other dispids with the same number
-			auto ulExactMatch = ulCur; // The guy that matched lpszPropName
+			const auto ulExactMatch = ulCur; // The guy that matched lpszPropName
 			ULONG ulNumExacts = NULL;
 			ULONG ulFirstExactMatch = ulNoMatch;
 
@@ -433,7 +433,7 @@ void PrintDispIDFromPartialName(_In_opt_z_ LPCWSTR lpszDispIDName, _In_ ULONG ul
 
 	for (ULONG ulCur = 0; ulCur < NameIDArray.size(); ulCur++)
 	{
-		if (!lpszDispIDName || 0 != StrStrIW(NameIDArray[ulCur].lpszName, lpszDispIDName))
+		if (!lpszDispIDName || nullptr != StrStrIW(NameIDArray[ulCur].lpszName, lpszDispIDName))
 		{
 			if (ulNoMatch != ulType && ulType != NameIDArray[ulCur].ulType) continue;
 			PrintDispID(ulCur);
@@ -441,12 +441,12 @@ void PrintDispIDFromPartialName(_In_opt_z_ LPCWSTR lpszDispIDName, _In_ ULONG ul
 		}
 	}
 
-	printf("Found %u matches.\n", ulNumMatches);
+	printf("Found %lu matches.\n", ulNumMatches);
 }
 
 void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool bIsDispid, _In_ ULONG ulFlagValue)
 {
-	wstring szFlags;
+	std::wstring szFlags;
 	size_t ulCur = 0;
 	if (bIsDispid)
 	{
@@ -473,10 +473,10 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 
 		if (ulCur != NameIDArray.size())
 		{
-			printf("Found named property %ws (0x%04X) ", NameIDArray[ulCur].lpszName, NameIDArray[ulCur].lValue);
+			printf("Found named property %ws (0x%04lX) ", NameIDArray[ulCur].lpszName, NameIDArray[ulCur].lValue);
 			PrintGUID(NameIDArray[ulCur].lpGuid);
 			printf(".\n");
-			szFlags = InterpretNumberAsStringNamedProp(ulFlagValue, NameIDArray[ulCur].lValue, NameIDArray[ulCur].lpGuid);
+			szFlags = smartview::InterpretNumberAsStringNamedProp(ulFlagValue, NameIDArray[ulCur].lValue, NameIDArray[ulCur].lpGuid);
 		}
 	}
 	else
@@ -504,14 +504,14 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 
 		if (ulCur != PropTagArray.size())
 		{
-			printf("Found property %ws (0x%08X).\n", PropTagArray[ulCur].lpszName, PropTagArray[ulCur].ulValue);
-			szFlags = InterpretNumberAsStringProp(ulFlagValue, PropTagArray[ulCur].ulValue);
+			printf("Found property %ws (0x%08lX).\n", PropTagArray[ulCur].lpszName, PropTagArray[ulCur].ulValue);
+			szFlags = smartview::InterpretNumberAsStringProp(ulFlagValue, PropTagArray[ulCur].ulValue);
 		}
 	}
 
 	if (!szFlags.empty())
 	{
-		printf("0x%08X = %ws\n", ulFlagValue, szFlags.c_str());
+		printf("0x%08lX = %ws\n", ulFlagValue, szFlags.c_str());
 	}
 	else
 	{
@@ -519,12 +519,12 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 	}
 }
 
-void DoPropTags(_In_ MYOPTIONS ProgOpts)
+void DoPropTags(_In_ const MYOPTIONS& ProgOpts)
 {
-	auto lpszPropName = ProgOpts.lpszUnswitchedOption.empty() ? NULL : ProgOpts.lpszUnswitchedOption.c_str();
-	auto ulPropNum = wstringToUlong(ProgOpts.lpszUnswitchedOption, ProgOpts.ulOptions & OPT_DODECIMAL ? 10 : 16);
-	if (lpszPropName) DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
-	DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
+	const auto lpszPropName = ProgOpts.lpszUnswitchedOption.empty() ? nullptr : ProgOpts.lpszUnswitchedOption.c_str();
+	const auto ulPropNum = strings::wstringToUlong(ProgOpts.lpszUnswitchedOption, ProgOpts.ulOptions & OPT_DODECIMAL ? 10 : 16);
+	if (lpszPropName) output::DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
+	output::DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
 
 	// Handle dispid cases
 	if (ProgOpts.ulOptions & OPT_DODISPID)
@@ -568,7 +568,7 @@ void DoPropTags(_In_ MYOPTIONS ProgOpts)
 		if (ulNoMatch != ProgOpts.ulTypeNum)
 		{
 			PrintType(PROP_TAG(ProgOpts.ulTypeNum, 0));
-			printf(" = 0x%04X = %u", ProgOpts.ulTypeNum, ProgOpts.ulTypeNum);
+			printf(" = 0x%04lX = %lu", ProgOpts.ulTypeNum, ProgOpts.ulTypeNum);
 			printf("\n");
 		}
 		else
@@ -582,18 +582,18 @@ void DoPropTags(_In_ MYOPTIONS ProgOpts)
 	}
 }
 
-void DoGUIDs(_In_ MYOPTIONS /*ProgOpts*/)
+void DoGUIDs(_In_ const MYOPTIONS& /*ProgOpts*/)
 {
 	PrintGUIDs();
 }
 
-void DoFlagSearch(_In_ MYOPTIONS ProgOpts)
+void DoFlagSearch(_In_ const MYOPTIONS& ProgOpts)
 {
 	for (const auto& flag : FlagArray)
 	{
 		if (!_wcsicmp(flag.lpszName, ProgOpts.lpszFlagName.c_str()))
 		{
-			printf("%ws = 0x%08X\n", flag.lpszName, flag.lFlagValue);
+			printf("%ws = 0x%08lX\n", flag.lpszName, flag.lFlagValue);
 			break;
 		}
 	}

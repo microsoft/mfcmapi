@@ -1,70 +1,73 @@
 // Defines the class behaviors for the application.
 
-#include "stdafx.h"
+#include <StdAfx.h>
 #include <UI/MyWinApp.h>
 #include <UI/ParentWnd.h>
-#include <MAPI/MapiObjects.h>
-#include "ImportProcs.h"
+#include <MAPI/Cache/MapiObjects.h>
+#include <ImportProcs.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 
 // The one and only CMyWinApp object
-CMyWinApp theApp;
+ui::CMyWinApp theApp;
 
-CMyWinApp::CMyWinApp()
+namespace ui
 {
-	// Assume true if we don't find a reg key set to false.
-	auto bTerminateOnCorruption = true;
-
-	HKEY hRootKey = nullptr;
-	auto lStatus = RegOpenKeyExW(
-		HKEY_CURRENT_USER,
-		RKEY_ROOT,
-		NULL,
-		KEY_READ,
-		&hRootKey);
-	if (ERROR_SUCCESS == lStatus)
+	CMyWinApp::CMyWinApp()
 	{
-		DWORD dwRegVal = 0;
-		DWORD dwType = REG_DWORD;
-		ULONG cb = sizeof dwRegVal;
-		lStatus = RegQueryValueExW(
-			hRootKey,
-			RegKeys[regkeyHEAPENABLETERMINATIONONCORRUPTION].szKeyName.c_str(),
-			nullptr,
-			&dwType,
-			reinterpret_cast<LPBYTE>(&dwRegVal),
-			&cb);
-		if (ERROR_SUCCESS == lStatus && !dwRegVal)
+		// Assume true if we don't find a reg key set to false.
+		auto bTerminateOnCorruption = true;
+
+		HKEY hRootKey = nullptr;
+		auto lStatus = RegOpenKeyExW(
+			HKEY_CURRENT_USER,
+			RKEY_ROOT,
+			NULL,
+			KEY_READ,
+			&hRootKey);
+		if (ERROR_SUCCESS == lStatus)
 		{
-			bTerminateOnCorruption = false;
+			DWORD dwRegVal = 0;
+			DWORD dwType = REG_DWORD;
+			ULONG cb = sizeof dwRegVal;
+			lStatus = RegQueryValueExW(
+				hRootKey,
+				registry::RegKeys[registry::regkeyHEAPENABLETERMINATIONONCORRUPTION].szKeyName.c_str(),
+				nullptr,
+				&dwType,
+				reinterpret_cast<LPBYTE>(&dwRegVal),
+				&cb);
+			if (ERROR_SUCCESS == lStatus && !dwRegVal)
+			{
+				bTerminateOnCorruption = false;
+			}
+
+			if (hRootKey) RegCloseKey(hRootKey);
 		}
 
-		if (hRootKey) RegCloseKey(hRootKey);
-	}
-
-	if (bTerminateOnCorruption)
-	{
-		MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
-	}
-}
-
-// CMyWinApp initialization
-BOOL CMyWinApp::InitInstance()
-{
-	// Create a parent window that all objects get a pointer to, ensuring we don't
-	// quit this thread until all objects have freed themselves.
-	auto pWnd = new CParentWnd();
-	if (pWnd)
-	{
-		m_pMainWnd = static_cast<CWnd *>(pWnd);
-		auto MyObjects = new (std::nothrow) CMapiObjects(nullptr);
-		if (MyObjects)
+		if (bTerminateOnCorruption)
 		{
-			new CMainDlg(pWnd, MyObjects);
-			MyObjects->Release();
+			import::MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 		}
-		pWnd->Release();
 	}
 
-	return true;
+	// CMyWinApp initialization
+	BOOL CMyWinApp::InitInstance()
+	{
+		// Create a parent window that all objects get a pointer to, ensuring we don't
+		// quit this thread until all objects have freed themselves.
+		auto pWnd = new CParentWnd();
+		if (pWnd)
+		{
+			m_pMainWnd = static_cast<CWnd *>(pWnd);
+			auto MyObjects = new (std::nothrow) cache::CMapiObjects(nullptr);
+			if (MyObjects)
+			{
+				new dialog::CMainDlg(pWnd, MyObjects);
+				MyObjects->Release();
+			}
+			pWnd->Release();
+		}
+
+		return true;
+	}
 }

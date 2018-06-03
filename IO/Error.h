@@ -40,225 +40,229 @@
 // EC_MAPIERR - logs and displays dialog for any errors in a LPMAPIERROR
 // EC_TNEFERR - logs and displays dialog for any errors in a LPSTnefProblemArray
 
-void LogFunctionCall(
-			  HRESULT hRes,
-			  HRESULT hrIgnore,
-			  bool bShowDialog,
-			  bool bMAPICall,
-			  bool bSystemCall,
-			  UINT uidErrorMsg,
-			  _In_opt_z_ LPCSTR szFunction,
-			  _In_z_ LPCSTR szFile,
-			  int iLine);
+namespace error
+{
+	void LogFunctionCall(
+		HRESULT hRes,
+		HRESULT hrIgnore,
+		bool bShowDialog,
+		bool bMAPICall,
+		bool bSystemCall,
+		UINT uidErrorMsg,
+		_In_opt_z_ LPCSTR szFunction,
+		_In_z_ LPCSTR szFile,
+		int iLine);
+
+	void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...);
+
+	// Function to convert error codes to their names
+	std::wstring ErrorNameFromErrorCode(ULONG hrErr);
+
+	_Check_return_ HRESULT CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction);
+
+	// We'll only output this information in debug builds.
+#ifdef _DEBUG
+	void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc);
+#else
+	inline void PrintSkipNote(HRESULT, _In_z_ LPCSTR) {}
+#endif
+
+	// Flag parsing array - used by GetPropFlags
+	struct ERROR_ARRAY_ENTRY
+	{
+		ULONG ulErrorName;
+		LPCWSTR lpszName;
+	};
+	typedef ERROR_ARRAY_ENTRY* LPERROR_ARRAY_ENTRY;
+}
 
 #define CheckHResFn(hRes, hrIgnore, bDisplayDialog, szFunction, uidErrorMsg, szFile, iLine) \
-	LogFunctionCall(hRes, hrIgnore, bDisplayDialog, false, false, uidErrorMsg, szFunction, szFile, iLine)
+	error::LogFunctionCall(hRes, hrIgnore, bDisplayDialog, false, false, uidErrorMsg, szFunction, szFile, iLine)
 
 #define CheckMAPICall(hRes, hrIgnore, bDisplayDialog, szFunction, uidErrorMsg, szFile, iLine) \
-	LogFunctionCall(hRes, hrIgnore, bDisplayDialog, true, false, uidErrorMsg, szFunction, szFile, iLine)
-
-void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...);
-
-// Function to convert error codes to their names
-wstring ErrorNameFromErrorCode(ULONG hrErr);
-// Flag parsing array - used by GetPropFlags
-struct ERROR_ARRAY_ENTRY
-{
-	ULONG ulErrorName;
-	LPCWSTR lpszName;
-};
-typedef ERROR_ARRAY_ENTRY* LPERROR_ARRAY_ENTRY;
+	error::LogFunctionCall(hRes, hrIgnore, bDisplayDialog, true, false, uidErrorMsg, szFunction, szFile, iLine)
 
 // Macros for debug output
 #define CHECKHRES(hRes) (CheckHResFn(hRes, NULL, true, "", NULL, __FILE__, __LINE__))
 #define CHECKHRESMSG(hRes, uidErrorMsg) (CheckHResFn(hRes, NULL, true, nullptr, uidErrorMsg, __FILE__, __LINE__))
 #define WARNHRESMSG(hRes, uidErrorMsg)  (CheckHResFn(hRes, NULL, false, nullptr, uidErrorMsg, __FILE__, __LINE__))
 
-_Check_return_ HRESULT CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction);
-
-// We'll only output this information in debug builds.
-#ifdef _DEBUG
-void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc);
-#else
-#define PrintSkipNote
-#endif
-
 #define EC_H(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckHResFn(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+}}
 
 #define WC_H(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckHResFn(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+}}
 
 #define EC_MAPI(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckMAPICall(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+}}
 
 #define WC_MAPI(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckMAPICall(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+}}
 
 #define EC_H_MSG(fnx,uidErrorMsg)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckMAPICall(hRes, NULL, true, #fnx, uidErrorMsg, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+}}
 
 #define WC_H_MSG(fnx,uidErrorMsg)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckMAPICall(hRes, NULL, false, #fnx, uidErrorMsg, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+}}
 
 #define EC_W32(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = HRESULT_FROM_WIN32(fnx);	\
 	CheckHResFn(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+}}
 
 #define WC_W32(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = HRESULT_FROM_WIN32(fnx);	\
 	CheckHResFn(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+}}
 
 #define EC_B(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	if (!(fnx))	\
 	{	\
-		hRes = CheckWin32Error(true, __FILE__, __LINE__, #fnx);	\
+		hRes = error::CheckWin32Error(true, __FILE__, __LINE__, #fnx);	\
 	}	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+}}
 
 #define WC_B(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	if (!(fnx))	\
 	{	\
-		hRes = CheckWin32Error(false, __FILE__, __LINE__, #fnx);\
+		hRes = error::CheckWin32Error(false, __FILE__, __LINE__, #fnx);\
 	}	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+}}
 
 // Used for functions which return 0 on error
 // dwRet will contain the return value - assign to a local if needed for other calls.
 #define EC_D(_ret,fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
-	_ret = (fnx);	\
-	if (!_ret)	\
+	(_ret) = (fnx);	\
+	if (!(_ret))	\
 	{	\
-		hRes = CheckWin32Error(true, __FILE__, __LINE__, #fnx);	\
+		hRes = error::CheckWin32Error(true, __FILE__, __LINE__, #fnx);	\
 	}	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-	_ret = NULL;	\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+	(_ret) = NULL;	\
+}}
 
 // whatever's passed to _ret will contain the return value
 #define WC_D(_ret,fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
-	_ret = (fnx);	\
-	if (!_ret)	\
+	(_ret) = (fnx);	\
+	if (!(_ret))	\
 	{	\
-		hRes = CheckWin32Error(false, __FILE__, __LINE__, #fnx);\
+		hRes = error::CheckWin32Error(false, __FILE__, __LINE__, #fnx);\
 	}	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-	_ret = NULL;	\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+	(_ret) = NULL;	\
+}}
 
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
 #define EC_H_GETPROPS(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckMAPICall(hRes, MAPI_W_ERRORS_RETURNED, true, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+}}
 
 #define WC_H_GETPROPS(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	CheckMAPICall(hRes, MAPI_W_ERRORS_RETURNED, false, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+}}
 
 // some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL. I don't consider these to be errors.
 #define EC_H_CANCEL(fnx)	\
-if (SUCCEEDED(hRes))	\
+{if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
 	if (MAPI_E_USER_CANCEL == hRes || MAPI_E_CANCEL == hRes) \
@@ -270,8 +274,8 @@ if (SUCCEEDED(hRes))	\
 }	\
 else	\
 {	\
-	PrintSkipNote(hRes,#fnx);\
-}
+	error::PrintSkipNote(hRes,#fnx);\
+}}
 
 // Designed to check return values from dialog functions, primarily DoModal
 // These functions use CommDlgExtendedError to get error information
@@ -283,7 +287,7 @@ else	\
 		DWORD err = CommDlgExtendedError();	\
 		if (err) \
 		{ \
-			ErrDialog(__FILE__,__LINE__,IDS_EDCOMMONDLG,#fnx,err);	\
+			error::ErrDialog(__FILE__,__LINE__,IDS_EDCOMMONDLG,#fnx,err);	\
 			hRes = MAPI_E_CALL_FAILED;	\
 		} \
 		else hRes = S_OK; \
@@ -294,9 +298,9 @@ else	\
 {	\
 	if (problemarray)	\
 	{	\
-		wstring szProbArray = ProblemArrayToString(*(problemarray));	\
-		ErrDialog(__FILE__,__LINE__,IDS_EDPROBLEMARRAY, szProbArray.c_str());	\
-		DebugPrint(DBGGeneric,L"Problem array:\n%ws\n",szProbArray.c_str());	\
+		std::wstring szProbArray = interpretprop::ProblemArrayToString(*(problemarray));	\
+		error::ErrDialog(__FILE__,__LINE__,IDS_EDPROBLEMARRAY, szProbArray.c_str());	\
+		output::DebugPrint(DBGGeneric,L"Problem array:\n%ws\n",szProbArray.c_str());	\
 	}	\
 }
 
@@ -304,8 +308,8 @@ else	\
 {	\
 	if (problemarray)	\
 	{	\
-		wstring szProbArray = ProblemArrayToString(*(problemarray));	\
-		DebugPrint(DBGGeneric,L"Problem array:\n%ws\n",szProbArray.c_str());	\
+		std::wstring szProbArray = interpretprop::ProblemArrayToString(*(problemarray));	\
+		output::DebugPrint(DBGGeneric,L"Problem array:\n%ws\n",szProbArray.c_str());	\
 	}	\
 }
 
@@ -313,9 +317,9 @@ else	\
 {	\
 	if (__lperr)	\
 	{	\
-		wstring szErr = MAPIErrToString((__ulflags),*(__lperr));	\
-		ErrDialog(__FILE__,__LINE__,IDS_EDMAPIERROR, szErr.c_str());	\
-		DebugPrint(DBGGeneric,L"LPMAPIERROR:\n%ws\n", szErr.c_str());	\
+		std::wstring szErr = interpretprop::MAPIErrToString((__ulflags),*(__lperr));	\
+		error::ErrDialog(__FILE__,__LINE__,IDS_EDMAPIERROR, szErr.c_str());	\
+		output::DebugPrint(DBGGeneric,L"LPMAPIERROR:\n%ws\n", szErr.c_str());	\
 	}	\
 }
 
@@ -323,8 +327,8 @@ else	\
 {	\
 	if (problemarray)	\
 	{	\
-		wstring szProbArray = TnefProblemArrayToString(*(problemarray));	\
-		ErrDialog(__FILE__,__LINE__,IDS_EDTNEFPROBLEMARRAY, szProbArray.c_str());	\
-		DebugPrint(DBGGeneric,L"TNEF Problem array:\n%ws\n",szProbArray.c_str());	\
+		std::wstring szProbArray = interpretprop::TnefProblemArrayToString(*(problemarray));	\
+		error::ErrDialog(__FILE__,__LINE__,IDS_EDTNEFPROBLEMARRAY, szProbArray.c_str());	\
+		output::DebugPrint(DBGGeneric,L"TNEF Problem array:\n%ws\n",szProbArray.c_str());	\
 	}	\
 }

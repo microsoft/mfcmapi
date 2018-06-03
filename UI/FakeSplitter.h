@@ -1,50 +1,56 @@
 #pragma once
 // List splitter control which hosts two controls either horizontally or vertically
 
-class CBaseDialog;
-
-enum SplitType
+namespace dialog
 {
-	SplitVertical = 0,
-	SplitHorizontal = 1
-};
+	class CBaseDialog;
+}
 
-// Implementation of a lite Splitter class.
-// Liberal code sharing from the CSplitterWnd class
-class CFakeSplitter : public CWnd
+namespace controls
 {
-public:
-	CFakeSplitter(
-		_In_ CBaseDialog* lpHostDlg);
-	virtual ~CFakeSplitter();
+	enum SplitType
+	{
+		SplitVertical = 0,
+		SplitHorizontal = 1
+	};
 
-	void SetPaneOne(CWnd* PaneOne);
-	void SetPaneTwo(CWnd* PaneTwo);
-	void SetPercent(FLOAT iNewPercent);
-	void SetSplitType(SplitType stSplitType);
+	// Implementation of a lite Splitter class.
+	// Liberal code sharing from the CSplitterWnd class
+	class CFakeSplitter : public CWnd
+	{
+	public:
+		CFakeSplitter(
+			_In_ dialog::CBaseDialog* lpHostDlg);
+		virtual ~CFakeSplitter();
 
-private:
-	void OnSize(UINT nType, int cx, int cy);
-	void OnPaint();
-	void OnMouseMove(UINT nFlags, CPoint point);
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	_Check_return_ int HitTest(LONG x, LONG y) const;
+		void SetPaneOne(CWnd* PaneOne);
+		void SetPaneTwo(CWnd* PaneTwo);
+		void SetPercent(FLOAT iNewPercent);
+		void SetSplitType(SplitType stSplitType);
 
-	// starting and stopping tracking
-	void StartTracking(int ht);
-	void StopTracking();
-	void CalcSplitPos();
+	private:
+		void OnSize(UINT nType, int cx, int cy);
+		void OnPaint();
+		void OnMouseMove(UINT nFlags, CPoint point);
+		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+		_Check_return_ int HitTest(LONG x, LONG y) const;
 
-	CBaseDialog* m_lpHostDlg;
-	bool m_bTracking;
-	FLOAT m_flSplitPercent;
-	CWnd* m_PaneOne;
-	CWnd* m_PaneTwo;
-	int m_iSplitWidth;
-	int m_iSplitPos;
-	SplitType m_SplitType;
-	HCURSOR m_hSplitCursorV;
-	HCURSOR m_hSplitCursorH;
+		// starting and stopping tracking
+		void StartTracking(int ht);
+		void StopTracking();
+		void CalcSplitPos();
 
-	DECLARE_MESSAGE_MAP()
-};
+		dialog::CBaseDialog* m_lpHostDlg;
+		bool m_bTracking;
+		FLOAT m_flSplitPercent;
+		CWnd* m_PaneOne;
+		CWnd* m_PaneTwo;
+		int m_iSplitWidth;
+		int m_iSplitPos;
+		SplitType m_SplitType;
+		HCURSOR m_hSplitCursorV{};
+		HCURSOR m_hSplitCursorH{};
+
+		DECLARE_MESSAGE_MAP()
+	};
+}

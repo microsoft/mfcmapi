@@ -1,47 +1,50 @@
 #pragma once
-#include "SmartViewParser.h"
+#include <Interpret/SmartView/SmartViewParser.h>
 
-struct FolderFieldDefinitionCommon
+namespace smartview
 {
-	GUID PropSetGuid;
-	DWORD fcapm;
-	DWORD dwString;
-	DWORD dwBitmap;
-	DWORD dwDisplay;
-	DWORD iFmt;
-	WORD wszFormulaLength;
-	wstring wszFormula;
-};
+	struct FolderFieldDefinitionCommon
+	{
+		GUID PropSetGuid;
+		DWORD fcapm;
+		DWORD dwString;
+		DWORD dwBitmap;
+		DWORD dwDisplay;
+		DWORD iFmt;
+		WORD wszFormulaLength;
+		std::wstring wszFormula;
+	};
 
-struct FolderFieldDefinitionA
-{
-	DWORD FieldType;
-	WORD FieldNameLength;
-	string FieldName;
-	FolderFieldDefinitionCommon Common;
-};
+	struct FolderFieldDefinitionA
+	{
+		DWORD FieldType;
+		WORD FieldNameLength;
+		std::string FieldName;
+		FolderFieldDefinitionCommon Common;
+	};
 
-struct FolderFieldDefinitionW
-{
-	DWORD FieldType;
-	WORD FieldNameLength;
-	wstring FieldName;
-	FolderFieldDefinitionCommon Common;
-};
+	struct FolderFieldDefinitionW
+	{
+		DWORD FieldType;
+		WORD FieldNameLength;
+		std::wstring FieldName;
+		FolderFieldDefinitionCommon Common;
+	};
 
-class FolderUserFieldStream : public SmartViewParser
-{
-public:
-	FolderUserFieldStream();
+	class FolderUserFieldStream : public SmartViewParser
+	{
+	public:
+		FolderUserFieldStream();
 
-private:
-	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	private:
+		void Parse() override;
+		_Check_return_ std::wstring ToStringInternal() override;
 
-	FolderFieldDefinitionCommon BinToFolderFieldDefinitionCommon();
+		FolderFieldDefinitionCommon BinToFolderFieldDefinitionCommon();
 
-	DWORD m_FolderUserFieldsAnsiCount;
-	vector<FolderFieldDefinitionA> m_FieldDefinitionsA;
-	DWORD m_FolderUserFieldsUnicodeCount;
-	vector<FolderFieldDefinitionW> m_FieldDefinitionsW;
-};
+		DWORD m_FolderUserFieldsAnsiCount;
+		std::vector<FolderFieldDefinitionA> m_FieldDefinitionsA;
+		DWORD m_FolderUserFieldsUnicodeCount;
+		std::vector<FolderFieldDefinitionW> m_FieldDefinitionsW;
+	};
+}

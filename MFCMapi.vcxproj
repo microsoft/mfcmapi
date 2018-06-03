@@ -547,6 +547,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Interpret\Sid.h" />
+    <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="UI\Dialogs\HierarchyTable\ABContDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\ABDlg.h" />
     <ClInclude Include="UI\Dialogs\AboutDlg.h" />
@@ -559,7 +560,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\ContentsTable\AttachmentsDlg.h" />
     <ClInclude Include="UI\Dialogs\BaseDialog.h" />
     <ClInclude Include="UI\DoubleBuffer.h" />
-    <ClInclude Include="MAPI\GlobalCache.h" />
+    <ClInclude Include="MAPI\Cache\GlobalCache.h" />
     <ClInclude Include="MAPI\ColumnTags.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\ContentsTableDlg.h" />
     <ClInclude Include="UI\Controls\ContentsTableListCtrl.h" />
@@ -585,14 +586,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Controls\HierarchyTableTreeCtrl.h" />
     <ClInclude Include="ImportProcs.h" />
     <ClInclude Include="Interpret\InterpretProp.h" />
-    <ClInclude Include="Interpret\InterpretProp2.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MailboxTableDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MainDlg.h" />
     <ClInclude Include="MAPI\MAPIABFunctions.h" />
     <ClInclude Include="UI\MAPIFormFunctions.h" />
     <ClInclude Include="MAPI\MAPIFunctions.h" />
     <ClInclude Include="MAPI\MapiMime.h" />
-    <ClInclude Include="MAPI\MapiObjects.h" />
+    <ClInclude Include="MAPI\Cache\MapiObjects.h" />
     <ClInclude Include="MAPI\MAPIProcessor\MapiProcessor.h" />
     <ClInclude Include="MAPI\MAPIProfileFunctions.h" />
     <ClInclude Include="MAPI\MAPIProgress.h" />
@@ -603,7 +603,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="MAPI\MAPIStoreFunctions.h" />
     <ClInclude Include="MFCMAPI.h" />
     <ClInclude Include="IO\MFCOutput.h" />
-    <ClInclude Include="UI\MFCUtilityFunctions.h" />
+    <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h" />
     <ClInclude Include="UI\Dialogs\Editors\QSSpecialFolders.h" />
     <ClInclude Include="UI\RichEditOleCallback.h" />
     <ClInclude Include="UI\Dialogs\SingleRecipientDialog.h" />
@@ -659,7 +659,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\MyMAPIFormViewer.h" />
     <ClInclude Include="UI\MySecInfo.h" />
     <ClInclude Include="UI\MyWinApp.h" />
-    <ClInclude Include="MAPI\NamedPropCache.h" />
+    <ClInclude Include="MAPI\Cache\NamedPropCache.h" />
     <ClInclude Include="Interpret\NameIDArray.h" />
     <ClInclude Include="UI\Dialogs\Editors\Options.h" />
     <ClInclude Include="UI\ParentWnd.h" />
@@ -727,7 +727,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="Property\Attributes.cpp" />
     <ClCompile Include="UI\Dialogs\BaseDialog.cpp" />
     <ClCompile Include="UI\DoubleBuffer.cpp" />
-    <ClCompile Include="MAPI\GlobalCache.cpp" />
+    <ClCompile Include="MAPI\Cache\GlobalCache.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\ContentsTableDlg.cpp" />
     <ClCompile Include="UI\Controls\ContentsTableListCtrl.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\DbgView.cpp" />
@@ -746,14 +746,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\Controls\HierarchyTableTreeCtrl.cpp" />
     <ClCompile Include="ImportProcs.cpp" />
     <ClCompile Include="Interpret\InterpretProp.cpp" />
-    <ClCompile Include="Interpret\InterpretProp2.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\MailboxTableDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\MainDlg.cpp" />
     <ClCompile Include="MAPI\MAPIABFunctions.cpp" />
     <ClCompile Include="UI\MAPIFormFunctions.cpp" />
     <ClCompile Include="MAPI\MAPIFunctions.cpp" />
     <ClCompile Include="MAPI\MapiMime.cpp" />
-    <ClCompile Include="MAPI\MapiObjects.cpp" />
+    <ClCompile Include="MAPI\Cache\MapiObjects.cpp" />
     <ClCompile Include="MAPI\MAPIProcessor\MapiProcessor.cpp" />
     <ClCompile Include="MAPI\MAPIProfileFunctions.cpp" />
     <ClCompile Include="MAPI\MAPIProgress.cpp" />
@@ -764,13 +763,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="MAPI\MapiStubLibrary.cpp" />
     <ClCompile Include="MAPI\MAPIStoreFunctions.cpp" />
     <ClCompile Include="IO\MFCOutput.cpp" />
-    <ClCompile Include="UI\MFCUtilityFunctions.cpp" />
+    <ClCompile Include="UI\Dialogs\MFCUtilityFunctions.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\MsgServiceTableDlg.cpp" />
     <ClCompile Include="UI\Dialogs\HierarchyTable\MsgStoreDlg.cpp" />
     <ClCompile Include="UI\MyMAPIFormViewer.cpp" />
     <ClCompile Include="UI\MySecInfo.cpp" />
     <ClCompile Include="UI\MyWinApp.cpp" />
-    <ClCompile Include="MAPI\NamedPropCache.cpp" />
+    <ClCompile Include="MAPI\Cache\NamedPropCache.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\Options.cpp" />
     <ClCompile Include="UI\ParentWnd.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

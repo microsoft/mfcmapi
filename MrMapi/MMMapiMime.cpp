@@ -1,9 +1,9 @@
-#include "stdafx.h"
-#include "MrMAPI.h"
-#include "MMMapiMime.h"
+#include <StdAfx.h>
+#include <MrMapi/MrMAPI.h>
+#include <MrMapi/MMMapiMime.h>
 #include <MAPI/MAPIMime.h>
-#include "ImportProcs.h"
-#include <Interpret/InterpretProp2.h>
+#include <ImportProcs.h>
+#include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 
 #define CHECKFLAG(__flag) ((ProgOpts.ulMAPIMIMEFlags & (__flag)) == (__flag))
@@ -60,7 +60,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 
 	if (0 != ProgOpts.ulConvertFlags)
 	{
-		auto szFlags = InterpretFlags(flagCcsf, ProgOpts.ulConvertFlags);
+		auto szFlags = interpretprop::InterpretFlags(flagCcsf, ProgOpts.ulConvertFlags);
 		if (!szFlags.empty())
 		{
 			printf("   Conversion Flags: %ws\n", szFlags.c_str());
@@ -69,7 +69,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 
 	if (CHECKFLAG(MAPIMIME_ENCODING))
 	{
-		auto szType = InterpretFlags(flagIet, ProgOpts.ulEncodingType);
+		auto szType = interpretprop::InterpretFlags(flagIet, ProgOpts.ulEncodingType);
 		if (!szType.empty())
 		{
 			printf("   Encoding Type: %ws\n", szType.c_str());
@@ -93,7 +93,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 	if (CHECKFLAG(MAPIMIME_TOMIME))
 	{
 		// Source file is MSG, target is EML
-		WC_H(ConvertMSGToEML(
+		WC_H(mapi::mapimime::ConvertMSGToEML(
 			ProgOpts.lpszInput.c_str(),
 			ProgOpts.lpszOutput.c_str(),
 			ProgOpts.ulConvertFlags,
@@ -108,7 +108,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		HCHARSET hCharSet = nullptr;
 		if (CHECKFLAG(MAPIMIME_CHARSET))
 		{
-			WC_H(MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage, ProgOpts.cSetType, &hCharSet));
+			WC_H(import::MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage, ProgOpts.cSetType, &hCharSet));
 			if (FAILED(hRes))
 			{
 				printf("MimeOleGetCodePageCharset returned 0x%08X\n", hRes);
@@ -116,7 +116,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		}
 		if (SUCCEEDED(hRes))
 		{
-			WC_H(ConvertEMLToMSG(
+			WC_H(mapi::mapimime::ConvertEMLToMSG(
 				ProgOpts.lpszInput.c_str(),
 				ProgOpts.lpszOutput.c_str(),
 				ProgOpts.ulConvertFlags,

@@ -1,14 +1,20 @@
-﻿#include "stdafx.h"
-#include "BinaryData.h"
+﻿#include <StdAfx.h>
+#include <UI/Controls/SortList/BinaryData.h>
 
-BinaryData::BinaryData(_In_ LPSBinary lpOldBin)
+namespace controls
 {
-	m_OldBin = { 0 };
-	if (lpOldBin)
+	namespace sortlistdata
 	{
-		m_OldBin.cb = lpOldBin->cb;
-		m_OldBin.lpb = lpOldBin->lpb;
-	}
+		BinaryData::BinaryData(_In_ LPSBinary lpOldBin)
+		{
+			m_OldBin = { 0 };
+			if (lpOldBin)
+			{
+				m_OldBin.cb = lpOldBin->cb;
+				m_OldBin.lpb = lpOldBin->lpb;
+			}
 
-	m_NewBin = { 0 };
+			m_NewBin = { 0 };
+		}
+	}
 }

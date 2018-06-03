@@ -1,36 +1,39 @@
 #pragma once
-#include "ContentsTableDlg.h"
+#include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
-class CContentsTableListCtrl;
-class CSingleMAPIPropListCtrl;
-class CParentWnd;
-class CMapiObjects;
-
-class CRulesDlg : public CContentsTableDlg
+namespace cache
 {
-public:
-	CRulesDlg(
-		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
-		_In_ LPEXCHANGEMODIFYTABLE lpExchTbl);
-	virtual ~CRulesDlg();
+	class CMapiObjects;
+}
 
-private:
-	// Overrides from base class
-	void HandleAddInMenuSingle(
-		_In_ LPADDINMENUPARAMS lpParams,
-		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ LPMAPICONTAINER lpContainer) override;
-	void OnDeleteSelectedItem() override;
-	void OnInitMenu(_In_opt_ CMenu* pMenu) override;
-	void OnRefreshView() override;
+namespace dialog
+{
+	class CRulesDlg : public CContentsTableDlg
+	{
+	public:
+		CRulesDlg(
+			_In_ ui::CParentWnd* pParentWnd,
+			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_ LPEXCHANGEMODIFYTABLE lpExchTbl);
+		virtual ~CRulesDlg();
 
-	// Menu items
-	void OnModifySelectedItem();
+	private:
+		// Overrides from base class
+		void HandleAddInMenuSingle(
+			_In_ LPADDINMENUPARAMS lpParams,
+			_In_ LPMAPIPROP lpMAPIProp,
+			_In_ LPMAPICONTAINER lpContainer) override;
+		void OnDeleteSelectedItem() override;
+		void OnInitMenu(_In_opt_ CMenu* pMenu) override;
+		void OnRefreshView() override;
 
-	_Check_return_ HRESULT GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, _In_ LPROWLIST* lppRowList) const;
+		// Menu items
+		void OnModifySelectedItem();
 
-	LPEXCHANGEMODIFYTABLE m_lpExchTbl;
+		_Check_return_ HRESULT GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, _In_ LPROWLIST* lppRowList) const;
 
-	DECLARE_MESSAGE_MAP()
-};
+		LPEXCHANGEMODIFYTABLE m_lpExchTbl;
+
+		DECLARE_MESSAGE_MAP()
+	};
+}

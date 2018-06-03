@@ -1,7 +1,7 @@
-#include "stdafx.h"
-#include "MrMAPI.h"
+#include <StdAfx.h>
+#include <MrMapi/MrMAPI.h>
 #include <MAPI/ColumnTags.h>
-#include "MMReceiveFolder.h"
+#include <MrMapi/MMReceiveFolder.h>
 
 void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 {
@@ -10,7 +10,7 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 	WC_MAPI(lpMDB->GetReceiveFolderTable(0, &lpReceiveFolderTable));
 	if (FAILED(hRes))
 	{
-		printf("<receivefoldertable error=0x%x />\n", hRes);
+		printf("<receivefoldertable error=0x%lx />\n", hRes);
 		return;
 	}
 
@@ -18,9 +18,7 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 
 	if (lpReceiveFolderTable)
 	{
-		auto sTags = LPSPropTagArray(&sptRECEIVECols);
-
-		WC_MAPI(lpReceiveFolderTable->SetColumns(sTags, TBL_ASYNC));
+		WC_MAPI(lpReceiveFolderTable->SetColumns(LPSPropTagArray(&columns::sptRECEIVECols), TBL_ASYNC));
 	}
 
 	if (SUCCEEDED(hRes))
@@ -41,8 +39,8 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 
 			for (ULONG i = 0; i < lpRows->cRows; i++)
 			{
-				printf("<properties index=\"%u\">\n", iRow);
-				_OutputProperties(DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
+				printf("<properties index=\"%lu\">\n", iRow);
+				output::_OutputProperties(DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
 				printf("</properties>\n");
 				iRow++;
 			}

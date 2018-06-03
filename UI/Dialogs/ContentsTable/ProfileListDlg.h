@@ -1,45 +1,48 @@
 #pragma once
-#include "ContentsTableDlg.h"
+#include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
-class CContentsTableListCtrl;
-class CSingleMAPIPropListCtrl;
-class CParentWnd;
-class CMapiObjects;
-
-class CProfileListDlg : public CContentsTableDlg
+namespace
 {
-public:
-	CProfileListDlg(
-		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
-		_In_ LPMAPITABLE lpMAPITable);
-	virtual ~CProfileListDlg();
+	class CMapiObjects;
+}
 
-private:
-	// Overrides from base class
-	void OnDeleteSelectedItem() override;
-	void OnDisplayItem() override;
-	void OnRefreshView() override;
-	void HandleCopy() override;
-	_Check_return_ bool HandlePaste() override;
+namespace dialog
+{
+	class CProfileListDlg : public CContentsTableDlg
+	{
+	public:
+		CProfileListDlg(
+			_In_ ui::CParentWnd* pParentWnd,
+			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_ LPMAPITABLE lpMAPITable);
+		virtual ~CProfileListDlg();
 
-	// Menu items
-	void OnAddExchangeToProfile();
-	void OnAddPSTToProfile();
-	void OnAddUnicodePSTToProfile();
-	void OnAddServicesToMAPISVC();
-	void OnAddServiceToProfile();
-	void OnCreateProfile();
-	void OnGetMAPISVC();
-	void OnGetProfileServiceVersion();
-	void OnInitMenu(_In_ CMenu* pMenu) override;
-	void OnLaunchProfileWizard();
-	void OnRemoveServicesFromMAPISVC();
-	void OnSetDefaultProfile();
-	void OnOpenProfileByName();
-	void OnExportProfile();
+	private:
+		// Overrides from base class
+		void OnDeleteSelectedItem() override;
+		void OnDisplayItem() override;
+		void OnRefreshView() override;
+		void HandleCopy() override;
+		_Check_return_ bool HandlePaste() override;
 
-	void AddPSTToProfile(bool bUnicodePST);
+		// Menu items
+		void OnAddExchangeToProfile();
+		void OnAddPSTToProfile();
+		void OnAddUnicodePSTToProfile();
+		void OnAddServicesToMAPISVC();
+		void OnAddServiceToProfile();
+		void OnCreateProfile();
+		void OnGetMAPISVC();
+		void OnGetProfileServiceVersion();
+		void OnInitMenu(_In_ CMenu* pMenu) override;
+		void OnLaunchProfileWizard();
+		void OnRemoveServicesFromMAPISVC();
+		void OnSetDefaultProfile();
+		void OnOpenProfileByName();
+		void OnExportProfile();
 
-	DECLARE_MESSAGE_MAP()
-};
+		void AddPSTToProfile(bool bUnicodePST);
+
+		DECLARE_MESSAGE_MAP()
+	};
+}

@@ -1,5 +1,5 @@
 #pragma once
-#include "BinaryParser.h"
+#include <Interpret/SmartView/BinaryParser.h>
 
 #define _MaxBytes 0xFFFF
 #define _MaxDepth 50
@@ -9,45 +9,48 @@
 #define _MaxEntriesExtraLarge 1500
 #define _MaxEntriesEnormous 10000
 
-class SmartViewParser;
-typedef SmartViewParser FAR* LPSMARTVIEWPARSER;
-
-class SmartViewParser
+namespace smartview
 {
-public:
-	SmartViewParser();
-	virtual ~SmartViewParser() = default;
+	class SmartViewParser;
+	typedef SmartViewParser FAR* LPSMARTVIEWPARSER;
 
-	void Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin);
-	_Check_return_ wstring ToString();
+	class SmartViewParser
+	{
+	public:
+		SmartViewParser();
+		virtual ~SmartViewParser() = default;
 
-	void DisableJunkParsing();
-	size_t GetCurrentOffset() const;
-	void EnsureParsed();
+		void Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin);
+		_Check_return_ std::wstring ToString();
 
-protected:
-	_Check_return_ wstring JunkDataToString(const vector<BYTE>& lpJunkData) const;
-	_Check_return_ wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const;
-	_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
+		void DisableJunkParsing();
+		size_t GetCurrentOffset() const;
+		void EnsureParsed();
 
-	// These functions return pointers to memory backed and cleaned up by SmartViewParser
-	LPBYTE GetBYTES(size_t cbBytes);
-	LPSTR GetStringA(size_t cchChar = -1);
-	LPWSTR GetStringW(size_t cchChar = -1);
-	LPBYTE Allocate(size_t cbBytes);
-	LPBYTE AllocateArray(size_t cArray, size_t cbEntry);
+	protected:
+		_Check_return_ std::wstring JunkDataToString(const std::vector<BYTE>& lpJunkData) const;
+		_Check_return_ std::wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const;
+		_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
 
-	CBinaryParser m_Parser;
+		// These functions return pointers to memory backed and cleaned up by SmartViewParser
+		LPBYTE GetBYTES(size_t cbBytes);
+		LPSTR GetStringA(size_t cchChar = -1);
+		LPWSTR GetStringW(size_t cchChar = -1);
+		LPBYTE Allocate(size_t cbBytes);
+		LPBYTE AllocateArray(size_t cArray, size_t cbEntry);
 
-private:
-	virtual void Parse() = 0;
-	virtual _Check_return_ wstring ToStringInternal() = 0;
+		CBinaryParser m_Parser;
 
-	bool m_bEnableJunk;
-	bool m_bParsed;
+	private:
+		virtual void Parse() = 0;
+		virtual _Check_return_ std::wstring ToStringInternal() = 0;
 
-	// We use list instead of vector so our nodes never get reallocated
-	std::list<string> m_stringCache;
-	std::list<wstring> m_wstringCache;
-	std::list<vector<BYTE>> m_binCache;
-};
+		bool m_bEnableJunk;
+		bool m_bParsed;
+
+		// We use list instead of vector so our nodes never get reallocated
+		std::list<std::string> m_stringCache;
+		std::list<std::wstring> m_wstringCache;
+		std::list<std::vector<BYTE>> m_binCache;
+	};
+}

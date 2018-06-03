@@ -1,42 +1,45 @@
 #pragma once
-#include "ContentsTableDlg.h"
+#include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
-class CContentsTableListCtrl;
-class CSingleMAPIPropListCtrl;
-class CParentWnd;
-class CMapiObjects;
-
-class CFormContainerDlg : public CContentsTableDlg
+namespace cache
 {
-public:
+	class CMapiObjects;
+}
 
-	CFormContainerDlg(
-		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
-		_In_ LPMAPIFORMCONTAINER lpFormContainer);
-	virtual ~CFormContainerDlg();
+namespace dialog
+{
+	class CFormContainerDlg : public CContentsTableDlg
+	{
+	public:
 
-private:
-	// Overrides from base class
-	void HandleAddInMenuSingle(
-		_In_ LPADDINMENUPARAMS lpParams,
-		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ LPMAPICONTAINER lpContainer) override;
-	void OnDeleteSelectedItem() override;
-	BOOL OnInitDialog() override;
-	void OnInitMenu(_In_ CMenu* pMenu) override;
-	void OnRefreshView() override;
-	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
+		CFormContainerDlg(
+			_In_ ui::CParentWnd* pParentWnd,
+			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_ LPMAPIFORMCONTAINER lpFormContainer);
+		virtual ~CFormContainerDlg();
 
-	// Menu items
-	void OnCalcFormPropSet();
-	void OnGetDisplay();
-	void OnInstallForm();
-	void OnRemoveForm();
-	void OnResolveMessageClass();
-	void OnResolveMultipleMessageClasses();
+	private:
+		// Overrides from base class
+		void HandleAddInMenuSingle(
+			_In_ LPADDINMENUPARAMS lpParams,
+			_In_ LPMAPIPROP lpMAPIProp,
+			_In_ LPMAPICONTAINER lpContainer) override;
+		void OnDeleteSelectedItem() override;
+		BOOL OnInitDialog() override;
+		void OnInitMenu(_In_ CMenu* pMenu) override;
+		void OnRefreshView() override;
+		_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
 
-	LPMAPIFORMCONTAINER m_lpFormContainer;
+		// Menu items
+		void OnCalcFormPropSet();
+		void OnGetDisplay();
+		void OnInstallForm();
+		void OnRemoveForm();
+		void OnResolveMessageClass();
+		void OnResolveMultipleMessageClasses();
 
-	DECLARE_MESSAGE_MAP()
-};
+		LPMAPIFORMCONTAINER m_lpFormContainer;
+
+		DECLARE_MESSAGE_MAP()
+	};
+}

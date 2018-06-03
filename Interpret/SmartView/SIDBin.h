@@ -1,13 +1,16 @@
 #pragma once
-#include "SmartViewParser.h"
+#include <Interpret/SmartView/SmartViewParser.h>
 
-class SIDBin : public SmartViewParser
+namespace smartview
 {
-private:
-	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	class SIDBin : public SmartViewParser
+	{
+	private:
+		void Parse() override;
+		_Check_return_ std::wstring ToStringInternal() override;
 
-	wstring m_lpSidName;
-	wstring m_lpSidDomain;
-	wstring m_lpStringSid;
-};
+		std::wstring m_lpSidName;
+		std::wstring m_lpSidDomain;
+		std::wstring m_lpStringSid;
+	};
+}

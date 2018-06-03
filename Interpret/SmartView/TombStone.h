@@ -1,30 +1,33 @@
 #pragma once
-#include "SmartViewParser.h"
+#include <Interpret/SmartView/SmartViewParser.h>
 
-struct TombstoneRecord
+namespace smartview
 {
-	DWORD StartTime;
-	DWORD EndTime;
-	DWORD GlobalObjectIdSize;
-	vector<BYTE> lpGlobalObjectId;
-	WORD UsernameSize;
-	string szUsername;
-};
+	struct TombstoneRecord
+	{
+		DWORD StartTime;
+		DWORD EndTime;
+		DWORD GlobalObjectIdSize;
+		std::vector<BYTE> lpGlobalObjectId;
+		WORD UsernameSize;
+		std::string szUsername;
+	};
 
-class TombStone : public SmartViewParser
-{
-public:
-	TombStone();
+	class TombStone : public SmartViewParser
+	{
+	public:
+		TombStone();
 
-private:
-	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+	private:
+		void Parse() override;
+		_Check_return_ std::wstring ToStringInternal() override;
 
-	DWORD m_Identifier;
-	DWORD m_HeaderSize;
-	DWORD m_Version;
-	DWORD m_RecordsCount;
-	DWORD m_ActualRecordsCount; // computed based on state, not read value
-	DWORD m_RecordsSize;
-	vector<TombstoneRecord> m_lpRecords;
-};
+		DWORD m_Identifier;
+		DWORD m_HeaderSize;
+		DWORD m_Version;
+		DWORD m_RecordsCount;
+		DWORD m_ActualRecordsCount; // computed based on state, not read value
+		DWORD m_RecordsSize;
+		std::vector<TombstoneRecord> m_lpRecords;
+	};
+}

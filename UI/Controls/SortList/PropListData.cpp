@@ -1,7 +1,13 @@
-﻿#include "stdafx.h"
-#include "PropListData.h"
+﻿#include <StdAfx.h>
+#include <UI/Controls/SortList/PropListData.h>
 
-PropListData::PropListData(_In_ ULONG ulPropTag)
+namespace controls
 {
-	m_ulPropTag = ulPropTag;
+	namespace sortlistdata
+	{
+		PropListData::PropListData(_In_ ULONG ulPropTag)
+		{
+			m_ulPropTag = ulPropTag;
+		}
+	}
 }

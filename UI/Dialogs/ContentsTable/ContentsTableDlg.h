@@ -1,74 +1,83 @@
 #pragma once
 #include <UI/Dialogs/BaseDialog.h>
 
-class CContentsTableListCtrl;
-
-class CContentsTableDlg : public CBaseDialog
+namespace controls
 {
-public:
-	CContentsTableDlg(
-		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
-		UINT uidTitle,
-		__mfcmapiCreateDialogEnum bCreateDialog,
-		_In_opt_ LPMAPITABLE lpContentsTable,
-		_In_ LPSPropTagArray sptExtraColumnTags,
-		_In_ const vector<TagNames>& lpExtraDisplayColumns,
-		ULONG nIDContextMenu,
-		ULONG ulAddInContext
-	);
-	virtual ~CContentsTableDlg();
+	namespace sortlistctrl
+	{
+		class CContentsTableListCtrl;
+	}
+}
 
-	_Check_return_ virtual HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
+namespace dialog
+{
+	class CContentsTableDlg : public CBaseDialog
+	{
+	public:
+		CContentsTableDlg(
+			_In_ ui::CParentWnd* pParentWnd,
+			_In_ cache::CMapiObjects* lpMapiObjects,
+			UINT uidTitle,
+			__mfcmapiCreateDialogEnum bCreateDialog,
+			_In_opt_ LPMAPITABLE lpContentsTable,
+			_In_ LPSPropTagArray sptExtraColumnTags,
+			_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
+			ULONG nIDContextMenu,
+			ULONG ulAddInContext
+		);
+		virtual ~CContentsTableDlg();
 
-protected:
-	// Overrides from base class
-	virtual void CreateDialogAndMenu(UINT nIDMenuResource);
-	_Check_return_ bool HandleMenu(WORD wMenuSelect) override;
-	BOOL OnInitDialog() override;
-	void OnInitMenu(_In_opt_ CMenu* pMenu) override;
-	void OnRefreshView() override;
+		_Check_return_ virtual HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
 
-	virtual void OnDisplayItem();
+	protected:
+		// Overrides from base class
+		virtual void CreateDialogAndMenu(UINT nIDMenuResource);
+		_Check_return_ bool HandleMenu(WORD wMenuSelect) override;
+		BOOL OnInitDialog() override;
+		void OnInitMenu(_In_opt_ CMenu* pMenu) override;
+		void OnRefreshView() override;
 
-	void SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
-	_Check_return_ HRESULT OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage);
-	_Check_return_ HRESULT OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage);
+		virtual void OnDisplayItem();
 
-	CContentsTableListCtrl* m_lpContentsTableListCtrl;
-	LPMAPITABLE m_lpContentsTable;
-	ULONG m_ulDisplayFlags;
+		void SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
+		_Check_return_ HRESULT OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage);
+		_Check_return_ HRESULT OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage);
 
-private:
-	virtual void HandleAddInMenuSingle(
-		_In_ LPADDINMENUPARAMS lpParams,
-		_In_opt_ LPMAPIPROP lpMAPIProp,
-		_In_opt_ LPMAPICONTAINER lpContainer);
+		controls::sortlistctrl::CContentsTableListCtrl* m_lpContentsTableListCtrl;
+		LPMAPITABLE m_lpContentsTable;
+		ULONG m_ulDisplayFlags;
 
-	// Overrides from base class
-	_Check_return_ bool HandleAddInMenu(WORD wMenuSelect) override;
-	void OnCancel() override;
-	void OnEscHit() override;
+	private:
+		virtual void HandleAddInMenuSingle(
+			_In_ LPADDINMENUPARAMS lpParams,
+			_In_opt_ LPMAPIPROP lpMAPIProp,
+			_In_opt_ LPMAPICONTAINER lpContainer);
 
-	virtual void OnCreatePropertyStringRestriction();
+		// Overrides from base class
+		_Check_return_ bool HandleAddInMenu(WORD wMenuSelect) override;
+		void OnCancel() override;
+		void OnEscHit() override;
 
-	// Menu items
-	void OnCreateRangeRestriction();
-	void OnEditRestriction();
-	void OnGetStatus();
-	void OnNotificationOff();
-	void OnNotificationOn();
-	void OnOutputTable();
-	void OnSetColumns();
-	void OnSortTable();
+		virtual void OnCreatePropertyStringRestriction();
 
-	// Custom messages
-	_Check_return_ LRESULT msgOnResetColumns(WPARAM wParam, LPARAM lParam);
+		// Menu items
+		void OnCreateRangeRestriction();
+		void OnEditRestriction();
+		void OnGetStatus();
+		void OnNotificationOff();
+		void OnNotificationOn();
+		void OnOutputTable();
+		void OnSetColumns();
+		void OnSortTable();
 
-	// Values held only for use in InitDialog to create our CContentsTableListCtrl
-	vector<TagNames> m_lpExtraDisplayColumns;
-	LPSPropTagArray m_sptExtraColumnTags;
-	UINT m_nIDContextMenu;
+		// Custom messages
+		_Check_return_ LRESULT msgOnResetColumns(WPARAM wParam, LPARAM lParam);
 
-	DECLARE_MESSAGE_MAP()
-};
+		// Values held only for use in InitDialog to create our CContentsTableListCtrl
+		std::vector<TagNames> m_lpExtraDisplayColumns;
+		LPSPropTagArray m_sptExtraColumnTags;
+		UINT m_nIDContextMenu;
+
+		DECLARE_MESSAGE_MAP()
+	};
+}

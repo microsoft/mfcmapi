@@ -1,33 +1,40 @@
 #pragma once
-#include "ContentsTableDlg.h"
+#include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
 class CParentWnd;
-class CMapiObjects;
 
-class CMailboxTableDlg : public CContentsTableDlg
+namespace cache
 {
-public:
-	CMailboxTableDlg(
-		_In_ CParentWnd* pParentWnd,
-		_In_ CMapiObjects* lpMapiObjects,
-		_In_ const wstring& lpszServerName,
-		_In_ LPMAPITABLE lpMAPITable);
-	virtual ~CMailboxTableDlg();
+	class CMapiObjects;
+}
 
-private:
-	// Overrides from base class
-	void CreateDialogAndMenu(UINT nIDMenuResource) override;
-	void DisplayItem(ULONG ulFlags);
-	void OnCreatePropertyStringRestriction() override;
-	void OnDisplayItem() override;
-	void OnInitMenu(_In_ CMenu* pMenu) override;
+namespace dialog
+{
+	class CMailboxTableDlg : public CContentsTableDlg
+	{
+	public:
+		CMailboxTableDlg(
+			_In_ ui::CParentWnd* pParentWnd,
+			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_ const std::wstring& lpszServerName,
+			_In_ LPMAPITABLE lpMAPITable);
+		virtual ~CMailboxTableDlg();
 
-	// Menu items
-	void OnOpenWithFlags();
+	private:
+		// Overrides from base class
+		void CreateDialogAndMenu(UINT nIDMenuResource) override;
+		void DisplayItem(ULONG ulFlags);
+		void OnCreatePropertyStringRestriction() override;
+		void OnDisplayItem() override;
+		void OnInitMenu(_In_ CMenu* pMenu) override;
 
-	wstring m_lpszServerName;
+		// Menu items
+		void OnOpenWithFlags();
 
-	DECLARE_MESSAGE_MAP()
-};
+		std::wstring m_lpszServerName;
+
+		DECLARE_MESSAGE_MAP()
+	};
+}

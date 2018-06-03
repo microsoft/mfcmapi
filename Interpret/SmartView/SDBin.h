@@ -1,17 +1,20 @@
 #pragma once
-#include "SmartViewParser.h"
+#include <Interpret/SmartView/SmartViewParser.h>
 
-class SDBin : public SmartViewParser
+namespace smartview
 {
-public:
-	SDBin();
-	~SDBin();
+	class SDBin : public SmartViewParser
+	{
+	public:
+		SDBin();
+		~SDBin();
 
-	void Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
-private:
-	void Parse() override;
-	_Check_return_ wstring ToStringInternal() override;
+		void Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
+	private:
+		void Parse() override;
+		_Check_return_ std::wstring ToStringInternal() override;
 
-	LPMAPIPROP m_lpMAPIProp;
-	bool m_bFB;
-};
+		LPMAPIPROP m_lpMAPIProp;
+		bool m_bFB;
+	};
+}

@@ -5,10 +5,13 @@
 #error include 'stdafx.h' before including this file for PCH
 #endif
 
-class CMyWinApp : public CWinApp
+namespace ui
 {
-public:
-	CMyWinApp();
-private:
-	BOOL InitInstance() override;
-};
+	class CMyWinApp : public CWinApp
+	{
+	public:
+		CMyWinApp();
+	private:
+		BOOL InitInstance() override;
+	};
+}
