@@ -24,7 +24,7 @@ void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
 		if (lpTbl)
 		{
 			RegKeys[regkeyDEBUG_TAG].ulCurDWORD |= DBGGeneric;
-			_OutputTable(DBGGeneric, nullptr, lpTbl);
+			output::_OutputTable(DBGGeneric, nullptr, lpTbl);
 		}
 	}
 

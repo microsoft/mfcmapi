@@ -2,20 +2,22 @@
 // Output (to File/Debug) functions
 #include <Interpret/String.h>
 
-extern std::wstring g_szXMLHeader;
+namespace output
+{
+	extern std::wstring g_szXMLHeader;
 
-void OpenDebugFile();
-void CloseDebugFile();
-_Check_return_ ULONG GetDebugLevel();
-void SetDebugLevel(ULONG ulDbgLvl);
-void SetDebugOutputToFile(bool bDoOutput);
+	void OpenDebugFile();
+	void CloseDebugFile();
+	_Check_return_ ULONG GetDebugLevel();
+	void SetDebugLevel(ULONG ulDbgLvl);
+	void SetDebugOutputToFile(bool bDoOutput);
 
-// New system for debug output: When outputting debug output, a tag is included - if that tag is
-// set in RegKeys[regkeyDEBUG_TAG].ulCurDWORD, then we do the output. Otherwise, we ditch it.
-// DBGNoDebug never gets output - special case
+	// New system for debug output: When outputting debug output, a tag is included - if that tag is
+	// set in RegKeys[regkeyDEBUG_TAG].ulCurDWORD, then we do the output. Otherwise, we ditch it.
+	// DBGNoDebug never gets output - special case
 
-// The global debug level - combination of flags from below
-// RegKeys[regkeyDEBUG_TAG].ulCurDWORD
+	// The global debug level - combination of flags from below
+	// RegKeys[regkeyDEBUG_TAG].ulCurDWORD
 
 #define DBGNoDebug ((ULONG) 0x00000000)
 #define DBGGeneric ((ULONG) 0x00000001)
@@ -52,59 +54,59 @@ void SetDebugOutputToFile(bool bDoOutput);
 #define fIsSet(ulTag) (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag))
 #define fIsSetv(ulTag) (((ulTag) != DBGNoDebug) && (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
 
-_Check_return_ FILE* MyOpenFile(const std::wstring& szFileName, bool bNewFile);
-_Check_return_ FILE* MyOpenFileMode(const std::wstring& szFileName, const wchar_t* mode);
-void CloseFile(_In_opt_ FILE* fFile);
+	_Check_return_ FILE* MyOpenFile(const std::wstring& szFileName, bool bNewFile);
+	_Check_return_ FILE* MyOpenFileMode(const std::wstring& szFileName, const wchar_t* mode);
+	void CloseFile(_In_opt_ FILE* fFile);
 
-void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const std::wstring& szMsg);
-void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, LPCWSTR szMsg, ...);
+	void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const std::wstring& szMsg);
+	void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
 #define Outputf(ulDbgLvl, fFile, bPrintThreadTime, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), Outputf(ulDbgLvl, fFile, bPrintThreadTime, szMsg, __VA_ARGS__))
 #endif
 
 #define OutputToFile(fFile, szMsg) Output((DBGNoDebug), (fFile), true, (szMsg))
-void __cdecl OutputToFilef(_In_opt_ FILE* fFile, LPCWSTR szMsg, ...);
+	void __cdecl OutputToFilef(_In_opt_ FILE* fFile, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef OutputToFilef
 #define OutputToFilef(fFile, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), OutputToFilef(fFile, szMsg, __VA_ARGS__))
 #endif
 
-void __cdecl DebugPrint(ULONG ulDbgLvl, LPCWSTR szMsg, ...);
+	void __cdecl DebugPrint(ULONG ulDbgLvl, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef DebugPrint
 #define DebugPrint(ulDbgLvl, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), DebugPrint(ulDbgLvl, szMsg, __VA_ARGS__))
 #endif
 
-void __cdecl DebugPrintEx(ULONG ulDbgLvl, std::wstring& szClass, const std::wstring& szFunc, LPCWSTR szMsg, ...);
+	void __cdecl DebugPrintEx(ULONG ulDbgLvl, std::wstring& szClass, const std::wstring& szFunc, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef DebugPrintEx
 #define DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, __VA_ARGS__))
 #endif
 
-// Template for the Output functions
-// void Output(ULONG ulDbgLvl, FILE* fFile,stufftooutput)
+	// Template for the Output functions
+	// void Output(ULONG ulDbgLvl, FILE* fFile,stufftooutput)
 
-// If the first parameter is not DBGNoDebug, we debug print the output
-// If the second parameter is a file name, we print the output to the file
-// Doing both is OK, if we ask to do neither, ASSERT
+	// If the first parameter is not DBGNoDebug, we debug print the output
+	// If the second parameter is a file name, we print the output to the file
+	// Doing both is OK, if we ask to do neither, ASSERT
 
-// We'll use macros to make these calls so the code will read right
+	// We'll use macros to make these calls so the code will read right
 
-void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin);
-void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps);
-void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps);
-void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const _SRow* lpSRow, _In_opt_ LPMAPIPROP lpObj);
-void _OutputSRowSet(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSet, _In_opt_ LPMAPIPROP lpObj);
-void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_opt_ const _SRestriction* lpRes, _In_opt_ LPMAPIPROP lpObj);
-void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream);
-void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
-void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO lpMAPIFormInfo);
-void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray);
-void _OutputPropTagArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagArray lpTagsToDump);
-void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPITable);
-void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _In_count_(cNotify) LPNOTIFICATION lpNotifications, _In_opt_ LPMAPIPROP lpObj);
-void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList);
+	void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin);
+	void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps);
+	void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps);
+	void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const _SRow* lpSRow, _In_opt_ LPMAPIPROP lpObj);
+	void _OutputSRowSet(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSet, _In_opt_ LPMAPIPROP lpObj);
+	void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_opt_ const _SRestriction* lpRes, _In_opt_ LPMAPIPROP lpObj);
+	void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream);
+	void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
+	void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO lpMAPIFormInfo);
+	void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray);
+	void _OutputPropTagArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagArray lpTagsToDump);
+	void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPITable);
+	void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _In_count_(cNotify) LPNOTIFICATION lpNotifications, _In_opt_ LPMAPIPROP lpObj);
+	void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList);
 
 #define DebugPrintBinary(ulDbgLvl, bin) _OutputBinary((ulDbgLvl), nullptr, (bin))
 #define DebugPrintProperties(ulDbgLvl, cProps, lpProps, lpObj) _OutputProperties((ulDbgLvl), nullptr, (cProps), (lpProps), (lpObj), false)
@@ -124,13 +126,13 @@ void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpE
 #define OutputPropertiesToFile(fFile,cProps,lpProps,lpObj,bRetry) _OutputProperties(DBGNoDebug,fFile, cProps, lpProps, lpObj, bRetry)
 #define OutputPropertyToFile(fFile, lpProp, lpObj, bRetry) _OutputProperty(DBGNoDebug,fFile, lpProp, lpObj, bRetry)
 
-// We'll only output this information in debug builds.
+	// We'll only output this information in debug builds.
 #ifdef _DEBUG
-#define TRACE_CONSTRUCTOR(__class) DebugPrintEx(DBGConDes,(__class),(__class),L"(this = %p) - Constructor\n",this);
-#define TRACE_DESTRUCTOR(__class) DebugPrintEx(DBGConDes,(__class),(__class),L"(this = %p) - Destructor\n",this);
+#define TRACE_CONSTRUCTOR(__class) output::DebugPrintEx(DBGConDes,(__class),(__class),L"(this = %p) - Constructor\n",this);
+#define TRACE_DESTRUCTOR(__class) output::DebugPrintEx(DBGConDes,(__class),(__class),L"(this = %p) - Destructor\n",this);
 
-#define TRACE_ADDREF(__class,__count) DebugPrintEx(DBGRefCount,(__class),L"AddRef",L"(this = %p) m_cRef increased to %d.\n",this,(__count));
-#define TRACE_RELEASE(__class,__count) DebugPrintEx(DBGRefCount,(__class),L"Release",L"(this = %p) m_cRef decreased to %d.\n",this,(__count));
+#define TRACE_ADDREF(__class,__count) output::DebugPrintEx(DBGRefCount,(__class),L"AddRef",L"(this = %p) m_cRef increased to %d.\n",this,(__count));
+#define TRACE_RELEASE(__class,__count) output::DebugPrintEx(DBGRefCount,(__class),L"Release",L"(this = %p) m_cRef decreased to %d.\n",this,(__count));
 #else
 #define TRACE_CONSTRUCTOR(__class)
 #define TRACE_DESTRUCTOR(__class)
@@ -139,8 +141,9 @@ void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpE
 #define TRACE_RELEASE(__class,__count)
 #endif
 
-void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, const std::wstring& szValue, bool bWrapCData, int iIndent);
-void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
-void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
+	void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, const std::wstring& szValue, bool bWrapCData, int iIndent);
+	void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
+	void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 
 #define OutputXMLValueToFile(fFile, uidTag, szValue, bWrapCData, iIndent) OutputXMLValue(DBGNoDebug, fFile, uidTag, szValue, bWrapCData, iIndent)
+}

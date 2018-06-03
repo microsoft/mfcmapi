@@ -31,7 +31,7 @@ namespace mapi
 			{
 				ulFlags |= MDB_ONLINE;
 			}
-			DebugPrint(DBGOpenItemProp, L"CallOpenMsgStore ulFlags = 0x%X\n", ulFlags);
+			output::DebugPrint(DBGOpenItemProp, L"CallOpenMsgStore ulFlags = 0x%X\n", ulFlags);
 
 			WC_MAPI(lpSession->OpenMsgStore(
 				ulUIParam,
@@ -45,7 +45,7 @@ namespace mapi
 				hRes = S_OK;
 				// perhaps this store doesn't know the MDB_ONLINE flag - remove and retry
 				ulFlags = ulFlags & ~MDB_ONLINE;
-				DebugPrint(DBGOpenItemProp, L"CallOpenMsgStore 2nd attempt ulFlags = 0x%X\n", ulFlags);
+				output::DebugPrint(DBGOpenItemProp, L"CallOpenMsgStore 2nd attempt ulFlags = 0x%X\n", ulFlags);
 
 				WC_MAPI(lpSession->OpenMsgStore(
 					ulUIParam,
@@ -359,8 +359,8 @@ namespace mapi
 
 			if (!lpMDB || lpszMsgStoreDN.empty() || !StoreSupportsManageStore(lpMDB))
 			{
-				if (!lpMDB) DebugPrint(DBGGeneric, L"CreateStoreEntryID: MDB was NULL\n");
-				if (lpszMsgStoreDN.empty()) DebugPrint(DBGGeneric, L"CreateStoreEntryID: lpszMsgStoreDN was missing\n");
+				if (!lpMDB) output::DebugPrint(DBGGeneric, L"CreateStoreEntryID: MDB was NULL\n");
+				if (lpszMsgStoreDN.empty()) output::DebugPrint(DBGGeneric, L"CreateStoreEntryID: lpszMsgStoreDN was missing\n");
 				return MAPI_E_INVALID_PARAMETER;
 			}
 
@@ -370,7 +370,7 @@ namespace mapi
 
 			if (lpXManageStore)
 			{
-				DebugPrint(DBGGeneric, L"CreateStoreEntryID: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", Flags = \"0x%X\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str(), ulFlags);
+				output::DebugPrint(DBGGeneric, L"CreateStoreEntryID: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", Flags = \"0x%X\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str(), ulFlags);
 
 				EC_MAPI(lpXManageStore->CreateStoreEntryID(
 					LPSTR(lpszMsgStoreDN.c_str()),
@@ -399,8 +399,8 @@ namespace mapi
 
 			if (!lpMDB || lpszMsgStoreDN.empty() || !StoreSupportsManageStoreEx(lpMDB))
 			{
-				if (!lpMDB) DebugPrint(DBGGeneric, L"CreateStoreEntryID2: MDB was NULL\n");
-				if (lpszMsgStoreDN.empty()) DebugPrint(DBGGeneric, L"CreateStoreEntryID2: lpszMsgStoreDN was missing\n");
+				if (!lpMDB) output::DebugPrint(DBGGeneric, L"CreateStoreEntryID2: MDB was NULL\n");
+				if (lpszMsgStoreDN.empty()) output::DebugPrint(DBGGeneric, L"CreateStoreEntryID2: lpszMsgStoreDN was missing\n");
 				return MAPI_E_INVALID_PARAMETER;
 			}
 
@@ -410,7 +410,7 @@ namespace mapi
 
 			if (lpXManageStoreEx)
 			{
-				DebugPrint(DBGGeneric, L"CreateStoreEntryID2: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", SmtpAddress = \"%ws\", Flags = \"0x%X\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str(), smtpAddress.c_str(), ulFlags);
+				output::DebugPrint(DBGGeneric, L"CreateStoreEntryID2: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", SmtpAddress = \"%ws\", Flags = \"0x%X\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str(), smtpAddress.c_str(), ulFlags);
 				SPropValue sProps[4] = { 0 };
 				sProps[0].ulPropTag = PR_PROFILE_MAILBOX;
 				sProps[0].Value.lpszA = LPSTR(lpszMailboxDN.c_str());
@@ -519,7 +519,7 @@ namespace mapi
 
 			if (!lpMAPISession)
 			{
-				DebugPrint(DBGGeneric, L"HrMailboxLogon: Session was NULL\n");
+				output::DebugPrint(DBGGeneric, L"HrMailboxLogon: Session was NULL\n");
 				return MAPI_E_INVALID_PARAMETER;
 			}
 
@@ -614,7 +614,7 @@ namespace mapi
 
 			*lppOtherUserMDB = nullptr;
 
-			DebugPrint(DBGGeneric, L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%hs\", Mailbox = \"%hs\", SmtpAddress = \"%ws\"\n", lpMAPISession, lpMDB, szServerName.c_str(), szMailboxDN.c_str(), smtpAddress.c_str());
+			output::DebugPrint(DBGGeneric, L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%hs\", Mailbox = \"%hs\", SmtpAddress = \"%ws\"\n", lpMAPISession, lpMDB, szServerName.c_str(), szMailboxDN.c_str(), smtpAddress.c_str());
 			if (!lpMAPISession || !lpMDB || szMailboxDN.empty() || !StoreSupportsManageStore(lpMDB)) return MAPI_E_INVALID_PARAMETER;
 
 			std::string serverName;
@@ -636,7 +636,7 @@ namespace mapi
 
 				if (!szServerDN.empty())
 				{
-					DebugPrint(DBGGeneric, L"Calling HrMailboxLogon with Server DN = \"%hs\"\n", szServerDN.c_str());
+					output::DebugPrint(DBGGeneric, L"Calling HrMailboxLogon with Server DN = \"%hs\"\n", szServerDN.c_str());
 					WC_H(HrMailboxLogon(
 						lpMAPISession,
 						lpMDB,

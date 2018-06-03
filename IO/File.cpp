@@ -81,7 +81,7 @@ namespace file
 	_Check_return_ HRESULT MyStgOpenStorage(_In_ const std::wstring& szMessageFile, bool bBestAccess, _Deref_out_ LPSTORAGE* lppStorage)
 	{
 		if (!lppStorage) return MAPI_E_INVALID_PARAMETER;
-		DebugPrint(DBGGeneric, L"MyStgOpenStorage: Opening \"%ws\", bBestAccess == %ws\n", szMessageFile.c_str(), bBestAccess ? L"True" : L"False");
+		output::DebugPrint(DBGGeneric, L"MyStgOpenStorage: Opening \"%ws\", bBestAccess == %ws\n", szMessageFile.c_str(), bBestAccess ? L"True" : L"False");
 		auto hRes = S_OK;
 		ULONG ulFlags = STGM_TRANSACTED;
 
@@ -344,13 +344,13 @@ namespace file
 		_In_ const std::wstring& szRootPath,
 		_In_opt_ const _SBinary*lpBin)
 	{
-		DebugPrint(DBGGeneric, L"BuildFileNameAndPath ext = \"%ws\"\n", szExt.c_str());
-		DebugPrint(DBGGeneric, L"BuildFileNameAndPath subj = \"%ws\"\n", szSubj.c_str());
-		DebugPrint(DBGGeneric, L"BuildFileNameAndPath rootPath = \"%ws\"\n", szRootPath.c_str());
+		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath ext = \"%ws\"\n", szExt.c_str());
+		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath subj = \"%ws\"\n", szSubj.c_str());
+		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath rootPath = \"%ws\"\n", szRootPath.c_str());
 
 		// Set up the path portion of the output.
 		auto cleanRoot = ShortenPath(szRootPath);
-		DebugPrint(DBGGeneric, L"BuildFileNameAndPath cleanRoot = \"%ws\"\n", cleanRoot.c_str());
+		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath cleanRoot = \"%ws\"\n", cleanRoot.c_str());
 
 		// If we don't have enough space for even the shortest filename, give up.
 		if (cleanRoot.length() >= MAXMSGPATH) return strings::emptystring;
@@ -370,7 +370,7 @@ namespace file
 			cleanSubj = L"UnknownSubject"; // STRING_OK
 		}
 
-		DebugPrint(DBGGeneric, L"BuildFileNameAndPath cleanSubj = \"%ws\"\n", cleanSubj.c_str());
+		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath cleanSubj = \"%ws\"\n", cleanSubj.c_str());
 
 		std::wstring szBin;
 		if (lpBin && lpBin->cb)
@@ -381,7 +381,7 @@ namespace file
 		if (cleanSubj.length() + szBin.length() <= maxFile)
 		{
 			auto szFile = cleanRoot + cleanSubj + szBin + szExt;
-			DebugPrint(DBGGeneric, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szFile.c_str());
+			output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szFile.c_str());
 			return szFile;
 		}
 
@@ -389,24 +389,24 @@ namespace file
 		// Compute a shorter subject length that should fit.
 		const auto maxSubj = maxFile - min(MAXBIN, szBin.length()) - 1;
 		auto szFile = cleanSubj.substr(0, maxSubj) + szBin.substr(0, MAXBIN);
-		DebugPrint(DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
-		DebugPrint(DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
+		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
+		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
 
 		if (szFile.length() >= maxFile)
 		{
 			szFile = cleanSubj.substr(0, MAXSUBJTIGHT) + szBin.substr(0, MAXBIN);
-			DebugPrint(DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
-			DebugPrint(DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
+			output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
+			output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
 		}
 
 		if (szFile.length() >= maxFile)
 		{
-			DebugPrint(DBGGeneric, L"BuildFileNameAndPath failed to build a string\n");
+			output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath failed to build a string\n");
 			return strings::emptystring;
 		}
 
 		auto szOut = cleanRoot + szFile + szExt;
-		DebugPrint(DBGGeneric, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szOut.c_str());
+		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szOut.c_str());
 		return szOut;
 	}
 
@@ -455,7 +455,7 @@ namespace file
 		if (!lpFolder || szPathName.empty()) return MAPI_E_INVALID_PARAMETER;
 		if (szPathName.length() >= MAXMSGPATH) return MAPI_E_INVALID_PARAMETER;
 
-		DebugPrint(DBGGeneric, L"SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n", szPathName.c_str());
+		output::DebugPrint(DBGGeneric, L"SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n", szPathName.c_str());
 
 		EC_MAPI(lpFolder->GetContentsTable(
 			fMapiUnicode | (bAssoc ? MAPI_ASSOCIATED : NULL),
@@ -607,7 +607,7 @@ namespace file
 		{
 			pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME);
 
-			DebugPrint(DBGStream, L"WriteStreamToFile: Writing cb = %llu bytes\n", StatInfo.cbSize.QuadPart);
+			output::DebugPrint(DBGStream, L"WriteStreamToFile: Writing cb = %llu bytes\n", StatInfo.cbSize.QuadPart);
 
 			EC_MAPI(pStrmSrc->CopyTo(pStrmDest,
 				StatInfo.cbSize,
@@ -629,7 +629,7 @@ namespace file
 		LPSTREAM pStrmSrc = nullptr;
 
 		if (!lpMessage || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
-		DebugPrint(DBGGeneric, L"SaveToEML: Saving message to \"%ws\"\n", szFileName.c_str());
+		output::DebugPrint(DBGGeneric, L"SaveToEML: Saving message to \"%ws\"\n", szFileName.c_str());
 
 		// Open the property of the attachment
 		// containing the file data
@@ -643,7 +643,7 @@ namespace file
 		{
 			if (MAPI_E_NOT_FOUND == hRes)
 			{
-				DebugPrint(DBGGeneric, L"No internet content found\n");
+				output::DebugPrint(DBGGeneric, L"No internet content found\n");
 			}
 		}
 		else
@@ -777,10 +777,10 @@ namespace file
 		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
 
-		DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szPathName.c_str());
+		output::DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szPathName.c_str());
 
-		DebugPrint(DBGGeneric, L"Source Message =\n");
-		DebugPrintBinary(DBGGeneric, entryID.Value.bin);
+		output::DebugPrint(DBGGeneric, L"Source Message =\n");
+		output::DebugPrintBinary(DBGGeneric, entryID.Value.bin);
 
 		LPMAPICONTAINER lpMapiContainer = nullptr;
 		EC_H(lpFolder->QueryInterface(IID_IMAPIContainer, reinterpret_cast<LPVOID*>(&lpMapiContainer)));
@@ -807,7 +807,7 @@ namespace file
 			auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szPathName, recordKey); // STRING_OK
 			if (!szFileName.empty())
 			{
-				DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
+				output::DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
 				EC_H(SaveToMSG(
 					lpMessage,
@@ -816,7 +816,7 @@ namespace file
 					hWnd,
 					false));
 
-				DebugPrint(DBGGeneric, L"Message Saved\n");
+				output::DebugPrint(DBGGeneric, L"Message Saved\n");
 			}
 		}
 
@@ -834,7 +834,7 @@ namespace file
 
 		if (!lpMessage || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-		DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szFileName.c_str());
+		output::DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szFileName.c_str());
 
 		EC_H(CreateNewMSG(szFileName, bUnicode, &pIMsg, &pStorage));
 		if (pIMsg && pStorage)
@@ -907,7 +907,7 @@ namespace file
 		};
 
 		if (!lpMessage || !lpAdrBook || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
-		DebugPrint(DBGGeneric, L"SaveToTNEF: Saving message to \"%ws\"\n", szFileName.c_str());
+		output::DebugPrint(DBGGeneric, L"SaveToTNEF: Saving message to \"%ws\"\n", szFileName.c_str());
 
 		LPSTREAM lpStream = nullptr;
 		LPITNEF lpTNEF = nullptr;
@@ -1164,7 +1164,7 @@ namespace file
 
 		if (!lpAttach || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-		DebugPrint(DBGGeneric, L"WriteEmbeddedMSGToFile: Saving attachment to \"%ws\"\n", szFileName.c_str());
+		output::DebugPrint(DBGGeneric, L"WriteEmbeddedMSGToFile: Saving attachment to \"%ws\"\n", szFileName.c_str());
 
 		EC_MAPI(lpAttach->OpenProperty(
 			PR_ATTACH_DATA_OBJ,
@@ -1201,7 +1201,7 @@ namespace file
 		{
 			if (MAPI_E_NOT_FOUND == hRes)
 			{
-				DebugPrint(DBGGeneric, L"No attachments found. Maybe the attachment was a message?\n");
+				output::DebugPrint(DBGGeneric, L"No attachments found. Maybe the attachment was a message?\n");
 			}
 			else CHECKHRES(hRes);
 		}
@@ -1307,7 +1307,7 @@ namespace file
 
 		if (!lpAttach) return MAPI_E_INVALID_PARAMETER;
 
-		DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Saving attachment.\n");
+		output::DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Saving attachment.\n");
 
 		// Get required properties from the message
 		EC_H_GETPROPS(lpAttach->GetProps(
@@ -1344,7 +1344,7 @@ namespace file
 			case ATTACH_BY_REF_RESOLVE:
 			case ATTACH_BY_REF_ONLY:
 			{
-				DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
+				output::DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
 
 				auto file = CFileDialogExW::SaveAs(
 					L"txt", // STRING_OK
@@ -1360,7 +1360,7 @@ namespace file
 			case ATTACH_EMBEDDED_MSG:
 				// Get File Name
 			{
-				DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
+				output::DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
 				auto file = CFileDialogExW::SaveAs(
 					L"msg", // STRING_OK
 					szFileName,
@@ -1374,7 +1374,7 @@ namespace file
 			break;
 			case ATTACH_OLE:
 			{
-				DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
+				output::DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
 				auto file = CFileDialogExW::SaveAs(
 					strings::emptystring,
 					szFileName,

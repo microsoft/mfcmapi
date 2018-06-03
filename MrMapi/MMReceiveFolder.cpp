@@ -42,7 +42,7 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 			for (ULONG i = 0; i < lpRows->cRows; i++)
 			{
 				printf("<properties index=\"%u\">\n", iRow);
-				_OutputProperties(DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
+				output::_OutputProperties(DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
 				printf("</properties>\n");
 				iRow++;
 			}

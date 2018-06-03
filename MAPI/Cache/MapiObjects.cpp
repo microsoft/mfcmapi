@@ -11,7 +11,7 @@ namespace cache
 	CMapiObjects::CMapiObjects(_In_opt_ CMapiObjects *OldMapiObjects)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		DebugPrintEx(DBGConDes, CLASS, CLASS, L"OldMapiObjects = %p\n", OldMapiObjects);
+		output::DebugPrintEx(DBGConDes, CLASS, CLASS, L"OldMapiObjects = %p\n", OldMapiObjects);
 		m_cRef = 1;
 
 		m_lpAddrBook = nullptr;
@@ -58,7 +58,7 @@ namespace cache
 	void CMapiObjects::MAPILogonEx(_In_ HWND hwnd, _In_opt_z_ LPTSTR szProfileName, ULONG ulFlags)
 	{
 		auto hRes = S_OK;
-		DebugPrint(DBGGeneric, L"Logging on with MAPILogonEx, ulFlags = 0x%X\n", ulFlags);
+		output::DebugPrint(DBGGeneric, L"Logging on with MAPILogonEx, ulFlags = 0x%X\n", ulFlags);
 
 		CGlobalCache::getInstance().MAPIInitialize(NULL);
 		if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
@@ -73,13 +73,13 @@ namespace cache
 			ulFlags,
 			&m_lpMAPISession));
 
-		DebugPrint(DBGGeneric, L"\tm_lpMAPISession set to %p\n", m_lpMAPISession);
+		output::DebugPrint(DBGGeneric, L"\tm_lpMAPISession set to %p\n", m_lpMAPISession);
 	}
 
 	void CMapiObjects::Logoff(_In_ HWND hwnd, ULONG ulFlags)
 	{
 		auto hRes = S_OK;
-		DebugPrint(DBGGeneric, L"Logging off of %p, ulFlags = 0x%08X\n", m_lpMAPISession, ulFlags);
+		output::DebugPrint(DBGGeneric, L"Logging off of %p, ulFlags = 0x%08X\n", m_lpMAPISession, ulFlags);
 
 		if (m_lpMAPISession)
 		{
@@ -105,7 +105,7 @@ namespace cache
 
 	void CMapiObjects::SetMDB(_In_opt_ LPMDB lpMDB)
 	{
-		DebugPrintEx(DBGGeneric, CLASS, L"SetMDB", L"replacing %p with %p\n", m_lpMDB, lpMDB);
+		output::DebugPrintEx(DBGGeneric, CLASS, L"SetMDB", L"replacing %p with %p\n", m_lpMDB, lpMDB);
 		if (m_lpMDB) m_lpMDB->Release();
 		m_lpMDB = lpMDB;
 		if (m_lpMDB) m_lpMDB->AddRef();
@@ -118,7 +118,7 @@ namespace cache
 
 	void CMapiObjects::SetAddrBook(_In_opt_ LPADRBOOK lpAddrBook)
 	{
-		DebugPrintEx(DBGGeneric, CLASS, L"SetAddrBook", L"replacing %p with %p\n", m_lpAddrBook, lpAddrBook);
+		output::DebugPrintEx(DBGGeneric, CLASS, L"SetAddrBook", L"replacing %p with %p\n", m_lpAddrBook, lpAddrBook);
 		if (m_lpAddrBook) m_lpAddrBook->Release();
 		m_lpAddrBook = lpAddrBook;
 		if (m_lpAddrBook) m_lpAddrBook->AddRef();

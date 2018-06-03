@@ -178,7 +178,7 @@ namespace mapi
 
 					if (lpMAPIFormMgr)
 					{
-						DebugPrint(DBGFormViewer, L"Calling LoadForm: szMessageClass = %hs, ulMessageStatus = 0x%X, ulMessageFlags = 0x%X\n",
+						output::DebugPrint(DBGFormViewer, L"Calling LoadForm: szMessageClass = %hs, ulMessageStatus = 0x%X, ulMessageFlags = 0x%X\n",
 							lpspvaShow[CLASS].Value.lpszA,
 							ulMessageStatus,
 							lpspvaShow[FLAGS].Value.ul);

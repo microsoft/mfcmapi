@@ -83,7 +83,7 @@ namespace dialog
 		__mfcmapiModifyEnum bModify,
 		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 	{
-		DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
@@ -147,7 +147,7 @@ namespace dialog
 							lpProp->Value.l = 0;
 						}
 
-						DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting row 0x%08X\n", lpProp->Value.l);
+						output::DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting row 0x%08X\n", lpProp->Value.l);
 					}
 				}
 
@@ -197,7 +197,7 @@ namespace dialog
 				adrList.aEntries[0].rgPropVals,
 				&ulSizeProps));
 
-			DebugPrintEx(DBGGeneric, CLASS, L"OnModifyRecipients", L"Committing changes for current selection\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"OnModifyRecipients", L"Committing changes for current selection\n");
 
 			EC_MAPI(m_lpMessage->ModifyRecipients(
 				MODRECIP_MODIFY,
@@ -231,7 +231,7 @@ namespace dialog
 				adrEntry.ulReserved1 = 0;
 				adrEntry.cValues = cProps;
 				adrEntry.rgPropVals = lpProps;
-				DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"Calling RecipOptions\n");
+				output::DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"Calling RecipOptions\n");
 
 				EC_MAPI(lpAB->RecipOptions(
 					reinterpret_cast<ULONG_PTR>(m_hWnd),
@@ -259,10 +259,10 @@ namespace dialog
 
 					const auto szAdrList = interpretprop::AdrListToString(adrList);
 
-					DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"RecipOptions returned the following ADRLIST:\n");
+					output::DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"RecipOptions returned the following ADRLIST:\n");
 					// Note - debug output may be truncated due to limitations of OutputDebugString,
 					// but output to file is complete
-					Output(DBGGeneric, nullptr, false, szAdrList);
+					output::Output(DBGGeneric, nullptr, false, szAdrList);
 
 					EC_MAPI(m_lpMessage->ModifyRecipients(
 						MODRECIP_MODIFY,

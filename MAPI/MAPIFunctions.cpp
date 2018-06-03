@@ -64,12 +64,12 @@ namespace mapi
 		if (lpInterface && fIsSet(DBGGeneric))
 		{
 			auto szGuid = guid::GUIDToStringAndName(lpInterface);
-			DebugPrint(DBGGeneric, L"CallOpenEntry: OpenEntry asking for %ws\n", szGuid.c_str());
+			output::DebugPrint(DBGGeneric, L"CallOpenEntry: OpenEntry asking for %ws\n", szGuid.c_str());
 		}
 
 		if (lpMDB)
 		{
-			DebugPrint(DBGGeneric, L"CallOpenEntry: Calling OpenEntry on MDB with ulFlags = 0x%X\n", ulFlags);
+			output::DebugPrint(DBGGeneric, L"CallOpenEntry: Calling OpenEntry on MDB with ulFlags = 0x%X\n", ulFlags);
 			WC_MAPI(lpMDB->OpenEntry(
 				cbEntryID,
 				lpEntryID,
@@ -79,7 +79,7 @@ namespace mapi
 				&lpUnk));
 			if (MAPI_E_UNKNOWN_FLAGS == hRes && ulNoCacheFlags)
 			{
-				DebugPrint(DBGGeneric, L"CallOpenEntry 2nd attempt: Calling OpenEntry on MDB with ulFlags = 0x%X\n", ulNoCacheFlags);
+				output::DebugPrint(DBGGeneric, L"CallOpenEntry 2nd attempt: Calling OpenEntry on MDB with ulFlags = 0x%X\n", ulNoCacheFlags);
 				hRes = S_OK;
 				if (lpUnk) lpUnk->Release();
 				lpUnk = nullptr;
@@ -100,7 +100,7 @@ namespace mapi
 		if (lpAB && !lpUnk)
 		{
 			hRes = S_OK;
-			DebugPrint(DBGGeneric, L"CallOpenEntry: Calling OpenEntry on AB with ulFlags = 0x%X\n", ulFlags);
+			output::DebugPrint(DBGGeneric, L"CallOpenEntry: Calling OpenEntry on AB with ulFlags = 0x%X\n", ulFlags);
 			WC_MAPI(lpAB->OpenEntry(
 				cbEntryID,
 				lpEntryID,
@@ -110,7 +110,7 @@ namespace mapi
 				&lpUnk));
 			if (MAPI_E_UNKNOWN_FLAGS == hRes && ulNoCacheFlags)
 			{
-				DebugPrint(DBGGeneric, L"CallOpenEntry 2nd attempt: Calling OpenEntry on AB with ulFlags = 0x%X\n", ulNoCacheFlags);
+				output::DebugPrint(DBGGeneric, L"CallOpenEntry 2nd attempt: Calling OpenEntry on AB with ulFlags = 0x%X\n", ulNoCacheFlags);
 				hRes = S_OK;
 				if (lpUnk) lpUnk->Release();
 				lpUnk = nullptr;
@@ -132,7 +132,7 @@ namespace mapi
 		if (lpContainer && !lpUnk)
 		{
 			hRes = S_OK;
-			DebugPrint(DBGGeneric, L"CallOpenEntry: Calling OpenEntry on Container with ulFlags = 0x%X\n", ulFlags);
+			output::DebugPrint(DBGGeneric, L"CallOpenEntry: Calling OpenEntry on Container with ulFlags = 0x%X\n", ulFlags);
 			WC_MAPI(lpContainer->OpenEntry(
 				cbEntryID,
 				lpEntryID,
@@ -142,7 +142,7 @@ namespace mapi
 				&lpUnk));
 			if (MAPI_E_UNKNOWN_FLAGS == hRes && ulNoCacheFlags)
 			{
-				DebugPrint(DBGGeneric, L"CallOpenEntry 2nd attempt: Calling OpenEntry on Container with ulFlags = 0x%X\n", ulNoCacheFlags);
+				output::DebugPrint(DBGGeneric, L"CallOpenEntry 2nd attempt: Calling OpenEntry on Container with ulFlags = 0x%X\n", ulNoCacheFlags);
 				hRes = S_OK;
 				if (lpUnk) lpUnk->Release();
 				lpUnk = nullptr;
@@ -164,7 +164,7 @@ namespace mapi
 		if (lpMAPISession && !lpUnk)
 		{
 			hRes = S_OK;
-			DebugPrint(DBGGeneric, L"CallOpenEntry: Calling OpenEntry on Session with ulFlags = 0x%X\n", ulFlags);
+			output::DebugPrint(DBGGeneric, L"CallOpenEntry: Calling OpenEntry on Session with ulFlags = 0x%X\n", ulFlags);
 			WC_MAPI(lpMAPISession->OpenEntry(
 				cbEntryID,
 				lpEntryID,
@@ -174,7 +174,7 @@ namespace mapi
 				&lpUnk));
 			if (MAPI_E_UNKNOWN_FLAGS == hRes && ulNoCacheFlags)
 			{
-				DebugPrint(DBGGeneric, L"CallOpenEntry 2nd attempt: Calling OpenEntry on Session with ulFlags = 0x%X\n", ulNoCacheFlags);
+				output::DebugPrint(DBGGeneric, L"CallOpenEntry 2nd attempt: Calling OpenEntry on Session with ulFlags = 0x%X\n", ulNoCacheFlags);
 				hRes = S_OK;
 				if (lpUnk) lpUnk->Release();
 				lpUnk = nullptr;
@@ -196,7 +196,7 @@ namespace mapi
 		if (lpUnk)
 		{
 			auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
-			DebugPrint(DBGGeneric, L"OnOpenEntryID: Got object of type 0x%08X = %ws\n", ulObjType, szFlags.c_str());
+			output::DebugPrint(DBGGeneric, L"OnOpenEntryID: Got object of type 0x%08X = %ws\n", ulObjType, szFlags.c_str());
 			*lppUnk = lpUnk;
 		}
 		if (ulObjTypeRet) *ulObjTypeRet = ulObjType;
@@ -334,7 +334,7 @@ namespace mapi
 			{PR_ENTRYID},
 		};
 
-		DebugPrint(DBGGeneric, L"CopyFolderContents: lpSrcFolder = %p, lpDestFolder = %p, bCopyAssociatedContents = %d, bMove = %d\n",
+		output::DebugPrint(DBGGeneric, L"CopyFolderContents: lpSrcFolder = %p, lpDestFolder = %p, bCopyAssociatedContents = %d, bMove = %d\n",
 			lpSrcFolder,
 			lpDestFolder,
 			bCopyAssociatedContents,
@@ -412,8 +412,8 @@ namespace mapi
 					if (pRows && PT_ERROR != PROP_TYPE(pRows->aRow->lpProps[fldPR_ENTRYID].ulPropTag))
 					{
 						SBinaryArray sbaEID = { 0 };
-						DebugPrint(DBGGeneric, L"Source Message =\n");
-						DebugPrintBinary(DBGGeneric, pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin);
+						output::DebugPrint(DBGGeneric, L"Source Message =\n");
+						output::DebugPrintBinary(DBGGeneric, pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin);
 
 						sbaEID.cValues = 1;
 						sbaEID.lpbin = &pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin;
@@ -433,12 +433,12 @@ namespace mapi
 							lpProgress,
 							ulCopyFlags));
 
-						if (S_OK == hRes) DebugPrint(DBGGeneric, L"Message Copied\n");
+						if (S_OK == hRes) output::DebugPrint(DBGGeneric, L"Message Copied\n");
 
 						if (lpProgress) lpProgress->Release();
 					}
 
-					if (S_OK != hRes) DebugPrint(DBGGeneric, L"Message Copy Failed\n");
+					if (S_OK != hRes) output::DebugPrint(DBGGeneric, L"Message Copy Failed\n");
 				}
 			}
 
@@ -820,15 +820,15 @@ namespace mapi
 				szString.c_str(),
 				lpAllocationParent));
 
-			DebugPrint(DBGGeneric, L"CreatePropertyStringRestriction built restriction:\n");
-			DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
+			output::DebugPrint(DBGGeneric, L"CreatePropertyStringRestriction built restriction:\n");
+			output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
 
 			*lppRes = lpRes;
 		}
 
 		if (hRes != S_OK)
 		{
-			DebugPrint(DBGGeneric, L"Failed to create restriction\n");
+			output::DebugPrint(DBGGeneric, L"Failed to create restriction\n");
 			MAPIFreeBuffer(lpRes);
 			*lppRes = nullptr;
 		}
@@ -912,15 +912,15 @@ namespace mapi
 				szString.c_str(),
 				lpAllocationParent));
 
-			DebugPrint(DBGGeneric, L"CreateRangeRestriction built restriction:\n");
-			DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
+			output::DebugPrint(DBGGeneric, L"CreateRangeRestriction built restriction:\n");
+			output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
 
 			*lppRes = lpRes;
 		}
 
 		if (hRes != S_OK)
 		{
-			DebugPrint(DBGGeneric, L"Failed to create restriction\n");
+			output::DebugPrint(DBGGeneric, L"Failed to create restriction\n");
 			MAPIFreeBuffer(lpRes);
 			*lppRes = nullptr;
 		}
@@ -938,7 +938,7 @@ namespace mapi
 		if (PROP_TYPE(ulPropTag) == PT_ERROR)
 			ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED);
 
-		DebugPrint(DBGGeneric, L"DeleteProperty: Deleting prop 0x%08X from MAPI item %p.\n", ulPropTag, lpMAPIProp);
+		output::DebugPrint(DBGGeneric, L"DeleteProperty: Deleting prop 0x%08X from MAPI item %p.\n", ulPropTag, lpMAPIProp);
 
 		SPropTagArray ptaTag = { 1,{ ulPropTag } };
 		EC_MAPI(lpMAPIProp->DeleteProps(
@@ -972,7 +972,7 @@ namespace mapi
 
 		if (!lpMDB || !lpSourceFolder || !lpEIDs) return MAPI_E_INVALID_PARAMETER;
 
-		DebugPrint(DBGGeneric, L"DeleteToDeletedItems: Deleting from folder %p in store %p\n",
+		output::DebugPrint(DBGGeneric, L"DeleteToDeletedItems: Deleting from folder %p in store %p\n",
 			lpSourceFolder,
 			lpMDB);
 
@@ -1042,7 +1042,7 @@ namespace mapi
 		ULONG cbInboxEID = 0;
 		LPENTRYID lpInboxEID = nullptr;
 
-		DebugPrint(DBGGeneric, L"GetInbox: getting Inbox\n");
+		output::DebugPrint(DBGGeneric, L"GetInbox: getting Inbox\n");
 
 		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 
@@ -1073,7 +1073,7 @@ namespace mapi
 		ULONG cbInboxEID = 0;
 		LPENTRYID lpInboxEID = nullptr;
 
-		DebugPrint(DBGGeneric, L"GetInbox: getting Inbox from %p\n", lpMDB);
+		output::DebugPrint(DBGGeneric, L"GetInbox: getting Inbox from %p\n", lpMDB);
 
 		*lpInbox = nullptr;
 
@@ -1158,7 +1158,7 @@ namespace mapi
 		LPSPropTagArray lpTags = nullptr;
 		if (RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD)
 		{
-			DebugPrint(DBGGeneric, L"GetPropsNULL: Calling GetPropList\n");
+			output::DebugPrint(DBGGeneric, L"GetPropsNULL: Calling GetPropList\n");
 			WC_MAPI(lpMAPIProp->GetPropList(
 				ulFlags,
 				&lpTags));
@@ -1177,7 +1177,7 @@ namespace mapi
 		}
 		else
 		{
-			DebugPrint(DBGGeneric, L"GetPropsNULL: Calling GetProps(NULL) on %p\n", lpMAPIProp);
+			output::DebugPrint(DBGGeneric, L"GetPropsNULL: Calling GetProps(NULL) on %p\n", lpMAPIProp);
 		}
 
 		WC_H_GETPROPS(lpMAPIProp->GetProps(
@@ -1195,7 +1195,7 @@ namespace mapi
 		auto hRes = S_OK;
 		LPMAPIFOLDER lpInbox = nullptr;
 
-		DebugPrint(DBGGeneric, L"GetSpecialFolderEID: getting 0x%X from %p\n", ulFolderPropTag, lpMDB);
+		output::DebugPrint(DBGGeneric, L"GetSpecialFolderEID: getting 0x%X from %p\n", ulFolderPropTag, lpMDB);
 
 		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 
@@ -1243,7 +1243,7 @@ namespace mapi
 
 		if (MAPI_E_NOT_FOUND == hRes)
 		{
-			DebugPrint(DBGGeneric, L"Special folder not found.\n");
+			output::DebugPrint(DBGGeneric, L"Special folder not found.\n");
 		}
 
 		MAPIFreeBuffer(lpProp);
@@ -1364,7 +1364,7 @@ namespace mapi
 				}
 			}
 
-			DebugPrint(DBGGeneric, L"ManuallyEmptyFolder deleted %u items\n", iItemCount);
+			output::DebugPrint(DBGGeneric, L"ManuallyEmptyFolder deleted %u items\n", iItemCount);
 		}
 
 		if (pRows) FreeProws(pRows);
@@ -1406,7 +1406,7 @@ namespace mapi
 	_Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDef)
 	{
 		if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
-		DebugPrint(DBGNamedProp, L"RemoveOneOff - removing one off named properties.\n");
+		output::DebugPrint(DBGNamedProp, L"RemoveOneOff - removing one off named properties.\n");
 
 		auto hRes = S_OK;
 		MAPINAMEID rgnmid[ulNumOneOffIDs];
@@ -1430,8 +1430,8 @@ namespace mapi
 		{
 			LPSPropProblemArray lpProbArray = nullptr;
 
-			DebugPrint(DBGNamedProp, L"RemoveOneOff - identified the following properties.\n");
-			DebugPrintPropTagArray(DBGNamedProp, lpTags);
+			output::DebugPrint(DBGNamedProp, L"RemoveOneOff - identified the following properties.\n");
+			output::DebugPrintPropTagArray(DBGNamedProp, lpTags);
 
 			// The last prop is the flag value we'll be updating, don't count it
 			lpTags->cValues = ulNumOneOffIDs - 1;
@@ -1449,7 +1449,7 @@ namespace mapi
 			{
 				if (lpProbArray)
 				{
-					DebugPrint(DBGNamedProp, L"RemoveOneOff - DeleteProps problem array:\n%ws\n", interpretprop::ProblemArrayToString(*lpProbArray).c_str());
+					output::DebugPrint(DBGNamedProp, L"RemoveOneOff - DeleteProps problem array:\n%ws\n", interpretprop::ProblemArrayToString(*lpProbArray).c_str());
 				}
 
 				SPropTagArray pTag = { 0 };
@@ -1480,7 +1480,7 @@ namespace mapi
 						&lpProbArray2));
 					if (S_OK == hRes && lpProbArray2)
 					{
-						DebugPrint(DBGNamedProp, L"RemoveOneOff - SetProps problem array:\n%ws\n", interpretprop::ProblemArrayToString(*lpProbArray2).c_str());
+						output::DebugPrint(DBGNamedProp, L"RemoveOneOff - SetProps problem array:\n%ws\n", interpretprop::ProblemArrayToString(*lpProbArray2).c_str());
 					}
 
 					MAPIFreeBuffer(lpProbArray2);
@@ -1492,7 +1492,7 @@ namespace mapi
 
 				if (SUCCEEDED(hRes))
 				{
-					DebugPrint(DBGNamedProp, L"RemoveOneOff - One-off properties removed.\n");
+					output::DebugPrint(DBGNamedProp, L"RemoveOneOff - One-off properties removed.\n");
 				}
 			}
 
@@ -1648,7 +1648,7 @@ namespace mapi
 
 		if (!lpMessage || !lpFolder) return MAPI_E_INVALID_PARAMETER;
 
-		DebugPrint(DBGGeneric, L"ResendSingleMessage: Checking message for embedded messages\n");
+		output::DebugPrint(DBGGeneric, L"ResendSingleMessage: Checking message for embedded messages\n");
 
 		EC_MAPI(lpMessage->GetAttachmentTable(
 			NULL,
@@ -1675,7 +1675,7 @@ namespace mapi
 
 				if (ATTACH_EMBEDDED_MSG == pRows->aRow->lpProps[atPR_ATTACH_METHOD].Value.l)
 				{
-					DebugPrint(DBGGeneric, L"Found an embedded message to resend.\n");
+					output::DebugPrint(DBGGeneric, L"Found an embedded message to resend.\n");
 
 					if (lpAttach) lpAttach->Release();
 					lpAttach = nullptr;
@@ -1702,14 +1702,14 @@ namespace mapi
 
 					if (FAILED(hRes)) continue;
 
-					DebugPrint(DBGGeneric, L"Message opened.\n");
+					output::DebugPrint(DBGGeneric, L"Message opened.\n");
 
 					if (CheckStringProp(&pRows->aRow->lpProps[atPR_DISPLAY_NAME], PT_UNICODE))
 					{
-						DebugPrint(DBGGeneric, L"Resending \"%ws\"\n", pRows->aRow->lpProps[atPR_DISPLAY_NAME].Value.lpszW);
+						output::DebugPrint(DBGGeneric, L"Resending \"%ws\"\n", pRows->aRow->lpProps[atPR_DISPLAY_NAME].Value.lpszW);
 					}
 
-					DebugPrint(DBGGeneric, L"Creating new message.\n");
+					output::DebugPrint(DBGGeneric, L"Creating new message.\n");
 					if (lpNewMessage) lpNewMessage->Release();
 					lpNewMessage = nullptr;
 					EC_MAPI(lpFolder->CreateMessage(nullptr, 0, &lpNewMessage));
@@ -1718,13 +1718,13 @@ namespace mapi
 					EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
 					// Copy all the transmission properties
-					DebugPrint(DBGGeneric, L"Getting list of properties.\n");
+					output::DebugPrint(DBGGeneric, L"Getting list of properties.\n");
 					MAPIFreeBuffer(lpsMessageTags);
 					lpsMessageTags = nullptr;
 					EC_MAPI(lpAttachMsg->GetPropList(0, &lpsMessageTags));
 					if (!lpsMessageTags) continue;
 
-					DebugPrint(DBGGeneric, L"Copying properties to new message.\n");
+					output::DebugPrint(DBGGeneric, L"Copying properties to new message.\n");
 					if (!FAILED(hRes)) for (ULONG ulProp = 0; ulProp < lpsMessageTags->cValues; ulProp++)
 					{
 						hRes = S_OK;
@@ -1733,7 +1733,7 @@ namespace mapi
 						if (FIsTransmittable(lpsMessageTags->aulPropTag[ulProp]))
 						{
 							LPSPropValue lpProp = nullptr;
-							DebugPrint(DBGGeneric, L"Copying 0x%08X\n", lpsMessageTags->aulPropTag[ulProp]);
+							output::DebugPrint(DBGGeneric, L"Copying 0x%08X\n", lpsMessageTags->aulPropTag[ulProp]);
 							WC_MAPI(HrGetOnePropEx(lpAttachMsg, lpsMessageTags->aulPropTag[ulProp], fMapiUnicode, &lpProp));
 
 							WC_MAPI(HrSetOneProp(lpNewMessage, lpProp));
@@ -1744,7 +1744,7 @@ namespace mapi
 
 					EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
-					DebugPrint(DBGGeneric, L"Copying recipients and attachments to new message.\n");
+					output::DebugPrint(DBGGeneric, L"Copying recipients and attachments to new message.\n");
 
 					LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
 
@@ -1770,7 +1770,7 @@ namespace mapi
 					sProp.ulPropTag = PR_DELETE_AFTER_SUBMIT;
 					sProp.Value.b = true;
 
-					DebugPrint(DBGGeneric, L"Setting PR_DELETE_AFTER_SUBMIT to true.\n");
+					output::DebugPrint(DBGGeneric, L"Setting PR_DELETE_AFTER_SUBMIT to true.\n");
 					EC_MAPI(HrSetOneProp(lpNewMessage, &sProp));
 
 					SPropTagArray sPropTagArray = { 0 };
@@ -1778,17 +1778,17 @@ namespace mapi
 					sPropTagArray.cValues = 1;
 					sPropTagArray.aulPropTag[0] = PR_SENTMAIL_ENTRYID;
 
-					DebugPrint(DBGGeneric, L"Deleting PR_SENTMAIL_ENTRYID\n");
+					output::DebugPrint(DBGGeneric, L"Deleting PR_SENTMAIL_ENTRYID\n");
 					EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray, nullptr));
 
 					EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
-					DebugPrint(DBGGeneric, L"Submitting new message.\n");
+					output::DebugPrint(DBGGeneric, L"Submitting new message.\n");
 					EC_MAPI(lpNewMessage->SubmitMessage(0));
 				}
 				else
 				{
-					DebugPrint(DBGGeneric, L"Attachment is not an embedded message.\n");
+					output::DebugPrint(DBGGeneric, L"Attachment is not an embedded message.\n");
 				}
 			}
 		}
@@ -1901,7 +1901,7 @@ namespace mapi
 					}
 				}
 
-				DebugPrint(DBGGeneric, L"ResetPermissionsOnItems reset permissions on %u items\n", iItemCount);
+				output::DebugPrint(DBGGeneric, L"ResetPermissionsOnItems reset permissions on %u items\n", iItemCount);
 			}
 		}
 
@@ -1940,28 +1940,28 @@ namespace mapi
 			sProp.ulPropTag = PR_DELETE_AFTER_SUBMIT;
 			sProp.Value.b = true;
 
-			DebugPrint(DBGGeneric, L"Setting PR_DELETE_AFTER_SUBMIT to true.\n");
+			output::DebugPrint(DBGGeneric, L"Setting PR_DELETE_AFTER_SUBMIT to true.\n");
 			EC_MAPI(HrSetOneProp(lpNewMessage, &sProp));
 
 			sProp.dwAlignPad = 0;
 			sProp.ulPropTag = PR_BODY_W;
 			sProp.Value.lpszW = const_cast<LPWSTR>(szBody.c_str());
 
-			DebugPrint(DBGGeneric, L"Setting PR_BODY to %ws.\n", szBody.c_str());
+			output::DebugPrint(DBGGeneric, L"Setting PR_BODY to %ws.\n", szBody.c_str());
 			EC_MAPI(HrSetOneProp(lpNewMessage, &sProp));
 
 			sProp.dwAlignPad = 0;
 			sProp.ulPropTag = PR_SUBJECT_W;
 			sProp.Value.lpszW = const_cast<LPWSTR>(szSubject.c_str());
 
-			DebugPrint(DBGGeneric, L"Setting PR_SUBJECT to %ws.\n", szSubject.c_str());
+			output::DebugPrint(DBGGeneric, L"Setting PR_SUBJECT to %ws.\n", szSubject.c_str());
 			EC_MAPI(HrSetOneProp(lpNewMessage, &sProp));
 
 			sProp.dwAlignPad = 0;
 			sProp.ulPropTag = PR_MESSAGE_CLASS_W;
 			sProp.Value.lpszW = const_cast<LPWSTR>(szClass.c_str());
 
-			DebugPrint(DBGGeneric, L"Setting PR_MESSAGE_CLASS to %ws.\n", szSubject.c_str());
+			output::DebugPrint(DBGGeneric, L"Setting PR_MESSAGE_CLASS to %ws.\n", szSubject.c_str());
 			EC_MAPI(HrSetOneProp(lpNewMessage, &sProp));
 
 			SPropTagArray sPropTagArray;
@@ -1969,17 +1969,17 @@ namespace mapi
 			sPropTagArray.cValues = 1;
 			sPropTagArray.aulPropTag[0] = PR_SENTMAIL_ENTRYID;
 
-			DebugPrint(DBGGeneric, L"Deleting PR_SENTMAIL_ENTRYID\n");
+			output::DebugPrint(DBGGeneric, L"Deleting PR_SENTMAIL_ENTRYID\n");
 			EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray, nullptr));
 
-			DebugPrint(DBGGeneric, L"Adding recipient: %ws.\n", szRecipient.c_str());
+			output::DebugPrint(DBGGeneric, L"Adding recipient: %ws.\n", szRecipient.c_str());
 			EC_H(ab::AddRecipient(
 				lpMAPISession,
 				lpNewMessage,
 				szRecipient,
 				MAPI_TO));
 
-			DebugPrint(DBGGeneric, L"Submitting message\n");
+			output::DebugPrint(DBGGeneric, L"Submitting message\n");
 			EC_MAPI(lpNewMessage->SubmitMessage(NULL));
 		}
 
@@ -2148,43 +2148,43 @@ namespace mapi
 	{
 		if (PT_STRING8 != ulPropType && PT_UNICODE != ulPropType)
 		{
-			DebugPrint(DBGGeneric, L"CheckStringProp: Called with invalid ulPropType of 0x%X\n", ulPropType);
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: Called with invalid ulPropType of 0x%X\n", ulPropType);
 			return false;
 		}
 
 		if (!lpProp)
 		{
-			DebugPrint(DBGGeneric, L"CheckStringProp: lpProp is NULL\n");
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp is NULL\n");
 			return false;
 		}
 
 		if (PT_ERROR == PROP_TYPE(lpProp->ulPropTag))
 		{
-			DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is of type PT_ERROR\n");
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is of type PT_ERROR\n");
 			return false;
 		}
 
 		if (ulPropType != PROP_TYPE(lpProp->ulPropTag))
 		{
-			DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is not of type 0x%X\n", ulPropType);
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is not of type 0x%X\n", ulPropType);
 			return false;
 		}
 
 		if (nullptr == lpProp->Value.LPSZ)
 		{
-			DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.LPSZ is NULL\n");
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.LPSZ is NULL\n");
 			return false;
 		}
 
 		if (PT_STRING8 == ulPropType && NULL == lpProp->Value.lpszA[0])
 		{
-			DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.lpszA[0] is NULL\n");
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.lpszA[0] is NULL\n");
 			return false;
 		}
 
 		if (PT_UNICODE == ulPropType && NULL == lpProp->Value.lpszW[0])
 		{
-			DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.lpszW[0] is NULL\n");
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.lpszW[0] is NULL\n");
 			return false;
 		}
 
@@ -2220,13 +2220,13 @@ namespace mapi
 
 		if (bPublicStore)
 		{
-			DebugPrint(DBGGeneric, L"ComputeStoreHash, hash (before adding .PUB) = 0x%08X\n", dwHash);
+			output::DebugPrint(DBGGeneric, L"ComputeStoreHash, hash (before adding .PUB) = 0x%08X\n", dwHash);
 			// augment to make sure it is unique else could be same as the private store
 			dwHash = (dwHash << 5) + dwHash + 0x2E505542; // this is '.PUB'
 		}
 
 		if (pwzFileName || pszFileName)
-			DebugPrint(DBGGeneric, L"ComputeStoreHash, hash (before adding path) = 0x%08X\n", dwHash);
+			output::DebugPrint(DBGGeneric, L"ComputeStoreHash, hash (before adding path) = 0x%08X\n", dwHash);
 
 		// You may want to also include the store file name in the hash calculation
 		// pszFileName and pwzFileName are NULL terminated strings with the path and filename of the store
@@ -2246,7 +2246,7 @@ namespace mapi
 		}
 
 		if (pwzFileName || pszFileName)
-			DebugPrint(DBGGeneric, L"ComputeStoreHash, hash (after adding path) = 0x%08X\n", dwHash);
+			output::DebugPrint(DBGGeneric, L"ComputeStoreHash, hash (after adding path) = 0x%08X\n", dwHash);
 
 		// dwHash now contains the hash to be used. It should be written in hex when building a URL.
 		return dwHash;
@@ -2775,7 +2775,7 @@ namespace mapi
 	_Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
 	{
 		if (!lpMAPIProp || !lppProp) return MAPI_E_INVALID_PARAMETER;
-		DebugPrint(DBGGeneric, L"GetLargeProp getting buffer from 0x%08X\n", ulPropTag);
+		output::DebugPrint(DBGGeneric, L"GetLargeProp getting buffer from 0x%08X\n", ulPropTag);
 
 		auto hRes = S_OK;
 		ULONG cValues = 0;
@@ -2793,7 +2793,7 @@ namespace mapi
 
 		if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag) && MAPI_E_NOT_ENOUGH_MEMORY == lpPropArray->Value.err)
 		{
-			DebugPrint(DBGGeneric, L"GetLargeProp property reported in GetProps as large.\n");
+			output::DebugPrint(DBGGeneric, L"GetLargeProp property reported in GetProps as large.\n");
 			MAPIFreeBuffer(lpPropArray);
 			lpPropArray = nullptr;
 			// need to get the data as a stream
@@ -2872,12 +2872,12 @@ namespace mapi
 		}
 		else if (lpPropArray && cValues == 1 && lpPropArray->ulPropTag == ulPropTag)
 		{
-			DebugPrint(DBGGeneric, L"GetLargeProp GetProps found property.\n");
+			output::DebugPrint(DBGGeneric, L"GetLargeProp GetProps found property.\n");
 			bSuccess = true;
 		}
 		else if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag))
 		{
-			DebugPrint(DBGGeneric, L"GetLargeProp GetProps reported property as error 0x%08X.\n", lpPropArray->Value.err);
+			output::DebugPrint(DBGGeneric, L"GetLargeProp GetProps reported property as error 0x%08X.\n", lpPropArray->Value.err);
 		}
 
 		if (bSuccess)

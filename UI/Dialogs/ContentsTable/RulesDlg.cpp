@@ -74,7 +74,7 @@ namespace dialog
 		if (!m_lpExchTbl || !m_lpContentsTableListCtrl) return;
 
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
-		DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 
 		if (m_lpExchTbl)
 		{

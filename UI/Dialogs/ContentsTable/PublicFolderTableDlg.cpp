@@ -40,7 +40,7 @@ namespace dialog
 
 	void CPublicFolderTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	{
-		DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
+		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
 		ui::UpdateMenuString(

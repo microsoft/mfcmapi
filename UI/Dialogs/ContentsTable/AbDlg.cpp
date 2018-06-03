@@ -57,7 +57,7 @@ namespace dialog
 
 	void CAbDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	{
-		DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
+		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
 		ui::UpdateMenuString(
@@ -87,7 +87,7 @@ namespace dialog
 
 	void CAbDlg::OnDisplayDetails()
 	{
-		DebugPrintEx(DBGGeneric, CLASS, L"OnDisplayDetails", L"displaying Address Book entry details\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnDisplayDetails", L"displaying Address Book entry details\n");
 
 		auto hRes = S_OK;
 		if (!m_lpMapiObjects) return;
@@ -243,7 +243,7 @@ namespace dialog
 		WC_H(Query.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteSelectedItem", L"deleting address Book entries\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteSelectedItem", L"deleting address Book entries\n");
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 			LPENTRYLIST lpEIDs = nullptr;
 
@@ -260,7 +260,7 @@ namespace dialog
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		LPENTRYLIST lpEIDs = nullptr;
@@ -278,7 +278,7 @@ namespace dialog
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"pasting address Book entries\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"pasting address Book entries\n");
 		if (!m_lpContainer) return false;
 
 		const auto lpEIDs = cache::CGlobalCache::getInstance().GetABEntriesToCopy();

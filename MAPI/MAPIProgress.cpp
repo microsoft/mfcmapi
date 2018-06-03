@@ -85,7 +85,7 @@ namespace mapi
 
 		_Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal)
 		{
-			DebugPrintEx(DBGGeneric, CLASS, L"Progress", L"(%ws) - ulValue = %u, ulCount = %u, ulTotal = %u\n",
+			output::DebugPrintEx(DBGGeneric, CLASS, L"Progress", L"(%ws) - ulValue = %u, ulCount = %u, ulTotal = %u\n",
 				m_szContext.c_str(), ulValue, ulCount, ulTotal);
 
 			OutputState(L"Progress");
@@ -169,7 +169,7 @@ namespace mapi
 				szMin = L"NULL";
 			}
 
-			DebugPrintEx(DBGGeneric, CLASS, L"SetLimits", L"(%ws) - Passed Values: lpulMin = %ws, lpulMax = %ws, lpulFlags = %ws\n",
+			output::DebugPrintEx(DBGGeneric, CLASS, L"SetLimits", L"(%ws) - Passed Values: lpulMin = %ws, lpulMax = %ws, lpulFlags = %ws\n",
 				m_szContext.c_str(), szMin.c_str(), szMax.c_str(), szFlags.c_str());
 
 			if (lpulMin)
@@ -188,7 +188,7 @@ namespace mapi
 
 		void CMAPIProgress::OutputState(const std::wstring& lpszFunction) const
 		{
-			DebugPrint(DBGGeneric, L"%ws::%ws(%ws) - Current Values: Min = %u, Max = %u, Flags = %u\n",
+			output::DebugPrint(DBGGeneric, L"%ws::%ws(%ws) - Current Values: Min = %u, Max = %u, Flags = %u\n",
 				CLASS.c_str(), lpszFunction.c_str(), m_szContext.c_str(), m_ulMin, m_ulMax, m_ulFlags);
 		}
 #endif

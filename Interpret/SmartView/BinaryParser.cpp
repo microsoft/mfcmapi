@@ -17,7 +17,7 @@ namespace smartview
 
 	void CBinaryParser::Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 	{
-		DebugPrintEx(DBGSmartView, CLASS, L"Init", L"cbBin = 0x%08X = %u\n", static_cast<int>(cbBin), static_cast<UINT>(cbBin));
+		output::DebugPrintEx(DBGSmartView, CLASS, L"Init", L"cbBin = 0x%08X = %u\n", static_cast<int>(cbBin), static_cast<UINT>(cbBin));
 		m_Bin = lpBin && cbBin ? std::vector<BYTE>(lpBin, lpBin + cbBin) : std::vector<BYTE>();
 		m_Offset = 0;
 	}
@@ -34,7 +34,7 @@ namespace smartview
 
 	void CBinaryParser::Rewind()
 	{
-		DebugPrintEx(DBGSmartView, CLASS, L"Rewind", L"Rewinding to the beginning of the stream\n");
+		output::DebugPrintEx(DBGSmartView, CLASS, L"Rewind", L"Rewinding to the beginning of the stream\n");
 		m_Offset = 0;
 	}
 
@@ -50,7 +50,7 @@ namespace smartview
 
 	void CBinaryParser::SetCurrentOffset(size_t stOffset)
 	{
-		DebugPrintEx(DBGSmartView, CLASS, L"SetCurrentOffset", L"Setting offset 0x%08X = %u bytes.\n", static_cast<int>(stOffset), static_cast<UINT>(stOffset));
+		output::DebugPrintEx(DBGSmartView, CLASS, L"SetCurrentOffset", L"Setting offset 0x%08X = %u bytes.\n", static_cast<int>(stOffset), static_cast<UINT>(stOffset));
 		m_Offset = stOffset;
 	}
 
@@ -68,11 +68,11 @@ namespace smartview
 		const auto cbRemaining = RemainingBytes();
 		if (cbBytes > cbRemaining)
 		{
-			DebugPrintEx(DBGSmartView, CLASS, L"CheckRemainingBytes", L"Bytes requested (0x%08X = %u) > remaining bytes (0x%08X = %u)\n",
+			output::DebugPrintEx(DBGSmartView, CLASS, L"CheckRemainingBytes", L"Bytes requested (0x%08X = %u) > remaining bytes (0x%08X = %u)\n",
 				static_cast<int>(cbBytes), static_cast<UINT>(cbBytes),
 				static_cast<int>(cbRemaining), static_cast<UINT>(cbRemaining));
-			DebugPrintEx(DBGSmartView, CLASS, L"CheckRemainingBytes", L"Total Bytes: 0x%08X = %u\n", m_Bin.size(), m_Bin.size());
-			DebugPrintEx(DBGSmartView, CLASS, L"CheckRemainingBytes", L"Current offset: 0x%08X = %d\n", m_Offset, m_Offset);
+			output::DebugPrintEx(DBGSmartView, CLASS, L"CheckRemainingBytes", L"Total Bytes: 0x%08X = %u\n", m_Bin.size(), m_Bin.size());
+			output::DebugPrintEx(DBGSmartView, CLASS, L"CheckRemainingBytes", L"Current offset: 0x%08X = %d\n", m_Offset, m_Offset);
 			return false;
 		}
 

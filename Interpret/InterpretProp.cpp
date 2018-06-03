@@ -75,7 +75,7 @@ namespace interpretprop
 			}
 		}
 
-		std::wstring szRet = strings::formatmessage(szFormatString.c_str(),
+		auto szRet = strings::formatmessage(szFormatString.c_str(),
 			ulPropTag,
 			TypeToString(ulPropTag).c_str(),
 			propTagNames.bestGuess.c_str(),
@@ -89,7 +89,7 @@ namespace interpretprop
 			static size_t cchMaxBuff = 0;
 			auto cchBuff = szRet.length();
 			cchMaxBuff = max(cchBuff, cchMaxBuff);
-			DebugPrint(DBGTest, L"TagToString parsing 0x%08X returned %u chars - max %u\n", ulPropTag, static_cast<UINT>(cchBuff), static_cast<UINT>(cchMaxBuff));
+			output::DebugPrint(DBGTest, L"TagToString parsing 0x%08X returned %u chars - max %u\n", ulPropTag, static_cast<UINT>(cchBuff), static_cast<UINT>(cchMaxBuff));
 		}
 
 		return szRet;
@@ -664,7 +664,7 @@ namespace interpretprop
 				ulFirstMatch = ulFirstMatch - 1;
 			}
 
-			for (ULONG ulCur = ulFirstMatch; ulCur < MyArray.size() && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulCur].ulValue); ulCur++)
+			for (auto ulCur = ulFirstMatch; ulCur < MyArray.size() && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulCur].ulValue); ulCur++)
 			{
 				if (ulTarget == MyArray[ulCur].ulValue)
 				{
@@ -743,7 +743,7 @@ namespace interpretprop
 	// Strictly does a lookup in the array. Does not convert otherwise
 	_Check_return_ ULONG LookupPropName(_In_ const std::wstring& lpszPropName)
 	{
-		std::wstring trimName = strings::TrimString(lpszPropName);
+		auto trimName = strings::TrimString(lpszPropName);
 		if (trimName.empty()) return 0;
 
 		for (auto& tag : PropTagArray)

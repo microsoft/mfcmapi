@@ -171,7 +171,7 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			DebugPrintEx(DBGGeneric, CLASS, L"OnEditSearchCriteria", L"Calling GetSearchCriteria on %p.\n", lpMAPIFolder);
+			output::DebugPrintEx(DBGGeneric, CLASS, L"OnEditSearchCriteria", L"Calling GetSearchCriteria on %p.\n", lpMAPIFolder);
 
 			LPSRestriction lpRes = nullptr;
 			LPENTRYLIST lpEntryList = nullptr;
@@ -184,7 +184,7 @@ namespace dialog
 				&ulSearchState));
 			if (MAPI_E_NOT_INITIALIZED == hRes)
 			{
-				DebugPrint(DBGGeneric, L"No search criteria has been set on this folder.\n");
+				output::DebugPrint(DBGGeneric, L"No search criteria has been set on this folder.\n");
 				hRes = S_OK;
 			}
 			else CHECKHRESMSG(hRes, IDS_GETSEARCHCRITERIAFAILED);
@@ -254,7 +254,7 @@ namespace dialog
 	{
 		auto hRes = S_OK;
 
-		DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
+		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CBaseDialog::CreateDialogAndMenu(nIDMenuResource, IDR_MENU_HIERARCHY_TABLE, IDS_HIERARCHYTABLE);
 
 		if (m_lpHierarchyTableTreeCtrl)
@@ -289,7 +289,7 @@ namespace dialog
 	{
 		auto hRes = S_OK;
 
-		DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 		if (m_lpHierarchyTableTreeCtrl)
 			EC_H(m_lpHierarchyTableTreeCtrl->RefreshHierarchyTable());
 	}

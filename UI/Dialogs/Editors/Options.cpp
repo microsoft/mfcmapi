@@ -10,7 +10,7 @@ namespace dialog
 		class COptions : public CEditor
 		{
 		public:
-			COptions(_In_ CWnd* pParentWnd);
+			COptions(_In_ CWnd* pWnd);
 			virtual ~COptions();
 			bool NeedPropRefresh() const;
 
@@ -32,7 +32,7 @@ namespace dialog
 
 			m_bNeedPropRefresh = false;
 
-			DebugPrintEx(DBGGeneric, CLASS, L"COptions(", L"Building option sheet - adding fields\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"COptions(", L"Building option sheet - adding fields\n");
 
 			for (ULONG ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
 			{
@@ -69,11 +69,11 @@ namespace dialog
 
 			if (GetHex(regkeyDEBUG_TAG) != RegKeys[regkeyDEBUG_TAG].ulCurDWORD)
 			{
-				SetDebugLevel(GetHex(regkeyDEBUG_TAG));
-				DebugPrintVersion(DBGVersionBanner);
+				output::SetDebugLevel(GetHex(regkeyDEBUG_TAG));
+				output::DebugPrintVersion(DBGVersionBanner);
 			}
 
-			SetDebugOutputToFile(GetCheck(regkeyDEBUG_TO_FILE));
+			output::SetDebugOutputToFile(GetCheck(regkeyDEBUG_TO_FILE));
 
 			// Remaining options require no special handling - loop through them
 			for (ULONG ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)

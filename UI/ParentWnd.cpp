@@ -49,8 +49,8 @@ namespace ui
 		SetDefaults();
 		ReadFromRegistry();
 		// After this call we may output to the debug file
-		OpenDebugFile();
-		DebugPrintVersion(DBGVersionBanner);
+		output::OpenDebugFile();
+		output::DebugPrintVersion(DBGVersionBanner);
 		// Force the system riched20 so we don't load office's version.
 		(void)LoadFromSystemDir(L"riched20.dll"); // STRING_OK
 		// Second part is to load rundll32.exe
@@ -93,7 +93,7 @@ namespace ui
 		if (m_hwinEventHook) UnhookWinEvent(m_hwinEventHook);
 		cache::UninitializeNamedPropCache();
 		WriteToRegistry();
-		CloseDebugFile();
+		output::CloseDebugFile();
 		// Since we're killing what m_pMainWnd points to here, we need to clear it
 		// Else MFC will try to route messages to it
 		theApp.m_pMainWnd = nullptr;

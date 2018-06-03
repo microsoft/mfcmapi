@@ -65,7 +65,7 @@ _Check_return_ HRESULT HrGetRegistryValue(
 {
 	auto hRes = S_OK;
 
-	DebugPrint(DBGGeneric, L"HrGetRegistryValue(%ws)\n", lpszValue.c_str());
+	output::DebugPrint(DBGGeneric, L"HrGetRegistryValue(%ws)\n", lpszValue.c_str());
 
 	*lppData = nullptr;
 	DWORD cb = NULL;
@@ -139,7 +139,7 @@ std::wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szV
 	LPBYTE szBuf = nullptr;
 	auto ret = szDefault;
 
-	DebugPrint(DBGGeneric, L"ReadStringFromRegistry(%ws)\n", szValue.c_str());
+	output::DebugPrint(DBGGeneric, L"ReadStringFromRegistry(%ws)\n", szValue.c_str());
 
 	DWORD cb = NULL;
 
@@ -219,8 +219,8 @@ void ReadFromRegistry()
 		EC_W32(RegCloseKey(hRootKey));
 	}
 
-	SetDebugLevel(RegKeys[regkeyDEBUG_TAG].ulCurDWORD);
-	DebugPrintVersion(DBGVersionBanner);
+	output::SetDebugLevel(RegKeys[regkeyDEBUG_TAG].ulCurDWORD);
+	output::DebugPrintVersion(DBGVersionBanner);
 }
 
 void WriteDWORDToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, DWORD dwValue)

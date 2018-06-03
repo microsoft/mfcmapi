@@ -94,7 +94,7 @@ namespace dialog
 
 		if (m_lpContentsTableListCtrl->IsLoading())
 			m_lpContentsTableListCtrl->OnCancelTableLoad();
-		DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 
 		if (m_lpExchTbl)
 		{
@@ -132,7 +132,7 @@ namespace dialog
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes)
 		{
-			DebugPrint(DBGGeneric, L"OnAddItem cancelled.\n");
+			output::DebugPrint(DBGGeneric, L"OnAddItem cancelled.\n");
 			return;
 		}
 

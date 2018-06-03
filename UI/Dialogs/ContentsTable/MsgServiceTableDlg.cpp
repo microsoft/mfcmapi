@@ -73,7 +73,7 @@ namespace dialog
 	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 	void CMsgServiceTableDlg::OnRefreshView()
 	{
-		DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 
 		auto hRes = S_OK;
 
@@ -206,7 +206,7 @@ namespace dialog
 	{
 		auto hRes = S_OK;
 
-		DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		*lppMAPIProp = nullptr;
 
@@ -285,7 +285,7 @@ namespace dialog
 			// Find the highlighted item AttachNum
 			if (!lpListData || !lpListData->Contents()) break;
 
-			DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting service from \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
+			output::DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting service from \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)

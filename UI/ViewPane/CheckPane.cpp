@@ -23,7 +23,7 @@ namespace viewpane
 		const auto label = ViewPane::GetMinWidth(hdc);
 		const auto check = GetSystemMetrics(SM_CXMENUCHECK);
 		const auto edge = check / 5;
-		DebugPrint(DBGDraw, L"CheckPane::GetMinWidth Label:%d + check:%d + edge:%d = minwidth:%d\n",
+		output::DebugPrint(DBGDraw, L"CheckPane::GetMinWidth Label:%d + check:%d + edge:%d = minwidth:%d\n",
 			label,
 			check,
 			edge,
@@ -62,7 +62,7 @@ namespace viewpane
 	void CheckPane::SetWindowPos(int x, int y, int width, int height)
 	{
 		auto hRes = S_OK;
-		DebugPrint(DBGDraw, L"CheckPane::SetWindowPos x:%d width:%d \n",
+		output::DebugPrint(DBGDraw, L"CheckPane::SetWindowPos x:%d width:%d \n",
 			x,
 			width);
 		EC_B(m_Check.SetWindowPos(NULL, x, y, width, height, SWP_NOZORDER));
@@ -112,7 +112,7 @@ namespace viewpane
 		rcLabel.left = rcCheck.right + lEdge;
 		rcLabel.right = rcLabel.left + ui::GetTextExtentPoint32(hDC, szButton).cx;
 
-		DebugPrint(DBGDraw, L"CheckButton::Draw left:%d width:%d checkwidth:%d space:%d labelwidth:%d (scroll:%d 2frame:%d), \"%ws\"\n",
+		output::DebugPrint(DBGDraw, L"CheckButton::Draw left:%d width:%d checkwidth:%d space:%d labelwidth:%d (scroll:%d 2frame:%d), \"%ws\"\n",
 			rc.left,
 			rc.right - rc.left,
 			rcCheck.right - rcCheck.left,

@@ -152,7 +152,7 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 	struct _stat64 stats = { 0 };
 	_wstati64(ProgOpts.lpszInput.c_str(), &stats);
 
-	const auto fIn = MyOpenFileMode(ProgOpts.lpszInput, L"rb");
+	const auto fIn = output::MyOpenFileMode(ProgOpts.lpszInput, L"rb");
 	if (fIn)
 	{
 		PSTHEADER pstHeader = { 0 };

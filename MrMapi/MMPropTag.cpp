@@ -523,8 +523,8 @@ void DoPropTags(_In_ const MYOPTIONS& ProgOpts)
 {
 	const auto lpszPropName = ProgOpts.lpszUnswitchedOption.empty() ? nullptr : ProgOpts.lpszUnswitchedOption.c_str();
 	const auto ulPropNum = strings::wstringToUlong(ProgOpts.lpszUnswitchedOption, ProgOpts.ulOptions & OPT_DODECIMAL ? 10 : 16);
-	if (lpszPropName) DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
-	DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
+	if (lpszPropName) output::DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
+	output::DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
 
 	// Handle dispid cases
 	if (ProgOpts.ulOptions & OPT_DODISPID)

@@ -19,11 +19,11 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 	if (ulStructType)
 	{
 		FILE* fOut = nullptr;
-		const auto fIn = MyOpenFileMode(ProgOpts.lpszInput, L"rb");
+		const auto fIn = output::MyOpenFileMode(ProgOpts.lpszInput, L"rb");
 		if (!fIn) printf("Cannot open input file %ws\n", ProgOpts.lpszInput.c_str());
 		if (!ProgOpts.lpszOutput.empty())
 		{
-			fOut = MyOpenFileMode(ProgOpts.lpszOutput, L"wb");
+			fOut = output::MyOpenFileMode(ProgOpts.lpszOutput, L"wb");
 			if (!fOut) printf("Cannot open output file %ws\n", ProgOpts.lpszOutput.c_str());
 		}
 
@@ -56,7 +56,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 				{
 					if (fOut)
 					{
-						Output(DBGNoDebug, fOut, false, szString);
+						output::Output(DBGNoDebug, fOut, false, szString);
 					}
 					else
 					{

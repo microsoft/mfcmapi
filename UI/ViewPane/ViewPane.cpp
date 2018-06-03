@@ -38,7 +38,7 @@ namespace viewpane
 			x += m_iButtonHeight;
 		}
 
-		DebugPrint(DBGDraw, L"ViewPane::SetWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
+		output::DebugPrint(DBGDraw, L"ViewPane::SetWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
 			x,
 			width,
 			x + m_iButtonHeight,
@@ -106,7 +106,7 @@ namespace viewpane
 	{
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
 		m_iLabelWidth = sizeText.cx;
-		DebugPrint(DBGDraw, L"ViewPane::GetMinWidth m_iLabelWidth:%d \"%ws\"\n",
+		output::DebugPrint(DBGDraw, L"ViewPane::GetMinWidth m_iLabelWidth:%d \"%ws\"\n",
 			m_iLabelWidth,
 			m_szLabel.c_str());
 		return m_iLabelWidth;

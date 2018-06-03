@@ -19,7 +19,7 @@ void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin
 		&lpAllProps));
 	if (FAILED(hRes))
 	{
-		OutputToFilef(fProfile, L"<properties error=\"0x%08X\" />\n", hRes);
+		output::OutputToFilef(fProfile, L"<properties error=\"0x%08X\" />\n", hRes);
 	}
 	else if (lpAllProps)
 	{
@@ -29,11 +29,11 @@ void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin
 			szBin = strings::BinToHexString(lpSectBin, false);
 		}
 
-		OutputToFilef(fProfile, L"<properties listtype=\"profilesection\" profilesection=\"%ws\">\n", szBin.c_str());
+		output::OutputToFilef(fProfile, L"<properties listtype=\"profilesection\" profilesection=\"%ws\">\n", szBin.c_str());
 
-		OutputPropertiesToFile(fProfile, cValues, lpAllProps, nullptr, false);
+		output::OutputPropertiesToFile(fProfile, cValues, lpAllProps, nullptr, false);
 
-		OutputToFile(fProfile, L"</properties>\n");
+		output::OutputToFile(fProfile, L"</properties>\n");
 
 		MAPIFreeBuffer(lpAllProps);
 	}
@@ -43,11 +43,11 @@ void ExportProfileProvider(FILE* fProfile, int iRow, LPPROVIDERADMIN lpProviderA
 {
 	if (!fProfile || !lpRow) return;
 
-	Outputf(DBGNoDebug, fProfile, true, L"<provider index = \"0x%08X\">\n", iRow);
+	output::Outputf(DBGNoDebug, fProfile, true, L"<provider index = \"0x%08X\">\n", iRow);
 
-	OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
-	OutputSRowToFile(fProfile, lpRow, nullptr);
-	OutputToFile(fProfile, L"</properties>\n");
+	output::OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
+	output::OutputSRowToFile(fProfile, lpRow, nullptr);
+	output::OutputToFile(fProfile, L"</properties>\n");
 
 	auto hRes = S_OK;
 	auto lpProviderUID = PpropFindProp(
@@ -69,18 +69,18 @@ void ExportProfileProvider(FILE* fProfile, int iRow, LPPROVIDERADMIN lpProviderA
 		}
 	}
 
-	OutputToFile(fProfile, L"</provider>\n");
+	output::OutputToFile(fProfile, L"</provider>\n");
 }
 
 void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmin, LPSRow lpRow)
 {
 	if (!fProfile || !lpRow) return;
 
-	Outputf(DBGNoDebug, fProfile, true, L"<service index = \"0x%08X\">\n", iRow);
+	output::Outputf(DBGNoDebug, fProfile, true, L"<service index = \"0x%08X\">\n", iRow);
 
-	OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
-	OutputSRowToFile(fProfile, lpRow, nullptr);
-	OutputToFile(fProfile, L"</properties>\n");
+	output::OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
+	output::OutputSRowToFile(fProfile, lpRow, nullptr);
+	output::OutputToFile(fProfile, L"</properties>\n");
 
 	auto hRes = S_OK;
 	auto lpServiceUID = PpropFindProp(
@@ -137,17 +137,17 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 		}
 	}
 
-	OutputToFile(fProfile, L"</service>\n");
+	output::OutputToFile(fProfile, L"</service>\n");
 }
 
 void ExportProfile(_In_ const std::string& szProfile, _In_ const std::wstring& szProfileSection, bool bByteSwapped, const std::wstring& szFileName)
 {
 	if (szProfile.empty()) return;
 
-	DebugPrint(DBGGeneric, L"ExportProfile: Saving profile \"%hs\" to \"%ws\"\n", szProfile.c_str(), szFileName.c_str());
+	output::DebugPrint(DBGGeneric, L"ExportProfile: Saving profile \"%hs\" to \"%ws\"\n", szProfile.c_str(), szFileName.c_str());
 	if (!szProfileSection.empty())
 	{
-		DebugPrint(DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection.c_str());
+		output::DebugPrint(DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection.c_str());
 	}
 
 	auto hRes = S_OK;
@@ -156,11 +156,11 @@ void ExportProfile(_In_ const std::string& szProfile, _In_ const std::wstring& s
 
 	if (!szFileName.empty())
 	{
-		fProfile = MyOpenFile(szFileName, true);
+		fProfile = output::MyOpenFile(szFileName, true);
 	}
 
-	OutputToFile(fProfile, g_szXMLHeader);
-	Outputf(DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile.c_str());
+	output::OutputToFile(fProfile, output::g_szXMLHeader);
+	output::Outputf(DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile.c_str());
 
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 
@@ -225,10 +225,10 @@ void ExportProfile(_In_ const std::string& szProfile, _In_ const std::wstring& s
 
 	}
 
-	OutputToFile(fProfile, L"</profile>");
+	output::OutputToFile(fProfile, L"</profile>");
 
 	if (fProfile)
 	{
-		CloseFile(fProfile);
+		output::CloseFile(fProfile);
 	}
 }

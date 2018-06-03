@@ -510,7 +510,7 @@ namespace controls
 					{
 						// Remove the lpb prefix
 						lpData->szSortText = std::wstring(szText);
-						auto pos = lpData->szSortText.find(L"lpb: "); // STRING_OK
+						const auto pos = lpData->szSortText.find(L"lpb: "); // STRING_OK
 						if (pos != std::string::npos)
 						{
 							lpData->szSortText = lpData->szSortText.substr(pos);
@@ -582,7 +582,7 @@ namespace controls
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-			DebugPrintEx(DBGGeneric, CLASS, L"AutoSizeColumns", L"Sizing columns\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"AutoSizeColumns", L"Sizing columns\n");
 			const auto lpMyHeader = GetHeaderCtrl();
 			if (lpMyHeader)
 			{
@@ -601,7 +601,7 @@ namespace controls
 			auto hRes = S_OK;
 			HDITEM hdItem = { 0 };
 
-			DebugPrintEx(DBGGeneric, CLASS, L"DeleteAllColumns", L"Deleting existing columns\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"DeleteAllColumns", L"Deleting existing columns\n");
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 			const auto lpMyHeader = GetHeaderCtrl();
@@ -683,7 +683,7 @@ namespace controls
 		void CSortListCtrl::SetSelectedItem(int iItem)
 		{
 			auto hRes = S_OK;
-			DebugPrintEx(DBGGeneric, CLASS, L"SetSelectedItem", L"selecting iItem = %d\n", iItem);
+			output::DebugPrintEx(DBGGeneric, CLASS, L"SetSelectedItem", L"selecting iItem = %d\n", iItem);
 			const auto bSet = SetItemState(iItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
 
 			if (bSet)

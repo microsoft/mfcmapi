@@ -60,7 +60,7 @@ namespace dialog
 
 	_Check_return_ bool CFolderDlg::HandleMenu(WORD wMenuSelect)
 	{
-		DebugPrint(DBGMenu, L"CFolderDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
+		output::DebugPrint(DBGMenu, L"CFolderDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 		auto hRes = S_OK;
 		switch (wMenuSelect)
 		{
@@ -430,7 +430,7 @@ namespace dialog
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		LPENTRYLIST lpEIDs = nullptr;
@@ -448,7 +448,7 @@ namespace dialog
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 		if (!m_lpContainer) return false;
 
 		editor::CEditor MyData(
@@ -1353,7 +1353,7 @@ namespace dialog
 
 				if (lpMessage)
 				{
-					DebugPrint(DBGGeneric, L"Calling RemoveOneOff on %p, %wsremoving property definition stream\n", lpMessage, MyData.GetCheck(0) ? L"" : L"not ");
+					output::DebugPrint(DBGGeneric, L"Calling RemoveOneOff on %p, %wsremoving property definition stream\n", lpMessage, MyData.GetCheck(0) ? L"" : L"not ");
 					EC_H(mapi::RemoveOneOff(
 						lpMessage,
 						MyData.GetCheck(0)));
@@ -1410,13 +1410,13 @@ namespace dialog
 
 				if (lpMessage)
 				{
-					DebugPrint(DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", lpMessage, MyData.GetHex(0));
+					output::DebugPrint(DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", lpMessage, MyData.GetHex(0));
 					EC_MAPI(RTFSync(
 						lpMessage,
 						MyData.GetHex(0),
 						&bMessageUpdated));
 
-					DebugPrint(DBGGeneric, L"RTFSync returned %d\n", bMessageUpdated);
+					output::DebugPrint(DBGGeneric, L"RTFSync returned %d\n", bMessageUpdated);
 
 					EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
@@ -1492,7 +1492,7 @@ namespace dialog
 	{
 		auto hRes = S_OK;
 
-		DebugPrintEx(DBGGeneric, CLASS, L"OnSaveMessageToFile", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnSaveMessageToFile", L"\n");
 
 		editor::CEditor MyData(
 			this,
@@ -1575,7 +1575,7 @@ namespace dialog
 				if (lpMessage)
 				{
 					auto filename = file::BuildFileName(szDotExt, dir, lpMessage);
-					DebugPrint(DBGGeneric, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
+					output::DebugPrint(DBGGeneric, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
 
 					if (bPrompt)
 					{
@@ -1824,7 +1824,7 @@ namespace dialog
 
 		if (!m_lpContentsTableListCtrl) return;
 
-		DebugPrintEx(DBGGeneric, CLASS, L"OnSetReadFlag", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnSetReadFlag", L"\n");
 
 		editor::CEditor MyFlags(
 			this,
@@ -1893,7 +1893,7 @@ namespace dialog
 		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		DebugPrintEx(DBGGeneric, CLASS, L"OnGetMessageOptions", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnGetMessageOptions", L"\n");
 
 		editor::CEditor MyAddress(
 			this,
@@ -2096,8 +2096,8 @@ namespace dialog
 						lpspvDeliveryTime->Value.ft.dwHighDateTime = 0x0;
 					}
 
-					DebugPrintEx(DBGGeneric, CLASS, L"OnCreateMessageRestriction", L"built restriction:\n");
-					DebugPrintRestriction(DBGGeneric, lpRes, lpMAPIProp);
+					output::DebugPrintEx(DBGGeneric, CLASS, L"OnCreateMessageRestriction", L"built restriction:\n");
+					output::DebugPrintRestriction(DBGGeneric, lpRes, lpMAPIProp);
 				}
 				else
 				{
@@ -2122,7 +2122,7 @@ namespace dialog
 
 		if (!lpData || !lpData->Contents() || !m_lpContainer) return MAPI_E_INVALID_PARAMETER;
 
-		DebugPrintEx(DBGGeneric, CLASS, L"OnGetMessageStatus", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnGetMessageStatus", L"\n");
 
 		ULONG ulMessageStatus = NULL;
 
@@ -2166,7 +2166,7 @@ namespace dialog
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_STATUSINHEX, false));
 		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_MASKINHEX, false));
 
-		DebugPrintEx(DBGGeneric, CLASS, L"OnSetMessageStatus", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnSetMessageStatus", L"\n");
 
 		WC_H(MyData.DisplayDialog());
 
@@ -2213,7 +2213,7 @@ namespace dialog
 		LPMESSAGE lpMessage = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		DebugPrintEx(DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
@@ -2239,7 +2239,7 @@ namespace dialog
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		DebugPrintEx(DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 		if (!m_lpMapiObjects || !lpData || !lpData->Contents()) return MAPI_E_INVALID_PARAMETER;

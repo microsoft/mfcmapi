@@ -47,7 +47,7 @@ namespace dialog
 		}
 
 		auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
-		DebugPrint(DBGGeneric, L"DisplayObject asked to display %p, with ObjectType of 0x%08X and MAPI type of 0x%08X = %ws\n",
+		output::DebugPrint(DBGGeneric, L"DisplayObject asked to display %p, with ObjectType of 0x%08X and MAPI type of 0x%08X = %ws\n",
 			lpUnk,
 			tType,
 			ulObjType,
@@ -184,7 +184,7 @@ namespace dialog
 			lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
 
 			szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
-			DebugPrint(DBGGeneric,
+			output::DebugPrint(DBGGeneric,
 				L"DisplayObject: Object type: 0x%08X = %ws not implemented\r\n" // STRING_OK
 				L"This is not an error. It just means no specialized viewer has been implemented for this object type.", // STRING_OK
 				ulObjType,
@@ -208,7 +208,7 @@ namespace dialog
 		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 		if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
-		DebugPrint(DBGGeneric, L"DisplayTable asked to display %p\n", lpTable);
+		output::DebugPrint(DBGGeneric, L"DisplayTable asked to display %p\n", lpTable);
 
 		switch (tType)
 		{
@@ -454,7 +454,7 @@ namespace dialog
 			WC_H(Cancel.DisplayDialog());
 			if (S_OK != hRes)
 			{
-				DebugPrint(DBGGeneric, L"bShouldCancel: User asked to cancel\n");
+				output::DebugPrint(DBGGeneric, L"bShouldCancel: User asked to cancel\n");
 				return true;
 			}
 		}
@@ -750,7 +750,7 @@ namespace dialog
 		EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 		if (lpMAPIFormMgr)
 		{
-			DebugPrint(DBGForms, L"OnResolveMessageClass: resolving message class\n");
+			output::DebugPrint(DBGForms, L"OnResolveMessageClass: resolving message class\n");
 			dialog::editor::CEditor MyData(
 				nullptr,
 				IDS_RESOLVECLASS,
@@ -767,11 +767,11 @@ namespace dialog
 				if (!szClass.empty())
 				{
 					LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-					DebugPrint(DBGForms, L"OnResolveMessageClass: Calling ResolveMessageClass(\"%ws\",0x%08X)\n", szClass.c_str(), ulFlags); // STRING_OK
+					output::DebugPrint(DBGForms, L"OnResolveMessageClass: Calling ResolveMessageClass(\"%ws\",0x%08X)\n", szClass.c_str(), ulFlags); // STRING_OK
 					EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(strings::wstringTostring(szClass).c_str(), ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
 					if (lpMAPIFormInfo)
 					{
-						DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
+						output::DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
 						*lppMAPIFormInfo = lpMAPIFormInfo;
 					}
 				}
@@ -809,7 +809,7 @@ namespace dialog
 
 			if (lpMAPIFormInfo)
 			{
-				DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
+				output::DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
 				*lppMAPIFormInfo = lpMAPIFormInfo;
 			}
 

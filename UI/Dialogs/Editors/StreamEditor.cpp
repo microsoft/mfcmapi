@@ -222,7 +222,7 @@ namespace dialog
 			LPSTREAM lpTmpStream = nullptr;
 			auto ulRTFFlags = m_ulRTFFlags;
 
-			DebugPrintEx(DBGStream, CLASS, L"OpenPropertyStream", L"opening property 0x%X (= %ws) from %p, bWrite = 0x%X\n", m_ulPropTag, interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(), m_lpMAPIProp, bWrite);
+			output::DebugPrintEx(DBGStream, CLASS, L"OpenPropertyStream", L"opening property 0x%X (= %ws) from %p, bWrite = 0x%X\n", m_ulPropTag, interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(), m_lpMAPIProp, bWrite);
 
 			if (bWrite)
 			{
@@ -278,7 +278,7 @@ namespace dialog
 					if (ulPropTag != m_ulPropTag)
 					{
 						hRes = S_OK;
-						DebugPrintEx(DBGStream, CLASS, L"OpenPropertyStream", L"Retrying as 0x%X (= %ws)\n", m_ulPropTag, interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str());
+						output::DebugPrintEx(DBGStream, CLASS, L"OpenPropertyStream", L"Retrying as 0x%X (= %ws)\n", m_ulPropTag, interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str());
 						WC_MAPI(m_lpMAPIProp->OpenProperty(
 							ulPropTag,
 							&IID_IStream,
@@ -337,7 +337,7 @@ namespace dialog
 		{
 			if (!m_lpMAPIProp) return;
 
-			DebugPrintEx(DBGStream, CLASS, L"ReadTextStreamFromProperty", L"opening property 0x%X (= %ws) from %p\n", m_ulPropTag, interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(), m_lpMAPIProp);
+			output::DebugPrintEx(DBGStream, CLASS, L"ReadTextStreamFromProperty", L"opening property 0x%X (= %ws) from %p\n", m_ulPropTag, interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(), m_lpMAPIProp);
 
 			// If we don't have a stream to display, put up an error instead
 			if (FAILED(m_StreamError) || !m_lpStream)
@@ -391,13 +391,13 @@ namespace dialog
 				auto bin = GetBinary(m_iBinBox);
 
 				EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
-				DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
+				output::DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
 
 				EC_MAPI(m_lpStream->Commit(STGC_DEFAULT));
 
 				if (m_bDisableSave)
 				{
-					DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"Save was disabled.\n");
+					output::DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"Save was disabled.\n");
 				}
 				else
 				{
@@ -406,8 +406,8 @@ namespace dialog
 
 			}
 
-			DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"Wrote out this stream:\n");
-			DebugPrintStream(DBGStream, m_lpStream);
+			output::DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"Wrote out this stream:\n");
+			output::DebugPrintStream(DBGStream, m_lpStream);
 		}
 
 		_Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)

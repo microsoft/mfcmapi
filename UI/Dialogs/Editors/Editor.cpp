@@ -122,7 +122,7 @@ namespace dialog
 			}
 			if (!m_pParentWnd)
 			{
-				DebugPrint(DBGGeneric, L"Editor created with a NULL parent!\n");
+				output::DebugPrint(DBGGeneric, L"Editor created with a NULL parent!\n");
 			}
 		}
 
@@ -533,7 +533,7 @@ namespace dialog
 			switch (iDlgRet)
 			{
 			case -1:
-				DebugPrint(DBGGeneric, L"Dialog box could not be created!\n");
+				output::DebugPrint(DBGGeneric, L"Dialog box could not be created!\n");
 				MessageBox(_T("Dialog box could not be created!")); // STRING_OK
 				return MAPI_E_CALL_FAILED;
 			case IDABORT:
@@ -642,29 +642,29 @@ namespace dialog
 				}
 			}
 
-			DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea GetMinWidth:%d \n", cx);
+			output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea GetMinWidth:%d \n", cx);
 
 			if (m_bEnableScroll)
 			{
 				cx += GetSystemMetrics(SM_CXVSCROLL) + 2 * GetSystemMetrics(SM_CXFIXEDFRAME);
-				DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea scroll->%d \n", cx);
+				output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea scroll->%d \n", cx);
 			}
 
-			DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea cx:%d \n", cx);
+			output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea cx:%d \n", cx);
 			(void)SelectObject(hdc, hfontOld);
 
 			// Throw all that work out if we have enough buttons
 			cx = max(cx, (int)(m_cButtons * m_iButtonWidth + m_iMargin * (m_cButtons - 1)));
-			DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea buttons->%d \n", cx);
+			output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea buttons->%d \n", cx);
 
 			// cx now contains the width of the widest prompt string or control
 			// Add a margin around that to frame our controls in the client area:
 			cx += 2 * m_iSideMargin;
-			DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea +m_iSideMargin->%d \n", cx);
+			output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea +m_iSideMargin->%d \n", cx);
 
 			// Check that we're wide enough to handle our caption
 			cx = max(cx, ComputeCaptionWidth(hdc, m_szTitle, m_iMargin));
-			DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea caption->%d \n", cx);
+			output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea caption->%d \n", cx);
 			::ReleaseDC(m_hWnd, hdc);
 			// Done figuring a good width (cx)
 
@@ -786,7 +786,7 @@ namespace dialog
 
 			auto iFullWidth = cx - 2 * iCXMargin;
 
-			DebugPrint(DBGDraw, L"CEditor::OnSize cx=%d iFullWidth=%d iCXMargin=%d\n",
+			output::DebugPrint(DBGDraw, L"CEditor::OnSize cx=%d iFullWidth=%d iCXMargin=%d\n",
 				cx,
 				iFullWidth,
 				iCXMargin);
@@ -907,10 +907,10 @@ namespace dialog
 				{
 					const auto iScrollWidth = GetSystemMetrics(SM_CXVSCROLL);
 					iFullWidth -= iScrollWidth;
-					DebugPrint(DBGDraw, L"CEditor::OnSize Scroll iScrollWidth=%d new iFullWidth=%d\n",
+					output::DebugPrint(DBGDraw, L"CEditor::OnSize Scroll iScrollWidth=%d new iFullWidth=%d\n",
 						iScrollWidth,
 						iFullWidth);
-					DebugPrint(DBGDraw, L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n",
+					output::DebugPrint(DBGDraw, L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n",
 						iFullWidth + iCXMargin);
 					::SetWindowPos(m_hWndVertScroll, nullptr, iFullWidth + iCXMargin, iCYTop, iScrollWidth, iCYBottom - iCYTop, SWP_NOZORDER);
 					SCROLLINFO si = { 0 };
@@ -933,7 +933,7 @@ namespace dialog
 					m_bScrollVisible = false;
 				}
 
-				DebugPrint(DBGDraw, L"CEditor::OnSize m_ScrollWindow positioned at=%d\n",
+				output::DebugPrint(DBGDraw, L"CEditor::OnSize m_ScrollWindow positioned at=%d\n",
 					iCXMargin);
 				::SetWindowPos(m_ScrollWindow.m_hWnd, nullptr, iCXMargin, iCYTop, iFullWidth, iCYBottom - iCYTop, SWP_NOZORDER);
 				iCYTop = -iScrollPos; // We get scrolling for free by adjusting our top

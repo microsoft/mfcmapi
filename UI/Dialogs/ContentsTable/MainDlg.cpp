@@ -114,7 +114,7 @@ namespace dialog
 
 	void CMainDlg::AddLoadMAPIMenus() const
 	{
-		DebugPrint(DBGLoadMAPI, L"AddLoadMAPIMenus - Extending menus\n");
+		output::DebugPrint(DBGLoadMAPI, L"AddLoadMAPIMenus - Extending menus\n");
 		auto hRes = S_OK;
 
 		// Find the submenu with ID_LOADMAPI on it
@@ -130,7 +130,7 @@ namespace dialog
 			{
 				if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
 
-				DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
+				output::DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
 				const auto lpMenu = ui::CreateMenuEntry(szPath);
 
 				EC_B(AppendMenu(
@@ -141,13 +141,13 @@ namespace dialog
 			}
 		}
 
-		DebugPrint(DBGLoadMAPI, L"Done extending menus\n");
+		output::DebugPrint(DBGLoadMAPI, L"Done extending menus\n");
 	}
 
 	bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect) const
 	{
 		if (wMenuSelect < ID_LOADMAPIMENUMIN || wMenuSelect > ID_LOADMAPIMENUMAX) return false;
-		DebugPrint(DBGLoadMAPI, L"InvokeLoadMAPIMenu - got menu item %u\n", wMenuSelect);
+		output::DebugPrint(DBGLoadMAPI, L"InvokeLoadMAPIMenu - got menu item %u\n", wMenuSelect);
 
 		auto hRes = S_OK;
 		MENUITEMINFOW subMenu = { 0 };
@@ -162,7 +162,7 @@ namespace dialog
 		if (subMenu.dwItemData)
 		{
 			const auto lme = reinterpret_cast<ui::LPMENUENTRY>(subMenu.dwItemData);
-			DebugPrint(DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName.c_str());
+			output::DebugPrint(DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName.c_str());
 			HMODULE hMAPI = nullptr;
 			EC_D(hMAPI, MyLoadLibraryW(lme->m_pName));
 			SetMAPIHandle(hMAPI);
@@ -173,7 +173,7 @@ namespace dialog
 
 	_Check_return_ bool CMainDlg::HandleMenu(WORD wMenuSelect)
 	{
-		DebugPrint(DBGMenu, L"CMainDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
+		output::DebugPrint(DBGMenu, L"CMainDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 		if (HandleQuickStart(wMenuSelect, this, m_hWnd)) return true;
 		if (InvokeLoadMAPIMenu(wMenuSelect)) return true;
 
@@ -399,7 +399,7 @@ namespace dialog
 		auto hRes = S_OK;
 
 		*lppMAPIProp = nullptr;
-		DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
@@ -979,7 +979,7 @@ namespace dialog
 		}
 		else
 		{
-			DebugPrint(DBGGeneric, L"MAPILogonEx call cancelled.\n");
+			output::DebugPrint(DBGGeneric, L"MAPILogonEx call cancelled.\n");
 		}
 	}
 
@@ -1173,7 +1173,7 @@ namespace dialog
 		auto hRes = S_OK;
 		WCHAR szMAPIPath[MAX_PATH] = { 0 };
 
-		DebugPrint(DBGGeneric, L"OnDisplayMAPIPath()\n");
+		output::DebugPrint(DBGGeneric, L"OnDisplayMAPIPath()\n");
 		const auto hMAPI = GetMAPIHandle();
 
 		editor::CEditor MyData(
@@ -1293,7 +1293,7 @@ namespace dialog
 				&cValues,
 				&lpOptions));
 
-			DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
+			output::DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
 
 			if (SUCCEEDED(hRes))
 			{
@@ -1358,7 +1358,7 @@ namespace dialog
 				&cValues,
 				&lpOptions));
 
-			DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
+			output::DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
 
 			if (SUCCEEDED(hRes))
 			{
@@ -1872,7 +1872,7 @@ namespace dialog
 						if (fIsSet(DBGGeneric))
 						{
 							auto szGUID = guid::GUIDToString(reinterpret_cast<LPCGUID>(&emsmdbUID));
-							DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %ws\n", szGUID.c_str());
+							output::DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %ws\n", szGUID.c_str());
 						}
 
 						WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, nullptr, 0, &lpProfSect));
@@ -1904,9 +1904,9 @@ namespace dialog
 						}
 					}
 
-					DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fPrivateExchangeStore = %d\n", fPrivateExchangeStore);
-					DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fPublicExchangeStore = %d\n", fPublicExchangeStore);
-					DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fCached = %d\n", fCached);
+					output::DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fPrivateExchangeStore = %d\n", fPrivateExchangeStore);
+					output::DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fPublicExchangeStore = %d\n", fPublicExchangeStore);
+					output::DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fCached = %d\n", fCached);
 
 					if (fCached)
 					{
@@ -1923,12 +1923,12 @@ namespace dialog
 							if (lpPathPropW && lpPathPropW->Value.lpszW)
 							{
 								wzPath = lpPathPropW->Value.lpszW;
-								DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_W = %ws\n", wzPath);
+								output::DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_W = %ws\n", wzPath);
 							}
 							else if (lpPathPropA && lpPathPropA->Value.lpszA)
 							{
 								szPath = lpPathPropA->Value.lpszA;
-								DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_A = %hs\n", szPath);
+								output::DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_A = %hs\n", szPath);
 							}
 						}
 						// If this is an Exchange store with an OST path, it's an OST, so we get the mapping signature
@@ -1958,9 +1958,9 @@ namespace dialog
 					szHash = strings::formatmessage(IDS_STOREHASHVAL, dwEIDHash);
 				}
 
-				DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n", dwEIDHash);
+				output::DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n", dwEIDHash);
 				if (dwSigHash)
-					DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n", dwSigHash);
+					output::DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n", dwSigHash);
 
 				editor::CEditor Result(
 					this,

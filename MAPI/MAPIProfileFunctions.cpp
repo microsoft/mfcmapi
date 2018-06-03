@@ -29,7 +29,7 @@ namespace mapi
 			const ULONG cchProfName = _countof(szProfName);
 			LPCSTR szServices[] = { szServiceNameToAdd.c_str(), nullptr };
 
-			DebugPrint(DBGGeneric, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
+			output::DebugPrint(DBGGeneric, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
 
 			// Call LaunchWizard to add the service.
 			WC_MAPI(LaunchWizard(
@@ -46,7 +46,7 @@ namespace mapi
 
 			if (SUCCEEDED(hRes))
 			{
-				DebugPrint(DBGGeneric, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", szProfName);
+				output::DebugPrint(DBGGeneric, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", szProfName);
 			}
 
 			return strings::LPCSTRToWstring(szProfName);
@@ -56,7 +56,7 @@ namespace mapi
 		{
 			auto hRes = S_OK;
 
-			DebugPrint(DBGGeneric, L"DisplayMAPISVCPath()\n");
+			output::DebugPrint(DBGGeneric, L"DisplayMAPISVCPath()\n");
 
 			dialog::editor::CEditor MyData(
 				pParentWnd,
@@ -274,7 +274,7 @@ namespace mapi
 		{
 			auto hRes = S_OK;
 
-			DebugPrint(DBGGeneric, L"HrSetProfileParameters()\n");
+			output::DebugPrint(DBGGeneric, L"HrSetProfileParameters()\n");
 
 			if (!lpServicesIni) return MAPI_E_INVALID_PARAMETER;
 
@@ -286,7 +286,7 @@ namespace mapi
 			}
 			else
 			{
-				DebugPrint(DBGGeneric, L"Writing to this file: \"%ws\"\n", szServicesIni.c_str());
+				output::DebugPrint(DBGGeneric, L"Writing to this file: \"%ws\"\n", szServicesIni.c_str());
 
 				// Loop through and add items to MAPISVC.INF
 				auto n = 0;
@@ -305,7 +305,7 @@ namespace mapi
 					}
 
 					// Write the item to MAPISVC.INF
-					DebugPrint(DBGGeneric, L"\tWriting: \"%ws\"::\"%ws\"::\"%ws\"\n",
+					output::DebugPrint(DBGGeneric, L"\tWriting: \"%ws\"::\"%ws\"::\"%ws\"\n",
 						lpServicesIni[n].lpszSection,
 						lpszProp.c_str(),
 						lpszValue.c_str());
@@ -402,7 +402,7 @@ namespace mapi
 
 				EC_MAPI(HrQueryAllRows(lpProviderTable, LPSPropTagArray(&pTagUID), nullptr, nullptr, 0, &lpRowSet));
 
-				if (lpRowSet) DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
+				if (lpRowSet) output::DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
 
 				if (lpRowSet && lpRowSet->cRows >= 1)
 				{
@@ -543,7 +543,7 @@ namespace mapi
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
 			LPSRowSet lpRowSet = nullptr;
 
-			DebugPrint(DBGGeneric, L"HrAddServiceToProfile(%hs,%hs)\n", lpszServiceName.c_str(), lpszProfileName.c_str());
+			output::DebugPrint(DBGGeneric, L"HrAddServiceToProfile(%hs,%hs)\n", lpszServiceName.c_str(), lpszProfileName.c_str());
 
 			if (lpszServiceName.empty() || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
@@ -596,7 +596,7 @@ namespace mapi
 						// Look for a provider without our dummy prop
 						EC_H(HrFindUnmarkedProvider(lpServiceAdmin, &lpRowSet));
 
-						if (lpRowSet) DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
+						if (lpRowSet) output::DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
 
 						// should only have one unmarked row
 						if (lpRowSet && lpRowSet->cRows == 1)
@@ -646,7 +646,7 @@ namespace mapi
 		{
 			auto hRes = S_OK;
 
-			DebugPrint(DBGGeneric, L"HrAddExchangeToProfile(%hs,%hs,%hs)\n", lpszServerName.c_str(), lpszMailboxName.c_str(), lpszProfileName.c_str());
+			output::DebugPrint(DBGGeneric, L"HrAddExchangeToProfile(%hs,%hs,%hs)\n", lpszServerName.c_str(), lpszMailboxName.c_str(), lpszProfileName.c_str());
 
 			if (lpszServerName.empty() || lpszMailboxName.empty() || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
@@ -671,7 +671,7 @@ namespace mapi
 		{
 			auto hRes = S_OK;
 
-			DebugPrint(DBGGeneric, L"HrAddPSTToProfile(0x%X,%ws,%hs,0x%X,%hs)\n", bUnicodePST, lpszPSTPath.c_str(), lpszProfileName.c_str(), bPasswordSet, lpszPassword.c_str());
+			output::DebugPrint(DBGGeneric, L"HrAddPSTToProfile(0x%X,%ws,%hs,0x%X,%hs)\n", bUnicodePST, lpszPSTPath.c_str(), lpszProfileName.c_str(), bPasswordSet, lpszPassword.c_str());
 
 			if (lpszPSTPath.empty() || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
@@ -700,7 +700,7 @@ namespace mapi
 			auto hRes = S_OK;
 			LPPROFADMIN lpProfAdmin = nullptr;
 
-			DebugPrint(DBGGeneric, L"HrCreateProfile(%hs)\n", lpszProfileName.c_str());
+			output::DebugPrint(DBGGeneric, L"HrCreateProfile(%hs)\n", lpszProfileName.c_str());
 
 			if (lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
@@ -733,7 +733,7 @@ namespace mapi
 			auto hRes = S_OK;
 			LPPROFADMIN lpProfAdmin = nullptr;
 
-			DebugPrint(DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName.c_str());
+			output::DebugPrint(DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName.c_str());
 			if (lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -756,7 +756,7 @@ namespace mapi
 			auto hRes = S_OK;
 			LPPROFADMIN lpProfAdmin = nullptr;
 
-			DebugPrint(DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName.c_str());
+			output::DebugPrint(DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName.c_str());
 			if (lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -787,7 +787,7 @@ namespace mapi
 			PR_DISPLAY_NAME_A
 			};
 
-			DebugPrint(DBGGeneric, L"HrMAPIProfileExists()\n");
+			output::DebugPrint(DBGGeneric, L"HrMAPIProfileExists()\n");
 			if (!lpProfAdmin || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			// Get a table of existing profiles
@@ -867,7 +867,7 @@ namespace mapi
 			LPPROFADMIN lpProfAdmin = nullptr;
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
 
-			DebugPrint(DBGGeneric, L"GetProfileServiceVersion(%hs)\n", lpszProfileName.c_str());
+			output::DebugPrint(DBGGeneric, L"GetProfileServiceVersion(%hs)\n", lpszProfileName.c_str());
 
 			EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
@@ -908,9 +908,9 @@ namespace mapi
 						PR_PROFILE_SERVER_FULL_VERSION == lpServerFullVersion->ulPropTag &&
 						sizeof(EXCHANGE_STORE_VERSION_NUM) == lpServerFullVersion->Value.bin.cb)
 					{
-						DebugPrint(DBGGeneric, L"PR_PROFILE_SERVER_FULL_VERSION = ");
-						DebugPrintBinary(DBGGeneric, lpServerFullVersion->Value.bin);
-						DebugPrint(DBGGeneric, L"\n");
+						output::DebugPrint(DBGGeneric, L"PR_PROFILE_SERVER_FULL_VERSION = ");
+						output::DebugPrintBinary(DBGGeneric, lpServerFullVersion->Value.bin);
+						output::DebugPrint(DBGGeneric, L"\n");
 
 						memcpy(lpStoreVersion, lpServerFullVersion->Value.bin.lpb, sizeof(EXCHANGE_STORE_VERSION_NUM));
 						*lpbFoundServerFullVersion = true;
@@ -939,7 +939,7 @@ namespace mapi
 			auto hRes = S_OK;
 			LPPROFADMIN lpProfAdmin = nullptr;
 
-			DebugPrint(DBGGeneric, L"HrCopyProfile(%hs, %hs)\n", lpszOldProfileName.c_str(), lpszNewProfileName.c_str());
+			output::DebugPrint(DBGGeneric, L"HrCopyProfile(%hs, %hs)\n", lpszOldProfileName.c_str(), lpszNewProfileName.c_str());
 			if (lpszOldProfileName.empty() || lpszNewProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -968,9 +968,9 @@ namespace mapi
 
 			if (!lpServiceUID || !lpServiceAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
 
-			DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
-			DebugPrintBinary(DBGOpenItemProp, *lpServiceUID);
-			DebugPrint(DBGOpenItemProp, L"\n");
+			output::DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
+			output::DebugPrintBinary(DBGOpenItemProp, *lpServiceUID);
+			output::DebugPrint(DBGOpenItemProp, L"\n");
 
 			// First, we try the normal way of opening the profile section:
 			WC_MAPI(lpServiceAdmin->OpenProfileSection(
@@ -1022,9 +1022,9 @@ namespace mapi
 			if (lppProfSect) *lppProfSect = nullptr;
 			if (!lpProviderUID || !lpProviderAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
 
-			DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
-			DebugPrintBinary(DBGOpenItemProp, *lpProviderUID);
-			DebugPrint(DBGOpenItemProp, L"\n");
+			output::DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
+			output::DebugPrintBinary(DBGOpenItemProp, *lpProviderUID);
+			output::DebugPrint(DBGOpenItemProp, L"\n");
 
 			WC_MAPI(lpProviderAdmin->OpenProfileSection(
 				reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb),

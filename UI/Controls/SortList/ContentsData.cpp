@@ -42,7 +42,7 @@ namespace controls
 				PR_ATTACH_NUM);
 			if (lpProp && PR_ATTACH_NUM == lpProp->ulPropTag)
 			{
-				DebugPrint(DBGGeneric, L"\tPR_ATTACH_NUM = %d\n", lpProp->Value.l);
+				output::DebugPrint(DBGGeneric, L"\tPR_ATTACH_NUM = %d\n", lpProp->Value.l);
 				m_ulAttachNum = lpProp->Value.l;
 			}
 
@@ -52,7 +52,7 @@ namespace controls
 				PR_ATTACH_METHOD);
 			if (lpProp && PR_ATTACH_METHOD == lpProp->ulPropTag)
 			{
-				DebugPrint(DBGGeneric, L"\tPR_ATTACH_METHOD = %d\n", lpProp->Value.l);
+				output::DebugPrint(DBGGeneric, L"\tPR_ATTACH_METHOD = %d\n", lpProp->Value.l);
 				m_ulAttachMethod = lpProp->Value.l;
 			}
 
@@ -63,7 +63,7 @@ namespace controls
 				PR_ROWID);
 			if (lpProp && PR_ROWID == lpProp->ulPropTag)
 			{
-				DebugPrint(DBGGeneric, L"\tPR_ROWID = %d\n", lpProp->Value.l);
+				output::DebugPrint(DBGGeneric, L"\tPR_ROWID = %d\n", lpProp->Value.l);
 				m_ulRowID = lpProp->Value.l;
 			}
 
@@ -74,7 +74,7 @@ namespace controls
 				PR_ROW_TYPE);
 			if (lpProp && PR_ROW_TYPE == lpProp->ulPropTag)
 			{
-				DebugPrint(DBGGeneric, L"\tPR_ROW_TYPE = %d\n", lpProp->Value.l);
+				output::DebugPrint(DBGGeneric, L"\tPR_ROW_TYPE = %d\n", lpProp->Value.l);
 				m_ulRowType = lpProp->Value.l;
 			}
 
@@ -140,7 +140,7 @@ namespace controls
 			if (mapi::CheckStringProp(lpProp, PT_STRING8))
 			{
 				m_szProfileDisplayName = lpProp->Value.lpszA;
-				DebugPrint(DBGGeneric, L"\tPR_DISPLAY_NAME_A = %hs\n", m_szProfileDisplayName.c_str());
+				output::DebugPrint(DBGGeneric, L"\tPR_DISPLAY_NAME_A = %hs\n", m_szProfileDisplayName.c_str());
 			}
 
 			// Save the e-mail address (if it exists on the object) into lpData
@@ -151,7 +151,7 @@ namespace controls
 			if (mapi::CheckStringProp(lpProp, PT_TSTRING))
 			{
 				m_szDN = strings::LPCTSTRToWstring(lpProp->Value.LPSZ);
-				DebugPrint(DBGGeneric, L"\tPR_EMAIL_ADDRESS = %ws\n", m_szDN.c_str());
+				output::DebugPrint(DBGGeneric, L"\tPR_EMAIL_ADDRESS = %ws\n", m_szDN.c_str());
 			}
 		}
 

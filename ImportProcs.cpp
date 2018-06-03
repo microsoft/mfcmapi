@@ -86,15 +86,15 @@ _Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName)
 {
 	HMODULE hMod = nullptr;
 	auto hRes = S_OK;
-	DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - loading \"%ws\"\n", lpszLibFileName.c_str());
+	output::DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - loading \"%ws\"\n", lpszLibFileName.c_str());
 	WC_D(hMod, LoadLibraryW(lpszLibFileName.c_str()));
 	if (hMod)
 	{
-		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" loaded at %p\n", lpszLibFileName.c_str(), hMod);
+		output::DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" loaded at %p\n", lpszLibFileName.c_str(), hMod);
 	}
 	else
 	{
-		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" failed to load\n", lpszLibFileName.c_str());
+		output::DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" failed to load\n", lpszLibFileName.c_str());
 	}
 
 	return hMod;
@@ -131,7 +131,7 @@ _Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
 	static WCHAR szSystemDir[MAX_PATH] = { 0 };
 	static auto bSystemDirLoaded = false;
 
-	DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
+	output::DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
 
 	if (!bSystemDirLoaded)
 	{
@@ -140,7 +140,7 @@ _Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
 	}
 
 	szDLLPath = std::wstring(szSystemDir) + L"\\" + szDLLName;
-	DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
+	output::DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
 	hModRet = MyLoadLibraryW(szDLLPath);
 
 	return hModRet;
@@ -150,7 +150,7 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring&  szDLLName)
 {
 	HMODULE hModRet = nullptr;
 
-	DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading \"%ws\"\n", szDLLName.c_str());
+	output::DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading \"%ws\"\n", szDLLName.c_str());
 
 	for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
 	{
@@ -167,7 +167,7 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring&  szDLLName)
 			{
 				auto szFullPath = std::wstring(szDrive) + std::wstring(szMAPIPath) + szDLLName;
 
-				DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
+				output::DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
 				WC_D(hModRet, MyLoadLibraryW(szFullPath));
 			}
 		}
@@ -198,7 +198,7 @@ _Check_return_ HKEY GetMailKey(_In_ const std::wstring& szClient)
 {
 	std::wstring lpszClient = L"Default";
 	if (!szClient.empty()) lpszClient = szClient;
-	DebugPrint(DBGLoadLibrary, L"Enter GetMailKey(%ws)\n", lpszClient.c_str());
+	output::DebugPrint(DBGLoadLibrary, L"Enter GetMailKey(%ws)\n", lpszClient.c_str());
 	auto hRes = S_OK;
 	HKEY hMailKey = nullptr;
 
@@ -220,7 +220,7 @@ _Check_return_ HKEY GetMailKey(_In_ const std::wstring& szClient)
 			if (!lpszReg.empty())
 			{
 				lpszClient = lpszReg;
-				DebugPrint(DBGLoadLibrary, L"Default MAPI = %ws\n", lpszClient.c_str());
+				output::DebugPrint(DBGLoadLibrary, L"Default MAPI = %ws\n", lpszClient.c_str());
 			}
 
 			EC_W32(RegCloseKey(hDefaultMailKey));
@@ -249,19 +249,19 @@ _Check_return_ HKEY GetMailKey(_In_ const std::wstring& szClient)
 // Pass empty string to get the IDs for the default MAPI client
 void GetMapiMsiIds(_In_ const std::wstring& szClient, _In_ std::wstring& lpszComponentID, _In_ std::wstring& lpszAppLCID, _In_ std::wstring& lpszOfficeLCID)
 {
-	DebugPrint(DBGLoadLibrary, L"GetMapiMsiIds(%ws)\n", szClient.c_str());
+	output::DebugPrint(DBGLoadLibrary, L"GetMapiMsiIds(%ws)\n", szClient.c_str());
 
 	const auto hKey = GetMailKey(szClient);
 	if (hKey)
 	{
 		lpszComponentID = ReadStringFromRegistry(hKey, L"MSIComponentID"); // STRING_OK
-		DebugPrint(DBGLoadLibrary, L"MSIComponentID = %ws\n", !lpszComponentID.empty() ? lpszComponentID.c_str() : L"<not found>");
+		output::DebugPrint(DBGLoadLibrary, L"MSIComponentID = %ws\n", !lpszComponentID.empty() ? lpszComponentID.c_str() : L"<not found>");
 
 		lpszAppLCID = ReadStringFromRegistry(hKey, L"MSIApplicationLCID"); // STRING_OK
-		DebugPrint(DBGLoadLibrary, L"MSIApplicationLCID = %ws\n", !lpszAppLCID.empty() ? lpszAppLCID.c_str() : L"<not found>");
+		output::DebugPrint(DBGLoadLibrary, L"MSIApplicationLCID = %ws\n", !lpszAppLCID.empty() ? lpszAppLCID.c_str() : L"<not found>");
 
 		lpszOfficeLCID = ReadStringFromRegistry(hKey, L"MSIOfficeLCID"); // STRING_OK
-		DebugPrint(DBGLoadLibrary, L"MSIOfficeLCID = %ws\n", !lpszOfficeLCID.empty() ? lpszOfficeLCID.c_str() : L"<not found>");
+		output::DebugPrint(DBGLoadLibrary, L"MSIOfficeLCID = %ws\n", !lpszOfficeLCID.empty() ? lpszOfficeLCID.c_str() : L"<not found>");
 		auto hRes = S_OK;
 
 		EC_W32(RegCloseKey(hKey));

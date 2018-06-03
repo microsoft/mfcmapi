@@ -109,13 +109,13 @@ namespace dialog
 
 			if (m_lpMessage)
 			{
-				DebugPrint(DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", m_lpMessage, MyData.GetHex(0));
+				output::DebugPrint(DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", m_lpMessage, MyData.GetHex(0));
 				EC_MAPI(RTFSync(
 					m_lpMessage,
 					MyData.GetHex(0),
 					&bMessageUpdated));
 
-				DebugPrint(DBGGeneric, L"RTFSync returned %d\n", bMessageUpdated);
+				output::DebugPrint(DBGGeneric, L"RTFSync returned %d\n", bMessageUpdated);
 
 				EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
@@ -131,7 +131,7 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			DebugPrint(DBGGeneric, L"Editing body on %p\n", m_lpMessage);
+			output::DebugPrint(DBGGeneric, L"Editing body on %p\n", m_lpMessage);
 
 			editor::CStreamEditor MyEditor(
 				this,
@@ -161,7 +161,7 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			DebugPrint(DBGGeneric, L"Testing HTML on %p\n", m_lpMessage);
+			output::DebugPrint(DBGGeneric, L"Testing HTML on %p\n", m_lpMessage);
 
 			editor::CStreamEditor MyEditor(
 				this,
@@ -191,7 +191,7 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			DebugPrint(DBGGeneric, L"Testing body on %p\n", m_lpMessage);
+			output::DebugPrint(DBGGeneric, L"Testing body on %p\n", m_lpMessage);
 
 			editor::CStreamEditor MyEditor(
 				this,
@@ -221,7 +221,7 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			DebugPrint(DBGGeneric, L"Saving changes on %p\n", m_lpMessage);
+			output::DebugPrint(DBGGeneric, L"Saving changes on %p\n", m_lpMessage);
 
 			EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 

@@ -267,7 +267,7 @@ namespace ui
 
 		auto szNewString = strings::loadstring(uidNewString);
 
-		DebugPrint(DBGMenu, L"UpdateMenuString: Changing menu item 0x%X on window %p to \"%ws\"\n", uiMenuTag, hWnd, szNewString.c_str());
+		output::DebugPrint(DBGMenu, L"UpdateMenuString: Changing menu item 0x%X on window %p to \"%ws\"\n", uiMenuTag, hWnd, szNewString.c_str());
 		const auto hMenu = GetMenu(hWnd);
 		if (!hMenu) return;
 
@@ -610,7 +610,7 @@ namespace ui
 		bool bBold,
 		_In_ UINT format)
 	{
-		DebugPrint(DBGDraw, L"Draw %d, \"%ws\"\n", rc.right - rc.left, lpchText.c_str());
+		output::DebugPrint(DBGDraw, L"Draw %d, \"%ws\"\n", rc.right - rc.left, lpchText.c_str());
 		const auto hfontOld = SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
 		const auto crText = SetTextColor(hdc, color);
 		SetBkMode(hdc, TRANSPARENT);
@@ -1436,7 +1436,7 @@ namespace ui
 			SelectObject(hdc, hfontOld);
 			ReleaseDC(nullptr, hdc);
 
-			DebugPrint(DBGDraw, L"Measure %d, \"%ws\"\n",
+			output::DebugPrint(DBGDraw, L"Measure %d, \"%ws\"\n",
 				lpMeasureItemStruct->itemWidth,
 				szText.c_str());
 		}
@@ -1465,7 +1465,7 @@ namespace ui
 		const auto bHot = (lpDrawItemStruct->itemState & (ODS_HOTLIGHT | ODS_SELECTED)) != 0;
 		const auto bDisabled = (lpDrawItemStruct->itemState & (ODS_GRAYED | ODS_DISABLED)) != 0;
 
-		DebugPrint(DBGDraw, L"DrawMenu %d, \"%ws\"\n",
+		output::DebugPrint(DBGDraw, L"DrawMenu %d, \"%ws\"\n",
 			lpDrawItemStruct->rcItem.right - lpDrawItemStruct->rcItem.left,
 			lpMenuEntry->m_pName.c_str());
 
@@ -1521,7 +1521,7 @@ namespace ui
 			else
 				rcText.left += GetSystemMetrics(SM_CXEDGE);
 
-			DebugPrint(DBGDraw, L"DrawMenu text %d, \"%ws\"\n",
+			output::DebugPrint(DBGDraw, L"DrawMenu text %d, \"%ws\"\n",
 				rcText.right - rcText.left,
 				lpMenuEntry->m_pName.c_str());
 

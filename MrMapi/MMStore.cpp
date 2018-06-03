@@ -190,7 +190,7 @@ void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 		&cValues,
 		&lpAllProps));
 
-	_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
+	output::_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
 	MAPIFreeBuffer(lpAllProps);
 }
@@ -200,7 +200,7 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 	auto hRes = S_OK;
 	if (!lpMAPIProp) return;
 
-	wprintf(g_szXMLHeader.c_str());
+	wprintf(output::g_szXMLHeader.c_str());
 	wprintf(L"<%ws>\n", szObjType.c_str());
 
 	LPSPropValue lpAllProps = nullptr;
@@ -233,7 +233,7 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 	{
 		wprintf(L"<properties>\n");
 
-		_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
+		output::_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
 		wprintf(L"</properties>\n");
 
@@ -269,7 +269,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 	LPMAPITABLE lpStoreTable = nullptr;
 	if (!lpMAPISession) return;
 
-	wprintf(g_szXMLHeader.c_str());
+	wprintf(output::g_szXMLHeader.c_str());
 	wprintf(L"<storetable>\n");
 	WC_MAPI(lpMAPISession->GetMsgStoresTable(0, &lpStoreTable));
 
@@ -313,7 +313,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 					}
 					else
 					{
-						_OutputProperties(DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
+						output::_OutputProperties(DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
 					}
 
 					wprintf(L"</properties>\n");

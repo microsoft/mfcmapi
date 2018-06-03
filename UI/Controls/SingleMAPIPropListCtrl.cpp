@@ -224,7 +224,7 @@ namespace controls
 
 		_Check_return_ bool CSingleMAPIPropListCtrl::HandleMenu(WORD wMenuSelect)
 		{
-			DebugPrint(DBGMenu, L"CSingleMAPIPropListCtrl::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
+			output::DebugPrint(DBGMenu, L"CSingleMAPIPropListCtrl::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 			switch (wMenuSelect)
 			{
 			case ID_COPY_PROPERTY: OnCopyProperty(); return true;
@@ -267,7 +267,7 @@ namespace controls
 
 			if (lpPropTag)
 			{
-				DebugPrintEx(DBGGeneric, CLASS, L"GetSelectedPropTag", L"returning lpPropTag = 0x%X\n", *lpPropTag);
+				output::DebugPrintEx(DBGGeneric, CLASS, L"GetSelectedPropTag", L"returning lpPropTag = 0x%X\n", *lpPropTag);
 			}
 		}
 
@@ -505,7 +505,7 @@ namespace controls
 			// lpMappingSig might come from lpPropsToAdd, so don't free this until here
 			m_lpPropBag->FreeBuffer(lpPropsToAdd);
 
-			DebugPrintEx(DBGGeneric, CLASS, L"LoadMAPIPropList", L"added %u properties\n", ulCurListBoxRow);
+			output::DebugPrintEx(DBGGeneric, CLASS, L"LoadMAPIPropList", L"added %u properties\n", ulCurListBoxRow);
 
 			SortClickedColumn();
 
@@ -516,7 +516,7 @@ namespace controls
 		_Check_return_ HRESULT CSingleMAPIPropListCtrl::RefreshMAPIPropList()
 		{
 			auto hRes = S_OK;
-			DebugPrintEx(DBGGeneric, CLASS, L"RefreshMAPIPropList", L"\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"RefreshMAPIPropList", L"\n");
 
 			// Turn off redraw while we work on the window
 			MySetRedraw(false);
@@ -547,7 +547,7 @@ namespace controls
 			auto hRes = S_OK;
 			SPropTagArray sptSingleProp;
 
-			DebugPrintEx(DBGGeneric, CLASS, L"AddPropToExtraProps", L"adding proptag 0x%X\n", ulPropTag);
+			output::DebugPrintEx(DBGGeneric, CLASS, L"AddPropToExtraProps", L"adding proptag 0x%X\n", ulPropTag);
 
 			// Cache this proptag so we continue to request it in this view
 			// We've got code to refresh any props cached in m_sptExtraProps...let's add to that.
@@ -565,7 +565,7 @@ namespace controls
 			auto hRes = S_OK;
 			LPSPropTagArray lpNewExtraProps = nullptr;
 
-			DebugPrintEx(DBGGeneric, CLASS, L"AddPropsToExtraProps", L"adding prop array %p\n", lpPropsToAdd);
+			output::DebugPrintEx(DBGGeneric, CLASS, L"AddPropsToExtraProps", L"adding prop array %p\n", lpPropsToAdd);
 
 			EC_H(mapi::ConcatSPropTagArrays(
 				m_sptExtraProps,
@@ -712,7 +712,7 @@ namespace controls
 
 		_Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ sortlistdata::SortListData* lpListData, bool bIsAB)
 		{
-			DebugPrintEx(DBGGeneric, CLASS, L"SetDataSource", L"setting new data source\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"SetDataSource", L"setting new data source\n");
 
 			propertybag::LPMAPIPROPERTYBAG lpNewPropBag = nullptr;
 			if (lpMAPIProp)
@@ -733,7 +733,7 @@ namespace controls
 		_Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ propertybag::LPMAPIPROPERTYBAG lpPropBag, bool bIsAB)
 		{
 			auto hRes = S_OK;
-			DebugPrintEx(DBGGeneric, CLASS, L"SetDataSource", L"setting new data source\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"SetDataSource", L"setting new data source\n");
 
 			// if nothing to do...do nothing
 			if (lpPropBag && lpPropBag->IsEqual(m_lpPropBag))
@@ -787,35 +787,35 @@ namespace controls
 				this);
 			if (!szFileName.empty())
 			{
-				const auto fProps = MyOpenFile(szFileName, true);
+				const auto fProps = output::MyOpenFile(szFileName, true);
 				if (fProps)
 				{
-					DebugPrintEx(DBGGeneric, CLASS, L"SavePropsToXML", L"saving to %ws\n", szFileName.c_str());
+					output::DebugPrintEx(DBGGeneric, CLASS, L"SavePropsToXML", L"saving to %ws\n", szFileName.c_str());
 
 					// Force a sort on the tag column to make output consistent
 					FakeClickColumn(pcPROPTAG, false);
 
 					const auto iItemCount = GetItemCount();
 
-					OutputToFile(fProps, g_szXMLHeader);
-					OutputToFile(fProps, L"<propertypane>\n");
+					output::OutputToFile(fProps, output::g_szXMLHeader);
+					output::OutputToFile(fProps, L"<propertypane>\n");
 					for (auto iRow = 0; iRow < iItemCount; iRow++)
 					{
 						auto szTemp1 = GetItemText(iRow, pcPROPTAG);
 						auto szTemp2 = GetItemText(iRow, pcPROPTYPE);
-						OutputToFilef(fProps, L"\t<property tag = \"%ws\" type = \"%ws\">\n", szTemp1.c_str(), szTemp2.c_str());
+						output::OutputToFilef(fProps, L"\t<property tag = \"%ws\" type = \"%ws\">\n", szTemp1.c_str(), szTemp2.c_str());
 
 						szTemp1 = GetItemText(iRow, pcPROPBESTGUESS);
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPBESTGUESS].uidName, szTemp1, false, 2);
+						output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPBESTGUESS].uidName, szTemp1, false, 2);
 
 						szTemp1 = GetItemText(iRow, pcPROPOTHERNAMES);
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPOTHERNAMES].uidName, szTemp1, false, 2);
+						output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPOTHERNAMES].uidName, szTemp1, false, 2);
 
 						szTemp1 = GetItemText(iRow, pcPROPNAMEDIID);
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDIID].uidName, szTemp1, false, 2);
+						output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDIID].uidName, szTemp1, false, 2);
 
 						szTemp1 = GetItemText(iRow, pcPROPNAMEDNAME);
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDNAME].uidName, szTemp1, false, 2);
+						output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDNAME].uidName, szTemp1, false, 2);
 
 						const auto lpListData = reinterpret_cast<sortlistdata::SortListData*>(GetItemData(iRow));
 						auto ulPropType = PT_NULL;
@@ -830,41 +830,41 @@ namespace controls
 						{
 						case PT_STRING8:
 						case PT_UNICODE:
-							OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, true, 2);
-							OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
+							output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, true, 2);
+							output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
 							break;
 						case PT_BINARY:
-							OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
-							OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, true, 2);
+							output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
+							output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, true, 2);
 							break;
 						default:
-							OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
-							OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
+							output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
+							output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
 							break;
 						}
 
 						szTemp1 = GetItemText(iRow, pcPROPSMARTVIEW);
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPSMARTVIEW].uidName, szTemp1, true, 2);
+						output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPSMARTVIEW].uidName, szTemp1, true, 2);
 
-						OutputToFile(fProps, L"\t</property>\n");
+						output::OutputToFile(fProps, L"\t</property>\n");
 					}
 
-					OutputToFile(fProps, L"</propertypane>");
-					CloseFile(fProps);
+					output::OutputToFile(fProps, L"</propertypane>");
+					output::CloseFile(fProps);
 				}
 			}
 		}
 
 		void CSingleMAPIPropListCtrl::OnDblclk(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
 		{
-			DebugPrintEx(DBGGeneric, CLASS, L"OnDblclk", L"calling OnEditProp\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"OnDblclk", L"calling OnEditProp\n");
 			OnEditProp();
 			*pResult = 0;
 		}
 
 		void CSingleMAPIPropListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		{
-			DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
+			output::DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
 
 			auto hRes = S_OK;
 			const auto bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
@@ -905,12 +905,12 @@ namespace controls
 				{
 					if (!bCtrlPressed)
 					{
-						DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"calling OnEditProp\n");
+						output::DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"calling OnEditProp\n");
 						OnEditProp();
 					}
 					else
 					{
-						DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"calling OnOpenProperty\n");
+						output::DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"calling OnOpenProperty\n");
 						OnOpenProperty();
 					}
 				}
@@ -943,7 +943,7 @@ namespace controls
 			if (!m_lpPropBag) return;
 
 			// Exchange can return MAPI_E_NOT_ENOUGH_MEMORY when I call this - give it a try - PSTs support it
-			DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Calling GetIDsFromNames with a NULL\n");
+			output::DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Calling GetIDsFromNames with a NULL\n");
 			LPSPropTagArray lptag = nullptr;
 			WC_H(cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(),
 				NULL,
@@ -960,7 +960,7 @@ namespace controls
 			else
 			{
 				hRes = S_OK;
-				DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Exchange didn't support GetIDsFromNames(NULL).\n");
+				output::DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Exchange didn't support GetIDsFromNames(NULL).\n");
 
 #define __LOWERBOUND 0x8000
 #define __UPPERBOUNDDEFAULT 0x8FFF
@@ -983,7 +983,7 @@ namespace controls
 					const auto ulLowerBound = MyData.GetHex(0);
 					const auto ulUpperBound = MyData.GetHex(1);
 
-					DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Walking through all IDs from 0x%X to 0x%X, looking for mappings to names\n", ulLowerBound, ulUpperBound);
+					output::DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Walking through all IDs from 0x%X to 0x%X, looking for mappings to names\n", ulLowerBound, ulUpperBound);
 					if (ulLowerBound < __LOWERBOUND)
 					{
 						error::ErrDialog(__FILE__, __LINE__, IDS_EDLOWERBOUNDTOOLOW, ulLowerBound, __LOWERBOUND);
@@ -1019,7 +1019,7 @@ namespace controls
 								&lppPropNames));
 							if (S_OK == hRes && ulPropNames == 1 && lppPropNames && *lppPropNames)
 							{
-								DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Found an ID with a name (0x%X). Adding to extra prop list.\n", iTag);
+								output::DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Found an ID with a name (0x%X). Adding to extra prop list.\n", iTag);
 								EC_H(AddPropToExtraProps(PROP_TAG(NULL, iTag), false));
 							}
 							MAPIFreeBuffer(lppPropNames);
@@ -1037,7 +1037,7 @@ namespace controls
 		{
 			if (!m_lpPropBag) return;
 
-			DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Searching for the highest named prop mapping\n");
+			output::DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Searching for the highest named prop mapping\n");
 
 			auto hRes = S_OK;
 			ULONG ulLower = 0x8000;
@@ -1069,14 +1069,14 @@ namespace controls
 					// Avoid NameIDToStrings call if we're not debug printing
 					if (fIsSet(DBGNamedProp))
 					{
-						DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Found a named property at 0x%04X.\n", ulCurrent);
+						output::DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Found a named property at 0x%04X.\n", ulCurrent);
 						auto namePropNames = cache::NameIDToStrings(
 							tag.aulPropTag[0],
 							nullptr,
 							lppPropNames[0],
 							nullptr,
 							false);
-						DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Name = %ws, GUID = %ws\n", namePropNames.name.c_str(), namePropNames.guid.c_str());
+						output::DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Name = %ws, GUID = %ws\n", namePropNames.name.c_str(), namePropNames.guid.c_str());
 					}
 
 					ulHighestKnown = ulCurrent;
@@ -1112,7 +1112,7 @@ namespace controls
 					&lppPropNames));
 				if (S_OK == hRes && ulPropNames == 1 && lppPropNames && *lppPropNames)
 				{
-					DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Found a named property at 0x%04X.\n", ulCurrent);
+					output::DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Found a named property at 0x%04X.\n", ulCurrent);
 					ulHighestKnown = ulCurrent;
 				}
 
@@ -1164,7 +1164,7 @@ namespace controls
 			WC_H(Query.DisplayDialog());
 			if (S_OK == hRes)
 			{
-				DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteProperty", L"deleting property 0x%08X\n", ulPropTag);
+				output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteProperty", L"deleting property 0x%08X\n", ulPropTag);
 
 				EC_H(m_lpPropBag->DeleteProp(ulPropTag));
 
@@ -1184,7 +1184,7 @@ namespace controls
 			GetSelectedPropTag(&ulPropTag);
 			if (!ulPropTag) return;
 
-			DebugPrintEx(DBGGeneric, CLASS, L"OnDisplayPropertyAsSecurityDescriptorPropSheet", L"interpreting 0x%X as Security Descriptor\n", ulPropTag);
+			output::DebugPrintEx(DBGGeneric, CLASS, L"OnDisplayPropertyAsSecurityDescriptorPropSheet", L"interpreting 0x%X as Security Descriptor\n", ulPropTag);
 
 			auto MySecInfo = new (std::nothrow) mapi::mapiui::CMySecInfo(m_lpPropBag->GetMAPIProp(), ulPropTag);
 
@@ -1224,8 +1224,8 @@ namespace controls
 				lpResIn = reinterpret_cast<LPSRestriction>(lpEditProp->Value.lpszA);
 			}
 
-			DebugPrint(DBGGeneric, L"Source restriction before editing:\n");
-			DebugPrintRestriction(DBGGeneric, lpResIn, m_lpPropBag->GetMAPIProp());
+			output::DebugPrint(DBGGeneric, L"Source restriction before editing:\n");
+			output::DebugPrintRestriction(DBGGeneric, lpResIn, m_lpPropBag->GetMAPIProp());
 			dialog::editor::CRestrictEditor MyResEditor(
 				this,
 				nullptr, // No alloc parent - we must MAPIFreeBuffer the result
@@ -1237,8 +1237,8 @@ namespace controls
 				const auto lpModRes = MyResEditor.DetachModifiedSRestriction();
 				if (lpModRes)
 				{
-					DebugPrint(DBGGeneric, L"Modified restriction:\n");
-					DebugPrintRestriction(DBGGeneric, lpModRes, m_lpPropBag->GetMAPIProp());
+					output::DebugPrint(DBGGeneric, L"Modified restriction:\n");
+					output::DebugPrintRestriction(DBGGeneric, lpModRes, m_lpPropBag->GetMAPIProp());
 
 					// need to merge the data we got back from the CRestrictEditor with our current prop set
 					// so that we can free lpModRes
@@ -1269,7 +1269,7 @@ namespace controls
 			// Explicit check since TagToString is expensive
 			if (fIsSet(DBGGeneric))
 			{
-				DebugPrintEx(DBGGeneric, CLASS, L"OnEditGivenProp", L"editing property 0x%X (= %ws)\n",
+				output::DebugPrintEx(DBGGeneric, CLASS, L"OnEditGivenProp", L"editing property 0x%X (= %ws)\n",
 					ulPropTag,
 					interpretprop::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(),
 						m_bIsAB,
@@ -1374,7 +1374,7 @@ namespace controls
 			// Explicit check since TagToString is expensive
 			if (fIsSet(DBGGeneric))
 			{
-				DebugPrintEx(DBGGeneric, CLASS, L"OnEditPropAsStream", L"editing property 0x%X (= %ws) as stream, ulType = 0x%08X, bEditAsRTF = 0x%X\n",
+				output::DebugPrintEx(DBGGeneric, CLASS, L"OnEditPropAsStream", L"editing property 0x%X (= %ws) as stream, ulType = 0x%08X, bEditAsRTF = 0x%X\n",
 					ulPropTag,
 					interpretprop::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str(),
 					ulType,
@@ -1631,7 +1631,7 @@ namespace controls
 			GetSelectedPropTag(&ulPropTag);
 			if (!ulPropTag) return;
 
-			DebugPrintEx(DBGGeneric, CLASS, L"OnOpenProperty", L"asked to open 0x%X\n", ulPropTag);
+			output::DebugPrintEx(DBGGeneric, CLASS, L"OnOpenProperty", L"asked to open 0x%X\n", ulPropTag);
 			LPSPropValue lpProp = nullptr;
 			if (m_lpPropBag)
 			{
@@ -1653,14 +1653,14 @@ namespace controls
 					switch (PROP_TYPE(lpProp->ulPropTag))
 					{
 					case PT_BINARY:
-						DebugPrintEx(DBGGeneric, CLASS, L"OnOpenProperty", L"property is PT_BINARY\n");
+						output::DebugPrintEx(DBGGeneric, CLASS, L"OnOpenProperty", L"property is PT_BINARY\n");
 						m_lpHostDlg->OnOpenEntryID(&lpProp->Value.bin);
 						break;
 					case PT_MV_BINARY:
-						DebugPrintEx(DBGGeneric, CLASS, L"OnOpenProperty", L"property is PT_MV_BINARY\n");
+						output::DebugPrintEx(DBGGeneric, CLASS, L"OnOpenProperty", L"property is PT_MV_BINARY\n");
 						if (S_OK == hRes && lpProp && PT_MV_BINARY == PROP_TYPE(lpProp->ulPropTag))
 						{
-							DebugPrintEx(DBGGeneric, CLASS, L"OnOpenProperty", L"opened MV structure. There are 0x%X binaries in it.\n", lpProp->Value.MVbin.cValues);
+							output::DebugPrintEx(DBGGeneric, CLASS, L"OnOpenProperty", L"opened MV structure. There are 0x%X binaries in it.\n", lpProp->Value.MVbin.cValues);
 							for (ULONG i = 0; i < lpProp->Value.MVbin.cValues; i++)
 							{
 								m_lpHostDlg->OnOpenEntryID(&lpProp->Value.MVbin.lpbin[i]);

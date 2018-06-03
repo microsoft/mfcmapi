@@ -57,7 +57,7 @@ namespace mapi
 		{
 			auto hRes = S_OK;
 
-			DebugPrintNotifications(DBGNotify, cNotify, lpNotifications, m_lpAdviseTarget);
+			output::DebugPrintNotifications(DBGNotify, cNotify, lpNotifications, m_lpAdviseTarget);
 
 			if (!m_hWndParent) return 0;
 

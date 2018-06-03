@@ -82,7 +82,7 @@ namespace viewpane
 
 		*pcb = 0;
 
-		DebugPrint(DBGStream, L"EditStreamReadCallBack: cb = %d\n", cb);
+		output::DebugPrint(DBGStream, L"EditStreamReadCallBack: cb = %d\n", cb);
 
 		const auto cbTemp = cb / 2;
 		ULONG cbTempRead = 0;
@@ -91,7 +91,7 @@ namespace viewpane
 		if (pbTempBuff)
 		{
 			EC_MAPI(stmData->Read(pbTempBuff, cbTemp, &cbTempRead));
-			DebugPrint(DBGStream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
+			output::DebugPrint(DBGStream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
 
 			memset(pbBuff, 0, cbTempRead * 2);
 			ULONG iBinPos = 0;
@@ -299,7 +299,7 @@ namespace viewpane
 
 		// read the 'text stream' into control
 		const auto lBytesRead = m_EditBox.StreamIn(SF_TEXT | SF_UNICODE, es);
-		DebugPrintEx(DBGStream, CLASS, L"SetEditBoxText", L"read %d bytes from the stream\n", lBytesRead);
+		output::DebugPrintEx(DBGStream, CLASS, L"SetEditBoxText", L"read %d bytes from the stream\n", lBytesRead);
 
 		// Clear the modify bit so this stream appears untouched
 		m_EditBox.SetModify(false);
@@ -447,7 +447,7 @@ namespace viewpane
 
 		// read the 'text' stream into control
 		const auto lBytesRead = m_EditBox.StreamIn(uFormat, es);
-		DebugPrintEx(DBGStream, CLASS, L"InitEditFromStream", L"read %d bytes from the stream\n", lBytesRead);
+		output::DebugPrintEx(DBGStream, CLASS, L"InitEditFromStream", L"read %d bytes from the stream\n", lBytesRead);
 
 		// Clear the modify bit so this stream appears untouched
 		m_EditBox.SetModify(false);
@@ -463,7 +463,7 @@ namespace viewpane
 		{
 			ULONG cbWritten = 0;
 			EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
-			DebugPrintEx(DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
+			output::DebugPrintEx(DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
 
 			EC_MAPI(lpStreamOut->Commit(STGC_DEFAULT));
 		}

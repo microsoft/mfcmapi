@@ -326,7 +326,7 @@ namespace viewpane
 	void ListPane::OnMoveListEntryUp()
 	{
 		const auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
-		DebugPrintEx(DBGGeneric, CLASS, L"OnMoveListEntryUp", L"This item was selected: 0x%08X\n", iItem);
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnMoveListEntryUp", L"This item was selected: 0x%08X\n", iItem);
 
 		if (-1 == iItem) return;
 		if (0 == iItem) return;
@@ -339,7 +339,7 @@ namespace viewpane
 	void ListPane::OnMoveListEntryDown()
 	{
 		const auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
-		DebugPrintEx(DBGGeneric, CLASS, L"OnMoveListEntryDown", L"This item was selected: 0x%08X\n", iItem);
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnMoveListEntryDown", L"This item was selected: 0x%08X\n", iItem);
 
 		if (-1 == iItem) return;
 		if (m_List.GetItemCount() == iItem + 1) return;
@@ -352,7 +352,7 @@ namespace viewpane
 	void ListPane::OnMoveListEntryToTop()
 	{
 		const auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
-		DebugPrintEx(DBGGeneric, CLASS, L"OnMoveListEntryToTop", L"This item was selected: 0x%08X\n", iItem);
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnMoveListEntryToTop", L"This item was selected: 0x%08X\n", iItem);
 
 		if (-1 == iItem) return;
 		if (0 == iItem) return;
@@ -369,7 +369,7 @@ namespace viewpane
 	void ListPane::OnMoveListEntryToBottom()
 	{
 		const auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
-		DebugPrintEx(DBGGeneric, CLASS, L"OnMoveListEntryDown", L"This item was selected: 0x%08X\n", iItem);
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnMoveListEntryDown", L"This item was selected: 0x%08X\n", iItem);
 
 		if (-1 == iItem) return;
 		if (m_List.GetItemCount() == iItem + 1) return;
@@ -403,7 +403,7 @@ namespace viewpane
 	void ListPane::OnDeleteListEntry(bool bDoDirty)
 	{
 		const auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
-		DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteListEntry", L"This item was selected: 0x%08X\n", iItem);
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteListEntry", L"This item was selected: 0x%08X\n", iItem);
 
 		if (iItem == -1) return;
 
@@ -423,7 +423,7 @@ namespace viewpane
 	_Check_return_ bool ListPane::OnEditListEntry()
 	{
 		const auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
-		DebugPrintEx(DBGGeneric, CLASS, L"OnEditListEntry", L"This item was selected: 0x%08X\n", iItem);
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnEditListEntry", L"This item was selected: 0x%08X\n", iItem);
 
 		if (iItem == -1) return false;
 

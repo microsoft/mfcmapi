@@ -173,7 +173,7 @@ namespace dialog
 	{
 		const auto hRes = S_OK;
 
-		DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
@@ -223,7 +223,7 @@ namespace dialog
 		if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		const ULONG ulNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
@@ -249,7 +249,7 @@ namespace dialog
 		if (CBaseDialog::HandlePaste()) return true;
 
 		if (!m_lpContentsTableListCtrl || !m_lpMessage) return false;
-		DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -343,7 +343,7 @@ namespace dialog
 
 		for (const auto& attachnum : attachnums)
 		{
-			DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting attachment 0x%08X\n", attachnum);
+			output::DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting attachment 0x%08X\n", attachnum);
 			LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", m_hWnd); // STRING_OK
 			EC_MAPI(m_lpMessage->DeleteAttach(
 				attachnum,

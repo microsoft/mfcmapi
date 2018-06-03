@@ -935,20 +935,20 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 
 void PrintArgs(_In_ MYOPTIONS ProgOpts)
 {
-	DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.Mode);
-	DebugPrint(DBGGeneric, L"ulOptions = 0x%08X\n", ProgOpts.ulOptions);
-	DebugPrint(DBGGeneric, L"ulTypeNum = 0x%08X\n", ProgOpts.ulTypeNum);
-	if (!ProgOpts.lpszUnswitchedOption.empty()) DebugPrint(DBGGeneric, L"lpszUnswitchedOption = %ws\n", ProgOpts.lpszUnswitchedOption.c_str());
-	if (!ProgOpts.lpszFlagName.empty()) DebugPrint(DBGGeneric, L"lpszFlagName = %ws\n", ProgOpts.lpszFlagName.c_str());
-	if (!ProgOpts.lpszFolderPath.empty()) DebugPrint(DBGGeneric, L"lpszFolderPath = %ws\n", ProgOpts.lpszFolderPath.c_str());
-	if (!ProgOpts.lpszInput.empty()) DebugPrint(DBGGeneric, L"lpszInput = %ws\n", ProgOpts.lpszInput.c_str());
-	if (!ProgOpts.lpszMessageClass.empty()) DebugPrint(DBGGeneric, L"lpszMessageClass = %ws\n", ProgOpts.lpszMessageClass.c_str());
-	if (!ProgOpts.lpszMid.empty()) DebugPrint(DBGGeneric, L"lpszMid = %ws\n", ProgOpts.lpszMid.c_str());
-	if (!ProgOpts.lpszOutput.empty()) DebugPrint(DBGGeneric, L"lpszOutput = %ws\n", ProgOpts.lpszOutput.c_str());
-	if (!ProgOpts.lpszProfile.empty()) DebugPrint(DBGGeneric, L"lpszProfile = %ws\n", ProgOpts.lpszProfile.c_str());
-	if (!ProgOpts.lpszProfileSection.empty()) DebugPrint(DBGGeneric, L"lpszProfileSection = %ws\n", ProgOpts.lpszProfileSection.c_str());
-	if (!ProgOpts.lpszSubject.empty()) DebugPrint(DBGGeneric, L"lpszSubject = %ws\n", ProgOpts.lpszSubject.c_str());
-	if (!ProgOpts.lpszVersion.empty()) DebugPrint(DBGGeneric, L"lpszVersion = %ws\n", ProgOpts.lpszVersion.c_str());
+	output::DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.Mode);
+	output::DebugPrint(DBGGeneric, L"ulOptions = 0x%08X\n", ProgOpts.ulOptions);
+	output::DebugPrint(DBGGeneric, L"ulTypeNum = 0x%08X\n", ProgOpts.ulTypeNum);
+	if (!ProgOpts.lpszUnswitchedOption.empty()) output::DebugPrint(DBGGeneric, L"lpszUnswitchedOption = %ws\n", ProgOpts.lpszUnswitchedOption.c_str());
+	if (!ProgOpts.lpszFlagName.empty()) output::DebugPrint(DBGGeneric, L"lpszFlagName = %ws\n", ProgOpts.lpszFlagName.c_str());
+	if (!ProgOpts.lpszFolderPath.empty()) output::DebugPrint(DBGGeneric, L"lpszFolderPath = %ws\n", ProgOpts.lpszFolderPath.c_str());
+	if (!ProgOpts.lpszInput.empty()) output::DebugPrint(DBGGeneric, L"lpszInput = %ws\n", ProgOpts.lpszInput.c_str());
+	if (!ProgOpts.lpszMessageClass.empty()) output::DebugPrint(DBGGeneric, L"lpszMessageClass = %ws\n", ProgOpts.lpszMessageClass.c_str());
+	if (!ProgOpts.lpszMid.empty()) output::DebugPrint(DBGGeneric, L"lpszMid = %ws\n", ProgOpts.lpszMid.c_str());
+	if (!ProgOpts.lpszOutput.empty()) output::DebugPrint(DBGGeneric, L"lpszOutput = %ws\n", ProgOpts.lpszOutput.c_str());
+	if (!ProgOpts.lpszProfile.empty()) output::DebugPrint(DBGGeneric, L"lpszProfile = %ws\n", ProgOpts.lpszProfile.c_str());
+	if (!ProgOpts.lpszProfileSection.empty()) output::DebugPrint(DBGGeneric, L"lpszProfileSection = %ws\n", ProgOpts.lpszProfileSection.c_str());
+	if (!ProgOpts.lpszSubject.empty()) output::DebugPrint(DBGGeneric, L"lpszSubject = %ws\n", ProgOpts.lpszSubject.c_str());
+	if (!ProgOpts.lpszVersion.empty()) output::DebugPrint(DBGGeneric, L"lpszVersion = %ws\n", ProgOpts.lpszVersion.c_str());
 }
 
 // Returns true if we've done everything we need to do and can exit the program.
@@ -957,13 +957,13 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 {
 	// Load DLLS and get functions from them
 	ImportProcs();
-	DebugPrint(DBGGeneric, L"LoadMAPIVersion(%ws)\n", lpszVersion.c_str());
+	output::DebugPrint(DBGGeneric, L"LoadMAPIVersion(%ws)\n", lpszVersion.c_str());
 
 	std::wstring szPath;
 	auto paths = GetMAPIPaths();
 	if (lpszVersion == L"0")
 	{
-		DebugPrint(DBGGeneric, L"Listing MAPI\n");
+		output::DebugPrint(DBGGeneric, L"Listing MAPI\n");
 		for (const auto& path : paths)
 		{
 
@@ -975,7 +975,7 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 	const auto ulVersion = strings::wstringToUlong(lpszVersion, 10);
 	if (ulVersion == 0)
 	{
-		DebugPrint(DBGGeneric, L"Got a string\n");
+		output::DebugPrint(DBGGeneric, L"Got a string\n");
 
 		for (const auto& path : paths)
 		{
@@ -990,7 +990,7 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 	}
 	else
 	{
-		DebugPrint(DBGGeneric, L"Got a number %u\n", ulVersion);
+		output::DebugPrint(DBGGeneric, L"Got a number %u\n", ulVersion);
 		switch (ulVersion)
 		{
 		case 1: // system
@@ -1016,7 +1016,7 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 
 	if (!szPath.empty())
 	{
-		DebugPrint(DBGGeneric, L"Found MAPI path %ws\n", szPath.c_str());
+		output::DebugPrint(DBGGeneric, L"Found MAPI path %ws\n", szPath.c_str());
 		HMODULE hMAPI = nullptr;
 		auto hRes = S_OK;
 		WC_D(hMAPI, MyLoadLibraryW(szPath));

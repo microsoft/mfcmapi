@@ -366,7 +366,7 @@ namespace mapiprocessor
 
 		if (SUCCEEDED(hRes) && lpContentsTable && m_lpResFolderContents)
 		{
-			DebugPrintRestriction(DBGGeneric, m_lpResFolderContents, nullptr);
+			output::DebugPrintRestriction(DBGGeneric, m_lpResFolderContents, nullptr);
 			WC_MAPI(lpContentsTable->Restrict(m_lpResFolderContents, TBL_BATCH));
 			hRes = S_OK;
 		}

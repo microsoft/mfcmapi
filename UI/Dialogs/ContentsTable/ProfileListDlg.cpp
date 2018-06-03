@@ -97,7 +97,7 @@ namespace dialog
 		if (!m_lpContentsTableListCtrl) return;
 
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
-		DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 
 		// Wipe out current references to the profile table so the refresh will work
 		// If we don't do this, we get the old table back again.
@@ -215,7 +215,7 @@ namespace dialog
 				{
 					if (!lpListData || !lpListData->Contents()) break;
 
-					DebugPrintEx(DBGGeneric, CLASS,
+					output::DebugPrintEx(DBGGeneric, CLASS,
 						L"OnAddExchangeToProfile", // STRING_OK
 						L"Adding Server \"%hs\" and Mailbox \"%hs\" to profile \"%hs\"\n", // STRING_OK
 						szServer.c_str(),
@@ -267,7 +267,7 @@ namespace dialog
 					const auto bPasswordSet = MyFile.GetCheck(1);
 					auto szPwd = strings::wstringTostring(MyFile.GetStringW(2));
 
-					DebugPrintEx(DBGGeneric, CLASS, L"AddPSTToProfile", L"Adding PST \"%ws\" to profile \"%hs\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = \"%hs\"\n",
+					output::DebugPrintEx(DBGGeneric, CLASS, L"AddPSTToProfile", L"Adding PST \"%ws\" to profile \"%hs\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = \"%hs\"\n",
 						szPath.c_str(),
 						lpListData->Contents()->m_szProfileDisplayName.c_str(),
 						bUnicodePST,
@@ -317,7 +317,7 @@ namespace dialog
 				hRes = S_OK;
 				if (!lpListData || !lpListData->Contents()) break;
 
-				DebugPrintEx(DBGGeneric, CLASS, L"OnAddServiceToProfile", L"Adding service \"%hs\" to profile \"%hs\"\n", szService.c_str(), lpListData->Contents()->m_szProfileDisplayName.c_str());
+				output::DebugPrintEx(DBGGeneric, CLASS, L"OnAddServiceToProfile", L"Adding service \"%hs\" to profile \"%hs\"\n", szService.c_str(), lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 				EC_H(mapi::profile::HrAddServiceToProfile(szService, reinterpret_cast<ULONG_PTR>(m_hWnd), MyData.GetCheck(1) ? SERVICE_UI_ALWAYS : 0, 0, nullptr, lpListData->Contents()->m_szProfileDisplayName));
 			}
@@ -342,7 +342,7 @@ namespace dialog
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 			auto szProfile = strings::wstringTostring(MyData.GetStringW(0));
 
-			DebugPrintEx(DBGGeneric, CLASS,
+			output::DebugPrintEx(DBGGeneric, CLASS,
 				L"OnCreateProfile", // STRING_OK
 				L"Creating profile \"%hs\"\n", // STRING_OK
 				szProfile.c_str());
@@ -367,7 +367,7 @@ namespace dialog
 			// Find the highlighted item AttachNum
 			if (!lpListData || !lpListData->Contents()) break;
 
-			DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting profile \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
+			output::DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting profile \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 			EC_H(mapi::profile::HrRemoveProfile(lpListData->Contents()->m_szProfileDisplayName));
 		}
@@ -388,7 +388,7 @@ namespace dialog
 			// Find the highlighted item AttachNum
 			if (!lpListData || !lpListData->Contents()) break;
 
-			DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnGetProfileServiceVersion", L"Getting profile service version for \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
+			output::DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnGetProfileServiceVersion", L"Getting profile service version for \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 			ULONG ulServerVersion = 0;
 			mapi::profile::EXCHANGE_STORE_VERSION_NUM storeVersion = { 0 };
@@ -419,7 +419,7 @@ namespace dialog
 			if (bFoundServerVersion)
 			{
 				MyData.SetStringf(0, L"%u = 0x%X", ulServerVersion, ulServerVersion); // STRING_OK
-				DebugPrint(DBGGeneric, L"PR_PROFILE_SERVER_VERSION == 0x%08X\n", ulServerVersion);
+				output::DebugPrint(DBGGeneric, L"PR_PROFILE_SERVER_VERSION == 0x%08X\n", ulServerVersion);
 			}
 			else
 			{
@@ -428,12 +428,12 @@ namespace dialog
 
 			if (bFoundServerFullVersion)
 			{
-				DebugPrint(DBGGeneric, L"PR_PROFILE_SERVER_FULL_VERSION = \n");
+				output::DebugPrint(DBGGeneric, L"PR_PROFILE_SERVER_FULL_VERSION = \n");
 				MyData.SetStringf(1, L"%u = 0x%X", storeVersion.wMajorVersion, storeVersion.wMajorVersion); // STRING_OK
 				MyData.SetStringf(2, L"%u = 0x%X", storeVersion.wMinorVersion, storeVersion.wMinorVersion); // STRING_OK
 				MyData.SetStringf(3, L"%u = 0x%X", storeVersion.wBuild, storeVersion.wBuild); // STRING_OK
 				MyData.SetStringf(4, L"%u = 0x%X", storeVersion.wMinorBuild, storeVersion.wMinorBuild); // STRING_OK
-				DebugPrint(DBGGeneric,
+				output::DebugPrint(DBGGeneric,
 					L"\twMajorVersion 0x%04X\n" // STRING_OK
 					L"\twMinorVersion 0x%04X\n" // STRING_OK
 					L"\twBuild 0x%04X\n" // STRING_OK
@@ -466,7 +466,7 @@ namespace dialog
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 		if (lpListData && lpListData->Contents())
 		{
-			DebugPrintEx(DBGGeneric, CLASS, L"OnSetDefaultProfile", L"Setting profile \"%hs\" as default\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
+			output::DebugPrintEx(DBGGeneric, CLASS, L"OnSetDefaultProfile", L"Setting profile \"%hs\" as default\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 			EC_H(mapi::profile::HrSetDefaultProfile(lpListData->Contents()->m_szProfileDisplayName));
 
@@ -504,7 +504,7 @@ namespace dialog
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		// Find the highlighted profile
@@ -522,7 +522,7 @@ namespace dialog
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 
 		const auto szOldProfile = cache::CGlobalCache::getInstance().GetProfileToCopy();
 
@@ -551,7 +551,7 @@ namespace dialog
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		DebugPrintEx(DBGGeneric, CLASS, L"OnExportProfile", L"\n");
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnExportProfile", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		// Find the highlighted profile

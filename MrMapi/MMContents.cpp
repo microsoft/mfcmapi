@@ -14,14 +14,14 @@ void DumpContentsTable(
 	_In_ ULONG ulCount,
 	_In_opt_ LPSRestriction lpRes)
 {
-	DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting folder %u / %ws from profile %ws to %ws\n", ulFolder, lpszFolder ? lpszFolder : L"", lpszProfile, lpszDir);
-	if (ulOptions & OPT_DOCONTENTS) DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Contents\n");
-	if (ulOptions & OPT_DOASSOCIATEDCONTENTS) DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Associated Contents\n");
-	if (ulOptions & OPT_MSG) DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
-	if (ulOptions & OPT_RETRYSTREAMPROPS) DebugPrint(DBGGeneric, L"DumpContentsTable: Will retry stream properties\n");
-	if (ulOptions & OPT_SKIPATTACHMENTS) DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
-	if (ulOptions & OPT_LIST) DebugPrint(DBGGeneric, L"DumpContentsTable: List only mode\n");
-	if (ulCount) DebugPrint(DBGGeneric, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
+	output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting folder %u / %ws from profile %ws to %ws\n", ulFolder, lpszFolder ? lpszFolder : L"", lpszProfile, lpszDir);
+	if (ulOptions & OPT_DOCONTENTS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Contents\n");
+	if (ulOptions & OPT_DOASSOCIATEDCONTENTS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Associated Contents\n");
+	if (ulOptions & OPT_MSG) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
+	if (ulOptions & OPT_RETRYSTREAMPROPS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will retry stream properties\n");
+	if (ulOptions & OPT_SKIPATTACHMENTS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
+	if (ulOptions & OPT_LIST) output::DebugPrint(DBGGeneric, L"DumpContentsTable: List only mode\n");
+	if (ulCount) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
 
 	if (lpFolder)
 	{
@@ -127,7 +127,7 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 		sResTop.res.resAnd.cRes = i;
 		sResTop.res.resAnd.lpRes = &sResMiddle[0];
 		lpRes = &sResTop;
-		DebugPrintRestriction(DBGGeneric, lpRes, NULL);
+		output::DebugPrintRestriction(DBGGeneric, lpRes, NULL);
 	}
 
 	DumpContentsTable(

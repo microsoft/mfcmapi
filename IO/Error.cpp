@@ -24,8 +24,8 @@ namespace error
 				iLine,
 				szFunction);
 
-			Output(DBGMAPIFunctions, nullptr, true, szFunctionString);
-			Output(DBGMAPIFunctions, nullptr, false, L"\n");
+			output::Output(DBGMAPIFunctions, nullptr, true, szFunctionString);
+			output::Output(DBGMAPIFunctions, nullptr, false, L"\n");
 		}
 
 		// Check if we have no work to do
@@ -48,8 +48,8 @@ namespace error
 			szFile,
 			iLine);
 
-		Output(DBGHRes, nullptr, true, strings::StripCarriage(szErrString));
-		Output(DBGHRes, nullptr, false, L"\n");
+		output::Output(DBGHRes, nullptr, true, strings::StripCarriage(szErrString));
+		output::Output(DBGHRes, nullptr, false, L"\n");
 
 		if (bShowDialog)
 		{
@@ -85,8 +85,8 @@ namespace error
 
 		const auto szCombo = szErrorBegin + strings::formatmessage(IDS_INFILEONLINE, szFile, iLine);
 
-		Output(DBGHRes, nullptr, true, szCombo);
-		Output(DBGHRes, nullptr, false, L"\n");
+		output::Output(DBGHRes, nullptr, true, szCombo);
+		output::Output(DBGHRes, nullptr, false, L"\n");
 
 #ifndef MRMAPI
 		dialog::editor::CEditor Err(
@@ -115,7 +115,7 @@ namespace error
 #ifdef _DEBUG
 	void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc)
 	{
-		DebugPrint(DBGHRes,
+		output::DebugPrint(DBGHRes,
 			L"Skipping %hs because hRes = 0x%8x = %ws.\n", // STRING_OK
 			szFunc,
 			hRes,
