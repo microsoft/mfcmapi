@@ -733,8 +733,8 @@ namespace output
 		Outputf(ulDbgLvl, fFile, false, L"\t<property tag = \"0x%08X\" type = \"%ws\" >\n", lpProp->ulPropTag, interpretprop::TypeToString(lpProp->ulPropTag).c_str());
 
 		auto propTagNames = interpretprop::PropTagToPropName(lpProp->ulPropTag, false);
-		if (!propTagNames.bestGuess.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPBESTGUESS].uidName, propTagNames.bestGuess, false, iIndent);
-		if (!propTagNames.otherMatches.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPOTHERNAMES].uidName, propTagNames.otherMatches, false, iIndent);
+		if (!propTagNames.bestGuess.empty()) OutputXMLValue(ulDbgLvl, fFile, columns::PropXMLNames[columns::pcPROPBESTGUESS].uidName, propTagNames.bestGuess, false, iIndent);
+		if (!propTagNames.otherMatches.empty()) OutputXMLValue(ulDbgLvl, fFile, columns::PropXMLNames[columns::pcPROPOTHERNAMES].uidName, propTagNames.otherMatches, false, iIndent);
 
 		auto namePropNames = cache::NameIDToStrings(
 			lpProp->ulPropTag,
@@ -742,8 +742,8 @@ namespace output
 			nullptr,
 			nullptr,
 			false);
-		if (!namePropNames.guid.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDIID].uidName, namePropNames.guid, false, iIndent);
-		if (!namePropNames.name.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, namePropNames.name, false, iIndent);
+		if (!namePropNames.guid.empty()) OutputXMLValue(ulDbgLvl, fFile, columns::PropXMLNames[columns::pcPROPNAMEDIID].uidName, namePropNames.guid, false, iIndent);
+		if (!namePropNames.name.empty()) OutputXMLValue(ulDbgLvl, fFile, columns::PropXMLNames[columns::pcPROPNAMEDNAME].uidName, namePropNames.name, false, iIndent);
 
 		auto prop = property::ParseProperty(lpProp);
 		Output(ulDbgLvl, fFile, false, strings::StripCarriage(prop.toXML(iIndent)));
@@ -757,7 +757,7 @@ namespace output
 			false);
 		if (!szSmartView.empty())
 		{
-			OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, szSmartView, true, iIndent);
+			OutputXMLValue(ulDbgLvl, fFile, columns::PropXMLNames[columns::pcPROPSMARTVIEW].uidName, szSmartView, true, iIndent);
 		}
 
 		Output(ulDbgLvl, fFile, false, L"\t</property>\n");

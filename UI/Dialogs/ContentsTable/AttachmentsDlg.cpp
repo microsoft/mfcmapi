@@ -30,8 +30,8 @@ namespace dialog
 			IDS_ATTACHMENTS,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			lpMAPITable,
-			LPSPropTagArray(&sptATTACHCols),
-			ATTACHColumns,
+			LPSPropTagArray(&columns::sptATTACHCols),
+			columns::ATTACHColumns,
 			IDR_MENU_ATTACHMENTS_POPUP,
 			MENU_CONTEXT_ATTACHMENT_TABLE)
 	{

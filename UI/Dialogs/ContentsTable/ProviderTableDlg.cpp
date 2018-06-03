@@ -25,8 +25,8 @@ namespace dialog
 			IDS_PROVIDERS,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			lpMAPITable,
-			LPSPropTagArray(&sptPROVIDERCols),
-			PROVIDERColumns,
+			LPSPropTagArray(&columns::sptPROVIDERCols),
+			columns::PROVIDERColumns,
 			NULL,
 			MENU_CONTEXT_PROFILE_PROVIDERS)
 	{

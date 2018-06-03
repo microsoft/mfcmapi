@@ -23,8 +23,8 @@ namespace dialog
 			IDS_PUBLICFOLDERTABLE,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			lpMAPITable,
-			LPSPropTagArray(&sptPFCols),
-			PFColumns,
+			LPSPropTagArray(&columns::sptPFCols),
+			columns::PFColumns,
 			NULL,
 			MENU_CONTEXT_PUBLIC_FOLDER_TABLE)
 	{

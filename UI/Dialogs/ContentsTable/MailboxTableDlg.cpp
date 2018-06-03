@@ -28,8 +28,8 @@ namespace dialog
 			IDS_MAILBOXTABLE,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			lpMAPITable,
-			LPSPropTagArray(&sptMBXCols),
-			MBXColumns,
+			LPSPropTagArray(&columns::sptMBXCols),
+			columns::MBXColumns,
 			IDR_MENU_MAILBOX_TABLE_POPUP,
 			MENU_CONTEXT_MAILBOX_TABLE
 		)

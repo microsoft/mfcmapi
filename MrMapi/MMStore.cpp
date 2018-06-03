@@ -275,7 +275,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 
 	if (lpStoreTable)
 	{
-		auto sTags = LPSPropTagArray(&sptSTORECols);
+		auto sTags = LPSPropTagArray(&columns::sptSTORECols);
 		SPropTagArray sTag = { 0 };
 		if (ulPropTag)
 		{

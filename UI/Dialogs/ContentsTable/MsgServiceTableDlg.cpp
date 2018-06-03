@@ -25,8 +25,8 @@ namespace dialog
 			IDS_SERVICES,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			nullptr,
-			LPSPropTagArray(&sptSERVICECols),
-			SERVICEColumns,
+			LPSPropTagArray(&columns::sptSERVICECols),
+			columns::SERVICEColumns,
 			IDR_MENU_MSGSERVICE_POPUP,
 			MENU_CONTEXT_PROFILE_SERVICES)
 	{

@@ -99,7 +99,7 @@ namespace mapiprocessor
 				&lpMailBoxTable));
 			if (lpMailBoxTable)
 			{
-				WC_MAPI(lpMailBoxTable->SetColumns(LPSPropTagArray(&sptMBXCols), NULL));
+				WC_MAPI(lpMailBoxTable->SetColumns(LPSPropTagArray(&columns::sptMBXCols), NULL));
 				hRes = S_OK;
 
 				// go to the first row

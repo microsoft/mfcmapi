@@ -28,8 +28,8 @@ namespace dialog
 			IDS_AB,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			nullptr,
-			LPSPropTagArray(&sptABCols),
-			ABColumns,
+			LPSPropTagArray(&columns::sptABCols),
+			columns::ABColumns,
 			IDR_MENU_AB_VIEW_POPUP,
 			MENU_CONTEXT_AB_CONTENTS)
 	{

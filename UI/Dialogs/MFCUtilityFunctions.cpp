@@ -221,8 +221,8 @@ namespace dialog
 				IDS_STATUSTABLE,
 				mfcmapiCALL_CREATE_DIALOG,
 				lpTable,
-				LPSPropTagArray(&sptSTATUSCols),
-				STATUSColumns,
+				LPSPropTagArray(&columns::sptSTATUSCols),
+				columns::STATUSColumns,
 				NULL,
 				MENU_CONTEXT_STATUS_TABLE);
 			break;
@@ -236,8 +236,8 @@ namespace dialog
 				IDS_RECEIVEFOLDERTABLE,
 				mfcmapiCALL_CREATE_DIALOG,
 				lpTable,
-				LPSPropTagArray(&sptRECEIVECols),
-				RECEIVEColumns,
+				LPSPropTagArray(&columns::sptRECEIVECols),
+				columns::RECEIVEColumns,
 				NULL,
 				MENU_CONTEXT_RECIEVE_FOLDER_TABLE);
 			break;
@@ -251,8 +251,8 @@ namespace dialog
 				IDS_HIERARCHYTABLE,
 				mfcmapiCALL_CREATE_DIALOG,
 				lpTable,
-				LPSPropTagArray(&sptHIERARCHYCols),
-				HIERARCHYColumns,
+				LPSPropTagArray(&columns::sptHIERARCHYCols),
+				columns::HIERARCHYColumns,
 				NULL,
 				MENU_CONTEXT_HIER_TABLE);
 			break;
@@ -268,8 +268,8 @@ namespace dialog
 				IDS_CONTENTSTABLE,
 				mfcmapiCALL_CREATE_DIALOG,
 				lpTable,
-				LPSPropTagArray(&sptDEFCols),
-				DEFColumns,
+				LPSPropTagArray(&columns::sptDEFCols),
+				columns::DEFColumns,
 				NULL,
 				MENU_CONTEXT_DEFAULT_TABLE);
 			break;

@@ -28,8 +28,8 @@ namespace dialog
 			IDS_PROFILES,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			lpMAPITable,
-			LPSPropTagArray(&sptPROFLISTCols),
-			PROFLISTColumns,
+			LPSPropTagArray(&columns::sptPROFLISTCols),
+			columns::PROFLISTColumns,
 			IDR_MENU_PROFILE_POPUP,
 			MENU_CONTEXT_PROFILE_LIST)
 	{

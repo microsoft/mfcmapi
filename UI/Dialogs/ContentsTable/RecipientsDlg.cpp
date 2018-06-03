@@ -24,8 +24,8 @@ namespace dialog
 			IDS_RECIPIENTS,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			lpMAPITable,
-			LPSPropTagArray(&sptDEFCols),
-			DEFColumns,
+			LPSPropTagArray(&columns::sptDEFCols),
+			columns::DEFColumns,
 			IDR_MENU_RECIPIENTS_POPUP,
 			MENU_CONTEXT_RECIPIENT_TABLE)
 	{

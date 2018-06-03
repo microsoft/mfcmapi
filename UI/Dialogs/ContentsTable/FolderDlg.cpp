@@ -39,8 +39,8 @@ namespace dialog
 			IDS_FOLDER,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			nullptr,
-			LPSPropTagArray(&sptMSGCols),
-			MSGColumns,
+			LPSPropTagArray(&columns::sptMSGCols),
+			columns::MSGColumns,
 			IDR_MENU_FOLDER_POPUP,
 			MENU_CONTEXT_FOLDER_CONTENTS)
 	{

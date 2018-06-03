@@ -55,9 +55,9 @@ namespace controls
 			m_lpHostDlg = lpHostDlg;
 			if (m_lpHostDlg) m_lpHostDlg->AddRef();
 
-			for (ULONG i = 0; i < PropColumns.size(); i++)
+			for (ULONG i = 0; i < columns::PropColumns.size(); i++)
 			{
-				const auto szHeaderName = strings::loadstring(PropColumns[i].uidName);
+				const auto szHeaderName = strings::loadstring(columns::PropColumns[i].uidName);
 				InsertColumn(i, strings::wstringTotstring(szHeaderName).c_str());
 			}
 
@@ -662,29 +662,29 @@ namespace controls
 
 			if (!propTagNames.bestGuess.empty())
 			{
-				SetItemText(iRow, pcPROPBESTGUESS, propTagNames.bestGuess);
+				SetItemText(iRow, columns::pcPROPBESTGUESS, propTagNames.bestGuess);
 			}
 			else if (!namePropNames.bestPidLid.empty())
 			{
-				SetItemText(iRow, pcPROPBESTGUESS, namePropNames.bestPidLid);
+				SetItemText(iRow, columns::pcPROPBESTGUESS, namePropNames.bestPidLid);
 			}
 			else if (!namePropNames.name.empty())
 			{
-				SetItemText(iRow, pcPROPBESTGUESS, namePropNames.name);
+				SetItemText(iRow, columns::pcPROPBESTGUESS, namePropNames.name);
 			}
 			else
 			{
-				SetItemText(iRow, pcPROPBESTGUESS, PropTag);
+				SetItemText(iRow, columns::pcPROPBESTGUESS, PropTag);
 			}
 
-			SetItemText(iRow, pcPROPOTHERNAMES, propTagNames.otherMatches);
+			SetItemText(iRow, columns::pcPROPOTHERNAMES, propTagNames.otherMatches);
 
-			SetItemText(iRow, pcPROPTAG, PropTag);
-			SetItemText(iRow, pcPROPTYPE, interpretprop::TypeToString(ulPropTag));
+			SetItemText(iRow, columns::pcPROPTAG, PropTag);
+			SetItemText(iRow, columns::pcPROPTYPE, interpretprop::TypeToString(ulPropTag));
 
 			interpretprop::InterpretProp(lpsPropToAdd, &PropString, &AltPropString);
-			SetItemText(iRow, pcPROPVAL, PropString);
-			SetItemText(iRow, pcPROPVALALT, AltPropString);
+			SetItemText(iRow, columns::pcPROPVAL, PropString);
+			SetItemText(iRow, columns::pcPROPVALALT, AltPropString);
 
 			auto szSmartView = smartview::InterpretPropSmartView(
 				lpsPropToAdd,
@@ -693,9 +693,9 @@ namespace controls
 				lpMappingSignature,
 				m_bIsAB,
 				false); // Built from lpProp & lpMAPIProp
-			if (!szSmartView.empty()) SetItemText(iRow, pcPROPSMARTVIEW, szSmartView);
-			if (!namePropNames.name.empty()) SetItemText(iRow, pcPROPNAMEDNAME, namePropNames.name);
-			if (!namePropNames.guid.empty()) SetItemText(iRow, pcPROPNAMEDIID, namePropNames.guid);
+			if (!szSmartView.empty()) SetItemText(iRow, columns::pcPROPSMARTVIEW, szSmartView);
+			if (!namePropNames.name.empty()) SetItemText(iRow, columns::pcPROPNAMEDNAME, namePropNames.name);
+			if (!namePropNames.guid.empty()) SetItemText(iRow, columns::pcPROPNAMEDIID, namePropNames.guid);
 		}
 
 		_Check_return_ HRESULT CSingleMAPIPropListCtrl::GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) const
@@ -762,7 +762,7 @@ namespace controls
 				{
 					// This fixes a ton of flashing problems
 					lpMyHeader->SetRedraw(true);
-					for (auto iCurCol = 0; iCurCol < int(PropColumns.size()); iCurCol++)
+					for (auto iCurCol = 0; iCurCol < int(columns::PropColumns.size()); iCurCol++)
 					{
 						SetColumnWidth(iCurCol, LVSCW_AUTOSIZE_USEHEADER);
 						if (GetColumnWidth(iCurCol) > 200) SetColumnWidth(iCurCol, 200);
@@ -793,7 +793,7 @@ namespace controls
 					output::DebugPrintEx(DBGGeneric, CLASS, L"SavePropsToXML", L"saving to %ws\n", szFileName.c_str());
 
 					// Force a sort on the tag column to make output consistent
-					FakeClickColumn(pcPROPTAG, false);
+					FakeClickColumn(columns::pcPROPTAG, false);
 
 					const auto iItemCount = GetItemCount();
 
@@ -801,21 +801,21 @@ namespace controls
 					output::OutputToFile(fProps, L"<propertypane>\n");
 					for (auto iRow = 0; iRow < iItemCount; iRow++)
 					{
-						auto szTemp1 = GetItemText(iRow, pcPROPTAG);
-						auto szTemp2 = GetItemText(iRow, pcPROPTYPE);
+						auto szTemp1 = GetItemText(iRow, columns::pcPROPTAG);
+						auto szTemp2 = GetItemText(iRow, columns::pcPROPTYPE);
 						output::OutputToFilef(fProps, L"\t<property tag = \"%ws\" type = \"%ws\">\n", szTemp1.c_str(), szTemp2.c_str());
 
-						szTemp1 = GetItemText(iRow, pcPROPBESTGUESS);
-						output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPBESTGUESS].uidName, szTemp1, false, 2);
+						szTemp1 = GetItemText(iRow, columns::pcPROPBESTGUESS);
+						output::OutputXMLValueToFile(fProps, columns::PropXMLNames[columns::pcPROPBESTGUESS].uidName, szTemp1, false, 2);
 
-						szTemp1 = GetItemText(iRow, pcPROPOTHERNAMES);
-						output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPOTHERNAMES].uidName, szTemp1, false, 2);
+						szTemp1 = GetItemText(iRow, columns::pcPROPOTHERNAMES);
+						output::OutputXMLValueToFile(fProps, columns::PropXMLNames[columns::pcPROPOTHERNAMES].uidName, szTemp1, false, 2);
 
-						szTemp1 = GetItemText(iRow, pcPROPNAMEDIID);
-						output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDIID].uidName, szTemp1, false, 2);
+						szTemp1 = GetItemText(iRow, columns::pcPROPNAMEDIID);
+						output::OutputXMLValueToFile(fProps, columns::PropXMLNames[columns::pcPROPNAMEDIID].uidName, szTemp1, false, 2);
 
-						szTemp1 = GetItemText(iRow, pcPROPNAMEDNAME);
-						output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDNAME].uidName, szTemp1, false, 2);
+						szTemp1 = GetItemText(iRow, columns::pcPROPNAMEDNAME);
+						output::OutputXMLValueToFile(fProps, columns::PropXMLNames[columns::pcPROPNAMEDNAME].uidName, szTemp1, false, 2);
 
 						const auto lpListData = reinterpret_cast<sortlistdata::SortListData*>(GetItemData(iRow));
 						auto ulPropType = PT_NULL;
@@ -824,27 +824,27 @@ namespace controls
 							ulPropType = PROP_TYPE(lpListData->Prop()->m_ulPropTag);
 						}
 
-						szTemp1 = GetItemText(iRow, pcPROPVAL);
-						szTemp2 = GetItemText(iRow, pcPROPVALALT);
+						szTemp1 = GetItemText(iRow, columns::pcPROPVAL);
+						szTemp2 = GetItemText(iRow, columns::pcPROPVALALT);
 						switch (ulPropType)
 						{
 						case PT_STRING8:
 						case PT_UNICODE:
-							output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, true, 2);
-							output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
+							output::OutputXMLValueToFile(fProps, columns::PropXMLNames[columns::pcPROPVAL].uidName, szTemp1, true, 2);
+							output::OutputXMLValueToFile(fProps, columns::PropXMLNames[columns::pcPROPVALALT].uidName, szTemp2, false, 2);
 							break;
 						case PT_BINARY:
-							output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
-							output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, true, 2);
+							output::OutputXMLValueToFile(fProps, columns::PropXMLNames[columns::pcPROPVAL].uidName, szTemp1, false, 2);
+							output::OutputXMLValueToFile(fProps, columns::PropXMLNames[columns::pcPROPVALALT].uidName, szTemp2, true, 2);
 							break;
 						default:
-							output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
-							output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
+							output::OutputXMLValueToFile(fProps, columns::PropXMLNames[columns::pcPROPVAL].uidName, szTemp1, false, 2);
+							output::OutputXMLValueToFile(fProps, columns::PropXMLNames[columns::pcPROPVALALT].uidName, szTemp2, false, 2);
 							break;
 						}
 
-						szTemp1 = GetItemText(iRow, pcPROPSMARTVIEW);
-						output::OutputXMLValueToFile(fProps, PropXMLNames[pcPROPSMARTVIEW].uidName, szTemp1, true, 2);
+						szTemp1 = GetItemText(iRow, columns::pcPROPSMARTVIEW);
+						output::OutputXMLValueToFile(fProps, columns::PropXMLNames[columns::pcPROPSMARTVIEW].uidName, szTemp1, true, 2);
 
 						output::OutputToFile(fProps, L"\t</property>\n");
 					}

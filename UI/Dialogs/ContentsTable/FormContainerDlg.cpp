@@ -26,8 +26,8 @@ namespace dialog
 			IDS_FORMCONTAINER,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			nullptr,
-			LPSPropTagArray(&sptDEFCols),
-			DEFColumns,
+			LPSPropTagArray(&columns::sptDEFCols),
+			columns::DEFColumns,
 			IDR_MENU_FORM_CONTAINER_POPUP,
 			MENU_CONTEXT_FORM_CONTAINER)
 	{

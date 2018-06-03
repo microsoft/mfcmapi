@@ -100,7 +100,7 @@ namespace property
 
 		if (mv == L"true")
 		{
-			const auto szValue = strings::loadstring(PropXMLNames[pcPROPVAL].uidName);
+			const auto szValue = strings::loadstring(columns::PropXMLNames[columns::pcPROPVAL].uidName);
 			const auto szRow = strings::loadstring(IDS_ROW);
 
 			szXML << tagopen(szValue + m_attributes.toXML(), iIndent) + L"\n";
@@ -108,8 +108,8 @@ namespace property
 			for (const auto& parsing : m_MainParsing)
 			{
 				szXML << tagopen(szRow, iIndent + 1) + L"\n";
-				szXML << parsing.toXML(PropXMLNames[pcPROPVAL].uidName, iIndent + 2);
-				szXML << parsing.toXML(PropXMLNames[pcPROPVALALT].uidName, iIndent + 2);
+				szXML << parsing.toXML(columns::PropXMLNames[columns::pcPROPVAL].uidName, iIndent + 2);
+				szXML << parsing.toXML(columns::PropXMLNames[columns::pcPROPVALALT].uidName, iIndent + 2);
 				szXML << tagclose(szRow, iIndent + 1);
 			}
 
@@ -117,8 +117,8 @@ namespace property
 			return szXML.str();
 		}
 
-		if (m_MainParsing.size() == 1) szXML << m_MainParsing[0].toXML(PropXMLNames[pcPROPVAL].uidName, iIndent);
-		if (m_AltParsing.size() == 1) szXML << m_AltParsing[0].toXML(PropXMLNames[pcPROPVALALT].uidName, iIndent);
+		if (m_MainParsing.size() == 1) szXML << m_MainParsing[0].toXML(columns::PropXMLNames[columns::pcPROPVAL].uidName, iIndent);
+		if (m_AltParsing.size() == 1) szXML << m_AltParsing[0].toXML(columns::PropXMLNames[columns::pcPROPVALALT].uidName, iIndent);
 
 		return szXML.str();
 	}
