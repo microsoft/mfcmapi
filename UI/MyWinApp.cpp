@@ -46,7 +46,7 @@ namespace ui
 
 		if (bTerminateOnCorruption)
 		{
-			MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
+			import::MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 		}
 	}
 

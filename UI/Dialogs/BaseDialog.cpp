@@ -648,7 +648,7 @@ namespace dialog
 	{
 		auto hRes = S_OK;
 
-		if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return strings::emptystring;
+		if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return strings::emptystring;
 
 		std::wstring szOut;
 
@@ -665,7 +665,7 @@ namespace dialog
 				{
 					UINT ret = 0;
 					DWORD dwValueBuf = MAX_PATH;
-					WC_D(ret, pfnMsiGetFileVersion(lpszTempPath.c_str(),
+					WC_D(ret, import::pfnMsiGetFileVersion(lpszTempPath.c_str(),
 						lpszTempVer,
 						&dwValueBuf,
 						lpszTempLang,

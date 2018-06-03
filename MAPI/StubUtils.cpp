@@ -19,7 +19,7 @@
  * Obtain a handle to the MAPI DLL. This function will load the MAPI DLL
  * if it hasn't already been loaded
  *
- * UnLoadPrivateMAPI()
+ * UnloadPrivateMAPI()
  * Forces the MAPI DLL to be unloaded. This can cause problems if the code
  * still has outstanding allocated MAPI memory, or unmatched calls to
  * MAPIInitialize/MAPIUninitialize
@@ -94,7 +94,7 @@ void SetMAPIHandle(HMODULE hinstMAPI)
 		// Preload pstprx32 to prevent crash when using autodiscover to build a new profile
 		if (!g_hModPstPrx32)
 		{
-			g_hModPstPrx32 = LoadFromOLMAPIDir(L"pstprx32.dll"); // STRING_OK
+			g_hModPstPrx32 = import::LoadFromOLMAPIDir(L"pstprx32.dll"); // STRING_OK
 		}
 
 		// Code Analysis gives us a C28112 error when we use InterlockedCompareExchangePointer, so we instead exchange, check and exchange back
@@ -174,9 +174,9 @@ std::wstring GetComponentPath(const std::wstring& szComponent, const std::wstrin
 
 	typedef bool (STDAPICALLTYPE *FGetComponentPathType)(LPCSTR, LPSTR, LPSTR, DWORD, bool);
 
-	auto hMapiStub = MyLoadLibraryW(WszMapi32);
+	auto hMapiStub = import::MyLoadLibraryW(WszMapi32);
 	if (!hMapiStub)
-		hMapiStub = MyLoadLibraryW(WszMapiStub);
+		hMapiStub = import::MyLoadLibraryW(WszMapiStub);
 
 	if (hMapiStub)
 	{
@@ -356,7 +356,7 @@ std::wstring GetInstalledOutlookMAPI(int iOutlook)
 	output::DebugPrint(DBGLoadMAPI, L"Enter GetInstalledOutlookMAPI(%d)\n", iOutlook);
 	auto hRes = S_OK;
 
-	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return strings::emptystring;
+	if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return strings::emptystring;
 
 	auto lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[iOutlook], nullptr);
 
@@ -384,7 +384,7 @@ std::vector<std::wstring> GetInstalledOutlookMAPI()
 {
 	output::DebugPrint(DBGLoadMAPI, L"Enter GetInstalledOutlookMAPI\n");
 	auto paths = std::vector<std::wstring>();
-	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return paths;
+	if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return paths;
 
 	for (auto iCurrentOutlook = oqcOfficeBegin; iCurrentOutlook < oqcOfficeEnd; iCurrentOutlook++)
 	{
@@ -416,7 +416,7 @@ std::wstring GetOutlookPath(_In_ const std::wstring& szCategory, _Out_opt_ bool*
 
 	if (lpb64) *lpb64 = false;
 
-	WC_D(ret, pfnMsiProvideQualifiedComponent(
+	WC_D(ret, import::pfnMsiProvideQualifiedComponent(
 		szCategory.c_str(),
 		L"outlook.x64.exe", // STRING_OK
 		static_cast<DWORD>(INSTALLMODE_DEFAULT),
@@ -428,7 +428,7 @@ std::wstring GetOutlookPath(_In_ const std::wstring& szCategory, _Out_opt_ bool*
 	}
 	else
 	{
-		WC_D(ret, pfnMsiProvideQualifiedComponent(
+		WC_D(ret, import::pfnMsiProvideQualifiedComponent(
 			szCategory.c_str(),
 			L"outlook.exe", // STRING_OK
 			static_cast<DWORD>(INSTALLMODE_DEFAULT),
@@ -443,7 +443,7 @@ std::wstring GetOutlookPath(_In_ const std::wstring& szCategory, _Out_opt_ bool*
 
 		if (lpszTempPath != nullptr)
 		{
-			WC_D(ret, pfnMsiProvideQualifiedComponent(
+			WC_D(ret, import::pfnMsiProvideQualifiedComponent(
 				szCategory.c_str(),
 				L"outlook.x64.exe", // STRING_OK
 				static_cast<DWORD>(INSTALLMODE_DEFAULT),
@@ -451,7 +451,7 @@ std::wstring GetOutlookPath(_In_ const std::wstring& szCategory, _Out_opt_ bool*
 				&dwValueBuf));
 			if (ERROR_SUCCESS != ret)
 			{
-				WC_D(ret, pfnMsiProvideQualifiedComponent(
+				WC_D(ret, import::pfnMsiProvideQualifiedComponent(
 					szCategory.c_str(),
 					L"outlook.exe", // STRING_OK
 					static_cast<DWORD>(INSTALLMODE_DEFAULT),
@@ -486,7 +486,7 @@ HMODULE GetDefaultMapiHandle()
 	for (const auto& szPath : paths)
 	{
 		output::DebugPrint(DBGLoadMAPI, L"Trying %ws\n", szPath.c_str());
-		hinstMapi = MyLoadLibraryW(szPath);
+		hinstMapi = import::MyLoadLibraryW(szPath);
 		if (hinstMapi) break;
 	}
 
@@ -502,21 +502,21 @@ HMODULE AttachToMAPIDll(const WCHAR *wzMapiDll)
 {
 	output::DebugPrint(DBGLoadMAPI, L"Enter AttachToMAPIDll: wzMapiDll = %ws\n", wzMapiDll);
 	HMODULE hinstPrivateMAPI = nullptr;
-	MyGetModuleHandleExW(0UL, wzMapiDll, &hinstPrivateMAPI);
+	import::MyGetModuleHandleExW(0UL, wzMapiDll, &hinstPrivateMAPI);
 	output::DebugPrint(DBGLoadMAPI, L"Exit AttachToMAPIDll: hinstPrivateMAPI = %p\n", hinstPrivateMAPI);
 	return hinstPrivateMAPI;
 }
 
-void UnLoadPrivateMAPI()
+void UnloadPrivateMAPI()
 {
-	output::DebugPrint(DBGLoadMAPI, L"Enter UnLoadPrivateMAPI\n");
+	output::DebugPrint(DBGLoadMAPI, L"Enter UnloadPrivateMAPI\n");
 	const auto hinstPrivateMAPI = GetMAPIHandle();
 	if (nullptr != hinstPrivateMAPI)
 	{
 		SetMAPIHandle(nullptr);
 	}
 
-	output::DebugPrint(DBGLoadMAPI, L"Exit UnLoadPrivateMAPI\n");
+	output::DebugPrint(DBGLoadMAPI, L"Exit UnloadPrivateMAPI\n");
 }
 
 void ForceOutlookMAPI(bool fForce)

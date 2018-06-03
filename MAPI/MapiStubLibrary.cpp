@@ -46,7 +46,7 @@ struct RTF_WCSRETINFO;
 // Forward declares from MapiStubUtil.cpp
 HMODULE GetMAPIHandle();
 HMODULE GetPrivateMAPI();
-void UnLoadPrivateMAPI();
+void UnloadPrivateMAPI();
 extern volatile ULONG g_ulDllSequenceNum;
 
 #define DEFINE_STUB_FUNCTION_V0(_linkage, _modifiers, _name, _lookup)	\

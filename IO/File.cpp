@@ -670,9 +670,9 @@ namespace file
 	{
 		if (pName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-		if (pfnStgCreateStorageEx)
+		if (import::pfnStgCreateStorageEx)
 		{
-			return pfnStgCreateStorageEx(
+			return import::pfnStgCreateStorageEx(
 				pName.c_str(),
 				grfMode,
 				stgfmt,

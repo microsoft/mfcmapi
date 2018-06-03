@@ -2,8 +2,8 @@
 #include <MAPI/MapiMime.h>
 #include <IO/File.h>
 #include <Interpret/Guids.h>
-#include <UI/Dialogs/Editors/Editor.h>
 #include <ImportProcs.h>
+#include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIFunctions.h>
 #ifndef MRMAPI
 #include <Interpret/ExtraPropTags.h>
@@ -307,7 +307,7 @@ namespace mapi
 					const auto ulCodePage = MyData.GetDecimal(2);
 					const auto cCharSetType = static_cast<CHARSETTYPE>(MyData.GetDecimal(3));
 					if (cCharSetType > CHARSET_WEB) return MAPI_E_INVALID_PARAMETER;
-					EC_H(MyMimeOleGetCodePageCharset(ulCodePage, cCharSetType, phCharSet));
+					EC_H(import::MyMimeOleGetCodePageCharset(ulCodePage, cCharSetType, phCharSet));
 				}
 				*pDoAdrBook = MyData.GetCheck(5);
 				if (pbUnicode)

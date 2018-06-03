@@ -190,7 +190,7 @@ namespace controls
 				pMenu->EnableMenuItem(ID_COPY_PROPERTY, DIM(bHasSource));
 
 				pMenu->EnableMenuItem(ID_DELETEPROPERTY, DIM(bHasSource && bPropSelected));
-				pMenu->EnableMenuItem(ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET, DIM(bHasSource && bPropSelected && pfnEditSecurity));
+				pMenu->EnableMenuItem(ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET, DIM(bHasSource && bPropSelected && import::pfnEditSecurity));
 				pMenu->EnableMenuItem(ID_EDITPROPASBINARYSTREAM, DIM(bHasSource && bPropSelected));
 				pMenu->EnableMenuItem(ID_EDITPROPERTY, DIM(bPropSelected));
 				pMenu->EnableMenuItem(ID_EDITPROPERTYASASCIISTREAM, DIM(bHasSource && bPropSelected));
@@ -1179,7 +1179,7 @@ namespace controls
 			auto hRes = S_OK;
 			ULONG ulPropTag = NULL;
 
-			if (!m_lpPropBag || !pfnEditSecurity) return;
+			if (!m_lpPropBag || !import::pfnEditSecurity) return;
 
 			GetSelectedPropTag(&ulPropTag);
 			if (!ulPropTag) return;
@@ -1190,7 +1190,7 @@ namespace controls
 
 			if (MySecInfo)
 			{
-				EC_B(pfnEditSecurity(m_hWnd, MySecInfo));
+				EC_B(import::pfnEditSecurity(m_hWnd, MySecInfo));
 
 				MySecInfo->Release();
 			}

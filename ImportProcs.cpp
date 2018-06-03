@@ -2,6 +2,8 @@
 #include <ImportProcs.h>
 #include <Interpret/String.h>
 
+namespace import
+{
 HMODULE hModAclui = nullptr;
 HMODULE hModOle32 = nullptr;
 HMODULE hModUxTheme = nullptr;
@@ -382,4 +384,5 @@ BOOL WINAPI MyGetModuleHandleExW(
 	if (pfnGetModuleHandleExW) return pfnGetModuleHandleExW(dwFlags, lpModuleName, phModule);
 	*phModule = GetModuleHandleW(lpModuleName);
 	return *phModule != nullptr;
+}
 }

@@ -52,13 +52,13 @@ namespace ui
 		output::OpenDebugFile();
 		output::DebugPrintVersion(DBGVersionBanner);
 		// Force the system riched20 so we don't load office's version.
-		(void)LoadFromSystemDir(L"riched20.dll"); // STRING_OK
+		(void)import::LoadFromSystemDir(L"riched20.dll"); // STRING_OK
 		// Second part is to load rundll32.exe
 		// Don't plan on unloading this, so don't care about the return value
-		(void)LoadFromSystemDir(L"rundll32.exe"); // STRING_OK
+		(void)import::LoadFromSystemDir(L"rundll32.exe"); // STRING_OK
 
 		// Load DLLS and get functions from them
-		ImportProcs();
+		import::ImportProcs();
 
 		// Initialize objects for theming
 		ui::InitializeGDI();

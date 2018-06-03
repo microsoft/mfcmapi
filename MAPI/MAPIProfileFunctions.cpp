@@ -76,7 +76,7 @@ namespace mapi
 		{
 			auto hRes = S_OK;
 
-			auto szMAPIDir = GetMAPIPath(L"Microsoft Outlook"); // STRING_OK
+			auto szMAPIDir = import::GetMAPIPath(L"Microsoft Outlook"); // STRING_OK
 
 			// We got the path to MAPI - need to strip it
 			if (!szMAPIDir.empty())

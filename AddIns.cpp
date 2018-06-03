@@ -309,7 +309,7 @@ namespace addin
 							// Only if we're interested do we reload the DLL for real
 							if (InclusionList.IsOnList(FindFileData.cFileName))
 							{
-								hMod = MyLoadLibraryW(FindFileData.cFileName);
+								hMod = import::MyLoadLibraryW(FindFileData.cFileName);
 							}
 							else
 							{
@@ -327,7 +327,7 @@ namespace addin
 											// Remember this as a good add-in
 											InclusionList.AddToList(FindFileData.cFileName);
 											// We found a candidate, load it for real now
-											hMod = MyLoadLibraryW(FindFileData.cFileName);
+											hMod = import::MyLoadLibraryW(FindFileData.cFileName);
 										}
 									}
 

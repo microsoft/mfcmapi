@@ -228,10 +228,10 @@ namespace dialog
 		case WM_CREATE:
 			// Ensure all windows group together by enforcing a consistent App User Model ID.
 			// We don't use SetCurrentProcessExplicitAppUserModelID because logging on to MAPI somehow breaks this.
-			if (pfnSHGetPropertyStoreForWindow)
+			if (import::pfnSHGetPropertyStoreForWindow)
 			{
 				IPropertyStore* pps = nullptr;
-				const auto hRes = pfnSHGetPropertyStoreForWindow(m_hWnd, IID_PPV_ARGS(&pps));
+				const auto hRes = import::pfnSHGetPropertyStoreForWindow(m_hWnd, IID_PPV_ARGS(&pps));
 				if (SUCCEEDED(hRes) && pps) {
 					PROPVARIANT var = { 0 };
 					var.vt = VT_LPWSTR;
@@ -243,7 +243,7 @@ namespace dialog
 				if (pps) pps->Release();
 			}
 
-			if (pfnSetWindowTheme) (void)pfnSetWindowTheme(m_hWnd, L"", L"");
+			if (import::pfnSetWindowTheme) (void)import::pfnSetWindowTheme(m_hWnd, L"", L"");
 			{
 				// These calls force Windows to initialize the system menu for this window.
 				// This avoids repaints whenever the system menu is later accessed.

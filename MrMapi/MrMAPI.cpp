@@ -956,7 +956,7 @@ void PrintArgs(_In_ MYOPTIONS ProgOpts)
 bool LoadMAPIVersion(const std::wstring& lpszVersion)
 {
 	// Load DLLS and get functions from them
-	ImportProcs();
+	import::ImportProcs();
 	output::DebugPrint(DBGGeneric, L"LoadMAPIVersion(%ws)\n", lpszVersion.c_str());
 
 	std::wstring szPath;
@@ -1019,7 +1019,7 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 		output::DebugPrint(DBGGeneric, L"Found MAPI path %ws\n", szPath.c_str());
 		HMODULE hMAPI = nullptr;
 		auto hRes = S_OK;
-		WC_D(hMAPI, MyLoadLibraryW(szPath));
+		WC_D(hMAPI, import::MyLoadLibraryW(szPath));
 		SetMAPIHandle(hMAPI);
 	}
 
@@ -1032,7 +1032,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 	auto bMAPIInit = false;
 
 	SetDllDirectory(_T(""));
-	MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
+	import::MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 
 	// Set up our property arrays or nothing works
 	addin::MergeAddInArrays();

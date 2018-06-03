@@ -108,7 +108,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		HCHARSET hCharSet = nullptr;
 		if (CHECKFLAG(MAPIMIME_CHARSET))
 		{
-			WC_H(MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage, ProgOpts.cSetType, &hCharSet));
+			WC_H(import::MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage, ProgOpts.cSetType, &hCharSet));
 			if (FAILED(hRes))
 			{
 				printf("MimeOleGetCodePageCharset returned 0x%08X\n", hRes);
