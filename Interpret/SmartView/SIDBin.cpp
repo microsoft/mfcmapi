@@ -59,7 +59,7 @@ namespace smartview
 				delete[] lpSidDomain;
 			}
 
-			m_lpStringSid = GetTextualSid(SidStart);
+			m_lpStringSid = sid::GetTextualSid(SidStart);
 		}
 	}
 

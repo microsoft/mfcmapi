@@ -39,18 +39,18 @@ namespace smartview
 		const auto ulSDToParse = m_Parser.RemainingBytes();
 		m_Parser.Advance(ulSDToParse);
 
-		auto acetype = acetypeMessage;
+		auto acetype = sid::acetypeMessage;
 		switch (mapi::GetMAPIObjectType(m_lpMAPIProp))
 		{
 		case MAPI_STORE:
 		case MAPI_ADDRBOOK:
 		case MAPI_FOLDER:
 		case MAPI_ABCONT:
-			acetype = acetypeContainer;
+			acetype = sid::acetypeContainer;
 			break;
 		}
 
-		if (m_bFB) acetype = acetypeFreeBusy;
+		if (m_bFB) acetype = sid::acetypeFreeBusy;
 
 		std::wstring szDACL;
 		std::wstring szInfo;

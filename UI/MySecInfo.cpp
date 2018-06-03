@@ -70,7 +70,7 @@ namespace mapi
 			m_cRef = 1;
 			m_ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_BINARY); // An SD must be in a binary prop
 			m_lpMAPIProp = lpMAPIProp;
-			m_acetype = acetypeMessage;
+			m_acetype = sid::acetypeMessage;
 			m_cbHeader = 0;
 			m_lpHeader = nullptr;
 
@@ -84,13 +84,13 @@ namespace mapi
 				case MAPI_ADDRBOOK:
 				case MAPI_FOLDER:
 				case MAPI_ABCONT:
-					m_acetype = acetypeContainer;
+					m_acetype = sid::acetypeContainer;
 					break;
 				}
 			}
 
 			if (PR_FREEBUSY_NT_SECURITY_DESCRIPTOR == m_ulPropTag)
-				m_acetype = acetypeFreeBusy;
+				m_acetype = sid::acetypeFreeBusy;
 
 			m_wszObject = strings::loadstring(IDS_OBJECT);
 		}
@@ -165,11 +165,11 @@ namespace mapi
 
 			if (bAllowEdits)
 			{
-				pObjectInfo->dwFlags = SI_EDIT_PERMS | SI_EDIT_OWNER | SI_ADVANCED | (acetypeContainer == m_acetype ? SI_CONTAINER : 0);
+				pObjectInfo->dwFlags = SI_EDIT_PERMS | SI_EDIT_OWNER | SI_ADVANCED | (sid::acetypeContainer == m_acetype ? SI_CONTAINER : 0);
 			}
 			else
 			{
-				pObjectInfo->dwFlags = SI_READONLY | SI_ADVANCED | (acetypeContainer == m_acetype ? SI_CONTAINER : 0);
+				pObjectInfo->dwFlags = SI_READONLY | SI_ADVANCED | (sid::acetypeContainer == m_acetype ? SI_CONTAINER : 0);
 			}
 			pObjectInfo->pszObjectName = LPWSTR(m_wszObject.c_str()); // Object being edited
 			pObjectInfo->pszServerName = nullptr; // specify DC for lookups
@@ -294,15 +294,15 @@ namespace mapi
 
 			switch (m_acetype)
 			{
-			case acetypeContainer:
+			case sid::acetypeContainer:
 				*ppAccess = siExchangeAccessesFolder;
 				*pcAccesses = _countof(siExchangeAccessesFolder);
 				break;
-			case acetypeMessage:
+			case sid::acetypeMessage:
 				*ppAccess = siExchangeAccessesMessage;
 				*pcAccesses = _countof(siExchangeAccessesMessage);
 				break;
-			case acetypeFreeBusy:
+			case sid::acetypeFreeBusy:
 				*ppAccess = siExchangeAccessesFreeBusy;
 				*pcAccesses = _countof(siExchangeAccessesFreeBusy);
 				break;
@@ -320,13 +320,13 @@ namespace mapi
 
 			switch (m_acetype)
 			{
-			case acetypeContainer:
+			case sid::acetypeContainer:
 				MapGenericMask(pMask, &gmFolders);
 				break;
-			case acetypeMessage:
+			case sid::acetypeMessage:
 				MapGenericMask(pMask, &gmMessages);
 				break;
-			case acetypeFreeBusy:
+			case sid::acetypeFreeBusy:
 				// No generic for freebusy
 				break;
 			};

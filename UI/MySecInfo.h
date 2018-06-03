@@ -44,7 +44,7 @@ namespace mapi
 			ULONG m_ulPropTag;
 			LPBYTE m_lpHeader;
 			ULONG m_cbHeader;
-			eAceType m_acetype;
+			sid::eAceType m_acetype;
 			std::wstring m_wszObject;
 		};
 	}
