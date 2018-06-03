@@ -191,7 +191,7 @@ namespace controls
 			// Set up the columns on the new contents table and refresh!
 			DoSetColumns(
 				true,
-				0 != RegKeys[regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD);
+				0 != registry::RegKeys[registry::regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD);
 
 			return hRes;
 		}
@@ -450,7 +450,7 @@ namespace controls
 			m_ulHeaderColumns = lpCurColTagArray->cValues;
 
 			ULONG ulCurHeaderCol = 0;
-			if (RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD)
+			if (registry::RegKeys[registry::regkeyDO_COLUMN_NAMES].ulCurDWORD)
 			{
 				output::DebugPrintEx(DBGGeneric, CLASS, L"AddColumns", L"Adding named columns\n");
 				// If we have named columns, put them up front
@@ -622,7 +622,7 @@ namespace controls
 
 				output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"ulTotal = 0x%X\n", ulTotal);
 
-				ulThrottleLevel = RegKeys[regkeyTHROTTLE_LEVEL].ulCurDWORD;
+				ulThrottleLevel = registry::RegKeys[registry::regkeyTHROTTLE_LEVEL].ulCurDWORD;
 
 				if (ulTotal)
 				{
@@ -871,7 +871,7 @@ namespace controls
 						const auto pProp = &lpsRowData->lpProps[ulCol];
 
 						// If we've got a MAPI_E_NOT_FOUND error, just don't display it.
-						if (RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD && pProp && PT_ERROR == PROP_TYPE(pProp->ulPropTag) && MAPI_E_NOT_FOUND == pProp->Value.err)
+						if (registry::RegKeys[registry::regkeySUPPRESS_NOT_FOUND].ulCurDWORD && pProp && PT_ERROR == PROP_TYPE(pProp->ulPropTag) && MAPI_E_NOT_FOUND == pProp->Value.err)
 						{
 							if (0 == iColumn)
 							{
@@ -1269,7 +1269,7 @@ namespace controls
 				const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 				LPCIID lpInterface = nullptr;
 
-				if (RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD)
+				if (registry::RegKeys[registry::regkeyUSE_MESSAGERAW].ulCurDWORD)
 				{
 					lpInterface = &IID_IMessageRaw;
 				}
@@ -1284,7 +1284,7 @@ namespace controls
 					bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
 					nullptr,
 					reinterpret_cast<LPUNKNOWN*>(lppProp)));
-				if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes && RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD)
+				if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes && registry::RegKeys[registry::regkeyUSE_MESSAGERAW].ulCurDWORD)
 				{
 					error::ErrDialog(__FILE__, __LINE__, IDS_EDMESSAGERAWNOTSUPPORTED);
 				}

@@ -156,7 +156,7 @@ namespace mapi
 
 			if (hRootKey)
 			{
-				bAllowEdits = !!ReadDWORDFromRegistry(
+				bAllowEdits = !!registry::ReadDWORDFromRegistry(
 					hRootKey,
 					L"AllowUnsupportedSecurityEdits", // STRING_OK
 					DWORD(bAllowEdits));

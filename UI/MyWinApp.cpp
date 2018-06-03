@@ -31,7 +31,7 @@ namespace ui
 			ULONG cb = sizeof dwRegVal;
 			lStatus = RegQueryValueExW(
 				hRootKey,
-				RegKeys[regkeyHEAPENABLETERMINATIONONCORRUPTION].szKeyName.c_str(),
+				registry::RegKeys[registry::regkeyHEAPENABLETERMINATIONONCORRUPTION].szKeyName.c_str(),
 				nullptr,
 				&dwType,
 				reinterpret_cast<LPBYTE>(&dwRegVal),

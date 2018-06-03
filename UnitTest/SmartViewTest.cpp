@@ -151,10 +151,10 @@ namespace SmartViewTest
 			// Set up our property arrays or nothing works
 			addin::MergeAddInArrays();
 
-			RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD = 1;
-			RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
-			RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
-			RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
+			registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD = 1;
+			registry::RegKeys[registry::regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
+			registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
+			registry::RegKeys[registry::regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
 
 			strings::setTestInstance(GetModuleHandleW(L"UnitTest.dll"));
 		}

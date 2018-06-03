@@ -207,7 +207,7 @@ namespace smartview
 	{
 		std::wstring lpszSmartView;
 
-		if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp) return std::make_pair(IDS_STNOPARSING, L"");
+		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp) return std::make_pair(IDS_STNOPARSING, L"");
 
 		auto hRes = S_OK;
 		auto iStructType = IDS_STNOPARSING;
@@ -220,8 +220,8 @@ namespace smartview
 		if (!lpNameID &&
 			lpMAPIProp && // if we have an object
 			!bIsAB &&
-			RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
-			(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(lpProp->ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
+			registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
+			(registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(lpProp->ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 		{
 			SPropTagArray tag = { 0 };
 			auto lpTag = &tag;
@@ -321,7 +321,7 @@ namespace smartview
 
 	std::wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum  iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
-		if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
+		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 
 		std::wstring szResult;
 
@@ -399,7 +399,7 @@ namespace smartview
 
 	std::wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp)
 	{
-		if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
+		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 
 		std::wstring szResult;
 		std::wstring szSmartView;
@@ -429,7 +429,7 @@ namespace smartview
 
 	std::wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
-		if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
+		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 		auto szResultString = addin::AddInSmartView(iStructType, myBin.cb, myBin.lpb);
 		if (!szResultString.empty())
 		{

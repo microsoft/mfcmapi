@@ -30,9 +30,9 @@ namespace output
 		CloseDebugFile();
 
 		// only open the file if we really need to
-		if (0 != RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD)
+		if (0 != registry::RegKeys[registry::regkeyDEBUG_TO_FILE].ulCurDWORD)
 		{
-			g_fDebugFile = MyOpenFile(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING, false);
+			g_fDebugFile = MyOpenFile(registry::RegKeys[registry::regkeyDEBUG_FILE_NAME].szCurSTRING, false);
 		}
 	}
 
@@ -44,12 +44,12 @@ namespace output
 
 	_Check_return_ ULONG GetDebugLevel()
 	{
-		return RegKeys[regkeyDEBUG_TAG].ulCurDWORD;
+		return registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD;
 	}
 
 	void SetDebugLevel(ULONG ulDbgLvl)
 	{
-		RegKeys[regkeyDEBUG_TAG].ulCurDWORD = ulDbgLvl;
+		registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD = ulDbgLvl;
 	}
 
 	// We've got our 'new' value here and also a debug output file name
@@ -59,10 +59,10 @@ namespace output
 	void SetDebugOutputToFile(bool bDoOutput)
 	{
 		// save our old value
-		const auto bOldDoOutput = 0 != RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD;
+		const auto bOldDoOutput = 0 != registry::RegKeys[registry::regkeyDEBUG_TO_FILE].ulCurDWORD;
 
 		// set the new value
-		RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD = bDoOutput;
+		registry::RegKeys[registry::regkeyDEBUG_TO_FILE].ulCurDWORD = bDoOutput;
 
 		// ensure we got a file if we need it
 		OpenDebugFile();
@@ -84,7 +84,7 @@ namespace output
 #define CHKPARAM ASSERT(DBGNoDebug != ulDbgLvl || fFile)
 
 	// quick check to see if we have anything to print - so we can avoid executing the call
-#define EARLYABORT {if (!fFile && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && !fIsSetv(ulDbgLvl)) return;}
+#define EARLYABORT {if (!fFile && !registry::RegKeys[registry::regkeyDEBUG_TO_FILE].ulCurDWORD && !fIsSetv(ulDbgLvl)) return;}
 
 	_Check_return_ FILE* MyOpenFile(const std::wstring& szFileName, bool bNewFile)
 	{
@@ -166,7 +166,7 @@ namespace output
 #endif
 
 		// print to to our debug output log file
-		if (RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && g_fDebugFile)
+		if (registry::RegKeys[registry::regkeyDEBUG_TO_FILE].ulCurDWORD && g_fDebugFile)
 		{
 			WriteFile(g_fDebugFile, szThreadTime);
 		}
@@ -195,7 +195,7 @@ namespace output
 #endif
 
 			// print to to our debug output log file
-			if (RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && g_fDebugFile)
+			if (registry::RegKeys[registry::regkeyDEBUG_TO_FILE].ulCurDWORD && g_fDebugFile)
 			{
 				WriteFile(g_fDebugFile, szMsg);
 			}
@@ -240,7 +240,7 @@ namespace output
 
 	void __cdecl DebugPrint(ULONG ulDbgLvl, LPCWSTR szMsg, ...)
 	{
-		if (!fIsSetv(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
+		if (!fIsSetv(ulDbgLvl) && !registry::RegKeys[registry::regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
 		va_list argList = nullptr;
 		va_start(argList, szMsg);
@@ -258,7 +258,7 @@ namespace output
 
 	void __cdecl DebugPrintEx(ULONG ulDbgLvl, std::wstring& szClass, const std::wstring& szFunc, LPCWSTR szMsg, ...)
 	{
-		if (!fIsSetv(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
+		if (!fIsSetv(ulDbgLvl) && !registry::RegKeys[registry::regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
 		auto szMsgEx = strings::format(L"%ws::%ws %ws", szClass.c_str(), szFunc.c_str(), szMsg); // STRING_OK
 		va_list argList = nullptr;

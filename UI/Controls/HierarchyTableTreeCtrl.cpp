@@ -380,7 +380,7 @@ namespace controls
 		SetNodeData(m_hWnd, hItem, lpData);
 
 		if (bGetTable &&
-			(RegKeys[regkeyHIER_ROOT_NOTIFS].ulCurDWORD || hParent != TVI_ROOT))
+			(registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || hParent != TVI_ROOT))
 		{
 			(void)GetHierarchyTable(hItem, nullptr, true);
 		}
@@ -463,7 +463,7 @@ namespace controls
 		{
 			// set up our advise sink
 			if (bRegNotifs &&
-				(RegKeys[regkeyHIER_ROOT_NOTIFS].ulCurDWORD || GetRootItem() != hItem))
+				(registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || GetRootItem() != hItem))
 			{
 				output::DebugPrintEx(DBGNotify, CLASS, L"GetHierarchyTable", L"Advise sink for \"%ws\" = %p\n", strings::LPCTSTRToWstring(GetItemText(hItem)).c_str(), hItem);
 				lpData->Node()->m_lpAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, hItem);
@@ -509,7 +509,7 @@ namespace controls
 		if (!hParent) return MAPI_E_INVALID_PARAMETER;
 		output::DebugPrintEx(DBGHierarchy, CLASS, L"ExpandNode", L"Expanding %p\n", hParent);
 
-		auto lpHierarchyTable = GetHierarchyTable(hParent, nullptr, 0 != RegKeys[regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
+		auto lpHierarchyTable = GetHierarchyTable(hParent, nullptr, 0 != registry::RegKeys[registry::regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
 		if (lpHierarchyTable)
 		{
 			// go to the first row
@@ -612,7 +612,7 @@ namespace controls
 		GetContainer(hItem, mfcmapiREQUEST_MODIFY, &lpMAPIContainer);
 
 		// make sure we've gotten the hierarchy table for this node
-		(void)GetHierarchyTable(hItem, lpMAPIContainer, 0 != RegKeys[regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
+		(void)GetHierarchyTable(hItem, lpMAPIContainer, 0 != registry::RegKeys[registry::regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
 
 		if (SUCCEEDED(hRes) && lpMAPIContainer)
 		{

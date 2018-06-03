@@ -51,8 +51,8 @@ namespace output
 #define DBGAll ((ULONG) 0x0000ffff)
 #define DBGSuperVerbose ((ULONG) 0xffffffff)
 
-#define fIsSet(ulTag) (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag))
-#define fIsSetv(ulTag) (((ulTag) != DBGNoDebug) && (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
+#define fIsSet(ulTag) (registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD & (ulTag))
+#define fIsSetv(ulTag) (((ulTag) != DBGNoDebug) && (registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
 
 	_Check_return_ FILE* MyOpenFile(const std::wstring& szFileName, bool bNewFile);
 	_Check_return_ FILE* MyOpenFileMode(const std::wstring& szFileName, const wchar_t* mode);

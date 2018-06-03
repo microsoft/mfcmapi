@@ -27,7 +27,7 @@ namespace mapi
 
 			auto hRes = S_OK;
 
-			if (RegKeys[regkeyMDB_ONLINE].ulCurDWORD)
+			if (registry::RegKeys[registry::regkeyMDB_ONLINE].ulCurDWORD)
 			{
 				ulFlags |= MDB_ONLINE;
 			}

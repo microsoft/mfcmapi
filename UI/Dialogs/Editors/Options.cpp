@@ -36,23 +36,23 @@ namespace dialog
 
 			for (ULONG ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
 			{
-				if (regoptCheck == RegKeys[ulReg].ulRegOptType)
+				if (registry::regoptCheck == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					InitPane(ulReg, viewpane::CheckPane::Create(RegKeys[ulReg].uiOptionsPrompt, 0 != RegKeys[ulReg].ulCurDWORD, false));
+					InitPane(ulReg, viewpane::CheckPane::Create(registry::RegKeys[ulReg].uiOptionsPrompt, 0 != registry::RegKeys[ulReg].ulCurDWORD, false));
 				}
-				else if (regoptString == RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptString == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					InitPane(ulReg, viewpane::TextPane::CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, RegKeys[ulReg].szCurSTRING, false));
+					InitPane(ulReg, viewpane::TextPane::CreateSingleLinePane(registry::RegKeys[ulReg].uiOptionsPrompt, registry::RegKeys[ulReg].szCurSTRING, false));
 				}
-				else if (regoptStringHex == RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptStringHex == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					InitPane(ulReg, viewpane::TextPane::CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, false));
-					SetHex(ulReg, RegKeys[ulReg].ulCurDWORD);
+					InitPane(ulReg, viewpane::TextPane::CreateSingleLinePane(registry::RegKeys[ulReg].uiOptionsPrompt, false));
+					SetHex(ulReg, registry::RegKeys[ulReg].ulCurDWORD);
 				}
-				else if (regoptStringDec == RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptStringDec == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					InitPane(ulReg, viewpane::TextPane::CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, false));
-					SetDecimal(ulReg, RegKeys[ulReg].ulCurDWORD);
+					InitPane(ulReg, viewpane::TextPane::CreateSingleLinePane(registry::RegKeys[ulReg].uiOptionsPrompt, false));
+					SetDecimal(ulReg, registry::RegKeys[ulReg].ulCurDWORD);
 				}
 			}
 		}
@@ -65,40 +65,40 @@ namespace dialog
 		void COptions::OnOK()
 		{
 			// need to grab this FIRST
-			RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING = GetStringW(regkeyDEBUG_FILE_NAME);
+			registry::RegKeys[registry::regkeyDEBUG_FILE_NAME].szCurSTRING = GetStringW(registry::regkeyDEBUG_FILE_NAME);
 
-			if (GetHex(regkeyDEBUG_TAG) != RegKeys[regkeyDEBUG_TAG].ulCurDWORD)
+			if (GetHex(registry::regkeyDEBUG_TAG) != registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD)
 			{
-				output::SetDebugLevel(GetHex(regkeyDEBUG_TAG));
+				output::SetDebugLevel(GetHex(registry::regkeyDEBUG_TAG));
 				output::DebugPrintVersion(DBGVersionBanner);
 			}
 
-			output::SetDebugOutputToFile(GetCheck(regkeyDEBUG_TO_FILE));
+			output::SetDebugOutputToFile(GetCheck(registry::regkeyDEBUG_TO_FILE));
 
 			// Remaining options require no special handling - loop through them
 			for (ULONG ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
 			{
-				if (regoptCheck == RegKeys[ulReg].ulRegOptType)
+				if (registry::regoptCheck == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					if (RegKeys[ulReg].bRefresh && RegKeys[ulReg].ulCurDWORD != static_cast<ULONG>(GetCheck(ulReg)))
+					if (registry::RegKeys[ulReg].bRefresh && registry::RegKeys[ulReg].ulCurDWORD != static_cast<ULONG>(GetCheck(ulReg)))
 					{
 						m_bNeedPropRefresh = true;
 					}
 
-					RegKeys[ulReg].ulCurDWORD = GetCheck(ulReg);
+					registry::RegKeys[ulReg].ulCurDWORD = GetCheck(ulReg);
 				}
-				else if (regoptStringHex == RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptStringHex == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					RegKeys[ulReg].ulCurDWORD = GetHex(ulReg);
+					registry::RegKeys[ulReg].ulCurDWORD = GetHex(ulReg);
 				}
-				else if (regoptStringDec == RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptStringDec == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					RegKeys[ulReg].ulCurDWORD = GetDecimal(ulReg);
+					registry::RegKeys[ulReg].ulCurDWORD = GetDecimal(ulReg);
 				}
 			}
 
 			// Commit our values to the registry
-			WriteToRegistry();
+			registry::WriteToRegistry();
 
 			CEditor::OnOK();
 		}
@@ -118,8 +118,8 @@ namespace dialog
 			COptions MyOptions(lpParentWnd);
 			MyOptions.DoModal();
 
-			ForceOutlookMAPI(0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
-			ForceSystemMAPI(0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD);
+			ForceOutlookMAPI(0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
+			ForceSystemMAPI(0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD);
 			return MyOptions.NeedPropRefresh();
 		}
 	}

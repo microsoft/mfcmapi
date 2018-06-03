@@ -214,7 +214,7 @@ _Check_return_ HKEY GetMailKey(_In_ const std::wstring& szClient)
 			&hDefaultMailKey));
 		if (hDefaultMailKey)
 		{
-			auto lpszReg = ReadStringFromRegistry(
+			auto lpszReg = registry::ReadStringFromRegistry(
 				hDefaultMailKey,
 				L""); // get the default value
 			if (!lpszReg.empty())
@@ -254,13 +254,13 @@ void GetMapiMsiIds(_In_ const std::wstring& szClient, _In_ std::wstring& lpszCom
 	const auto hKey = GetMailKey(szClient);
 	if (hKey)
 	{
-		lpszComponentID = ReadStringFromRegistry(hKey, L"MSIComponentID"); // STRING_OK
+		lpszComponentID = registry::ReadStringFromRegistry(hKey, L"MSIComponentID"); // STRING_OK
 		output::DebugPrint(DBGLoadLibrary, L"MSIComponentID = %ws\n", !lpszComponentID.empty() ? lpszComponentID.c_str() : L"<not found>");
 
-		lpszAppLCID = ReadStringFromRegistry(hKey, L"MSIApplicationLCID"); // STRING_OK
+		lpszAppLCID = registry::ReadStringFromRegistry(hKey, L"MSIApplicationLCID"); // STRING_OK
 		output::DebugPrint(DBGLoadLibrary, L"MSIApplicationLCID = %ws\n", !lpszAppLCID.empty() ? lpszAppLCID.c_str() : L"<not found>");
 
-		lpszOfficeLCID = ReadStringFromRegistry(hKey, L"MSIOfficeLCID"); // STRING_OK
+		lpszOfficeLCID = registry::ReadStringFromRegistry(hKey, L"MSIOfficeLCID"); // STRING_OK
 		output::DebugPrint(DBGLoadLibrary, L"MSIOfficeLCID = %ws\n", !lpszOfficeLCID.empty() ? lpszOfficeLCID.c_str() : L"<not found>");
 		auto hRes = S_OK;
 

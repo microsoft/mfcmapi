@@ -61,7 +61,7 @@ namespace cache
 
 	_Check_return_ inline bool fCacheNamedProps()
 	{
-		return RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD != 0;
+		return registry::RegKeys[registry::regkeyCACHE_NAME_DPROPS].ulCurDWORD != 0;
 	}
 
 	NamePropNames NameIDToStrings(

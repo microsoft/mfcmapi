@@ -739,8 +739,8 @@ namespace cache
 		if (!lpNameID &&
 			lpMAPIProp && // if we have an object
 			!bIsAB &&
-			RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
-			(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
+			registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
+			(registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 		{
 			SPropTagArray tag = { 0 };
 			auto lpTag = &tag;

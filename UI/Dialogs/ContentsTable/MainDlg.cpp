@@ -49,7 +49,7 @@ namespace dialog
 		CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_MAIN);
 		AddLoadMAPIMenus();
 
-		if (RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD)
+		if (registry::RegKeys[registry::regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD)
 		{
 			DisplayAboutDlg(this);
 		}
@@ -1191,8 +1191,8 @@ namespace dialog
 			}
 		}
 
-		MyData.InitPane(1, viewpane::CheckPane::Create(IDS_REGKEY_FORCEOUTLOOKMAPI, 0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD, true));
-		MyData.InitPane(2, viewpane::CheckPane::Create(IDS_REGKEY_FORCESYSTEMMAPI, 0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD, true));
+		MyData.InitPane(1, viewpane::CheckPane::Create(IDS_REGKEY_FORCEOUTLOOKMAPI, 0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD, true));
+		MyData.InitPane(2, viewpane::CheckPane::Create(IDS_REGKEY_FORCESYSTEMMAPI, 0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD, true));
 
 		WC_H(MyData.DisplayDialog());
 	}

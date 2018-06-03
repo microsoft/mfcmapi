@@ -1037,10 +1037,10 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 	// Set up our property arrays or nothing works
 	addin::MergeAddInArrays();
 
-	RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD = 1;
-	RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
-	RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
-	RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
+	registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD = 1;
+	registry::RegKeys[registry::regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
+	registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
+	registry::RegKeys[registry::regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
 
 	MYOPTIONS ProgOpts;
 	const auto bGoodCommandLine = ParseArgs(argc, argv, &ProgOpts);
@@ -1053,13 +1053,13 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 
 	if (ProgOpts.ulOptions & OPT_VERBOSE)
 	{
-		RegKeys[regkeyDEBUG_TAG].ulCurDWORD = 0xFFFFFFFF;
+		registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD = 0xFFFFFFFF;
 		PrintArgs(ProgOpts);
 	}
 
 	if (!(ProgOpts.ulOptions & OPT_NOADDINS))
 	{
-		RegKeys[regkeyLOADADDINS].ulCurDWORD = true;
+		registry::RegKeys[registry::regkeyLOADADDINS].ulCurDWORD = true;
 		addin::LoadAddIns();
 	}
 
@@ -1076,8 +1076,8 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 	{
 		if (ProgOpts.ulOptions & OPT_ONLINE)
 		{
-			RegKeys[regKeyMAPI_NO_CACHE].ulCurDWORD = true;
-			RegKeys[regkeyMDB_ONLINE].ulCurDWORD = true;
+			registry::RegKeys[registry::regKeyMAPI_NO_CACHE].ulCurDWORD = true;
+			registry::RegKeys[registry::regkeyMDB_ONLINE].ulCurDWORD = true;
 		}
 
 		// Log on to MAPI if needed

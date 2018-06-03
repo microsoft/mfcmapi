@@ -46,8 +46,8 @@ namespace ui
 	{
 		// OutputDebugStringOutput only at first
 		// Get any settings from the registry
-		SetDefaults();
-		ReadFromRegistry();
+		registry::SetDefaults();
+		registry::ReadFromRegistry();
 		// After this call we may output to the debug file
 		output::OpenDebugFile();
 		output::DebugPrintVersion(DBGVersionBanner);
@@ -74,8 +74,8 @@ namespace ui
 			NULL,
 			NULL);
 
-		ForceOutlookMAPI(0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
-		ForceSystemMAPI(0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD);
+		ForceOutlookMAPI(0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
+		ForceSystemMAPI(0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD);
 
 		addin::LoadAddIns();
 
@@ -92,7 +92,7 @@ namespace ui
 		addin::UnloadAddIns();
 		if (m_hwinEventHook) UnhookWinEvent(m_hwinEventHook);
 		cache::UninitializeNamedPropCache();
-		WriteToRegistry();
+		registry::WriteToRegistry();
 		output::CloseDebugFile();
 		// Since we're killing what m_pMainWnd points to here, we need to clear it
 		// Else MFC will try to route messages to it

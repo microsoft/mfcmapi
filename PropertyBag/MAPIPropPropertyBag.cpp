@@ -70,7 +70,7 @@ namespace propertybag
 		auto hRes = S_OK;
 		m_bGetPropsSucceeded = false;
 
-		if (!RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD)
+		if (!registry::RegKeys[registry::regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD)
 		{
 			hRes = mapi::GetPropsNULL(m_lpProp,
 				fMapiUnicode,

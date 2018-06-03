@@ -190,12 +190,12 @@ namespace addin
 		{
 			std::wstring lpszReg;
 
-			m_hRootKey = CreateRootKey();
+			m_hRootKey = registry::CreateRootKey();
 			m_szKey = szKey;
 
 			if (m_hRootKey)
 			{
-				lpszReg = ReadStringFromRegistry(
+				lpszReg = registry::ReadStringFromRegistry(
 					m_hRootKey,
 					m_szKey);
 			}
@@ -226,7 +226,7 @@ namespace addin
 					szList += SEPARATOR;
 				}
 
-				WriteStringToRegistry(
+				registry::WriteStringToRegistry(
 					m_hRootKey,
 					m_szKey,
 					szList);
@@ -260,7 +260,7 @@ namespace addin
 		output::DebugPrint(DBGAddInPlumbing, L"Loading AddIns\n");
 		// First, we look at each DLL in the current dir and see if it exports 'LoadAddIn'
 
-		if (!RegKeys[regkeyLOADADDINS].ulCurDWORD)
+		if (!registry::RegKeys[registry::regkeyLOADADDINS].ulCurDWORD)
 		{
 			output::DebugPrint(DBGAddInPlumbing, L"Bypassing add-in loading\n");
 		}

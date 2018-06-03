@@ -12,14 +12,14 @@ namespace mapi
 #ifdef MRMAPI
 		_Check_return_ CMAPIProgress* GetMAPIProgress(const std::wstring& /*lpszContext*/, _In_ HWND /*hWnd*/)
 		{
-			return NULL;
+			return nullptr;
 		}
 #endif
 
 #ifndef MRMAPI
 		_Check_return_ CMAPIProgress* GetMAPIProgress(const std::wstring& lpszContext, _In_ HWND hWnd)
 		{
-			if (RegKeys[regkeyUSE_IMAPIPROGRESS].ulCurDWORD)
+			if (registry::RegKeys[registry::regkeyUSE_IMAPIPROGRESS].ulCurDWORD)
 			{
 				const auto pProgress = new CMAPIProgress(lpszContext, hWnd);
 

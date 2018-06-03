@@ -53,7 +53,7 @@ namespace mapi
 
 		*lppUnk = nullptr;
 
-		if (RegKeys[regKeyMAPI_NO_CACHE].ulCurDWORD)
+		if (registry::RegKeys[registry::regKeyMAPI_NO_CACHE].ulCurDWORD)
 		{
 			ulFlags |= MAPI_NO_CACHE;
 		}
@@ -1156,7 +1156,7 @@ namespace mapi
 
 		if (!lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 		LPSPropTagArray lpTags = nullptr;
-		if (RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD)
+		if (registry::RegKeys[registry::regkeyUSE_GETPROPLIST].ulCurDWORD)
 		{
 			output::DebugPrint(DBGGeneric, L"GetPropsNULL: Calling GetPropList\n");
 			WC_MAPI(lpMAPIProp->GetPropList(
@@ -1277,7 +1277,7 @@ namespace mapi
 		for (ULONG i = 0; i < lpArray->cValues; i++)
 		{
 			// They're dupes if the IDs are the same
-			if (RegKeys[regkeyALLOW_DUPE_COLUMNS].ulCurDWORD)
+			if (registry::RegKeys[registry::regkeyALLOW_DUPE_COLUMNS].ulCurDWORD)
 			{
 				if (lpArray->aulPropTag[i] == ulPropTag)
 					return true;

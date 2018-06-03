@@ -233,8 +233,8 @@ namespace mapiprocessor
 		bool bMid)
 	{
 		// FID/MID lookups only succeed online, so go ahead and force it
-		RegKeys[regKeyMAPI_NO_CACHE].ulCurDWORD = true;
-		RegKeys[regkeyMDB_ONLINE].ulCurDWORD = true;
+		registry::RegKeys[registry::regKeyMAPI_NO_CACHE].ulCurDWORD = true;
+		registry::RegKeys[registry::regkeyMDB_ONLINE].ulCurDWORD = true;
 
 		output::DebugPrint(DBGGeneric, L"DumpFidMid: Outputting from profile %ws. FID: %ws, MID: %ws\n", lpszProfile.c_str(), lpszFid.c_str(), lpszMid.c_str());
 		auto hRes = S_OK;

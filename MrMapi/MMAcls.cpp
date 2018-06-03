@@ -23,7 +23,7 @@ void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
 		}
 		if (lpTbl)
 		{
-			RegKeys[regkeyDEBUG_TAG].ulCurDWORD |= DBGGeneric;
+			registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD |= DBGGeneric;
 			output::_OutputTable(DBGGeneric, nullptr, lpTbl);
 		}
 	}
