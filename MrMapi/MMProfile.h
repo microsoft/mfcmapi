@@ -1,4 +1,7 @@
 #pragma once
 // Profile dumping for MrMAPI
 
-void DoProfile(_In_ MYOPTIONS ProgOpts);
+namespace output
+{
+	void DoProfile(_In_ MYOPTIONS ProgOpts);
+}

@@ -1175,7 +1175,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 			DoPST(ProgOpts);
 			break;
 		case cmdmodeProfile:
-			DoProfile(ProgOpts);
+			output::DoProfile(ProgOpts);
 			break;
 		case cmdmodeReceiveFolder:
 			DoReceiveFolder(ProgOpts);

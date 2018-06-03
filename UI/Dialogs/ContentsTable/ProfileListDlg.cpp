@@ -568,7 +568,7 @@ namespace dialog
 				this);
 			if (!file.empty())
 			{
-				ExportProfile(lpListData->Contents()->m_szProfileDisplayName, strings::emptystring, false, file);
+				output::ExportProfile(lpListData->Contents()->m_szProfileDisplayName, strings::emptystring, false, file);
 			}
 		}
 	}

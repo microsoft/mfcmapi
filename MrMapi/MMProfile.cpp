@@ -5,92 +5,95 @@
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
 
-void ExportProfileList()
+namespace output
 {
-	printf("Profile List\n");
-	printf(" # Default Name\n");
-	auto hRes = S_OK;
-	LPMAPITABLE lpProfTable = nullptr;
-	LPPROFADMIN lpProfAdmin = nullptr;
-
-	static const SizedSPropTagArray(2, rgPropTag) =
+	void ExportProfileList()
 	{
-		2,
-		PR_DEFAULT_PROFILE,
-		PR_DISPLAY_NAME_A,
-	};
+		printf("Profile List\n");
+		printf(" # Default Name\n");
+		auto hRes = S_OK;
+		LPMAPITABLE lpProfTable = nullptr;
+		LPPROFADMIN lpProfAdmin = nullptr;
 
-	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
-	if (!lpProfAdmin) return;
-
-	EC_MAPI(lpProfAdmin->GetProfileTable(
-		0, // fMapiUnicode is not supported
-		&lpProfTable));
-
-	if (lpProfTable)
-	{
-		LPSRowSet lpRows = nullptr;
-
-		EC_MAPI(HrQueryAllRows(
-			lpProfTable,
-			LPSPropTagArray(&rgPropTag),
-			NULL,
-			NULL,
-			0,
-			&lpRows));
-
-		if (lpRows)
+		static const SizedSPropTagArray(2, rgPropTag) =
 		{
-			if (lpRows->cRows == 0)
-			{
-				printf("No profiles exist\n");
-			}
-			else
-			{
-				if (!FAILED(hRes)) for (ULONG i = 0; i < lpRows->cRows; i++)
-				{
-					printf("%2d ", i);
-					if (PR_DEFAULT_PROFILE == lpRows->aRow[i].lpProps[0].ulPropTag && lpRows->aRow[i].lpProps[0].Value.b)
-					{
-						printf("*       ");
-					}
-					else
-					{
-						printf("        ");
-					}
+			2,
+			PR_DEFAULT_PROFILE,
+			PR_DISPLAY_NAME_A,
+		};
 
-					if (mapi::CheckStringProp(&lpRows->aRow[i].lpProps[1], PT_STRING8))
+		EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+		if (!lpProfAdmin) return;
+
+		EC_MAPI(lpProfAdmin->GetProfileTable(
+			0, // fMapiUnicode is not supported
+			&lpProfTable));
+
+		if (lpProfTable)
+		{
+			LPSRowSet lpRows = nullptr;
+
+			EC_MAPI(HrQueryAllRows(
+				lpProfTable,
+				LPSPropTagArray(&rgPropTag),
+				NULL,
+				NULL,
+				0,
+				&lpRows));
+
+			if (lpRows)
+			{
+				if (lpRows->cRows == 0)
+				{
+					printf("No profiles exist\n");
+				}
+				else
+				{
+					if (!FAILED(hRes)) for (ULONG i = 0; i < lpRows->cRows; i++)
 					{
-						printf("%hs\n", lpRows->aRow[i].lpProps[1].Value.lpszA);
-					}
-					else
-					{
-						printf("UNKNOWN\n");
+						printf("%2d ", i);
+						if (PR_DEFAULT_PROFILE == lpRows->aRow[i].lpProps[0].ulPropTag && lpRows->aRow[i].lpProps[0].Value.b)
+						{
+							printf("*       ");
+						}
+						else
+						{
+							printf("        ");
+						}
+
+						if (mapi::CheckStringProp(&lpRows->aRow[i].lpProps[1], PT_STRING8))
+						{
+							printf("%hs\n", lpRows->aRow[i].lpProps[1].Value.lpszA);
+						}
+						else
+						{
+							printf("UNKNOWN\n");
+						}
 					}
 				}
+
+				FreeProws(lpRows);
 			}
 
-			FreeProws(lpRows);
+			lpProfTable->Release();
 		}
 
-		lpProfTable->Release();
+		lpProfAdmin->Release();
 	}
 
-	lpProfAdmin->Release();
-}
-
-void DoProfile(_In_ MYOPTIONS ProgOpts)
-{
-	if (!ProgOpts.lpszProfile.empty() && !ProgOpts.lpszOutput.empty())
+	void DoProfile(_In_ MYOPTIONS ProgOpts)
 	{
-		printf("Profile Export\n");
-		printf("Options specified:\n");
-		printf("   Profile: %ws\n", ProgOpts.lpszProfile.c_str());
-		printf("   Output File: %ws\n", ProgOpts.lpszOutput.c_str());
-		ExportProfile(strings::wstringTostring(ProgOpts.lpszProfile), ProgOpts.lpszProfileSection, ProgOpts.bByteSwapped, ProgOpts.lpszOutput);
-	}
-	else
-	{
-		ExportProfileList();
+		if (!ProgOpts.lpszProfile.empty() && !ProgOpts.lpszOutput.empty())
+		{
+			printf("Profile Export\n");
+			printf("Options specified:\n");
+			printf("   Profile: %ws\n", ProgOpts.lpszProfile.c_str());
+			printf("   Output File: %ws\n", ProgOpts.lpszOutput.c_str());
+			ExportProfile(strings::wstringTostring(ProgOpts.lpszProfile), ProgOpts.lpszProfileSection, ProgOpts.bByteSwapped, ProgOpts.lpszOutput);
+		}
+		else
+		{
+			ExportProfileList();
+		}
 	}
 }
