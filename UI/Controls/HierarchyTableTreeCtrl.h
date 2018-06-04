@@ -34,6 +34,34 @@ namespace controls
 
 		// Selected item accessors
 		_Check_return_ LPMAPICONTAINER GetSelectedContainer(__mfcmapiModifyEnum bModify) const;
+		// Get selected container cast as a particular interface
+		_Check_return_ template <class T> T GetSelectedContainer(__mfcmapiModifyEnum bModify) const
+		{
+			HRESULT hRes = S_OK;
+			T ret = nullptr;
+			LPMAPICONTAINER lpSelectedContainer = nullptr;
+
+			auto iid = IID_IUnknown;
+			if (std::is_same<T, LPMAPIFOLDER>::value)
+			{
+				iid = IID_IMAPIFolder;
+			}
+			else if (std::is_same<T, LPMAPICONTAINER>::value)
+			{
+				iid = IID_IMAPIContainer;
+			}
+
+			GetContainer(GetSelectedItem(), bModify, &lpSelectedContainer);
+
+			if (lpSelectedContainer)
+			{
+				WC_H(lpSelectedContainer->QueryInterface(iid, reinterpret_cast<LPVOID*>(&ret)));
+				lpSelectedContainer->Release();
+			}
+
+			return ret;
+		}
+
 		_Check_return_ LPSBinary GetSelectedItemEID() const;
 		_Check_return_ sortlistdata::SortListData* GetSelectedItemData() const;
 		_Check_return_ sortlistdata::SortListData* GetSortListData(HTREEITEM iItem) const;

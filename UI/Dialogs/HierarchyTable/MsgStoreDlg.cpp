@@ -349,7 +349,7 @@ namespace dialog
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnCopyItems", L"\n");
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpMAPISourceFolder = dynamic_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
+		auto lpMAPISourceFolder = m_lpHierarchyTableTreeCtrl->GetSelectedContainer<LPMAPIFOLDER>(mfcmapiREQUEST_MODIFY);
 
 		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		LPMAPIFOLDER lpSrcParentFolder = nullptr;
@@ -662,8 +662,7 @@ namespace dialog
 		MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_FOLDERCOMMENT, szFolderComment, false));
 		MyData.InitPane(3, viewpane::CheckPane::Create(IDS_PASSOPENIFEXISTS, false, false));
 
-		auto lpMAPIFolder = dynamic_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(
-			mfcmapiREQUEST_MODIFY));
+		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl->GetSelectedContainer<LPMAPIFOLDER>(mfcmapiREQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
