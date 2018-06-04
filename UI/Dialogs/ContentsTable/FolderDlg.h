@@ -71,5 +71,7 @@ namespace dialog
 		_Check_return_ bool MultiSelectComplex(WORD wMenuSelect);
 		_Check_return_ bool MultiSelectSimple(WORD wMenuSelect);
 		void NewSpecialItem(WORD wMenuSelect) const;
+
+		LPMAPIFOLDER m_lpFolder;
 	};
 }
