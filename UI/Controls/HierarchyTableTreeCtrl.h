@@ -33,7 +33,6 @@ namespace controls
 		_Check_return_ HRESULT RefreshHierarchyTable();
 
 		// Selected item accessors
-		_Check_return_ LPMAPICONTAINER GetSelectedContainer(__mfcmapiModifyEnum bModify) const;
 		// Get selected container cast as a particular interface
 		_Check_return_ template <class T> T GetSelectedContainer(__mfcmapiModifyEnum bModify) const
 		{
