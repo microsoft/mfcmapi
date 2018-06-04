@@ -54,7 +54,6 @@ namespace dialog
 		m_lpParent = pParentWnd;
 		if (m_lpParent) m_lpParent->AddRef();
 
-		m_lpContainer = nullptr;
 		m_ulAddInContext = ulAddInContext;
 		m_ulAddInMenuItems = NULL;
 
@@ -73,7 +72,6 @@ namespace dialog
 
 		CWnd::DestroyWindow();
 		OnNotificationsOff();
-		if (m_lpContainer) m_lpContainer->Release();
 		if (m_lpMapiObjects) m_lpMapiObjects->Release();
 		if (m_lpParent) m_lpParent->Release();
 	}

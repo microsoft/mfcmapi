@@ -64,7 +64,7 @@ namespace dialog
 	{
 		TRACE_DESTRUCTOR(CLASS);
 		if (m_lpContentsTable) m_lpContentsTable->Release();
-		m_lpContentsTable = nullptr;
+		if (m_lpContainer) m_lpContainer->Release();
 	}
 
 	_Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)

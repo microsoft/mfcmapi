@@ -43,6 +43,7 @@ namespace dialog
 		_Check_return_ HRESULT OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage);
 		_Check_return_ HRESULT OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage);
 
+		LPMAPICONTAINER m_lpContainer;
 		controls::sortlistctrl::CContentsTableListCtrl* m_lpContentsTableListCtrl;
 		LPMAPITABLE m_lpContentsTable;
 		ULONG m_ulDisplayFlags;

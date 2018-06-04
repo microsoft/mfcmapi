@@ -33,6 +33,7 @@ namespace dialog
 		void CreateDialogAndMenu(UINT nIDMenuResource);
 		void OnInitMenu(_In_ CMenu* pMenu) override;
 
+		LPMAPICONTAINER m_lpContainer;
 		controls::CHierarchyTableTreeCtrl* m_lpHierarchyTableTreeCtrl;
 		ULONG m_ulDisplayFlags;
 
