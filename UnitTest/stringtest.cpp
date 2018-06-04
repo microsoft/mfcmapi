@@ -73,6 +73,8 @@ namespace stringtest
 
 			Assert::AreEqual(std::wstring(L""), strings::LPCTSTRToWstring(nullptr));
 			Assert::AreEqual(std::wstring(L""), strings::LPCSTRToWstring(nullptr));
+			Assert::AreEqual(L"test", strings::wstringToLPCWSTR(L"test"));
+			Assert::AreEqual(L"", strings::wstringToLPCWSTR(L""));
 		}
 
 		TEST_METHOD(Test_wstringToUlong)
@@ -259,6 +261,7 @@ namespace stringtest
 			Assert::AreEqual(std::wstring(L"\t\n\r"), strings::BinToTextString(&sBinary, true));
 			sBinary = SBinary{ static_cast<ULONG>(vector_tabcrlfA.size()), vector_tabcrlfA.data() };
 			Assert::AreEqual(std::wstring(L"..."), strings::BinToTextString(&sBinary, false));
+			Assert::AreEqual(mystringW, strings::BinToTextString(std::vector<BYTE>(bufA, bufA + cbA), true));
 		}
 
 		TEST_METHOD(Test_BinToHexString)
@@ -331,6 +334,19 @@ namespace stringtest
 		TEST_METHOD(Test_join)
 		{
 			Assert::AreEqual(fullstring, strings::join(words, L' '));
+		}
+
+		TEST_METHOD(Test_currency)
+		{
+			CURRENCY foo = { 1,2 };
+			Assert::AreEqual(std::wstring(L"0.0000"), strings::CurrencyToString(CURRENCY({ 0, 0 })));
+			Assert::AreEqual(std::wstring(L"858993.4593"), strings::CurrencyToString(CURRENCY({ 1, 2 })));
+		}
+
+		TEST_METHOD(Test_base64)
+		{
+			Assert::AreEqual(std::wstring(L"bQB5AHMAdAByAGkAbgBnAA=="), strings::Base64Encode(myStringWvector.size(), myStringWvector.data()));
+			Assert::AreEqual(myStringWvector, strings::Base64Decode(std::wstring(L"bQB5AHMAdAByAGkAbgBnAA==")));
 		}
 	};
 }
