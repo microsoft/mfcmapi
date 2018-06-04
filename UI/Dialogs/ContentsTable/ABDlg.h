@@ -9,7 +9,7 @@ namespace dialog
 		CAbDlg(
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects,
-			_In_ LPABCONT lpAdrBook);
+			_In_ LPABCONT lpAbCont);
 		virtual ~CAbDlg();
 
 	private:
@@ -30,6 +30,8 @@ namespace dialog
 		void OnOpenContact();
 		void OnOpenManager();
 		void OnOpenOwner();
+
+		LPABCONT m_lpAbCont;
 
 		DECLARE_MESSAGE_MAP()
 	};
