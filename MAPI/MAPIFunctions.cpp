@@ -1912,7 +1912,7 @@ namespace mapi
 		return hRes;
 	}
 
-	// This function creates a new message based in m_lpContainer
+	// This function creates a new message based in lpFolder
 	// Then sends the message
 	_Check_return_ HRESULT SendTestMessage(
 		_In_ LPMAPISESSION lpMAPISession,
