@@ -45,6 +45,7 @@ namespace dialog
 	CAbDlg::~CAbDlg()
 	{
 		TRACE_DESTRUCTOR(CLASS);
+		if (m_lpAbCont) m_lpAbCont->Release();
 	}
 
 	BEGIN_MESSAGE_MAP(CAbDlg, CContentsTableDlg)
