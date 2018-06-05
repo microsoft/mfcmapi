@@ -5,7 +5,7 @@
 namespace mapi
 {
 	// Safely cast across MAPI interfaces. Result is addrefed and must be released.
-	_Check_return_ template <class T> T safe_cast(LPMAPIPROP src)
+	_Check_return_ template <class T> T safe_cast(IUnknown* src)
 	{
 		if (!src) return nullptr;
 		auto hRes = S_OK;

@@ -84,6 +84,13 @@ namespace dialog
 		CBaseDialog::OnInitMenu(pMenu);
 	}
 
+	// Remove previous container and set new one. Will addref container.
+	void CHierarchyTableDlg::SetRootContainer(LPUNKNOWN container)
+	{
+		if (m_lpContainer) m_lpContainer->Release();
+		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(container);
+	}
+
 	void CHierarchyTableDlg::OnCancel()
 	{
 		ShowWindow(SW_HIDE);

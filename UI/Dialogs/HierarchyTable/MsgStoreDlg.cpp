@@ -45,8 +45,9 @@ namespace dialog
 			{
 				m_szTitle = mapi::GetTitle(lpMDB);
 
-				if (!m_lpContainer)
+				if (!GetRootContainer())
 				{
+					auto container = LPUNKNOWN(nullptr);
 					// Open root container.
 					EC_H(mapi::CallOpenEntry(
 						lpMDB,
@@ -57,7 +58,10 @@ namespace dialog
 						NULL,
 						MAPI_BEST_ACCESS,
 						NULL,
-						reinterpret_cast<LPUNKNOWN*>(&m_lpContainer)));
+						&container));
+
+					SetRootContainer(container);
+					container->Release();
 				}
 			}
 		}
@@ -1165,9 +1169,9 @@ namespace dialog
 				// Restore the folder up under m_lpContainer
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				output::DebugPrint(DBGGeneric, L"Restoring %p to %p as \n", lpSrcFolder, m_lpContainer);
+				output::DebugPrint(DBGGeneric, L"Restoring %p to %p as \n", lpSrcFolder, GetRootContainer());
 
-				if (!lpSrcParentFolder) lpSrcParentFolder = mapi::safe_cast<LPMAPIFOLDER>(m_lpContainer);
+				if (!lpSrcParentFolder) lpSrcParentFolder = mapi::safe_cast<LPMAPIFOLDER>(GetRootContainer());
 
 				LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
 
@@ -1180,7 +1184,7 @@ namespace dialog
 					lpProps[EID].Value.bin.cb,
 					reinterpret_cast<LPENTRYID>(lpProps[EID].Value.bin.lpb),
 					&IID_IMAPIFolder,
-					m_lpContainer,
+					GetRootContainer(),
 					LPTSTR(MyData.GetStringW(0).c_str()),
 					lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 					lpProgress,
