@@ -508,7 +508,7 @@ namespace dialog
 
 		addin::InvokeAddInMenu(lpParams);
 
-		if (lpParams&& lpParams->lpAttach)
+		if (lpParams && lpParams->lpAttach)
 		{
 			lpParams->lpAttach->Release();
 			lpParams->lpAttach = nullptr;
