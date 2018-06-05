@@ -16,6 +16,7 @@ namespace dialog
 		CMsgStoreDlg(
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_opt_ LPMAPIPROP lpMDB,
 			_In_opt_ LPMAPIPROP lpRootFolder,
 			ULONG ulDisplayFlags);
 		virtual ~CMsgStoreDlg();
@@ -64,6 +65,7 @@ namespace dialog
 		void OnPasteMessages();
 		void OnExportMessages();
 
+		LPMDB m_lpMDB;
 		DECLARE_MESSAGE_MAP()
 	};
 }

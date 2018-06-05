@@ -22,6 +22,7 @@ namespace dialog
 	CMsgStoreDlg::CMsgStoreDlg(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
+		_In_opt_ LPMAPIPROP lpMDB,
 		_In_opt_ LPMAPIPROP lpRootFolder,
 		ULONG ulDisplayFlags
 	) :
@@ -36,21 +37,21 @@ namespace dialog
 		TRACE_CONSTRUCTOR(CLASS);
 		auto hRes = S_OK;
 
+		m_lpMDB = mapi::safe_cast<LPMDB>(lpMDB);
 		m_ulDisplayFlags = ulDisplayFlags;
 
 		if (m_lpMapiObjects)
 		{
-			const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-			if (lpMDB)
+			if (m_lpMDB)
 			{
-				m_szTitle = mapi::GetTitle(lpMDB);
+				m_szTitle = mapi::GetTitle(m_lpMDB);
 
 				if (!GetRootContainer())
 				{
 					auto container = LPUNKNOWN(nullptr);
 					// Open root container.
 					EC_H(mapi::CallOpenEntry(
-						lpMDB,
+						m_lpMDB,
 						NULL,
 						NULL,
 						NULL,
@@ -72,6 +73,7 @@ namespace dialog
 	CMsgStoreDlg::~CMsgStoreDlg()
 	{
 		TRACE_DESTRUCTOR(CLASS);
+		if (m_lpMDB) m_lpMDB->Release();
 	}
 
 	BEGIN_MESSAGE_MAP(CMsgStoreDlg, CHierarchyTableDlg)
@@ -109,13 +111,7 @@ namespace dialog
 	{
 		if (!pMenu) return;
 
-		LPMDB lpMDB = nullptr;
 		const auto bItemSelected = m_lpHierarchyTableTreeCtrl && m_lpHierarchyTableTreeCtrl->IsItemSelected();
-
-		if (m_lpMapiObjects)
-		{
-			lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-		}
 
 		const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 		pMenu->EnableMenuItem(ID_PASTE, DIM((ulStatus != BUFFER_EMPTY) && bItemSelected));
@@ -127,9 +123,9 @@ namespace dialog
 
 		pMenu->EnableMenuItem(ID_CREATESUBFOLDER, DIM(bItemSelected));
 		pMenu->EnableMenuItem(ID_DISPLAYACLTABLE, DIM(bItemSelected));
-		pMenu->EnableMenuItem(ID_DISPLAYMAILBOXTABLE, DIM(lpMDB));
-		pMenu->EnableMenuItem(ID_DISPLAYOUTGOINGQUEUE, DIM(lpMDB));
-		pMenu->EnableMenuItem(ID_DISPLAYRECEIVEFOLDERTABLE, DIM(lpMDB));
+		pMenu->EnableMenuItem(ID_DISPLAYMAILBOXTABLE, DIM(m_lpMDB));
+		pMenu->EnableMenuItem(ID_DISPLAYOUTGOINGQUEUE, DIM(m_lpMDB));
+		pMenu->EnableMenuItem(ID_DISPLAYRECEIVEFOLDERTABLE, DIM(m_lpMDB));
 		pMenu->EnableMenuItem(ID_DISPLAYRULESTABLE, DIM(bItemSelected));
 		pMenu->EnableMenuItem(ID_EMPTYFOLDER, DIM(bItemSelected));
 		pMenu->EnableMenuItem(ID_OPENFORMCONTAINER, DIM(bItemSelected));
@@ -146,10 +142,10 @@ namespace dialog
 		pMenu->EnableMenuItem(ID_COPY, DIM(bItemSelected));
 		pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIM(bItemSelected));
 
-		pMenu->EnableMenuItem(ID_DISPLAYINBOX, DIM(lpMDB));
-		pMenu->EnableMenuItem(ID_DISPLAYCALENDAR, DIM(lpMDB));
-		pMenu->EnableMenuItem(ID_DISPLAYCONTACTS, DIM(lpMDB));
-		pMenu->EnableMenuItem(ID_DISPLAYTASKS, DIM(lpMDB));
+		pMenu->EnableMenuItem(ID_DISPLAYINBOX, DIM(m_lpMDB));
+		pMenu->EnableMenuItem(ID_DISPLAYCALENDAR, DIM(m_lpMDB));
+		pMenu->EnableMenuItem(ID_DISPLAYCONTACTS, DIM(m_lpMDB));
+		pMenu->EnableMenuItem(ID_DISPLAYTASKS, DIM(m_lpMDB));
 
 		CHierarchyTableDlg::OnInitMenu(pMenu);
 	}
@@ -171,12 +167,9 @@ namespace dialog
 		auto hRes = S_OK;
 		LPMAPIFOLDER lpFolder = nullptr;
 
-		if (!m_lpMapiObjects) return;
+		if (!m_lpMDB) return;
 
-		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-		if (!lpMDB) return;
-
-		EC_H(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
+		EC_H(mapi::OpenDefaultFolder(ulFolder, m_lpMDB, &lpFolder));
 
 		if (lpFolder)
 		{
@@ -216,12 +209,10 @@ namespace dialog
 		auto hRes = S_OK;
 		LPMAPITABLE lpMAPITable = nullptr;
 
-		if (!m_lpMapiObjects) return;
+		if (!m_lpMDB) return;
 
-		auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-		if (!lpMDB) return;
 
-		EC_MAPI(lpMDB->GetReceiveFolderTable(
+		EC_MAPI(m_lpMDB->GetReceiveFolderTable(
 			fMapiUnicode,
 			&lpMAPITable));
 		if (lpMAPITable)
@@ -239,12 +230,9 @@ namespace dialog
 		auto hRes = S_OK;
 		LPMAPITABLE lpMAPITable = nullptr;
 
-		if (!m_lpMapiObjects) return;
+		if (!m_lpMDB) return;
 
-		auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-		if (!lpMDB) return;
-
-		EC_MAPI(lpMDB->GetOutgoingQueue(
+		EC_MAPI(m_lpMDB->GetOutgoingQueue(
 			NULL,
 			&lpMAPITable));
 
@@ -367,13 +355,12 @@ namespace dialog
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnCopyItems", L"\n");
-		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
+		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		auto lpMAPISourceFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
 
-		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		LPMAPIFOLDER lpSrcParentFolder = nullptr;
-		WC_H(mapi::GetParentFolder(lpMAPISourceFolder, lpMDB, &lpSrcParentFolder));
+		WC_H(mapi::GetParentFolder(lpMAPISourceFolder, m_lpMDB, &lpSrcParentFolder));
 
 		cache::CGlobalCache::getInstance().SetFolderToCopy(lpMAPISourceFolder, lpSrcParentFolder);
 
@@ -749,12 +736,11 @@ namespace dialog
 
 		if (lpItemEID)
 		{
-			const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-			if (lpMDB)
+			if (m_lpMDB)
 			{
 				LPMAPIFOLDER lpMAPIFolder = nullptr;
 				WC_H(mapi::CallOpenEntry(
-					lpMDB,
+					m_lpMDB,
 					NULL,
 					NULL,
 					NULL,
@@ -792,6 +778,7 @@ namespace dialog
 			new CMsgStoreDlg(
 				m_lpParent,
 				m_lpMapiObjects,
+				m_lpMDB,
 				lpFolder,
 				dfDeleted);
 			lpFolder->Release();
@@ -862,7 +849,7 @@ namespace dialog
 		auto hRes = S_OK;
 		LPSBinary lpItemEID = nullptr;
 
-		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
+		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		const ULONG bShiftPressed = GetKeyState(VK_SHIFT) < 0;
 
@@ -874,16 +861,14 @@ namespace dialog
 		}
 
 		if (!lpItemEID) return;
-
-		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-		if (!lpMDB) return;
+		if (!m_lpMDB) return;
 
 		auto lpFolderToDelete = GetSelectedFolder(mfcmapiDO_NOT_REQUEST_MODIFY);
 
 		if (lpFolderToDelete)
 		{
 			LPMAPIFOLDER lpParentFolder = nullptr;
-			EC_H(mapi::GetParentFolder(lpFolderToDelete, lpMDB, &lpParentFolder));
+			EC_H(mapi::GetParentFolder(lpFolderToDelete, m_lpMDB, &lpParentFolder));
 			if (lpParentFolder)
 			{
 				editor::CEditor MyData(
@@ -971,10 +956,7 @@ namespace dialog
 	{
 		auto hRes = S_OK;
 
-		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
-
-		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-		if (!lpMDB) return;
+		if (!m_lpMDB || !m_lpHierarchyTableTreeCtrl) return;
 
 		auto lpFolder = GetSelectedFolder(mfcmapiDO_NOT_REQUEST_MODIFY);
 
@@ -994,7 +976,7 @@ namespace dialog
 			if (S_OK == hRes)
 			{
 				file::SaveFolderContentsToTXT(
-					lpMDB,
+					m_lpMDB,
 					lpFolder,
 					MyData.GetCheck(1),
 					MyData.GetCheck(2),
@@ -1026,10 +1008,7 @@ namespace dialog
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
-
-		auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-		if (!lpMDB) return;
+		if (!m_lpMDB || !m_lpHierarchyTableTreeCtrl) return;
 
 		editor::CEditor MyData(
 			this,
@@ -1048,7 +1027,7 @@ namespace dialog
 		{
 			if (MyData.GetCheck(1))
 			{
-				EC_MAPI(lpMDB->SetReceiveFolder(
+				EC_MAPI(m_lpMDB->SetReceiveFolder(
 					LPTSTR(MyData.GetStringW(0).c_str()),
 					MAPI_UNICODE,
 					NULL,
@@ -1056,7 +1035,7 @@ namespace dialog
 			}
 			else if (lpEID)
 			{
-				EC_MAPI(lpMDB->SetReceiveFolder(
+				EC_MAPI(m_lpMDB->SetReceiveFolder(
 					LPTSTR(MyData.GetStringW(0).c_str()),
 					MAPI_UNICODE,
 					lpEID->cb,
@@ -1089,16 +1068,14 @@ namespace dialog
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
-
-		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+		if (!m_lpMDB || !m_lpHierarchyTableTreeCtrl) return;
 
 		// Find the highlighted item
 		auto lpMAPIFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
-			EC_H(mapi::ResetPermissionsOnItems(lpMDB, lpMAPIFolder));
+			EC_H(mapi::ResetPermissionsOnItems(m_lpMDB, lpMAPIFolder));
 			lpMAPIFolder->Release();
 		}
 	}
@@ -1110,7 +1087,7 @@ namespace dialog
 		ULONG cProps;
 		LPSPropValue lpProps = nullptr;
 
-		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
+		if (!m_lpMDB || !m_lpHierarchyTableTreeCtrl) return;
 
 		enum
 		{
@@ -1127,15 +1104,12 @@ namespace dialog
 			}
 		};
 
-		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-		if (!lpMDB) return;
-
 		auto lpSrcFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
 
 		if (lpSrcFolder)
 		{
 			LPMAPIFOLDER lpSrcParentFolder = nullptr;
-			WC_H(mapi::GetParentFolder(lpSrcFolder, lpMDB, &lpSrcParentFolder));
+			WC_H(mapi::GetParentFolder(lpSrcFolder, m_lpMDB, &lpSrcParentFolder));
 			hRes = S_OK;
 
 			// Get required properties from the source folder
@@ -1211,6 +1185,8 @@ namespace dialog
 
 	void CMsgStoreDlg::OnValidateIPMSubtree()
 	{
+		if (!m_lpMDB) return;
+
 		auto hRes = S_OK;
 		ULONG ulValues = 0;
 		LPSPropValue lpProps = nullptr;
@@ -1224,11 +1200,6 @@ namespace dialog
 		MyData.InitPane(0, viewpane::CheckPane::Create(IDS_MAPIFORCECREATE, false, false));
 		MyData.InitPane(1, viewpane::CheckPane::Create(IDS_MAPIFULLIPMTREE, false, false));
 
-		if (!m_lpMapiObjects) return;
-
-		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-		if (!lpMDB) return;
-
 		WC_H(MyData.DisplayDialog());
 
 		if (S_OK == hRes)
@@ -1239,7 +1210,7 @@ namespace dialog
 			output::DebugPrintEx(DBGGeneric, CLASS, L"OnValidateIPMSubtree", L"ulFlags = 0x%08X\n", ulFlags);
 
 			EC_MAPI(HrValidateIPMSubtree(
-				lpMDB,
+				m_lpMDB,
 				ulFlags,
 				&ulValues,
 				&lpProps,
@@ -1250,7 +1221,7 @@ namespace dialog
 			if (ulValues > 0 && lpProps)
 			{
 				output::DebugPrintEx(DBGGeneric, CLASS, L"OnValidateIPMSubtree", L"HrValidateIPMSubtree returned 0x%08X properties:\n", ulValues);
-				output::DebugPrintProperties(DBGGeneric, ulValues, lpProps, lpMDB);
+				output::DebugPrintProperties(DBGGeneric, ulValues, lpProps, m_lpMDB);
 			}
 
 			MAPIFreeBuffer(lpProps);
