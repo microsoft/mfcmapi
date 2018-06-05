@@ -20,7 +20,7 @@ namespace dialog
 	CAbDlg::CAbDlg(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_ LPMAPIPROP lpUnk
+		_In_ LPMAPIPROP lpAbCont
 	) :
 		CContentsTableDlg(
 			pParentWnd,
@@ -34,8 +34,8 @@ namespace dialog
 			MENU_CONTEXT_AB_CONTENTS)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpUnk);
-		m_lpAbCont = mapi::safe_cast<LPABCONT>(lpUnk);
+		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpAbCont);
+		m_lpAbCont = mapi::safe_cast<LPABCONT>(lpAbCont);
 
 		m_bIsAB = true;
 

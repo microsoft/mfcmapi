@@ -9,7 +9,7 @@ namespace dialog
 		CAbDlg(
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects,
-			_In_ LPMAPIPROP lpUnk);
+			_In_ LPMAPIPROP lpAbCont);
 		virtual ~CAbDlg();
 
 	private:
