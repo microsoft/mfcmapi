@@ -96,7 +96,7 @@ namespace dialog
 	{
 		auto hRes = S_OK;
 
-		auto lpMAPIContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer<LPMAPICONTAINER>(
+		auto lpMAPIContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(
 			mfcmapiREQUEST_MODIFY);
 		if (!lpMAPIContainer)
 		{
@@ -120,7 +120,7 @@ namespace dialog
 
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer<LPMAPICONTAINER>(mfcmapiREQUEST_MODIFY);
+		auto lpContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 		if (lpContainer)
 		{
@@ -146,6 +146,7 @@ namespace dialog
 					this));
 				lpMAPITable->Release();
 			}
+
 			lpContainer->Release();
 		}
 	}
@@ -157,7 +158,10 @@ namespace dialog
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		// Find the highlighted item
-		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl->GetSelectedContainer<LPMAPIFOLDER>(mfcmapiREQUEST_MODIFY);
+		auto container = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		if (!container) return;
+		auto lpMAPIFolder = mapi::safe_cast<LPMAPIFOLDER>(container);
+		container->Release();
 
 		if (lpMAPIFolder)
 		{
@@ -210,6 +214,7 @@ namespace dialog
 					MAPIFreeBuffer(lpNewEntryList);
 				}
 			}
+
 			lpMAPIFolder->Release();
 		}
 	}
@@ -341,7 +346,7 @@ namespace dialog
 
 			if (!(ulFlags & MENU_FLAGS_ROW))
 			{
-				lpContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer<LPMAPICONTAINER>(fRequestModify);
+				lpContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(fRequestModify);
 			}
 
 			HandleAddInMenuSingle(

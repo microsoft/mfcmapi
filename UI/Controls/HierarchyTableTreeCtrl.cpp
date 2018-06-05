@@ -861,6 +861,13 @@ namespace controls
 		return nullptr;
 	}
 
+	_Check_return_ LPMAPICONTAINER CHierarchyTableTreeCtrl::GetSelectedContainer(__mfcmapiModifyEnum bModify) const
+	{
+		LPMAPICONTAINER lpSelectedContainer = nullptr;
+		GetContainer(GetSelectedItem(), bModify, &lpSelectedContainer);
+		return lpSelectedContainer;
+	}
+
 	void CHierarchyTableTreeCtrl::GetContainer(
 		HTREEITEM Item,
 		__mfcmapiModifyEnum bModify,

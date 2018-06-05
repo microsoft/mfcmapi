@@ -30,6 +30,7 @@ namespace dialog
 		void HandleCopy() override;
 		_Check_return_ bool HandlePaste() override;
 		void OnInitMenu(_In_ CMenu* pMenu) override;
+		LPMAPIFOLDER GetSelectedFolder(__mfcmapiModifyEnum bModify) const;
 
 		// Menu items
 		void OnCreateSubFolder();
