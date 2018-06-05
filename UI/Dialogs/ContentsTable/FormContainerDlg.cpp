@@ -26,6 +26,7 @@ namespace dialog
 			IDS_FORMCONTAINER,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			nullptr,
+			nullptr,
 			LPSPropTagArray(&columns::sptDEFCols),
 			columns::DEFColumns,
 			IDR_MENU_FORM_CONTAINER_POPUP,
@@ -465,9 +466,15 @@ namespace dialog
 		if (lpParams)
 		{
 			lpParams->lpFormContainer = m_lpFormContainer;
-			lpParams->lpFormInfoProp = dynamic_cast<LPMAPIFORMINFO>(lpMAPIProp); // OpenItemProp returns LPMAPIFORMINFO
+			lpParams->lpFormInfoProp = mapi::safe_cast<LPMAPIFORMINFO>(lpMAPIProp);
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpFormInfoProp)
+		{
+			lpParams->lpFormInfoProp->Release();
+			lpParams->lpFormInfoProp = nullptr;
+		}
 	}
 }

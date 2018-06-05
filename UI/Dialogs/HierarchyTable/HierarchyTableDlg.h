@@ -22,7 +22,7 @@ namespace dialog
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects,
 			UINT uidTitle,
-			_In_opt_ LPUNKNOWN lpRootContainer,
+			_In_opt_ LPMAPIPROP lpRootContainer,
 			ULONG nIDContextMenu,
 			ULONG ulAddInContext
 		);
@@ -32,6 +32,9 @@ namespace dialog
 		// Overrides from base class
 		void CreateDialogAndMenu(UINT nIDMenuResource);
 		void OnInitMenu(_In_ CMenu* pMenu) override;
+		// Get the current root container - does not addref
+		LPMAPICONTAINER GetRootContainer() { return m_lpContainer; }
+		void SetRootContainer(LPUNKNOWN container);
 
 		controls::CHierarchyTableTreeCtrl* m_lpHierarchyTableTreeCtrl;
 		ULONG m_ulDisplayFlags;
@@ -56,6 +59,8 @@ namespace dialog
 		void OnEditSearchCriteria();
 
 		UINT m_nIDContextMenu;
+
+		LPMAPICONTAINER m_lpContainer;
 
 		DECLARE_MESSAGE_MAP()
 	};

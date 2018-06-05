@@ -9,6 +9,7 @@
 #include <MAPI/MAPIProfileFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Controls/SortList/ContentsData.h>
+#include <MAPI/MAPIFunctions.h>
 
 namespace dialog
 {
@@ -24,6 +25,7 @@ namespace dialog
 			lpMapiObjects,
 			IDS_SERVICES,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			nullptr,
 			nullptr,
 			LPSPropTagArray(&columns::sptSERVICECols),
 			columns::SERVICEColumns,
@@ -306,9 +308,15 @@ namespace dialog
 	{
 		if (lpParams)
 		{
-			lpParams->lpProfSect = dynamic_cast<LPPROFSECT>(lpMAPIProp); // OpenItemProp returns LPPROFSECT
+			lpParams->lpProfSect = mapi::safe_cast<LPPROFSECT>(lpMAPIProp);
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpProfSect)
+		{
+			lpParams->lpProfSect->Release();
+			lpParams->lpProfSect = nullptr;
+		}
 	}
 }

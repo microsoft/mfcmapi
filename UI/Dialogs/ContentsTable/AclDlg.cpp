@@ -25,6 +25,7 @@ namespace dialog
 			fFreeBusyVisible ? IDS_ACLFBTABLE : IDS_ACLTABLE,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			nullptr,
+			nullptr,
 			LPSPropTagArray(&columns::sptACLCols),
 			columns::ACLColumns,
 			IDR_MENU_ACL_POPUP,

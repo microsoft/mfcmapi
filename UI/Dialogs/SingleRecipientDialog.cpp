@@ -11,7 +11,7 @@ namespace dialog
 	SingleRecipientDialog::SingleRecipientDialog(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_opt_ LPMAILUSER lpMAPIProp) :
+		_In_opt_ LPMAPIPROP lpMAPIProp) :
 		CBaseDialog(
 			pParentWnd,
 			lpMapiObjects,
@@ -20,8 +20,7 @@ namespace dialog
 		TRACE_CONSTRUCTOR(CLASS);
 		m_szTitle = strings::loadstring(IDS_ADDRESS_BOOK_ENTRY);
 
-		m_lpMailUser = lpMAPIProp;
-		if (m_lpMailUser) m_lpMailUser->AddRef();
+		m_lpMailUser = mapi::safe_cast<LPMAILUSER>(lpMAPIProp);
 
 		CBaseDialog::CreateDialogAndMenu(NULL, NULL, NULL);
 	}

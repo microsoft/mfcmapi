@@ -5,7 +5,6 @@
 #include <Interpret/String.h>
 #include <MAPI/MAPIABFunctions.h>
 #include <Interpret/InterpretProp.h>
-#include <ImportProcs.h>
 #include <Interpret/ExtraPropTags.h>
 #include <MAPI/MAPIProgress.h>
 #include <Interpret/Guids.h>
@@ -1912,7 +1911,7 @@ namespace mapi
 		return hRes;
 	}
 
-	// This function creates a new message based in m_lpContainer
+	// This function creates a new message based in lpFolder
 	// Then sends the message
 	_Check_return_ HRESULT SendTestMessage(
 		_In_ LPMAPISESSION lpMAPISession,

@@ -40,6 +40,7 @@ namespace dialog
 			ID_PRODUCTNAME,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			nullptr,
+			nullptr,
 			LPSPropTagArray(&columns::sptSTORECols),
 			columns::STOREColumns,
 			IDR_MENU_MAIN_POPUP,
@@ -1987,9 +1988,15 @@ namespace dialog
 	{
 		if (lpParams)
 		{
-			lpParams->lpMDB = dynamic_cast<LPMDB>(lpMAPIProp);
+			lpParams->lpMDB = mapi::safe_cast<LPMDB>(lpMAPIProp);
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpMDB)
+		{
+			lpParams->lpMDB->Release();
+			lpParams->lpMDB = nullptr;
+		}
 	}
 }
