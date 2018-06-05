@@ -29,6 +29,7 @@ namespace dialog
 			lpMapiObjects,
 			IDS_ATTACHMENTS,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			nullptr,
 			lpMAPITable,
 			LPSPropTagArray(&columns::sptATTACHCols),
 			columns::ATTACHColumns,

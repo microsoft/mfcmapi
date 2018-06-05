@@ -24,6 +24,7 @@ namespace dialog
 			IDS_RULESTABLE,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			nullptr,
+			nullptr,
 			LPSPropTagArray(&columns::sptRULECols),
 			columns::RULEColumns,
 			IDR_MENU_RULES_POPUP,

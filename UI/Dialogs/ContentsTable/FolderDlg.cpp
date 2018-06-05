@@ -38,6 +38,7 @@ namespace dialog
 			lpMapiObjects,
 			IDS_FOLDER,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			lpMAPIFolder,
 			nullptr,
 			LPSPropTagArray(&columns::sptMSGCols),
 			columns::MSGColumns,
@@ -47,7 +48,6 @@ namespace dialog
 		TRACE_CONSTRUCTOR(CLASS);
 		m_ulDisplayFlags = ulDisplayFlags;
 
-		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpMAPIFolder);
 		m_lpFolder = mapi::safe_cast<LPMAPIFOLDER>(lpMAPIFolder);
 
 		CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_FOLDER);

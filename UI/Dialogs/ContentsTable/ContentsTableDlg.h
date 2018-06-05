@@ -19,6 +19,7 @@ namespace dialog
 			_In_ cache::CMapiObjects* lpMapiObjects,
 			UINT uidTitle,
 			__mfcmapiCreateDialogEnum bCreateDialog,
+			_In_opt_ LPMAPIPROP lpContainer,
 			_In_opt_ LPMAPITABLE lpContentsTable,
 			_In_ LPSPropTagArray sptExtraColumnTags,
 			_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
@@ -43,7 +44,6 @@ namespace dialog
 		_Check_return_ HRESULT OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage);
 		_Check_return_ HRESULT OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage);
 
-		LPMAPICONTAINER m_lpContainer;
 		controls::sortlistctrl::CContentsTableListCtrl* m_lpContentsTableListCtrl;
 		LPMAPITABLE m_lpContentsTable;
 		ULONG m_ulDisplayFlags;
@@ -78,6 +78,8 @@ namespace dialog
 		std::vector<TagNames> m_lpExtraDisplayColumns;
 		LPSPropTagArray m_sptExtraColumnTags;
 		UINT m_nIDContextMenu;
+
+		LPMAPICONTAINER m_lpContainer;
 
 		DECLARE_MESSAGE_MAP()
 	};

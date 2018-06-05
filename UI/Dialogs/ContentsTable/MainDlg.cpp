@@ -40,6 +40,7 @@ namespace dialog
 			ID_PRODUCTNAME,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			nullptr,
+			nullptr,
 			LPSPropTagArray(&columns::sptSTORECols),
 			columns::STOREColumns,
 			IDR_MENU_MAIN_POPUP,

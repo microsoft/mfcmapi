@@ -27,6 +27,7 @@ namespace dialog
 			lpMapiObjects,
 			IDS_AB,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			lpAbCont,
 			nullptr,
 			LPSPropTagArray(&columns::sptABCols),
 			columns::ABColumns,
@@ -34,7 +35,6 @@ namespace dialog
 			MENU_CONTEXT_AB_CONTENTS)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpAbCont);
 		m_lpAbCont = mapi::safe_cast<LPABCONT>(lpAbCont);
 
 		m_bIsAB = true;

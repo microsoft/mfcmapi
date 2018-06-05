@@ -21,6 +21,7 @@ namespace dialog
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		UINT uidTitle,
 		__mfcmapiCreateDialogEnum bCreateDialog,
+		_In_opt_ LPMAPIPROP lpContainer,
 		_In_opt_ LPMAPITABLE lpContentsTable,
 		_In_ LPSPropTagArray sptExtraColumnTags,
 		_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
@@ -43,7 +44,7 @@ namespace dialog
 		}
 
 		m_lpContentsTableListCtrl = nullptr;
-		m_lpContainer = nullptr;
+		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpContainer);
 		m_nIDContextMenu = nIDContextMenu;
 
 		m_ulDisplayFlags = dfNormal;
