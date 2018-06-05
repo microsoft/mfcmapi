@@ -34,7 +34,6 @@ namespace controls
 
 		// Selected item accessors
 		_Check_return_ LPMAPICONTAINER GetSelectedContainer(__mfcmapiModifyEnum bModify) const;
-
 		_Check_return_ LPSBinary GetSelectedItemEID() const;
 		_Check_return_ sortlistdata::SortListData* GetSelectedItemData() const;
 		_Check_return_ sortlistdata::SortListData* GetSortListData(HTREEITEM iItem) const;
