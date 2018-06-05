@@ -670,15 +670,21 @@ namespace dialog
 			switch (lpParams->ulAddInContext)
 			{
 			case MENU_CONTEXT_RECIEVE_FOLDER_TABLE:
-				lpParams->lpFolder = dynamic_cast<LPMAPIFOLDER>(lpMAPIProp); // OpenItemProp returns LPMAPIFOLDER
+				lpParams->lpFolder = mapi::safe_cast<LPMAPIFOLDER>(lpMAPIProp);
 				break;
 			case MENU_CONTEXT_HIER_TABLE:
-				lpParams->lpFolder = dynamic_cast<LPMAPIFOLDER>(lpMAPIProp); // OpenItemProp returns LPMAPIFOLDER
+				lpParams->lpFolder = mapi::safe_cast<LPMAPIFOLDER>(lpMAPIProp);
 				break;
 			}
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpFolder)
+		{
+			lpParams->lpFolder->Release();
+			lpParams->lpFolder = nullptr;
+		}
 	}
 
 	// WM_MFCMAPI_RESETCOLUMNS

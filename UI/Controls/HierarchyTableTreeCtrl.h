@@ -36,7 +36,7 @@ namespace controls
 		// Get selected container cast as a particular interface
 		_Check_return_ template <class T> T GetSelectedContainer(__mfcmapiModifyEnum bModify) const
 		{
-			HRESULT hRes = S_OK;
+			auto hRes = S_OK;
 			T ret = nullptr;
 			LPMAPICONTAINER lpSelectedContainer = nullptr;
 

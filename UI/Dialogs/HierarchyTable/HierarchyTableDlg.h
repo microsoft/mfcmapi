@@ -22,7 +22,7 @@ namespace dialog
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects,
 			UINT uidTitle,
-			_In_opt_ LPUNKNOWN lpRootContainer,
+			_In_opt_ LPMAPIPROP lpRootContainer,
 			ULONG nIDContextMenu,
 			ULONG ulAddInContext
 		);

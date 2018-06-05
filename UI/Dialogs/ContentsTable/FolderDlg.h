@@ -16,7 +16,7 @@ namespace dialog
 		CFolderDlg(
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects,
-			_In_ LPMAPIFOLDER lpMAPIFolder,
+			_In_ LPMAPIPROP lpMAPIFolder,
 			ULONG ulDisplayFlags);
 		virtual ~CFolderDlg();
 

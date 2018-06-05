@@ -1,8 +1,59 @@
 // Stand alone MAPI functions
 #pragma once
+#include "Interpret/GUIDArray.h"
 
 namespace mapi
 {
+	// Safely cast across MAPI interfaces. Result is addrefed and must be released.
+	_Check_return_ template <class T> T safe_cast(LPMAPIPROP src)
+	{
+		if (!src) return nullptr;
+		auto hRes = S_OK;
+		T ret = nullptr;
+
+		auto iid = IID_IUnknown;
+		if (std::is_same<T, LPMAPIFOLDER>::value)
+		{
+			iid = IID_IMAPIFolder;
+		}
+		else if (std::is_same<T, LPMAPICONTAINER>::value)
+		{
+			iid = IID_IMAPIContainer;
+		}
+		else if (std::is_same<T, LPMAILUSER>::value)
+		{
+			iid = IID_IMailUser;
+		}
+		else if (std::is_same<T, LPABCONT>::value)
+		{
+			iid = IID_IABContainer;
+		}
+		else if (std::is_same<T, LPMESSAGE>::value)
+		{
+			iid = IID_IMessage;
+		}
+		else if (std::is_same<T, LPMDB>::value)
+		{
+			iid = IID_IMsgStore;
+		}
+		else if (std::is_same<T, LPMAPIFORMINFO>::value)
+		{
+			iid = IID_IMAPIFormInfo;
+		}
+		else
+		{
+			ASSERT(false);
+		}
+
+		WC_H(src->QueryInterface(iid, reinterpret_cast<LPVOID*>(&ret)));
+		output::DebugPrint(DBGGeneric, L"safe_cast: iid =%ws, src = %p, ret = %p\n",
+			guid::GUIDToStringAndName(&iid).c_str(),
+			src,
+			ret);
+
+		return ret;
+	}
+
 	_Check_return_ HRESULT CallOpenEntry(
 		_In_opt_ LPMDB lpMDB,
 		_In_opt_ LPADRBOOK lpAB,

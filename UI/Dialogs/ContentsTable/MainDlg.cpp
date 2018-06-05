@@ -1987,9 +1987,15 @@ namespace dialog
 	{
 		if (lpParams)
 		{
-			lpParams->lpMDB = dynamic_cast<LPMDB>(lpMAPIProp);
+			lpParams->lpMDB = mapi::safe_cast<LPMDB>(lpMAPIProp);
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpMDB)
+		{
+			lpParams->lpMDB->Release();
+			lpParams->lpMDB = nullptr;
+		}
 	}
 }

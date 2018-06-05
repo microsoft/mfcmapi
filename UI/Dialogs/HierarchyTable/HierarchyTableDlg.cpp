@@ -7,6 +7,7 @@
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
+#include <MAPI/MAPIFunctions.h>
 
 namespace dialog
 {
@@ -16,7 +17,7 @@ namespace dialog
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		UINT uidTitle,
-		_In_opt_ LPUNKNOWN lpRootContainer,
+		_In_opt_ LPMAPIPROP lpRootContainer,
 		ULONG nIDContextMenu,
 		ULONG ulAddInContext
 	) :
@@ -39,18 +40,7 @@ namespace dialog
 
 		m_ulDisplayFlags = dfNormal;
 		m_lpHierarchyTableTreeCtrl = nullptr;
-		m_lpContainer = nullptr;
-		// need to make sure whatever gets passed to us is really a container
-		if (lpRootContainer)
-		{
-			auto hRes = S_OK;
-			LPMAPICONTAINER lpTemp = nullptr;
-			EC_MAPI(lpRootContainer->QueryInterface(IID_IMAPIContainer, reinterpret_cast<LPVOID*>(&lpTemp)));
-			if (lpTemp)
-			{
-				m_lpContainer = lpTemp;
-			}
-		}
+		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpRootContainer);
 	}
 
 	CHierarchyTableDlg::~CHierarchyTableDlg()

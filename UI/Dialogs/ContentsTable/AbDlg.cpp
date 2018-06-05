@@ -20,7 +20,7 @@ namespace dialog
 	CAbDlg::CAbDlg(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_ LPABCONT lpAbCont
+		_In_ LPMAPIPROP lpUnk
 	) :
 		CContentsTableDlg(
 			pParentWnd,
@@ -34,10 +34,8 @@ namespace dialog
 			MENU_CONTEXT_AB_CONTENTS)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		m_lpContainer = lpAbCont;
-		if (m_lpContainer) m_lpContainer->AddRef();
-		m_lpAbCont = lpAbCont;
-		if (m_lpAbCont) m_lpAbCont->AddRef();
+		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpUnk);
+		m_lpAbCont = mapi::safe_cast<LPABCONT>(lpUnk);
 
 		m_bIsAB = true;
 
@@ -359,9 +357,15 @@ namespace dialog
 		if (lpParams)
 		{
 			lpParams->lpAbCont = m_lpAbCont;
-			lpParams->lpMailUser = dynamic_cast<LPMAILUSER>(lpMAPIProp); // OpenItemProp returns LPMAILUSER
+			lpParams->lpMailUser = mapi::safe_cast<LPMAILUSER>(lpMAPIProp);
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpMailUser)
+		{
+			lpParams->lpMailUser->Release();
+			lpParams->lpMailUser = nullptr;
+		}
 	}
 }

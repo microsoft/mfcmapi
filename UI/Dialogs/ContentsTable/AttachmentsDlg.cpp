@@ -22,7 +22,7 @@ namespace dialog
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPITABLE lpMAPITable,
-		_In_ LPMESSAGE lpMessage
+		_In_ LPMAPIPROP lpMessage
 	) :
 		CContentsTableDlg(
 			pParentWnd,
@@ -36,8 +36,7 @@ namespace dialog
 			MENU_CONTEXT_ATTACHMENT_TABLE)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		m_lpMessage = lpMessage;
-		if (m_lpMessage) m_lpMessage->AddRef();
+		m_lpMessage = mapi::safe_cast<LPMESSAGE>(lpMessage);
 
 		m_bDisplayAttachAsEmbeddedMessage = false;
 		m_lpAttach = nullptr;
@@ -258,7 +257,7 @@ namespace dialog
 		if (!(ulStatus & BUFFER_ATTACHMENTS) || !(ulStatus & BUFFER_SOURCEPROPOBJ)) return false;
 
 		auto lpAttNumList = cache::CGlobalCache::getInstance().GetAttachmentsToCopy();
-		auto lpSourceMessage = dynamic_cast<LPMESSAGE>(cache::CGlobalCache::getInstance().GetSourcePropObject());
+		auto lpSourceMessage = mapi::safe_cast<LPMESSAGE>(cache::CGlobalCache::getInstance().GetSourcePropObject());
 
 		if (!lpAttNumList.empty() && lpSourceMessage)
 		{
@@ -322,6 +321,7 @@ namespace dialog
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
 
+		if (lpSourceMessage) lpSourceMessage->Release();
 		return true;
 	}
 
@@ -503,9 +503,15 @@ namespace dialog
 		if (lpParams)
 		{
 			lpParams->lpMessage = m_lpMessage;
-			lpParams->lpAttach = dynamic_cast<LPATTACH>(lpMAPIProp); // OpenItemProp returns LPATTACH
+			lpParams->lpAttach = mapi::safe_cast<LPATTACH>(lpMAPIProp);
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams&& lpParams->lpAttach)
+		{
+			lpParams->lpAttach->Release();
+			lpParams->lpAttach = nullptr;
+		}
 	}
 }

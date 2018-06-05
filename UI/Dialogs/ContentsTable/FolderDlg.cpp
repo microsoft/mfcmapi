@@ -30,7 +30,7 @@ namespace dialog
 	CFolderDlg::CFolderDlg(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_ LPMAPIFOLDER lpMAPIFolder,
+		_In_ LPMAPIPROP lpMAPIFolder,
 		ULONG ulDisplayFlags
 	) :
 		CContentsTableDlg(
@@ -47,10 +47,8 @@ namespace dialog
 		TRACE_CONSTRUCTOR(CLASS);
 		m_ulDisplayFlags = ulDisplayFlags;
 
-		m_lpContainer = dynamic_cast<LPMAPICONTAINER>(lpMAPIFolder); // SAFE
-		if (m_lpContainer) m_lpContainer->AddRef();
-		m_lpFolder = lpMAPIFolder;
-		if (m_lpFolder) m_lpFolder->AddRef();
+		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpMAPIFolder);
+		m_lpFolder = mapi::safe_cast<LPMAPIFOLDER>(lpMAPIFolder);
 
 		CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_FOLDER);
 	}
@@ -2291,7 +2289,7 @@ namespace dialog
 		if (lpParams)
 		{
 			lpParams->lpFolder = m_lpFolder;
-			lpParams->lpMessage = dynamic_cast<LPMESSAGE>(lpMAPIProp); // OpenItemProp returns LPMESSAGE
+			lpParams->lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 			// Add appropriate flag to context
 			if (m_ulDisplayFlags & dfAssoc)
 				lpParams->ulCurrentFlags |= MENU_FLAGS_FOLDER_ASSOC;
@@ -2300,5 +2298,11 @@ namespace dialog
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpMessage)
+		{
+			lpParams->lpMessage->Release();
+			lpParams->lpMessage = nullptr;
+		}
 	}
 }

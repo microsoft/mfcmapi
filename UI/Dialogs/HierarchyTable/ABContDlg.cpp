@@ -105,9 +105,15 @@ namespace dialog
 	{
 		if (lpParams)
 		{
-			lpParams->lpAbCont = dynamic_cast<LPABCONT>(lpContainer);
+			lpParams->lpAbCont = mapi::safe_cast<LPABCONT>(lpContainer);
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpAbCont)
+		{
+			lpParams->lpAbCont->Release();
+			lpParams->lpAbCont = nullptr;
+		}
 	}
 }

@@ -14,7 +14,7 @@ namespace dialog
 	SingleMessageDialog::SingleMessageDialog(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_opt_ LPMESSAGE lpMAPIProp) :
+		_In_opt_ LPMAPIPROP lpMAPIProp) :
 		CBaseDialog(
 			pParentWnd,
 			lpMapiObjects,
@@ -23,8 +23,7 @@ namespace dialog
 		TRACE_CONSTRUCTOR(CLASS);
 		m_szTitle = strings::loadstring(IDS_MESSAGE);
 
-		m_lpMessage = lpMAPIProp;
-		if (m_lpMessage) m_lpMessage->AddRef();
+		m_lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 
 		CBaseDialog::CreateDialogAndMenu(IDR_MENU_MESSAGE, NULL, NULL);
 	}

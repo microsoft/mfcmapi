@@ -59,8 +59,7 @@ namespace dialog
 			// #define MAPI_STORE ((ULONG) 0x00000001) /* Message Store */
 		case MAPI_STORE:
 		{
-			LPMDB lpTempMDB = nullptr;
-			WC_H(lpUnk->QueryInterface(IID_IMsgStore, reinterpret_cast<LPVOID*>(&lpTempMDB)));
+			auto lpTempMDB = mapi::safe_cast<LPMDB>(lpUnk);
 			if (lpTempMDB)
 			{
 				lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
@@ -86,58 +85,50 @@ namespace dialog
 		// #define MAPI_FOLDER ((ULONG) 0x00000003) /* Folder */
 		case MAPI_FOLDER:
 		{
-			LPMAPIFOLDER lpTempFolder = nullptr;
-			WC_H(lpUnk->QueryInterface(IID_IMAPIFolder, reinterpret_cast<LPVOID*>(&lpTempFolder)));
-
-			if (lpTempFolder)
+			// There are two ways to display a folder...either the contents table or the hierarchy table.
+			if (otHierarchy == tType)
 			{
-				// There are two ways to display a folder...either the contents table or the hierarchy table.
-				if (otHierarchy == tType)
+				const auto lpMDB = lpMapiObjects->GetMDB(); // do not release
+				if (lpMDB)
 				{
-					const auto lpMDB = lpMapiObjects->GetMDB(); // do not release
-					if (lpMDB)
+					new dialog::CMsgStoreDlg(
+						lpParentWnd,
+						lpMapiObjects,
+						lpUnk,
+						dfNormal);
+				}
+				else
+				{
+					// Since lpMDB was NULL, let's get a good MDB
+					const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
+					if (lpMAPISession)
 					{
-						new dialog::CMsgStoreDlg(
-							lpParentWnd,
-							lpMapiObjects,
-							lpTempFolder,
-							dfNormal);
-					}
-					else
-					{
-						// Since lpMDB was NULL, let's get a good MDB
-						const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
-						if (lpMAPISession)
+						LPMDB lpNewMDB = nullptr;
+						EC_H(mapi::store::OpenStoreFromMAPIProp(lpMAPISession, static_cast<LPMAPIPROP>(lpUnk), &lpNewMDB));
+						if (lpNewMDB)
 						{
-							LPMDB lpNewMDB = nullptr;
-							EC_H(mapi::store::OpenStoreFromMAPIProp(lpMAPISession, static_cast<LPMAPIPROP>(lpUnk), &lpNewMDB));
-							if (lpNewMDB)
-							{
-								lpMapiObjects->SetMDB(lpNewMDB);
+							lpMapiObjects->SetMDB(lpNewMDB);
 
-								new dialog::CMsgStoreDlg(
-									lpParentWnd,
-									lpMapiObjects,
-									lpTempFolder,
-									dfNormal);
+							new dialog::CMsgStoreDlg(
+								lpParentWnd,
+								lpMapiObjects,
+								lpUnk,
+								dfNormal);
 
-								// restore the old MDB
-								lpMapiObjects->SetMDB(nullptr);
-								lpNewMDB->Release();
-							}
+							// restore the old MDB
+							lpMapiObjects->SetMDB(nullptr);
+							lpNewMDB->Release();
 						}
 					}
 				}
-				else if (otContents == tType || otAssocContents == tType)
-				{
-					new dialog::CFolderDlg(
-						lpParentWnd,
-						lpMapiObjects,
-						lpTempFolder,
-						otAssocContents == tType ? dfAssoc : dfNormal);
-				}
-
-				lpTempFolder->Release();
+			}
+			else if (otContents == tType || otAssocContents == tType)
+			{
+				new dialog::CFolderDlg(
+					lpParentWnd,
+					lpMapiObjects,
+					lpUnk,
+					otAssocContents == tType ? dfAssoc : dfNormal);
 			}
 		}
 		break;
@@ -146,32 +137,32 @@ namespace dialog
 			new dialog::CAbDlg(
 				lpParentWnd,
 				lpMapiObjects,
-				dynamic_cast<LPABCONT>(lpUnk));
+				lpUnk);
 			break;
 			// #define MAPI_MESSAGE ((ULONG) 0x00000005) /* Message */
 		case MAPI_MESSAGE:
 			new dialog::SingleMessageDialog(
 				lpParentWnd,
 				lpMapiObjects,
-				dynamic_cast<LPMESSAGE>(lpUnk));
+				lpUnk);
 			break;
 			// #define MAPI_MAILUSER ((ULONG) 0x00000006) /* Individual Recipient */
 		case MAPI_MAILUSER:
 			new dialog::SingleRecipientDialog(
 				lpParentWnd,
 				lpMapiObjects,
-				dynamic_cast<LPMAILUSER>(lpUnk));
+				lpUnk);
 			break;
 			// #define MAPI_DISTLIST ((ULONG) 0x00000008) /* Distribution List Recipient */
 		case MAPI_DISTLIST: // A DistList is really an Address book anyways
 			new dialog::SingleRecipientDialog(
 				lpParentWnd,
 				lpMapiObjects,
-				dynamic_cast<LPMAILUSER>(lpUnk));
+				lpUnk);
 			new dialog::CAbDlg(
 				lpParentWnd,
 				lpMapiObjects,
-				dynamic_cast<LPABCONT>(lpUnk));
+				lpUnk);
 			break;
 			// The following types don't have special viewers - just dump their props in the property pane
 			// #define MAPI_ADDRBOOK ((ULONG) 0x00000002) /* Address Book */
@@ -303,15 +294,25 @@ namespace dialog
 			switch (PROP_ID(ulPropTag))
 			{
 			case PROP_ID(PR_MESSAGE_ATTACHMENTS):
-				dynamic_cast<LPMESSAGE>(lpMAPIProp)->GetAttachmentTable(
-					NULL,
-					&lpTable);
+			{
+				auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
+				if (lpMessage)
+				{
+					lpMessage->GetAttachmentTable(NULL, &lpTable);
+					lpMessage->Release();
+				}
 				break;
+			}
 			case PROP_ID(PR_MESSAGE_RECIPIENTS):
-				dynamic_cast<LPMESSAGE>(lpMAPIProp)->GetRecipientTable(
-					NULL,
-					&lpTable);
+			{
+				auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
+				if (lpMessage)
+				{
+					lpMessage->GetRecipientTable(NULL, &lpTable);
+					lpMessage->Release();
+				}
 				break;
+			}
 			}
 		}
 
@@ -324,14 +325,14 @@ namespace dialog
 					lpHostDlg->GetParentWnd(),
 					lpHostDlg->GetMapiObjects(),
 					lpTable,
-					dynamic_cast<LPMESSAGE>(lpMAPIProp));
+					lpMAPIProp);
 				break;
 			case PROP_ID(PR_MESSAGE_RECIPIENTS):
 				new dialog::CRecipientsDlg(
 					lpHostDlg->GetParentWnd(),
 					lpHostDlg->GetMapiObjects(),
 					lpTable,
-					dynamic_cast<LPMESSAGE>(lpMAPIProp));
+					lpMAPIProp);
 				break;
 			default:
 				EC_H(DisplayTable(

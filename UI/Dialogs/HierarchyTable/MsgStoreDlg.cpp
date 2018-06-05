@@ -22,7 +22,7 @@ namespace dialog
 	CMsgStoreDlg::CMsgStoreDlg(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_opt_ LPMAPIFOLDER lpRootFolder,
+		_In_opt_ LPMAPIPROP lpRootFolder,
 		ULONG ulDisplayFlags
 	) :
 		CHierarchyTableDlg(
@@ -1149,8 +1149,7 @@ namespace dialog
 
 				output::DebugPrint(DBGGeneric, L"Restoring %p to %p as \n", lpSrcFolder, m_lpContainer);
 
-				auto lpCopyRoot = lpSrcParentFolder;
-				if (!lpSrcParentFolder) lpCopyRoot = dynamic_cast<LPMAPIFOLDER>(m_lpContainer);
+				if (!lpSrcParentFolder) lpSrcParentFolder = mapi::safe_cast<LPMAPIFOLDER>(m_lpContainer);
 
 				LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
 
@@ -1159,7 +1158,7 @@ namespace dialog
 				if (lpProgress)
 					ulCopyFlags |= FOLDER_DIALOG;
 
-				WC_MAPI(lpCopyRoot->CopyFolder(
+				WC_MAPI(lpSrcParentFolder->CopyFolder(
 					lpProps[EID].Value.bin.cb,
 					reinterpret_cast<LPENTRYID>(lpProps[EID].Value.bin.lpb),
 					&IID_IMAPIFolder,
@@ -1243,9 +1242,15 @@ namespace dialog
 	{
 		if (lpParams)
 		{
-			lpParams->lpFolder = dynamic_cast<LPMAPIFOLDER>(lpContainer); // GetSelectedContainer returns LPMAPIFOLDER
+			lpParams->lpFolder = mapi::safe_cast<LPMAPIFOLDER>(lpContainer);
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpAbCont)
+		{
+			lpParams->lpAbCont->Release();
+			lpParams->lpAbCont = nullptr;
+		}
 	}
 }

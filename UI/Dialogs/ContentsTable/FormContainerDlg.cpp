@@ -465,9 +465,15 @@ namespace dialog
 		if (lpParams)
 		{
 			lpParams->lpFormContainer = m_lpFormContainer;
-			lpParams->lpFormInfoProp = dynamic_cast<LPMAPIFORMINFO>(lpMAPIProp); // OpenItemProp returns LPMAPIFORMINFO
+			lpParams->lpFormInfoProp = mapi::safe_cast<LPMAPIFORMINFO>(lpMAPIProp);
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpFormInfoProp)
+		{
+			lpParams->lpFormInfoProp->Release();
+			lpParams->lpFormInfoProp = nullptr;
+		}
 	}
 }
