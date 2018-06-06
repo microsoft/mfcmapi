@@ -1096,7 +1096,7 @@ IDS_HELPTEXTNOPROPS "Select an item to display properties."
 
 IDS_HELPTEXT "%1 Usage notes\n\
 \n\
-Visit http://mfcmapi.codeplex.com for more information, bug reports, and the latest builds.\n\
+Visit https://github.com/stephenegriffin/mfcmapi for more information, bug reports, and the latest builds.\n\
 For the latest blog entries, visit http://blogs.msdn.com/b/stephen_griffin/archive/tags/mfcmapi.\n\
 \n\
 Become a fan on Facebook! http://www.facebook.com/MFCMAPI.\n\
@@ -2223,19 +2223,18 @@ Please close MFCMAPI now."
 IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %ws.\r\n\
 \r\n\
 Here are some known causes for this.\r\n\
-1 - The 64 bit version of Outlook 2010 is not installed. The 64 bit version of MFCMAPI only works with the 64 bit version of Outlook 2010.\r\n\
-\tSee http://mfcmapi.codeplex.com for the latest 32 bit bit build of MFCMAPI.\r\n\
-2 - Windows Mail or Outlook Express (which do not implement Extended MAPI) is registered as the Default Mail Client.\r\n\
+1 - A 64 bit version of Outlook 2010 is not installed. The 64 bit version of MFCMAPI only works with a 64 bit version of Outlook.\r\n\
+\tSee https://github.com/stephenegriffin/mfcmapifor the latest 32 bit bit build of MFCMAPI.\r\n\
+2 - Windows Mail is registered as the Default Mail Client.\r\n\
 \tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
 #else
 IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %ws.\r\n\
 \r\n\
 Here are some known causes for this.\r\n\
-1 - No version of Extended MAPI is installed. Either Outlook or MAPICDO must be installed.\r\n\
-\tSee http://www.microsoft.com/downloads/details.aspx?familyid=E17E7F31-079A-43A9-BFF2-0A110307611E to install MAPICDO.\r\n\
-2 - The 64 bit version of Outlook 2010 is installed. The 64 bit version of Outlook 2010 requires the 64 bit build of MFCMAPI.\r\n\
-\tSee http://mfcmapi.codeplex.com for the latest 64 bit build of MFCMAPI.\r\n\
-3 - Windows Mail or Outlook Express (which do not implement Extended MAPI) is registered as the Default Mail Client.\r\n\
+1 - No version of Extended MAPI is installed. Outlook must be installed.\r\n\
+2 - A 64 bit version of Outlook is installed. A 64 bit version of Outlook requires the 64 bit build of MFCMAPI.\r\n\
+\tSee https://github.com/stephenegriffin/mfcmapi for the latest 64 bit build of MFCMAPI.\r\n\
+3 - Windows Mail is registered as the Default Mail Client.\r\n\
 \tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
 IDS_EDPATHTOOLONG "Chosen path is too long (%d).\r\n\
 Try selecting a shorter path ( < %d)."
