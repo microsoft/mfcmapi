@@ -21,10 +21,16 @@
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <UI/Dialogs/Editors/Options.h>
 #include <MAPI/StubUtils.h>
+#include <Windows.h>
+#include <appmodel.h>
+#include <malloc.h>
+#include <stdio.h>
 
 namespace dialog
 {
 	static std::wstring CLASS = L"CBaseDialog";
+	static std::wstring LookupFamilyName(_In_ PCWSTR familyName, _In_ const UINT32 filter);
+	PCWSTR PackagePropertiesToString(_In_ const UINT32 properties);
 
 	CBaseDialog::CBaseDialog(
 		_In_ ui::CParentWnd* pParentWnd,
@@ -683,7 +689,6 @@ namespace dialog
 				}
 			}
 		}
-
 		return szOut;
 	}
 
@@ -700,7 +705,32 @@ namespace dialog
 		auto szVersionString = GetOutlookVersionString();
 		if (szVersionString.empty())
 		{
-			szVersionString = strings::loadstring(IDS_NOOUTLOOK);
+			// if the string is empty, check for centennial office first
+			PCWSTR familyName = L"Microsoft.Office.Desktop_8wekyb3d8bbwe";
+			std::wstring packageName = LookupFamilyName(familyName, 0);
+
+			if (!packageName.empty())
+			{
+				// lookup should return something like this:
+				// Microsoft.Office.Desktop_16010.10222.20010.0_x86__8wekyb3d8bbwe
+
+				unsigned first = packageName.find('_');
+				unsigned last = packageName.find_last_of('_');
+
+				// trim the string between the first and last underscore character
+				std::wstring buildNum = packageName.substr(first, last - first);
+
+				// we should be left with _16010.10222.20010.0_x86_
+				// replace the underscores with spaces
+				std::replace(buildNum.begin(), buildNum.end(), '_', ' ');
+
+				// we now should have the build num and bitness
+				szVersionString = buildNum;
+			}
+			else
+			{
+				szVersionString = strings::loadstring(IDS_NOOUTLOOK);
+			}
 		}
 
 		MyEID.InitPane(0, viewpane::TextPane::CreateMultiLinePane(IDS_OUTLOOKVERSIONPROMPT, szVersionString, true));
@@ -1087,5 +1117,86 @@ namespace dialog
 	_Check_return_ cache::CMapiObjects* CBaseDialog::GetMapiObjects() const
 	{
 		return m_lpMapiObjects;
+	}
+	
+	std::wstring LookupFamilyName(_In_ PCWSTR familyName, _In_ const UINT32 filter)
+	{
+		UINT32 count = 0;
+		UINT32 length = 0;
+		std::wstring buildInfo;
+		LONG rc = FindPackagesByPackageFamily(familyName, filter, &count, nullptr, &length, nullptr, nullptr);
+		if (rc == ERROR_SUCCESS)
+		{
+			output::DebugPrint(1, L"FindPackagesByPackageFamily -> No packages found\n");
+			return L"";
+		}
+		else if (rc != ERROR_INSUFFICIENT_BUFFER)
+		{
+			output::DebugPrint(1, L"Error %d in FindPackagesByPackageFamily\n");
+			return L"";
+		}
+
+		PWSTR * fullNames = (PWSTR *)malloc(count * sizeof(*fullNames));
+		if (fullNames == nullptr)
+		{
+			free(fullNames);
+			output::DebugPrint(1, L"LookupFamilyName -> Error allocating memory\n");
+			return L"";
+		}
+
+		PWSTR buffer = (PWSTR)malloc(length * sizeof(WCHAR));
+		if (buffer == nullptr)
+		{
+			free(buffer);
+			free(fullNames);
+			output::DebugPrint(1, L"LookupFamilyName -> Error allocating memory\n");
+			return L"";
+		}
+
+		UINT32 * properties = (UINT32 *)malloc(count * sizeof(*properties));
+		if (properties == nullptr)
+		{
+			free(properties);
+			free(buffer);
+			free(fullNames);
+			output::DebugPrint(1, L"LookupFamilyName -> Error allocating memory\n");
+			return L"";
+		}
+
+		rc = FindPackagesByPackageFamily(familyName, filter, &count, fullNames, &length, buffer, properties);
+		if (rc != ERROR_SUCCESS)
+		{
+			output::DebugPrint(1, L"FindPackagesByPackageFamily -> Error %d looking up Full Names from Family Names\n");
+			free(properties);
+			free(buffer);
+			free(fullNames);
+			return L"";
+		}
+		else
+		{
+			for (UINT32 index = 0; index < count; ++index)
+			{
+				buildInfo = L"%u: %s [0x%X %s]\n", index, fullNames[index], properties[index], PackagePropertiesToString(properties[index]);
+				free(properties);
+				free(buffer);
+				free(fullNames);
+			}
+			return buildInfo;
+		}
+	}
+
+	PCWSTR PackagePropertiesToString(const UINT32 properties)
+	{
+		const UINT32 PACKAGE_PROPERTY_APPLICATION = 0;
+		const UINT32 mask = PACKAGE_PROPERTY_APPLICATION | PACKAGE_PROPERTY_FRAMEWORK |
+			PACKAGE_PROPERTY_RESOURCE | PACKAGE_PROPERTY_BUNDLE;
+		switch (properties & mask)
+		{
+		case PACKAGE_PROPERTY_APPLICATION: return L"Application";
+		case PACKAGE_PROPERTY_FRAMEWORK:   return L"Framework";
+		case PACKAGE_PROPERTY_RESOURCE:    return L"Resource";
+		case PACKAGE_PROPERTY_BUNDLE:      return L"Bundle";
+		default:                           return L"?";
+		}
 	}
 }
