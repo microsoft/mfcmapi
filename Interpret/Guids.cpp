@@ -20,6 +20,8 @@
 #define USES_IID_IABContainer
 #define USES_IID_IDistList
 #define USES_IID_IStreamDocfile
+#define USES_IID_IMailUser
+#define USES_IID_IMAPIFormInfo
 #define USES_PS_MAPI
 #define USES_PS_PUBLIC_STRINGS
 #define USES_PS_ROUTING_EMAIL_ADDRESSES

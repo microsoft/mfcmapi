@@ -21,6 +21,7 @@ namespace dialog
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		UINT uidTitle,
 		__mfcmapiCreateDialogEnum bCreateDialog,
+		_In_opt_ LPMAPIPROP lpContainer,
 		_In_opt_ LPMAPITABLE lpContentsTable,
 		_In_ LPSPropTagArray sptExtraColumnTags,
 		_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
@@ -43,7 +44,7 @@ namespace dialog
 		}
 
 		m_lpContentsTableListCtrl = nullptr;
-		m_lpContainer = nullptr;
+		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpContainer);
 		m_nIDContextMenu = nIDContextMenu;
 
 		m_ulDisplayFlags = dfNormal;
@@ -64,7 +65,7 @@ namespace dialog
 	{
 		TRACE_DESTRUCTOR(CLASS);
 		if (m_lpContentsTable) m_lpContentsTable->Release();
-		m_lpContentsTable = nullptr;
+		if (m_lpContainer) m_lpContainer->Release();
 	}
 
 	_Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
@@ -670,15 +671,21 @@ namespace dialog
 			switch (lpParams->ulAddInContext)
 			{
 			case MENU_CONTEXT_RECIEVE_FOLDER_TABLE:
-				lpParams->lpFolder = dynamic_cast<LPMAPIFOLDER>(lpMAPIProp); // OpenItemProp returns LPMAPIFOLDER
+				lpParams->lpFolder = mapi::safe_cast<LPMAPIFOLDER>(lpMAPIProp);
 				break;
 			case MENU_CONTEXT_HIER_TABLE:
-				lpParams->lpFolder = dynamic_cast<LPMAPIFOLDER>(lpMAPIProp); // OpenItemProp returns LPMAPIFOLDER
+				lpParams->lpFolder = mapi::safe_cast<LPMAPIFOLDER>(lpMAPIProp);
 				break;
 			}
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpFolder)
+		{
+			lpParams->lpFolder->Release();
+			lpParams->lpFolder = nullptr;
+		}
 	}
 
 	// WM_MFCMAPI_RESETCOLUMNS

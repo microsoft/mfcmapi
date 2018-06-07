@@ -434,7 +434,7 @@ namespace mapi
 								}
 								else
 								{
-									SPropTagArray pTagArray = { 1, PR_MARKER };
+									SPropTagArray pTagArray = { 1, {PR_MARKER} };
 									WC_MAPI(lpSect->DeleteProps(&pTagArray, nullptr));
 								}
 								hRes = S_OK;
@@ -563,10 +563,8 @@ namespace mapi
 				MAPIUID uidService = { 0 };
 				auto lpuidService = &uidService;
 
-				LPSERVICEADMIN2 lpServiceAdmin2 = nullptr;
-				WC_MAPI(lpServiceAdmin->QueryInterface(IID_IMsgServiceAdmin2, reinterpret_cast<LPVOID*>(&lpServiceAdmin2)));
-
-				if (SUCCEEDED(hRes) && lpServiceAdmin2)
+				auto lpServiceAdmin2 = mapi::safe_cast<LPSERVICEADMIN2>(lpServiceAdmin);
+				if (lpServiceAdmin2)
 				{
 					EC_H_MSG(lpServiceAdmin2->CreateMsgServiceEx(
 						reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
@@ -585,6 +583,7 @@ namespace mapi
 						// Add a dummy prop to the current providers
 						EC_H(HrMarkExistingProviders(lpServiceAdmin, true));
 					}
+					
 					EC_H_MSG(lpServiceAdmin->CreateMsgService(
 						reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
 						reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
@@ -784,7 +783,7 @@ namespace mapi
 			static const SizedSPropTagArray(1, rgPropTag) =
 			{
 			1,
-			PR_DISPLAY_NAME_A
+				{PR_DISPLAY_NAME_A}
 			};
 
 			output::DebugPrint(DBGGeneric, L"HrMAPIProfileExists()\n");

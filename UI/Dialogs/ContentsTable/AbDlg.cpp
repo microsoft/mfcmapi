@@ -20,13 +20,14 @@ namespace dialog
 	CAbDlg::CAbDlg(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_ LPABCONT lpAdrBook
+		_In_ LPMAPIPROP lpAbCont
 	) :
 		CContentsTableDlg(
 			pParentWnd,
 			lpMapiObjects,
 			IDS_AB,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			lpAbCont,
 			nullptr,
 			LPSPropTagArray(&columns::sptABCols),
 			columns::ABColumns,
@@ -34,8 +35,7 @@ namespace dialog
 			MENU_CONTEXT_AB_CONTENTS)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		m_lpContainer = lpAdrBook;
-		if (m_lpContainer) m_lpContainer->AddRef();
+		m_lpAbCont = mapi::safe_cast<LPABCONT>(lpAbCont);
 
 		m_bIsAB = true;
 
@@ -45,6 +45,7 @@ namespace dialog
 	CAbDlg::~CAbDlg()
 	{
 		TRACE_DESTRUCTOR(CLASS);
+		if (m_lpAbCont) m_lpAbCont->Release();
 	}
 
 	BEGIN_MESSAGE_MAP(CAbDlg, CContentsTableDlg)
@@ -234,6 +235,8 @@ namespace dialog
 
 	void CAbDlg::OnDeleteSelectedItem()
 	{
+		if (!m_lpAbCont) return;
+
 		auto hRes = S_OK;
 		editor::CEditor Query(
 			this,
@@ -249,7 +252,7 @@ namespace dialog
 
 			EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
 
-			EC_MAPI(dynamic_cast<LPABCONT>(m_lpContainer)->DeleteEntries(lpEIDs, NULL));
+			EC_MAPI(m_lpAbCont->DeleteEntries(lpEIDs, NULL));
 
 			MAPIFreeBuffer(lpEIDs);
 		}
@@ -279,7 +282,7 @@ namespace dialog
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		output::DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"pasting address Book entries\n");
-		if (!m_lpContainer) return false;
+		if (!m_lpAbCont) return false;
 
 		const auto lpEIDs = cache::CGlobalCache::getInstance().GetABEntriesToCopy();
 
@@ -299,7 +302,7 @@ namespace dialog
 			{
 				LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IABContainer::CopyEntries", m_hWnd); // STRING_OK
 
-				EC_MAPI(dynamic_cast<LPABCONT>(m_lpContainer)->CopyEntries(
+				EC_MAPI(m_lpAbCont->CopyEntries(
 					lpEIDs,
 					lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 					lpProgress,
@@ -354,10 +357,16 @@ namespace dialog
 	{
 		if (lpParams)
 		{
-			lpParams->lpAbCont = dynamic_cast<LPABCONT>(m_lpContainer);
-			lpParams->lpMailUser = dynamic_cast<LPMAILUSER>(lpMAPIProp); // OpenItemProp returns LPMAILUSER
+			lpParams->lpAbCont = m_lpAbCont;
+			lpParams->lpMailUser = mapi::safe_cast<LPMAILUSER>(lpMAPIProp);
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpMailUser)
+		{
+			lpParams->lpMailUser->Release();
+			lpParams->lpMailUser = nullptr;
+		}
 	}
 }

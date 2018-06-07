@@ -117,6 +117,7 @@ namespace controls
 		m_bShuttingDown = true;
 		CWnd::DestroyWindow();
 
+		if (m_lpContainer) m_lpContainer->Release();
 		if (m_lpHostDlg) m_lpHostDlg->Release();
 		if (m_lpMapiObjects) m_lpMapiObjects->Release();
 	}

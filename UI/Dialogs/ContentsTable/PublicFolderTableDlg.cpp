@@ -22,6 +22,7 @@ namespace dialog
 			lpMapiObjects,
 			IDS_PUBLICFOLDERTABLE,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			nullptr,
 			lpMAPITable,
 			LPSPropTagArray(&columns::sptPFCols),
 			columns::PFColumns,
@@ -69,7 +70,7 @@ namespace dialog
 			NULL, // prompt
 			PR_DISPLAY_NAME,
 			m_bIsAB,
-			m_lpContainer,
+			nullptr,
 			this);
 
 		WC_H(MyPropertyTag.DisplayDialog());

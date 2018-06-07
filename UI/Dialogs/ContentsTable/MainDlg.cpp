@@ -40,6 +40,7 @@ namespace dialog
 			ID_PRODUCTNAME,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			nullptr,
+			nullptr,
 			LPSPropTagArray(&columns::sptSTORECols),
 			columns::STOREColumns,
 			IDR_MENU_MAIN_POPUP,
@@ -1239,14 +1240,11 @@ namespace dialog
 	{
 		auto hRes = S_OK;
 		if (!m_lpMapiObjects) return;
-		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		LPMAPICLIENTSHUTDOWN lpClientShutdown = nullptr;
-
-		EC_H_MSG(lpMAPISession->QueryInterface(IID_IMAPIClientShutdown, reinterpret_cast<LPVOID*>(&lpClientShutdown)), IDS_EDNOMAPICLIENTSHUTDOWN);
-
-		if (SUCCEEDED(hRes) && lpClientShutdown)
+		auto lpClientShutdown = mapi::safe_cast<LPMAPICLIENTSHUTDOWN>(lpMAPISession);
+		if (lpClientShutdown)
 		{
 			EC_H_MSG(lpClientShutdown->QueryFastShutdown(), IDS_EDQUERYFASTSHUTDOWNFAILED);
 
@@ -1987,9 +1985,15 @@ namespace dialog
 	{
 		if (lpParams)
 		{
-			lpParams->lpMDB = dynamic_cast<LPMDB>(lpMAPIProp);
+			lpParams->lpMDB = mapi::safe_cast<LPMDB>(lpMAPIProp);
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpMDB)
+		{
+			lpParams->lpMDB->Release();
+			lpParams->lpMDB = nullptr;
+		}
 	}
 }

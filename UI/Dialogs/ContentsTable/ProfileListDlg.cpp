@@ -27,6 +27,7 @@ namespace dialog
 			lpMapiObjects,
 			IDS_PROFILES,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			nullptr,
 			lpMAPITable,
 			LPSPropTagArray(&columns::sptPROFLISTCols),
 			columns::PROFLISTColumns,

@@ -77,12 +77,7 @@ namespace mapi
 			*lpMailboxTable = nullptr;
 
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE lpManageStore1 = nullptr;
-
-			WC_MAPI(lpMDB->QueryInterface(
-				IID_IExchangeManageStore,
-				reinterpret_cast<LPVOID*>(&lpManageStore1)));
-
+			auto lpManageStore1 = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpManageStore1)
 			{
 				WC_MAPI(lpManageStore1->GetMailboxTable(
@@ -107,12 +102,7 @@ namespace mapi
 			*lpMailboxTable = nullptr;
 
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE3 lpManageStore3 = nullptr;
-
-			WC_MAPI(lpMDB->QueryInterface(
-				IID_IExchangeManageStore3,
-				reinterpret_cast<LPVOID*>(&lpManageStore3)));
-
+			auto lpManageStore3 = mapi::safe_cast<LPEXCHANGEMANAGESTORE3>(lpMDB);
 			if (lpManageStore3)
 			{
 				WC_MAPI(lpManageStore3->GetMailboxTableOffset(
@@ -139,12 +129,7 @@ namespace mapi
 			*lpMailboxTable = nullptr;
 
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE5 lpManageStore5 = nullptr;
-
-			EC_MAPI(lpMDB->QueryInterface(
-				guid::IID_IExchangeManageStore5,
-				reinterpret_cast<LPVOID*>(&lpManageStore5)));
-
+			auto lpManageStore5 = mapi::safe_cast<LPEXCHANGEMANAGESTORE5>(lpMDB);
 			if (lpManageStore5)
 			{
 				EC_MAPI(lpManageStore5->GetMailboxTableEx(
@@ -211,12 +196,7 @@ namespace mapi
 			*lpPFTable = nullptr;
 
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE lpManageStore1 = nullptr;
-
-			EC_MAPI(lpMDB->QueryInterface(
-				IID_IExchangeManageStore,
-				reinterpret_cast<LPVOID*>(&lpManageStore1)));
-
+			auto lpManageStore1 = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpManageStore1)
 			{
 				EC_MAPI(lpManageStore1->GetPublicFolderTable(
@@ -241,12 +221,7 @@ namespace mapi
 			*lpPFTable = nullptr;
 
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE4 lpManageStore4 = nullptr;
-
-			EC_MAPI(lpMDB->QueryInterface(
-				IID_IExchangeManageStore4,
-				reinterpret_cast<LPVOID*>(&lpManageStore4)));
-
+			auto lpManageStore4 = mapi::safe_cast<LPEXCHANGEMANAGESTORE4>(lpMDB);
 			if (lpManageStore4)
 			{
 				EC_MAPI(lpManageStore4->GetPublicFolderTableOffset(
@@ -272,12 +247,7 @@ namespace mapi
 			*lpPFTable = nullptr;
 
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE5 lpManageStore5 = nullptr;
-
-			EC_MAPI(lpMDB->QueryInterface(
-				guid::IID_IExchangeManageStore5,
-				reinterpret_cast<LPVOID*>(&lpManageStore5)));
-
+			auto lpManageStore5 = mapi::safe_cast<LPEXCHANGEMANAGESTORE5>(lpMDB);
 			if (lpManageStore5)
 			{
 				EC_MAPI(lpManageStore5->GetPublicFolderTableEx(
@@ -355,7 +325,6 @@ namespace mapi
 			_Deref_out_opt_ LPENTRYID * lppEntryID)
 		{
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE lpXManageStore = nullptr;
 
 			if (!lpMDB || lpszMsgStoreDN.empty() || !StoreSupportsManageStore(lpMDB))
 			{
@@ -364,10 +333,7 @@ namespace mapi
 				return MAPI_E_INVALID_PARAMETER;
 			}
 
-			EC_MAPI(lpMDB->QueryInterface(
-				IID_IExchangeManageStore,
-				reinterpret_cast<LPVOID*>(&lpXManageStore)));
-
+			auto lpXManageStore = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpXManageStore)
 			{
 				output::DebugPrint(DBGGeneric, L"CreateStoreEntryID: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", Flags = \"0x%X\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str(), ulFlags);
@@ -395,7 +361,6 @@ namespace mapi
 			_Deref_out_opt_ LPENTRYID * lppEntryID)
 		{
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTOREEX lpXManageStoreEx = nullptr;
 
 			if (!lpMDB || lpszMsgStoreDN.empty() || !StoreSupportsManageStoreEx(lpMDB))
 			{
@@ -404,10 +369,7 @@ namespace mapi
 				return MAPI_E_INVALID_PARAMETER;
 			}
 
-			EC_MAPI(lpMDB->QueryInterface(
-				guid::IID_IExchangeManageStoreEx,
-				reinterpret_cast<LPVOID*>(&lpXManageStoreEx)));
-
+			auto lpXManageStoreEx = mapi::safe_cast<LPEXCHANGEMANAGESTOREEX>(lpMDB);
 			if (lpXManageStoreEx)
 			{
 				output::DebugPrint(DBGGeneric, L"CreateStoreEntryID2: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", SmtpAddress = \"%ws\", Flags = \"0x%X\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str(), smtpAddress.c_str(), ulFlags);
@@ -902,41 +864,29 @@ namespace mapi
 
 		_Check_return_ bool StoreSupportsManageStore(_In_ LPMDB lpMDB)
 		{
-			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE lpIManageStore = nullptr;
-
 			if (!lpMDB) return false;
 
-			EC_H_MSG(lpMDB->QueryInterface(
-				IID_IExchangeManageStore,
-				reinterpret_cast<LPVOID*>(&lpIManageStore)),
-				IDS_MANAGESTORENOTSUPPORTED);
-
+			auto lpIManageStore = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpIManageStore)
 			{
 				lpIManageStore->Release();
 				return true;
 			}
+
 			return false;
 		}
 
 		_Check_return_ bool StoreSupportsManageStoreEx(_In_ LPMDB lpMDB)
 		{
-			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE lpIManageStore = nullptr;
-
 			if (!lpMDB) return false;
 
-			EC_H_MSG(lpMDB->QueryInterface(
-				guid::IID_IExchangeManageStoreEx,
-				reinterpret_cast<LPVOID*>(&lpIManageStore)),
-				IDS_MANAGESTOREEXNOTSUPPORTED);
-
+			auto lpIManageStore = mapi::safe_cast<LPEXCHANGEMANAGESTOREEX>(lpMDB);
 			if (lpIManageStore)
 			{
 				lpIManageStore->Release();
 				return true;
 			}
+
 			return false;
 		}
 
@@ -944,11 +894,10 @@ namespace mapi
 		{
 			if (!lpMDBIn || !lppMDBOut) return MAPI_E_INVALID_PARAMETER;
 			auto hRes = S_OK;
-			IProxyStoreObject* lpProxyObj = nullptr;
-			LPMDB lpUnwrappedMDB = nullptr;
-			EC_MAPI(lpMDBIn->QueryInterface(guid::IID_IProxyStoreObject, reinterpret_cast<LPVOID*>(&lpProxyObj)));
-			if (SUCCEEDED(hRes) && lpProxyObj)
+			auto lpProxyObj = mapi::safe_cast<IProxyStoreObject*>(lpMDBIn);
+			if (lpProxyObj)
 			{
+				LPMDB lpUnwrappedMDB = nullptr;
 				EC_MAPI(lpProxyObj->UnwrapNoRef(reinterpret_cast<LPVOID*>(&lpUnwrappedMDB)));
 				if (SUCCEEDED(hRes) && lpUnwrappedMDB)
 				{
