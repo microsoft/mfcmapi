@@ -453,7 +453,7 @@ namespace mapi
 			}
 			else if (lpForm)
 			{
-				EC_MAPI(lpForm->QueryInterface(IID_IPersistMessage, reinterpret_cast<LPVOID *>(&m_lpPersistMessage)));
+				m_lpPersistMessage = mapi::safe_cast<LPPERSISTMESSAGE>(lpForm);
 			}
 
 			return hRes;

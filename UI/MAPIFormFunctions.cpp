@@ -3,6 +3,7 @@
 #include <StdAfx.h>
 #include <UI/MAPIFormFunctions.h>
 #include <UI/MyMAPIFormViewer.h>
+#include <MAPI/MAPIFunctions.h>
 
 namespace mapi
 {
@@ -78,9 +79,7 @@ namespace mapi
 								static_cast<LPMAPIMESSAGESITE>(lpMAPIFormViewer),
 								lpMessage));
 
-							LPMAPIFORM lpForm = nullptr;
-							EC_MAPI(lpPersistMessage->QueryInterface(IID_IMAPIForm, reinterpret_cast<LPVOID*>(&lpForm)));
-
+							auto lpForm = mapi::safe_cast<LPMAPIFORM >(lpPersistMessage);
 							if (lpForm)
 							{
 								EC_MAPI(lpForm->SetViewContext(
