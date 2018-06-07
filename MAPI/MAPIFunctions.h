@@ -1,8 +1,47 @@
 // Stand alone MAPI functions
 #pragma once
+#include "Interpret/GUIDArray.h"
 
 namespace mapi
 {
+	// Safely cast across MAPI interfaces. Result is addrefed and must be released.
+	_Check_return_ template <class T> T safe_cast(IUnknown* src)
+	{
+		if (!src) return nullptr;
+
+		auto iid = IID();
+		if (std::is_same_v<T, LPMAPIFOLDER>) iid = IID_IMAPIFolder;
+		else if (std::is_same_v<T, LPMAPICONTAINER>) iid = IID_IMAPIContainer;
+		else if (std::is_same_v<T, LPMAILUSER>) iid = IID_IMailUser;
+		else if (std::is_same_v<T, LPABCONT>) iid = IID_IABContainer;
+		else if (std::is_same_v<T, LPMESSAGE>) iid = IID_IMessage;
+		else if (std::is_same_v<T, LPMDB>) iid = IID_IMsgStore;
+		else if (std::is_same_v<T, LPMAPIFORMINFO>) iid = IID_IMAPIFormInfo;
+		else if (std::is_same_v<T, LPMAPIPROP>) iid = IID_IMAPIProp;
+		else if (std::is_same_v<T, LPMAPIFORM>) iid = IID_IMAPIForm;
+		else if (std::is_same_v<T, LPPERSISTMESSAGE>) iid = IID_IPersistMessage;
+		else if (std::is_same_v<T, IAttachmentSecurity*>) iid = guid::IID_IAttachmentSecurity;
+		else if (std::is_same_v<T, LPSERVICEADMIN2>) iid = IID_IMsgServiceAdmin2;
+		else if (std::is_same_v<T, LPEXCHANGEMANAGESTORE>) iid = IID_IExchangeManageStore;
+		else if (std::is_same_v<T, LPEXCHANGEMANAGESTORE3>) iid = IID_IExchangeManageStore3;
+		else if (std::is_same_v<T, LPEXCHANGEMANAGESTORE4>) iid = IID_IExchangeManageStore4;
+		else if (std::is_same_v<T, LPEXCHANGEMANAGESTORE5>) iid = guid::IID_IExchangeManageStore5;
+		else if (std::is_same_v<T, LPEXCHANGEMANAGESTOREEX>) iid = guid::IID_IExchangeManageStoreEx;
+		else if (std::is_same_v<T, IProxyStoreObject*>) iid = guid::IID_IProxyStoreObject;
+		else if (std::is_same_v<T, LPMAPICLIENTSHUTDOWN>) iid = IID_IMAPIClientShutdown;
+		else ASSERT(false);
+
+		auto hRes = S_OK;
+		T ret = nullptr;
+		WC_H(src->QueryInterface(iid, reinterpret_cast<LPVOID*>(&ret)));
+		output::DebugPrint(DBGGeneric, L"safe_cast: iid =%ws, src = %p, ret = %p\n",
+			guid::GUIDToStringAndName(&iid).c_str(),
+			src,
+			ret);
+
+		return ret;
+	}
+
 	_Check_return_ HRESULT CallOpenEntry(
 		_In_opt_ LPMDB lpMDB,
 		_In_opt_ LPADRBOOK lpAB,

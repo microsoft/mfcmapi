@@ -782,10 +782,8 @@ namespace file
 		output::DebugPrint(DBGGeneric, L"Source Message =\n");
 		output::DebugPrintBinary(DBGGeneric, entryID.Value.bin);
 
-		LPMAPICONTAINER lpMapiContainer = nullptr;
-		EC_H(lpFolder->QueryInterface(IID_IMAPIContainer, reinterpret_cast<LPVOID*>(&lpMapiContainer)));
-
-		if (SUCCEEDED(hRes) && lpMapiContainer != nullptr)
+		auto lpMapiContainer = mapi::safe_cast<LPMAPICONTAINER>(lpFolder);
+		if (lpMapiContainer)
 		{
 			EC_H(mapi::CallOpenEntry(
 				nullptr,

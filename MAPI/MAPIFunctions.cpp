@@ -5,7 +5,6 @@
 #include <Interpret/String.h>
 #include <MAPI/MAPIABFunctions.h>
 #include <Interpret/InterpretProp.h>
-#include <ImportProcs.h>
 #include <Interpret/ExtraPropTags.h>
 #include <MAPI/MAPIProgress.h>
 #include <Interpret/Guids.h>
@@ -1255,16 +1254,13 @@ namespace mapi
 		if (!lpMAPISession || !pwszFileName || !pfBlocked) return MAPI_E_INVALID_PARAMETER;
 
 		auto hRes = S_OK;
-		IAttachmentSecurity* lpAttachSec = nullptr;
-		BOOL bBlocked = false;
-
-		EC_MAPI(lpMAPISession->QueryInterface(guid::IID_IAttachmentSecurity, reinterpret_cast<LPVOID*>(&lpAttachSec)));
-		if (SUCCEEDED(hRes) && lpAttachSec)
+		auto bBlocked = BOOL(false);
+		auto lpAttachSec = mapi::safe_cast<IAttachmentSecurity*>(lpMAPISession);
+		if (lpAttachSec)
 		{
 			EC_MAPI(lpAttachSec->IsAttachmentBlocked(pwszFileName, &bBlocked));
+			lpAttachSec->Release();
 		}
-
-		if (lpAttachSec) lpAttachSec->Release();
 
 		*pfBlocked = !!bBlocked;
 		return hRes;
@@ -1912,7 +1908,7 @@ namespace mapi
 		return hRes;
 	}
 
-	// This function creates a new message based in m_lpContainer
+	// This function creates a new message based in lpFolder
 	// Then sends the message
 	_Check_return_ HRESULT SendTestMessage(
 		_In_ LPMAPISESSION lpMAPISession,

@@ -174,7 +174,7 @@ namespace mapi
 
 				EC_MAPI(lpAddrBook->ResolveName(
 					0L,
-					fMapiUnicode,
+					MAPI_UNICODE,
 					nullptr,
 					lpAdrList));
 

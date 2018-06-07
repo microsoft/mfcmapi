@@ -70,7 +70,6 @@ namespace dialog
 		controls::sortlistctrl::CSingleMAPIPropListCtrl* m_lpPropDisplay;
 		controls::CFakeSplitter* m_lpFakeSplitter;
 		std::wstring m_szTitle;
-		LPMAPICONTAINER m_lpContainer;
 		cache::CMapiObjects* m_lpMapiObjects;
 		ui::CParentWnd* m_lpParent;
 

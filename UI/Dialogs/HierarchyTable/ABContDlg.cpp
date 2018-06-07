@@ -32,6 +32,7 @@ namespace dialog
 			const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			if (lpAddrBook)
 			{
+				auto container = LPUNKNOWN(nullptr);
 				// Open root address book (container).
 				EC_H(mapi::CallOpenEntry(
 					NULL, lpAddrBook, NULL, NULL,
@@ -39,7 +40,8 @@ namespace dialog
 					NULL,
 					MAPI_BEST_ACCESS,
 					NULL,
-					reinterpret_cast<LPUNKNOWN*>(&m_lpContainer)));
+					&container));
+				SetRootContainer(container);
 			}
 		}
 
@@ -105,9 +107,15 @@ namespace dialog
 	{
 		if (lpParams)
 		{
-			lpParams->lpAbCont = dynamic_cast<LPABCONT>(lpContainer);
+			lpParams->lpAbCont = mapi::safe_cast<LPABCONT>(lpContainer);
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpAbCont)
+		{
+			lpParams->lpAbCont->Release();
+			lpParams->lpAbCont = nullptr;
+		}
 	}
 }
