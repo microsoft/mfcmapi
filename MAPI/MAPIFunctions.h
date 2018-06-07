@@ -40,6 +40,34 @@ namespace mapi
 		{
 			iid = IID_IMAPIFormInfo;
 		}
+		else if (std::is_same<T, IAttachmentSecurity*>::value)
+		{
+			iid = guid::IID_IAttachmentSecurity;
+		}
+		else if (std::is_same<T, LPSERVICEADMIN2>::value)
+		{
+			iid = IID_IMsgServiceAdmin2;
+		}
+		else if (std::is_same<T, LPEXCHANGEMANAGESTORE>::value)
+		{
+			iid = IID_IExchangeManageStore;
+		}
+		else if (std::is_same<T, LPEXCHANGEMANAGESTORE3>::value)
+		{
+			iid = IID_IExchangeManageStore3;
+		}
+		else if (std::is_same<T, LPEXCHANGEMANAGESTORE4>::value)
+		{
+			iid = IID_IExchangeManageStore4;
+		}
+		else if (std::is_same<T, LPEXCHANGEMANAGESTORE5>::value)
+		{
+			iid = guid::IID_IExchangeManageStore5;
+		}
+		else if (std::is_same<T, LPEXCHANGEMANAGESTOREEX>::value)
+		{
+			iid = guid::IID_IExchangeManageStoreEx;
+		}
 		else
 		{
 			ASSERT(false);

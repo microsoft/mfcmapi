@@ -1259,8 +1259,6 @@ IDS_GETSPECIALFOLDERROOTMISSINGPROP "GetSpecialFolderEID: Failed to get property
 IDS_LAUNCHWIZARDFAILED "Failed to configure profile, perhaps because MAPI is requiring the use of mlcfg.cpl from system32, and it doesn't exist. Use Profile Action menu to create profiles and add Exchange services instead."
 IDS_CREATEMSGSERVICEFAILED "Could not add service to profile. Perhaps service is not in MAPISVC.INF?"
 IDS_DUPLICATEPROFILE "Failed to create profile, most likely because profile with this name already exists"
-IDS_MANAGESTORENOTSUPPORTED "Store does not support the IExchangeManageStore interface"
-IDS_MANAGESTOREEXNOTSUPPORTED "Store does not support the IExchangeManageStoreEx interface"
 IDS_STREAMSEEKFAILED "This might be expected with PR_RTF_COMPRESSED"
 IDS_COPYFOLDERFAILED "CopyFolder failed."
 IDS_ONACTIVENEXTFAILED "OnActivateNext failed."

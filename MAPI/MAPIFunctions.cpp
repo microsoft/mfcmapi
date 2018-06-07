@@ -1254,16 +1254,13 @@ namespace mapi
 		if (!lpMAPISession || !pwszFileName || !pfBlocked) return MAPI_E_INVALID_PARAMETER;
 
 		auto hRes = S_OK;
-		IAttachmentSecurity* lpAttachSec = nullptr;
-		BOOL bBlocked = false;
-
-		EC_MAPI(lpMAPISession->QueryInterface(guid::IID_IAttachmentSecurity, reinterpret_cast<LPVOID*>(&lpAttachSec)));
-		if (SUCCEEDED(hRes) && lpAttachSec)
+		auto bBlocked = BOOL(false);
+		auto lpAttachSec = mapi::safe_cast<IAttachmentSecurity*>(lpMAPISession);
+		if (lpAttachSec)
 		{
 			EC_MAPI(lpAttachSec->IsAttachmentBlocked(pwszFileName, &bBlocked));
+			lpAttachSec->Release();
 		}
-
-		if (lpAttachSec) lpAttachSec->Release();
 
 		*pfBlocked = !!bBlocked;
 		return hRes;
