@@ -706,8 +706,12 @@ namespace dialog
 		if (szVersionString.empty())
 		{
 			// if the string is empty, check for centennial office first
-			PCWSTR familyName = L"Microsoft.Office.Desktop_8wekyb3d8bbwe";
-			std::wstring packageName = LookupFamilyName(familyName, 0);
+			auto familyName = L"Microsoft.Office.Desktop_8wekyb3d8bbwe";
+
+			// not sure if these filters will ever change but using this combination is the only way I found to make this work
+			// anything else fails with error 87, which is bad parameter
+			UINT32 filter = PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_PROPERTY_BUNDLE | PACKAGE_PROPERTY_RESOURCE;
+			auto packageName = LookupFamilyName(familyName, filter);
 
 			if (!packageName.empty())
 			{
@@ -718,14 +722,14 @@ namespace dialog
 				unsigned last = packageName.find_last_of('_');
 
 				// trim the string between the first and last underscore character
-				std::wstring buildNum = packageName.substr(first, last - first);
+				auto buildNum = packageName.substr(first, last - first);
 
 				// we should be left with _16010.10222.20010.0_x86_
 				// replace the underscores with spaces
 				std::replace(buildNum.begin(), buildNum.end(), '_', ' ');
 
 				// we now should have the build num and bitness
-				szVersionString = buildNum;
+				szVersionString = L"Microsoft Store Version:" + buildNum;
 			}
 			else
 			{
@@ -1119,20 +1123,24 @@ namespace dialog
 		return m_lpMapiObjects;
 	}
 	
+	// most of this function is from https://msdn.microsoft.com/en-us/library/windows/desktop/dn270601(v=vs.85).aspx
+	// returning empty strings so the logic that calls this Lookup function can be handled accordingly
+	// only if the API call works do we want to return anything other than an empty string
 	std::wstring LookupFamilyName(_In_ PCWSTR familyName, _In_ const UINT32 filter)
 	{
 		UINT32 count = 0;
 		UINT32 length = 0;
 		std::wstring buildInfo;
+
 		LONG rc = FindPackagesByPackageFamily(familyName, filter, &count, nullptr, &length, nullptr, nullptr);
 		if (rc == ERROR_SUCCESS)
 		{
-			output::DebugPrint(1, L"FindPackagesByPackageFamily -> No packages found\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"No packages found\n");
 			return L"";
 		}
 		else if (rc != ERROR_INSUFFICIENT_BUFFER)
 		{
-			output::DebugPrint(1, L"Error %d in FindPackagesByPackageFamily\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"Error %ld in FindPackagesByPackageFamily\n", rc);
 			return L"";
 		}
 
@@ -1140,7 +1148,7 @@ namespace dialog
 		if (fullNames == nullptr)
 		{
 			free(fullNames);
-			output::DebugPrint(1, L"LookupFamilyName -> Error allocating memory\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"Error allocating memory\n");
 			return L"";
 		}
 
@@ -1149,7 +1157,7 @@ namespace dialog
 		{
 			free(buffer);
 			free(fullNames);
-			output::DebugPrint(1, L"LookupFamilyName -> Error allocating memory\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"Error allocating memory\n");
 			return L"";
 		}
 
@@ -1159,14 +1167,14 @@ namespace dialog
 			free(properties);
 			free(buffer);
 			free(fullNames);
-			output::DebugPrint(1, L"LookupFamilyName -> Error allocating memory\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"Error allocating memory\n");
 			return L"";
 		}
 
 		rc = FindPackagesByPackageFamily(familyName, filter, &count, fullNames, &length, buffer, properties);
 		if (rc != ERROR_SUCCESS)
 		{
-			output::DebugPrint(1, L"FindPackagesByPackageFamily -> Error %d looking up Full Names from Family Names\n");
+			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"Error %d looking up Full Names from Family Names\n", rc);
 			free(properties);
 			free(buffer);
 			free(fullNames);
@@ -1176,7 +1184,7 @@ namespace dialog
 		{
 			for (UINT32 index = 0; index < count; ++index)
 			{
-				buildInfo = L"%u: %s [0x%X %s]\n", index, fullNames[index], properties[index], PackagePropertiesToString(properties[index]);
+				buildInfo = strings::format(L"%u: %s [0x%X %s]\n", index, fullNames[index], properties[index], PackagePropertiesToString(properties[index]));
 				free(properties);
 				free(buffer);
 				free(fullNames);
