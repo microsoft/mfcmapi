@@ -894,11 +894,10 @@ namespace mapi
 		{
 			if (!lpMDBIn || !lppMDBOut) return MAPI_E_INVALID_PARAMETER;
 			auto hRes = S_OK;
-			IProxyStoreObject* lpProxyObj = nullptr;
-			LPMDB lpUnwrappedMDB = nullptr;
-			EC_MAPI(lpMDBIn->QueryInterface(guid::IID_IProxyStoreObject, reinterpret_cast<LPVOID*>(&lpProxyObj)));
-			if (SUCCEEDED(hRes) && lpProxyObj)
+			auto lpProxyObj = mapi::safe_cast<IProxyStoreObject*>(lpMDBIn);
+			if (lpProxyObj)
 			{
+				LPMDB lpUnwrappedMDB = nullptr;
 				EC_MAPI(lpProxyObj->UnwrapNoRef(reinterpret_cast<LPVOID*>(&lpUnwrappedMDB)));
 				if (SUCCEEDED(hRes) && lpUnwrappedMDB)
 				{

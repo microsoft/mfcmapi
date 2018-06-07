@@ -2210,7 +2210,6 @@ IDS_EDLOWEROVERUPPER "Lower bound of 0x%X is over upper bound of 0x%X"
 IDS_EDOFFSETWITHWRONGINTERFACE "You specified an offset but requested the IID_IExchangeManageStore\r\n\
 interface. This interface does not support passing an offset.\r\n"
 IDS_EDINVALIDGUID "The GUID you entered was invalid."
-IDS_EDNOMAPICLIENTSHUTDOWN "This version of MAPI does not support Fast Shutdown."
 IDS_EDQUERYFASTSHUTDOWNFAILED "QueryFastShutdown returned an error.\r\n\
 Usually this means at least one provider does not support Fast Shutdown."
 IDS_EDNOTIFYPROCESSSHUTDOWNFAILED "NotifyProcessShutdown failed."

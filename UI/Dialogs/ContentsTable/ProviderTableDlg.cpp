@@ -8,6 +8,7 @@
 #include <MAPI/MAPIProfileFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Controls/SortList/ContentsData.h>
+#include <MAPI/MAPIFunctions.h>
 
 namespace dialog
 {
@@ -106,8 +107,7 @@ namespace dialog
 			&lpProfSect));
 		if (lpProfSect)
 		{
-			LPMAPIPROP lpTemp = nullptr;
-			EC_MAPI(lpProfSect->QueryInterface(IID_IMAPIProp, reinterpret_cast<LPVOID*>(&lpTemp)));
+			auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpProfSect);
 			if (lpTemp)
 			{
 				EC_H(DisplayObject(

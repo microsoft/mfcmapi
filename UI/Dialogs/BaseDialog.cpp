@@ -797,8 +797,7 @@ namespace dialog
 				auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 				output::DebugPrint(DBGGeneric, L"OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n", lpUnk, ulObjType, szFlags.c_str());
 
-				LPMAPIPROP lpTemp = nullptr;
-				WC_MAPI(lpUnk->QueryInterface(IID_IMAPIProp, reinterpret_cast<LPVOID*>(&lpTemp)));
+				auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpUnk);
 				if (lpTemp)
 				{
 					WC_H(DisplayObject(
@@ -808,6 +807,7 @@ namespace dialog
 						this));
 					lpTemp->Release();
 				}
+
 				lpUnk->Release();
 			}
 		}
