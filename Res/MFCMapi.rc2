@@ -1096,7 +1096,7 @@ IDS_HELPTEXTNOPROPS "Select an item to display properties."
 
 IDS_HELPTEXT "%1 Usage notes\n\
 \n\
-Visit http://mfcmapi.codeplex.com for more information, bug reports, and the latest builds.\n\
+Visit https://github.com/stephenegriffin/mfcmapi for more information, bug reports, and the latest builds.\n\
 For the latest blog entries, visit http://blogs.msdn.com/b/stephen_griffin/archive/tags/mfcmapi.\n\
 \n\
 Become a fan on Facebook! http://www.facebook.com/MFCMAPI.\n\
@@ -1259,8 +1259,6 @@ IDS_GETSPECIALFOLDERROOTMISSINGPROP "GetSpecialFolderEID: Failed to get property
 IDS_LAUNCHWIZARDFAILED "Failed to configure profile, perhaps because MAPI is requiring the use of mlcfg.cpl from system32, and it doesn't exist. Use Profile Action menu to create profiles and add Exchange services instead."
 IDS_CREATEMSGSERVICEFAILED "Could not add service to profile. Perhaps service is not in MAPISVC.INF?"
 IDS_DUPLICATEPROFILE "Failed to create profile, most likely because profile with this name already exists"
-IDS_MANAGESTORENOTSUPPORTED "Store does not support the IExchangeManageStore interface"
-IDS_MANAGESTOREEXNOTSUPPORTED "Store does not support the IExchangeManageStoreEx interface"
 IDS_STREAMSEEKFAILED "This might be expected with PR_RTF_COMPRESSED"
 IDS_COPYFOLDERFAILED "CopyFolder failed."
 IDS_ONACTIVENEXTFAILED "OnActivateNext failed."
@@ -2212,7 +2210,6 @@ IDS_EDLOWEROVERUPPER "Lower bound of 0x%X is over upper bound of 0x%X"
 IDS_EDOFFSETWITHWRONGINTERFACE "You specified an offset but requested the IID_IExchangeManageStore\r\n\
 interface. This interface does not support passing an offset.\r\n"
 IDS_EDINVALIDGUID "The GUID you entered was invalid."
-IDS_EDNOMAPICLIENTSHUTDOWN "This version of MAPI does not support Fast Shutdown."
 IDS_EDQUERYFASTSHUTDOWNFAILED "QueryFastShutdown returned an error.\r\n\
 Usually this means at least one provider does not support Fast Shutdown."
 IDS_EDNOTIFYPROCESSSHUTDOWNFAILED "NotifyProcessShutdown failed."
@@ -2223,19 +2220,18 @@ Please close MFCMAPI now."
 IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %ws.\r\n\
 \r\n\
 Here are some known causes for this.\r\n\
-1 - The 64 bit version of Outlook 2010 is not installed. The 64 bit version of MFCMAPI only works with the 64 bit version of Outlook 2010.\r\n\
-\tSee http://mfcmapi.codeplex.com for the latest 32 bit bit build of MFCMAPI.\r\n\
-2 - Windows Mail or Outlook Express (which do not implement Extended MAPI) is registered as the Default Mail Client.\r\n\
+1 - A 64 bit version of Outlook 2010 is not installed. The 64 bit version of MFCMAPI only works with a 64 bit version of Outlook.\r\n\
+\tSee https://github.com/stephenegriffin/mfcmapifor the latest 32 bit bit build of MFCMAPI.\r\n\
+2 - Windows Mail is registered as the Default Mail Client.\r\n\
 \tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
 #else
 IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %ws.\r\n\
 \r\n\
 Here are some known causes for this.\r\n\
-1 - No version of Extended MAPI is installed. Either Outlook or MAPICDO must be installed.\r\n\
-\tSee http://www.microsoft.com/downloads/details.aspx?familyid=E17E7F31-079A-43A9-BFF2-0A110307611E to install MAPICDO.\r\n\
-2 - The 64 bit version of Outlook 2010 is installed. The 64 bit version of Outlook 2010 requires the 64 bit build of MFCMAPI.\r\n\
-\tSee http://mfcmapi.codeplex.com for the latest 64 bit build of MFCMAPI.\r\n\
-3 - Windows Mail or Outlook Express (which do not implement Extended MAPI) is registered as the Default Mail Client.\r\n\
+1 - No version of Extended MAPI is installed. Outlook must be installed.\r\n\
+2 - A 64 bit version of Outlook is installed. A 64 bit version of Outlook requires the 64 bit build of MFCMAPI.\r\n\
+\tSee https://github.com/stephenegriffin/mfcmapi for the latest 64 bit build of MFCMAPI.\r\n\
+3 - Windows Mail is registered as the Default Mail Client.\r\n\
 \tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
 IDS_EDPATHTOOLONG "Chosen path is too long (%d).\r\n\
 Try selecting a shorter path ( < %d)."

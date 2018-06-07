@@ -7,6 +7,7 @@
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/ContentsData.h>
+#include <MAPI/MAPIFunctions.h>
 
 namespace dialog
 {
@@ -16,13 +17,14 @@ namespace dialog
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPITABLE lpMAPITable,
-		_In_ LPMESSAGE lpMessage
+		_In_ LPMAPIPROP lpMessage
 	) :
 		CContentsTableDlg(
 			pParentWnd,
 			lpMapiObjects,
 			IDS_RECIPIENTS,
 			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			nullptr,
 			lpMAPITable,
 			LPSPropTagArray(&columns::sptDEFCols),
 			columns::DEFColumns,
@@ -30,8 +32,7 @@ namespace dialog
 			MENU_CONTEXT_RECIPIENT_TABLE)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		m_lpMessage = lpMessage;
-		if (m_lpMessage) m_lpMessage->AddRef();
+		m_lpMessage = mapi::safe_cast<LPMESSAGE>(lpMessage);
 		m_bIsAB = true; // Recipients are from the AB
 		m_bViewRecipientABEntry = false;
 
