@@ -1135,7 +1135,7 @@ namespace dialog
 		UINT32 count = 0;
 		UINT32 length = 0;
 
-		auto rc = FindPackagesByPackageFamily(familyName, filter, &count, nullptr, &length, nullptr, nullptr);
+		auto rc = import::pfnFindPackagesByPackageFamily(familyName, filter, &count, nullptr, &length, nullptr, nullptr);
 		if (rc == ERROR_SUCCESS)
 		{
 			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"No packages found\n");
@@ -1154,7 +1154,7 @@ namespace dialog
 
 		if (fullNames && properties && buffer)
 		{
-			rc = FindPackagesByPackageFamily(familyName, filter, &count, fullNames, &length, buffer, properties);
+			rc = import::pfnFindPackagesByPackageFamily(familyName, filter, &count, fullNames, &length, buffer, properties);
 			if (rc != ERROR_SUCCESS)
 			{
 				output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"Error %d looking up Full Names from Family Names\n", rc);
