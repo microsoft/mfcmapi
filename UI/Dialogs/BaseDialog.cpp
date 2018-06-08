@@ -704,11 +704,11 @@ namespace dialog
 		if (szVersionString.empty())
 		{
 			// if the string is empty, check for centennial office first
-			auto familyName = L"Microsoft.Office.Desktop_8wekyb3d8bbwe";
+			const auto familyName = L"Microsoft.Office.Desktop_8wekyb3d8bbwe";
 
 			// not sure if these filters will ever change but using this combination is the only way I found to make this work
 			// anything else fails with error 87, which is bad parameter
-			UINT32 filter = PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_PROPERTY_BUNDLE | PACKAGE_PROPERTY_RESOURCE;
+			const UINT32 filter = PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_PROPERTY_BUNDLE | PACKAGE_PROPERTY_RESOURCE;
 			auto packageName = LookupFamilyName(familyName, filter);
 
 			if (!packageName.empty())
@@ -716,8 +716,8 @@ namespace dialog
 				// lookup should return something like this:
 				// Microsoft.Office.Desktop_16010.10222.20010.0_x86__8wekyb3d8bbwe
 
-				unsigned first = packageName.find('_');
-				unsigned last = packageName.find_last_of('_');
+				const auto first = packageName.find('_');
+				const auto last = packageName.find_last_of('_');
 
 				// trim the string between the first and last underscore character
 				auto buildNum = packageName.substr(first, last - first);
@@ -1126,6 +1126,12 @@ namespace dialog
 	// Only if the API call works do we want to return anything other than an empty string
 	std::wstring LookupFamilyName(_In_ LPCWSTR familyName, _In_ const UINT32 filter)
 	{
+		if (!import::pfnFindPackagesByPackageFamily)
+		{
+			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"FindPackagesByPackageFamily not found\n");
+			return L"";
+		}
+
 		UINT32 count = 0;
 		UINT32 length = 0;
 
