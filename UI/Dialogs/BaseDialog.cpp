@@ -29,8 +29,8 @@
 namespace dialog
 {
 	static std::wstring CLASS = L"CBaseDialog";
-	static std::wstring LookupFamilyName(_In_ PCWSTR familyName, _In_ const UINT32 filter);
-	PCWSTR PackagePropertiesToString(_In_ const UINT32 properties);
+	static std::wstring LookupFamilyName(_In_ LPCWSTR familyName, _In_ const UINT32 filter);
+	LPCWSTR PackagePropertiesToString(_In_ const UINT32 properties);
 
 	CBaseDialog::CBaseDialog(
 		_In_ ui::CParentWnd* pParentWnd,
@@ -704,11 +704,11 @@ namespace dialog
 		if (szVersionString.empty())
 		{
 			// if the string is empty, check for centennial office first
-			auto familyName = L"Microsoft.Office.Desktop_8wekyb3d8bbwe";
+			const auto familyName = L"Microsoft.Office.Desktop_8wekyb3d8bbwe";
 
 			// not sure if these filters will ever change but using this combination is the only way I found to make this work
 			// anything else fails with error 87, which is bad parameter
-			UINT32 filter = PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_PROPERTY_BUNDLE | PACKAGE_PROPERTY_RESOURCE;
+			const UINT32 filter = PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_PROPERTY_BUNDLE | PACKAGE_PROPERTY_RESOURCE;
 			auto packageName = LookupFamilyName(familyName, filter);
 
 			if (!packageName.empty())
@@ -716,8 +716,8 @@ namespace dialog
 				// lookup should return something like this:
 				// Microsoft.Office.Desktop_16010.10222.20010.0_x86__8wekyb3d8bbwe
 
-				unsigned first = packageName.find('_');
-				unsigned last = packageName.find_last_of('_');
+				const auto first = packageName.find('_');
+				const auto last = packageName.find_last_of('_');
 
 				// trim the string between the first and last underscore character
 				auto buildNum = packageName.substr(first, last - first);
@@ -1120,81 +1120,71 @@ namespace dialog
 	{
 		return m_lpMapiObjects;
 	}
-	
-	// most of this function is from https://msdn.microsoft.com/en-us/library/windows/desktop/dn270601(v=vs.85).aspx
-	// returning empty strings so the logic that calls this Lookup function can be handled accordingly
-	// only if the API call works do we want to return anything other than an empty string
-	std::wstring LookupFamilyName(_In_ PCWSTR familyName, _In_ const UINT32 filter)
+
+	// Most of this function is from https://msdn.microsoft.com/en-us/library/windows/desktop/dn270601(v=vs.85).aspx
+	// Return empty strings so the logic that calls this Lookup function can be handled accordingly
+	// Only if the API call works do we want to return anything other than an empty string
+	std::wstring LookupFamilyName(_In_ LPCWSTR familyName, _In_ const UINT32 filter)
 	{
+		if (!import::pfnFindPackagesByPackageFamily)
+		{
+			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"FindPackagesByPackageFamily not found\n");
+			return L"";
+		}
+
 		UINT32 count = 0;
 		UINT32 length = 0;
-		std::wstring buildInfo;
 
-		LONG rc = FindPackagesByPackageFamily(familyName, filter, &count, nullptr, &length, nullptr, nullptr);
+		auto rc = import::pfnFindPackagesByPackageFamily(familyName, filter, &count, nullptr, &length, nullptr, nullptr);
 		if (rc == ERROR_SUCCESS)
 		{
 			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"No packages found\n");
 			return L"";
 		}
-		else if (rc != ERROR_INSUFFICIENT_BUFFER)
+
+		if (rc != ERROR_INSUFFICIENT_BUFFER)
 		{
 			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"Error %ld in FindPackagesByPackageFamily\n", rc);
 			return L"";
 		}
 
-		PWSTR * fullNames = (PWSTR *)malloc(count * sizeof(*fullNames));
-		if (fullNames == nullptr)
+		const auto fullNames = static_cast<LPWSTR *>(malloc(count * sizeof(LPWSTR)));
+		const auto buffer = static_cast<PWSTR>(malloc(length * sizeof(WCHAR)));
+		const auto properties = static_cast<UINT32 *>(malloc(count * sizeof(UINT32)));
+
+		if (fullNames && properties && buffer)
 		{
-			free(fullNames);
-			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"Error allocating memory\n");
-			return L"";
+			rc = import::pfnFindPackagesByPackageFamily(familyName, filter, &count, fullNames, &length, buffer, properties);
+			if (rc != ERROR_SUCCESS)
+			{
+				output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"Error %d looking up Full Names from Family Names\n", rc);
+			}
 		}
 
-		PWSTR buffer = (PWSTR)malloc(length * sizeof(WCHAR));
-		if (buffer == nullptr)
-		{
-			free(buffer);
-			free(fullNames);
-			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"Error allocating memory\n");
-			return L"";
-		}
-
-		UINT32 * properties = (UINT32 *)malloc(count * sizeof(*properties));
-		if (properties == nullptr)
-		{
-			free(properties);
-			free(buffer);
-			free(fullNames);
-			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"Error allocating memory\n");
-			return L"";
-		}
-
-		rc = FindPackagesByPackageFamily(familyName, filter, &count, fullNames, &length, buffer, properties);
-		if (rc != ERROR_SUCCESS)
-		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"LookupFamilyName", L"Error %d looking up Full Names from Family Names\n", rc);
-			free(properties);
-			free(buffer);
-			free(fullNames);
-			return L"";
-		}
-		else
+		std::vector<std::wstring> builds;
+		if (count)
 		{
 			for (UINT32 index = 0; index < count; ++index)
 			{
-				buildInfo = strings::format(L"%u: %s [0x%X %s]\n", index, fullNames[index], properties[index], PackagePropertiesToString(properties[index]));
-				free(properties);
-				free(buffer);
-				free(fullNames);
+				builds.push_back(strings::format(L"%u: %s [0x%X %s]",
+					index,
+					fullNames[index],
+					properties[index],
+					PackagePropertiesToString(properties[index])));
 			}
-			return buildInfo;
 		}
+
+		free(properties);
+		free(buffer);
+		free(fullNames);
+
+		return strings::join(builds, L'\n');
 	}
 
-	PCWSTR PackagePropertiesToString(const UINT32 properties)
+	LPCWSTR PackagePropertiesToString(const UINT32 properties)
 	{
 		const UINT32 PACKAGE_PROPERTY_APPLICATION = 0;
-		const UINT32 mask = PACKAGE_PROPERTY_APPLICATION | PACKAGE_PROPERTY_FRAMEWORK |
+		const auto mask = PACKAGE_PROPERTY_APPLICATION | PACKAGE_PROPERTY_FRAMEWORK |
 			PACKAGE_PROPERTY_RESOURCE | PACKAGE_PROPERTY_BUNDLE;
 		switch (properties & mask)
 		{
