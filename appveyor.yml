@@ -117,5 +117,5 @@ deploy:
 
   auth_token:
     secure: vJsUDJyfK/dEUbimHuxnA5id48OJR5UeHpB2WK8rcN7SslRJ08BHy9ecKctDJzx/
-  artifact: /.*exe.*\.zip/
+  artifact: /.*\.zip/
   draft: true
