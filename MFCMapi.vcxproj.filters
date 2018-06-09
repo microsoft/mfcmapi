@@ -115,6 +115,7 @@
       <Filter>Source Files\IO</Filter>
     </ClInclude>
     <ClInclude Include="MAPI\StubUtils.h" />
+    <ClInclude Include="MAPI\Version.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -149,6 +150,9 @@
     </ClCompile>
     <ClCompile Include="UI\Dialogs\MFCUtilityFunctions.cpp">
       <Filter>Source Files\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="MAPI\Version.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
