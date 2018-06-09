@@ -39,7 +39,7 @@ namespace strings
 	{
 		va_list argList;
 		va_start(argList, szMsg);
-		auto ret = strings::formatV(szMsg, argList);
+		auto ret = formatV(szMsg, argList);
 		va_end(argList);
 		return ret;
 	}
@@ -101,7 +101,7 @@ namespace strings
 	{
 		va_list argList;
 		va_start(argList, dwID);
-		auto ret = formatmessageV(strings::loadstring(dwID).c_str(), argList);
+		auto ret = formatmessageV(loadstring(dwID).c_str(), argList);
 		va_end(argList);
 		return ret;
 	}
@@ -121,7 +121,7 @@ namespace strings
 #ifdef _UNICODE
 		return src;
 #else
-		return strings::wstringTostring(src);
+		return wstringTostring(src);
 #endif
 	}
 
@@ -147,7 +147,7 @@ namespace strings
 #ifdef UNICODE
 		return src ? src : L"";
 #else
-		return strings::LPCSTRToWstring(src);
+		return LPCSTRToWstring(src);
 #endif
 	}
 
@@ -246,7 +246,7 @@ namespace strings
 
 	std::wstring StripCarriage(const std::wstring& szString)
 	{
-		return strings::StripCharacter(szString, L'\r');
+		return StripCharacter(szString, L'\r');
 	}
 
 	std::wstring CleanString(const std::wstring& szString)
@@ -261,7 +261,7 @@ namespace strings
 	{
 		const auto first = szString.find_first_not_of(' ');
 		if (first == std::string::npos)
-			return strings::emptystring;
+			return emptystring;
 		const auto last = szString.find_last_not_of(' ');
 		return szString.substr(first, last - first + 1);
 	}
@@ -377,7 +377,7 @@ namespace strings
 	std::wstring BinToTextStringW(const std::vector<BYTE>& lpByte, bool bMultiLine)
 	{
 		SBinary bin = { static_cast<ULONG>(lpByte.size()),const_cast<LPBYTE>(lpByte.data()) };
-		return strings::BinToTextStringW(&bin, bMultiLine);
+		return BinToTextStringW(&bin, bMultiLine);
 	}
 
 	// Converts binary data to a string, assuming source string was unicode
@@ -386,13 +386,13 @@ namespace strings
 		if (!lpBin || !lpBin->cb || lpBin->cb % sizeof WCHAR || !lpBin->lpb) return L"";
 
 		const std::wstring szBin(reinterpret_cast<LPWSTR>(lpBin->lpb), lpBin->cb / sizeof WCHAR);
-		return strings::RemoveInvalidCharactersW(szBin, bMultiLine);
+		return RemoveInvalidCharactersW(szBin, bMultiLine);
 	}
 
 	std::wstring BinToTextString(const std::vector<BYTE>& lpByte, bool bMultiLine)
 	{
 		SBinary bin = { static_cast<ULONG>(lpByte.size()),const_cast<LPBYTE>(lpByte.data()) };
-		return strings::BinToTextString(&bin, bMultiLine);
+		return BinToTextString(&bin, bMultiLine);
 	}
 
 	// Converts binary data to a string, assuming source string was single byte
@@ -417,7 +417,7 @@ namespace strings
 
 		if (bPrependCB)
 		{
-			lpsz = strings::format(L"cb: %u lpb: ", static_cast<UINT>(cb)); // STRING_OK
+			lpsz = format(L"cb: %u lpb: ", static_cast<UINT>(cb)); // STRING_OK
 		}
 
 		if (!cb || !lpb)
@@ -444,14 +444,14 @@ namespace strings
 	std::wstring BinToHexString(const std::vector<BYTE>& lpByte, bool bPrependCB)
 	{
 		SBinary sBin = { static_cast<ULONG>(lpByte.size()), const_cast<LPBYTE>(lpByte.data()) };
-		return strings::BinToHexString(&sBin, bPrependCB);
+		return BinToHexString(&sBin, bPrependCB);
 	}
 
 	std::wstring BinToHexString(_In_opt_ const SBinary* lpBin, bool bPrependCB)
 	{
 		if (!lpBin) return L"";
 
-		return strings::BinToHexString(
+		return BinToHexString(
 			lpBin->lpb,
 			lpBin->cb,
 			bPrependCB);
@@ -559,7 +559,7 @@ namespace strings
 
 	std::wstring join(const std::vector<std::wstring>& elems, const wchar_t delim)
 	{
-		return strings::join(elems, std::wstring(1, delim));
+		return join(elems, std::wstring(1, delim));
 	}
 
 	static const char pBase64[] = {
@@ -677,7 +677,7 @@ namespace strings
 
 	std::wstring CurrencyToString(const CURRENCY& curVal)
 	{
-		auto szCur = strings::format(L"%05I64d", curVal.int64); // STRING_OK
+		auto szCur = format(L"%05I64d", curVal.int64); // STRING_OK
 		if (szCur.length() > 4)
 		{
 			szCur.insert(szCur.length() - 4, L"."); // STRING_OK
@@ -700,7 +700,7 @@ namespace strings
 			wchar_t szDateStr[MAX_PATH] = { 0 };
 
 			// shove millisecond info into our format string since GetTimeFormat doesn't use it
-			auto szFormatStr = strings::formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
+			auto szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
 
 			WC_D(iRet, GetTimeFormatW(
 				LOCALE_USER_DEFAULT,
@@ -718,13 +718,13 @@ namespace strings
 				szDateStr,
 				MAX_PATH));
 
-			PropString = strings::format(L"%ws %ws", szTimeStr, szDateStr); // STRING_OK
+			PropString = format(L"%ws %ws", szTimeStr, szDateStr); // STRING_OK
 		}
 		else
 		{
-			PropString = strings::loadstring(IDS_INVALIDSYSTIME);
+			PropString = loadstring(IDS_INVALIDSYSTIME);
 		}
 
-		AltPropString = strings::formatmessage(IDS_FILETIMEALTFORMAT, fileTime.dwLowDateTime, fileTime.dwHighDateTime);
+		AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, fileTime.dwLowDateTime, fileTime.dwHighDateTime);
 	}
 }

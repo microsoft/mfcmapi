@@ -14,13 +14,15 @@
 #include <MAPI/AdviseSink.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Msi.h>
-#include <ImportProcs.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <MAPI/Cache/GlobalCache.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <UI/Dialogs/Editors/Options.h>
-#include <MAPI/StubUtils.h>
+#include <Windows.h>
+#include <malloc.h>
+#include <stdio.h>
+#include <MAPI/Version.h>
 
 namespace dialog
 {
@@ -643,47 +645,6 @@ namespace dialog
 		new editor::CHexEditor(m_lpParent, m_lpMapiObjects);
 	}
 
-	std::wstring GetOutlookVersionString()
-	{
-		auto hRes = S_OK;
-
-		if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return strings::emptystring;
-
-		std::wstring szOut;
-
-		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
-		{
-			auto b64 = false;
-			auto lpszTempPath = mapistub::GetOutlookPath(mapistub::g_pszOutlookQualifiedComponents[i], &b64);
-
-			if (!lpszTempPath.empty())
-			{
-				const auto lpszTempVer = new WCHAR[MAX_PATH];
-				const auto lpszTempLang = new WCHAR[MAX_PATH];
-				if (lpszTempVer && lpszTempLang)
-				{
-					UINT ret = 0;
-					DWORD dwValueBuf = MAX_PATH;
-					WC_D(ret, import::pfnMsiGetFileVersion(lpszTempPath.c_str(),
-						lpszTempVer,
-						&dwValueBuf,
-						lpszTempLang,
-						&dwValueBuf));
-					if (ERROR_SUCCESS == ret)
-					{
-						szOut = strings::formatmessage(IDS_OUTLOOKVERSIONSTRING, lpszTempPath.c_str(), lpszTempVer, lpszTempLang);
-						szOut += strings::formatmessage(b64 ? IDS_TRUE : IDS_FALSE);
-						szOut += L"\n"; // STRING_OK
-					}
-
-					delete[] lpszTempLang;
-					delete[] lpszTempVer;
-				}
-			}
-		}
-
-		return szOut;
-	}
 
 	void CBaseDialog::OnOutlookVersion()
 	{
@@ -695,11 +656,7 @@ namespace dialog
 			NULL,
 			CEDITOR_BUTTON_OK);
 
-		auto szVersionString = GetOutlookVersionString();
-		if (szVersionString.empty())
-		{
-			szVersionString = strings::loadstring(IDS_NOOUTLOOK);
-		}
+		const auto szVersionString = version::GetOutlookVersionString();
 
 		MyEID.InitPane(0, viewpane::TextPane::CreateMultiLinePane(IDS_OUTLOOKVERSIONPROMPT, szVersionString, true));
 		WC_H(MyEID.DisplayDialog());

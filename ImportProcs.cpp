@@ -83,6 +83,8 @@ LPMSIPROVIDEQUALIFIEDCOMPONENTW pfnMsiProvideQualifiedComponentW = nullptr;
 // From kernel32.dll
 LPHEAPSETINFORMATION pfnHeapSetInformation = nullptr;
 LPGETMODULEHANDLEEXW pfnGetModuleHandleExW = nullptr;
+LPFINDPACKAGESBYPACKAGEFAMILY pfnFindPackagesByPackageFamily = nullptr;
+LPPACKAGEIDFROMFULLNAME pfnPackageIdFromFullName = nullptr;
 
 // Exists to allow some logging
 _Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName)
@@ -193,6 +195,8 @@ void ImportProcs()
 	LoadProc(L"msi.dll", &hModMSI, "MsiGetFileVersionW", reinterpret_cast<FARPROC*>(&pfnMsiGetFileVersion)); // STRING_OK;
 	LoadProc(L"msi.dll", &hModMSI, "MsiProvideQualifiedComponentW", reinterpret_cast<FARPROC*>(&pfnMsiProvideQualifiedComponent)); // STRING_OK;
 	LoadProc(L"shell32.dll", &hModShell32, "SHGetPropertyStoreForWindow", reinterpret_cast<FARPROC*>(&pfnSHGetPropertyStoreForWindow)); // STRING_OK;
+	LoadProc(L"kernel32.dll", &hModKernel32, "FindPackagesByPackageFamily", reinterpret_cast<FARPROC*>(&pfnFindPackagesByPackageFamily)); // STRING_OK;
+	LoadProc(L"kernel32.dll", &hModKernel32, "PackageIdFromFullName", reinterpret_cast<FARPROC*>(&pfnPackageIdFromFullName)); // STRING_OK;
 }
 
 // Opens the mail key for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
@@ -379,7 +383,7 @@ BOOL WINAPI MyGetModuleHandleExW(
 {
 	if (!pfnGetModuleHandleExW)
 	{
-		LoadProc(L"kernel32.dll", &hModMSI, "GetModuleHandleExW", reinterpret_cast<FARPROC*>(&pfnGetModuleHandleExW)); // STRING_OK;
+		LoadProc(L"kernel32.dll", &hModKernel32, "GetModuleHandleExW", reinterpret_cast<FARPROC*>(&pfnGetModuleHandleExW)); // STRING_OK;
 	}
 
 	if (pfnGetModuleHandleExW) return pfnGetModuleHandleExW(dwFlags, lpModuleName, phModule);
