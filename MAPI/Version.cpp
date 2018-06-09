@@ -3,6 +3,7 @@
 #include <ImportProcs.h>
 #include <MAPI/StubUtils.h>
 #include <appmodel.h>
+#include <AppxPackaging.h>
 
 namespace version
 {
@@ -48,25 +49,22 @@ namespace version
 		return szOut;
 	}
 
-	LPCWSTR PackagePropertiesToString(const UINT32 properties)
+	LPCWSTR AppArchitectureToString(const APPX_PACKAGE_ARCHITECTURE a)
 	{
-		const UINT32 PACKAGE_PROPERTY_APPLICATION = 0;
-		const auto mask = PACKAGE_PROPERTY_APPLICATION | PACKAGE_PROPERTY_FRAMEWORK |
-			PACKAGE_PROPERTY_RESOURCE | PACKAGE_PROPERTY_BUNDLE;
-		switch (properties & mask)
+		switch (a)
 		{
-		case PACKAGE_PROPERTY_APPLICATION: return L"Application";
-		case PACKAGE_PROPERTY_FRAMEWORK:   return L"Framework";
-		case PACKAGE_PROPERTY_RESOURCE:    return L"Resource";
-		case PACKAGE_PROPERTY_BUNDLE:      return L"Bundle";
-		default:                           return L"?";
+		case APPX_PACKAGE_ARCHITECTURE_X86: return L"x86";
+		case APPX_PACKAGE_ARCHITECTURE_ARM: return L"arm";
+		case APPX_PACKAGE_ARCHITECTURE_X64: return L"x64";
+		case APPX_PACKAGE_ARCHITECTURE_NEUTRAL: return L"neutral";
+		default: return L"?";
 		}
 	}
 
 	// Most of this function is from https://msdn.microsoft.com/en-us/library/windows/desktop/dn270601(v=vs.85).aspx
 	// Return empty strings so the logic that calls this Lookup function can be handled accordingly
 	// Only if the API call works do we want to return anything other than an empty string
-	std::wstring LookupFamilyName(_In_ LPCWSTR familyName, _In_ const UINT32 filter)
+	std::wstring GetFullName(_In_ LPCWSTR familyName, _In_ const UINT32 filter)
 	{
 		if (!import::pfnFindPackagesByPackageFamily)
 		{
@@ -115,32 +113,66 @@ namespace version
 		return builds;
 	}
 
+	std::wstring GetPackageVersion(LPCWSTR fullname)
+	{
+		if (!import::pfnPackageIdFromFullName) return strings::emptystring;
+		UINT32 length = 0;
+		auto rc = import::pfnPackageIdFromFullName(
+			fullname,
+			0,
+			&length,
+			nullptr);
+		if (rc == ERROR_SUCCESS)
+		{
+			output::DebugPrint(DBGGeneric, L"GetPackageId: Package not found\n");
+			return strings::emptystring;
+		}
+
+		if (rc != ERROR_INSUFFICIENT_BUFFER)
+		{
+			output::DebugPrint(DBGGeneric, L"GetPackageId: Error %ld in PackageIdFromFullName\n", rc);
+			return strings::emptystring;
+		}
+
+		std::wstring build;
+		const auto package_id = static_cast<PACKAGE_ID *>(malloc(length));
+		if (package_id)
+		{
+			rc = import::pfnPackageIdFromFullName(
+				fullname,
+				0,
+				&length,
+				reinterpret_cast<BYTE*>(package_id));
+			if (rc != ERROR_SUCCESS)
+			{
+				output::DebugPrint(DBGGeneric, L"PackageIdFromFullName: Error %d looking up ID from full name\n", rc);
+			}
+			else
+			{
+				build = strings::format(L"%d.%d.%d.%d %ws",
+					package_id->version.Major,
+					package_id->version.Minor,
+					package_id->version.Build,
+					package_id->version.Revision,
+					AppArchitectureToString(static_cast<APPX_PACKAGE_ARCHITECTURE>(package_id->processorArchitecture)));
+			}
+		}
+
+		free(package_id);
+		return build;
+	}
+
 	std::wstring GetCentennialVersion()
 	{
-		// If the string is empty, check for Centennial office first
-		//const auto familyName = L"Microsoft.Office.Desktop_8wekyb3d8bbwe";
+		// Check for Centennial Office
 		const auto familyName = L"Microsoft.MicrosoftOfficeHub_8wekyb3d8bbwe";
 
 		const UINT32 filter = PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_PROPERTY_BUNDLE | PACKAGE_PROPERTY_RESOURCE;
-		auto packageName = LookupFamilyName(familyName, filter);
+		auto fullName = GetFullName(familyName, filter);
 
-		if (!packageName.empty())
+		if (!fullName.empty())
 		{
-			// Lookup should return something like this:
-			// Microsoft.Office.Desktop_16010.10222.20010.0_x86__8wekyb3d8bbwe
-
-			const auto first = packageName.find('_');
-			const auto last = packageName.find_last_of('_');
-
-			// Trim the string between the first and last underscore character
-			auto buildNum = packageName.substr(first, last - first);
-
-			// We should be left with _16010.10222.20010.0_x86_
-			// Replace the underscores with spaces
-			std::replace(buildNum.begin(), buildNum.end(), '_', ' ');
-
-			// We now should have the build num and bitness
-			return L"Microsoft Store Version: " + buildNum;
+			return L"Microsoft Store Version: " + GetPackageVersion(fullName.c_str());
 		}
 
 		return strings::emptystring;
@@ -150,7 +182,7 @@ namespace version
 	{
 		auto szVersionString = GetMSIVersion();
 
-		//		if (szVersionString.empty())
+		if (szVersionString.empty())
 		{
 			szVersionString = GetCentennialVersion();
 		}
