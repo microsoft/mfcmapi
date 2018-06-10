@@ -44,8 +44,7 @@ namespace smartview
 		persistData.wPersistID = m_Parser.Get<WORD>();
 		persistData.wDataElementsSize = m_Parser.Get<WORD>();
 
-		if (persistData.wPersistID != PERISIST_SENTINEL &&
-			m_Parser.RemainingBytes() >= persistData.wDataElementsSize)
+		if (persistData.wPersistID != PERISIST_SENTINEL && m_Parser.RemainingBytes() >= persistData.wDataElementsSize)
 		{
 			// Build a new m_Parser to preread and count our elements
 			// This new m_Parser will only contain as much space as suggested in wDataElementsSize
@@ -100,7 +99,8 @@ namespace smartview
 		{
 			for (WORD iPersistElement = 0; iPersistElement < m_ppdPersistData.size(); iPersistElement++)
 			{
-				szAdditionalRenEntryIDs += strings::formatmessage(IDS_AEIDPERSISTELEMENT,
+				szAdditionalRenEntryIDs += strings::formatmessage(
+					IDS_AEIDPERSISTELEMENT,
 					iPersistElement,
 					m_ppdPersistData[iPersistElement].wPersistID,
 					interpretprop::InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID).c_str(),
@@ -108,15 +108,21 @@ namespace smartview
 
 				if (m_ppdPersistData[iPersistElement].ppeDataElement.size())
 				{
-					for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].ppeDataElement.size(); iDataElement++)
+					for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].ppeDataElement.size();
+						 iDataElement++)
 					{
-						szAdditionalRenEntryIDs += strings::formatmessage(IDS_AEIDDATAELEMENT,
+						szAdditionalRenEntryIDs += strings::formatmessage(
+							IDS_AEIDDATAELEMENT,
 							iDataElement,
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
-							interpretprop::InterpretFlags(flagElementID, m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID).c_str(),
+							interpretprop::InterpretFlags(
+								flagElementID,
+								m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID)
+								.c_str(),
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize);
 
-						szAdditionalRenEntryIDs += strings::BinToHexString(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData, true);
+						szAdditionalRenEntryIDs += strings::BinToHexString(
+							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData, true);
 					}
 				}
 

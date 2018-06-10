@@ -4,9 +4,11 @@
 # Tested files: (just tracking enough until I'm happy)
 # MAPIPropPropertyBag.cpp
 # MAPIABFunctions.cpp
+# AdditionalRenEntryIDs.*
 
 Language: Cpp
 
+AccessModifierOffset: -4
 AlignAfterOpenBracket: AlwaysBreak
 AlignTrailingComments: false
 AllowAllParametersOfDeclarationOnNextLine: false
@@ -16,11 +18,11 @@ BinPackParameters: false
 BreakBeforeBraces: Custom
 BraceWrapping: # Will likely end up enabling more/all of these before we're done testing
   AfterNamespace: true
-#  AfterClass: false
+  AfterClass: true
   AfterControlStatement: true
   AfterEnum: true
   AfterFunction: true
-#  AfterStruct: true
+  AfterStruct: true
 #  AfterUnion: true
 #  BeforeCatch: true
   BeforeElse: true
@@ -28,7 +30,7 @@ BraceWrapping: # Will likely end up enabling more/all of these before we're done
 #  SplitEmptyFunction: false
 #  SplitEmptyRecord: false
 #  SplitEmptyNamespace: false
-ColumnLimit: 120
+ColumnLimit: 120 # This is large now to minimize churn but needs to be lowered
 IndentWidth: 4
 NamespaceIndentation: All
 #PenaltyExcessCharacter: 0 # This is serious overkill - let's try not to use it
