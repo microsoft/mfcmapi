@@ -32,6 +32,7 @@ PenaltyReturnTypeOnItsOwnLine: 20
 PointerAlignment: Left
 ReflowComments: false
 SortIncludes: false
+SpacesBeforeTrailingComments: 1
 Standard: Cpp11
 TabWidth: 4
 UseTab: Always
@@ -41,7 +42,7 @@ UseTab: Always
 #AlignEscapedNewlinesLeft: true
 #AllowShortBlocksOnASingleLine: true
 #AllowShortFunctionsOnASingleLine: true
-#llowShortLoopsOnASingleLine: true
+#AllowShortLoopsOnASingleLine: true
 #AlwaysBreakAfterDefinitionReturnType: None
 #AlwaysBreakAfterReturnType: None
 #AlwaysBreakBeforeMultilineStrings: false
@@ -65,7 +66,6 @@ UseTab: Always
 #SpaceBeforeAssignmentOperators: true
 #SpaceBeforeParens: ControlStatements
 #SpaceInEmptyParentheses: false
-#SpacesBeforeTrailingComments: 1
 #SpacesInAngles: false
 #SpacesInCStyleCastParentheses: false
 #SpacesInContainerLiterals: false
