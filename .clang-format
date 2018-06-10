@@ -1,6 +1,10 @@
 # Plan is to test a few files at a time, see if we can get a baseline clang which has minimal impact on the source
 # Allow it to fix stuff where we're really not consistent already, but mostly should be a no-op on the file
 # Once a good balance is found, we can start getting aggressive about changing options, things like no -indent on namespace.
+# Tested files: (just tracking enough until I'm happy)
+# MAPIPropPropertyBag.cpp
+# MAPIABFunctions.cpp
+
 Language: Cpp
 
 AlignAfterOpenBracket: AlwaysBreak
