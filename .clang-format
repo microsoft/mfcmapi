@@ -1,13 +1,6 @@
 # Plan is to test a few files at a time, see if we can get a baseline clang which has minimal impact on the source
 # Allow it to fix stuff where we're really not consistent already, but mostly should be a no-op on the file
 # Once a good balance is found, we can start getting aggressive about changing options, things like no -indent on namespace.
-# Tested files: (just tracking enough until I'm happy)
-# MAPIPropPropertyBag.*
-# MAPIABFunctions.*
-# AdditionalRenEntryIDs.*
-# BinaryParser.*
-# Guids.cpp
-# GuidArray.h
 
 Language: Cpp
 
@@ -49,7 +42,6 @@ TabWidth: 4
 UseTab: Always
 
 # These are other format switches we know about - will likely need to turn some of these on/off before we're done
-#AccessModifierOffset: 0
 #AllowShortBlocksOnASingleLine: true
 #AllowShortFunctionsOnASingleLine: true
 #AllowShortLoopsOnASingleLine: true
