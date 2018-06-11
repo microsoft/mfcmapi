@@ -2,7 +2,7 @@
 All pull requests are welcome.
 
 # GETTING STARTED
-*	Make sure you have a GitHub account.
+*	Make sure you have a [GitHub account](https://github.com/signup/free).
 *	Fork the repository on GitHub.
 
 # MAKING CHANGES
@@ -13,11 +13,11 @@ All pull requests are welcome.
 *	Make commits of logical and atomic units.
 *	Check for unnecessary whitespace with git diff --check before committing.
 
-# FORK, THEN CLONE THE REPO:
+## FORK, THEN CLONE THE REPO:
 git clone git@github.com:your-username/mfcmapi.git
 
-# SUBMITTING CHANGES
+## SUBMITTING CHANGES
 *	Push your changes to a topic branch in your fork of the repository.
 
-# PUSH TO YOUR FORK AND SUBMIT A PULL REQUEST.
+## PUSH TO YOUR FORK AND SUBMIT A PULL REQUEST.
 At this point you're waiting on me.
