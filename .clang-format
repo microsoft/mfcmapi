@@ -13,6 +13,7 @@ Language: Cpp
 
 AccessModifierOffset: -4
 AlignAfterOpenBracket: AlwaysBreak
+AlignEscapedNewlinesLeft: DontAlign
 AlignTrailingComments: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortIfStatementsOnASingleLine: true
@@ -49,7 +50,6 @@ UseTab: Always
 
 # These are other format switches we know about - will likely need to turn some of these on/off before we're done
 #AccessModifierOffset: 0
-AlignEscapedNewlinesLeft: true
 #AllowShortBlocksOnASingleLine: true
 #AllowShortFunctionsOnASingleLine: true
 #AllowShortLoopsOnASingleLine: true
