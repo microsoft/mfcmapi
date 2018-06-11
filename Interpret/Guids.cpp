@@ -51,14 +51,15 @@ namespace guid
 {
 	std::wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 	{
-		GUID nullGUID = { 0 };
+		GUID nullGUID = {0};
 
 		if (!lpGUID)
 		{
 			lpGUID = &nullGUID;
 		}
 
-		return strings::format(L"{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}", // STRING_OK
+		return strings::format(
+			L"{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}", // STRING_OK
 			lpGUID->Data1,
 			lpGUID->Data2,
 			lpGUID->Data3,
@@ -96,7 +97,7 @@ namespace guid
 	{
 		LPGUID lpGuidRet = nullptr;
 		LPCGUID lpGUID = nullptr;
-		GUID guid = { 0 };
+		GUID guid = {0};
 
 		// Try the GUID like PS_* first
 		for (const auto& propGuid : PropGuidArray)
@@ -129,10 +130,7 @@ namespace guid
 		return lpGuidRet;
 	}
 
-	_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID)
-	{
-		return StringToGUID(szGUID, false);
-	}
+	_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID) { return StringToGUID(szGUID, false); }
 
 	_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped)
 	{

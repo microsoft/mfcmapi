@@ -2,9 +2,12 @@
 # Allow it to fix stuff where we're really not consistent already, but mostly should be a no-op on the file
 # Once a good balance is found, we can start getting aggressive about changing options, things like no -indent on namespace.
 # Tested files: (just tracking enough until I'm happy)
-# MAPIPropPropertyBag.cpp
-# MAPIABFunctions.cpp
+# MAPIPropPropertyBag.*
+# MAPIABFunctions.*
 # AdditionalRenEntryIDs.*
+# BinaryParser.*
+# Guids.cpp
+# GuidArray.h
 
 Language: Cpp
 

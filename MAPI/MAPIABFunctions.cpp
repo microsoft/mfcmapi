@@ -307,7 +307,10 @@ namespace mapi
 
 			static const SizedSPropTagArray(abcNUM_COLS, abcCols) = {
 				abcNUM_COLS,
-				{PR_ENTRYID, PR_DISPLAY_NAME},
+				{
+					PR_ENTRYID, //
+					PR_DISPLAY_NAME //
+				},
 			};
 
 			enum
@@ -484,7 +487,15 @@ namespace mapi
 
 			const SizedSPropTagArray(abNUM_COLS, abCols) = {
 				abNUM_COLS,
-				{PR_ENTRYID, PR_DISPLAY_NAME_W, PR_RECIPIENT_TYPE, PR_ADDRTYPE_W, PR_DISPLAY_TYPE, PropTagToCompare}};
+				{
+					PR_ENTRYID, //
+					PR_DISPLAY_NAME_W, //
+					PR_RECIPIENT_TYPE, //
+					PR_ADDRTYPE_W, //
+					PR_DISPLAY_TYPE, //
+					PropTagToCompare //
+				},
+			};
 
 			*lppPropsFound = nullptr;
 			if (!pTable || szName.empty()) return MAPI_E_INVALID_PARAMETER;

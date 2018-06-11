@@ -19,12 +19,14 @@ namespace mapi
 			_In_ const std::wstring& szName,
 			ULONG ulRecipientType);
 
-		_Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
+		_Check_return_ HRESULT CreateANRRestriction(
+			ULONG ulPropTag,
 			_In_ const std::wstring& szString,
 			_In_opt_ LPVOID lpParent,
 			_Deref_out_opt_ LPSRestriction* lppRes);
 
-		_Check_return_ HRESULT GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_opt_ LPMAPITABLE* lpABContainerTable);
+		_Check_return_ HRESULT
+		GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_opt_ LPMAPITABLE* lpABContainerTable);
 
 		_Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIST* lpAdrList);
 
@@ -38,8 +40,12 @@ namespace mapi
 			_In_ LPMAPITABLE pTable,
 			_In_ const std::wstring& szName,
 			ULONG PropTagToCompare,
-			_Deref_out_opt_ LPSPropValue *lppPropsFound);
+			_Deref_out_opt_ LPSPropValue* lppPropsFound);
 
-		_Check_return_ HRESULT SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Out_opt_ ULONG* lpulObjType, _Deref_out_opt_ LPMAILUSER* lppMailUser);
+		_Check_return_ HRESULT SelectUser(
+			_In_ LPADRBOOK lpAdrBook,
+			HWND hwnd,
+			_Out_opt_ ULONG* lpulObjType,
+			_Deref_out_opt_ LPMAILUSER* lppMailUser);
 	}
 }
