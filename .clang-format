@@ -41,6 +41,7 @@ PenaltyReturnTypeOnItsOwnLine: 20
 PointerAlignment: Left
 ReflowComments: false
 SortIncludes: false
+SpaceAfterCStyleCast : true
 SpacesBeforeTrailingComments: 1
 Standard: Cpp11
 TabWidth: 4
@@ -48,7 +49,7 @@ UseTab: Always
 
 # These are other format switches we know about - will likely need to turn some of these on/off before we're done
 #AccessModifierOffset: 0
-#AlignEscapedNewlinesLeft: true
+AlignEscapedNewlinesLeft: true
 #AllowShortBlocksOnASingleLine: true
 #AllowShortFunctionsOnASingleLine: true
 #AllowShortLoopsOnASingleLine: true
