@@ -13,6 +13,9 @@ extern LPGETTHEMESYSSIZE pfnGetThemeSysSize;
 extern LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent;
 extern LPMSIGETFILEVERSION pfnMsiGetFileVersion;
 extern LPSHGETPROPERTYSTOREFORWINDOW pfnSHGetPropertyStoreForWindow;
+extern LPFINDPACKAGESBYPACKAGEFAMILY pfnFindPackagesByPackageFamily;
+extern LPPACKAGEIDFROMFULLNAME pfnPackageIdFromFullName;
+
 
 _Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName);
 _Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring& szDLLName);

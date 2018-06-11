@@ -26,10 +26,7 @@ namespace propertybag
 		return ulFlags;
 	}
 
-	propBagType MAPIPropPropertyBag::GetType()
-	{
-		return pbMAPIProp;
-	}
+	propBagType MAPIPropPropertyBag::GetType() { return pbMAPIProp; }
 
 	bool MAPIPropPropertyBag::IsEqual(LPMAPIPROPERTYBAG lpPropBag)
 	{
@@ -48,10 +45,7 @@ namespace propertybag
 	}
 
 	// Returns the underlying MAPI prop object, if one exists. Does NOT ref count it.
-	_Check_return_ LPMAPIPROP MAPIPropPropertyBag::GetMAPIProp()
-	{
-		return m_lpProp;
-	}
+	_Check_return_ LPMAPIPROP MAPIPropPropertyBag::GetMAPIProp() { return m_lpProp; }
 
 	_Check_return_ HRESULT MAPIPropPropertyBag::Commit()
 	{
@@ -62,9 +56,7 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT MAPIPropPropertyBag::GetAllProps(
-		ULONG FAR* lpcValues,
-		LPSPropValue FAR* lppPropArray)
+	_Check_return_ HRESULT MAPIPropPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 		auto hRes = S_OK;
@@ -72,10 +64,7 @@ namespace propertybag
 
 		if (!registry::RegKeys[registry::regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD)
 		{
-			hRes = mapi::GetPropsNULL(m_lpProp,
-				fMapiUnicode,
-				lpcValues,
-				lppPropArray);
+			hRes = mapi::GetPropsNULL(m_lpProp, fMapiUnicode, lpcValues, lppPropArray);
 			if (SUCCEEDED(hRes))
 			{
 				m_bGetPropsSucceeded = true;
@@ -116,9 +105,7 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT MAPIPropPropertyBag::GetProp(
-		ULONG ulPropTag,
-		LPSPropValue FAR* lppProp)
+	_Check_return_ HRESULT MAPIPropPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
@@ -151,9 +138,7 @@ namespace propertybag
 		if (lpProp) MAPIFreeBuffer(lpProp);
 	}
 
-	_Check_return_ HRESULT MAPIPropPropertyBag::SetProps(
-		ULONG cValues,
-		LPSPropValue lpPropArray)
+	_Check_return_ HRESULT MAPIPropPropertyBag::SetProps(ULONG cValues, LPSPropValue lpPropArray)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
@@ -165,8 +150,7 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT MAPIPropPropertyBag::SetProp(
-		LPSPropValue lpProp)
+	_Check_return_ HRESULT MAPIPropPropertyBag::SetProp(LPSPropValue lpProp)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
@@ -175,8 +159,7 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT MAPIPropPropertyBag::DeleteProp(
-		ULONG ulPropTag)
+	_Check_return_ HRESULT MAPIPropPropertyBag::DeleteProp(ULONG ulPropTag)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 

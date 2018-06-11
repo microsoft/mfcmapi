@@ -113,9 +113,9 @@ deploy:
 - provider: GitHub
   tag: $(APPVEYOR_BUILD_VERSION)
   release: Continuous Integration ($(APPVEYOR_BUILD_VERSION))
-  description: "Build: *$(APPVEYOR_BUILD_VERSION)*\n\nThis is the continuous integration build of MFCMAPI.\n\nIf you just want to run the MFCMAPI or MrMAPI, get the executables. If you want to debug them, get the symbol files [from AppVeyor](https://ci.appveyor.com/project/stephenegriffin/mfcmapi/build/$(APPVEYOR_BUILD_VERSION)) (click a job and look at the ARTIFACTS).\n\n*The 64 bit builds will only work on a machine with Outlook 2010/2013/2016 64 bit installed. All other machines should use the 32 bit builds, regardless of the operating system.*\n\n[![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)\n\n[Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)"
+  description: "Build: *$(APPVEYOR_BUILD_VERSION)*\n\nThis is the continuous integration build of MFCMAPI.\n\nIf you just want to run the MFCMAPI or MrMAPI, get the executables (exe). If you want to debug them, get the symbol files (pdb).\n\n*The 64 bit builds will only work on a machine with Outlook 2010/2013/2016 64 bit installed. All other machines should use the 32 bit builds, regardless of the operating system.*\n\n[![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)\n\n[Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)"
 
   auth_token:
     secure: vJsUDJyfK/dEUbimHuxnA5id48OJR5UeHpB2WK8rcN7SslRJ08BHy9ecKctDJzx/
-  artifact: /.*exe.*\.zip/
+  artifact: /.*\.zip/
   draft: true
