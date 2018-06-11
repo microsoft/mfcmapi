@@ -1,20 +1,25 @@
 # CONTRIBUTING
-All pull requests are welcome.
+All pull requests are welcome, there are just a few guidelines you need to follow.
+
+When contributing to this repository, please first discuss the change by creating a new [issue](https://github.com/stephenegriffin/mfcmapi/issues) or by replying to an existing one.
 
 # GETTING STARTED
 *	Make sure you have a [GitHub account](https://github.com/signup/free).
-*	Fork the repository on GitHub.
-* Clone the repo with git clone git@github.com:your-username/mfcmapi.git
+*	Fork the repository, you can [learn about forking on Github](https://help.github.com/articles/fork-a-repo)
+* [Clone the repro to your local machine](https://help.github.com/articles/cloning-a-repository/).
 
 ## MAKING CHANGES
 *	Create branch topic for the work you will do, this is where you want to base your work.
   *	This is usually the master branch.
   * To quickly create a topic branch based on master, run git checkout -b fix/master/my_contribution master. 
-		* Note:Please avoid working directly on the master branch.
+		* Note: Please avoid working directly on the master branch.
 *	Once you have a branch, make your changes and commit them to the local branch.
+* All submissions require a review and pull requests are how those happen. Consult
+[GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
+information on pull requests.
 
 ## SUBMITTING CHANGES
 *	Push your changes to a topic branch in your fork of the repository.
 
 ## PUSH TO YOUR FORK AND SUBMIT A PULL REQUEST.
-At this point you're waiting on me.
+At this point you're waiting on the code/changes to be reviewed.
