@@ -1,8 +1,8 @@
 #pragma once
-#define PTYPE_ENTRY(num) {(num),L#num},
+#define PTYPE_ENTRY(num) {(num), L#num},
 
-static NAME_ARRAY_ENTRY g_PropTypeArray[] =
-{
+static NAME_ARRAY_ENTRY g_PropTypeArray[] = {
+	// clang-format off
 	PTYPE_ENTRY(PT_UNSPECIFIED)
 	PTYPE_ENTRY(PT_NULL)
 	PTYPE_ENTRY(PT_I2)
@@ -38,4 +38,5 @@ static NAME_ARRAY_ENTRY g_PropTypeArray[] =
 	PTYPE_ENTRY(PT_MV_SYSTIME)
 	PTYPE_ENTRY(PT_MV_CLSID)
 	PTYPE_ENTRY(PT_MV_BINARY)
+	// clang-format on
 };

@@ -10,6 +10,7 @@ namespace guid
 	_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped);
 
 #pragma region "GUID definitions"
+	// clang-format off
 	DEFINE_GUID(CLSID_MailMessage, 0x00020D0B, 0x0000, 0x0000, 0xC0, 0x00, 0x0, 0x00, 0x0, 0x00, 0x00, 0x46);
 	DEFINE_OLEGUID(PS_INTERNET_HEADERS, 0x00020386, 0, 0);
 
@@ -128,5 +129,6 @@ namespace guid
 	DEFINE_OLEGUID(CLSID_TaskFolder, 0x00067803, 0, 0);
 	DEFINE_OLEGUID(CLSID_NoteFolder, 0x00067804, 0, 0);
 	DEFINE_OLEGUID(CLSID_JournalFolder, 0x00067808, 0, 0);
+	// clang-format on
 #pragma endregion
 }

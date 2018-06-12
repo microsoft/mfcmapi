@@ -68,24 +68,24 @@ enum __NonPropFlag
 	flagEidVersion,
 };
 
-#define PR_FREEBUSY_NT_SECURITY_DESCRIPTOR (PROP_TAG(PT_BINARY,0x0F00))
+#define PR_FREEBUSY_NT_SECURITY_DESCRIPTOR (PROP_TAG(PT_BINARY, 0x0F00))
 
 // http://support.microsoft.com/kb/171670
 // Entry ID for the Calendar
-#define PR_IPM_APPOINTMENT_ENTRYID (PROP_TAG(PT_BINARY,0x36D0))
+#define PR_IPM_APPOINTMENT_ENTRYID (PROP_TAG(PT_BINARY, 0x36D0))
 // Entry ID for the Contact Folder
-#define PR_IPM_CONTACT_ENTRYID (PROP_TAG(PT_BINARY,0x36D1))
+#define PR_IPM_CONTACT_ENTRYID (PROP_TAG(PT_BINARY, 0x36D1))
 // Entry ID for the Journal Folder
-#define PR_IPM_JOURNAL_ENTRYID (PROP_TAG(PT_BINARY,0x36D2))
+#define PR_IPM_JOURNAL_ENTRYID (PROP_TAG(PT_BINARY, 0x36D2))
 // Entry ID for the Notes Folder
-#define PR_IPM_NOTE_ENTRYID (PROP_TAG(PT_BINARY,0x36D3))
+#define PR_IPM_NOTE_ENTRYID (PROP_TAG(PT_BINARY, 0x36D3))
 // Entry ID for the Task Folder
-#define PR_IPM_TASK_ENTRYID (PROP_TAG(PT_BINARY,0x36D4))
+#define PR_IPM_TASK_ENTRYID (PROP_TAG(PT_BINARY, 0x36D4))
 // Entry IDs for the Reminders Folder
-#define PR_REM_ONLINE_ENTRYID (PROP_TAG(PT_BINARY,0x36D5))
+#define PR_REM_ONLINE_ENTRYID (PROP_TAG(PT_BINARY, 0x36D5))
 #define PR_REM_OFFLINE_ENTRYID PROP_TAG(PT_BINARY, 0x36D6)
 // Entry ID for the Drafts Folder
-#define PR_IPM_DRAFTS_ENTRYID (PROP_TAG(PT_BINARY,0x36D7))
+#define PR_IPM_DRAFTS_ENTRYID (PROP_TAG(PT_BINARY, 0x36D7))
 
 #define PR_FREEBUSY_ENTRYIDS PROP_TAG(PT_MV_BINARY, 0x36E4)
 #ifndef PR_RECIPIENT_TRACKSTATUS
@@ -96,10 +96,10 @@ enum __NonPropFlag
 #define PR_ICON_INDEX PROP_TAG(PT_LONG, 0x1080)
 
 #ifndef PR_NT_SECURITY_DESCRIPTOR
-#define PR_NT_SECURITY_DESCRIPTOR (PROP_TAG(PT_BINARY,0x0E27))
+#define PR_NT_SECURITY_DESCRIPTOR (PROP_TAG(PT_BINARY, 0x0E27))
 #endif
 #ifndef PR_BODY_HTML
-#define PR_BODY_HTML (PROP_TAG(PT_TSTRING,0x1013))
+#define PR_BODY_HTML (PROP_TAG(PT_TSTRING, 0x1013))
 #endif
 
 #ifndef PR_SEND_INTERNET_ENCODING
@@ -111,12 +111,12 @@ enum __NonPropFlag
 
 // http://support.microsoft.com/kb/837364
 #ifndef PR_CONFLICT_ITEMS
-#define PR_CONFLICT_ITEMS PROP_TAG(PT_MV_BINARY,0x1098)
+#define PR_CONFLICT_ITEMS PROP_TAG(PT_MV_BINARY, 0x1098)
 #endif
 
 // http://support.microsoft.com/kb/278321
 #ifndef PR_INETMAIL_OVERRIDE_FORMAT
-#define PR_INETMAIL_OVERRIDE_FORMAT PROP_TAG(PT_LONG,0x5902)
+#define PR_INETMAIL_OVERRIDE_FORMAT PROP_TAG(PT_LONG, 0x5902)
 #endif
 
 // http://support.microsoft.com/kb/312900
@@ -128,10 +128,10 @@ enum __NonPropFlag
 #define MSG_DEFAULTS_SEND_CERT 4 // Send certificate with message.
 
 // http://support.microsoft.com/kb/194955
-#define PR_AGING_GRANULARITY PROP_TAG(PT_LONG,0x36EE)
+#define PR_AGING_GRANULARITY PROP_TAG(PT_LONG, 0x36EE)
 
 // http://msdn2.microsoft.com/en-us/library/bb176434.aspx
-#define PR_AGING_DEFAULT PROP_TAG(PT_LONG,0x685E)
+#define PR_AGING_DEFAULT PROP_TAG(PT_LONG, 0x685E)
 
 #define AG_DEFAULT_FILE 0x01
 #define AG_DEFAULT_ALL 0x02
@@ -158,7 +158,7 @@ enum __NonPropFlag
 #define PR_ADDITIONAL_REN_ENTRYIDS PROP_TAG(PT_MV_BINARY, 0x36D8)
 
 // http://msdn2.microsoft.com/en-us/library/bb820966.aspx
-#define PR_PROFILE_SERVER_FULL_VERSION PROP_TAG( PT_BINARY, pidProfileMin+0x3b)
+#define PR_PROFILE_SERVER_FULL_VERSION PROP_TAG(PT_BINARY, pidProfileMin + 0x3b)
 
 // [MS-NSPI].pdf
 #define DT_CONTAINER ((ULONG) 0x00000100)
@@ -167,7 +167,7 @@ enum __NonPropFlag
 #define DT_SEARCH ((ULONG) 0x00000200)
 
 // http://msdn2.microsoft.com/en-us/library/bb821036.aspx
-#define PR_FLAG_STATUS PROP_TAG( PT_LONG, 0x1090 )
+#define PR_FLAG_STATUS PROP_TAG(PT_LONG, 0x1090)
 enum FollowUpStatus
 {
 	flwupNone = 0,
@@ -176,7 +176,7 @@ enum FollowUpStatus
 };
 
 // http://msdn2.microsoft.com/en-us/library/bb821062.aspx
-#define PR_FOLLOWUP_ICON PROP_TAG( PT_LONG, 0x1095 )
+#define PR_FOLLOWUP_ICON PROP_TAG(PT_LONG, 0x1095)
 enum OlFlagIcon
 {
 	olNoFlagIcon = 0,
@@ -234,7 +234,7 @@ enum Gender
 #define TWIR_TOTALLY ((ULONG) 0x08000000)
 
 // [MS-OXCSPAM].pdf
-#define PR_SENDER_ID_STATUS PROP_TAG( PT_LONG, 0x4079)
+#define PR_SENDER_ID_STATUS PROP_TAG(PT_LONG, 0x4079)
 // Values that PR_SENDER_ID_STATUS can take
 #define SENDER_ID_NEUTRAL 0x1
 #define SENDER_ID_PASS 0x2
@@ -270,7 +270,8 @@ enum Gender
 #define PR_TODO_ITEM_FLAGS PROP_TAG(PT_LONG, 0x0e2b)
 #define TDIP_None 0x00000000
 #define TDIP_Active 0x00000001 // Object is time flagged
-#define TDIP_ActiveRecip 0x00000008 // SHOULD only be set on a draft message object, and means that the object is flagged for recipients.
+#define TDIP_ActiveRecip \
+	0x00000008 // SHOULD only be set on a draft message object, and means that the object is flagged for recipients.
 
 // [MS-OXORule].pdf
 #define PR_RULE_MSG_STATE PROP_TAG(PT_LONG, 0x65e9)
@@ -685,11 +686,16 @@ enum
 #define PropDefV2 0x103
 
 #define PDO_IS_CUSTOM 0x00000001 // This FieldDefinition structure contains a definition of a user-defined field.
-#define PDO_REQUIRED 0x00000002 // For a form control bound to this field, the checkbox for A value is required for this field is selected in the Validation tab of the Properties dialog box.
-#define PDO_PRINT_SAVEAS 0x00000004 // For a form control bound to this field, the checkbox for Include this field for printing and Save As is selected in the Validation tab of the Properties dialog box.
-#define PDO_CALC_AUTO 0x00000008 // For a form control bound to this field, the checkbox for Calculate this formula automatically option is selected in the Value tab of the Properties dialog box.
-#define PDO_FT_CONCAT 0x00000010 // This is a field of type Combination and it has the 'Joining fields and any text fragments with each other' option selected in its Combination Formula Field dialog.
-#define PDO_FT_SWITCH 0x00000020 // This field is of type Combination and has the Showing only the first non-empty field, ignoring subsequent ones option selected in the Combination Formula Field dialog box.
+#define PDO_REQUIRED \
+	0x00000002 // For a form control bound to this field, the checkbox for A value is required for this field is selected in the Validation tab of the Properties dialog box.
+#define PDO_PRINT_SAVEAS \
+	0x00000004 // For a form control bound to this field, the checkbox for Include this field for printing and Save As is selected in the Validation tab of the Properties dialog box.
+#define PDO_CALC_AUTO \
+	0x00000008 // For a form control bound to this field, the checkbox for Calculate this formula automatically option is selected in the Value tab of the Properties dialog box.
+#define PDO_FT_CONCAT \
+	0x00000010 // This is a field of type Combination and it has the 'Joining fields and any text fragments with each other' option selected in its Combination Formula Field dialog.
+#define PDO_FT_SWITCH \
+	0x00000020 // This field is of type Combination and has the Showing only the first non-empty field, ignoring subsequent ones option selected in the Combination Formula Field dialog box.
 #define PDO_PRINT_SAVEAS_DEF 0x000000040 // This flag is not used
 
 enum iTypeEnum
@@ -713,7 +719,7 @@ enum iTypeEnum
 };
 
 // [MS-OXOSFLD].pdf
-#define PR_ADDITIONAL_REN_ENTRYIDS_EX PROP_TAG( PT_BINARY, 0x36d9)
+#define PR_ADDITIONAL_REN_ENTRYIDS_EX PROP_TAG(PT_BINARY, 0x36d9)
 
 #define RSF_PID_TREAT_AS_SF 0x8000
 #define RSF_PID_RSS_SUBSCRIPTION (RSF_PID_TREAT_AS_SF | 1)
@@ -726,20 +732,20 @@ enum iTypeEnum
 #define RSF_ELID_ENTRYID 1
 #define RSF_ELID_HEADER 2
 
-#define PR_TARGET_ENTRYID PROP_TAG( PT_BINARY, 0x3010)
+#define PR_TARGET_ENTRYID PROP_TAG(PT_BINARY, 0x3010)
 
-#define PR_SCHDINFO_DELEGATE_ENTRYIDS PROP_TAG( PT_MV_BINARY, 0x6845)
+#define PR_SCHDINFO_DELEGATE_ENTRYIDS PROP_TAG(PT_MV_BINARY, 0x6845)
 
-#define PR_EMSMDB_SECTION_UID PROP_TAG( PT_BINARY, 0x3d15)
+#define PR_EMSMDB_SECTION_UID PROP_TAG(PT_BINARY, 0x3d15)
 
 #define EDK_PROFILEUISTATE_ENCRYPTNETWORK 0x4000
 
-#define PR_CONTAB_FOLDER_ENTRYIDS PROP_TAG( PT_MV_BINARY, 0x6620)
-#define PR_CONTAB_STORE_ENTRYIDS PROP_TAG( PT_MV_BINARY, 0x6626)
-#define PR_CONTAB_STORE_SUPPORT_MASKS PROP_TAG( PT_MV_LONG, 0x6621)
-#define PR_DELEGATE_FLAGS PROP_TAG( PT_MV_LONG, 0x686b)
+#define PR_CONTAB_FOLDER_ENTRYIDS PROP_TAG(PT_MV_BINARY, 0x6620)
+#define PR_CONTAB_STORE_ENTRYIDS PROP_TAG(PT_MV_BINARY, 0x6626)
+#define PR_CONTAB_STORE_SUPPORT_MASKS PROP_TAG(PT_MV_LONG, 0x6621)
+#define PR_DELEGATE_FLAGS PROP_TAG(PT_MV_LONG, 0x686b)
 
-#define PR_EXTENDED_RULE_MSG_CONDITION PROP_TAG( PT_BINARY, 0x0E9A)
+#define PR_EXTENDED_RULE_MSG_CONDITION PROP_TAG(PT_BINARY, 0x0E9A)
 
 // [MS-OXOCNTC].pdf
 #define dispidDLOneOffMembers 0x8054
@@ -747,8 +753,8 @@ enum iTypeEnum
 #define dispidABPEmailList 0x8028
 #define dispidABPArrayType 0x8029
 
-#define PR_CONVERSATION_ID PROP_TAG( PT_BINARY, 0x3013)
-#define PR_FOLDER_WEBVIEWINFO PROP_TAG( PT_BINARY, 0x36DF)
+#define PR_CONVERSATION_ID PROP_TAG(PT_BINARY, 0x3013)
+#define PR_FOLDER_WEBVIEWINFO PROP_TAG(PT_BINARY, 0x36DF)
 
 #define WEBVIEW_PERSISTENCE_VERSION 0x000000002
 #define WEBVIEWURL 0x00000001
@@ -760,7 +766,7 @@ enum iTypeEnum
 #define dispidForwardNotificationRecipients 0x8261
 
 // http://msdn.microsoft.com/en-us/library/ee218029(EXCHG.80).aspx
-#define PR_NATIVE_BODY_INFO PROP_TAG( PT_LONG, 0x1016)
+#define PR_NATIVE_BODY_INFO PROP_TAG(PT_LONG, 0x1016)
 enum NBI
 {
 	nbiUndefined = 0,
@@ -770,10 +776,10 @@ enum NBI
 	nbiClearSigned,
 };
 
-#define ptagSenderFlags PROP_TAG( PT_LONG, 0x4019)
-#define ptagSentRepresentingFlags PROP_TAG( PT_LONG, 0x401A)
+#define ptagSenderFlags PROP_TAG(PT_LONG, 0x4019)
+#define ptagSentRepresentingFlags PROP_TAG(PT_LONG, 0x401A)
 
-#define PR_LAST_VERB_EXECUTED PROP_TAG( PT_LONG, 0x1081)
+#define PR_LAST_VERB_EXECUTED PROP_TAG(PT_LONG, 0x1081)
 #define NOTEIVERB_OPEN 0
 #define NOTEIVERB_REPLYTOSENDER 102
 #define NOTEIVERB_REPLYTOALL 103
@@ -840,10 +846,10 @@ enum NBI
 #define PR_PROFILE_OFFLINE_STORE_PATH_W PROP_TAG(PT_UNICODE, 0x6610)
 
 // Documented via widely shipped mapisvc.inf files.
-#define CONFIG_USE_SMTP_ADDRESSES ((ULONG)0x00000040)
+#define CONFIG_USE_SMTP_ADDRESSES ((ULONG) 0x00000040)
 
-#define CONFIG_OST_CACHE_PRIVATE ((ULONG)0x00000180)
-#define CONFIG_OST_CACHE_PUBLIC ((ULONG)0x00000400)
+#define CONFIG_OST_CACHE_PRIVATE ((ULONG) 0x00000180)
+#define CONFIG_OST_CACHE_PUBLIC ((ULONG) 0x00000400)
 
 #define PR_STORE_UNICODE_MASK PROP_TAG(PT_LONG, 0x340F)
 
@@ -906,7 +912,7 @@ enum ClientIntent
 #define dispidEmail3DisplayName 0x80A0
 
 // http://blogs.msdn.com/b/stephen_griffin/archive/2010/09/13/you-chose-wisely.aspx
-#define PR_AB_CHOOSE_DIRECTORY_AUTOMATICALLY PROP_TAG( PT_BOOLEAN, 0x3D1C)
+#define PR_AB_CHOOSE_DIRECTORY_AUTOMATICALLY PROP_TAG(PT_BOOLEAN, 0x3D1C)
 
 // http://blogs.msdn.com/b/stephen_griffin/archive/2011/04/13/setsearchpath-not-really.aspx
 enum SearchPathReorderType
@@ -916,7 +922,7 @@ enum SearchPathReorderType
 	SEARCHPATHREORDERTYPE_ACCT_PREFERCONTACTS,
 };
 
-#define PR_USERFIELDS PROP_TAG( PT_BINARY, 0x36E3)
+#define PR_USERFIELDS PROP_TAG(PT_BINARY, 0x36E3)
 
 #define ftNull 0x00
 #define ftString 0x01
@@ -979,12 +985,12 @@ enum SearchPathReorderType
 
 #define PR_ROAMING_BINARYSTREAM PROP_TAG(PT_BINARY, 0x7C09)
 
-#define PR_PROHIBIT_RECEIVE_QUOTA PROP_TAG( PT_LONG, 0x666A)
-#define PR_QUOTA_WARNING PROP_TAG( PT_LONG, 0x341A)
-#define PR_QUOTA_SEND PROP_TAG( PT_LONG, 0x341B)
-#define PR_QUOTA_RECEIVE PROP_TAG( PT_LONG, 0x341C)
+#define PR_PROHIBIT_RECEIVE_QUOTA PROP_TAG(PT_LONG, 0x666A)
+#define PR_QUOTA_WARNING PROP_TAG(PT_LONG, 0x341A)
+#define PR_QUOTA_SEND PROP_TAG(PT_LONG, 0x341B)
+#define PR_QUOTA_RECEIVE PROP_TAG(PT_LONG, 0x341C)
 
-#define PR_SCHDINFO_APPT_TOMBSTONE PROP_TAG( PT_BINARY, 0x686A)
+#define PR_SCHDINFO_APPT_TOMBSTONE PROP_TAG(PT_BINARY, 0x686A)
 
 #define PRXF_IGNORE_SEC_WARNING 0x10
 
@@ -997,7 +1003,8 @@ enum SearchPathReorderType
 #define PR_WLINK_TYPE PROP_TAG(PT_LONG, 0x6849)
 #define PR_WLINK_FLAGS PROP_TAG(PT_LONG, 0x684A)
 
-enum WBROGroupType {
+enum WBROGroupType
+{
 	wbrogUndefined = -1,
 	wbrogMyDepartment = 0,
 	wbrogOtherDepartment,
@@ -1006,7 +1013,8 @@ enum WBROGroupType {
 	wbrogDL,
 };
 
-enum WBSID {
+enum WBSID
+{
 	wbsidMailFavorites = 1,
 	wbsidCalendar = 3,
 	wbsidContacts,
@@ -1015,7 +1023,8 @@ enum WBSID {
 	wbsidJournal,
 };
 
-enum WLinkType {
+enum WLinkType
+{
 	wblNormalFolder = 0,
 	wblSearchFolder = 1,
 	wblSharedFolder = 2,
@@ -1038,18 +1047,18 @@ enum WLinkType {
 #define dispidConvActionMoveStoreEid 0x85C7
 
 #define PR_RETENTION_FLAGS PROP_TAG(PT_LONG, 0x301D)
-#define RETENTION_FLAGS_EXPLICIT ((ULONG)0x00000001)
-#define RETENTION_FLAGS_TAG_CHANGED ((ULONG)0x00000002)
-#define RETENTION_FLAGS_AUTOTAG ((ULONG)0x00000004)
-#define RETENTION_FLAGS_PERSONAL ((ULONG)0x00000008)
-#define RETENTION_FLAGS_EXPLICIT_ARCHIVE ((ULONG)0x00000010)
-#define RETENTION_FLAGS_KEEP_IN_PLACE ((ULONG)0x00000020)
-#define RETENTION_FLAGS_SYSTEM_DATA ((ULONG)0X00000040)
-#define RETENTION_FLAGS_NEEDS_RESCAN ((ULONG)0X00000080)
-#define RETENTION_FLAGS_PENDING_RESCAN ((ULONG)0X00000100)
+#define RETENTION_FLAGS_EXPLICIT ((ULONG) 0x00000001)
+#define RETENTION_FLAGS_TAG_CHANGED ((ULONG) 0x00000002)
+#define RETENTION_FLAGS_AUTOTAG ((ULONG) 0x00000004)
+#define RETENTION_FLAGS_PERSONAL ((ULONG) 0x00000008)
+#define RETENTION_FLAGS_EXPLICIT_ARCHIVE ((ULONG) 0x00000010)
+#define RETENTION_FLAGS_KEEP_IN_PLACE ((ULONG) 0x00000020)
+#define RETENTION_FLAGS_SYSTEM_DATA ((ULONG) 0X00000040)
+#define RETENTION_FLAGS_NEEDS_RESCAN ((ULONG) 0X00000080)
+#define RETENTION_FLAGS_PENDING_RESCAN ((ULONG) 0X00000100)
 
-#define PR_SORT_POSITION PROP_TAG( PT_BINARY, 0x3020)
-#define PR_SORT_PARENTID PROP_TAG( PT_BINARY, 0x3021)
+#define PR_SORT_POSITION PROP_TAG(PT_BINARY, 0x3020)
+#define PR_SORT_PARENTID PROP_TAG(PT_BINARY, 0x3021)
 
 #define PR_PROFILE_MDB_DN PROP_TAG(PT_STRING8, 0x7CFF)
 #define PR_FORCE_USE_ENTRYID_SERVER PROP_TAG(PT_BOOLEAN, 0x7CFE)
@@ -1062,9 +1071,6 @@ enum WLinkType {
 
 #define PR_CONTENT_FILTER_SCL PROP_TAG(PT_LONG, 0x4076)
 
-#define EPHEMERAL (UCHAR)(~( MAPI_NOTRECIP \
- | MAPI_THISSESSION \
- | MAPI_NOW \
- | MAPI_NOTRESERVED))
+#define EPHEMERAL (UCHAR)(~(MAPI_NOTRECIP | MAPI_THISSESSION | MAPI_NOW | MAPI_NOTRESERVED))
 
 #define ATTACH_BY_WEB_REF ((ULONG) 0x00000007)

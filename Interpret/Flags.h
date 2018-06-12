@@ -5,8 +5,8 @@
 #include <Interpret/ExtraPropTags.h>
 
 // when listing flagVALUE entries, NULL values need to come first
-static FLAG_ARRAY_ENTRY g_FlagArray[] =
-{
+static FLAG_ARRAY_ENTRY g_FlagArray[] = {
+	// clang-format off
 	FLAG_ENTRY_NAMED(PR_ACKNOWLEDGEMENT_MODE, 0x00000000, L"Manual acknowledgment", flagVALUE) // STRING_OK
 	FLAG_ENTRY_NAMED(PR_ACKNOWLEDGEMENT_MODE, 0x00000001, L"Automatic acknowledgment", flagVALUE) // STRING_OK
 
@@ -1711,4 +1711,5 @@ static FLAG_ARRAY_ENTRY g_FlagArray[] =
 	NAMEDPROP_FLAG_ENTRY(dispidNoteColor, PSETID_Note, ncPink, flagVALUE)
 	NAMEDPROP_FLAG_ENTRY(dispidNoteColor, PSETID_Note, ncYellow, flagVALUE)
 	NAMEDPROP_FLAG_ENTRY(dispidNoteColor, PSETID_Note, ncWhite, flagVALUE)
+	// clang-format on
 };
