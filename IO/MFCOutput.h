@@ -62,7 +62,8 @@ namespace output
 	void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
-#define Outputf(ulDbgLvl, fFile, bPrintThreadTime, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), Outputf(ulDbgLvl, fFile, bPrintThreadTime, szMsg, __VA_ARGS__))
+#define Outputf(ulDbgLvl, fFile, bPrintThreadTime, szMsg, ...) \
+	(wprintf(szMsg, __VA_ARGS__), Outputf(ulDbgLvl, fFile, bPrintThreadTime, szMsg, __VA_ARGS__))
 #endif
 
 #define OutputToFile(fFile, szMsg) Output((DBGNoDebug), (fFile), true, (szMsg))
@@ -81,7 +82,8 @@ namespace output
 	void __cdecl DebugPrintEx(ULONG ulDbgLvl, std::wstring& szClass, const std::wstring& szFunc, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef DebugPrintEx
-#define DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, __VA_ARGS__))
+#define DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, ...) \
+	(wprintf(szMsg, __VA_ARGS__), DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, __VA_ARGS__))
 #endif
 
 	// Template for the Output functions
@@ -94,56 +96,91 @@ namespace output
 	// We'll use macros to make these calls so the code will read right
 
 	void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin);
-	void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps);
-	void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps);
+	void _OutputProperty(
+		ULONG ulDbgLvl,
+		_In_opt_ FILE* fFile,
+		_In_ LPSPropValue lpProp,
+		_In_opt_ LPMAPIPROP lpObj,
+		bool bRetryStreamProps);
+	void _OutputProperties(
+		ULONG ulDbgLvl,
+		_In_opt_ FILE* fFile,
+		ULONG cProps,
+		_In_count_(cProps) LPSPropValue lpProps,
+		_In_opt_ LPMAPIPROP lpObj,
+		bool bRetryStreamProps);
 	void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const _SRow* lpSRow, _In_opt_ LPMAPIPROP lpObj);
 	void _OutputSRowSet(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSet, _In_opt_ LPMAPIPROP lpObj);
-	void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_opt_ const _SRestriction* lpRes, _In_opt_ LPMAPIPROP lpObj);
+	void _OutputRestriction(
+		ULONG ulDbgLvl,
+		_In_opt_ FILE* fFile,
+		_In_opt_ const _SRestriction* lpRes,
+		_In_opt_ LPMAPIPROP lpObj);
 	void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream);
 	void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 	void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO lpMAPIFormInfo);
 	void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray);
 	void _OutputPropTagArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagArray lpTagsToDump);
 	void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPITable);
-	void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _In_count_(cNotify) LPNOTIFICATION lpNotifications, _In_opt_ LPMAPIPROP lpObj);
+	void _OutputNotifications(
+		ULONG ulDbgLvl,
+		_In_opt_ FILE* fFile,
+		ULONG cNotify,
+		_In_count_(cNotify) LPNOTIFICATION lpNotifications,
+		_In_opt_ LPMAPIPROP lpObj);
 	void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList);
 
 #define DebugPrintBinary(ulDbgLvl, bin) _OutputBinary((ulDbgLvl), nullptr, (bin))
-#define DebugPrintProperties(ulDbgLvl, cProps, lpProps, lpObj) _OutputProperties((ulDbgLvl), nullptr, (cProps), (lpProps), (lpObj), false)
+#define DebugPrintProperties(ulDbgLvl, cProps, lpProps, lpObj) \
+	_OutputProperties((ulDbgLvl), nullptr, (cProps), (lpProps), (lpObj), false)
 #define DebugPrintRestriction(ulDbgLvl, lpRes, lpObj) _OutputRestriction((ulDbgLvl), nullptr, (lpRes), (lpObj))
 #define DebugPrintStream(ulDbgLvl, lpStream) _OutputStream((ulDbgLvl), nullptr, lpStream)
 #define DebugPrintVersion(ulDbgLvl) _OutputVersion((ulDbgLvl), nullptr)
-#define DebugPrintFormInfo(ulDbgLvl,lpMAPIFormInfo) _OutputFormInfo((ulDbgLvl),nullptr, (lpMAPIFormInfo))
-#define DebugPrintFormPropArray(ulDbgLvl,lpMAPIFormPropArray) _OutputFormPropArray((ulDbgLvl),nullptr, (lpMAPIFormPropArray))
-#define DebugPrintPropTagArray(ulDbgLvl,lpTagsToDump) _OutputPropTagArray((ulDbgLvl),nullptr, (lpTagsToDump))
-#define DebugPrintNotifications(ulDbgLvl, cNotify, lpNotifications, lpObj) _OutputNotifications((ulDbgLvl),nullptr, (cNotify), (lpNotifications), (lpObj))
+#define DebugPrintFormInfo(ulDbgLvl, lpMAPIFormInfo) _OutputFormInfo((ulDbgLvl), nullptr, (lpMAPIFormInfo))
+#define DebugPrintFormPropArray(ulDbgLvl, lpMAPIFormPropArray) \
+	_OutputFormPropArray((ulDbgLvl), nullptr, (lpMAPIFormPropArray))
+#define DebugPrintPropTagArray(ulDbgLvl, lpTagsToDump) _OutputPropTagArray((ulDbgLvl), nullptr, (lpTagsToDump))
+#define DebugPrintNotifications(ulDbgLvl, cNotify, lpNotifications, lpObj) \
+	_OutputNotifications((ulDbgLvl), nullptr, (cNotify), (lpNotifications), (lpObj))
 #define DebugPrintSRowSet(ulDbgLvl, lpRowSet, lpObj) _OutputSRowSet((ulDbgLvl), nullptr, (lpRowSet), (lpObj))
 #define DebugPrintEntryList(ulDbgLvl, lpEntryList) _OutputEntryList((ulDbgLvl), nullptr, (lpEntryList))
 
 #define OutputStreamToFile(fFile, lpStream) _OutputStream(DBGNoDebug, (fFile), (lpStream))
 #define OutputTableToFile(fFile, lpMAPITable) _OutputTable(DBGNoDebug, (fFile), (lpMAPITable))
-#define OutputSRowToFile(fFile, lpSRow, lpObj) _OutputSRow(DBGNoDebug,fFile, lpSRow, lpObj)
-#define OutputPropertiesToFile(fFile,cProps,lpProps,lpObj,bRetry) _OutputProperties(DBGNoDebug,fFile, cProps, lpProps, lpObj, bRetry)
-#define OutputPropertyToFile(fFile, lpProp, lpObj, bRetry) _OutputProperty(DBGNoDebug,fFile, lpProp, lpObj, bRetry)
+#define OutputSRowToFile(fFile, lpSRow, lpObj) _OutputSRow(DBGNoDebug, fFile, lpSRow, lpObj)
+#define OutputPropertiesToFile(fFile, cProps, lpProps, lpObj, bRetry) \
+	_OutputProperties(DBGNoDebug, fFile, cProps, lpProps, lpObj, bRetry)
+#define OutputPropertyToFile(fFile, lpProp, lpObj, bRetry) _OutputProperty(DBGNoDebug, fFile, lpProp, lpObj, bRetry)
 
 	// We'll only output this information in debug builds.
 #ifdef _DEBUG
-#define TRACE_CONSTRUCTOR(__class) output::DebugPrintEx(DBGConDes,(__class),(__class),L"(this = %p) - Constructor\n",this);
-#define TRACE_DESTRUCTOR(__class) output::DebugPrintEx(DBGConDes,(__class),(__class),L"(this = %p) - Destructor\n",this);
+#define TRACE_CONSTRUCTOR(__class) \
+	output::DebugPrintEx(DBGConDes, (__class), (__class), L"(this = %p) - Constructor\n", this);
+#define TRACE_DESTRUCTOR(__class) \
+	output::DebugPrintEx(DBGConDes, (__class), (__class), L"(this = %p) - Destructor\n", this);
 
-#define TRACE_ADDREF(__class,__count) output::DebugPrintEx(DBGRefCount,(__class),L"AddRef",L"(this = %p) m_cRef increased to %d.\n",this,(__count));
-#define TRACE_RELEASE(__class,__count) output::DebugPrintEx(DBGRefCount,(__class),L"Release",L"(this = %p) m_cRef decreased to %d.\n",this,(__count));
+#define TRACE_ADDREF(__class, __count) \
+	output::DebugPrintEx(DBGRefCount, (__class), L"AddRef", L"(this = %p) m_cRef increased to %d.\n", this, (__count));
+#define TRACE_RELEASE(__class, __count) \
+	output::DebugPrintEx(DBGRefCount, (__class), L"Release", L"(this = %p) m_cRef decreased to %d.\n", this, (__count));
 #else
 #define TRACE_CONSTRUCTOR(__class)
 #define TRACE_DESTRUCTOR(__class)
 
-#define TRACE_ADDREF(__class,__count)
-#define TRACE_RELEASE(__class,__count)
+#define TRACE_ADDREF(__class, __count)
+#define TRACE_RELEASE(__class, __count)
 #endif
 
-	void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, const std::wstring& szValue, bool bWrapCData, int iIndent);
+	void OutputXMLValue(
+		ULONG ulDbgLvl,
+		_In_opt_ FILE* fFile,
+		UINT uidTag,
+		const std::wstring& szValue,
+		bool bWrapCData,
+		int iIndent);
 	void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 	void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 
-#define OutputXMLValueToFile(fFile, uidTag, szValue, bWrapCData, iIndent) OutputXMLValue(DBGNoDebug, fFile, uidTag, szValue, bWrapCData, iIndent)
+#define OutputXMLValueToFile(fFile, uidTag, szValue, bWrapCData, iIndent) \
+	OutputXMLValue(DBGNoDebug, fFile, uidTag, szValue, bWrapCData, iIndent)
 }
