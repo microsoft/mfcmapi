@@ -7,8 +7,8 @@ namespace smartview
 	ConversationIndex::ConversationIndex()
 	{
 		m_UnnamedByte = 0;
-		m_ftCurrent = { 0 };
-		m_guid = { 0 };
+		m_ftCurrent = {0};
+		m_guid = {0};
 		m_ulResponseLevels = 0;
 	}
 
@@ -47,7 +47,8 @@ namespace smartview
 
 		if (m_Parser.RemainingBytes() > 0)
 		{
-			m_ulResponseLevels = static_cast<ULONG>(m_Parser.RemainingBytes()) / 5; // Response levels consume 5 bytes each
+			m_ulResponseLevels =
+				static_cast<ULONG>(m_Parser.RemainingBytes()) / 5; // Response levels consume 5 bytes each
 		}
 
 		if (m_ulResponseLevels && m_ulResponseLevels < _MaxEntriesSmall)
@@ -82,7 +83,8 @@ namespace smartview
 		std::wstring AltPropString;
 		strings::FileTimeToString(m_ftCurrent, PropString, AltPropString);
 		auto szGUID = guid::GUIDToString(&m_guid);
-		auto szConversationIndex = strings::formatmessage(IDS_CONVERSATIONINDEXHEADER,
+		auto szConversationIndex = strings::formatmessage(
+			IDS_CONVERSATIONINDEXHEADER,
 			m_UnnamedByte,
 			m_ftCurrent.dwLowDateTime,
 			m_ftCurrent.dwHighDateTime,
@@ -93,8 +95,10 @@ namespace smartview
 		{
 			for (ULONG i = 0; i < m_lpResponseLevels.size(); i++)
 			{
-				szConversationIndex += strings::formatmessage(IDS_CONVERSATIONINDEXRESPONSELEVEL,
-					i, m_lpResponseLevels[i].DeltaCode,
+				szConversationIndex += strings::formatmessage(
+					IDS_CONVERSATIONINDEXRESPONSELEVEL,
+					i,
+					m_lpResponseLevels[i].DeltaCode,
 					m_lpResponseLevels[i].TimeDelta,
 					m_lpResponseLevels[i].Random,
 					m_lpResponseLevels[i].Level);

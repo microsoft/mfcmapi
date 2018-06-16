@@ -28,9 +28,7 @@ namespace smartview
 		m_bFB = bFB;
 	}
 
-	void SDBin::Parse()
-	{
-	}
+	void SDBin::Parse() {}
 
 	_Check_return_ std::wstring SDBin::ToStringInternal()
 	{
@@ -59,7 +57,8 @@ namespace smartview
 
 		std::vector<std::wstring> result;
 		result.push_back(strings::formatmessage(IDS_SECURITYDESCRIPTORHEADER) + szInfo);
-		result.push_back(strings::formatmessage(IDS_SECURITYDESCRIPTORVERSION, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), szFlags.c_str()));
+		result.push_back(strings::formatmessage(
+			IDS_SECURITYDESCRIPTORVERSION, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), szFlags.c_str()));
 		result.push_back(szDACL);
 
 		return strings::join(result, L"\r\n");

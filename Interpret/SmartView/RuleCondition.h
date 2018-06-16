@@ -5,13 +5,13 @@
 namespace smartview
 {
 	// http://msdn.microsoft.com/en-us/library/ee158295.aspx
-// http://msdn.microsoft.com/en-us/library/ee179073.aspx
+	// http://msdn.microsoft.com/en-us/library/ee179073.aspx
 
-// [MS-OXCDATA]
-// PropertyName
-// =====================
-//   This structure specifies a Property Name
-//
+	// [MS-OXCDATA]
+	// PropertyName
+	// =====================
+	//   This structure specifies a Property Name
+	//
 	struct PropertyName
 	{
 		BYTE Kind{};
@@ -40,6 +40,7 @@ namespace smartview
 		RuleCondition();
 
 		void Init(bool bExtended);
+
 	private:
 		void Parse() override;
 		_Check_return_ std::wstring ToStringInternal() override;

@@ -7,8 +7,7 @@ namespace smartview
 	{
 		BYTE Id{};
 		BYTE Cb{};
-		union
-		{
+		union {
 			DWORD ExtendedFlags;
 			GUID SearchFolderID;
 			DWORD SearchFolderTag;

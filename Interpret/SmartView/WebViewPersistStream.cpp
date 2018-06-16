@@ -5,10 +5,7 @@
 
 namespace smartview
 {
-	WebViewPersistStream::WebViewPersistStream()
-	{
-		m_cWebViews = 0;
-	}
+	WebViewPersistStream::WebViewPersistStream() { m_cWebViews = 0; }
 
 	void WebViewPersistStream::Parse()
 	{
@@ -59,9 +56,12 @@ namespace smartview
 			szWebViewPersistStream += strings::formatmessage(
 				IDS_WEBVIEWHEADER,
 				i,
-				m_lpWebViews[i].dwVersion, szVersion.c_str(),
-				m_lpWebViews[i].dwType, szType.c_str(),
-				m_lpWebViews[i].dwFlags, szFlags.c_str());
+				m_lpWebViews[i].dwVersion,
+				szVersion.c_str(),
+				m_lpWebViews[i].dwType,
+				szType.c_str(),
+				m_lpWebViews[i].dwFlags,
+				szFlags.c_str());
 
 			szWebViewPersistStream += strings::BinToHexString(m_lpWebViews[i].dwUnused, true);
 

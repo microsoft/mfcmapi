@@ -29,9 +29,7 @@ namespace smartview
 
 				if (m_lpAdrEntry[i].cValues && m_lpAdrEntry[i].cValues < _MaxEntriesSmall)
 				{
-					m_lpAdrEntry[i].rgPropVals = BinToSPropValue(
-						m_lpAdrEntry[i].cValues,
-						false);
+					m_lpAdrEntry[i].rgPropVals = BinToSPropValue(m_lpAdrEntry[i].cValues, false);
 				}
 			}
 		}
@@ -39,19 +37,13 @@ namespace smartview
 
 	_Check_return_ std::wstring RecipientRowStream::ToStringInternal()
 	{
-		auto szRecipientRowStream = strings::formatmessage(
-			IDS_RECIPIENTROWSTREAMHEADER,
-			m_cVersion,
-			m_cRowCount);
+		auto szRecipientRowStream = strings::formatmessage(IDS_RECIPIENTROWSTREAMHEADER, m_cVersion, m_cRowCount);
 		if (m_lpAdrEntry && m_cRowCount)
 		{
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
 				szRecipientRowStream += strings::formatmessage(
-					IDS_RECIPIENTROWSTREAMROW,
-					i,
-					m_lpAdrEntry[i].cValues,
-					m_lpAdrEntry[i].ulReserved1);
+					IDS_RECIPIENTROWSTREAMROW, i, m_lpAdrEntry[i].cValues, m_lpAdrEntry[i].ulReserved1);
 
 				szRecipientRowStream += PropsToString(m_lpAdrEntry[i].cValues, m_lpAdrEntry[i].rgPropVals);
 			}
