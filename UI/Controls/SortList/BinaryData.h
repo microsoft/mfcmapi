@@ -5,7 +5,7 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		class BinaryData :public IData
+		class BinaryData : public IData
 		{
 		public:
 			BinaryData(_In_ LPSBinary lpOldBin);

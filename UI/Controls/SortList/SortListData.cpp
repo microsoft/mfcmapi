@@ -12,19 +12,13 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		SortListData::SortListData() :
-			cSourceProps(0),
-			lpSourceProps(nullptr),
-			bItemFullyLoaded(false),
-			m_lpData(nullptr)
+		SortListData::SortListData()
+			: cSourceProps(0), lpSourceProps(nullptr), bItemFullyLoaded(false), m_lpData(nullptr)
 		{
 			ulSortValue.QuadPart = NULL;
 		}
 
-		SortListData::~SortListData()
-		{
-			Clean();
-		}
+		SortListData::~SortListData() { Clean(); }
 
 		void SortListData::Clean()
 		{
@@ -41,40 +35,19 @@ namespace controls
 			ulSortValue.QuadPart = NULL;
 		}
 
-		ContentsData* SortListData::Contents() const
-		{
-			return reinterpret_cast<ContentsData*>(m_lpData);
-		}
+		ContentsData* SortListData::Contents() const { return reinterpret_cast<ContentsData*>(m_lpData); }
 
-		NodeData* SortListData::Node() const
-		{
-			return reinterpret_cast<NodeData*>(m_lpData);
-		}
+		NodeData* SortListData::Node() const { return reinterpret_cast<NodeData*>(m_lpData); }
 
-		PropListData* SortListData::Prop() const
-		{
-			return reinterpret_cast<PropListData*>(m_lpData);
-		}
+		PropListData* SortListData::Prop() const { return reinterpret_cast<PropListData*>(m_lpData); }
 
-		MVPropData* SortListData::MV() const
-		{
-			return reinterpret_cast<MVPropData*>(m_lpData);
-		}
+		MVPropData* SortListData::MV() const { return reinterpret_cast<MVPropData*>(m_lpData); }
 
-		ResData* SortListData::Res() const
-		{
-			return reinterpret_cast<ResData*>(m_lpData);
-		}
+		ResData* SortListData::Res() const { return reinterpret_cast<ResData*>(m_lpData); }
 
-		CommentData* SortListData::Comment() const
-		{
-			return reinterpret_cast<CommentData*>(m_lpData);
-		}
+		CommentData* SortListData::Comment() const { return reinterpret_cast<CommentData*>(m_lpData); }
 
-		BinaryData* SortListData::Binary() const
-		{
-			return reinterpret_cast<BinaryData*>(m_lpData);
-		}
+		BinaryData* SortListData::Binary() const { return reinterpret_cast<BinaryData*>(m_lpData); }
 
 		// Sets data from the LPSRow into the SortListData structure
 		// Assumes the structure is either an existing structure or a new one which has been memset to 0
@@ -101,11 +74,7 @@ namespace controls
 			Clean();
 			cSourceProps = cProps;
 			lpSourceProps = lpProps;
-			m_lpData = new NodeData(
-				lpEntryID,
-				lpInstanceKey,
-				bSubfolders,
-				ulContainerFlags);
+			m_lpData = new NodeData(lpEntryID, lpInstanceKey, bSubfolders, ulContainerFlags);
 		}
 
 		void SortListData::InitializeNode(_In_ LPSRow lpsRow)
@@ -116,27 +85,15 @@ namespace controls
 			LPSBinary lpEIDBin = nullptr; // don't free
 			LPSBinary lpInstanceBin = nullptr; // don't free
 
-			auto lpEID = PpropFindProp(
-				lpsRow->lpProps,
-				lpsRow->cValues,
-				PR_ENTRYID);
+			auto lpEID = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_ENTRYID);
 			if (lpEID) lpEIDBin = &lpEID->Value.bin;
 
-			auto lpInstance = PpropFindProp(
-				lpsRow->lpProps,
-				lpsRow->cValues,
-				PR_INSTANCE_KEY);
+			auto lpInstance = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_INSTANCE_KEY);
 			if (lpInstance) lpInstanceBin = &lpInstance->Value.bin;
 
-			const auto lpSubfolders = PpropFindProp(
-				lpsRow->lpProps,
-				lpsRow->cValues,
-				PR_SUBFOLDERS);
+			const auto lpSubfolders = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_SUBFOLDERS);
 
-			const auto lpContainerFlags = PpropFindProp(
-				lpsRow->lpProps,
-				lpsRow->cValues,
-				PR_CONTAINER_FLAGS);
+			const auto lpContainerFlags = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_CONTAINER_FLAGS);
 
 			InitializeNode(
 				lpsRow->cValues,

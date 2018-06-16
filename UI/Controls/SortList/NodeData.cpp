@@ -11,31 +11,24 @@ namespace controls
 			_In_opt_ LPSBinary lpEntryID,
 			_In_opt_ LPSBinary lpInstanceKey,
 			ULONG bSubfolders,
-			ULONG ulContainerFlags) : m_lpEntryID(nullptr), m_lpInstanceKey(nullptr), m_lpHierarchyTable(nullptr), m_lpAdviseSink(nullptr), m_ulAdviseConnection(0)
+			ULONG ulContainerFlags)
+			: m_lpEntryID(nullptr), m_lpInstanceKey(nullptr), m_lpHierarchyTable(nullptr), m_lpAdviseSink(nullptr),
+			  m_ulAdviseConnection(0)
 		{
 			auto hRes = S_OK;
 			if (lpEntryID)
 			{
-				WC_H(MAPIAllocateBuffer(
-					static_cast<ULONG>(sizeof(SBinary)),
-					reinterpret_cast<LPVOID*>(&m_lpEntryID)));
+				WC_H(MAPIAllocateBuffer(static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpEntryID)));
 
 				// Copy the data over
-				WC_H(mapi::CopySBinary(
-					m_lpEntryID,
-					lpEntryID,
-					nullptr));
+				WC_H(mapi::CopySBinary(m_lpEntryID, lpEntryID, nullptr));
 			}
 
 			if (lpInstanceKey)
 			{
 				WC_H(MAPIAllocateBuffer(
-					static_cast<ULONG>(sizeof(SBinary)),
-					reinterpret_cast<LPVOID*>(&m_lpInstanceKey)));
-				WC_H(mapi::CopySBinary(
-					m_lpInstanceKey,
-					lpInstanceKey,
-					nullptr));
+					static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpInstanceKey)));
+				WC_H(mapi::CopySBinary(m_lpInstanceKey, lpInstanceKey, nullptr));
 			}
 
 			m_cSubfolders = -1;
@@ -57,12 +50,11 @@ namespace controls
 			if (m_lpAdviseSink)
 			{
 				// unadvise before releasing our sink
-				if (m_ulAdviseConnection &&  m_lpHierarchyTable)
-					m_lpHierarchyTable->Unadvise(m_ulAdviseConnection);
+				if (m_ulAdviseConnection && m_lpHierarchyTable) m_lpHierarchyTable->Unadvise(m_ulAdviseConnection);
 				m_lpAdviseSink->Release();
 			}
 
-			if (m_lpHierarchyTable)  m_lpHierarchyTable->Release();
+			if (m_lpHierarchyTable) m_lpHierarchyTable->Release();
 		}
 	}
 }

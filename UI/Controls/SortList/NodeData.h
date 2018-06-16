@@ -14,7 +14,7 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		class NodeData :public IData
+		class NodeData : public IData
 		{
 		public:
 			NodeData(

@@ -5,7 +5,7 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		class ContentsData :public IData
+		class ContentsData : public IData
 		{
 		public:
 			ContentsData(_In_ LPSRow lpsRowData);
