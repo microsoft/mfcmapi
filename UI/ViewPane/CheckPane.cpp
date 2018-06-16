@@ -23,7 +23,9 @@ namespace viewpane
 		const auto label = ViewPane::GetMinWidth(hdc);
 		const auto check = GetSystemMetrics(SM_CXMENUCHECK);
 		const auto edge = check / 5;
-		output::DebugPrint(DBGDraw, L"CheckPane::GetMinWidth Label:%d + check:%d + edge:%d = minwidth:%d\n",
+		output::DebugPrint(
+			DBGDraw,
+			L"CheckPane::GetMinWidth Label:%d + check:%d + edge:%d = minwidth:%d\n",
 			label,
 			check,
 			edge,
@@ -31,10 +33,7 @@ namespace viewpane
 		return label + edge + check;
 	}
 
-	int CheckPane::GetFixedHeight()
-	{
-		return m_iButtonHeight;
-	}
+	int CheckPane::GetFixedHeight() { return m_iButtonHeight; }
 
 	void CheckPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 	{
@@ -44,12 +43,7 @@ namespace viewpane
 
 		EC_B(m_Check.Create(
 			NULL,
-			WS_TABSTOP
-			| WS_CHILD
-			| WS_CLIPSIBLINGS
-			| WS_VISIBLE
-			| BS_AUTOCHECKBOX
-			| (m_bReadOnly ? WS_DISABLED : 0),
+			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_AUTOCHECKBOX | (m_bReadOnly ? WS_DISABLED : 0),
 			CRect(0, 0, 0, 0),
 			pParent,
 			m_nID));
@@ -62,9 +56,7 @@ namespace viewpane
 	void CheckPane::SetWindowPos(int x, int y, int width, int height)
 	{
 		auto hRes = S_OK;
-		output::DebugPrint(DBGDraw, L"CheckPane::SetWindowPos x:%d width:%d \n",
-			x,
-			width);
+		output::DebugPrint(DBGDraw, L"CheckPane::SetWindowPos x:%d width:%d \n", x, width);
 		EC_B(m_Check.SetWindowPos(NULL, x, y, width, height, SWP_NOZORDER));
 	}
 
@@ -92,14 +84,17 @@ namespace viewpane
 
 		const auto lCheck = GetSystemMetrics(SM_CXMENUCHECK);
 		const auto lEdge = lCheck / 5;
-		RECT rcCheck = { 0 };
+		RECT rcCheck = {0};
 		rcCheck.left = rc.left;
 		rcCheck.right = rcCheck.left + lCheck;
 		rcCheck.top = (rc.bottom - rc.top - lCheck) / 2;
 		rcCheck.bottom = rcCheck.top + lCheck;
 
 		FillRect(hDC, &rc, GetSysBrush(ui::cBackground));
-		FrameRect(hDC, &rcCheck, GetSysBrush(bDisabled ? ui::cFrameUnselected : bGlow || bFocused ? ui::cGlow : ui::cFrameSelected));
+		FrameRect(
+			hDC,
+			&rcCheck,
+			GetSysBrush(bDisabled ? ui::cFrameUnselected : bGlow || bFocused ? ui::cGlow : ui::cFrameSelected));
 		if (bChecked)
 		{
 			auto rcFill = rcCheck;
@@ -112,7 +107,9 @@ namespace viewpane
 		rcLabel.left = rcCheck.right + lEdge;
 		rcLabel.right = rcLabel.left + ui::GetTextExtentPoint32(hDC, szButton).cx;
 
-		output::DebugPrint(DBGDraw, L"CheckButton::Draw left:%d width:%d checkwidth:%d space:%d labelwidth:%d (scroll:%d 2frame:%d), \"%ws\"\n",
+		output::DebugPrint(
+			DBGDraw,
+			L"CheckButton::Draw left:%d width:%d checkwidth:%d space:%d labelwidth:%d (scroll:%d 2frame:%d), \"%ws\"\n",
 			rc.left,
 			rc.right - rc.left,
 			rcCheck.right - rcCheck.left,

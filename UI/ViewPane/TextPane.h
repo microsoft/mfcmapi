@@ -15,7 +15,8 @@ namespace viewpane
 		static TextPane* CreateMultiLinePane(UINT uidLabel, bool bReadOnly);
 		static TextPane* CreateMultiLinePane(UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly);
 		static TextPane* CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine = false);
-		static TextPane* CreateSingleLinePane(UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly, bool bMultiLine = false);
+		static TextPane*
+		CreateSingleLinePane(UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly, bool bMultiLine = false);
 		static TextPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly);
 		static TextPane* CreateCollapsibleTextPane(UINT uidLabel, bool bReadOnly);
 
