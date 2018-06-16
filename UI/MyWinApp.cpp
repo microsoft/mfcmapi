@@ -18,12 +18,7 @@ namespace ui
 		auto bTerminateOnCorruption = true;
 
 		HKEY hRootKey = nullptr;
-		auto lStatus = RegOpenKeyExW(
-			HKEY_CURRENT_USER,
-			RKEY_ROOT,
-			NULL,
-			KEY_READ,
-			&hRootKey);
+		auto lStatus = RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey);
 		if (ERROR_SUCCESS == lStatus)
 		{
 			DWORD dwRegVal = 0;
@@ -58,7 +53,7 @@ namespace ui
 		auto pWnd = new CParentWnd();
 		if (pWnd)
 		{
-			m_pMainWnd = static_cast<CWnd *>(pWnd);
+			m_pMainWnd = static_cast<CWnd*>(pWnd);
 			auto MyObjects = new (std::nothrow) cache::CMapiObjects(nullptr);
 			if (MyObjects)
 			{

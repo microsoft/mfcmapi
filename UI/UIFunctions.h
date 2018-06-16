@@ -3,7 +3,8 @@
 
 #include <oleacc.h>
 
-namespace ui {
+namespace ui
+{
 	enum uiColor
 	{
 		cBackground,
@@ -94,9 +95,9 @@ namespace ui {
 
 	void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly);
 
-	// Application-specific owner-drawn menu info struct. Owner-drawn data 
-	// is a pointer to one of these. MSAAMENUINFO must be the first 
-	// member. 
+	// Application-specific owner-drawn menu info struct. Owner-drawn data
+	// is a pointer to one of these. MSAAMENUINFO must be the first
+	// member.
 	struct MenuEntry
 	{
 		MSAAMENUINFO m_MSAA; // MSAA info - must be first element.
@@ -149,7 +150,8 @@ namespace ui {
 		int iStatusData2,
 		const std::wstring& szStatusInfo);
 
-	void GetCaptionRects(HWND hWnd,
+	void GetCaptionRects(
+		HWND hWnd,
 		RECT* lprcFullCaption,
 		RECT* lprcIcon,
 		RECT* lprcCloseIcon,

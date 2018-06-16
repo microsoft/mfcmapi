@@ -64,7 +64,7 @@ namespace dialog
 		if (!lpMapiObjects) return MAPI_E_CALL_FAILED;
 
 		// ensure we have an AB
-		(void)OpenSessionForQuickStart(lpHostDlg, hwnd); // do not release
+		(void) OpenSessionForQuickStart(lpHostDlg, hwnd); // do not release
 		auto lpAdrBook = lpMapiObjects->GetAddrBook(true); // do not release
 
 		if (lpAdrBook)
@@ -90,11 +90,7 @@ namespace dialog
 
 			if (lpFolder)
 			{
-				WC_H(DisplayObject(
-					lpFolder,
-					NULL,
-					dialog::otContents,
-					lpHostDlg));
+				WC_H(DisplayObject(lpFolder, NULL, dialog::otContents, lpHostDlg));
 
 				lpFolder->Release();
 			}
@@ -103,7 +99,12 @@ namespace dialog
 		}
 	}
 
-	void OnQSDisplayTable(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder, _In_ ULONG ulProp, _In_ dialog::ObjectType tType)
+	void OnQSDisplayTable(
+		_In_ dialog::CMainDlg* lpHostDlg,
+		_In_ HWND hwnd,
+		_In_ ULONG ulFolder,
+		_In_ ULONG ulProp,
+		_In_ dialog::ObjectType tType)
 	{
 		auto hRes = S_OK;
 
@@ -118,11 +119,7 @@ namespace dialog
 
 			if (lpFolder)
 			{
-				WC_H(DisplayExchangeTable(
-					lpFolder,
-					ulProp,
-					tType,
-					lpHostDlg));
+				WC_H(DisplayExchangeTable(lpFolder, ulProp, tType, lpHostDlg));
 				lpFolder->Release();
 			}
 
@@ -143,9 +140,7 @@ namespace dialog
 			ULONG ulObjType = NULL;
 			LPABCONT lpDefaultDir = nullptr;
 
-			WC_MAPI(lpAdrBook->GetDefaultDir(
-				&cbEID,
-				&lpEID));
+			WC_MAPI(lpAdrBook->GetDefaultDir(&cbEID, &lpEID));
 
 			WC_H(mapi::CallOpenEntry(
 				nullptr,
@@ -185,9 +180,7 @@ namespace dialog
 		if (SUCCEEDED(hRes) && lpAdrBook)
 		{
 			// call the dialog
-			new dialog::CAbContDlg(
-				lpParentWnd,
-				lpMapiObjects);
+			new dialog::CAbContDlg(lpParentWnd, lpMapiObjects);
 		}
 		if (lpAdrBook) lpAdrBook->Release();
 	}
@@ -216,8 +209,8 @@ namespace dialog
 
 				if (lpTable)
 				{
-					SRestriction sRes = { 0 };
-					SPropValue sPV = { 0 };
+					SRestriction sRes = {0};
+					SPropValue sPV = {0};
 					sRes.rt = RES_PROPERTY;
 					sRes.res.resProperty.ulPropTag = PR_MESSAGE_CLASS;
 					sRes.res.resProperty.relop = RELOP_EQ;
@@ -233,8 +226,7 @@ namespace dialog
 							eidPR_ENTRYID,
 							eidNUM_COLS
 						};
-						static const SizedSPropTagArray(eidNUM_COLS, eidCols) =
-						{
+						static const SizedSPropTagArray(eidNUM_COLS, eidCols) = {
 							eidNUM_COLS,
 							{PR_ENTRYID},
 						};
@@ -245,10 +237,20 @@ namespace dialog
 							LPSRowSet lpRows = nullptr;
 							WC_MAPI(lpTable->QueryRows(1, NULL, &lpRows));
 
-							if (lpRows && 1 == lpRows->cRows && PR_ENTRYID == lpRows->aRow[0].lpProps[eidPR_ENTRYID].ulPropTag)
+							if (lpRows && 1 == lpRows->cRows &&
+								PR_ENTRYID == lpRows->aRow[0].lpProps[eidPR_ENTRYID].ulPropTag)
 							{
 								LPMESSAGE lpMSG = nullptr;
-								WC_H(mapi::CallOpenEntry(lpMDB, nullptr, nullptr, nullptr, &lpRows->aRow[0].lpProps[eidPR_ENTRYID].Value.bin, nullptr, NULL, nullptr, reinterpret_cast<LPUNKNOWN*>(&lpMSG)));
+								WC_H(mapi::CallOpenEntry(
+									lpMDB,
+									nullptr,
+									nullptr,
+									nullptr,
+									&lpRows->aRow[0].lpProps[eidPR_ENTRYID].Value.bin,
+									nullptr,
+									NULL,
+									nullptr,
+									reinterpret_cast<LPUNKNOWN*>(&lpMSG)));
 
 								if (SUCCEEDED(hRes) && lpMSG)
 								{
@@ -257,7 +259,8 @@ namespace dialog
 									if (lpsProp)
 									{
 										// Get the string interpretation
-										szNicknames = smartview::InterpretBinaryAsString(lpsProp->Value.bin, IDS_STNICKNAMECACHE, lpMSG);
+										szNicknames = smartview::InterpretBinaryAsString(
+											lpsProp->Value.bin, IDS_STNICKNAMECACHE, lpMSG);
 									}
 									lpMSG->Release();
 								}
@@ -275,11 +278,7 @@ namespace dialog
 			// Display our dialog
 			if (!szNicknames.empty() && lpsProp)
 			{
-				dialog::editor::CEditor MyResults(
-					lpHostDlg,
-					IDS_NICKNAME,
-					NULL,
-					CEDITOR_BUTTON_OK);
+				dialog::editor::CEditor MyResults(lpHostDlg, IDS_NICKNAME, NULL, CEDITOR_BUTTON_OK);
 				MyResults.InitPane(0, viewpane::TextPane::CreateCollapsibleTextPane(NULL, true));
 				MyResults.InitPane(1, viewpane::CountedTextPane::Create(IDS_HEX, true, IDS_CB));
 
@@ -315,22 +314,19 @@ namespace dialog
 		qPR_MDB_PROVIDER,
 		qNUM_COLS
 	};
-	static const SizedSPropTagArray(qNUM_COLS, sptaQuota) =
-	{
+	static const SizedSPropTagArray(qNUM_COLS, sptaQuota) = {
 		qNUM_COLS,
-		{
-			PR_STORE_SUPPORT_MASK,
-			PR_DISPLAY_NAME_W,
-			PR_MESSAGE_SIZE_EXTENDED,
-			PR_STORAGE_QUOTA_LIMIT,
-			PR_PROHIBIT_SEND_QUOTA,
-			PR_PROHIBIT_RECEIVE_QUOTA,
-			PR_MAX_SUBMIT_MESSAGE_SIZE,
-			PR_QUOTA_WARNING,
-			PR_QUOTA_SEND,
-			PR_QUOTA_RECEIVE,
-			PR_MDB_PROVIDER
-		},
+		{PR_STORE_SUPPORT_MASK,
+		 PR_DISPLAY_NAME_W,
+		 PR_MESSAGE_SIZE_EXTENDED,
+		 PR_STORAGE_QUOTA_LIMIT,
+		 PR_PROHIBIT_SEND_QUOTA,
+		 PR_PROHIBIT_RECEIVE_QUOTA,
+		 PR_MAX_SUBMIT_MESSAGE_SIZE,
+		 PR_QUOTA_WARNING,
+		 PR_QUOTA_SEND,
+		 PR_QUOTA_RECEIVE,
+		 PR_MDB_PROVIDER},
 	};
 
 	std::wstring FormatQuota(LPSPropValue lpProp, ULONG ulPropTag, const std::wstring& szName)
@@ -362,11 +358,7 @@ namespace dialog
 			LPSPropValue lpProps = nullptr;
 
 			// Get quota properties
-			WC_H_GETPROPS(lpMDB->GetProps(
-				LPSPropTagArray(&sptaQuota),
-				fMapiUnicode,
-				&cProps,
-				&lpProps));
+			WC_H_GETPROPS(lpMDB->GetProps(LPSPropTagArray(&sptaQuota), fMapiUnicode, &cProps, &lpProps));
 
 			if (lpProps)
 			{
@@ -383,7 +375,8 @@ namespace dialog
 
 				if (lpProps[qPR_MESSAGE_SIZE_EXTENDED].ulPropTag == PR_MESSAGE_SIZE_EXTENDED)
 				{
-					szQuotaString += strings::formatmessage(IDS_QUOTASIZE,
+					szQuotaString += strings::formatmessage(
+						IDS_QUOTASIZE,
 						lpProps[qPR_MESSAGE_SIZE_EXTENDED].Value.li.QuadPart,
 						lpProps[qPR_MESSAGE_SIZE_EXTENDED].Value.li.QuadPart / 1024);
 				}
@@ -399,13 +392,16 @@ namespace dialog
 
 				if (lpProps[qPR_STORE_SUPPORT_MASK].ulPropTag == PR_STORE_SUPPORT_MASK)
 				{
-					auto szFlags = smartview::InterpretNumberAsStringProp(lpProps[qPR_STORE_SUPPORT_MASK].Value.l, PR_STORE_SUPPORT_MASK);
-					szQuotaString += strings::formatmessage(IDS_QUOTAMASK, lpProps[qPR_STORE_SUPPORT_MASK].Value.l, szFlags.c_str());
+					auto szFlags = smartview::InterpretNumberAsStringProp(
+						lpProps[qPR_STORE_SUPPORT_MASK].Value.l, PR_STORE_SUPPORT_MASK);
+					szQuotaString +=
+						strings::formatmessage(IDS_QUOTAMASK, lpProps[qPR_STORE_SUPPORT_MASK].Value.l, szFlags.c_str());
 				}
 
 				if (lpProps[qPR_MDB_PROVIDER].ulPropTag == PR_MDB_PROVIDER)
 				{
-					szQuotaString += strings::formatmessage(IDS_QUOTAPROVIDER, strings::BinToHexString(&lpProps[qPR_MDB_PROVIDER].Value.bin, true).c_str());
+					szQuotaString += strings::formatmessage(
+						IDS_QUOTAPROVIDER, strings::BinToHexString(&lpProps[qPR_MDB_PROVIDER].Value.bin, true).c_str());
 				}
 
 				MAPIFreeBuffer(lpProps);
@@ -413,11 +409,7 @@ namespace dialog
 			lpMDB->Release();
 
 			// Display our dialog
-			dialog::editor::CEditor MyResults(
-				lpHostDlg,
-				IDS_QUOTA,
-				NULL,
-				CEDITOR_BUTTON_OK);
+			dialog::editor::CEditor MyResults(lpHostDlg, IDS_QUOTA, NULL, CEDITOR_BUTTON_OK);
 			MyResults.InitPane(0, viewpane::TextPane::CreateMultiLinePane(NULL, true));
 			MyResults.SetStringW(0, szQuotaString);
 
@@ -448,11 +440,7 @@ namespace dialog
 
 			if (SUCCEEDED(hRes) && lpMailUser)
 			{
-				EC_H(DisplayObject(
-					lpMailUser,
-					ulObjType,
-					dialog::otDefault,
-					lpHostDlg));
+				EC_H(DisplayObject(lpMailUser, ulObjType, dialog::otDefault, lpHostDlg));
 			}
 
 			if (lpMailUser) lpMailUser->Release();
@@ -489,11 +477,7 @@ namespace dialog
 		}
 
 		hRes = S_OK;
-		dialog::editor::CEditor MyResults(
-			lpHostDlg,
-			IDS_QSTHUMBNAIL,
-			NULL,
-			CEDITOR_BUTTON_OK);
+		dialog::editor::CEditor MyResults(lpHostDlg, IDS_QSTHUMBNAIL, NULL, CEDITOR_BUTTON_OK);
 
 		if (lpThumbnail)
 		{
@@ -521,34 +505,90 @@ namespace dialog
 	{
 		switch (wMenuSelect)
 		{
-		case ID_QSINBOX: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_INBOX); return true;
-		case ID_QSCALENDAR: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR); return true;
-		case ID_QSCONTACTS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_CONTACTS); return true;
-		case ID_QSJOURNAL: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_JOURNAL); return true;
-		case ID_QSNOTES: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_NOTES); return true;
-		case ID_QSTASKS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_TASKS); return true;
-		case ID_QSREMINDERS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_REMINDERS); return true;
-		case ID_QSDRAFTS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_DRAFTS); return true;
-		case ID_QSSENTITEMS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_SENTITEMS); return true;
-		case ID_QSOUTBOX: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_OUTBOX); return true;
-		case ID_QSDELETEDITEMS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_DELETEDITEMS); return true;
-		case ID_QSFINDER: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_FINDER); return true;
-		case ID_QSIPM_SUBTREE: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_IPM_SUBTREE); return true;
-		case ID_QSLOCALFREEBUSY: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_LOCALFREEBUSY); return true;
-		case ID_QSCONFLICTS: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_CONFLICTS); return true;
-		case ID_QSSYNCISSUES: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_SYNCISSUES); return true;
-		case ID_QSLOCALFAILURES: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_LOCALFAILURES); return true;
-		case ID_QSSERVERFAILURES: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_SERVERFAILURES); return true;
-		case ID_QSJUNKMAIL: OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_JUNKMAIL); return true;
-		case ID_QSRULES: OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_INBOX, PR_RULES_TABLE, dialog::otRules); return true;
-		case ID_QSDEFAULTDIR: OnQSDisplayDefaultDir(lpHostDlg, hwnd); return true;
-		case ID_QSAB: OnQSDisplayAB(lpHostDlg, hwnd); return true;
-		case ID_QSCALPERM: OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR, PR_ACL_TABLE, dialog::otACL); return true;
-		case ID_QSNICKNAME: OnQSDisplayNicknameCache(lpHostDlg, hwnd); return true;
-		case ID_QSQUOTA: OnQSDisplayQuota(lpHostDlg, hwnd); return true;
-		case ID_QSCHECKSPECIALFOLDERS: dialog::editor::OnQSCheckSpecialFolders(lpHostDlg, hwnd); return true;
-		case ID_QSTHUMBNAIL: OnQSLookupThumbail(lpHostDlg, hwnd); return true;
-		case ID_QSOPENUSER: OnQSOpenUser(lpHostDlg, hwnd); return true;
+		case ID_QSINBOX:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_INBOX);
+			return true;
+		case ID_QSCALENDAR:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR);
+			return true;
+		case ID_QSCONTACTS:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_CONTACTS);
+			return true;
+		case ID_QSJOURNAL:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_JOURNAL);
+			return true;
+		case ID_QSNOTES:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_NOTES);
+			return true;
+		case ID_QSTASKS:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_TASKS);
+			return true;
+		case ID_QSREMINDERS:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_REMINDERS);
+			return true;
+		case ID_QSDRAFTS:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_DRAFTS);
+			return true;
+		case ID_QSSENTITEMS:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_SENTITEMS);
+			return true;
+		case ID_QSOUTBOX:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_OUTBOX);
+			return true;
+		case ID_QSDELETEDITEMS:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_DELETEDITEMS);
+			return true;
+		case ID_QSFINDER:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_FINDER);
+			return true;
+		case ID_QSIPM_SUBTREE:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_IPM_SUBTREE);
+			return true;
+		case ID_QSLOCALFREEBUSY:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_LOCALFREEBUSY);
+			return true;
+		case ID_QSCONFLICTS:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_CONFLICTS);
+			return true;
+		case ID_QSSYNCISSUES:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_SYNCISSUES);
+			return true;
+		case ID_QSLOCALFAILURES:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_LOCALFAILURES);
+			return true;
+		case ID_QSSERVERFAILURES:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_SERVERFAILURES);
+			return true;
+		case ID_QSJUNKMAIL:
+			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_JUNKMAIL);
+			return true;
+		case ID_QSRULES:
+			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_INBOX, PR_RULES_TABLE, dialog::otRules);
+			return true;
+		case ID_QSDEFAULTDIR:
+			OnQSDisplayDefaultDir(lpHostDlg, hwnd);
+			return true;
+		case ID_QSAB:
+			OnQSDisplayAB(lpHostDlg, hwnd);
+			return true;
+		case ID_QSCALPERM:
+			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR, PR_ACL_TABLE, dialog::otACL);
+			return true;
+		case ID_QSNICKNAME:
+			OnQSDisplayNicknameCache(lpHostDlg, hwnd);
+			return true;
+		case ID_QSQUOTA:
+			OnQSDisplayQuota(lpHostDlg, hwnd);
+			return true;
+		case ID_QSCHECKSPECIALFOLDERS:
+			dialog::editor::OnQSCheckSpecialFolders(lpHostDlg, hwnd);
+			return true;
+		case ID_QSTHUMBNAIL:
+			OnQSLookupThumbail(lpHostDlg, hwnd);
+			return true;
+		case ID_QSOPENUSER:
+			OnQSOpenUser(lpHostDlg, hwnd);
+			return true;
 		}
 		return false;
 	}

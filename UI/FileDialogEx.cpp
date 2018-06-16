@@ -13,13 +13,7 @@ namespace file
 		auto hRes = S_OK;
 		auto iDlgRet = INT_PTR(IDOK);
 		CFileDialogExW dlgFilePicker;
-		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			true,
-			lpszDefExt,
-			lpszFileName,
-			dwFlags,
-			lpszFilter,
-			pParentWnd));
+		EC_D_DIALOG(dlgFilePicker.DisplayDialog(true, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd));
 
 		if (iDlgRet == IDOK)
 		{
@@ -40,12 +34,7 @@ namespace file
 		auto iDlgRet = INT_PTR(IDOK);
 		CFileDialogExW dlgFilePicker;
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			true,
-			lpszDefExt,
-			lpszFileName,
-			dwFlags | OFN_ALLOWMULTISELECT,
-			lpszFilter,
-			pParentWnd));
+			true, lpszDefExt, lpszFileName, dwFlags | OFN_ALLOWMULTISELECT, lpszFilter, pParentWnd));
 
 		if (iDlgRet == IDOK)
 		{
@@ -65,13 +54,7 @@ namespace file
 		auto hRes = S_OK;
 		auto iDlgRet = INT_PTR(IDOK);
 		CFileDialogExW dlgFilePicker;
-		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			false,
-			lpszDefExt,
-			lpszFileName,
-			dwFlags,
-			lpszFilter,
-			pParentWnd));
+		EC_D_DIALOG(dlgFilePicker.DisplayDialog(false, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd));
 
 		if (iDlgRet == IDOK)
 		{
@@ -81,9 +64,11 @@ namespace file
 		return std::wstring();
 	}
 
-	// Make sure OPENFILENAMEEX is the same size regardless of how _WIN32_WINNT is defined
+		// Make sure OPENFILENAMEEX is the same size regardless of how _WIN32_WINNT is defined
 #if (_WIN32_WINNT >= 0x0500)
-	struct OPENFILENAMEEXW : public OPENFILENAMEW {};
+	struct OPENFILENAMEEXW : public OPENFILENAMEW
+	{
+	};
 #else
 	struct OPENFILENAMEEXW : public OPENFILENAMEW
 	{
@@ -108,7 +93,8 @@ namespace file
 		auto strBasePath = std::wstring(ofn.lpstrFile) + L"\\";
 		auto lpsz = ofn.lpstrFile;
 		// find char pos after first Delimiter
-		while (*lpsz != L'\0') lpsz = CharNextW(lpsz);
+		while (*lpsz != L'\0')
+			lpsz = CharNextW(lpsz);
 		lpsz++;
 
 		// if single selection then return only selection
@@ -128,14 +114,16 @@ namespace file
 			}
 			else
 			{
-				_wsplitpath_s(strBasePath.c_str(), strDrive, _MAX_DRIVE, strDir, _MAX_DIR, nullptr, 0, nullptr, 0); // STRING_OK
+				_wsplitpath_s(
+					strBasePath.c_str(), strDrive, _MAX_DRIVE, strDir, _MAX_DIR, nullptr, 0, nullptr, 0); // STRING_OK
 				_wmakepath_s(strPath, _MAX_PATH, strDrive, strDir, strName, strExt);
 			}
 
 			paths.push_back(strPath);
 
 			// find char pos at next Delimiter
-			while (*lpsz != L'\0') lpsz = CharNextW(lpsz);
+			while (*lpsz != L'\0')
+				lpsz = CharNextW(lpsz);
 			lpsz++;
 
 			if (*lpsz == L'\0') // if double terminated then done
@@ -182,8 +170,7 @@ namespace file
 		memset(ofn.lpstrFile, 0, ofn.nMaxFile);
 
 		// setup initial file name
-		if (!lpszFileName.empty())
-			wcsncpy_s(ofn.lpstrFile, ofn.nMaxFile, lpszFileName.c_str(), _TRUNCATE);
+		if (!lpszFileName.empty()) wcsncpy_s(ofn.lpstrFile, ofn.nMaxFile, lpszFileName.c_str(), _TRUNCATE);
 
 		// Translate filter into commdlg format (lots of \0)
 		auto strFilter = lpszFilter; // filter string
@@ -214,8 +201,5 @@ namespace file
 		return strings::emptystring;
 	}
 
-	std::vector<std::wstring> CFileDialogExW::GetFileNames() const
-	{
-		return m_paths;
-	}
+	std::vector<std::wstring> CFileDialogExW::GetFileNames() const { return m_paths; }
 }

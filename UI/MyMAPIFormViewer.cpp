@@ -25,7 +25,7 @@ namespace mapi
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_ LPMAPIFOLDER lpFolder,
 			_In_ LPMESSAGE lpMessage,
-			_In_opt_ controls::sortlistctrl::CContentsTableListCtrl *lpContentsTableListCtrl,
+			_In_opt_ controls::sortlistctrl::CContentsTableListCtrl* lpContentsTableListCtrl,
 			int iItem)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
@@ -90,8 +90,7 @@ namespace mapi
 			m_lpContentsTableListCtrl = nullptr;
 		}
 
-		STDMETHODIMP CMyMAPIFormViewer::QueryInterface(REFIID riid,
-			LPVOID * ppvObj)
+		STDMETHODIMP CMyMAPIFormViewer::QueryInterface(REFIID riid, LPVOID* ppvObj)
 		{
 			output::DebugPrintEx(DBGFormViewer, CLASS, L"QueryInterface", L"\n");
 			auto szGuid = guid::GUIDToStringAndName(const_cast<LPGUID>(&riid));
@@ -101,7 +100,7 @@ namespace mapi
 			if (riid == IID_IMAPIMessageSite)
 			{
 				output::DebugPrint(DBGFormViewer, L"Requested IID_IMAPIMessageSite\n");
-				*ppvObj = static_cast<IMAPIMessageSite *>(this);
+				*ppvObj = static_cast<IMAPIMessageSite*>(this);
 				AddRef();
 				return S_OK;
 			}
@@ -109,7 +108,7 @@ namespace mapi
 			if (riid == IID_IMAPIViewContext)
 			{
 				output::DebugPrint(DBGFormViewer, L"Requested IID_IMAPIViewContext\n");
-				*ppvObj = static_cast<IMAPIViewContext *>(this);
+				*ppvObj = static_cast<IMAPIViewContext*>(this);
 				AddRef();
 				return S_OK;
 			}
@@ -117,7 +116,7 @@ namespace mapi
 			if (riid == IID_IMAPIViewAdviseSink)
 			{
 				output::DebugPrint(DBGFormViewer, L"Requested IID_IMAPIViewAdviseSink\n");
-				*ppvObj = static_cast<IMAPIViewAdviseSink *>(this);
+				*ppvObj = static_cast<IMAPIViewAdviseSink*>(this);
 				AddRef();
 				return S_OK;
 			}
@@ -125,7 +124,7 @@ namespace mapi
 			if (riid == IID_IUnknown)
 			{
 				output::DebugPrint(DBGFormViewer, L"Requested IID_IUnknown\n");
-				*ppvObj = static_cast<LPUNKNOWN>(static_cast<IMAPIMessageSite *>(this));
+				*ppvObj = static_cast<LPUNKNOWN>(static_cast<IMAPIMessageSite*>(this));
 				AddRef();
 				return S_OK;
 			}
@@ -209,14 +208,22 @@ namespace mapi
 			return hRes;
 		}
 
-		STDMETHODIMP CMyMAPIFormViewer::NewMessage(ULONG fComposeInFolder,
+		STDMETHODIMP CMyMAPIFormViewer::NewMessage(
+			ULONG fComposeInFolder,
 			LPMAPIFOLDER pFolderFocus,
 			LPPERSISTMESSAGE pPersistMessage,
 			LPMESSAGE* ppMessage,
 			LPMAPIMESSAGESITE* ppMessageSite,
 			LPMAPIVIEWCONTEXT* ppViewContext)
 		{
-			output::DebugPrintEx(DBGFormViewer, CLASS, L"NewMessage", L"fComposeInFolder = 0x%X pFolderFocus = %p, pPersistMessage = %p\n", fComposeInFolder, pFolderFocus, pPersistMessage);
+			output::DebugPrintEx(
+				DBGFormViewer,
+				CLASS,
+				L"NewMessage",
+				L"fComposeInFolder = 0x%X pFolderFocus = %p, pPersistMessage = %p\n",
+				fComposeInFolder,
+				pFolderFocus,
+				pPersistMessage);
 			auto hRes = S_OK;
 
 			*ppMessage = nullptr;
@@ -263,7 +270,8 @@ namespace mapi
 			return MAPI_E_NO_SUPPORT;
 		}
 
-		STDMETHODIMP CMyMAPIFormViewer::MoveMessage(LPMAPIFOLDER /*pFolderDestination*/,
+		STDMETHODIMP CMyMAPIFormViewer::MoveMessage(
+			LPMAPIFOLDER /*pFolderDestination*/,
 			LPMAPIVIEWCONTEXT /*pViewContext*/,
 			LPCRECT /*prcPosRect*/)
 		{
@@ -271,8 +279,7 @@ namespace mapi
 			return MAPI_E_NO_SUPPORT;
 		}
 
-		STDMETHODIMP CMyMAPIFormViewer::DeleteMessage(LPMAPIVIEWCONTEXT /*pViewContext*/,
-			LPCRECT /*prcPosRect*/)
+		STDMETHODIMP CMyMAPIFormViewer::DeleteMessage(LPMAPIVIEWCONTEXT /*pViewContext*/, LPCRECT /*prcPosRect*/)
 		{
 			output::DebugPrintEx(DBGFormViewer, CLASS, L"DeleteMessage", L"\n");
 			return MAPI_E_NO_SUPPORT;
@@ -297,7 +304,8 @@ namespace mapi
 					EC_MAPIERR(fMapiUnicode, lpErr);
 					MAPIFreeBuffer(lpErr);
 				}
-				else CHECKHRES(hRes);
+				else
+					CHECKHRES(hRes);
 			}
 			else
 			{
@@ -314,9 +322,7 @@ namespace mapi
 			auto hRes = S_OK;
 			if (!m_lpPersistMessage || !m_lpMessage) return MAPI_E_INVALID_PARAMETER;
 
-			EC_MAPI(m_lpPersistMessage->Save(
-				m_lpMessage,
-				true));
+			EC_MAPI(m_lpPersistMessage->Save(m_lpMessage, true));
 			if (FAILED(hRes))
 			{
 				LPMAPIERROR lpErr = nullptr;
@@ -326,7 +332,8 @@ namespace mapi
 					EC_MAPIERR(fMapiUnicode, lpErr);
 					MAPIFreeBuffer(lpErr);
 				}
-				else CHECKHRES(hRes);
+				else
+					CHECKHRES(hRes);
 			}
 			else
 			{
@@ -343,24 +350,19 @@ namespace mapi
 		STDMETHODIMP CMyMAPIFormViewer::GetSiteStatus(LPULONG lpulStatus)
 		{
 			output::DebugPrintEx(DBGFormViewer, CLASS, L"GetSiteStatus", L"\n");
-			*lpulStatus =
-				VCSTATUS_NEW_MESSAGE;
+			*lpulStatus = VCSTATUS_NEW_MESSAGE;
 			if (m_lpPersistMessage)
 			{
-				*lpulStatus |=
-					VCSTATUS_SAVE |
-					VCSTATUS_SUBMIT |
-					NULL;
+				*lpulStatus |= VCSTATUS_SAVE | VCSTATUS_SUBMIT | NULL;
 			}
 
 			return S_OK;
 		}
 
-		STDMETHODIMP CMyMAPIFormViewer::GetLastError(HRESULT hResult,
-			ULONG ulFlags,
-			LPMAPIERROR* /*lppMAPIError*/)
+		STDMETHODIMP CMyMAPIFormViewer::GetLastError(HRESULT hResult, ULONG ulFlags, LPMAPIERROR* /*lppMAPIError*/)
 		{
-			output::DebugPrintEx(DBGFormViewer, CLASS, L"GetLastError", L"hResult = 0x%08X, ulFlags = 0x%08X\n", hResult, ulFlags);
+			output::DebugPrintEx(
+				DBGFormViewer, CLASS, L"GetLastError", L"hResult = 0x%08X, ulFlags = 0x%08X\n", hResult, ulFlags);
 			return MAPI_E_NO_SUPPORT;
 		}
 
@@ -377,11 +379,12 @@ namespace mapi
 			return MAPI_E_NO_SUPPORT;
 		}
 
-		STDMETHODIMP CMyMAPIFormViewer::OnPrint(
-			ULONG dwPageNumber,
-			HRESULT hrStatus)
+		STDMETHODIMP CMyMAPIFormViewer::OnPrint(ULONG dwPageNumber, HRESULT hrStatus)
 		{
-			output::DebugPrintEx(DBGFormViewer, CLASS, L"OnPrint",
+			output::DebugPrintEx(
+				DBGFormViewer,
+				CLASS,
+				L"OnPrint",
 				L"Page Number %u\nStatus: 0x%08X\n", // STRING_OK
 				dwPageNumber,
 				hrStatus);
@@ -416,17 +419,14 @@ namespace mapi
 		// Used to set or clear our m_lpPersistMessage
 		// Can take either a persist or a form interface, but not both
 		// This should only be called with a persist if the verb is EXCHIVERB_OPEN
-		_Check_return_ HRESULT CMyMAPIFormViewer::SetPersist(_In_opt_ LPMAPIFORM lpForm, _In_opt_ LPPERSISTMESSAGE lpPersist)
+		_Check_return_ HRESULT
+		CMyMAPIFormViewer::SetPersist(_In_opt_ LPMAPIFORM lpForm, _In_opt_ LPPERSISTMESSAGE lpPersist)
 		{
 			output::DebugPrintEx(DBGFormViewer, CLASS, L"SetPersist", L"\n");
 			auto hRes = S_OK;
 			ShutdownPersist();
 
-			static const SizedSPropTagArray(1, sptaFlags) =
-			{
-			1,
-				{PR_MESSAGE_FLAGS}
-			};
+			static const SizedSPropTagArray(1, sptaFlags) = {1, {PR_MESSAGE_FLAGS}};
 			ULONG cValues = 0L;
 			LPSPropValue lpPropArray = nullptr;
 
@@ -459,9 +459,8 @@ namespace mapi
 			return hRes;
 		}
 
-		_Check_return_ HRESULT CMyMAPIFormViewer::CallDoVerb(_In_ LPMAPIFORM lpMapiForm,
-			LONG lVerb,
-			_In_opt_ LPCRECT lpRect)
+		_Check_return_ HRESULT
+		CMyMAPIFormViewer::CallDoVerb(_In_ LPMAPIFORM lpMapiForm, LONG lVerb, _In_opt_ LPCRECT lpRect)
 		{
 			auto hRes = S_OK;
 			if (EXCHIVERB_OPEN == lVerb)
@@ -510,8 +509,7 @@ namespace mapi
 			return S_OK;
 		}
 
-		STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
-			LPCRECT lpRect)
+		STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir, LPCRECT lpRect)
 		{
 			output::DebugPrintEx(DBGFormViewer, CLASS, L"ActivateNext", L"ulDir = 0x%X\n", ulDir);
 			auto hRes = S_OK;
@@ -522,14 +520,8 @@ namespace mapi
 				ePR_MESSAGE_CLASS_A,
 				NUM_COLS
 			};
-			static const SizedSPropTagArray(NUM_COLS, sptaShowForm) =
-			{
-			NUM_COLS,
-				{
-					PR_MESSAGE_FLAGS,
-					PR_MESSAGE_CLASS_A
-				}
-			};
+			static const SizedSPropTagArray(NUM_COLS, sptaShowForm) = {NUM_COLS,
+																	   {PR_MESSAGE_FLAGS, PR_MESSAGE_CLASS_A}};
 
 			auto iNewItem = -1;
 			LPMESSAGE lpNewMessage = nullptr;
@@ -553,7 +545,9 @@ namespace mapi
 
 					if (m_lpMapiFormAdviseSink)
 					{
-						output::DebugPrint(DBGFormViewer, L"Calling OnActivateNext: szClass = %hs, ulStatus = 0x%X, ulFlags = 0x%X\n",
+						output::DebugPrint(
+							DBGFormViewer,
+							L"Calling OnActivateNext: szClass = %hs, ulStatus = 0x%X, ulFlags = 0x%X\n",
 							lpspvaShow[ePR_MESSAGE_CLASS_A].Value.lpszA,
 							ulMessageStatus,
 							lpspvaShow[ePR_MESSAGE_FLAGS].Value.ul);
@@ -573,7 +567,8 @@ namespace mapi
 					{
 						if (lpNewPersistMessage)
 						{
-							output::DebugPrintEx(DBGFormViewer, CLASS, L"ActivateNext", L"Got new persist from OnActivateNext\n");
+							output::DebugPrintEx(
+								DBGFormViewer, CLASS, L"ActivateNext", L"Got new persist from OnActivateNext\n");
 
 							EC_H(OpenMessageNonModal(
 								m_hwndParent,
@@ -594,7 +589,8 @@ namespace mapi
 					// We have to load the form from scratch
 					else if (hRes == S_FALSE)
 					{
-						output::DebugPrintEx(DBGFormViewer, CLASS, L"ActivateNext", L"Didn't get new persist from OnActivateNext\n");
+						output::DebugPrintEx(
+							DBGFormViewer, CLASS, L"ActivateNext", L"Didn't get new persist from OnActivateNext\n");
 						// we're going to return S_FALSE, which will shut us down, so we can spin a whole new site
 						// we don't need to clean up this site since the shutdown will do it for us
 						// BTW - it might be more efficient to in-line this code and eliminate a GetProps call
@@ -609,7 +605,8 @@ namespace mapi
 							EXCHIVERB_OPEN,
 							lpRect));
 					}
-					else CHECKHRESMSG(hRes, IDS_ONACTIVENEXTFAILED);
+					else
+						CHECKHRESMSG(hRes, IDS_ONACTIVENEXTFAILED);
 
 					if (lpNewPersistMessage) lpNewPersistMessage->Release();
 					MAPIFreeBuffer(lpspvaShow);
@@ -622,16 +619,13 @@ namespace mapi
 			return hRes;
 		}
 
-		STDMETHODIMP CMyMAPIFormViewer::GetPrintSetup(ULONG ulFlags,
-			LPFORMPRINTSETUP* /*lppFormPrintSetup*/)
+		STDMETHODIMP CMyMAPIFormViewer::GetPrintSetup(ULONG ulFlags, LPFORMPRINTSETUP* /*lppFormPrintSetup*/)
 		{
 			output::DebugPrintEx(DBGFormViewer, CLASS, L"GetPrintSetup", L"ulFlags = 0x%08X\n", ulFlags);
 			return MAPI_E_NO_SUPPORT;
 		}
 
-		STDMETHODIMP CMyMAPIFormViewer::GetSaveStream(ULONG* /*pulFlags*/,
-			ULONG* /*pulFormat*/,
-			LPSTREAM* /*ppstm*/)
+		STDMETHODIMP CMyMAPIFormViewer::GetSaveStream(ULONG* /*pulFlags*/, ULONG* /*pulFormat*/, LPSTREAM* /*ppstm*/)
 		{
 			output::DebugPrintEx(DBGFormViewer, CLASS, L"GetSaveStream", L"\n");
 			return MAPI_E_NO_SUPPORT;
@@ -713,10 +707,7 @@ namespace mapi
 							reinterpret_cast<LPUNKNOWN*>(ppMessage)));
 
 						EC_MAPI(m_lpFolder->GetMessageStatus(
-							lpEID->cb,
-							reinterpret_cast<LPENTRYID>(lpEID->lpb),
-							0,
-							pulStatus));
+							lpEID->cb, reinterpret_cast<LPENTRYID>(lpEID->lpb), 0, pulStatus));
 					}
 				}
 			}
