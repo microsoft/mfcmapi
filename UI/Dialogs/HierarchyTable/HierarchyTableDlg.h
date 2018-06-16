@@ -24,8 +24,7 @@ namespace dialog
 			UINT uidTitle,
 			_In_opt_ LPMAPIPROP lpRootContainer,
 			ULONG nIDContextMenu,
-			ULONG ulAddInContext
-		);
+			ULONG ulAddInContext);
 		virtual ~CHierarchyTableDlg();
 
 	protected:

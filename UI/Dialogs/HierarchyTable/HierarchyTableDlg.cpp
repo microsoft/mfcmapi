@@ -19,12 +19,8 @@ namespace dialog
 		UINT uidTitle,
 		_In_opt_ LPMAPIPROP lpRootContainer,
 		ULONG nIDContextMenu,
-		ULONG ulAddInContext
-	) :
-		CBaseDialog(
-			pParentWnd,
-			lpMapiObjects,
-			ulAddInContext)
+		ULONG ulAddInContext)
+		: CBaseDialog(pParentWnd, lpMapiObjects, ulAddInContext)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		if (NULL != uidTitle)
@@ -50,10 +46,10 @@ namespace dialog
 	}
 
 	BEGIN_MESSAGE_MAP(CHierarchyTableDlg, CBaseDialog)
-		ON_COMMAND(ID_DISPLAYSELECTEDITEM, OnDisplayItem)
-		ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
-		ON_COMMAND(ID_DISPLAYHIERARCHYTABLE, OnDisplayHierarchyTable)
-		ON_COMMAND(ID_EDITSEARCHCRITERIA, OnEditSearchCriteria)
+	ON_COMMAND(ID_DISPLAYSELECTEDITEM, OnDisplayItem)
+	ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
+	ON_COMMAND(ID_DISPLAYHIERARCHYTABLE, OnDisplayHierarchyTable)
+	ON_COMMAND(ID_EDITSEARCHCRITERIA, OnEditSearchCriteria)
 	END_MESSAGE_MAP()
 
 	void CHierarchyTableDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -103,19 +99,14 @@ namespace dialog
 	{
 		auto hRes = S_OK;
 
-		auto lpMAPIContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(
-			mfcmapiREQUEST_MODIFY);
+		auto lpMAPIContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 		if (!lpMAPIContainer)
 		{
 			WARNHRESMSG(MAPI_E_NOT_FOUND, IDS_NOITEMSELECTED);
 			return;
 		}
 
-		EC_H(DisplayObject(
-			lpMAPIContainer,
-			NULL,
-			otContents,
-			this));
+		EC_H(DisplayObject(lpMAPIContainer, NULL, otContents, this));
 
 		lpMAPIContainer->Release();
 	}
@@ -140,17 +131,12 @@ namespace dialog
 
 			WC_H(MyData.DisplayDialog());
 
-			EC_MAPI(lpContainer->GetHierarchyTable(
-				MyData.GetCheck(0) ? CONVENIENT_DEPTH : 0
-				| fMapiUnicode,
-				&lpMAPITable));
+			EC_MAPI(
+				lpContainer->GetHierarchyTable(MyData.GetCheck(0) ? CONVENIENT_DEPTH : 0 | fMapiUnicode, &lpMAPITable));
 
 			if (lpMAPITable)
 			{
-				EC_H(DisplayTable(
-					lpMAPITable,
-					otHierarchy,
-					this));
+				EC_H(DisplayTable(lpMAPITable, otHierarchy, this));
 				lpMAPITable->Release();
 			}
 
@@ -172,29 +158,23 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"OnEditSearchCriteria", L"Calling GetSearchCriteria on %p.\n", lpMAPIFolder);
+			output::DebugPrintEx(
+				DBGGeneric, CLASS, L"OnEditSearchCriteria", L"Calling GetSearchCriteria on %p.\n", lpMAPIFolder);
 
 			LPSRestriction lpRes = nullptr;
 			LPENTRYLIST lpEntryList = nullptr;
 			ULONG ulSearchState = 0;
 
-			WC_MAPI(lpMAPIFolder->GetSearchCriteria(
-				fMapiUnicode,
-				&lpRes,
-				&lpEntryList,
-				&ulSearchState));
+			WC_MAPI(lpMAPIFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
 			if (MAPI_E_NOT_INITIALIZED == hRes)
 			{
 				output::DebugPrint(DBGGeneric, L"No search criteria has been set on this folder.\n");
 				hRes = S_OK;
 			}
-			else CHECKHRESMSG(hRes, IDS_GETSEARCHCRITERIAFAILED);
+			else
+				CHECKHRESMSG(hRes, IDS_GETSEARCHCRITERIAFAILED);
 
-			editor::CCriteriaEditor MyCriteria(
-				this,
-				lpRes,
-				lpEntryList,
-				ulSearchState);
+			editor::CCriteriaEditor MyCriteria(this, lpRes, lpEntryList, ulSearchState);
 
 			WC_H(MyCriteria.DisplayDialog());
 			if (S_OK == hRes)
@@ -213,10 +193,7 @@ namespace dialog
 					const auto lpNewRes = MyCriteria.DetachModifiedSRestriction();
 					const auto lpNewEntryList = MyCriteria.DetachModifiedEntryList();
 					const auto ulSearchFlags = MyCriteria.GetSearchFlags();
-					EC_MAPI(lpMAPIFolder->SetSearchCriteria(
-						lpNewRes,
-						lpNewEntryList,
-						ulSearchFlags));
+					EC_MAPI(lpMAPIFolder->SetSearchCriteria(lpNewRes, lpNewEntryList, ulSearchFlags));
 					MAPIFreeBuffer(lpNewRes);
 					MAPIFreeBuffer(lpNewEntryList);
 				}
@@ -233,11 +210,7 @@ namespace dialog
 		if (m_lpFakeSplitter)
 		{
 			m_lpHierarchyTableTreeCtrl = new controls::CHierarchyTableTreeCtrl(
-				m_lpFakeSplitter,
-				m_lpMapiObjects,
-				this,
-				m_ulDisplayFlags,
-				m_nIDContextMenu);
+				m_lpFakeSplitter, m_lpMapiObjects, this, m_ulDisplayFlags, m_nIDContextMenu);
 
 			if (m_lpHierarchyTableTreeCtrl)
 			{
@@ -273,8 +246,7 @@ namespace dialog
 		// control. When the ENTER key was sent to the edit control, the
 		// parent window of the tree view control is responsible for updating
 		// the item's label in TVN_ENDLABELEDIT notification code.
-		if (m_lpHierarchyTableTreeCtrl && pMsg &&
-			pMsg->message == WM_KEYDOWN &&
+		if (m_lpHierarchyTableTreeCtrl && pMsg && pMsg->message == WM_KEYDOWN &&
 			(pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE))
 		{
 			const auto edit = m_lpHierarchyTableTreeCtrl->GetEditControl();
@@ -292,8 +264,7 @@ namespace dialog
 		auto hRes = S_OK;
 
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
-		if (m_lpHierarchyTableTreeCtrl)
-			EC_H(m_lpHierarchyTableTreeCtrl->RefreshHierarchyTable());
+		if (m_lpHierarchyTableTreeCtrl) EC_H(m_lpHierarchyTableTreeCtrl->RefreshHierarchyTable());
 	}
 
 	_Check_return_ bool CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
@@ -313,7 +284,7 @@ namespace dialog
 			ulFlags & MENU_FLAGS_REQUESTMODIFY ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
 
 		// Get the stuff we need for any case
-		_AddInMenuParams MyAddInMenuParams = { nullptr };
+		_AddInMenuParams MyAddInMenuParams = {nullptr};
 		MyAddInMenuParams.lpAddInMenu = lpAddInMenu;
 		MyAddInMenuParams.ulAddInContext = m_ulAddInContext;
 		MyAddInMenuParams.hWndParent = m_hWnd;
@@ -332,14 +303,11 @@ namespace dialog
 		// MENU_FLAGS_SINGLESELECT and MENU_FLAGS_MULTISELECT can't both be set, so we can ignore this case
 		if (!(ulFlags & (MENU_FLAGS_SINGLESELECT | MENU_FLAGS_MULTISELECT)))
 		{
-			HandleAddInMenuSingle(
-				&MyAddInMenuParams,
-				nullptr,
-				nullptr);
+			HandleAddInMenuSingle(&MyAddInMenuParams, nullptr, nullptr);
 		}
 		else
 		{
-			SRow MyRow = { 0 };
+			SRow MyRow = {0};
 
 			// If we have a row to give, give it - it's free
 			const auto lpData = m_lpHierarchyTableTreeCtrl->GetSelectedItemData();
@@ -356,10 +324,7 @@ namespace dialog
 				lpContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(fRequestModify);
 			}
 
-			HandleAddInMenuSingle(
-				&MyAddInMenuParams,
-				nullptr,
-				lpContainer);
+			HandleAddInMenuSingle(&MyAddInMenuParams, nullptr, lpContainer);
 			if (lpContainer) lpContainer->Release();
 		}
 		return true;

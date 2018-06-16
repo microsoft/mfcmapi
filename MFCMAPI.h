@@ -284,7 +284,7 @@ struct _AddInDialogControl
 	bool bMultiLine; // Whether the control should be single or multiple lines. ADDIN_CTRL_EDIT_* only.
 	bool bDefaultCheckState; // Default state for a check box. ADDIN_CTRL_CHECK only.
 	ULONG
-		ulDefaultNum; // Default value for an edit control. ADDIN_CTRL_EDIT_NUM_DECIMAL and ADDIN_CTRL_EDIT_NUM_HEX only.
+	ulDefaultNum; // Default value for an edit control. ADDIN_CTRL_EDIT_NUM_DECIMAL and ADDIN_CTRL_EDIT_NUM_HEX only.
 	LPWSTR szLabel; // Text label for the control. Valid for all controls.
 	LPWSTR szDefaultText; // Default value for an edit control. ADDIN_CTRL_EDIT_TEXT only.
 	size_t cbBin; // Count of bytes in lpBin. ADDIN_CTRL_EDIT_BINARY only.
@@ -324,7 +324,7 @@ struct _AddInDialogResult
 {
 	ULONG ulNumControls; // Number of entries in lpDialogControlResults
 	LPADDINDIALOGCONTROLRESULT
-		lpDialogControlResults; // Array of _AddInDialogControlResult with final values from the dialog
+	lpDialogControlResults; // Array of _AddInDialogControlResult with final values from the dialog
 };
 typedef _AddInDialogResult* LPADDINDIALOGRESULT;
 
