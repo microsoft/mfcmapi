@@ -595,7 +595,7 @@ struct OptParser
 };
 
 OptParser g_Parsers[] = {
-	//clang-format off
+	// clang-format off
 	{switchHelp, cmdmodeHelp, 0, 0, OPT_INITMFC},
 	{switchVerbose, cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC},
 	{switchNoAddins, cmdmodeUnknown, 0, 0, OPT_NOADDINS},
@@ -645,7 +645,7 @@ OptParser g_Parsers[] = {
 	{switchReceiveFolder, cmdmodeReceiveFolder, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDSTORE | OPT_INITMFC},
 	{switchSearchState, cmdmodeSearchState, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER},
 	{switchNoSwitch, cmdmodeUnknown, 0, 0, 0},
-	//clang-format on
+	// clang-format on
 };
 
 MYOPTIONS::MYOPTIONS()

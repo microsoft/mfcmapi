@@ -4,8 +4,8 @@
 namespace registry
 {
 	// Keep this in sync with REGKEYNAMES
+	// clang-format off
 	__RegKeys RegKeys[] = {
-		// clang-format off
 	#ifdef _DEBUG
 		{ L"DebugTag",					regDWORD,regoptStringHex,	DBGAll		,0,L"",L"",false,	IDS_REGKEY_DEBUG_TAG }, // STRING_OK
 	#else
@@ -39,8 +39,8 @@ namespace registry
 		{ L"DisplayAboutDialog",		regDWORD,regoptCheck,		true		,0,L"",L"",false,	NULL }, // STRING_OK
 		{ L"PropertyColumnOrder",		regSTRING,regoptCheck,		0			,0,L"",L"",false,	NULL }, // STRING_OK
 		// {KeyName,					keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
-		// clang-format on
 	};
+	// clang-format on
 
 	void SetDefaults()
 	{
