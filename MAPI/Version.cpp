@@ -28,14 +28,14 @@ namespace version
 				{
 					UINT ret = 0;
 					DWORD dwValueBuf = MAX_PATH;
-					WC_D(ret, import::pfnMsiGetFileVersion(lpszTempPath.c_str(),
-						lpszTempVer,
-						&dwValueBuf,
-						lpszTempLang,
-						&dwValueBuf));
+					WC_D(
+						ret,
+						import::pfnMsiGetFileVersion(
+							lpszTempPath.c_str(), lpszTempVer, &dwValueBuf, lpszTempLang, &dwValueBuf));
 					if (ERROR_SUCCESS == ret)
 					{
-						szOut = strings::formatmessage(IDS_OUTLOOKVERSIONSTRING, lpszTempPath.c_str(), lpszTempVer, lpszTempLang);
+						szOut = strings::formatmessage(
+							IDS_OUTLOOKVERSIONSTRING, lpszTempPath.c_str(), lpszTempVer, lpszTempLang);
 						szOut += strings::formatmessage(b64 ? IDS_TRUE : IDS_FALSE);
 						szOut += L"\n"; // STRING_OK
 					}
@@ -53,11 +53,16 @@ namespace version
 	{
 		switch (a)
 		{
-		case APPX_PACKAGE_ARCHITECTURE_X86: return L"x86";
-		case APPX_PACKAGE_ARCHITECTURE_ARM: return L"arm";
-		case APPX_PACKAGE_ARCHITECTURE_X64: return L"x64";
-		case APPX_PACKAGE_ARCHITECTURE_NEUTRAL: return L"neutral";
-		default: return L"?";
+		case APPX_PACKAGE_ARCHITECTURE_X86:
+			return L"x86";
+		case APPX_PACKAGE_ARCHITECTURE_ARM:
+			return L"arm";
+		case APPX_PACKAGE_ARCHITECTURE_X64:
+			return L"x64";
+		case APPX_PACKAGE_ARCHITECTURE_NEUTRAL:
+			return L"neutral";
+		default:
+			return L"?";
 		}
 	}
 
@@ -75,7 +80,8 @@ namespace version
 		UINT32 count = 0;
 		UINT32 length = 0;
 
-		auto rc = import::pfnFindPackagesByPackageFamily(familyName, filter, &count, nullptr, &length, nullptr, nullptr);
+		auto rc =
+			import::pfnFindPackagesByPackageFamily(familyName, filter, &count, nullptr, &length, nullptr, nullptr);
 		if (rc == ERROR_SUCCESS)
 		{
 			output::DebugPrint(DBGGeneric, L"LookupFamilyName: No packages found\n");
@@ -88,15 +94,17 @@ namespace version
 			return L"";
 		}
 
-		const auto fullNames = static_cast<LPWSTR *>(malloc(count * sizeof(LPWSTR)));
+		const auto fullNames = static_cast<LPWSTR*>(malloc(count * sizeof(LPWSTR)));
 		const auto buffer = static_cast<PWSTR>(malloc(length * sizeof(WCHAR)));
 
 		if (fullNames && buffer)
 		{
-			rc = import::pfnFindPackagesByPackageFamily(familyName, filter, &count, fullNames, &length, buffer, nullptr);
+			rc =
+				import::pfnFindPackagesByPackageFamily(familyName, filter, &count, fullNames, &length, buffer, nullptr);
 			if (rc != ERROR_SUCCESS)
 			{
-				output::DebugPrint(DBGGeneric, L"LookupFamilyName: Error %d looking up Full Names from Family Names\n", rc);
+				output::DebugPrint(
+					DBGGeneric, L"LookupFamilyName: Error %d looking up Full Names from Family Names\n", rc);
 			}
 		}
 
@@ -117,11 +125,7 @@ namespace version
 	{
 		if (!import::pfnPackageIdFromFullName) return strings::emptystring;
 		UINT32 length = 0;
-		auto rc = import::pfnPackageIdFromFullName(
-			fullname,
-			0,
-			&length,
-			nullptr);
+		auto rc = import::pfnPackageIdFromFullName(fullname, 0, &length, nullptr);
 		if (rc == ERROR_SUCCESS)
 		{
 			output::DebugPrint(DBGGeneric, L"GetPackageId: Package not found\n");
@@ -135,21 +139,18 @@ namespace version
 		}
 
 		std::wstring build;
-		const auto package_id = static_cast<PACKAGE_ID *>(malloc(length));
+		const auto package_id = static_cast<PACKAGE_ID*>(malloc(length));
 		if (package_id)
 		{
-			rc = import::pfnPackageIdFromFullName(
-				fullname,
-				0,
-				&length,
-				reinterpret_cast<BYTE*>(package_id));
+			rc = import::pfnPackageIdFromFullName(fullname, 0, &length, reinterpret_cast<BYTE*>(package_id));
 			if (rc != ERROR_SUCCESS)
 			{
 				output::DebugPrint(DBGGeneric, L"PackageIdFromFullName: Error %d looking up ID from full name\n", rc);
 			}
 			else
 			{
-				build = strings::format(L"%d.%d.%d.%d %ws",
+				build = strings::format(
+					L"%d.%d.%d.%d %ws",
 					package_id->version.Major,
 					package_id->version.Minor,
 					package_id->version.Build,
@@ -167,7 +168,8 @@ namespace version
 		// Check for Centennial Office
 		const auto familyName = L"Microsoft.MicrosoftOfficeHub_8wekyb3d8bbwe";
 
-		const UINT32 filter = PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_PROPERTY_BUNDLE | PACKAGE_PROPERTY_RESOURCE;
+		const UINT32 filter =
+			PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_PROPERTY_BUNDLE | PACKAGE_PROPERTY_RESOURCE;
 		auto fullName = GetFullName(familyName, filter);
 
 		if (!fullName.empty())

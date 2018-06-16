@@ -3,28 +3,27 @@
 
 namespace import
 {
-extern LPEDITSECURITY pfnEditSecurity;
-extern LPSTGCREATESTORAGEEX pfnStgCreateStorageEx;
-extern LPOPENTHEMEDATA pfnOpenThemeData;
-extern LPCLOSETHEMEDATA pfnCloseThemeData;
-extern LPGETTHEMEMARGINS pfnGetThemeMargins;
-extern LPSETWINDOWTHEME pfnSetWindowTheme;
-extern LPGETTHEMESYSSIZE pfnGetThemeSysSize;
-extern LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent;
-extern LPMSIGETFILEVERSION pfnMsiGetFileVersion;
-extern LPSHGETPROPERTYSTOREFORWINDOW pfnSHGetPropertyStoreForWindow;
-extern LPFINDPACKAGESBYPACKAGEFAMILY pfnFindPackagesByPackageFamily;
-extern LPPACKAGEIDFROMFULLNAME pfnPackageIdFromFullName;
+	extern LPEDITSECURITY pfnEditSecurity;
+	extern LPSTGCREATESTORAGEEX pfnStgCreateStorageEx;
+	extern LPOPENTHEMEDATA pfnOpenThemeData;
+	extern LPCLOSETHEMEDATA pfnCloseThemeData;
+	extern LPGETTHEMEMARGINS pfnGetThemeMargins;
+	extern LPSETWINDOWTHEME pfnSetWindowTheme;
+	extern LPGETTHEMESYSSIZE pfnGetThemeSysSize;
+	extern LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent;
+	extern LPMSIGETFILEVERSION pfnMsiGetFileVersion;
+	extern LPSHGETPROPERTYSTOREFORWINDOW pfnSHGetPropertyStoreForWindow;
+	extern LPFINDPACKAGESBYPACKAGEFAMILY pfnFindPackagesByPackageFamily;
+	extern LPPACKAGEIDFROMFULLNAME pfnPackageIdFromFullName;
 
+	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName);
+	_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring& szDLLName);
 
-_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName);
-_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring& szDLLName);
+	_Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName);
 
-_Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName);
+	void ImportProcs();
 
-void ImportProcs();
-
-std::wstring GetMAPIPath(const std::wstring& szClient);
+	std::wstring GetMAPIPath(const std::wstring& szClient);
 
 // Keep this in sync with g_pszOutlookQualifiedComponents
 #define oqcOfficeBegin 0
@@ -36,18 +35,13 @@ std::wstring GetMAPIPath(const std::wstring& szClient);
 #define oqcOffice11Debug (oqcOfficeBegin + 5)
 #define oqcOfficeEnd oqcOffice11Debug
 
-void WINAPI MyHeapSetInformation(_In_opt_ HANDLE HeapHandle,
-	_In_ HEAP_INFORMATION_CLASS HeapInformationClass,
-	_In_opt_count_(HeapInformationLength) PVOID HeapInformation,
-	_In_ SIZE_T HeapInformationLength);
+	void WINAPI MyHeapSetInformation(
+		_In_opt_ HANDLE HeapHandle,
+		_In_ HEAP_INFORMATION_CLASS HeapInformationClass,
+		_In_opt_count_(HeapInformationLength) PVOID HeapInformation,
+		_In_ SIZE_T HeapInformationLength);
 
-HRESULT WINAPI MyMimeOleGetCodePageCharset(
-	CODEPAGEID cpiCodePage,
-	CHARSETTYPE ctCsetType,
-	LPHCHARSET phCharset);
+	HRESULT WINAPI MyMimeOleGetCodePageCharset(CODEPAGEID cpiCodePage, CHARSETTYPE ctCsetType, LPHCHARSET phCharset);
 
-BOOL WINAPI MyGetModuleHandleExW(
-	DWORD dwFlags,
-	LPCWSTR lpModuleName,
-	HMODULE* phModule);
+	BOOL WINAPI MyGetModuleHandleExW(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE* phModule);
 }

@@ -44,17 +44,12 @@ namespace smartview
 	_Check_return_ std::wstring FlatEntryList::ToStringInternal()
 	{
 		std::vector<std::wstring> flatEntryList;
-		flatEntryList.push_back(strings::formatmessage(
-			IDS_FELHEADER,
-			m_cEntries,
-			m_cbEntries));
+		flatEntryList.push_back(strings::formatmessage(IDS_FELHEADER, m_cEntries, m_cbEntries));
 
 		for (DWORD iFlatEntryList = 0; iFlatEntryList < m_pEntryIDs.size(); iFlatEntryList++)
 		{
-			flatEntryList.push_back(strings::formatmessage(
-				IDS_FELENTRYHEADER,
-				iFlatEntryList,
-				m_pEntryIDs[iFlatEntryList].dwSize));
+			flatEntryList.push_back(
+				strings::formatmessage(IDS_FELENTRYHEADER, iFlatEntryList, m_pEntryIDs[iFlatEntryList].dwSize));
 			auto entryID = m_pEntryIDs[iFlatEntryList].lpEntryID.ToString();
 
 			if (entryID.length())
@@ -64,9 +59,8 @@ namespace smartview
 
 			if (m_pEntryIDs[iFlatEntryList].JunkData.size())
 			{
-				flatEntryList.push_back(strings::formatmessage(
-					IDS_FELENTRYPADDING,
-					iFlatEntryList) +
+				flatEntryList.push_back(
+					strings::formatmessage(IDS_FELENTRYPADDING, iFlatEntryList) +
 					JunkDataToString(m_pEntryIDs[iFlatEntryList].JunkData));
 			}
 		}

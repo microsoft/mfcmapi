@@ -39,7 +39,11 @@
 
 namespace smartview
 {
-	std::wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp);
+	std::wstring InterpretMVLongAsString(
+		SLongArray myLongArray,
+		ULONG ulPropTag,
+		ULONG ulPropNameID,
+		_In_opt_ LPGUID lpguidNamedProp);
 
 	// Functions to parse PT_LONG/PT-I2 properties
 	_Check_return_ std::wstring RTimeToSzString(DWORD rTime, bool bLabel);
@@ -137,7 +141,8 @@ namespace smartview
 		return nullptr;
 	}
 
-	_Check_return_ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
+	_Check_return_ ULONG BuildFlagIndexFromTag(
+		ULONG ulPropTag,
 		ULONG ulPropNameID,
 		_In_opt_z_ LPCWSTR lpszPropNameString,
 		_In_opt_ LPCGUID lpguidNamedProp)
@@ -149,19 +154,27 @@ namespace smartview
 
 		// Else we build our index from the guid and named property ID
 		// In the future, we can look at using lpszPropNameString for MNID_STRING named properties
-		if (lpguidNamedProp &&
-			(ulPropNameID || lpszPropNameString))
+		if (lpguidNamedProp && (ulPropNameID || lpszPropNameString))
 		{
 			ULONG ulGuid = NULL;
-			if (*lpguidNamedProp == guid::PSETID_Meeting)        ulGuid = guidPSETID_Meeting;
-			else if (*lpguidNamedProp == guid::PSETID_Address)        ulGuid = guidPSETID_Address;
-			else if (*lpguidNamedProp == guid::PSETID_Task)           ulGuid = guidPSETID_Task;
-			else if (*lpguidNamedProp == guid::PSETID_Appointment)    ulGuid = guidPSETID_Appointment;
-			else if (*lpguidNamedProp == guid::PSETID_Common)         ulGuid = guidPSETID_Common;
-			else if (*lpguidNamedProp == guid::PSETID_Log)            ulGuid = guidPSETID_Log;
-			else if (*lpguidNamedProp == guid::PSETID_PostRss)        ulGuid = guidPSETID_PostRss;
-			else if (*lpguidNamedProp == guid::PSETID_Sharing)        ulGuid = guidPSETID_Sharing;
-			else if (*lpguidNamedProp == guid::PSETID_Note)           ulGuid = guidPSETID_Note;
+			if (*lpguidNamedProp == guid::PSETID_Meeting)
+				ulGuid = guidPSETID_Meeting;
+			else if (*lpguidNamedProp == guid::PSETID_Address)
+				ulGuid = guidPSETID_Address;
+			else if (*lpguidNamedProp == guid::PSETID_Task)
+				ulGuid = guidPSETID_Task;
+			else if (*lpguidNamedProp == guid::PSETID_Appointment)
+				ulGuid = guidPSETID_Appointment;
+			else if (*lpguidNamedProp == guid::PSETID_Common)
+				ulGuid = guidPSETID_Common;
+			else if (*lpguidNamedProp == guid::PSETID_Log)
+				ulGuid = guidPSETID_Log;
+			else if (*lpguidNamedProp == guid::PSETID_PostRss)
+				ulGuid = guidPSETID_PostRss;
+			else if (*lpguidNamedProp == guid::PSETID_Sharing)
+				ulGuid = guidPSETID_Sharing;
+			else if (*lpguidNamedProp == guid::PSETID_Note)
+				ulGuid = guidPSETID_Note;
 
 			if (ulGuid && ulPropNameID)
 			{
@@ -175,22 +188,25 @@ namespace smartview
 		return NULL;
 	}
 
-	_Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp)
+	_Check_return_ __ParsingTypeEnum
+	FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp)
 	{
 		const auto ulIndex = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, nullptr, lpguidNamedProp);
 		const auto bMV = (PROP_TYPE(ulPropTag) & MV_FLAG) == MV_FLAG;
 
 		for (const auto& smartViewParser : SmartViewParserArray)
 		{
-			if (smartViewParser.ulIndex == ulIndex &&
-				smartViewParser.bMV == bMV)
-				return smartViewParser.iStructType;
+			if (smartViewParser.ulIndex == ulIndex && smartViewParser.bMV == bMV) return smartViewParser.iStructType;
 		}
 
 		return IDS_STNOPARSING;
 	}
 
-	_Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp, bool bMVRow)
+	_Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(
+		const ULONG ulPropTag,
+		const ULONG ulPropNameID,
+		_In_opt_ const LPCGUID lpguidNamedProp,
+		bool bMVRow)
 	{
 		auto ulLookupPropTag = ulPropTag;
 		if (bMVRow) ulLookupPropTag |= MV_FLAG;
@@ -198,16 +214,19 @@ namespace smartview
 		return FindSmartViewParserForProp(ulLookupPropTag, ulPropNameID, lpguidNamedProp);
 	}
 
-	std::pair<__ParsingTypeEnum, std::wstring> InterpretPropSmartView2(_In_opt_ const _SPropValue* lpProp, // required property value
+	std::pair<__ParsingTypeEnum, std::wstring> InterpretPropSmartView2(
+		_In_opt_ const _SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-		bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+		bool
+			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 		bool bMVRow) // did the row come from a MV prop?
 	{
 		std::wstring lpszSmartView;
 
-		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp) return std::make_pair(IDS_STNOPARSING, L"");
+		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp)
+			return std::make_pair(IDS_STNOPARSING, L"");
 
 		auto hRes = S_OK;
 		auto iStructType = IDS_STNOPARSING;
@@ -217,25 +236,20 @@ namespace smartview
 
 		// If we weren't passed named property information and we need it, look it up
 		// We check bIsAB here - some address book providers return garbage which will crash us
-		if (!lpNameID &&
-			lpMAPIProp && // if we have an object
+		if (!lpNameID && lpMAPIProp && // if we have an object
 			!bIsAB &&
 			registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
-			(registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(lpProp->ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
+			(registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD ||
+			 PROP_ID(lpProp->ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 		{
-			SPropTagArray tag = { 0 };
+			SPropTagArray tag = {0};
 			auto lpTag = &tag;
 			ULONG ulPropNames = 0;
 			tag.cValues = 1;
 			tag.aulPropTag[0] = lpProp->ulPropTag;
 
-			WC_H_GETPROPS(cache::GetNamesFromIDs(lpMAPIProp,
-				lpMappingSignature,
-				&lpTag,
-				nullptr,
-				NULL,
-				&ulPropNames,
-				&lppPropNames));
+			WC_H_GETPROPS(cache::GetNamesFromIDs(
+				lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL, &ulPropNames, &lppPropNames));
 			if (SUCCEEDED(hRes) && ulPropNames == 1 && lppPropNames && lppPropNames[0])
 			{
 				lpNameID = lppPropNames[0];
@@ -262,7 +276,8 @@ namespace smartview
 		case PT_LONG:
 		case PT_I2:
 		case PT_I8:
-			lpszSmartView = InterpretNumberAsString(lpProp->Value, lpProp->ulPropTag, ulPropNameID, nullptr, lpPropNameGUID, true);
+			lpszSmartView =
+				InterpretNumberAsString(lpProp->Value, lpProp->ulPropTag, ulPropNameID, nullptr, lpPropNameGUID, true);
 			break;
 		case PT_MV_LONG:
 			lpszSmartView = InterpretMVLongAsString(lpProp->Value.MVl, lpProp->ulPropTag, ulPropNameID, lpPropNameGUID);
@@ -279,7 +294,8 @@ namespace smartview
 
 				WC_MAPI(HrGetOneProp(lpMAPIProp, PR_SUBJECT_W, &lpPropSubject));
 
-				if (mapi::CheckStringProp(lpPropSubject, PT_UNICODE) && 0 == wcscmp(lpPropSubject->Value.lpszW, L"IPM.Configuration.Autocomplete"))
+				if (mapi::CheckStringProp(lpPropSubject, PT_UNICODE) &&
+					0 == wcscmp(lpPropSubject->Value.lpszW, L"IPM.Configuration.Autocomplete"))
 				{
 					iStructType = IDS_STNICKNAMECACHE;
 				}
@@ -308,18 +324,21 @@ namespace smartview
 		return make_pair(iStructType, lpszSmartView);
 	}
 
-	std::wstring InterpretPropSmartView(_In_opt_ LPSPropValue lpProp, // required property value
+	std::wstring InterpretPropSmartView(
+		_In_opt_ LPSPropValue lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-		bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+		bool
+			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 		bool bMVRow) // did the row come from a MV prop?
 	{
 		auto smartview = InterpretPropSmartView2(lpProp, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB, bMVRow);
 		return smartview.second;
 	}
 
-	std::wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum  iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
+	std::wstring
+	InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
 		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 
@@ -341,14 +360,14 @@ namespace smartview
 
 	std::wstring InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag)
 	{
-		_PV pV = { 0 };
+		_PV pV = {0};
 		pV.ul = ulVal;
 		return InterpretNumberAsString(pV, ulPropTag, NULL, nullptr, nullptr, false);
 	}
 
 	std::wstring InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp)
 	{
-		_PV pV = { 0 };
+		_PV pV = {0};
 		pV.ul = ulVal;
 		return InterpretNumberAsString(pV, PT_LONG, ulPropNameID, nullptr, lpguidNamedProp, false);
 	}
@@ -356,14 +375,21 @@ namespace smartview
 	// Interprets a PT_LONG, PT_I2. or PT_I8 found in lpProp and returns a string
 	// Will not return a string if the lpProp is not a PT_LONG/PT_I2/PT_I8 or we don't recognize the property
 	// Will use named property details to look up named property flags
-	std::wstring InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPCGUID lpguidNamedProp, bool bLabel)
+	std::wstring InterpretNumberAsString(
+		_PV pV,
+		ULONG ulPropTag,
+		ULONG ulPropNameID,
+		_In_opt_z_ LPWSTR lpszPropNameString,
+		_In_opt_ LPCGUID lpguidNamedProp,
+		bool bLabel)
 	{
 		std::wstring lpszResultString;
 		if (!ulPropTag) return L"";
 
-		if (PROP_TYPE(ulPropTag) != PT_LONG &&
-			PROP_TYPE(ulPropTag) != PT_I2 &&
-			PROP_TYPE(ulPropTag) != PT_I8) return L"";
+		if (PROP_TYPE(ulPropTag) != PT_LONG && //
+			PROP_TYPE(ulPropTag) != PT_I2 && //
+			PROP_TYPE(ulPropTag) != PT_I8)
+			return L"";
 
 		ULONG ulPropID = NULL;
 		const auto iParser = FindSmartViewParserForProp(ulPropTag, ulPropNameID, lpguidNamedProp);
@@ -397,7 +423,11 @@ namespace smartview
 		return lpszResultString;
 	}
 
-	std::wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp)
+	std::wstring InterpretMVLongAsString(
+		SLongArray myLongArray,
+		ULONG ulPropTag,
+		ULONG ulPropNameID,
+		_In_opt_ LPGUID lpguidNamedProp)
 	{
 		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 
@@ -407,9 +437,10 @@ namespace smartview
 
 		for (ULONG ulRow = 0; ulRow < myLongArray.cValues; ulRow++)
 		{
-			_PV pV = { 0 };
+			_PV pV = {0};
 			pV.ul = myLongArray.lpl[ulRow];
-			szSmartView = InterpretNumberAsString(pV, CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, nullptr, lpguidNamedProp, true);
+			szSmartView = InterpretNumberAsString(
+				pV, CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, nullptr, lpguidNamedProp, true);
 			if (!szSmartView.empty())
 			{
 				if (bHasData)
@@ -418,9 +449,7 @@ namespace smartview
 				}
 
 				bHasData = true;
-				szResult += strings::formatmessage(IDS_MVROWLONG,
-					ulRow,
-					szSmartView.c_str());
+				szResult += strings::formatmessage(IDS_MVROWLONG, ulRow, szSmartView.c_str());
 			}
 		}
 
@@ -463,8 +492,8 @@ namespace smartview
 	{
 		std::wstring rTimeString;
 		std::wstring rTimeAltString;
-		FILETIME fTime = { 0 };
-		LARGE_INTEGER liNumSec = { 0 };
+		FILETIME fTime = {0};
+		LARGE_INTEGER liNumSec = {0};
 		liNumSec.LowPart = rTime;
 		// Resolution of RTime is in minutes, FILETIME is in 100 nanosecond intervals
 		// Scale between the two is 10000000*60
@@ -506,10 +535,7 @@ namespace smartview
 		BYTE globcnt[cbGlobcnt];
 	};
 
-	_Check_return_ WORD WGetReplId(ID id)
-	{
-		return id.replid;
-	}
+	_Check_return_ WORD WGetReplId(ID id) { return id.replid; }
 
 	_Check_return_ ULONGLONG UllGetIdGlobcnt(ID id)
 	{

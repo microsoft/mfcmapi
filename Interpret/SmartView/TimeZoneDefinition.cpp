@@ -62,7 +62,8 @@ namespace smartview
 
 	_Check_return_ std::wstring TimeZoneDefinition::ToStringInternal()
 	{
-		auto szTimeZoneDefinition = strings::formatmessage(IDS_TIMEZONEDEFINITION,
+		auto szTimeZoneDefinition = strings::formatmessage(
+			IDS_TIMEZONEDEFINITION,
 			m_bMajorVersion,
 			m_bMinorVersion,
 			m_cbHeader,
@@ -74,7 +75,8 @@ namespace smartview
 		for (WORD i = 0; i < m_lpTZRule.size(); i++)
 		{
 			auto szFlags = interpretprop::InterpretFlags(flagTZRule, m_lpTZRule[i].wTZRuleFlags);
-			szTimeZoneDefinition += strings::formatmessage(IDS_TZRULEHEADER,
+			szTimeZoneDefinition += strings::formatmessage(
+				IDS_TZRULEHEADER,
 				i,
 				m_lpTZRule[i].bMajorVersion,
 				m_lpTZRule[i].bMinorVersion,
@@ -85,7 +87,8 @@ namespace smartview
 
 			szTimeZoneDefinition += strings::BinToHexString(m_lpTZRule[i].X, true);
 
-			szTimeZoneDefinition += strings::formatmessage(IDS_TZRULEFOOTER,
+			szTimeZoneDefinition += strings::formatmessage(
+				IDS_TZRULEFOOTER,
 				i,
 				m_lpTZRule[i].lBias,
 				m_lpTZRule[i].lStandardBias,

@@ -3,9 +3,9 @@
 
 namespace guid
 {
-#define GUID_ENTRY(guid) {&(guid),L#guid},
-	static GUID_ARRAY_ENTRY g_PropGuidArray[] =
-	{
+#define GUID_ENTRY(guid) {&(guid), L#guid},
+	static GUID_ARRAY_ENTRY g_PropGuidArray[] = {
+		// clang-format off
 		GUID_ENTRY(IID_IUnknown)
 		GUID_ENTRY(IID_IMAPITable)
 		GUID_ENTRY(IID_IMAPIAdviseSink)
@@ -78,5 +78,6 @@ namespace guid
 		GUID_ENTRY(muidEMSAB)
 		{ LPGUID(pbGlobalProfileSectionGuid), L"pbGlobalProfileSectionGuid" }, // STRING_OK
 		GUID_ENTRY(WAB_GUID)
+		// clang-format on
 	};
 }

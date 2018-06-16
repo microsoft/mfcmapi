@@ -17,11 +17,12 @@ namespace mapi
 			_In_ HWND hwndParent,
 			_In_ LPMDB lpMDB,
 			_In_ LPMAPISESSION lpMAPISession,
-			_In_ controls::sortlistctrl::CContentsTableListCtrl *lpContentsTableListCtrl,
+			_In_ controls::sortlistctrl::CContentsTableListCtrl* lpContentsTableListCtrl,
 			int iItem,
 			_In_ const std::wstring& szMessageClass,
 			_In_ LPMAPIFOLDER lpFolder);
-		_Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
+		_Check_return_ HRESULT OpenMessageModal(
+			_In_ LPMAPIFOLDER lpParentFolder,
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_ LPMDB lpMDB,
 			_In_ LPMESSAGE lpMessage);
@@ -30,7 +31,7 @@ namespace mapi
 			_In_ LPMDB lpMDB,
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_ LPMAPIFOLDER lpSourceFolder,
-			_In_ controls::sortlistctrl::CContentsTableListCtrl *lpContentsTableListCtrl,
+			_In_ controls::sortlistctrl::CContentsTableListCtrl* lpContentsTableListCtrl,
 			int iItem,
 			_In_ LPMESSAGE lpMessage,
 			LONG lVerb,

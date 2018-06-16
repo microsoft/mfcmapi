@@ -25,10 +25,7 @@ namespace propertybag
 		return ulFlags;
 	}
 
-	propBagType RowPropertyBag::GetType()
-	{
-		return pbRow;
-	}
+	propBagType RowPropertyBag::GetType() { return pbRow; }
 
 	bool RowPropertyBag::IsEqual(LPMAPIPROPERTYBAG lpPropBag)
 	{
@@ -48,19 +45,11 @@ namespace propertybag
 	}
 
 	// Returns the underlying MAPI prop object, if one exists. Does NOT ref count it.
-	_Check_return_ LPMAPIPROP RowPropertyBag::GetMAPIProp()
-	{
-		return nullptr;
-	}
+	_Check_return_ LPMAPIPROP RowPropertyBag::GetMAPIProp() { return nullptr; }
 
-	_Check_return_ HRESULT RowPropertyBag::Commit()
-	{
-		return E_NOTIMPL;
-	}
+	_Check_return_ HRESULT RowPropertyBag::Commit() { return E_NOTIMPL; }
 
-	_Check_return_ HRESULT RowPropertyBag::GetAllProps(
-		ULONG FAR* lpcValues,
-		LPSPropValue FAR* lppPropArray)
+	_Check_return_ HRESULT RowPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
 	{
 		if (!lpcValues || !lppPropArray) return MAPI_E_INVALID_PARAMETER;
 
@@ -81,9 +70,7 @@ namespace propertybag
 		return E_NOTIMPL;
 	}
 
-	_Check_return_ HRESULT RowPropertyBag::GetProp(
-		ULONG ulPropTag,
-		LPSPropValue FAR* lppProp)
+	_Check_return_ HRESULT RowPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
 	{
 		if (!lppProp) return MAPI_E_INVALID_PARAMETER;
 
@@ -98,9 +85,7 @@ namespace propertybag
 	}
 
 	// TODO: This is for paste, something we don't yet support for rows
-	_Check_return_ HRESULT RowPropertyBag::SetProps(
-		ULONG /*cValues*/,
-		LPSPropValue /*lpPropArray*/)
+	_Check_return_ HRESULT RowPropertyBag::SetProps(ULONG /*cValues*/, LPSPropValue /*lpPropArray*/)
 	{
 		return E_NOTIMPL;
 	}
@@ -163,15 +148,13 @@ namespace propertybag
 								CHANGE_PROP_TYPE(lpVal1[ulSourceArray].ulPropTag, PT_UNSPECIFIED)))
 						{
 							EC_H(mapi::MyPropCopyMore(
-								&lpNewArray[ulTargetArray],
-								&lpVal1[ulSourceArray],
-								MAPIAllocateMore,
-								lpNewArray));
+								&lpNewArray[ulTargetArray], &lpVal1[ulSourceArray], MAPIAllocateMore, lpNewArray));
 							if (SUCCEEDED(hRes))
 							{
 								ulTargetArray++;
 							}
-							else break;
+							else
+								break;
 						}
 					}
 				}
@@ -193,15 +176,13 @@ namespace propertybag
 								break;
 							}
 							EC_H(mapi::MyPropCopyMore(
-								&lpNewArray[ulTargetArray],
-								&lpVal2[ulSourceArray],
-								MAPIAllocateMore,
-								lpNewArray));
+								&lpNewArray[ulTargetArray], &lpVal2[ulSourceArray], MAPIAllocateMore, lpNewArray));
 							if (SUCCEEDED(hRes))
 							{
 								ulTargetArray++;
 							}
-							else break;
+							else
+								break;
 						}
 					}
 				}
@@ -221,20 +202,13 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT RowPropertyBag::SetProp(
-		LPSPropValue lpProp)
+	_Check_return_ HRESULT RowPropertyBag::SetProp(LPSPropValue lpProp)
 	{
 		auto hRes = S_OK;
 		ULONG ulNewArray = NULL;
 		LPSPropValue lpNewArray = nullptr;
 
-		EC_H(ConcatLPSPropValue(
-			1,
-			lpProp,
-			m_cValues,
-			m_lpProps,
-			&ulNewArray,
-			&lpNewArray));
+		EC_H(ConcatLPSPropValue(1, lpProp, m_cValues, m_lpProps, &ulNewArray, &lpNewArray));
 		if (SUCCEEDED(hRes))
 		{
 			MAPIFreeBuffer(m_lpListData->lpSourceProps);
@@ -249,9 +223,5 @@ namespace propertybag
 	}
 
 	//TODO: Not supported yet
-	_Check_return_ HRESULT RowPropertyBag::DeleteProp(
-		ULONG /*ulPropTag*/)
-	{
-		return E_NOTIMPL;
-	};
+	_Check_return_ HRESULT RowPropertyBag::DeleteProp(ULONG /*ulPropTag*/) { return E_NOTIMPL; };
 }

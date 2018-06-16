@@ -5,9 +5,6 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		PropListData::PropListData(_In_ ULONG ulPropTag)
-		{
-			m_ulPropTag = ulPropTag;
-		}
+		PropListData::PropListData(_In_ ULONG ulPropTag) { m_ulPropTag = ulPropTag; }
 	}
 }

@@ -68,10 +68,7 @@ namespace mapistub
 	static volatile HMODULE g_hinstMAPI = nullptr;
 	HMODULE g_hModPstPrx32 = nullptr;
 
-	HMODULE GetMAPIHandle()
-	{
-		return g_hinstMAPI;
-	}
+	HMODULE GetMAPIHandle() { return g_hinstMAPI; }
 
 	void SetMAPIHandle(HMODULE hinstMAPI)
 	{
@@ -88,7 +85,8 @@ namespace mapistub
 				g_hModPstPrx32 = nullptr;
 			}
 
-			hinstToFree = static_cast<HMODULE>(InterlockedExchangePointer(const_cast<PVOID*>(reinterpret_cast<PVOID volatile *>(&g_hinstMAPI)), static_cast<PVOID>(hinstNULL)));
+			hinstToFree = static_cast<HMODULE>(InterlockedExchangePointer(
+				const_cast<PVOID*>(reinterpret_cast<PVOID volatile*>(&g_hinstMAPI)), static_cast<PVOID>(hinstNULL)));
 		}
 		else
 		{
@@ -100,10 +98,12 @@ namespace mapistub
 
 			// Code Analysis gives us a C28112 error when we use InterlockedCompareExchangePointer, so we instead exchange, check and exchange back
 			//hinstPrev = (HMODULE)InterlockedCompareExchangePointer(reinterpret_cast<volatile PVOID*>(&g_hinstMAPI), hinstMAPI, hinstNULL);
-			const auto hinstPrev = static_cast<HMODULE>(InterlockedExchangePointer(const_cast<PVOID*>(reinterpret_cast<PVOID volatile *>(&g_hinstMAPI)), static_cast<PVOID>(hinstMAPI)));
+			const auto hinstPrev = static_cast<HMODULE>(InterlockedExchangePointer(
+				const_cast<PVOID*>(reinterpret_cast<PVOID volatile*>(&g_hinstMAPI)), static_cast<PVOID>(hinstMAPI)));
 			if (nullptr != hinstPrev)
 			{
-				(void)InterlockedExchangePointer(const_cast<PVOID*>(reinterpret_cast<PVOID volatile *>(&g_hinstMAPI)), static_cast<PVOID>(hinstPrev));
+				(void) InterlockedExchangePointer(
+					const_cast<PVOID*>(reinterpret_cast<PVOID volatile*>(&g_hinstMAPI)), static_cast<PVOID>(hinstPrev));
 				hinstToFree = hinstMAPI;
 			}
 
@@ -126,14 +126,16 @@ namespace mapistub
 	 */
 	std::wstring RegQueryWszExpand(HKEY hKey, const std::wstring& lpValueName)
 	{
-		output::DebugPrint(DBGLoadMAPI, L"Enter RegQueryWszExpand: hKey = %p, lpValueName = %ws\n", hKey, lpValueName.c_str());
+		output::DebugPrint(
+			DBGLoadMAPI, L"Enter RegQueryWszExpand: hKey = %p, lpValueName = %ws\n", hKey, lpValueName.c_str());
 		DWORD dwType = 0;
 
 		std::wstring ret;
-		WCHAR rgchValue[MAX_PATH] = { 0 };
+		WCHAR rgchValue[MAX_PATH] = {0};
 		DWORD dwSize = sizeof rgchValue;
 
-		const auto dwErr = RegQueryValueExW(hKey, lpValueName.c_str(), nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchValue), &dwSize);
+		const auto dwErr = RegQueryValueExW(
+			hKey, lpValueName.c_str(), nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchValue), &dwSize);
 
 		if (dwErr == ERROR_SUCCESS)
 		{
@@ -168,27 +170,36 @@ namespace mapistub
 	 */
 	std::wstring GetComponentPath(const std::wstring& szComponent, const std::wstring& szQualifier, bool fInstall)
 	{
-		output::DebugPrint(DBGLoadMAPI, L"Enter GetComponentPath: szComponent = %ws, szQualifier = %ws, fInstall = 0x%08X\n",
-			szComponent.c_str(), szQualifier.c_str(), fInstall);
+		output::DebugPrint(
+			DBGLoadMAPI,
+			L"Enter GetComponentPath: szComponent = %ws, szQualifier = %ws, fInstall = 0x%08X\n",
+			szComponent.c_str(),
+			szQualifier.c_str(),
+			fInstall);
 		auto fReturn = false;
 		std::wstring path;
 
-		typedef bool (STDAPICALLTYPE *FGetComponentPathType)(LPCSTR, LPSTR, LPSTR, DWORD, bool);
+		typedef bool(STDAPICALLTYPE * FGetComponentPathType)(LPCSTR, LPSTR, LPSTR, DWORD, bool);
 
 		auto hMapiStub = import::MyLoadLibraryW(WszMapi32);
-		if (!hMapiStub)
-			hMapiStub = import::MyLoadLibraryW(WszMapiStub);
+		if (!hMapiStub) hMapiStub = import::MyLoadLibraryW(WszMapiStub);
 
 		if (hMapiStub)
 		{
-			const auto pFGetCompPath = reinterpret_cast<FGetComponentPathType>(GetProcAddress(hMapiStub, SzFGetComponentPath));
+			const auto pFGetCompPath =
+				reinterpret_cast<FGetComponentPathType>(GetProcAddress(hMapiStub, SzFGetComponentPath));
 
 			if (pFGetCompPath)
 			{
-				CHAR lpszPath[MAX_PATH] = { 0 };
+				CHAR lpszPath[MAX_PATH] = {0};
 				const ULONG cchPath = _countof(lpszPath);
 
-				fReturn = pFGetCompPath(strings::wstringTostring(szComponent).c_str(), LPSTR(strings::wstringTostring(szQualifier).c_str()), lpszPath, cchPath, fInstall);
+				fReturn = pFGetCompPath(
+					strings::wstringTostring(szComponent).c_str(),
+					LPSTR(strings::wstringTostring(szQualifier).c_str()),
+					lpszPath,
+					cchPath,
+					fInstall);
 				if (fReturn) path = strings::LPCSTRToWstring(lpszPath);
 				output::DebugPrint(DBGLoadMAPI, L"GetComponentPath: path = %ws\n", path.c_str());
 			}
@@ -209,11 +220,7 @@ namespace mapistub
 		HKEY hkeyMapiClient = nullptr;
 
 		// Open HKLM\Software\Clients\Mail
-		WC_W32(RegOpenKeyExW(HKEY_LOCAL_MACHINE,
-			WszKeyNameMailClient,
-			0,
-			KEY_READ,
-			&hMailKey));
+		WC_W32(RegOpenKeyExW(HKEY_LOCAL_MACHINE, WszKeyNameMailClient, 0, KEY_READ, &hMailKey));
 		if (FAILED(hRes))
 		{
 			hMailKey = nullptr;
@@ -230,16 +237,15 @@ namespace mapistub
 				DWORD dwSize = MAX_PATH;
 				DWORD dwType = 0;
 				WC_W32(RegQueryValueExW(
-					hMailKey,
-					nullptr,
-					nullptr,
-					&dwType,
-					reinterpret_cast<LPBYTE>(rgchMailClient),
-					&dwSize));
+					hMailKey, nullptr, nullptr, &dwType, reinterpret_cast<LPBYTE>(rgchMailClient), &dwSize));
 				if (SUCCEEDED(hRes))
 				{
 					defaultClient = rgchMailClient;
-					output::DebugPrint(DBGLoadMAPI, L"GetHKeyMapiClient: HKLM\\%ws = %ws\n", WszKeyNameMailClient, defaultClient.c_str());
+					output::DebugPrint(
+						DBGLoadMAPI,
+						L"GetHKeyMapiClient: HKLM\\%ws = %ws\n",
+						WszKeyNameMailClient,
+						defaultClient.c_str());
 				}
 
 				delete[] rgchMailClient;
@@ -251,19 +257,15 @@ namespace mapistub
 		if (hMailKey && !pwzProvider.empty())
 		{
 			output::DebugPrint(DBGLoadMAPI, L"GetHKeyMapiClient: pwzProvider = %ws\n", pwzProvider.c_str());
-			WC_W32(RegOpenKeyExW(
-				hMailKey,
-				pwzProvider.c_str(),
-				0,
-				KEY_READ,
-				&hkeyMapiClient));
+			WC_W32(RegOpenKeyExW(hMailKey, pwzProvider.c_str(), 0, KEY_READ, &hkeyMapiClient));
 			if (FAILED(hRes))
 			{
 				hkeyMapiClient = nullptr;
 			}
 		}
 
-		output::DebugPrint(DBGLoadMAPI, L"Exit GetHKeyMapiClient.hkeyMapiClient found (%ws)\n", hkeyMapiClient ? L"true" : L"false");
+		output::DebugPrint(
+			DBGLoadMAPI, L"Exit GetHKeyMapiClient.hkeyMapiClient found (%ws)\n", hkeyMapiClient ? L"true" : L"false");
 
 		if (hMailKey) RegCloseKey(hMailKey);
 		return hkeyMapiClient;
@@ -277,16 +279,28 @@ namespace mapistub
 	{
 		output::DebugPrint(DBGLoadMAPI, L"Enter GetMailClientFromMSIData\n");
 		if (!hkeyMapiClient) return strings::emptystring;
-		WCHAR rgchMSIComponentID[MAX_PATH] = { 0 };
-		WCHAR rgchMSIApplicationLCID[MAX_PATH] = { 0 };
+		WCHAR rgchMSIComponentID[MAX_PATH] = {0};
+		WCHAR rgchMSIApplicationLCID[MAX_PATH] = {0};
 		DWORD dwType = 0;
 		std::wstring szPath;
 
 		DWORD dwSizeComponentID = sizeof rgchMSIComponentID;
 		DWORD dwSizeLCID = sizeof rgchMSIApplicationLCID;
 
-		if (ERROR_SUCCESS == RegQueryValueExW(hkeyMapiClient, WszValueNameMSI, nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchMSIComponentID), &dwSizeComponentID) &&
-			ERROR_SUCCESS == RegQueryValueExW(hkeyMapiClient, WszValueNameLCID, nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchMSIApplicationLCID), &dwSizeLCID))
+		if (ERROR_SUCCESS == RegQueryValueExW(
+								 hkeyMapiClient,
+								 WszValueNameMSI,
+								 nullptr,
+								 &dwType,
+								 reinterpret_cast<LPBYTE>(&rgchMSIComponentID),
+								 &dwSizeComponentID) &&
+			ERROR_SUCCESS == RegQueryValueExW(
+								 hkeyMapiClient,
+								 WszValueNameLCID,
+								 nullptr,
+								 &dwType,
+								 reinterpret_cast<LPBYTE>(&rgchMSIApplicationLCID),
+								 &dwSizeLCID))
 		{
 			const auto componentID = std::wstring(rgchMSIComponentID, dwSizeComponentID);
 			const auto applicationID = std::wstring(rgchMSIApplicationLCID, dwSizeLCID);
@@ -304,7 +318,7 @@ namespace mapistub
 	std::wstring GetMAPISystemDir()
 	{
 		output::DebugPrint(DBGLoadMAPI, L"Enter GetMAPISystemDir\n");
-		WCHAR szSystemDir[MAX_PATH] = { 0 };
+		WCHAR szSystemDir[MAX_PATH] = {0};
 
 		if (GetSystemDirectoryW(szSystemDir, MAX_PATH))
 		{
@@ -353,12 +367,12 @@ namespace mapistub
 	}
 
 	WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH] = {
-	 L"{5812C571-53F0-4467-BEFA-0A4F47A9437C}", // O16_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-	 L"{E83B4360-C208-4325-9504-0D23003A74A5}", // O15_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-	 L"{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}", // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-	 L"{24AAE126-0911-478F-A019-07B875EB9996}", // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-	 L"{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-	 L"{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (debug) // STRING_OK
+		L"{5812C571-53F0-4467-BEFA-0A4F47A9437C}", // O16_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{E83B4360-C208-4325-9504-0D23003A74A5}", // O15_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}", // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{24AAE126-0911-478F-A019-07B875EB9996}", // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (debug) // STRING_OK
 	};
 
 	// Looks up Outlook's path given its qualified component guid
@@ -372,24 +386,28 @@ namespace mapistub
 
 		if (lpb64) *lpb64 = false;
 
-		WC_D(ret, import::pfnMsiProvideQualifiedComponent(
-			szCategory.c_str(),
-			L"outlook.x64.exe", // STRING_OK
-			static_cast<DWORD>(INSTALLMODE_DEFAULT),
-			nullptr,
-			&dwValueBuf));
+		WC_D(
+			ret,
+			import::pfnMsiProvideQualifiedComponent(
+				szCategory.c_str(),
+				L"outlook.x64.exe", // STRING_OK
+				static_cast<DWORD>(INSTALLMODE_DEFAULT),
+				nullptr,
+				&dwValueBuf));
 		if (ERROR_SUCCESS == ret)
 		{
 			if (lpb64) *lpb64 = true;
 		}
 		else
 		{
-			WC_D(ret, import::pfnMsiProvideQualifiedComponent(
-				szCategory.c_str(),
-				L"outlook.exe", // STRING_OK
-				static_cast<DWORD>(INSTALLMODE_DEFAULT),
-				nullptr,
-				&dwValueBuf));
+			WC_D(
+				ret,
+				import::pfnMsiProvideQualifiedComponent(
+					szCategory.c_str(),
+					L"outlook.exe", // STRING_OK
+					static_cast<DWORD>(INSTALLMODE_DEFAULT),
+					nullptr,
+					&dwValueBuf));
 		}
 
 		if (ERROR_SUCCESS == ret)
@@ -399,20 +417,24 @@ namespace mapistub
 
 			if (lpszTempPath != nullptr)
 			{
-				WC_D(ret, import::pfnMsiProvideQualifiedComponent(
-					szCategory.c_str(),
-					L"outlook.x64.exe", // STRING_OK
-					static_cast<DWORD>(INSTALLMODE_DEFAULT),
-					lpszTempPath,
-					&dwValueBuf));
-				if (ERROR_SUCCESS != ret)
-				{
-					WC_D(ret, import::pfnMsiProvideQualifiedComponent(
+				WC_D(
+					ret,
+					import::pfnMsiProvideQualifiedComponent(
 						szCategory.c_str(),
-						L"outlook.exe", // STRING_OK
+						L"outlook.x64.exe", // STRING_OK
 						static_cast<DWORD>(INSTALLMODE_DEFAULT),
 						lpszTempPath,
 						&dwValueBuf));
+				if (ERROR_SUCCESS != ret)
+				{
+					WC_D(
+						ret,
+						import::pfnMsiProvideQualifiedComponent(
+							szCategory.c_str(),
+							L"outlook.exe", // STRING_OK
+							static_cast<DWORD>(INSTALLMODE_DEFAULT),
+							lpszTempPath,
+							&dwValueBuf));
 				}
 
 				if (ERROR_SUCCESS == ret)
@@ -445,9 +467,12 @@ namespace mapistub
 		if (!lpszTempPath.empty())
 		{
 			UINT ret = 0;
-			WCHAR szDrive[_MAX_DRIVE] = { 0 };
-			WCHAR szOutlookPath[MAX_PATH] = { 0 };
-			WC_D(ret, _wsplitpath_s(lpszTempPath.c_str(), szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, nullptr, NULL, nullptr, NULL));
+			WCHAR szDrive[_MAX_DRIVE] = {0};
+			WCHAR szOutlookPath[MAX_PATH] = {0};
+			WC_D(
+				ret,
+				_wsplitpath_s(
+					lpszTempPath.c_str(), szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, nullptr, NULL, nullptr, NULL));
 
 			if (SUCCEEDED(hRes))
 			{
@@ -499,7 +524,7 @@ namespace mapistub
 	 Attach to wzMapiDll(olmapi32.dll/msmapi32.dll) if it is already loaded in the
 	 current process.
 	 ------------------------------------------------------------------------------*/
-	HMODULE AttachToMAPIDll(const WCHAR *wzMapiDll)
+	HMODULE AttachToMAPIDll(const WCHAR* wzMapiDll)
 	{
 		output::DebugPrint(DBGLoadMAPI, L"Enter AttachToMAPIDll: wzMapiDll = %ws\n", wzMapiDll);
 		HMODULE hinstPrivateMAPI = nullptr;

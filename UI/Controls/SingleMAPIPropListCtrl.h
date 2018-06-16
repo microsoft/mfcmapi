@@ -7,7 +7,8 @@ namespace cache
 	class CMapiObjects;
 }
 
-namespace dialog {
+namespace dialog
+{
 	class CBaseDialog;
 }
 
@@ -22,12 +23,12 @@ namespace controls
 				_In_ CWnd* pCreateParent,
 				_In_ dialog::CBaseDialog* lpHostDlg,
 				_In_ cache::CMapiObjects* lpMapiObjects,
-				bool bIsAB
-			);
+				bool bIsAB);
 			virtual ~CSingleMAPIPropListCtrl();
 
 			// Initialization
-			_Check_return_ HRESULT SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ sortlistdata::SortListData* lpListData, bool bIsAB);
+			_Check_return_ HRESULT
+			SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ sortlistdata::SortListData* lpListData, bool bIsAB);
 			_Check_return_ HRESULT SetDataSource(_In_opt_ propertybag::LPMAPIPROPERTYBAG lpPropBag, bool bIsAB);
 			_Check_return_ HRESULT RefreshMAPIPropList();
 
@@ -53,11 +54,12 @@ namespace controls
 				int iRow,
 				ULONG ulPropTag,
 				_In_opt_ LPMAPINAMEID lpNameID,
-				_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+				_In_opt_ LPSBinary
+					lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 				_In_ LPSPropValue lpsPropToAdd);
 
 			_Check_return_ bool HandleAddInMenu(WORD wMenuSelect) const;
-			void OnContextMenu(_In_ CWnd *pWnd, CPoint pos);
+			void OnContextMenu(_In_ CWnd* pWnd, CPoint pos);
 			void OnDblclk(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 			void OnCopyProperty() const;
 			void OnCopyTo();

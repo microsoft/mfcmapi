@@ -5,32 +5,21 @@ namespace smartview
 {
 	static std::wstring CLASS = L"CBinaryParser";
 
-	CBinaryParser::CBinaryParser()
-	{
-		m_Offset = 0;
-	}
+	CBinaryParser::CBinaryParser() { m_Offset = 0; }
 
-	CBinaryParser::CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
-	{
-		Init(cbBin, lpBin);
-	}
+	CBinaryParser::CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { Init(cbBin, lpBin); }
 
 	void CBinaryParser::Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 	{
-		output::DebugPrintEx(DBGSmartView, CLASS, L"Init", L"cbBin = 0x%08X = %u\n", static_cast<int>(cbBin), static_cast<UINT>(cbBin));
+		output::DebugPrintEx(
+			DBGSmartView, CLASS, L"Init", L"cbBin = 0x%08X = %u\n", static_cast<int>(cbBin), static_cast<UINT>(cbBin));
 		m_Bin = lpBin && cbBin ? std::vector<BYTE>(lpBin, lpBin + cbBin) : std::vector<BYTE>();
 		m_Offset = 0;
 	}
 
-	bool CBinaryParser::Empty() const
-	{
-		return m_Bin.empty();
-	}
+	bool CBinaryParser::Empty() const { return m_Bin.empty(); }
 
-	void CBinaryParser::Advance(size_t cbAdvance)
-	{
-		m_Offset += cbAdvance;
-	}
+	void CBinaryParser::Advance(size_t cbAdvance) { m_Offset += cbAdvance; }
 
 	void CBinaryParser::Rewind()
 	{
@@ -38,19 +27,19 @@ namespace smartview
 		m_Offset = 0;
 	}
 
-	size_t CBinaryParser::GetCurrentOffset() const
-	{
-		return m_Offset;
-	}
+	size_t CBinaryParser::GetCurrentOffset() const { return m_Offset; }
 
-	const BYTE* CBinaryParser::GetCurrentAddress() const
-	{
-		return m_Bin.data() + m_Offset;
-	}
+	const BYTE* CBinaryParser::GetCurrentAddress() const { return m_Bin.data() + m_Offset; }
 
 	void CBinaryParser::SetCurrentOffset(size_t stOffset)
 	{
-		output::DebugPrintEx(DBGSmartView, CLASS, L"SetCurrentOffset", L"Setting offset 0x%08X = %u bytes.\n", static_cast<int>(stOffset), static_cast<UINT>(stOffset));
+		output::DebugPrintEx(
+			DBGSmartView,
+			CLASS,
+			L"SetCurrentOffset",
+			L"Setting offset 0x%08X = %u bytes.\n",
+			static_cast<int>(stOffset),
+			static_cast<UINT>(stOffset));
 		m_Offset = stOffset;
 	}
 
@@ -68,11 +57,19 @@ namespace smartview
 		const auto cbRemaining = RemainingBytes();
 		if (cbBytes > cbRemaining)
 		{
-			output::DebugPrintEx(DBGSmartView, CLASS, L"CheckRemainingBytes", L"Bytes requested (0x%08X = %u) > remaining bytes (0x%08X = %u)\n",
-				static_cast<int>(cbBytes), static_cast<UINT>(cbBytes),
-				static_cast<int>(cbRemaining), static_cast<UINT>(cbRemaining));
-			output::DebugPrintEx(DBGSmartView, CLASS, L"CheckRemainingBytes", L"Total Bytes: 0x%08X = %u\n", m_Bin.size(), m_Bin.size());
-			output::DebugPrintEx(DBGSmartView, CLASS, L"CheckRemainingBytes", L"Current offset: 0x%08X = %d\n", m_Offset, m_Offset);
+			output::DebugPrintEx(
+				DBGSmartView,
+				CLASS,
+				L"CheckRemainingBytes",
+				L"Bytes requested (0x%08X = %u) > remaining bytes (0x%08X = %u)\n",
+				static_cast<int>(cbBytes),
+				static_cast<UINT>(cbBytes),
+				static_cast<int>(cbRemaining),
+				static_cast<UINT>(cbRemaining));
+			output::DebugPrintEx(
+				DBGSmartView, CLASS, L"CheckRemainingBytes", L"Total Bytes: 0x%08X = %u\n", m_Bin.size(), m_Bin.size());
+			output::DebugPrintEx(
+				DBGSmartView, CLASS, L"CheckRemainingBytes", L"Current offset: 0x%08X = %d\n", m_Offset, m_Offset);
 			return false;
 		}
 
@@ -83,7 +80,8 @@ namespace smartview
 	{
 		if (cchChar == -1)
 		{
-			const auto hRes = StringCchLengthA(reinterpret_cast<LPCSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof CHAR, &cchChar);
+			const auto hRes = StringCchLengthA(
+				reinterpret_cast<LPCSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof CHAR, &cchChar);
 			if (FAILED(hRes)) return "";
 			cchChar += 1;
 		}
@@ -98,7 +96,8 @@ namespace smartview
 	{
 		if (cchChar == -1)
 		{
-			const auto hRes = StringCchLengthW(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof WCHAR, &cchChar);
+			const auto hRes = StringCchLengthW(
+				reinterpret_cast<LPCWSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof WCHAR, &cchChar);
 			if (FAILED(hRes)) return strings::emptystring;
 			cchChar += 1;
 		}
@@ -113,13 +112,11 @@ namespace smartview
 	{
 		if (!cbBytes || !CheckRemainingBytes(cbBytes)) return std::vector<BYTE>();
 		if (cbMaxBytes != -1 && cbBytes > cbMaxBytes) return std::vector<BYTE>();
-		std::vector<BYTE> ret(const_cast<LPBYTE>(GetCurrentAddress()), const_cast<LPBYTE>(GetCurrentAddress() + cbBytes));
+		std::vector<BYTE> ret(
+			const_cast<LPBYTE>(GetCurrentAddress()), const_cast<LPBYTE>(GetCurrentAddress() + cbBytes));
 		m_Offset += cbBytes;
 		return ret;
 	}
 
-	std::vector<BYTE> CBinaryParser::GetRemainingData()
-	{
-		return GetBYTES(RemainingBytes());
-	}
+	std::vector<BYTE> CBinaryParser::GetRemainingData() { return GetBYTES(RemainingBytes()); }
 }

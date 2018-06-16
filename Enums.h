@@ -23,8 +23,8 @@ enum __StatusPaneEnum
 // Flags to indicate which contents/hierarchy tables to render
 enum _mfcmapiDisplayFlagsEnum
 {
-	dfNormal  = 0x0000,
-	dfAssoc   = 0x0001,
+	dfNormal = 0x0000,
+	dfAssoc = 0x0001,
 	dfDeleted = 0x0002,
 };
 

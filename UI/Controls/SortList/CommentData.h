@@ -5,7 +5,7 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		class CommentData :public IData
+		class CommentData : public IData
 		{
 		public:
 			CommentData(_In_ const _SPropValue* lpOldProp);

@@ -33,8 +33,7 @@ namespace smartview
 				if (m_lpRows[i].cValues && m_lpRows[i].cValues < _MaxEntriesSmall)
 				{
 					const size_t cbBytesRead = 0;
-					m_lpRows[i].lpProps = NickNameBinToSPropValue(
-						m_lpRows[i].cValues);
+					m_lpRows[i].lpProps = NickNameBinToSPropValue(m_lpRows[i].cValues);
 					m_Parser.Advance(cbBytesRead);
 				}
 			}
@@ -112,7 +111,8 @@ namespace smartview
 				pspvProperty[i].Value.MVbin.cValues = dwTemp;
 				if (pspvProperty[i].Value.MVbin.cValues && pspvProperty[i].Value.MVbin.cValues < _MaxEntriesLarge)
 				{
-					pspvProperty[i].Value.MVbin.lpbin = reinterpret_cast<LPSBinary>(AllocateArray(dwTemp, sizeof SBinary));
+					pspvProperty[i].Value.MVbin.lpbin =
+						reinterpret_cast<LPSBinary>(AllocateArray(dwTemp, sizeof SBinary));
 					if (pspvProperty[i].Value.MVbin.lpbin)
 					{
 						for (ULONG j = 0; j < pspvProperty[i].Value.MVbin.cValues; j++)
@@ -120,7 +120,8 @@ namespace smartview
 							dwTemp = m_Parser.Get<DWORD>();
 							pspvProperty[i].Value.MVbin.lpbin[j].cb = dwTemp;
 							// Note that we're not placing a restriction on how large a multivalued binary property we can parse. May need to revisit this.
-							pspvProperty[i].Value.MVbin.lpbin[j].lpb = GetBYTES(pspvProperty[i].Value.MVbin.lpbin[j].cb);
+							pspvProperty[i].Value.MVbin.lpbin[j].lpb =
+								GetBYTES(pspvProperty[i].Value.MVbin.lpbin[j].cb);
 						}
 					}
 				}
@@ -145,7 +146,8 @@ namespace smartview
 				pspvProperty[i].Value.MVszW.cValues = dwTemp;
 				if (pspvProperty[i].Value.MVszW.cValues && pspvProperty[i].Value.MVszW.cValues < _MaxEntriesLarge)
 				{
-					pspvProperty[i].Value.MVszW.lppszW = reinterpret_cast<LPWSTR*>(AllocateArray(dwTemp, sizeof LPVOID));
+					pspvProperty[i].Value.MVszW.lppszW =
+						reinterpret_cast<LPWSTR*>(AllocateArray(dwTemp, sizeof LPVOID));
 					if (pspvProperty[i].Value.MVszW.lppszW)
 					{
 						for (ULONG j = 0; j < pspvProperty[i].Value.MVszW.cValues; j++)
@@ -168,15 +170,14 @@ namespace smartview
 		auto szNickNameCache = strings::formatmessage(IDS_NICKNAMEHEADER);
 		szNickNameCache += strings::BinToHexString(m_Metadata1, true);
 
-		szNickNameCache += strings::formatmessage(IDS_NICKNAMEROWCOUNT, m_ulMajorVersion, m_ulMinorVersion, m_cRowCount);
+		szNickNameCache +=
+			strings::formatmessage(IDS_NICKNAMEROWCOUNT, m_ulMajorVersion, m_ulMinorVersion, m_cRowCount);
 
 		if (m_cRowCount && m_lpRows)
 		{
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
-				szNickNameCache += strings::formatmessage(IDS_NICKNAMEROWS,
-					i,
-					m_lpRows[i].cValues);
+				szNickNameCache += strings::formatmessage(IDS_NICKNAMEROWS, i, m_lpRows[i].cValues);
 
 				szNickNameCache += PropsToString(m_lpRows[i].cValues, m_lpRows[i].lpProps);
 			}

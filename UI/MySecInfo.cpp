@@ -11,60 +11,45 @@ namespace mapi
 		static std::wstring CLASS = L"CMySecInfo";
 
 		// The following array defines the permission names for Exchange objects.
-		SI_ACCESS siExchangeAccessesFolder[] =
-		{
-		 { &GUID_NULL, frightsReadAny, MAKEINTRESOURCEW(IDS_ACCESSREADANY), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, rightsReadOnly, MAKEINTRESOURCEW(IDS_ACCESSREADONLY), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, frightsCreate, MAKEINTRESOURCEW(IDS_ACCESSCREATE), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, frightsEditOwned, MAKEINTRESOURCEW(IDS_ACCESSEDITOWN), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, frightsDeleteOwned, MAKEINTRESOURCEW(IDS_ACCESSDELETEOWN), SI_ACCESS_CONTAINER },
-		 { &GUID_NULL, frightsEditAny, MAKEINTRESOURCEW(IDS_ACCESSEDITANY), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, rightsReadWrite, MAKEINTRESOURCEW(IDS_ACCESSREADWRITE), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, frightsDeleteAny, MAKEINTRESOURCEW(IDS_ACCESSDELETEANY), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, frightsCreateSubfolder, MAKEINTRESOURCEW(IDS_ACCESSCREATESUBFOLDER), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, frightsOwner, MAKEINTRESOURCEW(IDS_ACCESSOWNER), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, frightsVisible, MAKEINTRESOURCEW(IDS_ACCESSVISIBLE), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, frightsContact, MAKEINTRESOURCEW(IDS_ACCESSCONTACT), SI_ACCESS_GENERAL }
+		SI_ACCESS siExchangeAccessesFolder[] = {
+			{&GUID_NULL, frightsReadAny, MAKEINTRESOURCEW(IDS_ACCESSREADANY), SI_ACCESS_GENERAL},
+			{&GUID_NULL, rightsReadOnly, MAKEINTRESOURCEW(IDS_ACCESSREADONLY), SI_ACCESS_GENERAL},
+			{&GUID_NULL, frightsCreate, MAKEINTRESOURCEW(IDS_ACCESSCREATE), SI_ACCESS_GENERAL},
+			{&GUID_NULL, frightsEditOwned, MAKEINTRESOURCEW(IDS_ACCESSEDITOWN), SI_ACCESS_GENERAL},
+			{&GUID_NULL, frightsDeleteOwned, MAKEINTRESOURCEW(IDS_ACCESSDELETEOWN), SI_ACCESS_CONTAINER},
+			{&GUID_NULL, frightsEditAny, MAKEINTRESOURCEW(IDS_ACCESSEDITANY), SI_ACCESS_GENERAL},
+			{&GUID_NULL, rightsReadWrite, MAKEINTRESOURCEW(IDS_ACCESSREADWRITE), SI_ACCESS_GENERAL},
+			{&GUID_NULL, frightsDeleteAny, MAKEINTRESOURCEW(IDS_ACCESSDELETEANY), SI_ACCESS_GENERAL},
+			{&GUID_NULL, frightsCreateSubfolder, MAKEINTRESOURCEW(IDS_ACCESSCREATESUBFOLDER), SI_ACCESS_GENERAL},
+			{&GUID_NULL, frightsOwner, MAKEINTRESOURCEW(IDS_ACCESSOWNER), SI_ACCESS_GENERAL},
+			{&GUID_NULL, frightsVisible, MAKEINTRESOURCEW(IDS_ACCESSVISIBLE), SI_ACCESS_GENERAL},
+			{&GUID_NULL, frightsContact, MAKEINTRESOURCEW(IDS_ACCESSCONTACT), SI_ACCESS_GENERAL}};
+
+		SI_ACCESS siExchangeAccessesMessage[] = {
+			{&GUID_NULL, fsdrightDelete, MAKEINTRESOURCEW(IDS_ACCESSDELETE), SI_ACCESS_GENERAL},
+			{&GUID_NULL, fsdrightReadProperty, MAKEINTRESOURCEW(IDS_ACCESSREADPROPERTY), SI_ACCESS_GENERAL},
+			{&GUID_NULL, fsdrightWriteProperty, MAKEINTRESOURCEW(IDS_ACCESSWRITEPROPERTY), SI_ACCESS_GENERAL},
+			// { &GUID_NULL, fsdrightCreateMessage, MAKEINTRESOURCEW(IDS_ACCESSCREATEMESSAGE), SI_ACCESS_GENERAL },
+			// { &GUID_NULL, fsdrightSaveMessage, MAKEINTRESOURCEW(IDS_ACCESSSAVEMESSAGE), SI_ACCESS_GENERAL },
+			// { &GUID_NULL, fsdrightOpenMessage, MAKEINTRESOURCEW(IDS_ACCESSOPENMESSAGE), SI_ACCESS_GENERAL },
+			{&GUID_NULL, fsdrightWriteSD, MAKEINTRESOURCEW(IDS_ACCESSWRITESD), SI_ACCESS_GENERAL},
+			{&GUID_NULL, fsdrightWriteOwner, MAKEINTRESOURCEW(IDS_ACCESSWRITEOWNER), SI_ACCESS_GENERAL},
+			{&GUID_NULL, fsdrightReadControl, MAKEINTRESOURCEW(IDS_ACCESSREADCONTROL), SI_ACCESS_GENERAL},
 		};
 
-		SI_ACCESS siExchangeAccessesMessage[] =
-		{
-		 { &GUID_NULL, fsdrightDelete, MAKEINTRESOURCEW(IDS_ACCESSDELETE), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, fsdrightReadProperty, MAKEINTRESOURCEW(IDS_ACCESSREADPROPERTY), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, fsdrightWriteProperty, MAKEINTRESOURCEW(IDS_ACCESSWRITEPROPERTY), SI_ACCESS_GENERAL },
-		 // { &GUID_NULL, fsdrightCreateMessage, MAKEINTRESOURCEW(IDS_ACCESSCREATEMESSAGE), SI_ACCESS_GENERAL },
-		 // { &GUID_NULL, fsdrightSaveMessage, MAKEINTRESOURCEW(IDS_ACCESSSAVEMESSAGE), SI_ACCESS_GENERAL },
-		 // { &GUID_NULL, fsdrightOpenMessage, MAKEINTRESOURCEW(IDS_ACCESSOPENMESSAGE), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, fsdrightWriteSD, MAKEINTRESOURCEW(IDS_ACCESSWRITESD), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, fsdrightWriteOwner, MAKEINTRESOURCEW(IDS_ACCESSWRITEOWNER), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, fsdrightReadControl, MAKEINTRESOURCEW(IDS_ACCESSREADCONTROL), SI_ACCESS_GENERAL },
+		SI_ACCESS siExchangeAccessesFreeBusy[] = {
+			{&GUID_NULL, fsdrightFreeBusySimple, MAKEINTRESOURCEW(IDS_ACCESSSIMPLEFREEBUSY), SI_ACCESS_GENERAL},
+			{&GUID_NULL, fsdrightFreeBusyDetailed, MAKEINTRESOURCEW(IDS_ACCESSDETAILEDFREEBUSY), SI_ACCESS_GENERAL},
 		};
 
-		SI_ACCESS siExchangeAccessesFreeBusy[] =
-		{
-		 { &GUID_NULL, fsdrightFreeBusySimple, MAKEINTRESOURCEW(IDS_ACCESSSIMPLEFREEBUSY), SI_ACCESS_GENERAL },
-		 { &GUID_NULL, fsdrightFreeBusyDetailed, MAKEINTRESOURCEW(IDS_ACCESSDETAILEDFREEBUSY), SI_ACCESS_GENERAL },
-		};
+		GENERIC_MAPPING gmFolders = {frightsReadAny, frightsEditOwned | frightsDeleteOwned, rightsNone, rightsAll};
 
-		GENERIC_MAPPING gmFolders =
-		{
-		 frightsReadAny,
-		 frightsEditOwned | frightsDeleteOwned,
-		 rightsNone,
-		 rightsAll
-		};
+		GENERIC_MAPPING gmMessages = {msgrightsGenericRead,
+									  msgrightsGenericWrite,
+									  msgrightsGenericExecute,
+									  msgrightsGenericAll};
 
-
-		GENERIC_MAPPING gmMessages =
-		{
-		 msgrightsGenericRead,
-		 msgrightsGenericWrite,
-		 msgrightsGenericExecute,
-		 msgrightsGenericAll
-		};
-
-		CMySecInfo::CMySecInfo(_In_ LPMAPIPROP lpMAPIProp,
-			ULONG ulPropTag)
+		CMySecInfo::CMySecInfo(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 			m_cRef = 1;
@@ -89,8 +74,7 @@ namespace mapi
 				}
 			}
 
-			if (PR_FREEBUSY_NT_SECURITY_DESCRIPTOR == m_ulPropTag)
-				m_acetype = sid::acetypeFreeBusy;
+			if (PR_FREEBUSY_NT_SECURITY_DESCRIPTOR == m_ulPropTag) m_acetype = sid::acetypeFreeBusy;
 
 			m_wszObject = strings::loadstring(IDS_OBJECT);
 		}
@@ -102,21 +86,19 @@ namespace mapi
 			if (m_lpMAPIProp) m_lpMAPIProp->Release();
 		}
 
-		STDMETHODIMP CMySecInfo::QueryInterface(_In_ REFIID riid,
-			_Deref_out_opt_ LPVOID* ppvObj)
+		STDMETHODIMP CMySecInfo::QueryInterface(_In_ REFIID riid, _Deref_out_opt_ LPVOID* ppvObj)
 		{
 			*ppvObj = nullptr;
-			if (riid == IID_ISecurityInformation ||
-				riid == IID_IUnknown)
+			if (riid == IID_ISecurityInformation || riid == IID_IUnknown)
 			{
-				*ppvObj = static_cast<ISecurityInformation *>(this);
+				*ppvObj = static_cast<ISecurityInformation*>(this);
 				AddRef();
 				return S_OK;
 			}
 
 			if (riid == IID_ISecurityInformation2)
 			{
-				*ppvObj = static_cast<ISecurityInformation2 *>(this);
+				*ppvObj = static_cast<ISecurityInformation2*>(this);
 				AddRef();
 				return S_OK;
 			}
@@ -147,12 +129,7 @@ namespace mapi
 
 			HKEY hRootKey = nullptr;
 
-			WC_W32(RegOpenKeyExW(
-				HKEY_CURRENT_USER,
-				RKEY_ROOT,
-				NULL,
-				KEY_READ,
-				&hRootKey));
+			WC_W32(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey));
 
 			if (hRootKey)
 			{
@@ -165,19 +142,22 @@ namespace mapi
 
 			if (bAllowEdits)
 			{
-				pObjectInfo->dwFlags = SI_EDIT_PERMS | SI_EDIT_OWNER | SI_ADVANCED | (sid::acetypeContainer == m_acetype ? SI_CONTAINER : 0);
+				pObjectInfo->dwFlags = SI_EDIT_PERMS | SI_EDIT_OWNER | SI_ADVANCED |
+									   (sid::acetypeContainer == m_acetype ? SI_CONTAINER : 0);
 			}
 			else
 			{
-				pObjectInfo->dwFlags = SI_READONLY | SI_ADVANCED | (sid::acetypeContainer == m_acetype ? SI_CONTAINER : 0);
+				pObjectInfo->dwFlags =
+					SI_READONLY | SI_ADVANCED | (sid::acetypeContainer == m_acetype ? SI_CONTAINER : 0);
 			}
 			pObjectInfo->pszObjectName = LPWSTR(m_wszObject.c_str()); // Object being edited
 			pObjectInfo->pszServerName = nullptr; // specify DC for lookups
 			return S_OK;
 		}
 
-		STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation*/,
-			PSECURITY_DESCRIPTOR *ppSecurityDescriptor,
+		STDMETHODIMP CMySecInfo::GetSecurity(
+			SECURITY_INFORMATION /*RequestedInformation*/,
+			PSECURITY_DESCRIPTOR* ppSecurityDescriptor,
 			BOOL /*fDefault*/)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::GetSecurity\n");
@@ -192,7 +172,8 @@ namespace mapi
 			{
 				const auto lpSDBuffer = lpsProp->Value.bin.lpb;
 				const auto cbSBBuffer = lpsProp->Value.bin.cb;
-				const auto pSecDesc = SECURITY_DESCRIPTOR_OF(lpSDBuffer); // will be a pointer into lpPropArray, do not free!
+				const auto pSecDesc =
+					SECURITY_DESCRIPTOR_OF(lpSDBuffer); // will be a pointer into lpPropArray, do not free!
 
 				if (IsValidSecurityDescriptor(pSecDesc))
 				{
@@ -216,14 +197,11 @@ namespace mapi
 					// make sure we don't try to copy more than we really got
 					if (m_cbHeader <= cbSBBuffer)
 					{
-						EC_H(MAPIAllocateBuffer(
-							m_cbHeader,
-							reinterpret_cast<LPVOID*>(&m_lpHeader)));
+						EC_H(MAPIAllocateBuffer(m_cbHeader, reinterpret_cast<LPVOID*>(&m_lpHeader)));
 
 						if (m_lpHeader)
 						{
 							memcpy(m_lpHeader, lpSDBuffer, m_cbHeader);
-
 						}
 					}
 
@@ -245,12 +223,12 @@ namespace mapi
 		// The code, as written, does nothing to ensure the DACL is ordered correctly, so it will probably cause problems
 		// on the server once written
 		// For this reason, the property sheet is read-only unless a reg key is set.
-		STDMETHODIMP CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*/,
-			PSECURITY_DESCRIPTOR pSecurityDescriptor)
+		STDMETHODIMP
+		CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*/, PSECURITY_DESCRIPTOR pSecurityDescriptor)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::SetSecurity\n");
 			auto hRes = S_OK;
-			SPropValue Blob = { 0 };
+			SPropValue Blob = {0};
 			LPBYTE lpBlob = nullptr;
 
 			if (!m_lpHeader || !pSecurityDescriptor || !m_lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
@@ -260,9 +238,7 @@ namespace mapi
 			const auto cbBlob = m_cbHeader + dwSDLength;
 			if (cbBlob < m_cbHeader || cbBlob < dwSDLength) return MAPI_E_INVALID_PARAMETER;
 
-			EC_H(MAPIAllocateBuffer(
-				cbBlob,
-				reinterpret_cast<LPVOID*>(&lpBlob)));
+			EC_H(MAPIAllocateBuffer(cbBlob, reinterpret_cast<LPVOID*>(&lpBlob)));
 
 			if (lpBlob)
 			{
@@ -275,20 +251,19 @@ namespace mapi
 				Blob.Value.bin.cb = cbBlob;
 				Blob.Value.bin.lpb = lpBlob;
 
-				EC_MAPI(HrSetOneProp(
-					m_lpMAPIProp,
-					&Blob));
+				EC_MAPI(HrSetOneProp(m_lpMAPIProp, &Blob));
 
 				MAPIFreeBuffer(lpBlob);
 			}
 			return hRes;
 		}
 
-		STDMETHODIMP CMySecInfo::GetAccessRights(const GUID* /*pguidObjectType*/,
+		STDMETHODIMP CMySecInfo::GetAccessRights(
+			const GUID* /*pguidObjectType*/,
 			DWORD /*dwFlags*/,
-			PSI_ACCESS *ppAccess,
-			ULONG *pcAccesses,
-			ULONG *piDefaultAccess)
+			PSI_ACCESS* ppAccess,
+			ULONG* pcAccesses,
+			ULONG* piDefaultAccess)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::GetAccessRights\n");
 
@@ -312,9 +287,7 @@ namespace mapi
 			return S_OK;
 		}
 
-		STDMETHODIMP CMySecInfo::MapGeneric(const GUID* /*pguidObjectType*/,
-			UCHAR* /*pAceFlags*/,
-			ACCESS_MASK *pMask)
+		STDMETHODIMP CMySecInfo::MapGeneric(const GUID* /*pguidObjectType*/, UCHAR* /*pAceFlags*/, ACCESS_MASK* pMask)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::MapGeneric\n");
 
@@ -333,8 +306,7 @@ namespace mapi
 			return S_OK;
 		}
 
-		STDMETHODIMP CMySecInfo::GetInheritTypes(PSI_INHERIT_TYPE* /*ppInheritTypes*/,
-			ULONG* /*pcInheritTypes*/)
+		STDMETHODIMP CMySecInfo::GetInheritTypes(PSI_INHERIT_TYPE* /*ppInheritTypes*/, ULONG* /*pcInheritTypes*/)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::GetInheritTypes\n");
 			return E_NOTIMPL;
@@ -342,7 +314,8 @@ namespace mapi
 
 		STDMETHODIMP CMySecInfo::PropertySheetPageCallback(HWND /*hwnd*/, UINT uMsg, SI_PAGE_TYPE uPage)
 		{
-			output::DebugPrint(DBGGeneric, L"CMySecInfo::PropertySheetPageCallback, uMsg = 0x%X, uPage = 0x%X\n", uMsg, uPage);
+			output::DebugPrint(
+				DBGGeneric, L"CMySecInfo::PropertySheetPageCallback, uMsg = 0x%X, uPage = 0x%X\n", uMsg, uPage);
 			return S_OK;
 		}
 

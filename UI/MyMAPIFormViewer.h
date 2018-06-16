@@ -13,10 +13,7 @@ namespace mapi
 {
 	namespace mapiui
 	{
-		class CMyMAPIFormViewer :
-			public IMAPIMessageSite,
-			public IMAPIViewAdviseSink,
-			public IMAPIViewContext
+		class CMyMAPIFormViewer : public IMAPIMessageSite, public IMAPIViewAdviseSink, public IMAPIViewContext
 		{
 		public:
 			CMyMAPIFormViewer(
@@ -30,26 +27,18 @@ namespace mapi
 			virtual ~CMyMAPIFormViewer();
 
 			// IUnknown
-			STDMETHODIMP QueryInterface(REFIID riid, LPVOID * ppvObj) override;
+			STDMETHODIMP QueryInterface(REFIID riid, LPVOID* ppvObj) override;
 			STDMETHODIMP_(ULONG) AddRef() override;
 			STDMETHODIMP_(ULONG) Release() override;
 
-			STDMETHODIMP GetLastError(
-				HRESULT hResult,
-				ULONG ulFlags,
-				LPMAPIERROR* lppMAPIError) override;
+			STDMETHODIMP GetLastError(HRESULT hResult, ULONG ulFlags, LPMAPIERROR* lppMAPIError) override;
 
 			// IMAPIMessageSite
-			STDMETHODIMP GetSession(
-				LPMAPISESSION* ppSession) override;
-			STDMETHODIMP GetStore(
-				LPMDB* ppStore) override;
-			STDMETHODIMP GetFolder(
-				LPMAPIFOLDER* ppFolder) override;
-			STDMETHODIMP GetMessage(
-				LPMESSAGE* ppmsg) override;
-			STDMETHODIMP GetFormManager(
-				LPMAPIFORMMGR* ppFormMgr) override;
+			STDMETHODIMP GetSession(LPMAPISESSION* ppSession) override;
+			STDMETHODIMP GetStore(LPMDB* ppStore) override;
+			STDMETHODIMP GetFolder(LPMAPIFOLDER* ppFolder) override;
+			STDMETHODIMP GetMessage(LPMESSAGE* ppmsg) override;
+			STDMETHODIMP GetFormManager(LPMAPIFORMMGR* ppFormMgr) override;
 			STDMETHODIMP NewMessage(
 				ULONG fComposeInFolder,
 				LPMAPIFOLDER pFolderFocus,
@@ -57,49 +46,29 @@ namespace mapi
 				LPMESSAGE* ppMessage,
 				LPMAPIMESSAGESITE* ppMessageSite,
 				LPMAPIVIEWCONTEXT* ppViewContext) override;
-			STDMETHODIMP CopyMessage(
-				LPMAPIFOLDER pFolderDestination) override;
-			STDMETHODIMP MoveMessage(
-				LPMAPIFOLDER pFolderDestination,
-				LPMAPIVIEWCONTEXT pViewContext,
-				LPCRECT prcPosRect) override;
-			STDMETHODIMP DeleteMessage(
-				LPMAPIVIEWCONTEXT pViewContext,
-				LPCRECT prcPosRect) override;
+			STDMETHODIMP CopyMessage(LPMAPIFOLDER pFolderDestination) override;
+			STDMETHODIMP
+			MoveMessage(LPMAPIFOLDER pFolderDestination, LPMAPIVIEWCONTEXT pViewContext, LPCRECT prcPosRect) override;
+			STDMETHODIMP DeleteMessage(LPMAPIVIEWCONTEXT pViewContext, LPCRECT prcPosRect) override;
 			STDMETHODIMP SaveMessage() override;
-			STDMETHODIMP SubmitMessage(
-				ULONG ulFlags) override;
-			STDMETHODIMP GetSiteStatus(
-				LPULONG lpulStatus) override;
+			STDMETHODIMP SubmitMessage(ULONG ulFlags) override;
+			STDMETHODIMP GetSiteStatus(LPULONG lpulStatus) override;
 
 			// IMAPIViewAdviseSink
 			STDMETHODIMP OnShutdown() override;
 			STDMETHODIMP OnNewMessage() override;
-			STDMETHODIMP OnPrint(
-				ULONG dwPageNumber,
-				HRESULT hrStatus) override;
+			STDMETHODIMP OnPrint(ULONG dwPageNumber, HRESULT hrStatus) override;
 			STDMETHODIMP OnSubmitted() override;
 			STDMETHODIMP OnSaved() override;
 
 			// IMAPIViewContext
-			STDMETHODIMP SetAdviseSink(
-				LPMAPIFORMADVISESINK pmvns) override;
-			STDMETHODIMP ActivateNext(
-				ULONG ulDir,
-				LPCRECT lpRect) override;
-			STDMETHODIMP GetPrintSetup(
-				ULONG ulFlags,
-				LPFORMPRINTSETUP* lppFormPrintSetup) override;
-			STDMETHODIMP GetSaveStream(
-				ULONG* pulFlags,
-				ULONG* pulFormat,
-				LPSTREAM* ppstm) override;
-			STDMETHODIMP GetViewStatus(
-				LPULONG lpulStatus) override;
+			STDMETHODIMP SetAdviseSink(LPMAPIFORMADVISESINK pmvns) override;
+			STDMETHODIMP ActivateNext(ULONG ulDir, LPCRECT lpRect) override;
+			STDMETHODIMP GetPrintSetup(ULONG ulFlags, LPFORMPRINTSETUP* lppFormPrintSetup) override;
+			STDMETHODIMP GetSaveStream(ULONG* pulFlags, ULONG* pulFormat, LPSTREAM* ppstm) override;
+			STDMETHODIMP GetViewStatus(LPULONG lpulStatus) override;
 
-			_Check_return_ HRESULT CallDoVerb(_In_ LPMAPIFORM lpMapiForm,
-				LONG lVerb,
-				_In_opt_ LPCRECT lpRect);
+			_Check_return_ HRESULT CallDoVerb(_In_ LPMAPIFORM lpMapiForm, LONG lVerb, _In_opt_ LPCRECT lpRect);
 
 		private:
 			// helper function for ActivateNext

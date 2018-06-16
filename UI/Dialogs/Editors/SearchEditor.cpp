@@ -13,23 +13,21 @@ namespace dialog
 		static std::wstring CLASS = L"CSearchEditor";
 
 		std::vector<std::pair<ULONG, ULONG>> FuzzyLevels = {
-			{ IDS_SEARCHSUBSTRING , FL_IGNORECASE | FL_SUBSTRING },
-			{ IDS_SEARCHPREFIX, FL_IGNORECASE | FL_PREFIX },
-			{ IDS_SEARCHFULLSTRING, FL_IGNORECASE | FL_FULLSTRING },
+			{IDS_SEARCHSUBSTRING, FL_IGNORECASE | FL_SUBSTRING},
+			{IDS_SEARCHPREFIX, FL_IGNORECASE | FL_PREFIX},
+			{IDS_SEARCHFULLSTRING, FL_IGNORECASE | FL_FULLSTRING},
 		};
 
 		// TODO: Right now only supports string properties
-		CSearchEditor::CSearchEditor(
-			ULONG ulPropTag,
-			_In_opt_ LPMAPIPROP lpMAPIProp,
-			_In_ CWnd* pParentWnd) :
-			CEditor(pParentWnd,
-				IDS_SEARCHCRITERIA,
-				IDS_CREATEPROPRES,
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL | CEDITOR_BUTTON_ACTION1,
-				IDS_ACTIONSELECTPTAG,
-				NULL,
-				NULL)
+		CSearchEditor::CSearchEditor(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpMAPIProp, _In_ CWnd* pParentWnd)
+			: CEditor(
+				  pParentWnd,
+				  IDS_SEARCHCRITERIA,
+				  IDS_CREATEPROPRES,
+				  CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL | CEDITOR_BUTTON_ACTION1,
+				  IDS_ACTIONSELECTPTAG,
+				  NULL,
+				  NULL)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 			m_ulPropTag = ulPropTag;
@@ -140,12 +138,7 @@ namespace dialog
 				}
 				else
 				{
-					auto namePropNames = cache::NameIDToStrings(
-						m_ulPropTag,
-						m_lpMAPIProp,
-						nullptr,
-						nullptr,
-						false);
+					auto namePropNames = cache::NameIDToStrings(m_ulPropTag, m_lpMAPIProp, nullptr, nullptr, false);
 
 					if (!namePropNames.name.empty())
 						SetStringW(PROPNAME, namePropNames.name);

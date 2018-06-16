@@ -38,16 +38,12 @@ namespace smartview
 
 	_Check_return_ std::wstring EntryList::ToStringInternal()
 	{
-		auto szEntryList = strings::formatmessage(IDS_ENTRYLISTDATA,
-			m_EntryCount,
-			m_Pad);
+		auto szEntryList = strings::formatmessage(IDS_ENTRYLISTDATA, m_EntryCount, m_Pad);
 
 		for (DWORD i = 0; i < m_Entry.size(); i++)
 		{
-			szEntryList += strings::formatmessage(IDS_ENTRYLISTENTRYID,
-				i,
-				m_Entry[i].EntryLength,
-				m_Entry[i].EntryLengthPad);
+			szEntryList +=
+				strings::formatmessage(IDS_ENTRYLISTENTRYID, i, m_Entry[i].EntryLength, m_Entry[i].EntryLengthPad);
 
 			szEntryList += m_Entry[i].EntryId.ToString();
 		}

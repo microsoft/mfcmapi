@@ -71,11 +71,7 @@ namespace mapi
 
 			if (!lpMessage || !lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-			EC_MAPI(lpMAPISession->OpenAddressBook(
-				NULL,
-				nullptr,
-				NULL,
-				&lpAddrBook));
+			EC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAddrBook));
 
 			EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS, &lpAdrList));
 
@@ -112,11 +108,7 @@ namespace mapi
 					&lpEID));
 				lpAdrList->aEntries[0].rgPropVals[EID].Value.bin.lpb = reinterpret_cast<LPBYTE>(lpEID);
 
-				EC_MAPI(lpAddrBook->ResolveName(
-					0L,
-					MAPI_UNICODE,
-					nullptr,
-					lpAdrList));
+				EC_MAPI(lpAddrBook->ResolveName(0L, MAPI_UNICODE, nullptr, lpAdrList));
 
 				// If everything goes right, add the new recipient to the message
 				// object passed into us.
@@ -150,11 +142,7 @@ namespace mapi
 
 			if (!lpMessage || !lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-			EC_MAPI(lpMAPISession->OpenAddressBook(
-				NULL,
-				nullptr,
-				NULL,
-				&lpAddrBook));
+			EC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAddrBook));
 
 			EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS, &lpAdrList));
 
@@ -172,11 +160,7 @@ namespace mapi
 				lpAdrList->aEntries[0].rgPropVals[RECIP].ulPropTag = PR_RECIPIENT_TYPE;
 				lpAdrList->aEntries[0].rgPropVals[RECIP].Value.l = ulRecipientType;
 
-				EC_MAPI(lpAddrBook->ResolveName(
-					0L,
-					MAPI_UNICODE,
-					nullptr,
-					lpAdrList));
+				EC_MAPI(lpAddrBook->ResolveName(0L, MAPI_UNICODE, nullptr, lpAdrList));
 
 				// If everything goes right, add the new recipient to the message
 				// object passed into us.
@@ -191,7 +175,8 @@ namespace mapi
 		}
 
 		// Same as CreatePropertyStringRestriction, but skips the existence part.
-		_Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
+		_Check_return_ HRESULT CreateANRRestriction(
+			ULONG ulPropTag,
 			_In_ const std::wstring& szString,
 			_In_opt_ LPVOID lpParent,
 			_Deref_out_opt_ LPSRestriction* lppRes)
@@ -213,26 +198,18 @@ namespace mapi
 			// Allocate base memory:
 			if (lpParent)
 			{
-				EC_H(MAPIAllocateMore(
-					sizeof(SRestriction),
-					lpParent,
-					reinterpret_cast<LPVOID*>(&lpRes)));
+				EC_H(MAPIAllocateMore(sizeof(SRestriction), lpParent, reinterpret_cast<LPVOID*>(&lpRes)));
 
 				lpAllocationParent = lpParent;
 			}
 			else
 			{
-				EC_H(MAPIAllocateBuffer(
-					sizeof(SRestriction),
-					reinterpret_cast<LPVOID*>(&lpRes)));
+				EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&lpRes)));
 
 				lpAllocationParent = lpRes;
 			}
 
-			EC_H(MAPIAllocateMore(
-				sizeof(SPropValue),
-				lpAllocationParent,
-				reinterpret_cast<LPVOID*>(&lpspvSubject)));
+			EC_H(MAPIAllocateMore(sizeof(SPropValue), lpAllocationParent, reinterpret_cast<LPVOID*>(&lpspvSubject)));
 
 			if (lpRes && lpspvSubject)
 			{
@@ -271,7 +248,8 @@ namespace mapi
 			return hRes;
 		}
 
-		_Check_return_ HRESULT GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_opt_ LPMAPITABLE* lpABContainerTable)
+		_Check_return_ HRESULT
+		GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_opt_ LPMAPITABLE* lpABContainerTable)
 		{
 			auto hRes = S_OK;
 			LPABCONT lpABRootContainer = nullptr;
@@ -327,12 +305,11 @@ namespace mapi
 				abcNUM_COLS
 			};
 
-			static const SizedSPropTagArray(abcNUM_COLS, abcCols) =
-			{
-			abcNUM_COLS,
+			static const SizedSPropTagArray(abcNUM_COLS, abcCols) = {
+				abcNUM_COLS,
 				{
-					PR_ENTRYID,
-					PR_DISPLAY_NAME
+					PR_ENTRYID, //
+					PR_DISPLAY_NAME //
 				},
 			};
 
@@ -352,11 +329,7 @@ namespace mapi
 
 			output::DebugPrint(DBGGeneric, L"ManualResolve: Asked to resolve \"%ws\"\n", szName.c_str());
 
-			EC_MAPI(lpMAPISession->OpenAddressBook(
-				NULL,
-				nullptr,
-				NULL,
-				&lpAdrBook));
+			EC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAdrBook));
 
 			EC_H(GetABContainerTable(lpAdrBook, &lpABContainerTable));
 
@@ -365,131 +338,121 @@ namespace mapi
 				// Restrict the table to the properties that we are interested in.
 				EC_MAPI(lpABContainerTable->SetColumns(LPSPropTagArray(&abcCols), TBL_BATCH));
 
-				if (!FAILED(hRes)) for (;;)
-				{
-					hRes = S_OK;
-
-					FreeProws(lpABRow);
-					lpABRow = nullptr;
-					EC_MAPI(lpABContainerTable->QueryRows(
-						1,
-						NULL,
-						&lpABRow));
-					if (FAILED(hRes) || !lpABRow || lpABRow && !lpABRow->cRows) break;
-
-					// From this point forward, consider any error an error with the current address book container, so just continue and try the next one.
-					if (PR_ENTRYID == lpABRow->aRow->lpProps[abcPR_ENTRYID].ulPropTag)
+				if (!FAILED(hRes))
+					for (;;)
 					{
-						output::DebugPrint(DBGGeneric, L"ManualResolve: Searching this container\n");
-						output::DebugPrintBinary(DBGGeneric, lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin);
+						hRes = S_OK;
 
-						if (lpABContainer) lpABContainer->Release();
-						lpABContainer = nullptr;
-						EC_H(mapi::CallOpenEntry(
-							nullptr,
-							lpAdrBook,
-							nullptr,
-							nullptr,
-							lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin.cb,
-							reinterpret_cast<ENTRYID*>(lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin.lpb),
-							nullptr,
-							NULL,
-							&ulObjType,
-							reinterpret_cast<LPUNKNOWN*>(&lpABContainer)));
-						if (!lpABContainer) continue;
+						FreeProws(lpABRow);
+						lpABRow = nullptr;
+						EC_MAPI(lpABContainerTable->QueryRows(1, NULL, &lpABRow));
+						if (FAILED(hRes) || !lpABRow || lpABRow && !lpABRow->cRows) break;
 
-						output::DebugPrint(DBGGeneric, L"ManualResolve: Object opened as 0x%X\n", ulObjType);
-
-						if (lpABContainer && ulObjType == MAPI_ABCONT)
+						// From this point forward, consider any error an error with the current address book container, so just continue and try the next one.
+						if (PR_ENTRYID == lpABRow->aRow->lpProps[abcPR_ENTRYID].ulPropTag)
 						{
-							if (pTable) pTable->Release();
-							pTable = nullptr;
-							WC_MAPI(lpABContainer->GetContentsTable(fMapiUnicode, &pTable));
-							if (!pTable)
+							output::DebugPrint(DBGGeneric, L"ManualResolve: Searching this container\n");
+							output::DebugPrintBinary(DBGGeneric, lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin);
+
+							if (lpABContainer) lpABContainer->Release();
+							lpABContainer = nullptr;
+							EC_H(mapi::CallOpenEntry(
+								nullptr,
+								lpAdrBook,
+								nullptr,
+								nullptr,
+								lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin.cb,
+								reinterpret_cast<ENTRYID*>(lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin.lpb),
+								nullptr,
+								NULL,
+								&ulObjType,
+								reinterpret_cast<LPUNKNOWN*>(&lpABContainer)));
+							if (!lpABContainer) continue;
+
+							output::DebugPrint(DBGGeneric, L"ManualResolve: Object opened as 0x%X\n", ulObjType);
+
+							if (lpABContainer && ulObjType == MAPI_ABCONT)
 							{
-								output::DebugPrint(DBGGeneric, L"ManualResolve: Container did not support contents table\n");
-								continue;
+								if (pTable) pTable->Release();
+								pTable = nullptr;
+								WC_MAPI(lpABContainer->GetContentsTable(fMapiUnicode, &pTable));
+								if (!pTable)
+								{
+									output::DebugPrint(
+										DBGGeneric, L"ManualResolve: Container did not support contents table\n");
+									continue;
+								}
+
+								MAPIFreeBuffer(lpFoundRow);
+								lpFoundRow = nullptr;
+								EC_H(SearchContentsTableForName(pTable, szName, PropTagToCompare, &lpFoundRow));
+								if (!lpFoundRow) continue;
+
+								if (lpAdrList) FreePadrlist(lpAdrList);
+								lpAdrList = nullptr;
+								// Allocate memory for new Address List structure.
+								EC_H(MAPIAllocateBuffer(CbNewADRLIST(1), reinterpret_cast<LPVOID*>(&lpAdrList)));
+								if (!lpAdrList) continue;
+
+								ZeroMemory(lpAdrList, CbNewADRLIST(1));
+								lpAdrList->cEntries = 1;
+								// Allocate memory for SPropValue structure that indicates what
+								// recipient properties will be set. To resolve a name that
+								// already exists in the Address book, this will always be 1.
+
+								EC_H(MAPIAllocateBuffer(
+									static_cast<ULONG>(abNUM_COLS * sizeof(SPropValue)),
+									reinterpret_cast<LPVOID*>(&lpAdrList->aEntries->rgPropVals)));
+								if (!lpAdrList->aEntries->rgPropVals) continue;
+
+								// TODO: We are setting 5 properties below. If this changes, modify these two lines.
+								ZeroMemory(lpAdrList->aEntries->rgPropVals, 5 * sizeof(SPropValue));
+								lpAdrList->aEntries->cValues = 5;
+
+								// Fill out addresslist with required property values.
+								const auto pProps = lpAdrList->aEntries->rgPropVals;
+
+								auto pProp = &pProps[abPR_ENTRYID]; // Just a pointer, do not free.
+								pProp->ulPropTag = PR_ENTRYID;
+								EC_H(mapi::CopySBinary(
+									&pProp->Value.bin, &lpFoundRow[abPR_ENTRYID].Value.bin, lpAdrList));
+
+								pProp = &pProps[abPR_RECIPIENT_TYPE];
+								pProp->ulPropTag = PR_RECIPIENT_TYPE;
+								pProp->Value.l = MAPI_TO;
+
+								pProp = &pProps[abPR_DISPLAY_NAME];
+								pProp->ulPropTag = PR_DISPLAY_NAME;
+
+								if (!mapi::CheckStringProp(&lpFoundRow[abPR_DISPLAY_NAME], PT_TSTRING)) continue;
+
+								EC_H(mapi::CopyString(
+									&pProp->Value.LPSZ, lpFoundRow[abPR_DISPLAY_NAME].Value.LPSZ, lpAdrList));
+
+								pProp = &pProps[abPR_ADDRTYPE];
+								pProp->ulPropTag = PR_ADDRTYPE;
+
+								if (!mapi::CheckStringProp(&lpFoundRow[abPR_ADDRTYPE], PT_TSTRING)) continue;
+
+								EC_H(mapi::CopyString(
+									&pProp->Value.LPSZ, lpFoundRow[abPR_ADDRTYPE].Value.LPSZ, lpAdrList));
+
+								pProp = &pProps[abPR_DISPLAY_TYPE];
+								pProp->ulPropTag = PR_DISPLAY_TYPE;
+								pProp->Value.l = lpFoundRow[abPR_DISPLAY_TYPE].Value.l;
+
+								EC_MAPI(lpMessage->ModifyRecipients(MODRECIP_ADD, lpAdrList));
+
+								if (lpAdrList) FreePadrlist(lpAdrList);
+								lpAdrList = nullptr;
+
+								EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+
+								// since we're done with our work, let's get out of here.
+								break;
 							}
-
-							MAPIFreeBuffer(lpFoundRow);
-							lpFoundRow = nullptr;
-							EC_H(SearchContentsTableForName(
-								pTable,
-								szName,
-								PropTagToCompare,
-								&lpFoundRow));
-							if (!lpFoundRow) continue;
-
-							if (lpAdrList) FreePadrlist(lpAdrList);
-							lpAdrList = nullptr;
-							// Allocate memory for new Address List structure.
-							EC_H(MAPIAllocateBuffer(CbNewADRLIST(1), reinterpret_cast<LPVOID*>(&lpAdrList)));
-							if (!lpAdrList) continue;
-
-							ZeroMemory(lpAdrList, CbNewADRLIST(1));
-							lpAdrList->cEntries = 1;
-							// Allocate memory for SPropValue structure that indicates what
-							// recipient properties will be set. To resolve a name that
-							// already exists in the Address book, this will always be 1.
-
-							EC_H(MAPIAllocateBuffer(
-								static_cast<ULONG>(abNUM_COLS * sizeof(SPropValue)),
-								reinterpret_cast<LPVOID*>(&lpAdrList->aEntries->rgPropVals)));
-							if (!lpAdrList->aEntries->rgPropVals) continue;
-
-							// TODO: We are setting 5 properties below. If this changes, modify these two lines.
-							ZeroMemory(lpAdrList->aEntries->rgPropVals, 5 * sizeof(SPropValue));
-							lpAdrList->aEntries->cValues = 5;
-
-							// Fill out addresslist with required property values.
-							const auto pProps = lpAdrList->aEntries->rgPropVals;
-
-							auto pProp = &pProps[abPR_ENTRYID]; // Just a pointer, do not free.
-							pProp->ulPropTag = PR_ENTRYID;
-							EC_H(mapi::CopySBinary(&pProp->Value.bin, &lpFoundRow[abPR_ENTRYID].Value.bin, lpAdrList));
-
-							pProp = &pProps[abPR_RECIPIENT_TYPE];
-							pProp->ulPropTag = PR_RECIPIENT_TYPE;
-							pProp->Value.l = MAPI_TO;
-
-							pProp = &pProps[abPR_DISPLAY_NAME];
-							pProp->ulPropTag = PR_DISPLAY_NAME;
-
-							if (!mapi::CheckStringProp(&lpFoundRow[abPR_DISPLAY_NAME], PT_TSTRING)) continue;
-
-							EC_H(mapi::CopyString(
-								&pProp->Value.LPSZ,
-								lpFoundRow[abPR_DISPLAY_NAME].Value.LPSZ,
-								lpAdrList));
-
-							pProp = &pProps[abPR_ADDRTYPE];
-							pProp->ulPropTag = PR_ADDRTYPE;
-
-							if (!mapi::CheckStringProp(&lpFoundRow[abPR_ADDRTYPE], PT_TSTRING)) continue;
-
-							EC_H(mapi::CopyString(
-								&pProp->Value.LPSZ,
-								lpFoundRow[abPR_ADDRTYPE].Value.LPSZ,
-								lpAdrList));
-
-							pProp = &pProps[abPR_DISPLAY_TYPE];
-							pProp->ulPropTag = PR_DISPLAY_TYPE;
-							pProp->Value.l = lpFoundRow[abPR_DISPLAY_TYPE].Value.l;
-
-							EC_MAPI(lpMessage->ModifyRecipients(
-								MODRECIP_ADD,
-								lpAdrList));
-
-							if (lpAdrList) FreePadrlist(lpAdrList);
-							lpAdrList = nullptr;
-
-							EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
-
-							// since we're done with our work, let's get out of here.
-							break;
 						}
 					}
-				}
 				lpABContainerTable->Release();
 			}
 			FreeProws(lpABRow);
@@ -505,7 +468,7 @@ namespace mapi
 			_In_ LPMAPITABLE pTable,
 			_In_ const std::wstring& szName,
 			ULONG PropTagToCompare,
-			_Deref_out_opt_ LPSPropValue *lppPropsFound)
+			_Deref_out_opt_ LPSPropValue* lppPropsFound)
 		{
 			auto hRes = S_OK;
 
@@ -522,17 +485,16 @@ namespace mapi
 				abNUM_COLS
 			};
 
-			const SizedSPropTagArray(abNUM_COLS, abCols) =
-			{
-			abNUM_COLS,
+			const SizedSPropTagArray(abNUM_COLS, abCols) = {
+				abNUM_COLS,
 				{
-					PR_ENTRYID,
-					PR_DISPLAY_NAME_W,
-					PR_RECIPIENT_TYPE,
-					PR_ADDRTYPE_W,
-					PR_DISPLAY_TYPE,
-					PropTagToCompare
-				}
+					PR_ENTRYID, //
+					PR_DISPLAY_NAME_W, //
+					PR_RECIPIENT_TYPE, //
+					PR_ADDRTYPE_W, //
+					PR_DISPLAY_TYPE, //
+					PropTagToCompare //
+				},
 			};
 
 			*lppPropsFound = nullptr;
@@ -544,57 +506,44 @@ namespace mapi
 			// Set a restriction so we only find close matches
 			LPSRestriction lpSRes = nullptr;
 
-			EC_H(CreateANRRestriction(
-				PR_ANR_W,
-				szName,
-				nullptr,
-				&lpSRes));
+			EC_H(CreateANRRestriction(PR_ANR_W, szName, nullptr, &lpSRes));
 
 			EC_MAPI(pTable->SetColumns(LPSPropTagArray(&abCols), TBL_BATCH));
 
 			// Jump to the top of the table...
-			EC_MAPI(pTable->SeekRow(
-				BOOKMARK_BEGINNING,
-				0,
-				nullptr));
+			EC_MAPI(pTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 
 			// ..and jump to the first matching entry in the table
-			EC_MAPI(pTable->Restrict(
-				lpSRes,
-				NULL
-			));
+			EC_MAPI(pTable->Restrict(lpSRes, NULL));
 
 			// Now we iterate through each of the matching entries
-			if (!FAILED(hRes)) for (;;)
-			{
-				hRes = S_OK;
-				if (pRows) FreeProws(pRows);
-				pRows = nullptr;
-				EC_MAPI(pTable->QueryRows(
-					1,
-					NULL,
-					&pRows));
-				if (FAILED(hRes) || !pRows || pRows && !pRows->cRows) break;
-
-				// An error at this point is an error with the current entry, so we can continue this for statement
-				// Unless it's an allocation error. Those are bad.
-				if (PropTagToCompare == pRows->aRow->lpProps[abPropTagToCompare].ulPropTag &&
-					mapi::CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_UNICODE))
+			if (!FAILED(hRes))
+				for (;;)
 				{
-					output::DebugPrint(DBGGeneric, L"SearchContentsTableForName: found \"%ws\"\n", pRows->aRow->lpProps[abPropTagToCompare].Value.lpszW);
-					if (szName == pRows->aRow->lpProps[abPropTagToCompare].Value.lpszW)
+					hRes = S_OK;
+					if (pRows) FreeProws(pRows);
+					pRows = nullptr;
+					EC_MAPI(pTable->QueryRows(1, NULL, &pRows));
+					if (FAILED(hRes) || !pRows || pRows && !pRows->cRows) break;
+
+					// An error at this point is an error with the current entry, so we can continue this for statement
+					// Unless it's an allocation error. Those are bad.
+					if (PropTagToCompare == pRows->aRow->lpProps[abPropTagToCompare].ulPropTag &&
+						mapi::CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_UNICODE))
 					{
-						output::DebugPrint(DBGGeneric, L"SearchContentsTableForName: This is an exact match!\n");
-						// We found a match! Return it!
-						EC_MAPI(ScDupPropset(
-							abNUM_COLS,
-							pRows->aRow->lpProps,
-							MAPIAllocateBuffer,
-							lppPropsFound));
-						break;
+						output::DebugPrint(
+							DBGGeneric,
+							L"SearchContentsTableForName: found \"%ws\"\n",
+							pRows->aRow->lpProps[abPropTagToCompare].Value.lpszW);
+						if (szName == pRows->aRow->lpProps[abPropTagToCompare].Value.lpszW)
+						{
+							output::DebugPrint(DBGGeneric, L"SearchContentsTableForName: This is an exact match!\n");
+							// We found a match! Return it!
+							EC_MAPI(ScDupPropset(abNUM_COLS, pRows->aRow->lpProps, MAPIAllocateBuffer, lppPropsFound));
+							break;
+						}
 					}
 				}
-			}
 
 			if (!*lppPropsFound)
 			{
@@ -606,13 +555,17 @@ namespace mapi
 			return hRes;
 		}
 
-		_Check_return_ HRESULT SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Out_opt_ ULONG* lpulObjType, _Deref_out_opt_ LPMAILUSER* lppMailUser)
+		_Check_return_ HRESULT SelectUser(
+			_In_ LPADRBOOK lpAdrBook,
+			HWND hwnd,
+			_Out_opt_ ULONG* lpulObjType,
+			_Deref_out_opt_ LPMAILUSER* lppMailUser)
 		{
 			if (!lpAdrBook || !hwnd || !lppMailUser) return MAPI_E_INVALID_PARAMETER;
 
 			auto hRes = S_OK;
 
-			ADRPARM AdrParm = { 0 };
+			ADRPARM AdrParm = {0};
 			LPADRLIST lpAdrList = nullptr;
 			LPSPropValue lpEntryID = nullptr;
 			LPMAILUSER lpMailUser = nullptr;
@@ -628,17 +581,12 @@ namespace mapi
 			AdrParm.ulFlags = DIALOG_MODAL | ADDRESS_ONE | AB_SELECTONLY | AB_RESOLVE;
 			AdrParm.lpszCaption = LPTSTR(szTitle.c_str());
 
-			EC_H_CANCEL(lpAdrBook->Address(
-				reinterpret_cast<ULONG_PTR*>(&hwnd),
-				&AdrParm,
-				&lpAdrList));
+			EC_H_CANCEL(lpAdrBook->Address(reinterpret_cast<ULONG_PTR*>(&hwnd), &AdrParm, &lpAdrList));
 
 			if (lpAdrList)
 			{
-				lpEntryID = PpropFindProp(
-					lpAdrList[0].aEntries->rgPropVals,
-					lpAdrList[0].aEntries->cValues,
-					PR_ENTRYID);
+				lpEntryID =
+					PpropFindProp(lpAdrList[0].aEntries->rgPropVals, lpAdrList[0].aEntries->cValues, PR_ENTRYID);
 
 				if (lpEntryID)
 				{

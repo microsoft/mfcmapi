@@ -38,18 +38,14 @@ namespace viewpane
 			x += m_iButtonHeight;
 		}
 
-		output::DebugPrint(DBGDraw, L"ViewPane::SetWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
+		output::DebugPrint(
+			DBGDraw,
+			L"ViewPane::SetWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
 			x,
 			width,
 			x + m_iButtonHeight,
 			m_iLabelWidth);
-		EC_B(m_Label.SetWindowPos(
-			nullptr,
-			x,
-			y,
-			m_iLabelWidth,
-			m_iLabelHeight,
-			SWP_NOZORDER));
+		EC_B(m_Label.SetWindowPos(nullptr, x, y, m_iLabelWidth, m_iLabelHeight, SWP_NOZORDER));
 	}
 
 	void ViewPane::SetLabel(UINT uidLabel, bool bReadOnly)
@@ -71,13 +67,7 @@ namespace viewpane
 		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl + 1;
 
 		EC_B(m_Label.Create(
-			WS_CHILD
-			| WS_CLIPSIBLINGS
-			| ES_READONLY
-			| WS_VISIBLE,
-			CRect(0, 0, 0, 0),
-			pParent,
-			iCurIDLabel));
+			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, iCurIDLabel));
 		SetWindowTextW(m_Label.m_hWnd, m_szLabel.c_str());
 		ui::SubclassLabel(m_Label.m_hWnd);
 
@@ -87,35 +77,25 @@ namespace viewpane
 
 			EC_B(m_CollapseButton.Create(
 				NULL,
-				WS_TABSTOP
-				| WS_CHILD
-				| WS_CLIPSIBLINGS
-				| WS_VISIBLE,
+				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 				CRect(0, 0, 0, 0),
 				pParent,
 				IDD_COLLAPSE + iControl));
 		}
 	}
 
-	bool ViewPane::IsDirty()
-	{
-		return false;
-	}
+	bool ViewPane::IsDirty() { return false; }
 
 	int ViewPane::GetMinWidth(_In_ HDC hdc)
 	{
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
 		m_iLabelWidth = sizeText.cx;
-		output::DebugPrint(DBGDraw, L"ViewPane::GetMinWidth m_iLabelWidth:%d \"%ws\"\n",
-			m_iLabelWidth,
-			m_szLabel.c_str());
+		output::DebugPrint(
+			DBGDraw, L"ViewPane::GetMinWidth m_iLabelWidth:%d \"%ws\"\n", m_iLabelWidth, m_szLabel.c_str());
 		return m_iLabelWidth;
 	}
 
-	int ViewPane::GetLines()
-	{
-		return 0;
-	}
+	int ViewPane::GetLines() { return 0; }
 
 	ULONG ViewPane::HandleChange(UINT nID)
 	{
@@ -154,17 +134,9 @@ namespace viewpane
 		m_iEditHeight = iEditHeight;
 	}
 
-	void ViewPane::SetAddInLabel(const std::wstring& szLabel)
-	{
-		m_szLabel = szLabel;
-	}
+	void ViewPane::SetAddInLabel(const std::wstring& szLabel) { m_szLabel = szLabel; }
 
-	bool ViewPane::MatchID(UINT nID) const
-	{
-		return nID == m_nID;
-	}
+	bool ViewPane::MatchID(UINT nID) const { return nID == m_nID; }
 
-	void ViewPane::UpdateButtons()
-	{
-	}
+	void ViewPane::UpdateButtons() {}
 }

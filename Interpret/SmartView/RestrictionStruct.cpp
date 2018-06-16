@@ -25,11 +25,7 @@ namespace smartview
 
 		if (m_lpRes)
 		{
-			(void)BinToRestriction(
-				0,
-				m_lpRes,
-				m_bRuleCondition,
-				m_bExtended);
+			(void) BinToRestriction(0, m_lpRes, m_bRuleCondition, m_bExtended);
 		}
 	}
 
@@ -47,7 +43,11 @@ namespace smartview
 	// If bRuleCondition is false, parse restrictions defined in [MS-OXOCFG] 2.2.4.1.2
 	// If bRuleCondition is false, ignore bExtendedCount (assumes true)
 	// Returns true if it successfully read a restriction
-	bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrRestriction, bool bRuleCondition, bool bExtendedCount)
+	bool RestrictionStruct::BinToRestriction(
+		ULONG ulDepth,
+		_In_ LPSRestriction psrRestriction,
+		bool bRuleCondition,
+		bool bExtendedCount)
 	{
 		if (ulDepth > _MaxDepth) return false;
 		if (!psrRestriction) return false;
@@ -57,7 +57,8 @@ namespace smartview
 
 		if (bRuleCondition)
 		{
-			psrRestriction->rt = m_Parser.Get<BYTE>();;
+			psrRestriction->rt = m_Parser.Get<BYTE>();
+			;
 		}
 		else
 		{
@@ -78,19 +79,16 @@ namespace smartview
 			}
 
 			psrRestriction->res.resAnd.cRes = dwTemp;
-			if (psrRestriction->res.resAnd.cRes &&
-				psrRestriction->res.resAnd.cRes < _MaxEntriesExtraLarge)
+			if (psrRestriction->res.resAnd.cRes && psrRestriction->res.resAnd.cRes < _MaxEntriesExtraLarge)
 			{
-				psrRestriction->res.resAnd.lpRes = reinterpret_cast<SRestriction*>(AllocateArray(psrRestriction->res.resAnd.cRes, sizeof SRestriction));
+				psrRestriction->res.resAnd.lpRes = reinterpret_cast<SRestriction*>(
+					AllocateArray(psrRestriction->res.resAnd.cRes, sizeof SRestriction));
 				if (psrRestriction->res.resAnd.lpRes)
 				{
 					for (ULONG i = 0; i < psrRestriction->res.resAnd.cRes; i++)
 					{
 						bRet = BinToRestriction(
-							ulDepth + 1,
-							&psrRestriction->res.resAnd.lpRes[i],
-							bRuleCondition,
-							bExtendedCount);
+							ulDepth + 1, &psrRestriction->res.resAnd.lpRes[i], bRuleCondition, bExtendedCount);
 						if (!bRet) break;
 					}
 				}
@@ -100,19 +98,13 @@ namespace smartview
 			psrRestriction->res.resNot.lpRes = reinterpret_cast<LPSRestriction>(Allocate(sizeof SRestriction));
 			if (psrRestriction->res.resNot.lpRes)
 			{
-				bRet = BinToRestriction(
-					ulDepth + 1,
-					psrRestriction->res.resNot.lpRes,
-					bRuleCondition,
-					bExtendedCount);
+				bRet = BinToRestriction(ulDepth + 1, psrRestriction->res.resNot.lpRes, bRuleCondition, bExtendedCount);
 			}
 			break;
 		case RES_CONTENT:
 			psrRestriction->res.resContent.ulFuzzyLevel = m_Parser.Get<DWORD>();
 			psrRestriction->res.resContent.ulPropTag = m_Parser.Get<DWORD>();
-			psrRestriction->res.resContent.lpProp = BinToSPropValue(
-				1,
-				bRuleCondition);
+			psrRestriction->res.resContent.lpProp = BinToSPropValue(1, bRuleCondition);
 			break;
 		case RES_PROPERTY:
 			if (bRuleCondition)
@@ -121,9 +113,7 @@ namespace smartview
 				psrRestriction->res.resProperty.relop = m_Parser.Get<DWORD>();
 
 			psrRestriction->res.resProperty.ulPropTag = m_Parser.Get<DWORD>();
-			psrRestriction->res.resProperty.lpProp = BinToSPropValue(
-				1,
-				bRuleCondition);
+			psrRestriction->res.resProperty.lpProp = BinToSPropValue(1, bRuleCondition);
 			break;
 		case RES_COMPAREPROPS:
 			if (bRuleCondition)
@@ -160,11 +150,7 @@ namespace smartview
 			psrRestriction->res.resSub.lpRes = reinterpret_cast<LPSRestriction>(Allocate(sizeof SRestriction));
 			if (psrRestriction->res.resSub.lpRes)
 			{
-				bRet = BinToRestriction(
-					ulDepth + 1,
-					psrRestriction->res.resSub.lpRes,
-					bRuleCondition,
-					bExtendedCount);
+				bRet = BinToRestriction(ulDepth + 1, psrRestriction->res.resSub.lpRes, bRuleCondition, bExtendedCount);
 			}
 			break;
 		case RES_COMMENT:
@@ -173,9 +159,8 @@ namespace smartview
 			else
 				psrRestriction->res.resComment.cValues = m_Parser.Get<DWORD>();
 
-			psrRestriction->res.resComment.lpProp = BinToSPropValue(
-				psrRestriction->res.resComment.cValues,
-				bRuleCondition);
+			psrRestriction->res.resComment.lpProp =
+				BinToSPropValue(psrRestriction->res.resComment.cValues, bRuleCondition);
 
 			// Check if a restriction is present
 			if (m_Parser.Get<BYTE>())
@@ -184,10 +169,7 @@ namespace smartview
 				if (psrRestriction->res.resComment.lpRes)
 				{
 					bRet = BinToRestriction(
-						ulDepth + 1,
-						psrRestriction->res.resComment.lpRes,
-						bRuleCondition,
-						bExtendedCount);
+						ulDepth + 1, psrRestriction->res.resComment.lpRes, bRuleCondition, bExtendedCount);
 				}
 			}
 			break;
@@ -197,11 +179,7 @@ namespace smartview
 			psrRestriction->res.resNot.lpRes = reinterpret_cast<LPSRestriction>(Allocate(sizeof SRestriction));
 			if (psrRestriction->res.resNot.lpRes)
 			{
-				bRet = BinToRestriction(
-					ulDepth + 1,
-					psrRestriction->res.resNot.lpRes,
-					bRuleCondition,
-					bExtendedCount);
+				bRet = BinToRestriction(ulDepth + 1, psrRestriction->res.resNot.lpRes, bRuleCondition, bExtendedCount);
 			}
 			break;
 		}

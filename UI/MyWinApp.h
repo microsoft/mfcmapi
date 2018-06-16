@@ -11,6 +11,7 @@ namespace ui
 	{
 	public:
 		CMyWinApp();
+
 	private:
 		BOOL InitInstance() override;
 	};

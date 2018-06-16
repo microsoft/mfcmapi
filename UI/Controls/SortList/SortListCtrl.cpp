@@ -45,26 +45,20 @@ namespace controls
 		}
 
 		BEGIN_MESSAGE_MAP(CSortListCtrl, CListCtrl)
-			ON_WM_KEYDOWN()
-			ON_WM_GETDLGCODE()
-			ON_WM_DRAWITEM()
-			ON_NOTIFY_REFLECT(LVN_DELETEALLITEMS, OnDeleteAllItems)
-			ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnDeleteItem)
-			ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
+		ON_WM_KEYDOWN()
+		ON_WM_GETDLGCODE()
+		ON_WM_DRAWITEM()
+		ON_NOTIFY_REFLECT(LVN_DELETEALLITEMS, OnDeleteAllItems)
+		ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnDeleteItem)
+		ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
 		END_MESSAGE_MAP()
 
 		_Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages)
 		{
 			auto hRes = S_OK;
 			EC_B(CListCtrl::Create(
-				ulFlags
-				| LVS_REPORT
-				| LVS_SHOWSELALWAYS
-				| WS_TABSTOP
-				| WS_CHILD
-				| WS_CLIPCHILDREN
-				| WS_CLIPSIBLINGS
-				| WS_VISIBLE,
+				ulFlags | LVS_REPORT | LVS_SHOWSELALWAYS | WS_TABSTOP | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS |
+					WS_VISIBLE,
 				CRect(0, 0, 0, 0), // size doesn't matter
 				pCreateParent,
 				nID));
@@ -73,7 +67,9 @@ namespace controls
 			ListView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::cText));
 			::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 
-			SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_INFOTIP | LVS_EX_DOUBLEBUFFER);
+			SetExtendedStyle(
+				GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_INFOTIP |
+				LVS_EX_DOUBLEBUFFER);
 
 			if (bImages)
 			{
@@ -109,7 +105,7 @@ namespace controls
 
 		void OnBeginTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
 		{
-			RECT rcHeader = { 0 };
+			RECT rcHeader = {0};
 			if (!pNMHDR) return;
 			const auto pHdr = reinterpret_cast<LPNMHEADER>(pNMHDR);
 			Header_GetItemRect(pHdr->hdr.hwndFrom, pHdr->iItem, &rcHeader);
@@ -132,7 +128,7 @@ namespace controls
 		{
 			if (s_bInTrack && pNMHDR)
 			{
-				RECT rcHeader = { 0 };
+				RECT rcHeader = {0};
 				const auto pHdr = reinterpret_cast<LPNMHEADER>(pNMHDR);
 				Header_GetItemRect(pHdr->hdr.hwndFrom, pHdr->iItem, &rcHeader);
 				if (s_iTrack != rcHeader.right)
@@ -199,7 +195,7 @@ namespace controls
 			}
 			case WM_MOUSEMOVE:
 			{
-				LVHITTESTINFO lvHitTestInfo = { 0 };
+				LVHITTESTINFO lvHitTestInfo = {0};
 				lvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 				lvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
@@ -220,7 +216,7 @@ namespace controls
 						m_iItemCurHover = lvHitTestInfo.iItem;
 						ui::DrawListItemGlow(m_hWnd, lvHitTestInfo.iItem);
 
-						TRACKMOUSEEVENT tmEvent = { 0 };
+						TRACKMOUSEEVENT tmEvent = {0};
 						tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
 						tmEvent.dwFlags = TME_LEAVE;
 						tmEvent.hwndTrack = m_hWnd;
@@ -278,11 +274,12 @@ namespace controls
 			return InsertRow(iRow, szText, 0, 0);
 		}
 
-		_Check_return_ sortlistdata::SortListData* CSortListCtrl::InsertRow(int iRow, const std::wstring& szText, int iIndent, int iImage) const
+		_Check_return_ sortlistdata::SortListData*
+		CSortListCtrl::InsertRow(int iRow, const std::wstring& szText, int iIndent, int iImage) const
 		{
 			auto lpData = new sortlistdata::SortListData();
 
-			LVITEMW lvItem = { 0 };
+			LVITEMW lvItem = {0};
 			lvItem.iItem = iRow;
 			lvItem.iSubItem = 0;
 			lvItem.mask = LVIF_TEXT | LVIF_PARAM | LVIF_INDENT | LVIF_IMAGE;
@@ -334,7 +331,8 @@ namespace controls
 		// Sort the item in alphabetical order.
 		// Simplistic algorithm that only looks at the text. This pays no attention to the underlying MAPI properties.
 		// This will sort dates and numbers badly. :)
-		_Check_return_ int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort)
+		_Check_return_ int CALLBACK
+		CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort)
 		{
 			if (!lParamSort) return sortEqual;
 			auto iRet = 0;
@@ -346,7 +344,7 @@ namespace controls
 			if (!lpData1) return sort2First; // sort null items to the end - this makes lParam2>lParam1
 			if (!lpData2) return sort1First; // sort null items to the end - this makes lParam1>lParam2
 
-											 // Don't sort items which aren't fully loaded
+			// Don't sort items which aren't fully loaded
 			if (!lpData1->bItemFullyLoaded) return sort2First;
 			if (!lpData2->bItemFullyLoaded) return sort1First;
 
@@ -387,7 +385,7 @@ namespace controls
 			{
 				const auto ul1 = lpData1->ulSortValue;
 				const auto ul2 = lpData2->ulSortValue;
-				return lpSortInfo->bSortUp ? ul2.QuadPart > ul1.QuadPart:ul1.QuadPart >= ul2.QuadPart;
+				return lpSortInfo->bSortUp ? ul2.QuadPart > ul1.QuadPart : ul1.QuadPart >= ul2.QuadPart;
 			}
 			default:
 				break;
@@ -406,9 +404,9 @@ namespace controls
 		void CSortListCtrl::SortClickedColumn()
 		{
 			auto hRes = S_OK;
-			HDITEM hdItem = { 0 };
+			HDITEM hdItem = {0};
 			ULONG ulPropTag = NULL;
-			SortInfo sortinfo = { false };
+			SortInfo sortinfo = {false};
 
 			// szText will be filled out by our LVM_GETITEMW calls
 			// There's little point in getting more than 128 characters for sorting
@@ -442,7 +440,7 @@ namespace controls
 			}
 
 			// Set our sort text
-			LVITEMW lvi = { 0 };
+			LVITEMW lvi = {0};
 			lvi.mask = LVIF_PARAM | LVIF_TEXT;
 			lvi.iSubItem = m_iClickedColumn;
 			lvi.cchTextMax = _countof(szText);
@@ -488,7 +486,8 @@ namespace controls
 					{
 						lpData->szSortText.clear();
 						lpData->ulSortValue.QuadPart = 0;
-						if (ulSourceCol < lpData->cSourceProps && PROP_TYPE(lpData->lpSourceProps[ulSourceCol].ulPropTag) == PT_SYSTIME)
+						if (ulSourceCol < lpData->cSourceProps &&
+							PROP_TYPE(lpData->lpSourceProps[ulSourceCol].ulPropTag) == PT_SYSTIME)
 						{
 							lpData->ulSortValue.LowPart = lpData->lpSourceProps[ulSourceCol].Value.ft.dwLowDateTime;
 							lpData->ulSortValue.HighPart = lpData->lpSourceProps[ulSourceCol].Value.ft.dwHighDateTime;
@@ -573,8 +572,10 @@ namespace controls
 			MySetRedraw(false);
 			SetColumnWidth(iColumn, LVSCW_AUTOSIZE_USEHEADER);
 			const auto width = GetColumnWidth(iColumn);
-			if (iMaxWidth && width > iMaxWidth) SetColumnWidth(iColumn, iMaxWidth);
-			else if (width < iMinWidth) SetColumnWidth(iColumn, iMinWidth);
+			if (iMaxWidth && width > iMaxWidth)
+				SetColumnWidth(iColumn, iMaxWidth);
+			else if (width < iMinWidth)
+				SetColumnWidth(iColumn, iMinWidth);
 			MySetRedraw(true);
 		}
 
@@ -599,7 +600,7 @@ namespace controls
 		void CSortListCtrl::DeleteAllColumns(bool bShutdown)
 		{
 			auto hRes = S_OK;
-			HDITEM hdItem = { 0 };
+			HDITEM hdItem = {0};
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"DeleteAllColumns", L"Deleting existing columns\n");
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -619,8 +620,7 @@ namespace controls
 						EC_B(lpMyHeader->GetItem(iCol, &hdItem));
 
 						// This will be a HeaderData, created in CContentsTableListCtrl::AddColumn
-						if (SUCCEEDED(hRes))
-							delete reinterpret_cast<HeaderData*>(hdItem.lParam);
+						if (SUCCEEDED(hRes)) delete reinterpret_cast<HeaderData*>(hdItem.lParam);
 
 						if (!bShutdown) EC_B(DeleteColumn(iCol));
 					}
@@ -630,10 +630,7 @@ namespace controls
 			}
 		}
 
-		void CSortListCtrl::AllowEscapeClose()
-		{
-			m_bAllowEscapeClose = true;
-		}
+		void CSortListCtrl::AllowEscapeClose() { m_bAllowEscapeClose = true; }
 
 		// Assert that we want all keyboard input (including ENTER!)
 		// In the case of TAB though, let it through
@@ -647,14 +644,12 @@ namespace controls
 			if (GetKeyState(VK_CONTROL) >= 0 && m_hWnd == ::GetFocus())
 			{
 				// to make sure that the Tab key is pressed
-				if (GetKeyState(VK_TAB) < 0)
-					iDlgCode &= ~(DLGC_WANTALLKEYS | DLGC_WANTMESSAGE | DLGC_WANTTAB);
+				if (GetKeyState(VK_TAB) < 0) iDlgCode &= ~(DLGC_WANTALLKEYS | DLGC_WANTMESSAGE | DLGC_WANTTAB);
 
 				if (m_bAllowEscapeClose)
 				{
 					// to make sure that the Escape key is pressed
-					if (GetKeyState(VK_ESCAPE) < 0)
-						iDlgCode &= ~(DLGC_WANTALLKEYS | DLGC_WANTMESSAGE | DLGC_WANTTAB);
+					if (GetKeyState(VK_ESCAPE) < 0) iDlgCode &= ~(DLGC_WANTALLKEYS | DLGC_WANTMESSAGE | DLGC_WANTTAB);
 				}
 			}
 
@@ -671,7 +666,7 @@ namespace controls
 				szWhitespace = static_cast<LPWSTR>(wcspbrk(szWhitespace, L"\r\n\t")); // STRING_OK
 			}
 
-			(void)CListCtrl::SetItemText(nItem, nSubItem, strings::wstringTotstring(lpszText).c_str());
+			(void) CListCtrl::SetItemText(nItem, nSubItem, strings::wstringTotstring(lpszText).c_str());
 		}
 
 		std::wstring CSortListCtrl::GetItemText(_In_ int nItem, _In_ int nSubItem) const

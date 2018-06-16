@@ -14,10 +14,14 @@ namespace interpretprop
 
 	std::wstring AdrListToString(_In_ const ADRLIST& adrList);
 
-	void InterpretProp(_In_ const _SPropValue* lpProp, _In_opt_ std::wstring* PropString, _In_opt_ std::wstring* AltPropString);
+	void InterpretProp(
+		_In_ const _SPropValue* lpProp,
+		_In_opt_ std::wstring* PropString,
+		_In_opt_ std::wstring* AltPropString);
 
 #define PROP_TAG_MASK 0xffff0000
-	void FindTagArrayMatches(_In_ ULONG ulTarget,
+	void FindTagArrayMatches(
+		_In_ ULONG ulTarget,
 		bool bIsAB,
 		const std::vector<NAME_ARRAY_ENTRY_V2>& MyArray,
 		std::vector<ULONG>& ulExacts,

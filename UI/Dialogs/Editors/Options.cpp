@@ -24,8 +24,8 @@ namespace dialog
 
 		static std::wstring CLASS = L"COptions";
 
-		COptions::COptions(_In_ CWnd* pWnd) :
-			CEditor(pWnd, IDS_SETOPTS, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+		COptions::COptions(_In_ CWnd* pWnd)
+			: CEditor(pWnd, IDS_SETOPTS, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 			EnableScroll();
@@ -38,34 +38,42 @@ namespace dialog
 			{
 				if (registry::regoptCheck == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					InitPane(ulReg, viewpane::CheckPane::Create(registry::RegKeys[ulReg].uiOptionsPrompt, 0 != registry::RegKeys[ulReg].ulCurDWORD, false));
+					InitPane(
+						ulReg,
+						viewpane::CheckPane::Create(
+							registry::RegKeys[ulReg].uiOptionsPrompt, 0 != registry::RegKeys[ulReg].ulCurDWORD, false));
 				}
 				else if (registry::regoptString == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					InitPane(ulReg, viewpane::TextPane::CreateSingleLinePane(registry::RegKeys[ulReg].uiOptionsPrompt, registry::RegKeys[ulReg].szCurSTRING, false));
+					InitPane(
+						ulReg,
+						viewpane::TextPane::CreateSingleLinePane(
+							registry::RegKeys[ulReg].uiOptionsPrompt, registry::RegKeys[ulReg].szCurSTRING, false));
 				}
 				else if (registry::regoptStringHex == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					InitPane(ulReg, viewpane::TextPane::CreateSingleLinePane(registry::RegKeys[ulReg].uiOptionsPrompt, false));
+					InitPane(
+						ulReg,
+						viewpane::TextPane::CreateSingleLinePane(registry::RegKeys[ulReg].uiOptionsPrompt, false));
 					SetHex(ulReg, registry::RegKeys[ulReg].ulCurDWORD);
 				}
 				else if (registry::regoptStringDec == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					InitPane(ulReg, viewpane::TextPane::CreateSingleLinePane(registry::RegKeys[ulReg].uiOptionsPrompt, false));
+					InitPane(
+						ulReg,
+						viewpane::TextPane::CreateSingleLinePane(registry::RegKeys[ulReg].uiOptionsPrompt, false));
 					SetDecimal(ulReg, registry::RegKeys[ulReg].ulCurDWORD);
 				}
 			}
 		}
 
-		COptions::~COptions()
-		{
-			TRACE_DESTRUCTOR(CLASS);
-		}
+		COptions::~COptions() { TRACE_DESTRUCTOR(CLASS); }
 
 		void COptions::OnOK()
 		{
 			// need to grab this FIRST
-			registry::RegKeys[registry::regkeyDEBUG_FILE_NAME].szCurSTRING = GetStringW(registry::regkeyDEBUG_FILE_NAME);
+			registry::RegKeys[registry::regkeyDEBUG_FILE_NAME].szCurSTRING =
+				GetStringW(registry::regkeyDEBUG_FILE_NAME);
 
 			if (GetHex(registry::regkeyDEBUG_TAG) != registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD)
 			{
@@ -80,7 +88,8 @@ namespace dialog
 			{
 				if (registry::regoptCheck == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					if (registry::RegKeys[ulReg].bRefresh && registry::RegKeys[ulReg].ulCurDWORD != static_cast<ULONG>(GetCheck(ulReg)))
+					if (registry::RegKeys[ulReg].bRefresh &&
+						registry::RegKeys[ulReg].ulCurDWORD != static_cast<ULONG>(GetCheck(ulReg)))
 					{
 						m_bNeedPropRefresh = true;
 					}
@@ -103,15 +112,9 @@ namespace dialog
 			CEditor::OnOK();
 		}
 
-		_Check_return_ ULONG COptions::HandleChange(UINT nID)
-		{
-			return CEditor::HandleChange(nID);
-		}
+		_Check_return_ ULONG COptions::HandleChange(UINT nID) { return CEditor::HandleChange(nID); }
 
-		bool COptions::NeedPropRefresh() const
-		{
-			return m_bNeedPropRefresh;
-		}
+		bool COptions::NeedPropRefresh() const { return m_bNeedPropRefresh; }
 
 		bool DisplayOptionsDlg(_In_ CWnd* lpParentWnd)
 		{

@@ -8,8 +8,7 @@ namespace smartview
 	// =====================
 	//   This structure specifies the details of the recurrence type
 	//
-	union PatternTypeSpecific
-	{
+	union PatternTypeSpecific {
 		DWORD WeekRecurrencePattern;
 		DWORD MonthRecurrencePattern;
 		struct
@@ -18,7 +17,6 @@ namespace smartview
 			DWORD N;
 		} MonthNthRecurrencePattern;
 	};
-
 
 	class RecurrencePattern : public SmartViewParser
 	{

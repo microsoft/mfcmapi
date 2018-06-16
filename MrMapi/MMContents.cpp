@@ -14,11 +14,19 @@ void DumpContentsTable(
 	_In_ ULONG ulCount,
 	_In_opt_ LPSRestriction lpRes)
 {
-	output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting folder %u / %ws from profile %ws to %ws\n", ulFolder, lpszFolder ? lpszFolder : L"", lpszProfile, lpszDir);
+	output::DebugPrint(
+		DBGGeneric,
+		L"DumpContentsTable: Outputting folder %u / %ws from profile %ws to %ws\n",
+		ulFolder,
+		lpszFolder ? lpszFolder : L"",
+		lpszProfile,
+		lpszDir);
 	if (ulOptions & OPT_DOCONTENTS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Contents\n");
-	if (ulOptions & OPT_DOASSOCIATEDCONTENTS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Associated Contents\n");
+	if (ulOptions & OPT_DOASSOCIATEDCONTENTS)
+		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Associated Contents\n");
 	if (ulOptions & OPT_MSG) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
-	if (ulOptions & OPT_RETRYSTREAMPROPS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will retry stream properties\n");
+	if (ulOptions & OPT_RETRYSTREAMPROPS)
+		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will retry stream properties\n");
 	if (ulOptions & OPT_SKIPATTACHMENTS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
 	if (ulOptions & OPT_LIST) output::DebugPrint(DBGGeneric, L"DumpContentsTable: List only mode\n");
 	if (ulCount) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
@@ -26,7 +34,7 @@ void DumpContentsTable(
 	if (lpFolder)
 	{
 		mapiprocessor::CDumpStore MyDumpStore;
-		SSortOrderSet SortOrder = { 0 };
+		SSortOrderSet SortOrder = {0};
 		MyDumpStore.InitMDB(lpMDB);
 		MyDumpStore.InitFolder(lpFolder);
 		MyDumpStore.InitFolderPathRoot(lpszDir);
@@ -48,13 +56,15 @@ void DumpContentsTable(
 		if (ulOptions & OPT_SKIPATTACHMENTS) MyDumpStore.DisableEmbeddedAttachments();
 
 		MyDumpStore.ProcessFolders(
-			0 != (ulOptions & OPT_DOCONTENTS),
-			0 != (ulOptions & OPT_DOASSOCIATEDCONTENTS),
-			false);
+			0 != (ulOptions & OPT_DOCONTENTS), 0 != (ulOptions & OPT_DOASSOCIATEDCONTENTS), false);
 	}
 }
 
-void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool bRetryStreamProps, _In_ bool bOutputAttachments)
+void DumpMSG(
+	_In_z_ LPCWSTR lpszMSGFile,
+	_In_z_ LPCWSTR lpszXMLFile,
+	_In_ bool bRetryStreamProps,
+	_In_ bool bOutputAttachments)
 {
 	auto hRes = S_OK;
 	LPMESSAGE lpMessage = nullptr;
@@ -76,11 +86,11 @@ void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool b
 
 void DoContents(_In_ MYOPTIONS ProgOpts)
 {
-	SRestriction sResTop = { 0 };
-	SRestriction sResMiddle[2] = { 0 };
-	SRestriction sResSubject[2] = { 0 };
-	SRestriction sResMessageClass[2] = { 0 };
-	SPropValue sPropValue[2] = { 0 };
+	SRestriction sResTop = {0};
+	SRestriction sResMiddle[2] = {0};
+	SRestriction sResSubject[2] = {0};
+	SRestriction sResMessageClass[2] = {0};
+	SPropValue sPropValue[2] = {0};
 	LPSRestriction lpRes = nullptr;
 	if (!ProgOpts.lpszSubject.empty() || !ProgOpts.lpszMessageClass.empty())
 	{

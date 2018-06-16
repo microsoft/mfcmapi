@@ -7,14 +7,14 @@ namespace controls
 	{
 		BinaryData::BinaryData(_In_ LPSBinary lpOldBin)
 		{
-			m_OldBin = { 0 };
+			m_OldBin = {0};
 			if (lpOldBin)
 			{
 				m_OldBin.cb = lpOldBin->cb;
 				m_OldBin.lpb = lpOldBin->lpb;
 			}
 
-			m_NewBin = { 0 };
+			m_NewBin = {0};
 		}
 	}
 }

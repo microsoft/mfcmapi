@@ -32,7 +32,8 @@ namespace smartview
 		ULONG ulMagic; // MDB_STORE_EID_V3_MAGIC
 		ULONG ulSize; // size of this struct plus the size of szServerSmtpAddress
 		ULONG ulVersion; // MDB_STORE_EID_V3_VERSION
-		ULONG ulOffsetSmtpAddress; // offset past the beginning of the MDB_STORE_EID_V3 struct where szSmtpAddress starts
+		ULONG
+		ulOffsetSmtpAddress; // offset past the beginning of the MDB_STORE_EID_V3 struct where szSmtpAddress starts
 	};
 
 	struct FolderObject

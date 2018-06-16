@@ -6,7 +6,8 @@ namespace viewpane
 	class DropDownPane : public ViewPane
 	{
 	public:
-		static DropDownPane* Create(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly);
+		static DropDownPane*
+		Create(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly);
 		static DropDownPane* CreateGuid(UINT uidLabel, bool bReadOnly);
 
 		void SetDropDownSelection(_In_ const std::wstring& szText);

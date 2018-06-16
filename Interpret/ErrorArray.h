@@ -4,26 +4,26 @@
 
 #define E_ACCT_NOT_FOUND 0x800C8101
 #define E_ACCT_WRONG_SORT_ORDER 0x800C8105
-#define E_OLK_REGISTRY  0x800C8001
-#define E_OLK_ALREADY_INITIALIZED  0x800C8002
+#define E_OLK_REGISTRY 0x800C8001
+#define E_OLK_ALREADY_INITIALIZED 0x800C8002
 #define E_OLK_PARAM_NOT_SUPPORTED 0x800C8003
 #define E_OLK_NOT_INITIALIZED 0x800C8005
-#define E_OLK_PROP_READ_ONLY  0x800C800D
+#define E_OLK_PROP_READ_ONLY 0x800C800D
 
 #ifndef MAPI_E_STORE_FULL
-#define MAPI_E_STORE_FULL MAKE_MAPI_E( 0x60C )
+#define MAPI_E_STORE_FULL MAKE_MAPI_E(0x60C)
 #endif
 
 // [MS-OXCDATA]
 #ifndef MAPI_E_LOCKID_LIMIT
-#define MAPI_E_LOCKID_LIMIT MAKE_MAPI_E( 0x60D )
+#define MAPI_E_LOCKID_LIMIT MAKE_MAPI_E(0x60D)
 #endif
 #ifndef MAPI_E_NAMED_PROP_QUOTA_EXCEEDED
-#define MAPI_E_NAMED_PROP_QUOTA_EXCEEDED MAKE_MAPI_E( 0x900 )
+#define MAPI_E_NAMED_PROP_QUOTA_EXCEEDED MAKE_MAPI_E(0x900)
 #endif
 
 #ifndef MAPI_E_PROFILE_DELETED
-#define MAPI_E_PROFILE_DELETED MAKE_MAPI_E( 0x204 )
+#define MAPI_E_PROFILE_DELETED MAKE_MAPI_E(0x204)
 #endif
 
 #ifndef SYNC_E_CYCLE
@@ -34,18 +34,18 @@
 #define E_ERROR_PROC_NOT_FOUND HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND)
 #define E_RPC_S_INVALID_TAG HRESULT_FROM_WIN32(RPC_S_INVALID_TAG)
 
-#define MAPI_E_RECONNECTED MAKE_MAPI_E( 0x125 )
-#define MAPI_E_OFFLINE MAKE_MAPI_E( 0x126 )
+#define MAPI_E_RECONNECTED MAKE_MAPI_E(0x125)
+#define MAPI_E_OFFLINE MAKE_MAPI_E(0x126)
 #define MAIL_E_NAMENOTFOUND MAKE_SCODE(SEVERITY_ERROR, 0x0100, 10054)
 
 namespace error
 {
-	#define ERROR_ENTRY(_fName) {(ULONG)_fName,L#_fName},
+#define ERROR_ENTRY(_fName) {(ULONG) _fName, L#_fName},
 
 	// These are sorted in increasing order, with no duplicates
 	// We have no logic for handling duplicate error codes
-	ERROR_ARRAY_ENTRY g_ErrorArray[] =
-	{
+	ERROR_ARRAY_ENTRY g_ErrorArray[] = {
+		// clang-format off
 		ERROR_ENTRY(S_FALSE)
 
 		// IStorage success codes
@@ -234,7 +234,8 @@ namespace error
 		ERROR_ENTRY(E_NOTIMPL)
 
 		ERROR_ENTRY(MAIL_E_NAMENOTFOUND)
-	}; // g_ErrorArray
+		// clang-format on
+	};
 
 	ULONG g_ulErrorArray = _countof(g_ErrorArray);
 }

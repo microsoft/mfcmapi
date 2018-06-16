@@ -8,8 +8,8 @@
 
 namespace smartview
 {
-	EntryIdStruct::EntryIdStruct() : m_FolderOrMessage(), m_MessageDatabaseObject(), m_AddressBookObject(),
-		m_ContactAddressBookObject(), m_WAB()
+	EntryIdStruct::EntryIdStruct()
+		: m_FolderOrMessage(), m_MessageDatabaseObject(), m_AddressBookObject(), m_ContactAddressBookObject(), m_WAB()
 	{
 		m_ObjectType = eidtUnknown;
 	}
@@ -139,9 +139,7 @@ namespace smartview
 				m_WAB.Type = m_Parser.Get<BYTE>();
 
 				EntryIdStruct entryIdStruct;
-				entryIdStruct.Init(
-					m_Parser.RemainingBytes(),
-					m_Parser.GetCurrentAddress());
+				entryIdStruct.Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 				entryIdStruct.DisableJunkParsing();
 				entryIdStruct.EnsureParsed();
 				m_Parser.Advance(entryIdStruct.GetCurrentOffset());
@@ -157,12 +155,13 @@ namespace smartview
 
 				// We only know how to parse emsmdb.dll's wrapped entry IDs
 				if (!m_MessageDatabaseObject.DLLFileName.empty() &&
-					CSTR_EQUAL == CompareStringA(LOCALE_INVARIANT,
-						NORM_IGNORECASE,
-						m_MessageDatabaseObject.DLLFileName.c_str(),
-						-1,
-						"emsmdb.dll", // STRING_OK
-						-1))
+					CSTR_EQUAL == CompareStringA(
+									  LOCALE_INVARIANT,
+									  NORM_IGNORECASE,
+									  m_MessageDatabaseObject.DLLFileName.c_str(),
+									  -1,
+									  "emsmdb.dll", // STRING_OK
+									  -1))
 				{
 					m_MessageDatabaseObject.bIsExchange = true;
 					auto cbRead = m_Parser.GetCurrentOffset();
@@ -186,7 +185,7 @@ namespace smartview
 					// Either we're not a PF eid, or this PF EID wasn't followed directly by a magic value
 					if (!(m_MessageDatabaseObject.WrappedType & OPENSTORE_PUBLIC) ||
 						m_MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V2_MAGIC &&
-						m_MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V3_MAGIC)
+							m_MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V3_MAGIC)
 					{
 						m_MessageDatabaseObject.MailboxDN = m_Parser.GetStringA();
 					}
@@ -259,8 +258,7 @@ namespace smartview
 		}
 
 		// Check if we have an unidentified short term entry ID:
-		if (eidtUnknown == m_ObjectType && m_abFlags[0] & MAPI_SHORTTERM)
-			m_ObjectType = eidtShortTerm;
+		if (eidtUnknown == m_ObjectType && m_abFlags[0] & MAPI_SHORTTERM) m_ObjectType = eidtShortTerm;
 	}
 
 	_Check_return_ std::wstring EntryIdStruct::ToStringInternal()
@@ -307,14 +305,17 @@ namespace smartview
 		}
 		else if (0 == (m_abFlags[1] | m_abFlags[2] | m_abFlags[3]))
 		{
-			szEntryId += strings::formatmessage(IDS_ENTRYIDHEADER2,
-				m_abFlags[0], interpretprop::InterpretFlags(flagEntryId0, m_abFlags[0]).c_str());
+			szEntryId += strings::formatmessage(
+				IDS_ENTRYIDHEADER2, m_abFlags[0], interpretprop::InterpretFlags(flagEntryId0, m_abFlags[0]).c_str());
 		}
 		else
 		{
-			szEntryId += strings::formatmessage(IDS_ENTRYIDHEADER3,
-				m_abFlags[0], interpretprop::InterpretFlags(flagEntryId0, m_abFlags[0]).c_str(),
-				m_abFlags[1], interpretprop::InterpretFlags(flagEntryId1, m_abFlags[1]).c_str(),
+			szEntryId += strings::formatmessage(
+				IDS_ENTRYIDHEADER3,
+				m_abFlags[0],
+				interpretprop::InterpretFlags(flagEntryId0, m_abFlags[0]).c_str(),
+				m_abFlags[1],
+				interpretprop::InterpretFlags(flagEntryId1, m_abFlags[1]).c_str(),
 				m_abFlags[2],
 				m_abFlags[3]);
 		}
@@ -327,25 +328,32 @@ namespace smartview
 			auto szVersion = interpretprop::InterpretFlags(flagExchangeABVersion, m_EphemeralObject.Version);
 			auto szType = InterpretNumberAsStringProp(m_EphemeralObject.Type, PR_DISPLAY_TYPE);
 
-			szEntryId += strings::formatmessage(IDS_ENTRYIDEPHEMERALADDRESSDATA,
-				m_EphemeralObject.Version, szVersion.c_str(),
-				m_EphemeralObject.Type, szType.c_str());
+			szEntryId += strings::formatmessage(
+				IDS_ENTRYIDEPHEMERALADDRESSDATA,
+				m_EphemeralObject.Version,
+				szVersion.c_str(),
+				m_EphemeralObject.Type,
+				szType.c_str());
 		}
 		else if (eidtOneOff == m_ObjectType)
 		{
 			auto szFlags = interpretprop::InterpretFlags(flagOneOffEntryId, m_OneOffRecipientObject.Bitmask);
 			if (MAPI_UNICODE & m_OneOffRecipientObject.Bitmask)
 			{
-				szEntryId += strings::formatmessage(IDS_ONEOFFENTRYIDFOOTERUNICODE,
-					m_OneOffRecipientObject.Bitmask, szFlags.c_str(),
+				szEntryId += strings::formatmessage(
+					IDS_ONEOFFENTRYIDFOOTERUNICODE,
+					m_OneOffRecipientObject.Bitmask,
+					szFlags.c_str(),
 					m_OneOffRecipientObject.Unicode.DisplayName.c_str(),
 					m_OneOffRecipientObject.Unicode.AddressType.c_str(),
 					m_OneOffRecipientObject.Unicode.EmailAddress.c_str());
 			}
 			else
 			{
-				szEntryId += strings::formatmessage(IDS_ONEOFFENTRYIDFOOTERANSI,
-					m_OneOffRecipientObject.Bitmask, szFlags.c_str(),
+				szEntryId += strings::formatmessage(
+					IDS_ONEOFFENTRYIDFOOTERANSI,
+					m_OneOffRecipientObject.Bitmask,
+					szFlags.c_str(),
 					m_OneOffRecipientObject.ANSI.DisplayName.c_str(),
 					m_OneOffRecipientObject.ANSI.AddressType.c_str(),
 					m_OneOffRecipientObject.ANSI.EmailAddress.c_str());
@@ -356,9 +364,12 @@ namespace smartview
 			auto szVersion = interpretprop::InterpretFlags(flagExchangeABVersion, m_AddressBookObject.Version);
 			auto szType = InterpretNumberAsStringProp(m_AddressBookObject.Type, PR_DISPLAY_TYPE);
 
-			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEADDRESSDATA,
-				m_AddressBookObject.Version, szVersion.c_str(),
-				m_AddressBookObject.Type, szType.c_str(),
+			szEntryId += strings::formatmessage(
+				IDS_ENTRYIDEXCHANGEADDRESSDATA,
+				m_AddressBookObject.Version,
+				szVersion.c_str(),
+				m_AddressBookObject.Type,
+				szType.c_str(),
 				m_AddressBookObject.X500DN.c_str());
 		}
 		// Contact Address Book / Personal Distribution List (PDL)
@@ -367,16 +378,21 @@ namespace smartview
 			auto szVersion = interpretprop::InterpretFlags(flagContabVersion, m_ContactAddressBookObject.Version);
 			auto szType = interpretprop::InterpretFlags(flagContabType, m_ContactAddressBookObject.Type);
 
-			szEntryId += strings::formatmessage(IDS_ENTRYIDCONTACTADDRESSDATAHEAD,
-				m_ContactAddressBookObject.Version, szVersion.c_str(),
-				m_ContactAddressBookObject.Type, szType.c_str());
+			szEntryId += strings::formatmessage(
+				IDS_ENTRYIDCONTACTADDRESSDATAHEAD,
+				m_ContactAddressBookObject.Version,
+				szVersion.c_str(),
+				m_ContactAddressBookObject.Type,
+				szType.c_str());
 
 			switch (m_ContactAddressBookObject.Type)
 			{
 			case CONTAB_USER:
 			case CONTAB_DISTLIST:
-				szEntryId += strings::formatmessage(IDS_ENTRYIDCONTACTADDRESSDATAUSER,
-					m_ContactAddressBookObject.Index, interpretprop::InterpretFlags(flagContabIndex, m_ContactAddressBookObject.Index).c_str(),
+				szEntryId += strings::formatmessage(
+					IDS_ENTRYIDCONTACTADDRESSDATAUSER,
+					m_ContactAddressBookObject.Index,
+					interpretprop::InterpretFlags(flagContabIndex, m_ContactAddressBookObject.Index).c_str(),
 					m_ContactAddressBookObject.EntryIDCount);
 				break;
 			case CONTAB_ROOT:
@@ -396,7 +412,10 @@ namespace smartview
 		}
 		else if (eidtWAB == m_ObjectType)
 		{
-			szEntryId += strings::formatmessage(IDS_ENTRYIDWRAPPEDENTRYIDDATA, m_WAB.Type, interpretprop::InterpretFlags(flagWABEntryIDType, m_WAB.Type).c_str());
+			szEntryId += strings::formatmessage(
+				IDS_ENTRYIDWRAPPEDENTRYIDDATA,
+				m_WAB.Type,
+				interpretprop::InterpretFlags(flagWABEntryIDType, m_WAB.Type).c_str());
 
 			for (auto& entry : m_WAB.lpEntryID)
 			{
@@ -408,19 +427,25 @@ namespace smartview
 			auto szVersion = interpretprop::InterpretFlags(flagMDBVersion, m_MessageDatabaseObject.Version);
 			auto szFlag = interpretprop::InterpretFlags(flagMDBFlag, m_MessageDatabaseObject.Flag);
 
-			szEntryId += strings::formatmessage(IDS_ENTRYIDMAPIMESSAGESTOREDATA,
-				m_MessageDatabaseObject.Version, szVersion.c_str(),
-				m_MessageDatabaseObject.Flag, szFlag.c_str(),
+			szEntryId += strings::formatmessage(
+				IDS_ENTRYIDMAPIMESSAGESTOREDATA,
+				m_MessageDatabaseObject.Version,
+				szVersion.c_str(),
+				m_MessageDatabaseObject.Flag,
+				szFlag.c_str(),
 				m_MessageDatabaseObject.DLLFileName.c_str());
 			if (m_MessageDatabaseObject.bIsExchange)
 			{
-				auto szWrappedType = InterpretNumberAsStringProp(m_MessageDatabaseObject.WrappedType, PR_PROFILE_OPEN_FLAGS);
+				auto szWrappedType =
+					InterpretNumberAsStringProp(m_MessageDatabaseObject.WrappedType, PR_PROFILE_OPEN_FLAGS);
 
 				szGUID = guid::GUIDToStringAndName(&m_MessageDatabaseObject.WrappedProviderUID);
-				szEntryId += strings::formatmessage(IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATA,
+				szEntryId += strings::formatmessage(
+					IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATA,
 					m_MessageDatabaseObject.WrappedFlags,
 					szGUID.c_str(),
-					m_MessageDatabaseObject.WrappedType, szWrappedType.c_str(),
+					m_MessageDatabaseObject.WrappedType,
+					szWrappedType.c_str(),
 					m_MessageDatabaseObject.ServerShortname.c_str(),
 					m_MessageDatabaseObject.MailboxDN.c_str());
 			}
@@ -432,10 +457,13 @@ namespace smartview
 				auto szV2Magic = interpretprop::InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v2.ulMagic);
 				auto szV2Version = interpretprop::InterpretFlags(flagEidVersion, m_MessageDatabaseObject.v2.ulVersion);
 
-				szEntryId += strings::formatmessage(IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV2,
-					m_MessageDatabaseObject.v2.ulMagic, szV2Magic.c_str(),
+				szEntryId += strings::formatmessage(
+					IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV2,
+					m_MessageDatabaseObject.v2.ulMagic,
+					szV2Magic.c_str(),
 					m_MessageDatabaseObject.v2.ulSize,
-					m_MessageDatabaseObject.v2.ulVersion, szV2Version.c_str(),
+					m_MessageDatabaseObject.v2.ulVersion,
+					szV2Version.c_str(),
 					m_MessageDatabaseObject.v2.ulOffsetDN,
 					m_MessageDatabaseObject.v2.ulOffsetFQDN,
 					m_MessageDatabaseObject.v2DN.c_str(),
@@ -449,10 +477,13 @@ namespace smartview
 				auto szV3Magic = interpretprop::InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v3.ulMagic);
 				auto szV3Version = interpretprop::InterpretFlags(flagEidVersion, m_MessageDatabaseObject.v3.ulVersion);
 
-				szEntryId += strings::formatmessage(IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV3,
-					m_MessageDatabaseObject.v3.ulMagic, szV3Magic.c_str(),
+				szEntryId += strings::formatmessage(
+					IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV3,
+					m_MessageDatabaseObject.v3.ulMagic,
+					szV3Magic.c_str(),
 					m_MessageDatabaseObject.v3.ulSize,
-					m_MessageDatabaseObject.v3.ulVersion, szV3Version.c_str(),
+					m_MessageDatabaseObject.v3.ulVersion,
+					szV3Version.c_str(),
 					m_MessageDatabaseObject.v3.ulOffsetSmtpAddress,
 					m_MessageDatabaseObject.v3SmtpAddress.c_str());
 
@@ -467,9 +498,8 @@ namespace smartview
 
 			auto szDatabaseGUID = guid::GUIDToStringAndName(&m_FolderOrMessage.FolderObject.DatabaseGUID);
 
-			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEFOLDERDATA,
-				m_FolderOrMessage.Type, szType.c_str(),
-				szDatabaseGUID.c_str());
+			szEntryId += strings::formatmessage(
+				IDS_ENTRYIDEXCHANGEFOLDERDATA, m_FolderOrMessage.Type, szType.c_str(), szDatabaseGUID.c_str());
 			szEntryId += strings::BinToHexString(m_FolderOrMessage.FolderObject.GlobalCounter, true);
 
 			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEDATAPAD);
@@ -479,18 +509,17 @@ namespace smartview
 		{
 			auto szType = interpretprop::InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
 			auto szFolderDatabaseGUID = guid::GUIDToStringAndName(&m_FolderOrMessage.MessageObject.FolderDatabaseGUID);
-			auto szMessageDatabaseGUID = guid::GUIDToStringAndName(&m_FolderOrMessage.MessageObject.MessageDatabaseGUID);
+			auto szMessageDatabaseGUID =
+				guid::GUIDToStringAndName(&m_FolderOrMessage.MessageObject.MessageDatabaseGUID);
 
-			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEMESSAGEDATA,
-				m_FolderOrMessage.Type, szType.c_str(),
-				szFolderDatabaseGUID.c_str());
+			szEntryId += strings::formatmessage(
+				IDS_ENTRYIDEXCHANGEMESSAGEDATA, m_FolderOrMessage.Type, szType.c_str(), szFolderDatabaseGUID.c_str());
 			szEntryId += strings::BinToHexString(m_FolderOrMessage.MessageObject.FolderGlobalCounter, true);
 
 			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEDATAPADNUM, 1);
 			szEntryId += strings::BinToHexString(m_FolderOrMessage.MessageObject.Pad1, true);
 
-			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEMESSAGEDATAGUID,
-				szMessageDatabaseGUID.c_str());
+			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEMESSAGEDATAGUID, szMessageDatabaseGUID.c_str());
 			szEntryId += strings::BinToHexString(m_FolderOrMessage.MessageObject.MessageGlobalCounter, true);
 
 			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEDATAPADNUM, 2);

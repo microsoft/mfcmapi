@@ -30,7 +30,7 @@ namespace mapiprocessor
 		void InitFolder(_In_ LPMAPIFOLDER lpFolder);
 		void InitFolderContentsRestriction(_In_opt_ LPSRestriction lpRes);
 		void InitMaxOutput(_In_ ULONG ulCount);
-		void InitSortOrder(_In_  const  _SSortOrderSet*lpSort);
+		void InitSortOrder(_In_ const _SSortOrderSet* lpSort);
 
 		// Processing functions
 		void ProcessMailboxTable(_In_ const std::wstring& szExchangeServerName);
@@ -76,12 +76,22 @@ namespace mapiprocessor
 		// The Begin functions return true if work should continue
 		// Do and End functions will only be called if Begin returned true
 		// If BeginMessageWork returns false, we'll never call the recipient or attachment functions
-		virtual bool BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpParentMessageData, _Deref_out_opt_ LPVOID* lpData);
+		virtual bool
+		BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpParentMessageData, _Deref_out_opt_ LPVOID* lpData);
 		virtual bool BeginRecipientWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
-		virtual void DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ const  _SRow*lpSRow, ULONG ulCurRow);
+		virtual void DoMessagePerRecipientWork(
+			_In_ LPMESSAGE lpMessage,
+			_In_ LPVOID lpData,
+			_In_ const _SRow* lpSRow,
+			ULONG ulCurRow);
 		virtual void EndRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
 		virtual bool BeginAttachmentWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
-		virtual void DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ const  _SRow*lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow);
+		virtual void DoMessagePerAttachmentWork(
+			_In_ LPMESSAGE lpMessage,
+			_In_ LPVOID lpData,
+			_In_ const _SRow* lpSRow,
+			_In_ LPATTACH lpAttach,
+			ULONG ulCurRow);
 		virtual void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
 		virtual void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
 
@@ -92,7 +102,7 @@ namespace mapiprocessor
 
 		// FolderList functions
 		// Add a new node to the end of the folder list
-		void AddFolderToFolderList(_In_opt_ const  _SBinary*lpFolderEID, _In_ const std::wstring& szFolderOffsetPath);
+		void AddFolderToFolderList(_In_opt_ const _SBinary* lpFolderEID, _In_ const std::wstring& szFolderOffsetPath);
 
 		// Call OpenEntry on the first folder in the list, remove it from the list
 		void OpenFirstFolderInList();

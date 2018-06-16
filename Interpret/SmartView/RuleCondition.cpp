@@ -6,15 +6,9 @@
 
 namespace smartview
 {
-	RuleCondition::RuleCondition()
-	{
-		m_bExtended = false;
-	}
+	RuleCondition::RuleCondition() { m_bExtended = false; }
 
-	void RuleCondition::Init(bool bExtended)
-	{
-		m_bExtended = bExtended;
-	}
+	void RuleCondition::Init(bool bExtended) { m_bExtended = bExtended; }
 
 	void RuleCondition::Parse()
 	{
@@ -65,38 +59,39 @@ namespace smartview
 
 		if (m_bExtended)
 		{
-			ruleCondition.push_back(strings::formatmessage(IDS_EXRULECONHEADER,
-				m_NamedPropertyInformation.NoOfNamedProps));
+			ruleCondition.push_back(
+				strings::formatmessage(IDS_EXRULECONHEADER, m_NamedPropertyInformation.NoOfNamedProps));
 		}
 		else
 		{
-			ruleCondition.push_back(strings::formatmessage(IDS_RULECONHEADER,
-				m_NamedPropertyInformation.NoOfNamedProps));
+			ruleCondition.push_back(
+				strings::formatmessage(IDS_RULECONHEADER, m_NamedPropertyInformation.NoOfNamedProps));
 		}
 
 		if (m_NamedPropertyInformation.PropId.size())
 		{
-			ruleCondition.push_back(strings::formatmessage(IDS_RULECONNAMEPROPSIZE,
-				m_NamedPropertyInformation.NamedPropertiesSize));
+			ruleCondition.push_back(
+				strings::formatmessage(IDS_RULECONNAMEPROPSIZE, m_NamedPropertyInformation.NamedPropertiesSize));
 
 			for (size_t i = 0; i < m_NamedPropertyInformation.PropId.size(); i++)
 			{
-				ruleCondition.push_back(strings::formatmessage(IDS_RULECONNAMEPROPID, i, m_NamedPropertyInformation.PropId[i]));
+				ruleCondition.push_back(
+					strings::formatmessage(IDS_RULECONNAMEPROPID, i, m_NamedPropertyInformation.PropId[i]));
 
-				ruleCondition.push_back(strings::formatmessage(IDS_RULECONNAMEPROPKIND,
-					m_NamedPropertyInformation.PropertyName[i].Kind));
+				ruleCondition.push_back(
+					strings::formatmessage(IDS_RULECONNAMEPROPKIND, m_NamedPropertyInformation.PropertyName[i].Kind));
 
 				ruleCondition.push_back(guid::GUIDToString(&m_NamedPropertyInformation.PropertyName[i].Guid));
 
 				if (MNID_ID == m_NamedPropertyInformation.PropertyName[i].Kind)
 				{
-					ruleCondition.push_back(strings::formatmessage(IDS_RULECONNAMEPROPLID,
-						m_NamedPropertyInformation.PropertyName[i].LID));
+					ruleCondition.push_back(
+						strings::formatmessage(IDS_RULECONNAMEPROPLID, m_NamedPropertyInformation.PropertyName[i].LID));
 				}
 				else if (MNID_STRING == m_NamedPropertyInformation.PropertyName[i].Kind)
 				{
-					ruleCondition.push_back(strings::formatmessage(IDS_RULENAMEPROPSIZE,
-						m_NamedPropertyInformation.PropertyName[i].NameSize));
+					ruleCondition.push_back(strings::formatmessage(
+						IDS_RULENAMEPROPSIZE, m_NamedPropertyInformation.PropertyName[i].NameSize));
 					ruleCondition.push_back(m_NamedPropertyInformation.PropertyName[i].Name);
 				}
 			}

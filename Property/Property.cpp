@@ -117,21 +117,17 @@ namespace property
 			return szXML.str();
 		}
 
-		if (m_MainParsing.size() == 1) szXML << m_MainParsing[0].toXML(columns::PropXMLNames[columns::pcPROPVAL].uidName, iIndent);
-		if (m_AltParsing.size() == 1) szXML << m_AltParsing[0].toXML(columns::PropXMLNames[columns::pcPROPVALALT].uidName, iIndent);
+		if (m_MainParsing.size() == 1)
+			szXML << m_MainParsing[0].toXML(columns::PropXMLNames[columns::pcPROPVAL].uidName, iIndent);
+		if (m_AltParsing.size() == 1)
+			szXML << m_AltParsing[0].toXML(columns::PropXMLNames[columns::pcPROPVALALT].uidName, iIndent);
 
 		return szXML.str();
 	}
 
-	std::wstring Property::toString() const
-	{
-		return toString(m_MainParsing);
-	}
+	std::wstring Property::toString() const { return toString(m_MainParsing); }
 
-	std::wstring Property::toAltString() const
-	{
-		return toString(m_AltParsing);
-	}
+	std::wstring Property::toAltString() const { return toString(m_AltParsing); }
 
 	std::wstring Property::toString(const std::vector<Parsing>& parsings) const
 	{

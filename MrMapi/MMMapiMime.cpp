@@ -42,17 +42,29 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 			printf("   CharSetType: ");
 			switch (ProgOpts.cSetType)
 			{
-			case CHARSET_BODY: printf("CHARSET_BODY"); break;
-			case CHARSET_HEADER: printf("CHARSET_HEADER"); break;
-			case CHARSET_WEB: printf("CHARSET_WEB"); break;
+			case CHARSET_BODY:
+				printf("CHARSET_BODY");
+				break;
+			case CHARSET_HEADER:
+				printf("CHARSET_HEADER");
+				break;
+			case CHARSET_WEB:
+				printf("CHARSET_WEB");
+				break;
 			}
 			printf("\n");
 			printf("   CharSetApplyType: ");
 			switch (ProgOpts.cSetApplyType)
 			{
-			case CSET_APPLY_UNTAGGED: printf("CSET_APPLY_UNTAGGED"); break;
-			case CSET_APPLY_ALL: printf("CSET_APPLY_ALL"); break;
-			case CSET_APPLY_TAG_ALL: printf("CSET_APPLY_TAG_ALL"); break;
+			case CSET_APPLY_UNTAGGED:
+				printf("CSET_APPLY_UNTAGGED");
+				break;
+			case CSET_APPLY_ALL:
+				printf("CSET_APPLY_ALL");
+				break;
+			case CSET_APPLY_TAG_ALL:
+				printf("CSET_APPLY_TAG_ALL");
+				break;
 			}
 			printf("\n");
 		}

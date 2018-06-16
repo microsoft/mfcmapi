@@ -16,25 +16,13 @@ namespace property
 		m_value = other.m_value;
 	}
 
-	bool Attribute::empty() const
-	{
-		return m_key.empty() && m_value.empty();
-	}
+	bool Attribute::empty() const { return m_key.empty() && m_value.empty(); }
 
-	std::wstring Attribute::Key() const
-	{
-		return m_key;
-	}
+	std::wstring Attribute::Key() const { return m_key; }
 
-	std::wstring Attribute::Value() const
-	{
-		return m_value;
-	}
+	std::wstring Attribute::Value() const { return m_value; }
 
-	std::wstring Attribute::toXML() const
-	{
-		return m_key + L"=\"" + m_value + L"\" ";
-	}
+	std::wstring Attribute::toXML() const { return m_key + L"=\"" + m_value + L"\" "; }
 
 	void Attributes::AddAttribute(const std::wstring& key, const std::wstring& value)
 	{

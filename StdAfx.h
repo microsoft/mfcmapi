@@ -3,7 +3,7 @@
 #define VC_EXTRALEAN // Exclude rarely-used stuff from Windows headers
 
 #pragma warning(push)
-#pragma warning(disable: 4995)
+#pragma warning(disable : 4995)
 #include <cstdio>
 #include <cstring>
 #include <cwchar>
@@ -20,13 +20,13 @@
 #include <sal.h>
 // A bug in annotations in shobjidl.h forces us to disable 6387 to include afxwin.h
 #pragma warning(push)
-#pragma warning(disable:6387)
+#pragma warning(disable : 6387)
 #include <afxwin.h> // MFC core and standard components
 #pragma warning(pop)
 #include <afxcmn.h> // MFC support for Windows Common Controls
 
 #pragma warning(push)
-#pragma warning(disable: 4091)
+#pragma warning(disable : 4091)
 #include <ShlObj.h>
 #pragma warning(pop)
 
@@ -35,9 +35,7 @@
 
 // Fix a build issue with a few versions of the MAPI headers
 #if !defined(FREEBUFFER_DEFINED)
-typedef ULONG(STDAPICALLTYPE FREEBUFFER)(
-	LPVOID lpBuffer
-	);
+typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 #define FREEBUFFER_DEFINED
 #endif
 
@@ -84,10 +82,10 @@ struct TagNames
 };
 
 // Macros to assist in OnInitMenu
-#define CHECK(state) ((state)?MF_CHECKED:MF_UNCHECKED)
-#define DIM(state) ((state)?MF_ENABLED:MF_GRAYED)
-#define DIMMSOK(iNumSelected) ((iNumSelected>=1)?MF_ENABLED:MF_GRAYED)
-#define DIMMSNOK(iNumSelected) ((iNumSelected==1)?MF_ENABLED:MF_GRAYED)
+#define CHECK(state) ((state) ? MF_CHECKED : MF_UNCHECKED)
+#define DIM(state) ((state) ? MF_ENABLED : MF_GRAYED)
+#define DIMMSOK(iNumSelected) ((iNumSelected >= 1) ? MF_ENABLED : MF_GRAYED)
+#define DIMMSNOK(iNumSelected) ((iNumSelected == 1) ? MF_ENABLED : MF_GRAYED)
 
 // Various flags gleaned from product documentation and KB articles
 // http://msdn2.microsoft.com/en-us/library/ms526744.aspx
@@ -121,26 +119,27 @@ struct TagNames
 // Custom messages - used to ensure actions occur on the right threads.
 
 // Used by CAdviseSink:
-#define WM_MFCMAPI_ADDITEM (WM_APP+1)
-#define WM_MFCMAPI_DELETEITEM (WM_APP+2)
-#define WM_MFCMAPI_MODIFYITEM (WM_APP+3)
-#define WM_MFCMAPI_REFRESHTABLE (WM_APP+4)
+#define WM_MFCMAPI_ADDITEM (WM_APP + 1)
+#define WM_MFCMAPI_DELETEITEM (WM_APP + 2)
+#define WM_MFCMAPI_MODIFYITEM (WM_APP + 3)
+#define WM_MFCMAPI_REFRESHTABLE (WM_APP + 4)
 
 // Used by DwThreadFuncLoadTable
-#define WM_MFCMAPI_THREADADDITEM (WM_APP+5)
-#define WM_MFCMAPI_UPDATESTATUSBAR (WM_APP+6)
-#define WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST (WM_APP+7)
+#define WM_MFCMAPI_THREADADDITEM (WM_APP + 5)
+#define WM_MFCMAPI_UPDATESTATUSBAR (WM_APP + 6)
+#define WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST (WM_APP + 7)
 
 // Used by CSingleMAPIPropListCtrl and CSortHeader
-#define WM_MFCMAPI_SAVECOLUMNORDERHEADER (WM_APP+10)
-#define WM_MFCMAPI_SAVECOLUMNORDERLIST (WM_APP+11)
+#define WM_MFCMAPI_SAVECOLUMNORDERHEADER (WM_APP + 10)
+#define WM_MFCMAPI_SAVECOLUMNORDERLIST (WM_APP + 11)
 
 // Used by CContentsTableDlg
-#define WM_MFCMAPI_RESETCOLUMNS (WM_APP+12)
+#define WM_MFCMAPI_RESETCOLUMNS (WM_APP + 12)
 
 // Definitions for WrapCompressedRTFStreamEx in param for WrapCompressedRTFStreamEX
 // http://msdn2.microsoft.com/en-us/library/bb905293.aspx
-struct RTF_WCSINFO {
+struct RTF_WCSINFO
+{
 	ULONG size; // Size of the structure
 	ULONG ulFlags;
 	/****** MAPI_MODIFY ((ULONG) 0x00000001) above */
@@ -152,7 +151,8 @@ struct RTF_WCSINFO {
 
 // out param type information for WrapCompressedRTFStreamEX
 // http://msdn2.microsoft.com/en-us/library/bb905294.aspx
-struct RTF_WCSRETINFO {
+struct RTF_WCSRETINFO
+{
 	ULONG size; // Size of the structure
 	ULONG ulStreamFlags;
 	/****** MAPI_NATIVE_BODY_TYPE_RTF ((ULONG) 0x00000001) mapidefs.h */
@@ -168,111 +168,76 @@ struct RTF_WCSRETINFO {
 #define MAPI_NATIVE_BODY_TYPE_PLAINTEXT 0x00000004
 
 // For EditSecurity
-typedef bool(STDAPICALLTYPE EDITSECURITY)
-(
-	HWND hwndOwner,
-	LPSECURITYINFO psi
-	);
+typedef bool(STDAPICALLTYPE EDITSECURITY)(HWND hwndOwner, LPSECURITYINFO psi);
 typedef EDITSECURITY* LPEDITSECURITY;
 
 // For StgCreateStorageEx
-typedef HRESULT(STDAPICALLTYPE STGCREATESTORAGEEX)
-(
+typedef HRESULT(STDAPICALLTYPE STGCREATESTORAGEEX)(
 	IN const WCHAR* pwcsName,
 	IN DWORD grfMode,
 	IN DWORD stgfmt, // enum
 	IN DWORD grfAttrs, // reserved
-	IN STGOPTIONS * pStgOptions,
-	IN void * reserved,
+	IN STGOPTIONS* pStgOptions,
+	IN void* reserved,
 	IN REFIID riid,
-	OUT void ** ppObjectOpen);
+	OUT void** ppObjectOpen);
 typedef STGCREATESTORAGEEX* LPSTGCREATESTORAGEEX;
 
 // For Themes
-typedef HTHEME(STDMETHODCALLTYPE OPENTHEMEDATA)
-(
-	HWND hwnd,
-	LPCWSTR pszClassList);
+typedef HTHEME(STDMETHODCALLTYPE OPENTHEMEDATA)(HWND hwnd, LPCWSTR pszClassList);
 typedef OPENTHEMEDATA* LPOPENTHEMEDATA;
 
-typedef HTHEME(STDMETHODCALLTYPE CLOSETHEMEDATA)
-(
-	HTHEME hTheme);
+typedef HTHEME(STDMETHODCALLTYPE CLOSETHEMEDATA)(HTHEME hTheme);
 typedef CLOSETHEMEDATA* LPCLOSETHEMEDATA;
 
-typedef HRESULT(STDMETHODCALLTYPE GETTHEMEMARGINS)
-(
+typedef HRESULT(STDMETHODCALLTYPE GETTHEMEMARGINS)(
 	HTHEME hTheme,
 	OPTIONAL HDC hdc,
 	int iPartId,
 	int iStateId,
 	int iPropId,
-	OPTIONAL RECT *prc,
-	OUT MARGINS *pMargins);
+	OPTIONAL RECT* prc,
+	OUT MARGINS* pMargins);
 typedef GETTHEMEMARGINS* LPGETTHEMEMARGINS;
 
-typedef HRESULT(STDMETHODCALLTYPE SETWINDOWTHEME)
-(
-	__in HWND hwnd,
-	__in LPCWSTR pszSubAppName,
-	__in LPCWSTR pszSubIdList
-	);
+typedef HRESULT(
+	STDMETHODCALLTYPE SETWINDOWTHEME)(__in HWND hwnd, __in LPCWSTR pszSubAppName, __in LPCWSTR pszSubIdList);
 typedef SETWINDOWTHEME* LPSETWINDOWTHEME;
 
-typedef int(STDMETHODCALLTYPE GETTHEMESYSSIZE)
-(
-	HTHEME hTheme,
-	int iSizeID
-	);
+typedef int(STDMETHODCALLTYPE GETTHEMESYSSIZE)(HTHEME hTheme, int iSizeID);
 typedef GETTHEMESYSSIZE* LPGETTHEMESYSSIZE;
 
-typedef HRESULT(STDMETHODCALLTYPE MSIPROVIDEQUALIFIEDCOMPONENT)
-(
+typedef HRESULT(STDMETHODCALLTYPE MSIPROVIDEQUALIFIEDCOMPONENT)(
 	LPCWSTR szCategory,
 	LPCWSTR szQualifier,
 	DWORD dwInstallMode,
 	LPWSTR lpPathBuf,
-	LPDWORD pcchPathBuf
-	);
+	LPDWORD pcchPathBuf);
 typedef MSIPROVIDEQUALIFIEDCOMPONENT* LPMSIPROVIDEQUALIFIEDCOMPONENT;
 
-typedef HRESULT(STDMETHODCALLTYPE MSIGETFILEVERSION)
-(
+typedef HRESULT(STDMETHODCALLTYPE MSIGETFILEVERSION)(
 	LPCWSTR szFilePath,
 	LPWSTR lpVersionBuf,
 	LPDWORD pcchVersionBuf,
 	LPWSTR lpLangBuf,
-	LPDWORD pcchLangBuf
-	);
+	LPDWORD pcchLangBuf);
 typedef MSIGETFILEVERSION* LPMSIGETFILEVERSION;
 
-typedef HRESULT(STDMETHODCALLTYPE SHGETPROPERTYSTOREFORWINDOW)
-(
-	HWND hwnd,
-	REFIID riid,
-	void** ppv
-	);
+typedef HRESULT(STDMETHODCALLTYPE SHGETPROPERTYSTOREFORWINDOW)(HWND hwnd, REFIID riid, void** ppv);
 typedef SHGETPROPERTYSTOREFORWINDOW* LPSHGETPROPERTYSTOREFORWINDOW;
 
-typedef LONG(STDMETHODCALLTYPE FINDPACKAGESBYPACKAGEFAMILY)
-(
+typedef LONG(STDMETHODCALLTYPE FINDPACKAGESBYPACKAGEFAMILY)(
 	PCWSTR packageFamilyName,
 	UINT32 packageFilters,
-	UINT32 * count,
-	PWSTR * packageFullNames,
-	UINT32 * bufferLength,
-	WCHAR * buffer,
-	UINT32 * packageProperties
-	);
+	UINT32* count,
+	PWSTR* packageFullNames,
+	UINT32* bufferLength,
+	WCHAR* buffer,
+	UINT32* packageProperties);
 typedef FINDPACKAGESBYPACKAGEFAMILY* LPFINDPACKAGESBYPACKAGEFAMILY;
 
-typedef LONG(STDMETHODCALLTYPE PACKAGEIDFROMFULLNAME)
-(
-	PCWSTR packageFullName,
-	const UINT32 flags,
-	UINT32 * bufferLength,
-	BYTE * buffer
-);
+typedef LONG(STDMETHODCALLTYPE
+				 PACKAGEIDFROMFULLNAME)(PCWSTR packageFullName, const UINT32 flags, UINT32* bufferLength, BYTE* buffer);
 typedef PACKAGEIDFROMFULLNAME* LPPACKAGEIDFROMFULLNAME;
 
 // http://msdn.microsoft.com/en-us/library/office/dn433223.aspx
@@ -305,37 +270,41 @@ typedef DIR_ENTRYID* LPDIR_ENTRYID;
 
 // http://msdn2.microsoft.com/en-us/library/bb820951.aspx
 #define MAPI_IPROXYSTOREOBJECT_METHODS(IPURE) \
- MAPIMETHOD(PlaceHolder1) \
- () IPURE; \
- MAPIMETHOD(UnwrapNoRef) \
- (LPVOID *ppvObject) IPURE; \
- MAPIMETHOD(PlaceHolder2) \
- () IPURE;
+	MAPIMETHOD(PlaceHolder1) \
+	() IPURE; \
+	MAPIMETHOD(UnwrapNoRef) \
+	(LPVOID * ppvObject) IPURE; \
+	MAPIMETHOD(PlaceHolder2) \
+	() IPURE;
 
+// clang-format off
 DECLARE_MAPI_INTERFACE_(IProxyStoreObject, IUnknown)
 {
 	BEGIN_INTERFACE
 		MAPI_IUNKNOWN_METHODS(PURE)
 		MAPI_IPROXYSTOREOBJECT_METHODS(PURE)
 };
+// clang-format on
 
 #ifndef MAPI_IMAPICLIENTSHUTDOWN_METHODS
 // http://blogs.msdn.com/stephen_griffin/archive/2009/03/03/fastest-shutdown-in-the-west.aspx
 DECLARE_MAPI_INTERFACE_PTR(IMAPIClientShutdown, LPMAPICLIENTSHUTDOWN);
 #define MAPI_IMAPICLIENTSHUTDOWN_METHODS(IPURE) \
- MAPIMETHOD(QueryFastShutdown) \
- (THIS) IPURE; \
- MAPIMETHOD(NotifyProcessShutdown) \
- (THIS) IPURE; \
- MAPIMETHOD(DoFastShutdown) \
- (THIS) IPURE;
+	MAPIMETHOD(QueryFastShutdown) \
+	(THIS) IPURE; \
+	MAPIMETHOD(NotifyProcessShutdown) \
+	(THIS) IPURE; \
+	MAPIMETHOD(DoFastShutdown) \
+	(THIS) IPURE;
 
+// clang-format off
 DECLARE_MAPI_INTERFACE_(IMAPIClientShutdown, IUnknown)
 {
 	BEGIN_INTERFACE
 		MAPI_IUNKNOWN_METHODS(PURE)
 		MAPI_IMAPICLIENTSHUTDOWN_METHODS(PURE)
 };
+// clang-format on
 #define _IID_IMAPIClientShutdown_MISSING_IN_HEADER
 #endif // MAPI_IMAPICLIENTSHUTDOWN_METHODS
 
@@ -344,19 +313,21 @@ DECLARE_MAPI_INTERFACE_(IMAPIClientShutdown, IUnknown)
 DECLARE_MAPI_INTERFACE_PTR(IMAPIProviderShutdown, LPMAPIPROVIDERSHUTDOWN);
 
 #define MAPI_IMAPIPROVIDERSHUTDOWN_METHODS(IPURE) \
- MAPIMETHOD(QueryFastShutdown) \
- (THIS) IPURE; \
- MAPIMETHOD(NotifyProcessShutdown) \
- (THIS) IPURE; \
- MAPIMETHOD(DoFastShutdown) \
- (THIS) IPURE;
+	MAPIMETHOD(QueryFastShutdown) \
+	(THIS) IPURE; \
+	MAPIMETHOD(NotifyProcessShutdown) \
+	(THIS) IPURE; \
+	MAPIMETHOD(DoFastShutdown) \
+	(THIS) IPURE;
 
+// clang-format off
 DECLARE_MAPI_INTERFACE_(IMAPIProviderShutdown, IUnknown)
 {
 	BEGIN_INTERFACE
 		MAPI_IUNKNOWN_METHODS(PURE)
 		MAPI_IMAPIPROVIDERSHUTDOWN_METHODS(PURE)
 };
+// clang-format on
 #endif // MAPI_IMAPIPROVIDERSHUTDOWN_METHODS
 
 // for CompareStrings
@@ -386,15 +357,17 @@ static DWORD g_lcid = MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SOR
 
 // http://msdn2.microsoft.com/en-us/library/bb820933.aspx
 #define MAPI_IATTACHMENTSECURITY_METHODS(IPURE) \
- MAPIMETHOD(IsAttachmentBlocked) \
- (LPCWSTR pwszFileName, BOOL *pfBlocked) IPURE;
+	MAPIMETHOD(IsAttachmentBlocked) \
+	(LPCWSTR pwszFileName, BOOL * pfBlocked) IPURE;
 
+// clang-format off
 DECLARE_MAPI_INTERFACE_(IAttachmentSecurity, IUnknown)
 {
 	BEGIN_INTERFACE
 		MAPI_IUNKNOWN_METHODS(PURE)
 		MAPI_IATTACHMENTSECURITY_METHODS(PURE)
 };
+// clang-format on
 
 // http://msdn2.microsoft.com/en-us/library/bb820937.aspx
 #define STORE_PUSHER_OK ((ULONG) 0x00800000)
@@ -452,21 +425,14 @@ struct INDEX_SEARCH_PUSHER_PROCESS
 *-----------------------------------------------------------------------*/
 
 #define EXCHANGE_IEXCHANGEMANAGESTORE5_METHODS(IPURE) \
- MAPIMETHOD(GetMailboxTableEx) \
- (THIS_ LPSTR lpszServerName, \
- LPGUID lpguidMdb, \
- LPMAPITABLE* lppTable, \
- ULONG ulFlags, \
- UINT uOffset) IPURE; \
- MAPIMETHOD(GetPublicFolderTableEx) \
- (THIS_ LPSTR lpszServerName, \
- LPGUID lpguidMdb, \
- LPMAPITABLE* lppTable, \
- ULONG ulFlags, \
- UINT uOffset) IPURE; \
+	MAPIMETHOD(GetMailboxTableEx) \
+	(THIS_ LPSTR lpszServerName, LPGUID lpguidMdb, LPMAPITABLE * lppTable, ULONG ulFlags, UINT uOffset) IPURE; \
+	MAPIMETHOD(GetPublicFolderTableEx) \
+	(THIS_ LPSTR lpszServerName, LPGUID lpguidMdb, LPMAPITABLE * lppTable, ULONG ulFlags, UINT uOffset) IPURE;
 
 #undef INTERFACE
 #define INTERFACE IExchangeManageStore5
+// clang-format off
 DECLARE_MAPI_INTERFACE_(IExchangeManageStore5, IUnknown)
 {
 	MAPI_IUNKNOWN_METHODS(PURE)
@@ -476,6 +442,7 @@ DECLARE_MAPI_INTERFACE_(IExchangeManageStore5, IUnknown)
 		EXCHANGE_IEXCHANGEMANAGESTORE4_METHODS(PURE)
 		EXCHANGE_IEXCHANGEMANAGESTORE5_METHODS(PURE)
 };
+// clang-format on
 #undef IMPL
 #define IMPL
 
@@ -483,37 +450,34 @@ DECLARE_MAPI_INTERFACE_PTR(IExchangeManageStore5, LPEXCHANGEMANAGESTORE5);
 #endif // #ifndef EXCHANGE_IEXCHANGEMANAGESTORE5_METHODS
 
 #define EXCHANGE_IEXCHANGEMANAGESTOREEX_METHODS(IPURE) \
- MAPIMETHOD(CreateStoreEntryID2) \
- (THIS_ ULONG cValues, \
- LPSPropValue lpPropArray, \
- ULONG ulFlags, \
- ULONG* lpcbEntryID, \
- LPENTRYID * lppEntryID) IPURE;
+	MAPIMETHOD(CreateStoreEntryID2) \
+	(THIS_ ULONG cValues, LPSPropValue lpPropArray, ULONG ulFlags, ULONG * lpcbEntryID, LPENTRYID * lppEntryID) IPURE;
 
 #undef INTERFACE
 #define INTERFACE IExchangeManageStoreEx
+// clang-format off
 DECLARE_MAPI_INTERFACE_(IExchangeManageStoreEx, IUnknown)
 {
 	MAPI_IUNKNOWN_METHODS(PURE)
 		EXCHANGE_IEXCHANGEMANAGESTORE_METHODS(PURE)
 		EXCHANGE_IEXCHANGEMANAGESTOREEX_METHODS(PURE)
 };
+// clang-format on
 #undef IMPL
 #define IMPL
 
 DECLARE_MAPI_INTERFACE_PTR(IExchangeManageStoreEx, LPEXCHANGEMANAGESTOREEX);
 
-#define CbNewROWLIST(_centries) (offsetof(ROWLIST,aEntries) + \
- (_centries)*sizeof(ROWENTRY))
-#define MAXNewROWLIST ((ULONG_MAX-offsetof(ROWLIST,aEntries))/sizeof(ROWENTRY))
-#define MAXMessageClassArray ((ULONG_MAX - offsetof(SMessageClassArray, aMessageClass))/sizeof(LPCSTR))
-#define MAXNewADRLIST ((ULONG_MAX - offsetof(ADRLIST, aEntries))/sizeof(ADRENTRY))
+#define CbNewROWLIST(_centries) (offsetof(ROWLIST, aEntries) + (_centries) * sizeof(ROWENTRY))
+#define MAXNewROWLIST ((ULONG_MAX - offsetof(ROWLIST, aEntries)) / sizeof(ROWENTRY))
+#define MAXMessageClassArray ((ULONG_MAX - offsetof(SMessageClassArray, aMessageClass)) / sizeof(LPCSTR))
+#define MAXNewADRLIST ((ULONG_MAX - offsetof(ADRLIST, aEntries)) / sizeof(ADRENTRY))
 
 const WORD TZRULE_FLAG_RECUR_CURRENT_TZREG = 0x0001; // see dispidApptTZDefRecur
 const WORD TZRULE_FLAG_EFFECTIVE_TZREG = 0x0002;
 
 // http://blogs.msdn.com/stephen_griffin/archive/2007/03/19/mapi-and-exchange-2007.aspx
-#define CONNECT_IGNORE_NO_PF ((ULONG)0x8000)
+#define CONNECT_IGNORE_NO_PF ((ULONG) 0x8000)
 
 #define TABLE_SORT_CATEG_MAX ((ULONG) 0x00000004)
 #define TABLE_SORT_CATEG_MIN ((ULONG) 0x00000008)

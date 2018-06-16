@@ -29,8 +29,8 @@ namespace smartview
 		{
 			// Must have at least 2 bytes left to have another flag
 			if (m_Parser.RemainingBytes() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
-			(void)m_Parser.Get<DWORD>();
-			(void)m_Parser.Get<DWORD>();
+			(void) m_Parser.Get<DWORD>();
+			(void) m_Parser.Get<DWORD>();
 			m_Parser.Advance(m_Parser.Get<DWORD>());
 			m_Parser.Advance(m_Parser.Get<WORD>());
 			m_ActualRecordsCount++;
@@ -57,7 +57,8 @@ namespace smartview
 
 	_Check_return_ std::wstring TombStone::ToStringInternal()
 	{
-		auto szTombstoneString = strings::formatmessage(IDS_TOMBSTONEHEADER,
+		auto szTombstoneString = strings::formatmessage(
+			IDS_TOMBSTONEHEADER,
 			m_Identifier,
 			m_HeaderSize,
 			m_Version,
@@ -67,18 +68,18 @@ namespace smartview
 
 		for (ULONG i = 0; i < m_lpRecords.size(); i++)
 		{
-			const SBinary sBin =
-			{
-				static_cast<ULONG>(m_lpRecords[i].lpGlobalObjectId.size()),
-				m_lpRecords[i].lpGlobalObjectId.data()
-			};
+			const SBinary sBin = {static_cast<ULONG>(m_lpRecords[i].lpGlobalObjectId.size()),
+								  m_lpRecords[i].lpGlobalObjectId.data()};
 
 			auto szGoid = InterpretBinaryAsString(sBin, IDS_STGLOBALOBJECTID, nullptr);
 
-			szTombstoneString += strings::formatmessage(IDS_TOMBSTONERECORD,
+			szTombstoneString += strings::formatmessage(
+				IDS_TOMBSTONERECORD,
 				i,
-				m_lpRecords[i].StartTime, RTimeToString(m_lpRecords[i].StartTime).c_str(),
-				m_lpRecords[i].EndTime, RTimeToString(m_lpRecords[i].EndTime).c_str(),
+				m_lpRecords[i].StartTime,
+				RTimeToString(m_lpRecords[i].StartTime).c_str(),
+				m_lpRecords[i].EndTime,
+				RTimeToString(m_lpRecords[i].EndTime).c_str(),
 				m_lpRecords[i].GlobalObjectIdSize,
 				strings::BinToHexString(m_lpRecords[i].lpGlobalObjectId, true).c_str(),
 				szGoid.c_str(),

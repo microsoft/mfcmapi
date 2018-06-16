@@ -67,7 +67,8 @@ namespace smartview
 		for (ULONG i = 0; i < m_lpVerbData.size(); i++)
 		{
 			auto szVerb = smartview::InterpretNumberAsStringProp(m_lpVerbData[i].ID, PR_LAST_VERB_EXECUTED);
-			verbStream.push_back(strings::formatmessage(IDS_VERBDATA,
+			verbStream.push_back(strings::formatmessage(
+				IDS_VERBDATA,
 				i,
 				m_lpVerbData[i].VerbType,
 				m_lpVerbData[i].DisplayNameCount,
@@ -93,7 +94,8 @@ namespace smartview
 
 		for (ULONG i = 0; i < m_lpVerbExtraData.size(); i++)
 		{
-			verbStream.push_back(strings::formatmessage(IDS_VERBEXTRADATA,
+			verbStream.push_back(strings::formatmessage(
+				IDS_VERBEXTRADATA,
 				i,
 				m_lpVerbExtraData[i].DisplayNameCount,
 				m_lpVerbExtraData[i].DisplayName.c_str(),

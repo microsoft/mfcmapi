@@ -21,8 +21,7 @@ HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* 
 
 	if (lpStoreTable)
 	{
-		static const SizedSPropTagArray(1, sptStore) =
-		{
+		static const SizedSPropTagArray(1, sptStore) = {
 			1,
 			PR_ENTRYID,
 		};
@@ -32,18 +31,11 @@ HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* 
 		{
 			LPSRowSet lpRow = nullptr;
 			WC_MAPI(lpStoreTable->SeekRow(BOOKMARK_BEGINNING, ulIndex, NULL));
-			WC_MAPI(lpStoreTable->QueryRows(
-				1,
-				NULL,
-				&lpRow));
+			WC_MAPI(lpStoreTable->QueryRows(1, NULL, &lpRow));
 			if (SUCCEEDED(hRes) && lpRow && 1 == lpRow->cRows && PR_ENTRYID == lpRow->aRow[0].lpProps[0].ulPropTag)
 			{
 				WC_H(mapi::store::CallOpenMsgStore(
-					lpMAPISession,
-					NULL,
-					&lpRow->aRow[0].lpProps[0].Value.bin,
-					MDB_NO_DIALOG | MDB_WRITE,
-					&lpMDB));
+					lpMAPISession, NULL, &lpRow->aRow[0].lpProps[0].Value.bin, MDB_NO_DIALOG | MDB_WRITE, &lpMDB));
 				if (SUCCEEDED(hRes) && lpMDB)
 				{
 					*lppMDB = lpMDB;
@@ -91,15 +83,10 @@ HRESULT HrMAPIOpenStoreAndFolder(
 			// Which is larger than any reasonable store number. So we use that to distinguish.
 			if (bin.size() > 1)
 			{
-				SBinary Bin = { 0 };
+				SBinary Bin = {0};
 				Bin.cb = static_cast<ULONG>(bin.size());
 				Bin.lpb = bin.data();
-				WC_H(mapi::store::CallOpenMsgStore(
-					lpMAPISession,
-					NULL,
-					&Bin,
-					MDB_NO_DIALOG | MDB_WRITE,
-					&lpMDB));
+				WC_H(mapi::store::CallOpenMsgStore(lpMAPISession, NULL, &Bin, MDB_NO_DIALOG | MDB_WRITE, &lpMDB));
 			}
 			else
 			{
@@ -181,14 +168,11 @@ void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 	LPSPropValue lpAllProps = nullptr;
 	ULONG cValues = 0L;
 
-	SPropTagArray sTag = { 0 };
+	SPropTagArray sTag = {0};
 	sTag.cValues = 1;
 	sTag.aulPropTag[0] = ulPropTag;
 
-	WC_H_GETPROPS(lpMAPIProp->GetProps(&sTag,
-		fMapiUnicode,
-		&cValues,
-		&lpAllProps));
+	WC_H_GETPROPS(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
 
 	output::_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
@@ -208,21 +192,15 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 
 	if (ulPropTag)
 	{
-		SPropTagArray sTag = { 0 };
+		SPropTagArray sTag = {0};
 		sTag.cValues = 1;
 		sTag.aulPropTag[0] = ulPropTag;
 
-		WC_H_GETPROPS(lpMAPIProp->GetProps(&sTag,
-			fMapiUnicode,
-			&cValues,
-			&lpAllProps));
+		WC_H_GETPROPS(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
 	}
 	else
 	{
-		WC_H_GETPROPS(mapi::GetPropsNULL(lpMAPIProp,
-			fMapiUnicode,
-			&cValues,
-			&lpAllProps));
+		WC_H_GETPROPS(mapi::GetPropsNULL(lpMAPIProp, fMapiUnicode, &cValues, &lpAllProps));
 	}
 
 	if (FAILED(hRes))
@@ -276,7 +254,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 	if (lpStoreTable)
 	{
 		auto sTags = LPSPropTagArray(&columns::sptSTORECols);
-		SPropTagArray sTag = { 0 };
+		SPropTagArray sTag = {0};
 		if (ulPropTag)
 		{
 			sTag.cValues = 1;
@@ -290,36 +268,34 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 		{
 			LPSRowSet lpRows = nullptr;
 			ULONG iCurStore = 0;
-			if (!FAILED(hRes)) for (;;)
-			{
-				hRes = S_OK;
-				if (lpRows) FreeProws(lpRows);
-				lpRows = nullptr;
-				WC_MAPI(lpStoreTable->QueryRows(
-					10,
-					NULL,
-					&lpRows));
-				if (FAILED(hRes) || !lpRows || !lpRows->cRows) break;
-
-				for (ULONG i = 0; i < lpRows->cRows; i++)
+			if (!FAILED(hRes))
+				for (;;)
 				{
-					wprintf(L"<properties index=\"%u\">\n", iCurStore);
-					if (ulPropTag &&
-						lpRows->aRow[0].lpProps &&
-						PT_ERROR == PROP_TYPE(lpRows->aRow[0].lpProps->ulPropTag) &&
-						MAPI_E_NOT_FOUND == lpRows->aRow[0].lpProps->Value.err)
-					{
-						PrintStoreProperty(lpMAPISession, i, ulPropTag);
-					}
-					else
-					{
-						output::_OutputProperties(DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
-					}
+					hRes = S_OK;
+					if (lpRows) FreeProws(lpRows);
+					lpRows = nullptr;
+					WC_MAPI(lpStoreTable->QueryRows(10, NULL, &lpRows));
+					if (FAILED(hRes) || !lpRows || !lpRows->cRows) break;
 
-					wprintf(L"</properties>\n");
-					iCurStore++;
+					for (ULONG i = 0; i < lpRows->cRows; i++)
+					{
+						wprintf(L"<properties index=\"%u\">\n", iCurStore);
+						if (ulPropTag && lpRows->aRow[0].lpProps &&
+							PT_ERROR == PROP_TYPE(lpRows->aRow[0].lpProps->ulPropTag) &&
+							MAPI_E_NOT_FOUND == lpRows->aRow[0].lpProps->Value.err)
+						{
+							PrintStoreProperty(lpMAPISession, i, ulPropTag);
+						}
+						else
+						{
+							output::_OutputProperties(
+								DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
+						}
+
+						wprintf(L"</properties>\n");
+						iCurStore++;
+					}
 				}
-			}
 
 			if (lpRows) FreeProws(lpRows);
 		}

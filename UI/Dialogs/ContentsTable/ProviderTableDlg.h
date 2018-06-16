@@ -24,7 +24,8 @@ namespace dialog
 			_In_ LPADDINMENUPARAMS lpParams,
 			_In_ LPMAPIPROP lpMAPIProp,
 			_In_ LPMAPICONTAINER lpContainer) override;
-		_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
+		_Check_return_ HRESULT
+		OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
 
 		// Menu items
 		void OnOpenProfileSection();

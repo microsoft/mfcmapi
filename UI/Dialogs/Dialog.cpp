@@ -8,15 +8,9 @@ namespace dialog
 {
 	static std::wstring CLASS = L"CMyDialog";
 
-	CMyDialog::CMyDialog() :CDialog()
-	{
-		Constructor();
-	}
+	CMyDialog::CMyDialog() : CDialog() { Constructor(); }
 
-	CMyDialog::CMyDialog(UINT nIDTemplate, CWnd* pParentWnd) : CDialog(nIDTemplate, pParentWnd)
-	{
-		Constructor();
-	}
+	CMyDialog::CMyDialog(UINT nIDTemplate, CWnd* pParentWnd) : CDialog(nIDTemplate, pParentWnd) { Constructor(); }
 
 	void CMyDialog::Constructor()
 	{
@@ -29,7 +23,7 @@ namespace dialog
 		// If the previous foreground window is ours, remember its handle for computing cascades
 		m_hWndPrevious = ::GetForegroundWindow();
 		DWORD pid = NULL;
-		(void)GetWindowThreadProcessId(m_hWndPrevious, &pid);
+		(void) GetWindowThreadProcessId(m_hWndPrevious, &pid);
 		if (GetCurrentProcessId() != pid)
 		{
 			m_hWndPrevious = nullptr;
@@ -43,35 +37,40 @@ namespace dialog
 	}
 
 	BEGIN_MESSAGE_MAP(CMyDialog, CDialog)
-		ON_WM_MEASUREITEM()
-		ON_WM_DRAWITEM()
+	ON_WM_MEASUREITEM()
+	ON_WM_DRAWITEM()
 	END_MESSAGE_MAP()
 
-	void CMyDialog::SetStatusHeight(int iHeight)
-	{
-		m_iStatusHeight = iHeight;
-	}
+	void CMyDialog::SetStatusHeight(int iHeight) { m_iStatusHeight = iHeight; }
 
-	int CMyDialog::GetStatusHeight() const
-	{
-		return m_iStatusHeight;
-	}
+	int CMyDialog::GetStatusHeight() const { return m_iStatusHeight; }
 
 	std::wstring FormatHT(LRESULT ht)
 	{
 		std::wstring szRet;
 		switch (ht)
 		{
-		case HTNOWHERE: szRet = L"HTNOWHERE"; break;
-		case HTCLIENT: szRet = L"HTCLIENT"; break;
-		case HTCAPTION: szRet = L"HTCAPTION"; break;
-		case HTCLOSE: szRet = L"HTCLOSE"; break;
-		case HTMAXBUTTON: szRet = L"HTMAXBUTTON"; break;
-		case HTMINBUTTON: szRet = L"HTMINBUTTON"; break;
+		case HTNOWHERE:
+			szRet = L"HTNOWHERE";
+			break;
+		case HTCLIENT:
+			szRet = L"HTCLIENT";
+			break;
+		case HTCAPTION:
+			szRet = L"HTCAPTION";
+			break;
+		case HTCLOSE:
+			szRet = L"HTCLOSE";
+			break;
+		case HTMAXBUTTON:
+			szRet = L"HTMAXBUTTON";
+			break;
+		case HTMINBUTTON:
+			szRet = L"HTMINBUTTON";
+			break;
 		}
 
 		return strings::format(L"ht = 0x%X = %ws", ht, szRet.c_str());
-
 	}
 
 	// Point should be screen relative coordinates
@@ -84,7 +83,7 @@ namespace dialog
 		output::DebugPrint(DBGUI, L"CheckButtons: pt = %d %d", pt.x, pt.y);
 
 		// Get the screen coordinates of our window
-		RECT rcWindow = { 0 };
+		RECT rcWindow = {0};
 		GetWindowRect(hWnd, &rcWindow);
 
 		// We subtract to get coordinates relative to our window
@@ -93,13 +92,21 @@ namespace dialog
 		pt.y -= rcWindow.top;
 		output::Outputf(DBGUI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
 
-		RECT rcCloseIcon = { 0 };
-		RECT rcMaxIcon = { 0 };
-		RECT rcMinIcon = { 0 };
+		RECT rcCloseIcon = {0};
+		RECT rcMaxIcon = {0};
+		RECT rcMinIcon = {0};
 		ui::GetCaptionRects(hWnd, nullptr, nullptr, &rcCloseIcon, &rcMaxIcon, &rcMinIcon, nullptr);
-		output::DebugPrint(DBGUI, L"rcMinIcon: %d %d %d %d\n", rcMinIcon.left, rcMinIcon.top, rcMinIcon.right, rcMinIcon.bottom);
-		output::DebugPrint(DBGUI, L"rcMaxIcon: %d %d %d %d\n", rcMaxIcon.left, rcMaxIcon.top, rcMaxIcon.right, rcMaxIcon.bottom);
-		output::DebugPrint(DBGUI, L"rcCloseIcon: %d %d %d %d\n", rcCloseIcon.left, rcCloseIcon.top, rcCloseIcon.right, rcCloseIcon.bottom);
+		output::DebugPrint(
+			DBGUI, L"rcMinIcon: %d %d %d %d\n", rcMinIcon.left, rcMinIcon.top, rcMinIcon.right, rcMinIcon.bottom);
+		output::DebugPrint(
+			DBGUI, L"rcMaxIcon: %d %d %d %d\n", rcMaxIcon.left, rcMaxIcon.top, rcMaxIcon.right, rcMaxIcon.bottom);
+		output::DebugPrint(
+			DBGUI,
+			L"rcCloseIcon: %d %d %d %d\n",
+			rcCloseIcon.left,
+			rcCloseIcon.top,
+			rcCloseIcon.right,
+			rcCloseIcon.bottom);
 		if (PtInRect(&rcCloseIcon, pt)) ret = HTCLOSE;
 		if (PtInRect(&rcMaxIcon, pt)) ret = HTMAXBUTTON;
 		if (PtInRect(&rcMinIcon, pt)) ret = HTMINBUTTON;
@@ -114,7 +121,7 @@ namespace dialog
 	LRESULT CMyDialog::NCHitTest(WPARAM wParam, LPARAM lParam)
 	{
 		// These are screen coordinates of the mouse pointer
-		const POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		const POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
 		output::DebugPrint(DBGUI, L"WM_NCHITTEST: pt = %d %d\r\n", pt.x, pt.y);
 
 		auto ht = CDialog::WindowProc(WM_NCHITTEST, wParam, lParam);
@@ -135,9 +142,9 @@ namespace dialog
 	LRESULT NCHitTestMouse(HWND hWnd, LPARAM lParam)
 	{
 		// These are client coordinates - we need to translate them to screen coordinates
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
 		output::DebugPrint(DBGUI, L"NCHitTestMouse: pt = %d %d", pt.x, pt.y);
-		(void)MapWindowPoints(hWnd, nullptr, &pt, 1); // Map our client point to the screen
+		(void) MapWindowPoints(hWnd, nullptr, &pt, 1); // Map our client point to the screen
 		output::Outputf(DBGUI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
 
 		const auto ht = CheckButtons(hWnd, pt);
@@ -151,7 +158,7 @@ namespace dialog
 		SetCapture(hWnd);
 		for (;;)
 		{
-			MSG msg = { nullptr };
+			MSG msg = {nullptr};
 			if (::PeekMessage(&msg, hWnd, WM_MOUSEFIRST, WM_MOUSELAST, PM_REMOVE))
 			{
 				switch (msg.message)
@@ -232,26 +239,27 @@ namespace dialog
 			{
 				IPropertyStore* pps = nullptr;
 				const auto hRes = import::pfnSHGetPropertyStoreForWindow(m_hWnd, IID_PPV_ARGS(&pps));
-				if (SUCCEEDED(hRes) && pps) {
-					PROPVARIANT var = { 0 };
+				if (SUCCEEDED(hRes) && pps)
+				{
+					PROPVARIANT var = {0};
 					var.vt = VT_LPWSTR;
 					var.pwszVal = const_cast<LPWSTR>(L"Microsoft.MFCMAPI");
 
-					(void)pps->SetValue(PKEY_AppUserModel_ID, var);
+					(void) pps->SetValue(PKEY_AppUserModel_ID, var);
 				}
 
 				if (pps) pps->Release();
 			}
 
-			if (import::pfnSetWindowTheme) (void)import::pfnSetWindowTheme(m_hWnd, L"", L"");
+			if (import::pfnSetWindowTheme) (void) import::pfnSetWindowTheme(m_hWnd, L"", L"");
 			{
 				// These calls force Windows to initialize the system menu for this window.
 				// This avoids repaints whenever the system menu is later accessed.
 				// We eliminate classic mode visual artifacts with this call.
 				(void) ::GetSystemMenu(m_hWnd, false);
-				MENUBARINFO mbi = { 0 };
+				MENUBARINFO mbi = {0};
 				mbi.cbSize = sizeof mbi;
-				(void)GetMenuBarInfo(m_hWnd, OBJID_SYSMENU, 0, &mbi);
+				(void) GetMenuBarInfo(m_hWnd, OBJID_SYSMENU, 0, &mbi);
 			}
 			break;
 		}
@@ -296,13 +304,15 @@ namespace dialog
 		}
 
 		// This effect only applies when opening non-CEditor IDD_BLANK_DIALOG windows
-		if (m_hWndPrevious && !m_lpNonModalParent && m_hwndCenteringWindow && IDD_BLANK_DIALOG == reinterpret_cast<intptr_t>(m_lpszTemplateName))
+		if (m_hWndPrevious && !m_lpNonModalParent && m_hwndCenteringWindow &&
+			IDD_BLANK_DIALOG == reinterpret_cast<intptr_t>(m_lpszTemplateName))
 		{
 			// Cheap cascade effect
-			RECT rc = { 0 };
+			RECT rc = {0};
 			(void) ::GetWindowRect(m_hWndPrevious, &rc);
 			const LONG lOffset = GetSystemMetrics(SM_CXSMSIZE);
-			(void) ::SetWindowPos(m_hWnd, nullptr, rc.left + lOffset, rc.top + lOffset, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+			(void) ::SetWindowPos(
+				m_hWnd, nullptr, rc.left + lOffset, rc.top + lOffset, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 		}
 		else
 		{

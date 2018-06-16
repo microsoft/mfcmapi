@@ -37,87 +37,81 @@ namespace ui
 	};
 
 	// Keep in sync with enum myColor
-	COLORREF g_Colors[cColorEnd] =
-	{
-	 RGB(0xFF, 0xFF, 0xFF), // cWhite
-	 RGB(0xD3, 0xD3, 0xD3), // cLightGrey
-	 RGB(0xAD, 0xAC, 0xAE), // cGrey
-	 RGB(0x64, 0x64, 0x64), // cDarkGrey
-	 RGB(0x00, 0x00, 0x00), // cBlack
-	 RGB(0x00, 0xFF, 0xFF), // cCyan
-	 RGB(0xFF, 0x00, 0xFF), // cMagenta
-	 RGB(0x00, 0x72, 0xC6), // cBlue
-	 RGB(0xCD, 0xE6, 0xF7), // cMedBlue
-	 RGB(0xE6, 0xF2, 0xFA), // cPaleBlue
+	COLORREF g_Colors[cColorEnd] = {
+		RGB(0xFF, 0xFF, 0xFF), // cWhite
+		RGB(0xD3, 0xD3, 0xD3), // cLightGrey
+		RGB(0xAD, 0xAC, 0xAE), // cGrey
+		RGB(0x64, 0x64, 0x64), // cDarkGrey
+		RGB(0x00, 0x00, 0x00), // cBlack
+		RGB(0x00, 0xFF, 0xFF), // cCyan
+		RGB(0xFF, 0x00, 0xFF), // cMagenta
+		RGB(0x00, 0x72, 0xC6), // cBlue
+		RGB(0xCD, 0xE6, 0xF7), // cMedBlue
+		RGB(0xE6, 0xF2, 0xFA), // cPaleBlue
 	};
 
 	// Fixed mapping of UI elements to colors
 	// Will be overridden by system colors when specified in g_SysColors
 	// Keep in sync with enum uiColor
 	// We can swap in cCyan for various entries to test coverage
-	myColor g_FixedColors[cUIEnd] =
-	{
-	 cWhite, // cBackground
-	 cLightGrey, // cBackgroundReadOnly
-	 cBlue, // cGlow
-	 cPaleBlue, // cGlowBackground
-	 cBlack, // cGlowText
-	 cBlack, // cFrameSelected
-	 cGrey, // cFrameUnselected
-	 cMedBlue, // cSelectedBackground
-	 cGrey, // cArrow
-	 cBlack, // cText
-	 cGrey, // cTextDisabled
-	 cBlack, // cTextReadOnly
-	 cMagenta, // cBitmapTransBack
-	 cCyan, // cBitmapTransFore
-	 cBlue, // cStatus
-	 cWhite, // cStatusText
-	 cPaleBlue, // cPaneHeaderBackground,
-	 cBlack, // cPaneHeaderText,
+	myColor g_FixedColors[cUIEnd] = {
+		cWhite, // cBackground
+		cLightGrey, // cBackgroundReadOnly
+		cBlue, // cGlow
+		cPaleBlue, // cGlowBackground
+		cBlack, // cGlowText
+		cBlack, // cFrameSelected
+		cGrey, // cFrameUnselected
+		cMedBlue, // cSelectedBackground
+		cGrey, // cArrow
+		cBlack, // cText
+		cGrey, // cTextDisabled
+		cBlack, // cTextReadOnly
+		cMagenta, // cBitmapTransBack
+		cCyan, // cBitmapTransFore
+		cBlue, // cStatus
+		cWhite, // cStatusText
+		cPaleBlue, // cPaneHeaderBackground,
+		cBlack, // cPaneHeaderText,
 	};
 
 	// Mapping of UI elements to system colors
 	// NULL entries will get the fixed mapping from g_FixedColors
-	int g_SysColors[cUIEnd] =
-	{
-	 COLOR_WINDOW, // cBackground
-	 NULL, // cBackgroundReadOnly
-	 NULL, // cGlow
-	 NULL, // cGlowBackground
-	 NULL, // cGlowText
-	 COLOR_WINDOWTEXT, // cFrameSelected
-	 COLOR_3DLIGHT, // cFrameUnselected
-	 NULL,
-	 COLOR_GRAYTEXT, // cArrow
-	 COLOR_WINDOWTEXT, // cText
-	 COLOR_GRAYTEXT, // cTextDisabled
-	 NULL, // cTextReadOnly
-	 NULL, // cBitmapTransBack
-	 NULL, // cBitmapTransFore
-	 NULL, // cStatus
-	 NULL, // cStatusText
+	int g_SysColors[cUIEnd] = {
+		COLOR_WINDOW, // cBackground
+		NULL, // cBackgroundReadOnly
+		NULL, // cGlow
+		NULL, // cGlowBackground
+		NULL, // cGlowText
+		COLOR_WINDOWTEXT, // cFrameSelected
+		COLOR_3DLIGHT, // cFrameUnselected
+		NULL,
+		COLOR_GRAYTEXT, // cArrow
+		COLOR_WINDOWTEXT, // cText
+		COLOR_GRAYTEXT, // cTextDisabled
+		NULL, // cTextReadOnly
+		NULL, // cBitmapTransBack
+		NULL, // cBitmapTransFore
+		NULL, // cStatus
+		NULL, // cStatusText
 	};
 
 	// Mapping of bitmap resources to constants
 	// NULL entries will get the fixed mapping from g_FixedColors
-	int g_BitmapResources[cBitmapEnd] =
-	{
-	 IDB_ADVISE, // cNotify,
-	 IDB_CLOSE, // cClose,
-	 IDB_MINIMIZE, // cMinimize,
-	 IDB_MAXIMIZE, // cMaximize,
-	 IDB_RESTORE, // cRestore,
+	int g_BitmapResources[cBitmapEnd] = {
+		IDB_ADVISE, // cNotify,
+		IDB_CLOSE, // cClose,
+		IDB_MINIMIZE, // cMinimize,
+		IDB_MAXIMIZE, // cMaximize,
+		IDB_RESTORE, // cRestore,
 	};
 
-	HBRUSH g_FixedBrushes[cColorEnd] = { nullptr };
-	HBRUSH g_SysBrushes[cUIEnd] = { nullptr };
-	HPEN g_Pens[cPenEnd] = { nullptr };
-	HBITMAP g_Bitmaps[cBitmapEnd] = { nullptr };
+	HBRUSH g_FixedBrushes[cColorEnd] = {nullptr};
+	HBRUSH g_SysBrushes[cUIEnd] = {nullptr};
+	HPEN g_Pens[cPenEnd] = {nullptr};
+	HBITMAP g_Bitmaps[cBitmapEnd] = {nullptr};
 
-	void InitializeGDI()
-	{
-	}
+	void InitializeGDI() {}
 
 	void UninitializeGDI()
 	{
@@ -188,10 +182,7 @@ namespace ui
 		return nullptr;
 	}
 
-	_Check_return_ LPMENUENTRY CreateMenuEntry(UINT iudMenu)
-	{
-		return CreateMenuEntry(strings::loadstring(iudMenu));
-	}
+	_Check_return_ LPMENUENTRY CreateMenuEntry(UINT iudMenu) { return CreateMenuEntry(strings::loadstring(iudMenu)); }
 
 	void DeleteMenuEntry(_In_ LPMENUENTRY lpMenu)
 	{
@@ -207,7 +198,7 @@ namespace ui
 
 		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 		{
-			MENUITEMINFOW menuiteminfo = { 0 };
+			MENUITEMINFOW menuiteminfo = {0};
 			menuiteminfo.cbSize = sizeof(MENUITEMINFOW);
 			menuiteminfo.fMask = MIIM_DATA | MIIM_SUBMENU;
 
@@ -232,8 +223,8 @@ namespace ui
 
 		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 		{
-			MENUITEMINFOW menuiteminfo = { 0 };
-			WCHAR szMenu[128] = { 0 };
+			MENUITEMINFOW menuiteminfo = {0};
+			WCHAR szMenu[128] = {0};
 			menuiteminfo.cbSize = sizeof(MENUITEMINFOW);
 			menuiteminfo.fMask = MIIM_STRING | MIIM_SUBMENU | MIIM_FTYPE;
 			menuiteminfo.cch = _countof(szMenu);
@@ -267,11 +258,16 @@ namespace ui
 
 		auto szNewString = strings::loadstring(uidNewString);
 
-		output::DebugPrint(DBGMenu, L"UpdateMenuString: Changing menu item 0x%X on window %p to \"%ws\"\n", uiMenuTag, hWnd, szNewString.c_str());
+		output::DebugPrint(
+			DBGMenu,
+			L"UpdateMenuString: Changing menu item 0x%X on window %p to \"%ws\"\n",
+			uiMenuTag,
+			hWnd,
+			szNewString.c_str());
 		const auto hMenu = GetMenu(hWnd);
 		if (!hMenu) return;
 
-		MENUITEMINFOW MenuInfo = { 0 };
+		MENUITEMINFOW MenuInfo = {0};
 
 		ZeroMemory(&MenuInfo, sizeof MenuInfo);
 
@@ -279,11 +275,7 @@ namespace ui
 		MenuInfo.fMask = MIIM_STRING;
 		MenuInfo.dwTypeData = LPWSTR(szNewString.c_str());
 
-		EC_B(SetMenuItemInfoW(
-			hMenu,
-			uiMenuTag,
-			false,
-			&MenuInfo));
+		EC_B(SetMenuItemInfoW(hMenu, uiMenuTag, false, &MenuInfo));
 	}
 
 	void MergeMenu(_In_ HMENU hMenuDestination, _In_ HMENU hMenuAdd)
@@ -296,7 +288,7 @@ namespace ui
 
 		if (iMenuDestItemCount > 0) ::AppendMenu(hMenuDestination, MF_SEPARATOR, NULL, nullptr);
 
-		WCHAR szMenu[128] = { 0 };
+		WCHAR szMenu[128] = {0};
 		for (auto iLoop = 0; iLoop < iMenuAddItemCount; iLoop++)
 		{
 			GetMenuStringW(hMenuAdd, iLoop, szMenu, _countof(szMenu), MF_BYPOSITION);
@@ -335,12 +327,7 @@ namespace ui
 		const auto hPopup = CreateMenu();
 		auto hContext = ::LoadMenu(nullptr, MAKEINTRESOURCE(uiClassMenu));
 
-		::InsertMenu(
-			hPopup,
-			0,
-			MF_BYPOSITION | MF_POPUP,
-			reinterpret_cast<UINT_PTR>(hContext),
-			_T(""));
+		::InsertMenu(hPopup, 0, MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(hContext), _T(""));
 
 		const auto hRealPopup = GetSubMenu(hPopup, 0);
 
@@ -358,7 +345,7 @@ namespace ui
 
 			if (IDR_MENU_PROPERTY_POPUP == uiClassMenu)
 			{
-				(void)addin::ExtendAddInMenu(hRealPopup, MENU_CONTEXT_PROPERTY);
+				(void) addin::ExtendAddInMenu(hRealPopup, MENU_CONTEXT_PROPERTY);
 			}
 
 			ConvertMenuOwnerDraw(hRealPopup, false);
@@ -377,7 +364,7 @@ namespace ui
 
 		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 		{
-			MENUITEMINFOW menuiteminfo = { 0 };
+			MENUITEMINFOW menuiteminfo = {0};
 			menuiteminfo.cbSize = sizeof(MENUITEMINFOW);
 			menuiteminfo.fMask = MIIM_SUBMENU | MIIM_ID;
 
@@ -397,10 +384,9 @@ namespace ui
 	_Check_return_ int GetEditHeight(_In_opt_ HWND hwndEdit)
 	{
 		// Calculate the new height for the edit control.
-		const auto iHeight =
-			GetTextHeight(hwndEdit)
-			+ 2 * GetSystemMetrics(SM_CYFIXEDFRAME) // Adjust for the edit border
-			+ 2 * GetSystemMetrics(SM_CXEDGE); // Adjust for the edit border
+		const auto iHeight = GetTextHeight(hwndEdit) +
+							 2 * GetSystemMetrics(SM_CYFIXEDFRAME) // Adjust for the edit border
+							 + 2 * GetSystemMetrics(SM_CXEDGE); // Adjust for the edit border
 		return iHeight;
 	}
 
@@ -408,7 +394,7 @@ namespace ui
 	{
 		auto hRes = S_OK;
 		HDC hdc = nullptr;
-		TEXTMETRIC tmFont = { 0 };
+		TEXTMETRIC tmFont = {0};
 		auto iHeight = 0;
 
 		// Get the DC for the edit control.
@@ -430,22 +416,19 @@ namespace ui
 
 	SIZE GetTextExtentPoint32(HDC hdc, const std::wstring& szText)
 	{
-		SIZE size = { 0 };
+		SIZE size = {0};
 		GetTextExtentPoint32W(hdc, szText.c_str(), static_cast<int>(szText.length()), &size);
 		return size;
 	}
 
-	int CALLBACK EnumFontFamExProcW(
-		_In_ LPLOGFONTW lplf,
-		_In_ NEWTEXTMETRICEXW* /*lpntme*/,
-		DWORD /*FontType*/,
-		LPARAM lParam)
+	int CALLBACK
+	EnumFontFamExProcW(_In_ LPLOGFONTW lplf, _In_ NEWTEXTMETRICEXW* /*lpntme*/, DWORD /*FontType*/, LPARAM lParam)
 	{
 		// Use a 9 point font
 		lplf->lfHeight = -MulDiv(9, GetDeviceCaps(GetDC(nullptr), LOGPIXELSY), 72);
 		lplf->lfWidth = 0;
 		lplf->lfCharSet = DEFAULT_CHARSET;
-		*reinterpret_cast<HFONT *>(lParam) = CreateFontIndirectW(lplf);
+		*reinterpret_cast<HFONT*>(lParam) = CreateFontIndirectW(lplf);
 		return 0;
 	}
 
@@ -453,25 +436,40 @@ namespace ui
 	HFONT GetFont(_In_z_ LPCWSTR szFont)
 	{
 		HFONT hFont = nullptr;
-		LOGFONTW lfFont = { 0 };
+		LOGFONTW lfFont = {0};
 		auto hRes = S_OK;
 		WC_H(StringCchCopyW(lfFont.lfFaceName, _countof(lfFont.lfFaceName), szFont));
 
-		EnumFontFamiliesExW(GetDC(nullptr), &lfFont, reinterpret_cast<FONTENUMPROCW>(EnumFontFamExProcW), reinterpret_cast<LPARAM>(&hFont), 0);
+		EnumFontFamiliesExW(
+			GetDC(nullptr),
+			&lfFont,
+			reinterpret_cast<FONTENUMPROCW>(EnumFontFamExProcW),
+			reinterpret_cast<LPARAM>(&hFont),
+			0);
 		if (hFont) return hFont;
 
 		// If we can't get our font, fallback to a system font
-		NONCLIENTMETRICSW ncm = { 0 };
+		NONCLIENTMETRICSW ncm = {0};
 		ncm.cbSize = sizeof ncm;
 		SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, NULL, &ncm, NULL);
 		static auto lf = ncm.lfMessageFont;
 
 		// Create the font, and then return its handle.
-		hFont = CreateFontW(lf.lfHeight, lf.lfWidth,
-			lf.lfEscapement, lf.lfOrientation, lf.lfWeight,
-			lf.lfItalic, lf.lfUnderline, lf.lfStrikeOut, lf.lfCharSet,
-			lf.lfOutPrecision, lf.lfClipPrecision, lf.lfQuality,
-			lf.lfPitchAndFamily, lf.lfFaceName);
+		hFont = CreateFontW(
+			lf.lfHeight,
+			lf.lfWidth,
+			lf.lfEscapement,
+			lf.lfOrientation,
+			lf.lfWeight,
+			lf.lfItalic,
+			lf.lfUnderline,
+			lf.lfStrikeOut,
+			lf.lfCharSet,
+			lf.lfOutPrecision,
+			lf.lfClipPrecision,
+			lf.lfQuality,
+			lf.lfPitchAndFamily,
+			lf.lfFaceName);
 		return hFont;
 	}
 
@@ -524,7 +522,7 @@ namespace ui
 	_Check_return_ HPEN GetPen(uiPen up)
 	{
 		if (g_Pens[up]) return g_Pens[up];
-		LOGBRUSH lbr = { 0 };
+		LOGBRUSH lbr = {0};
 		lbr.lbStyle = BS_SOLID;
 
 		switch (up)
@@ -544,11 +542,12 @@ namespace ui
 		case cDashedPen:
 		{
 			lbr.lbColor = MyGetSysColor(cFrameUnselected);
-			DWORD rgStyle[2] = { 1,3 };
+			DWORD rgStyle[2] = {1, 3};
 			g_Pens[cDashedPen] = ExtCreatePen(PS_GEOMETRIC | PS_USERSTYLE, 1, &lbr, 2, rgStyle);
 			return g_Pens[cDashedPen];
 		}
-		default: break;
+		default:
+			break;
 		}
 		return nullptr;
 	}
@@ -568,16 +567,16 @@ namespace ui
 		const auto dpiY = GetDeviceCaps(hdcWin, LOGPIXELSY);
 
 		if (hdcWin) DeleteDC(hdcWin);
-		return{ dpiX, dpiY, 96 };
+		return {dpiX, dpiY, 96};
 	}
 
 	HBITMAP ScaleBitmap(HBITMAP hBitmap, SCALE& scale)
 	{
-		BITMAP bm = { 0 };
+		BITMAP bm = {0};
 		::GetObject(hBitmap, sizeof(BITMAP), &bm);
 
-		const SIZE sizeSrc = { bm.bmWidth, bm.bmHeight };
-		const SIZE sizeDst = { scale.x * sizeSrc.cx / scale.denominator, scale.y * sizeSrc.cy / scale.denominator };
+		const SIZE sizeSrc = {bm.bmWidth, bm.bmHeight};
+		const SIZE sizeDst = {scale.x * sizeSrc.cx / scale.denominator, scale.y * sizeSrc.cy / scale.denominator};
 
 		const auto hdcWin = GetWindowDC(nullptr);
 		const auto hRet = CreateCompatibleBitmap(hdcWin, sizeDst.cx, sizeDst.cy);
@@ -588,10 +587,10 @@ namespace ui
 		const auto bmpSrc = SelectObject(hdcSrc, hBitmap);
 		const auto bmpDst = SelectObject(hdcDst, hRet);
 
-		(void)StretchBlt(hdcDst, 0, 0, sizeDst.cx, sizeDst.cy, hdcSrc, 0, 0, sizeSrc.cx, sizeSrc.cy, SRCCOPY);
+		(void) StretchBlt(hdcDst, 0, 0, sizeDst.cx, sizeDst.cy, hdcSrc, 0, 0, sizeSrc.cx, sizeSrc.cy, SRCCOPY);
 
-		(void)SelectObject(hdcSrc, bmpSrc);
-		(void)SelectObject(hdcDst, bmpDst);
+		(void) SelectObject(hdcSrc, bmpSrc);
+		(void) SelectObject(hdcDst, bmpDst);
 
 		if (bmpDst) DeleteObject(bmpDst);
 		if (bmpSrc) DeleteObject(bmpSrc);
@@ -615,19 +614,14 @@ namespace ui
 		const auto crText = SetTextColor(hdc, color);
 		SetBkMode(hdc, TRANSPARENT);
 		auto drawRc = rc;
-		DrawTextW(
-			hdc,
-			lpchText.c_str(),
-			-1,
-			&drawRc,
-			format);
+		DrawTextW(hdc, lpchText.c_str(), -1, &drawRc, format);
 
 #ifdef SKIPBUFFER
 		FrameRect(hdc, &drawRc, GetSysBrush(bBold ? cBitmapTransFore : cBitmapTransBack));
 #endif
 
 		SelectObject(hdc, hfontOld);
-		(void)SetTextColor(hdc, crText);
+		(void) SetTextColor(hdc, crText);
 	}
 
 	// Clear/initialize formatting on the rich edit control.
@@ -664,7 +658,7 @@ namespace ui
 		const auto crGlow = MyGetSysColor(uc);
 		const auto crLightGlow = LightColor(crGlow);
 
-		TRIVERTEX vertex[2] = { 0 };
+		TRIVERTEX vertex[2] = {0};
 		// Light at the top
 		vertex[0].x = rc.left;
 		vertex[0].y = rc.top;
@@ -681,14 +675,15 @@ namespace ui
 		vertex[1].Blue = GetBValue(crGlow) << 8;
 		vertex[1].Alpha = 0x0000;
 
-		// Create a GRADIENT_RECT structure that references the TRIVERTEX vertices. 
-		GRADIENT_RECT gRect = { 0 };
+		// Create a GRADIENT_RECT structure that references the TRIVERTEX vertices.
+		GRADIENT_RECT gRect = {0};
 		gRect.UpperLeft = 0;
 		gRect.LowerRight = 1;
 		GradientFill(hdc, vertex, 2, &gRect, 1, GRADIENT_FILL_RECT_V);
 	}
 
-	void DrawFilledPolygon(_In_ HDC hdc, _In_count_(cpt) const POINT *apt, _In_ int cpt, COLORREF cEdge, _In_ HBRUSH hFill)
+	void
+	DrawFilledPolygon(_In_ HDC hdc, _In_count_(cpt) const POINT* apt, _In_ int cpt, COLORREF cEdge, _In_ HBRUSH hFill)
 	{
 		const auto hPen = CreatePen(PS_SOLID, 0, cEdge);
 		const auto hBrushOld = SelectObject(hdc, hFill);
@@ -700,13 +695,8 @@ namespace ui
 	}
 
 	// Draw the frame of our edit controls
-	LRESULT CALLBACK DrawEditProc(
-		_In_ HWND hWnd,
-		UINT uMsg,
-		WPARAM wParam,
-		LPARAM lParam,
-		UINT_PTR uIdSubclass,
-		DWORD_PTR /*dwRefData*/)
+	LRESULT CALLBACK
+	DrawEditProc(_In_ HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR /*dwRefData*/)
 	{
 		switch (uMsg)
 		{
@@ -718,7 +708,7 @@ namespace ui
 			const auto hdc = GetWindowDC(hWnd);
 			if (hdc)
 			{
-				RECT rc = { 0 };
+				RECT rc = {0};
 				GetWindowRect(hWnd, &rc);
 				OffsetRect(&rc, -rc.left, -rc.top);
 				FrameRect(hdc, &rc, GetSysBrush(cFrameSelected));
@@ -730,7 +720,7 @@ namespace ui
 			const auto ws = GetWindowLongPtr(hWnd, GWL_STYLE);
 			if (ws & WS_VSCROLL)
 			{
-				RECT rcScroll = { 0 };
+				RECT rcScroll = {0};
 				GetWindowRect(hWnd, &rcScroll);
 				InflateRect(&rcScroll, -1, -1);
 				rcScroll.left = rcScroll.right - GetSystemMetrics(SM_CXHSCROLL);
@@ -751,13 +741,19 @@ namespace ui
 		auto lStyle = ::GetWindowLongPtr(hWnd, GWL_EXSTYLE);
 		lStyle &= ~WS_EX_CLIENTEDGE;
 		(void) ::SetWindowLongPtr(hWnd, GWL_EXSTYLE, lStyle);
-		if (bReadOnly) {
-			(void) ::SendMessage(hWnd, EM_SETBKGNDCOLOR, static_cast<WPARAM>(0), static_cast<LPARAM>(MyGetSysColor(cBackgroundReadOnly)));
+		if (bReadOnly)
+		{
+			(void) ::SendMessage(
+				hWnd,
+				EM_SETBKGNDCOLOR,
+				static_cast<WPARAM>(0),
+				static_cast<LPARAM>(MyGetSysColor(cBackgroundReadOnly)));
 			(void) ::SendMessage(hWnd, EM_SETREADONLY, true, 0L);
 		}
 		else
 		{
-			(void) ::SendMessage(hWnd, EM_SETBKGNDCOLOR, static_cast<WPARAM>(0), static_cast<LPARAM>(MyGetSysColor(cBackground)));
+			(void) ::SendMessage(
+				hWnd, EM_SETBKGNDCOLOR, static_cast<WPARAM>(0), static_cast<LPARAM>(MyGetSysColor(cBackground)));
 		}
 
 		ClearEditFormatting(hWnd, bReadOnly);
@@ -766,11 +762,7 @@ namespace ui
 		auto reCallback = new (std::nothrow) CRichEditOleCallback(hWnd, hWndParent);
 		if (reCallback)
 		{
-			(void) ::SendMessage(
-				hWnd,
-				EM_SETOLECALLBACK,
-				static_cast<WPARAM>(0),
-				reinterpret_cast<LPARAM>(reCallback));
+			(void) ::SendMessage(hWnd, EM_SETOLECALLBACK, static_cast<WPARAM>(0), reinterpret_cast<LPARAM>(reCallback));
 			reCallback->Release();
 		}
 	}
@@ -783,10 +775,8 @@ namespace ui
 
 		// If there's nothing to paint, this is a "fake paint" and we don't want to toggle selection highlight
 		// Toggling selection highlight causes a repaint, so this logic prevents flicker
-		const auto bFakePaint = lvcd->nmcd.rc.bottom == 0 &&
-			lvcd->nmcd.rc.top == 0 &&
-			lvcd->nmcd.rc.left == 0 &&
-			lvcd->nmcd.rc.right == 0;
+		const auto bFakePaint =
+			lvcd->nmcd.rc.bottom == 0 && lvcd->nmcd.rc.top == 0 && lvcd->nmcd.rc.left == 0 && lvcd->nmcd.rc.right == 0;
 
 		switch (lvcd->nmcd.dwDrawStage)
 		{
@@ -819,7 +809,7 @@ namespace ui
 				bResetBottom = true;
 			}
 
-			RECT rc = { 0 };
+			RECT rc = {0};
 			GetClientRect(lvcd->nmcd.hdr.hwndFrom, &rc);
 			IntersectRect(&rc, &rc, &lvcd->nmcd.rc);
 
@@ -875,13 +865,13 @@ namespace ui
 		const auto bSelected = ListView_GetItemState(hWnd, itemID, LVIS_SELECTED) != 0;
 		if (bSelected) return;
 
-		RECT rcIcon = { 0 };
-		RECT rcLabels = { 0 };
+		RECT rcIcon = {0};
+		RECT rcLabels = {0};
 		ListView_GetItemRect(hWnd, itemID, &rcLabels, LVIR_BOUNDS);
 		ListView_GetItemRect(hWnd, itemID, &rcIcon, LVIR_ICON);
 		rcLabels.left = rcIcon.right;
 		if (rcLabels.left >= rcLabels.right) return;
-		RECT rcClient = { 0 };
+		RECT rcClient = {0};
 		GetClientRect(hWnd, &rcClient); // Get our client size
 		IntersectRect(&rcLabels, &rcLabels, &rcClient);
 		RedrawWindow(hWnd, &rcLabels, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
@@ -889,8 +879,8 @@ namespace ui
 
 	void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem)
 	{
-		RECT rect = { 0 };
-		RECT rectTree = { 0 };
+		RECT rect = {0};
+		RECT rectTree = {0};
 		TreeView_GetItemRect(hWnd, hItem, &rect, false);
 		GetClientRect(hWnd, &rectTree);
 		rect.left = rectTree.left;
@@ -902,27 +892,14 @@ namespace ui
 	// No scaling is performed
 	void CopyBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, uiColor cSource, uiColor cReplace)
 	{
-		RECT rcBM = { 0, 0, iWidth, iHeight };
+		RECT rcBM = {0, 0, iWidth, iHeight};
 
-		const auto hbmTarget = CreateCompatibleBitmap(
-			hdcSource,
-			iWidth,
-			iHeight);
-		(void)SelectObject(hdcTarget, hbmTarget);
+		const auto hbmTarget = CreateCompatibleBitmap(hdcSource, iWidth, iHeight);
+		(void) SelectObject(hdcTarget, hbmTarget);
 		FillRect(hdcTarget, &rcBM, GetSysBrush(cReplace));
 
-		(void)TransparentBlt(
-			hdcTarget,
-			0,
-			0,
-			iWidth,
-			iHeight,
-			hdcSource,
-			0,
-			0,
-			iWidth,
-			iHeight,
-			MyGetSysColor(cSource));
+		(void) TransparentBlt(
+			hdcTarget, 0, 0, iWidth, iHeight, hdcSource, 0, 0, iWidth, iHeight, MyGetSysColor(cSource));
 		if (hbmTarget) DeleteObject(hbmTarget);
 	}
 
@@ -930,25 +907,13 @@ namespace ui
 	// Background filled with cBackground
 	void ShiftBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, int offset, uiColor cBackground)
 	{
-		RECT rcBM = { 0, 0, iWidth, iHeight };
+		RECT rcBM = {0, 0, iWidth, iHeight};
 
-		const auto hbmTarget = CreateCompatibleBitmap(
-			hdcSource,
-			iWidth,
-			iHeight);
-		(void)SelectObject(hdcTarget, hbmTarget);
+		const auto hbmTarget = CreateCompatibleBitmap(hdcSource, iWidth, iHeight);
+		(void) SelectObject(hdcTarget, hbmTarget);
 		FillRect(hdcTarget, &rcBM, GetSysBrush(cBackground));
 
-		(void)BitBlt(
-			hdcTarget,
-			offset,
-			offset,
-			iWidth,
-			iHeight,
-			hdcSource,
-			0,
-			0,
-			SRCCOPY);
+		(void) BitBlt(hdcTarget, offset, offset, iWidth, iHeight, hdcSource, 0, 0, SRCCOPY);
 		if (hbmTarget) DeleteObject(hbmTarget);
 	}
 
@@ -966,9 +931,9 @@ namespace ui
 		const auto hdcBitmap = CreateCompatibleDC(hdc);
 		// TODO: pass target dimensions here and load the most appropriate bitmap
 		const auto hbmBitmap = GetBitmap(iBitmap);
-		(void)SelectObject(hdcBitmap, hbmBitmap);
+		(void) SelectObject(hdcBitmap, hbmBitmap);
 
-		BITMAP bm = { 0 };
+		BITMAP bm = {0};
 		::GetObject(hbmBitmap, sizeof bm, &bm);
 
 		// hdcForeReplace: Create a bitmap compatible with hdc, select it, fill with cFrameSelected, copy from hdcBitmap, with cBitmapTransFore transparent
@@ -977,25 +942,21 @@ namespace ui
 
 		// hdcBackReplace: Create a bitmap compatible with hdc, select it, fill with cBackground, copy from hdcForeReplace, with cBitmapTransBack transparent
 		const auto hdcBackReplace = CreateCompatibleDC(hdc);
-		CopyBitmap(hdcForeReplace, hdcBackReplace, bm.bmWidth, bm.bmHeight, cBitmapTransBack, bHover ? cGlowBackground : cBackground);
+		CopyBitmap(
+			hdcForeReplace,
+			hdcBackReplace,
+			bm.bmWidth,
+			bm.bmHeight,
+			cBitmapTransBack,
+			bHover ? cGlowBackground : cBackground);
 
 		const auto hdcShift = CreateCompatibleDC(hdc);
 		ShiftBitmap(hdcBackReplace, hdcShift, bm.bmWidth, bm.bmHeight, offset, bHover ? cGlowBackground : cBackground);
 
 		// In case the original bitmap dimensions doesn't match our target dimension, we stretch it to fit
 		// We can get better results if the original bitmap happens to match.
-		(void)StretchBlt(
-			hdc,
-			rcTarget.left,
-			rcTarget.top,
-			iWidth,
-			iHeight,
-			hdcShift,
-			0,
-			0,
-			bm.bmWidth,
-			bm.bmHeight,
-			SRCCOPY);
+		(void) StretchBlt(
+			hdc, rcTarget.left, rcTarget.top, iWidth, iHeight, hdcShift, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
 
 		if (hdcShift) DeleteDC(hdcShift);
 		if (hdcBackReplace) DeleteDC(hdcBackReplace);
@@ -1027,7 +988,8 @@ namespace ui
 				lvcd->clrTextBk = MyGetSysColor(cBackground);
 				lvcd->clrText = MyGetSysColor(cText);
 				const int iState = TreeView_GetItemState(lvcd->nmcd.hdr.hwndFrom, hItem, TVIS_SELECTED);
-				TreeView_SetItemState(lvcd->nmcd.hdr.hwndFrom, hItem, iState & TVIS_SELECTED ? TVIS_BOLD : NULL, TVIS_BOLD);
+				TreeView_SetItemState(
+					lvcd->nmcd.hdr.hwndFrom, hItem, iState & TVIS_SELECTED ? TVIS_BOLD : NULL, TVIS_BOLD);
 			}
 
 			*pResult = CDRF_DODEFAULT | CDRF_NOTIFYPOSTPAINT;
@@ -1049,17 +1011,22 @@ namespace ui
 			if (hItem)
 			{
 				// Cover over the +/- and paint triangles instead
-				DrawExpandTriangle(lvcd->nmcd.hdr.hwndFrom, lvcd->nmcd.hdc, hItem, bHover && hItem == hItemCurHover, hItem == hItemCurHover);
+				DrawExpandTriangle(
+					lvcd->nmcd.hdr.hwndFrom,
+					lvcd->nmcd.hdc,
+					hItem,
+					bHover && hItem == hItemCurHover,
+					hItem == hItemCurHover);
 
 				// Paint the advise icon, IDB_ADVISE
-				TVITEM tvi = { 0 };
+				TVITEM tvi = {0};
 				tvi.mask = TVIF_PARAM;
 				tvi.hItem = hItem;
 				TreeView_GetItem(lvcd->nmcd.hdr.hwndFrom, &tvi);
 				const auto lpData = reinterpret_cast<controls::sortlistdata::SortListData*>(tvi.lParam);
 				if (lpData && lpData->Node() && lpData->Node()->m_lpAdviseSink)
 				{
-					RECT rect = { 0 };
+					RECT rect = {0};
 					TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
 					rect.left = rect.right;
 					rect.right += rect.bottom - rect.top;
@@ -1077,14 +1044,14 @@ namespace ui
 	// Paints the triangles indicating expansion state
 	void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool bGlow, bool bHover)
 	{
-		TVITEM tvitem = { 0 };
+		TVITEM tvitem = {0};
 		tvitem.hItem = hItem;
 		tvitem.mask = TVIF_CHILDREN | TVIF_STATE;
 		TreeView_GetItem(hWnd, &tvitem);
 		const auto bHasChildren = tvitem.cChildren != 0;
 		if (bHasChildren)
 		{
-			RECT rcButton = { 0 };
+			RECT rcButton = {0};
 			TreeView_GetItemRect(hWnd, hItem, &rcButton, true);
 			const auto triangleSize = (rcButton.bottom - rcButton.top) / 4;
 
@@ -1098,9 +1065,9 @@ namespace ui
 			rcButton.left = rcButton.right - 15;
 
 			// Boundary box for the actual triangles
-			RECT rcTriangle = { 0 };
+			RECT rcTriangle = {0};
 
-			POINT tri[3] = { 0 };
+			POINT tri[3] = {0};
 			const auto bExpanded = TVIS_EXPANDED == (tvitem.state & TVIS_EXPANDED);
 			if (bExpanded)
 			{
@@ -1157,7 +1124,7 @@ namespace ui
 
 		FillRect(hdc, &rc, GetSysBrush(bButton ? cPaneHeaderBackground : cBackground));
 
-		POINT tri[3] = { 0 };
+		POINT tri[3] = {0};
 		LONG lCenter = 0;
 		LONG lTop = 0;
 		const auto triangleSize = (rc.bottom - rc.top) / 5;
@@ -1203,15 +1170,14 @@ namespace ui
 		auto bSorted = false;
 		auto bSortUp = true;
 
-		WCHAR szHeader[255] = { 0 };
-		HDITEMW hdItem = { 0 };
+		WCHAR szHeader[255] = {0};
+		HDITEMW hdItem = {0};
 		hdItem.mask = HDI_TEXT | HDI_FORMAT;
 		hdItem.pszText = szHeader;
 		hdItem.cchTextMax = _countof(szHeader);
 		::SendMessage(hWnd, HDM_GETITEMW, static_cast<WPARAM>(itemID), reinterpret_cast<LPARAM>(&hdItem));
 
-		if (hdItem.fmt & (HDF_SORTUP | HDF_SORTDOWN))
-			bSorted = true;
+		if (hdItem.fmt & (HDF_SORTUP | HDF_SORTDOWN)) bSorted = true;
 		if (bSorted)
 		{
 			bSortUp = (hdItem.fmt & HDF_SORTUP) != 0;
@@ -1231,18 +1197,13 @@ namespace ui
 		auto rcText = rcHeader;
 		rcText.left += GetSystemMetrics(SM_CXEDGE);
 		DrawSegoeTextW(
-			hdc,
-			hdItem.pszText,
-			MyGetSysColor(cText),
-			rcText,
-			false,
-			DT_END_ELLIPSIS | DT_SINGLELINE | DT_VCENTER);
+			hdc, hdItem.pszText, MyGetSysColor(cText), rcText, false, DT_END_ELLIPSIS | DT_SINGLELINE | DT_VCENTER);
 
 		// Draw a line under for some visual separation
 		const auto hpenOld = SelectObject(hdc, GetPen(cSolidGreyPen));
 		MoveToEx(hdc, rcHeader.left, rcHeader.bottom - 1, nullptr);
 		LineTo(hdc, rcHeader.right, rcHeader.bottom - 1);
-		(void)SelectObject(hdc, hpenOld);
+		(void) SelectObject(hdc, hpenOld);
 
 		// Draw our divider
 		// Since no one else uses rcHeader after here, we can modify it in place
@@ -1273,7 +1234,7 @@ namespace ui
 
 		case CDDS_POSTPAINT:
 		{
-			RECT rc = { 0 };
+			RECT rc = {0};
 			// Get the rc for the entire header
 			GetClientRect(lvcd->hdr.hwndFrom, &rc);
 			// Get the last item in the header
@@ -1283,9 +1244,9 @@ namespace ui
 				// Find the index of the last item in the header
 				const auto iIndex = Header_OrderToIndex(lvcd->hdr.hwndFrom, iCount - 1);
 
-				RECT rcRight = { 0 };
+				RECT rcRight = {0};
 				// Compute the right edge of the last item
-				(void)Header_GetItemRect(lvcd->hdr.hwndFrom, iIndex, &rcRight);
+				(void) Header_GetItemRect(lvcd->hdr.hwndFrom, iIndex, &rcRight);
 				rc.left = rcRight.right;
 			}
 
@@ -1307,7 +1268,7 @@ namespace ui
 
 	void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeaderHeight, bool bRedraw)
 	{
-		RECT rcTracker = { 0 };
+		RECT rcTracker = {0};
 		GetClientRect(hWndList, &rcTracker);
 		const auto hdc = GetDC(hWndList);
 		rcTracker.top += iHeaderHeight;
@@ -1342,7 +1303,7 @@ namespace ui
 		{
 		case bsUnstyled:
 		{
-			WCHAR szButton[255] = { 0 };
+			WCHAR szButton[255] = {0};
 			GetWindowTextW(hWnd, szButton, _countof(szButton));
 			const auto iState = static_cast<int>(::SendMessage(hWnd, BM_GETSTATE, NULL, NULL));
 			const auto bGlow = (iState & BST_HOT) != 0;
@@ -1350,7 +1311,8 @@ namespace ui
 			const auto bDisabled = (itemState & CDIS_DISABLED) != 0;
 			const auto bFocused = (itemState & CDIS_FOCUS) != 0;
 
-			FrameRect(hDC, &rc, bFocused || bGlow || bPushed ? GetSysBrush(cFrameSelected) : GetSysBrush(cFrameUnselected));
+			FrameRect(
+				hDC, &rc, bFocused || bGlow || bPushed ? GetSysBrush(cFrameSelected) : GetSysBrush(cFrameUnselected));
 
 			DrawSegoeTextW(
 				hDC,
@@ -1370,14 +1332,13 @@ namespace ui
 		}
 	}
 
-
 	bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
 		if (!pNMHDR) return false;
 		const auto lvcd = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 
 		// Ensure we only handle painting for buttons
-		WCHAR szClass[64] = { 0 };
+		WCHAR szClass[64] = {0};
 		GetClassNameW(lvcd->hdr.hwndFrom, szClass, _countof(szClass));
 		if (_wcsicmp(szClass, L"BUTTON") != 0) return false;
 
@@ -1392,13 +1353,12 @@ namespace ui
 			{
 				viewpane::CheckPane::Draw(lvcd->hdr.hwndFrom, lvcd->hdc, lvcd->rc, lvcd->uItemState);
 			}
-			else if (BS_PUSHBUTTON == lStyle ||
-				BS_DEFPUSHBUTTON == lStyle)
+			else if (BS_PUSHBUTTON == lStyle || BS_DEFPUSHBUTTON == lStyle)
 			{
 				DrawButton(lvcd->hdr.hwndFrom, lvcd->hdc, lvcd->rc, lvcd->uItemState);
 			}
-			else *pResult = CDRF_DODEFAULT;
-
+			else
+				*pResult = CDRF_DODEFAULT;
 		}
 		break;
 
@@ -1428,7 +1388,8 @@ namespace ui
 			lpMeasureItemStruct->itemHeight = size.cy + 2 * GetSystemMetrics(SM_CYEDGE);
 
 			// Make sure we have room for the flyout icon
-			if (!lpMenuEntry->m_bOnMenuBar && IsMenu(reinterpret_cast<HMENU>(static_cast<UINT_PTR>(lpMeasureItemStruct->itemID))))
+			if (!lpMenuEntry->m_bOnMenuBar &&
+				IsMenu(reinterpret_cast<HMENU>(static_cast<UINT_PTR>(lpMeasureItemStruct->itemID))))
 			{
 				lpMeasureItemStruct->itemWidth += GetSystemMetrics(SM_CXSMICON);
 			}
@@ -1436,9 +1397,7 @@ namespace ui
 			SelectObject(hdc, hfontOld);
 			ReleaseDC(nullptr, hdc);
 
-			output::DebugPrint(DBGDraw, L"Measure %d, \"%ws\"\n",
-				lpMeasureItemStruct->itemWidth,
-				szText.c_str());
+			output::DebugPrint(DBGDraw, L"Measure %d, \"%ws\"\n", lpMeasureItemStruct->itemWidth, szText.c_str());
 		}
 	}
 
@@ -1460,12 +1419,15 @@ namespace ui
 		const auto lpMenuEntry = reinterpret_cast<LPMENUENTRY>(lpDrawItemStruct->itemData);
 		if (!lpMenuEntry) return;
 
-		const auto bSeparator = !lpMenuEntry->m_MSAA.cchWText; // Cheap way to find separators. Revisit if odd effects show.
+		const auto bSeparator =
+			!lpMenuEntry->m_MSAA.cchWText; // Cheap way to find separators. Revisit if odd effects show.
 		const auto bAccel = (lpDrawItemStruct->itemState & ODS_NOACCEL) != 0;
 		const auto bHot = (lpDrawItemStruct->itemState & (ODS_HOTLIGHT | ODS_SELECTED)) != 0;
 		const auto bDisabled = (lpDrawItemStruct->itemState & (ODS_GRAYED | ODS_DISABLED)) != 0;
 
-		output::DebugPrint(DBGDraw, L"DrawMenu %d, \"%ws\"\n",
+		output::DebugPrint(
+			DBGDraw,
+			L"DrawMenu %d, \"%ws\"\n",
 			lpDrawItemStruct->rcItem.right - lpDrawItemStruct->rcItem.left,
 			lpMenuEntry->m_pName.c_str());
 
@@ -1509,7 +1471,7 @@ namespace ui
 			const auto hpenOld = SelectObject(hdc, GetPen(cSolidGreyPen));
 			MoveToEx(hdc, rcText.left, lMid, nullptr);
 			LineTo(hdc, rcText.right, lMid);
-			(void)SelectObject(hdc, hpenOld);
+			(void) SelectObject(hdc, hpenOld);
 		}
 		else if (!lpMenuEntry->m_pName.empty())
 		{
@@ -1521,32 +1483,25 @@ namespace ui
 			else
 				rcText.left += GetSystemMetrics(SM_CXEDGE);
 
-			output::DebugPrint(DBGDraw, L"DrawMenu text %d, \"%ws\"\n",
-				rcText.right - rcText.left,
-				lpMenuEntry->m_pName.c_str());
+			output::DebugPrint(
+				DBGDraw, L"DrawMenu text %d, \"%ws\"\n", rcText.right - rcText.left, lpMenuEntry->m_pName.c_str());
 
-			DrawSegoeTextW(
-				hdc,
-				lpMenuEntry->m_pName,
-				MyGetSysColor(cFore),
-				rcText,
-				false,
-				uiTextFlags);
+			DrawSegoeTextW(hdc, lpMenuEntry->m_pName, MyGetSysColor(cFore), rcText, false, uiTextFlags);
 
 			// Triple buffer the check mark so we can copy it over without the background
 			if (lpDrawItemStruct->itemState & ODS_CHECKED)
 			{
 				const UINT nWidth = GetSystemMetrics(SM_CXMENUCHECK);
 				const UINT nHeight = GetSystemMetrics(SM_CYMENUCHECK);
-				RECT rc = { 0 };
+				RECT rc = {0};
 				const auto bm = CreateBitmap(nWidth, nHeight, 1, 1, nullptr);
 				const auto hdcMem = CreateCompatibleDC(hdc);
 
 				SelectObject(hdcMem, bm);
 				SetRect(&rc, 0, 0, nWidth, nHeight);
-				(void)DrawFrameControl(hdcMem, &rc, DFC_MENU, DFCS_MENUCHECK);
+				(void) DrawFrameControl(hdcMem, &rc, DFC_MENU, DFCS_MENUCHECK);
 
-				(void)TransparentBlt(
+				(void) TransparentBlt(
 					hdc,
 					rcItem.left,
 					(rcItem.top + rcItem.bottom - nHeight) / 2,
@@ -1578,7 +1533,7 @@ namespace ui
 	{
 		const auto len = ComboBox_GetLBTextLen(hwnd, nIndex) + 1;
 		const auto buffer = new TCHAR[len];
-		memset(buffer, 0, sizeof(TCHAR)* len);
+		memset(buffer, 0, sizeof(TCHAR) * len);
 		ComboBox_GetLBText(hwnd, nIndex, buffer);
 		auto szOut = strings::LPCTSTRToWstring(buffer);
 		delete[] buffer;
@@ -1636,13 +1591,13 @@ namespace ui
 		int iStatusData2,
 		const std::wstring& szStatusInfo)
 	{
-		RECT rcStatus = { 0 };
+		RECT rcStatus = {0};
 		GetClientRect(hwnd, &rcStatus);
 		if (rcStatus.bottom - rcStatus.top > iStatusHeight)
 		{
 			rcStatus.top = rcStatus.bottom - iStatusHeight;
 		}
-		PAINTSTRUCT ps = { nullptr };
+		PAINTSTRUCT ps = {nullptr};
 		BeginPaint(hwnd, &ps);
 
 		CDoubleBuffer db;
@@ -1657,37 +1612,21 @@ namespace ui
 		GradientFillRect(ps.hdc, rcGrad, cStatus);
 
 		rcText.left = rcText.right - iStatusData2;
-		DrawSegoeTextW(
-			ps.hdc,
-			szStatusData2,
-			crFore,
-			rcText,
-			true,
-			DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
+		DrawSegoeTextW(ps.hdc, szStatusData2, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 		rcText.right = rcText.left;
 		rcText.left = rcText.right - iStatusData1;
-		DrawSegoeTextW(
-			ps.hdc,
-			szStatusData1,
-			crFore,
-			rcText,
-			true,
-			DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
+		DrawSegoeTextW(ps.hdc, szStatusData1, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 		rcText.right = rcText.left;
 		rcText.left = 0;
 		DrawSegoeTextW(
-			ps.hdc,
-			szStatusInfo,
-			crFore,
-			rcText,
-			true,
-			DT_LEFT | DT_SINGLELINE | DT_BOTTOM | DT_END_ELLIPSIS);
+			ps.hdc, szStatusInfo, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM | DT_END_ELLIPSIS);
 
 		db.End(ps.hdc);
 		EndPaint(hwnd, &ps);
 	}
 
-	void GetCaptionRects(HWND hWnd,
+	void GetCaptionRects(
+		HWND hWnd,
 		RECT* lprcFullCaption,
 		RECT* lprcIcon,
 		RECT* lprcCloseIcon,
@@ -1695,14 +1634,14 @@ namespace ui
 		RECT* lprcMinIcon,
 		RECT* lprcCaptionText)
 	{
-		RECT rcFullCaption = { 0 };
-		RECT rcIcon = { 0 };
-		RECT rcCloseIcon = { 0 };
-		RECT rcMaxIcon = { 0 };
-		RECT rcMinIcon = { 0 };
-		RECT rcCaptionText = { 0 };
+		RECT rcFullCaption = {0};
+		RECT rcIcon = {0};
+		RECT rcCloseIcon = {0};
+		RECT rcMaxIcon = {0};
+		RECT rcMinIcon = {0};
+		RECT rcCaptionText = {0};
 
-		RECT rcWindow = { 0 };
+		RECT rcWindow = {0};
 		const auto dwWinStyle = GetWindowStyle(hWnd);
 		const auto bThickFrame = WS_THICKFRAME == (dwWinStyle & WS_THICKFRAME);
 
@@ -1730,8 +1669,7 @@ namespace ui
 		rcFullCaption.top = rcWindow.top + BORDER_VISIBLEWIDTH;
 		rcFullCaption.left = rcWindow.left + BORDER_VISIBLEWIDTH;
 		rcFullCaption.right = rcWindow.right - BORDER_VISIBLEWIDTH;
-		rcFullCaption.bottom = rcCaptionText.bottom =
-			rcWindow.top + cyFrame + GetSystemMetrics(SM_CYCAPTION);
+		rcFullCaption.bottom = rcCaptionText.bottom = rcWindow.top + cyFrame + GetSystemMetrics(SM_CYCAPTION);
 
 		rcIcon.top = rcWindow.top + cyFrame + GetSystemMetrics(SM_CYEDGE);
 		rcIcon.left = rcWindow.left + cxFrame + cxFixedFrame;
@@ -1767,8 +1705,10 @@ namespace ui
 
 		rcCaptionText.right = rcCloseIcon.left;
 
-		if (WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX)) rcCaptionText.right = rcMinIcon.left;
-		else if (WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX)) rcCaptionText.right = rcMaxIcon.left;
+		if (WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX))
+			rcCaptionText.right = rcMinIcon.left;
+		else if (WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX))
+			rcCaptionText.right = rcMaxIcon.left;
 
 		if (lprcFullCaption) *lprcFullCaption = rcFullCaption;
 		if (lprcIcon) *lprcIcon = rcIcon;
@@ -1791,9 +1731,9 @@ namespace ui
 		const auto bMinBox = WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX);
 		const auto bMaxBox = WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX);
 
-		RECT rcCloseIcon = { 0 };
-		RECT rcMaxIcon = { 0 };
-		RECT rcMinIcon = { 0 };
+		RECT rcCloseIcon = {0};
+		RECT rcMaxIcon = {0};
+		RECT rcMinIcon = {0};
 		GetCaptionRects(hWnd, nullptr, nullptr, &rcCloseIcon, &rcMaxIcon, &rcMinIcon, nullptr);
 
 		// Draw our system buttons appropriately
@@ -1828,8 +1768,8 @@ namespace ui
 		const auto bModal = DS_MODALFRAME == (dwWinStyle & DS_MODALFRAME);
 		const auto bThickFrame = WS_THICKFRAME == (dwWinStyle & WS_THICKFRAME);
 
-		RECT rcWindow = { 0 };
-		RECT rcClient = { 0 };
+		RECT rcWindow = {0};
+		RECT rcClient = {0};
 		GetWindowRect(hWnd, &rcWindow); // Get our non-client size
 		GetClientRect(hWnd, &rcClient); // Get our client size
 		MapWindowPoints(hWnd, nullptr, reinterpret_cast<LPPOINT>(&rcClient), 2); // locate our client rect on the screen
@@ -1868,32 +1808,23 @@ namespace ui
 		}
 
 		// The menu and caption have odd borders we've not painted yet - compute rectangles so we can paint them
-		RECT rcFullCaption = { 0 };
-		RECT rcIcon = { 0 };
-		RECT rcCaptionText = { 0 };
-		RECT rcMenuGutterLeft = { 0 };
-		RECT rcMenuGutterRight = { 0 };
-		RECT rcWindowGutterLeft = { 0 };
-		RECT rcWindowGutterRight = { 0 };
+		RECT rcFullCaption = {0};
+		RECT rcIcon = {0};
+		RECT rcCaptionText = {0};
+		RECT rcMenuGutterLeft = {0};
+		RECT rcMenuGutterRight = {0};
+		RECT rcWindowGutterLeft = {0};
+		RECT rcWindowGutterRight = {0};
 
 		GetCaptionRects(hWnd, &rcFullCaption, &rcIcon, nullptr, nullptr, nullptr, &rcCaptionText);
 
-		rcMenuGutterLeft.left =
-			rcWindowGutterLeft.left =
-			rcFullCaption.left;
-		rcMenuGutterRight.right =
-			rcWindowGutterRight.right =
-			rcFullCaption.right;
-		rcMenuGutterLeft.top =
-			rcMenuGutterRight.top =
-			rcFullCaption.bottom;
+		rcMenuGutterLeft.left = rcWindowGutterLeft.left = rcFullCaption.left;
+		rcMenuGutterRight.right = rcWindowGutterRight.right = rcFullCaption.right;
+		rcMenuGutterLeft.top = rcMenuGutterRight.top = rcFullCaption.bottom;
 
 		rcMenuGutterLeft.right = rcWindow.left + cxFrame;
 		rcMenuGutterRight.left = rcWindow.right - cxFrame;
-		rcMenuGutterLeft.bottom =
-			rcMenuGutterRight.bottom =
-			rcWindowGutterLeft.top =
-			rcWindowGutterRight.top =
+		rcMenuGutterLeft.bottom = rcMenuGutterRight.bottom = rcWindowGutterLeft.top = rcWindowGutterRight.top =
 			rcClient.top;
 
 		rcWindowGutterLeft.bottom = rcWindowGutterRight.bottom = rcClient.bottom - iStatusHeight;
@@ -1926,7 +1857,7 @@ namespace ui
 			const auto hpenOld = SelectObject(hdc, GetPen(cSolidGreyPen));
 			MoveToEx(hdc, rcMenuGutterLeft.right, rcClient.top - 1, nullptr);
 			LineTo(hdc, rcMenuGutterRight.left, rcClient.top - 1);
-			(void)SelectObject(hdc, hpenOld);
+			(void) SelectObject(hdc, hpenOld);
 
 			// White out the caption
 			FillRect(hdc, &rcFullCaption, GetSysBrush(cBackground));
@@ -1944,7 +1875,8 @@ namespace ui
 					rcIcon.bottom - rcIcon.top,
 					LR_DEFAULTCOLOR));
 
-				DrawIconEx(hdc,
+				DrawIconEx(
+					hdc,
 					rcIcon.left,
 					rcIcon.top,
 					hIcon,
@@ -1968,7 +1900,7 @@ namespace ui
 				auto rcStatus = rcClient;
 				rcStatus.top = rcClient.bottom - iStatusHeight;
 
-				RECT rcFullStatus = { 0 };
+				RECT rcFullStatus = {0};
 				rcFullStatus.top = rcStatus.top;
 				rcFullStatus.left = rcWindow.left + BORDER_VISIBLEWIDTH;
 				rcFullStatus.right = rcWindow.right - BORDER_VISIBLEWIDTH;
@@ -1979,7 +1911,7 @@ namespace ui
 			}
 			else
 			{
-				RECT rcBottomGutter = { 0 };
+				RECT rcBottomGutter = {0};
 				rcBottomGutter.top = rcWindow.bottom - cyFrame;
 				rcBottomGutter.left = rcWindow.left + BORDER_VISIBLEWIDTH;
 				rcBottomGutter.right = rcWindow.right - BORDER_VISIBLEWIDTH;
@@ -1988,15 +1920,10 @@ namespace ui
 				FillRect(hdc, &rcBottomGutter, GetSysBrush(cBackground));
 			}
 
-			WCHAR szTitle[256] = { 0 };
+			WCHAR szTitle[256] = {0};
 			GetWindowTextW(hWnd, szTitle, _countof(szTitle));
 			DrawSegoeTextW(
-				hdc,
-				szTitle,
-				MyGetSysColor(cText),
-				rcCaptionText,
-				false,
-				DT_LEFT | DT_SINGLELINE | DT_VCENTER);
+				hdc, szTitle, MyGetSysColor(cText), rcCaptionText, false, DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 
 			// Finally, we paint our border glow if we're not maximized
 			if (!IsZoomed(hWnd))
@@ -2063,12 +1990,12 @@ namespace ui
 
 	void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText)
 	{
-		PAINTSTRUCT ps = { nullptr };
+		PAINTSTRUCT ps = {nullptr};
 		BeginPaint(hWnd, &ps);
 
 		if (ps.hdc)
 		{
-			RECT rcWin = { 0 };
+			RECT rcWin = {0};
 			GetClientRect(hWnd, &rcWin);
 
 			CDoubleBuffer db;
@@ -2093,13 +2020,8 @@ namespace ui
 	}
 
 	// Handle WM_ERASEBKGND so the control won't flicker.
-	LRESULT CALLBACK LabelProc(
-		_In_ HWND hWnd,
-		UINT uMsg,
-		WPARAM wParam,
-		LPARAM lParam,
-		UINT_PTR uIdSubclass,
-		DWORD_PTR /*dwRefData*/)
+	LRESULT CALLBACK
+	LabelProc(_In_ HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR /*dwRefData*/)
 	{
 		switch (uMsg)
 		{

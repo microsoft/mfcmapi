@@ -20,17 +20,9 @@ namespace controls
 		htNUMCOLS
 	};
 
-	static const SizedSPropTagArray(htNUMCOLS, sptHTCols) =
-	{
-	 htNUMCOLS,
-		{
-			PR_DISPLAY_NAME_W,
-			PR_ENTRYID,
-			PR_INSTANCE_KEY,
-			PR_SUBFOLDERS,
-			PR_CONTAINER_FLAGS
-		}
-	};
+	static const SizedSPropTagArray(htNUMCOLS, sptHTCols) = {
+		htNUMCOLS,
+		{PR_DISPLAY_NAME_W, PR_ENTRYID, PR_INSTANCE_KEY, PR_SUBFOLDERS, PR_CONTAINER_FLAGS}};
 
 	enum
 	{
@@ -41,24 +33,19 @@ namespace controls
 		htcPR_DELETED_ASSOC_MSG_COUNT,
 		htcNUMCOLS
 	};
-	static const SizedSPropTagArray(htNUMCOLS, sptHTCountCols) =
-	{
-	 htcNUMCOLS,
-		{
-			PR_CONTENT_COUNT,
-			PR_ASSOC_CONTENT_COUNT,
-			PR_DELETED_FOLDER_COUNT,
-			PR_DELETED_MSG_COUNT,
-			PR_DELETED_ASSOC_MSG_COUNT
-		}
-	};
+	static const SizedSPropTagArray(htNUMCOLS, sptHTCountCols) = {htcNUMCOLS,
+																  {PR_CONTENT_COUNT,
+																   PR_ASSOC_CONTENT_COUNT,
+																   PR_DELETED_FOLDER_COUNT,
+																   PR_DELETED_MSG_COUNT,
+																   PR_DELETED_ASSOC_MSG_COUNT}};
 
 	static std::wstring CLASS = L"CHierarchyTableTreeCtrl";
 
 	CHierarchyTableTreeCtrl::CHierarchyTableTreeCtrl(
 		_In_ CWnd* pCreateParent,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_ dialog::CHierarchyTableDlg *lpHostDlg,
+		_In_ dialog::CHierarchyTableDlg* lpHostDlg,
 		ULONG ulDisplayFlags,
 		UINT nIDContextMenu)
 	{
@@ -92,17 +79,11 @@ namespace controls
 		m_HoverButton = false;
 
 		Create(
-			TVS_HASBUTTONS
-			| TVS_LINESATROOT
-			| TVS_EDITLABELS
-			| TVS_DISABLEDRAGDROP
-			| TVS_SHOWSELALWAYS
-			| TVS_FULLROWSELECT
-			| WS_CHILD
-			| WS_TABSTOP
-			//| WS_CLIPCHILDREN
-			| WS_CLIPSIBLINGS
-			| WS_VISIBLE,
+			TVS_HASBUTTONS | TVS_LINESATROOT | TVS_EDITLABELS | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS |
+				TVS_FULLROWSELECT | WS_CHILD |
+				WS_TABSTOP
+				//| WS_CLIPCHILDREN
+				| WS_CLIPSIBLINGS | WS_VISIBLE,
 			pRect,
 			pCreateParent,
 			IDC_FOLDER_TREE);
@@ -138,21 +119,21 @@ namespace controls
 	}
 
 	BEGIN_MESSAGE_MAP(CHierarchyTableTreeCtrl, CTreeCtrl)
-		ON_NOTIFY_REFLECT(TVN_GETDISPINFO, OnGetDispInfo)
-		ON_NOTIFY_REFLECT(TVN_SELCHANGED, OnSelChanged)
-		ON_NOTIFY_REFLECT(TVN_ENDLABELEDIT, OnEndLabelEdit)
-		ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, OnItemExpanding)
-		ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteItem)
-		ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
-		ON_NOTIFY_REFLECT(NM_RCLICK, OnRightClick)
-		ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
-		ON_WM_KEYDOWN()
-		ON_WM_GETDLGCODE()
-		ON_WM_CONTEXTMENU()
-		ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
-		ON_MESSAGE(WM_MFCMAPI_DELETEITEM, msgOnDeleteItem)
-		ON_MESSAGE(WM_MFCMAPI_MODIFYITEM, msgOnModifyItem)
-		ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
+	ON_NOTIFY_REFLECT(TVN_GETDISPINFO, OnGetDispInfo)
+	ON_NOTIFY_REFLECT(TVN_SELCHANGED, OnSelChanged)
+	ON_NOTIFY_REFLECT(TVN_ENDLABELEDIT, OnEndLabelEdit)
+	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, OnItemExpanding)
+	ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteItem)
+	ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
+	ON_NOTIFY_REFLECT(NM_RCLICK, OnRightClick)
+	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
+	ON_WM_KEYDOWN()
+	ON_WM_GETDLGCODE()
+	ON_WM_CONTEXTMENU()
+	ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
+	ON_MESSAGE(WM_MFCMAPI_DELETEITEM, msgOnDeleteItem)
+	ON_MESSAGE(WM_MFCMAPI_MODIFYITEM, msgOnModifyItem)
+	ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
 	END_MESSAGE_MAP()
 
 	LRESULT CHierarchyTableTreeCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -165,7 +146,7 @@ namespace controls
 		{
 			auto hRes = S_OK;
 
-			TVHITTESTINFO tvHitTestInfo = { 0 };
+			TVHITTESTINFO tvHitTestInfo = {0};
 			tvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 			tvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
@@ -194,7 +175,7 @@ namespace controls
 
 					m_hItemCurHover = tvHitTestInfo.hItem;
 
-					TRACKMOUSEEVENT tmEvent = { 0 };
+					TRACKMOUSEEVENT tmEvent = {0};
 					tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
 					tmEvent.dwFlags = TME_LEAVE;
 					tmEvent.hwndTrack = m_hWnd;
@@ -236,8 +217,7 @@ namespace controls
 
 		EC_B(DeleteItem(GetRootItem()));
 
-		if (m_lpContainer)
-			EC_H(AddRootNode(m_lpContainer));
+		if (m_lpContainer) EC_H(AddRootNode(m_lpContainer));
 
 		if (m_lpHostDlg) m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
 
@@ -266,7 +246,8 @@ namespace controls
 		{
 			WARNHRESMSG(hRes, IDS_HIERARCHNOTFOUND);
 		}
-		else CHECKHRESMSG(hRes, IDS_REFRESHHIERARCHYFAILED);
+		else
+			CHECKHRESMSG(hRes, IDS_REFRESHHIERARCHYFAILED);
 
 		return hRes;
 	}
@@ -276,7 +257,7 @@ namespace controls
 	{
 		if (lpData)
 		{
-			TVITEM tvItem = { 0 };
+			TVITEM tvItem = {0};
 			tvItem.hItem = hItem;
 			tvItem.mask = TVIF_PARAM;
 			if (TreeView_GetItem(hWnd, &tvItem) && tvItem.lParam)
@@ -307,26 +288,26 @@ namespace controls
 
 		ULONG cVals = 0;
 
-		WC_H_GETPROPS(lpMAPIContainer->GetProps(
-			LPSPropTagArray(&sptHTCols),
-			fMapiUnicode,
-			&cVals,
-			&lpProps));
+		WC_H_GETPROPS(lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCols), fMapiUnicode, &cVals, &lpProps));
 		hRes = S_OK;
 
 		// Get the entry ID for the Root Container
 		if (!lpProps || PT_ERROR == PROP_TYPE(lpProps[htPR_ENTRYID].ulPropTag))
 		{
-			output::DebugPrint(DBGHierarchy, L"Could not find EntryID for Root Container. This is benign. Assuming NULL.\n");
+			output::DebugPrint(
+				DBGHierarchy, L"Could not find EntryID for Root Container. This is benign. Assuming NULL.\n");
 		}
-		else lpEIDBin = &lpProps[htPR_ENTRYID].Value.bin;
+		else
+			lpEIDBin = &lpProps[htPR_ENTRYID].Value.bin;
 
 		// Get the Display Name for the Root Container
 		if (!lpProps || PT_ERROR == PROP_TYPE(lpProps[htPR_DISPLAY_NAME_W].ulPropTag))
 		{
-			output::DebugPrint(DBGHierarchy, L"Could not find Display Name for Root Container. This is benign. Assuming NULL.\n");
+			output::DebugPrint(
+				DBGHierarchy, L"Could not find Display Name for Root Container. This is benign. Assuming NULL.\n");
 		}
-		else lpRootName = &lpProps[htPR_DISPLAY_NAME_W];
+		else
+			lpRootName = &lpProps[htPR_DISPLAY_NAME_W];
 
 		std::wstring szName;
 
@@ -351,11 +332,7 @@ namespace controls
 				true, // Always assume root nodes have children so we always paint an expanding icon
 				lpProps ? lpProps[htPR_CONTAINER_FLAGS].Value.ul : MAPI_E_NOT_FOUND);
 
-			AddNode(
-				szName,
-				TVI_ROOT,
-				lpData,
-				true);
+			AddNode(szName, TVI_ROOT, lpData, true);
 		}
 
 		// Node owns the lpProps memory now, so we don't free it
@@ -368,22 +345,29 @@ namespace controls
 		sortlistdata::SortListData* lpData,
 		bool bGetTable) const
 	{
-		output::DebugPrintEx(DBGHierarchy, CLASS, L"AddNode", L"Adding Node \"%ws\" under node %p, bGetTable = 0x%X\n", szName.c_str(), hParent, bGetTable);
-		TVINSERTSTRUCTW tvInsert = { nullptr };
+		output::DebugPrintEx(
+			DBGHierarchy,
+			CLASS,
+			L"AddNode",
+			L"Adding Node \"%ws\" under node %p, bGetTable = 0x%X\n",
+			szName.c_str(),
+			hParent,
+			bGetTable);
+		TVINSERTSTRUCTW tvInsert = {nullptr};
 
 		tvInsert.hParent = hParent;
 		tvInsert.hInsertAfter = TVI_SORT;
 		tvInsert.item.mask = TVIF_CHILDREN | TVIF_TEXT;
 		tvInsert.item.cChildren = I_CHILDRENCALLBACK;
 		tvInsert.item.pszText = const_cast<LPWSTR>(szName.c_str());
-		const auto hItem = reinterpret_cast<HTREEITEM>(::SendMessage(m_hWnd, TVM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&tvInsert)));
+		const auto hItem =
+			reinterpret_cast<HTREEITEM>(::SendMessage(m_hWnd, TVM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&tvInsert)));
 
 		SetNodeData(m_hWnd, hItem, lpData);
 
-		if (bGetTable &&
-			(registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || hParent != TVI_ROOT))
+		if (bGetTable && (registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || hParent != TVI_ROOT))
 		{
-			(void)GetHierarchyTable(hItem, nullptr, true);
+			(void) GetHierarchyTable(hItem, nullptr, true);
 		}
 	}
 
@@ -392,10 +376,7 @@ namespace controls
 		if (!lpsRow) return;
 
 		std::wstring szName;
-		const auto lpName = PpropFindProp(
-			lpsRow->lpProps,
-			lpsRow->cValues,
-			PR_DISPLAY_NAME_W);
+		const auto lpName = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_DISPLAY_NAME_W);
 		if (mapi::CheckStringProp(lpName, PT_UNICODE))
 		{
 			szName = lpName->Value.lpszW;
@@ -411,15 +392,14 @@ namespace controls
 		{
 			lpData->InitializeNode(lpsRow);
 
-			AddNode(
-				szName,
-				hParent,
-				lpData,
-				bGetTable);
+			AddNode(szName, hParent, lpData, bGetTable);
 		}
 	}
 
-	_Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bRegNotifs) const
+	_Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(
+		HTREEITEM hItem,
+		_In_opt_ LPMAPICONTAINER lpMAPIContainer,
+		bool bRegNotifs) const
 	{
 		auto hRes = S_OK;
 		const auto lpData = GetSortListData(hItem);
@@ -445,14 +425,11 @@ namespace controls
 				// on the AB, something about this call triggers table reloads on the parent hierarchy table
 				// no idea why they're triggered - doesn't happen for all AB providers
 				WC_MAPI(lpMAPIContainer->GetHierarchyTable(
-					(m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | fMapiUnicode,
-					&lpHierarchyTable));
+					(m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | fMapiUnicode, &lpHierarchyTable));
 
 				if (lpHierarchyTable)
 				{
-					EC_MAPI(lpHierarchyTable->SetColumns(
-						LPSPropTagArray(&sptHTCols),
-						TBL_BATCH));
+					EC_MAPI(lpHierarchyTable->SetColumns(LPSPropTagArray(&sptHTCols), TBL_BATCH));
 				}
 
 				lpData->Node()->m_lpHierarchyTable = lpHierarchyTable;
@@ -466,14 +443,20 @@ namespace controls
 			if (bRegNotifs &&
 				(registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || GetRootItem() != hItem))
 			{
-				output::DebugPrintEx(DBGNotify, CLASS, L"GetHierarchyTable", L"Advise sink for \"%ws\" = %p\n", strings::LPCTSTRToWstring(GetItemText(hItem)).c_str(), hItem);
+				output::DebugPrintEx(
+					DBGNotify,
+					CLASS,
+					L"GetHierarchyTable",
+					L"Advise sink for \"%ws\" = %p\n",
+					strings::LPCTSTRToWstring(GetItemText(hItem)).c_str(),
+					hItem);
 				lpData->Node()->m_lpAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, hItem);
 
 				if (lpData->Node()->m_lpAdviseSink)
 				{
 					WC_MAPI(lpData->Node()->m_lpHierarchyTable->Advise(
 						fnevTableModified,
-						static_cast<IMAPIAdviseSink *>(lpData->Node()->m_lpAdviseSink),
+						static_cast<IMAPIAdviseSink*>(lpData->Node()->m_lpAdviseSink),
 						&lpData->Node()->m_ulAdviseConnection));
 					if (MAPI_E_NO_SUPPORT == hRes) // Some tables don't support this!
 					{
@@ -491,7 +474,13 @@ namespace controls
 						}
 					}
 
-					output::DebugPrintEx(DBGNotify, CLASS, L"GetHierarchyTable", L"Advise sink %p, ulAdviseConnection = 0x%08X\n", lpData->Node()->m_lpAdviseSink, static_cast<int>(lpData->Node()->m_ulAdviseConnection));
+					output::DebugPrintEx(
+						DBGNotify,
+						CLASS,
+						L"GetHierarchyTable",
+						L"Advise sink %p, ulAdviseConnection = 0x%08X\n",
+						lpData->Node()->m_lpAdviseSink,
+						static_cast<int>(lpData->Node()->m_ulAdviseConnection));
 				}
 			}
 		}
@@ -510,38 +499,31 @@ namespace controls
 		if (!hParent) return MAPI_E_INVALID_PARAMETER;
 		output::DebugPrintEx(DBGHierarchy, CLASS, L"ExpandNode", L"Expanding %p\n", hParent);
 
-		auto lpHierarchyTable = GetHierarchyTable(hParent, nullptr, 0 != registry::RegKeys[registry::regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
+		auto lpHierarchyTable =
+			GetHierarchyTable(hParent, nullptr, 0 != registry::RegKeys[registry::regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
 		if (lpHierarchyTable)
 		{
 			// go to the first row
-			EC_MAPI(lpHierarchyTable->SeekRow(
-				BOOKMARK_BEGINNING,
-				0,
-				nullptr));
+			EC_MAPI(lpHierarchyTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 			hRes = S_OK; // don't let failure here fail the whole load
 
 			ULONG i = 0;
 			// get each row in turn and add it to the list
 			// TODO: Query several rows at once
-			if (!FAILED(hRes)) for (;;)
-			{
-				hRes = S_OK;
-				// Note - we're saving the rows off in AddNode, so we don't FreeProws this...we just MAPIFreeBuffer the array
-				if (pRows) MAPIFreeBuffer(pRows);
-				pRows = nullptr;
-				EC_MAPI(lpHierarchyTable->QueryRows(
-					1,
-					NULL,
-					&pRows));
-				if (FAILED(hRes) || !pRows || !pRows->cRows) break;
-				// Now we can process the row!
+			if (!FAILED(hRes))
+				for (;;)
+				{
+					hRes = S_OK;
+					// Note - we're saving the rows off in AddNode, so we don't FreeProws this...we just MAPIFreeBuffer the array
+					if (pRows) MAPIFreeBuffer(pRows);
+					pRows = nullptr;
+					EC_MAPI(lpHierarchyTable->QueryRows(1, NULL, &pRows));
+					if (FAILED(hRes) || !pRows || !pRows->cRows) break;
+					// Now we can process the row!
 
-				AddNode(
-					pRows->aRow,
-					hParent,
-					false);
-				i++;
-			}
+					AddNode(pRows->aRow, hParent, false);
+					i++;
+				}
 		}
 
 		// Note - we're saving the props off in AddNode, so we don't FreeProws this...we just MAPIFreeBuffer the array
@@ -553,8 +535,7 @@ namespace controls
 	{
 		const auto lpDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
 
-		if (lpDispInfo &&
-			lpDispInfo->item.mask & TVIF_CHILDREN)
+		if (lpDispInfo && lpDispInfo->item.mask & TVIF_CHILDREN)
 		{
 			const auto lpData = reinterpret_cast<sortlistdata::SortListData*>(lpDispInfo->item.lParam);
 
@@ -571,8 +552,16 @@ namespace controls
 				else
 				{
 					LPCTSTR szName = nullptr;
-					if (PROP_TYPE(lpData->lpSourceProps[0].ulPropTag) == PT_TSTRING) szName = lpData->lpSourceProps[0].Value.LPSZ;
-					output::DebugPrintEx(DBGHierarchy, CLASS, L"OnGetDispInfo", L"Using Hierarchy table %d %p %ws\n", lpData->Node()->m_cSubfolders, lpData->Node()->m_lpHierarchyTable, strings::LPCTSTRToWstring(szName).c_str());
+					if (PROP_TYPE(lpData->lpSourceProps[0].ulPropTag) == PT_TSTRING)
+						szName = lpData->lpSourceProps[0].Value.LPSZ;
+					output::DebugPrintEx(
+						DBGHierarchy,
+						CLASS,
+						L"OnGetDispInfo",
+						L"Using Hierarchy table %d %p %ws\n",
+						lpData->Node()->m_cSubfolders,
+						lpData->Node()->m_lpHierarchyTable,
+						strings::LPCTSTRToWstring(szName).c_str());
 					// won't force the hierarchy table - just get it if we've already got it
 					auto lpHierarchyTable = lpData->Node()->m_lpHierarchyTable;
 					if (lpHierarchyTable)
@@ -580,9 +569,7 @@ namespace controls
 						lpDispInfo->item.cChildren = 1;
 						auto hRes = S_OK;
 						ULONG ulRowCount = NULL;
-						WC_MAPI(lpHierarchyTable->GetRowCount(
-							NULL,
-							&ulRowCount));
+						WC_MAPI(lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
 						if (S_OK == hRes && !ulRowCount)
 						{
 							lpDispInfo->item.cChildren = 0;
@@ -613,16 +600,13 @@ namespace controls
 		GetContainer(hItem, mfcmapiREQUEST_MODIFY, &lpMAPIContainer);
 
 		// make sure we've gotten the hierarchy table for this node
-		(void)GetHierarchyTable(hItem, lpMAPIContainer, 0 != registry::RegKeys[registry::regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
+		(void) GetHierarchyTable(
+			hItem, lpMAPIContainer, 0 != registry::RegKeys[registry::regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
 
 		if (SUCCEEDED(hRes) && lpMAPIContainer)
 		{
 			// Get some props for status bar
-			WC_H_GETPROPS(lpMAPIContainer->GetProps(
-				LPSPropTagArray(&sptHTCountCols),
-				fMapiUnicode,
-				&cVals,
-				&lpProps));
+			WC_H_GETPROPS(lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCountCols), fMapiUnicode, &cVals, &lpProps));
 			if (lpProps)
 			{
 				if (!(m_ulDisplayFlags & dfDeleted))
@@ -633,14 +617,16 @@ namespace controls
 						WARNHRESMSG(lpProps[htcPR_CONTENT_COUNT].Value.err, IDS_NODELACKSCONTENTCOUNT);
 						szParam1 = L"?"; // STRING_OK
 					}
-					else szParam1 = std::to_wstring(lpProps[htcPR_CONTENT_COUNT].Value.ul);
+					else
+						szParam1 = std::to_wstring(lpProps[htcPR_CONTENT_COUNT].Value.ul);
 
 					if (PT_ERROR == PROP_TYPE(lpProps[htcPR_ASSOC_CONTENT_COUNT].ulPropTag))
 					{
 						WARNHRESMSG(lpProps[htcPR_ASSOC_CONTENT_COUNT].Value.err, IDS_NODELACKSASSOCCONTENTCOUNT);
 						szParam2 = L"?"; // STRING_OK
 					}
-					else szParam2 = std::to_wstring(lpProps[htcPR_ASSOC_CONTENT_COUNT].Value.ul);
+					else
+						szParam2 = std::to_wstring(lpProps[htcPR_ASSOC_CONTENT_COUNT].Value.ul);
 				}
 				else
 				{
@@ -650,37 +636,36 @@ namespace controls
 						WARNHRESMSG(lpProps[htcPR_DELETED_MSG_COUNT].Value.err, IDS_NODELACKSDELETEDMESSAGECOUNT);
 						szParam1 = L"?"; // STRING_OK
 					}
-					else szParam1 = std::to_wstring(lpProps[htcPR_DELETED_MSG_COUNT].Value.ul);
+					else
+						szParam1 = std::to_wstring(lpProps[htcPR_DELETED_MSG_COUNT].Value.ul);
 
 					if (PT_ERROR == PROP_TYPE(lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].ulPropTag))
 					{
-						WARNHRESMSG(lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].Value.err, IDS_NODELACKSDELETEDASSOCMESSAGECOUNT);
+						WARNHRESMSG(
+							lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].Value.err, IDS_NODELACKSDELETEDASSOCMESSAGECOUNT);
 						szParam2 = L"?"; // STRING_OK
 					}
-					else szParam2 = std::to_wstring(lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].Value.ul);
+					else
+						szParam2 = std::to_wstring(lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].Value.ul);
 
 					if (PT_ERROR == PROP_TYPE(lpProps[htcPR_DELETED_FOLDER_COUNT].ulPropTag))
 					{
 						WARNHRESMSG(lpProps[htcPR_DELETED_FOLDER_COUNT].Value.err, IDS_NODELACKSDELETEDSUBFOLDERCOUNT);
 						szParam3 = L"?"; // STRING_OK
 					}
-					else szParam3 = std::to_wstring(lpProps[htcPR_DELETED_FOLDER_COUNT].Value.ul);
+					else
+						szParam3 = std::to_wstring(lpProps[htcPR_DELETED_FOLDER_COUNT].Value.ul);
 				}
 				MAPIFreeBuffer(lpProps);
 			}
 		}
 
-		m_lpHostDlg->UpdateStatusBarText(
-			STATUSDATA1,
-			uiMsg,
-			szParam1,
-			szParam2,
-			szParam3);
+		m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, uiMsg, szParam1, szParam2, szParam3);
 
 		m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpMAPIContainer, GetSortListData(hItem));
 
-		WCHAR szText[255] = { 0 };
-		TVITEMEXW item = { 0 };
+		WCHAR szText[255] = {0};
+		TVITEMEXW item = {0};
 		item.mask = TVIF_TEXT;
 		item.pszText = szText;
 		item.cchTextMax = _countof(szText);
@@ -691,10 +676,7 @@ namespace controls
 		if (lpMAPIContainer) lpMAPIContainer->Release();
 	}
 
-	_Check_return_ bool CHierarchyTableTreeCtrl::IsItemSelected() const
-	{
-		return m_bItemSelected;
-	}
+	_Check_return_ bool CHierarchyTableTreeCtrl::IsItemSelected() const { return m_bItemSelected; }
 
 	void CHierarchyTableTreeCtrl::OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
@@ -741,8 +723,7 @@ namespace controls
 	{
 		// Due to problems with focus...we have to post instead of calling OnDisplayItem directly.
 		// Post the message to display the item
-		if (m_lpHostDlg)
-			m_lpHostDlg->PostMessage(WM_COMMAND, ID_DISPLAYSELECTEDITEM, NULL);
+		if (m_lpHostDlg) m_lpHostDlg->PostMessage(WM_COMMAND, ID_DISPLAYSELECTEDITEM, NULL);
 
 		// Don't do default behavior for double-click (We only want '+' sign expansion.
 		// Double click should display the item, not expand the tree.)
@@ -762,8 +743,7 @@ namespace controls
 			if (VK_RETURN == nChar && bCtrlPressed)
 			{
 				output::DebugPrintEx(DBGGeneric, CLASS, L"OnKeyDown", L"calling Display Associated Contents\n");
-				if (m_lpHostDlg)
-					m_lpHostDlg->PostMessage(WM_COMMAND, ID_DISPLAYASSOCIATEDCONTENTS, NULL);
+				if (m_lpHostDlg) m_lpHostDlg->PostMessage(WM_COMMAND, ID_DISPLAYASSOCIATEDCONTENTS, NULL);
 			}
 			else if (!m_lpHostDlg || !m_lpHostDlg->HandleKeyDown(nChar, bShiftPressed, bCtrlPressed, bMenuPressed))
 			{
@@ -781,8 +761,7 @@ namespace controls
 		if (GetKeyState(VK_CONTROL) >= 0 && m_hWnd == ::GetFocus())
 		{
 			// to make sure that the Tab key is pressed
-			if (GetKeyState(VK_TAB) < 0)
-				iDlgCode &= ~(DLGC_WANTALLKEYS | DLGC_WANTMESSAGE | DLGC_WANTTAB);
+			if (GetKeyState(VK_TAB) < 0) iDlgCode &= ~(DLGC_WANTALLKEYS | DLGC_WANTMESSAGE | DLGC_WANTTAB);
 		}
 
 		return iDlgCode;
@@ -791,7 +770,7 @@ namespace controls
 	void CHierarchyTableTreeCtrl::OnRightClick(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
 	{
 		// Send WM_CONTEXTMENU to self
-		(void)SendMessage(WM_CONTEXTMENU, reinterpret_cast<WPARAM>(m_hWnd), GetMessagePos());
+		(void) SendMessage(WM_CONTEXTMENU, reinterpret_cast<WPARAM>(m_hWnd), GetMessagePos());
 
 		// Mark message as handled and suppress default handling
 		*pResult = 1;
@@ -806,7 +785,7 @@ namespace controls
 
 			if (item)
 			{
-				RECT rc = { 0 };
+				RECT rc = {0};
 				GetItemRect(item, &rc, true);
 				pos.x = rc.left;
 				pos.y = rc.top;
@@ -856,8 +835,7 @@ namespace controls
 		if (Item)
 		{
 			const auto lpData = GetSortListData(Item);
-			if (lpData && lpData->Node())
-				return lpData->Node()->m_lpEntryID;
+			if (lpData && lpData->Node()) return lpData->Node()->m_lpEntryID;
 		}
 		return nullptr;
 	}
@@ -878,21 +856,29 @@ namespace controls
 	{
 		auto hRes = S_OK;
 		ULONG ulObjType = 0;
-		SBinary NullBin = { 0 };
+		SBinary NullBin = {0};
 		LPMAPICONTAINER lpContainer = nullptr;
 
 		*lppContainer = nullptr;
 
 		if (!Item) return;
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"GetContainer", L"HTREEITEM = %p, bModify = %d, m_ulContainerType = 0x%X\n", Item, bModify, m_ulContainerType);
+		output::DebugPrintEx(
+			DBGGeneric,
+			CLASS,
+			L"GetContainer",
+			L"HTREEITEM = %p, bModify = %d, m_ulContainerType = 0x%X\n",
+			Item,
+			bModify,
+			m_ulContainerType);
 
 		const auto lpData = GetSortListData(Item);
 
 		if (!lpData || !lpData->Node())
 		{
 			// We didn't get an entryID, so log it and get out of here
-			output::DebugPrintEx(DBGGeneric, CLASS, L"GetContainer", L"GetSortListData returned NULL or lpEntryID is NULL\n");
+			output::DebugPrintEx(
+				DBGGeneric, CLASS, L"GetContainer", L"GetSortListData returned NULL or lpEntryID is NULL\n");
 			return;
 		}
 
@@ -911,7 +897,8 @@ namespace controls
 				const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 				if (lpAddrBook)
 				{
-					output::DebugPrint(DBGGeneric, L"\tCalling OpenEntry on address book with ulFlags = 0x%X\n", ulFlags);
+					output::DebugPrint(
+						DBGGeneric, L"\tCalling OpenEntry on address book with ulFlags = 0x%X\n", ulFlags);
 
 					WC_H(mapi::CallOpenEntry(
 						nullptr,
@@ -932,7 +919,7 @@ namespace controls
 				if (lpMDB)
 				{
 					ulFlags = (mfcmapiREQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL) |
-						(m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES | MAPI_NO_CACHE : NULL);
+							  (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES | MAPI_NO_CACHE : NULL);
 
 					WC_H(mapi::CallOpenEntry(
 						lpMDB,
@@ -973,10 +960,7 @@ namespace controls
 			output::DebugPrint(DBGGeneric, L"\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n", hRes);
 			// We failed to open the item with MAPI_MODIFY.
 			// Let's try to open it with NULL
-			GetContainer(
-				Item,
-				mfcmapiDO_NOT_REQUEST_MODIFY,
-				&lpContainer);
+			GetContainer(Item, mfcmapiDO_NOT_REQUEST_MODIFY, &lpContainer);
 		}
 
 		// Ok - we're just out of luck
@@ -987,7 +971,14 @@ namespace controls
 		}
 
 		if (lpContainer) *lppContainer = lpContainer;
-		output::DebugPrintEx(DBGGeneric, CLASS, L"GetContainer", L"returning lpContainer = %p, ulObjType = 0x%X and hRes = 0x%X\n", lpContainer, ulObjType, hRes);
+		output::DebugPrintEx(
+			DBGGeneric,
+			CLASS,
+			L"GetContainer",
+			L"returning lpContainer = %p, ulObjType = 0x%X and hRes = 0x%X\n",
+			lpContainer,
+			ulObjType,
+			hRes);
 	}
 
 	// When + is clicked, add all entries in the table as children
@@ -999,7 +990,15 @@ namespace controls
 		const auto pNMTreeView = reinterpret_cast<NM_TREEVIEW*>(pNMHDR);
 		if (pNMTreeView)
 		{
-			output::DebugPrintEx(DBGHierarchy, CLASS, L"OnItemExpanding", L"Expanding item %p \"%ws\" action = 0x%08X state = 0x%08X\n", pNMTreeView->itemNew.hItem, strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str(), pNMTreeView->action, pNMTreeView->itemNew.state);
+			output::DebugPrintEx(
+				DBGHierarchy,
+				CLASS,
+				L"OnItemExpanding",
+				L"Expanding item %p \"%ws\" action = 0x%08X state = 0x%08X\n",
+				pNMTreeView->itemNew.hItem,
+				strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str(),
+				pNMTreeView->action,
+				pNMTreeView->itemNew.state);
 			if (pNMTreeView->action & TVE_EXPAND)
 			{
 				if (!(pNMTreeView->itemNew.state & TVIS_EXPANDEDONCE))
@@ -1017,11 +1016,23 @@ namespace controls
 		if (pNMTreeView)
 		{
 			auto* lpData = reinterpret_cast<sortlistdata::SortListData*>(pNMTreeView->itemOld.lParam);
-			output::DebugPrintEx(DBGHierarchy, CLASS, L"OnDeleteItem", L"Deleting item %p \"%ws\"\n", pNMTreeView->itemOld.hItem, strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str());
+			output::DebugPrintEx(
+				DBGHierarchy,
+				CLASS,
+				L"OnDeleteItem",
+				L"Deleting item %p \"%ws\"\n",
+				pNMTreeView->itemOld.hItem,
+				strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str());
 
-			if (lpData&& lpData->Node() && lpData->Node()->m_lpAdviseSink)
+			if (lpData && lpData->Node() && lpData->Node()->m_lpAdviseSink)
 			{
-				output::DebugPrintEx(DBGHierarchy, CLASS, L"OnDeleteItem", L"Unadvising %p, ulAdviseConnection = 0x%08X\n", lpData->Node()->m_lpAdviseSink, static_cast<int>(lpData->Node()->m_ulAdviseConnection));
+				output::DebugPrintEx(
+					DBGHierarchy,
+					CLASS,
+					L"OnDeleteItem",
+					L"Unadvising %p, ulAdviseConnection = 0x%08X\n",
+					lpData->Node()->m_lpAdviseSink,
+					static_cast<int>(lpData->Node()->m_ulAdviseConnection));
 			}
 
 			delete lpData;
@@ -1034,10 +1045,11 @@ namespace controls
 
 				if (!(hPrev || hNext))
 				{
-					output::DebugPrintEx(DBGHierarchy, CLASS, L"OnDeleteItem", L"%p has no siblings\n", pNMTreeView->itemOld.hItem);
+					output::DebugPrintEx(
+						DBGHierarchy, CLASS, L"OnDeleteItem", L"%p has no siblings\n", pNMTreeView->itemOld.hItem);
 					const auto hParent = TreeView_GetParent(m_hWnd, pNMTreeView->itemOld.hItem);
 					TreeView_SetItemState(m_hWnd, hParent, 0, TVIS_EXPANDED | TVIS_EXPANDEDONCE);
-					TVITEM tvItem = { 0 };
+					TVITEM tvItem = {0};
 					tvItem.hItem = hParent;
 					tvItem.mask = TVIF_PARAM;
 					if (TreeView_GetItem(m_hWnd, &tvItem) && tvItem.lParam)
@@ -1063,7 +1075,13 @@ namespace controls
 		const auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
 		const auto hParent = reinterpret_cast<HTREEITEM>(lParam);
 
-		output::DebugPrintEx(DBGHierarchy, CLASS, L"msgOnAddItem", L"Received message add item under: %p =\"%ws\"\n", hParent, strings::LPCTSTRToWstring(GetItemText(hParent)).c_str());
+		output::DebugPrintEx(
+			DBGHierarchy,
+			CLASS,
+			L"msgOnAddItem",
+			L"Received message add item under: %p =\"%ws\"\n",
+			hParent,
+			strings::LPCTSTRToWstring(GetItemText(hParent)).c_str());
 
 		// only need to add the node if we're expanded
 		const int iState = GetItemState(hParent, NULL);
@@ -1072,20 +1090,16 @@ namespace controls
 			auto hRes = S_OK;
 			// We make this copy here and pass it in to AddNode, where it is grabbed by SortListData::InitializeContents to be part of the item data
 			// The mem will be freed when the item data is cleaned up - do not free here
-			SRow NewRow = { 0 };
+			SRow NewRow = {0};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-			WC_MAPI(ScDupPropset(
-				tab->row.cValues,
-				tab->row.lpProps,
-				MAPIAllocateBuffer,
-				&NewRow.lpProps));
+			WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 			AddNode(&NewRow, hParent, true);
 		}
 		else
 		{
 			// in case the item doesn't know it has children, let it know
-			TVITEM tvItem = { 0 };
+			TVITEM tvItem = {0};
 			tvItem.hItem = hParent;
 			tvItem.mask = TVIF_PARAM;
 			if (TreeView_GetItem(m_hWnd, &tvItem) && tvItem.lParam)
@@ -1109,13 +1123,17 @@ namespace controls
 		auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
 		const auto hParent = reinterpret_cast<HTREEITEM>(lParam);
 
-		const auto hItemToDelete = FindNode(
-			&tab->propIndex.Value.bin,
-			hParent);
+		const auto hItemToDelete = FindNode(&tab->propIndex.Value.bin, hParent);
 
 		if (hItemToDelete)
 		{
-			output::DebugPrintEx(DBGHierarchy, CLASS, L"msgOnDeleteItem", L"Received message delete item: %p =\"%ws\"\n", hItemToDelete, strings::LPCTSTRToWstring(GetItemText(hItemToDelete)).c_str());
+			output::DebugPrintEx(
+				DBGHierarchy,
+				CLASS,
+				L"msgOnDeleteItem",
+				L"Received message delete item: %p =\"%ws\"\n",
+				hItemToDelete,
+				strings::LPCTSTRToWstring(GetItemText(hItemToDelete)).c_str());
 			EC_B(DeleteItem(hItemToDelete));
 		}
 
@@ -1130,18 +1148,19 @@ namespace controls
 		auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
 		const auto hParent = reinterpret_cast<HTREEITEM>(lParam);
 
-		const auto hModifyItem = FindNode(
-			&tab->propIndex.Value.bin,
-			hParent);
+		const auto hModifyItem = FindNode(&tab->propIndex.Value.bin, hParent);
 
 		if (hModifyItem)
 		{
-			output::DebugPrintEx(DBGHierarchy, CLASS, L"msgOnModifyItem", L"Received message modify item: %p =\"%ws\"\n", hModifyItem, strings::LPCTSTRToWstring(GetItemText(hModifyItem)).c_str());
+			output::DebugPrintEx(
+				DBGHierarchy,
+				CLASS,
+				L"msgOnModifyItem",
+				L"Received message modify item: %p =\"%ws\"\n",
+				hModifyItem,
+				strings::LPCTSTRToWstring(GetItemText(hModifyItem)).c_str());
 
-			const auto lpName = PpropFindProp(
-				tab->row.lpProps,
-				tab->row.cValues,
-				PR_DISPLAY_NAME_W);
+			const auto lpName = PpropFindProp(tab->row.lpProps, tab->row.cValues, PR_DISPLAY_NAME_W);
 
 			std::wstring szText;
 			if (mapi::CheckStringProp(lpName, PT_UNICODE))
@@ -1153,7 +1172,7 @@ namespace controls
 				szText = strings::loadstring(IDS_UNKNOWNNAME);
 			}
 
-			TVITEMEXW item = { 0 };
+			TVITEMEXW item = {0};
 			item.mask = TVIF_TEXT;
 			item.pszText = const_cast<LPWSTR>(szText.c_str());
 			item.hItem = hModifyItem;
@@ -1161,14 +1180,10 @@ namespace controls
 
 			// We make this copy here and pass it in to the node
 			// The mem will be freed when the item data is cleaned up - do not free here
-			SRow NewRow = { 0 };
+			SRow NewRow = {0};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-			WC_MAPI(ScDupPropset(
-				tab->row.cValues,
-				tab->row.lpProps,
-				MAPIAllocateBuffer,
-				&NewRow.lpProps));
+			WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 			auto lpData = new sortlistdata::SortListData();
 			if (lpData)
 			{
@@ -1191,7 +1206,13 @@ namespace controls
 	{
 		auto hRes = S_OK;
 		const auto hRefreshItem = reinterpret_cast<HTREEITEM>(wParam);
-		output::DebugPrintEx(DBGHierarchy, CLASS, L"msgOnRefreshTable", L"Received message refresh table: %p =\"%ws\"\n", hRefreshItem, strings::LPCTSTRToWstring(GetItemText(hRefreshItem)).c_str());
+		output::DebugPrintEx(
+			DBGHierarchy,
+			CLASS,
+			L"msgOnRefreshTable",
+			L"Received message refresh table: %p =\"%ws\"\n",
+			hRefreshItem,
+			strings::LPCTSTRToWstring(GetItemText(hRefreshItem)).c_str());
 
 		const int iState = GetItemState(hRefreshItem, NULL);
 		if (iState & TVIS_EXPANDED)
@@ -1214,9 +1235,7 @@ namespace controls
 					if (lpData->Node()->m_lpHierarchyTable)
 					{
 						ULONG ulRowCount = NULL;
-						WC_MAPI(lpData->Node()->m_lpHierarchyTable->GetRowCount(
-							NULL,
-							&ulRowCount));
+						WC_MAPI(lpData->Node()->m_lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
 						if (S_OK != hRes || ulRowCount)
 						{
 							EC_B(Expand(hRefreshItem, TVE_EXPAND));
@@ -1235,7 +1254,13 @@ namespace controls
 	{
 		if (!lpInstance || !hParent) return nullptr;
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"FindNode", L"Looking for child of: %p =\"%ws\"\n", hParent, strings::LPCTSTRToWstring(GetItemText(hParent)).c_str());
+		output::DebugPrintEx(
+			DBGGeneric,
+			CLASS,
+			L"FindNode",
+			L"Looking for child of: %p =\"%ws\"\n",
+			hParent,
+			strings::LPCTSTRToWstring(GetItemText(hParent)).c_str());
 
 		auto hCurrent = GetNextItem(hParent, TVGN_CHILD);
 
@@ -1249,7 +1274,13 @@ namespace controls
 				{
 					if (!memcmp(lpCurInstance->lpb, lpInstance->lpb, lpInstance->cb))
 					{
-						output::DebugPrintEx(DBGGeneric, CLASS, L"FindNode", L"Matched at %p =\"%ws\"\n", hCurrent, strings::LPCTSTRToWstring(GetItemText(hCurrent)).c_str());
+						output::DebugPrintEx(
+							DBGGeneric,
+							CLASS,
+							L"FindNode",
+							L"Matched at %p =\"%ws\"\n",
+							hCurrent,
+							strings::LPCTSTRToWstring(GetItemText(hCurrent)).c_str());
 						return hCurrent;
 					}
 				}

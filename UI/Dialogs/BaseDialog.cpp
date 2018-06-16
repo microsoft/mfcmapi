@@ -96,21 +96,21 @@ namespace dialog
 	}
 
 	BEGIN_MESSAGE_MAP(CBaseDialog, CMyDialog)
-		ON_WM_ACTIVATE()
-		ON_WM_INITMENU()
-		ON_WM_MENUSELECT()
-		ON_WM_SIZE()
+	ON_WM_ACTIVATE()
+	ON_WM_INITMENU()
+	ON_WM_MENUSELECT()
+	ON_WM_SIZE()
 
-		ON_COMMAND(ID_OPTIONS, OnOptions)
-		ON_COMMAND(ID_OPENMAINWINDOW, OnOpenMainWindow)
-		ON_COMMAND(ID_MYHELP, OnHelp)
+	ON_COMMAND(ID_OPTIONS, OnOptions)
+	ON_COMMAND(ID_OPENMAINWINDOW, OnOpenMainWindow)
+	ON_COMMAND(ID_MYHELP, OnHelp)
 
-		ON_COMMAND(ID_NOTIFICATIONSOFF, OnNotificationsOff)
-		ON_COMMAND(ID_NOTIFICATIONSON, OnNotificationsOn)
-		ON_COMMAND(ID_DISPATCHNOTIFICATIONS, OnDispatchNotifications)
+	ON_COMMAND(ID_NOTIFICATIONSOFF, OnNotificationsOff)
+	ON_COMMAND(ID_NOTIFICATIONSON, OnNotificationsOn)
+	ON_COMMAND(ID_DISPATCHNOTIFICATIONS, OnDispatchNotifications)
 
-		ON_MESSAGE(WM_MFCMAPI_UPDATESTATUSBAR, msgOnUpdateStatusBar)
-		ON_MESSAGE(WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, msgOnClearSingleMAPIPropList)
+	ON_MESSAGE(WM_MFCMAPI_UPDATESTATUSBAR, msgOnUpdateStatusBar)
+	ON_MESSAGE(WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, msgOnClearSingleMAPIPropList)
 	END_MESSAGE_MAP()
 
 	LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -154,10 +154,10 @@ namespace dialog
 
 		if (m_lpFakeSplitter)
 		{
-			m_lpPropDisplay = new controls::sortlistctrl::CSingleMAPIPropListCtrl(m_lpFakeSplitter, this, m_lpMapiObjects, m_bIsAB);
+			m_lpPropDisplay =
+				new controls::sortlistctrl::CSingleMAPIPropListCtrl(m_lpFakeSplitter, this, m_lpMapiObjects, m_bIsAB);
 
-			if (m_lpPropDisplay)
-				m_lpFakeSplitter->SetPaneTwo(m_lpPropDisplay);
+			if (m_lpPropDisplay) m_lpFakeSplitter->SetPaneTwo(m_lpPropDisplay);
 		}
 		return false;
 	}
@@ -198,7 +198,7 @@ namespace dialog
 		::AppendMenuW(hSub, MF_ENABLED | MF_STRING, IDCANCEL, szExit.c_str());
 
 		// Make sure the menu background is filled in the right color
-		MENUINFO mi = { 0 };
+		MENUINFO mi = {0};
 		mi.cbSize = sizeof(MENUINFO);
 		mi.fMask = MIM_BACKGROUND;
 		mi.hbrBack = ui::GetSysBrush(ui::cBackground);
@@ -215,14 +215,30 @@ namespace dialog
 		output::DebugPrint(DBGMenu, L"CBaseDialog::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 		switch (wMenuSelect)
 		{
-		case ID_HEXEDITOR: OnHexEditor(); return true;
-		case ID_DBGVIEW: editor::DisplayDbgView(m_lpParent); return true;
-		case ID_COMPAREENTRYIDS: OnCompareEntryIDs(); return true;
-		case ID_OPENENTRYID: OnOpenEntryID(nullptr); return true;
-		case ID_COMPUTESTOREHASH: OnComputeStoreHash(); return true;
-		case ID_COPY: HandleCopy(); return true;
-		case ID_PASTE: (void)HandlePaste(); return true;
-		case ID_OUTLOOKVERSION: OnOutlookVersion(); return true;
+		case ID_HEXEDITOR:
+			OnHexEditor();
+			return true;
+		case ID_DBGVIEW:
+			editor::DisplayDbgView(m_lpParent);
+			return true;
+		case ID_COMPAREENTRYIDS:
+			OnCompareEntryIDs();
+			return true;
+		case ID_OPENENTRYID:
+			OnOpenEntryID(nullptr);
+			return true;
+		case ID_COMPUTESTOREHASH:
+			OnComputeStoreHash();
+			return true;
+		case ID_COPY:
+			HandleCopy();
+			return true;
+		case ID_PASTE:
+			(void) HandlePaste();
+			return true;
+		case ID_OUTLOOKVERSION:
+			OnOutlookVersion();
+			return true;
 		}
 		if (HandleAddInMenu(wMenuSelect)) return true;
 
@@ -278,8 +294,15 @@ namespace dialog
 
 	_Check_return_ bool CBaseDialog::HandleKeyDown(UINT nChar, bool bShift, bool bCtrl, bool bMenu)
 	{
-		output::DebugPrintEx(DBGMenu, CLASS, L"HandleKeyDown", L"nChar = 0x%0X, bShift = 0x%X, bCtrl = 0x%X, bMenu = 0x%X\n",
-			nChar, bShift, bCtrl, bMenu);
+		output::DebugPrintEx(
+			DBGMenu,
+			CLASS,
+			L"HandleKeyDown",
+			L"nChar = 0x%0X, bShift = 0x%X, bCtrl = 0x%X, bMenu = 0x%X\n",
+			nChar,
+			bShift,
+			bCtrl,
+			bMenu);
 		if (bMenu) return false;
 
 		switch (nChar)
@@ -287,21 +310,25 @@ namespace dialog
 		case 'H':
 			if (bCtrl)
 			{
-				OnHexEditor(); return true;
+				OnHexEditor();
+				return true;
 			}
 			break;
 		case 'D':
 			if (bCtrl)
 			{
-				editor::DisplayDbgView(m_lpParent); return true;
+				editor::DisplayDbgView(m_lpParent);
+				return true;
 			}
 			break;
 		case VK_F1:
-			DisplayAboutDlg(this); return true;
+			DisplayAboutDlg(this);
+			return true;
 		case 'S':
 			if (bCtrl && m_lpPropDisplay)
 			{
-				m_lpPropDisplay->SavePropsToXML(); return true;
+				m_lpPropDisplay->SavePropsToXML();
+				return true;
 			}
 			break;
 		case VK_DELETE:
@@ -310,31 +337,36 @@ namespace dialog
 		case 'X':
 			if (bCtrl)
 			{
-				OnDeleteSelectedItem(); return true;
+				OnDeleteSelectedItem();
+				return true;
 			}
 			break;
 		case 'C':
 			if (bCtrl && !bShift)
 			{
-				HandleCopy(); return true;
+				HandleCopy();
+				return true;
 			}
 			break;
 		case 'V':
 			if (bCtrl)
 			{
-				(void)HandlePaste(); return true;
+				(void) HandlePaste();
+				return true;
 			}
 			break;
 		case 'O':
 			if (bCtrl)
 			{
-				OnOptions(); return true;
+				OnOptions();
+				return true;
 			}
 			break;
 		case VK_F5:
 			if (!bCtrl)
 			{
-				OnRefreshView(); return true;
+				OnRefreshView();
+				return true;
 			}
 			break;
 		case VK_ESCAPE:
@@ -364,18 +396,17 @@ namespace dialog
 		Release();
 	}
 
-	void CBaseDialog::OnEscHit()
-	{
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnEscHit", L"Not implemented\n");
-	}
+	void CBaseDialog::OnEscHit() { output::DebugPrintEx(DBGGeneric, CLASS, L"OnEscHit", L"Not implemented\n"); }
 
 	void CBaseDialog::OnOptions()
 	{
 		const auto ulNiceNamesBefore = registry::RegKeys[registry::regkeyDO_COLUMN_NAMES].ulCurDWORD;
 		const auto ulSuppressNotFoundBefore = registry::RegKeys[registry::regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
 		const auto bNeedPropRefresh = editor::DisplayOptionsDlg(this);
-		const auto bNiceNamesChanged = ulNiceNamesBefore != registry::RegKeys[registry::regkeyDO_COLUMN_NAMES].ulCurDWORD;
-		const auto bSuppressNotFoundChanged = ulSuppressNotFoundBefore != registry::RegKeys[registry::regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
+		const auto bNiceNamesChanged =
+			ulNiceNamesBefore != registry::RegKeys[registry::regkeyDO_COLUMN_NAMES].ulCurDWORD;
+		const auto bSuppressNotFoundChanged =
+			ulSuppressNotFoundBefore != registry::RegKeys[registry::regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
 		auto hRes = S_OK;
 		auto bResetColumns = false;
 
@@ -398,10 +429,7 @@ namespace dialog
 		if (pMain) pMain->OnOpenMessageStoreTable();
 	}
 
-	void CBaseDialog::HandleCopy()
-	{
-		output::DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
-	}
+	void CBaseDialog::HandleCopy() { output::DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n"); }
 
 	_Check_return_ bool CBaseDialog::HandlePaste()
 	{
@@ -417,10 +445,7 @@ namespace dialog
 		return false;
 	}
 
-	void CBaseDialog::OnHelp()
-	{
-		DisplayAboutDlg(this);
-	}
+	void CBaseDialog::OnHelp() { DisplayAboutDlg(this); }
 
 	void CBaseDialog::OnDeleteSelectedItem()
 	{
@@ -432,17 +457,16 @@ namespace dialog
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L" Not Implemented\n");
 	}
 
-	void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ controls::sortlistdata::SortListData* lpListData) const
+	void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(
+		_In_opt_ LPMAPIPROP lpMAPIProp,
+		_In_opt_ controls::sortlistdata::SortListData* lpListData) const
 	{
 		auto hRes = S_OK;
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnUpdateSingleMAPIPropListCtrl", L"Setting item %p\n", lpMAPIProp);
 
 		if (m_lpPropDisplay)
 		{
-			WC_H(m_lpPropDisplay->SetDataSource(
-				lpMAPIProp,
-				lpListData,
-				m_bIsAB));
+			WC_H(m_lpPropDisplay->SetDataSource(lpMAPIProp, lpListData, m_bIsAB));
 		}
 	}
 
@@ -453,10 +477,11 @@ namespace dialog
 		if (hMenuBar && hMenuToAdd)
 		{
 			auto szTitle = strings::loadstring(uidTitle);
-			::InsertMenuW(hMenuBar, uiPos, MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(hMenuToAdd), szTitle.c_str());
+			::InsertMenuW(
+				hMenuBar, uiPos, MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(hMenuToAdd), szTitle.c_str());
 			if (IDR_MENU_PROPERTY == uiResource)
 			{
-				(void)addin::ExtendAddInMenu(hMenuToAdd, MENU_CONTEXT_PROPERTY);
+				(void) addin::ExtendAddInMenu(hMenuToAdd, MENU_CONTEXT_PROPERTY);
 			}
 		}
 	}
@@ -473,8 +498,8 @@ namespace dialog
 		const auto iData1 = !m_StatusMessages[STATUSDATA1].empty();
 		const auto iData2 = !m_StatusMessages[STATUSDATA2].empty();
 
-		SIZE sizeData1 = { 0 };
-		SIZE sizeData2 = { 0 };
+		SIZE sizeData1 = {0};
+		SIZE sizeData2 = {0};
 		if (iData1 || iData2)
 		{
 			const auto hdc = ::GetDC(m_hWnd);
@@ -507,7 +532,7 @@ namespace dialog
 		m_StatusWidth[STATUSDATA1] = iWidthData1;
 		m_StatusWidth[STATUSDATA2] = iWidthData2;
 		m_StatusWidth[STATUSINFOTEXT] = -1;
-		RECT rcStatus = { 0 };
+		RECT rcStatus = {0};
 		::GetClientRect(m_hWnd, &rcStatus);
 		rcStatus.top = rcStatus.bottom - GetStatusHeight();
 
@@ -515,7 +540,7 @@ namespace dialog
 		::RedrawWindow(m_hWnd, &rcStatus, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	}
 
-	void CBaseDialog::OnSize(UINT/* nType*/, int cx, int cy)
+	void CBaseDialog::OnSize(UINT /* nType*/, int cx, int cy)
 	{
 		auto hRes = S_OK;
 		HDWP hdwp = nullptr;
@@ -526,7 +551,7 @@ namespace dialog
 		{
 			const auto iHeight = GetStatusHeight();
 			const auto iNewCY = cy - iHeight;
-			RECT rcStatus = { 0 };
+			RECT rcStatus = {0};
 			::GetClientRect(m_hWnd, &rcStatus);
 			if (rcStatus.bottom - rcStatus.top > iHeight)
 			{
@@ -562,7 +587,12 @@ namespace dialog
 		UpdateStatusBarText(nPos, uidMsg, szParam1, strings::emptystring, strings::emptystring);
 	}
 
-	void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, std::wstring& szParam1, std::wstring& szParam2, std::wstring& szParam3)
+	void __cdecl CBaseDialog::UpdateStatusBarText(
+		__StatusPaneEnum nPos,
+		UINT uidMsg,
+		std::wstring& szParam1,
+		std::wstring& szParam2,
+		std::wstring& szParam3)
 	{
 		std::wstring szStatBarString;
 
@@ -570,15 +600,11 @@ namespace dialog
 		if (uidMsg >= ID_LOADMAPIMENUMIN && uidMsg <= ID_LOADMAPIMENUMAX)
 		{
 			auto hRes = S_OK;
-			MENUITEMINFOW mii = { 0 };
+			MENUITEMINFOW mii = {0};
 			mii.cbSize = sizeof(MENUITEMINFO);
 			mii.fMask = MIIM_DATA;
 
-			WC_B(GetMenuItemInfoW(
-				::GetMenu(m_hWnd),
-				uidMsg,
-				false,
-				&mii));
+			WC_B(GetMenuItemInfoW(::GetMenu(m_hWnd), uidMsg, false, &mii));
 			if (mii.dwItemData)
 			{
 				const auto lme = reinterpret_cast<ui::LPMENUENTRY>(mii.dwItemData);
@@ -640,21 +666,13 @@ namespace dialog
 		return S_OK;
 	}
 
-	void CBaseDialog::OnHexEditor()
-	{
-		new editor::CHexEditor(m_lpParent, m_lpMapiObjects);
-	}
-
+	void CBaseDialog::OnHexEditor() { new editor::CHexEditor(m_lpParent, m_lpMapiObjects); }
 
 	void CBaseDialog::OnOutlookVersion()
 	{
 		auto hRes = S_OK;
 
-		editor::CEditor MyEID(
-			this,
-			IDS_OUTLOOKVERSIONTITLE,
-			NULL,
-			CEDITOR_BUTTON_OK);
+		editor::CEditor MyEID(this, IDS_OUTLOOKVERSIONTITLE, NULL, CEDITOR_BUTTON_OK);
 
 		const auto szVersionString = version::GetOutlookVersionString();
 
@@ -667,20 +685,19 @@ namespace dialog
 		auto hRes = S_OK;
 		if (!m_lpMapiObjects) return;
 
-		editor::CEditor MyEID(
-			this,
-			IDS_OPENEID,
-			IDS_OPENEIDPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		editor::CEditor MyEID(this, IDS_OPENEID, IDS_OPENEIDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyEID.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EID, strings::BinToHexString(lpBin, false), false));
+		MyEID.InitPane(
+			0, viewpane::TextPane::CreateSingleLinePane(IDS_EID, strings::BinToHexString(lpBin, false), false));
 
 		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		MyEID.InitPane(1, viewpane::CheckPane::Create(IDS_USEMDB, lpMDB != nullptr, lpMDB == nullptr));
 
 		auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
-		if (lpAB) MyEID.InitPane(2, viewpane::CheckPane::Create(IDS_USEAB, true, lpAB == nullptr));
-		else MyEID.InitPane(2, viewpane::CheckPane::Create(IDS_USEAB, false, lpAB == nullptr));
+		if (lpAB)
+			MyEID.InitPane(2, viewpane::CheckPane::Create(IDS_USEAB, true, lpAB == nullptr));
+		else
+			MyEID.InitPane(2, viewpane::CheckPane::Create(IDS_USEAB, false, lpAB == nullptr));
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		MyEID.InitPane(3, viewpane::CheckPane::Create(IDS_SESSION, lpMAPISession != nullptr, lpMAPISession == nullptr));
@@ -708,7 +725,11 @@ namespace dialog
 
 		if (MyEID.GetCheck(9) && lpEnteredEntryID)
 		{
-			(void)mapi::UnwrapContactEntryID(static_cast<ULONG>(cbBin), reinterpret_cast<LPBYTE>(lpEnteredEntryID), reinterpret_cast<ULONG*>(&cbBin), reinterpret_cast<LPBYTE*>(&lpEntryID));
+			(void) mapi::UnwrapContactEntryID(
+				static_cast<ULONG>(cbBin),
+				reinterpret_cast<LPBYTE>(lpEnteredEntryID),
+				reinterpret_cast<ULONG*>(&cbBin),
+				reinterpret_cast<LPBYTE*>(&lpEntryID));
 		}
 		else
 		{
@@ -743,25 +764,25 @@ namespace dialog
 				static_cast<ULONG>(cbBin),
 				lpEntryID,
 				nullptr,
-				(MyEID.GetCheck(4) ? MAPI_MODIFY : MAPI_BEST_ACCESS) |
-				(MyEID.GetCheck(5) ? MAPI_NO_CACHE : 0) |
-				(MyEID.GetCheck(6) ? MAPI_CACHE_ONLY : 0),
+				(MyEID.GetCheck(4) ? MAPI_MODIFY : MAPI_BEST_ACCESS) | (MyEID.GetCheck(5) ? MAPI_NO_CACHE : 0) |
+					(MyEID.GetCheck(6) ? MAPI_CACHE_ONLY : 0),
 				&ulObjType,
 				&lpUnk));
 
 			if (lpUnk)
 			{
 				auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
-				output::DebugPrint(DBGGeneric, L"OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n", lpUnk, ulObjType, szFlags.c_str());
+				output::DebugPrint(
+					DBGGeneric,
+					L"OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n",
+					lpUnk,
+					ulObjType,
+					szFlags.c_str());
 
 				auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpUnk);
 				if (lpTemp)
 				{
-					WC_H(DisplayObject(
-						lpTemp,
-						ulObjType,
-						otHierarchy,
-						this));
+					WC_H(DisplayObject(lpTemp, ulObjType, otHierarchy, this));
 					lpTemp->Release();
 				}
 
@@ -782,28 +803,21 @@ namespace dialog
 		auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
 
 		editor::CEditor MyEIDs(
-			this,
-			IDS_COMPAREEIDS,
-			IDS_COMPAREEIDSPROMPTS,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			this, IDS_COMPAREEIDS, IDS_COMPAREEIDSPROMPTS, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyEIDs.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EID1, false));
 		MyEIDs.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_EID2, false));
 
-		UINT uidDropDown[] = {
-		IDS_DDMESSAGESTORE,
-		IDS_DDSESSION,
-		IDS_DDADDRESSBOOK
-		};
-		MyEIDs.InitPane(2, viewpane::DropDownPane::Create(IDS_OBJECTFORCOMPAREEID, _countof(uidDropDown), uidDropDown, true));
+		UINT uidDropDown[] = {IDS_DDMESSAGESTORE, IDS_DDSESSION, IDS_DDADDRESSBOOK};
+		MyEIDs.InitPane(
+			2, viewpane::DropDownPane::Create(IDS_OBJECTFORCOMPAREEID, _countof(uidDropDown), uidDropDown, true));
 
 		MyEIDs.InitPane(3, viewpane::CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
 
 		WC_H(MyEIDs.DisplayDialog());
 		if (S_OK != hRes) return;
 
-		if (0 == MyEIDs.GetDropDown(2) && !lpMDB ||
-			1 == MyEIDs.GetDropDown(2) && !lpMAPISession ||
+		if (0 == MyEIDs.GetDropDown(2) && !lpMDB || 1 == MyEIDs.GetDropDown(2) && !lpMAPISession ||
 			2 == MyEIDs.GetDropDown(2) && !lpAB)
 		{
 			error::ErrDialog(__FILE__, __LINE__, IDS_EDCOMPAREEID);
@@ -822,13 +836,16 @@ namespace dialog
 		switch (MyEIDs.GetDropDown(2))
 		{
 		case 0: // Message Store
-			EC_MAPI(lpMDB->CompareEntryIDs(static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
+			EC_MAPI(lpMDB->CompareEntryIDs(
+				static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
 			break;
 		case 1: // Session
-			EC_MAPI(lpMAPISession->CompareEntryIDs(static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
+			EC_MAPI(lpMAPISession->CompareEntryIDs(
+				static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
 			break;
 		case 2: // Address Book
-			EC_MAPI(lpAB->CompareEntryIDs(static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
+			EC_MAPI(lpAB->CompareEntryIDs(
+				static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
 			break;
 		}
 
@@ -837,13 +854,9 @@ namespace dialog
 			auto szResult = strings::loadstring(ulResult ? IDS_TRUE : IDS_FALSE);
 			const auto szRet = strings::formatmessage(IDS_COMPAREEIDBOOL, ulResult, szResult.c_str());
 
-			editor::CEditor Result(
-				this,
-				IDS_COMPAREEIDSRESULT,
-				NULL,
-				CEDITOR_BUTTON_OK);
+			editor::CEditor Result(this, IDS_COMPAREEIDSRESULT, NULL, CEDITOR_BUTTON_OK);
 			Result.SetPromptPostFix(szRet);
-			(void)Result.DisplayDialog();
+			(void) Result.DisplayDialog();
 		}
 
 		delete[] lpEntryID2;
@@ -855,10 +868,7 @@ namespace dialog
 		auto hRes = S_OK;
 
 		editor::CEditor MyStoreEID(
-			this,
-			IDS_COMPUTESTOREHASH,
-			IDS_COMPUTESTOREHASHPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			this, IDS_COMPUTESTOREHASH, IDS_COMPUTESTOREHASHPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyStoreEID.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_STOREEID, false));
 		MyStoreEID.InitPane(1, viewpane::CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
@@ -873,16 +883,17 @@ namespace dialog
 		size_t cbBin = NULL;
 		EC_H(MyStoreEID.GetEntryID(0, MyStoreEID.GetCheck(1), &cbBin, &lpEntryID));
 
-		const auto dwHash = mapi::ComputeStoreHash(static_cast<ULONG>(cbBin), reinterpret_cast<LPBYTE>(lpEntryID), nullptr, MyStoreEID.GetStringW(2).c_str(), MyStoreEID.GetCheck(3));
+		const auto dwHash = mapi::ComputeStoreHash(
+			static_cast<ULONG>(cbBin),
+			reinterpret_cast<LPBYTE>(lpEntryID),
+			nullptr,
+			MyStoreEID.GetStringW(2).c_str(),
+			MyStoreEID.GetCheck(3));
 		const auto szHash = strings::formatmessage(IDS_STOREHASHVAL, dwHash);
 
-		editor::CEditor Result(
-			this,
-			IDS_STOREHASH,
-			NULL,
-			CEDITOR_BUTTON_OK);
+		editor::CEditor Result(this, IDS_STOREHASH, NULL, CEDITOR_BUTTON_OK);
 		Result.SetPromptPostFix(szHash);
-		(void)Result.DisplayDialog();
+		(void) Result.DisplayDialog();
 
 		delete[] lpEntryID;
 	}
@@ -898,27 +909,20 @@ namespace dialog
 		auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
 
 		editor::CEditor MyData(
-			this,
-			IDS_NOTIFICATIONS,
-			IDS_NOTIFICATIONSPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			this, IDS_NOTIFICATIONS, IDS_NOTIFICATIONSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagNotifEventType, true));
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EID, false));
 		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULEVENTMASK, false));
 		MyData.SetHex(1, fnevNewMail);
-		UINT uidDropDown[] = {
-		IDS_DDMESSAGESTORE,
-		IDS_DDSESSION,
-		IDS_DDADDRESSBOOK
-		};
-		MyData.InitPane(2, viewpane::DropDownPane::Create(IDS_OBJECTFORADVISE, _countof(uidDropDown), uidDropDown, true));
+		UINT uidDropDown[] = {IDS_DDMESSAGESTORE, IDS_DDSESSION, IDS_DDADDRESSBOOK};
+		MyData.InitPane(
+			2, viewpane::DropDownPane::Create(IDS_OBJECTFORADVISE, _countof(uidDropDown), uidDropDown, true));
 
 		WC_H(MyData.DisplayDialog());
 
 		if (S_OK == hRes)
 		{
-			if (0 == MyData.GetDropDown(2) && !lpMDB ||
-				1 == MyData.GetDropDown(2) && !lpMAPISession ||
+			if (0 == MyData.GetDropDown(2) && !lpMDB || 1 == MyData.GetDropDown(2) && !lpMAPISession ||
 				2 == MyData.GetDropDown(2) && !lpAB)
 			{
 				error::ErrDialog(__FILE__, __LINE__, IDS_EDADVISE);
@@ -941,7 +945,7 @@ namespace dialog
 						static_cast<ULONG>(cbBin),
 						lpEntryID,
 						MyData.GetHex(1),
-						static_cast<IMAPIAdviseSink *>(m_lpBaseAdviseSink),
+						static_cast<IMAPIAdviseSink*>(m_lpBaseAdviseSink),
 						&m_ulBaseAdviseConnection));
 					m_lpBaseAdviseSink->SetAdviseTarget(lpMDB);
 					m_ulBaseAdviseObjectType = MAPI_STORE;
@@ -951,7 +955,7 @@ namespace dialog
 						static_cast<ULONG>(cbBin),
 						lpEntryID,
 						MyData.GetHex(1),
-						static_cast<IMAPIAdviseSink *>(m_lpBaseAdviseSink),
+						static_cast<IMAPIAdviseSink*>(m_lpBaseAdviseSink),
 						&m_ulBaseAdviseConnection));
 					m_ulBaseAdviseObjectType = MAPI_SESSION;
 					break;
@@ -960,7 +964,7 @@ namespace dialog
 						static_cast<ULONG>(cbBin),
 						lpEntryID,
 						MyData.GetHex(1),
-						static_cast<IMAPIAdviseSink *>(m_lpBaseAdviseSink),
+						static_cast<IMAPIAdviseSink*>(m_lpBaseAdviseSink),
 						&m_ulBaseAdviseConnection));
 					m_lpBaseAdviseSink->SetAdviseTarget(lpAB);
 					m_ulBaseAdviseObjectType = MAPI_ADDRBOOK;
@@ -1034,13 +1038,7 @@ namespace dialog
 		return false;
 	}
 
-	_Check_return_ ui::CParentWnd* CBaseDialog::GetParentWnd() const
-	{
-		return m_lpParent;
-	}
+	_Check_return_ ui::CParentWnd* CBaseDialog::GetParentWnd() const { return m_lpParent; }
 
-	_Check_return_ cache::CMapiObjects* CBaseDialog::GetMapiObjects() const
-	{
-		return m_lpMapiObjects;
-	}
+	_Check_return_ cache::CMapiObjects* CBaseDialog::GetMapiObjects() const { return m_lpMapiObjects; }
 }

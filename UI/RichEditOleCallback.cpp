@@ -14,14 +14,12 @@ namespace ui
 		m_cRef = 1;
 	}
 
-	STDMETHODIMP CRichEditOleCallback::QueryInterface(REFIID riid,
-		LPVOID* ppvObj)
+	STDMETHODIMP CRichEditOleCallback::QueryInterface(REFIID riid, LPVOID* ppvObj)
 	{
 		*ppvObj = nullptr;
-		if (riid == IID_IRichEditOleCallback ||
-			riid == IID_IUnknown)
+		if (riid == IID_IRichEditOleCallback || riid == IID_IUnknown)
 		{
-			*ppvObj = static_cast<IRichEditOleCallback *>(this);
+			*ppvObj = static_cast<IRichEditOleCallback*>(this);
 			AddRef();
 			return S_OK;
 		}
@@ -44,37 +42,28 @@ namespace ui
 		return lCount;
 	}
 
-	STDMETHODIMP CRichEditOleCallback::GetNewStorage(LPSTORAGE FAR * /*lplpstg*/)
-	{
-		return E_NOTIMPL;
-	}
+	STDMETHODIMP CRichEditOleCallback::GetNewStorage(LPSTORAGE FAR* /*lplpstg*/) { return E_NOTIMPL; }
 
-	STDMETHODIMP CRichEditOleCallback::GetInPlaceContext(LPOLEINPLACEFRAME FAR * /*lplpFrame*/,
-		LPOLEINPLACEUIWINDOW FAR * /*lplpDoc*/,
+	STDMETHODIMP CRichEditOleCallback::GetInPlaceContext(
+		LPOLEINPLACEFRAME FAR* /*lplpFrame*/,
+		LPOLEINPLACEUIWINDOW FAR* /*lplpDoc*/,
 		LPOLEINPLACEFRAMEINFO /*lpFrameInfo*/)
 	{
 		return E_NOTIMPL;
 	}
 
-	STDMETHODIMP CRichEditOleCallback::ShowContainerUI(BOOL /*fShow*/)
+	STDMETHODIMP CRichEditOleCallback::ShowContainerUI(BOOL /*fShow*/) { return E_NOTIMPL; }
+
+	STDMETHODIMP CRichEditOleCallback::QueryInsertObject(LPCLSID /*lpclsid*/, LPSTORAGE /*lpstg*/, LONG /*cp*/)
 	{
 		return E_NOTIMPL;
 	}
 
-	STDMETHODIMP CRichEditOleCallback::QueryInsertObject(LPCLSID /*lpclsid*/,
-		LPSTORAGE /*lpstg*/,
-		LONG /*cp*/)
-	{
-		return E_NOTIMPL;
-	}
+	STDMETHODIMP CRichEditOleCallback::DeleteObject(LPOLEOBJECT /*lpoleobj*/) { return E_NOTIMPL; }
 
-	STDMETHODIMP CRichEditOleCallback::DeleteObject(LPOLEOBJECT /*lpoleobj*/)
-	{
-		return E_NOTIMPL;
-	}
-
-	STDMETHODIMP CRichEditOleCallback::QueryAcceptData(LPDATAOBJECT /*lpdataobj*/,
-		CLIPFORMAT FAR * lpcfFormat,
+	STDMETHODIMP CRichEditOleCallback::QueryAcceptData(
+		LPDATAOBJECT /*lpdataobj*/,
+		CLIPFORMAT FAR* lpcfFormat,
 		DWORD /*reco*/,
 		BOOL /*fReally*/,
 		HGLOBAL /*hMetaPict*/)
@@ -88,31 +77,26 @@ namespace ui
 		return S_OK;
 	}
 
-	STDMETHODIMP CRichEditOleCallback::ContextSensitiveHelp(BOOL /*fEnterMode*/)
+	STDMETHODIMP CRichEditOleCallback::ContextSensitiveHelp(BOOL /*fEnterMode*/) { return E_NOTIMPL; }
+
+	STDMETHODIMP
+	CRichEditOleCallback::GetClipboardData(CHARRANGE FAR* /*lpchrg*/, DWORD /*reco*/, LPDATAOBJECT FAR* /*lplpdataobj*/)
 	{
 		return E_NOTIMPL;
 	}
 
-	STDMETHODIMP CRichEditOleCallback::GetClipboardData(CHARRANGE FAR * /*lpchrg*/,
-		DWORD /*reco*/,
-		LPDATAOBJECT FAR * /*lplpdataobj*/)
-	{
-		return E_NOTIMPL;
-	}
-
-	STDMETHODIMP CRichEditOleCallback::GetDragDropEffect(BOOL /*fDrag*/,
-		DWORD /*grfKeyState*/,
-		LPDWORD /*pdwEffect*/)
+	STDMETHODIMP CRichEditOleCallback::GetDragDropEffect(BOOL /*fDrag*/, DWORD /*grfKeyState*/, LPDWORD /*pdwEffect*/)
 	{
 		return E_NOTIMPL;
 	}
 
 	// We're supposed to return a menu, but then we can't control where the command messages are sent.
 	// So, instead, we display and handle the menu ourselves, then return no menu.
-	STDMETHODIMP CRichEditOleCallback::GetContextMenu(WORD /*seltype*/,
+	STDMETHODIMP CRichEditOleCallback::GetContextMenu(
+		WORD /*seltype*/,
 		LPOLEOBJECT /*lpoleobj*/,
-		CHARRANGE FAR * /*lpchrg*/,
-		HMENU FAR * lphmenu)
+		CHARRANGE FAR* /*lpchrg*/,
+		HMENU FAR* lphmenu)
 	{
 		if (!lphmenu) return E_INVALIDARG;
 		lphmenu = nullptr;
@@ -123,8 +107,8 @@ namespace ui
 			if (hPopup)
 			{
 				ConvertMenuOwnerDraw(hPopup, false);
-				POINT pos = { 0 };
-				CURSORINFO ci = { 0 };
+				POINT pos = {0};
+				CURSORINFO ci = {0};
 				ci.cbSize = sizeof(CURSORINFO);
 				GetCursorInfo(&ci);
 				pos.x = ci.ptScreenPos.x;
@@ -135,14 +119,24 @@ namespace ui
 				if (m_hWnd != WindowFromPoint(pos))
 				{
 					DWORD dwPos = 0;
-					(void) ::SendMessage(m_hWnd, EM_GETSEL, reinterpret_cast<WPARAM>(&dwPos), static_cast<LPARAM>(NULL));
-					(void) ::SendMessage(m_hWnd, EM_POSFROMCHAR, reinterpret_cast<WPARAM>(&pos), static_cast<LPARAM>(dwPos));
+					(void) ::SendMessage(
+						m_hWnd, EM_GETSEL, reinterpret_cast<WPARAM>(&dwPos), static_cast<LPARAM>(NULL));
+					(void) ::SendMessage(
+						m_hWnd, EM_POSFROMCHAR, reinterpret_cast<WPARAM>(&pos), static_cast<LPARAM>(dwPos));
 					ClientToScreen(m_hWnd, &pos);
 				}
 
-				const DWORD dwCommand = TrackPopupMenu(hPopup, TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pos.x, pos.y, NULL, m_hWndParent, nullptr);
+				const DWORD dwCommand = TrackPopupMenu(
+					hPopup,
+					TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD,
+					pos.x,
+					pos.y,
+					NULL,
+					m_hWndParent,
+					nullptr);
 				DeleteMenuEntries(hPopup);
-				(void) ::SendMessage(m_hWnd, dwCommand, static_cast<WPARAM>(0), static_cast<LPARAM>(EM_SETSEL == dwCommand) ? -1 : 0);
+				(void) ::SendMessage(
+					m_hWnd, dwCommand, static_cast<WPARAM>(0), static_cast<LPARAM>(EM_SETSEL == dwCommand) ? -1 : 0);
 			}
 
 			DestroyMenu(hContext);

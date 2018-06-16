@@ -4,9 +4,9 @@
 
 namespace strings
 {
-	// Enable this macro to build with parameter checking for format()
-	// Do NOT check in with this macro enabled!
-	//#define CHECKFORMATPARAMS
+// Enable this macro to build with parameter checking for format()
+// Do NOT check in with this macro enabled!
+//#define CHECKFORMATPARAMS
 
 #ifdef _UNICODE
 	typedef std::wstring tstring;
@@ -21,7 +21,7 @@ namespace strings
 	std::wstring format(LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef format
-#define format(fmt,...) (wprintf(fmt,__VA_ARGS__), format(fmt,__VA_ARGS__))
+#define format(fmt, ...) (wprintf(fmt, __VA_ARGS__), format(fmt, __VA_ARGS__))
 #endif
 
 	std::wstring formatmessagesys(DWORD dwID);
@@ -68,5 +68,8 @@ namespace strings
 
 	std::wstring CurrencyToString(const CURRENCY& curVal);
 
-	void FileTimeToString(_In_ const FILETIME& fileTime, _In_ std::wstring& PropString, _In_opt_ std::wstring& AltPropString);
+	void FileTimeToString(
+		_In_ const FILETIME& fileTime,
+		_In_ std::wstring& PropString,
+		_In_opt_ std::wstring& AltPropString);
 }

@@ -27,9 +27,7 @@ std::vector<_AddIn> g_lpMyAddins;
 
 namespace addin
 {
-	template <typename T> T GetFunction(
-		HMODULE hMod,
-		LPCSTR szFuncName)
+	template <typename T> T GetFunction(HMODULE hMod, LPCSTR szFuncName)
 	{
 		auto hRes = S_OK;
 		T pObj = nullptr;
@@ -166,7 +164,8 @@ namespace addin
 			pfnGetSmartViewParserArray(&addIn.ulSmartViewParsers, &addIn.lpSmartViewParsers);
 		}
 
-		const auto pfnGetSmartViewParserTypeArray = GetFunction<LPGETSMARTVIEWPARSERTYPEARRAY>(hMod, szGetSmartViewParserTypeArray);
+		const auto pfnGetSmartViewParserTypeArray =
+			GetFunction<LPGETSMARTVIEWPARSERTYPEARRAY>(hMod, szGetSmartViewParserTypeArray);
 		if (pfnGetSmartViewParserTypeArray)
 		{
 			pfnGetSmartViewParserTypeArray(&addIn.ulSmartViewParserTypes, &addIn.lpSmartViewParserTypes);
@@ -196,9 +195,7 @@ namespace addin
 
 			if (m_hRootKey)
 			{
-				lpszReg = registry::ReadStringFromRegistry(
-					m_hRootKey,
-					m_szKey);
+				lpszReg = registry::ReadStringFromRegistry(m_hRootKey, m_szKey);
 			}
 
 			if (!lpszReg.empty())
@@ -227,10 +224,7 @@ namespace addin
 					szList += SEPARATOR;
 				}
 
-				registry::WriteStringToRegistry(
-					m_hRootKey,
-					m_szKey,
-					szList);
+				registry::WriteStringToRegistry(m_hRootKey, m_szKey, szList);
 			}
 
 			EC_W32(RegCloseKey(m_hRootKey));
@@ -288,7 +282,7 @@ namespace addin
 				{
 					output::DebugPrint(DBGAddInPlumbing, L"File spec = \"%ws\"\n", szSpec.c_str());
 
-					WIN32_FIND_DATAW FindFileData = { 0 };
+					WIN32_FIND_DATAW FindFileData = {0};
 					const auto hFind = FindFirstFileW(szSpec.c_str(), &FindFileData);
 
 					if (hFind == INVALID_HANDLE_VALUE)
@@ -437,8 +431,14 @@ namespace addin
 						addIn.lpMenu[ulMenu].ulFlags & MENU_FLAGS_MULTISELECT)
 					{
 						// Invalid combo of flags - don't add the menu
-						output::DebugPrint(DBGAddInPlumbing, L"Invalid flags on menu \"%ws\" in add-in \"%ws\"\n", addIn.lpMenu[ulMenu].szMenu, addIn.szName);
-						output::DebugPrint(DBGAddInPlumbing, L"MENU_FLAGS_SINGLESELECT and MENU_FLAGS_MULTISELECT cannot be combined\n");
+						output::DebugPrint(
+							DBGAddInPlumbing,
+							L"Invalid flags on menu \"%ws\" in add-in \"%ws\"\n",
+							addIn.lpMenu[ulMenu].szMenu,
+							addIn.szName);
+						output::DebugPrint(
+							DBGAddInPlumbing,
+							L"MENU_FLAGS_SINGLESELECT and MENU_FLAGS_MULTISELECT cannot be combined\n");
 						continue;
 					}
 
@@ -457,7 +457,8 @@ namespace addin
 									reinterpret_cast<UINT_PTR>(hAddInMenu),
 									strings::loadstring(IDS_ADDINSMENU).c_str());
 							}
-							else continue;
+							else
+								continue;
 						}
 
 						// Now add each of the menu entries
@@ -470,10 +471,7 @@ namespace addin
 							}
 
 							EC_B(AppendMenuW(
-								hAddInMenu,
-								MF_ENABLED | MF_OWNERDRAW,
-								uidCurMenu,
-								reinterpret_cast<LPCWSTR>(lpMenu)));
+								hAddInMenu, MF_ENABLED | MF_OWNERDRAW, uidCurMenu, reinterpret_cast<LPCWSTR>(lpMenu)));
 							uidCurMenu++;
 						}
 					}
@@ -489,16 +487,11 @@ namespace addin
 	{
 		if (uidMsg < ID_ADDINMENU) return nullptr;
 
-		MENUITEMINFOW subMenu = { 0 };
+		MENUITEMINFOW subMenu = {0};
 		subMenu.cbSize = sizeof(MENUITEMINFO);
 		subMenu.fMask = MIIM_STATE | MIIM_ID | MIIM_DATA;
 
-		if (GetMenuItemInfoW(
-			GetMenu(hWnd),
-			uidMsg,
-			false,
-			&subMenu) &&
-			subMenu.dwItemData)
+		if (GetMenuItemInfoW(GetMenu(hWnd), uidMsg, false, &subMenu) && subMenu.dwItemData)
 		{
 			return reinterpret_cast<LPMENUITEM>(reinterpret_cast<ui::LPMENUENTRY>(subMenu.dwItemData)->m_AddInData);
 		}
@@ -517,9 +510,8 @@ namespace addin
 		if (!lpParams->lpAddInMenu->lpAddIn->pfnCallMenu)
 		{
 			if (!lpParams->lpAddInMenu->lpAddIn->hMod) return;
-			lpParams->lpAddInMenu->lpAddIn->pfnCallMenu = GetFunction<LPCALLMENU>(
-				lpParams->lpAddInMenu->lpAddIn->hMod,
-				szCallMenu);
+			lpParams->lpAddInMenu->lpAddIn->pfnCallMenu =
+				GetFunction<LPCALLMENU>(lpParams->lpAddInMenu->lpAddIn->hMod, szCallMenu);
 		}
 
 		if (!lpParams->lpAddInMenu->lpAddIn->pfnCallMenu)
@@ -598,11 +590,12 @@ namespace addin
 		return -1;
 	}
 
-	template <typename T> void MergeArrays(
-		std::vector<T> &Target,
+	template <typename T>
+	void MergeArrays(
+		std::vector<T>& Target,
 		_Inout_bytecap_x_(cSource* width) T* Source,
 		_In_ size_t cSource,
-		_In_ int(_cdecl *Comparison)(const void *, const void *))
+		_In_ int(_cdecl* Comparison)(const void*, const void*))
 	{
 		// Sort the source array
 		qsort(Source, cSource, sizeof T, Comparison);
@@ -610,18 +603,15 @@ namespace addin
 		// Append any entries in the source not already in the target to the target
 		for (ULONG i = 0; i < cSource; i++)
 		{
-			if (end(Target) == find_if(begin(Target), end(Target), [&](T &entry)
-			{
-				return Comparison(&Source[i], &entry) == 0;
-			}))
+			if (end(Target) ==
+				find_if(begin(Target), end(Target), [&](T& entry) { return Comparison(&Source[i], &entry) == 0; }))
 			{
 				Target.push_back(Source[i]);
 			}
 		}
 
 		// Stable sort the resulting array
-		std::stable_sort(begin(Target), end(Target), [Comparison](const T& a, const T& b) -> bool
-		{
+		std::stable_sort(begin(Target), end(Target), [Comparison](const T& a, const T& b) -> bool {
 			return Comparison(&a, &b) < 0;
 		});
 	}
@@ -657,8 +647,7 @@ namespace addin
 			// Stop searching when ulFlagName doesn't match
 			// Assumes lpTarget is sorted
 			if (target[iTarget].ulFlagName != source.ulFlagName) break;
-			if (target[iTarget].lFlagValue == source.lFlagValue &&
-				target[iTarget].ulFlagType == source.ulFlagType &&
+			if (target[iTarget].lFlagValue == source.lFlagValue && target[iTarget].ulFlagType == source.ulFlagType &&
 				!wcscmp(target[iTarget].lpszName, source.lpszName))
 			{
 				return;
@@ -669,10 +658,7 @@ namespace addin
 	}
 
 	// Similar to MergeArrays, but using AppendFlagIfNotDupe logic
-	void MergeFlagArrays(
-		std::vector<FLAG_ARRAY_ENTRY> &In1,
-		_In_count_(cIn2) LPFLAG_ARRAY_ENTRY In2,
-		_In_ size_t cIn2)
+	void MergeFlagArrays(std::vector<FLAG_ARRAY_ENTRY>& In1, _In_count_(cIn2) LPFLAG_ARRAY_ENTRY In2, _In_ size_t cIn2)
 	{
 		if (!In2) return;
 
@@ -713,19 +699,24 @@ namespace addin
 		output::DebugPrint(DBGAddInPlumbing, L"Loading default arrays\n");
 		PropTagArray = std::vector<NAME_ARRAY_ENTRY_V2>(std::begin(g_PropTagArray), std::end(g_PropTagArray));
 		PropTypeArray = std::vector<NAME_ARRAY_ENTRY>(std::begin(g_PropTypeArray), std::end(g_PropTypeArray));
-		PropGuidArray = std::vector<GUID_ARRAY_ENTRY>(std::begin(guid::g_PropGuidArray), std::end(guid::g_PropGuidArray));
+		PropGuidArray =
+			std::vector<GUID_ARRAY_ENTRY>(std::begin(guid::g_PropGuidArray), std::end(guid::g_PropGuidArray));
 		NameIDArray = std::vector<NAMEID_ARRAY_ENTRY>(std::begin(g_NameIDArray), std::end(g_NameIDArray));
 		FlagArray = std::vector<FLAG_ARRAY_ENTRY>(std::begin(g_FlagArray), std::end(g_FlagArray));
-		SmartViewParserArray = std::vector<SMARTVIEW_PARSER_ARRAY_ENTRY>(std::begin(smartview::g_SmartViewParserArray), std::end(smartview::g_SmartViewParserArray));
-		SmartViewParserTypeArray = std::vector<NAME_ARRAY_ENTRY>(std::begin(smartview::g_SmartViewParserTypeArray), std::end(smartview::g_SmartViewParserTypeArray));
+		SmartViewParserArray = std::vector<SMARTVIEW_PARSER_ARRAY_ENTRY>(
+			std::begin(smartview::g_SmartViewParserArray), std::end(smartview::g_SmartViewParserArray));
+		SmartViewParserTypeArray = std::vector<NAME_ARRAY_ENTRY>(
+			std::begin(smartview::g_SmartViewParserTypeArray), std::end(smartview::g_SmartViewParserTypeArray));
 
 		output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop tags.\n", PropTagArray.size());
 		output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop types.\n", PropTypeArray.size());
 		output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in guids.\n", PropGuidArray.size());
 		output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in named ids.\n", NameIDArray.size());
 		output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in flags.\n", FlagArray.size());
-		output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in Smart View parsers.\n", SmartViewParserArray.size());
-		output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in Smart View parser types.\n", SmartViewParserTypeArray.size());
+		output::DebugPrint(
+			DBGAddInPlumbing, L"Found 0x%08X built in Smart View parsers.\n", SmartViewParserArray.size());
+		output::DebugPrint(
+			DBGAddInPlumbing, L"Found 0x%08X built in Smart View parser types.\n", SmartViewParserTypeArray.size());
 
 		// No add-in == nothing to merge
 		if (g_lpMyAddins.empty()) return;
@@ -740,7 +731,8 @@ namespace addin
 			output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X named ids.\n", addIn.ulNameIDs);
 			output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X flags.\n", addIn.ulPropFlags);
 			output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X Smart View parsers.\n", addIn.ulSmartViewParsers);
-			output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X Smart View parser types.\n", addIn.ulSmartViewParserTypes);
+			output::DebugPrint(
+				DBGAddInPlumbing, L"Found 0x%08X Smart View parser types.\n", addIn.ulSmartViewParserTypes);
 		}
 
 		// Second pass - merge our arrays to the hardcoded arrays
@@ -769,7 +761,8 @@ namespace addin
 
 			if (addIn.ulSmartViewParsers)
 			{
-				MergeArrays<SMARTVIEW_PARSER_ARRAY_ENTRY>(SmartViewParserArray, addIn.lpSmartViewParsers, addIn.ulSmartViewParsers, CompareSmartViewParser);
+				MergeArrays<SMARTVIEW_PARSER_ARRAY_ENTRY>(
+					SmartViewParserArray, addIn.lpSmartViewParsers, addIn.ulSmartViewParsers, CompareSmartViewParser);
 			}
 
 			// We add our new parsers to the end of the array, assigning ids starting with IDS_STEND
@@ -814,7 +807,8 @@ namespace addin
 		output::DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X guids.\n", PropGuidArray.size());
 		output::DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X flags.\n", FlagArray.size());
 		output::DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X Smart View parsers.\n", SmartViewParserArray.size());
-		output::DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X Smart View parser types.\n", SmartViewParserTypeArray.size());
+		output::DebugPrint(
+			DBGAddInPlumbing, L"After merge, 0x%08X Smart View parser types.\n", SmartViewParserTypeArray.size());
 
 		output::DebugPrint(DBGAddInPlumbing, L"Done merging add-in arrays\n");
 	}
@@ -832,15 +826,12 @@ namespace addin
 	}
 
 #ifndef MRMAPI
-	_Check_return_ __declspec(dllexport) HRESULT __cdecl SimpleDialog(_In_z_ LPWSTR szTitle, _Printf_format_string_ LPWSTR szMsg, ...)
+	_Check_return_ __declspec(dllexport) HRESULT
+		__cdecl SimpleDialog(_In_z_ LPWSTR szTitle, _Printf_format_string_ LPWSTR szMsg, ...)
 	{
 		auto hRes = S_OK;
 
-		dialog::editor::CEditor MySimpleDialog(
-			nullptr,
-			NULL,
-			NULL,
-			CEDITOR_BUTTON_OK);
+		dialog::editor::CEditor MySimpleDialog(nullptr, NULL, NULL, CEDITOR_BUTTON_OK);
 		MySimpleDialog.SetAddInTitle(szTitle);
 
 		va_list argList = nullptr;
@@ -854,18 +845,15 @@ namespace addin
 		return hRes;
 	}
 
-	_Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDINDIALOG lpDialog, _Out_ LPADDINDIALOGRESULT* lppDialogResult)
+	_Check_return_ __declspec(dllexport) HRESULT
+		__cdecl ComplexDialog(_In_ LPADDINDIALOG lpDialog, _Out_ LPADDINDIALOGRESULT* lppDialogResult)
 	{
 		if (!lpDialog) return MAPI_E_INVALID_PARAMETER;
 		// Reject any flags except CEDITOR_BUTTON_OK and CEDITOR_BUTTON_CANCEL
 		if (lpDialog->ulButtonFlags & ~(CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)) return MAPI_E_INVALID_PARAMETER;
 		auto hRes = S_OK;
 
-		dialog::editor::CEditor MyComplexDialog(
-			nullptr,
-			NULL,
-			NULL,
-			lpDialog->ulButtonFlags);
+		dialog::editor::CEditor MyComplexDialog(nullptr, NULL, NULL, lpDialog->ulButtonFlags);
 		MyComplexDialog.SetAddInTitle(lpDialog->szTitle);
 		MyComplexDialog.SetPromptPostFix(lpDialog->szPrompt);
 
@@ -876,23 +864,31 @@ namespace addin
 				switch (lpDialog->lpDialogControls[i].cType)
 				{
 				case ADDIN_CTRL_CHECK:
-					MyComplexDialog.InitPane(i, viewpane::CheckPane::Create(
-						NULL,
-						lpDialog->lpDialogControls[i].bDefaultCheckState,
-						lpDialog->lpDialogControls[i].bReadOnly));
+					MyComplexDialog.InitPane(
+						i,
+						viewpane::CheckPane::Create(
+							NULL,
+							lpDialog->lpDialogControls[i].bDefaultCheckState,
+							lpDialog->lpDialogControls[i].bReadOnly));
 					break;
 				case ADDIN_CTRL_EDIT_TEXT:
 				{
 					if (lpDialog->lpDialogControls[i].bMultiLine)
 					{
-						MyComplexDialog.InitPane(i, viewpane::TextPane::CreateCollapsibleTextPane(
-							NULL,
-							lpDialog->lpDialogControls[i].bReadOnly));
+						MyComplexDialog.InitPane(
+							i,
+							viewpane::TextPane::CreateCollapsibleTextPane(
+								NULL, lpDialog->lpDialogControls[i].bReadOnly));
 						MyComplexDialog.SetStringW(i, lpDialog->lpDialogControls[i].szDefaultText);
 					}
 					else
 					{
-						MyComplexDialog.InitPane(i, viewpane::TextPane::CreateSingleLinePane(NULL, std::wstring(lpDialog->lpDialogControls[i].szDefaultText), lpDialog->lpDialogControls[i].bReadOnly));
+						MyComplexDialog.InitPane(
+							i,
+							viewpane::TextPane::CreateSingleLinePane(
+								NULL,
+								std::wstring(lpDialog->lpDialogControls[i].szDefaultText),
+								lpDialog->lpDialogControls[i].bReadOnly));
 					}
 
 					break;
@@ -900,31 +896,28 @@ namespace addin
 				case ADDIN_CTRL_EDIT_BINARY:
 					if (lpDialog->lpDialogControls[i].bMultiLine)
 					{
-						MyComplexDialog.InitPane(i, viewpane::TextPane::CreateCollapsibleTextPane(
-							NULL,
-							lpDialog->lpDialogControls[i].bReadOnly));
+						MyComplexDialog.InitPane(
+							i,
+							viewpane::TextPane::CreateCollapsibleTextPane(
+								NULL, lpDialog->lpDialogControls[i].bReadOnly));
 					}
 					else
 					{
-						MyComplexDialog.InitPane(i, viewpane::TextPane::CreateSingleLinePane(NULL, lpDialog->lpDialogControls[i].bReadOnly));
-
+						MyComplexDialog.InitPane(
+							i, viewpane::TextPane::CreateSingleLinePane(NULL, lpDialog->lpDialogControls[i].bReadOnly));
 					}
 					MyComplexDialog.SetBinary(
-						i,
-						lpDialog->lpDialogControls[i].lpBin,
-						lpDialog->lpDialogControls[i].cbBin);
+						i, lpDialog->lpDialogControls[i].lpBin, lpDialog->lpDialogControls[i].cbBin);
 					break;
 				case ADDIN_CTRL_EDIT_NUM_DECIMAL:
-					MyComplexDialog.InitPane(i, viewpane::TextPane::CreateSingleLinePane(NULL, lpDialog->lpDialogControls[i].bReadOnly));
-					MyComplexDialog.SetDecimal(
-						i,
-						lpDialog->lpDialogControls[i].ulDefaultNum);
+					MyComplexDialog.InitPane(
+						i, viewpane::TextPane::CreateSingleLinePane(NULL, lpDialog->lpDialogControls[i].bReadOnly));
+					MyComplexDialog.SetDecimal(i, lpDialog->lpDialogControls[i].ulDefaultNum);
 					break;
 				case ADDIN_CTRL_EDIT_NUM_HEX:
-					MyComplexDialog.InitPane(i, viewpane::TextPane::CreateSingleLinePane(NULL, lpDialog->lpDialogControls[i].bReadOnly));
-					MyComplexDialog.SetHex(
-						i,
-						lpDialog->lpDialogControls[i].ulDefaultNum);
+					MyComplexDialog.InitPane(
+						i, viewpane::TextPane::CreateSingleLinePane(NULL, lpDialog->lpDialogControls[i].bReadOnly));
+					MyComplexDialog.SetHex(i, lpDialog->lpDialogControls[i].ulDefaultNum);
 					break;
 				}
 
@@ -945,7 +938,8 @@ namespace addin
 				lpResults->lpDialogControlResults = new _AddInDialogControlResult[lpDialog->ulNumControls];
 				if (lpResults->lpDialogControlResults)
 				{
-					ZeroMemory(lpResults->lpDialogControlResults, sizeof(_AddInDialogControlResult)*lpDialog->ulNumControls);
+					ZeroMemory(
+						lpResults->lpDialogControlResults, sizeof(_AddInDialogControlResult) * lpDialog->ulNumControls);
 					for (ULONG i = 0; i < lpDialog->ulNumControls; i++)
 					{
 						lpResults->lpDialogControlResults[i].cType = lpDialog->lpDialogControls[i].cType;
@@ -967,9 +961,7 @@ namespace addin
 								if (lpResults->lpDialogControlResults[i].szText)
 								{
 									EC_H(StringCchCopyW(
-										lpResults->lpDialogControlResults[i].szText,
-										cchText,
-										szText.c_str()));
+										lpResults->lpDialogControlResults[i].szText, cchText, szText.c_str()));
 								}
 							}
 							break;
@@ -996,7 +988,8 @@ namespace addin
 				{
 					*lppDialogResult = lpResults;
 				}
-				else FreeDialogResult(lpResults);
+				else
+					FreeDialogResult(lpResults);
 			}
 		}
 

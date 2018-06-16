@@ -5,7 +5,7 @@ namespace dialog
 {
 	namespace editor
 	{
-#define NOSKIPFIELD ((ULONG)0xffffffff)
+#define NOSKIPFIELD ((ULONG) 0xffffffff)
 
 		class CSearchEditor : public CEditor
 		{
@@ -18,10 +18,7 @@ namespace dialog
 				FINDROW,
 			};
 
-			CSearchEditor(
-				ULONG ulPropTag,
-				_In_opt_ LPMAPIPROP lpMAPIProp,
-				_In_ CWnd* pParentWnd);
+			CSearchEditor(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpMAPIProp, _In_ CWnd* pParentWnd);
 			virtual ~CSearchEditor();
 
 			_Check_return_ const _SRestriction* GetRestriction() const;

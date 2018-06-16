@@ -29,7 +29,8 @@ namespace viewpane
 		return lpPane;
 	}
 
-	TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly, bool bMultiLine)
+	TextPane*
+	TextPane::CreateSingleLinePane(UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly, bool bMultiLine)
 	{
 		auto lpPane = new (std::nothrow) TextPane();
 		if (lpPane)
@@ -69,11 +70,8 @@ namespace viewpane
 	}
 
 	// Imports binary data from a stream, converting it to hex format before returning
-	_Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
-		DWORD_PTR dwCookie,
-		_In_ LPBYTE pbBuff,
-		LONG cb,
-		_In_count_(cb) LONG *pcb)
+	_Check_return_ static DWORD CALLBACK
+	EditStreamReadCallBack(DWORD_PTR dwCookie, _In_ LPBYTE pbBuff, LONG cb, _In_count_(cb) LONG* pcb)
 	{
 		auto hRes = S_OK;
 		if (!pbBuff || !pcb || !dwCookie) return 0;
@@ -116,10 +114,7 @@ namespace viewpane
 		return 0;
 	}
 
-	bool TextPane::IsDirty()
-	{
-		return m_EditBox.m_hWnd && m_EditBox.GetModify();
-	}
+	bool TextPane::IsDirty() { return m_EditBox.m_hWnd && m_EditBox.GetModify(); }
 
 	int TextPane::GetFixedHeight()
 	{
@@ -198,7 +193,6 @@ namespace viewpane
 		}
 
 		EC_B(m_EditBox.SetWindowPos(NULL, x, y, width, m_bCollapsible ? iVariableHeight : height, SWP_NOZORDER));
-
 	}
 
 	void TextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
@@ -208,15 +202,8 @@ namespace viewpane
 		auto hRes = S_OK;
 
 		EC_B(m_EditBox.Create(
-			WS_TABSTOP
-			| WS_CHILD
-			| WS_CLIPSIBLINGS
-			| WS_BORDER
-			| WS_VISIBLE
-			| WS_VSCROLL
-			| ES_AUTOVSCROLL
-			| (m_bReadOnly ? ES_READONLY : 0)
-			| (m_bMultiline ? (ES_MULTILINE | ES_WANTRETURN) : (ES_AUTOHSCROLL)),
+			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_BORDER | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL |
+				(m_bReadOnly ? ES_READONLY : 0) | (m_bMultiline ? (ES_MULTILINE | ES_WANTRETURN) : (ES_AUTOHSCROLL)),
 			CRect(0, 0, 0, 0),
 			pParent,
 			m_nID));
@@ -227,11 +214,7 @@ namespace viewpane
 
 		// Set maximum text size
 		// Use -1 to allow for VERY LARGE strings
-		(void) ::SendMessage(
-			m_EditBox.m_hWnd,
-			EM_EXLIMITTEXT,
-			static_cast<WPARAM>(0),
-			static_cast<LPARAM>(-1));
+		(void) ::SendMessage(m_EditBox.m_hWnd, EM_EXLIMITTEXT, static_cast<WPARAM>(0), static_cast<LPARAM>(-1));
 
 		SetEditBoxText();
 
@@ -243,11 +226,7 @@ namespace viewpane
 		// Remove the awful autoselect of the edit control that scrolls to the end of multiline text
 		if (m_bMultiline)
 		{
-			::PostMessage(
-				m_EditBox.m_hWnd,
-				EM_SETSEL,
-				static_cast<WPARAM>(0),
-				static_cast<LPARAM>(0));
+			::PostMessage(m_EditBox.m_hWnd, EM_SETSEL, static_cast<WPARAM>(0), static_cast<LPARAM>(0));
 		}
 	}
 
@@ -258,18 +237,15 @@ namespace viewpane
 		size_t cbCur{};
 	};
 
-	_Check_return_ static DWORD CALLBACK FakeEditStreamReadCallBack(
-		DWORD_PTR dwCookie,
-		_In_ LPBYTE pbBuff,
-		LONG cb,
-		_In_count_(cb) LONG *pcb)
+	_Check_return_ static DWORD CALLBACK
+	FakeEditStreamReadCallBack(DWORD_PTR dwCookie, _In_ LPBYTE pbBuff, LONG cb, _In_count_(cb) LONG* pcb)
 	{
 		if (!pbBuff || !pcb || !dwCookie) return 0;
 
 		auto lpfs = reinterpret_cast<FakeStream*>(dwCookie);
 		if (!lpfs) return 0;
 		const auto cbRemaining = static_cast<ULONG>(lpfs->cbszW - lpfs->cbCur);
-		const auto cbRead = min((ULONG)cb, cbRemaining);
+		const auto cbRead = min((ULONG) cb, cbRemaining);
 
 		*pcb = cbRead;
 
@@ -295,7 +271,7 @@ namespace viewpane
 		fs.cbszW = m_lpszW.length() * sizeof(WCHAR);
 		fs.cbCur = 0;
 
-		EDITSTREAM es = { reinterpret_cast<DWORD_PTR>(&fs), 0, FakeEditStreamReadCallBack };
+		EDITSTREAM es = {reinterpret_cast<DWORD_PTR>(&fs), 0, FakeEditStreamReadCallBack};
 
 		// read the 'text stream' into control
 		const auto lBytesRead = m_EditBox.StreamIn(SF_TEXT | SF_UNICODE, es);
@@ -341,11 +317,7 @@ namespace viewpane
 	void TextPane::Clear()
 	{
 		m_lpszW.clear();
-		::SendMessage(
-			m_EditBox.m_hWnd,
-			WM_SETTEXT,
-			NULL,
-			reinterpret_cast<LPARAM>(""));
+		::SendMessage(m_EditBox.m_hWnd, WM_SETTEXT, NULL, reinterpret_cast<LPARAM>(""));
 	}
 
 	void TextPane::SetReadOnly()
@@ -354,10 +326,7 @@ namespace viewpane
 		m_EditBox.SetReadOnly();
 	}
 
-	void TextPane::SetMultiline()
-	{
-		m_bMultiline = true;
-	}
+	void TextPane::SetMultiline() { m_bMultiline = true; }
 
 	std::wstring TextPane::GetStringW() const
 	{
@@ -368,23 +337,17 @@ namespace viewpane
 	std::wstring TextPane::GetUIValue() const
 	{
 		std::wstring value;
-		GETTEXTLENGTHEX getTextLength = { 0 };
+		GETTEXTLENGTHEX getTextLength = {0};
 		getTextLength.flags = GTL_PRECISE | GTL_NUMCHARS;
 		getTextLength.codepage = 1200;
 
 		auto cchText = static_cast<size_t>(::SendMessage(
-			m_EditBox.m_hWnd,
-			EM_GETTEXTLENGTHEX,
-			reinterpret_cast<WPARAM>(&getTextLength),
-			static_cast<LPARAM>(0)));
+			m_EditBox.m_hWnd, EM_GETTEXTLENGTHEX, reinterpret_cast<WPARAM>(&getTextLength), static_cast<LPARAM>(0)));
 		if (E_INVALIDARG == cchText)
 		{
 			// We didn't get a length - try another method
-			cchText = static_cast<size_t>(::SendMessage(
-				m_EditBox.m_hWnd,
-				WM_GETTEXTLENGTH,
-				static_cast<WPARAM>(0),
-				static_cast<LPARAM>(0)));
+			cchText = static_cast<size_t>(
+				::SendMessage(m_EditBox.m_hWnd, WM_GETTEXTLENGTH, static_cast<WPARAM>(0), static_cast<LPARAM>(0)));
 		}
 
 		if (cchText)
@@ -395,7 +358,7 @@ namespace viewpane
 			auto buffer = new (std::nothrow) BYTE[cbBuffer];
 			if (buffer)
 			{
-				GETTEXTEX getText = { 0 };
+				GETTEXTEX getText = {0};
 				getText.cb = DWORD(cbBuffer);
 				getText.flags = GT_DEFAULT;
 				getText.codepage = 1200;
@@ -440,7 +403,7 @@ namespace viewpane
 	// Takes a binary stream and initializes an edit control with the HEX version of this stream
 	void TextPane::SetBinaryStream(_In_ LPSTREAM lpStreamIn)
 	{
-		EDITSTREAM es = { 0, 0, EditStreamReadCallBack };
+		EDITSTREAM es = {0, 0, EditStreamReadCallBack};
 		const UINT uFormat = SF_TEXT;
 
 		es.dwCookie = reinterpret_cast<DWORD_PTR>(lpStreamIn);
@@ -463,14 +426,12 @@ namespace viewpane
 		{
 			ULONG cbWritten = 0;
 			EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
-			output::DebugPrintEx(DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
+			output::DebugPrintEx(
+				DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
 
 			EC_MAPI(lpStreamOut->Commit(STGC_DEFAULT));
 		}
 	}
 
-	void TextPane::ShowWindow(int nCmdShow)
-	{
-		m_EditBox.ShowWindow(nCmdShow);
-	}
+	void TextPane::ShowWindow(int nCmdShow) { m_EditBox.ShowWindow(nCmdShow); }
 }

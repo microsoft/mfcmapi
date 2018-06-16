@@ -12,11 +12,8 @@ namespace dialog
 
 		// Property selection dialog
 		// Displays a list of known property tags - no add or delete
-		CPropertySelector::CPropertySelector(
-			bool bIncludeABProps,
-			_In_ LPMAPIPROP lpMAPIProp,
-			_In_ CWnd* pParentWnd) :
-			CEditor(pParentWnd, IDS_PROPSELECTOR, 0, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+		CPropertySelector::CPropertySelector(bool bIncludeABProps, _In_ LPMAPIPROP lpMAPIProp, _In_ CWnd* pParentWnd)
+			: CEditor(pParentWnd, IDS_PROPSELECTOR, 0, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 			m_ulPropTag = PR_NULL;
@@ -77,18 +74,19 @@ namespace dialog
 
 		// We're not actually editing the list here - just overriding this to allow double-click
 		// So it's OK to return false
-		_Check_return_ bool CPropertySelector::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ controls::sortlistdata::SortListData* /*lpData*/)
+		_Check_return_ bool CPropertySelector::DoListEdit(
+			ULONG /*ulListNum*/,
+			int /*iItem*/,
+			_In_ controls::sortlistdata::SortListData* /*lpData*/)
 		{
 			OnOK();
 			return false;
 		}
 
-		_Check_return_ ULONG CPropertySelector::GetPropertyTag() const
-		{
-			return m_ulPropTag;
-		}
+		_Check_return_ ULONG CPropertySelector::GetPropertyTag() const { return m_ulPropTag; }
 
-		_Check_return_ controls::sortlistdata::SortListData* CPropertySelector::GetSelectedListRowData(ULONG iControl) const
+		_Check_return_ controls::sortlistdata::SortListData*
+		CPropertySelector::GetSelectedListRowData(ULONG iControl) const
 		{
 			const auto lpPane = static_cast<viewpane::ListPane*>(GetPane(iControl));
 			if (lpPane)

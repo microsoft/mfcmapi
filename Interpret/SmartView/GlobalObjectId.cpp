@@ -10,8 +10,8 @@ namespace smartview
 		m_Year = 0;
 		m_Month = 0;
 		m_Day = 0;
-		m_CreationTime = { 0 };
-		m_X = { 0 };
+		m_CreationTime = {0};
+		m_X = {0};
 		m_dwSize = 0;
 	}
 
@@ -29,6 +29,7 @@ namespace smartview
 		m_lpData = m_Parser.GetBYTES(m_dwSize, _MaxBytes);
 	}
 
+	// clang-format off
 	static const BYTE s_rgbSPlus[] =
 	{
 		0x04, 0x00, 0x00, 0x00,
@@ -36,6 +37,7 @@ namespace smartview
 		0x74, 0xC5, 0xB7, 0x10,
 		0x1A, 0x82, 0xE0, 0x08,
 	};
+	// clang-format on
 
 	_Check_return_ std::wstring GlobalObjectId::ToStringInternal()
 	{
@@ -57,12 +59,17 @@ namespace smartview
 		std::wstring PropString;
 		std::wstring AltPropString;
 		strings::FileTimeToString(m_CreationTime, PropString, AltPropString);
-		szGlobalObjectId += strings::formatmessage(IDS_GLOBALOBJECTIDDATA1,
+		szGlobalObjectId += strings::formatmessage(
+			IDS_GLOBALOBJECTIDDATA1,
 			m_Year,
-			m_Month, szFlags.c_str(),
+			m_Month,
+			szFlags.c_str(),
 			m_Day,
-			m_CreationTime.dwHighDateTime, m_CreationTime.dwLowDateTime, PropString.c_str(),
-			m_X.HighPart, m_X.LowPart,
+			m_CreationTime.dwHighDateTime,
+			m_CreationTime.dwLowDateTime,
+			PropString.c_str(),
+			m_X.HighPart,
+			m_X.LowPart,
 			m_dwSize);
 
 		if (m_lpData.size())

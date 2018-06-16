@@ -19,7 +19,8 @@ namespace dialog
 			virtual ~CTagArrayEditor();
 
 			_Check_return_ LPSPropTagArray DetachModifiedTagArray();
-			_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
+			_Check_return_ bool
+			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
 
 		private:
 			BOOL OnInitDialog() override;

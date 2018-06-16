@@ -19,8 +19,7 @@ namespace controls
 	class CFakeSplitter : public CWnd
 	{
 	public:
-		CFakeSplitter(
-			_In_ dialog::CBaseDialog* lpHostDlg);
+		CFakeSplitter(_In_ dialog::CBaseDialog* lpHostDlg);
 		virtual ~CFakeSplitter();
 
 		void SetPaneOne(CWnd* PaneOne);

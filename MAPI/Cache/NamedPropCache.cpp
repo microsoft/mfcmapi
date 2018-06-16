@@ -8,14 +8,11 @@ namespace cache
 	// We keep a list of named prop cache entries
 	std::list<NamedPropCacheEntry> g_lpNamedPropCache;
 
-	void UninitializeNamedPropCache()
-	{
-		g_lpNamedPropCache.clear();
-	}
+	void UninitializeNamedPropCache() { g_lpNamedPropCache.clear(); }
 
 	// Go through all the details of copying allocated data to or from a cache entry
 	void CopyCacheData(
-		const MAPINAMEID &src,
+		const MAPINAMEID& src,
 		MAPINAMEID& dst,
 		_In_opt_ LPVOID lpMAPIParent) // If passed, allocate using MAPI with this as a parent
 	{
@@ -28,7 +25,8 @@ namespace cache
 			{
 				MAPIAllocateMore(sizeof(GUID), lpMAPIParent, reinterpret_cast<LPVOID*>(&dst.lpguid));
 			}
-			else dst.lpguid = new GUID;
+			else
+				dst.lpguid = new GUID;
 
 			if (dst.lpguid)
 			{
@@ -69,9 +67,11 @@ namespace cache
 
 				if (lpMAPIParent)
 				{
-					MAPIAllocateMore(static_cast<ULONG>(cbName), lpMAPIParent, reinterpret_cast<LPVOID*>(&dst.Kind.lpwstrName));
+					MAPIAllocateMore(
+						static_cast<ULONG>(cbName), lpMAPIParent, reinterpret_cast<LPVOID*>(&dst.Kind.lpwstrName));
 				}
-				else dst.Kind.lpwstrName = reinterpret_cast<LPWSTR>(new BYTE[cbName]);
+				else
+					dst.Kind.lpwstrName = reinterpret_cast<LPWSTR>(new BYTE[cbName]);
 
 				if (dst.Kind.lpwstrName)
 				{
@@ -132,56 +132,67 @@ namespace cache
 	// Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
 	_Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID)
 	{
-		const auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &namedPropCacheEntry)
-		{
-			if (namedPropCacheEntry.ulPropID != ulPropID) return false;
-			if (namedPropCacheEntry.cbSig != cbSig) return false;
-			if (cbSig && memcmp(lpSig, namedPropCacheEntry.lpSig, cbSig) != 0) return false;
+		const auto entry =
+			find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry& namedPropCacheEntry) {
+				if (namedPropCacheEntry.ulPropID != ulPropID) return false;
+				if (namedPropCacheEntry.cbSig != cbSig) return false;
+				if (cbSig && memcmp(lpSig, namedPropCacheEntry.lpSig, cbSig) != 0) return false;
 
-			return true;
-		});
+				return true;
+			});
 
 		return entry != end(g_lpNamedPropCache) ? &(*entry) : nullptr;
 	}
 
 	// Given a signature, guid, kind, and value, finds the named prop mapping in the cache
-	_Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
+	_Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(
+		ULONG cbSig,
+		_In_count_(cbSig) LPBYTE lpSig,
+		_In_ LPGUID lpguid,
+		ULONG ulKind,
+		LONG lID,
+		_In_z_ LPWSTR lpwstrName)
 	{
-		const auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &namedPropCacheEntry)
-		{
-			if (!namedPropCacheEntry.lpmniName) return false;
-			if (namedPropCacheEntry.lpmniName->ulKind != ulKind) return false;
-			if (MNID_ID == ulKind && namedPropCacheEntry.lpmniName->Kind.lID != lID) return false;
-			if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry.lpmniName->Kind.lpwstrName, lpwstrName)) return false;;
-			if (0 != memcmp(namedPropCacheEntry.lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
-			if (cbSig != namedPropCacheEntry.cbSig) return false;
-			if (cbSig && memcmp(lpSig, namedPropCacheEntry.lpSig, cbSig) != 0) return false;
+		const auto entry =
+			find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry& namedPropCacheEntry) {
+				if (!namedPropCacheEntry.lpmniName) return false;
+				if (namedPropCacheEntry.lpmniName->ulKind != ulKind) return false;
+				if (MNID_ID == ulKind && namedPropCacheEntry.lpmniName->Kind.lID != lID) return false;
+				if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry.lpmniName->Kind.lpwstrName, lpwstrName))
+					return false;
+				;
+				if (0 != memcmp(namedPropCacheEntry.lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
+				if (cbSig != namedPropCacheEntry.cbSig) return false;
+				if (cbSig && memcmp(lpSig, namedPropCacheEntry.lpSig, cbSig) != 0) return false;
 
-			return true;
-		});
+				return true;
+			});
 
 		return entry != end(g_lpNamedPropCache) ? &(*entry) : nullptr;
 	}
 
 	// Given a tag, guid, kind, and value, finds the named prop mapping in the cache
-	_Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
+	_Check_return_ LPNAMEDPROPCACHEENTRY
+	FindCacheEntry(ULONG ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
 	{
-		const auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &namedPropCacheEntry)
-		{
-			if (namedPropCacheEntry.ulPropID != ulPropID) return false;
-			if (!namedPropCacheEntry.lpmniName) return false;
-			if (namedPropCacheEntry.lpmniName->ulKind != ulKind) return false;
-			if (MNID_ID == ulKind && namedPropCacheEntry.lpmniName->Kind.lID != lID) return false;
-			if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry.lpmniName->Kind.lpwstrName, lpwstrName)) return false;
-			if (0 != memcmp(namedPropCacheEntry.lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
+		const auto entry =
+			find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry& namedPropCacheEntry) {
+				if (namedPropCacheEntry.ulPropID != ulPropID) return false;
+				if (!namedPropCacheEntry.lpmniName) return false;
+				if (namedPropCacheEntry.lpmniName->ulKind != ulKind) return false;
+				if (MNID_ID == ulKind && namedPropCacheEntry.lpmniName->Kind.lID != lID) return false;
+				if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry.lpmniName->Kind.lpwstrName, lpwstrName))
+					return false;
+				if (0 != memcmp(namedPropCacheEntry.lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
 
-			return true;
-		});
+				return true;
+			});
 
 		return entry != end(g_lpNamedPropCache) ? &(*entry) : nullptr;
 	}
 
-	void AddMapping(ULONG cbSig, // Count bytes of signature
+	void AddMapping(
+		ULONG cbSig, // Count bytes of signature
 		_In_opt_count_(cbSig) LPBYTE lpSig, // Signature
 		ULONG ulNumProps, // Number of mapped names
 		_In_count_(ulNumProps) LPMAPINAMEID* lppPropNames, // Output from GetNamesFromIDs, input for GetIDsFromNames
@@ -199,11 +210,16 @@ namespace cache
 					auto names = interpretprop::NameIDToPropNames(lppPropNames[ulSource]);
 					if (names.empty())
 					{
-						output::DebugPrint(DBGNamedPropCacheMisses, L"AddMapping: Caching unknown property 0x%08X %ws\n", lppPropNames[ulSource]->Kind.lID, guid::GUIDToStringAndName(lppPropNames[ulSource]->lpguid).c_str());
+						output::DebugPrint(
+							DBGNamedPropCacheMisses,
+							L"AddMapping: Caching unknown property 0x%08X %ws\n",
+							lppPropNames[ulSource]->Kind.lID,
+							guid::GUIDToStringAndName(lppPropNames[ulSource]->lpguid).c_str());
 					}
 				}
 
-				g_lpNamedPropCache.emplace_back(cbSig, lpSig, lppPropNames[ulSource], PROP_ID(lpTag->aulPropTag[ulSource]));
+				g_lpNamedPropCache.emplace_back(
+					cbSig, lpSig, lppPropNames[ulSource], PROP_ID(lpTag->aulPropTag[ulSource]));
 			}
 		}
 	}
@@ -212,14 +228,15 @@ namespace cache
 	// For each one, we have to check that the item isn't already in the cache
 	// Since this function should rarely be hit, we'll do it the slow but easy way...
 	// One entry at a time
-	void AddMappingWithoutSignature(ULONG ulNumProps, // Number of mapped names
+	void AddMappingWithoutSignature(
+		ULONG ulNumProps, // Number of mapped names
 		_In_count_(ulNumProps) LPMAPINAMEID* lppPropNames, // Output from GetNamesFromIDs, input for GetIDsFromNames
 		_In_ LPSPropTagArray lpTag) // Input for GetNamesFromIDs, output from GetIDsFromNames
 	{
 		if (!ulNumProps || !lppPropNames || !lpTag) return;
 		if (ulNumProps != lpTag->cValues) return; // Wouldn't know what to do with this
 
-		SPropTagArray sptaTag = { 0 };
+		SPropTagArray sptaTag = {0};
 		sptaTag.cValues = 1;
 		for (ULONG ulProp = 0; ulProp < ulNumProps; ulProp++)
 		{
@@ -240,7 +257,8 @@ namespace cache
 		}
 	}
 
-	_Check_return_ HRESULT CacheGetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
+	_Check_return_ HRESULT CacheGetNamesFromIDs(
+		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG cbSig,
 		_In_count_(cbSig) LPBYTE lpSig,
 		_In_ LPSPropTagArray* lppPropTags,
@@ -257,11 +275,11 @@ namespace cache
 		const auto lpPropTags = *lppPropTags;
 		// First, allocate our results using MAPI
 		LPMAPINAMEID* lppNameIDs = nullptr;
-		EC_H(MAPIAllocateBuffer(sizeof(MAPINAMEID*)* lpPropTags->cValues, reinterpret_cast<LPVOID*>(&lppNameIDs)));
+		EC_H(MAPIAllocateBuffer(sizeof(MAPINAMEID*) * lpPropTags->cValues, reinterpret_cast<LPVOID*>(&lppNameIDs)));
 
 		if (lppNameIDs)
 		{
-			memset(lppNameIDs, 0, sizeof(MAPINAMEID*)* lpPropTags->cValues);
+			memset(lppNameIDs, 0, sizeof(MAPINAMEID*) * lpPropTags->cValues);
 
 			// Assume we'll miss on everything
 			auto ulMisses = lpPropTags->cValues;
@@ -306,11 +324,7 @@ namespace cache
 					LPMAPINAMEID* lppUncachedPropNames = nullptr;
 
 					WC_H_GETPROPS(lpMAPIProp->GetNamesFromIDs(
-						&lpUncachedTags,
-						nullptr,
-						NULL,
-						&ulUncachedPropNames,
-						&lppUncachedPropNames));
+						&lpUncachedTags, nullptr, NULL, &ulUncachedPropNames, &lppUncachedPropNames));
 					if (SUCCEEDED(hRes) && ulUncachedPropNames == ulMisses && lppUncachedPropNames)
 					{
 						// Cache the results
@@ -329,7 +343,8 @@ namespace cache
 								{
 									LPMAPINAMEID lpNameID = nullptr;
 
-									EC_H(MAPIAllocateMore(sizeof(MAPINAMEID), lppNameIDs, reinterpret_cast<LPVOID*>(&lpNameID)));
+									EC_H(MAPIAllocateMore(
+										sizeof(MAPINAMEID), lppNameIDs, reinterpret_cast<LPVOID*>(&lpNameID)));
 									if (lpNameID)
 									{
 										CopyCacheData(*lppUncachedPropNames[ulUncachedTag], *lpNameID, lppNameIDs);
@@ -360,24 +375,19 @@ namespace cache
 		return hRes;
 	}
 
-	_Check_return_ HRESULT GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
+	_Check_return_ HRESULT GetNamesFromIDs(
+		_In_ LPMAPIPROP lpMAPIProp,
 		_In_ LPSPropTagArray* lppPropTags,
 		_In_opt_ LPGUID lpPropSetGuid,
 		ULONG ulFlags,
 		_Out_ ULONG* lpcPropNames,
 		_Out_ _Deref_post_cap_(*lpcPropNames) LPMAPINAMEID** lpppPropNames)
 	{
-		return GetNamesFromIDs(
-			lpMAPIProp,
-			nullptr,
-			lppPropTags,
-			lpPropSetGuid,
-			ulFlags,
-			lpcPropNames,
-			lpppPropNames);
+		return GetNamesFromIDs(lpMAPIProp, nullptr, lppPropTags, lpPropSetGuid, ulFlags, lpcPropNames, lpppPropNames);
 	}
 
-	_Check_return_ HRESULT GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
+	_Check_return_ HRESULT GetNamesFromIDs(
+		_In_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ const _SBinary* lpMappingSignature,
 		_In_ LPSPropTagArray* lppPropTags,
 		_In_opt_ LPGUID lpPropSetGuid,
@@ -413,17 +423,14 @@ namespace cache
 
 		if (lpMappingSignature)
 		{
-			WC_H_GETPROPS(CacheGetNamesFromIDs(lpMAPIProp,
-				lpMappingSignature->cb,
-				lpMappingSignature->lpb,
-				lppPropTags,
-				lpcPropNames,
-				lpppPropNames));
+			WC_H_GETPROPS(CacheGetNamesFromIDs(
+				lpMAPIProp, lpMappingSignature->cb, lpMappingSignature->lpb, lppPropTags, lpcPropNames, lpppPropNames));
 		}
 		else
 		{
 			hRes = S_OK;
-			WC_H_GETPROPS(lpMAPIProp->GetNamesFromIDs(lppPropTags, lpPropSetGuid, ulFlags, lpcPropNames, lpppPropNames));
+			WC_H_GETPROPS(
+				lpMAPIProp->GetNamesFromIDs(lppPropTags, lpPropSetGuid, ulFlags, lpcPropNames, lpppPropNames));
 			// Cache the results
 			if (SUCCEEDED(hRes))
 			{
@@ -435,7 +442,8 @@ namespace cache
 		return hRes;
 	}
 
-	_Check_return_ HRESULT CacheGetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp,
+	_Check_return_ HRESULT CacheGetIDsFromNames(
+		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG cbSig,
 		_In_count_(cbSig) LPBYTE lpSig,
 		ULONG cPropNames,
@@ -488,10 +496,11 @@ namespace cache
 			if (0 != ulMisses)
 			{
 				LPMAPINAMEID* lppUncachedPropNames = nullptr;
-				EC_H(MAPIAllocateBuffer(sizeof(LPMAPINAMEID)* ulMisses, reinterpret_cast<LPVOID*>(&lppUncachedPropNames)));
+				EC_H(MAPIAllocateBuffer(
+					sizeof(LPMAPINAMEID) * ulMisses, reinterpret_cast<LPVOID*>(&lppUncachedPropNames)));
 				if (lppUncachedPropNames)
 				{
-					memset(lppUncachedPropNames, 0, sizeof(LPMAPINAMEID)* ulMisses);
+					memset(lppUncachedPropNames, 0, sizeof(LPMAPINAMEID) * ulMisses);
 					ULONG ulUncachedName = NULL;
 					for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
 					{
@@ -507,11 +516,8 @@ namespace cache
 					const ULONG ulUncachedTags = 0;
 					LPSPropTagArray lpUncachedTags = nullptr;
 
-					EC_H_GETPROPS(lpMAPIProp->GetIDsFromNames(
-						ulMisses,
-						lppUncachedPropNames,
-						ulFlags,
-						&lpUncachedTags));
+					EC_H_GETPROPS(
+						lpMAPIProp->GetIDsFromNames(ulMisses, lppUncachedPropNames, ulFlags, &lpUncachedTags));
 					if (SUCCEEDED(hRes) && lpUncachedTags && lpUncachedTags->cValues == ulMisses)
 					{
 						// Cache the results
@@ -530,8 +536,7 @@ namespace cache
 
 								// If we got a hit, decrement the miss counter
 								// But only if the hit wasn't an error
-								if (lpPropTags->aulPropTag[ulTarget] &&
-									PT_ERROR != lpPropTags->aulPropTag[ulTarget])
+								if (lpPropTags->aulPropTag[ulTarget] && PT_ERROR != lpPropTags->aulPropTag[ulTarget])
 								{
 									ulMisses--;
 								}
@@ -556,7 +561,8 @@ namespace cache
 		return hRes;
 	}
 
-	_Check_return_ HRESULT GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp,
+	_Check_return_ HRESULT GetIDsFromNames(
+		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG cPropNames,
 		_In_opt_count_(cPropNames) LPMAPINAMEID* lppPropNames,
 		ULONG ulFlags,
@@ -581,7 +587,8 @@ namespace cache
 
 		if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			WC_H_GETPROPS(CacheGetIDsFromNames(lpMAPIProp,
+			WC_H_GETPROPS(CacheGetIDsFromNames(
+				lpMAPIProp,
 				lpProp->Value.bin.cb,
 				lpProp->Value.bin.lpb,
 				cPropNames,
@@ -620,7 +627,8 @@ namespace cache
 		// If we're using the cache, look up the answer there and return
 		if (fCacheNamedProps())
 		{
-			lpNamedPropCacheEntry = FindCacheEntry(PROP_ID(ulPropTag), lpNameID->lpguid, lpNameID->ulKind, lpNameID->Kind.lID, lpNameID->Kind.lpwstrName);
+			lpNamedPropCacheEntry = FindCacheEntry(
+				PROP_ID(ulPropTag), lpNameID->lpguid, lpNameID->ulKind, lpNameID->Kind.lID, lpNameID->Kind.lpwstrName);
 			if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->bStringsCached)
 			{
 				namePropNames = lpNamedPropCacheEntry->namePropNames;
@@ -630,7 +638,8 @@ namespace cache
 			// We shouldn't ever get here without a cached entry
 			if (!lpNamedPropCacheEntry)
 			{
-				output::DebugPrint(DBGNamedProp, L"NameIDToStrings: Failed to find cache entry for ulPropTag = 0x%08X\n", ulPropTag);
+				output::DebugPrint(
+					DBGNamedProp, L"NameIDToStrings: Failed to find cache entry for ulPropTag = 0x%08X\n", ulPropTag);
 				return namePropNames;
 			}
 		}
@@ -644,7 +653,8 @@ namespace cache
 
 		if (lpNameID->ulKind == MNID_ID)
 		{
-			output::DebugPrint(DBGNamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
+			output::DebugPrint(
+				DBGNamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
 			auto pidlids = interpretprop::NameIDToPropNames(lpNameID);
 
 			if (!pidlids.empty())
@@ -653,7 +663,8 @@ namespace cache
 				pidlids.erase(pidlids.begin());
 				namePropNames.otherPidLid = strings::join(pidlids, L", ");
 				// Printing hex first gets a nice sort without spacing tricks
-				namePropNames.name = strings::format(L"id: 0x%04X=%d = %ws", // STRING_OK
+				namePropNames.name = strings::format(
+					L"id: 0x%04X=%d = %ws", // STRING_OK
 					lpNameID->Kind.lID,
 					lpNameID->Kind.lID,
 					namePropNames.bestPidLid.c_str());
@@ -666,12 +677,14 @@ namespace cache
 			else
 			{
 				// Printing hex first gets a nice sort without spacing tricks
-				namePropNames.name = strings::format(L"id: 0x%04X=%d", // STRING_OK
+				namePropNames.name = strings::format(
+					L"id: 0x%04X=%d", // STRING_OK
 					lpNameID->Kind.lID,
 					lpNameID->Kind.lID);
 			}
 
-			namePropNames.dasl = strings::format(L"id/%s/%04X%04X", // STRING_OK
+			namePropNames.dasl = strings::format(
+				L"id/%s/%04X%04X", // STRING_OK
 				szDASLGuid.c_str(),
 				lpNameID->Kind.lID,
 				PROP_TYPE(ulPropTag));
@@ -692,20 +705,29 @@ namespace cache
 				output::DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%ws\"\n", lpNameID->Kind.lpwstrName);
 				namePropNames.name = lpNameID->Kind.lpwstrName;
 
-				namePropNames.dasl = strings::format(L"string/%ws/%ws", // STRING_OK
+				namePropNames.dasl = strings::format(
+					L"string/%ws/%ws", // STRING_OK
 					szDASLGuid.c_str(),
 					lpNameID->Kind.lpwstrName);
 			}
 			else
 			{
 				// this is the case where ANSI data was shoved into a unicode string.
-				output::DebugPrint(DBGNamedProp, L"Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n");
-				output::DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%hs\"\n", reinterpret_cast<LPCSTR>(lpNameID->Kind.lpwstrName));
+				output::DebugPrint(
+					DBGNamedProp,
+					L"Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of "
+					L"this named property\n");
+				output::DebugPrint(
+					DBGNamedProp,
+					L"lpNameID->Kind.lpwstrName = \"%hs\"\n",
+					reinterpret_cast<LPCSTR>(lpNameID->Kind.lpwstrName));
 
 				auto szComment = strings::loadstring(IDS_NAMEWASANSI);
-				namePropNames.name = strings::format(L"%hs %ws", reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), szComment.c_str());
+				namePropNames.name =
+					strings::format(L"%hs %ws", reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), szComment.c_str());
 
-				namePropNames.dasl = strings::format(L"string/%ws/%hs", // STRING_OK
+				namePropNames.dasl = strings::format(
+					L"string/%ws/%hs", // STRING_OK
 					szDASLGuid.c_str(),
 					LPSTR(lpNameID->Kind.lpwstrName));
 			}
@@ -725,8 +747,10 @@ namespace cache
 		ULONG ulPropTag, // optional 'original' prop tag
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-		_In_opt_ const _SBinary* lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-		bool bIsAB) // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+		_In_opt_ const _SBinary*
+			lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+		bool
+			bIsAB) // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 	{
 		auto hRes = S_OK;
 		NamePropNames namePropNames;
@@ -736,25 +760,20 @@ namespace cache
 
 		// If we weren't passed named property information and we need it, look it up
 		// We check bIsAB here - some address book providers return garbage which will crash us
-		if (!lpNameID &&
-			lpMAPIProp && // if we have an object
+		if (!lpNameID && lpMAPIProp && // if we have an object
 			!bIsAB &&
 			registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
-			(registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
+			(registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD ||
+			 PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 		{
-			SPropTagArray tag = { 0 };
+			SPropTagArray tag = {0};
 			auto lpTag = &tag;
 			ULONG ulPropNames = 0;
 			tag.cValues = 1;
 			tag.aulPropTag[0] = ulPropTag;
 
-			WC_H_GETPROPS(GetNamesFromIDs(lpMAPIProp,
-				lpMappingSignature,
-				&lpTag,
-				nullptr,
-				NULL,
-				&ulPropNames,
-				&lppPropNames));
+			WC_H_GETPROPS(
+				GetNamesFromIDs(lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL, &ulPropNames, &lppPropNames));
 			if (SUCCEEDED(hRes) && ulPropNames == 1 && lppPropNames && lppPropNames[0])
 			{
 				lpNameID = lppPropNames[0];

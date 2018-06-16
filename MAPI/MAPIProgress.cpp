@@ -49,17 +49,12 @@ namespace mapi
 			}
 		}
 
-		CMAPIProgress::~CMAPIProgress()
-		{
-			TRACE_DESTRUCTOR(CLASS);
-		}
+		CMAPIProgress::~CMAPIProgress() { TRACE_DESTRUCTOR(CLASS); }
 
-		STDMETHODIMP CMAPIProgress::QueryInterface(REFIID riid,
-			LPVOID * ppvObj)
+		STDMETHODIMP CMAPIProgress::QueryInterface(REFIID riid, LPVOID* ppvObj)
 		{
 			*ppvObj = nullptr;
-			if (riid == IID_IMAPIProgress ||
-				riid == IID_IUnknown)
+			if (riid == IID_IMAPIProgress || riid == IID_IUnknown)
 			{
 				*ppvObj = static_cast<LPVOID>(this);
 				AddRef();
@@ -85,15 +80,23 @@ namespace mapi
 
 		_Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal)
 		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"Progress", L"(%ws) - ulValue = %u, ulCount = %u, ulTotal = %u\n",
-				m_szContext.c_str(), ulValue, ulCount, ulTotal);
+			output::DebugPrintEx(
+				DBGGeneric,
+				CLASS,
+				L"Progress",
+				L"(%ws) - ulValue = %u, ulCount = %u, ulTotal = %u\n",
+				m_szContext.c_str(),
+				ulValue,
+				ulCount,
+				ulTotal);
 
 			OutputState(L"Progress");
 
 			if (m_hWnd)
 			{
 				const auto iPercent = MulDiv(ulValue - m_ulMin, 100, m_ulMax - m_ulMin);
-				dialog::CBaseDialog::UpdateStatus(m_hWnd, STATUSINFOTEXT, strings::formatmessage(IDS_PERCENTLOADED, m_szContext.c_str(), iPercent));
+				dialog::CBaseDialog::UpdateStatus(
+					m_hWnd, STATUSINFOTEXT, strings::formatmessage(IDS_PERCENTLOADED, m_szContext.c_str(), iPercent));
 			}
 
 			return S_OK;
@@ -114,8 +117,7 @@ namespace mapi
 
 		STDMETHODIMP CMAPIProgress::GetMax(ULONG* lpulMax)
 		{
-			if (!lpulMax)
-				return MAPI_E_INVALID_PARAMETER;
+			if (!lpulMax) return MAPI_E_INVALID_PARAMETER;
 
 			OutputState(L"GetMax");
 
@@ -125,8 +127,7 @@ namespace mapi
 
 		STDMETHODIMP CMAPIProgress::GetMin(ULONG* lpulMin)
 		{
-			if (!lpulMin)
-				return MAPI_E_INVALID_PARAMETER;
+			if (!lpulMin) return MAPI_E_INVALID_PARAMETER;
 
 			OutputState(L"GetMin");
 
@@ -169,17 +170,21 @@ namespace mapi
 				szMin = L"NULL";
 			}
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"SetLimits", L"(%ws) - Passed Values: lpulMin = %ws, lpulMax = %ws, lpulFlags = %ws\n",
-				m_szContext.c_str(), szMin.c_str(), szMax.c_str(), szFlags.c_str());
+			output::DebugPrintEx(
+				DBGGeneric,
+				CLASS,
+				L"SetLimits",
+				L"(%ws) - Passed Values: lpulMin = %ws, lpulMax = %ws, lpulFlags = %ws\n",
+				m_szContext.c_str(),
+				szMin.c_str(),
+				szMax.c_str(),
+				szFlags.c_str());
 
-			if (lpulMin)
-				m_ulMin = *lpulMin;
+			if (lpulMin) m_ulMin = *lpulMin;
 
-			if (lpulMax)
-				m_ulMax = *lpulMax;
+			if (lpulMax) m_ulMax = *lpulMax;
 
-			if (lpulFlags)
-				m_ulFlags = *lpulFlags;
+			if (lpulFlags) m_ulFlags = *lpulFlags;
 
 			OutputState(L"SetLimits");
 
@@ -188,8 +193,15 @@ namespace mapi
 
 		void CMAPIProgress::OutputState(const std::wstring& lpszFunction) const
 		{
-			output::DebugPrint(DBGGeneric, L"%ws::%ws(%ws) - Current Values: Min = %u, Max = %u, Flags = %u\n",
-				CLASS.c_str(), lpszFunction.c_str(), m_szContext.c_str(), m_ulMin, m_ulMax, m_ulFlags);
+			output::DebugPrint(
+				DBGGeneric,
+				L"%ws::%ws(%ws) - Current Values: Min = %u, Max = %u, Flags = %u\n",
+				CLASS.c_str(),
+				lpszFunction.c_str(),
+				m_szContext.c_str(),
+				m_ulMin,
+				m_ulMax,
+				m_ulFlags);
 		}
 #endif
 	}

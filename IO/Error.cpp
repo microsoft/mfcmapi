@@ -18,11 +18,7 @@ namespace error
 	{
 		if (fIsSet(DBGMAPIFunctions) && bMAPICall)
 		{
-			const auto szFunctionString = strings::formatmessage(
-				IDS_FUNCTION,
-				szFile,
-				iLine,
-				szFunction);
+			const auto szFunctionString = strings::formatmessage(IDS_FUNCTION, szFile, iLine, szFunction);
 
 			output::Output(DBGMAPIFunctions, nullptr, true, szFunctionString);
 			output::Output(DBGMAPIFunctions, nullptr, false, L"\n");
@@ -37,7 +33,8 @@ namespace error
 #endif
 
 		// Get our error message if we have one
-		auto szErrorMsg = bSystemCall ? strings::formatmessagesys(uidErrorMsg) : uidErrorMsg ? strings::loadstring(uidErrorMsg) : L"";
+		auto szErrorMsg =
+			bSystemCall ? strings::formatmessagesys(uidErrorMsg) : uidErrorMsg ? strings::loadstring(uidErrorMsg) : L"";
 
 		const auto szErrString = strings::formatmessage(
 			FAILED(hRes) ? IDS_ERRFORMATSTRING : IDS_WARNFORMATSTRING,
@@ -54,18 +51,15 @@ namespace error
 		if (bShowDialog)
 		{
 #ifndef MRMAPI
-			dialog::editor::CEditor Err(
-				nullptr,
-				ID_PRODUCTNAME,
-				NULL,
-				CEDITOR_BUTTON_OK);
+			dialog::editor::CEditor Err(nullptr, ID_PRODUCTNAME, NULL, CEDITOR_BUTTON_OK);
 			Err.SetPromptPostFix(szErrString);
-			(void)Err.DisplayDialog();
+			(void) Err.DisplayDialog();
 #endif
 		}
 	}
 
-	_Check_return_ HRESULT CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction)
+	_Check_return_ HRESULT
+	CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction)
 	{
 		const auto dwErr = GetLastError();
 		const auto hRes = HRESULT_FROM_WIN32(dwErr);
@@ -89,17 +83,15 @@ namespace error
 		output::Output(DBGHRes, nullptr, false, L"\n");
 
 #ifndef MRMAPI
-		dialog::editor::CEditor Err(
-			nullptr,
-			ID_PRODUCTNAME,
-			NULL,
-			CEDITOR_BUTTON_OK);
+		dialog::editor::CEditor Err(nullptr, ID_PRODUCTNAME, NULL, CEDITOR_BUTTON_OK);
 		Err.SetPromptPostFix(szCombo);
-		(void)Err.DisplayDialog();
+		(void) Err.DisplayDialog();
 #endif
 	}
 
-#define RETURN_ERR_CASE(err) case (err): return(_T(#err))
+#define RETURN_ERR_CASE(err) \
+	case (err): \
+		return (_T(#err))
 
 	// Function to convert error codes to their names
 	std::wstring ErrorNameFromErrorCode(ULONG hrErr)
@@ -115,7 +107,8 @@ namespace error
 #ifdef _DEBUG
 	void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc)
 	{
-		output::DebugPrint(DBGHRes,
+		output::DebugPrint(
+			DBGHRes,
 			L"Skipping %hs because hRes = 0x%8x = %ws.\n", // STRING_OK
 			szFunc,
 			hRes,

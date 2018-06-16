@@ -6,7 +6,9 @@
 
 namespace smartview
 {
-	FolderUserFieldStream::FolderUserFieldStream() : m_FolderUserFieldsAnsiCount(0), m_FolderUserFieldsUnicodeCount(0) {}
+	FolderUserFieldStream::FolderUserFieldStream() : m_FolderUserFieldsAnsiCount(0), m_FolderUserFieldsUnicodeCount(0)
+	{
+	}
 
 	void FolderUserFieldStream::Parse()
 	{
@@ -19,8 +21,7 @@ namespace smartview
 				folderFieldDefinitionA.FieldType = m_Parser.Get<DWORD>();
 				folderFieldDefinitionA.FieldNameLength = m_Parser.Get<WORD>();
 
-				if (folderFieldDefinitionA.FieldNameLength &&
-					folderFieldDefinitionA.FieldNameLength < _MaxEntriesSmall)
+				if (folderFieldDefinitionA.FieldNameLength && folderFieldDefinitionA.FieldNameLength < _MaxEntriesSmall)
 				{
 					folderFieldDefinitionA.FieldName = m_Parser.GetStringA(folderFieldDefinitionA.FieldNameLength);
 				}
@@ -39,8 +40,7 @@ namespace smartview
 				folderFieldDefinitionW.FieldType = m_Parser.Get<DWORD>();
 				folderFieldDefinitionW.FieldNameLength = m_Parser.Get<WORD>();
 
-				if (folderFieldDefinitionW.FieldNameLength &&
-					folderFieldDefinitionW.FieldNameLength < _MaxEntriesSmall)
+				if (folderFieldDefinitionW.FieldNameLength && folderFieldDefinitionW.FieldNameLength < _MaxEntriesSmall)
 				{
 					folderFieldDefinitionW.FieldName = m_Parser.GetStringW(folderFieldDefinitionW.FieldNameLength);
 				}
@@ -62,8 +62,7 @@ namespace smartview
 		common.dwDisplay = m_Parser.Get<DWORD>();
 		common.iFmt = m_Parser.Get<DWORD>();
 		common.wszFormulaLength = m_Parser.Get<WORD>();
-		if (common.wszFormulaLength &&
-			common.wszFormulaLength < _MaxEntriesLarge)
+		if (common.wszFormulaLength && common.wszFormulaLength < _MaxEntriesLarge)
 		{
 			common.wszFormula = m_Parser.GetStringW(common.wszFormulaLength);
 		}
@@ -75,9 +74,7 @@ namespace smartview
 	{
 		std::wstring szTmp;
 
-		auto szFolderUserFieldStream = strings::formatmessage(
-			IDS_FIELDHEADER,
-			m_FolderUserFieldsAnsiCount);
+		auto szFolderUserFieldStream = strings::formatmessage(IDS_FIELDHEADER, m_FolderUserFieldsAnsiCount);
 
 		if (m_FolderUserFieldsAnsiCount && !m_FieldDefinitionsA.empty())
 		{
@@ -91,11 +88,13 @@ namespace smartview
 				szTmp = strings::formatmessage(
 					IDS_FIELDANSIFIELD,
 					i++,
-					fieldDefinition.FieldType, szFieldType.c_str(),
+					fieldDefinition.FieldType,
+					szFieldType.c_str(),
 					fieldDefinition.FieldNameLength,
 					fieldDefinition.FieldName.c_str(),
 					szGUID.c_str(),
-					fieldDefinition.Common.fcapm, szFieldcap.c_str(),
+					fieldDefinition.Common.fcapm,
+					szFieldcap.c_str(),
 					fieldDefinition.Common.dwString,
 					fieldDefinition.Common.dwBitmap,
 					fieldDefinition.Common.dwDisplay,
@@ -106,9 +105,7 @@ namespace smartview
 			}
 		}
 
-		szTmp = strings::formatmessage(
-			IDS_FIELDUNICODEHEADER,
-			m_FolderUserFieldsUnicodeCount);
+		szTmp = strings::formatmessage(IDS_FIELDUNICODEHEADER, m_FolderUserFieldsUnicodeCount);
 		szFolderUserFieldStream += szTmp;
 
 		if (m_FolderUserFieldsUnicodeCount && !m_FieldDefinitionsW.empty())
@@ -123,11 +120,13 @@ namespace smartview
 				szTmp = strings::formatmessage(
 					IDS_FIELDUNICODEFIELD,
 					i++,
-					fieldDefinition.FieldType, szFieldType.c_str(),
+					fieldDefinition.FieldType,
+					szFieldType.c_str(),
 					fieldDefinition.FieldNameLength,
 					fieldDefinition.FieldName.c_str(),
 					szGUID.c_str(),
-					fieldDefinition.Common.fcapm, szFieldcap.c_str(),
+					fieldDefinition.Common.fcapm,
+					szFieldcap.c_str(),
 					fieldDefinition.Common.dwString,
 					fieldDefinition.Common.dwBitmap,
 					fieldDefinition.Common.dwDisplay,

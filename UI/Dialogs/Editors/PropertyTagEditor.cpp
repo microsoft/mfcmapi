@@ -30,14 +30,16 @@ namespace dialog
 			ULONG ulPropTag,
 			bool bIsAB,
 			_In_opt_ LPMAPIPROP lpMAPIProp,
-			_In_ CWnd* pParentWnd) :
-			CEditor(pParentWnd,
-				uidTitle ? uidTitle : IDS_PROPTAGEDITOR,
-				uidPrompt,
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL | CEDITOR_BUTTON_ACTION1 | (lpMAPIProp ? CEDITOR_BUTTON_ACTION2 : 0),
-				IDS_ACTIONSELECTPTAG,
-				IDS_ACTIONCREATENAMEDPROP,
-				NULL)
+			_In_ CWnd* pParentWnd)
+			: CEditor(
+				  pParentWnd,
+				  uidTitle ? uidTitle : IDS_PROPTAGEDITOR,
+				  uidPrompt,
+				  CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL | CEDITOR_BUTTON_ACTION1 |
+					  (lpMAPIProp ? CEDITOR_BUTTON_ACTION2 : 0),
+				  IDS_ACTIONSELECTPTAG,
+				  IDS_ACTIONCREATENAMEDPROP,
+				  NULL)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 			m_ulPropTag = ulPropTag;
@@ -82,20 +84,14 @@ namespace dialog
 			if (m_lpMAPIProp) m_lpMAPIProp->Release();
 		}
 
-		_Check_return_ ULONG CPropertyTagEditor::GetPropertyTag() const
-		{
-			return m_ulPropTag;
-		}
+		_Check_return_ ULONG CPropertyTagEditor::GetPropertyTag() const { return m_ulPropTag; }
 
 		// Select a property tag
 		void CPropertyTagEditor::OnEditAction1()
 		{
 			auto hRes = S_OK;
 
-			CPropertySelector MyData(
-				m_bIsAB,
-				m_lpMAPIProp,
-				this);
+			CPropertySelector MyData(m_bIsAB, m_lpMAPIProp, this);
 
 			WC_H(MyData.DisplayDialog());
 			if (S_OK != hRes) return;
@@ -119,8 +115,7 @@ namespace dialog
 		{
 			if (!lpszDispIDName) return nullptr;
 
-			const auto entry = find_if(begin(NameIDArray), end(NameIDArray), [&](NAMEID_ARRAY_ENTRY& nameID)
-			{
+			const auto entry = find_if(begin(NameIDArray), end(NameIDArray), [&](NAMEID_ARRAY_ENTRY& nameID) {
 				if (0 == wcscmp(nameID.lpszName, lpszDispIDName))
 				{
 					// PSUNKNOWN is used as a placeholder in NameIDArray - don't return matching entries
@@ -139,7 +134,7 @@ namespace dialog
 
 			auto ulPropType = GetSelectedPropType();
 
-			MAPINAMEID NamedID = { nullptr };
+			MAPINAMEID NamedID = {nullptr};
 			auto lpNamedID = &NamedID;
 
 			// Assume an ID to help with the dispid case
@@ -156,7 +151,6 @@ namespace dialog
 
 			auto guid = GetSelectedGUID(PROPTAG_NAMEPROPGUID, false);
 			NamedID.lpguid = &guid;
-
 
 			if (MNID_ID == NamedID.ulKind)
 			{
@@ -175,7 +169,8 @@ namespace dialog
 					// We found something in our lookup, but later GetIDsFromNames call may fail
 					// Make sure we write what we found back to the dialog
 					// However, don't overwrite the field the user changed
-					if (PROPTAG_NAMEPROPKIND != ulSkipField) SetDropDownSelection(PROPTAG_NAMEPROPKIND, L"MNID_ID"); // STRING_OK
+					if (PROPTAG_NAMEPROPKIND != ulSkipField)
+						SetDropDownSelection(PROPTAG_NAMEPROPKIND, L"MNID_ID"); // STRING_OK
 
 					if (PROPTAG_NAMEPROPGUID != ulSkipField)
 					{
@@ -199,16 +194,13 @@ namespace dialog
 				NamedID.Kind.lpwstrName = const_cast<LPWSTR>(szName.c_str());
 			}
 
-			if (NamedID.lpguid &&
-				(MNID_ID == NamedID.ulKind && NamedID.Kind.lID || MNID_STRING == NamedID.ulKind && NamedID.Kind.lpwstrName))
+			if (NamedID.lpguid && (MNID_ID == NamedID.ulKind && NamedID.Kind.lID ||
+								   MNID_STRING == NamedID.ulKind && NamedID.Kind.lpwstrName))
 			{
 				LPSPropTagArray lpNamedPropTags = nullptr;
 
-				WC_H_GETPROPS(cache::GetIDsFromNames(m_lpMAPIProp,
-					1,
-					&lpNamedID,
-					bCreate ? MAPI_CREATE : 0,
-					&lpNamedPropTags));
+				WC_H_GETPROPS(
+					cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0, &lpNamedPropTags));
 
 				if (lpNamedPropTags)
 				{
@@ -281,61 +273,61 @@ namespace dialog
 		{
 			auto hRes = S_OK;
 
-			auto namePropNames = cache::NameIDToStrings(
-				m_ulPropTag,
-				m_lpMAPIProp,
-				nullptr,
-				nullptr,
-				m_bIsAB);
+			auto namePropNames = cache::NameIDToStrings(m_ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
 
 			if (PROPTAG_TAG != ulSkipField) SetHex(PROPTAG_TAG, m_ulPropTag);
 			if (PROPTAG_ID != ulSkipField) SetStringf(PROPTAG_ID, L"0x%04X", PROP_ID(m_ulPropTag)); // STRING_OK
-			if (PROPTAG_TYPE != ulSkipField) SetDropDownSelection(PROPTAG_TYPE, interpretprop::TypeToString(m_ulPropTag));
+			if (PROPTAG_TYPE != ulSkipField)
+				SetDropDownSelection(PROPTAG_TYPE, interpretprop::TypeToString(m_ulPropTag));
 			if (PROPTAG_NAME != ulSkipField)
 			{
 				auto propTagNames = interpretprop::PropTagToPropName(m_ulPropTag, m_bIsAB);
 
 				if (PROP_ID(m_ulPropTag) && !propTagNames.bestGuess.empty())
-					SetStringf(PROPTAG_NAME, L"%ws (%ws)", propTagNames.bestGuess.c_str(), propTagNames.otherMatches.c_str()); // STRING_OK
+					SetStringf(
+						PROPTAG_NAME,
+						L"%ws (%ws)",
+						propTagNames.bestGuess.c_str(),
+						propTagNames.otherMatches.c_str()); // STRING_OK
 				else if (!namePropNames.name.empty())
 					SetStringf(PROPTAG_NAME, L"%ws", namePropNames.name.c_str()); // STRING_OK
 				else
 					LoadString(PROPTAG_NAME, IDS_UNKNOWNPROPERTY);
 			}
 
-			if (PROPTAG_TYPESTRING != ulSkipField) SetStringW(PROPTAG_TYPESTRING, interpretprop::TypeToString(m_ulPropTag));
+			if (PROPTAG_TYPESTRING != ulSkipField)
+				SetStringW(PROPTAG_TYPESTRING, interpretprop::TypeToString(m_ulPropTag));
 
 			// Do a named property lookup and fill out fields
 			// But only if PROPTAG_TAG or PROPTAG_ID is what the user changed
 			// And never for Address Books
-			if (m_lpMAPIProp && !m_bIsAB &&
-				(PROPTAG_TAG == ulSkipField || PROPTAG_ID == ulSkipField))
+			if (m_lpMAPIProp && !m_bIsAB && (PROPTAG_TAG == ulSkipField || PROPTAG_ID == ulSkipField))
 			{
 				ULONG ulPropNames = 0;
-				SPropTagArray sTagArray = { 0 };
+				SPropTagArray sTagArray = {0};
 				auto lpTagArray = &sTagArray;
 				LPMAPINAMEID* lppPropNames = nullptr;
 
 				lpTagArray->cValues = 1;
 				lpTagArray->aulPropTag[0] = m_ulPropTag;
 
-				WC_H_GETPROPS(cache::GetNamesFromIDs(m_lpMAPIProp,
-					&lpTagArray,
-					NULL,
-					NULL,
-					&ulPropNames,
-					&lppPropNames));
+				WC_H_GETPROPS(
+					cache::GetNamesFromIDs(m_lpMAPIProp, &lpTagArray, NULL, NULL, &ulPropNames, &lppPropNames));
 				if (SUCCEEDED(hRes) && ulPropNames == lpTagArray->cValues && lppPropNames && lppPropNames[0])
 				{
 					if (MNID_STRING == lppPropNames[0]->ulKind)
 					{
-						if (PROPTAG_NAMEPROPKIND != ulSkipField) SetDropDownSelection(PROPTAG_NAMEPROPKIND, L"MNID_STRING"); // STRING_OK
-						if (PROPTAG_NAMEPROPNAME != ulSkipField) SetStringW(PROPTAG_NAMEPROPNAME, lppPropNames[0]->Kind.lpwstrName);
+						if (PROPTAG_NAMEPROPKIND != ulSkipField)
+							SetDropDownSelection(PROPTAG_NAMEPROPKIND, L"MNID_STRING"); // STRING_OK
+						if (PROPTAG_NAMEPROPNAME != ulSkipField)
+							SetStringW(PROPTAG_NAMEPROPNAME, lppPropNames[0]->Kind.lpwstrName);
 					}
 					else if (MNID_ID == lppPropNames[0]->ulKind)
 					{
-						if (PROPTAG_NAMEPROPKIND != ulSkipField) SetDropDownSelection(PROPTAG_NAMEPROPKIND, L"MNID_ID"); // STRING_OK
-						if (PROPTAG_NAMEPROPNAME != ulSkipField) SetHex(PROPTAG_NAMEPROPNAME, lppPropNames[0]->Kind.lID);
+						if (PROPTAG_NAMEPROPKIND != ulSkipField)
+							SetDropDownSelection(PROPTAG_NAMEPROPKIND, L"MNID_ID"); // STRING_OK
+						if (PROPTAG_NAMEPROPNAME != ulSkipField)
+							SetHex(PROPTAG_NAMEPROPNAME, lppPropNames[0]->Kind.lID);
 					}
 					else
 					{
@@ -349,8 +341,7 @@ namespace dialog
 				}
 				else
 				{
-					if (PROPTAG_NAMEPROPKIND != ulSkipField &&
-						PROPTAG_NAMEPROPNAME != ulSkipField &&
+					if (PROPTAG_NAMEPROPKIND != ulSkipField && PROPTAG_NAMEPROPNAME != ulSkipField &&
 						PROPTAG_NAMEPROPGUID != ulSkipField)
 					{
 						SetDropDownSelection(PROPTAG_NAMEPROPKIND, strings::emptystring);
@@ -362,7 +353,7 @@ namespace dialog
 			}
 		}
 
-		void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_ const std::wstring&szText) const
+		void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_ const std::wstring& szText) const
 		{
 			auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(i));
 			if (lpPane)

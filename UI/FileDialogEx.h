@@ -28,7 +28,8 @@ namespace file
 			_In_opt_ CWnd* pParentWnd = nullptr);
 
 	private:
-		_Check_return_ INT_PTR DisplayDialog(bool bOpenFileDialog, // true for open, false for FileSaveAs
+		_Check_return_ INT_PTR DisplayDialog(
+			bool bOpenFileDialog, // true for open, false for FileSaveAs
 			_In_ const std::wstring& lpszDefExt,
 			_In_ const std::wstring& lpszFileName,
 			DWORD dwFlags,

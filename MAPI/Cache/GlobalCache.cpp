@@ -31,7 +31,7 @@ namespace cache
 		auto hRes = S_OK;
 		if (!m_bMAPIInitialized)
 		{
-			MAPIINIT_0 mapiInit = { MAPI_INIT_VERSION, ulFlags };
+			MAPIINIT_0 mapiInit = {MAPI_INIT_VERSION, ulFlags};
 			WC_MAPI(::MAPIInitialize(&mapiInit));
 			if (SUCCEEDED(hRes))
 			{
@@ -39,10 +39,8 @@ namespace cache
 			}
 			else
 			{
-				error::ErrDialog(__FILE__, __LINE__,
-					IDS_EDMAPIINITIALIZEFAILED,
-					hRes,
-					error::ErrorNameFromErrorCode(hRes).c_str());
+				error::ErrDialog(
+					__FILE__, __LINE__, IDS_EDMAPIINITIALIZEFAILED, hRes, error::ErrorNameFromErrorCode(hRes).c_str());
 			}
 		}
 	}
@@ -56,10 +54,7 @@ namespace cache
 		}
 	}
 
-	_Check_return_ bool CGlobalCache::bMAPIInitialized() const
-	{
-		return m_bMAPIInitialized;
-	}
+	_Check_return_ bool CGlobalCache::bMAPIInitialized() const { return m_bMAPIInitialized; }
 
 	void CGlobalCache::EmptyBuffer()
 	{
@@ -85,10 +80,7 @@ namespace cache
 		m_lpAddressEntriesToCopy = lpEBEntriesToCopy;
 	}
 
-	_Check_return_ LPENTRYLIST CGlobalCache::GetABEntriesToCopy() const
-	{
-		return m_lpAddressEntriesToCopy;
-	}
+	_Check_return_ LPENTRYLIST CGlobalCache::GetABEntriesToCopy() const { return m_lpAddressEntriesToCopy; }
 
 	void CGlobalCache::SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent)
 	{
@@ -98,10 +90,7 @@ namespace cache
 		if (m_lpSourceParent) m_lpSourceParent->AddRef();
 	}
 
-	_Check_return_ LPENTRYLIST CGlobalCache::GetMessagesToCopy() const
-	{
-		return m_lpMessagesToCopy;
-	}
+	_Check_return_ LPENTRYLIST CGlobalCache::GetMessagesToCopy() const { return m_lpMessagesToCopy; }
 
 	void CGlobalCache::SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent)
 	{
@@ -132,10 +121,7 @@ namespace cache
 		if (m_lpSourcePropObject) m_lpSourcePropObject->AddRef();
 	}
 
-	_Check_return_ ULONG CGlobalCache::GetPropertyToCopy() const
-	{
-		return m_ulPropTagToCopy;
-	}
+	_Check_return_ ULONG CGlobalCache::GetPropertyToCopy() const { return m_ulPropTagToCopy; }
 
 	_Check_return_ LPMAPIPROP CGlobalCache::GetSourcePropObject() const
 	{
@@ -151,20 +137,11 @@ namespace cache
 		if (m_lpSourcePropObject) m_lpSourcePropObject->AddRef();
 	}
 
-	_Check_return_ std::vector<ULONG> CGlobalCache::GetAttachmentsToCopy() const
-	{
-		return m_attachmentsToCopy;
-	}
+	_Check_return_ std::vector<ULONG> CGlobalCache::GetAttachmentsToCopy() const { return m_attachmentsToCopy; }
 
-	void CGlobalCache::SetProfileToCopy(_In_ const std::string& szProfileName)
-	{
-		m_szProfileToCopy = szProfileName;
-	}
+	void CGlobalCache::SetProfileToCopy(_In_ const std::string& szProfileName) { m_szProfileToCopy = szProfileName; }
 
-	_Check_return_ std::string CGlobalCache::GetProfileToCopy() const
-	{
-		return m_szProfileToCopy;
-	}
+	_Check_return_ std::string CGlobalCache::GetProfileToCopy() const { return m_szProfileToCopy; }
 
 	_Check_return_ ULONG CGlobalCache::GetBufferStatus() const
 	{

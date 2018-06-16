@@ -6,18 +6,19 @@ namespace controls
 {
 	namespace sortlistctrl
 	{
-		CSortHeader::CSortHeader() : m_bTooltipDisplayed(false) {
+		CSortHeader::CSortHeader() : m_bTooltipDisplayed(false)
+		{
 			m_hwndTip = nullptr;
 			m_hwndParent = nullptr;
 			ZeroMemory(&m_ti, sizeof(TOOLINFO));
 		}
 
 		BEGIN_MESSAGE_MAP(CSortHeader, CHeaderCtrl)
-			ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERHEADER, msgOnSaveColumnOrder)
-			ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
+		ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERHEADER, msgOnSaveColumnOrder)
+		ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
 		END_MESSAGE_MAP()
 
-		_Check_return_ bool CSortHeader::Init(_In_ CHeaderCtrl *pHeader, _In_ HWND hwndParent)
+		_Check_return_ bool CSortHeader::Init(_In_ CHeaderCtrl* pHeader, _In_ HWND hwndParent)
 		{
 			if (!pHeader) return false;
 
@@ -39,27 +40,25 @@ namespace controls
 			if (!m_hwndTip)
 			{
 				auto hRes = S_OK;
-				EC_D(m_hwndTip, CreateWindowEx(
-					WS_EX_TOPMOST,
-					TOOLTIPS_CLASS,
-					NULL,
-					TTS_NOPREFIX | TTS_ALWAYSTIP,
-					CW_USEDEFAULT,
-					CW_USEDEFAULT,
-					CW_USEDEFAULT,
-					CW_USEDEFAULT,
-					m_hWnd,
-					NULL,
-					AfxGetInstanceHandle(),
-					NULL));
+				EC_D(
+					m_hwndTip,
+					CreateWindowEx(
+						WS_EX_TOPMOST,
+						TOOLTIPS_CLASS,
+						NULL,
+						TTS_NOPREFIX | TTS_ALWAYSTIP,
+						CW_USEDEFAULT,
+						CW_USEDEFAULT,
+						CW_USEDEFAULT,
+						CW_USEDEFAULT,
+						m_hWnd,
+						NULL,
+						AfxGetInstanceHandle(),
+						NULL));
 
 				if (m_hwndTip)
 				{
-					EC_B(::SetWindowPos(
-						m_hwndTip,
-						HWND_TOPMOST,
-						0, 0, 0, 0,
-						SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE));
+					EC_B(::SetWindowPos(m_hwndTip, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE));
 
 					m_ti.cbSize = sizeof(TOOLINFO);
 					m_ti.uFlags = TTF_TRACK | TTF_IDISHWND;
@@ -74,8 +73,6 @@ namespace controls
 			}
 		}
 
-#define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
-#define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
 		LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			auto hRes = S_OK;
@@ -92,7 +89,7 @@ namespace controls
 					// This covers the case where we move from one header to another, but don't leave the control
 					if (m_bTooltipDisplayed)
 					{
-						HDHITTESTINFO hdHitTestInfo = { 0 };
+						HDHITTESTINFO hdHitTestInfo = {0};
 						hdHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 						hdHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
@@ -106,7 +103,7 @@ namespace controls
 					}
 					else
 					{
-						TRACKMOUSEEVENT tmEvent = { 0 };
+						TRACKMOUSEEVENT tmEvent = {0};
 						tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
 						tmEvent.dwFlags = TME_HOVER;
 						tmEvent.hwndTrack = m_hWnd;
@@ -118,7 +115,7 @@ namespace controls
 					break;
 				case WM_MOUSEHOVER:
 				{
-					HDHITTESTINFO hdHitTestInfo = { 0 };
+					HDHITTESTINFO hdHitTestInfo = {0};
 					hdHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 					hdHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
@@ -127,7 +124,7 @@ namespace controls
 					// We only turn on or modify our tooltip if we're on a column header
 					if (hdHitTestInfo.flags & HHT_ONHEADER)
 					{
-						HDITEM hdItem = { 0 };
+						HDITEM hdItem = {0};
 						hdItem.mask = HDI_LPARAM;
 
 						EC_B(GetItem(hdHitTestInfo.iItem, &hdItem));
@@ -138,12 +135,16 @@ namespace controls
 						if (lpHeaderData)
 						{
 							EC_B(::GetCursorPos(&hdHitTestInfo.pt));
-							EC_B(::SendMessage(m_hwndTip, TTM_TRACKPOSITION, 0, MAKELPARAM(hdHitTestInfo.pt.x + 10, hdHitTestInfo.pt.y + 20)));
+							EC_B(::SendMessage(
+								m_hwndTip,
+								TTM_TRACKPOSITION,
+								0,
+								MAKELPARAM(hdHitTestInfo.pt.x + 10, hdHitTestInfo.pt.y + 20)));
 
 							m_ti.lpszText = const_cast<LPWSTR>(lpHeaderData->szTipString.c_str());
 							EC_B(::SendMessage(m_hwndTip, TTM_SETTOOLINFOW, true, reinterpret_cast<LPARAM>(&m_ti)));
 							// Ask for notification when the mouse leaves the control
-							TRACKMOUSEEVENT tmEvent = { 0 };
+							TRACKMOUSEEVENT tmEvent = {0};
 							tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
 							tmEvent.dwFlags = TME_LEAVE;
 							tmEvent.hwndTrack = m_hWnd;

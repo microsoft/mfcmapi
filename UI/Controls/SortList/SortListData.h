@@ -46,11 +46,12 @@ namespace controls
 			BinaryData* Binary() const;
 
 			ULONG cSourceProps;
-			LPSPropValue lpSourceProps; // Stolen from lpsRowData in SortListData::InitializeContents - free with MAPIFreeBuffer
+			LPSPropValue
+				lpSourceProps; // Stolen from lpsRowData in SortListData::InitializeContents - free with MAPIFreeBuffer
 			bool bItemFullyLoaded;
 
 		private:
-			IData * m_lpData;
+			IData* m_lpData;
 		};
 	}
 }

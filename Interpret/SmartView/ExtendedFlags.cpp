@@ -6,10 +6,7 @@
 
 namespace smartview
 {
-	ExtendedFlags::ExtendedFlags()
-	{
-		m_ulNumFlags = 0;
-	}
+	ExtendedFlags::ExtendedFlags() { m_ulNumFlags = 0; }
 
 	void ExtendedFlags::Parse()
 	{
@@ -18,7 +15,7 @@ namespace smartview
 		{
 			// Must have at least 2 bytes left to have another flag
 			if (m_Parser.RemainingBytes() < 2) break;
-			(void)m_Parser.Get<BYTE>();
+			(void) m_Parser.Get<BYTE>();
 			const auto cbData = m_Parser.Get<BYTE>();
 			// Must have at least cbData bytes left to be a valid flag
 			if (m_Parser.RemainingBytes() < cbData) break;
@@ -100,26 +97,27 @@ namespace smartview
 			for (const auto& extendedFlag : m_pefExtendedFlags)
 			{
 				auto szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlagType, extendedFlag.Id);
-				szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGID,
-					extendedFlag.Id, szFlags.c_str(),
-					extendedFlag.Cb);
+				szExtendedFlags +=
+					strings::formatmessage(IDS_EXTENDEDFLAGID, extendedFlag.Id, szFlags.c_str(), extendedFlag.Cb);
 
 				switch (extendedFlag.Id)
 				{
 				case EFPB_FLAGS:
 					szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags);
-					szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATAFLAG, extendedFlag.Data.ExtendedFlags, szFlags.c_str());
+					szExtendedFlags += strings::formatmessage(
+						IDS_EXTENDEDFLAGDATAFLAG, extendedFlag.Data.ExtendedFlags, szFlags.c_str());
 					break;
 				case EFPB_CLSIDID:
 					szFlags = guid::GUIDToString(&extendedFlag.Data.SearchFolderID);
 					szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATASFID, szFlags.c_str());
 					break;
 				case EFPB_SFTAG:
-					szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATASFTAG,
-						extendedFlag.Data.SearchFolderTag);
+					szExtendedFlags +=
+						strings::formatmessage(IDS_EXTENDEDFLAGDATASFTAG, extendedFlag.Data.SearchFolderTag);
 					break;
 				case EFPB_TODO_VERSION:
-					szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATATODOVERSION, extendedFlag.Data.ToDoFolderVersion);
+					szExtendedFlags +=
+						strings::formatmessage(IDS_EXTENDEDFLAGDATATODOVERSION, extendedFlag.Data.ToDoFolderVersion);
 					break;
 				}
 

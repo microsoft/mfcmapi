@@ -24,11 +24,11 @@ namespace dialog
 			_In_ LPSPropTagArray sptExtraColumnTags,
 			_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
 			ULONG nIDContextMenu,
-			ULONG ulAddInContext
-		);
+			ULONG ulAddInContext);
 		virtual ~CContentsTableDlg();
 
-		_Check_return_ virtual HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
+		_Check_return_ virtual HRESULT
+		OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
 
 	protected:
 		// Overrides from base class

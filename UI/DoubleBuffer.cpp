@@ -8,10 +8,7 @@ namespace ui
 		ZeroMemory(&m_rcPaint, sizeof m_rcPaint);
 	}
 
-	CDoubleBuffer::~CDoubleBuffer()
-	{
-		Cleanup();
-	}
+	CDoubleBuffer::~CDoubleBuffer() { Cleanup(); }
 
 	void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ const RECT& rcPaint)
 	{
@@ -24,23 +21,17 @@ namespace ui
 			m_hdcMem = CreateCompatibleDC(hdc);
 			if (m_hdcMem)
 			{
-				m_hbmpMem = CreateCompatibleBitmap(
-					hdc,
-					rcPaint.right - rcPaint.left,
-					rcPaint.bottom - rcPaint.top);
+				m_hbmpMem = CreateCompatibleBitmap(hdc, rcPaint.right - rcPaint.left, rcPaint.bottom - rcPaint.top);
 
 				if (m_hbmpMem)
 				{
-					(void)SelectObject(m_hdcMem, m_hbmpMem);
-					(void)CopyRect(&m_rcPaint, &rcPaint);
-					(void)OffsetWindowOrgEx(m_hdcMem,
-						m_rcPaint.left,
-						m_rcPaint.top,
-						nullptr);
+					(void) SelectObject(m_hdcMem, m_hbmpMem);
+					(void) CopyRect(&m_rcPaint, &rcPaint);
+					(void) OffsetWindowOrgEx(m_hdcMem, m_rcPaint.left, m_rcPaint.top, nullptr);
 
-					(void)SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_FONT));
-					(void)SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_BRUSH));
-					(void)SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_PEN));
+					(void) SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_FONT));
+					(void) SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_BRUSH));
+					(void) SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_PEN));
 					// cache the original DC and pass out the memory DC
 					m_hdcPaint = hdc;
 					hdc = m_hdcMem;
@@ -58,7 +49,8 @@ namespace ui
 	{
 		if (hdc && hdc == m_hdcMem)
 		{
-			BitBlt(m_hdcPaint,
+			BitBlt(
+				m_hdcPaint,
 				m_rcPaint.left,
 				m_rcPaint.top,
 				m_rcPaint.right - m_rcPaint.left,
@@ -79,13 +71,13 @@ namespace ui
 	{
 		if (m_hbmpMem)
 		{
-			(void)DeleteObject(m_hbmpMem);
+			(void) DeleteObject(m_hbmpMem);
 			m_hbmpMem = nullptr;
 		}
 
 		if (m_hdcMem)
 		{
-			(void)DeleteDC(m_hdcMem);
+			(void) DeleteDC(m_hdcMem);
 			m_hdcMem = nullptr;
 		}
 

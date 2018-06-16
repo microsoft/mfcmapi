@@ -8,7 +8,11 @@ namespace viewpane
 {
 	static std::wstring CLASS = L"DropDownPane";
 
-	DropDownPane* DropDownPane::Create(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly)
+	DropDownPane* DropDownPane::Create(
+		UINT uidLabel,
+		ULONG ulDropList,
+		_In_opt_count_(ulDropList) UINT* lpuidDropList,
+		bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) DropDownPane();
 		if (pane && lpuidDropList)
@@ -93,13 +97,7 @@ namespace viewpane
 
 		if (!m_szLabel.empty())
 		{
-			EC_B(m_Label.SetWindowPos(
-				nullptr,
-				x,
-				y,
-				width,
-				m_iLabelHeight,
-				SWP_NOZORDER));
+			EC_B(m_Label.SetWindowPos(nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER));
 			y += m_iLabelHeight;
 		}
 
@@ -132,18 +130,8 @@ namespace viewpane
 		}
 
 		EC_B(m_DropDown.Create(
-			WS_TABSTOP
-			| WS_CHILD
-			| WS_CLIPSIBLINGS
-			| WS_BORDER
-			| WS_VISIBLE
-			| WS_VSCROLL
-			| CBS_OWNERDRAWFIXED
-			| CBS_HASSTRINGS
-			| CBS_AUTOHSCROLL
-			| CBS_DISABLENOSCROLL
-			| CBS_NOINTEGRALHEIGHT
-			| dwDropStyle,
+			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_BORDER | WS_VISIBLE | WS_VSCROLL | CBS_OWNERDRAWFIXED |
+				CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DISABLENOSCROLL | CBS_NOINTEGRALHEIGHT | dwDropStyle,
 			CRect(0, 0, 0, static_cast<int>(dropHeight)),
 			pParent,
 			m_nID));
@@ -186,7 +174,7 @@ namespace viewpane
 	{
 		const auto len = m_DropDown.GetWindowTextLength() + 1;
 		const auto buffer = new WCHAR[len];
-		memset(buffer, 0, sizeof(WCHAR)* len);
+		memset(buffer, 0, sizeof(WCHAR) * len);
 		GetWindowTextW(m_DropDown.m_hWnd, buffer, len);
 		std::wstring szOut = buffer;
 		delete[] buffer;
@@ -221,15 +209,9 @@ namespace viewpane
 		return 0;
 	}
 
-	_Check_return_ int DropDownPane::GetDropDown() const
-	{
-		return m_iDropSelection;
-	}
+	_Check_return_ int DropDownPane::GetDropDown() const { return m_iDropSelection; }
 
-	_Check_return_ DWORD_PTR DropDownPane::GetDropDownValue() const
-	{
-		return m_iDropSelectionValue;
-	}
+	_Check_return_ DWORD_PTR DropDownPane::GetDropDownValue() const { return m_iDropSelectionValue; }
 
 	// This should work whether the editor is active/displayed or not
 	GUID DropDownPane::GetSelectedGUID(bool bByteSwapped) const
@@ -260,7 +242,7 @@ namespace viewpane
 			return guid;
 		}
 
-		return { 0 };
+		return {0};
 	}
 
 	void DropDownPane::SetDropDownSelection(_In_ const std::wstring& szText)
@@ -277,10 +259,7 @@ namespace viewpane
 		if (CB_ERR == iSelect)
 		{
 			EC_B(::SendMessage(
-				m_DropDown.m_hWnd,
-				WM_SETTEXT,
-				NULL,
-				reinterpret_cast<LPARAM>(static_cast<LPCTSTR>(text.c_str()))));
+				m_DropDown.m_hWnd, WM_SETTEXT, NULL, reinterpret_cast<LPARAM>(static_cast<LPCTSTR>(text.c_str()))));
 		}
 	}
 

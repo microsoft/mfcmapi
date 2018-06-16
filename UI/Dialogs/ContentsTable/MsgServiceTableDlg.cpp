@@ -18,19 +18,18 @@ namespace dialog
 	CMsgServiceTableDlg::CMsgServiceTableDlg(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_ const std::string& szProfileName
-	) :
-		CContentsTableDlg(
-			pParentWnd,
-			lpMapiObjects,
-			IDS_SERVICES,
-			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-			nullptr,
-			nullptr,
-			LPSPropTagArray(&columns::sptSERVICECols),
-			columns::SERVICEColumns,
-			IDR_MENU_MSGSERVICE_POPUP,
-			MENU_CONTEXT_PROFILE_SERVICES)
+		_In_ const std::string& szProfileName)
+		: CContentsTableDlg(
+			  pParentWnd,
+			  lpMapiObjects,
+			  IDS_SERVICES,
+			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  nullptr,
+			  nullptr,
+			  LPSPropTagArray(&columns::sptSERVICECols),
+			  columns::SERVICEColumns,
+			  IDR_MENU_MSGSERVICE_POPUP,
+			  MENU_CONTEXT_PROFILE_SERVICES)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
@@ -52,9 +51,9 @@ namespace dialog
 	}
 
 	BEGIN_MESSAGE_MAP(CMsgServiceTableDlg, CContentsTableDlg)
-		ON_COMMAND(ID_CONFIGUREMSGSERVICE, OnConfigureMsgService)
-		ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
-		ON_COMMAND(ID_OPENPROFILESECTION, OnOpenProfileSection)
+	ON_COMMAND(ID_CONFIGUREMSGSERVICE, OnConfigureMsgService)
+	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
+	ON_COMMAND(ID_OPENPROFILESECTION, OnOpenProfileSection)
 	END_MESSAGE_MAP()
 
 	void CMsgServiceTableDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -87,10 +86,7 @@ namespace dialog
 
 		// Clean up our table and admin in reverse order from which we obtained them
 		// Failure to do this leads to crashes in Outlook's profile code
-		EC_H(m_lpContentsTableListCtrl->SetContentsTable(
-			nullptr,
-			dfNormal,
-			NULL));
+		EC_H(m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, NULL));
 
 		if (m_lpServiceAdmin) m_lpServiceAdmin->Release();
 		m_lpServiceAdmin = nullptr;
@@ -116,10 +112,7 @@ namespace dialog
 
 				if (lpServiceTable)
 				{
-					EC_H(m_lpContentsTableListCtrl->SetContentsTable(
-						lpServiceTable,
-						dfNormal,
-						NULL));
+					EC_H(m_lpContentsTableListCtrl->SetContentsTable(lpServiceTable, dfNormal, NULL));
 
 					lpServiceTable->Release();
 				}
@@ -159,11 +152,7 @@ namespace dialog
 
 						if (lpProviderTable)
 						{
-							new CProviderTableDlg(
-								m_lpParent,
-								m_lpMapiObjects,
-								lpProviderTable,
-								lpProviderAdmin);
+							new CProviderTableDlg(m_lpParent, m_lpMapiObjects, lpProviderTable, lpProviderAdmin);
 							lpProviderTable->Release();
 							lpProviderTable = nullptr;
 						}
@@ -204,7 +193,10 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ HRESULT CMsgServiceTableDlg::OpenItemProp(
+		int iSelectedItem,
+		__mfcmapiModifyEnum /*bModify*/,
+		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 	{
 		auto hRes = S_OK;
 
@@ -221,9 +213,7 @@ namespace dialog
 			if (lpServiceUID)
 			{
 				EC_H(mapi::profile::OpenProfileSection(
-					m_lpServiceAdmin,
-					lpServiceUID,
-					reinterpret_cast<LPPROFSECT*>(lppMAPIProp)));
+					m_lpServiceAdmin, lpServiceUID, reinterpret_cast<LPPROFSECT*>(lppMAPIProp)));
 			}
 		}
 
@@ -237,10 +227,7 @@ namespace dialog
 		if (!m_lpServiceAdmin) return;
 
 		editor::CEditor MyUID(
-			this,
-			IDS_OPENPROFSECT,
-			IDS_OPENPROFSECTPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			this, IDS_OPENPROFSECT, IDS_OPENPROFSECTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyUID.InitPane(0, viewpane::DropDownPane::CreateGuid(IDS_MAPIUID, false));
 		MyUID.InitPane(1, viewpane::CheckPane::Create(IDS_MAPIUIDBYTESWAPPED, false, false));
@@ -249,23 +236,16 @@ namespace dialog
 		if (S_OK != hRes) return;
 
 		auto guid = MyUID.GetSelectedGUID(0, MyUID.GetCheck(1));
-		SBinary MapiUID = { sizeof(GUID), reinterpret_cast<LPBYTE>(&guid) };
+		SBinary MapiUID = {sizeof(GUID), reinterpret_cast<LPBYTE>(&guid)};
 
 		LPPROFSECT lpProfSect = nullptr;
-		EC_H(mapi::profile::OpenProfileSection(
-			m_lpServiceAdmin,
-			&MapiUID,
-			&lpProfSect));
+		EC_H(mapi::profile::OpenProfileSection(m_lpServiceAdmin, &MapiUID, &lpProfSect));
 		if (lpProfSect)
 		{
 			auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpProfSect);
 			if (lpTemp)
 			{
-				EC_H(DisplayObject(
-					lpTemp,
-					MAPI_PROFSECT,
-					otContents,
-					this));
+				EC_H(DisplayObject(lpTemp, MAPI_PROFSECT, otContents, this));
 				lpTemp->Release();
 			}
 
@@ -286,15 +266,18 @@ namespace dialog
 			// Find the highlighted item AttachNum
 			if (!lpListData || !lpListData->Contents()) break;
 
-			output::DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting service from \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
+			output::DebugPrintEx(
+				DBGDeleteSelectedItem,
+				CLASS,
+				L"OnDeleteSelectedItem",
+				L"Deleting service from \"%hs\"\n",
+				lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)
 			{
-				WC_MAPI(m_lpServiceAdmin->DeleteMsgService(
-					reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb)));
+				WC_MAPI(m_lpServiceAdmin->DeleteMsgService(reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb)));
 			}
-
 		}
 
 		OnRefreshView(); // Update the view since we don't have notifications here.

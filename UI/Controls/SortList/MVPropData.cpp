@@ -7,7 +7,7 @@ namespace controls
 	{
 		MVPropData::MVPropData(_In_opt_ const _SPropValue* lpProp, ULONG iProp)
 		{
-			m_val = { 0 };
+			m_val = {0};
 			if (!lpProp) return;
 
 			switch (PROP_TYPE(lpProp->ulPropTag))
@@ -45,7 +45,9 @@ namespace controls
 				m_val.lpszW = const_cast<LPWSTR>(m_lpszW.c_str());
 				break;
 			case PT_MV_BINARY:
-				m_lpBin.assign(lpProp->Value.MVbin.lpbin[iProp].lpb, lpProp->Value.MVbin.lpbin[iProp].lpb + lpProp->Value.MVbin.lpbin[iProp].cb);
+				m_lpBin.assign(
+					lpProp->Value.MVbin.lpbin[iProp].lpb,
+					lpProp->Value.MVbin.lpbin[iProp].lpb + lpProp->Value.MVbin.lpbin[iProp].cb);
 				m_val.bin.cb = static_cast<ULONG>(m_lpBin.size());
 				m_val.bin.lpb = m_lpBin.data();
 				break;
@@ -62,7 +64,7 @@ namespace controls
 
 		MVPropData::MVPropData(_In_opt_ const _SPropValue* lpProp)
 		{
-			m_val = { 0 };
+			m_val = {0};
 			if (!lpProp) return;
 
 			// This handles most cases by default - cases needing a buffer copied are handled below
