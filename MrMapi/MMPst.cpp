@@ -6,7 +6,8 @@
 #define NDB_CRYPT_PERMUTE 1
 #define NDB_CRYPT_CYCLIC 2
 
-struct PSTHEADER {
+struct PSTHEADER
+{
 	DWORD dwMagic;
 	DWORD dwCRCPartial;
 	WORD wMagicClient;
@@ -23,12 +24,14 @@ struct PSTHEADER {
 #define NDBUNICODE 23
 #define NDBUNICODE2 36
 
-struct BREFANSI {
+struct BREFANSI
+{
 	DWORD bid;
 	DWORD ib;
 };
 
-struct ROOTANSI {
+struct ROOTANSI
+{
 	ULONG dwReserved;
 	DWORD ibFileEof;
 	DWORD ibAMapLast;
@@ -41,7 +44,8 @@ struct ROOTANSI {
 	WORD cARVec;
 };
 
-struct HEADER2ANSI {
+struct HEADER2ANSI
+{
 	DWORD bidNextB;
 	DWORD bidNextP;
 	DWORD dwUnique;
@@ -53,12 +57,14 @@ struct HEADER2ANSI {
 	BYTE bCryptMethod;
 };
 
-struct BREFUNICODE {
+struct BREFUNICODE
+{
 	ULONGLONG bid;
 	ULONGLONG ib;
 };
 
-struct ROOTUNICODE {
+struct ROOTUNICODE
+{
 	ULONG dwReserved;
 	ULONGLONG ibFileEof;
 	ULONGLONG ibAMapLast;
@@ -71,7 +77,8 @@ struct ROOTUNICODE {
 	WORD cARVec;
 };
 
-struct HEADER2UNICODE {
+struct HEADER2UNICODE
+{
 	ULONGLONG bidUnused;
 	ULONGLONG bidNextP;
 	DWORD dwUnique;
@@ -149,13 +156,13 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 {
 	printf("Analyzing %ws\n", ProgOpts.lpszInput.c_str());
 
-	struct _stat64 stats = { 0 };
+	struct _stat64 stats = {0};
 	_wstati64(ProgOpts.lpszInput.c_str(), &stats);
 
 	const auto fIn = output::MyOpenFileMode(ProgOpts.lpszInput, L"rb");
 	if (fIn)
 	{
-		PSTHEADER pstHeader = { 0 };
+		PSTHEADER pstHeader = {0};
 		if (fread(&pstHeader, sizeof(PSTHEADER), 1, fIn))
 		{
 			ULONGLONG ibFileEof = 0;
@@ -166,7 +173,7 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 			if (NDBANSISMALL == pstHeader.wVer || NDBANSILARGE == pstHeader.wVer)
 			{
 				printf("ANSI PST (%ws)\n", NDBANSISMALL == pstHeader.wVer ? L"small" : L"large");
-				HEADER2ANSI h2Ansi = { 0 };
+				HEADER2ANSI h2Ansi = {0};
 				if (fread(&h2Ansi, sizeof(HEADER2ANSI), 1, fIn))
 				{
 					ibFileEof = h2Ansi.root.ibFileEof;
@@ -178,7 +185,7 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 			else if (NDBUNICODE == pstHeader.wVer || NDBUNICODE2 == pstHeader.wVer)
 			{
 				printf("Unicode PST\n");
-				HEADER2UNICODE h2Unicode = { 0 };
+				HEADER2UNICODE h2Unicode = {0};
 				if (fread(&h2Unicode, sizeof(HEADER2UNICODE), 1, fIn))
 				{
 					ibFileEof = h2Unicode.root.ibFileEof;

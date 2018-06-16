@@ -35,9 +35,9 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 			const auto lpbIn = new (std::nothrow) BYTE[iLength + 1]; // +1 for NULL
 			if (lpbIn)
 			{
-				memset(lpbIn, 0, sizeof(BYTE)*(iLength + 1));
+				memset(lpbIn, 0, sizeof(BYTE) * (iLength + 1));
 				fread(lpbIn, sizeof(BYTE), iLength, fIn);
-				SBinary Bin = { 0 };
+				SBinary Bin = {0};
 				std::vector<BYTE> bin;
 				if (ProgOpts.ulOptions & OPT_BINARYFILE)
 				{

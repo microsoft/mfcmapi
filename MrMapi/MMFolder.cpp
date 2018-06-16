@@ -26,12 +26,7 @@ HRESULT HrMAPIFindFolderW(
 		ePR_ENTRYID,
 		NUM_COLS
 	};
-	static const SizedSPropTagArray(NUM_COLS, rgColProps) =
-	{
-		NUM_COLS,
-		PR_DISPLAY_NAME_W,
-		PR_ENTRYID
-	};
+	static const SizedSPropTagArray(NUM_COLS, rgColProps) = {NUM_COLS, PR_DISPLAY_NAME_W, PR_ENTRYID};
 
 	if (!lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 	*lpcbeid = 0;
@@ -130,12 +125,7 @@ HRESULT HrMAPIFindSubfolderExW(
 		if (i + 1 < FolderList.size())
 		{
 			WC_MAPI(lpParentFolder->OpenEntry(
-				cbeid,
-				lpeid,
-				nullptr,
-				MAPI_DEFERRED_ERRORS,
-				&ulObjType,
-				reinterpret_cast<LPUNKNOWN*>(&lpChildFolder)));
+				cbeid, lpeid, nullptr, MAPI_DEFERRED_ERRORS, &ulObjType, reinterpret_cast<LPUNKNOWN*>(&lpChildFolder)));
 			if (FAILED(hRes) || ulObjType != MAPI_FOLDER)
 			{
 				MAPIFreeBuffer(lpeid);
@@ -199,16 +189,12 @@ static HRESULT HrLookupRootFolderW(
 
 	if (ulPropTag)
 	{
-		SPropTagArray rgPropTag = { 1, ulPropTag };
+		SPropTagArray rgPropTag = {1, ulPropTag};
 		LPSPropValue lpPropValue = nullptr;
 		ULONG cValues = 0;
 
 		// Get the outbox entry ID property.
-		WC_MAPI(lpMDB->GetProps(
-			&rgPropTag,
-			MAPI_UNICODE,
-			&cValues,
-			&lpPropValue));
+		WC_MAPI(lpMDB->GetProps(&rgPropTag, MAPI_UNICODE, &cValues, &lpPropValue));
 		if (SUCCEEDED(hRes) && lpPropValue && lpPropValue->ulPropTag == ulPropTag)
 		{
 			WC_H(MAPIAllocateBuffer(lpPropValue->Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
@@ -288,11 +274,7 @@ HRESULT HrMAPIFindFolderExW(
 			MAPIFreeBuffer(lpeid);
 
 			// Find the subfolder in question
-			WC_H(HrMAPIFindSubfolderExW(
-				lpRootFolder,
-				FolderList,
-				&cbeid,
-				&lpeid));
+			WC_H(HrMAPIFindSubfolderExW(lpRootFolder, FolderList, &cbeid, &lpeid));
 		}
 		if (lpRootFolder) lpRootFolder->Release();
 	}
@@ -323,11 +305,7 @@ HRESULT HrMAPIOpenFolderExW(
 
 	*lppFolder = nullptr;
 
-	WC_H(HrMAPIFindFolderExW(
-		lpMDB,
-		lpszFolderPath,
-		&cbeid,
-		&lpeid));
+	WC_H(HrMAPIFindFolderExW(lpMDB, lpszFolderPath, &cbeid, &lpeid));
 
 	if (SUCCEEDED(hRes))
 	{
@@ -354,7 +332,12 @@ void DumpHierarchyTable(
 {
 	if (0 == ulDepth)
 	{
-		output::DebugPrint(DBGGeneric, L"DumpHierarchyTable: Outputting hierarchy table for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
+		output::DebugPrint(
+			DBGGeneric,
+			L"DumpHierarchyTable: Outputting hierarchy table for folder %u / %ws from profile %ws \n",
+			ulFolder,
+			lpszFolder.c_str(),
+			lpszProfile.c_str());
 	}
 	auto hRes = S_OK;
 
@@ -369,8 +352,7 @@ void DumpHierarchyTable(
 			ePR_ENTRYID,
 			NUM_COLS
 		};
-		static const SizedSPropTagArray(NUM_COLS, rgColProps) =
-		{
+		static const SizedSPropTagArray(NUM_COLS, rgColProps) = {
 			NUM_COLS,
 			PR_DISPLAY_NAME_W,
 			PR_ENTRYID,
@@ -381,53 +363,52 @@ void DumpHierarchyTable(
 		{
 			WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&rgColProps), TBL_ASYNC));
 
-			if (!FAILED(hRes)) for (;;)
-			{
-				hRes = S_OK;
-				if (lpRow) FreeProws(lpRow);
-				lpRow = nullptr;
-				WC_MAPI(lpTable->QueryRows(
-					50,
-					NULL,
-					&lpRow));
-				if (FAILED(hRes) || !lpRow || !lpRow->cRows) break;
-
-				for (ULONG i = 0; i < lpRow->cRows; i++)
+			if (!FAILED(hRes))
+				for (;;)
 				{
 					hRes = S_OK;
-					if (ulDepth >= 1)
+					if (lpRow) FreeProws(lpRow);
+					lpRow = nullptr;
+					WC_MAPI(lpTable->QueryRows(50, NULL, &lpRow));
+					if (FAILED(hRes) || !lpRow || !lpRow->cRows) break;
+
+					for (ULONG i = 0; i < lpRow->cRows; i++)
 					{
-						for (ULONG iTab = 0; iTab < ulDepth; iTab++)
+						hRes = S_OK;
+						if (ulDepth >= 1)
 						{
-							printf("  ");
+							for (ULONG iTab = 0; iTab < ulDepth; iTab++)
+							{
+								printf("  ");
+							}
 						}
-					}
-					if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
-					{
-						printf("%ws\n", lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW);
-					}
-
-					if (PR_ENTRYID == lpRow->aRow[i].lpProps[ePR_ENTRYID].ulPropTag)
-					{
-						ULONG ulObjType = NULL;
-						LPMAPIFOLDER lpSubfolder = nullptr;
-
-						WC_MAPI(lpFolder->OpenEntry(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
-							reinterpret_cast<LPENTRYID>(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
-							nullptr,
-							MAPI_BEST_ACCESS,
-							&ulObjType,
-							reinterpret_cast<LPUNKNOWN *>(&lpSubfolder)));
-
-						if (SUCCEEDED(hRes) && lpSubfolder)
+						if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
 						{
-							DumpHierarchyTable(lpszProfile, lpSubfolder, 0, L"", ulDepth + 1);
+							printf("%ws\n", lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW);
 						}
 
-						if (lpSubfolder) lpSubfolder->Release();
+						if (PR_ENTRYID == lpRow->aRow[i].lpProps[ePR_ENTRYID].ulPropTag)
+						{
+							ULONG ulObjType = NULL;
+							LPMAPIFOLDER lpSubfolder = nullptr;
+
+							WC_MAPI(lpFolder->OpenEntry(
+								lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
+								reinterpret_cast<LPENTRYID>(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
+								nullptr,
+								MAPI_BEST_ACCESS,
+								&ulObjType,
+								reinterpret_cast<LPUNKNOWN*>(&lpSubfolder)));
+
+							if (SUCCEEDED(hRes) && lpSubfolder)
+							{
+								DumpHierarchyTable(lpszProfile, lpSubfolder, 0, L"", ulDepth + 1);
+							}
+
+							if (lpSubfolder) lpSubfolder->Release();
+						}
 					}
 				}
-			}
 
 			if (lpRow) FreeProws(lpRow);
 		}
@@ -436,13 +417,12 @@ void DumpHierarchyTable(
 	}
 }
 
-ULONGLONG ComputeSingleFolderSize(
-	_In_ LPMAPIFOLDER lpFolder)
+ULONGLONG ComputeSingleFolderSize(_In_ LPMAPIFOLDER lpFolder)
 {
 	auto hRes = S_OK;
 	LPMAPITABLE lpTable = nullptr;
 	LPSRowSet lpsRowSet = nullptr;
-	SizedSPropTagArray(1, sProps) = { 1, { PR_MESSAGE_SIZE } };
+	SizedSPropTagArray(1, sProps) = {1, {PR_MESSAGE_SIZE}};
 	ULONGLONG ullThisFolderSize = 0;
 
 	// Look at each item in this folder
@@ -498,7 +478,12 @@ ULONGLONG ComputeFolderSize(
 	_In_ ULONG ulFolder,
 	_In_ const std::wstring& lpszFolder)
 {
-	output::DebugPrint(DBGGeneric, L"ComputeFolderSize: Calculating size (including subfolders) for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
+	output::DebugPrint(
+		DBGGeneric,
+		L"ComputeFolderSize: Calculating size (including subfolders) for folder %u / %ws from profile %ws \n",
+		ulFolder,
+		lpszFolder.c_str(),
+		lpszProfile.c_str());
 	auto hRes = S_OK;
 
 	if (lpFolder)
@@ -514,8 +499,7 @@ ULONGLONG ComputeFolderSize(
 			ePR_FOLDER_TYPE,
 			NUM_COLS
 		};
-		static const SizedSPropTagArray(NUM_COLS, rgColProps) =
-		{
+		static const SizedSPropTagArray(NUM_COLS, rgColProps) = {
 			NUM_COLS,
 			PR_DISPLAY_NAME_W,
 			PR_ENTRYID,
@@ -531,53 +515,53 @@ ULONGLONG ComputeFolderSize(
 		{
 			WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&rgColProps), TBL_ASYNC));
 
-			if (!FAILED(hRes)) for (;;)
-			{
-				hRes = S_OK;
-				if (lpRow) FreeProws(lpRow);
-				lpRow = nullptr;
-				WC_MAPI(lpTable->QueryRows(
-					50,
-					NULL,
-					&lpRow));
-				if (FAILED(hRes) || !lpRow || !lpRow->cRows) break;
-
-				for (ULONG i = 0; i < lpRow->cRows; i++)
+			if (!FAILED(hRes))
+				for (;;)
 				{
 					hRes = S_OK;
-					// Don't look at search folders
-					if (PR_FOLDER_TYPE == lpRow->aRow[i].lpProps[ePR_FOLDER_TYPE].ulPropTag && FOLDER_SEARCH == lpRow->aRow[i].lpProps[ePR_FOLDER_TYPE].Value.ul)
+					if (lpRow) FreeProws(lpRow);
+					lpRow = nullptr;
+					WC_MAPI(lpTable->QueryRows(50, NULL, &lpRow));
+					if (FAILED(hRes) || !lpRow || !lpRow->cRows) break;
+
+					for (ULONG i = 0; i < lpRow->cRows; i++)
 					{
-						continue;
-					}
-
-					if (PR_ENTRYID == lpRow->aRow[i].lpProps[ePR_ENTRYID].ulPropTag)
-					{
-						ULONG ulObjType = NULL;
-						LPMAPIFOLDER lpSubfolder = nullptr;
-
-						WC_MAPI(lpFolder->OpenEntry(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
-							reinterpret_cast<LPENTRYID>(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
-							nullptr,
-							MAPI_BEST_ACCESS,
-							&ulObjType,
-							reinterpret_cast<LPUNKNOWN *>(&lpSubfolder)));
-
-						if (SUCCEEDED(hRes) && lpSubfolder)
+						hRes = S_OK;
+						// Don't look at search folders
+						if (PR_FOLDER_TYPE == lpRow->aRow[i].lpProps[ePR_FOLDER_TYPE].ulPropTag &&
+							FOLDER_SEARCH == lpRow->aRow[i].lpProps[ePR_FOLDER_TYPE].Value.ul)
 						{
-							std::wstring szDisplayName;
-							if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
-							{
-								szDisplayName = lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW;
-							}
-
-							ullSize += ComputeFolderSize(lpszProfile, lpSubfolder, 0, szDisplayName);
+							continue;
 						}
 
-						if (lpSubfolder) lpSubfolder->Release();
+						if (PR_ENTRYID == lpRow->aRow[i].lpProps[ePR_ENTRYID].ulPropTag)
+						{
+							ULONG ulObjType = NULL;
+							LPMAPIFOLDER lpSubfolder = nullptr;
+
+							WC_MAPI(lpFolder->OpenEntry(
+								lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
+								reinterpret_cast<LPENTRYID>(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
+								nullptr,
+								MAPI_BEST_ACCESS,
+								&ulObjType,
+								reinterpret_cast<LPUNKNOWN*>(&lpSubfolder)));
+
+							if (SUCCEEDED(hRes) && lpSubfolder)
+							{
+								std::wstring szDisplayName;
+								if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
+								{
+									szDisplayName = lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW;
+								}
+
+								ullSize += ComputeFolderSize(lpszProfile, lpSubfolder, 0, szDisplayName);
+							}
+
+							if (lpSubfolder) lpSubfolder->Release();
+						}
 					}
 				}
-			}
 
 			if (lpRow) FreeProws(lpRow);
 		}
@@ -596,7 +580,12 @@ void DumpSearchState(
 	_In_ ULONG ulFolder,
 	_In_ const std::wstring& lpszFolder)
 {
-	output::DebugPrint(DBGGeneric, L"DumpSearchState: Outputting search state for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
+	output::DebugPrint(
+		DBGGeneric,
+		L"DumpSearchState: Outputting search state for folder %u / %ws from profile %ws \n",
+		ulFolder,
+		lpszFolder.c_str(),
+		lpszProfile.c_str());
 
 	auto hRes = S_OK;
 
@@ -606,11 +595,7 @@ void DumpSearchState(
 		LPENTRYLIST lpEntryList = nullptr;
 		ULONG ulSearchState = 0;
 
-		WC_H(lpFolder->GetSearchCriteria(
-			fMapiUnicode,
-			&lpRes,
-			&lpEntryList,
-			&ulSearchState));
+		WC_H(lpFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
 		if (MAPI_E_NOT_INITIALIZED == hRes)
 		{
 			printf("No search criteria has been set on this folder.\n");
@@ -640,17 +625,15 @@ void DoFolderProps(_In_ MYOPTIONS ProgOpts)
 {
 	if (ProgOpts.lpFolder)
 	{
-		PrintObjectProperties(L"folderprops", ProgOpts.lpFolder, interpretprop::PropNameToPropTag(ProgOpts.lpszUnswitchedOption));
+		PrintObjectProperties(
+			L"folderprops", ProgOpts.lpFolder, interpretprop::PropNameToPropTag(ProgOpts.lpszUnswitchedOption));
 	}
 }
 
 void DoFolderSize(_In_ MYOPTIONS ProgOpts)
 {
-	const LONGLONG ullSize = ComputeFolderSize(
-		ProgOpts.lpszProfile,
-		ProgOpts.lpFolder,
-		ProgOpts.ulFolder,
-		ProgOpts.lpszFolderPath);
+	const LONGLONG ullSize =
+		ComputeFolderSize(ProgOpts.lpszProfile, ProgOpts.lpFolder, ProgOpts.ulFolder, ProgOpts.lpszFolderPath);
 	printf("Folder size (including subfolders)\n");
 	printf("Bytes: %I64d\n", ullSize);
 	printf("KB: %I64d\n", ullSize / 1024);

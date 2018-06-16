@@ -24,8 +24,10 @@ void PrintErrFromName(_In_ const std::wstring& lpszError)
 
 void PrintErrFromPartialName(_In_ const std::wstring& lpszError)
 {
-	if (!lpszError.empty()) printf("Searching for \"%ws\"\n", lpszError.c_str());
-	else printf("Searching for all errors\n");
+	if (!lpszError.empty())
+		printf("Searching for \"%ws\"\n", lpszError.c_str());
+	else
+		printf("Searching for all errors\n");
 
 	ULONG ulNumMatches = 0;
 
