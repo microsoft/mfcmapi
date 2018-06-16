@@ -6,7 +6,8 @@ namespace dialog
 {
 	namespace editor
 	{
-		_Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
+		_Check_return_ HRESULT DisplayPropertyEditor(
+			_In_ CWnd* pParentWnd,
 			UINT uidTitle,
 			UINT uidPrompt,
 			bool bIsAB,

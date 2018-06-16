@@ -11,9 +11,7 @@ namespace dialog
 		class CHexEditor : public CEditor
 		{
 		public:
-			CHexEditor(
-				_In_ ui::CParentWnd* pParentWnd,
-				_In_ cache::CMapiObjects* lpMapiObjects);
+			CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects);
 			virtual ~CHexEditor();
 
 		private:

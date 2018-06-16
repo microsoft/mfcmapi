@@ -21,8 +21,15 @@ namespace dialog
 			HEXED_SMARTVIEW
 		};
 
-		CHexEditor::CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects) :
-			CEditor(pParentWnd, IDS_HEXEDITOR, NULL, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 | CEDITOR_BUTTON_ACTION3, IDS_IMPORT, IDS_EXPORT, IDS_CLOSE)
+		CHexEditor::CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects)
+			: CEditor(
+				  pParentWnd,
+				  IDS_HEXEDITOR,
+				  NULL,
+				  CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 | CEDITOR_BUTTON_ACTION3,
+				  IDS_IMPORT,
+				  IDS_EXPORT,
+				  IDS_CLOSE)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 			m_lpMapiObjects = lpMapiObjects;
@@ -49,10 +56,7 @@ namespace dialog
 			delete this;
 		}
 
-		void CHexEditor::OnCancel()
-		{
-			OnOK();
-		}
+		void CHexEditor::OnCancel() { OnOK(); }
 
 		_Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		{
@@ -178,7 +182,7 @@ namespace dialog
 			if (lpPane)
 			{
 				auto bin = GetBinary(HEXED_HEX);
-				SBinary Bin = { 0 };
+				SBinary Bin = {0};
 				Bin.lpb = bin.data();
 				Bin.cb = ULONG(bin.size());
 				lpPane->Parse(Bin);
@@ -203,12 +207,7 @@ namespace dialog
 					LPSTREAM lpStream = nullptr;
 
 					// Get a Stream interface on the input file
-					EC_H(mapi::MyOpenStreamOnFile(
-						MAPIAllocateBuffer,
-						MAPIFreeBuffer,
-						STGM_READ,
-						file,
-						&lpStream));
+					EC_H(mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, file, &lpStream));
 
 					if (lpStream)
 					{
@@ -243,11 +242,7 @@ namespace dialog
 
 					// Get a Stream interface on the output file
 					EC_H(mapi::MyOpenStreamOnFile(
-						MAPIAllocateBuffer,
-						MAPIFreeBuffer,
-						STGM_CREATE | STGM_READWRITE,
-						file,
-						&lpStream));
+						MAPIAllocateBuffer, MAPIFreeBuffer, STGM_CREATE | STGM_READWRITE, file, &lpStream));
 
 					if (lpStream)
 					{
@@ -264,9 +259,6 @@ namespace dialog
 		}
 
 		// Close
-		void CHexEditor::OnEditAction3()
-		{
-			OnOK();
-		}
+		void CHexEditor::OnEditAction3() { OnOK(); }
 	}
 }

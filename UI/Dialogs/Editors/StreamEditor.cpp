@@ -67,8 +67,8 @@ namespace dialog
 			bool bUseWrapEx,
 			ULONG ulRTFFlags,
 			ULONG ulInCodePage,
-			ULONG ulOutCodePage) :
-			CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+			ULONG ulOutCodePage)
+			: CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 
@@ -125,7 +125,8 @@ namespace dialog
 				m_iSmartViewBox = m_iBinBox + 1;
 			}
 
-			if (bEditPropAsRTF) m_ulEditorType = EDITOR_RTF;
+			if (bEditPropAsRTF)
+				m_ulEditorType = EDITOR_RTF;
 			else
 			{
 				switch (PROP_TYPE(m_ulPropTag))
@@ -143,7 +144,8 @@ namespace dialog
 				}
 			}
 
-			const auto szPromptPostFix = strings::format(L"\r\n%ws", interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+			const auto szPromptPostFix = strings::format(
+				L"\r\n%ws", interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 			SetPromptPostFix(szPromptPostFix);
 
 			// Let's crack our property open and see what kind of controls we'll need for it
@@ -181,20 +183,15 @@ namespace dialog
 				auto lpSmartView = dynamic_cast<viewpane::SmartViewPane*>(GetPane(m_iSmartViewBox));
 				if (lpSmartView)
 				{
-					SPropValue sProp = { 0 };
+					SPropValue sProp = {0};
 					sProp.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY);
 					auto bin = GetBinary(m_iBinBox);
 					sProp.Value.bin.lpb = bin.data();
 					sProp.Value.bin.cb = ULONG(bin.size());
 
 					// TODO: pass in named prop stuff to make this work
-					const auto smartView = smartview::InterpretPropSmartView2(
-						&sProp,
-						m_lpMAPIProp,
-						nullptr,
-						nullptr,
-						m_bIsAB,
-						false);
+					const auto smartView =
+						smartview::InterpretPropSmartView2(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, false);
 
 					lpSmartView->SetParser(smartView.first);
 					lpSmartView->SetStringW(smartView.second);
@@ -222,7 +219,15 @@ namespace dialog
 			LPSTREAM lpTmpStream = nullptr;
 			auto ulRTFFlags = m_ulRTFFlags;
 
-			output::DebugPrintEx(DBGStream, CLASS, L"OpenPropertyStream", L"opening property 0x%X (= %ws) from %p, bWrite = 0x%X\n", m_ulPropTag, interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(), m_lpMAPIProp, bWrite);
+			output::DebugPrintEx(
+				DBGStream,
+				CLASS,
+				L"OpenPropertyStream",
+				L"opening property 0x%X (= %ws) from %p, bWrite = 0x%X\n",
+				m_ulPropTag,
+				interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(),
+				m_lpMAPIProp,
+				bWrite);
 
 			if (bWrite)
 			{
@@ -237,16 +242,12 @@ namespace dialog
 						&IID_IStreamDocfile,
 						ulStgFlags,
 						ulFlags,
-						reinterpret_cast<LPUNKNOWN *>(&lpTmpStream)));
+						reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 				}
 				else
 				{
 					EC_MAPI(m_lpMAPIProp->OpenProperty(
-						m_ulPropTag,
-						&IID_IStream,
-						ulStgFlags,
-						ulFlags,
-						reinterpret_cast<LPUNKNOWN *>(&lpTmpStream)));
+						m_ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 				}
 			}
 			else
@@ -254,11 +255,7 @@ namespace dialog
 				const auto ulStgFlags = STGM_READ;
 				const auto ulFlags = NULL;
 				WC_MAPI(m_lpMAPIProp->OpenProperty(
-					m_ulPropTag,
-					&IID_IStream,
-					ulStgFlags,
-					ulFlags,
-					reinterpret_cast<LPUNKNOWN *>(&lpTmpStream)));
+					m_ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 
 				// If we're guessing types, try again as a different type
 				if (MAPI_E_NOT_FOUND == hRes && m_bAllowTypeGuessing)
@@ -278,13 +275,15 @@ namespace dialog
 					if (ulPropTag != m_ulPropTag)
 					{
 						hRes = S_OK;
-						output::DebugPrintEx(DBGStream, CLASS, L"OpenPropertyStream", L"Retrying as 0x%X (= %ws)\n", m_ulPropTag, interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str());
+						output::DebugPrintEx(
+							DBGStream,
+							CLASS,
+							L"OpenPropertyStream",
+							L"Retrying as 0x%X (= %ws)\n",
+							m_ulPropTag,
+							interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str());
 						WC_MAPI(m_lpMAPIProp->OpenProperty(
-							ulPropTag,
-							&IID_IStream,
-							ulStgFlags,
-							ulFlags,
-							reinterpret_cast<LPUNKNOWN *>(&lpTmpStream)));
+							ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 						if (SUCCEEDED(hRes))
 						{
 							m_ulPropTag = ulPropTag;
@@ -301,7 +300,7 @@ namespace dialog
 						&IID_IStreamDocfile,
 						ulStgFlags,
 						ulFlags,
-						reinterpret_cast<LPUNKNOWN *>(&lpTmpStream)));
+						reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 					if (SUCCEEDED(hRes))
 					{
 						m_bDocFile = true;
@@ -337,15 +336,20 @@ namespace dialog
 		{
 			if (!m_lpMAPIProp) return;
 
-			output::DebugPrintEx(DBGStream, CLASS, L"ReadTextStreamFromProperty", L"opening property 0x%X (= %ws) from %p\n", m_ulPropTag, interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(), m_lpMAPIProp);
+			output::DebugPrintEx(
+				DBGStream,
+				CLASS,
+				L"ReadTextStreamFromProperty",
+				L"opening property 0x%X (= %ws) from %p\n",
+				m_ulPropTag,
+				interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(),
+				m_lpMAPIProp);
 
 			// If we don't have a stream to display, put up an error instead
 			if (FAILED(m_StreamError) || !m_lpStream)
 			{
 				const auto szStreamErr = strings::formatmessage(
-					IDS_CANNOTOPENSTREAM,
-					error::ErrorNameFromErrorCode(m_StreamError).c_str(),
-					m_StreamError);
+					IDS_CANNOTOPENSTREAM, error::ErrorNameFromErrorCode(m_StreamError).c_str(), m_StreamError);
 				SetStringW(m_iTextBox, szStreamErr);
 				SetEditReadOnly(m_iTextBox);
 				SetEditReadOnly(m_iBinBox);
@@ -403,7 +407,6 @@ namespace dialog
 				{
 					EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 				}
-
 			}
 
 			output::DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"Wrote out this stream:\n");
@@ -468,7 +471,7 @@ namespace dialog
 				{
 					auto bin = GetBinary(m_iBinBox);
 
-					SBinary Bin = { 0 };
+					SBinary Bin = {0};
 					Bin.cb = ULONG(bin.size());
 					Bin.lpb = bin.data();
 
@@ -496,9 +499,6 @@ namespace dialog
 			}
 		}
 
-		void CStreamEditor::DisableSave()
-		{
-			m_bDisableSave = true;
-		}
+		void CStreamEditor::DisableSave() { m_bDisableSave = true; }
 	}
 }

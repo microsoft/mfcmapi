@@ -12,7 +12,8 @@ namespace dialog
 {
 	namespace editor
 	{
-		_Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
+		_Check_return_ HRESULT DisplayPropertyEditor(
+			_In_ CWnd* pParentWnd,
 			UINT uidTitle,
 			UINT uidPrompt,
 			bool bIsAB,
@@ -29,19 +30,17 @@ namespace dialog
 			// We got a MAPI prop object and no input value, go look one up
 			if (lpMAPIProp && !lpsPropValue)
 			{
-				SPropTagArray sTag = { 0 };
+				SPropTagArray sTag = {0};
 				sTag.cValues = 1;
-				sTag.aulPropTag[0] = PT_ERROR == PROP_TYPE(ulPropTag) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
+				sTag.aulPropTag[0] =
+					PT_ERROR == PROP_TYPE(ulPropTag) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
 				ULONG ulValues = NULL;
 
 				WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
 
 				// Suppress MAPI_E_NOT_FOUND error when the source type is non error
-				if (sourceProp &&
-					PT_ERROR == PROP_TYPE(sourceProp->ulPropTag) &&
-					MAPI_E_NOT_FOUND == sourceProp->Value.err &&
-					PT_ERROR != PROP_TYPE(ulPropTag)
-					)
+				if (sourceProp && PT_ERROR == PROP_TYPE(sourceProp->ulPropTag) &&
+					MAPI_E_NOT_FOUND == sourceProp->Value.err && PT_ERROR != PROP_TYPE(ulPropTag))
 				{
 					MAPIFreeBuffer(sourceProp);
 					sourceProp = nullptr;
@@ -72,14 +71,7 @@ namespace dialog
 			if (PROP_TYPE(ulPropTag) & MV_FLAG)
 			{
 				CMultiValuePropertyEditor MyPropertyEditor(
-					pParentWnd,
-					uidTitle,
-					uidPrompt,
-					bIsAB,
-					lpAllocParent,
-					lpMAPIProp,
-					ulPropTag,
-					lpsPropValue);
+					pParentWnd, uidTitle, uidPrompt, bIsAB, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
 				WC_H(MyPropertyEditor.DisplayDialog());
 
 				if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
@@ -88,15 +80,7 @@ namespace dialog
 			else
 			{
 				CPropertyEditor MyPropertyEditor(
-					pParentWnd,
-					uidTitle,
-					uidPrompt,
-					bIsAB,
-					bMVRow,
-					lpAllocParent,
-					lpMAPIProp,
-					ulPropTag,
-					lpsPropValue);
+					pParentWnd, uidTitle, uidPrompt, bIsAB, bMVRow, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
 				WC_H(MyPropertyEditor.DisplayDialog());
 
 				if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
@@ -119,8 +103,8 @@ namespace dialog
 			_In_opt_ LPVOID lpAllocParent,
 			_In_opt_ LPMAPIPROP lpMAPIProp,
 			ULONG ulPropTag,
-			_In_opt_ const _SPropValue* lpsPropValue) :
-			CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+			_In_opt_ const _SPropValue* lpsPropValue)
+			: CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 		{
 			TRACE_CONSTRUCTOR(SVCLASS);
 
@@ -140,7 +124,11 @@ namespace dialog
 			// So by definition, we're already dirty
 			if (!m_lpsInputValue) m_bDirty = true;
 
-			const auto szPromptPostFix = strings::format(L"%ws%ws", uidPrompt ? L"\r\n" : L"", interpretprop::TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+			const auto szPromptPostFix = strings::format(
+				L"%ws%ws",
+				uidPrompt ? L"\r\n" : L"",
+				interpretprop::TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false)
+					.c_str()); // STRING_OK
 			SetPromptPostFix(szPromptPostFix);
 
 			InitPropertyControls();
@@ -152,10 +140,7 @@ namespace dialog
 			if (m_lpMAPIProp) m_lpMAPIProp->Release();
 		}
 
-		BOOL CPropertyEditor::OnInitDialog()
-		{
-			return CEditor::OnInitDialog();
-		}
+		BOOL CPropertyEditor::OnInitDialog() { return CEditor::OnInitDialog(); }
 
 		void CPropertyEditor::OnOK()
 		{
@@ -211,7 +196,10 @@ namespace dialog
 
 				break;
 			case PT_BOOLEAN:
-				InitPane(0, viewpane::CheckPane::Create(IDS_BOOLEAN, m_lpsInputValue ? 0 != m_lpsInputValue->Value.b : false, false));
+				InitPane(
+					0,
+					viewpane::CheckPane::Create(
+						IDS_BOOLEAN, m_lpsInputValue ? 0 != m_lpsInputValue->Value.b : false, false));
 				break;
 			case PT_DOUBLE:
 				InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_DOUBLE, false));
@@ -376,7 +364,8 @@ namespace dialog
 							lpPane->SetStringW(strings::BinToHexString(&m_lpsInputValue->Value.bin, false));
 						}
 
-						SetStringA(1, std::string(LPCSTR(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb));
+						SetStringA(
+							1, std::string(LPCSTR(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb));
 					}
 
 					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(1));
@@ -475,7 +464,8 @@ namespace dialog
 			case PT_SRESTRICTION:
 			case PT_ACTIONS:
 				return;
-			default: break;
+			default:
+				break;
 			}
 
 			// If nothing has changed, we're done.
@@ -486,15 +476,11 @@ namespace dialog
 				if (m_lpAllocParent)
 				{
 					EC_H(MAPIAllocateMore(
-						sizeof(SPropValue),
-						m_lpAllocParent,
-						reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
+						sizeof(SPropValue), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
 				}
 				else
 				{
-					EC_H(MAPIAllocateBuffer(
-						sizeof(SPropValue),
-						reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
+					EC_H(MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
 					m_lpAllocParent = m_lpsOutputValue;
 				}
 			}
@@ -541,13 +527,15 @@ namespace dialog
 					// We read strings out of the hex control in order to preserve any hex level tweaks the user
 					// may have done. The RichEdit control likes throwing them away.
 					bin = strings::HexStringToBin(GetStringW(1));
-					m_lpsOutputValue->Value.lpszA = reinterpret_cast<LPSTR>(mapi::ByteVectorToMAPI(bin, m_lpAllocParent));
+					m_lpsOutputValue->Value.lpszA =
+						reinterpret_cast<LPSTR>(mapi::ByteVectorToMAPI(bin, m_lpAllocParent));
 					break;
 				case PT_UNICODE:
 					// We read strings out of the hex control in order to preserve any hex level tweaks the user
 					// may have done. The RichEdit control likes throwing them away.
 					bin = strings::HexStringToBin(GetStringW(1));
-					m_lpsOutputValue->Value.lpszW = reinterpret_cast<LPWSTR>(mapi::ByteVectorToMAPI(bin, m_lpAllocParent));
+					m_lpsOutputValue->Value.lpszW =
+						reinterpret_cast<LPWSTR>(mapi::ByteVectorToMAPI(bin, m_lpAllocParent));
 					break;
 				case PT_SYSTIME:
 					m_lpsOutputValue->Value.ft.dwLowDateTime = strings::wstringToUlong(GetStringW(0), 16);
@@ -555,9 +543,7 @@ namespace dialog
 					break;
 				case PT_CLSID:
 					EC_H(MAPIAllocateMore(
-						sizeof(GUID),
-						m_lpAllocParent,
-						reinterpret_cast<LPVOID*>(&m_lpsOutputValue->Value.lpguid)));
+						sizeof(GUID), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpsOutputValue->Value.lpguid)));
 					if (m_lpsOutputValue->Value.lpguid)
 					{
 						*m_lpsOutputValue->Value.lpguid = guid::StringToGUID(GetStringW(0));
@@ -603,10 +589,7 @@ namespace dialog
 
 			LPSPropProblemArray lpProblemArray = nullptr;
 
-			EC_MAPI(m_lpMAPIProp->SetProps(
-				1,
-				m_lpsOutputValue,
-				&lpProblemArray));
+			EC_MAPI(m_lpMAPIProp->SetProps(1, m_lpsOutputValue, &lpProblemArray));
 
 			EC_PROBLEMARRAY(lpProblemArray);
 			MAPIFreeBuffer(lpProblemArray);
@@ -632,14 +615,14 @@ namespace dialog
 			std::wstring szTemp1;
 			std::wstring szTemp2;
 			std::wstring szSmartView;
-			SPropValue sProp = { 0 };
+			SPropValue sProp = {0};
 
 			short int iVal = 0;
 			LONG lVal = 0;
-			CURRENCY curVal = { 0 };
-			LARGE_INTEGER liVal = { 0 };
-			FILETIME ftVal = { 0 };
-			SBinary Bin = { 0 };
+			CURRENCY curVal = {0};
+			LARGE_INTEGER liVal = {0};
+			FILETIME ftVal = {0};
+			SBinary Bin = {0};
 			std::vector<BYTE> bin;
 			std::string lpszA;
 			std::wstring lpszW;
@@ -667,12 +650,8 @@ namespace dialog
 				sProp.ulPropTag = m_ulPropTag;
 				sProp.Value.i = iVal;
 
-				szSmartView = smartview::InterpretPropSmartView(&sProp,
-					m_lpMAPIProp,
-					nullptr,
-					nullptr,
-					m_bIsAB,
-					m_bMVRow);
+				szSmartView =
+					smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow);
 
 				if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView);
 
@@ -693,12 +672,8 @@ namespace dialog
 				sProp.ulPropTag = m_ulPropTag;
 				sProp.Value.l = lVal;
 
-				szSmartView = smartview::InterpretPropSmartView(&sProp,
-					m_lpMAPIProp,
-					nullptr,
-					nullptr,
-					m_bIsAB,
-					m_bMVRow);
+				szSmartView =
+					smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow);
 
 				if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView);
 
@@ -742,12 +717,8 @@ namespace dialog
 				sProp.ulPropTag = m_ulPropTag;
 				sProp.Value.li = liVal;
 
-				szSmartView = smartview::InterpretPropSmartView(&sProp,
-					m_lpMAPIProp,
-					nullptr,
-					nullptr,
-					m_bIsAB,
-					m_bMVRow);
+				szSmartView =
+					smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow);
 
 				if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView);
 

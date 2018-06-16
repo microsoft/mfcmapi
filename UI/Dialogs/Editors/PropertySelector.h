@@ -8,14 +8,12 @@ namespace dialog
 		class CPropertySelector : public CEditor
 		{
 		public:
-			CPropertySelector(
-				bool bIncludeABProps,
-				_In_ LPMAPIPROP lpMAPIProp,
-				_In_ CWnd* pParentWnd);
+			CPropertySelector(bool bIncludeABProps, _In_ LPMAPIPROP lpMAPIProp, _In_ CWnd* pParentWnd);
 			virtual ~CPropertySelector();
 
 			_Check_return_ ULONG GetPropertyTag() const;
-			_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
+			_Check_return_ bool
+			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
 
 		private:
 			BOOL OnInitDialog() override;
