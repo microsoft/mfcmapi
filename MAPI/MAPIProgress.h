@@ -13,7 +13,7 @@ namespace mapi
 
 		private:
 			// IUnknown
-			STDMETHODIMP QueryInterface(REFIID riid, LPVOID * ppvObj) override;
+			STDMETHODIMP QueryInterface(REFIID riid, LPVOID* ppvObj) override;
 			STDMETHODIMP_(ULONG) AddRef() override;
 			STDMETHODIMP_(ULONG) Release() override;
 
