@@ -23,7 +23,8 @@ namespace dialog
 		void OnDeleteSelectedItem() override;
 		void OnInitMenu(_In_ CMenu* pMenu) override;
 		void OnRefreshView() override;
-		_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
+		_Check_return_ HRESULT
+		OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
 
 		// Menu items
 		void OnAddItem();

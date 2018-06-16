@@ -6,10 +6,7 @@ namespace dialog
 	class CAbDlg : public CContentsTableDlg
 	{
 	public:
-		CAbDlg(
-			_In_ ui::CParentWnd* pParentWnd,
-			_In_ cache::CMapiObjects* lpMapiObjects,
-			_In_ LPMAPIPROP lpAbCont);
+		CAbDlg(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects, _In_ LPMAPIPROP lpAbCont);
 		virtual ~CAbDlg();
 
 	private:

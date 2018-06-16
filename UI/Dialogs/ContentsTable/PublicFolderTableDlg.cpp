@@ -15,46 +15,40 @@ namespace dialog
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ const std::wstring& lpszServerName,
-		_In_ LPMAPITABLE lpMAPITable
-	) :
-		CContentsTableDlg(
-			pParentWnd,
-			lpMapiObjects,
-			IDS_PUBLICFOLDERTABLE,
-			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-			nullptr,
-			lpMAPITable,
-			LPSPropTagArray(&columns::sptPFCols),
-			columns::PFColumns,
-			NULL,
-			MENU_CONTEXT_PUBLIC_FOLDER_TABLE)
+		_In_ LPMAPITABLE lpMAPITable)
+		: CContentsTableDlg(
+			  pParentWnd,
+			  lpMapiObjects,
+			  IDS_PUBLICFOLDERTABLE,
+			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  nullptr,
+			  lpMAPITable,
+			  LPSPropTagArray(&columns::sptPFCols),
+			  columns::PFColumns,
+			  NULL,
+			  MENU_CONTEXT_PUBLIC_FOLDER_TABLE)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_lpszServerName = lpszServerName;
 		CPublicFolderTableDlg::CreateDialogAndMenu(NULL);
 	}
 
-	CPublicFolderTableDlg::~CPublicFolderTableDlg()
-	{
-		TRACE_DESTRUCTOR(CLASS);
-	}
+	CPublicFolderTableDlg::~CPublicFolderTableDlg() { TRACE_DESTRUCTOR(CLASS); }
 
 	void CPublicFolderTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	{
 		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
-		ui::UpdateMenuString(
-			m_hWnd,
-			ID_CREATEPROPERTYSTRINGRESTRICTION,
-			IDS_PFRESMENU);
+		ui::UpdateMenuString(m_hWnd, ID_CREATEPROPERTYSTRINGRESTRICTION, IDS_PFRESMENU);
 	}
 
-	void CPublicFolderTableDlg::OnDisplayItem()
-	{
-	}
+	void CPublicFolderTableDlg::OnDisplayItem() {}
 
-	_Check_return_ HRESULT CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ HRESULT CPublicFolderTableDlg::OpenItemProp(
+		int /*iSelectedItem*/,
+		__mfcmapiModifyEnum /*bModify*/,
+		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 	{
 		if (lppMAPIProp) *lppMAPIProp = nullptr;
 		return S_OK;
@@ -77,10 +71,7 @@ namespace dialog
 		if (S_OK == hRes)
 		{
 			editor::CEditor MyData(
-				this,
-				IDS_SEARCHCRITERIA,
-				IDS_PFSEARCHCRITERIAPROMPT,
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+				this, IDS_SEARCHCRITERIA, IDS_PFSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
 
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));

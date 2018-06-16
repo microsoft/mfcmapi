@@ -22,19 +22,18 @@ namespace dialog
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPITABLE lpMAPITable,
-		_In_ LPMAPIPROP lpMessage
-	) :
-		CContentsTableDlg(
-			pParentWnd,
-			lpMapiObjects,
-			IDS_ATTACHMENTS,
-			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-			nullptr,
-			lpMAPITable,
-			LPSPropTagArray(&columns::sptATTACHCols),
-			columns::ATTACHColumns,
-			IDR_MENU_ATTACHMENTS_POPUP,
-			MENU_CONTEXT_ATTACHMENT_TABLE)
+		_In_ LPMAPIPROP lpMessage)
+		: CContentsTableDlg(
+			  pParentWnd,
+			  lpMapiObjects,
+			  IDS_ATTACHMENTS,
+			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  nullptr,
+			  lpMAPITable,
+			  LPSPropTagArray(&columns::sptATTACHCols),
+			  columns::ATTACHColumns,
+			  IDR_MENU_ATTACHMENTS_POPUP,
+			  MENU_CONTEXT_ATTACHMENT_TABLE)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_lpMessage = mapi::safe_cast<LPMESSAGE>(lpMessage);
@@ -60,12 +59,12 @@ namespace dialog
 	}
 
 	BEGIN_MESSAGE_MAP(CAttachmentsDlg, CContentsTableDlg)
-		ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
-		ON_COMMAND(ID_MODIFYSELECTEDITEM, OnModifySelectedItem)
-		ON_COMMAND(ID_SAVECHANGES, OnSaveChanges)
-		ON_COMMAND(ID_SAVETOFILE, OnSaveToFile)
-		ON_COMMAND(ID_VIEWEMBEDDEDMESSAGEPROPERTIES, OnViewEmbeddedMessageProps)
-		ON_COMMAND(ID_ADDATTACHMENT, OnAddAttachment)
+	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
+	ON_COMMAND(ID_MODIFYSELECTEDITEM, OnModifySelectedItem)
+	ON_COMMAND(ID_SAVECHANGES, OnSaveChanges)
+	ON_COMMAND(ID_SAVETOFILE, OnSaveToFile)
+	ON_COMMAND(ID_VIEWEMBEDDEDMESSAGEPROPERTIES, OnViewEmbeddedMessageProps)
+	ON_COMMAND(ID_ADDATTACHMENT, OnAddAttachment)
 	END_MESSAGE_MAP()
 
 	void CAttachmentsDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -116,19 +115,11 @@ namespace dialog
 		auto hRes = S_OK;
 		LPATTACH lpAttach = nullptr;
 
-		WC_MAPI(m_lpMessage->OpenAttach(
-			ulAttachNum,
-			NULL,
-			MAPI_MODIFY,
-			&lpAttach));
+		WC_MAPI(m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_MODIFY, &lpAttach));
 		if (MAPI_E_NO_ACCESS == hRes)
 		{
 			hRes = S_OK;
-			WC_MAPI(m_lpMessage->OpenAttach(
-				ulAttachNum,
-				NULL,
-				MAPI_BEST_ACCESS,
-				&lpAttach));
+			WC_MAPI(m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_BEST_ACCESS, &lpAttach));
 		}
 
 		return lpAttach;
@@ -145,7 +136,7 @@ namespace dialog
 			const_cast<LPIID>(&IID_IMessage),
 			0,
 			MAPI_MODIFY,
-			reinterpret_cast<LPUNKNOWN *>(&lpMessage)));
+			reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
 		if (hRes == MAPI_E_NO_ACCESS)
 		{
 			hRes = S_OK;
@@ -154,11 +145,10 @@ namespace dialog
 				const_cast<LPIID>(&IID_IMessage),
 				0,
 				MAPI_BEST_ACCESS,
-				reinterpret_cast<LPUNKNOWN *>(&lpMessage)));
+				reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
 		}
 
-		if (hRes == MAPI_E_INTERFACE_NOT_SUPPORTED ||
-			hRes == MAPI_E_NOT_FOUND)
+		if (hRes == MAPI_E_INTERFACE_NOT_SUPPORTED || hRes == MAPI_E_NOT_FOUND)
 		{
 			WARNHRESMSG(hRes, IDS_ATTNOTEMBEDDEDMSG);
 		}
@@ -270,11 +260,7 @@ namespace dialog
 				LPSPropProblemArray lpProblems = nullptr;
 
 				// Open the attachment source
-				EC_MAPI(lpSourceMessage->OpenAttach(
-					ulAtt,
-					NULL,
-					MAPI_DEFERRED_ERRORS,
-					&lpAttSrc));
+				EC_MAPI(lpSourceMessage->OpenAttach(ulAtt, NULL, MAPI_DEFERRED_ERRORS, &lpAttSrc));
 
 				if (lpAttSrc)
 				{
@@ -283,7 +269,8 @@ namespace dialog
 					EC_MAPI(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
 					if (lpAttDst)
 					{
-						LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IAttach::CopyTo", m_hWnd); // STRING_OK
+						LPMAPIPROGRESS lpProgress =
+							mapi::mapiui::GetMAPIProgress(L"IAttach::CopyTo", m_hWnd); // STRING_OK
 
 						// Copy from source to destination
 						EC_MAPI(lpAttSrc->CopyTo(
@@ -344,7 +331,8 @@ namespace dialog
 
 		for (const auto& attachnum : attachnums)
 		{
-			output::DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting attachment 0x%08X\n", attachnum);
+			output::DebugPrintEx(
+				DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting attachment 0x%08X\n", attachnum);
 			LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", m_hWnd); // STRING_OK
 			EC_MAPI(m_lpMessage->DeleteAttach(
 				attachnum,
@@ -352,8 +340,7 @@ namespace dialog
 				lpProgress,
 				lpProgress ? ATTACH_DIALOG : 0));
 
-			if (lpProgress)
-				lpProgress->Release();
+			if (lpProgress) lpProgress->Release();
 		}
 
 		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
@@ -402,11 +389,8 @@ namespace dialog
 			{
 				const auto ulAttachNum = lpListData->Contents()->m_ulAttachNum;
 
-				EC_MAPI(m_lpMessage->OpenAttach(
-					ulAttachNum,
-					NULL,
-					MAPI_BEST_ACCESS,
-					static_cast<LPATTACH*>(&lpAttach)));
+				EC_MAPI(
+					m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_BEST_ACCESS, static_cast<LPATTACH*>(&lpAttach)));
 
 				if (lpAttach)
 				{
@@ -429,10 +413,7 @@ namespace dialog
 	{
 		HRESULT hRes = 0;
 		auto szAttachName = file::CFileDialogExW::OpenFile(
-			strings::emptystring,
-			strings::emptystring,
-			NULL,
-			strings::loadstring(IDS_ALLFILES));
+			strings::emptystring, strings::emptystring, NULL, strings::loadstring(IDS_ALLFILES));
 		if (!szAttachName.empty())
 		{
 			LPATTACH lpAttachment = nullptr;
@@ -458,22 +439,18 @@ namespace dialog
 					LPSTREAM pStreamFile = nullptr;
 
 					EC_MAPI(mapi::MyOpenStreamOnFile(
-						MAPIAllocateBuffer,
-						MAPIFreeBuffer,
-						STGM_READ,
-						szAttachName,
-						&pStreamFile));
+						MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, szAttachName, &pStreamFile));
 					if (SUCCEEDED(hRes) && pStreamFile)
 					{
 						LPSTREAM pStreamAtt = nullptr;
-						STATSTG StatInfo = { nullptr };
+						STATSTG StatInfo = {nullptr};
 
 						EC_MAPI(lpAttachment->OpenProperty(
 							PR_ATTACH_DATA_BIN,
 							&IID_IStream,
 							0,
 							MAPI_MODIFY | MAPI_CREATE,
-							reinterpret_cast<LPUNKNOWN *>(&pStreamAtt)));
+							reinterpret_cast<LPUNKNOWN*>(&pStreamAtt)));
 						if (SUCCEEDED(hRes) && pStreamAtt)
 						{
 							EC_MAPI(pStreamFile->Stat(&StatInfo, STATFLAG_NONAME));

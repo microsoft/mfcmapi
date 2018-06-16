@@ -17,19 +17,18 @@ namespace dialog
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPITABLE lpMAPITable,
-		_In_ LPMAPIPROP lpMessage
-	) :
-		CContentsTableDlg(
-			pParentWnd,
-			lpMapiObjects,
-			IDS_RECIPIENTS,
-			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-			nullptr,
-			lpMAPITable,
-			LPSPropTagArray(&columns::sptDEFCols),
-			columns::DEFColumns,
-			IDR_MENU_RECIPIENTS_POPUP,
-			MENU_CONTEXT_RECIPIENT_TABLE)
+		_In_ LPMAPIPROP lpMessage)
+		: CContentsTableDlg(
+			  pParentWnd,
+			  lpMapiObjects,
+			  IDS_RECIPIENTS,
+			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  nullptr,
+			  lpMAPITable,
+			  LPSPropTagArray(&columns::sptDEFCols),
+			  columns::DEFColumns,
+			  IDR_MENU_RECIPIENTS_POPUP,
+			  MENU_CONTEXT_RECIPIENT_TABLE)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_lpMessage = mapi::safe_cast<LPMESSAGE>(lpMessage);
@@ -53,11 +52,11 @@ namespace dialog
 	}
 
 	BEGIN_MESSAGE_MAP(CRecipientsDlg, CContentsTableDlg)
-		ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
-		ON_COMMAND(ID_MODIFYRECIPIENT, OnModifyRecipients)
-		ON_COMMAND(ID_RECIPOPTIONS, OnRecipOptions)
-		ON_COMMAND(ID_SAVECHANGES, OnSaveChanges)
-		ON_COMMAND(ID_VIEWRECIPIENTABENTRY, OnViewRecipientABEntry)
+	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
+	ON_COMMAND(ID_MODIFYRECIPIENT, OnModifyRecipients)
+	ON_COMMAND(ID_RECIPOPTIONS, OnRecipOptions)
+	ON_COMMAND(ID_SAVECHANGES, OnSaveChanges)
+	ON_COMMAND(ID_VIEWRECIPIENTABENTRY, OnViewRecipientABEntry)
 	END_MESSAGE_MAP()
 
 	void CRecipientsDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -69,8 +68,8 @@ namespace dialog
 				const int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 				pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
 				pMenu->EnableMenuItem(ID_RECIPOPTIONS, DIMMSOK(1 == iNumSel));
-				pMenu->EnableMenuItem(ID_MODIFYRECIPIENT,
-					DIM(1 == iNumSel && m_lpPropDisplay && m_lpPropDisplay->IsModifiedPropVals()));
+				pMenu->EnableMenuItem(
+					ID_MODIFYRECIPIENT, DIM(1 == iNumSel && m_lpPropDisplay && m_lpPropDisplay->IsModifiedPropVals()));
 			}
 
 			pMenu->CheckMenuItem(ID_VIEWRECIPIENTABENTRY, CHECK(m_bViewRecipientABEntry));
@@ -115,9 +114,7 @@ namespace dialog
 
 		if (iNumSelected && iNumSelected < MAXNewADRLIST)
 		{
-			EC_H(MAPIAllocateBuffer(
-				CbNewADRLIST(iNumSelected),
-				reinterpret_cast<LPVOID*>(&lpAdrList)));
+			EC_H(MAPIAllocateBuffer(CbNewADRLIST(iNumSelected), reinterpret_cast<LPVOID*>(&lpAdrList)));
 			if (lpAdrList)
 			{
 				ZeroMemory(lpAdrList, CbNewADRLIST(iNumSelected));
@@ -126,9 +123,7 @@ namespace dialog
 				for (auto iSelection = 0; iSelection < iNumSelected; iSelection++)
 				{
 					LPSPropValue lpProp = nullptr;
-					EC_H(MAPIAllocateBuffer(
-						sizeof(SPropValue),
-						reinterpret_cast<LPVOID*>(&lpProp)));
+					EC_H(MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&lpProp)));
 
 					if (lpProp)
 					{
@@ -148,13 +143,16 @@ namespace dialog
 							lpProp->Value.l = 0;
 						}
 
-						output::DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting row 0x%08X\n", lpProp->Value.l);
+						output::DebugPrintEx(
+							DBGDeleteSelectedItem,
+							CLASS,
+							L"OnDeleteSelectedItem",
+							L"Deleting row 0x%08X\n",
+							lpProp->Value.l);
 					}
 				}
 
-				EC_MAPI(m_lpMessage->ModifyRecipients(
-					MODRECIP_REMOVE,
-					lpAdrList));
+				EC_MAPI(m_lpMessage->ModifyRecipients(MODRECIP_REMOVE, lpAdrList));
 
 				OnRefreshView();
 				FreePadrlist(lpAdrList);
@@ -179,30 +177,22 @@ namespace dialog
 
 		if (lpProps)
 		{
-			ADRLIST adrList = { 0 };
+			ADRLIST adrList = {0};
 			adrList.cEntries = 1;
 			adrList.aEntries[0].ulReserved1 = 0;
 			adrList.aEntries[0].cValues = cProps;
 
 			ULONG ulSizeProps = NULL;
-			EC_MAPI(ScCountProps(
-				adrList.aEntries[0].cValues,
-				lpProps,
-				&ulSizeProps));
+			EC_MAPI(ScCountProps(adrList.aEntries[0].cValues, lpProps, &ulSizeProps));
 
 			EC_H(MAPIAllocateBuffer(ulSizeProps, reinterpret_cast<LPVOID*>(&adrList.aEntries[0].rgPropVals)));
 
-			EC_MAPI(ScCopyProps(
-				adrList.aEntries[0].cValues,
-				lpProps,
-				adrList.aEntries[0].rgPropVals,
-				&ulSizeProps));
+			EC_MAPI(ScCopyProps(adrList.aEntries[0].cValues, lpProps, adrList.aEntries[0].rgPropVals, &ulSizeProps));
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"OnModifyRecipients", L"Committing changes for current selection\n");
+			output::DebugPrintEx(
+				DBGGeneric, CLASS, L"OnModifyRecipients", L"Committing changes for current selection\n");
 
-			EC_MAPI(m_lpMessage->ModifyRecipients(
-				MODRECIP_MODIFY,
-				&adrList));
+			EC_MAPI(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
 
 			MAPIFreeBuffer(adrList.aEntries[0].rgPropVals);
 
@@ -228,16 +218,13 @@ namespace dialog
 			auto lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
 			if (lpAB)
 			{
-				ADRENTRY adrEntry = { 0 };
+				ADRENTRY adrEntry = {0};
 				adrEntry.ulReserved1 = 0;
 				adrEntry.cValues = cProps;
 				adrEntry.rgPropVals = lpProps;
 				output::DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"Calling RecipOptions\n");
 
-				EC_MAPI(lpAB->RecipOptions(
-					reinterpret_cast<ULONG_PTR>(m_hWnd),
-					NULL,
-					&adrEntry));
+				EC_MAPI(lpAB->RecipOptions(reinterpret_cast<ULONG_PTR>(m_hWnd), NULL, &adrEntry));
 
 				if (MAPI_W_ERRORS_RETURNED == hRes)
 				{
@@ -248,11 +235,12 @@ namespace dialog
 						EC_MAPIERR(fMapiUnicode, lpErr);
 						MAPIFreeBuffer(lpErr);
 					}
-					else CHECKHRES(hRes);
+					else
+						CHECKHRES(hRes);
 				}
 				else if (SUCCEEDED(hRes))
 				{
-					ADRLIST adrList = { 0 };
+					ADRLIST adrList = {0};
 					adrList.cEntries = 1;
 					adrList.aEntries[0].ulReserved1 = 0;
 					adrList.aEntries[0].cValues = adrEntry.cValues;
@@ -260,14 +248,13 @@ namespace dialog
 
 					const auto szAdrList = interpretprop::AdrListToString(adrList);
 
-					output::DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"RecipOptions returned the following ADRLIST:\n");
+					output::DebugPrintEx(
+						DBGGeneric, CLASS, L"OnRecipOptions", L"RecipOptions returned the following ADRLIST:\n");
 					// Note - debug output may be truncated due to limitations of OutputDebugString,
 					// but output to file is complete
 					output::Output(DBGGeneric, nullptr, false, szAdrList);
 
-					EC_MAPI(m_lpMessage->ModifyRecipients(
-						MODRECIP_MODIFY,
-						&adrList));
+					EC_MAPI(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
 
 					OnRefreshView();
 				}

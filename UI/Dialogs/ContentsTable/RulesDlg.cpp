@@ -17,18 +17,18 @@ namespace dialog
 	CRulesDlg::CRulesDlg(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_ LPEXCHANGEMODIFYTABLE lpExchTbl) :
-		CContentsTableDlg(
-			pParentWnd,
-			lpMapiObjects,
-			IDS_RULESTABLE,
-			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-			nullptr,
-			nullptr,
-			LPSPropTagArray(&columns::sptRULECols),
-			columns::RULEColumns,
-			IDR_MENU_RULES_POPUP,
-			MENU_CONTEXT_RULES_TABLE)
+		_In_ LPEXCHANGEMODIFYTABLE lpExchTbl)
+		: CContentsTableDlg(
+			  pParentWnd,
+			  lpMapiObjects,
+			  IDS_RULESTABLE,
+			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  nullptr,
+			  nullptr,
+			  LPSPropTagArray(&columns::sptRULECols),
+			  columns::RULEColumns,
+			  IDR_MENU_RULES_POPUP,
+			  MENU_CONTEXT_RULES_TABLE)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_lpExchTbl = lpExchTbl;
@@ -48,8 +48,8 @@ namespace dialog
 	}
 
 	BEGIN_MESSAGE_MAP(CRulesDlg, CContentsTableDlg)
-		ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
-		ON_COMMAND(ID_MODIFYSELECTEDITEM, OnModifySelectedItem)
+	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
+	ON_COMMAND(ID_MODIFYSELECTEDITEM, OnModifySelectedItem)
 	END_MESSAGE_MAP()
 
 	void CRulesDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
@@ -86,10 +86,7 @@ namespace dialog
 
 			if (lpMAPITable)
 			{
-				EC_H(m_lpContentsTableListCtrl->SetContentsTable(
-					lpMAPITable,
-					dfDeleted,
-					NULL));
+				EC_H(m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, dfDeleted, NULL));
 
 				lpMAPITable->Release();
 			}
@@ -107,9 +104,7 @@ namespace dialog
 
 		if (lpSelectedItems)
 		{
-			EC_MAPI(m_lpExchTbl->ModifyTable(
-				0,
-				lpSelectedItems));
+			EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (S_OK == hRes) OnRefreshView();
 		}
@@ -126,15 +121,14 @@ namespace dialog
 
 		if (lpSelectedItems)
 		{
-			EC_MAPI(m_lpExchTbl->ModifyTable(
-				0,
-				lpSelectedItems));
+			EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (S_OK == hRes) OnRefreshView();
 		}
 	}
 
-	_Check_return_ HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, _In_ LPROWLIST* lppRowList) const
+	_Check_return_ HRESULT
+	CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, _In_ LPROWLIST* lppRowList) const
 	{
 		if (!lppRowList || !m_lpContentsTableListCtrl) return MAPI_E_INVALID_PARAMETER;
 		*lppRowList = nullptr;
@@ -158,9 +152,7 @@ namespace dialog
 				lpTempList->aEntries[iArrayPos].ulRowFlags = ulRowFlags;
 				lpTempList->aEntries[iArrayPos].cValues = 0;
 				lpTempList->aEntries[iArrayPos].rgPropVals = nullptr;
-				iSelectedItem = m_lpContentsTableListCtrl->GetNextItem(
-					iSelectedItem,
-					LVNI_SELECTED);
+				iSelectedItem = m_lpContentsTableListCtrl->GetNextItem(iSelectedItem, LVNI_SELECTED);
 				if (-1 != iSelectedItem)
 				{
 					// TODO: Rewrite with GetSelectedItems
@@ -201,10 +193,8 @@ namespace dialog
 						else if (ulFlags & RULE_INCLUDE_ID)
 						{
 							lpTempList->aEntries[iArrayPos].cValues = 1;
-							lpTempList->aEntries[iArrayPos].rgPropVals = PpropFindProp(
-								lpData->lpSourceProps,
-								lpData->cSourceProps,
-								PR_RULE_ID);
+							lpTempList->aEntries[iArrayPos].rgPropVals =
+								PpropFindProp(lpData->lpSourceProps, lpData->cSourceProps, PR_RULE_ID);
 						}
 					}
 				}

@@ -18,19 +18,18 @@ namespace dialog
 	CFormContainerDlg::CFormContainerDlg(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_ LPMAPIFORMCONTAINER lpFormContainer
-	) :
-		CContentsTableDlg(
-			pParentWnd,
-			lpMapiObjects,
-			IDS_FORMCONTAINER,
-			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-			nullptr,
-			nullptr,
-			LPSPropTagArray(&columns::sptDEFCols),
-			columns::DEFColumns,
-			IDR_MENU_FORM_CONTAINER_POPUP,
-			MENU_CONTEXT_FORM_CONTAINER)
+		_In_ LPMAPIFORMCONTAINER lpFormContainer)
+		: CContentsTableDlg(
+			  pParentWnd,
+			  lpMapiObjects,
+			  IDS_FORMCONTAINER,
+			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  nullptr,
+			  nullptr,
+			  LPSPropTagArray(&columns::sptDEFCols),
+			  columns::DEFColumns,
+			  IDR_MENU_FORM_CONTAINER_POPUP,
+			  MENU_CONTEXT_FORM_CONTAINER)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
@@ -39,7 +38,7 @@ namespace dialog
 		{
 			m_lpFormContainer->AddRef();
 			LPTSTR lpszDisplayName = nullptr;
-			(void)m_lpFormContainer->GetDisplay(fMapiUnicode, &lpszDisplayName);
+			(void) m_lpFormContainer->GetDisplay(fMapiUnicode, &lpszDisplayName);
 			if (lpszDisplayName)
 			{
 				m_szTitle = strings::LPCTSTRToWstring(lpszDisplayName);
@@ -57,13 +56,13 @@ namespace dialog
 	}
 
 	BEGIN_MESSAGE_MAP(CFormContainerDlg, CContentsTableDlg)
-		ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
-		ON_COMMAND(ID_INSTALLFORM, OnInstallForm)
-		ON_COMMAND(ID_REMOVEFORM, OnRemoveForm)
-		ON_COMMAND(ID_RESOLVEMESSAGECLASS, OnResolveMessageClass)
-		ON_COMMAND(ID_RESOLVEMULTIPLEMESSAGECLASSES, OnResolveMultipleMessageClasses)
-		ON_COMMAND(ID_CALCFORMPOPSET, OnCalcFormPropSet)
-		ON_COMMAND(ID_GETDISPLAY, OnGetDisplay)
+	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
+	ON_COMMAND(ID_INSTALLFORM, OnInstallForm)
+	ON_COMMAND(ID_REMOVEFORM, OnRemoveForm)
+	ON_COMMAND(ID_RESOLVEMESSAGECLASS, OnResolveMessageClass)
+	ON_COMMAND(ID_RESOLVEMULTIPLEMESSAGECLASSES, OnResolveMultipleMessageClasses)
+	ON_COMMAND(ID_CALCFORMPOPSET, OnCalcFormPropSet)
+	ON_COMMAND(ID_GETDISPLAY, OnGetDisplay)
 	END_MESSAGE_MAP()
 
 	void CFormContainerDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -118,13 +117,14 @@ namespace dialog
 					{
 						ULONG ulPropVals = NULL;
 						LPSPropValue lpPropVals = nullptr;
-						EC_H_GETPROPS(mapi::GetPropsNULL(lpMAPIFormInfoArray->aFormInfo[i], fMapiUnicode, &ulPropVals, &lpPropVals));
+						EC_H_GETPROPS(mapi::GetPropsNULL(
+							lpMAPIFormInfoArray->aFormInfo[i], fMapiUnicode, &ulPropVals, &lpPropVals));
 						if (lpPropVals)
 						{
-							SRow sRow = { 0 };
+							SRow sRow = {0};
 							sRow.cValues = ulPropVals;
 							sRow.lpProps = lpPropVals;
-							(void)::SendMessage(
+							(void) ::SendMessage(
 								m_lpContentsTableListCtrl->m_hWnd,
 								WM_MFCMAPI_THREADADDITEM,
 								i,
@@ -139,7 +139,10 @@ namespace dialog
 		m_lpContentsTableListCtrl->AutoSizeColumns(false);
 	}
 
-	_Check_return_ HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ HRESULT CFormContainerDlg::OpenItemProp(
+		int iSelectedItem,
+		__mfcmapiModifyEnum /*bModify*/,
+		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 	{
 		auto hRes = S_OK;
 
@@ -159,15 +162,14 @@ namespace dialog
 			if (mapi::CheckStringProp(lpProp, PT_STRING8))
 			{
 				LPMAPIFORMINFO lpFormInfoProp = nullptr;
-				EC_MAPI(m_lpFormContainer->ResolveMessageClass(
-					lpProp->Value.lpszA,
-					MAPIFORM_EXACTMATCH,
-					&lpFormInfoProp));
+				EC_MAPI(
+					m_lpFormContainer->ResolveMessageClass(lpProp->Value.lpszA, MAPIFORM_EXACTMATCH, &lpFormInfoProp));
 				if (SUCCEEDED(hRes))
 				{
 					*lppMAPIProp = lpFormInfoProp;
 				}
-				else if (lpFormInfoProp) lpFormInfoProp->Release();
+				else if (lpFormInfoProp)
+					lpFormInfoProp->Release();
 			}
 		}
 		return hRes;
@@ -196,8 +198,7 @@ namespace dialog
 					L"OnDeleteSelectedItem", // STRING_OK
 					L"Removing form \"%hs\"\n", // STRING_OK
 					lpProp->Value.lpszA);
-				EC_MAPI(m_lpFormContainer->RemoveForm(
-					lpProp->Value.lpszA));
+				EC_MAPI(m_lpFormContainer->RemoveForm(lpProp->Value.lpszA));
 			}
 		}
 
@@ -211,10 +212,7 @@ namespace dialog
 
 		output::DebugPrintEx(DBGForms, CLASS, L"OnInstallForm", L"installing form\n");
 		editor::CEditor MyFlags(
-			this,
-			IDS_INSTALLFORM,
-			IDS_INSTALLFORMPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			this, IDS_INSTALLFORM, IDS_INSTALLFORMPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyFlags.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyFlags.SetHex(0, MAPIFORM_INSTALL_DIALOG);
 
@@ -234,9 +232,18 @@ namespace dialog
 				for (auto& lpszPath : files)
 				{
 					hRes = S_OK;
-					output::DebugPrintEx(DBGForms, CLASS, L"OnInstallForm",
-						L"Calling InstallForm(%p,0x%08X,\"%ws\")\n", hwnd, ulFlags, lpszPath.c_str()); // STRING_OK
-					WC_MAPI(m_lpFormContainer->InstallForm(reinterpret_cast<ULONG_PTR>(hwnd), ulFlags, LPCTSTR(strings::wstringTostring(lpszPath).c_str())));
+					output::DebugPrintEx(
+						DBGForms,
+						CLASS,
+						L"OnInstallForm",
+						L"Calling InstallForm(%p,0x%08X,\"%ws\")\n",
+						hwnd,
+						ulFlags,
+						lpszPath.c_str()); // STRING_OK
+					WC_MAPI(m_lpFormContainer->InstallForm(
+						reinterpret_cast<ULONG_PTR>(hwnd),
+						ulFlags,
+						LPCTSTR(strings::wstringTostring(lpszPath).c_str())));
 					if (MAPI_E_EXTENDED_ERROR == hRes)
 					{
 						LPMAPIERROR lpErr = nullptr;
@@ -247,7 +254,8 @@ namespace dialog
 							MAPIFreeBuffer(lpErr);
 						}
 					}
-					else CHECKHRES(hRes);
+					else
+						CHECKHRES(hRes);
 
 					if (bShouldCancel(this, hRes)) break;
 				}
@@ -263,11 +271,7 @@ namespace dialog
 		if (!m_lpFormContainer) return;
 
 		output::DebugPrintEx(DBGForms, CLASS, L"OnRemoveForm", L"removing form\n");
-		editor::CEditor MyClass(
-			this,
-			IDS_REMOVEFORM,
-			IDS_REMOVEFORMPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		editor::CEditor MyClass(this, IDS_REMOVEFORM, IDS_REMOVEFORMPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyClass.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
 
 		WC_H(MyClass.DisplayDialog());
@@ -276,8 +280,8 @@ namespace dialog
 			auto szClass = strings::wstringTostring(MyClass.GetStringW(0)); // RemoveForm requires an ANSI string
 			if (!szClass.empty())
 			{
-				output::DebugPrintEx(DBGForms, CLASS, L"OnRemoveForm",
-					L"Calling RemoveForm(\"%hs\")\n", szClass.c_str()); // STRING_OK
+				output::DebugPrintEx(
+					DBGForms, CLASS, L"OnRemoveForm", L"Calling RemoveForm(\"%hs\")\n", szClass.c_str()); // STRING_OK
 				EC_MAPI(m_lpFormContainer->RemoveForm(szClass.c_str()));
 				OnRefreshView(); // Update the view since we don't have notifications here.
 			}
@@ -291,23 +295,26 @@ namespace dialog
 
 		output::DebugPrintEx(DBGForms, CLASS, L"OnResolveMessageClass", L"resolving message class\n");
 		editor::CEditor MyData(
-			this,
-			IDS_RESOLVECLASS,
-			IDS_RESOLVECLASSPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			this, IDS_RESOLVECLASS, IDS_RESOLVECLASSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
 		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			auto szClass = strings::wstringTostring(MyData.GetStringW(0)); // ResolveMessageClass requires an ANSI string
+			auto szClass =
+				strings::wstringTostring(MyData.GetStringW(0)); // ResolveMessageClass requires an ANSI string
 			const auto ulFlags = MyData.GetHex(1);
 			if (!szClass.empty())
 			{
 				LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-				output::DebugPrintEx(DBGForms, CLASS, L"OnResolveMessageClass",
-					L"Calling ResolveMessageClass(\"%hs\",0x%08X)\n", szClass.c_str(), ulFlags); // STRING_OK
+				output::DebugPrintEx(
+					DBGForms,
+					CLASS,
+					L"OnResolveMessageClass",
+					L"Calling ResolveMessageClass(\"%hs\",0x%08X)\n",
+					szClass.c_str(),
+					ulFlags); // STRING_OK
 				EC_MAPI(m_lpFormContainer->ResolveMessageClass(szClass.c_str(), ulFlags, &lpMAPIFormInfo));
 				if (lpMAPIFormInfo)
 				{
@@ -324,12 +331,10 @@ namespace dialog
 		auto hRes = S_OK;
 		if (!m_lpFormContainer) return;
 
-		output::DebugPrintEx(DBGForms, CLASS, L"OnResolveMultipleMessageClasses", L"resolving multiple message classes\n");
+		output::DebugPrintEx(
+			DBGForms, CLASS, L"OnResolveMultipleMessageClasses", L"resolving multiple message classes\n");
 		editor::CEditor MyData(
-			this,
-			IDS_RESOLVECLASSES,
-			IDS_RESOLVECLASSESPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			this, IDS_RESOLVECLASSES, IDS_RESOLVECLASSESPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NUMBER, false));
 		MyData.SetDecimal(0, 1);
 		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
@@ -343,7 +348,8 @@ namespace dialog
 			LPSMESSAGECLASSARRAY lpMSGClassArray = nullptr;
 			if (ulNumClasses && ulNumClasses < MAXMessageClassArray)
 			{
-				EC_H(MAPIAllocateBuffer(CbMessageClassArray(ulNumClasses), reinterpret_cast<LPVOID*>(&lpMSGClassArray)));
+				EC_H(
+					MAPIAllocateBuffer(CbMessageClassArray(ulNumClasses), reinterpret_cast<LPVOID*>(&lpMSGClassArray)));
 
 				if (lpMSGClassArray)
 				{
@@ -360,19 +366,25 @@ namespace dialog
 						WC_H(MyClass.DisplayDialog());
 						if (S_OK == hRes)
 						{
-							auto szClass = strings::wstringTostring(MyClass.GetStringW(0)); // MSDN says always use ANSI strings here
+							auto szClass = strings::wstringTostring(
+								MyClass.GetStringW(0)); // MSDN says always use ANSI strings here
 							auto cbClass = szClass.length();
 
 							if (cbClass)
 							{
 								cbClass++; // for the NULL terminator
-								EC_H(MAPIAllocateMore(static_cast<ULONG>(cbClass), lpMSGClassArray,
+								EC_H(MAPIAllocateMore(
+									static_cast<ULONG>(cbClass),
+									lpMSGClassArray,
 									reinterpret_cast<LPVOID*>(const_cast<LPSTR*>(&lpMSGClassArray->aMessageClass[i]))));
-								EC_H(StringCbCopyA(const_cast<LPSTR>(lpMSGClassArray->aMessageClass[i]), cbClass, szClass.c_str()));
+								EC_H(StringCbCopyA(
+									const_cast<LPSTR>(lpMSGClassArray->aMessageClass[i]), cbClass, szClass.c_str()));
 							}
-							else bCancel = true;
+							else
+								bCancel = true;
 						}
-						else bCancel = true;
+						else
+							bCancel = true;
 						if (bCancel) break;
 					}
 				}
@@ -381,12 +393,23 @@ namespace dialog
 			if (!bCancel)
 			{
 				LPSMAPIFORMINFOARRAY lpMAPIFormInfoArray = nullptr;
-				output::DebugPrintEx(DBGForms, CLASS, L"OnResolveMultipleMessageClasses",
-					L"Calling ResolveMultipleMessageClasses(Num Classes = 0x%08X,0x%08X)\n", ulNumClasses, ulFlags); // STRING_OK
-				EC_MAPI(m_lpFormContainer->ResolveMultipleMessageClasses(lpMSGClassArray, ulFlags, &lpMAPIFormInfoArray));
+				output::DebugPrintEx(
+					DBGForms,
+					CLASS,
+					L"OnResolveMultipleMessageClasses",
+					L"Calling ResolveMultipleMessageClasses(Num Classes = 0x%08X,0x%08X)\n",
+					ulNumClasses,
+					ulFlags); // STRING_OK
+				EC_MAPI(
+					m_lpFormContainer->ResolveMultipleMessageClasses(lpMSGClassArray, ulFlags, &lpMAPIFormInfoArray));
 				if (lpMAPIFormInfoArray)
 				{
-					output::DebugPrintEx(DBGForms, CLASS, L"OnResolveMultipleMessageClasses", L"Got 0x%08X forms\n", lpMAPIFormInfoArray->cForms);
+					output::DebugPrintEx(
+						DBGForms,
+						CLASS,
+						L"OnResolveMultipleMessageClasses",
+						L"Got 0x%08X forms\n",
+						lpMAPIFormInfoArray->cForms);
 					for (ULONG i = 0; i < lpMAPIFormInfoArray->cForms; i++)
 					{
 						if (lpMAPIFormInfoArray->aFormInfo[i])
@@ -411,10 +434,7 @@ namespace dialog
 
 		output::DebugPrintEx(DBGForms, CLASS, L"OnCalcFormPropSet", L"calculating form property set\n");
 		editor::CEditor MyData(
-			this,
-			IDS_CALCFORMPROPSET,
-			IDS_CALCFORMPROPSETPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			this, IDS_CALCFORMPROPSET, IDS_CALCFORMPROPSETPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(0, FORMPROPSET_UNION);
 
@@ -424,8 +444,8 @@ namespace dialog
 			const auto ulFlags = MyData.GetHex(0);
 
 			LPMAPIFORMPROPARRAY lpFormPropArray = nullptr;
-			output::DebugPrintEx(DBGForms, CLASS, L"OnCalcFormPropSet",
-				L"Calling CalcFormPropSet(0x%08X)\n", ulFlags); // STRING_OK
+			output::DebugPrintEx(
+				DBGForms, CLASS, L"OnCalcFormPropSet", L"Calling CalcFormPropSet(0x%08X)\n", ulFlags); // STRING_OK
 			EC_MAPI(m_lpFormContainer->CalcFormPropSet(ulFlags, &lpFormPropArray));
 			if (lpFormPropArray)
 			{
@@ -446,12 +466,10 @@ namespace dialog
 		if (lpszDisplayName)
 		{
 			auto szDisplayName = strings::LPCTSTRToWstring(lpszDisplayName);
-			output::DebugPrintEx(DBGForms, CLASS, L"OnGetDisplay", L"Got display name \"%ws\"\n", szDisplayName.c_str());
+			output::DebugPrintEx(
+				DBGForms, CLASS, L"OnGetDisplay", L"Got display name \"%ws\"\n", szDisplayName.c_str());
 			editor::CEditor MyOutput(
-				this,
-				IDS_GETDISPLAY,
-				IDS_GETDISPLAYPROMPT,
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+				this, IDS_GETDISPLAY, IDS_GETDISPLAYPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyOutput.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_GETDISPLAY, szDisplayName, true));
 			WC_H(MyOutput.DisplayDialog());
 			MAPIFreeBuffer(lpszDisplayName);

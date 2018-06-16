@@ -17,22 +17,18 @@ namespace dialog
 {
 	static std::wstring CLASS = L"CAbDlg";
 
-	CAbDlg::CAbDlg(
-		_In_ ui::CParentWnd* pParentWnd,
-		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_ LPMAPIPROP lpAbCont
-	) :
-		CContentsTableDlg(
-			pParentWnd,
-			lpMapiObjects,
-			IDS_AB,
-			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-			lpAbCont,
-			nullptr,
-			LPSPropTagArray(&columns::sptABCols),
-			columns::ABColumns,
-			IDR_MENU_AB_VIEW_POPUP,
-			MENU_CONTEXT_AB_CONTENTS)
+	CAbDlg::CAbDlg(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects, _In_ LPMAPIPROP lpAbCont)
+		: CContentsTableDlg(
+			  pParentWnd,
+			  lpMapiObjects,
+			  IDS_AB,
+			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  lpAbCont,
+			  nullptr,
+			  LPSPropTagArray(&columns::sptABCols),
+			  columns::ABColumns,
+			  IDR_MENU_AB_VIEW_POPUP,
+			  MENU_CONTEXT_AB_CONTENTS)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_lpAbCont = mapi::safe_cast<LPABCONT>(lpAbCont);
@@ -49,11 +45,11 @@ namespace dialog
 	}
 
 	BEGIN_MESSAGE_MAP(CAbDlg, CContentsTableDlg)
-		ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
-		ON_COMMAND(ID_DISPLAYDETAILS, OnDisplayDetails)
-		ON_COMMAND(ID_OPENCONTACT, OnOpenContact)
-		ON_COMMAND(ID_OPENMANAGER, OnOpenManager)
-		ON_COMMAND(ID_OPENOWNER, OnOpenOwner)
+	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
+	ON_COMMAND(ID_DISPLAYDETAILS, OnDisplayDetails)
+	ON_COMMAND(ID_OPENCONTACT, OnOpenContact)
+	ON_COMMAND(ID_OPENMANAGER, OnOpenManager)
+	ON_COMMAND(ID_OPENOWNER, OnOpenOwner)
 	END_MESSAGE_MAP()
 
 	void CAbDlg::CreateDialogAndMenu(UINT nIDMenuResource)
@@ -61,10 +57,7 @@ namespace dialog
 		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
-		ui::UpdateMenuString(
-			m_hWnd,
-			ID_CREATEPROPERTYSTRINGRESTRICTION,
-			IDS_ABRESMENU);
+		ui::UpdateMenuString(m_hWnd, ID_CREATEPROPERTYSTRINGRESTRICTION, IDS_ABRESMENU);
 	}
 
 	void CAbDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -185,9 +178,7 @@ namespace dialog
 			if (lpMailUser) lpMailUser->Release();
 			lpMailUser = nullptr;
 			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-				&iItem,
-				mfcmapiREQUEST_MODIFY,
-				reinterpret_cast<LPMAPIPROP*>(&lpMailUser)));
+				&iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMailUser)));
 
 			if (lpMailUser)
 			{
@@ -216,9 +207,7 @@ namespace dialog
 			if (lpMailUser) lpMailUser->Release();
 			lpMailUser = nullptr;
 			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-				&iItem,
-				mfcmapiREQUEST_MODIFY,
-				reinterpret_cast<LPMAPIPROP*>(&lpMailUser)));
+				&iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMailUser)));
 
 			if (lpMailUser)
 			{
@@ -239,10 +228,7 @@ namespace dialog
 
 		auto hRes = S_OK;
 		editor::CEditor Query(
-			this,
-			IDS_DELETEABENTRY,
-			IDS_DELETEABENTRYPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			this, IDS_DELETEABENTRY, IDS_DELETEABENTRYPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		WC_H(Query.DisplayDialog());
 		if (S_OK == hRes)
 		{
@@ -289,10 +275,7 @@ namespace dialog
 		if (lpEIDs)
 		{
 			editor::CEditor MyData(
-				this,
-				IDS_CALLCOPYENTRIES,
-				IDS_CALLCOPYENTRIESPROMPT,
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+				this, IDS_CALLCOPYENTRIES, IDS_CALLCOPYENTRIESPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 			MyData.SetHex(0, CREATE_CHECK_DUP_STRICT);
@@ -300,16 +283,13 @@ namespace dialog
 			WC_H(MyData.DisplayDialog());
 			if (S_OK == hRes)
 			{
-				LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IABContainer::CopyEntries", m_hWnd); // STRING_OK
+				LPMAPIPROGRESS lpProgress =
+					mapi::mapiui::GetMAPIProgress(L"IABContainer::CopyEntries", m_hWnd); // STRING_OK
 
 				EC_MAPI(m_lpAbCont->CopyEntries(
-					lpEIDs,
-					lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
-					lpProgress,
-					MyData.GetHex(0)));
+					lpEIDs, lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL, lpProgress, MyData.GetHex(0)));
 
-				if (lpProgress)
-					lpProgress->Release();
+				if (lpProgress) lpProgress->Release();
 			}
 
 			return true; // handled pasted
@@ -326,10 +306,7 @@ namespace dialog
 		if (!m_lpContentsTableListCtrl) return;
 
 		editor::CEditor MyData(
-			this,
-			IDS_SEARCHCRITERIA,
-			IDS_ABSEARCHCRITERIAPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			this, IDS_SEARCHCRITERIA, IDS_ABSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));
 
@@ -337,11 +314,7 @@ namespace dialog
 		if (S_OK != hRes) return;
 
 		// Allocate and create our SRestriction
-		EC_H(mapi::ab::CreateANRRestriction(
-			PR_ANR_W,
-			MyData.GetStringW(0),
-			NULL,
-			&lpRes));
+		EC_H(mapi::ab::CreateANRRestriction(PR_ANR_W, MyData.GetStringW(0), NULL, &lpRes));
 
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 

@@ -26,7 +26,8 @@ namespace dialog
 		void OnInitMenu(_In_ CMenu* pMenu) override;
 		_Check_return_ LPATTACH OpenAttach(ULONG ulAttachNum) const;
 		_Check_return_ LPMESSAGE CAttachmentsDlg::OpenEmbeddedMessage() const;
-		_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
+		_Check_return_ HRESULT
+		OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
 
 		// Menu items
 		void OnModifySelectedItem();

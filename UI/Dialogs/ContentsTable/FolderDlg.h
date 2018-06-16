@@ -59,7 +59,7 @@ namespace dialog
 		void OnCreateMessageRestriction();
 		void OnDisplayFolder(WORD wMenuSelect);
 		_Check_return_ HRESULT OnAbortSubmit(int iItem, _In_ controls::sortlistdata::SortListData* lpData);
-		_Check_return_ HRESULT OnAttachmentProperties(int iItem, _In_ controls::sortlistdata::SortListData*	lpData);
+		_Check_return_ HRESULT OnAttachmentProperties(int iItem, _In_ controls::sortlistdata::SortListData* lpData);
 		_Check_return_ HRESULT OnGetMessageStatus(int iItem, _In_ controls::sortlistdata::SortListData* lpData);
 		_Check_return_ HRESULT OnOpenModal(int iItem, _In_ controls::sortlistdata::SortListData* lpData);
 		_Check_return_ HRESULT OnOpenNonModal(int iItem, _In_ controls::sortlistdata::SortListData* lpData);
