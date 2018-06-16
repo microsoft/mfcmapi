@@ -629,8 +629,10 @@ namespace mapiprocessor
 	// Clean up the list
 	void CMAPIProcessor::FreeFolderList() const
 	{
-		for
-			each(auto node in m_List) { MAPIFreeBuffer(node.lpFolderEID); }
+		for (auto node : m_List)
+		{
+			MAPIFreeBuffer(node.lpFolderEID);
+		}
 	}
 
 	// --------------------------------------------------------------------------------- //
