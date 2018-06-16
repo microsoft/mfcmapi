@@ -6,8 +6,7 @@ namespace cache
 	class CMapiObjects
 	{
 	public:
-		CMapiObjects(
-			_In_opt_ CMapiObjects* OldMapiObjects);
+		CMapiObjects(_In_opt_ CMapiObjects* OldMapiObjects);
 		virtual ~CMapiObjects();
 
 		STDMETHODIMP_(ULONG) AddRef();

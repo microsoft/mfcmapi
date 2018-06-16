@@ -8,7 +8,7 @@ namespace cache
 {
 	static std::wstring CLASS = L"CMapiObjects";
 	// Pass an existing CMapiObjects to make a copy, pass NULL to create a new one from scratch
-	CMapiObjects::CMapiObjects(_In_opt_ CMapiObjects *OldMapiObjects)
+	CMapiObjects::CMapiObjects(_In_opt_ CMapiObjects* OldMapiObjects)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		output::DebugPrintEx(DBGConDes, CLASS, CLASS, L"OldMapiObjects = %p\n", OldMapiObjects);
@@ -66,12 +66,8 @@ namespace cache
 		if (m_lpMAPISession) m_lpMAPISession->Release();
 		m_lpMAPISession = nullptr;
 
-		EC_H_CANCEL(::MAPILogonEx(
-			reinterpret_cast<ULONG_PTR>(hwnd),
-			szProfileName,
-			nullptr,
-			ulFlags,
-			&m_lpMAPISession));
+		EC_H_CANCEL(
+			::MAPILogonEx(reinterpret_cast<ULONG_PTR>(hwnd), szProfileName, nullptr, ulFlags, &m_lpMAPISession));
 
 		output::DebugPrint(DBGGeneric, L"\tm_lpMAPISession set to %p\n", m_lpMAPISession);
 	}
@@ -89,10 +85,7 @@ namespace cache
 		}
 	}
 
-	_Check_return_ LPMAPISESSION CMapiObjects::GetSession() const
-	{
-		return m_lpMAPISession;
-	}
+	_Check_return_ LPMAPISESSION CMapiObjects::GetSession() const { return m_lpMAPISession; }
 
 	_Check_return_ LPMAPISESSION CMapiObjects::LogonGetSession(_In_ HWND hWnd)
 	{
@@ -111,10 +104,7 @@ namespace cache
 		if (m_lpMDB) m_lpMDB->AddRef();
 	}
 
-	_Check_return_ LPMDB CMapiObjects::GetMDB() const
-	{
-		return m_lpMDB;
-	}
+	_Check_return_ LPMDB CMapiObjects::GetMDB() const { return m_lpMDB; }
 
 	void CMapiObjects::SetAddrBook(_In_opt_ LPADRBOOK lpAddrBook)
 	{
@@ -130,11 +120,7 @@ namespace cache
 		if (!m_lpAddrBook && m_lpMAPISession && bForceOpen)
 		{
 			auto hRes = S_OK;
-			EC_MAPI(m_lpMAPISession->OpenAddressBook(
-				NULL,
-				nullptr,
-				NULL,
-				&m_lpAddrBook));
+			EC_MAPI(m_lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &m_lpAddrBook));
 		}
 		return m_lpAddrBook;
 	}
