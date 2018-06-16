@@ -30,16 +30,15 @@ namespace dialog
 	class CBaseDialog : public CMyDialog
 	{
 	public:
-		CBaseDialog(
-			_In_ ui::CParentWnd* pParentWnd,
-			_In_ cache::CMapiObjects* lpMapiObjects,
-			ULONG ulAddInContext);
+		CBaseDialog(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects, ULONG ulAddInContext);
 		virtual ~CBaseDialog();
 
 		STDMETHODIMP_(ULONG) AddRef();
 		STDMETHODIMP_(ULONG) Release();
 
-		void OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ controls::sortlistdata::SortListData* lpListData) const;
+		void OnUpdateSingleMAPIPropListCtrl(
+			_In_opt_ LPMAPIPROP lpMAPIProp,
+			_In_opt_ controls::sortlistdata::SortListData* lpListData) const;
 		_Check_return_ bool HandleKeyDown(UINT nChar, bool bShift, bool bCtrl, bool bMenu);
 
 		void UpdateTitleBarText(_In_ const std::wstring& szMsg) const;
@@ -47,7 +46,12 @@ namespace dialog
 		void UpdateStatusBarText(__StatusPaneEnum nPos, _In_ const std::wstring& szMsg);
 		void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg);
 		void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1);
-		void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, std::wstring& szParam1, std::wstring& szParam2, std::wstring& szParam3);
+		void __cdecl UpdateStatusBarText(
+			__StatusPaneEnum nPos,
+			UINT uidMsg,
+			std::wstring& szParam1,
+			std::wstring& szParam2,
+			std::wstring& szParam3);
 		void OnOpenEntryID(_In_opt_ LPSBinary lpBin);
 		_Check_return_ ui::CParentWnd* GetParentWnd() const;
 		_Check_return_ cache::CMapiObjects* GetMapiObjects() const;
