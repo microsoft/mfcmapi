@@ -166,7 +166,7 @@ namespace version
 	std::wstring GetCentennialVersion()
 	{
 		// Check for Centennial Office
-		const auto familyName = L"Microsoft.MicrosoftOfficeHub_8wekyb3d8bbwe";
+		const auto familyName = L"Microsoft.Office.Desktop_8wekyb3d8bbwe";
 
 		const UINT32 filter =
 			PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_PROPERTY_BUNDLE | PACKAGE_PROPERTY_RESOURCE;
