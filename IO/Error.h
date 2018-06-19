@@ -88,6 +88,23 @@ namespace error
 #define CHECKHRESMSG(hRes, uidErrorMsg) (CheckHResFn(hRes, NULL, true, nullptr, uidErrorMsg, __FILE__, __LINE__))
 #define WARNHRESMSG(hRes, uidErrorMsg) (CheckHResFn(hRes, NULL, false, nullptr, uidErrorMsg, __FILE__, __LINE__))
 
+// Execute a function, log and return the HRESULT
+// Does not modify or reference existing hRes
+#define EC_H2(fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a function, log and swallow the HRESULT
+// Does not modify or reference existing hRes
+#define EC_H2S(fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
+
 #define EC_H(fnx) \
 	{ \
 		if (SUCCEEDED(hRes)) \
