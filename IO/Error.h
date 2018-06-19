@@ -90,6 +90,7 @@ namespace error
 
 // Execute a function, log and return the HRESULT
 // Does not modify or reference existing hRes
+// Will display dialog on error
 #define EC_H2(fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = (fnx); \
@@ -99,6 +100,7 @@ namespace error
 
 // Execute a function, log and swallow the HRESULT
 // Does not modify or reference existing hRes
+// Will display dialog on error
 #define EC_H2S(fnx) \
 	[&]() -> void { \
 		auto __hRes = (fnx); \
@@ -117,6 +119,25 @@ namespace error
 			error::PrintSkipNote(hRes, #fnx); \
 		} \
 	}
+
+// Execute a function, log and return the HRESULT
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_H2(fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a function, log and swallow the HRESULT
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_H2S(fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
 
 #define WC_H(fnx) \
 	{ \

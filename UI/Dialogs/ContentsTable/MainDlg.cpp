@@ -426,7 +426,7 @@ namespace dialog
 			MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 			MyPrompt.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 			MyPrompt.SetHex(0, NULL);
-			WC_H(MyPrompt.DisplayDialog());
+			hRes = WC_H2(MyPrompt.DisplayDialog());
 			if (S_OK == hRes)
 			{
 				ulFlags = MyPrompt.GetHex(0);
@@ -490,7 +490,6 @@ namespace dialog
 
 	void CMainDlg::OnOpenMessageStoreEID()
 	{
-		auto hRes = S_OK;
 		if (!m_lpMapiObjects) return;
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
@@ -506,7 +505,7 @@ namespace dialog
 		MyEID.InitPane(3, viewpane::CheckPane::Create(IDS_DISPLAYPROPS, false, false));
 		MyEID.InitPane(4, viewpane::CheckPane::Create(IDS_UNWRAPSTORE, false, false));
 
-		WC_H(MyEID.DisplayDialog());
+		auto hRes = WC_H2(MyEID.DisplayDialog());
 		if (S_OK != hRes) return;
 
 		// Get the entry ID as a binary
@@ -552,7 +551,6 @@ namespace dialog
 	void CMainDlg::OnOpenPublicFolders()
 	{
 		LPMDB lpMDB = nullptr;
-		auto hRes = S_OK;
 
 		if (!m_lpMapiObjects) return;
 
@@ -564,7 +562,7 @@ namespace dialog
 		MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 		MyPrompt.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 		MyPrompt.SetHex(0, NULL);
-		WC_H(MyPrompt.DisplayDialog());
+		auto hRes = WC_H2(MyPrompt.DisplayDialog());
 		if (S_OK == hRes)
 		{
 			EC_H2S(mapi::store::OpenPublicMessageStore(lpMAPISession, "", MyPrompt.GetHex(0), &lpMDB));
@@ -580,8 +578,6 @@ namespace dialog
 
 	void CMainDlg::OnOpenPublicFolderWithDN()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpMapiObjects) return;
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
@@ -593,7 +589,7 @@ namespace dialog
 		MyPrompt.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
 		MyPrompt.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 		MyPrompt.SetHex(1, OPENSTORE_PUBLIC);
-		WC_H(MyPrompt.DisplayDialog());
+		auto hRes = WC_H2(MyPrompt.DisplayDialog());
 		if (S_OK == hRes)
 		{
 			LPMDB lpMDB = nullptr;
@@ -611,7 +607,6 @@ namespace dialog
 
 	void CMainDlg::OnOpenMailboxWithDN()
 	{
-		auto hRes = S_OK;
 		LPMDB lpMDB = nullptr;
 		LPMDB lpOtherMDB = nullptr;
 
@@ -622,12 +617,12 @@ namespace dialog
 
 		const auto szServerName = mapi::store::GetServerName(lpMAPISession);
 
-		hRes = EC_H2(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		auto hRes = EC_H2(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 		if (!lpMDB) return;
 
 		if (mapi::store::StoreSupportsManageStore(lpMDB))
 		{
-			WC_H(mapi::store::OpenMailboxWithPrompt(
+			hRes = WC_H2(mapi::store::OpenMailboxWithPrompt(
 				lpMAPISession,
 				lpMDB,
 				szServerName,
@@ -779,7 +774,7 @@ namespace dialog
 			this, IDS_DUMPSERVERPRIVATESTORE, IDS_SERVERNAMEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
 
-		WC_H(MyData.DisplayDialog());
+		hRes = WC_H2(MyData.DisplayDialog());
 
 		if (S_OK == hRes)
 		{
@@ -820,7 +815,7 @@ namespace dialog
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
 		MyData.SetHex(0, MAPI_LOGOFF_UI);
 
-		WC_H(MyData.DisplayDialog());
+		hRes = WC_H2(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
 			OnCloseAddressBook();
@@ -859,7 +854,7 @@ namespace dialog
 		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
 		MyData.SetHex(1, MAPI_EXTENDED | MAPI_EXPLICIT_PROFILE | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI);
 
-		WC_H(MyData.DisplayDialog());
+		hRes = WC_H2(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
 			auto szProfile = MyData.GetStringW(0);
@@ -921,7 +916,7 @@ namespace dialog
 			MyFlags.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 			MyFlags.SetHex(0, MAPIFORM_SELECT_ALL_REGISTRIES);
 
-			WC_H(MyFlags.DisplayDialog());
+			hRes = WC_H2(MyFlags.DisplayDialog());
 			if (S_OK == hRes)
 			{
 				const auto ulFlags = MyFlags.GetHex(0);
@@ -958,7 +953,7 @@ namespace dialog
 			MyFlags.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_HFRMREG, false));
 			MyFlags.SetHex(0, MAPIFORM_SELECT_ALL_REGISTRIES);
 
-			WC_H(MyFlags.DisplayDialog());
+			hRes = WC_H2(MyFlags.DisplayDialog());
 			if (S_OK == hRes)
 			{
 				const auto hFrmReg = MyFlags.GetHex(0);
@@ -1007,7 +1002,7 @@ namespace dialog
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PATH, szFullPath, false));
 		}
 
-		WC_H(MyData.DisplayDialog());
+		hRes = WC_H2(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
 			HMODULE hMAPI = nullptr;
@@ -1019,11 +1014,9 @@ namespace dialog
 
 	void CMainDlg::OnUnloadMAPI()
 	{
-		auto hRes = S_OK;
-
 		editor::CEditor MyData(this, IDS_UNLOADMAPI, IDS_MAPICRASHWARNING, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		WC_H(MyData.DisplayDialog());
+		auto hRes = WC_H2(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
 			mapistub::UnloadPrivateMAPI();
@@ -1060,19 +1053,18 @@ namespace dialog
 			viewpane::CheckPane::Create(
 				IDS_REGKEY_FORCESYSTEMMAPI, 0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD, true));
 
-		WC_H(MyData.DisplayDialog());
+		hRes = WC_H2(MyData.DisplayDialog());
 	}
 
 	void CMainDlg::OnMAPIInitialize()
 	{
-		auto hRes = S_OK;
 		if (!m_lpMapiObjects) return;
 
 		editor::CEditor MyData(this, IDS_MAPIINIT, IDS_MAPIINITPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
 		MyData.SetHex(0, NULL);
 
-		WC_H(MyData.DisplayDialog());
+		auto hRes = WC_H2(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
 			cache::CGlobalCache::getInstance().MAPIInitialize(MyData.GetHex(0));
@@ -1081,11 +1073,9 @@ namespace dialog
 
 	void CMainDlg::OnMAPIUninitialize()
 	{
-		auto hRes = S_OK;
-
 		editor::CEditor MyData(this, IDS_MAPIUNINIT, IDS_MAPICRASHWARNING, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		WC_H(MyData.DisplayDialog());
+		auto hRes = WC_H2(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
 			cache::CGlobalCache::getInstance().MAPIUninitialize();
@@ -1123,7 +1113,6 @@ namespace dialog
 
 	void CMainDlg::OnQueryDefaultMessageOpt()
 	{
-		auto hRes = S_OK;
 		if (!m_lpMapiObjects) return;
 		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
@@ -1133,7 +1122,7 @@ namespace dialog
 		MyData.InitPane(
 			0, viewpane::TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
 
-		WC_H(MyData.DisplayDialog());
+		auto hRes = WC_H2(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
 			ULONG cValues = NULL;
@@ -1173,7 +1162,7 @@ namespace dialog
 					MyResult.InitPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_OPTIONS, szPropString, true));
 				}
 
-				WC_H(MyResult.DisplayDialog());
+				WC_H2S(MyResult.DisplayDialog());
 			}
 
 			MAPIFreeBuffer(lpOptions);
@@ -1182,7 +1171,6 @@ namespace dialog
 
 	void CMainDlg::OnQueryDefaultRecipOpt()
 	{
-		auto hRes = S_OK;
 		if (!m_lpMapiObjects) return;
 		auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 		if (!lpAddrBook) return;
@@ -1192,7 +1180,7 @@ namespace dialog
 		MyData.InitPane(
 			0, viewpane::TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
 
-		WC_H(MyData.DisplayDialog());
+		auto hRes = WC_H2(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
 			ULONG cValues = NULL;
@@ -1206,10 +1194,10 @@ namespace dialog
 				&cValues,
 				&lpOptions));
 
-			output::DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
-
 			if (SUCCEEDED(hRes))
 			{
+				output::DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
+
 				editor::CEditor MyResult(this, IDS_QUERYDEFRECIPOPT, IDS_RESULTOFCALLPROMPT, CEDITOR_BUTTON_OK);
 				MyResult.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_COUNTOPTIONS, true));
 				MyResult.SetHex(0, cValues);
@@ -1233,7 +1221,7 @@ namespace dialog
 					MyResult.InitPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_OPTIONS, szPropString, true));
 				}
 
-				WC_H(MyResult.DisplayDialog());
+				WC_H2S(MyResult.DisplayDialog());
 			}
 
 			MAPIFreeBuffer(lpOptions);
@@ -1258,7 +1246,7 @@ namespace dialog
 		{
 			editor::CEditor MyPrompt(this, IDS_QUERYID, IDS_QUERYIDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyPrompt.InitPane(0, viewpane::CheckPane::Create(IDS_DISPLAYDETAILSDLG, false, false));
-			WC_H(MyPrompt.DisplayDialog());
+			hRes = WC_H2(MyPrompt.DisplayDialog());
 			if (S_OK == hRes)
 			{
 				if (MyPrompt.GetCheck(0))
@@ -1323,7 +1311,7 @@ namespace dialog
 				MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 				MyData.SetHex(0, MAPI_DEFAULT_STORE);
 
-				WC_H(MyData.DisplayDialog());
+				hRes = WC_H2(MyData.DisplayDialog());
 				if (S_OK == hRes)
 				{
 					EC_MAPI(lpMAPISession->SetDefaultStore(
@@ -1338,12 +1326,10 @@ namespace dialog
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		auto hRes = S_OK;
-
 		editor::CEditor MyData(this, IDS_ISATTBLOCKED, IDS_ENTERFILENAME, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILENAME, false));
 
-		WC_H(MyData.DisplayDialog());
+		auto hRes = WC_H2(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
 			auto bBlocked = false;
@@ -1354,7 +1340,7 @@ namespace dialog
 				const auto szResult = strings::loadstring(bBlocked ? IDS_TRUE : IDS_FALSE);
 				MyResult.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RESULT, szResult, true));
 
-				WC_H(MyResult.DisplayDialog());
+				hRes = WC_H2(MyResult.DisplayDialog());
 			}
 		}
 	}
@@ -1389,7 +1375,6 @@ namespace dialog
 		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
 		if (!cache::CGlobalCache::getInstance().bMAPIInitialized()) return;
 
-		auto hRes = S_OK;
 		editor::CEditor MyData(
 			this, IDS_LAUNCHPROFWIZ, IDS_LAUNCHPROFWIZPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
@@ -1397,7 +1382,7 @@ namespace dialog
 		MyData.InitPane(
 			1, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
 
-		WC_H(MyData.DisplayDialog());
+		auto hRes = WC_H2(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
 			auto szProfName = mapi::profile::LaunchProfileWizard(
@@ -1466,12 +1451,11 @@ namespace dialog
 			this);
 		if (!file.empty())
 		{
-			auto hRes = S_OK;
 			LPMESSAGE lpNewMessage = nullptr;
-			hRes = EC_H2(file::LoadMSGToMessage(file, &lpNewMessage));
+			EC_H2S(file::LoadMSGToMessage(file, &lpNewMessage));
 			if (lpNewMessage)
 			{
-				WC_H(DisplayObject(lpNewMessage, MAPI_MESSAGE, otDefault, this));
+				WC_H2S(DisplayObject(lpNewMessage, MAPI_MESSAGE, otDefault, this));
 				lpNewMessage->Release();
 			}
 		}
@@ -1482,14 +1466,14 @@ namespace dialog
 		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
 		if (!cache::CGlobalCache::getInstance().bMAPIInitialized()) return;
 
-		auto hRes = S_OK;
 		ULONG ulConvertFlags = CCSF_SMTP;
 		auto et = IET_UNKNOWN;
 		auto mst = USE_DEFAULT_SAVETYPE;
 		ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
 		auto bDoAdrBook = false;
 
-		WC_H(mapi::mapimime::GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
+		auto hRes = WC_H2(
+			mapi::mapimime::GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 		if (S_OK == hRes)
 		{
 			LPADRBOOK lpAdrBook = nullptr;
@@ -1525,14 +1509,13 @@ namespace dialog
 		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
 		if (!cache::CGlobalCache::getInstance().bMAPIInitialized()) return;
 
-		auto hRes = S_OK;
 		ULONG ulConvertFlags = CCSF_SMTP;
 		auto bDoAdrBook = false;
 		auto bDoApply = false;
 		auto bUnicode = false;
 		HCHARSET hCharSet = nullptr;
 		auto cSetApplyType = CSET_APPLY_UNTAGGED;
-		WC_H(mapi::mapimime::GetConversionFromEMLOptions(
+		auto hRes = WC_H2(mapi::mapimime::GetConversionFromEMLOptions(
 			this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, &bUnicode));
 		if (S_OK == hRes)
 		{
@@ -1657,7 +1640,7 @@ namespace dialog
 				// Get profile section
 				if (lpServiceUID)
 				{
-					WC_H(mapi::HrEmsmdbUIDFromStore(
+					hRes = WC_H2(mapi::HrEmsmdbUIDFromStore(
 						lpMAPISession, reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb), &emsmdbUID));
 					if (SUCCEEDED(hRes))
 					{
