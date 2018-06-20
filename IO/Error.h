@@ -152,6 +152,25 @@ namespace error
 		} \
 	}
 
+// Execute a function, log and return the HRESULT
+// Logs a MAPI call trace under DBGMAPIFunctions
+// Does not modify or reference existing hRes
+#define EC_MAPI2(fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a function, log and swallow the HRESULT
+// Logs a MAPI call trace under DBGMAPIFunctions
+// Does not modify or reference existing hRes
+#define EC_MAPI2S(fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
+
 #define EC_MAPI(fnx) \
 	{ \
 		if (SUCCEEDED(hRes)) \
@@ -164,6 +183,27 @@ namespace error
 			error::PrintSkipNote(hRes, #fnx); \
 		} \
 	}
+
+// Execute a function, log and return the HRESULT
+// Logs a MAPI call trace under DBGMAPIFunctions
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_MAPI2(fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a function, log and swallow the HRESULT
+// Logs a MAPI call trace under DBGMAPIFunctions
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_MAPI2S(fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
 
 #define WC_MAPI(fnx) \
 	{ \
@@ -178,6 +218,23 @@ namespace error
 		} \
 	}
 
+// Execute a function, log error with uidErrorMessage, and return the HRESULT
+// Does not modify or reference existing hRes
+#define EC_H_MSG2(uidErrorMsg, fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a function, log error with uidErrorMessage, and swallow the HRESULT
+// Does not modify or reference existing hRes
+#define EC_H_MSG2S(uidErrorMsg, fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
+	}()
+
 #define EC_H_MSG(fnx, uidErrorMsg) \
 	{ \
 		if (SUCCEEDED(hRes)) \
@@ -190,6 +247,25 @@ namespace error
 			error::PrintSkipNote(hRes, #fnx); \
 		} \
 	}
+
+// Execute a function, log error with uidErrorMessage, and return the HRESULT
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_H_MSG2(uidErrorMsg, fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a function, log error with uidErrorMessage, and swallow the HRESULT
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_H_MSG2S(uidErrorMsg, fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
+	}()
 
 #define WC_H_MSG(fnx, uidErrorMsg) \
 	{ \
@@ -204,6 +280,23 @@ namespace error
 		} \
 	}
 
+// Execute a w32 function, log error, and return HRESULT_FROM_WIN32
+// Does not modify or reference existing hRes
+#define EC_W32_2(fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = HRESULT_FROM_WIN32(fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a w32 function, log error, and swallow error
+// Does not modify or reference existing hRes
+#define EC_W32_2S(fnx) \
+	[&]() -> void { \
+		auto __hRes = HRESULT_FROM_WIN32(fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
+
 #define EC_W32(fnx) \
 	{ \
 		if (SUCCEEDED(hRes)) \
@@ -217,6 +310,25 @@ namespace error
 		} \
 	}
 
+// Execute a w32 function, log error, and return HRESULT_FROM_WIN32
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_W32_2(fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = HRESULT_FROM_WIN32(fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a w32 function, log error, and swallow error
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_W32_2S(fnx) \
+	[&]() -> void { \
+		auto __hRes = HRESULT_FROM_WIN32(fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
+
 #define WC_W32(fnx) \
 	{ \
 		if (SUCCEEDED(hRes)) \
@@ -229,6 +341,25 @@ namespace error
 			error::PrintSkipNote(hRes, #fnx); \
 		} \
 	}
+
+// Execute a bool/BOOL function, log error, and return CheckWin32Error(HRESULT)
+// Does not modify or reference existing hRes
+#define EC_B2(fnx) \
+	[&]() -> HRESULT { \
+		return !(fnx) ? \
+		error::CheckWin32Error(true, __FILE__, __LINE__, #fnx) \
+			: S_OK; \
+	}()
+
+// Execute a bool/BOOL function, log error, and swallow error
+// Does not modify or reference existing hRes
+#define EC_B2S(fnx) \
+	[&]() -> void { \
+		if (!(fnx)) \
+		{ \
+			error::CheckWin32Error(true, __FILE__, __LINE__, #fnx); \
+		} \
+	}()
 
 #define EC_B(fnx) \
 	{ \
@@ -245,6 +376,27 @@ namespace error
 		} \
 	}
 
+// Execute a bool/BOOL function, log error, and return CheckWin32Error(HRESULT)
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_B2(fnx) \
+	[&]() -> HRESULT { \
+		return !(fnx) ? \
+		error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
+			: S_OK; \
+	}()
+
+// Execute a bool/BOOL function, log error, and swallow error
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_B2S(fnx) \
+	[&]() -> void { \
+		if (!(fnx)) \
+		{ \
+			error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
+		} \
+	}()
+
 #define WC_B(fnx) \
 	{ \
 		if (SUCCEEDED(hRes)) \
@@ -259,6 +411,17 @@ namespace error
 			error::PrintSkipNote(hRes, #fnx); \
 		} \
 	}
+
+// Execute a function which returns 0 on error, log error, and return result
+#define EC_D2(_TYPE, fnx) \
+	[&]() -> _TYPE { \
+		auto __ret = (fnx); \
+		if (!__ret) \
+		{ \
+			error::CheckWin32Error(true, __FILE__, __LINE__, #fnx); \
+		} \
+		return __ret; \
+	}()
 
 // Used for functions which return 0 on error
 // dwRet will contain the return value - assign to a local if needed for other calls.
@@ -279,6 +442,28 @@ namespace error
 		} \
 	}
 
+// Execute a function which returns 0 on error, log error, and return CheckWin32Error(HRESULT)
+// Will not display an error dialog
+#define WC_D2(_TYPE, fnx)[&]()->_TYPE \
+	{ \
+		auto __ret = (fnx); \
+		if (!__ret) \
+		{ \
+			error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
+		} \
+		return __ret; \
+	} ()
+
+// Execute a function which returns 0 on error, log error, and swallow error
+// Will not display an error dialog
+#define WC_D2S(fnx) \
+	[&]() -> void { \
+		if (!(fnx)) \
+		{ \
+			error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
+		} \
+	}()
+
 // whatever's passed to _ret will contain the return value
 #define WC_D(_ret, fnx) \
 	{ \
@@ -297,6 +482,29 @@ namespace error
 		} \
 	}
 
+// Execute a function, log and return the HRESULT
+// MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
+// This is annoying, so this macro tosses those warnings.
+// We have to check each prop before we use it anyway, so we don't lose anything here.
+// Using this macro, all we have to check is that we got a props array back
+#define EC_H_GETPROPS2(fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes == MAPI_W_ERRORS_RETURNED?S_OK:__hRes; \
+	}()
+
+// Execute a function, log and swallow the HRESULT
+// MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
+// This is annoying, so this macro tosses those warnings.
+// We have to check each prop before we use it anyway, so we don't lose anything here.
+// Using this macro, all we have to check is that we got a props array back
+#define EC_H_GETPROPS2S(fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
+
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
@@ -314,6 +522,31 @@ namespace error
 		} \
 	}
 
+// Execute a function, log and return the HRESULT
+// MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
+// This is annoying, so this macro tosses those warnings.
+// We have to check each prop before we use it anyway, so we don't lose anything here.
+// Using this macro, all we have to check is that we got a props array back
+// Will not display an error dialog
+#define WC_H_GETPROPS2(fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes == MAPI_W_ERRORS_RETURNED ? S_OK : __hRes; \
+	}()
+
+// Execute a function, log and swallow the HRESULT
+// MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
+// This is annoying, so this macro tosses those warnings.
+// We have to check each prop before we use it anyway, so we don't lose anything here.
+// Using this macro, all we have to check is that we got a props array back
+// Will not display an error dialog
+#define WC_H_GETPROPS2S(fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
+
 #define WC_H_GETPROPS(fnx) \
 	{ \
 		if (SUCCEEDED(hRes)) \
@@ -326,6 +559,38 @@ namespace error
 			error::PrintSkipNote(hRes, #fnx); \
 		} \
 	}
+
+// Execute a function, log and return the HRESULT
+// Logs a MAPI call trace under DBGMAPIFunctions
+// Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
+// I don't consider these to be errors.
+// Does not modify or reference existing hRes
+#define EC_H_CANCEL2(fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		if (MAPI_E_USER_CANCEL == __hRes || MAPI_E_CANCEL == __hRes) \
+		{ \
+			error::LogFunctionCall(__hRes, NULL, true, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
+			return S_OK; \
+		} \
+		else \
+			error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a function, log and swallow the HRESULT
+// Logs a MAPI call trace under DBGMAPIFunctions
+// Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
+// I don't consider these to be errors.
+// Does not modify or reference existing hRes
+#define EC_H_CANCEL2S(fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		if (MAPI_E_USER_CANCEL == __hRes || MAPI_E_CANCEL == __hRes) \
+			error::LogFunctionCall(__hRes, NULL, true, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
+		else \
+			error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
 
 // some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL. I don't consider these to be errors.
 #define EC_H_CANCEL(fnx) \
@@ -346,6 +611,26 @@ namespace error
 			error::PrintSkipNote(hRes, #fnx); \
 		} \
 	}
+
+// Execute a function, log and return the HRESULT
+// Designed to check return values from dialog functions, primarily DoModal
+// These functions use CommDlgExtendedError to get error information
+// Does not modify or reference existing hRes
+#define EC_D_DIALOG2(fnx) \
+	[&]() -> HRESULT { \
+		auto __iDlgRet = (fnx); \
+		if (IDCANCEL == __iDlgRet) \
+		{ \
+			auto __err = CommDlgExtendedError(); \
+			if (__err) \
+			{ \
+				error::ErrDialog(__FILE__, __LINE__, IDS_EDCOMMONDLG, #fnx, __err); \
+				return MAPI_E_CALL_FAILED; \
+			} \
+			else \
+				return S_OK; \
+		} \
+	}()
 
 // Designed to check return values from dialog functions, primarily DoModal
 // These functions use CommDlgExtendedError to get error information
