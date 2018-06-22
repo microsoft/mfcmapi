@@ -59,9 +59,19 @@ namespace dialog
 		case MAPI_STORE:
 		{
 			lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
+			auto lpTempMDB = mapi::safe_cast<LPMDB>(lpUnk);
+
+			auto lpMDB = lpMapiObjects->GetMDB(); // do not release
+			if (lpMDB) lpMDB->AddRef(); // hold on to this so that...
+			lpMapiObjects->SetMDB(lpTempMDB);
 
 			new dialog::CMsgStoreDlg(
 				lpParentWnd, lpMapiObjects, lpUnk, nullptr, otStoreDeletedItems == tType ? dfDeleted : dfNormal);
+
+			// restore the old MDB
+			lpMapiObjects->SetMDB(lpMDB); // ...we can put it back
+			if (lpMDB) lpMDB->Release();
+			if (lpTempMDB) lpTempMDB->Release();
 			break;
 		}
 		// #define MAPI_FOLDER ((ULONG) 0x00000003) /* Folder */
@@ -86,8 +96,11 @@ namespace dialog
 							lpMAPISession, static_cast<LPMAPIPROP>(lpUnk), &lpNewMDB));
 						if (lpNewMDB)
 						{
+							lpMapiObjects->SetMDB(lpNewMDB);
 							new dialog::CMsgStoreDlg(lpParentWnd, lpMapiObjects, lpNewMDB, lpUnk, dfNormal);
 
+							// restore the old MDB
+							lpMapiObjects->SetMDB(nullptr);
 							lpNewMDB->Release();
 						}
 					}
