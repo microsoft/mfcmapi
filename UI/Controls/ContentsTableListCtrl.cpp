@@ -520,11 +520,11 @@ namespace controls
 					output::DebugPrintRestriction(DBGGeneric, m_lpRes, lpMDB);
 				}
 
-				EC_MAPI(m_lpContentsTable->Restrict(const_cast<LPSRestriction>(m_lpRes), TBL_BATCH));
+				hRes = EC_MAPI2(m_lpContentsTable->Restrict(const_cast<LPSRestriction>(m_lpRes), TBL_BATCH));
 			}
 			else
 			{
-				WC_H_MSG(m_lpContentsTable->Restrict(nullptr, TBL_BATCH), IDS_TABLENOSUPPORTRES);
+				hRes = WC_H_MSG(IDS_TABLENOSUPPORTRES, m_lpContentsTable->Restrict(nullptr, TBL_BATCH));
 			}
 
 			return hRes;

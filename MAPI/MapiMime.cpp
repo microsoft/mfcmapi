@@ -24,17 +24,16 @@ namespace mapi
 		{
 			if (!lpszEMLFile || !lpMsg) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = S_OK;
 			LPCONVERTERSESSION lpConverter = nullptr;
 
-			EC_H_MSG(
+			auto hRes = EC_H_MSG(
+				IDS_NOCONVERTERSESSION,
 				CoCreateInstance(
 					guid::CLSID_IConverterSession,
 					nullptr,
 					CLSCTX_INPROC_SERVER,
 					guid::IID_IConverterSession,
-					reinterpret_cast<LPVOID*>(&lpConverter)),
-				IDS_NOCONVERTERSESSION);
+					reinterpret_cast<LPVOID*>(&lpConverter)));
 			if (SUCCEEDED(hRes) && lpConverter)
 			{
 				LPSTREAM lpEMLStm = nullptr;
@@ -84,52 +83,53 @@ namespace mapi
 		{
 			if (!lpszEMLFile || !lpMsg) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = S_OK;
-
 			LPCONVERTERSESSION lpConverter = nullptr;
 
-			EC_H_MSG(
+			auto hRes = EC_H_MSG(
+				IDS_NOCONVERTERSESSION,
 				CoCreateInstance(
 					guid::CLSID_IConverterSession,
 					nullptr,
 					CLSCTX_INPROC_SERVER,
 					guid::IID_IConverterSession,
-					reinterpret_cast<LPVOID*>(&lpConverter)),
-				IDS_NOCONVERTERSESSION);
+					reinterpret_cast<LPVOID*>(&lpConverter)));
 			if (SUCCEEDED(hRes) && lpConverter)
 			{
 				if (lpAdrBook)
 				{
-					EC_MAPI(lpConverter->SetAdrBook(lpAdrBook));
+					hRes = EC_MAPI2(lpConverter->SetAdrBook(lpAdrBook));
 				}
+
 				if (SUCCEEDED(hRes) && et != IET_UNKNOWN)
 				{
-					EC_MAPI(lpConverter->SetEncoding(et));
+					hRes = EC_MAPI2(lpConverter->SetEncoding(et));
 				}
+
 				if (SUCCEEDED(hRes) && mst != USE_DEFAULT_SAVETYPE)
 				{
-					EC_MAPI(lpConverter->SetSaveFormat(mst));
+					hRes = EC_MAPI2(lpConverter->SetSaveFormat(mst));
 				}
+
 				if (SUCCEEDED(hRes) && ulWrapLines != USE_DEFAULT_WRAPPING)
 				{
-					EC_MAPI(lpConverter->SetTextWrapping(ulWrapLines != 0, ulWrapLines));
+					hRes = EC_MAPI2(lpConverter->SetTextWrapping(ulWrapLines != 0, ulWrapLines));
 				}
 
 				if (SUCCEEDED(hRes))
 				{
 					LPSTREAM lpMimeStm = nullptr;
 
-					EC_H(CreateStreamOnHGlobal(nullptr, true, &lpMimeStm));
+					hRes = EC_H2(CreateStreamOnHGlobal(nullptr, true, &lpMimeStm));
 					if (SUCCEEDED(hRes) && lpMimeStm)
 					{
 						// Per the docs for MAPIToMIMEStm, CCSF_SMTP must always be set
 						// But we're gonna make the user ensure that, so we don't or it in here
-						EC_MAPI(lpConverter->MAPIToMIMEStm(lpMsg, lpMimeStm, ulConvertFlags));
+						hRes = EC_MAPI2(lpConverter->MAPIToMIMEStm(lpMsg, lpMimeStm, ulConvertFlags));
 						if (SUCCEEDED(hRes))
 						{
 							LPSTREAM lpFileStm = nullptr;
 
-							EC_H(mapi::MyOpenStreamOnFile(
+							hRes = EC_H2(mapi::MyOpenStreamOnFile(
 								MAPIAllocateBuffer,
 								MAPIFreeBuffer,
 								STGM_CREATE | STGM_READWRITE,
@@ -138,14 +138,15 @@ namespace mapi
 							if (SUCCEEDED(hRes) && lpFileStm)
 							{
 								const LARGE_INTEGER dwBegin = {0};
-								EC_MAPI(lpMimeStm->Seek(dwBegin, STREAM_SEEK_SET, nullptr));
+								hRes = EC_MAPI2(lpMimeStm->Seek(dwBegin, STREAM_SEEK_SET, nullptr));
 								if (SUCCEEDED(hRes))
 								{
-									EC_MAPI(lpMimeStm->CopyTo(lpFileStm, ULARGE_MAX, nullptr, nullptr));
-									if (SUCCEEDED(hRes))
-									{
-										EC_MAPI(lpFileStm->Commit(STGC_DEFAULT));
-									}
+									hRes = EC_MAPI2(lpMimeStm->CopyTo(lpFileStm, ULARGE_MAX, nullptr, nullptr));
+								}
+
+								if (SUCCEEDED(hRes))
+								{
+									hRes = EC_MAPI2(lpFileStm->Commit(STGC_DEFAULT));
 								}
 							}
 

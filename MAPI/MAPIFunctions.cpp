@@ -1110,27 +1110,24 @@ namespace mapi
 		_Out_opt_ ULONG* lpcbeid,
 		_Deref_out_opt_ LPENTRYID* lppeid)
 	{
-		auto hRes = S_OK;
-		LPMAPIFOLDER lpInbox = nullptr;
+		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 
 		output::DebugPrint(DBGGeneric, L"GetSpecialFolderEID: getting 0x%X from %p\n", ulFolderPropTag, lpMDB);
 
-		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
-
 		LPSPropValue lpProp = nullptr;
-		WC_H(GetInbox(lpMDB, &lpInbox));
+		LPMAPIFOLDER lpInbox = nullptr;
+		auto hRes = WC_H2(GetInbox(lpMDB, &lpInbox));
 		if (lpInbox)
 		{
-			WC_H_MSG(HrGetOneProp(lpInbox, ulFolderPropTag, &lpProp), IDS_GETSPECIALFOLDERINBOXMISSINGPROP);
+			hRes = WC_H_MSG(HrGetOneProp(lpInbox, ulFolderPropTag, &lpProp), IDS_GETSPECIALFOLDERINBOXMISSINGPROP);
 			lpInbox->Release();
 		}
 
 		if (!lpProp)
 		{
-			hRes = S_OK;
 			LPMAPIFOLDER lpRootFolder = nullptr;
 			// Open root container.
-			EC_H(CallOpenEntry(
+			hRes = EC_H2(CallOpenEntry(
 				lpMDB,
 				nullptr,
 				nullptr,
@@ -1142,14 +1139,15 @@ namespace mapi
 				reinterpret_cast<LPUNKNOWN*>(&lpRootFolder)));
 			if (lpRootFolder)
 			{
-				EC_H_MSG(HrGetOneProp(lpRootFolder, ulFolderPropTag, &lpProp), IDS_GETSPECIALFOLDERROOTMISSINGPROP);
+				hRes = EC_H_MSG(
+					IDS_GETSPECIALFOLDERROOTMISSINGPROP, HrGetOneProp(lpRootFolder, ulFolderPropTag, &lpProp));
 				lpRootFolder->Release();
 			}
 		}
 
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag) && lpProp->Value.bin.cb)
 		{
-			WC_H(MAPIAllocateBuffer(lpProp->Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
+			hRes = WC_H2(MAPIAllocateBuffer(lpProp->Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
 			if (SUCCEEDED(hRes))
 			{
 				*lpcbeid = lpProp->Value.bin.cb;

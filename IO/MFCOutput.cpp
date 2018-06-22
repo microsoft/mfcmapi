@@ -983,10 +983,6 @@ namespace output
 	{
 		CHKPARAM;
 		EARLYABORT;
-		auto hRes = S_OK;
-		BYTE bBuf[MAXBYTES + 2]; // Allocate some extra for NULL terminators - 2 for Unicode
-		ULONG ulNumBytes = 0;
-		const LARGE_INTEGER li = {0};
 
 		if (!lpStream)
 		{
@@ -994,13 +990,15 @@ namespace output
 			return;
 		}
 
-		WC_H_MSG(lpStream->Seek(li, STREAM_SEEK_SET, nullptr), IDS_STREAMSEEKFAILED);
+		const LARGE_INTEGER li = {0};
+		auto hRes = WC_H_MSG(IDS_STREAMSEEKFAILED, lpStream->Seek(li, STREAM_SEEK_SET, nullptr));
 
-		if (S_OK == hRes) do
+		BYTE bBuf[MAXBYTES + 2]; // Allocate some extra for NULL terminators - 2 for Unicode
+		ULONG ulNumBytes = 0;
+		if (hRes == S_OK) do
 			{
-				hRes = S_OK;
 				ulNumBytes = 0;
-				EC_MAPI(lpStream->Read(bBuf, MAXBYTES, &ulNumBytes));
+				EC_MAPI2S(lpStream->Read(bBuf, MAXBYTES, &ulNumBytes));
 
 				if (ulNumBytes > 0)
 				{
@@ -1027,7 +1025,7 @@ namespace output
 		// Get version information from the application.
 		EC_D(dwRet, GetModuleFileNameW(nullptr, szFullPath, _countof(szFullPath)));
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			DWORD dwVerInfoSize = 0;
 
@@ -1061,7 +1059,7 @@ namespace output
 
 					// Read the file description for each language and code page.
 
-					if (S_OK == hRes && lpTranslate)
+					if (hRes == S_OK && lpTranslate)
 					{
 						for (UINT iCodePages = 0; iCodePages < cbTranslate / sizeof(LANGANDCODEPAGE); iCodePages++)
 						{
@@ -1085,7 +1083,7 @@ namespace output
 									reinterpret_cast<void**>(&lpszVer),
 									&cchVer));
 
-								if (S_OK == hRes && cchVer && lpszVer)
+								if (hRes == S_OK && cchVer && lpszVer)
 								{
 									Outputf(ulDbgLvl, fFile, true, L"%ws: %ws\n", szVerString.c_str(), lpszVer);
 								}

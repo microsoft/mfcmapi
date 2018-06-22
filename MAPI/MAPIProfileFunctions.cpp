@@ -499,21 +499,18 @@ namespace mapi
 			_In_opt_ LPSPropValue lpPropVals, // Properties for ConfigureMsgService
 			_In_ const std::string& lpszProfileName) // profile name
 		{
-			auto hRes = S_OK;
-			LPPROFADMIN lpProfAdmin = nullptr;
-			LPSERVICEADMIN lpServiceAdmin = nullptr;
-			LPSRowSet lpRowSet = nullptr;
+			if (lpszServiceName.empty() || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			output::DebugPrint(
 				DBGGeneric, L"HrAddServiceToProfile(%hs,%hs)\n", lpszServiceName.c_str(), lpszProfileName.c_str());
 
-			if (lpszServiceName.empty() || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
-
+			LPPROFADMIN lpProfAdmin = nullptr;
 			// Connect to Profile Admin interface.
-			EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+			auto hRes = EC_MAPI2(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
 
-			EC_MAPI(lpProfAdmin->AdminServices(
+			LPSERVICEADMIN lpServiceAdmin = nullptr;
+			hRes = EC_MAPI2(lpProfAdmin->AdminServices(
 				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
 				LPTSTR(""),
 				0,
@@ -528,36 +525,40 @@ namespace mapi
 				auto lpServiceAdmin2 = mapi::safe_cast<LPSERVICEADMIN2>(lpServiceAdmin);
 				if (lpServiceAdmin2)
 				{
-					EC_H_MSG(
+					hRes = EC_H_MSG(
+						IDS_CREATEMSGSERVICEFAILED,
 						lpServiceAdmin2->CreateMsgServiceEx(
 							reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
 							reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
 							ulUIParam,
 							ulFlags,
-							&uidService),
-						IDS_CREATEMSGSERVICEFAILED);
+							&uidService));
 				}
 				else
 				{
-					hRes = S_OK;
 					// Only need to mark if we plan on calling ConfigureMsgService
 					if (lpPropVals)
 					{
 						// Add a dummy prop to the current providers
-						EC_H(HrMarkExistingProviders(lpServiceAdmin, true));
+						hRes = EC_H2(HrMarkExistingProviders(lpServiceAdmin, true));
 					}
 
-					EC_H_MSG(
-						lpServiceAdmin->CreateMsgService(
-							reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
-							reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
-							ulUIParam,
-							ulFlags),
-						IDS_CREATEMSGSERVICEFAILED);
+					if (SUCCEEDED(hRes))
+					{
+						hRes = EC_H_MSG(
+							IDS_CREATEMSGSERVICEFAILED,
+							lpServiceAdmin->CreateMsgService(
+								reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
+								reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
+								ulUIParam,
+								ulFlags));
+					}
+
 					if (lpPropVals)
 					{
+						LPSRowSet lpRowSet = nullptr;
 						// Look for a provider without our dummy prop
-						EC_H(HrFindUnmarkedProvider(lpServiceAdmin, &lpRowSet));
+						hRes = EC_H2(HrFindUnmarkedProvider(lpServiceAdmin, &lpRowSet));
 
 						if (lpRowSet) output::DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
 
@@ -573,18 +574,19 @@ namespace mapi
 							}
 						}
 
-						hRes = S_OK;
 						// Strip out the dummy prop
-						EC_H(HrMarkExistingProviders(lpServiceAdmin, false));
+						hRes = EC_H2(HrMarkExistingProviders(lpServiceAdmin, false));
+
+						FreeProws(lpRowSet);
 					}
 				}
 
 				if (lpPropVals)
 				{
-					EC_H_CANCEL(lpServiceAdmin->ConfigureMsgService(lpuidService, NULL, 0, cPropVals, lpPropVals));
+					hRes =
+						EC_H_CANCEL2(lpServiceAdmin->ConfigureMsgService(lpuidService, NULL, 0, cPropVals, lpPropVals));
 				}
 
-				FreeProws(lpRowSet);
 				if (lpServiceAdmin2) lpServiceAdmin2->Release();
 				lpServiceAdmin->Release();
 			}

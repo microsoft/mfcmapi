@@ -1073,12 +1073,12 @@ namespace dialog
 		auto lpClientShutdown = mapi::safe_cast<LPMAPICLIENTSHUTDOWN>(lpMAPISession);
 		if (lpClientShutdown)
 		{
-			auto hRes = EC_H_MSG2(IDS_EDQUERYFASTSHUTDOWNFAILED, lpClientShutdown->QueryFastShutdown());
-			EC_H_MSG2S(IDS_EDNOTIFYPROCESSSHUTDOWNFAILED, lpClientShutdown->NotifyProcessShutdown());
+			auto hRes = EC_H_MSG(IDS_EDQUERYFASTSHUTDOWNFAILED, lpClientShutdown->QueryFastShutdown());
+			EC_H_MSGS(IDS_EDNOTIFYPROCESSSHUTDOWNFAILED, lpClientShutdown->NotifyProcessShutdown());
 
 			if (SUCCEEDED(hRes))
 			{
-				hRes = EC_H_MSG2(IDS_EDDOFASTSHUTDOWNFAILED, lpClientShutdown->DoFastShutdown());
+				hRes = EC_H_MSG(IDS_EDDOFASTSHUTDOWNFAILED, lpClientShutdown->DoFastShutdown());
 
 				if (SUCCEEDED(hRes))
 				{

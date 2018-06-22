@@ -220,7 +220,7 @@ namespace error
 
 // Execute a function, log error with uidErrorMessage, and return the HRESULT
 // Does not modify or reference existing hRes
-#define EC_H_MSG2(uidErrorMsg, fnx) \
+#define EC_H_MSG(uidErrorMsg, fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, true, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
@@ -229,29 +229,16 @@ namespace error
 
 // Execute a function, log error with uidErrorMessage, and swallow the HRESULT
 // Does not modify or reference existing hRes
-#define EC_H_MSG2S(uidErrorMsg, fnx) \
+#define EC_H_MSGS(uidErrorMsg, fnx) \
 	[&]() -> void { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, true, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
 	}()
-
-#define EC_H_MSG(fnx, uidErrorMsg) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = (fnx); \
-			CheckMAPICall(hRes, NULL, true, #fnx, uidErrorMsg, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
 
 // Execute a function, log error with uidErrorMessage, and return the HRESULT
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_H_MSG2(uidErrorMsg, fnx) \
+#define WC_H_MSG(uidErrorMsg, fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
@@ -261,24 +248,11 @@ namespace error
 // Execute a function, log error with uidErrorMessage, and swallow the HRESULT
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_H_MSG2S(uidErrorMsg, fnx) \
+#define WC_H_MSGS(uidErrorMsg, fnx) \
 	[&]() -> void { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
 	}()
-
-#define WC_H_MSG(fnx, uidErrorMsg) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = (fnx); \
-			CheckMAPICall(hRes, NULL, false, #fnx, uidErrorMsg, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
 
 // Execute a w32 function, log error, and return HRESULT_FROM_WIN32
 // Does not modify or reference existing hRes

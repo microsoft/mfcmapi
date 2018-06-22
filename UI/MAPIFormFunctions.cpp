@@ -26,39 +26,34 @@ namespace mapi
 			_In_ const std::wstring& szMessageClass,
 			_In_ LPMAPIFOLDER lpFolder)
 		{
-			auto hRes = S_OK;
-			LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
-
 			if (!lpFolder || !lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-			EC_H_MSG(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr), IDS_NOFORMMANAGER);
-
+			LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
+			auto hRes = EC_H_MSG(IDS_NOFORMMANAGER, MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 			if (!lpMAPIFormMgr) return hRes;
 
 			LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-			LPPERSISTMESSAGE lpPersistMessage = nullptr;
-
-			EC_H_MSG(
+			hRes = EC_H_MSG(
+				IDS_NOCLASSHANDLER,
 				lpMAPIFormMgr->ResolveMessageClass(
 					strings::wstringTostring(szMessageClass).c_str(), // class
 					0, // flags
 					lpFolder, // folder to resolve to
-					&lpMAPIFormInfo),
-				IDS_NOCLASSHANDLER);
+					&lpMAPIFormInfo));
 			if (lpMAPIFormInfo)
 			{
-				EC_MAPI(lpMAPIFormMgr->CreateForm(
+				LPPERSISTMESSAGE lpPersistMessage = nullptr;
+				hRes = EC_MAPI2(lpMAPIFormMgr->CreateForm(
 					reinterpret_cast<ULONG_PTR>(hwndParent), // parent window
 					MAPI_DIALOG, // display status window
 					lpMAPIFormInfo, // form info
 					IID_IPersistMessage, // riid to open
 					reinterpret_cast<LPVOID*>(&lpPersistMessage))); // form to open into
-
 				if (lpPersistMessage)
 				{
 					LPMESSAGE lpMessage = nullptr;
 					// Get a message
-					EC_MAPI(lpFolder->CreateMessage(
+					hRes = EC_MAPI2(lpFolder->CreateMessage(
 						nullptr, // default interface
 						0, // flags
 						&lpMessage));
@@ -70,18 +65,23 @@ namespace mapi
 						if (lpMAPIFormViewer)
 						{
 							// put everything together with the default info
-							EC_MAPI(
+							hRes = EC_MAPI2(
 								lpPersistMessage->InitNew(static_cast<LPMAPIMESSAGESITE>(lpMAPIFormViewer), lpMessage));
 
 							auto lpForm = mapi::safe_cast<LPMAPIFORM>(lpPersistMessage);
 							if (lpForm)
 							{
-								EC_MAPI(lpForm->SetViewContext(static_cast<LPMAPIVIEWCONTEXT>(lpMAPIFormViewer)));
+								hRes =
+									EC_MAPI2(lpForm->SetViewContext(static_cast<LPMAPIVIEWCONTEXT>(lpMAPIFormViewer)));
 
-								EC_MAPI(lpMAPIFormViewer->CallDoVerb(
-									lpForm,
-									EXCHIVERB_OPEN,
-									nullptr)); // Not passing a RECT here so we'll try to use the default for the form
+								if (SUCCEEDED(hRes))
+								{
+									hRes = EC_MAPI2(lpMAPIFormViewer->CallDoVerb(
+										lpForm,
+										EXCHIVERB_OPEN,
+										nullptr)); // Not passing a RECT here so we'll try to use the default for the form
+								}
+
 								lpForm->Release();
 							}
 
