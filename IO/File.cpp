@@ -1253,8 +1253,8 @@ namespace file
 
 	std::wstring GetModuleFileName(_In_opt_ HMODULE hModule)
 	{
-		std::vector<wchar_t> buf;
-		DWORD copied = 0;
+		auto buf = std::vector<wchar_t>();
+		auto copied = DWORD();
 		do
 		{
 			auto hRes = S_OK;
@@ -1264,15 +1264,15 @@ namespace file
 
 		buf.resize(copied);
 
-		const std::wstring path(buf.begin(), buf.end());
+		const auto path = std::wstring(buf.begin(), buf.end());
 
 		return path;
 	}
 
 	std::wstring GetSystemDirectory()
 	{
-		std::vector<wchar_t> buf;
-		DWORD copied = 0;
+		auto buf = std::vector<wchar_t>();
+		auto copied = DWORD();
 		do
 		{
 			auto hRes = S_OK;
@@ -1282,7 +1282,7 @@ namespace file
 
 		buf.resize(copied);
 
-		const std::wstring path(buf.begin(), buf.end());
+		const auto path = std::wstring(buf.begin(), buf.end());
 
 		return path;
 	}
