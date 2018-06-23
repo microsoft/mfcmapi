@@ -213,7 +213,6 @@ namespace addin
 		// Write the list back to registry
 		~CFileList()
 		{
-			auto hRes = S_OK;
 			std::wstring szList;
 
 			if (!m_lpList.empty())
@@ -227,7 +226,7 @@ namespace addin
 				registry::WriteStringToRegistry(m_hRootKey, m_szKey, szList);
 			}
 
-			EC_W32(RegCloseKey(m_hRootKey));
+			EC_W32S(RegCloseKey(m_hRootKey));
 		}
 
 		// Add the DLL to the list

@@ -247,7 +247,7 @@ namespace error
 
 // Execute a w32 function, log error, and return HRESULT_FROM_WIN32
 // Does not modify or reference existing hRes
-#define EC_W32_2(fnx) \
+#define EC_W32(fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = HRESULT_FROM_WIN32(fnx); \
 		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
@@ -256,29 +256,16 @@ namespace error
 
 // Execute a w32 function, log error, and swallow error
 // Does not modify or reference existing hRes
-#define EC_W32_2S(fnx) \
+#define EC_W32S(fnx) \
 	[&]() -> void { \
 		auto __hRes = HRESULT_FROM_WIN32(fnx); \
 		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
-
-#define EC_W32(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = HRESULT_FROM_WIN32(fnx); \
-			CheckHResFn(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
 
 // Execute a w32 function, log error, and return HRESULT_FROM_WIN32
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_W32_2(fnx) \
+#define WC_W32(fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = HRESULT_FROM_WIN32(fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
@@ -288,24 +275,11 @@ namespace error
 // Execute a w32 function, log error, and swallow error
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_W32_2S(fnx) \
+#define WC_W32S(fnx) \
 	[&]() -> void { \
 		auto __hRes = HRESULT_FROM_WIN32(fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
-
-#define WC_W32(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = HRESULT_FROM_WIN32(fnx); \
-			CheckHResFn(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
 
 // Execute a bool/BOOL function, log error, and return CheckWin32Error(HRESULT)
 // Does not modify or reference existing hRes

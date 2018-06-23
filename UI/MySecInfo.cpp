@@ -124,20 +124,18 @@ namespace mapi
 		STDMETHODIMP CMySecInfo::GetObjectInformation(PSI_OBJECT_INFO pObjectInfo)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::GetObjectInformation\n");
-			auto hRes = S_OK;
-			auto bAllowEdits = false;
 
 			HKEY hRootKey = nullptr;
+			WC_W32S(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey));
 
-			WC_W32(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey));
-
+			auto bAllowEdits = false;
 			if (hRootKey)
 			{
 				bAllowEdits = !!registry::ReadDWORDFromRegistry(
 					hRootKey,
 					L"AllowUnsupportedSecurityEdits", // STRING_OK
 					DWORD(bAllowEdits));
-				EC_W32(RegCloseKey(hRootKey));
+				EC_W32S(RegCloseKey(hRootKey));
 			}
 
 			if (bAllowEdits)
@@ -150,6 +148,7 @@ namespace mapi
 				pObjectInfo->dwFlags =
 					SI_READONLY | SI_ADVANCED | (sid::acetypeContainer == m_acetype ? SI_CONTAINER : 0);
 			}
+
 			pObjectInfo->pszObjectName = LPWSTR(m_wszObject.c_str()); // Object being edited
 			pObjectInfo->pszServerName = nullptr; // specify DC for lookups
 			return S_OK;
