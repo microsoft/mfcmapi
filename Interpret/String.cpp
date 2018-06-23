@@ -685,23 +685,19 @@ namespace strings
 	void
 	FileTimeToString(_In_ const FILETIME& fileTime, _In_ std::wstring& PropString, _In_opt_ std::wstring& AltPropString)
 	{
-		auto hRes = S_OK;
 		SYSTEMTIME SysTime = {0};
+		auto hRes = WC_B2(FileTimeToSystemTime(&fileTime, &SysTime));
 
-		WC_B(FileTimeToSystemTime(&fileTime, &SysTime));
-
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
-			auto iRet = 0;
 			wchar_t szTimeStr[MAX_PATH] = {0};
 			wchar_t szDateStr[MAX_PATH] = {0};
 
 			// shove millisecond info into our format string since GetTimeFormat doesn't use it
 			auto szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
 
-			WC_D(iRet, GetTimeFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, szFormatStr.c_str(), szTimeStr, MAX_PATH));
-
-			WC_D(iRet, GetDateFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, nullptr, szDateStr, MAX_PATH));
+			WC_DS(GetTimeFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, szFormatStr.c_str(), szTimeStr, MAX_PATH));
+			WC_DS(GetDateFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, nullptr, szDateStr, MAX_PATH));
 
 			PropString = format(L"%ws %ws", szTimeStr, szDateStr); // STRING_OK
 		}

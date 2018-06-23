@@ -149,7 +149,7 @@ namespace dialog
 		{
 			const auto lme = reinterpret_cast<ui::LPMENUENTRY>(subMenu.dwItemData);
 			output::DebugPrint(DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName.c_str());
-			auto hMAPI = EC_D2(HMODULE, import::MyLoadLibraryW(lme->m_pName));
+			auto hMAPI = EC_D(HMODULE, import::MyLoadLibraryW(lme->m_pName));
 			mapistub::SetMAPIHandle(hMAPI);
 		}
 
@@ -976,13 +976,12 @@ namespace dialog
 
 	void CMainDlg::OnLoadMAPI()
 	{
-		WCHAR szDLLPath[MAX_PATH] = {0};
 		editor::CEditor MyData(this, IDS_LOADMAPI, IDS_LOADMAPIPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		auto cchDllPath = WC_D2(UINT, GetSystemDirectoryW(szDLLPath, _countof(szDLLPath)));
-		if (cchDllPath < _countof(szDLLPath))
+		const auto szDLLPath = file::GetSystemDirectory();
+		if (!szDLLPath.empty())
 		{
-			const auto szFullPath = std::wstring(szDLLPath) + L"\\mapi32.dll";
+			const auto szFullPath = szDLLPath + L"\\mapi32.dll";
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PATH, szFullPath, false));
 		}
 
@@ -990,7 +989,7 @@ namespace dialog
 		if (hRes == S_OK)
 		{
 			mapistub::UnloadPrivateMAPI();
-			auto hMAPI = EC_D2(HMODULE, import::MyLoadLibraryW(MyData.GetStringW(0)));
+			auto hMAPI = EC_D(HMODULE, import::MyLoadLibraryW(MyData.GetStringW(0)));
 			mapistub::SetMAPIHandle(hMAPI);
 		}
 	}
@@ -1008,8 +1007,6 @@ namespace dialog
 
 	void CMainDlg::OnDisplayMAPIPath()
 	{
-		WCHAR szMAPIPath[MAX_PATH] = {0};
-
 		output::DebugPrint(DBGGeneric, L"OnDisplayMAPIPath()\n");
 		const auto hMAPI = mapistub::GetMAPIHandle();
 
@@ -1017,8 +1014,8 @@ namespace dialog
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
 		if (hMAPI)
 		{
-			const auto dw = GetModuleFileNameW(hMAPI, szMAPIPath, _countof(szMAPIPath));
-			if (dw)
+			const auto szMAPIPath = file::GetModuleFileName(hMAPI);
+			if (!szMAPIPath.empty())
 			{
 				MyData.SetStringW(0, szMAPIPath);
 			}

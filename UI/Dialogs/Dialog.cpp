@@ -279,12 +279,10 @@ namespace dialog
 		m_hwndCenteringWindow = GetActiveWindow();
 
 		const auto hInst = AfxFindResourceHandle(m_lpszTemplateName, RT_DIALOG);
-		HRSRC hResource = nullptr;
-		EC_D(hResource, ::FindResource(hInst, m_lpszTemplateName, RT_DIALOG));
+		const auto hResource = EC_D(HRSRC, ::FindResource(hInst, m_lpszTemplateName, RT_DIALOG));
 		if (hResource)
 		{
-			HGLOBAL hTemplate = nullptr;
-			EC_D(hTemplate, LoadResource(hInst, hResource));
+			const auto hTemplate = EC_D(HGLOBAL, LoadResource(hInst, hResource));
 			if (hTemplate)
 			{
 				const auto lpDialogTemplate = static_cast<LPCDLGTEMPLATE>(LockResource(hTemplate));

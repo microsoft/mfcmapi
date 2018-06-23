@@ -2,6 +2,7 @@
 #include <ImportProcs.h>
 #include <Interpret/String.h>
 #include <MAPI/StubUtils.h>
+#include <IO/File.h>
 
 namespace import
 {
@@ -78,10 +79,8 @@ namespace import
 	// Exists to allow some logging
 	_Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName)
 	{
-		HMODULE hMod = nullptr;
-		auto hRes = S_OK;
 		output::DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - loading \"%ws\"\n", lpszLibFileName.c_str());
-		WC_D(hMod, LoadLibraryW(lpszLibFileName.c_str()));
+		const auto hMod = WC_D(HMODULE, LoadLibraryW(lpszLibFileName.c_str()));
 		if (hMod)
 		{
 			output::DebugPrint(
@@ -108,35 +107,27 @@ namespace import
 
 		if (!*lphModule) return;
 
-		auto hRes = S_OK;
-		WC_D(*lpfn, GetProcAddress(*lphModule, szEntryPoint));
+		*lpfn = WC_D(FARPROC, GetProcAddress(*lphModule, szEntryPoint));
 	}
 
 	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
 	{
 		if (szDLLName.empty()) return nullptr;
 
-		auto hRes = S_OK;
-		HMODULE hModRet = nullptr;
-		std::wstring szDLLPath;
-		UINT uiRet = NULL;
-
-		static WCHAR szSystemDir[MAX_PATH] = {0};
+		static std::wstring szSystemDir;
 		static auto bSystemDirLoaded = false;
 
 		output::DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
 
 		if (!bSystemDirLoaded)
 		{
-			WC_D(uiRet, GetSystemDirectoryW(szSystemDir, MAX_PATH));
+			szSystemDir = file::GetSystemDirectory();
 			bSystemDirLoaded = true;
 		}
 
-		szDLLPath = std::wstring(szSystemDir) + L"\\" + szDLLName;
+		const auto szDLLPath = szSystemDir + L"\\" + szDLLName;
 		output::DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
-		hModRet = MyLoadLibraryW(szDLLPath);
-
-		return hModRet;
+		return MyLoadLibraryW(szDLLPath);
 	}
 
 	_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring& szDLLName)
@@ -150,12 +141,9 @@ namespace import
 			auto szOutlookMAPIPath = mapistub::GetInstalledOutlookMAPI(i);
 			if (!szOutlookMAPIPath.empty())
 			{
-				auto hRes = S_OK;
-				UINT ret = 0;
 				WCHAR szDrive[_MAX_DRIVE] = {0};
 				WCHAR szMAPIPath[MAX_PATH] = {0};
-				WC_D(
-					ret,
+				auto ret = WC_W32(
 					_wsplitpath_s(
 						szOutlookMAPIPath.c_str(),
 						szDrive,
@@ -167,13 +155,13 @@ namespace import
 						nullptr,
 						NULL));
 
-				if (SUCCEEDED(hRes))
+				if (ret == ERROR_SUCCESS)
 				{
 					auto szFullPath = std::wstring(szDrive) + std::wstring(szMAPIPath) + szDLLName;
 
 					output::DebugPrint(
 						DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
-					WC_D(hModRet, MyLoadLibraryW(szFullPath));
+					hModRet = WC_D(HMODULE, MyLoadLibraryW(szFullPath));
 				}
 			}
 

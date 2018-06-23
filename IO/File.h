@@ -62,4 +62,7 @@ namespace file
 	_Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd);
 	_Check_return_ HRESULT
 	WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_ const std::wstring& szFileName, bool bUnicode, HWND hWnd);
+
+	std::wstring GetModuleFileName(_In_opt_ HMODULE hModule);
+	std::wstring GetSystemDirectory();
 }

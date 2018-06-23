@@ -39,9 +39,8 @@ namespace controls
 		{
 			if (!m_hwndTip)
 			{
-				auto hRes = S_OK;
-				EC_D(
-					m_hwndTip,
+				m_hwndTip = EC_D(
+					HWND,
 					CreateWindowEx(
 						WS_EX_TOPMOST,
 						TOOLTIPS_CLASS,
@@ -58,7 +57,7 @@ namespace controls
 
 				if (m_hwndTip)
 				{
-					EC_B(::SetWindowPos(m_hwndTip, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE));
+					EC_B2S(::SetWindowPos(m_hwndTip, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE));
 
 					m_ti.cbSize = sizeof(TOOLINFO);
 					m_ti.uFlags = TTF_TRACK | TTF_IDISHWND;
@@ -67,8 +66,8 @@ namespace controls
 					m_ti.hinst = AfxGetInstanceHandle();
 					m_ti.lpszText = const_cast<LPWSTR>(L"");
 
-					EC_B(::SendMessage(m_hwndTip, TTM_ADDTOOL, 0, LPARAM(&m_ti)));
-					EC_B(::SendMessage(m_hwndTip, TTM_SETMAXTIPWIDTH, 0, LPARAM(500)));
+					EC_B2S(::SendMessage(m_hwndTip, TTM_ADDTOOL, 0, LPARAM(&m_ti)));
+					EC_B2S(::SendMessage(m_hwndTip, TTM_SETMAXTIPWIDTH, 0, LPARAM(500)));
 				}
 			}
 		}

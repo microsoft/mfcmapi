@@ -6,6 +6,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/ExtraPropTags.h>
+#include <IO/File.h>
 
 namespace mapi
 {
@@ -65,8 +66,6 @@ namespace mapi
 		// Return type : wstring
 		std::wstring GetMAPISVCPath()
 		{
-			auto hRes = S_OK;
-
 			auto szMAPIDir = import::GetMAPIPath(L"Microsoft Outlook"); // STRING_OK
 
 			// We got the path to MAPI - need to strip it
@@ -77,17 +76,10 @@ namespace mapi
 			else
 			{
 				// Fall back on System32
-				UINT cchSystemDir = 0;
-				WCHAR szSystemDir[MAX_PATH] = {0};
-				EC_D(cchSystemDir, GetSystemDirectoryW(szSystemDir, _countof(szSystemDir)));
-
-				if (cchSystemDir < _countof(szSystemDir))
-				{
-					szMAPIDir = szSystemDir;
-				}
+				szMAPIDir = file::GetSystemDirectory();
 			}
 
-			if (SUCCEEDED(hRes) && !szMAPIDir.empty())
+			if (!szMAPIDir.empty())
 			{
 				szMAPIDir += L"\\MAPISVC.INF";
 			}
@@ -749,7 +741,6 @@ namespace mapi
 		_Check_return_ HRESULT
 		HrMAPIProfileExists(_In_ LPPROFADMIN lpProfAdmin, _In_ const std::string& lpszProfileName)
 		{
-			auto hRes = S_OK;
 			LPMAPITABLE lpTable = nullptr;
 			LPSRowSet lpRows = nullptr;
 
@@ -760,10 +751,10 @@ namespace mapi
 
 			// Get a table of existing profiles
 
-			EC_MAPI(lpProfAdmin->GetProfileTable(0, &lpTable));
+			auto hRes = EC_MAPI2(lpProfAdmin->GetProfileTable(0, &lpTable));
 			if (!lpTable) return hRes;
 
-			EC_MAPI(HrQueryAllRows(lpTable, LPSPropTagArray(&rgPropTag), nullptr, nullptr, 0, &lpRows));
+			hRes = EC_MAPI2(HrQueryAllRows(lpTable, LPSPropTagArray(&rgPropTag), nullptr, nullptr, 0, &lpRows));
 
 			if (lpRows)
 			{
@@ -776,16 +767,14 @@ namespace mapi
 				{
 					// Search rows for the folder in question
 
-					if (!FAILED(hRes))
+					if (SUCCEEDED(hRes))
+					{
 						for (ULONG i = 0; i < lpRows->cRows; i++)
 						{
-							hRes = S_OK;
 							const auto lpProp = lpRows->aRow[i].lpProps;
 
-							ULONG ulComp = NULL;
-
-							EC_D(
-								ulComp,
+							const auto ulComp = EC_D(
+								ULONG,
 								CompareStringA(
 									g_lcid, // LOCALE_INVARIANT,
 									NORM_IGNORECASE,
@@ -794,12 +783,13 @@ namespace mapi
 									lpszProfileName.c_str(),
 									-1));
 
-							if (CSTR_EQUAL == ulComp)
+							if (ulComp == CSTR_EQUAL)
 							{
 								hRes = E_ACCESSDENIED;
 								break;
 							}
 						}
+					}
 				}
 			}
 

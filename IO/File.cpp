@@ -22,7 +22,7 @@ namespace file
 		{
 			WCHAR szShortPath[MAX_PATH] = {0};
 			// Use the short path to give us as much room as possible
-			WC_D2S(GetShortPathNameW(path.c_str(), szShortPath, _countof(szShortPath)));
+			WC_DS(GetShortPathNameW(path.c_str(), szShortPath, _countof(szShortPath)));
 			std::wstring ret = szShortPath;
 			if (ret.back() != L'\\')
 			{
@@ -1252,4 +1252,38 @@ namespace file
 		return hRes;
 	}
 #endif
+
+	std::wstring GetModuleFileName(_In_opt_ HMODULE hModule)
+	{
+		std::vector<wchar_t> buf;
+		DWORD copied = 0;
+		do
+		{
+			buf.resize(buf.size() + MAX_PATH);
+			copied = EC_D(DWORD, ::GetModuleFileNameW(hModule, &buf.at(0), buf.size()));
+		} while (copied >= buf.size());
+
+		buf.resize(copied);
+
+		const std::wstring path(buf.begin(), buf.end());
+
+		return path;
+	}
+
+	std::wstring GetSystemDirectory()
+	{
+		std::vector<wchar_t> buf;
+		DWORD copied = 0;
+		do
+		{
+			buf.resize(buf.size() + MAX_PATH);
+			copied = EC_D(DWORD, ::GetSystemDirectoryW(&buf.at(0), buf.size()));
+		} while (copied >= buf.size());
+
+		buf.resize(copied);
+
+		const std::wstring path(buf.begin(), buf.end());
+
+		return path;
+	}
 }

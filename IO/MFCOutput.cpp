@@ -8,6 +8,7 @@
 #include <Property/ParseProperty.h>
 #include <Interpret/Guids.h>
 #include <MAPI/Cache/NamedPropCache.h>
+#include <IO/File.h>
 #ifndef MRMAPI
 #include <UI/Dialogs/Editors/DbgView.h>
 #endif
@@ -1018,29 +1019,21 @@ namespace output
 	{
 		CHKPARAM;
 		EARLYABORT;
-		wchar_t szFullPath[MAX_PATH];
-		auto hRes = S_OK;
-		DWORD dwRet = 0;
 
 		// Get version information from the application.
-		EC_D(dwRet, GetModuleFileNameW(nullptr, szFullPath, _countof(szFullPath)));
+		const auto szFullPath = file::GetModuleFileName(nullptr);
 
-		if (hRes == S_OK)
+		if (!szFullPath.empty())
 		{
-			DWORD dwVerInfoSize = 0;
-
-			EC_D(dwVerInfoSize, GetFileVersionInfoSizeW(szFullPath, nullptr));
-
+			const auto dwVerInfoSize = EC_D(DWORD, GetFileVersionInfoSizeW(szFullPath.c_str(), nullptr));
 			if (dwVerInfoSize)
 			{
 				// If we were able to get the information, process it.
 				const auto pbData = new BYTE[dwVerInfoSize];
 				if (pbData == nullptr) return;
 
-				BOOL bRet = false;
-				EC_D(bRet, GetFileVersionInfoW(szFullPath, NULL, dwVerInfoSize, static_cast<void*>(pbData)));
-
-				if (pbData)
+				auto hRes = EC_B2(GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
+				if (SUCCEEDED(hRes))
 				{
 					struct LANGANDCODEPAGE
 					{
@@ -1051,7 +1044,7 @@ namespace output
 					UINT cbTranslate = 0;
 
 					// Read the list of languages and code pages.
-					EC_B(VerQueryValueW(
+					hRes = EC_B2(VerQueryValueW(
 						pbData,
 						L"\\VarFileInfo\\Translation", // STRING_OK
 						reinterpret_cast<LPVOID*>(&lpTranslate),
@@ -1075,9 +1068,7 @@ namespace output
 								wchar_t* lpszVer = nullptr;
 								auto szVerString = strings::loadstring(iVerString);
 								auto szQueryString = szSubBlock + szVerString;
-								hRes = S_OK;
-
-								EC_B(VerQueryValueW(
+								hRes = EC_B2(VerQueryValueW(
 									static_cast<void*>(pbData),
 									szQueryString.c_str(),
 									reinterpret_cast<void**>(&lpszVer),
