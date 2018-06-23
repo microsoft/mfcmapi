@@ -25,6 +25,7 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/Cache/GlobalCache.h>
 #include <MAPI/StubUtils.h>
+#include <IO/File.h>
 
 namespace dialog
 {
@@ -1039,7 +1040,6 @@ namespace dialog
 	void CMainDlg::OnDisplayMAPIPath()
 	{
 		auto hRes = S_OK;
-		WCHAR szMAPIPath[MAX_PATH] = {0};
 
 		output::DebugPrint(DBGGeneric, L"OnDisplayMAPIPath()\n");
 		const auto hMAPI = mapistub::GetMAPIHandle();
@@ -1048,8 +1048,8 @@ namespace dialog
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
 		if (hMAPI)
 		{
-			const auto dw = GetModuleFileNameW(hMAPI, szMAPIPath, _countof(szMAPIPath));
-			if (dw)
+			const auto szMAPIPath = file::GetModuleFileName(hMAPI);
+			if (!szMAPIPath.empty())
 			{
 				MyData.SetStringW(0, szMAPIPath);
 			}

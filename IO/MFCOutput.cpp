@@ -8,6 +8,7 @@
 #include <Property/ParseProperty.h>
 #include <Interpret/Guids.h>
 #include <MAPI/Cache/NamedPropCache.h>
+#include <IO/File.h>
 #ifndef MRMAPI
 #include <UI/Dialogs/Editors/DbgView.h>
 #endif
@@ -1020,18 +1021,15 @@ namespace output
 	{
 		CHKPARAM;
 		EARLYABORT;
-		wchar_t szFullPath[MAX_PATH];
-		auto hRes = S_OK;
-		DWORD dwRet = 0;
 
 		// Get version information from the application.
-		EC_D(dwRet, GetModuleFileNameW(nullptr, szFullPath, _countof(szFullPath)));
-
-		if (S_OK == hRes)
+		const auto szFullPath = file::GetModuleFileName(nullptr);
+		if (!szFullPath.empty())
 		{
+			auto hRes = S_OK;
 			DWORD dwVerInfoSize = 0;
 
-			EC_D(dwVerInfoSize, GetFileVersionInfoSizeW(szFullPath, nullptr));
+			EC_D(dwVerInfoSize, GetFileVersionInfoSizeW(szFullPath.c_str(), nullptr));
 
 			if (dwVerInfoSize)
 			{
@@ -1040,7 +1038,7 @@ namespace output
 				if (pbData == nullptr) return;
 
 				BOOL bRet = false;
-				EC_D(bRet, GetFileVersionInfoW(szFullPath, NULL, dwVerInfoSize, static_cast<void*>(pbData)));
+				EC_D(bRet, GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
 
 				if (pbData)
 				{
