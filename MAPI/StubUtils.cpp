@@ -318,17 +318,22 @@ namespace mapistub
 	std::wstring GetMAPISystemDir()
 	{
 		output::DebugPrint(DBGLoadMAPI, L"Enter GetMAPISystemDir\n");
-		WCHAR szSystemDir[MAX_PATH] = {0};
-
-		if (GetSystemDirectoryW(szSystemDir, MAX_PATH))
+		auto buf = std::vector<wchar_t>();
+		auto copied = DWORD();
+		do
 		{
-			auto szDLLPath = std::wstring(szSystemDir) + L"\\" + std::wstring(WszMapi32);
-			output::DebugPrint(DBGLoadMAPI, L"GetMAPISystemDir: found %ws\n", szDLLPath.c_str());
-			return szDLLPath;
-		}
+			auto hRes = S_OK;
+			buf.resize(buf.size() + MAX_PATH);
+			EC_D(copied, ::GetSystemDirectoryW(&buf.at(0), buf.size()));
+		} while (copied >= buf.size());
 
-		output::DebugPrint(DBGLoadMAPI, L"Exit GetMAPISystemDir: found nothing\n");
-		return strings::emptystring;
+		buf.resize(copied);
+
+		const auto path = std::wstring(buf.begin(), buf.end());
+		const auto szDLLPath = path + L"\\" + std::wstring(WszMapi32);
+
+		output::DebugPrint(DBGLoadMAPI, L"Exit GetMAPISystemDir: found %ws\n", szDLLPath.c_str());
+		return szDLLPath;
 	}
 
 	std::vector<std::wstring> GetMAPIPaths()

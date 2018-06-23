@@ -6,6 +6,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/ExtraPropTags.h>
+#include <IO/File.h>
 
 namespace mapi
 {
@@ -65,8 +66,6 @@ namespace mapi
 		// Return type : wstring
 		std::wstring GetMAPISVCPath()
 		{
-			auto hRes = S_OK;
-
 			auto szMAPIDir = import::GetMAPIPath(L"Microsoft Outlook"); // STRING_OK
 
 			// We got the path to MAPI - need to strip it
@@ -77,17 +76,10 @@ namespace mapi
 			else
 			{
 				// Fall back on System32
-				UINT cchSystemDir = 0;
-				WCHAR szSystemDir[MAX_PATH] = {0};
-				EC_D(cchSystemDir, GetSystemDirectoryW(szSystemDir, _countof(szSystemDir)));
-
-				if (cchSystemDir < _countof(szSystemDir))
-				{
-					szMAPIDir = szSystemDir;
-				}
+				szMAPIDir = file::GetSystemDirectory();
 			}
 
-			if (SUCCEEDED(hRes) && !szMAPIDir.empty())
+			if (!szMAPIDir.empty())
 			{
 				szMAPIDir += L"\\MAPISVC.INF";
 			}
