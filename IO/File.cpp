@@ -1250,4 +1250,40 @@ namespace file
 		return hRes;
 	}
 #endif
+
+	std::wstring GetModuleFileName(_In_opt_ HMODULE hModule)
+	{
+		std::vector<wchar_t> buf;
+		DWORD copied = 0;
+		do
+		{
+			auto hRes = S_OK;
+			buf.resize(buf.size() + MAX_PATH);
+			EC_D(copied, ::GetModuleFileNameW(hModule, &buf.at(0), buf.size()));
+		} while (copied >= buf.size());
+
+		buf.resize(copied);
+
+		const std::wstring path(buf.begin(), buf.end());
+
+		return path;
+	}
+
+	std::wstring GetSystemDirectory()
+	{
+		std::vector<wchar_t> buf;
+		DWORD copied = 0;
+		do
+		{
+			auto hRes = S_OK;
+			buf.resize(buf.size() + MAX_PATH);
+			EC_D(copied, ::GetSystemDirectoryW(&buf.at(0), buf.size()));
+		} while (copied >= buf.size());
+
+		buf.resize(copied);
+
+		const std::wstring path(buf.begin(), buf.end());
+
+		return path;
+	}
 }
