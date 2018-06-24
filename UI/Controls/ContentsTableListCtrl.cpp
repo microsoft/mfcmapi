@@ -324,7 +324,7 @@ namespace controls
 
 				WC_H(MyEditor.DisplayDialog());
 
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					lpModifiedTags = MyEditor.DetachModifiedTagArray();
 					if (lpModifiedTags)
@@ -1419,7 +1419,7 @@ namespace controls
 					output::DebugPrint(DBGGeneric, L"This table doesn't support notifications\n");
 					hRes = S_OK; // mask the error
 				}
-				else if (S_OK == hRes)
+				else if (hRes == S_OK)
 				{
 					const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 					if (lpMDB)
@@ -1526,7 +1526,7 @@ namespace controls
 						NULL,
 						&lpRowSet,
 						&ulRowsAdded));
-					if (S_OK == hRes && lpRowSet)
+					if (hRes == S_OK && lpRowSet)
 					{
 						for (ULONG i = 0; i < lpRowSet->cRows; i++)
 						{
@@ -1556,7 +1556,7 @@ namespace controls
 						lpData->Contents()->m_lpInstanceKey->lpb,
 						NULL,
 						&ulRowsRemoved));
-					if (S_OK == hRes && ulRowsRemoved)
+					if (hRes == S_OK && ulRowsRemoved)
 					{
 						for (int i = iItem + ulRowsRemoved; i > iItem; i--)
 						{

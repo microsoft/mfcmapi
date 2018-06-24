@@ -242,7 +242,7 @@ namespace mapiprocessor
 				// go to the first row
 				WC_MAPI(lpHierarchyTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 					for (;;)
 					{
 						hRes = S_OK;

@@ -262,7 +262,7 @@ namespace mapi
 
 				WC_H(MyData.DisplayDialog());
 
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					serverName = strings::wstringTostring(MyData.GetStringW(0));
 				}
@@ -612,7 +612,7 @@ namespace mapi
 			MyPrompt.SetHex(3, ulFlags);
 			MyPrompt.InitPane(4, viewpane::CheckPane::Create(IDS_FORCESERVER, false, false));
 			WC_H(MyPrompt.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				WC_H(OpenOtherUsersMailbox(
 					lpMAPISession,

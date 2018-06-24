@@ -356,7 +356,7 @@ namespace dialog
 
 			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_PASTEFOLDERCONTENTS, false, false));
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				const auto bPasteContents = MyData.GetCheck(0);
 				if (bPasteContents)
@@ -391,7 +391,7 @@ namespace dialog
 
 			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_MESSAGEMOVE, false, false));
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				auto ulMoveMessage = MyData.GetCheck(0) ? MESSAGE_MOVE : 0;
 
@@ -468,7 +468,7 @@ namespace dialog
 			auto lpCopyRoot = lpSrcParentFolder;
 			if (!lpSrcParentFolder) lpCopyRoot = lpMAPIDestFolder;
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -532,7 +532,7 @@ namespace dialog
 			MyData.InitPane(2, viewpane::CheckPane::Create(IDS_SINGLECALLCOPY, false, false));
 			WC_H(MyData.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -572,7 +572,7 @@ namespace dialog
 			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_REPLACERULES, false, false));
 			WC_H(MyData.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -723,7 +723,7 @@ namespace dialog
 			MyData.InitPane(2, viewpane::CheckPane::Create(IDS_MANUALLYEMPTYFOLDER, false, false));
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				if (MyData.GetCheck(2))
 				{
@@ -788,7 +788,7 @@ namespace dialog
 					this, IDS_DELETEFOLDER, IDS_DELETEFOLDERPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 				MyData.InitPane(0, viewpane::CheckPane::Create(IDS_HARDDELETION, false, false));
 				if (!bShiftPressed) WC_H(MyData.DisplayDialog());
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					auto ulFlags = DEL_FOLDERS | DEL_MESSAGES;
 					ulFlags |= bShiftPressed || MyData.GetCheck(0) ? DELETE_HARD_DELETE : 0;
@@ -843,7 +843,7 @@ namespace dialog
 		MyData.InitPane(1, viewpane::CheckPane::Create(IDS_SAVEUNICODE, false, false));
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			auto szDir = file::GetDirectoryPath(m_hWnd);
 			if (!szDir.empty())
@@ -876,7 +876,7 @@ namespace dialog
 
 			WC_H(MyData.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				file::SaveFolderContentsToTXT(
 					m_lpMDB, lpFolder, MyData.GetCheck(1), MyData.GetCheck(2), MyData.GetCheck(0), m_hWnd);
@@ -918,7 +918,7 @@ namespace dialog
 
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			if (MyData.GetCheck(1))
 			{
@@ -1015,7 +1015,7 @@ namespace dialog
 
 			WC_H(MyData.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				// Restore the folder up under m_lpContainer
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -1076,7 +1076,7 @@ namespace dialog
 
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			const auto ulFlags =
 				(MyData.GetCheck(0) ? MAPI_FORCE_CREATE : 0) | (MyData.GetCheck(1) ? MAPI_FULL_IPM_TREE : 0);

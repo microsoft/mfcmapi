@@ -413,7 +413,7 @@ namespace mapi
 								lpProgress,
 								ulCopyFlags));
 
-							if (S_OK == hRes) output::DebugPrint(DBGGeneric, L"Message Copied\n");
+							if (hRes == S_OK) output::DebugPrint(DBGGeneric, L"Message Copied\n");
 
 							if (lpProgress) lpProgress->Release();
 						}
@@ -618,7 +618,7 @@ namespace mapi
 				EC_H(MAPIAllocateBuffer(psbSrc->cb, reinterpret_cast<LPVOID*>(&psbDest->lpb)));
 			}
 
-			if (S_OK == hRes) CopyMemory(psbDest->lpb, psbSrc->lpb, psbSrc->cb);
+			if (hRes == S_OK) CopyMemory(psbDest->lpb, psbSrc->lpb, psbSrc->cb);
 		}
 
 		return hRes;
@@ -871,7 +871,7 @@ namespace mapi
 		SPropTagArray ptaTag = {1, {ulPropTag}};
 		EC_MAPI(lpMAPIProp->DeleteProps(&ptaTag, &pProbArray));
 
-		if (S_OK == hRes && pProbArray)
+		if (hRes == S_OK && pProbArray)
 		{
 			WC_PROBLEMARRAY(pProbArray);
 			if (pProbArray->cProblem == 1)
@@ -1362,7 +1362,7 @@ namespace mapi
 						lpCustomFlag->Value.l = lpCustomFlag->Value.l & ~INSP_PROPDEFINITION;
 					}
 					EC_MAPI(lpMessage->SetProps(1, lpCustomFlag, &lpProbArray2));
-					if (S_OK == hRes && lpProbArray2)
+					if (hRes == S_OK && lpProbArray2)
 					{
 						output::DebugPrint(
 							DBGNamedProp,
@@ -1950,14 +1950,14 @@ namespace mapi
 
 		WC_MAPI(lpSource->GetPropList(0, &lpAllProps));
 
-		if (S_OK == hRes && lpAllProps)
+		if (hRes == S_OK && lpAllProps)
 		{
 			ULONG cProps = 0;
 			LPMAPINAMEID* lppNameIDs = nullptr;
 
 			WC_H(cache::GetNamesFromIDs(lpSource, &lpAllProps, nullptr, 0, &cProps, &lppNameIDs));
 
-			if (S_OK == hRes && lppNameIDs)
+			if (hRes == S_OK && lppNameIDs)
 			{
 				ULONG ulNumProps = 0; // count of props that match our guid
 				for (ULONG i = 0; i < cProps; i++)
@@ -1973,7 +1973,7 @@ namespace mapi
 
 				WC_H(MAPIAllocateBuffer(CbNewSPropTagArray(ulNumProps), reinterpret_cast<LPVOID*>(&lpFilteredProps)));
 
-				if (S_OK == hRes && lpFilteredProps)
+				if (hRes == S_OK && lpFilteredProps)
 				{
 					lpFilteredProps->cValues = 0;
 
@@ -2486,7 +2486,7 @@ namespace mapi
 			nullptr, IDS_TAGSTOEXCLUDE, IDS_TAGSTOEXCLUDEPROMPT, nullptr, lpTagArray, bIsAB, lpProp);
 		WC_H(TagEditor.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			return TagEditor.DetachModifiedTagArray();
 		}
@@ -2533,7 +2533,7 @@ namespace mapi
 
 			WC_H(MyData.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				auto MyGUID = guid::StringToGUID(MyData.GetStringW(0));
 				lpGUIDLocal = &MyGUID;
@@ -2553,7 +2553,7 @@ namespace mapi
 		}
 #endif
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			WC_MAPI(lpSource->CopyTo(
 				0,

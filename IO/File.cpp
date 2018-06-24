@@ -1325,7 +1325,7 @@ namespace file
 
 					// Read the file description for each language and code page.
 
-					if (S_OK == hRes && lpTranslate)
+					if (hRes == S_OK && lpTranslate)
 					{
 						for (UINT iCodePages = 0; iCodePages < cbTranslate / sizeof(LANGANDCODEPAGE); iCodePages++)
 						{
@@ -1349,7 +1349,7 @@ namespace file
 									reinterpret_cast<void**>(&lpszVer),
 									&cchVer));
 
-								if (S_OK == hRes && cchVer && lpszVer)
+								if (hRes == S_OK && cchVer && lpszVer)
 								{
 									versionStrings[szVerString] = lpszVer;
 								}

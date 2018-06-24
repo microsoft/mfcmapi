@@ -341,7 +341,7 @@ namespace dialog
 				MyData.InitPane(0, viewpane::CheckPane::Create(IDS_FBRIGHTSVISIBLE, false, false));
 
 				WC_H(MyData.DisplayDialog());
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					new dialog::CAclDlg(lpParentWnd, lpMapiObjects, lpExchTbl, MyData.GetCheck(0));
 				}
@@ -438,7 +438,7 @@ namespace dialog
 				error::ErrDialog(__FILE__, __LINE__, IDS_EDOFFSETWITHWRONGINTERFACE);
 			}
 
-			else if (S_OK == hRes)
+			else if (hRes == S_OK)
 			{
 				auto szServerDN = mapi::store::BuildServerDN(strings::wstringTostring(MyData.GetStringW(0)), "");
 				if (!szServerDN.empty())
@@ -562,7 +562,7 @@ namespace dialog
 				error::ErrDialog(__FILE__, __LINE__, IDS_EDOFFSETWITHWRONGINTERFACE);
 			}
 
-			else if (S_OK == hRes)
+			else if (hRes == S_OK)
 			{
 				auto szServerDN = mapi::store::BuildServerDN(strings::wstringTostring(MyData.GetStringW(0)), "");
 				if (!szServerDN.empty())
@@ -668,7 +668,7 @@ namespace dialog
 			MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				auto szClass = MyData.GetStringW(0); // ResolveMessageClass requires an ANSI string
 				const auto ulFlags = MyData.GetHex(1);

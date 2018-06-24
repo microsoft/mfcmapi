@@ -68,7 +68,7 @@ namespace dialog
 			this);
 
 		WC_H(MyPropertyTag.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			editor::CEditor MyData(
 				this, IDS_SEARCHCRITERIA, IDS_PFSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);

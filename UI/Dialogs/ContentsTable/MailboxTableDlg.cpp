@@ -130,7 +130,7 @@ namespace dialog
 		MyPrompt.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 		MyPrompt.SetHex(0, OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 		WC_H(MyPrompt.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			DisplayItem(MyPrompt.GetHex(0));
 		}
@@ -150,7 +150,7 @@ namespace dialog
 			this);
 
 		WC_H(MyPropertyTag.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			editor::CEditor MyData(
 				this, IDS_SEARCHCRITERIA, IDS_MBSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);

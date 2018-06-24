@@ -146,7 +146,7 @@ namespace dialog
 			1, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			auto szProfName = mapi::profile::LaunchProfileWizard(
 				m_hWnd, MyData.GetHex(0), strings::wstringTostring(MyData.GetStringW(1)));
@@ -173,7 +173,7 @@ namespace dialog
 
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 			auto szServer = strings::wstringTostring(MyData.GetStringW(0));
@@ -230,7 +230,7 @@ namespace dialog
 
 				WC_H(MyFile.DisplayDialog());
 
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					auto szPath = MyFile.GetStringW(0);
 					const auto bPasswordSet = MyFile.GetCheck(1);
@@ -277,7 +277,7 @@ namespace dialog
 
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 			auto szService = strings::wstringTostring(MyData.GetStringW(0));
@@ -315,7 +315,7 @@ namespace dialog
 
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 			auto szProfile = strings::wstringTostring(MyData.GetStringW(0));
@@ -476,7 +476,7 @@ namespace dialog
 
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			auto szProfileName = strings::wstringTostring(MyData.GetStringW(0));
 			if (!szProfileName.empty())
@@ -520,7 +520,7 @@ namespace dialog
 				IDS_COPYPROFILEPROMPT, strings::stringTowstring(szOldProfile), false));
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			const auto szNewProfile = strings::wstringTostring(MyData.GetStringW(0));
 

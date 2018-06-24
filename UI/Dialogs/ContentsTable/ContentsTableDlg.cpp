@@ -291,7 +291,7 @@ namespace dialog
 		editor::CSearchEditor SearchEditor(PR_SUBJECT_W, m_lpContainer, this);
 		auto hRes = S_OK;
 		WC_H(SearchEditor.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			const auto lpRes = SearchEditor.GetRestriction();
 			if (lpRes)
@@ -326,7 +326,7 @@ namespace dialog
 			this);
 
 		WC_H(MyPropertyTag.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			editor::CEditor MyData(
 				this, IDS_SEARCHCRITERIA, IDS_RANGESEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -455,7 +455,7 @@ namespace dialog
 					this);
 
 				WC_H(MyPropertyTag.DisplayDialog());
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					lpMySortOrders->aSort[i].ulPropTag = MyPropertyTag.GetPropertyTag();
 					editor::CEditor MySortOrderDlg(
@@ -469,7 +469,7 @@ namespace dialog
 						0, viewpane::DropDownPane::Create(IDS_SORTORDER, _countof(uidDropDown), uidDropDown, true));
 
 					WC_H(MySortOrderDlg.DisplayDialog());
-					if (S_OK == hRes)
+					if (hRes == S_OK)
 					{
 						switch (MySortOrderDlg.GetDropDown(0))
 						{

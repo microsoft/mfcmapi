@@ -399,7 +399,7 @@ namespace mapistub
 				static_cast<DWORD>(INSTALLMODE_DEFAULT),
 				nullptr,
 				&dwValueBuf));
-		if (ERROR_SUCCESS == ret)
+		if (ret == ERROR_SUCCESS)
 		{
 			if (lpb64) *lpb64 = true;
 		}
@@ -415,7 +415,7 @@ namespace mapistub
 					&dwValueBuf));
 		}
 
-		if (ERROR_SUCCESS == ret)
+		if (ret == ERROR_SUCCESS)
 		{
 			dwValueBuf += 1;
 			const auto lpszTempPath = new (std::nothrow) WCHAR[dwValueBuf];
@@ -430,7 +430,7 @@ namespace mapistub
 						static_cast<DWORD>(INSTALLMODE_DEFAULT),
 						lpszTempPath,
 						&dwValueBuf));
-				if (ERROR_SUCCESS != ret)
+				if (ret != ERROR_SUCCESS)
 				{
 					WC_D(
 						ret,
@@ -442,7 +442,7 @@ namespace mapistub
 							&dwValueBuf));
 				}
 
-				if (ERROR_SUCCESS == ret)
+				if (ret == ERROR_SUCCESS)
 				{
 					path = lpszTempPath;
 					output::DebugPrint(DBGLoadMAPI, L"Exit GetOutlookPath: Path = %ws\n", path.c_str());
