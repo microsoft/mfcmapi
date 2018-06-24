@@ -101,8 +101,7 @@ namespace dialog
 			if (m_bButtonFlags & CEDITOR_BUTTON_CANCEL) m_cButtons++;
 
 			// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
-			auto hRes = S_OK;
-			WC_D(m_hIcon, AfxGetApp()->LoadIcon(IDR_MAINFRAME));
+			m_hIcon = WC_D(HICON, AfxGetApp()->LoadIcon(IDR_MAINFRAME));
 
 			m_pParentWnd = pParentWnd;
 			if (!m_pParentWnd)

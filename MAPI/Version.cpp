@@ -26,13 +26,11 @@ namespace version
 				const auto lpszTempLang = new WCHAR[MAX_PATH];
 				if (lpszTempVer && lpszTempLang)
 				{
-					UINT ret = 0;
 					DWORD dwValueBuf = MAX_PATH;
-					WC_D(
-						ret,
+					WC_W32(
 						import::pfnMsiGetFileVersion(
 							lpszTempPath.c_str(), lpszTempVer, &dwValueBuf, lpszTempLang, &dwValueBuf));
-					if (ret == ERROR_SUCCESS)
+					if (SUCCEEDED(hRes))
 					{
 						szOut = strings::formatmessage(
 							IDS_OUTLOOKVERSIONSTRING, lpszTempPath.c_str(), lpszTempVer, lpszTempLang);

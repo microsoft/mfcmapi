@@ -79,10 +79,8 @@ namespace import
 	// Exists to allow some logging
 	_Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName)
 	{
-		HMODULE hMod = nullptr;
-		auto hRes = S_OK;
 		output::DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - loading \"%ws\"\n", lpszLibFileName.c_str());
-		WC_D(hMod, LoadLibraryW(lpszLibFileName.c_str()));
+		const auto hMod = WC_D(HMODULE, LoadLibraryW(lpszLibFileName.c_str()));
 		if (hMod)
 		{
 			output::DebugPrint(
@@ -109,8 +107,7 @@ namespace import
 
 		if (!*lphModule) return;
 
-		auto hRes = S_OK;
-		WC_D(*lpfn, GetProcAddress(*lphModule, szEntryPoint));
+		*lpfn = WC_D(FARPROC, GetProcAddress(*lphModule, szEntryPoint));
 	}
 
 	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
@@ -145,21 +142,18 @@ namespace import
 			if (!szOutlookMAPIPath.empty())
 			{
 				auto hRes = S_OK;
-				UINT ret = 0;
 				WCHAR szDrive[_MAX_DRIVE] = {0};
 				WCHAR szMAPIPath[MAX_PATH] = {0};
-				WC_D(
-					ret,
-					_wsplitpath_s(
-						szOutlookMAPIPath.c_str(),
-						szDrive,
-						_MAX_DRIVE,
-						szMAPIPath,
-						MAX_PATH,
-						nullptr,
-						NULL,
-						nullptr,
-						NULL));
+				WC_W32(_wsplitpath_s(
+					szOutlookMAPIPath.c_str(),
+					szDrive,
+					_MAX_DRIVE,
+					szMAPIPath,
+					MAX_PATH,
+					nullptr,
+					NULL,
+					nullptr,
+					NULL));
 
 				if (SUCCEEDED(hRes))
 				{
@@ -167,7 +161,7 @@ namespace import
 
 					output::DebugPrint(
 						DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
-					WC_D(hModRet, MyLoadLibraryW(szFullPath));
+					hModRet = WC_D(HMODULE, MyLoadLibraryW(szFullPath));
 				}
 			}
 

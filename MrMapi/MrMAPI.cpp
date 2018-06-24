@@ -1174,9 +1174,7 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 	if (!szPath.empty())
 	{
 		output::DebugPrint(DBGGeneric, L"Found MAPI path %ws\n", szPath.c_str());
-		HMODULE hMAPI = nullptr;
-		auto hRes = S_OK;
-		WC_D(hMAPI, import::MyLoadLibraryW(szPath));
+		const auto hMAPI = WC_D(HMODULE, import::MyLoadLibraryW(szPath));
 		mapistub::SetMAPIHandle(hMAPI);
 	}
 

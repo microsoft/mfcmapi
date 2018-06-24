@@ -34,7 +34,6 @@ namespace dialog
 		ULONG ulAddInContext)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		auto hRes = S_OK;
 		m_szTitle = strings::loadstring(IDS_BASEDIALOG);
 		m_bDisplayingMenuText = false;
 
@@ -45,7 +44,7 @@ namespace dialog
 		m_bIsAB = false;
 
 		// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
-		EC_D(m_hIcon, AfxGetApp()->LoadIcon(IDR_MAINFRAME));
+		m_hIcon = EC_D(HICON, AfxGetApp()->LoadIcon(IDR_MAINFRAME));
 
 		m_cRef = 1;
 		m_lpPropDisplay = nullptr;
@@ -542,11 +541,7 @@ namespace dialog
 
 	void CBaseDialog::OnSize(UINT /* nType*/, int cx, int cy)
 	{
-		auto hRes = S_OK;
-		HDWP hdwp = nullptr;
-
-		WC_D(hdwp, BeginDeferWindowPos(1));
-
+		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(1));
 		if (hdwp)
 		{
 			const auto iHeight = GetStatusHeight();
@@ -565,6 +560,7 @@ namespace dialog
 				DeferWindowPos(hdwp, m_lpFakeSplitter->m_hWnd, nullptr, 0, 0, cx, iNewCY, SWP_NOZORDER);
 			}
 
+			auto hRes = S_OK;
 			WC_B(EndDeferWindowPos(hdwp));
 		}
 	}

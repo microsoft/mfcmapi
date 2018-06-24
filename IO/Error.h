@@ -222,42 +222,38 @@ namespace error
 		} \
 	}
 
-// Used for functions which return 0 on error
-// dwRet will contain the return value - assign to a local if needed for other calls.
-#define EC_D(_ret, fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
+// Execute a function which returns 0 on error, log error, and return result
+#define EC_D(_TYPE, fnx) \
+	[&]() -> _TYPE { \
+		auto __ret = (fnx); \
+		if (!__ret) \
 		{ \
-			(_ret) = (fnx); \
-			if (!(_ret)) \
-			{ \
-				hRes = error::CheckWin32Error(true, __FILE__, __LINE__, #fnx); \
-			} \
+			error::CheckWin32Error(true, __FILE__, __LINE__, #fnx); \
 		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-			(_ret) = NULL; \
-		} \
-	}
+		return __ret; \
+	}()
 
-// whatever's passed to _ret will contain the return value
-#define WC_D(_ret, fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
+// Execute a function which returns 0 on error, log error, and return CheckWin32Error(HRESULT)
+// Will not display an error dialog
+#define WC_D(_TYPE, fnx) \
+	[&]() -> _TYPE { \
+		auto __ret = (fnx); \
+		if (!__ret) \
 		{ \
-			(_ret) = (fnx); \
-			if (!(_ret)) \
-			{ \
-				hRes = error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
-			} \
+			error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
 		} \
-		else \
+		return __ret; \
+	}()
+
+// Execute a function which returns 0 on error, log error, and swallow error
+// Will not display an error dialog
+#define WC_DS(fnx) \
+	[&]() -> void { \
+		if (!(fnx)) \
 		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-			(_ret) = NULL; \
+			error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
 		} \
-	}
+	}()
 
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
 // This is annoying, so this macro tosses those warnings.

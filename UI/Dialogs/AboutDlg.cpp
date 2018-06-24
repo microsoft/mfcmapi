@@ -108,13 +108,11 @@ namespace dialog
 
 		for (auto i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
 		{
-			WCHAR szResult[256];
+			WCHAR szResult[256] = {};
 
-			hRes = S_OK;
-			UINT uiRet = 0;
-			EC_D(uiRet, ::GetDlgItemTextW(m_hWnd, i, szResult, _countof(szResult)));
+			auto uiRet = EC_D(UINT, ::GetDlgItemTextW(m_hWnd, i, szResult, _countof(szResult)));
 
-			if (!fileVersionInfo[szResult].empty())
+			if (uiRet != 0)
 			{
 				::SetDlgItemTextW(m_hWnd, i, fileVersionInfo[szResult].c_str());
 			}

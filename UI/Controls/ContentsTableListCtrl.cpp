@@ -752,13 +752,11 @@ namespace controls
 
 				output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Creating load thread.\n");
 
-				HANDLE hThread = nullptr;
-				EC_D(
-					hThread,
+				auto hThread = EC_D(
+					HANDLE,
 					reinterpret_cast<HANDLE>(
 						_beginthreadex(nullptr, 0, ThreadFuncLoadTable, lpThreadInfo, 0, nullptr)));
-
-				if (!hThread)
+				if (hThread == 0 || hThread == reinterpret_cast<HANDLE>(-1))
 				{
 					output::DebugPrintEx(
 						DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Load thread creation failed.\n");

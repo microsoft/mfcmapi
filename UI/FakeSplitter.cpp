@@ -64,8 +64,8 @@ namespace controls
 		EC_B(ModifyStyleEx(0, WS_EX_CONTROLPARENT));
 
 		// Load split cursors
-		EC_D(m_hSplitCursorV, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITV)));
-		EC_D(m_hSplitCursorH, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITH)));
+		m_hSplitCursorV = EC_D(HCURSOR, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITV)));
+		m_hSplitCursorH = EC_D(HCURSOR, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITH)));
 	}
 
 	CFakeSplitter::~CFakeSplitter()
@@ -125,13 +125,10 @@ namespace controls
 
 	void CFakeSplitter::OnSize(UINT /*nType*/, int cx, int cy)
 	{
-		auto hRes = S_OK;
-		HDWP hdwp = nullptr;
-
 		CalcSplitPos();
 
-		WC_D(hdwp, BeginDeferWindowPos(2));
-
+		auto hRes = S_OK;
+		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 		if (hdwp)
 		{
 			if (m_PaneOne && m_PaneOne->m_hWnd)

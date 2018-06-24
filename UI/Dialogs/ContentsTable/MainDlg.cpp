@@ -153,8 +153,7 @@ namespace dialog
 		{
 			const auto lme = reinterpret_cast<ui::LPMENUENTRY>(subMenu.dwItemData);
 			output::DebugPrint(DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName.c_str());
-			HMODULE hMAPI = nullptr;
-			EC_D(hMAPI, import::MyLoadLibraryW(lme->m_pName));
+			auto hMAPI = EC_D(HMODULE, import::MyLoadLibraryW(lme->m_pName));
 			mapistub::SetMAPIHandle(hMAPI);
 		}
 
@@ -1015,9 +1014,8 @@ namespace dialog
 		WC_H(MyData.DisplayDialog());
 		if (hRes == S_OK)
 		{
-			HMODULE hMAPI = nullptr;
 			mapistub::UnloadPrivateMAPI();
-			EC_D(hMAPI, import::MyLoadLibraryW(MyData.GetStringW(0)));
+			auto hMAPI = EC_D(HMODULE, import::MyLoadLibraryW(MyData.GetStringW(0)));
 			mapistub::SetMAPIHandle(hMAPI);
 		}
 	}
