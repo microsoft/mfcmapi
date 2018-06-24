@@ -193,7 +193,7 @@ namespace dialog
 		void CHexEditor::OnEditAction1()
 		{
 			auto hRes = S_OK;
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				auto file = file::CFileDialogExW::OpenFile(
 					strings::emptystring,
@@ -227,7 +227,7 @@ namespace dialog
 		void CHexEditor::OnEditAction2()
 		{
 			auto hRes = S_OK;
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				auto file = file::CFileDialogExW::SaveAs(
 					strings::emptystring,

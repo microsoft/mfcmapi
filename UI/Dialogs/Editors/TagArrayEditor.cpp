@@ -203,7 +203,7 @@ namespace dialog
 			MyData.SetHex(0, ulQueryColumnFlags);
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				ulQueryColumnFlags = MyData.GetHex(0);
 				LPSPropTagArray lpTagArray = nullptr;
@@ -231,7 +231,7 @@ namespace dialog
 			MyData.SetHex(0, m_ulSetColumnsFlags);
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_ulSetColumnsFlags = MyData.GetHex(0);
 			}

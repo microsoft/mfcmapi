@@ -369,7 +369,7 @@ namespace dialog
 		MyData.SetDecimal(4, 1);
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			const auto displayName = MyData.GetStringW(0);
 			const auto addressType = MyData.GetStringW(1);
@@ -467,7 +467,7 @@ namespace dialog
 		MyData.InitPane(1, viewpane::DropDownPane::Create(IDS_COPYINTERFACE, _countof(uidDropDown), uidDropDown, true));
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			const auto lpEIDs = cache::CGlobalCache::getInstance().GetMessagesToCopy();
 			auto lpMAPISourceFolder = cache::CGlobalCache::getInstance().GetSourceParentFolder();
@@ -594,7 +594,7 @@ namespace dialog
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILENAME, false));
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -679,7 +679,7 @@ namespace dialog
 			}
 		}
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			LPENTRYLIST lpEIDs = nullptr;
 
@@ -774,7 +774,7 @@ namespace dialog
 			MyData.InitPane(0, viewpane::DropDownPane::Create(IDS_LOADSTYLE, _countof(uidDropDown), uidDropDown, true));
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				for (auto& lpszPath : files)
 				{
@@ -864,7 +864,7 @@ namespace dialog
 			this);
 
 		WC_H(MyPropertyTag.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			editor::CEditor MyData(
 				this, IDS_MANUALRESOLVE, IDS_MANUALRESOLVEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -872,7 +872,7 @@ namespace dialog
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_DISPLAYNAME, false));
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				do
 				{
@@ -996,7 +996,7 @@ namespace dialog
 
 			WC_H(MyPrompt1.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				std::wstring szClass;
 				LPSPropValue lpProp = nullptr;
@@ -1013,7 +1013,7 @@ namespace dialog
 				case 0:
 					WC_H(MyClass.DisplayDialog());
 
-					if (S_OK == hRes)
+					if (hRes == S_OK)
 					{
 						szClass = MyClass.GetStringW(0);
 					}
@@ -1171,7 +1171,7 @@ namespace dialog
 			MyData.SetDecimal(0, EXCHIVERB_OPEN);
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				LPMESSAGE lpMessage = nullptr;
 				const auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
@@ -1249,7 +1249,7 @@ namespace dialog
 		MyData.InitPane(0, viewpane::CheckPane::Create(IDS_REMOVEPROPDEFSTREAM, true, false));
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			LPMESSAGE lpMessage = nullptr;
 
@@ -1296,7 +1296,7 @@ namespace dialog
 		MyData.SetHex(0, RTF_SYNC_RTF_CHANGED);
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			LPMESSAGE lpMessage = nullptr;
 			BOOL bMessageUpdated = false;
@@ -1398,7 +1398,7 @@ namespace dialog
 		}
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			LPCWSTR szExt = nullptr;
 			LPCWSTR szDotExt = nullptr;
@@ -1493,7 +1493,7 @@ namespace dialog
 
 							EC_H(mapi::mapimime::GetConversionToEMLOptions(
 								this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
-							if (S_OK == hRes)
+							if (hRes == S_OK)
 							{
 								LPADRBOOK lpAdrBook = nullptr;
 								if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
@@ -1590,7 +1590,7 @@ namespace dialog
 		auto cSetApplyType = CSET_APPLY_UNTAGGED;
 		WC_H(mapi::mapimime::GetConversionFromEMLOptions(
 			this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, nullptr));
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			LPADRBOOK lpAdrBook = nullptr;
 			if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
@@ -1649,7 +1649,7 @@ namespace dialog
 
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			const auto ulNumMessages = MyData.GetDecimal(0);
 			auto szSubject = MyData.GetStringW(2);
@@ -1691,7 +1691,7 @@ namespace dialog
 		MyFlags.SetHex(0, CLEAR_READ_FLAG);
 
 		WC_H(MyFlags.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			const int iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 
@@ -1750,7 +1750,7 @@ namespace dialog
 			0, viewpane::TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
 		WC_H(MyAddress.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			LPMESSAGE lpMessage = nullptr;
 			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
@@ -1972,7 +1972,7 @@ namespace dialog
 
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 			while (iItem != -1)

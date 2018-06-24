@@ -309,7 +309,7 @@ namespace mapi
 			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_PST, false, false));
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				if (MyData.GetCheck(0))
 				{
@@ -332,7 +332,7 @@ namespace mapi
 			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_PST, false, false));
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				if (MyData.GetCheck(0))
 				{
@@ -432,7 +432,7 @@ namespace mapi
 				for (;;)
 				{
 					EC_MAPI(lpProviderTable->QueryRows(1, 0, lpRowSet));
-					if (S_OK == hRes && *lpRowSet && 1 == (*lpRowSet)->cRows)
+					if (hRes == S_OK && *lpRowSet && 1 == (*lpRowSet)->cRows)
 					{
 						const auto lpCurRow = &(*lpRowSet)->aRow[0];
 

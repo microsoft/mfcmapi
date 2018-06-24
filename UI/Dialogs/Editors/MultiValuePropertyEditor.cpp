@@ -356,7 +356,7 @@ namespace dialog
 				&tmpPropVal,
 				&lpNewValue));
 
-			if (S_OK == hRes && lpNewValue)
+			if (hRes == S_OK && lpNewValue)
 			{
 				lpData->InitializeMV(lpNewValue);
 

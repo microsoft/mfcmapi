@@ -230,7 +230,7 @@ namespace dialog
 		editor::CEditor Query(
 			this, IDS_DELETEABENTRY, IDS_DELETEABENTRYPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		WC_H(Query.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteSelectedItem", L"deleting address Book entries\n");
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -281,7 +281,7 @@ namespace dialog
 			MyData.SetHex(0, CREATE_CHECK_DUP_STRICT);
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				LPMAPIPROGRESS lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IABContainer::CopyEntries", m_hWnd); // STRING_OK

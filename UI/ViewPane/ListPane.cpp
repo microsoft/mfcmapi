@@ -411,7 +411,7 @@ namespace viewpane
 		EC_B(m_List.DeleteItem(iItem));
 		m_List.SetSelectedItem(iItem);
 
-		if (S_OK == hRes && bDoDirty)
+		if (hRes == S_OK && bDoDirty)
 		{
 			m_bDirty = true;
 		}

@@ -690,7 +690,7 @@ namespace strings
 
 		WC_B(FileTimeToSystemTime(&fileTime, &SysTime));
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			auto iRet = 0;
 			wchar_t szTimeStr[MAX_PATH] = {0};

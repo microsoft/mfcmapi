@@ -464,7 +464,7 @@ namespace controls
 						lpData->Node()->m_lpAdviseSink = nullptr;
 						output::DebugPrint(DBGNotify, L"This table doesn't support notifications\n");
 					}
-					else if (S_OK == hRes)
+					else if (hRes == S_OK)
 					{
 						const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 						if (lpMDB)
@@ -570,7 +570,7 @@ namespace controls
 						auto hRes = S_OK;
 						ULONG ulRowCount = NULL;
 						WC_MAPI(lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
-						if (S_OK == hRes && !ulRowCount)
+						if (hRes == S_OK && !ulRowCount)
 						{
 							lpDispInfo->item.cChildren = 0;
 						}

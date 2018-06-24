@@ -997,7 +997,7 @@ namespace output
 
 		WC_H_MSG(lpStream->Seek(li, STREAM_SEEK_SET, nullptr), IDS_STREAMSEEKFAILED);
 
-		if (S_OK == hRes) do
+		if (hRes == S_OK) do
 			{
 				hRes = S_OK;
 				ulNumBytes = 0;

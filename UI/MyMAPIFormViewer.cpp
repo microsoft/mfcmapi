@@ -563,7 +563,7 @@ namespace mapi
 						hRes = S_FALSE;
 					}
 
-					if (S_OK == hRes) // we can handle the message ourselves
+					if (hRes == S_OK) // we can handle the message ourselves
 					{
 						if (lpNewPersistMessage)
 						{

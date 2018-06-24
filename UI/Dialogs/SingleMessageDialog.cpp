@@ -95,7 +95,7 @@ namespace dialog
 		MyData.SetHex(0, RTF_SYNC_RTF_CHANGED);
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			BOOL bMessageUpdated = false;
 

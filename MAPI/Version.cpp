@@ -32,7 +32,7 @@ namespace version
 						ret,
 						import::pfnMsiGetFileVersion(
 							lpszTempPath.c_str(), lpszTempVer, &dwValueBuf, lpszTempLang, &dwValueBuf));
-					if (ERROR_SUCCESS == ret)
+					if (ret == ERROR_SUCCESS)
 					{
 						szOut = strings::formatmessage(
 							IDS_OUTLOOKVERSIONSTRING, lpszTempPath.c_str(), lpszTempVer, lpszTempLang);
