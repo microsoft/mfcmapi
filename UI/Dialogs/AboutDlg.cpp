@@ -104,7 +104,7 @@ namespace dialog
 		auto szDisplayAboutCheck = strings::loadstring(IDS_DISPLAYABOUTCHECK);
 		::SetWindowTextW(m_DisplayAboutCheck.m_hWnd, szDisplayAboutCheck.c_str());
 
-		const auto fileVersionInfo = file::GetFileVersionInfo(nullptr);
+		auto fileVersionInfo = file::GetFileVersionInfo(nullptr);
 
 		for (auto i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
 		{

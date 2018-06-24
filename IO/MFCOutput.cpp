@@ -1026,12 +1026,12 @@ namespace output
 		const auto szFullPath = file::GetModuleFileName(nullptr);
 		if (!szFullPath.empty())
 		{
-			const auto fileVersionInfo = file::GetFileVersionInfo(nullptr);
+			auto fileVersionInfo = file::GetFileVersionInfo(nullptr);
 
 			// Load all our strings
 			for (auto iVerString = IDS_VER_FIRST; iVerString <= IDS_VER_LAST; iVerString++)
 			{
-				auto szVerString = strings::loadstring(iVerString);
+				const auto szVerString = strings::loadstring(iVerString);
 				Outputf(
 					ulDbgLvl, fFile, true, L"%ws: %ws\n", szVerString.c_str(), fileVersionInfo[szVerString].c_str());
 			}
