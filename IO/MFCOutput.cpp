@@ -1022,68 +1022,16 @@ namespace output
 
 		// Get version information from the application.
 		const auto szFullPath = file::GetModuleFileName(nullptr);
-
 		if (!szFullPath.empty())
 		{
-			const auto dwVerInfoSize = EC_D(DWORD, GetFileVersionInfoSizeW(szFullPath.c_str(), nullptr));
-			if (dwVerInfoSize)
+			auto fileVersionInfo = file::GetFileVersionInfo(nullptr);
+
+			// Load all our strings
+			for (auto iVerString = IDS_VER_FIRST; iVerString <= IDS_VER_LAST; iVerString++)
 			{
-				// If we were able to get the information, process it.
-				const auto pbData = new BYTE[dwVerInfoSize];
-				if (pbData == nullptr) return;
-
-				auto hRes = EC_B2(GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
-				if (SUCCEEDED(hRes))
-				{
-					struct LANGANDCODEPAGE
-					{
-						WORD wLanguage;
-						WORD wCodePage;
-					}* lpTranslate = {nullptr};
-
-					UINT cbTranslate = 0;
-
-					// Read the list of languages and code pages.
-					hRes = EC_B2(VerQueryValueW(
-						pbData,
-						L"\\VarFileInfo\\Translation", // STRING_OK
-						reinterpret_cast<LPVOID*>(&lpTranslate),
-						&cbTranslate));
-
-					// Read the file description for each language and code page.
-
-					if (hRes == S_OK && lpTranslate)
-					{
-						for (UINT iCodePages = 0; iCodePages < cbTranslate / sizeof(LANGANDCODEPAGE); iCodePages++)
-						{
-							const auto szSubBlock = strings::format(
-								L"\\StringFileInfo\\%04x%04x\\", // STRING_OK
-								lpTranslate[iCodePages].wLanguage,
-								lpTranslate[iCodePages].wCodePage);
-
-							// Load all our strings
-							for (auto iVerString = IDS_VER_FIRST; iVerString <= IDS_VER_LAST; iVerString++)
-							{
-								UINT cchVer = 0;
-								wchar_t* lpszVer = nullptr;
-								auto szVerString = strings::loadstring(iVerString);
-								auto szQueryString = szSubBlock + szVerString;
-								hRes = EC_B2(VerQueryValueW(
-									static_cast<void*>(pbData),
-									szQueryString.c_str(),
-									reinterpret_cast<void**>(&lpszVer),
-									&cchVer));
-
-								if (hRes == S_OK && cchVer && lpszVer)
-								{
-									Outputf(ulDbgLvl, fFile, true, L"%ws: %ws\n", szVerString.c_str(), lpszVer);
-								}
-							}
-						}
-					}
-				}
-
-				delete[] pbData;
+				const auto szVerString = strings::loadstring(iVerString);
+				Outputf(
+					ulDbgLvl, fFile, true, L"%ws: %ws\n", szVerString.c_str(), fileVersionInfo[szVerString].c_str());
 			}
 		}
 	}

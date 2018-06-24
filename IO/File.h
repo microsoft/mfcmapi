@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 
 namespace file
 {
@@ -65,4 +66,5 @@ namespace file
 
 	std::wstring GetModuleFileName(_In_opt_ HMODULE hModule);
 	std::wstring GetSystemDirectory();
+	std::map<std::wstring, std::wstring> GetFileVersionInfo(_In_opt_ HMODULE hModule);
 }

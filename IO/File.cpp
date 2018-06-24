@@ -1255,35 +1255,109 @@ namespace file
 
 	std::wstring GetModuleFileName(_In_opt_ HMODULE hModule)
 	{
-		std::vector<wchar_t> buf;
-		DWORD copied = 0;
+		auto buf = std::vector<wchar_t>();
+		auto copied = DWORD();
 		do
 		{
 			buf.resize(buf.size() + MAX_PATH);
-			copied = EC_D(DWORD, ::GetModuleFileNameW(hModule, &buf.at(0), buf.size()));
+			copied = EC_D(DWORD, ::GetModuleFileNameW(hModule, &buf.at(0), static_cast<DWORD>(buf.size())));
 		} while (copied >= buf.size());
 
 		buf.resize(copied);
 
-		const std::wstring path(buf.begin(), buf.end());
+		const auto path = std::wstring(buf.begin(), buf.end());
 
 		return path;
 	}
 
 	std::wstring GetSystemDirectory()
 	{
-		std::vector<wchar_t> buf;
-		DWORD copied = 0;
+		auto buf = std::vector<wchar_t>();
+		auto copied = DWORD();
 		do
 		{
 			buf.resize(buf.size() + MAX_PATH);
-			copied = EC_D(DWORD, ::GetSystemDirectoryW(&buf.at(0), buf.size()));
+			copied = EC_D(DWORD, ::GetSystemDirectoryW(&buf.at(0), static_cast<UINT>(buf.size())));
 		} while (copied >= buf.size());
 
 		buf.resize(copied);
 
-		const std::wstring path(buf.begin(), buf.end());
+		const auto path = std::wstring(buf.begin(), buf.end());
 
 		return path;
+	}
+
+	std::map<std::wstring, std::wstring> GetFileVersionInfo(_In_opt_ HMODULE hModule)
+	{
+		auto versionStrings = std::map<std::wstring, std::wstring>();
+		const auto szFullPath = file::GetModuleFileName(hModule);
+		if (!szFullPath.empty())
+		{
+			auto dwVerInfoSize = EC_D(DWORD, GetFileVersionInfoSizeW(szFullPath.c_str(), nullptr));
+
+			if (dwVerInfoSize)
+			{
+				// If we were able to get the information, process it.
+				const auto pbData = new BYTE[dwVerInfoSize];
+				if (pbData == nullptr) return {};
+
+				auto hRes = EC_B2(GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
+
+				if (SUCCEEDED(hRes))
+				{
+					struct LANGANDCODEPAGE
+					{
+						WORD wLanguage;
+						WORD wCodePage;
+					}* lpTranslate = {nullptr};
+
+					UINT cbTranslate = 0;
+
+					// Read the list of languages and code pages.
+					hRes = EC_B2(VerQueryValueW(
+						pbData,
+						L"\\VarFileInfo\\Translation", // STRING_OK
+						reinterpret_cast<LPVOID*>(&lpTranslate),
+						&cbTranslate));
+
+					// Read the file description for each language and code page.
+
+					if (S_OK == hRes && lpTranslate)
+					{
+						for (UINT iCodePages = 0; iCodePages < cbTranslate / sizeof(LANGANDCODEPAGE); iCodePages++)
+						{
+							const auto szSubBlock = strings::format(
+								L"\\StringFileInfo\\%04x%04x\\", // STRING_OK
+								lpTranslate[iCodePages].wLanguage,
+								lpTranslate[iCodePages].wCodePage);
+
+							// Load all our strings
+							for (auto iVerString = IDS_VER_FIRST; iVerString <= IDS_VER_LAST; iVerString++)
+							{
+								UINT cchVer = 0;
+								wchar_t* lpszVer = nullptr;
+								auto szVerString = strings::loadstring(iVerString);
+								auto szQueryString = szSubBlock + szVerString;
+
+								hRes = EC_B2(VerQueryValueW(
+									static_cast<void*>(pbData),
+									szQueryString.c_str(),
+									reinterpret_cast<void**>(&lpszVer),
+									&cchVer));
+
+								if (S_OK == hRes && cchVer && lpszVer)
+								{
+									versionStrings[szVerString] = lpszVer;
+								}
+							}
+						}
+					}
+				}
+
+				delete[] pbData;
+			}
+		}
+
+		return versionStrings;
 	}
 }

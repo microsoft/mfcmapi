@@ -104,70 +104,17 @@ namespace dialog
 		auto szDisplayAboutCheck = strings::loadstring(IDS_DISPLAYABOUTCHECK);
 		::SetWindowTextW(m_DisplayAboutCheck.m_hWnd, szDisplayAboutCheck.c_str());
 
-		// Get version information from the application.
-		const auto szFullPath = file::GetModuleFileName(nullptr);
-		const auto dwVerInfoSize = EC_D(DWORD, GetFileVersionInfoSizeW(szFullPath.c_str(), nullptr));
-		if (dwVerInfoSize)
+		auto fileVersionInfo = file::GetFileVersionInfo(nullptr);
+
+		for (auto i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
 		{
-			// If we were able to get the information, process it.
-			const auto pbData = new BYTE[dwVerInfoSize];
+			WCHAR szResult[256] = {};
 
-			if (pbData)
+			auto uiRet = EC_D(UINT, ::GetDlgItemTextW(m_hWnd, i, szResult, _countof(szResult)));
+
+			if (uiRet != 0)
 			{
-				hRes = EC_B2(GetFileVersionInfoW(szFullPath.c_str(), 0, dwVerInfoSize, static_cast<void*>(pbData)));
-
-				struct LANGANDCODEPAGE
-				{
-					WORD wLanguage;
-					WORD wCodePage;
-				}* lpTranslate = {};
-
-				if (SUCCEEDED(hRes))
-				{
-					// Read the list of languages and code pages.
-					UINT cbTranslate = 0;
-					hRes = EC_B2(VerQueryValueW(
-						pbData,
-						L"\\VarFileInfo\\Translation", // STRING_OK
-						reinterpret_cast<LPVOID*>(&lpTranslate),
-						&cbTranslate));
-				}
-
-				// Read the file description for the first language/codepage
-				if (SUCCEEDED(hRes) && lpTranslate)
-				{
-					const auto szGetName = strings::format(
-						L"\\StringFileInfo\\%04x%04x\\", // STRING_OK
-						lpTranslate[0].wLanguage,
-						lpTranslate[0].wCodePage);
-
-					// Walk through the dialog box items that we want to replace.
-					for (auto i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
-					{
-						UINT cchVer = 0;
-						WCHAR* pszVer = nullptr;
-						WCHAR szResult[256];
-
-						auto length = EC_D(UINT, ::GetDlgItemTextW(m_hWnd, i, szResult, _countof(szResult)));
-
-						if (length > 0)
-						{
-							hRes = EC_B2(VerQueryValueW(
-								static_cast<void*>(pbData),
-								(szGetName + szResult).c_str(),
-								reinterpret_cast<void**>(&pszVer),
-								&cchVer));
-
-							if (SUCCEEDED(hRes) && cchVer && pszVer)
-							{
-								// Replace the dialog box item text with version information.
-								::SetDlgItemTextW(m_hWnd, i, pszVer);
-							}
-						}
-					}
-				}
-
-				delete[] pbData;
+				::SetDlgItemTextW(m_hWnd, i, fileVersionInfo[szResult].c_str());
 			}
 		}
 

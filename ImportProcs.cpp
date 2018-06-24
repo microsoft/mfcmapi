@@ -114,7 +114,7 @@ namespace import
 	{
 		if (szDLLName.empty()) return nullptr;
 
-		static std::wstring szSystemDir;
+		static auto szSystemDir = std::wstring();
 		static auto bSystemDirLoaded = false;
 
 		output::DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
