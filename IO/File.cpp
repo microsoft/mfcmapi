@@ -1286,4 +1286,83 @@ namespace file
 
 		return path;
 	}
+
+	std::map<std::wstring, std::wstring> GetFileVersionInfo(_In_opt_ HMODULE hModule)
+	{
+		auto versionStrings = std::map<std::wstring, std::wstring>();
+		const auto szFullPath = file::GetModuleFileName(hModule);
+		if (!szFullPath.empty())
+		{
+			auto hRes = S_OK;
+			DWORD dwVerInfoSize = 0;
+
+			EC_D(dwVerInfoSize, GetFileVersionInfoSizeW(szFullPath.c_str(), nullptr));
+
+			if (dwVerInfoSize)
+			{
+				// If we were able to get the information, process it.
+				const auto pbData = new BYTE[dwVerInfoSize];
+				if (pbData == nullptr) return {};
+
+				BOOL bRet = false;
+				EC_D(bRet, GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
+
+				if (pbData)
+				{
+					struct LANGANDCODEPAGE
+					{
+						WORD wLanguage;
+						WORD wCodePage;
+					}* lpTranslate = {nullptr};
+
+					UINT cbTranslate = 0;
+
+					// Read the list of languages and code pages.
+					EC_B(VerQueryValueW(
+						pbData,
+						L"\\VarFileInfo\\Translation", // STRING_OK
+						reinterpret_cast<LPVOID*>(&lpTranslate),
+						&cbTranslate));
+
+					// Read the file description for each language and code page.
+
+					if (S_OK == hRes && lpTranslate)
+					{
+						for (UINT iCodePages = 0; iCodePages < cbTranslate / sizeof(LANGANDCODEPAGE); iCodePages++)
+						{
+							const auto szSubBlock = strings::format(
+								L"\\StringFileInfo\\%04x%04x\\", // STRING_OK
+								lpTranslate[iCodePages].wLanguage,
+								lpTranslate[iCodePages].wCodePage);
+
+							// Load all our strings
+							for (auto iVerString = IDS_VER_FIRST; iVerString <= IDS_VER_LAST; iVerString++)
+							{
+								UINT cchVer = 0;
+								wchar_t* lpszVer = nullptr;
+								auto szVerString = strings::loadstring(iVerString);
+								auto szQueryString = szSubBlock + szVerString;
+								hRes = S_OK;
+
+								EC_B(VerQueryValueW(
+									static_cast<void*>(pbData),
+									szQueryString.c_str(),
+									reinterpret_cast<void**>(&lpszVer),
+									&cchVer));
+
+								if (S_OK == hRes && cchVer && lpszVer)
+								{
+									versionStrings[szVerString] = lpszVer;
+								}
+							}
+						}
+					}
+				}
+
+				delete[] pbData;
+			}
+		}
+
+		return versionStrings;
+	}
 }
