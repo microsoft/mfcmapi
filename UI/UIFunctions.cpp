@@ -393,13 +393,11 @@ namespace ui
 	_Check_return_ int GetTextHeight(_In_opt_ HWND hwndEdit)
 	{
 		auto hRes = S_OK;
-		HDC hdc = nullptr;
 		TEXTMETRIC tmFont = {0};
 		auto iHeight = 0;
 
 		// Get the DC for the edit control.
-		WC_D(hdc, GetDC(hwndEdit));
-
+		const auto hdc = WC_D(HDC, GetDC(hwndEdit));
 		if (hdc)
 		{
 			// Get the metrics for the Segoe font.

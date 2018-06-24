@@ -39,9 +39,8 @@ namespace controls
 		{
 			if (!m_hwndTip)
 			{
-				auto hRes = S_OK;
-				EC_D(
-					m_hwndTip,
+				m_hwndTip = EC_D(
+					HWND,
 					CreateWindowEx(
 						WS_EX_TOPMOST,
 						TOOLTIPS_CLASS,
@@ -58,6 +57,7 @@ namespace controls
 
 				if (m_hwndTip)
 				{
+					auto hRes = S_OK;
 					EC_B(::SetWindowPos(m_hwndTip, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE));
 
 					m_ti.cbSize = sizeof(TOOLINFO);

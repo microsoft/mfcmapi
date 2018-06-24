@@ -30,10 +30,7 @@ namespace addin
 {
 	template <typename T> T GetFunction(HMODULE hMod, LPCSTR szFuncName)
 	{
-		auto hRes = S_OK;
-		T pObj = nullptr;
-		WC_D(pObj, reinterpret_cast<T>(GetProcAddress(hMod, szFuncName)));
-		return pObj;
+		return WC_D(T, reinterpret_cast<T>(GetProcAddress(hMod, szFuncName)));
 	}
 
 	_Check_return_ ULONG GetAddinVersion(HMODULE hMod)

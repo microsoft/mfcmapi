@@ -692,16 +692,14 @@ namespace strings
 
 		if (hRes == S_OK)
 		{
-			auto iRet = 0;
 			wchar_t szTimeStr[MAX_PATH] = {0};
 			wchar_t szDateStr[MAX_PATH] = {0};
 
 			// shove millisecond info into our format string since GetTimeFormat doesn't use it
 			auto szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
 
-			WC_D(iRet, GetTimeFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, szFormatStr.c_str(), szTimeStr, MAX_PATH));
-
-			WC_D(iRet, GetDateFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, nullptr, szDateStr, MAX_PATH));
+			WC_DS(GetTimeFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, szFormatStr.c_str(), szTimeStr, MAX_PATH));
+			WC_DS(GetDateFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, nullptr, szDateStr, MAX_PATH));
 
 			PropString = format(L"%ws %ws", szTimeStr, szDateStr); // STRING_OK
 		}

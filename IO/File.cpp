@@ -21,11 +21,9 @@ namespace file
 	{
 		if (!path.empty())
 		{
-			auto hRes = S_OK;
-			WCHAR szShortPath[MAX_PATH] = {0};
-			size_t cchShortPath = NULL;
+			WCHAR szShortPath[MAX_PATH] = {};
 			// Use the short path to give us as much room as possible
-			WC_D(cchShortPath, GetShortPathNameW(path.c_str(), szShortPath, _countof(szShortPath)));
+			WC_DS(GetShortPathNameW(path.c_str(), szShortPath, _countof(szShortPath)));
 			std::wstring ret = szShortPath;
 			if (ret.back() != L'\\')
 			{
@@ -1257,9 +1255,8 @@ namespace file
 		auto copied = DWORD();
 		do
 		{
-			auto hRes = S_OK;
 			buf.resize(buf.size() + MAX_PATH);
-			EC_D(copied, ::GetModuleFileNameW(hModule, &buf.at(0), static_cast<DWORD>(buf.size())));
+			copied = EC_D(DWORD, ::GetModuleFileNameW(hModule, &buf.at(0), static_cast<DWORD>(buf.size())));
 		} while (copied >= buf.size());
 
 		buf.resize(copied);
@@ -1275,9 +1272,8 @@ namespace file
 		auto copied = DWORD();
 		do
 		{
-			auto hRes = S_OK;
 			buf.resize(buf.size() + MAX_PATH);
-			EC_D(copied, ::GetSystemDirectoryW(&buf.at(0), static_cast<UINT>(buf.size())));
+			copied = EC_D(DWORD, ::GetSystemDirectoryW(&buf.at(0), static_cast<UINT>(buf.size())));
 		} while (copied >= buf.size());
 
 		buf.resize(copied);
@@ -1294,10 +1290,7 @@ namespace file
 		if (!szFullPath.empty())
 		{
 			auto hRes = S_OK;
-			DWORD dwVerInfoSize = 0;
-
-			EC_D(dwVerInfoSize, GetFileVersionInfoSizeW(szFullPath.c_str(), nullptr));
-
+			auto dwVerInfoSize = EC_D(DWORD, GetFileVersionInfoSizeW(szFullPath.c_str(), nullptr));
 			if (dwVerInfoSize)
 			{
 				// If we were able to get the information, process it.

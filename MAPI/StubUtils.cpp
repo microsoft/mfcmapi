@@ -322,9 +322,8 @@ namespace mapistub
 		auto copied = DWORD();
 		do
 		{
-			auto hRes = S_OK;
 			buf.resize(buf.size() + MAX_PATH);
-			EC_D(copied, ::GetSystemDirectoryW(&buf.at(0), static_cast<DWORD>(buf.size())));
+			copied = EC_D(DWORD, ::GetSystemDirectoryW(&buf.at(0), static_cast<DWORD>(buf.size())));
 		} while (copied >= buf.size());
 
 		buf.resize(copied);
@@ -386,63 +385,56 @@ namespace mapistub
 		output::DebugPrint(DBGLoadMAPI, L"Enter GetOutlookPath: szCategory = %ws\n", szCategory.c_str());
 		auto hRes = S_OK;
 		DWORD dwValueBuf = 0;
-		UINT ret = 0;
 		std::wstring path;
 
 		if (lpb64) *lpb64 = false;
 
-		WC_D(
-			ret,
-			import::pfnMsiProvideQualifiedComponent(
-				szCategory.c_str(),
-				L"outlook.x64.exe", // STRING_OK
-				static_cast<DWORD>(INSTALLMODE_DEFAULT),
-				nullptr,
-				&dwValueBuf));
-		if (ret == ERROR_SUCCESS)
+		WC_W32(import::pfnMsiProvideQualifiedComponent(
+			szCategory.c_str(),
+			L"outlook.x64.exe", // STRING_OK
+			static_cast<DWORD>(INSTALLMODE_DEFAULT),
+			nullptr,
+			&dwValueBuf));
+		if (SUCCEEDED(hRes))
 		{
 			if (lpb64) *lpb64 = true;
 		}
 		else
 		{
-			WC_D(
-				ret,
-				import::pfnMsiProvideQualifiedComponent(
-					szCategory.c_str(),
-					L"outlook.exe", // STRING_OK
-					static_cast<DWORD>(INSTALLMODE_DEFAULT),
-					nullptr,
-					&dwValueBuf));
+			hRes = S_OK;
+			WC_W32(import::pfnMsiProvideQualifiedComponent(
+				szCategory.c_str(),
+				L"outlook.exe", // STRING_OK
+				static_cast<DWORD>(INSTALLMODE_DEFAULT),
+				nullptr,
+				&dwValueBuf));
 		}
 
-		if (ret == ERROR_SUCCESS)
+		if (SUCCEEDED(hRes))
 		{
 			dwValueBuf += 1;
 			const auto lpszTempPath = new (std::nothrow) WCHAR[dwValueBuf];
 
 			if (lpszTempPath != nullptr)
 			{
-				WC_D(
-					ret,
-					import::pfnMsiProvideQualifiedComponent(
+				WC_W32(import::pfnMsiProvideQualifiedComponent(
+					szCategory.c_str(),
+					L"outlook.x64.exe", // STRING_OK
+					static_cast<DWORD>(INSTALLMODE_DEFAULT),
+					lpszTempPath,
+					&dwValueBuf));
+				if (FAILED(hRes))
+				{
+					hRes = S_OK;
+					WC_W32(import::pfnMsiProvideQualifiedComponent(
 						szCategory.c_str(),
-						L"outlook.x64.exe", // STRING_OK
+						L"outlook.exe", // STRING_OK
 						static_cast<DWORD>(INSTALLMODE_DEFAULT),
 						lpszTempPath,
 						&dwValueBuf));
-				if (ret != ERROR_SUCCESS)
-				{
-					WC_D(
-						ret,
-						import::pfnMsiProvideQualifiedComponent(
-							szCategory.c_str(),
-							L"outlook.exe", // STRING_OK
-							static_cast<DWORD>(INSTALLMODE_DEFAULT),
-							lpszTempPath,
-							&dwValueBuf));
 				}
 
-				if (ret == ERROR_SUCCESS)
+				if (SUCCEEDED(hRes))
 				{
 					path = lpszTempPath;
 					output::DebugPrint(DBGLoadMAPI, L"Exit GetOutlookPath: Path = %ws\n", path.c_str());
@@ -463,7 +455,6 @@ namespace mapistub
 	std::wstring GetInstalledOutlookMAPI(int iOutlook)
 	{
 		output::DebugPrint(DBGLoadMAPI, L"Enter GetInstalledOutlookMAPI(%d)\n", iOutlook);
-		auto hRes = S_OK;
 
 		if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return strings::emptystring;
 
@@ -471,15 +462,14 @@ namespace mapistub
 
 		if (!lpszTempPath.empty())
 		{
-			UINT ret = 0;
 			WCHAR szDrive[_MAX_DRIVE] = {0};
 			WCHAR szOutlookPath[MAX_PATH] = {0};
-			WC_D(
-				ret,
+			auto ret = WC_D(
+				UINT,
 				_wsplitpath_s(
 					lpszTempPath.c_str(), szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, nullptr, NULL, nullptr, NULL));
 
-			if (SUCCEEDED(hRes))
+			if (ret == ERROR_SUCCESS)
 			{
 				auto szPath = std::wstring(szDrive) + std::wstring(szOutlookPath) + WszOlMAPI32DLL;
 

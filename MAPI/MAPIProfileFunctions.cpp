@@ -772,10 +772,8 @@ namespace mapi
 							hRes = S_OK;
 							const auto lpProp = lpRows->aRow[i].lpProps;
 
-							ULONG ulComp = NULL;
-
-							EC_D(
-								ulComp,
+							const auto ulComp = EC_D(
+								ULONG,
 								CompareStringA(
 									g_lcid, // LOCALE_INVARIANT,
 									NORM_IGNORECASE,
@@ -784,7 +782,7 @@ namespace mapi
 									lpszProfileName.c_str(),
 									-1));
 
-							if (CSTR_EQUAL == ulComp)
+							if (ulComp == CSTR_EQUAL)
 							{
 								hRes = E_ACCESSDENIED;
 								break;
