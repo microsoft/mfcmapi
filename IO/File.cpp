@@ -1304,8 +1304,7 @@ namespace file
 				const auto pbData = new BYTE[dwVerInfoSize];
 				if (pbData == nullptr) return {};
 
-				BOOL bRet = false;
-				EC_D(bRet, GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
+				EC_B(GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
 
 				if (pbData)
 				{
