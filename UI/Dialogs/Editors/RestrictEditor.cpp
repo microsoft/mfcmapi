@@ -223,7 +223,7 @@ namespace dialog
 				&lpOutProp));
 
 			// Since m_lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-			if (S_OK == hRes && lpOutProp)
+			if (hRes == S_OK && lpOutProp)
 			{
 				m_lpNewProp = lpOutProp;
 				std::wstring szProp;
@@ -447,7 +447,7 @@ namespace dialog
 
 			WC_H(ResEdit.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				// Since m_lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 				m_lpNewRes = ResEdit.DetachModifiedSRestriction();
@@ -570,7 +570,7 @@ namespace dialog
 										lpSourceRes); // pass source res into editor
 			WC_H(MyResEditor.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				// Since lpData->data.Res.lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 				lpData->Res()->m_lpNewRes = MyResEditor.DetachModifiedSRestriction();
@@ -757,7 +757,7 @@ namespace dialog
 										lpSourceRes); // pass source res into editor
 			WC_H(MyResEditor.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				// Since m_lpNewCommentRes was owned by an m_lpAllocParent, we don't free it directly
 				m_lpNewCommentRes = MyResEditor.DetachModifiedSRestriction();
@@ -802,7 +802,7 @@ namespace dialog
 				&lpData->Comment()->m_lpNewProp));
 
 			// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-			if (S_OK == hRes && lpData->Comment()->m_lpNewProp)
+			if (hRes == S_OK && lpData->Comment()->m_lpNewProp)
 			{
 				std::wstring szTmp;
 				std::wstring szAltTmp;
@@ -1074,7 +1074,7 @@ namespace dialog
 				break;
 			}
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_bModified = true;
 				SetStringW(2, interpretprop::RestrictionToString(m_lpOutputRes, nullptr));
@@ -1090,7 +1090,7 @@ namespace dialog
 				lpSourceRes->res.resCompareProps.ulPropTag1,
 				lpSourceRes->res.resCompareProps.ulPropTag2);
 			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resCompareProps.relop = MyEditor.GetHex(0);
@@ -1108,7 +1108,7 @@ namespace dialog
 										m_lpAllocParent); // pass source res into editor
 			WC_H(MyResEditor.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resAnd.cRes = MyResEditor.GetResCount();
@@ -1134,7 +1134,7 @@ namespace dialog
 				lpSourceRes->res.resNot.lpRes); // pass source res into editor
 			WC_H(MyResEditor.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				// Since m_lpOutputRes->res.resNot.lpRes was owned by an m_lpAllocParent, we don't free it directly
@@ -1155,7 +1155,7 @@ namespace dialog
 				lpSourceRes->res.resContent.lpProp,
 				m_lpAllocParent);
 			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resContent.ulFuzzyLevel = MyEditor.GetHex(0);
@@ -1192,7 +1192,7 @@ namespace dialog
 				lpSourceRes->res.resBitMask.ulPropTag,
 				lpSourceRes->res.resBitMask.ulMask);
 			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resBitMask.relBMR = MyEditor.GetHex(0);
@@ -1209,7 +1209,7 @@ namespace dialog
 			CResSizeEditor MyEditor(
 				this, lpSourceRes->res.resSize.relop, lpSourceRes->res.resSize.ulPropTag, lpSourceRes->res.resSize.cb);
 			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resSize.relop = MyEditor.GetHex(0);
@@ -1225,7 +1225,7 @@ namespace dialog
 			auto hRes = S_OK;
 			CResExistEditor MyEditor(this, lpSourceRes->res.resExist.ulPropTag);
 			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resExist.ulPropTag = MyEditor.GetPropTag(0);
@@ -1242,7 +1242,7 @@ namespace dialog
 			CResSubResEditor MyEditor(
 				this, lpSourceRes->res.resSub.ulSubObject, lpSourceRes->res.resSub.lpRes, m_lpAllocParent);
 			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resSub.ulSubObject = MyEditor.GetHex(1);
@@ -1261,7 +1261,7 @@ namespace dialog
 										  m_lpAllocParent); // pass source res into editor
 			WC_H(MyResEditor.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 
@@ -1419,7 +1419,7 @@ namespace dialog
 										lpSourceRes); // pass source res into editor
 			WC_H(MyResEditor.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				const auto lpModRes = MyResEditor.DetachModifiedSRestriction();
 				if (lpModRes)
@@ -1461,7 +1461,7 @@ namespace dialog
 				viewpane::TextPane::CreateSingleLinePane(IDS_EID, strings::BinToHexString(lpSourcebin, false), false));
 
 			WC_H(BinEdit.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				auto bin = strings::HexStringToBin(BinEdit.GetStringW(0));
 				lpData->Binary()->m_NewBin.lpb = mapi::ByteVectorToMAPI(bin, m_lpNewEntryList);

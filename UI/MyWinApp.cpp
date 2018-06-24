@@ -19,7 +19,7 @@ namespace ui
 
 		HKEY hRootKey = nullptr;
 		auto lStatus = RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey);
-		if (ERROR_SUCCESS == lStatus)
+		if (lStatus == ERROR_SUCCESS)
 		{
 			DWORD dwRegVal = 0;
 			DWORD dwType = REG_DWORD;
@@ -31,7 +31,7 @@ namespace ui
 				&dwType,
 				reinterpret_cast<LPBYTE>(&dwRegVal),
 				&cb);
-			if (ERROR_SUCCESS == lStatus && !dwRegVal)
+			if (lStatus == ERROR_SUCCESS && !dwRegVal)
 			{
 				bTerminateOnCorruption = false;
 			}

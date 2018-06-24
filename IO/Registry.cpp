@@ -76,7 +76,7 @@ namespace registry
 		auto hRes = WC_W32(RegQueryValueExW(hKey, lpszValue.c_str(), nullptr, lpType, nullptr, &cb));
 
 		// only handle types we know about - all others are bad
-		if (S_OK == hRes && cb && (REG_SZ == *lpType || REG_DWORD == *lpType || REG_MULTI_SZ == *lpType))
+		if (hRes == S_OK && cb && (REG_SZ == *lpType || REG_DWORD == *lpType || REG_MULTI_SZ == *lpType))
 		{
 			*lppData = new BYTE[cb];
 
@@ -131,7 +131,7 @@ namespace registry
 		// Get its size
 		auto hRes = WC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, nullptr, &cb));
 
-		if (S_OK == hRes && cb && !(cb % 2) && REG_SZ == dwKeyType)
+		if (hRes == S_OK && cb && !(cb % 2) && REG_SZ == dwKeyType)
 		{
 			szBuf = new (std::nothrow) BYTE[cb];
 			if (szBuf)

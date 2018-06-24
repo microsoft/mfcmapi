@@ -420,7 +420,7 @@ namespace mapistub
 					static_cast<DWORD>(INSTALLMODE_DEFAULT),
 					lpszTempPath,
 					&dwValueBuf));
-				if (ERROR_SUCCESS != ret)
+				if (ret != ERROR_SUCCESS)
 				{
 					ret = WC_W32(import::pfnMsiProvideQualifiedComponent(
 						szCategory.c_str(),

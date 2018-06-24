@@ -177,7 +177,7 @@ namespace dialog
 			editor::CCriteriaEditor MyCriteria(this, lpRes, lpEntryList, ulSearchState);
 
 			WC_H(MyCriteria.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				// make sure the user really wants to call SetSearchCriteria
 				// hard to detect 'dirty' on this dialog so easier just to ask
@@ -187,7 +187,7 @@ namespace dialog
 					IDS_CALLSETSEARCHCRITERIAPROMPT,
 					CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 				WC_H(MyYesNoDialog.DisplayDialog());
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					// do the set search criteria
 					const auto lpNewRes = MyCriteria.DetachModifiedSRestriction();

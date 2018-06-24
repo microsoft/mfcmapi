@@ -159,7 +159,7 @@ namespace dialog
 
 				EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpNewItem));
 				MAPIFreeBuffer(lpNewItem);
-				if (S_OK == hRes) OnRefreshView();
+				if (hRes == S_OK) OnRefreshView();
 
 				delete[] lpEntryID;
 			}
@@ -179,7 +179,7 @@ namespace dialog
 		{
 			EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
-			if (S_OK == hRes) OnRefreshView();
+			if (hRes == S_OK) OnRefreshView();
 		}
 	}
 
@@ -196,7 +196,7 @@ namespace dialog
 		{
 			EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
-			if (S_OK == hRes) OnRefreshView();
+			if (hRes == S_OK) OnRefreshView();
 		}
 	}
 

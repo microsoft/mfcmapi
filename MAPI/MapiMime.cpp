@@ -250,7 +250,7 @@ namespace mapi
 			MyData.InitPane(7, viewpane::CheckPane::Create(IDS_CONVERTDOADRBOOK, false, false));
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				*lpulConvertFlags = MyData.GetHex(0);
 				*lpulWrapLines = MyData.GetCheck(1) ? static_cast<ENCODINGTYPE>(MyData.GetDecimal(2)) : IET_UNKNOWN;
@@ -293,7 +293,7 @@ namespace mapi
 			}
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				*lpulConvertFlags = MyData.GetHex(0);
 				if (MyData.GetCheck(1))

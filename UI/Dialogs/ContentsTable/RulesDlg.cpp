@@ -106,7 +106,7 @@ namespace dialog
 		{
 			EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
-			if (S_OK == hRes) OnRefreshView();
+			if (hRes == S_OK) OnRefreshView();
 		}
 	}
 
@@ -123,7 +123,7 @@ namespace dialog
 		{
 			EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
-			if (S_OK == hRes) OnRefreshView();
+			if (hRes == S_OK) OnRefreshView();
 		}
 	}
 

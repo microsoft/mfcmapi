@@ -217,7 +217,7 @@ namespace dialog
 		MyFlags.SetHex(0, MAPIFORM_INSTALL_DIALOG);
 
 		WC_H(MyFlags.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			auto files = file::CFileDialogExW::OpenFiles(
 				L"cfg", // STRING_OK
@@ -275,7 +275,7 @@ namespace dialog
 		MyClass.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
 
 		WC_H(MyClass.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			auto szClass = strings::wstringTostring(MyClass.GetStringW(0)); // RemoveForm requires an ANSI string
 			if (!szClass.empty())
@@ -300,7 +300,7 @@ namespace dialog
 		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			auto szClass =
 				strings::wstringTostring(MyData.GetStringW(0)); // ResolveMessageClass requires an ANSI string
@@ -340,7 +340,7 @@ namespace dialog
 		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			auto bCancel = false;
 			const auto ulNumClasses = MyData.GetDecimal(0);
@@ -364,7 +364,7 @@ namespace dialog
 						MyClass.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
 
 						WC_H(MyClass.DisplayDialog());
-						if (S_OK == hRes)
+						if (hRes == S_OK)
 						{
 							auto szClass = strings::wstringTostring(
 								MyClass.GetStringW(0)); // MSDN says always use ANSI strings here
@@ -439,7 +439,7 @@ namespace dialog
 		MyData.SetHex(0, FORMPROPSET_UNION);
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			const auto ulFlags = MyData.GetHex(0);
 

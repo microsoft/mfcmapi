@@ -916,7 +916,7 @@ namespace dialog
 
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			if (0 == MyData.GetDropDown(2) && !lpMDB || 1 == MyData.GetDropDown(2) && !lpMAPISession ||
 				2 == MyData.GetDropDown(2) && !lpAB)

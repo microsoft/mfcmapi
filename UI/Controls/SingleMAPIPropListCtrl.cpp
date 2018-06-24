@@ -787,7 +787,7 @@ namespace controls
 			WC_H(RefreshMAPIPropList());
 
 			// Reset our header widths if weren't showing anything before and are now
-			if (S_OK == hRes && !m_bHaveEverDisplayedSomething && m_lpPropBag && GetItemCount())
+			if (hRes == S_OK && !m_bHaveEverDisplayedSomething && m_lpPropBag && GetItemCount())
 			{
 				m_bHaveEverDisplayedSomething = true;
 
@@ -991,7 +991,7 @@ namespace controls
 			output::DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Calling GetIDsFromNames with a NULL\n");
 			LPSPropTagArray lptag = nullptr;
 			WC_H(cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), NULL, NULL, NULL, &lptag));
-			if (S_OK == hRes && lptag && lptag->cValues)
+			if (hRes == S_OK && lptag && lptag->cValues)
 			{
 				// Now we have an array of tags - add them in:
 				EC_H(AddPropsToExtraProps(lptag, false));
@@ -1020,7 +1020,7 @@ namespace controls
 
 				WC_H(MyData.DisplayDialog());
 
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					const auto ulLowerBound = MyData.GetHex(0);
 					const auto ulUpperBound = MyData.GetHex(1);
@@ -1061,7 +1061,7 @@ namespace controls
 
 							WC_H(cache::GetNamesFromIDs(
 								m_lpPropBag->GetMAPIProp(), &lptag, NULL, NULL, &ulPropNames, &lppPropNames));
-							if (S_OK == hRes && ulPropNames == 1 && lppPropNames && *lppPropNames)
+							if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
 							{
 								output::DebugPrintEx(
 									DBGNamedProp,
@@ -1108,7 +1108,7 @@ namespace controls
 
 				WC_H(cache::GetNamesFromIDs(
 					m_lpPropBag->GetMAPIProp(), &lptag, NULL, NULL, &ulPropNames, &lppPropNames));
-				if (S_OK == hRes && ulPropNames == 1 && lppPropNames && *lppPropNames)
+				if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
 				{
 					// Found a named property, reset lower bound
 
@@ -1151,7 +1151,7 @@ namespace controls
 				hRes = S_OK;
 				WC_H(cache::GetNamesFromIDs(
 					m_lpPropBag->GetMAPIProp(), &lptag, NULL, NULL, &ulPropNames, &lppPropNames));
-				if (S_OK == hRes && ulPropNames == 1 && lppPropNames && *lppPropNames)
+				if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
 				{
 					output::DebugPrintEx(
 						DBGNamedProp, CLASS, L"CountNamedProps", L"Found a named property at 0x%04X.\n", ulCurrent);
@@ -1163,7 +1163,7 @@ namespace controls
 
 				MyResult.InitPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_HIGHESTNAMEDPROPNUM, true));
 
-				if (S_OK == hRes && ulPropNames == 1 && lppPropNames && *lppPropNames)
+				if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
 				{
 					auto namePropNames =
 						cache::NameIDToStrings(tag.aulPropTag[0], nullptr, lppPropNames[0], nullptr, false);
@@ -1203,7 +1203,7 @@ namespace controls
 			dialog::editor::CEditor Query(
 				this, IDS_DELETEPROPERTY, IDS_DELETEPROPERTYPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			WC_H(Query.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteProperty", L"deleting property 0x%08X\n", ulPropTag);
 
@@ -1278,7 +1278,7 @@ namespace controls
 				lpResIn);
 			WC_H(MyResEditor.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				const auto lpModRes = MyResEditor.DetachModifiedSRestriction();
 				if (lpModRes)
@@ -1391,7 +1391,7 @@ namespace controls
 					lpSourceObj ? NULL : &lpModProp));
 
 				// If we didn't have a source object, we need to shove our results back in to the property bag
-				if (S_OK == hRes && !lpSourceObj && lpModProp)
+				if (hRes == S_OK && !lpSourceObj && lpModProp)
 				{
 					EC_H(m_lpPropBag->SetProp(lpModProp));
 					// At this point, we're done with lpModProp - it was allocated off of lpSourceArray
@@ -1442,7 +1442,7 @@ namespace controls
 				MyPrompt.InitPane(0, viewpane::CheckPane::Create(IDS_USEWRAPEX, true, false));
 
 				WC_H(MyPrompt.DisplayDialog());
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					if (MyPrompt.GetCheck(0))
 					{
@@ -1468,7 +1468,7 @@ namespace controls
 
 						WC_H(MyPrompt2.DisplayDialog());
 
-						if (S_OK == hRes)
+						if (hRes == S_OK)
 						{
 							ulRTFFlags = MyPrompt2.GetHex(0);
 							ulInCodePage = MyPrompt2.GetDecimal(1);
@@ -1478,7 +1478,7 @@ namespace controls
 				}
 			}
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				dialog::editor::CStreamEditor MyEditor(
 					this,
@@ -1538,7 +1538,7 @@ namespace controls
 			MyData.SetHex(2, ulSourcePropTag);
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				const auto ulSourceTag = MyData.GetHex(1);
 				auto ulTargetTag = MyData.GetHex(2);
@@ -1560,7 +1560,7 @@ namespace controls
 					MyCopyData.SetHex(1, MAPI_DIALOG);
 
 					WC_H(MyCopyData.DisplayDialog());
-					if (S_OK == hRes)
+					if (hRes == S_OK)
 					{
 						auto MyGUID = guid::StringToGUID(MyCopyData.GetStringW(0));
 						LPMAPIPROGRESS lpProgress =
@@ -1671,7 +1671,7 @@ namespace controls
 						break;
 					case PT_MV_BINARY:
 						output::DebugPrintEx(DBGGeneric, CLASS, L"OnOpenProperty", L"property is PT_MV_BINARY\n");
-						if (S_OK == hRes && lpProp && PT_MV_BINARY == PROP_TYPE(lpProp->ulPropTag))
+						if (hRes == S_OK && lpProp && PT_MV_BINARY == PROP_TYPE(lpProp->ulPropTag))
 						{
 							output::DebugPrintEx(
 								DBGGeneric,
@@ -1739,7 +1739,7 @@ namespace controls
 				this);
 
 			WC_H(MyPropertyTag.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				OnEditGivenProp(MyPropertyTag.GetPropertyTag());
 			}
@@ -1760,7 +1760,7 @@ namespace controls
 				this);
 
 			WC_H(MyPropertyTag.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				dialog::editor::CEditor MyData(
 					this, IDS_OPENPROPASTABLE, IDS_OPENPROPASTABLEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -1768,7 +1768,7 @@ namespace controls
 				MyData.InitPane(0, viewpane::CheckPane::Create(IDS_OPENASEXTABLE, false, false));
 
 				WC_H(MyData.DisplayDialog());
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					if (MyData.GetCheck(0))
 					{
@@ -1810,13 +1810,13 @@ namespace controls
 
 				WC_H(MyData.DisplayDialog());
 
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					ULONG ulObjType = 0;
 					LPMAPIPROP lpSource = nullptr;
 					auto propSetGUID = guid::StringToGUID(MyData.GetStringW(0));
 
-					if (S_OK == hRes)
+					if (hRes == S_OK)
 					{
 						EC_H(mapi::CallOpenEntry(
 							NULL,
@@ -1829,7 +1829,7 @@ namespace controls
 							&ulObjType,
 							reinterpret_cast<LPUNKNOWN*>(&lpSource)));
 
-						if (S_OK == hRes && MAPI_MESSAGE == ulObjType && lpSource)
+						if (hRes == S_OK && MAPI_MESSAGE == ulObjType && lpSource)
 						{
 							EC_H(mapi::CopyNamedProps(
 								lpSource,
