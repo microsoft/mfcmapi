@@ -1259,7 +1259,7 @@ namespace file
 		{
 			auto hRes = S_OK;
 			buf.resize(buf.size() + MAX_PATH);
-			EC_D(copied, ::GetModuleFileNameW(hModule, &buf.at(0), buf.size()));
+			EC_D(copied, ::GetModuleFileNameW(hModule, &buf.at(0), static_cast<DWORD>(buf.size())));
 		} while (copied >= buf.size());
 
 		buf.resize(copied);
@@ -1277,7 +1277,7 @@ namespace file
 		{
 			auto hRes = S_OK;
 			buf.resize(buf.size() + MAX_PATH);
-			EC_D(copied, ::GetSystemDirectoryW(&buf.at(0), buf.size()));
+			EC_D(copied, ::GetSystemDirectoryW(&buf.at(0), static_cast<UINT>(buf.size())));
 		} while (copied >= buf.size());
 
 		buf.resize(copied);
