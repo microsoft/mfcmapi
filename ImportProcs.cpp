@@ -2,6 +2,7 @@
 #include <ImportProcs.h>
 #include <Interpret/String.h>
 #include <MAPI/StubUtils.h>
+#include <IO/File.h>
 
 namespace import
 {
@@ -116,27 +117,20 @@ namespace import
 	{
 		if (szDLLName.empty()) return nullptr;
 
-		auto hRes = S_OK;
-		HMODULE hModRet = nullptr;
-		std::wstring szDLLPath;
-		UINT uiRet = NULL;
-
-		static WCHAR szSystemDir[MAX_PATH] = {0};
+		static auto szSystemDir = std::wstring();
 		static auto bSystemDirLoaded = false;
 
 		output::DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
 
 		if (!bSystemDirLoaded)
 		{
-			WC_D(uiRet, GetSystemDirectoryW(szSystemDir, MAX_PATH));
+			szSystemDir = file::GetSystemDirectory();
 			bSystemDirLoaded = true;
 		}
 
-		szDLLPath = std::wstring(szSystemDir) + L"\\" + szDLLName;
+		const auto szDLLPath = szSystemDir + L"\\" + szDLLName;
 		output::DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
-		hModRet = MyLoadLibraryW(szDLLPath);
-
-		return hModRet;
+		return MyLoadLibraryW(szDLLPath);
 	}
 
 	_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring& szDLLName)

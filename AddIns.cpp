@@ -3,6 +3,7 @@
 #include <ImportProcs.h>
 #include <Interpret/String.h>
 #include <UI/Dialogs/Editors/Editor.h>
+#include <IO/File.h>
 #ifndef MRMAPI
 #include <UI/UIFunctions.h>
 #endif
@@ -261,15 +262,11 @@ namespace addin
 		}
 		else
 		{
-			auto hRes = S_OK;
-			WCHAR szFilePath[MAX_PATH];
-			DWORD dwDir = NULL;
-			EC_D(dwDir, GetModuleFileNameW(nullptr, szFilePath, _countof(szFilePath)));
-			if (!dwDir) return;
+			const auto szFilePath = file::GetModuleFileName(nullptr);
+			if (szFilePath.empty()) return;
 
 			// We got the path to mfcmapi.exe - need to strip it
-			std::wstring szDir = szFilePath;
-			szDir = szDir.substr(0, szDir.find_last_of(L'\\'));
+			const auto szDir = szFilePath.substr(0, szFilePath.find_last_of(L'\\'));
 
 			CFileList ExclusionList(EXCLUSION_LIST);
 			CFileList InclusionList(INCLUSION_LIST);
@@ -277,90 +274,87 @@ namespace addin
 			if (!szDir.empty())
 			{
 				output::DebugPrint(DBGAddInPlumbing, L"Current dir = \"%ws\"\n", szDir.c_str());
-				auto szSpec = szDir + L"\\*.dll"; // STRING_OK
-				if (SUCCEEDED(hRes))
+				const auto szSpec = szDir + L"\\*.dll"; // STRING_OK
+				output::DebugPrint(DBGAddInPlumbing, L"File spec = \"%ws\"\n", szSpec.c_str());
+
+				WIN32_FIND_DATAW FindFileData = {0};
+				const auto hFind = FindFirstFileW(szSpec.c_str(), &FindFileData);
+
+				if (hFind == INVALID_HANDLE_VALUE)
 				{
-					output::DebugPrint(DBGAddInPlumbing, L"File spec = \"%ws\"\n", szSpec.c_str());
-
-					WIN32_FIND_DATAW FindFileData = {0};
-					const auto hFind = FindFirstFileW(szSpec.c_str(), &FindFileData);
-
-					if (hFind == INVALID_HANDLE_VALUE)
+					output::DebugPrint(DBGAddInPlumbing, L"Invalid file handle. Error is %u.\n", GetLastError());
+				}
+				else
+				{
+					for (;;)
 					{
-						output::DebugPrint(DBGAddInPlumbing, L"Invalid file handle. Error is %u.\n", GetLastError());
-					}
-					else
-					{
-						for (;;)
+						output::DebugPrint(DBGAddInPlumbing, L"Examining \"%ws\"\n", FindFileData.cFileName);
+						HMODULE hMod = nullptr;
+
+						// If we know the Add-in is good, just load it.
+						// If we know it's bad, skip it.
+						// Otherwise, we have to check if it's good.
+						// LoadLibrary calls DLLMain, which can get expensive just to see if a function is exported
+						// So we use DONT_RESOLVE_DLL_REFERENCES to see if we're interested in the DLL first
+						// Only if we're interested do we reload the DLL for real
+						if (InclusionList.IsOnList(FindFileData.cFileName))
 						{
-							output::DebugPrint(DBGAddInPlumbing, L"Examining \"%ws\"\n", FindFileData.cFileName);
-							HMODULE hMod = nullptr;
-
-							// If we know the Add-in is good, just load it.
-							// If we know it's bad, skip it.
-							// Otherwise, we have to check if it's good.
-							// LoadLibrary calls DLLMain, which can get expensive just to see if a function is exported
-							// So we use DONT_RESOLVE_DLL_REFERENCES to see if we're interested in the DLL first
-							// Only if we're interested do we reload the DLL for real
-							if (InclusionList.IsOnList(FindFileData.cFileName))
+							hMod = import::MyLoadLibraryW(FindFileData.cFileName);
+						}
+						else
+						{
+							if (!ExclusionList.IsOnList(FindFileData.cFileName))
 							{
-								hMod = import::MyLoadLibraryW(FindFileData.cFileName);
+								hMod = LoadLibraryExW(FindFileData.cFileName, nullptr, DONT_RESOLVE_DLL_REFERENCES);
+								if (hMod)
+								{
+									const auto pfnLoadAddIn = GetFunction<LPLOADADDIN>(hMod, szLoadAddIn);
+									FreeLibrary(hMod);
+									hMod = nullptr;
+
+									if (pfnLoadAddIn)
+									{
+										// Remember this as a good add-in
+										InclusionList.AddToList(FindFileData.cFileName);
+										// We found a candidate, load it for real now
+										hMod = import::MyLoadLibraryW(FindFileData.cFileName);
+									}
+								}
+
+								// If we still don't have a DLL loaded, exclude it
+								if (!hMod)
+								{
+									ExclusionList.AddToList(FindFileData.cFileName);
+								}
+							}
+						}
+
+						if (hMod)
+						{
+							output::DebugPrint(DBGAddInPlumbing, L"Opened module\n");
+							const auto pfnLoadAddIn = GetFunction<LPLOADADDIN>(hMod, szLoadAddIn);
+							if (pfnLoadAddIn && GetAddinVersion(hMod) == MFCMAPI_HEADER_CURRENT_VERSION)
+							{
+								output::DebugPrint(DBGAddInPlumbing, L"Found an add-in\n");
+								g_lpMyAddins.push_back(_AddIn());
+								LoadSingleAddIn(g_lpMyAddins.back(), hMod, pfnLoadAddIn);
 							}
 							else
 							{
-								if (!ExclusionList.IsOnList(FindFileData.cFileName))
-								{
-									hMod = LoadLibraryExW(FindFileData.cFileName, nullptr, DONT_RESOLVE_DLL_REFERENCES);
-									if (hMod)
-									{
-										const auto pfnLoadAddIn = GetFunction<LPLOADADDIN>(hMod, szLoadAddIn);
-										FreeLibrary(hMod);
-										hMod = nullptr;
-
-										if (pfnLoadAddIn)
-										{
-											// Remember this as a good add-in
-											InclusionList.AddToList(FindFileData.cFileName);
-											// We found a candidate, load it for real now
-											hMod = import::MyLoadLibraryW(FindFileData.cFileName);
-										}
-									}
-
-									// If we still don't have a DLL loaded, exclude it
-									if (!hMod)
-									{
-										ExclusionList.AddToList(FindFileData.cFileName);
-									}
-								}
+								// Not an add-in, release the hMod
+								FreeLibrary(hMod);
 							}
-
-							if (hMod)
-							{
-								output::DebugPrint(DBGAddInPlumbing, L"Opened module\n");
-								const auto pfnLoadAddIn = GetFunction<LPLOADADDIN>(hMod, szLoadAddIn);
-								if (pfnLoadAddIn && GetAddinVersion(hMod) == MFCMAPI_HEADER_CURRENT_VERSION)
-								{
-									output::DebugPrint(DBGAddInPlumbing, L"Found an add-in\n");
-									g_lpMyAddins.push_back(_AddIn());
-									LoadSingleAddIn(g_lpMyAddins.back(), hMod, pfnLoadAddIn);
-								}
-								else
-								{
-									// Not an add-in, release the hMod
-									FreeLibrary(hMod);
-								}
-							}
-
-							// get next file
-							if (!FindNextFileW(hFind, &FindFileData)) break;
 						}
 
-						const auto dwRet = GetLastError();
-						FindClose(hFind);
-						if (dwRet != ERROR_NO_MORE_FILES)
-						{
-							output::DebugPrint(DBGAddInPlumbing, L"FindNextFile error. Error is %u.\n", dwRet);
-						}
+						// get next file
+						if (!FindNextFileW(hFind, &FindFileData)) break;
+					}
+
+					const auto dwRet = GetLastError();
+					FindClose(hFind);
+					if (dwRet != ERROR_NO_MORE_FILES)
+					{
+						output::DebugPrint(DBGAddInPlumbing, L"FindNextFile error. Error is %u.\n", dwRet);
 					}
 				}
 			}

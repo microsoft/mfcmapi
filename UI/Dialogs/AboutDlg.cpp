@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/AboutDlg.h>
 #include <UI/UIFunctions.h>
+#include <IO/File.h>
 
 namespace dialog
 {
@@ -103,71 +104,19 @@ namespace dialog
 		auto szDisplayAboutCheck = strings::loadstring(IDS_DISPLAYABOUTCHECK);
 		::SetWindowTextW(m_DisplayAboutCheck.m_hWnd, szDisplayAboutCheck.c_str());
 
-		// Get version information from the application.
-		WCHAR szFullPath[256];
-		DWORD dwRet = 0;
-		EC_D(dwRet, GetModuleFileNameW(NULL, szFullPath, _countof(szFullPath)));
-		DWORD dwVerInfoSize = 0;
-		EC_D(dwVerInfoSize, GetFileVersionInfoSizeW(szFullPath, nullptr));
-		if (dwVerInfoSize)
+		auto fileVersionInfo = file::GetFileVersionInfo(nullptr);
+
+		for (auto i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
 		{
-			// If we were able to get the information, process it.
-			const auto pbData = new BYTE[dwVerInfoSize];
+			WCHAR szResult[256];
 
-			if (pbData)
+			hRes = S_OK;
+			UINT uiRet = 0;
+			EC_D(uiRet, ::GetDlgItemTextW(m_hWnd, i, szResult, _countof(szResult)));
+
+			if (!fileVersionInfo[szResult].empty())
 			{
-				EC_D(bRet, GetFileVersionInfoW(szFullPath, 0, dwVerInfoSize, static_cast<void*>(pbData)));
-
-				struct LANGANDCODEPAGE
-				{
-					WORD wLanguage;
-					WORD wCodePage;
-				}* lpTranslate = {nullptr};
-
-				UINT cbTranslate = 0;
-
-				// Read the list of languages and code pages.
-				EC_B(VerQueryValueW(
-					pbData,
-					L"\\VarFileInfo\\Translation", // STRING_OK
-					reinterpret_cast<LPVOID*>(&lpTranslate),
-					&cbTranslate));
-
-				// Read the file description for the first language/codepage
-				if (S_OK == hRes && lpTranslate)
-				{
-					const auto szGetName = strings::format(
-						L"\\StringFileInfo\\%04x%04x\\", // STRING_OK
-						lpTranslate[0].wLanguage,
-						lpTranslate[0].wCodePage);
-
-					// Walk through the dialog box items that we want to replace.
-					if (!FAILED(hRes))
-						for (auto i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
-						{
-							UINT cchVer = 0;
-							WCHAR* pszVer = nullptr;
-							WCHAR szResult[256];
-
-							hRes = S_OK;
-							UINT uiRet = 0;
-							EC_D(uiRet, ::GetDlgItemTextW(m_hWnd, i, szResult, _countof(szResult)));
-
-							EC_B(VerQueryValueW(
-								static_cast<void*>(pbData),
-								(szGetName + szResult).c_str(),
-								reinterpret_cast<void**>(&pszVer),
-								&cchVer));
-
-							if (S_OK == hRes && cchVer && pszVer)
-							{
-								// Replace the dialog box item text with version information.
-								::SetDlgItemTextW(m_hWnd, i, pszVer);
-							}
-						}
-				}
-
-				delete[] pbData;
+				::SetDlgItemTextW(m_hWnd, i, fileVersionInfo[szResult].c_str());
 			}
 		}
 

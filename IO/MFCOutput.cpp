@@ -8,6 +8,7 @@
 #include <Property/ParseProperty.h>
 #include <Interpret/Guids.h>
 #include <MAPI/Cache/NamedPropCache.h>
+#include <IO/File.h>
 #ifndef MRMAPI
 #include <UI/Dialogs/Editors/DbgView.h>
 #endif
@@ -1020,81 +1021,19 @@ namespace output
 	{
 		CHKPARAM;
 		EARLYABORT;
-		wchar_t szFullPath[MAX_PATH];
-		auto hRes = S_OK;
-		DWORD dwRet = 0;
 
 		// Get version information from the application.
-		EC_D(dwRet, GetModuleFileNameW(nullptr, szFullPath, _countof(szFullPath)));
-
-		if (S_OK == hRes)
+		const auto szFullPath = file::GetModuleFileName(nullptr);
+		if (!szFullPath.empty())
 		{
-			DWORD dwVerInfoSize = 0;
+			auto fileVersionInfo = file::GetFileVersionInfo(nullptr);
 
-			EC_D(dwVerInfoSize, GetFileVersionInfoSizeW(szFullPath, nullptr));
-
-			if (dwVerInfoSize)
+			// Load all our strings
+			for (auto iVerString = IDS_VER_FIRST; iVerString <= IDS_VER_LAST; iVerString++)
 			{
-				// If we were able to get the information, process it.
-				const auto pbData = new BYTE[dwVerInfoSize];
-				if (pbData == nullptr) return;
-
-				BOOL bRet = false;
-				EC_D(bRet, GetFileVersionInfoW(szFullPath, NULL, dwVerInfoSize, static_cast<void*>(pbData)));
-
-				if (pbData)
-				{
-					struct LANGANDCODEPAGE
-					{
-						WORD wLanguage;
-						WORD wCodePage;
-					}* lpTranslate = {nullptr};
-
-					UINT cbTranslate = 0;
-
-					// Read the list of languages and code pages.
-					EC_B(VerQueryValueW(
-						pbData,
-						L"\\VarFileInfo\\Translation", // STRING_OK
-						reinterpret_cast<LPVOID*>(&lpTranslate),
-						&cbTranslate));
-
-					// Read the file description for each language and code page.
-
-					if (S_OK == hRes && lpTranslate)
-					{
-						for (UINT iCodePages = 0; iCodePages < cbTranslate / sizeof(LANGANDCODEPAGE); iCodePages++)
-						{
-							const auto szSubBlock = strings::format(
-								L"\\StringFileInfo\\%04x%04x\\", // STRING_OK
-								lpTranslate[iCodePages].wLanguage,
-								lpTranslate[iCodePages].wCodePage);
-
-							// Load all our strings
-							for (auto iVerString = IDS_VER_FIRST; iVerString <= IDS_VER_LAST; iVerString++)
-							{
-								UINT cchVer = 0;
-								wchar_t* lpszVer = nullptr;
-								auto szVerString = strings::loadstring(iVerString);
-								auto szQueryString = szSubBlock + szVerString;
-								hRes = S_OK;
-
-								EC_B(VerQueryValueW(
-									static_cast<void*>(pbData),
-									szQueryString.c_str(),
-									reinterpret_cast<void**>(&lpszVer),
-									&cchVer));
-
-								if (S_OK == hRes && cchVer && lpszVer)
-								{
-									Outputf(ulDbgLvl, fFile, true, L"%ws: %ws\n", szVerString.c_str(), lpszVer);
-								}
-							}
-						}
-					}
-				}
-
-				delete[] pbData;
+				const auto szVerString = strings::loadstring(iVerString);
+				Outputf(
+					ulDbgLvl, fFile, true, L"%ws: %ws\n", szVerString.c_str(), fileVersionInfo[szVerString].c_str());
 			}
 		}
 	}
