@@ -143,17 +143,16 @@ namespace import
 			{
 				WCHAR szDrive[_MAX_DRIVE] = {0};
 				WCHAR szMAPIPath[MAX_PATH] = {0};
-				auto ret = WC_W32(
-					_wsplitpath_s(
-						szOutlookMAPIPath.c_str(),
-						szDrive,
-						_MAX_DRIVE,
-						szMAPIPath,
-						MAX_PATH,
-						nullptr,
-						NULL,
-						nullptr,
-						NULL));
+				auto ret = WC_W32(_wsplitpath_s(
+					szOutlookMAPIPath.c_str(),
+					szDrive,
+					_MAX_DRIVE,
+					szMAPIPath,
+					MAX_PATH,
+					nullptr,
+					NULL,
+					nullptr,
+					NULL));
 
 				if (ret == ERROR_SUCCESS)
 				{

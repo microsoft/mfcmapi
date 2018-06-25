@@ -387,19 +387,19 @@ namespace mapistub
 
 		if (lpb64) *lpb64 = false;
 
-		auto ret = WC_W32(import::pfnMsiProvideQualifiedComponent(
+		auto hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
 			szCategory.c_str(),
 			L"outlook.x64.exe", // STRING_OK
 			static_cast<DWORD>(INSTALLMODE_DEFAULT),
 			nullptr,
 			&dwValueBuf));
-		if (ret == ERROR_SUCCESS)
+		if (SUCCEEDED(hRes))
 		{
 			if (lpb64) *lpb64 = true;
 		}
 		else
 		{
-			ret = WC_W32(import::pfnMsiProvideQualifiedComponent(
+			hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
 				szCategory.c_str(),
 				L"outlook.exe", // STRING_OK
 				static_cast<DWORD>(INSTALLMODE_DEFAULT),
@@ -407,22 +407,22 @@ namespace mapistub
 				&dwValueBuf));
 		}
 
-		if (ret == ERROR_SUCCESS)
+		if (SUCCEEDED(hRes))
 		{
 			dwValueBuf += 1;
 			const auto lpszTempPath = new (std::nothrow) WCHAR[dwValueBuf];
 
 			if (lpszTempPath != nullptr)
 			{
-				ret = WC_W32(import::pfnMsiProvideQualifiedComponent(
+				hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
 					szCategory.c_str(),
 					L"outlook.x64.exe", // STRING_OK
 					static_cast<DWORD>(INSTALLMODE_DEFAULT),
 					lpszTempPath,
 					&dwValueBuf));
-				if (ret != ERROR_SUCCESS)
+				if (FAILED(hRes))
 				{
-					ret = WC_W32(import::pfnMsiProvideQualifiedComponent(
+					hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
 						szCategory.c_str(),
 						L"outlook.exe", // STRING_OK
 						static_cast<DWORD>(INSTALLMODE_DEFAULT),
@@ -430,7 +430,7 @@ namespace mapistub
 						&dwValueBuf));
 				}
 
-				if (ret == ERROR_SUCCESS)
+				if (SUCCEEDED(hRes))
 				{
 					path = lpszTempPath;
 					output::DebugPrint(DBGLoadMAPI, L"Exit GetOutlookPath: Path = %ws\n", path.c_str());
@@ -460,10 +460,10 @@ namespace mapistub
 		{
 			WCHAR szDrive[_MAX_DRIVE] = {0};
 			WCHAR szOutlookPath[MAX_PATH] = {0};
-			auto ret = WC_W32(_wsplitpath_s(
+			auto hRes = WC_W32(_wsplitpath_s(
 				lpszTempPath.c_str(), szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, nullptr, NULL, nullptr, NULL));
 
-			if (ret == ERROR_SUCCESS)
+			if (SUCCEEDED(hRes))
 			{
 				auto szPath = std::wstring(szDrive) + std::wstring(szOutlookPath) + WszOlMAPI32DLL;
 

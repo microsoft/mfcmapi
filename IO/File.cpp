@@ -20,7 +20,7 @@ namespace file
 	{
 		if (!path.empty())
 		{
-			WCHAR szShortPath[MAX_PATH] = {0};
+			WCHAR szShortPath[MAX_PATH] = {};
 			// Use the short path to give us as much room as possible
 			WC_DS(GetShortPathNameW(path.c_str(), szShortPath, _countof(szShortPath)));
 			std::wstring ret = szShortPath;
@@ -1294,7 +1294,6 @@ namespace file
 		if (!szFullPath.empty())
 		{
 			auto dwVerInfoSize = EC_D(DWORD, GetFileVersionInfoSizeW(szFullPath.c_str(), nullptr));
-
 			if (dwVerInfoSize)
 			{
 				// If we were able to get the information, process it.

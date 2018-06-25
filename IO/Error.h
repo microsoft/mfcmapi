@@ -353,16 +353,6 @@ namespace error
 		return __ret; \
 	}()
 
-// Execute a function which returns 0 on error, log error, and return result
-#define EC_DS(fnx) \
-	[&]() -> void { \
-		auto __ret = (fnx); \
-		if (!__ret) \
-		{ \
-			error::CheckWin32Error(true, __FILE__, __LINE__, #fnx); \
-		} \
-	}()
-
 // Execute a function which returns 0 on error, log error, and return CheckWin32Error(HRESULT)
 // Will not display an error dialog
 #define WC_D(_TYPE, fnx) \

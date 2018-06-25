@@ -542,7 +542,6 @@ namespace dialog
 	void CBaseDialog::OnSize(UINT /* nType*/, int cx, int cy)
 	{
 		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(1));
-
 		if (hdwp)
 		{
 			const auto iHeight = GetStatusHeight();

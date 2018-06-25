@@ -756,7 +756,6 @@ namespace controls
 					HANDLE,
 					reinterpret_cast<HANDLE>(
 						_beginthreadex(nullptr, 0, ThreadFuncLoadTable, lpThreadInfo, 0, nullptr)));
-
 				if (hThread == 0 || hThread == reinterpret_cast<HANDLE>(-1))
 				{
 					output::DebugPrintEx(
