@@ -21,16 +21,13 @@ namespace dialog
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		UINT uidTitle,
 		__mfcmapiCreateDialogEnum bCreateDialog,
+		_In_opt_ LPMAPIPROP lpContainer,
 		_In_opt_ LPMAPITABLE lpContentsTable,
 		_In_ LPSPropTagArray sptExtraColumnTags,
 		_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
 		ULONG nIDContextMenu,
-		ULONG ulAddInContext
-	) :
-		CBaseDialog(
-			pParentWnd,
-			lpMapiObjects,
-			ulAddInContext)
+		ULONG ulAddInContext)
+		: CBaseDialog(pParentWnd, lpMapiObjects, ulAddInContext)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		if (NULL != uidTitle)
@@ -43,7 +40,7 @@ namespace dialog
 		}
 
 		m_lpContentsTableListCtrl = nullptr;
-		m_lpContainer = nullptr;
+		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpContainer);
 		m_nIDContextMenu = nIDContextMenu;
 
 		m_ulDisplayFlags = dfNormal;
@@ -64,17 +61,24 @@ namespace dialog
 	{
 		TRACE_DESTRUCTOR(CLASS);
 		if (m_lpContentsTable) m_lpContentsTable->Release();
-		m_lpContentsTable = nullptr;
+		if (m_lpContainer) m_lpContainer->Release();
 	}
 
 	_Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 	{
-		output::DebugPrint(DBGMenu, L"CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
+		output::DebugPrint(
+			DBGMenu, L"CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 		switch (wMenuSelect)
 		{
-		case ID_APPLYFINDROW: SetRestrictionType(mfcmapiFINDROW_RESTRICTION); return true;
-		case ID_APPLYRESTRICTION: SetRestrictionType(mfcmapiNORMAL_RESTRICTION); return true;
-		case ID_CLEARRESTRICTION: SetRestrictionType(mfcmapiNO_RESTRICTION); return true;
+		case ID_APPLYFINDROW:
+			SetRestrictionType(mfcmapiFINDROW_RESTRICTION);
+			return true;
+		case ID_APPLYRESTRICTION:
+			SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+			return true;
+		case ID_CLEARRESTRICTION:
+			SetRestrictionType(mfcmapiNO_RESTRICTION);
+			return true;
 		}
 
 		return CBaseDialog::HandleMenu(wMenuSelect);
@@ -113,16 +117,12 @@ namespace dialog
 			if (m_lpContentsTable) m_lpContentsTable->Release();
 			m_lpContentsTable = nullptr;
 
-			const auto ulFlags =
-				(m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL) |
-				(m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) |
-				fMapiUnicode;
+			const auto ulFlags = (m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL) |
+								 (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | fMapiUnicode;
 
 			auto hRes = S_OK;
 			// Get the table of contents of the IMAPIContainer!!!
-			EC_MAPI(m_lpContainer->GetContentsTable(
-				ulFlags,
-				&m_lpContentsTable));
+			EC_MAPI(m_lpContainer->GetContentsTable(ulFlags, &m_lpContentsTable));
 		}
 
 		UpdateTitleBarText();
@@ -142,27 +142,24 @@ namespace dialog
 			const auto ulPropType = mapi::GetMAPIObjectType(m_lpContainer);
 
 			// Pass the contents table to the list control, but don't render yet - call BuildUIForContentsTable from CreateDialogAndMenu for that
-			WC_H(m_lpContentsTableListCtrl->SetContentsTable(
-				m_lpContentsTable,
-				m_ulDisplayFlags,
-				ulPropType));
+			WC_H(m_lpContentsTableListCtrl->SetContentsTable(m_lpContentsTable, m_ulDisplayFlags, ulPropType));
 		}
 	}
 
 	BEGIN_MESSAGE_MAP(CContentsTableDlg, CBaseDialog)
-		ON_COMMAND(ID_DISPLAYSELECTEDITEM, OnDisplayItem)
-		ON_COMMAND(ID_CANCELTABLELOAD, OnEscHit)
-		ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
-		ON_COMMAND(ID_CREATEPROPERTYSTRINGRESTRICTION, OnCreatePropertyStringRestriction)
-		ON_COMMAND(ID_CREATERANGERESTRICTION, OnCreateRangeRestriction)
-		ON_COMMAND(ID_EDITRESTRICTION, OnEditRestriction)
-		ON_COMMAND(ID_GETSTATUS, OnGetStatus)
-		ON_COMMAND(ID_OUTPUTTABLE, OnOutputTable)
-		ON_COMMAND(ID_SETCOLUMNS, OnSetColumns)
-		ON_COMMAND(ID_SORTTABLE, OnSortTable)
-		ON_COMMAND(ID_TABLENOTIFICATIONON, OnNotificationOn)
-		ON_COMMAND(ID_TABLENOTIFICATIONOFF, OnNotificationOff)
-		ON_MESSAGE(WM_MFCMAPI_RESETCOLUMNS, msgOnResetColumns)
+	ON_COMMAND(ID_DISPLAYSELECTEDITEM, OnDisplayItem)
+	ON_COMMAND(ID_CANCELTABLELOAD, OnEscHit)
+	ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
+	ON_COMMAND(ID_CREATEPROPERTYSTRINGRESTRICTION, OnCreatePropertyStringRestriction)
+	ON_COMMAND(ID_CREATERANGERESTRICTION, OnCreateRangeRestriction)
+	ON_COMMAND(ID_EDITRESTRICTION, OnEditRestriction)
+	ON_COMMAND(ID_GETSTATUS, OnGetStatus)
+	ON_COMMAND(ID_OUTPUTTABLE, OnOutputTable)
+	ON_COMMAND(ID_SETCOLUMNS, OnSetColumns)
+	ON_COMMAND(ID_SORTTABLE, OnSortTable)
+	ON_COMMAND(ID_TABLENOTIFICATIONON, OnNotificationOn)
+	ON_COMMAND(ID_TABLENOTIFICATIONOFF, OnNotificationOff)
+	ON_MESSAGE(WM_MFCMAPI_RESETCOLUMNS, msgOnResetColumns)
 	END_MESSAGE_MAP()
 
 	void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
@@ -179,15 +176,20 @@ namespace dialog
 			pMenu->CheckMenuItem(ID_APPLYFINDROW, CHECK(mfcmapiFINDROW_RESTRICTION == RestrictionType));
 			pMenu->CheckMenuItem(ID_APPLYRESTRICTION, CHECK(mfcmapiNORMAL_RESTRICTION == RestrictionType));
 			pMenu->CheckMenuItem(ID_CLEARRESTRICTION, CHECK(mfcmapiNO_RESTRICTION == RestrictionType));
-			pMenu->EnableMenuItem(ID_TABLENOTIFICATIONON, DIM(m_lpContentsTableListCtrl->IsContentsTableSet() && !m_lpContentsTableListCtrl->IsAdviseSet()));
+			pMenu->EnableMenuItem(
+				ID_TABLENOTIFICATIONON,
+				DIM(m_lpContentsTableListCtrl->IsContentsTableSet() && !m_lpContentsTableListCtrl->IsAdviseSet()));
 			pMenu->CheckMenuItem(ID_TABLENOTIFICATIONON, CHECK(m_lpContentsTableListCtrl->IsAdviseSet()));
 			pMenu->EnableMenuItem(ID_TABLENOTIFICATIONOFF, DIM(m_lpContentsTableListCtrl->IsAdviseSet()));
-			pMenu->EnableMenuItem(ID_OUTPUTTABLE, DIM(m_lpContentsTableListCtrl->IsContentsTableSet() && !m_lpContentsTableListCtrl->IsLoading()));
+			pMenu->EnableMenuItem(
+				ID_OUTPUTTABLE,
+				DIM(m_lpContentsTableListCtrl->IsContentsTableSet() && !m_lpContentsTableListCtrl->IsLoading()));
 
 			pMenu->EnableMenuItem(ID_SETCOLUMNS, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 			pMenu->EnableMenuItem(ID_SORTTABLE, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 			pMenu->EnableMenuItem(ID_GETSTATUS, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
-			pMenu->EnableMenuItem(ID_CREATEPROPERTYSTRINGRESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+			pMenu->EnableMenuItem(
+				ID_CREATEPROPERTYSTRINGRESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 			pMenu->EnableMenuItem(ID_CREATERANGERESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 			pMenu->EnableMenuItem(ID_EDITRESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 			pMenu->EnableMenuItem(ID_APPLYFINDROW, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
@@ -235,8 +237,7 @@ namespace dialog
 
 	void CContentsTableDlg::SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType)
 	{
-		if (m_lpContentsTableListCtrl)
-			m_lpContentsTableListCtrl->SetRestrictionType(RestrictionType);
+		if (m_lpContentsTableListCtrl) m_lpContentsTableListCtrl->SetRestrictionType(RestrictionType);
 		OnRefreshView();
 	}
 
@@ -249,18 +250,11 @@ namespace dialog
 		do
 		{
 			auto hRes = S_OK;
-			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-				&iItem,
-				mfcmapiREQUEST_MODIFY,
-				&lpMAPIProp));
+			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
 
 			if (lpMAPIProp)
 			{
-				EC_H(DisplayObject(
-					lpMAPIProp,
-					NULL,
-					otHierarchy,
-					this));
+				EC_H(DisplayObject(lpMAPIProp, NULL, otHierarchy, this));
 				lpMAPIProp->Release();
 				lpMAPIProp = nullptr;
 			}
@@ -297,7 +291,7 @@ namespace dialog
 		editor::CSearchEditor SearchEditor(PR_SUBJECT_W, m_lpContainer, this);
 		auto hRes = S_OK;
 		WC_H(SearchEditor.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			const auto lpRes = SearchEditor.GetRestriction();
 			if (lpRes)
@@ -332,13 +326,10 @@ namespace dialog
 			this);
 
 		WC_H(MyPropertyTag.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			editor::CEditor MyData(
-				this,
-				IDS_SEARCHCRITERIA,
-				IDS_RANGESEARCHCRITERIAPROMPT,
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+				this, IDS_SEARCHCRITERIA, IDS_RANGESEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SUBSTRING, false));
 			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
@@ -349,10 +340,7 @@ namespace dialog
 			const auto szString = MyData.GetStringW(0);
 			// Allocate and create our SRestriction
 			EC_H(mapi::CreateRangeRestriction(
-				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
-				szString,
-				nullptr,
-				&lpRes));
+				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, nullptr, &lpRes));
 			if (S_OK != hRes)
 			{
 				MAPIFreeBuffer(lpRes);
@@ -408,9 +396,7 @@ namespace dialog
 	void CContentsTableDlg::OnSetColumns()
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-		m_lpContentsTableListCtrl->DoSetColumns(
-			false,
-			true);
+		m_lpContentsTableListCtrl->DoSetColumns(false, true);
 	}
 
 	void CContentsTableDlg::OnGetStatus()
@@ -425,11 +411,7 @@ namespace dialog
 
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
-		editor::CEditor MyData(
-			this,
-			IDS_SORTTABLE,
-			IDS_SORTTABLEPROMPT1,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		editor::CEditor MyData(this, IDS_SORTTABLE, IDS_SORTTABLEPROMPT1, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CSORTS, false));
 		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_CCATS, false));
@@ -473,25 +455,21 @@ namespace dialog
 					this);
 
 				WC_H(MyPropertyTag.DisplayDialog());
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					lpMySortOrders->aSort[i].ulPropTag = MyPropertyTag.GetPropertyTag();
 					editor::CEditor MySortOrderDlg(
-						this,
-						IDS_SORTORDER,
-						IDS_SORTORDERPROMPT,
-						CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-					UINT uidDropDown[] = {
-					IDS_DDTABLESORTASCEND,
-					IDS_DDTABLESORTDESCEND,
-					IDS_DDTABLESORTCOMBINE,
-					IDS_DDTABLESORTCATEGMAX,
-					IDS_DDTABLESORTCATEGMIN
-					};
-					MySortOrderDlg.InitPane(0, viewpane::DropDownPane::Create(IDS_SORTORDER, _countof(uidDropDown), uidDropDown, true));
+						this, IDS_SORTORDER, IDS_SORTORDERPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+					UINT uidDropDown[] = {IDS_DDTABLESORTASCEND,
+										  IDS_DDTABLESORTDESCEND,
+										  IDS_DDTABLESORTCOMBINE,
+										  IDS_DDTABLESORTCATEGMAX,
+										  IDS_DDTABLESORTCATEGMIN};
+					MySortOrderDlg.InitPane(
+						0, viewpane::DropDownPane::Create(IDS_SORTORDER, _countof(uidDropDown), uidDropDown, true));
 
 					WC_H(MySortOrderDlg.DisplayDialog());
-					if (S_OK == hRes)
+					if (hRes == S_OK)
 					{
 						switch (MySortOrderDlg.GetDropDown(0))
 						{
@@ -513,9 +491,11 @@ namespace dialog
 							break;
 						}
 					}
-					else bNoError = false;
+					else
+						bNoError = false;
 				}
-				else bNoError = false;
+				else
+					bNoError = false;
 			}
 
 			if (bNoError)
@@ -523,7 +503,7 @@ namespace dialog
 				EC_MAPI(m_lpContentsTableListCtrl->SetSortTable(
 					lpMySortOrders,
 					(MyData.GetCheck(3) ? TBL_ASYNC : 0) | (MyData.GetCheck(4) ? TBL_BATCH : 0) // flags
-				));
+					));
 			}
 		}
 		MAPIFreeBuffer(lpMySortOrders);
@@ -533,7 +513,10 @@ namespace dialog
 
 	// Since the strategy for opening the selected property may vary depending on the table we're displaying,
 	// this virtual function allows us to override the default method with the method used by the table we've written a special class for.
-	_Check_return_ HRESULT CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ HRESULT CContentsTableDlg::OpenItemProp(
+		int iSelectedItem,
+		__mfcmapiModifyEnum bModify,
+		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 	{
 		auto hRes = S_OK;
 		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
@@ -543,17 +526,11 @@ namespace dialog
 		if (-1 == iSelectedItem)
 		{
 			// Get the first selected item
-			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-				nullptr,
-				bModify,
-				lppMAPIProp));
+			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, bModify, lppMAPIProp));
 		}
 		else
 		{
-			EC_H(m_lpContentsTableListCtrl->DefaultOpenItemProp(
-				iSelectedItem,
-				bModify,
-				lppMAPIProp));
+			EC_H(m_lpContentsTableListCtrl->DefaultOpenItemProp(iSelectedItem, bModify, lppMAPIProp));
 		}
 
 		return hRes;
@@ -595,7 +572,7 @@ namespace dialog
 			(ulFlags & MENU_FLAGS_REQUESTMODIFY) ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
 
 		// Get the stuff we need for any case
-		_AddInMenuParams MyAddInMenuParams = { nullptr };
+		_AddInMenuParams MyAddInMenuParams = {nullptr};
 		MyAddInMenuParams.lpAddInMenu = lpAddInMenu;
 		MyAddInMenuParams.ulAddInContext = m_ulAddInContext;
 		MyAddInMenuParams.hWndParent = m_hWnd;
@@ -614,10 +591,7 @@ namespace dialog
 		// MENU_FLAGS_SINGLESELECT and MENU_FLAGS_MULTISELECT can't both be set, so we can ignore this case
 		if (!(ulFlags & (MENU_FLAGS_SINGLESELECT | MENU_FLAGS_MULTISELECT)))
 		{
-			HandleAddInMenuSingle(
-				&MyAddInMenuParams,
-				nullptr,
-				nullptr);
+			HandleAddInMenuSingle(&MyAddInMenuParams, nullptr, nullptr);
 		}
 		else
 		{
@@ -626,7 +600,7 @@ namespace dialog
 			auto items = m_lpContentsTableListCtrl->GetSelectedItemNums();
 			for (const auto& item : items)
 			{
-				SRow MyRow = { 0 };
+				SRow MyRow = {0};
 
 				const auto lpData = m_lpContentsTableListCtrl->GetSortListData(item);
 				// If we have a row to give, give it - it's free
@@ -646,10 +620,7 @@ namespace dialog
 					}
 				}
 
-				HandleAddInMenuSingle(
-					&MyAddInMenuParams,
-					lpMAPIProp,
-					nullptr);
+				HandleAddInMenuSingle(&MyAddInMenuParams, lpMAPIProp, nullptr);
 				if (lpMAPIProp) lpMAPIProp->Release();
 
 				// If we're not doing multiselect, then we're done after a single pass
@@ -670,15 +641,21 @@ namespace dialog
 			switch (lpParams->ulAddInContext)
 			{
 			case MENU_CONTEXT_RECIEVE_FOLDER_TABLE:
-				lpParams->lpFolder = dynamic_cast<LPMAPIFOLDER>(lpMAPIProp); // OpenItemProp returns LPMAPIFOLDER
+				lpParams->lpFolder = mapi::safe_cast<LPMAPIFOLDER>(lpMAPIProp);
 				break;
 			case MENU_CONTEXT_HIER_TABLE:
-				lpParams->lpFolder = dynamic_cast<LPMAPIFOLDER>(lpMAPIProp); // OpenItemProp returns LPMAPIFOLDER
+				lpParams->lpFolder = mapi::safe_cast<LPMAPIFOLDER>(lpMAPIProp);
 				break;
 			}
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpFolder)
+		{
+			lpParams->lpFolder->Release();
+			lpParams->lpFolder = nullptr;
+		}
 	}
 
 	// WM_MFCMAPI_RESETCOLUMNS
@@ -689,9 +666,7 @@ namespace dialog
 
 		if (m_lpContentsTableListCtrl)
 		{
-			m_lpContentsTableListCtrl->DoSetColumns(
-				true,
-				false);
+			m_lpContentsTableListCtrl->DoSetColumns(true, false);
 			return true;
 		}
 

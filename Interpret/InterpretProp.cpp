@@ -17,12 +17,7 @@ namespace interpretprop
 	{
 		std::wstring szTemp;
 
-		auto namePropNames = cache::NameIDToStrings(
-			ulPropTag,
-			lpObj,
-			nullptr,
-			nullptr,
-			bIsAB);
+		auto namePropNames = cache::NameIDToStrings(ulPropTag, lpObj, nullptr, nullptr, bIsAB);
 
 		auto propTagNames = PropTagToPropName(ulPropTag, bIsAB);
 
@@ -75,7 +70,8 @@ namespace interpretprop
 			}
 		}
 
-		auto szRet = strings::formatmessage(szFormatString.c_str(),
+		auto szRet = strings::formatmessage(
+			szFormatString.c_str(),
 			ulPropTag,
 			TypeToString(ulPropTag).c_str(),
 			propTagNames.bestGuess.c_str(),
@@ -89,7 +85,12 @@ namespace interpretprop
 			static size_t cchMaxBuff = 0;
 			auto cchBuff = szRet.length();
 			cchMaxBuff = max(cchBuff, cchMaxBuff);
-			output::DebugPrint(DBGTest, L"TagToString parsing 0x%08X returned %u chars - max %u\n", ulPropTag, static_cast<UINT>(cchBuff), static_cast<UINT>(cchMaxBuff));
+			output::DebugPrint(
+				DBGTest,
+				L"TagToString parsing 0x%08X returned %u chars - max %u\n",
+				ulPropTag,
+				static_cast<UINT>(cchBuff),
+				static_cast<UINT>(cchMaxBuff));
 		}
 
 		return szRet;
@@ -142,7 +143,7 @@ namespace interpretprop
 		return szOut;
 	}
 
-	// There may be restrictions with over 100 nested levels, but we're not going to try to parse them
+		// There may be restrictions with over 100 nested levels, but we're not going to try to parse them
 #define _MaxRestrictionNesting 100
 
 	std::wstring RestrictionToString(_In_ const _SRestriction* lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel)
@@ -205,18 +206,12 @@ namespace interpretprop
 			}
 			break;
 		case RES_NOT:
-			resString.push_back(strings::formatmessage(
-				IDS_RESNOT,
-				szTabs.c_str(),
-				lpRes->res.resNot.ulReserved));
+			resString.push_back(strings::formatmessage(IDS_RESNOT, szTabs.c_str(), lpRes->res.resNot.ulReserved));
 			resString.push_back(RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1));
 			break;
 		case RES_COUNT:
 			// RES_COUNT and RES_NOT look the same, so we use the resNot member here
-			resString.push_back(strings::formatmessage(
-				IDS_RESCOUNT,
-				szTabs.c_str(),
-				lpRes->res.resNot.ulReserved));
+			resString.push_back(strings::formatmessage(IDS_RESCOUNT, szTabs.c_str(), lpRes->res.resNot.ulReserved));
 			resString.push_back(RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1));
 			break;
 		case RES_CONTENT:
@@ -255,10 +250,17 @@ namespace interpretprop
 					TagToString(lpRes->res.resProperty.lpProp->ulPropTag, lpObj, false, true).c_str(),
 					szProp.c_str(),
 					szAltProp.c_str()));
-				szPropNum = smartview::InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value, lpRes->res.resProperty.lpProp->ulPropTag, NULL, nullptr, nullptr, false);
+				szPropNum = smartview::InterpretNumberAsString(
+					lpRes->res.resProperty.lpProp->Value,
+					lpRes->res.resProperty.lpProp->ulPropTag,
+					NULL,
+					nullptr,
+					nullptr,
+					false);
 				if (!szPropNum.empty())
 				{
-					resString.push_back(strings::formatmessage(IDS_RESPROPPROPFLAGS, szTabs.c_str(), szPropNum.c_str()));
+					resString.push_back(
+						strings::formatmessage(IDS_RESPROPPROPFLAGS, szTabs.c_str(), szPropNum.c_str()));
 				}
 			}
 			break;
@@ -270,7 +272,8 @@ namespace interpretprop
 				szFlags.c_str(),
 				lpRes->res.resBitMask.relBMR,
 				lpRes->res.resBitMask.ulMask));
-			szPropNum = smartview::InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag);
+			szPropNum =
+				smartview::InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag);
 			if (!szPropNum.empty())
 			{
 				resString.push_back(strings::formatmessage(IDS_RESBITMASKFLAGS, szPropNum.c_str()));
@@ -301,9 +304,7 @@ namespace interpretprop
 			break;
 		case RES_SUBRESTRICTION:
 			resString.push_back(strings::formatmessage(
-				IDS_RESSUBRES,
-				szTabs.c_str(),
-				TagToString(lpRes->res.resSub.ulSubObject, lpObj, false, true).c_str()));
+				IDS_RESSUBRES, szTabs.c_str(), TagToString(lpRes->res.resSub.ulSubObject, lpObj, false, true).c_str()));
 			resString.push_back(RestrictionToString(lpRes->res.resSub.lpRes, lpObj, ulTabLevel + 1));
 			break;
 		case RES_COMMENT:
@@ -323,13 +324,12 @@ namespace interpretprop
 				}
 			}
 
-			resString.push_back(strings::formatmessage(
-				IDS_RESCOMMENTRES,
-				szTabs.c_str()));
+			resString.push_back(strings::formatmessage(IDS_RESCOMMENTRES, szTabs.c_str()));
 			resString.push_back(RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1));
 			break;
 		case RES_ANNOTATION:
-			resString.push_back(strings::formatmessage(IDS_RESANNOTATION, szTabs.c_str(), lpRes->res.resComment.cValues));
+			resString.push_back(
+				strings::formatmessage(IDS_RESANNOTATION, szTabs.c_str(), lpRes->res.resComment.cValues));
 			if (lpRes->res.resComment.lpProp)
 			{
 				for (ULONG i = 0; i < lpRes->res.resComment.cValues; i++)
@@ -345,9 +345,7 @@ namespace interpretprop
 				}
 			}
 
-			resString.push_back(strings::formatmessage(
-				IDS_RESANNOTATIONRES,
-				szTabs.c_str()));
+			resString.push_back(strings::formatmessage(IDS_RESANNOTATIONRES, szTabs.c_str()));
 			resString.push_back(RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1));
 			break;
 		}
@@ -405,14 +403,15 @@ namespace interpretprop
 		case OP_MOVE:
 		case OP_COPY:
 		{
-			SBinary sBinStore = { 0 };
-			SBinary sBinFld = { 0 };
+			SBinary sBinStore = {0};
+			SBinary sBinFld = {0};
 			sBinStore.cb = action.actMoveCopy.cbStoreEntryId;
 			sBinStore.lpb = reinterpret_cast<LPBYTE>(action.actMoveCopy.lpStoreEntryId);
 			sBinFld.cb = action.actMoveCopy.cbFldEntryId;
 			sBinFld.lpb = reinterpret_cast<LPBYTE>(action.actMoveCopy.lpFldEntryId);
 
-			actstring += strings::formatmessage(IDS_ACTIONOPMOVECOPY,
+			actstring += strings::formatmessage(
+				IDS_ACTIONOPMOVECOPY,
 				strings::BinToHexString(&sBinStore, true).c_str(),
 				strings::BinToTextString(&sBinStore, false).c_str(),
 				strings::BinToHexString(&sBinFld, true).c_str(),
@@ -423,12 +422,13 @@ namespace interpretprop
 		case OP_OOF_REPLY:
 		{
 
-			SBinary sBin = { 0 };
+			SBinary sBin = {0};
 			sBin.cb = action.actReply.cbEntryId;
 			sBin.lpb = reinterpret_cast<LPBYTE>(action.actReply.lpEntryId);
 			auto szGUID = guid::GUIDToStringAndName(&action.actReply.guidReplyTemplate);
 
-			actstring += strings::formatmessage(IDS_ACTIONOPREPLY,
+			actstring += strings::formatmessage(
+				IDS_ACTIONOPREPLY,
 				strings::BinToHexString(&sBin, true).c_str(),
 				strings::BinToTextString(&sBin, false).c_str(),
 				szGUID.c_str());
@@ -436,11 +436,12 @@ namespace interpretprop
 		}
 		case OP_DEFER_ACTION:
 		{
-			SBinary sBin = { 0 };
+			SBinary sBin = {0};
 			sBin.cb = action.actDeferAction.cbData;
 			sBin.lpb = static_cast<LPBYTE>(action.actDeferAction.pbData);
 
-			actstring += strings::formatmessage(IDS_ACTIONOPDEFER,
+			actstring += strings::formatmessage(
+				IDS_ACTIONOPDEFER,
 				strings::BinToHexString(&sBin, true).c_str(),
 				strings::BinToTextString(&sBin, false).c_str());
 			break;
@@ -470,13 +471,15 @@ namespace interpretprop
 		case OP_TAG:
 		{
 			InterpretProp(const_cast<LPSPropValue>(&action.propTag), &szProp, &szAltProp);
-			actstring += strings::formatmessage(IDS_ACTIONOPTAG,
+			actstring += strings::formatmessage(
+				IDS_ACTIONOPTAG,
 				TagToString(action.propTag.ulPropTag, nullptr, false, true).c_str(),
 				szProp.c_str(),
 				szAltProp.c_str());
 			break;
 		}
-		default: break;
+		default:
+			break;
 		}
 
 		switch (action.acttype)
@@ -491,7 +494,8 @@ namespace interpretprop
 			szFlags = InterpretFlags(flagOpForward, action.ulActionFlavor);
 			break;
 		}
-		default: break;
+		default:
+			break;
 		}
 
 		actstring += strings::formatmessage(IDS_ACTIONFLAVOR, action.ulActionFlavor, szFlags.c_str());
@@ -505,7 +509,8 @@ namespace interpretprop
 			actstring += strings::formatmessage(IDS_ACTIONTAGARRAYCOUNT, action.lpPropTagArray->cValues);
 			for (ULONG i = 0; i < action.lpPropTagArray->cValues; i++)
 			{
-				actstring += strings::formatmessage(IDS_ACTIONTAGARRAYTAG,
+				actstring += strings::formatmessage(
+					IDS_ACTIONTAGARRAYTAG,
 					i,
 					TagToString(action.lpPropTagArray->aulPropTag[i], nullptr, false, false).c_str());
 			}
@@ -517,10 +522,8 @@ namespace interpretprop
 	std::wstring ActionsToString(_In_ const ACTIONS& actions)
 	{
 		auto szFlags = InterpretFlags(flagRulesVersion, actions.ulVersion);
-		auto actstring = strings::formatmessage(IDS_ACTIONSMEMBERS,
-			actions.ulVersion,
-			szFlags.c_str(),
-			actions.cActions);
+		auto actstring =
+			strings::formatmessage(IDS_ACTIONSMEMBERS, actions.ulVersion, szFlags.c_str(), actions.cActions);
 
 		for (ULONG i = 0; i < actions.cActions; i++)
 		{
@@ -542,7 +545,10 @@ namespace interpretprop
 	wstring* tmpAltPropString: Alternative string representation
 	Comment: Add new Property IDs as they become known
 	***************************************************************************/
-	void InterpretProp(_In_ const _SPropValue* lpProp, _In_opt_ std::wstring* PropString, _In_opt_ std::wstring* AltPropString)
+	void InterpretProp(
+		_In_ const _SPropValue* lpProp,
+		_In_opt_ std::wstring* PropString,
+		_In_opt_ std::wstring* AltPropString)
 	{
 		if (!lpProp) return;
 
@@ -575,8 +581,7 @@ namespace interpretprop
 			}
 		}
 
-		if (!bTypeFound)
-			tmpPropType = strings::format(L"0x%04x", PROP_TYPE(ulPropTag)); // STRING_OK
+		if (!bTypeFound) tmpPropType = strings::format(L"0x%04x", PROP_TYPE(ulPropTag)); // STRING_OK
 
 		if (bNeedInstance) tmpPropType += L" | MV_INSTANCE"; // STRING_OK
 		return tmpPropType;
@@ -586,7 +591,7 @@ namespace interpretprop
 	bool CompareTagsSortOrder(int a1, int a2)
 	{
 		const auto lpTag1 = &PropTagArray[a1];
-		const auto lpTag2 = &PropTagArray[a2];;
+		const auto lpTag2 = &PropTagArray[a2];
 
 		if (lpTag1->ulSortOrder < lpTag2->ulSortOrder) return false;
 		if (lpTag1->ulSortOrder == lpTag2->ulSortOrder)
@@ -603,7 +608,8 @@ namespace interpretprop
 	// lpUlNumPartials will exclude count of exact matches
 	// if it wants just the true partial matches.
 	// If no hits, then ulNoMatch should be returned for lpulFirstExact and/or lpulFirstPartial
-	void FindTagArrayMatches(_In_ ULONG ulTarget,
+	void FindTagArrayMatches(
+		_In_ ULONG ulTarget,
 		bool bIsAB,
 		const std::vector<NAME_ARRAY_ENTRY_V2>& MyArray,
 		std::vector<ULONG>& ulExacts,
@@ -664,7 +670,9 @@ namespace interpretprop
 				ulFirstMatch = ulFirstMatch - 1;
 			}
 
-			for (auto ulCur = ulFirstMatch; ulCur < MyArray.size() && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulCur].ulValue); ulCur++)
+			for (auto ulCur = ulFirstMatch;
+				 ulCur < MyArray.size() && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulCur].ulValue);
+				 ulCur++)
 			{
 				if (ulTarget == MyArray[ulCur].ulValue)
 				{
@@ -678,7 +686,6 @@ namespace interpretprop
 
 			if (ulExacts.size()) sort(ulExacts.begin(), ulExacts.end(), CompareTagsSortOrder);
 			if (ulPartials.size()) sort(ulPartials.begin(), ulPartials.end(), CompareTagsSortOrder);
-
 		}
 	}
 
@@ -735,7 +742,7 @@ namespace interpretprop
 			}
 		}
 
-		g_PropNames.insert({ ulKey, entry });
+		g_PropNames.insert({ulKey, entry});
 
 		return entry;
 	}
@@ -797,11 +804,11 @@ namespace interpretprop
 	std::vector<std::wstring> NameIDToPropNames(_In_ const MAPINAMEID* lpNameID)
 	{
 		std::vector<std::wstring> results;
-		if (!lpNameID) return{};
-		if (lpNameID->ulKind != MNID_ID) return{};
+		if (!lpNameID) return {};
+		if (lpNameID->ulKind != MNID_ID) return {};
 		ULONG ulMatch = ulNoMatch;
 
-		if (NameIDArray.empty()) return{};
+		if (NameIDArray.empty()) return {};
 
 		for (ULONG ulCur = 0; ulCur < NameIDArray.size(); ulCur++)
 		{
@@ -950,7 +957,7 @@ namespace interpretprop
 					}
 
 					szTempString += strings::format(L"0x%X", lClearedBits); // STRING_OK
-																			// clear the bits out
+						// clear the bits out
 					lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
 					bNeedSeparator = true;
 				}
@@ -1010,11 +1017,13 @@ namespace interpretprop
 			{
 				if (bHex)
 				{
-					szFlagString += strings::formatmessage(IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
+					szFlagString += strings::formatmessage(
+						IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
 				}
 				else
 				{
-					szFlagString += strings::formatmessage(IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
+					szFlagString += strings::formatmessage(
+						IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
 				}
 			}
 		}

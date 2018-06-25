@@ -117,8 +117,10 @@ namespace viewpane
 		int iButtonHeight, // Height of buttons below the control
 		int iEditHeight) // height of an edit control
 	{
-		m_TextPane.SetMargins(iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
-		ViewPane::SetMargins(iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
+		m_TextPane.SetMargins(
+			iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
+		ViewPane::SetMargins(
+			iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
 	}
 
 	void SmartViewPane::SetStringW(const std::wstring& szMsg)
@@ -135,10 +137,7 @@ namespace viewpane
 		m_TextPane.SetStringW(szMsg);
 	}
 
-	void SmartViewPane::DisableDropDown()
-	{
-		m_bDoDropDown = false;
-	}
+	void SmartViewPane::DisableDropDown() { m_bDoDropDown = false; }
 
 	void SmartViewPane::SetParser(__ParsingTypeEnum iParser)
 	{

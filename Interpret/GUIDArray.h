@@ -3,14 +3,16 @@
 
 namespace guid
 {
-#define GUID_ENTRY(guid) {&(guid),L#guid},
-	static GUID_ARRAY_ENTRY g_PropGuidArray[] =
-	{
+#define GUID_ENTRY(guid) {&(guid), L#guid},
+	static GUID_ARRAY_ENTRY g_PropGuidArray[] = {
+		// clang-format off
 		GUID_ENTRY(IID_IUnknown)
 		GUID_ENTRY(IID_IMAPITable)
 		GUID_ENTRY(IID_IMAPIAdviseSink)
 		GUID_ENTRY(IID_IMAPIProp)
+		GUID_ENTRY(IID_IMsgStore)
 		GUID_ENTRY(IID_IMessage)
+		GUID_ENTRY(IID_IMailUser)
 		GUID_ENTRY(IID_IMAPIContainer)
 		GUID_ENTRY(IID_IMAPIFolder)
 		GUID_ENTRY(IID_IABContainer)
@@ -76,5 +78,6 @@ namespace guid
 		GUID_ENTRY(muidEMSAB)
 		{ LPGUID(pbGlobalProfileSectionGuid), L"pbGlobalProfileSectionGuid" }, // STRING_OK
 		GUID_ENTRY(WAB_GUID)
+		// clang-format on
 	};
 }

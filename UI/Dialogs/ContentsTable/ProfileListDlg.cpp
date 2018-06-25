@@ -20,18 +20,18 @@ namespace dialog
 	CProfileListDlg::CProfileListDlg(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_ LPMAPITABLE lpMAPITable
-	) :
-		CContentsTableDlg(
-			pParentWnd,
-			lpMapiObjects,
-			IDS_PROFILES,
-			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-			lpMAPITable,
-			LPSPropTagArray(&columns::sptPROFLISTCols),
-			columns::PROFLISTColumns,
-			IDR_MENU_PROFILE_POPUP,
-			MENU_CONTEXT_PROFILE_LIST)
+		_In_ LPMAPITABLE lpMAPITable)
+		: CContentsTableDlg(
+			  pParentWnd,
+			  lpMapiObjects,
+			  IDS_PROFILES,
+			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  nullptr,
+			  lpMAPITable,
+			  LPSPropTagArray(&columns::sptPROFLISTCols),
+			  columns::PROFLISTColumns,
+			  IDR_MENU_PROFILE_POPUP,
+			  MENU_CONTEXT_PROFILE_LIST)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
@@ -42,26 +42,23 @@ namespace dialog
 		m_lpContentsTable = nullptr;
 	}
 
-	CProfileListDlg::~CProfileListDlg()
-	{
-		TRACE_DESTRUCTOR(CLASS);
-	}
+	CProfileListDlg::~CProfileListDlg() { TRACE_DESTRUCTOR(CLASS); }
 
 	BEGIN_MESSAGE_MAP(CProfileListDlg, CContentsTableDlg)
-		ON_COMMAND(ID_GETMAPISVCINF, OnGetMAPISVC)
-		ON_COMMAND(ID_ADDSERVICESTOMAPISVCINF, OnAddServicesToMAPISVC)
-		ON_COMMAND(ID_REMOVESERVICESFROMMAPISVCINF, OnRemoveServicesFromMAPISVC)
-		ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
-		ON_COMMAND(ID_LAUNCHPROFILEWIZARD, OnLaunchProfileWizard)
-		ON_COMMAND(ID_ADDEXCHANGETOPROFILE, OnAddExchangeToProfile)
-		ON_COMMAND(ID_ADDPSTTOPROFILE, OnAddPSTToProfile)
-		ON_COMMAND(ID_ADDUNICODEPSTTOPROFILE, OnAddUnicodePSTToProfile)
-		ON_COMMAND(ID_ADDSERVICETOPROFILE, OnAddServiceToProfile)
-		ON_COMMAND(ID_GETPROFILESERVERVERSION, OnGetProfileServiceVersion)
-		ON_COMMAND(ID_CREATEPROFILE, OnCreateProfile)
-		ON_COMMAND(ID_SETDEFAULTPROFILE, OnSetDefaultProfile)
-		ON_COMMAND(ID_OPENPROFILEBYNAME, OnOpenProfileByName)
-		ON_COMMAND(ID_EXPORTPROFILE, OnExportProfile)
+	ON_COMMAND(ID_GETMAPISVCINF, OnGetMAPISVC)
+	ON_COMMAND(ID_ADDSERVICESTOMAPISVCINF, OnAddServicesToMAPISVC)
+	ON_COMMAND(ID_REMOVESERVICESFROMMAPISVCINF, OnRemoveServicesFromMAPISVC)
+	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
+	ON_COMMAND(ID_LAUNCHPROFILEWIZARD, OnLaunchProfileWizard)
+	ON_COMMAND(ID_ADDEXCHANGETOPROFILE, OnAddExchangeToProfile)
+	ON_COMMAND(ID_ADDPSTTOPROFILE, OnAddPSTToProfile)
+	ON_COMMAND(ID_ADDUNICODEPSTTOPROFILE, OnAddUnicodePSTToProfile)
+	ON_COMMAND(ID_ADDSERVICETOPROFILE, OnAddServiceToProfile)
+	ON_COMMAND(ID_GETPROFILESERVERVERSION, OnGetProfileServiceVersion)
+	ON_COMMAND(ID_CREATEPROFILE, OnCreateProfile)
+	ON_COMMAND(ID_SETDEFAULTPROFILE, OnSetDefaultProfile)
+	ON_COMMAND(ID_OPENPROFILEBYNAME, OnOpenProfileByName)
+	ON_COMMAND(ID_EXPORTPROFILE, OnExportProfile)
 	END_MESSAGE_MAP()
 
 	void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -101,10 +98,7 @@ namespace dialog
 
 		// Wipe out current references to the profile table so the refresh will work
 		// If we don't do this, we get the old table back again.
-		EC_H(m_lpContentsTableListCtrl->SetContentsTable(
-			NULL,
-			dfNormal,
-			NULL));
+		EC_H(m_lpContentsTableListCtrl->SetContentsTable(NULL, dfNormal, NULL));
 
 		LPPROFADMIN lpProfAdmin = nullptr;
 		EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -116,10 +110,7 @@ namespace dialog
 
 		if (lpProfTable)
 		{
-			EC_H(m_lpContentsTableListCtrl->SetContentsTable(
-				lpProfTable,
-				dfNormal,
-				NULL));
+			EC_H(m_lpContentsTableListCtrl->SetContentsTable(lpProfTable, dfNormal, NULL));
 
 			lpProfTable->Release();
 		}
@@ -139,10 +130,7 @@ namespace dialog
 
 			if (!lpListData->Contents()->m_szProfileDisplayName.empty())
 			{
-				new CMsgServiceTableDlg(
-					m_lpParent,
-					m_lpMapiObjects,
-					lpListData->Contents()->m_szProfileDisplayName);
+				new CMsgServiceTableDlg(m_lpParent, m_lpMapiObjects, lpListData->Contents()->m_szProfileDisplayName);
 			}
 		}
 	}
@@ -151,39 +139,26 @@ namespace dialog
 	{
 		auto hRes = S_OK;
 		editor::CEditor MyData(
-			this,
-			IDS_LAUNCHPROFWIZ,
-			IDS_LAUNCHPROFWIZPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			this, IDS_LAUNCHPROFWIZ, IDS_LAUNCHPROFWIZPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
-		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
+		MyData.InitPane(
+			1, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			auto szProfName = mapi::profile::LaunchProfileWizard(
-				m_hWnd,
-				MyData.GetHex(0),
-				strings::wstringTostring(MyData.GetStringW(1)));
+				m_hWnd, MyData.GetHex(0), strings::wstringTostring(MyData.GetStringW(1)));
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
 	}
 
-	void CProfileListDlg::OnGetMAPISVC()
-	{
-		mapi::profile::DisplayMAPISVCPath(this);
-	}
+	void CProfileListDlg::OnGetMAPISVC() { mapi::profile::DisplayMAPISVCPath(this); }
 
-	void CProfileListDlg::OnAddServicesToMAPISVC()
-	{
-		mapi::profile::AddServicesToMapiSvcInf();
-	}
+	void CProfileListDlg::OnAddServicesToMAPISVC() { mapi::profile::AddServicesToMapiSvcInf(); }
 
-	void CProfileListDlg::OnRemoveServicesFromMAPISVC()
-	{
-		mapi::profile::RemoveServicesFromMapiSvcInf();
-	}
+	void CProfileListDlg::OnRemoveServicesFromMAPISVC() { mapi::profile::RemoveServicesFromMapiSvcInf(); }
 
 	void CProfileListDlg::OnAddExchangeToProfile()
 	{
@@ -191,18 +166,14 @@ namespace dialog
 
 		if (!m_lpContentsTableListCtrl) return;
 
-		editor::CEditor MyData(
-			this,
-			IDS_NEWEXPROF,
-			IDS_NEWEXPROFPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		editor::CEditor MyData(this, IDS_NEWEXPROF, IDS_NEWEXPROFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
 		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_MAILBOXNAME, false));
 
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 			auto szServer = strings::wstringTostring(MyData.GetStringW(0));
@@ -215,7 +186,9 @@ namespace dialog
 				{
 					if (!lpListData || !lpListData->Contents()) break;
 
-					output::DebugPrintEx(DBGGeneric, CLASS,
+					output::DebugPrintEx(
+						DBGGeneric,
+						CLASS,
 						L"OnAddExchangeToProfile", // STRING_OK
 						L"Adding Server \"%hs\" and Mailbox \"%hs\" to profile \"%hs\"\n", // STRING_OK
 						szServer.c_str(),
@@ -250,24 +223,25 @@ namespace dialog
 				if (!lpListData || !lpListData->Contents()) break;
 
 				auto hRes = S_OK;
-				editor::CEditor MyFile(
-					this,
-					IDS_PSTPATH,
-					IDS_PSTPATHPROMPT,
-					CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+				editor::CEditor MyFile(this, IDS_PSTPATH, IDS_PSTPATHPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 				MyFile.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, file, false));
 				MyFile.InitPane(1, viewpane::CheckPane::Create(IDS_PSTDOPW, false, false));
 				MyFile.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_PSTPW, false));
 
 				WC_H(MyFile.DisplayDialog());
 
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					auto szPath = MyFile.GetStringW(0);
 					const auto bPasswordSet = MyFile.GetCheck(1);
 					auto szPwd = strings::wstringTostring(MyFile.GetStringW(2));
 
-					output::DebugPrintEx(DBGGeneric, CLASS, L"AddPSTToProfile", L"Adding PST \"%ws\" to profile \"%hs\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = \"%hs\"\n",
+					output::DebugPrintEx(
+						DBGGeneric,
+						CLASS,
+						L"AddPSTToProfile",
+						L"Adding PST \"%ws\" to profile \"%hs\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = "
+						L"\"%hs\"\n",
 						szPath.c_str(),
 						lpListData->Contents()->m_szProfileDisplayName.c_str(),
 						bUnicodePST,
@@ -275,21 +249,21 @@ namespace dialog
 						szPwd.c_str());
 
 					CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-					EC_H(mapi::profile::HrAddPSTToProfile(reinterpret_cast<ULONG_PTR>(m_hWnd), bUnicodePST, szPath, lpListData->Contents()->m_szProfileDisplayName, bPasswordSet, szPwd));
+					EC_H(mapi::profile::HrAddPSTToProfile(
+						reinterpret_cast<ULONG_PTR>(m_hWnd),
+						bUnicodePST,
+						szPath,
+						lpListData->Contents()->m_szProfileDisplayName,
+						bPasswordSet,
+						szPwd));
 				}
 			}
 		}
 	}
 
-	void CProfileListDlg::OnAddPSTToProfile()
-	{
-		AddPSTToProfile(false);
-	}
+	void CProfileListDlg::OnAddPSTToProfile() { AddPSTToProfile(false); }
 
-	void CProfileListDlg::OnAddUnicodePSTToProfile()
-	{
-		AddPSTToProfile(true);
-	}
+	void CProfileListDlg::OnAddUnicodePSTToProfile() { AddPSTToProfile(true); }
 
 	void CProfileListDlg::OnAddServiceToProfile()
 	{
@@ -297,17 +271,13 @@ namespace dialog
 
 		if (!m_lpContentsTableListCtrl) return;
 
-		editor::CEditor MyData(
-			this,
-			IDS_NEWSERVICE,
-			IDS_NEWSERVICEPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		editor::CEditor MyData(this, IDS_NEWSERVICE, IDS_NEWSERVICEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, false));
 		MyData.InitPane(1, viewpane::CheckPane::Create(IDS_DISPLAYSERVICEUI, true, false));
 
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 			auto szService = strings::wstringTostring(MyData.GetStringW(0));
@@ -317,9 +287,21 @@ namespace dialog
 				hRes = S_OK;
 				if (!lpListData || !lpListData->Contents()) break;
 
-				output::DebugPrintEx(DBGGeneric, CLASS, L"OnAddServiceToProfile", L"Adding service \"%hs\" to profile \"%hs\"\n", szService.c_str(), lpListData->Contents()->m_szProfileDisplayName.c_str());
+				output::DebugPrintEx(
+					DBGGeneric,
+					CLASS,
+					L"OnAddServiceToProfile",
+					L"Adding service \"%hs\" to profile \"%hs\"\n",
+					szService.c_str(),
+					lpListData->Contents()->m_szProfileDisplayName.c_str());
 
-				EC_H(mapi::profile::HrAddServiceToProfile(szService, reinterpret_cast<ULONG_PTR>(m_hWnd), MyData.GetCheck(1) ? SERVICE_UI_ALWAYS : 0, 0, nullptr, lpListData->Contents()->m_szProfileDisplayName));
+				EC_H(mapi::profile::HrAddServiceToProfile(
+					szService,
+					reinterpret_cast<ULONG_PTR>(m_hWnd),
+					MyData.GetCheck(1) ? SERVICE_UI_ALWAYS : 0,
+					0,
+					nullptr,
+					lpListData->Contents()->m_szProfileDisplayName));
 			}
 		}
 	}
@@ -328,21 +310,19 @@ namespace dialog
 	{
 		auto hRes = S_OK;
 
-		editor::CEditor MyData(
-			this,
-			IDS_NEWPROF,
-			IDS_NEWPROFPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		editor::CEditor MyData(this, IDS_NEWPROF, IDS_NEWPROFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILE, false));
 
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 			auto szProfile = strings::wstringTostring(MyData.GetStringW(0));
 
-			output::DebugPrintEx(DBGGeneric, CLASS,
+			output::DebugPrintEx(
+				DBGGeneric,
+				CLASS,
 				L"OnCreateProfile", // STRING_OK
 				L"Creating profile \"%hs\"\n", // STRING_OK
 				szProfile.c_str());
@@ -367,7 +347,12 @@ namespace dialog
 			// Find the highlighted item AttachNum
 			if (!lpListData || !lpListData->Contents()) break;
 
-			output::DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting profile \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
+			output::DebugPrintEx(
+				DBGDeleteSelectedItem,
+				CLASS,
+				L"OnDeleteSelectedItem",
+				L"Deleting profile \"%hs\"\n",
+				lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 			EC_H(mapi::profile::HrRemoveProfile(lpListData->Contents()->m_szProfileDisplayName));
 		}
@@ -388,10 +373,15 @@ namespace dialog
 			// Find the highlighted item AttachNum
 			if (!lpListData || !lpListData->Contents()) break;
 
-			output::DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnGetProfileServiceVersion", L"Getting profile service version for \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
+			output::DebugPrintEx(
+				DBGDeleteSelectedItem,
+				CLASS,
+				L"OnGetProfileServiceVersion",
+				L"Getting profile service version for \"%hs\"\n",
+				lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 			ULONG ulServerVersion = 0;
-			mapi::profile::EXCHANGE_STORE_VERSION_NUM storeVersion = { 0 };
+			mapi::profile::EXCHANGE_STORE_VERSION_NUM storeVersion = {0};
 			auto bFoundServerVersion = false;
 			auto bFoundServerFullVersion = false;
 
@@ -405,10 +395,7 @@ namespace dialog
 			hRes = S_OK;
 
 			editor::CEditor MyData(
-				this,
-				IDS_PROFILESERVERVERSIONTITLE,
-				IDS_PROFILESERVERVERSIONPROMPT,
-				CEDITOR_BUTTON_OK);
+				this, IDS_PROFILESERVERVERSIONTITLE, IDS_PROFILESERVERVERSIONPROMPT, CEDITOR_BUTTON_OK);
 
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSION, true));
 			MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMAJOR, true));
@@ -433,7 +420,8 @@ namespace dialog
 				MyData.SetStringf(2, L"%u = 0x%X", storeVersion.wMinorVersion, storeVersion.wMinorVersion); // STRING_OK
 				MyData.SetStringf(3, L"%u = 0x%X", storeVersion.wBuild, storeVersion.wBuild); // STRING_OK
 				MyData.SetStringf(4, L"%u = 0x%X", storeVersion.wMinorBuild, storeVersion.wMinorBuild); // STRING_OK
-				output::DebugPrint(DBGGeneric,
+				output::DebugPrint(
+					DBGGeneric,
 					L"\twMajorVersion 0x%04X\n" // STRING_OK
 					L"\twMinorVersion 0x%04X\n" // STRING_OK
 					L"\twBuild 0x%04X\n" // STRING_OK
@@ -466,7 +454,12 @@ namespace dialog
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 		if (lpListData && lpListData->Contents())
 		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"OnSetDefaultProfile", L"Setting profile \"%hs\" as default\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
+			output::DebugPrintEx(
+				DBGGeneric,
+				CLASS,
+				L"OnSetDefaultProfile",
+				L"Setting profile \"%hs\" as default\n",
+				lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 			EC_H(mapi::profile::HrSetDefaultProfile(lpListData->Contents()->m_szProfileDisplayName));
 
@@ -478,24 +471,17 @@ namespace dialog
 	{
 		auto hRes = S_OK;
 
-		editor::CEditor MyData(
-			this,
-			IDS_OPENPROFILE,
-			NULL,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		editor::CEditor MyData(this, IDS_OPENPROFILE, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_OPENPROFILEPROMPT, false));
 
 		WC_H(MyData.DisplayDialog());
 
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			auto szProfileName = strings::wstringTostring(MyData.GetStringW(0));
 			if (!szProfileName.empty())
 			{
-				new CMsgServiceTableDlg(
-					m_lpParent,
-					m_lpMapiObjects,
-					szProfileName);
+				new CMsgServiceTableDlg(m_lpParent, m_lpMapiObjects, szProfileName);
 			}
 		}
 	}
@@ -526,16 +512,15 @@ namespace dialog
 
 		const auto szOldProfile = cache::CGlobalCache::getInstance().GetProfileToCopy();
 
-		editor::CEditor MyData(
-			this,
-			IDS_COPYPROFILE,
-			NULL,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		editor::CEditor MyData(this, IDS_COPYPROFILE, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_COPYPROFILEPROMPT, strings::stringTowstring(szOldProfile), false));
+		MyData.InitPane(
+			0,
+			viewpane::TextPane::CreateSingleLinePane(
+				IDS_COPYPROFILEPROMPT, strings::stringTowstring(szOldProfile), false));
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			const auto szNewProfile = strings::wstringTostring(MyData.GetStringW(0));
 
@@ -568,7 +553,8 @@ namespace dialog
 				this);
 			if (!file.empty())
 			{
-				output::ExportProfile(lpListData->Contents()->m_szProfileDisplayName, strings::emptystring, false, file);
+				output::ExportProfile(
+					lpListData->Contents()->m_szProfileDisplayName, strings::emptystring, false, file);
 			}
 		}
 	}

@@ -3,7 +3,7 @@
 namespace smartview
 {
 	// CBinaryParser - helper class for parsing binary data without
-// worrying about whether you've run off the end of your buffer.
+	// worrying about whether you've run off the end of your buffer.
 	class CBinaryParser
 	{
 	public:
@@ -22,7 +22,7 @@ namespace smartview
 		template <typename T> T Get()
 		{
 			if (!CheckRemainingBytes(sizeof T)) return T();
-			auto ret = *reinterpret_cast<const T *>(GetCurrentAddress());
+			auto ret = *reinterpret_cast<const T*>(GetCurrentAddress());
 			m_Offset += sizeof T;
 			return ret;
 		}

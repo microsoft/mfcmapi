@@ -11,17 +11,13 @@ namespace dialog
 	SingleRecipientDialog::SingleRecipientDialog(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_opt_ LPMAILUSER lpMAPIProp) :
-		CBaseDialog(
-			pParentWnd,
-			lpMapiObjects,
-			NULL)
+		_In_opt_ LPMAPIPROP lpMAPIProp)
+		: CBaseDialog(pParentWnd, lpMapiObjects, NULL)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_szTitle = strings::loadstring(IDS_ADDRESS_BOOK_ENTRY);
 
-		m_lpMailUser = lpMAPIProp;
-		if (m_lpMailUser) m_lpMailUser->AddRef();
+		m_lpMailUser = mapi::safe_cast<LPMAILUSER>(lpMAPIProp);
 
 		CBaseDialog::CreateDialogAndMenu(NULL, NULL, NULL);
 	}
@@ -52,13 +48,13 @@ namespace dialog
 	}
 
 	BEGIN_MESSAGE_MAP(SingleRecipientDialog, CBaseDialog)
-		ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
+	ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
 	END_MESSAGE_MAP()
 
 	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 	void SingleRecipientDialog::OnRefreshView()
 	{
 		if (!m_lpPropDisplay) return;
-		(void)m_lpPropDisplay->RefreshMAPIPropList();
+		(void) m_lpPropDisplay->RefreshMAPIPropList();
 	}
 }

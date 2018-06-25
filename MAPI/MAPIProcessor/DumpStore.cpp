@@ -41,7 +41,12 @@ namespace mapiprocessor
 		m_szFolderPathRoot = szFolderPathRoot;
 		if (m_szFolderPathRoot.length() >= MAXMSGPATH)
 		{
-			output::DebugPrint(DBGGeneric, L"InitFolderPathRoot: \"%ws\" length (%d) greater than max length (%d)\n", m_szFolderPathRoot.c_str(), m_szFolderPathRoot.length(), MAXMSGPATH);
+			output::DebugPrint(
+				DBGGeneric,
+				L"InitFolderPathRoot: \"%ws\" length (%d) greater than max length (%d)\n",
+				m_szFolderPathRoot.c_str(),
+				m_szFolderPathRoot.length(),
+				MAXMSGPATH);
 		}
 	}
 
@@ -50,25 +55,13 @@ namespace mapiprocessor
 		m_szMailboxTablePathRoot = szMailboxTablePathRoot;
 	}
 
-	void CDumpStore::EnableMSG()
-	{
-		m_bOutputMSG = true;
-	}
+	void CDumpStore::EnableMSG() { m_bOutputMSG = true; }
 
-	void CDumpStore::EnableList()
-	{
-		m_bOutputList = true;
-	}
+	void CDumpStore::EnableList() { m_bOutputList = true; }
 
-	void CDumpStore::DisableStreamRetry()
-	{
-		m_bRetryStreamProps = false;
-	}
+	void CDumpStore::DisableStreamRetry() { m_bRetryStreamProps = false; }
 
-	void CDumpStore::DisableEmbeddedAttachments()
-	{
-		m_bOutputAttachments = false;
-	}
+	void CDumpStore::DisableEmbeddedAttachments() { m_bOutputAttachments = false; }
 
 	void CDumpStore::BeginMailboxTableWork(_In_ const std::wstring& szExchangeServerName)
 	{
@@ -90,15 +83,9 @@ namespace mapiprocessor
 		if (m_bOutputList) return;
 		auto hRes = S_OK;
 
-		const auto lpEmailAddress = PpropFindProp(
-			lpSRow->lpProps,
-			lpSRow->cValues,
-			PR_EMAIL_ADDRESS);
+		const auto lpEmailAddress = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_EMAIL_ADDRESS);
 
-		const auto lpDisplayName = PpropFindProp(
-			lpSRow->lpProps,
-			lpSRow->cValues,
-			PR_DISPLAY_NAME);
+		const auto lpDisplayName = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_DISPLAY_NAME);
 
 		output::OutputToFile(m_fMailboxTable, L"<mailbox prdisplayname=\"");
 		if (mapi::CheckStringProp(lpDisplayName, PT_TSTRING))
@@ -140,13 +127,9 @@ namespace mapiprocessor
 		m_fMailboxTable = nullptr;
 	}
 
-	void CDumpStore::BeginStoreWork()
-	{
-	}
+	void CDumpStore::BeginStoreWork() {}
 
-	void CDumpStore::EndStoreWork()
-	{
-	}
+	void CDumpStore::EndStoreWork() {}
 
 	void CDumpStore::BeginFolderWork()
 	{
@@ -171,10 +154,7 @@ namespace mapiprocessor
 		LPSPropValue lpAllProps = nullptr;
 		ULONG cValues = 0L;
 
-		WC_H_GETPROPS(mapi::GetPropsNULL(m_lpFolder,
-			fMapiUnicode,
-			&cValues,
-			&lpAllProps));
+		WC_H_GETPROPS(mapi::GetPropsNULL(m_lpFolder, fMapiUnicode, &cValues, &lpAllProps));
 		if (FAILED(hRes))
 		{
 			output::OutputToFilef(m_fFolderProps, L"<properties error=\"0x%08X\" />\n", hRes);
@@ -225,23 +205,23 @@ namespace mapiprocessor
 		}
 
 		// Holds file/path name for contents table output
-		const auto szContentsTableFile =
-			ulFlags & MAPI_ASSOCIATED ? m_szFolderPath + L"ASSOCIATED_CONTENTS_TABLE.xml" : m_szFolderPath + L"CONTENTS_TABLE.xml"; // STRING_OK
+		const auto szContentsTableFile = ulFlags & MAPI_ASSOCIATED
+											 ? m_szFolderPath + L"ASSOCIATED_CONTENTS_TABLE.xml"
+											 : m_szFolderPath + L"CONTENTS_TABLE.xml"; // STRING_OK
 		m_fFolderContents = output::MyOpenFile(szContentsTableFile, true);
 		if (m_fFolderContents)
 		{
 			output::OutputToFile(m_fFolderContents, output::g_szXMLHeader);
-			output::OutputToFilef(m_fFolderContents, L"<ContentsTable TableType=\"%ws\" messagecount=\"0x%08X\">\n",
+			output::OutputToFilef(
+				m_fFolderContents,
+				L"<ContentsTable TableType=\"%ws\" messagecount=\"0x%08X\">\n",
 				ulFlags & MAPI_ASSOCIATED ? L"Associated Contents" : L"Contents", // STRING_OK
 				ulCountRows);
 		}
 	}
 
 	// Outputs a single message's details to the screen, so as to produce a list of messages
-	void OutputMessageList(
-		_In_ const _SRow* lpSRow,
-		_In_ const std::wstring& szFolderPath,
-		bool bOutputMSG)
+	void OutputMessageList(_In_ const _SRow* lpSRow, _In_ const std::wstring& szFolderPath, bool bOutputMSG)
 	{
 		if (!lpSRow || szFolderPath.empty()) return;
 		if (szFolderPath.length() >= MAXMSGPATH) return;
@@ -269,7 +249,8 @@ namespace mapiprocessor
 			lpRecordKey = &lpTemp->Value.bin;
 		}
 
-		const auto lpMessageClass = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, CHANGE_PROP_TYPE(PR_MESSAGE_CLASS, PT_UNSPECIFIED));
+		const auto lpMessageClass =
+			PpropFindProp(lpSRow->lpProps, lpSRow->cValues, CHANGE_PROP_TYPE(PR_MESSAGE_CLASS, PT_UNSPECIFIED));
 
 		wprintf(L"\"%ls\"", szSubj.c_str());
 		if (lpMessageClass)
@@ -321,19 +302,21 @@ namespace mapiprocessor
 	}
 
 	// TODO: This fails in unicode builds since PR_RTF_COMPRESSED is always ascii.
-	void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBodyTag, _In_ const std::wstring& szBodyName, bool bWrapEx, ULONG ulCPID)
+	void OutputBody(
+		_In_ FILE* fMessageProps,
+		_In_ LPMESSAGE lpMessage,
+		ULONG ulBodyTag,
+		_In_ const std::wstring& szBodyName,
+		bool bWrapEx,
+		ULONG ulCPID)
 	{
 		auto hRes = S_OK;
 		LPSTREAM lpStream = nullptr;
 		LPSTREAM lpRTFUncompressed = nullptr;
 		LPSTREAM lpOutputStream = nullptr;
 
-		WC_MAPI(lpMessage->OpenProperty(
-			ulBodyTag,
-			&IID_IStream,
-			STGM_READ,
-			NULL,
-			reinterpret_cast<LPUNKNOWN *>(&lpStream)));
+		WC_MAPI(
+			lpMessage->OpenProperty(ulBodyTag, &IID_IStream, STGM_READ, NULL, reinterpret_cast<LPUNKNOWN*>(&lpStream)));
 		// The only error we suppress is MAPI_E_NOT_FOUND, so if a body type isn't in the output, it wasn't on the message
 		if (MAPI_E_NOT_FOUND != hRes)
 		{
@@ -362,19 +345,17 @@ namespace mapiprocessor
 							&lpRTFUncompressed,
 							&ulStreamFlags));
 						auto szFlags = interpretprop::InterpretFlags(flagStreamFlag, ulStreamFlags);
-						output::OutputToFilef(fMessageProps, L" ulStreamFlags = \"0x%08X\" szStreamFlags= \"%ws\"", ulStreamFlags, szFlags.c_str());
-						output::OutputToFilef(fMessageProps, L" CodePageIn = \"%u\" CodePageOut = \"%d\"", ulCPID, CP_ACP);
+						output::OutputToFilef(
+							fMessageProps,
+							L" ulStreamFlags = \"0x%08X\" szStreamFlags= \"%ws\"",
+							ulStreamFlags,
+							szFlags.c_str());
+						output::OutputToFilef(
+							fMessageProps, L" CodePageIn = \"%u\" CodePageOut = \"%d\"", ulCPID, CP_ACP);
 					}
 					else
 					{
-						WC_H(mapi::WrapStreamForRTF(
-							lpStream,
-							false,
-							NULL,
-							NULL,
-							NULL,
-							&lpRTFUncompressed,
-							nullptr));
+						WC_H(mapi::WrapStreamForRTF(lpStream, false, NULL, NULL, NULL, &lpRTFUncompressed, nullptr));
 					}
 					if (!lpRTFUncompressed || FAILED(hRes))
 					{
@@ -414,7 +395,7 @@ namespace mapiprocessor
 
 		auto hRes = S_OK;
 
-		*lpData = static_cast<LPVOID>(new(MessageData));
+		*lpData = static_cast<LPVOID>(new (MessageData));
 		if (!*lpData) return;
 
 		auto lpMsgData = static_cast<LPMESSAGEDATA>(*lpData);
@@ -423,19 +404,13 @@ namespace mapiprocessor
 		ULONG cValues = 0L;
 
 		// Get all props, asking for UNICODE string properties
-		WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage,
-			MAPI_UNICODE,
-			&cValues,
-			&lpAllProps));
+		WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, MAPI_UNICODE, &cValues, &lpAllProps));
 		if (hRes == MAPI_E_BAD_CHARWIDTH)
 		{
 			// Didn't like MAPI_UNICODE - fall back
 			hRes = S_OK;
 
-			WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage,
-				NULL,
-				&cValues,
-				&lpAllProps));
+			WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, NULL, &cValues, &lpAllProps));
 		}
 
 		// If we've got a parent message, we're an attachment - use attachment filename logic
@@ -451,9 +426,13 @@ namespace mapiprocessor
 			lpMsgData->szFilePath = lpMsgData->szFilePath.substr(0, lpMsgData->szFilePath.find_last_of(L'.'));
 
 			// Update file name and add extension
-			lpMsgData->szFilePath += strings::format(L"-Attach%u.xml", (static_cast<LPMESSAGEDATA>(lpParentMessageData))->ulCurAttNum); // STRING_OK
+			lpMsgData->szFilePath += strings::format(
+				L"-Attach%u.xml", (static_cast<LPMESSAGEDATA>(lpParentMessageData))->ulCurAttNum); // STRING_OK
 
-			output::OutputToFilef(static_cast<LPMESSAGEDATA>(lpParentMessageData)->fMessageProps, L"<embeddedmessage path=\"%ws\"/>\n", lpMsgData->szFilePath.c_str());
+			output::OutputToFilef(
+				static_cast<LPMESSAGEDATA>(lpParentMessageData)->fMessageProps,
+				L"<embeddedmessage path=\"%ws\"/>\n",
+				lpMsgData->szFilePath.c_str());
 		}
 		else if (!szMessageFileName.empty()) // if we've got a file name, use it
 		{
@@ -489,7 +468,8 @@ namespace mapiprocessor
 
 		if (!lpMsgData->szFilePath.empty())
 		{
-			output::DebugPrint(DBGGeneric, L"OutputMessagePropertiesToFile: Saving to \"%ws\"\n", lpMsgData->szFilePath.c_str());
+			output::DebugPrint(
+				DBGGeneric, L"OutputMessagePropertiesToFile: Saving to \"%ws\"\n", lpMsgData->szFilePath.c_str());
 			lpMsgData->fMessageProps = output::MyOpenFile(lpMsgData->szFilePath, true);
 
 			if (lpMsgData->fMessageProps)
@@ -500,20 +480,17 @@ namespace mapiprocessor
 				{
 					output::OutputToFile(lpMsgData->fMessageProps, L"<properties listtype=\"summary\">\n");
 #define NUMPROPS 9
-					static const SizedSPropTagArray(NUMPROPS, sptCols) =
-					{
-					NUMPROPS,
-						{
-							PR_MESSAGE_CLASS_W,
-							PR_SUBJECT_W,
-							PR_SENDER_ADDRTYPE_W,
-							PR_SENDER_EMAIL_ADDRESS_W,
-							PR_MESSAGE_DELIVERY_TIME,
-							PR_ENTRYID,
-							PR_SEARCH_KEY,
-							PR_RECORD_KEY,
-							PR_INTERNET_CPID
-						},
+					static const SizedSPropTagArray(NUMPROPS, sptCols) = {
+						NUMPROPS,
+						{PR_MESSAGE_CLASS_W,
+						 PR_SUBJECT_W,
+						 PR_SENDER_ADDRTYPE_W,
+						 PR_SENDER_EMAIL_ADDRESS_W,
+						 PR_MESSAGE_DELIVERY_TIME,
+						 PR_ENTRYID,
+						 PR_SEARCH_KEY,
+						 PR_RECORD_KEY,
+						 PR_INTERNET_CPID},
 					};
 
 					for (auto column : sptCols.aulPropTag)
@@ -521,7 +498,8 @@ namespace mapiprocessor
 						const auto lpTemp = PpropFindProp(lpAllProps, cValues, column);
 						if (lpTemp)
 						{
-							output::OutputPropertyToFile(lpMsgData->fMessageProps, lpTemp, lpMessage, bRetryStreamProps);
+							output::OutputPropertyToFile(
+								lpMsgData->fMessageProps, lpTemp, lpMessage, bRetryStreamProps);
 						}
 					}
 
@@ -540,13 +518,20 @@ namespace mapiprocessor
 					ulInCodePage = lpTemp->Value.l;
 				}
 
-				OutputBody(lpMsgData->fMessageProps, lpMessage, PR_RTF_COMPRESSED, L"WrapCompressedRTFEx best body", true, ulInCodePage);
+				OutputBody(
+					lpMsgData->fMessageProps,
+					lpMessage,
+					PR_RTF_COMPRESSED,
+					L"WrapCompressedRTFEx best body",
+					true,
+					ulInCodePage);
 
 				if (lpAllProps)
 				{
 					output::OutputToFile(lpMsgData->fMessageProps, L"<properties listtype=\"FullPropList\">\n");
 
-					output::OutputPropertiesToFile(lpMsgData->fMessageProps, cValues, lpAllProps, lpMessage, bRetryStreamProps);
+					output::OutputPropertiesToFile(
+						lpMsgData->fMessageProps, cValues, lpAllProps, lpMessage, bRetryStreamProps);
 
 					output::OutputToFile(lpMsgData->fMessageProps, L"</properties>\n");
 				}
@@ -556,9 +541,7 @@ namespace mapiprocessor
 		MAPIFreeBuffer(lpAllProps);
 	}
 
-	void OutputMessageMSG(
-		_In_ LPMESSAGE lpMessage,
-		_In_ const std::wstring& szFolderPath)
+	void OutputMessageMSG(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szFolderPath)
 	{
 		auto hRes = S_OK;
 
@@ -569,14 +552,7 @@ namespace mapiprocessor
 			msgNUM_COLS
 		};
 
-		static const SizedSPropTagArray(msgNUM_COLS, msgProps) =
-		{
-		msgNUM_COLS,
-			{
-				PR_SUBJECT_W,
-				PR_RECORD_KEY
-			}
-		};
+		static const SizedSPropTagArray(msgNUM_COLS, msgProps) = {msgNUM_COLS, {PR_SUBJECT_W, PR_RECORD_KEY}};
 
 		if (!lpMessage || szFolderPath.empty()) return;
 
@@ -589,11 +565,7 @@ namespace mapiprocessor
 		LPSBinary lpRecordKey = nullptr;
 
 		// Get required properties from the message
-		EC_H_GETPROPS(lpMessage->GetProps(
-			LPSPropTagArray(&msgProps),
-			fMapiUnicode,
-			&cProps,
-			&lpsProps));
+		EC_H_GETPROPS(lpMessage->GetProps(LPSPropTagArray(&msgProps), fMapiUnicode, &cProps, &lpsProps));
 
 		if (cProps == 2 && lpsProps)
 		{
@@ -612,16 +584,14 @@ namespace mapiprocessor
 		{
 			output::DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
-			WC_H(file::SaveToMSG(
-				lpMessage,
-				szFileName,
-				fMapiUnicode != 0,
-				nullptr,
-				false));
+			WC_H(file::SaveToMSG(lpMessage, szFileName, fMapiUnicode != 0, nullptr, false));
 		}
 	}
 
-	bool CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParentMessageData, _Deref_out_opt_ LPVOID* lpData)
+	bool CDumpStore::BeginMessageWork(
+		_In_ LPMESSAGE lpMessage,
+		_In_ LPVOID lpParentMessageData,
+		_Deref_out_opt_ LPVOID* lpData)
 	{
 		if (lpData) *lpData = nullptr;
 		if (lpParentMessageData && !m_bOutputAttachments) return false;
@@ -633,7 +603,8 @@ namespace mapiprocessor
 			return false; // no more work necessary
 		}
 
-		OutputMessageXML(lpMessage, lpParentMessageData, m_szMessageFileName, m_szFolderPath, m_bRetryStreamProps, lpData);
+		OutputMessageXML(
+			lpMessage, lpParentMessageData, m_szMessageFileName, m_szFolderPath, m_bRetryStreamProps, lpData);
 		return true;
 	}
 
@@ -646,7 +617,11 @@ namespace mapiprocessor
 		return true;
 	}
 
-	void CDumpStore::DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ const _SRow* lpSRow, ULONG ulCurRow)
+	void CDumpStore::DoMessagePerRecipientWork(
+		_In_ LPMESSAGE lpMessage,
+		_In_ LPVOID lpData,
+		_In_ const _SRow* lpSRow,
+		ULONG ulCurRow)
 	{
 		if (!lpMessage || !lpData || !lpSRow) return;
 		if (m_bOutputMSG) return; // When outputting message files, no recipient work is needed
@@ -678,7 +653,12 @@ namespace mapiprocessor
 		return true;
 	}
 
-	void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ const _SRow* lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow)
+	void CDumpStore::DoMessagePerAttachmentWork(
+		_In_ LPMESSAGE lpMessage,
+		_In_ LPVOID lpData,
+		_In_ const _SRow* lpSRow,
+		_In_ LPATTACH lpAttach,
+		ULONG ulCurRow)
 	{
 		if (!lpMessage || !lpData || !lpSRow) return;
 		if (m_bOutputMSG) return; // When outputting message files, no attachment work is needed
@@ -692,17 +672,11 @@ namespace mapiprocessor
 
 		output::OutputToFilef(lpMsgData->fMessageProps, L"<attachment num=\"0x%08X\" filename=\"", ulCurRow);
 
-		auto lpAttachName = PpropFindProp(
-			lpSRow->lpProps,
-			lpSRow->cValues,
-			PR_ATTACH_FILENAME);
+		auto lpAttachName = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_ATTACH_FILENAME);
 
 		if (!lpAttachName || !mapi::CheckStringProp(lpAttachName, PT_TSTRING))
 		{
-			lpAttachName = PpropFindProp(
-				lpSRow->lpProps,
-				lpSRow->cValues,
-				PR_DISPLAY_NAME);
+			lpAttachName = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_DISPLAY_NAME);
 		}
 
 		if (lpAttachName && mapi::CheckStringProp(lpAttachName, PT_TSTRING))
@@ -722,14 +696,12 @@ namespace mapiprocessor
 			ULONG ulAllProps = 0;
 			LPSPropValue lpAllProps = nullptr;
 			// Let's get all props from the message and dump them.
-			WC_H_GETPROPS(mapi::GetPropsNULL(lpAttach,
-				fMapiUnicode,
-				&ulAllProps,
-				&lpAllProps));
+			WC_H_GETPROPS(mapi::GetPropsNULL(lpAttach, fMapiUnicode, &ulAllProps, &lpAllProps));
 			if (lpAllProps)
 			{
 				output::OutputToFile(lpMsgData->fMessageProps, L"\t<getprops>\n");
-				output::OutputPropertiesToFile(lpMsgData->fMessageProps, ulAllProps, lpAllProps, lpAttach, m_bRetryStreamProps);
+				output::OutputPropertiesToFile(
+					lpMsgData->fMessageProps, ulAllProps, lpAllProps, lpAttach, m_bRetryStreamProps);
 				output::OutputToFile(lpMsgData->fMessageProps, L"\t</getprops>\n");
 			}
 

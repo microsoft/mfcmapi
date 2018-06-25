@@ -15,10 +15,7 @@ namespace output
 		LPSPropValue lpAllProps = nullptr;
 		ULONG cValues = 0L;
 
-		WC_H_GETPROPS(mapi::GetPropsNULL(lpSect,
-			fMapiUnicode,
-			&cValues,
-			&lpAllProps));
+		WC_H_GETPROPS(mapi::GetPropsNULL(lpSect, fMapiUnicode, &cValues, &lpAllProps));
 		if (FAILED(hRes))
 		{
 			output::OutputToFilef(fProfile, L"<properties error=\"0x%08X\" />\n", hRes);
@@ -31,7 +28,8 @@ namespace output
 				szBin = strings::BinToHexString(lpSectBin, false);
 			}
 
-			output::OutputToFilef(fProfile, L"<properties listtype=\"profilesection\" profilesection=\"%ws\">\n", szBin.c_str());
+			output::OutputToFilef(
+				fProfile, L"<properties listtype=\"profilesection\" profilesection=\"%ws\">\n", szBin.c_str());
 
 			output::OutputPropertiesToFile(fProfile, cValues, lpAllProps, nullptr, false);
 
@@ -52,18 +50,12 @@ namespace output
 		output::OutputToFile(fProfile, L"</properties>\n");
 
 		auto hRes = S_OK;
-		auto lpProviderUID = PpropFindProp(
-			lpRow->lpProps,
-			lpRow->cValues,
-			PR_PROVIDER_UID);
+		auto lpProviderUID = PpropFindProp(lpRow->lpProps, lpRow->cValues, PR_PROVIDER_UID);
 
 		if (lpProviderUID)
 		{
 			LPPROFSECT lpSect = nullptr;
-			EC_H(mapi::profile::OpenProfileSection(
-				lpProviderAdmin,
-				&lpProviderUID->Value.bin,
-				&lpSect));
+			EC_H(mapi::profile::OpenProfileSection(lpProviderAdmin, &lpProviderUID->Value.bin, &lpSect));
 			if (lpSect)
 			{
 				ExportProfileSection(fProfile, lpSect, &lpProviderUID->Value.bin);
@@ -85,18 +77,12 @@ namespace output
 		output::OutputToFile(fProfile, L"</properties>\n");
 
 		auto hRes = S_OK;
-		auto lpServiceUID = PpropFindProp(
-			lpRow->lpProps,
-			lpRow->cValues,
-			PR_SERVICE_UID);
+		auto lpServiceUID = PpropFindProp(lpRow->lpProps, lpRow->cValues, PR_SERVICE_UID);
 
 		if (lpServiceUID)
 		{
 			LPPROFSECT lpSect = nullptr;
-			EC_H(mapi::profile::OpenProfileSection(
-				lpServiceAdmin,
-				&lpServiceUID->Value.bin,
-				&lpSect));
+			EC_H(mapi::profile::OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin, &lpSect));
 			if (lpSect)
 			{
 				ExportProfileSection(fProfile, lpSect, &lpServiceUID->Value.bin);
@@ -142,11 +128,16 @@ namespace output
 		output::OutputToFile(fProfile, L"</service>\n");
 	}
 
-	void ExportProfile(_In_ const std::string& szProfile, _In_ const std::wstring& szProfileSection, bool bByteSwapped, const std::wstring& szFileName)
+	void ExportProfile(
+		_In_ const std::string& szProfile,
+		_In_ const std::wstring& szProfileSection,
+		bool bByteSwapped,
+		const std::wstring& szFileName)
 	{
 		if (szProfile.empty()) return;
 
-		output::DebugPrint(DBGGeneric, L"ExportProfile: Saving profile \"%hs\" to \"%ws\"\n", szProfile.c_str(), szFileName.c_str());
+		output::DebugPrint(
+			DBGGeneric, L"ExportProfile: Saving profile \"%hs\" to \"%ws\"\n", szProfile.c_str(), szFileName.c_str());
 		if (!szProfileSection.empty())
 		{
 			output::DebugPrint(DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection.c_str());
@@ -169,12 +160,8 @@ namespace output
 		if (lpProfAdmin)
 		{
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
-			EC_MAPI(lpProfAdmin->AdminServices(
-				LPTSTR(szProfile.c_str()),
-				LPTSTR(""),
-				NULL,
-				MAPI_DIALOG,
-				&lpServiceAdmin));
+			EC_MAPI(
+				lpProfAdmin->AdminServices(LPTSTR(szProfile.c_str()), LPTSTR(""), NULL, MAPI_DIALOG, &lpServiceAdmin));
 			if (lpServiceAdmin)
 			{
 				if (!szProfileSection.empty())
@@ -184,14 +171,11 @@ namespace output
 					if (lpGuid)
 					{
 						LPPROFSECT lpSect = nullptr;
-						SBinary sBin = { 0 };
+						SBinary sBin = {0};
 						sBin.cb = sizeof(GUID);
 						sBin.lpb = LPBYTE(lpGuid);
 
-						EC_H(mapi::profile::OpenProfileSection(
-							lpServiceAdmin,
-							&sBin,
-							&lpSect));
+						EC_H(mapi::profile::OpenProfileSection(lpServiceAdmin, &sBin, &lpSect));
 
 						ExportProfileSection(fProfile, lpSect, &sBin);
 						delete[] lpGuid;
@@ -224,7 +208,6 @@ namespace output
 				lpServiceAdmin->Release();
 			}
 			lpProfAdmin->Release();
-
 		}
 
 		output::OutputToFile(fProfile, L"</profile>");

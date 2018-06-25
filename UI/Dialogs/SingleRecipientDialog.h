@@ -11,7 +11,7 @@ namespace dialog
 		SingleRecipientDialog(
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects,
-			_In_opt_ LPMAILUSER lpMailUser);
+			_In_opt_ LPMAPIPROP lpMailUser);
 		virtual ~SingleRecipientDialog();
 
 	protected:

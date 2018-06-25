@@ -8,10 +8,7 @@ namespace dialog
 		class CRestrictEditor : public CEditor
 		{
 		public:
-			CRestrictEditor(
-				_In_ CWnd* pParentWnd,
-				_In_opt_ LPVOID lpAllocParent,
-				_In_opt_ const _SRestriction* lpRes);
+			CRestrictEditor(_In_ CWnd* pParentWnd, _In_opt_ LPVOID lpAllocParent, _In_opt_ const _SRestriction* lpRes);
 			virtual ~CRestrictEditor();
 
 			_Check_return_ LPSRestriction DetachModifiedSRestriction();
@@ -42,7 +39,6 @@ namespace dialog
 			bool m_bModified;
 		};
 
-
 		class CCriteriaEditor : public CEditor
 		{
 		public:
@@ -56,7 +52,8 @@ namespace dialog
 			_Check_return_ LPSRestriction DetachModifiedSRestriction();
 			_Check_return_ LPENTRYLIST DetachModifiedEntryList();
 			_Check_return_ ULONG GetSearchFlags() const;
-			_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
+			_Check_return_ bool
+			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
 
 		private:
 			void OnEditAction1() override;

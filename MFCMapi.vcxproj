@@ -548,6 +548,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   <ItemGroup>
     <ClInclude Include="Interpret\Sid.h" />
     <ClInclude Include="MAPI\StubUtils.h" />
+    <ClInclude Include="MAPI\Version.h" />
     <ClInclude Include="UI\Dialogs\HierarchyTable\ABContDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\ABDlg.h" />
     <ClInclude Include="UI\Dialogs\AboutDlg.h" />
@@ -704,6 +705,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ResourceCompile Include="Res\MFCMapi.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".clang-format" />
     <None Include="Res\MFCMAPI64x64_logo.bmp" />
     <None Include="Res\advise.bmp" />
     <None Include="Res\MFCMapi.ico" />
@@ -714,6 +716,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Interpret\Sid.cpp" />
+    <ClCompile Include="MAPI\Version.cpp" />
     <ClCompile Include="UI\Dialogs\HierarchyTable\ABContDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\AbDlg.cpp" />
     <ClCompile Include="UI\Dialogs\AboutDlg.cpp" />

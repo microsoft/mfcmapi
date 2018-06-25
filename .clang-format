@@ -1,0 +1,74 @@
+# Plan is to test a few files at a time, see if we can get a baseline clang which has minimal impact on the source
+# Allow it to fix stuff where we're really not consistent already, but mostly should be a no-op on the file
+# Once a good balance is found, we can start getting aggressive about changing options, things like no -indent on namespace.
+
+Language: Cpp
+
+AccessModifierOffset: -4
+AlignAfterOpenBracket: AlwaysBreak
+AlignEscapedNewlinesLeft: DontAlign
+AlignTrailingComments: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortIfStatementsOnASingleLine: true
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBraces: Custom
+BraceWrapping: # Will likely end up enabling more/all of these before we're done testing
+  AfterNamespace: true
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterStruct: true
+#  AfterUnion: true
+#  BeforeCatch: true
+  BeforeElse: true
+#  IndentBraces: false
+#  SplitEmptyFunction: false
+#  SplitEmptyRecord: false
+#  SplitEmptyNamespace: false
+ColumnLimit: 120 # This is large now to minimize churn but needs to be lowered
+IndentWidth: 4
+NamespaceIndentation: All
+#PenaltyExcessCharacter: 0 # This is serious overkill - let's try not to use it
+PenaltyReturnTypeOnItsOwnLine: 20
+PointerAlignment: Left
+ReflowComments: false
+SortIncludes: false
+SpaceAfterCStyleCast : true
+SpacesBeforeTrailingComments: 1
+Standard: Cpp11
+TabWidth: 4
+UseTab: Always
+
+# These are other format switches we know about - will likely need to turn some of these on/off before we're done
+#AllowShortBlocksOnASingleLine: true
+#AllowShortFunctionsOnASingleLine: true
+#AllowShortLoopsOnASingleLine: true
+#AlwaysBreakAfterDefinitionReturnType: None
+#AlwaysBreakAfterReturnType: None
+#AlwaysBreakBeforeMultilineStrings: false
+#AlwaysBreakTemplateDeclarations: false
+#BreakBeforeBinaryOperators: false
+#BreakBeforeTernaryOperators: false
+#BreakConstructorInitializersBeforeComma: false
+#CommentPragmas: ''
+#ConstructorInitializerAllOnOneLineOrOnePerLine: false
+#ConstructorInitializerIndentWidth: 0
+#ContinuationIndentWidth: 4
+#Cpp11BracedListStyle: true
+#DerivePointerBinding: false
+#IndentCaseLabels: false
+#IndentFunctionDeclarationAfterType: false
+#MaxEmptyLinesToKeep: 2
+#PenaltyBreakBeforeFirstCallParameter: 100
+#PenaltyBreakComment: 100
+#PenaltyBreakFirstLessLess: 0
+#PenaltyBreakString: 100
+#SpaceBeforeAssignmentOperators: true
+#SpaceBeforeParens: ControlStatements
+#SpaceInEmptyParentheses: false
+#SpacesInAngles: false
+#SpacesInCStyleCastParentheses: false
+#SpacesInContainerLiterals: false
+#SpacesInParentheses: false

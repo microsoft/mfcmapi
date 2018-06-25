@@ -9,9 +9,9 @@ namespace smartview
 		m_lStandardBias = 0;
 		m_lDaylightBias = 0;
 		m_wStandardYear = 0;
-		m_stStandardDate = { 0 };
+		m_stStandardDate = {0};
 		m_wDaylightDate = 0;
-		m_stDaylightDate = { 0 };
+		m_stDaylightDate = {0};
 	}
 
 	void TimeZone::Parse()
@@ -41,7 +41,8 @@ namespace smartview
 
 	_Check_return_ std::wstring TimeZone::ToStringInternal()
 	{
-		auto szTimeZone = strings::formatmessage(IDS_TIMEZONE,
+		auto szTimeZone = strings::formatmessage(
+			IDS_TIMEZONE,
 			m_lBias,
 			m_lStandardBias,
 			m_lDaylightBias,

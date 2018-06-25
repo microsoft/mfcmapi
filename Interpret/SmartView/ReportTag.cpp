@@ -69,9 +69,7 @@ namespace smartview
 		szReportTag += strings::BinToHexString(m_Cookie, true);
 
 		auto szFlags = interpretprop::InterpretFlags(flagReportTagVersion, m_Version);
-		szReportTag += strings::formatmessage(IDS_REPORTTAGVERSION,
-			m_Version,
-			szFlags.c_str());
+		szReportTag += strings::formatmessage(IDS_REPORTTAGVERSION, m_Version, szFlags.c_str());
 
 		if (m_cbStoreEntryID)
 		{
@@ -105,7 +103,8 @@ namespace smartview
 
 		if (m_cchAnsiText)
 		{
-			szReportTag += strings::formatmessage(IDS_REPORTTAGANSITEXT,
+			szReportTag += strings::formatmessage(
+				IDS_REPORTTAGANSITEXT,
 				m_cchAnsiText,
 				m_lpszAnsiText.c_str()); // STRING_OK
 		}

@@ -9,20 +9,11 @@ namespace smartview
 		m_bEnableJunk = true;
 	}
 
-	void SmartViewParser::Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
-	{
-		m_Parser.Init(cbBin, lpBin);
-	}
+	void SmartViewParser::Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { m_Parser.Init(cbBin, lpBin); }
 
-	void SmartViewParser::DisableJunkParsing()
-	{
-		m_bEnableJunk = false;
-	}
+	void SmartViewParser::DisableJunkParsing() { m_bEnableJunk = false; }
 
-	size_t SmartViewParser::GetCurrentOffset() const
-	{
-		return m_Parser.GetCurrentOffset();
-	}
+	size_t SmartViewParser::GetCurrentOffset() const { return m_Parser.GetCurrentOffset(); }
 
 	void SmartViewParser::EnsureParsed()
 	{
@@ -44,10 +35,8 @@ namespace smartview
 		}
 
 		// If we built a string with embedded nulls in it, replace them with dots.
-		std::replace_if(szParsedString.begin(), szParsedString.end(), [](const WCHAR & chr)
-		{
-			return chr == L'\0';
-		}, L'.');
+		std::replace_if(
+			szParsedString.begin(), szParsedString.end(), [](const WCHAR& chr) { return chr == L'\0'; }, L'.');
 
 		return szParsedString;
 	}
@@ -55,16 +44,25 @@ namespace smartview
 	_Check_return_ std::wstring SmartViewParser::JunkDataToString(const std::vector<BYTE>& lpJunkData) const
 	{
 		if (lpJunkData.empty()) return strings::emptystring;
-		output::DebugPrint(DBGSmartView, L"Had 0x%08X = %u bytes left over.\n", static_cast<int>(lpJunkData.size()), static_cast<UINT>(lpJunkData.size()));
+		output::DebugPrint(
+			DBGSmartView,
+			L"Had 0x%08X = %u bytes left over.\n",
+			static_cast<int>(lpJunkData.size()),
+			static_cast<UINT>(lpJunkData.size()));
 		auto szJunk = strings::formatmessage(IDS_JUNKDATASIZE, lpJunkData.size());
 		szJunk += strings::BinToHexString(lpJunkData, true);
 		return szJunk;
 	}
 
-	_Check_return_ std::wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const
+	_Check_return_ std::wstring
+	SmartViewParser::JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const
 	{
 		if (!cbJunkData || !lpJunkData) return L"";
-		output::DebugPrint(DBGSmartView, L"Had 0x%08X = %u bytes left over.\n", static_cast<int>(cbJunkData), static_cast<UINT>(cbJunkData));
+		output::DebugPrint(
+			DBGSmartView,
+			L"Had 0x%08X = %u bytes left over.\n",
+			static_cast<int>(cbJunkData),
+			static_cast<UINT>(cbJunkData));
 		auto szJunk = strings::formatmessage(IDS_JUNKDATASIZE, cbJunkData);
 		szJunk += strings::BinToHexString(lpJunkData, static_cast<ULONG>(cbJunkData), true);
 		return szJunk;
@@ -96,10 +94,7 @@ namespace smartview
 		return m_binCache.back().data();
 	}
 
-	LPBYTE SmartViewParser::AllocateArray(size_t cArray, size_t cbEntry)
-	{
-		return Allocate(cArray * cbEntry);
-	}
+	LPBYTE SmartViewParser::AllocateArray(size_t cArray, size_t cbEntry) { return Allocate(cArray * cbEntry); }
 
 	_Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength)
 	{
@@ -159,7 +154,8 @@ namespace smartview
 				pspvProperty[i].Value.bin.lpb = GetBYTES(pspvProperty[i].Value.bin.cb);
 				break;
 			case PT_MV_STRING8:
-				pspvProperty[i].Value.MVszA.lppszA = reinterpret_cast<LPSTR*>(AllocateArray(pspvProperty[i].Value.MVszA.cValues, sizeof LPVOID));
+				pspvProperty[i].Value.MVszA.lppszA =
+					reinterpret_cast<LPSTR*>(AllocateArray(pspvProperty[i].Value.MVszA.cValues, sizeof LPVOID));
 				if (pspvProperty[i].Value.MVszA.lppszA)
 				{
 					for (ULONG j = 0; j < pspvProperty[i].Value.MVszA.cValues; j++)
@@ -169,7 +165,8 @@ namespace smartview
 				}
 				break;
 			case PT_MV_UNICODE:
-				pspvProperty[i].Value.MVszW.lppszW = reinterpret_cast<LPWSTR*>(AllocateArray(pspvProperty[i].Value.MVszW.cValues, sizeof LPVOID));
+				pspvProperty[i].Value.MVszW.lppszW =
+					reinterpret_cast<LPWSTR*>(AllocateArray(pspvProperty[i].Value.MVszW.cValues, sizeof LPVOID));
 				if (pspvProperty[i].Value.MVszW.lppszW)
 				{
 					for (ULONG j = 0; j < pspvProperty[i].Value.MVszW.cValues; j++)

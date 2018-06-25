@@ -16,21 +16,14 @@ namespace dialog
 		class CResCompareEditor : public CEditor
 		{
 		public:
-			CResCompareEditor(
-				_In_ CWnd* pParentWnd,
-				ULONG ulRelop,
-				ULONG ulPropTag1,
-				ULONG ulPropTag2);
+			CResCompareEditor(_In_ CWnd* pParentWnd, ULONG ulRelop, ULONG ulPropTag1, ULONG ulPropTag2);
+
 		private:
 			_Check_return_ ULONG HandleChange(UINT nID) override;
 		};
 
-		CResCompareEditor::CResCompareEditor(
-			_In_ CWnd* pParentWnd,
-			ULONG ulRelop,
-			ULONG ulPropTag1,
-			ULONG ulPropTag2) :
-			CEditor(pParentWnd, IDS_RESED, IDS_RESEDCOMPPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+		CResCompareEditor::CResCompareEditor(_In_ CWnd* pParentWnd, ULONG ulRelop, ULONG ulPropTag1, ULONG ulPropTag2)
+			: CEditor(pParentWnd, IDS_RESED, IDS_RESEDCOMPPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 		{
 			TRACE_CONSTRUCTOR(COMPCLASS);
 
@@ -41,11 +34,17 @@ namespace dialog
 			InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RELOP, szFlags, true));
 			InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG1, false));
 			SetHex(2, ulPropTag1);
-			InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag1, nullptr, false, true), true));
+			InitPane(
+				3,
+				viewpane::TextPane::CreateSingleLinePane(
+					IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag1, nullptr, false, true), true));
 
 			InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG2, false));
 			SetHex(4, ulPropTag2);
-			InitPane(5, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag2, nullptr, false, true), true));
+			InitPane(
+				5,
+				viewpane::TextPane::CreateSingleLinePane(
+					IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag2, nullptr, false, true), true));
 		}
 
 		_Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
@@ -100,16 +99,17 @@ namespace dialog
 			ULONG ulCompare,
 			ULONG ulPropTag,
 			_In_ const _SPropValue* lpProp,
-			_In_ LPVOID lpAllocParent) :
-			CEditor(pParentWnd,
-				IDS_RESED,
-				ulResType == RES_CONTENT ? IDS_RESEDCONTPROMPT : // Content case
-				ulResType == RES_PROPERTY ? IDS_RESEDPROPPROMPT : // Property case
-				0, // else case
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL,
-				IDS_ACTIONEDITPROP,
-				NULL,
-				NULL)
+			_In_ LPVOID lpAllocParent)
+			: CEditor(
+				  pParentWnd,
+				  IDS_RESED,
+				  ulResType == RES_CONTENT ? IDS_RESEDCONTPROMPT : // Content case
+					  ulResType == RES_PROPERTY ? IDS_RESEDPROPPROMPT : // Property case
+						  0, // else case
+				  CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL,
+				  IDS_ACTIONEDITPROP,
+				  NULL,
+				  NULL)
 		{
 			TRACE_CONSTRUCTOR(CONTENTCLASS);
 
@@ -140,11 +140,19 @@ namespace dialog
 
 			InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
 			SetHex(2, ulPropTag);
-			InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+			InitPane(
+				3,
+				viewpane::TextPane::CreateSingleLinePane(
+					IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
 
 			InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_LPPROPULPROPTAG, false));
 			if (lpProp) SetHex(4, lpProp->ulPropTag);
-			InitPane(5, viewpane::TextPane::CreateSingleLinePane(IDS_LPPROPULPROPTAG, lpProp ? interpretprop::TagToString(lpProp->ulPropTag, nullptr, false, true) : strings::emptystring, true));
+			InitPane(
+				5,
+				viewpane::TextPane::CreateSingleLinePane(
+					IDS_LPPROPULPROPTAG,
+					lpProp ? interpretprop::TagToString(lpProp->ulPropTag, nullptr, false, true) : strings::emptystring,
+					true));
 
 			std::wstring szProp;
 			std::wstring szAltProp;
@@ -215,7 +223,7 @@ namespace dialog
 				&lpOutProp));
 
 			// Since m_lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-			if (S_OK == hRes && lpOutProp)
+			if (hRes == S_OK && lpOutProp)
 			{
 				m_lpNewProp = lpOutProp;
 				std::wstring szProp;
@@ -231,22 +239,14 @@ namespace dialog
 		class CResBitmaskEditor : public CEditor
 		{
 		public:
-			CResBitmaskEditor(
-				_In_ CWnd* pParentWnd,
-				ULONG relBMR,
-				ULONG ulPropTag,
-				ULONG ulMask);
+			CResBitmaskEditor(_In_ CWnd* pParentWnd, ULONG relBMR, ULONG ulPropTag, ULONG ulMask);
 
 		private:
 			_Check_return_ ULONG HandleChange(UINT nID) override;
 		};
 
-		CResBitmaskEditor::CResBitmaskEditor(
-			_In_ CWnd* pParentWnd,
-			ULONG relBMR,
-			ULONG ulPropTag,
-			ULONG ulMask) :
-			CEditor(pParentWnd, IDS_RESED, IDS_RESEDBITPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+		CResBitmaskEditor::CResBitmaskEditor(_In_ CWnd* pParentWnd, ULONG relBMR, ULONG ulPropTag, ULONG ulMask)
+			: CEditor(pParentWnd, IDS_RESED, IDS_RESEDBITPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 		{
 			TRACE_CONSTRUCTOR(BITMASKCLASS);
 
@@ -257,7 +257,10 @@ namespace dialog
 			InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RELBMR, szFlags, true));
 			InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
 			SetHex(2, ulPropTag);
-			InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+			InitPane(
+				3,
+				viewpane::TextPane::CreateSingleLinePane(
+					IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
 
 			InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_MASK, false));
 			SetHex(4, ulMask);
@@ -283,22 +286,14 @@ namespace dialog
 		class CResSizeEditor : public CEditor
 		{
 		public:
-			CResSizeEditor(
-				_In_ CWnd* pParentWnd,
-				ULONG relop,
-				ULONG ulPropTag,
-				ULONG cb);
+			CResSizeEditor(_In_ CWnd* pParentWnd, ULONG relop, ULONG ulPropTag, ULONG cb);
 
 		private:
 			_Check_return_ ULONG HandleChange(UINT nID) override;
 		};
 
-		CResSizeEditor::CResSizeEditor(
-			_In_ CWnd* pParentWnd,
-			ULONG relop,
-			ULONG ulPropTag,
-			ULONG cb) :
-			CEditor(pParentWnd, IDS_RESED, IDS_RESEDSIZEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+		CResSizeEditor::CResSizeEditor(_In_ CWnd* pParentWnd, ULONG relop, ULONG ulPropTag, ULONG cb)
+			: CEditor(pParentWnd, IDS_RESED, IDS_RESEDSIZEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 		{
 			TRACE_CONSTRUCTOR(SIZECLASS);
 
@@ -310,7 +305,10 @@ namespace dialog
 
 			InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
 			SetHex(2, ulPropTag);
-			InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+			InitPane(
+				3,
+				viewpane::TextPane::CreateSingleLinePane(
+					IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
 
 			InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_CB, false));
 			SetHex(4, cb);
@@ -336,24 +334,23 @@ namespace dialog
 		class CResExistEditor : public CEditor
 		{
 		public:
-			CResExistEditor(
-				_In_ CWnd* pParentWnd,
-				ULONG ulPropTag);
+			CResExistEditor(_In_ CWnd* pParentWnd, ULONG ulPropTag);
 
 		private:
 			_Check_return_ ULONG HandleChange(UINT nID) override;
 		};
 
-		CResExistEditor::CResExistEditor(
-			_In_ CWnd* pParentWnd,
-			ULONG ulPropTag) :
-			CEditor(pParentWnd, IDS_RESED, IDS_RESEDEXISTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+		CResExistEditor::CResExistEditor(_In_ CWnd* pParentWnd, ULONG ulPropTag)
+			: CEditor(pParentWnd, IDS_RESED, IDS_RESEDEXISTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 		{
 			TRACE_CONSTRUCTOR(EXISTCLASS);
 
 			InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
 			SetHex(0, ulPropTag);
-			InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+			InitPane(
+				1,
+				viewpane::TextPane::CreateSingleLinePane(
+					IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
 		}
 
 		_Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
@@ -395,8 +392,15 @@ namespace dialog
 			_In_ CWnd* pParentWnd,
 			ULONG ulSubObject,
 			_In_ const _SRestriction* lpRes,
-			_In_ LPVOID lpAllocParent) :
-			CEditor(pParentWnd, IDS_SUBRESED, IDS_RESEDSUBPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL, IDS_ACTIONEDITRES, NULL, NULL)
+			_In_ LPVOID lpAllocParent)
+			: CEditor(
+				  pParentWnd,
+				  IDS_SUBRESED,
+				  IDS_RESEDSUBPROMPT,
+				  CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL,
+				  IDS_ACTIONEDITRES,
+				  NULL,
+				  NULL)
 		{
 			TRACE_CONSTRUCTOR(SUBRESCLASS);
 
@@ -406,9 +410,15 @@ namespace dialog
 
 			InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULSUBOBJECT, false));
 			SetHex(0, ulSubObject);
-			InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULSUBOBJECT, interpretprop::TagToString(ulSubObject, nullptr, false, true), true));
+			InitPane(
+				1,
+				viewpane::TextPane::CreateSingleLinePane(
+					IDS_ULSUBOBJECT, interpretprop::TagToString(ulSubObject, nullptr, false, true), true));
 
-			InitPane(2, viewpane::TextPane::CreateMultiLinePane(IDS_LPRES, interpretprop::RestrictionToString(lpRes, nullptr), true));
+			InitPane(
+				2,
+				viewpane::TextPane::CreateMultiLinePane(
+					IDS_LPRES, interpretprop::RestrictionToString(lpRes, nullptr), true));
 		}
 
 		_Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
@@ -433,14 +443,11 @@ namespace dialog
 		void CResSubResEditor::OnEditAction1()
 		{
 			auto hRes = S_OK;
-			CRestrictEditor ResEdit(
-				this,
-				m_lpAllocParent,
-				m_lpNewRes ? m_lpNewRes : m_lpOldRes);
+			CRestrictEditor ResEdit(this, m_lpAllocParent, m_lpNewRes ? m_lpNewRes : m_lpOldRes);
 
 			WC_H(ResEdit.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				// Since m_lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 				m_lpNewRes = ResEdit.DetachModifiedSRestriction();
@@ -455,14 +462,12 @@ namespace dialog
 		class CResAndOrEditor : public CEditor
 		{
 		public:
-			CResAndOrEditor(
-				_In_ CWnd* pParentWnd,
-				_In_ const _SRestriction* lpRes,
-				_In_ LPVOID lpAllocParent);
+			CResAndOrEditor(_In_ CWnd* pParentWnd, _In_ const _SRestriction* lpRes, _In_ LPVOID lpAllocParent);
 
 			_Check_return_ LPSRestriction DetachModifiedSRestrictionArray();
 			_Check_return_ ULONG GetResCount() const;
-			_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
+			_Check_return_ bool
+			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
 
 		private:
 			BOOL OnInitDialog() override;
@@ -478,8 +483,8 @@ namespace dialog
 		CResAndOrEditor::CResAndOrEditor(
 			_In_ CWnd* pParentWnd,
 			_In_ const _SRestriction* lpRes,
-			_In_ LPVOID lpAllocParent) :
-			CEditor(pParentWnd, IDS_RESED, IDS_RESEDANDORPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+			_In_ LPVOID lpAllocParent)
+			: CEditor(pParentWnd, IDS_RESED, IDS_RESEDANDORPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 		{
 			TRACE_CONSTRUCTOR(ANDORCLASS);
 			m_lpRes = lpRes;
@@ -509,10 +514,7 @@ namespace dialog
 			return lpRet;
 		}
 
-		_Check_return_ ULONG CResAndOrEditor::GetResCount() const
-		{
-			return m_ulNewResCount;
-		}
+		_Check_return_ ULONG CResAndOrEditor::GetResCount() const { return m_ulNewResCount; }
 
 		void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ const _SRestriction* lpRes) const
 		{
@@ -533,7 +535,8 @@ namespace dialog
 					if (lpData)
 					{
 						lpData->InitializeRes(&lpRes->res.resAnd.lpRes[i]);
-						SetListString(ulListNum, i, 1, interpretprop::RestrictionToString(&lpRes->res.resAnd.lpRes[i], nullptr));
+						SetListString(
+							ulListNum, i, 1, interpretprop::RestrictionToString(&lpRes->res.resAnd.lpRes[i], nullptr));
 					}
 				}
 				break;
@@ -546,7 +549,8 @@ namespace dialog
 					if (lpData)
 					{
 						lpData->InitializeRes(&lpRes->res.resOr.lpRes[i]);
-						SetListString(ulListNum, i, 1, interpretprop::RestrictionToString(&lpRes->res.resOr.lpRes[i], nullptr));
+						SetListString(
+							ulListNum, i, 1, interpretprop::RestrictionToString(&lpRes->res.resOr.lpRes[i], nullptr));
 					}
 				}
 				break;
@@ -554,24 +558,24 @@ namespace dialog
 			ResizeList(ulListNum, false);
 		}
 
-		_Check_return_ bool CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
+		_Check_return_ bool
+		CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData || !lpData->Res()) return false;
 			auto hRes = S_OK;
 
 			const auto lpSourceRes = lpData->Res()->m_lpNewRes ? lpData->Res()->m_lpNewRes : lpData->Res()->m_lpOldRes;
 
-			CRestrictEditor MyResEditor(
-				this,
-				m_lpAllocParent,
-				lpSourceRes); // pass source res into editor
+			CRestrictEditor MyResEditor(this, m_lpAllocParent,
+										lpSourceRes); // pass source res into editor
 			WC_H(MyResEditor.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				// Since lpData->data.Res.lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 				lpData->Res()->m_lpNewRes = MyResEditor.DetachModifiedSRestriction();
-				SetListString(ulListNum, iItem, 1, interpretprop::RestrictionToString(lpData->Res()->m_lpNewRes, nullptr));
+				SetListString(
+					ulListNum, iItem, 1, interpretprop::RestrictionToString(lpData->Res()->m_lpNewRes, nullptr));
 				return true;
 			}
 
@@ -589,9 +593,7 @@ namespace dialog
 			if (ulNewResCount > ULONG_MAX / sizeof(SRestriction)) return;
 			auto hRes = S_OK;
 			EC_H(MAPIAllocateMore(
-				sizeof(SRestriction)* ulNewResCount,
-				m_lpAllocParent,
-				reinterpret_cast<LPVOID*>(&lpNewResArray)));
+				sizeof(SRestriction) * ulNewResCount, m_lpAllocParent, reinterpret_cast<LPVOID*>(&lpNewResArray)));
 
 			if (lpNewResArray)
 			{
@@ -608,10 +610,7 @@ namespace dialog
 						else
 						{
 							EC_H(mapi::HrCopyRestrictionArray(
-								lpData->Res()->m_lpOldRes,
-								m_lpAllocParent,
-								1,
-								&lpNewResArray[i]));
+								lpData->Res()->m_lpOldRes, m_lpAllocParent, 1, &lpNewResArray[i]));
 						}
 					}
 				}
@@ -626,20 +625,19 @@ namespace dialog
 		class CResCommentEditor : public CEditor
 		{
 		public:
-			CResCommentEditor(
-				_In_ CWnd* pParentWnd,
-				_In_ const _SRestriction* lpRes,
-				_In_ LPVOID lpAllocParent);
+			CResCommentEditor(_In_ CWnd* pParentWnd, _In_ const _SRestriction* lpRes, _In_ LPVOID lpAllocParent);
 
 			_Check_return_ LPSRestriction DetachModifiedSRestriction();
 			_Check_return_ LPSPropValue DetachModifiedSPropValue();
 			_Check_return_ ULONG GetSPropValueCount() const;
-			_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
+			_Check_return_ bool
+			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
 
 		private:
 			void OnEditAction1() override;
 			BOOL OnInitDialog() override;
-			void InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) const _SPropValue* lpProps) const;
+			void
+			InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) const _SPropValue* lpProps) const;
 			_Check_return_ const _SRestriction* GetSourceRes() const;
 			void OnOK() override;
 
@@ -654,8 +652,15 @@ namespace dialog
 		CResCommentEditor::CResCommentEditor(
 			_In_ CWnd* pParentWnd,
 			_In_ const _SRestriction* lpRes,
-			_In_ LPVOID lpAllocParent) :
-			CEditor(pParentWnd, IDS_COMMENTRESED, IDS_RESEDCOMMENTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL, IDS_ACTIONEDITRES, NULL, NULL)
+			_In_ LPVOID lpAllocParent)
+			: CEditor(
+				  pParentWnd,
+				  IDS_COMMENTRESED,
+				  IDS_RESEDCOMMENTPROMPT,
+				  CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL,
+				  IDS_ACTIONEDITRES,
+				  NULL,
+				  NULL)
 		{
 			TRACE_CONSTRUCTOR(COMMENTCLASS);
 
@@ -664,8 +669,16 @@ namespace dialog
 			m_lpNewCommentProp = nullptr;
 			m_lpAllocParent = lpAllocParent;
 
-			InitPane(0, viewpane::ListPane::CreateCollapsibleListPane(IDS_SUBRESTRICTION, false, false, ListEditCallBack(this)));
-			InitPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(m_lpSourceRes->res.resComment.lpRes, nullptr), true));
+			InitPane(
+				0,
+				viewpane::ListPane::CreateCollapsibleListPane(
+					IDS_SUBRESTRICTION, false, false, ListEditCallBack(this)));
+			InitPane(
+				1,
+				viewpane::TextPane::CreateMultiLinePane(
+					IDS_RESTRICTIONTEXT,
+					interpretprop::RestrictionToString(m_lpSourceRes->res.resComment.lpRes, nullptr),
+					true));
 		}
 
 		// Used to call functions which need to be called AFTER controls are created
@@ -701,12 +714,12 @@ namespace dialog
 			return lpRet;
 		}
 
-		_Check_return_ ULONG CResCommentEditor::GetSPropValueCount() const
-		{
-			return m_ulNewCommentProp;
-		}
+		_Check_return_ ULONG CResCommentEditor::GetSPropValueCount() const { return m_ulNewCommentProp; }
 
-		void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) const _SPropValue* lpProps) const
+		void CResCommentEditor::InitListFromPropArray(
+			ULONG ulListNum,
+			ULONG cProps,
+			_In_count_(cProps) const _SPropValue* lpProps) const
 		{
 			ClearList(ulListNum);
 
@@ -723,7 +736,8 @@ namespace dialog
 				if (lpData)
 				{
 					lpData->InitializeComment(&lpProps[i]);
-					SetListString(ulListNum, i, 1, interpretprop::TagToString(lpProps[i].ulPropTag, nullptr, false, true));
+					SetListString(
+						ulListNum, i, 1, interpretprop::TagToString(lpProps[i].ulPropTag, nullptr, false, true));
 					interpretprop::InterpretProp(&lpProps[i], &szProp, &szAltProp);
 					SetListString(ulListNum, i, 2, szProp);
 					SetListString(ulListNum, i, 3, szAltProp);
@@ -739,13 +753,11 @@ namespace dialog
 
 			const auto lpSourceRes = GetSourceRes();
 
-			CRestrictEditor MyResEditor(
-				this,
-				m_lpAllocParent,
-				lpSourceRes); // pass source res into editor
+			CRestrictEditor MyResEditor(this, m_lpAllocParent,
+										lpSourceRes); // pass source res into editor
 			WC_H(MyResEditor.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				// Since m_lpNewCommentRes was owned by an m_lpAllocParent, we don't free it directly
 				m_lpNewCommentRes = MyResEditor.DetachModifiedSRestriction();
@@ -753,23 +765,21 @@ namespace dialog
 			}
 		}
 
-		_Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
+		_Check_return_ bool
+		CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData || !lpData->Comment()) return false;
 			if (!m_lpAllocParent) return false;
 			auto hRes = S_OK;
 
-			auto lpSourceProp = lpData->Comment()->m_lpNewProp ? lpData->Comment()->m_lpNewProp : lpData->Comment()->m_lpOldProp;
+			auto lpSourceProp =
+				lpData->Comment()->m_lpNewProp ? lpData->Comment()->m_lpNewProp : lpData->Comment()->m_lpOldProp;
 
-			SPropValue sProp = { 0 };
+			SPropValue sProp = {0};
 
 			if (!lpSourceProp)
 			{
-				CEditor MyTag(
-					this,
-					IDS_TAG,
-					IDS_TAGPROMPT,
-					true);
+				CEditor MyTag(this, IDS_TAG, IDS_TAGPROMPT, true);
 
 				MyTag.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_TAG, false));
 
@@ -792,11 +802,15 @@ namespace dialog
 				&lpData->Comment()->m_lpNewProp));
 
 			// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-			if (S_OK == hRes && lpData->Comment()->m_lpNewProp)
+			if (hRes == S_OK && lpData->Comment()->m_lpNewProp)
 			{
 				std::wstring szTmp;
 				std::wstring szAltTmp;
-				SetListString(ulListNum, iItem, 1, interpretprop::TagToString(lpData->Comment()->m_lpNewProp->ulPropTag, nullptr, false, true));
+				SetListString(
+					ulListNum,
+					iItem,
+					1,
+					interpretprop::TagToString(lpData->Comment()->m_lpNewProp->ulPropTag, nullptr, false, true));
 				interpretprop::InterpretProp(lpData->Comment()->m_lpNewProp, &szTmp, &szAltTmp);
 				SetListString(ulListNum, iItem, 2, szTmp);
 				SetListString(ulListNum, iItem, 3, szAltTmp);
@@ -817,7 +831,7 @@ namespace dialog
 			if (ulNewCommentProp && ulNewCommentProp < ULONG_MAX / sizeof(SPropValue))
 			{
 				EC_H(MAPIAllocateMore(
-					sizeof(SPropValue)* ulNewCommentProp,
+					sizeof(SPropValue) * ulNewCommentProp,
 					m_lpAllocParent,
 					reinterpret_cast<LPVOID*>(&lpNewCommentProp)));
 
@@ -865,8 +879,15 @@ namespace dialog
 		CRestrictEditor::CRestrictEditor(
 			_In_ CWnd* pParentWnd,
 			_In_opt_ LPVOID lpAllocParent,
-			_In_opt_ const _SRestriction* lpRes) :
-			CEditor(pParentWnd, IDS_RESED, IDS_RESEDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL, IDS_ACTIONEDITRES, NULL, NULL)
+			_In_opt_ const _SRestriction* lpRes)
+			: CEditor(
+				  pParentWnd,
+				  IDS_RESED,
+				  IDS_RESEDPROMPT,
+				  CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL,
+				  IDS_ACTIONEDITRES,
+				  NULL,
+				  NULL)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 			auto hRes = S_OK;
@@ -883,16 +904,12 @@ namespace dialog
 			// Allocate base memory:
 			if (m_lpAllocParent)
 			{
-				EC_H(MAPIAllocateMore(
-					sizeof(SRestriction),
-					m_lpAllocParent,
-					reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
+				EC_H(
+					MAPIAllocateMore(sizeof(SRestriction), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
 			}
 			else
 			{
-				EC_H(MAPIAllocateBuffer(
-					sizeof(SRestriction),
-					reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
+				EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
 
 				m_lpAllocParent = m_lpOutputRes;
 			}
@@ -905,8 +922,14 @@ namespace dialog
 
 			SetPromptPostFix(interpretprop::AllFlagsToString(flagRestrictionType, true));
 			InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RESTRICTIONTYPE, false)); // type as a number
-			InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RESTRICTIONTYPE, true)); // type as a string (flagRestrictionType)
-			InitPane(2, viewpane::TextPane::CreateMultiLinePane(IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(GetSourceRes(), nullptr), true));
+			InitPane(
+				1,
+				viewpane::TextPane::CreateSingleLinePane(
+					IDS_RESTRICTIONTYPE, true)); // type as a string (flagRestrictionType)
+			InitPane(
+				2,
+				viewpane::TextPane::CreateMultiLinePane(
+					IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(GetSourceRes(), nullptr), true));
 		}
 
 		CRestrictEditor::~CRestrictEditor()
@@ -986,9 +1009,7 @@ namespace dialog
 					{
 						// We allocated m_lpOutputRes directly, so we can and should free it before replacing the pointer
 						MAPIFreeBuffer(m_lpOutputRes);
-						EC_H(MAPIAllocateBuffer(
-							sizeof(SRestriction),
-							reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
+						EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
 
 						m_lpAllocParent = m_lpOutputRes;
 					}
@@ -997,9 +1018,7 @@ namespace dialog
 						// If the pointers are different, m_lpOutputRes was allocated with MAPIAllocateMore
 						// Since m_lpOutputRes is owned by m_lpAllocParent, we don't free it directly
 						EC_H(MAPIAllocateMore(
-							sizeof(SRestriction),
-							m_lpAllocParent,
-							reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
+							sizeof(SRestriction), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
 					}
 					memset(m_lpOutputRes, 0, sizeof(SRestriction));
 					m_lpOutputRes->rt = ulNewResType;
@@ -1055,7 +1074,7 @@ namespace dialog
 				break;
 			}
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_bModified = true;
 				SetStringW(2, interpretprop::RestrictionToString(m_lpOutputRes, nullptr));
@@ -1071,7 +1090,7 @@ namespace dialog
 				lpSourceRes->res.resCompareProps.ulPropTag1,
 				lpSourceRes->res.resCompareProps.ulPropTag2);
 			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resCompareProps.relop = MyEditor.GetHex(0);
@@ -1085,13 +1104,11 @@ namespace dialog
 		HRESULT CRestrictEditor::EditAndOr(const _SRestriction* lpSourceRes)
 		{
 			auto hRes = S_OK;
-			CResAndOrEditor MyResEditor(
-				this,
-				lpSourceRes,
-				m_lpAllocParent); // pass source res into editor
+			CResAndOrEditor MyResEditor(this, lpSourceRes,
+										m_lpAllocParent); // pass source res into editor
 			WC_H(MyResEditor.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resAnd.cRes = MyResEditor.GetResCount();
@@ -1117,7 +1134,7 @@ namespace dialog
 				lpSourceRes->res.resNot.lpRes); // pass source res into editor
 			WC_H(MyResEditor.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				// Since m_lpOutputRes->res.resNot.lpRes was owned by an m_lpAllocParent, we don't free it directly
@@ -1138,7 +1155,7 @@ namespace dialog
 				lpSourceRes->res.resContent.lpProp,
 				m_lpAllocParent);
 			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resContent.ulFuzzyLevel = MyEditor.GetHex(0);
@@ -1175,7 +1192,7 @@ namespace dialog
 				lpSourceRes->res.resBitMask.ulPropTag,
 				lpSourceRes->res.resBitMask.ulMask);
 			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resBitMask.relBMR = MyEditor.GetHex(0);
@@ -1190,12 +1207,9 @@ namespace dialog
 		{
 			auto hRes = S_OK;
 			CResSizeEditor MyEditor(
-				this,
-				lpSourceRes->res.resSize.relop,
-				lpSourceRes->res.resSize.ulPropTag,
-				lpSourceRes->res.resSize.cb);
+				this, lpSourceRes->res.resSize.relop, lpSourceRes->res.resSize.ulPropTag, lpSourceRes->res.resSize.cb);
 			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resSize.relop = MyEditor.GetHex(0);
@@ -1209,11 +1223,9 @@ namespace dialog
 		HRESULT CRestrictEditor::EditExist(const _SRestriction* lpSourceRes)
 		{
 			auto hRes = S_OK;
-			CResExistEditor MyEditor(
-				this,
-				lpSourceRes->res.resExist.ulPropTag);
+			CResExistEditor MyEditor(this, lpSourceRes->res.resExist.ulPropTag);
 			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resExist.ulPropTag = MyEditor.GetPropTag(0);
@@ -1228,12 +1240,9 @@ namespace dialog
 		{
 			auto hRes = S_OK;
 			CResSubResEditor MyEditor(
-				this,
-				lpSourceRes->res.resSub.ulSubObject,
-				lpSourceRes->res.resSub.lpRes,
-				m_lpAllocParent);
+				this, lpSourceRes->res.resSub.ulSubObject, lpSourceRes->res.resSub.lpRes, m_lpAllocParent);
 			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resSub.ulSubObject = MyEditor.GetHex(1);
@@ -1248,13 +1257,11 @@ namespace dialog
 		HRESULT CRestrictEditor::EditComment(const _SRestriction* lpSourceRes)
 		{
 			auto hRes = S_OK;
-			CResCommentEditor MyResEditor(
-				this,
-				lpSourceRes,
-				m_lpAllocParent); // pass source res into editor
+			CResCommentEditor MyResEditor(this, lpSourceRes,
+										  m_lpAllocParent); // pass source res into editor
 			WC_H(MyResEditor.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 
@@ -1280,8 +1287,15 @@ namespace dialog
 			_In_ CWnd* pParentWnd,
 			_In_ const _SRestriction* lpRes,
 			_In_ LPENTRYLIST lpEntryList,
-			ULONG ulSearchState) :
-			CEditor(pParentWnd, IDS_CRITERIAEDITOR, IDS_CRITERIAEDITORPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL, IDS_ACTIONEDITRES, NULL, NULL)
+			ULONG ulSearchState)
+			: CEditor(
+				  pParentWnd,
+				  IDS_CRITERIAEDITOR,
+				  IDS_CRITERIAEDITORPROMPT,
+				  CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL,
+				  IDS_ACTIONEDITRES,
+				  NULL,
+				  NULL)
 		{
 			TRACE_CONSTRUCTOR(CRITERIACLASS);
 
@@ -1291,9 +1305,7 @@ namespace dialog
 			m_lpNewRes = nullptr;
 			m_lpSourceEntryList = lpEntryList;
 
-			EC_H(MAPIAllocateBuffer(
-				sizeof(SBinaryArray),
-				reinterpret_cast<LPVOID*>(&m_lpNewEntryList)));
+			EC_H(MAPIAllocateBuffer(sizeof(SBinaryArray), reinterpret_cast<LPVOID*>(&m_lpNewEntryList)));
 
 			m_ulNewSearchFlags = NULL;
 
@@ -1305,8 +1317,12 @@ namespace dialog
 			InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, false));
 			SetHex(2, 0);
 			InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, true));
-			InitPane(4, viewpane::ListPane::CreateCollapsibleListPane(IDS_EIDLIST, false, false, ListEditCallBack(this)));
-			InitPane(5, viewpane::TextPane::CreateMultiLinePane(IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(m_lpSourceRes, nullptr), true));
+			InitPane(
+				4, viewpane::ListPane::CreateCollapsibleListPane(IDS_EIDLIST, false, false, ListEditCallBack(this)));
+			InitPane(
+				5,
+				viewpane::TextPane::CreateMultiLinePane(
+					IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(m_lpSourceRes, nullptr), true));
 		}
 
 		CCriteriaEditor::~CCriteriaEditor()
@@ -1328,7 +1344,7 @@ namespace dialog
 			return bRet;
 		}
 
-		_Check_return_ const _SRestriction*  CCriteriaEditor::GetSourceRes() const
+		_Check_return_ const _SRestriction* CCriteriaEditor::GetSourceRes() const
 		{
 			if (m_lpNewRes) return m_lpNewRes;
 			return m_lpSourceRes;
@@ -1362,10 +1378,7 @@ namespace dialog
 			return lpRet;
 		}
 
-		_Check_return_ ULONG CCriteriaEditor::GetSearchFlags() const
-		{
-			return m_ulNewSearchFlags;
-		}
+		_Check_return_ ULONG CCriteriaEditor::GetSearchFlags() const { return m_ulNewSearchFlags; }
 
 		void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ const SBinaryArray* lpEntryList) const
 		{
@@ -1402,13 +1415,11 @@ namespace dialog
 
 			const auto lpSourceRes = GetSourceRes();
 
-			CRestrictEditor MyResEditor(
-				this,
-				nullptr,
-				lpSourceRes); // pass source res into editor
+			CRestrictEditor MyResEditor(this, nullptr,
+										lpSourceRes); // pass source res into editor
 			WC_H(MyResEditor.DisplayDialog());
 
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				const auto lpModRes = MyResEditor.DetachModifiedSRestriction();
 				if (lpModRes)
@@ -1421,7 +1432,8 @@ namespace dialog
 			}
 		}
 
-		_Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
+		_Check_return_ bool
+		CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData) return false;
 
@@ -1432,11 +1444,7 @@ namespace dialog
 
 			auto hRes = S_OK;
 
-			CEditor BinEdit(
-				this,
-				IDS_EIDEDITOR,
-				IDS_EIDEDITORPROMPT,
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			CEditor BinEdit(this, IDS_EIDEDITOR, IDS_EIDEDITORPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 			LPSBinary lpSourcebin = nullptr;
 			if (lpData->Binary()->m_OldBin.lpb)
@@ -1448,10 +1456,12 @@ namespace dialog
 				lpSourcebin = &lpData->Binary()->m_NewBin;
 			}
 
-			BinEdit.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EID, strings::BinToHexString(lpSourcebin, false), false));
+			BinEdit.InitPane(
+				0,
+				viewpane::TextPane::CreateSingleLinePane(IDS_EID, strings::BinToHexString(lpSourcebin, false), false));
 
 			WC_H(BinEdit.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				auto bin = strings::HexStringToBin(BinEdit.GetStringW(0));
 				lpData->Binary()->m_NewBin.lpb = mapi::ByteVectorToMAPI(bin, m_lpNewEntryList);
@@ -1504,7 +1514,10 @@ namespace dialog
 								m_lpNewEntryList,
 								reinterpret_cast<LPVOID*>(&m_lpNewEntryList->lpbin[i].lpb)));
 
-							memcpy(m_lpNewEntryList->lpbin[i].lpb, lpData->Binary()->m_OldBin.lpb, m_lpNewEntryList->lpbin[i].cb);
+							memcpy(
+								m_lpNewEntryList->lpbin[i].lpb,
+								lpData->Binary()->m_OldBin.lpb,
+								m_lpNewEntryList->lpbin[i].cb);
 						}
 					}
 				}

@@ -19,7 +19,8 @@ namespace viewpane
 		return pane;
 	}
 
-	ListPane* ListPane::CreateCollapsibleListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
+	ListPane*
+	ListPane::CreateCollapsibleListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
 	{
 		auto pane = new (std::nothrow) ListPane();
 		if (pane)
@@ -46,10 +47,7 @@ namespace viewpane
 		m_callback = std::move(callback);
 	}
 
-	bool ListPane::IsDirty()
-	{
-		return m_bDirty;
-	}
+	bool ListPane::IsDirty() { return m_bDirty; }
 
 	void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	{
@@ -58,8 +56,7 @@ namespace viewpane
 		auto hRes = S_OK;
 
 		DWORD dwListStyle = LVS_SINGLESEL | WS_BORDER;
-		if (!m_bAllowSort)
-			dwListStyle |= LVS_NOSORTHEADER;
+		if (!m_bAllowSort) dwListStyle |= LVS_NOSORTHEADER;
 		EC_H(m_List.Create(pParent, dwListStyle, m_nID, false));
 
 		// read only lists don't need buttons
@@ -71,10 +68,7 @@ namespace viewpane
 
 				EC_B(m_ButtonArray[iButton].Create(
 					strings::wstringTotstring(szButtonText).c_str(),
-					WS_TABSTOP
-					| WS_CHILD
-					| WS_CLIPSIBLINGS
-					| WS_VISIBLE,
+					WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
 					pParent,
 					ListButtons[iButton]));
@@ -90,7 +84,8 @@ namespace viewpane
 
 	int ListPane::GetMinWidth(_In_ HDC hdc)
 	{
-		return max(ViewPane::GetMinWidth(hdc), (int)(NUMLISTBUTTONS * m_iButtonWidth + m_iMargin * (NUMLISTBUTTONS - 1)));
+		return max(
+			ViewPane::GetMinWidth(hdc), (int) (NUMLISTBUTTONS * m_iButtonWidth + m_iMargin * (NUMLISTBUTTONS - 1)));
 	}
 
 	int ListPane::GetFixedHeight()
@@ -135,13 +130,27 @@ namespace viewpane
 	{
 		switch (nID)
 		{
-		case IDD_LISTMOVEDOWN: OnMoveListEntryDown(); break;
-		case IDD_LISTADD: OnAddListEntry(); break;
-		case IDD_LISTEDIT: (void)OnEditListEntry(); break;
-		case IDD_LISTDELETE: OnDeleteListEntry(true); break;
-		case IDD_LISTMOVEUP: OnMoveListEntryUp(); break;
-		case IDD_LISTMOVETOBOTTOM: OnMoveListEntryToBottom(); break;
-		case IDD_LISTMOVETOTOP: OnMoveListEntryToTop(); break;
+		case IDD_LISTMOVEDOWN:
+			OnMoveListEntryDown();
+			break;
+		case IDD_LISTADD:
+			OnAddListEntry();
+			break;
+		case IDD_LISTEDIT:
+			(void) OnEditListEntry();
+			break;
+		case IDD_LISTDELETE:
+			OnDeleteListEntry(true);
+			break;
+		case IDD_LISTMOVEUP:
+			OnMoveListEntryUp();
+			break;
+		case IDD_LISTMOVETOBOTTOM:
+			OnMoveListEntryToBottom();
+			break;
+		case IDD_LISTMOVETOTOP:
+			OnMoveListEntryToTop();
+			break;
 		}
 
 		return ViewPane::HandleChange(nID);
@@ -162,13 +171,7 @@ namespace viewpane
 
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
 		EC_B(m_List.ShowWindow(cmdShow));
-		EC_B(m_List.SetWindowPos(
-			NULL,
-			x,
-			y,
-			width,
-			iVariableHeight,
-			SWP_NOZORDER));
+		EC_B(m_List.SetWindowPos(NULL, x, y, width, iVariableHeight, SWP_NOZORDER));
 		y += iVariableHeight;
 
 		if (!m_bReadOnly)
@@ -193,9 +196,7 @@ namespace viewpane
 		}
 	}
 
-	void ListPane::CommitUIValues()
-	{
-	}
+	void ListPane::CommitUIValues() {}
 
 	void ListPane::SetListString(ULONG iListRow, ULONG iListCol, const std::wstring& szListString)
 	{
@@ -225,10 +226,7 @@ namespace viewpane
 		m_List.AutoSizeColumns(false);
 	}
 
-	_Check_return_ ULONG ListPane::GetItemCount() const
-	{
-		return m_List.GetItemCount();
-	}
+	_Check_return_ ULONG ListPane::GetItemCount() const { return m_List.GetItemCount(); }
 
 	_Check_return_ controls::sortlistdata::SortListData* ListPane::GetItemData(int iRow) const
 	{
@@ -255,13 +253,14 @@ namespace viewpane
 	void ListPane::SetColumnType(int nCol, ULONG ulPropType) const
 	{
 		auto hRes = S_OK;
-		HDITEM hdItem = { 0 };
+		HDITEM hdItem = {0};
 		auto lpMyHeader = m_List.GetHeaderCtrl();
 
 		if (lpMyHeader)
 		{
 			hdItem.mask = HDI_LPARAM;
-			auto lpHeaderData = new (std::nothrow) controls::sortlistctrl::HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
+			auto lpHeaderData = new (std::nothrow)
+				controls::sortlistctrl::HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
 			if (lpHeaderData)
 			{
 				lpHeaderData->ulTagArrayRow = NULL;
@@ -387,7 +386,7 @@ namespace viewpane
 	{
 		const auto iItem = m_List.GetItemCount();
 
-		(void)InsertRow(iItem, std::to_wstring(iItem));
+		(void) InsertRow(iItem, std::to_wstring(iItem));
 
 		m_List.SetSelectedItem(iItem);
 
@@ -412,7 +411,7 @@ namespace viewpane
 		EC_B(m_List.DeleteItem(iItem));
 		m_List.SetSelectedItem(iItem);
 
-		if (S_OK == hRes && bDoDirty)
+		if (hRes == S_OK && bDoDirty)
 		{
 			m_bDirty = true;
 		}

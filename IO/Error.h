@@ -58,7 +58,8 @@ namespace error
 	// Function to convert error codes to their names
 	std::wstring ErrorNameFromErrorCode(ULONG hrErr);
 
-	_Check_return_ HRESULT CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction);
+	_Check_return_ HRESULT
+	CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction);
 
 	// We'll only output this information in debug builds.
 #ifdef _DEBUG
@@ -85,250 +86,278 @@ namespace error
 // Macros for debug output
 #define CHECKHRES(hRes) (CheckHResFn(hRes, NULL, true, "", NULL, __FILE__, __LINE__))
 #define CHECKHRESMSG(hRes, uidErrorMsg) (CheckHResFn(hRes, NULL, true, nullptr, uidErrorMsg, __FILE__, __LINE__))
-#define WARNHRESMSG(hRes, uidErrorMsg)  (CheckHResFn(hRes, NULL, false, nullptr, uidErrorMsg, __FILE__, __LINE__))
+#define WARNHRESMSG(hRes, uidErrorMsg) (CheckHResFn(hRes, NULL, false, nullptr, uidErrorMsg, __FILE__, __LINE__))
 
-#define EC_H(fnx)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	hRes = (fnx);	\
-	CheckHResFn(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-}}
+#define EC_H(fnx) \
+	{ \
+		if (SUCCEEDED(hRes)) \
+		{ \
+			hRes = (fnx); \
+			CheckHResFn(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__); \
+		} \
+		else \
+		{ \
+			error::PrintSkipNote(hRes, #fnx); \
+		} \
+	}
 
-#define WC_H(fnx)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	hRes = (fnx);	\
-	CheckHResFn(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__);	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-}}
+#define WC_H(fnx) \
+	{ \
+		if (SUCCEEDED(hRes)) \
+		{ \
+			hRes = (fnx); \
+			CheckHResFn(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__); \
+		} \
+		else \
+		{ \
+			error::PrintSkipNote(hRes, #fnx); \
+		} \
+	}
 
-#define EC_MAPI(fnx)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	hRes = (fnx);	\
-	CheckMAPICall(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-}}
+#define EC_MAPI(fnx) \
+	{ \
+		if (SUCCEEDED(hRes)) \
+		{ \
+			hRes = (fnx); \
+			CheckMAPICall(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__); \
+		} \
+		else \
+		{ \
+			error::PrintSkipNote(hRes, #fnx); \
+		} \
+	}
 
-#define WC_MAPI(fnx)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	hRes = (fnx);	\
-	CheckMAPICall(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__);	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-}}
+#define WC_MAPI(fnx) \
+	{ \
+		if (SUCCEEDED(hRes)) \
+		{ \
+			hRes = (fnx); \
+			CheckMAPICall(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__); \
+		} \
+		else \
+		{ \
+			error::PrintSkipNote(hRes, #fnx); \
+		} \
+	}
 
-#define EC_H_MSG(fnx,uidErrorMsg)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	hRes = (fnx);	\
-	CheckMAPICall(hRes, NULL, true, #fnx, uidErrorMsg, __FILE__, __LINE__);	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-}}
+#define EC_H_MSG(fnx, uidErrorMsg) \
+	{ \
+		if (SUCCEEDED(hRes)) \
+		{ \
+			hRes = (fnx); \
+			CheckMAPICall(hRes, NULL, true, #fnx, uidErrorMsg, __FILE__, __LINE__); \
+		} \
+		else \
+		{ \
+			error::PrintSkipNote(hRes, #fnx); \
+		} \
+	}
 
-#define WC_H_MSG(fnx,uidErrorMsg)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	hRes = (fnx);	\
-	CheckMAPICall(hRes, NULL, false, #fnx, uidErrorMsg, __FILE__, __LINE__);	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-}}
+#define WC_H_MSG(fnx, uidErrorMsg) \
+	{ \
+		if (SUCCEEDED(hRes)) \
+		{ \
+			hRes = (fnx); \
+			CheckMAPICall(hRes, NULL, false, #fnx, uidErrorMsg, __FILE__, __LINE__); \
+		} \
+		else \
+		{ \
+			error::PrintSkipNote(hRes, #fnx); \
+		} \
+	}
 
-#define EC_W32(fnx)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	hRes = HRESULT_FROM_WIN32(fnx);	\
-	CheckHResFn(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-}}
+#define EC_W32(fnx) \
+	{ \
+		if (SUCCEEDED(hRes)) \
+		{ \
+			hRes = HRESULT_FROM_WIN32(fnx); \
+			CheckHResFn(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__); \
+		} \
+		else \
+		{ \
+			error::PrintSkipNote(hRes, #fnx); \
+		} \
+	}
 
-#define WC_W32(fnx)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	hRes = HRESULT_FROM_WIN32(fnx);	\
-	CheckHResFn(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__);	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-}}
+#define WC_W32(fnx) \
+	{ \
+		if (SUCCEEDED(hRes)) \
+		{ \
+			hRes = HRESULT_FROM_WIN32(fnx); \
+			CheckHResFn(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__); \
+		} \
+		else \
+		{ \
+			error::PrintSkipNote(hRes, #fnx); \
+		} \
+	}
 
-#define EC_B(fnx)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	if (!(fnx))	\
-	{	\
-		hRes = error::CheckWin32Error(true, __FILE__, __LINE__, #fnx);	\
-	}	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-}}
+#define EC_B(fnx) \
+	{ \
+		if (SUCCEEDED(hRes)) \
+		{ \
+			if (!(fnx)) \
+			{ \
+				hRes = error::CheckWin32Error(true, __FILE__, __LINE__, #fnx); \
+			} \
+		} \
+		else \
+		{ \
+			error::PrintSkipNote(hRes, #fnx); \
+		} \
+	}
 
-#define WC_B(fnx)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	if (!(fnx))	\
-	{	\
-		hRes = error::CheckWin32Error(false, __FILE__, __LINE__, #fnx);\
-	}	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-}}
+#define WC_B(fnx) \
+	{ \
+		if (SUCCEEDED(hRes)) \
+		{ \
+			if (!(fnx)) \
+			{ \
+				hRes = error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
+			} \
+		} \
+		else \
+		{ \
+			error::PrintSkipNote(hRes, #fnx); \
+		} \
+	}
 
-// Used for functions which return 0 on error
-// dwRet will contain the return value - assign to a local if needed for other calls.
-#define EC_D(_ret,fnx)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	(_ret) = (fnx);	\
-	if (!(_ret))	\
-	{	\
-		hRes = error::CheckWin32Error(true, __FILE__, __LINE__, #fnx);	\
-	}	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-	(_ret) = NULL;	\
-}}
+// Execute a function which returns 0 on error, log error, and return result
+#define EC_D(_TYPE, fnx) \
+	[&]() -> _TYPE { \
+		auto __ret = (fnx); \
+		if (!__ret) \
+		{ \
+			error::CheckWin32Error(true, __FILE__, __LINE__, #fnx); \
+		} \
+		return __ret; \
+	}()
 
-// whatever's passed to _ret will contain the return value
-#define WC_D(_ret,fnx)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	(_ret) = (fnx);	\
-	if (!(_ret))	\
-	{	\
-		hRes = error::CheckWin32Error(false, __FILE__, __LINE__, #fnx);\
-	}	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-	(_ret) = NULL;	\
-}}
+// Execute a function which returns 0 on error, log error, and return CheckWin32Error(HRESULT)
+// Will not display an error dialog
+#define WC_D(_TYPE, fnx) \
+	[&]() -> _TYPE { \
+		auto __ret = (fnx); \
+		if (!__ret) \
+		{ \
+			error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
+		} \
+		return __ret; \
+	}()
+
+// Execute a function which returns 0 on error, log error, and swallow error
+// Will not display an error dialog
+#define WC_DS(fnx) \
+	[&]() -> void { \
+		if (!(fnx)) \
+		{ \
+			error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
+		} \
+	}()
 
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
-#define EC_H_GETPROPS(fnx)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	hRes = (fnx);	\
-	CheckMAPICall(hRes, MAPI_W_ERRORS_RETURNED, true, #fnx, NULL, __FILE__, __LINE__);	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-}}
+#define EC_H_GETPROPS(fnx) \
+	{ \
+		if (SUCCEEDED(hRes)) \
+		{ \
+			hRes = (fnx); \
+			CheckMAPICall(hRes, MAPI_W_ERRORS_RETURNED, true, #fnx, NULL, __FILE__, __LINE__); \
+		} \
+		else \
+		{ \
+			error::PrintSkipNote(hRes, #fnx); \
+		} \
+	}
 
-#define WC_H_GETPROPS(fnx)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	hRes = (fnx);	\
-	CheckMAPICall(hRes, MAPI_W_ERRORS_RETURNED, false, #fnx, NULL, __FILE__, __LINE__);	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-}}
+#define WC_H_GETPROPS(fnx) \
+	{ \
+		if (SUCCEEDED(hRes)) \
+		{ \
+			hRes = (fnx); \
+			CheckMAPICall(hRes, MAPI_W_ERRORS_RETURNED, false, #fnx, NULL, __FILE__, __LINE__); \
+		} \
+		else \
+		{ \
+			error::PrintSkipNote(hRes, #fnx); \
+		} \
+	}
 
 // some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL. I don't consider these to be errors.
-#define EC_H_CANCEL(fnx)	\
-{if (SUCCEEDED(hRes))	\
-{	\
-	hRes = (fnx);	\
-	if (MAPI_E_USER_CANCEL == hRes || MAPI_E_CANCEL == hRes) \
+#define EC_H_CANCEL(fnx) \
 	{ \
-		CheckMAPICall(hRes, NULL, false, #fnx, IDS_USERCANCELLED, __FILE__, __LINE__); \
-		hRes = S_OK; \
-	} \
-	else CheckMAPICall(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
-}	\
-else	\
-{	\
-	error::PrintSkipNote(hRes,#fnx);\
-}}
+		if (SUCCEEDED(hRes)) \
+		{ \
+			hRes = (fnx); \
+			if (MAPI_E_USER_CANCEL == hRes || MAPI_E_CANCEL == hRes) \
+			{ \
+				CheckMAPICall(hRes, NULL, false, #fnx, IDS_USERCANCELLED, __FILE__, __LINE__); \
+				hRes = S_OK; \
+			} \
+			else \
+				CheckMAPICall(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__); \
+		} \
+		else \
+		{ \
+			error::PrintSkipNote(hRes, #fnx); \
+		} \
+	}
 
 // Designed to check return values from dialog functions, primarily DoModal
 // These functions use CommDlgExtendedError to get error information
-#define EC_D_DIALOG(fnx)	\
-{	\
-	iDlgRet = (fnx);	\
-	if (IDCANCEL == iDlgRet)	\
-	{	\
-		DWORD err = CommDlgExtendedError();	\
-		if (err) \
+#define EC_D_DIALOG(fnx) \
+	{ \
+		iDlgRet = (fnx); \
+		if (IDCANCEL == iDlgRet) \
 		{ \
-			error::ErrDialog(__FILE__,__LINE__,IDS_EDCOMMONDLG,#fnx,err);	\
-			hRes = MAPI_E_CALL_FAILED;	\
+			DWORD err = CommDlgExtendedError(); \
+			if (err) \
+			{ \
+				error::ErrDialog(__FILE__, __LINE__, IDS_EDCOMMONDLG, #fnx, err); \
+				hRes = MAPI_E_CALL_FAILED; \
+			} \
+			else \
+				hRes = S_OK; \
 		} \
-		else hRes = S_OK; \
-	}	\
-}
+	}
 
-#define EC_PROBLEMARRAY(problemarray)	\
-{	\
-	if (problemarray)	\
-	{	\
-		std::wstring szProbArray = interpretprop::ProblemArrayToString(*(problemarray));	\
-		error::ErrDialog(__FILE__,__LINE__,IDS_EDPROBLEMARRAY, szProbArray.c_str());	\
-		output::DebugPrint(DBGGeneric,L"Problem array:\n%ws\n",szProbArray.c_str());	\
-	}	\
-}
+#define EC_PROBLEMARRAY(problemarray) \
+	{ \
+		if (problemarray) \
+		{ \
+			std::wstring szProbArray = interpretprop::ProblemArrayToString(*(problemarray)); \
+			error::ErrDialog(__FILE__, __LINE__, IDS_EDPROBLEMARRAY, szProbArray.c_str()); \
+			output::DebugPrint(DBGGeneric, L"Problem array:\n%ws\n", szProbArray.c_str()); \
+		} \
+	}
 
-#define WC_PROBLEMARRAY(problemarray)	\
-{	\
-	if (problemarray)	\
-	{	\
-		std::wstring szProbArray = interpretprop::ProblemArrayToString(*(problemarray));	\
-		output::DebugPrint(DBGGeneric,L"Problem array:\n%ws\n",szProbArray.c_str());	\
-	}	\
-}
+#define WC_PROBLEMARRAY(problemarray) \
+	{ \
+		if (problemarray) \
+		{ \
+			std::wstring szProbArray = interpretprop::ProblemArrayToString(*(problemarray)); \
+			output::DebugPrint(DBGGeneric, L"Problem array:\n%ws\n", szProbArray.c_str()); \
+		} \
+	}
 
-#define EC_MAPIERR(__ulflags,__lperr)	\
-{	\
-	if (__lperr)	\
-	{	\
-		std::wstring szErr = interpretprop::MAPIErrToString((__ulflags),*(__lperr));	\
-		error::ErrDialog(__FILE__,__LINE__,IDS_EDMAPIERROR, szErr.c_str());	\
-		output::DebugPrint(DBGGeneric,L"LPMAPIERROR:\n%ws\n", szErr.c_str());	\
-	}	\
-}
+#define EC_MAPIERR(__ulflags, __lperr) \
+	{ \
+		if (__lperr) \
+		{ \
+			std::wstring szErr = interpretprop::MAPIErrToString((__ulflags), *(__lperr)); \
+			error::ErrDialog(__FILE__, __LINE__, IDS_EDMAPIERROR, szErr.c_str()); \
+			output::DebugPrint(DBGGeneric, L"LPMAPIERROR:\n%ws\n", szErr.c_str()); \
+		} \
+	}
 
-#define EC_TNEFERR(problemarray)	\
-{	\
-	if (problemarray)	\
-	{	\
-		std::wstring szProbArray = interpretprop::TnefProblemArrayToString(*(problemarray));	\
-		error::ErrDialog(__FILE__,__LINE__,IDS_EDTNEFPROBLEMARRAY, szProbArray.c_str());	\
-		output::DebugPrint(DBGGeneric,L"TNEF Problem array:\n%ws\n",szProbArray.c_str());	\
-	}	\
-}
+#define EC_TNEFERR(problemarray) \
+	{ \
+		if (problemarray) \
+		{ \
+			std::wstring szProbArray = interpretprop::TnefProblemArrayToString(*(problemarray)); \
+			error::ErrDialog(__FILE__, __LINE__, IDS_EDTNEFPROBLEMARRAY, szProbArray.c_str()); \
+			output::DebugPrint(DBGGeneric, L"TNEF Problem array:\n%ws\n", szProbArray.c_str()); \
+		} \
+	}

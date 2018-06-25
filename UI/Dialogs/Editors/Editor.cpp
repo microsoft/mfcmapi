@@ -26,20 +26,11 @@ namespace dialog
 
 #define LINES_SCROLL 12
 
-// Use this constuctor for generic data editing
-		CEditor::CEditor(
-			_In_opt_ CWnd* pParentWnd,
-			UINT uidTitle,
-			UINT uidPrompt,
-			ULONG ulButtonFlags) :CMyDialog(IDD_BLANK_DIALOG, pParentWnd)
+		// Use this constuctor for generic data editing
+		CEditor::CEditor(_In_opt_ CWnd* pParentWnd, UINT uidTitle, UINT uidPrompt, ULONG ulButtonFlags)
+			: CMyDialog(IDD_BLANK_DIALOG, pParentWnd)
 		{
-			Constructor(pParentWnd,
-				uidTitle,
-				uidPrompt,
-				ulButtonFlags,
-				IDS_ACTION1,
-				IDS_ACTION2,
-				IDS_ACTION3);
+			Constructor(pParentWnd, uidTitle, uidPrompt, ulButtonFlags, IDS_ACTION1, IDS_ACTION2, IDS_ACTION3);
 		}
 
 		CEditor::CEditor(
@@ -49,9 +40,11 @@ namespace dialog
 			ULONG ulButtonFlags,
 			UINT uidActionButtonText1,
 			UINT uidActionButtonText2,
-			UINT uidActionButtonText3) :CMyDialog(IDD_BLANK_DIALOG, pParentWnd)
+			UINT uidActionButtonText3)
+			: CMyDialog(IDD_BLANK_DIALOG, pParentWnd)
 		{
-			Constructor(pParentWnd,
+			Constructor(
+				pParentWnd,
 				uidTitle,
 				uidPrompt,
 				ulButtonFlags,
@@ -108,8 +101,7 @@ namespace dialog
 			if (m_bButtonFlags & CEDITOR_BUTTON_CANCEL) m_cButtons++;
 
 			// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
-			auto hRes = S_OK;
-			WC_D(m_hIcon, AfxGetApp()->LoadIcon(IDR_MAINFRAME));
+			m_hIcon = WC_D(HICON, AfxGetApp()->LoadIcon(IDR_MAINFRAME));
 
 			m_pParentWnd = pParentWnd;
 			if (!m_pParentWnd)
@@ -133,9 +125,9 @@ namespace dialog
 		}
 
 		BEGIN_MESSAGE_MAP(CEditor, CMyDialog)
-			ON_WM_SIZE()
-			ON_WM_GETMINMAXINFO()
-			ON_WM_NCHITTEST()
+		ON_WM_SIZE()
+		ON_WM_GETMINMAXINFO()
+		ON_WM_NCHITTEST()
 		END_MESSAGE_MAP()
 
 		LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -158,7 +150,7 @@ namespace dialog
 					auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(m_ulListNum));
 					if (pane)
 					{
-						(void)pane->HandleChange(IDD_LISTEDIT);
+						(void) pane->HandleChange(IDD_LISTEDIT);
 					}
 
 					return NULL;
@@ -169,31 +161,40 @@ namespace dialog
 			{
 				const auto nCode = HIWORD(wParam);
 				const auto idFrom = LOWORD(wParam);
-				if (EN_CHANGE == nCode ||
-					CBN_SELCHANGE == nCode ||
-					CBN_EDITCHANGE == nCode)
+				if (EN_CHANGE == nCode || CBN_SELCHANGE == nCode || CBN_EDITCHANGE == nCode)
 				{
-					(void)HandleChange(idFrom);
+					(void) HandleChange(idFrom);
 				}
 				else if (BN_CLICKED == nCode)
 				{
 					switch (idFrom)
 					{
-					case IDD_EDITACTION1: OnEditAction1(); return NULL;
-					case IDD_EDITACTION2: OnEditAction2(); return NULL;
-					case IDD_EDITACTION3: OnEditAction3(); return NULL;
-					case IDD_RECALCLAYOUT: OnRecalcLayout(); return NULL;
-					default: (void)HandleChange(idFrom); break;
+					case IDD_EDITACTION1:
+						OnEditAction1();
+						return NULL;
+					case IDD_EDITACTION2:
+						OnEditAction2();
+						return NULL;
+					case IDD_EDITACTION3:
+						OnEditAction3();
+						return NULL;
+					case IDD_RECALCLAYOUT:
+						OnRecalcLayout();
+						return NULL;
+					default:
+						(void) HandleChange(idFrom);
+						break;
 					}
 				}
 				break;
 			}
 			case WM_ERASEBKGND:
 			{
-				RECT rect = { 0 };
+				RECT rect = {0};
 				::GetClientRect(m_hWnd, &rect);
 				const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), ui::GetSysBrush(ui::cBackground));
-				const auto bRet = PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
+				const auto bRet = PatBlt(
+					reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
 				SelectObject(reinterpret_cast<HDC>(wParam), hOld);
 				return bRet;
 			}
@@ -209,7 +210,8 @@ namespace dialog
 				s_DeltaTotal -= nLines * WHEEL_DELTA;
 				for (auto i = 0; i != abs(nLines); ++i)
 				{
-					::SendMessage(m_hWnd,
+					::SendMessage(
+						m_hWnd,
 						WM_VSCROLL,
 						nLines < 0 ? static_cast<WPARAM>(SB_LINEDOWN) : static_cast<WPARAM>(SB_LINEUP),
 						reinterpret_cast<LPARAM>(m_hWndVertScroll));
@@ -220,7 +222,7 @@ namespace dialog
 			{
 				const auto wScrollType = LOWORD(wParam);
 				const auto hWndScroll = reinterpret_cast<HWND>(lParam);
-				SCROLLINFO si = { 0 };
+				SCROLLINFO si = {0};
 
 				si.cbSize = sizeof si;
 				si.fMask = SIF_ALL;
@@ -264,7 +266,15 @@ namespace dialog
 				// If the position has changed, scroll window and update it.
 				if (si.nPos != yPos)
 				{
-					::ScrollWindowEx(m_ScrollWindow.m_hWnd, 0, yPos - si.nPos, nullptr, nullptr, nullptr, nullptr, SW_SCROLLCHILDREN | SW_INVALIDATE);
+					::ScrollWindowEx(
+						m_ScrollWindow.m_hWnd,
+						0,
+						yPos - si.nPos,
+						nullptr,
+						nullptr,
+						nullptr,
+						nullptr,
+						SW_SCROLLCHILDREN | SW_INVALIDATE);
 				}
 
 				return 0;
@@ -274,10 +284,7 @@ namespace dialog
 		}
 
 		// AddIn functions
-		void CEditor::SetAddInTitle(const std::wstring& szTitle)
-		{
-			m_szAddInTitle = szTitle;
-		}
+		void CEditor::SetAddInTitle(const std::wstring& szTitle) { m_szAddInTitle = szTitle; }
 
 		void CEditor::SetAddInLabel(ULONG i, const std::wstring& szLabel) const
 		{
@@ -336,11 +343,7 @@ namespace dialog
 				szFullString = szPrefix + m_szPromptPostFix;
 
 				EC_B(m_Prompt.Create(
-					WS_CHILD
-					| WS_CLIPSIBLINGS
-					| ES_MULTILINE
-					| ES_READONLY
-					| WS_VISIBLE,
+					WS_CHILD | WS_CLIPSIBLINGS | ES_MULTILINE | ES_READONLY | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
 					this,
 					IDC_PROMPT));
@@ -370,13 +373,17 @@ namespace dialog
 					_T("SCROLLBAR"), // STRING_OK
 					nullptr,
 					WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | SBS_VERT | SBS_RIGHTALIGN,
-					0, 0, 0, 0,
+					0,
+					0,
+					0,
+					0,
 					m_hWnd,
 					nullptr,
 					nullptr,
 					nullptr);
 				// Subclass static control so we can ensure we're drawing everything right
-				SetWindowSubclass(m_ScrollWindow.m_hWnd, DrawScrollProc, 0, reinterpret_cast<DWORD_PTR>(m_ScrollWindow.m_hWnd));
+				SetWindowSubclass(
+					m_ScrollWindow.m_hWnd, DrawScrollProc, 0, reinterpret_cast<DWORD_PTR>(m_ScrollWindow.m_hWnd));
 				pParent = &m_ScrollWindow;
 			}
 
@@ -395,10 +402,7 @@ namespace dialog
 				const auto szOk = strings::loadstring(IDS_OK);
 				EC_B(m_OkButton.Create(
 					strings::wstringTotstring(szOk).c_str(),
-					WS_TABSTOP
-					| WS_CHILD
-					| WS_CLIPSIBLINGS
-					| WS_VISIBLE,
+					WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
 					this,
 					IDOK));
@@ -409,10 +413,7 @@ namespace dialog
 				const auto szActionButtonText1 = strings::loadstring(m_uidActionButtonText1);
 				EC_B(m_ActionButton1.Create(
 					strings::wstringTotstring(szActionButtonText1).c_str(),
-					WS_TABSTOP
-					| WS_CHILD
-					| WS_CLIPSIBLINGS
-					| WS_VISIBLE,
+					WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
 					this,
 					IDD_EDITACTION1));
@@ -426,10 +427,7 @@ namespace dialog
 				const auto szActionButtonText2 = strings::loadstring(m_uidActionButtonText2);
 				EC_B(m_ActionButton2.Create(
 					strings::wstringTotstring(szActionButtonText2).c_str(),
-					WS_TABSTOP
-					| WS_CHILD
-					| WS_CLIPSIBLINGS
-					| WS_VISIBLE,
+					WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
 					this,
 					IDD_EDITACTION2));
@@ -443,10 +441,7 @@ namespace dialog
 				const auto szActionButtonText3 = strings::loadstring(m_uidActionButtonText3);
 				EC_B(m_ActionButton3.Create(
 					strings::wstringTotstring(szActionButtonText3).c_str(),
-					WS_TABSTOP
-					| WS_CHILD
-					| WS_CLIPSIBLINGS
-					| WS_VISIBLE,
+					WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
 					this,
 					IDD_EDITACTION3));
@@ -460,10 +455,7 @@ namespace dialog
 				const auto szCancel = strings::loadstring(IDS_CANCEL);
 				EC_B(m_CancelButton.Create(
 					strings::wstringTotstring(szCancel).c_str(),
-					WS_TABSTOP
-					| WS_CHILD
-					| WS_CLIPSIBLINGS
-					| WS_VISIBLE,
+					WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
 					this,
 					IDCANCEL));
@@ -473,7 +465,7 @@ namespace dialog
 			}
 
 			// tear down from our width computations
-			(void)SelectObject(hdc, hfontOld);
+			(void) SelectObject(hdc, hfontOld);
 			::ReleaseDC(m_hWnd, hdc);
 
 			m_iButtonWidth += m_iMargin;
@@ -487,12 +479,7 @@ namespace dialog
 
 			// Size according to our defaults, respecting minimums
 			EC_B(SetWindowPos(
-				NULL,
-				0,
-				0,
-				max(MIN_WIDTH, m_iMinWidth),
-				max(MIN_HEIGHT, m_iMinHeight),
-				SWP_NOZORDER | SWP_NOMOVE));
+				NULL, 0, 0, max(MIN_WIDTH, m_iMinWidth), max(MIN_HEIGHT, m_iMinHeight), SWP_NOZORDER | SWP_NOMOVE));
 
 			return bRet;
 		}
@@ -520,7 +507,7 @@ namespace dialog
 				return pane->GetSelectedGUID(bByteSwapped);
 			}
 
-			return { 0 };
+			return {0};
 		}
 
 		_Check_return_ HRESULT CEditor::DisplayDialog()
@@ -618,7 +605,7 @@ namespace dialog
 		// Good is defined as big enough to display all elements at a minimum size, including title
 		_Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 		{
-			SIZE sArea = { 0 };
+			SIZE sArea = {0};
 
 			// Figure a good width (cx)
 			auto cx = 0;
@@ -651,10 +638,10 @@ namespace dialog
 			}
 
 			output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea cx:%d \n", cx);
-			(void)SelectObject(hdc, hfontOld);
+			(void) SelectObject(hdc, hfontOld);
 
 			// Throw all that work out if we have enough buttons
-			cx = max(cx, (int)(m_cButtons * m_iButtonWidth + m_iMargin * (m_cButtons - 1)));
+			cx = max(cx, (int) (m_cButtons * m_iButtonWidth + m_iMargin * (m_cButtons - 1)));
 			output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea buttons->%d \n", cx);
 
 			// cx now contains the width of the widest prompt string or control
@@ -679,9 +666,7 @@ namespace dialog
 			{
 				if (pane)
 				{
-					iControlHeight +=
-						pane->GetFixedHeight() +
-						pane->GetLines() * m_iEditHeight;
+					iControlHeight += pane->GetFixedHeight() + pane->GetLines() * m_iEditHeight;
 				}
 			}
 
@@ -706,11 +691,12 @@ namespace dialog
 			auto hRes = S_OK;
 
 			CRect rcMaxScreen;
-			EC_B(SystemParametersInfo(SPI_GETWORKAREA, NULL, static_cast<LPVOID>(static_cast<LPRECT>(rcMaxScreen)), NULL));
+			EC_B(SystemParametersInfo(
+				SPI_GETWORKAREA, NULL, static_cast<LPVOID>(static_cast<LPRECT>(rcMaxScreen)), NULL));
 			auto cxFullScreen = rcMaxScreen.Width();
 			auto cyFullScreen = rcMaxScreen.Height();
 
-			const SIZE sScreen = { cxFullScreen, cyFullScreen };
+			const SIZE sScreen = {cxFullScreen, cyFullScreen};
 			auto sArea = ComputeWorkArea(sScreen);
 			// inflate the rectangle according to the title bar, border, etc...
 			CRect MyRect(0, 0, sArea.cx, sArea.cy);
@@ -752,9 +738,10 @@ namespace dialog
 		{
 			OnSetDefaultSize();
 
-			RECT rc = { 0 };
+			RECT rc = {0};
 			::GetClientRect(m_hWnd, &rc);
-			(void) ::PostMessage(m_hWnd,
+			(void) ::PostMessage(
+				m_hWnd,
 				WM_SIZE,
 				static_cast<WPARAM>(SIZE_RESTORED),
 				static_cast<LPARAM>(MAKELPARAM(rc.right - rc.left, rc.bottom - rc.top)));
@@ -786,15 +773,14 @@ namespace dialog
 
 			auto iFullWidth = cx - 2 * iCXMargin;
 
-			output::DebugPrint(DBGDraw, L"CEditor::OnSize cx=%d iFullWidth=%d iCXMargin=%d\n",
-				cx,
-				iFullWidth,
-				iCXMargin);
+			output::DebugPrint(
+				DBGDraw, L"CEditor::OnSize cx=%d iFullWidth=%d iCXMargin=%d\n", cx, iFullWidth, iCXMargin);
 
 			auto iPromptLineCount = 0;
 			if (m_bHasPrompt)
 			{
-				iPromptLineCount = m_Prompt.GetLineCount() + 1; // we allow space for the prompt and one line of whitespace
+				iPromptLineCount =
+					m_Prompt.GetLineCount() + 1; // we allow space for the prompt and one line of whitespace
 			}
 
 			auto iCYBottom = cy - m_iButtonHeight - m_iMargin; // Top of Buttons
@@ -907,13 +893,22 @@ namespace dialog
 				{
 					const auto iScrollWidth = GetSystemMetrics(SM_CXVSCROLL);
 					iFullWidth -= iScrollWidth;
-					output::DebugPrint(DBGDraw, L"CEditor::OnSize Scroll iScrollWidth=%d new iFullWidth=%d\n",
+					output::DebugPrint(
+						DBGDraw,
+						L"CEditor::OnSize Scroll iScrollWidth=%d new iFullWidth=%d\n",
 						iScrollWidth,
 						iFullWidth);
-					output::DebugPrint(DBGDraw, L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n",
-						iFullWidth + iCXMargin);
-					::SetWindowPos(m_hWndVertScroll, nullptr, iFullWidth + iCXMargin, iCYTop, iScrollWidth, iCYBottom - iCYTop, SWP_NOZORDER);
-					SCROLLINFO si = { 0 };
+					output::DebugPrint(
+						DBGDraw, L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n", iFullWidth + iCXMargin);
+					::SetWindowPos(
+						m_hWndVertScroll,
+						nullptr,
+						iFullWidth + iCXMargin,
+						iCYTop,
+						iScrollWidth,
+						iCYBottom - iCYTop,
+						SWP_NOZORDER);
+					SCROLLINFO si = {0};
 					si.cbSize = sizeof si;
 					si.fMask = SIF_POS;
 					::GetScrollInfo(m_hWndVertScroll, SB_CTL, &si);
@@ -933,9 +928,9 @@ namespace dialog
 					m_bScrollVisible = false;
 				}
 
-				output::DebugPrint(DBGDraw, L"CEditor::OnSize m_ScrollWindow positioned at=%d\n",
-					iCXMargin);
-				::SetWindowPos(m_ScrollWindow.m_hWnd, nullptr, iCXMargin, iCYTop, iFullWidth, iCYBottom - iCYTop, SWP_NOZORDER);
+				output::DebugPrint(DBGDraw, L"CEditor::OnSize m_ScrollWindow positioned at=%d\n", iCXMargin);
+				::SetWindowPos(
+					m_ScrollWindow.m_hWnd, nullptr, iCXMargin, iCYTop, iFullWidth, iCYBottom - iCYTop, SWP_NOZORDER);
 				iCYTop = -iScrollPos; // We get scrolling for free by adjusting our top
 			}
 
@@ -1075,15 +1070,13 @@ namespace dialog
 		}
 
 		// Returns a binary buffer which is represented by the hex string
-		std::vector<BYTE> CEditor::GetBinary(ULONG i) const
-		{
-			return strings::HexStringToBin(GetStringW(i));
-		}
+		std::vector<BYTE> CEditor::GetBinary(ULONG i) const { return strings::HexStringToBin(GetStringW(i)); }
 
 		// converts string in a text(edit) control into an entry ID
 		// Can base64 decode if needed
 		// entryID is allocated with new, free with delete[]
-		_Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID) const
+		_Check_return_ HRESULT
+		CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID) const
 		{
 			if (!lpcbBin || !lppEID) return MAPI_E_INVALID_PARAMETER;
 
@@ -1122,7 +1115,8 @@ namespace dialog
 			SetStringf(i, L"%u", ulVal); // STRING_OK
 		}
 
-		void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, const std::wstring& szListString) const
+		void
+		CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, const std::wstring& szListString) const
 		{
 			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
 			if (pane)
@@ -1131,7 +1125,8 @@ namespace dialog
 			}
 		}
 
-		_Check_return_ controls::sortlistdata::SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, const std::wstring& szText) const
+		_Check_return_ controls::sortlistdata::SortListData*
+		CEditor::InsertListRow(ULONG iControl, int iRow, const std::wstring& szText) const
 		{
 			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
 			if (pane)
@@ -1369,15 +1364,13 @@ namespace dialog
 
 		// Will be invoked on both edit button and double-click
 		// return true to indicate the entry was changed, false to indicate it was not
-		_Check_return_ bool CEditor::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ controls::sortlistdata::SortListData* /*lpData*/)
+		_Check_return_ bool
+		CEditor::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ controls::sortlistdata::SortListData* /*lpData*/)
 		{
 			// Not Implemented
 			return false;
 		}
 
-		void CEditor::EnableScroll()
-		{
-			m_bEnableScroll = true;
-		}
+		void CEditor::EnableScroll() { m_bEnableScroll = true; }
 	}
 }

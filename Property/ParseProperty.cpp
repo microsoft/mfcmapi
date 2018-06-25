@@ -16,8 +16,7 @@ namespace property
 		case PROP_ID(PR_BODY):
 		case PROP_ID(PR_BODY_HTML):
 		case PROP_ID(PR_RTF_COMPRESSED):
-			if (MAPI_E_NOT_ENOUGH_MEMORY == lpProp->Value.err ||
-				MAPI_E_NOT_FOUND == lpProp->Value.err)
+			if (MAPI_E_NOT_ENOUGH_MEMORY == lpProp->Value.err || MAPI_E_NOT_FOUND == lpProp->Value.err)
 			{
 				return strings::loadstring(IDS_OPENBODY);
 			}
@@ -38,12 +37,11 @@ namespace property
 		if (!lpProp || ulMVRow > lpProp->Value.MVi.cValues) return Property();
 
 		// We'll let ParseProperty do all the work
-		SPropValue sProp = { 0 };
+		SPropValue sProp = {0};
 		sProp.ulPropTag = CHANGE_PROP_TYPE(lpProp->ulPropTag, PROP_TYPE(lpProp->ulPropTag) & ~MV_FLAG);
 
 		// Only attempt to dereference our array if it's non-NULL
-		if (PROP_TYPE(lpProp->ulPropTag) & MV_FLAG &&
-			lpProp->Value.MVi.lpi)
+		if (PROP_TYPE(lpProp->ulPropTag) & MV_FLAG && lpProp->Value.MVi.lpi)
 		{
 			switch (PROP_TYPE(lpProp->ulPropTag))
 			{
@@ -145,7 +143,10 @@ namespace property
 					szTmp.insert(szTmp.length() - 4, L".");
 				}
 
-				szAltTmp = strings::format(L"0x%08X:0x%08X", static_cast<int>(lpProp->Value.cur.Hi), static_cast<int>(lpProp->Value.cur.Lo)); // STRING_OK
+				szAltTmp = strings::format(
+					L"0x%08X:0x%08X",
+					static_cast<int>(lpProp->Value.cur.Hi),
+					static_cast<int>(lpProp->Value.cur.Lo)); // STRING_OK
 				break;
 			case PT_APPTIME:
 				szTmp = std::to_wstring(lpProp->Value.at); // STRING_OK
@@ -163,7 +164,10 @@ namespace property
 				szTmp = strings::loadstring(IDS_OBJECT);
 				break;
 			case PT_I8: // LARGE_INTEGER
-				szTmp = strings::format(L"0x%08X:0x%08X", static_cast<int>(lpProp->Value.li.HighPart), static_cast<int>(lpProp->Value.li.LowPart)); // STRING_OK
+				szTmp = strings::format(
+					L"0x%08X:0x%08X",
+					static_cast<int>(lpProp->Value.li.HighPart),
+					static_cast<int>(lpProp->Value.li.LowPart)); // STRING_OK
 				szAltTmp = strings::format(L"%I64d", lpProp->Value.li.QuadPart); // STRING_OK
 				break;
 			case PT_STRING8:
@@ -172,7 +176,7 @@ namespace property
 					szTmp = strings::LPCSTRToWstring(lpProp->Value.lpszA);
 					bPropXMLSafe = false;
 
-					SBinary sBin = { 0 };
+					SBinary sBin = {0};
 					sBin.cb = static_cast<ULONG>(szTmp.length());
 					sBin.lpb = reinterpret_cast<LPBYTE>(lpProp->Value.lpszA);
 					szAltTmp = strings::BinToHexString(&sBin, false);
@@ -186,7 +190,7 @@ namespace property
 					szTmp = lpProp->Value.lpszW;
 					bPropXMLSafe = false;
 
-					SBinary sBin = { 0 };
+					SBinary sBin = {0};
 					sBin.cb = static_cast<ULONG>(szTmp.length()) * sizeof(WCHAR);
 					sBin.lpb = reinterpret_cast<LPBYTE>(lpProp->Value.lpszW);
 					szAltTmp = strings::BinToHexString(&sBin, false);
@@ -209,7 +213,8 @@ namespace property
 				attributes.AddAttribute(L"cb", std::to_wstring(lpProp->Value.bin.cb)); // STRING_OK
 				break;
 			case PT_SRESTRICTION:
-				szTmp = interpretprop::RestrictionToString(reinterpret_cast<LPSRestriction>(lpProp->Value.lpszA), nullptr);
+				szTmp =
+					interpretprop::RestrictionToString(reinterpret_cast<LPSRestriction>(lpProp->Value.lpszA), nullptr);
 				bPropXMLSafe = false;
 				break;
 			case PT_ACTIONS:

@@ -4,6 +4,7 @@
 namespace registry
 {
 	// Keep this in sync with REGKEYNAMES
+	// clang-format off
 	__RegKeys RegKeys[] = {
 	#ifdef _DEBUG
 		{ L"DebugTag",					regDWORD,regoptStringHex,	DBGAll		,0,L"",L"",false,	IDS_REGKEY_DEBUG_TAG }, // STRING_OK
@@ -39,6 +40,7 @@ namespace registry
 		{ L"PropertyColumnOrder",		regSTRING,regoptCheck,		0			,0,L"",L"",false,	NULL }, // STRING_OK
 		// {KeyName,					keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
 	};
+	// clang-format on
 
 	void SetDefaults()
 	{
@@ -73,17 +75,10 @@ namespace registry
 		DWORD cb = NULL;
 
 		// Get its size
-		WC_W32(RegQueryValueExW(
-			hKey,
-			lpszValue.c_str(),
-			nullptr,
-			lpType,
-			nullptr,
-			&cb));
+		WC_W32(RegQueryValueExW(hKey, lpszValue.c_str(), nullptr, lpType, nullptr, &cb));
 
 		// only handle types we know about - all others are bad
-		if (S_OK == hRes && cb &&
-			(REG_SZ == *lpType || REG_DWORD == *lpType || REG_MULTI_SZ == *lpType))
+		if (hRes == S_OK && cb && (REG_SZ == *lpType || REG_DWORD == *lpType || REG_MULTI_SZ == *lpType))
 		{
 			*lppData = new BYTE[cb];
 
@@ -91,12 +86,7 @@ namespace registry
 			{
 				// Get the current value
 				EC_W32(RegQueryValueExW(
-					hKey,
-					lpszValue.c_str(),
-					nullptr,
-					lpType,
-					static_cast<unsigned char*>(*lppData),
-					&cb));
+					hKey, lpszValue.c_str(), nullptr, lpType, static_cast<unsigned char*>(*lppData), &cb));
 
 				if (FAILED(hRes))
 				{
@@ -105,7 +95,8 @@ namespace registry
 				}
 			}
 		}
-		else hRes = MAPI_E_INVALID_PARAMETER;
+		else
+			hRes = MAPI_E_INVALID_PARAMETER;
 
 		return hRes;
 	}
@@ -119,11 +110,7 @@ namespace registry
 		DWORD* lpValue = nullptr;
 		auto ret = dwDefaultVal;
 
-		WC_H(HrGetRegistryValue(
-			hKey,
-			szValue,
-			&dwKeyType,
-			reinterpret_cast<LPVOID*>(&lpValue)));
+		WC_H(HrGetRegistryValue(hKey, szValue, &dwKeyType, reinterpret_cast<LPVOID*>(&lpValue)));
 		if (hRes == S_OK && REG_DWORD == dwKeyType && lpValue)
 		{
 			ret = *lpValue;
@@ -133,7 +120,8 @@ namespace registry
 		return ret;
 	}
 	// If the value is not set in the registry, return the default value
-	std::wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::wstring& szDefault)
+	std::wstring
+	ReadStringFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::wstring& szDefault)
 	{
 		if (szValue.empty()) return szDefault;
 		auto hRes = S_OK;
@@ -146,27 +134,15 @@ namespace registry
 		DWORD cb = NULL;
 
 		// Get its size
-		WC_W32(RegQueryValueExW(
-			hKey,
-			szValue.c_str(),
-			nullptr,
-			&dwKeyType,
-			nullptr,
-			&cb));
+		WC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, nullptr, &cb));
 
-		if (S_OK == hRes && cb && !(cb % 2) && REG_SZ == dwKeyType)
+		if (hRes == S_OK && cb && !(cb % 2) && REG_SZ == dwKeyType)
 		{
 			szBuf = new (std::nothrow) BYTE[cb];
 			if (szBuf)
 			{
 				// Get the current value
-				EC_W32(RegQueryValueExW(
-					hKey,
-					szValue.c_str(),
-					nullptr,
-					&dwKeyType,
-					szBuf,
-					&cb));
+				EC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, szBuf, &cb));
 
 				if (FAILED(hRes))
 				{
@@ -176,7 +152,7 @@ namespace registry
 			}
 		}
 
-		if (S_OK == hRes && cb && !(cb % 2) && REG_SZ == dwKeyType && szBuf)
+		if (hRes == S_OK && cb && !(cb % 2) && REG_SZ == dwKeyType && szBuf)
 		{
 			ret = std::wstring(LPWSTR(szBuf), cb / sizeof WCHAR);
 		}
@@ -190,12 +166,7 @@ namespace registry
 		auto hRes = S_OK;
 		HKEY hRootKey = nullptr;
 
-		WC_W32(RegOpenKeyExW(
-			HKEY_CURRENT_USER,
-			RKEY_ROOT,
-			NULL,
-			KEY_READ,
-			&hRootKey));
+		WC_W32(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey));
 
 		// Now that we have a root key, go get our values
 		if (hRootKey)
@@ -204,17 +175,11 @@ namespace registry
 			{
 				if (regKey.ulRegKeyType == regDWORD)
 				{
-					regKey.ulCurDWORD = ReadDWORDFromRegistry(
-						hRootKey,
-						regKey.szKeyName,
-						regKey.ulCurDWORD);
+					regKey.ulCurDWORD = ReadDWORDFromRegistry(hRootKey, regKey.szKeyName, regKey.ulCurDWORD);
 				}
 				else if (regKey.ulRegKeyType == regSTRING)
 				{
-					regKey.szCurSTRING = ReadStringFromRegistry(
-						hRootKey,
-						regKey.szKeyName,
-						regKey.szCurSTRING);
+					regKey.szCurSTRING = ReadStringFromRegistry(hRootKey, regKey.szKeyName, regKey.szCurSTRING);
 				}
 			}
 
@@ -230,12 +195,7 @@ namespace registry
 		auto hRes = S_OK;
 
 		WC_W32(RegSetValueExW(
-			hKey,
-			szValueName.c_str(),
-			NULL,
-			REG_DWORD,
-			reinterpret_cast<LPBYTE>(&dwValue),
-			sizeof(DWORD)));
+			hKey, szValueName.c_str(), NULL, REG_DWORD, reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD)));
 	}
 
 	void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_ const std::wstring& szValueName, DWORD dwValue, DWORD dwDefaultValue)
@@ -243,10 +203,7 @@ namespace registry
 		auto hRes = S_OK;
 		if (dwValue != dwDefaultValue)
 		{
-			WriteDWORDToRegistry(
-				hKey,
-				szValueName,
-				dwValue);
+			WriteDWORDToRegistry(hKey, szValueName, dwValue);
 		}
 		else
 		{
@@ -263,23 +220,19 @@ namespace registry
 		cbValue += sizeof(WCHAR); // NULL terminator
 
 		WC_W32(RegSetValueExW(
-			hKey,
-			szValueName.c_str(),
-			NULL,
-			REG_SZ,
-			LPBYTE(szValue.c_str()),
-			static_cast<DWORD>(cbValue)));
+			hKey, szValueName.c_str(), NULL, REG_SZ, LPBYTE(szValue.c_str()), static_cast<DWORD>(cbValue)));
 	}
 
-	void CommitStringIfNeeded(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue, _In_ const std::wstring& szDefaultValue)
+	void CommitStringIfNeeded(
+		_In_ HKEY hKey,
+		_In_ const std::wstring& szValueName,
+		_In_ const std::wstring& szValue,
+		_In_ const std::wstring& szDefaultValue)
 	{
 		auto hRes = S_OK;
 		if (strings::wstringToLower(szValue) != strings::wstringToLower(szDefaultValue))
 		{
-			WriteStringToRegistry(
-				hKey,
-				szValueName,
-				szValue);
+			WriteStringToRegistry(hKey, szValueName, szValue);
 		}
 		else
 		{
@@ -293,25 +246,12 @@ namespace registry
 		HKEY hkSub = nullptr;
 
 		// Try to open the root key before we do the work to create it
-		WC_W32(RegOpenKeyExW(
-			HKEY_CURRENT_USER,
-			RKEY_ROOT,
-			NULL,
-			KEY_READ | KEY_WRITE,
-			&hkSub));
+		WC_W32(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ | KEY_WRITE, &hkSub));
 		if (SUCCEEDED(hRes) && hkSub) return hkSub;
 
 		hRes = S_OK;
 		WC_W32(RegCreateKeyExW(
-			HKEY_CURRENT_USER,
-			RKEY_ROOT,
-			0,
-			nullptr,
-			0,
-			KEY_READ | KEY_WRITE,
-			nullptr,
-			&hkSub,
-			nullptr));
+			HKEY_CURRENT_USER, RKEY_ROOT, 0, nullptr, 0, KEY_READ | KEY_WRITE, nullptr, &hkSub, nullptr));
 
 		return hkSub;
 	}
@@ -325,19 +265,11 @@ namespace registry
 		{
 			if (regKey.ulRegKeyType == regDWORD)
 			{
-				CommitDWORDIfNeeded(
-					hRootKey,
-					regKey.szKeyName,
-					regKey.ulCurDWORD,
-					regKey.ulDefDWORD);
+				CommitDWORDIfNeeded(hRootKey, regKey.szKeyName, regKey.ulCurDWORD, regKey.ulDefDWORD);
 			}
 			else if (regKey.ulRegKeyType == regSTRING)
 			{
-				CommitStringIfNeeded(
-					hRootKey,
-					regKey.szKeyName,
-					regKey.szCurSTRING,
-					regKey.szDefSTRING);
+				CommitStringIfNeeded(hRootKey, regKey.szKeyName, regKey.szCurSTRING, regKey.szDefSTRING);
 			}
 		}
 

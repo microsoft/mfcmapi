@@ -4,10 +4,7 @@
 
 namespace smartview
 {
-	PCL::PCL()
-	{
-		m_cXID = 0;
-	}
+	PCL::PCL() { m_cXID = 0; }
 
 	void PCL::Parse()
 	{
@@ -55,7 +52,8 @@ namespace smartview
 			auto i = 0;
 			for (auto& xid : m_lpXID)
 			{
-				szPCLString += strings::formatmessage(IDS_PCLXID,
+				szPCLString += strings::formatmessage(
+					IDS_PCLXID,
 					i++,
 					xid.XidSize,
 					guid::GUIDToString(&xid.NamespaceGuid).c_str(),

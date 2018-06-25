@@ -35,11 +35,7 @@ namespace ui
 		{
 			auto hRes = S_OK;
 			// We don't need to wait on the results - just post the message
-			WC_B(PostMessage(
-				hwnd,
-				WM_MFCMAPI_SAVECOLUMNORDERHEADER,
-				WPARAM(NULL),
-				LPARAM(NULL)));
+			WC_B(PostMessage(hwnd, WM_MFCMAPI_SAVECOLUMNORDERHEADER, WPARAM(NULL), LPARAM(NULL)));
 		}
 	}
 
@@ -53,10 +49,10 @@ namespace ui
 		output::OpenDebugFile();
 		output::DebugPrintVersion(DBGVersionBanner);
 		// Force the system riched20 so we don't load office's version.
-		(void)import::LoadFromSystemDir(L"riched20.dll"); // STRING_OK
+		(void) import::LoadFromSystemDir(L"riched20.dll"); // STRING_OK
 		// Second part is to load rundll32.exe
 		// Don't plan on unloading this, so don't care about the return value
-		(void)import::LoadFromSystemDir(L"rundll32.exe"); // STRING_OK
+		(void) import::LoadFromSystemDir(L"rundll32.exe"); // STRING_OK
 
 		// Load DLLS and get functions from them
 		import::ImportProcs();
@@ -67,13 +63,7 @@ namespace ui
 		m_cRef = 1;
 
 		m_hwinEventHook = SetWinEventHook(
-			EVENT_OBJECT_REORDER,
-			EVENT_OBJECT_REORDER,
-			nullptr,
-			&MyWinEventProc,
-			GetCurrentProcessId(),
-			NULL,
-			NULL);
+			EVENT_OBJECT_REORDER, EVENT_OBJECT_REORDER, nullptr, &MyWinEventProc, GetCurrentProcessId(), NULL, NULL);
 
 		mapistub::ForceOutlookMAPI(0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
 		mapistub::ForceSystemMAPI(0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD);
@@ -101,8 +91,7 @@ namespace ui
 		AfxPostQuitMessage(0);
 	}
 
-	_Check_return_ STDMETHODIMP CParentWnd::QueryInterface(REFIID riid,
-		_Deref_out_opt_ LPVOID * ppvObj)
+	_Check_return_ STDMETHODIMP CParentWnd::QueryInterface(REFIID riid, _Deref_out_opt_ LPVOID* ppvObj)
 	{
 		*ppvObj = nullptr;
 		if (riid == IID_IUnknown)

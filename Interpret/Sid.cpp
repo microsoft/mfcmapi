@@ -38,10 +38,8 @@ namespace sid
 		{
 			TextualSid += strings::format(
 				L"%lu", // STRING_OK
-				static_cast<ULONG>(psia->Value[4] << 8) +
-				static_cast<ULONG>(psia->Value[5]) +
-				static_cast<ULONG>(psia->Value[3] << 16) +
-				static_cast<ULONG>(psia->Value[2] << 24));
+				static_cast<ULONG>(psia->Value[4] << 8) + static_cast<ULONG>(psia->Value[5]) +
+					static_cast<ULONG>(psia->Value[3] << 16) + static_cast<ULONG>(psia->Value[2] << 24));
 		}
 
 		// Add SID subauthorities to the string.
@@ -64,8 +62,8 @@ namespace sid
 		std::vector<std::wstring> aceString;
 		ACCESS_MASK Mask = 0;
 		DWORD Flags = 0;
-		GUID ObjectType = { 0 };
-		GUID InheritedObjectType = { 0 };
+		GUID ObjectType = {0};
+		GUID InheritedObjectType = {0};
 		SID* SidStart = nullptr;
 		auto bObjectFound = false;
 
@@ -78,27 +76,27 @@ namespace sid
 		switch (AceType)
 		{
 		case ACCESS_ALLOWED_ACE_TYPE:
-			Mask = static_cast<ACCESS_ALLOWED_ACE *>(pACE)->Mask;
-			SidStart = reinterpret_cast<SID *>(&static_cast<ACCESS_ALLOWED_ACE *>(pACE)->SidStart);
+			Mask = static_cast<ACCESS_ALLOWED_ACE*>(pACE)->Mask;
+			SidStart = reinterpret_cast<SID*>(&static_cast<ACCESS_ALLOWED_ACE*>(pACE)->SidStart);
 			break;
 		case ACCESS_DENIED_ACE_TYPE:
-			Mask = static_cast<ACCESS_DENIED_ACE *>(pACE)->Mask;
-			SidStart = reinterpret_cast<SID *>(&static_cast<ACCESS_DENIED_ACE *>(pACE)->SidStart);
+			Mask = static_cast<ACCESS_DENIED_ACE*>(pACE)->Mask;
+			SidStart = reinterpret_cast<SID*>(&static_cast<ACCESS_DENIED_ACE*>(pACE)->SidStart);
 			break;
 		case ACCESS_ALLOWED_OBJECT_ACE_TYPE:
-			Mask = static_cast<ACCESS_ALLOWED_OBJECT_ACE *>(pACE)->Mask;
-			Flags = static_cast<ACCESS_ALLOWED_OBJECT_ACE *>(pACE)->Flags;
-			ObjectType = static_cast<ACCESS_ALLOWED_OBJECT_ACE *>(pACE)->ObjectType;
-			InheritedObjectType = static_cast<ACCESS_ALLOWED_OBJECT_ACE *>(pACE)->InheritedObjectType;
-			SidStart = reinterpret_cast<SID *>(&static_cast<ACCESS_ALLOWED_OBJECT_ACE *>(pACE)->SidStart);
+			Mask = static_cast<ACCESS_ALLOWED_OBJECT_ACE*>(pACE)->Mask;
+			Flags = static_cast<ACCESS_ALLOWED_OBJECT_ACE*>(pACE)->Flags;
+			ObjectType = static_cast<ACCESS_ALLOWED_OBJECT_ACE*>(pACE)->ObjectType;
+			InheritedObjectType = static_cast<ACCESS_ALLOWED_OBJECT_ACE*>(pACE)->InheritedObjectType;
+			SidStart = reinterpret_cast<SID*>(&static_cast<ACCESS_ALLOWED_OBJECT_ACE*>(pACE)->SidStart);
 			bObjectFound = true;
 			break;
 		case ACCESS_DENIED_OBJECT_ACE_TYPE:
-			Mask = static_cast<ACCESS_DENIED_OBJECT_ACE *>(pACE)->Mask;
-			Flags = static_cast<ACCESS_DENIED_OBJECT_ACE *>(pACE)->Flags;
-			ObjectType = static_cast<ACCESS_DENIED_OBJECT_ACE *>(pACE)->ObjectType;
-			InheritedObjectType = static_cast<ACCESS_DENIED_OBJECT_ACE *>(pACE)->InheritedObjectType;
-			SidStart = reinterpret_cast<SID *>(&static_cast<ACCESS_DENIED_OBJECT_ACE *>(pACE)->SidStart);
+			Mask = static_cast<ACCESS_DENIED_OBJECT_ACE*>(pACE)->Mask;
+			Flags = static_cast<ACCESS_DENIED_OBJECT_ACE*>(pACE)->Flags;
+			ObjectType = static_cast<ACCESS_DENIED_OBJECT_ACE*>(pACE)->ObjectType;
+			InheritedObjectType = static_cast<ACCESS_DENIED_OBJECT_ACE*>(pACE)->InheritedObjectType;
+			SidStart = reinterpret_cast<SID*>(&static_cast<ACCESS_DENIED_OBJECT_ACE*>(pACE)->SidStart);
 			bObjectFound = true;
 			break;
 		}
@@ -107,21 +105,14 @@ namespace sid
 		DWORD dwSidDomain = 0;
 		SID_NAME_USE SidNameUse;
 
-		WC_B(LookupAccountSidW(
-			nullptr,
-			SidStart,
-			nullptr,
-			&dwSidName,
-			nullptr,
-			&dwSidDomain,
-			&SidNameUse));
+		WC_B(LookupAccountSidW(nullptr, SidStart, nullptr, &dwSidName, nullptr, &dwSidDomain, &SidNameUse));
 		hRes = S_OK;
 
 		LPWSTR lpSidName = nullptr;
 		LPWSTR lpSidDomain = nullptr;
 
 #pragma warning(push)
-#pragma warning(disable:6211)
+#pragma warning(disable : 6211)
 		if (dwSidName) lpSidName = new WCHAR[dwSidName];
 		if (dwSidDomain) lpSidDomain = new WCHAR[dwSidDomain];
 #pragma warning(pop)
@@ -129,14 +120,7 @@ namespace sid
 		// Only make the call if we got something to get
 		if (lpSidName || lpSidDomain)
 		{
-			WC_B(LookupAccountSidW(
-				nullptr,
-				SidStart,
-				lpSidName,
-				&dwSidName,
-				lpSidDomain,
-				&dwSidDomain,
-				&SidNameUse));
+			WC_B(LookupAccountSidW(nullptr, SidStart, lpSidName, &dwSidName, lpSidDomain, &dwSidDomain, &SidNameUse));
 		}
 
 		auto lpStringSid = GetTextualSid(SidStart);
@@ -169,9 +153,12 @@ namespace sid
 			szDomain.c_str(),
 			szName.c_str(),
 			szSID.c_str(),
-			AceType, szAceType.c_str(),
-			AceFlags, szAceFlags.c_str(),
-			Mask, szAceMask.c_str()));
+			AceType,
+			szAceType.c_str(),
+			AceFlags,
+			szAceFlags.c_str(),
+			Mask,
+			szAceMask.c_str()));
 
 		if (bObjectFound)
 		{
@@ -185,7 +172,12 @@ namespace sid
 		return strings::join(aceString, L"\r\n");
 	}
 
-	_Check_return_ HRESULT SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype, _In_ std::wstring& SDString, _In_ std::wstring& sdInfo)
+	_Check_return_ HRESULT SDToString(
+		_In_count_(cbBuf) const BYTE* lpBuf,
+		size_t cbBuf,
+		eAceType acetype,
+		_In_ std::wstring& SDString,
+		_In_ std::wstring& sdInfo)
 	{
 		auto hRes = S_OK;
 		BOOL bValidDACL = false;
@@ -204,19 +196,11 @@ namespace sid
 
 		sdInfo = interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf));
 
-		EC_B(GetSecurityDescriptorDacl(
-			pSecurityDescriptor,
-			&bValidDACL,
-			&pACL,
-			&bDACLDefaulted));
+		EC_B(GetSecurityDescriptorDacl(pSecurityDescriptor, &bValidDACL, &pACL, &bDACLDefaulted));
 		if (bValidDACL && pACL)
 		{
-			ACL_SIZE_INFORMATION ACLSizeInfo = { 0 };
-			EC_B(GetAclInformation(
-				pACL,
-				&ACLSizeInfo,
-				sizeof ACLSizeInfo,
-				AclSizeInformation));
+			ACL_SIZE_INFORMATION ACLSizeInfo = {0};
+			EC_B(GetAclInformation(pACL, &ACLSizeInfo, sizeof ACLSizeInfo, AclSizeInformation));
 
 			std::vector<std::wstring> sdString;
 			for (DWORD i = 0; i < ACLSizeInfo.AceCount; i++)

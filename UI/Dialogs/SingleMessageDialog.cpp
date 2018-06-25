@@ -14,17 +14,13 @@ namespace dialog
 	SingleMessageDialog::SingleMessageDialog(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_opt_ LPMESSAGE lpMAPIProp) :
-		CBaseDialog(
-			pParentWnd,
-			lpMapiObjects,
-			NULL)
+		_In_opt_ LPMAPIPROP lpMAPIProp)
+		: CBaseDialog(pParentWnd, lpMapiObjects, NULL)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_szTitle = strings::loadstring(IDS_MESSAGE);
 
-		m_lpMessage = lpMAPIProp;
-		if (m_lpMessage) m_lpMessage->AddRef();
+		m_lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 
 		CBaseDialog::CreateDialogAndMenu(IDR_MENU_MESSAGE, NULL, NULL);
 	}
@@ -55,21 +51,21 @@ namespace dialog
 	}
 
 	BEGIN_MESSAGE_MAP(SingleMessageDialog, CBaseDialog)
-		ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
-		ON_COMMAND(ID_ATTACHMENTPROPERTIES, OnAttachmentProperties)
-		ON_COMMAND(ID_RECIPIENTPROPERTIES, OnRecipientProperties)
-		ON_COMMAND(ID_RTFSYNC, OnRTFSync)
-		ON_COMMAND(ID_TESTEDITBODY, OnTestEditBody)
-		ON_COMMAND(ID_TESTEDITHTML, OnTestEditHTML)
-		ON_COMMAND(ID_TESTEDITRTF, OnTestEditRTF)
-		ON_COMMAND(ID_SAVECHANGES, OnSaveChanges)
+	ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
+	ON_COMMAND(ID_ATTACHMENTPROPERTIES, OnAttachmentProperties)
+	ON_COMMAND(ID_RECIPIENTPROPERTIES, OnRecipientProperties)
+	ON_COMMAND(ID_RTFSYNC, OnRTFSync)
+	ON_COMMAND(ID_TESTEDITBODY, OnTestEditBody)
+	ON_COMMAND(ID_TESTEDITHTML, OnTestEditHTML)
+	ON_COMMAND(ID_TESTEDITRTF, OnTestEditRTF)
+	ON_COMMAND(ID_SAVECHANGES, OnSaveChanges)
 	END_MESSAGE_MAP()
 
 	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 	void SingleMessageDialog::OnRefreshView()
 	{
 		if (!m_lpPropDisplay) return;
-		(void)m_lpPropDisplay->RefreshMAPIPropList();
+		(void) m_lpPropDisplay->RefreshMAPIPropList();
 	}
 
 	void SingleMessageDialog::OnAttachmentProperties()
@@ -93,33 +89,27 @@ namespace dialog
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		editor::CEditor MyData(
-			this,
-			IDS_CALLRTFSYNC,
-			IDS_CALLRTFSYNCPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		editor::CEditor MyData(this, IDS_CALLRTFSYNC, IDS_CALLRTFSYNCPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(0, RTF_SYNC_RTF_CHANGED);
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			BOOL bMessageUpdated = false;
 
 			if (m_lpMessage)
 			{
-				output::DebugPrint(DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", m_lpMessage, MyData.GetHex(0));
-				EC_MAPI(RTFSync(
-					m_lpMessage,
-					MyData.GetHex(0),
-					&bMessageUpdated));
+				output::DebugPrint(
+					DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", m_lpMessage, MyData.GetHex(0));
+				EC_MAPI(RTFSync(m_lpMessage, MyData.GetHex(0), &bMessageUpdated));
 
 				output::DebugPrint(DBGGeneric, L"RTFSync returned %d\n", bMessageUpdated);
 
 				EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
-				(void)m_lpPropDisplay->RefreshMAPIPropList();
+				(void) m_lpPropDisplay->RefreshMAPIPropList();
 			}
 		}
 	}
@@ -150,7 +140,7 @@ namespace dialog
 
 			WC_H(MyEditor.DisplayDialog());
 
-			(void)m_lpPropDisplay->RefreshMAPIPropList();
+			(void) m_lpPropDisplay->RefreshMAPIPropList();
 		}
 	}
 
@@ -180,7 +170,7 @@ namespace dialog
 
 			WC_H(MyEditor.DisplayDialog());
 
-			(void)m_lpPropDisplay->RefreshMAPIPropList();
+			(void) m_lpPropDisplay->RefreshMAPIPropList();
 		}
 	}
 
@@ -210,7 +200,7 @@ namespace dialog
 
 			WC_H(MyEditor.DisplayDialog());
 
-			(void)m_lpPropDisplay->RefreshMAPIPropList();
+			(void) m_lpPropDisplay->RefreshMAPIPropList();
 		}
 	}
 
@@ -225,7 +215,7 @@ namespace dialog
 
 			EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
-			(void)m_lpPropDisplay->RefreshMAPIPropList();
+			(void) m_lpPropDisplay->RefreshMAPIPropList();
 		}
 	}
 }

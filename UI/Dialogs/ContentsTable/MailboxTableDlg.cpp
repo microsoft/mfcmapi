@@ -20,32 +20,28 @@ namespace dialog
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ const std::wstring& lpszServerName,
-		_In_ LPMAPITABLE lpMAPITable
-	) :
-		CContentsTableDlg(
-			pParentWnd,
-			lpMapiObjects,
-			IDS_MAILBOXTABLE,
-			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-			lpMAPITable,
-			LPSPropTagArray(&columns::sptMBXCols),
-			columns::MBXColumns,
-			IDR_MENU_MAILBOX_TABLE_POPUP,
-			MENU_CONTEXT_MAILBOX_TABLE
-		)
+		_In_ LPMAPITABLE lpMAPITable)
+		: CContentsTableDlg(
+			  pParentWnd,
+			  lpMapiObjects,
+			  IDS_MAILBOXTABLE,
+			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  nullptr,
+			  lpMAPITable,
+			  LPSPropTagArray(&columns::sptMBXCols),
+			  columns::MBXColumns,
+			  IDR_MENU_MAILBOX_TABLE_POPUP,
+			  MENU_CONTEXT_MAILBOX_TABLE)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_lpszServerName = lpszServerName;
 		CMailboxTableDlg::CreateDialogAndMenu(IDR_MENU_MAILBOX_TABLE);
 	}
 
-	CMailboxTableDlg::~CMailboxTableDlg()
-	{
-		TRACE_DESTRUCTOR(CLASS);
-	}
+	CMailboxTableDlg::~CMailboxTableDlg() { TRACE_DESTRUCTOR(CLASS); }
 
 	BEGIN_MESSAGE_MAP(CMailboxTableDlg, CContentsTableDlg)
-		ON_COMMAND(ID_OPENWITHFLAGS, OnOpenWithFlags)
+	ON_COMMAND(ID_OPENWITHFLAGS, OnOpenWithFlags)
 	END_MESSAGE_MAP()
 
 	void CMailboxTableDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -67,10 +63,7 @@ namespace dialog
 		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
-		ui::UpdateMenuString(
-			m_hWnd,
-			ID_CREATEPROPERTYSTRINGRESTRICTION,
-			IDS_MBRESMENU);
+		ui::UpdateMenuString(m_hWnd, ID_CREATEPROPERTYSTRINGRESTRICTION, IDS_MBRESMENU);
 	}
 
 	void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
@@ -113,11 +106,7 @@ namespace dialog
 
 						if (lpNewMDB)
 						{
-							EC_H(DisplayObject(
-								static_cast<LPMAPIPROP>(lpNewMDB),
-								NULL,
-								otStore,
-								this));
+							EC_H(DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, otStore, this));
 							lpNewMDB->Release();
 							lpNewMDB = nullptr;
 						}
@@ -129,25 +118,19 @@ namespace dialog
 		if (lpGUIDMDB) lpGUIDMDB->Release();
 	}
 
-	void CMailboxTableDlg::OnDisplayItem()
-	{
-		DisplayItem(OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
-	}
+	void CMailboxTableDlg::OnDisplayItem() { DisplayItem(OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP); }
 
 	void CMailboxTableDlg::OnOpenWithFlags()
 	{
 		auto hRes = S_OK;
 
 		editor::CEditor MyPrompt(
-			this,
-			IDS_OPENWITHFLAGS,
-			IDS_OPENWITHFLAGSPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			this, IDS_OPENWITHFLAGS, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 		MyPrompt.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 		MyPrompt.SetHex(0, OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 		WC_H(MyPrompt.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			DisplayItem(MyPrompt.GetHex(0));
 		}
@@ -163,17 +146,14 @@ namespace dialog
 			NULL, // prompt
 			PR_DISPLAY_NAME,
 			m_bIsAB,
-			m_lpContainer,
+			nullptr,
 			this);
 
 		WC_H(MyPropertyTag.DisplayDialog());
-		if (S_OK == hRes)
+		if (hRes == S_OK)
 		{
 			editor::CEditor MyData(
-				this,
-				IDS_SEARCHCRITERIA,
-				IDS_MBSEARCHCRITERIAPROMPT,
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+				this, IDS_SEARCHCRITERIA, IDS_MBSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
 
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));

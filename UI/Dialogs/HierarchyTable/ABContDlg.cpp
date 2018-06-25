@@ -9,17 +9,14 @@ namespace dialog
 {
 	static std::wstring CLASS = L"CAbContDlg";
 
-	CAbContDlg::CAbContDlg(
-		_In_ ui::CParentWnd* pParentWnd,
-		_In_ cache::CMapiObjects* lpMapiObjects
-	) :
-		CHierarchyTableDlg(
-			pParentWnd,
-			lpMapiObjects,
-			IDS_ABCONT,
-			nullptr,
-			IDR_MENU_ABCONT_POPUP,
-			MENU_CONTEXT_AB_TREE)
+	CAbContDlg::CAbContDlg(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects)
+		: CHierarchyTableDlg(
+			  pParentWnd,
+			  lpMapiObjects,
+			  IDS_ABCONT,
+			  nullptr,
+			  IDR_MENU_ABCONT_POPUP,
+			  MENU_CONTEXT_AB_TREE)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
@@ -32,28 +29,22 @@ namespace dialog
 			const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			if (lpAddrBook)
 			{
+				auto container = LPUNKNOWN(nullptr);
 				// Open root address book (container).
 				EC_H(mapi::CallOpenEntry(
-					NULL, lpAddrBook, NULL, NULL,
-					nullptr,
-					NULL,
-					MAPI_BEST_ACCESS,
-					NULL,
-					reinterpret_cast<LPUNKNOWN*>(&m_lpContainer)));
+					NULL, lpAddrBook, NULL, NULL, nullptr, NULL, MAPI_BEST_ACCESS, NULL, &container));
+				SetRootContainer(container);
 			}
 		}
 
 		CreateDialogAndMenu(IDR_MENU_ABCONT);
 	}
 
-	CAbContDlg::~CAbContDlg()
-	{
-		TRACE_DESTRUCTOR(CLASS);
-	}
+	CAbContDlg::~CAbContDlg() { TRACE_DESTRUCTOR(CLASS); }
 
 	BEGIN_MESSAGE_MAP(CAbContDlg, CHierarchyTableDlg)
-		ON_COMMAND(ID_SETDEFAULTDIR, OnSetDefaultDir)
-		ON_COMMAND(ID_SETPAB, OnSetPAB)
+	ON_COMMAND(ID_SETDEFAULTDIR, OnSetDefaultDir)
+	ON_COMMAND(ID_SETPAB, OnSetPAB)
 	END_MESSAGE_MAP()
 
 	void CAbContDlg::OnSetDefaultDir()
@@ -70,9 +61,7 @@ namespace dialog
 			auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // Do not release
 			if (lpAddrBook)
 			{
-				EC_MAPI(lpAddrBook->SetDefaultDir(
-					lpItemEID->cb,
-					reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
+				EC_MAPI(lpAddrBook->SetDefaultDir(lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
 			}
 		}
 	}
@@ -91,9 +80,7 @@ namespace dialog
 			auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			if (lpAddrBook)
 			{
-				EC_MAPI(lpAddrBook->SetPAB(
-					lpItemEID->cb,
-					reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
+				EC_MAPI(lpAddrBook->SetPAB(lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
 			}
 		}
 	}
@@ -105,9 +92,15 @@ namespace dialog
 	{
 		if (lpParams)
 		{
-			lpParams->lpAbCont = dynamic_cast<LPABCONT>(lpContainer);
+			lpParams->lpAbCont = mapi::safe_cast<LPABCONT>(lpContainer);
 		}
 
 		addin::InvokeAddInMenu(lpParams);
+
+		if (lpParams && lpParams->lpAbCont)
+		{
+			lpParams->lpAbCont->Release();
+			lpParams->lpAbCont = nullptr;
+		}
 	}
 }

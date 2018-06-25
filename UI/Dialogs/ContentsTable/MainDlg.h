@@ -11,9 +11,7 @@ namespace dialog
 	class CMainDlg : public CContentsTableDlg
 	{
 	public:
-		CMainDlg(
-			_In_ ui::CParentWnd* pParentWnd,
-			_In_ cache::CMapiObjects* lpMapiObjects);
+		CMainDlg(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects);
 		virtual ~CMainDlg();
 
 		// public so CBaseDialog can call it
@@ -26,7 +24,8 @@ namespace dialog
 			_In_ LPMAPIPROP lpMAPIProp,
 			_In_ LPMAPICONTAINER lpContainer) override;
 		_Check_return_ bool HandleMenu(WORD wMenuSelect) override;
-		_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
+		_Check_return_ HRESULT
+		OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
 		void OnDisplayItem() override;
 		void OnInitMenu(_In_ CMenu* pMenu) override;
 

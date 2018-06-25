@@ -15,13 +15,9 @@ namespace stringtest
 				std::wstring(L"No service is operating at the destination network endpoint on the remote system.\r\n"),
 				strings::formatmessagesys(1234));
 
-			Assert::AreEqual(
-				std::wstring(L"The operation completed successfully.\r\n"),
-				strings::formatmessagesys(0));
+			Assert::AreEqual(std::wstring(L"The operation completed successfully.\r\n"), strings::formatmessagesys(0));
 
-			Assert::AreEqual(
-				std::wstring(L""),
-				strings::formatmessagesys(0xFFFFFFFF));
+			Assert::AreEqual(std::wstring(L""), strings::formatmessagesys(0xFFFFFFFF));
 		}
 
 		TEST_METHOD(Test_loadstring)
@@ -29,14 +25,10 @@ namespace stringtest
 			strings::setTestInstance(GetModuleHandleW(L"UnitTest.dll"));
 
 			// A resource which does not exist
-			Assert::AreEqual(
-				std::wstring(L""),
-				strings::loadstring(1234));
+			Assert::AreEqual(std::wstring(L""), strings::loadstring(1234));
 
 			// A resource which does exist
-			Assert::AreEqual(
-				std::wstring(L"\r\n\tUnknown Data = "),
-				strings::loadstring(IDS_EXTENDEDFLAGUNKNOWN));
+			Assert::AreEqual(std::wstring(L"\r\n\tUnknown Data = "), strings::loadstring(IDS_EXTENDEDFLAGUNKNOWN));
 		}
 
 		TEST_METHOD(Test_format)
@@ -49,9 +41,7 @@ namespace stringtest
 		TEST_METHOD(Test_formatmessage)
 		{
 			// Also tests formatmessageV
-			Assert::AreEqual(
-				std::wstring(L"Hello world"),
-				strings::formatmessage(L"%1!hs! %2", "Hello", L"world"));
+			Assert::AreEqual(std::wstring(L"Hello world"), strings::formatmessage(L"%1!hs! %2", "Hello", L"world"));
 		}
 
 		TEST_METHOD(Test_stringConverters)
@@ -69,7 +59,8 @@ namespace stringtest
 			Assert::AreEqual(wstr, strings::LPCTSTRToWstring(lpctstr));
 			Assert::AreEqual(wstr, strings::LPCSTRToWstring(lpcstr));
 			Assert::AreEqual(wstrLower, strings::wstringToLower(wstr));
-			Assert::AreEqual(std::wstring(L"abc\xDC\xA7\x40\xC8\xC0\x42"), strings::stringTowstring("abc\xDC\xA7\x40\xC8\xC0\x42"));
+			Assert::AreEqual(
+				std::wstring(L"abc\xDC\xA7\x40\xC8\xC0\x42"), strings::stringTowstring("abc\xDC\xA7\x40\xC8\xC0\x42"));
 
 			Assert::AreEqual(std::wstring(L""), strings::LPCTSTRToWstring(nullptr));
 			Assert::AreEqual(std::wstring(L""), strings::LPCSTRToWstring(nullptr));
@@ -122,8 +113,10 @@ namespace stringtest
 			Assert::AreEqual(double(1234), strings::wstringToDouble(L"1234"));
 			Assert::AreEqual(double(12.34), strings::wstringToDouble(L"12.34"));
 			Assert::AreEqual(double(0), strings::wstringToDouble(L"12.34test"));
-			Assert::AreEqual(double(1e+52), strings::wstringToDouble(L"9999999999999999999999999999999999999999999999999999"));
-			Assert::AreEqual(double(1e-52), strings::wstringToDouble(L".0000000000000000000000000000000000000000000000000001"));
+			Assert::AreEqual(
+				double(1e+52), strings::wstringToDouble(L"9999999999999999999999999999999999999999999999999999"));
+			Assert::AreEqual(
+				double(1e-52), strings::wstringToDouble(L".0000000000000000000000000000000000000000000000000001"));
 			Assert::AreEqual(double(0), strings::wstringToDouble(L"0"));
 			Assert::AreEqual(double(0), strings::wstringToDouble(L""));
 		}
@@ -203,8 +196,10 @@ namespace stringtest
 
 		TEST_METHOD(Test_SanitizeFileName)
 		{
-			Assert::AreEqual(std::wstring(L"_This_ is_a_bad string_!_"), strings::SanitizeFileName(L"[This] is\ra\nbad string?!?"));
-			Assert::AreEqual(std::wstring(L"____________________"), strings::SanitizeFileName(L"^&*-+=[]\\|;:\",<>/?\r\n"));
+			Assert::AreEqual(
+				std::wstring(L"_This_ is_a_bad string_!_"), strings::SanitizeFileName(L"[This] is\ra\nbad string?!?"));
+			Assert::AreEqual(
+				std::wstring(L"____________________"), strings::SanitizeFileName(L"^&*-+=[]\\|;:\",<>/?\r\n"));
 		}
 
 		TEST_METHOD(Test_indent)
@@ -217,22 +212,22 @@ namespace stringtest
 		std::wstring mystringW = L"mystring";
 		LPBYTE bufW = LPBYTE(mystringW.c_str());
 		size_t cbW = mystringW.length() * sizeof(WCHAR);
-		SBinary sBinaryW = SBinary{ static_cast<ULONG>(cbW), bufW };
+		SBinary sBinaryW = SBinary{static_cast<ULONG>(cbW), bufW};
 		std::vector<BYTE> myStringWvector = std::vector<BYTE>(bufW, bufW + cbW);
 
 		std::string mystringA = std::string("mystring");
 		LPBYTE bufA = LPBYTE(mystringA.c_str());
 		size_t cbA = mystringA.length();
-		SBinary sBinaryA = SBinary{ static_cast<ULONG>(cbA), bufA };
+		SBinary sBinaryA = SBinary{static_cast<ULONG>(cbA), bufA};
 		std::vector<BYTE> myStringAvector = std::vector<BYTE>(bufA, bufA + cbA);
 
-		std::vector<BYTE> vector_abcdW = std::vector<BYTE>({ 0x61, 0, 0x62, 0, 0x63, 0, 0x64, 0 });
-		std::vector<BYTE> vector_abNULLdW = std::vector<BYTE>({ 0x61, 0, 0x62, 0, 0x00, 0, 0x64, 0 });
-		std::vector<BYTE> vector_tabcrlfW = std::vector<BYTE>({ 0x9, 0, 0xa, 0, 0xd, 0 });
+		std::vector<BYTE> vector_abcdW = std::vector<BYTE>({0x61, 0, 0x62, 0, 0x63, 0, 0x64, 0});
+		std::vector<BYTE> vector_abNULLdW = std::vector<BYTE>({0x61, 0, 0x62, 0, 0x00, 0, 0x64, 0});
+		std::vector<BYTE> vector_tabcrlfW = std::vector<BYTE>({0x9, 0, 0xa, 0, 0xd, 0});
 
-		std::vector<BYTE> vector_abcdA = std::vector<BYTE>({ 0x61, 0x62, 0x63, 0x64 });
-		std::vector<BYTE> vector_abNULLdA = std::vector<BYTE>({ 0x61, 0x62, 0x00, 0x64 });
-		std::vector<BYTE> vector_tabcrlfA = std::vector<BYTE>({ 0x9, 0xa, 0xd });
+		std::vector<BYTE> vector_abcdA = std::vector<BYTE>({0x61, 0x62, 0x63, 0x64});
+		std::vector<BYTE> vector_abNULLdA = std::vector<BYTE>({0x61, 0x62, 0x00, 0x64});
+		std::vector<BYTE> vector_tabcrlfA = std::vector<BYTE>({0x9, 0xa, 0xd});
 
 		TEST_METHOD(Test_BinToTextStringW)
 		{
@@ -253,13 +248,13 @@ namespace stringtest
 			Assert::AreEqual(std::wstring(L""), strings::BinToTextString(nullptr, false));
 
 			Assert::AreEqual(mystringW, strings::BinToTextString(&sBinaryA, false));
-			auto sBinary = SBinary{ static_cast<ULONG>(vector_abcdA.size()), vector_abcdA.data() };
+			auto sBinary = SBinary{static_cast<ULONG>(vector_abcdA.size()), vector_abcdA.data()};
 			Assert::AreEqual(std::wstring(L"abcd"), strings::BinToTextString(&sBinary, false));
-			sBinary = SBinary{ static_cast<ULONG>(vector_abNULLdA.size()), vector_abNULLdA.data() };
+			sBinary = SBinary{static_cast<ULONG>(vector_abNULLdA.size()), vector_abNULLdA.data()};
 			Assert::AreEqual(std::wstring(L"ab.d"), strings::BinToTextString(&sBinary, false));
-			sBinary = SBinary{ static_cast<ULONG>(vector_tabcrlfA.size()), vector_tabcrlfA.data() };
+			sBinary = SBinary{static_cast<ULONG>(vector_tabcrlfA.size()), vector_tabcrlfA.data()};
 			Assert::AreEqual(std::wstring(L"\t\n\r"), strings::BinToTextString(&sBinary, true));
-			sBinary = SBinary{ static_cast<ULONG>(vector_tabcrlfA.size()), vector_tabcrlfA.data() };
+			sBinary = SBinary{static_cast<ULONG>(vector_tabcrlfA.size()), vector_tabcrlfA.data()};
 			Assert::AreEqual(std::wstring(L"..."), strings::BinToTextString(&sBinary, false));
 			Assert::AreEqual(mystringW, strings::BinToTextString(std::vector<BYTE>(bufA, bufA + cbA), true));
 		}
@@ -270,8 +265,11 @@ namespace stringtest
 			Assert::AreEqual(std::wstring(L"FF"), strings::BinToHexString(std::vector<BYTE>{0xFF}, false));
 			Assert::AreEqual(std::wstring(L""), strings::BinToHexString(nullptr, false));
 			Assert::AreEqual(std::wstring(L"6D79737472696E67"), strings::BinToHexString(&sBinaryA, false));
-			Assert::AreEqual(std::wstring(L"6D00790073007400720069006E006700"), strings::BinToHexString(&sBinaryW, false));
-			Assert::AreEqual(std::wstring(L"cb: 8 lpb: 6D79737472696E67"), strings::BinToHexString(std::vector<BYTE>(bufA, bufA + cbA), true));
+			Assert::AreEqual(
+				std::wstring(L"6D00790073007400720069006E006700"), strings::BinToHexString(&sBinaryW, false));
+			Assert::AreEqual(
+				std::wstring(L"cb: 8 lpb: 6D79737472696E67"),
+				strings::BinToHexString(std::vector<BYTE>(bufA, bufA + cbA), true));
 			Assert::AreEqual(std::wstring(L"6100620063006400"), strings::BinToHexString(vector_abcdW, false));
 			Assert::AreEqual(std::wstring(L"6100620000006400"), strings::BinToHexString(vector_abNULLdW, false));
 			Assert::AreEqual(std::wstring(L"cb: 6 lpb: 09000A000D00"), strings::BinToHexString(vector_tabcrlfW, true));
@@ -315,7 +313,7 @@ namespace stringtest
 		}
 
 		std::wstring fullstring = L"this is a string  yes";
-		std::vector<std::wstring> words = { L"this", L"is", L"a", L"string", L"", L"yes" };
+		std::vector<std::wstring> words = {L"this", L"is", L"a", L"string", L"", L"yes"};
 
 		TEST_METHOD(Test_split)
 		{
@@ -331,10 +329,7 @@ namespace stringtest
 			Assert::IsTrue(i == words.size());
 		}
 
-		TEST_METHOD(Test_join)
-		{
-			Assert::AreEqual(fullstring, strings::join(words, L' '));
-		}
+		TEST_METHOD(Test_join) { Assert::AreEqual(fullstring, strings::join(words, L' ')); }
 
 		TEST_METHOD(Test_currency)
 		{

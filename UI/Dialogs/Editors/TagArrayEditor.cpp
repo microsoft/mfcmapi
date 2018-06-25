@@ -18,8 +18,16 @@ namespace dialog
 			_In_opt_ LPMAPITABLE lpContentsTable,
 			_In_opt_ LPSPropTagArray lpTagArray,
 			bool bIsAB,
-			_In_opt_ LPMAPIPROP lpMAPIProp) :
-			CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | (lpContentsTable ? CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 : 0) | CEDITOR_BUTTON_CANCEL, IDS_QUERYCOLUMNS, IDS_FLAGS, NULL)
+			_In_opt_ LPMAPIPROP lpMAPIProp)
+			: CEditor(
+				  pParentWnd,
+				  uidTitle,
+				  uidPrompt,
+				  CEDITOR_BUTTON_OK | (lpContentsTable ? CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 : 0) |
+					  CEDITOR_BUTTON_CANCEL,
+				  IDS_QUERYCOLUMNS,
+				  IDS_FLAGS,
+				  NULL)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 
@@ -60,15 +68,15 @@ namespace dialog
 			{
 				// Apply lpFinalTagArray through SetColumns
 				auto hRes = S_OK;
-				EC_MAPI(m_lpContentsTable->SetColumns(
-					m_lpOutputTagArray,
-					m_ulSetColumnsFlags)); // Flags
+				EC_MAPI(m_lpContentsTable->SetColumns(m_lpOutputTagArray,
+													  m_ulSetColumnsFlags)); // Flags
 			}
 
 			CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 		}
 
-		_Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
+		_Check_return_ bool
+		CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData) return false;
 			if (!lpData->Prop())
@@ -95,12 +103,8 @@ namespace dialog
 			{
 				lpData->Prop()->m_ulPropTag = ulNewPropTag;
 
-				const auto namePropNames = cache::NameIDToStrings(
-					ulNewPropTag,
-					m_lpMAPIProp,
-					nullptr,
-					nullptr,
-					m_bIsAB);
+				const auto namePropNames =
+					cache::NameIDToStrings(ulNewPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
 
 				const auto propTagNames = interpretprop::PropTagToPropName(ulNewPropTag, m_bIsAB);
 
@@ -142,12 +146,8 @@ namespace dialog
 						lpData->InitializePropList(ulPropTag);
 					}
 
-					const auto namePropNames = cache::NameIDToStrings(
-						ulPropTag,
-						m_lpMAPIProp,
-						nullptr,
-						nullptr,
-						m_bIsAB);
+					const auto namePropNames =
+						cache::NameIDToStrings(ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
 
 					const auto propTagNames = interpretprop::PropTagToPropName(ulPropTag, m_bIsAB);
 
@@ -170,9 +170,7 @@ namespace dialog
 
 			auto hRes = S_OK;
 			const auto ulListCount = GetListCount(ulListNum);
-			EC_H(MAPIAllocateBuffer(
-				CbNewSPropTagArray(ulListCount),
-				reinterpret_cast<LPVOID*>(&m_lpOutputTagArray)));
+			EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(ulListCount), reinterpret_cast<LPVOID*>(&m_lpOutputTagArray)));
 			if (m_lpOutputTagArray)
 			{
 				m_lpOutputTagArray->cValues = ulListCount;
@@ -200,23 +198,17 @@ namespace dialog
 			auto hRes = S_OK;
 			ULONG ulQueryColumnFlags = NULL;
 
-			CEditor MyData(
-				this,
-				IDS_QUERYCOLUMNS,
-				IDS_QUERYCOLUMNSPROMPT,
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			CEditor MyData(this, IDS_QUERYCOLUMNS, IDS_QUERYCOLUMNSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_QUERYCOLUMNFLAGS, false));
 			MyData.SetHex(0, ulQueryColumnFlags);
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				ulQueryColumnFlags = MyData.GetHex(0);
 				LPSPropTagArray lpTagArray = nullptr;
 
-				EC_MAPI(m_lpContentsTable->QueryColumns(
-					ulQueryColumnFlags,
-					&lpTagArray));
+				EC_MAPI(m_lpContentsTable->QueryColumns(ulQueryColumnFlags, &lpTagArray));
 
 				if (SUCCEEDED(hRes))
 				{
@@ -234,16 +226,12 @@ namespace dialog
 			if (!m_lpContentsTable) return;
 			auto hRes = S_OK;
 
-			CEditor MyData(
-				this,
-				IDS_SETCOLUMNS,
-				IDS_SETCOLUMNSPROMPT,
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			CEditor MyData(this, IDS_SETCOLUMNS, IDS_SETCOLUMNSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SETCOLUMNFLAGS, false));
 			MyData.SetHex(0, m_ulSetColumnsFlags);
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				m_ulSetColumnsFlags = MyData.GetHex(0);
 			}

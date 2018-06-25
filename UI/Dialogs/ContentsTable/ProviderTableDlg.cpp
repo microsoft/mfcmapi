@@ -8,6 +8,7 @@
 #include <MAPI/MAPIProfileFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Controls/SortList/ContentsData.h>
+#include <MAPI/MAPIFunctions.h>
 
 namespace dialog
 {
@@ -17,18 +18,18 @@ namespace dialog
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ LPMAPITABLE lpMAPITable,
-		_In_ LPPROVIDERADMIN lpProviderAdmin
-	) :
-		CContentsTableDlg(
-			pParentWnd,
-			lpMapiObjects,
-			IDS_PROVIDERS,
-			mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-			lpMAPITable,
-			LPSPropTagArray(&columns::sptPROVIDERCols),
-			columns::PROVIDERColumns,
-			NULL,
-			MENU_CONTEXT_PROFILE_PROVIDERS)
+		_In_ LPPROVIDERADMIN lpProviderAdmin)
+		: CContentsTableDlg(
+			  pParentWnd,
+			  lpMapiObjects,
+			  IDS_PROVIDERS,
+			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+			  nullptr,
+			  lpMAPITable,
+			  LPSPropTagArray(&columns::sptPROVIDERCols),
+			  columns::PROVIDERColumns,
+			  NULL,
+			  MENU_CONTEXT_PROFILE_PROVIDERS)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
@@ -48,10 +49,13 @@ namespace dialog
 	}
 
 	BEGIN_MESSAGE_MAP(CProviderTableDlg, CContentsTableDlg)
-		ON_COMMAND(ID_OPENPROFILESECTION, OnOpenProfileSection)
+	ON_COMMAND(ID_OPENPROFILESECTION, OnOpenProfileSection)
 	END_MESSAGE_MAP()
 
-	_Check_return_ HRESULT CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ HRESULT CProviderTableDlg::OpenItemProp(
+		int iSelectedItem,
+		__mfcmapiModifyEnum /*bModify*/,
+		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 	{
 		auto hRes = S_OK;
 
@@ -68,9 +72,7 @@ namespace dialog
 			if (lpProviderUID)
 			{
 				EC_H(mapi::profile::OpenProfileSection(
-					m_lpProviderAdmin,
-					lpProviderUID,
-					reinterpret_cast<LPPROFSECT*>(lppMAPIProp)));
+					m_lpProviderAdmin, lpProviderUID, reinterpret_cast<LPPROFSECT*>(lppMAPIProp)));
 			}
 		}
 
@@ -84,10 +86,7 @@ namespace dialog
 		if (!m_lpProviderAdmin) return;
 
 		editor::CEditor MyUID(
-			this,
-			IDS_OPENPROFSECT,
-			IDS_OPENPROFSECTPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			this, IDS_OPENPROFSECT, IDS_OPENPROFSECTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyUID.InitPane(0, viewpane::DropDownPane::CreateGuid(IDS_MAPIUID, false));
 		MyUID.InitPane(1, viewpane::CheckPane::Create(IDS_MAPIUIDBYTESWAPPED, false, false));
@@ -96,24 +95,16 @@ namespace dialog
 		if (S_OK != hRes) return;
 
 		auto guid = MyUID.GetSelectedGUID(0, MyUID.GetCheck(1));
-		SBinary MapiUID = { sizeof(GUID), reinterpret_cast<LPBYTE>(&guid) };
+		SBinary MapiUID = {sizeof(GUID), reinterpret_cast<LPBYTE>(&guid)};
 
 		LPPROFSECT lpProfSect = nullptr;
-		EC_H(mapi::profile::OpenProfileSection(
-			m_lpProviderAdmin,
-			&MapiUID,
-			&lpProfSect));
+		EC_H(mapi::profile::OpenProfileSection(m_lpProviderAdmin, &MapiUID, &lpProfSect));
 		if (lpProfSect)
 		{
-			LPMAPIPROP lpTemp = nullptr;
-			EC_MAPI(lpProfSect->QueryInterface(IID_IMAPIProp, reinterpret_cast<LPVOID*>(&lpTemp)));
+			auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpProfSect);
 			if (lpTemp)
 			{
-				EC_H(DisplayObject(
-					lpTemp,
-					MAPI_PROFSECT,
-					otContents,
-					this));
+				EC_H(DisplayObject(lpTemp, MAPI_PROFSECT, otContents, this));
 				lpTemp->Release();
 			}
 

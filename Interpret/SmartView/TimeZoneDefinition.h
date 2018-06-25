@@ -4,11 +4,11 @@
 namespace smartview
 {
 	// TZRule
-// =====================
-//   This structure represents both a description when a daylight.
-//   savings shift occurs, and in addition, the year in which that
-//   timezone rule came into effect.
-//
+	// =====================
+	//   This structure represents both a description when a daylight.
+	//   savings shift occurs, and in addition, the year in which that
+	//   timezone rule came into effect.
+	//
 	struct TZRule
 	{
 		BYTE bMajorVersion;

@@ -40,10 +40,7 @@ namespace smartview
 		m_Prop = BinToSPropValue(dwPropCount, false);
 	}
 
-	_Check_return_ std::wstring PropertyStruct::ToStringInternal()
-	{
-		return PropsToString(m_PropCount, m_Prop);
-	}
+	_Check_return_ std::wstring PropertyStruct::ToStringInternal() { return PropsToString(m_PropCount, m_Prop); }
 
 	_Check_return_ std::wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 	{
@@ -56,40 +53,29 @@ namespace smartview
 				std::wstring PropString;
 				std::wstring AltPropString;
 
-				property.push_back(strings::formatmessage(IDS_PROPERTYDATAHEADER,
-					i,
-					Prop[i].ulPropTag));
+				property.push_back(strings::formatmessage(IDS_PROPERTYDATAHEADER, i, Prop[i].ulPropTag));
 
 				auto propTagNames = interpretprop::PropTagToPropName(Prop[i].ulPropTag, false);
 				if (!propTagNames.bestGuess.empty())
 				{
-					property.push_back(strings::formatmessage(IDS_PROPERTYDATANAME,
-						propTagNames.bestGuess.c_str()));
+					property.push_back(strings::formatmessage(IDS_PROPERTYDATANAME, propTagNames.bestGuess.c_str()));
 				}
 
 				if (!propTagNames.otherMatches.empty())
 				{
-					property.push_back(strings::formatmessage(IDS_PROPERTYDATAPARTIALMATCHES,
-						propTagNames.otherMatches.c_str()));
+					property.push_back(
+						strings::formatmessage(IDS_PROPERTYDATAPARTIALMATCHES, propTagNames.otherMatches.c_str()));
 				}
 
 				interpretprop::InterpretProp(&Prop[i], &PropString, &AltPropString);
-				property.push_back(strings::RemoveInvalidCharactersW(strings::formatmessage(IDS_PROPERTYDATA,
-					PropString.c_str(),
-					AltPropString.c_str()), false));
+				property.push_back(strings::RemoveInvalidCharactersW(
+					strings::formatmessage(IDS_PROPERTYDATA, PropString.c_str(), AltPropString.c_str()), false));
 
-				auto szSmartView = InterpretPropSmartView(
-					&Prop[i],
-					nullptr,
-					nullptr,
-					nullptr,
-					false,
-					false);
+				auto szSmartView = InterpretPropSmartView(&Prop[i], nullptr, nullptr, nullptr, false, false);
 
 				if (!szSmartView.empty())
 				{
-					property.push_back(strings::formatmessage(IDS_PROPERTYDATASMARTVIEW,
-						szSmartView.c_str()));
+					property.push_back(strings::formatmessage(IDS_PROPERTYDATASMARTVIEW, szSmartView.c_str()));
 				}
 			}
 		}

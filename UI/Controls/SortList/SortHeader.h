@@ -18,7 +18,7 @@ namespace controls
 		{
 		public:
 			CSortHeader();
-			_Check_return_ bool Init(_In_ CHeaderCtrl *pHeader, _In_ HWND hwndParent);
+			_Check_return_ bool Init(_In_ CHeaderCtrl* pHeader, _In_ HWND hwndParent);
 
 		private:
 			LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;

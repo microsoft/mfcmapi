@@ -2,7 +2,7 @@
 
 namespace cache
 {
-	// For GetBufferStatus
+// For GetBufferStatus
 #define BUFFER_EMPTY ((ULONG) 0x00000000)
 #define BUFFER_MESSAGES ((ULONG) 0x00000001)
 #define BUFFER_FOLDER ((ULONG) 0x00000002)
@@ -13,7 +13,7 @@ namespace cache
 #define BUFFER_ATTACHMENTS ((ULONG) 0x00000040)
 #define BUFFER_PROFILE ((ULONG) 0x00000080)
 
-// A single instance cache of objects available to all
+	// A single instance cache of objects available to all
 	class CGlobalCache
 	{
 	public:

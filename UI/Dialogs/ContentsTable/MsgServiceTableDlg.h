@@ -15,7 +15,6 @@ namespace dialog
 	class CMsgServiceTableDlg : public CContentsTableDlg
 	{
 	public:
-
 		CMsgServiceTableDlg(
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects,
@@ -31,7 +30,8 @@ namespace dialog
 		void OnDeleteSelectedItem() override;
 		void OnDisplayItem() override;
 		void OnRefreshView() override;
-		_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
+		_Check_return_ HRESULT
+		OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
 		void OnInitMenu(_In_ CMenu* pMenu) override;
 
 		// Menu items

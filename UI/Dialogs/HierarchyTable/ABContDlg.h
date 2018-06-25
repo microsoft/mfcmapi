@@ -6,9 +6,7 @@ namespace dialog
 	class CAbContDlg : public CHierarchyTableDlg
 	{
 	public:
-		CAbContDlg(
-			_In_ ui::CParentWnd* pParentWnd,
-			_In_ cache::CMapiObjects* lpMapiObjects);
+		CAbContDlg(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects);
 		virtual ~CAbContDlg();
 
 	private:

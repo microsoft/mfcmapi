@@ -31,7 +31,7 @@ namespace controls
 			_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
 			UINT nIDContextMenu,
 			bool bIsAB,
-			_In_ dialog::CContentsTableDlg *lpHostDlg)
+			_In_ dialog::CContentsTableDlg* lpHostDlg)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 
@@ -81,14 +81,14 @@ namespace controls
 		}
 
 		BEGIN_MESSAGE_MAP(CContentsTableListCtrl, CSortListCtrl)
-			ON_NOTIFY_REFLECT(LVN_ITEMCHANGED, OnItemChanged)
-			ON_WM_KEYDOWN()
-			ON_WM_CONTEXTMENU()
-			ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
-			ON_MESSAGE(WM_MFCMAPI_THREADADDITEM, msgOnThreadAddItem)
-			ON_MESSAGE(WM_MFCMAPI_DELETEITEM, msgOnDeleteItem)
-			ON_MESSAGE(WM_MFCMAPI_MODIFYITEM, msgOnModifyItem)
-			ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
+		ON_NOTIFY_REFLECT(LVN_ITEMCHANGED, OnItemChanged)
+		ON_WM_KEYDOWN()
+		ON_WM_CONTEXTMENU()
+		ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
+		ON_MESSAGE(WM_MFCMAPI_THREADADDITEM, msgOnThreadAddItem)
+		ON_MESSAGE(WM_MFCMAPI_DELETEITEM, msgOnDeleteItem)
+		ON_MESSAGE(WM_MFCMAPI_MODIFYITEM, msgOnModifyItem)
+		ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
 		END_MESSAGE_MAP()
 
 		LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -117,8 +117,7 @@ namespace controls
 				if (S_FALSE == hRes)
 				{
 					// Post the message to display the item
-					if (m_lpHostDlg)
-						m_lpHostDlg->PostMessage(WM_COMMAND, ID_DISPLAYSELECTEDITEM, NULL);
+					if (m_lpHostDlg) m_lpHostDlg->PostMessage(WM_COMMAND, ID_DISPLAYSELECTEDITEM, NULL);
 				}
 				else
 				{
@@ -135,10 +134,8 @@ namespace controls
 		{
 			if (pWnd && -1 == pos.x && -1 == pos.y)
 			{
-				POINT point = { 0 };
-				const auto iItem = GetNextItem(
-					-1,
-					LVNI_SELECTED);
+				POINT point = {0};
+				const auto iItem = GetNextItem(-1, LVNI_SELECTED);
 				GetItemPosition(iItem, &point);
 				::ClientToScreen(pWnd->m_hWnd, &point);
 				pos = point;
@@ -147,15 +144,9 @@ namespace controls
 			ui::DisplayContextMenu(m_nIDContextMenu, IDR_MENU_TABLE, m_lpHostDlg->m_hWnd, pos.x, pos.y);
 		}
 
-		_Check_return_ ULONG CContentsTableListCtrl::GetContainerType() const
-		{
-			return m_ulContainerType;
-		}
+		_Check_return_ ULONG CContentsTableListCtrl::GetContainerType() const { return m_ulContainerType; }
 
-		_Check_return_ bool CContentsTableListCtrl::IsContentsTableSet() const
-		{
-			return m_lpContentsTable != nullptr;
-		}
+		_Check_return_ bool CContentsTableListCtrl::IsContentsTableSet() const { return m_lpContentsTable != nullptr; }
 
 		_Check_return_ HRESULT CContentsTableListCtrl::SetContentsTable(
 			_In_opt_ LPMAPITABLE lpContentsTable,
@@ -173,8 +164,10 @@ namespace controls
 			m_ulDisplayFlags = ulDisplayFlags;
 			m_ulContainerType = ulContainerType;
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"SetContentsTable", L"replacing %p with %p\n", m_lpContentsTable, lpContentsTable);
-			output::DebugPrintEx(DBGGeneric, CLASS, L"SetContentsTable", L"New container type: 0x%X\n", m_ulContainerType);
+			output::DebugPrintEx(
+				DBGGeneric, CLASS, L"SetContentsTable", L"replacing %p with %p\n", m_lpContentsTable, lpContentsTable);
+			output::DebugPrintEx(
+				DBGGeneric, CLASS, L"SetContentsTable", L"New container type: 0x%X\n", m_ulContainerType);
 			// Clean up the old contents table and grab the new one
 			if (m_lpContentsTable)
 			{
@@ -189,9 +182,7 @@ namespace controls
 			if (m_lpContentsTable) m_lpContentsTable->AddRef();
 
 			// Set up the columns on the new contents table and refresh!
-			DoSetColumns(
-				true,
-				0 != registry::RegKeys[registry::regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD);
+			DoSetColumns(true, 0 != registry::RegKeys[registry::regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD);
 
 			return hRes;
 		}
@@ -205,17 +196,11 @@ namespace controls
 			ULONG ulTableStatus = NULL;
 			ULONG ulTableType = NULL;
 
-			EC_MAPI(m_lpContentsTable->GetStatus(
-				&ulTableStatus,
-				&ulTableType));
+			EC_MAPI(m_lpContentsTable->GetStatus(&ulTableStatus, &ulTableType));
 
 			if (!FAILED(hRes))
 			{
-				dialog::editor::CEditor MyData(
-					this,
-					IDS_GETSTATUS,
-					IDS_GETSTATUSPROMPT,
-					CEDITOR_BUTTON_OK);
+				dialog::editor::CEditor MyData(this, IDS_GETSTATUS, IDS_GETSTATUSPROMPT, CEDITOR_BUTTON_OK);
 				MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, true));
 				MyData.SetHex(0, ulTableStatus);
 				auto szFlags = interpretprop::InterpretFlags(flagTableStatus, ulTableStatus);
@@ -287,8 +272,7 @@ namespace controls
 			if (!IsContentsTableSet())
 			{
 				// Clear out the selected item view since we have no contents table
-				if (m_lpHostDlg)
-					m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
+				if (m_lpHostDlg) m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
 
 				// Make sure we're clear
 				DeleteAllColumns();
@@ -306,9 +290,7 @@ namespace controls
 
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-			EC_MAPI(m_lpContentsTable->QueryColumns(
-				NULL,
-				&lpOriginalColSet));
+			EC_MAPI(m_lpContentsTable->QueryColumns(NULL, &lpOriginalColSet));
 			// this is just a pointer - do not free
 			auto lpFinalTagArray = lpOriginalColSet;
 			hRes = S_OK;
@@ -342,7 +324,7 @@ namespace controls
 
 				WC_H(MyEditor.DisplayDialog());
 
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					lpModifiedTags = MyEditor.DetachModifiedTagArray();
 					if (lpModifiedTags)
@@ -355,9 +337,7 @@ namespace controls
 			else
 			{
 				// Apply lpFinalTagArray through SetColumns
-				EC_MAPI(m_lpContentsTable->SetColumns(
-					lpFinalTagArray,
-					TBL_BATCH));
+				EC_MAPI(m_lpContentsTable->SetColumns(lpFinalTagArray, TBL_BATCH));
 				bModified = true;
 			}
 
@@ -377,10 +357,14 @@ namespace controls
 			MAPIFreeBuffer(lpOriginalColSet);
 		}
 
-		_Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULONG ulCurHeaderCol, ULONG ulCurTagArrayRow, ULONG ulPropTag)
+		_Check_return_ HRESULT CContentsTableListCtrl::AddColumn(
+			UINT uidHeaderName,
+			ULONG ulCurHeaderCol,
+			ULONG ulCurTagArrayRow,
+			ULONG ulPropTag)
 		{
 			auto hRes = S_OK;
-			HDITEM hdItem = { 0 };
+			HDITEM hdItem = {0};
 			auto lpMyHeader = GetHeaderCtrl();
 			std::wstring szHeaderString;
 			LPMDB lpMDB = nullptr;
@@ -396,12 +380,7 @@ namespace controls
 				szHeaderString = propTagNames.bestGuess;
 				if (szHeaderString.empty())
 				{
-					const auto namePropNames = cache::NameIDToStrings(
-						ulPropTag,
-						lpMDB,
-						nullptr,
-						nullptr,
-						m_bIsAB);
+					const auto namePropNames = cache::NameIDToStrings(ulPropTag, lpMDB, nullptr, nullptr, m_bIsAB);
 
 					szHeaderString = namePropNames.name;
 				}
@@ -485,11 +464,7 @@ namespace controls
 				if (lpCurColTagArray->aulPropTag[ulCurTableCol] != NULL)
 				{
 					hRes = S_OK;
-					EC_H(AddColumn(
-						NULL,
-						ulCurHeaderCol,
-						ulCurTableCol,
-						lpCurColTagArray->aulPropTag[ulCurTableCol]));
+					EC_H(AddColumn(NULL, ulCurHeaderCol, ulCurTableCol, lpCurColTagArray->aulPropTag[ulCurTableCol]));
 					ulCurHeaderCol++;
 				}
 			}
@@ -515,10 +490,7 @@ namespace controls
 			m_lpRes = lpRes;
 		}
 
-		_Check_return_ const _SRestriction* CContentsTableListCtrl::GetRestriction() const
-		{
-			return m_lpRes;
-		}
+		_Check_return_ const _SRestriction* CContentsTableListCtrl::GetRestriction() const { return m_lpRes; }
 
 		_Check_return_ __mfcmapiRestrictionTypeEnum CContentsTableListCtrl::GetRestrictionType() const
 		{
@@ -535,7 +507,8 @@ namespace controls
 			if (!m_lpContentsTable) return MAPI_E_INVALID_PARAMETER;
 
 			auto hRes = S_OK;
-			output::DebugPrintEx(DBGGeneric, CLASS, L"ApplyRestriction", L"m_RestrictionType = 0x%X\n", m_RestrictionType);
+			output::DebugPrintEx(
+				DBGGeneric, CLASS, L"ApplyRestriction", L"m_RestrictionType = 0x%X\n", m_RestrictionType);
 			// Apply our restrictions
 			if (mfcmapiNORMAL_RESTRICTION == m_RestrictionType)
 			{
@@ -547,16 +520,11 @@ namespace controls
 					output::DebugPrintRestriction(DBGGeneric, m_lpRes, lpMDB);
 				}
 
-				EC_MAPI(m_lpContentsTable->Restrict(
-					const_cast<LPSRestriction>(m_lpRes),
-					TBL_BATCH));
+				EC_MAPI(m_lpContentsTable->Restrict(const_cast<LPSRestriction>(m_lpRes), TBL_BATCH));
 			}
 			else
 			{
-				WC_H_MSG(m_lpContentsTable->Restrict(
-					nullptr,
-					TBL_BATCH),
-					IDS_TABLENOSUPPORTRES);
+				WC_H_MSG(m_lpContentsTable->Restrict(nullptr, TBL_BATCH), IDS_TABLENOSUPPORTRES);
 			}
 
 			return hRes;
@@ -571,8 +539,13 @@ namespace controls
 		};
 
 #define bABORTSET (*lpThreadInfo->lpbAbort) // This is safe
-#define BREAKONABORT if (bABORTSET) break;
-#define CHECKABORT(__fn) if (!bABORTSET) {__fn;}
+#define BREAKONABORT \
+	if (bABORTSET) break;
+#define CHECKABORT(__fn) \
+	if (!bABORTSET) \
+	{ \
+		__fn; \
+	}
 #define NUMROWSPERLOOP 255
 
 		// Idea here is to do our MAPI work here on this thread, then send messages (SendMessage) back to the control to add the data to the view
@@ -600,7 +573,8 @@ namespace controls
 
 			(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
 			auto szCount = std::to_wstring(lpListCtrl->GetItemCount());
-			dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSDATA1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
+			dialog::CBaseDialog::UpdateStatus(
+				hWndHost, STATUSDATA1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
 
 			// potentially lengthy op - check abort before and after
 			CHECKABORT(WC_H(lpListCtrl->ApplyRestriction()));
@@ -609,15 +583,10 @@ namespace controls
 			if (!bABORTSET) // only check abort once for this group of ops
 			{
 				// go to the first row
-				EC_MAPI(lpContentsTable->SeekRow(
-					BOOKMARK_BEGINNING,
-					0,
-					nullptr));
+				EC_MAPI(lpContentsTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 				hRes = S_OK; // don't let failure here fail the whole load
 
-				EC_MAPI(lpContentsTable->GetRowCount(
-					NULL,
-					&ulTotal));
+				EC_MAPI(lpContentsTable->GetRowCount(NULL, &ulTotal));
 				hRes = S_OK; // don't let failure here fail the whole load
 
 				output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"ulTotal = 0x%X\n", ulTotal);
@@ -626,81 +595,98 @@ namespace controls
 
 				if (ulTotal)
 				{
-					dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, strings::formatmessage(IDS_LOADINGITEMS, 0, ulTotal));
+					dialog::CBaseDialog::UpdateStatus(
+						hWndHost, STATUSDATA2, strings::formatmessage(IDS_LOADINGITEMS, 0, ulTotal));
 				}
 			}
 
 			const auto lpRes = lpListCtrl->GetRestriction();
 			// get rows and add them to the list
-			if (!FAILED(hRes)) for (;;)
-			{
-				BREAKONABORT;
-				dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
-				hRes = S_OK;
-				if (pRows) FreeProws(pRows);
-				pRows = nullptr;
-				if (mfcmapiFINDROW_RESTRICTION == lpListCtrl->GetRestrictionType() && lpRes)
+			if (!FAILED(hRes))
+				for (;;)
 				{
-					output::DebugPrintEx(DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
-					output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
-
-					CHECKABORT(WC_MAPI(lpContentsTable->FindRow(
-						const_cast<LPSRestriction>(lpRes),
-						BOOKMARK_CURRENT,
-						NULL)));
-
-					if (MAPI_E_NOT_FOUND != hRes) // MAPI_E_NOT_FOUND signals we didn't find any more rows.
+					BREAKONABORT;
+					dialog::CBaseDialog::UpdateStatus(
+						hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
+					hRes = S_OK;
+					if (pRows) FreeProws(pRows);
+					pRows = nullptr;
+					if (mfcmapiFINDROW_RESTRICTION == lpListCtrl->GetRestrictionType() && lpRes)
 					{
-						CHECKABORT(EC_MAPI(lpContentsTable->QueryRows(
-							1,
-							NULL,
-							&pRows)));
+						output::DebugPrintEx(DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
+						output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
+
+						CHECKABORT(WC_MAPI(
+							lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL)));
+
+						if (MAPI_E_NOT_FOUND != hRes) // MAPI_E_NOT_FOUND signals we didn't find any more rows.
+						{
+							CHECKABORT(EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows)));
+						}
+						else
+						{
+							break;
+						}
 					}
 					else
 					{
-						break;
+						output::DebugPrintEx(
+							DBGGeneric,
+							CLASS,
+							L"ThreadFuncLoadTable",
+							L"Calling QueryRows. Asking for 0x%X rows.\n",
+							ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP);
+						// Pull back a sizable block of rows to add to the list box
+						CHECKABORT(EC_MAPI(lpContentsTable->QueryRows(
+							ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP, NULL, &pRows)));
+						if (FAILED(hRes)) break;
 					}
-				}
-				else
-				{
-					output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Calling QueryRows. Asking for 0x%X rows.\n", ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP);
-					// Pull back a sizable block of rows to add to the list box
-					CHECKABORT(EC_MAPI(lpContentsTable->QueryRows(
-						ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP,
-						NULL,
-						&pRows)));
-					if (FAILED(hRes)) break;
-				}
 
-				if (FAILED(hRes) || !pRows || !pRows->cRows) break;
+					if (FAILED(hRes) || !pRows || !pRows->cRows) break;
 
-				output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Got this many rows: 0x%X\n", pRows->cRows);
+					output::DebugPrintEx(
+						DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Got this many rows: 0x%X\n", pRows->cRows);
 
-				for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
-				{
-					hRes = S_OK;
-					BREAKONABORT; // This check is cheap enough not to be a perf concern anymore
-					if (ulTotal)
+					for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
 					{
-						dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, strings::formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
+						hRes = S_OK;
+						BREAKONABORT; // This check is cheap enough not to be a perf concern anymore
+						if (ulTotal)
+						{
+							dialog::CBaseDialog::UpdateStatus(
+								hWndHost,
+								STATUSDATA2,
+								strings::formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
+						}
+
+						output::DebugPrintEx(
+							DBGGeneric,
+							CLASS,
+							L"ThreadFuncLoadTable",
+							L"Asking to add %p to %u\n",
+							&pRows->aRow[iCurPropRow],
+							iCurListBoxRow);
+						(void) ::SendMessage(
+							lpListCtrl->m_hWnd,
+							WM_MFCMAPI_THREADADDITEM,
+							iCurListBoxRow,
+							reinterpret_cast<LPARAM>(&pRows->aRow[iCurPropRow]));
+						if (FAILED(hRes)) continue;
+						iCurListBoxRow++;
 					}
 
-					output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Asking to add %p to %u\n", &pRows->aRow[iCurPropRow], iCurListBoxRow);
-					(void) ::SendMessage(lpListCtrl->m_hWnd, WM_MFCMAPI_THREADADDITEM, iCurListBoxRow, reinterpret_cast<LPARAM>(&pRows->aRow[iCurPropRow]));
-					if (FAILED(hRes)) continue;
-					iCurListBoxRow++;
+					// Note - we're saving the rows off, so we don't FreeProws this...we just MAPIFreeBuffer the array
+					MAPIFreeBuffer(pRows);
+					pRows = nullptr;
+
+					if (ulThrottleLevel && iCurListBoxRow >= ulThrottleLevel)
+						break; // Only render ulThrottleLevel rows if throttle is on
 				}
-
-				// Note - we're saving the rows off, so we don't FreeProws this...we just MAPIFreeBuffer the array
-				MAPIFreeBuffer(pRows);
-				pRows = nullptr;
-
-				if (ulThrottleLevel && iCurListBoxRow >= ulThrottleLevel) break; // Only render ulThrottleLevel rows if throttle is on
-			}
 
 			if (bABORTSET)
 			{
-				dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_TABLELOADCANCELLED));
+				dialog::CBaseDialog::UpdateStatus(
+					hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_TABLELOADCANCELLED));
 			}
 			else
 			{
@@ -726,15 +712,9 @@ namespace controls
 			return 0;
 		}
 
-		_Check_return_ bool CContentsTableListCtrl::IsLoading() const
-		{
-			return m_bInLoadOp;
-		}
+		_Check_return_ bool CContentsTableListCtrl::IsLoading() const { return m_bInLoadOp; }
 
-		void CContentsTableListCtrl::ClearLoading()
-		{
-			m_bInLoadOp = false;
-		}
+		void CContentsTableListCtrl::ClearLoading() { m_bInLoadOp = false; }
 
 		_Check_return_ HRESULT CContentsTableListCtrl::LoadContentsTableIntoView()
 		{
@@ -772,12 +752,14 @@ namespace controls
 
 				output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Creating load thread.\n");
 
-				HANDLE hThread = nullptr;
-				EC_D(hThread, reinterpret_cast<HANDLE>(_beginthreadex(nullptr, 0, ThreadFuncLoadTable, lpThreadInfo, 0, nullptr)));
-
-				if (!hThread)
+				auto hThread = EC_D(
+					HANDLE,
+					reinterpret_cast<HANDLE>(
+						_beginthreadex(nullptr, 0, ThreadFuncLoadTable, lpThreadInfo, 0, nullptr)));
+				if (hThread == 0 || hThread == reinterpret_cast<HANDLE>(-1))
 				{
-					output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Load thread creation failed.\n");
+					output::DebugPrintEx(
+						DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Load thread creation failed.\n");
 					if (lpThreadInfo->lpContentsTable) lpThreadInfo->lpContentsTable->Release();
 					if (lpThreadInfo->lpListCtrl) lpThreadInfo->lpListCtrl->Release();
 					delete lpThreadInfo;
@@ -794,7 +776,8 @@ namespace controls
 
 		void CContentsTableListCtrl::OnCancelTableLoad()
 		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"OnCancelTableLoad", L"Setting abort flag and waiting for thread to discover it\n");
+			output::DebugPrintEx(
+				DBGGeneric, CLASS, L"OnCancelTableLoad", L"Setting abort flag and waiting for thread to discover it\n");
 			// Wait here until the thread we spun off has shut down
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 			DWORD dwRet = 0;
@@ -808,12 +791,7 @@ namespace controls
 				InterlockedExchange(&m_bAbortLoad, true);
 
 				// Wait for the thread to shutdown/signal, or messages posted to our queue
-				dwRet = MsgWaitForMultipleObjects(
-					1,
-					&m_LoadThreadHandle,
-					false,
-					INFINITE,
-					QS_ALLINPUT);
+				dwRet = MsgWaitForMultipleObjects(1, &m_LoadThreadHandle, false, INFINITE, QS_ALLINPUT);
 				if (dwRet == WAIT_OBJECT_0 + 0) break;
 
 				// Read all of the messages in this next loop, removing each message as we read it.
@@ -856,7 +834,7 @@ namespace controls
 
 			for (ULONG iColumn = 0; iColumn < m_ulHeaderColumns; iColumn++)
 			{
-				HDITEM hdItem = { 0 };
+				HDITEM hdItem = {0};
 				hdItem.mask = HDI_LPARAM;
 				EC_B(lpMyHeader->GetItem(iColumn, &hdItem));
 
@@ -871,7 +849,8 @@ namespace controls
 						const auto pProp = &lpsRowData->lpProps[ulCol];
 
 						// If we've got a MAPI_E_NOT_FOUND error, just don't display it.
-						if (registry::RegKeys[registry::regkeySUPPRESS_NOT_FOUND].ulCurDWORD && pProp && PT_ERROR == PROP_TYPE(pProp->ulPropTag) && MAPI_E_NOT_FOUND == pProp->Value.err)
+						if (registry::RegKeys[registry::regkeySUPPRESS_NOT_FOUND].ulCurDWORD && pProp &&
+							PT_ERROR == PROP_TYPE(pProp->ulPropTag) && MAPI_E_NOT_FOUND == pProp->Value.err)
 						{
 							if (0 == iColumn)
 							{
@@ -883,7 +862,8 @@ namespace controls
 
 						interpretprop::InterpretProp(pProp, &PropString, nullptr);
 
-						auto szFlags = smartview::InterpretNumberAsString(pProp->Value, pProp->ulPropTag, NULL, nullptr, nullptr, false);
+						auto szFlags = smartview::InterpretNumberAsString(
+							pProp->Value, pProp->ulPropTag, NULL, nullptr, nullptr, false);
 						if (!szFlags.empty())
 						{
 							PropString += L" ("; // STRING_OK
@@ -906,20 +886,19 @@ namespace controls
 		}
 
 #define NUMOBJTYPES 12
-		static LONG _ObjTypeIcons[NUMOBJTYPES][2] =
-		{
-		 { MAPI_STORE, slIconMAPI_STORE },
-		 { MAPI_ADDRBOOK, slIconMAPI_ADDRBOOK },
-		 { MAPI_FOLDER, slIconMAPI_FOLDER },
-		 { MAPI_ABCONT, slIconMAPI_ABCONT },
-		 { MAPI_MESSAGE, slIconMAPI_MESSAGE },
-		 { MAPI_MAILUSER, slIconMAPI_MAILUSER },
-		 { MAPI_ATTACH, slIconMAPI_ATTACH },
-		 { MAPI_DISTLIST, slIconMAPI_DISTLIST },
-		 { MAPI_PROFSECT, slIconMAPI_PROFSECT },
-		 { MAPI_STATUS, slIconMAPI_STATUS },
-		 { MAPI_SESSION, slIconMAPI_SESSION },
-		 { MAPI_FORMINFO, slIconMAPI_FORMINFO },
+		static LONG _ObjTypeIcons[NUMOBJTYPES][2] = {
+			{MAPI_STORE, slIconMAPI_STORE},
+			{MAPI_ADDRBOOK, slIconMAPI_ADDRBOOK},
+			{MAPI_FOLDER, slIconMAPI_FOLDER},
+			{MAPI_ABCONT, slIconMAPI_ABCONT},
+			{MAPI_MESSAGE, slIconMAPI_MESSAGE},
+			{MAPI_MAILUSER, slIconMAPI_MAILUSER},
+			{MAPI_ATTACH, slIconMAPI_ATTACH},
+			{MAPI_DISTLIST, slIconMAPI_DISTLIST},
+			{MAPI_PROFSECT, slIconMAPI_PROFSECT},
+			{MAPI_STATUS, slIconMAPI_STATUS},
+			{MAPI_SESSION, slIconMAPI_SESSION},
+			{MAPI_FORMINFO, slIconMAPI_FORMINFO},
 		};
 
 		void GetDepthAndImage(_In_ LPSRow lpsRowData, _In_ ULONG* lpulDepth, _In_ ULONG* lpulImage)
@@ -1027,8 +1006,7 @@ namespace controls
 
 			EC_H(RefreshItem(iRow, lpsRowToAdd, false));
 
-			if (m_lpHostDlg)
-				m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, IDS_STATUSTEXTNUMITEMS, GetItemCount());
+			if (m_lpHostDlg) m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, IDS_STATUSTEXTNUMITEMS, GetItemCount());
 
 			return hRes;
 		}
@@ -1060,7 +1038,8 @@ namespace controls
 			}
 		}
 
-		_Check_return_ HRESULT CContentsTableListCtrl::GetSelectedItemEIDs(_Deref_out_opt_ LPENTRYLIST* lppEntryIDs) const
+		_Check_return_ HRESULT
+		CContentsTableListCtrl::GetSelectedItemEIDs(_Deref_out_opt_ LPENTRYLIST* lppEntryIDs) const
 		{
 			*lppEntryIDs = nullptr;
 			auto hRes = S_OK;
@@ -1079,7 +1058,7 @@ namespace controls
 				lpTempList->lpbin = nullptr;
 
 				EC_H(MAPIAllocateMore(
-					static_cast<ULONG>(sizeof(SBinary))* iNumItems,
+					static_cast<ULONG>(sizeof(SBinary)) * iNumItems,
 					lpTempList,
 					reinterpret_cast<LPVOID*>(&lpTempList->lpbin)));
 				if (lpTempList->lpbin)
@@ -1090,9 +1069,7 @@ namespace controls
 					{
 						lpTempList->lpbin[iArrayPos].cb = 0;
 						lpTempList->lpbin[iArrayPos].lpb = nullptr;
-						iSelectedItem = GetNextItem(
-							iSelectedItem,
-							LVNI_SELECTED);
+						iSelectedItem = GetNextItem(iSelectedItem, LVNI_SELECTED);
 						if (-1 != iSelectedItem)
 						{
 							const auto lpData = GetSortListData(iSelectedItem);
@@ -1102,7 +1079,7 @@ namespace controls
 								EC_H(MAPIAllocateMore(
 									lpData->Contents()->m_lpEntryID->cb,
 									lpTempList,
-									reinterpret_cast<LPVOID *>(&lpTempList->lpbin[iArrayPos].lpb)));
+									reinterpret_cast<LPVOID*>(&lpTempList->lpbin[iArrayPos].lpb)));
 								if (lpTempList->lpbin[iArrayPos].lpb)
 								{
 									CopyMemory(
@@ -1126,9 +1103,7 @@ namespace controls
 			std::vector<int> iItems;
 			do
 			{
-				iItem = GetNextItem(
-					iItem,
-					LVNI_SELECTED);
+				iItem = GetNextItem(iItem, LVNI_SELECTED);
 				if (iItem != -1)
 				{
 					iItems.push_back(iItem);
@@ -1145,9 +1120,7 @@ namespace controls
 			std::vector<sortlistdata::SortListData*> items;
 			do
 			{
-				iItem = GetNextItem(
-					iItem,
-					LVNI_SELECTED);
+				iItem = GetNextItem(iItem, LVNI_SELECTED);
 				if (iItem != -1)
 				{
 					items.push_back(GetSortListData(iItem));
@@ -1159,9 +1132,7 @@ namespace controls
 
 		_Check_return_ sortlistdata::SortListData* CContentsTableListCtrl::GetFirstSelectedItemData() const
 		{
-			const auto iItem = GetNextItem(
-				-1,
-				LVNI_SELECTED);
+			const auto iItem = GetNextItem(-1, LVNI_SELECTED);
 			if (-1 == iItem) return nullptr;
 
 			return GetSortListData(iItem);
@@ -1171,8 +1142,7 @@ namespace controls
 		// Call again with the previous iCurItem to get the next one.
 		// Stop calling when iCurItem = -1 and/or lppProp is NULL
 		// If iCurItem is NULL, just returns the focused item
-		_Check_return_ int CContentsTableListCtrl::GetNextSelectedItemNum(
-			_Inout_opt_ int *iCurItem) const
+		_Check_return_ int CContentsTableListCtrl::GetNextSelectedItemNum(_Inout_opt_ int* iCurItem) const
 		{
 			auto iItem = NULL;
 
@@ -1187,9 +1157,7 @@ namespace controls
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"GetNextSelectedItemNum", L"iItem before = 0x%X\n", iItem);
 
-			iItem = GetNextItem(
-				iItem,
-				LVNI_SELECTED);
+			iItem = GetNextItem(iItem, LVNI_SELECTED);
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"GetNextSelectedItemNum", L"iItem after = 0x%X\n", iItem);
 
@@ -1208,7 +1176,7 @@ namespace controls
 		// Stop calling when iCurItem = -1 and/or lppProp is NULL
 		// If iCurItem is NULL, just returns the focused item
 		_Check_return_ HRESULT CContentsTableListCtrl::OpenNextSelectedItemProp(
-			_Inout_opt_ int *iCurItem,
+			_Inout_opt_ int* iCurItem,
 			__mfcmapiModifyEnum bModify,
 			_Deref_out_opt_ LPMAPIPROP* lppProp) const
 		{
@@ -1217,8 +1185,7 @@ namespace controls
 			*lppProp = nullptr;
 
 			const auto iItem = GetNextSelectedItemNum(iCurItem);
-			if (-1 != iItem)
-				WC_H(m_lpHostDlg->OpenItemProp(iItem, bModify, lppProp));
+			if (-1 != iItem) WC_H(m_lpHostDlg->OpenItemProp(iItem, bModify, lppProp));
 
 			return hRes;
 		}
@@ -1234,7 +1201,14 @@ namespace controls
 
 			if (!m_lpMapiObjects || -1 == iItem) return S_OK;
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"DefaultOpenItemProp", L"iItem = %d, bModify = %d, m_ulContainerType = 0x%X\n", iItem, bModify, m_ulContainerType);
+			output::DebugPrintEx(
+				DBGGeneric,
+				CLASS,
+				L"DefaultOpenItemProp",
+				L"iItem = %d, bModify = %d, m_ulContainerType = 0x%X\n",
+				iItem,
+				bModify,
+				m_ulContainerType);
 
 			const auto lpListData = GetSortListData(iItem);
 			if (!lpListData || !lpListData->Contents()) return S_OK;
@@ -1284,7 +1258,8 @@ namespace controls
 					bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
 					nullptr,
 					reinterpret_cast<LPUNKNOWN*>(lppProp)));
-				if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes && registry::RegKeys[registry::regkeyUSE_MESSAGERAW].ulCurDWORD)
+				if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes &&
+					registry::RegKeys[registry::regkeyUSE_MESSAGERAW].ulCurDWORD)
 				{
 					error::ErrDialog(__FILE__, __LINE__, IDS_EDMESSAGERAWNOTSUPPORTED);
 				}
@@ -1315,19 +1290,25 @@ namespace controls
 				// We got access denied when we passed MAPI_MODIFY
 				// Let's try again without it.
 				hRes = S_OK;
-				EC_H(DefaultOpenItemProp(
-					iItem,
-					mfcmapiDO_NOT_REQUEST_MODIFY,
-					lppProp));
+				EC_H(DefaultOpenItemProp(iItem, mfcmapiDO_NOT_REQUEST_MODIFY, lppProp));
 			}
 
 			if (MAPI_E_NOT_FOUND == hRes)
 			{
-				output::DebugPrint(DBGGeneric, L"\tDefaultOpenItemProp encountered an entry ID for an item that doesn't exist\n\tThis happens often when we're deleting items.\n");
+				output::DebugPrint(
+					DBGGeneric,
+					L"\tDefaultOpenItemProp encountered an entry ID for an item that doesn't exist\n\tThis happens "
+					L"often when we're deleting items.\n");
 				hRes = S_OK;
 			}
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"DefaultOpenItemProp", L"returning *lppProp = %p and hRes = 0x%X\n", *lppProp, hRes);
+			output::DebugPrintEx(
+				DBGGeneric,
+				CLASS,
+				L"DefaultOpenItemProp",
+				L"returning *lppProp = %p and hRes = 0x%X\n",
+				*lppProp,
+				hRes);
 			return hRes;
 		}
 
@@ -1344,8 +1325,7 @@ namespace controls
 			}
 
 			MySetRedraw(true);
-			if (m_lpHostDlg)
-				m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
+			if (m_lpHostDlg) m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
 		}
 
 		// This is a tough function. I wonder if I'm handling this event correctly
@@ -1384,9 +1364,7 @@ namespace controls
 					szTitle = strings::loadstring(IDS_DISPLAYNAMENOTFOUND);
 
 					// try to use our rowset first
-					if (NODISPLAYNAME != m_ulDisplayNameColumn
-						&& lpProps
-						&& m_ulDisplayNameColumn < cValues)
+					if (NODISPLAYNAME != m_ulDisplayNameColumn && lpProps && m_ulDisplayNameColumn < cValues)
 					{
 						if (mapi::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_STRING8))
 						{
@@ -1415,10 +1393,7 @@ namespace controls
 			}
 		}
 
-		_Check_return_ bool CContentsTableListCtrl::IsAdviseSet() const
-		{
-			return m_lpAdviseSink != nullptr;
-		}
+		_Check_return_ bool CContentsTableListCtrl::IsAdviseSet() const { return m_lpAdviseSink != nullptr; }
 
 		_Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 		{
@@ -1426,16 +1401,15 @@ namespace controls
 
 			if (m_lpAdviseSink || !m_lpContentsTable) return S_OK;
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"NotificationOn", L"registering table notification on %p\n", m_lpContentsTable);
+			output::DebugPrintEx(
+				DBGGeneric, CLASS, L"NotificationOn", L"registering table notification on %p\n", m_lpContentsTable);
 
 			m_lpAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
 
 			if (m_lpAdviseSink)
 			{
 				WC_MAPI(m_lpContentsTable->Advise(
-					fnevTableModified,
-					static_cast<IMAPIAdviseSink *>(m_lpAdviseSink),
-					&m_ulAdviseConnection));
+					fnevTableModified, static_cast<IMAPIAdviseSink*>(m_lpAdviseSink), &m_ulAdviseConnection));
 				if (MAPI_E_NO_SUPPORT == hRes) // Some tables don't support this!
 				{
 					if (m_lpAdviseSink) m_lpAdviseSink->Release();
@@ -1443,7 +1417,7 @@ namespace controls
 					output::DebugPrint(DBGGeneric, L"This table doesn't support notifications\n");
 					hRes = S_OK; // mask the error
 				}
-				else if (S_OK == hRes)
+				else if (hRes == S_OK)
 				{
 					const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 					if (lpMDB)
@@ -1454,7 +1428,14 @@ namespace controls
 				}
 			}
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"NotificationOn", L"Table notification results (Sink:%p, ulConnection:0x%X) on %p\n", m_lpAdviseSink, static_cast<int>(m_ulAdviseConnection), m_lpContentsTable);
+			output::DebugPrintEx(
+				DBGGeneric,
+				CLASS,
+				L"NotificationOn",
+				L"Table notification results (Sink:%p, ulConnection:0x%X) on %p\n",
+				m_lpAdviseSink,
+				static_cast<int>(m_ulAdviseConnection),
+				m_lpContentsTable);
 			return hRes;
 		}
 
@@ -1463,10 +1444,16 @@ namespace controls
 		void CContentsTableListCtrl::NotificationOff()
 		{
 			if (!m_lpAdviseSink) return;
-			output::DebugPrintEx(DBGGeneric, CLASS, L"NotificationOff", L"clearing table notification (Sink:%p, ulConnection:0x%X) on %p\n", m_lpAdviseSink, static_cast<int>(m_ulAdviseConnection), m_lpContentsTable);
+			output::DebugPrintEx(
+				DBGGeneric,
+				CLASS,
+				L"NotificationOff",
+				L"clearing table notification (Sink:%p, ulConnection:0x%X) on %p\n",
+				m_lpAdviseSink,
+				static_cast<int>(m_ulAdviseConnection),
+				m_lpContentsTable);
 
-			if (m_ulAdviseConnection && m_lpContentsTable)
-				m_lpContentsTable->Unadvise(m_ulAdviseConnection);
+			if (m_ulAdviseConnection && m_lpContentsTable) m_lpContentsTable->Unadvise(m_ulAdviseConnection);
 
 			m_ulAdviseConnection = NULL;
 			if (m_lpAdviseSink) m_lpAdviseSink->Release();
@@ -1502,9 +1489,7 @@ namespace controls
 		{
 			auto hRes = S_FALSE;
 
-			const auto iItem = GetNextItem(
-				-1,
-				LVNI_SELECTED);
+			const auto iItem = GetNextItem(-1, LVNI_SELECTED);
 
 			// nothing selected, no work done
 			if (-1 == iItem) return S_FALSE;
@@ -1512,14 +1497,12 @@ namespace controls
 			const auto lpData = GetSortListData(iItem);
 
 			// No lpData or wrong type of row - no work done
-			if (!lpData ||
-				!lpData->Contents() ||
-				lpData->Contents()->m_ulRowType == TBL_LEAF_ROW ||
+			if (!lpData || !lpData->Contents() || lpData->Contents()->m_ulRowType == TBL_LEAF_ROW ||
 				lpData->Contents()->m_ulRowType == TBL_EMPTY_CATEGORY)
 				return S_FALSE;
 
 			auto bDidWork = false;
-			LVITEM lvItem = { 0 };
+			LVITEM lvItem = {0};
 			lvItem.iItem = iItem;
 			lvItem.iSubItem = 0;
 			lvItem.mask = LVIF_IMAGE;
@@ -1541,7 +1524,7 @@ namespace controls
 						NULL,
 						&lpRowSet,
 						&ulRowsAdded));
-					if (S_OK == hRes && lpRowSet)
+					if (hRes == S_OK && lpRowSet)
 					{
 						for (ULONG i = 0; i < lpRowSet->cRows; i++)
 						{
@@ -1571,7 +1554,7 @@ namespace controls
 						lpData->Contents()->m_lpInstanceKey->lpb,
 						NULL,
 						&ulRowsRemoved));
-					if (S_OK == hRes && ulRowsRemoved)
+					if (hRes == S_OK && ulRowsRemoved)
 					{
 						for (int i = iItem + ulRowsRemoved; i > iItem; i--)
 						{
@@ -1592,16 +1575,13 @@ namespace controls
 				EC_B(SetItem(&lvItem)); // Set new image for the row
 
 				// Save the row type (header/leaf) into lpData
-				const auto lpProp = PpropFindProp(
-					lpData->lpSourceProps,
-					lpData->cSourceProps,
-					PR_ROW_TYPE);
+				const auto lpProp = PpropFindProp(lpData->lpSourceProps, lpData->cSourceProps, PR_ROW_TYPE);
 				if (lpProp && PR_ROW_TYPE == lpProp->ulPropTag)
 				{
 					lpProp->Value.l = lpData->Contents()->m_ulRowType;
 				}
 
-				SRow sRowData = { 0 };
+				SRow sRowData = {0};
 				sRowData.cValues = lpData->cSourceProps;
 				sRowData.lpProps = lpData->lpSourceProps;
 				SetRowStrings(iItem, &sRowData);
@@ -1621,14 +1601,13 @@ namespace controls
 			}
 		}
 
-		_Check_return_ HRESULT CContentsTableListCtrl::SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags) const
+		_Check_return_ HRESULT
+		CContentsTableListCtrl::SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags) const
 		{
 			auto hRes = S_OK;
 			if (!m_lpContentsTable) return MAPI_E_INVALID_PARAMETER;
 
-			EC_MAPI(m_lpContentsTable->SortTable(
-				lpSortOrderSet,
-				ulFlags));
+			EC_MAPI(m_lpContentsTable->SortTable(lpSortOrderSet, ulFlags));
 
 			return hRes;
 		}
@@ -1642,7 +1621,8 @@ namespace controls
 
 			if (!lpsRow) return MAPI_E_INVALID_PARAMETER;
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"msgOnThreadAddItem", L"Received message to add %p to row %d\n", lpsRow, iNewRow);
+			output::DebugPrintEx(
+				DBGGeneric, CLASS, L"msgOnThreadAddItem", L"Received message to add %p to row %d\n", lpsRow, iNewRow);
 			EC_H(AddItemToListBox(iNewRow, lpsRow));
 
 			return hRes;
@@ -1670,16 +1650,13 @@ namespace controls
 
 			// We make this copy here and pass it in to AddItemToListBox, where it is grabbed by SortListData::InitializeContents to be part of the item data
 			// The mem will be freed when the item data is cleaned up - do not free here
-			SRow NewRow = { 0 };
+			SRow NewRow = {0};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-			EC_MAPI(ScDupPropset(
-				tab->row.cValues,
-				tab->row.lpProps,
-				MAPIAllocateBuffer,
-				&NewRow.lpProps));
+			EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"msgOnAddItem", L"Received message to add row to row %d\n", iNewRow);
+			output::DebugPrintEx(
+				DBGGeneric, CLASS, L"msgOnAddItem", L"Received message to add row to row %d\n", iNewRow);
 			EC_H(AddItemToListBox(iNewRow, &NewRow));
 
 			return hRes;
@@ -1695,7 +1672,8 @@ namespace controls
 
 			const auto iItem = FindRow(&tab->propIndex.Value.bin);
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"msgOnDeleteItem", L"Received message to delete item 0x%d\n", iItem);
+			output::DebugPrintEx(
+				DBGGeneric, CLASS, L"msgOnDeleteItem", L"Received message to delete item 0x%d\n", iItem);
 
 			if (iItem == -1) return S_OK;
 
@@ -1725,18 +1703,20 @@ namespace controls
 
 			if (-1 != iItem)
 			{
-				output::DebugPrintEx(DBGGeneric, CLASS, L"msgOnModifyItem", L"Received message to modify row %d with %p\n", iItem, &tab->row);
+				output::DebugPrintEx(
+					DBGGeneric,
+					CLASS,
+					L"msgOnModifyItem",
+					L"Received message to modify row %d with %p\n",
+					iItem,
+					&tab->row);
 
 				// We make this copy here and pass it in to RefreshItem, where it is grabbed by SortListData::InitializeContents to be part of the item data
 				// The mem will be freed when the item data is cleaned up - do not free here
-				SRow NewRow = { 0 };
+				SRow NewRow = {0};
 				NewRow.cValues = tab->row.cValues;
 				NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-				EC_MAPI(ScDupPropset(
-					tab->row.cValues,
-					tab->row.lpProps,
-					MAPIAllocateBuffer,
-					&NewRow.lpProps));
+				EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 
 				EC_H(RefreshItem(iItem, &NewRow, true));
 			}

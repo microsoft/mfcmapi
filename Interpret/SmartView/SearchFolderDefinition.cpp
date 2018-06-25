@@ -85,9 +85,7 @@ namespace smartview
 					addressListEntryStruct.Pad = m_Parser.Get<DWORD>();
 					if (addressListEntryStruct.PropertyCount)
 					{
-						addressListEntryStruct.Props = BinToSPropValue(
-							addressListEntryStruct.PropertyCount,
-							false);
+						addressListEntryStruct.Props = BinToSPropValue(addressListEntryStruct.PropertyCount, false);
 					}
 
 					m_Addresses.push_back(addressListEntryStruct);
@@ -129,17 +127,12 @@ namespace smartview
 	_Check_return_ std::wstring SearchFolderDefinition::ToStringInternal()
 	{
 		auto szFlags = InterpretNumberAsStringProp(m_Flags, PR_WB_SF_STORAGE_TYPE);
-		auto szSearchFolderDefinition = strings::formatmessage(IDS_SFDEFINITIONHEADER,
-			m_Version,
-			m_Flags,
-			szFlags.c_str(),
-			m_NumericSearch,
-			m_TextSearchLength);
+		auto szSearchFolderDefinition = strings::formatmessage(
+			IDS_SFDEFINITIONHEADER, m_Version, m_Flags, szFlags.c_str(), m_NumericSearch, m_TextSearchLength);
 
 		if (m_TextSearchLength)
 		{
-			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONTEXTSEARCH,
-				m_TextSearchLengthExtended);
+			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONTEXTSEARCH, m_TextSearchLengthExtended);
 
 			if (!m_TextSearch.empty())
 			{
@@ -147,8 +140,7 @@ namespace smartview
 			}
 		}
 
-		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPLEN1,
-			m_SkipLen1);
+		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPLEN1, m_SkipLen1);
 
 		if (m_SkipLen1)
 		{
@@ -156,14 +148,13 @@ namespace smartview
 			szSearchFolderDefinition += strings::BinToHexString(m_SkipBytes1, true);
 		}
 
-		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONDEEPSEARCH,
-			m_DeepSearch,
-			m_FolderList1Length);
+		szSearchFolderDefinition +=
+			strings::formatmessage(IDS_SFDEFINITIONDEEPSEARCH, m_DeepSearch, m_FolderList1Length);
 
 		if (m_FolderList1Length)
 		{
-			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONFOLDERLIST1,
-				m_FolderList1LengthExtended);
+			szSearchFolderDefinition +=
+				strings::formatmessage(IDS_SFDEFINITIONFOLDERLIST1, m_FolderList1LengthExtended);
 
 			if (!m_FolderList1.empty())
 			{
@@ -171,8 +162,7 @@ namespace smartview
 			}
 		}
 
-		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONFOLDERLISTLENGTH2,
-			m_FolderList2Length);
+		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONFOLDERLISTLENGTH2, m_FolderList2Length);
 
 		if (m_FolderList2Length)
 		{
@@ -182,22 +172,19 @@ namespace smartview
 
 		if (SFST_BINARY & m_Flags)
 		{
-			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONADDRESSCOUNT,
-				m_AddressCount);
+			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONADDRESSCOUNT, m_AddressCount);
 
 			for (DWORD i = 0; i < m_Addresses.size(); i++)
 			{
-				szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONADDRESSES,
-					i, m_Addresses[i].PropertyCount,
-					i, m_Addresses[i].Pad);
+				szSearchFolderDefinition += strings::formatmessage(
+					IDS_SFDEFINITIONADDRESSES, i, m_Addresses[i].PropertyCount, i, m_Addresses[i].Pad);
 
 				szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONPROPERTIES, i);
 				szSearchFolderDefinition += PropsToString(m_Addresses[i].PropertyCount, m_Addresses[i].Props);
 			}
 		}
 
-		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPLEN2,
-			m_SkipLen2);
+		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPLEN2, m_SkipLen2);
 
 		if (m_SkipLen2)
 		{
@@ -213,8 +200,8 @@ namespace smartview
 
 		if (SFST_FILTERSTREAM & m_Flags)
 		{
-			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONADVANCEDSEARCHLEN,
-				m_AdvancedSearchBytes.size());
+			szSearchFolderDefinition +=
+				strings::formatmessage(IDS_SFDEFINITIONADVANCEDSEARCHLEN, m_AdvancedSearchBytes.size());
 
 			if (!m_AdvancedSearchBytes.empty())
 			{
@@ -223,8 +210,7 @@ namespace smartview
 			}
 		}
 
-		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPLEN3,
-			m_SkipLen3);
+		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPLEN3, m_SkipLen3);
 
 		if (m_SkipLen3)
 		{

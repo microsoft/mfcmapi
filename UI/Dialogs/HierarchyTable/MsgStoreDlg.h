@@ -16,7 +16,8 @@ namespace dialog
 		CMsgStoreDlg(
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ cache::CMapiObjects* lpMapiObjects,
-			_In_opt_ LPMAPIFOLDER lpRootFolder,
+			_In_opt_ LPMAPIPROP lpMDB,
+			_In_opt_ LPMAPIPROP lpRootFolder,
 			ULONG ulDisplayFlags);
 		virtual ~CMsgStoreDlg();
 
@@ -30,6 +31,7 @@ namespace dialog
 		void HandleCopy() override;
 		_Check_return_ bool HandlePaste() override;
 		void OnInitMenu(_In_ CMenu* pMenu) override;
+		LPMAPIFOLDER GetSelectedFolder(__mfcmapiModifyEnum bModify) const;
 
 		// Menu items
 		void OnCreateSubFolder();
@@ -63,6 +65,7 @@ namespace dialog
 		void OnPasteMessages();
 		void OnExportMessages();
 
+		LPMDB m_lpMDB;
 		DECLARE_MESSAGE_MAP()
 	};
 }

@@ -1,7 +1,7 @@
 #pragma once
 
-static NAME_ARRAY_ENTRY_V2 g_PropTagArray[] =
-{
+static NAME_ARRAY_ENTRY_V2 g_PropTagArray[] = {
+	// clang-format off
 	{ 0x00010003, 0x5, L"PR_ACKNOWLEDGEMENT_MODE" },
 	{ 0x00010003, 0x3, L"PR_CERT_PROP_VERSION" },
 	{ 0x00010003, 0x4, L"PidTagAcknowledgementMode" },
@@ -3934,4 +3934,5 @@ static NAME_ARRAY_ENTRY_V2 g_PropTagArray[] =
 	{ 0xfffe001e, 0x3, L"PR_EMS_AB_SERVER" },
 	{ 0xfffe001e, 0x2, L"PR_EMS_AB_SERVER_A" },
 	{ 0xfffe001f, 0x1, L"PR_EMS_AB_SERVER_W" },
+	// clang-format on
 };

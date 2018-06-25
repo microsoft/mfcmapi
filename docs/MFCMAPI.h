@@ -79,6 +79,7 @@ enum __GuidType
 };
 
 // All MAPI props are stored in the array by their PROP_ID. So all are < 0xffff.
+// clang-format off
 #define FLAG_ENTRY(_fName,_fValue,_fType) {PROP_ID(_fName),static_cast<LONG>(_fValue),(_fType),L#_fValue},
 #define FLAG_ENTRY_NAMED(_fName,_fValue,_fValueName,_fType) {PROP_ID(_fName),static_cast<LONG>(_fValue),(_fType),(_fValueName)},
 #define FLAG_ENTRY3RDBYTE(_fName,_fValue,_fValType) {PROP_ID(_fName),static_cast<LONG>(_fValue),flagVALUE3RDBYTE,L#_fValType L": " L#_fValue}, // STRING_OK
@@ -95,6 +96,7 @@ enum __GuidType
 #define NON_PROP_FLAG_ENTRY_NAMED(_fName,_fValue,_fValueName,_fType) {(_fName),static_cast<LONG>(_fValue),(_fType),(_fValueName)},
 #define NON_PROP_FLAG_ENTRYLOWERNIBBLE(_fName,_fValue,_fValType) {(_fName),static_cast<LONG>(_fValue),flagVALUELOWERNIBBLE,L#_fValType L": " L#_fValue}, // STRING_OK
 #define NON_PROP_CLEAR_BITS_ENTRY(_fName,_fValue) {(_fName),static_cast<LONG>(_fValue),flagCLEARBITS,L""},
+// clang-format on
 
 // Flag parsing array - used by GetPropFlags
 struct FLAG_ARRAY_ENTRY
@@ -155,10 +157,12 @@ struct SMARTVIEW_PARSER_ARRAY_ENTRY
 };
 typedef SMARTVIEW_PARSER_ARRAY_ENTRY* LPSMARTVIEW_PARSER_ARRAY_ENTRY;
 
+// clang-format off
 #define BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType),false},
 #define NAMEDPROP_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType),false},
 #define MV_BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType),true},
 #define NAMEDPROP_MV_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType),true},
+// clang-format on
 
 // Menu contexts - denote when a menu item should be present. May be combined.
 // Used in _MenuItem and _AddInMenuParams.
@@ -184,9 +188,11 @@ typedef SMARTVIEW_PARSER_ARRAY_ENTRY* LPSMARTVIEW_PARSER_ARRAY_ENTRY;
 #define MENU_CONTEXT_PROPERTY 0x00080000 // Property pane
 
 // Some helpful constants for common context scenarios
-#define MENU_CONTEXT_ALL_FOLDER MENU_CONTEXT_FOLDER_TREE|MENU_CONTEXT_FOLDER_CONTENTS
-#define MENU_CONTEXT_ALL_AB MENU_CONTEXT_AB_TREE|MENU_CONTEXT_AB_CONTENTS
-#define MENU_CONTEXT_ALL_PROFILE MENU_CONTEXT_PROFILE_LIST|MENU_CONTEXT_PROFILE_SERVICES|MENU_CONTEXT_PROFILE_PROVIDERS
+// clang-format off
+#define MENU_CONTEXT_ALL_FOLDER MENU_CONTEXT_FOLDER_TREE | MENU_CONTEXT_FOLDER_CONTENTS
+#define MENU_CONTEXT_ALL_AB MENU_CONTEXT_AB_TREE | MENU_CONTEXT_AB_CONTENTS
+#define MENU_CONTEXT_ALL_PROFILE \
+	MENU_CONTEXT_PROFILE_LIST | MENU_CONTEXT_PROFILE_SERVICES | MENU_CONTEXT_PROFILE_PROVIDERS
 #define MENU_CONTEXT_ALL_WINDOWS \
  MENU_CONTEXT_MAIN| \
  MENU_CONTEXT_ALL_FOLDER| \
@@ -203,7 +209,8 @@ typedef SMARTVIEW_PARSER_ARRAY_ENTRY* LPSMARTVIEW_PARSER_ARRAY_ENTRY;
  MENU_CONTEXT_DEFAULT_TABLE| \
  MENU_CONTEXT_MAILBOX_TABLE| \
  MENU_CONTEXT_PUBLIC_FOLDER_TABLE
-#define MENU_CONTEXT_ALL MENU_CONTEXT_ALL_WINDOWS|MENU_CONTEXT_PROPERTY
+#define MENU_CONTEXT_ALL MENU_CONTEXT_ALL_WINDOWS | MENU_CONTEXT_PROPERTY
+// clang-format on
 
 // Menu flags - denote when a menu item should be enabled, data to be fetched, etc. May be combined.
 // Used in _MenuItem and _AddInMenuParams.
@@ -215,10 +222,7 @@ typedef SMARTVIEW_PARSER_ARRAY_ENTRY* LPSMARTVIEW_PARSER_ARRAY_ENTRY;
 #define MENU_FLAGS_MULTISELECT 0x00000020 // Enable only when multiple items selected
 #define MENU_FLAGS_REQUESTMODIFY 0x00000040 // Request modify when opening item
 
-#define MENU_FLAGS_ALL_FOLDER \
- MENU_FLAGS_FOLDER_REG| \
- MENU_FLAGS_FOLDER_ASSOC| \
- MENU_FLAGS_DELETED
+#define MENU_FLAGS_ALL_FOLDER MENU_FLAGS_FOLDER_REG | MENU_FLAGS_FOLDER_ASSOC | MENU_FLAGS_DELETED
 
 struct _AddIn; // forward
 typedef _AddIn* LPADDIN;
@@ -279,7 +283,8 @@ struct _AddInDialogControl
 	bool bReadOnly; // Whether the control should be read-only or read-write
 	bool bMultiLine; // Whether the control should be single or multiple lines. ADDIN_CTRL_EDIT_* only.
 	bool bDefaultCheckState; // Default state for a check box. ADDIN_CTRL_CHECK only.
-	ULONG ulDefaultNum; // Default value for an edit control. ADDIN_CTRL_EDIT_NUM_DECIMAL and ADDIN_CTRL_EDIT_NUM_HEX only.
+	ULONG
+	ulDefaultNum; // Default value for an edit control. ADDIN_CTRL_EDIT_NUM_DECIMAL and ADDIN_CTRL_EDIT_NUM_HEX only.
 	LPWSTR szLabel; // Text label for the control. Valid for all controls.
 	LPWSTR szDefaultText; // Default value for an edit control. ADDIN_CTRL_EDIT_TEXT only.
 	size_t cbBin; // Count of bytes in lpBin. ADDIN_CTRL_EDIT_BINARY only.
@@ -318,7 +323,8 @@ typedef _AddInDialogControlResult* LPADDINDIALOGCONTROLRESULT;
 struct _AddInDialogResult
 {
 	ULONG ulNumControls; // Number of entries in lpDialogControlResults
-	LPADDINDIALOGCONTROLRESULT lpDialogControlResults; // Array of _AddInDialogControlResult with final values from the dialog
+	LPADDINDIALOGCONTROLRESULT
+	lpDialogControlResults; // Array of _AddInDialogControlResult with final values from the dialog
 };
 typedef _AddInDialogResult* LPADDINDIALOGRESULT;
 
@@ -329,11 +335,11 @@ typedef _AddInDialogResult* LPADDINDIALOGRESULT;
 // Notes: Uses a 4k buffer for printf parameter expansion. All string to be printed should be smaller than 4k.
 // Uses the DbgAddIn tag (0x00010000) for printing. This tag must be set in MFCMAPI to get output.
 #define szAddInLog "AddInLog" // STRING_OK
-typedef void (STDMETHODVCALLTYPE ADDINLOG)(
+typedef void(STDMETHODVCALLTYPE ADDINLOG)(
 	bool bPrintThreadTime, // whether to print the thread and time banner.
 	_Printf_format_string_ LPWSTR szMsg, // the message to be printed. Uses printf syntax.
 	... // optional printf style parameters
-	);
+);
 typedef ADDINLOG* LPADDINLOG;
 
 // Function: SimpleDialog
@@ -344,7 +350,7 @@ typedef HRESULT(STDMETHODVCALLTYPE SIMPLEDIALOG)(
 	_In_z_ LPWSTR szTitle, // Title for dialog
 	_Printf_format_string_ LPWSTR szMsg, // the message to be printed. Uses printf syntax.
 	... // optional printf style parameters
-	);
+);
 typedef SIMPLEDIALOG* LPSIMPLEDIALOG;
 
 // Function: ComplexDialog
@@ -352,9 +358,10 @@ typedef SIMPLEDIALOG* LPSIMPLEDIALOG;
 #define szComplexDialog "ComplexDialog" // STRING_OK
 typedef HRESULT(_cdecl COMPLEXDIALOG)(
 	_In_ LPADDINDIALOG lpDialog, // In - pointer to a _AddInDialog structure indicating what the dialog should look like
-	_Out_ LPADDINDIALOGRESULT* lppDialogResult // Out, Optional - array of _AddInDialogControlResult structures with the values of the dialog when it was closed
+	_Out_ LPADDINDIALOGRESULT*
+		lppDialogResult // Out, Optional - array of _AddInDialogControlResult structures with the values of the dialog when it was closed
 	// Must be freed with FreeDialogResult
-	);
+);
 typedef COMPLEXDIALOG* LPCOMPLEXDIALOG;
 
 // Function: FreeDialogResult
@@ -363,7 +370,7 @@ typedef COMPLEXDIALOG* LPCOMPLEXDIALOG;
 #define szFreeDialogResult "FreeDialogResult" // STRING_OK
 typedef void(_cdecl FREEDIALOGRESULT)(
 	_In_ LPADDINDIALOGRESULT lpDialogResult // _AddInDialogControlResult array to be freed
-	);
+);
 typedef FREEDIALOGRESULT* LPFREEDIALOGRESULT;
 
 // Function: GetMAPIModule
@@ -373,10 +380,7 @@ typedef FREEDIALOGRESULT* LPFREEDIALOGRESULT;
 // If MAPI is loaded, bForce has no effect.
 // The handle returned is NOT ref-counted. Pay close attention to return values from GetProcAddress. Do not call FreeLibrary.
 #define szGetMAPIModule "GetMAPIModule" // STRING_OK
-typedef void(_cdecl GETMAPIMODULE)(
-	_In_ HMODULE* lphModule,
-	bool bForce
-	);
+typedef void(_cdecl GETMAPIMODULE)(_In_ HMODULE* lphModule, bool bForce);
 typedef GETMAPIMODULE* LPGETMAPIMODULE;
 
 // End functions exported by MFCMAPI
@@ -387,104 +391,102 @@ typedef GETMAPIMODULE* LPGETMAPIMODULE;
 // Use: Let the add-in know we're here, get its name.
 // Notes: If this function is not present, MFCMAPI won't load the add-in. This is the only required function.
 #define szLoadAddIn "LoadAddIn" // STRING_OK
-typedef void (STDMETHODCALLTYPE LOADADDIN)(
-	_In_z_ LPWSTR* szTitle // Name of the add-in
-	);
+typedef void(STDMETHODCALLTYPE LOADADDIN)(_In_z_ LPWSTR* szTitle // Name of the add-in
+);
 typedef LOADADDIN* LPLOADADDIN;
 
 // Function: UnloadAddIn
 // Use: Let the add-in know we're done - it can free any resources it has allocated
 #define szUnloadAddIn "UnloadAddIn" // STRING_OK
-typedef void (STDMETHODCALLTYPE UNLOADADDIN)();
+typedef void(STDMETHODCALLTYPE UNLOADADDIN)();
 typedef UNLOADADDIN* LPUNLOADADDIN;
 
 // Function: GetMenus
 // Use: Returns static array of menu information
 #define szGetMenus "GetMenus" // STRING_OK
-typedef void (STDMETHODCALLTYPE GETMENUS)(
+typedef void(STDMETHODCALLTYPE GETMENUS)(
 	_In_ ULONG* lpulMenu, // Count of _MenuItem structures in lppMenu
 	_In_ LPMENUITEM* lppMenu // Array of _MenuItem structures describing menu items
-	);
+);
 typedef GETMENUS* LPGETMENUS;
 
 // Function: CallMenu
 // Use: Calls back to AddIn with a menu choice - addin will decode and invoke
 #define szCallMenu "CallMenu" // STRING_OK
-typedef HRESULT(STDMETHODCALLTYPE CALLMENU)(
-	_In_ LPADDINMENUPARAMS lpParams // Everything the add-in needs to know
-	);
+typedef HRESULT(STDMETHODCALLTYPE CALLMENU)(_In_ LPADDINMENUPARAMS lpParams // Everything the add-in needs to know
+);
 typedef CALLMENU* LPCALLMENU;
 
 // Function: GetPropTags
 // Use: Returns a static array of property names for MFCMAPI to use in decoding properties
 #define szGetPropTags "GetPropTags" // STRING_OK
-typedef void (STDMETHODCALLTYPE GETPROPTAGS)(
+typedef void(STDMETHODCALLTYPE GETPROPTAGS)(
 	_In_ ULONG* lpulPropTags, // Number of entries in lppPropTags
 	_In_ LPNAME_ARRAY_ENTRY* lppPropTags // Array of NAME_ARRAY_ENTRY structures
-	);
+);
 typedef GETPROPTAGS* LPGETPROPTAGS;
 
 // Function: GetPropTagsV2
 // Use: Returns a static array of property names for MFCMAPI to use in decoding properties
 #define szGetPropTagsV2 "GetPropTagsV2" // STRING_OK
-typedef void (STDMETHODCALLTYPE GETPROPTAGSV2)(
+typedef void(STDMETHODCALLTYPE GETPROPTAGSV2)(
 	_In_ ULONG* lpulPropTags, // Number of entries in lppPropTags
 	_In_ LPNAME_ARRAY_ENTRY_V2* lppPropTags // Array of NAME_ARRAY_ENTRY_V2 structures
-	);
+);
 typedef GETPROPTAGSV2* LPGETPROPTAGSV2;
 
 // Function: GetPropTypes
 // Use: Returns a static array of property types for MFCMAPI to use in decoding properties
 #define szGetPropTypes "GetPropTypes" // STRING_OK
-typedef void (STDMETHODCALLTYPE GETPROPTYPES)(
+typedef void(STDMETHODCALLTYPE GETPROPTYPES)(
 	_In_ ULONG* lpulPropTypes, // Number of entries in lppPropTypes
 	_In_ LPNAME_ARRAY_ENTRY* lppPropTypes // Array of NAME_ARRAY_ENTRY structures
-	);
+);
 typedef GETPROPTYPES* LPGETPROPTYPES;
 
 // Function: GetPropGuids
 // Use: Returns a static array of property guids for MFCMAPI to use in decoding properties
 #define szGetPropGuids "GetPropGuids" // STRING_OK
-typedef void (STDMETHODCALLTYPE GETPROPGUIDS)(
+typedef void(STDMETHODCALLTYPE GETPROPGUIDS)(
 	_In_ ULONG* lpulPropGuids, // Number of entries in lppPropGuids
 	_In_ LPGUID_ARRAY_ENTRY* lppPropGuids // Array of GUID_ARRAY_ENTRY structures
-	);
+);
 typedef GETPROPGUIDS* LPGETPROPGUIDS;
 
 // Function: GetNameIDs
 // Use: Returns a static array of named property mappings for MFCMAPI to use in decoding properties
 #define szGetNameIDs "GetNameIDs" // STRING_OK
-typedef void (STDMETHODCALLTYPE GETNAMEIDS)(
+typedef void(STDMETHODCALLTYPE GETNAMEIDS)(
 	_In_ ULONG* lpulNameIDs, // Number of entries in lppNameIDs
 	_In_ LPNAMEID_ARRAY_ENTRY* lppNameIDs // Array of NAMEID_ARRAY_ENTRY structures
-	);
+);
 typedef GETNAMEIDS* LPGETNAMEIDS;
 
 // Function: GetPropFlags
 // Use: Returns a static array of flag parsing information for MFCMAPI to use in decoding properties
 #define szGetPropFlags "GetPropFlags" // STRING_OK
-typedef void (STDMETHODCALLTYPE GETPROPFLAGS)(
+typedef void(STDMETHODCALLTYPE GETPROPFLAGS)(
 	_In_ ULONG* lpulPropFlags, // Number of entries in lppPropFlags
 	_In_ LPFLAG_ARRAY_ENTRY* lppPropFlags // Array of FLAG_ARRAY_ENTRY structures
-	);
+);
 typedef GETPROPFLAGS* LPGETPROPFLAGS;
 
 // Function: GetSmartViewParserArray
 // Use: Returns a static array of SmartView parsers for MFCMAPI to use in SmartView parsing
 #define szGetSmartViewParserArray "GetSmartViewParserArray" // STRING_OK
-typedef void (STDMETHODCALLTYPE GETSMARTVIEWPARSERARRAY)(
+typedef void(STDMETHODCALLTYPE GETSMARTVIEWPARSERARRAY)(
 	_In_ ULONG* lpulSmartViewParserArray, // Number of entries in lppSmartViewParserArray
 	_In_ LPSMARTVIEW_PARSER_ARRAY_ENTRY* lppSmartViewParserArray // Array of SMARTVIEW_PARSER_ARRAY_ENTRY structures
-	);
+);
 typedef GETSMARTVIEWPARSERARRAY* LPGETSMARTVIEWPARSERARRAY;
 
 // Function: GetSmartViewParserTypeArray
 // Use: Returns a static array of SmartView parser types for MFCMAPI to use in SmartView parsing
 #define szGetSmartViewParserTypeArray "GetSmartViewParserTypeArray" // STRING_OK
-typedef void (STDMETHODCALLTYPE GETSMARTVIEWPARSERTYPEARRAY)(
+typedef void(STDMETHODCALLTYPE GETSMARTVIEWPARSERTYPEARRAY)(
 	_In_ ULONG* lpulSmartViewParserTypeArray, // Number of entries in lppSmartViewParserTypeArray
 	_In_ LPCWSTR** lppSmartViewParserTypeArray // Array of LPCWSTR
-	);
+);
 typedef GETSMARTVIEWPARSERTYPEARRAY* LPGETSMARTVIEWPARSERTYPEARRAY;
 
 // Function: SmartViewParse
@@ -493,16 +495,13 @@ typedef GETSMARTVIEWPARSERTYPEARRAY* LPGETSMARTVIEWPARSERTYPEARRAY;
 typedef LPWSTR(STDMETHODCALLTYPE SMARTVIEWPARSE)(
 	_In_ LPCWSTR szParserType, // Name of parser type
 	ULONG cbBin,
-	_In_count_(cbBin) LPBYTE lpBin
-	);
+	_In_count_(cbBin) LPBYTE lpBin);
 typedef SMARTVIEWPARSE* LPSMARTVIEWPARSE;
 
 // Function: FreeParse
 // Use: Free the string returned by SmartViewParse
 #define szFreeParse "FreeParse" // STRING_OK
-typedef void(STDMETHODCALLTYPE FREEPARSE)(
-	_In_ LPWSTR szParse
-	);
+typedef void(STDMETHODCALLTYPE FREEPARSE)(_In_ LPWSTR szParse);
 typedef FREEPARSE* LPFREEPARSE;
 
 // Function: GetAPIVersion

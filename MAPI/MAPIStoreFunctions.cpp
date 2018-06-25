@@ -59,9 +59,7 @@ namespace mapi
 		}
 
 		// Build a server DN.
-		std::string BuildServerDN(
-			const std::string& szServerName,
-			const std::string& szPost)
+		std::string BuildServerDN(const std::string& szServerName, const std::string& szPost)
 		{
 			static std::string szPre = "/cn=Configuration/cn=Servers/cn="; // STRING_OK
 			return szPre + szServerName + szPost;
@@ -77,18 +75,10 @@ namespace mapi
 			*lpMailboxTable = nullptr;
 
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE lpManageStore1 = nullptr;
-
-			WC_MAPI(lpMDB->QueryInterface(
-				IID_IExchangeManageStore,
-				reinterpret_cast<LPVOID*>(&lpManageStore1)));
-
+			auto lpManageStore1 = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpManageStore1)
 			{
-				WC_MAPI(lpManageStore1->GetMailboxTable(
-					LPSTR(szServerDN.c_str()),
-					lpMailboxTable,
-					ulFlags));
+				WC_MAPI(lpManageStore1->GetMailboxTable(LPSTR(szServerDN.c_str()), lpMailboxTable, ulFlags));
 
 				lpManageStore1->Release();
 			}
@@ -107,19 +97,11 @@ namespace mapi
 			*lpMailboxTable = nullptr;
 
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE3 lpManageStore3 = nullptr;
-
-			WC_MAPI(lpMDB->QueryInterface(
-				IID_IExchangeManageStore3,
-				reinterpret_cast<LPVOID*>(&lpManageStore3)));
-
+			auto lpManageStore3 = mapi::safe_cast<LPEXCHANGEMANAGESTORE3>(lpMDB);
 			if (lpManageStore3)
 			{
 				WC_MAPI(lpManageStore3->GetMailboxTableOffset(
-					LPSTR(szServerDN.c_str()),
-					lpMailboxTable,
-					ulFlags,
-					ulOffset));
+					LPSTR(szServerDN.c_str()), lpMailboxTable, ulFlags, ulOffset));
 
 				lpManageStore3->Release();
 			}
@@ -139,20 +121,11 @@ namespace mapi
 			*lpMailboxTable = nullptr;
 
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE5 lpManageStore5 = nullptr;
-
-			EC_MAPI(lpMDB->QueryInterface(
-				guid::IID_IExchangeManageStore5,
-				reinterpret_cast<LPVOID*>(&lpManageStore5)));
-
+			auto lpManageStore5 = mapi::safe_cast<LPEXCHANGEMANAGESTORE5>(lpMDB);
 			if (lpManageStore5)
 			{
 				EC_MAPI(lpManageStore5->GetMailboxTableEx(
-					LPSTR(szServerDN.c_str()),
-					lpGuidMDB,
-					lpMailboxTable,
-					ulFlags,
-					ulOffset));
+					LPSTR(szServerDN.c_str()), lpGuidMDB, lpMailboxTable, ulFlags, ulOffset));
 
 				lpManageStore5->Release();
 			}
@@ -175,25 +148,14 @@ namespace mapi
 			auto hRes = S_OK;
 			LPMAPITABLE lpLocalTable = nullptr;
 
-			auto szServerDN = BuildServerDN(
-				szServerName,
-				"");
+			auto szServerDN = BuildServerDN(szServerName, "");
 			if (!szServerDN.empty())
 			{
-				WC_H(GetMailboxTable3(
-					lpMDB,
-					szServerDN,
-					ulOffset,
-					fMapiUnicode,
-					&lpLocalTable));
+				WC_H(GetMailboxTable3(lpMDB, szServerDN, ulOffset, fMapiUnicode, &lpLocalTable));
 
 				if (!lpLocalTable && 0 == ulOffset)
 				{
-					WC_H(GetMailboxTable1(
-						lpMDB,
-						szServerDN,
-						fMapiUnicode,
-						&lpLocalTable));
+					WC_H(GetMailboxTable1(lpMDB, szServerDN, fMapiUnicode, &lpLocalTable));
 				}
 			}
 
@@ -211,18 +173,10 @@ namespace mapi
 			*lpPFTable = nullptr;
 
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE lpManageStore1 = nullptr;
-
-			EC_MAPI(lpMDB->QueryInterface(
-				IID_IExchangeManageStore,
-				reinterpret_cast<LPVOID*>(&lpManageStore1)));
-
+			auto lpManageStore1 = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpManageStore1)
 			{
-				EC_MAPI(lpManageStore1->GetPublicFolderTable(
-					LPSTR(szServerDN.c_str()),
-					lpPFTable,
-					ulFlags));
+				EC_MAPI(lpManageStore1->GetPublicFolderTable(LPSTR(szServerDN.c_str()), lpPFTable, ulFlags));
 
 				lpManageStore1->Release();
 			}
@@ -241,19 +195,11 @@ namespace mapi
 			*lpPFTable = nullptr;
 
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE4 lpManageStore4 = nullptr;
-
-			EC_MAPI(lpMDB->QueryInterface(
-				IID_IExchangeManageStore4,
-				reinterpret_cast<LPVOID*>(&lpManageStore4)));
-
+			auto lpManageStore4 = mapi::safe_cast<LPEXCHANGEMANAGESTORE4>(lpMDB);
 			if (lpManageStore4)
 			{
 				EC_MAPI(lpManageStore4->GetPublicFolderTableOffset(
-					LPSTR(szServerDN.c_str()),
-					lpPFTable,
-					ulFlags,
-					ulOffset));
+					LPSTR(szServerDN.c_str()), lpPFTable, ulFlags, ulOffset));
 				lpManageStore4->Release();
 			}
 
@@ -272,20 +218,11 @@ namespace mapi
 			*lpPFTable = nullptr;
 
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE5 lpManageStore5 = nullptr;
-
-			EC_MAPI(lpMDB->QueryInterface(
-				guid::IID_IExchangeManageStore5,
-				reinterpret_cast<LPVOID*>(&lpManageStore5)));
-
+			auto lpManageStore5 = mapi::safe_cast<LPEXCHANGEMANAGESTORE5>(lpMDB);
 			if (lpManageStore5)
 			{
 				EC_MAPI(lpManageStore5->GetPublicFolderTableEx(
-					LPSTR(szServerDN.c_str()),
-					lpGuidMDB,
-					lpPFTable,
-					ulFlags,
-					ulOffset));
+					LPSTR(szServerDN.c_str()), lpGuidMDB, lpPFTable, ulFlags, ulOffset));
 
 				lpManageStore5->Release();
 			}
@@ -304,15 +241,9 @@ namespace mapi
 
 			if (!lpSession) return "";
 
-			EC_MAPI(lpSession->AdminServices(
-				0,
-				&pSvcAdmin));
+			EC_MAPI(lpSession->AdminServices(0, &pSvcAdmin));
 
-			EC_MAPI(pSvcAdmin->OpenProfileSection(
-				LPMAPIUID(pbGlobalProfileSectionGuid),
-				nullptr,
-				0,
-				&pGlobalProfSect));
+			EC_MAPI(pSvcAdmin->OpenProfileSection(LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &pGlobalProfSect));
 
 			WC_MAPI(HrGetOneProp(pGlobalProfSect, PR_PROFILE_HOME_SERVER, &lpServerName));
 
@@ -326,15 +257,12 @@ namespace mapi
 				hRes = S_OK;
 				// prompt the user to enter a server name
 				dialog::editor::CEditor MyData(
-					nullptr,
-					IDS_SERVERNAME,
-					IDS_SERVERNAMEMISSINGPROMPT,
-					CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+					nullptr, IDS_SERVERNAME, IDS_SERVERNAMEMISSINGPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 				MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
 
 				WC_H(MyData.DisplayDialog());
 
-				if (S_OK == hRes)
+				if (hRes == S_OK)
 				{
 					serverName = strings::wstringTostring(MyData.GetStringW(0));
 				}
@@ -352,25 +280,27 @@ namespace mapi
 			const std::string& lpszMailboxDN, // desired mailbox DN or NULL
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
 			_Out_opt_ ULONG* lpcbEntryID,
-			_Deref_out_opt_ LPENTRYID * lppEntryID)
+			_Deref_out_opt_ LPENTRYID* lppEntryID)
 		{
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE lpXManageStore = nullptr;
 
 			if (!lpMDB || lpszMsgStoreDN.empty() || !StoreSupportsManageStore(lpMDB))
 			{
 				if (!lpMDB) output::DebugPrint(DBGGeneric, L"CreateStoreEntryID: MDB was NULL\n");
-				if (lpszMsgStoreDN.empty()) output::DebugPrint(DBGGeneric, L"CreateStoreEntryID: lpszMsgStoreDN was missing\n");
+				if (lpszMsgStoreDN.empty())
+					output::DebugPrint(DBGGeneric, L"CreateStoreEntryID: lpszMsgStoreDN was missing\n");
 				return MAPI_E_INVALID_PARAMETER;
 			}
 
-			EC_MAPI(lpMDB->QueryInterface(
-				IID_IExchangeManageStore,
-				reinterpret_cast<LPVOID*>(&lpXManageStore)));
-
+			auto lpXManageStore = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpXManageStore)
 			{
-				output::DebugPrint(DBGGeneric, L"CreateStoreEntryID: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", Flags = \"0x%X\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str(), ulFlags);
+				output::DebugPrint(
+					DBGGeneric,
+					L"CreateStoreEntryID: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", Flags = \"0x%X\"\n",
+					lpszMsgStoreDN.c_str(),
+					lpszMailboxDN.c_str(),
+					ulFlags);
 
 				EC_MAPI(lpXManageStore->CreateStoreEntryID(
 					LPSTR(lpszMsgStoreDN.c_str()),
@@ -392,26 +322,30 @@ namespace mapi
 			const std::wstring& smtpAddress,
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
 			_Out_opt_ ULONG* lpcbEntryID,
-			_Deref_out_opt_ LPENTRYID * lppEntryID)
+			_Deref_out_opt_ LPENTRYID* lppEntryID)
 		{
 			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTOREEX lpXManageStoreEx = nullptr;
 
 			if (!lpMDB || lpszMsgStoreDN.empty() || !StoreSupportsManageStoreEx(lpMDB))
 			{
 				if (!lpMDB) output::DebugPrint(DBGGeneric, L"CreateStoreEntryID2: MDB was NULL\n");
-				if (lpszMsgStoreDN.empty()) output::DebugPrint(DBGGeneric, L"CreateStoreEntryID2: lpszMsgStoreDN was missing\n");
+				if (lpszMsgStoreDN.empty())
+					output::DebugPrint(DBGGeneric, L"CreateStoreEntryID2: lpszMsgStoreDN was missing\n");
 				return MAPI_E_INVALID_PARAMETER;
 			}
 
-			EC_MAPI(lpMDB->QueryInterface(
-				guid::IID_IExchangeManageStoreEx,
-				reinterpret_cast<LPVOID*>(&lpXManageStoreEx)));
-
+			auto lpXManageStoreEx = mapi::safe_cast<LPEXCHANGEMANAGESTOREEX>(lpMDB);
 			if (lpXManageStoreEx)
 			{
-				output::DebugPrint(DBGGeneric, L"CreateStoreEntryID2: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", SmtpAddress = \"%ws\", Flags = \"0x%X\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str(), smtpAddress.c_str(), ulFlags);
-				SPropValue sProps[4] = { 0 };
+				output::DebugPrint(
+					DBGGeneric,
+					L"CreateStoreEntryID2: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", SmtpAddress = "
+					L"\"%ws\", Flags = \"0x%X\"\n",
+					lpszMsgStoreDN.c_str(),
+					lpszMailboxDN.c_str(),
+					smtpAddress.c_str(),
+					ulFlags);
+				SPropValue sProps[4] = {0};
 				sProps[0].ulPropTag = PR_PROFILE_MAILBOX;
 				sProps[0].Value.lpszA = LPSTR(lpszMailboxDN.c_str());
 
@@ -445,7 +379,7 @@ namespace mapi
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
 			bool bForceServer, // Use CreateStoreEntryID2
 			_Out_opt_ ULONG* lpcbEntryID,
-			_Deref_out_opt_ LPENTRYID * lppEntryID)
+			_Deref_out_opt_ LPENTRYID* lppEntryID)
 		{
 			auto hRes = S_OK;
 
@@ -457,24 +391,12 @@ namespace mapi
 
 			if (!bForceServer)
 			{
-				EC_MAPI(CreateStoreEntryID(
-					lpMDB,
-					lpszMsgStoreDN,
-					lpszMailboxDN,
-					ulFlags,
-					lpcbEntryID,
-					lppEntryID));
+				EC_MAPI(CreateStoreEntryID(lpMDB, lpszMsgStoreDN, lpszMailboxDN, ulFlags, lpcbEntryID, lppEntryID));
 			}
 			else
 			{
 				EC_MAPI(CreateStoreEntryID2(
-					lpMDB,
-					lpszMsgStoreDN,
-					lpszMailboxDN,
-					smtpAddress,
-					ulFlags,
-					lpcbEntryID,
-					lppEntryID));
+					lpMDB, lpszMsgStoreDN, lpszMailboxDN, smtpAddress, ulFlags, lpcbEntryID, lppEntryID));
 			}
 
 			return hRes;
@@ -513,7 +435,7 @@ namespace mapi
 			_Deref_out_opt_ LPMDB* lppMailboxMDB) // ptr to mailbox message store ptr
 		{
 			auto hRes = S_OK;
-			SBinary sbEID = { 0 };
+			SBinary sbEID = {0};
 
 			*lppMailboxMDB = nullptr;
 
@@ -523,7 +445,15 @@ namespace mapi
 				return MAPI_E_INVALID_PARAMETER;
 			}
 
-			WC_H(CreateStoreEntryID(lpMDB, lpszMsgStoreDN, lpszMailboxDN, smtpAddress, ulFlags, bForceServer, &sbEID.cb, reinterpret_cast<LPENTRYID*>(&sbEID.lpb)));
+			WC_H(CreateStoreEntryID(
+				lpMDB,
+				lpszMsgStoreDN,
+				lpszMailboxDN,
+				smtpAddress,
+				ulFlags,
+				bForceServer,
+				&sbEID.cb,
+				reinterpret_cast<LPENTRYID*>(&sbEID.lpb)));
 
 			if (SUCCEEDED(hRes))
 			{
@@ -531,10 +461,9 @@ namespace mapi
 					lpMAPISession,
 					NULL,
 					&sbEID,
-					MDB_NO_DIALOG |
-					MDB_NO_MAIL | // spooler not notified of our presence
-					MDB_TEMPORARY | // message store not added to MAPI profile
-					MAPI_BEST_ACCESS, // normally WRITE, but allow access to RO store
+					MDB_NO_DIALOG | MDB_NO_MAIL | // spooler not notified of our presence
+						MDB_TEMPORARY | // message store not added to MAPI profile
+						MAPI_BEST_ACCESS, // normally WRITE, but allow access to RO store
 					lppMailboxMDB));
 			}
 
@@ -542,9 +471,8 @@ namespace mapi
 			return hRes;
 		}
 
-		_Check_return_ HRESULT OpenDefaultMessageStore(
-			_In_ LPMAPISESSION lpMAPISession,
-			_Deref_out_ LPMDB* lppDefaultMDB)
+		_Check_return_ HRESULT
+		OpenDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession, _Deref_out_ LPMDB* lppDefaultMDB)
 		{
 			auto hRes = S_OK;
 			LPMAPITABLE pStoresTbl = nullptr;
@@ -557,9 +485,8 @@ namespace mapi
 				EID,
 				NUM_COLS
 			};
-			static const SizedSPropTagArray(NUM_COLS, sptEIDCol) =
-			{
-			NUM_COLS,
+			static const SizedSPropTagArray(NUM_COLS, sptEIDCol) = {
+				NUM_COLS,
 				{PR_ENTRYID},
 			};
 			if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
@@ -586,13 +513,10 @@ namespace mapi
 			if (pRow && pRow->cRows)
 			{
 				WC_H(CallOpenMsgStore(
-					lpMAPISession,
-					NULL,
-					&pRow->aRow[0].lpProps[EID].Value.bin,
-					MDB_WRITE,
-					lppDefaultMDB));
+					lpMAPISession, NULL, &pRow->aRow[0].lpProps[EID].Value.bin, MDB_WRITE, lppDefaultMDB));
 			}
-			else hRes = MAPI_E_NOT_FOUND;
+			else
+				hRes = MAPI_E_NOT_FOUND;
 
 			if (pRow) FreeProws(pRow);
 			if (pStoresTbl) pStoresTbl->Release();
@@ -614,8 +538,17 @@ namespace mapi
 
 			*lppOtherUserMDB = nullptr;
 
-			output::DebugPrint(DBGGeneric, L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%hs\", Mailbox = \"%hs\", SmtpAddress = \"%ws\"\n", lpMAPISession, lpMDB, szServerName.c_str(), szMailboxDN.c_str(), smtpAddress.c_str());
-			if (!lpMAPISession || !lpMDB || szMailboxDN.empty() || !StoreSupportsManageStore(lpMDB)) return MAPI_E_INVALID_PARAMETER;
+			output::DebugPrint(
+				DBGGeneric,
+				L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%hs\", Mailbox = "
+				L"\"%hs\", SmtpAddress = \"%ws\"\n",
+				lpMAPISession,
+				lpMDB,
+				szServerName.c_str(),
+				szMailboxDN.c_str(),
+				smtpAddress.c_str());
+			if (!lpMAPISession || !lpMDB || szMailboxDN.empty() || !StoreSupportsManageStore(lpMDB))
+				return MAPI_E_INVALID_PARAMETER;
 
 			std::string serverName;
 			if (szServerName.empty())
@@ -630,13 +563,13 @@ namespace mapi
 
 			if (!serverName.empty())
 			{
-				auto szServerDN = BuildServerDN(
-					serverName,
-					"/cn=Microsoft Private MDB"); // STRING_OK
+				auto szServerDN = BuildServerDN(serverName,
+												"/cn=Microsoft Private MDB"); // STRING_OK
 
 				if (!szServerDN.empty())
 				{
-					output::DebugPrint(DBGGeneric, L"Calling HrMailboxLogon with Server DN = \"%hs\"\n", szServerDN.c_str());
+					output::DebugPrint(
+						DBGGeneric, L"Calling HrMailboxLogon with Server DN = \"%hs\"\n", szServerDN.c_str());
 					WC_H(HrMailboxLogon(
 						lpMAPISession,
 						lpMDB,
@@ -667,19 +600,19 @@ namespace mapi
 			if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
 			dialog::editor::CEditor MyPrompt(
-				nullptr,
-				IDS_OPENOTHERUSER,
-				IDS_OPENWITHFLAGSPROMPT,
-				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+				nullptr, IDS_OPENOTHERUSER, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-			MyPrompt.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, strings::stringTowstring(szServerName), false));
+			MyPrompt.InitPane(
+				0,
+				viewpane::TextPane::CreateSingleLinePane(
+					IDS_SERVERNAME, strings::stringTowstring(szServerName), false));
 			MyPrompt.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_USERDN, szMailboxDN, false));
 			MyPrompt.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_USER_SMTP_ADDRESS, false));
 			MyPrompt.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 			MyPrompt.SetHex(3, ulFlags);
 			MyPrompt.InitPane(4, viewpane::CheckPane::Create(IDS_FORCESERVER, false, false));
 			WC_H(MyPrompt.DisplayDialog());
-			if (S_OK == hRes)
+			if (hRes == S_OK)
 			{
 				WC_H(OpenOtherUsersMailbox(
 					lpMAPISession,
@@ -762,14 +695,7 @@ namespace mapi
 				STORETYPE,
 				NUM_COLS
 			};
-			static const SizedSPropTagArray(NUM_COLS, sptCols) =
-			{
-			NUM_COLS,
-				{
-					PR_ENTRYID,
-					PR_MDB_PROVIDER
-				}
-			};
+			static const SizedSPropTagArray(NUM_COLS, sptCols) = {NUM_COLS, {PR_ENTRYID, PR_MDB_PROVIDER}};
 
 			*lppMDB = nullptr;
 			if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
@@ -787,23 +713,24 @@ namespace mapi
 					&pRow));
 				if (pRow)
 				{
-					if (!FAILED(hRes)) for (ULONG ulRowNum = 0; ulRowNum < pRow->cRows; ulRowNum++)
-					{
-						hRes = S_OK;
-						// check to see if we have a folder with a matching GUID
-						if (pRow->aRow[ulRowNum].lpProps[STORETYPE].ulPropTag == PR_MDB_PROVIDER &&
-							pRow->aRow[ulRowNum].lpProps[EID].ulPropTag == PR_ENTRYID &&
-							IsEqualMAPIUID(pRow->aRow[ulRowNum].lpProps[STORETYPE].Value.bin.lpb, lpGUID))
+					if (!FAILED(hRes))
+						for (ULONG ulRowNum = 0; ulRowNum < pRow->cRows; ulRowNum++)
 						{
-							WC_H(CallOpenMsgStore(
-								lpMAPISession,
-								NULL,
-								&pRow->aRow[ulRowNum].lpProps[EID].Value.bin,
-								MDB_WRITE,
-								lppMDB));
-							break;
+							hRes = S_OK;
+							// check to see if we have a folder with a matching GUID
+							if (pRow->aRow[ulRowNum].lpProps[STORETYPE].ulPropTag == PR_MDB_PROVIDER &&
+								pRow->aRow[ulRowNum].lpProps[EID].ulPropTag == PR_ENTRYID &&
+								IsEqualMAPIUID(pRow->aRow[ulRowNum].lpProps[STORETYPE].Value.bin.lpb, lpGUID))
+							{
+								WC_H(CallOpenMsgStore(
+									lpMAPISession,
+									NULL,
+									&pRow->aRow[ulRowNum].lpProps[EID].Value.bin,
+									MDB_WRITE,
+									lppMDB));
+								break;
+							}
 						}
-					}
 				}
 			}
 			if (!*lppMDB) hRes = MAPI_E_NOT_FOUND;
@@ -826,10 +753,7 @@ namespace mapi
 
 			if (!lpMAPISession || !lppPublicMDB) return MAPI_E_INVALID_PARAMETER;
 
-			WC_H(OpenMessageStoreGUID(
-				lpMAPISession,
-				pbExchangeProviderPublicGuid,
-				&lpPublicMDBNonAdmin));
+			WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPublicGuid, &lpPublicMDBNonAdmin));
 
 			// If we don't have flags we're done
 			if (!ulFlags)
@@ -843,7 +767,8 @@ namespace mapi
 				auto server = szServerName;
 				if (server.empty())
 				{
-					EC_MAPI(HrGetOneProp(lpPublicMDBNonAdmin, CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_STRING8), &lpServerName));
+					EC_MAPI(HrGetOneProp(
+						lpPublicMDBNonAdmin, CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_STRING8), &lpServerName));
 					if (mapi::CheckStringProp(lpServerName, PT_STRING8))
 					{
 						server = lpServerName->Value.lpszA;
@@ -854,9 +779,8 @@ namespace mapi
 
 				if (!server.empty())
 				{
-					auto szServerDN = BuildServerDN(
-						server,
-						"/cn=Microsoft Public MDB"); // STRING_OK
+					auto szServerDN = BuildServerDN(server,
+													"/cn=Microsoft Public MDB"); // STRING_OK
 
 					if (!szServerDN.empty())
 					{
@@ -877,7 +801,8 @@ namespace mapi
 			return hRes;
 		}
 
-		_Check_return_ HRESULT OpenStoreFromMAPIProp(_In_ LPMAPISESSION lpMAPISession, _In_ LPMAPIPROP lpMAPIProp, _Deref_out_ LPMDB* lpMDB)
+		_Check_return_ HRESULT
+		OpenStoreFromMAPIProp(_In_ LPMAPISESSION lpMAPISession, _In_ LPMAPIPROP lpMAPIProp, _Deref_out_ LPMDB* lpMDB)
 		{
 			auto hRes = S_OK;
 			LPSPropValue lpProp = nullptr;
@@ -888,12 +813,7 @@ namespace mapi
 
 			if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 			{
-				WC_H(CallOpenMsgStore(
-					lpMAPISession,
-					NULL,
-					&lpProp->Value.bin,
-					MAPI_BEST_ACCESS,
-					lpMDB));
+				WC_H(CallOpenMsgStore(lpMAPISession, NULL, &lpProp->Value.bin, MAPI_BEST_ACCESS, lpMDB));
 			}
 
 			MAPIFreeBuffer(lpProp);
@@ -902,41 +822,29 @@ namespace mapi
 
 		_Check_return_ bool StoreSupportsManageStore(_In_ LPMDB lpMDB)
 		{
-			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE lpIManageStore = nullptr;
-
 			if (!lpMDB) return false;
 
-			EC_H_MSG(lpMDB->QueryInterface(
-				IID_IExchangeManageStore,
-				reinterpret_cast<LPVOID*>(&lpIManageStore)),
-				IDS_MANAGESTORENOTSUPPORTED);
-
+			auto lpIManageStore = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpIManageStore)
 			{
 				lpIManageStore->Release();
 				return true;
 			}
+
 			return false;
 		}
 
 		_Check_return_ bool StoreSupportsManageStoreEx(_In_ LPMDB lpMDB)
 		{
-			auto hRes = S_OK;
-			LPEXCHANGEMANAGESTORE lpIManageStore = nullptr;
-
 			if (!lpMDB) return false;
 
-			EC_H_MSG(lpMDB->QueryInterface(
-				guid::IID_IExchangeManageStoreEx,
-				reinterpret_cast<LPVOID*>(&lpIManageStore)),
-				IDS_MANAGESTOREEXNOTSUPPORTED);
-
+			auto lpIManageStore = mapi::safe_cast<LPEXCHANGEMANAGESTOREEX>(lpMDB);
 			if (lpIManageStore)
 			{
 				lpIManageStore->Release();
 				return true;
 			}
+
 			return false;
 		}
 
@@ -944,11 +852,10 @@ namespace mapi
 		{
 			if (!lpMDBIn || !lppMDBOut) return MAPI_E_INVALID_PARAMETER;
 			auto hRes = S_OK;
-			IProxyStoreObject* lpProxyObj = nullptr;
-			LPMDB lpUnwrappedMDB = nullptr;
-			EC_MAPI(lpMDBIn->QueryInterface(guid::IID_IProxyStoreObject, reinterpret_cast<LPVOID*>(&lpProxyObj)));
-			if (SUCCEEDED(hRes) && lpProxyObj)
+			auto lpProxyObj = mapi::safe_cast<IProxyStoreObject*>(lpMDBIn);
+			if (lpProxyObj)
 			{
+				LPMDB lpUnwrappedMDB = nullptr;
 				EC_MAPI(lpProxyObj->UnwrapNoRef(reinterpret_cast<LPVOID*>(&lpUnwrappedMDB)));
 				if (SUCCEEDED(hRes) && lpUnwrappedMDB)
 				{

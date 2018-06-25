@@ -19,15 +19,16 @@ namespace dialog
 			_In_ cache::CMapiObjects* lpMapiObjects,
 			UINT uidTitle,
 			__mfcmapiCreateDialogEnum bCreateDialog,
+			_In_opt_ LPMAPIPROP lpContainer,
 			_In_opt_ LPMAPITABLE lpContentsTable,
 			_In_ LPSPropTagArray sptExtraColumnTags,
 			_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
 			ULONG nIDContextMenu,
-			ULONG ulAddInContext
-		);
+			ULONG ulAddInContext);
 		virtual ~CContentsTableDlg();
 
-		_Check_return_ virtual HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
+		_Check_return_ virtual HRESULT
+		OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
 
 	protected:
 		// Overrides from base class
@@ -77,6 +78,8 @@ namespace dialog
 		std::vector<TagNames> m_lpExtraDisplayColumns;
 		LPSPropTagArray m_sptExtraColumnTags;
 		UINT m_nIDContextMenu;
+
+		LPMAPICONTAINER m_lpContainer;
 
 		DECLARE_MESSAGE_MAP()
 	};

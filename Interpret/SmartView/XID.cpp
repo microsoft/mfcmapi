@@ -6,7 +6,7 @@ namespace smartview
 {
 	XID::XID()
 	{
-		m_NamespaceGuid = { 0 };
+		m_NamespaceGuid = {0};
 		m_cbLocalId = 0;
 	}
 
@@ -19,8 +19,7 @@ namespace smartview
 
 	_Check_return_ std::wstring XID::ToStringInternal()
 	{
-		return strings::formatmessage(IDS_XID,
-			guid::GUIDToString(&m_NamespaceGuid).c_str(),
-			strings::BinToHexString(m_LocalID, true).c_str());
+		return strings::formatmessage(
+			IDS_XID, guid::GUIDToString(&m_NamespaceGuid).c_str(), strings::BinToHexString(m_LocalID, true).c_str());
 	}
 }

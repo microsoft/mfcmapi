@@ -22,12 +22,10 @@ namespace mapi
 			if (m_lpAdviseTarget) m_lpAdviseTarget->Release();
 		}
 
-		STDMETHODIMP CAdviseSink::QueryInterface(REFIID riid,
-			LPVOID * ppvObj)
+		STDMETHODIMP CAdviseSink::QueryInterface(REFIID riid, LPVOID* ppvObj)
 		{
 			*ppvObj = nullptr;
-			if (riid == IID_IMAPIAdviseSink ||
-				riid == IID_IUnknown)
+			if (riid == IID_IMAPIAdviseSink || riid == IID_IUnknown)
 			{
 				*ppvObj = static_cast<LPVOID>(this);
 				AddRef();
@@ -52,8 +50,7 @@ namespace mapi
 			return lCount;
 		}
 
-		STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify,
-			LPNOTIFICATION lpNotifications)
+		STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify, LPNOTIFICATION lpNotifications)
 		{
 			auto hRes = S_OK;
 
@@ -75,7 +72,8 @@ namespace mapi
 					case TABLE_ERROR:
 					case TABLE_CHANGED:
 					case TABLE_RELOAD:
-						EC_H(static_cast<HRESULT>(::SendMessage(m_hWndParent, WM_MFCMAPI_REFRESHTABLE, reinterpret_cast<WPARAM>(m_hTreeParent), 0)));
+						EC_H(static_cast<HRESULT>(::SendMessage(
+							m_hWndParent, WM_MFCMAPI_REFRESHTABLE, reinterpret_cast<WPARAM>(m_hTreeParent), 0)));
 						break;
 					case TABLE_ROW_ADDED:
 						EC_H(static_cast<HRESULT>(::SendMessage(

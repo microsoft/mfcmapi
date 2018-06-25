@@ -7,7 +7,7 @@ namespace controls
 	namespace sortlistctrl
 	{
 		// This enum maps to icons.bmp
-	// Reorder at your own risk!!!
+		// Reorder at your own risk!!!
 		enum __SortListIconNames
 		{
 			slIconDefault = 0,
@@ -80,7 +80,8 @@ namespace controls
 
 		protected:
 			void MySetRedraw(bool bRedraw);
-			_Check_return_ sortlistdata::SortListData* InsertRow(int iRow, const std::wstring& szText, int iIndent, int iImage) const;
+			_Check_return_ sortlistdata::SortListData*
+			InsertRow(int iRow, const std::wstring& szText, int iIndent, int iImage) const;
 			void FakeClickColumn(int iColumn, bool bSortUp);
 
 			// protected since derived classes need to call the base implementation
@@ -95,7 +96,8 @@ namespace controls
 			void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 			void AutoSizeColumn(int iColumn, int iMaxWidth, int iMinWidth);
 			void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-			_Check_return_ static int CALLBACK MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort);
+			_Check_return_ static int CALLBACK
+			MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort);
 
 			LONG m_cRef;
 			int m_iRedrawCount;

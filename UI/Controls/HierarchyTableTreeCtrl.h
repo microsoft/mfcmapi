@@ -20,7 +20,7 @@ namespace controls
 		CHierarchyTableTreeCtrl(
 			_In_ CWnd* pCreateParent,
 			_In_ cache::CMapiObjects* lpMapiObjects,
-			_In_ dialog::CHierarchyTableDlg *lpHostDlg,
+			_In_ dialog::CHierarchyTableDlg* lpHostDlg,
 			ULONG ulDisplayFlags,
 			UINT nIDContextMenu);
 		virtual ~CHierarchyTableTreeCtrl();
@@ -46,9 +46,10 @@ namespace controls
 
 		_Check_return_ HRESULT ExpandNode(HTREEITEM hParent) const;
 		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
-		void GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify, _In_ LPMAPICONTAINER * lppContainer) const;
-		_Check_return_ LPMAPITABLE GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bRegNotifs) const;
-		void OnContextMenu(_In_ CWnd *pWnd, CPoint pos);
+		void GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify, _In_ LPMAPICONTAINER* lppContainer) const;
+		_Check_return_ LPMAPITABLE
+		GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bRegNotifs) const;
+		void OnContextMenu(_In_ CWnd* pWnd, CPoint pos);
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnDblclk(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
@@ -62,11 +63,9 @@ namespace controls
 
 		// Node insertion
 		_Check_return_ HRESULT AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer) const;
-		void AddNode(
-			_In_ const std::wstring& szName,
-			HTREEITEM hParent,
-			sortlistdata::SortListData* lpData,
-			bool bGetTable) const;
+		void
+		AddNode(_In_ const std::wstring& szName, HTREEITEM hParent, sortlistdata::SortListData* lpData, bool bGetTable)
+			const;
 		void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, bool bGetTable) const;
 
 		// Custom messages

@@ -5,7 +5,7 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		class PropListData :public IData
+		class PropListData : public IData
 		{
 		public:
 			PropListData(_In_ ULONG ulPropTag);

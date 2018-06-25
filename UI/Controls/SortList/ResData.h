@@ -5,7 +5,7 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		class ResData :public IData
+		class ResData : public IData
 		{
 		public:
 			ResData(_In_ const _SRestriction* lpOldRes);

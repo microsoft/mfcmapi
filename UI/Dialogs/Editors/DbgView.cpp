@@ -17,8 +17,8 @@ namespace dialog
 
 		private:
 			_Check_return_ ULONG HandleChange(UINT nID) override;
-			void  OnEditAction1() override;
-			void  OnEditAction2() override;
+			void OnEditAction1() override;
+			void OnEditAction2() override;
 
 			// OnOK override does nothing except *not* call base OnOK
 			void OnOK() override {}
@@ -50,8 +50,15 @@ namespace dialog
 
 		static std::wstring CLASS = L"CDbgView";
 
-		CDbgView::CDbgView(_In_ ui::CParentWnd* pParentWnd) :
-			CEditor(pParentWnd, IDS_DBGVIEW, NULL, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2, IDS_CLEAR, IDS_CLOSE, NULL)
+		CDbgView::CDbgView(_In_ ui::CParentWnd* pParentWnd)
+			: CEditor(
+				  pParentWnd,
+				  IDS_DBGVIEW,
+				  NULL,
+				  CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2,
+				  IDS_CLEAR,
+				  IDS_CLOSE,
+				  NULL)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 			InitPane(DBGVIEW_TAGS, viewpane::TextPane::CreateSingleLinePane(IDS_REGKEY_DEBUG_TAG, false));
@@ -112,10 +119,7 @@ namespace dialog
 		}
 
 		// Close
-		void CDbgView::OnEditAction2()
-		{
-			OnCancel();
-		}
+		void CDbgView::OnEditAction2() { OnCancel(); }
 
 		void CDbgView::AppendText(const std::wstring& szMsg) const
 		{

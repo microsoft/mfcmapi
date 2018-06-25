@@ -4,12 +4,12 @@
 namespace smartview
 {
 	// TimeZone
-// =====================
-//   This is an individual description that defines when a daylight
-//   savings shift, and the return to standard time occurs, and how
-//   far the shift is.  This is basically the same as
-//   TIME_ZONE_INFORMATION documented in MSDN, except that the strings
-//   describing the names 'daylight' and 'standard' time are omitted.
+	// =====================
+	//   This is an individual description that defines when a daylight
+	//   savings shift, and the return to standard time occurs, and how
+	//   far the shift is.  This is basically the same as
+	//   TIME_ZONE_INFORMATION documented in MSDN, except that the strings
+	//   describing the names 'daylight' and 'standard' time are omitted.
 	class TimeZone : public SmartViewParser
 	{
 	public:

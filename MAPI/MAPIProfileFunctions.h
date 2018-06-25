@@ -5,17 +5,13 @@ namespace mapi
 {
 	namespace profile
 	{
-		std::wstring LaunchProfileWizard(
-			_In_ HWND hParentWnd,
-			ULONG ulFlags,
-			_In_ const std::string& szServiceNameToAdd);
+		std::wstring
+		LaunchProfileWizard(_In_ HWND hParentWnd, ULONG ulFlags, _In_ const std::string& szServiceNameToAdd);
 
-		_Check_return_ HRESULT HrMAPIProfileExists(
-			_In_ LPPROFADMIN lpProfAdmin,
-			_In_ const std::string& lpszProfileName);
+		_Check_return_ HRESULT
+		HrMAPIProfileExists(_In_ LPPROFADMIN lpProfAdmin, _In_ const std::string& lpszProfileName);
 
-		_Check_return_ HRESULT HrCreateProfile(
-			_In_ const std::string& lpszProfileName); // profile name
+		_Check_return_ HRESULT HrCreateProfile(_In_ const std::string& lpszProfileName); // profile name
 
 		_Check_return_ HRESULT HrAddServiceToProfile(
 			_In_ const std::string& lpszServiceName, // Service Name
@@ -39,15 +35,19 @@ namespace mapi
 			bool bPasswordSet, // whether or not to include a password
 			_In_ const std::string& lpszPassword); // password to include
 
-		_Check_return_ HRESULT HrRemoveProfile(
-			_In_ const std::string& lpszProfileName);
+		_Check_return_ HRESULT HrRemoveProfile(_In_ const std::string& lpszProfileName);
 
-		_Check_return_ HRESULT HrSetDefaultProfile(
-			_In_ const std::string& lpszProfileName);
+		_Check_return_ HRESULT HrSetDefaultProfile(_In_ const std::string& lpszProfileName);
 
-		_Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _In_ LPSBinary lpServiceUID, _Deref_out_opt_ LPPROFSECT* lppProfSect);
+		_Check_return_ HRESULT OpenProfileSection(
+			_In_ LPSERVICEADMIN lpServiceAdmin,
+			_In_ LPSBinary lpServiceUID,
+			_Deref_out_opt_ LPPROFSECT* lppProfSect);
 
-		_Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ LPSBinary lpProviderUID, _Deref_out_ LPPROFSECT* lppProfSect);
+		_Check_return_ HRESULT OpenProfileSection(
+			_In_ LPPROVIDERADMIN lpProviderAdmin,
+			_In_ LPSBinary lpProviderUID,
+			_Deref_out_ LPPROFSECT* lppProfSect);
 
 		void AddServicesToMapiSvcInf();
 		void RemoveServicesFromMapiSvcInf();
@@ -70,8 +70,7 @@ namespace mapi
 			_Out_ bool* lpbFoundServerVersion,
 			_Out_ bool* lpbFoundServerFullVersion);
 
-		_Check_return_ HRESULT HrCopyProfile(
-			_In_ const std::string& lpszOldProfileName,
-			_In_ const std::string& lpszNewProfileName);
+		_Check_return_ HRESULT
+		HrCopyProfile(_In_ const std::string& lpszOldProfileName, _In_ const std::string& lpszNewProfileName);
 	}
 }
