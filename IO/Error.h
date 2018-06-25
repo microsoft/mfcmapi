@@ -166,31 +166,41 @@ namespace error
 		} \
 	}
 
+// Execute a W32 function which returns ERROR_SUCCESS on success, log error, and return HRESULT_FROM_WIN32
+// Does not modify or reference existing hRes
 #define EC_W32(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = HRESULT_FROM_WIN32(fnx); \
-			CheckHResFn(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
+	[&]() -> HRESULT { \
+		auto __hRes = HRESULT_FROM_WIN32(fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
 
+// Execute a W32 function which returns ERROR_SUCCESS on success, log error, and swallow error
+// Does not modify or reference existing hRes
+#define EC_W32S(fnx) \
+	[&]() -> void { \
+		auto __hRes = HRESULT_FROM_WIN32(fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
+
+// Execute a W32 function which returns ERROR_SUCCESS on success, log error, and return HRESULT_FROM_WIN32
+// Does not modify or reference existing hRes
+// Will not display an error dialog
 #define WC_W32(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = HRESULT_FROM_WIN32(fnx); \
-			CheckHResFn(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
+	[&]() -> HRESULT { \
+		auto __hRes = HRESULT_FROM_WIN32(fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a W32 function which returns ERROR_SUCCESS on success, log error, and swallow error
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_W32S(fnx) \
+	[&]() -> void { \
+		auto __hRes = HRESULT_FROM_WIN32(fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
 
 #define EC_B(fnx) \
 	{ \

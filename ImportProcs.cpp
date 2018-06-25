@@ -141,10 +141,9 @@ namespace import
 			auto szOutlookMAPIPath = mapistub::GetInstalledOutlookMAPI(i);
 			if (!szOutlookMAPIPath.empty())
 			{
-				auto hRes = S_OK;
 				WCHAR szDrive[_MAX_DRIVE] = {0};
 				WCHAR szMAPIPath[MAX_PATH] = {0};
-				WC_W32(_wsplitpath_s(
+				auto hRes = WC_W32(_wsplitpath_s(
 					szOutlookMAPIPath.c_str(),
 					szDrive,
 					_MAX_DRIVE,
@@ -196,14 +195,13 @@ namespace import
 		std::wstring lpszClient = L"Default";
 		if (!szClient.empty()) lpszClient = szClient;
 		output::DebugPrint(DBGLoadLibrary, L"Enter GetMailKey(%ws)\n", lpszClient.c_str());
-		auto hRes = S_OK;
 		HKEY hMailKey = nullptr;
 
 		// If szClient is empty, we need to read the name of the default MAPI client
 		if (szClient.empty())
 		{
 			HKEY hDefaultMailKey = nullptr;
-			WC_W32(RegOpenKeyExW(
+			WC_W32S(RegOpenKeyExW(
 				HKEY_LOCAL_MACHINE,
 				L"Software\\Clients\\Mail", // STRING_OK
 				NULL,
@@ -219,7 +217,7 @@ namespace import
 					output::DebugPrint(DBGLoadLibrary, L"Default MAPI = %ws\n", lpszClient.c_str());
 				}
 
-				EC_W32(RegCloseKey(hDefaultMailKey));
+				EC_W32S(RegCloseKey(hDefaultMailKey));
 			}
 		}
 
@@ -227,10 +225,7 @@ namespace import
 		{
 			auto szMailKey = std::wstring(L"Software\\Clients\\Mail\\") + szClient; // STRING_OK
 
-			if (SUCCEEDED(hRes))
-			{
-				WC_W32(RegOpenKeyExW(HKEY_LOCAL_MACHINE, szMailKey.c_str(), NULL, KEY_READ, &hMailKey));
-			}
+			WC_W32S(RegOpenKeyExW(HKEY_LOCAL_MACHINE, szMailKey.c_str(), NULL, KEY_READ, &hMailKey));
 		}
 
 		return hMailKey;
@@ -266,9 +261,8 @@ namespace import
 				DBGLoadLibrary,
 				L"MSIOfficeLCID = %ws\n",
 				!lpszOfficeLCID.empty() ? lpszOfficeLCID.c_str() : L"<not found>");
-			auto hRes = S_OK;
 
-			EC_W32(RegCloseKey(hKey));
+			EC_W32S(RegCloseKey(hKey));
 		}
 	}
 
