@@ -122,12 +122,10 @@ namespace registry
 	ReadStringFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::wstring& szDefault)
 	{
 		if (szValue.empty()) return szDefault;
-		DWORD dwKeyType = NULL;
-		LPBYTE szBuf = nullptr;
-		auto ret = szDefault;
-
 		output::DebugPrint(DBGGeneric, L"ReadStringFromRegistry(%ws)\n", szValue.c_str());
 
+		DWORD dwKeyType = NULL;
+		LPBYTE szBuf = nullptr;
 		DWORD cb = NULL;
 
 		// Get its size
@@ -149,6 +147,7 @@ namespace registry
 			}
 		}
 
+		auto ret = szDefault;
 		if (hRes == S_OK && cb && !(cb % 2) && REG_SZ == dwKeyType && szBuf)
 		{
 			ret = std::wstring(LPWSTR(szBuf), cb / sizeof WCHAR);
@@ -161,7 +160,6 @@ namespace registry
 	void ReadFromRegistry()
 	{
 		HKEY hRootKey = nullptr;
-
 		WC_W32S(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey));
 
 		// Now that we have a root key, go get our values
@@ -243,6 +241,7 @@ namespace registry
 
 		return hkSub;
 	}
+
 	void WriteToRegistry()
 	{
 		const auto hRootKey = CreateRootKey();

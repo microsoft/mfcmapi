@@ -25,9 +25,8 @@ namespace version
 				if (lpszTempVer && lpszTempLang)
 				{
 					DWORD dwValueBuf = MAX_PATH;
-					auto hRes = WC_W32(
-						import::pfnMsiGetFileVersion(
-							lpszTempPath.c_str(), lpszTempVer, &dwValueBuf, lpszTempLang, &dwValueBuf));
+					auto hRes = WC_W32(import::pfnMsiGetFileVersion(
+						lpszTempPath.c_str(), lpszTempVer, &dwValueBuf, lpszTempLang, &dwValueBuf));
 					if (SUCCEEDED(hRes))
 					{
 						szOut = strings::formatmessage(
