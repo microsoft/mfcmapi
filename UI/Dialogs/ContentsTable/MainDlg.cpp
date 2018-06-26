@@ -1096,7 +1096,6 @@ namespace dialog
 
 	void CMainDlg::OnFastShutdown()
 	{
-		auto hRes = S_OK;
 		if (!m_lpMapiObjects) return;
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
@@ -1104,14 +1103,12 @@ namespace dialog
 		auto lpClientShutdown = mapi::safe_cast<LPMAPICLIENTSHUTDOWN>(lpMAPISession);
 		if (lpClientShutdown)
 		{
-			EC_H_MSG(lpClientShutdown->QueryFastShutdown(), IDS_EDQUERYFASTSHUTDOWNFAILED);
-
-			const auto hResNotify = lpClientShutdown->NotifyProcessShutdown();
-			CHECKHRESMSG(hResNotify, IDS_EDNOTIFYPROCESSSHUTDOWNFAILED);
+			auto hRes = EC_H_MSG(IDS_EDQUERYFASTSHUTDOWNFAILED, lpClientShutdown->QueryFastShutdown());
+			WC_H_MSGS(IDS_EDNOTIFYPROCESSSHUTDOWNFAILED, lpClientShutdown->NotifyProcessShutdown());
 
 			if (SUCCEEDED(hRes))
 			{
-				EC_H_MSG(lpClientShutdown->DoFastShutdown(), IDS_EDDOFASTSHUTDOWNFAILED);
+				hRes = EC_H_MSG(IDS_EDDOFASTSHUTDOWNFAILED, lpClientShutdown->DoFastShutdown());
 
 				if (SUCCEEDED(hRes))
 				{

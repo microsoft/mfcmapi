@@ -1110,18 +1110,18 @@ namespace mapi
 		_Out_opt_ ULONG* lpcbeid,
 		_Deref_out_opt_ LPENTRYID* lppeid)
 	{
+		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
+
 		auto hRes = S_OK;
 		LPMAPIFOLDER lpInbox = nullptr;
 
 		output::DebugPrint(DBGGeneric, L"GetSpecialFolderEID: getting 0x%X from %p\n", ulFolderPropTag, lpMDB);
 
-		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
-
 		LPSPropValue lpProp = nullptr;
 		WC_H(GetInbox(lpMDB, &lpInbox));
 		if (lpInbox)
 		{
-			WC_H_MSG(HrGetOneProp(lpInbox, ulFolderPropTag, &lpProp), IDS_GETSPECIALFOLDERINBOXMISSINGPROP);
+			WC_H_MSGS(IDS_GETSPECIALFOLDERINBOXMISSINGPROP, HrGetOneProp(lpInbox, ulFolderPropTag, &lpProp));
 			lpInbox->Release();
 		}
 
@@ -1142,7 +1142,8 @@ namespace mapi
 				reinterpret_cast<LPUNKNOWN*>(&lpRootFolder)));
 			if (lpRootFolder)
 			{
-				EC_H_MSG(HrGetOneProp(lpRootFolder, ulFolderPropTag, &lpProp), IDS_GETSPECIALFOLDERROOTMISSINGPROP);
+				hRes =
+					EC_H_MSG(IDS_GETSPECIALFOLDERROOTMISSINGPROP, HrGetOneProp(lpRootFolder, ulFolderPropTag, &lpProp));
 				lpRootFolder->Release();
 			}
 		}

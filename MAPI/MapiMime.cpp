@@ -24,17 +24,16 @@ namespace mapi
 		{
 			if (!lpszEMLFile || !lpMsg) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = S_OK;
 			LPCONVERTERSESSION lpConverter = nullptr;
 
-			EC_H_MSG(
+			auto hRes = EC_H_MSG(
+				IDS_NOCONVERTERSESSION,
 				CoCreateInstance(
 					guid::CLSID_IConverterSession,
 					nullptr,
 					CLSCTX_INPROC_SERVER,
 					guid::IID_IConverterSession,
-					reinterpret_cast<LPVOID*>(&lpConverter)),
-				IDS_NOCONVERTERSESSION);
+					reinterpret_cast<LPVOID*>(&lpConverter)));
 			if (SUCCEEDED(hRes) && lpConverter)
 			{
 				LPSTREAM lpEMLStm = nullptr;
@@ -84,18 +83,16 @@ namespace mapi
 		{
 			if (!lpszEMLFile || !lpMsg) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = S_OK;
-
 			LPCONVERTERSESSION lpConverter = nullptr;
 
-			EC_H_MSG(
+			auto hRes = EC_H_MSG(
+				IDS_NOCONVERTERSESSION,
 				CoCreateInstance(
 					guid::CLSID_IConverterSession,
 					nullptr,
 					CLSCTX_INPROC_SERVER,
 					guid::IID_IConverterSession,
-					reinterpret_cast<LPVOID*>(&lpConverter)),
-				IDS_NOCONVERTERSESSION);
+					reinterpret_cast<LPVOID*>(&lpConverter)));
 			if (SUCCEEDED(hRes) && lpConverter)
 			{
 				if (lpAdrBook)

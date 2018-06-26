@@ -140,31 +140,41 @@ namespace error
 		} \
 	}
 
-#define EC_H_MSG(fnx, uidErrorMsg) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = (fnx); \
-			CheckMAPICall(hRes, NULL, true, #fnx, uidErrorMsg, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
+// Execute a function, log error with uidErrorMessage, and return the HRESULT
+// Does not modify or reference existing hRes
+#define EC_H_MSG(uidErrorMsg, fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
 
-#define WC_H_MSG(fnx, uidErrorMsg) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = (fnx); \
-			CheckMAPICall(hRes, NULL, false, #fnx, uidErrorMsg, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
+// Execute a function, log error with uidErrorMessage, and swallow the HRESULT
+// Does not modify or reference existing hRes
+#define EC_H_MSGS(uidErrorMsg, fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
+	}()
+
+// Execute a function, log error with uidErrorMessage, and return the HRESULT
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_H_MSG(uidErrorMsg, fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a function, log error with uidErrorMessage, and swallow the HRESULT
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_H_MSGS(uidErrorMsg, fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
+	}()
 
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and return HRESULT_FROM_WIN32
 // Does not modify or reference existing hRes

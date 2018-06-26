@@ -491,20 +491,19 @@ namespace mapi
 			_In_opt_ LPSPropValue lpPropVals, // Properties for ConfigureMsgService
 			_In_ const std::string& lpszProfileName) // profile name
 		{
-			auto hRes = S_OK;
-			LPPROFADMIN lpProfAdmin = nullptr;
-			LPSERVICEADMIN lpServiceAdmin = nullptr;
-			LPSRowSet lpRowSet = nullptr;
+			if (lpszServiceName.empty() || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			output::DebugPrint(
 				DBGGeneric, L"HrAddServiceToProfile(%hs,%hs)\n", lpszServiceName.c_str(), lpszProfileName.c_str());
 
-			if (lpszServiceName.empty() || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
+			auto hRes = S_OK;
+			LPPROFADMIN lpProfAdmin = nullptr;
 
 			// Connect to Profile Admin interface.
 			EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
 
+			LPSERVICEADMIN lpServiceAdmin = nullptr;
 			EC_MAPI(lpProfAdmin->AdminServices(
 				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
 				LPTSTR(""),
@@ -520,14 +519,14 @@ namespace mapi
 				auto lpServiceAdmin2 = mapi::safe_cast<LPSERVICEADMIN2>(lpServiceAdmin);
 				if (lpServiceAdmin2)
 				{
-					EC_H_MSG(
+					hRes = EC_H_MSG(
+						IDS_CREATEMSGSERVICEFAILED,
 						lpServiceAdmin2->CreateMsgServiceEx(
 							reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
 							reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
 							ulUIParam,
 							ulFlags,
-							&uidService),
-						IDS_CREATEMSGSERVICEFAILED);
+							&uidService));
 				}
 				else
 				{
@@ -539,15 +538,20 @@ namespace mapi
 						EC_H(HrMarkExistingProviders(lpServiceAdmin, true));
 					}
 
-					EC_H_MSG(
-						lpServiceAdmin->CreateMsgService(
-							reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
-							reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
-							ulUIParam,
-							ulFlags),
-						IDS_CREATEMSGSERVICEFAILED);
+					if (SUCCEEDED(hRes))
+					{
+						hRes = EC_H_MSG(
+							IDS_CREATEMSGSERVICEFAILED,
+							lpServiceAdmin->CreateMsgService(
+								reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
+								reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
+								ulUIParam,
+								ulFlags));
+					}
+
 					if (lpPropVals)
 					{
+						LPSRowSet lpRowSet = nullptr;
 						// Look for a provider without our dummy prop
 						EC_H(HrFindUnmarkedProvider(lpServiceAdmin, &lpRowSet));
 
@@ -568,6 +572,8 @@ namespace mapi
 						hRes = S_OK;
 						// Strip out the dummy prop
 						EC_H(HrMarkExistingProviders(lpServiceAdmin, false));
+
+						FreeProws(lpRowSet);
 					}
 				}
 
@@ -576,7 +582,6 @@ namespace mapi
 					EC_H_CANCEL(lpServiceAdmin->ConfigureMsgService(lpuidService, NULL, 0, cPropVals, lpPropVals));
 				}
 
-				FreeProws(lpRowSet);
 				if (lpServiceAdmin2) lpServiceAdmin2->Release();
 				lpServiceAdmin->Release();
 			}
