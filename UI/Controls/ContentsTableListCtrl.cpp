@@ -524,7 +524,7 @@ namespace controls
 			}
 			else
 			{
-				WC_H_MSG(m_lpContentsTable->Restrict(nullptr, TBL_BATCH), IDS_TABLENOSUPPORTRES);
+				hRes = WC_H_MSG(IDS_TABLENOSUPPORTRES, m_lpContentsTable->Restrict(nullptr, TBL_BATCH));
 			}
 
 			return hRes;

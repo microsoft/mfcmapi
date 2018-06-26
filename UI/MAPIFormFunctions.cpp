@@ -26,27 +26,25 @@ namespace mapi
 			_In_ const std::wstring& szMessageClass,
 			_In_ LPMAPIFOLDER lpFolder)
 		{
-			auto hRes = S_OK;
-			LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
-
 			if (!lpFolder || !lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-			EC_H_MSG(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr), IDS_NOFORMMANAGER);
+			LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
+			auto hRes = EC_H_MSG(IDS_NOFORMMANAGER, MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 
 			if (!lpMAPIFormMgr) return hRes;
 
 			LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-			LPPERSISTMESSAGE lpPersistMessage = nullptr;
 
-			EC_H_MSG(
+			hRes = EC_H_MSG(
+				IDS_NOCLASSHANDLER,
 				lpMAPIFormMgr->ResolveMessageClass(
 					strings::wstringTostring(szMessageClass).c_str(), // class
 					0, // flags
 					lpFolder, // folder to resolve to
-					&lpMAPIFormInfo),
-				IDS_NOCLASSHANDLER);
+					&lpMAPIFormInfo));
 			if (lpMAPIFormInfo)
 			{
+				LPPERSISTMESSAGE lpPersistMessage = nullptr;
 				EC_MAPI(lpMAPIFormMgr->CreateForm(
 					reinterpret_cast<ULONG_PTR>(hwndParent), // parent window
 					MAPI_DIALOG, // display status window
