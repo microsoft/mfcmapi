@@ -195,7 +195,6 @@ namespace import
 		std::wstring lpszClient = L"Default";
 		if (!szClient.empty()) lpszClient = szClient;
 		output::DebugPrint(DBGLoadLibrary, L"Enter GetMailKey(%ws)\n", lpszClient.c_str());
-		HKEY hMailKey = nullptr;
 
 		// If szClient is empty, we need to read the name of the default MAPI client
 		if (szClient.empty())
@@ -221,6 +220,7 @@ namespace import
 			}
 		}
 
+		HKEY hMailKey = nullptr;
 		if (!szClient.empty())
 		{
 			auto szMailKey = std::wstring(L"Software\\Clients\\Mail\\") + szClient; // STRING_OK

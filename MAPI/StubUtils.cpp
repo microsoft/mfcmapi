@@ -214,9 +214,7 @@ namespace mapistub
 	HKEY GetHKeyMapiClient(const std::wstring& pwzProviderOverride)
 	{
 		output::DebugPrint(DBGLoadMAPI, L"Enter GetHKeyMapiClient (%ws)\n", pwzProviderOverride.c_str());
-		auto pwzProvider = pwzProviderOverride;
 		HKEY hMailKey = nullptr;
-		HKEY hkeyMapiClient = nullptr;
 
 		// Open HKLM\Software\Clients\Mail
 		auto hRes = WC_W32(RegOpenKeyExW(HKEY_LOCAL_MACHINE, WszKeyNameMailClient, 0, KEY_READ, &hMailKey));
@@ -227,6 +225,7 @@ namespace mapistub
 
 		// If a specific provider wasn't specified, load the name of the default MAPI provider
 		std::wstring defaultClient;
+		auto pwzProvider = pwzProviderOverride;
 		if (hMailKey && pwzProvider.empty())
 		{
 			const auto rgchMailClient = new (std::nothrow) WCHAR[MAX_PATH];
@@ -253,6 +252,7 @@ namespace mapistub
 
 		if (pwzProvider.empty()) pwzProvider = defaultClient;
 
+		HKEY hkeyMapiClient = nullptr;
 		if (hMailKey && !pwzProvider.empty())
 		{
 			output::DebugPrint(DBGLoadMAPI, L"GetHKeyMapiClient: pwzProvider = %ws\n", pwzProvider.c_str());
@@ -460,12 +460,10 @@ namespace mapistub
 		{
 			WCHAR szDrive[_MAX_DRIVE] = {0};
 			WCHAR szOutlookPath[MAX_PATH] = {0};
-			auto ret = WC_D(
-				UINT,
-				_wsplitpath_s(
-					lpszTempPath.c_str(), szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, nullptr, NULL, nullptr, NULL));
+			auto hRes = WC_W32(_wsplitpath_s(
+				lpszTempPath.c_str(), szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, nullptr, NULL, nullptr, NULL));
 
-			if (ret == ERROR_SUCCESS)
+			if (SUCCEEDED(hRes))
 			{
 				auto szPath = std::wstring(szDrive) + std::wstring(szOutlookPath) + WszOlMAPI32DLL;
 

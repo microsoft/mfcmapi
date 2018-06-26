@@ -124,12 +124,11 @@ namespace mapi
 		STDMETHODIMP CMySecInfo::GetObjectInformation(PSI_OBJECT_INFO pObjectInfo)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::GetObjectInformation\n");
-			auto bAllowEdits = false;
 
 			HKEY hRootKey = nullptr;
-
 			WC_W32S(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey));
 
+			auto bAllowEdits = false;
 			if (hRootKey)
 			{
 				bAllowEdits = !!registry::ReadDWORDFromRegistry(
