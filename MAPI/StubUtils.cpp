@@ -214,13 +214,12 @@ namespace mapistub
 	HKEY GetHKeyMapiClient(const std::wstring& pwzProviderOverride)
 	{
 		output::DebugPrint(DBGLoadMAPI, L"Enter GetHKeyMapiClient (%ws)\n", pwzProviderOverride.c_str());
-		auto hRes = S_OK;
 		auto pwzProvider = pwzProviderOverride;
 		HKEY hMailKey = nullptr;
 		HKEY hkeyMapiClient = nullptr;
 
 		// Open HKLM\Software\Clients\Mail
-		WC_W32(RegOpenKeyExW(HKEY_LOCAL_MACHINE, WszKeyNameMailClient, 0, KEY_READ, &hMailKey));
+		auto hRes = WC_W32(RegOpenKeyExW(HKEY_LOCAL_MACHINE, WszKeyNameMailClient, 0, KEY_READ, &hMailKey));
 		if (FAILED(hRes))
 		{
 			hMailKey = nullptr;
@@ -236,7 +235,7 @@ namespace mapistub
 				// Get Outlook application path registry value
 				DWORD dwSize = MAX_PATH;
 				DWORD dwType = 0;
-				WC_W32(RegQueryValueExW(
+				hRes = WC_W32(RegQueryValueExW(
 					hMailKey, nullptr, nullptr, &dwType, reinterpret_cast<LPBYTE>(rgchMailClient), &dwSize));
 				if (SUCCEEDED(hRes))
 				{
@@ -257,7 +256,7 @@ namespace mapistub
 		if (hMailKey && !pwzProvider.empty())
 		{
 			output::DebugPrint(DBGLoadMAPI, L"GetHKeyMapiClient: pwzProvider = %ws\n", pwzProvider.c_str());
-			WC_W32(RegOpenKeyExW(hMailKey, pwzProvider.c_str(), 0, KEY_READ, &hkeyMapiClient));
+			hRes = WC_W32(RegOpenKeyExW(hMailKey, pwzProvider.c_str(), 0, KEY_READ, &hkeyMapiClient));
 			if (FAILED(hRes))
 			{
 				hkeyMapiClient = nullptr;
@@ -383,13 +382,12 @@ namespace mapistub
 	std::wstring GetOutlookPath(_In_ const std::wstring& szCategory, _Out_opt_ bool* lpb64)
 	{
 		output::DebugPrint(DBGLoadMAPI, L"Enter GetOutlookPath: szCategory = %ws\n", szCategory.c_str());
-		auto hRes = S_OK;
 		DWORD dwValueBuf = 0;
 		std::wstring path;
 
 		if (lpb64) *lpb64 = false;
 
-		WC_W32(import::pfnMsiProvideQualifiedComponent(
+		auto hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
 			szCategory.c_str(),
 			L"outlook.x64.exe", // STRING_OK
 			static_cast<DWORD>(INSTALLMODE_DEFAULT),
@@ -401,8 +399,7 @@ namespace mapistub
 		}
 		else
 		{
-			hRes = S_OK;
-			WC_W32(import::pfnMsiProvideQualifiedComponent(
+			hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
 				szCategory.c_str(),
 				L"outlook.exe", // STRING_OK
 				static_cast<DWORD>(INSTALLMODE_DEFAULT),
@@ -417,7 +414,7 @@ namespace mapistub
 
 			if (lpszTempPath != nullptr)
 			{
-				WC_W32(import::pfnMsiProvideQualifiedComponent(
+				hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
 					szCategory.c_str(),
 					L"outlook.x64.exe", // STRING_OK
 					static_cast<DWORD>(INSTALLMODE_DEFAULT),
@@ -425,8 +422,7 @@ namespace mapistub
 					&dwValueBuf));
 				if (FAILED(hRes))
 				{
-					hRes = S_OK;
-					WC_W32(import::pfnMsiProvideQualifiedComponent(
+					hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
 						szCategory.c_str(),
 						L"outlook.exe", // STRING_OK
 						static_cast<DWORD>(INSTALLMODE_DEFAULT),
