@@ -143,7 +143,7 @@ namespace import
 			{
 				WCHAR szDrive[_MAX_DRIVE] = {0};
 				WCHAR szMAPIPath[MAX_PATH] = {0};
-				auto ret = WC_W32(_wsplitpath_s(
+				auto hRes = WC_W32(_wsplitpath_s(
 					szOutlookMAPIPath.c_str(),
 					szDrive,
 					_MAX_DRIVE,
@@ -154,7 +154,7 @@ namespace import
 					nullptr,
 					NULL));
 
-				if (ret == ERROR_SUCCESS)
+				if (SUCCEEDED(hRes))
 				{
 					auto szFullPath = std::wstring(szDrive) + std::wstring(szMAPIPath) + szDLLName;
 

@@ -148,7 +148,7 @@ namespace registry
 		}
 
 		auto ret = szDefault;
-		if (S_OK == hRes && cb && !(cb % 2) && REG_SZ == dwKeyType && szBuf)
+		if (hRes == S_OK && cb && !(cb % 2) && REG_SZ == dwKeyType && szBuf)
 		{
 			ret = std::wstring(LPWSTR(szBuf), cb / sizeof WCHAR);
 		}
