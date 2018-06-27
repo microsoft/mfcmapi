@@ -993,7 +993,7 @@ namespace output
 
 		const LARGE_INTEGER li = {0};
 
-		auto hRes = WC_H_MSG(lpStream->Seek(li, STREAM_SEEK_SET, nullptr), IDS_STREAMSEEKFAILED);
+		auto hRes = WC_H_MSG(IDS_STREAMSEEKFAILED, lpStream->Seek(li, STREAM_SEEK_SET, nullptr));
 
 		BYTE bBuf[MAXBYTES + 2]; // Allocate some extra for NULL terminators - 2 for Unicode
 		ULONG ulNumBytes = 0;

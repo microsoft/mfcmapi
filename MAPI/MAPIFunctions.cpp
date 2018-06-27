@@ -1121,7 +1121,7 @@ namespace mapi
 		WC_H(GetInbox(lpMDB, &lpInbox));
 		if (lpInbox)
 		{
-			WC_H_MSGS(IDS_GETSPECIALFOLDERINBOXMISSINGPROP, HrGetOneProp(lpInbox, ulFolderPropTag, &lpProp));
+			hRes = WC_H_MSG(IDS_GETSPECIALFOLDERINBOXMISSINGPROP, HrGetOneProp(lpInbox, ulFolderPropTag, &lpProp));
 			lpInbox->Release();
 		}
 

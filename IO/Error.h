@@ -149,14 +149,6 @@ namespace error
 		return __hRes; \
 	}()
 
-// Execute a function, log error with uidErrorMessage, and swallow the HRESULT
-// Does not modify or reference existing hRes
-#define EC_H_MSGS(uidErrorMsg, fnx) \
-	[&]() -> void { \
-		auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, NULL, true, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
-	}()
-
 // Execute a function, log error with uidErrorMessage, and return the HRESULT
 // Does not modify or reference existing hRes
 // Will not display an error dialog
