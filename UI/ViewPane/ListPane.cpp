@@ -66,7 +66,7 @@ namespace viewpane
 			{
 				const auto szButtonText = strings::loadstring(ListButtons[iButton]);
 
-				EC_B(m_ButtonArray[iButton].Create(
+				EC_BS(m_ButtonArray[iButton].Create(
 					strings::wstringTotstring(szButtonText).c_str(),
 					WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
@@ -158,7 +158,6 @@ namespace viewpane
 
 	void ListPane::SetWindowPos(int x, int y, int width, int height)
 	{
-		auto hRes = S_OK;
 		const auto iVariableHeight = height - GetFixedHeight();
 		if (0 != m_iControl)
 		{
@@ -170,8 +169,8 @@ namespace viewpane
 		y += m_iLabelHeight + m_iSmallHeightMargin;
 
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
-		EC_B(m_List.ShowWindow(cmdShow));
-		EC_B(m_List.SetWindowPos(NULL, x, y, width, iVariableHeight, SWP_NOZORDER));
+		EC_BS(m_List.ShowWindow(cmdShow));
+		EC_BS(m_List.SetWindowPos(NULL, x, y, width, iVariableHeight, SWP_NOZORDER));
 		y += iVariableHeight;
 
 		if (!m_bReadOnly)
@@ -184,8 +183,8 @@ namespace viewpane
 
 			for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 			{
-				EC_B(m_ButtonArray[iButton].ShowWindow(cmdShow));
-				EC_B(m_ButtonArray[iButton].SetWindowPos(
+				EC_BS(m_ButtonArray[iButton].ShowWindow(cmdShow));
+				EC_BS(m_ButtonArray[iButton].SetWindowPos(
 					nullptr,
 					iOffset - iSlotWidth * (NUMLISTBUTTONS - iButton),
 					y,
@@ -210,10 +209,8 @@ namespace viewpane
 
 	void ListPane::ClearList()
 	{
-		auto hRes = S_OK;
-
 		m_List.DeleteAllColumns();
-		EC_B(m_List.DeleteAllItems());
+		EC_BS(m_List.DeleteAllItems());
 	}
 
 	void ListPane::ResizeList(bool bSort)
@@ -252,7 +249,6 @@ namespace viewpane
 
 	void ListPane::SetColumnType(int nCol, ULONG ulPropType) const
 	{
-		auto hRes = S_OK;
 		HDITEM hdItem = {0};
 		auto lpMyHeader = m_List.GetHeaderCtrl();
 
@@ -268,7 +264,7 @@ namespace viewpane
 				lpHeaderData->bIsAB = false;
 				lpHeaderData->szTipString[0] = NULL;
 				hdItem.lParam = reinterpret_cast<LPARAM>(lpHeaderData);
-				EC_B(lpMyHeader->SetItem(nCol, &hdItem));
+				EC_BS(lpMyHeader->SetItem(nCol, &hdItem));
 			}
 		}
 	}
@@ -277,7 +273,6 @@ namespace viewpane
 	{
 		const ULONG ulNumItems = m_List.GetItemCount();
 
-		auto hRes = S_OK;
 		for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 		{
 			switch (ListButtons[iButton])
@@ -286,13 +281,13 @@ namespace viewpane
 			case IDD_LISTMOVEDOWN:
 			case IDD_LISTMOVETOTOP:
 			case IDD_LISTMOVEUP:
-				EC_B(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 2));
+				EC_BS(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 2));
 				break;
 			case IDD_LISTDELETE:
-				EC_B(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1));
+				EC_BS(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1));
 				break;
 			case IDD_LISTEDIT:
-				EC_B(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1));
+				EC_BS(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1));
 				break;
 			}
 		}
@@ -300,13 +295,12 @@ namespace viewpane
 
 	void ListPane::SwapListItems(ULONG ulFirstItem, ULONG ulSecondItem)
 	{
-		auto hRes = S_OK;
 		auto lpData1 = GetItemData(ulFirstItem);
 		auto lpData2 = GetItemData(ulSecondItem);
 
 		// swap the data
-		EC_B(m_List.SetItemData(ulFirstItem, reinterpret_cast<DWORD_PTR>(lpData2)));
-		EC_B(m_List.SetItemData(ulSecondItem, reinterpret_cast<DWORD_PTR>(lpData1)));
+		EC_BS(m_List.SetItemData(ulFirstItem, reinterpret_cast<DWORD_PTR>(lpData2)));
+		EC_BS(m_List.SetItemData(ulSecondItem, reinterpret_cast<DWORD_PTR>(lpData1)));
 
 		// swap the text (skip the first column!)
 		const auto lpMyHeader = m_List.GetHeaderCtrl();
@@ -406,9 +400,7 @@ namespace viewpane
 
 		if (iItem == -1) return;
 
-		auto hRes = S_OK;
-
-		EC_B(m_List.DeleteItem(iItem));
+		auto hRes = EC_B(m_List.DeleteItem(iItem));
 		m_List.SetSelectedItem(iItem);
 
 		if (hRes == S_OK && bDoDirty)

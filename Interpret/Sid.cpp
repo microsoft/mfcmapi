@@ -58,7 +58,6 @@ namespace sid
 
 	std::wstring ACEToString(_In_ void* pACE, eAceType acetype)
 	{
-		auto hRes = S_OK;
 		std::vector<std::wstring> aceString;
 		ACCESS_MASK Mask = 0;
 		DWORD Flags = 0;
@@ -105,8 +104,7 @@ namespace sid
 		DWORD dwSidDomain = 0;
 		SID_NAME_USE SidNameUse;
 
-		WC_B(LookupAccountSidW(nullptr, SidStart, nullptr, &dwSidName, nullptr, &dwSidDomain, &SidNameUse));
-		hRes = S_OK;
+		WC_BS(LookupAccountSidW(nullptr, SidStart, nullptr, &dwSidName, nullptr, &dwSidDomain, &SidNameUse));
 
 		LPWSTR lpSidName = nullptr;
 		LPWSTR lpSidDomain = nullptr;
@@ -120,7 +118,7 @@ namespace sid
 		// Only make the call if we got something to get
 		if (lpSidName || lpSidDomain)
 		{
-			WC_B(LookupAccountSidW(nullptr, SidStart, lpSidName, &dwSidName, lpSidDomain, &dwSidDomain, &SidNameUse));
+			WC_BS(LookupAccountSidW(nullptr, SidStart, lpSidName, &dwSidName, lpSidDomain, &dwSidDomain, &SidNameUse));
 		}
 
 		auto lpStringSid = GetTextualSid(SidStart);
@@ -179,7 +177,6 @@ namespace sid
 		_In_ std::wstring& SDString,
 		_In_ std::wstring& sdInfo)
 	{
-		auto hRes = S_OK;
 		BOOL bValidDACL = false;
 		PACL pACL = nullptr;
 		BOOL bDACLDefaulted = false;
@@ -196,18 +193,18 @@ namespace sid
 
 		sdInfo = interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf));
 
-		EC_B(GetSecurityDescriptorDacl(pSecurityDescriptor, &bValidDACL, &pACL, &bDACLDefaulted));
+		auto hRes = EC_B(GetSecurityDescriptorDacl(pSecurityDescriptor, &bValidDACL, &pACL, &bDACLDefaulted));
 		if (bValidDACL && pACL)
 		{
 			ACL_SIZE_INFORMATION ACLSizeInfo = {0};
-			EC_B(GetAclInformation(pACL, &ACLSizeInfo, sizeof ACLSizeInfo, AclSizeInformation));
+			hRes = EC_B(GetAclInformation(pACL, &ACLSizeInfo, sizeof ACLSizeInfo, AclSizeInformation));
 
 			std::vector<std::wstring> sdString;
 			for (DWORD i = 0; i < ACLSizeInfo.AceCount; i++)
 			{
 				void* pACE = nullptr;
 
-				EC_B(GetAce(pACL, i, &pACE));
+				hRes = EC_B(GetAce(pACL, i, &pACE));
 
 				if (pACE)
 				{

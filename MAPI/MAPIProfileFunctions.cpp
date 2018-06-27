@@ -288,7 +288,7 @@ namespace mapi
 						lpszProp.c_str(),
 						lpszValue.c_str());
 
-					EC_B(WritePrivateProfileStringW(
+					hRes = EC_B(WritePrivateProfileStringW(
 						lpServicesIni[n].lpszSection, lpszProp.c_str(), lpszValue.c_str(), szServicesIni.c_str()));
 					n++;
 				}

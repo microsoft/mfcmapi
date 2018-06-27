@@ -97,7 +97,7 @@ namespace dialog
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
 		output::DebugPrintEx(DBGForms, CLASS, L"OnRefreshView", L"\n");
 
-		EC_B(m_lpContentsTableListCtrl->DeleteAllItems());
+		EC_BS(m_lpContentsTableListCtrl->DeleteAllItems());
 		if (m_lpFormContainer)
 		{
 			LPSMAPIFORMINFOARRAY lpMAPIFormInfoArray = nullptr;
@@ -130,12 +130,15 @@ namespace dialog
 								i,
 								reinterpret_cast<LPARAM>(&sRow));
 						}
+
 						lpMAPIFormInfoArray->aFormInfo[i]->Release();
 					}
 				}
+
 				MAPIFreeBuffer(lpMAPIFormInfoArray);
 			}
 		}
+
 		m_lpContentsTableListCtrl->AutoSizeColumns(false);
 	}
 

@@ -28,22 +28,23 @@ namespace smartview
 					error::LogFunctionCall(
 						hRes, NULL, false, false, true, dwErr, "LookupAccountSid", __FILE__, __LINE__);
 				}
-
-				hRes = S_OK;
 			}
 
-			const auto lpSidName = dwSidName ? new WCHAR[dwSidName] : nullptr;
-			const auto lpSidDomain = dwSidDomain ? new WCHAR[dwSidDomain] : nullptr;
-
-			// Only make the call if we got something to get
-			if (lpSidName || lpSidDomain)
+			if (SUCCEEDED(hRes))
 			{
-				WC_B(LookupAccountSidW(
-					nullptr, SidStart, lpSidName, &dwSidName, lpSidDomain, &dwSidDomain, &SidNameUse));
-				if (lpSidName) m_lpSidName = lpSidName;
-				if (lpSidDomain) m_lpSidDomain = lpSidDomain;
-				delete[] lpSidName;
-				delete[] lpSidDomain;
+				const auto lpSidName = dwSidName ? new WCHAR[dwSidName] : nullptr;
+				const auto lpSidDomain = dwSidDomain ? new WCHAR[dwSidDomain] : nullptr;
+
+				// Only make the call if we got something to get
+				if (lpSidName || lpSidDomain)
+				{
+					WC_BS(LookupAccountSidW(
+						nullptr, SidStart, lpSidName, &dwSidName, lpSidDomain, &dwSidDomain, &SidNameUse));
+					if (lpSidName) m_lpSidName = lpSidName;
+					if (lpSidDomain) m_lpSidDomain = lpSidDomain;
+					delete[] lpSidName;
+					delete[] lpSidDomain;
+				}
 			}
 
 			m_lpStringSid = sid::GetTextualSid(SidStart);

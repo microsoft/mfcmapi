@@ -55,8 +55,7 @@ namespace controls
 
 		_Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages)
 		{
-			auto hRes = S_OK;
-			EC_B(CListCtrl::Create(
+			auto hRes = EC_B(CListCtrl::Create(
 				ulFlags | LVS_REPORT | LVS_SHOWSELALWAYS | WS_TABSTOP | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS |
 					WS_VISIBLE,
 				CRect(0, 0, 0, 0), // size doesn't matter
@@ -143,7 +142,6 @@ namespace controls
 		LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			const auto iItemCur = m_iItemCurHover;
-			auto hRes = S_OK;
 
 			switch (message)
 			{
@@ -199,7 +197,7 @@ namespace controls
 				lvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 				lvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
-				WC_B(::SendMessage(m_hWnd, LVM_HITTEST, 0, reinterpret_cast<LPARAM>(&lvHitTestInfo)));
+				WC_BS(::SendMessage(m_hWnd, LVM_HITTEST, 0, reinterpret_cast<LPARAM>(&lvHitTestInfo)));
 				// Hover highlight
 				if (lvHitTestInfo.flags & LVHT_ONITEM)
 				{
@@ -221,7 +219,7 @@ namespace controls
 						tmEvent.dwFlags = TME_LEAVE;
 						tmEvent.hwndTrack = m_hWnd;
 
-						EC_B(TrackMouseEvent(&tmEvent));
+						EC_BS(TrackMouseEvent(&tmEvent));
 					}
 				}
 				else
@@ -403,7 +401,6 @@ namespace controls
 
 		void CSortListCtrl::SortClickedColumn()
 		{
-			auto hRes = S_OK;
 			HDITEM hdItem = {0};
 			ULONG ulPropTag = NULL;
 			SortInfo sortinfo = {false};
@@ -420,7 +417,7 @@ namespace controls
 				for (auto i = 0; i < lpMyHeader->GetItemCount(); i++)
 				{
 					hdItem.mask = HDI_FORMAT;
-					EC_B(lpMyHeader->GetItem(i, &hdItem));
+					EC_BS(lpMyHeader->GetItem(i, &hdItem));
 					hdItem.fmt &= ~(HDF_SORTUP | HDF_SORTDOWN);
 					lpMyHeader->SetItem(i, &hdItem);
 				}
@@ -432,7 +429,7 @@ namespace controls
 				lpMyHeader->SetItem(m_iClickedColumn, &hdItem);
 
 				hdItem.mask = HDI_LPARAM;
-				EC_B(lpMyHeader->GetItem(m_iClickedColumn, &hdItem));
+				EC_BS(lpMyHeader->GetItem(m_iClickedColumn, &hdItem));
 				if (hdItem.lParam)
 				{
 					ulPropTag = reinterpret_cast<LPHEADERDATA>(hdItem.lParam)->ulPropTag;
@@ -538,7 +535,7 @@ namespace controls
 			}
 
 			sortinfo.bSortUp = m_bSortUp;
-			EC_B(SortItems(MyCompareProc, reinterpret_cast<LPARAM>(&sortinfo)));
+			EC_BS(SortItems(MyCompareProc, reinterpret_cast<LPARAM>(&sortinfo)));
 		}
 
 		// Leverage in support for sorting columns.
@@ -554,6 +551,7 @@ namespace controls
 				if (!m_bHaveSorted) m_bSortUp = false; // init this to down arrow on first pass
 				m_iClickedColumn = iColumn;
 			}
+
 			SortClickedColumn();
 		}
 
@@ -599,7 +597,6 @@ namespace controls
 
 		void CSortListCtrl::DeleteAllColumns(bool bShutdown)
 		{
-			auto hRes = S_OK;
 			HDITEM hdItem = {0};
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"DeleteAllColumns", L"Deleting existing columns\n");
@@ -617,12 +614,12 @@ namespace controls
 					for (auto iCol = iColCount - 1; iCol >= 0; iCol--)
 					{
 						hdItem.mask = HDI_LPARAM;
-						EC_B(lpMyHeader->GetItem(iCol, &hdItem));
+						auto hRes = EC_B(lpMyHeader->GetItem(iCol, &hdItem));
 
 						// This will be a HeaderData, created in CContentsTableListCtrl::AddColumn
 						if (SUCCEEDED(hRes)) delete reinterpret_cast<HeaderData*>(hdItem.lParam);
 
-						if (!bShutdown) EC_B(DeleteColumn(iCol));
+						if (!bShutdown) EC_BS(DeleteColumn(iCol));
 					}
 
 					if (!bShutdown) MySetRedraw(true);
@@ -677,7 +674,6 @@ namespace controls
 		// if asked to select the item after the last item - will select the last item.
 		void CSortListCtrl::SetSelectedItem(int iItem)
 		{
-			auto hRes = S_OK;
 			output::DebugPrintEx(DBGGeneric, CLASS, L"SetSelectedItem", L"selecting iItem = %d\n", iItem);
 			const auto bSet = SetItemState(iItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
 
@@ -687,7 +683,7 @@ namespace controls
 			}
 			else if (iItem > 0)
 			{
-				EC_B(SetItemState(iItem - 1, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED));
+				EC_BS(SetItemState(iItem - 1, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED));
 				EnsureVisible(iItem - 1, false);
 			}
 		}

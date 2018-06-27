@@ -145,7 +145,6 @@ namespace controls
 		// WM_MFCMAPI_SAVECOLUMNORDERLIST
 		_Check_return_ LRESULT CSingleMAPIPropListCtrl::msgOnSaveColumnOrder(WPARAM /*wParam*/, LPARAM /*lParam*/)
 		{
-			auto hRes = S_OK;
 			const auto lpMyHeader = GetHeaderCtrl();
 
 			if (lpMyHeader)
@@ -158,7 +157,7 @@ namespace controls
 					if (pnOrder)
 					{
 						registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.clear();
-						EC_B(GetColumnOrderArray(pnOrder, nColumnCount));
+						EC_BS(GetColumnOrderArray(pnOrder, nColumnCount));
 						for (ULONG i = 0; i < nColumnCount; i++)
 						{
 							registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.push_back(
@@ -169,6 +168,7 @@ namespace controls
 					delete[] pnOrder;
 				}
 			}
+
 			return S_OK;
 		}
 
@@ -554,7 +554,6 @@ namespace controls
 
 		_Check_return_ HRESULT CSingleMAPIPropListCtrl::RefreshMAPIPropList()
 		{
-			auto hRes = S_OK;
 			output::DebugPrintEx(DBGGeneric, CLASS, L"RefreshMAPIPropList", L"\n");
 
 			// Turn off redraw while we work on the window
@@ -563,7 +562,7 @@ namespace controls
 
 			const auto iSelectedItem = GetNextSelectedItem(MyPos);
 
-			EC_B(DeleteAllItems());
+			auto hRes = EC_B(DeleteAllItems());
 
 			if (m_lpPropBag) EC_H(LoadMAPIPropList());
 
@@ -1217,7 +1216,6 @@ namespace controls
 		// Display the selected property as a security dscriptor using a property sheet
 		void CSingleMAPIPropListCtrl::OnDisplayPropertyAsSecurityDescriptorPropSheet() const
 		{
-			auto hRes = S_OK;
 			ULONG ulPropTag = NULL;
 
 			if (!m_lpPropBag || !import::pfnEditSecurity) return;
@@ -1236,7 +1234,7 @@ namespace controls
 
 			if (MySecInfo)
 			{
-				EC_B(import::pfnEditSecurity(m_hWnd, MySecInfo));
+				EC_BS(import::pfnEditSecurity(m_hWnd, MySecInfo));
 
 				MySecInfo->Release();
 			}

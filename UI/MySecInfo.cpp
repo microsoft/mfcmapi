@@ -243,7 +243,7 @@ namespace mapi
 			{
 				// The format is a security descriptor preceeded by a header.
 				memcpy(lpBlob, m_lpHeader, m_cbHeader);
-				EC_B(MakeSelfRelativeSD(pSecurityDescriptor, lpBlob + m_cbHeader, &dwSDLength));
+				hRes = EC_B(MakeSelfRelativeSD(pSecurityDescriptor, lpBlob + m_cbHeader, &dwSDLength));
 
 				Blob.ulPropTag = m_ulPropTag;
 				Blob.dwAlignPad = NULL;
@@ -254,6 +254,7 @@ namespace mapi
 
 				MAPIFreeBuffer(lpBlob);
 			}
+
 			return hRes;
 		}
 

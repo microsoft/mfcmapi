@@ -81,7 +81,6 @@ namespace mapiprocessor
 	{
 		if (!lpSRow || !m_fMailboxTable) return;
 		if (m_bOutputList) return;
-		auto hRes = S_OK;
 
 		const auto lpEmailAddress = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_EMAIL_ADDRESS);
 
@@ -109,7 +108,7 @@ namespace mapiprocessor
 			m_szFolderPathRoot = m_szMailboxTablePathRoot + L"\\" + szTemp;
 
 			// suppress any error here since the folder may already exist
-			WC_B(CreateDirectoryW(m_szFolderPathRoot.c_str(), nullptr));
+			WC_BS(CreateDirectoryW(m_szFolderPathRoot.c_str(), nullptr));
 		}
 
 		output::OutputToFile(m_fMailboxTable, L"</mailbox>\n");
@@ -139,8 +138,7 @@ namespace mapiprocessor
 		// We've done all the setup we need. If we're just outputting a list, we don't need to do the rest
 		if (m_bOutputList) return;
 
-		WC_B(CreateDirectoryW(m_szFolderPath.c_str(), nullptr));
-		hRes = S_OK; // ignore the error - the directory may exist already
+		WC_BS(CreateDirectoryW(m_szFolderPath.c_str(), nullptr));
 
 		// Dump the folder props to a file
 		// Holds file/path name for folder props

@@ -269,7 +269,6 @@ namespace dialog
 
 	void CMyDialog::DisplayParentedDialog(ui::CParentWnd* lpNonModalParent, UINT iAutoCenterWidth)
 	{
-		auto hRes = S_OK;
 		m_iAutoCenterWidth = iAutoCenterWidth;
 		m_lpszTemplateName = MAKEINTRESOURCE(IDD_BLANK_DIALOG);
 
@@ -286,7 +285,7 @@ namespace dialog
 			if (hTemplate)
 			{
 				const auto lpDialogTemplate = static_cast<LPCDLGTEMPLATE>(LockResource(hTemplate));
-				EC_B(CreateDlgIndirect(lpDialogTemplate, m_lpNonModalParent, hInst));
+				EC_BS(CreateDlgIndirect(lpDialogTemplate, m_lpNonModalParent, hInst));
 			}
 		}
 	}

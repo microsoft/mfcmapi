@@ -411,7 +411,7 @@ namespace controls
 					lpHeaderData->szTipString = interpretprop::TagToString(ulPropTag, lpMDB, m_bIsAB, false);
 
 					hdItem.lParam = reinterpret_cast<LPARAM>(lpHeaderData);
-					EC_B(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
+					hRes = EC_B(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
 				}
 			}
 
@@ -718,7 +718,6 @@ namespace controls
 
 		_Check_return_ HRESULT CContentsTableListCtrl::LoadContentsTableIntoView()
 		{
-			auto hRes = S_OK;
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"\n");
@@ -726,7 +725,7 @@ namespace controls
 			if (m_bInLoadOp) return MAPI_E_INVALID_PARAMETER;
 			if (!m_lpHostDlg) return MAPI_E_INVALID_PARAMETER;
 
-			EC_B(DeleteAllItems());
+			auto hRes = EC_B(DeleteAllItems());
 
 			// whack the old thread handle if we still have it
 			if (m_LoadThreadHandle) CloseHandle(m_LoadThreadHandle);
@@ -827,7 +826,6 @@ namespace controls
 		{
 			if (!lpsRowData) return;
 
-			auto hRes = S_OK;
 			const auto lpMyHeader = GetHeaderCtrl();
 
 			if (!lpMyHeader) return;
@@ -836,12 +834,11 @@ namespace controls
 			{
 				HDITEM hdItem = {0};
 				hdItem.mask = HDI_LPARAM;
-				EC_B(lpMyHeader->GetItem(iColumn, &hdItem));
+				EC_BS(lpMyHeader->GetItem(iColumn, &hdItem));
 
 				if (hdItem.lParam)
 				{
 					const auto ulCol = reinterpret_cast<LPHEADERDATA>(hdItem.lParam)->ulTagArrayRow;
-					hRes = S_OK;
 
 					if (ulCol < lpsRowData->cValues)
 					{
@@ -1314,14 +1311,12 @@ namespace controls
 
 		void CContentsTableListCtrl::SelectAll()
 		{
-			auto hRes = S_OK;
 			output::DebugPrintEx(DBGGeneric, CLASS, L"SelectAll", L"\n");
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 			MySetRedraw(false);
 			for (auto iIndex = 0; iIndex < GetItemCount(); iIndex++)
 			{
-				EC_B(SetItemState(iIndex, LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED));
-				hRes = S_OK;
+				EC_BS(SetItemState(iIndex, LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED));
 			}
 
 			MySetRedraw(true);
@@ -1558,7 +1553,10 @@ namespace controls
 					{
 						for (int i = iItem + ulRowsRemoved; i > iItem; i--)
 						{
-							EC_B(DeleteItem(i));
+							if (SUCCEEDED(hRes))
+							{
+								hRes = EC_B(DeleteItem(i));
+							}
 						}
 					}
 
@@ -1572,7 +1570,7 @@ namespace controls
 
 			if (bDidWork)
 			{
-				EC_B(SetItem(&lvItem)); // Set new image for the row
+				hRes = EC_B(SetItem(&lvItem)); // Set new image for the row
 
 				// Save the row type (header/leaf) into lpData
 				const auto lpProp = PpropFindProp(lpData->lpSourceProps, lpData->cSourceProps, PR_ROW_TYPE);
@@ -1665,7 +1663,6 @@ namespace controls
 		// WM_MFCMAPI_DELETEITEM
 		_Check_return_ LRESULT CContentsTableListCtrl::msgOnDeleteItem(WPARAM wParam, LPARAM /*lParam*/)
 		{
-			auto hRes = S_OK;
 			auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
 
 			if (!tab) return MAPI_E_INVALID_PARAMETER;
@@ -1677,7 +1674,7 @@ namespace controls
 
 			if (iItem == -1) return S_OK;
 
-			EC_B(DeleteItem(iItem));
+			auto hRes = EC_B(DeleteItem(iItem));
 
 			if (S_OK != hRes || !m_lpHostDlg) return hRes;
 
