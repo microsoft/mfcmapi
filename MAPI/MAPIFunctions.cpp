@@ -1119,7 +1119,7 @@ namespace mapi
 		auto hRes = WC_H2(GetInbox(lpMDB, &lpInbox));
 		if (lpInbox)
 		{
-			hRes = WC_H_MSG(HrGetOneProp(lpInbox, ulFolderPropTag, &lpProp), IDS_GETSPECIALFOLDERINBOXMISSINGPROP);
+			hRes = WC_H_MSG(IDS_GETSPECIALFOLDERINBOXMISSINGPROP, HrGetOneProp(lpInbox, ulFolderPropTag, &lpProp));
 			lpInbox->Release();
 		}
 
@@ -1139,8 +1139,8 @@ namespace mapi
 				reinterpret_cast<LPUNKNOWN*>(&lpRootFolder)));
 			if (lpRootFolder)
 			{
-				hRes = EC_H_MSG(
-					IDS_GETSPECIALFOLDERROOTMISSINGPROP, HrGetOneProp(lpRootFolder, ulFolderPropTag, &lpProp));
+				hRes =
+					EC_H_MSG(IDS_GETSPECIALFOLDERROOTMISSINGPROP, HrGetOneProp(lpRootFolder, ulFolderPropTag, &lpProp));
 				lpRootFolder->Release();
 			}
 		}

@@ -333,8 +333,7 @@ namespace dialog
 		ULONG ulObjType = NULL;
 		LPABCONT lpPAB = nullptr;
 
-		EC_MAPI2(lpAddrBook->GetPAB(&cbEID, &lpEID));
-
+		EC_MAPI2S(lpAddrBook->GetPAB(&cbEID, &lpEID));
 		if (lpEID)
 		{
 			EC_H2S(mapi::CallOpenEntry(
@@ -648,8 +647,7 @@ namespace dialog
 		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_MAPI2(lpMAPISession->GetMsgStoresTable(0, &pStoresTbl));
-
+		EC_MAPI2S(lpMAPISession->GetMsgStoresTable(0, &pStoresTbl));
 		if (pStoresTbl)
 		{
 			EC_H2S(m_lpContentsTableListCtrl->SetContentsTable(pStoresTbl, dfNormal, MAPI_STORE));
@@ -932,7 +930,7 @@ namespace dialog
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_MAPI2(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
+		EC_MAPI2S(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 		if (lpMAPIFormMgr)
 		{
 			editor::CEditor MyFlags(
@@ -1071,7 +1069,7 @@ namespace dialog
 		if (lpClientShutdown)
 		{
 			auto hRes = EC_H_MSG(IDS_EDQUERYFASTSHUTDOWNFAILED, lpClientShutdown->QueryFastShutdown());
-			EC_H_MSGS(IDS_EDNOTIFYPROCESSSHUTDOWNFAILED, lpClientShutdown->NotifyProcessShutdown());
+			WC_H_MSGS(IDS_EDNOTIFYPROCESSSHUTDOWNFAILED, lpClientShutdown->NotifyProcessShutdown());
 
 			if (SUCCEEDED(hRes))
 			{
