@@ -262,11 +262,10 @@ namespace dialog
 	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 	void CContentsTableDlg::OnRefreshView()
 	{
-		auto hRes = S_OK;
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
-		EC_H(m_lpContentsTableListCtrl->RefreshTable());
+		m_lpContentsTableListCtrl->RefreshTable();
 	}
 
 	void CContentsTableDlg::OnNotificationOn()
@@ -506,7 +505,7 @@ namespace dialog
 		}
 		MAPIFreeBuffer(lpMySortOrders);
 
-		if (MyData.GetCheck(5)) EC_H(m_lpContentsTableListCtrl->RefreshTable());
+		if (MyData.GetCheck(5)) m_lpContentsTableListCtrl->RefreshTable();
 	}
 
 	// Since the strategy for opening the selected property may vary depending on the table we're displaying,

@@ -112,7 +112,7 @@ namespace controls
 				break;
 			case WM_LBUTTONDBLCLK:
 				WC_H(DoExpandCollapse());
-				if (S_FALSE == hRes)
+				if (hRes == S_FALSE)
 				{
 					// Post the message to display the item
 					if (m_lpHostDlg) m_lpHostDlg->PostMessage(WM_COMMAND, ID_DISPLAYSELECTEDITEM, NULL);
@@ -208,10 +208,9 @@ namespace controls
 		}
 
 		// Takes a tag array and builds the UI out of it - does NOT touch the table
-		_Check_return_ HRESULT CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray lpTags)
+		_Check_return_ void CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray lpTags)
 		{
-			auto hRes = S_OK;
-			if (!lpTags) return MAPI_E_INVALID_PARAMETER;
+			if (!lpTags) return;
 
 			// find a PR_DISPLAY_NAME column for later use
 			m_ulDisplayNameColumn = NODISPLAYNAME;
@@ -247,14 +246,13 @@ namespace controls
 			// Delete all of the old column headers
 			DeleteAllColumns();
 
-			EC_H(AddColumns(lpTags));
+			AddColumns(lpTags);
 
 			AutoSizeColumns(true);
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"SetColumns", L"Done inserting column headers\n");
 
 			MySetRedraw(true);
-			return hRes;
 		}
 
 		void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor)
@@ -270,7 +268,7 @@ namespace controls
 				// Make sure we're clear
 				DeleteAllColumns();
 				ModifyStyle(0, LVS_NOCOLUMNHEADER);
-				EC_H(RefreshTable());
+				RefreshTable();
 				return;
 			}
 
@@ -341,8 +339,8 @@ namespace controls
 				WC_H(NotificationOn());
 				hRes = S_OK;
 
-				EC_H(SetUIColumns(lpFinalTagArray));
-				EC_H(RefreshTable());
+				SetUIColumns(lpFinalTagArray);
+				RefreshTable();
 			}
 
 			MAPIFreeBuffer(lpModifiedTags);
@@ -350,13 +348,12 @@ namespace controls
 			MAPIFreeBuffer(lpOriginalColSet);
 		}
 
-		_Check_return_ HRESULT CContentsTableListCtrl::AddColumn(
+		_Check_return_ void CContentsTableListCtrl::AddColumn(
 			UINT uidHeaderName,
 			ULONG ulCurHeaderCol,
 			ULONG ulCurTagArrayRow,
 			ULONG ulPropTag)
 		{
-			auto hRes = S_OK;
 			HDITEM hdItem = {0};
 			auto lpMyHeader = GetHeaderCtrl();
 			std::wstring szHeaderString;
@@ -404,20 +401,16 @@ namespace controls
 					lpHeaderData->szTipString = interpretprop::TagToString(ulPropTag, lpMDB, m_bIsAB, false);
 
 					hdItem.lParam = reinterpret_cast<LPARAM>(lpHeaderData);
-					hRes = EC_B(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
+					EC_BS(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
 				}
 			}
-
-			return hRes;
 		}
 
 		// Sets up column headers based on passed in named columns
 		// Put all named columns first, followed by a column for each property in the contents table
-		_Check_return_ HRESULT CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray lpCurColTagArray)
+		_Check_return_ void CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray lpCurColTagArray)
 		{
-			auto hRes = S_OK;
-
-			if (!lpCurColTagArray || !m_lpHostDlg) return MAPI_E_INVALID_PARAMETER;
+			if (!lpCurColTagArray || !m_lpHostDlg) return;
 
 			m_ulHeaderColumns = lpCurColTagArray->cValues;
 
@@ -436,12 +429,11 @@ namespace controls
 					ULONG ulCurTagArrayRow = 0;
 					if (mapi::FindPropInPropTagArray(lpCurColTagArray, ulExtraColTag, &ulCurTagArrayRow))
 					{
-						hRes = S_OK;
-						EC_H(AddColumn(
+						AddColumn(
 							extraCol.uidName,
 							ulCurHeaderCol,
 							ulCurTagArrayRow,
-							lpCurColTagArray->aulPropTag[ulCurTagArrayRow]));
+							lpCurColTagArray->aulPropTag[ulCurTagArrayRow]);
 						// Strike out the value in the tag array so we can ignore it later!
 						lpCurColTagArray->aulPropTag[ulCurTagArrayRow] = NULL;
 
@@ -456,8 +448,7 @@ namespace controls
 			{
 				if (lpCurColTagArray->aulPropTag[ulCurTableCol] != NULL)
 				{
-					hRes = S_OK;
-					EC_H(AddColumn(NULL, ulCurHeaderCol, ulCurTableCol, lpCurColTagArray->aulPropTag[ulCurTableCol]));
+					AddColumn(NULL, ulCurHeaderCol, ulCurTableCol, lpCurColTagArray->aulPropTag[ulCurTableCol]);
 					ulCurHeaderCol++;
 				}
 			}
@@ -474,7 +465,6 @@ namespace controls
 			}
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"AddColumns", L"Done adding columns\n");
-			return hRes;
 		}
 
 		void CContentsTableListCtrl::SetRestriction(_In_opt_ const _SRestriction* lpRes)
@@ -1248,7 +1238,7 @@ namespace controls
 					bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
 					nullptr,
 					reinterpret_cast<LPUNKNOWN*>(lppProp)));
-				if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes &&
+				if (hRes == MAPI_E_INTERFACE_NOT_SUPPORTED &&
 					registry::RegKeys[registry::regkeyUSE_MESSAGERAW].ulCurDWORD)
 				{
 					error::ErrDialog(__FILE__, __LINE__, IDS_EDMESSAGERAWNOTSUPPORTED);
@@ -1283,7 +1273,7 @@ namespace controls
 				EC_H(DefaultOpenItemProp(iItem, mfcmapiDO_NOT_REQUEST_MODIFY, lppProp));
 			}
 
-			if (MAPI_E_NOT_FOUND == hRes)
+			if (hRes == MAPI_E_NOT_FOUND)
 			{
 				output::DebugPrint(
 					DBGGeneric,
@@ -1398,7 +1388,7 @@ namespace controls
 			{
 				WC_MAPI(m_lpContentsTable->Advise(
 					fnevTableModified, static_cast<IMAPIAdviseSink*>(m_lpAdviseSink), &m_ulAdviseConnection));
-				if (MAPI_E_NO_SUPPORT == hRes) // Some tables don't support this!
+				if (hRes == MAPI_E_NO_SUPPORT) // Some tables don't support this!
 				{
 					if (m_lpAdviseSink) m_lpAdviseSink->Release();
 					m_lpAdviseSink = nullptr;
@@ -1448,24 +1438,22 @@ namespace controls
 			m_lpAdviseSink = nullptr;
 		}
 
-		_Check_return_ HRESULT CContentsTableListCtrl::RefreshTable()
+		_Check_return_ void CContentsTableListCtrl::RefreshTable()
 		{
-			auto hRes = S_OK;
-			if (!m_lpHostDlg) return MAPI_E_INVALID_PARAMETER;
+			if (!m_lpHostDlg) return;
 			if (m_bInLoadOp)
 			{
 				output::DebugPrintEx(DBGGeneric, CLASS, L"RefreshTable", L"called during table load - ditching call\n");
-				return S_OK;
+				return;
 			}
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"RefreshTable", L"\n");
 
+			auto hRes = S_OK;
 			EC_H(LoadContentsTableIntoView());
 
 			// Reset the title while we're at it
 			m_lpHostDlg->UpdateTitleBarText();
-
-			return hRes;
 		}
 
 		// Call ExpandRow or CollapseRow as needed
@@ -1717,11 +1705,10 @@ namespace controls
 		// WM_MFCMAPI_REFRESHTABLE
 		_Check_return_ LRESULT CContentsTableListCtrl::msgOnRefreshTable(WPARAM /*wParam*/, LPARAM /*lParam*/)
 		{
-			auto hRes = S_OK;
 			output::DebugPrintEx(DBGGeneric, CLASS, L"msgOnRefreshTable", L"Received message refresh table\n");
-			EC_H(RefreshTable());
+			RefreshTable();
 
-			return hRes;
+			return S_OK;
 		}
 
 		// This function steps through the list control to find the entry with this instance key

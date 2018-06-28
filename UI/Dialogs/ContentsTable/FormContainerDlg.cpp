@@ -110,7 +110,7 @@ namespace dialog
 					{
 						LPSPropTagArray lpTagArray = nullptr;
 						EC_MAPI(lpMAPIFormInfoArray->aFormInfo[i]->GetPropList(fMapiUnicode, &lpTagArray));
-						EC_H(m_lpContentsTableListCtrl->SetUIColumns(lpTagArray));
+						m_lpContentsTableListCtrl->SetUIColumns(lpTagArray);
 						MAPIFreeBuffer(lpTagArray);
 					}
 					if (lpMAPIFormInfoArray->aFormInfo[i])
