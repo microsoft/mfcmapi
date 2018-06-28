@@ -945,9 +945,8 @@ namespace controls
 			if (lpulImage) *lpulImage = ulImage;
 		}
 
-		_Check_return_ HRESULT CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists)
+		_Check_return_ void CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists)
 		{
-			const auto hRes = S_OK;
 			sortlistdata::SortListData* lpData = nullptr;
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"RefreshItem", L"item %d\n", iRow);
@@ -973,22 +972,16 @@ namespace controls
 				// Do this last so that our row can't get sorted before we're done!
 				lpData->bItemFullyLoaded = true;
 			}
-
-			return hRes;
 		}
 
 		// Crack open the given SPropValue and render it to the given row in the list.
-		_Check_return_ HRESULT CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd)
+		_Check_return_ void CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd)
 		{
-			auto hRes = S_OK;
-
 			output::DebugPrintEx(DBGGeneric, CLASS, L"AddItemToListBox", L"item %d\n", iRow);
 
-			EC_H(RefreshItem(iRow, lpsRowToAdd, false));
+			RefreshItem(iRow, lpsRowToAdd, false);
 
 			if (m_lpHostDlg) m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, IDS_STATUSTEXTNUMITEMS, GetItemCount());
-
-			return hRes;
 		}
 
 		void CContentsTableListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -1505,7 +1498,7 @@ namespace controls
 						for (ULONG i = 0; i < lpRowSet->cRows; i++)
 						{
 							// add the item to the NEXT slot
-							EC_H(AddItemToListBox(iItem + i + 1, &lpRowSet->aRow[i]));
+							AddItemToListBox(iItem + i + 1, &lpRowSet->aRow[i]);
 							// Since we handed the props off to the list box, null it out of the row set
 							// so we don't free it later with FreeProws
 							lpRowSet->aRow[i].lpProps = nullptr;
@@ -1594,7 +1587,6 @@ namespace controls
 		// WM_MFCMAPI_THREADADDITEM
 		_Check_return_ LRESULT CContentsTableListCtrl::msgOnThreadAddItem(WPARAM wParam, LPARAM lParam)
 		{
-			auto hRes = S_OK;
 			const auto iNewRow = static_cast<int>(wParam);
 			const auto lpsRow = reinterpret_cast<LPSRow>(lParam);
 
@@ -1602,15 +1594,14 @@ namespace controls
 
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"msgOnThreadAddItem", L"Received message to add %p to row %d\n", lpsRow, iNewRow);
-			EC_H(AddItemToListBox(iNewRow, lpsRow));
+			AddItemToListBox(iNewRow, lpsRow);
 
-			return hRes;
+			return S_OK;
 		}
 
 		// WM_MFCMAPI_ADDITEM
 		_Check_return_ LRESULT CContentsTableListCtrl::msgOnAddItem(WPARAM wParam, LPARAM /*lParam*/)
 		{
-			auto hRes = S_OK;
 			auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
 
 			if (!tab) return MAPI_E_INVALID_PARAMETER;
@@ -1632,11 +1623,12 @@ namespace controls
 			SRow NewRow = {0};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
+			auto hRes = S_OK;
 			EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"msgOnAddItem", L"Received message to add row to row %d\n", iNewRow);
-			EC_H(AddItemToListBox(iNewRow, &NewRow));
+			AddItemToListBox(iNewRow, &NewRow);
 
 			return hRes;
 		}
@@ -1696,7 +1688,7 @@ namespace controls
 				NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 				EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 
-				EC_H(RefreshItem(iItem, &NewRow, true));
+				RefreshItem(iItem, &NewRow, true);
 			}
 
 			return hRes;

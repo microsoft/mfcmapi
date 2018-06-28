@@ -84,12 +84,12 @@ namespace controls
 			_Check_return_ void
 			AddColumn(UINT uidHeaderName, ULONG ulCurHeaderCol, ULONG ulCurTagArrayRow, ULONG ulPropTag);
 			_Check_return_ void AddColumns(_In_ LPSPropTagArray lpCurColTagArray);
-			_Check_return_ HRESULT AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd);
+			_Check_return_ void AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd);
 			_Check_return_ HRESULT DoExpandCollapse();
 			_Check_return_ int FindRow(_In_ LPSBinary lpInstance) const;
 			_Check_return_ int GetNextSelectedItemNum(_Inout_opt_ int* iCurItem) const;
 			_Check_return_ HRESULT LoadContentsTableIntoView();
-			_Check_return_ HRESULT RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists);
+			_Check_return_ void RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists);
 			void SelectAll();
 			void SetRowStrings(int iRow, _In_ LPSRow lpsRowData);
 
