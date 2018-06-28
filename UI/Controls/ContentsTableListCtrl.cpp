@@ -146,7 +146,7 @@ namespace controls
 
 		_Check_return_ bool CContentsTableListCtrl::IsContentsTableSet() const { return m_lpContentsTable != nullptr; }
 
-		_Check_return_ void CContentsTableListCtrl::SetContentsTable(
+		void CContentsTableListCtrl::SetContentsTable(
 			_In_opt_ LPMAPITABLE lpContentsTable,
 			ULONG ulDisplayFlags,
 			ULONG ulContainerType)
@@ -208,7 +208,7 @@ namespace controls
 		}
 
 		// Takes a tag array and builds the UI out of it - does NOT touch the table
-		_Check_return_ void CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray lpTags)
+		void CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray lpTags)
 		{
 			if (!lpTags) return;
 
@@ -348,7 +348,7 @@ namespace controls
 			MAPIFreeBuffer(lpOriginalColSet);
 		}
 
-		_Check_return_ void CContentsTableListCtrl::AddColumn(
+		void CContentsTableListCtrl::AddColumn(
 			UINT uidHeaderName,
 			ULONG ulCurHeaderCol,
 			ULONG ulCurTagArrayRow,
@@ -408,7 +408,7 @@ namespace controls
 
 		// Sets up column headers based on passed in named columns
 		// Put all named columns first, followed by a column for each property in the contents table
-		_Check_return_ void CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray lpCurColTagArray)
+		void CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray lpCurColTagArray)
 		{
 			if (!lpCurColTagArray || !m_lpHostDlg) return;
 
@@ -699,22 +699,21 @@ namespace controls
 
 		void CContentsTableListCtrl::ClearLoading() { m_bInLoadOp = false; }
 
-		_Check_return_ HRESULT CContentsTableListCtrl::LoadContentsTableIntoView()
+		void CContentsTableListCtrl::LoadContentsTableIntoView()
 		{
+			if (m_bInLoadOp || !m_lpHostDlg) return;
+
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"\n");
 
-			if (m_bInLoadOp) return MAPI_E_INVALID_PARAMETER;
-			if (!m_lpHostDlg) return MAPI_E_INVALID_PARAMETER;
-
-			auto hRes = EC_B(DeleteAllItems());
+			EC_BS(DeleteAllItems());
 
 			// whack the old thread handle if we still have it
 			if (m_LoadThreadHandle) CloseHandle(m_LoadThreadHandle);
 			m_LoadThreadHandle = nullptr;
 
-			if (!m_lpContentsTable) return S_OK;
+			if (!m_lpContentsTable) return;
 			m_bInLoadOp = true;
 			// Do not call return after this point!
 
@@ -752,8 +751,6 @@ namespace controls
 					m_LoadThreadHandle = hThread;
 				}
 			}
-
-			return hRes;
 		}
 
 		void CContentsTableListCtrl::OnCancelTableLoad()
@@ -945,7 +942,7 @@ namespace controls
 			if (lpulImage) *lpulImage = ulImage;
 		}
 
-		_Check_return_ void CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists)
+		void CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists)
 		{
 			sortlistdata::SortListData* lpData = nullptr;
 
@@ -975,7 +972,7 @@ namespace controls
 		}
 
 		// Crack open the given SPropValue and render it to the given row in the list.
-		_Check_return_ void CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd)
+		void CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd)
 		{
 			output::DebugPrintEx(DBGGeneric, CLASS, L"AddItemToListBox", L"item %d\n", iRow);
 
@@ -1431,7 +1428,7 @@ namespace controls
 			m_lpAdviseSink = nullptr;
 		}
 
-		_Check_return_ void CContentsTableListCtrl::RefreshTable()
+		void CContentsTableListCtrl::RefreshTable()
 		{
 			if (!m_lpHostDlg) return;
 			if (m_bInLoadOp)
@@ -1442,8 +1439,7 @@ namespace controls
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"RefreshTable", L"\n");
 
-			auto hRes = S_OK;
-			EC_H(LoadContentsTableIntoView());
+			LoadContentsTableIntoView();
 
 			// Reset the title while we're at it
 			m_lpHostDlg->UpdateTitleBarText();
