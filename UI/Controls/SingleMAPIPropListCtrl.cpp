@@ -577,9 +577,8 @@ namespace controls
 			return hRes;
 		}
 
-		_Check_return_ HRESULT CSingleMAPIPropListCtrl::AddPropToExtraProps(ULONG ulPropTag, bool bRefresh)
+		void CSingleMAPIPropListCtrl::AddPropToExtraProps(ULONG ulPropTag, bool bRefresh)
 		{
-			auto hRes = S_OK;
 			SPropTagArray sptSingleProp;
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"AddPropToExtraProps", L"adding proptag 0x%X\n", ulPropTag);
@@ -590,13 +589,10 @@ namespace controls
 			sptSingleProp.cValues = 1;
 			sptSingleProp.aulPropTag[0] = ulPropTag;
 
-			EC_H(AddPropsToExtraProps(&sptSingleProp, bRefresh));
-
-			return hRes;
+			AddPropsToExtraProps(&sptSingleProp, bRefresh);
 		}
 
-		_Check_return_ HRESULT
-		CSingleMAPIPropListCtrl::AddPropsToExtraProps(_In_ LPSPropTagArray lpPropsToAdd, bool bRefresh)
+		void CSingleMAPIPropListCtrl::AddPropsToExtraProps(_In_ LPSPropTagArray lpPropsToAdd, bool bRefresh)
 		{
 			auto hRes = S_OK;
 			LPSPropTagArray lpNewExtraProps = nullptr;
@@ -608,12 +604,10 @@ namespace controls
 			MAPIFreeBuffer(m_sptExtraProps);
 			m_sptExtraProps = lpNewExtraProps;
 
-			if (bRefresh)
+			if (SUCCEEDED(hRes) && bRefresh)
 			{
 				WC_H(RefreshMAPIPropList());
 			}
-
-			return hRes;
 		}
 
 #define NUMPROPTYPES 31
@@ -992,7 +986,7 @@ namespace controls
 			if (hRes == S_OK && lptag && lptag->cValues)
 			{
 				// Now we have an array of tags - add them in:
-				EC_H(AddPropsToExtraProps(lptag, false));
+				AddPropsToExtraProps(lptag, false);
 				MAPIFreeBuffer(lptag);
 				lptag = nullptr;
 			}
@@ -1067,7 +1061,7 @@ namespace controls
 									L"FindAllNamedProps",
 									L"Found an ID with a name (0x%X). Adding to extra prop list.\n",
 									iTag);
-								EC_H(AddPropToExtraProps(PROP_TAG(NULL, iTag), false));
+								AddPropToExtraProps(PROP_TAG(NULL, iTag), false);
 							}
 							MAPIFreeBuffer(lppPropNames);
 							lppPropNames = nullptr;
