@@ -336,8 +336,7 @@ namespace controls
 			{
 				// Cycle our notification, turning off the old one if necessary
 				NotificationOff();
-				WC_H(NotificationOn());
-				hRes = S_OK;
+				NotificationOn();
 
 				SetUIColumns(lpFinalTagArray);
 				RefreshTable();
@@ -1363,11 +1362,11 @@ namespace controls
 
 		_Check_return_ bool CContentsTableListCtrl::IsAdviseSet() const { return m_lpAdviseSink != nullptr; }
 
-		_Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
+		void CContentsTableListCtrl::NotificationOn()
 		{
 			auto hRes = S_OK;
 
-			if (m_lpAdviseSink || !m_lpContentsTable) return S_OK;
+			if (m_lpAdviseSink || !m_lpContentsTable) return;
 
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"NotificationOn", L"registering table notification on %p\n", m_lpContentsTable);
@@ -1404,7 +1403,6 @@ namespace controls
 				m_lpAdviseSink,
 				static_cast<int>(m_ulAdviseConnection),
 				m_lpContentsTable);
-			return hRes;
 		}
 
 		// This function gets called a lot, make sure it's ok to call it too often...:)
@@ -1569,15 +1567,11 @@ namespace controls
 			}
 		}
 
-		_Check_return_ HRESULT
-		CContentsTableListCtrl::SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags) const
+		void CContentsTableListCtrl::SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags) const
 		{
+			if (!m_lpContentsTable) return;
 			auto hRes = S_OK;
-			if (!m_lpContentsTable) return MAPI_E_INVALID_PARAMETER;
-
 			EC_MAPI(m_lpContentsTable->SortTable(lpSortOrderSet, ulFlags));
-
-			return hRes;
 		}
 
 		// WM_MFCMAPI_THREADADDITEM

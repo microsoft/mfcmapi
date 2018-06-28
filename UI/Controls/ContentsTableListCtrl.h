@@ -55,11 +55,11 @@ namespace controls
 			_Check_return_ HRESULT
 			DefaultOpenItemProp(int iItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppProp) const;
 			void NotificationOff();
-			_Check_return_ HRESULT NotificationOn();
+			void NotificationOn();
 			void RefreshTable();
 			void OnCancelTableLoad();
 			void OnOutputTable(const std::wstring& szFileName) const;
-			_Check_return_ HRESULT SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags) const;
+			void SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags) const;
 			void SetUIColumns(_In_ LPSPropTagArray lpTags);
 			_Check_return_ bool IsLoading() const;
 			void ClearLoading();

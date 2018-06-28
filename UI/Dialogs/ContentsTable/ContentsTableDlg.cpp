@@ -271,8 +271,7 @@ namespace dialog
 	void CContentsTableDlg::OnNotificationOn()
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-		auto hRes = S_OK;
-		EC_H(m_lpContentsTableListCtrl->NotificationOn());
+		m_lpContentsTableListCtrl->NotificationOn();
 	}
 
 	void CContentsTableDlg::OnNotificationOff()
@@ -497,12 +496,13 @@ namespace dialog
 
 			if (bNoError)
 			{
-				EC_MAPI(m_lpContentsTableListCtrl->SetSortTable(
+				m_lpContentsTableListCtrl->SetSortTable(
 					lpMySortOrders,
 					(MyData.GetCheck(3) ? TBL_ASYNC : 0) | (MyData.GetCheck(4) ? TBL_BATCH : 0) // flags
-					));
+					);
 			}
 		}
+
 		MAPIFreeBuffer(lpMySortOrders);
 
 		if (MyData.GetCheck(5)) m_lpContentsTableListCtrl->RefreshTable();
