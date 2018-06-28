@@ -1007,15 +1007,13 @@ namespace controls
 			}
 		}
 
-		_Check_return_ HRESULT
-		CContentsTableListCtrl::GetSelectedItemEIDs(_Deref_out_opt_ LPENTRYLIST* lppEntryIDs) const
+		_Check_return_ LPENTRYLIST CContentsTableListCtrl::GetSelectedItemEIDs() const
 		{
-			*lppEntryIDs = nullptr;
 			auto hRes = S_OK;
 			const auto iNumItems = GetSelectedCount();
 
 			if (!iNumItems) return S_OK;
-			if (iNumItems > ULONG_MAX / sizeof(SBinary)) return MAPI_E_INVALID_PARAMETER;
+			if (iNumItems > ULONG_MAX / sizeof(SBinary)) return nullptr;
 
 			LPENTRYLIST lpTempList = nullptr;
 
@@ -1062,8 +1060,7 @@ namespace controls
 				}
 			}
 
-			*lppEntryIDs = lpTempList;
-			return hRes;
+			return lpTempList;
 		}
 
 		_Check_return_ std::vector<int> CContentsTableListCtrl::GetSelectedItemNums() const

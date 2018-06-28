@@ -41,7 +41,7 @@ namespace controls
 			void SetContentsTable(_In_opt_ LPMAPITABLE lpContentsTable, ULONG ulDisplayFlags, ULONG ulContainerType);
 
 			// Selected item accessors
-			_Check_return_ HRESULT GetSelectedItemEIDs(_Deref_out_opt_ LPENTRYLIST* lppEntryIDs) const;
+			_Check_return_ LPENTRYLIST GetSelectedItemEIDs() const;
 			_Check_return_ sortlistdata::SortListData* GetSortListData(int iItem) const;
 			_Check_return_ HRESULT OpenNextSelectedItemProp(
 				_Inout_opt_ int* iCurItem,
