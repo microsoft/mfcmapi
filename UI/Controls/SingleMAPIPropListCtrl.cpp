@@ -42,9 +42,8 @@ namespace controls
 			bool bIsAB)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
-			auto hRes = S_OK;
 
-			EC_H(Create(pCreateParent, LVS_SINGLESEL, IDC_LIST_CTRL, true));
+			Create(pCreateParent, LVS_SINGLESEL, IDC_LIST_CTRL, true);
 
 			m_bHaveEverDisplayedSomething = false;
 
@@ -70,7 +69,7 @@ namespace controls
 				auto bSetCols = false;
 				const auto nColumnCount = lpMyHeader->GetItemCount();
 				const auto cchOrder = registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.length();
-				if (SUCCEEDED(hRes) && nColumnCount == static_cast<int>(cchOrder))
+				if (nColumnCount == static_cast<int>(cchOrder))
 				{
 					const auto pnOrder = new (std::nothrow) int[nColumnCount];
 

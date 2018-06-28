@@ -53,11 +53,9 @@ namespace viewpane
 	{
 		ViewPane::Initialize(iControl, pParent, nullptr);
 
-		auto hRes = S_OK;
-
 		DWORD dwListStyle = LVS_SINGLESEL | WS_BORDER;
 		if (!m_bAllowSort) dwListStyle |= LVS_NOSORTHEADER;
-		EC_H(m_List.Create(pParent, dwListStyle, m_nID, false));
+		m_List.Create(pParent, dwListStyle, m_nID, false);
 
 		// read only lists don't need buttons
 		if (!m_bReadOnly)

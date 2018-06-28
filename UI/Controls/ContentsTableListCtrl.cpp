@@ -35,9 +35,7 @@ namespace controls
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 
-			auto hRes = S_OK;
-
-			EC_H(Create(pCreateParent, LVS_NOCOLUMNHEADER, IDC_LIST_CTRL, true));
+			Create(pCreateParent, LVS_NOCOLUMNHEADER, IDC_LIST_CTRL, true);
 
 			m_bAbortLoad = false; // no need to synchronize this - the thread hasn't started yet
 			m_bInLoadOp = false;

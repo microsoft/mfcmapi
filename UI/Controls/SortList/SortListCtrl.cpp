@@ -53,9 +53,9 @@ namespace controls
 		ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
 		END_MESSAGE_MAP()
 
-		_Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages)
+		void CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages)
 		{
-			auto hRes = EC_B(CListCtrl::Create(
+			EC_BS(CListCtrl::Create(
 				ulFlags | LVS_REPORT | LVS_SHOWSELALWAYS | WS_TABSTOP | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS |
 					WS_VISIBLE,
 				CRect(0, 0, 0, 0), // size doesn't matter
@@ -94,8 +94,6 @@ namespace controls
 				if (hBitmapScaled) DeleteObject(hBitmapScaled);
 				if (hBitmap) DeleteObject(hBitmap);
 			}
-
-			return hRes;
 		}
 
 		static bool s_bInTrack = false;
