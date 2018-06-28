@@ -50,9 +50,8 @@ namespace smartview
 
 		if (m_bFB) acetype = sid::acetypeFreeBusy;
 
-		std::wstring szDACL;
 		std::wstring szInfo;
-		WC_H(SDToString(lpSDToParse, ulSDToParse, acetype, szDACL, szInfo));
+		auto szDACL = SDToString(lpSDToParse, ulSDToParse, acetype, szInfo);
 		auto szFlags = interpretprop::InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse));
 
 		std::vector<std::wstring> result;

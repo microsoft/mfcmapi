@@ -170,51 +170,47 @@ namespace sid
 		return strings::join(aceString, L"\r\n");
 	}
 
-	_Check_return_ HRESULT SDToString(
+	_Check_return_ std::wstring SDToString(
 		_In_count_(cbBuf) const BYTE* lpBuf,
 		size_t cbBuf,
 		eAceType acetype,
-		_In_ std::wstring& SDString,
 		_In_ std::wstring& sdInfo)
 	{
-		BOOL bValidDACL = false;
-		PACL pACL = nullptr;
-		BOOL bDACLDefaulted = false;
-
-		if (!lpBuf) return MAPI_E_NOT_FOUND;
+		if (!lpBuf) return strings::emptystring;
 
 		const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(lpBuf);
 
 		if (CbSecurityDescriptorHeader(lpBuf) > cbBuf || !IsValidSecurityDescriptor(pSecurityDescriptor))
 		{
-			SDString = strings::formatmessage(IDS_INVALIDSD);
-			return S_OK;
+			return strings::formatmessage(IDS_INVALIDSD);
 		}
 
 		sdInfo = interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf));
 
-		auto hRes = EC_B(GetSecurityDescriptorDacl(pSecurityDescriptor, &bValidDACL, &pACL, &bDACLDefaulted));
+		BOOL bValidDACL = false;
+		PACL pACL = nullptr;
+		BOOL bDACLDefaulted = false;
+		EC_BS(GetSecurityDescriptorDacl(pSecurityDescriptor, &bValidDACL, &pACL, &bDACLDefaulted));
 		if (bValidDACL && pACL)
 		{
-			ACL_SIZE_INFORMATION ACLSizeInfo = {0};
-			hRes = EC_B(GetAclInformation(pACL, &ACLSizeInfo, sizeof ACLSizeInfo, AclSizeInformation));
+			ACL_SIZE_INFORMATION ACLSizeInfo = {};
+			EC_BS(GetAclInformation(pACL, &ACLSizeInfo, sizeof ACLSizeInfo, AclSizeInformation));
 
 			std::vector<std::wstring> sdString;
 			for (DWORD i = 0; i < ACLSizeInfo.AceCount; i++)
 			{
 				void* pACE = nullptr;
 
-				hRes = EC_B(GetAce(pACL, i, &pACE));
-
+				WC_BS(GetAce(pACL, i, &pACE));
 				if (pACE)
 				{
 					sdString.push_back(ACEToString(pACE, acetype));
 				}
 			}
 
-			SDString = strings::join(sdString, L"\r\n");
+			return strings::join(sdString, L"\r\n");
 		}
 
-		return hRes;
+		return strings::emptystring;
 	}
 }
