@@ -6,7 +6,6 @@ namespace smartview
 {
 	void SIDBin::Parse()
 	{
-		auto hRes = S_OK;
 		const PSID SidStart = const_cast<LPBYTE>(m_Parser.GetCurrentAddress());
 		const auto cbSid = m_Parser.RemainingBytes();
 		m_Parser.Advance(cbSid);
@@ -22,29 +21,33 @@ namespace smartview
 			if (!LookupAccountSidW(nullptr, SidStart, nullptr, &dwSidName, nullptr, &dwSidDomain, &SidNameUse))
 			{
 				const auto dwErr = GetLastError();
-				hRes = HRESULT_FROM_WIN32(dwErr);
-				if (ERROR_NONE_MAPPED != dwErr && STRSAFE_E_INSUFFICIENT_BUFFER != hRes)
+				if (dwErr != ERROR_NONE_MAPPED && dwErr != ERROR_INSUFFICIENT_BUFFER)
 				{
 					error::LogFunctionCall(
-						hRes, NULL, false, false, true, dwErr, "LookupAccountSid", __FILE__, __LINE__);
+						HRESULT_FROM_WIN32(dwErr),
+						NULL,
+						false,
+						false,
+						true,
+						dwErr,
+						"LookupAccountSid",
+						__FILE__,
+						__LINE__);
 				}
 			}
 
-			if (SUCCEEDED(hRes))
-			{
-				const auto lpSidName = dwSidName ? new WCHAR[dwSidName] : nullptr;
-				const auto lpSidDomain = dwSidDomain ? new WCHAR[dwSidDomain] : nullptr;
+			const auto lpSidName = dwSidName ? new WCHAR[dwSidName] : nullptr;
+			const auto lpSidDomain = dwSidDomain ? new WCHAR[dwSidDomain] : nullptr;
 
-				// Only make the call if we got something to get
-				if (lpSidName || lpSidDomain)
-				{
-					WC_BS(LookupAccountSidW(
-						nullptr, SidStart, lpSidName, &dwSidName, lpSidDomain, &dwSidDomain, &SidNameUse));
-					if (lpSidName) m_lpSidName = lpSidName;
-					if (lpSidDomain) m_lpSidDomain = lpSidDomain;
-					delete[] lpSidName;
-					delete[] lpSidDomain;
-				}
+			// Only make the call if we got something to get
+			if (lpSidName || lpSidDomain)
+			{
+				WC_BS(LookupAccountSidW(
+					nullptr, SidStart, lpSidName, &dwSidName, lpSidDomain, &dwSidDomain, &SidNameUse));
+				if (lpSidName) m_lpSidName = lpSidName;
+				if (lpSidDomain) m_lpSidDomain = lpSidDomain;
+				delete[] lpSidName;
+				delete[] lpSidDomain;
 			}
 
 			m_lpStringSid = sid::GetTextualSid(SidStart);
