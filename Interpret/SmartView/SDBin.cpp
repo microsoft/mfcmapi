@@ -32,7 +32,6 @@ namespace smartview
 
 	_Check_return_ std::wstring SDBin::ToStringInternal()
 	{
-		auto hRes = S_OK;
 		const auto lpSDToParse = m_Parser.GetCurrentAddress();
 		const auto ulSDToParse = m_Parser.RemainingBytes();
 		m_Parser.Advance(ulSDToParse);
