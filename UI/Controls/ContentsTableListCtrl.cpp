@@ -146,16 +146,13 @@ namespace controls
 
 		_Check_return_ bool CContentsTableListCtrl::IsContentsTableSet() const { return m_lpContentsTable != nullptr; }
 
-		_Check_return_ HRESULT CContentsTableListCtrl::SetContentsTable(
+		_Check_return_ void CContentsTableListCtrl::SetContentsTable(
 			_In_opt_ LPMAPITABLE lpContentsTable,
 			ULONG ulDisplayFlags,
 			ULONG ulContainerType)
 		{
-			const auto hRes = S_OK;
-
 			// If nothing to do, exit early
-			if (lpContentsTable == m_lpContentsTable) return S_OK;
-			if (m_bInLoadOp) return MAPI_E_INVALID_PARAMETER;
+			if (m_bInLoadOp || lpContentsTable == m_lpContentsTable) return;
 
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -181,8 +178,6 @@ namespace controls
 
 			// Set up the columns on the new contents table and refresh!
 			DoSetColumns(true, 0 != registry::RegKeys[registry::regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD);
-
-			return hRes;
 		}
 
 		void CContentsTableListCtrl::GetStatus()

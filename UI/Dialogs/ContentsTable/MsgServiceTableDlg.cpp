@@ -86,7 +86,7 @@ namespace dialog
 
 		// Clean up our table and admin in reverse order from which we obtained them
 		// Failure to do this leads to crashes in Outlook's profile code
-		EC_H(m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, NULL));
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, NULL);
 
 		if (m_lpServiceAdmin) m_lpServiceAdmin->Release();
 		m_lpServiceAdmin = nullptr;
@@ -112,7 +112,7 @@ namespace dialog
 
 				if (lpServiceTable)
 				{
-					EC_H(m_lpContentsTableListCtrl->SetContentsTable(lpServiceTable, dfNormal, NULL));
+					m_lpContentsTableListCtrl->SetContentsTable(lpServiceTable, dfNormal, NULL);
 
 					lpServiceTable->Release();
 				}

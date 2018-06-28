@@ -38,7 +38,7 @@ namespace controls
 			virtual ~CContentsTableListCtrl();
 
 			// Initialization
-			_Check_return_ HRESULT
+			_Check_return_ void
 			SetContentsTable(_In_opt_ LPMAPITABLE lpContentsTable, ULONG ulDisplayFlags, ULONG ulContainerType);
 
 			// Selected item accessors

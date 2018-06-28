@@ -653,7 +653,7 @@ namespace dialog
 
 		if (pStoresTbl)
 		{
-			EC_H(m_lpContentsTableListCtrl->SetContentsTable(pStoresTbl, dfNormal, MAPI_STORE));
+			m_lpContentsTableListCtrl->SetContentsTable(pStoresTbl, dfNormal, MAPI_STORE);
 
 			pStoresTbl->Release();
 		}
@@ -795,14 +795,12 @@ namespace dialog
 	void CMainDlg::OnLogoff()
 	{
 		if (m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading()) return;
-		auto hRes = S_OK;
-
 		if (!m_lpMapiObjects) return;
 
 		OnCloseAddressBook();
 
 		// We do this first to free up any stray session pointers
-		EC_H(m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE));
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE);
 
 		m_lpMapiObjects->Logoff(m_hWnd, MAPI_LOGOFF_UI);
 	}
@@ -824,7 +822,7 @@ namespace dialog
 			OnCloseAddressBook();
 
 			// We do this first to free up any stray session pointers
-			EC_H(m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE));
+			m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE);
 
 			m_lpMapiObjects->Logoff(m_hWnd, MyData.GetHex(0));
 		}

@@ -132,8 +132,6 @@ namespace dialog
 
 	void CContentsTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	{
-		auto hRes = S_OK;
-
 		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CBaseDialog::CreateDialogAndMenu(nIDMenuResource, IDR_MENU_TABLE, IDS_TABLEMENU);
 
@@ -142,7 +140,7 @@ namespace dialog
 			const auto ulPropType = mapi::GetMAPIObjectType(m_lpContainer);
 
 			// Pass the contents table to the list control, but don't render yet - call BuildUIForContentsTable from CreateDialogAndMenu for that
-			WC_H(m_lpContentsTableListCtrl->SetContentsTable(m_lpContentsTable, m_ulDisplayFlags, ulPropType));
+			m_lpContentsTableListCtrl->SetContentsTable(m_lpContentsTable, m_ulDisplayFlags, ulPropType);
 		}
 	}
 
