@@ -251,7 +251,7 @@ namespace strings
 
 	std::wstring StripCarriage(const std::wstring& szString) { return StripCharacter(szString, L'\r'); }
 
-	std::wstring CleanString(const std::wstring& szString)
+	std::wstring StripCRLF(const std::wstring& szString)
 	{
 		return strip(szString, [](const WCHAR& chr) {
 			// Remove carriage returns

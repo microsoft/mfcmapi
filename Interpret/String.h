@@ -40,7 +40,7 @@ namespace strings
 
 	std::wstring StripCharacter(const std::wstring& szString, const WCHAR& character);
 	std::wstring StripCarriage(const std::wstring& szString);
-	std::wstring CleanString(const std::wstring& szString);
+	std::wstring StripCRLF(const std::wstring& szString);
 	std::wstring TrimString(const std::wstring& szString);
 	std::wstring ScrubStringForXML(const std::wstring& szString);
 	std::wstring SanitizeFileName(const std::wstring& szFileIn);

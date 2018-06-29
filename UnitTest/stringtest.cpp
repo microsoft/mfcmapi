@@ -144,10 +144,10 @@ namespace stringtest
 			Assert::AreEqual(std::wstring(L"12345"), strings::StripCarriage(L"1\r2345\r\r"));
 		}
 
-		TEST_METHOD(Test_CleanString)
+		TEST_METHOD(Test_StripCRLF)
 		{
-			Assert::AreEqual(std::wstring(L"12345"), strings::CleanString(L"1\r2345\r\r"));
-			Assert::AreEqual(std::wstring(L"12345"), strings::CleanString(L"1\r23\n\r\n45\r\n\r"));
+			Assert::AreEqual(std::wstring(L"12345"), strings::StripCRLF(L"1\r2345\r\r"));
+			Assert::AreEqual(std::wstring(L"12345"), strings::StripCRLF(L"1\r23\n\r\n45\r\n\r"));
 		}
 
 		TEST_METHOD(Test_TrimString)
