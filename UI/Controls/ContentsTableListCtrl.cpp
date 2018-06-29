@@ -380,7 +380,7 @@ namespace controls
 				}
 			}
 
-			const auto iRetVal = InsertColumn(ulCurHeaderCol, strings::wstringTotstring(szHeaderString).c_str());
+			const auto iRetVal = InsertColumnW(ulCurHeaderCol, szHeaderString);
 
 			if (-1 == iRetVal)
 			{
