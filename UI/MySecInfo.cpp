@@ -205,9 +205,8 @@ namespace mapi
 					}
 
 					// Dump our SD
-					std::wstring szDACL;
 					std::wstring szInfo;
-					EC_H(SDToString(lpSDBuffer, cbSBBuffer, m_acetype, szDACL, szInfo));
+					auto szDACL = SDToString(lpSDBuffer, cbSBBuffer, m_acetype, szInfo);
 
 					output::DebugPrint(DBGGeneric, L"sdInfo: %ws\nszDACL: %ws\n", szInfo.c_str(), szDACL.c_str());
 				}
@@ -243,7 +242,7 @@ namespace mapi
 			{
 				// The format is a security descriptor preceeded by a header.
 				memcpy(lpBlob, m_lpHeader, m_cbHeader);
-				EC_B(MakeSelfRelativeSD(pSecurityDescriptor, lpBlob + m_cbHeader, &dwSDLength));
+				hRes = EC_B(MakeSelfRelativeSD(pSecurityDescriptor, lpBlob + m_cbHeader, &dwSDLength));
 
 				Blob.ulPropTag = m_ulPropTag;
 				Blob.dwAlignPad = NULL;
@@ -254,6 +253,7 @@ namespace mapi
 
 				MAPIFreeBuffer(lpBlob);
 			}
+
 			return hRes;
 		}
 

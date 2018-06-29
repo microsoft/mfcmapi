@@ -17,7 +17,6 @@ namespace controls
 	CFakeSplitter::CFakeSplitter(_In_ dialog::CBaseDialog* lpHostDlg)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		auto hRes = S_OK;
 		CRect pRect;
 
 		m_bTracking = false;
@@ -50,7 +49,7 @@ namespace controls
 			RegisterClassEx(&wc);
 		}
 
-		EC_B(Create(
+		EC_BS(Create(
 			_T("FakeSplitter"), // STRING_OK
 			_T("FakeSplitter"), // STRING_OK
 			WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN // required to reduce flicker
@@ -61,7 +60,7 @@ namespace controls
 
 		// Necessary for TAB to work. Without this, all TABS get stuck on the fake splitter control
 		// instead of passing to the children. Haven't tested with nested splitters.
-		EC_B(ModifyStyleEx(0, WS_EX_CONTROLPARENT));
+		EC_BS(ModifyStyleEx(0, WS_EX_CONTROLPARENT));
 
 		// Load split cursors
 		m_hSplitCursorV = EC_D(HCURSOR, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITV)));
@@ -127,7 +126,6 @@ namespace controls
 	{
 		CalcSplitPos();
 
-		auto hRes = S_OK;
 		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 		if (hdwp)
 		{
@@ -170,7 +168,7 @@ namespace controls
 					hdwp, m_PaneTwo->m_hWnd, nullptr, r2.left, r2.top, r2.Width(), r2.Height(), SWP_NOZORDER);
 			}
 
-			EC_B(EndDeferWindowPos(hdwp));
+			EC_BS(EndDeferWindowPos(hdwp));
 		}
 
 		if (m_PaneOne && m_PaneTwo)
@@ -254,7 +252,6 @@ namespace controls
 	{
 		if (!m_PaneOne) return;
 
-		auto hRes = S_OK;
 		// If we don't have GetCapture, then we don't want to track right now.
 		if (GetCapture() != this) StopTracking();
 
@@ -281,13 +278,12 @@ namespace controls
 			SetPercent(flNewPercent);
 
 			// Force child windows to refresh now
-			EC_B(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
+			EC_BS(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
 		}
 	}
 
 	void CFakeSplitter::StartTracking(int ht)
 	{
-		auto hRes = S_OK;
 		if (ht == noHit) return;
 
 		// steal focus and capture
@@ -296,7 +292,7 @@ namespace controls
 
 		// make sure no updates are pending
 		// CSplitterWnd does this...not sure why
-		EC_B(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
+		EC_BS(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
 
 		// set tracking state and appropriate cursor
 		m_bTracking = true;

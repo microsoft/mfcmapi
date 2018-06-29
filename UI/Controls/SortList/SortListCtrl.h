@@ -68,7 +68,7 @@ namespace controls
 			STDMETHODIMP_(ULONG) Release();
 
 			// Exported manipulation functions
-			_Check_return_ HRESULT Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages);
+			void Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages);
 			void AutoSizeColumns(bool bMinWidth);
 			void DeleteAllColumns(bool bShutdown = false);
 			void SetSelectedItem(int iItem);

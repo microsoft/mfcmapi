@@ -22,7 +22,6 @@ namespace dialog
 
 	BOOL CAboutDlg::OnInitDialog()
 	{
-		auto hRes = S_OK;
 		auto bRet = CMyDialog::OnInitDialog();
 
 		auto szProductName = strings::loadstring(ID_PRODUCTNAME);
@@ -74,7 +73,7 @@ namespace dialog
 		rcHelpText.right = rcClient.right - iMargin;
 		rcHelpText.bottom = rcClient.bottom - iMargin * 2 - iCheckHeight;
 
-		EC_B(m_HelpText.Create(
+		EC_BS(m_HelpText.Create(
 			WS_TABSTOP | WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | WS_BORDER | ES_AUTOHSCROLL | ES_AUTOVSCROLL |
 				ES_MULTILINE,
 			rcHelpText,
@@ -93,7 +92,7 @@ namespace dialog
 		rcCheck.top = rcHelpText.bottom + iMargin;
 		rcCheck.bottom = rcCheck.top + iCheckHeight;
 
-		EC_B(m_DisplayAboutCheck.Create(
+		EC_BS(m_DisplayAboutCheck.Create(
 			NULL,
 			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_AUTOCHECKBOX,
 			rcCheck,

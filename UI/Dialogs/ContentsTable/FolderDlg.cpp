@@ -436,15 +436,12 @@ namespace dialog
 
 	void CFolderDlg::HandleCopy()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		output::DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
-		LPENTRYLIST lpEIDs = nullptr;
-
-		EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
+		const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 
 		// CGlobalCache takes over ownership of lpEIDs - don't free now
 		cache::CGlobalCache::getInstance().SetMessagesToCopy(lpEIDs, m_lpFolder);
@@ -681,9 +678,7 @@ namespace dialog
 
 		if (hRes == S_OK)
 		{
-			LPENTRYLIST lpEIDs = nullptr;
-
-			EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
+			const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 
 			if (bMove)
 			{
@@ -1711,9 +1706,7 @@ namespace dialog
 			}
 			else if (iNumSelected > 1)
 			{
-				LPENTRYLIST lpEIDs = nullptr;
-
-				EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
+				const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 
 				LPMAPIPROGRESS lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::SetReadFlags", m_hWnd); // STRING_OK

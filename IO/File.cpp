@@ -59,7 +59,7 @@ namespace file
 		const auto lpItemIdList = SHBrowseForFolderW(&BrowseInfo);
 		if (lpItemIdList)
 		{
-			EC_B(SHGetPathFromIDListW(lpItemIdList, szPath));
+			EC_BS(SHGetPathFromIDListW(lpItemIdList, szPath));
 			lpMalloc->Free(lpItemIdList);
 		}
 
@@ -1289,7 +1289,6 @@ namespace file
 		const auto szFullPath = file::GetModuleFileName(hModule);
 		if (!szFullPath.empty())
 		{
-			auto hRes = S_OK;
 			auto dwVerInfoSize = EC_D(DWORD, GetFileVersionInfoSizeW(szFullPath.c_str(), nullptr));
 			if (dwVerInfoSize)
 			{
@@ -1297,7 +1296,7 @@ namespace file
 				const auto pbData = new BYTE[dwVerInfoSize];
 				if (pbData == nullptr) return {};
 
-				EC_B(GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
+				EC_BS(GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
 
 				if (pbData)
 				{
@@ -1310,7 +1309,7 @@ namespace file
 					UINT cbTranslate = 0;
 
 					// Read the list of languages and code pages.
-					EC_B(VerQueryValueW(
+					auto hRes = EC_B(VerQueryValueW(
 						pbData,
 						L"\\VarFileInfo\\Translation", // STRING_OK
 						reinterpret_cast<LPVOID*>(&lpTranslate),
@@ -1334,9 +1333,8 @@ namespace file
 								wchar_t* lpszVer = nullptr;
 								auto szVerString = strings::loadstring(iVerString);
 								auto szQueryString = szSubBlock + szVerString;
-								hRes = S_OK;
 
-								EC_B(VerQueryValueW(
+								hRes = EC_B(VerQueryValueW(
 									static_cast<void*>(pbData),
 									szQueryString.c_str(),
 									reinterpret_cast<void**>(&lpszVer),

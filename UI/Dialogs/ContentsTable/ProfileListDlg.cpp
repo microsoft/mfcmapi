@@ -98,7 +98,7 @@ namespace dialog
 
 		// Wipe out current references to the profile table so the refresh will work
 		// If we don't do this, we get the old table back again.
-		EC_H(m_lpContentsTableListCtrl->SetContentsTable(NULL, dfNormal, NULL));
+		m_lpContentsTableListCtrl->SetContentsTable(NULL, dfNormal, NULL);
 
 		LPPROFADMIN lpProfAdmin = nullptr;
 		EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -110,7 +110,7 @@ namespace dialog
 
 		if (lpProfTable)
 		{
-			EC_H(m_lpContentsTableListCtrl->SetContentsTable(lpProfTable, dfNormal, NULL));
+			m_lpContentsTableListCtrl->SetContentsTable(lpProfTable, dfNormal, NULL);
 
 			lpProfTable->Release();
 		}

@@ -42,9 +42,8 @@ namespace controls
 			bool bIsAB)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
-			auto hRes = S_OK;
 
-			EC_H(Create(pCreateParent, LVS_SINGLESEL, IDC_LIST_CTRL, true));
+			Create(pCreateParent, LVS_SINGLESEL, IDC_LIST_CTRL, true);
 
 			m_bHaveEverDisplayedSomething = false;
 
@@ -70,7 +69,7 @@ namespace controls
 				auto bSetCols = false;
 				const auto nColumnCount = lpMyHeader->GetItemCount();
 				const auto cchOrder = registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.length();
-				if (SUCCEEDED(hRes) && nColumnCount == static_cast<int>(cchOrder))
+				if (nColumnCount == static_cast<int>(cchOrder))
 				{
 					const auto pnOrder = new (std::nothrow) int[nColumnCount];
 
@@ -145,7 +144,6 @@ namespace controls
 		// WM_MFCMAPI_SAVECOLUMNORDERLIST
 		_Check_return_ LRESULT CSingleMAPIPropListCtrl::msgOnSaveColumnOrder(WPARAM /*wParam*/, LPARAM /*lParam*/)
 		{
-			auto hRes = S_OK;
 			const auto lpMyHeader = GetHeaderCtrl();
 
 			if (lpMyHeader)
@@ -158,7 +156,7 @@ namespace controls
 					if (pnOrder)
 					{
 						registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.clear();
-						EC_B(GetColumnOrderArray(pnOrder, nColumnCount));
+						EC_BS(GetColumnOrderArray(pnOrder, nColumnCount));
 						for (ULONG i = 0; i < nColumnCount; i++)
 						{
 							registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.push_back(
@@ -169,6 +167,7 @@ namespace controls
 					delete[] pnOrder;
 				}
 			}
+
 			return S_OK;
 		}
 
@@ -554,7 +553,6 @@ namespace controls
 
 		_Check_return_ HRESULT CSingleMAPIPropListCtrl::RefreshMAPIPropList()
 		{
-			auto hRes = S_OK;
 			output::DebugPrintEx(DBGGeneric, CLASS, L"RefreshMAPIPropList", L"\n");
 
 			// Turn off redraw while we work on the window
@@ -563,7 +561,7 @@ namespace controls
 
 			const auto iSelectedItem = GetNextSelectedItem(MyPos);
 
-			EC_B(DeleteAllItems());
+			auto hRes = EC_B(DeleteAllItems());
 
 			if (m_lpPropBag) EC_H(LoadMAPIPropList());
 
@@ -579,9 +577,8 @@ namespace controls
 			return hRes;
 		}
 
-		_Check_return_ HRESULT CSingleMAPIPropListCtrl::AddPropToExtraProps(ULONG ulPropTag, bool bRefresh)
+		void CSingleMAPIPropListCtrl::AddPropToExtraProps(ULONG ulPropTag, bool bRefresh)
 		{
-			auto hRes = S_OK;
 			SPropTagArray sptSingleProp;
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"AddPropToExtraProps", L"adding proptag 0x%X\n", ulPropTag);
@@ -592,13 +589,10 @@ namespace controls
 			sptSingleProp.cValues = 1;
 			sptSingleProp.aulPropTag[0] = ulPropTag;
 
-			EC_H(AddPropsToExtraProps(&sptSingleProp, bRefresh));
-
-			return hRes;
+			AddPropsToExtraProps(&sptSingleProp, bRefresh);
 		}
 
-		_Check_return_ HRESULT
-		CSingleMAPIPropListCtrl::AddPropsToExtraProps(_In_ LPSPropTagArray lpPropsToAdd, bool bRefresh)
+		void CSingleMAPIPropListCtrl::AddPropsToExtraProps(_In_ LPSPropTagArray lpPropsToAdd, bool bRefresh)
 		{
 			auto hRes = S_OK;
 			LPSPropTagArray lpNewExtraProps = nullptr;
@@ -610,12 +604,10 @@ namespace controls
 			MAPIFreeBuffer(m_sptExtraProps);
 			m_sptExtraProps = lpNewExtraProps;
 
-			if (bRefresh)
+			if (SUCCEEDED(hRes) && bRefresh)
 			{
 				WC_H(RefreshMAPIPropList());
 			}
-
-			return hRes;
 		}
 
 #define NUMPROPTYPES 31
@@ -994,7 +986,7 @@ namespace controls
 			if (hRes == S_OK && lptag && lptag->cValues)
 			{
 				// Now we have an array of tags - add them in:
-				EC_H(AddPropsToExtraProps(lptag, false));
+				AddPropsToExtraProps(lptag, false);
 				MAPIFreeBuffer(lptag);
 				lptag = nullptr;
 			}
@@ -1069,7 +1061,7 @@ namespace controls
 									L"FindAllNamedProps",
 									L"Found an ID with a name (0x%X). Adding to extra prop list.\n",
 									iTag);
-								EC_H(AddPropToExtraProps(PROP_TAG(NULL, iTag), false));
+								AddPropToExtraProps(PROP_TAG(NULL, iTag), false);
 							}
 							MAPIFreeBuffer(lppPropNames);
 							lppPropNames = nullptr;
@@ -1217,7 +1209,6 @@ namespace controls
 		// Display the selected property as a security dscriptor using a property sheet
 		void CSingleMAPIPropListCtrl::OnDisplayPropertyAsSecurityDescriptorPropSheet() const
 		{
-			auto hRes = S_OK;
 			ULONG ulPropTag = NULL;
 
 			if (!m_lpPropBag || !import::pfnEditSecurity) return;
@@ -1236,7 +1227,7 @@ namespace controls
 
 			if (MySecInfo)
 			{
-				EC_B(import::pfnEditSecurity(m_hWnd, MySecInfo));
+				EC_BS(import::pfnEditSecurity(m_hWnd, MySecInfo));
 
 				MySecInfo->Release();
 			}

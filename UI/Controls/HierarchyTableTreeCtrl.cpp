@@ -144,13 +144,11 @@ namespace controls
 		{
 		case WM_MOUSEMOVE:
 		{
-			auto hRes = S_OK;
-
 			TVHITTESTINFO tvHitTestInfo = {0};
 			tvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 			tvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
-			WC_B(::SendMessage(m_hWnd, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&tvHitTestInfo)));
+			WC_BS(::SendMessage(m_hWnd, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&tvHitTestInfo)));
 			if (tvHitTestInfo.hItem)
 			{
 				if (tvHitTestInfo.flags & TVHT_ONITEMBUTTON)
@@ -180,7 +178,7 @@ namespace controls
 					tmEvent.dwFlags = TME_LEAVE;
 					tmEvent.hwndTrack = m_hWnd;
 
-					WC_B(TrackMouseEvent(&tmEvent));
+					WC_BS(TrackMouseEvent(&tmEvent));
 				}
 			}
 			else
@@ -208,14 +206,12 @@ namespace controls
 
 	_Check_return_ HRESULT CHierarchyTableTreeCtrl::RefreshHierarchyTable()
 	{
-		auto hRes = S_OK;
-
 		// Turn off redraw while we work on the window
 		SetRedraw(false);
 
 		m_bItemSelected = false; // clear this just in case
 
-		EC_B(DeleteItem(GetRootItem()));
+		auto hRes = EC_B(DeleteItem(GetRootItem()));
 
 		if (m_lpContainer) EC_H(AddRootNode(m_lpContainer));
 
@@ -670,7 +666,7 @@ namespace controls
 		item.pszText = szText;
 		item.cchTextMax = _countof(szText);
 		item.hItem = GetSelectedItem();
-		WC_B(::SendMessage(m_hWnd, TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+		WC_BS(::SendMessage(m_hWnd, TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
 		m_lpHostDlg->UpdateTitleBarText(szText);
 
 		if (lpMAPIContainer) lpMAPIContainer->Release();
@@ -1134,7 +1130,7 @@ namespace controls
 				L"Received message delete item: %p =\"%ws\"\n",
 				hItemToDelete,
 				strings::LPCTSTRToWstring(GetItemText(hItemToDelete)).c_str());
-			EC_B(DeleteItem(hItemToDelete));
+			hRes = EC_B(DeleteItem(hItemToDelete));
 		}
 
 		return hRes;
@@ -1176,7 +1172,7 @@ namespace controls
 			item.mask = TVIF_TEXT;
 			item.pszText = const_cast<LPWSTR>(szText.c_str());
 			item.hItem = hModifyItem;
-			EC_B(::SendMessage(m_hWnd, TVM_SETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+			hRes = EC_B(::SendMessage(m_hWnd, TVM_SETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
 
 			// We make this copy here and pass it in to the node
 			// The mem will be freed when the item data is cleaned up - do not free here
@@ -1191,7 +1187,10 @@ namespace controls
 				SetNodeData(m_hWnd, hModifyItem, lpData);
 			}
 
-			if (hParent) EC_B(SortChildren(hParent));
+			if (hParent)
+			{
+				hRes = EC_B(SortChildren(hParent));
+			}
 		}
 
 		if (hModifyItem == GetSelectedItem()) UpdateSelectionUI(hModifyItem);
@@ -1220,26 +1219,23 @@ namespace controls
 			auto hChild = GetChildItem(hRefreshItem);
 			while (hChild)
 			{
-				hRes = S_OK;
-				EC_B(DeleteItem(hChild));
+				hRes = EC_B(DeleteItem(hChild));
 				hChild = GetChildItem(hRefreshItem);
 			}
-			// Reset our expanded bits
-			EC_B(SetItemState(hRefreshItem, NULL, TVIS_EXPANDED | TVIS_EXPANDEDONCE));
-			hRes = S_OK;
-			{
-				const auto lpData = GetSortListData(hRefreshItem);
 
-				if (lpData && lpData->Node())
+			// Reset our expanded bits
+			hRes = EC_B(SetItemState(hRefreshItem, NULL, TVIS_EXPANDED | TVIS_EXPANDEDONCE));
+			const auto lpData = GetSortListData(hRefreshItem);
+
+			if (lpData && lpData->Node())
+			{
+				if (lpData->Node()->m_lpHierarchyTable)
 				{
-					if (lpData->Node()->m_lpHierarchyTable)
+					ULONG ulRowCount = NULL;
+					WC_MAPI(lpData->Node()->m_lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
+					if (S_OK != hRes || ulRowCount)
 					{
-						ULONG ulRowCount = NULL;
-						WC_MAPI(lpData->Node()->m_lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
-						if (S_OK != hRes || ulRowCount)
-						{
-							EC_B(Expand(hRefreshItem, TVE_EXPAND));
-						}
+						hRes = EC_B(Expand(hRefreshItem, TVE_EXPAND));
 					}
 				}
 			}

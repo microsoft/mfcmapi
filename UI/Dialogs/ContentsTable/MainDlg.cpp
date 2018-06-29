@@ -112,7 +112,6 @@ namespace dialog
 	void CMainDlg::AddLoadMAPIMenus() const
 	{
 		output::DebugPrint(DBGLoadMAPI, L"AddLoadMAPIMenus - Extending menus\n");
-		auto hRes = S_OK;
 
 		// Find the submenu with ID_LOADMAPI on it
 		const auto hAddInMenu = ui::LocateSubmenu(::GetMenu(m_hWnd), ID_LOADMAPI);
@@ -120,19 +119,15 @@ namespace dialog
 		UINT uidCurMenu = ID_LOADMAPIMENUMIN;
 
 		// Now add each of the menu entries
-		if (SUCCEEDED(hRes))
+		auto paths = mapistub::GetMAPIPaths();
+		for (const auto& szPath : paths)
 		{
-			auto paths = mapistub::GetMAPIPaths();
-			for (const auto& szPath : paths)
-			{
-				if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
+			if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
 
-				output::DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
-				const auto lpMenu = ui::CreateMenuEntry(szPath);
+			output::DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
+			const auto lpMenu = ui::CreateMenuEntry(szPath);
 
-				EC_B(
-					AppendMenu(hAddInMenu, MF_ENABLED | MF_OWNERDRAW, uidCurMenu++, reinterpret_cast<LPCTSTR>(lpMenu)));
-			}
+			EC_BS(AppendMenu(hAddInMenu, MF_ENABLED | MF_OWNERDRAW, uidCurMenu++, reinterpret_cast<LPCTSTR>(lpMenu)));
 		}
 
 		output::DebugPrint(DBGLoadMAPI, L"Done extending menus\n");
@@ -143,12 +138,11 @@ namespace dialog
 		if (wMenuSelect < ID_LOADMAPIMENUMIN || wMenuSelect > ID_LOADMAPIMENUMAX) return false;
 		output::DebugPrint(DBGLoadMAPI, L"InvokeLoadMAPIMenu - got menu item %u\n", wMenuSelect);
 
-		auto hRes = S_OK;
 		MENUITEMINFOW subMenu = {0};
 		subMenu.cbSize = sizeof(MENUITEMINFO);
 		subMenu.fMask = MIIM_DATA;
 
-		WC_B(GetMenuItemInfoW(::GetMenu(m_hWnd), wMenuSelect, false, &subMenu));
+		WC_BS(GetMenuItemInfoW(::GetMenu(m_hWnd), wMenuSelect, false, &subMenu));
 		if (subMenu.dwItemData)
 		{
 			const auto lme = reinterpret_cast<ui::LPMENUENTRY>(subMenu.dwItemData);
@@ -659,7 +653,7 @@ namespace dialog
 
 		if (pStoresTbl)
 		{
-			EC_H(m_lpContentsTableListCtrl->SetContentsTable(pStoresTbl, dfNormal, MAPI_STORE));
+			m_lpContentsTableListCtrl->SetContentsTable(pStoresTbl, dfNormal, MAPI_STORE);
 
 			pStoresTbl->Release();
 		}
@@ -801,14 +795,12 @@ namespace dialog
 	void CMainDlg::OnLogoff()
 	{
 		if (m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading()) return;
-		auto hRes = S_OK;
-
 		if (!m_lpMapiObjects) return;
 
 		OnCloseAddressBook();
 
 		// We do this first to free up any stray session pointers
-		EC_H(m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE));
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE);
 
 		m_lpMapiObjects->Logoff(m_hWnd, MAPI_LOGOFF_UI);
 	}
@@ -830,7 +822,7 @@ namespace dialog
 			OnCloseAddressBook();
 
 			// We do this first to free up any stray session pointers
-			EC_H(m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE));
+			m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE);
 
 			m_lpMapiObjects->Logoff(m_hWnd, MyData.GetHex(0));
 		}

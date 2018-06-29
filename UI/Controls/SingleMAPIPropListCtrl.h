@@ -44,8 +44,8 @@ namespace controls
 
 		private:
 			LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
-			_Check_return_ HRESULT AddPropToExtraProps(ULONG ulPropTag, bool bRefresh);
-			_Check_return_ HRESULT AddPropsToExtraProps(_In_ LPSPropTagArray lpPropsToAdd, bool bRefresh);
+			void AddPropToExtraProps(ULONG ulPropTag, bool bRefresh);
+			void AddPropsToExtraProps(_In_ LPSPropTagArray lpPropsToAdd, bool bRefresh);
 			void FindAllNamedProps();
 			void CountNamedProps();
 			_Check_return_ HRESULT LoadMAPIPropList();
