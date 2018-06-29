@@ -57,7 +57,7 @@ namespace controls
 			for (ULONG i = 0; i < columns::PropColumns.size(); i++)
 			{
 				const auto szHeaderName = strings::loadstring(columns::PropColumns[i].uidName);
-				InsertColumn(i, strings::wstringTotstring(szHeaderName).c_str());
+				InsertColumnW(i, szHeaderName);
 			}
 
 			const auto lpMyHeader = GetHeaderCtrl();

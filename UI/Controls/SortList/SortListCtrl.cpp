@@ -665,7 +665,7 @@ namespace controls
 			auto lvi = LVITEMW();
 			lvi.iSubItem = nSubItem;
 			lvi.pszText = const_cast<LPWSTR>(lpszText.c_str());
-			(void)::SendMessage(m_hWnd, LVM_SETITEMTEXTW, nItem, (LPARAM) &lvi);
+			(void) ::SendMessage(m_hWnd, LVM_SETITEMTEXTW, nItem, (LPARAM) &lvi);
 		}
 
 		std::wstring CSortListCtrl::GetItemText(_In_ int nItem, _In_ int nSubItem) const
@@ -688,6 +688,16 @@ namespace controls
 				EC_BS(SetItemState(iItem - 1, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED));
 				EnsureVisible(iItem - 1, false);
 			}
+		}
+
+		int CSortListCtrl::InsertColumnW(_In_ int nCol, const std::wstring& columnHeading)
+		{
+			auto column = LVCOLUMNW();
+			column.mask = LVCF_TEXT | LVCF_FMT;
+			column.pszText = const_cast<LPWSTR>(columnHeading.c_str());
+			column.fmt = LVCFMT_LEFT;
+
+			return static_cast<int>(::SendMessage(m_hWnd, LVM_INSERTCOLUMNW, nCol, (LPARAM) &column));
 		}
 	}
 }
