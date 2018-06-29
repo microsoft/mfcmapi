@@ -127,7 +127,7 @@ namespace dialog
 				output::DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
 				const auto lpMenu = ui::CreateMenuEntry(szPath);
 
-				EC_B2S(
+				EC_BS(
 					AppendMenu(hAddInMenu, MF_ENABLED | MF_OWNERDRAW, uidCurMenu++, reinterpret_cast<LPCTSTR>(lpMenu)));
 			}
 		}
@@ -144,7 +144,7 @@ namespace dialog
 		subMenu.cbSize = sizeof(MENUITEMINFO);
 		subMenu.fMask = MIIM_DATA;
 
-		WC_B2S(GetMenuItemInfoW(::GetMenu(m_hWnd), wMenuSelect, false, &subMenu));
+		WC_BS(GetMenuItemInfoW(::GetMenu(m_hWnd), wMenuSelect, false, &subMenu));
 		if (subMenu.dwItemData)
 		{
 			const auto lme = reinterpret_cast<ui::LPMENUENTRY>(subMenu.dwItemData);
@@ -650,7 +650,7 @@ namespace dialog
 		EC_MAPI2S(lpMAPISession->GetMsgStoresTable(0, &pStoresTbl));
 		if (pStoresTbl)
 		{
-			EC_H2S(m_lpContentsTableListCtrl->SetContentsTable(pStoresTbl, dfNormal, MAPI_STORE));
+			m_lpContentsTableListCtrl->SetContentsTable(pStoresTbl, dfNormal, MAPI_STORE);
 
 			pStoresTbl->Release();
 		}
@@ -790,7 +790,7 @@ namespace dialog
 		OnCloseAddressBook();
 
 		// We do this first to free up any stray session pointers
-		EC_H2S(m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE));
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE);
 
 		m_lpMapiObjects->Logoff(m_hWnd, MAPI_LOGOFF_UI);
 	}
@@ -810,7 +810,7 @@ namespace dialog
 			OnCloseAddressBook();
 
 			// We do this first to free up any stray session pointers
-			EC_H2S(m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE));
+			m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, MAPI_STORE);
 
 			m_lpMapiObjects->Logoff(m_hWnd, MyData.GetHex(0));
 		}

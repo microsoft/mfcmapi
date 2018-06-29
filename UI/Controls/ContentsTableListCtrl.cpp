@@ -35,9 +35,7 @@ namespace controls
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 
-			auto hRes = S_OK;
-
-			EC_H(Create(pCreateParent, LVS_NOCOLUMNHEADER, IDC_LIST_CTRL, true));
+			Create(pCreateParent, LVS_NOCOLUMNHEADER, IDC_LIST_CTRL, true);
 
 			m_bAbortLoad = false; // no need to synchronize this - the thread hasn't started yet
 			m_bInLoadOp = false;
@@ -114,7 +112,7 @@ namespace controls
 				break;
 			case WM_LBUTTONDBLCLK:
 				WC_H(DoExpandCollapse());
-				if (S_FALSE == hRes)
+				if (hRes == S_FALSE)
 				{
 					// Post the message to display the item
 					if (m_lpHostDlg) m_lpHostDlg->PostMessage(WM_COMMAND, ID_DISPLAYSELECTEDITEM, NULL);
@@ -148,16 +146,13 @@ namespace controls
 
 		_Check_return_ bool CContentsTableListCtrl::IsContentsTableSet() const { return m_lpContentsTable != nullptr; }
 
-		_Check_return_ HRESULT CContentsTableListCtrl::SetContentsTable(
+		void CContentsTableListCtrl::SetContentsTable(
 			_In_opt_ LPMAPITABLE lpContentsTable,
 			ULONG ulDisplayFlags,
 			ULONG ulContainerType)
 		{
-			const auto hRes = S_OK;
-
 			// If nothing to do, exit early
-			if (lpContentsTable == m_lpContentsTable) return S_OK;
-			if (m_bInLoadOp) return MAPI_E_INVALID_PARAMETER;
+			if (m_bInLoadOp || lpContentsTable == m_lpContentsTable) return;
 
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -183,8 +178,6 @@ namespace controls
 
 			// Set up the columns on the new contents table and refresh!
 			DoSetColumns(true, 0 != registry::RegKeys[registry::regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD);
-
-			return hRes;
 		}
 
 		void CContentsTableListCtrl::GetStatus()
@@ -215,10 +208,9 @@ namespace controls
 		}
 
 		// Takes a tag array and builds the UI out of it - does NOT touch the table
-		_Check_return_ HRESULT CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray lpTags)
+		void CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray lpTags)
 		{
-			auto hRes = S_OK;
-			if (!lpTags) return MAPI_E_INVALID_PARAMETER;
+			if (!lpTags) return;
 
 			// find a PR_DISPLAY_NAME column for later use
 			m_ulDisplayNameColumn = NODISPLAYNAME;
@@ -254,14 +246,13 @@ namespace controls
 			// Delete all of the old column headers
 			DeleteAllColumns();
 
-			EC_H(AddColumns(lpTags));
+			AddColumns(lpTags);
 
 			AutoSizeColumns(true);
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"SetColumns", L"Done inserting column headers\n");
 
 			MySetRedraw(true);
-			return hRes;
 		}
 
 		void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor)
@@ -277,7 +268,7 @@ namespace controls
 				// Make sure we're clear
 				DeleteAllColumns();
 				ModifyStyle(0, LVS_NOCOLUMNHEADER);
-				EC_H(RefreshTable());
+				RefreshTable();
 				return;
 			}
 
@@ -345,11 +336,10 @@ namespace controls
 			{
 				// Cycle our notification, turning off the old one if necessary
 				NotificationOff();
-				WC_H(NotificationOn());
-				hRes = S_OK;
+				NotificationOn();
 
-				EC_H(SetUIColumns(lpFinalTagArray));
-				EC_H(RefreshTable());
+				SetUIColumns(lpFinalTagArray);
+				RefreshTable();
 			}
 
 			MAPIFreeBuffer(lpModifiedTags);
@@ -357,13 +347,12 @@ namespace controls
 			MAPIFreeBuffer(lpOriginalColSet);
 		}
 
-		_Check_return_ HRESULT CContentsTableListCtrl::AddColumn(
+		void CContentsTableListCtrl::AddColumn(
 			UINT uidHeaderName,
 			ULONG ulCurHeaderCol,
 			ULONG ulCurTagArrayRow,
 			ULONG ulPropTag)
 		{
-			auto hRes = S_OK;
 			HDITEM hdItem = {0};
 			auto lpMyHeader = GetHeaderCtrl();
 			std::wstring szHeaderString;
@@ -411,20 +400,16 @@ namespace controls
 					lpHeaderData->szTipString = interpretprop::TagToString(ulPropTag, lpMDB, m_bIsAB, false);
 
 					hdItem.lParam = reinterpret_cast<LPARAM>(lpHeaderData);
-					EC_B(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
+					EC_BS(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
 				}
 			}
-
-			return hRes;
 		}
 
 		// Sets up column headers based on passed in named columns
 		// Put all named columns first, followed by a column for each property in the contents table
-		_Check_return_ HRESULT CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray lpCurColTagArray)
+		void CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray lpCurColTagArray)
 		{
-			auto hRes = S_OK;
-
-			if (!lpCurColTagArray || !m_lpHostDlg) return MAPI_E_INVALID_PARAMETER;
+			if (!lpCurColTagArray || !m_lpHostDlg) return;
 
 			m_ulHeaderColumns = lpCurColTagArray->cValues;
 
@@ -443,12 +428,11 @@ namespace controls
 					ULONG ulCurTagArrayRow = 0;
 					if (mapi::FindPropInPropTagArray(lpCurColTagArray, ulExtraColTag, &ulCurTagArrayRow))
 					{
-						hRes = S_OK;
-						EC_H(AddColumn(
+						AddColumn(
 							extraCol.uidName,
 							ulCurHeaderCol,
 							ulCurTagArrayRow,
-							lpCurColTagArray->aulPropTag[ulCurTagArrayRow]));
+							lpCurColTagArray->aulPropTag[ulCurTagArrayRow]);
 						// Strike out the value in the tag array so we can ignore it later!
 						lpCurColTagArray->aulPropTag[ulCurTagArrayRow] = NULL;
 
@@ -463,8 +447,7 @@ namespace controls
 			{
 				if (lpCurColTagArray->aulPropTag[ulCurTableCol] != NULL)
 				{
-					hRes = S_OK;
-					EC_H(AddColumn(NULL, ulCurHeaderCol, ulCurTableCol, lpCurColTagArray->aulPropTag[ulCurTableCol]));
+					AddColumn(NULL, ulCurHeaderCol, ulCurTableCol, lpCurColTagArray->aulPropTag[ulCurTableCol]);
 					ulCurHeaderCol++;
 				}
 			}
@@ -481,7 +464,6 @@ namespace controls
 			}
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"AddColumns", L"Done adding columns\n");
-			return hRes;
 		}
 
 		void CContentsTableListCtrl::SetRestriction(_In_opt_ const _SRestriction* lpRes)
@@ -716,23 +698,21 @@ namespace controls
 
 		void CContentsTableListCtrl::ClearLoading() { m_bInLoadOp = false; }
 
-		_Check_return_ HRESULT CContentsTableListCtrl::LoadContentsTableIntoView()
+		void CContentsTableListCtrl::LoadContentsTableIntoView()
 		{
-			auto hRes = S_OK;
+			if (m_bInLoadOp || !m_lpHostDlg) return;
+
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"\n");
 
-			if (m_bInLoadOp) return MAPI_E_INVALID_PARAMETER;
-			if (!m_lpHostDlg) return MAPI_E_INVALID_PARAMETER;
-
-			EC_B(DeleteAllItems());
+			EC_BS(DeleteAllItems());
 
 			// whack the old thread handle if we still have it
 			if (m_LoadThreadHandle) CloseHandle(m_LoadThreadHandle);
 			m_LoadThreadHandle = nullptr;
 
-			if (!m_lpContentsTable) return S_OK;
+			if (!m_lpContentsTable) return;
 			m_bInLoadOp = true;
 			// Do not call return after this point!
 
@@ -770,8 +750,6 @@ namespace controls
 					m_LoadThreadHandle = hThread;
 				}
 			}
-
-			return hRes;
 		}
 
 		void CContentsTableListCtrl::OnCancelTableLoad()
@@ -827,7 +805,6 @@ namespace controls
 		{
 			if (!lpsRowData) return;
 
-			auto hRes = S_OK;
 			const auto lpMyHeader = GetHeaderCtrl();
 
 			if (!lpMyHeader) return;
@@ -836,12 +813,11 @@ namespace controls
 			{
 				HDITEM hdItem = {0};
 				hdItem.mask = HDI_LPARAM;
-				EC_B(lpMyHeader->GetItem(iColumn, &hdItem));
+				EC_BS(lpMyHeader->GetItem(iColumn, &hdItem));
 
 				if (hdItem.lParam)
 				{
 					const auto ulCol = reinterpret_cast<LPHEADERDATA>(hdItem.lParam)->ulTagArrayRow;
-					hRes = S_OK;
 
 					if (ulCol < lpsRowData->cValues)
 					{
@@ -965,9 +941,8 @@ namespace controls
 			if (lpulImage) *lpulImage = ulImage;
 		}
 
-		_Check_return_ HRESULT CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists)
+		void CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists)
 		{
-			const auto hRes = S_OK;
 			sortlistdata::SortListData* lpData = nullptr;
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"RefreshItem", L"item %d\n", iRow);
@@ -993,22 +968,16 @@ namespace controls
 				// Do this last so that our row can't get sorted before we're done!
 				lpData->bItemFullyLoaded = true;
 			}
-
-			return hRes;
 		}
 
 		// Crack open the given SPropValue and render it to the given row in the list.
-		_Check_return_ HRESULT CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd)
+		void CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd)
 		{
-			auto hRes = S_OK;
-
 			output::DebugPrintEx(DBGGeneric, CLASS, L"AddItemToListBox", L"item %d\n", iRow);
 
-			EC_H(RefreshItem(iRow, lpsRowToAdd, false));
+			RefreshItem(iRow, lpsRowToAdd, false);
 
 			if (m_lpHostDlg) m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, IDS_STATUSTEXTNUMITEMS, GetItemCount());
-
-			return hRes;
 		}
 
 		void CContentsTableListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -1038,15 +1007,13 @@ namespace controls
 			}
 		}
 
-		_Check_return_ HRESULT
-		CContentsTableListCtrl::GetSelectedItemEIDs(_Deref_out_opt_ LPENTRYLIST* lppEntryIDs) const
+		_Check_return_ LPENTRYLIST CContentsTableListCtrl::GetSelectedItemEIDs() const
 		{
-			*lppEntryIDs = nullptr;
 			auto hRes = S_OK;
 			const auto iNumItems = GetSelectedCount();
 
 			if (!iNumItems) return S_OK;
-			if (iNumItems > ULONG_MAX / sizeof(SBinary)) return MAPI_E_INVALID_PARAMETER;
+			if (iNumItems > ULONG_MAX / sizeof(SBinary)) return nullptr;
 
 			LPENTRYLIST lpTempList = nullptr;
 
@@ -1093,8 +1060,7 @@ namespace controls
 				}
 			}
 
-			*lppEntryIDs = lpTempList;
-			return hRes;
+			return lpTempList;
 		}
 
 		_Check_return_ std::vector<int> CContentsTableListCtrl::GetSelectedItemNums() const
@@ -1258,7 +1224,7 @@ namespace controls
 					bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
 					nullptr,
 					reinterpret_cast<LPUNKNOWN*>(lppProp)));
-				if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes &&
+				if (hRes == MAPI_E_INTERFACE_NOT_SUPPORTED &&
 					registry::RegKeys[registry::regkeyUSE_MESSAGERAW].ulCurDWORD)
 				{
 					error::ErrDialog(__FILE__, __LINE__, IDS_EDMESSAGERAWNOTSUPPORTED);
@@ -1293,7 +1259,7 @@ namespace controls
 				EC_H(DefaultOpenItemProp(iItem, mfcmapiDO_NOT_REQUEST_MODIFY, lppProp));
 			}
 
-			if (MAPI_E_NOT_FOUND == hRes)
+			if (hRes == MAPI_E_NOT_FOUND)
 			{
 				output::DebugPrint(
 					DBGGeneric,
@@ -1314,14 +1280,12 @@ namespace controls
 
 		void CContentsTableListCtrl::SelectAll()
 		{
-			auto hRes = S_OK;
 			output::DebugPrintEx(DBGGeneric, CLASS, L"SelectAll", L"\n");
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 			MySetRedraw(false);
 			for (auto iIndex = 0; iIndex < GetItemCount(); iIndex++)
 			{
-				EC_B(SetItemState(iIndex, LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED));
-				hRes = S_OK;
+				EC_BS(SetItemState(iIndex, LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED));
 			}
 
 			MySetRedraw(true);
@@ -1395,11 +1359,11 @@ namespace controls
 
 		_Check_return_ bool CContentsTableListCtrl::IsAdviseSet() const { return m_lpAdviseSink != nullptr; }
 
-		_Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
+		void CContentsTableListCtrl::NotificationOn()
 		{
 			auto hRes = S_OK;
 
-			if (m_lpAdviseSink || !m_lpContentsTable) return S_OK;
+			if (m_lpAdviseSink || !m_lpContentsTable) return;
 
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"NotificationOn", L"registering table notification on %p\n", m_lpContentsTable);
@@ -1410,7 +1374,7 @@ namespace controls
 			{
 				WC_MAPI(m_lpContentsTable->Advise(
 					fnevTableModified, static_cast<IMAPIAdviseSink*>(m_lpAdviseSink), &m_ulAdviseConnection));
-				if (MAPI_E_NO_SUPPORT == hRes) // Some tables don't support this!
+				if (hRes == MAPI_E_NO_SUPPORT) // Some tables don't support this!
 				{
 					if (m_lpAdviseSink) m_lpAdviseSink->Release();
 					m_lpAdviseSink = nullptr;
@@ -1436,7 +1400,6 @@ namespace controls
 				m_lpAdviseSink,
 				static_cast<int>(m_ulAdviseConnection),
 				m_lpContentsTable);
-			return hRes;
 		}
 
 		// This function gets called a lot, make sure it's ok to call it too often...:)
@@ -1460,24 +1423,21 @@ namespace controls
 			m_lpAdviseSink = nullptr;
 		}
 
-		_Check_return_ HRESULT CContentsTableListCtrl::RefreshTable()
+		void CContentsTableListCtrl::RefreshTable()
 		{
-			auto hRes = S_OK;
-			if (!m_lpHostDlg) return MAPI_E_INVALID_PARAMETER;
+			if (!m_lpHostDlg) return;
 			if (m_bInLoadOp)
 			{
 				output::DebugPrintEx(DBGGeneric, CLASS, L"RefreshTable", L"called during table load - ditching call\n");
-				return S_OK;
+				return;
 			}
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"RefreshTable", L"\n");
 
-			EC_H(LoadContentsTableIntoView());
+			LoadContentsTableIntoView();
 
 			// Reset the title while we're at it
 			m_lpHostDlg->UpdateTitleBarText();
-
-			return hRes;
 		}
 
 		// Call ExpandRow or CollapseRow as needed
@@ -1529,7 +1489,7 @@ namespace controls
 						for (ULONG i = 0; i < lpRowSet->cRows; i++)
 						{
 							// add the item to the NEXT slot
-							EC_H(AddItemToListBox(iItem + i + 1, &lpRowSet->aRow[i]));
+							AddItemToListBox(iItem + i + 1, &lpRowSet->aRow[i]);
 							// Since we handed the props off to the list box, null it out of the row set
 							// so we don't free it later with FreeProws
 							lpRowSet->aRow[i].lpProps = nullptr;
@@ -1558,7 +1518,10 @@ namespace controls
 					{
 						for (int i = iItem + ulRowsRemoved; i > iItem; i--)
 						{
-							EC_B(DeleteItem(i));
+							if (SUCCEEDED(hRes))
+							{
+								hRes = EC_B(DeleteItem(i));
+							}
 						}
 					}
 
@@ -1572,7 +1535,7 @@ namespace controls
 
 			if (bDidWork)
 			{
-				EC_B(SetItem(&lvItem)); // Set new image for the row
+				hRes = EC_B(SetItem(&lvItem)); // Set new image for the row
 
 				// Save the row type (header/leaf) into lpData
 				const auto lpProp = PpropFindProp(lpData->lpSourceProps, lpData->cSourceProps, PR_ROW_TYPE);
@@ -1601,21 +1564,16 @@ namespace controls
 			}
 		}
 
-		_Check_return_ HRESULT
-		CContentsTableListCtrl::SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags) const
+		void CContentsTableListCtrl::SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags) const
 		{
+			if (!m_lpContentsTable) return;
 			auto hRes = S_OK;
-			if (!m_lpContentsTable) return MAPI_E_INVALID_PARAMETER;
-
 			EC_MAPI(m_lpContentsTable->SortTable(lpSortOrderSet, ulFlags));
-
-			return hRes;
 		}
 
 		// WM_MFCMAPI_THREADADDITEM
 		_Check_return_ LRESULT CContentsTableListCtrl::msgOnThreadAddItem(WPARAM wParam, LPARAM lParam)
 		{
-			auto hRes = S_OK;
 			const auto iNewRow = static_cast<int>(wParam);
 			const auto lpsRow = reinterpret_cast<LPSRow>(lParam);
 
@@ -1623,15 +1581,14 @@ namespace controls
 
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"msgOnThreadAddItem", L"Received message to add %p to row %d\n", lpsRow, iNewRow);
-			EC_H(AddItemToListBox(iNewRow, lpsRow));
+			AddItemToListBox(iNewRow, lpsRow);
 
-			return hRes;
+			return S_OK;
 		}
 
 		// WM_MFCMAPI_ADDITEM
 		_Check_return_ LRESULT CContentsTableListCtrl::msgOnAddItem(WPARAM wParam, LPARAM /*lParam*/)
 		{
-			auto hRes = S_OK;
 			auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
 
 			if (!tab) return MAPI_E_INVALID_PARAMETER;
@@ -1653,11 +1610,12 @@ namespace controls
 			SRow NewRow = {0};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
+			auto hRes = S_OK;
 			EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"msgOnAddItem", L"Received message to add row to row %d\n", iNewRow);
-			EC_H(AddItemToListBox(iNewRow, &NewRow));
+			AddItemToListBox(iNewRow, &NewRow);
 
 			return hRes;
 		}
@@ -1665,7 +1623,6 @@ namespace controls
 		// WM_MFCMAPI_DELETEITEM
 		_Check_return_ LRESULT CContentsTableListCtrl::msgOnDeleteItem(WPARAM wParam, LPARAM /*lParam*/)
 		{
-			auto hRes = S_OK;
 			auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
 
 			if (!tab) return MAPI_E_INVALID_PARAMETER;
@@ -1677,7 +1634,7 @@ namespace controls
 
 			if (iItem == -1) return S_OK;
 
-			EC_B(DeleteItem(iItem));
+			auto hRes = EC_B(DeleteItem(iItem));
 
 			if (S_OK != hRes || !m_lpHostDlg) return hRes;
 
@@ -1718,7 +1675,7 @@ namespace controls
 				NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 				EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 
-				EC_H(RefreshItem(iItem, &NewRow, true));
+				RefreshItem(iItem, &NewRow, true);
 			}
 
 			return hRes;
@@ -1727,11 +1684,10 @@ namespace controls
 		// WM_MFCMAPI_REFRESHTABLE
 		_Check_return_ LRESULT CContentsTableListCtrl::msgOnRefreshTable(WPARAM /*wParam*/, LPARAM /*lParam*/)
 		{
-			auto hRes = S_OK;
 			output::DebugPrintEx(DBGGeneric, CLASS, L"msgOnRefreshTable", L"Received message refresh table\n");
-			EC_H(RefreshTable());
+			RefreshTable();
 
-			return hRes;
+			return S_OK;
 		}
 
 		// This function steps through the list control to find the entry with this instance key

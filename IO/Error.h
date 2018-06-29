@@ -284,11 +284,11 @@ namespace error
 
 // Execute a bool/BOOL function, log error, and return CheckWin32Error(HRESULT)
 // Does not modify or reference existing hRes
-#define EC_B2(fnx) [&]() -> HRESULT { return !(fnx) ? error::CheckWin32Error(true, __FILE__, __LINE__, #fnx) : S_OK; }()
+#define EC_B(fnx) [&]() -> HRESULT { return !(fnx) ? error::CheckWin32Error(true, __FILE__, __LINE__, #fnx) : S_OK; }()
 
 // Execute a bool/BOOL function, log error, and swallow error
 // Does not modify or reference existing hRes
-#define EC_B2S(fnx) \
+#define EC_BS(fnx) \
 	[&]() -> void { \
 		if (!(fnx)) \
 		{ \
@@ -296,52 +296,22 @@ namespace error
 		} \
 	}()
 
-#define EC_B(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			if (!(fnx)) \
-			{ \
-				hRes = error::CheckWin32Error(true, __FILE__, __LINE__, #fnx); \
-			} \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
-
 // Execute a bool/BOOL function, log error, and return CheckWin32Error(HRESULT)
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_B2(fnx) \
+#define WC_B(fnx) \
 	[&]() -> HRESULT { return !(fnx) ? error::CheckWin32Error(false, __FILE__, __LINE__, #fnx) : S_OK; }()
 
 // Execute a bool/BOOL function, log error, and swallow error
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_B2S(fnx) \
+#define WC_BS(fnx) \
 	[&]() -> void { \
 		if (!(fnx)) \
 		{ \
 			error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
 		} \
 	}()
-
-#define WC_B(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			if (!(fnx)) \
-			{ \
-				hRes = error::CheckWin32Error(false, __FILE__, __LINE__, #fnx); \
-			} \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
 
 // Execute a function which returns 0 on error, log error, and return result
 #define EC_D(_TYPE, fnx) \

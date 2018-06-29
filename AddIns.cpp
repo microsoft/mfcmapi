@@ -460,7 +460,7 @@ namespace addin
 								lpMenu->m_AddInData = reinterpret_cast<ULONG_PTR>(&addIn.lpMenu[ulMenu]);
 							}
 
-							EC_B(AppendMenuW(
+							hRes = EC_B(AppendMenuW(
 								hAddInMenu, MF_ENABLED | MF_OWNERDRAW, uidCurMenu, reinterpret_cast<LPCWSTR>(lpMenu)));
 							uidCurMenu++;
 						}

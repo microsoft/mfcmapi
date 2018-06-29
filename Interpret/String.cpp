@@ -686,7 +686,8 @@ namespace strings
 	FileTimeToString(_In_ const FILETIME& fileTime, _In_ std::wstring& PropString, _In_opt_ std::wstring& AltPropString)
 	{
 		SYSTEMTIME SysTime = {0};
-		auto hRes = WC_B2(FileTimeToSystemTime(&fileTime, &SysTime));
+
+		auto hRes = WC_B(FileTimeToSystemTime(&fileTime, &SysTime));
 
 		if (hRes == S_OK)
 		{

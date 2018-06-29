@@ -56,9 +56,42 @@ namespace sid
 		return TextualSid;
 	}
 
+	_Check_return_ std::wstring LookupAccountSid(PSID SidStart, _In_ std::wstring& sidDomain)
+	{
+		// TODO: Make use of SidNameUse information
+		auto cchSidName = DWORD();
+		auto cchSidDomain = DWORD();
+		auto SidNameUse = SID_NAME_USE();
+
+		if (!LookupAccountSidW(nullptr, SidStart, nullptr, &cchSidName, nullptr, &cchSidDomain, &SidNameUse))
+		{
+			const auto dwErr = GetLastError();
+			if (dwErr != ERROR_NONE_MAPPED && dwErr != ERROR_INSUFFICIENT_BUFFER)
+			{
+				error::LogFunctionCall(
+					HRESULT_FROM_WIN32(dwErr), NULL, false, false, true, dwErr, "LookupAccountSid", __FILE__, __LINE__);
+			}
+		}
+
+		auto sidNameBuf = std::vector<wchar_t>();
+		sidNameBuf.resize(cchSidName);
+		auto sidDomainBuf = std::vector<wchar_t>();
+		sidDomainBuf.resize(cchSidDomain);
+		WC_BS(LookupAccountSidW(
+			nullptr,
+			SidStart,
+			cchSidName ? &sidNameBuf.at(0) : nullptr,
+			&cchSidName,
+			cchSidDomain ? & sidDomainBuf.at(0) : nullptr,
+			&cchSidDomain,
+			&SidNameUse));
+
+		sidDomain = std::wstring(sidDomainBuf.begin(), sidDomainBuf.end());
+		return std::wstring(sidNameBuf.begin(), sidNameBuf.end());
+	}
+
 	std::wstring ACEToString(_In_ void* pACE, eAceType acetype)
 	{
-		auto hRes = S_OK;
 		std::vector<std::wstring> aceString;
 		ACCESS_MASK Mask = 0;
 		DWORD Flags = 0;
@@ -101,28 +134,6 @@ namespace sid
 			break;
 		}
 
-		DWORD dwSidName = 0;
-		DWORD dwSidDomain = 0;
-		SID_NAME_USE SidNameUse;
-
-		WC_B(LookupAccountSidW(nullptr, SidStart, nullptr, &dwSidName, nullptr, &dwSidDomain, &SidNameUse));
-		hRes = S_OK;
-
-		LPWSTR lpSidName = nullptr;
-		LPWSTR lpSidDomain = nullptr;
-
-#pragma warning(push)
-#pragma warning(disable : 6211)
-		if (dwSidName) lpSidName = new WCHAR[dwSidName];
-		if (dwSidDomain) lpSidDomain = new WCHAR[dwSidDomain];
-#pragma warning(pop)
-
-		// Only make the call if we got something to get
-		if (lpSidName || lpSidDomain)
-		{
-			WC_B(LookupAccountSidW(nullptr, SidStart, lpSidName, &dwSidName, lpSidDomain, &dwSidDomain, &SidNameUse));
-		}
-
 		auto lpStringSid = GetTextualSid(SidStart);
 		auto szAceType = interpretprop::InterpretFlags(flagACEType, AceType);
 		auto szAceFlags = interpretprop::InterpretFlags(flagACEFlag, AceFlags);
@@ -141,12 +152,14 @@ namespace sid
 			break;
 		};
 
-		auto szDomain = lpSidDomain ? lpSidDomain : strings::formatmessage(IDS_NODOMAIN);
-		auto szName = lpSidName ? lpSidName : strings::formatmessage(IDS_NONAME);
+		auto szDomain = std::wstring();
+		auto szName = sid::LookupAccountSid(SidStart, szDomain);
+
+		if (szName.empty()) szName = strings::formatmessage(IDS_NONAME);
+		if (szDomain.empty()) szDomain = strings::formatmessage(IDS_NODOMAIN);
+
 		auto szSID = GetTextualSid(SidStart);
 		if (szSID.empty()) szSID = strings::formatmessage(IDS_NOSID);
-		delete[] lpSidDomain;
-		delete[] lpSidName;
 
 		aceString.push_back(strings::formatmessage(
 			IDS_SIDACCOUNT,
@@ -172,52 +185,44 @@ namespace sid
 		return strings::join(aceString, L"\r\n");
 	}
 
-	_Check_return_ HRESULT SDToString(
-		_In_count_(cbBuf) const BYTE* lpBuf,
-		size_t cbBuf,
-		eAceType acetype,
-		_In_ std::wstring& SDString,
-		_In_ std::wstring& sdInfo)
+	_Check_return_ std::wstring
+	SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype, _In_ std::wstring& sdInfo)
 	{
-		auto hRes = S_OK;
-		BOOL bValidDACL = false;
-		PACL pACL = nullptr;
-		BOOL bDACLDefaulted = false;
-
-		if (!lpBuf) return MAPI_E_NOT_FOUND;
+		if (!lpBuf) return strings::emptystring;
 
 		const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(lpBuf);
 
 		if (CbSecurityDescriptorHeader(lpBuf) > cbBuf || !IsValidSecurityDescriptor(pSecurityDescriptor))
 		{
-			SDString = strings::formatmessage(IDS_INVALIDSD);
-			return S_OK;
+			return strings::formatmessage(IDS_INVALIDSD);
 		}
 
 		sdInfo = interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf));
 
-		EC_B(GetSecurityDescriptorDacl(pSecurityDescriptor, &bValidDACL, &pACL, &bDACLDefaulted));
+		BOOL bValidDACL = false;
+		PACL pACL = nullptr;
+		BOOL bDACLDefaulted = false;
+		EC_BS(GetSecurityDescriptorDacl(pSecurityDescriptor, &bValidDACL, &pACL, &bDACLDefaulted));
 		if (bValidDACL && pACL)
 		{
-			ACL_SIZE_INFORMATION ACLSizeInfo = {0};
-			EC_B(GetAclInformation(pACL, &ACLSizeInfo, sizeof ACLSizeInfo, AclSizeInformation));
+			ACL_SIZE_INFORMATION ACLSizeInfo = {};
+			EC_BS(GetAclInformation(pACL, &ACLSizeInfo, sizeof ACLSizeInfo, AclSizeInformation));
 
 			std::vector<std::wstring> sdString;
 			for (DWORD i = 0; i < ACLSizeInfo.AceCount; i++)
 			{
 				void* pACE = nullptr;
 
-				EC_B(GetAce(pACL, i, &pACE));
-
+				WC_BS(GetAce(pACL, i, &pACE));
 				if (pACE)
 				{
 					sdString.push_back(ACEToString(pACE, acetype));
 				}
 			}
 
-			SDString = strings::join(sdString, L"\r\n");
+			return strings::join(sdString, L"\r\n");
 		}
 
-		return hRes;
+		return strings::emptystring;
 	}
 }

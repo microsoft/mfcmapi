@@ -33,9 +33,8 @@ namespace ui
 	{
 		if (EVENT_OBJECT_REORDER == event)
 		{
-			auto hRes = S_OK;
 			// We don't need to wait on the results - just post the message
-			WC_B(PostMessage(hwnd, WM_MFCMAPI_SAVECOLUMNORDERHEADER, WPARAM(NULL), LPARAM(NULL)));
+			WC_BS(PostMessage(hwnd, WM_MFCMAPI_SAVECOLUMNORDERHEADER, WPARAM(NULL), LPARAM(NULL)));
 		}
 	}
 

@@ -29,8 +29,6 @@ namespace viewpane
 
 	void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
 	{
-		auto hRes = S_OK;
-
 		if (m_bCollapsible)
 		{
 			StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::bsUpArrow : ui::bsDownArrow);
@@ -45,7 +43,7 @@ namespace viewpane
 			width,
 			x + m_iButtonHeight,
 			m_iLabelWidth);
-		EC_B(m_Label.SetWindowPos(nullptr, x, y, m_iLabelWidth, m_iLabelHeight, SWP_NOZORDER));
+		EC_BS(m_Label.SetWindowPos(nullptr, x, y, m_iLabelWidth, m_iLabelHeight, SWP_NOZORDER));
 	}
 
 	void ViewPane::SetLabel(UINT uidLabel, bool bReadOnly)
@@ -60,13 +58,12 @@ namespace viewpane
 
 	void ViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC /*hdc*/)
 	{
-		auto hRes = S_OK;
 		m_iControl = iControl;
 		if (pParent) m_hWndParent = pParent->m_hWnd;
 		const UINT iCurIDLabel = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl;
 		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl + 1;
 
-		EC_B(m_Label.Create(
+		EC_BS(m_Label.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, iCurIDLabel));
 		SetWindowTextW(m_Label.m_hWnd, m_szLabel.c_str());
 		ui::SubclassLabel(m_Label.m_hWnd);
@@ -75,7 +72,7 @@ namespace viewpane
 		{
 			StyleLabel(m_Label.m_hWnd, ui::lsPaneHeaderLabel);
 
-			EC_B(m_CollapseButton.Create(
+			EC_BS(m_CollapseButton.Create(
 				NULL,
 				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 				CRect(0, 0, 0, 0),

@@ -86,7 +86,7 @@ namespace dialog
 
 			if (lpMAPITable)
 			{
-				EC_H(m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, dfDeleted, NULL));
+				m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, dfDeleted, NULL);
 
 				lpMAPITable->Release();
 			}

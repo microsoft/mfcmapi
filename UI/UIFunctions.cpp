@@ -254,8 +254,6 @@ namespace ui
 
 	void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString)
 	{
-		auto hRes = S_OK;
-
 		auto szNewString = strings::loadstring(uidNewString);
 
 		output::DebugPrint(
@@ -275,7 +273,7 @@ namespace ui
 		MenuInfo.fMask = MIIM_STRING;
 		MenuInfo.dwTypeData = LPWSTR(szNewString.c_str());
 
-		EC_B(SetMenuItemInfoW(hMenu, uiMenuTag, false, &MenuInfo));
+		EC_BS(SetMenuItemInfoW(hMenu, uiMenuTag, false, &MenuInfo));
 	}
 
 	void MergeMenu(_In_ HMENU hMenuDestination, _In_ HMENU hMenuAdd)
@@ -397,12 +395,11 @@ namespace ui
 
 		// Get the DC for the edit control.
 		const auto hdc = WC_D(HDC, GetDC(hwndEdit));
-
 		if (hdc)
 		{
 			// Get the metrics for the Segoe font.
 			const auto hOldFont = SelectObject(hdc, GetSegoeFont());
-			WC_B2S(::GetTextMetrics(hdc, &tmFont));
+			WC_BS(::GetTextMetrics(hdc, &tmFont));
 			SelectObject(hdc, hOldFont);
 			ReleaseDC(hwndEdit, hdc);
 		}
@@ -1287,9 +1284,7 @@ namespace ui
 
 	void StyleButton(_In_ HWND hWnd, uiButtonStyle bsStyle)
 	{
-		auto hRes = S_OK;
-
-		EC_B(::SetProp(hWnd, BUTTON_STYLE, reinterpret_cast<HANDLE>(bsStyle)));
+		EC_BS(::SetProp(hWnd, BUTTON_STYLE, reinterpret_cast<HANDLE>(bsStyle)));
 	}
 
 	void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemState)
@@ -2049,8 +2044,6 @@ namespace ui
 
 	void StyleLabel(_In_ HWND hWnd, uiLabelStyle lsStyle)
 	{
-		auto hRes = S_OK;
-
-		EC_B(::SetProp(hWnd, LABEL_STYLE, reinterpret_cast<HANDLE>(lsStyle)));
+		EC_BS(::SetProp(hWnd, LABEL_STYLE, reinterpret_cast<HANDLE>(lsStyle)));
 	}
 }

@@ -90,9 +90,7 @@ namespace dialog
 
 		if (lpAddrBook)
 		{
-			LPENTRYLIST lpEIDs = nullptr;
-			EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
-
+			const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 			if (lpEIDs && lpEIDs->cValues && lpEIDs->lpbin)
 			{
 
@@ -124,7 +122,6 @@ namespace dialog
 	void CAbDlg::OnOpenContact()
 	{
 		auto hRes = S_OK;
-		LPENTRYLIST lpEntryList = nullptr;
 		LPMAPIPROP lpProp = nullptr;
 
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !m_lpPropDisplay) return;
@@ -133,9 +130,8 @@ namespace dialog
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEntryList));
-
-		if (SUCCEEDED(hRes) && lpEntryList && 1 == lpEntryList->cValues)
+		const auto lpEntryList =m_lpContentsTableListCtrl->GetSelectedItemEIDs();
+		if (lpEntryList && 1 == lpEntryList->cValues)
 		{
 			ULONG cb = 0;
 			LPBYTE lpb = nullptr;
@@ -234,27 +230,21 @@ namespace dialog
 		{
 			output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteSelectedItem", L"deleting address Book entries\n");
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-			LPENTRYLIST lpEIDs = nullptr;
 
-			EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
-
+			const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 			EC_MAPI(m_lpAbCont->DeleteEntries(lpEIDs, NULL));
-
 			MAPIFreeBuffer(lpEIDs);
 		}
 	}
 
 	void CAbDlg::HandleCopy()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		output::DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
-		LPENTRYLIST lpEIDs = nullptr;
-
-		EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
+		const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 
 		// CGlobalCache takes over ownership of lpEIDs - don't free now
 		cache::CGlobalCache::getInstance().SetABEntriesToCopy(lpEIDs);

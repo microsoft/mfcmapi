@@ -57,7 +57,7 @@ namespace controls
 
 				if (m_hwndTip)
 				{
-					EC_B2S(::SetWindowPos(m_hwndTip, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE));
+					EC_BS(::SetWindowPos(m_hwndTip, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE));
 
 					m_ti.cbSize = sizeof(TOOLINFO);
 					m_ti.uFlags = TTF_TRACK | TTF_IDISHWND;
@@ -66,16 +66,14 @@ namespace controls
 					m_ti.hinst = AfxGetInstanceHandle();
 					m_ti.lpszText = const_cast<LPWSTR>(L"");
 
-					EC_B2S(::SendMessage(m_hwndTip, TTM_ADDTOOL, 0, LPARAM(&m_ti)));
-					EC_B2S(::SendMessage(m_hwndTip, TTM_SETMAXTIPWIDTH, 0, LPARAM(500)));
+					EC_BS(::SendMessage(m_hwndTip, TTM_ADDTOOL, 0, LPARAM(&m_ti)));
+					EC_BS(::SendMessage(m_hwndTip, TTM_SETMAXTIPWIDTH, 0, LPARAM(500)));
 				}
 			}
 		}
 
 		LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		{
-			auto hRes = S_OK;
-
 			if (m_hwndTip)
 			{
 				switch (message)
@@ -92,11 +90,11 @@ namespace controls
 						hdHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 						hdHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
-						WC_B(::SendMessage(m_hWnd, HDM_HITTEST, 0, reinterpret_cast<LPARAM>(&hdHitTestInfo)));
+						WC_BS(::SendMessage(m_hWnd, HDM_HITTEST, 0, reinterpret_cast<LPARAM>(&hdHitTestInfo)));
 						if (!(hdHitTestInfo.flags & HHT_ONHEADER))
 						{
 							// We were displaying a tooltip, but we're now on empty space in the header. Turn it off.
-							EC_B(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, false, reinterpret_cast<LPARAM>(&m_ti)));
+							EC_BS(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, false, reinterpret_cast<LPARAM>(&m_ti)));
 							m_bTooltipDisplayed = false;
 						}
 					}
@@ -108,7 +106,7 @@ namespace controls
 						tmEvent.hwndTrack = m_hWnd;
 						tmEvent.dwHoverTime = HOVER_DEFAULT;
 
-						EC_B(TrackMouseEvent(&tmEvent));
+						EC_BS(TrackMouseEvent(&tmEvent));
 					}
 
 					break;
@@ -118,7 +116,7 @@ namespace controls
 					hdHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 					hdHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
-					EC_B(::SendMessage(m_hWnd, HDM_HITTEST, 0, reinterpret_cast<LPARAM>(&hdHitTestInfo)));
+					EC_BS(::SendMessage(m_hWnd, HDM_HITTEST, 0, reinterpret_cast<LPARAM>(&hdHitTestInfo)));
 
 					// We only turn on or modify our tooltip if we're on a column header
 					if (hdHitTestInfo.flags & HHT_ONHEADER)
@@ -126,31 +124,31 @@ namespace controls
 						HDITEM hdItem = {0};
 						hdItem.mask = HDI_LPARAM;
 
-						EC_B(GetItem(hdHitTestInfo.iItem, &hdItem));
+						EC_BS(GetItem(hdHitTestInfo.iItem, &hdItem));
 
 						const auto lpHeaderData = reinterpret_cast<LPHEADERDATA>(hdItem.lParam);
 
 						// This will only display tips if we have a HeaderData structure saved
 						if (lpHeaderData)
 						{
-							EC_B(::GetCursorPos(&hdHitTestInfo.pt));
-							EC_B(::SendMessage(
+							EC_BS(::GetCursorPos(&hdHitTestInfo.pt));
+							EC_BS(::SendMessage(
 								m_hwndTip,
 								TTM_TRACKPOSITION,
 								0,
 								MAKELPARAM(hdHitTestInfo.pt.x + 10, hdHitTestInfo.pt.y + 20)));
 
 							m_ti.lpszText = const_cast<LPWSTR>(lpHeaderData->szTipString.c_str());
-							EC_B(::SendMessage(m_hwndTip, TTM_SETTOOLINFOW, true, reinterpret_cast<LPARAM>(&m_ti)));
+							EC_BS(::SendMessage(m_hwndTip, TTM_SETTOOLINFOW, true, reinterpret_cast<LPARAM>(&m_ti)));
 							// Ask for notification when the mouse leaves the control
 							TRACKMOUSEEVENT tmEvent = {0};
 							tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
 							tmEvent.dwFlags = TME_LEAVE;
 							tmEvent.hwndTrack = m_hWnd;
-							EC_B(TrackMouseEvent(&tmEvent));
+							EC_BS(TrackMouseEvent(&tmEvent));
 
 							// Turn on the tooltip
-							EC_B(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, true, reinterpret_cast<LPARAM>(&m_ti)));
+							EC_BS(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, true, reinterpret_cast<LPARAM>(&m_ti)));
 							m_bTooltipDisplayed = true;
 						}
 					}
@@ -158,7 +156,7 @@ namespace controls
 				}
 				case WM_MOUSELEAVE:
 					// We were displaying a tooltip, but we're now off of the header. Turn it off.
-					EC_B(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, false, reinterpret_cast<LPARAM>(&m_ti)));
+					EC_BS(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, false, reinterpret_cast<LPARAM>(&m_ti)));
 					m_bTooltipDisplayed = false;
 					return NULL;
 				}
@@ -172,8 +170,7 @@ namespace controls
 		{
 			if (m_hwndParent)
 			{
-				auto hRes = S_OK;
-				WC_B(::PostMessage(
+				WC_BS(::PostMessage(
 					m_hwndParent,
 					WM_MFCMAPI_SAVECOLUMNORDERLIST,
 					reinterpret_cast<WPARAM>(nullptr),

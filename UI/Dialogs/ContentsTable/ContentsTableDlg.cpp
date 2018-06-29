@@ -132,8 +132,6 @@ namespace dialog
 
 	void CContentsTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	{
-		auto hRes = S_OK;
-
 		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CBaseDialog::CreateDialogAndMenu(nIDMenuResource, IDR_MENU_TABLE, IDS_TABLEMENU);
 
@@ -142,7 +140,7 @@ namespace dialog
 			const auto ulPropType = mapi::GetMAPIObjectType(m_lpContainer);
 
 			// Pass the contents table to the list control, but don't render yet - call BuildUIForContentsTable from CreateDialogAndMenu for that
-			WC_H(m_lpContentsTableListCtrl->SetContentsTable(m_lpContentsTable, m_ulDisplayFlags, ulPropType));
+			m_lpContentsTableListCtrl->SetContentsTable(m_lpContentsTable, m_ulDisplayFlags, ulPropType);
 		}
 	}
 
@@ -264,18 +262,16 @@ namespace dialog
 	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 	void CContentsTableDlg::OnRefreshView()
 	{
-		auto hRes = S_OK;
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
-		EC_H(m_lpContentsTableListCtrl->RefreshTable());
+		m_lpContentsTableListCtrl->RefreshTable();
 	}
 
 	void CContentsTableDlg::OnNotificationOn()
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-		auto hRes = S_OK;
-		EC_H(m_lpContentsTableListCtrl->NotificationOn());
+		m_lpContentsTableListCtrl->NotificationOn();
 	}
 
 	void CContentsTableDlg::OnNotificationOff()
@@ -500,15 +496,16 @@ namespace dialog
 
 			if (bNoError)
 			{
-				EC_MAPI(m_lpContentsTableListCtrl->SetSortTable(
+				m_lpContentsTableListCtrl->SetSortTable(
 					lpMySortOrders,
 					(MyData.GetCheck(3) ? TBL_ASYNC : 0) | (MyData.GetCheck(4) ? TBL_BATCH : 0) // flags
-					));
+					);
 			}
 		}
+
 		MAPIFreeBuffer(lpMySortOrders);
 
-		if (MyData.GetCheck(5)) EC_H(m_lpContentsTableListCtrl->RefreshTable());
+		if (MyData.GetCheck(5)) m_lpContentsTableListCtrl->RefreshTable();
 	}
 
 	// Since the strategy for opening the selected property may vary depending on the table we're displaying,

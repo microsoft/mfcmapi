@@ -487,9 +487,8 @@ namespace dialog
 
 	void CBaseDialog::OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized)
 	{
-		auto hRes = S_OK;
 		CMyDialog::OnActivate(nState, pWndOther, bMinimized);
-		if (nState == 1 && !bMinimized) EC_B(RedrawWindow());
+		if (nState == 1 && !bMinimized) EC_BS(RedrawWindow());
 	}
 
 	void CBaseDialog::SetStatusWidths()
@@ -560,7 +559,7 @@ namespace dialog
 				DeferWindowPos(hdwp, m_lpFakeSplitter->m_hWnd, nullptr, 0, 0, cx, iNewCY, SWP_NOZORDER);
 			}
 
-			WC_B2S(EndDeferWindowPos(hdwp));
+			WC_BS(EndDeferWindowPos(hdwp));
 		}
 	}
 
@@ -594,12 +593,11 @@ namespace dialog
 		// MAPI Load paths take special handling
 		if (uidMsg >= ID_LOADMAPIMENUMIN && uidMsg <= ID_LOADMAPIMENUMAX)
 		{
-			auto hRes = S_OK;
 			MENUITEMINFOW mii = {0};
 			mii.cbSize = sizeof(MENUITEMINFO);
 			mii.fMask = MIIM_DATA;
 
-			WC_B(GetMenuItemInfoW(::GetMenu(m_hWnd), uidMsg, false, &mii));
+			WC_BS(GetMenuItemInfoW(::GetMenu(m_hWnd), uidMsg, false, &mii));
 			if (mii.dwItemData)
 			{
 				const auto lme = reinterpret_cast<ui::LPMENUENTRY>(mii.dwItemData);

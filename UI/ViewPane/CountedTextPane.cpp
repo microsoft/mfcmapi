@@ -28,9 +28,7 @@ namespace viewpane
 
 	void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		auto hRes = S_OK;
-
-		EC_B(m_Count.Create(
+		EC_BS(m_Count.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, IDD_COUNTLABEL));
 		SetWindowTextW(m_Count.m_hWnd, m_szCountLabel.c_str());
 		ui::SubclassLabel(m_Count.m_hWnd);
@@ -91,7 +89,6 @@ namespace viewpane
 
 	void CountedTextPane::SetWindowPos(int x, int y, int width, int height)
 	{
-		auto hRes = S_OK;
 		const auto iVariableHeight = height - GetFixedHeight();
 		if (0 != m_iControl)
 		{
@@ -103,20 +100,20 @@ namespace viewpane
 
 		if (!m_bCollapsed)
 		{
-			EC_B(m_Count.ShowWindow(SW_SHOW));
-			EC_B(m_EditBox.ShowWindow(SW_SHOW));
+			EC_BS(m_Count.ShowWindow(SW_SHOW));
+			EC_BS(m_EditBox.ShowWindow(SW_SHOW));
 
-			EC_B(m_Count.SetWindowPos(
+			EC_BS(m_Count.SetWindowPos(
 				nullptr, x + width - m_iCountLabelWidth, y, m_iCountLabelWidth, m_iLabelHeight, SWP_NOZORDER));
 
 			y += m_iLabelHeight + m_iSmallHeightMargin;
 
-			EC_B(m_EditBox.SetWindowPos(NULL, x, y, width, iVariableHeight, SWP_NOZORDER));
+			EC_BS(m_EditBox.SetWindowPos(NULL, x, y, width, iVariableHeight, SWP_NOZORDER));
 		}
 		else
 		{
-			EC_B(m_Count.ShowWindow(SW_HIDE));
-			EC_B(m_EditBox.ShowWindow(SW_HIDE));
+			EC_BS(m_Count.ShowWindow(SW_HIDE));
+			EC_BS(m_EditBox.ShowWindow(SW_HIDE));
 		}
 	}
 
