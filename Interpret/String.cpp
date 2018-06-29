@@ -259,7 +259,7 @@ namespace strings
 		});
 	}
 
-	std::wstring TrimString(const std::wstring& szString)
+	std::wstring trim(const std::wstring& szString)
 	{
 		const auto first = szString.find_first_not_of(' ');
 		if (first == std::string::npos) return emptystring;

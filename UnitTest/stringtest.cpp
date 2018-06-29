@@ -152,9 +152,9 @@ namespace stringtest
 
 		TEST_METHOD(Test_TrimString)
 		{
-			Assert::AreEqual(std::wstring(L"12345"), strings::TrimString(L"12345"));
-			Assert::AreEqual(std::wstring(L"12345"), strings::TrimString(L"    12345"));
-			Assert::AreEqual(std::wstring(L""), strings::TrimString(L"  "));
+			Assert::AreEqual(std::wstring(L"12345"), strings::trim(L"12345"));
+			Assert::AreEqual(std::wstring(L"12345"), strings::trim(L"    12345"));
+			Assert::AreEqual(std::wstring(L""), strings::trim(L"  "));
 		}
 
 		TEST_METHOD(Test_ScrubStringForXML)
