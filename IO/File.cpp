@@ -265,7 +265,7 @@ namespace file
 		// This will be used as the new file name.
 		ULONG ulProps = NULL;
 		LPSPropValue lpProps = nullptr;
-		WC_H_GETPROPS2S(lpMessage->GetProps(LPSPropTagArray(&sptaMessageProps), fMapiUnicode, &ulProps, &lpProps));
+		WC_H_GETPROPS_S(lpMessage->GetProps(LPSPropTagArray(&sptaMessageProps), fMapiUnicode, &ulProps, &lpProps));
 
 		std::wstring szFileOut;
 		if (lpProps)
@@ -1166,7 +1166,7 @@ namespace file
 		LPSPropValue lpProps = nullptr;
 
 		// Get required properties from the message
-		auto hRes = EC_H_GETPROPS2(lpAttach->GetProps(
+		auto hRes = EC_H_GETPROPS(lpAttach->GetProps(
 			LPSPropTagArray(&sptaAttachProps), // property tag array
 			fMapiUnicode, // flags
 			&ulProps, // Count of values returned

@@ -323,7 +323,7 @@ namespace cache
 					ULONG ulUncachedPropNames = 0;
 					LPMAPINAMEID* lppUncachedPropNames = nullptr;
 
-					WC_H_GETPROPS(lpMAPIProp->GetNamesFromIDs(
+					hRes = WC_H_GETPROPS(lpMAPIProp->GetNamesFromIDs(
 						&lpUncachedTags, nullptr, NULL, &ulUncachedPropNames, &lppUncachedPropNames));
 					if (SUCCEEDED(hRes) && ulUncachedPropNames == ulMisses && lppUncachedPropNames)
 					{
@@ -423,13 +423,13 @@ namespace cache
 
 		if (lpMappingSignature)
 		{
-			WC_H_GETPROPS(CacheGetNamesFromIDs(
+			hRes = WC_H_GETPROPS(CacheGetNamesFromIDs(
 				lpMAPIProp, lpMappingSignature->cb, lpMappingSignature->lpb, lppPropTags, lpcPropNames, lpppPropNames));
 		}
 		else
 		{
 			hRes = S_OK;
-			WC_H_GETPROPS(
+			hRes = WC_H_GETPROPS(
 				lpMAPIProp->GetNamesFromIDs(lppPropTags, lpPropSetGuid, ulFlags, lpcPropNames, lpppPropNames));
 			// Cache the results
 			if (SUCCEEDED(hRes))
@@ -516,7 +516,7 @@ namespace cache
 					const ULONG ulUncachedTags = 0;
 					LPSPropTagArray lpUncachedTags = nullptr;
 
-					EC_H_GETPROPS(
+					hRes = EC_H_GETPROPS(
 						lpMAPIProp->GetIDsFromNames(ulMisses, lppUncachedPropNames, ulFlags, &lpUncachedTags));
 					if (SUCCEEDED(hRes) && lpUncachedTags && lpUncachedTags->cValues == ulMisses)
 					{
@@ -587,7 +587,7 @@ namespace cache
 
 		if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			WC_H_GETPROPS(CacheGetIDsFromNames(
+			hRes = WC_H_GETPROPS(CacheGetIDsFromNames(
 				lpMAPIProp,
 				lpProp->Value.bin.cb,
 				lpProp->Value.bin.lpb,
@@ -599,7 +599,7 @@ namespace cache
 		else
 		{
 			hRes = S_OK;
-			WC_H_GETPROPS(lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, lppPropTags));
+			hRes = WC_H_GETPROPS(lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, lppPropTags));
 			// Cache the results
 			if (SUCCEEDED(hRes))
 			{
@@ -752,7 +752,6 @@ namespace cache
 		bool
 			bIsAB) // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 	{
-		auto hRes = S_OK;
 		NamePropNames namePropNames;
 
 		// Named Props
@@ -772,7 +771,7 @@ namespace cache
 			tag.cValues = 1;
 			tag.aulPropTag[0] = ulPropTag;
 
-			WC_H_GETPROPS(
+			auto hRes = WC_H_GETPROPS(
 				GetNamesFromIDs(lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL, &ulPropNames, &lppPropNames));
 			if (SUCCEEDED(hRes) && ulPropNames == 1 && lppPropNames && lppPropNames[0])
 			{

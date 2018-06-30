@@ -88,7 +88,6 @@ namespace mapiprocessor
 		m_szCurrentFid.clear();
 		if (!m_lpFolder) return;
 
-		auto hRes = S_OK;
 		ULONG ulProps = NULL;
 		LPSPropValue lpProps = nullptr;
 
@@ -100,7 +99,7 @@ namespace mapiprocessor
 		};
 		static const SizedSPropTagArray(NUM_COLS, sptaFolderProps) = {NUM_COLS, {PR_DISPLAY_NAME_W, PidTagFolderId}};
 
-		WC_H_GETPROPS(m_lpFolder->GetProps(LPSPropTagArray(&sptaFolderProps), NULL, &ulProps, &lpProps));
+		WC_H_GETPROPS_S(m_lpFolder->GetProps(LPSPropTagArray(&sptaFolderProps), NULL, &ulProps, &lpProps));
 		output::DebugPrint(
 			DBGGeneric,
 			L"CFindFidMid::DoFolderPerHierarchyTableRowWork: m_szFolderOffset %ws\n",

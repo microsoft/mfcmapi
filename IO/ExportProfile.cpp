@@ -11,11 +11,10 @@ namespace output
 	{
 		if (!fProfile || !lpSect) return;
 
-		auto hRes = S_OK;
 		LPSPropValue lpAllProps = nullptr;
 		ULONG cValues = 0L;
 
-		WC_H_GETPROPS(mapi::GetPropsNULL(lpSect, fMapiUnicode, &cValues, &lpAllProps));
+		auto hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpSect, fMapiUnicode, &cValues, &lpAllProps));
 		if (FAILED(hRes))
 		{
 			output::OutputToFilef(fProfile, L"<properties error=\"0x%08X\" />\n", hRes);
