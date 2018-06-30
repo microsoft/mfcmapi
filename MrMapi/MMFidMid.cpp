@@ -99,7 +99,7 @@ namespace mapiprocessor
 		};
 		static const SizedSPropTagArray(NUM_COLS, sptaFolderProps) = {NUM_COLS, {PR_DISPLAY_NAME_W, PidTagFolderId}};
 
-		WC_H_GETPROPS2S(m_lpFolder->GetProps(LPSPropTagArray(&sptaFolderProps), NULL, &ulProps, &lpProps));
+		WC_H_GETPROPS(m_lpFolder->GetProps(LPSPropTagArray(&sptaFolderProps), NULL, &ulProps, &lpProps));
 		output::DebugPrint(
 			DBGGeneric,
 			L"CFindFidMid::DoFolderPerHierarchyTableRowWork: m_szFolderOffset %ws\n",
