@@ -152,7 +152,7 @@ namespace mapiprocessor
 		LPSPropValue lpAllProps = nullptr;
 		ULONG cValues = 0L;
 
-		WC_H_GETPROPS(mapi::GetPropsNULL(m_lpFolder, fMapiUnicode, &cValues, &lpAllProps));
+		hRes = WC_H_GETPROPS2(mapi::GetPropsNULL(m_lpFolder, fMapiUnicode, &cValues, &lpAllProps));
 		if (FAILED(hRes))
 		{
 			output::OutputToFilef(m_fFolderProps, L"<properties error=\"0x%08X\" />\n", hRes);
@@ -391,7 +391,6 @@ namespace mapiprocessor
 	{
 		if (!lpMessage || !lpData) return;
 
-		auto hRes = S_OK;
 
 		*lpData = static_cast<LPVOID>(new (MessageData));
 		if (!*lpData) return;
@@ -402,13 +401,13 @@ namespace mapiprocessor
 		ULONG cValues = 0L;
 
 		// Get all props, asking for UNICODE string properties
-		WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, MAPI_UNICODE, &cValues, &lpAllProps));
+		auto hRes = WC_H_GETPROPS2(mapi::GetPropsNULL(lpMessage, MAPI_UNICODE, &cValues, &lpAllProps));
 		if (hRes == MAPI_E_BAD_CHARWIDTH)
 		{
 			// Didn't like MAPI_UNICODE - fall back
 			hRes = S_OK;
 
-			WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, NULL, &cValues, &lpAllProps));
+			hRes = WC_H_GETPROPS2(mapi::GetPropsNULL(lpMessage, NULL, &cValues, &lpAllProps));
 		}
 
 		// If we've got a parent message, we're an attachment - use attachment filename logic
@@ -541,8 +540,6 @@ namespace mapiprocessor
 
 	void OutputMessageMSG(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szFolderPath)
 	{
-		auto hRes = S_OK;
-
 		enum
 		{
 			msgPR_SUBJECT_W,
@@ -563,7 +560,7 @@ namespace mapiprocessor
 		LPSBinary lpRecordKey = nullptr;
 
 		// Get required properties from the message
-		EC_H_GETPROPS(lpMessage->GetProps(LPSPropTagArray(&msgProps), fMapiUnicode, &cProps, &lpsProps));
+		auto hRes = EC_H_GETPROPS2(lpMessage->GetProps(LPSPropTagArray(&msgProps), fMapiUnicode, &cProps, &lpsProps));
 
 		if (cProps == 2 && lpsProps)
 		{
@@ -666,8 +663,6 @@ namespace mapiprocessor
 
 		lpMsgData->ulCurAttNum = ulCurRow; // set this so we can pull it if this is an embedded message
 
-		auto hRes = S_OK;
-
 		output::OutputToFilef(lpMsgData->fMessageProps, L"<attachment num=\"0x%08X\" filename=\"", ulCurRow);
 
 		auto lpAttachName = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_ATTACH_FILENAME);
@@ -694,7 +689,7 @@ namespace mapiprocessor
 			ULONG ulAllProps = 0;
 			LPSPropValue lpAllProps = nullptr;
 			// Let's get all props from the message and dump them.
-			WC_H_GETPROPS(mapi::GetPropsNULL(lpAttach, fMapiUnicode, &ulAllProps, &lpAllProps));
+			WC_H_GETPROPS2S(mapi::GetPropsNULL(lpAttach, fMapiUnicode, &ulAllProps, &lpAllProps));
 			if (lpAllProps)
 			{
 				output::OutputToFile(lpMsgData->fMessageProps, L"\t<getprops>\n");

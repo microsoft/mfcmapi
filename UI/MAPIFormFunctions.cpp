@@ -110,7 +110,6 @@ namespace mapi
 			LONG lVerb,
 			_In_opt_ LPCRECT lpRect)
 		{
-			auto hRes = S_OK;
 			ULONG cValuesShow = 0;
 			LPSPropValue lpspvaShow = nullptr;
 			ULONG ulMessageStatus = NULL;
@@ -129,7 +128,7 @@ namespace mapi
 			if (!lpMessage || !lpMAPISession || !lpSourceFolder) return MAPI_E_INVALID_PARAMETER;
 
 			// Get required properties from the message
-			EC_H_GETPROPS(lpMessage->GetProps(
+			auto hRes = EC_H_GETPROPS2(lpMessage->GetProps(
 				LPSPropTagArray(&sptaShowForm), // property tag array
 				fMapiUnicode, // flags
 				&cValuesShow, // Count of values returned
@@ -217,7 +216,6 @@ namespace mapi
 			_In_ LPMDB lpMDB,
 			_In_ LPMESSAGE lpMessage)
 		{
-			auto hRes = S_OK;
 			ULONG cValuesShow;
 			LPSPropValue lpspvaShow = nullptr;
 			ULONG_PTR Token = NULL;
@@ -237,7 +235,7 @@ namespace mapi
 			if (!lpMessage || !lpParentFolder || !lpMAPISession || !lpMDB) return MAPI_E_INVALID_PARAMETER;
 
 			// Get required properties from the message
-			EC_H_GETPROPS(lpMessage->GetProps(
+			auto hRes = EC_H_GETPROPS2(lpMessage->GetProps(
 				LPSPropTagArray(&sptaShowForm), // property tag array
 				fMapiUnicode, // flags
 				&cValuesShow, // Count of values returned

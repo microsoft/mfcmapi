@@ -278,10 +278,9 @@ namespace file
 
 		// Get subject line of message
 		// This will be used as the new file name.
-		auto hRes = S_OK;
 		ULONG ulProps = NULL;
 		LPSPropValue lpProps = nullptr;
-		WC_H_GETPROPS(lpMessage->GetProps(LPSPropTagArray(&sptaMessageProps), fMapiUnicode, &ulProps, &lpProps));
+		WC_H_GETPROPS2S(lpMessage->GetProps(LPSPropTagArray(&sptaMessageProps), fMapiUnicode, &ulProps, &lpProps));
 
 		std::wstring subj;
 		if (mapi::CheckStringProp(&lpProps[ePR_SUBJECT_W], PT_UNICODE))
@@ -1141,7 +1140,6 @@ namespace file
 #ifndef MRMAPI
 	_Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 	{
-		auto hRes = S_OK;
 		LPSPropValue lpProps = nullptr;
 		ULONG ulProps = 0;
 
@@ -1161,7 +1159,7 @@ namespace file
 		output::DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Saving attachment.\n");
 
 		// Get required properties from the message
-		EC_H_GETPROPS(lpAttach->GetProps(
+		auto hRes = EC_H_GETPROPS2(lpAttach->GetProps(
 			LPSPropTagArray(&sptaAttachProps), // property tag array
 			fMapiUnicode, // flags
 			&ulProps, // Count of values returned

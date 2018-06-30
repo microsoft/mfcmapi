@@ -1029,7 +1029,6 @@ namespace mapi
 	_Check_return_ HRESULT
 	GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpParentFolder)
 	{
-		auto hRes = S_OK;
 		ULONG cProps;
 		LPSPropValue lpProps = nullptr;
 
@@ -1045,7 +1044,7 @@ namespace mapi
 		static const SizedSPropTagArray(NUM_COLS, sptaSrcFolder) = {NUM_COLS, {PR_PARENT_ENTRYID}};
 
 		// Get PR_PARENT_ENTRYID
-		EC_H_GETPROPS(lpChildFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
+		auto hRes = EC_H_GETPROPS2(lpChildFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
 
 		if (lpProps && PT_ERROR != PROP_TYPE(lpProps[PARENTEID].ulPropTag))
 		{
@@ -1098,7 +1097,7 @@ namespace mapi
 			output::DebugPrint(DBGGeneric, L"GetPropsNULL: Calling GetProps(NULL) on %p\n", lpMAPIProp);
 		}
 
-		WC_H_GETPROPS(lpMAPIProp->GetProps(lpTags, ulFlags, lpcValues, lppPropArray));
+		hRes = WC_H_GETPROPS2(lpMAPIProp->GetProps(lpTags, ulFlags, lpcValues, lppPropArray));
 		MAPIFreeBuffer(lpTags);
 
 		return hRes;
@@ -2626,7 +2625,6 @@ namespace mapi
 		if (!lpMAPIProp || !lppProp) return MAPI_E_INVALID_PARAMETER;
 		output::DebugPrint(DBGGeneric, L"GetLargeProp getting buffer from 0x%08X\n", ulPropTag);
 
-		auto hRes = S_OK;
 		ULONG cValues = 0;
 		LPSPropValue lpPropArray = nullptr;
 		auto bSuccess = false;
@@ -2634,7 +2632,7 @@ namespace mapi
 		const SizedSPropTagArray(1, sptaBuffer) = {1, {ulPropTag}};
 		*lppProp = nullptr;
 
-		WC_H_GETPROPS(lpMAPIProp->GetProps(LPSPropTagArray(&sptaBuffer), 0, &cValues, &lpPropArray));
+		auto hRes = WC_H_GETPROPS2(lpMAPIProp->GetProps(LPSPropTagArray(&sptaBuffer), 0, &cValues, &lpPropArray));
 
 		if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag) &&
 			MAPI_E_NOT_ENOUGH_MEMORY == lpPropArray->Value.err)

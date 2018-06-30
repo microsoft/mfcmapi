@@ -151,7 +151,7 @@ namespace dialog
 						{
 							ULONG ulProps = 0;
 							LPSPropValue lpProps = nullptr;
-							WC_H_GETPROPS(lpFolder->GetProps(
+							WC_H_GETPROPS2S(lpFolder->GetProps(
 								LPSPropTagArray(&lptaFolderProps), fMapiUnicode, &ulProps, &lpProps));
 
 							for (ULONG ulPropNum = 0; ulPropNum < ulProps; ulPropNum++)

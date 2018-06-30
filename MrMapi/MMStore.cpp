@@ -162,7 +162,6 @@ HRESULT HrMAPIOpenStoreAndFolder(
 
 void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
-	auto hRes = S_OK;
 	if (!lpMAPIProp || !ulPropTag) return;
 
 	LPSPropValue lpAllProps = nullptr;
@@ -172,7 +171,7 @@ void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 	sTag.cValues = 1;
 	sTag.aulPropTag[0] = ulPropTag;
 
-	WC_H_GETPROPS(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
+	WC_H_GETPROPS2S(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
 
 	output::_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
@@ -196,11 +195,11 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 		sTag.cValues = 1;
 		sTag.aulPropTag[0] = ulPropTag;
 
-		WC_H_GETPROPS(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
+		hRes = WC_H_GETPROPS2(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
 	}
 	else
 	{
-		WC_H_GETPROPS(mapi::GetPropsNULL(lpMAPIProp, fMapiUnicode, &cValues, &lpAllProps));
+		hRes = WC_H_GETPROPS2(mapi::GetPropsNULL(lpMAPIProp, fMapiUnicode, &cValues, &lpAllProps));
 	}
 
 	if (FAILED(hRes))

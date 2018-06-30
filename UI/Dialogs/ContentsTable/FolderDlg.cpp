@@ -1809,7 +1809,7 @@ namespace dialog
 
 		if (lpMAPIProp)
 		{
-			EC_H_GETPROPS(lpMAPIProp->GetProps(LPSPropTagArray(&sptFRCols), fMapiUnicode, &cVals, &lpProps));
+			hRes = EC_H_GETPROPS2(lpMAPIProp->GetProps(LPSPropTagArray(&sptFRCols), fMapiUnicode, &cVals, &lpProps));
 			if (lpProps)
 			{
 				// Allocate and create our SRestriction
