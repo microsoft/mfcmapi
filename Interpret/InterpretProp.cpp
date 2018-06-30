@@ -750,7 +750,7 @@ namespace interpretprop
 	// Strictly does a lookup in the array. Does not convert otherwise
 	_Check_return_ ULONG LookupPropName(_In_ const std::wstring& lpszPropName)
 	{
-		auto trimName = strings::TrimString(lpszPropName);
+		auto trimName = strings::trim(lpszPropName);
 		if (trimName.empty()) return 0;
 
 		for (auto& tag : PropTagArray)

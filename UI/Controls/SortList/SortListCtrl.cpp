@@ -654,18 +654,15 @@ namespace controls
 		void CSortListCtrl::SetItemText(int nItem, int nSubItem, const std::wstring& lpszText)
 		{
 			// Remove any whitespace before setting in the list
-			// TODO: use something in the strings namespace to do this...
-			auto szWhitespace = const_cast<LPWSTR>(wcspbrk(lpszText.c_str(), L"\r\n\t")); // STRING_OK
-			while (szWhitespace != nullptr)
-			{
-				szWhitespace[0] = L' ';
-				szWhitespace = static_cast<LPWSTR>(wcspbrk(szWhitespace, L"\r\n\t")); // STRING_OK
-			}
+			auto szWhitespace = strings::replace(
+				lpszText,
+				[](const WCHAR& chr) { return std::wstring(L"\t\r\n").find(chr) == std::wstring::npos; },
+				L' ');
 
 			auto lvi = LVITEMW();
 			lvi.iSubItem = nSubItem;
 			lvi.pszText = const_cast<LPWSTR>(lpszText.c_str());
-			(void) ::SendMessage(m_hWnd, LVM_SETITEMTEXTW, nItem, (LPARAM) &lvi);
+			(void) ::SendMessage(m_hWnd, LVM_SETITEMTEXTW, nItem, reinterpret_cast<LPARAM>(&lvi));
 		}
 
 		std::wstring CSortListCtrl::GetItemText(_In_ int nItem, _In_ int nSubItem) const
