@@ -654,14 +654,15 @@ namespace controls
 		void CSortListCtrl::SetItemText(int nItem, int nSubItem, const std::wstring& lpszText)
 		{
 			// Remove any whitespace before setting in the list
-			auto szWhitespace = const_cast<LPWSTR>(wcspbrk(lpszText.c_str(), L"\r\n\t")); // STRING_OK
-			while (szWhitespace != nullptr)
-			{
-				szWhitespace[0] = L' ';
-				szWhitespace = static_cast<LPWSTR>(wcspbrk(szWhitespace, L"\r\n\t")); // STRING_OK
-			}
+			auto szWhitespace = strings::replace(
+				lpszText,
+				[](const WCHAR& chr) { return std::wstring(L"\t\r\n").find(chr) == std::wstring::npos; },
+				L' ');
 
-			(void) CListCtrl::SetItemText(nItem, nSubItem, strings::wstringTotstring(lpszText).c_str());
+			auto lvi = LVITEMW();
+			lvi.iSubItem = nSubItem;
+			lvi.pszText = const_cast<LPWSTR>(lpszText.c_str());
+			(void) ::SendMessage(m_hWnd, LVM_SETITEMTEXTW, nItem, reinterpret_cast<LPARAM>(&lvi));
 		}
 
 		std::wstring CSortListCtrl::GetItemText(_In_ int nItem, _In_ int nSubItem) const
@@ -684,6 +685,16 @@ namespace controls
 				EC_BS(SetItemState(iItem - 1, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED));
 				EnsureVisible(iItem - 1, false);
 			}
+		}
+
+		int CSortListCtrl::InsertColumnW(_In_ int nCol, const std::wstring& columnHeading)
+		{
+			auto column = LVCOLUMNW();
+			column.mask = LVCF_TEXT | LVCF_FMT;
+			column.pszText = const_cast<LPWSTR>(columnHeading.c_str());
+			column.fmt = LVCFMT_LEFT;
+
+			return static_cast<int>(::SendMessage(m_hWnd, LVM_INSERTCOLUMNW, nCol, (LPARAM) &column));
 		}
 	}
 }

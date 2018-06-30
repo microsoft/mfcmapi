@@ -242,7 +242,7 @@ namespace viewpane
 
 	void ListPane::InsertColumn(int nCol, UINT uidText)
 	{
-		m_List.InsertColumn(nCol, strings::wstringTotstring(strings::loadstring(uidText)).c_str());
+		m_List.InsertColumnW(nCol, strings::loadstring(uidText));
 	}
 
 	void ListPane::SetColumnType(int nCol, ULONG ulPropType) const

@@ -105,7 +105,7 @@ namespace dialog
 				auto szTmpString = GetStringW(HEXED_BASE64);
 
 				// remove any whitespace before decoding
-				szTmpString = strings::CleanString(szTmpString);
+				szTmpString = strings::StripCRLF(szTmpString);
 
 				cchEncodeStr = szTmpString.length();
 				auto bin = strings::Base64Decode(szTmpString);
