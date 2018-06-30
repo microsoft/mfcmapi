@@ -221,8 +221,7 @@ namespace error
 // Execute a bool/BOOL function, log error, and return CheckWin32Error(HRESULT)
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_B(fnx) \
-	[&]() -> HRESULT { return !(fnx) ? error::CheckWin32Error(false, __FILE__, __LINE__, #fnx) : S_OK; }()
+#define WC_B(fnx) [&]() -> HRESULT { return !(fnx) ? error::CheckWin32Error(false, __FILE__, __LINE__, #fnx) : S_OK; }()
 
 // Execute a bool/BOOL function, log error, and swallow error
 // Does not modify or reference existing hRes
@@ -268,35 +267,53 @@ namespace error
 		} \
 	}()
 
+// Execute a function, log and return the HRESULT
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
 #define EC_H_GETPROPS(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = (fnx); \
-			CheckMAPICall(hRes, MAPI_W_ERRORS_RETURNED, true, #fnx, NULL, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes == MAPI_W_ERRORS_RETURNED ? S_OK : __hRes; \
+	}()
 
+// Execute a function, log and swallow the HRESULT
+// MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
+// This is annoying, so this macro tosses those warnings.
+// We have to check each prop before we use it anyway, so we don't lose anything here.
+// Using this macro, all we have to check is that we got a props array back
+#define EC_H_GETPROPS_S(fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
+
+// Execute a function, log and return the HRESULT
+// MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
+// This is annoying, so this macro tosses those warnings.
+// We have to check each prop before we use it anyway, so we don't lose anything here.
+// Using this macro, all we have to check is that we got a props array back
+// Will not display an error dialog
 #define WC_H_GETPROPS(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = (fnx); \
-			CheckMAPICall(hRes, MAPI_W_ERRORS_RETURNED, false, #fnx, NULL, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes == MAPI_W_ERRORS_RETURNED ? S_OK : __hRes; \
+	}()
+
+// Execute a function, log and swallow the HRESULT
+// MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
+// This is annoying, so this macro tosses those warnings.
+// We have to check each prop before we use it anyway, so we don't lose anything here.
+// Using this macro, all we have to check is that we got a props array back
+// Will not display an error dialog
+#define WC_H_GETPROPS_S(fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
 
 // some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL. I don't consider these to be errors.
 #define EC_H_CANCEL(fnx) \

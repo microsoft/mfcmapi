@@ -451,7 +451,7 @@ namespace dialog
 			MyData.InitPane(2, viewpane::CheckPane::Create(IDS_FOLDERMOVE, false, false));
 
 			// Get required properties from the source folder
-			EC_H_GETPROPS(
+			EC_H_GETPROPS_S(
 				lpMAPISourceFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
 
 			if (lpProps)
@@ -994,10 +994,9 @@ namespace dialog
 		{
 			LPMAPIFOLDER lpSrcParentFolder = nullptr;
 			WC_H(mapi::GetParentFolder(lpSrcFolder, m_lpMDB, &lpSrcParentFolder));
-			hRes = S_OK;
 
 			// Get required properties from the source folder
-			EC_H_GETPROPS(lpSrcFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
+			hRes = EC_H_GETPROPS(lpSrcFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
 
 			editor::CEditor MyData(
 				this, IDS_RESTOREDELFOLD, IDS_RESTOREDELFOLDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);

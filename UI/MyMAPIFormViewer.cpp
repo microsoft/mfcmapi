@@ -534,7 +534,7 @@ namespace mapi
 				ULONG cValuesShow = 0;
 				LPSPropValue lpspvaShow = nullptr;
 
-				EC_H_GETPROPS(lpNewMessage->GetProps(
+				hRes = EC_H_GETPROPS(lpNewMessage->GetProps(
 					LPSPropTagArray(&sptaShowForm), // property tag array
 					fMapiUnicode, // flags
 					&cValuesShow, // Count of values returned

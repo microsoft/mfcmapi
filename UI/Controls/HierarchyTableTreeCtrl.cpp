@@ -274,7 +274,6 @@ namespace controls
 
 	_Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer) const
 	{
-		auto hRes = S_OK;
 		LPSPropValue lpProps = nullptr;
 		LPSPropValue lpRootName = nullptr; // don't free
 		LPSBinary lpEIDBin = nullptr; // don't free
@@ -284,8 +283,7 @@ namespace controls
 
 		ULONG cVals = 0;
 
-		WC_H_GETPROPS(lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCols), fMapiUnicode, &cVals, &lpProps));
-		hRes = S_OK;
+		WC_H_GETPROPS_S(lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCols), fMapiUnicode, &cVals, &lpProps));
 
 		// Get the entry ID for the Root Container
 		if (!lpProps || PT_ERROR == PROP_TYPE(lpProps[htPR_ENTRYID].ulPropTag))
@@ -332,7 +330,7 @@ namespace controls
 		}
 
 		// Node owns the lpProps memory now, so we don't free it
-		return hRes;
+		return S_OK;
 	}
 
 	void CHierarchyTableTreeCtrl::AddNode(
@@ -579,7 +577,6 @@ namespace controls
 
 	void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem) const
 	{
-		auto hRes = S_OK;
 		LPMAPICONTAINER lpMAPIContainer = nullptr;
 		LPSPropValue lpProps = nullptr;
 		ULONG cVals = 0;
@@ -599,10 +596,10 @@ namespace controls
 		(void) GetHierarchyTable(
 			hItem, lpMAPIContainer, 0 != registry::RegKeys[registry::regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
 
-		if (SUCCEEDED(hRes) && lpMAPIContainer)
+		if (lpMAPIContainer)
 		{
 			// Get some props for status bar
-			WC_H_GETPROPS(lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCountCols), fMapiUnicode, &cVals, &lpProps));
+			WC_H_GETPROPS_S(lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCountCols), fMapiUnicode, &cVals, &lpProps));
 			if (lpProps)
 			{
 				if (!(m_ulDisplayFlags & dfDeleted))

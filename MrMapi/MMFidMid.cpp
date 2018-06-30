@@ -88,7 +88,6 @@ namespace mapiprocessor
 		m_szCurrentFid.clear();
 		if (!m_lpFolder) return;
 
-		auto hRes = S_OK;
 		ULONG ulProps = NULL;
 		LPSPropValue lpProps = nullptr;
 
