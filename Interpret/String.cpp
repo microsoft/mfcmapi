@@ -303,34 +303,8 @@ namespace strings
 
 	bool InvalidCharacter(ULONG chr, bool bMultiLine)
 	{
-		if (chr == 0x80) return true;
-		if (chr == 0x82) return true;
-		if (chr == 0x83) return true;
-		if (chr == 0x84) return true;
-		if (chr == 0x85) return true;
-		if (chr == 0x86) return true;
-		if (chr == 0x87) return true;
-		if (chr == 0x88) return true;
-		if (chr == 0x89) return true;
-		if (chr == 0x8A) return true;
-		if (chr == 0x8B) return true;
-		if (chr == 0x8C) return true;
-		if (chr == 0x8E) return true;
-		if (chr == 0x90) return true;
-		if (chr == 0x91) return true;
-		if (chr == 0x92) return true;
-		if (chr == 0x93) return true;
-		if (chr == 0x94) return true;
-		if (chr == 0x95) return true;
-		if (chr == 0x96) return true;
-		if (chr == 0x97) return true;
-		if (chr == 0x98) return true;
-		if (chr == 0x99) return true;
-		if (chr == 0x9A) return true;
-		if (chr == 0x9B) return true;
-		if (chr == 0x9C) return true;
-		if (chr == 0x9E) return true;
-		if (chr == 0x9F) return true;
+		// Remove high range of unprintable characters
+		if (chr >= 0x80 && chr <= 0x9F) return true;
 		// Any printable extended ASCII character gets mapped directly
 		if (chr >= 0x20 && chr <= 0xFE)
 		{
