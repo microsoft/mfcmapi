@@ -117,7 +117,7 @@ namespace dialog
 					{
 						ULONG ulPropVals = NULL;
 						LPSPropValue lpPropVals = nullptr;
-						hRes = EC_H_GETPROPS2(mapi::GetPropsNULL(
+						hRes = EC_H_GETPROPS(mapi::GetPropsNULL(
 							lpMAPIFormInfoArray->aFormInfo[i], fMapiUnicode, &ulPropVals, &lpPropVals));
 						if (lpPropVals)
 						{

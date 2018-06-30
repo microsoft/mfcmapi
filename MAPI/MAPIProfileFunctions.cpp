@@ -446,7 +446,7 @@ namespace mapi
 								SPropTagArray pTagArray = {1, PR_MARKER};
 								ULONG ulPropVal = 0;
 								LPSPropValue lpsPropVal = nullptr;
-								hRes = EC_H_GETPROPS2(lpSect->GetProps(&pTagArray, NULL, &ulPropVal, &lpsPropVal));
+								hRes = EC_H_GETPROPS(lpSect->GetProps(&pTagArray, NULL, &ulPropVal, &lpsPropVal));
 								if (!(mapi::CheckStringProp(lpsPropVal, PROP_TYPE(PR_MARKER)) &&
 									  !strcmp(lpsPropVal->Value.lpszA, MARKER_STRING)))
 								{

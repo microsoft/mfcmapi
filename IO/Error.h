@@ -272,7 +272,7 @@ namespace error
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
-#define EC_H_GETPROPS2(fnx) \
+#define EC_H_GETPROPS(fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
@@ -284,7 +284,7 @@ namespace error
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
-#define EC_H_GETPROPS2S(fnx) \
+#define EC_H_GETPROPS_S(fnx) \
 	[&]() -> void { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
@@ -296,7 +296,7 @@ namespace error
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
 // Will not display an error dialog
-#define WC_H_GETPROPS2(fnx) \
+#define WC_H_GETPROPS(fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
@@ -309,7 +309,7 @@ namespace error
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
 // Will not display an error dialog
-#define WC_H_GETPROPS2S(fnx) \
+#define WC_H_GETPROPS_S(fnx) \
 	[&]() -> void { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, false, true, false, NULL, #fnx, __FILE__, __LINE__); \

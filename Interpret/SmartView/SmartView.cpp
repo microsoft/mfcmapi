@@ -248,7 +248,7 @@ namespace smartview
 			tag.cValues = 1;
 			tag.aulPropTag[0] = lpProp->ulPropTag;
 
-			hRes = WC_H_GETPROPS2(cache::GetNamesFromIDs(
+			hRes = WC_H_GETPROPS(cache::GetNamesFromIDs(
 				lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL, &ulPropNames, &lppPropNames));
 			if (SUCCEEDED(hRes) && ulPropNames == 1 && lppPropNames && lppPropNames[0])
 			{

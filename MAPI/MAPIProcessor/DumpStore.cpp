@@ -152,7 +152,7 @@ namespace mapiprocessor
 		LPSPropValue lpAllProps = nullptr;
 		ULONG cValues = 0L;
 
-		hRes = WC_H_GETPROPS2(mapi::GetPropsNULL(m_lpFolder, fMapiUnicode, &cValues, &lpAllProps));
+		hRes = WC_H_GETPROPS(mapi::GetPropsNULL(m_lpFolder, fMapiUnicode, &cValues, &lpAllProps));
 		if (FAILED(hRes))
 		{
 			output::OutputToFilef(m_fFolderProps, L"<properties error=\"0x%08X\" />\n", hRes);
@@ -401,13 +401,13 @@ namespace mapiprocessor
 		ULONG cValues = 0L;
 
 		// Get all props, asking for UNICODE string properties
-		auto hRes = WC_H_GETPROPS2(mapi::GetPropsNULL(lpMessage, MAPI_UNICODE, &cValues, &lpAllProps));
+		auto hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, MAPI_UNICODE, &cValues, &lpAllProps));
 		if (hRes == MAPI_E_BAD_CHARWIDTH)
 		{
 			// Didn't like MAPI_UNICODE - fall back
 			hRes = S_OK;
 
-			hRes = WC_H_GETPROPS2(mapi::GetPropsNULL(lpMessage, NULL, &cValues, &lpAllProps));
+			hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, NULL, &cValues, &lpAllProps));
 		}
 
 		// If we've got a parent message, we're an attachment - use attachment filename logic
@@ -560,7 +560,7 @@ namespace mapiprocessor
 		LPSBinary lpRecordKey = nullptr;
 
 		// Get required properties from the message
-		auto hRes = EC_H_GETPROPS2(lpMessage->GetProps(LPSPropTagArray(&msgProps), fMapiUnicode, &cProps, &lpsProps));
+		auto hRes = EC_H_GETPROPS(lpMessage->GetProps(LPSPropTagArray(&msgProps), fMapiUnicode, &cProps, &lpsProps));
 
 		if (cProps == 2 && lpsProps)
 		{
@@ -689,7 +689,7 @@ namespace mapiprocessor
 			ULONG ulAllProps = 0;
 			LPSPropValue lpAllProps = nullptr;
 			// Let's get all props from the message and dump them.
-			WC_H_GETPROPS2S(mapi::GetPropsNULL(lpAttach, fMapiUnicode, &ulAllProps, &lpAllProps));
+			WC_H_GETPROPS_S(mapi::GetPropsNULL(lpAttach, fMapiUnicode, &ulAllProps, &lpAllProps));
 			if (lpAllProps)
 			{
 				output::OutputToFile(lpMsgData->fMessageProps, L"\t<getprops>\n");

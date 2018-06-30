@@ -197,7 +197,7 @@ namespace dialog
 			{
 				LPSPropTagArray lpNamedPropTags = nullptr;
 
-				WC_H_GETPROPS2S(
+				WC_H_GETPROPS_S(
 					cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0, &lpNamedPropTags));
 
 				if (lpNamedPropTags)
@@ -307,7 +307,7 @@ namespace dialog
 				lpTagArray->cValues = 1;
 				lpTagArray->aulPropTag[0] = m_ulPropTag;
 
-				auto hRes = WC_H_GETPROPS2(
+				auto hRes = WC_H_GETPROPS(
 					cache::GetNamesFromIDs(m_lpMAPIProp, &lpTagArray, NULL, NULL, &ulPropNames, &lppPropNames));
 				if (SUCCEEDED(hRes) && ulPropNames == lpTagArray->cValues && lppPropNames && lppPropNames[0])
 				{

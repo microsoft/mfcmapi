@@ -432,7 +432,7 @@ namespace controls
 									}
 
 									// Get the names
-									hRes = WC_H_GETPROPS2(cache::GetNamesFromIDs(
+									hRes = WC_H_GETPROPS(cache::GetNamesFromIDs(
 										m_lpPropBag->GetMAPIProp(),
 										lpMappingSig ? &lpMappingSig->Value.bin : NULL,
 										&lpTag,

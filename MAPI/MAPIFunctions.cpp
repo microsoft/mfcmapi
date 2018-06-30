@@ -1044,7 +1044,7 @@ namespace mapi
 		static const SizedSPropTagArray(NUM_COLS, sptaSrcFolder) = {NUM_COLS, {PR_PARENT_ENTRYID}};
 
 		// Get PR_PARENT_ENTRYID
-		auto hRes = EC_H_GETPROPS2(lpChildFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
+		auto hRes = EC_H_GETPROPS(lpChildFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
 
 		if (lpProps && PT_ERROR != PROP_TYPE(lpProps[PARENTEID].ulPropTag))
 		{
@@ -1097,7 +1097,7 @@ namespace mapi
 			output::DebugPrint(DBGGeneric, L"GetPropsNULL: Calling GetProps(NULL) on %p\n", lpMAPIProp);
 		}
 
-		hRes = WC_H_GETPROPS2(lpMAPIProp->GetProps(lpTags, ulFlags, lpcValues, lppPropArray));
+		hRes = WC_H_GETPROPS(lpMAPIProp->GetProps(lpTags, ulFlags, lpcValues, lppPropArray));
 		MAPIFreeBuffer(lpTags);
 
 		return hRes;
@@ -2632,7 +2632,7 @@ namespace mapi
 		const SizedSPropTagArray(1, sptaBuffer) = {1, {ulPropTag}};
 		*lppProp = nullptr;
 
-		auto hRes = WC_H_GETPROPS2(lpMAPIProp->GetProps(LPSPropTagArray(&sptaBuffer), 0, &cValues, &lpPropArray));
+		auto hRes = WC_H_GETPROPS(lpMAPIProp->GetProps(LPSPropTagArray(&sptaBuffer), 0, &cValues, &lpPropArray));
 
 		if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag) &&
 			MAPI_E_NOT_ENOUGH_MEMORY == lpPropArray->Value.err)

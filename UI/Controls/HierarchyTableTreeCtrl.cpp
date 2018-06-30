@@ -283,7 +283,7 @@ namespace controls
 
 		ULONG cVals = 0;
 
-		WC_H_GETPROPS2S(lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCols), fMapiUnicode, &cVals, &lpProps));
+		WC_H_GETPROPS_S(lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCols), fMapiUnicode, &cVals, &lpProps));
 
 		// Get the entry ID for the Root Container
 		if (!lpProps || PT_ERROR == PROP_TYPE(lpProps[htPR_ENTRYID].ulPropTag))
@@ -599,7 +599,7 @@ namespace controls
 		if (lpMAPIContainer)
 		{
 			// Get some props for status bar
-			WC_H_GETPROPS2S(lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCountCols), fMapiUnicode, &cVals, &lpProps));
+			WC_H_GETPROPS_S(lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCountCols), fMapiUnicode, &cVals, &lpProps));
 			if (lpProps)
 			{
 				if (!(m_ulDisplayFlags & dfDeleted))

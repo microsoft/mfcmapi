@@ -358,7 +358,7 @@ namespace dialog
 			LPSPropValue lpProps = nullptr;
 
 			// Get quota properties
-			hRes = WC_H_GETPROPS2(lpMDB->GetProps(LPSPropTagArray(&sptaQuota), fMapiUnicode, &cProps, &lpProps));
+			hRes = WC_H_GETPROPS(lpMDB->GetProps(LPSPropTagArray(&sptaQuota), fMapiUnicode, &cProps, &lpProps));
 
 			if (lpProps)
 			{

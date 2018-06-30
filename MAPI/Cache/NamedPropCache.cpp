@@ -323,7 +323,7 @@ namespace cache
 					ULONG ulUncachedPropNames = 0;
 					LPMAPINAMEID* lppUncachedPropNames = nullptr;
 
-					hRes = WC_H_GETPROPS2(lpMAPIProp->GetNamesFromIDs(
+					hRes = WC_H_GETPROPS(lpMAPIProp->GetNamesFromIDs(
 						&lpUncachedTags, nullptr, NULL, &ulUncachedPropNames, &lppUncachedPropNames));
 					if (SUCCEEDED(hRes) && ulUncachedPropNames == ulMisses && lppUncachedPropNames)
 					{
@@ -423,13 +423,13 @@ namespace cache
 
 		if (lpMappingSignature)
 		{
-			hRes = WC_H_GETPROPS2(CacheGetNamesFromIDs(
+			hRes = WC_H_GETPROPS(CacheGetNamesFromIDs(
 				lpMAPIProp, lpMappingSignature->cb, lpMappingSignature->lpb, lppPropTags, lpcPropNames, lpppPropNames));
 		}
 		else
 		{
 			hRes = S_OK;
-			hRes = WC_H_GETPROPS2(
+			hRes = WC_H_GETPROPS(
 				lpMAPIProp->GetNamesFromIDs(lppPropTags, lpPropSetGuid, ulFlags, lpcPropNames, lpppPropNames));
 			// Cache the results
 			if (SUCCEEDED(hRes))
@@ -516,7 +516,7 @@ namespace cache
 					const ULONG ulUncachedTags = 0;
 					LPSPropTagArray lpUncachedTags = nullptr;
 
-					hRes = EC_H_GETPROPS2(
+					hRes = EC_H_GETPROPS(
 						lpMAPIProp->GetIDsFromNames(ulMisses, lppUncachedPropNames, ulFlags, &lpUncachedTags));
 					if (SUCCEEDED(hRes) && lpUncachedTags && lpUncachedTags->cValues == ulMisses)
 					{
@@ -587,7 +587,7 @@ namespace cache
 
 		if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			hRes = WC_H_GETPROPS2(CacheGetIDsFromNames(
+			hRes = WC_H_GETPROPS(CacheGetIDsFromNames(
 				lpMAPIProp,
 				lpProp->Value.bin.cb,
 				lpProp->Value.bin.lpb,
@@ -599,7 +599,7 @@ namespace cache
 		else
 		{
 			hRes = S_OK;
-			hRes = WC_H_GETPROPS2(lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, lppPropTags));
+			hRes = WC_H_GETPROPS(lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, lppPropTags));
 			// Cache the results
 			if (SUCCEEDED(hRes))
 			{
@@ -771,7 +771,7 @@ namespace cache
 			tag.cValues = 1;
 			tag.aulPropTag[0] = ulPropTag;
 
-			auto hRes = WC_H_GETPROPS2(
+			auto hRes = WC_H_GETPROPS(
 				GetNamesFromIDs(lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL, &ulPropNames, &lppPropNames));
 			if (SUCCEEDED(hRes) && ulPropNames == 1 && lppPropNames && lppPropNames[0])
 			{
