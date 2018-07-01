@@ -10,11 +10,9 @@ namespace file
 		_In_ const std::wstring& lpszFilter,
 		_In_opt_ CWnd* pParentWnd)
 	{
-		auto hRes = S_OK;
-		auto iDlgRet = INT_PTR(IDOK);
 		CFileDialogExW dlgFilePicker;
-		EC_D_DIALOG(dlgFilePicker.DisplayDialog(true, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd));
-
+		auto iDlgRet =
+			EC_D_DIALOG(dlgFilePicker.DisplayDialog(true, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd));
 		if (iDlgRet == IDOK)
 		{
 			return dlgFilePicker.GetFileName();
@@ -30,12 +28,9 @@ namespace file
 		_In_ const std::wstring& lpszFilter,
 		_In_opt_ CWnd* pParentWnd)
 	{
-		auto hRes = S_OK;
-		auto iDlgRet = INT_PTR(IDOK);
 		CFileDialogExW dlgFilePicker;
-		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+		auto iDlgRet = EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			true, lpszDefExt, lpszFileName, dwFlags | OFN_ALLOWMULTISELECT, lpszFilter, pParentWnd));
-
 		if (iDlgRet == IDOK)
 		{
 			return dlgFilePicker.GetFileNames();
@@ -51,11 +46,9 @@ namespace file
 		_In_ const std::wstring& lpszFilter,
 		_In_opt_ CWnd* pParentWnd)
 	{
-		auto hRes = S_OK;
-		auto iDlgRet = INT_PTR(IDOK);
 		CFileDialogExW dlgFilePicker;
-		EC_D_DIALOG(dlgFilePicker.DisplayDialog(false, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd));
-
+		auto iDlgRet =
+			EC_D_DIALOG(dlgFilePicker.DisplayDialog(false, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd));
 		if (iDlgRet == IDOK)
 		{
 			return dlgFilePicker.GetFileName();
