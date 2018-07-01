@@ -229,7 +229,7 @@ namespace dialog
 				if (MAPI_W_ERRORS_RETURNED == hRes)
 				{
 					LPMAPIERROR lpErr = nullptr;
-					WC_MAPI(lpAB->GetLastError(hRes, fMapiUnicode, &lpErr));
+					hRes = WC_MAPI(lpAB->GetLastError(hRes, fMapiUnicode, &lpErr));
 					if (lpErr)
 					{
 						EC_MAPIERR(fMapiUnicode, lpErr);

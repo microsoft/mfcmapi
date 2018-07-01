@@ -375,7 +375,7 @@ namespace mapi
 							{
 								if (pTable) pTable->Release();
 								pTable = nullptr;
-								WC_MAPI(lpABContainer->GetContentsTable(fMapiUnicode, &pTable));
+								WC_MAPI_S(lpABContainer->GetContentsTable(fMapiUnicode, &pTable));
 								if (!pTable)
 								{
 									output::DebugPrint(

@@ -242,15 +242,14 @@ namespace dialog
 	_Check_return_ HRESULT
 	DisplayTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, ObjectType tType, _In_ dialog::CBaseDialog* lpHostDlg)
 	{
-		auto hRes = S_OK;
 		LPMAPITABLE lpTable = nullptr;
 
 		if (!lpHostDlg || !lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 		if (PT_OBJECT != PROP_TYPE(ulPropTag)) return MAPI_E_INVALID_TYPE;
 
-		WC_MAPI(lpMAPIProp->OpenProperty(
+		auto hRes = WC_MAPI(lpMAPIProp->OpenProperty(
 			ulPropTag, &IID_IMAPITable, fMapiUnicode, 0, reinterpret_cast<LPUNKNOWN*>(&lpTable)));
-		if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes)
+		if (hRes == MAPI_E_INTERFACE_NOT_SUPPORTED)
 		{
 			hRes = S_OK;
 			switch (PROP_ID(ulPropTag))

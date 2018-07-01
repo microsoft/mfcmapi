@@ -1663,23 +1663,21 @@ namespace dialog
 								szGUID.c_str());
 						}
 
-						WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, nullptr, 0, &lpProfSect));
+						hRes = WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, nullptr, 0, &lpProfSect));
 					}
 				}
 
 				if (!lpServiceUID || FAILED(hRes))
 				{
-					hRes = S_OK;
 					// For Outlook 2003/2007, HrEmsmdbUIDFromStore may not succeed,
 					// so use pbGlobalProfileSectionGuid instead
-					WC_MAPI(lpMAPISession->OpenProfileSection(
+					hRes = WC_MAPI(lpMAPISession->OpenProfileSection(
 						LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &lpProfSect));
 				}
 
 				if (lpProfSect)
 				{
-					hRes = S_OK;
-					WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_CONFIG_FLAGS, &lpConfigProp));
+					hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_CONFIG_FLAGS, &lpConfigProp));
 					if (SUCCEEDED(hRes) && PROP_TYPE(lpConfigProp->ulPropTag) != PT_ERROR)
 					{
 						if (fPrivateExchangeStore)
@@ -1705,12 +1703,11 @@ namespace dialog
 
 					if (fCached)
 					{
-						hRes = S_OK;
-						WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_W, &lpPathPropW));
+						hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_W, &lpPathPropW));
 						if (FAILED(hRes))
 						{
 							hRes = S_OK;
-							WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_A, &lpPathPropA));
+							hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_A, &lpPathPropA));
 						}
 
 						if (SUCCEEDED(hRes))
@@ -1735,8 +1732,7 @@ namespace dialog
 						// If this is an Exchange store with an OST path, it's an OST, so we get the mapping signature
 						if ((fPrivateExchangeStore || fPublicExchangeStore) && (wzPath || szPath))
 						{
-							hRes = S_OK;
-							WC_MAPI(HrGetOneProp(lpProfSect, PR_MAPPING_SIGNATURE, &lpMappingSig));
+							hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_MAPPING_SIGNATURE, &lpMappingSig));
 						}
 					}
 				}

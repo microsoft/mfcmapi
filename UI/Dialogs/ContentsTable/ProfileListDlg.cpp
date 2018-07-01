@@ -524,7 +524,7 @@ namespace dialog
 		{
 			const auto szNewProfile = strings::wstringTostring(MyData.GetStringW(0));
 
-			WC_MAPI(mapi::profile::HrCopyProfile(szOldProfile, szNewProfile));
+			WC_MAPI_S(mapi::profile::HrCopyProfile(szOldProfile, szNewProfile));
 
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}

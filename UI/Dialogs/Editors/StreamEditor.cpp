@@ -254,7 +254,7 @@ namespace dialog
 			{
 				const auto ulStgFlags = STGM_READ;
 				const auto ulFlags = NULL;
-				WC_MAPI(m_lpMAPIProp->OpenProperty(
+				hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
 					m_ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 
 				// If we're guessing types, try again as a different type
@@ -282,7 +282,7 @@ namespace dialog
 							L"Retrying as 0x%X (= %ws)\n",
 							m_ulPropTag,
 							interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str());
-						WC_MAPI(m_lpMAPIProp->OpenProperty(
+						hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
 							ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 						if (SUCCEEDED(hRes))
 						{
@@ -294,8 +294,7 @@ namespace dialog
 				// It's possible our stream was actually an docfile - give it a try
 				if (FAILED(hRes))
 				{
-					hRes = S_OK;
-					WC_MAPI(m_lpMAPIProp->OpenProperty(
+					hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
 						CHANGE_PROP_TYPE(m_ulPropTag, PT_OBJECT),
 						&IID_IStreamDocfile,
 						ulStgFlags,

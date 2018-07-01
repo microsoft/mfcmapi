@@ -51,9 +51,7 @@ namespace dialog
 		if (m_lpAttach) m_lpAttach->Release();
 		if (m_lpMessage)
 		{
-			auto hRes = S_OK;
-
-			WC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+			WC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 			m_lpMessage->Release();
 		}
 	}
@@ -112,14 +110,12 @@ namespace dialog
 
 	_Check_return_ LPATTACH CAttachmentsDlg::OpenAttach(ULONG ulAttachNum) const
 	{
-		auto hRes = S_OK;
 		LPATTACH lpAttach = nullptr;
 
-		WC_MAPI(m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_MODIFY, &lpAttach));
-		if (MAPI_E_NO_ACCESS == hRes)
+		auto hRes = WC_MAPI(m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_MODIFY, &lpAttach));
+		if (hRes == MAPI_E_NO_ACCESS)
 		{
-			hRes = S_OK;
-			WC_MAPI(m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_BEST_ACCESS, &lpAttach));
+			WC_MAPI_S(m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_BEST_ACCESS, &lpAttach));
 		}
 
 		return lpAttach;
@@ -128,10 +124,9 @@ namespace dialog
 	_Check_return_ LPMESSAGE CAttachmentsDlg::OpenEmbeddedMessage() const
 	{
 		if (!m_lpAttach) return nullptr;
-		auto hRes = S_OK;
 
 		LPMESSAGE lpMessage = nullptr;
-		WC_MAPI(m_lpAttach->OpenProperty(
+		auto hRes = WC_MAPI(m_lpAttach->OpenProperty(
 			PR_ATTACH_DATA_OBJ,
 			const_cast<LPIID>(&IID_IMessage),
 			0,
@@ -139,8 +134,7 @@ namespace dialog
 			reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
 		if (hRes == MAPI_E_NO_ACCESS)
 		{
-			hRes = S_OK;
-			WC_MAPI(m_lpAttach->OpenProperty(
+			hRes = WC_MAPI(m_lpAttach->OpenProperty(
 				PR_ATTACH_DATA_OBJ,
 				const_cast<LPIID>(&IID_IMessage),
 				0,

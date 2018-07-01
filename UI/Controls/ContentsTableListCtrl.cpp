@@ -598,10 +598,11 @@ namespace controls
 						output::DebugPrintEx(DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
 						output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
 
-						CHECKABORT(WC_MAPI(
-							lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL)));
+						CHECKABORT(
+							hRes = WC_MAPI(
+								lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL)));
 
-						if (MAPI_E_NOT_FOUND != hRes) // MAPI_E_NOT_FOUND signals we didn't find any more rows.
+						if (hRes != MAPI_E_NOT_FOUND) // MAPI_E_NOT_FOUND signals we didn't find any more rows.
 						{
 							CHECKABORT(EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows)));
 						}
@@ -1361,8 +1362,6 @@ namespace controls
 
 		void CContentsTableListCtrl::NotificationOn()
 		{
-			auto hRes = S_OK;
-
 			if (m_lpAdviseSink || !m_lpContentsTable) return;
 
 			output::DebugPrintEx(
@@ -1372,7 +1371,7 @@ namespace controls
 
 			if (m_lpAdviseSink)
 			{
-				WC_MAPI(m_lpContentsTable->Advise(
+				auto hRes = WC_MAPI(m_lpContentsTable->Advise(
 					fnevTableModified, static_cast<IMAPIAdviseSink*>(m_lpAdviseSink), &m_ulAdviseConnection));
 				if (hRes == MAPI_E_NO_SUPPORT) // Some tables don't support this!
 				{

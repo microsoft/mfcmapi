@@ -146,8 +146,6 @@ namespace dialog
 
 	void CHierarchyTableDlg::OnEditSearchCriteria()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		// Find the highlighted item
@@ -165,8 +163,8 @@ namespace dialog
 			LPENTRYLIST lpEntryList = nullptr;
 			ULONG ulSearchState = 0;
 
-			WC_MAPI(lpMAPIFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
-			if (MAPI_E_NOT_INITIALIZED == hRes)
+			auto hRes = WC_MAPI(lpMAPIFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
+			if (hRes == MAPI_E_NOT_INITIALIZED)
 			{
 				output::DebugPrint(DBGGeneric, L"No search criteria has been set on this folder.\n");
 				hRes = S_OK;

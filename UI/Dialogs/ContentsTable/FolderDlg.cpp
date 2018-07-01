@@ -1078,9 +1078,7 @@ namespace dialog
 		{
 			// Before we open the message, make sure the MAPI Form Manager is implemented
 			LPMAPIFORMMGR lpFormMgr = nullptr;
-			WC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
-			hRes = S_OK; // Ditch the error if we got one
-
+			WC_MAPI_S(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
 			if (lpFormMgr)
 			{
 				EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
@@ -1115,8 +1113,7 @@ namespace dialog
 		{
 			// Before we open the message, make sure the MAPI Form Manager is implemented
 			LPMAPIFORMMGR lpFormMgr = nullptr;
-			WC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
-			hRes = S_OK; // Ditch the error if we got one
+			WC_MAPI_S(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
 
 			if (lpFormMgr)
 			{

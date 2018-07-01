@@ -101,7 +101,7 @@ namespace dialog
 		if (m_lpFormContainer)
 		{
 			LPSMAPIFORMINFOARRAY lpMAPIFormInfoArray = nullptr;
-			WC_MAPI(m_lpFormContainer->ResolveMultipleMessageClasses(nullptr, NULL, &lpMAPIFormInfoArray));
+			WC_MAPI_S(m_lpFormContainer->ResolveMultipleMessageClasses(nullptr, NULL, &lpMAPIFormInfoArray));
 			if (lpMAPIFormInfoArray)
 			{
 				for (ULONG i = 0; i < lpMAPIFormInfoArray->cForms; i++)
@@ -113,6 +113,7 @@ namespace dialog
 						m_lpContentsTableListCtrl->SetUIColumns(lpTagArray);
 						MAPIFreeBuffer(lpTagArray);
 					}
+
 					if (lpMAPIFormInfoArray->aFormInfo[i])
 					{
 						ULONG ulPropVals = NULL;
@@ -234,7 +235,6 @@ namespace dialog
 				auto hwnd = ulFlags & MAPIFORM_INSTALL_DIALOG ? m_hWnd : nullptr;
 				for (auto& lpszPath : files)
 				{
-					hRes = S_OK;
 					output::DebugPrintEx(
 						DBGForms,
 						CLASS,
@@ -243,14 +243,14 @@ namespace dialog
 						hwnd,
 						ulFlags,
 						lpszPath.c_str()); // STRING_OK
-					WC_MAPI(m_lpFormContainer->InstallForm(
+					hRes = WC_MAPI(m_lpFormContainer->InstallForm(
 						reinterpret_cast<ULONG_PTR>(hwnd),
 						ulFlags,
 						LPCTSTR(strings::wstringTostring(lpszPath).c_str())));
-					if (MAPI_E_EXTENDED_ERROR == hRes)
+					if (hRes == MAPI_E_EXTENDED_ERROR)
 					{
 						LPMAPIERROR lpErr = nullptr;
-						WC_MAPI(m_lpFormContainer->GetLastError(hRes, fMapiUnicode, &lpErr));
+						hRes = WC_MAPI(m_lpFormContainer->GetLastError(hRes, fMapiUnicode, &lpErr));
 						if (lpErr)
 						{
 							EC_MAPIERR(fMapiUnicode, lpErr);

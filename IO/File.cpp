@@ -479,10 +479,10 @@ namespace file
 			PR_SUBJECT_W, restrictString, FL_SUBSTRING | FL_IGNORECASE, nullptr, &lpRes));
 
 		LPMAPITABLE lpTable = nullptr;
-		WC_MAPI(lpFolder->GetContentsTable(MAPI_DEFERRED_ERRORS | MAPI_UNICODE, &lpTable));
+		hRes = WC_MAPI(lpFolder->GetContentsTable(MAPI_DEFERRED_ERRORS | MAPI_UNICODE, &lpTable));
 		if (lpTable)
 		{
-			WC_MAPI(lpTable->Restrict(lpRes, 0));
+			hRes = WC_MAPI(lpTable->Restrict(lpRes, 0));
 			if (SUCCEEDED(hRes))
 			{
 				enum
@@ -496,17 +496,16 @@ namespace file
 				static const SizedSPropTagArray(fldNUM_COLS, fldCols) = {fldNUM_COLS,
 																		 {PR_ENTRYID, PR_SUBJECT_W, PR_RECORD_KEY}};
 
-				WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&fldCols), TBL_ASYNC));
+				hRes = WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&fldCols), TBL_ASYNC));
 
 				// Export messages in the rows
 				LPSRowSet lpRows = nullptr;
-				if (!FAILED(hRes))
+				if (SUCCEEDED(hRes))
 					for (;;)
 					{
-						hRes = S_OK;
 						if (lpRows) FreeProws(lpRows);
 						lpRows = nullptr;
-						WC_MAPI(lpTable->QueryRows(50, NULL, &lpRows));
+						WC_MAPI_S(lpTable->QueryRows(50, NULL, &lpRows));
 						if (FAILED(hRes) || !lpRows || !lpRows->cRows) break;
 
 						for (ULONG i = 0; i < lpRows->cRows; i++)
@@ -1048,14 +1047,13 @@ namespace file
 
 	_Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_ const std::wstring& szFileName)
 	{
-		auto hRes = S_OK;
 		LPSTREAM pStrmSrc = nullptr;
 
 		if (!lpAttach || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 		// Open the property of the attachment
 		// containing the file data
-		WC_MAPI(lpAttach->OpenProperty(
+		auto hRes = WC_MAPI(lpAttach->OpenProperty(
 			PR_ATTACH_DATA_BIN,
 			const_cast<LPIID>(&IID_IStream),
 			0,
@@ -1093,7 +1091,7 @@ namespace file
 
 		// Open the property of the attachment containing the OLE data
 		// Try to get it as an IStreamDocFile file first as that will be faster
-		WC_MAPI(lpAttach->OpenProperty(
+		hRes = WC_MAPI(lpAttach->OpenProperty(
 			PR_ATTACH_DATA_OBJ,
 			const_cast<LPIID>(&IID_IStreamDocfile),
 			0,

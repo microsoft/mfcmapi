@@ -69,45 +69,45 @@ namespace mapi
 		if (lpMDB)
 		{
 			output::DebugPrint(DBGGeneric, L"CallOpenEntry: Calling OpenEntry on MDB with ulFlags = 0x%X\n", ulFlags);
-			WC_MAPI(lpMDB->OpenEntry(cbEntryID, lpEntryID, lpInterface, ulFlags, &ulObjType, &lpUnk));
+			hRes = WC_MAPI(lpMDB->OpenEntry(cbEntryID, lpEntryID, lpInterface, ulFlags, &ulObjType, &lpUnk));
 			if (MAPI_E_UNKNOWN_FLAGS == hRes && ulNoCacheFlags)
 			{
 				output::DebugPrint(
 					DBGGeneric,
 					L"CallOpenEntry 2nd attempt: Calling OpenEntry on MDB with ulFlags = 0x%X\n",
 					ulNoCacheFlags);
-				hRes = S_OK;
 				if (lpUnk) lpUnk->Release();
 				lpUnk = nullptr;
-				WC_MAPI(lpMDB->OpenEntry(cbEntryID, lpEntryID, lpInterface, ulNoCacheFlags, &ulObjType, &lpUnk));
+				hRes = WC_MAPI(lpMDB->OpenEntry(cbEntryID, lpEntryID, lpInterface, ulNoCacheFlags, &ulObjType, &lpUnk));
 			}
+
 			if (FAILED(hRes))
 			{
 				if (lpUnk) lpUnk->Release();
 				lpUnk = nullptr;
 			}
 		}
+
 		if (lpAB && !lpUnk)
 		{
-			hRes = S_OK;
 			output::DebugPrint(DBGGeneric, L"CallOpenEntry: Calling OpenEntry on AB with ulFlags = 0x%X\n", ulFlags);
-			WC_MAPI(lpAB->OpenEntry(
+			hRes = WC_MAPI(lpAB->OpenEntry(
 				cbEntryID,
 				lpEntryID,
 				nullptr, // no interface
 				ulFlags,
 				&ulObjType,
 				&lpUnk));
-			if (MAPI_E_UNKNOWN_FLAGS == hRes && ulNoCacheFlags)
+			if (hRes == MAPI_E_UNKNOWN_FLAGS && ulNoCacheFlags)
 			{
 				output::DebugPrint(
 					DBGGeneric,
 					L"CallOpenEntry 2nd attempt: Calling OpenEntry on AB with ulFlags = 0x%X\n",
 					ulNoCacheFlags);
-				hRes = S_OK;
+
 				if (lpUnk) lpUnk->Release();
 				lpUnk = nullptr;
-				WC_MAPI(lpAB->OpenEntry(
+				hRes = WC_MAPI(lpAB->OpenEntry(
 					cbEntryID,
 					lpEntryID,
 					nullptr, // no interface
@@ -115,6 +115,7 @@ namespace mapi
 					&ulObjType,
 					&lpUnk));
 			}
+
 			if (FAILED(hRes))
 			{
 				if (lpUnk) lpUnk->Release();
@@ -124,21 +125,22 @@ namespace mapi
 
 		if (lpContainer && !lpUnk)
 		{
-			hRes = S_OK;
 			output::DebugPrint(
 				DBGGeneric, L"CallOpenEntry: Calling OpenEntry on Container with ulFlags = 0x%X\n", ulFlags);
-			WC_MAPI(lpContainer->OpenEntry(cbEntryID, lpEntryID, lpInterface, ulFlags, &ulObjType, &lpUnk));
-			if (MAPI_E_UNKNOWN_FLAGS == hRes && ulNoCacheFlags)
+			hRes = WC_MAPI(lpContainer->OpenEntry(cbEntryID, lpEntryID, lpInterface, ulFlags, &ulObjType, &lpUnk));
+			if (hRes == MAPI_E_UNKNOWN_FLAGS && ulNoCacheFlags)
 			{
 				output::DebugPrint(
 					DBGGeneric,
 					L"CallOpenEntry 2nd attempt: Calling OpenEntry on Container with ulFlags = 0x%X\n",
 					ulNoCacheFlags);
-				hRes = S_OK;
+
 				if (lpUnk) lpUnk->Release();
 				lpUnk = nullptr;
-				WC_MAPI(lpContainer->OpenEntry(cbEntryID, lpEntryID, lpInterface, ulNoCacheFlags, &ulObjType, &lpUnk));
+				hRes = WC_MAPI(
+					lpContainer->OpenEntry(cbEntryID, lpEntryID, lpInterface, ulNoCacheFlags, &ulObjType, &lpUnk));
 			}
+
 			if (FAILED(hRes))
 			{
 				if (lpUnk) lpUnk->Release();
@@ -148,22 +150,22 @@ namespace mapi
 
 		if (lpMAPISession && !lpUnk)
 		{
-			hRes = S_OK;
 			output::DebugPrint(
 				DBGGeneric, L"CallOpenEntry: Calling OpenEntry on Session with ulFlags = 0x%X\n", ulFlags);
-			WC_MAPI(lpMAPISession->OpenEntry(cbEntryID, lpEntryID, lpInterface, ulFlags, &ulObjType, &lpUnk));
-			if (MAPI_E_UNKNOWN_FLAGS == hRes && ulNoCacheFlags)
+			hRes = WC_MAPI(lpMAPISession->OpenEntry(cbEntryID, lpEntryID, lpInterface, ulFlags, &ulObjType, &lpUnk));
+			if (hRes == MAPI_E_UNKNOWN_FLAGS && ulNoCacheFlags)
 			{
 				output::DebugPrint(
 					DBGGeneric,
 					L"CallOpenEntry 2nd attempt: Calling OpenEntry on Session with ulFlags = 0x%X\n",
 					ulNoCacheFlags);
-				hRes = S_OK;
+
 				if (lpUnk) lpUnk->Release();
 				lpUnk = nullptr;
-				WC_MAPI(
+				hRes = WC_MAPI(
 					lpMAPISession->OpenEntry(cbEntryID, lpEntryID, lpInterface, ulNoCacheFlags, &ulObjType, &lpUnk));
 			}
+
 			if (FAILED(hRes))
 			{
 				if (lpUnk) lpUnk->Release();
@@ -947,13 +949,12 @@ namespace mapi
 	// See list of types (like MAPI_FOLDER) in mapidefs.h
 	_Check_return_ ULONG GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp)
 	{
-		auto hRes = S_OK;
 		ULONG ulObjType = 0;
 		LPSPropValue lpProp = nullptr;
 
 		if (!lpMAPIProp) return 0; // 0's not a valid Object type
 
-		WC_MAPI(HrGetOneProp(lpMAPIProp, PR_OBJECT_TYPE, &lpProp));
+		WC_MAPI_S(HrGetOneProp(lpMAPIProp, PR_OBJECT_TYPE, &lpProp));
 
 		if (lpProp) ulObjType = lpProp->Value.ul;
 
@@ -1044,7 +1045,8 @@ namespace mapi
 		static const SizedSPropTagArray(NUM_COLS, sptaSrcFolder) = {NUM_COLS, {PR_PARENT_ENTRYID}};
 
 		// Get PR_PARENT_ENTRYID
-		auto hRes = EC_H_GETPROPS(lpChildFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
+		auto hRes =
+			EC_H_GETPROPS(lpChildFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
 
 		if (lpProps && PT_ERROR != PROP_TYPE(lpProps[PARENTEID].ulPropTag))
 		{
@@ -1080,7 +1082,7 @@ namespace mapi
 		if (registry::RegKeys[registry::regkeyUSE_GETPROPLIST].ulCurDWORD)
 		{
 			output::DebugPrint(DBGGeneric, L"GetPropsNULL: Calling GetPropList\n");
-			WC_MAPI(lpMAPIProp->GetPropList(ulFlags, &lpTags));
+			hRes = WC_MAPI(lpMAPIProp->GetPropList(ulFlags, &lpTags));
 
 			if (MAPI_E_BAD_CHARWIDTH == hRes)
 			{
@@ -1209,7 +1211,6 @@ namespace mapi
 		if (!lpFolder) return MAPI_E_INVALID_PARAMETER;
 
 		LPSRowSet pRows = nullptr;
-		auto hRes = S_OK;
 		ULONG iItemCount = 0;
 		LPMAPITABLE lpContentsTable = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -1223,7 +1224,7 @@ namespace mapi
 		static const SizedSPropTagArray(eidNUM_COLS, eidCols) = {eidNUM_COLS, {PR_ENTRYID}};
 
 		// Get the table of contents of the folder
-		WC_MAPI(lpFolder->GetContentsTable(bAssoc ? MAPI_ASSOCIATED : NULL, &lpContentsTable));
+		auto hRes = WC_MAPI(lpFolder->GetContentsTable(bAssoc ? MAPI_ASSOCIATED : NULL, &lpContentsTable));
 
 		if (SUCCEEDED(hRes) && lpContentsTable)
 		{
@@ -1253,7 +1254,7 @@ namespace mapi
 							ENTRYLIST eid = {0};
 							eid.cValues = 1;
 							eid.lpbin = &pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin;
-							WC_MAPI(
+							hRes = WC_MAPI(
 								lpFolder->DeleteMessages(&eid, NULL, nullptr, bHardDelete ? DELETE_HARD_DELETE : NULL));
 							if (SUCCEEDED(hRes)) iItemCount++;
 						}
@@ -1351,7 +1352,7 @@ namespace mapi
 				pTag.cValues = 1;
 				pTag.aulPropTag[0] = CHANGE_PROP_TYPE(lpTags->aulPropTag[ulNumOneOffIDs - 1], PT_LONG);
 
-				WC_MAPI(lpMessage->GetProps(&pTag, fMapiUnicode, &cProp, &lpCustomFlag));
+				hRes = WC_MAPI(lpMessage->GetProps(&pTag, fMapiUnicode, &cProp, &lpCustomFlag));
 				if (SUCCEEDED(hRes) && 1 == cProp && lpCustomFlag && PT_LONG == PROP_TYPE(lpCustomFlag->ulPropTag))
 				{
 					LPSPropProblemArray lpProbArray2 = nullptr;
@@ -1595,10 +1596,9 @@ namespace mapi
 						if (!lpsMessageTags) continue;
 
 						output::DebugPrint(DBGGeneric, L"Copying properties to new message.\n");
-						if (!FAILED(hRes))
+						if (SUCCEEDED(hRes))
 							for (ULONG ulProp = 0; ulProp < lpsMessageTags->cValues; ulProp++)
 							{
-								hRes = S_OK;
 								// it would probably be quicker to use this loop to construct an array of properties
 								// we desire to copy, and then pass that array to GetProps and then SetProps
 								if (FIsTransmittable(lpsMessageTags->aulPropTag[ulProp]))
@@ -1606,10 +1606,13 @@ namespace mapi
 									LPSPropValue lpProp = nullptr;
 									output::DebugPrint(
 										DBGGeneric, L"Copying 0x%08X\n", lpsMessageTags->aulPropTag[ulProp]);
-									WC_MAPI(HrGetOnePropEx(
+									hRes = WC_MAPI(HrGetOnePropEx(
 										lpAttachMsg, lpsMessageTags->aulPropTag[ulProp], fMapiUnicode, &lpProp));
 
-									WC_MAPI(HrSetOneProp(lpNewMessage, lpProp));
+									if (SUCCEEDED(hRes))
+									{
+										hRes = WC_MAPI(HrSetOneProp(lpNewMessage, lpProp));
+									}
 
 									MAPIFreeBuffer(lpProp);
 								}
@@ -1871,7 +1874,7 @@ namespace mapi
 
 		if (!bUseWrapEx)
 		{
-			WC_MAPI(WrapCompressedRTFStream(lpCompressedRTFStream, ulFlags, lpUncompressedRTFStream));
+			hRes = WC_MAPI(WrapCompressedRTFStream(lpCompressedRTFStream, ulFlags, lpUncompressedRTFStream));
 		}
 		else
 		{
@@ -1885,7 +1888,8 @@ namespace mapi
 			wcsinfo.ulInCodePage = ulInCodePage; // Get ulCodePage from PR_INTERNET_CPID on the IMessage
 			wcsinfo.ulOutCodePage = ulOutCodePage; // Desired code page for return
 
-			WC_MAPI(WrapCompressedRTFStreamEx(lpCompressedRTFStream, &wcsinfo, lpUncompressedRTFStream, &retinfo));
+			hRes =
+				WC_MAPI(WrapCompressedRTFStreamEx(lpCompressedRTFStream, &wcsinfo, lpUncompressedRTFStream, &retinfo));
 			if (pulStreamFlags) *pulStreamFlags = retinfo.ulStreamFlags;
 		}
 
@@ -1943,12 +1947,11 @@ namespace mapi
 	{
 		if (!lpSource || !lpPropSetGUID || lpOutArray) return MAPI_E_INVALID_PARAMETER;
 
-		auto hRes = S_OK;
 		LPSPropTagArray lpAllProps = nullptr;
 
 		*lpOutArray = nullptr;
 
-		WC_MAPI(lpSource->GetPropList(0, &lpAllProps));
+		auto hRes = WC_MAPI(lpSource->GetPropList(0, &lpAllProps));
 
 		if (hRes == S_OK && lpAllProps)
 		{
@@ -2233,10 +2236,9 @@ namespace mapi
 	GetEntryIDFromMDB(LPMDB lpMDB, ULONG ulPropTag, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid)
 	{
 		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
-		auto hRes = S_OK;
 		LPSPropValue lpEIDProp = nullptr;
 
-		WC_MAPI(HrGetOneProp(lpMDB, ulPropTag, &lpEIDProp));
+		auto hRes = WC_MAPI(HrGetOneProp(lpMDB, ulPropTag, &lpEIDProp));
 
 		if (SUCCEEDED(hRes) && lpEIDProp)
 		{
@@ -2268,7 +2270,7 @@ namespace mapi
 		if (SUCCEEDED(hRes) && lpInbox)
 		{
 			LPSPropValue lpEIDProp = nullptr;
-			WC_MAPI(HrGetOneProp(lpInbox, ulPropTag, &lpEIDProp));
+			hRes = WC_MAPI(HrGetOneProp(lpInbox, ulPropTag, &lpEIDProp));
 			if (SUCCEEDED(hRes) && lpEIDProp && PT_MV_BINARY == PROP_TYPE(lpEIDProp->ulPropTag) &&
 				ulIndex < lpEIDProp->Value.MVbin.cValues && lpEIDProp->Value.MVbin.lpbin[ulIndex].cb > 0)
 			{
@@ -2410,7 +2412,6 @@ namespace mapi
 
 	std::wstring GetTitle(LPMAPIPROP lpMAPIProp)
 	{
-		auto hRes = S_OK;
 		std::wstring szTitle;
 		LPSPropValue lpProp = nullptr;
 		auto bFoundName = false;
@@ -2420,8 +2421,7 @@ namespace mapi
 		// Get a property for the title bar
 		for (ULONG i = 0; !bFoundName && i < _countof(g_DisplayNameProps); i++)
 		{
-			hRes = S_OK;
-			WC_MAPI(HrGetOneProp(lpMAPIProp, g_DisplayNameProps[i], &lpProp));
+			WC_MAPI_S(HrGetOneProp(lpMAPIProp, g_DisplayNameProps[i], &lpProp));
 
 			if (lpProp)
 			{
@@ -2555,7 +2555,7 @@ namespace mapi
 
 		if (hRes == S_OK)
 		{
-			WC_MAPI(lpSource->CopyTo(
+			hRes = WC_MAPI(lpSource->CopyTo(
 				0,
 				nullptr,
 				lpExcludedTags,
@@ -2608,10 +2608,9 @@ namespace mapi
 
 	void ForceRop(_In_ LPMDB lpMDB)
 	{
-		auto hRes = S_OK;
 		LPSPropValue lpProp = nullptr;
 		// Try to trigger a rop to get notifications going
-		WC_MAPI(HrGetOneProp(lpMDB, PR_TEST_LINE_SPEED, &lpProp));
+		WC_MAPI_S(HrGetOneProp(lpMDB, PR_TEST_LINE_SPEED, &lpProp));
 		// No need to worry about errors here - this is just to force rops
 		MAPIFreeBuffer(lpProp);
 	}
@@ -2643,7 +2642,7 @@ namespace mapi
 			// need to get the data as a stream
 			LPSTREAM lpStream = nullptr;
 
-			WC_MAPI(lpMAPIProp->OpenProperty(
+			hRes = WC_MAPI(lpMAPIProp->OpenProperty(
 				ulPropTag, &IID_IStream, STGM_READ, 0, reinterpret_cast<LPUNKNOWN*>(&lpStream)));
 			if (SUCCEEDED(hRes) && lpStream)
 			{
@@ -2881,7 +2880,7 @@ namespace mapi
 			case RES_PROPERTY:
 				if (lpResSrc[i].res.resContent.lpProp)
 				{
-					WC_MAPI(HrDupPropset(
+					hRes = WC_MAPI(HrDupPropset(
 						1, lpResSrc[i].res.resContent.lpProp, lpObject, &lpResDest[i].res.resContent.lpProp));
 					if (FAILED(hRes)) break;
 				}
@@ -2922,7 +2921,7 @@ namespace mapi
 
 				if (lpResSrc[i].res.resComment.cValues && lpResSrc[i].res.resComment.lpProp)
 				{
-					WC_MAPI(mapi::HrDupPropset(
+					hRes = WC_MAPI(mapi::HrDupPropset(
 						lpResSrc[i].res.resComment.cValues,
 						lpResSrc[i].res.resComment.lpProp,
 						lpObject,
@@ -3082,7 +3081,7 @@ namespace mapi
 						// Copy the rgPropVals.
 						for (ULONG j = 0; j < lpActSrc->lpadrlist->cEntries; j++)
 						{
-							WC_MAPI(HrDupPropset(
+							hRes = WC_MAPI(HrDupPropset(
 								lpActDst->lpadrlist->aEntries[j].cValues,
 								lpActSrc->lpadrlist->aEntries[j].rgPropVals,
 								lpObject,
@@ -3155,8 +3154,10 @@ namespace mapi
 			break;
 		}
 		default:
-			WC_MAPI(PropCopyMore(lpSPropValueDest, const_cast<LPSPropValue>(lpSPropValueSrc), lpfAllocMore, lpvObject));
+			hRes = WC_MAPI(
+				PropCopyMore(lpSPropValueDest, const_cast<LPSPropValue>(lpSPropValueSrc), lpfAllocMore, lpvObject));
 		}
+
 		return hRes;
 	}
 

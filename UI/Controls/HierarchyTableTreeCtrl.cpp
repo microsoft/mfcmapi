@@ -418,7 +418,7 @@ namespace controls
 
 				// on the AB, something about this call triggers table reloads on the parent hierarchy table
 				// no idea why they're triggered - doesn't happen for all AB providers
-				WC_MAPI(lpMAPIContainer->GetHierarchyTable(
+				hRes = WC_MAPI(lpMAPIContainer->GetHierarchyTable(
 					(m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | fMapiUnicode, &lpHierarchyTable));
 
 				if (lpHierarchyTable)
@@ -448,7 +448,7 @@ namespace controls
 
 				if (lpData->Node()->m_lpAdviseSink)
 				{
-					WC_MAPI(lpData->Node()->m_lpHierarchyTable->Advise(
+					hRes = WC_MAPI(lpData->Node()->m_lpHierarchyTable->Advise(
 						fnevTableModified,
 						static_cast<IMAPIAdviseSink*>(lpData->Node()->m_lpAdviseSink),
 						&lpData->Node()->m_ulAdviseConnection));
@@ -563,7 +563,7 @@ namespace controls
 						lpDispInfo->item.cChildren = 1;
 						auto hRes = S_OK;
 						ULONG ulRowCount = NULL;
-						WC_MAPI(lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
+						hRes = WC_MAPI(lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
 						if (hRes == S_OK && !ulRowCount)
 						{
 							lpDispInfo->item.cChildren = 0;
@@ -1086,7 +1086,7 @@ namespace controls
 			SRow NewRow = {0};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-			WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
+			hRes = WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 			AddNode(&NewRow, hParent, true);
 		}
 		else
@@ -1176,7 +1176,7 @@ namespace controls
 			SRow NewRow = {0};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-			WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
+			hRes = WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 			auto lpData = new sortlistdata::SortListData();
 			if (lpData)
 			{
@@ -1229,7 +1229,7 @@ namespace controls
 				if (lpData->Node()->m_lpHierarchyTable)
 				{
 					ULONG ulRowCount = NULL;
-					WC_MAPI(lpData->Node()->m_lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
+					hRes = WC_MAPI(lpData->Node()->m_lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
 					if (S_OK != hRes || ulRowCount)
 					{
 						hRes = EC_B(Expand(hRefreshItem, TVE_EXPAND));

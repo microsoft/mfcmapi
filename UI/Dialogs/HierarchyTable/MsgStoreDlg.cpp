@@ -480,7 +480,7 @@ namespace dialog
 				if (MyData.GetCheck(2)) ulCopyFlags |= FOLDER_MOVE;
 				if (lpProgress) ulCopyFlags |= FOLDER_DIALOG;
 
-				WC_MAPI(lpCopyRoot->CopyFolder(
+				hRes = WC_MAPI(lpCopyRoot->CopyFolder(
 					lpProps[EID].Value.bin.cb,
 					reinterpret_cast<LPENTRYID>(lpProps[EID].Value.bin.lpb),
 					&IID_IMAPIFolder,
@@ -1030,7 +1030,7 @@ namespace dialog
 
 				if (lpProgress) ulCopyFlags |= FOLDER_DIALOG;
 
-				WC_MAPI(lpSrcParentFolder->CopyFolder(
+				hRes = WC_MAPI(lpSrcParentFolder->CopyFolder(
 					lpProps[EID].Value.bin.cb,
 					reinterpret_cast<LPENTRYID>(lpProps[EID].Value.bin.lpb),
 					&IID_IMAPIFolder,

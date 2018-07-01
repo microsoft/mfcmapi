@@ -254,7 +254,6 @@ namespace dialog
 
 	void CMsgServiceTableDlg::OnDeleteSelectedItem()
 	{
-		auto hRes = S_OK;
 		if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl) return;
 
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
@@ -273,7 +272,7 @@ namespace dialog
 			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)
 			{
-				WC_MAPI(m_lpServiceAdmin->DeleteMsgService(reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb)));
+				WC_MAPI_S(m_lpServiceAdmin->DeleteMsgService(reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb)));
 			}
 		}
 

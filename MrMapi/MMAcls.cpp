@@ -4,7 +4,6 @@
 
 void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
 {
-	auto hRes = S_OK;
 	LPEXCHANGEMODIFYTABLE lpExchTbl = nullptr;
 	LPMAPITABLE lpTbl = nullptr;
 

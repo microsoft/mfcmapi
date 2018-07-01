@@ -298,7 +298,7 @@ namespace mapi
 			if (FAILED(hRes))
 			{
 				LPMAPIERROR lpErr = nullptr;
-				WC_MAPI(m_lpPersistMessage->GetLastError(hRes, fMapiUnicode, &lpErr));
+				hRes = WC_MAPI(m_lpPersistMessage->GetLastError(hRes, fMapiUnicode, &lpErr));
 				if (lpErr)
 				{
 					EC_MAPIERR(fMapiUnicode, lpErr);
@@ -326,7 +326,7 @@ namespace mapi
 			if (FAILED(hRes))
 			{
 				LPMAPIERROR lpErr = nullptr;
-				WC_MAPI(m_lpPersistMessage->GetLastError(hRes, fMapiUnicode, &lpErr));
+				hRes = WC_MAPI(m_lpPersistMessage->GetLastError(hRes, fMapiUnicode, &lpErr));
 				if (lpErr)
 				{
 					EC_MAPIERR(fMapiUnicode, lpErr);
@@ -468,7 +468,7 @@ namespace mapi
 				WC_H(SetPersist(lpMapiForm, nullptr));
 			}
 
-			WC_MAPI(lpMapiForm->DoVerb(
+			hRes = WC_MAPI(lpMapiForm->DoVerb(
 				lVerb,
 				nullptr, // view context
 				reinterpret_cast<ULONG_PTR>(m_hwndParent), // parent window
@@ -552,7 +552,7 @@ namespace mapi
 							ulMessageStatus,
 							lpspvaShow[ePR_MESSAGE_FLAGS].Value.ul);
 
-						WC_MAPI(m_lpMapiFormAdviseSink->OnActivateNext(
+						hRes = WC_MAPI(m_lpMapiFormAdviseSink->OnActivateNext(
 							lpspvaShow[ePR_MESSAGE_CLASS_A].Value.lpszA,
 							ulMessageStatus, // message status
 							lpspvaShow[ePR_MESSAGE_FLAGS].Value.ul, // message flags

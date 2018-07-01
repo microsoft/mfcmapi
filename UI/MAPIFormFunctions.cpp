@@ -180,7 +180,7 @@ namespace mapi
 					{
 						EC_MAPI(lpMAPIFormViewer->CallDoVerb(lpForm, lVerb, lpRect));
 						// Fix for unknown typed freedocs.
-						WC_MAPI(lpForm->GetViewContext(&lpViewContextTemp));
+						hRes = WC_MAPI(lpForm->GetViewContext(&lpViewContextTemp));
 						if (SUCCEEDED(hRes))
 						{
 							if (lpViewContextTemp)
@@ -191,7 +191,7 @@ namespace mapi
 							else
 							{
 								// If the pointer came back NULL, then we need to call ShutdownForm but don't release.
-								WC_MAPI(lpForm->ShutdownForm(SAVEOPTS_NOSAVE));
+								hRes = WC_MAPI(lpForm->ShutdownForm(SAVEOPTS_NOSAVE));
 							}
 						}
 						else

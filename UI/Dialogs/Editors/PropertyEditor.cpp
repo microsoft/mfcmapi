@@ -36,7 +36,7 @@ namespace dialog
 					PT_ERROR == PROP_TYPE(ulPropTag) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
 				ULONG ulValues = NULL;
 
-				WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
+				hRes = WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
 
 				// Suppress MAPI_E_NOT_FOUND error when the source type is non error
 				if (sourceProp && PT_ERROR == PROP_TYPE(sourceProp->ulPropTag) &&

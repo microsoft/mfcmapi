@@ -25,29 +25,26 @@ namespace mapi
 		{
 			if (!lpSession || !lpMDB || !lpEID) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = S_OK;
-
 			if (registry::RegKeys[registry::regkeyMDB_ONLINE].ulCurDWORD)
 			{
 				ulFlags |= MDB_ONLINE;
 			}
 			output::DebugPrint(DBGOpenItemProp, L"CallOpenMsgStore ulFlags = 0x%X\n", ulFlags);
 
-			WC_MAPI(lpSession->OpenMsgStore(
+			auto hRes = WC_MAPI(lpSession->OpenMsgStore(
 				ulUIParam,
 				lpEID->cb,
 				reinterpret_cast<LPENTRYID>(lpEID->lpb),
 				nullptr,
 				ulFlags,
 				static_cast<LPMDB*>(lpMDB)));
-			if (MAPI_E_UNKNOWN_FLAGS == hRes && ulFlags & MDB_ONLINE)
+			if (hRes == MAPI_E_UNKNOWN_FLAGS && ulFlags & MDB_ONLINE)
 			{
-				hRes = S_OK;
 				// perhaps this store doesn't know the MDB_ONLINE flag - remove and retry
 				ulFlags = ulFlags & ~MDB_ONLINE;
 				output::DebugPrint(DBGOpenItemProp, L"CallOpenMsgStore 2nd attempt ulFlags = 0x%X\n", ulFlags);
 
-				WC_MAPI(lpSession->OpenMsgStore(
+				hRes = WC_MAPI(lpSession->OpenMsgStore(
 					ulUIParam,
 					lpEID->cb,
 					reinterpret_cast<LPENTRYID>(lpEID->lpb),
@@ -55,6 +52,7 @@ namespace mapi
 					ulFlags,
 					static_cast<LPMDB*>(lpMDB)));
 			}
+
 			return hRes;
 		}
 
@@ -78,7 +76,7 @@ namespace mapi
 			auto lpManageStore1 = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpManageStore1)
 			{
-				WC_MAPI(lpManageStore1->GetMailboxTable(LPSTR(szServerDN.c_str()), lpMailboxTable, ulFlags));
+				hRes = WC_MAPI(lpManageStore1->GetMailboxTable(LPSTR(szServerDN.c_str()), lpMailboxTable, ulFlags));
 
 				lpManageStore1->Release();
 			}
@@ -100,7 +98,7 @@ namespace mapi
 			auto lpManageStore3 = mapi::safe_cast<LPEXCHANGEMANAGESTORE3>(lpMDB);
 			if (lpManageStore3)
 			{
-				WC_MAPI(lpManageStore3->GetMailboxTableOffset(
+				hRes = WC_MAPI(lpManageStore3->GetMailboxTableOffset(
 					LPSTR(szServerDN.c_str()), lpMailboxTable, ulFlags, ulOffset));
 
 				lpManageStore3->Release();
@@ -245,7 +243,7 @@ namespace mapi
 
 			EC_MAPI(pSvcAdmin->OpenProfileSection(LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &pGlobalProfSect));
 
-			WC_MAPI(HrGetOneProp(pGlobalProfSect, PR_PROFILE_HOME_SERVER, &lpServerName));
+			hRes = WC_MAPI(HrGetOneProp(pGlobalProfSect, PR_PROFILE_HOME_SERVER, &lpServerName));
 
 			if (mapi::CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
 			{
