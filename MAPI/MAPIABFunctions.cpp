@@ -563,8 +563,6 @@ namespace mapi
 		{
 			if (!lpAdrBook || !hwnd || !lppMailUser) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = S_OK;
-
 			ADRPARM AdrParm = {0};
 			LPADRLIST lpAdrList = nullptr;
 			LPSPropValue lpEntryID = nullptr;
@@ -581,8 +579,9 @@ namespace mapi
 			AdrParm.ulFlags = DIALOG_MODAL | ADDRESS_ONE | AB_SELECTONLY | AB_RESOLVE;
 			AdrParm.lpszCaption = LPTSTR(szTitle.c_str());
 
-			EC_H_CANCEL(lpAdrBook->Address(reinterpret_cast<ULONG_PTR*>(&hwnd), &AdrParm, &lpAdrList));
+			EC_H_CANCEL_S(lpAdrBook->Address(reinterpret_cast<ULONG_PTR*>(&hwnd), &AdrParm, &lpAdrList));
 
+			auto hRes = S_OK;
 			if (lpAdrList)
 			{
 				lpEntryID =

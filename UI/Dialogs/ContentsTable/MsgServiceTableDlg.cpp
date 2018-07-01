@@ -167,7 +167,6 @@ namespace dialog
 
 	void CMsgServiceTableDlg::OnConfigureMsgService()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpContentsTableListCtrl || !m_lpServiceAdmin) return;
@@ -180,7 +179,7 @@ namespace dialog
 				const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 				if (lpServiceUID)
 				{
-					EC_H_CANCEL(m_lpServiceAdmin->ConfigureMsgService(
+					EC_H_CANCEL_S(m_lpServiceAdmin->ConfigureMsgService(
 						reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
 						reinterpret_cast<ULONG_PTR>(m_hWnd),
 						SERVICE_UI_ALWAYS,
@@ -188,8 +187,6 @@ namespace dialog
 						nullptr));
 				}
 			}
-
-			hRes = S_OK;
 		}
 	}
 

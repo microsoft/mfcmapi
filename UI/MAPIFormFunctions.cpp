@@ -255,7 +255,7 @@ namespace mapi
 					lpMessage, // message to open
 					&Token)); // basically, the pointer to the form
 
-				EC_H_CANCEL(lpMAPISession->ShowForm(
+				hRes = EC_H_CANCEL(lpMAPISession->ShowForm(
 					NULL,
 					lpMDB, // message store
 					lpParentFolder, // parent folder
