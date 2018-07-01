@@ -425,12 +425,11 @@ namespace error
 			error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
 
-// Execute a function, log and return the HRESULT
+// Execute a function, log and return the command ID
 // Designed to check return values from dialog functions, primarily DoModal
 // These functions use CommDlgExtendedError to get error information
-// Does not modify or reference existing hRes
-#define EC_D_DIALOG2(fnx) \
-	[&]() -> HRESULT { \
+#define EC_D_DIALOG(fnx) \
+	[&]() -> INT_PTR { \
 		auto __iDlgRet = (fnx); \
 		if (IDCANCEL == __iDlgRet) \
 		{ \
@@ -438,30 +437,10 @@ namespace error
 			if (__err) \
 			{ \
 				error::ErrDialog(__FILE__, __LINE__, IDS_EDCOMMONDLG, #fnx, __err); \
-				return MAPI_E_CALL_FAILED; \
 			} \
-			else \
-				return S_OK; \
 		} \
+		return __iDlgRet; \
 	}()
-
-// Designed to check return values from dialog functions, primarily DoModal
-// These functions use CommDlgExtendedError to get error information
-#define EC_D_DIALOG(fnx) \
-	{ \
-		iDlgRet = (fnx); \
-		if (IDCANCEL == iDlgRet) \
-		{ \
-			DWORD err = CommDlgExtendedError(); \
-			if (err) \
-			{ \
-				error::ErrDialog(__FILE__, __LINE__, IDS_EDCOMMONDLG, #fnx, err); \
-				hRes = MAPI_E_CALL_FAILED; \
-			} \
-			else \
-				hRes = S_OK; \
-		} \
-	}
 
 #define EC_PROBLEMARRAY(problemarray) \
 	{ \

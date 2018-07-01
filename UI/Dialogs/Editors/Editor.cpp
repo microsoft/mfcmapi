@@ -511,11 +511,7 @@ namespace dialog
 
 		_Check_return_ HRESULT CEditor::DisplayDialog()
 		{
-			auto hRes = S_OK;
-			auto iDlgRet = INT_PTR(0);
-
-			EC_D_DIALOG(DoModal());
-
+			auto iDlgRet = EC_D_DIALOG(DoModal());
 			switch (iDlgRet)
 			{
 			case -1:
