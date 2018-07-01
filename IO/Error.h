@@ -398,7 +398,7 @@ namespace error
 // Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
 // I don't consider these to be errors.
 // Does not modify or reference existing hRes
-#define EC_H_CANCEL2(fnx) \
+#define EC_H_CANCEL(fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = (fnx); \
 		if (MAPI_E_USER_CANCEL == __hRes || MAPI_E_CANCEL == __hRes) \
@@ -416,7 +416,7 @@ namespace error
 // Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
 // I don't consider these to be errors.
 // Does not modify or reference existing hRes
-#define EC_H_CANCEL2S(fnx) \
+#define EC_H_CANCEL_S(fnx) \
 	[&]() -> void { \
 		auto __hRes = (fnx); \
 		if (MAPI_E_USER_CANCEL == __hRes || MAPI_E_CANCEL == __hRes) \
@@ -424,26 +424,6 @@ namespace error
 		else \
 			error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
-
-// some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL. I don't consider these to be errors.
-#define EC_H_CANCEL(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = (fnx); \
-			if (MAPI_E_USER_CANCEL == hRes || MAPI_E_CANCEL == hRes) \
-			{ \
-				CheckMAPICall(hRes, NULL, false, #fnx, IDS_USERCANCELLED, __FILE__, __LINE__); \
-				hRes = S_OK; \
-			} \
-			else \
-				CheckMAPICall(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
 
 // Execute a function, log and return the HRESULT
 // Designed to check return values from dialog functions, primarily DoModal

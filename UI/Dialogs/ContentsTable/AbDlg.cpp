@@ -83,7 +83,6 @@ namespace dialog
 	{
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnDisplayDetails", L"displaying Address Book entry details\n");
 
-		auto hRes = S_OK;
 		if (!m_lpMapiObjects) return;
 		auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -100,7 +99,7 @@ namespace dialog
 
 					// Have to pass DIALOG_MODAL according to
 					// http://support.microsoft.com/kb/171637
-					EC_H_CANCEL(lpAddrBook->Details(
+					auto hRes = EC_H_CANCEL(lpAddrBook->Details(
 						&ulUIParam,
 						NULL,
 						NULL,
@@ -111,7 +110,6 @@ namespace dialog
 						NULL,
 						DIALOG_MODAL)); // API doesn't like Unicode
 					if (lpEIDs->cValues > i + 1 && bShouldCancel(this, hRes)) break;
-					hRes = S_OK;
 				}
 			}
 

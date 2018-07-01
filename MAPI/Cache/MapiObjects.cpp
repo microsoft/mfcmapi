@@ -57,7 +57,6 @@ namespace cache
 
 	void CMapiObjects::MAPILogonEx(_In_ HWND hwnd, _In_opt_z_ LPTSTR szProfileName, ULONG ulFlags)
 	{
-		auto hRes = S_OK;
 		output::DebugPrint(DBGGeneric, L"Logging on with MAPILogonEx, ulFlags = 0x%X\n", ulFlags);
 
 		CGlobalCache::getInstance().MAPIInitialize(NULL);
@@ -66,7 +65,7 @@ namespace cache
 		if (m_lpMAPISession) m_lpMAPISession->Release();
 		m_lpMAPISession = nullptr;
 
-		EC_H_CANCEL(
+		EC_H_CANCEL_S(
 			::MAPILogonEx(reinterpret_cast<ULONG_PTR>(hwnd), szProfileName, nullptr, ulFlags, &m_lpMAPISession));
 
 		output::DebugPrint(DBGGeneric, L"\tm_lpMAPISession set to %p\n", m_lpMAPISession);

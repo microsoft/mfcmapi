@@ -733,7 +733,7 @@ namespace dialog
 		{
 			auto ulUIParam = reinterpret_cast<ULONG_PTR>(static_cast<void*>(m_hWnd));
 
-			EC_H_CANCEL(lpAB->Details(
+			hRes = EC_H_CANCEL(lpAB->Details(
 				&ulUIParam,
 				nullptr,
 				nullptr,
