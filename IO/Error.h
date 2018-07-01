@@ -347,23 +347,22 @@ namespace error
 			error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
 
+// Execute a function, log and return the command ID
 // Designed to check return values from dialog functions, primarily DoModal
 // These functions use CommDlgExtendedError to get error information
 #define EC_D_DIALOG(fnx) \
-	{ \
-		iDlgRet = (fnx); \
-		if (IDCANCEL == iDlgRet) \
+	[&]() -> INT_PTR { \
+		auto __iDlgRet = (fnx); \
+		if (IDCANCEL == __iDlgRet) \
 		{ \
-			DWORD err = CommDlgExtendedError(); \
-			if (err) \
+			auto __err = CommDlgExtendedError(); \
+			if (__err) \
 			{ \
-				error::ErrDialog(__FILE__, __LINE__, IDS_EDCOMMONDLG, #fnx, err); \
-				hRes = MAPI_E_CALL_FAILED; \
+				error::ErrDialog(__FILE__, __LINE__, IDS_EDCOMMONDLG, #fnx, __err); \
 			} \
-			else \
-				hRes = S_OK; \
 		} \
-	}
+		return __iDlgRet; \
+	}()
 
 #define EC_PROBLEMARRAY(problemarray) \
 	{ \

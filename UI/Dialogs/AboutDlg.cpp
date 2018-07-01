@@ -8,10 +8,7 @@ namespace dialog
 	void DisplayAboutDlg(_In_ CWnd* lpParentWnd)
 	{
 		CAboutDlg AboutDlg(lpParentWnd);
-		auto hRes = S_OK;
-		auto iDlgRet = INT_PTR(0);
-
-		EC_D_DIALOG(AboutDlg.DoModal());
+		(void) EC_D_DIALOG(AboutDlg.DoModal());
 	}
 
 	static std::wstring CLASS = L"CAboutDlg";
