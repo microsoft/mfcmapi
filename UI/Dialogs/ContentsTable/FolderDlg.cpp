@@ -1028,7 +1028,7 @@ namespace dialog
 						const auto szTitle = strings::loadstring(IDS_SELECTFORMCREATE);
 
 						// Apparently, SelectForm doesn't support unicode
-						EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
+						hRes = EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
 							reinterpret_cast<ULONG_PTR>(m_hWnd),
 							0,
 							reinterpret_cast<LPCTSTR>(strings::wstringTostring(szTitle).c_str()),

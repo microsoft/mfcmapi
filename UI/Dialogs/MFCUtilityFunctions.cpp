@@ -717,7 +717,7 @@ namespace dialog
 			LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 			// Apparently, SelectForm doesn't support unicode
 			auto szTitle = strings::wstringTostring(strings::loadstring(IDS_SELECTFORMPROPS));
-			EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
+			EC_H_CANCEL_S(lpMAPIFormMgr->SelectForm(
 				reinterpret_cast<ULONG_PTR>(hWnd),
 				0, // fMapiUnicode,
 				LPCTSTR(szTitle.c_str()),

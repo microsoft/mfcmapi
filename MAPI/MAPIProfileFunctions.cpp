@@ -579,7 +579,7 @@ namespace mapi
 
 				if (lpPropVals)
 				{
-					EC_H_CANCEL(lpServiceAdmin->ConfigureMsgService(lpuidService, NULL, 0, cPropVals, lpPropVals));
+					hRes = EC_H_CANCEL(lpServiceAdmin->ConfigureMsgService(lpuidService, NULL, 0, cPropVals, lpPropVals));
 				}
 
 				if (lpServiceAdmin2) lpServiceAdmin2->Release();

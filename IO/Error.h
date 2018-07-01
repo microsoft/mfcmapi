@@ -315,25 +315,37 @@ namespace error
 		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
 
-// some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL. I don't consider these to be errors.
+// Execute a function, log and return the HRESULT
+// Logs a MAPI call trace under DBGMAPIFunctions
+// Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
+// I don't consider these to be errors.
+// Does not modify or reference existing hRes
 #define EC_H_CANCEL(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		if (MAPI_E_USER_CANCEL == __hRes || MAPI_E_CANCEL == __hRes) \
 		{ \
-			hRes = (fnx); \
-			if (MAPI_E_USER_CANCEL == hRes || MAPI_E_CANCEL == hRes) \
-			{ \
-				CheckMAPICall(hRes, NULL, false, #fnx, IDS_USERCANCELLED, __FILE__, __LINE__); \
-				hRes = S_OK; \
-			} \
-			else \
-				CheckMAPICall(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__); \
+			error::LogFunctionCall(__hRes, NULL, true, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
+			return S_OK; \
 		} \
 		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
+			error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a function, log and swallow the HRESULT
+// Logs a MAPI call trace under DBGMAPIFunctions
+// Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
+// I don't consider these to be errors.
+// Does not modify or reference existing hRes
+#define EC_H_CANCEL_S(fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		if (MAPI_E_USER_CANCEL == __hRes || MAPI_E_CANCEL == __hRes) \
+			error::LogFunctionCall(__hRes, NULL, true, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
+		else \
+			error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
 
 // Designed to check return values from dialog functions, primarily DoModal
 // These functions use CommDlgExtendedError to get error information

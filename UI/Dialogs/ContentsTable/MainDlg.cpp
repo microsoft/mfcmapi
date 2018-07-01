@@ -672,7 +672,7 @@ namespace dialog
 		const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 		if (lpAddrBook)
 		{
-			EC_H_CANCEL(mapi::store::OpenOtherUsersMailboxFromGal(lpMAPISession, lpAddrBook, &lpMailboxMDB));
+			hRes = EC_H_CANCEL(mapi::store::OpenOtherUsersMailboxFromGal(lpMAPISession, lpAddrBook, &lpMailboxMDB));
 
 			if (lpMailboxMDB)
 			{
@@ -923,7 +923,7 @@ namespace dialog
 			if (hRes == S_OK)
 			{
 				const auto ulFlags = MyFlags.GetHex(0);
-				EC_H_CANCEL(lpMAPIFormMgr->SelectFormContainer(
+				EC_H_CANCEL_S(lpMAPIFormMgr->SelectFormContainer(
 					reinterpret_cast<ULONG_PTR>(m_hWnd), ulFlags, &lpMAPIFormContainer));
 				if (lpMAPIFormContainer)
 				{
@@ -960,7 +960,7 @@ namespace dialog
 			if (hRes == S_OK)
 			{
 				const auto hFrmReg = MyFlags.GetHex(0);
-				EC_H_CANCEL(lpMAPIFormMgr->OpenFormContainer(hFrmReg, nullptr, &lpMAPIFormContainer));
+				EC_H_CANCEL_S(lpMAPIFormMgr->OpenFormContainer(hFrmReg, nullptr, &lpMAPIFormContainer));
 				if (lpMAPIFormContainer)
 				{
 					new CFormContainerDlg(m_lpParent, m_lpMapiObjects, lpMAPIFormContainer);
@@ -1257,7 +1257,7 @@ namespace dialog
 					auto lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
 					auto ulUIParam = reinterpret_cast<ULONG_PTR>(m_hWnd);
 
-					EC_H_CANCEL(lpAB->Details(
+					EC_H_CANCEL_S(lpAB->Details(
 						&ulUIParam,
 						nullptr,
 						nullptr,
