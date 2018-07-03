@@ -73,12 +73,11 @@ namespace cache
 
 	void CMapiObjects::Logoff(_In_ HWND hwnd, ULONG ulFlags)
 	{
-		auto hRes = S_OK;
 		output::DebugPrint(DBGGeneric, L"Logging off of %p, ulFlags = 0x%08X\n", m_lpMAPISession, ulFlags);
 
 		if (m_lpMAPISession)
 		{
-			EC_MAPI(m_lpMAPISession->Logoff(reinterpret_cast<ULONG_PTR>(hwnd), ulFlags, NULL));
+			EC_MAPI_S(m_lpMAPISession->Logoff(reinterpret_cast<ULONG_PTR>(hwnd), ulFlags, NULL));
 			m_lpMAPISession->Release();
 			m_lpMAPISession = nullptr;
 		}
@@ -118,9 +117,9 @@ namespace cache
 		// if we haven't opened the address book yet and we have a session, open it now
 		if (!m_lpAddrBook && m_lpMAPISession && bForceOpen)
 		{
-			auto hRes = S_OK;
-			EC_MAPI(m_lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &m_lpAddrBook));
+			EC_MAPI_S(m_lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &m_lpAddrBook));
 		}
+
 		return m_lpAddrBook;
 	}
 }

@@ -308,12 +308,11 @@ namespace mapiprocessor
 		bool bWrapEx,
 		ULONG ulCPID)
 	{
-		auto hRes = S_OK;
 		LPSTREAM lpStream = nullptr;
 		LPSTREAM lpRTFUncompressed = nullptr;
 		LPSTREAM lpOutputStream = nullptr;
 
-		WC_MAPI(
+		auto hRes = WC_MAPI(
 			lpMessage->OpenProperty(ulBodyTag, &IID_IStream, STGM_READ, NULL, reinterpret_cast<LPUNKNOWN*>(&lpStream)));
 		// The only error we suppress is MAPI_E_NOT_FOUND, so if a body type isn't in the output, it wasn't on the message
 		if (MAPI_E_NOT_FOUND != hRes)

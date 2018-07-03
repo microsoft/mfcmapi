@@ -230,7 +230,7 @@ namespace dialog
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 			const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
-			EC_MAPI(m_lpAbCont->DeleteEntries(lpEIDs, NULL));
+			EC_MAPI_S(m_lpAbCont->DeleteEntries(lpEIDs, NULL));
 			MAPIFreeBuffer(lpEIDs);
 		}
 	}
@@ -274,7 +274,7 @@ namespace dialog
 				LPMAPIPROGRESS lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IABContainer::CopyEntries", m_hWnd); // STRING_OK
 
-				EC_MAPI(m_lpAbCont->CopyEntries(
+				EC_MAPI_S(m_lpAbCont->CopyEntries(
 					lpEIDs, lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL, lpProgress, MyData.GetHex(0)));
 
 				if (lpProgress) lpProgress->Release();

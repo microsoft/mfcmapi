@@ -91,8 +91,6 @@ namespace dialog
 	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 	void CAclDlg::OnRefreshView()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpExchTbl || !m_lpContentsTableListCtrl) return;
 
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
@@ -103,7 +101,7 @@ namespace dialog
 			LPMAPITABLE lpMAPITable = nullptr;
 			// Open a MAPI table on the Exchange table property. This table can be
 			// read to determine what the Exchange table looks like.
-			EC_MAPI(m_lpExchTbl->GetTable(m_ulTableFlags, &lpMAPITable));
+			EC_MAPI_S(m_lpExchTbl->GetTable(m_ulTableFlags, &lpMAPITable));
 
 			if (lpMAPITable)
 			{
@@ -157,7 +155,7 @@ namespace dialog
 				lpNewItem->aEntries[0].rgPropVals[1].ulPropTag = PR_MEMBER_RIGHTS;
 				lpNewItem->aEntries[0].rgPropVals[1].Value.ul = MyData.GetHex(1);
 
-				EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpNewItem));
+				hRes = EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpNewItem));
 				MAPIFreeBuffer(lpNewItem);
 				if (hRes == S_OK) OnRefreshView();
 
@@ -177,7 +175,7 @@ namespace dialog
 
 		if (lpSelectedItems)
 		{
-			EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpSelectedItems));
+			hRes = EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (hRes == S_OK) OnRefreshView();
 		}
@@ -194,7 +192,7 @@ namespace dialog
 
 		if (lpSelectedItems)
 		{
-			EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpSelectedItems));
+			hRes = EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (hRes == S_OK) OnRefreshView();
 		}

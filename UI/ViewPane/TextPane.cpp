@@ -73,7 +73,6 @@ namespace viewpane
 	_Check_return_ static DWORD CALLBACK
 	EditStreamReadCallBack(DWORD_PTR dwCookie, _In_ LPBYTE pbBuff, LONG cb, _In_count_(cb) LONG* pcb)
 	{
-		auto hRes = S_OK;
 		if (!pbBuff || !pcb || !dwCookie) return 0;
 
 		auto stmData = reinterpret_cast<LPSTREAM>(dwCookie);
@@ -88,7 +87,7 @@ namespace viewpane
 
 		if (pbTempBuff)
 		{
-			EC_MAPI(stmData->Read(pbTempBuff, cbTemp, &cbTempRead));
+			EC_MAPI_S(stmData->Read(pbTempBuff, cbTemp, &cbTempRead));
 			output::DebugPrint(DBGStream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
 
 			memset(pbBuff, 0, cbTempRead * 2);
@@ -416,17 +415,18 @@ namespace viewpane
 	// Writes a hex pane out to a binary stream
 	void TextPane::GetBinaryStream(_In_ LPSTREAM lpStreamOut) const
 	{
-		auto hRes = S_OK;
-
 		auto bin = strings::HexStringToBin(GetStringW());
 		if (bin.data() != nullptr)
 		{
 			ULONG cbWritten = 0;
-			EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
+			auto hRes = EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 			output::DebugPrintEx(
 				DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
 
-			EC_MAPI(lpStreamOut->Commit(STGC_DEFAULT));
+			if (SUCCEEDED(hRes))
+			{
+				EC_MAPI_S(lpStreamOut->Commit(STGC_DEFAULT));
+			}
 		}
 	}
 

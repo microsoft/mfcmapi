@@ -70,8 +70,6 @@ namespace dialog
 	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 	void CRulesDlg::OnRefreshView()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpExchTbl || !m_lpContentsTableListCtrl) return;
 
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
@@ -82,8 +80,7 @@ namespace dialog
 			LPMAPITABLE lpMAPITable = nullptr;
 			// Open a MAPI table on the Exchange table property. This table can be
 			// read to determine what the Exchange table looks like.
-			EC_MAPI(m_lpExchTbl->GetTable(0, &lpMAPITable));
-
+			EC_MAPI_S(m_lpExchTbl->GetTable(0, &lpMAPITable));
 			if (lpMAPITable)
 			{
 				m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, dfDeleted, NULL);
@@ -104,7 +101,7 @@ namespace dialog
 
 		if (lpSelectedItems)
 		{
-			EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
+			hRes = EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (hRes == S_OK) OnRefreshView();
 		}
@@ -121,7 +118,7 @@ namespace dialog
 
 		if (lpSelectedItems)
 		{
-			EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
+			hRes = EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (hRes == S_OK) OnRefreshView();
 		}

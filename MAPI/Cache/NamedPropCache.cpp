@@ -579,11 +579,9 @@ namespace cache
 			return lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, lppPropTags);
 		}
 
-		auto hRes = S_OK;
-
 		LPSPropValue lpProp = nullptr;
 
-		WC_MAPI(HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp));
+		auto hRes = WC_MAPI(HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp));
 
 		if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
@@ -598,7 +596,6 @@ namespace cache
 		}
 		else
 		{
-			hRes = S_OK;
 			hRes = WC_H_GETPROPS(lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, lppPropTags));
 			// Cache the results
 			if (SUCCEEDED(hRes))

@@ -120,9 +120,8 @@ namespace dialog
 			const auto ulFlags = (m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL) |
 								 (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | fMapiUnicode;
 
-			auto hRes = S_OK;
 			// Get the table of contents of the IMAPIContainer!!!
-			EC_MAPI(m_lpContainer->GetContentsTable(ulFlags, &m_lpContentsTable));
+			EC_MAPI_S(m_lpContainer->GetContentsTable(ulFlags, &m_lpContentsTable));
 		}
 
 		UpdateTitleBarText();

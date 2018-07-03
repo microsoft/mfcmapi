@@ -1560,7 +1560,7 @@ namespace controls
 
 						if (lpProgress) ulCopyFlags |= MAPI_DIALOG;
 
-						EC_MAPI(lpSourcePropObj->CopyProps(
+						hRes = EC_MAPI(lpSourcePropObj->CopyProps(
 							&TagArray,
 							lpProgress ? reinterpret_cast<ULONG_PTR>(m_lpHostDlg->m_hWnd) : NULL, // ui param
 							lpProgress, // progress
@@ -1577,7 +1577,7 @@ namespace controls
 				{
 					ULONG ulValues = NULL;
 					LPSPropValue lpSourceProp = nullptr;
-					EC_MAPI(lpSourcePropObj->GetProps(&TagArray, fMapiUnicode, &ulValues, &lpSourceProp));
+					hRes = EC_MAPI(lpSourcePropObj->GetProps(&TagArray, fMapiUnicode, &ulValues, &lpSourceProp));
 					if (!FAILED(hRes) && ulValues && lpSourceProp && PT_ERROR != lpSourceProp->ulPropTag)
 					{
 						lpSourceProp->ulPropTag = ulTargetTag;

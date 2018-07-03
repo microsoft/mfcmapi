@@ -45,7 +45,7 @@ namespace mapi
 			if (lpMAPIFormInfo)
 			{
 				LPPERSISTMESSAGE lpPersistMessage = nullptr;
-				EC_MAPI(lpMAPIFormMgr->CreateForm(
+				hRes = EC_MAPI(lpMAPIFormMgr->CreateForm(
 					reinterpret_cast<ULONG_PTR>(hwndParent), // parent window
 					MAPI_DIALOG, // display status window
 					lpMAPIFormInfo, // form info
@@ -56,7 +56,7 @@ namespace mapi
 				{
 					LPMESSAGE lpMessage = nullptr;
 					// Get a message
-					EC_MAPI(lpFolder->CreateMessage(
+					hRes = EC_MAPI(lpFolder->CreateMessage(
 						nullptr, // default interface
 						0, // flags
 						&lpMessage));
@@ -68,18 +68,23 @@ namespace mapi
 						if (lpMAPIFormViewer)
 						{
 							// put everything together with the default info
-							EC_MAPI(
+							hRes = EC_MAPI(
 								lpPersistMessage->InitNew(static_cast<LPMAPIMESSAGESITE>(lpMAPIFormViewer), lpMessage));
 
 							auto lpForm = mapi::safe_cast<LPMAPIFORM>(lpPersistMessage);
 							if (lpForm)
 							{
-								EC_MAPI(lpForm->SetViewContext(static_cast<LPMAPIVIEWCONTEXT>(lpMAPIFormViewer)));
+								hRes =
+									EC_MAPI(lpForm->SetViewContext(static_cast<LPMAPIVIEWCONTEXT>(lpMAPIFormViewer)));
 
-								EC_MAPI(lpMAPIFormViewer->CallDoVerb(
-									lpForm,
-									EXCHIVERB_OPEN,
-									nullptr)); // Not passing a RECT here so we'll try to use the default for the form
+								if (SUCCEEDED(hRes))
+								{
+									hRes = EC_MAPI(lpMAPIFormViewer->CallDoVerb(
+										lpForm,
+										EXCHIVERB_OPEN,
+										nullptr)); // Not passing a RECT here so we'll try to use the default for the form
+								}
+
 								lpForm->Release();
 							}
 
@@ -136,7 +141,7 @@ namespace mapi
 
 			if (lpspvaShow)
 			{
-				EC_MAPI(lpSourceFolder->GetMessageStatus(
+				hRes = EC_MAPI(lpSourceFolder->GetMessageStatus(
 					lpspvaShow[EID].Value.bin.cb,
 					reinterpret_cast<LPENTRYID>(lpspvaShow[EID].Value.bin.lpb),
 					0,
@@ -150,7 +155,7 @@ namespace mapi
 					LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
 					LPMAPIFORM lpForm = nullptr;
 
-					EC_MAPI(lpMAPIFormViewer->GetFormManager(&lpMAPIFormMgr));
+					hRes = EC_MAPI(lpMAPIFormViewer->GetFormManager(&lpMAPIFormMgr));
 
 					if (lpMAPIFormMgr)
 					{
@@ -160,7 +165,7 @@ namespace mapi
 							lpspvaShow[CLASS].Value.lpszA,
 							ulMessageStatus,
 							lpspvaShow[FLAGS].Value.ul);
-						EC_MAPI(lpMAPIFormMgr->LoadForm(
+						hRes = EC_MAPI(lpMAPIFormMgr->LoadForm(
 							reinterpret_cast<ULONG_PTR>(hwndParent),
 							0, // flags
 							lpspvaShow[CLASS].Value.lpszA,
@@ -178,9 +183,14 @@ namespace mapi
 
 					if (lpForm)
 					{
-						EC_MAPI(lpMAPIFormViewer->CallDoVerb(lpForm, lVerb, lpRect));
-						// Fix for unknown typed freedocs.
-						WC_MAPI(lpForm->GetViewContext(&lpViewContextTemp));
+						hRes = EC_MAPI(lpMAPIFormViewer->CallDoVerb(lpForm, lVerb, lpRect));
+
+						if (SUCCEEDED(hRes))
+						{
+							// Fix for unknown typed freedocs.
+							hRes = WC_MAPI(lpForm->GetViewContext(&lpViewContextTemp));
+						}
+
 						if (SUCCEEDED(hRes))
 						{
 							if (lpViewContextTemp)
@@ -191,7 +201,7 @@ namespace mapi
 							else
 							{
 								// If the pointer came back NULL, then we need to call ShutdownForm but don't release.
-								WC_MAPI(lpForm->ShutdownForm(SAVEOPTS_NOSAVE));
+								hRes = WC_MAPI(lpForm->ShutdownForm(SAVEOPTS_NOSAVE));
 							}
 						}
 						else
@@ -243,30 +253,36 @@ namespace mapi
 
 			if (lpspvaShow)
 			{
-				EC_MAPI(lpParentFolder->GetMessageStatus(
+				hRes = EC_MAPI(lpParentFolder->GetMessageStatus(
 					lpspvaShow[EID].Value.bin.cb,
 					reinterpret_cast<LPENTRYID>(lpspvaShow[EID].Value.bin.lpb),
 					0,
 					&ulMessageStatus));
 
-				// set up the 'display message' form
-				EC_MAPI(lpMAPISession->PrepareForm(
-					nullptr, // default interface
-					lpMessage, // message to open
-					&Token)); // basically, the pointer to the form
+				if (SUCCEEDED(hRes))
+				{
+					// set up the 'display message' form
+					hRes = EC_MAPI(lpMAPISession->PrepareForm(
+						nullptr, // default interface
+						lpMessage, // message to open
+						&Token)); // basically, the pointer to the form
+				}
 
-				hRes = EC_H_CANCEL(lpMAPISession->ShowForm(
-					NULL,
-					lpMDB, // message store
-					lpParentFolder, // parent folder
-					nullptr, // default interface
-					Token, // token?
-					nullptr, // reserved
-					MAPI_POST_MESSAGE, // flags
-					ulMessageStatus, // message status
-					lpspvaShow[FLAGS].Value.ul, // message flags
-					lpspvaShow[ACCESS].Value.ul, // access
-					lpspvaShow[CLASS].Value.lpszA)); // message class
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_H_CANCEL(lpMAPISession->ShowForm(
+						NULL,
+						lpMDB, // message store
+						lpParentFolder, // parent folder
+						nullptr, // default interface
+						Token, // token?
+						nullptr, // reserved
+						MAPI_POST_MESSAGE, // flags
+						ulMessageStatus, // message status
+						lpspvaShow[FLAGS].Value.ul, // message flags
+						lpspvaShow[ACCESS].Value.ul, // access
+						lpspvaShow[CLASS].Value.lpszA)); // message class
+				}
 			}
 
 			MAPIFreeBuffer(lpspvaShow);

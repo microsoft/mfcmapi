@@ -36,7 +36,7 @@ namespace dialog
 					PT_ERROR == PROP_TYPE(ulPropTag) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
 				ULONG ulValues = NULL;
 
-				WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
+				hRes = WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
 
 				// Suppress MAPI_E_NOT_FOUND error when the source type is non error
 				if (sourceProp && PT_ERROR == PROP_TYPE(sourceProp->ulPropTag) &&
@@ -585,16 +585,17 @@ namespace dialog
 		{
 			if (!m_lpsOutputValue || !m_lpMAPIProp) return;
 
-			auto hRes = S_OK;
-
 			LPSPropProblemArray lpProblemArray = nullptr;
 
-			EC_MAPI(m_lpMAPIProp->SetProps(1, m_lpsOutputValue, &lpProblemArray));
+			auto hRes = EC_MAPI(m_lpMAPIProp->SetProps(1, m_lpsOutputValue, &lpProblemArray));
 
 			EC_PROBLEMARRAY(lpProblemArray);
 			MAPIFreeBuffer(lpProblemArray);
 
-			EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+			if (SUCCEEDED(hRes))
+			{
+				EC_MAPI_S(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+			}
 		}
 
 		// Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!

@@ -228,7 +228,6 @@ namespace smartview
 		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp)
 			return std::make_pair(IDS_STNOPARSING, L"");
 
-		auto hRes = S_OK;
 		auto iStructType = IDS_STNOPARSING;
 
 		// Named Props
@@ -248,14 +247,12 @@ namespace smartview
 			tag.cValues = 1;
 			tag.aulPropTag[0] = lpProp->ulPropTag;
 
-			hRes = WC_H_GETPROPS(cache::GetNamesFromIDs(
+			WC_H_GETPROPS_S(cache::GetNamesFromIDs(
 				lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL, &ulPropNames, &lppPropNames));
-			if (SUCCEEDED(hRes) && ulPropNames == 1 && lppPropNames && lppPropNames[0])
+			if (ulPropNames == 1 && lppPropNames && lppPropNames[0])
 			{
 				lpNameID = lppPropNames[0];
 			}
-
-			hRes = S_OK;
 		}
 
 		ULONG ulPropNameID = NULL;
@@ -292,7 +289,7 @@ namespace smartview
 			{
 				LPSPropValue lpPropSubject = nullptr;
 
-				WC_MAPI(HrGetOneProp(lpMAPIProp, PR_SUBJECT_W, &lpPropSubject));
+				WC_MAPI_S(HrGetOneProp(lpMAPIProp, PR_SUBJECT_W, &lpPropSubject));
 
 				if (mapi::CheckStringProp(lpPropSubject, PT_UNICODE) &&
 					0 == wcscmp(lpPropSubject->Value.lpszW, L"IPM.Configuration.Autocomplete"))

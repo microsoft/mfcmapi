@@ -140,7 +140,7 @@ namespace dialog
 			ULONG ulObjType = NULL;
 			LPABCONT lpDefaultDir = nullptr;
 
-			WC_MAPI(lpAdrBook->GetDefaultDir(&cbEID, &lpEID));
+			hRes = WC_MAPI(lpAdrBook->GetDefaultDir(&cbEID, &lpEID));
 
 			WC_H(mapi::CallOpenEntry(
 				nullptr,
@@ -205,7 +205,7 @@ namespace dialog
 			if (lpFolder)
 			{
 				LPMAPITABLE lpTable = nullptr;
-				WC_MAPI(lpFolder->GetContentsTable(MAPI_ASSOCIATED, &lpTable));
+				hRes = WC_MAPI(lpFolder->GetContentsTable(MAPI_ASSOCIATED, &lpTable));
 
 				if (lpTable)
 				{
@@ -217,7 +217,7 @@ namespace dialog
 					sRes.res.resProperty.lpProp = &sPV;
 					sPV.ulPropTag = sRes.res.resProperty.ulPropTag;
 					sPV.Value.LPSZ = const_cast<LPTSTR>(_T("IPM.Configuration.Autocomplete")); // STRING_OK
-					WC_MAPI(lpTable->Restrict(&sRes, TBL_BATCH));
+					hRes = WC_MAPI(lpTable->Restrict(&sRes, TBL_BATCH));
 
 					if (SUCCEEDED(hRes))
 					{
@@ -230,12 +230,12 @@ namespace dialog
 							eidNUM_COLS,
 							{PR_ENTRYID},
 						};
-						WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&eidCols), TBL_BATCH));
+						hRes = WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&eidCols), TBL_BATCH));
 
 						if (SUCCEEDED(hRes))
 						{
 							LPSRowSet lpRows = nullptr;
-							WC_MAPI(lpTable->QueryRows(1, NULL, &lpRows));
+							hRes = WC_MAPI(lpTable->QueryRows(1, NULL, &lpRows));
 
 							if (lpRows && 1 == lpRows->cRows &&
 								PR_ENTRYID == lpRows->aRow[0].lpProps[eidPR_ENTRYID].ulPropTag)
@@ -269,10 +269,13 @@ namespace dialog
 							FreeProws(lpRows);
 						}
 					}
+
 					lpTable->Release();
 				}
+
 				lpFolder->Release();
 			}
+
 			lpMDB->Release();
 
 			// Display our dialog
@@ -296,6 +299,7 @@ namespace dialog
 
 			MAPIFreeBuffer(lpsProp);
 		}
+
 		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
 	}
 
