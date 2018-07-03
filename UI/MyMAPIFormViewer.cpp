@@ -202,9 +202,8 @@ namespace mapi
 
 		STDMETHODIMP CMyMAPIFormViewer::GetFormManager(LPMAPIFORMMGR* ppFormMgr)
 		{
-			auto hRes = S_OK;
 			output::DebugPrintEx(DBGFormViewer, CLASS, L"GetFormManager", L"\n");
-			EC_MAPI(MAPIOpenFormMgr(m_lpMAPISession, ppFormMgr));
+			auto hRes = EC_MAPI(MAPIOpenFormMgr(m_lpMAPISession, ppFormMgr));
 			return hRes;
 		}
 
@@ -237,7 +236,7 @@ namespace mapi
 
 			if (pFolderFocus)
 			{
-				EC_MAPI(pFolderFocus->CreateMessage(
+				hRes = EC_MAPI(pFolderFocus->CreateMessage(
 					nullptr, // IID
 					NULL, // flags
 					ppMessage));
@@ -288,11 +287,10 @@ namespace mapi
 		STDMETHODIMP CMyMAPIFormViewer::SaveMessage()
 		{
 			output::DebugPrintEx(DBGFormViewer, CLASS, L"SaveMessage", L"\n");
-			auto hRes = S_OK;
 
 			if (!m_lpPersistMessage || !m_lpMessage) return MAPI_E_INVALID_PARAMETER;
 
-			EC_MAPI(m_lpPersistMessage->Save(
+			auto hRes = EC_MAPI(m_lpPersistMessage->Save(
 				nullptr, // m_lpMessage,
 				true));
 			if (FAILED(hRes))
@@ -309,8 +307,12 @@ namespace mapi
 			}
 			else
 			{
-				EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
-				EC_MAPI(m_lpPersistMessage->SaveCompleted(nullptr));
+				hRes = EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_MAPI(m_lpPersistMessage->SaveCompleted(nullptr));
+				}
 			}
 
 			return hRes;
@@ -319,10 +321,9 @@ namespace mapi
 		STDMETHODIMP CMyMAPIFormViewer::SubmitMessage(ULONG ulFlags)
 		{
 			output::DebugPrintEx(DBGFormViewer, CLASS, L"SubmitMessage", L"ulFlags = 0x%08X\n", ulFlags);
-			auto hRes = S_OK;
 			if (!m_lpPersistMessage || !m_lpMessage) return MAPI_E_INVALID_PARAMETER;
 
-			EC_MAPI(m_lpPersistMessage->Save(m_lpMessage, true));
+			auto hRes = EC_MAPI(m_lpPersistMessage->Save(m_lpMessage, true));
 			if (FAILED(hRes))
 			{
 				LPMAPIERROR lpErr = nullptr;
@@ -337,9 +338,12 @@ namespace mapi
 			}
 			else
 			{
-				EC_MAPI(m_lpPersistMessage->HandsOffMessage());
+				hRes = EC_MAPI(m_lpPersistMessage->HandsOffMessage());
 
-				EC_MAPI(m_lpMessage->SubmitMessage(NULL));
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_MAPI(m_lpMessage->SubmitMessage(NULL));
+				}
 			}
 
 			m_lpMessage->Release();
@@ -423,14 +427,13 @@ namespace mapi
 		CMyMAPIFormViewer::SetPersist(_In_opt_ LPMAPIFORM lpForm, _In_opt_ LPPERSISTMESSAGE lpPersist)
 		{
 			output::DebugPrintEx(DBGFormViewer, CLASS, L"SetPersist", L"\n");
-			auto hRes = S_OK;
 			ShutdownPersist();
 
 			static const SizedSPropTagArray(1, sptaFlags) = {1, {PR_MESSAGE_FLAGS}};
 			ULONG cValues = 0L;
 			LPSPropValue lpPropArray = nullptr;
 
-			EC_MAPI(m_lpMessage->GetProps(LPSPropTagArray(&sptaFlags), 0, &cValues, &lpPropArray));
+			auto hRes = EC_MAPI(m_lpMessage->GetProps(LPSPropTagArray(&sptaFlags), 0, &cValues, &lpPropArray));
 			const auto bComposing = lpPropArray && lpPropArray->Value.l & MSGFLAG_UNSENT;
 			MAPIFreeBuffer(lpPropArray);
 
@@ -473,16 +476,15 @@ namespace mapi
 				nullptr, // view context
 				reinterpret_cast<ULONG_PTR>(m_hwndParent), // parent window
 				lpRect)); // RECT structure with size
-			if (S_OK != hRes)
+			if (hRes != S_OK)
 			{
-				hRes = S_OK;
 				RECT Rect;
 
 				Rect.left = 0;
 				Rect.right = 500;
 				Rect.top = 0;
 				Rect.bottom = 400;
-				EC_MAPI(lpMapiForm->DoVerb(
+				hRes = EC_MAPI(lpMapiForm->DoVerb(
 					lVerb,
 					nullptr, // view context
 					reinterpret_cast<ULONG_PTR>(m_hwndParent), // parent window
@@ -706,7 +708,7 @@ namespace mapi
 							nullptr,
 							reinterpret_cast<LPUNKNOWN*>(ppMessage)));
 
-						EC_MAPI(m_lpFolder->GetMessageStatus(
+						hRes = EC_MAPI(m_lpFolder->GetMessageStatus(
 							lpEID->cb, reinterpret_cast<LPENTRYID>(lpEID->lpb), 0, pulStatus));
 					}
 				}

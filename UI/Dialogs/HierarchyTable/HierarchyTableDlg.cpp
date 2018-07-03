@@ -131,7 +131,7 @@ namespace dialog
 
 			WC_H(MyData.DisplayDialog());
 
-			EC_MAPI(
+			EC_MAPI_S(
 				lpContainer->GetHierarchyTable(MyData.GetCheck(0) ? CONVENIENT_DEPTH : 0 | fMapiUnicode, &lpMAPITable));
 
 			if (lpMAPITable)
@@ -191,7 +191,7 @@ namespace dialog
 					const auto lpNewRes = MyCriteria.DetachModifiedSRestriction();
 					const auto lpNewEntryList = MyCriteria.DetachModifiedEntryList();
 					const auto ulSearchFlags = MyCriteria.GetSearchFlags();
-					EC_MAPI(lpMAPIFolder->SetSearchCriteria(lpNewRes, lpNewEntryList, ulSearchFlags));
+					EC_MAPI_S(lpMAPIFolder->SetSearchCriteria(lpNewRes, lpNewEntryList, ulSearchFlags));
 					MAPIFreeBuffer(lpNewRes);
 					MAPIFreeBuffer(lpNewEntryList);
 				}

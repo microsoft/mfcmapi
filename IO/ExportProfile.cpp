@@ -90,7 +90,7 @@ namespace output
 
 			LPPROVIDERADMIN lpProviderAdmin = nullptr;
 
-			EC_MAPI(lpServiceAdmin->AdminProviders(
+			EC_MAPI_S(lpServiceAdmin->AdminProviders(
 				reinterpret_cast<LPMAPIUID>(lpServiceUID->Value.bin.lpb),
 				0, // fMapiUnicode is not supported
 				&lpProviderAdmin));
@@ -98,14 +98,14 @@ namespace output
 			if (lpProviderAdmin)
 			{
 				LPMAPITABLE lpProviderTable = nullptr;
-				EC_MAPI(lpProviderAdmin->GetProviderTable(
+				EC_MAPI_S(lpProviderAdmin->GetProviderTable(
 					0, // fMapiUnicode is not supported
 					&lpProviderTable));
 
 				if (lpProviderTable)
 				{
 					LPSRowSet lpRowSet = nullptr;
-					EC_MAPI(HrQueryAllRows(lpProviderTable, nullptr, nullptr, nullptr, 0, &lpRowSet));
+					EC_MAPI_S(HrQueryAllRows(lpProviderTable, nullptr, nullptr, nullptr, 0, &lpRowSet));
 					if (lpRowSet && lpRowSet->cRows >= 1)
 					{
 						for (ULONG i = 0; i < lpRowSet->cRows; i++)
@@ -154,12 +154,12 @@ namespace output
 		output::OutputToFile(fProfile, output::g_szXMLHeader);
 		output::Outputf(DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile.c_str());
 
-		EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));
 
 		if (lpProfAdmin)
 		{
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
-			EC_MAPI(
+			EC_MAPI_S(
 				lpProfAdmin->AdminServices(LPTSTR(szProfile.c_str()), LPTSTR(""), NULL, MAPI_DIALOG, &lpServiceAdmin));
 			if (lpServiceAdmin)
 			{
@@ -184,14 +184,14 @@ namespace output
 				{
 					LPMAPITABLE lpServiceTable = nullptr;
 
-					EC_MAPI(lpServiceAdmin->GetMsgServiceTable(
+					EC_MAPI_S(lpServiceAdmin->GetMsgServiceTable(
 						0, // fMapiUnicode is not supported
 						&lpServiceTable));
 
 					if (lpServiceTable)
 					{
 						LPSRowSet lpRowSet = nullptr;
-						EC_MAPI(HrQueryAllRows(lpServiceTable, nullptr, nullptr, nullptr, 0, &lpRowSet));
+						EC_MAPI_S(HrQueryAllRows(lpServiceTable, nullptr, nullptr, nullptr, 0, &lpRowSet));
 						if (lpRowSet && lpRowSet->cRows >= 1)
 						{
 							for (ULONG i = 0; i < lpRowSet->cRows; i++)
@@ -204,8 +204,10 @@ namespace output
 						lpServiceTable->Release();
 					}
 				}
+
 				lpServiceAdmin->Release();
 			}
+
 			lpProfAdmin->Release();
 		}
 

@@ -254,20 +254,19 @@ namespace dialog
 				LPSPropProblemArray lpProblems = nullptr;
 
 				// Open the attachment source
-				EC_MAPI(lpSourceMessage->OpenAttach(ulAtt, NULL, MAPI_DEFERRED_ERRORS, &lpAttSrc));
-
+				hRes = EC_MAPI(lpSourceMessage->OpenAttach(ulAtt, NULL, MAPI_DEFERRED_ERRORS, &lpAttSrc));
 				if (lpAttSrc)
 				{
 					ULONG ulAttNum = NULL;
 					// Create the attachment destination
-					EC_MAPI(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
+					hRes = EC_MAPI(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
 					if (lpAttDst)
 					{
 						LPMAPIPROGRESS lpProgress =
 							mapi::mapiui::GetMAPIProgress(L"IAttach::CopyTo", m_hWnd); // STRING_OK
 
 						// Copy from source to destination
-						EC_MAPI(lpAttSrc->CopyTo(
+						hRes = EC_MAPI(lpAttSrc->CopyTo(
 							0,
 							NULL,
 							nullptr,
@@ -290,7 +289,7 @@ namespace dialog
 
 				if (lpAttDst)
 				{
-					EC_MAPI(lpAttDst->SaveChanges(KEEP_OPEN_READWRITE));
+					hRes = EC_MAPI(lpAttDst->SaveChanges(KEEP_OPEN_READWRITE));
 					lpAttDst->Release();
 					lpAttDst = nullptr;
 				}
@@ -299,7 +298,7 @@ namespace dialog
 				hRes = S_OK;
 			}
 
-			EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+			hRes = EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
 
@@ -310,7 +309,6 @@ namespace dialog
 	void CAttachmentsDlg::OnDeleteSelectedItem()
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		std::vector<int> attachnums;
@@ -328,7 +326,7 @@ namespace dialog
 			output::DebugPrintEx(
 				DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting attachment 0x%08X\n", attachnum);
 			LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", m_hWnd); // STRING_OK
-			EC_MAPI(m_lpMessage->DeleteAttach(
+			EC_MAPI_S(m_lpMessage->DeleteAttach(
 				attachnum,
 				lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 				lpProgress,
@@ -337,7 +335,7 @@ namespace dialog
 			if (lpProgress) lpProgress->Release();
 		}
 
-		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+		EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
 
@@ -345,9 +343,7 @@ namespace dialog
 	{
 		if (m_lpAttach)
 		{
-			auto hRes = S_OK;
-
-			EC_MAPI(m_lpAttach->SaveChanges(KEEP_OPEN_READWRITE));
+			EC_MAPI_S(m_lpAttach->SaveChanges(KEEP_OPEN_READWRITE));
 		}
 	}
 
@@ -355,9 +351,7 @@ namespace dialog
 	{
 		if (m_lpMessage)
 		{
-			auto hRes = S_OK;
-
-			EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+			EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 		}
 	}
 
@@ -383,7 +377,7 @@ namespace dialog
 			{
 				const auto ulAttachNum = lpListData->Contents()->m_ulAttachNum;
 
-				EC_MAPI(
+				EC_MAPI_S(
 					m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_BEST_ACCESS, static_cast<LPATTACH*>(&lpAttach)));
 
 				if (lpAttach)
@@ -405,7 +399,6 @@ namespace dialog
 
 	void CAttachmentsDlg::OnAddAttachment()
 	{
-		HRESULT hRes = 0;
 		auto szAttachName = file::CFileDialogExW::OpenFile(
 			strings::emptystring, strings::emptystring, NULL, strings::loadstring(IDS_ALLFILES));
 		if (!szAttachName.empty())
@@ -413,7 +406,7 @@ namespace dialog
 			LPATTACH lpAttachment = nullptr;
 			ULONG ulAttachNum = 0;
 
-			EC_MAPI(m_lpMessage->CreateAttach(NULL, NULL, &ulAttachNum, &lpAttachment));
+			auto hRes = EC_MAPI(m_lpMessage->CreateAttach(NULL, NULL, &ulAttachNum, &lpAttachment));
 
 			if (SUCCEEDED(hRes) && lpAttachment)
 			{
@@ -427,19 +420,19 @@ namespace dialog
 				spvAttach[3].ulPropTag = PR_DISPLAY_NAME_W;
 				spvAttach[3].Value.lpszW = LPWSTR(szAttachName.c_str());
 
-				EC_MAPI(lpAttachment->SetProps(_countof(spvAttach), spvAttach, NULL));
+				hRes = EC_MAPI(lpAttachment->SetProps(_countof(spvAttach), spvAttach, NULL));
 				if (SUCCEEDED(hRes))
 				{
 					LPSTREAM pStreamFile = nullptr;
 
-					EC_MAPI(mapi::MyOpenStreamOnFile(
+					hRes = EC_MAPI(mapi::MyOpenStreamOnFile(
 						MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, szAttachName, &pStreamFile));
 					if (SUCCEEDED(hRes) && pStreamFile)
 					{
 						LPSTREAM pStreamAtt = nullptr;
 						STATSTG StatInfo = {nullptr};
 
-						EC_MAPI(lpAttachment->OpenProperty(
+						hRes = EC_MAPI(lpAttachment->OpenProperty(
 							PR_ATTACH_DATA_BIN,
 							&IID_IStream,
 							0,
@@ -447,11 +440,27 @@ namespace dialog
 							reinterpret_cast<LPUNKNOWN*>(&pStreamAtt)));
 						if (SUCCEEDED(hRes) && pStreamAtt)
 						{
-							EC_MAPI(pStreamFile->Stat(&StatInfo, STATFLAG_NONAME));
-							EC_MAPI(pStreamFile->CopyTo(pStreamAtt, StatInfo.cbSize, NULL, NULL));
-							EC_MAPI(pStreamAtt->Commit(STGC_DEFAULT));
-							EC_MAPI(lpAttachment->SaveChanges(KEEP_OPEN_READWRITE));
-							EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+							hRes = EC_MAPI(pStreamFile->Stat(&StatInfo, STATFLAG_NONAME));
+
+							if (SUCCEEDED(hRes))
+							{
+								hRes = EC_MAPI(pStreamFile->CopyTo(pStreamAtt, StatInfo.cbSize, NULL, NULL));
+							}
+
+							if (SUCCEEDED(hRes))
+							{
+								hRes = EC_MAPI(pStreamAtt->Commit(STGC_DEFAULT));
+							}
+
+							if (SUCCEEDED(hRes))
+							{
+								hRes = EC_MAPI(lpAttachment->SaveChanges(KEEP_OPEN_READWRITE));
+							}
+
+							if (SUCCEEDED(hRes))
+							{
+								hRes = EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+							}
 						}
 
 						if (pStreamAtt) pStreamAtt->Release();

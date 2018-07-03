@@ -44,9 +44,7 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			auto hRes = S_OK;
-
-			EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+			EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 			m_lpMessage->Release();
 		}
 	}
@@ -152,7 +150,7 @@ namespace dialog
 					}
 				}
 
-				EC_MAPI(m_lpMessage->ModifyRecipients(MODRECIP_REMOVE, lpAdrList));
+				EC_MAPI_S(m_lpMessage->ModifyRecipients(MODRECIP_REMOVE, lpAdrList));
 
 				OnRefreshView();
 				FreePadrlist(lpAdrList);
@@ -183,16 +181,25 @@ namespace dialog
 			adrList.aEntries[0].cValues = cProps;
 
 			ULONG ulSizeProps = NULL;
-			EC_MAPI(ScCountProps(adrList.aEntries[0].cValues, lpProps, &ulSizeProps));
+			hRes = EC_MAPI(ScCountProps(adrList.aEntries[0].cValues, lpProps, &ulSizeProps));
 
-			EC_H(MAPIAllocateBuffer(ulSizeProps, reinterpret_cast<LPVOID*>(&adrList.aEntries[0].rgPropVals)));
+			if (SUCCEEDED(hRes))
+			{
+				EC_H(MAPIAllocateBuffer(ulSizeProps, reinterpret_cast<LPVOID*>(&adrList.aEntries[0].rgPropVals)));
+			}
 
-			EC_MAPI(ScCopyProps(adrList.aEntries[0].cValues, lpProps, adrList.aEntries[0].rgPropVals, &ulSizeProps));
+			if (SUCCEEDED(hRes))
+			{
+				hRes = EC_MAPI(
+					ScCopyProps(adrList.aEntries[0].cValues, lpProps, adrList.aEntries[0].rgPropVals, &ulSizeProps));
+			}
 
-			output::DebugPrintEx(
-				DBGGeneric, CLASS, L"OnModifyRecipients", L"Committing changes for current selection\n");
-
-			EC_MAPI(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
+			if (SUCCEEDED(hRes))
+			{
+				output::DebugPrintEx(
+					DBGGeneric, CLASS, L"OnModifyRecipients", L"Committing changes for current selection\n");
+				hRes = EC_MAPI(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
+			}
 
 			MAPIFreeBuffer(adrList.aEntries[0].rgPropVals);
 
@@ -224,7 +231,7 @@ namespace dialog
 				adrEntry.rgPropVals = lpProps;
 				output::DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"Calling RecipOptions\n");
 
-				EC_MAPI(lpAB->RecipOptions(reinterpret_cast<ULONG_PTR>(m_hWnd), NULL, &adrEntry));
+				hRes = EC_MAPI(lpAB->RecipOptions(reinterpret_cast<ULONG_PTR>(m_hWnd), NULL, &adrEntry));
 
 				if (MAPI_W_ERRORS_RETURNED == hRes)
 				{
@@ -254,7 +261,7 @@ namespace dialog
 					// but output to file is complete
 					output::Output(DBGGeneric, nullptr, false, szAdrList);
 
-					EC_MAPI(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
+					EC_MAPI_S(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
 
 					OnRefreshView();
 				}
@@ -266,9 +273,7 @@ namespace dialog
 	{
 		if (m_lpMessage)
 		{
-			auto hRes = S_OK;
-
-			EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+			EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 		}
 	}
 }

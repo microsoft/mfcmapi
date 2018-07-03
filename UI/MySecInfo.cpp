@@ -249,7 +249,7 @@ namespace mapi
 				Blob.Value.bin.cb = cbBlob;
 				Blob.Value.bin.lpb = lpBlob;
 
-				EC_MAPI(HrSetOneProp(m_lpMAPIProp, &Blob));
+				hRes = EC_MAPI(HrSetOneProp(m_lpMAPIProp, &Blob));
 
 				MAPIFreeBuffer(lpBlob);
 			}

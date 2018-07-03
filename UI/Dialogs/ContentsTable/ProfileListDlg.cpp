@@ -88,7 +88,6 @@ namespace dialog
 	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 	void CProfileListDlg::OnRefreshView()
 	{
-		auto hRes = S_OK;
 		LPMAPITABLE lpProfTable = nullptr;
 
 		if (!m_lpContentsTableListCtrl) return;
@@ -101,10 +100,10 @@ namespace dialog
 		m_lpContentsTableListCtrl->SetContentsTable(NULL, dfNormal, NULL);
 
 		LPPROFADMIN lpProfAdmin = nullptr;
-		EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+		auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 		if (!lpProfAdmin) return;
 
-		EC_MAPI(lpProfAdmin->GetProfileTable(
+		hRes = EC_MAPI(lpProfAdmin->GetProfileTable(
 			0, // fMapiUnicode is not supported
 			&lpProfTable));
 

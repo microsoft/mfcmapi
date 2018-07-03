@@ -418,12 +418,12 @@ namespace controls
 
 				// on the AB, something about this call triggers table reloads on the parent hierarchy table
 				// no idea why they're triggered - doesn't happen for all AB providers
-				hRes = WC_MAPI(lpMAPIContainer->GetHierarchyTable(
+				WC_MAPI_S(lpMAPIContainer->GetHierarchyTable(
 					(m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | fMapiUnicode, &lpHierarchyTable));
 
 				if (lpHierarchyTable)
 				{
-					EC_MAPI(lpHierarchyTable->SetColumns(LPSPropTagArray(&sptHTCols), TBL_BATCH));
+					EC_MAPI_S(lpHierarchyTable->SetColumns(LPSPropTagArray(&sptHTCols), TBL_BATCH));
 				}
 
 				lpData->Node()->m_lpHierarchyTable = lpHierarchyTable;
@@ -452,7 +452,7 @@ namespace controls
 						fnevTableModified,
 						static_cast<IMAPIAdviseSink*>(lpData->Node()->m_lpAdviseSink),
 						&lpData->Node()->m_ulAdviseConnection));
-					if (MAPI_E_NO_SUPPORT == hRes) // Some tables don't support this!
+					if (hRes == MAPI_E_NO_SUPPORT) // Some tables don't support this!
 					{
 						if (lpData->Node()->m_lpAdviseSink) lpData->Node()->m_lpAdviseSink->Release();
 						lpData->Node()->m_lpAdviseSink = nullptr;
@@ -498,26 +498,23 @@ namespace controls
 		if (lpHierarchyTable)
 		{
 			// go to the first row
-			EC_MAPI(lpHierarchyTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
-			hRes = S_OK; // don't let failure here fail the whole load
+			EC_MAPI_S(lpHierarchyTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 
 			ULONG i = 0;
 			// get each row in turn and add it to the list
 			// TODO: Query several rows at once
-			if (!FAILED(hRes))
-				for (;;)
-				{
-					hRes = S_OK;
-					// Note - we're saving the rows off in AddNode, so we don't FreeProws this...we just MAPIFreeBuffer the array
-					if (pRows) MAPIFreeBuffer(pRows);
-					pRows = nullptr;
-					EC_MAPI(lpHierarchyTable->QueryRows(1, NULL, &pRows));
-					if (FAILED(hRes) || !pRows || !pRows->cRows) break;
-					// Now we can process the row!
+			for (;;)
+			{
+				// Note - we're saving the rows off in AddNode, so we don't FreeProws this...we just MAPIFreeBuffer the array
+				if (pRows) MAPIFreeBuffer(pRows);
+				pRows = nullptr;
+				hRes = EC_MAPI(lpHierarchyTable->QueryRows(1, NULL, &pRows));
+				if (FAILED(hRes) || !pRows || !pRows->cRows) break;
+				// Now we can process the row!
 
-					AddNode(pRows->aRow, hParent, false);
-					i++;
-				}
+				AddNode(pRows->aRow, hParent, false);
+				i++;
+			}
 		}
 
 		// Note - we're saving the props off in AddNode, so we don't FreeProws this...we just MAPIFreeBuffer the array
@@ -599,7 +596,8 @@ namespace controls
 		if (lpMAPIContainer)
 		{
 			// Get some props for status bar
-			WC_H_GETPROPS_S(lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCountCols), fMapiUnicode, &cVals, &lpProps));
+			WC_H_GETPROPS_S(
+				lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCountCols), fMapiUnicode, &cVals, &lpProps));
 			if (lpProps)
 			{
 				if (!(m_ulDisplayFlags & dfDeleted))
@@ -693,7 +691,6 @@ namespace controls
 	// TODO: In non-unicode builds, this gives us ANSI strings - need to figure out how to change that
 	void CHierarchyTableTreeCtrl::OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
-		auto hRes = S_OK;
 		const auto pTVDispInfo = reinterpret_cast<TV_DISPINFO*>(pNMHDR);
 		*pResult = 0;
 
@@ -707,7 +704,7 @@ namespace controls
 		sDisplayName.ulPropTag = PR_DISPLAY_NAME;
 		sDisplayName.Value.LPSZ = pTVDispInfo->item.pszText;
 
-		EC_MAPI(HrSetOneProp(lpMAPIContainer, &sDisplayName));
+		EC_MAPI_S(HrSetOneProp(lpMAPIContainer, &sDisplayName));
 
 		lpMAPIContainer->Release();
 	}

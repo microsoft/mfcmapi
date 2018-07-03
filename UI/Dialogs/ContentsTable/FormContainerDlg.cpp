@@ -90,8 +90,6 @@ namespace dialog
 	// Clear the current list and get a new one
 	void CFormContainerDlg::OnRefreshView()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpContentsTableListCtrl) return;
 
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
@@ -109,7 +107,7 @@ namespace dialog
 					if (0 == i)
 					{
 						LPSPropTagArray lpTagArray = nullptr;
-						EC_MAPI(lpMAPIFormInfoArray->aFormInfo[i]->GetPropList(fMapiUnicode, &lpTagArray));
+						EC_MAPI_S(lpMAPIFormInfoArray->aFormInfo[i]->GetPropList(fMapiUnicode, &lpTagArray));
 						m_lpContentsTableListCtrl->SetUIColumns(lpTagArray);
 						MAPIFreeBuffer(lpTagArray);
 					}
@@ -166,7 +164,7 @@ namespace dialog
 			if (mapi::CheckStringProp(lpProp, PT_STRING8))
 			{
 				LPMAPIFORMINFO lpFormInfoProp = nullptr;
-				EC_MAPI(
+				hRes = EC_MAPI(
 					m_lpFormContainer->ResolveMessageClass(lpProp->Value.lpszA, MAPIFORM_EXACTMATCH, &lpFormInfoProp));
 				if (SUCCEEDED(hRes))
 				{
@@ -176,6 +174,7 @@ namespace dialog
 					lpFormInfoProp->Release();
 			}
 		}
+
 		return hRes;
 	}
 
@@ -186,7 +185,6 @@ namespace dialog
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 		for (const auto& lpListData : items)
 		{
-			auto hRes = S_OK;
 			// Find the highlighted item AttachNum
 			if (!lpListData) break;
 
@@ -202,7 +200,7 @@ namespace dialog
 					L"OnDeleteSelectedItem", // STRING_OK
 					L"Removing form \"%hs\"\n", // STRING_OK
 					lpProp->Value.lpszA);
-				EC_MAPI(m_lpFormContainer->RemoveForm(lpProp->Value.lpszA));
+				EC_MAPI_S(m_lpFormContainer->RemoveForm(lpProp->Value.lpszA));
 			}
 		}
 
@@ -285,7 +283,7 @@ namespace dialog
 			{
 				output::DebugPrintEx(
 					DBGForms, CLASS, L"OnRemoveForm", L"Calling RemoveForm(\"%hs\")\n", szClass.c_str()); // STRING_OK
-				EC_MAPI(m_lpFormContainer->RemoveForm(szClass.c_str()));
+				EC_MAPI_S(m_lpFormContainer->RemoveForm(szClass.c_str()));
 				OnRefreshView(); // Update the view since we don't have notifications here.
 			}
 		}
@@ -318,7 +316,7 @@ namespace dialog
 					L"Calling ResolveMessageClass(\"%hs\",0x%08X)\n",
 					szClass.c_str(),
 					ulFlags); // STRING_OK
-				EC_MAPI(m_lpFormContainer->ResolveMessageClass(szClass.c_str(), ulFlags, &lpMAPIFormInfo));
+				EC_MAPI_S(m_lpFormContainer->ResolveMessageClass(szClass.c_str(), ulFlags, &lpMAPIFormInfo));
 				if (lpMAPIFormInfo)
 				{
 					OnUpdateSingleMAPIPropListCtrl(lpMAPIFormInfo, nullptr);
@@ -403,7 +401,7 @@ namespace dialog
 					L"Calling ResolveMultipleMessageClasses(Num Classes = 0x%08X,0x%08X)\n",
 					ulNumClasses,
 					ulFlags); // STRING_OK
-				EC_MAPI(
+				EC_MAPI_S(
 					m_lpFormContainer->ResolveMultipleMessageClasses(lpMSGClassArray, ulFlags, &lpMAPIFormInfoArray));
 				if (lpMAPIFormInfoArray)
 				{
@@ -449,7 +447,7 @@ namespace dialog
 			LPMAPIFORMPROPARRAY lpFormPropArray = nullptr;
 			output::DebugPrintEx(
 				DBGForms, CLASS, L"OnCalcFormPropSet", L"Calling CalcFormPropSet(0x%08X)\n", ulFlags); // STRING_OK
-			EC_MAPI(m_lpFormContainer->CalcFormPropSet(ulFlags, &lpFormPropArray));
+			EC_MAPI_S(m_lpFormContainer->CalcFormPropSet(ulFlags, &lpFormPropArray));
 			if (lpFormPropArray)
 			{
 				output::DebugPrintFormPropArray(DBGForms, lpFormPropArray);
@@ -460,11 +458,10 @@ namespace dialog
 
 	void CFormContainerDlg::OnGetDisplay()
 	{
-		auto hRes = S_OK;
 		if (!m_lpFormContainer) return;
 
 		LPTSTR lpszDisplayName = nullptr;
-		EC_MAPI(m_lpFormContainer->GetDisplay(fMapiUnicode, &lpszDisplayName));
+		auto hRes = EC_MAPI(m_lpFormContainer->GetDisplay(fMapiUnicode, &lpszDisplayName));
 
 		if (lpszDisplayName)
 		{

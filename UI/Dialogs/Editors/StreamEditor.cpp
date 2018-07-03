@@ -237,7 +237,7 @@ namespace dialog
 
 				if (m_bDocFile)
 				{
-					EC_MAPI(m_lpMAPIProp->OpenProperty(
+					hRes = EC_MAPI(m_lpMAPIProp->OpenProperty(
 						m_ulPropTag,
 						&IID_IStreamDocfile,
 						ulStgFlags,
@@ -246,7 +246,7 @@ namespace dialog
 				}
 				else
 				{
-					EC_MAPI(m_lpMAPIProp->OpenProperty(
+					hRes = EC_MAPI(m_lpMAPIProp->OpenProperty(
 						m_ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 				}
 			}
@@ -380,8 +380,6 @@ namespace dialog
 			if (!IsDirty(m_iBinBox) && !IsDirty(m_iTextBox)) return; // If we didn't change it, don't write
 			if (m_bUseWrapEx) return;
 
-			auto hRes = S_OK;
-
 			// Reopen the property stream as writeable
 			OpenPropertyStream(true, EDITOR_RTF == m_ulEditorType);
 
@@ -393,10 +391,13 @@ namespace dialog
 
 				auto bin = GetBinary(m_iBinBox);
 
-				EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
+				auto hRes = EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 				output::DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
 
-				EC_MAPI(m_lpStream->Commit(STGC_DEFAULT));
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_MAPI(m_lpStream->Commit(STGC_DEFAULT));
+				}
 
 				if (m_bDisableSave)
 				{
@@ -404,7 +405,7 @@ namespace dialog
 				}
 				else
 				{
-					EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+					hRes = EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 				}
 			}
 

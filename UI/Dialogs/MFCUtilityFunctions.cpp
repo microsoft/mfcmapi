@@ -305,7 +305,6 @@ namespace dialog
 		ObjectType tType,
 		_In_ dialog::CBaseDialog* lpHostDlg)
 	{
-		auto hRes = S_OK;
 		LPEXCHANGEMODIFYTABLE lpExchTbl = nullptr;
 		LPMAPITABLE lpMAPITable = nullptr;
 
@@ -318,7 +317,7 @@ namespace dialog
 		if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
 		// Open the table in an IExchangeModifyTable interface
-		EC_MAPI(lpMAPIProp->OpenProperty(
+		auto hRes = EC_MAPI(lpMAPIProp->OpenProperty(
 			ulPropTag,
 			const_cast<LPGUID>(&IID_IExchangeModifyTable),
 			0,
@@ -351,7 +350,7 @@ namespace dialog
 			default:
 				// Open a MAPI table on the Exchange table property. This table can be
 				// read to determine what the Exchange table looks like.
-				EC_MAPI(lpExchTbl->GetTable(0, &lpMAPITable));
+				hRes = EC_MAPI(lpExchTbl->GetTable(0, &lpMAPITable));
 
 				if (lpMAPITable)
 				{
@@ -361,8 +360,10 @@ namespace dialog
 
 				break;
 			}
+
 			lpExchTbl->Release();
 		}
+
 		return hRes;
 	}
 
@@ -648,7 +649,6 @@ namespace dialog
 		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
 		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
 	{
-		auto hRes = S_OK;
 		LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
 		if (!lpMapiObjects || !lppMAPIFormInfo) return;
 
@@ -657,7 +657,7 @@ namespace dialog
 		const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
+		auto hRes = EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 		if (lpMAPIFormMgr)
 		{
 			output::DebugPrint(DBGForms, L"OnResolveMessageClass: resolving message class\n");
@@ -679,7 +679,7 @@ namespace dialog
 						L"OnResolveMessageClass: Calling ResolveMessageClass(\"%ws\",0x%08X)\n",
 						szClass.c_str(),
 						ulFlags); // STRING_OK
-					EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(
+					hRes = EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(
 						strings::wstringTostring(szClass).c_str(), ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
 					if (lpMAPIFormInfo)
 					{
@@ -699,7 +699,6 @@ namespace dialog
 		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
 		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
 	{
-		auto hRes = S_OK;
 		LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
 
 		if (!lpMapiObjects || !lppMAPIFormInfo) return;
@@ -709,7 +708,7 @@ namespace dialog
 		const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
+		EC_MAPI_S(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 
 		if (lpMAPIFormMgr)
 		{

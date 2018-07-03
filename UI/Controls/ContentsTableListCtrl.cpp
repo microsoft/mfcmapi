@@ -182,14 +182,12 @@ namespace controls
 
 		void CContentsTableListCtrl::GetStatus()
 		{
-			auto hRes = S_OK;
-
 			if (!IsContentsTableSet()) return;
 
 			ULONG ulTableStatus = NULL;
 			ULONG ulTableType = NULL;
 
-			EC_MAPI(m_lpContentsTable->GetStatus(&ulTableStatus, &ulTableType));
+			auto hRes = EC_MAPI(m_lpContentsTable->GetStatus(&ulTableStatus, &ulTableType));
 
 			if (!FAILED(hRes))
 			{
@@ -281,10 +279,9 @@ namespace controls
 
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-			EC_MAPI(m_lpContentsTable->QueryColumns(NULL, &lpOriginalColSet));
+			EC_MAPI_S(m_lpContentsTable->QueryColumns(NULL, &lpOriginalColSet));
 			// this is just a pointer - do not free
 			auto lpFinalTagArray = lpOriginalColSet;
-			hRes = S_OK;
 
 			if (bAddExtras)
 			{
@@ -328,7 +325,7 @@ namespace controls
 			else
 			{
 				// Apply lpFinalTagArray through SetColumns
-				EC_MAPI(m_lpContentsTable->SetColumns(lpFinalTagArray, TBL_BATCH));
+				EC_MAPI_S(m_lpContentsTable->SetColumns(lpFinalTagArray, TBL_BATCH));
 				bModified = true;
 			}
 
@@ -502,7 +499,7 @@ namespace controls
 					output::DebugPrintRestriction(DBGGeneric, m_lpRes, lpMDB);
 				}
 
-				EC_MAPI(m_lpContentsTable->Restrict(const_cast<LPSRestriction>(m_lpRes), TBL_BATCH));
+				hRes = EC_MAPI(m_lpContentsTable->Restrict(const_cast<LPSRestriction>(m_lpRes), TBL_BATCH));
 			}
 			else
 			{
@@ -536,7 +533,6 @@ namespace controls
 		// This is the ideal behavior for this worker thread.
 		unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 		{
-			auto hRes = S_OK;
 			ULONG ulTotal = 0;
 			ULONG ulThrottleLevel = 0;
 			LPSRowSet pRows = nullptr;
@@ -551,7 +547,7 @@ namespace controls
 			const auto hWndHost = lpThreadInfo->hWndHost;
 
 			// required on da new thread before we do any MAPI work
-			EC_MAPI(MAPIInitialize(nullptr));
+			auto hRes = EC_MAPI(MAPIInitialize(nullptr));
 
 			(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
 			auto szCount = std::to_wstring(lpListCtrl->GetItemCount());
@@ -560,16 +556,13 @@ namespace controls
 
 			// potentially lengthy op - check abort before and after
 			CHECKABORT(WC_H(lpListCtrl->ApplyRestriction()));
-			hRes = S_OK; // Don't care if the restrict failed - let's try to go on
 
 			if (!bABORTSET) // only check abort once for this group of ops
 			{
 				// go to the first row
-				EC_MAPI(lpContentsTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
-				hRes = S_OK; // don't let failure here fail the whole load
+				EC_MAPI_S(lpContentsTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 
-				EC_MAPI(lpContentsTable->GetRowCount(NULL, &ulTotal));
-				hRes = S_OK; // don't let failure here fail the whole load
+				EC_MAPI_S(lpContentsTable->GetRowCount(NULL, &ulTotal));
 
 				output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"ulTotal = 0x%X\n", ulTotal);
 
@@ -604,7 +597,7 @@ namespace controls
 
 						if (hRes != MAPI_E_NOT_FOUND) // MAPI_E_NOT_FOUND signals we didn't find any more rows.
 						{
-							CHECKABORT(EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows)));
+							CHECKABORT(hRes = EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows)));
 						}
 						else
 						{
@@ -620,8 +613,9 @@ namespace controls
 							L"Calling QueryRows. Asking for 0x%X rows.\n",
 							ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP);
 						// Pull back a sizable block of rows to add to the list box
-						CHECKABORT(EC_MAPI(lpContentsTable->QueryRows(
-							ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP, NULL, &pRows)));
+						CHECKABORT(
+							hRes = EC_MAPI(lpContentsTable->QueryRows(
+								ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP, NULL, &pRows)));
 						if (FAILED(hRes)) break;
 					}
 
@@ -1476,7 +1470,7 @@ namespace controls
 					LPSRowSet lpRowSet = nullptr;
 					ULONG ulRowsAdded = 0;
 
-					EC_MAPI(m_lpContentsTable->ExpandRow(
+					hRes = EC_MAPI(m_lpContentsTable->ExpandRow(
 						lpData->Contents()->m_lpInstanceKey->cb,
 						lpData->Contents()->m_lpInstanceKey->lpb,
 						256,
@@ -1508,7 +1502,7 @@ namespace controls
 				{
 					ULONG ulRowsRemoved = 0;
 
-					EC_MAPI(m_lpContentsTable->CollapseRow(
+					hRes = EC_MAPI(m_lpContentsTable->CollapseRow(
 						lpData->Contents()->m_lpInstanceKey->cb,
 						lpData->Contents()->m_lpInstanceKey->lpb,
 						NULL,
@@ -1566,8 +1560,7 @@ namespace controls
 		void CContentsTableListCtrl::SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags) const
 		{
 			if (!m_lpContentsTable) return;
-			auto hRes = S_OK;
-			EC_MAPI(m_lpContentsTable->SortTable(lpSortOrderSet, ulFlags));
+			EC_MAPI_S(m_lpContentsTable->SortTable(lpSortOrderSet, ulFlags));
 		}
 
 		// WM_MFCMAPI_THREADADDITEM
@@ -1609,8 +1602,7 @@ namespace controls
 			SRow NewRow = {0};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-			auto hRes = S_OK;
-			EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
+			auto hRes = EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"msgOnAddItem", L"Received message to add row to row %d\n", iNewRow);
@@ -1672,7 +1664,7 @@ namespace controls
 				SRow NewRow = {0};
 				NewRow.cValues = tab->row.cValues;
 				NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-				EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
+				hRes = EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 
 				RefreshItem(iItem, &NewRow, true);
 			}
