@@ -142,17 +142,20 @@ namespace dialog
 
 			hRes = WC_MAPI(lpAdrBook->GetDefaultDir(&cbEID, &lpEID));
 
-			WC_H(mapi::CallOpenEntry(
-				nullptr,
-				lpAdrBook,
-				nullptr,
-				nullptr,
-				cbEID,
-				lpEID,
-				nullptr,
-				MAPI_MODIFY,
-				&ulObjType,
-				reinterpret_cast<LPUNKNOWN*>(&lpDefaultDir)));
+			if (SUCCEEDED(hRes))
+			{
+				WC_H(mapi::CallOpenEntry(
+					nullptr,
+					lpAdrBook,
+					nullptr,
+					nullptr,
+					cbEID,
+					lpEID,
+					nullptr,
+					MAPI_MODIFY,
+					&ulObjType,
+					reinterpret_cast<LPUNKNOWN*>(&lpDefaultDir)));
+			}
 
 			if (lpDefaultDir)
 			{

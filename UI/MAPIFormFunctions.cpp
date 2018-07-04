@@ -30,11 +30,9 @@ namespace mapi
 
 			LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
 			auto hRes = EC_H_MSG(IDS_NOFORMMANAGER, MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
-
 			if (!lpMAPIFormMgr) return hRes;
 
 			LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-
 			hRes = EC_H_MSG(
 				IDS_NOCLASSHANDLER,
 				lpMAPIFormMgr->ResolveMessageClass(
