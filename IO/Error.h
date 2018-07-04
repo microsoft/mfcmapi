@@ -155,7 +155,7 @@ namespace error
 // Execute a function, log and return the HRESULT
 // Logs a MAPI call trace under DBGMAPIFunctions
 // Does not modify or reference existing hRes
-#define EC_MAPI2(fnx) \
+#define EC_MAPI(fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
@@ -165,30 +165,17 @@ namespace error
 // Execute a function, log and swallow the HRESULT
 // Logs a MAPI call trace under DBGMAPIFunctions
 // Does not modify or reference existing hRes
-#define EC_MAPI2S(fnx) \
+#define EC_MAPI_S(fnx) \
 	[&]() -> void { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
-
-#define EC_MAPI(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = (fnx); \
-			CheckMAPICall(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
 
 // Execute a function, log and return the HRESULT
 // Logs a MAPI call trace under DBGMAPIFunctions
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_MAPI2(fnx) \
+#define WC_MAPI(fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
@@ -199,24 +186,11 @@ namespace error
 // Logs a MAPI call trace under DBGMAPIFunctions
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_MAPI2S(fnx) \
+#define WC_MAPI_S(fnx) \
 	[&]() -> void { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
-
-#define WC_MAPI(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = (fnx); \
-			CheckMAPICall(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
 
 // Execute a function, log error with uidErrorMessage, and return the HRESULT
 // Does not modify or reference existing hRes

@@ -237,7 +237,7 @@ namespace dialog
 
 				if (m_bDocFile)
 				{
-					EC_MAPI(m_lpMAPIProp->OpenProperty(
+					hRes = EC_MAPI(m_lpMAPIProp->OpenProperty(
 						m_ulPropTag,
 						&IID_IStreamDocfile,
 						ulStgFlags,
@@ -246,7 +246,7 @@ namespace dialog
 				}
 				else
 				{
-					EC_MAPI(m_lpMAPIProp->OpenProperty(
+					hRes = EC_MAPI(m_lpMAPIProp->OpenProperty(
 						m_ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 				}
 			}
@@ -254,7 +254,7 @@ namespace dialog
 			{
 				const auto ulStgFlags = STGM_READ;
 				const auto ulFlags = NULL;
-				WC_MAPI(m_lpMAPIProp->OpenProperty(
+				hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
 					m_ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 
 				// If we're guessing types, try again as a different type
@@ -274,7 +274,6 @@ namespace dialog
 
 					if (ulPropTag != m_ulPropTag)
 					{
-						hRes = S_OK;
 						output::DebugPrintEx(
 							DBGStream,
 							CLASS,
@@ -282,7 +281,7 @@ namespace dialog
 							L"Retrying as 0x%X (= %ws)\n",
 							m_ulPropTag,
 							interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str());
-						WC_MAPI(m_lpMAPIProp->OpenProperty(
+						hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
 							ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 						if (SUCCEEDED(hRes))
 						{
@@ -294,8 +293,7 @@ namespace dialog
 				// It's possible our stream was actually an docfile - give it a try
 				if (FAILED(hRes))
 				{
-					hRes = S_OK;
-					WC_MAPI(m_lpMAPIProp->OpenProperty(
+					hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
 						CHANGE_PROP_TYPE(m_ulPropTag, PT_OBJECT),
 						&IID_IStreamDocfile,
 						ulStgFlags,
@@ -381,8 +379,6 @@ namespace dialog
 			if (!IsDirty(m_iBinBox) && !IsDirty(m_iTextBox)) return; // If we didn't change it, don't write
 			if (m_bUseWrapEx) return;
 
-			auto hRes = S_OK;
-
 			// Reopen the property stream as writeable
 			OpenPropertyStream(true, EDITOR_RTF == m_ulEditorType);
 
@@ -394,10 +390,13 @@ namespace dialog
 
 				auto bin = GetBinary(m_iBinBox);
 
-				EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
+				auto hRes = EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 				output::DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
 
-				EC_MAPI(m_lpStream->Commit(STGC_DEFAULT));
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_MAPI(m_lpStream->Commit(STGC_DEFAULT));
+				}
 
 				if (m_bDisableSave)
 				{
@@ -405,7 +404,7 @@ namespace dialog
 				}
 				else
 				{
-					EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+					hRes = EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 				}
 			}
 

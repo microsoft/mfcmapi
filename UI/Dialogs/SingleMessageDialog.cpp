@@ -103,11 +103,13 @@ namespace dialog
 			{
 				output::DebugPrint(
 					DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", m_lpMessage, MyData.GetHex(0));
-				EC_MAPI(RTFSync(m_lpMessage, MyData.GetHex(0), &bMessageUpdated));
-
+				hRes = EC_MAPI(RTFSync(m_lpMessage, MyData.GetHex(0), &bMessageUpdated));
 				output::DebugPrint(DBGGeneric, L"RTFSync returned %d\n", bMessageUpdated);
 
-				EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+				}
 
 				(void) m_lpPropDisplay->RefreshMAPIPropList();
 			}
@@ -206,14 +208,13 @@ namespace dialog
 
 	void SingleMessageDialog::OnSaveChanges()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (m_lpMessage)
 		{
 			output::DebugPrint(DBGGeneric, L"Saving changes on %p\n", m_lpMessage);
 
-			EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+			EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
 			(void) m_lpPropDisplay->RefreshMAPIPropList();
 		}

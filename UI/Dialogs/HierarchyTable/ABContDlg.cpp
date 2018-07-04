@@ -49,7 +49,6 @@ namespace dialog
 
 	void CAbContDlg::OnSetDefaultDir()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
@@ -61,14 +60,13 @@ namespace dialog
 			auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // Do not release
 			if (lpAddrBook)
 			{
-				EC_MAPI(lpAddrBook->SetDefaultDir(lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
+				EC_MAPI_S(lpAddrBook->SetDefaultDir(lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
 			}
 		}
 	}
 
 	void CAbContDlg::OnSetPAB()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
@@ -80,7 +78,7 @@ namespace dialog
 			auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			if (lpAddrBook)
 			{
-				EC_MAPI(lpAddrBook->SetPAB(lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
+				EC_MAPI_S(lpAddrBook->SetPAB(lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
 			}
 		}
 	}

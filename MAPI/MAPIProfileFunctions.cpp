@@ -24,7 +24,6 @@ namespace mapi
 		std::wstring
 		LaunchProfileWizard(_In_ HWND hParentWnd, ULONG ulFlags, _In_ const std::string& szServiceNameToAdd)
 		{
-			auto hRes = S_OK;
 			CHAR szProfName[80] = {0};
 			const ULONG cchProfName = _countof(szProfName);
 			LPCSTR szServices[] = {szServiceNameToAdd.c_str(), nullptr};
@@ -32,8 +31,8 @@ namespace mapi
 			output::DebugPrint(DBGGeneric, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
 
 			// Call LaunchWizard to add the service.
-			WC_MAPI(LaunchWizard(hParentWnd, ulFlags, szServices, cchProfName, szProfName));
-			if (MAPI_E_CALL_FAILED == hRes)
+			auto hRes = WC_MAPI(LaunchWizard(hParentWnd, ulFlags, szServices, cchProfName, szProfName));
+			if (hRes == MAPI_E_CALL_FAILED)
 			{
 				CHECKHRESMSG(hRes, IDS_LAUNCHWIZARDFAILED);
 			}
@@ -352,20 +351,19 @@ namespace mapi
 		// bAddMark of true will add tag, bAddMark of false will remove it
 		_Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmin, bool bAddMark)
 		{
-			auto hRes = S_OK;
 			LPMAPITABLE lpProviderTable = nullptr;
 
 			if (!lpServiceAdmin) return MAPI_E_INVALID_PARAMETER;
 
 			static const SizedSPropTagArray(1, pTagUID) = {1, {PR_SERVICE_UID}};
 
-			EC_MAPI(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
+			auto hRes = EC_MAPI(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
 
 			if (lpProviderTable)
 			{
 				LPSRowSet lpRowSet = nullptr;
 
-				EC_MAPI(HrQueryAllRows(lpProviderTable, LPSPropTagArray(&pTagUID), nullptr, nullptr, 0, &lpRowSet));
+				hRes = EC_MAPI(HrQueryAllRows(lpProviderTable, LPSPropTagArray(&pTagUID), nullptr, nullptr, 0, &lpRowSet));
 
 				if (lpRowSet) output::DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
 
@@ -389,24 +387,25 @@ namespace mapi
 									SPropValue PropVal;
 									PropVal.ulPropTag = PR_MARKER;
 									PropVal.Value.lpszA = const_cast<LPSTR>(MARKER_STRING);
-									EC_MAPI(lpSect->SetProps(1, &PropVal, nullptr));
+									EC_MAPI_S(lpSect->SetProps(1, &PropVal, nullptr));
 								}
 								else
 								{
 									SPropTagArray pTagArray = {1, {PR_MARKER}};
-									WC_MAPI(lpSect->DeleteProps(&pTagArray, nullptr));
+									WC_MAPI_S(lpSect->DeleteProps(&pTagArray, nullptr));
 								}
 
-								hRes = S_OK;
-								EC_MAPI(lpSect->SaveChanges(0));
+								hRes = EC_MAPI(lpSect->SaveChanges(0));
 								lpSect->Release();
 							}
 						}
 					}
 				}
+
 				FreeProws(lpRowSet);
 				lpProviderTable->Release();
 			}
+
 			return hRes;
 		}
 
@@ -414,7 +413,6 @@ namespace mapi
 		_Check_return_ HRESULT
 		HrFindUnmarkedProvider(_In_ LPSERVICEADMIN lpServiceAdmin, _Deref_out_opt_ LPSRowSet* lpRowSet)
 		{
-			auto hRes = S_OK;
 			LPMAPITABLE lpProviderTable = nullptr;
 			LPPROFSECT lpSect = nullptr;
 
@@ -424,14 +422,14 @@ namespace mapi
 
 			static const SizedSPropTagArray(1, pTagUID) = {1, PR_SERVICE_UID};
 
-			EC_MAPI(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
+			auto hRes = EC_MAPI(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
 
 			if (lpProviderTable)
 			{
-				EC_MAPI(lpProviderTable->SetColumns(LPSPropTagArray(&pTagUID), TBL_BATCH));
+				hRes = EC_MAPI(lpProviderTable->SetColumns(LPSPropTagArray(&pTagUID), TBL_BATCH));
 				for (;;)
 				{
-					EC_MAPI(lpProviderTable->QueryRows(1, 0, lpRowSet));
+					hRes = EC_MAPI(lpProviderTable->QueryRows(1, 0, lpRowSet));
 					if (hRes == S_OK && *lpRowSet && 1 == (*lpRowSet)->cRows)
 					{
 						const auto lpCurRow = &(*lpRowSet)->aRow[0];
@@ -480,6 +478,7 @@ namespace mapi
 
 				lpProviderTable->Release();
 			}
+
 			return hRes;
 		}
 
@@ -498,11 +497,11 @@ namespace mapi
 
 			LPPROFADMIN lpProfAdmin = nullptr;
 			// Connect to Profile Admin interface.
-			auto hRes = EC_MAPI2(MAPIAdminProfiles(0, &lpProfAdmin));
+			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
 
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
-			hRes = EC_MAPI2(lpProfAdmin->AdminServices(
+			hRes = EC_MAPI(lpProfAdmin->AdminServices(
 				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
 				LPTSTR(""),
 				0,
@@ -575,7 +574,8 @@ namespace mapi
 
 				if (lpPropVals)
 				{
-					hRes = EC_H_CANCEL(lpServiceAdmin->ConfigureMsgService(lpuidService, NULL, 0, cPropVals, lpPropVals));
+					hRes =
+						EC_H_CANCEL(lpServiceAdmin->ConfigureMsgService(lpuidService, NULL, 0, cPropVals, lpPropVals));
 				}
 
 				if (lpServiceAdmin2) lpServiceAdmin2->Release();
@@ -661,7 +661,6 @@ namespace mapi
 		// Creates an empty profile.
 		_Check_return_ HRESULT HrCreateProfile(_In_ const std::string& lpszProfileName) // profile name
 		{
-			auto hRes = S_OK;
 			LPPROFADMIN lpProfAdmin = nullptr;
 
 			output::DebugPrint(DBGGeneric, L"HrCreateProfile(%hs)\n", lpszProfileName.c_str());
@@ -669,16 +668,16 @@ namespace mapi
 			if (lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			// Connect to Profile Admin interface.
-			EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
 
 			// Create the profile
-			WC_MAPI(lpProfAdmin->CreateProfile(
+			hRes = WC_MAPI(lpProfAdmin->CreateProfile(
 				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
 				nullptr,
 				0,
 				NULL)); // fMapiUnicode is not supported!
-			if (S_OK != hRes)
+			if (hRes != S_OK)
 			{
 				// Did it fail because a profile of this name already exists?
 				const auto hResCheck = HrMAPIProfileExists(lpProfAdmin, lpszProfileName);
@@ -693,16 +692,15 @@ namespace mapi
 		// Removes a profile.
 		_Check_return_ HRESULT HrRemoveProfile(_In_ const std::string& lpszProfileName)
 		{
-			auto hRes = S_OK;
 			LPPROFADMIN lpProfAdmin = nullptr;
 
 			output::DebugPrint(DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName.c_str());
 			if (lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-			EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
 
-			EC_MAPI(
+			hRes = EC_MAPI(
 				lpProfAdmin->DeleteProfile(reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())), 0));
 
 			lpProfAdmin->Release();
@@ -716,16 +714,15 @@ namespace mapi
 		// Set a profile as default.
 		_Check_return_ HRESULT HrSetDefaultProfile(_In_ const std::string& lpszProfileName)
 		{
-			auto hRes = S_OK;
 			LPPROFADMIN lpProfAdmin = nullptr;
 
 			output::DebugPrint(DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName.c_str());
 			if (lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-			EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
 
-			EC_MAPI(lpProfAdmin->SetDefaultProfile(
+			hRes = EC_MAPI(lpProfAdmin->SetDefaultProfile(
 				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())), 0));
 
 			lpProfAdmin->Release();
@@ -750,10 +747,10 @@ namespace mapi
 
 			// Get a table of existing profiles
 
-			auto hRes = EC_MAPI2(lpProfAdmin->GetProfileTable(0, &lpTable));
+			auto hRes = EC_MAPI(lpProfAdmin->GetProfileTable(0, &lpTable));
 			if (!lpTable) return hRes;
 
-			hRes = EC_MAPI2(HrQueryAllRows(lpTable, LPSPropTagArray(&rgPropTag), nullptr, nullptr, 0, &lpRows));
+			hRes = EC_MAPI(HrQueryAllRows(lpTable, LPSPropTagArray(&rgPropTag), nullptr, nullptr, 0, &lpRows));
 
 			if (lpRows)
 			{
@@ -813,16 +810,15 @@ namespace mapi
 			*lpbFoundServerVersion = false;
 			*lpbFoundServerFullVersion = false;
 
-			auto hRes = S_OK;
 			LPPROFADMIN lpProfAdmin = nullptr;
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
 
 			output::DebugPrint(DBGGeneric, L"GetProfileServiceVersion(%hs)\n", lpszProfileName.c_str());
 
-			EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
 
-			EC_MAPI(lpProfAdmin->AdminServices(
+			hRes = EC_MAPI(lpProfAdmin->AdminServices(
 				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
 				LPTSTR(""),
 				0,
@@ -832,12 +828,12 @@ namespace mapi
 			if (lpServiceAdmin)
 			{
 				LPPROFSECT lpProfSect = nullptr;
-				EC_MAPI(
+				hRes = EC_MAPI(
 					lpServiceAdmin->OpenProfileSection(LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &lpProfSect));
 				if (lpProfSect)
 				{
 					LPSPropValue lpServerVersion = nullptr;
-					WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_SERVER_VERSION, &lpServerVersion));
+					hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_SERVER_VERSION, &lpServerVersion));
 
 					if (SUCCEEDED(hRes) && lpServerVersion && PR_PROFILE_SERVER_VERSION == lpServerVersion->ulPropTag)
 					{
@@ -845,10 +841,9 @@ namespace mapi
 						*lpulServerVersion = lpServerVersion->Value.l;
 					}
 					MAPIFreeBuffer(lpServerVersion);
-					hRes = S_OK;
 
 					LPSPropValue lpServerFullVersion = nullptr;
-					WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_SERVER_FULL_VERSION, &lpServerFullVersion));
+					hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_SERVER_FULL_VERSION, &lpServerFullVersion));
 
 					if (SUCCEEDED(hRes) && lpServerFullVersion &&
 						PR_PROFILE_SERVER_FULL_VERSION == lpServerFullVersion->ulPropTag &&
@@ -861,6 +856,7 @@ namespace mapi
 						memcpy(lpStoreVersion, lpServerFullVersion->Value.bin.lpb, sizeof(EXCHANGE_STORE_VERSION_NUM));
 						*lpbFoundServerFullVersion = true;
 					}
+
 					MAPIFreeBuffer(lpServerFullVersion);
 
 					lpProfSect->Release();
@@ -881,17 +877,16 @@ namespace mapi
 		_Check_return_ HRESULT
 		HrCopyProfile(_In_ const std::string& lpszOldProfileName, _In_ const std::string& lpszNewProfileName)
 		{
-			auto hRes = S_OK;
 			LPPROFADMIN lpProfAdmin = nullptr;
 
 			output::DebugPrint(
 				DBGGeneric, L"HrCopyProfile(%hs, %hs)\n", lpszOldProfileName.c_str(), lpszNewProfileName.c_str());
 			if (lpszOldProfileName.empty() || lpszNewProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-			EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
 
-			EC_MAPI(lpProfAdmin->CopyProfile(
+			hRes = EC_MAPI(lpProfAdmin->CopyProfile(
 				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszOldProfileName.c_str())),
 				nullptr,
 				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszNewProfileName.c_str())),
@@ -911,8 +906,6 @@ namespace mapi
 			_In_ LPSBinary lpServiceUID,
 			_Deref_out_opt_ LPPROFSECT* lppProfSect)
 		{
-			auto hRes = S_OK;
-
 			if (lppProfSect) *lppProfSect = nullptr;
 
 			if (!lpServiceUID || !lpServiceAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
@@ -922,7 +915,7 @@ namespace mapi
 			output::DebugPrint(DBGOpenItemProp, L"\n");
 
 			// First, we try the normal way of opening the profile section:
-			WC_MAPI(lpServiceAdmin->OpenProfileSection(
+			auto hRes = WC_MAPI(lpServiceAdmin->OpenProfileSection(
 				reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
 				nullptr,
 				MAPI_MODIFY | MAPI_FORCE_ACCESS, // passing this flag might actually work with Outlook 2000 and XP
@@ -950,7 +943,7 @@ namespace mapi
 
 				if (ppProfile && *ppProfile)
 				{
-					EC_MAPI(
+					hRes = EC_MAPI(
 						(*ppProfile)
 							->OpenSection(reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb), MAPI_MODIFY, lppProfSect));
 				}
@@ -961,6 +954,7 @@ namespace mapi
 				// END OF HACK. I'm amazed that this works....
 				///////////////////////////////////////////////////////////////////
 			}
+
 			return hRes;
 		}
 
@@ -969,8 +963,6 @@ namespace mapi
 			_In_ LPSBinary lpProviderUID,
 			_Deref_out_ LPPROFSECT* lppProfSect)
 		{
-			auto hRes = S_OK;
-
 			if (lppProfSect) *lppProfSect = nullptr;
 			if (!lpProviderUID || !lpProviderAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
 
@@ -978,21 +970,20 @@ namespace mapi
 			output::DebugPrintBinary(DBGOpenItemProp, *lpProviderUID);
 			output::DebugPrint(DBGOpenItemProp, L"\n");
 
-			WC_MAPI(lpProviderAdmin->OpenProfileSection(
+			auto hRes = WC_MAPI(lpProviderAdmin->OpenProfileSection(
 				reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb),
 				nullptr,
 				MAPI_MODIFY | MAPI_FORCE_ACCESS,
 				lppProfSect));
 			if (!*lppProfSect)
 			{
-				hRes = S_OK;
-
 				// We only do this hack as a last resort - it can crash some versions of Outlook, but is required for Exchange
 				*(reinterpret_cast<BYTE*>(lpProviderAdmin) + 0x60) = 0x2; // Use at your own risk! NOT SUPPORTED!
 
-				WC_MAPI(lpProviderAdmin->OpenProfileSection(
+				hRes = WC_MAPI(lpProviderAdmin->OpenProfileSection(
 					reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb), nullptr, MAPI_MODIFY, lppProfSect));
 			}
+
 			return hRes;
 		}
 	}

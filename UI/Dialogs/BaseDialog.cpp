@@ -829,15 +829,15 @@ namespace dialog
 		switch (MyEIDs.GetDropDown(2))
 		{
 		case 0: // Message Store
-			EC_MAPI(lpMDB->CompareEntryIDs(
+			hRes = EC_MAPI(lpMDB->CompareEntryIDs(
 				static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
 			break;
 		case 1: // Session
-			EC_MAPI(lpMAPISession->CompareEntryIDs(
+			hRes = EC_MAPI(lpMAPISession->CompareEntryIDs(
 				static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
 			break;
 		case 2: // Address Book
-			EC_MAPI(lpAB->CompareEntryIDs(
+			hRes = EC_MAPI(lpAB->CompareEntryIDs(
 				static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
 			break;
 		}
@@ -934,7 +934,7 @@ namespace dialog
 				switch (MyData.GetDropDown(2))
 				{
 				case 0:
-					EC_MAPI(lpMDB->Advise(
+					hRes = EC_MAPI(lpMDB->Advise(
 						static_cast<ULONG>(cbBin),
 						lpEntryID,
 						MyData.GetHex(1),
@@ -944,7 +944,7 @@ namespace dialog
 					m_ulBaseAdviseObjectType = MAPI_STORE;
 					break;
 				case 1:
-					EC_MAPI(lpMAPISession->Advise(
+					hRes = EC_MAPI(lpMAPISession->Advise(
 						static_cast<ULONG>(cbBin),
 						lpEntryID,
 						MyData.GetHex(1),
@@ -953,7 +953,7 @@ namespace dialog
 					m_ulBaseAdviseObjectType = MAPI_SESSION;
 					break;
 				case 2:
-					EC_MAPI(lpAB->Advise(
+					hRes = EC_MAPI(lpAB->Advise(
 						static_cast<ULONG>(cbBin),
 						lpEntryID,
 						MyData.GetHex(1),
@@ -985,8 +985,6 @@ namespace dialog
 
 	void CBaseDialog::OnNotificationsOff()
 	{
-		auto hRes = S_OK;
-
 		if (m_ulBaseAdviseConnection && m_lpMapiObjects)
 		{
 			switch (m_ulBaseAdviseObjectType)
@@ -994,19 +992,19 @@ namespace dialog
 			case MAPI_SESSION:
 			{
 				auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-				if (lpMAPISession) EC_MAPI(lpMAPISession->Unadvise(m_ulBaseAdviseConnection));
+				if (lpMAPISession) EC_MAPI_S(lpMAPISession->Unadvise(m_ulBaseAdviseConnection));
 				break;
 			}
 			case MAPI_STORE:
 			{
 				auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-				if (lpMDB) EC_MAPI(lpMDB->Unadvise(m_ulBaseAdviseConnection));
+				if (lpMDB) EC_MAPI_S(lpMDB->Unadvise(m_ulBaseAdviseConnection));
 				break;
 			}
 			case MAPI_ADDRBOOK:
 			{
 				auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
-				if (lpAB) EC_MAPI(lpAB->Unadvise(m_ulBaseAdviseConnection));
+				if (lpAB) EC_MAPI_S(lpAB->Unadvise(m_ulBaseAdviseConnection));
 				break;
 			}
 			}
@@ -1018,12 +1016,7 @@ namespace dialog
 		m_ulBaseAdviseConnection = NULL;
 	}
 
-	void CBaseDialog::OnDispatchNotifications()
-	{
-		auto hRes = S_OK;
-
-		EC_MAPI(HrDispatchNotifications(NULL));
-	}
+	void CBaseDialog::OnDispatchNotifications() { EC_MAPI_S(HrDispatchNotifications(NULL)); }
 
 	_Check_return_ bool CBaseDialog::HandleAddInMenu(WORD wMenuSelect)
 	{

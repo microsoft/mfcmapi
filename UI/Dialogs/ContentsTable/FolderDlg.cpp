@@ -479,7 +479,7 @@ namespace dialog
 
 					if (lpProgress) ulMoveMessage |= MESSAGE_DIALOG;
 
-					EC_MAPI(lpMAPISourceFolder->CopyMessages(
+					EC_MAPI_S(lpMAPISourceFolder->CopyMessages(
 						lpEIDs,
 						&IID_IMAPIFolder,
 						m_lpFolder,
@@ -527,7 +527,7 @@ namespace dialog
 							if (lpMessage)
 							{
 								LPMESSAGE lpNewMessage = nullptr;
-								EC_MAPI(m_lpFolder->CreateMessage(
+								EC_MAPI_S(m_lpFolder->CreateMessage(
 									nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
 								if (lpNewMessage)
 								{
@@ -539,7 +539,7 @@ namespace dialog
 
 									if (lpProgress) ulMoveMessage |= MAPI_DIALOG;
 
-									EC_MAPI(lpMessage->CopyTo(
+									hRes = EC_MAPI(lpMessage->CopyTo(
 										0,
 										nullptr, // TODO: interfaces?
 										lpTagsToExclude,
@@ -555,13 +555,18 @@ namespace dialog
 									EC_PROBLEMARRAY(lpProblems);
 									MAPIFreeBuffer(lpProblems);
 
-									// save changes to IMessage object.
-									EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
+									if (SUCCEEDED(hRes))
+									{
+										// save changes to IMessage object.
+										hRes = EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
+									}
+
 									lpNewMessage->Release();
 
-									if (MyData.GetCheck(0)) // if we moved, save changes on original message
+									if (SUCCEEDED(hRes) &&
+										MyData.GetCheck(0)) // if we moved, save changes on original message
 									{
-										EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+										hRes = EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 									}
 								}
 
@@ -691,7 +696,7 @@ namespace dialog
 
 				if (lpProgress) ulFlag |= MESSAGE_DIALOG;
 
-				EC_MAPI(m_lpFolder->DeleteMessages(
+				EC_MAPI_S(m_lpFolder->DeleteMessages(
 					lpEIDs, // list of messages to delete
 					lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 					lpProgress,
@@ -777,10 +782,10 @@ namespace dialog
 					switch (MyData.GetDropDown(0))
 					{
 					case 0:
-						EC_MAPI(m_lpFolder->CreateMessage(
+						hRes = EC_MAPI(m_lpFolder->CreateMessage(
 							nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
 
-						if (lpNewMessage)
+						if (SUCCEEDED(hRes) && lpNewMessage)
 						{
 							EC_H(file::LoadFromMSG(lpszPath, lpNewMessage, m_hWnd));
 						}
@@ -958,14 +963,14 @@ namespace dialog
 
 	void CFolderDlg::OnNewMessage()
 	{
-		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
 
-		EC_MAPI(m_lpFolder->CreateMessage(nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0, &lpMessage));
+		auto hRes =
+			EC_MAPI(m_lpFolder->CreateMessage(nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0, &lpMessage));
 
-		if (lpMessage)
+		if (SUCCEEDED(hRes) && lpMessage)
 		{
-			EC_MAPI(lpMessage->SaveChanges(NULL));
+			hRes = EC_MAPI(lpMessage->SaveChanges(NULL));
 			lpMessage->Release();
 		}
 	}
@@ -1019,7 +1024,7 @@ namespace dialog
 				{
 					LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
 					LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-					EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
+					hRes = EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 
 					if (lpMAPIFormMgr)
 					{
@@ -1037,7 +1042,7 @@ namespace dialog
 
 						if (lpMAPIFormInfo)
 						{
-							EC_MAPI(HrGetOneProp(lpMAPIFormInfo, PR_MESSAGE_CLASS_W, &lpProp));
+							hRes = EC_MAPI(HrGetOneProp(lpMAPIFormInfo, PR_MESSAGE_CLASS_W, &lpProp));
 							if (mapi::CheckStringProp(lpProp, PT_UNICODE))
 							{
 								szClass = lpProp->Value.lpszW;
@@ -1078,9 +1083,7 @@ namespace dialog
 		{
 			// Before we open the message, make sure the MAPI Form Manager is implemented
 			LPMAPIFORMMGR lpFormMgr = nullptr;
-			WC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
-			hRes = S_OK; // Ditch the error if we got one
-
+			WC_MAPI_S(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
 			if (lpFormMgr)
 			{
 				EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
@@ -1115,8 +1118,7 @@ namespace dialog
 		{
 			// Before we open the message, make sure the MAPI Form Manager is implemented
 			LPMAPIFORMMGR lpFormMgr = nullptr;
-			WC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
-			hRes = S_OK; // Ditch the error if we got one
+			WC_MAPI_S(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
 
 			if (lpFormMgr)
 			{
@@ -1299,17 +1301,20 @@ namespace dialog
 			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 			while (iItem != -1)
 			{
+				hRes = S_OK;
 				EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 
 				if (lpMessage)
 				{
 					output::DebugPrint(
 						DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", lpMessage, MyData.GetHex(0));
-					EC_MAPI(RTFSync(lpMessage, MyData.GetHex(0), &bMessageUpdated));
-
+					hRes = EC_MAPI(RTFSync(lpMessage, MyData.GetHex(0), &bMessageUpdated));
 					output::DebugPrint(DBGGeneric, L"RTFSync returned %d\n", bMessageUpdated);
 
-					EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+					if (SUCCEEDED(hRes))
+					{
+						hRes = EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+					}
 
 					lpMessage->Release();
 					lpMessage = nullptr;
@@ -1319,7 +1324,6 @@ namespace dialog
 				if (S_OK != hRes && -1 != iItem)
 				{
 					if (bShouldCancel(this, hRes)) break;
-					hRes = S_OK;
 				}
 			}
 		}
@@ -1552,7 +1556,7 @@ namespace dialog
 				for (auto& lpszPath : files)
 				{
 					auto hRes = S_OK;
-					EC_MAPI(m_lpFolder->CreateMessage(
+					hRes = EC_MAPI(m_lpFolder->CreateMessage(
 						nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0, &lpNewMessage));
 
 					if (lpNewMessage)
@@ -1601,8 +1605,7 @@ namespace dialog
 			{
 				for (auto& lpszPath : files)
 				{
-					hRes = S_OK;
-					EC_MAPI(m_lpFolder->CreateMessage(
+					hRes = EC_MAPI(m_lpFolder->CreateMessage(
 						nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0, &lpNewMessage));
 
 					if (lpNewMessage)
@@ -1699,7 +1702,7 @@ namespace dialog
 
 				if (lpMessage)
 				{
-					EC_MAPI(lpMessage->SetReadFlag(MyFlags.GetHex(0)));
+					hRes = EC_MAPI(lpMessage->SetReadFlag(MyFlags.GetHex(0)));
 					lpMessage->Release();
 					lpMessage = nullptr;
 				}
@@ -1715,7 +1718,7 @@ namespace dialog
 
 				if (lpProgress) ulFlags |= MESSAGE_DIALOG;
 
-				EC_MAPI(m_lpFolder->SetReadFlags(
+				EC_MAPI_S(m_lpFolder->SetReadFlags(
 					lpEIDs, lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL, lpProgress, ulFlags));
 
 				if (lpProgress) lpProgress->Release();
@@ -1749,11 +1752,12 @@ namespace dialog
 			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 			while (iItem != -1)
 			{
+				hRes = S_OK;
 				EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 
 				if (lpMessage)
 				{
-					EC_MAPI(lpMAPISession->MessageOptions(
+					hRes = EC_MAPI(lpMAPISession->MessageOptions(
 						reinterpret_cast<ULONG_PTR>(m_hWnd),
 						NULL, // API doesn't like Unicode
 						LPTSTR(strings::wstringTostring(MyAddress.GetStringW(0)).c_str()),
@@ -1767,7 +1771,6 @@ namespace dialog
 				if (S_OK != hRes && -1 != iItem)
 				{
 					if (bShouldCancel(this, hRes)) break;
-					hRes = S_OK;
 				}
 			}
 		}
@@ -1935,7 +1938,7 @@ namespace dialog
 
 		if (lpMessageEID)
 		{
-			EC_MAPI(m_lpFolder->GetMessageStatus(
+			hRes = EC_MAPI(m_lpFolder->GetMessageStatus(
 				lpMessageEID->cb, reinterpret_cast<LPENTRYID>(lpMessageEID->lpb), NULL, &ulMessageStatus));
 
 			editor::CEditor MyStatus(this, IDS_MESSAGESTATUS, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -1970,6 +1973,7 @@ namespace dialog
 			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 			while (iItem != -1)
 			{
+				hRes = S_OK;
 				const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iItem);
 				if (lpListData && lpListData->Contents())
 				{
@@ -1979,7 +1983,7 @@ namespace dialog
 					{
 						ULONG ulOldStatus = NULL;
 
-						EC_MAPI(m_lpFolder->SetMessageStatus(
+						hRes = EC_MAPI(m_lpFolder->SetMessageStatus(
 							lpMessageEID->cb,
 							reinterpret_cast<LPENTRYID>(lpMessageEID->lpb),
 							MyData.GetHex(0),
@@ -1992,7 +1996,6 @@ namespace dialog
 				if (S_OK != hRes && -1 != iItem)
 				{
 					if (bShouldCancel(this, hRes)) break;
-					hRes = S_OK;
 				}
 			}
 		}
@@ -2014,7 +2017,7 @@ namespace dialog
 		{
 			// Get subject line of message to copy.
 			// This will be used as the new file name.
-			EC_MAPI(lpMessage->SubmitMessage(NULL));
+			hRes = EC_MAPI(lpMessage->SubmitMessage(NULL));
 
 			lpMessage->Release();
 		}
@@ -2038,7 +2041,7 @@ namespace dialog
 
 		if (lpMDB && lpMessageEID)
 		{
-			EC_MAPI(lpMDB->AbortSubmit(lpMessageEID->cb, reinterpret_cast<LPENTRYID>(lpMessageEID->lpb), NULL));
+			hRes = EC_MAPI(lpMDB->AbortSubmit(lpMessageEID->cb, reinterpret_cast<LPENTRYID>(lpMessageEID->lpb), NULL));
 		}
 
 		return hRes;

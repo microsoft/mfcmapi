@@ -260,7 +260,7 @@ namespace dialog
 		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_MAPI2S(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAddrBook));
+		EC_MAPI_S(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAddrBook));
 
 		m_lpMapiObjects->SetAddrBook(lpAddrBook);
 
@@ -293,7 +293,7 @@ namespace dialog
 		ULONG ulObjType = NULL;
 		LPABCONT lpDefaultDir = nullptr;
 
-		EC_MAPI2S(lpAddrBook->GetDefaultDir(&cbEID, &lpEID));
+		EC_MAPI_S(lpAddrBook->GetDefaultDir(&cbEID, &lpEID));
 
 		if (lpEID)
 		{
@@ -333,7 +333,7 @@ namespace dialog
 		ULONG ulObjType = NULL;
 		LPABCONT lpPAB = nullptr;
 
-		EC_MAPI2S(lpAddrBook->GetPAB(&cbEID, &lpEID));
+		EC_MAPI_S(lpAddrBook->GetPAB(&cbEID, &lpEID));
 		if (lpEID)
 		{
 			EC_H2S(mapi::CallOpenEntry(
@@ -436,7 +436,7 @@ namespace dialog
 			LPMAPIPROP lpIdentity = nullptr;
 			LPSPropValue lpMailboxName = nullptr;
 
-			EC_MAPI2S(lpMAPISession->QueryIdentity(&cbEntryID, &lpEntryID));
+			EC_MAPI_S(lpMAPISession->QueryIdentity(&cbEntryID, &lpEntryID));
 
 			if (lpEntryID)
 			{
@@ -453,7 +453,7 @@ namespace dialog
 					reinterpret_cast<LPUNKNOWN*>(&lpIdentity)));
 				if (lpIdentity)
 				{
-					EC_MAPI2S(HrGetOneProp(lpIdentity, PR_EMAIL_ADDRESS_A, &lpMailboxName));
+					EC_MAPI_S(HrGetOneProp(lpIdentity, PR_EMAIL_ADDRESS_A, &lpMailboxName));
 
 					if (mapi::CheckStringProp(lpMailboxName, PT_STRING8))
 					{
@@ -647,7 +647,8 @@ namespace dialog
 		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_MAPI2S(lpMAPISession->GetMsgStoresTable(0, &pStoresTbl));
+		EC_MAPI_S(lpMAPISession->GetMsgStoresTable(0, &pStoresTbl));
+
 		if (pStoresTbl)
 		{
 			m_lpContentsTableListCtrl->SetContentsTable(pStoresTbl, dfNormal, MAPI_STORE);
@@ -894,7 +895,7 @@ namespace dialog
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_MAPI2S(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
+		auto hRes = EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 		if (lpMAPIFormMgr)
 		{
 			editor::CEditor MyFlags(
@@ -902,7 +903,7 @@ namespace dialog
 			MyFlags.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 			MyFlags.SetHex(0, MAPIFORM_SELECT_ALL_REGISTRIES);
 
-			auto hRes = WC_H2(MyFlags.DisplayDialog());
+			hRes = WC_H2(MyFlags.DisplayDialog());
 			if (hRes == S_OK)
 			{
 				const auto ulFlags = MyFlags.GetHex(0);
@@ -930,7 +931,7 @@ namespace dialog
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_MAPI2S(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
+		EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 		if (lpMAPIFormMgr)
 		{
 			editor::CEditor MyFlags(
@@ -962,7 +963,7 @@ namespace dialog
 
 		LPMAPIFORMCONTAINER lpMAPILocalFormContainer = nullptr;
 
-		EC_MAPI2S(MAPIOpenLocalFormContainer(&lpMAPILocalFormContainer));
+		EC_MAPI_S(MAPIOpenLocalFormContainer(&lpMAPILocalFormContainer));
 
 		if (lpMAPILocalFormContainer)
 		{
@@ -1103,7 +1104,7 @@ namespace dialog
 			LPSPropValue lpOptions = nullptr;
 			auto adrType = strings::wstringTostring(MyData.GetStringW(0));
 
-			EC_MAPI2S(lpMAPISession->QueryDefaultMessageOpt(
+			hRes = EC_MAPI(lpMAPISession->QueryDefaultMessageOpt(
 				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(adrType.c_str())),
 				NULL, // API doesn't like Unicode
 				&cValues,
@@ -1162,7 +1163,7 @@ namespace dialog
 
 			auto adrType = strings::wstringTostring(MyData.GetStringW(0));
 
-			EC_MAPI2S(lpAddrBook->QueryDefaultRecipOpt(
+			hRes = EC_MAPI(lpAddrBook->QueryDefaultRecipOpt(
 				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(adrType.c_str())),
 				NULL, // API doesn't like Unicode
 				&cValues,
@@ -1213,8 +1214,7 @@ namespace dialog
 		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_MAPI2S(lpMAPISession->QueryIdentity(&cbEntryID, &lpEntryID));
-
+		EC_MAPI_S(lpMAPISession->QueryIdentity(&cbEntryID, &lpEntryID));
 		if (cbEntryID && lpEntryID)
 		{
 			editor::CEditor MyPrompt(this, IDS_QUERYID, IDS_QUERYIDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -1285,7 +1285,7 @@ namespace dialog
 				auto hRes = WC_H2(MyData.DisplayDialog());
 				if (hRes == S_OK)
 				{
-					EC_MAPI2S(lpMAPISession->SetDefaultStore(
+					EC_MAPI_S(lpMAPISession->SetDefaultStore(
 						MyData.GetHex(0), lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
 				}
 			}
@@ -1323,10 +1323,10 @@ namespace dialog
 		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
 
 		LPPROFADMIN lpProfAdmin = nullptr;
-		EC_MAPI2S(MAPIAdminProfiles(0, &lpProfAdmin));
+		auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 		if (!lpProfAdmin) return;
 
-		EC_MAPI2S(lpProfAdmin->GetProfileTable(
+		hRes = EC_MAPI(lpProfAdmin->GetProfileTable(
 			0, // fMapiUnicode is not supported
 			&lpProfTable));
 		if (lpProfTable)
@@ -1374,7 +1374,7 @@ namespace dialog
 		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_MAPI2S(lpMAPISession->GetStatusTable(
+		EC_MAPI_S(lpMAPISession->GetStatusTable(
 			NULL, // This table does not support MAPI_UNICODE!
 			&lpMAPITable));
 		if (lpMAPITable)
@@ -1621,7 +1621,7 @@ namespace dialog
 								szGUID.c_str());
 						}
 
-						hRes = WC_MAPI2(lpMAPISession->OpenProfileSection(&emsmdbUID, nullptr, 0, &lpProfSect));
+						hRes = WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, nullptr, 0, &lpProfSect));
 					}
 				}
 
@@ -1629,13 +1629,13 @@ namespace dialog
 				{
 					// For Outlook 2003/2007, HrEmsmdbUIDFromStore may not succeed,
 					// so use pbGlobalProfileSectionGuid instead
-					WC_MAPI2S(lpMAPISession->OpenProfileSection(
+					hRes = WC_MAPI(lpMAPISession->OpenProfileSection(
 						LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &lpProfSect));
 				}
 
 				if (lpProfSect)
 				{
-					WC_MAPI2S(HrGetOneProp(lpProfSect, PR_PROFILE_CONFIG_FLAGS, &lpConfigProp));
+					WC_MAPI_S(HrGetOneProp(lpProfSect, PR_PROFILE_CONFIG_FLAGS, &lpConfigProp));
 					if (lpConfigProp && PROP_TYPE(lpConfigProp->ulPropTag) != PT_ERROR)
 					{
 						if (fPrivateExchangeStore)
@@ -1661,10 +1661,10 @@ namespace dialog
 
 					if (fCached)
 					{
-						hRes = WC_MAPI2(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_W, &lpPathPropW));
+						hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_W, &lpPathPropW));
 						if (FAILED(hRes))
 						{
-							hRes = WC_MAPI2(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_A, &lpPathPropA));
+							hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_A, &lpPathPropA));
 						}
 
 						if (SUCCEEDED(hRes))
@@ -1689,7 +1689,7 @@ namespace dialog
 						// If this is an Exchange store with an OST path, it's an OST, so we get the mapping signature
 						if ((fPrivateExchangeStore || fPublicExchangeStore) && (wzPath || szPath))
 						{
-							WC_MAPI2S(HrGetOneProp(lpProfSect, PR_MAPPING_SIGNATURE, &lpMappingSig));
+							hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_MAPPING_SIGNATURE, &lpMappingSig));
 						}
 					}
 				}

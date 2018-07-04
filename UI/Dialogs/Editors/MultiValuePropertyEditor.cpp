@@ -306,16 +306,17 @@ namespace dialog
 		{
 			if (!m_lpsOutputValue || !m_lpMAPIProp) return;
 
-			auto hRes = S_OK;
-
 			LPSPropProblemArray lpProblemArray = nullptr;
 
-			EC_MAPI(m_lpMAPIProp->SetProps(1, m_lpsOutputValue, &lpProblemArray));
+			auto hRes = EC_MAPI(m_lpMAPIProp->SetProps(1, m_lpsOutputValue, &lpProblemArray));
 
 			EC_PROBLEMARRAY(lpProblemArray);
 			MAPIFreeBuffer(lpProblemArray);
 
-			EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+			if (SUCCEEDED(hRes))
+			{
+				hRes = EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+			}
 		}
 
 		// Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!

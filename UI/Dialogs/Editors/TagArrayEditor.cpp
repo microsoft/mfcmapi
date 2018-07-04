@@ -67,9 +67,8 @@ namespace dialog
 			if (m_lpOutputTagArray && m_lpContentsTable)
 			{
 				// Apply lpFinalTagArray through SetColumns
-				auto hRes = S_OK;
-				EC_MAPI(m_lpContentsTable->SetColumns(m_lpOutputTagArray,
-													  m_ulSetColumnsFlags)); // Flags
+				EC_MAPI_S(m_lpContentsTable->SetColumns(m_lpOutputTagArray,
+																  m_ulSetColumnsFlags)); // Flags
 			}
 
 			CMyDialog::OnOK(); // don't need to call CEditor::OnOK
@@ -208,7 +207,7 @@ namespace dialog
 				ulQueryColumnFlags = MyData.GetHex(0);
 				LPSPropTagArray lpTagArray = nullptr;
 
-				EC_MAPI(m_lpContentsTable->QueryColumns(ulQueryColumnFlags, &lpTagArray));
+				hRes = EC_MAPI(m_lpContentsTable->QueryColumns(ulQueryColumnFlags, &lpTagArray));
 
 				if (SUCCEEDED(hRes))
 				{

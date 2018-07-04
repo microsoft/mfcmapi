@@ -419,7 +419,6 @@ void DumpHierarchyTable(
 
 ULONGLONG ComputeSingleFolderSize(_In_ LPMAPIFOLDER lpFolder)
 {
-	auto hRes = S_OK;
 	LPMAPITABLE lpTable = nullptr;
 	LPSRowSet lpsRowSet = nullptr;
 	SizedSPropTagArray(1, sProps) = {1, {PR_MESSAGE_SIZE}};

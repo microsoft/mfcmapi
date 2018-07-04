@@ -131,7 +131,7 @@ namespace dialog
 
 			WC_H(MyData.DisplayDialog());
 
-			EC_MAPI(
+			EC_MAPI_S(
 				lpContainer->GetHierarchyTable(MyData.GetCheck(0) ? CONVENIENT_DEPTH : 0 | fMapiUnicode, &lpMAPITable));
 
 			if (lpMAPITable)
@@ -146,8 +146,6 @@ namespace dialog
 
 	void CHierarchyTableDlg::OnEditSearchCriteria()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		// Find the highlighted item
@@ -165,8 +163,8 @@ namespace dialog
 			LPENTRYLIST lpEntryList = nullptr;
 			ULONG ulSearchState = 0;
 
-			WC_MAPI(lpMAPIFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
-			if (MAPI_E_NOT_INITIALIZED == hRes)
+			auto hRes = WC_MAPI(lpMAPIFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
+			if (hRes == MAPI_E_NOT_INITIALIZED)
 			{
 				output::DebugPrint(DBGGeneric, L"No search criteria has been set on this folder.\n");
 				hRes = S_OK;
@@ -193,7 +191,7 @@ namespace dialog
 					const auto lpNewRes = MyCriteria.DetachModifiedSRestriction();
 					const auto lpNewEntryList = MyCriteria.DetachModifiedEntryList();
 					const auto ulSearchFlags = MyCriteria.GetSearchFlags();
-					EC_MAPI(lpMAPIFolder->SetSearchCriteria(lpNewRes, lpNewEntryList, ulSearchFlags));
+					EC_MAPI_S(lpMAPIFolder->SetSearchCriteria(lpNewRes, lpNewEntryList, ulSearchFlags));
 					MAPIFreeBuffer(lpNewRes);
 					MAPIFreeBuffer(lpNewEntryList);
 				}

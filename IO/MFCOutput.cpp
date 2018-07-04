@@ -346,7 +346,7 @@ namespace output
 			MAPIFreeBuffer(lpPropVals);
 		}
 
-		EC_MAPI(lpMAPIFormInfo->CalcVerbSet(NULL, &lpMAPIVerbArray)); // API doesn't support Unicode
+		hRes = EC_MAPI(lpMAPIFormInfo->CalcVerbSet(NULL, &lpMAPIVerbArray)); // API doesn't support Unicode
 
 		if (lpMAPIVerbArray)
 		{
@@ -388,8 +388,7 @@ namespace output
 			MAPIFreeBuffer(lpMAPIVerbArray);
 		}
 
-		hRes = S_OK;
-		EC_MAPI(lpMAPIFormInfo->CalcFormPropSet(NULL, &lpMAPIFormPropArray)); // API doesn't support Unicode
+		hRes = EC_MAPI(lpMAPIFormInfo->CalcFormPropSet(NULL, &lpMAPIFormPropArray)); // API doesn't support Unicode
 
 		if (lpMAPIFormPropArray)
 		{
@@ -493,21 +492,18 @@ namespace output
 		EARLYABORT;
 		if (!lpMAPITable) return;
 
-		auto hRes = S_OK;
 		LPSRowSet lpRows = nullptr;
 
-		EC_MAPI(lpMAPITable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
+		EC_MAPI_S(lpMAPITable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 
 		Output(ulDbgLvl, fFile, false, g_szXMLHeader);
 		Output(ulDbgLvl, fFile, false, L"<table>\n");
 
 		for (;;)
 		{
-			hRes = S_OK;
-
 			FreeProws(lpRows);
 			lpRows = nullptr;
-			EC_MAPI(lpMAPITable->QueryRows(20, NULL, &lpRows));
+			auto hRes = EC_MAPI(lpMAPITable->QueryRows(20, NULL, &lpRows));
 			if (FAILED(hRes) || !lpRows || !lpRows->cRows) break;
 
 			for (ULONG iCurRow = 0; iCurRow < lpRows->cRows; iCurRow++)
@@ -999,7 +995,7 @@ namespace output
 		if (hRes == S_OK) do
 			{
 				ulNumBytes = 0;
-				EC_MAPI2S(lpStream->Read(bBuf, MAXBYTES, &ulNumBytes));
+				EC_MAPI_S(lpStream->Read(bBuf, MAXBYTES, &ulNumBytes));
 
 				if (ulNumBytes > 0)
 				{

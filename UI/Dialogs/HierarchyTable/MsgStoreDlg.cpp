@@ -189,12 +189,11 @@ namespace dialog
 
 	void CMsgStoreDlg::OnDisplayReceiveFolderTable()
 	{
-		auto hRes = S_OK;
 		LPMAPITABLE lpMAPITable = nullptr;
 
 		if (!m_lpMDB) return;
 
-		EC_MAPI(m_lpMDB->GetReceiveFolderTable(fMapiUnicode, &lpMAPITable));
+		auto hRes = EC_MAPI(m_lpMDB->GetReceiveFolderTable(fMapiUnicode, &lpMAPITable));
 		if (lpMAPITable)
 		{
 			EC_H(DisplayTable(lpMAPITable, otReceive, this));
@@ -204,12 +203,11 @@ namespace dialog
 
 	void CMsgStoreDlg::OnDisplayOutgoingQueueTable()
 	{
-		auto hRes = S_OK;
 		LPMAPITABLE lpMAPITable = nullptr;
 
 		if (!m_lpMDB) return;
 
-		EC_MAPI(m_lpMDB->GetOutgoingQueue(NULL, &lpMAPITable));
+		auto hRes = EC_MAPI(m_lpMDB->GetOutgoingQueue(NULL, &lpMAPITable));
 
 		if (lpMAPITable)
 		{
@@ -277,7 +275,6 @@ namespace dialog
 
 	void CMsgStoreDlg::OnOpenFormContainer()
 	{
-		auto hRes = S_OK;
 		LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
 		LPMAPIFORMCONTAINER lpMAPIFormContainer = nullptr;
 
@@ -290,11 +287,11 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
+			auto hRes = EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 
 			if (lpMAPIFormMgr)
 			{
-				EC_MAPI(lpMAPIFormMgr->OpenFormContainer(HFRMREG_FOLDER, lpMAPIFolder, &lpMAPIFormContainer));
+				hRes = EC_MAPI(lpMAPIFormMgr->OpenFormContainer(HFRMREG_FOLDER, lpMAPIFolder, &lpMAPIFormContainer));
 
 				if (lpMAPIFormContainer)
 				{
@@ -400,7 +397,7 @@ namespace dialog
 
 				if (lpProgress) ulMoveMessage |= MESSAGE_DIALOG;
 
-				EC_MAPI(lpMAPISourceFolder->CopyMessages(
+				EC_MAPI_S(lpMAPISourceFolder->CopyMessages(
 					lpEIDs,
 					&IID_IMAPIFolder,
 					lpMAPIDestFolder,
@@ -480,7 +477,7 @@ namespace dialog
 				if (MyData.GetCheck(2)) ulCopyFlags |= FOLDER_MOVE;
 				if (lpProgress) ulCopyFlags |= FOLDER_DIALOG;
 
-				WC_MAPI(lpCopyRoot->CopyFolder(
+				hRes = WC_MAPI(lpCopyRoot->CopyFolder(
 					lpProps[EID].Value.bin.cb,
 					reinterpret_cast<LPENTRYID>(lpProps[EID].Value.bin.lpb),
 					&IID_IMAPIFolder,
@@ -606,15 +603,19 @@ namespace dialog
 		{
 			WC_H(MyData.DisplayDialog());
 
-			EC_MAPI(lpMAPIFolder->CreateFolder(
-				MyData.GetHex(1),
-				LPTSTR(MyData.GetStringW(0).c_str()),
-				LPTSTR(MyData.GetStringW(2).c_str()),
-				NULL, // interface
-				MAPI_UNICODE | (MyData.GetCheck(3) ? OPEN_IF_EXISTS : 0),
-				&lpMAPISubFolder));
+			if (SUCCEEDED(hRes))
+			{
+				EC_MAPI_S(lpMAPIFolder->CreateFolder(
+					MyData.GetHex(1),
+					LPTSTR(MyData.GetStringW(0).c_str()),
+					LPTSTR(MyData.GetStringW(2).c_str()),
+					NULL, // interface
+					MAPI_UNICODE | (MyData.GetCheck(3) ? OPEN_IF_EXISTS : 0),
+					&lpMAPISubFolder));
 
-			if (lpMAPISubFolder) lpMAPISubFolder->Release();
+				if (lpMAPISubFolder) lpMAPISubFolder->Release();
+			}
+
 			lpMAPIFolder->Release();
 		}
 	}
@@ -746,7 +747,7 @@ namespace dialog
 						lpMAPIFolderToEmpty,
 						ulFlags);
 
-					EC_MAPI(lpMAPIFolderToEmpty->EmptyFolder(
+					EC_MAPI_S(lpMAPIFolderToEmpty->EmptyFolder(
 						lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL, lpProgress, ulFlags));
 
 					if (lpProgress) lpProgress->Release();
@@ -806,7 +807,7 @@ namespace dialog
 
 					if (lpProgress) ulFlags |= FOLDER_DIALOG;
 
-					EC_MAPI(lpParentFolder->DeleteFolder(
+					hRes = EC_MAPI(lpParentFolder->DeleteFolder(
 						lpItemEID->cb,
 						reinterpret_cast<LPENTRYID>(lpItemEID->lpb),
 						lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
@@ -922,11 +923,11 @@ namespace dialog
 		{
 			if (MyData.GetCheck(1))
 			{
-				EC_MAPI(m_lpMDB->SetReceiveFolder(LPTSTR(MyData.GetStringW(0).c_str()), MAPI_UNICODE, NULL, NULL));
+				EC_MAPI_S(m_lpMDB->SetReceiveFolder(LPTSTR(MyData.GetStringW(0).c_str()), MAPI_UNICODE, NULL, NULL));
 			}
 			else if (lpEID)
 			{
-				EC_MAPI(m_lpMDB->SetReceiveFolder(
+				EC_MAPI_S(m_lpMDB->SetReceiveFolder(
 					LPTSTR(MyData.GetStringW(0).c_str()),
 					MAPI_UNICODE,
 					lpEID->cb,
@@ -996,7 +997,8 @@ namespace dialog
 			WC_H(mapi::GetParentFolder(lpSrcFolder, m_lpMDB, &lpSrcParentFolder));
 
 			// Get required properties from the source folder
-			hRes = EC_H_GETPROPS(lpSrcFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
+			hRes =
+				EC_H_GETPROPS(lpSrcFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
 
 			editor::CEditor MyData(
 				this, IDS_RESTOREDELFOLD, IDS_RESTOREDELFOLDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -1030,7 +1032,7 @@ namespace dialog
 
 				if (lpProgress) ulCopyFlags |= FOLDER_DIALOG;
 
-				WC_MAPI(lpSrcParentFolder->CopyFolder(
+				hRes = WC_MAPI(lpSrcParentFolder->CopyFolder(
 					lpProps[EID].Value.bin.cb,
 					reinterpret_cast<LPENTRYID>(lpProps[EID].Value.bin.lpb),
 					&IID_IMAPIFolder,
@@ -1082,7 +1084,7 @@ namespace dialog
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"OnValidateIPMSubtree", L"ulFlags = 0x%08X\n", ulFlags);
 
-			EC_MAPI(HrValidateIPMSubtree(m_lpMDB, ulFlags, &ulValues, &lpProps, &lpErr));
+			EC_MAPI_S(HrValidateIPMSubtree(m_lpMDB, ulFlags, &ulValues, &lpProps, &lpErr));
 			EC_MAPIERR(fMapiUnicode, lpErr);
 			MAPIFreeBuffer(lpErr);
 

@@ -76,8 +76,6 @@ namespace dialog
 	{
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 
-		auto hRes = S_OK;
-
 		// Make sure we've got something to work with
 		if (m_szProfileName.empty() || !m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
 
@@ -92,11 +90,11 @@ namespace dialog
 		m_lpServiceAdmin = nullptr;
 
 		LPPROFADMIN lpProfAdmin = nullptr;
-		EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+		auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 
 		if (lpProfAdmin)
 		{
-			EC_MAPI(lpProfAdmin->AdminServices(
+			hRes = EC_MAPI(lpProfAdmin->AdminServices(
 				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(m_szProfileName.c_str())),
 				reinterpret_cast<LPTSTR>(""),
 				NULL,
@@ -106,7 +104,7 @@ namespace dialog
 			{
 				LPMAPITABLE lpServiceTable = nullptr;
 
-				EC_MAPI(m_lpServiceAdmin->GetMsgServiceTable(
+				hRes = EC_MAPI(m_lpServiceAdmin->GetMsgServiceTable(
 					0, // fMapiUnicode is not supported
 					&lpServiceTable));
 
@@ -124,7 +122,6 @@ namespace dialog
 
 	void CMsgServiceTableDlg::OnDisplayItem()
 	{
-		auto hRes = S_OK;
 		LPPROVIDERADMIN lpProviderAdmin = nullptr;
 		LPMAPITABLE lpProviderTable = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -139,14 +136,14 @@ namespace dialog
 				const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 				if (lpServiceUID)
 				{
-					EC_MAPI(m_lpServiceAdmin->AdminProviders(
+					auto hRes = EC_MAPI(m_lpServiceAdmin->AdminProviders(
 						reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
 						0, // fMapiUnicode is not supported
 						&lpProviderAdmin));
 
 					if (lpProviderAdmin)
 					{
-						EC_MAPI(lpProviderAdmin->GetProviderTable(
+						hRes = EC_MAPI(lpProviderAdmin->GetProviderTable(
 							0, // fMapiUnicode is not supported
 							&lpProviderTable));
 
@@ -254,7 +251,6 @@ namespace dialog
 
 	void CMsgServiceTableDlg::OnDeleteSelectedItem()
 	{
-		auto hRes = S_OK;
 		if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl) return;
 
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
@@ -273,7 +269,7 @@ namespace dialog
 			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)
 			{
-				WC_MAPI(m_lpServiceAdmin->DeleteMsgService(reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb)));
+				WC_MAPI_S(m_lpServiceAdmin->DeleteMsgService(reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb)));
 			}
 		}
 

@@ -28,11 +28,10 @@ namespace cache
 
 	void CGlobalCache::MAPIInitialize(ULONG ulFlags)
 	{
-		auto hRes = S_OK;
 		if (!m_bMAPIInitialized)
 		{
 			MAPIINIT_0 mapiInit = {MAPI_INIT_VERSION, ulFlags};
-			WC_MAPI(::MAPIInitialize(&mapiInit));
+			auto hRes = WC_MAPI(::MAPIInitialize(&mapiInit));
 			if (SUCCEEDED(hRes))
 			{
 				m_bMAPIInitialized = true;

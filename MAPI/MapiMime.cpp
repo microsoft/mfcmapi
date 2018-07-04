@@ -43,23 +43,25 @@ namespace mapi
 				{
 					if (lpAdrBook)
 					{
-						EC_MAPI(lpConverter->SetAdrBook(lpAdrBook));
+						hRes = EC_MAPI(lpConverter->SetAdrBook(lpAdrBook));
 					}
+
 					if (SUCCEEDED(hRes) && bApply)
 					{
-						EC_MAPI(lpConverter->SetCharset(bApply, hCharSet, cSetApplyType));
+						hRes = EC_MAPI(lpConverter->SetCharset(bApply, hCharSet, cSetApplyType));
 					}
+
 					if (SUCCEEDED(hRes))
 					{
 						// We'll make the user ensure CCSF_SMTP is passed
-						EC_MAPI(lpConverter->MIMEToMAPI(
+						hRes = EC_MAPI(lpConverter->MIMEToMAPI(
 							lpEMLStm,
 							lpMsg,
 							nullptr, // Must be nullptr
 							ulConvertFlags));
 						if (SUCCEEDED(hRes))
 						{
-							EC_MAPI(lpMsg->SaveChanges(NULL));
+							hRes = EC_MAPI(lpMsg->SaveChanges(NULL));
 						}
 					}
 				}
@@ -97,22 +99,22 @@ namespace mapi
 			{
 				if (lpAdrBook)
 				{
-					hRes = EC_MAPI2(lpConverter->SetAdrBook(lpAdrBook));
+					hRes = EC_MAPI(lpConverter->SetAdrBook(lpAdrBook));
 				}
 
 				if (SUCCEEDED(hRes) && et != IET_UNKNOWN)
 				{
-					hRes = EC_MAPI2(lpConverter->SetEncoding(et));
+					hRes = EC_MAPI(lpConverter->SetEncoding(et));
 				}
 
 				if (SUCCEEDED(hRes) && mst != USE_DEFAULT_SAVETYPE)
 				{
-					hRes = EC_MAPI2(lpConverter->SetSaveFormat(mst));
+					hRes = EC_MAPI(lpConverter->SetSaveFormat(mst));
 				}
 
 				if (SUCCEEDED(hRes) && ulWrapLines != USE_DEFAULT_WRAPPING)
 				{
-					hRes = EC_MAPI2(lpConverter->SetTextWrapping(ulWrapLines != 0, ulWrapLines));
+					hRes = EC_MAPI(lpConverter->SetTextWrapping(ulWrapLines != 0, ulWrapLines));
 				}
 
 				if (SUCCEEDED(hRes))
@@ -124,7 +126,7 @@ namespace mapi
 					{
 						// Per the docs for MAPIToMIMEStm, CCSF_SMTP must always be set
 						// But we're gonna make the user ensure that, so we don't or it in here
-						hRes = EC_MAPI2(lpConverter->MAPIToMIMEStm(lpMsg, lpMimeStm, ulConvertFlags));
+						hRes = EC_MAPI(lpConverter->MAPIToMIMEStm(lpMsg, lpMimeStm, ulConvertFlags));
 						if (SUCCEEDED(hRes))
 						{
 							LPSTREAM lpFileStm = nullptr;
@@ -138,15 +140,14 @@ namespace mapi
 							if (SUCCEEDED(hRes) && lpFileStm)
 							{
 								const LARGE_INTEGER dwBegin = {0};
-								hRes = EC_MAPI2(lpMimeStm->Seek(dwBegin, STREAM_SEEK_SET, nullptr));
+								hRes = EC_MAPI(lpMimeStm->Seek(dwBegin, STREAM_SEEK_SET, nullptr));
 								if (SUCCEEDED(hRes))
 								{
-									hRes = EC_MAPI2(lpMimeStm->CopyTo(lpFileStm, ULARGE_MAX, nullptr, nullptr));
-								}
-
-								if (SUCCEEDED(hRes))
-								{
-									hRes = EC_MAPI2(lpFileStm->Commit(STGC_DEFAULT));
+									hRes = EC_MAPI(lpMimeStm->CopyTo(lpFileStm, ULARGE_MAX, nullptr, nullptr));
+									if (SUCCEEDED(hRes))
+									{
+										hRes = EC_MAPI(lpFileStm->Commit(STGC_DEFAULT));
+									}
 								}
 							}
 
@@ -186,7 +187,7 @@ namespace mapi
 					lpszEMLFile, pMessage, ulConvertFlags, bApply, hCharSet, cSetApplyType, lpAdrBook));
 				if (SUCCEEDED(hRes))
 				{
-					EC_MAPI(pStorage->Commit(STGC_DEFAULT));
+					hRes = EC_MAPI(pStorage->Commit(STGC_DEFAULT));
 				}
 			}
 
