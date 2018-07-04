@@ -130,6 +130,7 @@ namespace file
 					0,
 					0,
 					lppMessage));
+
 				pStorage->Release();
 			}
 		}
@@ -828,20 +829,17 @@ namespace file
 
 		if (lpStream)
 		{
-		// Open TNEF stream
-#pragma warning(push)
-#pragma warning(disable : 4616)
-#pragma warning(disable : 6276)
+			// Open TNEF stream
 			hRes = EC_H2(OpenTnefStreamEx(
 				nullptr,
 				lpStream,
-				LPTSTR("winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
+				reinterpret_cast<LPTSTR>(
+					"winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
 				TNEF_ENCODE,
 				lpMessage,
 				dwKey,
 				lpAdrBook,
 				&lpTNEF));
-#pragma warning(pop)
 
 			if (lpTNEF)
 			{
@@ -921,9 +919,11 @@ namespace file
 				auto bDirty = false;
 				if (pRows)
 				{
-					for (ULONG iRow = 0; iRow < pRows->cRows; iRow++)
+					if (SUCCEEDED(hRes))
 					{
-						if (PR_ATTACH_NUM != pRows->aRow[iRow].lpProps[ATTACHNUM].ulPropTag) continue;
+						for (ULONG iRow = 0; iRow < pRows->cRows; iRow++)
+						{
+							if (PR_ATTACH_NUM != pRows->aRow[iRow].lpProps[ATTACHNUM].ulPropTag) continue;
 
 						if (!szAttName.empty())
 						{
@@ -944,7 +944,8 @@ namespace file
 
 						if (SUCCEEDED(hRes)) bDirty = true;
 
-						if (lpProgress) lpProgress->Release();
+							if (lpProgress) lpProgress->Release();
+						}
 					}
 
 					FreeProws(pRows);
@@ -1164,8 +1165,8 @@ namespace file
 
 		output::DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Saving attachment.\n");
 
-		ULONG ulProps = 0;
 		LPSPropValue lpProps = nullptr;
+		ULONG ulProps = 0;
 
 		// Get required properties from the message
 		auto hRes = EC_H_GETPROPS(lpAttach->GetProps(

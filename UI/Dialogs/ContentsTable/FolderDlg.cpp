@@ -1812,7 +1812,7 @@ namespace dialog
 
 		if (lpMAPIProp)
 		{
-			EC_H_GETPROPS(lpMAPIProp->GetProps(LPSPropTagArray(&sptFRCols), fMapiUnicode, &cVals, &lpProps));
+			EC_H_GETPROPS_S(lpMAPIProp->GetProps(LPSPropTagArray(&sptFRCols), fMapiUnicode, &cVals, &lpProps));
 			if (lpProps)
 			{
 				// Allocate and create our SRestriction

@@ -245,7 +245,7 @@ namespace mapi
 
 				if (SUCCEEDED(hRes))
 				{
-					SPropValue Blob = {0};
+					SPropValue Blob = {};
 					Blob.ulPropTag = m_ulPropTag;
 					Blob.dwAlignPad = NULL;
 					Blob.Value.bin.cb = cbBlob;

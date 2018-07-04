@@ -363,7 +363,8 @@ namespace mapi
 			{
 				LPSRowSet lpRowSet = nullptr;
 
-				hRes = EC_MAPI(HrQueryAllRows(lpProviderTable, LPSPropTagArray(&pTagUID), nullptr, nullptr, 0, &lpRowSet));
+				hRes =
+					EC_MAPI(HrQueryAllRows(lpProviderTable, LPSPropTagArray(&pTagUID), nullptr, nullptr, 0, &lpRowSet));
 
 				if (lpRowSet) output::DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
 
