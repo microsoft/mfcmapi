@@ -363,7 +363,8 @@ namespace mapi
 			{
 				LPSRowSet lpRowSet = nullptr;
 
-				hRes = EC_MAPI(HrQueryAllRows(lpProviderTable, LPSPropTagArray(&pTagUID), nullptr, nullptr, 0, &lpRowSet));
+				hRes =
+					EC_MAPI(HrQueryAllRows(lpProviderTable, LPSPropTagArray(&pTagUID), nullptr, nullptr, 0, &lpRowSet));
 
 				if (lpRowSet) output::DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
 
@@ -496,7 +497,6 @@ namespace mapi
 				DBGGeneric, L"HrAddServiceToProfile(%hs,%hs)\n", lpszServiceName.c_str(), lpszProfileName.c_str());
 
 			LPPROFADMIN lpProfAdmin = nullptr;
-
 			// Connect to Profile Admin interface.
 			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
@@ -766,7 +766,8 @@ namespace mapi
 				{
 					// Search rows for the folder in question
 
-					if (!FAILED(hRes))
+					if (SUCCEEDED(hRes))
+					{
 						for (ULONG i = 0; i < lpRows->cRows; i++)
 						{
 							hRes = S_OK;
@@ -788,6 +789,7 @@ namespace mapi
 								break;
 							}
 						}
+					}
 				}
 			}
 

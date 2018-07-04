@@ -99,6 +99,7 @@ namespace mapiprocessor
 
 					// get each row in turn and process it
 					if (SUCCEEDED(hRes))
+					{
 						for (ulRowNum = 0;; ulRowNum++)
 						{
 							if (lpRows) FreeProws(lpRows);
@@ -133,6 +134,7 @@ namespace mapiprocessor
 
 							if (m_lpMDB) ProcessStore();
 						}
+					}
 
 					if (lpRows) FreeProws(lpRows);
 					lpRows = nullptr;
@@ -240,6 +242,7 @@ namespace mapiprocessor
 				}
 
 				if (SUCCEEDED(hRes))
+				{
 					for (;;)
 					{
 						if (lpRows) FreeProws(lpRows);
@@ -279,6 +282,7 @@ namespace mapiprocessor
 							}
 						}
 					}
+				}
 
 				if (lpRows) FreeProws(lpRows);
 				lpHierarchyTable->Release();

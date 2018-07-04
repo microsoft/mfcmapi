@@ -1751,7 +1751,8 @@ namespace mapi
 				hRes = EC_MAPI(lpContentsTable->SetColumns(LPSPropTagArray(&eidCols), TBL_BATCH));
 
 				if (SUCCEEDED(hRes))
-				{ // go to the first row
+				{
+					// go to the first row
 					hRes = EC_MAPI(lpContentsTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 				}
 

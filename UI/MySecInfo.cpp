@@ -226,7 +226,6 @@ namespace mapi
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::SetSecurity\n");
 			auto hRes = S_OK;
-			SPropValue Blob = {0};
 			LPBYTE lpBlob = nullptr;
 
 			if (!m_lpHeader || !pSecurityDescriptor || !m_lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
@@ -244,12 +243,16 @@ namespace mapi
 				memcpy(lpBlob, m_lpHeader, m_cbHeader);
 				hRes = EC_B(MakeSelfRelativeSD(pSecurityDescriptor, lpBlob + m_cbHeader, &dwSDLength));
 
-				Blob.ulPropTag = m_ulPropTag;
-				Blob.dwAlignPad = NULL;
-				Blob.Value.bin.cb = cbBlob;
-				Blob.Value.bin.lpb = lpBlob;
+				if (SUCCEEDED(hRes))
+				{
+					SPropValue Blob = {};
+					Blob.ulPropTag = m_ulPropTag;
+					Blob.dwAlignPad = NULL;
+					Blob.Value.bin.cb = cbBlob;
+					Blob.Value.bin.lpb = lpBlob;
 
-				hRes = EC_MAPI(HrSetOneProp(m_lpMAPIProp, &Blob));
+					hRes = EC_MAPI(HrSetOneProp(m_lpMAPIProp, &Blob));
+				}
 
 				MAPIFreeBuffer(lpBlob);
 			}

@@ -274,7 +274,6 @@ namespace dialog
 
 					if (ulPropTag != m_ulPropTag)
 					{
-						hRes = S_OK;
 						output::DebugPrintEx(
 							DBGStream,
 							CLASS,
