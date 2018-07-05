@@ -233,7 +233,7 @@ namespace dialog
 
 				hRes = EC_MAPI(lpAB->RecipOptions(reinterpret_cast<ULONG_PTR>(m_hWnd), NULL, &adrEntry));
 
-				if (MAPI_W_ERRORS_RETURNED == hRes)
+				if (hRes == MAPI_W_ERRORS_RETURNED)
 				{
 					LPMAPIERROR lpErr = nullptr;
 					hRes = WC_MAPI(lpAB->GetLastError(hRes, fMapiUnicode, &lpErr));

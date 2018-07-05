@@ -258,7 +258,7 @@ namespace dialog
 					m_ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 
 				// If we're guessing types, try again as a different type
-				if (MAPI_E_NOT_FOUND == hRes && m_bAllowTypeGuessing)
+				if (hRes == MAPI_E_NOT_FOUND && m_bAllowTypeGuessing)
 				{
 					auto ulPropTag = m_ulPropTag;
 					switch (PROP_TYPE(ulPropTag))
@@ -416,7 +416,7 @@ namespace dialog
 		{
 			const auto i = CEditor::HandleChange(nID);
 
-			if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
+			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
 			auto lpBinPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(m_iBinBox));
 			if (m_iTextBox == i && lpBinPane)

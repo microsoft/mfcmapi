@@ -319,7 +319,7 @@ namespace dialog
 			pMenu->EnableMenuItem(
 				ID_CREATEMESSAGERESTRICTION,
 				DIM(1 == iNumSel && m_lpContentsTableListCtrl->IsContentsTableSet() &&
-					MAPI_FOLDER == m_lpContentsTableListCtrl->GetContainerType()));
+					m_lpContentsTableListCtrl->GetContainerType() == MAPI_FOLDER));
 		}
 
 		CContentsTableDlg::OnInitMenu(pMenu);

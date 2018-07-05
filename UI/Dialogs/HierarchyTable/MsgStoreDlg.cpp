@@ -486,7 +486,7 @@ namespace dialog
 					lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 					lpProgress, // Progress
 					ulCopyFlags));
-				if (MAPI_E_COLLISION == hRes)
+				if (hRes == MAPI_E_COLLISION)
 				{
 					error::ErrDialog(__FILE__, __LINE__, IDS_EDDUPEFOLDER);
 				}
@@ -1041,11 +1041,11 @@ namespace dialog
 					lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 					lpProgress,
 					ulCopyFlags));
-				if (MAPI_E_COLLISION == hRes)
+				if (hRes == MAPI_E_COLLISION)
 				{
 					error::ErrDialog(__FILE__, __LINE__, IDS_EDDUPEFOLDER);
 				}
-				else if (MAPI_W_PARTIAL_COMPLETION == hRes)
+				else if (hRes == MAPI_W_PARTIAL_COMPLETION)
 				{
 					error::ErrDialog(__FILE__, __LINE__, IDS_EDRESTOREFAILED);
 				}

@@ -93,7 +93,7 @@ namespace file
 		WC_H(::StgOpenStorage(szMessageFile.c_str(), nullptr, ulFlags, nullptr, 0, lppStorage));
 
 		// If we asked for best access (read/write) and didn't get it, then try it without readwrite
-		if (STG_E_ACCESSDENIED == hRes && !*lppStorage && bBestAccess)
+		if (hRes == STG_E_ACCESSDENIED && !*lppStorage && bBestAccess)
 		{
 			hRes = S_OK;
 			EC_H(MyStgOpenStorage(szMessageFile, false, lppStorage));
@@ -587,7 +587,7 @@ namespace file
 			reinterpret_cast<LPUNKNOWN*>(&pStrmSrc)));
 		if (FAILED(hRes))
 		{
-			if (MAPI_E_NOT_FOUND == hRes)
+			if (hRes == MAPI_E_NOT_FOUND)
 			{
 				output::DebugPrint(DBGGeneric, L"No internet content found\n");
 			}
@@ -1091,7 +1091,7 @@ namespace file
 			reinterpret_cast<LPUNKNOWN*>(&pStrmSrc)));
 		if (FAILED(hRes))
 		{
-			if (MAPI_E_NOT_FOUND == hRes)
+			if (hRes == MAPI_E_NOT_FOUND)
 			{
 				output::DebugPrint(DBGGeneric, L"No attachments found. Maybe the attachment was a message?\n");
 			}
