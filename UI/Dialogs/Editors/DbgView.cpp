@@ -85,7 +85,7 @@ namespace dialog
 		{
 			const auto i = CEditor::HandleChange(nID);
 
-			if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
+			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
 			switch (i)
 			{
