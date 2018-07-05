@@ -121,7 +121,7 @@ namespace mapi
 				{
 					LPSTREAM lpMimeStm = nullptr;
 
-					EC_H(CreateStreamOnHGlobal(nullptr, true, &lpMimeStm));
+					hRes = EC_H2(CreateStreamOnHGlobal(nullptr, true, &lpMimeStm));
 					if (SUCCEEDED(hRes) && lpMimeStm)
 					{
 						// Per the docs for MAPIToMIMEStm, CCSF_SMTP must always be set
@@ -131,7 +131,7 @@ namespace mapi
 						{
 							LPSTREAM lpFileStm = nullptr;
 
-							EC_H(mapi::MyOpenStreamOnFile(
+							hRes = EC_H2(mapi::MyOpenStreamOnFile(
 								MAPIAllocateBuffer,
 								MAPIFreeBuffer,
 								STGM_CREATE | STGM_READWRITE,

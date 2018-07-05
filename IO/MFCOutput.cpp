@@ -790,7 +790,7 @@ namespace output
 		LPSPropValue lpLargeProp = nullptr;
 		const auto iIndent = 2;
 
-		if (PT_ERROR == PROP_TYPE(lpProp->ulPropTag) && MAPI_E_NOT_ENOUGH_MEMORY == lpProp->Value.err && lpObj &&
+		if (PROP_TYPE(lpProp->ulPropTag) == PT_ERROR && lpProp->Value.err == MAPI_E_NOT_ENOUGH_MEMORY && lpObj &&
 			bRetryStreamProps)
 		{
 			WC_H(mapi::GetLargeBinaryProp(lpObj, lpProp->ulPropTag, &lpLargeProp));

@@ -88,6 +88,25 @@ namespace error
 #define CHECKHRESMSG(hRes, uidErrorMsg) (CheckHResFn(hRes, NULL, true, nullptr, uidErrorMsg, __FILE__, __LINE__))
 #define WARNHRESMSG(hRes, uidErrorMsg) (CheckHResFn(hRes, NULL, false, nullptr, uidErrorMsg, __FILE__, __LINE__))
 
+// Execute a function, log and return the HRESULT
+// Does not modify or reference existing hRes
+// Will display dialog on error
+#define EC_H2(fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a function, log and swallow the HRESULT
+// Does not modify or reference existing hRes
+// Will display dialog on error
+#define EC_H2S(fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
+
 #define EC_H(fnx) \
 	{ \
 		if (SUCCEEDED(hRes)) \
@@ -100,6 +119,25 @@ namespace error
 			error::PrintSkipNote(hRes, #fnx); \
 		} \
 	}
+
+// Execute a function, log and return the HRESULT
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_H2(fnx) \
+	[&]() -> HRESULT { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes; \
+	}()
+
+// Execute a function, log and swallow the HRESULT
+// Does not modify or reference existing hRes
+// Will not display an error dialog
+#define WC_H2S(fnx) \
+	[&]() -> void { \
+		auto __hRes = (fnx); \
+		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
+	}()
 
 #define WC_H(fnx) \
 	{ \
@@ -337,7 +375,7 @@ namespace error
 #define EC_H_CANCEL(fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = (fnx); \
-		if (MAPI_E_USER_CANCEL == __hRes || MAPI_E_CANCEL == __hRes) \
+		if (__hRes == MAPI_E_USER_CANCEL || __hRes == MAPI_E_CANCEL) \
 		{ \
 			error::LogFunctionCall(__hRes, NULL, true, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
 			return S_OK; \
@@ -355,8 +393,8 @@ namespace error
 #define EC_H_CANCEL_S(fnx) \
 	[&]() -> void { \
 		auto __hRes = (fnx); \
-		if (MAPI_E_USER_CANCEL == __hRes || MAPI_E_CANCEL == __hRes) \
-			error::LogFunctionCall(__hRes, NULL, true, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
+		if (__hRes == MAPI_E_USER_CANCEL || __hRes == MAPI_E_CANCEL) \
+				error::LogFunctionCall(__hRes, NULL, true, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
 		else \
 			error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()

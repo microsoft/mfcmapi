@@ -104,7 +104,7 @@ namespace dialog
 			{
 				for (ULONG i = 0; i < lpMAPIFormInfoArray->cForms; i++)
 				{
-					if (0 == i)
+					if (i == 0)
 					{
 						LPSPropTagArray lpTagArray = nullptr;
 						EC_MAPI_S(lpMAPIFormInfoArray->aFormInfo[i]->GetPropList(fMapiUnicode, &lpTagArray));

@@ -821,7 +821,7 @@ namespace controls
 
 						// If we've got a MAPI_E_NOT_FOUND error, just don't display it.
 						if (registry::RegKeys[registry::regkeySUPPRESS_NOT_FOUND].ulCurDWORD && pProp &&
-							PT_ERROR == PROP_TYPE(pProp->ulPropTag) && MAPI_E_NOT_FOUND == pProp->Value.err)
+							PROP_TYPE(pProp->ulPropTag) == PT_ERROR && pProp->Value.err == MAPI_E_NOT_FOUND)
 						{
 							if (0 == iColumn)
 							{

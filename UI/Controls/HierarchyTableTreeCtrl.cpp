@@ -238,7 +238,7 @@ namespace controls
 		m_ulContainerType = mapi::GetMAPIObjectType(lpMAPIContainer);
 
 		WC_H(RefreshHierarchyTable());
-		if (MAPI_E_NOT_FOUND == hRes)
+		if (hRes == MAPI_E_NOT_FOUND)
 		{
 			WARNHRESMSG(hRes, IDS_HIERARCHNOTFOUND);
 		}
@@ -882,7 +882,7 @@ namespace controls
 		// Use the Root container if we can't decide and log an error
 		if (m_lpMapiObjects)
 		{
-			if (MAPI_ABCONT == m_ulContainerType)
+			if (m_ulContainerType == MAPI_ABCONT)
 			{
 				const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 				if (lpAddrBook)
@@ -903,7 +903,7 @@ namespace controls
 						reinterpret_cast<LPUNKNOWN*>(&lpContainer)));
 				}
 			}
-			else if (MAPI_FOLDER == m_ulContainerType)
+			else if (m_ulContainerType == MAPI_FOLDER)
 			{
 				const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)

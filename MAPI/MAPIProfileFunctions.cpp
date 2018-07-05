@@ -528,12 +528,11 @@ namespace mapi
 				}
 				else
 				{
-					hRes = S_OK;
 					// Only need to mark if we plan on calling ConfigureMsgService
 					if (lpPropVals)
 					{
 						// Add a dummy prop to the current providers
-						EC_H(HrMarkExistingProviders(lpServiceAdmin, true));
+						hRes = EC_H2(HrMarkExistingProviders(lpServiceAdmin, true));
 					}
 
 					if (SUCCEEDED(hRes))
@@ -551,7 +550,7 @@ namespace mapi
 					{
 						LPSRowSet lpRowSet = nullptr;
 						// Look for a provider without our dummy prop
-						EC_H(HrFindUnmarkedProvider(lpServiceAdmin, &lpRowSet));
+						hRes = EC_H2(HrFindUnmarkedProvider(lpServiceAdmin, &lpRowSet));
 
 						if (lpRowSet) output::DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
 
@@ -567,9 +566,8 @@ namespace mapi
 							}
 						}
 
-						hRes = S_OK;
 						// Strip out the dummy prop
-						EC_H(HrMarkExistingProviders(lpServiceAdmin, false));
+						hRes = EC_H2(HrMarkExistingProviders(lpServiceAdmin, false));
 
 						FreeProws(lpRowSet);
 					}
@@ -770,7 +768,6 @@ namespace mapi
 					{
 						for (ULONG i = 0; i < lpRows->cRows; i++)
 						{
-							hRes = S_OK;
 							const auto lpProp = lpRows->aRow[i].lpProps;
 
 							const auto ulComp = EC_D(
