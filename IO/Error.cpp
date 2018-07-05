@@ -25,7 +25,7 @@ namespace error
 		}
 
 		// Check if we have no work to do
-		if (hRes == S_OK || hrIgnore == hRes) return;
+		if (hRes == S_OK || hRes == hrIgnore) return;
 #ifdef MRMAPI
 		if (!fIsSet(DBGHRes)) return;
 #else

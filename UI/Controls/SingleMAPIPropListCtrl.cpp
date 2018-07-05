@@ -1342,7 +1342,7 @@ namespace controls
 				WC_H(m_lpPropBag->GetProp(ulPropTag, &lpEditProp));
 			}
 
-			if (MAPI_E_NOT_ENOUGH_MEMORY == hRes) bUseStream = true;
+			if (hRes == MAPI_E_NOT_ENOUGH_MEMORY) bUseStream = true;
 
 			if (bUseStream)
 			{
@@ -1820,7 +1820,7 @@ namespace controls
 							&ulObjType,
 							reinterpret_cast<LPUNKNOWN*>(&lpSource)));
 
-						if (hRes == S_OK && MAPI_MESSAGE == ulObjType && lpSource)
+						if (hRes == S_OK && ulObjType == MAPI_MESSAGE && lpSource)
 						{
 							EC_H(mapi::CopyNamedProps(
 								lpSource,

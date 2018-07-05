@@ -16,14 +16,14 @@ namespace property
 		case PROP_ID(PR_BODY):
 		case PROP_ID(PR_BODY_HTML):
 		case PROP_ID(PR_RTF_COMPRESSED):
-			if (MAPI_E_NOT_ENOUGH_MEMORY == lpProp->Value.err || MAPI_E_NOT_FOUND == lpProp->Value.err)
+			if (lpProp->Value.err == MAPI_E_NOT_ENOUGH_MEMORY || lpProp->Value.err == MAPI_E_NOT_FOUND)
 			{
 				return strings::loadstring(IDS_OPENBODY);
 			}
 
 			break;
 		default:
-			if (MAPI_E_NOT_ENOUGH_MEMORY == lpProp->Value.err)
+			if (lpProp->Value.err == MAPI_E_NOT_ENOUGH_MEMORY)
 			{
 				return strings::loadstring(IDS_OPENSTREAM);
 			}

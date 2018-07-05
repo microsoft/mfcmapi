@@ -344,7 +344,7 @@ namespace dialog
 					new dialog::CAclDlg(lpParentWnd, lpMapiObjects, lpExchTbl, MyData.GetCheck(0));
 				}
 
-				if (MAPI_E_USER_CANCEL == hRes) hRes = S_OK; // don't propogate the error past here
+				if (hRes == MAPI_E_USER_CANCEL) hRes = S_OK; // don't propogate the error past here
 			}
 			break;
 			default:
@@ -497,7 +497,7 @@ namespace dialog
 					{
 						new dialog::CMailboxTableDlg(lpParent, lpMapiObjects, MyData.GetStringW(0), lpMailboxTable);
 					}
-					else if (MAPI_E_NO_ACCESS == hRes || MAPI_E_NETWORK_ERROR == hRes)
+					else if (hRes == MAPI_E_NO_ACCESS || hRes == MAPI_E_NETWORK_ERROR)
 					{
 						error::ErrDialog(
 							__FILE__,
@@ -621,7 +621,7 @@ namespace dialog
 					{
 						new dialog::CPublicFolderTableDlg(lpParent, lpMapiObjects, MyData.GetStringW(0), lpPFTable);
 					}
-					else if (MAPI_E_NO_ACCESS == hRes || MAPI_E_NETWORK_ERROR == hRes)
+					else if (hRes == MAPI_E_NO_ACCESS || hRes == MAPI_E_NETWORK_ERROR)
 					{
 						error::ErrDialog(
 							__FILE__,

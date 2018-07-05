@@ -70,7 +70,7 @@ namespace mapi
 		{
 			output::DebugPrint(DBGGeneric, L"CallOpenEntry: Calling OpenEntry on MDB with ulFlags = 0x%X\n", ulFlags);
 			hRes = WC_MAPI(lpMDB->OpenEntry(cbEntryID, lpEntryID, lpInterface, ulFlags, &ulObjType, &lpUnk));
-			if (MAPI_E_UNKNOWN_FLAGS == hRes && ulNoCacheFlags)
+			if (hRes == MAPI_E_UNKNOWN_FLAGS && ulNoCacheFlags)
 			{
 				output::DebugPrint(
 					DBGGeneric,
@@ -1105,7 +1105,7 @@ namespace mapi
 			output::DebugPrint(DBGGeneric, L"GetPropsNULL: Calling GetPropList\n");
 			hRes = WC_MAPI(lpMAPIProp->GetPropList(ulFlags, &lpTags));
 
-			if (MAPI_E_BAD_CHARWIDTH == hRes)
+			if (hRes == MAPI_E_BAD_CHARWIDTH)
 			{
 				hRes = EC_MAPI(lpMAPIProp->GetPropList(NULL, &lpTags));
 			}
@@ -1176,7 +1176,7 @@ namespace mapi
 			}
 		}
 
-		if (MAPI_E_NOT_FOUND == hRes)
+		if (hRes == MAPI_E_NOT_FOUND)
 		{
 			output::DebugPrint(DBGGeneric, L"Special folder not found.\n");
 		}
@@ -1580,7 +1580,7 @@ namespace mapi
 							0,
 							MAPI_MODIFY,
 							reinterpret_cast<LPUNKNOWN*>(&lpAttachMsg)));
-						if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes)
+						if (hRes == MAPI_E_INTERFACE_NOT_SUPPORTED)
 						{
 							CHECKHRESMSG(hRes, IDS_ATTNOTEMBEDDEDMSG);
 							continue;
@@ -1736,7 +1736,7 @@ namespace mapi
 		// We pass through this code twice, once for regular contents, once for associated contents
 		for (auto i = 0; i <= 1; i++)
 		{
-			const auto ulFlags = (1 == i ? MAPI_ASSOCIATED : NULL) | fMapiUnicode;
+			const auto ulFlags = (i == 1 ? MAPI_ASSOCIATED : NULL) | fMapiUnicode;
 
 			if (lpContentsTable) lpContentsTable->Release();
 			lpContentsTable = nullptr;
@@ -2688,7 +2688,7 @@ namespace mapi
 		auto hRes = WC_H_GETPROPS(lpMAPIProp->GetProps(LPSPropTagArray(&sptaBuffer), 0, &cValues, &lpPropArray));
 
 		if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag) &&
-			MAPI_E_NOT_ENOUGH_MEMORY == lpPropArray->Value.err)
+			lpPropArray->Value.err == MAPI_E_NOT_ENOUGH_MEMORY)
 		{
 			output::DebugPrint(DBGGeneric, L"GetLargeProp property reported in GetProps as large.\n");
 			MAPIFreeBuffer(lpPropArray);
@@ -3235,7 +3235,7 @@ namespace mapi
 	{
 		auto hRes =
 			OpenStreamOnFileW(lpAllocateBuffer, lpFreeBuffer, ulFlags, lpszFileName.c_str(), nullptr, lppStream);
-		if (MAPI_E_CALL_FAILED == hRes)
+		if (hRes == MAPI_E_CALL_FAILED)
 		{
 			hRes = OpenStreamOnFile(
 				lpAllocateBuffer,

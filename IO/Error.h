@@ -375,7 +375,7 @@ namespace error
 #define EC_H_CANCEL(fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = (fnx); \
-		if (MAPI_E_USER_CANCEL == __hRes || MAPI_E_CANCEL == __hRes) \
+		if (__hRes == MAPI_E_USER_CANCEL || __hRes == MAPI_E_CANCEL) \
 		{ \
 			error::LogFunctionCall(__hRes, NULL, true, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
 			return S_OK; \
@@ -393,8 +393,8 @@ namespace error
 #define EC_H_CANCEL_S(fnx) \
 	[&]() -> void { \
 		auto __hRes = (fnx); \
-		if (MAPI_E_USER_CANCEL == __hRes || MAPI_E_CANCEL == __hRes) \
-			error::LogFunctionCall(__hRes, NULL, true, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
+		if (__hRes == MAPI_E_USER_CANCEL || __hRes == MAPI_E_CANCEL) \
+				error::LogFunctionCall(__hRes, NULL, true, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
 		else \
 			error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
