@@ -89,7 +89,7 @@ namespace file
 		auto hRes = WC_H2(::StgOpenStorage(szMessageFile.c_str(), nullptr, ulFlags, nullptr, 0, lppStorage));
 
 		// If we asked for best access (read/write) and didn't get it, then try it without readwrite
-		if (STG_E_ACCESSDENIED == hRes && !*lppStorage && bBestAccess)
+		if (hRes == STG_E_ACCESSDENIED && !*lppStorage && bBestAccess)
 		{
 			hRes = EC_H2(MyStgOpenStorage(szMessageFile, false, lppStorage));
 		}
@@ -577,7 +577,7 @@ namespace file
 			reinterpret_cast<LPUNKNOWN*>(&pStrmSrc)));
 		if (FAILED(hRes))
 		{
-			if (MAPI_E_NOT_FOUND == hRes)
+			if (hRes == MAPI_E_NOT_FOUND)
 			{
 				output::DebugPrint(DBGGeneric, L"No internet content found\n");
 			}
@@ -925,24 +925,24 @@ namespace file
 						{
 							if (PR_ATTACH_NUM != pRows->aRow[iRow].lpProps[ATTACHNUM].ulPropTag) continue;
 
-						if (!szAttName.empty())
-						{
-							if (PR_ATTACH_LONG_FILENAME_W != pRows->aRow[iRow].lpProps[ATTACHNAME].ulPropTag ||
-								szAttName != pRows->aRow[iRow].lpProps[ATTACHNAME].Value.lpszW)
-								continue;
-						}
+							if (!szAttName.empty())
+							{
+								if (PR_ATTACH_LONG_FILENAME_W != pRows->aRow[iRow].lpProps[ATTACHNAME].ulPropTag ||
+									szAttName != pRows->aRow[iRow].lpProps[ATTACHNAME].Value.lpszW)
+									continue;
+							}
 
-						// Open the attachment
-						LPMAPIPROGRESS lpProgress =
-							mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", hWnd); // STRING_OK
+							// Open the attachment
+							LPMAPIPROGRESS lpProgress =
+								mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", hWnd); // STRING_OK
 
-						hRes = EC_MAPI(lpMessage->DeleteAttach(
-							pRows->aRow[iRow].lpProps[ATTACHNUM].Value.l,
-							lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
-							lpProgress,
-							lpProgress ? ATTACH_DIALOG : 0));
+							hRes = EC_MAPI(lpMessage->DeleteAttach(
+								pRows->aRow[iRow].lpProps[ATTACHNUM].Value.l,
+								lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
+								lpProgress,
+								lpProgress ? ATTACH_DIALOG : 0));
 
-						if (SUCCEEDED(hRes)) bDirty = true;
+							if (SUCCEEDED(hRes)) bDirty = true;
 
 							if (lpProgress) lpProgress->Release();
 						}
@@ -1071,7 +1071,7 @@ namespace file
 			reinterpret_cast<LPUNKNOWN*>(&pStrmSrc)));
 		if (FAILED(hRes))
 		{
-			if (MAPI_E_NOT_FOUND == hRes)
+			if (hRes == MAPI_E_NOT_FOUND)
 			{
 				output::DebugPrint(DBGGeneric, L"No attachments found. Maybe the attachment was a message?\n");
 			}
@@ -1227,7 +1227,7 @@ namespace file
 						strings::loadstring(IDS_MSGFILES));
 					if (!file.empty())
 					{
-						hRes = EC_H2(WriteEmbeddedMSGToFile(lpAttach, file, MAPI_UNICODE == fMapiUnicode, hWnd));
+						hRes = EC_H2(WriteEmbeddedMSGToFile(lpAttach, file, fMapiUnicode == MAPI_UNICODE, hWnd));
 					}
 				}
 				break;
