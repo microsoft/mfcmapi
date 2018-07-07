@@ -114,16 +114,13 @@ namespace dialog
 
 	void CAclDlg::OnAddItem()
 	{
-		auto hRes = S_OK;
-
 		editor::CEditor MyData(this, IDS_ACLADDITEM, IDS_ACLADDITEMPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_MEMBER_RIGHTS), true));
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_USEREID, false));
 		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_MASKINHEX, false));
 		MyData.SetHex(1, 0);
 
-		WC_H(MyData.DisplayDialog());
-		if (hRes != S_OK)
+		if (!MyData.DisplayDialog())
 		{
 			output::DebugPrint(DBGGeneric, L"OnAddItem cancelled.\n");
 			return;
@@ -155,7 +152,7 @@ namespace dialog
 				lpNewItem->aEntries[0].rgPropVals[1].ulPropTag = PR_MEMBER_RIGHTS;
 				lpNewItem->aEntries[0].rgPropVals[1].Value.ul = MyData.GetHex(1);
 
-				hRes = EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpNewItem));
+				auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpNewItem));
 				MAPIFreeBuffer(lpNewItem);
 				if (hRes == S_OK) OnRefreshView();
 

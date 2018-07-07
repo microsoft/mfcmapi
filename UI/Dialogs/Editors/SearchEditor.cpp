@@ -86,8 +86,6 @@ namespace dialog
 		// Select a property tag
 		void CSearchEditor::OnEditAction1()
 		{
-			auto hRes = S_OK;
-
 			CPropertyTagEditor MyData(
 				IDS_EDITGIVENPROP, // Title
 				NULL, // Prompt
@@ -96,8 +94,7 @@ namespace dialog
 				m_lpMAPIProp,
 				this);
 
-			WC_H(MyData.DisplayDialog());
-			if (S_OK != hRes) return;
+			if (!MyData.DisplayDialog()) return;
 
 			m_ulPropTag = MyData.GetPropertyTag();
 			PopulateFields(NOSKIPFIELD);

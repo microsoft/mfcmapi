@@ -81,8 +81,6 @@ namespace dialog
 
 	void CProviderTableDlg::OnOpenProfileSection()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpProviderAdmin) return;
 
 		editor::CEditor MyUID(
@@ -91,8 +89,7 @@ namespace dialog
 		MyUID.InitPane(0, viewpane::DropDownPane::CreateGuid(IDS_MAPIUID, false));
 		MyUID.InitPane(1, viewpane::CheckPane::Create(IDS_MAPIUIDBYTESWAPPED, false, false));
 
-		WC_H(MyUID.DisplayDialog());
-		if (hRes != S_OK) return;
+		if (!MyUID.DisplayDialog()) return;
 
 		auto guid = MyUID.GetSelectedGUID(0, MyUID.GetCheck(1));
 		SBinary MapiUID = {sizeof(GUID), reinterpret_cast<LPBYTE>(&guid)};

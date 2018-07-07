@@ -72,18 +72,20 @@ namespace dialog
 			{
 				CMultiValuePropertyEditor MyPropertyEditor(
 					pParentWnd, uidTitle, uidPrompt, bIsAB, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
-				WC_H(MyPropertyEditor.DisplayDialog());
-
-				if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				if (MyPropertyEditor.DisplayDialog())
+				{
+					if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				}
 			}
 			// Or the single value prop case
 			else
 			{
 				CPropertyEditor MyPropertyEditor(
 					pParentWnd, uidTitle, uidPrompt, bIsAB, bMVRow, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
-				WC_H(MyPropertyEditor.DisplayDialog());
-
-				if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				if (MyPropertyEditor.DisplayDialog())
+				{
+					if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				}
 			}
 
 			MAPIFreeBuffer(sourceProp);

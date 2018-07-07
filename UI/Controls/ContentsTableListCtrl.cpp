@@ -189,7 +189,7 @@ namespace controls
 
 			auto hRes = EC_MAPI(m_lpContentsTable->GetStatus(&ulTableStatus, &ulTableType));
 
-			if (!FAILED(hRes))
+			if (SUCCEEDED(hRes))
 			{
 				dialog::editor::CEditor MyData(this, IDS_GETSTATUS, IDS_GETSTATUSPROMPT, CEDITOR_BUTTON_OK);
 				MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, true));
@@ -201,7 +201,7 @@ namespace controls
 				szFlags = interpretprop::InterpretFlags(flagTableType, ulTableType);
 				MyData.InitPane(3, viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLETYPE, szFlags, true));
 
-				WC_H(MyData.DisplayDialog());
+				(void) MyData.DisplayDialog();
 			}
 		}
 
@@ -255,7 +255,6 @@ namespace controls
 
 		void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor)
 		{
-			auto hRes = S_OK;
 			output::DebugPrintEx(DBGGeneric, CLASS, L"DoSetColumns", L"bDisplayEditor = %d\n", bDisplayEditor);
 
 			if (!IsContentsTableSet())
@@ -310,9 +309,7 @@ namespace controls
 					m_bIsAB,
 					lpMDB);
 
-				WC_H(MyEditor.DisplayDialog());
-
-				if (hRes == S_OK)
+				if (MyEditor.DisplayDialog())
 				{
 					lpModifiedTags = MyEditor.DetachModifiedTagArray();
 					if (lpModifiedTags)

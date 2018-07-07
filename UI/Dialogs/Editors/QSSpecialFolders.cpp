@@ -213,8 +213,6 @@ namespace dialog
 		{
 			if (!lpData) return false;
 
-			auto hRes = S_OK;
-
 			CEditor MyResults(this, IDS_QSSPECIALFOLDER, NULL, CEDITOR_BUTTON_OK);
 			MyResults.InitPane(0, viewpane::TextPane::CreateMultiLinePane(NULL, true));
 
@@ -236,11 +234,7 @@ namespace dialog
 				MyResults.SetStringW(0, szTmp);
 			}
 
-			WC_H(MyResults.DisplayDialog());
-
-			if (S_OK != hRes) return false;
-
-			return false;
+			return MyResults.DisplayDialog();
 		}
 
 		void OnQSCheckSpecialFolders(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
@@ -257,7 +251,7 @@ namespace dialog
 			{
 				SpecialFolderEditor MyResults(lpHostDlg, lpMDB);
 
-				WC_H(MyResults.DisplayDialog());
+				(void) MyResults.DisplayDialog();
 
 				lpMDB->Release();
 			}

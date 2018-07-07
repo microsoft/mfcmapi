@@ -297,7 +297,7 @@ namespace dialog
 					MyResults.SetBinary(1, lpsProp->Value.bin.lpb, lpsProp->Value.bin.cb);
 				}
 
-				WC_H(MyResults.DisplayDialog());
+				(void) MyResults.DisplayDialog();
 			}
 
 			MAPIFreeBuffer(lpsProp);
@@ -420,7 +420,7 @@ namespace dialog
 			MyResults.InitPane(0, viewpane::TextPane::CreateMultiLinePane(NULL, true));
 			MyResults.SetStringW(0, szQuotaString);
 
-			WC_H(MyResults.DisplayDialog());
+			(void) MyResults.DisplayDialog();
 		}
 
 		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
@@ -499,7 +499,7 @@ namespace dialog
 			MyResults.InitPane(0, viewpane::TextPane::CreateSingleLinePaneID(0, IDS_QSTHUMBNAILNOTFOUND, true));
 		}
 
-		WC_H2S(MyResults.DisplayDialog());
+		(void) MyResults.DisplayDialog();
 
 		MAPIFreeBuffer(lpThumbnail);
 		if (lpAdrBook) lpAdrBook->Release();

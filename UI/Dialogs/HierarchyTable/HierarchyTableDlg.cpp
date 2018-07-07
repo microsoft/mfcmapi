@@ -111,7 +111,6 @@ namespace dialog
 
 	void CHierarchyTableDlg::OnDisplayHierarchyTable()
 	{
-		auto hRes = S_OK;
 		LPMAPITABLE lpMAPITable = nullptr;
 
 		if (!m_lpHierarchyTableTreeCtrl) return;
@@ -127,15 +126,16 @@ namespace dialog
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_CONVENIENTDEPTH, false, false));
 
-			WC_H(MyData.DisplayDialog());
-
-			EC_MAPI_S(
-				lpContainer->GetHierarchyTable(MyData.GetCheck(0) ? CONVENIENT_DEPTH : 0 | fMapiUnicode, &lpMAPITable));
-
-			if (lpMAPITable)
+			if (MyData.DisplayDialog())
 			{
-				EC_H_S(DisplayTable(lpMAPITable, otHierarchy, this));
-				lpMAPITable->Release();
+				EC_MAPI_S(lpContainer->GetHierarchyTable(
+					MyData.GetCheck(0) ? CONVENIENT_DEPTH : 0 | fMapiUnicode, &lpMAPITable));
+
+				if (lpMAPITable)
+				{
+					EC_H_S(DisplayTable(lpMAPITable, otHierarchy, this));
+					lpMAPITable->Release();
+				}
 			}
 
 			lpContainer->Release();
@@ -172,8 +172,7 @@ namespace dialog
 
 			editor::CCriteriaEditor MyCriteria(this, lpRes, lpEntryList, ulSearchState);
 
-			WC_H(MyCriteria.DisplayDialog());
-			if (hRes == S_OK)
+			if (MyCriteria.DisplayDialog())
 			{
 				// make sure the user really wants to call SetSearchCriteria
 				// hard to detect 'dirty' on this dialog so easier just to ask
@@ -182,8 +181,7 @@ namespace dialog
 					IDS_CALLSETSEARCHCRITERIA,
 					IDS_CALLSETSEARCHCRITERIAPROMPT,
 					CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				WC_H(MyYesNoDialog.DisplayDialog());
-				if (hRes == S_OK)
+				if (MyYesNoDialog.DisplayDialog())
 				{
 					// do the set search criteria
 					const auto lpNewRes = MyCriteria.DetachModifiedSRestriction();

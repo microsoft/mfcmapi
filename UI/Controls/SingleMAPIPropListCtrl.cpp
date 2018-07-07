@@ -1012,9 +1012,7 @@ namespace controls
 				MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_UPPERBOUND, false));
 				MyData.SetHex(1, __UPPERBOUNDDEFAULT);
 
-				WC_H(MyData.DisplayDialog());
-
-				if (hRes == S_OK)
+				if (MyData.DisplayDialog())
 				{
 					const auto ulLowerBound = MyData.GetHex(0);
 					const auto ulUpperBound = MyData.GetHex(1);
@@ -1179,14 +1177,12 @@ namespace controls
 				MyResult.LoadString(0, IDS_HIGHESTNAMEDPROPNOTFOUND);
 			}
 
-			hRes = S_OK;
-			WC_H(MyResult.DisplayDialog());
+			(void) MyResult.DisplayDialog();
 		}
 
 		// Delete the selected property
 		void CSingleMAPIPropListCtrl::OnDeleteProperty()
 		{
-			auto hRes = S_OK;
 			ULONG ulPropTag = NULL;
 
 			if (!m_lpPropBag || m_lpPropBag->GetType() == propertybag::pbRow) return;
@@ -1196,13 +1192,11 @@ namespace controls
 
 			dialog::editor::CEditor Query(
 				this, IDS_DELETEPROPERTY, IDS_DELETEPROPERTYPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			WC_H(Query.DisplayDialog());
-			if (hRes == S_OK)
+			if (Query.DisplayDialog())
 			{
 				output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteProperty", L"deleting property 0x%08X\n", ulPropTag);
 
-				hRes = EC_H(m_lpPropBag->DeleteProp(ulPropTag));
-
+				auto hRes = EC_H(m_lpPropBag->DeleteProp(ulPropTag));
 				if (SUCCEEDED(hRes))
 				{
 					// Refresh the display
@@ -1272,9 +1266,7 @@ namespace controls
 				this,
 				nullptr, // No alloc parent - we must MAPIFreeBuffer the result
 				lpResIn);
-			WC_H(MyResEditor.DisplayDialog());
-
-			if (hRes == S_OK)
+			if (MyResEditor.DisplayDialog())
 			{
 				const auto lpModRes = MyResEditor.DetachModifiedSRestriction();
 				if (lpModRes)
@@ -1354,7 +1346,6 @@ namespace controls
 
 			if (bUseStream)
 			{
-				hRes = S_OK;
 				dialog::editor::CStreamEditor MyEditor(
 					this,
 					IDS_PROPEDITOR,
@@ -1369,15 +1360,17 @@ namespace controls
 					NULL,
 					NULL);
 
-				WC_H(MyEditor.DisplayDialog());
+				if (MyEditor.DisplayDialog())
+				{
+					WC_H2S(RefreshMAPIPropList());
+				}
 			}
 			else
 			{
 				if (lpEditProp) ulPropTag = lpEditProp->ulPropTag;
 
-				hRes = S_OK;
 				LPSPropValue lpModProp = nullptr;
-				WC_H(dialog::editor::DisplayPropertyEditor(
+				hRes = WC_H2(dialog::editor::DisplayPropertyEditor(
 					this,
 					IDS_PROPEDITOR,
 					NULL,
@@ -1396,11 +1389,11 @@ namespace controls
 					// At this point, we're done with lpModProp - it was allocated off of lpSourceArray
 					// and freed when a new source array was allocated. Nothing to free here. Move along.
 				}
-			}
 
-			if (SUCCEEDED(hRes))
-			{
-				WC_H(RefreshMAPIPropList());
+				if (SUCCEEDED(hRes))
+				{
+					WC_H2S(RefreshMAPIPropList());
+				}
 			}
 
 			m_lpPropBag->FreeBuffer(lpEditProp);
@@ -1444,62 +1437,55 @@ namespace controls
 					this, IDS_USEWRAPEX, IDS_USEWRAPEXPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 				MyPrompt.InitPane(0, viewpane::CheckPane::Create(IDS_USEWRAPEX, true, false));
 
-				WC_H(MyPrompt.DisplayDialog());
-				if (hRes == S_OK)
+				if (!MyPrompt.DisplayDialog()) return;
+
+				if (MyPrompt.GetCheck(0))
 				{
-					if (MyPrompt.GetCheck(0))
+					bUseWrapEx = true;
+					LPSPropValue lpProp = nullptr;
+
+					WC_H(m_lpPropBag->GetProp(PR_INTERNET_CPID, &lpProp));
+					if (lpProp && PT_LONG == PROP_TYPE(lpProp[0].ulPropTag))
 					{
-						bUseWrapEx = true;
-						LPSPropValue lpProp = nullptr;
-
-						WC_H(m_lpPropBag->GetProp(PR_INTERNET_CPID, &lpProp));
-						if (lpProp && PT_LONG == PROP_TYPE(lpProp[0].ulPropTag))
-						{
-							ulInCodePage = lpProp[0].Value.l;
-						}
-
-						m_lpPropBag->FreeBuffer(lpProp);
-
-						dialog::editor::CEditor MyPrompt2(
-							this, IDS_WRAPEXFLAGS, IDS_WRAPEXFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-						MyPrompt2.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_WRAPEXFLAGS, false));
-						MyPrompt2.SetHex(0, MAPI_NATIVE_BODY);
-						MyPrompt2.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULINCODEPAGE, false));
-						MyPrompt2.SetDecimal(1, ulInCodePage);
-						MyPrompt2.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULOUTCODEPAGE, false));
-						MyPrompt2.SetDecimal(2, 0);
-
-						WC_H(MyPrompt2.DisplayDialog());
-
-						if (hRes == S_OK)
-						{
-							ulRTFFlags = MyPrompt2.GetHex(0);
-							ulInCodePage = MyPrompt2.GetDecimal(1);
-							ulOutCodePage = MyPrompt2.GetDecimal(2);
-						}
+						ulInCodePage = lpProp[0].Value.l;
 					}
+
+					m_lpPropBag->FreeBuffer(lpProp);
+
+					dialog::editor::CEditor MyPrompt2(
+						this, IDS_WRAPEXFLAGS, IDS_WRAPEXFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+					MyPrompt2.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_WRAPEXFLAGS, false));
+					MyPrompt2.SetHex(0, MAPI_NATIVE_BODY);
+					MyPrompt2.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULINCODEPAGE, false));
+					MyPrompt2.SetDecimal(1, ulInCodePage);
+					MyPrompt2.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULOUTCODEPAGE, false));
+					MyPrompt2.SetDecimal(2, 0);
+
+					if (!MyPrompt2.DisplayDialog()) return;
+
+					ulRTFFlags = MyPrompt2.GetHex(0);
+					ulInCodePage = MyPrompt2.GetDecimal(1);
+					ulOutCodePage = MyPrompt2.GetDecimal(2);
 				}
 			}
 
-			if (hRes == S_OK)
+			dialog::editor::CStreamEditor MyEditor(
+				this,
+				IDS_PROPEDITOR,
+				IDS_STREAMEDITORPROMPT,
+				m_lpPropBag->GetMAPIProp(),
+				ulPropTag,
+				false, // No stream guessing
+				m_bIsAB,
+				bEditAsRTF,
+				bUseWrapEx,
+				ulRTFFlags,
+				ulInCodePage,
+				ulOutCodePage);
+
+			if (MyEditor.DisplayDialog())
 			{
-				dialog::editor::CStreamEditor MyEditor(
-					this,
-					IDS_PROPEDITOR,
-					IDS_STREAMEDITORPROMPT,
-					m_lpPropBag->GetMAPIProp(),
-					ulPropTag,
-					false, // No stream guessing
-					m_bIsAB,
-					bEditAsRTF,
-					bUseWrapEx,
-					ulRTFFlags,
-					ulInCodePage,
-					ulOutCodePage);
-
-				WC_H(MyEditor.DisplayDialog());
-
-				WC_H(RefreshMAPIPropList());
+				WC_H2S(RefreshMAPIPropList());
 			}
 		}
 
@@ -1540,68 +1526,64 @@ namespace controls
 			MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_TARGETPROP, false));
 			MyData.SetHex(2, ulSourcePropTag);
 
-			WC_H(MyData.DisplayDialog());
-			if (hRes == S_OK)
+			if (!MyData.DisplayDialog()) return;
+
+			const auto ulSourceTag = MyData.GetHex(1);
+			auto ulTargetTag = MyData.GetHex(2);
+			TagArray.aulPropTag[0] = ulSourceTag;
+
+			if (PROP_TYPE(ulTargetTag) != PROP_TYPE(ulSourceTag))
+				ulTargetTag = CHANGE_PROP_TYPE(ulTargetTag, PROP_TYPE(ulSourceTag));
+
+			switch (MyData.GetDropDown(0))
 			{
-				const auto ulSourceTag = MyData.GetHex(1);
-				auto ulTargetTag = MyData.GetHex(2);
-				TagArray.aulPropTag[0] = ulSourceTag;
+			case 0:
+			{
+				dialog::editor::CEditor MyCopyData(
+					this, IDS_PASTEPROP, IDS_COPYPASTEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-				if (PROP_TYPE(ulTargetTag) != PROP_TYPE(ulSourceTag))
-					ulTargetTag = CHANGE_PROP_TYPE(ulTargetTag, PROP_TYPE(ulSourceTag));
+				const auto szGuid = guid::GUIDToStringAndName(&IID_IMAPIProp);
+				MyCopyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_INTERFACE, szGuid, false));
+				MyCopyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+				MyCopyData.SetHex(1, MAPI_DIALOG);
 
-				switch (MyData.GetDropDown(0))
+				if (!MyCopyData.DisplayDialog()) return;
+
+				auto MyGUID = guid::StringToGUID(MyCopyData.GetStringW(0));
+				LPMAPIPROGRESS lpProgress =
+					mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", m_lpHostDlg->m_hWnd); // STRING_OK
+				auto ulCopyFlags = MyCopyData.GetHex(1);
+
+				if (lpProgress) ulCopyFlags |= MAPI_DIALOG;
+
+				hRes = EC_MAPI(lpSourcePropObj->CopyProps(
+					&TagArray,
+					lpProgress ? reinterpret_cast<ULONG_PTR>(m_lpHostDlg->m_hWnd) : NULL, // ui param
+					lpProgress, // progress
+					&MyGUID,
+					m_lpPropBag->GetMAPIProp(),
+					ulCopyFlags,
+					&lpProblems));
+
+				if (lpProgress) lpProgress->Release();
+			}
+			break;
+			case 1:
+			{
+				ULONG ulValues = NULL;
+				LPSPropValue lpSourceProp = nullptr;
+				hRes = EC_MAPI(lpSourcePropObj->GetProps(&TagArray, fMapiUnicode, &ulValues, &lpSourceProp));
+				if (SUCCEEDED(hRes) && ulValues && lpSourceProp && PT_ERROR != lpSourceProp->ulPropTag)
 				{
-				case 0:
-				{
-					dialog::editor::CEditor MyCopyData(
-						this, IDS_PASTEPROP, IDS_COPYPASTEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-
-					const auto szGuid = guid::GUIDToStringAndName(&IID_IMAPIProp);
-					MyCopyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_INTERFACE, szGuid, false));
-					MyCopyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
-					MyCopyData.SetHex(1, MAPI_DIALOG);
-
-					WC_H(MyCopyData.DisplayDialog());
-					if (hRes == S_OK)
-					{
-						auto MyGUID = guid::StringToGUID(MyCopyData.GetStringW(0));
-						LPMAPIPROGRESS lpProgress =
-							mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", m_lpHostDlg->m_hWnd); // STRING_OK
-						auto ulCopyFlags = MyCopyData.GetHex(1);
-
-						if (lpProgress) ulCopyFlags |= MAPI_DIALOG;
-
-						hRes = EC_MAPI(lpSourcePropObj->CopyProps(
-							&TagArray,
-							lpProgress ? reinterpret_cast<ULONG_PTR>(m_lpHostDlg->m_hWnd) : NULL, // ui param
-							lpProgress, // progress
-							&MyGUID,
-							m_lpPropBag->GetMAPIProp(),
-							ulCopyFlags,
-							&lpProblems));
-
-						if (lpProgress) lpProgress->Release();
-					}
+					lpSourceProp->ulPropTag = ulTargetTag;
+					hRes = EC_H(m_lpPropBag->SetProps(ulValues, lpSourceProp));
 				}
+			}
+			break;
+			case 2:
+				hRes = EC_H(
+					mapi::CopyPropertyAsStream(lpSourcePropObj, m_lpPropBag->GetMAPIProp(), ulSourceTag, ulTargetTag));
 				break;
-				case 1:
-				{
-					ULONG ulValues = NULL;
-					LPSPropValue lpSourceProp = nullptr;
-					hRes = EC_MAPI(lpSourcePropObj->GetProps(&TagArray, fMapiUnicode, &ulValues, &lpSourceProp));
-					if (SUCCEEDED(hRes) && ulValues && lpSourceProp && PT_ERROR != lpSourceProp->ulPropTag)
-					{
-						lpSourceProp->ulPropTag = ulTargetTag;
-						hRes = EC_H(m_lpPropBag->SetProps(ulValues, lpSourceProp));
-					}
-				}
-				break;
-				case 2:
-					hRes = EC_H(mapi::CopyPropertyAsStream(
-						lpSourcePropObj, m_lpPropBag->GetMAPIProp(), ulSourceTag, ulTargetTag));
-					break;
-				}
 			}
 
 			EC_PROBLEMARRAY(lpProblems);
@@ -1704,8 +1686,6 @@ namespace controls
 		{
 			cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
 
-			auto hRes = S_OK;
-
 			dialog::editor::CTagArrayEditor MyTagArrayEditor(
 				this,
 				IDS_EXTRAPROPS,
@@ -1715,8 +1695,7 @@ namespace controls
 				m_bIsAB,
 				m_lpPropBag ? m_lpPropBag->GetMAPIProp() : nullptr);
 
-			WC_H(MyTagArrayEditor.DisplayDialog());
-			if (S_OK != hRes) return;
+			if (!MyTagArrayEditor.DisplayDialog()) return;
 
 			const auto lpNewTagArray = MyTagArrayEditor.DetachModifiedTagArray();
 			if (lpNewTagArray)
@@ -1725,7 +1704,7 @@ namespace controls
 				m_sptExtraProps = lpNewTagArray;
 			}
 
-			WC_H(RefreshMAPIPropList());
+			WC_H2S(RefreshMAPIPropList());
 		}
 
 		void CSingleMAPIPropListCtrl::OnEditGivenProperty()
@@ -1733,8 +1712,6 @@ namespace controls
 			if (!m_lpPropBag) return;
 
 			// Display a dialog to get a property number.
-			auto hRes = S_OK;
-
 			dialog::editor::CPropertyTagEditor MyPropertyTag(
 				IDS_EDITGIVENPROP,
 				NULL, // prompt
@@ -1743,8 +1720,7 @@ namespace controls
 				m_lpPropBag->GetMAPIProp(),
 				this);
 
-			WC_H(MyPropertyTag.DisplayDialog());
-			if (hRes == S_OK)
+			if (MyPropertyTag.DisplayDialog())
 			{
 				OnEditGivenProp(MyPropertyTag.GetPropertyTag());
 			}
@@ -1755,7 +1731,6 @@ namespace controls
 			if (!m_lpPropBag) return;
 
 			// Display a dialog to get a property number.
-			auto hRes = S_OK;
 			dialog::editor::CPropertyTagEditor MyPropertyTag(
 				IDS_OPENPROPASTABLE,
 				NULL, // prompt
@@ -1763,35 +1738,28 @@ namespace controls
 				m_bIsAB,
 				m_lpPropBag->GetMAPIProp(),
 				this);
+			if (!MyPropertyTag.DisplayDialog()) return;
+			dialog::editor::CEditor MyData(
+				this, IDS_OPENPROPASTABLE, IDS_OPENPROPASTABLEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-			WC_H(MyPropertyTag.DisplayDialog());
-			if (hRes == S_OK)
+			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_OPENASEXTABLE, false, false));
+			if (!MyData.DisplayDialog()) return;
+
+			if (MyData.GetCheck(0))
 			{
-				dialog::editor::CEditor MyData(
-					this, IDS_OPENPROPASTABLE, IDS_OPENPROPASTABLEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-
-				MyData.InitPane(0, viewpane::CheckPane::Create(IDS_OPENASEXTABLE, false, false));
-
-				WC_H(MyData.DisplayDialog());
-				if (hRes == S_OK)
-				{
-					if (MyData.GetCheck(0))
-					{
-						EC_H_S(DisplayExchangeTable(
-							m_lpPropBag->GetMAPIProp(),
-							CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
-							dialog::otDefault,
-							m_lpHostDlg));
-					}
-					else
-					{
-						EC_H_S(DisplayTable(
-							m_lpPropBag->GetMAPIProp(),
-							CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
-							dialog::otDefault,
-							m_lpHostDlg));
-					}
-				}
+				EC_H_S(DisplayExchangeTable(
+					m_lpPropBag->GetMAPIProp(),
+					CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
+					dialog::otDefault,
+					m_lpHostDlg));
+			}
+			else
+			{
+				EC_H_S(DisplayTable(
+					m_lpPropBag->GetMAPIProp(),
+					CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
+					dialog::otDefault,
+					m_lpHostDlg));
 			}
 		}
 
@@ -1799,7 +1767,6 @@ namespace controls
 		{
 			if (!m_lpPropBag) return;
 
-			auto hRes = S_OK;
 			const auto lpSourceMsgEID = cache::CGlobalCache::getInstance().GetMessagesToCopy();
 
 			if (cache::CGlobalCache::getInstance().GetBufferStatus() & BUFFER_MESSAGES && lpSourceMsgEID &&
@@ -1813,47 +1780,41 @@ namespace controls
 				MyData.InitPane(1, viewpane::CheckPane::Create(IDS_MAPIMOVE, false, false));
 				MyData.InitPane(2, viewpane::CheckPane::Create(IDS_MAPINOREPLACE, false, false));
 
-				WC_H(MyData.DisplayDialog());
+				if (!MyData.DisplayDialog()) return;
 
-				if (hRes == S_OK)
+				ULONG ulObjType = 0;
+				LPMAPIPROP lpSource = nullptr;
+				auto propSetGUID = guid::StringToGUID(MyData.GetStringW(0));
+
+				auto hRes = EC_H(mapi::CallOpenEntry(
+					NULL,
+					NULL,
+					cache::CGlobalCache::getInstance().GetSourceParentFolder(),
+					NULL,
+					lpSourceMsgEID->lpbin,
+					NULL,
+					MAPI_BEST_ACCESS,
+					&ulObjType,
+					reinterpret_cast<LPUNKNOWN*>(&lpSource)));
+
+				if (hRes == S_OK && ulObjType == MAPI_MESSAGE && lpSource)
 				{
-					ULONG ulObjType = 0;
-					LPMAPIPROP lpSource = nullptr;
-					auto propSetGUID = guid::StringToGUID(MyData.GetStringW(0));
+					hRes = EC_H(mapi::CopyNamedProps(
+						lpSource,
+						&propSetGUID,
+						MyData.GetCheck(1),
+						MyData.GetCheck(2),
+						m_lpPropBag->GetMAPIProp(),
+						m_lpHostDlg->m_hWnd));
 
-					if (hRes == S_OK)
+					if (SUCCEEDED(hRes))
 					{
-						hRes = EC_H(mapi::CallOpenEntry(
-							NULL,
-							NULL,
-							cache::CGlobalCache::getInstance().GetSourceParentFolder(),
-							NULL,
-							lpSourceMsgEID->lpbin,
-							NULL,
-							MAPI_BEST_ACCESS,
-							&ulObjType,
-							reinterpret_cast<LPUNKNOWN*>(&lpSource)));
-
-						if (hRes == S_OK && ulObjType == MAPI_MESSAGE && lpSource)
-						{
-							hRes = EC_H(mapi::CopyNamedProps(
-								lpSource,
-								&propSetGUID,
-								MyData.GetCheck(1),
-								MyData.GetCheck(2),
-								m_lpPropBag->GetMAPIProp(),
-								m_lpHostDlg->m_hWnd));
-
-							if (SUCCEEDED(hRes))
-							{
-								hRes = EC_H(m_lpPropBag->Commit());
-							}
-
-							WC_H(RefreshMAPIPropList());
-
-							lpSource->Release();
-						}
+						hRes = EC_H(m_lpPropBag->Commit());
 					}
+
+					WC_H(RefreshMAPIPropList());
+
+					lpSource->Release();
 				}
 			}
 		}

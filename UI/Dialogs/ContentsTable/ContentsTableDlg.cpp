@@ -283,9 +283,7 @@ namespace dialog
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
 		editor::CSearchEditor SearchEditor(PR_SUBJECT_W, m_lpContainer, this);
-		auto hRes = S_OK;
-		WC_H(SearchEditor.DisplayDialog());
-		if (hRes == S_OK)
+		if (SearchEditor.DisplayDialog())
 		{
 			const auto lpRes = SearchEditor.GetRestriction();
 			if (lpRes)
@@ -306,7 +304,6 @@ namespace dialog
 
 	void CContentsTableDlg::OnCreateRangeRestriction()
 	{
-		auto hRes = S_OK;
 		LPSRestriction lpRes = nullptr;
 
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
@@ -319,45 +316,39 @@ namespace dialog
 			m_lpContainer,
 			this);
 
-		WC_H(MyPropertyTag.DisplayDialog());
-		if (hRes == S_OK)
+		if (!MyPropertyTag.DisplayDialog()) return;
+		editor::CEditor MyData(
+			this, IDS_SEARCHCRITERIA, IDS_RANGESEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SUBSTRING, false));
+		MyData.InitPane(1, viewpane::CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
+
+		if (!MyData.DisplayDialog()) return;
+
+		const auto szString = MyData.GetStringW(0);
+		// Allocate and create our SRestriction
+		auto hRes = EC_H(mapi::CreateRangeRestriction(
+			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, nullptr, &lpRes));
+		if (hRes != S_OK)
 		{
-			editor::CEditor MyData(
-				this, IDS_SEARCHCRITERIA, IDS_RANGESEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			MAPIFreeBuffer(lpRes);
+			lpRes = nullptr;
+		}
 
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SUBSTRING, false));
-			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
+		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
-			WC_H(MyData.DisplayDialog());
-			if (hRes != S_OK) return;
-
-			const auto szString = MyData.GetStringW(0);
-			// Allocate and create our SRestriction
-			hRes = EC_H(mapi::CreateRangeRestriction(
-				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, nullptr, &lpRes));
-			if (hRes != S_OK)
-			{
-				MAPIFreeBuffer(lpRes);
-				lpRes = nullptr;
-			}
-
-			m_lpContentsTableListCtrl->SetRestriction(lpRes);
-
-			if (MyData.GetCheck(1))
-			{
-				SetRestrictionType(mfcmapiFINDROW_RESTRICTION);
-			}
-			else
-			{
-				SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
-			}
+		if (MyData.GetCheck(1))
+		{
+			SetRestrictionType(mfcmapiFINDROW_RESTRICTION);
+		}
+		else
+		{
+			SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
 		}
 	}
 
 	void CContentsTableDlg::OnEditRestriction()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
 		editor::CRestrictEditor MyRestrict(
@@ -365,8 +356,7 @@ namespace dialog
 			nullptr, // No alloc parent - we must MAPIFreeBuffer the result
 			m_lpContentsTableListCtrl->GetRestriction());
 
-		WC_H(MyRestrict.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (!MyRestrict.DisplayDialog()) return;
 
 		m_lpContentsTableListCtrl->SetRestriction(MyRestrict.DetachModifiedSRestriction());
 	}
@@ -401,8 +391,6 @@ namespace dialog
 
 	void CContentsTableDlg::OnSortTable()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
 		editor::CEditor MyData(this, IDS_SORTTABLE, IDS_SORTTABLEPROMPT1, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -414,8 +402,7 @@ namespace dialog
 		MyData.InitPane(4, viewpane::CheckPane::Create(IDS_TBLBATCH, false, false));
 		MyData.InitPane(5, viewpane::CheckPane::Create(IDS_REFRESHAFTERSORT, true, false));
 
-		WC_H(MyData.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (!MyData.DisplayDialog()) return;
 
 		const auto cSorts = MyData.GetDecimal(0);
 		const auto cCategories = MyData.GetDecimal(1);
@@ -448,8 +435,7 @@ namespace dialog
 					m_lpContainer,
 					this);
 
-				WC_H(MyPropertyTag.DisplayDialog());
-				if (hRes == S_OK)
+				if (MyPropertyTag.DisplayDialog())
 				{
 					lpMySortOrders->aSort[i].ulPropTag = MyPropertyTag.GetPropertyTag();
 					editor::CEditor MySortOrderDlg(
@@ -462,8 +448,7 @@ namespace dialog
 					MySortOrderDlg.InitPane(
 						0, viewpane::DropDownPane::Create(IDS_SORTORDER, _countof(uidDropDown), uidDropDown, true));
 
-					WC_H(MySortOrderDlg.DisplayDialog());
-					if (hRes == S_OK)
+					if (MySortOrderDlg.DisplayDialog())
 					{
 						switch (MySortOrderDlg.GetDropDown(0))
 						{

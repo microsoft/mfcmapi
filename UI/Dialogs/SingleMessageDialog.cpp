@@ -91,8 +91,7 @@ namespace dialog
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(0, RTF_SYNC_RTF_CHANGED);
 
-		WC_H(MyData.DisplayDialog());
-		if (hRes == S_OK)
+		if (MyData.DisplayDialog())
 		{
 			BOOL bMessageUpdated = false;
 
@@ -115,7 +114,6 @@ namespace dialog
 
 	void SingleMessageDialog::OnTestEditBody()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (m_lpMessage)
@@ -137,7 +135,7 @@ namespace dialog
 				0);
 			MyEditor.DisableSave();
 
-			WC_H(MyEditor.DisplayDialog());
+			(void) MyEditor.DisplayDialog();
 
 			(void) m_lpPropDisplay->RefreshMAPIPropList();
 		}
@@ -145,7 +143,6 @@ namespace dialog
 
 	void SingleMessageDialog::OnTestEditHTML()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (m_lpMessage)
@@ -167,7 +164,7 @@ namespace dialog
 				0);
 			MyEditor.DisableSave();
 
-			WC_H(MyEditor.DisplayDialog());
+			(void) MyEditor.DisplayDialog();
 
 			(void) m_lpPropDisplay->RefreshMAPIPropList();
 		}
@@ -175,7 +172,6 @@ namespace dialog
 
 	void SingleMessageDialog::OnTestEditRTF()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (m_lpMessage)
@@ -197,7 +193,7 @@ namespace dialog
 				0);
 			MyEditor.DisableSave();
 
-			WC_H(MyEditor.DisplayDialog());
+			(void) MyEditor.DisplayDialog();
 
 			(void) m_lpPropDisplay->RefreshMAPIPropList();
 		}

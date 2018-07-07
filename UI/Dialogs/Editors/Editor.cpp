@@ -509,22 +509,24 @@ namespace dialog
 			return {0};
 		}
 
-		_Check_return_ HRESULT CEditor::DisplayDialog()
+		// Display a dialog
+		// Return value: If the dialog displayed and the user hit OK, true. Else false;
+		// Any errors will be logged and do not need to be bubbled up.
+		_Check_return_ bool CEditor::DisplayDialog()
 		{
 			auto iDlgRet = EC_D_DIALOG(DoModal());
 			switch (iDlgRet)
 			{
+			case IDOK:
+				return true;
 			case -1:
 				output::DebugPrint(DBGGeneric, L"Dialog box could not be created!\n");
 				MessageBox(_T("Dialog box could not be created!")); // STRING_OK
-				return MAPI_E_CALL_FAILED;
+				return false;
 			case IDABORT:
 			case IDCANCEL:
-				return MAPI_E_USER_CANCEL;
-			case IDOK:
-				return S_OK;
 			default:
-				return HRESULT_FROM_WIN32(static_cast<unsigned long>(iDlgRet));
+				return false;
 			}
 		}
 

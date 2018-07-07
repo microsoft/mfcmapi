@@ -248,7 +248,7 @@ namespace mapi
 
 			if (SUCCEEDED(hRes))
 			{
-				hRes = WC_MAPI(HrGetOneProp(pGlobalProfSect, PR_PROFILE_HOME_SERVER, &lpServerName));
+				WC_MAPI_S(HrGetOneProp(pGlobalProfSect, PR_PROFILE_HOME_SERVER, &lpServerName));
 			}
 
 			if (mapi::CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
@@ -258,15 +258,12 @@ namespace mapi
 #ifndef MRMAPI
 			else
 			{
-				hRes = S_OK;
 				// prompt the user to enter a server name
 				dialog::editor::CEditor MyData(
 					nullptr, IDS_SERVERNAME, IDS_SERVERNAMEMISSINGPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 				MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
 
-				WC_H(MyData.DisplayDialog());
-
-				if (hRes == S_OK)
+				if (MyData.DisplayDialog())
 				{
 					serverName = strings::wstringTostring(MyData.GetStringW(0));
 				}
@@ -615,19 +612,17 @@ namespace mapi
 			MyPrompt.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 			MyPrompt.SetHex(3, ulFlags);
 			MyPrompt.InitPane(4, viewpane::CheckPane::Create(IDS_FORCESERVER, false, false));
-			WC_H(MyPrompt.DisplayDialog());
-			if (hRes == S_OK)
-			{
-				WC_H(OpenOtherUsersMailbox(
-					lpMAPISession,
-					lpMDB,
-					strings::wstringTostring(MyPrompt.GetStringW(0)),
-					strings::wstringTostring(MyPrompt.GetStringW(1)),
-					MyPrompt.GetStringW(2),
-					MyPrompt.GetHex(3),
-					MyPrompt.GetCheck(4),
-					lppOtherUserMDB));
-			}
+			if (!MyPrompt.DisplayDialog()) return MAPI_E_USER_CANCEL;
+
+			WC_H(OpenOtherUsersMailbox(
+				lpMAPISession,
+				lpMDB,
+				strings::wstringTostring(MyPrompt.GetStringW(0)),
+				strings::wstringTostring(MyPrompt.GetStringW(1)),
+				MyPrompt.GetStringW(2),
+				MyPrompt.GetHex(3),
+				MyPrompt.GetCheck(4),
+				lppOtherUserMDB));
 
 			return hRes;
 		}

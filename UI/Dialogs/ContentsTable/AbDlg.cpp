@@ -217,19 +217,16 @@ namespace dialog
 	{
 		if (!m_lpAbCont) return;
 
-		auto hRes = S_OK;
 		editor::CEditor Query(
 			this, IDS_DELETEABENTRY, IDS_DELETEABENTRYPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		WC_H(Query.DisplayDialog());
-		if (hRes == S_OK)
-		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteSelectedItem", L"deleting address Book entries\n");
-			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+		if (!Query.DisplayDialog()) return;
 
-			const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
-			EC_MAPI_S(m_lpAbCont->DeleteEntries(lpEIDs, NULL));
-			MAPIFreeBuffer(lpEIDs);
-		}
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteSelectedItem", L"deleting address Book entries\n");
+		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+		const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
+		EC_MAPI_S(m_lpAbCont->DeleteEntries(lpEIDs, NULL));
+		MAPIFreeBuffer(lpEIDs);
 	}
 
 	void CAbDlg::HandleCopy()
@@ -249,7 +246,6 @@ namespace dialog
 	{
 		if (CBaseDialog::HandlePaste()) return true;
 
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		output::DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"pasting address Book entries\n");
@@ -265,8 +261,7 @@ namespace dialog
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 			MyData.SetHex(0, CREATE_CHECK_DUP_STRICT);
 
-			WC_H(MyData.DisplayDialog());
-			if (hRes == S_OK)
+			if (MyData.DisplayDialog())
 			{
 				LPMAPIPROGRESS lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IABContainer::CopyEntries", m_hWnd); // STRING_OK
@@ -294,11 +289,10 @@ namespace dialog
 
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));
 
-		auto hRes = WC_H2(MyData.DisplayDialog());
-		if (hRes != S_OK) return;
+		if (!MyData.DisplayDialog()) return;
 
 		// Allocate and create our SRestriction
-		hRes = EC_H(mapi::ab::CreateANRRestriction(PR_ANR_W, MyData.GetStringW(0), NULL, &lpRes));
+		auto hRes = EC_H(mapi::ab::CreateANRRestriction(PR_ANR_W, MyData.GetStringW(0), NULL, &lpRes));
 
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 

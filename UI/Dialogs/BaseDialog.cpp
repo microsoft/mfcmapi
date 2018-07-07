@@ -663,14 +663,12 @@ namespace dialog
 
 	void CBaseDialog::OnOutlookVersion()
 	{
-		auto hRes = S_OK;
-
 		editor::CEditor MyEID(this, IDS_OUTLOOKVERSIONTITLE, NULL, CEDITOR_BUTTON_OK);
 
 		const auto szVersionString = version::GetOutlookVersionString();
 
 		MyEID.InitPane(0, viewpane::TextPane::CreateMultiLinePane(IDS_OUTLOOKVERSIONPROMPT, szVersionString, true));
-		WC_H(MyEID.DisplayDialog());
+		(void) MyEID.DisplayDialog();
 	}
 
 	void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
@@ -707,8 +705,7 @@ namespace dialog
 
 		MyEID.InitPane(9, viewpane::CheckPane::Create(IDS_EIDISCONTAB, false, false));
 
-		WC_H(MyEID.DisplayDialog());
-		if (hRes != S_OK) return;
+		if (!MyEID.DisplayDialog()) return;
 
 		// Get the entry ID as a binary
 		LPENTRYID lpEnteredEntryID = nullptr;
@@ -807,8 +804,7 @@ namespace dialog
 
 		MyEIDs.InitPane(3, viewpane::CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
 
-		WC_H(MyEIDs.DisplayDialog());
-		if (hRes != S_OK) return;
+		if (!MyEIDs.DisplayDialog()) return;
 
 		if (0 == MyEIDs.GetDropDown(2) && !lpMDB || 1 == MyEIDs.GetDropDown(2) && !lpMAPISession ||
 			2 == MyEIDs.GetDropDown(2) && !lpAB)
@@ -816,6 +812,7 @@ namespace dialog
 			error::ErrDialog(__FILE__, __LINE__, IDS_EDCOMPAREEID);
 			return;
 		}
+
 		// Get the entry IDs as a binary
 		LPENTRYID lpEntryID1 = nullptr;
 		size_t cbBin1 = NULL;
@@ -865,8 +862,6 @@ namespace dialog
 
 	void CBaseDialog::OnComputeStoreHash()
 	{
-		auto hRes = S_OK;
-
 		editor::CEditor MyStoreEID(
 			this, IDS_COMPUTESTOREHASH, IDS_COMPUTESTOREHASHPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
@@ -875,8 +870,7 @@ namespace dialog
 		MyStoreEID.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_FILENAME, false));
 		MyStoreEID.InitPane(3, viewpane::CheckPane::Create(IDS_PUBLICFOLDERSTORE, false, false));
 
-		WC_H(MyStoreEID.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (!MyStoreEID.DisplayDialog()) return;
 
 		// Get the entry ID as a binary
 		LPENTRYID lpEntryID = nullptr;
@@ -918,9 +912,7 @@ namespace dialog
 		MyData.InitPane(
 			2, viewpane::DropDownPane::Create(IDS_OBJECTFORADVISE, _countof(uidDropDown), uidDropDown, true));
 
-		WC_H(MyData.DisplayDialog());
-
-		if (hRes == S_OK)
+		if (MyData.DisplayDialog())
 		{
 			if (0 == MyData.GetDropDown(2) && !lpMDB || 1 == MyData.GetDropDown(2) && !lpMAPISession ||
 				2 == MyData.GetDropDown(2) && !lpAB)

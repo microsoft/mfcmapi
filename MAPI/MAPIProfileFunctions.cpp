@@ -49,15 +49,13 @@ namespace mapi
 
 		void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 		{
-			auto hRes = S_OK;
-
 			output::DebugPrint(DBGGeneric, L"DisplayMAPISVCPath()\n");
 
 			dialog::editor::CEditor MyData(pParentWnd, IDS_MAPISVCTITLE, IDS_MAPISVCTEXT, CEDITOR_BUTTON_OK);
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
 			MyData.SetStringW(0, GetMAPISVCPath());
 
-			WC_H(MyData.DisplayDialog());
+			(void) MyData.DisplayDialog();
 		}
 
 		// Function name : GetMAPISVCPath
@@ -301,14 +299,12 @@ namespace mapi
 
 		void AddServicesToMapiSvcInf()
 		{
-			auto hRes = S_OK;
 			dialog::editor::CEditor MyData(
 				nullptr, IDS_ADDSERVICESTOINF, IDS_ADDSERVICESTOINFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_EXCHANGE, false, false));
 			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_PST, false, false));
 
-			WC_H(MyData.DisplayDialog());
-			if (hRes == S_OK)
+			if (MyData.DisplayDialog())
 			{
 				if (MyData.GetCheck(0))
 				{
@@ -324,14 +320,12 @@ namespace mapi
 
 		void RemoveServicesFromMapiSvcInf()
 		{
-			auto hRes = S_OK;
 			dialog::editor::CEditor MyData(
 				nullptr, IDS_REMOVEFROMINF, IDS_REMOVEFROMINFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_EXCHANGE, false, false));
 			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_PST, false, false));
 
-			WC_H(MyData.DisplayDialog());
-			if (hRes == S_OK)
+			if (MyData.DisplayDialog())
 			{
 				if (MyData.GetCheck(0))
 				{

@@ -2560,13 +2560,9 @@ namespace mapi
 	// Must be freed with MAPIFreeBuffer
 	LPSPropTagArray GetExcludedTags(_In_opt_ LPSPropTagArray lpTagArray, _In_opt_ LPMAPIPROP lpProp, bool bIsAB)
 	{
-		auto hRes = S_OK;
-
 		dialog::editor::CTagArrayEditor TagEditor(
 			nullptr, IDS_TAGSTOEXCLUDE, IDS_TAGSTOEXCLUDEPROMPT, nullptr, lpTagArray, bIsAB, lpProp);
-		WC_H(TagEditor.DisplayDialog());
-
-		if (hRes == S_OK)
+		if (TagEditor.DisplayDialog())
 		{
 			return TagEditor.DetachModifiedTagArray();
 		}
@@ -2586,7 +2582,6 @@ namespace mapi
 		bool bIsAB,
 		bool bAllowUI)
 	{
-		auto hRes = S_OK;
 		if (!lpSource || !lpDest) return MAPI_E_INVALID_PARAMETER;
 
 		LPSPropProblemArray lpProblems = nullptr;
@@ -2611,41 +2606,35 @@ namespace mapi
 			MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 			MyData.SetHex(1, MAPI_DIALOG);
 
-			WC_H(MyData.DisplayDialog());
+			if (!MyData.DisplayDialog()) return MAPI_E_USER_CANCEL;
 
-			if (hRes == S_OK)
+			auto MyGUID = guid::StringToGUID(MyData.GetStringW(0));
+			lpGUIDLocal = &MyGUID;
+			ulCopyFlags = MyData.GetHex(1);
+			if (hWnd)
 			{
-				auto MyGUID = guid::StringToGUID(MyData.GetStringW(0));
-				lpGUIDLocal = &MyGUID;
-				ulCopyFlags = MyData.GetHex(1);
-				if (hWnd)
-				{
-					lpProgress = mapi::mapiui::GetMAPIProgress(L"CopyTo", hWnd); // STRING_OK
-					if (lpProgress) ulCopyFlags |= MAPI_DIALOG;
-				}
+				lpProgress = mapi::mapiui::GetMAPIProgress(L"CopyTo", hWnd); // STRING_OK
+				if (lpProgress) ulCopyFlags |= MAPI_DIALOG;
+			}
 
-				lpUITags = GetExcludedTags(lpTagArray, lpSource, bIsAB);
-				if (lpUITags)
-				{
-					lpExcludedTags = lpUITags;
-				}
+			lpUITags = GetExcludedTags(lpTagArray, lpSource, bIsAB);
+			if (lpUITags)
+			{
+				lpExcludedTags = lpUITags;
 			}
 		}
 #endif
 
-		if (hRes == S_OK)
-		{
-			hRes = WC_MAPI(lpSource->CopyTo(
-				0,
-				nullptr,
-				lpExcludedTags,
-				lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL, // UI param
-				lpProgress, // progress
-				lpGUIDLocal,
-				lpDest,
-				ulCopyFlags, // flags
-				&lpProblems));
-		}
+		auto hRes = WC_MAPI(lpSource->CopyTo(
+			0,
+			nullptr,
+			lpExcludedTags,
+			lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL, // UI param
+			lpProgress, // progress
+			lpGUIDLocal,
+			lpDest,
+			ulCopyFlags, // flags
+			&lpProblems));
 
 		MAPIFreeBuffer(lpUITags);
 		if (lpProgress) lpProgress->Release();

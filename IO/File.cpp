@@ -454,8 +454,7 @@ namespace file
 
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EXPORTSEARCHTERM, false));
 
-		auto hRes = WC_H2(MyData.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (!MyData.DisplayDialog()) return;
 
 		auto szDir = GetDirectoryPath(hWnd);
 		if (szDir.empty()) return;
@@ -465,12 +464,12 @@ namespace file
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		LPMAPITABLE lpTable = nullptr;
-		hRes = WC_MAPI(lpFolder->GetContentsTable(MAPI_DEFERRED_ERRORS | MAPI_UNICODE, &lpTable));
+		WC_MAPI_S(lpFolder->GetContentsTable(MAPI_DEFERRED_ERRORS | MAPI_UNICODE, &lpTable));
 		if (lpTable)
 		{
 			LPSRestriction lpRes = nullptr;
 			// Allocate and create our SRestriction
-			hRes = EC_H(mapi::CreatePropertyStringRestriction(
+			auto hRes = EC_H(mapi::CreatePropertyStringRestriction(
 				PR_SUBJECT_W, restrictString, FL_SUBSTRING | FL_IGNORECASE, nullptr, &lpRes));
 			if (SUCCEEDED(hRes))
 			{
@@ -925,24 +924,24 @@ namespace file
 						{
 							if (PR_ATTACH_NUM != pRows->aRow[iRow].lpProps[ATTACHNUM].ulPropTag) continue;
 
-						if (!szAttName.empty())
-						{
-							if (PR_ATTACH_LONG_FILENAME_W != pRows->aRow[iRow].lpProps[ATTACHNAME].ulPropTag ||
-								szAttName != pRows->aRow[iRow].lpProps[ATTACHNAME].Value.lpszW)
-								continue;
-						}
+							if (!szAttName.empty())
+							{
+								if (PR_ATTACH_LONG_FILENAME_W != pRows->aRow[iRow].lpProps[ATTACHNAME].ulPropTag ||
+									szAttName != pRows->aRow[iRow].lpProps[ATTACHNAME].Value.lpszW)
+									continue;
+							}
 
-						// Open the attachment
-						LPMAPIPROGRESS lpProgress =
-							mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", hWnd); // STRING_OK
+							// Open the attachment
+							LPMAPIPROGRESS lpProgress =
+								mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", hWnd); // STRING_OK
 
-						hRes = EC_MAPI(lpMessage->DeleteAttach(
-							pRows->aRow[iRow].lpProps[ATTACHNUM].Value.l,
-							lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
-							lpProgress,
-							lpProgress ? ATTACH_DIALOG : 0));
+							hRes = EC_MAPI(lpMessage->DeleteAttach(
+								pRows->aRow[iRow].lpProps[ATTACHNUM].Value.l,
+								lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
+								lpProgress,
+								lpProgress ? ATTACH_DIALOG : 0));
 
-						if (SUCCEEDED(hRes)) bDirty = true;
+							if (SUCCEEDED(hRes)) bDirty = true;
 
 							if (lpProgress) lpProgress->Release();
 						}
