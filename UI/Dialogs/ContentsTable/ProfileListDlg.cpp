@@ -248,7 +248,7 @@ namespace dialog
 						szPwd.c_str());
 
 					CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-					EC_H(mapi::profile::HrAddPSTToProfile(
+					EC_H_S(mapi::profile::HrAddPSTToProfile(
 						reinterpret_cast<ULONG_PTR>(m_hWnd),
 						bUnicodePST,
 						szPath,
@@ -283,7 +283,6 @@ namespace dialog
 			auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 			for (const auto& lpListData : items)
 			{
-				hRes = S_OK;
 				if (!lpListData || !lpListData->Contents()) break;
 
 				output::DebugPrintEx(
@@ -294,7 +293,7 @@ namespace dialog
 					szService.c_str(),
 					lpListData->Contents()->m_szProfileDisplayName.c_str());
 
-				EC_H(mapi::profile::HrAddServiceToProfile(
+				EC_H_S(mapi::profile::HrAddServiceToProfile(
 					szService,
 					reinterpret_cast<ULONG_PTR>(m_hWnd),
 					MyData.GetCheck(1) ? SERVICE_UI_ALWAYS : 0,
@@ -326,7 +325,7 @@ namespace dialog
 				L"Creating profile \"%hs\"\n", // STRING_OK
 				szProfile.c_str());
 
-			EC_H(mapi::profile::HrCreateProfile(szProfile));
+			EC_H_S(mapi::profile::HrCreateProfile(szProfile));
 
 			// Since we may have created a profile, update even if we failed.
 			OnRefreshView(); // Update the view since we don't have notifications here.
@@ -342,7 +341,6 @@ namespace dialog
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 		for (const auto& lpListData : items)
 		{
-			auto hRes = S_OK;
 			// Find the highlighted item AttachNum
 			if (!lpListData || !lpListData->Contents()) break;
 
@@ -353,7 +351,7 @@ namespace dialog
 				L"Deleting profile \"%hs\"\n",
 				lpListData->Contents()->m_szProfileDisplayName.c_str());
 
-			EC_H(mapi::profile::HrRemoveProfile(lpListData->Contents()->m_szProfileDisplayName));
+			EC_H_S(mapi::profile::HrRemoveProfile(lpListData->Contents()->m_szProfileDisplayName));
 		}
 
 		OnRefreshView(); // Update the view since we don't have notifications here.
@@ -444,7 +442,6 @@ namespace dialog
 
 	void CProfileListDlg::OnSetDefaultProfile()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpContentsTableListCtrl) return;
@@ -460,7 +457,7 @@ namespace dialog
 				L"Setting profile \"%hs\" as default\n",
 				lpListData->Contents()->m_szProfileDisplayName.c_str());
 
-			EC_H(mapi::profile::HrSetDefaultProfile(lpListData->Contents()->m_szProfileDisplayName));
+			EC_H_S(mapi::profile::HrSetDefaultProfile(lpListData->Contents()->m_szProfileDisplayName));
 
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}

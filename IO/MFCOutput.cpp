@@ -330,8 +330,6 @@ namespace output
 		EARLYABORT;
 		if (!lpMAPIFormInfo) return;
 
-		auto hRes = S_OK;
-
 		LPSPropValue lpPropVals = nullptr;
 		ULONG ulPropVals = NULL;
 		LPMAPIVERBARRAY lpMAPIVerbArray = nullptr;
@@ -339,15 +337,14 @@ namespace output
 
 		Outputf(ulDbgLvl, fFile, true, L"Dumping verb and property set for form: %p\n", lpMAPIFormInfo);
 
-		EC_H(mapi::GetPropsNULL(lpMAPIFormInfo, fMapiUnicode, &ulPropVals, &lpPropVals));
+		EC_H_S(mapi::GetPropsNULL(lpMAPIFormInfo, fMapiUnicode, &ulPropVals, &lpPropVals));
 		if (lpPropVals)
 		{
 			_OutputProperties(ulDbgLvl, fFile, ulPropVals, lpPropVals, lpMAPIFormInfo, false);
 			MAPIFreeBuffer(lpPropVals);
 		}
 
-		hRes = EC_MAPI(lpMAPIFormInfo->CalcVerbSet(NULL, &lpMAPIVerbArray)); // API doesn't support Unicode
-
+		EC_MAPI_S(lpMAPIFormInfo->CalcVerbSet(NULL, &lpMAPIVerbArray)); // API doesn't support Unicode
 		if (lpMAPIVerbArray)
 		{
 			Outputf(ulDbgLvl, fFile, true, L"\t0x%X verbs:\n", lpMAPIVerbArray->cMAPIVerb);
@@ -388,8 +385,7 @@ namespace output
 			MAPIFreeBuffer(lpMAPIVerbArray);
 		}
 
-		hRes = EC_MAPI(lpMAPIFormInfo->CalcFormPropSet(NULL, &lpMAPIFormPropArray)); // API doesn't support Unicode
-
+		EC_MAPI_S(lpMAPIFormInfo->CalcFormPropSet(NULL, &lpMAPIFormPropArray)); // API doesn't support Unicode
 		if (lpMAPIFormPropArray)
 		{
 			_OutputFormPropArray(ulDbgLvl, fFile, lpMAPIFormPropArray);

@@ -91,7 +91,7 @@ namespace error
 // Execute a function, log and return the HRESULT
 // Does not modify or reference existing hRes
 // Will display dialog on error
-#define EC_H2(fnx) \
+#define EC_H(fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
@@ -101,24 +101,11 @@ namespace error
 // Execute a function, log and swallow the HRESULT
 // Does not modify or reference existing hRes
 // Will display dialog on error
-#define EC_H2S(fnx) \
+#define EC_H_S(fnx) \
 	[&]() -> void { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
-
-#define EC_H(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = (fnx); \
-			CheckHResFn(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
 
 // Execute a function, log and return the HRESULT
 // Does not modify or reference existing hRes

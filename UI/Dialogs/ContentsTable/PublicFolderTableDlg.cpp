@@ -79,17 +79,17 @@ namespace dialog
 			MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK != hRes) return;
+			if (hRes != S_OK) return;
 
 			const auto szString = MyData.GetStringW(0);
 			// Allocate and create our SRestriction
-			EC_H(mapi::CreatePropertyStringRestriction(
+			hRes = EC_H(mapi::CreatePropertyStringRestriction(
 				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
 				szString,
 				MyData.GetHex(1),
 				NULL,
 				&lpRes));
-			if (S_OK != hRes && lpRes)
+			if (hRes != S_OK && lpRes)
 			{
 				MAPIFreeBuffer(lpRes);
 				lpRes = nullptr;

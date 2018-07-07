@@ -267,15 +267,14 @@ namespace cache
 	{
 		if (!lpMAPIProp || !lppPropTags || !*lppPropTags || !cbSig || !lpSig) return MAPI_E_INVALID_PARAMETER;
 
-		auto hRes = S_OK;
-
 		// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 		// If we reach the end of the cache and don't have everything, we set up to make a GetNamesFromIDs call.
 
 		const auto lpPropTags = *lppPropTags;
 		// First, allocate our results using MAPI
 		LPMAPINAMEID* lppNameIDs = nullptr;
-		EC_H(MAPIAllocateBuffer(sizeof(MAPINAMEID*) * lpPropTags->cValues, reinterpret_cast<LPVOID*>(&lppNameIDs)));
+		auto hRes = EC_H(
+			MAPIAllocateBuffer(sizeof(MAPINAMEID*) * lpPropTags->cValues, reinterpret_cast<LPVOID*>(&lppNameIDs)));
 
 		if (lppNameIDs)
 		{
@@ -304,7 +303,8 @@ namespace cache
 			if (0 != ulMisses)
 			{
 				LPSPropTagArray lpUncachedTags = nullptr;
-				EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(ulMisses), reinterpret_cast<LPVOID*>(&lpUncachedTags)));
+				hRes =
+					EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(ulMisses), reinterpret_cast<LPVOID*>(&lpUncachedTags)));
 				if (lpUncachedTags)
 				{
 					memset(lpUncachedTags, 0, CbNewSPropTagArray(ulMisses));
@@ -343,7 +343,7 @@ namespace cache
 								{
 									LPMAPINAMEID lpNameID = nullptr;
 
-									EC_H(MAPIAllocateMore(
+									hRes = EC_H(MAPIAllocateMore(
 										sizeof(MAPINAMEID), lppNameIDs, reinterpret_cast<LPVOID*>(&lpNameID)));
 									if (lpNameID)
 									{
@@ -354,6 +354,7 @@ namespace cache
 										ulMisses--;
 									}
 								}
+
 								// Whether we copied or not, move on to the next one
 								ulUncachedTag++;
 							}
@@ -453,14 +454,12 @@ namespace cache
 	{
 		if (!lpMAPIProp || !cPropNames || !*lppPropNames || !lppPropTags) return MAPI_E_INVALID_PARAMETER;
 
-		auto hRes = S_OK;
-
 		// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 		// If we reach the end of the cache and don't have everything, we set up to make a GetIDsFromNames call.
 
 		// First, allocate our results using MAPI
 		LPSPropTagArray lpPropTags = nullptr;
-		EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(cPropNames), reinterpret_cast<LPVOID*>(&lpPropTags)));
+		auto hRes = EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(cPropNames), reinterpret_cast<LPVOID*>(&lpPropTags)));
 
 		if (lpPropTags)
 		{
@@ -496,7 +495,7 @@ namespace cache
 			if (0 != ulMisses)
 			{
 				LPMAPINAMEID* lppUncachedPropNames = nullptr;
-				EC_H(MAPIAllocateBuffer(
+				hRes = EC_H(MAPIAllocateBuffer(
 					sizeof(LPMAPINAMEID) * ulMisses, reinterpret_cast<LPVOID*>(&lppUncachedPropNames)));
 				if (lppUncachedPropNames)
 				{

@@ -591,10 +591,8 @@ namespace dialog
 			const auto ulNewResCount = GetListCount(0);
 
 			if (ulNewResCount > ULONG_MAX / sizeof(SRestriction)) return;
-			auto hRes = S_OK;
-			EC_H(MAPIAllocateMore(
+			EC_H_S(MAPIAllocateMore(
 				sizeof(SRestriction) * ulNewResCount, m_lpAllocParent, reinterpret_cast<LPVOID*>(&lpNewResArray)));
-
 			if (lpNewResArray)
 			{
 				for (ULONG i = 0; i < ulNewResCount; i++)
@@ -609,7 +607,7 @@ namespace dialog
 						}
 						else
 						{
-							EC_H(mapi::HrCopyRestrictionArray(
+							EC_H_S(mapi::HrCopyRestrictionArray(
 								lpData->Res()->m_lpOldRes, m_lpAllocParent, 1, &lpNewResArray[i]));
 						}
 					}
@@ -827,14 +825,12 @@ namespace dialog
 			LPSPropValue lpNewCommentProp = nullptr;
 			const auto ulNewCommentProp = GetListCount(0);
 
-			auto hRes = S_OK;
 			if (ulNewCommentProp && ulNewCommentProp < ULONG_MAX / sizeof(SPropValue))
 			{
-				EC_H(MAPIAllocateMore(
+				EC_H_S(MAPIAllocateMore(
 					sizeof(SPropValue) * ulNewCommentProp,
 					m_lpAllocParent,
 					reinterpret_cast<LPVOID*>(&lpNewCommentProp)));
-
 				if (lpNewCommentProp)
 				{
 					for (ULONG i = 0; i < ulNewCommentProp; i++)
@@ -844,7 +840,7 @@ namespace dialog
 						{
 							if (lpData->Comment()->m_lpNewProp)
 							{
-								EC_H(mapi::MyPropCopyMore(
+								EC_H_S(mapi::MyPropCopyMore(
 									&lpNewCommentProp[i],
 									lpData->Comment()->m_lpNewProp,
 									MAPIAllocateMore,
@@ -852,7 +848,7 @@ namespace dialog
 							}
 							else
 							{
-								EC_H(mapi::MyPropCopyMore(
+								EC_H_S(mapi::MyPropCopyMore(
 									&lpNewCommentProp[i],
 									lpData->Comment()->m_lpOldProp,
 									MAPIAllocateMore,
@@ -866,7 +862,8 @@ namespace dialog
 			}
 			if (!m_lpNewCommentRes && m_lpSourceRes && m_lpSourceRes->res.resComment.lpRes)
 			{
-				EC_H(mapi::HrCopyRestriction(m_lpSourceRes->res.resComment.lpRes, m_lpAllocParent, &m_lpNewCommentRes));
+				EC_H_S(
+					mapi::HrCopyRestriction(m_lpSourceRes->res.resComment.lpRes, m_lpAllocParent, &m_lpNewCommentRes));
 			}
 		}
 
@@ -890,7 +887,6 @@ namespace dialog
 				  NULL)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
-			auto hRes = S_OK;
 
 			// Not copying the source restriction, but since we're modal it won't matter
 			m_lpRes = lpRes;
@@ -904,12 +900,12 @@ namespace dialog
 			// Allocate base memory:
 			if (m_lpAllocParent)
 			{
-				EC_H(
+				EC_H_S(
 					MAPIAllocateMore(sizeof(SRestriction), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
 			}
 			else
 			{
-				EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
+				EC_H_S(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
 
 				m_lpAllocParent = m_lpOutputRes;
 			}
@@ -988,7 +984,6 @@ namespace dialog
 			if (i == 0)
 			{
 				if (!m_lpOutputRes) return i;
-				auto hRes = S_OK;
 				const auto ulOldResType = m_lpOutputRes->rt;
 				const auto ulNewResType = GetHex(i);
 
@@ -1009,7 +1004,7 @@ namespace dialog
 					{
 						// We allocated m_lpOutputRes directly, so we can and should free it before replacing the pointer
 						MAPIFreeBuffer(m_lpOutputRes);
-						EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
+						EC_H_S(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
 
 						m_lpAllocParent = m_lpOutputRes;
 					}
@@ -1017,9 +1012,10 @@ namespace dialog
 					{
 						// If the pointers are different, m_lpOutputRes was allocated with MAPIAllocateMore
 						// Since m_lpOutputRes is owned by m_lpAllocParent, we don't free it directly
-						EC_H(MAPIAllocateMore(
+						EC_H_S(MAPIAllocateMore(
 							sizeof(SRestriction), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
 					}
+
 					memset(m_lpOutputRes, 0, sizeof(SRestriction));
 					m_lpOutputRes->rt = ulNewResType;
 				}
@@ -1168,15 +1164,19 @@ namespace dialog
 				{
 					// Got a problem here - the relop or fuzzy level was changed, but not the property
 					// Need to copy the property from the source Res to the output Res
-					EC_H(MAPIAllocateMore(
+					hRes = EC_H(MAPIAllocateMore(
 						sizeof(SPropValue),
 						m_lpAllocParent,
 						reinterpret_cast<LPVOID*>(&m_lpOutputRes->res.resContent.lpProp)));
-					EC_H(mapi::MyPropCopyMore(
-						m_lpOutputRes->res.resContent.lpProp,
-						lpSourceRes->res.resContent.lpProp,
-						MAPIAllocateMore,
-						m_lpAllocParent));
+
+					if (SUCCEEDED(hRes))
+					{
+						hRes = EC_H(mapi::MyPropCopyMore(
+							m_lpOutputRes->res.resContent.lpProp,
+							lpSourceRes->res.resContent.lpProp,
+							MAPIAllocateMore,
+							m_lpAllocParent));
+					}
 				}
 			}
 
@@ -1299,13 +1299,11 @@ namespace dialog
 		{
 			TRACE_CONSTRUCTOR(CRITERIACLASS);
 
-			auto hRes = S_OK;
-
 			m_lpSourceRes = lpRes;
 			m_lpNewRes = nullptr;
 			m_lpSourceEntryList = lpEntryList;
 
-			EC_H(MAPIAllocateBuffer(sizeof(SBinaryArray), reinterpret_cast<LPVOID*>(&m_lpNewEntryList)));
+			EC_H_S(MAPIAllocateBuffer(sizeof(SBinaryArray), reinterpret_cast<LPVOID*>(&m_lpNewEntryList)));
 
 			m_ulNewSearchFlags = NULL;
 
@@ -1484,12 +1482,10 @@ namespace dialog
 			CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 			const auto ulValues = GetListCount(LISTNUM);
 
-			auto hRes = S_OK;
-
 			if (m_lpNewEntryList && ulValues < ULONG_MAX / sizeof(SBinary))
 			{
 				m_lpNewEntryList->cValues = ulValues;
-				EC_H(MAPIAllocateMore(
+				EC_H_S(MAPIAllocateMore(
 					m_lpNewEntryList->cValues * sizeof(SBinary),
 					m_lpNewEntryList,
 					reinterpret_cast<LPVOID*>(&m_lpNewEntryList->lpbin)));
@@ -1509,7 +1505,7 @@ namespace dialog
 						else
 						{
 							m_lpNewEntryList->lpbin[i].cb = lpData->Binary()->m_OldBin.cb;
-							EC_H(MAPIAllocateMore(
+							EC_H_S(MAPIAllocateMore(
 								m_lpNewEntryList->lpbin[i].cb,
 								m_lpNewEntryList,
 								reinterpret_cast<LPVOID*>(&m_lpNewEntryList->lpbin[i].lpb)));
@@ -1525,7 +1521,7 @@ namespace dialog
 
 			if (!m_lpNewRes && m_lpSourceRes)
 			{
-				EC_H(mapi::HrCopyRestriction(m_lpSourceRes, NULL, &m_lpNewRes))
+				EC_H_S(mapi::HrCopyRestriction(m_lpSourceRes, NULL, &m_lpNewRes));
 			}
 
 			m_ulNewSearchFlags = GetHex(2);

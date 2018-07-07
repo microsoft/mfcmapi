@@ -68,7 +68,7 @@ namespace dialog
 			{
 				// Apply lpFinalTagArray through SetColumns
 				EC_MAPI_S(m_lpContentsTable->SetColumns(m_lpOutputTagArray,
-																  m_ulSetColumnsFlags)); // Flags
+														m_ulSetColumnsFlags)); // Flags
 			}
 
 			CMyDialog::OnOK(); // don't need to call CEditor::OnOK
@@ -167,9 +167,9 @@ namespace dialog
 			// If we're not dirty, don't write
 			if (!IsDirty(ulListNum)) return;
 
-			auto hRes = S_OK;
 			const auto ulListCount = GetListCount(ulListNum);
-			EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(ulListCount), reinterpret_cast<LPVOID*>(&m_lpOutputTagArray)));
+			EC_H_S(
+				MAPIAllocateBuffer(CbNewSPropTagArray(ulListCount), reinterpret_cast<LPVOID*>(&m_lpOutputTagArray)));
 			if (m_lpOutputTagArray)
 			{
 				m_lpOutputTagArray->cValues = ulListCount;

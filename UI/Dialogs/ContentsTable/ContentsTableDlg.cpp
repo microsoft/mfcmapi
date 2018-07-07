@@ -246,12 +246,11 @@ namespace dialog
 
 		do
 		{
-			auto hRes = S_OK;
-			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
+			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
 
 			if (lpMAPIProp)
 			{
-				EC_H(DisplayObject(lpMAPIProp, NULL, otHierarchy, this));
+				EC_H_S(DisplayObject(lpMAPIProp, NULL, otHierarchy, this));
 				lpMAPIProp->Release();
 				lpMAPIProp = nullptr;
 			}
@@ -330,13 +329,13 @@ namespace dialog
 			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
 
 			WC_H(MyData.DisplayDialog());
-			if (S_OK != hRes) return;
+			if (hRes != S_OK) return;
 
 			const auto szString = MyData.GetStringW(0);
 			// Allocate and create our SRestriction
-			EC_H(mapi::CreateRangeRestriction(
+			hRes = EC_H(mapi::CreateRangeRestriction(
 				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, nullptr, &lpRes));
-			if (S_OK != hRes)
+			if (hRes != S_OK)
 			{
 				MAPIFreeBuffer(lpRes);
 				lpRes = nullptr;
@@ -430,7 +429,7 @@ namespace dialog
 
 		LPSSortOrderSet lpMySortOrders = nullptr;
 
-		EC_H(MAPIAllocateBuffer(CbNewSSortOrderSet(cSorts), reinterpret_cast<LPVOID*>(&lpMySortOrders)));
+		EC_H_S(MAPIAllocateBuffer(CbNewSSortOrderSet(cSorts), reinterpret_cast<LPVOID*>(&lpMySortOrders)));
 
 		if (lpMySortOrders)
 		{
@@ -498,7 +497,7 @@ namespace dialog
 				m_lpContentsTableListCtrl->SetSortTable(
 					lpMySortOrders,
 					(MyData.GetCheck(3) ? TBL_ASYNC : 0) | (MyData.GetCheck(4) ? TBL_BATCH : 0) // flags
-					);
+				);
 			}
 		}
 
@@ -522,11 +521,11 @@ namespace dialog
 		if (-1 == iSelectedItem)
 		{
 			// Get the first selected item
-			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, bModify, lppMAPIProp));
+			hRes = EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, bModify, lppMAPIProp));
 		}
 		else
 		{
-			EC_H(m_lpContentsTableListCtrl->DefaultOpenItemProp(iSelectedItem, bModify, lppMAPIProp));
+			hRes = EC_H(m_lpContentsTableListCtrl->DefaultOpenItemProp(iSelectedItem, bModify, lppMAPIProp));
 		}
 
 		return hRes;
@@ -534,22 +533,14 @@ namespace dialog
 
 	_Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage)
 	{
-		auto hRes = S_OK;
-
 		if (lpMessage == nullptr) return MAPI_E_INVALID_PARAMETER;
 
-		EC_H(DisplayTable(lpMessage, PR_MESSAGE_ATTACHMENTS, otDefault, this));
-
-		return hRes;
+		return DisplayTable(lpMessage, PR_MESSAGE_ATTACHMENTS, otDefault, this);
 	}
 
 	_Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage)
 	{
-		auto hRes = S_OK;
-
-		EC_H(DisplayTable(lpMessage, PR_MESSAGE_RECIPIENTS, otDefault, this));
-
-		return hRes;
+		return DisplayTable(lpMessage, PR_MESSAGE_RECIPIENTS, otDefault, this);
 	}
 
 	_Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)

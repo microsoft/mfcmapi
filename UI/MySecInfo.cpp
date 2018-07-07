@@ -160,12 +160,11 @@ namespace mapi
 			BOOL /*fDefault*/)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::GetSecurity\n");
-			auto hRes = S_OK;
 			LPSPropValue lpsProp = nullptr;
 
 			*ppSecurityDescriptor = nullptr;
 
-			EC_H(mapi::GetLargeBinaryProp(m_lpMAPIProp, m_ulPropTag, &lpsProp));
+			auto hRes = EC_H(mapi::GetLargeBinaryProp(m_lpMAPIProp, m_ulPropTag, &lpsProp));
 
 			if (lpsProp && PROP_TYPE(lpsProp->ulPropTag) == PT_BINARY && lpsProp->Value.bin.lpb)
 			{
@@ -196,7 +195,7 @@ namespace mapi
 					// make sure we don't try to copy more than we really got
 					if (m_cbHeader <= cbSBBuffer)
 					{
-						EC_H(MAPIAllocateBuffer(m_cbHeader, reinterpret_cast<LPVOID*>(&m_lpHeader)));
+						hRes = EC_H(MAPIAllocateBuffer(m_cbHeader, reinterpret_cast<LPVOID*>(&m_lpHeader)));
 
 						if (m_lpHeader)
 						{
@@ -211,6 +210,7 @@ namespace mapi
 					output::DebugPrint(DBGGeneric, L"sdInfo: %ws\nszDACL: %ws\n", szInfo.c_str(), szDACL.c_str());
 				}
 			}
+
 			MAPIFreeBuffer(lpsProp);
 
 			if (!*ppSecurityDescriptor) return MAPI_E_NOT_FOUND;
@@ -225,7 +225,6 @@ namespace mapi
 		CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*/, PSECURITY_DESCRIPTOR pSecurityDescriptor)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::SetSecurity\n");
-			auto hRes = S_OK;
 			LPBYTE lpBlob = nullptr;
 
 			if (!m_lpHeader || !pSecurityDescriptor || !m_lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
@@ -235,7 +234,7 @@ namespace mapi
 			const auto cbBlob = m_cbHeader + dwSDLength;
 			if (cbBlob < m_cbHeader || cbBlob < dwSDLength) return MAPI_E_INVALID_PARAMETER;
 
-			EC_H(MAPIAllocateBuffer(cbBlob, reinterpret_cast<LPVOID*>(&lpBlob)));
+			auto hRes = EC_H(MAPIAllocateBuffer(cbBlob, reinterpret_cast<LPVOID*>(&lpBlob)));
 
 			if (lpBlob)
 			{

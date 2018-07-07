@@ -52,15 +52,12 @@ namespace mapi
 
 		STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify, LPNOTIFICATION lpNotifications)
 		{
-			auto hRes = S_OK;
-
 			output::DebugPrintNotifications(DBGNotify, cNotify, lpNotifications, m_lpAdviseTarget);
 
 			if (!m_hWndParent) return 0;
 
 			for (ULONG i = 0; i < cNotify; i++)
 			{
-				hRes = S_OK;
 				if (fnevNewMail == lpNotifications[i].ulEventType)
 				{
 					MessageBeep(MB_OK);
@@ -72,25 +69,25 @@ namespace mapi
 					case TABLE_ERROR:
 					case TABLE_CHANGED:
 					case TABLE_RELOAD:
-						EC_H(static_cast<HRESULT>(::SendMessage(
+						EC_H_S(static_cast<HRESULT>(::SendMessage(
 							m_hWndParent, WM_MFCMAPI_REFRESHTABLE, reinterpret_cast<WPARAM>(m_hTreeParent), 0)));
 						break;
 					case TABLE_ROW_ADDED:
-						EC_H(static_cast<HRESULT>(::SendMessage(
+						EC_H_S(static_cast<HRESULT>(::SendMessage(
 							m_hWndParent,
 							WM_MFCMAPI_ADDITEM,
 							reinterpret_cast<WPARAM>(&lpNotifications[i].info.tab),
 							reinterpret_cast<LPARAM>(m_hTreeParent))));
 						break;
 					case TABLE_ROW_DELETED:
-						EC_H(static_cast<HRESULT>(::SendMessage(
+						EC_H_S(static_cast<HRESULT>(::SendMessage(
 							m_hWndParent,
 							WM_MFCMAPI_DELETEITEM,
 							reinterpret_cast<WPARAM>(&lpNotifications[i].info.tab),
 							reinterpret_cast<LPARAM>(m_hTreeParent))));
 						break;
 					case TABLE_ROW_MODIFIED:
-						EC_H(static_cast<HRESULT>(::SendMessage(
+						EC_H_S(static_cast<HRESULT>(::SendMessage(
 							m_hWndParent,
 							WM_MFCMAPI_MODIFYITEM,
 							reinterpret_cast<WPARAM>(&lpNotifications[i].info.tab),
@@ -100,7 +97,7 @@ namespace mapi
 				}
 			}
 
-			return 0;
+			return S_OK;
 		}
 
 		void CAdviseSink::SetAdviseTarget(LPMAPIPROP lpProp)

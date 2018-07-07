@@ -123,7 +123,7 @@ namespace dialog
 		MyData.SetHex(1, 0);
 
 		WC_H(MyData.DisplayDialog());
-		if (S_OK != hRes)
+		if (hRes != S_OK)
 		{
 			output::DebugPrint(DBGGeneric, L"OnAddItem cancelled.\n");
 			return;
@@ -131,7 +131,7 @@ namespace dialog
 
 		LPROWLIST lpNewItem = nullptr;
 
-		EC_H(MAPIAllocateBuffer(CbNewROWLIST(1), reinterpret_cast<LPVOID*>(&lpNewItem)));
+		EC_H_S(MAPIAllocateBuffer(CbNewROWLIST(1), reinterpret_cast<LPVOID*>(&lpNewItem)));
 
 		if (lpNewItem)
 		{
@@ -140,14 +140,14 @@ namespace dialog
 			lpNewItem->aEntries[0].cValues = 2;
 			lpNewItem->aEntries[0].rgPropVals = nullptr;
 
-			EC_H(MAPIAllocateMore(
+			EC_H_S(MAPIAllocateMore(
 				2 * sizeof(SPropValue), lpNewItem, reinterpret_cast<LPVOID*>(&lpNewItem->aEntries[0].rgPropVals)));
 
 			if (lpNewItem->aEntries[0].rgPropVals)
 			{
 				LPENTRYID lpEntryID = nullptr;
 				size_t cbBin = 0;
-				EC_H(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
+				EC_H_S(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
 
 				lpNewItem->aEntries[0].rgPropVals[0].ulPropTag = PR_MEMBER_ENTRYID;
 				lpNewItem->aEntries[0].rgPropVals[0].Value.bin.cb = static_cast<ULONG>(cbBin);
@@ -166,12 +166,11 @@ namespace dialog
 
 	void CAclDlg::OnDeleteSelectedItem()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		LPROWLIST lpSelectedItems = nullptr;
 
-		EC_H(GetSelectedItems(ACL_INCLUDE_ID, ROW_REMOVE, &lpSelectedItems));
+		auto hRes = EC_H(GetSelectedItems(ACL_INCLUDE_ID, ROW_REMOVE, &lpSelectedItems));
 
 		if (lpSelectedItems)
 		{
@@ -183,16 +182,15 @@ namespace dialog
 
 	void CAclDlg::OnModifySelectedItem()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		LPROWLIST lpSelectedItems = nullptr;
 
-		EC_H(GetSelectedItems(ACL_INCLUDE_ID | ACL_INCLUDE_OTHER, ROW_MODIFY, &lpSelectedItems));
+		EC_H_S(GetSelectedItems(ACL_INCLUDE_ID | ACL_INCLUDE_OTHER, ROW_MODIFY, &lpSelectedItems));
 
 		if (lpSelectedItems)
 		{
-			hRes = EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpSelectedItems));
+			auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (hRes == S_OK) OnRefreshView();
 		}
@@ -203,7 +201,6 @@ namespace dialog
 		if (!lppRowList || !m_lpContentsTableListCtrl) return MAPI_E_INVALID_PARAMETER;
 
 		*lppRowList = nullptr;
-		auto hRes = S_OK;
 		const int iNumItems = m_lpContentsTableListCtrl->GetSelectedCount();
 
 		if (!iNumItems) return S_OK;
@@ -211,7 +208,7 @@ namespace dialog
 
 		LPROWLIST lpTempList = nullptr;
 
-		EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems), reinterpret_cast<LPVOID*>(&lpTempList)));
+		auto hRes = EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems), reinterpret_cast<LPVOID*>(&lpTempList)));
 
 		if (lpTempList)
 		{
@@ -232,7 +229,7 @@ namespace dialog
 					{
 						if (ulFlags & ACL_INCLUDE_ID && ulFlags & ACL_INCLUDE_OTHER)
 						{
-							EC_H(MAPIAllocateMore(
+							hRes = EC_H(MAPIAllocateMore(
 								2 * sizeof(SPropValue),
 								lpTempList,
 								reinterpret_cast<LPVOID*>(&lpTempList->aEntries[iArrayPos].rgPropVals)));

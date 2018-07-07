@@ -950,7 +950,7 @@ namespace addin
 
 								if (lpResults->lpDialogControlResults[i].szText)
 								{
-									EC_H(StringCchCopyW(
+									hRes = EC_H(StringCchCopyW(
 										lpResults->lpDialogControlResults[i].szText, cchText, szText.c_str()));
 								}
 							}

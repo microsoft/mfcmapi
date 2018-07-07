@@ -41,8 +41,7 @@ namespace dialog
 
 		UpdateTitleBarText();
 
-		auto hRes = S_OK;
-		EC_H(m_lpPropDisplay->SetDataSource(m_lpMailUser, NULL, true));
+		EC_H_S(m_lpPropDisplay->SetDataSource(m_lpMailUser, NULL, true));
 
 		return bRet;
 	}

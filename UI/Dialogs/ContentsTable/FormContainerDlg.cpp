@@ -349,7 +349,7 @@ namespace dialog
 			LPSMESSAGECLASSARRAY lpMSGClassArray = nullptr;
 			if (ulNumClasses && ulNumClasses < MAXMessageClassArray)
 			{
-				EC_H(
+				hRes = EC_H(
 					MAPIAllocateBuffer(CbMessageClassArray(ulNumClasses), reinterpret_cast<LPVOID*>(&lpMSGClassArray)));
 
 				if (lpMSGClassArray)
@@ -374,12 +374,18 @@ namespace dialog
 							if (cbClass)
 							{
 								cbClass++; // for the NULL terminator
-								EC_H(MAPIAllocateMore(
+								hRes = EC_H(MAPIAllocateMore(
 									static_cast<ULONG>(cbClass),
 									lpMSGClassArray,
 									reinterpret_cast<LPVOID*>(const_cast<LPSTR*>(&lpMSGClassArray->aMessageClass[i]))));
-								EC_H(StringCbCopyA(
-									const_cast<LPSTR>(lpMSGClassArray->aMessageClass[i]), cbClass, szClass.c_str()));
+
+								if (SUCCEEDED(hRes))
+								{
+									hRes = EC_H(StringCbCopyA(
+										const_cast<LPSTR>(lpMSGClassArray->aMessageClass[i]),
+										cbClass,
+										szClass.c_str()));
+								}
 							}
 							else
 								bCancel = true;

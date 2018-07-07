@@ -428,8 +428,6 @@ namespace dialog
 
 	void OnQSOpenUser(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
-		auto hRes = S_OK;
-
 		const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return;
 
@@ -437,17 +435,17 @@ namespace dialog
 		if (!lpParentWnd) return;
 
 		LPADRBOOK lpAdrBook = nullptr;
-		WC_H(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
+		auto hRes = WC_H2(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
 		if (SUCCEEDED(hRes) && lpAdrBook)
 		{
 			ULONG ulObjType = NULL;
 			LPMAILUSER lpMailUser = nullptr;
 
-			EC_H(mapi::ab::SelectUser(lpAdrBook, hwnd, &ulObjType, &lpMailUser));
+			hRes = EC_H(mapi::ab::SelectUser(lpAdrBook, hwnd, &ulObjType, &lpMailUser));
 
 			if (SUCCEEDED(hRes) && lpMailUser)
 			{
-				EC_H(DisplayObject(lpMailUser, ulObjType, dialog::otDefault, lpHostDlg));
+				EC_H_S(DisplayObject(lpMailUser, ulObjType, dialog::otDefault, lpHostDlg));
 			}
 
 			if (lpMailUser) lpMailUser->Release();
@@ -473,7 +471,7 @@ namespace dialog
 		{
 			LPMAILUSER lpMailUser = nullptr;
 
-			EC_H(mapi::ab::SelectUser(lpAdrBook, hwnd, nullptr, &lpMailUser));
+			hRes = EC_H(mapi::ab::SelectUser(lpAdrBook, hwnd, nullptr, &lpMailUser));
 
 			if (SUCCEEDED(hRes) && lpMailUser)
 			{
@@ -483,7 +481,6 @@ namespace dialog
 			if (lpMailUser) lpMailUser->Release();
 		}
 
-		hRes = S_OK;
 		dialog::editor::CEditor MyResults(lpHostDlg, IDS_QSTHUMBNAIL, NULL, CEDITOR_BUTTON_OK);
 
 		if (lpThumbnail)
@@ -502,7 +499,7 @@ namespace dialog
 			MyResults.InitPane(0, viewpane::TextPane::CreateSingleLinePaneID(0, IDS_QSTHUMBNAILNOTFOUND, true));
 		}
 
-		WC_H(MyResults.DisplayDialog());
+		WC_H2S(MyResults.DisplayDialog());
 
 		MAPIFreeBuffer(lpThumbnail);
 		if (lpAdrBook) lpAdrBook->Release();

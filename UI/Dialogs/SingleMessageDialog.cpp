@@ -44,8 +44,7 @@ namespace dialog
 
 		UpdateTitleBarText();
 
-		auto hRes = S_OK;
-		EC_H(m_lpPropDisplay->SetDataSource(m_lpMessage, NULL, false));
+		EC_H_S(m_lpPropDisplay->SetDataSource(m_lpMessage, NULL, false));
 
 		return bRet;
 	}
@@ -70,18 +69,16 @@ namespace dialog
 
 	void SingleMessageDialog::OnAttachmentProperties()
 	{
-		auto hRes = S_OK;
 		if (!m_lpMessage) return;
 
-		EC_H(DisplayTable(m_lpMessage, PR_MESSAGE_ATTACHMENTS, otDefault, this));
+		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_ATTACHMENTS, otDefault, this));
 	}
 
 	void SingleMessageDialog::OnRecipientProperties()
 	{
-		auto hRes = S_OK;
 		if (!m_lpMessage) return;
 
-		EC_H(DisplayTable(m_lpMessage, PR_MESSAGE_RECIPIENTS, otDefault, this));
+		EC_H_S(DisplayTable(m_lpMessage, PR_MESSAGE_RECIPIENTS, otDefault, this));
 	}
 
 	void SingleMessageDialog::OnRTFSync()

@@ -406,7 +406,7 @@ namespace controls
 							LPSPropTagArray lpTag = nullptr;
 							if (ulNamedProps)
 							{
-								EC_H(MAPIAllocateBuffer(
+								hRes = EC_H(MAPIAllocateBuffer(
 									CbNewSPropTagArray(ulNamedProps), reinterpret_cast<LPVOID*>(&lpTag)));
 								if (lpTag)
 								{
@@ -563,7 +563,10 @@ namespace controls
 
 			auto hRes = EC_B(DeleteAllItems());
 
-			if (m_lpPropBag) EC_H(LoadMAPIPropList());
+			if (SUCCEEDED(hRes) && m_lpPropBag)
+			{
+				hRes = EC_H(LoadMAPIPropList());
+			}
 
 			SetItemState(iSelectedItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
 
@@ -594,12 +597,11 @@ namespace controls
 
 		void CSingleMAPIPropListCtrl::AddPropsToExtraProps(_In_ LPSPropTagArray lpPropsToAdd, bool bRefresh)
 		{
-			auto hRes = S_OK;
 			LPSPropTagArray lpNewExtraProps = nullptr;
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"AddPropsToExtraProps", L"adding prop array %p\n", lpPropsToAdd);
 
-			EC_H(mapi::ConcatSPropTagArrays(m_sptExtraProps, lpPropsToAdd, &lpNewExtraProps));
+			auto hRes = EC_H(mapi::ConcatSPropTagArrays(m_sptExtraProps, lpPropsToAdd, &lpNewExtraProps));
 
 			MAPIFreeBuffer(m_sptExtraProps);
 			m_sptExtraProps = lpNewExtraProps;
@@ -1199,10 +1201,13 @@ namespace controls
 			{
 				output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteProperty", L"deleting property 0x%08X\n", ulPropTag);
 
-				EC_H(m_lpPropBag->DeleteProp(ulPropTag));
+				hRes = EC_H(m_lpPropBag->DeleteProp(ulPropTag));
 
-				// Refresh the display
-				WC_H(RefreshMAPIPropList());
+				if (SUCCEEDED(hRes))
+				{
+					// Refresh the display
+					WC_H(RefreshMAPIPropList());
+				}
 			}
 		}
 
@@ -1283,13 +1288,16 @@ namespace controls
 					ResProp.ulPropTag = lpEditProp->ulPropTag;
 					ResProp.Value.lpszA = reinterpret_cast<LPSTR>(lpModRes);
 
-					EC_H(m_lpPropBag->SetProp(&ResProp));
+					hRes = EC_H(m_lpPropBag->SetProp(&ResProp));
 
 					// Remember, we had no alloc parent - this is safe to free
 					MAPIFreeBuffer(lpModRes);
 
-					// refresh
-					WC_H(RefreshMAPIPropList());
+					if (SUCCEEDED(hRes))
+					{
+						// refresh
+						WC_H(RefreshMAPIPropList());
+					}
 				}
 			}
 
@@ -1325,7 +1333,7 @@ namespace controls
 
 			if (PT_OBJECT == PROP_TYPE(ulPropTag))
 			{
-				EC_H(DisplayTable(m_lpPropBag->GetMAPIProp(), ulPropTag, dialog::otDefault, m_lpHostDlg));
+				EC_H_S(DisplayTable(m_lpPropBag->GetMAPIProp(), ulPropTag, dialog::otDefault, m_lpHostDlg));
 				return;
 			}
 
@@ -1384,12 +1392,16 @@ namespace controls
 				// If we didn't have a source object, we need to shove our results back in to the property bag
 				if (hRes == S_OK && !lpSourceObj && lpModProp)
 				{
-					EC_H(m_lpPropBag->SetProp(lpModProp));
+					hRes = EC_H(m_lpPropBag->SetProp(lpModProp));
 					// At this point, we're done with lpModProp - it was allocated off of lpSourceArray
 					// and freed when a new source array was allocated. Nothing to free here. Move along.
 				}
 			}
-			WC_H(RefreshMAPIPropList());
+
+			if (SUCCEEDED(hRes))
+			{
+				WC_H(RefreshMAPIPropList());
+			}
 
 			m_lpPropBag->FreeBuffer(lpEditProp);
 		}
@@ -1578,15 +1590,15 @@ namespace controls
 					ULONG ulValues = NULL;
 					LPSPropValue lpSourceProp = nullptr;
 					hRes = EC_MAPI(lpSourcePropObj->GetProps(&TagArray, fMapiUnicode, &ulValues, &lpSourceProp));
-					if (!FAILED(hRes) && ulValues && lpSourceProp && PT_ERROR != lpSourceProp->ulPropTag)
+					if (SUCCEEDED(hRes) && ulValues && lpSourceProp && PT_ERROR != lpSourceProp->ulPropTag)
 					{
 						lpSourceProp->ulPropTag = ulTargetTag;
-						EC_H(m_lpPropBag->SetProps(ulValues, lpSourceProp));
+						hRes = EC_H(m_lpPropBag->SetProps(ulValues, lpSourceProp));
 					}
 				}
 				break;
 				case 2:
-					EC_H(mapi::CopyPropertyAsStream(
+					hRes = EC_H(mapi::CopyPropertyAsStream(
 						lpSourcePropObj, m_lpPropBag->GetMAPIProp(), ulSourceTag, ulTargetTag));
 					break;
 				}
@@ -1595,12 +1607,15 @@ namespace controls
 			EC_PROBLEMARRAY(lpProblems);
 			MAPIFreeBuffer(lpProblems);
 
-			if (!FAILED(hRes))
+			if (SUCCEEDED(hRes))
 			{
-				EC_H(m_lpPropBag->Commit());
+				hRes = EC_H(m_lpPropBag->Commit());
 
-				// refresh
-				WC_H(RefreshMAPIPropList());
+				if (SUCCEEDED(hRes))
+				{
+					// refresh
+					WC_H(RefreshMAPIPropList());
+				}
 			}
 
 			lpSourcePropObj->Release();
@@ -1614,13 +1629,11 @@ namespace controls
 			auto lpSourcePropObj = cache::CGlobalCache::getInstance().GetSourcePropObject();
 			if (!lpSourcePropObj) return;
 
-			auto hRes = S_OK;
-
-			EC_H(mapi::CopyTo(
+			auto hRes = EC_H(mapi::CopyTo(
 				m_lpHostDlg->m_hWnd, lpSourcePropObj, m_lpPropBag->GetMAPIProp(), &IID_IMAPIProp, NULL, m_bIsAB, true));
-			if (!FAILED(hRes))
+			if (SUCCEEDED(hRes))
 			{
-				EC_H(m_lpPropBag->Commit());
+				hRes = EC_H(m_lpPropBag->Commit());
 
 				// refresh
 				WC_H(RefreshMAPIPropList());
@@ -1643,14 +1656,15 @@ namespace controls
 			LPSPropValue lpProp = nullptr;
 			if (m_lpPropBag)
 			{
-				EC_H(m_lpPropBag->GetProp(ulPropTag, &lpProp));
+				hRes = EC_H(m_lpPropBag->GetProp(ulPropTag, &lpProp));
 			}
 
-			if (!FAILED(hRes) && lpProp)
+			if (SUCCEEDED(hRes) && lpProp)
 			{
 				if (m_lpPropBag && PT_OBJECT == PROP_TYPE(lpProp->ulPropTag))
 				{
-					EC_H(DisplayTable(m_lpPropBag->GetMAPIProp(), lpProp->ulPropTag, dialog::otDefault, m_lpHostDlg));
+					hRes = EC_H(
+						DisplayTable(m_lpPropBag->GetMAPIProp(), lpProp->ulPropTag, dialog::otDefault, m_lpHostDlg));
 				}
 				else if (PT_BINARY == PROP_TYPE(lpProp->ulPropTag) || PT_MV_BINARY == PROP_TYPE(lpProp->ulPropTag))
 				{
@@ -1763,7 +1777,7 @@ namespace controls
 				{
 					if (MyData.GetCheck(0))
 					{
-						EC_H(DisplayExchangeTable(
+						EC_H_S(DisplayExchangeTable(
 							m_lpPropBag->GetMAPIProp(),
 							CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
 							dialog::otDefault,
@@ -1771,7 +1785,7 @@ namespace controls
 					}
 					else
 					{
-						EC_H(DisplayTable(
+						EC_H_S(DisplayTable(
 							m_lpPropBag->GetMAPIProp(),
 							CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_OBJECT),
 							dialog::otDefault,
@@ -1809,7 +1823,7 @@ namespace controls
 
 					if (hRes == S_OK)
 					{
-						EC_H(mapi::CallOpenEntry(
+						hRes = EC_H(mapi::CallOpenEntry(
 							NULL,
 							NULL,
 							cache::CGlobalCache::getInstance().GetSourceParentFolder(),
@@ -1822,7 +1836,7 @@ namespace controls
 
 						if (hRes == S_OK && ulObjType == MAPI_MESSAGE && lpSource)
 						{
-							EC_H(mapi::CopyNamedProps(
+							hRes = EC_H(mapi::CopyNamedProps(
 								lpSource,
 								&propSetGUID,
 								MyData.GetCheck(1),
@@ -1830,7 +1844,10 @@ namespace controls
 								m_lpPropBag->GetMAPIProp(),
 								m_lpHostDlg->m_hWnd));
 
-							EC_H(m_lpPropBag->Commit());
+							if (SUCCEEDED(hRes))
+							{
+								hRes = EC_H(m_lpPropBag->Commit());
+							}
 
 							WC_H(RefreshMAPIPropList());
 

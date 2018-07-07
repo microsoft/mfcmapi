@@ -133,7 +133,8 @@ namespace propertybag
 		if (ulNewArraySize)
 		{
 			// Allocate the base array - MyPropCopyMore will allocmore as needed for string/bin/etc
-			EC_H(MAPIAllocateBuffer(ulNewArraySize * sizeof(SPropValue), reinterpret_cast<LPVOID*>(&lpNewArray)));
+			hRes =
+				EC_H(MAPIAllocateBuffer(ulNewArraySize * sizeof(SPropValue), reinterpret_cast<LPVOID*>(&lpNewArray)));
 
 			if (SUCCEEDED(hRes) && lpNewArray)
 			{
@@ -147,7 +148,7 @@ namespace propertybag
 								ulTargetArray,
 								CHANGE_PROP_TYPE(lpVal1[ulSourceArray].ulPropTag, PT_UNSPECIFIED)))
 						{
-							EC_H(mapi::MyPropCopyMore(
+							hRes = EC_H(mapi::MyPropCopyMore(
 								&lpNewArray[ulTargetArray], &lpVal1[ulSourceArray], MAPIAllocateMore, lpNewArray));
 							if (SUCCEEDED(hRes))
 							{
@@ -175,7 +176,8 @@ namespace propertybag
 								hRes = MAPI_E_CALL_FAILED;
 								break;
 							}
-							EC_H(mapi::MyPropCopyMore(
+
+							hRes = EC_H(mapi::MyPropCopyMore(
 								&lpNewArray[ulTargetArray], &lpVal2[ulSourceArray], MAPIAllocateMore, lpNewArray));
 							if (SUCCEEDED(hRes))
 							{
@@ -204,11 +206,10 @@ namespace propertybag
 
 	_Check_return_ HRESULT RowPropertyBag::SetProp(LPSPropValue lpProp)
 	{
-		auto hRes = S_OK;
 		ULONG ulNewArray = NULL;
 		LPSPropValue lpNewArray = nullptr;
 
-		EC_H(ConcatLPSPropValue(1, lpProp, m_cValues, m_lpProps, &ulNewArray, &lpNewArray));
+		auto hRes = EC_H(ConcatLPSPropValue(1, lpProp, m_cValues, m_lpProps, &ulNewArray, &lpNewArray));
 		if (SUCCEEDED(hRes))
 		{
 			MAPIFreeBuffer(m_lpListData->lpSourceProps);

@@ -708,13 +708,13 @@ namespace dialog
 		MyEID.InitPane(9, viewpane::CheckPane::Create(IDS_EIDISCONTAB, false, false));
 
 		WC_H(MyEID.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (hRes != S_OK) return;
 
 		// Get the entry ID as a binary
 		LPENTRYID lpEnteredEntryID = nullptr;
 		LPENTRYID lpEntryID = nullptr;
 		size_t cbBin = NULL;
-		EC_H(MyEID.GetEntryID(0, MyEID.GetCheck(7), &cbBin, &lpEnteredEntryID));
+		EC_H_S(MyEID.GetEntryID(0, MyEID.GetCheck(7), &cbBin, &lpEnteredEntryID));
 
 		if (MyEID.GetCheck(9) && lpEnteredEntryID)
 		{
@@ -733,7 +733,7 @@ namespace dialog
 		{
 			auto ulUIParam = reinterpret_cast<ULONG_PTR>(static_cast<void*>(m_hWnd));
 
-			hRes = EC_H_CANCEL(lpAB->Details(
+			EC_H_CANCEL_S(lpAB->Details(
 				&ulUIParam,
 				nullptr,
 				nullptr,
@@ -749,7 +749,7 @@ namespace dialog
 			LPUNKNOWN lpUnk = nullptr;
 			ULONG ulObjType = NULL;
 
-			EC_H(mapi::CallOpenEntry(
+			EC_H_S(mapi::CallOpenEntry(
 				MyEID.GetCheck(1) ? lpMDB : nullptr,
 				MyEID.GetCheck(2) ? lpAB : nullptr,
 				nullptr,
@@ -808,7 +808,7 @@ namespace dialog
 		MyEIDs.InitPane(3, viewpane::CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
 
 		WC_H(MyEIDs.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (hRes != S_OK) return;
 
 		if (0 == MyEIDs.GetDropDown(2) && !lpMDB || 1 == MyEIDs.GetDropDown(2) && !lpMAPISession ||
 			2 == MyEIDs.GetDropDown(2) && !lpAB)
@@ -819,27 +819,34 @@ namespace dialog
 		// Get the entry IDs as a binary
 		LPENTRYID lpEntryID1 = nullptr;
 		size_t cbBin1 = NULL;
-		EC_H(MyEIDs.GetEntryID(0, MyEIDs.GetCheck(3), &cbBin1, &lpEntryID1));
-
 		LPENTRYID lpEntryID2 = nullptr;
 		size_t cbBin2 = NULL;
-		EC_H(MyEIDs.GetEntryID(1, MyEIDs.GetCheck(3), &cbBin2, &lpEntryID2));
+
+		hRes = EC_H(MyEIDs.GetEntryID(0, MyEIDs.GetCheck(3), &cbBin1, &lpEntryID1));
+
+		if (SUCCEEDED(hRes))
+		{
+			hRes = EC_H(MyEIDs.GetEntryID(1, MyEIDs.GetCheck(3), &cbBin2, &lpEntryID2));
+		}
 
 		ULONG ulResult = NULL;
-		switch (MyEIDs.GetDropDown(2))
+		if (SUCCEEDED(hRes))
 		{
-		case 0: // Message Store
-			hRes = EC_MAPI(lpMDB->CompareEntryIDs(
-				static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
-			break;
-		case 1: // Session
-			hRes = EC_MAPI(lpMAPISession->CompareEntryIDs(
-				static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
-			break;
-		case 2: // Address Book
-			hRes = EC_MAPI(lpAB->CompareEntryIDs(
-				static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
-			break;
+			switch (MyEIDs.GetDropDown(2))
+			{
+			case 0: // Message Store
+				hRes = EC_MAPI(lpMDB->CompareEntryIDs(
+					static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
+				break;
+			case 1: // Session
+				hRes = EC_MAPI(lpMAPISession->CompareEntryIDs(
+					static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
+				break;
+			case 2: // Address Book
+				hRes = EC_MAPI(lpAB->CompareEntryIDs(
+					static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
+				break;
+			}
 		}
 
 		if (SUCCEEDED(hRes))
@@ -874,7 +881,7 @@ namespace dialog
 		// Get the entry ID as a binary
 		LPENTRYID lpEntryID = nullptr;
 		size_t cbBin = NULL;
-		EC_H(MyStoreEID.GetEntryID(0, MyStoreEID.GetCheck(1), &cbBin, &lpEntryID));
+		EC_H_S(MyStoreEID.GetEntryID(0, MyStoreEID.GetCheck(1), &cbBin, &lpEntryID));
 
 		const auto dwHash = mapi::ComputeStoreHash(
 			static_cast<ULONG>(cbBin),

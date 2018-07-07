@@ -20,8 +20,6 @@ namespace dialog
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
-		auto hRes = S_OK;
-
 		m_bIsAB = true;
 
 		if (m_lpMapiObjects)
@@ -31,7 +29,7 @@ namespace dialog
 			{
 				auto container = LPUNKNOWN(nullptr);
 				// Open root address book (container).
-				EC_H(mapi::CallOpenEntry(
+				EC_H_S(mapi::CallOpenEntry(
 					NULL, lpAddrBook, NULL, NULL, nullptr, NULL, MAPI_BEST_ACCESS, NULL, &container));
 				SetRootContainer(container);
 			}

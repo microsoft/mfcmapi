@@ -92,7 +92,7 @@ namespace dialog
 					if (lpMAPISession)
 					{
 						LPMDB lpNewMDB = nullptr;
-						EC_H(mapi::store::OpenStoreFromMAPIProp(
+						EC_H_S(mapi::store::OpenStoreFromMAPIProp(
 							lpMAPISession, static_cast<LPMAPIPROP>(lpUnk), &lpNewMDB));
 						if (lpNewMDB)
 						{
@@ -289,7 +289,7 @@ namespace dialog
 				new dialog::CRecipientsDlg(lpHostDlg->GetParentWnd(), lpHostDlg->GetMapiObjects(), lpTable, lpMAPIProp);
 				break;
 			default:
-				EC_H(DisplayTable(lpTable, tType, lpHostDlg));
+				hRes = EC_H(DisplayTable(lpTable, tType, lpHostDlg));
 				break;
 			}
 
@@ -354,7 +354,7 @@ namespace dialog
 
 				if (lpMAPITable)
 				{
-					EC_H(DisplayTable(lpMAPITable, tType, lpHostDlg));
+					hRes = EC_H(DisplayTable(lpMAPITable, tType, lpHostDlg));
 					lpMAPITable->Release();
 				}
 
@@ -410,7 +410,7 @@ namespace dialog
 		if (!mapi::store::StoreSupportsManageStore(lpMDB))
 		{
 			// if that MDB doesn't support manage store, try to get one that does
-			EC_H(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
+			EC_H_S(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
 			lpMDB = lpPrivateMDB;
 		}
 
@@ -457,10 +457,10 @@ namespace dialog
 					switch (MyData.GetDropDown(3))
 					{
 					case 0:
-						EC_H(mapi::store::GetMailboxTable1(lpMDB, szServerDN, fMapiUnicode, &lpMailboxTable));
+						EC_H_S(mapi::store::GetMailboxTable1(lpMDB, szServerDN, fMapiUnicode, &lpMailboxTable));
 						break;
 					case 1:
-						EC_H(mapi::store::GetMailboxTable3(
+						EC_H_S(mapi::store::GetMailboxTable3(
 							lpMDB, szServerDN, MyData.GetHex(1), fMapiUnicode, &lpMailboxTable));
 						break;
 					case 2:
@@ -482,7 +482,7 @@ namespace dialog
 							}
 						}
 
-						EC_H(mapi::store::GetMailboxTable5(
+						EC_H_S(mapi::store::GetMailboxTable5(
 							lpMDB,
 							szServerDN,
 							MyData.GetHex(1),
@@ -532,7 +532,7 @@ namespace dialog
 		if (!mapi::store::StoreSupportsManageStore(lpMDB))
 		{
 			// if that MDB doesn't support manage store, try to get one that does
-			EC_H(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
+			EC_H_S(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
 			lpMDB = lpPrivateMDB;
 		}
 
@@ -556,12 +556,10 @@ namespace dialog
 			MyData.InitPane(
 				4, viewpane::DropDownPane::Create(IDS_GETMBXINTERFACE, _countof(uidDropDown), uidDropDown, true));
 			WC_H(MyData.DisplayDialog());
-
 			if (SUCCEEDED(hRes) && 0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(4))
 			{
 				error::ErrDialog(__FILE__, __LINE__, IDS_EDOFFSETWITHWRONGINTERFACE);
 			}
-
 			else if (hRes == S_OK)
 			{
 				auto szServerDN = mapi::store::BuildServerDN(strings::wstringTostring(MyData.GetStringW(0)), "");
@@ -581,11 +579,11 @@ namespace dialog
 					switch (MyData.GetDropDown(4))
 					{
 					case 0:
-						EC_H(mapi::store::GetPublicFolderTable1(
+						EC_H_S(mapi::store::GetPublicFolderTable1(
 							lpMDB, szServerDN, MyData.GetHex(2) | fMapiUnicode, &lpPFTable));
 						break;
 					case 1:
-						EC_H(mapi::store::GetPublicFolderTable4(
+						EC_H_S(mapi::store::GetPublicFolderTable4(
 							lpMDB, szServerDN, MyData.GetHex(1), MyData.GetHex(2) | fMapiUnicode, &lpPFTable));
 						break;
 					case 2:
@@ -606,7 +604,7 @@ namespace dialog
 							}
 						}
 
-						EC_H(mapi::store::GetPublicFolderTable5(
+						EC_H_S(mapi::store::GetPublicFolderTable5(
 							lpMDB,
 							szServerDN,
 							MyData.GetHex(1),

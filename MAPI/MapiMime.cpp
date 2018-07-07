@@ -38,7 +38,8 @@ namespace mapi
 			{
 				LPSTREAM lpEMLStm = nullptr;
 
-				EC_H(mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, lpszEMLFile, &lpEMLStm));
+				hRes = EC_H(
+					mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, lpszEMLFile, &lpEMLStm));
 				if (SUCCEEDED(hRes) && lpEMLStm)
 				{
 					if (lpAdrBook)
@@ -121,7 +122,7 @@ namespace mapi
 				{
 					LPSTREAM lpMimeStm = nullptr;
 
-					hRes = EC_H2(CreateStreamOnHGlobal(nullptr, true, &lpMimeStm));
+					hRes = EC_H(CreateStreamOnHGlobal(nullptr, true, &lpMimeStm));
 					if (SUCCEEDED(hRes) && lpMimeStm)
 					{
 						// Per the docs for MAPIToMIMEStm, CCSF_SMTP must always be set
@@ -131,7 +132,7 @@ namespace mapi
 						{
 							LPSTREAM lpFileStm = nullptr;
 
-							hRes = EC_H2(mapi::MyOpenStreamOnFile(
+							hRes = EC_H(mapi::MyOpenStreamOnFile(
 								MAPIAllocateBuffer,
 								MAPIFreeBuffer,
 								STGM_CREATE | STGM_READWRITE,
@@ -176,14 +177,13 @@ namespace mapi
 		{
 			if (!lpszEMLFile || !lpszMSGFile) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = S_OK;
 			LPSTORAGE pStorage = nullptr;
 			LPMESSAGE pMessage = nullptr;
 
-			EC_H(file::CreateNewMSG(lpszMSGFile, bUnicode, &pMessage, &pStorage));
+			auto hRes = EC_H(file::CreateNewMSG(lpszMSGFile, bUnicode, &pMessage, &pStorage));
 			if (SUCCEEDED(hRes) && pMessage && pStorage)
 			{
-				EC_H(ImportEMLToIMessage(
+				hRes = EC_H(ImportEMLToIMessage(
 					lpszEMLFile, pMessage, ulConvertFlags, bApply, hCharSet, cSetApplyType, lpAdrBook));
 				if (SUCCEEDED(hRes))
 				{
@@ -208,13 +208,13 @@ namespace mapi
 		{
 			if (!lpszEMLFile || !lpszMSGFile) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = S_OK;
 			LPMESSAGE pMessage = nullptr;
 
-			EC_H(file::LoadMSGToMessage(lpszMSGFile, &pMessage));
+			auto hRes = EC_H(file::LoadMSGToMessage(lpszMSGFile, &pMessage));
 			if (SUCCEEDED(hRes) && pMessage)
 			{
-				EC_H(ExportIMessageToEML(pMessage, lpszEMLFile, ulConvertFlags, et, mst, ulWrapLines, lpAdrBook));
+				hRes =
+					EC_H(ExportIMessageToEML(pMessage, lpszEMLFile, ulConvertFlags, et, mst, ulWrapLines, lpAdrBook));
 			}
 
 			if (pMessage) pMessage->Release();
@@ -305,7 +305,7 @@ namespace mapi
 					const auto ulCodePage = MyData.GetDecimal(2);
 					const auto cCharSetType = static_cast<CHARSETTYPE>(MyData.GetDecimal(3));
 					if (cCharSetType > CHARSET_WEB) return MAPI_E_INVALID_PARAMETER;
-					EC_H(import::MyMimeOleGetCodePageCharset(ulCodePage, cCharSetType, phCharSet));
+					hRes = EC_H(import::MyMimeOleGetCodePageCharset(ulCodePage, cCharSetType, phCharSet));
 				}
 				*pDoAdrBook = MyData.GetCheck(5);
 				if (pbUnicode)
@@ -313,6 +313,7 @@ namespace mapi
 					*pbUnicode = MyData.GetCheck(6);
 				}
 			}
+
 			return hRes;
 		}
 #endif

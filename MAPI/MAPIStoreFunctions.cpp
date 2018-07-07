@@ -654,7 +654,7 @@ namespace mapi
 			WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
 			if (lpPrivateMDB && StoreSupportsManageStore(lpPrivateMDB))
 			{
-				EC_H(ab::SelectUser(lpAddrBook, ::GetDesktopWindow(), nullptr, &lpMailUser));
+				hRes = EC_H(ab::SelectUser(lpAddrBook, ::GetDesktopWindow(), nullptr, &lpMailUser));
 				if (lpMailUser)
 				{
 					hRes = EC_MAPI(HrGetOneProp(lpMailUser, PR_EMAIL_ADDRESS_W, &lpEmailAddress));

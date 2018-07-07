@@ -41,7 +41,7 @@ namespace file
 		BROWSEINFOW BrowseInfo = {};
 		LPMALLOC lpMalloc = nullptr;
 
-		EC_H2S(SHGetMalloc(&lpMalloc));
+		EC_H_S(SHGetMalloc(&lpMalloc));
 
 		if (!lpMalloc) return strings::emptystring;
 
@@ -91,7 +91,7 @@ namespace file
 		// If we asked for best access (read/write) and didn't get it, then try it without readwrite
 		if (hRes == STG_E_ACCESSDENIED && !*lppStorage && bBestAccess)
 		{
-			hRes = EC_H2(MyStgOpenStorage(szMessageFile, false, lppStorage));
+			hRes = EC_H(MyStgOpenStorage(szMessageFile, false, lppStorage));
 		}
 
 		return hRes;
@@ -113,7 +113,7 @@ namespace file
 		{
 			LPSTORAGE pStorage = nullptr;
 			// Open the compound file
-			hRes = EC_H2(MyStgOpenStorage(szMessageFile, true, &pStorage));
+			hRes = EC_H(MyStgOpenStorage(szMessageFile, true, &pStorage));
 
 			if (pStorage)
 			{
@@ -167,7 +167,7 @@ namespace file
 															 PR_HAS_DAMS}};
 
 		LPMESSAGE pIMsg = nullptr;
-		auto hRes = EC_H2(LoadMSGToMessage(szMessageFile, &pIMsg));
+		auto hRes = EC_H(LoadMSGToMessage(szMessageFile, &pIMsg));
 
 		if (pIMsg)
 		{
@@ -210,12 +210,12 @@ namespace file
 		LPSTREAM lpStream = nullptr;
 		// Get a Stream interface on the input TNEF file
 		auto hRes =
-			EC_H2(mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, szMessageFile, &lpStream));
+			EC_H(mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, szMessageFile, &lpStream));
 
 		if (lpStream)
 		{
 			LPITNEF lpTNEF = nullptr;
-			hRes = EC_H2(OpenTnefStreamEx(
+			hRes = EC_H(OpenTnefStreamEx(
 				nullptr,
 				lpStream,
 				reinterpret_cast<LPTSTR>(
@@ -470,7 +470,7 @@ namespace file
 		{
 			LPSRestriction lpRes = nullptr;
 			// Allocate and create our SRestriction
-			hRes = EC_H2(mapi::CreatePropertyStringRestriction(
+			hRes = EC_H(mapi::CreatePropertyStringRestriction(
 				PR_SUBJECT_W, restrictString, FL_SUBSTRING | FL_IGNORECASE, nullptr, &lpRes));
 			if (SUCCEEDED(hRes))
 			{
@@ -536,7 +536,7 @@ namespace file
 		// Open an IStream interface and create the file at the
 		// same time. This code will create the file in the
 		// current directory.
-		auto hRes = EC_H2(mapi::MyOpenStreamOnFile(
+		auto hRes = EC_H(mapi::MyOpenStreamOnFile(
 			MAPIAllocateBuffer, MAPIFreeBuffer, STGM_CREATE | STGM_READWRITE, szFileName, &pStrmDest));
 
 		if (pStrmDest)
@@ -641,7 +641,7 @@ namespace file
 			myOpts.ulSectorSize = 4096;
 
 			// Open the compound file
-			hRes = EC_H2(MyStgCreateStorageEx(
+			hRes = EC_H(MyStgCreateStorageEx(
 				szFileName,
 				STGM_READWRITE | STGM_TRANSACTED | STGM_CREATE,
 				STGFMT_DOCFILE,
@@ -715,7 +715,7 @@ namespace file
 		auto lpMapiContainer = mapi::safe_cast<LPMAPICONTAINER>(lpFolder);
 		if (lpMapiContainer)
 		{
-			hRes = EC_H2(mapi::CallOpenEntry(
+			hRes = EC_H(mapi::CallOpenEntry(
 				nullptr,
 				nullptr,
 				lpMapiContainer,
@@ -739,7 +739,7 @@ namespace file
 			{
 				output::DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
-				hRes = EC_H2(SaveToMSG(lpMessage, szFileName, bUnicode, hWnd, false));
+				hRes = EC_H(SaveToMSG(lpMessage, szFileName, bUnicode, hWnd, false));
 
 				output::DebugPrint(DBGGeneric, L"Message Saved\n");
 			}
@@ -760,7 +760,7 @@ namespace file
 
 		LPSTORAGE pStorage = nullptr;
 		LPMESSAGE pIMsg = nullptr;
-		auto hRes = EC_H2(CreateNewMSG(szFileName, bUnicode, &pIMsg, &pStorage));
+		auto hRes = EC_H(CreateNewMSG(szFileName, bUnicode, &pIMsg, &pStorage));
 		if (pIMsg && pStorage)
 		{
 			// Specify properties to exclude in the copy operation. These are
@@ -776,7 +776,7 @@ namespace file
 																PR_RTF_SYNC_PREFIX_COUNT,
 																PR_RTF_SYNC_TRAILING_COUNT}};
 
-			hRes = EC_H2(
+			hRes = EC_H(
 				mapi::CopyTo(hWnd, lpMessage, pIMsg, &IID_IMessage, LPSPropTagArray(&excludeTags), false, bAllowUI));
 
 			if (SUCCEEDED(hRes))
@@ -824,13 +824,13 @@ namespace file
 		static auto dwKey = static_cast<WORD>(GetTickCount());
 
 		// Get a Stream interface on the input TNEF file
-		auto hRes = EC_H2(mapi::MyOpenStreamOnFile(
+		auto hRes = EC_H(mapi::MyOpenStreamOnFile(
 			MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READWRITE | STGM_CREATE, szFileName, &lpStream));
 
 		if (lpStream)
 		{
 			// Open TNEF stream
-			hRes = EC_H2(OpenTnefStreamEx(
+			hRes = EC_H(OpenTnefStreamEx(
 				nullptr,
 				lpStream,
 				reinterpret_cast<LPTSTR>(
@@ -1048,7 +1048,7 @@ namespace file
 
 		if (lpAttachMsg)
 		{
-			hRes = EC_H2(SaveToMSG(lpAttachMsg, szFileName, bUnicode, hWnd, false));
+			hRes = EC_H(SaveToMSG(lpAttachMsg, szFileName, bUnicode, hWnd, false));
 			lpAttachMsg->Release();
 		}
 
@@ -1126,7 +1126,7 @@ namespace file
 			if (lpStorageSrc)
 			{
 				LPSTORAGE lpStorageDest = nullptr;
-				hRes = EC_H2(::StgCreateDocfile(
+				hRes = EC_H(::StgCreateDocfile(
 					szFileName.c_str(), STGM_READWRITE | STGM_TRANSACTED | STGM_CREATE, 0, &lpStorageDest));
 				if (lpStorageDest)
 				{
@@ -1211,7 +1211,7 @@ namespace file
 					strings::loadstring(IDS_ALLFILES));
 				if (!file.empty())
 				{
-					hRes = EC_H2(WriteAttachStreamToFile(lpAttach, file));
+					hRes = EC_H(WriteAttachStreamToFile(lpAttach, file));
 				}
 			}
 			break;
@@ -1227,7 +1227,7 @@ namespace file
 						strings::loadstring(IDS_MSGFILES));
 					if (!file.empty())
 					{
-						hRes = EC_H2(WriteEmbeddedMSGToFile(lpAttach, file, MAPI_UNICODE == fMapiUnicode, hWnd));
+						hRes = EC_H(WriteEmbeddedMSGToFile(lpAttach, file, MAPI_UNICODE == fMapiUnicode, hWnd));
 					}
 				}
 				break;
@@ -1241,7 +1241,7 @@ namespace file
 					strings::loadstring(IDS_ALLFILES));
 				if (!file.empty())
 				{
-					hRes = EC_H2(WriteOleToFile(lpAttach, file));
+					hRes = EC_H(WriteOleToFile(lpAttach, file));
 				}
 			}
 			break;

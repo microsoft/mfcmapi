@@ -312,12 +312,12 @@ namespace mapi
 			{
 				if (MyData.GetCheck(0))
 				{
-					EC_H(HrSetProfileParameters(aEMSServicesIni));
-					hRes = S_OK;
+					EC_H_S(HrSetProfileParameters(aEMSServicesIni));
 				}
+
 				if (MyData.GetCheck(1))
 				{
-					EC_H(HrSetProfileParameters(aPSTServicesIni));
+					EC_H_S(HrSetProfileParameters(aPSTServicesIni));
 				}
 			}
 		}
@@ -335,12 +335,12 @@ namespace mapi
 			{
 				if (MyData.GetCheck(0))
 				{
-					EC_H(HrSetProfileParameters(aREMOVE_MSEMSServicesIni));
-					hRes = S_OK;
+					EC_H_S(HrSetProfileParameters(aREMOVE_MSEMSServicesIni));
 				}
+
 				if (MyData.GetCheck(1))
 				{
-					EC_H(HrSetProfileParameters(aREMOVE_MSPSTServicesIni));
+					EC_H_S(HrSetProfileParameters(aREMOVE_MSPSTServicesIni));
 				}
 			}
 		}
@@ -358,7 +358,6 @@ namespace mapi
 			static const SizedSPropTagArray(1, pTagUID) = {1, {PR_SERVICE_UID}};
 
 			auto hRes = EC_MAPI(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
-
 			if (lpProviderTable)
 			{
 				LPSRowSet lpRowSet = nullptr;
@@ -372,7 +371,6 @@ namespace mapi
 				{
 					for (ULONG i = 0; i < lpRowSet->cRows; i++)
 					{
-						hRes = S_OK;
 						const auto lpCurRow = &lpRowSet->aRow[i];
 
 						auto lpServiceUID = PpropFindProp(lpCurRow->lpProps, lpCurRow->cValues, PR_SERVICE_UID);
@@ -380,7 +378,7 @@ namespace mapi
 						if (lpServiceUID)
 						{
 							LPPROFSECT lpSect = nullptr;
-							EC_H(OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin, &lpSect));
+							hRes = EC_H(OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin, &lpSect));
 							if (lpSect)
 							{
 								if (bAddMark)
@@ -439,7 +437,7 @@ namespace mapi
 
 						if (lpServiceUID)
 						{
-							EC_H(OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin, &lpSect));
+							hRes = EC_H(OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin, &lpSect));
 							if (lpSect)
 							{
 								SPropTagArray pTagArray = {1, PR_MARKER};
@@ -532,7 +530,7 @@ namespace mapi
 					if (lpPropVals)
 					{
 						// Add a dummy prop to the current providers
-						hRes = EC_H2(HrMarkExistingProviders(lpServiceAdmin, true));
+						hRes = EC_H(HrMarkExistingProviders(lpServiceAdmin, true));
 					}
 
 					if (SUCCEEDED(hRes))
@@ -550,7 +548,7 @@ namespace mapi
 					{
 						LPSRowSet lpRowSet = nullptr;
 						// Look for a provider without our dummy prop
-						hRes = EC_H2(HrFindUnmarkedProvider(lpServiceAdmin, &lpRowSet));
+						hRes = EC_H(HrFindUnmarkedProvider(lpServiceAdmin, &lpRowSet));
 
 						if (lpRowSet) output::DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
 
@@ -567,7 +565,7 @@ namespace mapi
 						}
 
 						// Strip out the dummy prop
-						hRes = EC_H2(HrMarkExistingProviders(lpServiceAdmin, false));
+						hRes = EC_H(HrMarkExistingProviders(lpServiceAdmin, false));
 
 						FreeProws(lpRowSet);
 					}
@@ -594,8 +592,6 @@ namespace mapi
 			_In_ const std::string& lpszMailboxName,
 			_In_ const std::string& lpszProfileName)
 		{
-			auto hRes = S_OK;
-
 			output::DebugPrint(
 				DBGGeneric,
 				L"HrAddExchangeToProfile(%hs,%hs,%hs)\n",
@@ -612,7 +608,7 @@ namespace mapi
 			PropVal[0].Value.lpszA = const_cast<LPSTR>(lpszServerName.c_str());
 			PropVal[1].ulPropTag = PR_PROFILE_UNRESOLVED_NAME;
 			PropVal[1].Value.lpszA = const_cast<LPSTR>(lpszMailboxName.c_str());
-			EC_H(HrAddServiceToProfile(
+			auto hRes = EC_H(HrAddServiceToProfile(
 				"MSEMS", ulUIParam, NULL, NUMEXCHANGEPROPS, PropVal, lpszProfileName)); // STRING_OK
 
 			return hRes;
@@ -647,12 +643,12 @@ namespace mapi
 
 			if (bUnicodePST)
 			{
-				EC_H(HrAddServiceToProfile(
+				hRes = EC_H(HrAddServiceToProfile(
 					"MSUPST MS", ulUIParam, NULL, bPasswordSet ? 2 : 1, PropVal, lpszProfileName)); // STRING_OK
 			}
 			else
 			{
-				EC_H(HrAddServiceToProfile(
+				hRes = EC_H(HrAddServiceToProfile(
 					"MSPST MS", ulUIParam, NULL, bPasswordSet ? 2 : 1, PropVal, lpszProfileName)); // STRING_OK
 			}
 

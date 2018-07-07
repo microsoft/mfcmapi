@@ -34,7 +34,6 @@ namespace dialog
 			  MENU_CONTEXT_FOLDER_TREE)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		auto hRes = S_OK;
 
 		m_lpMDB = mapi::safe_cast<LPMDB>(lpMDB);
 		m_ulDisplayFlags = ulDisplayFlags;
@@ -49,7 +48,7 @@ namespace dialog
 				{
 					auto container = LPUNKNOWN(nullptr);
 					// Open root container.
-					EC_H(mapi::CallOpenEntry(
+					EC_H_S(mapi::CallOpenEntry(
 						m_lpMDB,
 						NULL,
 						NULL,
@@ -163,16 +162,15 @@ namespace dialog
 
 	void CMsgStoreDlg::OnDisplaySpecialFolder(ULONG ulFolder)
 	{
-		auto hRes = S_OK;
 		LPMAPIFOLDER lpFolder = nullptr;
 
 		if (!m_lpMDB) return;
 
-		EC_H(mapi::OpenDefaultFolder(ulFolder, m_lpMDB, &lpFolder));
+		EC_H_S(mapi::OpenDefaultFolder(ulFolder, m_lpMDB, &lpFolder));
 
 		if (lpFolder)
 		{
-			EC_H(DisplayObject(lpFolder, NULL, otHierarchy, this));
+			EC_H_S(DisplayObject(lpFolder, NULL, otHierarchy, this));
 
 			lpFolder->Release();
 		}
@@ -193,10 +191,10 @@ namespace dialog
 
 		if (!m_lpMDB) return;
 
-		auto hRes = EC_MAPI(m_lpMDB->GetReceiveFolderTable(fMapiUnicode, &lpMAPITable));
+		EC_MAPI_S(m_lpMDB->GetReceiveFolderTable(fMapiUnicode, &lpMAPITable));
 		if (lpMAPITable)
 		{
-			EC_H(DisplayTable(lpMAPITable, otReceive, this));
+			EC_H_S(DisplayTable(lpMAPITable, otReceive, this));
 			lpMAPITable->Release();
 		}
 	}
@@ -207,33 +205,29 @@ namespace dialog
 
 		if (!m_lpMDB) return;
 
-		auto hRes = EC_MAPI(m_lpMDB->GetOutgoingQueue(NULL, &lpMAPITable));
-
+		EC_MAPI_S(m_lpMDB->GetOutgoingQueue(NULL, &lpMAPITable));
 		if (lpMAPITable)
 		{
-			EC_H(DisplayTable(lpMAPITable, otDefault, this));
+			EC_H_S(DisplayTable(lpMAPITable, otDefault, this));
 			lpMAPITable->Release();
 		}
 	}
 
 	void CMsgStoreDlg::OnDisplayRulesTable()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
-			EC_H(DisplayExchangeTable(lpMAPIFolder, PR_RULES_TABLE, otRules, this));
+			EC_H_S(DisplayExchangeTable(lpMAPIFolder, PR_RULES_TABLE, otRules, this));
 			lpMAPIFolder->Release();
 		}
 	}
 
 	void CMsgStoreDlg::OnResolveMessageClass()
 	{
-		auto hRes = S_OK;
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl || !m_lpPropDisplay) return;
 
 		auto lpMAPIFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
@@ -244,7 +238,7 @@ namespace dialog
 			ResolveMessageClass(m_lpMapiObjects, lpMAPIFolder, &lpMAPIFormInfo);
 			if (lpMAPIFormInfo)
 			{
-				EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false));
+				EC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false));
 				lpMAPIFormInfo->Release();
 			}
 
@@ -254,7 +248,6 @@ namespace dialog
 
 	void CMsgStoreDlg::OnSelectForm()
 	{
-		auto hRes = S_OK;
 		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl || !m_lpPropDisplay) return;
@@ -265,7 +258,7 @@ namespace dialog
 			SelectForm(m_hWnd, m_lpMapiObjects, lpMAPIFolder, &lpMAPIFormInfo);
 			if (lpMAPIFormInfo)
 			{
-				EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false));
+				EC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false));
 				lpMAPIFormInfo->Release();
 			}
 
@@ -533,7 +526,7 @@ namespace dialog
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				EC_H(mapi::CopyFolderContents(
+				EC_H_S(mapi::CopyFolderContents(
 					lpMAPISourceFolder,
 					lpMAPIDestFolder,
 					MyData.GetCheck(0), // associated contents
@@ -542,6 +535,7 @@ namespace dialog
 					m_hWnd));
 			}
 		}
+
 		if (lpMAPIDestFolder) lpMAPIDestFolder->Release();
 		if (lpMAPISourceFolder) lpMAPISourceFolder->Release();
 	}
@@ -573,10 +567,11 @@ namespace dialog
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				EC_H(mapi::CopyFolderRules(lpMAPISourceFolder, lpMAPIDestFolder,
+				EC_H_S(mapi::CopyFolderRules(lpMAPISourceFolder, lpMAPIDestFolder,
 										   MyData.GetCheck(0))); // move
 			}
 		}
+
 		if (lpMAPIDestFolder) lpMAPIDestFolder->Release();
 		if (lpMAPISourceFolder) lpMAPISourceFolder->Release();
 	}
@@ -622,15 +617,13 @@ namespace dialog
 
 	void CMsgStoreDlg::OnDisplayACLTable()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
-			EC_H(DisplayExchangeTable(lpMAPIFolder, PR_ACL_TABLE, otACL, this));
+			EC_H_S(DisplayExchangeTable(lpMAPIFolder, PR_ACL_TABLE, otACL, this));
 			lpMAPIFolder->Release();
 		}
 	}
@@ -728,7 +721,7 @@ namespace dialog
 			{
 				if (MyData.GetCheck(2))
 				{
-					EC_H(mapi::ManuallyEmptyFolder(lpMAPIFolderToEmpty, MyData.GetCheck(0), MyData.GetCheck(1)));
+					EC_H_S(mapi::ManuallyEmptyFolder(lpMAPIFolderToEmpty, MyData.GetCheck(0), MyData.GetCheck(1)));
 				}
 				else
 				{
@@ -782,7 +775,7 @@ namespace dialog
 		if (lpFolderToDelete)
 		{
 			LPMAPIFOLDER lpParentFolder = nullptr;
-			EC_H(mapi::GetParentFolder(lpFolderToDelete, m_lpMDB, &lpParentFolder));
+			EC_H_S(mapi::GetParentFolder(lpFolderToDelete, m_lpMDB, &lpParentFolder));
 			if (lpParentFolder)
 			{
 				editor::CEditor MyData(
@@ -851,7 +844,7 @@ namespace dialog
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				EC_H(
+				EC_H_S(
 					file::SaveFolderContentsToMSG(lpMAPIFolder, szDir, MyData.GetCheck(0), MyData.GetCheck(1), m_hWnd));
 			}
 		}
@@ -938,7 +931,6 @@ namespace dialog
 
 	void CMsgStoreDlg::OnResendAllMessages()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpHierarchyTableTreeCtrl) return;
@@ -948,7 +940,7 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			EC_H(mapi::ResendMessages(lpMAPIFolder, m_hWnd));
+			EC_H_S(mapi::ResendMessages(lpMAPIFolder, m_hWnd));
 
 			lpMAPIFolder->Release();
 		}
@@ -957,7 +949,6 @@ namespace dialog
 	// Iterate through items in the selected folder and attempt to delete PR_NT_SECURITY_DESCRIPTOR
 	void CMsgStoreDlg::OnResetPermissionsOnItems()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpMDB || !m_lpHierarchyTableTreeCtrl) return;
@@ -967,7 +958,7 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			EC_H(mapi::ResetPermissionsOnItems(m_lpMDB, lpMAPIFolder));
+			EC_H_S(mapi::ResetPermissionsOnItems(m_lpMDB, lpMAPIFolder));
 			lpMAPIFolder->Release();
 		}
 	}

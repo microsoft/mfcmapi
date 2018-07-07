@@ -71,7 +71,7 @@ namespace dialog
 			const auto lpProviderUID = lpListData->Contents()->m_lpProviderUID;
 			if (lpProviderUID)
 			{
-				EC_H(mapi::profile::OpenProfileSection(
+				hRes = EC_H(mapi::profile::OpenProfileSection(
 					m_lpProviderAdmin, lpProviderUID, reinterpret_cast<LPPROFSECT*>(lppMAPIProp)));
 			}
 		}
@@ -92,19 +92,19 @@ namespace dialog
 		MyUID.InitPane(1, viewpane::CheckPane::Create(IDS_MAPIUIDBYTESWAPPED, false, false));
 
 		WC_H(MyUID.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (hRes != S_OK) return;
 
 		auto guid = MyUID.GetSelectedGUID(0, MyUID.GetCheck(1));
 		SBinary MapiUID = {sizeof(GUID), reinterpret_cast<LPBYTE>(&guid)};
 
 		LPPROFSECT lpProfSect = nullptr;
-		EC_H(mapi::profile::OpenProfileSection(m_lpProviderAdmin, &MapiUID, &lpProfSect));
+		EC_H_S(mapi::profile::OpenProfileSection(m_lpProviderAdmin, &MapiUID, &lpProfSect));
 		if (lpProfSect)
 		{
 			auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpProfSect);
 			if (lpTemp)
 			{
-				EC_H(DisplayObject(lpTemp, MAPI_PROFSECT, otContents, this));
+				EC_H_S(DisplayObject(lpTemp, MAPI_PROFSECT, otContents, this));
 				lpTemp->Release();
 			}
 

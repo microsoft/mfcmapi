@@ -213,7 +213,10 @@ namespace controls
 
 		auto hRes = EC_B(DeleteItem(GetRootItem()));
 
-		if (m_lpContainer) EC_H(AddRootNode(m_lpContainer));
+		if (SUCCEEDED(hRes) && m_lpContainer)
+		{
+			hRes = EC_H(AddRootNode(m_lpContainer));
+		}
 
 		if (m_lpHostDlg) m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
 
@@ -974,7 +977,6 @@ namespace controls
 	// When + is clicked, add all entries in the table as children
 	void CHierarchyTableTreeCtrl::OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
-		auto hRes = S_OK;
 		*pResult = 0;
 
 		const auto pNMTreeView = reinterpret_cast<NM_TREEVIEW*>(pNMHDR);
@@ -993,7 +995,7 @@ namespace controls
 			{
 				if (!(pNMTreeView->itemNew.state & TVIS_EXPANDEDONCE))
 				{
-					EC_H(ExpandNode(pNMTreeView->itemNew.hItem));
+					EC_H_S(ExpandNode(pNMTreeView->itemNew.hItem));
 				}
 			}
 		}

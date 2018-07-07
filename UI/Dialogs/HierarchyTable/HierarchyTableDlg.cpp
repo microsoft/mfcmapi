@@ -97,8 +97,6 @@ namespace dialog
 
 	void CHierarchyTableDlg::OnDisplayItem()
 	{
-		auto hRes = S_OK;
-
 		auto lpMAPIContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 		if (!lpMAPIContainer)
 		{
@@ -106,7 +104,7 @@ namespace dialog
 			return;
 		}
 
-		EC_H(DisplayObject(lpMAPIContainer, NULL, otContents, this));
+		EC_H_S(DisplayObject(lpMAPIContainer, NULL, otContents, this));
 
 		lpMAPIContainer->Release();
 	}
@@ -136,7 +134,7 @@ namespace dialog
 
 			if (lpMAPITable)
 			{
-				EC_H(DisplayTable(lpMAPITable, otHierarchy, this));
+				EC_H_S(DisplayTable(lpMAPITable, otHierarchy, this));
 				lpMAPITable->Release();
 			}
 
@@ -225,14 +223,12 @@ namespace dialog
 
 	void CHierarchyTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	{
-		auto hRes = S_OK;
-
 		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CBaseDialog::CreateDialogAndMenu(nIDMenuResource, IDR_MENU_HIERARCHY_TABLE, IDS_HIERARCHYTABLE);
 
 		if (m_lpHierarchyTableTreeCtrl)
 		{
-			EC_H(m_lpHierarchyTableTreeCtrl->LoadHierarchyTable(m_lpContainer));
+			EC_H_S(m_lpHierarchyTableTreeCtrl->LoadHierarchyTable(m_lpContainer));
 		}
 	}
 
@@ -259,10 +255,8 @@ namespace dialog
 
 	void CHierarchyTableDlg::OnRefreshView()
 	{
-		auto hRes = S_OK;
-
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
-		if (m_lpHierarchyTableTreeCtrl) EC_H(m_lpHierarchyTableTreeCtrl->RefreshHierarchyTable());
+		if (m_lpHierarchyTableTreeCtrl) EC_H_S(m_lpHierarchyTableTreeCtrl->RefreshHierarchyTable());
 	}
 
 	_Check_return_ bool CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)

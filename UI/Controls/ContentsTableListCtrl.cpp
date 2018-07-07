@@ -286,7 +286,7 @@ namespace controls
 			if (bAddExtras)
 			{
 				// build an array with the source set and m_sptExtraColumnTags combined
-				EC_H(mapi::ConcatSPropTagArrays(
+				EC_H_S(mapi::ConcatSPropTagArrays(
 					m_sptExtraColumnTags,
 					lpFinalTagArray, // build on the final array we've computed thus far
 					&lpConcatTagArray));
@@ -1004,7 +1004,6 @@ namespace controls
 
 		_Check_return_ LPENTRYLIST CContentsTableListCtrl::GetSelectedItemEIDs() const
 		{
-			auto hRes = S_OK;
 			const auto iNumItems = GetSelectedCount();
 
 			if (!iNumItems) return S_OK;
@@ -1012,14 +1011,14 @@ namespace controls
 
 			LPENTRYLIST lpTempList = nullptr;
 
-			EC_H(MAPIAllocateBuffer(sizeof(ENTRYLIST), reinterpret_cast<LPVOID*>(&lpTempList)));
+			auto hRes = EC_H(MAPIAllocateBuffer(sizeof(ENTRYLIST), reinterpret_cast<LPVOID*>(&lpTempList)));
 
 			if (lpTempList)
 			{
 				lpTempList->cValues = iNumItems;
 				lpTempList->lpbin = nullptr;
 
-				EC_H(MAPIAllocateMore(
+				hRes = EC_H(MAPIAllocateMore(
 					static_cast<ULONG>(sizeof(SBinary)) * iNumItems,
 					lpTempList,
 					reinterpret_cast<LPVOID*>(&lpTempList->lpbin)));
@@ -1038,7 +1037,7 @@ namespace controls
 							if (lpData && lpData->Contents() && lpData->Contents()->m_lpEntryID)
 							{
 								lpTempList->lpbin[iArrayPos].cb = lpData->Contents()->m_lpEntryID->cb;
-								EC_H(MAPIAllocateMore(
+								EC_H_S(MAPIAllocateMore(
 									lpData->Contents()->m_lpEntryID->cb,
 									lpTempList,
 									reinterpret_cast<LPVOID*>(&lpTempList->lpbin[iArrayPos].lpb)));
@@ -1250,8 +1249,7 @@ namespace controls
 				output::DebugPrint(DBGGeneric, L"\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n", hRes);
 				// We got access denied when we passed MAPI_MODIFY
 				// Let's try again without it.
-				hRes = S_OK;
-				EC_H(DefaultOpenItemProp(iItem, mfcmapiDO_NOT_REQUEST_MODIFY, lppProp));
+				hRes = EC_H(DefaultOpenItemProp(iItem, mfcmapiDO_NOT_REQUEST_MODIFY, lppProp));
 			}
 
 			if (hRes == MAPI_E_NOT_FOUND)
