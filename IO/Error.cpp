@@ -98,7 +98,7 @@ namespace error
 	{
 		for (ULONG i = 0; i < g_ulErrorArray; i++)
 		{
-			if (g_ErrorArray[i].ulErrorName == hrErr) return const_cast<LPWSTR>(g_ErrorArray[i].lpszName);
+			if (g_ErrorArray[i].ulErrorName == hrErr) return g_ErrorArray[i].lpszName;
 		}
 
 		return strings::format(L"0x%08X", hrErr); // STRING_OK
