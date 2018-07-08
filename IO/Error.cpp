@@ -103,16 +103,4 @@ namespace error
 
 		return strings::format(L"0x%08X", hrErr); // STRING_OK
 	}
-
-#ifdef _DEBUG
-	void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc)
-	{
-		output::DebugPrint(
-			DBGHRes,
-			L"Skipping %hs because hRes = 0x%8x = %ws.\n", // STRING_OK
-			szFunc,
-			hRes,
-			ErrorNameFromErrorCode(hRes).c_str());
-	}
-#endif
 }

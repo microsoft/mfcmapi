@@ -61,13 +61,6 @@ namespace error
 	_Check_return_ HRESULT
 	CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction);
 
-	// We'll only output this information in debug builds.
-#ifdef _DEBUG
-	void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc);
-#else
-	inline void PrintSkipNote(HRESULT, _In_z_ LPCSTR) {}
-#endif
-
 	// Flag parsing array - used by GetPropFlags
 	struct ERROR_ARRAY_ENTRY
 	{
