@@ -344,7 +344,7 @@ namespace dialog
 		lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
 		LPMDB lpMDB = nullptr;
-		WC_H(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
+		WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
 		if (lpMDB)
 		{
 			ULONG cProps = 0;

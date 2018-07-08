@@ -1616,7 +1616,6 @@ namespace dialog
 
 	void CFolderDlg::OnSetReadFlag()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpContentsTableListCtrl) return;
@@ -1637,12 +1636,12 @@ namespace dialog
 		{
 			LPMESSAGE lpMessage = nullptr;
 
-			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
+			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
 				nullptr, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 
 			if (lpMessage)
 			{
-				hRes = EC_MAPI(lpMessage->SetReadFlag(MyFlags.GetHex(0)));
+				EC_MAPI_S(lpMessage->SetReadFlag(MyFlags.GetHex(0)));
 				lpMessage->Release();
 				lpMessage = nullptr;
 			}

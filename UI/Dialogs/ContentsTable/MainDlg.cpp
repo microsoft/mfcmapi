@@ -300,7 +300,7 @@ namespace dialog
 		if (lpEID)
 		{
 			LPABCONT lpDefaultDir = nullptr;
-			EC_H(mapi::CallOpenEntry(
+			EC_H_S(mapi::CallOpenEntry(
 				nullptr,
 				lpAddrBook,
 				nullptr,
