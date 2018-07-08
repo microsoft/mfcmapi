@@ -68,6 +68,8 @@ namespace error
 		LPCWSTR lpszName;
 	};
 	typedef ERROR_ARRAY_ENTRY* LPERROR_ARRAY_ENTRY;
+
+	inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes; }
 }
 
 #define CheckHResFn(hRes, hrIgnore, bDisplayDialog, szFunction, uidErrorMsg, szFile, iLine) \
@@ -78,13 +80,11 @@ namespace error
 #define CHECKHRESMSG(hRes, uidErrorMsg) (CheckHResFn(hRes, NULL, true, nullptr, uidErrorMsg, __FILE__, __LINE__))
 #define WARNHRESMSG(hRes, uidErrorMsg) (CheckHResFn(hRes, NULL, false, nullptr, uidErrorMsg, __FILE__, __LINE__))
 
-inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes; }
-
 // Execute a function, log and return the HRESULT
 // Does not modify or reference existing hRes
 // Will display dialog on error
 #define EC_H(fnx) \
-	CheckMe([&]() -> HRESULT { \
+	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
@@ -103,7 +103,7 @@ inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes
 // Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_H(fnx) \
-	CheckMe([&]() -> HRESULT { \
+	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
@@ -122,7 +122,7 @@ inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes
 // Logs a MAPI call trace under DBGMAPIFunctions
 // Does not modify or reference existing hRes
 #define EC_MAPI(fnx) \
-	CheckMe([&]() -> HRESULT { \
+	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
@@ -142,7 +142,7 @@ inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes
 // Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_MAPI(fnx) \
-	CheckMe([&]() -> HRESULT { \
+	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
@@ -161,7 +161,7 @@ inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes
 // Execute a function, log error with uidErrorMessage, and return the HRESULT
 // Does not modify or reference existing hRes
 #define EC_H_MSG(uidErrorMsg, fnx) \
-	CheckMe([&]() -> HRESULT { \
+	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, true, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
@@ -171,7 +171,7 @@ inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes
 // Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_H_MSG(uidErrorMsg, fnx) \
-	CheckMe([&]() -> HRESULT { \
+	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
@@ -189,7 +189,7 @@ inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and return HRESULT_FROM_WIN32
 // Does not modify or reference existing hRes
 #define EC_W32(fnx) \
-	CheckMe([&]() -> HRESULT { \
+	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = HRESULT_FROM_WIN32(fnx); \
 		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
@@ -207,7 +207,7 @@ inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes
 // Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_W32(fnx) \
-	CheckMe([&]() -> HRESULT { \
+	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = HRESULT_FROM_WIN32(fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes; \
@@ -225,7 +225,8 @@ inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes
 // Execute a bool/BOOL function, log error, and return CheckWin32Error(HRESULT)
 // Does not modify or reference existing hRes
 #define EC_B(fnx) \
-	CheckMe([&]() -> HRESULT { return !(fnx) ? error::CheckWin32Error(true, __FILE__, __LINE__, #fnx) : S_OK; }())
+	error::CheckMe( \
+		[&]() -> HRESULT { return !(fnx) ? error::CheckWin32Error(true, __FILE__, __LINE__, #fnx) : S_OK; }())
 
 // Execute a bool/BOOL function, log error, and swallow error
 // Does not modify or reference existing hRes
@@ -241,7 +242,8 @@ inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes
 // Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_B(fnx) \
-	CheckMe([&]() -> HRESULT { return !(fnx) ? error::CheckWin32Error(false, __FILE__, __LINE__, #fnx) : S_OK; }())
+	error::CheckMe( \
+		[&]() -> HRESULT { return !(fnx) ? error::CheckWin32Error(false, __FILE__, __LINE__, #fnx) : S_OK; }())
 
 // Execute a bool/BOOL function, log error, and swallow error
 // Does not modify or reference existing hRes
@@ -293,7 +295,7 @@ inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
 #define EC_H_GETPROPS(fnx) \
-	CheckMe([&]() -> HRESULT { \
+	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes == MAPI_W_ERRORS_RETURNED ? S_OK : __hRes; \
@@ -317,7 +319,7 @@ inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes
 // Using this macro, all we have to check is that we got a props array back
 // Will not display an error dialog
 #define WC_H_GETPROPS(fnx) \
-	CheckMe([&]() -> HRESULT { \
+	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
 		return __hRes == MAPI_W_ERRORS_RETURNED ? S_OK : __hRes; \
@@ -341,7 +343,7 @@ inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes
 // I don't consider these to be errors.
 // Does not modify or reference existing hRes
 #define EC_H_CANCEL(fnx) \
-	CheckMe([&]() -> HRESULT { \
+	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		if (__hRes == MAPI_E_USER_CANCEL || __hRes == MAPI_E_CANCEL) \
 		{ \
