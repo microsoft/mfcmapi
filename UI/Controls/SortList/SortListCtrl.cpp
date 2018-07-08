@@ -55,7 +55,7 @@ namespace controls
 
 		void CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages)
 		{
-			EC_BS(CListCtrl::Create(
+			EC_B_S(CListCtrl::Create(
 				ulFlags | LVS_REPORT | LVS_SHOWSELALWAYS | WS_TABSTOP | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS |
 					WS_VISIBLE,
 				CRect(0, 0, 0, 0), // size doesn't matter
@@ -195,7 +195,7 @@ namespace controls
 				lvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 				lvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
-				WC_BS(::SendMessage(m_hWnd, LVM_HITTEST, 0, reinterpret_cast<LPARAM>(&lvHitTestInfo)));
+				WC_B_S(::SendMessage(m_hWnd, LVM_HITTEST, 0, reinterpret_cast<LPARAM>(&lvHitTestInfo)));
 				// Hover highlight
 				if (lvHitTestInfo.flags & LVHT_ONITEM)
 				{
@@ -217,7 +217,7 @@ namespace controls
 						tmEvent.dwFlags = TME_LEAVE;
 						tmEvent.hwndTrack = m_hWnd;
 
-						EC_BS(TrackMouseEvent(&tmEvent));
+						EC_B_S(TrackMouseEvent(&tmEvent));
 					}
 				}
 				else
@@ -415,7 +415,7 @@ namespace controls
 				for (auto i = 0; i < lpMyHeader->GetItemCount(); i++)
 				{
 					hdItem.mask = HDI_FORMAT;
-					EC_BS(lpMyHeader->GetItem(i, &hdItem));
+					EC_B_S(lpMyHeader->GetItem(i, &hdItem));
 					hdItem.fmt &= ~(HDF_SORTUP | HDF_SORTDOWN);
 					lpMyHeader->SetItem(i, &hdItem);
 				}
@@ -427,7 +427,7 @@ namespace controls
 				lpMyHeader->SetItem(m_iClickedColumn, &hdItem);
 
 				hdItem.mask = HDI_LPARAM;
-				EC_BS(lpMyHeader->GetItem(m_iClickedColumn, &hdItem));
+				EC_B_S(lpMyHeader->GetItem(m_iClickedColumn, &hdItem));
 				if (hdItem.lParam)
 				{
 					ulPropTag = reinterpret_cast<LPHEADERDATA>(hdItem.lParam)->ulPropTag;
@@ -533,7 +533,7 @@ namespace controls
 			}
 
 			sortinfo.bSortUp = m_bSortUp;
-			EC_BS(SortItems(MyCompareProc, reinterpret_cast<LPARAM>(&sortinfo)));
+			EC_B_S(SortItems(MyCompareProc, reinterpret_cast<LPARAM>(&sortinfo)));
 		}
 
 		// Leverage in support for sorting columns.
@@ -617,7 +617,7 @@ namespace controls
 						// This will be a HeaderData, created in CContentsTableListCtrl::AddColumn
 						if (SUCCEEDED(hRes)) delete reinterpret_cast<HeaderData*>(hdItem.lParam);
 
-						if (!bShutdown) EC_BS(DeleteColumn(iCol));
+						if (!bShutdown) EC_B_S(DeleteColumn(iCol));
 					}
 
 					if (!bShutdown) MySetRedraw(true);
@@ -682,7 +682,7 @@ namespace controls
 			}
 			else if (iItem > 0)
 			{
-				EC_BS(SetItemState(iItem - 1, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED));
+				EC_B_S(SetItemState(iItem - 1, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED));
 				EnsureVisible(iItem - 1, false);
 			}
 		}

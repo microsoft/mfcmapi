@@ -394,7 +394,7 @@ namespace controls
 					lpHeaderData->szTipString = interpretprop::TagToString(ulPropTag, lpMDB, m_bIsAB, false);
 
 					hdItem.lParam = reinterpret_cast<LPARAM>(lpHeaderData);
-					EC_BS(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
+					EC_B_S(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
 				}
 			}
 		}
@@ -698,7 +698,7 @@ namespace controls
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"\n");
 
-			EC_BS(DeleteAllItems());
+			EC_B_S(DeleteAllItems());
 
 			// whack the old thread handle if we still have it
 			if (m_LoadThreadHandle) CloseHandle(m_LoadThreadHandle);
@@ -805,7 +805,7 @@ namespace controls
 			{
 				HDITEM hdItem = {0};
 				hdItem.mask = HDI_LPARAM;
-				EC_BS(lpMyHeader->GetItem(iColumn, &hdItem));
+				EC_B_S(lpMyHeader->GetItem(iColumn, &hdItem));
 
 				if (hdItem.lParam)
 				{
@@ -1278,7 +1278,7 @@ namespace controls
 			MySetRedraw(false);
 			for (auto iIndex = 0; iIndex < GetItemCount(); iIndex++)
 			{
-				EC_BS(SetItemState(iIndex, LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED));
+				EC_B_S(SetItemState(iIndex, LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED));
 			}
 
 			MySetRedraw(true);

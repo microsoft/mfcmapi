@@ -148,7 +148,7 @@ namespace controls
 			tvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 			tvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
-			WC_BS(::SendMessage(m_hWnd, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&tvHitTestInfo)));
+			WC_B_S(::SendMessage(m_hWnd, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&tvHitTestInfo)));
 			if (tvHitTestInfo.hItem)
 			{
 				if (tvHitTestInfo.flags & TVHT_ONITEMBUTTON)
@@ -178,7 +178,7 @@ namespace controls
 					tmEvent.dwFlags = TME_LEAVE;
 					tmEvent.hwndTrack = m_hWnd;
 
-					WC_BS(TrackMouseEvent(&tmEvent));
+					WC_B_S(TrackMouseEvent(&tmEvent));
 				}
 			}
 			else
@@ -664,7 +664,7 @@ namespace controls
 		item.pszText = szText;
 		item.cchTextMax = _countof(szText);
 		item.hItem = GetSelectedItem();
-		WC_BS(::SendMessage(m_hWnd, TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+		WC_B_S(::SendMessage(m_hWnd, TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
 		m_lpHostDlg->UpdateTitleBarText(szText);
 
 		if (lpMAPIContainer) lpMAPIContainer->Release();

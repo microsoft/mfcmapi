@@ -797,7 +797,7 @@ namespace dialog
 						ulFlags));
 
 					// Delete the item from the UI since we cannot rely on notifications to handle this for us
-					WC_BS(m_lpHierarchyTableTreeCtrl->DeleteItem(hItem));
+					WC_B_S(m_lpHierarchyTableTreeCtrl->DeleteItem(hItem));
 
 					if (lpProgress) lpProgress->Release();
 				}

@@ -77,7 +77,7 @@ namespace sid
 		sidNameBuf.resize(cchSidName);
 		auto sidDomainBuf = std::vector<wchar_t>();
 		sidDomainBuf.resize(cchSidDomain);
-		WC_BS(LookupAccountSidW(
+		WC_B_S(LookupAccountSidW(
 			nullptr,
 			SidStart,
 			cchSidName ? &sidNameBuf.at(0) : nullptr,
@@ -202,18 +202,18 @@ namespace sid
 		BOOL bValidDACL = false;
 		PACL pACL = nullptr;
 		BOOL bDACLDefaulted = false;
-		EC_BS(GetSecurityDescriptorDacl(pSecurityDescriptor, &bValidDACL, &pACL, &bDACLDefaulted));
+		EC_B_S(GetSecurityDescriptorDacl(pSecurityDescriptor, &bValidDACL, &pACL, &bDACLDefaulted));
 		if (bValidDACL && pACL)
 		{
 			ACL_SIZE_INFORMATION ACLSizeInfo = {};
-			EC_BS(GetAclInformation(pACL, &ACLSizeInfo, sizeof ACLSizeInfo, AclSizeInformation));
+			EC_B_S(GetAclInformation(pACL, &ACLSizeInfo, sizeof ACLSizeInfo, AclSizeInformation));
 
 			std::vector<std::wstring> sdString;
 			for (DWORD i = 0; i < ACLSizeInfo.AceCount; i++)
 			{
 				void* pACE = nullptr;
 
-				WC_BS(GetAce(pACL, i, &pACE));
+				WC_B_S(GetAce(pACL, i, &pACE));
 				if (pACE)
 				{
 					sdString.push_back(ACEToString(pACE, acetype));

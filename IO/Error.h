@@ -188,7 +188,7 @@ namespace error
 // Execute a function, log error with uidErrorMessage, and swallow the HRESULT
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_H_MSGS(uidErrorMsg, fnx) \
+#define WC_H_MSG_S(uidErrorMsg, fnx) \
 	[&]() -> void { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, false, false, uidErrorMsg, #fnx, __FILE__, __LINE__); \
@@ -205,7 +205,7 @@ namespace error
 
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and swallow error
 // Does not modify or reference existing hRes
-#define EC_W32S(fnx) \
+#define EC_W32_S(fnx) \
 	[&]() -> void { \
 		auto __hRes = HRESULT_FROM_WIN32(fnx); \
 		error::LogFunctionCall(__hRes, NULL, true, false, false, NULL, #fnx, __FILE__, __LINE__); \
@@ -224,7 +224,7 @@ namespace error
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and swallow error
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_W32S(fnx) \
+#define WC_W32_S(fnx) \
 	[&]() -> void { \
 		auto __hRes = HRESULT_FROM_WIN32(fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
@@ -236,7 +236,7 @@ namespace error
 
 // Execute a bool/BOOL function, log error, and swallow error
 // Does not modify or reference existing hRes
-#define EC_BS(fnx) \
+#define EC_B_S(fnx) \
 	[&]() -> void { \
 		if (!(fnx)) \
 		{ \
@@ -252,7 +252,7 @@ namespace error
 // Execute a bool/BOOL function, log error, and swallow error
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_BS(fnx) \
+#define WC_B_S(fnx) \
 	[&]() -> void { \
 		if (!(fnx)) \
 		{ \
@@ -285,7 +285,7 @@ namespace error
 
 // Execute a function which returns 0 on error, log error, and swallow error
 // Will not display an error dialog
-#define WC_DS(fnx) \
+#define WC_D_S(fnx) \
 	[&]() -> void { \
 		if (!(fnx)) \
 		{ \

@@ -39,7 +39,7 @@ namespace viewpane
 	{
 		ViewPane::Initialize(iControl, pParent, nullptr);
 
-		EC_BS(m_Check.Create(
+		EC_B_S(m_Check.Create(
 			NULL,
 			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | BS_AUTOCHECKBOX | (m_bReadOnly ? WS_DISABLED : 0),
 			CRect(0, 0, 0, 0),
@@ -54,7 +54,7 @@ namespace viewpane
 	void CheckPane::SetWindowPos(int x, int y, int width, int height)
 	{
 		output::DebugPrint(DBGDraw, L"CheckPane::SetWindowPos x:%d width:%d \n", x, width);
-		EC_BS(m_Check.SetWindowPos(NULL, x, y, width, height, SWP_NOZORDER));
+		EC_B_S(m_Check.SetWindowPos(NULL, x, y, width, height, SWP_NOZORDER));
 	}
 
 	void CheckPane::CommitUIValues()

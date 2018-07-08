@@ -22,7 +22,7 @@ namespace file
 		{
 			WCHAR szShortPath[MAX_PATH] = {};
 			// Use the short path to give us as much room as possible
-			WC_DS(GetShortPathNameW(path.c_str(), szShortPath, _countof(szShortPath)));
+			WC_D_S(GetShortPathNameW(path.c_str(), szShortPath, _countof(szShortPath)));
 			std::wstring ret = szShortPath;
 			if (ret.back() != L'\\')
 			{
@@ -56,7 +56,7 @@ namespace file
 		const auto lpItemIdList = SHBrowseForFolderW(&BrowseInfo);
 		if (lpItemIdList)
 		{
-			EC_BS(SHGetPathFromIDListW(lpItemIdList, szPath));
+			EC_B_S(SHGetPathFromIDListW(lpItemIdList, szPath));
 			lpMalloc->Free(lpItemIdList);
 		}
 

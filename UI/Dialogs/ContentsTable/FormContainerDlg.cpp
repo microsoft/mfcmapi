@@ -95,7 +95,7 @@ namespace dialog
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
 		output::DebugPrintEx(DBGForms, CLASS, L"OnRefreshView", L"\n");
 
-		EC_BS(m_lpContentsTableListCtrl->DeleteAllItems());
+		EC_B_S(m_lpContentsTableListCtrl->DeleteAllItems());
 		if (m_lpFormContainer)
 		{
 			LPSMAPIFORMINFOARRAY lpMAPIFormInfoArray = nullptr;

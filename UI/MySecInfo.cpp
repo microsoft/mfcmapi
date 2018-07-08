@@ -126,7 +126,7 @@ namespace mapi
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::GetObjectInformation\n");
 
 			HKEY hRootKey = nullptr;
-			WC_W32S(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey));
+			WC_W32_S(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey));
 
 			auto bAllowEdits = false;
 			if (hRootKey)
@@ -135,7 +135,7 @@ namespace mapi
 					hRootKey,
 					L"AllowUnsupportedSecurityEdits", // STRING_OK
 					DWORD(bAllowEdits));
-				EC_W32S(RegCloseKey(hRootKey));
+				EC_W32_S(RegCloseKey(hRootKey));
 			}
 
 			if (bAllowEdits)

@@ -224,7 +224,7 @@ namespace addin
 				registry::WriteStringToRegistry(m_hRootKey, m_szKey, szList);
 			}
 
-			EC_W32S(RegCloseKey(m_hRootKey));
+			EC_W32_S(RegCloseKey(m_hRootKey));
 		}
 
 		// Add the DLL to the list

@@ -156,7 +156,7 @@ namespace controls
 					if (pnOrder)
 					{
 						registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.clear();
-						EC_BS(GetColumnOrderArray(pnOrder, nColumnCount));
+						EC_B_S(GetColumnOrderArray(pnOrder, nColumnCount));
 						for (ULONG i = 0; i < nColumnCount; i++)
 						{
 							registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.push_back(
@@ -1223,7 +1223,7 @@ namespace controls
 
 			if (MySecInfo)
 			{
-				EC_BS(import::pfnEditSecurity(m_hWnd, MySecInfo));
+				EC_B_S(import::pfnEditSecurity(m_hWnd, MySecInfo));
 
 				MySecInfo->Release();
 			}

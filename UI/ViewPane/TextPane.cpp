@@ -172,7 +172,7 @@ namespace viewpane
 		}
 
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
-		EC_BS(m_EditBox.ShowWindow(cmdShow));
+		EC_B_S(m_EditBox.ShowWindow(cmdShow));
 		ViewPane::SetWindowPos(x, y, width, height);
 
 		if (m_bCollapsible)
@@ -190,14 +190,14 @@ namespace viewpane
 			height -= m_iSmallHeightMargin; // This is the bottom margin
 		}
 
-		EC_BS(m_EditBox.SetWindowPos(NULL, x, y, width, m_bCollapsible ? iVariableHeight : height, SWP_NOZORDER));
+		EC_B_S(m_EditBox.SetWindowPos(NULL, x, y, width, m_bCollapsible ? iVariableHeight : height, SWP_NOZORDER));
 	}
 
 	void TextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 	{
 		ViewPane::Initialize(iControl, pParent, nullptr);
 
-		EC_BS(m_EditBox.Create(
+		EC_B_S(m_EditBox.Create(
 			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_BORDER | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL |
 				(m_bReadOnly ? ES_READONLY : 0) | (m_bMultiline ? (ES_MULTILINE | ES_WANTRETURN) : (ES_AUTOHSCROLL)),
 			CRect(0, 0, 0, 0),

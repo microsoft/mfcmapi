@@ -671,8 +671,8 @@ namespace strings
 			// shove millisecond info into our format string since GetTimeFormat doesn't use it
 			auto szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
 
-			WC_DS(GetTimeFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, szFormatStr.c_str(), szTimeStr, MAX_PATH));
-			WC_DS(GetDateFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, nullptr, szDateStr, MAX_PATH));
+			WC_D_S(GetTimeFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, szFormatStr.c_str(), szTimeStr, MAX_PATH));
+			WC_D_S(GetDateFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, nullptr, szDateStr, MAX_PATH));
 
 			PropString = format(L"%ws %ws", szTimeStr, szDateStr); // STRING_OK
 		}
