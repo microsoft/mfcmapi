@@ -43,7 +43,7 @@ namespace dialog
 		if (lpMAPISession)
 		{
 			LPMDB lpMDB = nullptr;
-			WC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+			hRes = WC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 			if (SUCCEEDED(hRes))
 			{
 				*lppMDB = lpMDB;
@@ -78,19 +78,17 @@ namespace dialog
 
 	void OnQSDisplayFolder(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder)
 	{
-		auto hRes = S_OK;
-
 		LPMDB lpMDB = nullptr;
-		WC_H(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
+		WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
 
 		if (lpMDB)
 		{
 			LPMAPIFOLDER lpFolder = nullptr;
-			WC_H(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
+			WC_H_S(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
 
 			if (lpFolder)
 			{
-				WC_H(DisplayObject(lpFolder, NULL, dialog::otContents, lpHostDlg));
+				WC_H_S(DisplayObject(lpFolder, NULL, dialog::otContents, lpHostDlg));
 
 				lpFolder->Release();
 			}
@@ -106,20 +104,18 @@ namespace dialog
 		_In_ ULONG ulProp,
 		_In_ dialog::ObjectType tType)
 	{
-		auto hRes = S_OK;
-
 		LPMDB lpMDB = nullptr;
-		WC_H(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
+		WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
 
 		if (lpMDB)
 		{
 			LPMAPIFOLDER lpFolder = nullptr;
 
-			WC_H(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
+			WC_H_S(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
 
 			if (lpFolder)
 			{
-				WC_H(DisplayExchangeTable(lpFolder, ulProp, tType, lpHostDlg));
+				WC_H_S(DisplayExchangeTable(lpFolder, ulProp, tType, lpHostDlg));
 				lpFolder->Release();
 			}
 
@@ -129,10 +125,8 @@ namespace dialog
 
 	void OnQSDisplayDefaultDir(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
-		auto hRes = S_OK;
-
 		LPADRBOOK lpAdrBook = nullptr;
-		WC_H(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
+		auto hRes = WC_H(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
 		if (SUCCEEDED(hRes) && lpAdrBook)
 		{
 			ULONG cbEID = NULL;
@@ -141,10 +135,9 @@ namespace dialog
 			LPABCONT lpDefaultDir = nullptr;
 
 			hRes = WC_MAPI(lpAdrBook->GetDefaultDir(&cbEID, &lpEID));
-
 			if (SUCCEEDED(hRes))
 			{
-				WC_H(mapi::CallOpenEntry(
+				hRes = WC_H(mapi::CallOpenEntry(
 					nullptr,
 					lpAdrBook,
 					nullptr,
@@ -159,19 +152,18 @@ namespace dialog
 
 			if (lpDefaultDir)
 			{
-				WC_H(DisplayObject(lpDefaultDir, ulObjType, dialog::otDefault, lpHostDlg));
+				WC_H_S(DisplayObject(lpDefaultDir, ulObjType, dialog::otDefault, lpHostDlg));
 
 				lpDefaultDir->Release();
 			}
 			MAPIFreeBuffer(lpEID);
 		}
+
 		if (lpAdrBook) lpAdrBook->Release();
 	}
 
 	void OnQSDisplayAB(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
-		auto hRes = S_OK;
-
 		const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return;
 
@@ -179,18 +171,18 @@ namespace dialog
 		if (!lpParentWnd) return;
 
 		LPADRBOOK lpAdrBook = nullptr;
-		WC_H(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
+		auto hRes = WC_H(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
 		if (SUCCEEDED(hRes) && lpAdrBook)
 		{
 			// call the dialog
 			new dialog::CAbContDlg(lpParentWnd, lpMapiObjects);
 		}
+
 		if (lpAdrBook) lpAdrBook->Release();
 	}
 
 	void OnQSDisplayNicknameCache(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
-		auto hRes = S_OK;
 		std::wstring szNicknames;
 		LPSPropValue lpsProp = nullptr;
 
@@ -198,18 +190,17 @@ namespace dialog
 		lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
 		LPMDB lpMDB = nullptr;
-		WC_H(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
+		WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
 
 		if (lpMDB)
 		{
 			LPMAPIFOLDER lpFolder = nullptr;
-			WC_H(mapi::OpenDefaultFolder(mapi::DEFAULT_INBOX, lpMDB, &lpFolder));
+			WC_H_S(mapi::OpenDefaultFolder(mapi::DEFAULT_INBOX, lpMDB, &lpFolder));
 
 			if (lpFolder)
 			{
 				LPMAPITABLE lpTable = nullptr;
-				hRes = WC_MAPI(lpFolder->GetContentsTable(MAPI_ASSOCIATED, &lpTable));
-
+				WC_MAPI_S(lpFolder->GetContentsTable(MAPI_ASSOCIATED, &lpTable));
 				if (lpTable)
 				{
 					SRestriction sRes = {0};
@@ -220,8 +211,7 @@ namespace dialog
 					sRes.res.resProperty.lpProp = &sPV;
 					sPV.ulPropTag = sRes.res.resProperty.ulPropTag;
 					sPV.Value.LPSZ = const_cast<LPTSTR>(_T("IPM.Configuration.Autocomplete")); // STRING_OK
-					hRes = WC_MAPI(lpTable->Restrict(&sRes, TBL_BATCH));
-
+					auto hRes = WC_MAPI(lpTable->Restrict(&sRes, TBL_BATCH));
 					if (SUCCEEDED(hRes))
 					{
 						enum
@@ -233,8 +223,8 @@ namespace dialog
 							eidNUM_COLS,
 							{PR_ENTRYID},
 						};
-						hRes = WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&eidCols), TBL_BATCH));
 
+						hRes = WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&eidCols), TBL_BATCH));
 						if (SUCCEEDED(hRes))
 						{
 							LPSRowSet lpRows = nullptr;
@@ -244,7 +234,7 @@ namespace dialog
 								PR_ENTRYID == lpRows->aRow[0].lpProps[eidPR_ENTRYID].ulPropTag)
 							{
 								LPMESSAGE lpMSG = nullptr;
-								WC_H(mapi::CallOpenEntry(
+								hRes = WC_H(mapi::CallOpenEntry(
 									lpMDB,
 									nullptr,
 									nullptr,
@@ -254,11 +244,9 @@ namespace dialog
 									NULL,
 									nullptr,
 									reinterpret_cast<LPUNKNOWN*>(&lpMSG)));
-
 								if (SUCCEEDED(hRes) && lpMSG)
 								{
-									WC_H(mapi::GetLargeBinaryProp(lpMSG, PR_ROAMING_BINARYSTREAM, &lpsProp));
-
+									WC_H_S(mapi::GetLargeBinaryProp(lpMSG, PR_ROAMING_BINARYSTREAM, &lpsProp));
 									if (lpsProp)
 									{
 										// Get the string interpretation
@@ -350,7 +338,6 @@ namespace dialog
 
 	void OnQSDisplayQuota(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
-		auto hRes = S_OK;
 		std::wstring szQuotaString;
 
 		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGQUOTA);
@@ -358,15 +345,13 @@ namespace dialog
 
 		LPMDB lpMDB = nullptr;
 		WC_H(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
-
-		if (SUCCEEDED(hRes) && lpMDB)
+		if (lpMDB)
 		{
 			ULONG cProps = 0;
 			LPSPropValue lpProps = nullptr;
 
 			// Get quota properties
-			hRes = WC_H_GETPROPS(lpMDB->GetProps(LPSPropTagArray(&sptaQuota), fMapiUnicode, &cProps, &lpProps));
-
+			WC_H_GETPROPS_S(lpMDB->GetProps(LPSPropTagArray(&sptaQuota), fMapiUnicode, &cProps, &lpProps));
 			if (lpProps)
 			{
 				if (lpProps[qPR_DISPLAY_NAME_W].ulPropTag == PR_DISPLAY_NAME_W)
@@ -413,6 +398,7 @@ namespace dialog
 
 				MAPIFreeBuffer(lpProps);
 			}
+
 			lpMDB->Release();
 
 			// Display our dialog
@@ -435,28 +421,27 @@ namespace dialog
 		if (!lpParentWnd) return;
 
 		LPADRBOOK lpAdrBook = nullptr;
-		auto hRes = WC_H2(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
-		if (SUCCEEDED(hRes) && lpAdrBook)
+		WC_H_S(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
+		if (lpAdrBook)
 		{
 			ULONG ulObjType = NULL;
 			LPMAILUSER lpMailUser = nullptr;
 
-			hRes = EC_H(mapi::ab::SelectUser(lpAdrBook, hwnd, &ulObjType, &lpMailUser));
+			EC_H_S(mapi::ab::SelectUser(lpAdrBook, hwnd, &ulObjType, &lpMailUser));
 
-			if (SUCCEEDED(hRes) && lpMailUser)
+			if (lpMailUser)
 			{
 				EC_H_S(DisplayObject(lpMailUser, ulObjType, dialog::otDefault, lpHostDlg));
+
+				lpMailUser->Release();
 			}
 
-			if (lpMailUser) lpMailUser->Release();
+			lpAdrBook->Release();
 		}
-
-		if (lpAdrBook) lpAdrBook->Release();
 	}
 
 	void OnQSLookupThumbail(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
-		auto hRes = S_OK;
 		LPSPropValue lpThumbnail = nullptr;
 
 		const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
@@ -466,19 +451,20 @@ namespace dialog
 		if (!lpParentWnd) return;
 
 		LPADRBOOK lpAdrBook = nullptr;
-		WC_H(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
-		if (SUCCEEDED(hRes) && lpAdrBook)
+		WC_H_S(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
+		if (lpAdrBook)
 		{
 			LPMAILUSER lpMailUser = nullptr;
 
-			hRes = EC_H(mapi::ab::SelectUser(lpAdrBook, hwnd, nullptr, &lpMailUser));
+			EC_H_S(mapi::ab::SelectUser(lpAdrBook, hwnd, nullptr, &lpMailUser));
 
-			if (SUCCEEDED(hRes) && lpMailUser)
+			if (lpMailUser)
 			{
-				WC_H(mapi::GetLargeBinaryProp(lpMailUser, PR_EMS_AB_THUMBNAIL_PHOTO, &lpThumbnail));
+				WC_H_S(mapi::GetLargeBinaryProp(lpMailUser, PR_EMS_AB_THUMBNAIL_PHOTO, &lpThumbnail));
+				lpMailUser->Release();
 			}
 
-			if (lpMailUser) lpMailUser->Release();
+			lpAdrBook->Release();
 		}
 
 		dialog::editor::CEditor MyResults(lpHostDlg, IDS_QSTHUMBNAIL, NULL, CEDITOR_BUTTON_OK);

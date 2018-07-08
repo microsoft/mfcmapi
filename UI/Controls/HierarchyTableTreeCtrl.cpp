@@ -240,7 +240,7 @@ namespace controls
 
 		m_ulContainerType = mapi::GetMAPIObjectType(lpMAPIContainer);
 
-		WC_H(RefreshHierarchyTable());
+		hRes = WC_H(RefreshHierarchyTable());
 		if (hRes == MAPI_E_NOT_FOUND)
 		{
 			WARNHRESMSG(hRes, IDS_HIERARCHNOTFOUND);
@@ -893,7 +893,7 @@ namespace controls
 					output::DebugPrint(
 						DBGGeneric, L"\tCalling OpenEntry on address book with ulFlags = 0x%X\n", ulFlags);
 
-					WC_H(mapi::CallOpenEntry(
+					hRes = WC_H(mapi::CallOpenEntry(
 						nullptr,
 						lpAddrBook,
 						nullptr,
@@ -914,7 +914,7 @@ namespace controls
 					ulFlags = (mfcmapiREQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL) |
 							  (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES | MAPI_NO_CACHE : NULL);
 
-					WC_H(mapi::CallOpenEntry(
+					hRes = WC_H(mapi::CallOpenEntry(
 						lpMDB,
 						nullptr,
 						nullptr,
@@ -934,7 +934,7 @@ namespace controls
 		{
 			WARNHRESMSG(MAPI_E_CALL_FAILED, IDS_UNKNOWNCONTAINERTYPE);
 			hRes = S_OK;
-			WC_H(mapi::CallOpenEntry(
+			hRes = WC_H(mapi::CallOpenEntry(
 				nullptr,
 				nullptr,
 				m_lpContainer,

@@ -110,7 +110,7 @@ namespace error
 // Execute a function, log and return the HRESULT
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_H2(fnx) \
+#define WC_H(fnx) \
 	[&]() -> HRESULT { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
@@ -120,24 +120,11 @@ namespace error
 // Execute a function, log and swallow the HRESULT
 // Does not modify or reference existing hRes
 // Will not display an error dialog
-#define WC_H2S(fnx) \
+#define WC_H_S(fnx) \
 	[&]() -> void { \
 		auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, NULL, false, false, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
-
-#define WC_H(fnx) \
-	{ \
-		if (SUCCEEDED(hRes)) \
-		{ \
-			hRes = (fnx); \
-			CheckHResFn(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__); \
-		} \
-		else \
-		{ \
-			error::PrintSkipNote(hRes, #fnx); \
-		} \
-	}
 
 // Execute a function, log and return the HRESULT
 // Logs a MAPI call trace under DBGMAPIFunctions

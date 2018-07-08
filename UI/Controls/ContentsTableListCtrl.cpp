@@ -111,7 +111,7 @@ namespace controls
 
 				break;
 			case WM_LBUTTONDBLCLK:
-				WC_H(DoExpandCollapse());
+				hRes = WC_H(DoExpandCollapse());
 				if (hRes == S_FALSE)
 				{
 					// Post the message to display the item
@@ -552,7 +552,7 @@ namespace controls
 				hWndHost, STATUSDATA1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
 
 			// potentially lengthy op - check abort before and after
-			CHECKABORT(WC_H(lpListCtrl->ApplyRestriction()));
+			CHECKABORT(WC_H_S(lpListCtrl->ApplyRestriction()));
 
 			if (!bABORTSET) // only check abort once for this group of ops
 			{
@@ -1142,7 +1142,10 @@ namespace controls
 			*lppProp = nullptr;
 
 			const auto iItem = GetNextSelectedItemNum(iCurItem);
-			if (-1 != iItem) WC_H(m_lpHostDlg->OpenItemProp(iItem, bModify, lppProp));
+			if (-1 != iItem)
+			{
+				hRes = WC_H(m_lpHostDlg->OpenItemProp(iItem, bModify, lppProp));
+			}
 
 			return hRes;
 		}
@@ -1182,7 +1185,7 @@ namespace controls
 			case MAPI_ABCONT:
 			{
 				const auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
-				WC_H(mapi::CallOpenEntry(
+				hRes = WC_H(mapi::CallOpenEntry(
 					nullptr,
 					lpAB, // use AB
 					nullptr,
@@ -1205,7 +1208,7 @@ namespace controls
 					lpInterface = &IID_IMessageRaw;
 				}
 
-				WC_H(mapi::CallOpenEntry(
+				hRes = WC_H(mapi::CallOpenEntry(
 					lpMDB, // use MDB
 					nullptr,
 					nullptr,
@@ -1226,7 +1229,7 @@ namespace controls
 			default:
 			{
 				const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-				WC_H(mapi::CallOpenEntry(
+				hRes = WC_H(mapi::CallOpenEntry(
 					nullptr,
 					nullptr,
 					nullptr,
@@ -1301,8 +1304,6 @@ namespace controls
 				std::wstring szTitle;
 				if (1 == GetSelectedCount())
 				{
-					auto hRes = S_OK;
-
 					// go get the original row for display in the prop list control
 					lpData = GetSortListData(pNMListView->iItem);
 					ULONG cValues = 0;
@@ -1313,7 +1314,7 @@ namespace controls
 						lpProps = lpData->lpSourceProps;
 					}
 
-					WC_H(m_lpHostDlg->OpenItemProp(pNMListView->iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
+					WC_H_S(m_lpHostDlg->OpenItemProp(pNMListView->iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
 
 					szTitle = strings::loadstring(IDS_DISPLAYNAMENOTFOUND);
 

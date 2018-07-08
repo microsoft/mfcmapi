@@ -303,7 +303,6 @@ namespace dialog
 	// newstyle copy folder
 	void CMsgStoreDlg::HandleCopy()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnCopyItems", L"\n");
@@ -312,7 +311,7 @@ namespace dialog
 		auto lpMAPISourceFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
 
 		LPMAPIFOLDER lpSrcParentFolder = nullptr;
-		WC_H(mapi::GetParentFolder(lpMAPISourceFolder, m_lpMDB, &lpSrcParentFolder));
+		WC_H_S(mapi::GetParentFolder(lpMAPISourceFolder, m_lpMDB, &lpSrcParentFolder));
 
 		cache::CGlobalCache::getInstance().SetFolderToCopy(lpMAPISourceFolder, lpSrcParentFolder);
 
@@ -631,7 +630,6 @@ namespace dialog
 		if (!m_lpHierarchyTableTreeCtrl || !m_lpMapiObjects) return;
 
 		// Find the highlighted item
-		auto hRes = S_OK;
 		const auto lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
 
 		if (lpItemEID)
@@ -639,7 +637,7 @@ namespace dialog
 			if (m_lpMDB)
 			{
 				LPMAPIFOLDER lpMAPIFolder = nullptr;
-				WC_H(mapi::CallOpenEntry(
+				WC_H_S(mapi::CallOpenEntry(
 					m_lpMDB,
 					NULL,
 					NULL,
@@ -946,7 +944,6 @@ namespace dialog
 	// Copy selected folder back to the land of the living
 	void CMsgStoreDlg::OnRestoreDeletedFolder()
 	{
-		auto hRes = S_OK;
 		ULONG cProps;
 		LPSPropValue lpProps = nullptr;
 
@@ -965,11 +962,14 @@ namespace dialog
 		if (lpSrcFolder)
 		{
 			LPMAPIFOLDER lpSrcParentFolder = nullptr;
-			WC_H(mapi::GetParentFolder(lpSrcFolder, m_lpMDB, &lpSrcParentFolder));
+			auto hRes = WC_H(mapi::GetParentFolder(lpSrcFolder, m_lpMDB, &lpSrcParentFolder));
 
-			// Get required properties from the source folder
-			hRes =
-				EC_H_GETPROPS(lpSrcFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
+			if (SUCCEEDED(hRes))
+			{
+				// Get required properties from the source folder
+				hRes = EC_H_GETPROPS(
+					lpSrcFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
+			}
 
 			editor::CEditor MyData(
 				this, IDS_RESTOREDELFOLD, IDS_RESTOREDELFOLDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);

@@ -33,9 +33,8 @@ namespace mapi
 		else ASSERT(false);
 		// clang-format on
 
-		auto hRes = S_OK;
 		T ret = nullptr;
-		WC_H(src->QueryInterface(iid, reinterpret_cast<LPVOID*>(&ret)));
+		WC_H_S(src->QueryInterface(iid, reinterpret_cast<LPVOID*>(&ret)));
 		output::DebugPrint(
 			DBGGeneric,
 			L"safe_cast: iid =%ws, src = %p, ret = %p\n",

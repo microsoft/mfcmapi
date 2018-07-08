@@ -86,7 +86,7 @@ namespace file
 
 		if (bBestAccess) ulFlags |= STGM_READWRITE;
 
-		auto hRes = WC_H2(::StgOpenStorage(szMessageFile.c_str(), nullptr, ulFlags, nullptr, 0, lppStorage));
+		auto hRes = WC_H(::StgOpenStorage(szMessageFile.c_str(), nullptr, ulFlags, nullptr, 0, lppStorage));
 
 		// If we asked for best access (read/write) and didn't get it, then try it without readwrite
 		if (hRes == STG_E_ACCESSDENIED && !*lppStorage && bBestAccess)
@@ -428,7 +428,7 @@ namespace file
 					hRes = EC_MAPI(lpFolderContents->QueryRows(1, NULL, &pRows));
 					if (FAILED(hRes) || !pRows || pRows && !pRows->cRows) break;
 
-					hRes = WC_H2(SaveToMSG(
+					hRes = WC_H(SaveToMSG(
 						lpFolder,
 						szPathName,
 						pRows->aRow->lpProps[fldPR_ENTRYID],
@@ -506,7 +506,7 @@ namespace file
 
 						for (ULONG i = 0; i < lpRows->cRows; i++)
 						{
-							hRes = WC_H2(SaveToMSG(
+							WC_H_S(SaveToMSG(
 								lpFolder,
 								szDir,
 								lpRows->aRow[i].lpProps[fldPR_ENTRYID],
@@ -585,7 +585,7 @@ namespace file
 		{
 			if (pStrmSrc)
 			{
-				hRes = WC_H2(WriteStreamToFile(pStrmSrc, szFileName));
+				hRes = WC_H(WriteStreamToFile(pStrmSrc, szFileName));
 
 				pStrmSrc->Release();
 			}
@@ -1007,7 +1007,7 @@ namespace file
 
 							if (lpAttach)
 							{
-								hRes = WC_H2(WriteAttachmentToFile(lpAttach, hWnd));
+								hRes = WC_H(WriteAttachmentToFile(lpAttach, hWnd));
 								lpAttach->Release();
 								if (S_OK != hRes && iRow != pRows->cRows - 1)
 								{
@@ -1081,7 +1081,7 @@ namespace file
 		{
 			if (pStrmSrc)
 			{
-				hRes = WC_H2(WriteStreamToFile(pStrmSrc, szFileName));
+				hRes = WC_H(WriteStreamToFile(pStrmSrc, szFileName));
 
 				pStrmSrc->Release();
 			}
@@ -1107,7 +1107,7 @@ namespace file
 		// We got IStreamDocFile! Great! We can copy stream to stream into the file
 		if (pStrmSrc)
 		{
-			hRes = WC_H2(WriteStreamToFile(pStrmSrc, szFileName));
+			hRes = WC_H(WriteStreamToFile(pStrmSrc, szFileName));
 
 			pStrmSrc->Release();
 		}

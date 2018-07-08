@@ -15,7 +15,6 @@ HRESULT HrMAPIFindFolderW(
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
 {
 	output::DebugPrint(DBGGeneric, L"HrMAPIFindFolderW: Locating folder \"%ws\"\n", lpszName.c_str());
-	auto hRes = S_OK;
 	LPMAPITABLE lpTable = nullptr;
 	LPSRowSet lpRow = nullptr;
 	LPSPropValue lpRowProp = nullptr;
@@ -33,10 +32,10 @@ HRESULT HrMAPIFindFolderW(
 	*lppeid = nullptr;
 	if (!lpFolder) return MAPI_E_INVALID_PARAMETER;
 
-	WC_MAPI(lpFolder->GetHierarchyTable(MAPI_UNICODE | MAPI_DEFERRED_ERRORS, &lpTable));
+	auto hRes = WC_MAPI(lpFolder->GetHierarchyTable(MAPI_UNICODE | MAPI_DEFERRED_ERRORS, &lpTable));
 	if (SUCCEEDED(hRes) && lpTable)
 	{
-		WC_MAPI(HrQueryAllRows(lpTable, LPSPropTagArray(&rgColProps), nullptr, nullptr, 0, &lpRow));
+		hRes = WC_MAPI(HrQueryAllRows(lpTable, LPSPropTagArray(&rgColProps), nullptr, nullptr, 0, &lpRow));
 	}
 
 	if (SUCCEEDED(hRes) && lpRow)
@@ -49,7 +48,7 @@ HRESULT HrMAPIFindFolderW(
 				_wcsicmp(lpRowProp[ePR_DISPLAY_NAME_W].Value.lpszW, lpszName.c_str()) == 0 &&
 				PR_ENTRYID == lpRowProp[ePR_ENTRYID].ulPropTag)
 			{
-				WC_H(MAPIAllocateBuffer(lpRowProp[ePR_ENTRYID].Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
+				hRes = WC_H(MAPIAllocateBuffer(lpRowProp[ePR_ENTRYID].Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
 				if (SUCCEEDED(hRes) && lppeid)
 				{
 					*lpcbeid = lpRowProp[ePR_ENTRYID].Value.bin.cb;
@@ -118,7 +117,7 @@ HRESULT HrMAPIFindSubfolderExW(
 		// Free entryid before re-use.
 		MAPIFreeBuffer(lpeid);
 
-		WC_H(HrMAPIFindFolderW(lpParentFolder, FolderList[i].c_str(), &cbeid, &lpeid));
+		hRes = WC_H(HrMAPIFindFolderW(lpParentFolder, FolderList[i].c_str(), &cbeid, &lpeid));
 		if (FAILED(hRes)) break;
 
 		// Only OpenEntry if needed for next tier of folder path.
@@ -176,7 +175,7 @@ static HRESULT HrLookupRootFolderW(
 		const auto ulFolder = strings::wstringToUlong(lpszRootFolder, 10);
 		if (0 < ulFolder && ulFolder < mapi::NUM_DEFAULT_PROPS)
 		{
-			WC_H(mapi::GetDefaultFolderEID(ulFolder, lpMDB, lpcbeid, lppeid));
+			hRes = WC_H(mapi::GetDefaultFolderEID(ulFolder, lpMDB, lpcbeid, lppeid));
 			return hRes;
 		}
 
@@ -194,10 +193,10 @@ static HRESULT HrLookupRootFolderW(
 		ULONG cValues = 0;
 
 		// Get the outbox entry ID property.
-		WC_MAPI(lpMDB->GetProps(&rgPropTag, MAPI_UNICODE, &cValues, &lpPropValue));
+		hRes = WC_MAPI(lpMDB->GetProps(&rgPropTag, MAPI_UNICODE, &cValues, &lpPropValue));
 		if (SUCCEEDED(hRes) && lpPropValue && lpPropValue->ulPropTag == ulPropTag)
 		{
-			WC_H(MAPIAllocateBuffer(lpPropValue->Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
+			hRes = WC_H(MAPIAllocateBuffer(lpPropValue->Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
 			if (SUCCEEDED(hRes))
 			{
 				*lpcbeid = lpPropValue->Value.bin.cb;
@@ -244,7 +243,7 @@ HRESULT HrMAPIFindFolderExW(
 	// Check for literal property name
 	if (!FolderList.empty() && FolderList[0][0] == L'@')
 	{
-		WC_H(HrLookupRootFolderW(lpMDB, FolderList[0].c_str() + 1, &cbeid, &lpeid));
+		hRes = WC_H(HrLookupRootFolderW(lpMDB, FolderList[0].c_str() + 1, &cbeid, &lpeid));
 		if (SUCCEEDED(hRes))
 		{
 			FolderList.erase(FolderList.begin());
@@ -274,7 +273,7 @@ HRESULT HrMAPIFindFolderExW(
 			MAPIFreeBuffer(lpeid);
 
 			// Find the subfolder in question
-			WC_H(HrMAPIFindSubfolderExW(lpRootFolder, FolderList, &cbeid, &lpeid));
+			hRes = WC_H(HrMAPIFindSubfolderExW(lpRootFolder, FolderList, &cbeid, &lpeid));
 		}
 		if (lpRootFolder) lpRootFolder->Release();
 	}
@@ -296,7 +295,6 @@ HRESULT HrMAPIOpenFolderExW(
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder) // pointer to folder opened
 {
 	output::DebugPrint(DBGGeneric, L"HrMAPIOpenFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
-	auto hRes = S_OK;
 	LPENTRYID lpeid = nullptr;
 	ULONG cbeid = 0;
 	ULONG ulObjType = 0;
@@ -305,7 +303,7 @@ HRESULT HrMAPIOpenFolderExW(
 
 	*lppFolder = nullptr;
 
-	WC_H(HrMAPIFindFolderExW(lpMDB, lpszFolderPath, &cbeid, &lpeid));
+	auto hRes = WC_H(HrMAPIFindFolderExW(lpMDB, lpszFolderPath, &cbeid, &lpeid));
 
 	if (SUCCEEDED(hRes))
 	{
@@ -586,15 +584,13 @@ void DumpSearchState(
 		lpszFolder.c_str(),
 		lpszProfile.c_str());
 
-	auto hRes = S_OK;
-
 	if (lpFolder)
 	{
 		LPSRestriction lpRes = nullptr;
 		LPENTRYLIST lpEntryList = nullptr;
 		ULONG ulSearchState = 0;
 
-		WC_H(lpFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
+		auto hRes = WC_H(lpFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
 		if (MAPI_E_NOT_INITIALIZED == hRes)
 		{
 			printf("No search criteria has been set on this folder.\n");

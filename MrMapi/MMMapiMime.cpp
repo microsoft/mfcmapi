@@ -105,7 +105,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 	if (CHECKFLAG(MAPIMIME_TOMIME))
 	{
 		// Source file is MSG, target is EML
-		WC_H(mapi::mapimime::ConvertMSGToEML(
+		hRes = WC_H(mapi::mapimime::ConvertMSGToEML(
 			ProgOpts.lpszInput.c_str(),
 			ProgOpts.lpszOutput.c_str(),
 			ProgOpts.ulConvertFlags,
@@ -120,15 +120,16 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		HCHARSET hCharSet = nullptr;
 		if (CHECKFLAG(MAPIMIME_CHARSET))
 		{
-			WC_H(import::MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage, ProgOpts.cSetType, &hCharSet));
+			hRes = WC_H(import::MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage, ProgOpts.cSetType, &hCharSet));
 			if (FAILED(hRes))
 			{
 				printf("MimeOleGetCodePageCharset returned 0x%08X\n", hRes);
 			}
 		}
+
 		if (SUCCEEDED(hRes))
 		{
-			WC_H(mapi::mapimime::ConvertEMLToMSG(
+			hRes = WC_H(mapi::mapimime::ConvertEMLToMSG(
 				ProgOpts.lpszInput.c_str(),
 				ProgOpts.lpszOutput.c_str(),
 				ProgOpts.ulConvertFlags,

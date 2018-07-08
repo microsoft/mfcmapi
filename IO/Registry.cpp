@@ -103,12 +103,11 @@ namespace registry
 	DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ DWORD dwDefaultVal)
 	{
 		if (szValue.empty()) return dwDefaultVal;
-		auto hRes = S_OK;
 		DWORD dwKeyType = NULL;
 		DWORD* lpValue = nullptr;
 		auto ret = dwDefaultVal;
 
-		WC_H(HrGetRegistryValue(hKey, szValue, &dwKeyType, reinterpret_cast<LPVOID*>(&lpValue)));
+		auto hRes = WC_H(HrGetRegistryValue(hKey, szValue, &dwKeyType, reinterpret_cast<LPVOID*>(&lpValue)));
 		if (hRes == S_OK && REG_DWORD == dwKeyType && lpValue)
 		{
 			ret = *lpValue;

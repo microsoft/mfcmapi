@@ -204,13 +204,11 @@ namespace dialog
 		{
 			if (!m_lpAllocParent) return;
 
-			auto hRes = S_OK;
-
 			auto lpEditProp = m_lpOldProp;
 			LPSPropValue lpOutProp = nullptr;
 			if (m_lpNewProp) lpEditProp = m_lpNewProp;
 
-			WC_H(DisplayPropertyEditor(
+			auto hRes = WC_H(DisplayPropertyEditor(
 				this,
 				IDS_PROPEDITOR,
 				NULL,
@@ -751,7 +749,6 @@ namespace dialog
 		{
 			if (!lpData || !lpData->Comment()) return false;
 			if (!m_lpAllocParent) return false;
-			auto hRes = S_OK;
 
 			auto lpSourceProp =
 				lpData->Comment()->m_lpNewProp ? lpData->Comment()->m_lpNewProp : lpData->Comment()->m_lpOldProp;
@@ -769,7 +766,7 @@ namespace dialog
 				lpSourceProp = &sProp;
 			}
 
-			WC_H(DisplayPropertyEditor(
+			auto hRes = WC_H(DisplayPropertyEditor(
 				this,
 				IDS_PROPEDITOR,
 				NULL,
@@ -1016,39 +1013,39 @@ namespace dialog
 			switch (lpSourceRes->rt)
 			{
 			case RES_COMPAREPROPS:
-				WC_H(EditCompare(lpSourceRes));
+				hRes = WC_H(EditCompare(lpSourceRes));
 				break;
 				// Structures for these two types are identical
 			case RES_OR:
 			case RES_AND:
-				WC_H(EditAndOr(lpSourceRes));
+				hRes = WC_H(EditAndOr(lpSourceRes));
 				break;
 				// Structures for these two types are identical
 			case RES_NOT:
 			case RES_COUNT:
-				WC_H(EditRestrict(lpSourceRes));
+				hRes = WC_H(EditRestrict(lpSourceRes));
 				break;
 				// Structures for these two types are identical
 			case RES_PROPERTY:
 			case RES_CONTENT:
-				WC_H(EditCombined(lpSourceRes));
+				hRes = WC_H(EditCombined(lpSourceRes));
 				break;
 			case RES_BITMASK:
-				WC_H(EditBitmask(lpSourceRes));
+				hRes = WC_H(EditBitmask(lpSourceRes));
 				break;
 			case RES_SIZE:
-				WC_H(EditSize(lpSourceRes));
+				hRes = WC_H(EditSize(lpSourceRes));
 				break;
 			case RES_EXIST:
-				WC_H(EditExist(lpSourceRes));
+				hRes = WC_H(EditExist(lpSourceRes));
 				break;
 			case RES_SUBRESTRICTION:
-				WC_H(EditSubrestriction(lpSourceRes));
+				hRes = WC_H(EditSubrestriction(lpSourceRes));
 				break;
 				// Structures for these two types are identical
 			case RES_COMMENT:
 			case RES_ANNOTATION:
-				WC_H(EditComment(lpSourceRes));
+				hRes = WC_H(EditComment(lpSourceRes));
 				break;
 			}
 

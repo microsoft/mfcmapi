@@ -149,11 +149,11 @@ namespace mapi
 			auto szServerDN = BuildServerDN(szServerName, "");
 			if (!szServerDN.empty())
 			{
-				WC_H(GetMailboxTable3(lpMDB, szServerDN, ulOffset, fMapiUnicode, &lpLocalTable));
+				hRes = WC_H(GetMailboxTable3(lpMDB, szServerDN, ulOffset, fMapiUnicode, &lpLocalTable));
 
 				if (!lpLocalTable && 0 == ulOffset)
 				{
-					WC_H(GetMailboxTable1(lpMDB, szServerDN, fMapiUnicode, &lpLocalTable));
+					hRes = WC_H(GetMailboxTable1(lpMDB, szServerDN, fMapiUnicode, &lpLocalTable));
 				}
 			}
 
@@ -436,7 +436,6 @@ namespace mapi
 			bool bForceServer, // Use CreateStoreEntryID2
 			_Deref_out_opt_ LPMDB* lppMailboxMDB) // ptr to mailbox message store ptr
 		{
-			auto hRes = S_OK;
 			SBinary sbEID = {0};
 
 			*lppMailboxMDB = nullptr;
@@ -447,7 +446,7 @@ namespace mapi
 				return MAPI_E_INVALID_PARAMETER;
 			}
 
-			WC_H(CreateStoreEntryID(
+			auto hRes = WC_H(CreateStoreEntryID(
 				lpMDB,
 				lpszMsgStoreDN,
 				lpszMailboxDN,
@@ -459,7 +458,7 @@ namespace mapi
 
 			if (SUCCEEDED(hRes))
 			{
-				WC_H(CallOpenMsgStore(
+				hRes = WC_H(CallOpenMsgStore(
 					lpMAPISession,
 					NULL,
 					&sbEID,
@@ -503,7 +502,7 @@ namespace mapi
 			spv.ulPropTag = PR_DEFAULT_STORE; // tag type
 			spv.Value.b = true; // tag value
 
-			hRes = EC_MAPI(HrQueryAllRows(
+			EC_MAPI_S(HrQueryAllRows(
 				pStoresTbl, // table to query
 				LPSPropTagArray(&sptEIDCol), // columns to get
 				&sres, // restriction to use
@@ -513,7 +512,7 @@ namespace mapi
 
 			if (pRow && pRow->cRows)
 			{
-				WC_H(CallOpenMsgStore(
+				hRes = WC_H(CallOpenMsgStore(
 					lpMAPISession, NULL, &pRow->aRow[0].lpProps[EID].Value.bin, MDB_WRITE, lppDefaultMDB));
 			}
 			else
@@ -571,7 +570,7 @@ namespace mapi
 				{
 					output::DebugPrint(
 						DBGGeneric, L"Calling HrMailboxLogon with Server DN = \"%hs\"\n", szServerDN.c_str());
-					WC_H(HrMailboxLogon(
+					hRes = WC_H(HrMailboxLogon(
 						lpMAPISession,
 						lpMDB,
 						szServerDN,
@@ -595,7 +594,6 @@ namespace mapi
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
 			_Deref_out_opt_ LPMDB* lppOtherUserMDB)
 		{
-			auto hRes = S_OK;
 			*lppOtherUserMDB = nullptr;
 
 			if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
@@ -614,7 +612,7 @@ namespace mapi
 			MyPrompt.InitPane(4, viewpane::CheckPane::Create(IDS_FORCESERVER, false, false));
 			if (!MyPrompt.DisplayDialog()) return MAPI_E_USER_CANCEL;
 
-			WC_H(OpenOtherUsersMailbox(
+			auto hRes = WC_H(OpenOtherUsersMailbox(
 				lpMAPISession,
 				lpMDB,
 				strings::wstringTostring(MyPrompt.GetStringW(0)),
@@ -634,8 +632,6 @@ namespace mapi
 			_In_ LPADRBOOK lpAddrBook,
 			_Deref_out_opt_ LPMDB* lppOtherUserMDB)
 		{
-			auto hRes = S_OK;
-
 			LPSPropValue lpEmailAddress = nullptr;
 			LPMAILUSER lpMailUser = nullptr;
 			LPMDB lpPrivateMDB = nullptr;
@@ -646,7 +642,7 @@ namespace mapi
 
 			const auto szServerName = GetServerName(lpMAPISession);
 
-			WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
+			auto hRes = WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
 			if (lpPrivateMDB && StoreSupportsManageStore(lpPrivateMDB))
 			{
 				hRes = EC_H(ab::SelectUser(lpAddrBook, ::GetDesktopWindow(), nullptr, &lpMailUser));
@@ -656,7 +652,7 @@ namespace mapi
 
 					if (mapi::CheckStringProp(lpEmailAddress, PT_UNICODE))
 					{
-						WC_H(OpenMailboxWithPrompt(
+						hRes = WC_H(OpenMailboxWithPrompt(
 							lpMAPISession,
 							lpPrivateMDB,
 							szServerName,
@@ -712,15 +708,15 @@ namespace mapi
 				if (pRow)
 				{
 					if (!FAILED(hRes))
+					{
 						for (ULONG ulRowNum = 0; ulRowNum < pRow->cRows; ulRowNum++)
 						{
-							hRes = S_OK;
 							// check to see if we have a folder with a matching GUID
 							if (pRow->aRow[ulRowNum].lpProps[STORETYPE].ulPropTag == PR_MDB_PROVIDER &&
 								pRow->aRow[ulRowNum].lpProps[EID].ulPropTag == PR_ENTRYID &&
 								IsEqualMAPIUID(pRow->aRow[ulRowNum].lpProps[STORETYPE].Value.bin.lpb, lpGUID))
 							{
-								WC_H(CallOpenMsgStore(
+								hRes = WC_H(CallOpenMsgStore(
 									lpMAPISession,
 									NULL,
 									&pRow->aRow[ulRowNum].lpProps[EID].Value.bin,
@@ -729,8 +725,10 @@ namespace mapi
 								break;
 							}
 						}
+					}
 				}
 			}
+
 			if (!*lppMDB) hRes = MAPI_E_NOT_FOUND;
 
 			if (pRow) FreeProws(pRow);
@@ -744,14 +742,12 @@ namespace mapi
 			ULONG ulFlags, // Flags for CreateStoreEntryID
 			_Deref_out_opt_ LPMDB* lppPublicMDB)
 		{
-			auto hRes = S_OK;
-
 			LPMDB lpPublicMDBNonAdmin = nullptr;
 			LPSPropValue lpServerName = nullptr;
 
 			if (!lpMAPISession || !lppPublicMDB) return MAPI_E_INVALID_PARAMETER;
 
-			WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPublicGuid, &lpPublicMDBNonAdmin));
+			auto hRes = WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPublicGuid, &lpPublicMDBNonAdmin));
 
 			// If we don't have flags we're done
 			if (!ulFlags)
@@ -782,7 +778,7 @@ namespace mapi
 
 					if (!szServerDN.empty())
 					{
-						WC_H(HrMailboxLogon(
+						hRes = WC_H(HrMailboxLogon(
 							lpMAPISession,
 							lpPublicMDBNonAdmin,
 							szServerDN,
@@ -810,7 +806,7 @@ namespace mapi
 
 			if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 			{
-				WC_H(CallOpenMsgStore(lpMAPISession, NULL, &lpProp->Value.bin, MAPI_BEST_ACCESS, lpMDB));
+				hRes = WC_H(CallOpenMsgStore(lpMAPISession, NULL, &lpProp->Value.bin, MAPI_BEST_ACCESS, lpMDB));
 			}
 
 			MAPIFreeBuffer(lpProp);

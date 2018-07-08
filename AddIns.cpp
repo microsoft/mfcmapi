@@ -491,8 +491,6 @@ namespace addin
 
 	void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
 	{
-		auto hRes = S_OK;
-
 		if (!lpParams) return;
 		if (!lpParams->lpAddInMenu) return;
 		if (!lpParams->lpAddInMenu->lpAddIn) return;
@@ -510,7 +508,7 @@ namespace addin
 			return;
 		}
 
-		WC_H(lpParams->lpAddInMenu->lpAddIn->pfnCallMenu(lpParams));
+		WC_H_S(lpParams->lpAddInMenu->lpAddIn->pfnCallMenu(lpParams));
 	}
 #endif // MRMAPI
 
@@ -956,7 +954,7 @@ namespace addin
 							}
 							case ADDIN_CTRL_EDIT_BINARY:
 								// GetEntryID does just what we want - abuse it
-								WC_H(MyComplexDialog.GetEntryID(
+								hRes = WC_H(MyComplexDialog.GetEntryID(
 									i,
 									false,
 									&lpResults->lpDialogControlResults[i].cbBin,

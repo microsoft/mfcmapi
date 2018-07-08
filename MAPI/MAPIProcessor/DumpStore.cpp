@@ -333,7 +333,7 @@ namespace mapiprocessor
 					if (bWrapEx)
 					{
 						ULONG ulStreamFlags = NULL;
-						WC_H(mapi::WrapStreamForRTF(
+						WC_H_S(mapi::WrapStreamForRTF(
 							lpStream,
 							true,
 							MAPI_NATIVE_BODY,
@@ -352,7 +352,7 @@ namespace mapiprocessor
 					}
 					else
 					{
-						WC_H(mapi::WrapStreamForRTF(lpStream, false, NULL, NULL, NULL, &lpRTFUncompressed, nullptr));
+						WC_H_S(mapi::WrapStreamForRTF(lpStream, false, NULL, NULL, NULL, &lpRTFUncompressed, nullptr));
 					}
 					if (!lpRTFUncompressed || FAILED(hRes))
 					{
@@ -389,7 +389,6 @@ namespace mapiprocessor
 		_Deref_out_ LPVOID* lpData)
 	{
 		if (!lpMessage || !lpData) return;
-
 
 		*lpData = static_cast<LPVOID>(new (MessageData));
 		if (!*lpData) return;
@@ -559,8 +558,7 @@ namespace mapiprocessor
 		LPSBinary lpRecordKey = nullptr;
 
 		// Get required properties from the message
-		auto hRes = EC_H_GETPROPS(lpMessage->GetProps(LPSPropTagArray(&msgProps), fMapiUnicode, &cProps, &lpsProps));
-
+		EC_H_GETPROPS_S(lpMessage->GetProps(LPSPropTagArray(&msgProps), fMapiUnicode, &cProps, &lpsProps));
 		if (cProps == 2 && lpsProps)
 		{
 			if (mapi::CheckStringProp(&lpsProps[msgPR_SUBJECT_W], PT_UNICODE))
@@ -578,7 +576,7 @@ namespace mapiprocessor
 		{
 			output::DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
-			WC_H(file::SaveToMSG(lpMessage, szFileName, fMapiUnicode != 0, nullptr, false));
+			WC_H_S(file::SaveToMSG(lpMessage, szFileName, fMapiUnicode != 0, nullptr, false));
 		}
 	}
 

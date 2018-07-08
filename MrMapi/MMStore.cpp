@@ -17,7 +17,7 @@ HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* 
 
 	*lppMDB = nullptr;
 
-	WC_MAPI(lpMAPISession->GetMsgStoresTable(0, &lpStoreTable));
+	hRes = WC_MAPI(lpMAPISession->GetMsgStoresTable(0, &lpStoreTable));
 
 	if (lpStoreTable)
 	{
@@ -34,7 +34,7 @@ HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* 
 			WC_MAPI(lpStoreTable->QueryRows(1, NULL, &lpRow));
 			if (SUCCEEDED(hRes) && lpRow && 1 == lpRow->cRows && PR_ENTRYID == lpRow->aRow[0].lpProps[0].ulPropTag)
 			{
-				WC_H(mapi::store::CallOpenMsgStore(
+				hRes = WC_H(mapi::store::CallOpenMsgStore(
 					lpMAPISession, NULL, &lpRow->aRow[0].lpProps[0].Value.bin, MDB_NO_DIALOG | MDB_WRITE, &lpMDB));
 				if (SUCCEEDED(hRes) && lpMDB)
 				{
@@ -86,7 +86,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 				SBinary Bin = {0};
 				Bin.cb = static_cast<ULONG>(bin.size());
 				Bin.lpb = bin.data();
-				WC_H(mapi::store::CallOpenMsgStore(lpMAPISession, NULL, &Bin, MDB_NO_DIALOG | MDB_WRITE, &lpMDB));
+				hRes = WC_H(mapi::store::CallOpenMsgStore(lpMAPISession, NULL, &Bin, MDB_NO_DIALOG | MDB_WRITE, &lpMDB));
 			}
 			else
 			{
@@ -98,7 +98,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 				if (szEndPtr && (szEndPtr[0] == L'\\' || szEndPtr[0] == L'\0'))
 				{
 					// We have a store. Let's open it
-					WC_H(OpenStore(lpMAPISession, ulStore, &lpMDB));
+					hRes = WC_H(OpenStore(lpMAPISession, ulStore, &lpMDB));
 					lpszFolderPath = szEndPtr;
 				}
 				else
@@ -109,7 +109,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 		}
 		else
 		{
-			WC_H(OpenExchangeOrDefaultMessageStore(lpMAPISession, &lpMDB));
+			hRes = WC_H(OpenExchangeOrDefaultMessageStore(lpMAPISession, &lpMDB));
 		}
 	}
 
@@ -117,11 +117,11 @@ HRESULT HrMAPIOpenStoreAndFolder(
 	{
 		if (!lpszFolderPath.empty())
 		{
-			WC_H(HrMAPIOpenFolderExW(lpMDB, lpszFolderPath, &lpFolder));
+			hRes = WC_H(HrMAPIOpenFolderExW(lpMDB, lpszFolderPath, &lpFolder));
 		}
 		else
 		{
-			WC_H(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
+			hRes = WC_H(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
 		}
 	}
 
@@ -224,9 +224,8 @@ void PrintStoreProperty(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, ULONG u
 {
 	if (!lpMAPISession || !ulPropTag) return;
 
-	auto hRes = S_OK;
 	LPMDB lpMDB = nullptr;
-	WC_H(OpenStore(lpMAPISession, ulIndex, &lpMDB));
+	WC_H_S(OpenStore(lpMAPISession, ulIndex, &lpMDB));
 	if (lpMDB)
 	{
 		PrintObjectProperty(lpMDB, ulPropTag);
@@ -306,7 +305,6 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 
 void DoStore(_In_ MYOPTIONS ProgOpts)
 {
-	auto hRes = S_OK;
 	ULONG ulPropTag = NULL;
 
 	// If we have a prop tag, parse it
@@ -326,7 +324,7 @@ void DoStore(_In_ MYOPTIONS ProgOpts)
 		else
 		{
 			// ulStore was incremented by 1 before, so drop it back now
-			WC_H(OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1, &lpMDB));
+			WC_H_S(OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1, &lpMDB));
 		}
 	}
 

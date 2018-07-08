@@ -159,7 +159,6 @@ namespace ui
 
 	_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const std::wstring& szMenu)
 	{
-		auto hRes = S_OK;
 		auto lpMenu = new (std::nothrow) MenuEntry;
 		if (lpMenu)
 		{
@@ -172,7 +171,7 @@ namespace ui
 			if (lpMenu->m_MSAA.pszWText)
 			{
 				lpMenu->m_MSAA.cchWText = static_cast<DWORD>(iLen);
-				WC_H(StringCchCopyW(lpMenu->m_MSAA.pszWText, iLen + 1, szMenu.c_str()));
+				WC_H_S(StringCchCopyW(lpMenu->m_MSAA.pszWText, iLen + 1, szMenu.c_str()));
 				lpMenu->m_pName = lpMenu->m_MSAA.pszWText;
 			}
 
@@ -432,8 +431,7 @@ namespace ui
 	{
 		HFONT hFont = nullptr;
 		LOGFONTW lfFont = {0};
-		auto hRes = S_OK;
-		WC_H(StringCchCopyW(lfFont.lfFaceName, _countof(lfFont.lfFaceName), szFont));
+		WC_H_S(StringCchCopyW(lfFont.lfFaceName, _countof(lfFont.lfFaceName), szFont));
 
 		EnumFontFamiliesExW(
 			GetDC(nullptr),

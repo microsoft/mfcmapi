@@ -336,14 +336,13 @@ namespace dialog
 				lpData->InitializeMV(nullptr);
 			}
 
-			auto hRes = S_OK;
 			SPropValue tmpPropVal = {0};
 			// Strip off MV_FLAG since we're displaying only a row
 			tmpPropVal.ulPropTag = m_ulPropTag & ~MV_FLAG;
 			tmpPropVal.Value = lpData->MV()->m_val;
 
 			LPSPropValue lpNewValue = nullptr;
-			WC_H(DisplayPropertyEditor(
+			auto hRes = WC_H(DisplayPropertyEditor(
 				this,
 				IDS_EDITROW,
 				NULL,

@@ -136,7 +136,6 @@ namespace dialog
 	_Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 	{
 		LPSIMPLEMULTI lpFunc = nullptr;
-		auto hRes = S_OK;
 
 		if (m_lpContentsTableListCtrl)
 		{
@@ -177,12 +176,11 @@ namespace dialog
 				while (-1 != iItem)
 				{
 					const auto lpData = m_lpContentsTableListCtrl->GetSortListData(iItem);
-					WC_H((this->*lpFunc)(iItem, lpData));
+					auto hRes = WC_H((this->*lpFunc)(iItem, lpData));
 					iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
 					if (S_OK != hRes && -1 != iItem)
 					{
 						if (bShouldCancel(this, hRes)) break;
-						hRes = S_OK;
 					}
 				}
 
@@ -700,7 +698,6 @@ namespace dialog
 
 	void CFolderDlg::OnGetPropsUsingLongTermEID() const
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
@@ -717,7 +714,7 @@ namespace dialog
 				const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
 				{
-					WC_H(mapi::CallOpenEntry(
+					WC_H_S(mapi::CallOpenEntry(
 						lpMDB,
 						nullptr,
 						nullptr,
@@ -1091,7 +1088,7 @@ namespace dialog
 
 				if (lpMessage)
 				{
-					hRes = WC_H2(mapi::mapiui::OpenMessageNonModal(
+					hRes = WC_H(mapi::mapiui::OpenMessageNonModal(
 						m_hWnd,
 						lpMDB,
 						lpMAPISession,
@@ -1528,7 +1525,6 @@ namespace dialog
 	{
 		if (!m_lpFolder) return;
 
-		auto hRes = S_OK;
 		LPMESSAGE lpNewMessage = nullptr;
 
 		ULONG ulConvertFlags = CCSF_SMTP;
@@ -1536,7 +1532,7 @@ namespace dialog
 		auto bDoApply = false;
 		HCHARSET hCharSet = nullptr;
 		auto cSetApplyType = CSET_APPLY_UNTAGGED;
-		WC_H(mapi::mapimime::GetConversionFromEMLOptions(
+		auto hRes = WC_H(mapi::mapimime::GetConversionFromEMLOptions(
 			this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, nullptr));
 		if (hRes == S_OK)
 		{

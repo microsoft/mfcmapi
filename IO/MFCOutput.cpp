@@ -782,19 +782,17 @@ namespace output
 
 		if (!lpProp) return;
 
-		auto hRes = S_OK;
 		LPSPropValue lpLargeProp = nullptr;
 		const auto iIndent = 2;
 
 		if (PROP_TYPE(lpProp->ulPropTag) == PT_ERROR && lpProp->Value.err == MAPI_E_NOT_ENOUGH_MEMORY && lpObj &&
 			bRetryStreamProps)
 		{
-			WC_H(mapi::GetLargeBinaryProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
+			auto hRes = WC_H(mapi::GetLargeBinaryProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
 
 			if (FAILED(hRes))
 			{
-				hRes = S_OK;
-				WC_H(mapi::GetLargeStringProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
+				hRes = WC_H(mapi::GetLargeStringProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
 			}
 
 			if (SUCCEEDED(hRes) && lpLargeProp && PT_ERROR != PROP_TYPE(lpLargeProp->ulPropTag))

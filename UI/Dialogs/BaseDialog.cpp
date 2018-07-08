@@ -406,7 +406,6 @@ namespace dialog
 			ulNiceNamesBefore != registry::RegKeys[registry::regkeyDO_COLUMN_NAMES].ulCurDWORD;
 		const auto bSuppressNotFoundChanged =
 			ulSuppressNotFoundBefore != registry::RegKeys[registry::regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
-		auto hRes = S_OK;
 		auto bResetColumns = false;
 
 		if (bNiceNamesChanged || bSuppressNotFoundChanged)
@@ -418,7 +417,7 @@ namespace dialog
 
 		if (!bResetColumns && bNeedPropRefresh)
 		{
-			if (m_lpPropDisplay) WC_H(m_lpPropDisplay->RefreshMAPIPropList());
+			if (m_lpPropDisplay) WC_H_S(m_lpPropDisplay->RefreshMAPIPropList());
 		}
 	}
 
@@ -460,12 +459,11 @@ namespace dialog
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ controls::sortlistdata::SortListData* lpListData) const
 	{
-		auto hRes = S_OK;
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnUpdateSingleMAPIPropListCtrl", L"Setting item %p\n", lpMAPIProp);
 
 		if (m_lpPropDisplay)
 		{
-			WC_H(m_lpPropDisplay->SetDataSource(lpMAPIProp, lpListData, m_bIsAB));
+			WC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIProp, lpListData, m_bIsAB));
 		}
 	}
 
@@ -673,7 +671,6 @@ namespace dialog
 
 	void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 	{
-		auto hRes = S_OK;
 		if (!m_lpMapiObjects) return;
 
 		editor::CEditor MyEID(this, IDS_OPENEID, IDS_OPENEIDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -772,7 +769,7 @@ namespace dialog
 				auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpUnk);
 				if (lpTemp)
 				{
-					WC_H(DisplayObject(lpTemp, ulObjType, otHierarchy, this));
+					WC_H_S(DisplayObject(lpTemp, ulObjType, otHierarchy, this));
 					lpTemp->Release();
 				}
 
@@ -894,8 +891,6 @@ namespace dialog
 
 	void CBaseDialog::OnNotificationsOn()
 	{
-		auto hRes = S_OK;
-
 		if (m_lpBaseAdviseSink || !m_lpMapiObjects) return;
 
 		auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
@@ -923,7 +918,7 @@ namespace dialog
 
 			LPENTRYID lpEntryID = nullptr;
 			size_t cbBin = NULL;
-			WC_H(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
+			auto hRes = WC_H(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
 			// don't actually care if the returning lpEntryID is NULL - Advise can work with that
 
 			m_lpBaseAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
@@ -978,6 +973,7 @@ namespace dialog
 					m_ulBaseAdviseConnection = NULL;
 				}
 			}
+
 			delete[] lpEntryID;
 		}
 	}

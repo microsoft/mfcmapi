@@ -345,7 +345,6 @@ namespace dialog
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 		for (const auto& lpListData : items)
 		{
-			auto hRes = S_OK;
 			// Find the highlighted item AttachNum
 			if (!lpListData || !lpListData->Contents()) break;
 
@@ -361,14 +360,12 @@ namespace dialog
 			auto bFoundServerVersion = false;
 			auto bFoundServerFullVersion = false;
 
-			WC_H(GetProfileServiceVersion(
+			WC_H_S(GetProfileServiceVersion(
 				lpListData->Contents()->m_szProfileDisplayName,
 				&ulServerVersion,
 				&storeVersion,
 				&bFoundServerVersion,
 				&bFoundServerFullVersion));
-			// Even in failure case, we're still gonna show the dialog
-			hRes = S_OK;
 
 			editor::CEditor MyData(
 				this, IDS_PROFILESERVERVERSIONTITLE, IDS_PROFILESERVERVERSIONPROMPT, CEDITOR_BUTTON_OK);

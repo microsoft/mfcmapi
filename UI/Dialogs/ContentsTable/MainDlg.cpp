@@ -615,7 +615,7 @@ namespace dialog
 
 		if (mapi::store::StoreSupportsManageStore(lpMDB))
 		{
-			WC_H2S(mapi::store::OpenMailboxWithPrompt(
+			WC_H_S(mapi::store::OpenMailboxWithPrompt(
 				lpMAPISession,
 				lpMDB,
 				szServerName,
@@ -1394,7 +1394,7 @@ namespace dialog
 			EC_H_S(file::LoadMSGToMessage(file, &lpNewMessage));
 			if (lpNewMessage)
 			{
-				WC_H2S(DisplayObject(lpNewMessage, MAPI_MESSAGE, otDefault, this));
+				WC_H_S(DisplayObject(lpNewMessage, MAPI_MESSAGE, otDefault, this));
 				lpNewMessage->Release();
 			}
 		}
@@ -1411,7 +1411,7 @@ namespace dialog
 		ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
 		auto bDoAdrBook = false;
 
-		auto hRes = WC_H2(
+		auto hRes = WC_H(
 			mapi::mapimime::GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 		if (hRes == S_OK)
 		{
@@ -1454,7 +1454,7 @@ namespace dialog
 		auto bUnicode = false;
 		HCHARSET hCharSet = nullptr;
 		auto cSetApplyType = CSET_APPLY_UNTAGGED;
-		auto hRes = WC_H2(mapi::mapimime::GetConversionFromEMLOptions(
+		auto hRes = WC_H(mapi::mapimime::GetConversionFromEMLOptions(
 			this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, &bUnicode));
 		if (hRes == S_OK)
 		{
@@ -1579,7 +1579,7 @@ namespace dialog
 				// Get profile section
 				if (lpServiceUID)
 				{
-					hRes = WC_H2(mapi::HrEmsmdbUIDFromStore(
+					hRes = WC_H(mapi::HrEmsmdbUIDFromStore(
 						lpMAPISession, reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb), &emsmdbUID));
 					if (SUCCEEDED(hRes))
 					{

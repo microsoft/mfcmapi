@@ -349,7 +349,7 @@ namespace controls
 
 			if (!registry::RegKeys[registry::regkeyONLY_ADDITIONAL_PROPERTIES].ulCurDWORD)
 			{
-				WC_H(m_lpPropBag->GetAllProps(&ulProps, &lpPropsToAdd));
+				hRes = WC_H(m_lpPropBag->GetAllProps(&ulProps, &lpPropsToAdd));
 
 				// If this is an AB object, make sure we interpret it as such
 				if (IsABPropSet(ulProps, lpPropsToAdd))
@@ -495,12 +495,11 @@ namespace controls
 
 				for (ULONG iCurExtraProp = 0; iCurExtraProp < m_sptExtraProps->cValues; iCurExtraProp++)
 				{
-					hRes = S_OK; // clear the error flag before each run
 					pNewTag.aulPropTag[0] = m_sptExtraProps->aulPropTag[iCurExtraProp];
 
 					// Let's add some extra properties
 					// Don't need to report since we're gonna put show the error in the UI
-					WC_H(m_lpPropBag->GetProps(&pNewTag, fMapiUnicode, &cExtraProps, &pExtraProps));
+					WC_H_S(m_lpPropBag->GetProps(&pNewTag, fMapiUnicode, &cExtraProps, &pExtraProps));
 
 					if (pExtraProps)
 					{
@@ -608,7 +607,7 @@ namespace controls
 
 			if (SUCCEEDED(hRes) && bRefresh)
 			{
-				WC_H(RefreshMAPIPropList());
+				WC_H_S(RefreshMAPIPropList());
 			}
 		}
 
@@ -761,7 +760,6 @@ namespace controls
 		_Check_return_ HRESULT
 		CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ propertybag::LPMAPIPROPERTYBAG lpPropBag, bool bIsAB)
 		{
-			auto hRes = S_OK;
 			output::DebugPrintEx(DBGGeneric, CLASS, L"SetDataSource", L"setting new data source\n");
 
 			// if nothing to do...do nothing
@@ -778,7 +776,7 @@ namespace controls
 			// Turn off redraw while we work on the window
 			MySetRedraw(false);
 
-			WC_H(RefreshMAPIPropList());
+			auto hRes = WC_H(RefreshMAPIPropList());
 
 			// Reset our header widths if weren't showing anything before and are now
 			if (hRes == S_OK && !m_bHaveEverDisplayedSomething && m_lpPropBag && GetItemCount())
@@ -907,7 +905,6 @@ namespace controls
 		{
 			output::DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
 
-			auto hRes = S_OK;
 			const auto bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
 			const auto bShiftPressed = GetKeyState(VK_SHIFT) < 0;
 			const auto bMenuPressed = GetKeyState(VK_MENU) < 0;
@@ -940,7 +937,7 @@ namespace controls
 				}
 				else if (VK_F5 == nChar)
 				{
-					WC_H(RefreshMAPIPropList());
+					WC_H_S(RefreshMAPIPropList());
 				}
 				else if (VK_RETURN == nChar)
 				{
@@ -978,13 +975,12 @@ namespace controls
 
 		void CSingleMAPIPropListCtrl::FindAllNamedProps()
 		{
-			auto hRes = S_OK;
 			if (!m_lpPropBag) return;
 
 			// Exchange can return MAPI_E_NOT_ENOUGH_MEMORY when I call this - give it a try - PSTs support it
 			output::DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Calling GetIDsFromNames with a NULL\n");
 			LPSPropTagArray lptag = nullptr;
-			WC_H(cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), NULL, NULL, NULL, &lptag));
+			auto hRes = WC_H(cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), NULL, NULL, NULL, &lptag));
 			if (hRes == S_OK && lptag && lptag->cValues)
 			{
 				// Now we have an array of tags - add them in:
@@ -994,7 +990,6 @@ namespace controls
 			}
 			else
 			{
-				hRes = S_OK;
 				output::DebugPrintEx(
 					DBGNamedProp, CLASS, L"FindAllNamedProps", L"Exchange didn't support GetIDsFromNames(NULL).\n");
 
@@ -1051,7 +1046,7 @@ namespace controls
 							hRes = S_OK;
 							tag.aulPropTag[0] = PROP_TAG(NULL, iTag);
 
-							WC_H(cache::GetNamesFromIDs(
+							hRes = WC_H(cache::GetNamesFromIDs(
 								m_lpPropBag->GetMAPIProp(), &lptag, NULL, NULL, &ulPropNames, &lppPropNames));
 							if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
 							{
@@ -1063,6 +1058,7 @@ namespace controls
 									iTag);
 								AddPropToExtraProps(PROP_TAG(NULL, iTag), false);
 							}
+
 							MAPIFreeBuffer(lppPropNames);
 							lppPropNames = nullptr;
 						}
@@ -1070,8 +1066,11 @@ namespace controls
 				}
 			}
 
-			// Refresh the display
-			WC_H(RefreshMAPIPropList());
+			if (SUCCEEDED(hRes))
+			{
+				// Refresh the display
+				WC_H_S(RefreshMAPIPropList());
+			}
 		}
 
 		void CSingleMAPIPropListCtrl::CountNamedProps()
@@ -1095,10 +1094,9 @@ namespace controls
 
 			while (ulUpper - ulLower > 1)
 			{
-				hRes = S_OK;
 				tag.aulPropTag[0] = PROP_TAG(NULL, ulCurrent);
 
-				WC_H(cache::GetNamesFromIDs(
+				hRes = WC_H(cache::GetNamesFromIDs(
 					m_lpPropBag->GetMAPIProp(), &lptag, NULL, NULL, &ulPropNames, &lppPropNames));
 				if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
 				{
@@ -1140,8 +1138,7 @@ namespace controls
 			{
 				tag.aulPropTag[0] = PROP_TAG(NULL, ulHighestKnown);
 
-				hRes = S_OK;
-				WC_H(cache::GetNamesFromIDs(
+				hRes = WC_H(cache::GetNamesFromIDs(
 					m_lpPropBag->GetMAPIProp(), &lptag, NULL, NULL, &ulPropNames, &lppPropNames));
 				if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
 				{
@@ -1200,7 +1197,7 @@ namespace controls
 				if (SUCCEEDED(hRes))
 				{
 					// Refresh the display
-					WC_H(RefreshMAPIPropList());
+					WC_H_S(RefreshMAPIPropList());
 				}
 			}
 		}
@@ -1246,13 +1243,10 @@ namespace controls
 
 		void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
 		{
-			auto hRes = S_OK;
-
 			if (!m_lpPropBag || !ulPropTag || PT_SRESTRICTION != PROP_TYPE(ulPropTag)) return;
 
 			LPSPropValue lpEditProp = nullptr;
-			WC_H(m_lpPropBag->GetProp(ulPropTag, &lpEditProp));
-			hRes = S_OK;
+			WC_H_S(m_lpPropBag->GetProp(ulPropTag, &lpEditProp));
 
 			LPSRestriction lpResIn = nullptr;
 			if (lpEditProp)
@@ -1280,7 +1274,7 @@ namespace controls
 					ResProp.ulPropTag = lpEditProp->ulPropTag;
 					ResProp.Value.lpszA = reinterpret_cast<LPSTR>(lpModRes);
 
-					hRes = EC_H(m_lpPropBag->SetProp(&ResProp));
+					auto hRes = EC_H(m_lpPropBag->SetProp(&ResProp));
 
 					// Remember, we had no alloc parent - this is safe to free
 					MAPIFreeBuffer(lpModRes);
@@ -1288,7 +1282,7 @@ namespace controls
 					if (SUCCEEDED(hRes))
 					{
 						// refresh
-						WC_H(RefreshMAPIPropList());
+						hRes = WC_H(RefreshMAPIPropList());
 					}
 				}
 			}
@@ -1339,7 +1333,7 @@ namespace controls
 			}
 			else
 			{
-				WC_H(m_lpPropBag->GetProp(ulPropTag, &lpEditProp));
+				hRes = WC_H(m_lpPropBag->GetProp(ulPropTag, &lpEditProp));
 			}
 
 			if (hRes == MAPI_E_NOT_ENOUGH_MEMORY) bUseStream = true;
@@ -1362,7 +1356,7 @@ namespace controls
 
 				if (MyEditor.DisplayDialog())
 				{
-					WC_H2S(RefreshMAPIPropList());
+					WC_H_S(RefreshMAPIPropList());
 				}
 			}
 			else
@@ -1370,7 +1364,7 @@ namespace controls
 				if (lpEditProp) ulPropTag = lpEditProp->ulPropTag;
 
 				LPSPropValue lpModProp = nullptr;
-				hRes = WC_H2(dialog::editor::DisplayPropertyEditor(
+				hRes = WC_H(dialog::editor::DisplayPropertyEditor(
 					this,
 					IDS_PROPEDITOR,
 					NULL,
@@ -1392,7 +1386,7 @@ namespace controls
 
 				if (SUCCEEDED(hRes))
 				{
-					WC_H2S(RefreshMAPIPropList());
+					WC_H_S(RefreshMAPIPropList());
 				}
 			}
 
@@ -1402,7 +1396,6 @@ namespace controls
 		// Display the selected property as a stream using CStreamEditor
 		void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 		{
-			auto hRes = S_OK;
 			ULONG ulPropTag = NULL;
 
 			if (!m_lpPropBag) return;
@@ -1444,7 +1437,7 @@ namespace controls
 					bUseWrapEx = true;
 					LPSPropValue lpProp = nullptr;
 
-					WC_H(m_lpPropBag->GetProp(PR_INTERNET_CPID, &lpProp));
+					WC_H_S(m_lpPropBag->GetProp(PR_INTERNET_CPID, &lpProp));
 					if (lpProp && PT_LONG == PROP_TYPE(lpProp[0].ulPropTag))
 					{
 						ulInCodePage = lpProp[0].Value.l;
@@ -1485,7 +1478,7 @@ namespace controls
 
 			if (MyEditor.DisplayDialog())
 			{
-				WC_H2S(RefreshMAPIPropList());
+				WC_H_S(RefreshMAPIPropList());
 			}
 		}
 
@@ -1596,7 +1589,7 @@ namespace controls
 				if (SUCCEEDED(hRes))
 				{
 					// refresh
-					WC_H(RefreshMAPIPropList());
+					hRes = WC_H(RefreshMAPIPropList());
 				}
 			}
 
@@ -1618,7 +1611,7 @@ namespace controls
 				hRes = EC_H(m_lpPropBag->Commit());
 
 				// refresh
-				WC_H(RefreshMAPIPropList());
+				hRes = WC_H(RefreshMAPIPropList());
 			}
 
 			lpSourcePropObj->Release();
@@ -1704,7 +1697,7 @@ namespace controls
 				m_sptExtraProps = lpNewTagArray;
 			}
 
-			WC_H2S(RefreshMAPIPropList());
+			WC_H_S(RefreshMAPIPropList());
 		}
 
 		void CSingleMAPIPropListCtrl::OnEditGivenProperty()
@@ -1812,7 +1805,7 @@ namespace controls
 						hRes = EC_H(m_lpPropBag->Commit());
 					}
 
-					WC_H(RefreshMAPIPropList());
+					hRes = WC_H(RefreshMAPIPropList());
 
 					lpSource->Release();
 				}

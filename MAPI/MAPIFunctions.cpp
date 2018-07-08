@@ -195,8 +195,7 @@ namespace mapi
 		_Out_opt_ ULONG* ulObjTypeRet,
 		_Deref_out_opt_ LPUNKNOWN* lppUnk)
 	{
-		auto hRes = S_OK;
-		WC_H(CallOpenEntry(
+		return WC_H(CallOpenEntry(
 			lpMDB,
 			lpAB,
 			lpContainer,
@@ -207,7 +206,6 @@ namespace mapi
 			ulFlags,
 			ulObjTypeRet,
 			lppUnk));
-		return hRes;
 	}
 
 	// Concatenate two property arrays without duplicates
@@ -949,7 +947,6 @@ namespace mapi
 	_Check_return_ HRESULT
 	DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpSourceFolder, _In_ LPENTRYLIST lpEIDs, _In_ HWND hWnd)
 	{
-		auto hRes = S_OK;
 		LPMAPIFOLDER lpWasteFolder = nullptr;
 
 		if (!lpMDB || !lpSourceFolder || !lpEIDs) return MAPI_E_INVALID_PARAMETER;
@@ -957,7 +954,7 @@ namespace mapi
 		output::DebugPrint(
 			DBGGeneric, L"DeleteToDeletedItems: Deleting from folder %p in store %p\n", lpSourceFolder, lpMDB);
 
-		WC_H(OpenDefaultFolder(DEFAULT_DELETEDITEMS, lpMDB, &lpWasteFolder));
+		auto hRes = WC_H(OpenDefaultFolder(DEFAULT_DELETEDITEMS, lpMDB, &lpWasteFolder));
 
 		if (lpWasteFolder)
 		{
@@ -1033,7 +1030,7 @@ namespace mapi
 
 		if (cbInboxEID && lpInboxEID)
 		{
-			WC_H(MAPIAllocateBuffer(cbInboxEID, reinterpret_cast<LPVOID*>(lppeid)));
+			hRes = WC_H(MAPIAllocateBuffer(cbInboxEID, reinterpret_cast<LPVOID*>(lppeid)));
 			if (SUCCEEDED(hRes))
 			{
 				*lpcbeid = cbInboxEID;
@@ -1061,7 +1058,7 @@ namespace mapi
 		if (cbInboxEID && lpInboxEID)
 		{
 			// Get the Inbox...
-			hRes = WC_H2(CallOpenEntry(
+			hRes = WC_H(CallOpenEntry(
 				lpMDB,
 				nullptr,
 				nullptr,
@@ -1101,7 +1098,7 @@ namespace mapi
 
 		if (lpProps && PT_ERROR != PROP_TYPE(lpProps[PARENTEID].ulPropTag))
 		{
-			WC_H(CallOpenEntry(
+			hRes = WC_H(CallOpenEntry(
 				lpMDB,
 				nullptr,
 				nullptr,
@@ -1167,7 +1164,7 @@ namespace mapi
 
 		LPSPropValue lpProp = nullptr;
 		LPMAPIFOLDER lpInbox = nullptr;
-		auto hRes = WC_H2(GetInbox(lpMDB, &lpInbox));
+		auto hRes = WC_H(GetInbox(lpMDB, &lpInbox));
 		if (lpInbox)
 		{
 			hRes = WC_H_MSG(IDS_GETSPECIALFOLDERINBOXMISSINGPROP, HrGetOneProp(lpInbox, ulFolderPropTag, &lpProp));
@@ -1198,7 +1195,7 @@ namespace mapi
 
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag) && lpProp->Value.bin.cb)
 		{
-			hRes = WC_H2(MAPIAllocateBuffer(lpProp->Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
+			hRes = WC_H(MAPIAllocateBuffer(lpProp->Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
 			if (SUCCEEDED(hRes))
 			{
 				*lpcbeid = lpProp->Value.bin.cb;
@@ -1323,11 +1320,10 @@ namespace mapi
 	// Will only return nullptr on allocation failure. Even empty bin will return pointer to 0 so MAPI handles empty strings properly
 	_Check_return_ LPBYTE ByteVectorToMAPI(const std::vector<BYTE>& bin, LPVOID lpParent)
 	{
-		auto hRes = S_OK;
 		LPBYTE lpBin = nullptr;
 
 		// We allocate a couple extra bytes (initialized to NULL) in case this buffer is printed.
-		WC_H(MAPIAllocateMore(
+		auto hRes = WC_H(MAPIAllocateMore(
 			static_cast<ULONG>(bin.size()) + sizeof(WCHAR), lpParent, reinterpret_cast<LPVOID*>(&lpBin)));
 		if (SUCCEEDED(hRes) && lpBin)
 		{
@@ -1476,7 +1472,7 @@ namespace mapi
 					{
 						LPMESSAGE lpMessage = nullptr;
 
-						hRes = WC_H2(CallOpenEntry(
+						hRes = WC_H(CallOpenEntry(
 							nullptr,
 							nullptr,
 							lpFolder,
@@ -1793,11 +1789,10 @@ namespace mapi
 
 						for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
 						{
-							hRes = S_OK;
 							if (lpMessage) lpMessage->Release();
 							lpMessage = nullptr;
 
-							WC_H(CallOpenEntry(
+							hRes = WC_H(CallOpenEntry(
 								lpMDB,
 								nullptr,
 								nullptr,
@@ -1815,7 +1810,7 @@ namespace mapi
 								continue;
 							}
 
-							WC_H(DeleteProperty(lpMessage, PR_NT_SECURITY_DESCRIPTOR));
+							hRes = WC_H(DeleteProperty(lpMessage, PR_NT_SECURITY_DESCRIPTOR));
 							if (FAILED(hRes))
 							{
 								hResOverall = hRes;
@@ -2031,7 +2026,7 @@ namespace mapi
 			ULONG cProps = 0;
 			LPMAPINAMEID* lppNameIDs = nullptr;
 
-			WC_H(cache::GetNamesFromIDs(lpSource, &lpAllProps, nullptr, 0, &cProps, &lppNameIDs));
+			hRes = WC_H(cache::GetNamesFromIDs(lpSource, &lpAllProps, nullptr, 0, &cProps, &lppNameIDs));
 
 			if (hRes == S_OK && lppNameIDs)
 			{
@@ -2047,7 +2042,8 @@ namespace mapi
 
 				LPSPropTagArray lpFilteredProps = nullptr;
 
-				WC_H(MAPIAllocateBuffer(CbNewSPropTagArray(ulNumProps), reinterpret_cast<LPVOID*>(&lpFilteredProps)));
+				hRes = WC_H(
+					MAPIAllocateBuffer(CbNewSPropTagArray(ulNumProps), reinterpret_cast<LPVOID*>(&lpFilteredProps)));
 
 				if (hRes == S_OK && lpFilteredProps)
 				{
@@ -2322,7 +2318,7 @@ namespace mapi
 
 		if (SUCCEEDED(hRes) && lpEIDProp)
 		{
-			WC_H(MAPIAllocateBuffer(lpEIDProp->Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
+			hRes = WC_H(MAPIAllocateBuffer(lpEIDProp->Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
 			if (SUCCEEDED(hRes))
 			{
 				*lpcbeid = lpEIDProp->Value.bin.cb;
@@ -2342,10 +2338,9 @@ namespace mapi
 		_Deref_out_opt_ LPENTRYID* lppeid)
 	{
 		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
-		auto hRes = S_OK;
 		LPMAPIFOLDER lpInbox = nullptr;
 
-		WC_H(GetInbox(lpMDB, &lpInbox));
+		auto hRes = WC_H(GetInbox(lpMDB, &lpInbox));
 
 		if (SUCCEEDED(hRes) && lpInbox)
 		{
@@ -2354,7 +2349,8 @@ namespace mapi
 			if (SUCCEEDED(hRes) && lpEIDProp && PT_MV_BINARY == PROP_TYPE(lpEIDProp->ulPropTag) &&
 				ulIndex < lpEIDProp->Value.MVbin.cValues && lpEIDProp->Value.MVbin.lpbin[ulIndex].cb > 0)
 			{
-				WC_H(MAPIAllocateBuffer(lpEIDProp->Value.MVbin.lpbin[ulIndex].cb, reinterpret_cast<LPVOID*>(lppeid)));
+				hRes = WC_H(
+					MAPIAllocateBuffer(lpEIDProp->Value.MVbin.lpbin[ulIndex].cb, reinterpret_cast<LPVOID*>(lppeid)));
 				if (SUCCEEDED(hRes))
 				{
 					*lpcbeid = lpEIDProp->Value.MVbin.lpbin[ulIndex].cb;
@@ -2447,19 +2443,17 @@ namespace mapi
 
 	STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpFolder)
 	{
-		auto hRes = S_OK;
-
 		if (!lpMDB || !lpFolder) return MAPI_E_INVALID_PARAMETER;
 
 		*lpFolder = nullptr;
 		ULONG cb = 0;
 		LPENTRYID lpeid = nullptr;
 
-		WC_H(GetDefaultFolderEID(ulFolder, lpMDB, &cb, &lpeid));
+		auto hRes = WC_H(GetDefaultFolderEID(ulFolder, lpMDB, &cb, &lpeid));
 		if (SUCCEEDED(hRes))
 		{
 			LPMAPIFOLDER lpTemp = nullptr;
-			WC_H(CallOpenEntry(
+			hRes = WC_H(CallOpenEntry(
 				lpMDB,
 				nullptr,
 				nullptr,
@@ -2866,17 +2860,18 @@ namespace mapi
 
 		if (lpObject != nullptr)
 		{
-			hRes = WC_H2(MAPIAllocateMore(sizeof(SRestriction), lpObject, reinterpret_cast<LPVOID*>(lppResDest)));
+			hRes = WC_H(MAPIAllocateMore(sizeof(SRestriction), lpObject, reinterpret_cast<LPVOID*>(lppResDest)));
 		}
 		else
 		{
-			hRes = WC_H2(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(lppResDest)));
+			hRes = WC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(lppResDest)));
 			lpObject = *lppResDest;
 		}
+
 		if (FAILED(hRes)) return hRes;
 		// no short circuit returns after here
 
-		hRes = WC_H2(HrCopyRestrictionArray(lpResSrc, lpObject, 1, *lppResDest));
+		hRes = WC_H(HrCopyRestrictionArray(lpResSrc, lpObject, 1, *lppResDest));
 
 		if (FAILED(hRes))
 		{
@@ -2913,13 +2908,13 @@ namespace mapi
 						hRes = MAPI_E_CALL_FAILED;
 						break;
 					}
-					WC_H(MAPIAllocateMore(
+					hRes = WC_H(MAPIAllocateMore(
 						sizeof(SRestriction) * lpResSrc[i].res.resAnd.cRes,
 						lpObject,
 						reinterpret_cast<LPVOID*>(&lpResDest[i].res.resAnd.lpRes)));
 					if (FAILED(hRes)) break;
 
-					WC_H(HrCopyRestrictionArray(
+					hRes = WC_H(HrCopyRestrictionArray(
 						lpResSrc[i].res.resAnd.lpRes,
 						lpObject,
 						lpResSrc[i].res.resAnd.cRes,
@@ -2933,11 +2928,11 @@ namespace mapi
 			case RES_COUNT:
 				if (lpResSrc[i].res.resNot.lpRes)
 				{
-					WC_H(MAPIAllocateMore(
+					hRes = WC_H(MAPIAllocateMore(
 						sizeof(SRestriction), lpObject, reinterpret_cast<LPVOID*>(&lpResDest[i].res.resNot.lpRes)));
 					if (FAILED(hRes)) break;
 
-					WC_H(HrCopyRestrictionArray(
+					hRes = WC_H(HrCopyRestrictionArray(
 						lpResSrc[i].res.resNot.lpRes, lpObject, 1, lpResDest[i].res.resNot.lpRes));
 					if (FAILED(hRes)) break;
 				}
@@ -2963,11 +2958,11 @@ namespace mapi
 			case RES_SUBRESTRICTION:
 				if (lpResSrc[i].res.resSub.lpRes)
 				{
-					WC_H(MAPIAllocateMore(
+					hRes = WC_H(MAPIAllocateMore(
 						sizeof(SRestriction), lpObject, reinterpret_cast<LPVOID*>(&lpResDest[i].res.resSub.lpRes)));
 					if (FAILED(hRes)) break;
 
-					WC_H(HrCopyRestrictionArray(
+					hRes = WC_H(HrCopyRestrictionArray(
 						lpResSrc[i].res.resSub.lpRes, lpObject, 1, lpResDest[i].res.resSub.lpRes));
 					if (FAILED(hRes)) break;
 				}
@@ -2978,11 +2973,11 @@ namespace mapi
 			case RES_ANNOTATION:
 				if (lpResSrc[i].res.resComment.lpRes)
 				{
-					WC_H(MAPIAllocateMore(
+					hRes = WC_H(MAPIAllocateMore(
 						sizeof(SRestriction), lpObject, reinterpret_cast<LPVOID*>(&lpResDest[i].res.resComment.lpRes)));
 					if (FAILED(hRes)) break;
 
-					WC_H(HrCopyRestrictionArray(
+					hRes = WC_H(HrCopyRestrictionArray(
 						lpResSrc[i].res.resComment.lpRes, lpObject, 1, lpResDest[i].res.resComment.lpRes));
 					if (FAILED(hRes)) break;
 				}
@@ -3025,11 +3020,11 @@ namespace mapi
 
 		if (lpObject != nullptr)
 		{
-			WC_H(MAPIAllocateMore(sizeof(ACTIONS), lpObject, reinterpret_cast<LPVOID*>(lppActsDst)));
+			hRes = WC_H(MAPIAllocateMore(sizeof(ACTIONS), lpObject, reinterpret_cast<LPVOID*>(lppActsDst)));
 		}
 		else
 		{
-			WC_H(MAPIAllocateBuffer(sizeof(ACTIONS), reinterpret_cast<LPVOID*>(lppActsDst)));
+			hRes = WC_H(MAPIAllocateBuffer(sizeof(ACTIONS), reinterpret_cast<LPVOID*>(lppActsDst)));
 			lpObject = *lppActsDst;
 		}
 
@@ -3040,7 +3035,7 @@ namespace mapi
 		*lpActsDst = *lpActsSrc;
 		lpActsDst->lpAction = nullptr;
 
-		WC_H(MAPIAllocateMore(
+		hRes = WC_H(MAPIAllocateMore(
 			sizeof(ACTION) * lpActsDst->cActions, lpObject, reinterpret_cast<LPVOID*>(&lpActsDst->lpAction)));
 		if (SUCCEEDED(hRes) && lpActsDst->lpAction)
 		{
@@ -3063,7 +3058,7 @@ namespace mapi
 				case OP_COPY:
 					if (lpActDst->actMoveCopy.cbStoreEntryId && lpActDst->actMoveCopy.lpStoreEntryId)
 					{
-						WC_H(MAPIAllocateMore(
+						hRes = WC_H(MAPIAllocateMore(
 							lpActDst->actMoveCopy.cbStoreEntryId,
 							lpObject,
 							reinterpret_cast<LPVOID*>(&lpActDst->actMoveCopy.lpStoreEntryId)));
@@ -3077,7 +3072,7 @@ namespace mapi
 
 					if (lpActDst->actMoveCopy.cbFldEntryId && lpActDst->actMoveCopy.lpFldEntryId)
 					{
-						WC_H(MAPIAllocateMore(
+						hRes = WC_H(MAPIAllocateMore(
 							lpActDst->actMoveCopy.cbFldEntryId,
 							lpObject,
 							reinterpret_cast<LPVOID*>(&lpActDst->actMoveCopy.lpFldEntryId)));
@@ -3094,7 +3089,7 @@ namespace mapi
 				case OP_OOF_REPLY:
 					if (lpActDst->actReply.cbEntryId && lpActDst->actReply.lpEntryId)
 					{
-						WC_H(MAPIAllocateMore(
+						hRes = WC_H(MAPIAllocateMore(
 							lpActDst->actReply.cbEntryId,
 							lpObject,
 							reinterpret_cast<LPVOID*>(&lpActDst->actReply.lpEntryId)));
@@ -3108,7 +3103,7 @@ namespace mapi
 				case OP_DEFER_ACTION: // actDeferAction
 					if (lpActSrc->actDeferAction.pbData && lpActSrc->actDeferAction.cbData)
 					{
-						WC_H(MAPIAllocateMore(
+						hRes = WC_H(MAPIAllocateMore(
 							lpActDst->actDeferAction.cbData,
 							lpObject,
 							reinterpret_cast<LPVOID*>(&lpActDst->actDeferAction.pbData)));
@@ -3127,7 +3122,7 @@ namespace mapi
 
 					if (lpActSrc->lpadrlist && lpActSrc->lpadrlist->cEntries)
 					{
-						WC_H(MAPIAllocateMore(
+						hRes = WC_H(MAPIAllocateMore(
 							CbADRLIST(lpActSrc->lpadrlist), lpObject, reinterpret_cast<LPVOID*>(&lpActDst->lpadrlist)));
 						if (FAILED(hRes)) break;
 
@@ -3160,7 +3155,7 @@ namespace mapi
 					break;
 
 				case OP_TAG: // propTag
-					WC_H(MyPropCopyMore(&lpActDst->propTag, &lpActSrc->propTag, MAPIAllocateMore, lpObject));
+					hRes = WC_H(MyPropCopyMore(&lpActDst->propTag, &lpActSrc->propTag, MAPIAllocateMore, lpObject));
 					if (FAILED(hRes)) break;
 					break;
 
@@ -3209,14 +3204,15 @@ namespace mapi
 			if (PT_SRESTRICTION == PROP_TYPE(lpSPropValueSrc->ulPropTag))
 			{
 				LPSRestriction lpNewRes = nullptr;
-				WC_H(HrCopyRestriction(
+				hRes = WC_H(HrCopyRestriction(
 					reinterpret_cast<LPSRestriction>(lpSPropValueSrc->Value.lpszA), lpvObject, &lpNewRes));
 				lpSPropValueDest->Value.lpszA = reinterpret_cast<LPSTR>(lpNewRes);
 			}
 			else
 			{
 				ACTIONS* lpNewAct = nullptr;
-				WC_H(HrCopyActions(reinterpret_cast<ACTIONS*>(lpSPropValueSrc->Value.lpszA), lpvObject, &lpNewAct));
+				hRes =
+					WC_H(HrCopyActions(reinterpret_cast<ACTIONS*>(lpSPropValueSrc->Value.lpszA), lpvObject, &lpNewAct));
 				lpSPropValueDest->Value.lpszA = reinterpret_cast<LPSTR>(lpNewAct);
 			}
 			break;

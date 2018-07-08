@@ -48,9 +48,8 @@ namespace cache
 				// So we check the string length both ways to make our best guess
 				size_t cchShortLen = NULL;
 				size_t cchWideLen = NULL;
-				auto hRes = S_OK;
-				WC_H(StringCchLengthA(reinterpret_cast<LPSTR>(src.Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
-				WC_H(StringCchLengthW(src.Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
+				WC_H_S(StringCchLengthA(reinterpret_cast<LPSTR>(src.Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
+				WC_H_S(StringCchLengthW(src.Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
 				size_t cbName = NULL;
 
 				if (cchShortLen < cchWideLen)
@@ -273,8 +272,8 @@ namespace cache
 		const auto lpPropTags = *lppPropTags;
 		// First, allocate our results using MAPI
 		LPMAPINAMEID* lppNameIDs = nullptr;
-		auto hRes = EC_H(
-			MAPIAllocateBuffer(sizeof(MAPINAMEID*) * lpPropTags->cValues, reinterpret_cast<LPVOID*>(&lppNameIDs)));
+		auto hRes =
+			EC_H(MAPIAllocateBuffer(sizeof(MAPINAMEID*) * lpPropTags->cValues, reinterpret_cast<LPVOID*>(&lppNameIDs)));
 
 		if (lppNameIDs)
 		{
@@ -612,7 +611,6 @@ namespace cache
 	// We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
 	NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
 	{
-		auto hRes = S_OK;
 		NamePropNames namePropNames;
 
 		// Can't generate strings without a MAPINAMEID structure
@@ -692,8 +690,8 @@ namespace cache
 			// So we check the string length both ways to make our best guess
 			size_t cchShortLen = NULL;
 			size_t cchWideLen = NULL;
-			WC_H(StringCchLengthA(reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
-			WC_H(StringCchLengthW(lpNameID->Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
+			WC_H_S(StringCchLengthA(reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
+			WC_H_S(StringCchLengthW(lpNameID->Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
 
 			if (cchShortLen < cchWideLen)
 			{
