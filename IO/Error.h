@@ -1,18 +1,14 @@
 #pragma once
 
 // Here's an index of error macros and functions for use throughout MFCMAPI
-// EC_H - When wrapping a function, checks that hRes is SUCCEEDED, then makes the call
-//        If the call fails, logs and displays a dialog.
-//        Prints a skip note in debug builds if the call is not made.
-// WC_H - When wrapping a function, checks that hRes is SUCCEEDED, then makes the call
-//        If the call fails, logs. It does not display a dialog.
-//        Prints a skip note in debug builds if the call is not made.
-// EC_H_MSG - When wrapping a function, checks that hRes is SUCCEEDED, then makes the call
-//        If the call fails, logs and displays a dialog with a given error string.
-//        Prints a skip note in debug builds if the call is not made.
-// WC_H_MSG - When wrapping a function, checks that hRes is SUCCEEDED, then makes the call
-//        If the call fails, logs and a given error string.
-//        Prints a skip note in debug builds if the call is not made.
+// EC_H - Execute a function, log and return the HRESULT
+//        Will display dialog on error
+// WC_H - Execute a function, log and return the HRESULT
+//        Will not display an error dialog
+// EC_H_MSG - Execute a function, log error with uidErrorMessage, and return the HRESULT
+//            Will display dialog on error
+// WC_H_MSG - Execute a function, log error with uidErrorMessage, and return the HRESULT
+//            Will not display dialog on error
 // EC_MAPI Variant of EC_H that is only used to wrap MAPI api calls.
 // WC_MAPI Variant of WC_H that is only used to wrap MAPI api calls.
 // CHECKHRES - checks an hRes and logs and displays a dialog on error
@@ -81,7 +77,6 @@ namespace error
 #define WARNHRESMSG(hRes, uidErrorMsg) (CheckHResFn(hRes, NULL, false, nullptr, uidErrorMsg, __FILE__, __LINE__))
 
 // Execute a function, log and return the HRESULT
-// Does not modify or reference existing hRes
 // Will display dialog on error
 #define EC_H(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
@@ -91,7 +86,6 @@ namespace error
 	}())
 
 // Execute a function, log and swallow the HRESULT
-// Does not modify or reference existing hRes
 // Will display dialog on error
 #define EC_H_S(fnx) \
 	[&]() -> void { \
@@ -100,7 +94,6 @@ namespace error
 	}()
 
 // Execute a function, log and return the HRESULT
-// Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_H(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
@@ -110,7 +103,6 @@ namespace error
 	}())
 
 // Execute a function, log and swallow the HRESULT
-// Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_H_S(fnx) \
 	[&]() -> void { \
@@ -120,7 +112,7 @@ namespace error
 
 // Execute a function, log and return the HRESULT
 // Logs a MAPI call trace under DBGMAPIFunctions
-// Does not modify or reference existing hRes
+// Will display dialog on error
 #define EC_MAPI(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
@@ -130,7 +122,7 @@ namespace error
 
 // Execute a function, log and swallow the HRESULT
 // Logs a MAPI call trace under DBGMAPIFunctions
-// Does not modify or reference existing hRes
+// Will display dialog on error
 #define EC_MAPI_S(fnx) \
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
@@ -139,7 +131,6 @@ namespace error
 
 // Execute a function, log and return the HRESULT
 // Logs a MAPI call trace under DBGMAPIFunctions
-// Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_MAPI(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
@@ -150,7 +141,6 @@ namespace error
 
 // Execute a function, log and swallow the HRESULT
 // Logs a MAPI call trace under DBGMAPIFunctions
-// Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_MAPI_S(fnx) \
 	[&]() -> void { \
@@ -159,7 +149,7 @@ namespace error
 	}()
 
 // Execute a function, log error with uidErrorMessage, and return the HRESULT
-// Does not modify or reference existing hRes
+// Will display dialog on error
 #define EC_H_MSG(uidErrorMsg, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
@@ -168,7 +158,6 @@ namespace error
 	}())
 
 // Execute a function, log error with uidErrorMessage, and return the HRESULT
-// Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_H_MSG(uidErrorMsg, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
@@ -178,7 +167,6 @@ namespace error
 	}())
 
 // Execute a function, log error with uidErrorMessage, and swallow the HRESULT
-// Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_H_MSG_S(uidErrorMsg, fnx) \
 	[&]() -> void { \
@@ -187,7 +175,7 @@ namespace error
 	}()
 
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and return HRESULT_FROM_WIN32
-// Does not modify or reference existing hRes
+// Will display dialog on error
 #define EC_W32(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = HRESULT_FROM_WIN32(fnx); \
@@ -196,7 +184,7 @@ namespace error
 	}())
 
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and swallow error
-// Does not modify or reference existing hRes
+// Will display dialog on error
 #define EC_W32_S(fnx) \
 	[&]() -> void { \
 		const auto __hRes = HRESULT_FROM_WIN32(fnx); \
@@ -204,7 +192,6 @@ namespace error
 	}()
 
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and return HRESULT_FROM_WIN32
-// Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_W32(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
@@ -214,7 +201,6 @@ namespace error
 	}())
 
 // Execute a W32 function which returns ERROR_SUCCESS on success, log error, and swallow error
-// Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_W32_S(fnx) \
 	[&]() -> void { \
@@ -223,13 +209,13 @@ namespace error
 	}()
 
 // Execute a bool/BOOL function, log error, and return CheckWin32Error(HRESULT)
-// Does not modify or reference existing hRes
+// Will display dialog on error
 #define EC_B(fnx) \
 	error::CheckMe( \
 		[&]() -> HRESULT { return !(fnx) ? error::CheckWin32Error(true, __FILE__, __LINE__, #fnx) : S_OK; }())
 
 // Execute a bool/BOOL function, log error, and swallow error
-// Does not modify or reference existing hRes
+// Will display dialog on error
 #define EC_B_S(fnx) \
 	[&]() -> void { \
 		if (!(fnx)) \
@@ -239,14 +225,12 @@ namespace error
 	}()
 
 // Execute a bool/BOOL function, log error, and return CheckWin32Error(HRESULT)
-// Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_B(fnx) \
 	error::CheckMe( \
 		[&]() -> HRESULT { return !(fnx) ? error::CheckWin32Error(false, __FILE__, __LINE__, #fnx) : S_OK; }())
 
 // Execute a bool/BOOL function, log error, and swallow error
-// Does not modify or reference existing hRes
 // Will not display an error dialog
 #define WC_B_S(fnx) \
 	[&]() -> void { \
@@ -257,6 +241,7 @@ namespace error
 	}()
 
 // Execute a function which returns 0 on error, log error, and return result
+// Will display dialog on error
 #define EC_D(_TYPE, fnx) \
 	[&]() -> _TYPE { \
 		auto __ret = (fnx); \
@@ -294,6 +279,7 @@ namespace error
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
+// Will display dialog on error
 #define EC_H_GETPROPS(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
@@ -306,6 +292,7 @@ namespace error
 // This is annoying, so this macro tosses those warnings.
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
+// Will display dialog on error
 #define EC_H_GETPROPS_S(fnx) \
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
@@ -341,7 +328,7 @@ namespace error
 // Logs a MAPI call trace under DBGMAPIFunctions
 // Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
 // I don't consider these to be errors.
-// Does not modify or reference existing hRes
+// Will display dialog on error
 #define EC_H_CANCEL(fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
@@ -359,7 +346,7 @@ namespace error
 // Logs a MAPI call trace under DBGMAPIFunctions
 // Some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL.
 // I don't consider these to be errors.
-// Does not modify or reference existing hRes
+// Will display dialog on error
 #define EC_H_CANCEL_S(fnx) \
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
@@ -372,6 +359,7 @@ namespace error
 // Execute a function, log and return the command ID
 // Designed to check return values from dialog functions, primarily DoModal
 // These functions use CommDlgExtendedError to get error information
+// Will display dialog on error
 #define EC_D_DIALOG(fnx) \
 	[&]() -> INT_PTR { \
 		const auto __iDlgRet = (fnx); \
