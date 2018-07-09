@@ -1,4 +1,3 @@
-
 #include <StdAfx.h>
 #include <IO/File.h>
 #include <Interpret/InterpretProp.h>
@@ -23,7 +22,7 @@ namespace file
 		{
 			WCHAR szShortPath[MAX_PATH] = {};
 			// Use the short path to give us as much room as possible
-			WC_DS(GetShortPathNameW(path.c_str(), szShortPath, _countof(szShortPath)));
+			WC_D_S(GetShortPathNameW(path.c_str(), szShortPath, _countof(szShortPath)));
 			std::wstring ret = szShortPath;
 			if (ret.back() != L'\\')
 			{
@@ -39,12 +38,10 @@ namespace file
 	std::wstring GetDirectoryPath(HWND hWnd)
 	{
 		WCHAR szPath[MAX_PATH] = {0};
-		BROWSEINFOW BrowseInfo = {nullptr};
-		auto hRes = S_OK;
-
+		BROWSEINFOW BrowseInfo = {};
 		LPMALLOC lpMalloc = nullptr;
 
-		EC_H(SHGetMalloc(&lpMalloc));
+		EC_H_S(SHGetMalloc(&lpMalloc));
 
 		if (!lpMalloc) return strings::emptystring;
 
@@ -59,7 +56,7 @@ namespace file
 		const auto lpItemIdList = SHBrowseForFolderW(&BrowseInfo);
 		if (lpItemIdList)
 		{
-			EC_BS(SHGetPathFromIDListW(lpItemIdList, szPath));
+			EC_B_S(SHGetPathFromIDListW(lpItemIdList, szPath));
 			lpMalloc->Free(lpItemIdList);
 		}
 
@@ -85,18 +82,16 @@ namespace file
 			L"MyStgOpenStorage: Opening \"%ws\", bBestAccess == %ws\n",
 			szMessageFile.c_str(),
 			bBestAccess ? L"True" : L"False");
-		auto hRes = S_OK;
 		ULONG ulFlags = STGM_TRANSACTED;
 
 		if (bBestAccess) ulFlags |= STGM_READWRITE;
 
-		WC_H(::StgOpenStorage(szMessageFile.c_str(), nullptr, ulFlags, nullptr, 0, lppStorage));
+		auto hRes = WC_H(::StgOpenStorage(szMessageFile.c_str(), nullptr, ulFlags, nullptr, 0, lppStorage));
 
 		// If we asked for best access (read/write) and didn't get it, then try it without readwrite
 		if (hRes == STG_E_ACCESSDENIED && !*lppStorage && bBestAccess)
 		{
-			hRes = S_OK;
-			EC_H(MyStgOpenStorage(szMessageFile, false, lppStorage));
+			hRes = EC_H(MyStgOpenStorage(szMessageFile, false, lppStorage));
 		}
 
 		return hRes;
@@ -118,7 +113,7 @@ namespace file
 		{
 			LPSTORAGE pStorage = nullptr;
 			// Open the compound file
-			EC_H(MyStgOpenStorage(szMessageFile, true, &pStorage));
+			hRes = EC_H(MyStgOpenStorage(szMessageFile, true, &pStorage));
 
 			if (pStorage)
 			{
@@ -147,8 +142,6 @@ namespace file
 	// lpMessage must be created first
 	_Check_return_ HRESULT LoadFromMSG(_In_ const std::wstring& szMessageFile, _In_ LPMESSAGE lpMessage, HWND hWnd)
 	{
-		auto hRes = S_OK;
-
 		// Specify properties to exclude in the copy operation. These are
 		// the properties that Exchange excludes to save bits and time.
 		// Should not be necessary to exclude these, but speeds the process
@@ -174,7 +167,7 @@ namespace file
 															 PR_HAS_DAMS}};
 
 		LPMESSAGE pIMsg = nullptr;
-		EC_H(LoadMSGToMessage(szMessageFile, &pIMsg));
+		auto hRes = EC_H(LoadMSGToMessage(szMessageFile, &pIMsg));
 
 		if (pIMsg)
 		{
@@ -214,28 +207,28 @@ namespace file
 	{
 		if (szMessageFile.empty() || !lpAdrBook || !lpMessage) return MAPI_E_INVALID_PARAMETER;
 
-		auto hRes = S_OK;
 		LPSTREAM lpStream = nullptr;
 		// Get a Stream interface on the input TNEF file
-		EC_H(mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, szMessageFile, &lpStream));
+		auto hRes =
+			EC_H(mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, szMessageFile, &lpStream));
 
 		if (lpStream)
 		{
 			LPITNEF lpTNEF = nullptr;
-			EC_H(OpenTnefStreamEx(
+			hRes = EC_H(OpenTnefStreamEx(
 				nullptr,
 				lpStream,
 				reinterpret_cast<LPTSTR>(
 					"winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
 				TNEF_DECODE,
 				lpMessage,
-				static_cast<WORD>(GetTickCount()) + 1,
+				static_cast<WORD>(GetTickCount() + 1),
 				lpAdrBook,
 				&lpTNEF));
 
 			if (lpTNEF)
 			{
-				static const SizedSPropTagArray(1, lpPropTnefExcludeArray) = {1, {PR_URL_COMP_NAME}};
+				auto lpPropTnefExcludeArray = SPropTagArray({1, {PR_URL_COMP_NAME}});
 				LPSTnefProblemArray lpError = nullptr;
 				// Decode the TNEF stream into our MAPI message.
 				hRes = EC_MAPI(
@@ -435,7 +428,7 @@ namespace file
 					hRes = EC_MAPI(lpFolderContents->QueryRows(1, NULL, &pRows));
 					if (FAILED(hRes) || !pRows || pRows && !pRows->cRows) break;
 
-					WC_H(SaveToMSG(
+					hRes = WC_H(SaveToMSG(
 						lpFolder,
 						szPathName,
 						pRows->aRow->lpProps[fldPR_ENTRYID],
@@ -447,7 +440,7 @@ namespace file
 			}
 
 			if (pRows) FreeProws(pRows);
-			if (lpFolderContents) lpFolderContents->Release();
+			lpFolderContents->Release();
 		}
 
 		return hRes;
@@ -456,14 +449,12 @@ namespace file
 #ifndef MRMAPI
 	void ExportMessages(_In_ LPMAPIFOLDER lpFolder, HWND hWnd)
 	{
-		auto hRes = S_OK;
 		dialog::editor::CEditor MyData(
 			nullptr, IDS_EXPORTTITLE, IDS_EXPORTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EXPORTSEARCHTERM, false));
 
-		WC_H(MyData.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (!MyData.DisplayDialog()) return;
 
 		auto szDir = GetDirectoryPath(hWnd);
 		if (szDir.empty()) return;
@@ -473,12 +464,12 @@ namespace file
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		LPMAPITABLE lpTable = nullptr;
-		hRes = WC_MAPI(lpFolder->GetContentsTable(MAPI_DEFERRED_ERRORS | MAPI_UNICODE, &lpTable));
+		WC_MAPI_S(lpFolder->GetContentsTable(MAPI_DEFERRED_ERRORS | MAPI_UNICODE, &lpTable));
 		if (lpTable)
 		{
 			LPSRestriction lpRes = nullptr;
 			// Allocate and create our SRestriction
-			EC_H(mapi::CreatePropertyStringRestriction(
+			auto hRes = EC_H(mapi::CreatePropertyStringRestriction(
 				PR_SUBJECT_W, restrictString, FL_SUBSTRING | FL_IGNORECASE, nullptr, &lpRes));
 			if (SUCCEEDED(hRes))
 			{
@@ -511,12 +502,11 @@ namespace file
 						if (lpRows) FreeProws(lpRows);
 						lpRows = nullptr;
 						WC_MAPI_S(lpTable->QueryRows(50, NULL, &lpRows));
-						if (FAILED(hRes) || !lpRows || !lpRows->cRows) break;
+						if (!lpRows || !lpRows->cRows) break;
 
 						for (ULONG i = 0; i < lpRows->cRows; i++)
 						{
-							hRes = S_OK;
-							WC_H(SaveToMSG(
+							WC_H_S(SaveToMSG(
 								lpFolder,
 								szDir,
 								lpRows->aRow[i].lpProps[fldPR_ENTRYID],
@@ -540,13 +530,12 @@ namespace file
 	{
 		if (!pStrmSrc || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-		auto hRes = S_OK;
 		LPSTREAM pStrmDest = nullptr;
 
 		// Open an IStream interface and create the file at the
 		// same time. This code will create the file in the
 		// current directory.
-		EC_H(mapi::MyOpenStreamOnFile(
+		auto hRes = EC_H(mapi::MyOpenStreamOnFile(
 			MAPIAllocateBuffer, MAPIFreeBuffer, STGM_CREATE | STGM_READWRITE, szFileName, &pStrmDest));
 
 		if (pStrmDest)
@@ -596,7 +585,7 @@ namespace file
 		{
 			if (pStrmSrc)
 			{
-				WC_H(WriteStreamToFile(pStrmSrc, szFileName));
+				hRes = WC_H(WriteStreamToFile(pStrmSrc, szFileName));
 
 				pStrmSrc->Release();
 			}
@@ -647,12 +636,11 @@ namespace file
 			LPSTORAGE pStorage = nullptr;
 
 			STGOPTIONS myOpts = {0};
-
 			myOpts.usVersion = 1; // STGOPTIONS_VERSION
 			myOpts.ulSectorSize = 4096;
 
 			// Open the compound file
-			EC_H(MyStgCreateStorageEx(
+			hRes = EC_H(MyStgCreateStorageEx(
 				szFileName,
 				STGM_READWRITE | STGM_TRANSACTED | STGM_CREATE,
 				STGFMT_DOCFILE,
@@ -726,7 +714,7 @@ namespace file
 		auto lpMapiContainer = mapi::safe_cast<LPMAPICONTAINER>(lpFolder);
 		if (lpMapiContainer)
 		{
-			EC_H(mapi::CallOpenEntry(
+			hRes = EC_H(mapi::CallOpenEntry(
 				nullptr,
 				nullptr,
 				lpMapiContainer,
@@ -750,7 +738,7 @@ namespace file
 			{
 				output::DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
-				EC_H(SaveToMSG(lpMessage, szFileName, bUnicode, hWnd, false));
+				hRes = EC_H(SaveToMSG(lpMessage, szFileName, bUnicode, hWnd, false));
 
 				output::DebugPrint(DBGGeneric, L"Message Saved\n");
 			}
@@ -765,15 +753,13 @@ namespace file
 	_Check_return_ HRESULT
 	SaveToMSG(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szFileName, bool bUnicode, HWND hWnd, bool bAllowUI)
 	{
-		auto hRes = S_OK;
-
 		if (!lpMessage || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 		output::DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szFileName.c_str());
 
 		LPSTORAGE pStorage = nullptr;
 		LPMESSAGE pIMsg = nullptr;
-		EC_H(CreateNewMSG(szFileName, bUnicode, &pIMsg, &pStorage));
+		auto hRes = EC_H(CreateNewMSG(szFileName, bUnicode, &pIMsg, &pStorage));
 		if (pIMsg && pStorage)
 		{
 			// Specify properties to exclude in the copy operation. These are
@@ -789,7 +775,8 @@ namespace file
 																PR_RTF_SYNC_PREFIX_COUNT,
 																PR_RTF_SYNC_TRAILING_COUNT}};
 
-			EC_H(mapi::CopyTo(hWnd, lpMessage, pIMsg, &IID_IMessage, LPSPropTagArray(&excludeTags), false, bAllowUI));
+			hRes = EC_H(
+				mapi::CopyTo(hWnd, lpMessage, pIMsg, &IID_IMessage, LPSPropTagArray(&excludeTags), false, bAllowUI));
 
 			if (SUCCEEDED(hRes))
 			{
@@ -813,8 +800,6 @@ namespace file
 	_Check_return_ HRESULT
 	SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdrBook, _In_ const std::wstring& szFileName)
 	{
-		auto hRes = S_OK;
-
 		enum
 		{
 			ulNumTNEFIncludeProps = 2
@@ -838,13 +823,13 @@ namespace file
 		static auto dwKey = static_cast<WORD>(GetTickCount());
 
 		// Get a Stream interface on the input TNEF file
-		EC_H(mapi::MyOpenStreamOnFile(
+		auto hRes = EC_H(mapi::MyOpenStreamOnFile(
 			MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READWRITE | STGM_CREATE, szFileName, &lpStream));
 
 		if (lpStream)
 		{
 			// Open TNEF stream
-			EC_H(OpenTnefStreamEx(
+			hRes = EC_H(OpenTnefStreamEx(
 				nullptr,
 				lpStream,
 				reinterpret_cast<LPTSTR>(
@@ -901,6 +886,8 @@ namespace file
 
 	_Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szAttName, HWND hWnd)
 	{
+		if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
+
 		enum
 		{
 			ATTACHNUM,
@@ -910,8 +897,6 @@ namespace file
 		static const SizedSPropTagArray(NUM_COLS, sptAttachTableCols) = {NUM_COLS,
 																		 {PR_ATTACH_NUM, PR_ATTACH_LONG_FILENAME_W}};
 
-		if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
-
 		LPSPropValue pProps = nullptr;
 		auto hRes = EC_MAPI(HrGetOneProp(lpMessage, PR_HASATTACH, &pProps));
 
@@ -920,7 +905,6 @@ namespace file
 			LPMAPITABLE lpAttTbl = nullptr;
 			hRes = EC_MAPI(lpMessage->OpenProperty(
 				PR_MESSAGE_ATTACHMENTS, &IID_IMAPITable, fMapiUnicode, 0, reinterpret_cast<LPUNKNOWN*>(&lpAttTbl)));
-
 			if (lpAttTbl)
 			{
 				LPSRowSet pRows = nullptr;
@@ -984,6 +968,7 @@ namespace file
 #ifndef MRMAPI
 	_Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWnd)
 	{
+		if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
 
 		enum
 		{
@@ -992,10 +977,7 @@ namespace file
 		};
 		static const SizedSPropTagArray(NUM_COLS, sptAttachTableCols) = {NUM_COLS, {PR_ATTACH_NUM}};
 
-		if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
-
 		LPSPropValue pProps = nullptr;
-
 		auto hRes = EC_MAPI(HrGetOneProp(lpMessage, PR_HASATTACH, &pProps));
 
 		if (pProps && PR_HASATTACH == pProps[0].ulPropTag && pProps[0].Value.b)
@@ -1016,19 +998,17 @@ namespace file
 					{
 						for (ULONG iRow = 0; iRow < pRows->cRows; iRow++)
 						{
-							LPATTACH lpAttach = nullptr;
-
 							if (PR_ATTACH_NUM != pRows->aRow[iRow].lpProps[ATTACHNUM].ulPropTag) continue;
 
+							LPATTACH lpAttach = nullptr;
 							// Open the attachment
 							hRes = EC_MAPI(lpMessage->OpenAttach(
 								pRows->aRow[iRow].lpProps[ATTACHNUM].Value.l, nullptr, MAPI_BEST_ACCESS, &lpAttach));
 
 							if (lpAttach)
 							{
-								WC_H(WriteAttachmentToFile(lpAttach, hWnd));
+								hRes = WC_H(WriteAttachmentToFile(lpAttach, hWnd));
 								lpAttach->Release();
-								lpAttach = nullptr;
 								if (S_OK != hRes && iRow != pRows->cRows - 1)
 								{
 									if (dialog::bShouldCancel(nullptr, hRes)) break;
@@ -1046,7 +1026,6 @@ namespace file
 		}
 
 		MAPIFreeBuffer(pProps);
-
 		return hRes;
 	}
 #endif
@@ -1068,7 +1047,7 @@ namespace file
 
 		if (lpAttachMsg)
 		{
-			EC_H(SaveToMSG(lpAttachMsg, szFileName, bUnicode, hWnd, false));
+			hRes = EC_H(SaveToMSG(lpAttachMsg, szFileName, bUnicode, hWnd, false));
 			lpAttachMsg->Release();
 		}
 
@@ -1102,7 +1081,7 @@ namespace file
 		{
 			if (pStrmSrc)
 			{
-				WC_H(WriteStreamToFile(pStrmSrc, szFileName));
+				hRes = WC_H(WriteStreamToFile(pStrmSrc, szFileName));
 
 				pStrmSrc->Release();
 			}
@@ -1128,7 +1107,7 @@ namespace file
 		// We got IStreamDocFile! Great! We can copy stream to stream into the file
 		if (pStrmSrc)
 		{
-			WC_H(WriteStreamToFile(pStrmSrc, szFileName));
+			hRes = WC_H(WriteStreamToFile(pStrmSrc, szFileName));
 
 			pStrmSrc->Release();
 		}
@@ -1146,7 +1125,7 @@ namespace file
 			if (lpStorageSrc)
 			{
 				LPSTORAGE lpStorageDest = nullptr;
-				EC_H(::StgCreateDocfile(
+				hRes = EC_H(::StgCreateDocfile(
 					szFileName.c_str(), STGM_READWRITE | STGM_TRANSACTED | STGM_CREATE, 0, &lpStorageDest));
 				if (lpStorageDest)
 				{
@@ -1231,7 +1210,7 @@ namespace file
 					strings::loadstring(IDS_ALLFILES));
 				if (!file.empty())
 				{
-					EC_H(WriteAttachStreamToFile(lpAttach, file));
+					hRes = EC_H(WriteAttachStreamToFile(lpAttach, file));
 				}
 			}
 			break;
@@ -1247,7 +1226,7 @@ namespace file
 						strings::loadstring(IDS_MSGFILES));
 					if (!file.empty())
 					{
-						EC_H(WriteEmbeddedMSGToFile(lpAttach, file, MAPI_UNICODE == fMapiUnicode, hWnd));
+						hRes = EC_H(WriteEmbeddedMSGToFile(lpAttach, file, MAPI_UNICODE == fMapiUnicode, hWnd));
 					}
 				}
 				break;
@@ -1261,7 +1240,7 @@ namespace file
 					strings::loadstring(IDS_ALLFILES));
 				if (!file.empty())
 				{
-					EC_H(WriteOleToFile(lpAttach, file));
+					hRes = EC_H(WriteOleToFile(lpAttach, file));
 				}
 			}
 			break;
@@ -1323,9 +1302,10 @@ namespace file
 				const auto pbData = new BYTE[dwVerInfoSize];
 				if (pbData == nullptr) return {};
 
-				EC_BS(GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
+				auto hRes =
+					EC_B(GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
 
-				if (pbData)
+				if (SUCCEEDED(hRes))
 				{
 					struct LANGANDCODEPAGE
 					{
@@ -1336,7 +1316,7 @@ namespace file
 					UINT cbTranslate = 0;
 
 					// Read the list of languages and code pages.
-					auto hRes = EC_B(VerQueryValueW(
+					hRes = EC_B(VerQueryValueW(
 						pbData,
 						L"\\VarFileInfo\\Translation", // STRING_OK
 						reinterpret_cast<LPVOID*>(&lpTranslate),

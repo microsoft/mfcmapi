@@ -64,7 +64,7 @@ namespace viewpane
 			{
 				const auto szButtonText = strings::loadstring(ListButtons[iButton]);
 
-				EC_BS(m_ButtonArray[iButton].Create(
+				EC_B_S(m_ButtonArray[iButton].Create(
 					strings::wstringTotstring(szButtonText).c_str(),
 					WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
@@ -167,8 +167,8 @@ namespace viewpane
 		y += m_iLabelHeight + m_iSmallHeightMargin;
 
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
-		EC_BS(m_List.ShowWindow(cmdShow));
-		EC_BS(m_List.SetWindowPos(NULL, x, y, width, iVariableHeight, SWP_NOZORDER));
+		EC_B_S(m_List.ShowWindow(cmdShow));
+		EC_B_S(m_List.SetWindowPos(NULL, x, y, width, iVariableHeight, SWP_NOZORDER));
 		y += iVariableHeight;
 
 		if (!m_bReadOnly)
@@ -181,8 +181,8 @@ namespace viewpane
 
 			for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 			{
-				EC_BS(m_ButtonArray[iButton].ShowWindow(cmdShow));
-				EC_BS(m_ButtonArray[iButton].SetWindowPos(
+				EC_B_S(m_ButtonArray[iButton].ShowWindow(cmdShow));
+				EC_B_S(m_ButtonArray[iButton].SetWindowPos(
 					nullptr,
 					iOffset - iSlotWidth * (NUMLISTBUTTONS - iButton),
 					y,
@@ -208,7 +208,7 @@ namespace viewpane
 	void ListPane::ClearList()
 	{
 		m_List.DeleteAllColumns();
-		EC_BS(m_List.DeleteAllItems());
+		EC_B_S(m_List.DeleteAllItems());
 	}
 
 	void ListPane::ResizeList(bool bSort)
@@ -262,7 +262,7 @@ namespace viewpane
 				lpHeaderData->bIsAB = false;
 				lpHeaderData->szTipString[0] = NULL;
 				hdItem.lParam = reinterpret_cast<LPARAM>(lpHeaderData);
-				EC_BS(lpMyHeader->SetItem(nCol, &hdItem));
+				EC_B_S(lpMyHeader->SetItem(nCol, &hdItem));
 			}
 		}
 	}
@@ -279,13 +279,13 @@ namespace viewpane
 			case IDD_LISTMOVEDOWN:
 			case IDD_LISTMOVETOTOP:
 			case IDD_LISTMOVEUP:
-				EC_BS(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 2));
+				EC_B_S(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 2));
 				break;
 			case IDD_LISTDELETE:
-				EC_BS(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1));
+				EC_B_S(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1));
 				break;
 			case IDD_LISTEDIT:
-				EC_BS(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1));
+				EC_B_S(m_ButtonArray[iButton].EnableWindow(ulNumItems >= 1));
 				break;
 			}
 		}
@@ -297,8 +297,8 @@ namespace viewpane
 		auto lpData2 = GetItemData(ulSecondItem);
 
 		// swap the data
-		EC_BS(m_List.SetItemData(ulFirstItem, reinterpret_cast<DWORD_PTR>(lpData2)));
-		EC_BS(m_List.SetItemData(ulSecondItem, reinterpret_cast<DWORD_PTR>(lpData1)));
+		EC_B_S(m_List.SetItemData(ulFirstItem, reinterpret_cast<DWORD_PTR>(lpData2)));
+		EC_B_S(m_List.SetItemData(ulSecondItem, reinterpret_cast<DWORD_PTR>(lpData1)));
 
 		// swap the text (skip the first column!)
 		const auto lpMyHeader = m_List.GetHeaderCtrl();

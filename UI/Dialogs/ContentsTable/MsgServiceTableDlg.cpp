@@ -206,7 +206,7 @@ namespace dialog
 			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)
 			{
-				EC_H(mapi::profile::OpenProfileSection(
+				hRes = EC_H(mapi::profile::OpenProfileSection(
 					m_lpServiceAdmin, lpServiceUID, reinterpret_cast<LPPROFSECT*>(lppMAPIProp)));
 			}
 		}
@@ -216,8 +216,6 @@ namespace dialog
 
 	void CMsgServiceTableDlg::OnOpenProfileSection()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpServiceAdmin) return;
 
 		editor::CEditor MyUID(
@@ -226,20 +224,19 @@ namespace dialog
 		MyUID.InitPane(0, viewpane::DropDownPane::CreateGuid(IDS_MAPIUID, false));
 		MyUID.InitPane(1, viewpane::CheckPane::Create(IDS_MAPIUIDBYTESWAPPED, false, false));
 
-		WC_H(MyUID.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (!MyUID.DisplayDialog()) return;
 
 		auto guid = MyUID.GetSelectedGUID(0, MyUID.GetCheck(1));
 		SBinary MapiUID = {sizeof(GUID), reinterpret_cast<LPBYTE>(&guid)};
 
 		LPPROFSECT lpProfSect = nullptr;
-		EC_H(mapi::profile::OpenProfileSection(m_lpServiceAdmin, &MapiUID, &lpProfSect));
+		EC_H_S(mapi::profile::OpenProfileSection(m_lpServiceAdmin, &MapiUID, &lpProfSect));
 		if (lpProfSect)
 		{
 			auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpProfSect);
 			if (lpTemp)
 			{
-				EC_H(DisplayObject(lpTemp, MAPI_PROFSECT, otContents, this));
+				EC_H_S(DisplayObject(lpTemp, MAPI_PROFSECT, otContents, this));
 				lpTemp->Release();
 			}
 

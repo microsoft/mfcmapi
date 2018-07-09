@@ -96,7 +96,7 @@ namespace viewpane
 
 		if (!m_szLabel.empty())
 		{
-			EC_BS(m_Label.SetWindowPos(nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER));
+			EC_B_S(m_Label.SetWindowPos(nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER));
 			y += m_iLabelHeight;
 		}
 
@@ -105,7 +105,7 @@ namespace viewpane
 		// This will give us something between 4 and 10 entries
 		const auto ulDrops = static_cast<int>(min(10, 1 + max(m_DropList.size(), 4)));
 
-		EC_BS(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
+		EC_B_S(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
 	}
 
 	void DropDownPane::CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
@@ -126,7 +126,7 @@ namespace viewpane
 			dwDropStyle = CBS_DROPDOWN; // allows typing
 		}
 
-		EC_BS(m_DropDown.Create(
+		EC_B_S(m_DropDown.Create(
 			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_BORDER | WS_VISIBLE | WS_VSCROLL | CBS_OWNERDRAWFIXED |
 				CBS_HASSTRINGS | CBS_AUTOHSCROLL | CBS_DISABLENOSCROLL | CBS_NOINTEGRALHEIGHT | dwDropStyle,
 			CRect(0, 0, 0, static_cast<int>(dropHeight)),
@@ -254,7 +254,7 @@ namespace viewpane
 		// not all dropdowns will support this!
 		if (CB_ERR == iSelect)
 		{
-			EC_BS(::SendMessage(
+			EC_B_S(::SendMessage(
 				m_DropDown.m_hWnd, WM_SETTEXT, NULL, reinterpret_cast<LPARAM>(static_cast<LPCTSTR>(text.c_str()))));
 		}
 	}

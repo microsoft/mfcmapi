@@ -254,7 +254,7 @@ namespace mapi
 						-1);
 					if (lpMAPIFormViewer) // not going to release this because we're returning it in ppMessageSite
 					{
-						EC_H(lpMAPIFormViewer->SetPersist(nullptr, pPersistMessage));
+						hRes = EC_H(lpMAPIFormViewer->SetPersist(nullptr, pPersistMessage));
 						*ppMessageSite = static_cast<LPMAPIMESSAGESITE>(lpMAPIFormViewer);
 					}
 				}
@@ -468,27 +468,30 @@ namespace mapi
 			auto hRes = S_OK;
 			if (EXCHIVERB_OPEN == lVerb)
 			{
-				WC_H(SetPersist(lpMapiForm, nullptr));
+				hRes = WC_H(SetPersist(lpMapiForm, nullptr));
 			}
 
-			hRes = WC_MAPI(lpMapiForm->DoVerb(
-				lVerb,
-				nullptr, // view context
-				reinterpret_cast<ULONG_PTR>(m_hwndParent), // parent window
-				lpRect)); // RECT structure with size
-			if (hRes != S_OK)
+			if (SUCCEEDED(hRes))
 			{
-				RECT Rect;
-
-				Rect.left = 0;
-				Rect.right = 500;
-				Rect.top = 0;
-				Rect.bottom = 400;
-				hRes = EC_MAPI(lpMapiForm->DoVerb(
+				hRes = WC_MAPI(lpMapiForm->DoVerb(
 					lVerb,
 					nullptr, // view context
 					reinterpret_cast<ULONG_PTR>(m_hwndParent), // parent window
-					&Rect)); // RECT structure with size
+					lpRect)); // RECT structure with size
+				if (hRes != S_OK)
+				{
+					RECT Rect;
+
+					Rect.left = 0;
+					Rect.right = 500;
+					Rect.top = 0;
+					Rect.bottom = 400;
+					hRes = EC_MAPI(lpMapiForm->DoVerb(
+						lVerb,
+						nullptr, // view context
+						reinterpret_cast<ULONG_PTR>(m_hwndParent), // parent window
+						&Rect)); // RECT structure with size
+				}
 			}
 
 			return hRes;
@@ -514,7 +517,6 @@ namespace mapi
 		STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir, LPCRECT lpRect)
 		{
 			output::DebugPrintEx(DBGFormViewer, CLASS, L"ActivateNext", L"ulDir = 0x%X\n", ulDir);
-			auto hRes = S_OK;
 
 			enum
 			{
@@ -530,7 +532,7 @@ namespace mapi
 			ULONG ulMessageStatus = NULL;
 			const auto bUsedCurrentSite = false;
 
-			WC_H(GetNextMessage(ulDir, &iNewItem, &ulMessageStatus, &lpNewMessage));
+			auto hRes = WC_H(GetNextMessage(ulDir, &iNewItem, &ulMessageStatus, &lpNewMessage));
 			if (lpNewMessage)
 			{
 				ULONG cValuesShow = 0;
@@ -572,7 +574,7 @@ namespace mapi
 							output::DebugPrintEx(
 								DBGFormViewer, CLASS, L"ActivateNext", L"Got new persist from OnActivateNext\n");
 
-							EC_H(OpenMessageNonModal(
+							hRes = EC_H(OpenMessageNonModal(
 								m_hwndParent,
 								m_lpMDB,
 								m_lpMAPISession,
@@ -596,7 +598,7 @@ namespace mapi
 						// we're going to return S_FALSE, which will shut us down, so we can spin a whole new site
 						// we don't need to clean up this site since the shutdown will do it for us
 						// BTW - it might be more efficient to in-line this code and eliminate a GetProps call
-						EC_H(OpenMessageNonModal(
+						hRes = EC_H(OpenMessageNonModal(
 							m_hwndParent,
 							m_lpMDB,
 							m_lpMAPISession,
@@ -696,7 +698,7 @@ namespace mapi
 					const auto lpEID = lpData->Contents()->m_lpEntryID;
 					if (lpEID)
 					{
-						EC_H(mapi::CallOpenEntry(
+						hRes = EC_H(mapi::CallOpenEntry(
 							m_lpMDB,
 							nullptr,
 							nullptr,
@@ -708,8 +710,12 @@ namespace mapi
 							nullptr,
 							reinterpret_cast<LPUNKNOWN*>(ppMessage)));
 
-						hRes = EC_MAPI(m_lpFolder->GetMessageStatus(
-							lpEID->cb, reinterpret_cast<LPENTRYID>(lpEID->lpb), 0, pulStatus));
+						if (SUCCEEDED(hRes))
+						{
+
+							hRes = EC_MAPI(m_lpFolder->GetMessageStatus(
+								lpEID->cb, reinterpret_cast<LPENTRYID>(lpEID->lpb), 0, pulStatus));
+						}
 					}
 				}
 			}

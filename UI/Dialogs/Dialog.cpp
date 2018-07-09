@@ -285,7 +285,7 @@ namespace dialog
 			if (hTemplate)
 			{
 				const auto lpDialogTemplate = static_cast<LPCDLGTEMPLATE>(LockResource(hTemplate));
-				EC_BS(CreateDlgIndirect(lpDialogTemplate, m_lpNonModalParent, hInst));
+				EC_B_S(CreateDlgIndirect(lpDialogTemplate, m_lpNonModalParent, hInst));
 			}
 		}
 	}

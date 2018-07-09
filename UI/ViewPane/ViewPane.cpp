@@ -43,7 +43,7 @@ namespace viewpane
 			width,
 			x + m_iButtonHeight,
 			m_iLabelWidth);
-		EC_BS(m_Label.SetWindowPos(nullptr, x, y, m_iLabelWidth, m_iLabelHeight, SWP_NOZORDER));
+		EC_B_S(m_Label.SetWindowPos(nullptr, x, y, m_iLabelWidth, m_iLabelHeight, SWP_NOZORDER));
 	}
 
 	void ViewPane::SetLabel(UINT uidLabel, bool bReadOnly)
@@ -63,7 +63,7 @@ namespace viewpane
 		const UINT iCurIDLabel = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl;
 		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl + 1;
 
-		EC_BS(m_Label.Create(
+		EC_B_S(m_Label.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, iCurIDLabel));
 		SetWindowTextW(m_Label.m_hWnd, m_szLabel.c_str());
 		ui::SubclassLabel(m_Label.m_hWnd);
@@ -72,7 +72,7 @@ namespace viewpane
 		{
 			StyleLabel(m_Label.m_hWnd, ui::lsPaneHeaderLabel);
 
-			EC_BS(m_CollapseButton.Create(
+			EC_B_S(m_CollapseButton.Create(
 				NULL,
 				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 				CRect(0, 0, 0, 0),

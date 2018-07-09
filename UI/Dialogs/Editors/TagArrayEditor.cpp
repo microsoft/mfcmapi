@@ -68,7 +68,7 @@ namespace dialog
 			{
 				// Apply lpFinalTagArray through SetColumns
 				EC_MAPI_S(m_lpContentsTable->SetColumns(m_lpOutputTagArray,
-																  m_ulSetColumnsFlags)); // Flags
+														m_ulSetColumnsFlags)); // Flags
 			}
 
 			CMyDialog::OnOK(); // don't need to call CEditor::OnOK
@@ -83,7 +83,6 @@ namespace dialog
 				lpData->InitializePropList(0);
 			}
 
-			auto hRes = S_OK;
 			const auto ulOrigPropTag = lpData->Prop()->m_ulPropTag;
 
 			CPropertyTagEditor MyPropertyTag(
@@ -94,8 +93,7 @@ namespace dialog
 				m_lpMAPIProp,
 				this);
 
-			WC_H(MyPropertyTag.DisplayDialog());
-			if (S_OK != hRes) return false;
+			if (!MyPropertyTag.DisplayDialog()) return false;
 			const auto ulNewPropTag = MyPropertyTag.GetPropertyTag();
 
 			if (ulNewPropTag != ulOrigPropTag)
@@ -167,9 +165,8 @@ namespace dialog
 			// If we're not dirty, don't write
 			if (!IsDirty(ulListNum)) return;
 
-			auto hRes = S_OK;
 			const auto ulListCount = GetListCount(ulListNum);
-			EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(ulListCount), reinterpret_cast<LPVOID*>(&m_lpOutputTagArray)));
+			EC_H_S(MAPIAllocateBuffer(CbNewSPropTagArray(ulListCount), reinterpret_cast<LPVOID*>(&m_lpOutputTagArray)));
 			if (m_lpOutputTagArray)
 			{
 				m_lpOutputTagArray->cValues = ulListCount;
@@ -201,36 +198,32 @@ namespace dialog
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_QUERYCOLUMNFLAGS, false));
 			MyData.SetHex(0, ulQueryColumnFlags);
 
-			WC_H(MyData.DisplayDialog());
-			if (hRes == S_OK)
+			if (!MyData.DisplayDialog()) return;
+
+			ulQueryColumnFlags = MyData.GetHex(0);
+			LPSPropTagArray lpTagArray = nullptr;
+
+			hRes = EC_MAPI(m_lpContentsTable->QueryColumns(ulQueryColumnFlags, &lpTagArray));
+
+			if (SUCCEEDED(hRes))
 			{
-				ulQueryColumnFlags = MyData.GetHex(0);
-				LPSPropTagArray lpTagArray = nullptr;
-
-				hRes = EC_MAPI(m_lpContentsTable->QueryColumns(ulQueryColumnFlags, &lpTagArray));
-
-				if (SUCCEEDED(hRes))
-				{
-					ReadTagArrayToList(0, lpTagArray);
-					UpdateButtons();
-				}
-
-				MAPIFreeBuffer(lpTagArray);
+				ReadTagArrayToList(0, lpTagArray);
+				UpdateButtons();
 			}
+
+			MAPIFreeBuffer(lpTagArray);
 		}
 
 		// SetColumns flags
 		void CTagArrayEditor::OnEditAction2()
 		{
 			if (!m_lpContentsTable) return;
-			auto hRes = S_OK;
 
 			CEditor MyData(this, IDS_SETCOLUMNS, IDS_SETCOLUMNSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SETCOLUMNFLAGS, false));
 			MyData.SetHex(0, m_ulSetColumnsFlags);
 
-			WC_H(MyData.DisplayDialog());
-			if (hRes == S_OK)
+			if (MyData.DisplayDialog())
 			{
 				m_ulSetColumnsFlags = MyData.GetHex(0);
 			}

@@ -111,7 +111,7 @@ namespace controls
 
 				break;
 			case WM_LBUTTONDBLCLK:
-				WC_H(DoExpandCollapse());
+				hRes = WC_H(DoExpandCollapse());
 				if (hRes == S_FALSE)
 				{
 					// Post the message to display the item
@@ -189,7 +189,7 @@ namespace controls
 
 			auto hRes = EC_MAPI(m_lpContentsTable->GetStatus(&ulTableStatus, &ulTableType));
 
-			if (!FAILED(hRes))
+			if (SUCCEEDED(hRes))
 			{
 				dialog::editor::CEditor MyData(this, IDS_GETSTATUS, IDS_GETSTATUSPROMPT, CEDITOR_BUTTON_OK);
 				MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, true));
@@ -201,7 +201,7 @@ namespace controls
 				szFlags = interpretprop::InterpretFlags(flagTableType, ulTableType);
 				MyData.InitPane(3, viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLETYPE, szFlags, true));
 
-				WC_H(MyData.DisplayDialog());
+				(void) MyData.DisplayDialog();
 			}
 		}
 
@@ -255,7 +255,6 @@ namespace controls
 
 		void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor)
 		{
-			auto hRes = S_OK;
 			output::DebugPrintEx(DBGGeneric, CLASS, L"DoSetColumns", L"bDisplayEditor = %d\n", bDisplayEditor);
 
 			if (!IsContentsTableSet())
@@ -286,7 +285,7 @@ namespace controls
 			if (bAddExtras)
 			{
 				// build an array with the source set and m_sptExtraColumnTags combined
-				EC_H(mapi::ConcatSPropTagArrays(
+				EC_H_S(mapi::ConcatSPropTagArrays(
 					m_sptExtraColumnTags,
 					lpFinalTagArray, // build on the final array we've computed thus far
 					&lpConcatTagArray));
@@ -310,9 +309,7 @@ namespace controls
 					m_bIsAB,
 					lpMDB);
 
-				WC_H(MyEditor.DisplayDialog());
-
-				if (hRes == S_OK)
+				if (MyEditor.DisplayDialog())
 				{
 					lpModifiedTags = MyEditor.DetachModifiedTagArray();
 					if (lpModifiedTags)
@@ -397,7 +394,7 @@ namespace controls
 					lpHeaderData->szTipString = interpretprop::TagToString(ulPropTag, lpMDB, m_bIsAB, false);
 
 					hdItem.lParam = reinterpret_cast<LPARAM>(lpHeaderData);
-					EC_BS(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
+					EC_B_S(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
 				}
 			}
 		}
@@ -555,7 +552,7 @@ namespace controls
 				hWndHost, STATUSDATA1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
 
 			// potentially lengthy op - check abort before and after
-			CHECKABORT(WC_H(lpListCtrl->ApplyRestriction()));
+			CHECKABORT(WC_H_S(lpListCtrl->ApplyRestriction()));
 
 			if (!bABORTSET) // only check abort once for this group of ops
 			{
@@ -701,7 +698,7 @@ namespace controls
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"\n");
 
-			EC_BS(DeleteAllItems());
+			EC_B_S(DeleteAllItems());
 
 			// whack the old thread handle if we still have it
 			if (m_LoadThreadHandle) CloseHandle(m_LoadThreadHandle);
@@ -808,7 +805,7 @@ namespace controls
 			{
 				HDITEM hdItem = {0};
 				hdItem.mask = HDI_LPARAM;
-				EC_BS(lpMyHeader->GetItem(iColumn, &hdItem));
+				EC_B_S(lpMyHeader->GetItem(iColumn, &hdItem));
 
 				if (hdItem.lParam)
 				{
@@ -1004,7 +1001,6 @@ namespace controls
 
 		_Check_return_ LPENTRYLIST CContentsTableListCtrl::GetSelectedItemEIDs() const
 		{
-			auto hRes = S_OK;
 			const auto iNumItems = GetSelectedCount();
 
 			if (!iNumItems) return S_OK;
@@ -1012,14 +1008,14 @@ namespace controls
 
 			LPENTRYLIST lpTempList = nullptr;
 
-			EC_H(MAPIAllocateBuffer(sizeof(ENTRYLIST), reinterpret_cast<LPVOID*>(&lpTempList)));
+			auto hRes = EC_H(MAPIAllocateBuffer(sizeof(ENTRYLIST), reinterpret_cast<LPVOID*>(&lpTempList)));
 
 			if (lpTempList)
 			{
 				lpTempList->cValues = iNumItems;
 				lpTempList->lpbin = nullptr;
 
-				EC_H(MAPIAllocateMore(
+				hRes = EC_H(MAPIAllocateMore(
 					static_cast<ULONG>(sizeof(SBinary)) * iNumItems,
 					lpTempList,
 					reinterpret_cast<LPVOID*>(&lpTempList->lpbin)));
@@ -1038,7 +1034,7 @@ namespace controls
 							if (lpData && lpData->Contents() && lpData->Contents()->m_lpEntryID)
 							{
 								lpTempList->lpbin[iArrayPos].cb = lpData->Contents()->m_lpEntryID->cb;
-								EC_H(MAPIAllocateMore(
+								EC_H_S(MAPIAllocateMore(
 									lpData->Contents()->m_lpEntryID->cb,
 									lpTempList,
 									reinterpret_cast<LPVOID*>(&lpTempList->lpbin[iArrayPos].lpb)));
@@ -1146,7 +1142,10 @@ namespace controls
 			*lppProp = nullptr;
 
 			const auto iItem = GetNextSelectedItemNum(iCurItem);
-			if (-1 != iItem) WC_H(m_lpHostDlg->OpenItemProp(iItem, bModify, lppProp));
+			if (-1 != iItem)
+			{
+				hRes = WC_H(m_lpHostDlg->OpenItemProp(iItem, bModify, lppProp));
+			}
 
 			return hRes;
 		}
@@ -1186,7 +1185,7 @@ namespace controls
 			case MAPI_ABCONT:
 			{
 				const auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
-				WC_H(mapi::CallOpenEntry(
+				hRes = WC_H(mapi::CallOpenEntry(
 					nullptr,
 					lpAB, // use AB
 					nullptr,
@@ -1209,7 +1208,7 @@ namespace controls
 					lpInterface = &IID_IMessageRaw;
 				}
 
-				WC_H(mapi::CallOpenEntry(
+				hRes = WC_H(mapi::CallOpenEntry(
 					lpMDB, // use MDB
 					nullptr,
 					nullptr,
@@ -1230,7 +1229,7 @@ namespace controls
 			default:
 			{
 				const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-				WC_H(mapi::CallOpenEntry(
+				hRes = WC_H(mapi::CallOpenEntry(
 					nullptr,
 					nullptr,
 					nullptr,
@@ -1250,8 +1249,7 @@ namespace controls
 				output::DebugPrint(DBGGeneric, L"\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n", hRes);
 				// We got access denied when we passed MAPI_MODIFY
 				// Let's try again without it.
-				hRes = S_OK;
-				EC_H(DefaultOpenItemProp(iItem, mfcmapiDO_NOT_REQUEST_MODIFY, lppProp));
+				hRes = EC_H(DefaultOpenItemProp(iItem, mfcmapiDO_NOT_REQUEST_MODIFY, lppProp));
 			}
 
 			if (hRes == MAPI_E_NOT_FOUND)
@@ -1280,7 +1278,7 @@ namespace controls
 			MySetRedraw(false);
 			for (auto iIndex = 0; iIndex < GetItemCount(); iIndex++)
 			{
-				EC_BS(SetItemState(iIndex, LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED));
+				EC_B_S(SetItemState(iIndex, LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED));
 			}
 
 			MySetRedraw(true);
@@ -1306,8 +1304,6 @@ namespace controls
 				std::wstring szTitle;
 				if (1 == GetSelectedCount())
 				{
-					auto hRes = S_OK;
-
 					// go get the original row for display in the prop list control
 					lpData = GetSortListData(pNMListView->iItem);
 					ULONG cValues = 0;
@@ -1318,7 +1314,7 @@ namespace controls
 						lpProps = lpData->lpSourceProps;
 					}
 
-					WC_H(m_lpHostDlg->OpenItemProp(pNMListView->iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
+					WC_H_S(m_lpHostDlg->OpenItemProp(pNMListView->iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
 
 					szTitle = strings::loadstring(IDS_DISPLAYNAMENOTFOUND);
 

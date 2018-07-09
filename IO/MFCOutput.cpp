@@ -330,8 +330,6 @@ namespace output
 		EARLYABORT;
 		if (!lpMAPIFormInfo) return;
 
-		auto hRes = S_OK;
-
 		LPSPropValue lpPropVals = nullptr;
 		ULONG ulPropVals = NULL;
 		LPMAPIVERBARRAY lpMAPIVerbArray = nullptr;
@@ -339,15 +337,14 @@ namespace output
 
 		Outputf(ulDbgLvl, fFile, true, L"Dumping verb and property set for form: %p\n", lpMAPIFormInfo);
 
-		EC_H(mapi::GetPropsNULL(lpMAPIFormInfo, fMapiUnicode, &ulPropVals, &lpPropVals));
+		EC_H_S(mapi::GetPropsNULL(lpMAPIFormInfo, fMapiUnicode, &ulPropVals, &lpPropVals));
 		if (lpPropVals)
 		{
 			_OutputProperties(ulDbgLvl, fFile, ulPropVals, lpPropVals, lpMAPIFormInfo, false);
 			MAPIFreeBuffer(lpPropVals);
 		}
 
-		hRes = EC_MAPI(lpMAPIFormInfo->CalcVerbSet(NULL, &lpMAPIVerbArray)); // API doesn't support Unicode
-
+		EC_MAPI_S(lpMAPIFormInfo->CalcVerbSet(NULL, &lpMAPIVerbArray)); // API doesn't support Unicode
 		if (lpMAPIVerbArray)
 		{
 			Outputf(ulDbgLvl, fFile, true, L"\t0x%X verbs:\n", lpMAPIVerbArray->cMAPIVerb);
@@ -388,8 +385,7 @@ namespace output
 			MAPIFreeBuffer(lpMAPIVerbArray);
 		}
 
-		hRes = EC_MAPI(lpMAPIFormInfo->CalcFormPropSet(NULL, &lpMAPIFormPropArray)); // API doesn't support Unicode
-
+		EC_MAPI_S(lpMAPIFormInfo->CalcFormPropSet(NULL, &lpMAPIFormPropArray)); // API doesn't support Unicode
 		if (lpMAPIFormPropArray)
 		{
 			_OutputFormPropArray(ulDbgLvl, fFile, lpMAPIFormPropArray);
@@ -786,19 +782,17 @@ namespace output
 
 		if (!lpProp) return;
 
-		auto hRes = S_OK;
 		LPSPropValue lpLargeProp = nullptr;
 		const auto iIndent = 2;
 
 		if (PROP_TYPE(lpProp->ulPropTag) == PT_ERROR && lpProp->Value.err == MAPI_E_NOT_ENOUGH_MEMORY && lpObj &&
 			bRetryStreamProps)
 		{
-			WC_H(mapi::GetLargeBinaryProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
+			auto hRes = WC_H(mapi::GetLargeBinaryProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
 
 			if (FAILED(hRes))
 			{
-				hRes = S_OK;
-				WC_H(mapi::GetLargeStringProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
+				hRes = WC_H(mapi::GetLargeStringProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
 			}
 
 			if (SUCCEEDED(hRes) && lpLargeProp && PT_ERROR != PROP_TYPE(lpLargeProp->ulPropTag))

@@ -200,7 +200,7 @@ namespace import
 		if (szClient.empty())
 		{
 			HKEY hDefaultMailKey = nullptr;
-			WC_W32S(RegOpenKeyExW(
+			WC_W32_S(RegOpenKeyExW(
 				HKEY_LOCAL_MACHINE,
 				L"Software\\Clients\\Mail", // STRING_OK
 				NULL,
@@ -216,7 +216,7 @@ namespace import
 					output::DebugPrint(DBGLoadLibrary, L"Default MAPI = %ws\n", lpszClient.c_str());
 				}
 
-				EC_W32S(RegCloseKey(hDefaultMailKey));
+				EC_W32_S(RegCloseKey(hDefaultMailKey));
 			}
 		}
 
@@ -225,7 +225,7 @@ namespace import
 		{
 			auto szMailKey = std::wstring(L"Software\\Clients\\Mail\\") + szClient; // STRING_OK
 
-			WC_W32S(RegOpenKeyExW(HKEY_LOCAL_MACHINE, szMailKey.c_str(), NULL, KEY_READ, &hMailKey));
+			WC_W32_S(RegOpenKeyExW(HKEY_LOCAL_MACHINE, szMailKey.c_str(), NULL, KEY_READ, &hMailKey));
 		}
 
 		return hMailKey;
@@ -262,7 +262,7 @@ namespace import
 				L"MSIOfficeLCID = %ws\n",
 				!lpszOfficeLCID.empty() ? lpszOfficeLCID.c_str() : L"<not found>");
 
-			EC_W32S(RegCloseKey(hKey));
+			EC_W32_S(RegCloseKey(hKey));
 		}
 	}
 

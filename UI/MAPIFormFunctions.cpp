@@ -49,7 +49,6 @@ namespace mapi
 					lpMAPIFormInfo, // form info
 					IID_IPersistMessage, // riid to open
 					reinterpret_cast<LPVOID*>(&lpPersistMessage))); // form to open into
-
 				if (lpPersistMessage)
 				{
 					LPMESSAGE lpMessage = nullptr;

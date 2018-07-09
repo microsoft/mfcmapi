@@ -148,7 +148,7 @@ namespace controls
 			tvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 			tvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
-			WC_BS(::SendMessage(m_hWnd, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&tvHitTestInfo)));
+			WC_B_S(::SendMessage(m_hWnd, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&tvHitTestInfo)));
 			if (tvHitTestInfo.hItem)
 			{
 				if (tvHitTestInfo.flags & TVHT_ONITEMBUTTON)
@@ -178,7 +178,7 @@ namespace controls
 					tmEvent.dwFlags = TME_LEAVE;
 					tmEvent.hwndTrack = m_hWnd;
 
-					WC_BS(TrackMouseEvent(&tmEvent));
+					WC_B_S(TrackMouseEvent(&tmEvent));
 				}
 			}
 			else
@@ -213,7 +213,10 @@ namespace controls
 
 		auto hRes = EC_B(DeleteItem(GetRootItem()));
 
-		if (m_lpContainer) EC_H(AddRootNode(m_lpContainer));
+		if (SUCCEEDED(hRes) && m_lpContainer)
+		{
+			hRes = EC_H(AddRootNode(m_lpContainer));
+		}
 
 		if (m_lpHostDlg) m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
 
@@ -237,7 +240,7 @@ namespace controls
 
 		m_ulContainerType = mapi::GetMAPIObjectType(lpMAPIContainer);
 
-		WC_H(RefreshHierarchyTable());
+		hRes = WC_H(RefreshHierarchyTable());
 		if (hRes == MAPI_E_NOT_FOUND)
 		{
 			WARNHRESMSG(hRes, IDS_HIERARCHNOTFOUND);
@@ -661,7 +664,7 @@ namespace controls
 		item.pszText = szText;
 		item.cchTextMax = _countof(szText);
 		item.hItem = GetSelectedItem();
-		WC_BS(::SendMessage(m_hWnd, TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+		WC_B_S(::SendMessage(m_hWnd, TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
 		m_lpHostDlg->UpdateTitleBarText(szText);
 
 		if (lpMAPIContainer) lpMAPIContainer->Release();
@@ -890,7 +893,7 @@ namespace controls
 					output::DebugPrint(
 						DBGGeneric, L"\tCalling OpenEntry on address book with ulFlags = 0x%X\n", ulFlags);
 
-					WC_H(mapi::CallOpenEntry(
+					hRes = WC_H(mapi::CallOpenEntry(
 						nullptr,
 						lpAddrBook,
 						nullptr,
@@ -911,7 +914,7 @@ namespace controls
 					ulFlags = (mfcmapiREQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL) |
 							  (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES | MAPI_NO_CACHE : NULL);
 
-					WC_H(mapi::CallOpenEntry(
+					hRes = WC_H(mapi::CallOpenEntry(
 						lpMDB,
 						nullptr,
 						nullptr,
@@ -931,7 +934,7 @@ namespace controls
 		{
 			WARNHRESMSG(MAPI_E_CALL_FAILED, IDS_UNKNOWNCONTAINERTYPE);
 			hRes = S_OK;
-			WC_H(mapi::CallOpenEntry(
+			hRes = WC_H(mapi::CallOpenEntry(
 				nullptr,
 				nullptr,
 				m_lpContainer,
@@ -974,7 +977,6 @@ namespace controls
 	// When + is clicked, add all entries in the table as children
 	void CHierarchyTableTreeCtrl::OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
-		auto hRes = S_OK;
 		*pResult = 0;
 
 		const auto pNMTreeView = reinterpret_cast<NM_TREEVIEW*>(pNMHDR);
@@ -993,7 +995,7 @@ namespace controls
 			{
 				if (!(pNMTreeView->itemNew.state & TVIS_EXPANDEDONCE))
 				{
-					EC_H(ExpandNode(pNMTreeView->itemNew.hItem));
+					EC_H_S(ExpandNode(pNMTreeView->itemNew.hItem));
 				}
 			}
 		}

@@ -98,11 +98,10 @@ namespace dialog
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 		if (lpListData && lpListData->Contents() && ATTACH_EMBEDDED_MSG == lpListData->Contents()->m_ulAttachMethod)
 		{
-			auto hRes = S_OK;
 			auto lpMessage = OpenEmbeddedMessage();
 			if (lpMessage)
 			{
-				WC_H(DisplayObject(lpMessage, MAPI_MESSAGE, otDefault, this));
+				WC_H_S(DisplayObject(lpMessage, MAPI_MESSAGE, otDefault, this));
 				lpMessage->Release();
 			}
 		}
@@ -382,7 +381,7 @@ namespace dialog
 
 				if (lpAttach)
 				{
-					WC_H(file::WriteAttachmentToFile(lpAttach, m_hWnd));
+					hRes = WC_H(file::WriteAttachmentToFile(lpAttach, m_hWnd));
 
 					lpAttach->Release();
 					lpAttach = nullptr;

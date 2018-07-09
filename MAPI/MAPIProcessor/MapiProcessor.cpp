@@ -70,7 +70,6 @@ namespace mapiprocessor
 	void CMAPIProcessor::ProcessMailboxTable(_In_ const std::wstring& szExchangeServerName)
 	{
 		if (szExchangeServerName.empty()) return;
-		auto hRes = S_OK;
 
 		LPMAPITABLE lpMailBoxTable = nullptr;
 		LPSRowSet lpRows = nullptr;
@@ -83,12 +82,11 @@ namespace mapiprocessor
 
 		BeginMailboxTableWork(szExchangeServerName);
 
-		WC_H(mapi::store::OpenMessageStoreGUID(m_lpSession, pbExchangeProviderPrimaryUserGuid, &lpPrimaryMDB));
+		WC_H_S(mapi::store::OpenMessageStoreGUID(m_lpSession, pbExchangeProviderPrimaryUserGuid, &lpPrimaryMDB));
 
 		if (lpPrimaryMDB && mapi::store::StoreSupportsManageStore(lpPrimaryMDB)) do
 			{
-				hRes = S_OK;
-				WC_H(mapi::store::GetMailboxTable(
+				auto hRes = WC_H(mapi::store::GetMailboxTable(
 					lpPrimaryMDB, strings::wstringTostring(szExchangeServerName), ulOffset, &lpMailBoxTable));
 				if (lpMailBoxTable)
 				{
@@ -122,7 +120,7 @@ namespace mapiprocessor
 								m_lpMDB = nullptr;
 							}
 
-							WC_H(mapi::store::OpenOtherUsersMailbox(
+							WC_H_S(mapi::store::OpenOtherUsersMailbox(
 								m_lpSession,
 								lpPrimaryMDB,
 								strings::wstringTostring(szExchangeServerName),
@@ -374,7 +372,7 @@ namespace mapiprocessor
 					if (!lpMsgEID) continue;
 
 					LPMESSAGE lpMessage = nullptr;
-					WC_H(mapi::CallOpenEntry(
+					WC_H_S(mapi::CallOpenEntry(
 						nullptr,
 						nullptr,
 						m_lpFolder,
@@ -576,10 +574,12 @@ namespace mapiprocessor
 		newNode.lpFolderEID = nullptr;
 		if (lpFolderEID)
 		{
-			auto hRes = S_OK;
-			WC_H(MAPIAllocateBuffer(
+			auto hRes = WC_H(MAPIAllocateBuffer(
 				static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&newNode.lpFolderEID)));
-			WC_H(mapi::CopySBinary(newNode.lpFolderEID, lpFolderEID, nullptr));
+			if (SUCCEEDED(hRes))
+			{
+				hRes = WC_H(mapi::CopySBinary(newNode.lpFolderEID, lpFolderEID, nullptr));
+			}
 		}
 
 		m_List.push_back(newNode);
@@ -589,7 +589,6 @@ namespace mapiprocessor
 	// If we fail to open a folder, move on to the next item in the list
 	void CMAPIProcessor::OpenFirstFolderInList()
 	{
-		auto hRes = S_OK;
 		LPMAPIFOLDER lpFolder = nullptr;
 		m_szFolderOffset.clear();
 
@@ -600,9 +599,7 @@ namespace mapiprocessor
 		while (!lpFolder && !m_List.empty())
 		{
 			auto node = m_List.front();
-			hRes = S_OK;
-
-			WC_H(mapi::CallOpenEntry(
+			WC_H_S(mapi::CallOpenEntry(
 				m_lpMDB,
 				nullptr,
 				nullptr,

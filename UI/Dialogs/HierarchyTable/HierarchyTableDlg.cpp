@@ -97,8 +97,6 @@ namespace dialog
 
 	void CHierarchyTableDlg::OnDisplayItem()
 	{
-		auto hRes = S_OK;
-
 		auto lpMAPIContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 		if (!lpMAPIContainer)
 		{
@@ -106,14 +104,13 @@ namespace dialog
 			return;
 		}
 
-		EC_H(DisplayObject(lpMAPIContainer, NULL, otContents, this));
+		EC_H_S(DisplayObject(lpMAPIContainer, NULL, otContents, this));
 
 		lpMAPIContainer->Release();
 	}
 
 	void CHierarchyTableDlg::OnDisplayHierarchyTable()
 	{
-		auto hRes = S_OK;
 		LPMAPITABLE lpMAPITable = nullptr;
 
 		if (!m_lpHierarchyTableTreeCtrl) return;
@@ -129,15 +126,16 @@ namespace dialog
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_CONVENIENTDEPTH, false, false));
 
-			WC_H(MyData.DisplayDialog());
-
-			EC_MAPI_S(
-				lpContainer->GetHierarchyTable(MyData.GetCheck(0) ? CONVENIENT_DEPTH : 0 | fMapiUnicode, &lpMAPITable));
-
-			if (lpMAPITable)
+			if (MyData.DisplayDialog())
 			{
-				EC_H(DisplayTable(lpMAPITable, otHierarchy, this));
-				lpMAPITable->Release();
+				EC_MAPI_S(lpContainer->GetHierarchyTable(
+					MyData.GetCheck(0) ? CONVENIENT_DEPTH : 0 | fMapiUnicode, &lpMAPITable));
+
+				if (lpMAPITable)
+				{
+					EC_H_S(DisplayTable(lpMAPITable, otHierarchy, this));
+					lpMAPITable->Release();
+				}
 			}
 
 			lpContainer->Release();
@@ -174,8 +172,7 @@ namespace dialog
 
 			editor::CCriteriaEditor MyCriteria(this, lpRes, lpEntryList, ulSearchState);
 
-			WC_H(MyCriteria.DisplayDialog());
-			if (hRes == S_OK)
+			if (MyCriteria.DisplayDialog())
 			{
 				// make sure the user really wants to call SetSearchCriteria
 				// hard to detect 'dirty' on this dialog so easier just to ask
@@ -184,8 +181,7 @@ namespace dialog
 					IDS_CALLSETSEARCHCRITERIA,
 					IDS_CALLSETSEARCHCRITERIAPROMPT,
 					CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				WC_H(MyYesNoDialog.DisplayDialog());
-				if (hRes == S_OK)
+				if (MyYesNoDialog.DisplayDialog())
 				{
 					// do the set search criteria
 					const auto lpNewRes = MyCriteria.DetachModifiedSRestriction();
@@ -225,14 +221,12 @@ namespace dialog
 
 	void CHierarchyTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	{
-		auto hRes = S_OK;
-
 		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CBaseDialog::CreateDialogAndMenu(nIDMenuResource, IDR_MENU_HIERARCHY_TABLE, IDS_HIERARCHYTABLE);
 
 		if (m_lpHierarchyTableTreeCtrl)
 		{
-			EC_H(m_lpHierarchyTableTreeCtrl->LoadHierarchyTable(m_lpContainer));
+			EC_H_S(m_lpHierarchyTableTreeCtrl->LoadHierarchyTable(m_lpContainer));
 		}
 	}
 
@@ -259,10 +253,8 @@ namespace dialog
 
 	void CHierarchyTableDlg::OnRefreshView()
 	{
-		auto hRes = S_OK;
-
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
-		if (m_lpHierarchyTableTreeCtrl) EC_H(m_lpHierarchyTableTreeCtrl->RefreshHierarchyTable());
+		if (m_lpHierarchyTableTreeCtrl) EC_H_S(m_lpHierarchyTableTreeCtrl->RefreshHierarchyTable());
 	}
 
 	_Check_return_ bool CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)

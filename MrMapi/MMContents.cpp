@@ -66,10 +66,9 @@ void DumpMSG(
 	_In_ bool bRetryStreamProps,
 	_In_ bool bOutputAttachments)
 {
-	auto hRes = S_OK;
 	LPMESSAGE lpMessage = nullptr;
 
-	WC_H(file::LoadMSGToMessage(lpszMSGFile, &lpMessage));
+	WC_H_S(file::LoadMSGToMessage(lpszMSGFile, &lpMessage));
 
 	if (lpMessage)
 	{

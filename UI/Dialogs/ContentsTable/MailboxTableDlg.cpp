@@ -68,7 +68,6 @@ namespace dialog
 
 	void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
@@ -78,7 +77,7 @@ namespace dialog
 		LPMDB lpGUIDMDB = nullptr;
 		if (!lpMDB)
 		{
-			EC_H(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpGUIDMDB));
+			EC_H_S(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpGUIDMDB));
 		}
 
 		const auto lpSourceMDB = lpMDB ? lpMDB : lpGUIDMDB; // do not release
@@ -89,12 +88,11 @@ namespace dialog
 			auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 			for (const auto& lpListData : items)
 			{
-				hRes = S_OK;
 				if (lpListData && lpListData->Contents())
 				{
 					if (!lpListData->Contents()->m_szDN.empty())
 					{
-						EC_H(mapi::store::OpenOtherUsersMailbox(
+						EC_H_S(mapi::store::OpenOtherUsersMailbox(
 							lpMAPISession,
 							lpSourceMDB,
 							strings::wstringTostring(m_lpszServerName),
@@ -106,7 +104,7 @@ namespace dialog
 
 						if (lpNewMDB)
 						{
-							EC_H(DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, otStore, this));
+							EC_H_S(DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, otStore, this));
 							lpNewMDB->Release();
 							lpNewMDB = nullptr;
 						}
@@ -122,15 +120,12 @@ namespace dialog
 
 	void CMailboxTableDlg::OnOpenWithFlags()
 	{
-		auto hRes = S_OK;
-
 		editor::CEditor MyPrompt(
 			this, IDS_OPENWITHFLAGS, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 		MyPrompt.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 		MyPrompt.SetHex(0, OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
-		WC_H(MyPrompt.DisplayDialog());
-		if (hRes == S_OK)
+		if (MyPrompt.DisplayDialog())
 		{
 			DisplayItem(MyPrompt.GetHex(0));
 		}
@@ -138,7 +133,6 @@ namespace dialog
 
 	void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 	{
-		auto hRes = S_OK;
 		LPSRestriction lpRes = nullptr;
 
 		editor::CPropertyTagEditor MyPropertyTag(
@@ -149,37 +143,30 @@ namespace dialog
 			nullptr,
 			this);
 
-		WC_H(MyPropertyTag.DisplayDialog());
-		if (hRes == S_OK)
+		if (!MyPropertyTag.DisplayDialog()) return;
+
+		editor::CEditor MyData(
+			this, IDS_SEARCHCRITERIA, IDS_MBSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
+
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));
+		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
+		MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
+
+		if (!MyData.DisplayDialog()) return;
+
+		const auto szString = MyData.GetStringW(0);
+		// Allocate and create our SRestriction
+		auto hRes = EC_H(mapi::CreatePropertyStringRestriction(
+			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, MyData.GetHex(1), NULL, &lpRes));
+		if (hRes != S_OK)
 		{
-			editor::CEditor MyData(
-				this, IDS_SEARCHCRITERIA, IDS_MBSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
-
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));
-			MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
-			MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
-
-			WC_H(MyData.DisplayDialog());
-			if (S_OK != hRes) return;
-
-			const auto szString = MyData.GetStringW(0);
-			// Allocate and create our SRestriction
-			EC_H(mapi::CreatePropertyStringRestriction(
-				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
-				szString,
-				MyData.GetHex(1),
-				NULL,
-				&lpRes));
-			if (hRes != S_OK)
-			{
-				MAPIFreeBuffer(lpRes);
-				lpRes = nullptr;
-			}
-
-			m_lpContentsTableListCtrl->SetRestriction(lpRes);
-
-			SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+			MAPIFreeBuffer(lpRes);
+			lpRes = nullptr;
 		}
+
+		m_lpContentsTableListCtrl->SetRestriction(lpRes);
+
+		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
 	}
 }

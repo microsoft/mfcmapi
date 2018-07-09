@@ -251,13 +251,12 @@ namespace mapiprocessor
 			lpszProfile.c_str(),
 			lpszFid.c_str(),
 			lpszMid.c_str());
-		auto hRes = S_OK;
 		LPMAPIFOLDER lpFolder = nullptr;
 
 		if (lpMDB)
 		{
 			// Open root container.
-			WC_H(mapi::CallOpenEntry(
+			WC_H_S(mapi::CallOpenEntry(
 				lpMDB,
 				nullptr,
 				nullptr,

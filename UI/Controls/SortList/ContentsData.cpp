@@ -26,9 +26,13 @@ namespace controls
 			auto lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_INSTANCE_KEY);
 			if (lpProp && PR_INSTANCE_KEY == lpProp->ulPropTag)
 			{
-				EC_H(MAPIAllocateBuffer(
+				hRes = EC_H(MAPIAllocateBuffer(
 					static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpInstanceKey)));
-				EC_H(mapi::CopySBinary(m_lpInstanceKey, &lpProp->Value.bin, m_lpInstanceKey));
+
+				if (SUCCEEDED(hRes))
+				{
+					EC_H_S(mapi::CopySBinary(m_lpInstanceKey, &lpProp->Value.bin, m_lpInstanceKey));
+				}
 			}
 
 			// Save the attachment number into lpData
@@ -66,17 +70,24 @@ namespace controls
 			lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_ENTRYID);
 			if (lpProp && PR_ENTRYID == lpProp->ulPropTag)
 			{
-				EC_H(MAPIAllocateBuffer(static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpEntryID)));
-				EC_H(mapi::CopySBinary(m_lpEntryID, &lpProp->Value.bin, m_lpEntryID));
+				hRes = EC_H(
+					MAPIAllocateBuffer(static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpEntryID)));
+				if (SUCCEEDED(hRes))
+				{
+					EC_H_S(mapi::CopySBinary(m_lpEntryID, &lpProp->Value.bin, m_lpEntryID));
+				}
 			}
 
 			// Save the Longterm Entry ID into lpData
 			lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_LONGTERM_ENTRYID_FROM_TABLE);
 			if (lpProp && PR_LONGTERM_ENTRYID_FROM_TABLE == lpProp->ulPropTag)
 			{
-				EC_H(MAPIAllocateBuffer(
+				hRes = EC_H(MAPIAllocateBuffer(
 					static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpLongtermID)));
-				EC_H(mapi::CopySBinary(m_lpLongtermID, &lpProp->Value.bin, m_lpLongtermID));
+				if (SUCCEEDED(hRes))
+				{
+					EC_H_S(mapi::CopySBinary(m_lpLongtermID, &lpProp->Value.bin, m_lpLongtermID));
+				}
 			}
 
 			// Save the Service ID into lpData
@@ -84,9 +95,12 @@ namespace controls
 			if (lpProp && PR_SERVICE_UID == lpProp->ulPropTag)
 			{
 				// Allocate some space
-				EC_H(MAPIAllocateBuffer(
+				hRes = EC_H(MAPIAllocateBuffer(
 					static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpServiceUID)));
-				EC_H(mapi::CopySBinary(m_lpServiceUID, &lpProp->Value.bin, m_lpServiceUID));
+				if (SUCCEEDED(hRes))
+				{
+					EC_H_S(mapi::CopySBinary(m_lpServiceUID, &lpProp->Value.bin, m_lpServiceUID));
+				}
 			}
 
 			// Save the Provider ID into lpData
@@ -94,9 +108,12 @@ namespace controls
 			if (lpProp && PR_PROVIDER_UID == lpProp->ulPropTag)
 			{
 				// Allocate some space
-				EC_H(MAPIAllocateBuffer(
+				hRes = EC_H(MAPIAllocateBuffer(
 					static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpProviderUID)));
-				EC_H(mapi::CopySBinary(m_lpProviderUID, &lpProp->Value.bin, m_lpProviderUID));
+				if (SUCCEEDED(hRes))
+				{
+					EC_H_S(mapi::CopySBinary(m_lpProviderUID, &lpProp->Value.bin, m_lpProviderUID));
+				}
 			}
 
 			// Save the DisplayName into lpData

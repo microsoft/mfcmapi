@@ -92,16 +92,14 @@ namespace dialog
 
 	void CRulesDlg::OnDeleteSelectedItem()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		LPROWLIST lpSelectedItems = nullptr;
 
-		EC_H(GetSelectedItems(RULE_INCLUDE_ID, ROW_REMOVE, &lpSelectedItems));
-
+		EC_H_S(GetSelectedItems(RULE_INCLUDE_ID, ROW_REMOVE, &lpSelectedItems));
 		if (lpSelectedItems)
 		{
-			hRes = EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
+			auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (hRes == S_OK) OnRefreshView();
 		}
@@ -109,16 +107,14 @@ namespace dialog
 
 	void CRulesDlg::OnModifySelectedItem()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		LPROWLIST lpSelectedItems = nullptr;
 
-		EC_H(GetSelectedItems(RULE_INCLUDE_ID | RULE_INCLUDE_OTHER, ROW_MODIFY, &lpSelectedItems));
-
+		EC_H_S(GetSelectedItems(RULE_INCLUDE_ID | RULE_INCLUDE_OTHER, ROW_MODIFY, &lpSelectedItems));
 		if (lpSelectedItems)
 		{
-			hRes = EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
+			auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (hRes == S_OK) OnRefreshView();
 		}
@@ -129,7 +125,6 @@ namespace dialog
 	{
 		if (!lppRowList || !m_lpContentsTableListCtrl) return MAPI_E_INVALID_PARAMETER;
 		*lppRowList = nullptr;
-		auto hRes = S_OK;
 		const int iNumItems = m_lpContentsTableListCtrl->GetSelectedCount();
 
 		if (!iNumItems) return S_OK;
@@ -137,7 +132,7 @@ namespace dialog
 
 		LPROWLIST lpTempList = nullptr;
 
-		EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems), reinterpret_cast<LPVOID*>(&lpTempList)));
+		auto hRes = EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems), reinterpret_cast<LPVOID*>(&lpTempList)));
 
 		if (lpTempList)
 		{
@@ -158,7 +153,7 @@ namespace dialog
 					{
 						if (ulFlags & RULE_INCLUDE_ID && ulFlags & RULE_INCLUDE_OTHER)
 						{
-							EC_H(MAPIAllocateMore(
+							hRes = EC_H(MAPIAllocateMore(
 								lpData->cSourceProps * sizeof(SPropValue),
 								lpTempList,
 								reinterpret_cast<LPVOID*>(&lpTempList->aEntries[iArrayPos].rgPropVals)));
@@ -177,13 +172,14 @@ namespace dialog
 										}
 									}
 
-									EC_H(mapi::MyPropCopyMore(
+									hRes = EC_H(mapi::MyPropCopyMore(
 										&lpTempList->aEntries[iArrayPos].rgPropVals[ulDst],
 										&lpData->lpSourceProps[ulSrc],
 										MAPIAllocateMore,
 										lpTempList));
 									ulDst++;
 								}
+
 								lpTempList->aEntries[iArrayPos].cValues = ulDst;
 							}
 						}

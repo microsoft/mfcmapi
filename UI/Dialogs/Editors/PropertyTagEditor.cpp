@@ -89,12 +89,9 @@ namespace dialog
 		// Select a property tag
 		void CPropertyTagEditor::OnEditAction1()
 		{
-			auto hRes = S_OK;
-
 			CPropertySelector MyData(m_bIsAB, m_lpMAPIProp, this);
 
-			WC_H(MyData.DisplayDialog());
-			if (S_OK != hRes) return;
+			if (!MyData.DisplayDialog()) return;
 
 			m_ulPropTag = MyData.GetPropertyTag();
 			PopulateFields(NOSKIPFIELD);

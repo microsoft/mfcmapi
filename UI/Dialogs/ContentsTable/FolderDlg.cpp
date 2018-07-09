@@ -61,13 +61,12 @@ namespace dialog
 	_Check_return_ bool CFolderDlg::HandleMenu(WORD wMenuSelect)
 	{
 		output::DebugPrint(DBGMenu, L"CFolderDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
-		auto hRes = S_OK;
 		switch (wMenuSelect)
 		{
 		case ID_DISPLAYACLTABLE:
 			if (m_lpFolder)
 			{
-				EC_H(DisplayExchangeTable(m_lpFolder, PR_ACL_TABLE, otACL, this));
+				EC_H_S(DisplayExchangeTable(m_lpFolder, PR_ACL_TABLE, otACL, this));
 			}
 
 			return true;
@@ -137,7 +136,6 @@ namespace dialog
 	_Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 	{
 		LPSIMPLEMULTI lpFunc = nullptr;
-		auto hRes = S_OK;
 
 		if (m_lpContentsTableListCtrl)
 		{
@@ -178,12 +176,11 @@ namespace dialog
 				while (-1 != iItem)
 				{
 					const auto lpData = m_lpContentsTableListCtrl->GetSortListData(iItem);
-					WC_H((this->*lpFunc)(iItem, lpData));
+					auto hRes = WC_H((this->*lpFunc)(iItem, lpData));
 					iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
 					if (S_OK != hRes && -1 != iItem)
 					{
 						if (bShouldCancel(this, hRes)) break;
-						hRes = S_OK;
 					}
 				}
 
@@ -235,23 +232,20 @@ namespace dialog
 
 	void CFolderDlg::OnDisplayItem()
 	{
-		auto hRes = S_OK;
 		LPMAPIPROP lpMAPIProp = nullptr;
 		auto iItem = -1;
 		CWaitCursor Wait;
 
 		do
 		{
-			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
+			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
 
 			if (lpMAPIProp)
 			{
-				EC_H(DisplayObject(lpMAPIProp, NULL, otDefault, this));
+				EC_H_S(DisplayObject(lpMAPIProp, NULL, otDefault, this));
 				lpMAPIProp->Release();
 				lpMAPIProp = nullptr;
 			}
-
-			hRes = S_OK;
 		} while (iItem != -1);
 	}
 
@@ -368,47 +362,44 @@ namespace dialog
 		MyData.InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_RECIPCOUNT, false));
 		MyData.SetDecimal(4, 1);
 
-		WC_H(MyData.DisplayDialog());
-		if (hRes == S_OK)
+		if (!MyData.DisplayDialog()) return;
+
+		const auto displayName = MyData.GetStringW(0);
+		const auto addressType = MyData.GetStringW(1);
+		const auto address = MyData.GetStringW(2);
+		const auto recipientType = MyData.GetHex(3);
+		const auto count = MyData.GetDecimal(4);
+		LPMESSAGE lpMessage = nullptr;
+		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
+		while (iItem != -1)
 		{
-			const auto displayName = MyData.GetStringW(0);
-			const auto addressType = MyData.GetStringW(1);
-			const auto address = MyData.GetStringW(2);
-			const auto recipientType = MyData.GetHex(3);
-			const auto count = MyData.GetDecimal(4);
-			LPMESSAGE lpMessage = nullptr;
-			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
-			while (iItem != -1)
+			hRes = EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+
+			if (lpMessage)
 			{
-				EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
-
-				if (lpMessage)
+				if (count <= 1)
 				{
-					if (count <= 1)
+					hRes = EC_H(mapi::ab::AddOneOffAddress(
+						lpMAPISession, lpMessage, displayName, addressType, address, recipientType));
+				}
+				else
+				{
+					for (ULONG i = 0; i < count; i++)
 					{
-						EC_H(mapi::ab::AddOneOffAddress(
-							lpMAPISession, lpMessage, displayName, addressType, address, recipientType));
+						const auto countedDisplayName = displayName + std::to_wstring(i);
+						hRes = EC_H(mapi::ab::AddOneOffAddress(
+							lpMAPISession, lpMessage, countedDisplayName, addressType, address, recipientType));
 					}
-					else
-					{
-						for (ULONG i = 0; i < count; i++)
-						{
-							const auto countedDisplayName = displayName + std::to_wstring(i);
-							EC_H(mapi::ab::AddOneOffAddress(
-								lpMAPISession, lpMessage, countedDisplayName, addressType, address, recipientType));
-						}
-					}
-
-					lpMessage->Release();
-					lpMessage = nullptr;
 				}
 
-				iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
-				if (S_OK != hRes && -1 != iItem)
-				{
-					if (bShouldCancel(this, hRes)) break;
-					hRes = S_OK;
-				}
+				lpMessage->Release();
+				lpMessage = nullptr;
+			}
+
+			iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
+			if (S_OK != hRes && -1 != iItem)
+			{
+				if (bShouldCancel(this, hRes)) break;
 			}
 		}
 	}
@@ -416,17 +407,16 @@ namespace dialog
 	_Check_return_ HRESULT
 	CFolderDlg::OnAttachmentProperties(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
 	{
-		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
-		EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+		auto hRes = EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 
 		if (lpMessage)
 		{
-			EC_H(OpenAttachmentsFromMessage(lpMessage));
+			hRes = EC_H(OpenAttachmentsFromMessage(lpMessage));
 
 			lpMessage->Release();
 		}
@@ -463,171 +453,161 @@ namespace dialog
 		UINT uidDropDown[] = {IDS_DDCOPYMESSAGES, IDS_DDCOPYTO};
 		MyData.InitPane(1, viewpane::DropDownPane::Create(IDS_COPYINTERFACE, _countof(uidDropDown), uidDropDown, true));
 
-		WC_H(MyData.DisplayDialog());
-		if (hRes == S_OK)
+		if (!MyData.DisplayDialog()) return false;
+
+		const auto lpEIDs = cache::CGlobalCache::getInstance().GetMessagesToCopy();
+		auto lpMAPISourceFolder = cache::CGlobalCache::getInstance().GetSourceParentFolder();
+		auto ulMoveMessage = MyData.GetCheck(0) ? MESSAGE_MOVE : 0;
+
+		if (lpEIDs && lpMAPISourceFolder)
 		{
-			const auto lpEIDs = cache::CGlobalCache::getInstance().GetMessagesToCopy();
-			auto lpMAPISourceFolder = cache::CGlobalCache::getInstance().GetSourceParentFolder();
-			auto ulMoveMessage = MyData.GetCheck(0) ? MESSAGE_MOVE : 0;
+			if (0 == MyData.GetDropDown(1))
+			{ // CopyMessages
+				LPMAPIPROGRESS lpProgress =
+					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
 
-			if (lpEIDs && lpMAPISourceFolder)
-			{
-				if (0 == MyData.GetDropDown(1))
-				{ // CopyMessages
-					LPMAPIPROGRESS lpProgress =
-						mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
+				if (lpProgress) ulMoveMessage |= MESSAGE_DIALOG;
 
-					if (lpProgress) ulMoveMessage |= MESSAGE_DIALOG;
+				EC_MAPI_S(lpMAPISourceFolder->CopyMessages(
+					lpEIDs,
+					&IID_IMAPIFolder,
+					m_lpFolder,
+					lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
+					lpProgress,
+					ulMoveMessage));
 
-					EC_MAPI_S(lpMAPISourceFolder->CopyMessages(
-						lpEIDs,
-						&IID_IMAPIFolder,
-						m_lpFolder,
-						lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
-						lpProgress,
-						ulMoveMessage));
+				if (lpProgress) lpProgress->Release();
+			}
+			else
+			{ // CopyTo
+				// Specify properties to exclude in the copy operation. These are
+				// the properties that Exchange excludes to save bits and time.
+				// Should not be necessary to exclude these, but speeds the process
+				// when a lot of messages are being copied.
+				static const SizedSPropTagArray(7, excludeTags) = {7,
+																   {PR_ACCESS,
+																	PR_BODY,
+																	PR_RTF_SYNC_BODY_COUNT,
+																	PR_RTF_SYNC_BODY_CRC,
+																	PR_RTF_SYNC_BODY_TAG,
+																	PR_RTF_SYNC_PREFIX_COUNT,
+																	PR_RTF_SYNC_TRAILING_COUNT}};
 
-					if (lpProgress) lpProgress->Release();
-				}
-				else
-				{ // CopyTo
-					// Specify properties to exclude in the copy operation. These are
-					// the properties that Exchange excludes to save bits and time.
-					// Should not be necessary to exclude these, but speeds the process
-					// when a lot of messages are being copied.
-					static const SizedSPropTagArray(7, excludeTags) = {7,
-																	   {PR_ACCESS,
-																		PR_BODY,
-																		PR_RTF_SYNC_BODY_COUNT,
-																		PR_RTF_SYNC_BODY_CRC,
-																		PR_RTF_SYNC_BODY_TAG,
-																		PR_RTF_SYNC_PREFIX_COUNT,
-																		PR_RTF_SYNC_TRAILING_COUNT}};
-
-					const auto lpTagsToExclude =
-						mapi::GetExcludedTags(LPSPropTagArray(&excludeTags), m_lpFolder, m_bIsAB);
-
-					if (lpTagsToExclude)
+				const auto lpTagsToExclude = mapi::GetExcludedTags(LPSPropTagArray(&excludeTags), m_lpFolder, m_bIsAB);
+				if (lpTagsToExclude)
+				{
+					for (ULONG i = 0; i < lpEIDs->cValues; i++)
 					{
-						for (ULONG i = 0; i < lpEIDs->cValues; i++)
+						LPMESSAGE lpMessage = nullptr;
+
+						EC_H_S(mapi::CallOpenEntry(
+							nullptr,
+							nullptr,
+							lpMAPISourceFolder,
+							nullptr,
+							lpEIDs->lpbin[i].cb,
+							reinterpret_cast<LPENTRYID>(lpEIDs->lpbin[i].lpb),
+							nullptr,
+							MyData.GetCheck(0) ? MAPI_MODIFY : 0, // only need write access for moves
+							nullptr,
+							reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
+						if (lpMessage)
 						{
-							LPMESSAGE lpMessage = nullptr;
-
-							EC_H(mapi::CallOpenEntry(
-								nullptr,
-								nullptr,
-								lpMAPISourceFolder,
-								nullptr,
-								lpEIDs->lpbin[i].cb,
-								reinterpret_cast<LPENTRYID>(lpEIDs->lpbin[i].lpb),
-								nullptr,
-								MyData.GetCheck(0) ? MAPI_MODIFY : 0, // only need write access for moves
-								nullptr,
-								reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
-							if (lpMessage)
+							LPMESSAGE lpNewMessage = nullptr;
+							EC_MAPI_S(m_lpFolder->CreateMessage(
+								nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
+							if (lpNewMessage)
 							{
-								LPMESSAGE lpNewMessage = nullptr;
-								EC_MAPI_S(m_lpFolder->CreateMessage(
-									nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
-								if (lpNewMessage)
+								LPSPropProblemArray lpProblems = nullptr;
+
+								// copy message properties to IMessage object opened on top of IStorage.
+								LPMAPIPROGRESS lpProgress =
+									mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyTo", m_hWnd); // STRING_OK
+
+								if (lpProgress) ulMoveMessage |= MAPI_DIALOG;
+
+								hRes = EC_MAPI(lpMessage->CopyTo(
+									0,
+									nullptr, // TODO: interfaces?
+									lpTagsToExclude,
+									lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL, // UI param
+									lpProgress, // progress
+									const_cast<LPIID>(&IID_IMessage),
+									lpNewMessage,
+									ulMoveMessage,
+									&lpProblems));
+
+								if (lpProgress) lpProgress->Release();
+
+								EC_PROBLEMARRAY(lpProblems);
+								MAPIFreeBuffer(lpProblems);
+
+								if (SUCCEEDED(hRes))
 								{
-									LPSPropProblemArray lpProblems = nullptr;
-
-									// copy message properties to IMessage object opened on top of IStorage.
-									LPMAPIPROGRESS lpProgress =
-										mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyTo", m_hWnd); // STRING_OK
-
-									if (lpProgress) ulMoveMessage |= MAPI_DIALOG;
-
-									hRes = EC_MAPI(lpMessage->CopyTo(
-										0,
-										nullptr, // TODO: interfaces?
-										lpTagsToExclude,
-										lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL, // UI param
-										lpProgress, // progress
-										const_cast<LPIID>(&IID_IMessage),
-										lpNewMessage,
-										ulMoveMessage,
-										&lpProblems));
-
-									if (lpProgress) lpProgress->Release();
-
-									EC_PROBLEMARRAY(lpProblems);
-									MAPIFreeBuffer(lpProblems);
-
-									if (SUCCEEDED(hRes))
-									{
-										// save changes to IMessage object.
-										hRes = EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
-									}
-
-									lpNewMessage->Release();
-
-									if (SUCCEEDED(hRes) &&
-										MyData.GetCheck(0)) // if we moved, save changes on original message
-									{
-										hRes = EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
-									}
+									// save changes to IMessage object.
+									hRes = EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
 								}
 
-								lpMessage->Release();
-								lpMessage = nullptr;
-							}
-						}
+								lpNewMessage->Release();
 
-						MAPIFreeBuffer(lpTagsToExclude);
+								if (SUCCEEDED(hRes) &&
+									MyData.GetCheck(0)) // if we moved, save changes on original message
+								{
+									hRes = EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+								}
+							}
+
+							lpMessage->Release();
+							lpMessage = nullptr;
+						}
 					}
+
+					MAPIFreeBuffer(lpTagsToExclude);
 				}
 			}
-
-			if (lpMAPISourceFolder) lpMAPISourceFolder->Release();
 		}
+
+		if (lpMAPISourceFolder) lpMAPISourceFolder->Release();
 
 		return true;
 	}
 
 	void CFolderDlg::OnDeleteAttachments()
 	{
-		auto hRes = S_OK;
-
 		editor::CEditor MyData(
 			this, IDS_DELETEATTACHMENTS, IDS_DELETEATTACHMENTSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILENAME, false));
 
-		WC_H(MyData.DisplayDialog());
-		if (hRes == S_OK)
+		if (!MyData.DisplayDialog()) return;
+
+		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+		auto szAttName = MyData.GetStringW(0);
+		if (!szAttName.empty())
 		{
-			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 
-			auto szAttName = MyData.GetStringW(0);
-
-			if (!szAttName.empty())
+			while (-1 != iItem)
 			{
-				auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
+				LPMESSAGE lpMessage = nullptr;
 
-				while (-1 != iItem)
+				EC_H_S(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+
+				if (lpMessage)
 				{
-					LPMESSAGE lpMessage = nullptr;
+					EC_H_S(file::DeleteAttachments(lpMessage, szAttName, m_hWnd));
 
-					EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
-
-					if (lpMessage)
-					{
-						EC_H(file::DeleteAttachments(lpMessage, szAttName, m_hWnd));
-
-						lpMessage->Release();
-					}
-
-					iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
+					lpMessage->Release();
 				}
+
+				iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
 			}
 		}
 	}
 
 	void CFolderDlg::OnDeleteSelectedItem()
 	{
-		auto hRes = S_OK;
 		LPMDB lpMDB = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -636,15 +616,17 @@ namespace dialog
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		EC_H_S(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 		if (!lpMDB) return;
 
+		auto bDelete = false;
 		auto bMove = false;
 		auto ulFlag = MESSAGE_DIALOG;
 
 		if (m_ulDisplayFlags & dfDeleted)
 		{
 			ulFlag |= DELETE_HARD_DELETE;
+			bDelete = true;
 		}
 		else
 		{
@@ -661,33 +643,36 @@ namespace dialog
 				MyData.InitPane(
 					0, viewpane::DropDownPane::Create(IDS_DELSTYLE, _countof(uidDropDown) - 1, &uidDropDown[1], true));
 
-			WC_H(MyData.DisplayDialog());
+			if (MyData.DisplayDialog())
+			{
+				bDelete = true;
 
-			if (bShift)
-			{
-				switch (MyData.GetDropDown(0))
+				if (bShift)
 				{
-				case 0:
-					bMove = true;
-					break;
-				case 2:
-					ulFlag |= DELETE_HARD_DELETE;
-					break;
+					switch (MyData.GetDropDown(0))
+					{
+					case 0:
+						bMove = true;
+						break;
+					case 2:
+						ulFlag |= DELETE_HARD_DELETE;
+						break;
+					}
 				}
-			}
-			else
-			{
-				if (1 == MyData.GetDropDown(0)) ulFlag |= DELETE_HARD_DELETE;
+				else
+				{
+					if (1 == MyData.GetDropDown(0)) ulFlag |= DELETE_HARD_DELETE;
+				}
 			}
 		}
 
-		if (hRes == S_OK)
+		if (bDelete)
 		{
 			const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 
 			if (bMove)
 			{
-				EC_H(mapi::DeleteToDeletedItems(lpMDB, m_lpFolder, lpEIDs, m_hWnd));
+				EC_H_S(mapi::DeleteToDeletedItems(lpMDB, m_lpFolder, lpEIDs, m_hWnd));
 			}
 			else
 			{
@@ -713,7 +698,6 @@ namespace dialog
 
 	void CFolderDlg::OnGetPropsUsingLongTermEID() const
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
@@ -730,7 +714,7 @@ namespace dialog
 				const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
 				{
-					WC_H(mapi::CallOpenEntry(
+					WC_H_S(mapi::CallOpenEntry(
 						lpMDB,
 						nullptr,
 						nullptr,
@@ -756,7 +740,6 @@ namespace dialog
 	{
 		if (!m_lpFolder) return;
 
-		auto hRes = S_OK;
 		LPMESSAGE lpNewMessage = nullptr;
 
 		auto files = file::CFileDialogExW::OpenFiles(
@@ -773,43 +756,40 @@ namespace dialog
 			UINT uidDropDown[] = {IDS_DDLOADTOFOLDER, IDS_DDDISPLAYPROPSONLY};
 			MyData.InitPane(0, viewpane::DropDownPane::Create(IDS_LOADSTYLE, _countof(uidDropDown), uidDropDown, true));
 
-			WC_H(MyData.DisplayDialog());
-			if (hRes == S_OK)
+			if (!MyData.DisplayDialog()) return;
+
+			for (auto& lpszPath : files)
 			{
-				for (auto& lpszPath : files)
+				switch (MyData.GetDropDown(0))
 				{
-					hRes = S_OK;
-					switch (MyData.GetDropDown(0))
-					{
-					case 0:
-						hRes = EC_MAPI(m_lpFolder->CreateMessage(
-							nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
-
-						if (SUCCEEDED(hRes) && lpNewMessage)
-						{
-							EC_H(file::LoadFromMSG(lpszPath, lpNewMessage, m_hWnd));
-						}
-
-						break;
-					case 1:
-						if (m_lpPropDisplay)
-						{
-							EC_H(file::LoadMSGToMessage(lpszPath, &lpNewMessage));
-
-							if (lpNewMessage)
-							{
-								EC_H(m_lpPropDisplay->SetDataSource(lpNewMessage, nullptr, false));
-							}
-						}
-
-						break;
-					}
+				case 0:
+					EC_MAPI_S(m_lpFolder->CreateMessage(
+						nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
 
 					if (lpNewMessage)
 					{
-						lpNewMessage->Release();
-						lpNewMessage = nullptr;
+						EC_H_S(file::LoadFromMSG(lpszPath, lpNewMessage, m_hWnd));
 					}
+
+					break;
+				case 1:
+					if (m_lpPropDisplay)
+					{
+						EC_H_S(file::LoadMSGToMessage(lpszPath, &lpNewMessage));
+
+						if (lpNewMessage)
+						{
+							EC_H_S(m_lpPropDisplay->SetDataSource(lpNewMessage, nullptr, false));
+						}
+					}
+
+					break;
+				}
+
+				if (lpNewMessage)
+				{
+					lpNewMessage->Release();
+					lpNewMessage = nullptr;
 				}
 			}
 		}
@@ -845,7 +825,6 @@ namespace dialog
 
 	void CFolderDlg::OnManualResolve()
 	{
-		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
 		auto iItem = -1;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -863,43 +842,33 @@ namespace dialog
 			m_lpFolder,
 			this);
 
-		WC_H(MyPropertyTag.DisplayDialog());
-		if (hRes == S_OK)
+		if (!MyPropertyTag.DisplayDialog()) return;
+
+		editor::CEditor MyData(
+			this, IDS_MANUALRESOLVE, IDS_MANUALRESOLVEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_DISPLAYNAME, false));
+
+		if (!MyData.DisplayDialog()) return;
+		do
 		{
-			editor::CEditor MyData(
-				this, IDS_MANUALRESOLVE, IDS_MANUALRESOLVEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
+				&iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_DISPLAYNAME, false));
-
-			WC_H(MyData.DisplayDialog());
-			if (hRes == S_OK)
+			if (lpMessage)
 			{
-				do
-				{
-					hRes = S_OK;
-					EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-						&iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+				const auto name = MyData.GetStringW(0);
+				EC_H_S(mapi::ab::ManualResolve(
+					lpMAPISession, lpMessage, name, CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE)));
 
-					if (lpMessage)
-					{
-						const auto name = MyData.GetStringW(0);
-						EC_H(mapi::ab::ManualResolve(
-							lpMAPISession,
-							lpMessage,
-							name,
-							CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE)));
-
-						lpMessage->Release();
-						lpMessage = nullptr;
-					}
-				} while (iItem != -1);
+				lpMessage->Release();
+				lpMessage = nullptr;
 			}
-		}
+		} while (iItem != -1);
 	}
 
 	void CFolderDlg::NewSpecialItem(WORD wMenuSelect) const
 	{
-		auto hRes = S_OK;
 		LPMAPIFOLDER lpFolder = nullptr; // DO NOT RELEASE
 
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
@@ -943,7 +912,7 @@ namespace dialog
 			LPMAPIFOLDER lpSpecialFolder = nullptr;
 			if (ulFolder)
 			{
-				EC_H(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpSpecialFolder));
+				EC_H_S(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpSpecialFolder));
 				lpFolder = lpSpecialFolder;
 			}
 			else
@@ -953,7 +922,7 @@ namespace dialog
 
 			if (lpFolder)
 			{
-				EC_H(mapi::mapiui::CreateAndDisplayNewMailInFolder(
+				EC_H_S(mapi::mapiui::CreateAndDisplayNewMailInFolder(
 					m_hWnd, lpMDB, lpMAPISession, m_lpContentsTableListCtrl, -1, szClass, lpFolder));
 			}
 
@@ -994,74 +963,67 @@ namespace dialog
 			MyPrompt1.InitPane(
 				0, viewpane::DropDownPane::Create(IDS_LOCATIONOFFORM, _countof(uidDropDown), uidDropDown, true));
 
-			WC_H(MyPrompt1.DisplayDialog());
+			if (!MyPrompt1.DisplayDialog()) return;
+			std::wstring szClass;
 
-			if (hRes == S_OK)
+			editor::CEditor MyClass(
+				this, IDS_NEWCUSTOMFORM, IDS_NEWCUSTOMFORMPROMPT2, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			MyClass.InitPane(
+				0,
+				viewpane::TextPane::CreateSingleLinePane(IDS_FORMTYPE, std::wstring(L"IPM.Note"), false)); // STRING_OK
+
+			switch (MyPrompt1.GetDropDown(0))
 			{
-				std::wstring szClass;
-				LPSPropValue lpProp = nullptr;
-
-				editor::CEditor MyClass(
-					this, IDS_NEWCUSTOMFORM, IDS_NEWCUSTOMFORMPROMPT2, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				MyClass.InitPane(
-					0,
-					viewpane::TextPane::CreateSingleLinePane(
-						IDS_FORMTYPE, std::wstring(L"IPM.Note"), false)); // STRING_OK
-
-				switch (MyPrompt1.GetDropDown(0))
-				{
-				case 0:
-					WC_H(MyClass.DisplayDialog());
-
-					if (hRes == S_OK)
-					{
-						szClass = MyClass.GetStringW(0);
-					}
-
-					break;
-				case 1:
-				case 2:
-				{
-					LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
-					LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
-					hRes = EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
-
-					if (lpMAPIFormMgr)
-					{
-						LPMAPIFOLDER lpFormSource = nullptr;
-						if (1 == MyPrompt1.GetDropDown(0)) lpFormSource = m_lpFolder;
-						const auto szTitle = strings::loadstring(IDS_SELECTFORMCREATE);
-
-						// Apparently, SelectForm doesn't support unicode
-						hRes = EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
-							reinterpret_cast<ULONG_PTR>(m_hWnd),
-							0,
-							reinterpret_cast<LPCTSTR>(strings::wstringTostring(szTitle).c_str()),
-							lpFormSource,
-							&lpMAPIFormInfo));
-
-						if (lpMAPIFormInfo)
-						{
-							hRes = EC_MAPI(HrGetOneProp(lpMAPIFormInfo, PR_MESSAGE_CLASS_W, &lpProp));
-							if (mapi::CheckStringProp(lpProp, PT_UNICODE))
-							{
-								szClass = lpProp->Value.lpszW;
-							}
-
-							lpMAPIFormInfo->Release();
-						}
-
-						lpMAPIFormMgr->Release();
-					}
-				}
+			case 0:
+				if (!MyClass.DisplayDialog()) return;
+				szClass = MyClass.GetStringW(0);
 
 				break;
+			case 1:
+			case 2:
+			{
+				LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
+				LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
+				hRes = EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
+
+				if (lpMAPIFormMgr)
+				{
+					LPMAPIFOLDER lpFormSource = nullptr;
+					if (1 == MyPrompt1.GetDropDown(0)) lpFormSource = m_lpFolder;
+					const auto szTitle = strings::loadstring(IDS_SELECTFORMCREATE);
+
+					// Apparently, SelectForm doesn't support unicode
+					hRes = EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
+						reinterpret_cast<ULONG_PTR>(m_hWnd),
+						0,
+						reinterpret_cast<LPCTSTR>(strings::wstringTostring(szTitle).c_str()),
+						lpFormSource,
+						&lpMAPIFormInfo));
+
+					if (lpMAPIFormInfo)
+					{
+						LPSPropValue lpProp = nullptr;
+						hRes = EC_MAPI(HrGetOneProp(lpMAPIFormInfo, PR_MESSAGE_CLASS_W, &lpProp));
+						if (mapi::CheckStringProp(lpProp, PT_UNICODE))
+						{
+							szClass = lpProp->Value.lpszW;
+						}
+
+						MAPIFreeBuffer(lpProp);
+						lpMAPIFormInfo->Release();
+					}
+
+					lpMAPIFormMgr->Release();
 				}
+			}
 
-				EC_H(mapi::mapiui::CreateAndDisplayNewMailInFolder(
+			break;
+			}
+
+			if (SUCCEEDED(hRes))
+			{
+				EC_H_S(mapi::mapiui::CreateAndDisplayNewMailInFolder(
 					m_hWnd, lpMDB, lpMAPISession, m_lpContentsTableListCtrl, -1, szClass, m_lpFolder));
-
-				MAPIFreeBuffer(lpProp);
 			}
 		}
 	}
@@ -1083,13 +1045,13 @@ namespace dialog
 		{
 			// Before we open the message, make sure the MAPI Form Manager is implemented
 			LPMAPIFORMMGR lpFormMgr = nullptr;
-			WC_MAPI_S(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
+			hRes = WC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
 			if (lpFormMgr)
 			{
-				EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+				hRes = EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 				if (lpMessage)
 				{
-					EC_H(mapi::mapiui::OpenMessageModal(m_lpFolder, lpMAPISession, lpMDB, lpMessage));
+					hRes = EC_H(mapi::mapiui::OpenMessageModal(m_lpFolder, lpMAPISession, lpMDB, lpMessage));
 
 					lpMessage->Release();
 				}
@@ -1118,15 +1080,15 @@ namespace dialog
 		{
 			// Before we open the message, make sure the MAPI Form Manager is implemented
 			LPMAPIFORMMGR lpFormMgr = nullptr;
-			WC_MAPI_S(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
+			hRes = WC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
 
 			if (lpFormMgr)
 			{
-				EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+				hRes = EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 
 				if (lpMessage)
 				{
-					WC_H(mapi::mapiui::OpenMessageNonModal(
+					hRes = WC_H(mapi::mapiui::OpenMessageNonModal(
 						m_hWnd,
 						lpMDB,
 						lpMAPISession,
@@ -1149,7 +1111,6 @@ namespace dialog
 
 	void CFolderDlg::OnExecuteVerbOnForm()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
@@ -1167,31 +1128,29 @@ namespace dialog
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_VERB, false));
 			MyData.SetDecimal(0, EXCHIVERB_OPEN);
 
-			WC_H(MyData.DisplayDialog());
-			if (hRes == S_OK)
+			if (!MyData.DisplayDialog()) return;
+
+			LPMESSAGE lpMessage = nullptr;
+			const auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
+			if (iItem != -1)
 			{
-				LPMESSAGE lpMessage = nullptr;
-				const auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
-				if (iItem != -1)
+				EC_H_S(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+
+				if (lpMessage)
 				{
-					EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+					EC_H_S(mapi::mapiui::OpenMessageNonModal(
+						m_hWnd,
+						lpMDB,
+						lpMAPISession,
+						m_lpFolder,
+						m_lpContentsTableListCtrl,
+						iItem,
+						lpMessage,
+						MyData.GetDecimal(0),
+						nullptr));
 
-					if (lpMessage)
-					{
-						EC_H(mapi::mapiui::OpenMessageNonModal(
-							m_hWnd,
-							lpMDB,
-							lpMAPISession,
-							m_lpFolder,
-							m_lpContentsTableListCtrl,
-							iItem,
-							lpMessage,
-							MyData.GetDecimal(0),
-							nullptr));
-
-						lpMessage->Release();
-						lpMessage = nullptr;
-					}
+					lpMessage->Release();
+					lpMessage = nullptr;
 				}
 			}
 		}
@@ -1207,7 +1166,7 @@ namespace dialog
 
 		if (lpData->Contents()->m_lpEntryID)
 		{
-			EC_H(mapi::ResendSingleMessage(m_lpFolder, lpData->Contents()->m_lpEntryID, m_hWnd));
+			hRes = EC_H(mapi::ResendSingleMessage(m_lpFolder, lpData->Contents()->m_lpEntryID, m_hWnd));
 		}
 
 		return hRes;
@@ -1216,17 +1175,16 @@ namespace dialog
 	_Check_return_ HRESULT
 	CFolderDlg::OnRecipientProperties(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
 	{
-		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
-		EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+		auto hRes = EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 
 		if (lpMessage)
 		{
-			EC_H(OpenRecipientsFromMessage(lpMessage));
+			hRes = EC_H(OpenRecipientsFromMessage(lpMessage));
 
 			lpMessage->Release();
 		}
@@ -1245,35 +1203,30 @@ namespace dialog
 			this, IDS_REMOVEONEOFF, IDS_REMOVEONEOFFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, viewpane::CheckPane::Create(IDS_REMOVEPROPDEFSTREAM, true, false));
 
-		WC_H(MyData.DisplayDialog());
-		if (hRes == S_OK)
+		if (!MyData.DisplayDialog()) return;
+
+		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
+		while (iItem != -1)
 		{
 			LPMESSAGE lpMessage = nullptr;
+			hRes = EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 
-			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
-			while (iItem != -1)
+			if (lpMessage)
 			{
-				EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+				output::DebugPrint(
+					DBGGeneric,
+					L"Calling RemoveOneOff on %p, %wsremoving property definition stream\n",
+					lpMessage,
+					MyData.GetCheck(0) ? L"" : L"not ");
+				hRes = EC_H(mapi::RemoveOneOff(lpMessage, MyData.GetCheck(0)));
 
-				if (lpMessage)
-				{
-					output::DebugPrint(
-						DBGGeneric,
-						L"Calling RemoveOneOff on %p, %wsremoving property definition stream\n",
-						lpMessage,
-						MyData.GetCheck(0) ? L"" : L"not ");
-					EC_H(mapi::RemoveOneOff(lpMessage, MyData.GetCheck(0)));
+				lpMessage->Release();
+			}
 
-					lpMessage->Release();
-					lpMessage = nullptr;
-				}
-
-				iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
-				if (S_OK != hRes && -1 != iItem)
-				{
-					if (bShouldCancel(this, hRes)) break;
-					hRes = S_OK;
-				}
+			iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
+			if (hRes != S_OK && -1 != iItem)
+			{
+				if (bShouldCancel(this, hRes)) break;
 			}
 		}
 	}
@@ -1292,8 +1245,7 @@ namespace dialog
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(0, RTF_SYNC_RTF_CHANGED);
 
-		WC_H(MyData.DisplayDialog());
-		if (hRes == S_OK)
+		if (MyData.DisplayDialog())
 		{
 			LPMESSAGE lpMessage = nullptr;
 			BOOL bMessageUpdated = false;
@@ -1301,8 +1253,7 @@ namespace dialog
 			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 			while (iItem != -1)
 			{
-				hRes = S_OK;
-				EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+				hRes = EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 
 				if (lpMessage)
 				{
@@ -1332,17 +1283,16 @@ namespace dialog
 	_Check_return_ HRESULT
 	CFolderDlg::OnSaveAttachments(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
 	{
-		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
-		EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+		auto hRes = EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 
 		if (lpMessage)
 		{
-			EC_H(file::WriteAttachmentsToFile(lpMessage, m_hWnd));
+			hRes = EC_H(file::WriteAttachmentsToFile(lpMessage, m_hWnd));
 
 			lpMessage->Release();
 		}
@@ -1396,139 +1346,136 @@ namespace dialog
 			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_EXPORTPROMPTLOCATION, false, false));
 		}
 
-		WC_H(MyData.DisplayDialog());
-		if (hRes == S_OK)
+		if (!MyData.DisplayDialog()) return;
+
+		LPCWSTR szExt = nullptr;
+		LPCWSTR szDotExt = nullptr;
+		std::wstring szFilter;
+		LPADRBOOK lpAddrBook = nullptr;
+		switch (MyData.GetDropDown(0))
 		{
-			LPCWSTR szExt = nullptr;
-			LPCWSTR szDotExt = nullptr;
-			std::wstring szFilter;
-			LPADRBOOK lpAddrBook = nullptr;
-			switch (MyData.GetDropDown(0))
+		case 0:
+			szExt = L"xml"; // STRING_OK
+			szDotExt = L".xml"; // STRING_OK
+			szFilter = strings::loadstring(IDS_XMLFILES);
+			break;
+		case 1:
+		case 2:
+			szExt = L"msg"; // STRING_OK
+			szDotExt = L".msg"; // STRING_OK
+			szFilter = strings::loadstring(IDS_MSGFILES);
+			break;
+		case 3:
+		case 4:
+			szExt = L"eml"; // STRING_OK
+			szDotExt = L".eml"; // STRING_OK
+			szFilter = strings::loadstring(IDS_EMLFILES);
+			break;
+		case 5:
+			szExt = L"tnef"; // STRING_OK
+			szDotExt = L".tnef"; // STRING_OK
+			szFilter = strings::loadstring(IDS_TNEFFILES);
+
+			lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
+			break;
+		default:
+			break;
+		}
+
+		std::wstring dir;
+		const auto bPrompt = numSelected == 1 || MyData.GetCheck(1);
+		if (!bPrompt)
+		{
+			// If we weren't asked to prompt for each item, we still need to ask for a directory
+			dir = file::GetDirectoryPath(m_hWnd);
+		}
+
+		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
+		while (-1 != iItem)
+		{
+			LPMESSAGE lpMessage = nullptr;
+
+			hRes = EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+
+			if (lpMessage)
 			{
-			case 0:
-				szExt = L"xml"; // STRING_OK
-				szDotExt = L".xml"; // STRING_OK
-				szFilter = strings::loadstring(IDS_XMLFILES);
-				break;
-			case 1:
-			case 2:
-				szExt = L"msg"; // STRING_OK
-				szDotExt = L".msg"; // STRING_OK
-				szFilter = strings::loadstring(IDS_MSGFILES);
-				break;
-			case 3:
-			case 4:
-				szExt = L"eml"; // STRING_OK
-				szDotExt = L".eml"; // STRING_OK
-				szFilter = strings::loadstring(IDS_EMLFILES);
-				break;
-			case 5:
-				szExt = L"tnef"; // STRING_OK
-				szDotExt = L".tnef"; // STRING_OK
-				szFilter = strings::loadstring(IDS_TNEFFILES);
+				auto filename = file::BuildFileName(szDotExt, dir, lpMessage);
+				output::DebugPrint(DBGGeneric, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
 
-				lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
-				break;
-			default:
-				break;
-			}
-
-			std::wstring dir;
-			const auto bPrompt = numSelected == 1 || MyData.GetCheck(1);
-			if (!bPrompt)
-			{
-				// If we weren't asked to prompt for each item, we still need to ask for a directory
-				dir = file::GetDirectoryPath(m_hWnd);
-			}
-
-			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
-			while (-1 != iItem)
-			{
-				LPMESSAGE lpMessage = nullptr;
-
-				EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
-
-				if (lpMessage)
+				if (bPrompt)
 				{
-					auto filename = file::BuildFileName(szDotExt, dir, lpMessage);
-					output::DebugPrint(DBGGeneric, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
+					filename = file::CFileDialogExW::SaveAs(
+						szExt, filename, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, this);
+				}
 
-					if (bPrompt)
+				if (!filename.empty())
+				{
+					switch (MyData.GetDropDown(0))
 					{
-						filename = file::CFileDialogExW::SaveAs(
-							szExt, filename, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, this);
-					}
-
-					if (!filename.empty())
-					{
-						switch (MyData.GetDropDown(0))
+					case 0:
+						// Idea is to capture anything that may be important about this message to disk so it can be analyzed.
 						{
-						case 0:
-							// Idea is to capture anything that may be important about this message to disk so it can be analyzed.
-							{
-								mapiprocessor::CDumpStore MyDumpStore;
-								MyDumpStore.InitMessagePath(filename);
-								// Just assume this message might have attachments
-								MyDumpStore.ProcessMessage(lpMessage, true, nullptr);
-							}
-
-							break;
-						case 1:
-							EC_H(file::SaveToMSG(lpMessage, filename, false, m_hWnd, true));
-							break;
-						case 2:
-							EC_H(file::SaveToMSG(lpMessage, filename, true, m_hWnd, true));
-							break;
-						case 3:
-							EC_H(file::SaveToEML(lpMessage, filename));
-							break;
-						case 4:
-						{
-							ULONG ulConvertFlags = CCSF_SMTP;
-							auto et = IET_UNKNOWN;
-							auto mst = USE_DEFAULT_SAVETYPE;
-							ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
-							auto bDoAdrBook = false;
-
-							EC_H(mapi::mapimime::GetConversionToEMLOptions(
-								this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
-							if (hRes == S_OK)
-							{
-								LPADRBOOK lpAdrBook = nullptr;
-								if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
-
-								EC_H(mapi::mapimime::ExportIMessageToEML(
-									lpMessage, filename.c_str(), ulConvertFlags, et, mst, ulWrapLines, lpAdrBook));
-							}
+							mapiprocessor::CDumpStore MyDumpStore;
+							MyDumpStore.InitMessagePath(filename);
+							// Just assume this message might have attachments
+							MyDumpStore.ProcessMessage(lpMessage, true, nullptr);
 						}
 
 						break;
-						case 5:
-							EC_H(file::SaveToTNEF(lpMessage, lpAddrBook, filename));
-							break;
-						default:
-							break;
+					case 1:
+						hRes = EC_H(file::SaveToMSG(lpMessage, filename, false, m_hWnd, true));
+						break;
+					case 2:
+						hRes = EC_H(file::SaveToMSG(lpMessage, filename, true, m_hWnd, true));
+						break;
+					case 3:
+						hRes = EC_H(file::SaveToEML(lpMessage, filename));
+						break;
+					case 4:
+					{
+						ULONG ulConvertFlags = CCSF_SMTP;
+						auto et = IET_UNKNOWN;
+						auto mst = USE_DEFAULT_SAVETYPE;
+						ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
+						auto bDoAdrBook = false;
+
+						hRes = EC_H(mapi::mapimime::GetConversionToEMLOptions(
+							this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
+						if (hRes == S_OK)
+						{
+							LPADRBOOK lpAdrBook = nullptr;
+							if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
+
+							hRes = EC_H(mapi::mapimime::ExportIMessageToEML(
+								lpMessage, filename.c_str(), ulConvertFlags, et, mst, ulWrapLines, lpAdrBook));
 						}
 					}
-					else
-					{
-						hRes = MAPI_E_USER_CANCEL;
-					}
 
-					lpMessage->Release();
+					break;
+					case 5:
+						hRes = EC_H(file::SaveToTNEF(lpMessage, lpAddrBook, filename));
+						break;
+					default:
+						break;
+					}
 				}
 				else
 				{
 					hRes = MAPI_E_USER_CANCEL;
-					CHECKHRESMSG(hRes, IDS_OPENMSGFAILED);
 				}
 
-				iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
-				if (S_OK != hRes && -1 != iItem)
-				{
-					if (bShouldCancel(this, hRes)) break;
-					hRes = S_OK;
-				}
+				lpMessage->Release();
+			}
+			else
+			{
+				hRes = MAPI_E_USER_CANCEL;
+				CHECKHRESMSG(hRes, IDS_OPENMSGFAILED);
+			}
+
+			iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
+			if (hRes != S_OK && -1 != iItem)
+			{
+				if (bShouldCancel(this, hRes)) break;
 			}
 		}
 	}
@@ -1555,13 +1502,12 @@ namespace dialog
 			{
 				for (auto& lpszPath : files)
 				{
-					auto hRes = S_OK;
-					hRes = EC_MAPI(m_lpFolder->CreateMessage(
+					EC_MAPI_S(m_lpFolder->CreateMessage(
 						nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0, &lpNewMessage));
 
 					if (lpNewMessage)
 					{
-						EC_H(file::LoadFromTNEF(lpszPath, lpAddrBook, lpNewMessage));
+						EC_H_S(file::LoadFromTNEF(lpszPath, lpAddrBook, lpNewMessage));
 
 						lpNewMessage->Release();
 						lpNewMessage = nullptr;
@@ -1579,7 +1525,6 @@ namespace dialog
 	{
 		if (!m_lpFolder) return;
 
-		auto hRes = S_OK;
 		LPMESSAGE lpNewMessage = nullptr;
 
 		ULONG ulConvertFlags = CCSF_SMTP;
@@ -1587,7 +1532,7 @@ namespace dialog
 		auto bDoApply = false;
 		HCHARSET hCharSet = nullptr;
 		auto cSetApplyType = CSET_APPLY_UNTAGGED;
-		WC_H(mapi::mapimime::GetConversionFromEMLOptions(
+		auto hRes = WC_H(mapi::mapimime::GetConversionFromEMLOptions(
 			this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, nullptr));
 		if (hRes == S_OK)
 		{
@@ -1605,12 +1550,12 @@ namespace dialog
 			{
 				for (auto& lpszPath : files)
 				{
-					hRes = EC_MAPI(m_lpFolder->CreateMessage(
+					EC_MAPI_S(m_lpFolder->CreateMessage(
 						nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0, &lpNewMessage));
 
 					if (lpNewMessage)
 					{
-						EC_H(mapi::mapimime::ImportEMLToIMessage(
+						EC_H_S(mapi::mapimime::ImportEMLToIMessage(
 							lpszPath.c_str(),
 							lpNewMessage,
 							ulConvertFlags,
@@ -1645,37 +1590,32 @@ namespace dialog
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		WC_H(MyData.DisplayDialog());
+		if (!MyData.DisplayDialog()) return;
 
-		if (hRes == S_OK)
+		const auto ulNumMessages = MyData.GetDecimal(0);
+		auto szSubject = MyData.GetStringW(2);
+
+		for (ULONG i = 0; i < ulNumMessages; i++)
 		{
-			const auto ulNumMessages = MyData.GetDecimal(0);
-			auto szSubject = MyData.GetStringW(2);
+			const auto szTestSubject = strings::formatmessage(IDS_TESTSUBJECT, szSubject.c_str(), i);
 
-			for (ULONG i = 0; i < ulNumMessages; i++)
+			hRes = EC_H(mapi::SendTestMessage(
+				lpMAPISession,
+				m_lpFolder,
+				MyData.GetStringW(1),
+				MyData.GetStringW(4),
+				szTestSubject,
+				MyData.GetStringW(3)));
+			if (FAILED(hRes))
 			{
-				hRes = S_OK;
-				const auto szTestSubject = strings::formatmessage(IDS_TESTSUBJECT, szSubject.c_str(), i);
-
-				EC_H(mapi::SendTestMessage(
-					lpMAPISession,
-					m_lpFolder,
-					MyData.GetStringW(1),
-					MyData.GetStringW(4),
-					szTestSubject,
-					MyData.GetStringW(3)));
-				if (FAILED(hRes))
-				{
-					CHECKHRESMSG(hRes, IDS_ERRORSENDINGMSGS);
-					break;
-				}
+				CHECKHRESMSG(hRes, IDS_ERRORSENDINGMSGS);
+				break;
 			}
 		}
 	}
 
 	void CFolderDlg::OnSetReadFlag()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpContentsTableListCtrl) return;
@@ -1688,43 +1628,41 @@ namespace dialog
 		MyFlags.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
 		MyFlags.SetHex(0, CLEAR_READ_FLAG);
 
-		WC_H(MyFlags.DisplayDialog());
-		if (hRes == S_OK)
+		if (!MyFlags.DisplayDialog()) return;
+
+		const int iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
+
+		if (iNumSelected == 1)
 		{
-			const int iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
+			LPMESSAGE lpMessage = nullptr;
 
-			if (1 == iNumSelected)
+			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
+				nullptr, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+
+			if (lpMessage)
 			{
-				LPMESSAGE lpMessage = nullptr;
-
-				EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-					nullptr, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
-
-				if (lpMessage)
-				{
-					hRes = EC_MAPI(lpMessage->SetReadFlag(MyFlags.GetHex(0)));
-					lpMessage->Release();
-					lpMessage = nullptr;
-				}
+				EC_MAPI_S(lpMessage->SetReadFlag(MyFlags.GetHex(0)));
+				lpMessage->Release();
+				lpMessage = nullptr;
 			}
-			else if (iNumSelected > 1)
-			{
-				const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
+		}
+		else if (iNumSelected > 1)
+		{
+			const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 
-				LPMAPIPROGRESS lpProgress =
-					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::SetReadFlags", m_hWnd); // STRING_OK
+			LPMAPIPROGRESS lpProgress =
+				mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::SetReadFlags", m_hWnd); // STRING_OK
 
-				auto ulFlags = MyFlags.GetHex(0);
+			auto ulFlags = MyFlags.GetHex(0);
 
-				if (lpProgress) ulFlags |= MESSAGE_DIALOG;
+			if (lpProgress) ulFlags |= MESSAGE_DIALOG;
 
-				EC_MAPI_S(m_lpFolder->SetReadFlags(
-					lpEIDs, lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL, lpProgress, ulFlags));
+			EC_MAPI_S(m_lpFolder->SetReadFlags(
+				lpEIDs, lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL, lpProgress, ulFlags));
 
-				if (lpProgress) lpProgress->Release();
+			if (lpProgress) lpProgress->Release();
 
-				MAPIFreeBuffer(lpEIDs);
-			}
+			MAPIFreeBuffer(lpEIDs);
 		}
 	}
 
@@ -1744,34 +1682,29 @@ namespace dialog
 			this, IDS_MESSAGEOPTIONS, IDS_ADDRESSTYPEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyAddress.InitPane(
 			0, viewpane::TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
-		WC_H(MyAddress.DisplayDialog());
+		if (!MyAddress.DisplayDialog()) return;
 
-		if (hRes == S_OK)
+		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
+		while (iItem != -1)
 		{
 			LPMESSAGE lpMessage = nullptr;
-			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
-			while (iItem != -1)
+			hRes = EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+
+			if (lpMessage)
 			{
-				hRes = S_OK;
-				EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+				hRes = EC_MAPI(lpMAPISession->MessageOptions(
+					reinterpret_cast<ULONG_PTR>(m_hWnd),
+					NULL, // API doesn't like Unicode
+					LPTSTR(strings::wstringTostring(MyAddress.GetStringW(0)).c_str()),
+					lpMessage));
 
-				if (lpMessage)
-				{
-					hRes = EC_MAPI(lpMAPISession->MessageOptions(
-						reinterpret_cast<ULONG_PTR>(m_hWnd),
-						NULL, // API doesn't like Unicode
-						LPTSTR(strings::wstringTostring(MyAddress.GetStringW(0)).c_str()),
-						lpMessage));
+				lpMessage->Release();
+			}
 
-					lpMessage->Release();
-					lpMessage = nullptr;
-				}
-
-				iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
-				if (S_OK != hRes && -1 != iItem)
-				{
-					if (bShouldCancel(this, hRes)) break;
-				}
+			iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
+			if (S_OK != hRes && -1 != iItem)
+			{
+				if (bShouldCancel(this, hRes)) break;
 			}
 		}
 	}
@@ -1781,7 +1714,6 @@ namespace dialog
 	void CFolderDlg::OnCreateMessageRestriction()
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-		auto hRes = S_OK;
 		ULONG cVals = 0;
 		LPSPropValue lpProps = nullptr;
 		LPMAPIPROP lpMAPIProp = nullptr;
@@ -1808,7 +1740,8 @@ namespace dialog
 
 		if (!m_lpContentsTableListCtrl) return;
 
-		EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
+		auto hRes =
+			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
 
 		if (lpMAPIProp)
 		{
@@ -1817,20 +1750,39 @@ namespace dialog
 			{
 				// Allocate and create our SRestriction
 				// Allocate base memory:
-				EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&lpRes)));
+				hRes = EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&lpRes)));
 
-				EC_H(MAPIAllocateMore(sizeof(SRestriction) * 2, lpRes, reinterpret_cast<LPVOID*>(&lpResLevel1)));
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_H(
+						MAPIAllocateMore(sizeof(SRestriction) * 2, lpRes, reinterpret_cast<LPVOID*>(&lpResLevel1)));
+				}
 
-				EC_H(MAPIAllocateMore(sizeof(SRestriction) * 2, lpRes, reinterpret_cast<LPVOID*>(&lpResLevel2)));
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_H(
+						MAPIAllocateMore(sizeof(SRestriction) * 2, lpRes, reinterpret_cast<LPVOID*>(&lpResLevel2)));
+				}
 
-				EC_H(MAPIAllocateMore(sizeof(SPropValue), lpRes, reinterpret_cast<LPVOID*>(&lpspvSubject)));
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_H(MAPIAllocateMore(sizeof(SPropValue), lpRes, reinterpret_cast<LPVOID*>(&lpspvSubject)));
+				}
 
-				EC_H(MAPIAllocateMore(sizeof(SPropValue), lpRes, reinterpret_cast<LPVOID*>(&lpspvDeliveryTime)));
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_H(
+						MAPIAllocateMore(sizeof(SPropValue), lpRes, reinterpret_cast<LPVOID*>(&lpspvDeliveryTime)));
+				}
 
-				EC_H(MAPIAllocateMore(sizeof(SPropValue), lpRes, reinterpret_cast<LPVOID*>(&lpspvSubmitTime)));
+				if (SUCCEEDED(hRes))
+				{
+					hRes =
+						EC_H(MAPIAllocateMore(sizeof(SPropValue), lpRes, reinterpret_cast<LPVOID*>(&lpspvSubmitTime)));
+				}
 
 				// Check that all our allocations were good before going on
-				if (!FAILED(hRes))
+				if (SUCCEEDED(hRes))
 				{
 					// Zero out allocated memory.
 					ZeroMemory(lpRes, sizeof(SRestriction));
@@ -1870,10 +1822,13 @@ namespace dialog
 
 					if (mapi::CheckStringProp(&lpProps[frPR_SUBJECT], PT_TSTRING))
 					{
-						EC_H(mapi::CopyString(&lpspvSubject->Value.LPSZ, lpProps[frPR_SUBJECT].Value.LPSZ, lpRes));
+						hRes =
+							EC_H(mapi::CopyString(&lpspvSubject->Value.LPSZ, lpProps[frPR_SUBJECT].Value.LPSZ, lpRes));
 					}
 					else
+					{
 						lpspvSubject->Value.LPSZ = nullptr;
+					}
 
 					lpspvSubmitTime->ulPropTag = PR_CLIENT_SUBMIT_TIME;
 					if (PR_CLIENT_SUBMIT_TIME == lpProps[frPR_CLIENT_SUBMIT_TIME].ulPropTag)
@@ -1918,6 +1873,7 @@ namespace dialog
 				SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
 				MAPIFreeBuffer(lpProps);
 			}
+
 			lpMAPIProp->Release();
 		}
 	}
@@ -1925,7 +1881,6 @@ namespace dialog
 	_Check_return_ HRESULT
 	CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ controls::sortlistdata::SortListData* lpData)
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!lpData || !lpData->Contents() || !m_lpFolder) return MAPI_E_INVALID_PARAMETER;
@@ -1938,17 +1893,20 @@ namespace dialog
 
 		if (lpMessageEID)
 		{
-			hRes = EC_MAPI(m_lpFolder->GetMessageStatus(
+			auto hRes = EC_MAPI(m_lpFolder->GetMessageStatus(
 				lpMessageEID->cb, reinterpret_cast<LPENTRYID>(lpMessageEID->lpb), NULL, &ulMessageStatus));
 
-			editor::CEditor MyStatus(this, IDS_MESSAGESTATUS, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyStatus.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_MESSAGESTATUS, true));
-			MyStatus.SetHex(0, ulMessageStatus);
+			if (SUCCEEDED(hRes))
+			{
+				editor::CEditor MyStatus(this, IDS_MESSAGESTATUS, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+				MyStatus.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_MESSAGESTATUS, true));
+				MyStatus.SetHex(0, ulMessageStatus);
 
-			WC_H(MyStatus.DisplayDialog());
+				(void) MyStatus.DisplayDialog();
+			}
 		}
 
-		return hRes;
+		return S_OK;
 	}
 
 	void CFolderDlg::OnSetMessageStatus()
@@ -1966,9 +1924,7 @@ namespace dialog
 
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnSetMessageStatus", L"\n");
 
-		WC_H(MyData.DisplayDialog());
-
-		if (hRes == S_OK)
+		if (MyData.DisplayDialog())
 		{
 			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 			while (iItem != -1)
@@ -2003,7 +1959,6 @@ namespace dialog
 
 	_Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
 	{
-		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -2011,7 +1966,7 @@ namespace dialog
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
-		EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+		auto hRes = EC_H(OpenItemProp(iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 
 		if (lpMessage)
 		{
@@ -2049,7 +2004,6 @@ namespace dialog
 
 	void CFolderDlg::OnDisplayFolder(WORD wMenuSelect)
 	{
-		auto hRes = S_OK;
 		auto otType = otDefault;
 		switch (wMenuSelect)
 		{
@@ -2064,7 +2018,7 @@ namespace dialog
 			break;
 		}
 
-		EC_H(DisplayObject(m_lpFolder, NULL, otType, this));
+		EC_H_S(DisplayObject(m_lpFolder, NULL, otType, this));
 	}
 
 	void CFolderDlg::HandleAddInMenuSingle(

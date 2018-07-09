@@ -72,18 +72,20 @@ namespace dialog
 			{
 				CMultiValuePropertyEditor MyPropertyEditor(
 					pParentWnd, uidTitle, uidPrompt, bIsAB, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
-				WC_H(MyPropertyEditor.DisplayDialog());
-
-				if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				if (MyPropertyEditor.DisplayDialog())
+				{
+					if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				}
 			}
 			// Or the single value prop case
 			else
 			{
 				CPropertyEditor MyPropertyEditor(
 					pParentWnd, uidTitle, uidPrompt, bIsAB, bMVRow, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
-				WC_H(MyPropertyEditor.DisplayDialog());
-
-				if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				if (MyPropertyEditor.DisplayDialog())
+				{
+					if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				}
 			}
 
 			MAPIFreeBuffer(sourceProp);
@@ -455,8 +457,6 @@ namespace dialog
 
 		void CPropertyEditor::WriteStringsToSPropValue()
 		{
-			auto hRes = S_OK;
-
 			// Check first if we'll have anything to write
 			switch (PROP_TYPE(m_ulPropTag))
 			{
@@ -475,12 +475,12 @@ namespace dialog
 			{
 				if (m_lpAllocParent)
 				{
-					EC_H(MAPIAllocateMore(
+					EC_H_S(MAPIAllocateMore(
 						sizeof(SPropValue), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
 				}
 				else
 				{
-					EC_H(MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
+					EC_H_S(MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
 					m_lpAllocParent = m_lpsOutputValue;
 				}
 			}
@@ -542,7 +542,7 @@ namespace dialog
 					m_lpsOutputValue->Value.ft.dwHighDateTime = strings::wstringToUlong(GetStringW(1), 16);
 					break;
 				case PT_CLSID:
-					EC_H(MAPIAllocateMore(
+					EC_H_S(MAPIAllocateMore(
 						sizeof(GUID), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpsOutputValue->Value.lpguid)));
 					if (m_lpsOutputValue->Value.lpguid)
 					{

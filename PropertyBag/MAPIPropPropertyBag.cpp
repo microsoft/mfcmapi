@@ -51,9 +51,7 @@ namespace propertybag
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
-		auto hRes = S_OK;
-		WC_H(m_lpProp->SaveChanges(KEEP_OPEN_READWRITE));
-		return hRes;
+		return WC_H(m_lpProp->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 
 	_Check_return_ HRESULT MAPIPropPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
@@ -100,9 +98,7 @@ namespace propertybag
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
-		auto hRes = S_OK;
-		WC_H(m_lpProp->GetProps(lpPropTagArray, ulFlags, lpcValues, lppPropArray));
-		return hRes;
+		return WC_H(m_lpProp->GetProps(lpPropTagArray, ulFlags, lpcValues, lppPropArray));
 	}
 
 	_Check_return_ HRESULT MAPIPropPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
@@ -140,9 +136,8 @@ namespace propertybag
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
-		auto hRes = S_OK;
 		LPSPropProblemArray lpProblems = nullptr;
-		WC_H(m_lpProp->SetProps(cValues, lpPropArray, &lpProblems));
+		auto hRes = WC_H(m_lpProp->SetProps(cValues, lpPropArray, &lpProblems));
 		EC_PROBLEMARRAY(lpProblems);
 		MAPIFreeBuffer(lpProblems);
 		return hRes;
@@ -152,9 +147,7 @@ namespace propertybag
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
-		auto hRes = S_OK;
-		WC_H(HrSetOneProp(m_lpProp, lpProp));
-		return hRes;
+		return WC_H(HrSetOneProp(m_lpProp, lpProp));
 	}
 
 	_Check_return_ HRESULT MAPIPropPropertyBag::DeleteProp(ULONG ulPropTag)

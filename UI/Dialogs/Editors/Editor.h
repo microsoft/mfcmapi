@@ -40,7 +40,7 @@ namespace dialog
 				UINT uidActionButtonText3);
 			virtual ~CEditor();
 
-			_Check_return_ HRESULT DisplayDialog();
+			_Check_return_ bool DisplayDialog();
 
 			// These functions can be used to set up a data editing dialog
 			void SetPromptPostFix(_In_ const std::wstring& szMsg);

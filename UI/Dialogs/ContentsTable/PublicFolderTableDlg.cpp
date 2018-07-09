@@ -67,37 +67,30 @@ namespace dialog
 			nullptr,
 			this);
 
-		WC_H(MyPropertyTag.DisplayDialog());
-		if (hRes == S_OK)
+		if (!MyPropertyTag.DisplayDialog()) return;
+
+		editor::CEditor MyData(
+			this, IDS_SEARCHCRITERIA, IDS_PFSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
+
+		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));
+		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
+		MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
+
+		if (!MyData.DisplayDialog()) return;
+
+		const auto szString = MyData.GetStringW(0);
+		// Allocate and create our SRestriction
+		hRes = EC_H(mapi::CreatePropertyStringRestriction(
+			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, MyData.GetHex(1), NULL, &lpRes));
+		if (hRes != S_OK && lpRes)
 		{
-			editor::CEditor MyData(
-				this, IDS_SEARCHCRITERIA, IDS_PFSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
-
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));
-			MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
-			MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
-
-			WC_H(MyData.DisplayDialog());
-			if (S_OK != hRes) return;
-
-			const auto szString = MyData.GetStringW(0);
-			// Allocate and create our SRestriction
-			EC_H(mapi::CreatePropertyStringRestriction(
-				CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
-				szString,
-				MyData.GetHex(1),
-				NULL,
-				&lpRes));
-			if (S_OK != hRes && lpRes)
-			{
-				MAPIFreeBuffer(lpRes);
-				lpRes = nullptr;
-			}
-
-			m_lpContentsTableListCtrl->SetRestriction(lpRes);
-
-			SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+			MAPIFreeBuffer(lpRes);
+			lpRes = nullptr;
 		}
+
+		m_lpContentsTableListCtrl->SetRestriction(lpRes);
+
+		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
 	}
 }

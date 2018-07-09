@@ -49,7 +49,7 @@ namespace controls
 			RegisterClassEx(&wc);
 		}
 
-		EC_BS(Create(
+		EC_B_S(Create(
 			_T("FakeSplitter"), // STRING_OK
 			_T("FakeSplitter"), // STRING_OK
 			WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN // required to reduce flicker
@@ -60,7 +60,7 @@ namespace controls
 
 		// Necessary for TAB to work. Without this, all TABS get stuck on the fake splitter control
 		// instead of passing to the children. Haven't tested with nested splitters.
-		EC_BS(ModifyStyleEx(0, WS_EX_CONTROLPARENT));
+		EC_B_S(ModifyStyleEx(0, WS_EX_CONTROLPARENT));
 
 		// Load split cursors
 		m_hSplitCursorV = EC_D(HCURSOR, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITV)));
@@ -168,7 +168,7 @@ namespace controls
 					hdwp, m_PaneTwo->m_hWnd, nullptr, r2.left, r2.top, r2.Width(), r2.Height(), SWP_NOZORDER);
 			}
 
-			EC_BS(EndDeferWindowPos(hdwp));
+			EC_B_S(EndDeferWindowPos(hdwp));
 		}
 
 		if (m_PaneOne && m_PaneTwo)
@@ -278,7 +278,7 @@ namespace controls
 			SetPercent(flNewPercent);
 
 			// Force child windows to refresh now
-			EC_BS(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
+			EC_B_S(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
 		}
 	}
 
@@ -292,7 +292,7 @@ namespace controls
 
 		// make sure no updates are pending
 		// CSplitterWnd does this...not sure why
-		EC_BS(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
+		EC_B_S(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
 
 		// set tracking state and appropriate cursor
 		m_bTracking = true;
