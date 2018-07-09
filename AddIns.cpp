@@ -16,6 +16,7 @@
 #include <Interpret/PropTypeArray.h>
 #include <Interpret/SmartView/SmartViewParsers.h>
 #include <MAPI/StubUtils.h>
+#include <strsafe.h>
 
 std::vector<NAME_ARRAY_ENTRY_V2> PropTagArray;
 std::vector<NAME_ARRAY_ENTRY> PropTypeArray;
