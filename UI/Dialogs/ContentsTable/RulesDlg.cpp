@@ -70,8 +70,6 @@ namespace dialog
 	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 	void CRulesDlg::OnRefreshView()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpExchTbl || !m_lpContentsTableListCtrl) return;
 
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
@@ -82,11 +80,10 @@ namespace dialog
 			LPMAPITABLE lpMAPITable = nullptr;
 			// Open a MAPI table on the Exchange table property. This table can be
 			// read to determine what the Exchange table looks like.
-			EC_MAPI(m_lpExchTbl->GetTable(0, &lpMAPITable));
-
+			EC_MAPI_S(m_lpExchTbl->GetTable(0, &lpMAPITable));
 			if (lpMAPITable)
 			{
-				EC_H(m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, dfDeleted, NULL));
+				m_lpContentsTableListCtrl->SetContentsTable(lpMAPITable, dfDeleted, NULL);
 
 				lpMAPITable->Release();
 			}
@@ -95,16 +92,14 @@ namespace dialog
 
 	void CRulesDlg::OnDeleteSelectedItem()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		LPROWLIST lpSelectedItems = nullptr;
 
-		EC_H(GetSelectedItems(RULE_INCLUDE_ID, ROW_REMOVE, &lpSelectedItems));
-
+		EC_H_S(GetSelectedItems(RULE_INCLUDE_ID, ROW_REMOVE, &lpSelectedItems));
 		if (lpSelectedItems)
 		{
-			EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
+			auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (hRes == S_OK) OnRefreshView();
 		}
@@ -112,16 +107,14 @@ namespace dialog
 
 	void CRulesDlg::OnModifySelectedItem()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		LPROWLIST lpSelectedItems = nullptr;
 
-		EC_H(GetSelectedItems(RULE_INCLUDE_ID | RULE_INCLUDE_OTHER, ROW_MODIFY, &lpSelectedItems));
-
+		EC_H_S(GetSelectedItems(RULE_INCLUDE_ID | RULE_INCLUDE_OTHER, ROW_MODIFY, &lpSelectedItems));
 		if (lpSelectedItems)
 		{
-			EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
+			auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (hRes == S_OK) OnRefreshView();
 		}
@@ -132,7 +125,6 @@ namespace dialog
 	{
 		if (!lppRowList || !m_lpContentsTableListCtrl) return MAPI_E_INVALID_PARAMETER;
 		*lppRowList = nullptr;
-		auto hRes = S_OK;
 		const int iNumItems = m_lpContentsTableListCtrl->GetSelectedCount();
 
 		if (!iNumItems) return S_OK;
@@ -140,7 +132,7 @@ namespace dialog
 
 		LPROWLIST lpTempList = nullptr;
 
-		EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems), reinterpret_cast<LPVOID*>(&lpTempList)));
+		auto hRes = EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems), reinterpret_cast<LPVOID*>(&lpTempList)));
 
 		if (lpTempList)
 		{
@@ -161,7 +153,7 @@ namespace dialog
 					{
 						if (ulFlags & RULE_INCLUDE_ID && ulFlags & RULE_INCLUDE_OTHER)
 						{
-							EC_H(MAPIAllocateMore(
+							hRes = EC_H(MAPIAllocateMore(
 								lpData->cSourceProps * sizeof(SPropValue),
 								lpTempList,
 								reinterpret_cast<LPVOID*>(&lpTempList->aEntries[iArrayPos].rgPropVals)));
@@ -180,13 +172,14 @@ namespace dialog
 										}
 									}
 
-									EC_H(mapi::MyPropCopyMore(
+									hRes = EC_H(mapi::MyPropCopyMore(
 										&lpTempList->aEntries[iArrayPos].rgPropVals[ulDst],
 										&lpData->lpSourceProps[ulSrc],
 										MAPIAllocateMore,
 										lpTempList));
 									ulDst++;
 								}
+
 								lpTempList->aEntries[iArrayPos].cValues = ulDst;
 							}
 						}

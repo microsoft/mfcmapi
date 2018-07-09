@@ -92,7 +92,7 @@ namespace dialog
 					if (lpMAPISession)
 					{
 						LPMDB lpNewMDB = nullptr;
-						EC_H(mapi::store::OpenStoreFromMAPIProp(
+						EC_H_S(mapi::store::OpenStoreFromMAPIProp(
 							lpMAPISession, static_cast<LPMAPIPROP>(lpUnk), &lpNewMDB));
 						if (lpNewMDB)
 						{
@@ -242,15 +242,14 @@ namespace dialog
 	_Check_return_ HRESULT
 	DisplayTable(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, ObjectType tType, _In_ dialog::CBaseDialog* lpHostDlg)
 	{
-		auto hRes = S_OK;
 		LPMAPITABLE lpTable = nullptr;
 
 		if (!lpHostDlg || !lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 		if (PT_OBJECT != PROP_TYPE(ulPropTag)) return MAPI_E_INVALID_TYPE;
 
-		WC_MAPI(lpMAPIProp->OpenProperty(
+		auto hRes = WC_MAPI(lpMAPIProp->OpenProperty(
 			ulPropTag, &IID_IMAPITable, fMapiUnicode, 0, reinterpret_cast<LPUNKNOWN*>(&lpTable)));
-		if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes)
+		if (hRes == MAPI_E_INTERFACE_NOT_SUPPORTED)
 		{
 			hRes = S_OK;
 			switch (PROP_ID(ulPropTag))
@@ -290,7 +289,7 @@ namespace dialog
 				new dialog::CRecipientsDlg(lpHostDlg->GetParentWnd(), lpHostDlg->GetMapiObjects(), lpTable, lpMAPIProp);
 				break;
 			default:
-				EC_H(DisplayTable(lpTable, tType, lpHostDlg));
+				hRes = EC_H(DisplayTable(lpTable, tType, lpHostDlg));
 				break;
 			}
 
@@ -306,7 +305,6 @@ namespace dialog
 		ObjectType tType,
 		_In_ dialog::CBaseDialog* lpHostDlg)
 	{
-		auto hRes = S_OK;
 		LPEXCHANGEMODIFYTABLE lpExchTbl = nullptr;
 		LPMAPITABLE lpMAPITable = nullptr;
 
@@ -319,7 +317,7 @@ namespace dialog
 		if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
 		// Open the table in an IExchangeModifyTable interface
-		EC_MAPI(lpMAPIProp->OpenProperty(
+		auto hRes = EC_MAPI(lpMAPIProp->OpenProperty(
 			ulPropTag,
 			const_cast<LPGUID>(&IID_IExchangeModifyTable),
 			0,
@@ -340,30 +338,29 @@ namespace dialog
 
 				MyData.InitPane(0, viewpane::CheckPane::Create(IDS_FBRIGHTSVISIBLE, false, false));
 
-				WC_H(MyData.DisplayDialog());
-				if (hRes == S_OK)
+				if (MyData.DisplayDialog())
 				{
 					new dialog::CAclDlg(lpParentWnd, lpMapiObjects, lpExchTbl, MyData.GetCheck(0));
 				}
-
-				if (MAPI_E_USER_CANCEL == hRes) hRes = S_OK; // don't propogate the error past here
 			}
 			break;
 			default:
 				// Open a MAPI table on the Exchange table property. This table can be
 				// read to determine what the Exchange table looks like.
-				EC_MAPI(lpExchTbl->GetTable(0, &lpMAPITable));
+				hRes = EC_MAPI(lpExchTbl->GetTable(0, &lpMAPITable));
 
 				if (lpMAPITable)
 				{
-					EC_H(DisplayTable(lpMAPITable, tType, lpHostDlg));
+					hRes = EC_H(DisplayTable(lpMAPITable, tType, lpHostDlg));
 					lpMAPITable->Release();
 				}
 
 				break;
 			}
+
 			lpExchTbl->Release();
 		}
+
 		return hRes;
 	}
 
@@ -378,8 +375,6 @@ namespace dialog
 				bGotError = true;
 			}
 
-			auto hRes = S_OK;
-
 			dialog::editor::CEditor Cancel(
 				cWnd, ID_PRODUCTNAME, IDS_CANCELPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			if (bGotError)
@@ -388,13 +383,14 @@ namespace dialog
 					strings::formatmessage(IDS_PREVIOUSCALL, error::ErrorNameFromErrorCode(hResPrev).c_str(), hResPrev);
 				Cancel.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ERROR, szPrevErr, true));
 			}
-			WC_H(Cancel.DisplayDialog());
-			if (S_OK != hRes)
+
+			if (Cancel.DisplayDialog())
 			{
 				output::DebugPrint(DBGGeneric, L"bShouldCancel: User asked to cancel\n");
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -410,7 +406,7 @@ namespace dialog
 		if (!mapi::store::StoreSupportsManageStore(lpMDB))
 		{
 			// if that MDB doesn't support manage store, try to get one that does
-			EC_H(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
+			EC_H_S(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
 			lpMDB = lpPrivateMDB;
 		}
 
@@ -431,87 +427,88 @@ namespace dialog
 			UINT uidDropDown[] = {IDS_GETMBXINTERFACE1, IDS_GETMBXINTERFACE3, IDS_GETMBXINTERFACE5};
 			MyData.InitPane(
 				3, viewpane::DropDownPane::Create(IDS_GETMBXINTERFACE, _countof(uidDropDown), uidDropDown, true));
-			WC_H(MyData.DisplayDialog());
 
-			if (SUCCEEDED(hRes) && 0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(3))
+			if (MyData.DisplayDialog())
 			{
-				error::ErrDialog(__FILE__, __LINE__, IDS_EDOFFSETWITHWRONGINTERFACE);
-			}
-
-			else if (hRes == S_OK)
-			{
-				auto szServerDN = mapi::store::BuildServerDN(strings::wstringTostring(MyData.GetStringW(0)), "");
-				if (!szServerDN.empty())
+				if (0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(3))
 				{
-					LPMDB lpOldMDB = nullptr;
-
-					// if we got a new MDB, set it in lpMapiObjects
-					if (lpPrivateMDB)
+					error::ErrDialog(__FILE__, __LINE__, IDS_EDOFFSETWITHWRONGINTERFACE);
+				}
+				else
+				{
+					auto szServerDN = mapi::store::BuildServerDN(strings::wstringTostring(MyData.GetStringW(0)), "");
+					if (!szServerDN.empty())
 					{
-						lpOldMDB = lpMapiObjects->GetMDB(); // do not release
-						if (lpOldMDB) lpOldMDB->AddRef(); // hold on to this so that...
-						// If we don't do this, we crash when destroying the Mailbox Table Window
-						lpMapiObjects->SetMDB(lpMDB);
-					}
+						LPMDB lpOldMDB = nullptr;
 
-					switch (MyData.GetDropDown(3))
-					{
-					case 0:
-						EC_H(mapi::store::GetMailboxTable1(lpMDB, szServerDN, fMapiUnicode, &lpMailboxTable));
-						break;
-					case 1:
-						EC_H(mapi::store::GetMailboxTable3(
-							lpMDB, szServerDN, MyData.GetHex(1), fMapiUnicode, &lpMailboxTable));
-						break;
-					case 2:
-					{
-						GUID MyGUID = {0};
-						auto bHaveGUID = false;
-
-						auto pszGUID = MyData.GetStringW(2);
-
-						if (!pszGUID.empty())
+						// if we got a new MDB, set it in lpMapiObjects
+						if (lpPrivateMDB)
 						{
-							bHaveGUID = true;
-
-							MyGUID = guid::StringToGUID(pszGUID);
-							if (MyGUID == GUID_NULL)
-							{
-								error::ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
-								break;
-							}
+							lpOldMDB = lpMapiObjects->GetMDB(); // do not release
+							if (lpOldMDB) lpOldMDB->AddRef(); // hold on to this so that...
+							// If we don't do this, we crash when destroying the Mailbox Table Window
+							lpMapiObjects->SetMDB(lpMDB);
 						}
 
-						EC_H(mapi::store::GetMailboxTable5(
-							lpMDB,
-							szServerDN,
-							MyData.GetHex(1),
-							fMapiUnicode,
-							bHaveGUID ? &MyGUID : nullptr,
-							&lpMailboxTable));
-						break;
-					}
-					}
+						switch (MyData.GetDropDown(3))
+						{
+						case 0:
+							EC_H_S(mapi::store::GetMailboxTable1(lpMDB, szServerDN, fMapiUnicode, &lpMailboxTable));
+							break;
+						case 1:
+							EC_H_S(mapi::store::GetMailboxTable3(
+								lpMDB, szServerDN, MyData.GetHex(1), fMapiUnicode, &lpMailboxTable));
+							break;
+						case 2:
+						{
+							GUID MyGUID = {0};
+							auto bHaveGUID = false;
 
-					if (SUCCEEDED(hRes) && lpMailboxTable)
-					{
-						new dialog::CMailboxTableDlg(lpParent, lpMapiObjects, MyData.GetStringW(0), lpMailboxTable);
-					}
-					else if (MAPI_E_NO_ACCESS == hRes || MAPI_E_NETWORK_ERROR == hRes)
-					{
-						error::ErrDialog(
-							__FILE__,
-							__LINE__,
-							IDS_EDGETMAILBOXTABLEFAILED,
-							_T("GetMailboxTable"),
-							_T("GetMailboxTable")); // STRING_OK
-					}
-					if (lpMailboxTable) lpMailboxTable->Release();
+							auto pszGUID = MyData.GetStringW(2);
 
-					if (lpOldMDB)
-					{
-						lpMapiObjects->SetMDB(lpOldMDB); // ...we can put it back
-						if (lpOldMDB) lpOldMDB->Release();
+							if (!pszGUID.empty())
+							{
+								bHaveGUID = true;
+
+								MyGUID = guid::StringToGUID(pszGUID);
+								if (MyGUID == GUID_NULL)
+								{
+									error::ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
+									break;
+								}
+							}
+
+							EC_H_S(mapi::store::GetMailboxTable5(
+								lpMDB,
+								szServerDN,
+								MyData.GetHex(1),
+								fMapiUnicode,
+								bHaveGUID ? &MyGUID : nullptr,
+								&lpMailboxTable));
+							break;
+						}
+						}
+
+						if (SUCCEEDED(hRes) && lpMailboxTable)
+						{
+							new dialog::CMailboxTableDlg(lpParent, lpMapiObjects, MyData.GetStringW(0), lpMailboxTable);
+						}
+						else if (hRes == MAPI_E_NO_ACCESS || hRes == MAPI_E_NETWORK_ERROR)
+						{
+							error::ErrDialog(
+								__FILE__,
+								__LINE__,
+								IDS_EDGETMAILBOXTABLEFAILED,
+								_T("GetMailboxTable"),
+								_T("GetMailboxTable")); // STRING_OK
+						}
+						if (lpMailboxTable) lpMailboxTable->Release();
+
+						if (lpOldMDB)
+						{
+							lpMapiObjects->SetMDB(lpOldMDB); // ...we can put it back
+							if (lpOldMDB) lpOldMDB->Release();
+						}
 					}
 				}
 			}
@@ -532,7 +529,7 @@ namespace dialog
 		if (!mapi::store::StoreSupportsManageStore(lpMDB))
 		{
 			// if that MDB doesn't support manage store, try to get one that does
-			EC_H(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
+			EC_H_S(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
 			lpMDB = lpPrivateMDB;
 		}
 
@@ -555,87 +552,87 @@ namespace dialog
 			UINT uidDropDown[] = {IDS_GETPFINTERFACE1, IDS_GETPFINTERFACE4, IDS_GETPFINTERFACE5};
 			MyData.InitPane(
 				4, viewpane::DropDownPane::Create(IDS_GETMBXINTERFACE, _countof(uidDropDown), uidDropDown, true));
-			WC_H(MyData.DisplayDialog());
-
-			if (SUCCEEDED(hRes) && 0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(4))
+			if (MyData.DisplayDialog())
 			{
-				error::ErrDialog(__FILE__, __LINE__, IDS_EDOFFSETWITHWRONGINTERFACE);
-			}
-
-			else if (hRes == S_OK)
-			{
-				auto szServerDN = mapi::store::BuildServerDN(strings::wstringTostring(MyData.GetStringW(0)), "");
-				if (!szServerDN.empty())
+				if (0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(4))
 				{
-					LPMDB lpOldMDB = nullptr;
-
-					// if we got a new MDB, set it in lpMapiObjects
-					if (lpPrivateMDB)
+					error::ErrDialog(__FILE__, __LINE__, IDS_EDOFFSETWITHWRONGINTERFACE);
+				}
+				else if (hRes == S_OK)
+				{
+					auto szServerDN = mapi::store::BuildServerDN(strings::wstringTostring(MyData.GetStringW(0)), "");
+					if (!szServerDN.empty())
 					{
-						lpOldMDB = lpMapiObjects->GetMDB(); // do not release
-						if (lpOldMDB) lpOldMDB->AddRef(); // hold on to this so that...
-						// If we don't do this, we crash when destroying the Mailbox Table Window
-						lpMapiObjects->SetMDB(lpMDB);
-					}
+						LPMDB lpOldMDB = nullptr;
 
-					switch (MyData.GetDropDown(4))
-					{
-					case 0:
-						EC_H(mapi::store::GetPublicFolderTable1(
-							lpMDB, szServerDN, MyData.GetHex(2) | fMapiUnicode, &lpPFTable));
-						break;
-					case 1:
-						EC_H(mapi::store::GetPublicFolderTable4(
-							lpMDB, szServerDN, MyData.GetHex(1), MyData.GetHex(2) | fMapiUnicode, &lpPFTable));
-						break;
-					case 2:
-					{
-						GUID MyGUID = {0};
-						auto bHaveGUID = false;
-
-						auto pszGUID = MyData.GetStringW(3);
-						if (!pszGUID.empty())
+						// if we got a new MDB, set it in lpMapiObjects
+						if (lpPrivateMDB)
 						{
-							bHaveGUID = true;
-
-							MyGUID = guid::StringToGUID(pszGUID);
-							if (MyGUID == GUID_NULL)
-							{
-								error::ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
-								break;
-							}
+							lpOldMDB = lpMapiObjects->GetMDB(); // do not release
+							if (lpOldMDB) lpOldMDB->AddRef(); // hold on to this so that...
+							// If we don't do this, we crash when destroying the Mailbox Table Window
+							lpMapiObjects->SetMDB(lpMDB);
 						}
 
-						EC_H(mapi::store::GetPublicFolderTable5(
-							lpMDB,
-							szServerDN,
-							MyData.GetHex(1),
-							MyData.GetHex(2) | fMapiUnicode,
-							bHaveGUID ? &MyGUID : nullptr,
-							&lpPFTable));
-						break;
-					}
-					}
+						switch (MyData.GetDropDown(4))
+						{
+						case 0:
+							EC_H_S(mapi::store::GetPublicFolderTable1(
+								lpMDB, szServerDN, MyData.GetHex(2) | fMapiUnicode, &lpPFTable));
+							break;
+						case 1:
+							EC_H_S(mapi::store::GetPublicFolderTable4(
+								lpMDB, szServerDN, MyData.GetHex(1), MyData.GetHex(2) | fMapiUnicode, &lpPFTable));
+							break;
+						case 2:
+						{
+							GUID MyGUID = {0};
+							auto bHaveGUID = false;
 
-					if (SUCCEEDED(hRes) && lpPFTable)
-					{
-						new dialog::CPublicFolderTableDlg(lpParent, lpMapiObjects, MyData.GetStringW(0), lpPFTable);
-					}
-					else if (MAPI_E_NO_ACCESS == hRes || MAPI_E_NETWORK_ERROR == hRes)
-					{
-						error::ErrDialog(
-							__FILE__,
-							__LINE__,
-							IDS_EDGETMAILBOXTABLEFAILED,
-							_T("GetPublicFolderTable"),
-							_T("GetPublicFolderTable")); // STRING_OK
-					}
-					if (lpPFTable) lpPFTable->Release();
+							auto pszGUID = MyData.GetStringW(3);
+							if (!pszGUID.empty())
+							{
+								bHaveGUID = true;
 
-					if (lpOldMDB)
-					{
-						lpMapiObjects->SetMDB(lpOldMDB); // ...we can put it back
-						if (lpOldMDB) lpOldMDB->Release();
+								MyGUID = guid::StringToGUID(pszGUID);
+								if (MyGUID == GUID_NULL)
+								{
+									error::ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
+									break;
+								}
+							}
+
+							EC_H_S(mapi::store::GetPublicFolderTable5(
+								lpMDB,
+								szServerDN,
+								MyData.GetHex(1),
+								MyData.GetHex(2) | fMapiUnicode,
+								bHaveGUID ? &MyGUID : nullptr,
+								&lpPFTable));
+							break;
+						}
+						}
+
+						if (SUCCEEDED(hRes) && lpPFTable)
+						{
+							new dialog::CPublicFolderTableDlg(lpParent, lpMapiObjects, MyData.GetStringW(0), lpPFTable);
+						}
+						else if (hRes == MAPI_E_NO_ACCESS || hRes == MAPI_E_NETWORK_ERROR)
+						{
+							error::ErrDialog(
+								__FILE__,
+								__LINE__,
+								IDS_EDGETMAILBOXTABLEFAILED,
+								_T("GetPublicFolderTable"),
+								_T("GetPublicFolderTable")); // STRING_OK
+						}
+						if (lpPFTable) lpPFTable->Release();
+
+						if (lpOldMDB)
+						{
+							lpMapiObjects->SetMDB(lpOldMDB); // ...we can put it back
+							if (lpOldMDB) lpOldMDB->Release();
+						}
 					}
 				}
 			}
@@ -649,7 +646,6 @@ namespace dialog
 		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
 		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
 	{
-		auto hRes = S_OK;
 		LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
 		if (!lpMapiObjects || !lppMAPIFormInfo) return;
 
@@ -658,7 +654,7 @@ namespace dialog
 		const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
+		auto hRes = EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 		if (lpMAPIFormMgr)
 		{
 			output::DebugPrint(DBGForms, L"OnResolveMessageClass: resolving message class\n");
@@ -667,8 +663,7 @@ namespace dialog
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
 			MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 
-			WC_H(MyData.DisplayDialog());
-			if (hRes == S_OK)
+			if (MyData.DisplayDialog())
 			{
 				auto szClass = MyData.GetStringW(0); // ResolveMessageClass requires an ANSI string
 				const auto ulFlags = MyData.GetHex(1);
@@ -680,7 +675,7 @@ namespace dialog
 						L"OnResolveMessageClass: Calling ResolveMessageClass(\"%ws\",0x%08X)\n",
 						szClass.c_str(),
 						ulFlags); // STRING_OK
-					EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(
+					hRes = EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(
 						strings::wstringTostring(szClass).c_str(), ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
 					if (lpMAPIFormInfo)
 					{
@@ -700,7 +695,6 @@ namespace dialog
 		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
 		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
 	{
-		auto hRes = S_OK;
 		LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
 
 		if (!lpMapiObjects || !lppMAPIFormInfo) return;
@@ -710,14 +704,14 @@ namespace dialog
 		const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
+		EC_MAPI_S(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 
 		if (lpMAPIFormMgr)
 		{
 			LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 			// Apparently, SelectForm doesn't support unicode
 			auto szTitle = strings::wstringTostring(strings::loadstring(IDS_SELECTFORMPROPS));
-			EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
+			EC_H_CANCEL_S(lpMAPIFormMgr->SelectForm(
 				reinterpret_cast<ULONG_PTR>(hWnd),
 				0, // fMapiUnicode,
 				LPCTSTR(szTitle.c_str()),

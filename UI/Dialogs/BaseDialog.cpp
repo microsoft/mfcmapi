@@ -406,7 +406,6 @@ namespace dialog
 			ulNiceNamesBefore != registry::RegKeys[registry::regkeyDO_COLUMN_NAMES].ulCurDWORD;
 		const auto bSuppressNotFoundChanged =
 			ulSuppressNotFoundBefore != registry::RegKeys[registry::regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
-		auto hRes = S_OK;
 		auto bResetColumns = false;
 
 		if (bNiceNamesChanged || bSuppressNotFoundChanged)
@@ -418,7 +417,7 @@ namespace dialog
 
 		if (!bResetColumns && bNeedPropRefresh)
 		{
-			if (m_lpPropDisplay) WC_H(m_lpPropDisplay->RefreshMAPIPropList());
+			if (m_lpPropDisplay) WC_H_S(m_lpPropDisplay->RefreshMAPIPropList());
 		}
 	}
 
@@ -460,12 +459,11 @@ namespace dialog
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ controls::sortlistdata::SortListData* lpListData) const
 	{
-		auto hRes = S_OK;
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnUpdateSingleMAPIPropListCtrl", L"Setting item %p\n", lpMAPIProp);
 
 		if (m_lpPropDisplay)
 		{
-			WC_H(m_lpPropDisplay->SetDataSource(lpMAPIProp, lpListData, m_bIsAB));
+			WC_H_S(m_lpPropDisplay->SetDataSource(lpMAPIProp, lpListData, m_bIsAB));
 		}
 	}
 
@@ -487,9 +485,8 @@ namespace dialog
 
 	void CBaseDialog::OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized)
 	{
-		auto hRes = S_OK;
 		CMyDialog::OnActivate(nState, pWndOther, bMinimized);
-		if (nState == 1 && !bMinimized) EC_B(RedrawWindow());
+		if (nState == 1 && !bMinimized) EC_B_S(RedrawWindow());
 	}
 
 	void CBaseDialog::SetStatusWidths()
@@ -560,8 +557,7 @@ namespace dialog
 				DeferWindowPos(hdwp, m_lpFakeSplitter->m_hWnd, nullptr, 0, 0, cx, iNewCY, SWP_NOZORDER);
 			}
 
-			auto hRes = S_OK;
-			WC_B(EndDeferWindowPos(hdwp));
+			WC_B_S(EndDeferWindowPos(hdwp));
 		}
 	}
 
@@ -595,12 +591,11 @@ namespace dialog
 		// MAPI Load paths take special handling
 		if (uidMsg >= ID_LOADMAPIMENUMIN && uidMsg <= ID_LOADMAPIMENUMAX)
 		{
-			auto hRes = S_OK;
 			MENUITEMINFOW mii = {0};
 			mii.cbSize = sizeof(MENUITEMINFO);
 			mii.fMask = MIIM_DATA;
 
-			WC_B(GetMenuItemInfoW(::GetMenu(m_hWnd), uidMsg, false, &mii));
+			WC_B_S(GetMenuItemInfoW(::GetMenu(m_hWnd), uidMsg, false, &mii));
 			if (mii.dwItemData)
 			{
 				const auto lme = reinterpret_cast<ui::LPMENUENTRY>(mii.dwItemData);
@@ -666,19 +661,16 @@ namespace dialog
 
 	void CBaseDialog::OnOutlookVersion()
 	{
-		auto hRes = S_OK;
-
 		editor::CEditor MyEID(this, IDS_OUTLOOKVERSIONTITLE, NULL, CEDITOR_BUTTON_OK);
 
 		const auto szVersionString = version::GetOutlookVersionString();
 
 		MyEID.InitPane(0, viewpane::TextPane::CreateMultiLinePane(IDS_OUTLOOKVERSIONPROMPT, szVersionString, true));
-		WC_H(MyEID.DisplayDialog());
+		(void) MyEID.DisplayDialog();
 	}
 
 	void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 	{
-		auto hRes = S_OK;
 		if (!m_lpMapiObjects) return;
 
 		editor::CEditor MyEID(this, IDS_OPENEID, IDS_OPENEIDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -710,14 +702,13 @@ namespace dialog
 
 		MyEID.InitPane(9, viewpane::CheckPane::Create(IDS_EIDISCONTAB, false, false));
 
-		WC_H(MyEID.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (!MyEID.DisplayDialog()) return;
 
 		// Get the entry ID as a binary
 		LPENTRYID lpEnteredEntryID = nullptr;
 		LPENTRYID lpEntryID = nullptr;
 		size_t cbBin = NULL;
-		EC_H(MyEID.GetEntryID(0, MyEID.GetCheck(7), &cbBin, &lpEnteredEntryID));
+		EC_H_S(MyEID.GetEntryID(0, MyEID.GetCheck(7), &cbBin, &lpEnteredEntryID));
 
 		if (MyEID.GetCheck(9) && lpEnteredEntryID)
 		{
@@ -736,7 +727,7 @@ namespace dialog
 		{
 			auto ulUIParam = reinterpret_cast<ULONG_PTR>(static_cast<void*>(m_hWnd));
 
-			EC_H_CANCEL(lpAB->Details(
+			EC_H_CANCEL_S(lpAB->Details(
 				&ulUIParam,
 				nullptr,
 				nullptr,
@@ -752,7 +743,7 @@ namespace dialog
 			LPUNKNOWN lpUnk = nullptr;
 			ULONG ulObjType = NULL;
 
-			EC_H(mapi::CallOpenEntry(
+			EC_H_S(mapi::CallOpenEntry(
 				MyEID.GetCheck(1) ? lpMDB : nullptr,
 				MyEID.GetCheck(2) ? lpAB : nullptr,
 				nullptr,
@@ -778,7 +769,7 @@ namespace dialog
 				auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpUnk);
 				if (lpTemp)
 				{
-					WC_H(DisplayObject(lpTemp, ulObjType, otHierarchy, this));
+					WC_H_S(DisplayObject(lpTemp, ulObjType, otHierarchy, this));
 					lpTemp->Release();
 				}
 
@@ -810,8 +801,7 @@ namespace dialog
 
 		MyEIDs.InitPane(3, viewpane::CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
 
-		WC_H(MyEIDs.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (!MyEIDs.DisplayDialog()) return;
 
 		if (0 == MyEIDs.GetDropDown(2) && !lpMDB || 1 == MyEIDs.GetDropDown(2) && !lpMAPISession ||
 			2 == MyEIDs.GetDropDown(2) && !lpAB)
@@ -819,30 +809,38 @@ namespace dialog
 			error::ErrDialog(__FILE__, __LINE__, IDS_EDCOMPAREEID);
 			return;
 		}
+
 		// Get the entry IDs as a binary
 		LPENTRYID lpEntryID1 = nullptr;
 		size_t cbBin1 = NULL;
-		EC_H(MyEIDs.GetEntryID(0, MyEIDs.GetCheck(3), &cbBin1, &lpEntryID1));
-
 		LPENTRYID lpEntryID2 = nullptr;
 		size_t cbBin2 = NULL;
-		EC_H(MyEIDs.GetEntryID(1, MyEIDs.GetCheck(3), &cbBin2, &lpEntryID2));
+
+		hRes = EC_H(MyEIDs.GetEntryID(0, MyEIDs.GetCheck(3), &cbBin1, &lpEntryID1));
+
+		if (SUCCEEDED(hRes))
+		{
+			hRes = EC_H(MyEIDs.GetEntryID(1, MyEIDs.GetCheck(3), &cbBin2, &lpEntryID2));
+		}
 
 		ULONG ulResult = NULL;
-		switch (MyEIDs.GetDropDown(2))
+		if (SUCCEEDED(hRes))
 		{
-		case 0: // Message Store
-			EC_MAPI(lpMDB->CompareEntryIDs(
-				static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
-			break;
-		case 1: // Session
-			EC_MAPI(lpMAPISession->CompareEntryIDs(
-				static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
-			break;
-		case 2: // Address Book
-			EC_MAPI(lpAB->CompareEntryIDs(
-				static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
-			break;
+			switch (MyEIDs.GetDropDown(2))
+			{
+			case 0: // Message Store
+				hRes = EC_MAPI(lpMDB->CompareEntryIDs(
+					static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
+				break;
+			case 1: // Session
+				hRes = EC_MAPI(lpMAPISession->CompareEntryIDs(
+					static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
+				break;
+			case 2: // Address Book
+				hRes = EC_MAPI(lpAB->CompareEntryIDs(
+					static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
+				break;
+			}
 		}
 
 		if (SUCCEEDED(hRes))
@@ -861,8 +859,6 @@ namespace dialog
 
 	void CBaseDialog::OnComputeStoreHash()
 	{
-		auto hRes = S_OK;
-
 		editor::CEditor MyStoreEID(
 			this, IDS_COMPUTESTOREHASH, IDS_COMPUTESTOREHASHPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
@@ -871,13 +867,12 @@ namespace dialog
 		MyStoreEID.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_FILENAME, false));
 		MyStoreEID.InitPane(3, viewpane::CheckPane::Create(IDS_PUBLICFOLDERSTORE, false, false));
 
-		WC_H(MyStoreEID.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (!MyStoreEID.DisplayDialog()) return;
 
 		// Get the entry ID as a binary
 		LPENTRYID lpEntryID = nullptr;
 		size_t cbBin = NULL;
-		EC_H(MyStoreEID.GetEntryID(0, MyStoreEID.GetCheck(1), &cbBin, &lpEntryID));
+		EC_H_S(MyStoreEID.GetEntryID(0, MyStoreEID.GetCheck(1), &cbBin, &lpEntryID));
 
 		const auto dwHash = mapi::ComputeStoreHash(
 			static_cast<ULONG>(cbBin),
@@ -896,8 +891,6 @@ namespace dialog
 
 	void CBaseDialog::OnNotificationsOn()
 	{
-		auto hRes = S_OK;
-
 		if (m_lpBaseAdviseSink || !m_lpMapiObjects) return;
 
 		auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
@@ -914,9 +907,7 @@ namespace dialog
 		MyData.InitPane(
 			2, viewpane::DropDownPane::Create(IDS_OBJECTFORADVISE, _countof(uidDropDown), uidDropDown, true));
 
-		WC_H(MyData.DisplayDialog());
-
-		if (hRes == S_OK)
+		if (MyData.DisplayDialog())
 		{
 			if (0 == MyData.GetDropDown(2) && !lpMDB || 1 == MyData.GetDropDown(2) && !lpMAPISession ||
 				2 == MyData.GetDropDown(2) && !lpAB)
@@ -927,7 +918,7 @@ namespace dialog
 
 			LPENTRYID lpEntryID = nullptr;
 			size_t cbBin = NULL;
-			WC_H(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
+			auto hRes = WC_H(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
 			// don't actually care if the returning lpEntryID is NULL - Advise can work with that
 
 			m_lpBaseAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
@@ -937,7 +928,7 @@ namespace dialog
 				switch (MyData.GetDropDown(2))
 				{
 				case 0:
-					EC_MAPI(lpMDB->Advise(
+					hRes = EC_MAPI(lpMDB->Advise(
 						static_cast<ULONG>(cbBin),
 						lpEntryID,
 						MyData.GetHex(1),
@@ -947,7 +938,7 @@ namespace dialog
 					m_ulBaseAdviseObjectType = MAPI_STORE;
 					break;
 				case 1:
-					EC_MAPI(lpMAPISession->Advise(
+					hRes = EC_MAPI(lpMAPISession->Advise(
 						static_cast<ULONG>(cbBin),
 						lpEntryID,
 						MyData.GetHex(1),
@@ -956,7 +947,7 @@ namespace dialog
 					m_ulBaseAdviseObjectType = MAPI_SESSION;
 					break;
 				case 2:
-					EC_MAPI(lpAB->Advise(
+					hRes = EC_MAPI(lpAB->Advise(
 						static_cast<ULONG>(cbBin),
 						lpEntryID,
 						MyData.GetHex(1),
@@ -982,14 +973,13 @@ namespace dialog
 					m_ulBaseAdviseConnection = NULL;
 				}
 			}
+
 			delete[] lpEntryID;
 		}
 	}
 
 	void CBaseDialog::OnNotificationsOff()
 	{
-		auto hRes = S_OK;
-
 		if (m_ulBaseAdviseConnection && m_lpMapiObjects)
 		{
 			switch (m_ulBaseAdviseObjectType)
@@ -997,19 +987,19 @@ namespace dialog
 			case MAPI_SESSION:
 			{
 				auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-				if (lpMAPISession) EC_MAPI(lpMAPISession->Unadvise(m_ulBaseAdviseConnection));
+				if (lpMAPISession) EC_MAPI_S(lpMAPISession->Unadvise(m_ulBaseAdviseConnection));
 				break;
 			}
 			case MAPI_STORE:
 			{
 				auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-				if (lpMDB) EC_MAPI(lpMDB->Unadvise(m_ulBaseAdviseConnection));
+				if (lpMDB) EC_MAPI_S(lpMDB->Unadvise(m_ulBaseAdviseConnection));
 				break;
 			}
 			case MAPI_ADDRBOOK:
 			{
 				auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
-				if (lpAB) EC_MAPI(lpAB->Unadvise(m_ulBaseAdviseConnection));
+				if (lpAB) EC_MAPI_S(lpAB->Unadvise(m_ulBaseAdviseConnection));
 				break;
 			}
 			}
@@ -1021,12 +1011,7 @@ namespace dialog
 		m_ulBaseAdviseConnection = NULL;
 	}
 
-	void CBaseDialog::OnDispatchNotifications()
-	{
-		auto hRes = S_OK;
-
-		EC_MAPI(HrDispatchNotifications(NULL));
-	}
+	void CBaseDialog::OnDispatchNotifications() { EC_MAPI_S(HrDispatchNotifications(NULL)); }
 
 	_Check_return_ bool CBaseDialog::HandleAddInMenu(WORD wMenuSelect)
 	{

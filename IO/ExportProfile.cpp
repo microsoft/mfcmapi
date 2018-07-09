@@ -11,11 +11,10 @@ namespace output
 	{
 		if (!fProfile || !lpSect) return;
 
-		auto hRes = S_OK;
 		LPSPropValue lpAllProps = nullptr;
 		ULONG cValues = 0L;
 
-		WC_H_GETPROPS(mapi::GetPropsNULL(lpSect, fMapiUnicode, &cValues, &lpAllProps));
+		auto hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpSect, fMapiUnicode, &cValues, &lpAllProps));
 		if (FAILED(hRes))
 		{
 			output::OutputToFilef(fProfile, L"<properties error=\"0x%08X\" />\n", hRes);
@@ -49,13 +48,12 @@ namespace output
 		output::OutputSRowToFile(fProfile, lpRow, nullptr);
 		output::OutputToFile(fProfile, L"</properties>\n");
 
-		auto hRes = S_OK;
 		auto lpProviderUID = PpropFindProp(lpRow->lpProps, lpRow->cValues, PR_PROVIDER_UID);
 
 		if (lpProviderUID)
 		{
 			LPPROFSECT lpSect = nullptr;
-			EC_H(mapi::profile::OpenProfileSection(lpProviderAdmin, &lpProviderUID->Value.bin, &lpSect));
+			EC_H_S(mapi::profile::OpenProfileSection(lpProviderAdmin, &lpProviderUID->Value.bin, &lpSect));
 			if (lpSect)
 			{
 				ExportProfileSection(fProfile, lpSect, &lpProviderUID->Value.bin);
@@ -76,13 +74,12 @@ namespace output
 		output::OutputSRowToFile(fProfile, lpRow, nullptr);
 		output::OutputToFile(fProfile, L"</properties>\n");
 
-		auto hRes = S_OK;
 		auto lpServiceUID = PpropFindProp(lpRow->lpProps, lpRow->cValues, PR_SERVICE_UID);
 
 		if (lpServiceUID)
 		{
 			LPPROFSECT lpSect = nullptr;
-			EC_H(mapi::profile::OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin, &lpSect));
+			EC_H_S(mapi::profile::OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin, &lpSect));
 			if (lpSect)
 			{
 				ExportProfileSection(fProfile, lpSect, &lpServiceUID->Value.bin);
@@ -91,7 +88,7 @@ namespace output
 
 			LPPROVIDERADMIN lpProviderAdmin = nullptr;
 
-			EC_MAPI(lpServiceAdmin->AdminProviders(
+			EC_MAPI_S(lpServiceAdmin->AdminProviders(
 				reinterpret_cast<LPMAPIUID>(lpServiceUID->Value.bin.lpb),
 				0, // fMapiUnicode is not supported
 				&lpProviderAdmin));
@@ -99,14 +96,14 @@ namespace output
 			if (lpProviderAdmin)
 			{
 				LPMAPITABLE lpProviderTable = nullptr;
-				EC_MAPI(lpProviderAdmin->GetProviderTable(
+				EC_MAPI_S(lpProviderAdmin->GetProviderTable(
 					0, // fMapiUnicode is not supported
 					&lpProviderTable));
 
 				if (lpProviderTable)
 				{
 					LPSRowSet lpRowSet = nullptr;
-					EC_MAPI(HrQueryAllRows(lpProviderTable, nullptr, nullptr, nullptr, 0, &lpRowSet));
+					EC_MAPI_S(HrQueryAllRows(lpProviderTable, nullptr, nullptr, nullptr, 0, &lpRowSet));
 					if (lpRowSet && lpRowSet->cRows >= 1)
 					{
 						for (ULONG i = 0; i < lpRowSet->cRows; i++)
@@ -143,7 +140,6 @@ namespace output
 			output::DebugPrint(DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection.c_str());
 		}
 
-		auto hRes = S_OK;
 		LPPROFADMIN lpProfAdmin = nullptr;
 		FILE* fProfile = nullptr;
 
@@ -155,12 +151,12 @@ namespace output
 		output::OutputToFile(fProfile, output::g_szXMLHeader);
 		output::Outputf(DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile.c_str());
 
-		EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));
 
 		if (lpProfAdmin)
 		{
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
-			EC_MAPI(
+			EC_MAPI_S(
 				lpProfAdmin->AdminServices(LPTSTR(szProfile.c_str()), LPTSTR(""), NULL, MAPI_DIALOG, &lpServiceAdmin));
 			if (lpServiceAdmin)
 			{
@@ -175,7 +171,7 @@ namespace output
 						sBin.cb = sizeof(GUID);
 						sBin.lpb = LPBYTE(lpGuid);
 
-						EC_H(mapi::profile::OpenProfileSection(lpServiceAdmin, &sBin, &lpSect));
+						EC_H_S(mapi::profile::OpenProfileSection(lpServiceAdmin, &sBin, &lpSect));
 
 						ExportProfileSection(fProfile, lpSect, &sBin);
 						delete[] lpGuid;
@@ -185,14 +181,14 @@ namespace output
 				{
 					LPMAPITABLE lpServiceTable = nullptr;
 
-					EC_MAPI(lpServiceAdmin->GetMsgServiceTable(
+					EC_MAPI_S(lpServiceAdmin->GetMsgServiceTable(
 						0, // fMapiUnicode is not supported
 						&lpServiceTable));
 
 					if (lpServiceTable)
 					{
 						LPSRowSet lpRowSet = nullptr;
-						EC_MAPI(HrQueryAllRows(lpServiceTable, nullptr, nullptr, nullptr, 0, &lpRowSet));
+						EC_MAPI_S(HrQueryAllRows(lpServiceTable, nullptr, nullptr, nullptr, 0, &lpRowSet));
 						if (lpRowSet && lpRowSet->cRows >= 1)
 						{
 							for (ULONG i = 0; i < lpRowSet->cRows; i++)
@@ -205,8 +201,10 @@ namespace output
 						lpServiceTable->Release();
 					}
 				}
+
 				lpServiceAdmin->Release();
 			}
+
 			lpProfAdmin->Release();
 		}
 

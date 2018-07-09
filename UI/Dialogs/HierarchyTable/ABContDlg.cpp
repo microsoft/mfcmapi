@@ -20,8 +20,6 @@ namespace dialog
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
-		auto hRes = S_OK;
-
 		m_bIsAB = true;
 
 		if (m_lpMapiObjects)
@@ -31,7 +29,7 @@ namespace dialog
 			{
 				auto container = LPUNKNOWN(nullptr);
 				// Open root address book (container).
-				EC_H(mapi::CallOpenEntry(
+				EC_H_S(mapi::CallOpenEntry(
 					NULL, lpAddrBook, NULL, NULL, nullptr, NULL, MAPI_BEST_ACCESS, NULL, &container));
 				SetRootContainer(container);
 			}
@@ -49,7 +47,6 @@ namespace dialog
 
 	void CAbContDlg::OnSetDefaultDir()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
@@ -61,14 +58,13 @@ namespace dialog
 			auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // Do not release
 			if (lpAddrBook)
 			{
-				EC_MAPI(lpAddrBook->SetDefaultDir(lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
+				EC_MAPI_S(lpAddrBook->SetDefaultDir(lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
 			}
 		}
 	}
 
 	void CAbContDlg::OnSetPAB()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
@@ -80,7 +76,7 @@ namespace dialog
 			auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			if (lpAddrBook)
 			{
-				EC_MAPI(lpAddrBook->SetPAB(lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
+				EC_MAPI_S(lpAddrBook->SetPAB(lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
 			}
 		}
 	}

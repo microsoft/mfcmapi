@@ -330,8 +330,6 @@ namespace output
 		EARLYABORT;
 		if (!lpMAPIFormInfo) return;
 
-		auto hRes = S_OK;
-
 		LPSPropValue lpPropVals = nullptr;
 		ULONG ulPropVals = NULL;
 		LPMAPIVERBARRAY lpMAPIVerbArray = nullptr;
@@ -339,15 +337,14 @@ namespace output
 
 		Outputf(ulDbgLvl, fFile, true, L"Dumping verb and property set for form: %p\n", lpMAPIFormInfo);
 
-		EC_H(mapi::GetPropsNULL(lpMAPIFormInfo, fMapiUnicode, &ulPropVals, &lpPropVals));
+		EC_H_S(mapi::GetPropsNULL(lpMAPIFormInfo, fMapiUnicode, &ulPropVals, &lpPropVals));
 		if (lpPropVals)
 		{
 			_OutputProperties(ulDbgLvl, fFile, ulPropVals, lpPropVals, lpMAPIFormInfo, false);
 			MAPIFreeBuffer(lpPropVals);
 		}
 
-		EC_MAPI(lpMAPIFormInfo->CalcVerbSet(NULL, &lpMAPIVerbArray)); // API doesn't support Unicode
-
+		EC_MAPI_S(lpMAPIFormInfo->CalcVerbSet(NULL, &lpMAPIVerbArray)); // API doesn't support Unicode
 		if (lpMAPIVerbArray)
 		{
 			Outputf(ulDbgLvl, fFile, true, L"\t0x%X verbs:\n", lpMAPIVerbArray->cMAPIVerb);
@@ -388,9 +385,7 @@ namespace output
 			MAPIFreeBuffer(lpMAPIVerbArray);
 		}
 
-		hRes = S_OK;
-		EC_MAPI(lpMAPIFormInfo->CalcFormPropSet(NULL, &lpMAPIFormPropArray)); // API doesn't support Unicode
-
+		EC_MAPI_S(lpMAPIFormInfo->CalcFormPropSet(NULL, &lpMAPIFormPropArray)); // API doesn't support Unicode
 		if (lpMAPIFormPropArray)
 		{
 			_OutputFormPropArray(ulDbgLvl, fFile, lpMAPIFormPropArray);
@@ -493,21 +488,18 @@ namespace output
 		EARLYABORT;
 		if (!lpMAPITable) return;
 
-		auto hRes = S_OK;
 		LPSRowSet lpRows = nullptr;
 
-		EC_MAPI(lpMAPITable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
+		EC_MAPI_S(lpMAPITable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 
 		Output(ulDbgLvl, fFile, false, g_szXMLHeader);
 		Output(ulDbgLvl, fFile, false, L"<table>\n");
 
 		for (;;)
 		{
-			hRes = S_OK;
-
 			FreeProws(lpRows);
 			lpRows = nullptr;
-			EC_MAPI(lpMAPITable->QueryRows(20, NULL, &lpRows));
+			auto hRes = EC_MAPI(lpMAPITable->QueryRows(20, NULL, &lpRows));
 			if (FAILED(hRes) || !lpRows || !lpRows->cRows) break;
 
 			for (ULONG iCurRow = 0; iCurRow < lpRows->cRows; iCurRow++)
@@ -790,19 +782,17 @@ namespace output
 
 		if (!lpProp) return;
 
-		auto hRes = S_OK;
 		LPSPropValue lpLargeProp = nullptr;
 		const auto iIndent = 2;
 
-		if (PT_ERROR == PROP_TYPE(lpProp->ulPropTag) && MAPI_E_NOT_ENOUGH_MEMORY == lpProp->Value.err && lpObj &&
+		if (PROP_TYPE(lpProp->ulPropTag) == PT_ERROR && lpProp->Value.err == MAPI_E_NOT_ENOUGH_MEMORY && lpObj &&
 			bRetryStreamProps)
 		{
-			WC_H(mapi::GetLargeBinaryProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
+			auto hRes = WC_H(mapi::GetLargeBinaryProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
 
 			if (FAILED(hRes))
 			{
-				hRes = S_OK;
-				WC_H(mapi::GetLargeStringProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
+				hRes = WC_H(mapi::GetLargeStringProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
 			}
 
 			if (SUCCEEDED(hRes) && lpLargeProp && PT_ERROR != PROP_TYPE(lpLargeProp->ulPropTag))
@@ -984,10 +974,6 @@ namespace output
 	{
 		CHKPARAM;
 		EARLYABORT;
-		auto hRes = S_OK;
-		BYTE bBuf[MAXBYTES + 2]; // Allocate some extra for NULL terminators - 2 for Unicode
-		ULONG ulNumBytes = 0;
-		const LARGE_INTEGER li = {0};
 
 		if (!lpStream)
 		{
@@ -995,13 +981,15 @@ namespace output
 			return;
 		}
 
-		WC_H_MSG(lpStream->Seek(li, STREAM_SEEK_SET, nullptr), IDS_STREAMSEEKFAILED);
+		const LARGE_INTEGER li = {0};
+		auto hRes = WC_H_MSG(IDS_STREAMSEEKFAILED, lpStream->Seek(li, STREAM_SEEK_SET, nullptr));
 
+		BYTE bBuf[MAXBYTES + 2]; // Allocate some extra for NULL terminators - 2 for Unicode
+		ULONG ulNumBytes = 0;
 		if (hRes == S_OK) do
 			{
-				hRes = S_OK;
 				ulNumBytes = 0;
-				EC_MAPI(lpStream->Read(bBuf, MAXBYTES, &ulNumBytes));
+				EC_MAPI_S(lpStream->Read(bBuf, MAXBYTES, &ulNumBytes));
 
 				if (ulNumBytes > 0)
 				{

@@ -76,8 +76,6 @@ namespace dialog
 	{
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 
-		auto hRes = S_OK;
-
 		// Make sure we've got something to work with
 		if (m_szProfileName.empty() || !m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
 
@@ -86,17 +84,17 @@ namespace dialog
 
 		// Clean up our table and admin in reverse order from which we obtained them
 		// Failure to do this leads to crashes in Outlook's profile code
-		EC_H(m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, NULL));
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, NULL);
 
 		if (m_lpServiceAdmin) m_lpServiceAdmin->Release();
 		m_lpServiceAdmin = nullptr;
 
 		LPPROFADMIN lpProfAdmin = nullptr;
-		EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+		auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 
 		if (lpProfAdmin)
 		{
-			EC_MAPI(lpProfAdmin->AdminServices(
+			hRes = EC_MAPI(lpProfAdmin->AdminServices(
 				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(m_szProfileName.c_str())),
 				reinterpret_cast<LPTSTR>(""),
 				NULL,
@@ -106,13 +104,13 @@ namespace dialog
 			{
 				LPMAPITABLE lpServiceTable = nullptr;
 
-				EC_MAPI(m_lpServiceAdmin->GetMsgServiceTable(
+				hRes = EC_MAPI(m_lpServiceAdmin->GetMsgServiceTable(
 					0, // fMapiUnicode is not supported
 					&lpServiceTable));
 
 				if (lpServiceTable)
 				{
-					EC_H(m_lpContentsTableListCtrl->SetContentsTable(lpServiceTable, dfNormal, NULL));
+					m_lpContentsTableListCtrl->SetContentsTable(lpServiceTable, dfNormal, NULL);
 
 					lpServiceTable->Release();
 				}
@@ -124,7 +122,6 @@ namespace dialog
 
 	void CMsgServiceTableDlg::OnDisplayItem()
 	{
-		auto hRes = S_OK;
 		LPPROVIDERADMIN lpProviderAdmin = nullptr;
 		LPMAPITABLE lpProviderTable = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -139,14 +136,14 @@ namespace dialog
 				const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 				if (lpServiceUID)
 				{
-					EC_MAPI(m_lpServiceAdmin->AdminProviders(
+					auto hRes = EC_MAPI(m_lpServiceAdmin->AdminProviders(
 						reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
 						0, // fMapiUnicode is not supported
 						&lpProviderAdmin));
 
 					if (lpProviderAdmin)
 					{
-						EC_MAPI(lpProviderAdmin->GetProviderTable(
+						hRes = EC_MAPI(lpProviderAdmin->GetProviderTable(
 							0, // fMapiUnicode is not supported
 							&lpProviderTable));
 
@@ -167,7 +164,6 @@ namespace dialog
 
 	void CMsgServiceTableDlg::OnConfigureMsgService()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpContentsTableListCtrl || !m_lpServiceAdmin) return;
@@ -180,7 +176,7 @@ namespace dialog
 				const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 				if (lpServiceUID)
 				{
-					EC_H_CANCEL(m_lpServiceAdmin->ConfigureMsgService(
+					EC_H_CANCEL_S(m_lpServiceAdmin->ConfigureMsgService(
 						reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
 						reinterpret_cast<ULONG_PTR>(m_hWnd),
 						SERVICE_UI_ALWAYS,
@@ -188,8 +184,6 @@ namespace dialog
 						nullptr));
 				}
 			}
-
-			hRes = S_OK;
 		}
 	}
 
@@ -212,7 +206,7 @@ namespace dialog
 			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)
 			{
-				EC_H(mapi::profile::OpenProfileSection(
+				hRes = EC_H(mapi::profile::OpenProfileSection(
 					m_lpServiceAdmin, lpServiceUID, reinterpret_cast<LPPROFSECT*>(lppMAPIProp)));
 			}
 		}
@@ -222,8 +216,6 @@ namespace dialog
 
 	void CMsgServiceTableDlg::OnOpenProfileSection()
 	{
-		auto hRes = S_OK;
-
 		if (!m_lpServiceAdmin) return;
 
 		editor::CEditor MyUID(
@@ -232,20 +224,19 @@ namespace dialog
 		MyUID.InitPane(0, viewpane::DropDownPane::CreateGuid(IDS_MAPIUID, false));
 		MyUID.InitPane(1, viewpane::CheckPane::Create(IDS_MAPIUIDBYTESWAPPED, false, false));
 
-		WC_H(MyUID.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (!MyUID.DisplayDialog()) return;
 
 		auto guid = MyUID.GetSelectedGUID(0, MyUID.GetCheck(1));
 		SBinary MapiUID = {sizeof(GUID), reinterpret_cast<LPBYTE>(&guid)};
 
 		LPPROFSECT lpProfSect = nullptr;
-		EC_H(mapi::profile::OpenProfileSection(m_lpServiceAdmin, &MapiUID, &lpProfSect));
+		EC_H_S(mapi::profile::OpenProfileSection(m_lpServiceAdmin, &MapiUID, &lpProfSect));
 		if (lpProfSect)
 		{
 			auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpProfSect);
 			if (lpTemp)
 			{
-				EC_H(DisplayObject(lpTemp, MAPI_PROFSECT, otContents, this));
+				EC_H_S(DisplayObject(lpTemp, MAPI_PROFSECT, otContents, this));
 				lpTemp->Release();
 			}
 
@@ -257,7 +248,6 @@ namespace dialog
 
 	void CMsgServiceTableDlg::OnDeleteSelectedItem()
 	{
-		auto hRes = S_OK;
 		if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl) return;
 
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
@@ -276,7 +266,7 @@ namespace dialog
 			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)
 			{
-				WC_MAPI(m_lpServiceAdmin->DeleteMsgService(reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb)));
+				WC_MAPI_S(m_lpServiceAdmin->DeleteMsgService(reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb)));
 			}
 		}
 

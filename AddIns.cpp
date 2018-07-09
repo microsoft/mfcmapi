@@ -211,7 +211,6 @@ namespace addin
 		// Write the list back to registry
 		~CFileList()
 		{
-			auto hRes = S_OK;
 			std::wstring szList;
 
 			if (!m_lpList.empty())
@@ -225,7 +224,7 @@ namespace addin
 				registry::WriteStringToRegistry(m_hRootKey, m_szKey, szList);
 			}
 
-			EC_W32(RegCloseKey(m_hRootKey));
+			EC_W32_S(RegCloseKey(m_hRootKey));
 		}
 
 		// Add the DLL to the list
@@ -461,7 +460,7 @@ namespace addin
 								lpMenu->m_AddInData = reinterpret_cast<ULONG_PTR>(&addIn.lpMenu[ulMenu]);
 							}
 
-							EC_B(AppendMenuW(
+							hRes = EC_B(AppendMenuW(
 								hAddInMenu, MF_ENABLED | MF_OWNERDRAW, uidCurMenu, reinterpret_cast<LPCWSTR>(lpMenu)));
 							uidCurMenu++;
 						}
@@ -492,8 +491,6 @@ namespace addin
 
 	void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
 	{
-		auto hRes = S_OK;
-
 		if (!lpParams) return;
 		if (!lpParams->lpAddInMenu) return;
 		if (!lpParams->lpAddInMenu->lpAddIn) return;
@@ -511,7 +508,7 @@ namespace addin
 			return;
 		}
 
-		WC_H(lpParams->lpAddInMenu->lpAddIn->pfnCallMenu(lpParams));
+		WC_H_S(lpParams->lpAddInMenu->lpAddIn->pfnCallMenu(lpParams));
 	}
 #endif // MRMAPI
 
@@ -820,8 +817,6 @@ namespace addin
 	_Check_return_ __declspec(dllexport) HRESULT
 		__cdecl SimpleDialog(_In_z_ LPWSTR szTitle, _Printf_format_string_ LPWSTR szMsg, ...)
 	{
-		auto hRes = S_OK;
-
 		dialog::editor::CEditor MySimpleDialog(nullptr, NULL, NULL, CEDITOR_BUTTON_OK);
 		MySimpleDialog.SetAddInTitle(szTitle);
 
@@ -832,8 +827,7 @@ namespace addin
 
 		MySimpleDialog.SetPromptPostFix(szDialogString);
 
-		WC_H(MySimpleDialog.DisplayDialog());
-		return hRes;
+		return MySimpleDialog.DisplayDialog() ? S_OK : S_FALSE;
 	}
 
 	_Check_return_ __declspec(dllexport) HRESULT
@@ -917,70 +911,72 @@ namespace addin
 			}
 		}
 
-		WC_H(MyComplexDialog.DisplayDialog());
-
-		// Put together results if needed
-		if (SUCCEEDED(hRes) && lppDialogResult && lpDialog->ulNumControls && lpDialog->lpDialogControls)
+		if (MyComplexDialog.DisplayDialog())
 		{
-			const auto lpResults = new _AddInDialogResult;
-			if (lpResults)
+			// Put together results if needed
+			if (lppDialogResult && lpDialog->ulNumControls && lpDialog->lpDialogControls)
 			{
-				lpResults->ulNumControls = lpDialog->ulNumControls;
-				lpResults->lpDialogControlResults = new _AddInDialogControlResult[lpDialog->ulNumControls];
-				if (lpResults->lpDialogControlResults)
+				const auto lpResults = new _AddInDialogResult;
+				if (lpResults)
 				{
-					ZeroMemory(
-						lpResults->lpDialogControlResults, sizeof(_AddInDialogControlResult) * lpDialog->ulNumControls);
-					for (ULONG i = 0; i < lpDialog->ulNumControls; i++)
+					lpResults->ulNumControls = lpDialog->ulNumControls;
+					lpResults->lpDialogControlResults = new _AddInDialogControlResult[lpDialog->ulNumControls];
+					if (lpResults->lpDialogControlResults)
 					{
-						lpResults->lpDialogControlResults[i].cType = lpDialog->lpDialogControls[i].cType;
-						switch (lpDialog->lpDialogControls[i].cType)
+						ZeroMemory(
+							lpResults->lpDialogControlResults,
+							sizeof(_AddInDialogControlResult) * lpDialog->ulNumControls);
+						for (ULONG i = 0; i < lpDialog->ulNumControls; i++)
 						{
-						case ADDIN_CTRL_CHECK:
-							lpResults->lpDialogControlResults[i].bCheckState = MyComplexDialog.GetCheck(i);
-							break;
-						case ADDIN_CTRL_EDIT_TEXT:
-						{
-							auto szText = MyComplexDialog.GetStringW(i);
-							if (!szText.empty())
+							lpResults->lpDialogControlResults[i].cType = lpDialog->lpDialogControls[i].cType;
+							switch (lpDialog->lpDialogControls[i].cType)
 							{
-								auto cchText = szText.length();
-
-								cchText++;
-								lpResults->lpDialogControlResults[i].szText = new WCHAR[cchText];
-
-								if (lpResults->lpDialogControlResults[i].szText)
+							case ADDIN_CTRL_CHECK:
+								lpResults->lpDialogControlResults[i].bCheckState = MyComplexDialog.GetCheck(i);
+								break;
+							case ADDIN_CTRL_EDIT_TEXT:
+							{
+								auto szText = MyComplexDialog.GetStringW(i);
+								if (!szText.empty())
 								{
-									EC_H(StringCchCopyW(
-										lpResults->lpDialogControlResults[i].szText, cchText, szText.c_str()));
+									auto cchText = szText.length();
+
+									cchText++;
+									lpResults->lpDialogControlResults[i].szText = new WCHAR[cchText];
+
+									if (lpResults->lpDialogControlResults[i].szText)
+									{
+										hRes = EC_H(StringCchCopyW(
+											lpResults->lpDialogControlResults[i].szText, cchText, szText.c_str()));
+									}
 								}
+								break;
 							}
-							break;
-						}
-						case ADDIN_CTRL_EDIT_BINARY:
-							// GetEntryID does just what we want - abuse it
-							WC_H(MyComplexDialog.GetEntryID(
-								i,
-								false,
-								&lpResults->lpDialogControlResults[i].cbBin,
-								reinterpret_cast<LPENTRYID*>(&lpResults->lpDialogControlResults[i].lpBin)));
-							break;
-						case ADDIN_CTRL_EDIT_NUM_DECIMAL:
-							lpResults->lpDialogControlResults[i].ulVal = MyComplexDialog.GetDecimal(i);
-							break;
-						case ADDIN_CTRL_EDIT_NUM_HEX:
-							lpResults->lpDialogControlResults[i].ulVal = MyComplexDialog.GetHex(i);
-							break;
+							case ADDIN_CTRL_EDIT_BINARY:
+								// GetEntryID does just what we want - abuse it
+								hRes = WC_H(MyComplexDialog.GetEntryID(
+									i,
+									false,
+									&lpResults->lpDialogControlResults[i].cbBin,
+									reinterpret_cast<LPENTRYID*>(&lpResults->lpDialogControlResults[i].lpBin)));
+								break;
+							case ADDIN_CTRL_EDIT_NUM_DECIMAL:
+								lpResults->lpDialogControlResults[i].ulVal = MyComplexDialog.GetDecimal(i);
+								break;
+							case ADDIN_CTRL_EDIT_NUM_HEX:
+								lpResults->lpDialogControlResults[i].ulVal = MyComplexDialog.GetHex(i);
+								break;
+							}
 						}
 					}
-				}
 
-				if (SUCCEEDED(hRes))
-				{
-					*lppDialogResult = lpResults;
+					if (SUCCEEDED(hRes))
+					{
+						*lppDialogResult = lpResults;
+					}
+					else
+						FreeDialogResult(lpResults);
 				}
-				else
-					FreeDialogResult(lpResults);
 			}
 		}
 

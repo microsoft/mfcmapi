@@ -24,43 +24,45 @@ namespace mapi
 		{
 			if (!lpszEMLFile || !lpMsg) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = S_OK;
 			LPCONVERTERSESSION lpConverter = nullptr;
 
-			EC_H_MSG(
+			auto hRes = EC_H_MSG(
+				IDS_NOCONVERTERSESSION,
 				CoCreateInstance(
 					guid::CLSID_IConverterSession,
 					nullptr,
 					CLSCTX_INPROC_SERVER,
 					guid::IID_IConverterSession,
-					reinterpret_cast<LPVOID*>(&lpConverter)),
-				IDS_NOCONVERTERSESSION);
+					reinterpret_cast<LPVOID*>(&lpConverter)));
 			if (SUCCEEDED(hRes) && lpConverter)
 			{
 				LPSTREAM lpEMLStm = nullptr;
 
-				EC_H(mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, lpszEMLFile, &lpEMLStm));
+				hRes = EC_H(
+					mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, lpszEMLFile, &lpEMLStm));
 				if (SUCCEEDED(hRes) && lpEMLStm)
 				{
 					if (lpAdrBook)
 					{
-						EC_MAPI(lpConverter->SetAdrBook(lpAdrBook));
+						hRes = EC_MAPI(lpConverter->SetAdrBook(lpAdrBook));
 					}
+
 					if (SUCCEEDED(hRes) && bApply)
 					{
-						EC_MAPI(lpConverter->SetCharset(bApply, hCharSet, cSetApplyType));
+						hRes = EC_MAPI(lpConverter->SetCharset(bApply, hCharSet, cSetApplyType));
 					}
+
 					if (SUCCEEDED(hRes))
 					{
 						// We'll make the user ensure CCSF_SMTP is passed
-						EC_MAPI(lpConverter->MIMEToMAPI(
+						hRes = EC_MAPI(lpConverter->MIMEToMAPI(
 							lpEMLStm,
 							lpMsg,
 							nullptr, // Must be nullptr
 							ulConvertFlags));
 						if (SUCCEEDED(hRes))
 						{
-							EC_MAPI(lpMsg->SaveChanges(NULL));
+							hRes = EC_MAPI(lpMsg->SaveChanges(NULL));
 						}
 					}
 				}
@@ -84,52 +86,53 @@ namespace mapi
 		{
 			if (!lpszEMLFile || !lpMsg) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = S_OK;
-
 			LPCONVERTERSESSION lpConverter = nullptr;
 
-			EC_H_MSG(
+			auto hRes = EC_H_MSG(
+				IDS_NOCONVERTERSESSION,
 				CoCreateInstance(
 					guid::CLSID_IConverterSession,
 					nullptr,
 					CLSCTX_INPROC_SERVER,
 					guid::IID_IConverterSession,
-					reinterpret_cast<LPVOID*>(&lpConverter)),
-				IDS_NOCONVERTERSESSION);
+					reinterpret_cast<LPVOID*>(&lpConverter)));
 			if (SUCCEEDED(hRes) && lpConverter)
 			{
 				if (lpAdrBook)
 				{
-					EC_MAPI(lpConverter->SetAdrBook(lpAdrBook));
+					hRes = EC_MAPI(lpConverter->SetAdrBook(lpAdrBook));
 				}
+
 				if (SUCCEEDED(hRes) && et != IET_UNKNOWN)
 				{
-					EC_MAPI(lpConverter->SetEncoding(et));
+					hRes = EC_MAPI(lpConverter->SetEncoding(et));
 				}
+
 				if (SUCCEEDED(hRes) && mst != USE_DEFAULT_SAVETYPE)
 				{
-					EC_MAPI(lpConverter->SetSaveFormat(mst));
+					hRes = EC_MAPI(lpConverter->SetSaveFormat(mst));
 				}
+
 				if (SUCCEEDED(hRes) && ulWrapLines != USE_DEFAULT_WRAPPING)
 				{
-					EC_MAPI(lpConverter->SetTextWrapping(ulWrapLines != 0, ulWrapLines));
+					hRes = EC_MAPI(lpConverter->SetTextWrapping(ulWrapLines != 0, ulWrapLines));
 				}
 
 				if (SUCCEEDED(hRes))
 				{
 					LPSTREAM lpMimeStm = nullptr;
 
-					EC_H(CreateStreamOnHGlobal(nullptr, true, &lpMimeStm));
+					hRes = EC_H(CreateStreamOnHGlobal(nullptr, true, &lpMimeStm));
 					if (SUCCEEDED(hRes) && lpMimeStm)
 					{
 						// Per the docs for MAPIToMIMEStm, CCSF_SMTP must always be set
 						// But we're gonna make the user ensure that, so we don't or it in here
-						EC_MAPI(lpConverter->MAPIToMIMEStm(lpMsg, lpMimeStm, ulConvertFlags));
+						hRes = EC_MAPI(lpConverter->MAPIToMIMEStm(lpMsg, lpMimeStm, ulConvertFlags));
 						if (SUCCEEDED(hRes))
 						{
 							LPSTREAM lpFileStm = nullptr;
 
-							EC_H(mapi::MyOpenStreamOnFile(
+							hRes = EC_H(mapi::MyOpenStreamOnFile(
 								MAPIAllocateBuffer,
 								MAPIFreeBuffer,
 								STGM_CREATE | STGM_READWRITE,
@@ -138,13 +141,13 @@ namespace mapi
 							if (SUCCEEDED(hRes) && lpFileStm)
 							{
 								const LARGE_INTEGER dwBegin = {0};
-								EC_MAPI(lpMimeStm->Seek(dwBegin, STREAM_SEEK_SET, nullptr));
+								hRes = EC_MAPI(lpMimeStm->Seek(dwBegin, STREAM_SEEK_SET, nullptr));
 								if (SUCCEEDED(hRes))
 								{
-									EC_MAPI(lpMimeStm->CopyTo(lpFileStm, ULARGE_MAX, nullptr, nullptr));
+									hRes = EC_MAPI(lpMimeStm->CopyTo(lpFileStm, ULARGE_MAX, nullptr, nullptr));
 									if (SUCCEEDED(hRes))
 									{
-										EC_MAPI(lpFileStm->Commit(STGC_DEFAULT));
+										hRes = EC_MAPI(lpFileStm->Commit(STGC_DEFAULT));
 									}
 								}
 							}
@@ -174,18 +177,17 @@ namespace mapi
 		{
 			if (!lpszEMLFile || !lpszMSGFile) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = S_OK;
 			LPSTORAGE pStorage = nullptr;
 			LPMESSAGE pMessage = nullptr;
 
-			EC_H(file::CreateNewMSG(lpszMSGFile, bUnicode, &pMessage, &pStorage));
+			auto hRes = EC_H(file::CreateNewMSG(lpszMSGFile, bUnicode, &pMessage, &pStorage));
 			if (SUCCEEDED(hRes) && pMessage && pStorage)
 			{
-				EC_H(ImportEMLToIMessage(
+				hRes = EC_H(ImportEMLToIMessage(
 					lpszEMLFile, pMessage, ulConvertFlags, bApply, hCharSet, cSetApplyType, lpAdrBook));
 				if (SUCCEEDED(hRes))
 				{
-					EC_MAPI(pStorage->Commit(STGC_DEFAULT));
+					hRes = EC_MAPI(pStorage->Commit(STGC_DEFAULT));
 				}
 			}
 
@@ -206,13 +208,13 @@ namespace mapi
 		{
 			if (!lpszEMLFile || !lpszMSGFile) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = S_OK;
 			LPMESSAGE pMessage = nullptr;
 
-			EC_H(file::LoadMSGToMessage(lpszMSGFile, &pMessage));
+			auto hRes = EC_H(file::LoadMSGToMessage(lpszMSGFile, &pMessage));
 			if (SUCCEEDED(hRes) && pMessage)
 			{
-				EC_H(ExportIMessageToEML(pMessage, lpszEMLFile, ulConvertFlags, et, mst, ulWrapLines, lpAdrBook));
+				hRes =
+					EC_H(ExportIMessageToEML(pMessage, lpszEMLFile, ulConvertFlags, et, mst, ulWrapLines, lpAdrBook));
 			}
 
 			if (pMessage) pMessage->Release();
@@ -230,7 +232,6 @@ namespace mapi
 			_Out_ bool* pDoAdrBook)
 		{
 			if (!lpulConvertFlags || !lpet || !lpmst || !lpulWrapLines || !pDoAdrBook) return MAPI_E_INVALID_PARAMETER;
-			auto hRes = S_OK;
 
 			dialog::editor::CEditor MyData(
 				pParentWnd, IDS_CONVERTTOEML, IDS_CONVERTTOEMLPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -248,16 +249,15 @@ namespace mapi
 			MyData.SetDecimal(6, 74);
 			MyData.InitPane(7, viewpane::CheckPane::Create(IDS_CONVERTDOADRBOOK, false, false));
 
-			WC_H(MyData.DisplayDialog());
-			if (hRes == S_OK)
-			{
-				*lpulConvertFlags = MyData.GetHex(0);
-				*lpulWrapLines = MyData.GetCheck(1) ? static_cast<ENCODINGTYPE>(MyData.GetDecimal(2)) : IET_UNKNOWN;
-				*lpmst = MyData.GetCheck(3) ? static_cast<MIMESAVETYPE>(MyData.GetHex(4)) : USE_DEFAULT_SAVETYPE;
-				*lpulWrapLines = MyData.GetCheck(5) ? MyData.GetDecimal(6) : USE_DEFAULT_WRAPPING;
-				*pDoAdrBook = MyData.GetCheck(7);
-			}
-			return hRes;
+			if (!MyData.DisplayDialog()) return MAPI_E_USER_CANCEL;
+
+			*lpulConvertFlags = MyData.GetHex(0);
+			*lpulWrapLines = MyData.GetCheck(1) ? static_cast<ENCODINGTYPE>(MyData.GetDecimal(2)) : IET_UNKNOWN;
+			*lpmst = MyData.GetCheck(3) ? static_cast<MIMESAVETYPE>(MyData.GetHex(4)) : USE_DEFAULT_SAVETYPE;
+			*lpulWrapLines = MyData.GetCheck(5) ? MyData.GetDecimal(6) : USE_DEFAULT_WRAPPING;
+			*pDoAdrBook = MyData.GetCheck(7);
+
+			return S_OK;
 		}
 
 		_Check_return_ HRESULT GetConversionFromEMLOptions(
@@ -291,26 +291,26 @@ namespace mapi
 				MyData.InitPane(6, viewpane::CheckPane::Create(IDS_SAVEUNICODE, false, false));
 			}
 
-			WC_H(MyData.DisplayDialog());
-			if (hRes == S_OK)
+			if (!MyData.DisplayDialog()) return MAPI_E_USER_CANCEL;
+
+			*lpulConvertFlags = MyData.GetHex(0);
+			if (MyData.GetCheck(1))
 			{
-				*lpulConvertFlags = MyData.GetHex(0);
-				if (MyData.GetCheck(1))
-				{
-					if (SUCCEEDED(hRes)) *pDoApply = true;
-					*pcSetApplyType = static_cast<CSETAPPLYTYPE>(MyData.GetDecimal(4));
-					if (*pcSetApplyType > CSET_APPLY_TAG_ALL) return MAPI_E_INVALID_PARAMETER;
-					const auto ulCodePage = MyData.GetDecimal(2);
-					const auto cCharSetType = static_cast<CHARSETTYPE>(MyData.GetDecimal(3));
-					if (cCharSetType > CHARSET_WEB) return MAPI_E_INVALID_PARAMETER;
-					EC_H(import::MyMimeOleGetCodePageCharset(ulCodePage, cCharSetType, phCharSet));
-				}
-				*pDoAdrBook = MyData.GetCheck(5);
-				if (pbUnicode)
-				{
-					*pbUnicode = MyData.GetCheck(6);
-				}
+				if (SUCCEEDED(hRes)) *pDoApply = true;
+				*pcSetApplyType = static_cast<CSETAPPLYTYPE>(MyData.GetDecimal(4));
+				if (*pcSetApplyType > CSET_APPLY_TAG_ALL) return MAPI_E_INVALID_PARAMETER;
+				const auto ulCodePage = MyData.GetDecimal(2);
+				const auto cCharSetType = static_cast<CHARSETTYPE>(MyData.GetDecimal(3));
+				if (cCharSetType > CHARSET_WEB) return MAPI_E_INVALID_PARAMETER;
+				hRes = EC_H(import::MyMimeOleGetCodePageCharset(ulCodePage, cCharSetType, phCharSet));
 			}
+
+			*pDoAdrBook = MyData.GetCheck(5);
+			if (pbUnicode)
+			{
+				*pbUnicode = MyData.GetCheck(6);
+			}
+
 			return hRes;
 		}
 #endif

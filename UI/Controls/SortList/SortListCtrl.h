@@ -68,7 +68,7 @@ namespace controls
 			STDMETHODIMP_(ULONG) Release();
 
 			// Exported manipulation functions
-			_Check_return_ HRESULT Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages);
+			void Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages);
 			void AutoSizeColumns(bool bMinWidth);
 			void DeleteAllColumns(bool bShutdown = false);
 			void SetSelectedItem(int iItem);
@@ -77,6 +77,7 @@ namespace controls
 			void SetItemText(int nItem, int nSubItem, const std::wstring& lpszText);
 			std::wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 			void AllowEscapeClose();
+			int InsertColumnW(_In_ int nCol, const std::wstring& columnHeading);
 
 		protected:
 			void MySetRedraw(bool bRedraw);

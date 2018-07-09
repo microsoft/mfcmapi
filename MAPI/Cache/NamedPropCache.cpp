@@ -49,9 +49,8 @@ namespace cache
 				// So we check the string length both ways to make our best guess
 				size_t cchShortLen = NULL;
 				size_t cchWideLen = NULL;
-				auto hRes = S_OK;
-				WC_H(StringCchLengthA(reinterpret_cast<LPSTR>(src.Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
-				WC_H(StringCchLengthW(src.Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
+				WC_H_S(StringCchLengthA(reinterpret_cast<LPSTR>(src.Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
+				WC_H_S(StringCchLengthW(src.Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
 				size_t cbName = NULL;
 
 				if (cchShortLen < cchWideLen)
@@ -268,15 +267,14 @@ namespace cache
 	{
 		if (!lpMAPIProp || !lppPropTags || !*lppPropTags || !cbSig || !lpSig) return MAPI_E_INVALID_PARAMETER;
 
-		auto hRes = S_OK;
-
 		// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 		// If we reach the end of the cache and don't have everything, we set up to make a GetNamesFromIDs call.
 
 		const auto lpPropTags = *lppPropTags;
 		// First, allocate our results using MAPI
 		LPMAPINAMEID* lppNameIDs = nullptr;
-		EC_H(MAPIAllocateBuffer(sizeof(MAPINAMEID*) * lpPropTags->cValues, reinterpret_cast<LPVOID*>(&lppNameIDs)));
+		auto hRes =
+			EC_H(MAPIAllocateBuffer(sizeof(MAPINAMEID*) * lpPropTags->cValues, reinterpret_cast<LPVOID*>(&lppNameIDs)));
 
 		if (lppNameIDs)
 		{
@@ -305,7 +303,8 @@ namespace cache
 			if (0 != ulMisses)
 			{
 				LPSPropTagArray lpUncachedTags = nullptr;
-				EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(ulMisses), reinterpret_cast<LPVOID*>(&lpUncachedTags)));
+				hRes =
+					EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(ulMisses), reinterpret_cast<LPVOID*>(&lpUncachedTags)));
 				if (lpUncachedTags)
 				{
 					memset(lpUncachedTags, 0, CbNewSPropTagArray(ulMisses));
@@ -324,7 +323,7 @@ namespace cache
 					ULONG ulUncachedPropNames = 0;
 					LPMAPINAMEID* lppUncachedPropNames = nullptr;
 
-					WC_H_GETPROPS(lpMAPIProp->GetNamesFromIDs(
+					hRes = WC_H_GETPROPS(lpMAPIProp->GetNamesFromIDs(
 						&lpUncachedTags, nullptr, NULL, &ulUncachedPropNames, &lppUncachedPropNames));
 					if (SUCCEEDED(hRes) && ulUncachedPropNames == ulMisses && lppUncachedPropNames)
 					{
@@ -344,7 +343,7 @@ namespace cache
 								{
 									LPMAPINAMEID lpNameID = nullptr;
 
-									EC_H(MAPIAllocateMore(
+									hRes = EC_H(MAPIAllocateMore(
 										sizeof(MAPINAMEID), lppNameIDs, reinterpret_cast<LPVOID*>(&lpNameID)));
 									if (lpNameID)
 									{
@@ -355,6 +354,7 @@ namespace cache
 										ulMisses--;
 									}
 								}
+
 								// Whether we copied or not, move on to the next one
 								ulUncachedTag++;
 							}
@@ -424,13 +424,13 @@ namespace cache
 
 		if (lpMappingSignature)
 		{
-			WC_H_GETPROPS(CacheGetNamesFromIDs(
+			hRes = WC_H_GETPROPS(CacheGetNamesFromIDs(
 				lpMAPIProp, lpMappingSignature->cb, lpMappingSignature->lpb, lppPropTags, lpcPropNames, lpppPropNames));
 		}
 		else
 		{
 			hRes = S_OK;
-			WC_H_GETPROPS(
+			hRes = WC_H_GETPROPS(
 				lpMAPIProp->GetNamesFromIDs(lppPropTags, lpPropSetGuid, ulFlags, lpcPropNames, lpppPropNames));
 			// Cache the results
 			if (SUCCEEDED(hRes))
@@ -454,14 +454,12 @@ namespace cache
 	{
 		if (!lpMAPIProp || !cPropNames || !*lppPropNames || !lppPropTags) return MAPI_E_INVALID_PARAMETER;
 
-		auto hRes = S_OK;
-
 		// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 		// If we reach the end of the cache and don't have everything, we set up to make a GetIDsFromNames call.
 
 		// First, allocate our results using MAPI
 		LPSPropTagArray lpPropTags = nullptr;
-		EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(cPropNames), reinterpret_cast<LPVOID*>(&lpPropTags)));
+		auto hRes = EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(cPropNames), reinterpret_cast<LPVOID*>(&lpPropTags)));
 
 		if (lpPropTags)
 		{
@@ -497,7 +495,7 @@ namespace cache
 			if (0 != ulMisses)
 			{
 				LPMAPINAMEID* lppUncachedPropNames = nullptr;
-				EC_H(MAPIAllocateBuffer(
+				hRes = EC_H(MAPIAllocateBuffer(
 					sizeof(LPMAPINAMEID) * ulMisses, reinterpret_cast<LPVOID*>(&lppUncachedPropNames)));
 				if (lppUncachedPropNames)
 				{
@@ -517,7 +515,7 @@ namespace cache
 					const ULONG ulUncachedTags = 0;
 					LPSPropTagArray lpUncachedTags = nullptr;
 
-					EC_H_GETPROPS(
+					hRes = EC_H_GETPROPS(
 						lpMAPIProp->GetIDsFromNames(ulMisses, lppUncachedPropNames, ulFlags, &lpUncachedTags));
 					if (SUCCEEDED(hRes) && lpUncachedTags && lpUncachedTags->cValues == ulMisses)
 					{
@@ -580,15 +578,13 @@ namespace cache
 			return lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, lppPropTags);
 		}
 
-		auto hRes = S_OK;
-
 		LPSPropValue lpProp = nullptr;
 
-		WC_MAPI(HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp));
+		auto hRes = WC_MAPI(HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp));
 
 		if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			WC_H_GETPROPS(CacheGetIDsFromNames(
+			hRes = WC_H_GETPROPS(CacheGetIDsFromNames(
 				lpMAPIProp,
 				lpProp->Value.bin.cb,
 				lpProp->Value.bin.lpb,
@@ -599,8 +595,7 @@ namespace cache
 		}
 		else
 		{
-			hRes = S_OK;
-			WC_H_GETPROPS(lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, lppPropTags));
+			hRes = WC_H_GETPROPS(lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, lppPropTags));
 			// Cache the results
 			if (SUCCEEDED(hRes))
 			{
@@ -617,7 +612,6 @@ namespace cache
 	// We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
 	NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
 	{
-		auto hRes = S_OK;
 		NamePropNames namePropNames;
 
 		// Can't generate strings without a MAPINAMEID structure
@@ -697,8 +691,8 @@ namespace cache
 			// So we check the string length both ways to make our best guess
 			size_t cchShortLen = NULL;
 			size_t cchWideLen = NULL;
-			WC_H(StringCchLengthA(reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
-			WC_H(StringCchLengthW(lpNameID->Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
+			WC_H_S(StringCchLengthA(reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
+			WC_H_S(StringCchLengthW(lpNameID->Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
 
 			if (cchShortLen < cchWideLen)
 			{
@@ -753,7 +747,6 @@ namespace cache
 		bool
 			bIsAB) // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 	{
-		auto hRes = S_OK;
 		NamePropNames namePropNames;
 
 		// Named Props
@@ -773,7 +766,7 @@ namespace cache
 			tag.cValues = 1;
 			tag.aulPropTag[0] = ulPropTag;
 
-			WC_H_GETPROPS(
+			auto hRes = WC_H_GETPROPS(
 				GetNamesFromIDs(lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL, &ulPropNames, &lppPropNames));
 			if (SUCCEEDED(hRes) && ulPropNames == 1 && lppPropNames && lppPropNames[0])
 			{

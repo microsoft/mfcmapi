@@ -9,8 +9,6 @@ namespace version
 {
 	std::wstring GetMSIVersion()
 	{
-		auto hRes = S_OK;
-
 		if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return strings::emptystring;
 
 		std::wstring szOut;
@@ -27,9 +25,8 @@ namespace version
 				if (lpszTempVer && lpszTempLang)
 				{
 					DWORD dwValueBuf = MAX_PATH;
-					WC_W32(
-						import::pfnMsiGetFileVersion(
-							lpszTempPath.c_str(), lpszTempVer, &dwValueBuf, lpszTempLang, &dwValueBuf));
+					auto hRes = WC_W32(import::pfnMsiGetFileVersion(
+						lpszTempPath.c_str(), lpszTempVer, &dwValueBuf, lpszTempLang, &dwValueBuf));
 					if (SUCCEEDED(hRes))
 					{
 						szOut = strings::formatmessage(

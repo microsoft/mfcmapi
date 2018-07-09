@@ -111,7 +111,6 @@ namespace dialog
 			// This will iterate over all the special folders we know how to get.
 			for (ULONG i = mapi::DEFAULT_UNSPECIFIED + 1; i < mapi::NUM_DEFAULT_PROPS; i++)
 			{
-				auto hRes = S_OK;
 				ULONG cb = NULL;
 				LPENTRYID lpeid = nullptr;
 
@@ -124,7 +123,7 @@ namespace dialog
 					SetListString(ulListNum, iRow, iCol, mapi::FolderNames[i]);
 					iCol++;
 
-					WC_H(mapi::GetDefaultFolderEID(i, m_lpMDB, &cb, &lpeid));
+					auto hRes = WC_H(mapi::GetDefaultFolderEID(i, m_lpMDB, &cb, &lpeid));
 					if (SUCCEEDED(hRes))
 					{
 						SPropValue eid = {0};
@@ -136,7 +135,7 @@ namespace dialog
 						iCol++;
 
 						LPMAPIFOLDER lpFolder = nullptr;
-						WC_H(mapi::CallOpenEntry(
+						hRes = WC_H(mapi::CallOpenEntry(
 							m_lpMDB,
 							NULL,
 							NULL,
@@ -151,7 +150,7 @@ namespace dialog
 						{
 							ULONG ulProps = 0;
 							LPSPropValue lpProps = nullptr;
-							WC_H_GETPROPS(lpFolder->GetProps(
+							WC_H_GETPROPS_S(lpFolder->GetProps(
 								LPSPropTagArray(&lptaFolderProps), fMapiUnicode, &ulProps, &lpProps));
 
 							for (ULONG ulPropNum = 0; ulPropNum < ulProps; ulPropNum++)
@@ -213,8 +212,6 @@ namespace dialog
 		{
 			if (!lpData) return false;
 
-			auto hRes = S_OK;
-
 			CEditor MyResults(this, IDS_QSSPECIALFOLDER, NULL, CEDITOR_BUTTON_OK);
 			MyResults.InitPane(0, viewpane::TextPane::CreateMultiLinePane(NULL, true));
 
@@ -236,28 +233,22 @@ namespace dialog
 				MyResults.SetStringW(0, szTmp);
 			}
 
-			WC_H(MyResults.DisplayDialog());
-
-			if (S_OK != hRes) return false;
-
-			return false;
+			return MyResults.DisplayDialog();
 		}
 
 		void OnQSCheckSpecialFolders(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		{
-			auto hRes = S_OK;
-
 			lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTCHECKINGSPECIALFOLDERS);
 			lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
 			LPMDB lpMDB = nullptr;
-			WC_H(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
+			WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
 
 			if (lpMDB)
 			{
 				SpecialFolderEditor MyResults(lpHostDlg, lpMDB);
 
-				WC_H(MyResults.DisplayDialog());
+				(void) MyResults.DisplayDialog();
 
 				lpMDB->Release();
 			}

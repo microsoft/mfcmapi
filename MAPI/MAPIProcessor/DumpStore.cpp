@@ -81,7 +81,6 @@ namespace mapiprocessor
 	{
 		if (!lpSRow || !m_fMailboxTable) return;
 		if (m_bOutputList) return;
-		auto hRes = S_OK;
 
 		const auto lpEmailAddress = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_EMAIL_ADDRESS);
 
@@ -109,7 +108,7 @@ namespace mapiprocessor
 			m_szFolderPathRoot = m_szMailboxTablePathRoot + L"\\" + szTemp;
 
 			// suppress any error here since the folder may already exist
-			WC_B(CreateDirectoryW(m_szFolderPathRoot.c_str(), nullptr));
+			WC_B_S(CreateDirectoryW(m_szFolderPathRoot.c_str(), nullptr));
 		}
 
 		output::OutputToFile(m_fMailboxTable, L"</mailbox>\n");
@@ -139,8 +138,7 @@ namespace mapiprocessor
 		// We've done all the setup we need. If we're just outputting a list, we don't need to do the rest
 		if (m_bOutputList) return;
 
-		WC_B(CreateDirectoryW(m_szFolderPath.c_str(), nullptr));
-		hRes = S_OK; // ignore the error - the directory may exist already
+		WC_B_S(CreateDirectoryW(m_szFolderPath.c_str(), nullptr));
 
 		// Dump the folder props to a file
 		// Holds file/path name for folder props
@@ -154,7 +152,7 @@ namespace mapiprocessor
 		LPSPropValue lpAllProps = nullptr;
 		ULONG cValues = 0L;
 
-		WC_H_GETPROPS(mapi::GetPropsNULL(m_lpFolder, fMapiUnicode, &cValues, &lpAllProps));
+		hRes = WC_H_GETPROPS(mapi::GetPropsNULL(m_lpFolder, fMapiUnicode, &cValues, &lpAllProps));
 		if (FAILED(hRes))
 		{
 			output::OutputToFilef(m_fFolderProps, L"<properties error=\"0x%08X\" />\n", hRes);
@@ -310,12 +308,11 @@ namespace mapiprocessor
 		bool bWrapEx,
 		ULONG ulCPID)
 	{
-		auto hRes = S_OK;
 		LPSTREAM lpStream = nullptr;
 		LPSTREAM lpRTFUncompressed = nullptr;
 		LPSTREAM lpOutputStream = nullptr;
 
-		WC_MAPI(
+		auto hRes = WC_MAPI(
 			lpMessage->OpenProperty(ulBodyTag, &IID_IStream, STGM_READ, NULL, reinterpret_cast<LPUNKNOWN*>(&lpStream)));
 		// The only error we suppress is MAPI_E_NOT_FOUND, so if a body type isn't in the output, it wasn't on the message
 		if (MAPI_E_NOT_FOUND != hRes)
@@ -336,7 +333,7 @@ namespace mapiprocessor
 					if (bWrapEx)
 					{
 						ULONG ulStreamFlags = NULL;
-						WC_H(mapi::WrapStreamForRTF(
+						WC_H_S(mapi::WrapStreamForRTF(
 							lpStream,
 							true,
 							MAPI_NATIVE_BODY,
@@ -355,7 +352,7 @@ namespace mapiprocessor
 					}
 					else
 					{
-						WC_H(mapi::WrapStreamForRTF(lpStream, false, NULL, NULL, NULL, &lpRTFUncompressed, nullptr));
+						WC_H_S(mapi::WrapStreamForRTF(lpStream, false, NULL, NULL, NULL, &lpRTFUncompressed, nullptr));
 					}
 					if (!lpRTFUncompressed || FAILED(hRes))
 					{
@@ -393,8 +390,6 @@ namespace mapiprocessor
 	{
 		if (!lpMessage || !lpData) return;
 
-		auto hRes = S_OK;
-
 		*lpData = static_cast<LPVOID>(new (MessageData));
 		if (!*lpData) return;
 
@@ -404,13 +399,13 @@ namespace mapiprocessor
 		ULONG cValues = 0L;
 
 		// Get all props, asking for UNICODE string properties
-		WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, MAPI_UNICODE, &cValues, &lpAllProps));
+		auto hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, MAPI_UNICODE, &cValues, &lpAllProps));
 		if (hRes == MAPI_E_BAD_CHARWIDTH)
 		{
 			// Didn't like MAPI_UNICODE - fall back
 			hRes = S_OK;
 
-			WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, NULL, &cValues, &lpAllProps));
+			hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, NULL, &cValues, &lpAllProps));
 		}
 
 		// If we've got a parent message, we're an attachment - use attachment filename logic
@@ -543,8 +538,6 @@ namespace mapiprocessor
 
 	void OutputMessageMSG(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szFolderPath)
 	{
-		auto hRes = S_OK;
-
 		enum
 		{
 			msgPR_SUBJECT_W,
@@ -565,8 +558,7 @@ namespace mapiprocessor
 		LPSBinary lpRecordKey = nullptr;
 
 		// Get required properties from the message
-		EC_H_GETPROPS(lpMessage->GetProps(LPSPropTagArray(&msgProps), fMapiUnicode, &cProps, &lpsProps));
-
+		EC_H_GETPROPS_S(lpMessage->GetProps(LPSPropTagArray(&msgProps), fMapiUnicode, &cProps, &lpsProps));
 		if (cProps == 2 && lpsProps)
 		{
 			if (mapi::CheckStringProp(&lpsProps[msgPR_SUBJECT_W], PT_UNICODE))
@@ -584,7 +576,7 @@ namespace mapiprocessor
 		{
 			output::DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
-			WC_H(file::SaveToMSG(lpMessage, szFileName, fMapiUnicode != 0, nullptr, false));
+			WC_H_S(file::SaveToMSG(lpMessage, szFileName, fMapiUnicode != 0, nullptr, false));
 		}
 	}
 
@@ -668,8 +660,6 @@ namespace mapiprocessor
 
 		lpMsgData->ulCurAttNum = ulCurRow; // set this so we can pull it if this is an embedded message
 
-		auto hRes = S_OK;
-
 		output::OutputToFilef(lpMsgData->fMessageProps, L"<attachment num=\"0x%08X\" filename=\"", ulCurRow);
 
 		auto lpAttachName = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_ATTACH_FILENAME);
@@ -696,7 +686,7 @@ namespace mapiprocessor
 			ULONG ulAllProps = 0;
 			LPSPropValue lpAllProps = nullptr;
 			// Let's get all props from the message and dump them.
-			WC_H_GETPROPS(mapi::GetPropsNULL(lpAttach, fMapiUnicode, &ulAllProps, &lpAllProps));
+			WC_H_GETPROPS_S(mapi::GetPropsNULL(lpAttach, fMapiUnicode, &ulAllProps, &lpAllProps));
 			if (lpAllProps)
 			{
 				output::OutputToFile(lpMsgData->fMessageProps, L"\t<getprops>\n");

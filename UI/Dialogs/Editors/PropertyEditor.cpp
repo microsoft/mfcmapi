@@ -33,20 +33,20 @@ namespace dialog
 				SPropTagArray sTag = {0};
 				sTag.cValues = 1;
 				sTag.aulPropTag[0] =
-					PT_ERROR == PROP_TYPE(ulPropTag) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
+					PROP_TYPE(ulPropTag) == PT_ERROR ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
 				ULONG ulValues = NULL;
 
-				WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
+				hRes = WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &sourceProp));
 
 				// Suppress MAPI_E_NOT_FOUND error when the source type is non error
-				if (sourceProp && PT_ERROR == PROP_TYPE(sourceProp->ulPropTag) &&
-					MAPI_E_NOT_FOUND == sourceProp->Value.err && PT_ERROR != PROP_TYPE(ulPropTag))
+				if (sourceProp && PROP_TYPE(sourceProp->ulPropTag) == PT_ERROR &&
+					sourceProp->Value.err == MAPI_E_NOT_FOUND && PROP_TYPE(ulPropTag) != PT_ERROR)
 				{
 					MAPIFreeBuffer(sourceProp);
 					sourceProp = nullptr;
 				}
 
-				if (MAPI_E_CALL_FAILED == hRes)
+				if (hRes == MAPI_E_CALL_FAILED)
 				{
 					// Just suppress this - let the user edit anyway
 					hRes = S_OK;
@@ -72,18 +72,20 @@ namespace dialog
 			{
 				CMultiValuePropertyEditor MyPropertyEditor(
 					pParentWnd, uidTitle, uidPrompt, bIsAB, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
-				WC_H(MyPropertyEditor.DisplayDialog());
-
-				if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				if (MyPropertyEditor.DisplayDialog())
+				{
+					if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				}
 			}
 			// Or the single value prop case
 			else
 			{
 				CPropertyEditor MyPropertyEditor(
 					pParentWnd, uidTitle, uidPrompt, bIsAB, bMVRow, lpAllocParent, lpMAPIProp, ulPropTag, lpsPropValue);
-				WC_H(MyPropertyEditor.DisplayDialog());
-
-				if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				if (MyPropertyEditor.DisplayDialog())
+				{
+					if (lpNewValue) *lpNewValue = MyPropertyEditor.DetachModifiedSPropValue();
+				}
 			}
 
 			MAPIFreeBuffer(sourceProp);
@@ -455,8 +457,6 @@ namespace dialog
 
 		void CPropertyEditor::WriteStringsToSPropValue()
 		{
-			auto hRes = S_OK;
-
 			// Check first if we'll have anything to write
 			switch (PROP_TYPE(m_ulPropTag))
 			{
@@ -475,12 +475,12 @@ namespace dialog
 			{
 				if (m_lpAllocParent)
 				{
-					EC_H(MAPIAllocateMore(
+					EC_H_S(MAPIAllocateMore(
 						sizeof(SPropValue), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
 				}
 				else
 				{
-					EC_H(MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
+					EC_H_S(MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
 					m_lpAllocParent = m_lpsOutputValue;
 				}
 			}
@@ -542,7 +542,7 @@ namespace dialog
 					m_lpsOutputValue->Value.ft.dwHighDateTime = strings::wstringToUlong(GetStringW(1), 16);
 					break;
 				case PT_CLSID:
-					EC_H(MAPIAllocateMore(
+					EC_H_S(MAPIAllocateMore(
 						sizeof(GUID), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpsOutputValue->Value.lpguid)));
 					if (m_lpsOutputValue->Value.lpguid)
 					{
@@ -585,16 +585,17 @@ namespace dialog
 		{
 			if (!m_lpsOutputValue || !m_lpMAPIProp) return;
 
-			auto hRes = S_OK;
-
 			LPSPropProblemArray lpProblemArray = nullptr;
 
-			EC_MAPI(m_lpMAPIProp->SetProps(1, m_lpsOutputValue, &lpProblemArray));
+			auto hRes = EC_MAPI(m_lpMAPIProp->SetProps(1, m_lpsOutputValue, &lpProblemArray));
 
 			EC_PROBLEMARRAY(lpProblemArray);
 			MAPIFreeBuffer(lpProblemArray);
 
-			EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+			if (SUCCEEDED(hRes))
+			{
+				EC_MAPI_S(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+			}
 		}
 
 		// Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!
@@ -609,7 +610,7 @@ namespace dialog
 		{
 			const auto i = CEditor::HandleChange(nID);
 
-			if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
+			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
 			std::wstring szTmpString;
 			std::wstring szTemp1;
@@ -636,12 +637,12 @@ namespace dialog
 			{
 			case PT_I2: // signed 16 bit
 				szTmpString = GetStringW(i);
-				if (0 == i)
+				if (i == 0)
 				{
 					iVal = static_cast<short int>(strings::wstringToLong(szTmpString, 10));
 					SetHex(1, iVal);
 				}
-				else if (1 == i)
+				else if (i == 1)
 				{
 					lVal = static_cast<short int>(strings::wstringToLong(szTmpString, 16));
 					SetDecimal(0, lVal);
@@ -658,12 +659,12 @@ namespace dialog
 				break;
 			case PT_LONG: // unsigned 32 bit
 				szTmpString = GetStringW(i);
-				if (0 == i)
+				if (i == 0)
 				{
 					lVal = static_cast<LONG>(strings::wstringToUlong(szTmpString, 10));
 					SetHex(1, lVal);
 				}
-				else if (1 == i)
+				else if (i == 1)
 				{
 					lVal = static_cast<LONG>(strings::wstringToUlong(szTmpString, 16));
 					SetStringf(0, L"%d", lVal); // STRING_OK
@@ -679,7 +680,7 @@ namespace dialog
 
 				break;
 			case PT_CURRENCY:
-				if (0 == i || 1 == i)
+				if (i == 0 || i == 1)
 				{
 					szTmpString = GetStringW(0);
 					curVal.Hi = strings::wstringToUlong(szTmpString, 16);
@@ -687,7 +688,7 @@ namespace dialog
 					curVal.Lo = strings::wstringToUlong(szTmpString, 16);
 					SetStringW(2, strings::CurrencyToString(curVal));
 				}
-				else if (2 == i)
+				else if (i == 2)
 				{
 					szTmpString = GetStringW(i);
 					szTmpString = strings::StripCharacter(szTmpString, L'.');
@@ -698,7 +699,7 @@ namespace dialog
 
 				break;
 			case PT_I8:
-				if (0 == i || 1 == i)
+				if (i == 0 || i == 1)
 				{
 					szTmpString = GetStringW(0);
 					liVal.HighPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16));
@@ -706,7 +707,7 @@ namespace dialog
 					liVal.LowPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16));
 					SetStringf(2, L"%I64d", liVal.QuadPart); // STRING_OK
 				}
-				else if (2 == i)
+				else if (i == 2)
 				{
 					szTmpString = GetStringW(i);
 					liVal.QuadPart = strings::wstringToInt64(szTmpString);
@@ -733,14 +734,14 @@ namespace dialog
 				SetStringW(2, szTemp1);
 				break;
 			case PT_BINARY:
-				if (0 == i || 2 == i)
+				if (i == 0 || i == 2)
 				{
 					bin = GetBinary(0);
-					if (0 == i) SetStringA(1, std::string(LPCSTR(bin.data()), bin.size())); // ansi string
+					if (i == 0) SetStringA(1, std::string(LPCSTR(bin.data()), bin.size())); // ansi string
 					Bin.lpb = bin.data();
 					Bin.cb = ULONG(bin.size());
 				}
-				else if (1 == i)
+				else if (i == 1)
 				{
 					lpszA = GetStringA(1); // Do not free this
 					Bin.lpb = LPBYTE(lpszA.c_str());
@@ -758,7 +759,7 @@ namespace dialog
 				if (m_lpSmartView) m_lpSmartView->Parse(Bin);
 				break;
 			case PT_STRING8:
-				if (0 == i)
+				if (i == 0)
 				{
 					size_t cbStr = 0;
 					lpszA = GetStringA(0);
@@ -777,7 +778,7 @@ namespace dialog
 					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
 					if (lpPane) lpPane->SetCount(cbStr);
 				}
-				else if (1 == i)
+				else if (i == 1)
 				{
 					bin = GetBinary(1);
 
@@ -792,7 +793,7 @@ namespace dialog
 
 				break;
 			case PT_UNICODE:
-				if (0 == i)
+				if (i == 0)
 				{
 					lpszW = GetStringW(0);
 
@@ -810,7 +811,7 @@ namespace dialog
 					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
 					if (lpPane) lpPane->SetCount(lpszW.length());
 				}
-				else if (1 == i)
+				else if (i == 1)
 				{
 					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
 					bin = GetBinary(1);

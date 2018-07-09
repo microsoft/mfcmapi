@@ -160,7 +160,6 @@ namespace ui
 
 	_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const std::wstring& szMenu)
 	{
-		auto hRes = S_OK;
 		auto lpMenu = new (std::nothrow) MenuEntry;
 		if (lpMenu)
 		{
@@ -173,7 +172,7 @@ namespace ui
 			if (lpMenu->m_MSAA.pszWText)
 			{
 				lpMenu->m_MSAA.cchWText = static_cast<DWORD>(iLen);
-				WC_H(StringCchCopyW(lpMenu->m_MSAA.pszWText, iLen + 1, szMenu.c_str()));
+				WC_H_S(StringCchCopyW(lpMenu->m_MSAA.pszWText, iLen + 1, szMenu.c_str()));
 				lpMenu->m_pName = lpMenu->m_MSAA.pszWText;
 			}
 
@@ -255,8 +254,6 @@ namespace ui
 
 	void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString)
 	{
-		auto hRes = S_OK;
-
 		auto szNewString = strings::loadstring(uidNewString);
 
 		output::DebugPrint(
@@ -276,7 +273,7 @@ namespace ui
 		MenuInfo.fMask = MIIM_STRING;
 		MenuInfo.dwTypeData = LPWSTR(szNewString.c_str());
 
-		EC_B(SetMenuItemInfoW(hMenu, uiMenuTag, false, &MenuInfo));
+		EC_B_S(SetMenuItemInfoW(hMenu, uiMenuTag, false, &MenuInfo));
 	}
 
 	void MergeMenu(_In_ HMENU hMenuDestination, _In_ HMENU hMenuAdd)
@@ -393,7 +390,6 @@ namespace ui
 
 	_Check_return_ int GetTextHeight(_In_opt_ HWND hwndEdit)
 	{
-		auto hRes = S_OK;
 		TEXTMETRIC tmFont = {0};
 		auto iHeight = 0;
 
@@ -403,7 +399,7 @@ namespace ui
 		{
 			// Get the metrics for the Segoe font.
 			const auto hOldFont = SelectObject(hdc, GetSegoeFont());
-			WC_B(::GetTextMetrics(hdc, &tmFont));
+			WC_B_S(::GetTextMetrics(hdc, &tmFont));
 			SelectObject(hdc, hOldFont);
 			ReleaseDC(hwndEdit, hdc);
 		}
@@ -436,8 +432,7 @@ namespace ui
 	{
 		HFONT hFont = nullptr;
 		LOGFONTW lfFont = {0};
-		auto hRes = S_OK;
-		WC_H(StringCchCopyW(lfFont.lfFaceName, _countof(lfFont.lfFaceName), szFont));
+		WC_H_S(StringCchCopyW(lfFont.lfFaceName, _countof(lfFont.lfFaceName), szFont));
 
 		EnumFontFamiliesExW(
 			GetDC(nullptr),
@@ -1288,9 +1283,7 @@ namespace ui
 
 	void StyleButton(_In_ HWND hWnd, uiButtonStyle bsStyle)
 	{
-		auto hRes = S_OK;
-
-		EC_B(::SetProp(hWnd, BUTTON_STYLE, reinterpret_cast<HANDLE>(bsStyle)));
+		EC_B_S(::SetProp(hWnd, BUTTON_STYLE, reinterpret_cast<HANDLE>(bsStyle)));
 	}
 
 	void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemState)
@@ -2050,8 +2043,6 @@ namespace ui
 
 	void StyleLabel(_In_ HWND hWnd, uiLabelStyle lsStyle)
 	{
-		auto hRes = S_OK;
-
-		EC_B(::SetProp(hWnd, LABEL_STYLE, reinterpret_cast<HANDLE>(lsStyle)));
+		EC_B_S(::SetProp(hWnd, LABEL_STYLE, reinterpret_cast<HANDLE>(lsStyle)));
 	}
 }

@@ -75,10 +75,9 @@ namespace viewpane
 
 	void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 	{
-		auto hRes = S_OK;
 		const auto visibility = !m_bDoDropDown && !m_bHasData ? SW_HIDE : SW_SHOW;
-		EC_B(m_CollapseButton.ShowWindow(visibility));
-		EC_B(m_Label.ShowWindow(visibility));
+		EC_B_S(m_CollapseButton.ShowWindow(visibility));
+		EC_B_S(m_Label.ShowWindow(visibility));
 
 		if (0 != m_iControl)
 		{
@@ -95,7 +94,7 @@ namespace viewpane
 		{
 			if (m_bDoDropDown)
 			{
-				EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * 10, SWP_NOZORDER));
+				EC_B_S(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * 10, SWP_NOZORDER));
 
 				y += m_iEditHeight;
 				height -= m_iEditHeight;
@@ -104,7 +103,7 @@ namespace viewpane
 			m_TextPane.SetWindowPos(x, y, width, height);
 		}
 
-		EC_B(m_DropDown.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
+		EC_B_S(m_DropDown.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
 		m_TextPane.ShowWindow(m_bCollapsed || !m_bHasData ? SW_HIDE : SW_SHOW);
 	}
 

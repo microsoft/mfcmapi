@@ -32,7 +32,6 @@ namespace smartview
 
 	_Check_return_ std::wstring SDBin::ToStringInternal()
 	{
-		auto hRes = S_OK;
 		const auto lpSDToParse = m_Parser.GetCurrentAddress();
 		const auto ulSDToParse = m_Parser.RemainingBytes();
 		m_Parser.Advance(ulSDToParse);
@@ -50,9 +49,8 @@ namespace smartview
 
 		if (m_bFB) acetype = sid::acetypeFreeBusy;
 
-		std::wstring szDACL;
 		std::wstring szInfo;
-		WC_H(SDToString(lpSDToParse, ulSDToParse, acetype, szDACL, szInfo));
+		auto szDACL = SDToString(lpSDToParse, ulSDToParse, acetype, szInfo);
 		auto szFlags = interpretprop::InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse));
 
 		std::vector<std::wstring> result;

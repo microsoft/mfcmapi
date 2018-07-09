@@ -73,7 +73,6 @@ namespace viewpane
 	_Check_return_ static DWORD CALLBACK
 	EditStreamReadCallBack(DWORD_PTR dwCookie, _In_ LPBYTE pbBuff, LONG cb, _In_count_(cb) LONG* pcb)
 	{
-		auto hRes = S_OK;
 		if (!pbBuff || !pcb || !dwCookie) return 0;
 
 		auto stmData = reinterpret_cast<LPSTREAM>(dwCookie);
@@ -88,7 +87,7 @@ namespace viewpane
 
 		if (pbTempBuff)
 		{
-			EC_MAPI(stmData->Read(pbTempBuff, cbTemp, &cbTempRead));
+			EC_MAPI_S(stmData->Read(pbTempBuff, cbTemp, &cbTempRead));
 			output::DebugPrint(DBGStream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
 
 			memset(pbBuff, 0, cbTempRead * 2);
@@ -165,7 +164,6 @@ namespace viewpane
 
 	void TextPane::SetWindowPos(int x, int y, int width, int height)
 	{
-		auto hRes = S_OK;
 		auto iVariableHeight = height - GetFixedHeight();
 		if (0 != m_iControl)
 		{
@@ -174,7 +172,7 @@ namespace viewpane
 		}
 
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
-		EC_B(m_EditBox.ShowWindow(cmdShow));
+		EC_B_S(m_EditBox.ShowWindow(cmdShow));
 		ViewPane::SetWindowPos(x, y, width, height);
 
 		if (m_bCollapsible)
@@ -192,16 +190,14 @@ namespace viewpane
 			height -= m_iSmallHeightMargin; // This is the bottom margin
 		}
 
-		EC_B(m_EditBox.SetWindowPos(NULL, x, y, width, m_bCollapsible ? iVariableHeight : height, SWP_NOZORDER));
+		EC_B_S(m_EditBox.SetWindowPos(NULL, x, y, width, m_bCollapsible ? iVariableHeight : height, SWP_NOZORDER));
 	}
 
 	void TextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 	{
 		ViewPane::Initialize(iControl, pParent, nullptr);
 
-		auto hRes = S_OK;
-
-		EC_B(m_EditBox.Create(
+		EC_B_S(m_EditBox.Create(
 			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_BORDER | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL |
 				(m_bReadOnly ? ES_READONLY : 0) | (m_bMultiline ? (ES_MULTILINE | ES_WANTRETURN) : (ES_AUTOHSCROLL)),
 			CRect(0, 0, 0, 0),
@@ -419,17 +415,18 @@ namespace viewpane
 	// Writes a hex pane out to a binary stream
 	void TextPane::GetBinaryStream(_In_ LPSTREAM lpStreamOut) const
 	{
-		auto hRes = S_OK;
-
 		auto bin = strings::HexStringToBin(GetStringW());
 		if (bin.data() != nullptr)
 		{
 			ULONG cbWritten = 0;
-			EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
+			auto hRes = EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 			output::DebugPrintEx(
 				DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
 
-			EC_MAPI(lpStreamOut->Commit(STGC_DEFAULT));
+			if (SUCCEEDED(hRes))
+			{
+				EC_MAPI_S(lpStreamOut->Commit(STGC_DEFAULT));
+			}
 		}
 	}
 

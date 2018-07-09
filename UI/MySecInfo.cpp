@@ -124,20 +124,18 @@ namespace mapi
 		STDMETHODIMP CMySecInfo::GetObjectInformation(PSI_OBJECT_INFO pObjectInfo)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::GetObjectInformation\n");
-			auto hRes = S_OK;
-			auto bAllowEdits = false;
 
 			HKEY hRootKey = nullptr;
+			WC_W32_S(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey));
 
-			WC_W32(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey));
-
+			auto bAllowEdits = false;
 			if (hRootKey)
 			{
 				bAllowEdits = !!registry::ReadDWORDFromRegistry(
 					hRootKey,
 					L"AllowUnsupportedSecurityEdits", // STRING_OK
 					DWORD(bAllowEdits));
-				EC_W32(RegCloseKey(hRootKey));
+				EC_W32_S(RegCloseKey(hRootKey));
 			}
 
 			if (bAllowEdits)
@@ -150,6 +148,7 @@ namespace mapi
 				pObjectInfo->dwFlags =
 					SI_READONLY | SI_ADVANCED | (sid::acetypeContainer == m_acetype ? SI_CONTAINER : 0);
 			}
+
 			pObjectInfo->pszObjectName = LPWSTR(m_wszObject.c_str()); // Object being edited
 			pObjectInfo->pszServerName = nullptr; // specify DC for lookups
 			return S_OK;
@@ -161,12 +160,11 @@ namespace mapi
 			BOOL /*fDefault*/)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::GetSecurity\n");
-			auto hRes = S_OK;
 			LPSPropValue lpsProp = nullptr;
 
 			*ppSecurityDescriptor = nullptr;
 
-			EC_H(mapi::GetLargeBinaryProp(m_lpMAPIProp, m_ulPropTag, &lpsProp));
+			auto hRes = EC_H(mapi::GetLargeBinaryProp(m_lpMAPIProp, m_ulPropTag, &lpsProp));
 
 			if (lpsProp && PROP_TYPE(lpsProp->ulPropTag) == PT_BINARY && lpsProp->Value.bin.lpb)
 			{
@@ -197,7 +195,7 @@ namespace mapi
 					// make sure we don't try to copy more than we really got
 					if (m_cbHeader <= cbSBBuffer)
 					{
-						EC_H(MAPIAllocateBuffer(m_cbHeader, reinterpret_cast<LPVOID*>(&m_lpHeader)));
+						hRes = EC_H(MAPIAllocateBuffer(m_cbHeader, reinterpret_cast<LPVOID*>(&m_lpHeader)));
 
 						if (m_lpHeader)
 						{
@@ -206,13 +204,13 @@ namespace mapi
 					}
 
 					// Dump our SD
-					std::wstring szDACL;
 					std::wstring szInfo;
-					EC_H(SDToString(lpSDBuffer, cbSBBuffer, m_acetype, szDACL, szInfo));
+					auto szDACL = SDToString(lpSDBuffer, cbSBBuffer, m_acetype, szInfo);
 
 					output::DebugPrint(DBGGeneric, L"sdInfo: %ws\nszDACL: %ws\n", szInfo.c_str(), szDACL.c_str());
 				}
 			}
+
 			MAPIFreeBuffer(lpsProp);
 
 			if (!*ppSecurityDescriptor) return MAPI_E_NOT_FOUND;
@@ -227,8 +225,6 @@ namespace mapi
 		CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*/, PSECURITY_DESCRIPTOR pSecurityDescriptor)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::SetSecurity\n");
-			auto hRes = S_OK;
-			SPropValue Blob = {0};
 			LPBYTE lpBlob = nullptr;
 
 			if (!m_lpHeader || !pSecurityDescriptor || !m_lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
@@ -238,23 +234,28 @@ namespace mapi
 			const auto cbBlob = m_cbHeader + dwSDLength;
 			if (cbBlob < m_cbHeader || cbBlob < dwSDLength) return MAPI_E_INVALID_PARAMETER;
 
-			EC_H(MAPIAllocateBuffer(cbBlob, reinterpret_cast<LPVOID*>(&lpBlob)));
+			auto hRes = EC_H(MAPIAllocateBuffer(cbBlob, reinterpret_cast<LPVOID*>(&lpBlob)));
 
 			if (lpBlob)
 			{
 				// The format is a security descriptor preceeded by a header.
 				memcpy(lpBlob, m_lpHeader, m_cbHeader);
-				EC_B(MakeSelfRelativeSD(pSecurityDescriptor, lpBlob + m_cbHeader, &dwSDLength));
+				hRes = EC_B(MakeSelfRelativeSD(pSecurityDescriptor, lpBlob + m_cbHeader, &dwSDLength));
 
-				Blob.ulPropTag = m_ulPropTag;
-				Blob.dwAlignPad = NULL;
-				Blob.Value.bin.cb = cbBlob;
-				Blob.Value.bin.lpb = lpBlob;
+				if (SUCCEEDED(hRes))
+				{
+					SPropValue Blob = {};
+					Blob.ulPropTag = m_ulPropTag;
+					Blob.dwAlignPad = NULL;
+					Blob.Value.bin.cb = cbBlob;
+					Blob.Value.bin.lpb = lpBlob;
 
-				EC_MAPI(HrSetOneProp(m_lpMAPIProp, &Blob));
+					hRes = EC_MAPI(HrSetOneProp(m_lpMAPIProp, &Blob));
+				}
 
 				MAPIFreeBuffer(lpBlob);
 			}
+
 			return hRes;
 		}
 

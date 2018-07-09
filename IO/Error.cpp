@@ -25,7 +25,7 @@ namespace error
 		}
 
 		// Check if we have no work to do
-		if (hRes == S_OK || hrIgnore == hRes) return;
+		if (hRes == S_OK || hRes == hrIgnore) return;
 #ifdef MRMAPI
 		if (!fIsSet(DBGHRes)) return;
 #else
@@ -98,21 +98,9 @@ namespace error
 	{
 		for (ULONG i = 0; i < g_ulErrorArray; i++)
 		{
-			if (g_ErrorArray[i].ulErrorName == hrErr) return const_cast<LPWSTR>(g_ErrorArray[i].lpszName);
+			if (g_ErrorArray[i].ulErrorName == hrErr) return g_ErrorArray[i].lpszName;
 		}
 
 		return strings::format(L"0x%08X", hrErr); // STRING_OK
 	}
-
-#ifdef _DEBUG
-	void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc)
-	{
-		output::DebugPrint(
-			DBGHRes,
-			L"Skipping %hs because hRes = 0x%8x = %ws.\n", // STRING_OK
-			szFunc,
-			hRes,
-			ErrorNameFromErrorCode(hRes).c_str());
-	}
-#endif
 }

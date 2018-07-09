@@ -89,12 +89,9 @@ namespace dialog
 		// Select a property tag
 		void CPropertyTagEditor::OnEditAction1()
 		{
-			auto hRes = S_OK;
-
 			CPropertySelector MyData(m_bIsAB, m_lpMAPIProp, this);
 
-			WC_H(MyData.DisplayDialog());
-			if (S_OK != hRes) return;
+			if (!MyData.DisplayDialog()) return;
 
 			m_ulPropTag = MyData.GetPropertyTag();
 			PopulateFields(NOSKIPFIELD);
@@ -130,8 +127,6 @@ namespace dialog
 
 		void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 		{
-			auto hRes = S_OK;
-
 			auto ulPropType = GetSelectedPropType();
 
 			MAPINAMEID NamedID = {nullptr};
@@ -199,7 +194,7 @@ namespace dialog
 			{
 				LPSPropTagArray lpNamedPropTags = nullptr;
 
-				WC_H_GETPROPS(
+				WC_H_GETPROPS_S(
 					cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0, &lpNamedPropTags));
 
 				if (lpNamedPropTags)
@@ -230,7 +225,7 @@ namespace dialog
 		{
 			const auto i = CEditor::HandleChange(nID);
 
-			if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
+			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
 			switch (i)
 			{
@@ -271,8 +266,6 @@ namespace dialog
 		// Pass NOSKIPFIELD to fill out all fields
 		void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 		{
-			auto hRes = S_OK;
-
 			auto namePropNames = cache::NameIDToStrings(m_ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
 
 			if (PROPTAG_TAG != ulSkipField) SetHex(PROPTAG_TAG, m_ulPropTag);
@@ -311,7 +304,7 @@ namespace dialog
 				lpTagArray->cValues = 1;
 				lpTagArray->aulPropTag[0] = m_ulPropTag;
 
-				WC_H_GETPROPS(
+				auto hRes = WC_H_GETPROPS(
 					cache::GetNamesFromIDs(m_lpMAPIProp, &lpTagArray, NULL, NULL, &ulPropNames, &lppPropNames));
 				if (SUCCEEDED(hRes) && ulPropNames == lpTagArray->cValues && lppPropNames && lppPropNames[0])
 				{

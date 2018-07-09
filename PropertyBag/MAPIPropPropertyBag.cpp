@@ -51,9 +51,7 @@ namespace propertybag
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
-		auto hRes = S_OK;
-		WC_H(m_lpProp->SaveChanges(KEEP_OPEN_READWRITE));
-		return hRes;
+		return WC_H(m_lpProp->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 
 	_Check_return_ HRESULT MAPIPropPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
@@ -69,7 +67,7 @@ namespace propertybag
 			{
 				m_bGetPropsSucceeded = true;
 			}
-			if (MAPI_E_CALL_FAILED == hRes)
+			if (hRes == MAPI_E_CALL_FAILED)
 			{
 				// Some stores, like public folders, don't support properties on the root folder
 				output::DebugPrint(DBGGeneric, L"Failed to get call GetProps on this object!\n");
@@ -100,29 +98,25 @@ namespace propertybag
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
-		auto hRes = S_OK;
-		WC_H(m_lpProp->GetProps(lpPropTagArray, ulFlags, lpcValues, lppPropArray));
-		return hRes;
+		return WC_H(m_lpProp->GetProps(lpPropTagArray, ulFlags, lpcValues, lppPropArray));
 	}
 
 	_Check_return_ HRESULT MAPIPropPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
-		auto hRes = S_OK;
-		WC_MAPI(mapi::HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, lppProp));
+		auto hRes = WC_MAPI(mapi::HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, lppProp));
 
 		// Special case for profile sections and row properties - we may have a property which was in our row that isn't available on the object
 		// In that case, we'll get MAPI_E_NOT_FOUND, but the property will be present in m_lpListData->lpSourceProps
 		// So we fetch it from there instead
 		// The caller will assume the memory was allocated from them, so copy before handing it back
-		if (MAPI_E_NOT_FOUND == hRes && m_lpListData)
+		if (hRes == MAPI_E_NOT_FOUND && m_lpListData)
 		{
 			const auto lpProp = PpropFindProp(m_lpListData->lpSourceProps, m_lpListData->cSourceProps, ulPropTag);
 			if (lpProp)
 			{
-				hRes = S_OK;
-				WC_MAPI(ScDupPropset(1, lpProp, MAPIAllocateBuffer, lppProp));
+				hRes = WC_MAPI(ScDupPropset(1, lpProp, MAPIAllocateBuffer, lppProp));
 			}
 		}
 
@@ -142,9 +136,8 @@ namespace propertybag
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
-		auto hRes = S_OK;
 		LPSPropProblemArray lpProblems = nullptr;
-		WC_H(m_lpProp->SetProps(cValues, lpPropArray, &lpProblems));
+		auto hRes = WC_H(m_lpProp->SetProps(cValues, lpPropArray, &lpProblems));
 		EC_PROBLEMARRAY(lpProblems);
 		MAPIFreeBuffer(lpProblems);
 		return hRes;
@@ -154,9 +147,7 @@ namespace propertybag
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
-		auto hRes = S_OK;
-		WC_H(HrSetOneProp(m_lpProp, lpProp));
-		return hRes;
+		return WC_H(HrSetOneProp(m_lpProp, lpProp));
 	}
 
 	_Check_return_ HRESULT MAPIPropPropertyBag::DeleteProp(ULONG ulPropTag)

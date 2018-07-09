@@ -65,10 +65,9 @@ namespace dialog
 
 		_Check_return_ const SRestriction* CSearchEditor::GetRestriction() const
 		{
-			auto hRes = S_OK;
 			LPSRestriction lpRes = nullptr;
 			// Allocate and create our SRestriction
-			WC_H(mapi::CreatePropertyStringRestriction(
+			auto hRes = WC_H(mapi::CreatePropertyStringRestriction(
 				CHANGE_PROP_TYPE(m_ulPropTag, PT_UNICODE),
 				GetStringW(CSearchEditor::SearchFields::SEARCHTERM),
 				m_ulFuzzyLevel,
@@ -86,8 +85,6 @@ namespace dialog
 		// Select a property tag
 		void CSearchEditor::OnEditAction1()
 		{
-			auto hRes = S_OK;
-
 			CPropertyTagEditor MyData(
 				IDS_EDITGIVENPROP, // Title
 				NULL, // Prompt
@@ -96,8 +93,7 @@ namespace dialog
 				m_lpMAPIProp,
 				this);
 
-			WC_H(MyData.DisplayDialog());
-			if (S_OK != hRes) return;
+			if (!MyData.DisplayDialog()) return;
 
 			m_ulPropTag = MyData.GetPropertyTag();
 			PopulateFields(NOSKIPFIELD);

@@ -11,13 +11,12 @@ namespace mapi
 		_Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIST* lpAdrList)
 		{
 			if (!lpAdrList || ulNumProps > ULONG_MAX / sizeof(SPropValue)) return MAPI_E_INVALID_PARAMETER;
-			auto hRes = S_OK;
 			LPADRLIST lpLocalAdrList = nullptr;
 
 			*lpAdrList = nullptr;
 
 			// Allocate memory for new SRowSet structure.
-			EC_H(MAPIAllocateBuffer(CbNewSRowSet(1), reinterpret_cast<LPVOID*>(&lpLocalAdrList)));
+			auto hRes = EC_H(MAPIAllocateBuffer(CbNewSRowSet(1), reinterpret_cast<LPVOID*>(&lpLocalAdrList)));
 
 			if (lpLocalAdrList)
 			{
@@ -26,7 +25,7 @@ namespace mapi
 
 				// Allocate memory for SPropValue structure that indicates what
 				// recipient properties will be set.
-				EC_H(MAPIAllocateBuffer(
+				hRes = EC_H(MAPIAllocateBuffer(
 					ulNumProps * sizeof(SPropValue),
 					reinterpret_cast<LPVOID*>(&lpLocalAdrList->aEntries[0].rgPropVals)));
 
@@ -54,7 +53,6 @@ namespace mapi
 			_In_ const std::wstring& szEmailAddress,
 			ULONG ulRecipientType)
 		{
-			auto hRes = S_OK;
 			LPADRLIST lpAdrList = nullptr; // ModifyRecips takes LPADRLIST
 			LPADRBOOK lpAddrBook = nullptr;
 			LPENTRYID lpEID = nullptr;
@@ -71,9 +69,12 @@ namespace mapi
 
 			if (!lpMessage || !lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-			EC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAddrBook));
+			auto hRes = EC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAddrBook));
 
-			EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS, &lpAdrList));
+			if (SUCCEEDED(hRes))
+			{
+				hRes = EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS, &lpAdrList));
+			}
 
 			// Setup the One Time recipient by indicating how many recipients
 			// and how many properties will be set on each recipient.
@@ -99,7 +100,7 @@ namespace mapi
 				lpAdrList->aEntries[0].rgPropVals[EID].ulPropTag = PR_ENTRYID;
 
 				// Create the One-off address and get an EID for it.
-				EC_MAPI(lpAddrBook->CreateOneOff(
+				hRes = EC_MAPI(lpAddrBook->CreateOneOff(
 					reinterpret_cast<LPTSTR>(lpAdrList->aEntries[0].rgPropVals[NAME].Value.lpszW),
 					reinterpret_cast<LPTSTR>(lpAdrList->aEntries[0].rgPropVals[ADDR].Value.lpszW),
 					reinterpret_cast<LPTSTR>(lpAdrList->aEntries[0].rgPropVals[EMAIL].Value.lpszW),
@@ -108,13 +109,22 @@ namespace mapi
 					&lpEID));
 				lpAdrList->aEntries[0].rgPropVals[EID].Value.bin.lpb = reinterpret_cast<LPBYTE>(lpEID);
 
-				EC_MAPI(lpAddrBook->ResolveName(0L, MAPI_UNICODE, nullptr, lpAdrList));
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_MAPI(lpAddrBook->ResolveName(0L, MAPI_UNICODE, nullptr, lpAdrList));
+				}
 
 				// If everything goes right, add the new recipient to the message
 				// object passed into us.
-				EC_MAPI(lpMessage->ModifyRecipients(MODRECIP_ADD, lpAdrList));
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_MAPI(lpMessage->ModifyRecipients(MODRECIP_ADD, lpAdrList));
+				}
 
-				EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+				}
 			}
 
 			MAPIFreeBuffer(lpEID);
@@ -129,7 +139,6 @@ namespace mapi
 			_In_ const std::wstring& szName,
 			ULONG ulRecipientType)
 		{
-			auto hRes = S_OK;
 			LPADRLIST lpAdrList = nullptr; // ModifyRecips takes LPADRLIST
 			LPADRBOOK lpAddrBook = nullptr;
 
@@ -142,9 +151,12 @@ namespace mapi
 
 			if (!lpMessage || !lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-			EC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAddrBook));
+			auto hRes = EC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAddrBook));
 
-			EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS, &lpAdrList));
+			if (SUCCEEDED(hRes))
+			{
+				hRes = EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS, &lpAdrList));
+			}
 
 			if (lpAdrList)
 			{
@@ -160,13 +172,18 @@ namespace mapi
 				lpAdrList->aEntries[0].rgPropVals[RECIP].ulPropTag = PR_RECIPIENT_TYPE;
 				lpAdrList->aEntries[0].rgPropVals[RECIP].Value.l = ulRecipientType;
 
-				EC_MAPI(lpAddrBook->ResolveName(0L, MAPI_UNICODE, nullptr, lpAdrList));
+				hRes = EC_MAPI(lpAddrBook->ResolveName(0L, MAPI_UNICODE, nullptr, lpAdrList));
 
-				// If everything goes right, add the new recipient to the message
-				// object passed into us.
-				EC_MAPI(lpMessage->ModifyRecipients(MODRECIP_ADD, lpAdrList));
+				if (SUCCEEDED(hRes))
+				{ // If everything goes right, add the new recipient to the message
+					// object passed into us.
+					hRes = EC_MAPI(lpMessage->ModifyRecipients(MODRECIP_ADD, lpAdrList));
+				}
 
-				EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+				if (SUCCEEDED(hRes))
+				{
+					hRes = EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+				}
 			}
 
 			if (lpAdrList) FreePadrlist(lpAdrList);
@@ -198,18 +215,22 @@ namespace mapi
 			// Allocate base memory:
 			if (lpParent)
 			{
-				EC_H(MAPIAllocateMore(sizeof(SRestriction), lpParent, reinterpret_cast<LPVOID*>(&lpRes)));
+				hRes = EC_H(MAPIAllocateMore(sizeof(SRestriction), lpParent, reinterpret_cast<LPVOID*>(&lpRes)));
 
 				lpAllocationParent = lpParent;
 			}
 			else
 			{
-				EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&lpRes)));
+				hRes = EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&lpRes)));
 
 				lpAllocationParent = lpRes;
 			}
 
-			EC_H(MAPIAllocateMore(sizeof(SPropValue), lpAllocationParent, reinterpret_cast<LPVOID*>(&lpspvSubject)));
+			if (SUCCEEDED(hRes))
+			{
+				hRes = EC_H(
+					MAPIAllocateMore(sizeof(SPropValue), lpAllocationParent, reinterpret_cast<LPVOID*>(&lpspvSubject)));
+			}
 
 			if (lpRes && lpspvSubject)
 			{
@@ -251,7 +272,6 @@ namespace mapi
 		_Check_return_ HRESULT
 		GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_opt_ LPMAPITABLE* lpABContainerTable)
 		{
-			auto hRes = S_OK;
 			LPABCONT lpABRootContainer = nullptr;
 			LPMAPITABLE lpTable = nullptr;
 
@@ -259,7 +279,7 @@ namespace mapi
 			if (!lpAdrBook) return MAPI_E_INVALID_PARAMETER;
 
 			// Open root address book (container).
-			EC_H(mapi::CallOpenEntry(
+			auto hRes = EC_H(mapi::CallOpenEntry(
 				nullptr,
 				lpAdrBook,
 				nullptr,
@@ -273,7 +293,7 @@ namespace mapi
 			if (lpABRootContainer)
 			{
 				// Get a table of all of the Address Books.
-				EC_MAPI(lpABRootContainer->GetHierarchyTable(CONVENIENT_DEPTH | fMapiUnicode, &lpTable));
+				hRes = EC_MAPI(lpABRootContainer->GetHierarchyTable(CONVENIENT_DEPTH | fMapiUnicode, &lpTable));
 				*lpABContainerTable = lpTable;
 				lpABRootContainer->Release();
 			}
@@ -288,7 +308,6 @@ namespace mapi
 			_In_ const std::wstring& szName,
 			ULONG PropTagToCompare)
 		{
-			auto hRes = S_OK;
 			ULONG ulObjType = 0;
 			LPADRBOOK lpAdrBook = nullptr;
 			LPSRowSet lpABRow = nullptr;
@@ -329,23 +348,25 @@ namespace mapi
 
 			output::DebugPrint(DBGGeneric, L"ManualResolve: Asked to resolve \"%ws\"\n", szName.c_str());
 
-			EC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAdrBook));
+			auto hRes = EC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAdrBook));
 
-			EC_H(GetABContainerTable(lpAdrBook, &lpABContainerTable));
+			if (SUCCEEDED(hRes))
+			{
+				hRes = EC_H(GetABContainerTable(lpAdrBook, &lpABContainerTable));
+			}
 
 			if (lpABContainerTable)
 			{
 				// Restrict the table to the properties that we are interested in.
-				EC_MAPI(lpABContainerTable->SetColumns(LPSPropTagArray(&abcCols), TBL_BATCH));
+				hRes = EC_MAPI(lpABContainerTable->SetColumns(LPSPropTagArray(&abcCols), TBL_BATCH));
 
-				if (!FAILED(hRes))
+				if (SUCCEEDED(hRes))
+				{
 					for (;;)
 					{
-						hRes = S_OK;
-
 						FreeProws(lpABRow);
 						lpABRow = nullptr;
-						EC_MAPI(lpABContainerTable->QueryRows(1, NULL, &lpABRow));
+						hRes = EC_MAPI(lpABContainerTable->QueryRows(1, NULL, &lpABRow));
 						if (FAILED(hRes) || !lpABRow || lpABRow && !lpABRow->cRows) break;
 
 						// From this point forward, consider any error an error with the current address book container, so just continue and try the next one.
@@ -356,7 +377,7 @@ namespace mapi
 
 							if (lpABContainer) lpABContainer->Release();
 							lpABContainer = nullptr;
-							EC_H(mapi::CallOpenEntry(
+							hRes = EC_H(mapi::CallOpenEntry(
 								nullptr,
 								lpAdrBook,
 								nullptr,
@@ -375,7 +396,7 @@ namespace mapi
 							{
 								if (pTable) pTable->Release();
 								pTable = nullptr;
-								WC_MAPI(lpABContainer->GetContentsTable(fMapiUnicode, &pTable));
+								WC_MAPI_S(lpABContainer->GetContentsTable(fMapiUnicode, &pTable));
 								if (!pTable)
 								{
 									output::DebugPrint(
@@ -385,13 +406,13 @@ namespace mapi
 
 								MAPIFreeBuffer(lpFoundRow);
 								lpFoundRow = nullptr;
-								EC_H(SearchContentsTableForName(pTable, szName, PropTagToCompare, &lpFoundRow));
+								hRes = EC_H(SearchContentsTableForName(pTable, szName, PropTagToCompare, &lpFoundRow));
 								if (!lpFoundRow) continue;
 
 								if (lpAdrList) FreePadrlist(lpAdrList);
 								lpAdrList = nullptr;
 								// Allocate memory for new Address List structure.
-								EC_H(MAPIAllocateBuffer(CbNewADRLIST(1), reinterpret_cast<LPVOID*>(&lpAdrList)));
+								hRes = EC_H(MAPIAllocateBuffer(CbNewADRLIST(1), reinterpret_cast<LPVOID*>(&lpAdrList)));
 								if (!lpAdrList) continue;
 
 								ZeroMemory(lpAdrList, CbNewADRLIST(1));
@@ -400,7 +421,7 @@ namespace mapi
 								// recipient properties will be set. To resolve a name that
 								// already exists in the Address book, this will always be 1.
 
-								EC_H(MAPIAllocateBuffer(
+								hRes = EC_H(MAPIAllocateBuffer(
 									static_cast<ULONG>(abNUM_COLS * sizeof(SPropValue)),
 									reinterpret_cast<LPVOID*>(&lpAdrList->aEntries->rgPropVals)));
 								if (!lpAdrList->aEntries->rgPropVals) continue;
@@ -414,7 +435,7 @@ namespace mapi
 
 								auto pProp = &pProps[abPR_ENTRYID]; // Just a pointer, do not free.
 								pProp->ulPropTag = PR_ENTRYID;
-								EC_H(mapi::CopySBinary(
+								hRes = EC_H(mapi::CopySBinary(
 									&pProp->Value.bin, &lpFoundRow[abPR_ENTRYID].Value.bin, lpAdrList));
 
 								pProp = &pProps[abPR_RECIPIENT_TYPE];
@@ -426,7 +447,7 @@ namespace mapi
 
 								if (!mapi::CheckStringProp(&lpFoundRow[abPR_DISPLAY_NAME], PT_TSTRING)) continue;
 
-								EC_H(mapi::CopyString(
+								hRes = EC_H(mapi::CopyString(
 									&pProp->Value.LPSZ, lpFoundRow[abPR_DISPLAY_NAME].Value.LPSZ, lpAdrList));
 
 								pProp = &pProps[abPR_ADDRTYPE];
@@ -434,27 +455,33 @@ namespace mapi
 
 								if (!mapi::CheckStringProp(&lpFoundRow[abPR_ADDRTYPE], PT_TSTRING)) continue;
 
-								EC_H(mapi::CopyString(
+								hRes = EC_H(mapi::CopyString(
 									&pProp->Value.LPSZ, lpFoundRow[abPR_ADDRTYPE].Value.LPSZ, lpAdrList));
 
 								pProp = &pProps[abPR_DISPLAY_TYPE];
 								pProp->ulPropTag = PR_DISPLAY_TYPE;
 								pProp->Value.l = lpFoundRow[abPR_DISPLAY_TYPE].Value.l;
 
-								EC_MAPI(lpMessage->ModifyRecipients(MODRECIP_ADD, lpAdrList));
+								if (SUCCEEDED(hRes))
+								{
+									hRes = EC_MAPI(lpMessage->ModifyRecipients(MODRECIP_ADD, lpAdrList));
+								}
 
 								if (lpAdrList) FreePadrlist(lpAdrList);
 								lpAdrList = nullptr;
 
-								EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+								hRes = EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
 								// since we're done with our work, let's get out of here.
 								break;
 							}
 						}
 					}
+				}
+
 				lpABContainerTable->Release();
 			}
+
 			FreeProws(lpABRow);
 			MAPIFreeBuffer(lpFoundRow);
 			if (lpAdrList) FreePadrlist(lpAdrList);
@@ -470,8 +497,6 @@ namespace mapi
 			ULONG PropTagToCompare,
 			_Deref_out_opt_ LPSPropValue* lppPropsFound)
 		{
-			auto hRes = S_OK;
-
 			LPSRowSet pRows = nullptr;
 
 			enum
@@ -506,24 +531,32 @@ namespace mapi
 			// Set a restriction so we only find close matches
 			LPSRestriction lpSRes = nullptr;
 
-			EC_H(CreateANRRestriction(PR_ANR_W, szName, nullptr, &lpSRes));
+			auto hRes = EC_H(CreateANRRestriction(PR_ANR_W, szName, nullptr, &lpSRes));
+			if (SUCCEEDED(hRes))
+			{
+				hRes = EC_MAPI(pTable->SetColumns(LPSPropTagArray(&abCols), TBL_BATCH));
+			}
 
-			EC_MAPI(pTable->SetColumns(LPSPropTagArray(&abCols), TBL_BATCH));
+			if (SUCCEEDED(hRes))
+			{
+				// Jump to the top of the table...
+				hRes = EC_MAPI(pTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
+			}
 
-			// Jump to the top of the table...
-			EC_MAPI(pTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
-
-			// ..and jump to the first matching entry in the table
-			EC_MAPI(pTable->Restrict(lpSRes, NULL));
+			if (SUCCEEDED(hRes))
+			{
+				// ..and jump to the first matching entry in the table
+				hRes = EC_MAPI(pTable->Restrict(lpSRes, NULL));
+			}
 
 			// Now we iterate through each of the matching entries
-			if (!FAILED(hRes))
+			if (SUCCEEDED(hRes))
+			{
 				for (;;)
 				{
-					hRes = S_OK;
 					if (pRows) FreeProws(pRows);
 					pRows = nullptr;
-					EC_MAPI(pTable->QueryRows(1, NULL, &pRows));
+					hRes = EC_MAPI(pTable->QueryRows(1, NULL, &pRows));
 					if (FAILED(hRes) || !pRows || pRows && !pRows->cRows) break;
 
 					// An error at this point is an error with the current entry, so we can continue this for statement
@@ -539,11 +572,13 @@ namespace mapi
 						{
 							output::DebugPrint(DBGGeneric, L"SearchContentsTableForName: This is an exact match!\n");
 							// We found a match! Return it!
-							EC_MAPI(ScDupPropset(abNUM_COLS, pRows->aRow->lpProps, MAPIAllocateBuffer, lppPropsFound));
+							hRes = EC_MAPI(
+								ScDupPropset(abNUM_COLS, pRows->aRow->lpProps, MAPIAllocateBuffer, lppPropsFound));
 							break;
 						}
 					}
 				}
+			}
 
 			if (!*lppPropsFound)
 			{
@@ -563,8 +598,6 @@ namespace mapi
 		{
 			if (!lpAdrBook || !hwnd || !lppMailUser) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = S_OK;
-
 			ADRPARM AdrParm = {0};
 			LPADRLIST lpAdrList = nullptr;
 			LPSPropValue lpEntryID = nullptr;
@@ -581,8 +614,7 @@ namespace mapi
 			AdrParm.ulFlags = DIALOG_MODAL | ADDRESS_ONE | AB_SELECTONLY | AB_RESOLVE;
 			AdrParm.lpszCaption = LPTSTR(szTitle.c_str());
 
-			EC_H_CANCEL(lpAdrBook->Address(reinterpret_cast<ULONG_PTR*>(&hwnd), &AdrParm, &lpAdrList));
-
+			auto hRes = EC_H_CANCEL(lpAdrBook->Address(reinterpret_cast<ULONG_PTR*>(&hwnd), &AdrParm, &lpAdrList));
 			if (lpAdrList)
 			{
 				lpEntryID =
@@ -592,7 +624,7 @@ namespace mapi
 				{
 					ULONG ulObjType = NULL;
 
-					EC_H(mapi::CallOpenEntry(
+					hRes = EC_H(mapi::CallOpenEntry(
 						nullptr,
 						lpAdrBook,
 						nullptr,

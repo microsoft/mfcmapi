@@ -83,16 +83,13 @@ namespace dialog
 	{
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnDisplayDetails", L"displaying Address Book entry details\n");
 
-		auto hRes = S_OK;
 		if (!m_lpMapiObjects) return;
 		auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (lpAddrBook)
 		{
-			LPENTRYLIST lpEIDs = nullptr;
-			EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
-
+			const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 			if (lpEIDs && lpEIDs->cValues && lpEIDs->lpbin)
 			{
 
@@ -102,7 +99,7 @@ namespace dialog
 
 					// Have to pass DIALOG_MODAL according to
 					// http://support.microsoft.com/kb/171637
-					EC_H_CANCEL(lpAddrBook->Details(
+					auto hRes = EC_H_CANCEL(lpAddrBook->Details(
 						&ulUIParam,
 						NULL,
 						NULL,
@@ -113,7 +110,6 @@ namespace dialog
 						NULL,
 						DIALOG_MODAL)); // API doesn't like Unicode
 					if (lpEIDs->cValues > i + 1 && bShouldCancel(this, hRes)) break;
-					hRes = S_OK;
 				}
 			}
 
@@ -123,8 +119,6 @@ namespace dialog
 
 	void CAbDlg::OnOpenContact()
 	{
-		auto hRes = S_OK;
-		LPENTRYLIST lpEntryList = nullptr;
 		LPMAPIPROP lpProp = nullptr;
 
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !m_lpPropDisplay) return;
@@ -133,15 +127,14 @@ namespace dialog
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEntryList));
-
-		if (SUCCEEDED(hRes) && lpEntryList && 1 == lpEntryList->cValues)
+		const auto lpEntryList = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
+		if (lpEntryList && 1 == lpEntryList->cValues)
 		{
 			ULONG cb = 0;
 			LPBYTE lpb = nullptr;
 			if (mapi::UnwrapContactEntryID(lpEntryList->lpbin[0].cb, lpEntryList->lpbin[0].lpb, &cb, &lpb))
 			{
-				EC_H(mapi::CallOpenEntry(
+				EC_H_S(mapi::CallOpenEntry(
 					NULL,
 					NULL,
 					NULL,
@@ -157,7 +150,7 @@ namespace dialog
 
 		if (lpProp)
 		{
-			EC_H(DisplayObject(lpProp, NULL, otDefault, this));
+			EC_H_S(DisplayObject(lpProp, NULL, otDefault, this));
 			if (lpProp) lpProp->Release();
 		}
 
@@ -174,15 +167,14 @@ namespace dialog
 
 		do
 		{
-			auto hRes = S_OK;
 			if (lpMailUser) lpMailUser->Release();
 			lpMailUser = nullptr;
-			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
+			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
 				&iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMailUser)));
 
 			if (lpMailUser)
 			{
-				EC_H(DisplayTable(
+				EC_H_S(DisplayTable(
 					lpMailUser,
 					PR_EMS_AB_MANAGER_O,
 					otDefault, // oType,
@@ -203,15 +195,14 @@ namespace dialog
 
 		do
 		{
-			auto hRes = S_OK;
 			if (lpMailUser) lpMailUser->Release();
 			lpMailUser = nullptr;
-			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
+			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
 				&iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMailUser)));
 
 			if (lpMailUser)
 			{
-				EC_H(DisplayTable(
+				EC_H_S(DisplayTable(
 					lpMailUser,
 					PR_EMS_AB_OWNER_O,
 					otDefault, // oType,
@@ -226,35 +217,26 @@ namespace dialog
 	{
 		if (!m_lpAbCont) return;
 
-		auto hRes = S_OK;
 		editor::CEditor Query(
 			this, IDS_DELETEABENTRY, IDS_DELETEABENTRYPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		WC_H(Query.DisplayDialog());
-		if (hRes == S_OK)
-		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteSelectedItem", L"deleting address Book entries\n");
-			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-			LPENTRYLIST lpEIDs = nullptr;
+		if (!Query.DisplayDialog()) return;
 
-			EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
+		output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteSelectedItem", L"deleting address Book entries\n");
+		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-			EC_MAPI(m_lpAbCont->DeleteEntries(lpEIDs, NULL));
-
-			MAPIFreeBuffer(lpEIDs);
-		}
+		const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
+		EC_MAPI_S(m_lpAbCont->DeleteEntries(lpEIDs, NULL));
+		MAPIFreeBuffer(lpEIDs);
 	}
 
 	void CAbDlg::HandleCopy()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		output::DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
-		LPENTRYLIST lpEIDs = nullptr;
-
-		EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
+		const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 
 		// CGlobalCache takes over ownership of lpEIDs - don't free now
 		cache::CGlobalCache::getInstance().SetABEntriesToCopy(lpEIDs);
@@ -264,7 +246,6 @@ namespace dialog
 	{
 		if (CBaseDialog::HandlePaste()) return true;
 
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		output::DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"pasting address Book entries\n");
@@ -280,13 +261,12 @@ namespace dialog
 			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 			MyData.SetHex(0, CREATE_CHECK_DUP_STRICT);
 
-			WC_H(MyData.DisplayDialog());
-			if (hRes == S_OK)
+			if (MyData.DisplayDialog())
 			{
 				LPMAPIPROGRESS lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IABContainer::CopyEntries", m_hWnd); // STRING_OK
 
-				EC_MAPI(m_lpAbCont->CopyEntries(
+				EC_MAPI_S(m_lpAbCont->CopyEntries(
 					lpEIDs, lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL, lpProgress, MyData.GetHex(0)));
 
 				if (lpProgress) lpProgress->Release();
@@ -300,7 +280,6 @@ namespace dialog
 
 	void CAbDlg::OnCreatePropertyStringRestriction()
 	{
-		auto hRes = S_OK;
 		LPSRestriction lpRes = nullptr;
 
 		if (!m_lpContentsTableListCtrl) return;
@@ -310,11 +289,10 @@ namespace dialog
 
 		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));
 
-		WC_H(MyData.DisplayDialog());
-		if (S_OK != hRes) return;
+		if (!MyData.DisplayDialog()) return;
 
 		// Allocate and create our SRestriction
-		EC_H(mapi::ab::CreateANRRestriction(PR_ANR_W, MyData.GetStringW(0), NULL, &lpRes));
+		auto hRes = EC_H(mapi::ab::CreateANRRestriction(PR_ANR_W, MyData.GetStringW(0), NULL, &lpRes));
 
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 

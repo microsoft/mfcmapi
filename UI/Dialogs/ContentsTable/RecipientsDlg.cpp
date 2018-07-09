@@ -44,9 +44,7 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			auto hRes = S_OK;
-
-			EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+			EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 			m_lpMessage->Release();
 		}
 	}
@@ -103,7 +101,6 @@ namespace dialog
 
 	void CRecipientsDlg::OnDeleteSelectedItem()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpMessage || !m_lpContentsTableListCtrl) return;
@@ -114,7 +111,7 @@ namespace dialog
 
 		if (iNumSelected && iNumSelected < MAXNewADRLIST)
 		{
-			EC_H(MAPIAllocateBuffer(CbNewADRLIST(iNumSelected), reinterpret_cast<LPVOID*>(&lpAdrList)));
+			EC_H_S(MAPIAllocateBuffer(CbNewADRLIST(iNumSelected), reinterpret_cast<LPVOID*>(&lpAdrList)));
 			if (lpAdrList)
 			{
 				ZeroMemory(lpAdrList, CbNewADRLIST(iNumSelected));
@@ -123,8 +120,7 @@ namespace dialog
 				for (auto iSelection = 0; iSelection < iNumSelected; iSelection++)
 				{
 					LPSPropValue lpProp = nullptr;
-					EC_H(MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&lpProp)));
-
+					EC_H_S(MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&lpProp)));
 					if (lpProp)
 					{
 						lpAdrList->aEntries[iSelection].ulReserved1 = 0;
@@ -152,7 +148,7 @@ namespace dialog
 					}
 				}
 
-				EC_MAPI(m_lpMessage->ModifyRecipients(MODRECIP_REMOVE, lpAdrList));
+				EC_MAPI_S(m_lpMessage->ModifyRecipients(MODRECIP_REMOVE, lpAdrList));
 
 				OnRefreshView();
 				FreePadrlist(lpAdrList);
@@ -162,7 +158,6 @@ namespace dialog
 
 	void CRecipientsDlg::OnModifyRecipients()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpMessage || !m_lpContentsTableListCtrl || !m_lpPropDisplay) return;
@@ -173,8 +168,7 @@ namespace dialog
 
 		ULONG cProps = 0;
 		LPSPropValue lpProps = nullptr;
-		EC_H(m_lpPropDisplay->GetDisplayedProps(&cProps, &lpProps));
-
+		EC_H_S(m_lpPropDisplay->GetDisplayedProps(&cProps, &lpProps));
 		if (lpProps)
 		{
 			ADRLIST adrList = {0};
@@ -183,16 +177,26 @@ namespace dialog
 			adrList.aEntries[0].cValues = cProps;
 
 			ULONG ulSizeProps = NULL;
-			EC_MAPI(ScCountProps(adrList.aEntries[0].cValues, lpProps, &ulSizeProps));
+			auto hRes = EC_MAPI(ScCountProps(adrList.aEntries[0].cValues, lpProps, &ulSizeProps));
 
-			EC_H(MAPIAllocateBuffer(ulSizeProps, reinterpret_cast<LPVOID*>(&adrList.aEntries[0].rgPropVals)));
+			if (SUCCEEDED(hRes))
+			{
+				hRes =
+					EC_H(MAPIAllocateBuffer(ulSizeProps, reinterpret_cast<LPVOID*>(&adrList.aEntries[0].rgPropVals)));
+			}
 
-			EC_MAPI(ScCopyProps(adrList.aEntries[0].cValues, lpProps, adrList.aEntries[0].rgPropVals, &ulSizeProps));
+			if (SUCCEEDED(hRes))
+			{
+				hRes = EC_MAPI(
+					ScCopyProps(adrList.aEntries[0].cValues, lpProps, adrList.aEntries[0].rgPropVals, &ulSizeProps));
+			}
 
-			output::DebugPrintEx(
-				DBGGeneric, CLASS, L"OnModifyRecipients", L"Committing changes for current selection\n");
-
-			EC_MAPI(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
+			if (SUCCEEDED(hRes))
+			{
+				output::DebugPrintEx(
+					DBGGeneric, CLASS, L"OnModifyRecipients", L"Committing changes for current selection\n");
+				EC_MAPI_S(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
+			}
 
 			MAPIFreeBuffer(adrList.aEntries[0].rgPropVals);
 
@@ -202,7 +206,6 @@ namespace dialog
 
 	void CRecipientsDlg::OnRecipOptions()
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpMessage || !m_lpContentsTableListCtrl || !m_lpPropDisplay || !m_lpMapiObjects) return;
@@ -211,7 +214,7 @@ namespace dialog
 
 		ULONG cProps = 0;
 		LPSPropValue lpProps = nullptr;
-		EC_H(m_lpPropDisplay->GetDisplayedProps(&cProps, &lpProps));
+		auto hRes = EC_H(m_lpPropDisplay->GetDisplayedProps(&cProps, &lpProps));
 
 		if (lpProps)
 		{
@@ -224,12 +227,12 @@ namespace dialog
 				adrEntry.rgPropVals = lpProps;
 				output::DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"Calling RecipOptions\n");
 
-				EC_MAPI(lpAB->RecipOptions(reinterpret_cast<ULONG_PTR>(m_hWnd), NULL, &adrEntry));
+				hRes = EC_MAPI(lpAB->RecipOptions(reinterpret_cast<ULONG_PTR>(m_hWnd), NULL, &adrEntry));
 
-				if (MAPI_W_ERRORS_RETURNED == hRes)
+				if (hRes == MAPI_W_ERRORS_RETURNED)
 				{
 					LPMAPIERROR lpErr = nullptr;
-					WC_MAPI(lpAB->GetLastError(hRes, fMapiUnicode, &lpErr));
+					hRes = WC_MAPI(lpAB->GetLastError(hRes, fMapiUnicode, &lpErr));
 					if (lpErr)
 					{
 						EC_MAPIERR(fMapiUnicode, lpErr);
@@ -254,7 +257,7 @@ namespace dialog
 					// but output to file is complete
 					output::Output(DBGGeneric, nullptr, false, szAdrList);
 
-					EC_MAPI(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
+					EC_MAPI_S(m_lpMessage->ModifyRecipients(MODRECIP_MODIFY, &adrList));
 
 					OnRefreshView();
 				}
@@ -266,9 +269,7 @@ namespace dialog
 	{
 		if (m_lpMessage)
 		{
-			auto hRes = S_OK;
-
-			EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+			EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 		}
 	}
 }

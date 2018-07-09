@@ -316,7 +316,6 @@ namespace dialog
 		// The order these controls are created dictates our tab order - be careful moving things around!
 		BOOL CEditor::OnInitDialog()
 		{
-			auto hRes = S_OK;
 			std::wstring szPrefix;
 			const auto szPostfix = strings::loadstring(m_uidTitle);
 			std::wstring szFullString;
@@ -342,7 +341,7 @@ namespace dialog
 
 				szFullString = szPrefix + m_szPromptPostFix;
 
-				EC_B(m_Prompt.Create(
+				EC_B_S(m_Prompt.Create(
 					WS_CHILD | WS_CLIPSIBLINGS | ES_MULTILINE | ES_READONLY | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
 					this,
@@ -400,7 +399,7 @@ namespace dialog
 			if (m_bButtonFlags & CEDITOR_BUTTON_OK)
 			{
 				const auto szOk = strings::loadstring(IDS_OK);
-				EC_B(m_OkButton.Create(
+				EC_B_S(m_OkButton.Create(
 					strings::wstringTotstring(szOk).c_str(),
 					WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
@@ -411,7 +410,7 @@ namespace dialog
 			if (m_bButtonFlags & CEDITOR_BUTTON_ACTION1)
 			{
 				const auto szActionButtonText1 = strings::loadstring(m_uidActionButtonText1);
-				EC_B(m_ActionButton1.Create(
+				EC_B_S(m_ActionButton1.Create(
 					strings::wstringTotstring(szActionButtonText1).c_str(),
 					WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
@@ -425,7 +424,7 @@ namespace dialog
 			if (m_bButtonFlags & CEDITOR_BUTTON_ACTION2)
 			{
 				const auto szActionButtonText2 = strings::loadstring(m_uidActionButtonText2);
-				EC_B(m_ActionButton2.Create(
+				EC_B_S(m_ActionButton2.Create(
 					strings::wstringTotstring(szActionButtonText2).c_str(),
 					WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
@@ -439,7 +438,7 @@ namespace dialog
 			if (m_bButtonFlags & CEDITOR_BUTTON_ACTION3)
 			{
 				const auto szActionButtonText3 = strings::loadstring(m_uidActionButtonText3);
-				EC_B(m_ActionButton3.Create(
+				EC_B_S(m_ActionButton3.Create(
 					strings::wstringTotstring(szActionButtonText3).c_str(),
 					WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
@@ -453,7 +452,7 @@ namespace dialog
 			if (m_bButtonFlags & CEDITOR_BUTTON_CANCEL)
 			{
 				const auto szCancel = strings::loadstring(IDS_CANCEL);
-				EC_B(m_CancelButton.Create(
+				EC_B_S(m_CancelButton.Create(
 					strings::wstringTotstring(szCancel).c_str(),
 					WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 					CRect(0, 0, 0, 0),
@@ -478,7 +477,7 @@ namespace dialog
 			OnSetDefaultSize();
 
 			// Size according to our defaults, respecting minimums
-			EC_B(SetWindowPos(
+			EC_B_S(SetWindowPos(
 				NULL, 0, 0, max(MIN_WIDTH, m_iMinWidth), max(MIN_HEIGHT, m_iMinHeight), SWP_NOZORDER | SWP_NOMOVE));
 
 			return bRet;
@@ -510,26 +509,24 @@ namespace dialog
 			return {0};
 		}
 
-		_Check_return_ HRESULT CEditor::DisplayDialog()
+		// Display a dialog
+		// Return value: If the dialog displayed and the user hit OK, true. Else false;
+		// Any errors will be logged and do not need to be bubbled up.
+		_Check_return_ bool CEditor::DisplayDialog()
 		{
-			auto hRes = S_OK;
-			auto iDlgRet = INT_PTR(0);
-
-			EC_D_DIALOG(DoModal());
-
+			auto iDlgRet = EC_D_DIALOG(DoModal());
 			switch (iDlgRet)
 			{
+			case IDOK:
+				return true;
 			case -1:
 				output::DebugPrint(DBGGeneric, L"Dialog box could not be created!\n");
 				MessageBox(_T("Dialog box could not be created!")); // STRING_OK
-				return MAPI_E_CALL_FAILED;
+				return false;
 			case IDABORT:
 			case IDCANCEL:
-				return MAPI_E_USER_CANCEL;
-			case IDOK:
-				return S_OK;
 			default:
-				return HRESULT_FROM_WIN32(static_cast<unsigned long>(iDlgRet));
+				return false;
 			}
 		}
 
@@ -688,10 +685,8 @@ namespace dialog
 
 		void CEditor::OnSetDefaultSize()
 		{
-			auto hRes = S_OK;
-
 			CRect rcMaxScreen;
-			EC_B(SystemParametersInfo(
+			EC_B_S(SystemParametersInfo(
 				SPI_GETWORKAREA, NULL, static_cast<LPVOID>(static_cast<LPRECT>(rcMaxScreen)), NULL));
 			auto cxFullScreen = rcMaxScreen.Width();
 			auto cyFullScreen = rcMaxScreen.Height();
@@ -767,7 +762,6 @@ namespace dialog
 
 		void CEditor::OnSize(UINT nType, int cx, int cy)
 		{
-			auto hRes = S_OK;
 			CMyDialog::OnSize(nType, cx, cy);
 			const auto iCXMargin = m_iSideMargin;
 
@@ -789,7 +783,7 @@ namespace dialog
 			if (m_bHasPrompt)
 			{
 				// Position prompt at top
-				EC_B(m_Prompt.SetWindowPos(
+				EC_B_S(m_Prompt.SetWindowPos(
 					nullptr, // z-order
 					iCXMargin, // new x
 					m_iMargin, // new y
@@ -807,7 +801,7 @@ namespace dialog
 				// Position buttons at the bottom, on the right
 				if (m_bButtonFlags & CEDITOR_BUTTON_OK)
 				{
-					EC_B(m_OkButton.SetWindowPos(
+					EC_B_S(m_OkButton.SetWindowPos(
 						nullptr,
 						iOffset - iSlotWidth * (m_cButtons - iButton), // new x
 						iCYBottom, // new y
@@ -819,7 +813,7 @@ namespace dialog
 
 				if (m_bButtonFlags & CEDITOR_BUTTON_ACTION1)
 				{
-					EC_B(m_ActionButton1.SetWindowPos(
+					EC_B_S(m_ActionButton1.SetWindowPos(
 						nullptr,
 						iOffset - iSlotWidth * (m_cButtons - iButton), // new x
 						iCYBottom, // new y
@@ -831,7 +825,7 @@ namespace dialog
 
 				if (m_bButtonFlags & CEDITOR_BUTTON_ACTION2)
 				{
-					EC_B(m_ActionButton2.SetWindowPos(
+					EC_B_S(m_ActionButton2.SetWindowPos(
 						nullptr,
 						iOffset - iSlotWidth * (m_cButtons - iButton), // new x
 						iCYBottom, // new y
@@ -843,7 +837,7 @@ namespace dialog
 
 				if (m_bButtonFlags & CEDITOR_BUTTON_ACTION3)
 				{
-					EC_B(m_ActionButton3.SetWindowPos(
+					EC_B_S(m_ActionButton3.SetWindowPos(
 						nullptr,
 						iOffset - iSlotWidth * (m_cButtons - iButton), // new x
 						iCYBottom, // new y
@@ -855,7 +849,7 @@ namespace dialog
 
 				if (m_bButtonFlags & CEDITOR_BUTTON_CANCEL)
 				{
-					EC_B(m_CancelButton.SetWindowPos(
+					EC_B_S(m_CancelButton.SetWindowPos(
 						nullptr,
 						iOffset - iSlotWidth * (m_cButtons - iButton), // new x
 						iCYBottom, // new y

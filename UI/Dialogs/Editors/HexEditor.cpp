@@ -105,7 +105,7 @@ namespace dialog
 				auto szTmpString = GetStringW(HEXED_BASE64);
 
 				// remove any whitespace before decoding
-				szTmpString = strings::CleanString(szTmpString);
+				szTmpString = strings::StripCRLF(szTmpString);
 
 				cchEncodeStr = szTmpString.length();
 				auto bin = strings::Base64Decode(szTmpString);
@@ -192,33 +192,25 @@ namespace dialog
 		// Import
 		void CHexEditor::OnEditAction1()
 		{
-			auto hRes = S_OK;
-			if (hRes == S_OK)
+			auto file = file::CFileDialogExW::OpenFile(
+				strings::emptystring, strings::emptystring, OFN_FILEMUSTEXIST, strings::loadstring(IDS_ALLFILES), this);
+			if (!file.empty())
 			{
-				auto file = file::CFileDialogExW::OpenFile(
-					strings::emptystring,
-					strings::emptystring,
-					OFN_FILEMUSTEXIST,
-					strings::loadstring(IDS_ALLFILES),
-					this);
-				if (!file.empty())
+				cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
+				LPSTREAM lpStream = nullptr;
+
+				// Get a Stream interface on the input file
+				EC_H_S(mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, file, &lpStream));
+
+				if (lpStream)
 				{
-					cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
-					LPSTREAM lpStream = nullptr;
-
-					// Get a Stream interface on the input file
-					EC_H(mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, file, &lpStream));
-
-					if (lpStream)
+					auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(HEXED_HEX));
+					if (lpPane)
 					{
-						auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(HEXED_HEX));
-						if (lpPane)
-						{
-							lpPane->SetBinaryStream(lpStream);
-						}
-
-						lpStream->Release();
+						lpPane->SetBinaryStream(lpStream);
 					}
+
+					lpStream->Release();
 				}
 			}
 		}
@@ -226,34 +218,30 @@ namespace dialog
 		// Export
 		void CHexEditor::OnEditAction2()
 		{
-			auto hRes = S_OK;
-			if (hRes == S_OK)
+			auto file = file::CFileDialogExW::SaveAs(
+				strings::emptystring,
+				strings::emptystring,
+				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+				strings::loadstring(IDS_ALLFILES),
+				this);
+			if (!file.empty())
 			{
-				auto file = file::CFileDialogExW::SaveAs(
-					strings::emptystring,
-					strings::emptystring,
-					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-					strings::loadstring(IDS_ALLFILES),
-					this);
-				if (!file.empty())
+				cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
+				LPSTREAM lpStream = nullptr;
+
+				// Get a Stream interface on the output file
+				EC_H_S(mapi::MyOpenStreamOnFile(
+					MAPIAllocateBuffer, MAPIFreeBuffer, STGM_CREATE | STGM_READWRITE, file, &lpStream));
+
+				if (lpStream)
 				{
-					cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
-					LPSTREAM lpStream = nullptr;
-
-					// Get a Stream interface on the output file
-					EC_H(mapi::MyOpenStreamOnFile(
-						MAPIAllocateBuffer, MAPIFreeBuffer, STGM_CREATE | STGM_READWRITE, file, &lpStream));
-
-					if (lpStream)
+					const auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(HEXED_HEX));
+					if (lpPane)
 					{
-						const auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(HEXED_HEX));
-						if (lpPane)
-						{
-							lpPane->GetBinaryStream(lpStream);
-						}
-
-						lpStream->Release();
+						lpPane->GetBinaryStream(lpStream);
 					}
+
+					lpStream->Release();
 				}
 			}
 		}

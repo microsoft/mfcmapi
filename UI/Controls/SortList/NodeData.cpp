@@ -18,17 +18,24 @@ namespace controls
 			auto hRes = S_OK;
 			if (lpEntryID)
 			{
-				WC_H(MAPIAllocateBuffer(static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpEntryID)));
+				hRes = WC_H(
+					MAPIAllocateBuffer(static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpEntryID)));
 
-				// Copy the data over
-				WC_H(mapi::CopySBinary(m_lpEntryID, lpEntryID, nullptr));
+				if (SUCCEEDED(hRes))
+				{
+					// Copy the data over
+					hRes = WC_H(mapi::CopySBinary(m_lpEntryID, lpEntryID, nullptr));
+				}
 			}
 
 			if (lpInstanceKey)
 			{
-				WC_H(MAPIAllocateBuffer(
+				hRes = WC_H(MAPIAllocateBuffer(
 					static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpInstanceKey)));
-				WC_H(mapi::CopySBinary(m_lpInstanceKey, lpInstanceKey, nullptr));
+				if (SUCCEEDED(hRes))
+				{
+					hRes = WC_H(mapi::CopySBinary(m_lpInstanceKey, lpInstanceKey, nullptr));
+				}
 			}
 
 			m_cSubfolders = -1;
