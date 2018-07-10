@@ -164,7 +164,7 @@ namespace ui
 		{
 			lpMenu->m_MSAA.dwMSAASignature = MSAA_MENU_SIG;
 			lpMenu->m_bOnMenuBar = false;
-			lpMenu->m_MSAA.cchWText = szMenu.length() + 1;
+			lpMenu->m_MSAA.cchWText = static_cast<DWORD>(szMenu.length() + 1);
 			lpMenu->m_MSAA.pszWText = const_cast<LPWSTR>(strings::wstringToLPCWSTR(szMenu));
 			lpMenu->m_pName = lpMenu->m_MSAA.pszWText;
 			return lpMenu;
