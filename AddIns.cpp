@@ -16,7 +16,6 @@
 #include <Interpret/PropTypeArray.h>
 #include <Interpret/SmartView/SmartViewParsers.h>
 #include <MAPI/StubUtils.h>
-#include <strsafe.h>
 
 std::vector<NAME_ARRAY_ENTRY_V2> PropTagArray;
 std::vector<NAME_ARRAY_ENTRY> PropTypeArray;
@@ -940,16 +939,8 @@ namespace addin
 								auto szText = MyComplexDialog.GetStringW(i);
 								if (!szText.empty())
 								{
-									auto cchText = szText.length();
-
-									cchText++;
-									lpResults->lpDialogControlResults[i].szText = new WCHAR[cchText];
-
-									if (lpResults->lpDialogControlResults[i].szText)
-									{
-										hRes = EC_H(StringCchCopyW(
-											lpResults->lpDialogControlResults[i].szText, cchText, szText.c_str()));
-									}
+									lpResults->lpDialogControlResults[i].szText =
+										LPWSTR(strings::wstringToLPCWSTR(szText));
 								}
 								break;
 							}
