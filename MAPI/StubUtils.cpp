@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <Windows.h>
-#include <strsafe.h>
 #include <Msi.h>
 #include <winreg.h>
 

@@ -10,8 +10,6 @@
 #include <TNEF.h>
 #include <abhelp.h>
 
-#include <strsafe.h>
-
 // Check that we have the Outlook 2010 MAPI headers or higher
 // We do this by checking for the presence of a macro not present in the older headers
 #ifndef MAPIFORM_CPU_X64
