@@ -335,7 +335,7 @@ namespace dialog
 		LPSMESSAGECLASSARRAY lpMSGClassArray = nullptr;
 		if (ulNumClasses && ulNumClasses < MAXMessageClassArray)
 		{
-			auto hRes = EC_H(
+			EC_H_S(
 				MAPIAllocateBuffer(CbMessageClassArray(ulNumClasses), reinterpret_cast<LPVOID*>(&lpMSGClassArray)));
 
 			if (lpMSGClassArray)
@@ -347,31 +347,19 @@ namespace dialog
 						this, IDS_ENTERMSGCLASS, IDS_ENTERMSGCLASSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 					MyClass.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
 
+					// Assume we're gonna fail until we succeed
+					bCancel = true;
 					if (MyClass.DisplayDialog())
 					{
 						auto szClass =
 							strings::wstringTostring(MyClass.GetStringW(0)); // MSDN says always use ANSI strings here
-						auto cbClass = szClass.length();
-
-						if (cbClass)
+						if (!szClass.empty())
 						{
-							cbClass++; // for the NULL terminator
-							hRes = EC_H(MAPIAllocateMore(
-								static_cast<ULONG>(cbClass),
-								lpMSGClassArray,
-								reinterpret_cast<LPVOID*>(const_cast<LPSTR*>(&lpMSGClassArray->aMessageClass[i]))));
-
-							if (SUCCEEDED(hRes))
-							{
-								hRes = EC_H(StringCbCopyA(
-									const_cast<LPSTR>(lpMSGClassArray->aMessageClass[i]), cbClass, szClass.c_str()));
-							}
+							lpMSGClassArray->aMessageClass[i] = mapi::CopyStringA(szClass.c_str(), lpMSGClassArray);
+							bCancel = false;
 						}
-						else
-							bCancel = true;
 					}
-					else
-						bCancel = true;
+
 					if (bCancel) break;
 				}
 			}

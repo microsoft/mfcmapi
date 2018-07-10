@@ -164,17 +164,9 @@ namespace ui
 		{
 			lpMenu->m_MSAA.dwMSAASignature = MSAA_MENU_SIG;
 			lpMenu->m_bOnMenuBar = false;
-
-			const auto iLen = szMenu.length();
-
-			lpMenu->m_MSAA.pszWText = new (std::nothrow) WCHAR[iLen + 1];
-			if (lpMenu->m_MSAA.pszWText)
-			{
-				lpMenu->m_MSAA.cchWText = static_cast<DWORD>(iLen);
-				WC_H_S(StringCchCopyW(lpMenu->m_MSAA.pszWText, iLen + 1, szMenu.c_str()));
-				lpMenu->m_pName = lpMenu->m_MSAA.pszWText;
-			}
-
+			lpMenu->m_MSAA.cchWText = static_cast<DWORD>(szMenu.length() + 1);
+			lpMenu->m_MSAA.pszWText = const_cast<LPWSTR>(strings::wstringToLPCWSTR(szMenu));
+			lpMenu->m_pName = lpMenu->m_MSAA.pszWText;
 			return lpMenu;
 		}
 
@@ -430,8 +422,8 @@ namespace ui
 	HFONT GetFont(_In_z_ LPCWSTR szFont)
 	{
 		HFONT hFont = nullptr;
-		LOGFONTW lfFont = {0};
-		WC_H_S(StringCchCopyW(lfFont.lfFaceName, _countof(lfFont.lfFaceName), szFont));
+		LOGFONTW lfFont = {};
+		wcscpy_s(lfFont.lfFaceName, _countof(lfFont.lfFaceName), szFont);
 
 		EnumFontFamiliesExW(
 			GetDC(nullptr),
@@ -628,7 +620,7 @@ namespace ui
 		cf.cbSize = sizeof cf;
 		cf.dwMask = CFM_COLOR | CFM_FACE | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
 		cf.crTextColor = MyGetSysColor(bReadOnly ? cTextReadOnly : cText);
-		StringCchCopy(cf.szFaceName, _countof(cf.szFaceName), SEGOE);
+		_tcscpy_s(cf.szFaceName, _countof(cf.szFaceName), SEGOE);
 		(void) ::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf));
 	}
 

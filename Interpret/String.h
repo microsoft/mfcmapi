@@ -33,6 +33,7 @@ namespace strings
 	std::wstring stringTowstring(const std::string& src);
 	std::wstring LPCTSTRToWstring(LPCTSTR src);
 	std::wstring LPCSTRToWstring(LPCSTR src);
+	LPCWSTR wstringToLPCWSTR(const std::wstring& src);
 	std::wstring wstringToLower(const std::wstring& src);
 	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters = true);
 	long wstringToLong(const std::wstring& src, int radix);

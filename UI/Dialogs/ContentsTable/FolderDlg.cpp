@@ -1822,8 +1822,7 @@ namespace dialog
 
 					if (mapi::CheckStringProp(&lpProps[frPR_SUBJECT], PT_TSTRING))
 					{
-						hRes =
-							EC_H(mapi::CopyString(&lpspvSubject->Value.LPSZ, lpProps[frPR_SUBJECT].Value.LPSZ, lpRes));
+						lpspvSubject->Value.LPSZ = mapi::CopyString(lpProps[frPR_SUBJECT].Value.LPSZ, lpRes);
 					}
 					else
 					{

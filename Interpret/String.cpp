@@ -168,6 +168,22 @@ namespace strings
 		return std::wstring(ansi.begin(), ansi.end());
 	}
 
+	// Converts wstring to LPCWSTR allocated with new
+	LPCWSTR wstringToLPCWSTR(const std::wstring& src)
+	{
+		const auto cch = src.length() + 1;
+		const auto cb = cch * sizeof WCHAR;
+
+		const auto lpBin = new (std::nothrow) WCHAR[cch];
+		if (lpBin != nullptr)
+		{
+			memset(lpBin, 0, cb);
+			memcpy(lpBin, &src[0], cb);
+		}
+
+		return lpBin;
+	}
+
 	std::wstring wstringToLower(const std::wstring& src)
 	{
 		auto dst = src;
