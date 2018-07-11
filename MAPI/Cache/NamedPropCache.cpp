@@ -65,7 +65,7 @@ namespace cache
 
 				if (lpMAPIParent)
 				{
-					dst.Kind.lpwstrName = mapi::allocate<LPWSTR>(cbName, lpMAPIParent);
+					dst.Kind.lpwstrName = mapi::allocate<LPWSTR>(static_cast<ULONG>(cbName), lpMAPIParent);
 				}
 				else
 					dst.Kind.lpwstrName = LPWSTR(new BYTE[cbName]);
