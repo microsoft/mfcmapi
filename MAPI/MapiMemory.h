@@ -5,7 +5,7 @@ namespace mapi
 	// Allocates an object using MAPI's memory allocators.
 	// Switches allocators based on whether parent is passed.
 	// Zero's memory before returning.
-	template <typename T> T allocate(ULONG size, _In_opt_ LPVOID parent)
+	template <typename T> T allocate(ULONG size, _In_opt_ LPVOID parent = nullptr)
 	{
 		LPVOID obj = nullptr;
 

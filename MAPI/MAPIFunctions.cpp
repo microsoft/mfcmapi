@@ -11,6 +11,7 @@
 #include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
+#include <MAPI/MapiMemory.h>
 
 namespace mapi
 {
@@ -487,11 +488,7 @@ namespace mapi
 
 				if (lpRows && lpRows->cRows < MAXNewROWLIST)
 				{
-					LPROWLIST lpTempList = nullptr;
-
-					hRes =
-						EC_H(MAPIAllocateBuffer(CbNewROWLIST(lpRows->cRows), reinterpret_cast<LPVOID*>(&lpTempList)));
-
+					auto lpTempList = mapi::allocate<LPROWLIST>(CbNewROWLIST(lpRows->cRows));
 					if (lpTempList)
 					{
 						lpTempList->cEntries = lpRows->cRows;
@@ -499,11 +496,9 @@ namespace mapi
 						for (ULONG iArrayPos = 0; iArrayPos < lpRows->cRows; iArrayPos++)
 						{
 							lpTempList->aEntries[iArrayPos].ulRowFlags = ROW_ADD;
-							hRes = EC_H(MAPIAllocateMore(
-								lpRows->aRow[iArrayPos].cValues * sizeof(SPropValue),
-								lpTempList,
-								reinterpret_cast<LPVOID*>(&lpTempList->aEntries[iArrayPos].rgPropVals)));
-							if (SUCCEEDED(hRes) && lpTempList->aEntries[iArrayPos].rgPropVals)
+							lpTempList->aEntries[iArrayPos].rgPropVals = mapi::allocate<LPSPropValue>(
+								lpRows->aRow[iArrayPos].cValues * sizeof(SPropValue), lpTempList);
+							if (lpTempList->aEntries[iArrayPos].rgPropVals)
 							{
 								ULONG ulDst = 0;
 								for (ULONG ulSrc = 0; ulSrc < lpRows->aRow[iArrayPos].cValues; ulSrc++)
@@ -633,16 +628,9 @@ namespace mapi
 
 		if (psbSrc->cb)
 		{
-			if (lpParent)
-			{
-				hRes = EC_H(MAPIAllocateMore(psbSrc->cb, lpParent, reinterpret_cast<LPVOID*>(&psbDest->lpb)));
-			}
-			else
-			{
-				hRes = EC_H(MAPIAllocateBuffer(psbSrc->cb, reinterpret_cast<LPVOID*>(&psbDest->lpb)));
-			}
+			psbDest->lpb = mapi::allocate<LPBYTE>(psbSrc->cb, lpParent);
 
-			if (hRes == S_OK) CopyMemory(psbDest->lpb, psbSrc->lpb, psbSrc->cb);
+			if (psbDest->lpb) CopyMemory(psbDest->lpb, psbSrc->lpb, psbSrc->cb);
 		}
 
 		return hRes;
@@ -675,20 +663,7 @@ namespace mapi
 
 		if (SUCCEEDED(hRes))
 		{
-			if (pParent)
-			{
-				hRes = EC_H(MAPIAllocateMore(
-					static_cast<ULONG>(cbSource), pParent, reinterpret_cast<LPVOID*>(lpszDestination)));
-			}
-			else
-			{
-				hRes =
-					EC_H(MAPIAllocateBuffer(static_cast<ULONG>(cbSource), reinterpret_cast<LPVOID*>(lpszDestination)));
-			}
-		}
-
-		if (SUCCEEDED(hRes))
-		{
+			*lpszDestination = mapi::allocate<LPSTR>(static_cast<ULONG>(cbSource), pParent);
 			hRes = EC_H(StringCbCopyA(*lpszDestination, cbSource, szSource));
 		}
 
@@ -711,16 +686,7 @@ namespace mapi
 
 		if (SUCCEEDED(hRes))
 		{
-			if (pParent)
-			{
-				hRes = EC_H(MAPIAllocateMore(
-					static_cast<ULONG>(cbSource), pParent, reinterpret_cast<LPVOID*>(lpszDestination)));
-			}
-			else
-			{
-				hRes =
-					EC_H(MAPIAllocateBuffer(static_cast<ULONG>(cbSource), reinterpret_cast<LPVOID*>(lpszDestination)));
-			}
+			*lpszDestination = mapi::allocate<LPWSTR>(static_cast<ULONG>(cbSource), pParent);
 		}
 
 		if (SUCCEEDED(hRes))
@@ -744,10 +710,6 @@ namespace mapi
 		if (PROP_TYPE(ulPropTag) != PT_UNICODE) return MAPI_E_INVALID_PARAMETER;
 
 		auto hRes = S_OK;
-		LPSRestriction lpRes = nullptr;
-		LPSRestriction lpResLevel1 = nullptr;
-		LPSPropValue lpspvSubject = nullptr;
-		LPVOID lpAllocationParent = nullptr;
 
 		*lppRes = nullptr;
 
@@ -755,30 +717,10 @@ namespace mapi
 
 		// Allocate and create our SRestriction
 		// Allocate base memory:
-		if (lpParent)
-		{
-			hRes = EC_H(MAPIAllocateMore(sizeof(SRestriction), lpParent, reinterpret_cast<LPVOID*>(&lpRes)));
-
-			lpAllocationParent = lpParent;
-		}
-		else
-		{
-			hRes = EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&lpRes)));
-
-			lpAllocationParent = lpRes;
-		}
-
-		if (SUCCEEDED(hRes))
-		{
-			hRes = EC_H(MAPIAllocateMore(
-				sizeof(SRestriction) * 2, lpAllocationParent, reinterpret_cast<LPVOID*>(&lpResLevel1)));
-		}
-
-		if (SUCCEEDED(hRes))
-		{
-			hRes = EC_H(
-				MAPIAllocateMore(sizeof(SPropValue), lpAllocationParent, reinterpret_cast<LPVOID*>(&lpspvSubject)));
-		}
+		auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpParent);
+		auto lpAllocationParent = lpParent ? lpParent : lpRes;
+		auto lpResLevel1 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpAllocationParent);
+		auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
 
 		if (lpRes && lpResLevel1 && lpspvSubject)
 		{
@@ -842,30 +784,10 @@ namespace mapi
 
 		// Allocate and create our SRestriction
 		// Allocate base memory:
-		if (lpParent)
-		{
-			hRes = EC_H(MAPIAllocateMore(sizeof(SRestriction), lpParent, reinterpret_cast<LPVOID*>(&lpRes)));
-
-			lpAllocationParent = lpParent;
-		}
-		else
-		{
-			hRes = EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&lpRes)));
-
-			lpAllocationParent = lpRes;
-		}
-
-		if (SUCCEEDED(hRes))
-		{
-			hRes = EC_H(MAPIAllocateMore(
-				sizeof(SRestriction) * 2, lpAllocationParent, reinterpret_cast<LPVOID*>(&lpResLevel1)));
-		}
-
-		if (SUCCEEDED(hRes))
-		{
-			hRes = EC_H(
-				MAPIAllocateMore(sizeof(SPropValue), lpAllocationParent, reinterpret_cast<LPVOID*>(&lpspvSubject)));
-		}
+		lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpParent);
+		lpAllocationParent = lpParent ? lpParent : lpRes;
+		lpResLevel1 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpAllocationParent);
+		lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
 
 		if (lpRes && lpResLevel1 && lpspvSubject)
 		{
@@ -1320,14 +1242,10 @@ namespace mapi
 	// Will only return nullptr on allocation failure. Even empty bin will return pointer to 0 so MAPI handles empty strings properly
 	_Check_return_ LPBYTE ByteVectorToMAPI(const std::vector<BYTE>& bin, LPVOID lpParent)
 	{
-		LPBYTE lpBin = nullptr;
-
 		// We allocate a couple extra bytes (initialized to NULL) in case this buffer is printed.
-		auto hRes = WC_H(MAPIAllocateMore(
-			static_cast<ULONG>(bin.size()) + sizeof(WCHAR), lpParent, reinterpret_cast<LPVOID*>(&lpBin)));
-		if (SUCCEEDED(hRes) && lpBin)
+		auto lpBin = mapi::allocate<LPBYTE>(static_cast<ULONG>(bin.size()) + sizeof(WCHAR), lpParent);
+		if (lpBin)
 		{
-			memset(lpBin, 0, bin.size() + sizeof(WCHAR));
 			memcpy(lpBin, &bin[0], bin.size());
 			return lpBin;
 		}
@@ -2365,7 +2283,8 @@ namespace mapi
 		return hRes;
 	}
 
-	STDMETHODIMP GetDefaultFolderEID(
+	STDMETHODIMP
+	GetDefaultFolderEID(
 		_In_ ULONG ulFolder,
 		_In_ LPMDB lpMDB,
 		_Out_opt_ ULONG* lpcbeid,
@@ -2740,11 +2659,10 @@ namespace mapi
 								break;
 							}
 
-							hRes = EC_H(MAPIAllocateMore(
-								ulBufferSize + ulTrailingNullSize, lpPropArray, reinterpret_cast<LPVOID*>(&lpBuffer)));
+							lpBuffer = mapi::allocate<LPBYTE>(
+								static_cast<ULONG>(ulBufferSize + ulTrailingNullSize), lpPropArray);
 							if (lpBuffer)
 							{
-								memset(lpBuffer, 0, ulBufferSize + ulTrailingNullSize);
 								ULONG ulSizeRead = 0;
 								hRes = EC_MAPI(lpStream->Read(lpBuffer, ulBufferSize, &ulSizeRead));
 								if (SUCCEEDED(hRes) && ulSizeRead == ulBufferSize)
@@ -2827,16 +2745,8 @@ namespace mapi
 		if (SUCCEEDED(hRes) && cb)
 		{
 			// Obtain memory
-			if (lpObject != nullptr)
-			{
-				hRes = EC_H(MAPIAllocateMore(cb, lpObject, reinterpret_cast<LPVOID*>(prgprop)));
-			}
-			else
-			{
-				hRes = EC_H(MAPIAllocateBuffer(cb, reinterpret_cast<LPVOID*>(prgprop)));
-			}
-
-			if (SUCCEEDED(hRes) && prgprop)
+			*prgprop = mapi::allocate<LPSPropValue>(cb, lpObject);
+			if (*prgprop)
 			{
 				// Copy the properties
 				hRes = EC_MAPI(ScCopyProps(cprop, rgprop, *prgprop, &cb));
@@ -2848,34 +2758,20 @@ namespace mapi
 
 	_Check_return_ STDAPI HrCopyRestriction(
 		_In_ const _SRestriction* lpResSrc, // source restriction ptr
-		_In_opt_ LPVOID lpObject, // ptr to existing MAPI buffer
+		_In_opt_ const LPVOID lpObject, // ptr to existing MAPI buffer
 		_In_ LPSRestriction* lppResDest) // dest restriction buffer ptr
 	{
 		if (!lppResDest) return MAPI_E_INVALID_PARAMETER;
 		*lppResDest = nullptr;
 		if (!lpResSrc) return S_OK;
 
-		const auto fNullObject = lpObject == nullptr;
-		auto hRes = S_OK;
-
-		if (lpObject != nullptr)
-		{
-			hRes = WC_H(MAPIAllocateMore(sizeof(SRestriction), lpObject, reinterpret_cast<LPVOID*>(lppResDest)));
-		}
-		else
-		{
-			hRes = WC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(lppResDest)));
-			lpObject = *lppResDest;
-		}
-
-		if (FAILED(hRes)) return hRes;
-		// no short circuit returns after here
-
-		hRes = WC_H(HrCopyRestrictionArray(lpResSrc, lpObject, 1, *lppResDest));
+		*lppResDest = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpObject);
+		auto lpAllocationParent = lpObject ? lpObject : *lppResDest;
+		auto hRes = WC_H(HrCopyRestrictionArray(lpResSrc, lpAllocationParent, 1, *lppResDest));
 
 		if (FAILED(hRes))
 		{
-			if (fNullObject) MAPIFreeBuffer(*lppResDest);
+			if (!lpObject) MAPIFreeBuffer(*lppResDest);
 		}
 
 		return hRes;
@@ -2883,7 +2779,7 @@ namespace mapi
 
 	_Check_return_ HRESULT HrCopyRestrictionArray(
 		_In_ const _SRestriction* lpResSrc, // source restriction
-		_In_ LPVOID lpObject, // ptr to existing MAPI buffer
+		_In_ const LPVOID lpObject, // ptr to existing MAPI buffer
 		ULONG cRes, // # elements in array
 		_In_count_(cRes) LPSRestriction lpResDest) // destination restriction
 	{
@@ -2908,15 +2804,14 @@ namespace mapi
 						hRes = MAPI_E_CALL_FAILED;
 						break;
 					}
-					hRes = WC_H(MAPIAllocateMore(
-						sizeof(SRestriction) * lpResSrc[i].res.resAnd.cRes,
-						lpObject,
-						reinterpret_cast<LPVOID*>(&lpResDest[i].res.resAnd.lpRes)));
-					if (FAILED(hRes)) break;
+
+					lpResDest[i].res.resAnd.lpRes =
+						mapi::allocate<LPSRestriction>(sizeof(SRestriction) * lpResSrc[i].res.resAnd.cRes, lpObject);
+					auto lpAllocationParent = lpObject ? lpObject : lpResDest[i].res.resAnd.lpRes;
 
 					hRes = WC_H(HrCopyRestrictionArray(
 						lpResSrc[i].res.resAnd.lpRes,
-						lpObject,
+						lpAllocationParent,
 						lpResSrc[i].res.resAnd.cRes,
 						lpResDest[i].res.resAnd.lpRes));
 					if (FAILED(hRes)) break;
@@ -2928,9 +2823,7 @@ namespace mapi
 			case RES_COUNT:
 				if (lpResSrc[i].res.resNot.lpRes)
 				{
-					hRes = WC_H(MAPIAllocateMore(
-						sizeof(SRestriction), lpObject, reinterpret_cast<LPVOID*>(&lpResDest[i].res.resNot.lpRes)));
-					if (FAILED(hRes)) break;
+					lpResDest[i].res.resNot.lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpObject);
 
 					hRes = WC_H(HrCopyRestrictionArray(
 						lpResSrc[i].res.resNot.lpRes, lpObject, 1, lpResDest[i].res.resNot.lpRes));
@@ -2958,9 +2851,7 @@ namespace mapi
 			case RES_SUBRESTRICTION:
 				if (lpResSrc[i].res.resSub.lpRes)
 				{
-					hRes = WC_H(MAPIAllocateMore(
-						sizeof(SRestriction), lpObject, reinterpret_cast<LPVOID*>(&lpResDest[i].res.resSub.lpRes)));
-					if (FAILED(hRes)) break;
+					lpResDest[i].res.resSub.lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpObject);
 
 					hRes = WC_H(HrCopyRestrictionArray(
 						lpResSrc[i].res.resSub.lpRes, lpObject, 1, lpResDest[i].res.resSub.lpRes));
@@ -2973,8 +2864,7 @@ namespace mapi
 			case RES_ANNOTATION:
 				if (lpResSrc[i].res.resComment.lpRes)
 				{
-					hRes = WC_H(MAPIAllocateMore(
-						sizeof(SRestriction), lpObject, reinterpret_cast<LPVOID*>(&lpResDest[i].res.resComment.lpRes)));
+					lpResDest[i].res.resComment.lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpObject);
 					if (FAILED(hRes)) break;
 
 					hRes = WC_H(HrCopyRestrictionArray(
@@ -3013,31 +2903,18 @@ namespace mapi
 		if (!lpActsSrc || !lppActsDst) return MAPI_E_INVALID_PARAMETER;
 		if (lpActsSrc->cActions <= 0 || lpActsSrc->lpAction == nullptr) return MAPI_E_INVALID_PARAMETER;
 
-		const auto fNullObject = lpObject == nullptr;
 		auto hRes = S_OK;
 
-		*lppActsDst = nullptr;
-
-		if (lpObject != nullptr)
-		{
-			hRes = WC_H(MAPIAllocateMore(sizeof(ACTIONS), lpObject, reinterpret_cast<LPVOID*>(lppActsDst)));
-		}
-		else
-		{
-			hRes = WC_H(MAPIAllocateBuffer(sizeof(ACTIONS), reinterpret_cast<LPVOID*>(lppActsDst)));
-			lpObject = *lppActsDst;
-		}
-
-		if (FAILED(hRes)) return hRes;
+		*lppActsDst = mapi::allocate<LPACTIONS>(sizeof(ACTIONS), lpObject);
+		auto lpAllocationParent = lpObject ? lpObject : *lppActsDst;
 		// no short circuit returns after here
 
 		auto lpActsDst = *lppActsDst;
 		*lpActsDst = *lpActsSrc;
 		lpActsDst->lpAction = nullptr;
 
-		hRes = WC_H(MAPIAllocateMore(
-			sizeof(ACTION) * lpActsDst->cActions, lpObject, reinterpret_cast<LPVOID*>(&lpActsDst->lpAction)));
-		if (SUCCEEDED(hRes) && lpActsDst->lpAction)
+		lpActsDst->lpAction = mapi::allocate<LPACTION>(sizeof(ACTION) * lpActsDst->cActions, lpAllocationParent);
+		if (lpActsDst->lpAction)
 		{
 			// Initialize acttype values for all members of the array to a value
 			// that will not cause deallocation errors should the copy fail.
@@ -3058,11 +2935,8 @@ namespace mapi
 				case OP_COPY:
 					if (lpActDst->actMoveCopy.cbStoreEntryId && lpActDst->actMoveCopy.lpStoreEntryId)
 					{
-						hRes = WC_H(MAPIAllocateMore(
-							lpActDst->actMoveCopy.cbStoreEntryId,
-							lpObject,
-							reinterpret_cast<LPVOID*>(&lpActDst->actMoveCopy.lpStoreEntryId)));
-						if (FAILED(hRes)) break;
+						lpActDst->actMoveCopy.lpStoreEntryId =
+							mapi::allocate<LPENTRYID>(lpActDst->actMoveCopy.cbStoreEntryId, lpAllocationParent);
 
 						memcpy(
 							lpActDst->actMoveCopy.lpStoreEntryId,
@@ -3072,11 +2946,8 @@ namespace mapi
 
 					if (lpActDst->actMoveCopy.cbFldEntryId && lpActDst->actMoveCopy.lpFldEntryId)
 					{
-						hRes = WC_H(MAPIAllocateMore(
-							lpActDst->actMoveCopy.cbFldEntryId,
-							lpObject,
-							reinterpret_cast<LPVOID*>(&lpActDst->actMoveCopy.lpFldEntryId)));
-						if (FAILED(hRes)) break;
+						lpActDst->actMoveCopy.lpFldEntryId =
+							mapi::allocate<LPENTRYID>(lpActDst->actMoveCopy.cbFldEntryId, lpAllocationParent);
 
 						memcpy(
 							lpActDst->actMoveCopy.lpFldEntryId,
@@ -3089,11 +2960,8 @@ namespace mapi
 				case OP_OOF_REPLY:
 					if (lpActDst->actReply.cbEntryId && lpActDst->actReply.lpEntryId)
 					{
-						hRes = WC_H(MAPIAllocateMore(
-							lpActDst->actReply.cbEntryId,
-							lpObject,
-							reinterpret_cast<LPVOID*>(&lpActDst->actReply.lpEntryId)));
-						if (FAILED(hRes)) break;
+						lpActDst->actReply.lpEntryId =
+							mapi::allocate<LPENTRYID>(lpActDst->actReply.cbEntryId, lpAllocationParent);
 
 						memcpy(
 							lpActDst->actReply.lpEntryId, lpActSrc->actReply.lpEntryId, lpActSrc->actReply.cbEntryId);
@@ -3103,11 +2971,8 @@ namespace mapi
 				case OP_DEFER_ACTION: // actDeferAction
 					if (lpActSrc->actDeferAction.pbData && lpActSrc->actDeferAction.cbData)
 					{
-						hRes = WC_H(MAPIAllocateMore(
-							lpActDst->actDeferAction.cbData,
-							lpObject,
-							reinterpret_cast<LPVOID*>(&lpActDst->actDeferAction.pbData)));
-						if (FAILED(hRes)) break;
+						lpActDst->actDeferAction.pbData =
+							mapi::allocate<LPBYTE>(lpActDst->actDeferAction.cbData, lpAllocationParent);
 
 						memcpy(
 							lpActDst->actDeferAction.pbData,
@@ -3122,10 +2987,8 @@ namespace mapi
 
 					if (lpActSrc->lpadrlist && lpActSrc->lpadrlist->cEntries)
 					{
-						hRes = WC_H(MAPIAllocateMore(
-							CbADRLIST(lpActSrc->lpadrlist), lpObject, reinterpret_cast<LPVOID*>(&lpActDst->lpadrlist)));
-						if (FAILED(hRes)) break;
-
+						lpActDst->lpadrlist =
+							mapi::allocate<LPADRLIST>(CbADRLIST(lpActSrc->lpadrlist), lpAllocationParent);
 						lpActDst->lpadrlist->cEntries = lpActSrc->lpadrlist->cEntries;
 
 						// Initialize the new ADRENTRYs and validate cValues.
@@ -3175,7 +3038,7 @@ namespace mapi
 
 		if (FAILED(hRes))
 		{
-			if (fNullObject) MAPIFreeBuffer(*lppActsDst);
+			if (!lpObject) MAPIFreeBuffer(*lppActsDst);
 		}
 
 		return hRes;

@@ -257,13 +257,13 @@ namespace mapi
 
 	_Check_return_ STDAPI HrCopyRestriction(
 		_In_ const _SRestriction* lpResSrc, // source restriction ptr
-		_In_opt_ LPVOID lpObject, // ptr to existing MAPI buffer
+		_In_opt_ const LPVOID lpObject, // ptr to existing MAPI buffer
 		_In_ LPSRestriction* lppResDest // dest restriction buffer ptr
 	);
 
 	_Check_return_ HRESULT HrCopyRestrictionArray(
 		_In_ const _SRestriction* lpResSrc, // source restriction
-		_In_ LPVOID lpObject, // ptr to existing MAPI buffer
+		_In_ const LPVOID lpObject, // ptr to existing MAPI buffer
 		ULONG cRes, // # elements in array
 		_In_count_(cRes) LPSRestriction lpResDest // destination restriction
 	);
