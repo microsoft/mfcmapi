@@ -3,6 +3,7 @@
 #include <StdAfx.h>
 #include <MAPI/MAPIABFunctions.h>
 #include <MAPI/MAPIFunctions.h>
+#include <MAPI/MapiMemory.h>
 
 namespace mapi
 {
@@ -213,31 +214,12 @@ namespace mapi
 
 			// Allocate and create our SRestriction
 			// Allocate base memory:
-			if (lpParent)
-			{
-				hRes = EC_H(MAPIAllocateMore(sizeof(SRestriction), lpParent, reinterpret_cast<LPVOID*>(&lpRes)));
-
-				lpAllocationParent = lpParent;
-			}
-			else
-			{
-				hRes = EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&lpRes)));
-
-				lpAllocationParent = lpRes;
-			}
-
-			if (SUCCEEDED(hRes))
-			{
-				hRes = EC_H(
-					MAPIAllocateMore(sizeof(SPropValue), lpAllocationParent, reinterpret_cast<LPVOID*>(&lpspvSubject)));
-			}
+			lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpParent);
+			lpAllocationParent = lpParent ? lpParent : lpRes;
+			lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
 
 			if (lpRes && lpspvSubject)
 			{
-				// Zero out allocated memory.
-				ZeroMemory(lpRes, sizeof(SRestriction));
-				ZeroMemory(lpspvSubject, sizeof(SPropValue));
-
 				// Root Node
 				lpRes->rt = RES_PROPERTY;
 				lpRes->res.resProperty.relop = RELOP_EQ;
