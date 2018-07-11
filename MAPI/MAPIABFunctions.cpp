@@ -310,7 +310,7 @@ namespace mapi
 				abcNUM_COLS,
 				{
 					PR_ENTRYID, //
-					PR_DISPLAY_NAME //
+					PR_DISPLAY_NAME_W //
 				},
 			};
 
@@ -425,20 +425,16 @@ namespace mapi
 								pProp->Value.l = MAPI_TO;
 
 								pProp = &pProps[abPR_DISPLAY_NAME];
-								pProp->ulPropTag = PR_DISPLAY_NAME;
-
-								if (!mapi::CheckStringProp(&lpFoundRow[abPR_DISPLAY_NAME], PT_TSTRING)) continue;
-
-								hRes = EC_H(mapi::CopyString(
-									&pProp->Value.LPSZ, lpFoundRow[abPR_DISPLAY_NAME].Value.LPSZ, lpAdrList));
+								pProp->ulPropTag = PR_DISPLAY_NAME_W;
+								if (!mapi::CheckStringProp(&lpFoundRow[abPR_DISPLAY_NAME], PT_UNICODE)) continue;
+								pProp->Value.lpszW =
+									mapi::CopyStringW(lpFoundRow[abPR_DISPLAY_NAME].Value.lpszW, lpAdrList);
 
 								pProp = &pProps[abPR_ADDRTYPE];
-								pProp->ulPropTag = PR_ADDRTYPE;
-
-								if (!mapi::CheckStringProp(&lpFoundRow[abPR_ADDRTYPE], PT_TSTRING)) continue;
-
-								hRes = EC_H(mapi::CopyString(
-									&pProp->Value.LPSZ, lpFoundRow[abPR_ADDRTYPE].Value.LPSZ, lpAdrList));
+								pProp->ulPropTag = PR_ADDRTYPE_W;
+								if (!mapi::CheckStringProp(&lpFoundRow[abPR_ADDRTYPE], PT_UNICODE)) continue;
+								pProp->Value.lpszW =
+									mapi::CopyStringW(lpFoundRow[abPR_ADDRTYPE].Value.lpszW, lpAdrList);
 
 								pProp = &pProps[abPR_DISPLAY_TYPE];
 								pProp->ulPropTag = PR_DISPLAY_TYPE;
@@ -452,7 +448,10 @@ namespace mapi
 								if (lpAdrList) FreePadrlist(lpAdrList);
 								lpAdrList = nullptr;
 
-								hRes = EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+								if (SUCCEEDED(hRes))
+								{
+									hRes = EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+								}
 
 								// since we're done with our work, let's get out of here.
 								break;

@@ -275,12 +275,10 @@ namespace dialog
 						lpsProp->Value.MVflt.lpflt[iMVCount] = lpData->MV()->m_val.flt;
 						break;
 					case PT_MV_STRING8:
-						EC_H_S(mapi::CopyStringA(
-							&lpsProp->Value.MVszA.lppszA[iMVCount], lpData->MV()->m_val.lpszA, lpParent));
+						lpsProp->Value.MVszA.lppszA[iMVCount] = mapi::CopyStringA(lpData->MV()->m_val.lpszA, lpParent);
 						break;
 					case PT_MV_UNICODE:
-						EC_H_S(mapi::CopyStringW(
-							&lpsProp->Value.MVszW.lppszW[iMVCount], lpData->MV()->m_val.lpszW, lpParent));
+						lpsProp->Value.MVszW.lppszW[iMVCount] = mapi::CopyStringW(lpData->MV()->m_val.lpszW, lpParent);
 						break;
 					case PT_MV_BINARY:
 						EC_H_S(mapi::CopySBinary(

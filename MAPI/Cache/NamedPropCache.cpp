@@ -47,11 +47,9 @@ namespace cache
 				// lpSrcName is LPWSTR which means it's ALWAYS unicode
 				// But some folks get it wrong and stuff ANSI data in there
 				// So we check the string length both ways to make our best guess
-				size_t cchShortLen = NULL;
-				size_t cchWideLen = NULL;
-				WC_H_S(StringCchLengthA(reinterpret_cast<LPSTR>(src.Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
-				WC_H_S(StringCchLengthW(src.Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
-				size_t cbName = NULL;
+				auto cchShortLen = strnlen_s(LPCSTR(src.Kind.lpwstrName), RSIZE_MAX);
+				auto cchWideLen = wcsnlen_s(src.Kind.lpwstrName, RSIZE_MAX);
+				auto cbName = size_t();
 
 				if (cchShortLen < cchWideLen)
 				{
@@ -60,8 +58,8 @@ namespace cache
 				}
 				else
 				{
-					// this is the case where ANSI data was shoved into a unicode string.
-					// add a couple extra NULL in case we read this as unicode again.
+					// This is the case where ANSI data was shoved into a unicode string.
+					// Add a couple extra NULL in case we read this as unicode again.
 					cbName = (cchShortLen + 3) * sizeof CHAR;
 				}
 
@@ -70,7 +68,7 @@ namespace cache
 					dst.Kind.lpwstrName = mapi::allocate<LPWSTR>(cbName, lpMAPIParent);
 				}
 				else
-					dst.Kind.lpwstrName = reinterpret_cast<LPWSTR>(new BYTE[cbName]);
+					dst.Kind.lpwstrName = LPWSTR(new BYTE[cbName]);
 
 				if (dst.Kind.lpwstrName)
 				{
@@ -685,10 +683,8 @@ namespace cache
 			// lpwstrName is LPWSTR which means it's ALWAYS unicode
 			// But some folks get it wrong and stuff ANSI data in there
 			// So we check the string length both ways to make our best guess
-			size_t cchShortLen = NULL;
-			size_t cchWideLen = NULL;
-			WC_H_S(StringCchLengthA(reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
-			WC_H_S(StringCchLengthW(lpNameID->Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
+			auto cchShortLen = strnlen_s(LPCSTR(lpNameID->Kind.lpwstrName), RSIZE_MAX);
+			auto cchWideLen = wcsnlen_s(lpNameID->Kind.lpwstrName, RSIZE_MAX);
 
 			if (cchShortLen < cchWideLen)
 			{

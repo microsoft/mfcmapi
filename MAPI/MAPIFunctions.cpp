@@ -1,5 +1,4 @@
 // Collection of useful MAPI functions
-
 #include <StdAfx.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
@@ -647,54 +646,53 @@ namespace mapi
 	// Purpose
 	// Uses MAPI to allocate a new string (szDestination) and copy szSource into it
 	// Uses lpParent as the parent for MAPIAllocateMore if possible
-	_Check_return_ HRESULT
-	CopyStringA(_Deref_out_z_ LPSTR* lpszDestination, _In_z_ LPCSTR szSource, _In_opt_ LPVOID pParent)
+	_Check_return_ LPSTR CopyStringA(_In_z_ LPCSTR src, _In_opt_ LPVOID pParent)
 	{
-		size_t cbSource = 0;
+		if (!src) return nullptr;
+		auto cb = strnlen_s(src, RSIZE_MAX) + 1;
+		auto hRes = S_OK;
+		auto dst = LPSTR();
 
-		if (!szSource)
+		if (pParent)
 		{
-			*lpszDestination = nullptr;
-			return S_OK;
+			hRes = EC_H(MAPIAllocateMore(static_cast<ULONG>(cb), pParent, reinterpret_cast<LPVOID*>(&dst)));
 		}
-
-		auto hRes = EC_H(StringCbLengthA(szSource, STRSAFE_MAX_CCH * sizeof(char), &cbSource));
-		cbSource += sizeof(char);
+		else
+		{
+			hRes = EC_H(MAPIAllocateBuffer(static_cast<ULONG>(cb), reinterpret_cast<LPVOID*>(&dst)));
+		}
 
 		if (SUCCEEDED(hRes))
 		{
-			*lpszDestination = mapi::allocate<LPSTR>(static_cast<ULONG>(cbSource), pParent);
-			hRes = EC_H(StringCbCopyA(*lpszDestination, cbSource, szSource));
+			EC_W32_S(strcpy_s(dst, cb, src));
 		}
 
-		return hRes;
+		return dst;
 	}
 
-	_Check_return_ HRESULT
-	CopyStringW(_Deref_out_z_ LPWSTR* lpszDestination, _In_z_ LPCWSTR szSource, _In_opt_ LPVOID pParent)
+	_Check_return_ LPWSTR CopyStringW(_In_z_ LPCWSTR src, _In_opt_ LPVOID pParent)
 	{
-		size_t cbSource = 0;
+		if (!src) return nullptr;
+		auto cb = wcsnlen_s(src, RSIZE_MAX) + 1;
+		auto cch = cb * sizeof(WCHAR);
+		auto hRes = S_OK;
+		auto dst = LPWSTR();
 
-		if (!szSource)
+		if (pParent)
 		{
-			*lpszDestination = nullptr;
-			return S_OK;
+			hRes = EC_H(MAPIAllocateMore(static_cast<ULONG>(cb), pParent, reinterpret_cast<LPVOID*>(&dst)));
 		}
-
-		auto hRes = EC_H(StringCbLengthW(szSource, STRSAFE_MAX_CCH * sizeof(WCHAR), &cbSource));
-		cbSource += sizeof(WCHAR);
+		else
+		{
+			hRes = EC_H(MAPIAllocateBuffer(static_cast<ULONG>(cb), reinterpret_cast<LPVOID*>(&dst)));
+		}
 
 		if (SUCCEEDED(hRes))
 		{
-			*lpszDestination = mapi::allocate<LPWSTR>(static_cast<ULONG>(cbSource), pParent);
+			EC_W32_S(wcscpy_s(dst, cch, src));
 		}
 
-		if (SUCCEEDED(hRes))
-		{
-			hRes = EC_H(StringCbCopyW(*lpszDestination, cbSource, szSource));
-		}
-
-		return hRes;
+		return dst;
 	}
 
 	// Allocates and creates a restriction that looks for existence of
@@ -746,8 +744,7 @@ namespace mapi
 
 			// Allocate and fill out properties:
 			lpspvSubject->ulPropTag = ulPropTag;
-
-			hRes = EC_H(CopyStringW(&lpspvSubject->Value.lpszW, szString.c_str(), lpAllocationParent));
+			lpspvSubject->Value.lpszW = CopyStringW(szString.c_str(), lpAllocationParent);
 
 			output::DebugPrint(DBGGeneric, L"CreatePropertyStringRestriction built restriction:\n");
 			output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
@@ -813,8 +810,7 @@ namespace mapi
 
 			// Allocate and fill out properties:
 			lpspvSubject->ulPropTag = ulPropTag;
-
-			hRes = EC_H(CopyStringW(&lpspvSubject->Value.lpszW, szString.c_str(), lpAllocationParent));
+			lpspvSubject->Value.lpszW = CopyStringW(szString.c_str(), lpAllocationParent);
 
 			output::DebugPrint(DBGGeneric, L"CreateRangeRestriction built restriction:\n");
 			output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);

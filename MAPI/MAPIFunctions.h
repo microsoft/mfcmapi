@@ -85,10 +85,8 @@ namespace mapi
 	_Check_return_ HRESULT
 	CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, bool bReplace);
 	_Check_return_ HRESULT CopySBinary(_Out_ LPSBinary psbDest, _In_ const _SBinary* psbSrc, _In_ LPVOID lpParent);
-	_Check_return_ HRESULT
-	CopyStringA(_Deref_out_z_ LPSTR* lpszDestination, _In_z_ LPCSTR szSource, _In_opt_ LPVOID pParent);
-	_Check_return_ HRESULT
-	CopyStringW(_Deref_out_z_ LPWSTR* lpszDestination, _In_z_ LPCWSTR szSource, _In_opt_ LPVOID pParent);
+	_Check_return_ LPSTR CopyStringA(_In_z_ LPCSTR szSource, _In_opt_ LPVOID pParent);
+	_Check_return_ LPWSTR CopyStringW(_In_z_ LPCWSTR szSource, _In_opt_ LPVOID pParent);
 #ifdef UNICODE
 #define CopyString CopyStringW
 #else

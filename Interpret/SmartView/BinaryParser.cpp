@@ -80,10 +80,8 @@ namespace smartview
 	{
 		if (cchChar == -1)
 		{
-			const auto hRes = StringCchLengthA(
-				reinterpret_cast<LPCSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof CHAR, &cchChar);
-			if (FAILED(hRes)) return "";
-			cchChar += 1;
+			cchChar =
+				strnlen_s(reinterpret_cast<LPCSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof CHAR) + 1;
 		}
 
 		if (!cchChar || !CheckRemainingBytes(sizeof CHAR * cchChar)) return "";
@@ -96,10 +94,8 @@ namespace smartview
 	{
 		if (cchChar == -1)
 		{
-			const auto hRes = StringCchLengthW(
-				reinterpret_cast<LPCWSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof WCHAR, &cchChar);
-			if (FAILED(hRes)) return strings::emptystring;
-			cchChar += 1;
+			cchChar =
+				wcsnlen_s(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof WCHAR) + 1;
 		}
 
 		if (!cchChar || !CheckRemainingBytes(sizeof WCHAR * cchChar)) return strings::emptystring;
