@@ -650,19 +650,9 @@ namespace mapi
 	{
 		if (!src) return nullptr;
 		auto cb = strnlen_s(src, RSIZE_MAX) + 1;
-		auto hRes = S_OK;
-		auto dst = LPSTR();
+		auto dst = mapi::allocate<LPSTR>(static_cast<ULONG>(cb), pParent);
 
-		if (pParent)
-		{
-			hRes = EC_H(MAPIAllocateMore(static_cast<ULONG>(cb), pParent, reinterpret_cast<LPVOID*>(&dst)));
-		}
-		else
-		{
-			hRes = EC_H(MAPIAllocateBuffer(static_cast<ULONG>(cb), reinterpret_cast<LPVOID*>(&dst)));
-		}
-
-		if (SUCCEEDED(hRes))
+		if (dst)
 		{
 			EC_W32_S(strcpy_s(dst, cb, src));
 		}
@@ -675,19 +665,9 @@ namespace mapi
 		if (!src) return nullptr;
 		auto cb = wcsnlen_s(src, RSIZE_MAX) + 1;
 		auto cch = cb * sizeof(WCHAR);
-		auto hRes = S_OK;
-		auto dst = LPWSTR();
+		auto dst = mapi::allocate<LPWSTR>(static_cast<ULONG>(cb), pParent);
 
-		if (pParent)
-		{
-			hRes = EC_H(MAPIAllocateMore(static_cast<ULONG>(cb), pParent, reinterpret_cast<LPVOID*>(&dst)));
-		}
-		else
-		{
-			hRes = EC_H(MAPIAllocateBuffer(static_cast<ULONG>(cb), reinterpret_cast<LPVOID*>(&dst)));
-		}
-
-		if (SUCCEEDED(hRes))
+		if (dst)
 		{
 			EC_W32_S(wcscpy_s(dst, cch, src));
 		}
