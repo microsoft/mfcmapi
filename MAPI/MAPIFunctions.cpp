@@ -215,8 +215,8 @@ namespace mapi
 		_Deref_out_opt_ LPSPropTagArray* lpNewArray)
 	{
 		if (!lpNewArray) return MAPI_E_INVALID_PARAMETER;
-		LPSPropTagArray lpLocalArray = nullptr;
 
+		auto hRes = S_OK;
 		*lpNewArray = nullptr;
 
 		// Add the sizes of the passed in arrays (0 if they were NULL)
@@ -240,9 +240,7 @@ namespace mapi
 		if (!iNewArraySize) return MAPI_E_CALL_FAILED;
 
 		// Allocate memory for the new prop tag array
-		auto hRes =
-			EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(iNewArraySize), reinterpret_cast<LPVOID*>(&lpLocalArray)));
-
+		auto lpLocalArray = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(iNewArraySize));
 		if (lpLocalArray)
 		{
 			ULONG iTargetArray = 0;
@@ -342,10 +340,8 @@ namespace mapi
 			{
 				SBinaryArray sbaEID = {0};
 				sbaEID.cValues = ulRowCount;
-				hRes = EC_H(MAPIAllocateBuffer(sizeof(SBinary) * ulRowCount, reinterpret_cast<LPVOID*>(&sbaEID.lpbin)));
-				ZeroMemory(sbaEID.lpbin, sizeof(SBinary) * ulRowCount);
-
-				if (SUCCEEDED(hRes))
+				sbaEID.lpbin = mapi::allocate<LPSBinary>(sizeof(SBinary) * ulRowCount);
+				if (sbaEID.lpbin)
 				{
 					for (ULONG ulRowsCopied = 0; ulRowsCopied < ulRowCount; ulRowsCopied++)
 					{
@@ -702,11 +698,6 @@ namespace mapi
 
 		if (lpRes && lpResLevel1 && lpspvSubject)
 		{
-			// Zero out allocated memory.
-			ZeroMemory(lpRes, sizeof(SRestriction));
-			ZeroMemory(lpResLevel1, sizeof(SRestriction) * 2);
-			ZeroMemory(lpspvSubject, sizeof(SPropValue));
-
 			// Root Node
 			lpRes->rt = RES_AND;
 			lpRes->res.resAnd.cRes = 2;
@@ -768,11 +759,6 @@ namespace mapi
 
 		if (lpRes && lpResLevel1 && lpspvSubject)
 		{
-			// Zero out allocated memory.
-			ZeroMemory(lpRes, sizeof(SRestriction));
-			ZeroMemory(lpResLevel1, sizeof(SRestriction) * 2);
-			ZeroMemory(lpspvSubject, sizeof(SPropValue));
-
 			// Root Node
 			lpRes->rt = RES_AND;
 			lpRes->res.resAnd.cRes = 2;
@@ -928,8 +914,8 @@ namespace mapi
 
 		if (cbInboxEID && lpInboxEID)
 		{
-			hRes = WC_H(MAPIAllocateBuffer(cbInboxEID, reinterpret_cast<LPVOID*>(lppeid)));
-			if (SUCCEEDED(hRes))
+			*lppeid = mapi::allocate<LPENTRYID>(cbInboxEID);
+			if (*lppeid)
 			{
 				*lpcbeid = cbInboxEID;
 				CopyMemory(*lppeid, lpInboxEID, *lpcbeid);
@@ -1093,8 +1079,8 @@ namespace mapi
 
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag) && lpProp->Value.bin.cb)
 		{
-			hRes = WC_H(MAPIAllocateBuffer(lpProp->Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
-			if (SUCCEEDED(hRes))
+			*lppeid = mapi::allocate<LPENTRYID>(lpProp->Value.bin.cb);
+			if (*lppeid)
 			{
 				*lpcbeid = lpProp->Value.bin.cb;
 				CopyMemory(*lppeid, lpProp->Value.bin.lpb, *lpcbeid);
@@ -1934,12 +1920,8 @@ namespace mapi
 					}
 				}
 
-				LPSPropTagArray lpFilteredProps = nullptr;
-
-				hRes = WC_H(
-					MAPIAllocateBuffer(CbNewSPropTagArray(ulNumProps), reinterpret_cast<LPVOID*>(&lpFilteredProps)));
-
-				if (hRes == S_OK && lpFilteredProps)
+				auto lpFilteredProps = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(ulNumProps));
+				if (lpFilteredProps)
 				{
 					lpFilteredProps->cValues = 0;
 
@@ -2212,8 +2194,8 @@ namespace mapi
 
 		if (SUCCEEDED(hRes) && lpEIDProp)
 		{
-			hRes = WC_H(MAPIAllocateBuffer(lpEIDProp->Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
-			if (SUCCEEDED(hRes))
+			*lppeid = mapi::allocate<LPENTRYID>(lpEIDProp->Value.bin.cb);
+			if (*lppeid)
 			{
 				*lpcbeid = lpEIDProp->Value.bin.cb;
 				CopyMemory(*lppeid, lpEIDProp->Value.bin.lpb, *lpcbeid);
@@ -2243,9 +2225,8 @@ namespace mapi
 			if (SUCCEEDED(hRes) && lpEIDProp && PT_MV_BINARY == PROP_TYPE(lpEIDProp->ulPropTag) &&
 				ulIndex < lpEIDProp->Value.MVbin.cValues && lpEIDProp->Value.MVbin.lpbin[ulIndex].cb > 0)
 			{
-				hRes = WC_H(
-					MAPIAllocateBuffer(lpEIDProp->Value.MVbin.lpbin[ulIndex].cb, reinterpret_cast<LPVOID*>(lppeid)));
-				if (SUCCEEDED(hRes))
+				*lppeid = mapi::allocate<LPENTRYID>(lpEIDProp->Value.MVbin.lpbin[ulIndex].cb);
+				if (*lppeid)
 				{
 					*lpcbeid = lpEIDProp->Value.MVbin.lpbin[ulIndex].cb;
 					CopyMemory(*lppeid, lpEIDProp->Value.MVbin.lpbin[ulIndex].lpb, *lpcbeid);
@@ -2254,6 +2235,7 @@ namespace mapi
 
 			MAPIFreeBuffer(lpEIDProp);
 		}
+
 		if (lpInbox) lpInbox->Release();
 
 		return hRes;
@@ -2610,10 +2592,9 @@ namespace mapi
 				// We're not going to try to support MASSIVE properties.
 				if (!StatInfo.cbSize.HighPart)
 				{
-					hRes = EC_H(MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&lpPropArray)));
+					lpPropArray = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 					if (lpPropArray)
 					{
-						memset(lpPropArray, 0, sizeof(SPropValue));
 						lpPropArray->ulPropTag = ulPropTag;
 
 						if (StatInfo.cbSize.LowPart)
