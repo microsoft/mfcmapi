@@ -2,6 +2,7 @@
 #include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/Guids.h>
+#include <MAPI/MapiMemory.h>
 
 namespace cache
 {
@@ -23,7 +24,7 @@ namespace cache
 		{
 			if (lpMAPIParent)
 			{
-				MAPIAllocateMore(sizeof(GUID), lpMAPIParent, reinterpret_cast<LPVOID*>(&dst.lpguid));
+				dst.lpguid = mapi::allocate<LPGUID>(sizeof(GUID), lpMAPIParent);
 			}
 			else
 				dst.lpguid = new GUID;
@@ -66,8 +67,7 @@ namespace cache
 
 				if (lpMAPIParent)
 				{
-					MAPIAllocateMore(
-						static_cast<ULONG>(cbName), lpMAPIParent, reinterpret_cast<LPVOID*>(&dst.Kind.lpwstrName));
+					dst.Kind.lpwstrName = mapi::allocate<LPWSTR>(cbName, lpMAPIParent);
 				}
 				else
 					dst.Kind.lpwstrName = reinterpret_cast<LPWSTR>(new BYTE[cbName]);
@@ -340,10 +340,7 @@ namespace cache
 								// copy the next result into it
 								if (lppUncachedPropNames[ulUncachedTag])
 								{
-									LPMAPINAMEID lpNameID = nullptr;
-
-									hRes = EC_H(MAPIAllocateMore(
-										sizeof(MAPINAMEID), lppNameIDs, reinterpret_cast<LPVOID*>(&lpNameID)));
+									auto lpNameID = mapi::allocate<LPMAPINAMEID>(sizeof(MAPINAMEID), lppNameIDs);
 									if (lpNameID)
 									{
 										CopyCacheData(*lppUncachedPropNames[ulUncachedTag], *lpNameID, lppNameIDs);

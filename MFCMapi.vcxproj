@@ -547,6 +547,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Interpret\Sid.h" />
+    <ClInclude Include="MAPI\MapiMemory.h" />
     <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
     <ClInclude Include="UI\Dialogs\HierarchyTable\ABContDlg.h" />
