@@ -10,6 +10,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <UI/FileDialogEx.h>
 #include <Interpret/InterpretProp.h>
+#include <MAPI/MapiMemory.h>
 
 namespace dialog
 {
@@ -335,9 +336,7 @@ namespace dialog
 		LPSMESSAGECLASSARRAY lpMSGClassArray = nullptr;
 		if (ulNumClasses && ulNumClasses < MAXMessageClassArray)
 		{
-			EC_H_S(
-				MAPIAllocateBuffer(CbMessageClassArray(ulNumClasses), reinterpret_cast<LPVOID*>(&lpMSGClassArray)));
-
+			lpMSGClassArray = mapi::allocate<LPSMESSAGECLASSARRAY>(CbMessageClassArray(ulNumClasses));
 			if (lpMSGClassArray)
 			{
 				lpMSGClassArray->cValues = ulNumClasses;

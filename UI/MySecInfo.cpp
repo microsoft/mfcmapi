@@ -3,6 +3,7 @@
 #include <Interpret/Sid.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/ExtraPropTags.h>
+#include <MAPI/MapiMemory.h>
 
 namespace mapi
 {
@@ -195,8 +196,7 @@ namespace mapi
 					// make sure we don't try to copy more than we really got
 					if (m_cbHeader <= cbSBBuffer)
 					{
-						hRes = EC_H(MAPIAllocateBuffer(m_cbHeader, reinterpret_cast<LPVOID*>(&m_lpHeader)));
-
+						m_lpHeader = mapi::allocate<LPBYTE>(m_cbHeader);
 						if (m_lpHeader)
 						{
 							memcpy(m_lpHeader, lpSDBuffer, m_cbHeader);
@@ -234,8 +234,8 @@ namespace mapi
 			const auto cbBlob = m_cbHeader + dwSDLength;
 			if (cbBlob < m_cbHeader || cbBlob < dwSDLength) return MAPI_E_INVALID_PARAMETER;
 
-			auto hRes = EC_H(MAPIAllocateBuffer(cbBlob, reinterpret_cast<LPVOID*>(&lpBlob)));
-
+			auto hRes = S_OK;
+			lpBlob = mapi::allocate<LPBYTE>(cbBlob);
 			if (lpBlob)
 			{
 				// The format is a security descriptor preceeded by a header.
