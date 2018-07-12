@@ -15,6 +15,7 @@
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 #include <MAPI/Cache/NamedPropCache.h>
+#include <MAPI/MapiMemory.h>
 
 namespace controls
 {
@@ -1006,19 +1007,12 @@ namespace controls
 			if (!iNumItems) return S_OK;
 			if (iNumItems > ULONG_MAX / sizeof(SBinary)) return nullptr;
 
-			LPENTRYLIST lpTempList = nullptr;
-
-			auto hRes = EC_H(MAPIAllocateBuffer(sizeof(ENTRYLIST), reinterpret_cast<LPVOID*>(&lpTempList)));
-
+			auto lpTempList = mapi::allocate<LPENTRYLIST>(sizeof(ENTRYLIST));
 			if (lpTempList)
 			{
 				lpTempList->cValues = iNumItems;
-				lpTempList->lpbin = nullptr;
-
-				hRes = EC_H(MAPIAllocateMore(
-					static_cast<ULONG>(sizeof(SBinary)) * iNumItems,
-					lpTempList,
-					reinterpret_cast<LPVOID*>(&lpTempList->lpbin)));
+				lpTempList->lpbin =
+					mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)) * iNumItems, lpTempList);
 				if (lpTempList->lpbin)
 				{
 					auto iSelectedItem = -1;
@@ -1034,10 +1028,8 @@ namespace controls
 							if (lpData && lpData->Contents() && lpData->Contents()->m_lpEntryID)
 							{
 								lpTempList->lpbin[iArrayPos].cb = lpData->Contents()->m_lpEntryID->cb;
-								EC_H_S(MAPIAllocateMore(
-									lpData->Contents()->m_lpEntryID->cb,
-									lpTempList,
-									reinterpret_cast<LPVOID*>(&lpTempList->lpbin[iArrayPos].lpb)));
+								lpTempList->lpbin[iArrayPos].lpb =
+									mapi::allocate<LPBYTE>(lpData->Contents()->m_lpEntryID->cb, lpTempList);
 								if (lpTempList->lpbin[iArrayPos].lpb)
 								{
 									CopyMemory(

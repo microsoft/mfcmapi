@@ -2,6 +2,7 @@
 #include <UI/Controls/SortList/NodeData.h>
 #include <MAPI/AdviseSink.h>
 #include <MAPI/MAPIFunctions.h>
+#include <MAPI/MapiMemory.h>
 
 namespace controls
 {
@@ -18,10 +19,8 @@ namespace controls
 			auto hRes = S_OK;
 			if (lpEntryID)
 			{
-				hRes = WC_H(
-					MAPIAllocateBuffer(static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpEntryID)));
-
-				if (SUCCEEDED(hRes))
+				m_lpEntryID = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
+				if (m_lpEntryID)
 				{
 					// Copy the data over
 					hRes = WC_H(mapi::CopySBinary(m_lpEntryID, lpEntryID, nullptr));
@@ -30,9 +29,8 @@ namespace controls
 
 			if (lpInstanceKey)
 			{
-				hRes = WC_H(MAPIAllocateBuffer(
-					static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpInstanceKey)));
-				if (SUCCEEDED(hRes))
+				m_lpInstanceKey = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
+				if (m_lpInstanceKey)
 				{
 					hRes = WC_H(mapi::CopySBinary(m_lpInstanceKey, lpInstanceKey, nullptr));
 				}
