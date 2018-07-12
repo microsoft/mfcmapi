@@ -7,6 +7,7 @@
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/Dialogs/Editors/MultiValuePropertyEditor.h>
 #include <Interpret/InterpretProp.h>
+#include <MAPI/MapiMemory.h>
 
 namespace dialog
 {
@@ -473,14 +474,9 @@ namespace dialog
 
 			if (!m_lpsOutputValue)
 			{
-				if (m_lpAllocParent)
+				m_lpsOutputValue = mapi::allocate<LPSPropValue>(sizeof(SPropValue), m_lpAllocParent);
+				if (!m_lpAllocParent)
 				{
-					EC_H_S(MAPIAllocateMore(
-						sizeof(SPropValue), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
-				}
-				else
-				{
-					EC_H_S(MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
 					m_lpAllocParent = m_lpsOutputValue;
 				}
 			}
@@ -542,8 +538,7 @@ namespace dialog
 					m_lpsOutputValue->Value.ft.dwHighDateTime = strings::wstringToUlong(GetStringW(1), 16);
 					break;
 				case PT_CLSID:
-					EC_H_S(MAPIAllocateMore(
-						sizeof(GUID), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpsOutputValue->Value.lpguid)));
+					m_lpsOutputValue->Value.lpguid = mapi::allocate<GUID*>(sizeof(GUID), m_lpAllocParent);
 					if (m_lpsOutputValue->Value.lpguid)
 					{
 						*m_lpsOutputValue->Value.lpguid = guid::StringToGUID(GetStringW(0));
