@@ -22,6 +22,7 @@
 #include <MAPI/MapiMime.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/Cache/GlobalCache.h>
+#include <MAPI/MapiMemory.h>
 
 namespace dialog
 {
@@ -1714,17 +1715,7 @@ namespace dialog
 	void CFolderDlg::OnCreateMessageRestriction()
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-		ULONG cVals = 0;
-		LPSPropValue lpProps = nullptr;
 		LPMAPIPROP lpMAPIProp = nullptr;
-
-		LPSRestriction lpRes = nullptr;
-		LPSRestriction lpResLevel1 = nullptr;
-		LPSRestriction lpResLevel2 = nullptr;
-
-		LPSPropValue lpspvSubject = nullptr;
-		LPSPropValue lpspvSubmitTime = nullptr;
-		LPSPropValue lpspvDeliveryTime = nullptr;
 
 		// These are the properties we're going to copy off of the current message and store
 		// in some object level variables
@@ -1738,61 +1729,28 @@ namespace dialog
 		static const SizedSPropTagArray(frNUMCOLS, sptFRCols) = {
 			frNUMCOLS, {PR_SUBJECT, PR_CLIENT_SUBMIT_TIME, PR_MESSAGE_DELIVERY_TIME}};
 
-		if (!m_lpContentsTableListCtrl) return;
-
 		auto hRes =
 			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
 
 		if (lpMAPIProp)
 		{
+			ULONG cVals = 0;
+			LPSPropValue lpProps = nullptr;
 			EC_H_GETPROPS_S(lpMAPIProp->GetProps(LPSPropTagArray(&sptFRCols), fMapiUnicode, &cVals, &lpProps));
 			if (lpProps)
 			{
 				// Allocate and create our SRestriction
 				// Allocate base memory:
-				hRes = EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&lpRes)));
-
-				if (SUCCEEDED(hRes))
-				{
-					hRes = EC_H(
-						MAPIAllocateMore(sizeof(SRestriction) * 2, lpRes, reinterpret_cast<LPVOID*>(&lpResLevel1)));
-				}
-
-				if (SUCCEEDED(hRes))
-				{
-					hRes = EC_H(
-						MAPIAllocateMore(sizeof(SRestriction) * 2, lpRes, reinterpret_cast<LPVOID*>(&lpResLevel2)));
-				}
-
-				if (SUCCEEDED(hRes))
-				{
-					hRes = EC_H(MAPIAllocateMore(sizeof(SPropValue), lpRes, reinterpret_cast<LPVOID*>(&lpspvSubject)));
-				}
-
-				if (SUCCEEDED(hRes))
-				{
-					hRes = EC_H(
-						MAPIAllocateMore(sizeof(SPropValue), lpRes, reinterpret_cast<LPVOID*>(&lpspvDeliveryTime)));
-				}
-
-				if (SUCCEEDED(hRes))
-				{
-					hRes =
-						EC_H(MAPIAllocateMore(sizeof(SPropValue), lpRes, reinterpret_cast<LPVOID*>(&lpspvSubmitTime)));
-				}
+				auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction));
+				auto lpResLevel1 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpRes);
+				auto lpResLevel2 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpRes);
+				auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
+				auto lpspvSubmitTime = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
+				auto lpspvDeliveryTime = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
 
 				// Check that all our allocations were good before going on
 				if (SUCCEEDED(hRes))
 				{
-					// Zero out allocated memory.
-					ZeroMemory(lpRes, sizeof(SRestriction));
-					ZeroMemory(lpResLevel1, sizeof(SRestriction) * 2);
-					ZeroMemory(lpResLevel2, sizeof(SRestriction) * 2);
-
-					ZeroMemory(lpspvSubject, sizeof(SPropValue));
-					ZeroMemory(lpspvSubmitTime, sizeof(SPropValue));
-					ZeroMemory(lpspvDeliveryTime, sizeof(SPropValue));
-
 					// Root Node
 					lpRes->rt = RES_AND; // We're doing an AND...
 					lpRes->res.resAnd.cRes = 2; // ...of two criteria...
