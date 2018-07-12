@@ -7,6 +7,7 @@
 #include <UI/Controls/SortList/ResData.h>
 #include <UI/Controls/SortList/CommentData.h>
 #include <UI/Controls/SortList/BinaryData.h>
+#include <MAPI/MapiMemory.h>
 
 namespace dialog
 {
@@ -573,12 +574,10 @@ namespace dialog
 		{
 			CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 
-			LPSRestriction lpNewResArray = nullptr;
 			const auto ulNewResCount = GetListCount(0);
 
 			if (ulNewResCount > ULONG_MAX / sizeof(SRestriction)) return;
-			EC_H_S(MAPIAllocateMore(
-				sizeof(SRestriction) * ulNewResCount, m_lpAllocParent, reinterpret_cast<LPVOID*>(&lpNewResArray)));
+			auto lpNewResArray = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * ulNewResCount, m_lpAllocParent);
 			if (lpNewResArray)
 			{
 				for (ULONG i = 0; i < ulNewResCount; i++)
@@ -801,15 +800,12 @@ namespace dialog
 		{
 			CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 
-			LPSPropValue lpNewCommentProp = nullptr;
 			const auto ulNewCommentProp = GetListCount(0);
 
 			if (ulNewCommentProp && ulNewCommentProp < ULONG_MAX / sizeof(SPropValue))
 			{
-				EC_H_S(MAPIAllocateMore(
-					sizeof(SPropValue) * ulNewCommentProp,
-					m_lpAllocParent,
-					reinterpret_cast<LPVOID*>(&lpNewCommentProp)));
+				auto lpNewCommentProp =
+					mapi::allocate<LPSPropValue>(sizeof(SPropValue) * ulNewCommentProp, m_lpAllocParent);
 				if (lpNewCommentProp)
 				{
 					for (ULONG i = 0; i < ulNewCommentProp; i++)
@@ -877,15 +873,9 @@ namespace dialog
 
 			// Set up our output restriction and determine m_lpAllocParent- this will be the basis for all other allocations
 			// Allocate base memory:
-			if (m_lpAllocParent)
+			m_lpOutputRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), m_lpAllocParent);
+			if (!m_lpAllocParent)
 			{
-				EC_H_S(
-					MAPIAllocateMore(sizeof(SRestriction), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
-			}
-			else
-			{
-				EC_H_S(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
-
 				m_lpAllocParent = m_lpOutputRes;
 			}
 
@@ -983,19 +973,16 @@ namespace dialog
 					{
 						// We allocated m_lpOutputRes directly, so we can and should free it before replacing the pointer
 						MAPIFreeBuffer(m_lpOutputRes);
-						EC_H_S(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
-
+						m_lpOutputRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction));
 						m_lpAllocParent = m_lpOutputRes;
 					}
 					else
 					{
 						// If the pointers are different, m_lpOutputRes was allocated with MAPIAllocateMore
 						// Since m_lpOutputRes is owned by m_lpAllocParent, we don't free it directly
-						EC_H_S(MAPIAllocateMore(
-							sizeof(SRestriction), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpOutputRes)));
+						m_lpOutputRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), m_lpAllocParent);
 					}
 
-					memset(m_lpOutputRes, 0, sizeof(SRestriction));
 					m_lpOutputRes->rt = ulNewResType;
 				}
 
@@ -1138,12 +1125,10 @@ namespace dialog
 			{
 				// Got a problem here - the relop or fuzzy level was changed, but not the property
 				// Need to copy the property from the source Res to the output Res
-				hRes = EC_H(MAPIAllocateMore(
-					sizeof(SPropValue),
-					m_lpAllocParent,
-					reinterpret_cast<LPVOID*>(&m_lpOutputRes->res.resContent.lpProp)));
+				m_lpOutputRes->res.resContent.lpProp =
+					mapi::allocate<LPSPropValue>(sizeof(SPropValue), m_lpAllocParent);
 
-				if (SUCCEEDED(hRes))
+				if (m_lpOutputRes->res.resContent.lpProp)
 				{
 					hRes = EC_H(mapi::MyPropCopyMore(
 						m_lpOutputRes->res.resContent.lpProp,
@@ -1271,7 +1256,7 @@ namespace dialog
 			m_lpNewRes = nullptr;
 			m_lpSourceEntryList = lpEntryList;
 
-			EC_H_S(MAPIAllocateBuffer(sizeof(SBinaryArray), reinterpret_cast<LPVOID*>(&m_lpNewEntryList)));
+			m_lpNewEntryList = mapi::allocate<SBinaryArray*>(sizeof(SBinaryArray));
 
 			m_ulNewSearchFlags = NULL;
 
@@ -1446,10 +1431,8 @@ namespace dialog
 			if (m_lpNewEntryList && ulValues < ULONG_MAX / sizeof(SBinary))
 			{
 				m_lpNewEntryList->cValues = ulValues;
-				EC_H_S(MAPIAllocateMore(
-					m_lpNewEntryList->cValues * sizeof(SBinary),
-					m_lpNewEntryList,
-					reinterpret_cast<LPVOID*>(&m_lpNewEntryList->lpbin)));
+				m_lpNewEntryList->lpbin =
+					mapi::allocate<LPSBinary>(m_lpNewEntryList->cValues * sizeof(SBinary), m_lpNewEntryList);
 
 				for (ULONG i = 0; i < m_lpNewEntryList->cValues; i++)
 				{
@@ -1466,10 +1449,8 @@ namespace dialog
 						else
 						{
 							m_lpNewEntryList->lpbin[i].cb = lpData->Binary()->m_OldBin.cb;
-							EC_H_S(MAPIAllocateMore(
-								m_lpNewEntryList->lpbin[i].cb,
-								m_lpNewEntryList,
-								reinterpret_cast<LPVOID*>(&m_lpNewEntryList->lpbin[i].lpb)));
+							m_lpNewEntryList->lpbin[i].lpb =
+								mapi::allocate<LPBYTE>(m_lpNewEntryList->lpbin[i].cb, m_lpNewEntryList);
 
 							memcpy(
 								m_lpNewEntryList->lpbin[i].lpb,
