@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/MAPIFunctions.h>
+#include <MAPI/MapiMemory.h>
 
 namespace controls
 {
@@ -26,10 +27,8 @@ namespace controls
 			auto lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_INSTANCE_KEY);
 			if (lpProp && PR_INSTANCE_KEY == lpProp->ulPropTag)
 			{
-				hRes = EC_H(MAPIAllocateBuffer(
-					static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpInstanceKey)));
-
-				if (SUCCEEDED(hRes))
+				m_lpInstanceKey = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
+				if (m_lpInstanceKey)
 				{
 					EC_H_S(mapi::CopySBinary(m_lpInstanceKey, &lpProp->Value.bin, m_lpInstanceKey));
 				}
@@ -70,9 +69,8 @@ namespace controls
 			lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_ENTRYID);
 			if (lpProp && PR_ENTRYID == lpProp->ulPropTag)
 			{
-				hRes = EC_H(
-					MAPIAllocateBuffer(static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpEntryID)));
-				if (SUCCEEDED(hRes))
+				m_lpEntryID = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
+				if (m_lpEntryID)
 				{
 					EC_H_S(mapi::CopySBinary(m_lpEntryID, &lpProp->Value.bin, m_lpEntryID));
 				}
@@ -82,9 +80,8 @@ namespace controls
 			lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_LONGTERM_ENTRYID_FROM_TABLE);
 			if (lpProp && PR_LONGTERM_ENTRYID_FROM_TABLE == lpProp->ulPropTag)
 			{
-				hRes = EC_H(MAPIAllocateBuffer(
-					static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpLongtermID)));
-				if (SUCCEEDED(hRes))
+				m_lpLongtermID = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
+				if (m_lpLongtermID)
 				{
 					EC_H_S(mapi::CopySBinary(m_lpLongtermID, &lpProp->Value.bin, m_lpLongtermID));
 				}
@@ -95,9 +92,8 @@ namespace controls
 			if (lpProp && PR_SERVICE_UID == lpProp->ulPropTag)
 			{
 				// Allocate some space
-				hRes = EC_H(MAPIAllocateBuffer(
-					static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpServiceUID)));
-				if (SUCCEEDED(hRes))
+				m_lpServiceUID = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
+				if (m_lpServiceUID)
 				{
 					EC_H_S(mapi::CopySBinary(m_lpServiceUID, &lpProp->Value.bin, m_lpServiceUID));
 				}
@@ -108,8 +104,7 @@ namespace controls
 			if (lpProp && PR_PROVIDER_UID == lpProp->ulPropTag)
 			{
 				// Allocate some space
-				hRes = EC_H(MAPIAllocateBuffer(
-					static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpProviderUID)));
+				m_lpProviderUID = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
 				if (SUCCEEDED(hRes))
 				{
 					EC_H_S(mapi::CopySBinary(m_lpProviderUID, &lpProp->Value.bin, m_lpProviderUID));
