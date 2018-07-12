@@ -1303,7 +1303,7 @@ namespace file
 				if (pbData == nullptr) return {};
 
 				auto hRes =
-					EC_B(GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
+					EC_B(::GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
 
 				if (SUCCEEDED(hRes))
 				{
