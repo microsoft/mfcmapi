@@ -6,6 +6,7 @@
 #include <MAPI/ColumnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
+#include <MAPI/MapiMemory.h>
 
 namespace dialog
 {
@@ -130,10 +131,8 @@ namespace dialog
 		if (!iNumItems) return S_OK;
 		if (iNumItems > MAXNewROWLIST) return MAPI_E_INVALID_PARAMETER;
 
-		LPROWLIST lpTempList = nullptr;
-
-		auto hRes = EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems), reinterpret_cast<LPVOID*>(&lpTempList)));
-
+		auto hRes = S_OK;
+		auto lpTempList = mapi::allocate<LPROWLIST>(CbNewROWLIST(iNumItems));
 		if (lpTempList)
 		{
 			lpTempList->cEntries = iNumItems;
@@ -153,11 +152,9 @@ namespace dialog
 					{
 						if (ulFlags & RULE_INCLUDE_ID && ulFlags & RULE_INCLUDE_OTHER)
 						{
-							hRes = EC_H(MAPIAllocateMore(
-								lpData->cSourceProps * sizeof(SPropValue),
-								lpTempList,
-								reinterpret_cast<LPVOID*>(&lpTempList->aEntries[iArrayPos].rgPropVals)));
-							if (SUCCEEDED(hRes) && lpTempList->aEntries[iArrayPos].rgPropVals)
+							lpTempList->aEntries[iArrayPos].rgPropVals =
+								mapi::allocate<LPSPropValue>(lpData->cSourceProps * sizeof(SPropValue), lpTempList);
+							if (lpTempList->aEntries[iArrayPos].rgPropVals)
 							{
 								ULONG ulDst = 0;
 								for (ULONG ulSrc = 0; ulSrc < lpData->cSourceProps; ulSrc++)

@@ -8,6 +8,7 @@
 #include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/MAPIFunctions.h>
+#include <MAPI/MapiMemory.h>
 
 namespace dialog
 {
@@ -105,22 +106,18 @@ namespace dialog
 
 		if (!m_lpMessage || !m_lpContentsTableListCtrl) return;
 
-		LPADRLIST lpAdrList = nullptr;
-
 		const int iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 
 		if (iNumSelected && iNumSelected < MAXNewADRLIST)
 		{
-			EC_H_S(MAPIAllocateBuffer(CbNewADRLIST(iNumSelected), reinterpret_cast<LPVOID*>(&lpAdrList)));
+			auto lpAdrList = mapi::allocate<LPADRLIST>(CbNewADRLIST(iNumSelected));
 			if (lpAdrList)
 			{
-				ZeroMemory(lpAdrList, CbNewADRLIST(iNumSelected));
 				lpAdrList->cEntries = iNumSelected;
 
 				for (auto iSelection = 0; iSelection < iNumSelected; iSelection++)
 				{
-					LPSPropValue lpProp = nullptr;
-					EC_H_S(MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&lpProp)));
+					auto lpProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 					if (lpProp)
 					{
 						lpAdrList->aEntries[iSelection].ulReserved1 = 0;
@@ -181,14 +178,12 @@ namespace dialog
 
 			if (SUCCEEDED(hRes))
 			{
-				hRes =
-					EC_H(MAPIAllocateBuffer(ulSizeProps, reinterpret_cast<LPVOID*>(&adrList.aEntries[0].rgPropVals)));
-			}
-
-			if (SUCCEEDED(hRes))
-			{
-				hRes = EC_MAPI(
-					ScCopyProps(adrList.aEntries[0].cValues, lpProps, adrList.aEntries[0].rgPropVals, &ulSizeProps));
+				adrList.aEntries[0].rgPropVals = mapi::allocate<LPSPropValue>(ulSizeProps);
+				if (adrList.aEntries[0].rgPropVals)
+				{
+					hRes = EC_MAPI(ScCopyProps(
+						adrList.aEntries[0].cValues, lpProps, adrList.aEntries[0].rgPropVals, &ulSizeProps));
+				}
 			}
 
 			if (SUCCEEDED(hRes))
