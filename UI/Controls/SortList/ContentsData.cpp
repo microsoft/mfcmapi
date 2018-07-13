@@ -21,17 +21,11 @@ namespace controls
 
 			if (!lpsRowData) return;
 
-			auto hRes = S_OK;
-
 			// Save the instance key into lpData
 			auto lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_INSTANCE_KEY);
 			if (lpProp && PR_INSTANCE_KEY == lpProp->ulPropTag)
 			{
-				m_lpInstanceKey = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
-				if (m_lpInstanceKey)
-				{
-					EC_H_S(mapi::CopySBinary(m_lpInstanceKey, &lpProp->Value.bin, m_lpInstanceKey));
-				}
+				m_lpInstanceKey = mapi::CopySBinary(&lpProp->Value.bin);
 			}
 
 			// Save the attachment number into lpData
@@ -69,46 +63,28 @@ namespace controls
 			lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_ENTRYID);
 			if (lpProp && PR_ENTRYID == lpProp->ulPropTag)
 			{
-				m_lpEntryID = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
-				if (m_lpEntryID)
-				{
-					EC_H_S(mapi::CopySBinary(m_lpEntryID, &lpProp->Value.bin, m_lpEntryID));
-				}
+				m_lpEntryID = mapi::CopySBinary(&lpProp->Value.bin);
 			}
 
 			// Save the Longterm Entry ID into lpData
 			lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_LONGTERM_ENTRYID_FROM_TABLE);
 			if (lpProp && PR_LONGTERM_ENTRYID_FROM_TABLE == lpProp->ulPropTag)
 			{
-				m_lpLongtermID = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
-				if (m_lpLongtermID)
-				{
-					EC_H_S(mapi::CopySBinary(m_lpLongtermID, &lpProp->Value.bin, m_lpLongtermID));
-				}
+				m_lpLongtermID = mapi::CopySBinary(&lpProp->Value.bin);
 			}
 
 			// Save the Service ID into lpData
 			lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_SERVICE_UID);
 			if (lpProp && PR_SERVICE_UID == lpProp->ulPropTag)
 			{
-				// Allocate some space
-				m_lpServiceUID = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
-				if (m_lpServiceUID)
-				{
-					EC_H_S(mapi::CopySBinary(m_lpServiceUID, &lpProp->Value.bin, m_lpServiceUID));
-				}
+				m_lpServiceUID = mapi::CopySBinary(&lpProp->Value.bin);
 			}
 
 			// Save the Provider ID into lpData
 			lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_PROVIDER_UID);
 			if (lpProp && PR_PROVIDER_UID == lpProp->ulPropTag)
 			{
-				// Allocate some space
-				m_lpProviderUID = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
-				if (SUCCEEDED(hRes))
-				{
-					EC_H_S(mapi::CopySBinary(m_lpProviderUID, &lpProp->Value.bin, m_lpProviderUID));
-				}
+				m_lpProviderUID = mapi::CopySBinary(&lpProp->Value.bin);
 			}
 
 			// Save the DisplayName into lpData

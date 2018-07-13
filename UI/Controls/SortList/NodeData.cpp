@@ -16,24 +16,15 @@ namespace controls
 			: m_lpEntryID(nullptr), m_lpInstanceKey(nullptr), m_lpHierarchyTable(nullptr), m_lpAdviseSink(nullptr),
 			  m_ulAdviseConnection(0)
 		{
-			auto hRes = S_OK;
 			if (lpEntryID)
 			{
-				m_lpEntryID = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
-				if (m_lpEntryID)
-				{
-					// Copy the data over
-					hRes = WC_H(mapi::CopySBinary(m_lpEntryID, lpEntryID, nullptr));
-				}
+				// Copy the data over
+				m_lpEntryID = mapi::CopySBinary(lpEntryID);
 			}
 
 			if (lpInstanceKey)
 			{
-				m_lpInstanceKey = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
-				if (m_lpInstanceKey)
-				{
-					hRes = WC_H(mapi::CopySBinary(m_lpInstanceKey, lpInstanceKey, nullptr));
-				}
+				m_lpInstanceKey = mapi::CopySBinary(lpInstanceKey);
 			}
 
 			m_cSubfolders = -1;

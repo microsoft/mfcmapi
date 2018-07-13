@@ -572,15 +572,7 @@ namespace mapiprocessor
 	{
 		FolderNode newNode;
 		newNode.szFolderOffsetPath = szFolderOffsetPath;
-		newNode.lpFolderEID = nullptr;
-		if (lpFolderEID)
-		{
-			newNode.lpFolderEID = mapi::allocate<LPSBinary>(sizeof(SBinary));
-			if (newNode.lpFolderEID)
-			{
-				WC_H_S(mapi::CopySBinary(newNode.lpFolderEID, lpFolderEID, nullptr));
-			}
-		}
+		newNode.lpFolderEID = mapi::CopySBinary(lpFolderEID);
 
 		m_List.push_back(newNode);
 	}

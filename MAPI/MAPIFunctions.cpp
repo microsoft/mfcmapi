@@ -612,11 +612,9 @@ namespace mapi
 	// lpParent - Pointer to parent object (not, however, pointer to pointer!)
 	//
 	// Purpose
-	// Allocates a new SBinary and copies psbSrc into it
+	// Copies psbSrc into an existing SBinary
 	_Check_return_ HRESULT CopySBinary(_Out_ LPSBinary psbDest, _In_ const _SBinary* psbSrc, _In_ LPVOID lpParent)
 	{
-		auto hRes = S_OK;
-
 		if (!psbDest || !psbSrc) return MAPI_E_INVALID_PARAMETER;
 
 		psbDest->cb = psbSrc->cb;
@@ -628,7 +626,19 @@ namespace mapi
 			if (psbDest->lpb) CopyMemory(psbDest->lpb, psbSrc->lpb, psbSrc->cb);
 		}
 
-		return hRes;
+		return S_OK;
+	}
+
+	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* source)
+	{
+		if (!source) return nullptr;
+		auto binary = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
+		if (binary)
+		{
+			EC_H_S(mapi::CopySBinary(binary, source, binary));
+		}
+
+		return binary;
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
