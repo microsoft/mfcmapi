@@ -9,6 +9,7 @@
 #include <Interpret/Guids.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #include <IO/File.h>
+#include <MAPI/MapiMemory.h>
 #ifndef MRMAPI
 #include <UI/Dialogs/Editors/DbgView.h>
 #endif
@@ -879,9 +880,8 @@ namespace output
 
 		// Copy the list before we sort it or else we affect the caller
 		// Don't worry about linked memory - we just need to sort the index
-		LPSPropValue lpSortedProps = nullptr;
 		const auto cbProps = cProps * sizeof(SPropValue);
-		MAPIAllocateBuffer(static_cast<ULONG>(cbProps), reinterpret_cast<LPVOID*>(&lpSortedProps));
+		auto lpSortedProps = mapi::allocate<LPSPropValue>(static_cast<ULONG>(cbProps));
 
 		if (lpSortedProps)
 		{

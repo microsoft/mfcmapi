@@ -3,6 +3,7 @@
 #include <StdAfx.h>
 #include <MAPI/MAPIABFunctions.h>
 #include <MAPI/MAPIFunctions.h>
+#include <MAPI/MapiMemory.h>
 
 namespace mapi
 {
@@ -10,29 +11,19 @@ namespace mapi
 	{
 		_Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIST* lpAdrList)
 		{
-			if (!lpAdrList || ulNumProps > ULONG_MAX / sizeof(SPropValue)) return MAPI_E_INVALID_PARAMETER;
-			LPADRLIST lpLocalAdrList = nullptr;
-
+			if (!lpAdrList) return MAPI_E_INVALID_PARAMETER;
 			*lpAdrList = nullptr;
+			if (ulNumProps > ULONG_MAX / sizeof(SPropValue)) return MAPI_E_INVALID_PARAMETER;
 
 			// Allocate memory for new SRowSet structure.
-			auto hRes = EC_H(MAPIAllocateBuffer(CbNewSRowSet(1), reinterpret_cast<LPVOID*>(&lpLocalAdrList)));
-
+			auto lpLocalAdrList = mapi::allocate<LPADRLIST>(CbNewSRowSet(1));
 			if (lpLocalAdrList)
 			{
-				// Zero out allocated memory.
-				ZeroMemory(lpLocalAdrList, CbNewSRowSet(1));
-
 				// Allocate memory for SPropValue structure that indicates what
 				// recipient properties will be set.
-				hRes = EC_H(MAPIAllocateBuffer(
-					ulNumProps * sizeof(SPropValue),
-					reinterpret_cast<LPVOID*>(&lpLocalAdrList->aEntries[0].rgPropVals)));
+				lpLocalAdrList->aEntries[0].rgPropVals = mapi::allocate<LPSPropValue>(ulNumProps * sizeof(SPropValue));
 
-				// Zero out allocated memory.
 				if (lpLocalAdrList->aEntries[0].rgPropVals)
-					ZeroMemory(lpLocalAdrList->aEntries[0].rgPropVals, ulNumProps * sizeof(SPropValue));
-				if (SUCCEEDED(hRes))
 				{
 					*lpAdrList = lpLocalAdrList;
 				}
@@ -42,7 +33,7 @@ namespace mapi
 				}
 			}
 
-			return hRes;
+			return S_OK;
 		}
 
 		_Check_return_ HRESULT AddOneOffAddress(
@@ -213,31 +204,12 @@ namespace mapi
 
 			// Allocate and create our SRestriction
 			// Allocate base memory:
-			if (lpParent)
-			{
-				hRes = EC_H(MAPIAllocateMore(sizeof(SRestriction), lpParent, reinterpret_cast<LPVOID*>(&lpRes)));
-
-				lpAllocationParent = lpParent;
-			}
-			else
-			{
-				hRes = EC_H(MAPIAllocateBuffer(sizeof(SRestriction), reinterpret_cast<LPVOID*>(&lpRes)));
-
-				lpAllocationParent = lpRes;
-			}
-
-			if (SUCCEEDED(hRes))
-			{
-				hRes = EC_H(
-					MAPIAllocateMore(sizeof(SPropValue), lpAllocationParent, reinterpret_cast<LPVOID*>(&lpspvSubject)));
-			}
+			lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpParent);
+			lpAllocationParent = lpParent ? lpParent : lpRes;
+			lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
 
 			if (lpRes && lpspvSubject)
 			{
-				// Zero out allocated memory.
-				ZeroMemory(lpRes, sizeof(SRestriction));
-				ZeroMemory(lpspvSubject, sizeof(SPropValue));
-
 				// Root Node
 				lpRes->rt = RES_PROPERTY;
 				lpRes->res.resProperty.relop = RELOP_EQ;
@@ -410,24 +382,20 @@ namespace mapi
 								if (!lpFoundRow) continue;
 
 								if (lpAdrList) FreePadrlist(lpAdrList);
-								lpAdrList = nullptr;
 								// Allocate memory for new Address List structure.
-								hRes = EC_H(MAPIAllocateBuffer(CbNewADRLIST(1), reinterpret_cast<LPVOID*>(&lpAdrList)));
+								lpAdrList = mapi::allocate<LPADRLIST>(CbNewADRLIST(1));
 								if (!lpAdrList) continue;
 
-								ZeroMemory(lpAdrList, CbNewADRLIST(1));
 								lpAdrList->cEntries = 1;
 								// Allocate memory for SPropValue structure that indicates what
 								// recipient properties will be set. To resolve a name that
 								// already exists in the Address book, this will always be 1.
 
-								hRes = EC_H(MAPIAllocateBuffer(
-									static_cast<ULONG>(abNUM_COLS * sizeof(SPropValue)),
-									reinterpret_cast<LPVOID*>(&lpAdrList->aEntries->rgPropVals)));
+								lpAdrList->aEntries->rgPropVals =
+									mapi::allocate<LPSPropValue>(static_cast<ULONG>(abNUM_COLS * sizeof(SPropValue)));
 								if (!lpAdrList->aEntries->rgPropVals) continue;
 
-								// TODO: We are setting 5 properties below. If this changes, modify these two lines.
-								ZeroMemory(lpAdrList->aEntries->rgPropVals, 5 * sizeof(SPropValue));
+								// We are setting 5 properties below. If this changes, modify these two lines.
 								lpAdrList->aEntries->cValues = 5;
 
 								// Fill out addresslist with required property values.

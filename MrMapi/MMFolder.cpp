@@ -6,6 +6,7 @@
 #include <Interpret/InterpretProp.h>
 #include <MrMapi/MMStore.h>
 #include <Interpret/String.h>
+#include <MAPI/MapiMemory.h>
 
 // Search folder for entry ID of child folder by name.
 HRESULT HrMAPIFindFolderW(
@@ -48,8 +49,8 @@ HRESULT HrMAPIFindFolderW(
 				_wcsicmp(lpRowProp[ePR_DISPLAY_NAME_W].Value.lpszW, lpszName.c_str()) == 0 &&
 				PR_ENTRYID == lpRowProp[ePR_ENTRYID].ulPropTag)
 			{
-				hRes = WC_H(MAPIAllocateBuffer(lpRowProp[ePR_ENTRYID].Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
-				if (SUCCEEDED(hRes) && lppeid)
+				*lppeid = mapi::allocate<LPENTRYID>(lpRowProp[ePR_ENTRYID].Value.bin.cb);
+				if (*lppeid)
 				{
 					*lpcbeid = lpRowProp[ePR_ENTRYID].Value.bin.cb;
 					CopyMemory(*lppeid, lpRowProp[ePR_ENTRYID].Value.bin.lpb, *lpcbeid);
@@ -196,8 +197,8 @@ static HRESULT HrLookupRootFolderW(
 		hRes = WC_MAPI(lpMDB->GetProps(&rgPropTag, MAPI_UNICODE, &cValues, &lpPropValue));
 		if (SUCCEEDED(hRes) && lpPropValue && lpPropValue->ulPropTag == ulPropTag)
 		{
-			hRes = WC_H(MAPIAllocateBuffer(lpPropValue->Value.bin.cb, reinterpret_cast<LPVOID*>(lppeid)));
-			if (SUCCEEDED(hRes))
+			*lppeid = mapi::allocate<LPENTRYID>(lpPropValue->Value.bin.cb);
+			if (*lppeid)
 			{
 				*lpcbeid = lpPropValue->Value.bin.cb;
 				CopyMemory(*lppeid, lpPropValue->Value.bin.lpb, *lpcbeid);

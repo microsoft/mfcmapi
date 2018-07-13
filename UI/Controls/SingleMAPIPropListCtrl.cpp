@@ -25,6 +25,7 @@
 #include <UI/Dialogs/Editors/PropertyEditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <MAPI/Cache/MapiObjects.h>
+#include <MAPI/MapiMemory.h>
 
 namespace controls
 {
@@ -402,12 +403,10 @@ namespace controls
 								}
 							}
 
-							// Allocate our tag array
-							LPSPropTagArray lpTag = nullptr;
 							if (ulNamedProps)
 							{
-								hRes = EC_H(MAPIAllocateBuffer(
-									CbNewSPropTagArray(ulNamedProps), reinterpret_cast<LPVOID*>(&lpTag)));
+								// Allocate our tag array
+								auto lpTag = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(ulNamedProps));
 								if (lpTag)
 								{
 									// Populate the array

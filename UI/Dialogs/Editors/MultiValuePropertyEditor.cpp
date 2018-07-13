@@ -5,6 +5,7 @@
 #include <UI/Controls/SortList/MVPropData.h>
 #include <UI/Dialogs/Editors/PropertyEditor.h>
 #include <Interpret/InterpretProp.h>
+#include <MAPI/MapiMemory.h>
 
 namespace dialog
 {
@@ -144,14 +145,9 @@ namespace dialog
 			// Take care of allocations first
 			if (!m_lpsOutputValue)
 			{
-				if (m_lpAllocParent)
+				m_lpsOutputValue = mapi::allocate<LPSPropValue>(sizeof(SPropValue), m_lpAllocParent);
+				if (!m_lpAllocParent)
 				{
-					EC_H_S(MAPIAllocateMore(
-						sizeof(SPropValue), m_lpAllocParent, reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
-				}
-				else
-				{
-					EC_H_S(MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
 					m_lpAllocParent = m_lpsOutputValue;
 				}
 			}
@@ -177,63 +173,51 @@ namespace dialog
 			switch (PROP_TYPE(lpsProp->ulPropTag))
 			{
 			case PT_MV_I2:
-				EC_H_S(MAPIAllocateMore(
-					sizeof(short int) * ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVi.lpi)));
+				lpsProp->Value.MVi.lpi = mapi::allocate<short int*>(sizeof(short int) * ulNumVals, lpParent);
 				lpsProp->Value.MVi.cValues = ulNumVals;
 				break;
 			case PT_MV_LONG:
-				EC_H_S(MAPIAllocateMore(
-					sizeof(LONG) * ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVl.lpl)));
+				lpsProp->Value.MVl.lpl = mapi::allocate<LONG*>(sizeof(LONG) * ulNumVals, lpParent);
 				lpsProp->Value.MVl.cValues = ulNumVals;
 				break;
 			case PT_MV_DOUBLE:
-				EC_H_S(MAPIAllocateMore(
-					sizeof(double) * ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVdbl.lpdbl)));
+				lpsProp->Value.MVdbl.lpdbl = mapi::allocate<double*>(sizeof(double) * ulNumVals, lpParent);
 				lpsProp->Value.MVdbl.cValues = ulNumVals;
 				break;
 			case PT_MV_CURRENCY:
-				EC_H_S(MAPIAllocateMore(
-					sizeof(CURRENCY) * ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVcur.lpcur)));
+				lpsProp->Value.MVcur.lpcur = mapi::allocate<CURRENCY*>(sizeof(CURRENCY) * ulNumVals, lpParent);
 				lpsProp->Value.MVcur.cValues = ulNumVals;
 				break;
 			case PT_MV_APPTIME:
-				EC_H_S(MAPIAllocateMore(
-					sizeof(double) * ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVat.lpat)));
+				lpsProp->Value.MVat.lpat = mapi::allocate<double*>(sizeof(double) * ulNumVals, lpParent);
 				lpsProp->Value.MVat.cValues = ulNumVals;
 				break;
 			case PT_MV_SYSTIME:
-				EC_H_S(MAPIAllocateMore(
-					sizeof(FILETIME) * ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVft.lpft)));
+				lpsProp->Value.MVft.lpft = mapi::allocate<FILETIME*>(sizeof(FILETIME) * ulNumVals, lpParent);
 				lpsProp->Value.MVft.cValues = ulNumVals;
 				break;
 			case PT_MV_I8:
-				EC_H_S(MAPIAllocateMore(
-					sizeof(LARGE_INTEGER) * ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVli.lpli)));
+				lpsProp->Value.MVli.lpli = mapi::allocate<LARGE_INTEGER*>(sizeof(LARGE_INTEGER) * ulNumVals, lpParent);
 				lpsProp->Value.MVli.cValues = ulNumVals;
 				break;
 			case PT_MV_R4:
-				EC_H_S(MAPIAllocateMore(
-					sizeof(float) * ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVflt.lpflt)));
+				lpsProp->Value.MVflt.lpflt = mapi::allocate<float*>(sizeof(float) * ulNumVals, lpParent);
 				lpsProp->Value.MVflt.cValues = ulNumVals;
 				break;
 			case PT_MV_STRING8:
-				EC_H_S(MAPIAllocateMore(
-					sizeof(LPSTR) * ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVszA.lppszA)));
+				lpsProp->Value.MVszA.lppszA = mapi::allocate<LPSTR*>(sizeof(LPSTR) * ulNumVals, lpParent);
 				lpsProp->Value.MVszA.cValues = ulNumVals;
 				break;
 			case PT_MV_UNICODE:
-				EC_H_S(MAPIAllocateMore(
-					sizeof(LPWSTR) * ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVszW.lppszW)));
+				lpsProp->Value.MVszW.lppszW = mapi::allocate<LPWSTR*>(sizeof(LPWSTR) * ulNumVals, lpParent);
 				lpsProp->Value.MVszW.cValues = ulNumVals;
 				break;
 			case PT_MV_BINARY:
-				EC_H_S(MAPIAllocateMore(
-					sizeof(SBinary) * ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVbin.lpbin)));
+				lpsProp->Value.MVbin.lpbin = mapi::allocate<SBinary*>(sizeof(SBinary) * ulNumVals, lpParent);
 				lpsProp->Value.MVbin.cValues = ulNumVals;
 				break;
 			case PT_MV_CLSID:
-				EC_H_S(MAPIAllocateMore(
-					sizeof(GUID) * ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVguid.lpguid)));
+				lpsProp->Value.MVguid.lpguid = mapi::allocate<GUID*>(sizeof(GUID) * ulNumVals, lpParent);
 				lpsProp->Value.MVguid.cValues = ulNumVals;
 				break;
 			default:
@@ -390,8 +374,7 @@ namespace dialog
 			auto lpPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
 			if (lpPane)
 			{
-				LPSPropValue lpsProp = nullptr;
-				EC_H_S(MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&lpsProp)));
+				auto lpsProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 				if (lpsProp)
 				{
 					WriteMultiValueStringsToSPropValue(static_cast<LPVOID>(lpsProp), lpsProp);

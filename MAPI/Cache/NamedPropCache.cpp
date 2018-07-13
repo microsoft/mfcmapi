@@ -2,6 +2,7 @@
 #include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/Guids.h>
+#include <MAPI/MapiMemory.h>
 
 namespace cache
 {
@@ -23,7 +24,7 @@ namespace cache
 		{
 			if (lpMAPIParent)
 			{
-				MAPIAllocateMore(sizeof(GUID), lpMAPIParent, reinterpret_cast<LPVOID*>(&dst.lpguid));
+				dst.lpguid = mapi::allocate<LPGUID>(sizeof(GUID), lpMAPIParent);
 			}
 			else
 				dst.lpguid = new GUID;
@@ -64,8 +65,7 @@ namespace cache
 
 				if (lpMAPIParent)
 				{
-					MAPIAllocateMore(
-						static_cast<ULONG>(cbName), lpMAPIParent, reinterpret_cast<LPVOID*>(&dst.Kind.lpwstrName));
+					dst.Kind.lpwstrName = mapi::allocate<LPWSTR>(static_cast<ULONG>(cbName), lpMAPIParent);
 				}
 				else
 					dst.Kind.lpwstrName = LPWSTR(new BYTE[cbName]);
@@ -267,16 +267,12 @@ namespace cache
 		// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 		// If we reach the end of the cache and don't have everything, we set up to make a GetNamesFromIDs call.
 
+		auto hRes = S_OK;
 		const auto lpPropTags = *lppPropTags;
 		// First, allocate our results using MAPI
-		LPMAPINAMEID* lppNameIDs = nullptr;
-		auto hRes =
-			EC_H(MAPIAllocateBuffer(sizeof(MAPINAMEID*) * lpPropTags->cValues, reinterpret_cast<LPVOID*>(&lppNameIDs)));
-
+		auto lppNameIDs = mapi::allocate<LPMAPINAMEID*>(sizeof(MAPINAMEID*) * lpPropTags->cValues);
 		if (lppNameIDs)
 		{
-			memset(lppNameIDs, 0, sizeof(MAPINAMEID*) * lpPropTags->cValues);
-
 			// Assume we'll miss on everything
 			auto ulMisses = lpPropTags->cValues;
 
@@ -299,12 +295,9 @@ namespace cache
 			// Go to MAPI with whatever's left. We set up for a single call to GetNamesFromIDs.
 			if (0 != ulMisses)
 			{
-				LPSPropTagArray lpUncachedTags = nullptr;
-				hRes =
-					EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(ulMisses), reinterpret_cast<LPVOID*>(&lpUncachedTags)));
+				auto lpUncachedTags = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(ulMisses));
 				if (lpUncachedTags)
 				{
-					memset(lpUncachedTags, 0, CbNewSPropTagArray(ulMisses));
 					lpUncachedTags->cValues = ulMisses;
 					ULONG ulUncachedTag = NULL;
 					for (ULONG ulTarget = 0; ulTarget < lpPropTags->cValues; ulTarget++)
@@ -338,10 +331,7 @@ namespace cache
 								// copy the next result into it
 								if (lppUncachedPropNames[ulUncachedTag])
 								{
-									LPMAPINAMEID lpNameID = nullptr;
-
-									hRes = EC_H(MAPIAllocateMore(
-										sizeof(MAPINAMEID), lppNameIDs, reinterpret_cast<LPVOID*>(&lpNameID)));
+									auto lpNameID = mapi::allocate<LPMAPINAMEID>(sizeof(MAPINAMEID), lppNameIDs);
 									if (lpNameID)
 									{
 										CopyCacheData(*lppUncachedPropNames[ulUncachedTag], *lpNameID, lppNameIDs);
@@ -455,12 +445,10 @@ namespace cache
 		// If we reach the end of the cache and don't have everything, we set up to make a GetIDsFromNames call.
 
 		// First, allocate our results using MAPI
-		LPSPropTagArray lpPropTags = nullptr;
-		auto hRes = EC_H(MAPIAllocateBuffer(CbNewSPropTagArray(cPropNames), reinterpret_cast<LPVOID*>(&lpPropTags)));
-
+		auto hRes = S_OK;
+		auto lpPropTags = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(cPropNames));
 		if (lpPropTags)
 		{
-			memset(lpPropTags, 0, CbNewSPropTagArray(cPropNames));
 			lpPropTags->cValues = cPropNames;
 
 			// Assume we'll miss on everything
@@ -491,12 +479,9 @@ namespace cache
 			// Go to MAPI with whatever's left. We set up for a single call to GetIDsFromNames.
 			if (0 != ulMisses)
 			{
-				LPMAPINAMEID* lppUncachedPropNames = nullptr;
-				hRes = EC_H(MAPIAllocateBuffer(
-					sizeof(LPMAPINAMEID) * ulMisses, reinterpret_cast<LPVOID*>(&lppUncachedPropNames)));
+				auto lppUncachedPropNames = mapi::allocate<LPMAPINAMEID*>(sizeof(LPMAPINAMEID) * ulMisses);
 				if (lppUncachedPropNames)
 				{
-					memset(lppUncachedPropNames, 0, sizeof(LPMAPINAMEID) * ulMisses);
 					ULONG ulUncachedName = NULL;
 					for (ULONG ulTarget = 0; ulTarget < cPropNames; ulTarget++)
 					{

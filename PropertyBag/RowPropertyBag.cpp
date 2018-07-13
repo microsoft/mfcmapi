@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <PropertyBag/RowPropertyBag.h>
 #include <MAPI/MAPIFunctions.h>
+#include <MAPI/MapiMemory.h>
 
 namespace propertybag
 {
@@ -133,10 +134,8 @@ namespace propertybag
 		if (ulNewArraySize)
 		{
 			// Allocate the base array - MyPropCopyMore will allocmore as needed for string/bin/etc
-			hRes =
-				EC_H(MAPIAllocateBuffer(ulNewArraySize * sizeof(SPropValue), reinterpret_cast<LPVOID*>(&lpNewArray)));
-
-			if (SUCCEEDED(hRes) && lpNewArray)
+			lpNewArray = mapi::allocate<LPSPropValue>(ulNewArraySize * sizeof(SPropValue));
+			if (lpNewArray)
 			{
 				if (ulVal1)
 				{

@@ -117,6 +117,7 @@
     </ClInclude>
     <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
+    <ClInclude Include="MAPI\MapiMemory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">

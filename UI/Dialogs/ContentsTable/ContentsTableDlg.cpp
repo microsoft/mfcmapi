@@ -11,6 +11,7 @@
 #include <UI/Dialogs/Editors/RestrictEditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <UI/Dialogs/Editors/SearchEditor.h>
+#include <MAPI/MapiMemory.h>
 
 namespace dialog
 {
@@ -414,10 +415,7 @@ namespace dialog
 			return;
 		}
 
-		LPSSortOrderSet lpMySortOrders = nullptr;
-
-		EC_H_S(MAPIAllocateBuffer(CbNewSSortOrderSet(cSorts), reinterpret_cast<LPVOID*>(&lpMySortOrders)));
-
+		auto lpMySortOrders = mapi::allocate<LPSSortOrderSet>(CbNewSSortOrderSet(cSorts));
 		if (lpMySortOrders)
 		{
 			lpMySortOrders->cSorts = cSorts;

@@ -2,6 +2,7 @@
 #include <UI/Controls/SortList/NodeData.h>
 #include <MAPI/AdviseSink.h>
 #include <MAPI/MAPIFunctions.h>
+#include <MAPI/MapiMemory.h>
 
 namespace controls
 {
@@ -15,27 +16,15 @@ namespace controls
 			: m_lpEntryID(nullptr), m_lpInstanceKey(nullptr), m_lpHierarchyTable(nullptr), m_lpAdviseSink(nullptr),
 			  m_ulAdviseConnection(0)
 		{
-			auto hRes = S_OK;
 			if (lpEntryID)
 			{
-				hRes = WC_H(
-					MAPIAllocateBuffer(static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpEntryID)));
-
-				if (SUCCEEDED(hRes))
-				{
-					// Copy the data over
-					hRes = WC_H(mapi::CopySBinary(m_lpEntryID, lpEntryID, nullptr));
-				}
+				// Copy the data over
+				m_lpEntryID = mapi::CopySBinary(lpEntryID);
 			}
 
 			if (lpInstanceKey)
 			{
-				hRes = WC_H(MAPIAllocateBuffer(
-					static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&m_lpInstanceKey)));
-				if (SUCCEEDED(hRes))
-				{
-					hRes = WC_H(mapi::CopySBinary(m_lpInstanceKey, lpInstanceKey, nullptr));
-				}
+				m_lpInstanceKey = mapi::CopySBinary(lpInstanceKey);
 			}
 
 			m_cSubfolders = -1;

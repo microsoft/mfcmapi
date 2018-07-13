@@ -3,6 +3,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/ColumnTags.h>
+#include <MAPI/MapiMemory.h>
 
 namespace mapiprocessor
 {
@@ -571,16 +572,7 @@ namespace mapiprocessor
 	{
 		FolderNode newNode;
 		newNode.szFolderOffsetPath = szFolderOffsetPath;
-		newNode.lpFolderEID = nullptr;
-		if (lpFolderEID)
-		{
-			auto hRes = WC_H(MAPIAllocateBuffer(
-				static_cast<ULONG>(sizeof(SBinary)), reinterpret_cast<LPVOID*>(&newNode.lpFolderEID)));
-			if (SUCCEEDED(hRes))
-			{
-				hRes = WC_H(mapi::CopySBinary(newNode.lpFolderEID, lpFolderEID, nullptr));
-			}
-		}
+		newNode.lpFolderEID = mapi::CopySBinary(lpFolderEID);
 
 		m_List.push_back(newNode);
 	}

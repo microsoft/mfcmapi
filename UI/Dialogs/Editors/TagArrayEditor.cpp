@@ -4,6 +4,7 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <UI/Controls/SortList/PropListData.h>
 #include <MAPI/Cache/NamedPropCache.h>
+#include <MAPI/MapiMemory.h>
 
 namespace dialog
 {
@@ -166,7 +167,7 @@ namespace dialog
 			if (!IsDirty(ulListNum)) return;
 
 			const auto ulListCount = GetListCount(ulListNum);
-			EC_H_S(MAPIAllocateBuffer(CbNewSPropTagArray(ulListCount), reinterpret_cast<LPVOID*>(&m_lpOutputTagArray)));
+			m_lpOutputTagArray = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(ulListCount));
 			if (m_lpOutputTagArray)
 			{
 				m_lpOutputTagArray->cValues = ulListCount;

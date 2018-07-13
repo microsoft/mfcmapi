@@ -8,6 +8,7 @@
 #include <MAPI/ColumnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <Interpret/InterpretProp.h>
+#include <MAPI/MapiMemory.h>
 
 namespace dialog
 {
@@ -126,10 +127,7 @@ namespace dialog
 			return;
 		}
 
-		LPROWLIST lpNewItem = nullptr;
-
-		EC_H_S(MAPIAllocateBuffer(CbNewROWLIST(1), reinterpret_cast<LPVOID*>(&lpNewItem)));
-
+		auto lpNewItem = mapi::allocate<LPROWLIST>(CbNewROWLIST(1));
 		if (lpNewItem)
 		{
 			lpNewItem->cEntries = 1;
@@ -137,9 +135,7 @@ namespace dialog
 			lpNewItem->aEntries[0].cValues = 2;
 			lpNewItem->aEntries[0].rgPropVals = nullptr;
 
-			EC_H_S(MAPIAllocateMore(
-				2 * sizeof(SPropValue), lpNewItem, reinterpret_cast<LPVOID*>(&lpNewItem->aEntries[0].rgPropVals)));
-
+			lpNewItem->aEntries[0].rgPropVals = mapi::allocate<LPSPropValue>(2 * sizeof(SPropValue), lpNewItem);
 			if (lpNewItem->aEntries[0].rgPropVals)
 			{
 				LPENTRYID lpEntryID = nullptr;
@@ -203,10 +199,7 @@ namespace dialog
 		if (!iNumItems) return S_OK;
 		if (iNumItems > MAXNewROWLIST) return MAPI_E_INVALID_PARAMETER;
 
-		LPROWLIST lpTempList = nullptr;
-
-		auto hRes = EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems), reinterpret_cast<LPVOID*>(&lpTempList)));
-
+		auto lpTempList = mapi::allocate<LPROWLIST>(CbNewROWLIST(iNumItems));
 		if (lpTempList)
 		{
 			lpTempList->cEntries = iNumItems;
@@ -226,11 +219,8 @@ namespace dialog
 					{
 						if (ulFlags & ACL_INCLUDE_ID && ulFlags & ACL_INCLUDE_OTHER)
 						{
-							hRes = EC_H(MAPIAllocateMore(
-								2 * sizeof(SPropValue),
-								lpTempList,
-								reinterpret_cast<LPVOID*>(&lpTempList->aEntries[iArrayPos].rgPropVals)));
-
+							lpTempList->aEntries[iArrayPos].rgPropVals =
+								mapi::allocate<LPSPropValue>(2 * sizeof(SPropValue), lpTempList);
 							lpTempList->aEntries[iArrayPos].cValues = 2;
 
 							auto lpSPropValue =
@@ -256,7 +246,7 @@ namespace dialog
 		}
 
 		*lppRowList = lpTempList;
-		return hRes;
+		return S_OK;
 	}
 
 	void CAclDlg::HandleAddInMenuSingle(
