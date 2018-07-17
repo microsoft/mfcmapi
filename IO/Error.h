@@ -334,7 +334,7 @@ namespace error
 		const auto __hRes = (fnx); \
 		if (__hRes == MAPI_E_USER_CANCEL || __hRes == MAPI_E_CANCEL) \
 		{ \
-			error::LogFunctionCall(__hRes, NULL, true, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
+			error::LogFunctionCall(__hRes, NULL, false, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
 			return S_OK; \
 		} \
 		else \
@@ -351,7 +351,7 @@ namespace error
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
 		if (__hRes == MAPI_E_USER_CANCEL || __hRes == MAPI_E_CANCEL) \
-			error::LogFunctionCall(__hRes, NULL, true, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
+			error::LogFunctionCall(__hRes, NULL, false, true, false, IDS_USERCANCELLED, #fnx, __FILE__, __LINE__); \
 		else \
 			error::LogFunctionCall(__hRes, NULL, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
