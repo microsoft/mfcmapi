@@ -93,12 +93,11 @@ namespace mapi
 #else
 #define CopyString CopyStringA
 #endif
-	_Check_return_ HRESULT CreatePropertyStringRestriction(
+	_Check_return_ LPSRestriction CreatePropertyStringRestriction(
 		ULONG ulPropTag,
 		_In_ const std::wstring& szString,
 		ULONG ulFuzzyLevel,
-		_In_opt_ LPVOID lpParent,
-		_Deref_out_opt_ LPSRestriction* lppRes);
+		_In_opt_ LPVOID parent);
 	_Check_return_ HRESULT CreateRangeRestriction(
 		ULONG ulPropTag,
 		_In_ const std::wstring& szString,
