@@ -65,19 +65,12 @@ namespace dialog
 
 		_Check_return_ const SRestriction* CSearchEditor::GetRestriction() const
 		{
-			LPSRestriction lpRes = nullptr;
 			// Allocate and create our SRestriction
-			auto hRes = WC_H(mapi::CreatePropertyStringRestriction(
+			auto lpRes = mapi::CreatePropertyStringRestriction(
 				CHANGE_PROP_TYPE(m_ulPropTag, PT_UNICODE),
 				GetStringW(CSearchEditor::SearchFields::SEARCHTERM),
 				m_ulFuzzyLevel,
-				nullptr,
-				&lpRes));
-			if (S_OK != hRes)
-			{
-				MAPIFreeBuffer(lpRes);
-				lpRes = nullptr;
-			}
+				nullptr);
 
 			return lpRes;
 		}

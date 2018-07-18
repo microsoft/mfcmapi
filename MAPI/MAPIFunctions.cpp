@@ -704,63 +704,52 @@ namespace mapi
 	// Allocates and creates a restriction that looks for existence of
 	// a particular property that matches the given string
 	// If lpParent is passed in, it is used as the allocation parent.
-	_Check_return_ HRESULT CreatePropertyStringRestriction(
+	_Check_return_ LPSRestriction CreatePropertyStringRestriction(
 		ULONG ulPropTag,
 		_In_ const std::wstring& szString,
 		ULONG ulFuzzyLevel,
-		_In_opt_ LPVOID lpParent,
-		_Deref_out_opt_ LPSRestriction* lppRes)
+		_In_opt_ LPVOID parent)
 	{
-		if (PROP_TYPE(ulPropTag) != PT_UNICODE) return MAPI_E_INVALID_PARAMETER;
-
-		auto hRes = S_OK;
-
-		*lppRes = nullptr;
-
-		if (szString.empty()) return MAPI_E_INVALID_PARAMETER;
+		if (PROP_TYPE(ulPropTag) != PT_UNICODE) return nullptr;
+		if (szString.empty()) return nullptr;
 
 		// Allocate and create our SRestriction
 		// Allocate base memory:
-		auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpParent);
-		auto lpAllocationParent = lpParent ? lpParent : lpRes;
-		auto lpResLevel1 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpAllocationParent);
-		auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
-
-		if (lpRes && lpResLevel1 && lpspvSubject)
+		auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), parent);
+		if (lpRes)
 		{
+			auto lpAllocationParent = parent ? parent : lpRes;
+
 			// Root Node
 			lpRes->rt = RES_AND;
 			lpRes->res.resAnd.cRes = 2;
+			auto lpResLevel1 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpAllocationParent);
 			lpRes->res.resAnd.lpRes = lpResLevel1;
+			if (lpResLevel1)
+			{
+				lpResLevel1[0].rt = RES_EXIST;
+				lpResLevel1[0].res.resExist.ulPropTag = ulPropTag;
+				lpResLevel1[0].res.resExist.ulReserved1 = 0;
+				lpResLevel1[0].res.resExist.ulReserved2 = 0;
 
-			lpResLevel1[0].rt = RES_EXIST;
-			lpResLevel1[0].res.resExist.ulPropTag = ulPropTag;
-			lpResLevel1[0].res.resExist.ulReserved1 = 0;
-			lpResLevel1[0].res.resExist.ulReserved2 = 0;
+				lpResLevel1[1].rt = RES_CONTENT;
+				lpResLevel1[1].res.resContent.ulPropTag = ulPropTag;
+				lpResLevel1[1].res.resContent.ulFuzzyLevel = ulFuzzyLevel;
+				auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
+				lpResLevel1[1].res.resContent.lpProp = lpspvSubject;
+				if (lpspvSubject)
+				{
+					// Allocate and fill out properties:
+					lpspvSubject->ulPropTag = ulPropTag;
+					lpspvSubject->Value.lpszW = CopyStringW(szString.c_str(), lpAllocationParent);
+				}
 
-			lpResLevel1[1].rt = RES_CONTENT;
-			lpResLevel1[1].res.resContent.ulPropTag = ulPropTag;
-			lpResLevel1[1].res.resContent.ulFuzzyLevel = ulFuzzyLevel;
-			lpResLevel1[1].res.resContent.lpProp = lpspvSubject;
-
-			// Allocate and fill out properties:
-			lpspvSubject->ulPropTag = ulPropTag;
-			lpspvSubject->Value.lpszW = CopyStringW(szString.c_str(), lpAllocationParent);
-
-			output::DebugPrint(DBGGeneric, L"CreatePropertyStringRestriction built restriction:\n");
-			output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
-
-			*lppRes = lpRes;
+				output::DebugPrint(DBGGeneric, L"CreatePropertyStringRestriction built restriction:\n");
+				output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
+			}
 		}
 
-		if (S_OK != hRes)
-		{
-			output::DebugPrint(DBGGeneric, L"Failed to create restriction\n");
-			MAPIFreeBuffer(lpRes);
-			*lppRes = nullptr;
-		}
-
-		return hRes;
+		return lpRes;
 	}
 
 	_Check_return_ HRESULT CreateRangeRestriction(

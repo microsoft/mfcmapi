@@ -56,9 +56,6 @@ namespace dialog
 
 	void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 	{
-		auto hRes = S_OK;
-		LPSRestriction lpRes = nullptr;
-
 		editor::CPropertyTagEditor MyPropertyTag(
 			IDS_PROPRES, // title
 			NULL, // prompt
@@ -81,14 +78,8 @@ namespace dialog
 
 		const auto szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
-		hRes = EC_H(mapi::CreatePropertyStringRestriction(
-			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, MyData.GetHex(1), NULL, &lpRes));
-		if (hRes != S_OK && lpRes)
-		{
-			MAPIFreeBuffer(lpRes);
-			lpRes = nullptr;
-		}
-
+		auto lpRes = mapi::CreatePropertyStringRestriction(
+			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, MyData.GetHex(1), NULL);
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
 		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
