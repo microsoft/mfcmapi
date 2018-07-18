@@ -180,6 +180,7 @@ namespace mapi
 				DBGGeneric, L"OnOpenEntryID: Got object of type 0x%08X = %ws\n", ulObjType, szFlags.c_str());
 			*lppUnk = lpUnk;
 		}
+
 		if (ulObjTypeRet) *ulObjTypeRet = ulObjType;
 		return hRes;
 	}
@@ -288,10 +289,158 @@ namespace mapi
 		return hRes;
 	}
 
+	_Check_return_ SBinaryArray GetEntryIDs(_In_ LPMAPITABLE table)
+	{
+		if (!table) return {};
+		auto tag = SPropTagArray{1, PR_ENTRYID};
+		auto hRes = EC_MAPI(table->SetColumns(&tag, TBL_BATCH));
+		if (FAILED(hRes)) return {};
+
+		ULONG ulRowCount = 0;
+		EC_MAPI_S(table->GetRowCount(0, &ulRowCount));
+		if (!ulRowCount || ulRowCount >= ULONG_MAX / sizeof(SBinary)) return {};
+
+		auto sbaEID = SBinaryArray{0, mapi::allocate<LPSBinary>(sizeof(SBinary) * ulRowCount)};
+		if (sbaEID.lpbin)
+		{
+			auto pRow = LPSRowSet();
+			ULONG ulRowsCopied;
+			for (ulRowsCopied = 0; ulRowsCopied < ulRowCount; ulRowsCopied++)
+			{
+				if (pRow) FreeProws(pRow);
+				pRow = nullptr;
+				hRes = EC_MAPI(table->QueryRows(1, NULL, &pRow));
+				if (FAILED(hRes) || !pRow || !pRow->cRows) break;
+
+				if (pRow && PT_ERROR != PROP_TYPE(pRow->aRow->lpProps[0].ulPropTag))
+				{
+					EC_H_S(CopySBinary(&sbaEID.lpbin[ulRowsCopied], &pRow->aRow->lpProps[0].Value.bin, sbaEID.lpbin));
+				}
+			}
+
+			if (pRow) FreeProws(pRow);
+			sbaEID.cValues = ulRowsCopied;
+		}
+
+		return sbaEID;
+	}
+
+	// Gets entry IDs of the messages in the source folder and copies to destination using a single call to CopyMessage
+	_Check_return_ void CopyMessagesBatch(
+		_In_ LPMAPIFOLDER lpSrcFolder,
+		_In_ LPMAPIFOLDER lpDestFolder,
+		bool bCopyAssociatedContents,
+		bool bMove,
+		_In_ HWND hWnd)
+	{
+		if (!lpSrcFolder || !lpDestFolder) return;
+		LPMAPITABLE lpSrcContents = nullptr;
+		EC_MAPI_S(lpSrcFolder->GetContentsTable(
+			fMapiUnicode | (bCopyAssociatedContents ? MAPI_ASSOCIATED : NULL), &lpSrcContents));
+		if (!lpSrcContents) return;
+
+		auto sbaEID = GetEntryIDs(lpSrcContents);
+		LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
+		auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
+
+		if (lpProgress) ulCopyFlags |= MESSAGE_DIALOG;
+
+		EC_MAPI_S(lpSrcFolder->CopyMessages(
+			&sbaEID,
+			&IID_IMAPIFolder,
+			lpDestFolder,
+			lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
+			lpProgress,
+			ulCopyFlags));
+
+		if (lpProgress) lpProgress->Release();
+		MAPIFreeBuffer(sbaEID.lpbin);
+		lpSrcContents->Release();
+	}
+
+	_Check_return_ HRESULT CopyMessage(
+		_In_ const SBinary& bin,
+		_In_ LPMAPIFOLDER lpSrcFolder,
+		_In_ LPMAPIFOLDER lpDestFolder,
+		bool bMove,
+		_In_ HWND hWnd)
+	{
+		if (!bin.lpb || !lpSrcFolder || !lpDestFolder) return MAPI_E_INVALID_PARAMETER;
+		output::DebugPrint(DBGGeneric, L"Source Message =\n");
+		output::DebugPrintBinary(DBGGeneric, bin);
+
+		auto sbaEID = SBinaryArray{1, const_cast<LPSBinary>(&bin)};
+
+		LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
+
+		auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
+		if (lpProgress) ulCopyFlags |= MESSAGE_DIALOG;
+
+		auto hRes = EC_MAPI(lpSrcFolder->CopyMessages(
+			&sbaEID,
+			&IID_IMAPIFolder,
+			lpDestFolder,
+			lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
+			lpProgress,
+			ulCopyFlags));
+
+		if (hRes == S_OK) output::DebugPrint(DBGGeneric, L"Message copied\n");
+
+		if (lpProgress) lpProgress->Release();
+		return hRes;
+	}
+
+	// Copies message from source folder to destination using multiple calls to CopyMessage
+	// Gets entry IDs of the messages in the source folder and copies to destination using a single call to CopyMessage
+	_Check_return_ void CopyMessagesIterate(
+		_In_ LPMAPIFOLDER lpSrcFolder,
+		_In_ LPMAPIFOLDER lpDestFolder,
+		bool bCopyAssociatedContents,
+		bool bMove,
+		_In_ HWND hWnd)
+	{
+		if (!lpSrcFolder || !lpDestFolder) return;
+		LPMAPITABLE lpSrcContents = nullptr;
+		auto hRes = EC_MAPI(lpSrcFolder->GetContentsTable(
+			fMapiUnicode | (bCopyAssociatedContents ? MAPI_ASSOCIATED : NULL), &lpSrcContents));
+		if (!lpSrcContents) return;
+
+		auto ulRowCount = ULONG();
+		auto tag = SPropTagArray{1, PR_ENTRYID};
+		hRes = EC_MAPI(lpSrcContents->SetColumns(&tag, TBL_BATCH));
+		if (SUCCEEDED(hRes))
+		{
+			EC_MAPI_S(lpSrcContents->GetRowCount(0, &ulRowCount));
+		}
+
+		if (ulRowCount)
+		{
+			auto pRow = LPSRowSet();
+			for (ULONG ulRowsCopied = 0; ulRowsCopied < ulRowCount; ulRowsCopied++)
+			{
+				if (pRow) FreeProws(pRow);
+				pRow = nullptr;
+				hRes = EC_MAPI(lpSrcContents->QueryRows(1, NULL, &pRow));
+				if (FAILED(hRes) || !pRow || !pRow->cRows) break;
+
+				if (PROP_TYPE(pRow->aRow->lpProps[0].ulPropTag) != PT_ERROR)
+				{
+					hRes = WC_H(CopyMessage(pRow->aRow->lpProps[0].Value.bin, lpSrcFolder, lpDestFolder, bMove, hWnd));
+				}
+
+				if (S_OK != hRes) output::DebugPrint(DBGGeneric, L"Message Copy Failed\n");
+			}
+
+			if (pRow) FreeProws(pRow);
+		}
+
+		lpSrcContents->Release();
+	}
+
 	// May not behave correctly if lpSrcFolder == lpDestFolder
 	// We can check that the pointers aren't equal, but they could be different
 	// and still refer to the same folder.
-	_Check_return_ HRESULT CopyFolderContents(
+	_Check_return_ void CopyFolderContents(
 		_In_ LPMAPIFOLDER lpSrcFolder,
 		_In_ LPMAPIFOLDER lpDestFolder,
 		bool bCopyAssociatedContents,
@@ -299,20 +448,6 @@ namespace mapi
 		bool bSingleCall,
 		_In_ HWND hWnd)
 	{
-		LPMAPITABLE lpSrcContents = nullptr;
-		LPSRowSet pRows = nullptr;
-
-		enum
-		{
-			fldPR_ENTRYID,
-			fldNUM_COLS
-		};
-
-		static const SizedSPropTagArray(fldNUM_COLS, fldCols) = {
-			fldNUM_COLS,
-			{PR_ENTRYID},
-		};
-
 		output::DebugPrint(
 			DBGGeneric,
 			L"CopyFolderContents: lpSrcFolder = %p, lpDestFolder = %p, bCopyAssociatedContents = %d, bMove = %d\n",
@@ -321,112 +456,16 @@ namespace mapi
 			bCopyAssociatedContents,
 			bMove);
 
-		if (!lpSrcFolder || !lpDestFolder) return MAPI_E_INVALID_PARAMETER;
+		if (!lpSrcFolder || !lpDestFolder) return;
 
-		auto hRes = EC_MAPI(lpSrcFolder->GetContentsTable(
-			fMapiUnicode | (bCopyAssociatedContents ? MAPI_ASSOCIATED : NULL), &lpSrcContents));
-
-		if (lpSrcContents)
+		if (bSingleCall)
 		{
-			hRes = EC_MAPI(lpSrcContents->SetColumns(LPSPropTagArray(&fldCols), TBL_BATCH));
-
-			ULONG ulRowCount = 0;
-			if (SUCCEEDED(hRes))
-			{
-				hRes = EC_MAPI(lpSrcContents->GetRowCount(0, &ulRowCount));
-			}
-
-			if (bSingleCall && ulRowCount < ULONG_MAX / sizeof(SBinary))
-			{
-				SBinaryArray sbaEID = {0};
-				sbaEID.cValues = ulRowCount;
-				sbaEID.lpbin = mapi::allocate<LPSBinary>(sizeof(SBinary) * ulRowCount);
-				if (sbaEID.lpbin)
-				{
-					for (ULONG ulRowsCopied = 0; ulRowsCopied < ulRowCount; ulRowsCopied++)
-					{
-						if (pRows) FreeProws(pRows);
-						pRows = nullptr;
-						hRes = EC_MAPI(lpSrcContents->QueryRows(1, NULL, &pRows));
-						if (FAILED(hRes) || !pRows || pRows && !pRows->cRows) break;
-
-						if (pRows && PT_ERROR != PROP_TYPE(pRows->aRow->lpProps[fldPR_ENTRYID].ulPropTag))
-						{
-							hRes = EC_H(CopySBinary(
-								&sbaEID.lpbin[ulRowsCopied],
-								&pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin,
-								sbaEID.lpbin));
-						}
-					}
-				}
-
-				LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
-
-				auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
-
-				if (lpProgress) ulCopyFlags |= MESSAGE_DIALOG;
-
-				hRes = EC_MAPI(lpSrcFolder->CopyMessages(
-					&sbaEID,
-					&IID_IMAPIFolder,
-					lpDestFolder,
-					lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
-					lpProgress,
-					ulCopyFlags));
-				MAPIFreeBuffer(sbaEID.lpbin);
-
-				if (lpProgress) lpProgress->Release();
-			}
-			else
-			{
-				if (SUCCEEDED(hRes))
-				{
-					for (ULONG ulRowsCopied = 0; ulRowsCopied < ulRowCount; ulRowsCopied++)
-					{
-						if (pRows) FreeProws(pRows);
-						pRows = nullptr;
-						hRes = EC_MAPI(lpSrcContents->QueryRows(1, NULL, &pRows));
-						if (FAILED(hRes) || !pRows || pRows && !pRows->cRows) break;
-
-						if (pRows && PT_ERROR != PROP_TYPE(pRows->aRow->lpProps[fldPR_ENTRYID].ulPropTag))
-						{
-							SBinaryArray sbaEID = {0};
-							output::DebugPrint(DBGGeneric, L"Source Message =\n");
-							output::DebugPrintBinary(DBGGeneric, pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin);
-
-							sbaEID.cValues = 1;
-							sbaEID.lpbin = &pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin;
-
-							LPMAPIPROGRESS lpProgress =
-								mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
-
-							auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
-
-							if (lpProgress) ulCopyFlags |= MESSAGE_DIALOG;
-
-							hRes = EC_MAPI(lpSrcFolder->CopyMessages(
-								&sbaEID,
-								&IID_IMAPIFolder,
-								lpDestFolder,
-								lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
-								lpProgress,
-								ulCopyFlags));
-
-							if (hRes == S_OK) output::DebugPrint(DBGGeneric, L"Message Copied\n");
-
-							if (lpProgress) lpProgress->Release();
-						}
-
-						if (S_OK != hRes) output::DebugPrint(DBGGeneric, L"Message Copy Failed\n");
-					}
-				}
-			}
-
-			lpSrcContents->Release();
+			CopyMessagesBatch(lpSrcFolder, lpDestFolder, bCopyAssociatedContents, bMove, hWnd);
 		}
-
-		if (pRows) FreeProws(pRows);
-		return hRes;
+		else
+		{
+			CopyMessagesIterate(lpSrcFolder, lpDestFolder, bCopyAssociatedContents, bMove, hWnd);
+		}
 	}
 
 	_Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, bool bReplace)

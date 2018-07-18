@@ -510,18 +510,18 @@ namespace dialog
 				this, IDS_COPYFOLDERCONTENTS, IDS_PICKOPTIONSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_COPYASSOCIATEDITEMS, false, false));
 			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_MOVEMESSAGES, false, false));
-			MyData.InitPane(2, viewpane::CheckPane::Create(IDS_SINGLECALLCOPY, false, false));
+			MyData.InitPane(2, viewpane::CheckPane::Create(IDS_SINGLECALLCOPY, true, false));
 			if (MyData.DisplayDialog())
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				EC_H_S(mapi::CopyFolderContents(
+				mapi::CopyFolderContents(
 					lpMAPISourceFolder,
 					lpMAPIDestFolder,
 					MyData.GetCheck(0), // associated contents
 					MyData.GetCheck(1), // move
 					MyData.GetCheck(2), // Single CopyMessages call
-					m_hWnd));
+					m_hWnd);
 			}
 		}
 
