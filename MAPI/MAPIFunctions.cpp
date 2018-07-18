@@ -689,8 +689,8 @@ namespace mapi
 	_Check_return_ LPWSTR CopyStringW(_In_z_ LPCWSTR src, _In_opt_ LPVOID pParent)
 	{
 		if (!src) return nullptr;
-		auto cb = wcsnlen_s(src, RSIZE_MAX) + 1;
-		auto cch = cb * sizeof(WCHAR);
+		auto cch = wcsnlen_s(src, RSIZE_MAX) + 1;
+		auto cb = cch * sizeof(WCHAR);
 		auto dst = mapi::allocate<LPWSTR>(static_cast<ULONG>(cb), pParent);
 
 		if (dst)
