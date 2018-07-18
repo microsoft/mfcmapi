@@ -314,7 +314,7 @@ namespace mapi
 
 				if (pRow && PT_ERROR != PROP_TYPE(pRow->aRow->lpProps[0].ulPropTag))
 				{
-					EC_H_S(CopySBinary(&sbaEID.lpbin[ulRowsCopied], &pRow->aRow->lpProps[0].Value.bin, sbaEID.lpbin));
+					sbaEID.lpbin[ulRowsCopied] = CopySBinary(pRow->aRow->lpProps[0].Value.bin, sbaEID.lpbin);
 				}
 			}
 
@@ -642,42 +642,23 @@ namespace mapi
 		return hRes;
 	}
 
-	///////////////////////////////////////////////////////////////////////////////
-	// CopySBinary()
-	//
-	// Parameters
-	// psbDest - Address of the destination binary
-	// psbSrc - Address of the source binary
-	// lpParent - Pointer to parent object (not, however, pointer to pointer!)
-	//
-	// Purpose
-	// Copies psbSrc into an existing SBinary
-	_Check_return_ HRESULT CopySBinary(_Out_ LPSBinary psbDest, _In_ const _SBinary* psbSrc, _In_ LPVOID lpParent)
+	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ LPVOID parent)
 	{
-		if (!psbDest || !psbSrc) return MAPI_E_INVALID_PARAMETER;
-
-		psbDest->cb = psbSrc->cb;
-
-		if (psbSrc->cb)
-		{
-			psbDest->lpb = mapi::allocate<LPBYTE>(psbSrc->cb, lpParent);
-
-			if (psbDest->lpb) CopyMemory(psbDest->lpb, psbSrc->lpb, psbSrc->cb);
-		}
-
-		return S_OK;
+		auto dst = SBinary{src.cb, mapi::allocate<LPBYTE>(src.cb, parent)};
+		if (src.cb) CopyMemory(dst.lpb, src.lpb, src.cb);
+		return dst;
 	}
 
-	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* source)
+	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* src)
 	{
-		if (!source) return nullptr;
-		auto binary = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
-		if (binary)
+		if (!src) return nullptr;
+		auto dst = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
+		if (dst)
 		{
-			EC_H_S(mapi::CopySBinary(binary, source, binary));
+			*dst = CopySBinary(*src, dst);
 		}
 
-		return binary;
+		return dst;
 	}
 
 	///////////////////////////////////////////////////////////////////////////////

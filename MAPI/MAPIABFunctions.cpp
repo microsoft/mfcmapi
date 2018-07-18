@@ -403,8 +403,7 @@ namespace mapi
 
 								auto pProp = &pProps[abPR_ENTRYID]; // Just a pointer, do not free.
 								pProp->ulPropTag = PR_ENTRYID;
-								hRes = EC_H(mapi::CopySBinary(
-									&pProp->Value.bin, &lpFoundRow[abPR_ENTRYID].Value.bin, lpAdrList));
+								pProp->Value.bin = mapi::CopySBinary(lpFoundRow[abPR_ENTRYID].Value.bin, lpAdrList);
 
 								pProp = &pProps[abPR_RECIPIENT_TYPE];
 								pProp->ulPropTag = PR_RECIPIENT_TYPE;

@@ -265,8 +265,7 @@ namespace dialog
 						lpsProp->Value.MVszW.lppszW[iMVCount] = mapi::CopyStringW(lpData->MV()->m_val.lpszW, lpParent);
 						break;
 					case PT_MV_BINARY:
-						EC_H_S(mapi::CopySBinary(
-							&lpsProp->Value.MVbin.lpbin[iMVCount], &lpData->MV()->m_val.bin, lpParent));
+						lpsProp->Value.MVbin.lpbin[iMVCount] = mapi::CopySBinary(lpData->MV()->m_val.bin, lpParent);
 						break;
 					case PT_MV_CLSID:
 						if (lpData->MV()->m_val.lpguid)

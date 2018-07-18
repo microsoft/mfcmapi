@@ -84,8 +84,8 @@ namespace mapi
 		_In_ HWND hWnd);
 	_Check_return_ HRESULT
 	CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, bool bReplace);
-	_Check_return_ HRESULT CopySBinary(_Out_ LPSBinary psbDest, _In_ const _SBinary* psbSrc, _In_ LPVOID lpParent);
-	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* source);
+	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ LPVOID parent);
+	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* src);
 	_Check_return_ LPSTR CopyStringA(_In_z_ LPCSTR szSource, _In_opt_ LPVOID pParent);
 	_Check_return_ LPWSTR CopyStringW(_In_z_ LPCWSTR szSource, _In_opt_ LPVOID pParent);
 #ifdef UNICODE
