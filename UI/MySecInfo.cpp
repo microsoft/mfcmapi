@@ -161,12 +161,10 @@ namespace mapi
 			BOOL /*fDefault*/)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::GetSecurity\n");
-			LPSPropValue lpsProp = nullptr;
 
 			*ppSecurityDescriptor = nullptr;
 
-			auto hRes = EC_H(mapi::GetLargeBinaryProp(m_lpMAPIProp, m_ulPropTag, &lpsProp));
-
+			auto lpsProp = mapi::GetLargeBinaryProp(m_lpMAPIProp, m_ulPropTag);
 			if (lpsProp && PROP_TYPE(lpsProp->ulPropTag) == PT_BINARY && lpsProp->Value.bin.lpb)
 			{
 				const auto lpSDBuffer = lpsProp->Value.bin.lpb;
@@ -214,7 +212,7 @@ namespace mapi
 			MAPIFreeBuffer(lpsProp);
 
 			if (!*ppSecurityDescriptor) return MAPI_E_NOT_FOUND;
-			return hRes;
+			return S_OK;
 		}
 
 		// This is very dangerous code and should only be executed under very controlled circumstances

@@ -83,9 +83,7 @@ namespace dialog
 
 		if (lpMDB)
 		{
-			LPMAPIFOLDER lpFolder = nullptr;
-			WC_H_S(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
-
+			auto lpFolder = mapi::OpenDefaultFolder(ulFolder, lpMDB);
 			if (lpFolder)
 			{
 				WC_H_S(DisplayObject(lpFolder, NULL, dialog::otContents, lpHostDlg));
@@ -109,10 +107,7 @@ namespace dialog
 
 		if (lpMDB)
 		{
-			LPMAPIFOLDER lpFolder = nullptr;
-
-			WC_H_S(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
-
+			auto lpFolder = mapi::OpenDefaultFolder(ulFolder, lpMDB);
 			if (lpFolder)
 			{
 				WC_H_S(DisplayExchangeTable(lpFolder, ulProp, tType, lpHostDlg));
@@ -194,9 +189,7 @@ namespace dialog
 
 		if (lpMDB)
 		{
-			LPMAPIFOLDER lpFolder = nullptr;
-			WC_H_S(mapi::OpenDefaultFolder(mapi::DEFAULT_INBOX, lpMDB, &lpFolder));
-
+			auto lpFolder = mapi::OpenDefaultFolder(mapi::DEFAULT_INBOX, lpMDB);
 			if (lpFolder)
 			{
 				LPMAPITABLE lpTable = nullptr;
@@ -246,13 +239,14 @@ namespace dialog
 									reinterpret_cast<LPUNKNOWN*>(&lpMSG)));
 								if (SUCCEEDED(hRes) && lpMSG)
 								{
-									WC_H_S(mapi::GetLargeBinaryProp(lpMSG, PR_ROAMING_BINARYSTREAM, &lpsProp));
+									lpsProp = mapi::GetLargeBinaryProp(lpMSG, PR_ROAMING_BINARYSTREAM);
 									if (lpsProp)
 									{
 										// Get the string interpretation
 										szNicknames = smartview::InterpretBinaryAsString(
 											lpsProp->Value.bin, IDS_STNICKNAMECACHE, lpMSG);
 									}
+
 									lpMSG->Release();
 								}
 							}
@@ -460,7 +454,7 @@ namespace dialog
 
 			if (lpMailUser)
 			{
-				WC_H_S(mapi::GetLargeBinaryProp(lpMailUser, PR_EMS_AB_THUMBNAIL_PHOTO, &lpThumbnail));
+				lpThumbnail = mapi::GetLargeBinaryProp(lpMailUser, PR_EMS_AB_THUMBNAIL_PHOTO);
 				lpMailUser->Release();
 			}
 

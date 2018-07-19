@@ -305,8 +305,6 @@ namespace dialog
 
 	void CContentsTableDlg::OnCreateRangeRestriction()
 	{
-		LPSRestriction lpRes = nullptr;
-
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
 		editor::CPropertyTagEditor MyPropertyTag(
@@ -328,13 +326,8 @@ namespace dialog
 
 		const auto szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
-		auto hRes = EC_H(mapi::CreateRangeRestriction(
-			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, nullptr, &lpRes));
-		if (hRes != S_OK)
-		{
-			MAPIFreeBuffer(lpRes);
-			lpRes = nullptr;
-		}
+		auto lpRes = mapi::CreateRangeRestriction(
+			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, nullptr);
 
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 

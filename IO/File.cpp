@@ -467,57 +467,54 @@ namespace file
 		WC_MAPI_S(lpFolder->GetContentsTable(MAPI_DEFERRED_ERRORS | MAPI_UNICODE, &lpTable));
 		if (lpTable)
 		{
-			LPSRestriction lpRes = nullptr;
 			// Allocate and create our SRestriction
-			auto hRes = EC_H(mapi::CreatePropertyStringRestriction(
-				PR_SUBJECT_W, restrictString, FL_SUBSTRING | FL_IGNORECASE, nullptr, &lpRes));
-			if (SUCCEEDED(hRes))
+			auto lpRes = mapi::CreatePropertyStringRestriction(
+				PR_SUBJECT_W, restrictString, FL_SUBSTRING | FL_IGNORECASE, nullptr);
+			if (lpRes)
 			{
-				hRes = WC_MAPI(lpTable->Restrict(lpRes, 0));
-			}
-
-			if (lpRes) MAPIFreeBuffer(lpRes);
-
-			if (SUCCEEDED(hRes))
-			{
-				enum
-				{
-					fldPR_ENTRYID,
-					fldPR_SUBJECT_W,
-					fldPR_RECORD_KEY,
-					fldNUM_COLS
-				};
-
-				static const SizedSPropTagArray(fldNUM_COLS, fldCols) = {fldNUM_COLS,
-																		 {PR_ENTRYID, PR_SUBJECT_W, PR_RECORD_KEY}};
-
-				hRes = WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&fldCols), TBL_ASYNC));
-
-				// Export messages in the rows
-				LPSRowSet lpRows = nullptr;
+				auto hRes = WC_MAPI(lpTable->Restrict(lpRes, 0));
+				MAPIFreeBuffer(lpRes);
 				if (SUCCEEDED(hRes))
 				{
-					for (;;)
+					enum
 					{
-						if (lpRows) FreeProws(lpRows);
-						lpRows = nullptr;
-						WC_MAPI_S(lpTable->QueryRows(50, NULL, &lpRows));
-						if (!lpRows || !lpRows->cRows) break;
+						fldPR_ENTRYID,
+						fldPR_SUBJECT_W,
+						fldPR_RECORD_KEY,
+						fldNUM_COLS
+					};
 
-						for (ULONG i = 0; i < lpRows->cRows; i++)
+					static const SizedSPropTagArray(fldNUM_COLS, fldCols) = {fldNUM_COLS,
+																			 {PR_ENTRYID, PR_SUBJECT_W, PR_RECORD_KEY}};
+
+					hRes = WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&fldCols), TBL_ASYNC));
+
+					// Export messages in the rows
+					LPSRowSet lpRows = nullptr;
+					if (SUCCEEDED(hRes))
+					{
+						for (;;)
 						{
-							WC_H_S(SaveToMSG(
-								lpFolder,
-								szDir,
-								lpRows->aRow[i].lpProps[fldPR_ENTRYID],
-								&lpRows->aRow[i].lpProps[fldPR_RECORD_KEY],
-								&lpRows->aRow[i].lpProps[fldPR_SUBJECT_W],
-								true,
-								hWnd));
-						}
-					}
+							if (lpRows) FreeProws(lpRows);
+							lpRows = nullptr;
+							WC_MAPI_S(lpTable->QueryRows(50, NULL, &lpRows));
+							if (!lpRows || !lpRows->cRows) break;
 
-					if (lpRows) FreeProws(lpRows);
+							for (ULONG i = 0; i < lpRows->cRows; i++)
+							{
+								WC_H_S(SaveToMSG(
+									lpFolder,
+									szDir,
+									lpRows->aRow[i].lpProps[fldPR_ENTRYID],
+									&lpRows->aRow[i].lpProps[fldPR_RECORD_KEY],
+									&lpRows->aRow[i].lpProps[fldPR_SUBJECT_W],
+									true,
+									hWnd));
+							}
+						}
+
+						if (lpRows) FreeProws(lpRows);
+					}
 				}
 			}
 

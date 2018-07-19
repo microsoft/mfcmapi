@@ -180,6 +180,7 @@ namespace mapi
 				DBGGeneric, L"OnOpenEntryID: Got object of type 0x%08X = %ws\n", ulObjType, szFlags.c_str());
 			*lppUnk = lpUnk;
 		}
+
 		if (ulObjTypeRet) *ulObjTypeRet = ulObjType;
 		return hRes;
 	}
@@ -288,10 +289,158 @@ namespace mapi
 		return hRes;
 	}
 
+	_Check_return_ SBinaryArray GetEntryIDs(_In_ LPMAPITABLE table)
+	{
+		if (!table) return {};
+		auto tag = SPropTagArray{1, PR_ENTRYID};
+		auto hRes = EC_MAPI(table->SetColumns(&tag, TBL_BATCH));
+		if (FAILED(hRes)) return {};
+
+		ULONG ulRowCount = 0;
+		EC_MAPI_S(table->GetRowCount(0, &ulRowCount));
+		if (!ulRowCount || ulRowCount >= ULONG_MAX / sizeof(SBinary)) return {};
+
+		auto sbaEID = SBinaryArray{0, mapi::allocate<LPSBinary>(sizeof(SBinary) * ulRowCount)};
+		if (sbaEID.lpbin)
+		{
+			auto pRow = LPSRowSet();
+			ULONG ulRowsCopied;
+			for (ulRowsCopied = 0; ulRowsCopied < ulRowCount; ulRowsCopied++)
+			{
+				if (pRow) FreeProws(pRow);
+				pRow = nullptr;
+				hRes = EC_MAPI(table->QueryRows(1, NULL, &pRow));
+				if (FAILED(hRes) || !pRow || !pRow->cRows) break;
+
+				if (pRow && PT_ERROR != PROP_TYPE(pRow->aRow->lpProps[0].ulPropTag))
+				{
+					sbaEID.lpbin[ulRowsCopied] = CopySBinary(pRow->aRow->lpProps[0].Value.bin, sbaEID.lpbin);
+				}
+			}
+
+			if (pRow) FreeProws(pRow);
+			sbaEID.cValues = ulRowsCopied;
+		}
+
+		return sbaEID;
+	}
+
+	// Gets entry IDs of the messages in the source folder and copies to destination using a single call to CopyMessage
+	_Check_return_ void CopyMessagesBatch(
+		_In_ LPMAPIFOLDER lpSrcFolder,
+		_In_ LPMAPIFOLDER lpDestFolder,
+		bool bCopyAssociatedContents,
+		bool bMove,
+		_In_ HWND hWnd)
+	{
+		if (!lpSrcFolder || !lpDestFolder) return;
+		LPMAPITABLE lpSrcContents = nullptr;
+		EC_MAPI_S(lpSrcFolder->GetContentsTable(
+			fMapiUnicode | (bCopyAssociatedContents ? MAPI_ASSOCIATED : NULL), &lpSrcContents));
+		if (!lpSrcContents) return;
+
+		auto sbaEID = GetEntryIDs(lpSrcContents);
+		LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
+		auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
+
+		if (lpProgress) ulCopyFlags |= MESSAGE_DIALOG;
+
+		EC_MAPI_S(lpSrcFolder->CopyMessages(
+			&sbaEID,
+			&IID_IMAPIFolder,
+			lpDestFolder,
+			lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
+			lpProgress,
+			ulCopyFlags));
+
+		if (lpProgress) lpProgress->Release();
+		MAPIFreeBuffer(sbaEID.lpbin);
+		lpSrcContents->Release();
+	}
+
+	_Check_return_ HRESULT CopyMessage(
+		_In_ const SBinary& bin,
+		_In_ LPMAPIFOLDER lpSrcFolder,
+		_In_ LPMAPIFOLDER lpDestFolder,
+		bool bMove,
+		_In_ HWND hWnd)
+	{
+		if (!bin.lpb || !lpSrcFolder || !lpDestFolder) return MAPI_E_INVALID_PARAMETER;
+		output::DebugPrint(DBGGeneric, L"Source Message =\n");
+		output::DebugPrintBinary(DBGGeneric, bin);
+
+		auto sbaEID = SBinaryArray{1, const_cast<LPSBinary>(&bin)};
+
+		LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
+
+		auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
+		if (lpProgress) ulCopyFlags |= MESSAGE_DIALOG;
+
+		auto hRes = EC_MAPI(lpSrcFolder->CopyMessages(
+			&sbaEID,
+			&IID_IMAPIFolder,
+			lpDestFolder,
+			lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
+			lpProgress,
+			ulCopyFlags));
+
+		if (hRes == S_OK) output::DebugPrint(DBGGeneric, L"Message copied\n");
+
+		if (lpProgress) lpProgress->Release();
+		return hRes;
+	}
+
+	// Copies message from source folder to destination using multiple calls to CopyMessage
+	// Gets entry IDs of the messages in the source folder and copies to destination using a single call to CopyMessage
+	_Check_return_ void CopyMessagesIterate(
+		_In_ LPMAPIFOLDER lpSrcFolder,
+		_In_ LPMAPIFOLDER lpDestFolder,
+		bool bCopyAssociatedContents,
+		bool bMove,
+		_In_ HWND hWnd)
+	{
+		if (!lpSrcFolder || !lpDestFolder) return;
+		LPMAPITABLE lpSrcContents = nullptr;
+		auto hRes = EC_MAPI(lpSrcFolder->GetContentsTable(
+			fMapiUnicode | (bCopyAssociatedContents ? MAPI_ASSOCIATED : NULL), &lpSrcContents));
+		if (!lpSrcContents) return;
+
+		auto ulRowCount = ULONG();
+		auto tag = SPropTagArray{1, PR_ENTRYID};
+		hRes = EC_MAPI(lpSrcContents->SetColumns(&tag, TBL_BATCH));
+		if (SUCCEEDED(hRes))
+		{
+			EC_MAPI_S(lpSrcContents->GetRowCount(0, &ulRowCount));
+		}
+
+		if (ulRowCount)
+		{
+			auto pRow = LPSRowSet();
+			for (ULONG ulRowsCopied = 0; ulRowsCopied < ulRowCount; ulRowsCopied++)
+			{
+				if (pRow) FreeProws(pRow);
+				pRow = nullptr;
+				hRes = EC_MAPI(lpSrcContents->QueryRows(1, NULL, &pRow));
+				if (FAILED(hRes) || !pRow || !pRow->cRows) break;
+
+				if (PROP_TYPE(pRow->aRow->lpProps[0].ulPropTag) != PT_ERROR)
+				{
+					hRes = WC_H(CopyMessage(pRow->aRow->lpProps[0].Value.bin, lpSrcFolder, lpDestFolder, bMove, hWnd));
+				}
+
+				if (S_OK != hRes) output::DebugPrint(DBGGeneric, L"Message Copy Failed\n");
+			}
+
+			if (pRow) FreeProws(pRow);
+		}
+
+		lpSrcContents->Release();
+	}
+
 	// May not behave correctly if lpSrcFolder == lpDestFolder
 	// We can check that the pointers aren't equal, but they could be different
 	// and still refer to the same folder.
-	_Check_return_ HRESULT CopyFolderContents(
+	_Check_return_ void CopyFolderContents(
 		_In_ LPMAPIFOLDER lpSrcFolder,
 		_In_ LPMAPIFOLDER lpDestFolder,
 		bool bCopyAssociatedContents,
@@ -299,20 +448,6 @@ namespace mapi
 		bool bSingleCall,
 		_In_ HWND hWnd)
 	{
-		LPMAPITABLE lpSrcContents = nullptr;
-		LPSRowSet pRows = nullptr;
-
-		enum
-		{
-			fldPR_ENTRYID,
-			fldNUM_COLS
-		};
-
-		static const SizedSPropTagArray(fldNUM_COLS, fldCols) = {
-			fldNUM_COLS,
-			{PR_ENTRYID},
-		};
-
 		output::DebugPrint(
 			DBGGeneric,
 			L"CopyFolderContents: lpSrcFolder = %p, lpDestFolder = %p, bCopyAssociatedContents = %d, bMove = %d\n",
@@ -321,112 +456,16 @@ namespace mapi
 			bCopyAssociatedContents,
 			bMove);
 
-		if (!lpSrcFolder || !lpDestFolder) return MAPI_E_INVALID_PARAMETER;
+		if (!lpSrcFolder || !lpDestFolder) return;
 
-		auto hRes = EC_MAPI(lpSrcFolder->GetContentsTable(
-			fMapiUnicode | (bCopyAssociatedContents ? MAPI_ASSOCIATED : NULL), &lpSrcContents));
-
-		if (lpSrcContents)
+		if (bSingleCall)
 		{
-			hRes = EC_MAPI(lpSrcContents->SetColumns(LPSPropTagArray(&fldCols), TBL_BATCH));
-
-			ULONG ulRowCount = 0;
-			if (SUCCEEDED(hRes))
-			{
-				hRes = EC_MAPI(lpSrcContents->GetRowCount(0, &ulRowCount));
-			}
-
-			if (bSingleCall && ulRowCount < ULONG_MAX / sizeof(SBinary))
-			{
-				SBinaryArray sbaEID = {0};
-				sbaEID.cValues = ulRowCount;
-				sbaEID.lpbin = mapi::allocate<LPSBinary>(sizeof(SBinary) * ulRowCount);
-				if (sbaEID.lpbin)
-				{
-					for (ULONG ulRowsCopied = 0; ulRowsCopied < ulRowCount; ulRowsCopied++)
-					{
-						if (pRows) FreeProws(pRows);
-						pRows = nullptr;
-						hRes = EC_MAPI(lpSrcContents->QueryRows(1, NULL, &pRows));
-						if (FAILED(hRes) || !pRows || pRows && !pRows->cRows) break;
-
-						if (pRows && PT_ERROR != PROP_TYPE(pRows->aRow->lpProps[fldPR_ENTRYID].ulPropTag))
-						{
-							hRes = EC_H(CopySBinary(
-								&sbaEID.lpbin[ulRowsCopied],
-								&pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin,
-								sbaEID.lpbin));
-						}
-					}
-				}
-
-				LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
-
-				auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
-
-				if (lpProgress) ulCopyFlags |= MESSAGE_DIALOG;
-
-				hRes = EC_MAPI(lpSrcFolder->CopyMessages(
-					&sbaEID,
-					&IID_IMAPIFolder,
-					lpDestFolder,
-					lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
-					lpProgress,
-					ulCopyFlags));
-				MAPIFreeBuffer(sbaEID.lpbin);
-
-				if (lpProgress) lpProgress->Release();
-			}
-			else
-			{
-				if (SUCCEEDED(hRes))
-				{
-					for (ULONG ulRowsCopied = 0; ulRowsCopied < ulRowCount; ulRowsCopied++)
-					{
-						if (pRows) FreeProws(pRows);
-						pRows = nullptr;
-						hRes = EC_MAPI(lpSrcContents->QueryRows(1, NULL, &pRows));
-						if (FAILED(hRes) || !pRows || pRows && !pRows->cRows) break;
-
-						if (pRows && PT_ERROR != PROP_TYPE(pRows->aRow->lpProps[fldPR_ENTRYID].ulPropTag))
-						{
-							SBinaryArray sbaEID = {0};
-							output::DebugPrint(DBGGeneric, L"Source Message =\n");
-							output::DebugPrintBinary(DBGGeneric, pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin);
-
-							sbaEID.cValues = 1;
-							sbaEID.lpbin = &pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin;
-
-							LPMAPIPROGRESS lpProgress =
-								mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
-
-							auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
-
-							if (lpProgress) ulCopyFlags |= MESSAGE_DIALOG;
-
-							hRes = EC_MAPI(lpSrcFolder->CopyMessages(
-								&sbaEID,
-								&IID_IMAPIFolder,
-								lpDestFolder,
-								lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
-								lpProgress,
-								ulCopyFlags));
-
-							if (hRes == S_OK) output::DebugPrint(DBGGeneric, L"Message Copied\n");
-
-							if (lpProgress) lpProgress->Release();
-						}
-
-						if (S_OK != hRes) output::DebugPrint(DBGGeneric, L"Message Copy Failed\n");
-					}
-				}
-			}
-
-			lpSrcContents->Release();
+			CopyMessagesBatch(lpSrcFolder, lpDestFolder, bCopyAssociatedContents, bMove, hWnd);
 		}
-
-		if (pRows) FreeProws(pRows);
-		return hRes;
+		else
+		{
+			CopyMessagesIterate(lpSrcFolder, lpDestFolder, bCopyAssociatedContents, bMove, hWnd);
+		}
 	}
 
 	_Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, bool bReplace)
@@ -603,42 +642,23 @@ namespace mapi
 		return hRes;
 	}
 
-	///////////////////////////////////////////////////////////////////////////////
-	// CopySBinary()
-	//
-	// Parameters
-	// psbDest - Address of the destination binary
-	// psbSrc - Address of the source binary
-	// lpParent - Pointer to parent object (not, however, pointer to pointer!)
-	//
-	// Purpose
-	// Copies psbSrc into an existing SBinary
-	_Check_return_ HRESULT CopySBinary(_Out_ LPSBinary psbDest, _In_ const _SBinary* psbSrc, _In_ LPVOID lpParent)
+	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ LPVOID parent)
 	{
-		if (!psbDest || !psbSrc) return MAPI_E_INVALID_PARAMETER;
-
-		psbDest->cb = psbSrc->cb;
-
-		if (psbSrc->cb)
-		{
-			psbDest->lpb = mapi::allocate<LPBYTE>(psbSrc->cb, lpParent);
-
-			if (psbDest->lpb) CopyMemory(psbDest->lpb, psbSrc->lpb, psbSrc->cb);
-		}
-
-		return S_OK;
+		auto dst = SBinary{src.cb, mapi::allocate<LPBYTE>(src.cb, parent)};
+		if (src.cb) CopyMemory(dst.lpb, src.lpb, src.cb);
+		return dst;
 	}
 
-	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* source)
+	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* src)
 	{
-		if (!source) return nullptr;
-		auto binary = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
-		if (binary)
+		if (!src) return nullptr;
+		auto dst = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
+		if (dst)
 		{
-			EC_H_S(mapi::CopySBinary(binary, source, binary));
+			*dst = CopySBinary(*src, dst);
 		}
 
-		return binary;
+		return dst;
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -684,124 +704,100 @@ namespace mapi
 	// Allocates and creates a restriction that looks for existence of
 	// a particular property that matches the given string
 	// If lpParent is passed in, it is used as the allocation parent.
-	_Check_return_ HRESULT CreatePropertyStringRestriction(
+	_Check_return_ LPSRestriction CreatePropertyStringRestriction(
 		ULONG ulPropTag,
 		_In_ const std::wstring& szString,
 		ULONG ulFuzzyLevel,
-		_In_opt_ LPVOID lpParent,
-		_Deref_out_opt_ LPSRestriction* lppRes)
+		_In_opt_ LPVOID parent)
 	{
-		if (PROP_TYPE(ulPropTag) != PT_UNICODE) return MAPI_E_INVALID_PARAMETER;
-
-		auto hRes = S_OK;
-
-		*lppRes = nullptr;
-
-		if (szString.empty()) return MAPI_E_INVALID_PARAMETER;
+		if (PROP_TYPE(ulPropTag) != PT_UNICODE) return nullptr;
+		if (szString.empty()) return nullptr;
 
 		// Allocate and create our SRestriction
 		// Allocate base memory:
-		auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpParent);
-		auto lpAllocationParent = lpParent ? lpParent : lpRes;
-		auto lpResLevel1 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpAllocationParent);
-		auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
-
-		if (lpRes && lpResLevel1 && lpspvSubject)
+		auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), parent);
+		if (lpRes)
 		{
+			auto lpAllocationParent = parent ? parent : lpRes;
+
 			// Root Node
 			lpRes->rt = RES_AND;
 			lpRes->res.resAnd.cRes = 2;
+			auto lpResLevel1 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpAllocationParent);
 			lpRes->res.resAnd.lpRes = lpResLevel1;
+			if (lpResLevel1)
+			{
+				lpResLevel1[0].rt = RES_EXIST;
+				lpResLevel1[0].res.resExist.ulPropTag = ulPropTag;
+				lpResLevel1[0].res.resExist.ulReserved1 = 0;
+				lpResLevel1[0].res.resExist.ulReserved2 = 0;
 
-			lpResLevel1[0].rt = RES_EXIST;
-			lpResLevel1[0].res.resExist.ulPropTag = ulPropTag;
-			lpResLevel1[0].res.resExist.ulReserved1 = 0;
-			lpResLevel1[0].res.resExist.ulReserved2 = 0;
+				lpResLevel1[1].rt = RES_CONTENT;
+				lpResLevel1[1].res.resContent.ulPropTag = ulPropTag;
+				lpResLevel1[1].res.resContent.ulFuzzyLevel = ulFuzzyLevel;
+				auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
+				lpResLevel1[1].res.resContent.lpProp = lpspvSubject;
+				if (lpspvSubject)
+				{
+					// Allocate and fill out properties:
+					lpspvSubject->ulPropTag = ulPropTag;
+					lpspvSubject->Value.lpszW = CopyStringW(szString.c_str(), lpAllocationParent);
+				}
 
-			lpResLevel1[1].rt = RES_CONTENT;
-			lpResLevel1[1].res.resContent.ulPropTag = ulPropTag;
-			lpResLevel1[1].res.resContent.ulFuzzyLevel = ulFuzzyLevel;
-			lpResLevel1[1].res.resContent.lpProp = lpspvSubject;
-
-			// Allocate and fill out properties:
-			lpspvSubject->ulPropTag = ulPropTag;
-			lpspvSubject->Value.lpszW = CopyStringW(szString.c_str(), lpAllocationParent);
-
-			output::DebugPrint(DBGGeneric, L"CreatePropertyStringRestriction built restriction:\n");
-			output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
-
-			*lppRes = lpRes;
+				output::DebugPrint(DBGGeneric, L"CreatePropertyStringRestriction built restriction:\n");
+				output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
+			}
 		}
 
-		if (S_OK != hRes)
-		{
-			output::DebugPrint(DBGGeneric, L"Failed to create restriction\n");
-			MAPIFreeBuffer(lpRes);
-			*lppRes = nullptr;
-		}
-
-		return hRes;
+		return lpRes;
 	}
 
-	_Check_return_ HRESULT CreateRangeRestriction(
-		ULONG ulPropTag,
-		_In_ const std::wstring& szString,
-		_In_opt_ LPVOID lpParent,
-		_Deref_out_opt_ LPSRestriction* lppRes)
+	_Check_return_ LPSRestriction
+	CreateRangeRestriction(ULONG ulPropTag, _In_ const std::wstring& szString, _In_opt_ LPVOID parent)
 	{
-		auto hRes = S_OK;
-		LPSRestriction lpRes = nullptr;
-		LPSRestriction lpResLevel1 = nullptr;
-		LPSPropValue lpspvSubject = nullptr;
-		LPVOID lpAllocationParent = nullptr;
-
-		*lppRes = nullptr;
-
-		if (szString.empty()) return MAPI_E_INVALID_PARAMETER;
-		if (PROP_TYPE(ulPropTag) != PT_UNICODE) return MAPI_E_INVALID_PARAMETER;
+		if (szString.empty()) return nullptr;
+		if (PROP_TYPE(ulPropTag) != PT_UNICODE) return nullptr;
 
 		// Allocate and create our SRestriction
 		// Allocate base memory:
-		lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpParent);
-		lpAllocationParent = lpParent ? lpParent : lpRes;
-		lpResLevel1 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpAllocationParent);
-		lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
+		auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), parent);
 
-		if (lpRes && lpResLevel1 && lpspvSubject)
+		if (lpRes)
 		{
+			auto lpAllocationParent = parent ? parent : lpRes;
+
 			// Root Node
 			lpRes->rt = RES_AND;
 			lpRes->res.resAnd.cRes = 2;
+			auto lpResLevel1 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpAllocationParent);
 			lpRes->res.resAnd.lpRes = lpResLevel1;
 
-			lpResLevel1[0].rt = RES_EXIST;
-			lpResLevel1[0].res.resExist.ulPropTag = ulPropTag;
-			lpResLevel1[0].res.resExist.ulReserved1 = 0;
-			lpResLevel1[0].res.resExist.ulReserved2 = 0;
+			if (lpResLevel1)
+			{
+				lpResLevel1[0].rt = RES_EXIST;
+				lpResLevel1[0].res.resExist.ulPropTag = ulPropTag;
+				lpResLevel1[0].res.resExist.ulReserved1 = 0;
+				lpResLevel1[0].res.resExist.ulReserved2 = 0;
 
-			lpResLevel1[1].rt = RES_PROPERTY;
-			lpResLevel1[1].res.resProperty.ulPropTag = ulPropTag;
-			lpResLevel1[1].res.resProperty.relop = RELOP_GE;
-			lpResLevel1[1].res.resProperty.lpProp = lpspvSubject;
+				lpResLevel1[1].rt = RES_PROPERTY;
+				lpResLevel1[1].res.resProperty.ulPropTag = ulPropTag;
+				lpResLevel1[1].res.resProperty.relop = RELOP_GE;
+				auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
+				lpResLevel1[1].res.resProperty.lpProp = lpspvSubject;
 
-			// Allocate and fill out properties:
-			lpspvSubject->ulPropTag = ulPropTag;
-			lpspvSubject->Value.lpszW = CopyStringW(szString.c_str(), lpAllocationParent);
+				if (lpspvSubject)
+				{
+					// Allocate and fill out properties:
+					lpspvSubject->ulPropTag = ulPropTag;
+					lpspvSubject->Value.lpszW = CopyStringW(szString.c_str(), lpAllocationParent);
+				}
+			}
 
 			output::DebugPrint(DBGGeneric, L"CreateRangeRestriction built restriction:\n");
 			output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
-
-			*lppRes = lpRes;
 		}
 
-		if (S_OK != hRes)
-		{
-			output::DebugPrint(DBGGeneric, L"Failed to create restriction\n");
-			MAPIFreeBuffer(lpRes);
-			*lppRes = nullptr;
-		}
-
-		return hRes;
+		return lpRes;
 	}
 
 	_Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
@@ -841,15 +837,13 @@ namespace mapi
 	_Check_return_ HRESULT
 	DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpSourceFolder, _In_ LPENTRYLIST lpEIDs, _In_ HWND hWnd)
 	{
-		LPMAPIFOLDER lpWasteFolder = nullptr;
-
 		if (!lpMDB || !lpSourceFolder || !lpEIDs) return MAPI_E_INVALID_PARAMETER;
 
 		output::DebugPrint(
 			DBGGeneric, L"DeleteToDeletedItems: Deleting from folder %p in store %p\n", lpSourceFolder, lpMDB);
 
-		auto hRes = WC_H(OpenDefaultFolder(DEFAULT_DELETEDITEMS, lpMDB, &lpWasteFolder));
-
+		auto hRes = S_OK;
+		auto lpWasteFolder = OpenDefaultFolder(DEFAULT_DELETEDITEMS, lpMDB);
 		if (lpWasteFolder)
 		{
 			LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
@@ -969,36 +963,26 @@ namespace mapi
 		return hRes;
 	}
 
-	_Check_return_ HRESULT
-	GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpParentFolder)
+	_Check_return_ LPMAPIFOLDER GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB)
 	{
+		if (!lpChildFolder) return nullptr;
 		ULONG cProps;
 		LPSPropValue lpProps = nullptr;
+		LPMAPIFOLDER lpParentFolder = nullptr;
 
-		*lpParentFolder = nullptr;
-
-		if (!lpChildFolder) return MAPI_E_INVALID_PARAMETER;
-
-		enum
-		{
-			PARENTEID,
-			NUM_COLS
-		};
-		static const SizedSPropTagArray(NUM_COLS, sptaSrcFolder) = {NUM_COLS, {PR_PARENT_ENTRYID}};
+		static auto tag = SPropTagArray{1, PR_PARENT_ENTRYID};
 
 		// Get PR_PARENT_ENTRYID
-		auto hRes =
-			EC_H_GETPROPS(lpChildFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
-
-		if (lpProps && PT_ERROR != PROP_TYPE(lpProps[PARENTEID].ulPropTag))
+		EC_H_GETPROPS_S(lpChildFolder->GetProps(&tag, fMapiUnicode, &cProps, &lpProps));
+		if (lpProps && PT_ERROR != PROP_TYPE(lpProps[0].ulPropTag))
 		{
-			hRes = WC_H(CallOpenEntry(
+			WC_H_S(CallOpenEntry(
 				lpMDB,
 				nullptr,
 				nullptr,
 				nullptr,
-				lpProps[PARENTEID].Value.bin.cb,
-				reinterpret_cast<LPENTRYID>(lpProps[PARENTEID].Value.bin.lpb),
+				lpProps[0].Value.bin.cb,
+				reinterpret_cast<LPENTRYID>(lpProps[0].Value.bin.lpb),
 				nullptr,
 				MAPI_BEST_ACCESS,
 				nullptr,
@@ -1006,7 +990,7 @@ namespace mapi
 		}
 
 		MAPIFreeBuffer(lpProps);
-		return hRes;
+		return lpParentFolder;
 	}
 
 	_Check_return_ HRESULT GetPropsNULL(
@@ -1865,11 +1849,9 @@ namespace mapi
 	{
 		if (!lpSource || !lpTarget) return MAPI_E_INVALID_PARAMETER;
 
-		LPSPropTagArray lpPropTags = nullptr;
-
-		auto hRes = EC_H(GetNamedPropsByGUID(lpSource, lpPropSetGUID, &lpPropTags));
-
-		if (SUCCEEDED(hRes) && lpPropTags)
+		auto hRes = S_OK;
+		auto lpPropTags = GetNamedPropsByGUID(lpSource, lpPropSetGUID);
+		if (lpPropTags)
 		{
 			LPSPropProblemArray lpProblems = nullptr;
 			ULONG ulFlags = 0;
@@ -1900,17 +1882,14 @@ namespace mapi
 		return hRes;
 	}
 
-	_Check_return_ HRESULT
-	GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, _Deref_out_ LPSPropTagArray* lpOutArray)
+	_Check_return_ LPSPropTagArray GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID)
 	{
-		if (!lpSource || !lpPropSetGUID || lpOutArray) return MAPI_E_INVALID_PARAMETER;
+		if (!lpSource || !lpPropSetGUID) return nullptr;
 
 		LPSPropTagArray lpAllProps = nullptr;
-
-		*lpOutArray = nullptr;
+		LPSPropTagArray lpFilteredProps = nullptr;
 
 		auto hRes = WC_MAPI(lpSource->GetPropList(0, &lpAllProps));
-
 		if (hRes == S_OK && lpAllProps)
 		{
 			ULONG cProps = 0;
@@ -1930,7 +1909,7 @@ namespace mapi
 					}
 				}
 
-				auto lpFilteredProps = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(ulNumProps));
+				lpFilteredProps = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(ulNumProps));
 				if (lpFilteredProps)
 				{
 					lpFilteredProps->cValues = 0;
@@ -1944,8 +1923,6 @@ namespace mapi
 							lpFilteredProps->cValues++;
 						}
 					}
-
-					*lpOutArray = lpFilteredProps;
 				}
 			}
 
@@ -1953,7 +1930,7 @@ namespace mapi
 		}
 
 		MAPIFreeBuffer(lpAllProps);
-		return hRes;
+		return lpFilteredProps;
 	}
 
 	_Check_return_ bool CheckStringProp(_In_opt_ const _SPropValue* lpProp, ULONG ulPropType)
@@ -2328,18 +2305,17 @@ namespace mapi
 		return hRes;
 	}
 
-	STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpFolder)
+	LPMAPIFOLDER OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB)
 	{
-		if (!lpMDB || !lpFolder) return MAPI_E_INVALID_PARAMETER;
+		if (!lpMDB) return nullptr;
 
-		*lpFolder = nullptr;
 		ULONG cb = 0;
 		LPENTRYID lpeid = nullptr;
+		LPMAPIFOLDER lpFolder = nullptr;
 
 		auto hRes = WC_H(GetDefaultFolderEID(ulFolder, lpMDB, &cb, &lpeid));
 		if (SUCCEEDED(hRes))
 		{
-			LPMAPIFOLDER lpTemp = nullptr;
 			hRes = WC_H(CallOpenEntry(
 				lpMDB,
 				nullptr,
@@ -2350,19 +2326,17 @@ namespace mapi
 				nullptr,
 				MAPI_BEST_ACCESS,
 				nullptr,
-				reinterpret_cast<LPUNKNOWN*>(&lpTemp)));
-			if (SUCCEEDED(hRes) && lpTemp)
+				reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
+
+			if (FAILED(hRes) && lpFolder)
 			{
-				*lpFolder = lpTemp;
-			}
-			else if (lpTemp)
-			{
-				lpTemp->Release();
+				lpFolder->Release();
+				lpFolder = nullptr;
 			}
 		}
 
 		MAPIFreeBuffer(lpeid);
-		return hRes;
+		return lpFolder;
 	}
 
 	ULONG g_DisplayNameProps[] = {
@@ -2568,20 +2542,17 @@ namespace mapi
 	// Returns LPSPropValue with value of a property
 	// Uses GetProps and falls back to OpenProperty if the value is large
 	// Free with MAPIFreeBuffer
-	_Check_return_ HRESULT
-	GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
+	_Check_return_ LPSPropValue GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 	{
-		if (!lpMAPIProp || !lppProp) return MAPI_E_INVALID_PARAMETER;
+		if (!lpMAPIProp) return nullptr;
 		output::DebugPrint(DBGGeneric, L"GetLargeProp getting buffer from 0x%08X\n", ulPropTag);
 
 		ULONG cValues = 0;
 		LPSPropValue lpPropArray = nullptr;
 		auto bSuccess = false;
 
-		const SizedSPropTagArray(1, sptaBuffer) = {1, {ulPropTag}};
-		*lppProp = nullptr;
-
-		auto hRes = WC_H_GETPROPS(lpMAPIProp->GetProps(LPSPropTagArray(&sptaBuffer), 0, &cValues, &lpPropArray));
+		auto tag = SPropTagArray{1, {ulPropTag}};
+		WC_H_GETPROPS_S(lpMAPIProp->GetProps(&tag, 0, &cValues, &lpPropArray));
 
 		if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag) &&
 			lpPropArray->Value.err == MAPI_E_NOT_ENOUGH_MEMORY)
@@ -2592,11 +2563,11 @@ namespace mapi
 			// need to get the data as a stream
 			LPSTREAM lpStream = nullptr;
 
-			hRes = WC_MAPI(lpMAPIProp->OpenProperty(
+			WC_MAPI_S(lpMAPIProp->OpenProperty(
 				ulPropTag, &IID_IStream, STGM_READ, 0, reinterpret_cast<LPUNKNOWN*>(&lpStream)));
-			if (SUCCEEDED(hRes) && lpStream)
+			if (lpStream)
 			{
-				STATSTG StatInfo = {nullptr};
+				STATSTG StatInfo = {};
 				lpStream->Stat(&StatInfo, STATFLAG_NONAME); // find out how much space we need
 
 				// We're not going to try to support MASSIVE properties.
@@ -2631,7 +2602,7 @@ namespace mapi
 							if (lpBuffer)
 							{
 								ULONG ulSizeRead = 0;
-								hRes = EC_MAPI(lpStream->Read(lpBuffer, ulBufferSize, &ulSizeRead));
+								auto hRes = EC_MAPI(lpStream->Read(lpBuffer, ulBufferSize, &ulSizeRead));
 								if (SUCCEEDED(hRes) && ulSizeRead == ulBufferSize)
 								{
 									switch (PROP_TYPE(ulPropTag))
@@ -2672,33 +2643,27 @@ namespace mapi
 				DBGGeneric, L"GetLargeProp GetProps reported property as error 0x%08X.\n", lpPropArray->Value.err);
 		}
 
-		if (bSuccess)
-		{
-			*lppProp = lpPropArray;
-		}
-		else
+		if (!bSuccess)
 		{
 			MAPIFreeBuffer(lpPropArray);
-			if (SUCCEEDED(hRes)) hRes = MAPI_E_CALL_FAILED;
+			lpPropArray = nullptr;
 		}
 
-		return hRes;
+		return lpPropArray;
 	}
 
 	// Returns LPSPropValue with value of a binary property
 	// Free with MAPIFreeBuffer
-	_Check_return_ HRESULT
-	GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
+	_Check_return_ LPSPropValue GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 	{
-		return GetLargeProp(lpMAPIProp, CHANGE_PROP_TYPE(ulPropTag, PT_BINARY), lppProp);
+		return GetLargeProp(lpMAPIProp, CHANGE_PROP_TYPE(ulPropTag, PT_BINARY));
 	}
 
 	// Returns LPSPropValue with value of a string property
 	// Free with MAPIFreeBuffer
-	_Check_return_ HRESULT
-	GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
+	_Check_return_ LPSPropValue GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 	{
-		return GetLargeProp(lpMAPIProp, CHANGE_PROP_TYPE(ulPropTag, PT_TSTRING), lppProp);
+		return GetLargeProp(lpMAPIProp, CHANGE_PROP_TYPE(ulPropTag, PT_TSTRING));
 	}
 
 	_Check_return_ HRESULT

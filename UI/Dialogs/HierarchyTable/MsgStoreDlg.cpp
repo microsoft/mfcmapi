@@ -162,12 +162,9 @@ namespace dialog
 
 	void CMsgStoreDlg::OnDisplaySpecialFolder(ULONG ulFolder)
 	{
-		LPMAPIFOLDER lpFolder = nullptr;
-
 		if (!m_lpMDB) return;
 
-		EC_H_S(mapi::OpenDefaultFolder(ulFolder, m_lpMDB, &lpFolder));
-
+		auto lpFolder = mapi::OpenDefaultFolder(ulFolder, m_lpMDB);
 		if (lpFolder)
 		{
 			EC_H_S(DisplayObject(lpFolder, NULL, otHierarchy, this));
@@ -310,8 +307,7 @@ namespace dialog
 
 		auto lpMAPISourceFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
 
-		LPMAPIFOLDER lpSrcParentFolder = nullptr;
-		WC_H_S(mapi::GetParentFolder(lpMAPISourceFolder, m_lpMDB, &lpSrcParentFolder));
+		auto lpSrcParentFolder = mapi::GetParentFolder(lpMAPISourceFolder, m_lpMDB);
 
 		cache::CGlobalCache::getInstance().SetFolderToCopy(lpMAPISourceFolder, lpSrcParentFolder);
 
@@ -510,18 +506,18 @@ namespace dialog
 				this, IDS_COPYFOLDERCONTENTS, IDS_PICKOPTIONSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_COPYASSOCIATEDITEMS, false, false));
 			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_MOVEMESSAGES, false, false));
-			MyData.InitPane(2, viewpane::CheckPane::Create(IDS_SINGLECALLCOPY, false, false));
+			MyData.InitPane(2, viewpane::CheckPane::Create(IDS_SINGLECALLCOPY, true, false));
 			if (MyData.DisplayDialog())
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				EC_H_S(mapi::CopyFolderContents(
+				mapi::CopyFolderContents(
 					lpMAPISourceFolder,
 					lpMAPIDestFolder,
 					MyData.GetCheck(0), // associated contents
 					MyData.GetCheck(1), // move
 					MyData.GetCheck(2), // Single CopyMessages call
-					m_hWnd));
+					m_hWnd);
 			}
 		}
 
@@ -749,8 +745,7 @@ namespace dialog
 		auto lpFolderToDelete = GetSelectedFolder(mfcmapiDO_NOT_REQUEST_MODIFY);
 		if (lpFolderToDelete)
 		{
-			LPMAPIFOLDER lpParentFolder = nullptr;
-			EC_H_S(mapi::GetParentFolder(lpFolderToDelete, m_lpMDB, &lpParentFolder));
+			auto lpParentFolder = mapi::GetParentFolder(lpFolderToDelete, m_lpMDB);
 			if (lpParentFolder)
 			{
 				const ULONG bShiftPressed = GetKeyState(VK_SHIFT) < 0;
@@ -961,13 +956,12 @@ namespace dialog
 
 		if (lpSrcFolder)
 		{
-			LPMAPIFOLDER lpSrcParentFolder = nullptr;
-			auto hRes = WC_H(mapi::GetParentFolder(lpSrcFolder, m_lpMDB, &lpSrcParentFolder));
+			auto lpSrcParentFolder = mapi::GetParentFolder(lpSrcFolder, m_lpMDB);
 
-			if (SUCCEEDED(hRes))
+			// Get required properties from the source folder
+			if (lpSrcParentFolder)
 			{
-				// Get required properties from the source folder
-				hRes = EC_H_GETPROPS(
+				EC_H_GETPROPS_S(
 					lpSrcFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
 			}
 
@@ -1001,7 +995,7 @@ namespace dialog
 
 				if (lpProgress) ulCopyFlags |= FOLDER_DIALOG;
 
-				hRes = WC_MAPI(lpSrcParentFolder->CopyFolder(
+				auto hRes = WC_MAPI(lpSrcParentFolder->CopyFolder(
 					lpProps[EID].Value.bin.cb,
 					reinterpret_cast<LPENTRYID>(lpProps[EID].Value.bin.lpb),
 					&IID_IMAPIFolder,

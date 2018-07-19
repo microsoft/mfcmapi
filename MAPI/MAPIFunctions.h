@@ -75,7 +75,7 @@ namespace mapi
 		_In_ LPMAPIPROP lpTargetPropObj,
 		ULONG ulSourceTag,
 		ULONG ulTargetTag);
-	_Check_return_ HRESULT CopyFolderContents(
+	_Check_return_ void CopyFolderContents(
 		_In_ LPMAPIFOLDER lpSrcFolder,
 		_In_ LPMAPIFOLDER lpDestFolder,
 		bool bCopyAssociatedContents,
@@ -84,8 +84,8 @@ namespace mapi
 		_In_ HWND hWnd);
 	_Check_return_ HRESULT
 	CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, bool bReplace);
-	_Check_return_ HRESULT CopySBinary(_Out_ LPSBinary psbDest, _In_ const _SBinary* psbSrc, _In_ LPVOID lpParent);
-	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* source);
+	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ LPVOID parent);
+	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* src);
 	_Check_return_ LPSTR CopyStringA(_In_z_ LPCSTR szSource, _In_opt_ LPVOID pParent);
 	_Check_return_ LPWSTR CopyStringW(_In_z_ LPCWSTR szSource, _In_opt_ LPVOID pParent);
 #ifdef UNICODE
@@ -93,25 +93,20 @@ namespace mapi
 #else
 #define CopyString CopyStringA
 #endif
-	_Check_return_ HRESULT CreatePropertyStringRestriction(
+	_Check_return_ LPSRestriction CreatePropertyStringRestriction(
 		ULONG ulPropTag,
 		_In_ const std::wstring& szString,
 		ULONG ulFuzzyLevel,
-		_In_opt_ LPVOID lpParent,
-		_Deref_out_opt_ LPSRestriction* lppRes);
-	_Check_return_ HRESULT CreateRangeRestriction(
-		ULONG ulPropTag,
-		_In_ const std::wstring& szString,
-		_In_opt_ LPVOID lpParent,
-		_Deref_out_opt_ LPSRestriction* lppRes);
+		_In_opt_ LPVOID parent);
+	_Check_return_ LPSRestriction
+	CreateRangeRestriction(ULONG ulPropTag, _In_ const std::wstring& szString, _In_opt_ LPVOID);
 	_Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
 	_Check_return_ HRESULT
 	DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpSourceFolder, _In_ LPENTRYLIST lpEIDs, _In_ HWND hWnd);
 	_Check_return_ bool
 	FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound);
 	_Check_return_ ULONG GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp);
-	_Check_return_ HRESULT
-	GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpParentFolder);
+	_Check_return_ LPMAPIFOLDER GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB);
 	_Check_return_ HRESULT GetPropsNULL(
 		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG ulFlags,
@@ -148,8 +143,7 @@ namespace mapi
 		_Deref_out_ LPSTREAM* lpUncompressedRTFStream,
 		_Out_opt_ ULONG* pulStreamFlags);
 
-	_Check_return_ HRESULT
-	GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, _Deref_out_ LPSPropTagArray* lpOutArray);
+	_Check_return_ LPSPropTagArray GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID);
 	_Check_return_ HRESULT CopyNamedProps(
 		_In_ LPMAPIPROP lpSource,
 		_In_ LPGUID lpPropSetGUID,
@@ -222,7 +216,7 @@ namespace mapi
 		L"Junk E-mail",
 	};
 
-	STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpFolder);
+	LPMAPIFOLDER OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB);
 	STDMETHODIMP GetDefaultFolderEID(
 		_In_ ULONG ulFolder,
 		_In_ LPMDB lpMDB,
@@ -249,10 +243,8 @@ namespace mapi
 
 	void ForceRop(_In_ LPMDB lpMDB);
 
-	_Check_return_ HRESULT
-	GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp);
-	_Check_return_ HRESULT
-	GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp);
+	_Check_return_ LPSPropValue GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
+	_Check_return_ LPSPropValue GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
 
 	_Check_return_ STDAPI HrCopyRestriction(
 		_In_ const _SRestriction* lpResSrc, // source restriction ptr
