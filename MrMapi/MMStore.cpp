@@ -121,7 +121,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 		}
 		else
 		{
-			hRes = WC_H(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
+			lpFolder = mapi::OpenDefaultFolder(ulFolder, lpMDB);
 		}
 	}
 

@@ -162,12 +162,9 @@ namespace dialog
 
 	void CMsgStoreDlg::OnDisplaySpecialFolder(ULONG ulFolder)
 	{
-		LPMAPIFOLDER lpFolder = nullptr;
-
 		if (!m_lpMDB) return;
 
-		EC_H_S(mapi::OpenDefaultFolder(ulFolder, m_lpMDB, &lpFolder));
-
+		auto lpFolder = mapi::OpenDefaultFolder(ulFolder, m_lpMDB);
 		if (lpFolder)
 		{
 			EC_H_S(DisplayObject(lpFolder, NULL, otHierarchy, this));

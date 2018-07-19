@@ -83,9 +83,7 @@ namespace dialog
 
 		if (lpMDB)
 		{
-			LPMAPIFOLDER lpFolder = nullptr;
-			WC_H_S(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
-
+			auto lpFolder = mapi::OpenDefaultFolder(ulFolder, lpMDB);
 			if (lpFolder)
 			{
 				WC_H_S(DisplayObject(lpFolder, NULL, dialog::otContents, lpHostDlg));
@@ -109,10 +107,7 @@ namespace dialog
 
 		if (lpMDB)
 		{
-			LPMAPIFOLDER lpFolder = nullptr;
-
-			WC_H_S(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
-
+			auto lpFolder = mapi::OpenDefaultFolder(ulFolder, lpMDB);
 			if (lpFolder)
 			{
 				WC_H_S(DisplayExchangeTable(lpFolder, ulProp, tType, lpHostDlg));
@@ -194,9 +189,7 @@ namespace dialog
 
 		if (lpMDB)
 		{
-			LPMAPIFOLDER lpFolder = nullptr;
-			WC_H_S(mapi::OpenDefaultFolder(mapi::DEFAULT_INBOX, lpMDB, &lpFolder));
-
+			auto lpFolder = mapi::OpenDefaultFolder(mapi::DEFAULT_INBOX, lpMDB);
 			if (lpFolder)
 			{
 				LPMAPITABLE lpTable = nullptr;

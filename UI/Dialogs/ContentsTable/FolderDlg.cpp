@@ -913,7 +913,7 @@ namespace dialog
 			LPMAPIFOLDER lpSpecialFolder = nullptr;
 			if (ulFolder)
 			{
-				EC_H_S(mapi::OpenDefaultFolder(ulFolder, lpMDB, &lpSpecialFolder));
+				lpSpecialFolder = mapi::OpenDefaultFolder(ulFolder, lpMDB);
 				lpFolder = lpSpecialFolder;
 			}
 			else

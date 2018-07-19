@@ -216,7 +216,7 @@ namespace mapi
 		L"Junk E-mail",
 	};
 
-	STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpFolder);
+	LPMAPIFOLDER OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB);
 	STDMETHODIMP GetDefaultFolderEID(
 		_In_ ULONG ulFolder,
 		_In_ LPMDB lpMDB,

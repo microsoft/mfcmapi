@@ -837,15 +837,13 @@ namespace mapi
 	_Check_return_ HRESULT
 	DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpSourceFolder, _In_ LPENTRYLIST lpEIDs, _In_ HWND hWnd)
 	{
-		LPMAPIFOLDER lpWasteFolder = nullptr;
-
 		if (!lpMDB || !lpSourceFolder || !lpEIDs) return MAPI_E_INVALID_PARAMETER;
 
 		output::DebugPrint(
 			DBGGeneric, L"DeleteToDeletedItems: Deleting from folder %p in store %p\n", lpSourceFolder, lpMDB);
 
-		auto hRes = WC_H(OpenDefaultFolder(DEFAULT_DELETEDITEMS, lpMDB, &lpWasteFolder));
-
+		auto hRes = S_OK;
+		auto lpWasteFolder = OpenDefaultFolder(DEFAULT_DELETEDITEMS, lpMDB);
 		if (lpWasteFolder)
 		{
 			LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
@@ -2307,18 +2305,17 @@ namespace mapi
 		return hRes;
 	}
 
-	STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpFolder)
+	LPMAPIFOLDER OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB)
 	{
-		if (!lpMDB || !lpFolder) return MAPI_E_INVALID_PARAMETER;
+		if (!lpMDB) return nullptr;
 
-		*lpFolder = nullptr;
 		ULONG cb = 0;
 		LPENTRYID lpeid = nullptr;
+		LPMAPIFOLDER lpFolder = nullptr;
 
 		auto hRes = WC_H(GetDefaultFolderEID(ulFolder, lpMDB, &cb, &lpeid));
 		if (SUCCEEDED(hRes))
 		{
-			LPMAPIFOLDER lpTemp = nullptr;
 			hRes = WC_H(CallOpenEntry(
 				lpMDB,
 				nullptr,
@@ -2329,19 +2326,17 @@ namespace mapi
 				nullptr,
 				MAPI_BEST_ACCESS,
 				nullptr,
-				reinterpret_cast<LPUNKNOWN*>(&lpTemp)));
-			if (SUCCEEDED(hRes) && lpTemp)
+				reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
+
+			if (FAILED(hRes) && lpFolder)
 			{
-				*lpFolder = lpTemp;
-			}
-			else if (lpTemp)
-			{
-				lpTemp->Release();
+				lpFolder->Release();
+				lpFolder = nullptr;
 			}
 		}
 
 		MAPIFreeBuffer(lpeid);
-		return hRes;
+		return lpFolder;
 	}
 
 	ULONG g_DisplayNameProps[] = {
