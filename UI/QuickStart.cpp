@@ -239,13 +239,14 @@ namespace dialog
 									reinterpret_cast<LPUNKNOWN*>(&lpMSG)));
 								if (SUCCEEDED(hRes) && lpMSG)
 								{
-									WC_H_S(mapi::GetLargeBinaryProp(lpMSG, PR_ROAMING_BINARYSTREAM, &lpsProp));
+									lpsProp = mapi::GetLargeBinaryProp(lpMSG, PR_ROAMING_BINARYSTREAM);
 									if (lpsProp)
 									{
 										// Get the string interpretation
 										szNicknames = smartview::InterpretBinaryAsString(
 											lpsProp->Value.bin, IDS_STNICKNAMECACHE, lpMSG);
 									}
+
 									lpMSG->Release();
 								}
 							}
@@ -453,7 +454,7 @@ namespace dialog
 
 			if (lpMailUser)
 			{
-				WC_H_S(mapi::GetLargeBinaryProp(lpMailUser, PR_EMS_AB_THUMBNAIL_PHOTO, &lpThumbnail));
+				lpThumbnail = mapi::GetLargeBinaryProp(lpMailUser, PR_EMS_AB_THUMBNAIL_PHOTO);
 				lpMailUser->Release();
 			}
 

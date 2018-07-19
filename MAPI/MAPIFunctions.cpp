@@ -2542,20 +2542,17 @@ namespace mapi
 	// Returns LPSPropValue with value of a property
 	// Uses GetProps and falls back to OpenProperty if the value is large
 	// Free with MAPIFreeBuffer
-	_Check_return_ HRESULT
-	GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
+	_Check_return_ LPSPropValue GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 	{
-		if (!lpMAPIProp || !lppProp) return MAPI_E_INVALID_PARAMETER;
+		if (!lpMAPIProp) return nullptr;
 		output::DebugPrint(DBGGeneric, L"GetLargeProp getting buffer from 0x%08X\n", ulPropTag);
 
 		ULONG cValues = 0;
 		LPSPropValue lpPropArray = nullptr;
 		auto bSuccess = false;
 
-		const SizedSPropTagArray(1, sptaBuffer) = {1, {ulPropTag}};
-		*lppProp = nullptr;
-
-		auto hRes = WC_H_GETPROPS(lpMAPIProp->GetProps(LPSPropTagArray(&sptaBuffer), 0, &cValues, &lpPropArray));
+		auto tag = SPropTagArray{1, {ulPropTag}};
+		WC_H_GETPROPS_S(lpMAPIProp->GetProps(&tag, 0, &cValues, &lpPropArray));
 
 		if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag) &&
 			lpPropArray->Value.err == MAPI_E_NOT_ENOUGH_MEMORY)
@@ -2566,11 +2563,11 @@ namespace mapi
 			// need to get the data as a stream
 			LPSTREAM lpStream = nullptr;
 
-			hRes = WC_MAPI(lpMAPIProp->OpenProperty(
+			WC_MAPI_S(lpMAPIProp->OpenProperty(
 				ulPropTag, &IID_IStream, STGM_READ, 0, reinterpret_cast<LPUNKNOWN*>(&lpStream)));
-			if (SUCCEEDED(hRes) && lpStream)
+			if (lpStream)
 			{
-				STATSTG StatInfo = {nullptr};
+				STATSTG StatInfo = {};
 				lpStream->Stat(&StatInfo, STATFLAG_NONAME); // find out how much space we need
 
 				// We're not going to try to support MASSIVE properties.
@@ -2605,7 +2602,7 @@ namespace mapi
 							if (lpBuffer)
 							{
 								ULONG ulSizeRead = 0;
-								hRes = EC_MAPI(lpStream->Read(lpBuffer, ulBufferSize, &ulSizeRead));
+								auto hRes = EC_MAPI(lpStream->Read(lpBuffer, ulBufferSize, &ulSizeRead));
 								if (SUCCEEDED(hRes) && ulSizeRead == ulBufferSize)
 								{
 									switch (PROP_TYPE(ulPropTag))
@@ -2646,33 +2643,27 @@ namespace mapi
 				DBGGeneric, L"GetLargeProp GetProps reported property as error 0x%08X.\n", lpPropArray->Value.err);
 		}
 
-		if (bSuccess)
-		{
-			*lppProp = lpPropArray;
-		}
-		else
+		if (!bSuccess)
 		{
 			MAPIFreeBuffer(lpPropArray);
-			if (SUCCEEDED(hRes)) hRes = MAPI_E_CALL_FAILED;
+			lpPropArray = nullptr;
 		}
 
-		return hRes;
+		return lpPropArray;
 	}
 
 	// Returns LPSPropValue with value of a binary property
 	// Free with MAPIFreeBuffer
-	_Check_return_ HRESULT
-	GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
+	_Check_return_ LPSPropValue GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 	{
-		return GetLargeProp(lpMAPIProp, CHANGE_PROP_TYPE(ulPropTag, PT_BINARY), lppProp);
+		return GetLargeProp(lpMAPIProp, CHANGE_PROP_TYPE(ulPropTag, PT_BINARY));
 	}
 
 	// Returns LPSPropValue with value of a string property
 	// Free with MAPIFreeBuffer
-	_Check_return_ HRESULT
-	GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
+	_Check_return_ LPSPropValue GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 	{
-		return GetLargeProp(lpMAPIProp, CHANGE_PROP_TYPE(ulPropTag, PT_TSTRING), lppProp);
+		return GetLargeProp(lpMAPIProp, CHANGE_PROP_TYPE(ulPropTag, PT_TSTRING));
 	}
 
 	_Check_return_ HRESULT

@@ -789,14 +789,14 @@ namespace output
 		if (PROP_TYPE(lpProp->ulPropTag) == PT_ERROR && lpProp->Value.err == MAPI_E_NOT_ENOUGH_MEMORY && lpObj &&
 			bRetryStreamProps)
 		{
-			auto hRes = WC_H(mapi::GetLargeBinaryProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
+			lpLargeProp = mapi::GetLargeBinaryProp(lpObj, lpProp->ulPropTag);
 
-			if (FAILED(hRes))
+			if (!lpLargeProp)
 			{
-				hRes = WC_H(mapi::GetLargeStringProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
+				lpLargeProp = mapi::GetLargeStringProp(lpObj, lpProp->ulPropTag);
 			}
 
-			if (SUCCEEDED(hRes) && lpLargeProp && PT_ERROR != PROP_TYPE(lpLargeProp->ulPropTag))
+			if (lpLargeProp && PT_ERROR != PROP_TYPE(lpLargeProp->ulPropTag))
 			{
 				lpProp = lpLargeProp;
 			}
