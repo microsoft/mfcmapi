@@ -965,36 +965,26 @@ namespace mapi
 		return hRes;
 	}
 
-	_Check_return_ HRESULT
-	GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpParentFolder)
+	_Check_return_ LPMAPIFOLDER GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB)
 	{
+		if (!lpChildFolder) return nullptr;
 		ULONG cProps;
 		LPSPropValue lpProps = nullptr;
+		LPMAPIFOLDER lpParentFolder = nullptr;
 
-		*lpParentFolder = nullptr;
-
-		if (!lpChildFolder) return MAPI_E_INVALID_PARAMETER;
-
-		enum
-		{
-			PARENTEID,
-			NUM_COLS
-		};
-		static const SizedSPropTagArray(NUM_COLS, sptaSrcFolder) = {NUM_COLS, {PR_PARENT_ENTRYID}};
+		static auto tag = SPropTagArray{1, PR_PARENT_ENTRYID};
 
 		// Get PR_PARENT_ENTRYID
-		auto hRes =
-			EC_H_GETPROPS(lpChildFolder->GetProps(LPSPropTagArray(&sptaSrcFolder), fMapiUnicode, &cProps, &lpProps));
-
-		if (lpProps && PT_ERROR != PROP_TYPE(lpProps[PARENTEID].ulPropTag))
+		EC_H_GETPROPS_S(lpChildFolder->GetProps(&tag, fMapiUnicode, &cProps, &lpProps));
+		if (lpProps && PT_ERROR != PROP_TYPE(lpProps[0].ulPropTag))
 		{
-			hRes = WC_H(CallOpenEntry(
+			WC_H_S(CallOpenEntry(
 				lpMDB,
 				nullptr,
 				nullptr,
 				nullptr,
-				lpProps[PARENTEID].Value.bin.cb,
-				reinterpret_cast<LPENTRYID>(lpProps[PARENTEID].Value.bin.lpb),
+				lpProps[0].Value.bin.cb,
+				reinterpret_cast<LPENTRYID>(lpProps[0].Value.bin.lpb),
 				nullptr,
 				MAPI_BEST_ACCESS,
 				nullptr,
@@ -1002,7 +992,7 @@ namespace mapi
 		}
 
 		MAPIFreeBuffer(lpProps);
-		return hRes;
+		return lpParentFolder;
 	}
 
 	_Check_return_ HRESULT GetPropsNULL(
