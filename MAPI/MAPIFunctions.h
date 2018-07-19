@@ -98,11 +98,10 @@ namespace mapi
 		_In_ const std::wstring& szString,
 		ULONG ulFuzzyLevel,
 		_In_opt_ LPVOID parent);
-	_Check_return_ HRESULT CreateRangeRestriction(
+	_Check_return_ LPSRestriction CreateRangeRestriction(
 		ULONG ulPropTag,
 		_In_ const std::wstring& szString,
-		_In_opt_ LPVOID lpParent,
-		_Deref_out_opt_ LPSRestriction* lppRes);
+		_In_opt_ LPVOID );
 	_Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
 	_Check_return_ HRESULT
 	DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpSourceFolder, _In_ LPENTRYLIST lpEIDs, _In_ HWND hWnd);
