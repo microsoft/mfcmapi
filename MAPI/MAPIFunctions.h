@@ -143,8 +143,7 @@ namespace mapi
 		_Deref_out_ LPSTREAM* lpUncompressedRTFStream,
 		_Out_opt_ ULONG* pulStreamFlags);
 
-	_Check_return_ HRESULT
-	GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, _Deref_out_ LPSPropTagArray* lpOutArray);
+	_Check_return_ LPSPropTagArray GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID);
 	_Check_return_ HRESULT CopyNamedProps(
 		_In_ LPMAPIPROP lpSource,
 		_In_ LPGUID lpPropSetGUID,

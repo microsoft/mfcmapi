@@ -1851,11 +1851,9 @@ namespace mapi
 	{
 		if (!lpSource || !lpTarget) return MAPI_E_INVALID_PARAMETER;
 
-		LPSPropTagArray lpPropTags = nullptr;
-
-		auto hRes = EC_H(GetNamedPropsByGUID(lpSource, lpPropSetGUID, &lpPropTags));
-
-		if (SUCCEEDED(hRes) && lpPropTags)
+		auto hRes = S_OK;
+		auto lpPropTags = GetNamedPropsByGUID(lpSource, lpPropSetGUID);
+		if (lpPropTags)
 		{
 			LPSPropProblemArray lpProblems = nullptr;
 			ULONG ulFlags = 0;
@@ -1886,17 +1884,14 @@ namespace mapi
 		return hRes;
 	}
 
-	_Check_return_ HRESULT
-	GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, _Deref_out_ LPSPropTagArray* lpOutArray)
+	_Check_return_ LPSPropTagArray GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID)
 	{
-		if (!lpSource || !lpPropSetGUID || lpOutArray) return MAPI_E_INVALID_PARAMETER;
+		if (!lpSource || !lpPropSetGUID) return nullptr;
 
 		LPSPropTagArray lpAllProps = nullptr;
-
-		*lpOutArray = nullptr;
+		LPSPropTagArray lpFilteredProps = nullptr;
 
 		auto hRes = WC_MAPI(lpSource->GetPropList(0, &lpAllProps));
-
 		if (hRes == S_OK && lpAllProps)
 		{
 			ULONG cProps = 0;
@@ -1916,7 +1911,7 @@ namespace mapi
 					}
 				}
 
-				auto lpFilteredProps = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(ulNumProps));
+				lpFilteredProps = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(ulNumProps));
 				if (lpFilteredProps)
 				{
 					lpFilteredProps->cValues = 0;
@@ -1930,8 +1925,6 @@ namespace mapi
 							lpFilteredProps->cValues++;
 						}
 					}
-
-					*lpOutArray = lpFilteredProps;
 				}
 			}
 
@@ -1939,7 +1932,7 @@ namespace mapi
 		}
 
 		MAPIFreeBuffer(lpAllProps);
-		return hRes;
+		return lpFilteredProps;
 	}
 
 	_Check_return_ bool CheckStringProp(_In_opt_ const _SPropValue* lpProp, ULONG ulPropType)
