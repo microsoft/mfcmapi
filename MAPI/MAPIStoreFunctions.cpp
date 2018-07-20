@@ -788,22 +788,21 @@ namespace mapi
 			return hRes;
 		}
 
-		_Check_return_ HRESULT
-		OpenStoreFromMAPIProp(_In_ LPMAPISESSION lpMAPISession, _In_ LPMAPIPROP lpMAPIProp, _Deref_out_ LPMDB* lpMDB)
+		_Check_return_ LPMDB OpenStoreFromMAPIProp(_In_ LPMAPISESSION lpMAPISession, _In_ LPMAPIPROP lpMAPIProp)
 		{
+			if (!lpMAPISession || !lpMAPIProp) return nullptr;
 			LPSPropValue lpProp = nullptr;
 
-			if (!lpMAPISession || !lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
+			EC_MAPI_S(HrGetOneProp(lpMAPIProp, PR_STORE_ENTRYID, &lpProp));
 
-			auto hRes = EC_MAPI(HrGetOneProp(lpMAPIProp, PR_STORE_ENTRYID, &lpProp));
-
+			LPMDB lpMDB = nullptr;
 			if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 			{
-				*lpMDB = CallOpenMsgStore(lpMAPISession, NULL, &lpProp->Value.bin, MAPI_BEST_ACCESS);
+				lpMDB = CallOpenMsgStore(lpMAPISession, NULL, &lpProp->Value.bin, MAPI_BEST_ACCESS);
 			}
 
 			MAPIFreeBuffer(lpProp);
-			return hRes;
+			return lpMDB;
 		}
 
 		_Check_return_ bool StoreSupportsManageStore(_In_ LPMDB lpMDB)

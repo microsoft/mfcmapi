@@ -91,9 +91,8 @@ namespace dialog
 					const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 					if (lpMAPISession)
 					{
-						LPMDB lpNewMDB = nullptr;
-						EC_H_S(mapi::store::OpenStoreFromMAPIProp(
-							lpMAPISession, static_cast<LPMAPIPROP>(lpUnk), &lpNewMDB));
+						auto lpNewMDB =
+							mapi::store::OpenStoreFromMAPIProp(lpMAPISession, static_cast<LPMAPIPROP>(lpUnk));
 						if (lpNewMDB)
 						{
 							lpMapiObjects->SetMDB(lpNewMDB);

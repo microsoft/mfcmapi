@@ -5,11 +5,8 @@ namespace mapi
 {
 	namespace store
 	{
-		_Check_return_ LPMDB CallOpenMsgStore(
-			_In_ LPMAPISESSION lpSession,
-			_In_ ULONG_PTR ulUIParam,
-			_In_ LPSBinary lpEID,
-			ULONG ulFlags);
+		_Check_return_ LPMDB
+		CallOpenMsgStore(_In_ LPMAPISESSION lpSession, _In_ ULONG_PTR ulUIParam, _In_ LPSBinary lpEID, ULONG ulFlags);
 		std::string BuildServerDN(const std::string& szServerName, const std::string& szPost);
 		_Check_return_ HRESULT GetMailboxTable(
 			_In_ LPMDB lpMDB,
@@ -94,8 +91,7 @@ namespace mapi
 			const std::string& szServerName,
 			ULONG ulFlags, // Flags for CreateStoreEntryID
 			_Deref_out_opt_ LPMDB* lppPublicMDB);
-		_Check_return_ HRESULT
-		OpenStoreFromMAPIProp(_In_ LPMAPISESSION lpMAPISession, _In_ LPMAPIPROP lpMAPIProp, _Deref_out_ LPMDB* lpMDB);
+		_Check_return_ LPMDB OpenStoreFromMAPIProp(_In_ LPMAPISESSION lpMAPISession, _In_ LPMAPIPROP lpMAPIProp);
 
 		_Check_return_ bool StoreSupportsManageStore(_In_ LPMDB lpMDB);
 		_Check_return_ bool StoreSupportsManageStoreEx(_In_ LPMDB lpMDB);
