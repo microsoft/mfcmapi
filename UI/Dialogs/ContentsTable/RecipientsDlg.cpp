@@ -77,21 +77,17 @@ namespace dialog
 		CContentsTableDlg::OnInitMenu(pMenu);
 	}
 
-	_Check_return_ HRESULT CRecipientsDlg::OpenItemProp(
-		int iSelectedItem,
-		__mfcmapiModifyEnum bModify,
-		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ LPMAPIPROP CRecipientsDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
 	{
+		if (!m_lpContentsTableListCtrl) return nullptr;
 		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
-		if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
+		if (m_bViewRecipientABEntry)
+		{
+			return CContentsTableDlg::OpenItemProp(iSelectedItem, bModify);
+		}
 
-		*lppMAPIProp = nullptr;
-
-		if (m_bViewRecipientABEntry) return CContentsTableDlg::OpenItemProp(iSelectedItem, bModify, lppMAPIProp);
-
-		// Do nothing, ensuring we work with the row
-		return S_OK;
+		return nullptr;
 	}
 
 	void CRecipientsDlg::OnViewRecipientABEntry()

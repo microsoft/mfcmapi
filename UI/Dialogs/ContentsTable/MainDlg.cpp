@@ -373,17 +373,15 @@ namespace dialog
 		OnOpenMessageStoreTable();
 	}
 
-	_Check_return_ HRESULT
-	CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ LPMAPIPROP CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
 	{
-		*lppMAPIProp = nullptr;
+		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return nullptr;
 		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
-		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
-
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-		if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
+		if (!lpMAPISession) return nullptr;
 
+		LPMDB lpMDB = nullptr;
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 		if (lpListData && lpListData->Contents())
 		{
@@ -393,16 +391,12 @@ namespace dialog
 				ULONG ulFlags = NULL;
 				if (mfcmapiREQUEST_MODIFY == bModify) ulFlags |= MDB_WRITE;
 
-				return EC_H(mapi::store::CallOpenMsgStore(
-					lpMAPISession,
-					reinterpret_cast<ULONG_PTR>(m_hWnd),
-					lpEntryID,
-					ulFlags,
-					reinterpret_cast<LPMDB*>(lppMAPIProp)));
+				EC_H_S(mapi::store::CallOpenMsgStore(
+					lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpEntryID, ulFlags, &lpMDB));
 			}
 		}
 
-		return S_OK;
+		return lpMDB;
 	}
 
 	void CMainDlg::OnOpenDefaultMessageStore()

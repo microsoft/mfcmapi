@@ -484,27 +484,24 @@ namespace dialog
 
 	// Since the strategy for opening the selected property may vary depending on the table we're displaying,
 	// this virtual function allows us to override the default method with the method used by the table we've written a special class for.
-	_Check_return_ HRESULT CContentsTableDlg::OpenItemProp(
-		int iSelectedItem,
-		__mfcmapiModifyEnum bModify,
-		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ LPMAPIPROP CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
 	{
+		if (!m_lpContentsTableListCtrl) return nullptr;
 		auto hRes = S_OK;
 		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
-		if (!lppMAPIProp || !m_lpContentsTableListCtrl) return MAPI_E_INVALID_PARAMETER;
-
+		LPMAPIPROP lpMAPIProp = nullptr;
 		if (-1 == iSelectedItem)
 		{
 			// Get the first selected item
-			hRes = EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, bModify, lppMAPIProp));
+			hRes = EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, bModify, &lpMAPIProp));
 		}
 		else
 		{
-			hRes = EC_H(m_lpContentsTableListCtrl->DefaultOpenItemProp(iSelectedItem, bModify, lppMAPIProp));
+			hRes = EC_H(m_lpContentsTableListCtrl->DefaultOpenItemProp(iSelectedItem, bModify, &lpMAPIProp));
 		}
 
-		return hRes;
+		return lpMAPIProp;
 	}
 
 	_Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage)
@@ -577,10 +574,7 @@ namespace dialog
 
 				if (!(ulFlags & MENU_FLAGS_ROW))
 				{
-					if (FAILED(OpenItemProp(item, fRequestModify, &lpMAPIProp)))
-					{
-						lpMAPIProp = nullptr;
-					}
+					lpMAPIProp = OpenItemProp(item, fRequestModify);
 				}
 
 				HandleAddInMenuSingle(&MyAddInMenuParams, lpMAPIProp, nullptr);

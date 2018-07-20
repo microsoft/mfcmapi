@@ -22,8 +22,7 @@ namespace dialog
 		// Overrides from base class
 		void OnDeleteSelectedItem() override;
 		void OnInitMenu(_In_ CMenu* pMenu) override;
-		_Check_return_ HRESULT
-		OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
+		_Check_return_ LPMAPIPROP OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify) override;
 
 		// Menu items
 		void OnModifyRecipients();

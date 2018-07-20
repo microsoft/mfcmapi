@@ -64,14 +64,10 @@ namespace dialog
 	ON_COMMAND(ID_MODIFYSELECTEDITEM, OnModifySelectedItem)
 	END_MESSAGE_MAP()
 
-	_Check_return_ HRESULT CAclDlg::OpenItemProp(
-		int /*iSelectedItem*/,
-		__mfcmapiModifyEnum /*bModify*/,
-		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ LPMAPIPROP CAclDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/)
 	{
-		if (lppMAPIProp) *lppMAPIProp = nullptr;
 		// Don't do anything because we don't want to override the properties that we have
-		return S_OK;
+		return nullptr;
 	}
 
 	void CAclDlg::OnInitMenu(_In_ CMenu* pMenu)

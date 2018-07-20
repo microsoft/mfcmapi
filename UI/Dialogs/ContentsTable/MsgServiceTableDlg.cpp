@@ -187,31 +187,24 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT CMsgServiceTableDlg::OpenItemProp(
-		int iSelectedItem,
-		__mfcmapiModifyEnum /*bModify*/,
-		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ LPMAPIPROP CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
 	{
-		auto hRes = S_OK;
+		if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl) return nullptr;
 
 		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
-		*lppMAPIProp = nullptr;
-
-		if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
-
+		LPPROFSECT lpProfSect = nullptr;
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 		if (lpListData && lpListData->Contents())
 		{
 			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)
 			{
-				hRes = EC_H(mapi::profile::OpenProfileSection(
-					m_lpServiceAdmin, lpServiceUID, reinterpret_cast<LPPROFSECT*>(lppMAPIProp)));
+				EC_H_S(mapi::profile::OpenProfileSection(m_lpServiceAdmin, lpServiceUID, &lpProfSect));
 			}
 		}
 
-		return hRes;
+		return lpProfSect;
 	}
 
 	void CMsgServiceTableDlg::OnOpenProfileSection()

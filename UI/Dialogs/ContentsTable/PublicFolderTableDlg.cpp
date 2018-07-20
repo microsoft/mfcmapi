@@ -45,13 +45,10 @@ namespace dialog
 
 	void CPublicFolderTableDlg::OnDisplayItem() {}
 
-	_Check_return_ HRESULT CPublicFolderTableDlg::OpenItemProp(
-		int /*iSelectedItem*/,
-		__mfcmapiModifyEnum /*bModify*/,
-		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ LPMAPIPROP
+	CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/)
 	{
-		if (lppMAPIProp) *lppMAPIProp = nullptr;
-		return S_OK;
+		return nullptr;
 	}
 
 	void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()

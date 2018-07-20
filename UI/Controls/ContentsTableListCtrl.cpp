@@ -1136,7 +1136,7 @@ namespace controls
 			const auto iItem = GetNextSelectedItemNum(iCurItem);
 			if (-1 != iItem)
 			{
-				hRes = WC_H(m_lpHostDlg->OpenItemProp(iItem, bModify, lppProp));
+				*lppProp = m_lpHostDlg->OpenItemProp(iItem, bModify);
 			}
 
 			return hRes;
@@ -1306,7 +1306,7 @@ namespace controls
 						lpProps = lpData->lpSourceProps;
 					}
 
-					WC_H_S(m_lpHostDlg->OpenItemProp(pNMListView->iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
+					lpMAPIProp = m_lpHostDlg->OpenItemProp(pNMListView->iItem, mfcmapiREQUEST_MODIFY);
 
 					szTitle = strings::loadstring(IDS_DISPLAYNAMENOTFOUND);
 

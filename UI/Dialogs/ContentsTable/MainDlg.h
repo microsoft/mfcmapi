@@ -24,8 +24,7 @@ namespace dialog
 			_In_ LPMAPIPROP lpMAPIProp,
 			_In_ LPMAPICONTAINER lpContainer) override;
 		_Check_return_ bool HandleMenu(WORD wMenuSelect) override;
-		_Check_return_ HRESULT
-		OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
+		_Check_return_ LPMAPIPROP OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify) override;
 		void OnDisplayItem() override;
 		void OnInitMenu(_In_ CMenu* pMenu) override;
 
