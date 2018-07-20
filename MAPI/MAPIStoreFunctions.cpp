@@ -624,18 +624,14 @@ namespace mapi
 
 		// Display a UI to select a mailbox, then call OpenOtherUsersMailbox with the mailboxDN
 		// May return MAPI_E_CANCEL
-		_Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
-			_In_ LPMAPISESSION lpMAPISession,
-			_In_ LPADRBOOK lpAddrBook,
-			_Deref_out_opt_ LPMDB* lppOtherUserMDB)
+		_Check_return_ LPMDB OpenOtherUsersMailboxFromGal(_In_ LPMAPISESSION lpMAPISession, _In_ LPADRBOOK lpAddrBook)
 		{
+			if (!lpMAPISession || !lpAddrBook) return nullptr;
+
 			LPSPropValue lpEmailAddress = nullptr;
 			LPMAILUSER lpMailUser = nullptr;
 			LPMDB lpPrivateMDB = nullptr;
-
-			*lppOtherUserMDB = nullptr;
-
-			if (!lpMAPISession || !lpAddrBook) return MAPI_E_INVALID_PARAMETER;
+			LPMDB lpOtherUserMDB = nullptr;
 
 			const auto szServerName = GetServerName(lpMAPISession);
 
@@ -649,13 +645,13 @@ namespace mapi
 
 					if (mapi::CheckStringProp(lpEmailAddress, PT_UNICODE))
 					{
-						hRes = WC_H(OpenMailboxWithPrompt(
+						WC_H_S(OpenMailboxWithPrompt(
 							lpMAPISession,
 							lpPrivateMDB,
 							szServerName,
 							lpEmailAddress->Value.lpszW,
 							OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
-							lppOtherUserMDB));
+							&lpOtherUserMDB));
 					}
 				}
 			}
@@ -663,7 +659,7 @@ namespace mapi
 			MAPIFreeBuffer(lpEmailAddress);
 			if (lpMailUser) lpMailUser->Release();
 			if (lpPrivateMDB) lpPrivateMDB->Release();
-			return hRes;
+			return lpOtherUserMDB;
 		}
 #endif
 

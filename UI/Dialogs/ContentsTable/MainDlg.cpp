@@ -649,8 +649,6 @@ namespace dialog
 
 	void CMainDlg::OnOpenOtherUsersMailboxFromGAL()
 	{
-		LPMDB lpMailboxMDB = nullptr; // Ptr to any another's msg store interface.
-
 		if (!m_lpMapiObjects) return;
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
@@ -659,8 +657,7 @@ namespace dialog
 		const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 		if (lpAddrBook)
 		{
-			EC_H_CANCEL_S(mapi::store::OpenOtherUsersMailboxFromGal(lpMAPISession, lpAddrBook, &lpMailboxMDB));
-
+			auto lpMailboxMDB = mapi::store::OpenOtherUsersMailboxFromGal(lpMAPISession, lpAddrBook);
 			if (lpMailboxMDB)
 			{
 				EC_H_S(DisplayObject(lpMailboxMDB, NULL, otStore, this));
