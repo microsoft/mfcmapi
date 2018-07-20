@@ -159,7 +159,6 @@ namespace dialog
 
 	void CAbDlg::OnOpenManager()
 	{
-		LPMAILUSER lpMailUser = nullptr;
 		auto iItem = -1;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -167,10 +166,7 @@ namespace dialog
 
 		do
 		{
-			if (lpMailUser) lpMailUser->Release();
-			lpMailUser = nullptr;
-			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-				&iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMailUser)));
+			auto lpMailUser = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
 
 			if (lpMailUser)
 			{
@@ -179,15 +175,14 @@ namespace dialog
 					PR_EMS_AB_MANAGER_O,
 					otDefault, // oType,
 					this));
+
+				lpMailUser->Release();
 			}
 		} while (iItem != -1);
-
-		if (lpMailUser) lpMailUser->Release();
 	}
 
 	void CAbDlg::OnOpenOwner()
 	{
-		LPMAILUSER lpMailUser = nullptr;
 		auto iItem = -1;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -195,10 +190,7 @@ namespace dialog
 
 		do
 		{
-			if (lpMailUser) lpMailUser->Release();
-			lpMailUser = nullptr;
-			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-				&iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMailUser)));
+			auto lpMailUser = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
 
 			if (lpMailUser)
 			{
@@ -207,10 +199,10 @@ namespace dialog
 					PR_EMS_AB_OWNER_O,
 					otDefault, // oType,
 					this));
+
+				lpMailUser->Release();
 			}
 		} while (iItem != -1);
-
-		if (lpMailUser) lpMailUser->Release();
 	}
 
 	void CAbDlg::OnDeleteSelectedItem()

@@ -1124,35 +1124,25 @@ namespace controls
 		// Call again with the previous iCurItem to get the next one.
 		// Stop calling when iCurItem = -1 and/or lppProp is NULL
 		// If iCurItem is NULL, just returns the focused item
-		_Check_return_ HRESULT CContentsTableListCtrl::OpenNextSelectedItemProp(
-			_Inout_opt_ int* iCurItem,
-			__mfcmapiModifyEnum bModify,
-			_Deref_out_opt_ LPMAPIPROP* lppProp) const
+		_Check_return_ LPMAPIPROP
+		CContentsTableListCtrl::OpenNextSelectedItemProp(_Inout_opt_ int* iCurItem, __mfcmapiModifyEnum bModify) const
 		{
-			auto hRes = S_OK;
-
-			*lppProp = nullptr;
-
 			const auto iItem = GetNextSelectedItemNum(iCurItem);
 			if (-1 != iItem)
 			{
-				*lppProp = m_lpHostDlg->OpenItemProp(iItem, bModify);
+				return m_lpHostDlg->OpenItemProp(iItem, bModify);
 			}
 
-			return hRes;
+			return nullptr;
 		}
 
-		_Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
-			int iItem,
-			__mfcmapiModifyEnum bModify,
-			_Deref_out_opt_ LPMAPIPROP* lppProp) const
+		_Check_return_ LPMAPIPROP
+		CContentsTableListCtrl::DefaultOpenItemProp(int iItem, __mfcmapiModifyEnum bModify) const
 		{
-			auto hRes = S_OK;
-
-			*lppProp = nullptr;
-
 			if (!m_lpMapiObjects || -1 == iItem) return S_OK;
 
+			auto hRes = S_OK;
+			LPMAPIPROP lpMAPIProp = nullptr;
 			output::DebugPrintEx(
 				DBGGeneric,
 				CLASS,
@@ -1186,7 +1176,7 @@ namespace controls
 					nullptr,
 					bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
 					nullptr,
-					reinterpret_cast<LPUNKNOWN*>(lppProp)));
+					reinterpret_cast<LPUNKNOWN*>(&lpMAPIProp)));
 			}
 
 			break;
@@ -1209,7 +1199,7 @@ namespace controls
 					lpInterface,
 					bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
 					nullptr,
-					reinterpret_cast<LPUNKNOWN*>(lppProp)));
+					reinterpret_cast<LPUNKNOWN*>(&lpMAPIProp)));
 				if (hRes == MAPI_E_INTERFACE_NOT_SUPPORTED &&
 					registry::RegKeys[registry::regkeyUSE_MESSAGERAW].ulCurDWORD)
 				{
@@ -1230,18 +1220,18 @@ namespace controls
 					nullptr,
 					bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
 					nullptr,
-					reinterpret_cast<LPUNKNOWN*>(lppProp)));
+					reinterpret_cast<LPUNKNOWN*>(&lpMAPIProp)));
 			}
 
 			break;
 			}
 
-			if (!*lppProp && FAILED(hRes) && mfcmapiREQUEST_MODIFY == bModify && MAPI_E_NOT_FOUND != hRes)
+			if (!lpMAPIProp && FAILED(hRes) && mfcmapiREQUEST_MODIFY == bModify && MAPI_E_NOT_FOUND != hRes)
 			{
 				output::DebugPrint(DBGGeneric, L"\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n", hRes);
 				// We got access denied when we passed MAPI_MODIFY
 				// Let's try again without it.
-				hRes = EC_H(DefaultOpenItemProp(iItem, mfcmapiDO_NOT_REQUEST_MODIFY, lppProp));
+				lpMAPIProp = DefaultOpenItemProp(iItem, mfcmapiDO_NOT_REQUEST_MODIFY);
 			}
 
 			if (hRes == MAPI_E_NOT_FOUND)
@@ -1250,7 +1240,6 @@ namespace controls
 					DBGGeneric,
 					L"\tDefaultOpenItemProp encountered an entry ID for an item that doesn't exist\n\tThis happens "
 					L"often when we're deleting items.\n");
-				hRes = S_OK;
 			}
 
 			output::DebugPrintEx(
@@ -1258,9 +1247,10 @@ namespace controls
 				CLASS,
 				L"DefaultOpenItemProp",
 				L"returning *lppProp = %p and hRes = 0x%X\n",
-				*lppProp,
+				lpMAPIProp,
 				hRes);
-			return hRes;
+
+			return lpMAPIProp;
 		}
 
 		void CContentsTableListCtrl::SelectAll()

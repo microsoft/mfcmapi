@@ -233,19 +233,17 @@ namespace dialog
 
 	void CFolderDlg::OnDisplayItem()
 	{
-		LPMAPIPROP lpMAPIProp = nullptr;
 		auto iItem = -1;
 		CWaitCursor Wait;
 
 		do
 		{
-			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
+			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
 
 			if (lpMAPIProp)
 			{
 				EC_H_S(DisplayObject(lpMAPIProp, NULL, otDefault, this));
 				lpMAPIProp->Release();
-				lpMAPIProp = nullptr;
 			}
 		} while (iItem != -1);
 	}
@@ -820,7 +818,6 @@ namespace dialog
 
 	void CFolderDlg::OnManualResolve()
 	{
-		LPMESSAGE lpMessage = nullptr;
 		auto iItem = -1;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -847,8 +844,8 @@ namespace dialog
 		if (!MyData.DisplayDialog()) return;
 		do
 		{
-			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-				&iItem, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 
 			if (lpMessage)
 			{
@@ -857,8 +854,9 @@ namespace dialog
 					lpMAPISession, lpMessage, name, CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE)));
 
 				lpMessage->Release();
-				lpMessage = nullptr;
 			}
+
+			if (lpMAPIProp) lpMAPIProp->Release();
 		} while (iItem != -1);
 	}
 
@@ -1616,17 +1614,16 @@ namespace dialog
 
 		if (iNumSelected == 1)
 		{
-			LPMESSAGE lpMessage = nullptr;
-
-			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-				nullptr, mfcmapiREQUEST_MODIFY, reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
+			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, mfcmapiREQUEST_MODIFY);
+			auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 
 			if (lpMessage)
 			{
 				EC_MAPI_S(lpMessage->SetReadFlag(MyFlags.GetHex(0)));
 				lpMessage->Release();
-				lpMessage = nullptr;
 			}
+
+			if (lpMAPIProp) lpMAPIProp->Release();
 		}
 		else if (iNumSelected > 1)
 		{
@@ -1694,7 +1691,6 @@ namespace dialog
 	void CFolderDlg::OnCreateMessageRestriction()
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-		LPMAPIPROP lpMAPIProp = nullptr;
 
 		// These are the properties we're going to copy off of the current message and store
 		// in some object level variables
@@ -1708,8 +1704,7 @@ namespace dialog
 		static const SizedSPropTagArray(frNUMCOLS, sptFRCols) = {
 			frNUMCOLS, {PR_SUBJECT, PR_CLIENT_SUBMIT_TIME, PR_MESSAGE_DELIVERY_TIME}};
 
-		auto hRes =
-			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
+		auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, mfcmapiREQUEST_MODIFY);
 
 		if (lpMAPIProp)
 		{
@@ -1721,89 +1716,92 @@ namespace dialog
 				// Allocate and create our SRestriction
 				// Allocate base memory:
 				auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction));
-				auto lpResLevel1 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpRes);
-				auto lpResLevel2 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpRes);
-				auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
-				auto lpspvSubmitTime = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
-				auto lpspvDeliveryTime = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
 
 				// Check that all our allocations were good before going on
-				if (SUCCEEDED(hRes))
-				{
-					// Root Node
-					lpRes->rt = RES_AND; // We're doing an AND...
-					lpRes->res.resAnd.cRes = 2; // ...of two criteria...
-					lpRes->res.resAnd.lpRes = lpResLevel1; // ...described here
+				// Root Node
+				lpRes->rt = RES_AND; // We're doing an AND...
+				lpRes->res.resAnd.cRes = 2; // ...of two criteria...
+				auto lpResLevel1 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpRes);
+				lpRes->res.resAnd.lpRes = lpResLevel1; // ...described here
 
+				if (lpResLevel1)
+				{
 					lpResLevel1[0].rt = RES_PROPERTY;
 					lpResLevel1[0].res.resProperty.relop = RELOP_EQ;
 					lpResLevel1[0].res.resProperty.ulPropTag = PR_SUBJECT;
+					auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
 					lpResLevel1[0].res.resProperty.lpProp = lpspvSubject;
+					if (lpspvSubject)
+					{
+						// Allocate and fill out properties:
+						lpspvSubject->ulPropTag = PR_SUBJECT;
+
+						if (mapi::CheckStringProp(&lpProps[frPR_SUBJECT], PT_TSTRING))
+						{
+							lpspvSubject->Value.LPSZ = mapi::CopyString(lpProps[frPR_SUBJECT].Value.LPSZ, lpRes);
+						}
+						else
+						{
+							lpspvSubject->Value.LPSZ = nullptr;
+						}
+					}
 
 					lpResLevel1[1].rt = RES_OR;
 					lpResLevel1[1].res.resOr.cRes = 2;
+					auto lpResLevel2 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpRes);
 					lpResLevel1[1].res.resOr.lpRes = lpResLevel2;
 
-					lpResLevel2[0].rt = RES_PROPERTY;
-					lpResLevel2[0].res.resProperty.relop = RELOP_EQ;
-					lpResLevel2[0].res.resProperty.ulPropTag = PR_CLIENT_SUBMIT_TIME;
-					lpResLevel2[0].res.resProperty.lpProp = lpspvSubmitTime;
-
-					lpResLevel2[1].rt = RES_PROPERTY;
-					lpResLevel2[1].res.resProperty.relop = RELOP_EQ;
-					lpResLevel2[1].res.resProperty.ulPropTag = PR_MESSAGE_DELIVERY_TIME;
-					lpResLevel2[1].res.resProperty.lpProp = lpspvDeliveryTime;
-
-					// Allocate and fill out properties:
-					lpspvSubject->ulPropTag = PR_SUBJECT;
-
-					if (mapi::CheckStringProp(&lpProps[frPR_SUBJECT], PT_TSTRING))
+					if (lpResLevel2)
 					{
-						lpspvSubject->Value.LPSZ = mapi::CopyString(lpProps[frPR_SUBJECT].Value.LPSZ, lpRes);
-					}
-					else
-					{
-						lpspvSubject->Value.LPSZ = nullptr;
-					}
+						lpResLevel2[0].rt = RES_PROPERTY;
+						lpResLevel2[0].res.resProperty.relop = RELOP_EQ;
+						lpResLevel2[0].res.resProperty.ulPropTag = PR_CLIENT_SUBMIT_TIME;
+						auto lpspvSubmitTime = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
+						lpResLevel2[0].res.resProperty.lpProp = lpspvSubmitTime;
+						if (lpspvSubmitTime)
+						{
+							lpspvSubmitTime->ulPropTag = PR_CLIENT_SUBMIT_TIME;
+							if (PR_CLIENT_SUBMIT_TIME == lpProps[frPR_CLIENT_SUBMIT_TIME].ulPropTag)
+							{
+								lpspvSubmitTime->Value.ft.dwLowDateTime =
+									lpProps[frPR_CLIENT_SUBMIT_TIME].Value.ft.dwLowDateTime;
+								lpspvSubmitTime->Value.ft.dwHighDateTime =
+									lpProps[frPR_CLIENT_SUBMIT_TIME].Value.ft.dwHighDateTime;
+							}
+							else
+							{
+								lpspvSubmitTime->Value.ft.dwLowDateTime = 0x0;
+								lpspvSubmitTime->Value.ft.dwHighDateTime = 0x0;
+							}
+						}
 
-					lpspvSubmitTime->ulPropTag = PR_CLIENT_SUBMIT_TIME;
-					if (PR_CLIENT_SUBMIT_TIME == lpProps[frPR_CLIENT_SUBMIT_TIME].ulPropTag)
-					{
-						lpspvSubmitTime->Value.ft.dwLowDateTime =
-							lpProps[frPR_CLIENT_SUBMIT_TIME].Value.ft.dwLowDateTime;
-						lpspvSubmitTime->Value.ft.dwHighDateTime =
-							lpProps[frPR_CLIENT_SUBMIT_TIME].Value.ft.dwHighDateTime;
+						lpResLevel2[1].rt = RES_PROPERTY;
+						lpResLevel2[1].res.resProperty.relop = RELOP_EQ;
+						lpResLevel2[1].res.resProperty.ulPropTag = PR_MESSAGE_DELIVERY_TIME;
+						auto lpspvDeliveryTime = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
+						lpResLevel2[1].res.resProperty.lpProp = lpspvDeliveryTime;
+						if (lpspvDeliveryTime)
+						{
+							lpspvDeliveryTime->ulPropTag = PR_MESSAGE_DELIVERY_TIME;
+							if (PR_MESSAGE_DELIVERY_TIME == lpProps[frPR_MESSAGE_DELIVERY_TIME].ulPropTag)
+							{
+								lpspvDeliveryTime->Value.ft.dwLowDateTime =
+									lpProps[frPR_MESSAGE_DELIVERY_TIME].Value.ft.dwLowDateTime;
+								lpspvDeliveryTime->Value.ft.dwHighDateTime =
+									lpProps[frPR_MESSAGE_DELIVERY_TIME].Value.ft.dwHighDateTime;
+							}
+							else
+							{
+								lpspvDeliveryTime->Value.ft.dwLowDateTime = 0x0;
+								lpspvDeliveryTime->Value.ft.dwHighDateTime = 0x0;
+							}
+						}
 					}
-					else
-					{
-						lpspvSubmitTime->Value.ft.dwLowDateTime = 0x0;
-						lpspvSubmitTime->Value.ft.dwHighDateTime = 0x0;
-					}
-
-					lpspvDeliveryTime->ulPropTag = PR_MESSAGE_DELIVERY_TIME;
-					if (PR_MESSAGE_DELIVERY_TIME == lpProps[frPR_MESSAGE_DELIVERY_TIME].ulPropTag)
-					{
-						lpspvDeliveryTime->Value.ft.dwLowDateTime =
-							lpProps[frPR_MESSAGE_DELIVERY_TIME].Value.ft.dwLowDateTime;
-						lpspvDeliveryTime->Value.ft.dwHighDateTime =
-							lpProps[frPR_MESSAGE_DELIVERY_TIME].Value.ft.dwHighDateTime;
-					}
-					else
-					{
-						lpspvDeliveryTime->Value.ft.dwLowDateTime = 0x0;
-						lpspvDeliveryTime->Value.ft.dwHighDateTime = 0x0;
-					}
-
-					output::DebugPrintEx(DBGGeneric, CLASS, L"OnCreateMessageRestriction", L"built restriction:\n");
-					output::DebugPrintRestriction(DBGGeneric, lpRes, lpMAPIProp);
 				}
-				else
-				{
-					// We failed in our allocations - clean up what we got before we apply
-					// Everything was allocated off of lpRes, so cleaning up that will suffice
-					if (lpRes) MAPIFreeBuffer(lpRes);
-					lpRes = nullptr;
-				}
+
+				output::DebugPrintEx(DBGGeneric, CLASS, L"OnCreateMessageRestriction", L"built restriction:\n");
+				output::DebugPrintRestriction(DBGGeneric, lpRes, lpMAPIProp);
+
 				m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
 				SetRestrictionType(mfcmapiNORMAL_RESTRICTION);

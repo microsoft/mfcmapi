@@ -241,19 +241,17 @@ namespace dialog
 
 	void CContentsTableDlg::OnDisplayItem()
 	{
-		LPMAPIPROP lpMAPIProp = nullptr;
 		auto iItem = -1;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		do
 		{
-			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
+			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
 
 			if (lpMAPIProp)
 			{
 				EC_H_S(DisplayObject(lpMAPIProp, NULL, otHierarchy, this));
 				lpMAPIProp->Release();
-				lpMAPIProp = nullptr;
 			}
 		} while (iItem != -1);
 	}
@@ -487,21 +485,17 @@ namespace dialog
 	_Check_return_ LPMAPIPROP CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
 	{
 		if (!m_lpContentsTableListCtrl) return nullptr;
-		auto hRes = S_OK;
 		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
-		LPMAPIPROP lpMAPIProp = nullptr;
 		if (-1 == iSelectedItem)
 		{
 			// Get the first selected item
-			hRes = EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, bModify, &lpMAPIProp));
+			return m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, bModify);
 		}
 		else
 		{
-			hRes = EC_H(m_lpContentsTableListCtrl->DefaultOpenItemProp(iSelectedItem, bModify, &lpMAPIProp));
+			return m_lpContentsTableListCtrl->DefaultOpenItemProp(iSelectedItem, bModify);
 		}
-
-		return lpMAPIProp;
 	}
 
 	_Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage)
