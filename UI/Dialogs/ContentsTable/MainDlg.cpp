@@ -391,8 +391,8 @@ namespace dialog
 				ULONG ulFlags = NULL;
 				if (mfcmapiREQUEST_MODIFY == bModify) ulFlags |= MDB_WRITE;
 
-				EC_H_S(mapi::store::CallOpenMsgStore(
-					lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpEntryID, ulFlags, &lpMDB));
+				lpMDB = mapi::store::CallOpenMsgStore(
+					lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpEntryID, ulFlags);
 			}
 		}
 
@@ -506,9 +506,8 @@ namespace dialog
 
 		if (sBin.lpb)
 		{
-			LPMDB lpMDB = nullptr;
-			EC_H_S(mapi::store::CallOpenMsgStore(
-				lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), &sBin, MyEID.GetHex(1), &lpMDB));
+			auto lpMDB = mapi::store::CallOpenMsgStore(
+				lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), &sBin, MyEID.GetHex(1));
 
 			if (lpMDB)
 			{
@@ -688,16 +687,14 @@ namespace dialog
 				const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
 				if (lpItemEID)
 				{
-					LPMDB lpMDB = nullptr;
-					EC_H_S(mapi::store::CallOpenMsgStore(
-						lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpItemEID, MDB_WRITE | MDB_ONLINE, &lpMDB));
+					auto lpMDB = mapi::store::CallOpenMsgStore(
+						lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpItemEID, MDB_WRITE | MDB_ONLINE);
 
 					if (lpMDB)
 					{
 						EC_H_S(DisplayObject(lpMDB, NULL, otStoreDeletedItems, this));
 
 						lpMDB->Release();
-						lpMDB = nullptr;
 					}
 				}
 			}
@@ -706,8 +703,6 @@ namespace dialog
 
 	void CMainDlg::OnDumpStoreContents()
 	{
-		LPMDB lpMDB = nullptr;
-
 		if (!m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
@@ -721,8 +716,8 @@ namespace dialog
 				const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
 				if (lpItemEID)
 				{
-					EC_H_S(mapi::store::CallOpenMsgStore(
-						lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpItemEID, MDB_WRITE, &lpMDB));
+					auto lpMDB = mapi::store::CallOpenMsgStore(
+						lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpItemEID, MDB_WRITE);
 					if (lpMDB)
 					{
 						auto szDir = file::GetDirectoryPath(m_hWnd);
@@ -737,7 +732,6 @@ namespace dialog
 						}
 
 						lpMDB->Release();
-						lpMDB = nullptr;
 					}
 				}
 			}

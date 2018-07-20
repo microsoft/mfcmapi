@@ -5,12 +5,11 @@ namespace mapi
 {
 	namespace store
 	{
-		_Check_return_ HRESULT CallOpenMsgStore(
+		_Check_return_ LPMDB CallOpenMsgStore(
 			_In_ LPMAPISESSION lpSession,
 			_In_ ULONG_PTR ulUIParam,
 			_In_ LPSBinary lpEID,
-			ULONG ulFlags,
-			_Deref_out_ LPMDB* lpMDB);
+			ULONG ulFlags);
 		std::string BuildServerDN(const std::string& szServerName, const std::string& szPost);
 		_Check_return_ HRESULT GetMailboxTable(
 			_In_ LPMDB lpMDB,

@@ -16,44 +16,42 @@ namespace mapi
 {
 	namespace store
 	{
-		_Check_return_ HRESULT CallOpenMsgStore(
-			_In_ LPMAPISESSION lpSession,
-			_In_ ULONG_PTR ulUIParam,
-			_In_ LPSBinary lpEID,
-			ULONG ulFlags,
-			_Deref_out_ LPMDB* lpMDB)
+		_Check_return_ LPMDB
+		CallOpenMsgStore(_In_ LPMAPISESSION lpSession, _In_ ULONG_PTR ulUIParam, _In_ LPSBinary lpEID, ULONG ulFlags)
 		{
-			if (!lpSession || !lpMDB || !lpEID) return MAPI_E_INVALID_PARAMETER;
+			if (!lpSession || !lpEID) return nullptr;
 
 			if (registry::RegKeys[registry::regkeyMDB_ONLINE].ulCurDWORD)
 			{
 				ulFlags |= MDB_ONLINE;
 			}
+
 			output::DebugPrint(DBGOpenItemProp, L"CallOpenMsgStore ulFlags = 0x%X\n", ulFlags);
 
+			LPMDB lpMDB = nullptr;
 			auto hRes = WC_MAPI(lpSession->OpenMsgStore(
 				ulUIParam,
 				lpEID->cb,
 				reinterpret_cast<LPENTRYID>(lpEID->lpb),
 				nullptr,
 				ulFlags,
-				static_cast<LPMDB*>(lpMDB)));
+				static_cast<LPMDB*>(&lpMDB)));
 			if (hRes == MAPI_E_UNKNOWN_FLAGS && ulFlags & MDB_ONLINE)
 			{
-				// perhaps this store doesn't know the MDB_ONLINE flag - remove and retry
+				// Perhaps this store doesn't know the MDB_ONLINE flag - remove and retry
 				ulFlags = ulFlags & ~MDB_ONLINE;
 				output::DebugPrint(DBGOpenItemProp, L"CallOpenMsgStore 2nd attempt ulFlags = 0x%X\n", ulFlags);
 
-				hRes = WC_MAPI(lpSession->OpenMsgStore(
+				WC_MAPI_S(lpSession->OpenMsgStore(
 					ulUIParam,
 					lpEID->cb,
 					reinterpret_cast<LPENTRYID>(lpEID->lpb),
 					nullptr,
 					ulFlags,
-					static_cast<LPMDB*>(lpMDB)));
+					static_cast<LPMDB*>(&lpMDB)));
 			}
 
-			return hRes;
+			return lpMDB;
 		}
 
 		// Build a server DN.
@@ -458,14 +456,13 @@ namespace mapi
 
 			if (SUCCEEDED(hRes))
 			{
-				hRes = WC_H(CallOpenMsgStore(
+				*lppMailboxMDB = CallOpenMsgStore(
 					lpMAPISession,
 					NULL,
 					&sbEID,
 					MDB_NO_DIALOG | MDB_NO_MAIL | // spooler not notified of our presence
 						MDB_TEMPORARY | // message store not added to MAPI profile
-						MAPI_BEST_ACCESS, // normally WRITE, but allow access to RO store
-					lppMailboxMDB));
+						MAPI_BEST_ACCESS); // normally WRITE, but allow access to RO store
 			}
 
 			MAPIFreeBuffer(sbEID.lpb);
@@ -512,8 +509,8 @@ namespace mapi
 
 			if (pRow && pRow->cRows)
 			{
-				hRes = WC_H(CallOpenMsgStore(
-					lpMAPISession, NULL, &pRow->aRow[0].lpProps[EID].Value.bin, MDB_WRITE, lppDefaultMDB));
+				*lppDefaultMDB =
+					CallOpenMsgStore(lpMAPISession, NULL, &pRow->aRow[0].lpProps[EID].Value.bin, MDB_WRITE);
 			}
 			else
 				hRes = MAPI_E_NOT_FOUND;
@@ -716,12 +713,8 @@ namespace mapi
 								pRow->aRow[ulRowNum].lpProps[EID].ulPropTag == PR_ENTRYID &&
 								IsEqualMAPIUID(pRow->aRow[ulRowNum].lpProps[STORETYPE].Value.bin.lpb, lpGUID))
 							{
-								hRes = WC_H(CallOpenMsgStore(
-									lpMAPISession,
-									NULL,
-									&pRow->aRow[ulRowNum].lpProps[EID].Value.bin,
-									MDB_WRITE,
-									lppMDB));
+								*lppMDB = CallOpenMsgStore(
+									lpMAPISession, NULL, &pRow->aRow[ulRowNum].lpProps[EID].Value.bin, MDB_WRITE);
 								break;
 							}
 						}
@@ -806,7 +799,7 @@ namespace mapi
 
 			if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 			{
-				hRes = WC_H(CallOpenMsgStore(lpMAPISession, NULL, &lpProp->Value.bin, MAPI_BEST_ACCESS, lpMDB));
+				*lpMDB = CallOpenMsgStore(lpMAPISession, NULL, &lpProp->Value.bin, MAPI_BEST_ACCESS);
 			}
 
 			MAPIFreeBuffer(lpProp);

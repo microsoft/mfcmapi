@@ -34,13 +34,13 @@ HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* 
 			WC_MAPI(lpStoreTable->QueryRows(1, NULL, &lpRow));
 			if (SUCCEEDED(hRes) && lpRow && 1 == lpRow->cRows && PR_ENTRYID == lpRow->aRow[0].lpProps[0].ulPropTag)
 			{
-				hRes = WC_H(mapi::store::CallOpenMsgStore(
-					lpMAPISession, NULL, &lpRow->aRow[0].lpProps[0].Value.bin, MDB_NO_DIALOG | MDB_WRITE, &lpMDB));
-				if (SUCCEEDED(hRes) && lpMDB)
+				lpMDB = mapi::store::CallOpenMsgStore(
+					lpMAPISession, NULL, &lpRow->aRow[0].lpProps[0].Value.bin, MDB_NO_DIALOG | MDB_WRITE);
+				if (lpMDB)
 				{
 					*lppMDB = lpMDB;
 				}
-				else if (SUCCEEDED(hRes))
+				else
 				{
 					hRes = MAPI_E_CALL_FAILED;
 				}
@@ -86,7 +86,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 				SBinary Bin = {0};
 				Bin.cb = static_cast<ULONG>(bin.size());
 				Bin.lpb = bin.data();
-				hRes = WC_H(mapi::store::CallOpenMsgStore(lpMAPISession, NULL, &Bin, MDB_NO_DIALOG | MDB_WRITE, &lpMDB));
+				lpMDB = mapi::store::CallOpenMsgStore(lpMAPISession, NULL, &Bin, MDB_NO_DIALOG | MDB_WRITE);
 			}
 			else
 			{
