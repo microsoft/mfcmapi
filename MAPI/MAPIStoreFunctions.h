@@ -29,7 +29,7 @@ namespace mapi
 			ULONG ulFlags,
 			_In_opt_ LPGUID lpGuidMDB);
 		std::string GetServerName(_In_ LPMAPISESSION lpSession);
-		_Check_return_ HRESULT HrMailboxLogon(
+		_Check_return_ LPMDB MailboxLogon(
 			_In_ LPMAPISESSION lplhSession, // ptr to MAPI session handle
 			_In_ LPMDB lpMDB, // ptr to message store
 			const std::string& lpszMsgStoreDN, // message store DN
@@ -37,8 +37,7 @@ namespace mapi
 			const std::wstring&
 				smtpAddress, // SMTP Address of the target user. Optional but Required if using MAPI / HTTP
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
-			bool bForceServer, // Use CreateStoreEntryID2
-			_Deref_out_opt_ LPMDB* lppMailboxMDB); // ptr to mailbox message store ptr
+			bool bForceServer); // Use CreateStoreEntryID2
 		_Check_return_ LPMDB OpenDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession);
 		_Check_return_ LPMDB OpenOtherUsersMailbox(
 			_In_ LPMAPISESSION lpMAPISession,

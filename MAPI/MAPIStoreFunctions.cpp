@@ -374,7 +374,7 @@ namespace mapi
 
 		// Stolen from MBLogon.c in the EDK to avoid compiling and linking in the entire beast
 		// Cleaned up to fit in with other functions
-		// $--HrMailboxLogon------------------------------------------------------
+		// $--MailboxLogon------------------------------------------------------
 		// Logon to a mailbox. Before calling this function do the following:
 		// 1) Create a profile that has Exchange administrator privileges.
 		// 2) Logon to Exchange using this profile.
@@ -394,24 +394,21 @@ namespace mapi
 		// Note2: A NULL lpszMailboxDN indicates the public store should be opened.
 		// -----------------------------------------------------------------------------
 
-		_Check_return_ HRESULT HrMailboxLogon(
+		_Check_return_ LPMDB MailboxLogon(
 			_In_ LPMAPISESSION lpMAPISession, // MAPI session handle
 			_In_ LPMDB lpMDB, // open message store
 			const std::string& lpszMsgStoreDN, // desired message store DN
 			const std::string& lpszMailboxDN, // desired mailbox DN or NULL
 			const std::wstring& smtpAddress,
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
-			bool bForceServer, // Use CreateStoreEntryID2
-			_Deref_out_opt_ LPMDB* lppMailboxMDB) // ptr to mailbox message store ptr
+			bool bForceServer) // Use CreateStoreEntryID2
 		{
 			SBinary sbEID = {0};
 
-			*lppMailboxMDB = nullptr;
-
 			if (!lpMAPISession)
 			{
-				output::DebugPrint(DBGGeneric, L"HrMailboxLogon: Session was NULL\n");
-				return MAPI_E_INVALID_PARAMETER;
+				output::DebugPrint(DBGGeneric, L"MailboxLogon: Session was NULL\n");
+				return nullptr;
 			}
 
 			auto hRes = WC_H(CreateStoreEntryID(
@@ -424,9 +421,10 @@ namespace mapi
 				&sbEID.cb,
 				reinterpret_cast<LPENTRYID*>(&sbEID.lpb)));
 
+			LPMDB lpMailboxMDB = nullptr;
 			if (SUCCEEDED(hRes))
 			{
-				*lppMailboxMDB = CallOpenMsgStore(
+				lpMailboxMDB = CallOpenMsgStore(
 					lpMAPISession,
 					NULL,
 					&sbEID,
@@ -436,7 +434,7 @@ namespace mapi
 			}
 
 			MAPIFreeBuffer(sbEID.lpb);
-			return hRes;
+			return lpMailboxMDB;
 		}
 
 		_Check_return_ LPMDB OpenDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession)
@@ -488,7 +486,7 @@ namespace mapi
 			return lpDefaultMDB;
 		}
 
-		// Build DNs for call to HrMailboxLogon
+		// Build DNs for call to MailboxLogon
 		_Check_return_ LPMDB OpenOtherUsersMailbox(
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_ LPMDB lpMDB,
@@ -530,16 +528,9 @@ namespace mapi
 				if (!szServerDN.empty())
 				{
 					output::DebugPrint(
-						DBGGeneric, L"Calling HrMailboxLogon with Server DN = \"%hs\"\n", szServerDN.c_str());
-					WC_H_S(HrMailboxLogon(
-						lpMAPISession,
-						lpMDB,
-						szServerDN,
-						szMailboxDN,
-						smtpAddress,
-						ulFlags,
-						bForceServer,
-						&lpOtherUserMDB));
+						DBGGeneric, L"Calling MailboxLogon with Server DN = \"%hs\"\n", szServerDN.c_str());
+					lpOtherUserMDB =
+						MailboxLogon(lpMAPISession, lpMDB, szServerDN, szMailboxDN, smtpAddress, ulFlags, bForceServer);
 				}
 			}
 
@@ -713,15 +704,8 @@ namespace mapi
 													"/cn=Microsoft Public MDB"); // STRING_OK
 					if (!szServerDN.empty())
 					{
-						WC_H_S(HrMailboxLogon(
-							lpMAPISession,
-							lpPublicMDBNonAdmin,
-							szServerDN,
-							"",
-							strings::emptystring,
-							ulFlags,
-							false,
-							&lpPublicMDB));
+						lpPublicMDB = MailboxLogon(
+							lpMAPISession, lpPublicMDBNonAdmin, szServerDN, "", strings::emptystring, ulFlags, false);
 					}
 				}
 			}
