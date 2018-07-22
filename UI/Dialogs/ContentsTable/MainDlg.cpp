@@ -603,13 +603,12 @@ namespace dialog
 
 		if (mapi::store::StoreSupportsManageStore(lpMDB))
 		{
-			WC_H_S(mapi::store::OpenMailboxWithPrompt(
+			lpOtherMDB = mapi::store::OpenMailboxWithPrompt(
 				lpMAPISession,
 				lpMDB,
 				szServerName,
 				strings::emptystring,
-				OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
-				&lpOtherMDB));
+				OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 			if (lpOtherMDB)
 			{
 				EC_H_S(DisplayObject(lpOtherMDB, NULL, otStore, this));

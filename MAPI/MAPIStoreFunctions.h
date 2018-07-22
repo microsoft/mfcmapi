@@ -71,13 +71,12 @@ namespace mapi
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
 			bool bForceServer, // Use CreateStoreEntryID2
 			_Deref_out_opt_ LPMDB* lppOtherUserMDB);
-		_Check_return_ HRESULT OpenMailboxWithPrompt(
+		_Check_return_ LPMDB OpenMailboxWithPrompt(
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_ LPMDB lpMDB,
 			const std::string& szServerName,
 			const std::wstring& szMailboxDN,
-			ULONG ulFlags, // desired flags for CreateStoreEntryID
-			_Deref_out_opt_ LPMDB* lppOtherUserMDB);
+			ULONG ulFlags); // desired flags for CreateStoreEntryID
 		_Check_return_ LPMDB OpenOtherUsersMailboxFromGal(_In_ LPMAPISESSION lpMAPISession, _In_ LPADRBOOK lpAddrBook);
 		_Check_return_ LPMDB OpenMessageStoreGUID(
 			_In_ LPMAPISESSION lpMAPISession,

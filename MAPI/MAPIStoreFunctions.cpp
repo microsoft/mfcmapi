@@ -583,17 +583,14 @@ namespace mapi
 		}
 
 #ifndef MRMAPI
-		_Check_return_ HRESULT OpenMailboxWithPrompt(
+		_Check_return_ LPMDB OpenMailboxWithPrompt(
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_ LPMDB lpMDB,
 			const std::string& szServerName,
 			const std::wstring& szMailboxDN,
-			ULONG ulFlags, // desired flags for CreateStoreEntryID
-			_Deref_out_opt_ LPMDB* lppOtherUserMDB)
+			ULONG ulFlags) // desired flags for CreateStoreEntryID
 		{
-			*lppOtherUserMDB = nullptr;
-
-			if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
+			if (!lpMAPISession) return nullptr;
 
 			dialog::editor::CEditor MyPrompt(
 				nullptr, IDS_OPENOTHERUSER, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -607,9 +604,10 @@ namespace mapi
 			MyPrompt.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 			MyPrompt.SetHex(3, ulFlags);
 			MyPrompt.InitPane(4, viewpane::CheckPane::Create(IDS_FORCESERVER, false, false));
-			if (!MyPrompt.DisplayDialog()) return MAPI_E_USER_CANCEL;
+			if (!MyPrompt.DisplayDialog()) return nullptr;
 
-			auto hRes = WC_H(OpenOtherUsersMailbox(
+			LPMDB lpOtherUserMDB = nullptr;
+			WC_H_S(OpenOtherUsersMailbox(
 				lpMAPISession,
 				lpMDB,
 				strings::wstringTostring(MyPrompt.GetStringW(0)),
@@ -617,9 +615,9 @@ namespace mapi
 				MyPrompt.GetStringW(2),
 				MyPrompt.GetHex(3),
 				MyPrompt.GetCheck(4),
-				lppOtherUserMDB));
+				&lpOtherUserMDB));
 
-			return hRes;
+			return lpOtherUserMDB;
 		}
 
 		// Display a UI to select a mailbox, then call OpenOtherUsersMailbox with the mailboxDN
@@ -643,13 +641,12 @@ namespace mapi
 					EC_MAPI_S(HrGetOneProp(lpMailUser, PR_EMAIL_ADDRESS_W, &lpEmailAddress));
 					if (mapi::CheckStringProp(lpEmailAddress, PT_UNICODE))
 					{
-						WC_H_S(OpenMailboxWithPrompt(
+						lpOtherUserMDB = OpenMailboxWithPrompt(
 							lpMAPISession,
 							lpPrivateMDB,
 							szServerName,
 							lpEmailAddress->Value.lpszW,
-							OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
-							&lpOtherUserMDB));
+							OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 					}
 
 					MAPIFreeBuffer(lpEmailAddress);
