@@ -26,15 +26,17 @@
 // Initialize MFC for LoadString support later on
 void InitMFC() { AfxWinInit(::GetModuleHandle(nullptr), nullptr, ::GetCommandLine(), 0); }
 
-_Check_return_ HRESULT MrMAPILogonEx(const std::wstring& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession)
+_Check_return_ LPMAPISESSION MrMAPILogonEx(const std::wstring& lpszProfile)
 {
-	auto hRes = S_OK;
 	auto ulFlags = MAPI_EXTENDED | MAPI_NO_MAIL | MAPI_UNICODE | MAPI_NEW_SESSION;
 	if (lpszProfile.empty()) ulFlags |= MAPI_USE_DEFAULT;
 
 	// TODO: profile parameter should be ansi in ansi builds
-	WC_MAPI(MAPILogonEx(NULL, LPTSTR((lpszProfile.empty() ? NULL : lpszProfile.c_str())), NULL, ulFlags, lppSession));
-	return hRes;
+	LPMAPISESSION lpSession = nullptr;
+	auto hRes = WC_MAPI(
+		MAPILogonEx(NULL, LPTSTR((lpszProfile.empty() ? NULL : lpszProfile.c_str())), NULL, ulFlags, &lpSession));
+	if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08lx\n", hRes);
+	return lpSession;
 }
 
 _Check_return_ LPMDB OpenExchangeOrDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession)
@@ -1237,8 +1239,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 		if (bMAPIInit && ProgOpts.ulOptions & OPT_NEEDMAPILOGON)
 		{
-			hRes = WC_H(MrMAPILogonEx(ProgOpts.lpszProfile, &ProgOpts.lpMAPISession));
-			if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08lx\n", hRes);
+			ProgOpts.lpMAPISession = MrMAPILogonEx(ProgOpts.lpszProfile);
 		}
 
 		// If they need a folder get it and store at the same time from the folder id
