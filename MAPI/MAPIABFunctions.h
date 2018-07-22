@@ -42,10 +42,6 @@ namespace mapi
 			ULONG PropTagToCompare,
 			_Deref_out_opt_ LPSPropValue* lppPropsFound);
 
-		_Check_return_ HRESULT SelectUser(
-			_In_ LPADRBOOK lpAdrBook,
-			HWND hwnd,
-			_Out_opt_ ULONG* lpulObjType,
-			_Deref_out_opt_ LPMAILUSER* lppMailUser);
+		_Check_return_ LPMAILUSER SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Out_opt_ ULONG* lpulObjType);
 	}
 }

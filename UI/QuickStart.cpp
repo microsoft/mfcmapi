@@ -396,10 +396,7 @@ namespace dialog
 		if (lpAdrBook)
 		{
 			ULONG ulObjType = NULL;
-			LPMAILUSER lpMailUser = nullptr;
-
-			EC_H_S(mapi::ab::SelectUser(lpAdrBook, hwnd, &ulObjType, &lpMailUser));
-
+			auto lpMailUser = mapi::ab::SelectUser(lpAdrBook, hwnd, &ulObjType);
 			if (lpMailUser)
 			{
 				EC_H_S(DisplayObject(lpMailUser, ulObjType, dialog::otDefault, lpHostDlg));
@@ -424,10 +421,7 @@ namespace dialog
 		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
 		if (lpAdrBook)
 		{
-			LPMAILUSER lpMailUser = nullptr;
-
-			EC_H_S(mapi::ab::SelectUser(lpAdrBook, hwnd, nullptr, &lpMailUser));
-
+			auto lpMailUser = mapi::ab::SelectUser(lpAdrBook, hwnd, nullptr);
 			if (lpMailUser)
 			{
 				lpThumbnail = mapi::GetLargeBinaryProp(lpMailUser, PR_EMS_AB_THUMBNAIL_PHOTO);

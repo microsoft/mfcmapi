@@ -625,8 +625,7 @@ namespace mapi
 			auto lpPrivateMDB = OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
 			if (lpPrivateMDB && StoreSupportsManageStore(lpPrivateMDB))
 			{
-				LPMAILUSER lpMailUser = nullptr;
-				EC_H_S(ab::SelectUser(lpAddrBook, ::GetDesktopWindow(), nullptr, &lpMailUser));
+				auto lpMailUser = ab::SelectUser(lpAddrBook, ::GetDesktopWindow(), nullptr);
 				if (lpMailUser)
 				{
 					LPSPropValue lpEmailAddress = nullptr;

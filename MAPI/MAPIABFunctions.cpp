@@ -556,34 +556,27 @@ namespace mapi
 			return hRes;
 		}
 
-		_Check_return_ HRESULT SelectUser(
-			_In_ LPADRBOOK lpAdrBook,
-			HWND hwnd,
-			_Out_opt_ ULONG* lpulObjType,
-			_Deref_out_opt_ LPMAILUSER* lppMailUser)
+		_Check_return_ LPMAILUSER SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Out_opt_ ULONG* lpulObjType)
 		{
-			if (!lpAdrBook || !hwnd || !lppMailUser) return MAPI_E_INVALID_PARAMETER;
-
-			ADRPARM AdrParm = {0};
-			LPADRLIST lpAdrList = nullptr;
-			LPSPropValue lpEntryID = nullptr;
-			LPMAILUSER lpMailUser = nullptr;
-
-			*lppMailUser = nullptr;
 			if (lpulObjType)
 			{
 				*lpulObjType = NULL;
 			}
 
+			if (!lpAdrBook || !hwnd) return nullptr;
+
 			auto szTitle = strings::wstringTostring(strings::loadstring(IDS_SELECTMAILBOX));
 
+			ADRPARM AdrParm = {};
 			AdrParm.ulFlags = DIALOG_MODAL | ADDRESS_ONE | AB_SELECTONLY | AB_RESOLVE;
 			AdrParm.lpszCaption = LPTSTR(szTitle.c_str());
 
+			LPMAILUSER lpMailUser = nullptr;
+			LPADRLIST lpAdrList = nullptr;
 			auto hRes = EC_H_CANCEL(lpAdrBook->Address(reinterpret_cast<ULONG_PTR*>(&hwnd), &AdrParm, &lpAdrList));
 			if (lpAdrList)
 			{
-				lpEntryID =
+				auto lpEntryID =
 					PpropFindProp(lpAdrList[0].aEntries->rgPropVals, lpAdrList[0].aEntries->cValues, PR_ENTRYID);
 
 				if (lpEntryID)
@@ -601,27 +594,25 @@ namespace mapi
 						MAPI_BEST_ACCESS,
 						&ulObjType,
 						reinterpret_cast<LPUNKNOWN*>(&lpMailUser)));
-					if (SUCCEEDED(hRes) && lpMailUser)
-					{
-						*lppMailUser = lpMailUser;
-					}
-					else
+					if (FAILED(hRes))
 					{
 						if (lpMailUser)
 						{
 							lpMailUser->Release();
-						}
-
-						if (lpulObjType)
-						{
-							*lpulObjType = ulObjType;
+							lpMailUser = nullptr;
 						}
 					}
+
+					if (lpulObjType)
+					{
+						*lpulObjType = ulObjType;
+					}
 				}
+
+				FreePadrlist(lpAdrList);
 			}
 
-			if (lpAdrList) FreePadrlist(lpAdrList);
-			return hRes;
+			return lpMailUser;
 		}
 	}
 }
