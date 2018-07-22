@@ -405,7 +405,7 @@ namespace dialog
 		if (!mapi::store::StoreSupportsManageStore(lpMDB))
 		{
 			// if that MDB doesn't support manage store, try to get one that does
-			EC_H_S(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
+			lpPrivateMDB = mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
 			lpMDB = lpPrivateMDB;
 		}
 
@@ -519,7 +519,6 @@ namespace dialog
 	void DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ cache::CMapiObjects* lpMapiObjects)
 	{
 		if (!lpParent || !lpMapiObjects) return;
-		auto hRes = S_OK;
 		LPMDB lpPrivateMDB = nullptr;
 		auto lpMDB = lpMapiObjects->GetMDB(); // do not release
 		const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
@@ -528,7 +527,7 @@ namespace dialog
 		if (!mapi::store::StoreSupportsManageStore(lpMDB))
 		{
 			// if that MDB doesn't support manage store, try to get one that does
-			EC_H_S(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
+			lpPrivateMDB = mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
 			lpMDB = lpPrivateMDB;
 		}
 
@@ -557,8 +556,9 @@ namespace dialog
 				{
 					error::ErrDialog(__FILE__, __LINE__, IDS_EDOFFSETWITHWRONGINTERFACE);
 				}
-				else if (hRes == S_OK)
+				else
 				{
+					auto hRes = S_OK;
 					auto szServerDN = mapi::store::BuildServerDN(strings::wstringTostring(MyData.GetStringW(0)), "");
 					if (!szServerDN.empty())
 					{
@@ -576,11 +576,11 @@ namespace dialog
 						switch (MyData.GetDropDown(4))
 						{
 						case 0:
-							EC_H_S(mapi::store::GetPublicFolderTable1(
+							hRes = EC_H(mapi::store::GetPublicFolderTable1(
 								lpMDB, szServerDN, MyData.GetHex(2) | fMapiUnicode, &lpPFTable));
 							break;
 						case 1:
-							EC_H_S(mapi::store::GetPublicFolderTable4(
+							hRes = EC_H(mapi::store::GetPublicFolderTable4(
 								lpMDB, szServerDN, MyData.GetHex(1), MyData.GetHex(2) | fMapiUnicode, &lpPFTable));
 							break;
 						case 2:
@@ -601,7 +601,7 @@ namespace dialog
 								}
 							}
 
-							EC_H_S(mapi::store::GetPublicFolderTable5(
+							hRes = EC_H(mapi::store::GetPublicFolderTable5(
 								lpMDB,
 								szServerDN,
 								MyData.GetHex(1),
@@ -625,6 +625,7 @@ namespace dialog
 								_T("GetPublicFolderTable"),
 								_T("GetPublicFolderTable")); // STRING_OK
 						}
+
 						if (lpPFTable) lpPFTable->Release();
 
 						if (lpOldMDB)

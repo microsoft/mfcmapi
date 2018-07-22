@@ -70,23 +70,19 @@ namespace mapiprocessor
 	// Server name MUST be passed
 	void CMAPIProcessor::ProcessMailboxTable(_In_ const std::wstring& szExchangeServerName)
 	{
-		if (szExchangeServerName.empty()) return;
+		if (!m_lpSession || szExchangeServerName.empty()) return;
 
-		LPMAPITABLE lpMailBoxTable = nullptr;
-		LPSRowSet lpRows = nullptr;
-		LPMDB lpPrimaryMDB = nullptr;
 		ULONG ulOffset = 0;
 		ULONG ulRowNum = 0;
 		auto ulFlags = LOGOFF_NO_WAIT;
 
-		if (!m_lpSession) return;
-
 		BeginMailboxTableWork(szExchangeServerName);
 
-		WC_H_S(mapi::store::OpenMessageStoreGUID(m_lpSession, pbExchangeProviderPrimaryUserGuid, &lpPrimaryMDB));
+		auto lpPrimaryMDB = mapi::store::OpenMessageStoreGUID(m_lpSession, pbExchangeProviderPrimaryUserGuid);
 
 		if (lpPrimaryMDB && mapi::store::StoreSupportsManageStore(lpPrimaryMDB)) do
 			{
+				LPMAPITABLE lpMailBoxTable = nullptr;
 				auto hRes = WC_H(mapi::store::GetMailboxTable(
 					lpPrimaryMDB, strings::wstringTostring(szExchangeServerName), ulOffset, &lpMailBoxTable));
 				if (lpMailBoxTable)
@@ -99,6 +95,7 @@ namespace mapiprocessor
 					// get each row in turn and process it
 					if (SUCCEEDED(hRes))
 					{
+						LPSRowSet lpRows = nullptr;
 						for (ulRowNum = 0;; ulRowNum++)
 						{
 							if (lpRows) FreeProws(lpRows);
@@ -133,10 +130,11 @@ namespace mapiprocessor
 
 							if (m_lpMDB) ProcessStore();
 						}
+
+						if (lpRows) FreeProws(lpRows);
+						lpRows = nullptr;
 					}
 
-					if (lpRows) FreeProws(lpRows);
-					lpRows = nullptr;
 					lpMailBoxTable->Release();
 					ulOffset += ulRowNum;
 				}

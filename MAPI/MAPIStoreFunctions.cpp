@@ -628,21 +628,19 @@ namespace mapi
 		{
 			if (!lpMAPISession || !lpAddrBook) return nullptr;
 
-			LPSPropValue lpEmailAddress = nullptr;
-			LPMAILUSER lpMailUser = nullptr;
-			LPMDB lpPrivateMDB = nullptr;
 			LPMDB lpOtherUserMDB = nullptr;
 
 			const auto szServerName = GetServerName(lpMAPISession);
 
-			auto hRes = WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
+			auto lpPrivateMDB = OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
 			if (lpPrivateMDB && StoreSupportsManageStore(lpPrivateMDB))
 			{
-				hRes = EC_H(ab::SelectUser(lpAddrBook, ::GetDesktopWindow(), nullptr, &lpMailUser));
+				LPMAILUSER lpMailUser = nullptr;
+				EC_H_S(ab::SelectUser(lpAddrBook, ::GetDesktopWindow(), nullptr, &lpMailUser));
 				if (lpMailUser)
 				{
-					hRes = EC_MAPI(HrGetOneProp(lpMailUser, PR_EMAIL_ADDRESS_W, &lpEmailAddress));
-
+					LPSPropValue lpEmailAddress = nullptr;
+					EC_MAPI_S(HrGetOneProp(lpMailUser, PR_EMAIL_ADDRESS_W, &lpEmailAddress));
 					if (mapi::CheckStringProp(lpEmailAddress, PT_UNICODE))
 					{
 						WC_H_S(OpenMailboxWithPrompt(
@@ -653,11 +651,12 @@ namespace mapi
 							OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
 							&lpOtherUserMDB));
 					}
+
+					MAPIFreeBuffer(lpEmailAddress);
+					lpMailUser->Release();
 				}
 			}
 
-			MAPIFreeBuffer(lpEmailAddress);
-			if (lpMailUser) lpMailUser->Release();
 			if (lpPrivateMDB) lpPrivateMDB->Release();
 			return lpOtherUserMDB;
 		}
@@ -668,13 +667,14 @@ namespace mapi
 		// pbExchangeProviderDelegateGuid
 		// pbExchangeProviderPublicGuid
 		// pbExchangeProviderXportGuid
-		_Check_return_ HRESULT OpenMessageStoreGUID(
+		_Check_return_ LPMDB OpenMessageStoreGUID(
 			_In_ LPMAPISESSION lpMAPISession,
-			_In_z_ LPCSTR lpGUID, // Do not migrate this to wstring/string
-			_Deref_out_opt_ LPMDB* lppMDB)
+			_In_z_ LPCSTR lpGUID) // Do not migrate this to wstring/string
 		{
+			if (!lpMAPISession) return nullptr;
+
 			LPMAPITABLE pStoresTbl = nullptr;
-			LPSRowSet pRow = nullptr;
+			LPMDB lpMDB = nullptr;
 
 			enum
 			{
@@ -684,14 +684,11 @@ namespace mapi
 			};
 			static const SizedSPropTagArray(NUM_COLS, sptCols) = {NUM_COLS, {PR_ENTRYID, PR_MDB_PROVIDER}};
 
-			*lppMDB = nullptr;
-			if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
-
-			auto hRes = EC_MAPI(lpMAPISession->GetMsgStoresTable(0, &pStoresTbl));
-
+			EC_MAPI_S(lpMAPISession->GetMsgStoresTable(0, &pStoresTbl));
 			if (pStoresTbl)
 			{
-				hRes = EC_MAPI(HrQueryAllRows(
+				LPSRowSet pRow = nullptr;
+				EC_MAPI_S(HrQueryAllRows(
 					pStoresTbl, // table to query
 					LPSPropTagArray(&sptCols), // columns to get
 					nullptr, // restriction to use
@@ -700,29 +697,26 @@ namespace mapi
 					&pRow));
 				if (pRow)
 				{
-					if (!FAILED(hRes))
+					for (ULONG ulRowNum = 0; ulRowNum < pRow->cRows; ulRowNum++)
 					{
-						for (ULONG ulRowNum = 0; ulRowNum < pRow->cRows; ulRowNum++)
+						// check to see if we have a folder with a matching GUID
+						if (pRow->aRow[ulRowNum].lpProps[STORETYPE].ulPropTag == PR_MDB_PROVIDER &&
+							pRow->aRow[ulRowNum].lpProps[EID].ulPropTag == PR_ENTRYID &&
+							IsEqualMAPIUID(pRow->aRow[ulRowNum].lpProps[STORETYPE].Value.bin.lpb, lpGUID))
 						{
-							// check to see if we have a folder with a matching GUID
-							if (pRow->aRow[ulRowNum].lpProps[STORETYPE].ulPropTag == PR_MDB_PROVIDER &&
-								pRow->aRow[ulRowNum].lpProps[EID].ulPropTag == PR_ENTRYID &&
-								IsEqualMAPIUID(pRow->aRow[ulRowNum].lpProps[STORETYPE].Value.bin.lpb, lpGUID))
-							{
-								*lppMDB = CallOpenMsgStore(
-									lpMAPISession, NULL, &pRow->aRow[ulRowNum].lpProps[EID].Value.bin, MDB_WRITE);
-								break;
-							}
+							lpMDB = CallOpenMsgStore(
+								lpMAPISession, NULL, &pRow->aRow[ulRowNum].lpProps[EID].Value.bin, MDB_WRITE);
+							break;
 						}
 					}
+
+					FreeProws(pRow);
 				}
+
+				pStoresTbl->Release();
 			}
 
-			if (!*lppMDB) hRes = MAPI_E_NOT_FOUND;
-
-			if (pRow) FreeProws(pRow);
-			if (pStoresTbl) pStoresTbl->Release();
-			return hRes;
+			return lpMDB;
 		}
 
 		_Check_return_ LPMDB OpenPublicMessageStore(
@@ -732,9 +726,7 @@ namespace mapi
 		{
 			if (!lpMAPISession) return nullptr;
 
-			LPMDB lpPublicMDBNonAdmin = nullptr;
-
-			auto hRes = WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPublicGuid, &lpPublicMDBNonAdmin));
+			auto lpPublicMDBNonAdmin = OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPublicGuid);
 
 			// If we don't have flags we're done
 			if (!ulFlags)
@@ -749,7 +741,7 @@ namespace mapi
 				auto server = szServerName;
 				if (server.empty())
 				{
-					hRes = EC_MAPI(HrGetOneProp(
+					EC_MAPI_S(HrGetOneProp(
 						lpPublicMDBNonAdmin, CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_STRING8), &lpServerName));
 					if (mapi::CheckStringProp(lpServerName, PT_STRING8))
 					{
@@ -763,10 +755,9 @@ namespace mapi
 				{
 					auto szServerDN = BuildServerDN(server,
 													"/cn=Microsoft Public MDB"); // STRING_OK
-
 					if (!szServerDN.empty())
 					{
-						hRes = WC_H(HrMailboxLogon(
+						WC_H_S(HrMailboxLogon(
 							lpMAPISession,
 							lpPublicMDBNonAdmin,
 							szServerDN,

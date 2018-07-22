@@ -79,10 +79,9 @@ namespace mapi
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
 			_Deref_out_opt_ LPMDB* lppOtherUserMDB);
 		_Check_return_ LPMDB OpenOtherUsersMailboxFromGal(_In_ LPMAPISESSION lpMAPISession, _In_ LPADRBOOK lpAddrBook);
-		_Check_return_ HRESULT OpenMessageStoreGUID(
+		_Check_return_ LPMDB OpenMessageStoreGUID(
 			_In_ LPMAPISESSION lpMAPISession,
-			_In_z_ LPCSTR lpGUID, // Do not migrate this to wstring/std::string
-			_Deref_out_opt_ LPMDB* lppMDB);
+			_In_z_ LPCSTR lpGUID); // Do not migrate this to wstring/std::string
 		_Check_return_ LPMDB OpenPublicMessageStore(
 			_In_ LPMAPISESSION lpMAPISession,
 			const std::string& szServerName,

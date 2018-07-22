@@ -41,11 +41,11 @@ _Check_return_ HRESULT
 OpenExchangeOrDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession, _Deref_out_opt_ LPMDB* lppMDB)
 {
 	if (!lpMAPISession || !lppMDB) return MAPI_E_INVALID_PARAMETER;
-	LPMDB lpMDB = nullptr;
 	*lppMDB = nullptr;
 
-	auto hRes = WC_H(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpMDB));
-	if (FAILED(hRes) || !lpMDB)
+	auto hRes = S_OK;
+	auto lpMDB= mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
+	if (!lpMDB)
 	{
 		hRes = WC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 	}

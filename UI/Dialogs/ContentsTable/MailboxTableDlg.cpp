@@ -77,7 +77,7 @@ namespace dialog
 		LPMDB lpGUIDMDB = nullptr;
 		if (!lpMDB)
 		{
-			EC_H_S(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpGUIDMDB));
+			lpGUIDMDB = mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
 		}
 
 		const auto lpSourceMDB = lpMDB ? lpMDB : lpGUIDMDB; // do not release
