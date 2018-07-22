@@ -208,16 +208,14 @@ namespace mapi
 		{
 			if (!lpszEMLFile || !lpszMSGFile) return MAPI_E_INVALID_PARAMETER;
 
-			LPMESSAGE pMessage = nullptr;
-
-			auto hRes = EC_H(file::LoadMSGToMessage(lpszMSGFile, &pMessage));
-			if (SUCCEEDED(hRes) && pMessage)
+			auto hRes = S_OK;
+			auto pMessage = file::LoadMSGToMessage(lpszMSGFile);
+			if (pMessage)
 			{
 				hRes =
 					EC_H(ExportIMessageToEML(pMessage, lpszEMLFile, ulConvertFlags, et, mst, ulWrapLines, lpAdrBook));
+				pMessage->Release();
 			}
-
-			if (pMessage) pMessage->Release();
 
 			return hRes;
 		}

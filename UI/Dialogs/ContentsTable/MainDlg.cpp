@@ -1355,8 +1355,7 @@ namespace dialog
 			this);
 		if (!file.empty())
 		{
-			LPMESSAGE lpNewMessage = nullptr;
-			EC_H_S(file::LoadMSGToMessage(file, &lpNewMessage));
+			auto lpNewMessage = file::LoadMSGToMessage(file);
 			if (lpNewMessage)
 			{
 				WC_H_S(DisplayObject(lpNewMessage, MAPI_MESSAGE, otDefault, this));
@@ -1481,10 +1480,7 @@ namespace dialog
 				this);
 			if (!xmlfile.empty())
 			{
-				LPMESSAGE lpMessage = nullptr;
-
-				EC_H_S(file::LoadMSGToMessage(msgfile, &lpMessage));
-
+				auto  lpMessage = file::LoadMSGToMessage(msgfile);
 				if (lpMessage)
 				{
 					mapiprocessor::CDumpStore MyDumpStore;

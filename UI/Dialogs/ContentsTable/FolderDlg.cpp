@@ -767,8 +767,7 @@ namespace dialog
 				case 1:
 					if (m_lpPropDisplay)
 					{
-						EC_H_S(file::LoadMSGToMessage(lpszPath, &lpNewMessage));
-
+						lpNewMessage = file::LoadMSGToMessage(lpszPath);
 						if (lpNewMessage)
 						{
 							EC_H_S(m_lpPropDisplay->SetDataSource(lpNewMessage, nullptr, false));

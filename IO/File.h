@@ -18,9 +18,7 @@ namespace file
 		_In_ const std::wstring& szRootPath,
 		_In_opt_ const _SBinary* lpBin);
 
-	_Check_return_ HRESULT
-	LoadMSGToMessage(_In_ const std::wstring& szMessageFile, _Deref_out_opt_ LPMESSAGE* lppMessage);
-
+	_Check_return_ LPMESSAGE LoadMSGToMessage(_In_ const std::wstring& szMessageFile);
 	_Check_return_ HRESULT LoadFromMSG(_In_ const std::wstring& szMessageFile, _In_ LPMESSAGE lpMessage, HWND hWnd);
 	_Check_return_ HRESULT
 	LoadFromTNEF(_In_ const std::wstring& szMessageFile, _In_ LPADRBOOK lpAdrBook, _In_ LPMESSAGE lpMessage);
