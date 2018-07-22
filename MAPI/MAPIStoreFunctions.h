@@ -62,15 +62,14 @@ namespace mapi
 			_Deref_out_opt_ LPMDB* lppMailboxMDB); // ptr to mailbox message store ptr
 		_Check_return_ HRESULT
 		OpenDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession, _Deref_out_ LPMDB* lppDefaultMDB);
-		_Check_return_ HRESULT OpenOtherUsersMailbox(
+		_Check_return_ LPMDB OpenOtherUsersMailbox(
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_ LPMDB lpMDB,
 			const std::string& szServerName,
 			const std::string& szMailboxDN,
 			const std::wstring& smtpAddress,
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
-			bool bForceServer, // Use CreateStoreEntryID2
-			_Deref_out_opt_ LPMDB* lppOtherUserMDB);
+			bool bForceServer); // Use CreateStoreEntryID2
 		_Check_return_ LPMDB OpenMailboxWithPrompt(
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_ LPMDB lpMDB,

@@ -118,15 +118,14 @@ namespace mapiprocessor
 								m_lpMDB = nullptr;
 							}
 
-							WC_H_S(mapi::store::OpenOtherUsersMailbox(
+							m_lpMDB = mapi::store::OpenOtherUsersMailbox(
 								m_lpSession,
 								lpPrimaryMDB,
 								strings::wstringTostring(szExchangeServerName),
 								strings::wstringTostring(strings::LPCTSTRToWstring(lpEmailAddress->Value.LPSZ)),
 								strings::emptystring,
 								OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
-								false,
-								&m_lpMDB));
+								false);
 
 							if (m_lpMDB) ProcessStore();
 						}

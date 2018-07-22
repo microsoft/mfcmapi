@@ -84,7 +84,6 @@ namespace dialog
 
 		if (lpSourceMDB)
 		{
-			LPMDB lpNewMDB = nullptr;
 			auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 			for (const auto& lpListData : items)
 			{
@@ -92,16 +91,14 @@ namespace dialog
 				{
 					if (!lpListData->Contents()->m_szDN.empty())
 					{
-						EC_H_S(mapi::store::OpenOtherUsersMailbox(
+						auto lpNewMDB = mapi::store::OpenOtherUsersMailbox(
 							lpMAPISession,
 							lpSourceMDB,
 							strings::wstringTostring(m_lpszServerName),
 							strings::wstringTostring(lpListData->Contents()->m_szDN),
 							strings::emptystring,
 							ulFlags,
-							false,
-							&lpNewMDB));
-
+							false);
 						if (lpNewMDB)
 						{
 							EC_H_S(DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, otStore, this));

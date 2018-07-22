@@ -521,19 +521,16 @@ namespace mapi
 		}
 
 		// Build DNs for call to HrMailboxLogon
-		_Check_return_ HRESULT OpenOtherUsersMailbox(
+		_Check_return_ LPMDB OpenOtherUsersMailbox(
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_ LPMDB lpMDB,
 			const std::string& szServerName,
 			const std::string& szMailboxDN,
 			const std::wstring& smtpAddress,
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
-			bool bForceServer, // Use CreateStoreEntryID2
-			_Deref_out_opt_ LPMDB* lppOtherUserMDB)
+			bool bForceServer) // Use CreateStoreEntryID2
 		{
-			auto hRes = S_OK;
-
-			*lppOtherUserMDB = nullptr;
+			if (!lpMAPISession || !lpMDB || szMailboxDN.empty() || !StoreSupportsManageStore(lpMDB)) return nullptr;
 
 			output::DebugPrint(
 				DBGGeneric,
@@ -544,8 +541,6 @@ namespace mapi
 				szServerName.c_str(),
 				szMailboxDN.c_str(),
 				smtpAddress.c_str());
-			if (!lpMAPISession || !lpMDB || szMailboxDN.empty() || !StoreSupportsManageStore(lpMDB))
-				return MAPI_E_INVALID_PARAMETER;
 
 			std::string serverName;
 			if (szServerName.empty())
@@ -558,6 +553,7 @@ namespace mapi
 				serverName = szServerName;
 			}
 
+			LPMDB lpOtherUserMDB = nullptr;
 			if (!serverName.empty())
 			{
 				auto szServerDN = BuildServerDN(serverName,
@@ -567,7 +563,7 @@ namespace mapi
 				{
 					output::DebugPrint(
 						DBGGeneric, L"Calling HrMailboxLogon with Server DN = \"%hs\"\n", szServerDN.c_str());
-					hRes = WC_H(HrMailboxLogon(
+					WC_H_S(HrMailboxLogon(
 						lpMAPISession,
 						lpMDB,
 						szServerDN,
@@ -575,11 +571,11 @@ namespace mapi
 						smtpAddress,
 						ulFlags,
 						bForceServer,
-						lppOtherUserMDB));
+						&lpOtherUserMDB));
 				}
 			}
 
-			return hRes;
+			return lpOtherUserMDB;
 		}
 
 #ifndef MRMAPI
@@ -606,18 +602,14 @@ namespace mapi
 			MyPrompt.InitPane(4, viewpane::CheckPane::Create(IDS_FORCESERVER, false, false));
 			if (!MyPrompt.DisplayDialog()) return nullptr;
 
-			LPMDB lpOtherUserMDB = nullptr;
-			WC_H_S(OpenOtherUsersMailbox(
+			return OpenOtherUsersMailbox(
 				lpMAPISession,
 				lpMDB,
 				strings::wstringTostring(MyPrompt.GetStringW(0)),
 				strings::wstringTostring(MyPrompt.GetStringW(1)),
 				MyPrompt.GetStringW(2),
 				MyPrompt.GetHex(3),
-				MyPrompt.GetCheck(4),
-				&lpOtherUserMDB));
-
-			return lpOtherUserMDB;
+				MyPrompt.GetCheck(4));
 		}
 
 		// Display a UI to select a mailbox, then call OpenOtherUsersMailbox with the mailboxDN

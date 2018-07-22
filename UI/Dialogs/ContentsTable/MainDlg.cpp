@@ -453,16 +453,8 @@ namespace dialog
 
 					if (mapi::CheckStringProp(lpMailboxName, PT_STRING8))
 					{
-						LPMDB lpAdminMDB = nullptr;
-						EC_H_S(mapi::store::OpenOtherUsersMailbox(
-							lpMAPISession,
-							lpMDB,
-							"",
-							lpMailboxName->Value.lpszA,
-							strings::emptystring,
-							ulFlags,
-							false,
-							&lpAdminMDB));
+						auto lpAdminMDB = mapi::store::OpenOtherUsersMailbox(
+							lpMAPISession, lpMDB, "", lpMailboxName->Value.lpszA, strings::emptystring, ulFlags, false);
 						if (lpAdminMDB)
 						{
 							EC_H_S(DisplayObject(lpAdminMDB, NULL, otStore, this));
