@@ -241,15 +241,11 @@ namespace dialog
 			lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTCHECKINGSPECIALFOLDERS);
 			lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
-			LPMDB lpMDB = nullptr;
-			WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
-
+			auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 			if (lpMDB)
 			{
 				SpecialFolderEditor MyResults(lpHostDlg, lpMDB);
-
 				(void) MyResults.DisplayDialog();
-
 				lpMDB->Release();
 			}
 

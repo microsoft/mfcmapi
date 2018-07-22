@@ -30,28 +30,21 @@ namespace dialog
 		return nullptr;
 	}
 
-	HRESULT OpenStoreForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPMDB* lppMDB)
+	LPMDB OpenStoreForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
-		auto hRes = S_OK;
-		if (!lppMDB) return MAPI_E_INVALID_PARAMETER;
-		*lppMDB = nullptr;
 
 		auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
-		if (!lpMapiObjects) return MAPI_E_CALL_FAILED;
+		if (!lpMapiObjects) return nullptr;
 
+		LPMDB lpMDB = nullptr;
 		const auto lpMAPISession = OpenSessionForQuickStart(lpHostDlg, hwnd); // do not release
 		if (lpMAPISession)
 		{
-			LPMDB lpMDB = nullptr;
-			hRes = WC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
-			if (SUCCEEDED(hRes))
-			{
-				*lppMDB = lpMDB;
-				lpMapiObjects->SetMDB(lpMDB);
-			}
+			WC_H_S(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+			lpMapiObjects->SetMDB(lpMDB);
 		}
 
-		return hRes;
+		return lpMDB;
 	}
 
 	HRESULT OpenABForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPADRBOOK* lppAdrBook)
@@ -78,9 +71,7 @@ namespace dialog
 
 	void OnQSDisplayFolder(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder)
 	{
-		LPMDB lpMDB = nullptr;
-		WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
-
+		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
 		{
 			auto lpFolder = mapi::OpenDefaultFolder(ulFolder, lpMDB);
@@ -102,9 +93,7 @@ namespace dialog
 		_In_ ULONG ulProp,
 		_In_ dialog::ObjectType tType)
 	{
-		LPMDB lpMDB = nullptr;
-		WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
-
+		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
 		{
 			auto lpFolder = mapi::OpenDefaultFolder(ulFolder, lpMDB);
@@ -184,9 +173,7 @@ namespace dialog
 		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGNICKNAME);
 		lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
-		LPMDB lpMDB = nullptr;
-		WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
-
+		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
 		{
 			auto lpFolder = mapi::OpenDefaultFolder(mapi::DEFAULT_INBOX, lpMDB);
@@ -337,8 +324,7 @@ namespace dialog
 		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGQUOTA);
 		lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
-		LPMDB lpMDB = nullptr;
-		WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
+		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
 		{
 			ULONG cProps = 0;
