@@ -775,25 +775,24 @@ namespace mapi
 			return false;
 		}
 
-		_Check_return_ HRESULT HrUnWrapMDB(_In_ LPMDB lpMDBIn, _Deref_out_ LPMDB* lppMDBOut)
+		_Check_return_ LPMDB HrUnWrapMDB(_In_ LPMDB lpMDBIn)
 		{
-			if (!lpMDBIn || !lppMDBOut) return MAPI_E_INVALID_PARAMETER;
-			auto hRes = S_OK;
+			if (!lpMDBIn) return nullptr;
+			LPMDB lpUnwrappedMDB = nullptr;
 			auto lpProxyObj = mapi::safe_cast<IProxyStoreObject*>(lpMDBIn);
 			if (lpProxyObj)
 			{
-				LPMDB lpUnwrappedMDB = nullptr;
-				hRes = EC_MAPI(lpProxyObj->UnwrapNoRef(reinterpret_cast<LPVOID*>(&lpUnwrappedMDB)));
-				if (SUCCEEDED(hRes) && lpUnwrappedMDB)
+				EC_MAPI_S(lpProxyObj->UnwrapNoRef(reinterpret_cast<LPVOID*>(&lpUnwrappedMDB)));
+				if (lpUnwrappedMDB)
 				{
 					// UnwrapNoRef doesn't addref, so we do it here:
 					lpUnwrappedMDB->AddRef();
-					*lppMDBOut = lpUnwrappedMDB;
 				}
+
+				lpProxyObj->Release();
 			}
 
-			if (lpProxyObj) lpProxyObj->Release();
-			return hRes;
+			return lpUnwrappedMDB;
 		}
 	}
 }

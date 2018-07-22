@@ -503,8 +503,7 @@ namespace dialog
 			{
 				if (MyEID.GetCheck(4))
 				{
-					LPMDB lpUnwrappedMDB = nullptr;
-					EC_H_S(mapi::store::HrUnWrapMDB(lpMDB, &lpUnwrappedMDB));
+					auto lpUnwrappedMDB = mapi::store::HrUnWrapMDB(lpMDB);
 
 					// Ditch the old MDB and substitute the unwrapped one.
 					lpMDB->Release();

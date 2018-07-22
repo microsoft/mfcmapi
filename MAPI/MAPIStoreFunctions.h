@@ -67,6 +67,6 @@ namespace mapi
 		_Check_return_ bool StoreSupportsManageStore(_In_ LPMDB lpMDB);
 		_Check_return_ bool StoreSupportsManageStoreEx(_In_ LPMDB lpMDB);
 
-		_Check_return_ HRESULT HrUnWrapMDB(_In_ LPMDB lpMDBIn, _Deref_out_ LPMDB* lppMDBOut);
+		_Check_return_ LPMDB HrUnWrapMDB(_In_ LPMDB lpMDBIn);
 	}
 }
