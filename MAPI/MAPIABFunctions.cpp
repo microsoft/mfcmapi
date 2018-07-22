@@ -9,31 +9,24 @@ namespace mapi
 {
 	namespace ab
 	{
-		_Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIST* lpAdrList)
+		_Check_return_ LPADRLIST AllocAdrList(ULONG ulNumProps)
 		{
-			if (!lpAdrList) return MAPI_E_INVALID_PARAMETER;
-			*lpAdrList = nullptr;
-			if (ulNumProps > ULONG_MAX / sizeof(SPropValue)) return MAPI_E_INVALID_PARAMETER;
+			if (ulNumProps > ULONG_MAX / sizeof(SPropValue)) return nullptr;
 
 			// Allocate memory for new SRowSet structure.
 			auto lpLocalAdrList = mapi::allocate<LPADRLIST>(CbNewSRowSet(1));
 			if (lpLocalAdrList)
 			{
-				// Allocate memory for SPropValue structure that indicates what
-				// recipient properties will be set.
+				// Allocate memory for SPropValue structure that indicates what recipient properties will be set.
 				lpLocalAdrList->aEntries[0].rgPropVals = mapi::allocate<LPSPropValue>(ulNumProps * sizeof(SPropValue));
-
-				if (lpLocalAdrList->aEntries[0].rgPropVals)
-				{
-					*lpAdrList = lpLocalAdrList;
-				}
-				else
+				if (!lpLocalAdrList->aEntries[0].rgPropVals)
 				{
 					FreePadrlist(lpLocalAdrList);
+					lpLocalAdrList = nullptr;
 				}
 			}
 
-			return S_OK;
+			return lpLocalAdrList;
 		}
 
 		_Check_return_ HRESULT AddOneOffAddress(
@@ -64,13 +57,12 @@ namespace mapi
 
 			if (SUCCEEDED(hRes))
 			{
-				hRes = EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS, &lpAdrList));
+				lpAdrList = AllocAdrList(NUM_RECIP_PROPS);
 			}
 
 			// Setup the One Time recipient by indicating how many recipients
 			// and how many properties will be set on each recipient.
-
-			if (SUCCEEDED(hRes) && lpAdrList)
+			if (lpAdrList)
 			{
 				lpAdrList->cEntries = 1; // How many recipients.
 				lpAdrList->aEntries[0].cValues = NUM_RECIP_PROPS; // How many properties per recipient
@@ -146,7 +138,7 @@ namespace mapi
 
 			if (SUCCEEDED(hRes))
 			{
-				hRes = EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS, &lpAdrList));
+				lpAdrList = AllocAdrList(NUM_RECIP_PROPS);
 			}
 
 			if (lpAdrList)

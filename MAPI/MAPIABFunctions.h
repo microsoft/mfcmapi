@@ -28,7 +28,7 @@ namespace mapi
 		_Check_return_ HRESULT
 		GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_opt_ LPMAPITABLE* lpABContainerTable);
 
-		_Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIST* lpAdrList);
+		_Check_return_ LPADRLIST AllocAdrList(ULONG ulNumProps);
 
 		_Check_return_ HRESULT ManualResolve(
 			_In_ LPMAPISESSION lpMAPISession,
