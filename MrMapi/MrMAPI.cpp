@@ -37,30 +37,17 @@ _Check_return_ HRESULT MrMAPILogonEx(const std::wstring& lpszProfile, _Deref_out
 	return hRes;
 }
 
-_Check_return_ HRESULT
-OpenExchangeOrDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession, _Deref_out_opt_ LPMDB* lppMDB)
+_Check_return_ LPMDB OpenExchangeOrDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession)
 {
-	if (!lpMAPISession || !lppMDB) return MAPI_E_INVALID_PARAMETER;
-	*lppMDB = nullptr;
+	if (!lpMAPISession) return nullptr;
 
-	auto hRes = S_OK;
-	auto lpMDB= mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
+	auto lpMDB = mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
 	if (!lpMDB)
 	{
-		hRes = WC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		WC_H_S(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 	}
 
-	if (SUCCEEDED(hRes) && lpMDB)
-	{
-		*lppMDB = lpMDB;
-	}
-	else
-	{
-		if (lpMDB) lpMDB->Release();
-		if (SUCCEEDED(hRes)) hRes = MAPI_E_CALL_FAILED;
-	}
-
-	return hRes;
+	return lpMDB;
 }
 
 enum __CommandLineSwitch
@@ -1278,8 +1265,8 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			else
 			{
 				// If they needed a store but didn't specify, get the default one
-				hRes = WC_H(OpenExchangeOrDefaultMessageStore(ProgOpts.lpMAPISession, &ProgOpts.lpMDB));
-				if (FAILED(hRes)) printf("OpenExchangeOrDefaultMessageStore returned an error: 0x%08lx\n", hRes);
+				ProgOpts.lpMDB = OpenExchangeOrDefaultMessageStore(ProgOpts.lpMAPISession);
+				if (!ProgOpts.lpMDB) printf("OpenExchangeOrDefaultMessageStore failed.\n");
 			}
 		}
 

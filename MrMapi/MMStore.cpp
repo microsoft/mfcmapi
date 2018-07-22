@@ -109,7 +109,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 		}
 		else
 		{
-			hRes = WC_H(OpenExchangeOrDefaultMessageStore(lpMAPISession, &lpMDB));
+			lpMDB = OpenExchangeOrDefaultMessageStore(lpMAPISession);
 		}
 	}
 
