@@ -82,15 +82,17 @@ namespace mapiprocessor
 
 		if (lpPrimaryMDB && mapi::store::StoreSupportsManageStore(lpPrimaryMDB)) do
 			{
-				LPMAPITABLE lpMailBoxTable = nullptr;
-				auto hRes = WC_H(mapi::store::GetMailboxTable(
-					lpPrimaryMDB, strings::wstringTostring(szExchangeServerName), ulOffset, &lpMailBoxTable));
+				auto lpMailBoxTable = mapi::store::GetMailboxTable(
+					lpPrimaryMDB, strings::wstringTostring(szExchangeServerName), ulOffset);
 				if (lpMailBoxTable)
 				{
-					WC_MAPI_S(lpMailBoxTable->SetColumns(LPSPropTagArray(&columns::sptMBXCols), NULL));
+					auto hRes = WC_MAPI(lpMailBoxTable->SetColumns(LPSPropTagArray(&columns::sptMBXCols), NULL));
 
 					// go to the first row
-					hRes = WC_MAPI(lpMailBoxTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
+					if (SUCCEEDED(hRes))
+					{
+						hRes = WC_MAPI(lpMailBoxTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
+					}
 
 					// get each row in turn and process it
 					if (SUCCEEDED(hRes))

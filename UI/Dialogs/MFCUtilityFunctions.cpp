@@ -396,7 +396,6 @@ namespace dialog
 	void DisplayMailboxTable(_In_ ui::CParentWnd* lpParent, _In_ cache::CMapiObjects* lpMapiObjects)
 	{
 		if (!lpParent || !lpMapiObjects) return;
-		auto hRes = S_OK;
 		LPMDB lpPrivateMDB = nullptr;
 		auto lpMDB = lpMapiObjects->GetMDB(); // do not release
 		const auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
@@ -452,11 +451,11 @@ namespace dialog
 						switch (MyData.GetDropDown(3))
 						{
 						case 0:
-							EC_H_S(mapi::store::GetMailboxTable1(lpMDB, szServerDN, fMapiUnicode, &lpMailboxTable));
+							lpMailboxTable = mapi::store::GetMailboxTable1(lpMDB, szServerDN, fMapiUnicode);
 							break;
 						case 1:
-							EC_H_S(mapi::store::GetMailboxTable3(
-								lpMDB, szServerDN, MyData.GetHex(1), fMapiUnicode, &lpMailboxTable));
+							lpMailboxTable =
+								mapi::store::GetMailboxTable3(lpMDB, szServerDN, MyData.GetHex(1), fMapiUnicode);
 							break;
 						case 2:
 						{
@@ -477,22 +476,18 @@ namespace dialog
 								}
 							}
 
-							EC_H_S(mapi::store::GetMailboxTable5(
-								lpMDB,
-								szServerDN,
-								MyData.GetHex(1),
-								fMapiUnicode,
-								bHaveGUID ? &MyGUID : nullptr,
-								&lpMailboxTable));
+							lpMailboxTable = mapi::store::GetMailboxTable5(
+								lpMDB, szServerDN, MyData.GetHex(1), fMapiUnicode, bHaveGUID ? &MyGUID : nullptr);
 							break;
 						}
 						}
 
-						if (SUCCEEDED(hRes) && lpMailboxTable)
+						if (lpMailboxTable)
 						{
 							new dialog::CMailboxTableDlg(lpParent, lpMapiObjects, MyData.GetStringW(0), lpMailboxTable);
+							lpMailboxTable->Release();
 						}
-						else if (hRes == MAPI_E_NO_ACCESS || hRes == MAPI_E_NETWORK_ERROR)
+						else
 						{
 							error::ErrDialog(
 								__FILE__,
@@ -501,7 +496,6 @@ namespace dialog
 								_T("GetMailboxTable"),
 								_T("GetMailboxTable")); // STRING_OK
 						}
-						if (lpMailboxTable) lpMailboxTable->Release();
 
 						if (lpOldMDB)
 						{

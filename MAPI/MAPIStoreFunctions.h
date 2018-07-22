@@ -8,38 +8,20 @@ namespace mapi
 		_Check_return_ LPMDB
 		CallOpenMsgStore(_In_ LPMAPISESSION lpSession, _In_ ULONG_PTR ulUIParam, _In_ LPSBinary lpEID, ULONG ulFlags);
 		std::string BuildServerDN(const std::string& szServerName, const std::string& szPost);
-		_Check_return_ HRESULT GetMailboxTable(
-			_In_ LPMDB lpMDB,
-			const std::string& szServerName,
-			ULONG ulOffset,
-			_Deref_out_opt_ LPMAPITABLE* lpMailboxTable);
-		_Check_return_ HRESULT GetMailboxTable1(
-			_In_ LPMDB lpMDB,
-			const std::string& szServerDN,
-			ULONG ulFlags,
-			_Deref_out_opt_ LPMAPITABLE* lpMailboxTable);
-		_Check_return_ HRESULT GetMailboxTable3(
+		_Check_return_ LPMAPITABLE GetMailboxTable(_In_ LPMDB lpMDB, const std::string& szServerName, ULONG ulOffset);
+		_Check_return_ LPMAPITABLE GetMailboxTable1(_In_ LPMDB lpMDB, const std::string& szServerDN, ULONG ulFlags);
+		_Check_return_ LPMAPITABLE
+		GetMailboxTable3(_In_ LPMDB lpMDB, const std::string& szServerDN, ULONG ulOffset, ULONG ulFlags);
+		_Check_return_ LPMAPITABLE GetMailboxTable5(
 			_In_ LPMDB lpMDB,
 			const std::string& szServerDN,
 			ULONG ulOffset,
 			ULONG ulFlags,
-			_Deref_out_opt_ LPMAPITABLE* lpMailboxTable);
-		_Check_return_ HRESULT GetMailboxTable5(
-			_In_ LPMDB lpMDB,
-			const std::string& szServerDN,
-			ULONG ulOffset,
-			ULONG ulFlags,
-			_In_opt_ LPGUID lpGuidMDB,
-			_Deref_out_opt_ LPMAPITABLE* lpMailboxTable);
-		_Check_return_ LPMAPITABLE GetPublicFolderTable1(
-			_In_ LPMDB lpMDB,
-			const std::string& szServerDN,
-			ULONG ulFlags);
-		_Check_return_ LPMAPITABLE GetPublicFolderTable4(
-			_In_ LPMDB lpMDB,
-			const std::string& szServerDN,
-			ULONG ulOffset,
-			ULONG ulFlags);
+			_In_opt_ LPGUID lpGuidMDB);
+		_Check_return_ LPMAPITABLE
+		GetPublicFolderTable1(_In_ LPMDB lpMDB, const std::string& szServerDN, ULONG ulFlags);
+		_Check_return_ LPMAPITABLE
+		GetPublicFolderTable4(_In_ LPMDB lpMDB, const std::string& szServerDN, ULONG ulOffset, ULONG ulFlags);
 		_Check_return_ LPMAPITABLE GetPublicFolderTable5(
 			_In_ LPMDB lpMDB,
 			const std::string& szServerDN,

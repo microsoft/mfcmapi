@@ -61,102 +61,84 @@ namespace mapi
 			return szPre + szServerName + szPost;
 		}
 
-		_Check_return_ HRESULT GetMailboxTable1(
-			_In_ LPMDB lpMDB,
-			const std::string& szServerDN,
-			ULONG ulFlags,
-			_Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
+		_Check_return_ LPMAPITABLE GetMailboxTable1(_In_ LPMDB lpMDB, const std::string& szServerDN, ULONG ulFlags)
 		{
-			if (!lpMDB || !lpMailboxTable || szServerDN.empty()) return MAPI_E_INVALID_PARAMETER;
-			*lpMailboxTable = nullptr;
+			if (!lpMDB || szServerDN.empty()) return nullptr;
 
-			auto hRes = S_OK;
+			LPMAPITABLE lpMailboxTable = nullptr;
 			auto lpManageStore1 = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpManageStore1)
 			{
-				hRes = WC_MAPI(lpManageStore1->GetMailboxTable(LPSTR(szServerDN.c_str()), lpMailboxTable, ulFlags));
+				WC_MAPI_S(lpManageStore1->GetMailboxTable(LPSTR(szServerDN.c_str()), &lpMailboxTable, ulFlags));
 
 				lpManageStore1->Release();
 			}
 
-			return hRes;
+			return lpMailboxTable;
 		}
 
-		_Check_return_ HRESULT GetMailboxTable3(
-			_In_ LPMDB lpMDB,
-			const std::string& szServerDN,
-			ULONG ulOffset,
-			ULONG ulFlags,
-			_Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
+		_Check_return_ LPMAPITABLE
+		GetMailboxTable3(_In_ LPMDB lpMDB, const std::string& szServerDN, ULONG ulOffset, ULONG ulFlags)
 		{
-			if (!lpMDB || !lpMailboxTable || szServerDN.empty()) return MAPI_E_INVALID_PARAMETER;
-			*lpMailboxTable = nullptr;
+			if (!lpMDB || szServerDN.empty()) return nullptr;
 
-			auto hRes = S_OK;
+			LPMAPITABLE lpMailboxTable = nullptr;
 			auto lpManageStore3 = mapi::safe_cast<LPEXCHANGEMANAGESTORE3>(lpMDB);
 			if (lpManageStore3)
 			{
-				hRes = WC_MAPI(lpManageStore3->GetMailboxTableOffset(
-					LPSTR(szServerDN.c_str()), lpMailboxTable, ulFlags, ulOffset));
+				WC_MAPI_S(lpManageStore3->GetMailboxTableOffset(
+					LPSTR(szServerDN.c_str()), &lpMailboxTable, ulFlags, ulOffset));
 
 				lpManageStore3->Release();
 			}
 
-			return hRes;
+			return lpMailboxTable;
 		}
 
-		_Check_return_ HRESULT GetMailboxTable5(
+		_Check_return_ LPMAPITABLE GetMailboxTable5(
 			_In_ LPMDB lpMDB,
 			const std::string& szServerDN,
 			ULONG ulOffset,
 			ULONG ulFlags,
-			_In_opt_ LPGUID lpGuidMDB,
-			_Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
+			_In_opt_ LPGUID lpGuidMDB)
 		{
-			if (!lpMDB || !lpMailboxTable || szServerDN.empty()) return MAPI_E_INVALID_PARAMETER;
-			*lpMailboxTable = nullptr;
+			if (!lpMDB || szServerDN.empty()) return nullptr;
 
-			auto hRes = S_OK;
+			LPMAPITABLE lpMailboxTable = nullptr;
 			auto lpManageStore5 = mapi::safe_cast<LPEXCHANGEMANAGESTORE5>(lpMDB);
 			if (lpManageStore5)
 			{
-				hRes = EC_MAPI(lpManageStore5->GetMailboxTableEx(
-					LPSTR(szServerDN.c_str()), lpGuidMDB, lpMailboxTable, ulFlags, ulOffset));
+				EC_MAPI_S(lpManageStore5->GetMailboxTableEx(
+					LPSTR(szServerDN.c_str()), lpGuidMDB, &lpMailboxTable, ulFlags, ulOffset));
 
 				lpManageStore5->Release();
 			}
 
-			return hRes;
+			return lpMailboxTable;
 		}
 
 		// lpMDB needs to be an Exchange MDB - OpenMessageStoreGUID(pbExchangeProviderPrimaryUserGuid) can get one if there's one to be had
 		// Use GetServerName to get the default server
 		// Will try IID_IExchangeManageStore3 first and fail back to IID_IExchangeManageStore
-		_Check_return_ HRESULT GetMailboxTable(
-			_In_ LPMDB lpMDB,
-			const std::string& szServerName,
-			ULONG ulOffset,
-			_Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
+		_Check_return_ LPMAPITABLE GetMailboxTable(_In_ LPMDB lpMDB, const std::string& szServerName, ULONG ulOffset)
 		{
-			if (!lpMDB || !StoreSupportsManageStore(lpMDB) || !lpMailboxTable) return MAPI_E_INVALID_PARAMETER;
-			*lpMailboxTable = nullptr;
+			if (!lpMDB || !StoreSupportsManageStore(lpMDB)) return nullptr;
 
-			auto hRes = S_OK;
+			LPMAPITABLE lpMailboxTable = nullptr;
 			LPMAPITABLE lpLocalTable = nullptr;
 
 			auto szServerDN = BuildServerDN(szServerName, "");
 			if (!szServerDN.empty())
 			{
-				hRes = WC_H(GetMailboxTable3(lpMDB, szServerDN, ulOffset, fMapiUnicode, &lpLocalTable));
+				lpMailboxTable = GetMailboxTable3(lpMDB, szServerDN, ulOffset, fMapiUnicode);
 
 				if (!lpLocalTable && 0 == ulOffset)
 				{
-					hRes = WC_H(GetMailboxTable1(lpMDB, szServerDN, fMapiUnicode, &lpLocalTable));
+					lpMailboxTable = GetMailboxTable1(lpMDB, szServerDN, fMapiUnicode);
 				}
 			}
 
-			*lpMailboxTable = lpLocalTable;
-			return hRes;
+			return lpMailboxTable;
 		}
 
 		_Check_return_ LPMAPITABLE GetPublicFolderTable1(_In_ LPMDB lpMDB, const std::string& szServerDN, ULONG ulFlags)
