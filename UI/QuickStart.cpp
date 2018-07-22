@@ -47,14 +47,10 @@ namespace dialog
 		return lpMDB;
 	}
 
-	HRESULT OpenABForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPADRBOOK* lppAdrBook)
+	_Check_return_ LPADRBOOK OpenABForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
-		const auto hRes = S_OK;
-		if (!lppAdrBook) return MAPI_E_INVALID_PARAMETER;
-		*lppAdrBook = nullptr;
-
 		auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
-		if (!lpMapiObjects) return MAPI_E_CALL_FAILED;
+		if (!lpMapiObjects) return nullptr;
 
 		// ensure we have an AB
 		(void) OpenSessionForQuickStart(lpHostDlg, hwnd); // do not release
@@ -63,10 +59,9 @@ namespace dialog
 		if (lpAdrBook)
 		{
 			lpAdrBook->AddRef();
-			*lppAdrBook = lpAdrBook;
 		}
 
-		return hRes;
+		return lpAdrBook;
 	}
 
 	void OnQSDisplayFolder(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder)
@@ -109,16 +104,15 @@ namespace dialog
 
 	void OnQSDisplayDefaultDir(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
-		LPADRBOOK lpAdrBook = nullptr;
-		auto hRes = WC_H(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
-		if (SUCCEEDED(hRes) && lpAdrBook)
+		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
+		if (lpAdrBook)
 		{
 			ULONG cbEID = NULL;
 			LPENTRYID lpEID = nullptr;
 			ULONG ulObjType = NULL;
 			LPABCONT lpDefaultDir = nullptr;
 
-			hRes = WC_MAPI(lpAdrBook->GetDefaultDir(&cbEID, &lpEID));
+			auto hRes = WC_MAPI(lpAdrBook->GetDefaultDir(&cbEID, &lpEID));
 			if (SUCCEEDED(hRes))
 			{
 				hRes = WC_H(mapi::CallOpenEntry(
@@ -140,10 +134,10 @@ namespace dialog
 
 				lpDefaultDir->Release();
 			}
-			MAPIFreeBuffer(lpEID);
-		}
 
-		if (lpAdrBook) lpAdrBook->Release();
+			MAPIFreeBuffer(lpEID);
+			lpAdrBook->Release();
+		}
 	}
 
 	void OnQSDisplayAB(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
@@ -154,15 +148,13 @@ namespace dialog
 		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 		if (!lpParentWnd) return;
 
-		LPADRBOOK lpAdrBook = nullptr;
-		auto hRes = WC_H(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
-		if (SUCCEEDED(hRes) && lpAdrBook)
+		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
+		if (lpAdrBook)
 		{
 			// call the dialog
 			new dialog::CAbContDlg(lpParentWnd, lpMapiObjects);
+			lpAdrBook->Release();
 		}
-
-		if (lpAdrBook) lpAdrBook->Release();
 	}
 
 	void OnQSDisplayNicknameCache(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
@@ -400,8 +392,7 @@ namespace dialog
 		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 		if (!lpParentWnd) return;
 
-		LPADRBOOK lpAdrBook = nullptr;
-		WC_H_S(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
+		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
 		if (lpAdrBook)
 		{
 			ULONG ulObjType = NULL;
@@ -430,8 +421,7 @@ namespace dialog
 		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 		if (!lpParentWnd) return;
 
-		LPADRBOOK lpAdrBook = nullptr;
-		WC_H_S(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
+		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
 		if (lpAdrBook)
 		{
 			LPMAILUSER lpMailUser = nullptr;
