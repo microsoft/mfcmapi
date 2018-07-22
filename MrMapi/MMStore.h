@@ -12,4 +12,4 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 
 void DoStore(_In_ MYOPTIONS ProgOpts);
 
-HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* lppMDB);
+LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex);

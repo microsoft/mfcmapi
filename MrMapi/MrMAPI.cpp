@@ -1260,8 +1260,8 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			{
 				// Decrement by one here on the index since we incremented during parameter parsing
 				// This is so zero indicate they did not specify a store
-				hRes = WC_H(OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1, &ProgOpts.lpMDB));
-				if (FAILED(hRes)) printf("OpenStore returned an error: 0x%08lx\n", hRes);
+				ProgOpts.lpMDB = OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1);
+				if (!ProgOpts.lpMDB) printf("OpenStore failed\n");
 			}
 			else
 			{

@@ -8,51 +8,39 @@
 #include <MAPI/MAPIStoreFunctions.h>
 #include <Interpret/String.h>
 
-HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* lppMDB)
+LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex)
 {
-	auto hRes = S_OK;
-	LPMAPITABLE lpStoreTable = nullptr;
+	if (!lpMAPISession) return nullptr;
 	LPMDB lpMDB = nullptr;
-	if (!lpMAPISession || !lppMDB) return MAPI_E_INVALID_PARAMETER;
 
-	*lppMDB = nullptr;
-
-	hRes = WC_MAPI(lpMAPISession->GetMsgStoresTable(0, &lpStoreTable));
-
+	LPMAPITABLE lpStoreTable = nullptr;
+	auto hRes = WC_MAPI(lpMAPISession->GetMsgStoresTable(0, &lpStoreTable));
 	if (lpStoreTable)
 	{
-		static const SizedSPropTagArray(1, sptStore) = {
-			1,
-			PR_ENTRYID,
-		};
-		WC_MAPI(lpStoreTable->SetColumns(LPSPropTagArray(&sptStore), TBL_ASYNC));
-
+		static auto sptStore = SPropTagArray{1, PR_ENTRYID};
+		hRes = WC_MAPI(lpStoreTable->SetColumns(&sptStore, TBL_ASYNC));
 		if (SUCCEEDED(hRes))
 		{
 			LPSRowSet lpRow = nullptr;
-			WC_MAPI(lpStoreTable->SeekRow(BOOKMARK_BEGINNING, ulIndex, NULL));
-			WC_MAPI(lpStoreTable->QueryRows(1, NULL, &lpRow));
+			hRes = WC_MAPI(lpStoreTable->SeekRow(BOOKMARK_BEGINNING, ulIndex, NULL));
+			if (SUCCEEDED(hRes))
+			{
+				hRes = WC_MAPI(lpStoreTable->QueryRows(1, NULL, &lpRow));
+			}
+
 			if (SUCCEEDED(hRes) && lpRow && 1 == lpRow->cRows && PR_ENTRYID == lpRow->aRow[0].lpProps[0].ulPropTag)
 			{
 				lpMDB = mapi::store::CallOpenMsgStore(
 					lpMAPISession, NULL, &lpRow->aRow[0].lpProps[0].Value.bin, MDB_NO_DIALOG | MDB_WRITE);
-				if (lpMDB)
-				{
-					*lppMDB = lpMDB;
-				}
-				else
-				{
-					hRes = MAPI_E_CALL_FAILED;
-				}
 			}
 
 			if (lpRow) FreeProws(lpRow);
 		}
+
+		lpStoreTable->Release();
 	}
 
-	if (lpStoreTable) lpStoreTable->Release();
-
-	return hRes;
+	return lpMDB;
 }
 
 HRESULT HrMAPIOpenStoreAndFolder(
@@ -98,7 +86,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 				if (szEndPtr && (szEndPtr[0] == L'\\' || szEndPtr[0] == L'\0'))
 				{
 					// We have a store. Let's open it
-					hRes = WC_H(OpenStore(lpMAPISession, ulStore, &lpMDB));
+					lpMDB = OpenStore(lpMAPISession, ulStore);
 					lpszFolderPath = szEndPtr;
 				}
 				else
@@ -224,8 +212,7 @@ void PrintStoreProperty(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, ULONG u
 {
 	if (!lpMAPISession || !ulPropTag) return;
 
-	LPMDB lpMDB = nullptr;
-	WC_H_S(OpenStore(lpMAPISession, ulIndex, &lpMDB));
+	auto lpMDB = OpenStore(lpMAPISession, ulIndex);
 	if (lpMDB)
 	{
 		PrintObjectProperty(lpMDB, ulPropTag);
@@ -314,7 +301,6 @@ void DoStore(_In_ MYOPTIONS ProgOpts)
 		ulPropTag = interpretprop::PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
 	}
 
-	LPMDB lpMDB = nullptr;
 	if (ProgOpts.lpMAPISession)
 	{
 		if (0 == ProgOpts.ulStore)
@@ -324,13 +310,12 @@ void DoStore(_In_ MYOPTIONS ProgOpts)
 		else
 		{
 			// ulStore was incremented by 1 before, so drop it back now
-			WC_H_S(OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1, &lpMDB));
+			auto lpMDB = OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1);
+			if (lpMDB)
+			{
+				PrintStoreProperties(lpMDB, ulPropTag);
+				lpMDB->Release();
+			}
 		}
-	}
-
-	if (lpMDB)
-	{
-		PrintStoreProperties(lpMDB, ulPropTag);
-		lpMDB->Release();
 	}
 }
