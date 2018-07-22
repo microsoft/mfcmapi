@@ -290,36 +290,32 @@ HRESULT HrMAPIFindFolderExW(
 
 // Opens an arbitrarily nested folder in the indicated store given its
 // path name.
-HRESULT HrMAPIOpenFolderExW(
+LPMAPIFOLDER MAPIOpenFolderExW(
 	_In_ LPMDB lpMDB, // Open message store
-	_In_ const std::wstring& lpszFolderPath, // folder path
-	_Deref_out_opt_ LPMAPIFOLDER* lppFolder) // pointer to folder opened
+	_In_ const std::wstring& lpszFolderPath) // folder path
 {
-	output::DebugPrint(DBGGeneric, L"HrMAPIOpenFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
+	output::DebugPrint(DBGGeneric, L"MAPIOpenFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
 	LPENTRYID lpeid = nullptr;
 	ULONG cbeid = 0;
 	ULONG ulObjType = 0;
 
-	if (!lppFolder) return MAPI_E_INVALID_PARAMETER;
-
-	*lppFolder = nullptr;
-
 	auto hRes = WC_H(HrMAPIFindFolderExW(lpMDB, lpszFolderPath, &cbeid, &lpeid));
 
+	LPMAPIFOLDER lpFolder = nullptr;
 	if (SUCCEEDED(hRes))
 	{
-		WC_MAPI(lpMDB->OpenEntry(
+		hRes = WC_MAPI(lpMDB->OpenEntry(
 			cbeid,
 			lpeid,
 			nullptr,
 			MAPI_BEST_ACCESS | MAPI_DEFERRED_ERRORS,
 			&ulObjType,
-			reinterpret_cast<LPUNKNOWN*>(lppFolder)));
+			reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
 	}
 
 	MAPIFreeBuffer(lpeid);
 
-	return hRes;
+	return lpFolder;
 }
 
 void DumpHierarchyTable(

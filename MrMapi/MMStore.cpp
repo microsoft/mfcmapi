@@ -117,7 +117,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 	{
 		if (!lpszFolderPath.empty())
 		{
-			hRes = WC_H(HrMAPIOpenFolderExW(lpMDB, lpszFolderPath, &lpFolder));
+			lpFolder = MAPIOpenFolderExW(lpMDB, lpszFolderPath);
 		}
 		else
 		{
