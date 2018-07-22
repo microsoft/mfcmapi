@@ -83,11 +83,10 @@ namespace mapi
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_z_ LPCSTR lpGUID, // Do not migrate this to wstring/std::string
 			_Deref_out_opt_ LPMDB* lppMDB);
-		_Check_return_ HRESULT OpenPublicMessageStore(
+		_Check_return_ LPMDB OpenPublicMessageStore(
 			_In_ LPMAPISESSION lpMAPISession,
 			const std::string& szServerName,
-			ULONG ulFlags, // Flags for CreateStoreEntryID
-			_Deref_out_opt_ LPMDB* lppPublicMDB);
+			ULONG ulFlags); // Flags for CreateStoreEntryID
 		_Check_return_ LPMDB OpenStoreFromMAPIProp(_In_ LPMAPISESSION lpMAPISession, _In_ LPMAPIPROP lpMAPIProp);
 
 		_Check_return_ bool StoreSupportsManageStore(_In_ LPMDB lpMDB);

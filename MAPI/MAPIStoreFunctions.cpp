@@ -725,28 +725,27 @@ namespace mapi
 			return hRes;
 		}
 
-		_Check_return_ HRESULT OpenPublicMessageStore(
+		_Check_return_ LPMDB OpenPublicMessageStore(
 			_In_ LPMAPISESSION lpMAPISession,
 			const std::string& szServerName,
-			ULONG ulFlags, // Flags for CreateStoreEntryID
-			_Deref_out_opt_ LPMDB* lppPublicMDB)
+			ULONG ulFlags) // Flags for CreateStoreEntryID
 		{
-			LPMDB lpPublicMDBNonAdmin = nullptr;
-			LPSPropValue lpServerName = nullptr;
+			if (!lpMAPISession) return nullptr;
 
-			if (!lpMAPISession || !lppPublicMDB) return MAPI_E_INVALID_PARAMETER;
+			LPMDB lpPublicMDBNonAdmin = nullptr;
 
 			auto hRes = WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPublicGuid, &lpPublicMDBNonAdmin));
 
 			// If we don't have flags we're done
 			if (!ulFlags)
 			{
-				*lppPublicMDB = lpPublicMDBNonAdmin;
-				return hRes;
+				return lpPublicMDBNonAdmin;
 			}
 
+			LPMDB lpPublicMDB = nullptr;
 			if (lpPublicMDBNonAdmin && StoreSupportsManageStore(lpPublicMDBNonAdmin))
 			{
+				LPSPropValue lpServerName = nullptr;
 				auto server = szServerName;
 				if (server.empty())
 				{
@@ -775,13 +774,13 @@ namespace mapi
 							strings::emptystring,
 							ulFlags,
 							false,
-							lppPublicMDB));
+							&lpPublicMDB));
 					}
 				}
 			}
 
 			if (lpPublicMDBNonAdmin) lpPublicMDBNonAdmin->Release();
-			return hRes;
+			return lpPublicMDB;
 		}
 
 		_Check_return_ LPMDB OpenStoreFromMAPIProp(_In_ LPMAPISESSION lpMAPISession, _In_ LPMAPIPROP lpMAPIProp)

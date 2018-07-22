@@ -540,8 +540,6 @@ namespace dialog
 
 	void CMainDlg::OnOpenPublicFolders()
 	{
-		LPMDB lpMDB = nullptr;
-
 		if (!m_lpMapiObjects) return;
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
@@ -554,8 +552,7 @@ namespace dialog
 		MyPrompt.SetHex(0, NULL);
 		if (!MyPrompt.DisplayDialog()) return;
 
-		EC_H_S(mapi::store::OpenPublicMessageStore(lpMAPISession, "", MyPrompt.GetHex(0), &lpMDB));
-
+		auto lpMDB = mapi::store::OpenPublicMessageStore(lpMAPISession, "", MyPrompt.GetHex(0));
 		if (lpMDB)
 		{
 			EC_H_S(DisplayObject(lpMDB, NULL, otStore, this));
@@ -579,10 +576,8 @@ namespace dialog
 		MyPrompt.SetHex(1, OPENSTORE_PUBLIC);
 		if (!MyPrompt.DisplayDialog()) return;
 
-		LPMDB lpMDB = nullptr;
-		EC_H_S(mapi::store::OpenPublicMessageStore(
-			lpMAPISession, strings::wstringTostring(MyPrompt.GetStringW(0)), MyPrompt.GetHex(1), &lpMDB));
-
+		auto lpMDB = mapi::store::OpenPublicMessageStore(
+			lpMAPISession, strings::wstringTostring(MyPrompt.GetStringW(0)), MyPrompt.GetHex(1));
 		if (lpMDB)
 		{
 			EC_H_S(DisplayObject(lpMDB, NULL, otStore, this));
