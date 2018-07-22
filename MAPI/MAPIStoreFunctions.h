@@ -31,24 +31,21 @@ namespace mapi
 			ULONG ulFlags,
 			_In_opt_ LPGUID lpGuidMDB,
 			_Deref_out_opt_ LPMAPITABLE* lpMailboxTable);
-		_Check_return_ HRESULT GetPublicFolderTable1(
+		_Check_return_ LPMAPITABLE GetPublicFolderTable1(
 			_In_ LPMDB lpMDB,
 			const std::string& szServerDN,
-			ULONG ulFlags,
-			_Deref_out_opt_ LPMAPITABLE* lpPFTable);
-		_Check_return_ HRESULT GetPublicFolderTable4(
+			ULONG ulFlags);
+		_Check_return_ LPMAPITABLE GetPublicFolderTable4(
+			_In_ LPMDB lpMDB,
+			const std::string& szServerDN,
+			ULONG ulOffset,
+			ULONG ulFlags);
+		_Check_return_ LPMAPITABLE GetPublicFolderTable5(
 			_In_ LPMDB lpMDB,
 			const std::string& szServerDN,
 			ULONG ulOffset,
 			ULONG ulFlags,
-			_Deref_out_opt_ LPMAPITABLE* lpPFTable);
-		_Check_return_ HRESULT GetPublicFolderTable5(
-			_In_ LPMDB lpMDB,
-			const std::string& szServerDN,
-			ULONG ulOffset,
-			ULONG ulFlags,
-			_In_opt_ LPGUID lpGuidMDB,
-			_Deref_out_opt_ LPMAPITABLE* lpPFTable);
+			_In_opt_ LPGUID lpGuidMDB);
 		std::string GetServerName(_In_ LPMAPISESSION lpSession);
 		_Check_return_ HRESULT HrMailboxLogon(
 			_In_ LPMAPISESSION lplhSession, // ptr to MAPI session handle

@@ -159,71 +159,59 @@ namespace mapi
 			return hRes;
 		}
 
-		_Check_return_ HRESULT GetPublicFolderTable1(
-			_In_ LPMDB lpMDB,
-			const std::string& szServerDN,
-			ULONG ulFlags,
-			_Deref_out_opt_ LPMAPITABLE* lpPFTable)
+		_Check_return_ LPMAPITABLE GetPublicFolderTable1(_In_ LPMDB lpMDB, const std::string& szServerDN, ULONG ulFlags)
 		{
-			if (!lpMDB || !lpPFTable || szServerDN.empty()) return MAPI_E_INVALID_PARAMETER;
-			*lpPFTable = nullptr;
+			if (!lpMDB || szServerDN.empty()) return nullptr;
 
-			auto hRes = S_OK;
+			LPMAPITABLE lpPFTable = nullptr;
 			auto lpManageStore1 = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpManageStore1)
 			{
-				hRes = EC_MAPI(lpManageStore1->GetPublicFolderTable(LPSTR(szServerDN.c_str()), lpPFTable, ulFlags));
+				EC_MAPI_S(lpManageStore1->GetPublicFolderTable(LPSTR(szServerDN.c_str()), &lpPFTable, ulFlags));
 
 				lpManageStore1->Release();
 			}
 
-			return hRes;
+			return lpPFTable;
 		}
 
-		_Check_return_ HRESULT GetPublicFolderTable4(
-			_In_ LPMDB lpMDB,
-			const std::string& szServerDN,
-			ULONG ulOffset,
-			ULONG ulFlags,
-			_Deref_out_opt_ LPMAPITABLE* lpPFTable)
+		_Check_return_ LPMAPITABLE
+		GetPublicFolderTable4(_In_ LPMDB lpMDB, const std::string& szServerDN, ULONG ulOffset, ULONG ulFlags)
 		{
-			if (!lpMDB || !lpPFTable || szServerDN.empty()) return MAPI_E_INVALID_PARAMETER;
-			*lpPFTable = nullptr;
+			if (!lpMDB || szServerDN.empty()) return nullptr;
 
-			auto hRes = S_OK;
+			LPMAPITABLE lpPFTable = nullptr;
 			auto lpManageStore4 = mapi::safe_cast<LPEXCHANGEMANAGESTORE4>(lpMDB);
 			if (lpManageStore4)
 			{
-				hRes = EC_MAPI(lpManageStore4->GetPublicFolderTableOffset(
-					LPSTR(szServerDN.c_str()), lpPFTable, ulFlags, ulOffset));
+				EC_MAPI_S(lpManageStore4->GetPublicFolderTableOffset(
+					LPSTR(szServerDN.c_str()), &lpPFTable, ulFlags, ulOffset));
 				lpManageStore4->Release();
 			}
 
-			return hRes;
+			return lpPFTable;
 		}
 
-		_Check_return_ HRESULT GetPublicFolderTable5(
+		_Check_return_ LPMAPITABLE GetPublicFolderTable5(
 			_In_ LPMDB lpMDB,
 			const std::string& szServerDN,
 			ULONG ulOffset,
 			ULONG ulFlags,
-			_In_opt_ LPGUID lpGuidMDB,
-			_Deref_out_opt_ LPMAPITABLE* lpPFTable)
+			_In_opt_ LPGUID lpGuidMDB)
 		{
-			if (!lpMDB || !lpPFTable || szServerDN.empty()) return MAPI_E_INVALID_PARAMETER;
-			*lpPFTable = nullptr;
+			if (!lpMDB || szServerDN.empty()) return nullptr;
 
-			auto hRes = S_OK;
+			LPMAPITABLE lpPFTable = nullptr;
 			auto lpManageStore5 = mapi::safe_cast<LPEXCHANGEMANAGESTORE5>(lpMDB);
 			if (lpManageStore5)
 			{
-				hRes = EC_MAPI(lpManageStore5->GetPublicFolderTableEx(
-					LPSTR(szServerDN.c_str()), lpGuidMDB, lpPFTable, ulFlags, ulOffset));
+				EC_MAPI_S(lpManageStore5->GetPublicFolderTableEx(
+					LPSTR(szServerDN.c_str()), lpGuidMDB, &lpPFTable, ulFlags, ulOffset));
 
 				lpManageStore5->Release();
 			}
 
-			return hRes;
+			return lpPFTable;
 		}
 
 		// Get server name from the profile
@@ -488,7 +476,7 @@ namespace mapi
 				{PR_ENTRYID},
 			};
 
-			auto hRes = EC_MAPI(lpMAPISession->GetMsgStoresTable(0, &pStoresTbl));
+			EC_MAPI_S(lpMAPISession->GetMsgStoresTable(0, &pStoresTbl));
 
 			// set up restriction for the default store
 			sres.rt = RES_PROPERTY; // gonna compare a property

@@ -558,7 +558,6 @@ namespace dialog
 				}
 				else
 				{
-					auto hRes = S_OK;
 					auto szServerDN = mapi::store::BuildServerDN(strings::wstringTostring(MyData.GetStringW(0)), "");
 					if (!szServerDN.empty())
 					{
@@ -576,12 +575,12 @@ namespace dialog
 						switch (MyData.GetDropDown(4))
 						{
 						case 0:
-							hRes = EC_H(mapi::store::GetPublicFolderTable1(
-								lpMDB, szServerDN, MyData.GetHex(2) | fMapiUnicode, &lpPFTable));
+							lpPFTable =
+								mapi::store::GetPublicFolderTable1(lpMDB, szServerDN, MyData.GetHex(2) | fMapiUnicode);
 							break;
 						case 1:
-							hRes = EC_H(mapi::store::GetPublicFolderTable4(
-								lpMDB, szServerDN, MyData.GetHex(1), MyData.GetHex(2) | fMapiUnicode, &lpPFTable));
+							lpPFTable = mapi::store::GetPublicFolderTable4(
+								lpMDB, szServerDN, MyData.GetHex(1), MyData.GetHex(2) | fMapiUnicode);
 							break;
 						case 2:
 						{
@@ -601,22 +600,22 @@ namespace dialog
 								}
 							}
 
-							hRes = EC_H(mapi::store::GetPublicFolderTable5(
+							lpPFTable = mapi::store::GetPublicFolderTable5(
 								lpMDB,
 								szServerDN,
 								MyData.GetHex(1),
 								MyData.GetHex(2) | fMapiUnicode,
-								bHaveGUID ? &MyGUID : nullptr,
-								&lpPFTable));
+								bHaveGUID ? &MyGUID : nullptr);
 							break;
 						}
 						}
 
-						if (SUCCEEDED(hRes) && lpPFTable)
+						if (lpPFTable)
 						{
 							new dialog::CPublicFolderTableDlg(lpParent, lpMapiObjects, MyData.GetStringW(0), lpPFTable);
+							lpPFTable->Release();
 						}
-						else if (hRes == MAPI_E_NO_ACCESS || hRes == MAPI_E_NETWORK_ERROR)
+						else
 						{
 							error::ErrDialog(
 								__FILE__,
@@ -625,8 +624,6 @@ namespace dialog
 								_T("GetPublicFolderTable"),
 								_T("GetPublicFolderTable")); // STRING_OK
 						}
-
-						if (lpPFTable) lpPFTable->Release();
 
 						if (lpOldMDB)
 						{
