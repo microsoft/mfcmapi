@@ -401,14 +401,12 @@ namespace dialog
 
 	void CMainDlg::OnOpenDefaultMessageStore()
 	{
-		LPMDB lpMDB = nullptr;
-
 		if (!m_lpMapiObjects) return;
 
 		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_H_S(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		auto lpMDB = mapi::store::OpenDefaultMessageStore(lpMAPISession);
 		if (!lpMDB) return;
 
 		// Now that we have a message store, try to open the Admin version of it
@@ -580,9 +578,6 @@ namespace dialog
 
 	void CMainDlg::OnOpenMailboxWithDN()
 	{
-		LPMDB lpMDB = nullptr;
-		LPMDB lpOtherMDB = nullptr;
-
 		if (!m_lpMapiObjects) return;
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
@@ -590,12 +585,12 @@ namespace dialog
 
 		const auto szServerName = mapi::store::GetServerName(lpMAPISession);
 
-		EC_H_S(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		auto lpMDB = mapi::store::OpenDefaultMessageStore(lpMAPISession);
 		if (!lpMDB) return;
 
 		if (mapi::store::StoreSupportsManageStore(lpMDB))
 		{
-			lpOtherMDB = mapi::store::OpenMailboxWithPrompt(
+			auto lpOtherMDB = mapi::store::OpenMailboxWithPrompt(
 				lpMAPISession,
 				lpMDB,
 				szServerName,

@@ -601,7 +601,6 @@ namespace dialog
 
 	void CFolderDlg::OnDeleteSelectedItem()
 	{
-		LPMDB lpMDB = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !m_lpFolder) return;
@@ -609,7 +608,7 @@ namespace dialog
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_H_S(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		auto lpMDB = mapi::store::OpenDefaultMessageStore(lpMAPISession);
 		if (!lpMDB) return;
 
 		auto bDelete = false;

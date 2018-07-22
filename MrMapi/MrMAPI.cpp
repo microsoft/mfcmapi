@@ -46,7 +46,7 @@ _Check_return_ LPMDB OpenExchangeOrDefaultMessageStore(_In_ LPMAPISESSION lpMAPI
 	auto lpMDB = mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
 	if (!lpMDB)
 	{
-		WC_H_S(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		lpMDB = mapi::store::OpenDefaultMessageStore(lpMAPISession);
 	}
 
 	return lpMDB;

@@ -469,9 +469,10 @@ namespace mapi
 			return hRes;
 		}
 
-		_Check_return_ HRESULT
-		OpenDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession, _Deref_out_ LPMDB* lppDefaultMDB)
+		_Check_return_ LPMDB OpenDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession)
 		{
+			if (!lpMAPISession) return nullptr;
+
 			LPMAPITABLE pStoresTbl = nullptr;
 			LPSRowSet pRow = nullptr;
 			static SRestriction sres;
@@ -486,7 +487,6 @@ namespace mapi
 				NUM_COLS,
 				{PR_ENTRYID},
 			};
-			if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
 			auto hRes = EC_MAPI(lpMAPISession->GetMsgStoresTable(0, &pStoresTbl));
 
@@ -507,17 +507,15 @@ namespace mapi
 				0, // max number of rows - 0 means ALL
 				&pRow));
 
+			LPMDB lpDefaultMDB = nullptr;
 			if (pRow && pRow->cRows)
 			{
-				*lppDefaultMDB =
-					CallOpenMsgStore(lpMAPISession, NULL, &pRow->aRow[0].lpProps[EID].Value.bin, MDB_WRITE);
+				lpDefaultMDB = CallOpenMsgStore(lpMAPISession, NULL, &pRow->aRow[0].lpProps[EID].Value.bin, MDB_WRITE);
 			}
-			else
-				hRes = MAPI_E_NOT_FOUND;
 
 			if (pRow) FreeProws(pRow);
 			if (pStoresTbl) pStoresTbl->Release();
-			return hRes;
+			return lpDefaultMDB;
 		}
 
 		// Build DNs for call to HrMailboxLogon

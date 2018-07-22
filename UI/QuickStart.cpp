@@ -40,7 +40,7 @@ namespace dialog
 		const auto lpMAPISession = OpenSessionForQuickStart(lpHostDlg, hwnd); // do not release
 		if (lpMAPISession)
 		{
-			WC_H_S(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+			lpMDB = mapi::store::OpenDefaultMessageStore(lpMAPISession);
 			lpMapiObjects->SetMDB(lpMDB);
 		}
 
