@@ -19,11 +19,8 @@ namespace mapi
 			_In_ const std::wstring& szName,
 			ULONG ulRecipientType);
 
-		_Check_return_ HRESULT CreateANRRestriction(
-			ULONG ulPropTag,
-			_In_ const std::wstring& szString,
-			_In_opt_ LPVOID lpParent,
-			_Deref_out_opt_ LPSRestriction* lppRes);
+		_Check_return_ LPSRestriction
+		CreateANRRestriction(ULONG ulPropTag, _In_ const std::wstring& szString, _In_opt_ LPVOID lpParent);
 
 		_Check_return_ LPMAPITABLE GetABContainerTable(_In_ LPADRBOOK lpAdrBook);
 

@@ -272,8 +272,6 @@ namespace dialog
 
 	void CAbDlg::OnCreatePropertyStringRestriction()
 	{
-		LPSRestriction lpRes = nullptr;
-
 		if (!m_lpContentsTableListCtrl) return;
 
 		editor::CEditor MyData(
@@ -284,13 +282,10 @@ namespace dialog
 		if (!MyData.DisplayDialog()) return;
 
 		// Allocate and create our SRestriction
-		auto hRes = EC_H(mapi::ab::CreateANRRestriction(PR_ANR_W, MyData.GetStringW(0), NULL, &lpRes));
-
+		auto lpRes = mapi::ab::CreateANRRestriction(PR_ANR_W, MyData.GetStringW(0), NULL);
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
 		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
-
-		if (FAILED(hRes)) MAPIFreeBuffer(lpRes);
 	}
 
 	void CAbDlg::HandleAddInMenuSingle(

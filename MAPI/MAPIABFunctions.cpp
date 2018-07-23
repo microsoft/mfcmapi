@@ -175,62 +175,45 @@ namespace mapi
 		}
 
 		// Same as CreatePropertyStringRestriction, but skips the existence part.
-		_Check_return_ HRESULT CreateANRRestriction(
-			ULONG ulPropTag,
-			_In_ const std::wstring& szString,
-			_In_opt_ LPVOID lpParent,
-			_Deref_out_opt_ LPSRestriction* lppRes)
+		_Check_return_ LPSRestriction
+		CreateANRRestriction(ULONG ulPropTag, _In_ const std::wstring& szString, _In_opt_ LPVOID lpParent)
 		{
 			if (PROP_TYPE(ulPropTag) != PT_UNICODE)
 			{
 				output::DebugPrint(DBGGeneric, L"Failed to create restriction - property was not PT_UNICODE\n");
-				return MAPI_E_INVALID_PARAMETER;
+				return nullptr;
 			}
-
-			auto hRes = S_OK;
-			LPSRestriction lpRes = nullptr;
-			LPSPropValue lpspvSubject = nullptr;
-			LPVOID lpAllocationParent = nullptr;
-
-			*lppRes = nullptr;
 
 			// Allocate and create our SRestriction
 			// Allocate base memory:
-			lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpParent);
-			lpAllocationParent = lpParent ? lpParent : lpRes;
-			lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
+			auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpParent);
+			auto lpAllocationParent = lpParent ? lpParent : lpRes;
 
-			if (lpRes && lpspvSubject)
+			if (lpRes)
 			{
 				// Root Node
 				lpRes->rt = RES_PROPERTY;
 				lpRes->res.resProperty.relop = RELOP_EQ;
 				lpRes->res.resProperty.ulPropTag = ulPropTag;
+				auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
 				lpRes->res.resProperty.lpProp = lpspvSubject;
 
-				// Allocate and fill out properties:
-				lpspvSubject->ulPropTag = ulPropTag;
-				lpspvSubject->Value.LPSZ = nullptr;
+				if (lpspvSubject)
+				{ // Allocate and fill out properties:
+					lpspvSubject->ulPropTag = ulPropTag;
+					lpspvSubject->Value.LPSZ = nullptr;
 
-				if (!szString.empty())
-				{
-					lpspvSubject->Value.lpszW = const_cast<LPWSTR>(szString.c_str());
+					if (!szString.empty())
+					{
+						lpspvSubject->Value.lpszW = const_cast<LPWSTR>(szString.c_str());
+					}
 				}
 
 				output::DebugPrint(DBGGeneric, L"CreateANRRestriction built restriction:\n");
 				output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
-
-				*lppRes = lpRes;
 			}
 
-			if (hRes != S_OK)
-			{
-				output::DebugPrint(DBGGeneric, L"Failed to create restriction\n");
-				MAPIFreeBuffer(lpRes);
-				*lppRes = nullptr;
-			}
-
-			return hRes;
+			return lpRes;
 		}
 
 		_Check_return_ LPMAPITABLE GetABContainerTable(_In_ LPADRBOOK lpAdrBook)
@@ -483,25 +466,20 @@ namespace mapi
 
 			output::DebugPrint(DBGGeneric, L"SearchContentsTableForName: Looking for \"%ws\"\n", szName.c_str());
 
-			// Set a restriction so we only find close matches
-			LPSRestriction lpSRes = nullptr;
-
-			auto hRes = EC_H(CreateANRRestriction(PR_ANR_W, szName, nullptr, &lpSRes));
-			if (SUCCEEDED(hRes))
-			{
-				hRes = EC_MAPI(pTable->SetColumns(LPSPropTagArray(&abCols), TBL_BATCH));
-			}
-
+			auto hRes = EC_MAPI(pTable->SetColumns(LPSPropTagArray(&abCols), TBL_BATCH));
 			if (SUCCEEDED(hRes))
 			{
 				// Jump to the top of the table...
 				hRes = EC_MAPI(pTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 			}
 
+			// Set a restriction so we only find close matches
 			if (SUCCEEDED(hRes))
 			{
 				// ..and jump to the first matching entry in the table
+				auto lpSRes = CreateANRRestriction(PR_ANR_W, szName, nullptr);
 				hRes = EC_MAPI(pTable->Restrict(lpSRes, NULL));
+				MAPIFreeBuffer(lpSRes);
 			}
 
 			// Now we iterate through each of the matching entries
@@ -540,7 +518,6 @@ namespace mapi
 				output::DebugPrint(DBGGeneric, L"SearchContentsTableForName: No exact match found.\n");
 			}
 
-			MAPIFreeBuffer(lpSRes);
 			if (pRows) FreeProws(pRows);
 			return hRes;
 		}
