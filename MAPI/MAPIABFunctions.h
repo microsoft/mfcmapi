@@ -25,8 +25,7 @@ namespace mapi
 			_In_opt_ LPVOID lpParent,
 			_Deref_out_opt_ LPSRestriction* lppRes);
 
-		_Check_return_ HRESULT
-		GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_opt_ LPMAPITABLE* lpABContainerTable);
+		_Check_return_ LPMAPITABLE GetABContainerTable(_In_ LPADRBOOK lpAdrBook);
 
 		_Check_return_ LPADRLIST AllocAdrList(ULONG ulNumProps);
 

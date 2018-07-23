@@ -233,14 +233,12 @@ namespace mapi
 			return hRes;
 		}
 
-		_Check_return_ HRESULT
-		GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_opt_ LPMAPITABLE* lpABContainerTable)
+		_Check_return_ LPMAPITABLE GetABContainerTable(_In_ LPADRBOOK lpAdrBook)
 		{
+			if (!lpAdrBook) return nullptr;
+
 			LPABCONT lpABRootContainer = nullptr;
 			LPMAPITABLE lpTable = nullptr;
-
-			*lpABContainerTable = nullptr;
-			if (!lpAdrBook) return MAPI_E_INVALID_PARAMETER;
 
 			// Open root address book (container).
 			auto hRes = EC_H(mapi::CallOpenEntry(
@@ -258,11 +256,10 @@ namespace mapi
 			{
 				// Get a table of all of the Address Books.
 				hRes = EC_MAPI(lpABRootContainer->GetHierarchyTable(CONVENIENT_DEPTH | fMapiUnicode, &lpTable));
-				*lpABContainerTable = lpTable;
 				lpABRootContainer->Release();
 			}
 
-			return hRes;
+			return lpTable;
 		}
 
 		// Manually resolve a name in the address book and add it to the message
@@ -316,7 +313,7 @@ namespace mapi
 
 			if (SUCCEEDED(hRes))
 			{
-				hRes = EC_H(GetABContainerTable(lpAdrBook, &lpABContainerTable));
+				lpABContainerTable = GetABContainerTable(lpAdrBook);
 			}
 
 			if (lpABContainerTable)
