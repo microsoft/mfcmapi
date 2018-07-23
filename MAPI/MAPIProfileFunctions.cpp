@@ -371,8 +371,7 @@ namespace mapi
 
 						if (lpServiceUID)
 						{
-							LPPROFSECT lpSect = nullptr;
-							hRes = EC_H(OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin, &lpSect));
+							auto lpSect = OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin);
 							if (lpSect)
 							{
 								if (bAddMark)
@@ -406,19 +405,16 @@ namespace mapi
 		_Check_return_ HRESULT
 		HrFindUnmarkedProvider(_In_ LPSERVICEADMIN lpServiceAdmin, _Deref_out_opt_ LPSRowSet* lpRowSet)
 		{
-			LPMAPITABLE lpProviderTable = nullptr;
-			LPPROFSECT lpSect = nullptr;
-
-			if (!lpServiceAdmin || !lpRowSet) return MAPI_E_INVALID_PARAMETER;
-
 			*lpRowSet = nullptr;
+			if (!lpServiceAdmin || !lpRowSet) return MAPI_E_INVALID_PARAMETER;
 
 			static const SizedSPropTagArray(1, pTagUID) = {1, PR_SERVICE_UID};
 
+			LPMAPITABLE lpProviderTable = nullptr;
 			auto hRes = EC_MAPI(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
-
 			if (lpProviderTable)
 			{
+				LPPROFSECT lpSect = nullptr;
 				hRes = EC_MAPI(lpProviderTable->SetColumns(LPSPropTagArray(&pTagUID), TBL_BATCH));
 				for (;;)
 				{
@@ -431,7 +427,7 @@ namespace mapi
 
 						if (lpServiceUID)
 						{
-							hRes = EC_H(OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin, &lpSect));
+							lpSect = OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin);
 							if (lpSect)
 							{
 								SPropTagArray pTagArray = {1, PR_MARKER};
@@ -892,29 +888,23 @@ namespace mapi
 
 #define MAPI_FORCE_ACCESS 0x00080000
 
-		_Check_return_ HRESULT OpenProfileSection(
-			_In_ LPSERVICEADMIN lpServiceAdmin,
-			_In_ LPSBinary lpServiceUID,
-			_Deref_out_opt_ LPPROFSECT* lppProfSect)
+		_Check_return_ LPPROFSECT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _In_ LPSBinary lpServiceUID)
 		{
-			if (lppProfSect) *lppProfSect = nullptr;
-
-			if (!lpServiceUID || !lpServiceAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
+			if (!lpServiceUID || !lpServiceAdmin) return nullptr;
 
 			output::DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
 			output::DebugPrintBinary(DBGOpenItemProp, *lpServiceUID);
 			output::DebugPrint(DBGOpenItemProp, L"\n");
 
+			LPPROFSECT lpProfSect = nullptr;
 			// First, we try the normal way of opening the profile section:
-			auto hRes = WC_MAPI(lpServiceAdmin->OpenProfileSection(
+			WC_MAPI_S(lpServiceAdmin->OpenProfileSection(
 				reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
 				nullptr,
 				MAPI_MODIFY | MAPI_FORCE_ACCESS, // passing this flag might actually work with Outlook 2000 and XP
-				lppProfSect));
-
-			if (!*lppProfSect)
+				&lpProfSect));
+			if (!lpProfSect)
 			{
-				hRes = S_OK;
 				///////////////////////////////////////////////////////////////////
 				// HACK CENTRAL. This is a MAJOR hack. MAPI will always return E_ACCESSDENIED
 				// when we open a profile section on the service if we are a client. The workaround
@@ -934,48 +924,41 @@ namespace mapi
 
 				if (ppProfile && *ppProfile)
 				{
-					hRes = EC_MAPI(
+					EC_MAPI_S(
 						(*ppProfile)
-							->OpenSection(reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb), MAPI_MODIFY, lppProfSect));
-				}
-				else
-				{
-					hRes = MAPI_E_NOT_FOUND;
+							->OpenSection(reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb), MAPI_MODIFY, &lpProfSect));
 				}
 				// END OF HACK. I'm amazed that this works....
 				///////////////////////////////////////////////////////////////////
 			}
 
-			return hRes;
+			return lpProfSect;
 		}
 
-		_Check_return_ HRESULT OpenProfileSection(
-			_In_ LPPROVIDERADMIN lpProviderAdmin,
-			_In_ LPSBinary lpProviderUID,
-			_Deref_out_ LPPROFSECT* lppProfSect)
+		_Check_return_ LPPROFSECT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ LPSBinary lpProviderUID)
 		{
-			if (lppProfSect) *lppProfSect = nullptr;
-			if (!lpProviderUID || !lpProviderAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
+			if (!lpProviderUID || !lpProviderAdmin) return nullptr;
 
 			output::DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
 			output::DebugPrintBinary(DBGOpenItemProp, *lpProviderUID);
 			output::DebugPrint(DBGOpenItemProp, L"\n");
 
-			auto hRes = WC_MAPI(lpProviderAdmin->OpenProfileSection(
+			LPPROFSECT lpProfSect = nullptr;
+			WC_MAPI_S(lpProviderAdmin->OpenProfileSection(
 				reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb),
 				nullptr,
 				MAPI_MODIFY | MAPI_FORCE_ACCESS,
-				lppProfSect));
-			if (!*lppProfSect)
+				&lpProfSect));
+			if (!lpProfSect)
 			{
 				// We only do this hack as a last resort - it can crash some versions of Outlook, but is required for Exchange
 				*(reinterpret_cast<BYTE*>(lpProviderAdmin) + 0x60) = 0x2; // Use at your own risk! NOT SUPPORTED!
 
-				hRes = WC_MAPI(lpProviderAdmin->OpenProfileSection(
-					reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb), nullptr, MAPI_MODIFY, lppProfSect));
+				WC_MAPI_S(lpProviderAdmin->OpenProfileSection(
+					reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb), nullptr, MAPI_MODIFY, &lpProfSect));
 			}
 
-			return hRes;
+			return lpProfSect;
 		}
 	}
 }

@@ -52,8 +52,7 @@ namespace output
 
 		if (lpProviderUID)
 		{
-			LPPROFSECT lpSect = nullptr;
-			EC_H_S(mapi::profile::OpenProfileSection(lpProviderAdmin, &lpProviderUID->Value.bin, &lpSect));
+			auto lpSect = mapi::profile::OpenProfileSection(lpProviderAdmin, &lpProviderUID->Value.bin);
 			if (lpSect)
 			{
 				ExportProfileSection(fProfile, lpSect, &lpProviderUID->Value.bin);
@@ -78,8 +77,7 @@ namespace output
 
 		if (lpServiceUID)
 		{
-			LPPROFSECT lpSect = nullptr;
-			EC_H_S(mapi::profile::OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin, &lpSect));
+			auto lpSect = mapi::profile::OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin);
 			if (lpSect)
 			{
 				ExportProfileSection(fProfile, lpSect, &lpServiceUID->Value.bin);
@@ -152,7 +150,6 @@ namespace output
 		output::Outputf(DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile.c_str());
 
 		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));
-
 		if (lpProfAdmin)
 		{
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
@@ -163,28 +160,26 @@ namespace output
 				if (!szProfileSection.empty())
 				{
 					const auto lpGuid = guid::GUIDNameToGUID(szProfileSection, bByteSwapped);
-
 					if (lpGuid)
 					{
-						LPPROFSECT lpSect = nullptr;
-						SBinary sBin = {0};
-						sBin.cb = sizeof(GUID);
-						sBin.lpb = LPBYTE(lpGuid);
+						auto sBin = SBinary{sizeof(GUID), LPBYTE(lpGuid)};
 
-						EC_H_S(mapi::profile::OpenProfileSection(lpServiceAdmin, &sBin, &lpSect));
+						auto lpSect = mapi::profile::OpenProfileSection(lpServiceAdmin, &sBin);
+						if (lpSect)
+						{
+							ExportProfileSection(fProfile, lpSect, &sBin);
+							lpSect->Release();
+						}
 
-						ExportProfileSection(fProfile, lpSect, &sBin);
 						delete[] lpGuid;
 					}
 				}
 				else
 				{
 					LPMAPITABLE lpServiceTable = nullptr;
-
 					EC_MAPI_S(lpServiceAdmin->GetMsgServiceTable(
 						0, // fMapiUnicode is not supported
 						&lpServiceTable));
-
 					if (lpServiceTable)
 					{
 						LPSRowSet lpRowSet = nullptr;

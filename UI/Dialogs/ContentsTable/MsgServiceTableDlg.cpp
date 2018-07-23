@@ -200,7 +200,7 @@ namespace dialog
 			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)
 			{
-				EC_H_S(mapi::profile::OpenProfileSection(m_lpServiceAdmin, lpServiceUID, &lpProfSect));
+				lpProfSect = mapi::profile::OpenProfileSection(m_lpServiceAdmin, lpServiceUID);
 			}
 		}
 
@@ -220,10 +220,9 @@ namespace dialog
 		if (!MyUID.DisplayDialog()) return;
 
 		auto guid = MyUID.GetSelectedGUID(0, MyUID.GetCheck(1));
-		SBinary MapiUID = {sizeof(GUID), reinterpret_cast<LPBYTE>(&guid)};
+		auto MapiUID = SBinary{sizeof(GUID), reinterpret_cast<LPBYTE>(&guid)};
 
-		LPPROFSECT lpProfSect = nullptr;
-		EC_H_S(mapi::profile::OpenProfileSection(m_lpServiceAdmin, &MapiUID, &lpProfSect));
+		auto lpProfSect = mapi::profile::OpenProfileSection(m_lpServiceAdmin, &MapiUID);
 		if (lpProfSect)
 		{
 			auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpProfSect);

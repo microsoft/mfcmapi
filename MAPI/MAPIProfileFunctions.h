@@ -39,15 +39,10 @@ namespace mapi
 
 		_Check_return_ HRESULT HrSetDefaultProfile(_In_ const std::string& lpszProfileName);
 
-		_Check_return_ HRESULT OpenProfileSection(
-			_In_ LPSERVICEADMIN lpServiceAdmin,
-			_In_ LPSBinary lpServiceUID,
-			_Deref_out_opt_ LPPROFSECT* lppProfSect);
+		_Check_return_ LPPROFSECT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _In_ LPSBinary lpServiceUID);
 
-		_Check_return_ HRESULT OpenProfileSection(
-			_In_ LPPROVIDERADMIN lpProviderAdmin,
-			_In_ LPSBinary lpProviderUID,
-			_Deref_out_ LPPROFSECT* lppProfSect);
+		_Check_return_ LPPROFSECT
+		OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ LPSBinary lpProviderUID);
 
 		void AddServicesToMapiSvcInf();
 		void RemoveServicesFromMapiSvcInf();
