@@ -402,12 +402,11 @@ namespace mapi
 		}
 
 		// Returns first provider without our mark on it
-		_Check_return_ HRESULT
-		HrFindUnmarkedProvider(_In_ LPSERVICEADMIN lpServiceAdmin, _Deref_out_opt_ LPSRowSet* lpRowSet)
+		_Check_return_ LPSRowSet HrFindUnmarkedProvider(_In_ LPSERVICEADMIN lpServiceAdmin)
 		{
-			*lpRowSet = nullptr;
-			if (!lpServiceAdmin || !lpRowSet) return MAPI_E_INVALID_PARAMETER;
+			if (!lpServiceAdmin) return nullptr;
 
+			LPSRowSet lpRowSet = nullptr;
 			static const SizedSPropTagArray(1, pTagUID) = {1, PR_SERVICE_UID};
 
 			LPMAPITABLE lpProviderTable = nullptr;
@@ -418,10 +417,10 @@ namespace mapi
 				hRes = EC_MAPI(lpProviderTable->SetColumns(LPSPropTagArray(&pTagUID), TBL_BATCH));
 				for (;;)
 				{
-					hRes = EC_MAPI(lpProviderTable->QueryRows(1, 0, lpRowSet));
-					if (hRes == S_OK && *lpRowSet && 1 == (*lpRowSet)->cRows)
+					hRes = EC_MAPI(lpProviderTable->QueryRows(1, 0, &lpRowSet));
+					if (hRes == S_OK && lpRowSet && 1 == lpRowSet->cRows)
 					{
-						const auto lpCurRow = &(*lpRowSet)->aRow[0];
+						const auto lpCurRow = &lpRowSet->aRow[0];
 
 						auto lpServiceUID = PpropFindProp(lpCurRow->lpProps, lpCurRow->cValues, PR_SERVICE_UID);
 
@@ -430,7 +429,7 @@ namespace mapi
 							lpSect = OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin);
 							if (lpSect)
 							{
-								SPropTagArray pTagArray = {1, PR_MARKER};
+								auto pTagArray = SPropTagArray{1, PR_MARKER};
 								ULONG ulPropVal = 0;
 								LPSPropValue lpsPropVal = nullptr;
 								hRes = EC_H_GETPROPS(lpSect->GetProps(&pTagArray, NULL, &ulPropVal, &lpsPropVal));
@@ -439,7 +438,6 @@ namespace mapi
 								{
 									// got an unmarked provider - this is our hit
 									// Don't free *lpRowSet - we're returning it
-									hRes = S_OK; // wipe any error from the GetProps - it was expected
 									MAPIFreeBuffer(lpsPropVal);
 									break;
 								}
@@ -451,14 +449,14 @@ namespace mapi
 						}
 
 						// go on to next one in the loop
-						FreeProws(*lpRowSet);
-						*lpRowSet = nullptr;
+						FreeProws(lpRowSet);
+						lpRowSet = nullptr;
 					}
 					else
 					{
 						// no more hits - get out of the loop
-						FreeProws(*lpRowSet);
-						*lpRowSet = nullptr;
+						FreeProws(lpRowSet);
+						lpRowSet = nullptr;
 						break;
 					}
 				}
@@ -468,7 +466,7 @@ namespace mapi
 				lpProviderTable->Release();
 			}
 
-			return hRes;
+			return lpRowSet;
 		}
 
 		_Check_return_ HRESULT HrAddServiceToProfile(
@@ -536,10 +534,8 @@ namespace mapi
 
 					if (lpPropVals)
 					{
-						LPSRowSet lpRowSet = nullptr;
 						// Look for a provider without our dummy prop
-						hRes = EC_H(HrFindUnmarkedProvider(lpServiceAdmin, &lpRowSet));
-
+						auto lpRowSet = HrFindUnmarkedProvider(lpServiceAdmin);
 						if (lpRowSet) output::DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
 
 						// should only have one unmarked row
