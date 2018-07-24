@@ -66,10 +66,8 @@ namespace mapi
 		ULONG ulFlags,
 		_Out_opt_ ULONG* ulObjTypeRet,
 		_Deref_out_opt_ LPUNKNOWN* lppUnk);
-	_Check_return_ HRESULT ConcatSPropTagArrays(
-		_In_ LPSPropTagArray lpArray1,
-		_In_opt_ LPSPropTagArray lpArray2,
-		_Deref_out_opt_ LPSPropTagArray* lpNewArray);
+	_Check_return_ LPSPropTagArray
+	ConcatSPropTagArrays(_In_ LPSPropTagArray lpArray1, _In_opt_ LPSPropTagArray lpArray2);
 	_Check_return_ HRESULT CopyPropertyAsStream(
 		_In_ LPMAPIPROP lpSourcePropObj,
 		_In_ LPMAPIPROP lpTargetPropObj,

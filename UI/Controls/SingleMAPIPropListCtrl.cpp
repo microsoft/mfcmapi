@@ -595,16 +595,14 @@ namespace controls
 
 		void CSingleMAPIPropListCtrl::AddPropsToExtraProps(_In_ LPSPropTagArray lpPropsToAdd, bool bRefresh)
 		{
-			LPSPropTagArray lpNewExtraProps = nullptr;
-
 			output::DebugPrintEx(DBGGeneric, CLASS, L"AddPropsToExtraProps", L"adding prop array %p\n", lpPropsToAdd);
 
-			auto hRes = EC_H(mapi::ConcatSPropTagArrays(m_sptExtraProps, lpPropsToAdd, &lpNewExtraProps));
+			auto lpNewExtraProps = mapi::ConcatSPropTagArrays(m_sptExtraProps, lpPropsToAdd);
 
 			MAPIFreeBuffer(m_sptExtraProps);
 			m_sptExtraProps = lpNewExtraProps;
 
-			if (SUCCEEDED(hRes) && bRefresh)
+			if (bRefresh)
 			{
 				WC_H_S(RefreshMAPIPropList());
 			}

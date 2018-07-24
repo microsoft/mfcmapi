@@ -286,10 +286,9 @@ namespace controls
 			if (bAddExtras)
 			{
 				// build an array with the source set and m_sptExtraColumnTags combined
-				EC_H_S(mapi::ConcatSPropTagArrays(
+				lpConcatTagArray = mapi::ConcatSPropTagArrays(
 					m_sptExtraColumnTags,
-					lpFinalTagArray, // build on the final array we've computed thus far
-					&lpConcatTagArray));
+					lpFinalTagArray); // build on the final array we've computed thus far
 				lpFinalTagArray = lpConcatTagArray;
 			}
 

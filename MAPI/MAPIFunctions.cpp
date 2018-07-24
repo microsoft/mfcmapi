@@ -210,15 +210,10 @@ namespace mapi
 	}
 
 	// Concatenate two property arrays without duplicates
-	_Check_return_ HRESULT ConcatSPropTagArrays(
-		_In_ LPSPropTagArray lpArray1,
-		_In_opt_ LPSPropTagArray lpArray2,
-		_Deref_out_opt_ LPSPropTagArray* lpNewArray)
+	_Check_return_ LPSPropTagArray
+	ConcatSPropTagArrays(_In_ LPSPropTagArray lpArray1, _In_opt_ LPSPropTagArray lpArray2)
 	{
-		if (!lpNewArray) return MAPI_E_INVALID_PARAMETER;
-
 		auto hRes = S_OK;
-		*lpNewArray = nullptr;
 
 		// Add the sizes of the passed in arrays (0 if they were NULL)
 		auto iNewArraySize = lpArray1 ? lpArray1->cValues : 0;
@@ -238,7 +233,7 @@ namespace mapi
 			iNewArraySize = iNewArraySize + (lpArray2 ? lpArray2->cValues : 0);
 		}
 
-		if (!iNewArraySize) return MAPI_E_CALL_FAILED;
+		if (!iNewArraySize) return nullptr;
 
 		// Allocate memory for the new prop tag array
 		auto lpLocalArray = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(iNewArraySize));
@@ -279,14 +274,11 @@ namespace mapi
 			if (FAILED(hRes))
 			{
 				MAPIFreeBuffer(lpLocalArray);
-			}
-			else
-			{
-				*lpNewArray = static_cast<LPSPropTagArray>(lpLocalArray);
+				lpLocalArray = nullptr;
 			}
 		}
 
-		return hRes;
+		return lpLocalArray;
 	}
 
 	_Check_return_ SBinaryArray GetEntryIDs(_In_ LPMAPITABLE table)
@@ -932,7 +924,7 @@ namespace mapi
 
 	_Check_return_ LPMAPIFOLDER GetInbox(_In_ LPMDB lpMDB)
 	{
-		if (!lpMDB ) return nullptr;
+		if (!lpMDB) return nullptr;
 
 		output::DebugPrint(DBGGeneric, L"GetInbox: getting Inbox from %p\n", lpMDB);
 
