@@ -373,17 +373,15 @@ namespace dialog
 		OnOpenMessageStoreTable();
 	}
 
-	_Check_return_ HRESULT
-	CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ LPMAPIPROP CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
 	{
-		*lppMAPIProp = nullptr;
+		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return nullptr;
 		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
-		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
-
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-		if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
+		if (!lpMAPISession) return nullptr;
 
+		LPMDB lpMDB = nullptr;
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 		if (lpListData && lpListData->Contents())
 		{
@@ -393,28 +391,22 @@ namespace dialog
 				ULONG ulFlags = NULL;
 				if (mfcmapiREQUEST_MODIFY == bModify) ulFlags |= MDB_WRITE;
 
-				return EC_H(mapi::store::CallOpenMsgStore(
-					lpMAPISession,
-					reinterpret_cast<ULONG_PTR>(m_hWnd),
-					lpEntryID,
-					ulFlags,
-					reinterpret_cast<LPMDB*>(lppMAPIProp)));
+				lpMDB = mapi::store::CallOpenMsgStore(
+					lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpEntryID, ulFlags);
 			}
 		}
 
-		return S_OK;
+		return lpMDB;
 	}
 
 	void CMainDlg::OnOpenDefaultMessageStore()
 	{
-		LPMDB lpMDB = nullptr;
-
 		if (!m_lpMapiObjects) return;
 
 		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		EC_H_S(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		auto lpMDB = mapi::store::OpenDefaultMessageStore(lpMAPISession);
 		if (!lpMDB) return;
 
 		// Now that we have a message store, try to open the Admin version of it
@@ -459,16 +451,8 @@ namespace dialog
 
 					if (mapi::CheckStringProp(lpMailboxName, PT_STRING8))
 					{
-						LPMDB lpAdminMDB = nullptr;
-						EC_H_S(mapi::store::OpenOtherUsersMailbox(
-							lpMAPISession,
-							lpMDB,
-							"",
-							lpMailboxName->Value.lpszA,
-							strings::emptystring,
-							ulFlags,
-							false,
-							&lpAdminMDB));
+						auto lpAdminMDB = mapi::store::OpenOtherUsersMailbox(
+							lpMAPISession, lpMDB, "", lpMailboxName->Value.lpszA, strings::emptystring, ulFlags, false);
 						if (lpAdminMDB)
 						{
 							EC_H_S(DisplayObject(lpAdminMDB, NULL, otStore, this));
@@ -512,16 +496,14 @@ namespace dialog
 
 		if (sBin.lpb)
 		{
-			LPMDB lpMDB = nullptr;
-			EC_H_S(mapi::store::CallOpenMsgStore(
-				lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), &sBin, MyEID.GetHex(1), &lpMDB));
+			auto lpMDB = mapi::store::CallOpenMsgStore(
+				lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), &sBin, MyEID.GetHex(1));
 
 			if (lpMDB)
 			{
 				if (MyEID.GetCheck(4))
 				{
-					LPMDB lpUnwrappedMDB = nullptr;
-					EC_H_S(mapi::store::HrUnWrapMDB(lpMDB, &lpUnwrappedMDB));
+					auto lpUnwrappedMDB = mapi::store::HrUnWrapMDB(lpMDB);
 
 					// Ditch the old MDB and substitute the unwrapped one.
 					lpMDB->Release();
@@ -547,8 +529,6 @@ namespace dialog
 
 	void CMainDlg::OnOpenPublicFolders()
 	{
-		LPMDB lpMDB = nullptr;
-
 		if (!m_lpMapiObjects) return;
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
@@ -561,8 +541,7 @@ namespace dialog
 		MyPrompt.SetHex(0, NULL);
 		if (!MyPrompt.DisplayDialog()) return;
 
-		EC_H_S(mapi::store::OpenPublicMessageStore(lpMAPISession, "", MyPrompt.GetHex(0), &lpMDB));
-
+		auto lpMDB = mapi::store::OpenPublicMessageStore(lpMAPISession, "", MyPrompt.GetHex(0));
 		if (lpMDB)
 		{
 			EC_H_S(DisplayObject(lpMDB, NULL, otStore, this));
@@ -586,10 +565,8 @@ namespace dialog
 		MyPrompt.SetHex(1, OPENSTORE_PUBLIC);
 		if (!MyPrompt.DisplayDialog()) return;
 
-		LPMDB lpMDB = nullptr;
-		EC_H_S(mapi::store::OpenPublicMessageStore(
-			lpMAPISession, strings::wstringTostring(MyPrompt.GetStringW(0)), MyPrompt.GetHex(1), &lpMDB));
-
+		auto lpMDB = mapi::store::OpenPublicMessageStore(
+			lpMAPISession, strings::wstringTostring(MyPrompt.GetStringW(0)), MyPrompt.GetHex(1));
 		if (lpMDB)
 		{
 			EC_H_S(DisplayObject(lpMDB, NULL, otStore, this));
@@ -600,9 +577,6 @@ namespace dialog
 
 	void CMainDlg::OnOpenMailboxWithDN()
 	{
-		LPMDB lpMDB = nullptr;
-		LPMDB lpOtherMDB = nullptr;
-
 		if (!m_lpMapiObjects) return;
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
@@ -610,18 +584,17 @@ namespace dialog
 
 		const auto szServerName = mapi::store::GetServerName(lpMAPISession);
 
-		EC_H_S(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		auto lpMDB = mapi::store::OpenDefaultMessageStore(lpMAPISession);
 		if (!lpMDB) return;
 
 		if (mapi::store::StoreSupportsManageStore(lpMDB))
 		{
-			WC_H_S(mapi::store::OpenMailboxWithPrompt(
+			auto lpOtherMDB = mapi::store::OpenMailboxWithPrompt(
 				lpMAPISession,
 				lpMDB,
 				szServerName,
 				strings::emptystring,
-				OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
-				&lpOtherMDB));
+				OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 			if (lpOtherMDB)
 			{
 				EC_H_S(DisplayObject(lpOtherMDB, NULL, otStore, this));
@@ -656,8 +629,6 @@ namespace dialog
 
 	void CMainDlg::OnOpenOtherUsersMailboxFromGAL()
 	{
-		LPMDB lpMailboxMDB = nullptr; // Ptr to any another's msg store interface.
-
 		if (!m_lpMapiObjects) return;
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
@@ -666,8 +637,7 @@ namespace dialog
 		const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 		if (lpAddrBook)
 		{
-			EC_H_CANCEL_S(mapi::store::OpenOtherUsersMailboxFromGal(lpMAPISession, lpAddrBook, &lpMailboxMDB));
-
+			auto lpMailboxMDB = mapi::store::OpenOtherUsersMailboxFromGal(lpMAPISession, lpAddrBook);
 			if (lpMailboxMDB)
 			{
 				EC_H_S(DisplayObject(lpMailboxMDB, NULL, otStore, this));
@@ -694,16 +664,14 @@ namespace dialog
 				const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
 				if (lpItemEID)
 				{
-					LPMDB lpMDB = nullptr;
-					EC_H_S(mapi::store::CallOpenMsgStore(
-						lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpItemEID, MDB_WRITE | MDB_ONLINE, &lpMDB));
+					auto lpMDB = mapi::store::CallOpenMsgStore(
+						lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpItemEID, MDB_WRITE | MDB_ONLINE);
 
 					if (lpMDB)
 					{
 						EC_H_S(DisplayObject(lpMDB, NULL, otStoreDeletedItems, this));
 
 						lpMDB->Release();
-						lpMDB = nullptr;
 					}
 				}
 			}
@@ -712,8 +680,6 @@ namespace dialog
 
 	void CMainDlg::OnDumpStoreContents()
 	{
-		LPMDB lpMDB = nullptr;
-
 		if (!m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
@@ -727,8 +693,8 @@ namespace dialog
 				const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
 				if (lpItemEID)
 				{
-					EC_H_S(mapi::store::CallOpenMsgStore(
-						lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpItemEID, MDB_WRITE, &lpMDB));
+					auto lpMDB = mapi::store::CallOpenMsgStore(
+						lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpItemEID, MDB_WRITE);
 					if (lpMDB)
 					{
 						auto szDir = file::GetDirectoryPath(m_hWnd);
@@ -743,7 +709,6 @@ namespace dialog
 						}
 
 						lpMDB->Release();
-						lpMDB = nullptr;
 					}
 				}
 			}
@@ -1390,8 +1355,7 @@ namespace dialog
 			this);
 		if (!file.empty())
 		{
-			LPMESSAGE lpNewMessage = nullptr;
-			EC_H_S(file::LoadMSGToMessage(file, &lpNewMessage));
+			auto lpNewMessage = file::LoadMSGToMessage(file);
 			if (lpNewMessage)
 			{
 				WC_H_S(DisplayObject(lpNewMessage, MAPI_MESSAGE, otDefault, this));
@@ -1516,10 +1480,7 @@ namespace dialog
 				this);
 			if (!xmlfile.empty())
 			{
-				LPMESSAGE lpMessage = nullptr;
-
-				EC_H_S(file::LoadMSGToMessage(msgfile, &lpMessage));
-
+				auto  lpMessage = file::LoadMSGToMessage(msgfile);
 				if (lpMessage)
 				{
 					mapiprocessor::CDumpStore MyDumpStore;

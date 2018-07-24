@@ -52,31 +52,23 @@ namespace dialog
 	ON_COMMAND(ID_OPENPROFILESECTION, OnOpenProfileSection)
 	END_MESSAGE_MAP()
 
-	_Check_return_ HRESULT CProviderTableDlg::OpenItemProp(
-		int iSelectedItem,
-		__mfcmapiModifyEnum /*bModify*/,
-		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ LPMAPIPROP CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
 	{
-		auto hRes = S_OK;
-
+		if (m_lpContentsTableListCtrl || !m_lpProviderAdmin) return nullptr;
 		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
-		if (!lppMAPIProp || !m_lpContentsTableListCtrl || !m_lpProviderAdmin) return MAPI_E_INVALID_PARAMETER;
-
-		*lppMAPIProp = nullptr;
-
+		LPPROFSECT lpProfSect = nullptr;
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 		if (lpListData && lpListData->Contents())
 		{
 			const auto lpProviderUID = lpListData->Contents()->m_lpProviderUID;
 			if (lpProviderUID)
 			{
-				hRes = EC_H(mapi::profile::OpenProfileSection(
-					m_lpProviderAdmin, lpProviderUID, reinterpret_cast<LPPROFSECT*>(lppMAPIProp)));
+				lpProfSect = mapi::profile::OpenProfileSection(m_lpProviderAdmin, lpProviderUID);
 			}
 		}
 
-		return hRes;
+		return lpProfSect;
 	}
 
 	void CProviderTableDlg::OnOpenProfileSection()
@@ -92,10 +84,9 @@ namespace dialog
 		if (!MyUID.DisplayDialog()) return;
 
 		auto guid = MyUID.GetSelectedGUID(0, MyUID.GetCheck(1));
-		SBinary MapiUID = {sizeof(GUID), reinterpret_cast<LPBYTE>(&guid)};
+		auto MapiUID = SBinary{sizeof(GUID), reinterpret_cast<LPBYTE>(&guid)};
 
-		LPPROFSECT lpProfSect = nullptr;
-		EC_H_S(mapi::profile::OpenProfileSection(m_lpProviderAdmin, &MapiUID, &lpProfSect));
+		auto lpProfSect = mapi::profile::OpenProfileSection(m_lpProviderAdmin, &MapiUID);
 		if (lpProfSect)
 		{
 			auto lpTemp = mapi::safe_cast<LPMAPIPROP>(lpProfSect);

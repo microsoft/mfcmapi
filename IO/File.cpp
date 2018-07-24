@@ -98,27 +98,20 @@ namespace file
 	}
 
 	// Creates an LPMESSAGE on top of the MSG file
-	_Check_return_ HRESULT
-	LoadMSGToMessage(_In_ const std::wstring& szMessageFile, _Deref_out_opt_ LPMESSAGE* lppMessage)
+	_Check_return_ LPMESSAGE LoadMSGToMessage(_In_ const std::wstring& szMessageFile)
 	{
-		if (!lppMessage) return MAPI_E_INVALID_PARAMETER;
-
-		auto hRes = S_OK;
-
-		*lppMessage = nullptr;
-
+		LPMESSAGE lpMessage = nullptr;
 		// get memory allocation function
 		const auto lpMalloc = MAPIGetDefaultMalloc();
 		if (lpMalloc)
 		{
 			LPSTORAGE pStorage = nullptr;
 			// Open the compound file
-			hRes = EC_H(MyStgOpenStorage(szMessageFile, true, &pStorage));
-
+			EC_H_S(MyStgOpenStorage(szMessageFile, true, &pStorage));
 			if (pStorage)
 			{
 				// Open an IMessage interface on an IStorage object
-				hRes = EC_MAPI(OpenIMsgOnIStg(
+				EC_MAPI_S(OpenIMsgOnIStg(
 					nullptr,
 					MAPIAllocateBuffer,
 					MAPIAllocateMore,
@@ -129,13 +122,13 @@ namespace file
 					nullptr,
 					0,
 					0,
-					lppMessage));
+					&lpMessage));
 
 				pStorage->Release();
 			}
 		}
 
-		return hRes;
+		return lpMessage;
 	}
 
 	// Loads the MSG file into an LPMESSAGE pointer, then copies it into the passed in message
@@ -166,9 +159,8 @@ namespace file
 															 PR_REPLICA_SERVER,
 															 PR_HAS_DAMS}};
 
-		LPMESSAGE pIMsg = nullptr;
-		auto hRes = EC_H(LoadMSGToMessage(szMessageFile, &pIMsg));
-
+		auto hRes = S_OK;
+		auto pIMsg = LoadMSGToMessage(szMessageFile);
 		if (pIMsg)
 		{
 			LPSPropProblemArray lpProblems = nullptr;
@@ -190,7 +182,7 @@ namespace file
 
 			EC_PROBLEMARRAY(lpProblems);
 			MAPIFreeBuffer(lpProblems);
-			if (!FAILED(hRes))
+			if (SUCCEEDED(hRes))
 			{
 				hRes = EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 			}

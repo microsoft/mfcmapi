@@ -9,31 +9,24 @@ namespace mapi
 {
 	namespace ab
 	{
-		_Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIST* lpAdrList)
+		_Check_return_ LPADRLIST AllocAdrList(ULONG ulNumProps)
 		{
-			if (!lpAdrList) return MAPI_E_INVALID_PARAMETER;
-			*lpAdrList = nullptr;
-			if (ulNumProps > ULONG_MAX / sizeof(SPropValue)) return MAPI_E_INVALID_PARAMETER;
+			if (ulNumProps > ULONG_MAX / sizeof(SPropValue)) return nullptr;
 
 			// Allocate memory for new SRowSet structure.
 			auto lpLocalAdrList = mapi::allocate<LPADRLIST>(CbNewSRowSet(1));
 			if (lpLocalAdrList)
 			{
-				// Allocate memory for SPropValue structure that indicates what
-				// recipient properties will be set.
+				// Allocate memory for SPropValue structure that indicates what recipient properties will be set.
 				lpLocalAdrList->aEntries[0].rgPropVals = mapi::allocate<LPSPropValue>(ulNumProps * sizeof(SPropValue));
-
-				if (lpLocalAdrList->aEntries[0].rgPropVals)
-				{
-					*lpAdrList = lpLocalAdrList;
-				}
-				else
+				if (!lpLocalAdrList->aEntries[0].rgPropVals)
 				{
 					FreePadrlist(lpLocalAdrList);
+					lpLocalAdrList = nullptr;
 				}
 			}
 
-			return S_OK;
+			return lpLocalAdrList;
 		}
 
 		_Check_return_ HRESULT AddOneOffAddress(
@@ -64,13 +57,12 @@ namespace mapi
 
 			if (SUCCEEDED(hRes))
 			{
-				hRes = EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS, &lpAdrList));
+				lpAdrList = AllocAdrList(NUM_RECIP_PROPS);
 			}
 
 			// Setup the One Time recipient by indicating how many recipients
 			// and how many properties will be set on each recipient.
-
-			if (SUCCEEDED(hRes) && lpAdrList)
+			if (lpAdrList)
 			{
 				lpAdrList->cEntries = 1; // How many recipients.
 				lpAdrList->aEntries[0].cValues = NUM_RECIP_PROPS; // How many properties per recipient
@@ -146,7 +138,7 @@ namespace mapi
 
 			if (SUCCEEDED(hRes))
 			{
-				hRes = EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS, &lpAdrList));
+				lpAdrList = AllocAdrList(NUM_RECIP_PROPS);
 			}
 
 			if (lpAdrList)
@@ -183,72 +175,53 @@ namespace mapi
 		}
 
 		// Same as CreatePropertyStringRestriction, but skips the existence part.
-		_Check_return_ HRESULT CreateANRRestriction(
-			ULONG ulPropTag,
-			_In_ const std::wstring& szString,
-			_In_opt_ LPVOID lpParent,
-			_Deref_out_opt_ LPSRestriction* lppRes)
+		_Check_return_ LPSRestriction
+		CreateANRRestriction(ULONG ulPropTag, _In_ const std::wstring& szString, _In_opt_ LPVOID lpParent)
 		{
 			if (PROP_TYPE(ulPropTag) != PT_UNICODE)
 			{
 				output::DebugPrint(DBGGeneric, L"Failed to create restriction - property was not PT_UNICODE\n");
-				return MAPI_E_INVALID_PARAMETER;
+				return nullptr;
 			}
-
-			auto hRes = S_OK;
-			LPSRestriction lpRes = nullptr;
-			LPSPropValue lpspvSubject = nullptr;
-			LPVOID lpAllocationParent = nullptr;
-
-			*lppRes = nullptr;
 
 			// Allocate and create our SRestriction
 			// Allocate base memory:
-			lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpParent);
-			lpAllocationParent = lpParent ? lpParent : lpRes;
-			lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
+			auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpParent);
+			auto lpAllocationParent = lpParent ? lpParent : lpRes;
 
-			if (lpRes && lpspvSubject)
+			if (lpRes)
 			{
 				// Root Node
 				lpRes->rt = RES_PROPERTY;
 				lpRes->res.resProperty.relop = RELOP_EQ;
 				lpRes->res.resProperty.ulPropTag = ulPropTag;
+				auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
 				lpRes->res.resProperty.lpProp = lpspvSubject;
 
-				// Allocate and fill out properties:
-				lpspvSubject->ulPropTag = ulPropTag;
-				lpspvSubject->Value.LPSZ = nullptr;
+				if (lpspvSubject)
+				{ // Allocate and fill out properties:
+					lpspvSubject->ulPropTag = ulPropTag;
+					lpspvSubject->Value.LPSZ = nullptr;
 
-				if (!szString.empty())
-				{
-					lpspvSubject->Value.lpszW = const_cast<LPWSTR>(szString.c_str());
+					if (!szString.empty())
+					{
+						lpspvSubject->Value.lpszW = const_cast<LPWSTR>(szString.c_str());
+					}
 				}
 
 				output::DebugPrint(DBGGeneric, L"CreateANRRestriction built restriction:\n");
 				output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
-
-				*lppRes = lpRes;
 			}
 
-			if (hRes != S_OK)
-			{
-				output::DebugPrint(DBGGeneric, L"Failed to create restriction\n");
-				MAPIFreeBuffer(lpRes);
-				*lppRes = nullptr;
-			}
-
-			return hRes;
+			return lpRes;
 		}
 
-		_Check_return_ HRESULT
-		GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_opt_ LPMAPITABLE* lpABContainerTable)
+		_Check_return_ LPMAPITABLE GetABContainerTable(_In_ LPADRBOOK lpAdrBook)
 		{
+			if (!lpAdrBook) return nullptr;
+
 			LPABCONT lpABRootContainer = nullptr;
 			LPMAPITABLE lpTable = nullptr;
-
-			*lpABContainerTable = nullptr;
-			if (!lpAdrBook) return MAPI_E_INVALID_PARAMETER;
 
 			// Open root address book (container).
 			auto hRes = EC_H(mapi::CallOpenEntry(
@@ -266,11 +239,10 @@ namespace mapi
 			{
 				// Get a table of all of the Address Books.
 				hRes = EC_MAPI(lpABRootContainer->GetHierarchyTable(CONVENIENT_DEPTH | fMapiUnicode, &lpTable));
-				*lpABContainerTable = lpTable;
 				lpABRootContainer->Release();
 			}
 
-			return hRes;
+			return lpTable;
 		}
 
 		// Manually resolve a name in the address book and add it to the message
@@ -324,7 +296,7 @@ namespace mapi
 
 			if (SUCCEEDED(hRes))
 			{
-				hRes = EC_H(GetABContainerTable(lpAdrBook, &lpABContainerTable));
+				lpABContainerTable = GetABContainerTable(lpAdrBook);
 			}
 
 			if (lpABContainerTable)
@@ -494,25 +466,20 @@ namespace mapi
 
 			output::DebugPrint(DBGGeneric, L"SearchContentsTableForName: Looking for \"%ws\"\n", szName.c_str());
 
-			// Set a restriction so we only find close matches
-			LPSRestriction lpSRes = nullptr;
-
-			auto hRes = EC_H(CreateANRRestriction(PR_ANR_W, szName, nullptr, &lpSRes));
-			if (SUCCEEDED(hRes))
-			{
-				hRes = EC_MAPI(pTable->SetColumns(LPSPropTagArray(&abCols), TBL_BATCH));
-			}
-
+			auto hRes = EC_MAPI(pTable->SetColumns(LPSPropTagArray(&abCols), TBL_BATCH));
 			if (SUCCEEDED(hRes))
 			{
 				// Jump to the top of the table...
 				hRes = EC_MAPI(pTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 			}
 
+			// Set a restriction so we only find close matches
 			if (SUCCEEDED(hRes))
 			{
 				// ..and jump to the first matching entry in the table
+				auto lpSRes = CreateANRRestriction(PR_ANR_W, szName, nullptr);
 				hRes = EC_MAPI(pTable->Restrict(lpSRes, NULL));
+				MAPIFreeBuffer(lpSRes);
 			}
 
 			// Now we iterate through each of the matching entries
@@ -551,39 +518,31 @@ namespace mapi
 				output::DebugPrint(DBGGeneric, L"SearchContentsTableForName: No exact match found.\n");
 			}
 
-			MAPIFreeBuffer(lpSRes);
 			if (pRows) FreeProws(pRows);
 			return hRes;
 		}
 
-		_Check_return_ HRESULT SelectUser(
-			_In_ LPADRBOOK lpAdrBook,
-			HWND hwnd,
-			_Out_opt_ ULONG* lpulObjType,
-			_Deref_out_opt_ LPMAILUSER* lppMailUser)
+		_Check_return_ LPMAILUSER SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Out_opt_ ULONG* lpulObjType)
 		{
-			if (!lpAdrBook || !hwnd || !lppMailUser) return MAPI_E_INVALID_PARAMETER;
-
-			ADRPARM AdrParm = {0};
-			LPADRLIST lpAdrList = nullptr;
-			LPSPropValue lpEntryID = nullptr;
-			LPMAILUSER lpMailUser = nullptr;
-
-			*lppMailUser = nullptr;
 			if (lpulObjType)
 			{
 				*lpulObjType = NULL;
 			}
 
+			if (!lpAdrBook || !hwnd) return nullptr;
+
 			auto szTitle = strings::wstringTostring(strings::loadstring(IDS_SELECTMAILBOX));
 
+			ADRPARM AdrParm = {};
 			AdrParm.ulFlags = DIALOG_MODAL | ADDRESS_ONE | AB_SELECTONLY | AB_RESOLVE;
 			AdrParm.lpszCaption = LPTSTR(szTitle.c_str());
 
+			LPMAILUSER lpMailUser = nullptr;
+			LPADRLIST lpAdrList = nullptr;
 			auto hRes = EC_H_CANCEL(lpAdrBook->Address(reinterpret_cast<ULONG_PTR*>(&hwnd), &AdrParm, &lpAdrList));
 			if (lpAdrList)
 			{
-				lpEntryID =
+				auto lpEntryID =
 					PpropFindProp(lpAdrList[0].aEntries->rgPropVals, lpAdrList[0].aEntries->cValues, PR_ENTRYID);
 
 				if (lpEntryID)
@@ -601,27 +560,25 @@ namespace mapi
 						MAPI_BEST_ACCESS,
 						&ulObjType,
 						reinterpret_cast<LPUNKNOWN*>(&lpMailUser)));
-					if (SUCCEEDED(hRes) && lpMailUser)
-					{
-						*lppMailUser = lpMailUser;
-					}
-					else
+					if (FAILED(hRes))
 					{
 						if (lpMailUser)
 						{
 							lpMailUser->Release();
-						}
-
-						if (lpulObjType)
-						{
-							*lpulObjType = ulObjType;
+							lpMailUser = nullptr;
 						}
 					}
+
+					if (lpulObjType)
+					{
+						*lpulObjType = ulObjType;
+					}
 				}
+
+				FreePadrlist(lpAdrList);
 			}
 
-			if (lpAdrList) FreePadrlist(lpAdrList);
-			return hRes;
+			return lpMailUser;
 		}
 	}
 }

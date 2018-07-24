@@ -26,41 +26,30 @@
 // Initialize MFC for LoadString support later on
 void InitMFC() { AfxWinInit(::GetModuleHandle(nullptr), nullptr, ::GetCommandLine(), 0); }
 
-_Check_return_ HRESULT MrMAPILogonEx(const std::wstring& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession)
+_Check_return_ LPMAPISESSION MrMAPILogonEx(const std::wstring& lpszProfile)
 {
-	auto hRes = S_OK;
 	auto ulFlags = MAPI_EXTENDED | MAPI_NO_MAIL | MAPI_UNICODE | MAPI_NEW_SESSION;
 	if (lpszProfile.empty()) ulFlags |= MAPI_USE_DEFAULT;
 
 	// TODO: profile parameter should be ansi in ansi builds
-	WC_MAPI(MAPILogonEx(NULL, LPTSTR((lpszProfile.empty() ? NULL : lpszProfile.c_str())), NULL, ulFlags, lppSession));
-	return hRes;
+	LPMAPISESSION lpSession = nullptr;
+	auto hRes = WC_MAPI(
+		MAPILogonEx(NULL, LPTSTR((lpszProfile.empty() ? NULL : lpszProfile.c_str())), NULL, ulFlags, &lpSession));
+	if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08lx\n", hRes);
+	return lpSession;
 }
 
-_Check_return_ HRESULT
-OpenExchangeOrDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession, _Deref_out_opt_ LPMDB* lppMDB)
+_Check_return_ LPMDB OpenExchangeOrDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession)
 {
-	if (!lpMAPISession || !lppMDB) return MAPI_E_INVALID_PARAMETER;
-	LPMDB lpMDB = nullptr;
-	*lppMDB = nullptr;
+	if (!lpMAPISession) return nullptr;
 
-	auto hRes = WC_H(mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpMDB));
-	if (FAILED(hRes) || !lpMDB)
+	auto lpMDB = mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
+	if (!lpMDB)
 	{
-		hRes = WC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+		lpMDB = mapi::store::OpenDefaultMessageStore(lpMAPISession);
 	}
 
-	if (SUCCEEDED(hRes) && lpMDB)
-	{
-		*lppMDB = lpMDB;
-	}
-	else
-	{
-		if (lpMDB) lpMDB->Release();
-		if (SUCCEEDED(hRes)) hRes = MAPI_E_CALL_FAILED;
-	}
-
-	return hRes;
+	return lpMDB;
 }
 
 enum __CommandLineSwitch
@@ -1250,8 +1239,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 		if (bMAPIInit && ProgOpts.ulOptions & OPT_NEEDMAPILOGON)
 		{
-			hRes = WC_H(MrMAPILogonEx(ProgOpts.lpszProfile, &ProgOpts.lpMAPISession));
-			if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08lx\n", hRes);
+			ProgOpts.lpMAPISession = MrMAPILogonEx(ProgOpts.lpszProfile);
 		}
 
 		// If they need a folder get it and store at the same time from the folder id
@@ -1272,14 +1260,14 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			{
 				// Decrement by one here on the index since we incremented during parameter parsing
 				// This is so zero indicate they did not specify a store
-				hRes = WC_H(OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1, &ProgOpts.lpMDB));
-				if (FAILED(hRes)) printf("OpenStore returned an error: 0x%08lx\n", hRes);
+				ProgOpts.lpMDB = OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1);
+				if (!ProgOpts.lpMDB) printf("OpenStore failed\n");
 			}
 			else
 			{
 				// If they needed a store but didn't specify, get the default one
-				hRes = WC_H(OpenExchangeOrDefaultMessageStore(ProgOpts.lpMAPISession, &ProgOpts.lpMDB));
-				if (FAILED(hRes)) printf("OpenExchangeOrDefaultMessageStore returned an error: 0x%08lx\n", hRes);
+				ProgOpts.lpMDB = OpenExchangeOrDefaultMessageStore(ProgOpts.lpMAPISession);
+				if (!ProgOpts.lpMDB) printf("OpenExchangeOrDefaultMessageStore failed.\n");
 			}
 		}
 

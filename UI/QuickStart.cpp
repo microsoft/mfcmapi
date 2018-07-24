@@ -30,38 +30,27 @@ namespace dialog
 		return nullptr;
 	}
 
-	HRESULT OpenStoreForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPMDB* lppMDB)
+	LPMDB OpenStoreForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
-		auto hRes = S_OK;
-		if (!lppMDB) return MAPI_E_INVALID_PARAMETER;
-		*lppMDB = nullptr;
 
 		auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
-		if (!lpMapiObjects) return MAPI_E_CALL_FAILED;
+		if (!lpMapiObjects) return nullptr;
 
+		LPMDB lpMDB = nullptr;
 		const auto lpMAPISession = OpenSessionForQuickStart(lpHostDlg, hwnd); // do not release
 		if (lpMAPISession)
 		{
-			LPMDB lpMDB = nullptr;
-			hRes = WC_H(mapi::store::OpenDefaultMessageStore(lpMAPISession, &lpMDB));
-			if (SUCCEEDED(hRes))
-			{
-				*lppMDB = lpMDB;
-				lpMapiObjects->SetMDB(lpMDB);
-			}
+			lpMDB = mapi::store::OpenDefaultMessageStore(lpMAPISession);
+			lpMapiObjects->SetMDB(lpMDB);
 		}
 
-		return hRes;
+		return lpMDB;
 	}
 
-	HRESULT OpenABForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPADRBOOK* lppAdrBook)
+	_Check_return_ LPADRBOOK OpenABForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
-		const auto hRes = S_OK;
-		if (!lppAdrBook) return MAPI_E_INVALID_PARAMETER;
-		*lppAdrBook = nullptr;
-
 		auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
-		if (!lpMapiObjects) return MAPI_E_CALL_FAILED;
+		if (!lpMapiObjects) return nullptr;
 
 		// ensure we have an AB
 		(void) OpenSessionForQuickStart(lpHostDlg, hwnd); // do not release
@@ -70,17 +59,14 @@ namespace dialog
 		if (lpAdrBook)
 		{
 			lpAdrBook->AddRef();
-			*lppAdrBook = lpAdrBook;
 		}
 
-		return hRes;
+		return lpAdrBook;
 	}
 
 	void OnQSDisplayFolder(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder)
 	{
-		LPMDB lpMDB = nullptr;
-		WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
-
+		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
 		{
 			auto lpFolder = mapi::OpenDefaultFolder(ulFolder, lpMDB);
@@ -102,9 +88,7 @@ namespace dialog
 		_In_ ULONG ulProp,
 		_In_ dialog::ObjectType tType)
 	{
-		LPMDB lpMDB = nullptr;
-		WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
-
+		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
 		{
 			auto lpFolder = mapi::OpenDefaultFolder(ulFolder, lpMDB);
@@ -120,16 +104,15 @@ namespace dialog
 
 	void OnQSDisplayDefaultDir(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
-		LPADRBOOK lpAdrBook = nullptr;
-		auto hRes = WC_H(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
-		if (SUCCEEDED(hRes) && lpAdrBook)
+		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
+		if (lpAdrBook)
 		{
 			ULONG cbEID = NULL;
 			LPENTRYID lpEID = nullptr;
 			ULONG ulObjType = NULL;
 			LPABCONT lpDefaultDir = nullptr;
 
-			hRes = WC_MAPI(lpAdrBook->GetDefaultDir(&cbEID, &lpEID));
+			auto hRes = WC_MAPI(lpAdrBook->GetDefaultDir(&cbEID, &lpEID));
 			if (SUCCEEDED(hRes))
 			{
 				hRes = WC_H(mapi::CallOpenEntry(
@@ -151,10 +134,10 @@ namespace dialog
 
 				lpDefaultDir->Release();
 			}
-			MAPIFreeBuffer(lpEID);
-		}
 
-		if (lpAdrBook) lpAdrBook->Release();
+			MAPIFreeBuffer(lpEID);
+			lpAdrBook->Release();
+		}
 	}
 
 	void OnQSDisplayAB(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
@@ -165,15 +148,13 @@ namespace dialog
 		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 		if (!lpParentWnd) return;
 
-		LPADRBOOK lpAdrBook = nullptr;
-		auto hRes = WC_H(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
-		if (SUCCEEDED(hRes) && lpAdrBook)
+		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
+		if (lpAdrBook)
 		{
 			// call the dialog
 			new dialog::CAbContDlg(lpParentWnd, lpMapiObjects);
+			lpAdrBook->Release();
 		}
-
-		if (lpAdrBook) lpAdrBook->Release();
 	}
 
 	void OnQSDisplayNicknameCache(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
@@ -184,9 +165,7 @@ namespace dialog
 		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGNICKNAME);
 		lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
-		LPMDB lpMDB = nullptr;
-		WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
-
+		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
 		{
 			auto lpFolder = mapi::OpenDefaultFolder(mapi::DEFAULT_INBOX, lpMDB);
@@ -337,8 +316,7 @@ namespace dialog
 		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGQUOTA);
 		lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
-		LPMDB lpMDB = nullptr;
-		WC_H_S(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
+		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
 		{
 			ULONG cProps = 0;
@@ -414,15 +392,11 @@ namespace dialog
 		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 		if (!lpParentWnd) return;
 
-		LPADRBOOK lpAdrBook = nullptr;
-		WC_H_S(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
+		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
 		if (lpAdrBook)
 		{
 			ULONG ulObjType = NULL;
-			LPMAILUSER lpMailUser = nullptr;
-
-			EC_H_S(mapi::ab::SelectUser(lpAdrBook, hwnd, &ulObjType, &lpMailUser));
-
+			auto lpMailUser = mapi::ab::SelectUser(lpAdrBook, hwnd, &ulObjType);
 			if (lpMailUser)
 			{
 				EC_H_S(DisplayObject(lpMailUser, ulObjType, dialog::otDefault, lpHostDlg));
@@ -444,14 +418,10 @@ namespace dialog
 		const auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 		if (!lpParentWnd) return;
 
-		LPADRBOOK lpAdrBook = nullptr;
-		WC_H_S(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
+		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
 		if (lpAdrBook)
 		{
-			LPMAILUSER lpMailUser = nullptr;
-
-			EC_H_S(mapi::ab::SelectUser(lpAdrBook, hwnd, nullptr, &lpMailUser));
-
+			auto lpMailUser = mapi::ab::SelectUser(lpAdrBook, hwnd, nullptr);
 			if (lpMailUser)
 			{
 				lpThumbnail = mapi::GetLargeBinaryProp(lpMailUser, PR_EMS_AB_THUMBNAIL_PHOTO);

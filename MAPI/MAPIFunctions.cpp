@@ -210,15 +210,10 @@ namespace mapi
 	}
 
 	// Concatenate two property arrays without duplicates
-	_Check_return_ HRESULT ConcatSPropTagArrays(
-		_In_ LPSPropTagArray lpArray1,
-		_In_opt_ LPSPropTagArray lpArray2,
-		_Deref_out_opt_ LPSPropTagArray* lpNewArray)
+	_Check_return_ LPSPropTagArray
+	ConcatSPropTagArrays(_In_ LPSPropTagArray lpArray1, _In_opt_ LPSPropTagArray lpArray2)
 	{
-		if (!lpNewArray) return MAPI_E_INVALID_PARAMETER;
-
 		auto hRes = S_OK;
-		*lpNewArray = nullptr;
 
 		// Add the sizes of the passed in arrays (0 if they were NULL)
 		auto iNewArraySize = lpArray1 ? lpArray1->cValues : 0;
@@ -238,7 +233,7 @@ namespace mapi
 			iNewArraySize = iNewArraySize + (lpArray2 ? lpArray2->cValues : 0);
 		}
 
-		if (!iNewArraySize) return MAPI_E_CALL_FAILED;
+		if (!iNewArraySize) return nullptr;
 
 		// Allocate memory for the new prop tag array
 		auto lpLocalArray = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(iNewArraySize));
@@ -279,14 +274,11 @@ namespace mapi
 			if (FAILED(hRes))
 			{
 				MAPIFreeBuffer(lpLocalArray);
-			}
-			else
-			{
-				*lpNewArray = static_cast<LPSPropTagArray>(lpLocalArray);
+				lpLocalArray = nullptr;
 			}
 		}
 
-		return hRes;
+		return lpLocalArray;
 	}
 
 	_Check_return_ SBinaryArray GetEntryIDs(_In_ LPMAPITABLE table)
@@ -930,19 +922,17 @@ namespace mapi
 		return hRes;
 	}
 
-	_Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpInbox)
+	_Check_return_ LPMAPIFOLDER GetInbox(_In_ LPMDB lpMDB)
 	{
-		ULONG cbInboxEID = 0;
-		LPENTRYID lpInboxEID = nullptr;
+		if (!lpMDB) return nullptr;
 
 		output::DebugPrint(DBGGeneric, L"GetInbox: getting Inbox from %p\n", lpMDB);
 
-		*lpInbox = nullptr;
-
-		if (!lpMDB || !lpInbox) return MAPI_E_INVALID_PARAMETER;
-
+		ULONG cbInboxEID = 0;
+		LPENTRYID lpInboxEID = nullptr;
 		auto hRes = EC_H(GetInbox(lpMDB, &cbInboxEID, &lpInboxEID));
 
+		LPMAPIFOLDER lpInbox = nullptr;
 		if (cbInboxEID && lpInboxEID)
 		{
 			// Get the Inbox...
@@ -956,11 +946,11 @@ namespace mapi
 				nullptr,
 				MAPI_BEST_ACCESS,
 				nullptr,
-				reinterpret_cast<LPUNKNOWN*>(lpInbox)));
+				reinterpret_cast<LPUNKNOWN*>(&lpInbox)));
 		}
 
 		MAPIFreeBuffer(lpInboxEID);
-		return hRes;
+		return lpInbox;
 	}
 
 	_Check_return_ LPMAPIFOLDER GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB)
@@ -1040,9 +1030,9 @@ namespace mapi
 
 		output::DebugPrint(DBGGeneric, L"GetSpecialFolderEID: getting 0x%X from %p\n", ulFolderPropTag, lpMDB);
 
+		auto hRes = S_OK;
 		LPSPropValue lpProp = nullptr;
-		LPMAPIFOLDER lpInbox = nullptr;
-		auto hRes = WC_H(GetInbox(lpMDB, &lpInbox));
+		auto lpInbox = GetInbox(lpMDB);
 		if (lpInbox)
 		{
 			hRes = WC_H_MSG(IDS_GETSPECIALFOLDERINBOXMISSINGPROP, HrGetOneProp(lpInbox, ulFolderPropTag, &lpProp));
@@ -2201,11 +2191,10 @@ namespace mapi
 		_Deref_out_opt_ LPENTRYID* lppeid)
 	{
 		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
-		LPMAPIFOLDER lpInbox = nullptr;
 
-		auto hRes = WC_H(GetInbox(lpMDB, &lpInbox));
-
-		if (SUCCEEDED(hRes) && lpInbox)
+		auto hRes = S_OK;
+		auto lpInbox = GetInbox(lpMDB);
+		if (lpInbox)
 		{
 			LPSPropValue lpEIDProp = nullptr;
 			hRes = WC_MAPI(HrGetOneProp(lpInbox, ulPropTag, &lpEIDProp));

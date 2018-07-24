@@ -149,18 +149,10 @@ namespace dialog
 		return lpMessage;
 	}
 
-	_Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
-		int iSelectedItem,
-		__mfcmapiModifyEnum /*bModify*/,
-		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ LPMAPIPROP CAttachmentsDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
 	{
-		const auto hRes = S_OK;
-
+		if (!m_lpContentsTableListCtrl) return nullptr;
 		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
-
-		if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
-
-		*lppMAPIProp = nullptr;
 
 		// Find the highlighted item AttachNum
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
@@ -189,16 +181,16 @@ namespace dialog
 				// it from the view to allow us to reopen it.
 				// TODO: Consider caching our embedded message so this isn't necessary
 				OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
-				*lppMAPIProp = OpenEmbeddedMessage();
+				return OpenEmbeddedMessage();
 			}
 			else
 			{
-				*lppMAPIProp = m_lpAttach;
-				if (*lppMAPIProp) (*lppMAPIProp)->AddRef();
+				if (m_lpAttach) m_lpAttach->AddRef();
+				return m_lpAttach;
 			}
 		}
 
-		return hRes;
+		return nullptr;
 	}
 
 	void CAttachmentsDlg::HandleCopy()

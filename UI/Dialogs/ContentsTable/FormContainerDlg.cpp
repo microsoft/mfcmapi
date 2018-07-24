@@ -142,19 +142,12 @@ namespace dialog
 		m_lpContentsTableListCtrl->AutoSizeColumns(false);
 	}
 
-	_Check_return_ HRESULT CFormContainerDlg::OpenItemProp(
-		int iSelectedItem,
-		__mfcmapiModifyEnum /*bModify*/,
-		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ LPMAPIPROP CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
 	{
-		auto hRes = S_OK;
-
+		if (!m_lpContentsTableListCtrl || !m_lpFormContainer) return nullptr;
 		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
-		if (!lppMAPIProp || !m_lpContentsTableListCtrl || !m_lpFormContainer) return MAPI_E_INVALID_PARAMETER;
-
-		*lppMAPIProp = nullptr;
-
+		LPMAPIFORMINFO lpFormInfoProp = nullptr;
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 		if (lpListData)
 		{
@@ -164,19 +157,17 @@ namespace dialog
 				PR_MESSAGE_CLASS_A); // ResolveMessageClass requires an ANSI string
 			if (mapi::CheckStringProp(lpProp, PT_STRING8))
 			{
-				LPMAPIFORMINFO lpFormInfoProp = nullptr;
-				hRes = EC_MAPI(
+				auto hRes = EC_MAPI(
 					m_lpFormContainer->ResolveMessageClass(lpProp->Value.lpszA, MAPIFORM_EXACTMATCH, &lpFormInfoProp));
-				if (SUCCEEDED(hRes))
+				if (FAILED(hRes))
 				{
-					*lppMAPIProp = lpFormInfoProp;
+					if (lpFormInfoProp) lpFormInfoProp->Release();
+					lpFormInfoProp = nullptr;
 				}
-				else if (lpFormInfoProp)
-					lpFormInfoProp->Release();
 			}
 		}
 
-		return hRes;
+		return lpFormInfoProp;
 	}
 
 	void CFormContainerDlg::OnDeleteSelectedItem()

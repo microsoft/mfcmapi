@@ -66,10 +66,7 @@ void DumpMSG(
 	_In_ bool bRetryStreamProps,
 	_In_ bool bOutputAttachments)
 {
-	LPMESSAGE lpMessage = nullptr;
-
-	WC_H_S(file::LoadMSGToMessage(lpszMSGFile, &lpMessage));
-
+	auto lpMessage = file::LoadMSGToMessage(lpszMSGFile);
 	if (lpMessage)
 	{
 		mapiprocessor::CDumpStore MyDumpStore;

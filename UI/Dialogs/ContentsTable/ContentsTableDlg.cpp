@@ -241,19 +241,17 @@ namespace dialog
 
 	void CContentsTableDlg::OnDisplayItem()
 	{
-		LPMAPIPROP lpMAPIProp = nullptr;
 		auto iItem = -1;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		do
 		{
-			EC_H_S(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
+			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
 
 			if (lpMAPIProp)
 			{
 				EC_H_S(DisplayObject(lpMAPIProp, NULL, otHierarchy, this));
 				lpMAPIProp->Release();
-				lpMAPIProp = nullptr;
 			}
 		} while (iItem != -1);
 	}
@@ -484,27 +482,20 @@ namespace dialog
 
 	// Since the strategy for opening the selected property may vary depending on the table we're displaying,
 	// this virtual function allows us to override the default method with the method used by the table we've written a special class for.
-	_Check_return_ HRESULT CContentsTableDlg::OpenItemProp(
-		int iSelectedItem,
-		__mfcmapiModifyEnum bModify,
-		_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	_Check_return_ LPMAPIPROP CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
 	{
-		auto hRes = S_OK;
+		if (!m_lpContentsTableListCtrl) return nullptr;
 		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
-
-		if (!lppMAPIProp || !m_lpContentsTableListCtrl) return MAPI_E_INVALID_PARAMETER;
 
 		if (-1 == iSelectedItem)
 		{
 			// Get the first selected item
-			hRes = EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, bModify, lppMAPIProp));
+			return m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, bModify);
 		}
 		else
 		{
-			hRes = EC_H(m_lpContentsTableListCtrl->DefaultOpenItemProp(iSelectedItem, bModify, lppMAPIProp));
+			return m_lpContentsTableListCtrl->DefaultOpenItemProp(iSelectedItem, bModify);
 		}
-
-		return hRes;
 	}
 
 	_Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage)
@@ -577,10 +568,7 @@ namespace dialog
 
 				if (!(ulFlags & MENU_FLAGS_ROW))
 				{
-					if (FAILED(OpenItemProp(item, fRequestModify, &lpMAPIProp)))
-					{
-						lpMAPIProp = nullptr;
-					}
+					lpMAPIProp = OpenItemProp(item, fRequestModify);
 				}
 
 				HandleAddInMenuSingle(&MyAddInMenuParams, lpMAPIProp, nullptr);

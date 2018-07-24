@@ -90,9 +90,8 @@ struct MYOPTIONS
 	MYOPTIONS();
 };
 
-_Check_return_ HRESULT MrMAPILogonEx(const std::wstring& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession);
-_Check_return_ HRESULT
-OpenExchangeOrDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession, _Deref_out_opt_ LPMDB* lppMDB);
+_Check_return_ LPMAPISESSION MrMAPILogonEx(const std::wstring& lpszProfile);
+_Check_return_ LPMDB OpenExchangeOrDefaultMessageStore(_In_ LPMAPISESSION lpMAPISession);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Command line interface functions

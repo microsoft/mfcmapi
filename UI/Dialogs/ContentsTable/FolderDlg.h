@@ -67,6 +67,7 @@ namespace dialog
 		_Check_return_ HRESULT OnResendSelectedItem(int iItem, _In_ controls::sortlistdata::SortListData* lpData);
 		_Check_return_ HRESULT OnSaveAttachments(int iItem, _In_ controls::sortlistdata::SortListData* lpData);
 		_Check_return_ HRESULT OnSubmitMessage(int iItem, _In_ controls::sortlistdata::SortListData* lpData);
+		LPMESSAGE OpenMessage(int iSelectedItem, __mfcmapiModifyEnum bModify);
 
 		_Check_return_ bool MultiSelectComplex(WORD wMenuSelect);
 		_Check_return_ bool MultiSelectSimple(WORD wMenuSelect);

@@ -70,35 +70,34 @@ namespace mapiprocessor
 	// Server name MUST be passed
 	void CMAPIProcessor::ProcessMailboxTable(_In_ const std::wstring& szExchangeServerName)
 	{
-		if (szExchangeServerName.empty()) return;
+		if (!m_lpSession || szExchangeServerName.empty()) return;
 
-		LPMAPITABLE lpMailBoxTable = nullptr;
-		LPSRowSet lpRows = nullptr;
-		LPMDB lpPrimaryMDB = nullptr;
 		ULONG ulOffset = 0;
 		ULONG ulRowNum = 0;
 		auto ulFlags = LOGOFF_NO_WAIT;
 
-		if (!m_lpSession) return;
-
 		BeginMailboxTableWork(szExchangeServerName);
 
-		WC_H_S(mapi::store::OpenMessageStoreGUID(m_lpSession, pbExchangeProviderPrimaryUserGuid, &lpPrimaryMDB));
+		auto lpPrimaryMDB = mapi::store::OpenMessageStoreGUID(m_lpSession, pbExchangeProviderPrimaryUserGuid);
 
 		if (lpPrimaryMDB && mapi::store::StoreSupportsManageStore(lpPrimaryMDB)) do
 			{
-				auto hRes = WC_H(mapi::store::GetMailboxTable(
-					lpPrimaryMDB, strings::wstringTostring(szExchangeServerName), ulOffset, &lpMailBoxTable));
+				auto lpMailBoxTable = mapi::store::GetMailboxTable(
+					lpPrimaryMDB, strings::wstringTostring(szExchangeServerName), ulOffset);
 				if (lpMailBoxTable)
 				{
-					WC_MAPI_S(lpMailBoxTable->SetColumns(LPSPropTagArray(&columns::sptMBXCols), NULL));
+					auto hRes = WC_MAPI(lpMailBoxTable->SetColumns(LPSPropTagArray(&columns::sptMBXCols), NULL));
 
 					// go to the first row
-					hRes = WC_MAPI(lpMailBoxTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
+					if (SUCCEEDED(hRes))
+					{
+						hRes = WC_MAPI(lpMailBoxTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
+					}
 
 					// get each row in turn and process it
 					if (SUCCEEDED(hRes))
 					{
+						LPSRowSet lpRows = nullptr;
 						for (ulRowNum = 0;; ulRowNum++)
 						{
 							if (lpRows) FreeProws(lpRows);
@@ -121,22 +120,22 @@ namespace mapiprocessor
 								m_lpMDB = nullptr;
 							}
 
-							WC_H_S(mapi::store::OpenOtherUsersMailbox(
+							m_lpMDB = mapi::store::OpenOtherUsersMailbox(
 								m_lpSession,
 								lpPrimaryMDB,
 								strings::wstringTostring(szExchangeServerName),
 								strings::wstringTostring(strings::LPCTSTRToWstring(lpEmailAddress->Value.LPSZ)),
 								strings::emptystring,
 								OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
-								false,
-								&m_lpMDB));
+								false);
 
 							if (m_lpMDB) ProcessStore();
 						}
+
+						if (lpRows) FreeProws(lpRows);
+						lpRows = nullptr;
 					}
 
-					if (lpRows) FreeProws(lpRows);
-					lpRows = nullptr;
 					lpMailBoxTable->Release();
 					ulOffset += ulRowNum;
 				}
