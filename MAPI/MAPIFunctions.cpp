@@ -2102,26 +2102,21 @@ namespace mapi
 		return IsEqualMAPIUID(lpmapiuid, LPMAPIUID(pbExchangeProviderPublicGuid));
 	}
 
-	STDMETHODIMP
-	GetEntryIDFromMDB(LPMDB lpMDB, ULONG ulPropTag, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid)
+	LPSBinary GetEntryIDFromMDB(LPMDB lpMDB, ULONG ulPropTag)
 	{
-		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
+		if (!lpMDB) return {};
 		LPSPropValue lpEIDProp = nullptr;
 
 		auto hRes = WC_MAPI(HrGetOneProp(lpMDB, ulPropTag, &lpEIDProp));
 
+		auto eid = LPSBinary{};
 		if (SUCCEEDED(hRes) && lpEIDProp)
 		{
-			*lppeid = mapi::allocate<LPENTRYID>(lpEIDProp->Value.bin.cb);
-			if (*lppeid)
-			{
-				*lpcbeid = lpEIDProp->Value.bin.cb;
-				CopyMemory(*lppeid, lpEIDProp->Value.bin.lpb, *lpcbeid);
-			}
+			eid = mapi::CopySBinary(&lpEIDProp->Value.bin);
 		}
 
 		MAPIFreeBuffer(lpEIDProp);
-		return hRes;
+		return eid;
 	}
 
 	STDMETHODIMP GetMVEntryIDFromInboxByIndex(
@@ -2189,20 +2184,19 @@ namespace mapi
 			return GetSpecialFolderEID(lpMDB, PR_IPM_DRAFTS_ENTRYID);
 			break;
 		case DEFAULT_SENTITEMS:
-			hRes = GetEntryIDFromMDB(lpMDB, PR_IPM_SENTMAIL_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetEntryIDFromMDB(lpMDB, PR_IPM_SENTMAIL_ENTRYID);
 			break;
 		case DEFAULT_OUTBOX:
-			hRes = GetEntryIDFromMDB(lpMDB, PR_IPM_OUTBOX_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetEntryIDFromMDB(lpMDB, PR_IPM_OUTBOX_ENTRYID);
 			break;
 		case DEFAULT_DELETEDITEMS:
-			hRes =
-				GetEntryIDFromMDB(lpMDB, PR_IPM_WASTEBASKET_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetEntryIDFromMDB(lpMDB, PR_IPM_WASTEBASKET_ENTRYID);
 			break;
 		case DEFAULT_FINDER:
-			hRes = GetEntryIDFromMDB(lpMDB, PR_FINDER_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetEntryIDFromMDB(lpMDB, PR_FINDER_ENTRYID);
 			break;
 		case DEFAULT_IPM_SUBTREE:
-			hRes = GetEntryIDFromMDB(lpMDB, PR_IPM_SUBTREE_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetEntryIDFromMDB(lpMDB, PR_IPM_SUBTREE_ENTRYID);
 			break;
 		case DEFAULT_INBOX:
 			hRes = GetInbox(lpMDB, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
