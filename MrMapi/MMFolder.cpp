@@ -9,7 +9,7 @@
 #include <MAPI/MapiMemory.h>
 
 // Search folder for entry ID of child folder by name.
-SBinary MAPIFindFolderW(
+LPSBinary MAPIFindFolderW(
 	_In_ LPMAPIFOLDER lpFolder, // pointer to folder
 	_In_ const std::wstring& lpszName) // name of child folder to find
 {
@@ -34,7 +34,7 @@ SBinary MAPIFindFolderW(
 		WC_MAPI_S(HrQueryAllRows(lpTable, LPSPropTagArray(&rgColProps), nullptr, nullptr, 0, &lpRow));
 	}
 
-	auto eid = SBinary{};
+	auto eid = LPSBinary{};
 	if (lpRow)
 	{
 		for (ULONG i = 0; i < lpRow->cRows; i++)
@@ -45,7 +45,7 @@ SBinary MAPIFindFolderW(
 				_wcsicmp(lpRowProp[ePR_DISPLAY_NAME_W].Value.lpszW, lpszName.c_str()) == 0 &&
 				PR_ENTRYID == lpRowProp[ePR_ENTRYID].ulPropTag)
 			{
-				eid = mapi::CopySBinary(lpRowProp[ePR_ENTRYID].Value.bin);
+				eid = mapi::CopySBinary(&lpRowProp[ePR_ENTRYID].Value.bin);
 				break;
 			}
 		}
@@ -80,7 +80,7 @@ std::wstring unescape(_In_ std::wstring lpsz)
 
 // Finds an arbitrarily nested folder in the indicated folder given
 // a hierarchical list of subfolders.
-SBinary MAPIFindSubfolderExW(
+LPSBinary MAPIFindSubfolderExW(
 	_In_ LPMAPIFOLDER lpRootFolder, // open root folder
 	const std::vector<std::wstring>& FolderList) // hierarchical list of subfolders to navigate
 {
@@ -89,31 +89,31 @@ SBinary MAPIFindSubfolderExW(
 	auto lpParentFolder = lpRootFolder;
 	if (lpRootFolder) lpRootFolder->AddRef();
 
-	auto eid = SBinary{};
+	auto eid = LPSBinary{};
 	for (ULONG i = 0; i < FolderList.size(); i++)
 	{
 		LPMAPIFOLDER lpChildFolder = nullptr;
 		ULONG ulObjType = 0;
 
 		// Free entryid before re-use.
-		MAPIFreeBuffer(eid.lpb);
+		MAPIFreeBuffer(eid);
 
 		eid = MAPIFindFolderW(lpParentFolder, FolderList[i].c_str());
-		if (!eid.cb || !eid.lpb) break;
+		if (!eid) break;
 
 		// Only OpenEntry if needed for next tier of folder path.
 		if (i + 1 < FolderList.size())
 		{
 			WC_MAPI_S(lpParentFolder->OpenEntry(
-				eid.cb,
-				reinterpret_cast<LPENTRYID>(eid.lpb),
+				eid->cb,
+				reinterpret_cast<LPENTRYID>(eid->lpb),
 				nullptr,
 				MAPI_DEFERRED_ERRORS,
 				&ulObjType,
 				reinterpret_cast<LPUNKNOWN*>(&lpChildFolder)));
 			if (ulObjType != MAPI_FOLDER)
 			{
-				MAPIFreeBuffer(eid.lpb);
+				MAPIFreeBuffer(eid);
 				eid = {};
 				break;
 			}
@@ -133,7 +133,7 @@ SBinary MAPIFindSubfolderExW(
 
 // Compare folder name to known root folder ENTRYID strings.  Return ENTRYID,
 // if matched.
-static SBinary LookupRootFolderW(
+static LPSBinary LookupRootFolderW(
 	_In_ LPMDB lpMDB, // pointer to open message store
 	_In_ const std::wstring& lpszRootFolder) // root folder name only (no separators)
 {
@@ -141,9 +141,13 @@ static SBinary LookupRootFolderW(
 
 	if (!lpMDB) return {};
 	// Implicitly recognize no root folder as THE root folder
-	if (lpszRootFolder.empty()) return {};
+	if (lpszRootFolder.empty())
+	{
+		auto rootEid = SBinary{};
+		return mapi::CopySBinary(&rootEid);
+	}
 
-	auto eid = SBinary{};
+	auto eid = LPSBinary{};
 	auto ulPropTag = interpretprop::LookupPropName(lpszRootFolder);
 	if (!ulPropTag)
 	{
@@ -152,7 +156,11 @@ static SBinary LookupRootFolderW(
 		const auto ulFolder = strings::wstringToUlong(lpszRootFolder, 10);
 		if (0 < ulFolder && ulFolder < mapi::NUM_DEFAULT_PROPS)
 		{
-			WC_H_S(mapi::GetDefaultFolderEID(ulFolder, lpMDB, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb)));
+			auto defaultEid = SBinary{};
+			WC_H_S(mapi::GetDefaultFolderEID(
+				ulFolder, lpMDB, &defaultEid.cb, reinterpret_cast<LPENTRYID*>(&defaultEid.lpb)));
+			eid = mapi::CopySBinary(&defaultEid);
+			MAPIFreeBuffer(defaultEid.lpb);
 			return eid;
 		}
 
@@ -173,7 +181,7 @@ static SBinary LookupRootFolderW(
 		WC_MAPI_S(lpMDB->GetProps(&rgPropTag, MAPI_UNICODE, &cValues, &lpPropValue));
 		if (lpPropValue && lpPropValue->ulPropTag == ulPropTag)
 		{
-			eid = mapi::CopySBinary(lpPropValue->Value.bin);
+			eid = mapi::CopySBinary(&lpPropValue->Value.bin);
 		}
 
 		MAPIFreeBuffer(lpPropValue);
@@ -184,7 +192,7 @@ static SBinary LookupRootFolderW(
 
 // Finds an arbitrarily nested folder in the indicated store given its
 // path name.
-SBinary MAPIFindFolderExW(
+LPSBinary MAPIFindFolderExW(
 	_In_ LPMDB lpMDB, // Open message store
 	_In_ const std::wstring& lpszFolderPath) // folder path
 {
@@ -195,11 +203,11 @@ SBinary MAPIFindFolderExW(
 	auto FolderList = strings::split(lpszFolderPath, wszBackslash);
 
 	// Check for literal property name
-	auto eid = SBinary{};
+	auto eid = LPSBinary{};
 	if (!FolderList.empty() && FolderList[0][0] == L'@')
 	{
 		eid = LookupRootFolderW(lpMDB, FolderList[0].c_str() + 1);
-		if (eid.cb && eid.lpb)
+		if (eid)
 		{
 			FolderList.erase(FolderList.begin());
 		}
@@ -210,14 +218,21 @@ SBinary MAPIFindFolderExW(
 		}
 	}
 
+	// If we don't have an entry ID yet, start from the root
+	if (!eid)
+	{
+		auto rootEid = SBinary{};
+		eid = mapi::CopySBinary(&rootEid);
+	}
+
 	// If we have any subfolders, chase them
-	if (!FolderList.empty())
+	if (!FolderList.empty() && eid)
 	{
 		ULONG ulObjType = 0;
 
 		WC_MAPI_S(lpMDB->OpenEntry(
-			eid.cb,
-			reinterpret_cast<LPENTRYID>(eid.lpb),
+			eid->cb,
+			reinterpret_cast<LPENTRYID>(eid->lpb),
 			nullptr,
 			MAPI_BEST_ACCESS | MAPI_DEFERRED_ERRORS,
 			&ulObjType,
@@ -225,7 +240,7 @@ SBinary MAPIFindFolderExW(
 		if (MAPI_FOLDER == ulObjType)
 		{
 			// Free before re-use
-			MAPIFreeBuffer(eid.lpb);
+			MAPIFreeBuffer(eid);
 
 			// Find the subfolder in question
 			eid = MAPIFindSubfolderExW(lpRootFolder, FolderList);
@@ -249,18 +264,18 @@ LPMAPIFOLDER MAPIOpenFolderExW(
 	auto eid = MAPIFindFolderExW(lpMDB, lpszFolderPath);
 
 	LPMAPIFOLDER lpFolder = nullptr;
-	if (eid.cb && eid.lpb)
+	if (eid)
 	{
 		WC_MAPI_S(lpMDB->OpenEntry(
-			eid.cb,
-			reinterpret_cast<LPENTRYID>(eid.lpb),
+			eid->cb,
+			reinterpret_cast<LPENTRYID>(eid->lpb),
 			nullptr,
 			MAPI_BEST_ACCESS | MAPI_DEFERRED_ERRORS,
 			&ulObjType,
 			reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
 	}
 
-	MAPIFreeBuffer(eid.lpb);
+	MAPIFreeBuffer(eid);
 
 	return lpFolder;
 }
