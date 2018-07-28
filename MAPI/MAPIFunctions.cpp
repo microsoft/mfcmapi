@@ -2111,47 +2111,33 @@ namespace mapi
 		return eid;
 	}
 
-	STDMETHODIMP GetMVEntryIDFromInboxByIndex(
-		LPMDB lpMDB,
-		ULONG ulPropTag,
-		ULONG ulIndex,
-		_Out_opt_ ULONG* lpcbeid,
-		_Deref_out_opt_ LPENTRYID* lppeid)
+	LPSBinary GetMVEntryIDFromInboxByIndex(LPMDB lpMDB, ULONG ulPropTag, ULONG ulIndex)
 	{
-		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
+		if (!lpMDB) return {};
 
-		auto hRes = S_OK;
+		auto eid = LPSBinary{};
 		auto lpInbox = GetInbox(lpMDB);
 		if (lpInbox)
 		{
 			LPSPropValue lpEIDProp = nullptr;
-			hRes = WC_MAPI(HrGetOneProp(lpInbox, ulPropTag, &lpEIDProp));
-			if (SUCCEEDED(hRes) && lpEIDProp && PT_MV_BINARY == PROP_TYPE(lpEIDProp->ulPropTag) &&
+			WC_MAPI_S(HrGetOneProp(lpInbox, ulPropTag, &lpEIDProp));
+			if (lpEIDProp && PT_MV_BINARY == PROP_TYPE(lpEIDProp->ulPropTag) &&
 				ulIndex < lpEIDProp->Value.MVbin.cValues && lpEIDProp->Value.MVbin.lpbin[ulIndex].cb > 0)
 			{
-				*lppeid = mapi::allocate<LPENTRYID>(lpEIDProp->Value.MVbin.lpbin[ulIndex].cb);
-				if (*lppeid)
-				{
-					*lpcbeid = lpEIDProp->Value.MVbin.lpbin[ulIndex].cb;
-					CopyMemory(*lppeid, lpEIDProp->Value.MVbin.lpbin[ulIndex].lpb, *lpcbeid);
-				}
+				eid = mapi::CopySBinary(&lpEIDProp->Value.MVbin.lpbin[ulIndex]);
 			}
 
 			MAPIFreeBuffer(lpEIDProp);
+			lpInbox->Release();
 		}
 
-		if (lpInbox) lpInbox->Release();
-
-		return hRes;
+		return eid;
 	}
 
 	LPSBinary GetDefaultFolderEID(_In_ ULONG ulFolder, _In_ LPMDB lpMDB)
 	{
-		auto hRes = S_OK;
-
 		if (!lpMDB) return {};
 
-		auto eid = SBinary{};
 		switch (ulFolder)
 		{
 		case DEFAULT_CALENDAR:
@@ -2194,38 +2180,26 @@ namespace mapi
 			return GetInboxEntryId(lpMDB);
 			break;
 		case DEFAULT_LOCALFREEBUSY:
-			hRes = GetMVEntryIDFromInboxByIndex(
-				lpMDB, PR_FREEBUSY_ENTRYIDS, 3, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetMVEntryIDFromInboxByIndex(lpMDB, PR_FREEBUSY_ENTRYIDS, 3);
 			break;
 		case DEFAULT_CONFLICTS:
-			hRes = GetMVEntryIDFromInboxByIndex(
-				lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 0, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetMVEntryIDFromInboxByIndex(lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 0);
 			break;
 		case DEFAULT_SYNCISSUES:
-			hRes = GetMVEntryIDFromInboxByIndex(
-				lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 1, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetMVEntryIDFromInboxByIndex(lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 1);
 			break;
 		case DEFAULT_LOCALFAILURES:
-			hRes = GetMVEntryIDFromInboxByIndex(
-				lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 2, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetMVEntryIDFromInboxByIndex(lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 2);
 			break;
 		case DEFAULT_SERVERFAILURES:
-			hRes = GetMVEntryIDFromInboxByIndex(
-				lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 3, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetMVEntryIDFromInboxByIndex(lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 3);
 			break;
 		case DEFAULT_JUNKMAIL:
-			hRes = GetMVEntryIDFromInboxByIndex(
-				lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 4, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetMVEntryIDFromInboxByIndex(lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 4);
 			break;
-		default:
-			hRes = MAPI_E_INVALID_PARAMETER;
 		}
 
-		auto eidRet = LPSBinary{};
-		eidRet = mapi::CopySBinary(&eid);
-		MAPIFreeBuffer(eid.lpb);
-
-		return eidRet;
+		return {};
 	}
 
 	LPMAPIFOLDER OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB)
