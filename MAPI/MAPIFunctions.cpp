@@ -2166,99 +2166,105 @@ namespace mapi
 		return hRes;
 	}
 
-	STDMETHODIMP
-	GetDefaultFolderEID(
-		_In_ ULONG ulFolder,
-		_In_ LPMDB lpMDB,
-		_Out_opt_ ULONG* lpcbeid,
-		_Deref_out_opt_ LPENTRYID* lppeid)
+	LPSBinary GetDefaultFolderEID(_In_ ULONG ulFolder, _In_ LPMDB lpMDB)
 	{
 		auto hRes = S_OK;
 
-		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
+		if (!lpMDB) return {};
 
+		auto eid = SBinary{};
 		switch (ulFolder)
 		{
 		case DEFAULT_CALENDAR:
-			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_APPOINTMENT_ENTRYID, lpcbeid, lppeid);
+			hRes =
+				GetSpecialFolderEID(lpMDB, PR_IPM_APPOINTMENT_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_CONTACTS:
-			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_CONTACT_ENTRYID, lpcbeid, lppeid);
+			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_CONTACT_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_JOURNAL:
-			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_JOURNAL_ENTRYID, lpcbeid, lppeid);
+			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_JOURNAL_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_NOTES:
-			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_NOTE_ENTRYID, lpcbeid, lppeid);
+			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_NOTE_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_TASKS:
-			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_TASK_ENTRYID, lpcbeid, lppeid);
+			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_TASK_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_REMINDERS:
-			hRes = GetSpecialFolderEID(lpMDB, PR_REM_ONLINE_ENTRYID, lpcbeid, lppeid);
+			hRes = GetSpecialFolderEID(lpMDB, PR_REM_ONLINE_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_DRAFTS:
-			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_DRAFTS_ENTRYID, lpcbeid, lppeid);
+			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_DRAFTS_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_SENTITEMS:
-			hRes = GetEntryIDFromMDB(lpMDB, PR_IPM_SENTMAIL_ENTRYID, lpcbeid, lppeid);
+			hRes = GetEntryIDFromMDB(lpMDB, PR_IPM_SENTMAIL_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_OUTBOX:
-			hRes = GetEntryIDFromMDB(lpMDB, PR_IPM_OUTBOX_ENTRYID, lpcbeid, lppeid);
+			hRes = GetEntryIDFromMDB(lpMDB, PR_IPM_OUTBOX_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_DELETEDITEMS:
-			hRes = GetEntryIDFromMDB(lpMDB, PR_IPM_WASTEBASKET_ENTRYID, lpcbeid, lppeid);
+			hRes =
+				GetEntryIDFromMDB(lpMDB, PR_IPM_WASTEBASKET_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_FINDER:
-			hRes = GetEntryIDFromMDB(lpMDB, PR_FINDER_ENTRYID, lpcbeid, lppeid);
+			hRes = GetEntryIDFromMDB(lpMDB, PR_FINDER_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_IPM_SUBTREE:
-			hRes = GetEntryIDFromMDB(lpMDB, PR_IPM_SUBTREE_ENTRYID, lpcbeid, lppeid);
+			hRes = GetEntryIDFromMDB(lpMDB, PR_IPM_SUBTREE_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_INBOX:
-			hRes = GetInbox(lpMDB, lpcbeid, lppeid);
+			hRes = GetInbox(lpMDB, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_LOCALFREEBUSY:
-			hRes = GetMVEntryIDFromInboxByIndex(lpMDB, PR_FREEBUSY_ENTRYIDS, 3, lpcbeid, lppeid);
+			hRes = GetMVEntryIDFromInboxByIndex(
+				lpMDB, PR_FREEBUSY_ENTRYIDS, 3, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_CONFLICTS:
-			hRes = GetMVEntryIDFromInboxByIndex(lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 0, lpcbeid, lppeid);
+			hRes = GetMVEntryIDFromInboxByIndex(
+				lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 0, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_SYNCISSUES:
-			hRes = GetMVEntryIDFromInboxByIndex(lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 1, lpcbeid, lppeid);
+			hRes = GetMVEntryIDFromInboxByIndex(
+				lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 1, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_LOCALFAILURES:
-			hRes = GetMVEntryIDFromInboxByIndex(lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 2, lpcbeid, lppeid);
+			hRes = GetMVEntryIDFromInboxByIndex(
+				lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 2, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_SERVERFAILURES:
-			hRes = GetMVEntryIDFromInboxByIndex(lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 3, lpcbeid, lppeid);
+			hRes = GetMVEntryIDFromInboxByIndex(
+				lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 3, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		case DEFAULT_JUNKMAIL:
-			hRes = GetMVEntryIDFromInboxByIndex(lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 4, lpcbeid, lppeid);
+			hRes = GetMVEntryIDFromInboxByIndex(
+				lpMDB, PR_ADDITIONAL_REN_ENTRYIDS, 4, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
 			break;
 		default:
 			hRes = MAPI_E_INVALID_PARAMETER;
 		}
 
-		return hRes;
+		auto eidRet = LPSBinary{};
+		eidRet = mapi::CopySBinary(&eid);
+		MAPIFreeBuffer(eid.lpb);
+
+		return eidRet;
 	}
 
 	LPMAPIFOLDER OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB)
 	{
 		if (!lpMDB) return nullptr;
 
-		ULONG cb = 0;
-		LPENTRYID lpeid = nullptr;
 		LPMAPIFOLDER lpFolder = nullptr;
 
-		auto hRes = WC_H(GetDefaultFolderEID(ulFolder, lpMDB, &cb, &lpeid));
-		if (SUCCEEDED(hRes))
+		auto eid = GetDefaultFolderEID(ulFolder, lpMDB);
+		if (eid)
 		{
-			lpFolder = CallOpenEntry<LPMAPIFOLDER>(
-				lpMDB, nullptr, nullptr, nullptr, cb, lpeid, nullptr, MAPI_BEST_ACCESS, nullptr);
+			lpFolder =
+				CallOpenEntry<LPMAPIFOLDER>(lpMDB, nullptr, nullptr, nullptr, eid, nullptr, MAPI_BEST_ACCESS, nullptr);
+			MAPIFreeBuffer(eid);
 		}
 
-		MAPIFreeBuffer(lpeid);
 		return lpFolder;
 	}
 

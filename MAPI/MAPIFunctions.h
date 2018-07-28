@@ -248,11 +248,7 @@ namespace mapi
 	};
 
 	LPMAPIFOLDER OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB);
-	STDMETHODIMP GetDefaultFolderEID(
-		_In_ ULONG ulFolder,
-		_In_ LPMDB lpMDB,
-		_Out_opt_ ULONG* lpcbeid,
-		_Deref_out_opt_ LPENTRYID* lppeid);
+	LPSBinary GetDefaultFolderEID(_In_ ULONG ulFolder, _In_ LPMDB lpMDB);
 
 	std::wstring GetTitle(LPMAPIPROP lpMAPIProp);
 	bool UnwrapContactEntryID(_In_ ULONG cbIn, _In_ LPBYTE lpbIn, _Out_ ULONG* lpcbOut, _Out_ LPBYTE* lppbOut);

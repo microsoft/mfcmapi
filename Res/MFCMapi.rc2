@@ -689,8 +689,8 @@ IDS_QSSFCREATIONTIME              "Creation time"
 IDS_QSSFLASTMODIFICATIONTIME      "Last modification time"
 IDS_QSSFRIGHTS                    "Rights"
 IDS_QSSFLTENTRYID                 "Long term entry id"
-IDS_QSSFCANNOTOPEN                "Cannot open folder: %1!ws! = 0x%2!08X!"
-IDS_QSSFCANNOTLOCATE              "Cannot locate entry id: %1!ws! = 0x%2!08X!"
+IDS_QSSFCANNOTOPEN                "Cannot open folder"
+IDS_QSSFCANNOTLOCATE              "Cannot locate entry id"
 
 // restricteditor.cpp
 IDS_RESED                        "Restriction Editor"

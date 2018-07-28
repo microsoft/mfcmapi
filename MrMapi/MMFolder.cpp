@@ -156,12 +156,7 @@ static LPSBinary LookupRootFolderW(
 		const auto ulFolder = strings::wstringToUlong(lpszRootFolder, 10);
 		if (0 < ulFolder && ulFolder < mapi::NUM_DEFAULT_PROPS)
 		{
-			auto defaultEid = SBinary{};
-			WC_H_S(mapi::GetDefaultFolderEID(
-				ulFolder, lpMDB, &defaultEid.cb, reinterpret_cast<LPENTRYID*>(&defaultEid.lpb)));
-			eid = mapi::CopySBinary(&defaultEid);
-			MAPIFreeBuffer(defaultEid.lpb);
-			return eid;
+			return mapi::GetDefaultFolderEID(ulFolder, lpMDB);
 		}
 
 		// Still no match?

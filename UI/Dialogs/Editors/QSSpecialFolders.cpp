@@ -111,9 +111,6 @@ namespace dialog
 			// This will iterate over all the special folders we know how to get.
 			for (ULONG i = mapi::DEFAULT_UNSPECIFIED + 1; i < mapi::NUM_DEFAULT_PROPS; i++)
 			{
-				ULONG cb = NULL;
-				LPENTRYID lpeid = nullptr;
-
 				const auto lpData = InsertListRow(ulListNum, i - 1, std::to_wstring(i));
 				if (lpData)
 				{
@@ -123,19 +120,18 @@ namespace dialog
 					SetListString(ulListNum, iRow, iCol, mapi::FolderNames[i]);
 					iCol++;
 
-					auto hRes = WC_H(mapi::GetDefaultFolderEID(i, m_lpMDB, &cb, &lpeid));
-					if (SUCCEEDED(hRes))
+					auto defaultEid = mapi::GetDefaultFolderEID(i, m_lpMDB);
+					if (defaultEid)
 					{
-						SPropValue eid = {0};
+						SPropValue eid = {};
 						eid.ulPropTag = PR_ENTRYID;
-						eid.Value.bin.cb = cb;
-						eid.Value.bin.lpb = reinterpret_cast<LPBYTE>(lpeid);
+						eid.Value.bin = *defaultEid;
 						interpretprop::InterpretProp(&eid, &szProp, nullptr);
 						SetListString(ulListNum, iRow, iCol, szProp);
 						iCol++;
 
 						auto lpFolder =
-							mapi::CallOpenEntry<LPMAPIFOLDER>(m_lpMDB, NULL, NULL, NULL, cb, lpeid, NULL, NULL, NULL);
+							mapi::CallOpenEntry<LPMAPIFOLDER>(m_lpMDB, NULL, NULL, NULL, defaultEid, NULL, NULL, NULL);
 						if (lpFolder)
 						{
 							ULONG ulProps = 0;
@@ -173,8 +169,7 @@ namespace dialog
 						else
 						{
 							// We couldn't open the folder - log the error
-							szTmp = strings::formatmessage(
-								IDS_QSSFCANNOTOPEN, error::ErrorNameFromErrorCode(hRes).c_str(), hRes);
+							szTmp = strings::formatmessage(IDS_QSSFCANNOTOPEN);
 							SetListString(ulListNum, iRow, iCol, szTmp);
 						}
 
@@ -184,12 +179,11 @@ namespace dialog
 					else
 					{
 						// We couldn't locate the entry ID- log the error
-						szTmp = strings::formatmessage(
-							IDS_QSSFCANNOTLOCATE, error::ErrorNameFromErrorCode(hRes).c_str(), hRes);
+						szTmp = strings::formatmessage(IDS_QSSFCANNOTLOCATE);
 						SetListString(ulListNum, iRow, iCol, szTmp);
 					}
 
-					MAPIFreeBuffer(lpeid);
+					MAPIFreeBuffer(defaultEid);
 					lpData->bItemFullyLoaded = true;
 				}
 			}
