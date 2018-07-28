@@ -9,13 +9,11 @@
 #include <MAPI/MapiMemory.h>
 
 // Search folder for entry ID of child folder by name.
-HRESULT HrMAPIFindFolderW(
+SBinary MAPIFindFolderW(
 	_In_ LPMAPIFOLDER lpFolder, // pointer to folder
-	_In_ const std::wstring& lpszName, // name of child folder to find
-	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
-	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
+	_In_ const std::wstring& lpszName) // name of child folder to find
 {
-	output::DebugPrint(DBGGeneric, L"HrMAPIFindFolderW: Locating folder \"%ws\"\n", lpszName.c_str());
+	output::DebugPrint(DBGGeneric, L"MAPIFindFolderW: Locating folder \"%ws\"\n", lpszName.c_str());
 	LPMAPITABLE lpTable = nullptr;
 	LPSRowSet lpRow = nullptr;
 	LPSPropValue lpRowProp = nullptr;
@@ -28,18 +26,16 @@ HRESULT HrMAPIFindFolderW(
 	};
 	static const SizedSPropTagArray(NUM_COLS, rgColProps) = {NUM_COLS, PR_DISPLAY_NAME_W, PR_ENTRYID};
 
-	if (!lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
-	*lpcbeid = 0;
-	*lppeid = nullptr;
-	if (!lpFolder) return MAPI_E_INVALID_PARAMETER;
+	if (!lpFolder) return {};
 
-	auto hRes = WC_MAPI(lpFolder->GetHierarchyTable(MAPI_UNICODE | MAPI_DEFERRED_ERRORS, &lpTable));
-	if (SUCCEEDED(hRes) && lpTable)
+	WC_MAPI_S(lpFolder->GetHierarchyTable(MAPI_UNICODE | MAPI_DEFERRED_ERRORS, &lpTable));
+	if (lpTable)
 	{
-		hRes = WC_MAPI(HrQueryAllRows(lpTable, LPSPropTagArray(&rgColProps), nullptr, nullptr, 0, &lpRow));
+		WC_MAPI_S(HrQueryAllRows(lpTable, LPSPropTagArray(&rgColProps), nullptr, nullptr, 0, &lpRow));
 	}
 
-	if (SUCCEEDED(hRes) && lpRow)
+	auto eid = SBinary{};
+	if (lpRow)
 	{
 		for (ULONG i = 0; i < lpRow->cRows; i++)
 		{
@@ -49,26 +45,16 @@ HRESULT HrMAPIFindFolderW(
 				_wcsicmp(lpRowProp[ePR_DISPLAY_NAME_W].Value.lpszW, lpszName.c_str()) == 0 &&
 				PR_ENTRYID == lpRowProp[ePR_ENTRYID].ulPropTag)
 			{
-				*lppeid = mapi::allocate<LPENTRYID>(lpRowProp[ePR_ENTRYID].Value.bin.cb);
-				if (*lppeid)
-				{
-					*lpcbeid = lpRowProp[ePR_ENTRYID].Value.bin.cb;
-					CopyMemory(*lppeid, lpRowProp[ePR_ENTRYID].Value.bin.lpb, *lpcbeid);
-				}
+				eid = mapi::CopySBinary(lpRowProp[ePR_ENTRYID].Value.bin);
 				break;
 			}
 		}
 	}
 
-	if (!*lpcbeid)
-	{
-		hRes = MAPI_E_NOT_FOUND;
-	}
-
 	FreeProws(lpRow);
 	if (lpTable) lpTable->Release();
 
-	return hRes;
+	return eid;
 }
 
 #define wszBackslash L'\\'
@@ -94,42 +80,41 @@ std::wstring unescape(_In_ std::wstring lpsz)
 
 // Finds an arbitrarily nested folder in the indicated folder given
 // a hierarchical list of subfolders.
-HRESULT HrMAPIFindSubfolderExW(
+SBinary MAPIFindSubfolderExW(
 	_In_ LPMAPIFOLDER lpRootFolder, // open root folder
-	const std::vector<std::wstring>& FolderList, // hierarchical list of subfolders to navigate
-	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
-	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
+	const std::vector<std::wstring>& FolderList) // hierarchical list of subfolders to navigate
 {
-	auto hRes = S_OK;
-	ULONG cbeid = 0;
-	LPENTRYID lpeid = nullptr;
-
-	if (!lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
-	if (FolderList.empty()) return MAPI_E_INVALID_PARAMETER;
+	if (FolderList.empty()) return {};
 
 	auto lpParentFolder = lpRootFolder;
 	if (lpRootFolder) lpRootFolder->AddRef();
 
+	auto eid = SBinary{};
 	for (ULONG i = 0; i < FolderList.size(); i++)
 	{
 		LPMAPIFOLDER lpChildFolder = nullptr;
 		ULONG ulObjType = 0;
 
 		// Free entryid before re-use.
-		MAPIFreeBuffer(lpeid);
+		MAPIFreeBuffer(eid.lpb);
 
-		hRes = WC_H(HrMAPIFindFolderW(lpParentFolder, FolderList[i].c_str(), &cbeid, &lpeid));
-		if (FAILED(hRes)) break;
+		eid = MAPIFindFolderW(lpParentFolder, FolderList[i].c_str());
+		if (!eid.cb || !eid.lpb) break;
 
 		// Only OpenEntry if needed for next tier of folder path.
 		if (i + 1 < FolderList.size())
 		{
-			WC_MAPI(lpParentFolder->OpenEntry(
-				cbeid, lpeid, nullptr, MAPI_DEFERRED_ERRORS, &ulObjType, reinterpret_cast<LPUNKNOWN*>(&lpChildFolder)));
-			if (FAILED(hRes) || ulObjType != MAPI_FOLDER)
+			WC_MAPI_S(lpParentFolder->OpenEntry(
+				eid.cb,
+				reinterpret_cast<LPENTRYID>(eid.lpb),
+				nullptr,
+				MAPI_DEFERRED_ERRORS,
+				&ulObjType,
+				reinterpret_cast<LPUNKNOWN*>(&lpChildFolder)));
+			if (ulObjType != MAPI_FOLDER)
 			{
-				MAPIFreeBuffer(lpeid);
-				hRes = MAPI_E_CALL_FAILED;
+				MAPIFreeBuffer(eid.lpb);
+				eid = {};
 				break;
 			}
 		}
@@ -141,33 +126,24 @@ HRESULT HrMAPIFindSubfolderExW(
 	}
 
 	// Success!
-	*lpcbeid = cbeid;
-	*lppeid = lpeid;
-
 	if (lpParentFolder) lpParentFolder->Release();
 
-	return hRes;
+	return eid;
 }
 
 // Compare folder name to known root folder ENTRYID strings.  Return ENTRYID,
 // if matched.
-static HRESULT HrLookupRootFolderW(
+static SBinary LookupRootFolderW(
 	_In_ LPMDB lpMDB, // pointer to open message store
-	_In_ const std::wstring& lpszRootFolder, // root folder name only (no separators)
-	_Out_opt_ ULONG* lpcbeid, // size of entryid
-	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entryid
+	_In_ const std::wstring& lpszRootFolder) // root folder name only (no separators)
 {
-	output::DebugPrint(DBGGeneric, L"HrLookupRootFolderW: Locating root folder \"%ws\"\n", lpszRootFolder.c_str());
-	if (!lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
-	auto hRes = S_OK;
+	output::DebugPrint(DBGGeneric, L"LookupRootFolderW: Locating root folder \"%ws\"\n", lpszRootFolder.c_str());
 
-	*lpcbeid = 0;
-	*lppeid = nullptr;
-
-	if (!lpMDB) return MAPI_E_INVALID_PARAMETER;
+	if (!lpMDB) return {};
 	// Implicitly recognize no root folder as THE root folder
-	if (lpszRootFolder.empty()) return S_OK;
+	if (lpszRootFolder.empty()) return {};
 
+	auto eid = SBinary{};
 	auto ulPropTag = interpretprop::LookupPropName(lpszRootFolder);
 	if (!ulPropTag)
 	{
@@ -176,8 +152,8 @@ static HRESULT HrLookupRootFolderW(
 		const auto ulFolder = strings::wstringToUlong(lpszRootFolder, 10);
 		if (0 < ulFolder && ulFolder < mapi::NUM_DEFAULT_PROPS)
 		{
-			hRes = WC_H(mapi::GetDefaultFolderEID(ulFolder, lpMDB, lpcbeid, lppeid));
-			return hRes;
+			WC_H_S(mapi::GetDefaultFolderEID(ulFolder, lpMDB, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb)));
+			return eid;
 		}
 
 		// Still no match?
@@ -185,67 +161,45 @@ static HRESULT HrLookupRootFolderW(
 		ulPropTag = strings::wstringToUlong(lpszRootFolder, 16);
 	}
 
-	if (!ulPropTag) return MAPI_E_NOT_FOUND;
+	if (!ulPropTag) return {};
 
 	if (ulPropTag)
 	{
-		SPropTagArray rgPropTag = {1, ulPropTag};
+		auto rgPropTag = SPropTagArray{1, ulPropTag};
 		LPSPropValue lpPropValue = nullptr;
 		ULONG cValues = 0;
 
 		// Get the outbox entry ID property.
-		hRes = WC_MAPI(lpMDB->GetProps(&rgPropTag, MAPI_UNICODE, &cValues, &lpPropValue));
-		if (SUCCEEDED(hRes) && lpPropValue && lpPropValue->ulPropTag == ulPropTag)
+		WC_MAPI_S(lpMDB->GetProps(&rgPropTag, MAPI_UNICODE, &cValues, &lpPropValue));
+		if (lpPropValue && lpPropValue->ulPropTag == ulPropTag)
 		{
-			*lppeid = mapi::allocate<LPENTRYID>(lpPropValue->Value.bin.cb);
-			if (*lppeid)
-			{
-				*lpcbeid = lpPropValue->Value.bin.cb;
-				CopyMemory(*lppeid, lpPropValue->Value.bin.lpb, *lpcbeid);
-			}
-		}
-		else
-		{
-			if (SUCCEEDED(hRes))
-			{
-				hRes = MAPI_E_CALL_FAILED;
-			}
+			eid = mapi::CopySBinary(lpPropValue->Value.bin);
 		}
 
 		MAPIFreeBuffer(lpPropValue);
 	}
 
-	return hRes;
+	return eid;
 }
 
 // Finds an arbitrarily nested folder in the indicated store given its
 // path name.
-HRESULT HrMAPIFindFolderExW(
+SBinary MAPIFindFolderExW(
 	_In_ LPMDB lpMDB, // Open message store
-	_In_ const std::wstring& lpszFolderPath, // folder path
-	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
-	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
+	_In_ const std::wstring& lpszFolderPath) // folder path
 {
-	output::DebugPrint(DBGGeneric, L"HrMAPIFindFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
-	auto hRes = S_OK;
+	output::DebugPrint(DBGGeneric, L"MAPIFindFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
+	if (!lpMDB) return {};
+
 	LPMAPIFOLDER lpRootFolder = nullptr;
-	ULONG cbeid = 0;
-	LPENTRYID lpeid = nullptr;
-
-	if (!lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
-
-	*lpcbeid = 0;
-	*lppeid = nullptr;
-
-	if (!lpMDB) return MAPI_E_INVALID_PARAMETER;
-
 	auto FolderList = strings::split(lpszFolderPath, wszBackslash);
 
 	// Check for literal property name
+	auto eid = SBinary{};
 	if (!FolderList.empty() && FolderList[0][0] == L'@')
 	{
-		hRes = WC_H(HrLookupRootFolderW(lpMDB, FolderList[0].c_str() + 1, &cbeid, &lpeid));
-		if (SUCCEEDED(hRes))
+		eid = LookupRootFolderW(lpMDB, FolderList[0].c_str() + 1);
+		if (eid.cb && eid.lpb)
 		{
 			FolderList.erase(FolderList.begin());
 		}
@@ -257,35 +211,30 @@ HRESULT HrMAPIFindFolderExW(
 	}
 
 	// If we have any subfolders, chase them
-	if (SUCCEEDED(hRes) && !FolderList.empty())
+	if (!FolderList.empty())
 	{
 		ULONG ulObjType = 0;
 
-		WC_MAPI(lpMDB->OpenEntry(
-			cbeid,
-			lpeid,
+		WC_MAPI_S(lpMDB->OpenEntry(
+			eid.cb,
+			reinterpret_cast<LPENTRYID>(eid.lpb),
 			nullptr,
 			MAPI_BEST_ACCESS | MAPI_DEFERRED_ERRORS,
 			&ulObjType,
 			reinterpret_cast<LPUNKNOWN*>(&lpRootFolder)));
-		if (SUCCEEDED(hRes) && MAPI_FOLDER == ulObjType)
+		if (MAPI_FOLDER == ulObjType)
 		{
 			// Free before re-use
-			MAPIFreeBuffer(lpeid);
+			MAPIFreeBuffer(eid.lpb);
 
 			// Find the subfolder in question
-			hRes = WC_H(HrMAPIFindSubfolderExW(lpRootFolder, FolderList, &cbeid, &lpeid));
+			eid = MAPIFindSubfolderExW(lpRootFolder, FolderList);
 		}
+
 		if (lpRootFolder) lpRootFolder->Release();
 	}
 
-	if (SUCCEEDED(hRes))
-	{
-		*lpcbeid = cbeid;
-		*lppeid = lpeid;
-	}
-
-	return hRes;
+	return eid;
 }
 
 // Opens an arbitrarily nested folder in the indicated store given its
@@ -295,25 +244,23 @@ LPMAPIFOLDER MAPIOpenFolderExW(
 	_In_ const std::wstring& lpszFolderPath) // folder path
 {
 	output::DebugPrint(DBGGeneric, L"MAPIOpenFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
-	LPENTRYID lpeid = nullptr;
-	ULONG cbeid = 0;
 	ULONG ulObjType = 0;
 
-	auto hRes = WC_H(HrMAPIFindFolderExW(lpMDB, lpszFolderPath, &cbeid, &lpeid));
+	auto eid = MAPIFindFolderExW(lpMDB, lpszFolderPath);
 
 	LPMAPIFOLDER lpFolder = nullptr;
-	if (SUCCEEDED(hRes))
+	if (eid.cb && eid.lpb)
 	{
-		hRes = WC_MAPI(lpMDB->OpenEntry(
-			cbeid,
-			lpeid,
+		WC_MAPI_S(lpMDB->OpenEntry(
+			eid.cb,
+			reinterpret_cast<LPENTRYID>(eid.lpb),
 			nullptr,
 			MAPI_BEST_ACCESS | MAPI_DEFERRED_ERRORS,
 			&ulObjType,
 			reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
 	}
 
-	MAPIFreeBuffer(lpeid);
+	MAPIFreeBuffer(eid.lpb);
 
 	return lpFolder;
 }
@@ -334,7 +281,6 @@ void DumpHierarchyTable(
 			lpszFolder.c_str(),
 			lpszProfile.c_str());
 	}
-	auto hRes = S_OK;
 
 	if (lpFolder)
 	{
@@ -353,57 +299,55 @@ void DumpHierarchyTable(
 			PR_ENTRYID,
 		};
 
-		WC_MAPI(lpFolder->GetHierarchyTable(MAPI_DEFERRED_ERRORS, &lpTable));
-		if (SUCCEEDED(hRes) && lpTable)
+		WC_MAPI_S(lpFolder->GetHierarchyTable(MAPI_DEFERRED_ERRORS, &lpTable));
+		if (lpTable)
 		{
-			WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&rgColProps), TBL_ASYNC));
+			WC_MAPI_S(lpTable->SetColumns(LPSPropTagArray(&rgColProps), TBL_ASYNC));
 
-			if (!FAILED(hRes))
-				for (;;)
+			for (;;)
+			{
+				if (lpRow) FreeProws(lpRow);
+				lpRow = nullptr;
+				WC_MAPI_S(lpTable->QueryRows(50, NULL, &lpRow));
+				if (!lpRow || !lpRow->cRows) break;
+
+				for (ULONG i = 0; i < lpRow->cRows; i++)
 				{
-					hRes = S_OK;
-					if (lpRow) FreeProws(lpRow);
-					lpRow = nullptr;
-					WC_MAPI(lpTable->QueryRows(50, NULL, &lpRow));
-					if (FAILED(hRes) || !lpRow || !lpRow->cRows) break;
-
-					for (ULONG i = 0; i < lpRow->cRows; i++)
+					if (ulDepth >= 1)
 					{
-						hRes = S_OK;
-						if (ulDepth >= 1)
+						for (ULONG iTab = 0; iTab < ulDepth; iTab++)
 						{
-							for (ULONG iTab = 0; iTab < ulDepth; iTab++)
-							{
-								printf("  ");
-							}
-						}
-						if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
-						{
-							printf("%ws\n", lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW);
-						}
-
-						if (PR_ENTRYID == lpRow->aRow[i].lpProps[ePR_ENTRYID].ulPropTag)
-						{
-							ULONG ulObjType = NULL;
-							LPMAPIFOLDER lpSubfolder = nullptr;
-
-							WC_MAPI(lpFolder->OpenEntry(
-								lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
-								reinterpret_cast<LPENTRYID>(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
-								nullptr,
-								MAPI_BEST_ACCESS,
-								&ulObjType,
-								reinterpret_cast<LPUNKNOWN*>(&lpSubfolder)));
-
-							if (SUCCEEDED(hRes) && lpSubfolder)
-							{
-								DumpHierarchyTable(lpszProfile, lpSubfolder, 0, L"", ulDepth + 1);
-							}
-
-							if (lpSubfolder) lpSubfolder->Release();
+							printf("  ");
 						}
 					}
+
+					if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
+					{
+						printf("%ws\n", lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW);
+					}
+
+					if (PR_ENTRYID == lpRow->aRow[i].lpProps[ePR_ENTRYID].ulPropTag)
+					{
+						ULONG ulObjType = NULL;
+						LPMAPIFOLDER lpSubfolder = nullptr;
+
+						WC_MAPI_S(lpFolder->OpenEntry(
+							lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
+							reinterpret_cast<LPENTRYID>(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
+							nullptr,
+							MAPI_BEST_ACCESS,
+							&ulObjType,
+							reinterpret_cast<LPUNKNOWN*>(&lpSubfolder)));
+
+						if (lpSubfolder)
+						{
+							DumpHierarchyTable(lpszProfile, lpSubfolder, 0, L"", ulDepth + 1);
+						}
+
+						if (lpSubfolder) lpSubfolder->Release();
+					}
 				}
+			}
 
 			if (lpRow) FreeProws(lpRow);
 		}
@@ -420,10 +364,10 @@ ULONGLONG ComputeSingleFolderSize(_In_ LPMAPIFOLDER lpFolder)
 	ULONGLONG ullThisFolderSize = 0;
 
 	// Look at each item in this folder
-	WC_MAPI(lpFolder->GetContentsTable(0, &lpTable));
+	WC_MAPI_S(lpFolder->GetContentsTable(0, &lpTable));
 	if (lpTable)
 	{
-		WC_MAPI(HrQueryAllRows(lpTable, reinterpret_cast<LPSPropTagArray>(&sProps), nullptr, nullptr, 0, &lpsRowSet));
+		WC_MAPI_S(HrQueryAllRows(lpTable, reinterpret_cast<LPSPropTagArray>(&sProps), nullptr, nullptr, 0, &lpsRowSet));
 
 		if (lpsRowSet)
 		{
@@ -441,10 +385,10 @@ ULONGLONG ComputeSingleFolderSize(_In_ LPMAPIFOLDER lpFolder)
 	}
 	output::DebugPrint(DBGGeneric, L"Content size = %I64u\n", ullThisFolderSize);
 
-	WC_MAPI(lpFolder->GetContentsTable(MAPI_ASSOCIATED, &lpTable));
+	WC_MAPI_S(lpFolder->GetContentsTable(MAPI_ASSOCIATED, &lpTable));
 	if (lpTable)
 	{
-		WC_MAPI(HrQueryAllRows(lpTable, reinterpret_cast<LPSPropTagArray>(&sProps), nullptr, nullptr, 0, &lpsRowSet));
+		WC_MAPI_S(HrQueryAllRows(lpTable, reinterpret_cast<LPSPropTagArray>(&sProps), nullptr, nullptr, 0, &lpsRowSet));
 
 		if (lpsRowSet)
 		{
@@ -478,8 +422,6 @@ ULONGLONG ComputeFolderSize(
 		ulFolder,
 		lpszFolder.c_str(),
 		lpszProfile.c_str());
-	auto hRes = S_OK;
-
 	if (lpFolder)
 	{
 		LPMAPITABLE lpTable = nullptr;
@@ -504,58 +446,55 @@ ULONGLONG ComputeFolderSize(
 		ullSize += ComputeSingleFolderSize(lpFolder);
 
 		// Size of children
-		WC_MAPI(lpFolder->GetHierarchyTable(MAPI_DEFERRED_ERRORS, &lpTable));
-		if (SUCCEEDED(hRes) && lpTable)
+		WC_MAPI_S(lpFolder->GetHierarchyTable(MAPI_DEFERRED_ERRORS, &lpTable));
+		if (lpTable)
 		{
-			WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&rgColProps), TBL_ASYNC));
+			WC_MAPI_S(lpTable->SetColumns(LPSPropTagArray(&rgColProps), TBL_ASYNC));
 
-			if (!FAILED(hRes))
-				for (;;)
+			for (;;)
+			{
+				if (lpRow) FreeProws(lpRow);
+				lpRow = nullptr;
+				WC_MAPI_S(lpTable->QueryRows(50, NULL, &lpRow));
+				if (!lpRow || !lpRow->cRows) break;
+
+				for (ULONG i = 0; i < lpRow->cRows; i++)
 				{
-					hRes = S_OK;
-					if (lpRow) FreeProws(lpRow);
-					lpRow = nullptr;
-					WC_MAPI(lpTable->QueryRows(50, NULL, &lpRow));
-					if (FAILED(hRes) || !lpRow || !lpRow->cRows) break;
-
-					for (ULONG i = 0; i < lpRow->cRows; i++)
+					// Don't look at search folders
+					if (PR_FOLDER_TYPE == lpRow->aRow[i].lpProps[ePR_FOLDER_TYPE].ulPropTag &&
+						FOLDER_SEARCH == lpRow->aRow[i].lpProps[ePR_FOLDER_TYPE].Value.ul)
 					{
-						hRes = S_OK;
-						// Don't look at search folders
-						if (PR_FOLDER_TYPE == lpRow->aRow[i].lpProps[ePR_FOLDER_TYPE].ulPropTag &&
-							FOLDER_SEARCH == lpRow->aRow[i].lpProps[ePR_FOLDER_TYPE].Value.ul)
+						continue;
+					}
+
+					if (PR_ENTRYID == lpRow->aRow[i].lpProps[ePR_ENTRYID].ulPropTag)
+					{
+						ULONG ulObjType = NULL;
+						LPMAPIFOLDER lpSubfolder = nullptr;
+
+						WC_MAPI_S(lpFolder->OpenEntry(
+							lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
+							reinterpret_cast<LPENTRYID>(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
+							nullptr,
+							MAPI_BEST_ACCESS,
+							&ulObjType,
+							reinterpret_cast<LPUNKNOWN*>(&lpSubfolder)));
+
+						if (lpSubfolder)
 						{
-							continue;
-						}
-
-						if (PR_ENTRYID == lpRow->aRow[i].lpProps[ePR_ENTRYID].ulPropTag)
-						{
-							ULONG ulObjType = NULL;
-							LPMAPIFOLDER lpSubfolder = nullptr;
-
-							WC_MAPI(lpFolder->OpenEntry(
-								lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
-								reinterpret_cast<LPENTRYID>(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
-								nullptr,
-								MAPI_BEST_ACCESS,
-								&ulObjType,
-								reinterpret_cast<LPUNKNOWN*>(&lpSubfolder)));
-
-							if (SUCCEEDED(hRes) && lpSubfolder)
+							std::wstring szDisplayName;
+							if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
 							{
-								std::wstring szDisplayName;
-								if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
-								{
-									szDisplayName = lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW;
-								}
-
-								ullSize += ComputeFolderSize(lpszProfile, lpSubfolder, 0, szDisplayName);
+								szDisplayName = lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW;
 							}
 
-							if (lpSubfolder) lpSubfolder->Release();
+							ullSize += ComputeFolderSize(lpszProfile, lpSubfolder, 0, szDisplayName);
+
+							lpSubfolder->Release();
 						}
 					}
 				}
+			}
 
 			if (lpRow) FreeProws(lpRow);
 		}
