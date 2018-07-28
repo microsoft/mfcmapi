@@ -982,13 +982,9 @@ namespace mapi
 		return hRes;
 	}
 
-	_Check_return_ HRESULT GetSpecialFolderEID(
-		_In_ LPMDB lpMDB,
-		ULONG ulFolderPropTag,
-		_Out_opt_ ULONG* lpcbeid,
-		_Deref_out_opt_ LPENTRYID* lppeid)
+	_Check_return_ LPSBinary GetSpecialFolderEID(_In_ LPMDB lpMDB, ULONG ulFolderPropTag)
 	{
-		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
+		if (!lpMDB) return {};
 
 		output::DebugPrint(DBGGeneric, L"GetSpecialFolderEID: getting 0x%X from %p\n", ulFolderPropTag, lpMDB);
 
@@ -1021,14 +1017,10 @@ namespace mapi
 			}
 		}
 
+		auto eid = LPSBinary{};
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag) && lpProp->Value.bin.cb)
 		{
-			*lppeid = mapi::allocate<LPENTRYID>(lpProp->Value.bin.cb);
-			if (*lppeid)
-			{
-				*lpcbeid = lpProp->Value.bin.cb;
-				CopyMemory(*lppeid, lpProp->Value.bin.lpb, *lpcbeid);
-			}
+			eid = mapi::CopySBinary(&lpProp->Value.bin);
 		}
 
 		if (hRes == MAPI_E_NOT_FOUND)
@@ -1037,7 +1029,7 @@ namespace mapi
 		}
 
 		MAPIFreeBuffer(lpProp);
-		return hRes;
+		return eid;
 	}
 
 	_Check_return_ HRESULT
@@ -2176,26 +2168,25 @@ namespace mapi
 		switch (ulFolder)
 		{
 		case DEFAULT_CALENDAR:
-			hRes =
-				GetSpecialFolderEID(lpMDB, PR_IPM_APPOINTMENT_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetSpecialFolderEID(lpMDB, PR_IPM_APPOINTMENT_ENTRYID);
 			break;
 		case DEFAULT_CONTACTS:
-			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_CONTACT_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetSpecialFolderEID(lpMDB, PR_IPM_CONTACT_ENTRYID);
 			break;
 		case DEFAULT_JOURNAL:
-			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_JOURNAL_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetSpecialFolderEID(lpMDB, PR_IPM_JOURNAL_ENTRYID);
 			break;
 		case DEFAULT_NOTES:
-			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_NOTE_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetSpecialFolderEID(lpMDB, PR_IPM_NOTE_ENTRYID);
 			break;
 		case DEFAULT_TASKS:
-			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_TASK_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetSpecialFolderEID(lpMDB, PR_IPM_TASK_ENTRYID);
 			break;
 		case DEFAULT_REMINDERS:
-			hRes = GetSpecialFolderEID(lpMDB, PR_REM_ONLINE_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetSpecialFolderEID(lpMDB, PR_REM_ONLINE_ENTRYID);
 			break;
 		case DEFAULT_DRAFTS:
-			hRes = GetSpecialFolderEID(lpMDB, PR_IPM_DRAFTS_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetSpecialFolderEID(lpMDB, PR_IPM_DRAFTS_ENTRYID);
 			break;
 		case DEFAULT_SENTITEMS:
 			hRes = GetEntryIDFromMDB(lpMDB, PR_IPM_SENTMAIL_ENTRYID, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));

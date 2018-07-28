@@ -143,11 +143,9 @@ namespace mapi
 		ULONG ulFlags,
 		_Out_ ULONG* lpcValues,
 		_Deref_out_opt_ LPSPropValue* lppPropArray);
-	_Check_return_ HRESULT GetSpecialFolderEID(
+	_Check_return_ LPSBinary GetSpecialFolderEID(
 		_In_ LPMDB lpMDB,
-		ULONG ulFolderPropTag,
-		_Out_opt_ ULONG* lpcbeid,
-		_Deref_out_opt_ LPENTRYID* lppeid);
+		ULONG ulFolderPropTag);
 	_Check_return_ HRESULT
 	IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ bool* pfBlocked);
 	_Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag);
