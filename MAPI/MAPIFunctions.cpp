@@ -864,34 +864,28 @@ namespace mapi
 		return ulObjType;
 	}
 
-	_Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid)
+	_Check_return_ LPSBinary GetInboxEntryId(_In_ LPMDB lpMDB)
 	{
-		ULONG cbInboxEID = 0;
-		LPENTRYID lpInboxEID = nullptr;
+		output::DebugPrint(DBGGeneric, L"GetInboxEntryId: getting Inbox\n");
 
-		output::DebugPrint(DBGGeneric, L"GetInbox: getting Inbox\n");
+		if (!lpMDB) return {};
 
-		if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
-
-		auto hRes = EC_MAPI(lpMDB->GetReceiveFolder(
+		auto receiveEid = SBinary{};
+		EC_MAPI_S(lpMDB->GetReceiveFolder(
 			const_cast<LPTSTR>(_T("IPM.Note")), // STRING_OK this is the class of message we want
 			fMapiUnicode, // flags
-			&cbInboxEID, // size and...
-			&lpInboxEID, // value of entry ID
+			&receiveEid.cb, // size and...
+			reinterpret_cast<LPENTRYID*>(&receiveEid.lpb), // value of entry ID
 			nullptr)); // returns a message class if not NULL
 
-		if (cbInboxEID && lpInboxEID)
+		auto eid = LPSBinary{};
+		if (receiveEid.cb && receiveEid.lpb)
 		{
-			*lppeid = mapi::allocate<LPENTRYID>(cbInboxEID);
-			if (*lppeid)
-			{
-				*lpcbeid = cbInboxEID;
-				CopyMemory(*lppeid, lpInboxEID, *lpcbeid);
-			}
+			eid = mapi::CopySBinary(&receiveEid);
 		}
 
-		MAPIFreeBuffer(lpInboxEID);
-		return hRes;
+		MAPIFreeBuffer(receiveEid.lpb);
+		return eid;
 	}
 
 	_Check_return_ LPMAPIFOLDER GetInbox(_In_ LPMDB lpMDB)
@@ -900,19 +894,17 @@ namespace mapi
 
 		output::DebugPrint(DBGGeneric, L"GetInbox: getting Inbox from %p\n", lpMDB);
 
-		ULONG cbInboxEID = 0;
-		LPENTRYID lpInboxEID = nullptr;
-		EC_H_S(GetInbox(lpMDB, &cbInboxEID, &lpInboxEID));
+		auto eid = GetInboxEntryId(lpMDB);
 
 		LPMAPIFOLDER lpInbox = nullptr;
-		if (cbInboxEID && lpInboxEID)
+		if (eid)
 		{
 			// Get the Inbox...
-			lpInbox = CallOpenEntry<LPMAPIFOLDER>(
-				lpMDB, nullptr, nullptr, nullptr, cbInboxEID, lpInboxEID, nullptr, MAPI_BEST_ACCESS, nullptr);
+			lpInbox =
+				CallOpenEntry<LPMAPIFOLDER>(lpMDB, nullptr, nullptr, nullptr, eid, nullptr, MAPI_BEST_ACCESS, nullptr);
 		}
 
-		MAPIFreeBuffer(lpInboxEID);
+		MAPIFreeBuffer(eid);
 		return lpInbox;
 	}
 
@@ -2199,7 +2191,7 @@ namespace mapi
 			return GetEntryIDFromMDB(lpMDB, PR_IPM_SUBTREE_ENTRYID);
 			break;
 		case DEFAULT_INBOX:
-			hRes = GetInbox(lpMDB, &eid.cb, reinterpret_cast<LPENTRYID*>(&eid.lpb));
+			return GetInboxEntryId(lpMDB);
 			break;
 		case DEFAULT_LOCALFREEBUSY:
 			hRes = GetMVEntryIDFromInboxByIndex(
