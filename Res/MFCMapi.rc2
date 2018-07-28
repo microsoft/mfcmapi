@@ -2220,7 +2220,7 @@ Please close MFCMAPI now."
 IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %ws.\r\n\
 \r\n\
 Here are some known causes for this.\r\n\
-1 - A 64 bit version of Outlook 2010 is not installed. The 64 bit version of MFCMAPI only works with a 64 bit version of Outlook.\r\n\
+1 - A 64 bit version of Outlook is not installed. The 64 bit version of MFCMAPI only works with a 64 bit version of Outlook.\r\n\
 \tSee https://github.com/stephenegriffin/mfcmapifor the latest 32 bit bit build of MFCMAPI.\r\n\
 2 - Windows Mail is registered as the Default Mail Client.\r\n\
 \tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
