@@ -371,8 +371,7 @@ namespace mapiprocessor
 
 					if (!lpMsgEID) continue;
 
-					LPMESSAGE lpMessage = nullptr;
-					WC_H_S(mapi::CallOpenEntry(
+					auto lpMessage = mapi::CallOpenEntry<LPMESSAGE>(
 						nullptr,
 						nullptr,
 						m_lpFolder,
@@ -381,9 +380,7 @@ namespace mapiprocessor
 						reinterpret_cast<LPENTRYID>(lpMsgEID->Value.bin.lpb),
 						nullptr,
 						MAPI_BEST_ACCESS,
-						nullptr,
-						reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
-
+						nullptr);
 					if (lpMessage)
 					{
 						auto bHasAttach = true;
@@ -590,16 +587,8 @@ namespace mapiprocessor
 		while (!lpFolder && !m_List.empty())
 		{
 			auto node = m_List.front();
-			WC_H_S(mapi::CallOpenEntry(
-				m_lpMDB,
-				nullptr,
-				nullptr,
-				nullptr,
-				node.lpFolderEID,
-				nullptr,
-				MAPI_BEST_ACCESS,
-				nullptr,
-				reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
+			lpFolder = mapi::CallOpenEntry<LPMAPIFOLDER>(
+				m_lpMDB, nullptr, nullptr, nullptr, node.lpFolderEID, nullptr, MAPI_BEST_ACCESS, nullptr);
 			if (!node.szFolderOffsetPath.empty())
 			{
 				m_szFolderOffset = node.szFolderOffsetPath;

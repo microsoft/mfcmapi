@@ -251,12 +251,11 @@ namespace mapiprocessor
 			lpszProfile.c_str(),
 			lpszFid.c_str(),
 			lpszMid.c_str());
-		LPMAPIFOLDER lpFolder = nullptr;
 
 		if (lpMDB)
 		{
 			// Open root container.
-			WC_H_S(mapi::CallOpenEntry(
+			auto lpFolder = mapi::CallOpenEntry<LPMAPIFOLDER>(
 				lpMDB,
 				nullptr,
 				nullptr,
@@ -264,20 +263,17 @@ namespace mapiprocessor
 				nullptr, // open root container
 				nullptr,
 				MAPI_BEST_ACCESS,
-				nullptr,
-				reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
+				nullptr);
+			if (lpFolder)
+			{
+				CFindFidMid MyFindFidMid;
+				MyFindFidMid.InitMDB(lpMDB);
+				MyFindFidMid.InitFolder(lpFolder);
+				MyFindFidMid.InitFidMid(lpszFid, lpszMid, bMid);
+				MyFindFidMid.ProcessFolders(true, true, true);
+				lpFolder->Release();
+			}
 		}
-
-		if (lpFolder)
-		{
-			CFindFidMid MyFindFidMid;
-			MyFindFidMid.InitMDB(lpMDB);
-			MyFindFidMid.InitFolder(lpFolder);
-			MyFindFidMid.InitFidMid(lpszFid, lpszMid, bMid);
-			MyFindFidMid.ProcessFolders(true, true, true);
-		}
-
-		if (lpFolder) lpFolder->Release();
 	}
 }
 

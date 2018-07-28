@@ -692,7 +692,6 @@ namespace file
 		if (szPathName.empty() || szPathName.length() >= MAXMSGPATH) return MAPI_E_INVALID_PARAMETER;
 		if (entryID.ulPropTag != PR_ENTRYID) return MAPI_E_INVALID_PARAMETER;
 
-		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
 
 		output::DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szPathName.c_str());
@@ -703,19 +702,12 @@ namespace file
 		auto lpMapiContainer = mapi::safe_cast<LPMAPICONTAINER>(lpFolder);
 		if (lpMapiContainer)
 		{
-			hRes = EC_H(mapi::CallOpenEntry(
-				nullptr,
-				nullptr,
-				lpMapiContainer,
-				nullptr,
-				&entryID.Value.bin,
-				nullptr,
-				MAPI_BEST_ACCESS,
-				nullptr,
-				reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
+			lpMessage = mapi::CallOpenEntry<LPMESSAGE>(
+				nullptr, nullptr, lpMapiContainer, nullptr, &entryID.Value.bin, nullptr, MAPI_BEST_ACCESS, nullptr);
 		}
 
-		if (SUCCEEDED(hRes) && lpMessage != nullptr)
+		auto hRes = S_OK;
+		if (lpMessage != nullptr)
 		{
 			const auto szSubj =
 				mapi::CheckStringProp(lpSubject, PT_UNICODE) ? lpSubject->Value.lpszW : L"UnknownSubject";

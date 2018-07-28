@@ -494,9 +494,7 @@ namespace dialog
 				{
 					for (ULONG i = 0; i < lpEIDs->cValues; i++)
 					{
-						LPMESSAGE lpMessage = nullptr;
-
-						EC_H_S(mapi::CallOpenEntry(
+						auto lpMessage = mapi::CallOpenEntry<LPMESSAGE>(
 							nullptr,
 							nullptr,
 							lpMAPISourceFolder,
@@ -505,8 +503,7 @@ namespace dialog
 							reinterpret_cast<LPENTRYID>(lpEIDs->lpbin[i].lpb),
 							nullptr,
 							MyData.GetCheck(0) ? MAPI_MODIFY : 0, // only need write access for moves
-							nullptr,
-							reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
+							nullptr);
 						if (lpMessage)
 						{
 							LPMESSAGE lpNewMessage = nullptr;
@@ -706,7 +703,7 @@ namespace dialog
 				const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
 				{
-					WC_H_S(mapi::CallOpenEntry(
+					lpMAPIProp = mapi::CallOpenEntry<LPMAPIPROP>(
 						lpMDB,
 						nullptr,
 						nullptr,
@@ -715,8 +712,7 @@ namespace dialog
 						reinterpret_cast<LPENTRYID>(lpMessageEID->lpb),
 						nullptr,
 						MAPI_BEST_ACCESS,
-						nullptr,
-						reinterpret_cast<LPUNKNOWN*>(&lpMAPIProp)));
+						nullptr);
 				}
 
 				OnUpdateSingleMAPIPropListCtrl(lpMAPIProp, nullptr);

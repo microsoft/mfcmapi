@@ -27,10 +27,9 @@ namespace dialog
 			const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			if (lpAddrBook)
 			{
-				auto container = LPUNKNOWN(nullptr);
 				// Open root address book (container).
-				EC_H_S(mapi::CallOpenEntry(
-					NULL, lpAddrBook, NULL, NULL, nullptr, NULL, MAPI_BEST_ACCESS, NULL, &container));
+				auto container =
+					mapi::CallOpenEntry<LPUNKNOWN>(NULL, lpAddrBook, NULL, NULL, nullptr, NULL, MAPI_BEST_ACCESS, NULL);
 				SetRootContainer(container);
 			}
 		}

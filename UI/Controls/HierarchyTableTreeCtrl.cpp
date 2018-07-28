@@ -893,7 +893,7 @@ namespace controls
 					output::DebugPrint(
 						DBGGeneric, L"\tCalling OpenEntry on address book with ulFlags = 0x%X\n", ulFlags);
 
-					hRes = WC_H(mapi::CallOpenEntry(
+					lpContainer = mapi::CallOpenEntry<LPMAPICONTAINER>(
 						nullptr,
 						lpAddrBook,
 						nullptr,
@@ -902,8 +902,7 @@ namespace controls
 						reinterpret_cast<LPENTRYID>(lpCurBin->lpb),
 						nullptr,
 						ulFlags,
-						&ulObjType,
-						reinterpret_cast<LPUNKNOWN*>(&lpContainer)));
+						&ulObjType);
 				}
 			}
 			else if (m_ulContainerType == MAPI_FOLDER)
@@ -914,7 +913,7 @@ namespace controls
 					ulFlags = (mfcmapiREQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL) |
 							  (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES | MAPI_NO_CACHE : NULL);
 
-					hRes = WC_H(mapi::CallOpenEntry(
+					lpContainer = mapi::CallOpenEntry<LPMAPICONTAINER>(
 						lpMDB,
 						nullptr,
 						nullptr,
@@ -923,8 +922,7 @@ namespace controls
 						reinterpret_cast<LPENTRYID>(lpCurBin->lpb),
 						nullptr,
 						ulFlags,
-						&ulObjType,
-						reinterpret_cast<LPUNKNOWN*>(&lpContainer)));
+						&ulObjType);
 				}
 			}
 		}
@@ -933,8 +931,7 @@ namespace controls
 		if (!lpContainer && m_lpContainer)
 		{
 			WARNHRESMSG(MAPI_E_CALL_FAILED, IDS_UNKNOWNCONTAINERTYPE);
-			hRes = S_OK;
-			hRes = WC_H(mapi::CallOpenEntry(
+			lpContainer = mapi::CallOpenEntry<LPMAPICONTAINER>(
 				nullptr,
 				nullptr,
 				m_lpContainer,
@@ -943,8 +940,7 @@ namespace controls
 				reinterpret_cast<LPENTRYID>(lpCurBin->lpb),
 				nullptr,
 				ulFlags,
-				&ulObjType,
-				reinterpret_cast<LPUNKNOWN*>(&lpContainer)));
+				&ulObjType);
 		}
 
 		// if we failed because write access was denied, try again if acceptable

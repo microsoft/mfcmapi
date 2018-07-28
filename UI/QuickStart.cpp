@@ -115,17 +115,8 @@ namespace dialog
 			auto hRes = WC_MAPI(lpAdrBook->GetDefaultDir(&cbEID, &lpEID));
 			if (SUCCEEDED(hRes))
 			{
-				hRes = WC_H(mapi::CallOpenEntry(
-					nullptr,
-					lpAdrBook,
-					nullptr,
-					nullptr,
-					cbEID,
-					lpEID,
-					nullptr,
-					MAPI_MODIFY,
-					&ulObjType,
-					reinterpret_cast<LPUNKNOWN*>(&lpDefaultDir)));
+				lpDefaultDir = mapi::CallOpenEntry<LPABCONT>(
+					nullptr, lpAdrBook, nullptr, nullptr, cbEID, lpEID, nullptr, MAPI_MODIFY, &ulObjType);
 			}
 
 			if (lpDefaultDir)
@@ -205,8 +196,7 @@ namespace dialog
 							if (lpRows && 1 == lpRows->cRows &&
 								PR_ENTRYID == lpRows->aRow[0].lpProps[eidPR_ENTRYID].ulPropTag)
 							{
-								LPMESSAGE lpMSG = nullptr;
-								hRes = WC_H(mapi::CallOpenEntry(
+								auto lpMSG = mapi::CallOpenEntry<LPMESSAGE>(
 									lpMDB,
 									nullptr,
 									nullptr,
@@ -214,8 +204,7 @@ namespace dialog
 									&lpRows->aRow[0].lpProps[eidPR_ENTRYID].Value.bin,
 									nullptr,
 									NULL,
-									nullptr,
-									reinterpret_cast<LPUNKNOWN*>(&lpMSG)));
+									nullptr);
 								if (SUCCEEDED(hRes) && lpMSG)
 								{
 									lpsProp = mapi::GetLargeBinaryProp(lpMSG, PR_ROAMING_BINARYSTREAM);

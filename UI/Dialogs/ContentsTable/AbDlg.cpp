@@ -119,8 +119,6 @@ namespace dialog
 
 	void CAbDlg::OnOpenContact()
 	{
-		LPMAPIPROP lpProp = nullptr;
-
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !m_lpPropDisplay) return;
 		const auto lpSession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpSession) return;
@@ -134,24 +132,14 @@ namespace dialog
 			LPBYTE lpb = nullptr;
 			if (mapi::UnwrapContactEntryID(lpEntryList->lpbin[0].cb, lpEntryList->lpbin[0].lpb, &cb, &lpb))
 			{
-				EC_H_S(mapi::CallOpenEntry(
-					NULL,
-					NULL,
-					NULL,
-					lpSession,
-					cb,
-					reinterpret_cast<LPENTRYID>(lpb),
-					NULL,
-					NULL,
-					NULL,
-					reinterpret_cast<LPUNKNOWN*>(&lpProp)));
+				auto lpProp = mapi::CallOpenEntry<LPMAPIPROP>(
+					NULL, NULL, NULL, lpSession, cb, reinterpret_cast<LPENTRYID>(lpb), NULL, NULL, NULL);
+				if (lpProp)
+				{
+					EC_H_S(DisplayObject(lpProp, NULL, otDefault, this));
+					if (lpProp) lpProp->Release();
+				}
 			}
-		}
-
-		if (lpProp)
-		{
-			EC_H_S(DisplayObject(lpProp, NULL, otDefault, this));
-			if (lpProp) lpProp->Release();
 		}
 
 		MAPIFreeBuffer(lpEntryList);

@@ -220,25 +220,16 @@ namespace mapi
 		{
 			if (!lpAdrBook) return nullptr;
 
-			LPABCONT lpABRootContainer = nullptr;
 			LPMAPITABLE lpTable = nullptr;
 
 			// Open root address book (container).
-			auto hRes = EC_H(mapi::CallOpenEntry(
-				nullptr,
-				lpAdrBook,
-				nullptr,
-				nullptr,
-				nullptr,
-				nullptr,
-				NULL,
-				nullptr,
-				reinterpret_cast<LPUNKNOWN*>(&lpABRootContainer)));
+			auto lpABRootContainer =
+				mapi::CallOpenEntry<LPABCONT>(nullptr, lpAdrBook, nullptr, nullptr, nullptr, nullptr, NULL, nullptr);
 
 			if (lpABRootContainer)
 			{
 				// Get a table of all of the Address Books.
-				hRes = EC_MAPI(lpABRootContainer->GetHierarchyTable(CONVENIENT_DEPTH | fMapiUnicode, &lpTable));
+				EC_MAPI_S(lpABRootContainer->GetHierarchyTable(CONVENIENT_DEPTH | fMapiUnicode, &lpTable));
 				lpABRootContainer->Release();
 			}
 
@@ -255,7 +246,6 @@ namespace mapi
 			ULONG ulObjType = 0;
 			LPADRBOOK lpAdrBook = nullptr;
 			LPSRowSet lpABRow = nullptr;
-			LPMAPITABLE lpABContainerTable = nullptr;
 			LPADRLIST lpAdrList = nullptr;
 			LPABCONT lpABContainer = nullptr;
 			LPMAPITABLE pTable = nullptr;
@@ -294,6 +284,7 @@ namespace mapi
 
 			auto hRes = EC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAdrBook));
 
+			LPMAPITABLE lpABContainerTable = nullptr;
 			if (SUCCEEDED(hRes))
 			{
 				lpABContainerTable = GetABContainerTable(lpAdrBook);
@@ -320,8 +311,7 @@ namespace mapi
 							output::DebugPrintBinary(DBGGeneric, lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin);
 
 							if (lpABContainer) lpABContainer->Release();
-							lpABContainer = nullptr;
-							hRes = EC_H(mapi::CallOpenEntry(
+							lpABContainer = mapi::CallOpenEntry<LPABCONT>(
 								nullptr,
 								lpAdrBook,
 								nullptr,
@@ -330,8 +320,7 @@ namespace mapi
 								reinterpret_cast<ENTRYID*>(lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin.lpb),
 								nullptr,
 								NULL,
-								&ulObjType,
-								reinterpret_cast<LPUNKNOWN*>(&lpABContainer)));
+								&ulObjType);
 							if (!lpABContainer) continue;
 
 							output::DebugPrint(DBGGeneric, L"ManualResolve: Object opened as 0x%X\n", ulObjType);
@@ -549,7 +538,7 @@ namespace mapi
 				{
 					ULONG ulObjType = NULL;
 
-					hRes = EC_H(mapi::CallOpenEntry(
+					lpMailUser = mapi::CallOpenEntry<LPMAILUSER>(
 						nullptr,
 						lpAdrBook,
 						nullptr,
@@ -558,8 +547,7 @@ namespace mapi
 						reinterpret_cast<LPENTRYID>(lpEntryID->Value.bin.lpb),
 						nullptr,
 						MAPI_BEST_ACCESS,
-						&ulObjType,
-						reinterpret_cast<LPUNKNOWN*>(&lpMailUser)));
+						&ulObjType);
 					if (FAILED(hRes))
 					{
 						if (lpMailUser)

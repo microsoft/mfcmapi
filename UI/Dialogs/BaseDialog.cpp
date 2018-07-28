@@ -740,10 +740,8 @@ namespace dialog
 		}
 		else
 		{
-			LPUNKNOWN lpUnk = nullptr;
 			ULONG ulObjType = NULL;
-
-			EC_H_S(mapi::CallOpenEntry(
+			auto lpUnk = mapi::CallOpenEntry<LPUNKNOWN>(
 				MyEID.GetCheck(1) ? lpMDB : nullptr,
 				MyEID.GetCheck(2) ? lpAB : nullptr,
 				nullptr,
@@ -753,8 +751,7 @@ namespace dialog
 				nullptr,
 				(MyEID.GetCheck(4) ? MAPI_MODIFY : MAPI_BEST_ACCESS) | (MyEID.GetCheck(5) ? MAPI_NO_CACHE : 0) |
 					(MyEID.GetCheck(6) ? MAPI_CACHE_ONLY : 0),
-				&ulObjType,
-				&lpUnk));
+				&ulObjType);
 
 			if (lpUnk)
 			{

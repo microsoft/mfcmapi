@@ -1773,10 +1773,9 @@ namespace controls
 				if (!MyData.DisplayDialog()) return;
 
 				ULONG ulObjType = 0;
-				LPMAPIPROP lpSource = nullptr;
 				auto propSetGUID = guid::StringToGUID(MyData.GetStringW(0));
 
-				auto hRes = EC_H(mapi::CallOpenEntry(
+				auto lpSource = mapi::CallOpenEntry<LPMAPIPROP>(
 					NULL,
 					NULL,
 					cache::CGlobalCache::getInstance().GetSourceParentFolder(),
@@ -1784,25 +1783,25 @@ namespace controls
 					lpSourceMsgEID->lpbin,
 					NULL,
 					MAPI_BEST_ACCESS,
-					&ulObjType,
-					reinterpret_cast<LPUNKNOWN*>(&lpSource)));
-
-				if (hRes == S_OK && ulObjType == MAPI_MESSAGE && lpSource)
+					&ulObjType);
+				if (ulObjType == MAPI_MESSAGE && lpSource)
 				{
-					hRes = EC_H(mapi::CopyNamedProps(
+					auto hRes = EC_H(mapi::CopyNamedProps(
 						lpSource,
 						&propSetGUID,
 						MyData.GetCheck(1),
 						MyData.GetCheck(2),
 						m_lpPropBag->GetMAPIProp(),
 						m_lpHostDlg->m_hWnd));
-
 					if (SUCCEEDED(hRes))
 					{
 						hRes = EC_H(m_lpPropBag->Commit());
 					}
 
-					hRes = WC_H(RefreshMAPIPropList());
+					if (SUCCEEDED(hRes))
+					{
+						WC_H_S(RefreshMAPIPropList());
+					}
 
 					lpSource->Release();
 				}
