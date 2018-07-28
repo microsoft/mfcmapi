@@ -1140,8 +1140,6 @@ namespace controls
 		{
 			if (!m_lpMapiObjects || -1 == iItem) return S_OK;
 
-			auto hRes = S_OK;
-			LPMAPIPROP lpMAPIProp = nullptr;
 			output::DebugPrintEx(
 				DBGGeneric,
 				CLASS,
@@ -1161,12 +1159,13 @@ namespace controls
 			output::DebugPrintBinary(DBGGeneric, *lpEID);
 
 			// Find the highlighted item EID
+			LPMAPIPROP lpMAPIProp = nullptr;
 			switch (m_ulContainerType)
 			{
 			case MAPI_ABCONT:
 			{
 				const auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
-				hRes = WC_H(mapi::CallOpenEntry(
+				lpMAPIProp = mapi::CallOpenEntry<LPMAPIPROP>(
 					nullptr,
 					lpAB, // use AB
 					nullptr,
@@ -1174,8 +1173,7 @@ namespace controls
 					lpEID,
 					nullptr,
 					bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
-					nullptr,
-					reinterpret_cast<LPUNKNOWN*>(&lpMAPIProp)));
+					nullptr);
 			}
 
 			break;
@@ -1189,7 +1187,7 @@ namespace controls
 					lpInterface = &IID_IMessageRaw;
 				}
 
-				hRes = WC_H(mapi::CallOpenEntry(
+				lpMAPIProp = mapi::CallOpenEntry<LPMAPIPROP>(
 					lpMDB, // use MDB
 					nullptr,
 					nullptr,
@@ -1197,20 +1195,14 @@ namespace controls
 					lpEID,
 					lpInterface,
 					bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
-					nullptr,
-					reinterpret_cast<LPUNKNOWN*>(&lpMAPIProp)));
-				if (hRes == MAPI_E_INTERFACE_NOT_SUPPORTED &&
-					registry::RegKeys[registry::regkeyUSE_MESSAGERAW].ulCurDWORD)
-				{
-					error::ErrDialog(__FILE__, __LINE__, IDS_EDMESSAGERAWNOTSUPPORTED);
-				}
+					nullptr);
 			}
 
 			break;
 			default:
 			{
 				const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-				hRes = WC_H(mapi::CallOpenEntry(
+				lpMAPIProp = mapi::CallOpenEntry<LPMAPIPROP>(
 					nullptr,
 					nullptr,
 					nullptr,
@@ -1218,36 +1210,21 @@ namespace controls
 					lpEID,
 					nullptr,
 					bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
-					nullptr,
-					reinterpret_cast<LPUNKNOWN*>(&lpMAPIProp)));
+					nullptr);
 			}
 
 			break;
 			}
 
-			if (!lpMAPIProp && FAILED(hRes) && mfcmapiREQUEST_MODIFY == bModify && MAPI_E_NOT_FOUND != hRes)
+			if (!lpMAPIProp && mfcmapiREQUEST_MODIFY == bModify)
 			{
-				output::DebugPrint(DBGGeneric, L"\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n", hRes);
+				output::DebugPrint(DBGGeneric, L"\tOpenEntry failed. Will try again without MAPI_MODIFY\n");
 				// We got access denied when we passed MAPI_MODIFY
 				// Let's try again without it.
 				lpMAPIProp = DefaultOpenItemProp(iItem, mfcmapiDO_NOT_REQUEST_MODIFY);
 			}
 
-			if (hRes == MAPI_E_NOT_FOUND)
-			{
-				output::DebugPrint(
-					DBGGeneric,
-					L"\tDefaultOpenItemProp encountered an entry ID for an item that doesn't exist\n\tThis happens "
-					L"often when we're deleting items.\n");
-			}
-
-			output::DebugPrintEx(
-				DBGGeneric,
-				CLASS,
-				L"DefaultOpenItemProp",
-				L"returning *lppProp = %p and hRes = 0x%X\n",
-				lpMAPIProp,
-				hRes);
+			output::DebugPrintEx(DBGGeneric, CLASS, L"DefaultOpenItemProp", L"returning lpMAPIProp = %p\n", lpMAPIProp);
 
 			return lpMAPIProp;
 		}

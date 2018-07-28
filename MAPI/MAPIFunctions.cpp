@@ -32,7 +32,7 @@ namespace mapi
 	#undef _MAC
 	*/
 
-	_Check_return_ HRESULT CallOpenEntry(
+	LPUNKNOWN CallOpenEntry(
 		_In_opt_ LPMDB lpMDB,
 		_In_opt_ LPADRBOOK lpAB,
 		_In_opt_ LPMAPICONTAINER lpContainer,
@@ -41,16 +41,12 @@ namespace mapi
 		_In_opt_ LPENTRYID lpEntryID,
 		_In_opt_ LPCIID lpInterface,
 		ULONG ulFlags,
-		_Out_opt_ ULONG* ulObjTypeRet, // optional - can be NULL
-		_Deref_out_opt_ LPUNKNOWN* lppUnk) // required
+		_Out_opt_ ULONG* ulObjTypeRet) // optional - can be NULL
 	{
-		if (!lppUnk) return MAPI_E_INVALID_PARAMETER;
 		auto hRes = S_OK;
 		ULONG ulObjType = 0;
 		LPUNKNOWN lpUnk = nullptr;
 		ULONG ulNoCacheFlags = 0;
-
-		*lppUnk = nullptr;
 
 		if (registry::RegKeys[registry::regKeyMAPI_NO_CACHE].ulCurDWORD)
 		{
@@ -178,35 +174,11 @@ namespace mapi
 			auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 			output::DebugPrint(
 				DBGGeneric, L"OnOpenEntryID: Got object of type 0x%08X = %ws\n", ulObjType, szFlags.c_str());
-			*lppUnk = lpUnk;
 		}
 
 		if (ulObjTypeRet) *ulObjTypeRet = ulObjType;
-		return hRes;
-	}
 
-	_Check_return_ HRESULT CallOpenEntry(
-		_In_opt_ LPMDB lpMDB,
-		_In_opt_ LPADRBOOK lpAB,
-		_In_opt_ LPMAPICONTAINER lpContainer,
-		_In_opt_ LPMAPISESSION lpMAPISession,
-		_In_opt_ const SBinary* lpSBinary,
-		_In_opt_ LPCIID lpInterface,
-		ULONG ulFlags,
-		_Out_opt_ ULONG* ulObjTypeRet,
-		_Deref_out_opt_ LPUNKNOWN* lppUnk)
-	{
-		return WC_H(CallOpenEntry(
-			lpMDB,
-			lpAB,
-			lpContainer,
-			lpMAPISession,
-			lpSBinary ? lpSBinary->cb : 0,
-			reinterpret_cast<LPENTRYID>(lpSBinary ? lpSBinary->lpb : nullptr),
-			lpInterface,
-			ulFlags,
-			ulObjTypeRet,
-			lppUnk));
+		return lpUnk;
 	}
 
 	// Concatenate two property arrays without duplicates
@@ -930,23 +902,14 @@ namespace mapi
 
 		ULONG cbInboxEID = 0;
 		LPENTRYID lpInboxEID = nullptr;
-		auto hRes = EC_H(GetInbox(lpMDB, &cbInboxEID, &lpInboxEID));
+		EC_H_S(GetInbox(lpMDB, &cbInboxEID, &lpInboxEID));
 
 		LPMAPIFOLDER lpInbox = nullptr;
 		if (cbInboxEID && lpInboxEID)
 		{
 			// Get the Inbox...
-			hRes = WC_H(CallOpenEntry(
-				lpMDB,
-				nullptr,
-				nullptr,
-				nullptr,
-				cbInboxEID,
-				lpInboxEID,
-				nullptr,
-				MAPI_BEST_ACCESS,
-				nullptr,
-				reinterpret_cast<LPUNKNOWN*>(&lpInbox)));
+			lpInbox = CallOpenEntry<LPMAPIFOLDER>(
+				lpMDB, nullptr, nullptr, nullptr, cbInboxEID, lpInboxEID, nullptr, MAPI_BEST_ACCESS, nullptr);
 		}
 
 		MAPIFreeBuffer(lpInboxEID);
@@ -966,7 +929,7 @@ namespace mapi
 		EC_H_GETPROPS_S(lpChildFolder->GetProps(&tag, fMapiUnicode, &cProps, &lpProps));
 		if (lpProps && PT_ERROR != PROP_TYPE(lpProps[0].ulPropTag))
 		{
-			WC_H_S(CallOpenEntry(
+			lpParentFolder = CallOpenEntry<LPMAPIFOLDER>(
 				lpMDB,
 				nullptr,
 				nullptr,
@@ -975,8 +938,7 @@ namespace mapi
 				reinterpret_cast<LPENTRYID>(lpProps[0].Value.bin.lpb),
 				nullptr,
 				MAPI_BEST_ACCESS,
-				nullptr,
-				reinterpret_cast<LPUNKNOWN*>(lpParentFolder)));
+				nullptr);
 		}
 
 		MAPIFreeBuffer(lpProps);
@@ -1041,9 +1003,8 @@ namespace mapi
 
 		if (!lpProp)
 		{
-			LPMAPIFOLDER lpRootFolder = nullptr;
 			// Open root container.
-			hRes = EC_H(CallOpenEntry(
+			auto lpRootFolder = CallOpenEntry<LPMAPIFOLDER>(
 				lpMDB,
 				nullptr,
 				nullptr,
@@ -1051,8 +1012,7 @@ namespace mapi
 				nullptr, // open root container
 				nullptr,
 				MAPI_BEST_ACCESS,
-				nullptr,
-				reinterpret_cast<LPUNKNOWN*>(&lpRootFolder)));
+				nullptr);
 			if (lpRootFolder)
 			{
 				hRes =
@@ -1334,9 +1294,7 @@ namespace mapi
 				{
 					for (ULONG i = 0; i < pRows->cRows; i++)
 					{
-						LPMESSAGE lpMessage = nullptr;
-
-						hRes = WC_H(CallOpenEntry(
+						auto lpMessage = CallOpenEntry<LPMESSAGE>(
 							nullptr,
 							nullptr,
 							lpFolder,
@@ -1345,8 +1303,7 @@ namespace mapi
 							reinterpret_cast<LPENTRYID>(pRows->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
 							nullptr,
 							MAPI_BEST_ACCESS,
-							nullptr,
-							reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
+							nullptr);
 						if (lpMessage)
 						{
 							hRes = EC_H(ResendSingleMessage(lpFolder, lpMessage, hWnd));
@@ -1364,11 +1321,10 @@ namespace mapi
 
 	_Check_return_ HRESULT ResendSingleMessage(_In_ LPMAPIFOLDER lpFolder, _In_ LPSBinary MessageEID, _In_ HWND hWnd)
 	{
-		LPMESSAGE lpMessage = nullptr;
-
 		if (!lpFolder || !MessageEID) return MAPI_E_INVALID_PARAMETER;
 
-		auto hRes = EC_H(CallOpenEntry(
+		auto hRes = S_OK;
+		auto lpMessage = CallOpenEntry<LPMESSAGE>(
 			nullptr,
 			nullptr,
 			lpFolder,
@@ -1377,14 +1333,13 @@ namespace mapi
 			reinterpret_cast<LPENTRYID>(MessageEID->lpb),
 			nullptr,
 			MAPI_BEST_ACCESS,
-			nullptr,
-			reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
+			nullptr);
 		if (lpMessage)
 		{
 			hRes = EC_H(ResendSingleMessage(lpFolder, lpMessage, hWnd));
+			lpMessage->Release();
 		}
 
-		if (lpMessage) lpMessage->Release();
 		return hRes;
 	}
 
@@ -1654,9 +1609,7 @@ namespace mapi
 						for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
 						{
 							if (lpMessage) lpMessage->Release();
-							lpMessage = nullptr;
-
-							hRes = WC_H(CallOpenEntry(
+							lpMessage = CallOpenEntry<LPMESSAGE>(
 								lpMDB,
 								nullptr,
 								nullptr,
@@ -1666,21 +1619,17 @@ namespace mapi
 									pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin.lpb),
 								nullptr,
 								MAPI_BEST_ACCESS,
-								nullptr,
-								reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
-							if (FAILED(hRes))
+								nullptr);
+							if (lpMessage)
 							{
-								hResOverall = hRes;
-								continue;
-							}
 
-							hRes = WC_H(DeleteProperty(lpMessage, PR_NT_SECURITY_DESCRIPTOR));
-							if (FAILED(hRes))
-							{
-								hResOverall = hRes;
-								continue;
+								hRes = WC_H(DeleteProperty(lpMessage, PR_NT_SECURITY_DESCRIPTOR));
+								if (FAILED(hRes))
+								{
+									hResOverall = hRes;
+									continue;
+								}
 							}
-
 							iItemCount++;
 						}
 					}
@@ -2305,23 +2254,8 @@ namespace mapi
 		auto hRes = WC_H(GetDefaultFolderEID(ulFolder, lpMDB, &cb, &lpeid));
 		if (SUCCEEDED(hRes))
 		{
-			hRes = WC_H(CallOpenEntry(
-				lpMDB,
-				nullptr,
-				nullptr,
-				nullptr,
-				cb,
-				lpeid,
-				nullptr,
-				MAPI_BEST_ACCESS,
-				nullptr,
-				reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
-
-			if (FAILED(hRes) && lpFolder)
-			{
-				lpFolder->Release();
-				lpFolder = nullptr;
-			}
+			lpFolder = CallOpenEntry<LPMAPIFOLDER>(
+				lpMDB, nullptr, nullptr, nullptr, cb, lpeid, nullptr, MAPI_BEST_ACCESS, nullptr);
 		}
 
 		MAPIFreeBuffer(lpeid);

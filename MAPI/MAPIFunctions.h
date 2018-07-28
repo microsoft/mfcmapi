@@ -11,7 +11,8 @@ namespace mapi
 
 		auto iid = IID();
 		// clang-format off
-		if (std::is_same_v<T, LPMAPIFOLDER>) iid = IID_IMAPIFolder;
+		if (std::is_same_v<T, LPUNKNOWN>) iid = IID_IUnknown;
+		else if (std::is_same_v<T, LPMAPIFOLDER>) iid = IID_IMAPIFolder;
 		else if (std::is_same_v<T, LPMAPICONTAINER>) iid = IID_IMAPIContainer;
 		else if (std::is_same_v<T, LPMAILUSER>) iid = IID_IMailUser;
 		else if (std::is_same_v<T, LPABCONT>) iid = IID_IABContainer;
@@ -45,7 +46,7 @@ namespace mapi
 		return ret;
 	}
 
-	_Check_return_ HRESULT CallOpenEntry(
+	LPUNKNOWN CallOpenEntry(
 		_In_opt_ LPMDB lpMDB,
 		_In_opt_ LPADRBOOK lpAB,
 		_In_opt_ LPMAPICONTAINER lpContainer,
@@ -54,9 +55,29 @@ namespace mapi
 		_In_opt_ LPENTRYID lpEntryID,
 		_In_opt_ LPCIID lpInterface,
 		ULONG ulFlags,
-		_Out_opt_ ULONG* ulObjTypeRet,
-		_Deref_out_opt_ LPUNKNOWN* lppUnk);
-	_Check_return_ HRESULT CallOpenEntry(
+		_Out_opt_ ULONG* ulObjTypeRet); // optional - can be NULL
+
+	template <class T>
+	T CallOpenEntry(
+		_In_opt_ LPMDB lpMDB,
+		_In_opt_ LPADRBOOK lpAB,
+		_In_opt_ LPMAPICONTAINER lpContainer,
+		_In_opt_ LPMAPISESSION lpMAPISession,
+		ULONG cbEntryID,
+		_In_opt_ LPENTRYID lpEntryID,
+		_In_opt_ LPCIID lpInterface,
+		ULONG ulFlags,
+		_Out_opt_ ULONG* ulObjTypeRet) // optional - can be NULL
+	{
+		auto lpUnk = CallOpenEntry(
+			lpMDB, lpAB, lpContainer, lpMAPISession, cbEntryID, lpEntryID, lpInterface, ulFlags, ulObjTypeRet);
+		auto retVal = mapi::safe_cast<T>(lpUnk);
+		if (lpUnk) lpUnk->Release();
+		return retVal;
+	}
+
+	template <class T>
+	T CallOpenEntry(
 		_In_opt_ LPMDB lpMDB,
 		_In_opt_ LPADRBOOK lpAB,
 		_In_opt_ LPMAPICONTAINER lpContainer,
@@ -64,8 +85,20 @@ namespace mapi
 		_In_opt_ const SBinary* lpSBinary,
 		_In_opt_ LPCIID lpInterface,
 		ULONG ulFlags,
-		_Out_opt_ ULONG* ulObjTypeRet,
-		_Deref_out_opt_ LPUNKNOWN* lppUnk);
+		_Out_opt_ ULONG* ulObjTypeRet) // optional - can be NULL
+	{
+		return CallOpenEntry<T>(
+			lpMDB,
+			lpAB,
+			lpContainer,
+			lpMAPISession,
+			lpSBinary ? lpSBinary->cb : 0,
+			reinterpret_cast<LPENTRYID>(lpSBinary ? lpSBinary->lpb : nullptr),
+			lpInterface,
+			ulFlags,
+			ulObjTypeRet);
+	}
+
 	_Check_return_ LPSPropTagArray
 	ConcatSPropTagArrays(_In_ LPSPropTagArray lpArray1, _In_opt_ LPSPropTagArray lpArray2);
 	_Check_return_ HRESULT CopyPropertyAsStream(

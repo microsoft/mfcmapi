@@ -698,7 +698,7 @@ namespace mapi
 					const auto lpEID = lpData->Contents()->m_lpEntryID;
 					if (lpEID)
 					{
-						hRes = EC_H(mapi::CallOpenEntry(
+						*ppMessage = mapi::CallOpenEntry<LPMESSAGE>(
 							m_lpMDB,
 							nullptr,
 							nullptr,
@@ -707,8 +707,7 @@ namespace mapi
 							reinterpret_cast<LPENTRYID>(lpEID->lpb),
 							nullptr,
 							MAPI_BEST_ACCESS,
-							nullptr,
-							reinterpret_cast<LPUNKNOWN*>(ppMessage)));
+							nullptr);
 
 						if (SUCCEEDED(hRes))
 						{

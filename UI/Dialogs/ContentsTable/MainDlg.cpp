@@ -299,19 +299,8 @@ namespace dialog
 
 		if (lpEID)
 		{
-			LPABCONT lpDefaultDir = nullptr;
-			EC_H_S(mapi::CallOpenEntry(
-				nullptr,
-				lpAddrBook,
-				nullptr,
-				nullptr,
-				cbEID,
-				lpEID,
-				nullptr,
-				MAPI_MODIFY,
-				&ulObjType,
-				reinterpret_cast<LPUNKNOWN*>(&lpDefaultDir)));
-
+			auto lpDefaultDir = mapi::CallOpenEntry<LPABCONT>(
+				nullptr, lpAddrBook, nullptr, nullptr, cbEID, lpEID, nullptr, MAPI_MODIFY, &ulObjType);
 			if (lpDefaultDir)
 			{
 				EC_H_S(DisplayObject(lpDefaultDir, ulObjType, otDefault, this));
@@ -339,19 +328,8 @@ namespace dialog
 
 		if (lpEID)
 		{
-			LPABCONT lpPAB = nullptr;
-			EC_H_S(mapi::CallOpenEntry(
-				nullptr,
-				lpAddrBook,
-				nullptr,
-				nullptr,
-				cbEID,
-				lpEID,
-				nullptr,
-				MAPI_MODIFY,
-				&ulObjType,
-				reinterpret_cast<LPUNKNOWN*>(&lpPAB)));
-
+			auto lpPAB = mapi::CallOpenEntry<LPABCONT>(
+				nullptr, lpAddrBook, nullptr, nullptr, cbEID, lpEID, nullptr, MAPI_MODIFY, &ulObjType);
 			if (lpPAB)
 			{
 				EC_H_S(DisplayObject(lpPAB, ulObjType, otDefault, this));
@@ -428,23 +406,13 @@ namespace dialog
 		{
 			ULONG cbEntryID = 0;
 			LPENTRYID lpEntryID = nullptr;
-			LPMAPIPROP lpIdentity = nullptr;
 			LPSPropValue lpMailboxName = nullptr;
 
 			EC_MAPI_S(lpMAPISession->QueryIdentity(&cbEntryID, &lpEntryID));
 			if (lpEntryID)
 			{
-				EC_H_S(mapi::CallOpenEntry(
-					nullptr,
-					nullptr,
-					nullptr,
-					lpMAPISession,
-					cbEntryID,
-					lpEntryID,
-					nullptr,
-					NULL,
-					nullptr,
-					reinterpret_cast<LPUNKNOWN*>(&lpIdentity)));
+				auto lpIdentity = mapi::CallOpenEntry<LPMAPIPROP>(
+					nullptr, nullptr, nullptr, lpMAPISession, cbEntryID, lpEntryID, nullptr, NULL, nullptr);
 				if (lpIdentity)
 				{
 					EC_MAPI_S(HrGetOneProp(lpIdentity, PR_EMAIL_ADDRESS_A, &lpMailboxName));
@@ -1146,7 +1114,6 @@ namespace dialog
 	{
 		ULONG cbEntryID = 0;
 		LPENTRYID lpEntryID = nullptr;
-		LPMAPIPROP lpIdentity = nullptr;
 
 		if (!m_lpMapiObjects || !m_lpPropDisplay) return;
 
@@ -1179,17 +1146,8 @@ namespace dialog
 				}
 				else
 				{
-					EC_H_S(mapi::CallOpenEntry(
-						nullptr,
-						nullptr,
-						nullptr,
-						lpMAPISession,
-						cbEntryID,
-						lpEntryID,
-						nullptr,
-						NULL,
-						nullptr,
-						reinterpret_cast<LPUNKNOWN*>(&lpIdentity)));
+					auto lpIdentity = mapi::CallOpenEntry<LPMAPIPROP>(
+						nullptr, nullptr, nullptr, lpMAPISession, cbEntryID, lpEntryID, nullptr, NULL, nullptr);
 					if (lpIdentity)
 					{
 						EC_H_S(m_lpPropDisplay->SetDataSource(lpIdentity, nullptr, true));
@@ -1480,7 +1438,7 @@ namespace dialog
 				this);
 			if (!xmlfile.empty())
 			{
-				auto  lpMessage = file::LoadMSGToMessage(msgfile);
+				auto lpMessage = file::LoadMSGToMessage(msgfile);
 				if (lpMessage)
 				{
 					mapiprocessor::CDumpStore MyDumpStore;

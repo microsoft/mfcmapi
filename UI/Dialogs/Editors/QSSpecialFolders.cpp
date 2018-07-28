@@ -134,19 +134,9 @@ namespace dialog
 						SetListString(ulListNum, iRow, iCol, szProp);
 						iCol++;
 
-						LPMAPIFOLDER lpFolder = nullptr;
-						hRes = WC_H(mapi::CallOpenEntry(
-							m_lpMDB,
-							NULL,
-							NULL,
-							NULL,
-							cb,
-							lpeid,
-							NULL,
-							NULL,
-							NULL,
-							reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
-						if (SUCCEEDED(hRes) && lpFolder)
+						auto lpFolder =
+							mapi::CallOpenEntry<LPMAPIFOLDER>(m_lpMDB, NULL, NULL, NULL, cb, lpeid, NULL, NULL, NULL);
+						if (lpFolder)
 						{
 							ULONG ulProps = 0;
 							LPSPropValue lpProps = nullptr;

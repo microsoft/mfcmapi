@@ -46,9 +46,8 @@ namespace dialog
 
 				if (!GetRootContainer())
 				{
-					auto container = LPUNKNOWN(nullptr);
 					// Open root container.
-					EC_H_S(mapi::CallOpenEntry(
+					auto container = mapi::CallOpenEntry<LPUNKNOWN>(
 						m_lpMDB,
 						NULL,
 						NULL,
@@ -56,8 +55,7 @@ namespace dialog
 						NULL, // open root container
 						NULL,
 						MAPI_BEST_ACCESS,
-						NULL,
-						&container));
+						NULL);
 
 					SetRootContainer(container);
 					container->Release();
@@ -632,8 +630,7 @@ namespace dialog
 		{
 			if (m_lpMDB)
 			{
-				LPMAPIFOLDER lpMAPIFolder = nullptr;
-				WC_H_S(mapi::CallOpenEntry(
+				auto lpMAPIFolder = mapi::CallOpenEntry<LPMAPIFOLDER>(
 					m_lpMDB,
 					NULL,
 					NULL,
@@ -642,8 +639,7 @@ namespace dialog
 					reinterpret_cast<LPENTRYID>(lpItemEID->lpb),
 					NULL,
 					MAPI_BEST_ACCESS | SHOW_SOFT_DELETES | MAPI_NO_CACHE,
-					NULL,
-					reinterpret_cast<LPUNKNOWN*>(&lpMAPIFolder)));
+					NULL);
 				if (lpMAPIFolder)
 				{
 					// call the dialog
