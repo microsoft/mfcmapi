@@ -974,11 +974,11 @@ namespace controls
 		{
 			if (!m_lpPropBag) return;
 
+			auto hRes = S_OK;
 			// Exchange can return MAPI_E_NOT_ENOUGH_MEMORY when I call this - give it a try - PSTs support it
 			output::DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Calling GetIDsFromNames with a NULL\n");
-			LPSPropTagArray lptag = nullptr;
-			auto hRes = WC_H(cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), NULL, NULL, NULL, &lptag));
-			if (hRes == S_OK && lptag && lptag->cValues)
+			auto lptag = cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), NULL, NULL, NULL);
+			if (lptag && lptag->cValues)
 			{
 				// Now we have an array of tags - add them in:
 				AddPropsToExtraProps(lptag, false);
