@@ -7,6 +7,7 @@ namespace smartview
 	{
 		m_bParsed = false;
 		m_bEnableJunk = true;
+		dataOffset = 0;
 	}
 
 	void SmartViewParser::Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { m_Parser.Init(cbBin, lpBin); }

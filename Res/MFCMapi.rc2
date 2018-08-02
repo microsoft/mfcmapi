@@ -1935,20 +1935,6 @@ IDS_TASKASSIGNERNAME "\r\n\tszDisplayName (ANSI) = %1!hs!\
 
 IDS_TASKASSIGNERJUNKDATA "\r\n\tUnparsed Data Size = 0x%1!08X!\r\n"
 
-IDS_GLOBALOBJECTIDHEADER "Global Object ID: \
-\r\nByte Array ID = "
-
-IDS_GLOBALOBJECTSPLUS "s_rgbSPlus"
-
-IDS_GLOBALOBJECTIDDATA1 "\r\nYear: 0x%1!04X! = %1!d!\
-\r\nMonth: 0x%2!02X! = %2!d! = %3!ws!\
-\r\nDay: 0x%4!02X! = %4!d!\
-\r\nCreation Time = 0x%5!08X!:0x%6!08X! = %7!ws!\
-\r\nX: 0x%8!08X!:0x%9!08X!\
-\r\nSize: 0x%10!02X! = %10!d!"
-
-IDS_GLOBALOBJECTIDDATA2 "\r\nData = "
-
 IDS_ONEOFFENTRYIDFOOTERUNICODE "\r\n\
 dwBitmask: 0x%1!08X! = %2!ws!\r\n\
 szDisplayName = %3!ws!\r\n\

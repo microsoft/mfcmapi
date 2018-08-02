@@ -5,30 +5,6 @@
 
 namespace smartview
 {
-	GlobalObjectId::GlobalObjectId()
-	{
-		m_Year = 0;
-		m_Month = 0;
-		m_Day = 0;
-		m_CreationTime = {0};
-		m_X = {0};
-		m_dwSize = 0;
-	}
-
-	void GlobalObjectId::Parse()
-	{
-		m_Id = m_Parser.GetBYTES(16);
-		const auto b1 = m_Parser.Get<BYTE>();
-		const auto b2 = m_Parser.Get<BYTE>();
-		m_Year = static_cast<WORD>(b1 << 8 | b2);
-		m_Month = m_Parser.Get<BYTE>();
-		m_Day = m_Parser.Get<BYTE>();
-		m_CreationTime = m_Parser.Get<FILETIME>();
-		m_X = m_Parser.Get<LARGE_INTEGER>();
-		m_dwSize = m_Parser.Get<DWORD>();
-		m_lpData = m_Parser.GetBYTES(m_dwSize, _MaxBytes);
-	}
-
 	// clang-format off
 	static const BYTE s_rgbSPlus[] =
 	{
@@ -39,45 +15,58 @@ namespace smartview
 	};
 	// clang-format on
 
-	_Check_return_ std::wstring GlobalObjectId::ToStringInternal()
+	void GlobalObjectId::Parse()
 	{
-		auto szGlobalObjectId = strings::formatmessage(IDS_GLOBALOBJECTIDHEADER);
+		addHeader(L"Global Object ID:\r\n");
+		addHeader(L"Byte Array ID = ");
 
-		szGlobalObjectId += strings::BinToHexString(m_Id, true);
-		szGlobalObjectId += L" = ";
-		if (equal(m_Id.begin(), m_Id.end(), s_rgbSPlus))
+		auto id = m_Parser.GetBYTES(16);
+		addBytes(id);
+
+		if (equal(id.begin(), id.end(), s_rgbSPlus))
 		{
-			szGlobalObjectId += strings::formatmessage(IDS_GLOBALOBJECTSPLUS);
+			addHeader(L" = s_rgbSPlus\r\n");
 		}
 		else
 		{
-			szGlobalObjectId += strings::formatmessage(IDS_UNKNOWNGUID);
+			addHeader(L" = Unknown GUID\r\n");
 		}
 
-		auto szFlags = interpretprop::InterpretFlags(flagGlobalObjectIdMonth, m_Month);
+		const auto b1 = m_Parser.Get<BYTE>();
+		const auto b2 = m_Parser.Get<BYTE>();
+		const auto year = static_cast<WORD>(b1 << 8 | b2);
+		addData(2 * sizeof BYTE, strings::formatmessage(L"Year: 0x%1!04X! = %1!d!\r\n", year));
 
-		std::wstring PropString;
-		std::wstring AltPropString;
-		strings::FileTimeToString(m_CreationTime, PropString, AltPropString);
-		szGlobalObjectId += strings::formatmessage(
-			IDS_GLOBALOBJECTIDDATA1,
-			m_Year,
-			m_Month,
-			szFlags.c_str(),
-			m_Day,
-			m_CreationTime.dwHighDateTime,
-			m_CreationTime.dwLowDateTime,
-			PropString.c_str(),
-			m_X.HighPart,
-			m_X.LowPart,
-			m_dwSize);
+		const auto month = m_Parser.Get<BYTE>();
+		const auto szFlags = interpretprop::InterpretFlags(flagGlobalObjectIdMonth, month);
+		addData(sizeof BYTE, strings::formatmessage(L"Month: 0x%1!02X! = %1!d! = %2!ws!\r\n", month, szFlags.c_str()));
 
-		if (m_lpData.size())
+		const auto day = m_Parser.Get<BYTE>();
+		addData(sizeof BYTE, strings::formatmessage(L"Day: 0x%1!02X! = %1!d!\r\n", day));
+
+		const auto creationTime = m_Parser.Get<FILETIME>();
+		std::wstring propString;
+		std::wstring altPropString;
+		strings::FileTimeToString(creationTime, propString, altPropString);
+		addData(
+			sizeof FILETIME,
+			strings::formatmessage(
+				L"Creation Time = 0x%1!08X!:0x%2!08X! = %3!ws!\r\n",
+				creationTime.dwHighDateTime,
+				creationTime.dwLowDateTime,
+				propString.c_str()));
+
+		const auto x = m_Parser.Get<LARGE_INTEGER>();
+		addData(sizeof LARGE_INTEGER, strings::formatmessage(L"X: 0x%1!08X!:0x%2!08X!\r\n", x.HighPart, x.LowPart));
+
+		const auto dwSize = m_Parser.Get<DWORD>();
+		addData(sizeof DWORD, strings::formatmessage(L"Size: 0x%1!02X! = %1!d!\r\n", dwSize));
+
+		const auto lpData = m_Parser.GetBYTES(dwSize, _MaxBytes);
+		if (lpData.size())
 		{
-			szGlobalObjectId += strings::formatmessage(IDS_GLOBALOBJECTIDDATA2);
-			szGlobalObjectId += strings::BinToHexString(m_lpData, true);
+			addHeader(L"Data = ");
+			addBytes(lpData);
 		}
-
-		return szGlobalObjectId;
 	}
 }
