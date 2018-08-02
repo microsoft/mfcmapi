@@ -192,11 +192,7 @@ namespace dialog
 			if (NamedID.lpguid && (MNID_ID == NamedID.ulKind && NamedID.Kind.lID ||
 								   MNID_STRING == NamedID.ulKind && NamedID.Kind.lpwstrName))
 			{
-				LPSPropTagArray lpNamedPropTags = nullptr;
-
-				WC_H_GETPROPS_S(
-					cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0, &lpNamedPropTags));
-
+				auto lpNamedPropTags = cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0);
 				if (lpNamedPropTags)
 				{
 					m_ulPropTag = CHANGE_PROP_TYPE(lpNamedPropTags->aulPropTag[0], ulPropType);

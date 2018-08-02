@@ -430,22 +430,20 @@ namespace cache
 		return hRes;
 	}
 
-	_Check_return_ HRESULT CacheGetIDsFromNames(
+	_Check_return_ LPSPropTagArray CacheGetIDsFromNames(
 		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG cbSig,
 		_In_count_(cbSig) LPBYTE lpSig,
 		ULONG cPropNames,
 		_In_count_(cPropNames) LPMAPINAMEID* lppPropNames,
-		ULONG ulFlags,
-		_Out_opt_cap_(cPropNames) LPSPropTagArray* lppPropTags)
+		ULONG ulFlags)
 	{
-		if (!lpMAPIProp || !cPropNames || !*lppPropNames || !lppPropTags) return MAPI_E_INVALID_PARAMETER;
+		if (!lpMAPIProp || !cPropNames || !*lppPropNames) return nullptr;
 
 		// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 		// If we reach the end of the cache and don't have everything, we set up to make a GetIDsFromNames call.
 
 		// First, allocate our results using MAPI
-		auto hRes = S_OK;
 		auto lpPropTags = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(cPropNames));
 		if (lpPropTags)
 		{
@@ -497,9 +495,9 @@ namespace cache
 					const ULONG ulUncachedTags = 0;
 					LPSPropTagArray lpUncachedTags = nullptr;
 
-					hRes = EC_H_GETPROPS(
+					EC_H_GETPROPS_S(
 						lpMAPIProp->GetIDsFromNames(ulMisses, lppUncachedPropNames, ulFlags, &lpUncachedTags));
-					if (SUCCEEDED(hRes) && lpUncachedTags && lpUncachedTags->cValues == ulMisses)
+					if (lpUncachedTags && lpUncachedTags->cValues == ulMisses)
 					{
 						// Cache the results
 						AddMapping(cbSig, lpSig, ulUncachedTags, lppUncachedPropNames, lpUncachedTags);
@@ -532,62 +530,58 @@ namespace cache
 				}
 
 				MAPIFreeBuffer(lppUncachedPropNames);
-
-				if (ulMisses != 0) hRes = MAPI_W_ERRORS_RETURNED;
 			}
-
-			*lppPropTags = lpPropTags;
 		}
 
-		return hRes;
+		return lpPropTags;
 	}
 
-	_Check_return_ HRESULT GetIDsFromNames(
+	_Check_return_ LPSPropTagArray GetIDsFromNames(
 		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG cPropNames,
 		_In_opt_count_(cPropNames) LPMAPINAMEID* lppPropNames,
-		ULONG ulFlags,
-		_Out_ _Deref_post_cap_(cPropNames) LPSPropTagArray* lppPropTags)
+		ULONG ulFlags)
 	{
-		if (!lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
+		if (!lpMAPIProp) return nullptr;
 
+		auto propTags = LPSPropTagArray{};
 		// Check if we're bypassing the cache:
 		if (!fCacheNamedProps() ||
 			// If no names were passed, we have to bypass the cache
 			// Should we cache results?
 			!cPropNames || !lppPropNames || !*lppPropNames)
 		{
-			return lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, lppPropTags);
+			WC_H_GETPROPS(lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, &propTags));
+			return propTags;
 		}
 
 		LPSPropValue lpProp = nullptr;
 
-		auto hRes = WC_MAPI(HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp));
+		WC_MAPI_S(HrGetOneProp(lpMAPIProp, PR_MAPPING_SIGNATURE, &lpProp));
 
-		if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
+		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
-			hRes = WC_H_GETPROPS(CacheGetIDsFromNames(
+			propTags = CacheGetIDsFromNames(
 				lpMAPIProp,
 				lpProp->Value.bin.cb,
 				lpProp->Value.bin.lpb,
 				cPropNames,
 				lppPropNames,
-				ulFlags,
-				lppPropTags));
+				ulFlags);
 		}
 		else
 		{
-			hRes = WC_H_GETPROPS(lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, lppPropTags));
+			WC_H_GETPROPS_S(lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, &propTags));
 			// Cache the results
-			if (SUCCEEDED(hRes))
+			if (propTags)
 			{
-				AddMappingWithoutSignature(cPropNames, lppPropNames, *lppPropTags);
+				AddMappingWithoutSignature(cPropNames, lppPropNames, propTags);
 			}
 		}
 
 		MAPIFreeBuffer(lpProp);
 
-		return hRes;
+		return propTags;
 	}
 
 	// TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant

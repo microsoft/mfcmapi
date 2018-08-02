@@ -56,12 +56,11 @@ namespace cache
 		ULONG ulFlags,
 		_Out_ ULONG* lpcPropNames,
 		_Out_ _Deref_post_cap_(*lpcPropNames) LPMAPINAMEID** lpppPropNames);
-	_Check_return_ HRESULT GetIDsFromNames(
+	_Check_return_ LPSPropTagArray GetIDsFromNames(
 		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG cPropNames,
 		_In_opt_count_(cPropNames) LPMAPINAMEID* lppPropNames,
-		ULONG ulFlags,
-		_Out_ _Deref_post_cap_(cPropNames) LPSPropTagArray* lppPropTags);
+		ULONG ulFlags);
 
 	_Check_return_ inline bool fCacheNamedProps()
 	{
