@@ -243,24 +243,21 @@ namespace mapi
 			return serverName;
 		}
 
-		_Check_return_ HRESULT CreateStoreEntryID(
+		_Check_return_ SBinary CreateStoreEntryID(
 			_In_ LPMDB lpMDB, // open message store
 			const std::string& lpszMsgStoreDN, // desired message store DN
 			const std::string& lpszMailboxDN, // desired mailbox DN or NULL
-			ULONG ulFlags, // desired flags for CreateStoreEntryID
-			_Out_opt_ ULONG* lpcbEntryID,
-			_Deref_out_opt_ LPENTRYID* lppEntryID)
+			ULONG ulFlags) // desired flags for CreateStoreEntryID
 		{
-			auto hRes = S_OK;
-
 			if (!lpMDB || lpszMsgStoreDN.empty() || !StoreSupportsManageStore(lpMDB))
 			{
 				if (!lpMDB) output::DebugPrint(DBGGeneric, L"CreateStoreEntryID: MDB was NULL\n");
 				if (lpszMsgStoreDN.empty())
 					output::DebugPrint(DBGGeneric, L"CreateStoreEntryID: lpszMsgStoreDN was missing\n");
-				return MAPI_E_INVALID_PARAMETER;
+				return {};
 			}
 
+			auto eid = SBinary{};
 			auto lpXManageStore = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpXManageStore)
 			{
@@ -271,38 +268,35 @@ namespace mapi
 					lpszMailboxDN.c_str(),
 					ulFlags);
 
-				hRes = EC_MAPI(lpXManageStore->CreateStoreEntryID(
+				EC_MAPI_S(lpXManageStore->CreateStoreEntryID(
 					LPSTR(lpszMsgStoreDN.c_str()),
 					lpszMailboxDN.empty() ? nullptr : LPSTR(lpszMailboxDN.c_str()),
 					ulFlags,
-					lpcbEntryID,
-					lppEntryID));
+					&eid.cb,
+					reinterpret_cast<LPENTRYID*>(&eid.lpb)));
 
 				lpXManageStore->Release();
 			}
 
-			return hRes;
+			return eid;
 		}
 
-		_Check_return_ HRESULT CreateStoreEntryID2(
+		_Check_return_ SBinary CreateStoreEntryID2(
 			_In_ LPMDB lpMDB, // open message store
 			const std::string& lpszMsgStoreDN, // desired message store DN
 			const std::string& lpszMailboxDN, // desired mailbox DN or NULL
 			const std::wstring& smtpAddress,
-			ULONG ulFlags, // desired flags for CreateStoreEntryID
-			_Out_opt_ ULONG* lpcbEntryID,
-			_Deref_out_opt_ LPENTRYID* lppEntryID)
+			ULONG ulFlags) // desired flags for CreateStoreEntryID
 		{
-			auto hRes = S_OK;
-
 			if (!lpMDB || lpszMsgStoreDN.empty() || !StoreSupportsManageStoreEx(lpMDB))
 			{
 				if (!lpMDB) output::DebugPrint(DBGGeneric, L"CreateStoreEntryID2: MDB was NULL\n");
 				if (lpszMsgStoreDN.empty())
 					output::DebugPrint(DBGGeneric, L"CreateStoreEntryID2: lpszMsgStoreDN was missing\n");
-				return MAPI_E_INVALID_PARAMETER;
+				return {};
 			}
 
+			auto eid = SBinary{};
 			auto lpXManageStoreEx = mapi::safe_cast<LPEXCHANGEMANAGESTOREEX>(lpMDB);
 			if (lpXManageStoreEx)
 			{
@@ -327,31 +321,27 @@ namespace mapi
 				sProps[3].ulPropTag = PR_PROFILE_USER_SMTP_EMAIL_ADDRESS_W;
 				sProps[3].Value.lpszW = smtpAddress.empty() ? nullptr : const_cast<LPWSTR>(smtpAddress.c_str());
 
-				hRes = EC_MAPI(lpXManageStoreEx->CreateStoreEntryID2(
+				EC_MAPI_S(lpXManageStoreEx->CreateStoreEntryID2(
 					smtpAddress.empty() ? _countof(sProps) - 1 : _countof(sProps),
 					reinterpret_cast<LPSPropValue>(&sProps),
 					ulFlags,
-					lpcbEntryID,
-					lppEntryID));
+					&eid.cb,
+					reinterpret_cast<LPENTRYID*>(&eid.lpb)));
 
 				lpXManageStoreEx->Release();
 			}
 
-			return hRes;
+			return eid;
 		}
 
-		_Check_return_ HRESULT CreateStoreEntryID(
+		_Check_return_ SBinary CreateStoreEntryID(
 			_In_ LPMDB lpMDB, // open message store
 			const std::string& lpszMsgStoreDN, // desired message store DN
 			const std::string& lpszMailboxDN, // desired mailbox DN or NULL
 			const std::wstring& smtpAddress,
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
-			bool bForceServer, // Use CreateStoreEntryID2
-			_Out_opt_ ULONG* lpcbEntryID,
-			_Deref_out_opt_ LPENTRYID* lppEntryID)
+			bool bForceServer) // Use CreateStoreEntryID2
 		{
-			auto hRes = S_OK;
-
 			// Use an empty MailboxDN to open the public store
 			if (lpszMailboxDN.empty())
 			{
@@ -360,16 +350,12 @@ namespace mapi
 
 			if (!bForceServer)
 			{
-				hRes =
-					EC_MAPI(CreateStoreEntryID(lpMDB, lpszMsgStoreDN, lpszMailboxDN, ulFlags, lpcbEntryID, lppEntryID));
+				return CreateStoreEntryID(lpMDB, lpszMsgStoreDN, lpszMailboxDN, ulFlags);
 			}
 			else
 			{
-				hRes = EC_MAPI(CreateStoreEntryID2(
-					lpMDB, lpszMsgStoreDN, lpszMailboxDN, smtpAddress, ulFlags, lpcbEntryID, lppEntryID));
+				return CreateStoreEntryID2(lpMDB, lpszMsgStoreDN, lpszMailboxDN, smtpAddress, ulFlags);
 			}
-
-			return hRes;
 		}
 
 		// Stolen from MBLogon.c in the EDK to avoid compiling and linking in the entire beast
@@ -403,37 +389,33 @@ namespace mapi
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
 			bool bForceServer) // Use CreateStoreEntryID2
 		{
-			SBinary sbEID = {0};
-
 			if (!lpMAPISession)
 			{
 				output::DebugPrint(DBGGeneric, L"MailboxLogon: Session was NULL\n");
 				return nullptr;
 			}
 
-			auto hRes = WC_H(CreateStoreEntryID(
+			auto eid = CreateStoreEntryID(
 				lpMDB,
 				lpszMsgStoreDN,
 				lpszMailboxDN,
 				smtpAddress,
 				ulFlags,
-				bForceServer,
-				&sbEID.cb,
-				reinterpret_cast<LPENTRYID*>(&sbEID.lpb)));
+				bForceServer);
 
 			LPMDB lpMailboxMDB = nullptr;
-			if (SUCCEEDED(hRes))
+			if (eid.cb && eid.lpb)
 			{
 				lpMailboxMDB = CallOpenMsgStore(
 					lpMAPISession,
 					NULL,
-					&sbEID,
+					&eid,
 					MDB_NO_DIALOG | MDB_NO_MAIL | // spooler not notified of our presence
 						MDB_TEMPORARY | // message store not added to MAPI profile
 						MAPI_BEST_ACCESS); // normally WRITE, but allow access to RO store
 			}
 
-			MAPIFreeBuffer(sbEID.lpb);
+			MAPIFreeBuffer(eid.lpb);
 			return lpMailboxMDB;
 		}
 

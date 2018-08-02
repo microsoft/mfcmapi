@@ -1157,9 +1157,9 @@ namespace mapi
 		if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
 		output::DebugPrint(DBGNamedProp, L"RemoveOneOff - removing one off named properties.\n");
 
+		auto hRes = S_OK;
 		MAPINAMEID rgnmid[ulNumOneOffIDs];
 		LPMAPINAMEID rgpnmid[ulNumOneOffIDs];
-		LPSPropTagArray lpTags = nullptr;
 
 		for (ULONG i = 0; i < ulNumOneOffIDs; i++)
 		{
@@ -1169,7 +1169,7 @@ namespace mapi
 			rgpnmid[i] = &rgnmid[i];
 		}
 
-		auto hRes = EC_H(cache::GetIDsFromNames(lpMessage, ulNumOneOffIDs, rgpnmid, 0, &lpTags));
+		auto lpTags = cache::GetIDsFromNames(lpMessage, ulNumOneOffIDs, rgpnmid, 0);
 		if (lpTags)
 		{
 			LPSPropProblemArray lpProbArray = nullptr;
