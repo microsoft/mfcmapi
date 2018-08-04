@@ -41,6 +41,10 @@ namespace smartview
 	{
 	public:
 		blockBytes() {}
+		void setData(const std::vector<BYTE>& _data) { data = _data; }
+		std::vector<BYTE> getData() const { return data; }
+
+	private:
 		std::vector<BYTE> data;
 	};
 
@@ -48,6 +52,10 @@ namespace smartview
 	{
 	public:
 		blockT() {}
+		void setData(const T& _data) { data = _data; }
+		T getData() const { return data; }
+
+	private:
 		T data;
 	};
 
@@ -83,9 +91,9 @@ namespace smartview
 			// TODO: Consider what a failure block really looks like
 			if (!CheckRemainingBytes(sizeof T)) return ret;
 
-			// TODO: Can we remove this cast?
-			ret.data = *reinterpret_cast<const T*>(GetCurrentAddress());
 			ret.setOffset(m_Offset);
+			// TODO: Can we remove this cast?
+			ret.setData(*reinterpret_cast<const T*>(GetCurrentAddress()));
 			ret.setSize(sizeof T);
 			m_Offset += sizeof T;
 			return ret;
@@ -97,10 +105,12 @@ namespace smartview
 		std::vector<BYTE> GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);
 		blockBytes GetBlockBYTES(size_t cbBytes, size_t cbMaxBytes = -1)
 		{
+			// TODO: Should we track when the returned byte length is less than requested?
 			auto ret = blockBytes();
 			ret.setOffset(m_Offset);
-			ret.data = GetBYTES(cbBytes, cbMaxBytes);
-			ret.setSize(ret.data.size() * sizeof(BYTE));
+			ret.setData(GetBYTES(cbBytes, cbMaxBytes));
+			// Important that we set our size after getting data, because we may not have gotten the requested byte length
+			ret.setSize(ret.getData().size() * sizeof(BYTE));
 			return ret;
 		}
 
