@@ -80,6 +80,7 @@ namespace smartview
 		template <typename T> blockT<T> GetBlock()
 		{
 			auto ret = blockT<T>();
+			// TODO: Consider what a failure block really looks like
 			if (!CheckRemainingBytes(sizeof T)) return ret;
 
 			// TODO: Can we remove this cast?
