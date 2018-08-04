@@ -39,12 +39,14 @@ namespace smartview
 			for (DWORD i = 0; i < m_FolderUserFieldsUnicodeCount; i++)
 			{
 				FolderFieldDefinitionW folderFieldDefinitionW;
-				folderFieldDefinitionW.FieldType = m_Parser.Get<DWORD>();
-				folderFieldDefinitionW.FieldNameLength = m_Parser.Get<WORD>();
+				folderFieldDefinitionW.FieldType = m_Parser.GetBlock<DWORD>();
+				folderFieldDefinitionW.FieldNameLength = m_Parser.GetBlock<WORD>();
 
-				if (folderFieldDefinitionW.FieldNameLength && folderFieldDefinitionW.FieldNameLength < _MaxEntriesSmall)
+				if (folderFieldDefinitionW.FieldNameLength.getData() &&
+					folderFieldDefinitionW.FieldNameLength.getData() < _MaxEntriesSmall)
 				{
-					folderFieldDefinitionW.FieldName = m_Parser.GetStringW(folderFieldDefinitionW.FieldNameLength);
+					folderFieldDefinitionW.FieldName =
+						m_Parser.GetBlockStringW(folderFieldDefinitionW.FieldNameLength.getData());
 				}
 
 				folderFieldDefinitionW.Common = BinToFolderFieldDefinitionCommon();
@@ -90,9 +92,9 @@ namespace smartview
 				szTmp = strings::formatmessage(
 					IDS_FIELDANSIFIELD,
 					i++,
-					fieldDefinition.FieldType,
+					fieldDefinition.FieldType.getData(),
 					szFieldType.c_str(),
-					fieldDefinition.FieldNameLength,
+					fieldDefinition.FieldNameLength.getData(),
 					fieldDefinition.FieldName.getData().c_str(),
 					szGUID.c_str(),
 					fieldDefinition.Common.fcapm.getData(),
@@ -116,16 +118,16 @@ namespace smartview
 			for (auto& fieldDefinition : m_FieldDefinitionsW)
 			{
 				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid.getData());
-				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
+				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType.getData());
 				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm.getData());
 
 				szTmp = strings::formatmessage(
 					IDS_FIELDUNICODEFIELD,
 					i++,
-					fieldDefinition.FieldType,
+					fieldDefinition.FieldType.getData(),
 					szFieldType.c_str(),
-					fieldDefinition.FieldNameLength,
-					fieldDefinition.FieldName.c_str(),
+					fieldDefinition.FieldNameLength.getData(),
+					fieldDefinition.FieldName.getData().c_str(),
 					szGUID.c_str(),
 					fieldDefinition.Common.fcapm.getData(),
 					szFieldcap.c_str(),

@@ -25,9 +25,9 @@ namespace smartview
 
 	struct FolderFieldDefinitionW
 	{
-		DWORD FieldType;
-		WORD FieldNameLength;
-		std::wstring FieldName;
+		blockT<DWORD> FieldType;
+		blockT<WORD> FieldNameLength;
+		blockT<std::wstring> FieldName;
 		FolderFieldDefinitionCommon Common;
 	};
 
