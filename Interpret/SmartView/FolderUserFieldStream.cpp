@@ -55,16 +55,16 @@ namespace smartview
 	{
 		FolderFieldDefinitionCommon common;
 
-		common.PropSetGuid = m_Parser.Get<GUID>();
-		common.fcapm = m_Parser.Get<DWORD>();
-		common.dwString = m_Parser.Get<DWORD>();
-		common.dwBitmap = m_Parser.Get<DWORD>();
-		common.dwDisplay = m_Parser.Get<DWORD>();
-		common.iFmt = m_Parser.Get<DWORD>();
-		common.wszFormulaLength = m_Parser.Get<WORD>();
-		if (common.wszFormulaLength && common.wszFormulaLength < _MaxEntriesLarge)
+		common.PropSetGuid = m_Parser.GetBlock<GUID>();
+		common.fcapm = m_Parser.GetBlock<DWORD>();
+		common.dwString = m_Parser.GetBlock<DWORD>();
+		common.dwBitmap = m_Parser.GetBlock<DWORD>();
+		common.dwDisplay = m_Parser.GetBlock<DWORD>();
+		common.iFmt = m_Parser.GetBlock<DWORD>();
+		common.wszFormulaLength = m_Parser.GetBlock<WORD>();
+		if (common.wszFormulaLength.getData() && common.wszFormulaLength.getData() < _MaxEntriesLarge)
 		{
-			common.wszFormula = m_Parser.GetStringW(common.wszFormulaLength);
+			common.wszFormula = m_Parser.GetStringW(common.wszFormulaLength.getData());
 		}
 
 		return common;
@@ -81,9 +81,9 @@ namespace smartview
 			auto i = 0;
 			for (auto& fieldDefinition : m_FieldDefinitionsA)
 			{
-				auto szGUID = guid::GUIDToString(&fieldDefinition.Common.PropSetGuid);
+				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid.getData());
 				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
-				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
+				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm.getData());
 
 				szTmp = strings::formatmessage(
 					IDS_FIELDANSIFIELD,
@@ -93,13 +93,13 @@ namespace smartview
 					fieldDefinition.FieldNameLength,
 					fieldDefinition.FieldName.c_str(),
 					szGUID.c_str(),
-					fieldDefinition.Common.fcapm,
+					fieldDefinition.Common.fcapm.getData(),
 					szFieldcap.c_str(),
-					fieldDefinition.Common.dwString,
-					fieldDefinition.Common.dwBitmap,
-					fieldDefinition.Common.dwDisplay,
-					fieldDefinition.Common.iFmt,
-					fieldDefinition.Common.wszFormulaLength,
+					fieldDefinition.Common.dwString.getData(),
+					fieldDefinition.Common.dwBitmap.getData(),
+					fieldDefinition.Common.dwDisplay.getData(),
+					fieldDefinition.Common.iFmt.getData(),
+					fieldDefinition.Common.wszFormulaLength.getData(),
 					fieldDefinition.Common.wszFormula.c_str());
 				szFolderUserFieldStream += szTmp;
 			}
@@ -113,9 +113,9 @@ namespace smartview
 			auto i = 0;
 			for (auto& fieldDefinition : m_FieldDefinitionsW)
 			{
-				auto szGUID = guid::GUIDToString(&fieldDefinition.Common.PropSetGuid);
+				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid.getData());
 				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
-				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
+				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm.getData());
 
 				szTmp = strings::formatmessage(
 					IDS_FIELDUNICODEFIELD,
@@ -125,13 +125,13 @@ namespace smartview
 					fieldDefinition.FieldNameLength,
 					fieldDefinition.FieldName.c_str(),
 					szGUID.c_str(),
-					fieldDefinition.Common.fcapm,
+					fieldDefinition.Common.fcapm.getData(),
 					szFieldcap.c_str(),
-					fieldDefinition.Common.dwString,
-					fieldDefinition.Common.dwBitmap,
-					fieldDefinition.Common.dwDisplay,
-					fieldDefinition.Common.iFmt,
-					fieldDefinition.Common.wszFormulaLength,
+					fieldDefinition.Common.dwString.getData(),
+					fieldDefinition.Common.dwBitmap.getData(),
+					fieldDefinition.Common.dwDisplay.getData(),
+					fieldDefinition.Common.iFmt.getData(),
+					fieldDefinition.Common.wszFormulaLength.getData(),
 					fieldDefinition.Common.wszFormula.c_str());
 				szFolderUserFieldStream += szTmp;
 			}

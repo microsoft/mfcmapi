@@ -49,6 +49,8 @@
 
 namespace guid
 {
+	std::wstring GUIDToString(_In_opt_ GUID guid) { return GUIDToString(&guid); }
+
 	std::wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 	{
 		GUID nullGUID = {0};

@@ -5,13 +5,13 @@ namespace smartview
 {
 	struct FolderFieldDefinitionCommon
 	{
-		GUID PropSetGuid;
-		DWORD fcapm;
-		DWORD dwString;
-		DWORD dwBitmap;
-		DWORD dwDisplay;
-		DWORD iFmt;
-		WORD wszFormulaLength;
+		blockT<GUID> PropSetGuid;
+		blockT<DWORD> fcapm;
+		blockT<DWORD> dwString;
+		blockT<DWORD> dwBitmap;
+		blockT<DWORD> dwDisplay;
+		blockT<DWORD> iFmt;
+		blockT<WORD> wszFormulaLength;
 		std::wstring wszFormula;
 	};
 
