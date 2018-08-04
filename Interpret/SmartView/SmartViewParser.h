@@ -11,35 +11,6 @@
 
 namespace smartview
 {
-	class block
-	{
-	public:
-		block() : header(true), offset(0), cb(0), text(L"") {}
-		block(size_t _offset, size_t _cb, std::wstring _text) : header(false), offset(_offset), cb(_cb), text(_text) {}
-		block(std::wstring _text) : header(true), offset(0), cb(0), text(_text) {}
-		std::wstring ToString()
-		{
-			std::vector<std::wstring> items;
-			items.emplace_back(text);
-			for (auto item : children)
-			{
-				items.emplace_back(item.ToString());
-			}
-
-			return strings::join(items, strings::emptystring);
-		}
-		size_t GetSize() { return cb; }
-		size_t GetOffset() { return offset; }
-		void AddChild(block child) { children.push_back(child); }
-
-	private:
-		std::vector<block> children;
-		bool header;
-		size_t offset;
-		size_t cb;
-		std::wstring text;
-	};
-
 	class SmartViewParser;
 	typedef SmartViewParser FAR* LPSMARTVIEWPARSER;
 
@@ -73,29 +44,12 @@ namespace smartview
 
 		// Nu style parsing data
 		block data;
-		size_t dataOffset;
-
-		std::wstring dataToString() { return data.ToString(); }
-
-		void addHeader(std::wstring text) { data.AddChild(block(text)); }
-		void addData(size_t cb, std::wstring text)
-		{
-			data.AddChild(block(dataOffset, cb, text));
-			dataOffset += cb;
-		}
-
-		void addBytes(const std::vector<BYTE>& bytes, bool bPrependCB = true)
-		{
-			const auto cb = bytes.size() * sizeof(BYTE);
-			data.AddChild(block(dataOffset, cb, strings::BinToHexString(bytes, bPrependCB)));
-			dataOffset += cb;
-		}
-
-		void addBlock(block& _block) { data.AddChild(_block); }
+		void addHeader(const std::wstring text) { data.AddChild(block(text)); }
+		void addBlock(const block& _block, const std::wstring text = L"") { data.AddChild(_block, text); }
 
 	private:
 		virtual void Parse() = 0;
-		virtual _Check_return_ std::wstring ToStringInternal() { return dataToString(); }
+		virtual _Check_return_ std::wstring ToStringInternal() { return data.ToString(); }
 
 		bool m_bEnableJunk;
 		bool m_bParsed;

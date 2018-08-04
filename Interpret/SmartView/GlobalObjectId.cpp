@@ -5,6 +5,8 @@
 
 namespace smartview
 {
+	GlobalObjectId::GlobalObjectId() {}
+
 	// clang-format off
 	static const BYTE s_rgbSPlus[] =
 	{
@@ -20,10 +22,10 @@ namespace smartview
 		addHeader(L"Global Object ID:\r\n");
 		addHeader(L"Byte Array ID = ");
 
-		auto id = m_Parser.GetBYTES(16);
-		addBytes(id);
+		m_Id = m_Parser.GetBlockBYTES(16);
+		addBlock(m_Id, strings::BinToHexString(m_Id.data, true));
 
-		if (equal(id.begin(), id.end(), s_rgbSPlus))
+		if (equal(m_Id.data.begin(), m_Id.data.end(), s_rgbSPlus))
 		{
 			addHeader(L" = s_rgbSPlus\r\n");
 		}
@@ -32,41 +34,44 @@ namespace smartview
 			addHeader(L" = Unknown GUID\r\n");
 		}
 
-		const auto b1 = m_Parser.Get<BYTE>();
-		const auto b2 = m_Parser.Get<BYTE>();
-		const auto year = static_cast<WORD>(b1 << 8 | b2);
-		addData(2 * sizeof BYTE, strings::formatmessage(L"Year: 0x%1!04X! = %1!d!\r\n", year));
+		const auto b1 = m_Parser.GetBlock<BYTE>();
+		const auto b2 = m_Parser.GetBlock<BYTE>();
+		m_Year.data = static_cast<WORD>(b1.data << 8 | b2.data);
+		m_Year.setOffset(b1.getOffset());
+		m_Year.setSize(b1.getSize() + b2.getSize());
+		addBlock(m_Year, strings::formatmessage(L"Year: 0x%1!04X! = %1!d!\r\n", m_Year.data));
 
-		const auto month = m_Parser.Get<BYTE>();
-		const auto szFlags = interpretprop::InterpretFlags(flagGlobalObjectIdMonth, month);
-		addData(sizeof BYTE, strings::formatmessage(L"Month: 0x%1!02X! = %1!d! = %2!ws!\r\n", month, szFlags.c_str()));
+		m_Month = m_Parser.GetBlock<BYTE>();
+		const auto szFlags = interpretprop::InterpretFlags(flagGlobalObjectIdMonth, m_Month.data);
+		addBlock(
+			m_Month, strings::formatmessage(L"Month: 0x%1!02X! = %1!d! = %2!ws!\r\n", m_Month.data, szFlags.c_str()));
 
-		const auto day = m_Parser.Get<BYTE>();
-		addData(sizeof BYTE, strings::formatmessage(L"Day: 0x%1!02X! = %1!d!\r\n", day));
+		m_Day = m_Parser.GetBlock<BYTE>();
+		addBlock(m_Day, strings::formatmessage(L"Day: 0x%1!02X! = %1!d!\r\n", m_Day.data));
 
-		const auto creationTime = m_Parser.Get<FILETIME>();
+		m_CreationTime = m_Parser.GetBlock<FILETIME>();
 		std::wstring propString;
 		std::wstring altPropString;
-		strings::FileTimeToString(creationTime, propString, altPropString);
-		addData(
-			sizeof FILETIME,
+		strings::FileTimeToString(m_CreationTime.data, propString, altPropString);
+		addBlock(
+			m_CreationTime,
 			strings::formatmessage(
 				L"Creation Time = 0x%1!08X!:0x%2!08X! = %3!ws!\r\n",
-				creationTime.dwHighDateTime,
-				creationTime.dwLowDateTime,
+				m_CreationTime.data.dwHighDateTime,
+				m_CreationTime.data.dwLowDateTime,
 				propString.c_str()));
 
-		const auto x = m_Parser.Get<LARGE_INTEGER>();
-		addData(sizeof LARGE_INTEGER, strings::formatmessage(L"X: 0x%1!08X!:0x%2!08X!\r\n", x.HighPart, x.LowPart));
+		m_X = m_Parser.GetBlock<LARGE_INTEGER>();
+		addBlock(m_X, strings::formatmessage(L"X: 0x%1!08X!:0x%2!08X!\r\n", m_X.data.HighPart, m_X.data.LowPart));
 
-		const auto dwSize = m_Parser.Get<DWORD>();
-		addData(sizeof DWORD, strings::formatmessage(L"Size: 0x%1!02X! = %1!d!\r\n", dwSize));
+		m_dwSize = m_Parser.GetBlock<DWORD>();
+		addBlock(m_dwSize, strings::formatmessage(L"Size: 0x%1!02X! = %1!d!\r\n", m_dwSize.data));
 
-		const auto lpData = m_Parser.GetBYTES(dwSize, _MaxBytes);
-		if (lpData.size())
+		m_lpData = m_Parser.GetBlockBYTES(m_dwSize.data, _MaxBytes);
+		if (m_lpData.data.size())
 		{
 			addHeader(L"Data = ");
-			addBytes(lpData);
+			addBlock(m_lpData, strings::BinToHexString(m_lpData.data, true));
 		}
 	}
 }
