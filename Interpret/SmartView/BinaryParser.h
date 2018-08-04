@@ -101,7 +101,46 @@ namespace smartview
 
 		// TODO: Do we need block versions of the string getters?
 		std::string GetStringA(size_t cchChar = -1);
+		blockT<std::string> GetBlockStringA(size_t cchChar = -1)
+		{
+			auto ret = blockT<std::string>();
+			if (cchChar == -1)
+			{
+				cchChar =
+					strnlen_s(reinterpret_cast<LPCSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof CHAR) +
+					1;
+			}
+
+			if (!cchChar || !CheckRemainingBytes(sizeof CHAR * cchChar)) return ret;
+
+			ret.setOffset(m_Offset);
+			ret.setData(
+				strings::RemoveInvalidCharactersA(std::string(reinterpret_cast<LPCSTR>(GetCurrentAddress()), cchChar)));
+			ret.setSize(sizeof CHAR * cchChar);
+			m_Offset += sizeof CHAR * cchChar;
+			return ret;
+		}
 		std::wstring GetStringW(size_t cchChar = -1);
+		blockT<std::wstring> GetBlockStringW(size_t cchChar = -1)
+		{
+			auto ret = blockT<std::wstring>();
+			if (cchChar == -1)
+			{
+				cchChar =
+					wcsnlen_s(
+						reinterpret_cast<LPCWSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof WCHAR) +
+					1;
+			}
+
+			if (!cchChar || !CheckRemainingBytes(sizeof WCHAR * cchChar)) return ret;
+
+			ret.setOffset(m_Offset);
+			ret.setData(strings::RemoveInvalidCharactersW(
+				std::wstring(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), cchChar)));
+			ret.setSize(sizeof WCHAR * cchChar);
+			m_Offset += sizeof WCHAR * cchChar;
+			return ret;
+		}
 		std::vector<BYTE> GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);
 		blockBytes GetBlockBYTES(size_t cbBytes, size_t cbMaxBytes = -1)
 		{

@@ -18,12 +18,14 @@ namespace smartview
 			for (DWORD i = 0; i < m_FolderUserFieldsAnsiCount; i++)
 			{
 				FolderFieldDefinitionA folderFieldDefinitionA;
-				folderFieldDefinitionA.FieldType = m_Parser.Get<DWORD>();
-				folderFieldDefinitionA.FieldNameLength = m_Parser.Get<WORD>();
+				folderFieldDefinitionA.FieldType = m_Parser.GetBlock<DWORD>();
+				folderFieldDefinitionA.FieldNameLength = m_Parser.GetBlock<WORD>();
 
-				if (folderFieldDefinitionA.FieldNameLength && folderFieldDefinitionA.FieldNameLength < _MaxEntriesSmall)
+				if (folderFieldDefinitionA.FieldNameLength.getData() &&
+					folderFieldDefinitionA.FieldNameLength.getData() < _MaxEntriesSmall)
 				{
-					folderFieldDefinitionA.FieldName = m_Parser.GetStringA(folderFieldDefinitionA.FieldNameLength);
+					folderFieldDefinitionA.FieldName =
+						m_Parser.GetBlockStringA(folderFieldDefinitionA.FieldNameLength.getData());
 				}
 
 				folderFieldDefinitionA.Common = BinToFolderFieldDefinitionCommon();
@@ -64,7 +66,7 @@ namespace smartview
 		common.wszFormulaLength = m_Parser.GetBlock<WORD>();
 		if (common.wszFormulaLength.getData() && common.wszFormulaLength.getData() < _MaxEntriesLarge)
 		{
-			common.wszFormula = m_Parser.GetStringW(common.wszFormulaLength.getData());
+			common.wszFormula = m_Parser.GetBlockStringW(common.wszFormulaLength.getData());
 		}
 
 		return common;
@@ -82,7 +84,7 @@ namespace smartview
 			for (auto& fieldDefinition : m_FieldDefinitionsA)
 			{
 				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid.getData());
-				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
+				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType.getData());
 				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm.getData());
 
 				szTmp = strings::formatmessage(
@@ -91,7 +93,7 @@ namespace smartview
 					fieldDefinition.FieldType,
 					szFieldType.c_str(),
 					fieldDefinition.FieldNameLength,
-					fieldDefinition.FieldName.c_str(),
+					fieldDefinition.FieldName.getData().c_str(),
 					szGUID.c_str(),
 					fieldDefinition.Common.fcapm.getData(),
 					szFieldcap.c_str(),
@@ -100,7 +102,7 @@ namespace smartview
 					fieldDefinition.Common.dwDisplay.getData(),
 					fieldDefinition.Common.iFmt.getData(),
 					fieldDefinition.Common.wszFormulaLength.getData(),
-					fieldDefinition.Common.wszFormula.c_str());
+					fieldDefinition.Common.wszFormula.getData().c_str());
 				szFolderUserFieldStream += szTmp;
 			}
 		}
@@ -132,7 +134,7 @@ namespace smartview
 					fieldDefinition.Common.dwDisplay.getData(),
 					fieldDefinition.Common.iFmt.getData(),
 					fieldDefinition.Common.wszFormulaLength.getData(),
-					fieldDefinition.Common.wszFormula.c_str());
+					fieldDefinition.Common.wszFormula.getData().c_str());
 				szFolderUserFieldStream += szTmp;
 			}
 		}
