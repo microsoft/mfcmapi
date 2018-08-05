@@ -2091,15 +2091,6 @@ IDS_PROPDEFSKIPBLOCK "\r\n\tSkipBlock: %1!d!\r\n\
 IDS_PROPDEFTAB2 "\r\n\t\t"
 IDS_PROPDEFFIELDNAME "FieldName"
 IDS_PROPDEFCONTENT "\r\n\t\tContent = "
-IDS_AEIDHEADER "Additional Ren Entry IDs\r\n\
-PersistDataCount = %1!d!"
-IDS_AEIDPERSISTELEMENT "\r\n\r\nPersist Element %1!d!:\r\n\
-PersistID = 0x%2!04X! = %3!ws!\r\n\
-DataElementsSize = 0x%4!04X!"
-IDS_AEIDDATAELEMENT "\r\nDataElement: %1!d!\r\n\
-\tElementID = 0x%2!04X! = %3!ws!\r\n\
-\tElementDataSize = 0x%4!04X!\r\n\
-\tElementData = "
 IDS_MVROWBIN "Row %1!d!\r\n"
 IDS_MVROWLONG "Row %1!d!: %2!ws!"
 IDS_FELHEADER "Flat Entry List\r\n\

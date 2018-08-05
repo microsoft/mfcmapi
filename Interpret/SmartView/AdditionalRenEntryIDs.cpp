@@ -15,14 +15,14 @@ namespace smartview
 		for (;;)
 		{
 			if (m_Parser.RemainingBytes() < 2 * sizeof(WORD)) break;
-			const auto wPersistID = m_Parser.Get<WORD>();
-			const auto wDataElementSize = m_Parser.Get<WORD>();
+			const auto wPersistID = m_Parser.GetBlock<WORD>();
+			const auto wDataElementSize = m_Parser.GetBlock<WORD>();
 			// Must have at least wDataElementSize bytes left to be a valid data element
-			if (m_Parser.RemainingBytes() < wDataElementSize) break;
+			if (m_Parser.RemainingBytes() < wDataElementSize.getData()) break;
 
-			m_Parser.Advance(wDataElementSize);
+			m_Parser.Advance(wDataElementSize.getData());
 			wPersistDataCount++;
-			if (PERISIST_SENTINEL == wPersistID) break;
+			if (wPersistID.getData() == PERISIST_SENTINEL) break;
 		}
 
 		// Now we parse for real
@@ -35,31 +35,34 @@ namespace smartview
 				m_ppdPersistData.push_back(BinToPersistData());
 			}
 		}
+
+		ParseBlocks();
 	}
 
 	PersistData AdditionalRenEntryIDs::BinToPersistData()
 	{
 		PersistData persistData;
 		WORD wDataElementCount = 0;
-		persistData.wPersistID = m_Parser.Get<WORD>();
-		persistData.wDataElementsSize = m_Parser.Get<WORD>();
+		persistData.wPersistID = m_Parser.GetBlock<WORD>();
+		persistData.wDataElementsSize = m_Parser.GetBlock<WORD>();
 
-		if (persistData.wPersistID != PERISIST_SENTINEL && m_Parser.RemainingBytes() >= persistData.wDataElementsSize)
+		if (persistData.wPersistID.getData() != PERISIST_SENTINEL &&
+			m_Parser.RemainingBytes() >= persistData.wDataElementsSize.getData())
 		{
 			// Build a new m_Parser to preread and count our elements
 			// This new m_Parser will only contain as much space as suggested in wDataElementsSize
-			CBinaryParser DataElementParser(persistData.wDataElementsSize, m_Parser.GetCurrentAddress());
+			CBinaryParser DataElementParser(persistData.wDataElementsSize.getData(), m_Parser.GetCurrentAddress());
 			for (;;)
 			{
 				if (DataElementParser.RemainingBytes() < 2 * sizeof(WORD)) break;
-				const auto wElementID = DataElementParser.Get<WORD>();
-				const auto wElementDataSize = DataElementParser.Get<WORD>();
+				const auto wElementID = DataElementParser.GetBlock<WORD>();
+				const auto wElementDataSize = DataElementParser.GetBlock<WORD>();
 				// Must have at least wElementDataSize bytes left to be a valid element data
-				if (DataElementParser.RemainingBytes() < wElementDataSize) break;
+				if (DataElementParser.RemainingBytes() < wElementDataSize.getData()) break;
 
-				DataElementParser.Advance(wElementDataSize);
+				DataElementParser.Advance(wElementDataSize.getData());
 				wDataElementCount++;
-				if (ELEMENT_SENTINEL == wElementID) break;
+				if (wElementID.getData() == ELEMENT_SENTINEL) break;
 			}
 		}
 
@@ -68,11 +71,11 @@ namespace smartview
 			for (WORD iDataElement = 0; iDataElement < wDataElementCount; iDataElement++)
 			{
 				PersistElement persistElement;
-				persistElement.wElementID = m_Parser.Get<WORD>();
-				persistElement.wElementDataSize = m_Parser.Get<WORD>();
-				if (ELEMENT_SENTINEL == persistElement.wElementID) break;
+				persistElement.wElementID = m_Parser.GetBlock<WORD>();
+				persistElement.wElementDataSize = m_Parser.GetBlock<WORD>();
+				if (persistElement.wElementID.getData() == ELEMENT_SENTINEL) break;
 				// Since this is a word, the size will never be too large
-				persistElement.lpbElementData = m_Parser.GetBYTES(persistElement.wElementDataSize);
+				persistElement.lpbElementData = m_Parser.GetBlockBYTES(persistElement.wElementDataSize.getData());
 
 				persistData.ppeDataElement.push_back(persistElement);
 			}
@@ -80,56 +83,78 @@ namespace smartview
 
 		// We'll trust wDataElementsSize to dictate our record size.
 		// Count the 2 WORD size header fields too.
-		const auto cbRecordSize = persistData.wDataElementsSize + sizeof(WORD) * 2;
+		const auto cbRecordSize = persistData.wDataElementsSize.getData() + sizeof(WORD) * 2;
 
 		// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
 		if (m_Parser.GetCurrentOffset() < cbRecordSize)
 		{
-			persistData.JunkData = m_Parser.GetBYTES(cbRecordSize - m_Parser.GetCurrentOffset());
+			persistData.JunkData = m_Parser.GetBlockBYTES(cbRecordSize - m_Parser.GetCurrentOffset());
 		}
 
 		return persistData;
 	}
 
-	_Check_return_ std::wstring AdditionalRenEntryIDs::ToStringInternal()
+	void AdditionalRenEntryIDs::ParseBlocks()
 	{
-		auto szAdditionalRenEntryIDs = strings::formatmessage(IDS_AEIDHEADER, m_ppdPersistData.size());
+		addHeader(L"Additional Ren Entry IDs\r\n");
+		addHeader(strings::formatmessage(L"PersistDataCount = %1!d!", m_ppdPersistData.size()));
 
 		if (m_ppdPersistData.size())
 		{
 			for (WORD iPersistElement = 0; iPersistElement < m_ppdPersistData.size(); iPersistElement++)
 			{
-				szAdditionalRenEntryIDs += strings::formatmessage(
-					IDS_AEIDPERSISTELEMENT,
-					iPersistElement,
+				addHeader(strings::formatmessage(L"\r\n\r\n"));
+				addHeader(strings::formatmessage(L"Persist Element %1!d!:\r\n", iPersistElement));
+				addBlock(
 					m_ppdPersistData[iPersistElement].wPersistID,
-					interpretprop::InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID).c_str(),
-					m_ppdPersistData[iPersistElement].wDataElementsSize);
+					strings::formatmessage(
+						L"PersistID = 0x%1!04X! = %2!ws!\r\n",
+						m_ppdPersistData[iPersistElement].wPersistID.getData(),
+						interpretprop::InterpretFlags(
+							flagPersistID, m_ppdPersistData[iPersistElement].wPersistID.getData())
+							.c_str()));
+				addBlock(
+					m_ppdPersistData[iPersistElement].wDataElementsSize,
+					strings::formatmessage(
+						L"DataElementsSize = 0x%1!04X!",
+						m_ppdPersistData[iPersistElement].wDataElementsSize.getData()));
 
 				if (m_ppdPersistData[iPersistElement].ppeDataElement.size())
 				{
 					for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].ppeDataElement.size();
 						 iDataElement++)
 					{
-						szAdditionalRenEntryIDs += strings::formatmessage(
-							IDS_AEIDDATAELEMENT,
-							iDataElement,
-							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
-							interpretprop::InterpretFlags(
-								flagElementID,
-								m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID)
-								.c_str(),
-							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize);
+						addHeader(strings::formatmessage(L"\r\nDataElement: %1!d!\r\n", iDataElement));
 
-						szAdditionalRenEntryIDs += strings::BinToHexString(
-							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData, true);
+						addBlock(
+							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
+							strings::formatmessage(
+								L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
+								m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID.getData(),
+								interpretprop::InterpretFlags(
+									flagElementID,
+									m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID.getData())
+									.c_str()));
+
+						addBlock(
+							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize,
+							strings::formatmessage(
+								L"\tElementDataSize = 0x%1!04X!\r\n",
+								m_ppdPersistData[iPersistElement]
+									.ppeDataElement[iDataElement]
+									.wElementDataSize.getData()));
+
+						addHeader(strings::formatmessage(L"\tElementData = "));
+						addBlock(
+							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData,
+							strings::BinToHexString(
+								m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData.getData(),
+								true));
 					}
 				}
 
-				szAdditionalRenEntryIDs += JunkDataToString(m_ppdPersistData[iPersistElement].JunkData);
+				addHeader(JunkDataToString(m_ppdPersistData[iPersistElement].JunkData.getData()));
 			}
 		}
-
-		return szAdditionalRenEntryIDs;
 	}
 }

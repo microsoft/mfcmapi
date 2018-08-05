@@ -5,26 +5,26 @@ namespace smartview
 {
 	struct PersistElement
 	{
-		WORD wElementID;
-		WORD wElementDataSize;
-		std::vector<BYTE> lpbElementData;
+		blockT<WORD> wElementID;
+		blockT<WORD> wElementDataSize;
+		blockBytes lpbElementData;
 	};
 
 	struct PersistData
 	{
-		WORD wPersistID;
-		WORD wDataElementsSize;
+		blockT<WORD> wPersistID;
+		blockT<WORD> wDataElementsSize;
 		std::vector<PersistElement> ppeDataElement;
 
-		std::vector<BYTE> JunkData;
+		blockBytes JunkData;
 	};
 
 	class AdditionalRenEntryIDs : public SmartViewParser
 	{
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
 		PersistData BinToPersistData();
+		void ParseBlocks();
 
 		std::vector<PersistData> m_ppdPersistData;
 	};
