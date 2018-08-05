@@ -145,11 +145,7 @@ namespace smartview
 									.wElementDataSize.getData()));
 
 						addHeader(strings::formatmessage(L"\tElementData = "));
-						addBlock(
-							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData,
-							strings::BinToHexString(
-								m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData.getData(),
-								true));
+						addBlockBytes(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData);
 					}
 				}
 

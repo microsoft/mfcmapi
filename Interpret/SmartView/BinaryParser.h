@@ -2,6 +2,7 @@
 
 namespace smartview
 {
+	class blockBytes;
 	class block
 	{
 	public:
@@ -29,6 +30,7 @@ namespace smartview
 			block.text = _text;
 			children.push_back(block);
 		}
+		void addBlockBytes(blockBytes child);
 
 	private:
 		size_t offset;

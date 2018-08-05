@@ -46,6 +46,7 @@ namespace smartview
 		block data;
 		void addHeader(const std::wstring& text) { data.addHeader(text); }
 		void addBlock(const block& _block, const std::wstring& text) { data.addBlock(_block, text); }
+		void addBlockBytes(const blockBytes& _block) { data.addBlockBytes(_block); }
 
 	private:
 		virtual void Parse() = 0;

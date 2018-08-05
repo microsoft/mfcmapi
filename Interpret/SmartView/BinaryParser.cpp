@@ -3,6 +3,13 @@
 
 namespace smartview
 {
+	void block::addBlockBytes(blockBytes child)
+	{
+		auto _block = child;
+		_block.text = strings::BinToHexString(child.getData(), true);
+		children.push_back(_block);
+	}
+
 	static std::wstring CLASS = L"CBinaryParser";
 
 	CBinaryParser::CBinaryParser() { m_Offset = 0; }

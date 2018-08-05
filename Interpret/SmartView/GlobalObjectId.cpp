@@ -24,7 +24,7 @@ namespace smartview
 
 		m_Id = m_Parser.GetBlockBYTES(16);
 		auto id = m_Id.getData();
-		addBlock(m_Id, strings::BinToHexString(id, true));
+		addBlockBytes(m_Id);
 
 		if (equal(id.begin(), id.end(), s_rgbSPlus))
 		{
@@ -74,7 +74,7 @@ namespace smartview
 		if (m_lpData.getData().size())
 		{
 			addHeader(L"Data = ");
-			addBlock(m_lpData, strings::BinToHexString(m_lpData.getData(), true));
+			addBlockBytes(m_lpData);
 		}
 	}
 }
