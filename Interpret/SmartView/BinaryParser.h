@@ -22,7 +22,7 @@ namespace smartview
 		void setSize(size_t _size) { cb = _size; }
 		size_t getOffset() const { return offset; }
 		void setOffset(size_t _offset) { offset = _offset; }
-		void AddChild(const block& child, const std::wstring _text = L"")
+		void AddChild(const block& child, const std::wstring& _text)
 		{
 			auto block = child;
 			block.text = _text;

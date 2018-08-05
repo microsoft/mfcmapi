@@ -38,13 +38,13 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks();
 
 		FolderFieldDefinitionCommon BinToFolderFieldDefinitionCommon();
 
-		DWORD m_FolderUserFieldsAnsiCount;
+		blockT<DWORD> m_FolderUserFieldsAnsiCount;
 		std::vector<FolderFieldDefinitionA> m_FieldDefinitionsA;
-		DWORD m_FolderUserFieldsUnicodeCount;
+		blockT<DWORD> m_FolderUserFieldsUnicodeCount;
 		std::vector<FolderFieldDefinitionW> m_FieldDefinitionsW;
 	};
 }

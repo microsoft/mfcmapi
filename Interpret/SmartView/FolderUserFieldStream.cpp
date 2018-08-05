@@ -6,16 +6,14 @@
 
 namespace smartview
 {
-	FolderUserFieldStream::FolderUserFieldStream() : m_FolderUserFieldsAnsiCount(0), m_FolderUserFieldsUnicodeCount(0)
-	{
-	}
+	FolderUserFieldStream::FolderUserFieldStream() {}
 
 	void FolderUserFieldStream::Parse()
 	{
-		m_FolderUserFieldsAnsiCount = m_Parser.Get<DWORD>();
-		if (m_FolderUserFieldsAnsiCount && m_FolderUserFieldsAnsiCount < _MaxEntriesSmall)
+		m_FolderUserFieldsAnsiCount = m_Parser.GetBlock<DWORD>();
+		if (m_FolderUserFieldsAnsiCount.getData() && m_FolderUserFieldsAnsiCount.getData() < _MaxEntriesSmall)
 		{
-			for (DWORD i = 0; i < m_FolderUserFieldsAnsiCount; i++)
+			for (DWORD i = 0; i < m_FolderUserFieldsAnsiCount.getData(); i++)
 			{
 				FolderFieldDefinitionA folderFieldDefinitionA;
 				folderFieldDefinitionA.FieldType = m_Parser.GetBlock<DWORD>();
@@ -33,10 +31,10 @@ namespace smartview
 			}
 		}
 
-		m_FolderUserFieldsUnicodeCount = m_Parser.Get<DWORD>();
-		if (m_FolderUserFieldsUnicodeCount && m_FolderUserFieldsUnicodeCount < _MaxEntriesSmall)
+		m_FolderUserFieldsUnicodeCount = m_Parser.GetBlock<DWORD>();
+		if (m_FolderUserFieldsUnicodeCount.getData() && m_FolderUserFieldsUnicodeCount.getData() < _MaxEntriesSmall)
 		{
-			for (DWORD i = 0; i < m_FolderUserFieldsUnicodeCount; i++)
+			for (DWORD i = 0; i < m_FolderUserFieldsUnicodeCount.getData(); i++)
 			{
 				FolderFieldDefinitionW folderFieldDefinitionW;
 				folderFieldDefinitionW.FieldType = m_Parser.GetBlock<DWORD>();
@@ -53,6 +51,8 @@ namespace smartview
 				m_FieldDefinitionsW.push_back(folderFieldDefinitionW);
 			}
 		}
+
+		ParseBlocks();
 	}
 
 	FolderFieldDefinitionCommon FolderUserFieldStream::BinToFolderFieldDefinitionCommon()
@@ -74,73 +74,130 @@ namespace smartview
 		return common;
 	}
 
-	_Check_return_ std::wstring FolderUserFieldStream::ToStringInternal()
+	void FolderUserFieldStream::ParseBlocks()
 	{
-		std::wstring szTmp;
+		addHeader(L"Folder User Field Stream\r\n");
+		addBlock(
+			m_FolderUserFieldsAnsiCount,
+			strings::formatmessage(
+				L"FolderUserFieldAnsi.FieldDefinitionCount = %1!d!", m_FolderUserFieldsAnsiCount.getData()));
 
-		auto szFolderUserFieldStream = strings::formatmessage(IDS_FIELDHEADER, m_FolderUserFieldsAnsiCount);
-
-		if (m_FolderUserFieldsAnsiCount && !m_FieldDefinitionsA.empty())
+		if (m_FolderUserFieldsAnsiCount.getData() && !m_FieldDefinitionsA.empty())
 		{
 			auto i = 0;
 			for (auto& fieldDefinition : m_FieldDefinitionsA)
 			{
-				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid.getData());
-				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType.getData());
-				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm.getData());
+				addHeader(L"\r\n\r\n");
+				addHeader(strings::formatmessage(L"Field %1!d!\r\n", i++));
 
-				szTmp = strings::formatmessage(
-					IDS_FIELDANSIFIELD,
-					i++,
-					fieldDefinition.FieldType.getData(),
-					szFieldType.c_str(),
-					fieldDefinition.FieldNameLength.getData(),
-					fieldDefinition.FieldName.getData().c_str(),
-					szGUID.c_str(),
-					fieldDefinition.Common.fcapm.getData(),
-					szFieldcap.c_str(),
-					fieldDefinition.Common.dwString.getData(),
-					fieldDefinition.Common.dwBitmap.getData(),
-					fieldDefinition.Common.dwDisplay.getData(),
-					fieldDefinition.Common.iFmt.getData(),
-					fieldDefinition.Common.wszFormulaLength.getData(),
-					fieldDefinition.Common.wszFormula.getData().c_str());
-				szFolderUserFieldStream += szTmp;
+				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType.getData());
+				addBlock(
+					fieldDefinition.FieldType,
+					strings::formatmessage(
+						L"FieldType = 0x%1!08X! = %2!ws!\r\n",
+						fieldDefinition.FieldType.getData(),
+						szFieldType.c_str()));
+				addBlock(
+					fieldDefinition.FieldNameLength,
+					strings::formatmessage(
+						L"FieldNameLength = 0x%1!08X! = %1!d!\r\n", fieldDefinition.FieldNameLength.getData()));
+				addBlock(
+					fieldDefinition.FieldName,
+					strings::formatmessage(L"FieldName = %1!hs!\r\n", fieldDefinition.FieldName.getData().c_str()));
+
+				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid.getData());
+				addBlock(
+					fieldDefinition.Common.PropSetGuid,
+					strings::formatmessage(L"PropSetGuid = %1!ws!\r\n", szGUID.c_str()));
+				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm.getData());
+				addBlock(
+					fieldDefinition.Common.fcapm,
+					strings::formatmessage(
+						L"fcapm = 0x%1!08X! = %2!ws!\r\n", fieldDefinition.Common.fcapm.getData(), szFieldcap.c_str()));
+				addBlock(
+					fieldDefinition.Common.dwString,
+					strings::formatmessage(L"dwString = 0x%1!08X!\r\n", fieldDefinition.Common.dwString.getData()));
+				addBlock(
+					fieldDefinition.Common.dwBitmap,
+					strings::formatmessage(L"dwBitmap = 0x%1!08X!\r\n", fieldDefinition.Common.dwBitmap.getData()));
+				addBlock(
+					fieldDefinition.Common.dwDisplay,
+					strings::formatmessage(L"dwDisplay = 0x%1!08X!\r\n", fieldDefinition.Common.dwDisplay.getData()));
+				addBlock(
+					fieldDefinition.Common.iFmt,
+					strings::formatmessage(L"iFmt = 0x%1!08X!\r\n", fieldDefinition.Common.iFmt.getData()));
+				addBlock(
+					fieldDefinition.Common.wszFormulaLength,
+					strings::formatmessage(
+						L"wszFormulaLength = 0x%1!04X! = %1!d!\r\n",
+						fieldDefinition.Common.wszFormulaLength.getData()));
+				addBlock(
+					fieldDefinition.Common.wszFormula,
+					strings::formatmessage(
+						L"wszFormula = %1!ws!", fieldDefinition.Common.wszFormula.getData().c_str()));
 			}
 		}
 
-		szTmp = strings::formatmessage(IDS_FIELDUNICODEHEADER, m_FolderUserFieldsUnicodeCount);
-		szFolderUserFieldStream += szTmp;
+		addHeader(L"\r\n\r\n");
+		addBlock(
+			m_FolderUserFieldsUnicodeCount,
+			strings::formatmessage(
+				L"FolderUserFieldUnicode.FieldDefinitionCount = %1!d!", m_FolderUserFieldsUnicodeCount.getData()));
 
-		if (m_FolderUserFieldsUnicodeCount && !m_FieldDefinitionsW.empty())
+		if (m_FolderUserFieldsUnicodeCount.getData() && !m_FieldDefinitionsW.empty())
 		{
 			auto i = 0;
 			for (auto& fieldDefinition : m_FieldDefinitionsW)
 			{
-				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid.getData());
-				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType.getData());
-				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm.getData());
+				addHeader(L"\r\n\r\n");
+				addHeader(strings::formatmessage(L"Field %1!d!\r\n", i++));
 
-				szTmp = strings::formatmessage(
-					IDS_FIELDUNICODEFIELD,
-					i++,
-					fieldDefinition.FieldType.getData(),
-					szFieldType.c_str(),
-					fieldDefinition.FieldNameLength.getData(),
-					fieldDefinition.FieldName.getData().c_str(),
-					szGUID.c_str(),
-					fieldDefinition.Common.fcapm.getData(),
-					szFieldcap.c_str(),
-					fieldDefinition.Common.dwString.getData(),
-					fieldDefinition.Common.dwBitmap.getData(),
-					fieldDefinition.Common.dwDisplay.getData(),
-					fieldDefinition.Common.iFmt.getData(),
-					fieldDefinition.Common.wszFormulaLength.getData(),
-					fieldDefinition.Common.wszFormula.getData().c_str());
-				szFolderUserFieldStream += szTmp;
+				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType.getData());
+				addBlock(
+					fieldDefinition.FieldType,
+					strings::formatmessage(
+						L"FieldType = 0x%1!08X! = %2!ws!\r\n",
+						fieldDefinition.FieldType.getData(),
+						szFieldType.c_str()));
+				addBlock(
+					fieldDefinition.FieldNameLength,
+					strings::formatmessage(
+						L"FieldNameLength = 0x%1!08X! = %1!d!\r\n", fieldDefinition.FieldNameLength.getData()));
+				addBlock(
+					fieldDefinition.FieldName,
+					strings::formatmessage(L"FieldName = %1!ws!\r\n", fieldDefinition.FieldName.getData().c_str()));
+
+				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid.getData());
+				addBlock(
+					fieldDefinition.Common.PropSetGuid,
+					strings::formatmessage(L"PropSetGuid = %1!ws!\r\n", szGUID.c_str()));
+				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm.getData());
+				addBlock(
+					fieldDefinition.Common.fcapm,
+					strings::formatmessage(
+						L"fcapm = 0x%1!08X! = %2!ws!\r\n", fieldDefinition.Common.fcapm.getData(), szFieldcap.c_str()));
+				addBlock(
+					fieldDefinition.Common.dwString,
+					strings::formatmessage(L"dwString = 0x%1!08X!\r\n", fieldDefinition.Common.dwString.getData()));
+				addBlock(
+					fieldDefinition.Common.dwBitmap,
+					strings::formatmessage(L"dwBitmap = 0x%1!08X!\r\n", fieldDefinition.Common.dwBitmap.getData()));
+				addBlock(
+					fieldDefinition.Common.dwDisplay,
+					strings::formatmessage(L"dwDisplay = 0x%1!08X!\r\n", fieldDefinition.Common.dwDisplay.getData()));
+				addBlock(
+					fieldDefinition.Common.iFmt,
+					strings::formatmessage(L"iFmt = 0x%1!08X!\r\n", fieldDefinition.Common.iFmt.getData()));
+				addBlock(
+					fieldDefinition.Common.wszFormulaLength,
+					strings::formatmessage(
+						L"wszFormulaLength = 0x%1!04X! = %1!d!\r\n",
+						fieldDefinition.Common.wszFormulaLength.getData()));
+				addBlock(
+					fieldDefinition.Common.wszFormula,
+					strings::formatmessage(
+						L"wszFormula = %1!ws!", fieldDefinition.Common.wszFormula.getData().c_str()));
 			}
 		}
-
-		return szFolderUserFieldStream;
 	}
 }

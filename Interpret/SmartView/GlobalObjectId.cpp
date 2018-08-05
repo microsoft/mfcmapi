@@ -23,9 +23,10 @@ namespace smartview
 		addHeader(L"Byte Array ID = ");
 
 		m_Id = m_Parser.GetBlockBYTES(16);
-		addBlock(m_Id, strings::BinToHexString(m_Id.getData(), true));
+		auto id = m_Id.getData();
+		addBlock(m_Id, strings::BinToHexString(id, true));
 
-		if (equal(m_Id.getData().begin(), m_Id.getData().end(), s_rgbSPlus))
+		if (equal(id.begin(), id.end(), s_rgbSPlus))
 		{
 			addHeader(L" = s_rgbSPlus\r\n");
 		}

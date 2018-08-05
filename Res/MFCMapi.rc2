@@ -1566,33 +1566,6 @@ Textual SID: %3!ws!"
 IDS_FLAGTOSTRINGHEX "\r\n0x%1!08X! %2!ws!"
 IDS_FLAGTOSTRINGDEC "\r\n%1!5d! %2!ws!"
 
-IDS_FIELDHEADER "Folder User Field Stream\r\n\
-FolderUserFieldAnsi.FieldDefinitionCount = %1!d!"
-IDS_FIELDANSIFIELD "\r\n\r\nField %1!d!\r\n\
-FieldType = 0x%2!08X! = %3!ws!\r\n\
-FieldNameLength = 0x%4!08X! = %4!d!\r\n\
-FieldName = %5!hs!\r\n\
-PropSetGuid = %6!ws!\r\n\
-fcapm = 0x%7!08X! = %8!ws!\r\n\
-dwString = 0x%9!08X!\r\n\
-dwBitmap = 0x%10!08X!\r\n\
-dwDisplay = 0x%11!08X!\r\n\
-iFmt = 0x%12!08X!\r\n\
-wszFormulaLength = 0x%13!04X! = %13!d!\r\n\
-wszFormula = %14!ws!"
-IDS_FIELDUNICODEHEADER "\r\n\r\nFolderUserFieldUnicode.FieldDefinitionCount = %1!d!"
-IDS_FIELDUNICODEFIELD "\r\n\r\nField %1!d!\r\n\
-FieldType = 0x%2!08X! = %3!ws!\r\n\
-FieldNameLength = 0x%4!08X! = %4!d!\r\n\
-FieldName = %5!ws!\r\n\
-PropSetGuid = %6!ws!\r\n\
-fcapm = 0x%7!08X! = %8!ws!\r\n\
-dwString = 0x%9!08X!\r\n\
-dwBitmap = 0x%10!08X!\r\n\
-dwDisplay = 0x%11!08X!\r\n\
-iFmt = 0x%12!08X!\r\n\
-wszFormulaLength = 0x%13!04X! = %13!d!\r\n\
-wszFormula = %14!ws!"
 IDS_NICKNAMEHEADER "Nickname Cache\r\n\
 Metadata1 = "
 IDS_NICKNAMEROWCOUNT "\r\nMajor Version = %1!d!\r\n\
