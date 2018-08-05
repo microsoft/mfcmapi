@@ -149,6 +149,7 @@ namespace smartview
 					}
 				}
 
+				// TODO: This should be a proper block
 				addHeader(JunkDataToString(m_ppdPersistData[iPersistElement].JunkData.getData()));
 			}
 		}
