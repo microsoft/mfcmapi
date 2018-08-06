@@ -55,53 +55,51 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring ReportTag::ToStringInternal()
+	void ReportTag::ParseBlock()
 	{
-		auto szReportTag = strings::formatmessage(IDS_REPORTTAGHEADER);
+		addHeader(L"Report Tag: \r\n");
+		addHeader(L"Cookie = ");
+		addBlockBytes(m_Cookie);
 
-		szReportTag += strings::BinToHexString(m_Cookie.getData(), true);
-
+		addHeader(L"\r\n");
 		auto szFlags = interpretprop::InterpretFlags(flagReportTagVersion, m_Version.getData());
-		szReportTag += strings::formatmessage(IDS_REPORTTAGVERSION, m_Version.getData(), szFlags.c_str());
+		addBlock(m_Version, L"Version = 0x%1!08X! = %2!ws!", m_Version.getData(), szFlags.c_str());
 
 		if (m_cbStoreEntryID.getData())
 		{
-			szReportTag += strings::formatmessage(IDS_REPORTTAGSTOREEID);
-			szReportTag += strings::BinToHexString(m_lpStoreEntryID.getData(), true);
+			addHeader(L"\r\nStoreEntryID = ");
+			addBlockBytes(m_lpStoreEntryID);
 		}
 
 		if (m_cbFolderEntryID.getData())
 		{
-			szReportTag += strings::formatmessage(IDS_REPORTTAGFOLDEREID);
-			szReportTag += strings::BinToHexString(m_lpFolderEntryID.getData(), true);
+			addHeader(L"\r\nFolderEntryID = ");
+			addBlockBytes(m_lpFolderEntryID);
 		}
 
 		if (m_cbMessageEntryID.getData())
 		{
-			szReportTag += strings::formatmessage(IDS_REPORTTAGMESSAGEEID);
-			szReportTag += strings::BinToHexString(m_lpMessageEntryID.getData(), true);
+			addHeader(L"\r\nMessageEntryID = ");
+			addBlockBytes(m_lpMessageEntryID);
 		}
 
 		if (m_cbSearchFolderEntryID.getData())
 		{
-			szReportTag += strings::formatmessage(IDS_REPORTTAGSFEID);
-			szReportTag += strings::BinToHexString(m_lpSearchFolderEntryID.getData(), true);
+			addHeader(L"\r\nSearchFolderEntryID = ");
+			addBlockBytes(m_lpSearchFolderEntryID);
 		}
 
 		if (m_cbMessageSearchKey.getData())
 		{
-			szReportTag += strings::formatmessage(IDS_REPORTTAGMESSAGEKEY);
-			szReportTag += strings::BinToHexString(m_lpMessageSearchKey.getData(), true);
+			addHeader(L"\r\nMessageSearchKey = ");
+			addBlockBytes(m_lpMessageSearchKey);
 		}
 
 		if (m_cchAnsiText.getData())
 		{
-			szReportTag += strings::formatmessage(
-				IDS_REPORTTAGANSITEXT,
-				m_cchAnsiText.getData(),
-				m_lpszAnsiText.getData().c_str()); // STRING_OK
+			addHeader(L"\r\n");
+			addBlock(m_cchAnsiText, L"cchAnsiText = 0x%1!08X!\r\n", m_cchAnsiText.getData());
+			addBlock(m_cchAnsiText, L"AnsiText = %1!hs!", m_lpszAnsiText.getData().c_str());
 		}
-
-		return szReportTag;
 	}
 }

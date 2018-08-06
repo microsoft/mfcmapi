@@ -11,7 +11,7 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlock() override;
 
 		blockBytes m_Cookie; // 8 characters + NULL terminator
 		blockT<DWORD> m_Version;

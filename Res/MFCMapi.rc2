@@ -1873,18 +1873,6 @@ IDS_EXTENDEDFLAGDATASFTAG "\r\n\tSearchFolderTag = 0x%1!08X!"
 IDS_EXTENDEDFLAGDATATODOVERSION "\r\n\tToDoFolderVersion = 0x%1!08X!"
 
 IDS_EXTENDEDFLAGUNKNOWN "\r\n\tUnknown Data = "
-IDS_REPORTTAGHEADER "Report Tag: \r\n\
-Cookie = "
-IDS_REPORTTAGVERSION "\r\n\
-Version = 0x%1!08X! = %2!ws!"
-
-IDS_REPORTTAGSTOREEID "\r\nStoreEntryID = "
-IDS_REPORTTAGFOLDEREID "\r\nFolderEntryID = "
-IDS_REPORTTAGMESSAGEEID "\r\nMessageEntryID = "
-IDS_REPORTTAGSFEID "\r\nSearchFolderEntryID = "
-IDS_REPORTTAGMESSAGEKEY "\r\nMessageSearchKey = "
-IDS_REPORTTAGANSITEXT "\r\ncchAnsiText = 0x%1!08X!\r\n\
-AnsiText = %2!hs!"
 
 IDS_CONVERSATIONINDEXHEADER "Conversation Index: \r\n\
 Unnamed byte = 0x%1!02X! = %1!d!\r\n\
