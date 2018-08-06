@@ -14,11 +14,11 @@ namespace smartview
 	//
 	struct PropertyName
 	{
-		BYTE Kind{};
-		GUID Guid{};
-		DWORD LID{};
-		BYTE NameSize{};
-		std::wstring Name;
+		blockT<BYTE> Kind{};
+		blockT<GUID> Guid{};
+		blockT<DWORD> LID{};
+		blockT<BYTE> NameSize{};
+		blockT<std::wstring> Name;
 	};
 
 	// [MS-OXORULE]
@@ -28,9 +28,9 @@ namespace smartview
 	//
 	struct NamedPropertyInformation
 	{
-		WORD NoOfNamedProps{};
-		std::vector<WORD> PropId;
-		DWORD NamedPropertiesSize{};
+		blockT<WORD> NoOfNamedProps{};
+		std::vector<blockT<WORD>> PropId;
+		blockT<DWORD> NamedPropertiesSize{};
 		std::vector<PropertyName> PropertyName;
 	};
 

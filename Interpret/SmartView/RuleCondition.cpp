@@ -12,33 +12,33 @@ namespace smartview
 
 	void RuleCondition::Parse()
 	{
-		m_NamedPropertyInformation.NoOfNamedProps = m_Parser.Get<WORD>();
-		if (m_NamedPropertyInformation.NoOfNamedProps && m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
+		m_NamedPropertyInformation.NoOfNamedProps = m_Parser.GetBlock<WORD>();
+		if (m_NamedPropertyInformation.NoOfNamedProps.getData() &&
+			m_NamedPropertyInformation.NoOfNamedProps.getData() < _MaxEntriesLarge)
 		{
 			{
-				for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
+				for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps.getData(); i++)
 				{
-					WORD propId = 0;
-					propId = m_Parser.Get<WORD>();
+					auto propId = m_Parser.GetBlock<WORD>();
 					m_NamedPropertyInformation.PropId.push_back(propId);
 				}
 			}
 
-			m_NamedPropertyInformation.NamedPropertiesSize = m_Parser.Get<DWORD>();
+			m_NamedPropertyInformation.NamedPropertiesSize = m_Parser.GetBlock<DWORD>();
 			{
-				for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
+				for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps.getData(); i++)
 				{
 					PropertyName propertyName;
-					propertyName.Kind = m_Parser.Get<BYTE>();
-					propertyName.Guid = m_Parser.Get<GUID>();
-					if (MNID_ID == propertyName.Kind)
+					propertyName.Kind = m_Parser.GetBlock<BYTE>();
+					propertyName.Guid = m_Parser.GetBlock<GUID>();
+					if (propertyName.Kind.getData() == MNID_ID)
 					{
-						propertyName.LID = m_Parser.Get<DWORD>();
+						propertyName.LID = m_Parser.GetBlock<DWORD>();
 					}
-					else if (MNID_STRING == propertyName.Kind)
+					else if (propertyName.Kind.getData() == MNID_STRING)
 					{
-						propertyName.NameSize = m_Parser.Get<BYTE>();
-						propertyName.Name = m_Parser.GetStringW(propertyName.NameSize / sizeof(WCHAR));
+						propertyName.NameSize = m_Parser.GetBlock<BYTE>();
+						propertyName.Name = m_Parser.GetBlockStringW(propertyName.NameSize.getData() / sizeof(WCHAR));
 					}
 
 					m_NamedPropertyInformation.PropertyName.push_back(propertyName);
@@ -76,23 +76,23 @@ namespace smartview
 			for (size_t i = 0; i < m_NamedPropertyInformation.PropId.size(); i++)
 			{
 				ruleCondition.push_back(
-					strings::formatmessage(IDS_RULECONNAMEPROPID, i, m_NamedPropertyInformation.PropId[i]));
+					strings::formatmessage(IDS_RULECONNAMEPROPID, i, m_NamedPropertyInformation.PropId[i].getData()));
 
 				ruleCondition.push_back(
 					strings::formatmessage(IDS_RULECONNAMEPROPKIND, m_NamedPropertyInformation.PropertyName[i].Kind));
 
-				ruleCondition.push_back(guid::GUIDToString(&m_NamedPropertyInformation.PropertyName[i].Guid));
+				ruleCondition.push_back(guid::GUIDToString(&m_NamedPropertyInformation.PropertyName[i].Guid.getData()));
 
-				if (MNID_ID == m_NamedPropertyInformation.PropertyName[i].Kind)
+				if (m_NamedPropertyInformation.PropertyName[i].Kind.getData() == MNID_ID)
 				{
 					ruleCondition.push_back(
 						strings::formatmessage(IDS_RULECONNAMEPROPLID, m_NamedPropertyInformation.PropertyName[i].LID));
 				}
-				else if (MNID_STRING == m_NamedPropertyInformation.PropertyName[i].Kind)
+				else if (m_NamedPropertyInformation.PropertyName[i].Kind.getData() == MNID_STRING)
 				{
 					ruleCondition.push_back(strings::formatmessage(
 						IDS_RULENAMEPROPSIZE, m_NamedPropertyInformation.PropertyName[i].NameSize));
-					ruleCondition.push_back(m_NamedPropertyInformation.PropertyName[i].Name);
+					ruleCondition.push_back(m_NamedPropertyInformation.PropertyName[i].Name.getData());
 				}
 			}
 		}
