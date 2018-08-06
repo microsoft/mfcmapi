@@ -40,16 +40,14 @@ namespace smartview
 		m_Year.setData(static_cast<WORD>(b1.getData() << 8 | b2.getData()));
 		m_Year.setOffset(b1.getOffset());
 		m_Year.setSize(b1.getSize() + b2.getSize());
-		addBlock(m_Year, strings::formatmessage(L"Year: 0x%1!04X! = %1!d!\r\n", m_Year.getData()));
+		addBlock(m_Year, L"Year: 0x%1!04X! = %1!d!\r\n", m_Year.getData());
 
 		m_Month = m_Parser.GetBlock<BYTE>();
 		const auto szFlags = interpretprop::InterpretFlags(flagGlobalObjectIdMonth, m_Month.getData());
-		addBlock(
-			m_Month,
-			strings::formatmessage(L"Month: 0x%1!02X! = %1!d! = %2!ws!\r\n", m_Month.getData(), szFlags.c_str()));
+		addBlock(m_Month, L"Month: 0x%1!02X! = %1!d! = %2!ws!\r\n", m_Month.getData(), szFlags.c_str());
 
 		m_Day = m_Parser.GetBlock<BYTE>();
-		addBlock(m_Day, strings::formatmessage(L"Day: 0x%1!02X! = %1!d!\r\n", m_Day.getData()));
+		addBlock(m_Day, L"Day: 0x%1!02X! = %1!d!\r\n", m_Day.getData());
 
 		m_CreationTime = m_Parser.GetBlock<FILETIME>();
 		std::wstring propString;
@@ -57,18 +55,16 @@ namespace smartview
 		strings::FileTimeToString(m_CreationTime.getData(), propString, altPropString);
 		addBlock(
 			m_CreationTime,
-			strings::formatmessage(
-				L"Creation Time = 0x%1!08X!:0x%2!08X! = %3!ws!\r\n",
-				m_CreationTime.getData().dwHighDateTime,
-				m_CreationTime.getData().dwLowDateTime,
-				propString.c_str()));
+			L"Creation Time = 0x%1!08X!:0x%2!08X! = %3!ws!\r\n",
+			m_CreationTime.getData().dwHighDateTime,
+			m_CreationTime.getData().dwLowDateTime,
+			propString.c_str());
 
 		m_X = m_Parser.GetBlock<LARGE_INTEGER>();
-		addBlock(
-			m_X, strings::formatmessage(L"X: 0x%1!08X!:0x%2!08X!\r\n", m_X.getData().HighPart, m_X.getData().LowPart));
+		addBlock(m_X, L"X: 0x%1!08X!:0x%2!08X!\r\n", m_X.getData().HighPart, m_X.getData().LowPart);
 
 		m_dwSize = m_Parser.GetBlock<DWORD>();
-		addBlock(m_dwSize, strings::formatmessage(L"Size: 0x%1!02X! = %1!d!\r\n", m_dwSize.getData()));
+		addBlock(m_dwSize, L"Size: 0x%1!02X! = %1!d!\r\n", m_dwSize.getData());
 
 		m_lpData = m_Parser.GetBlockBYTES(m_dwSize.getData(), _MaxBytes);
 		if (m_lpData.getData().size())

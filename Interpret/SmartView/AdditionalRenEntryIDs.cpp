@@ -95,54 +95,47 @@ namespace smartview
 	void AdditionalRenEntryIDs::ParseBlocks()
 	{
 		addHeader(L"Additional Ren Entry IDs\r\n");
-		addHeader(strings::formatmessage(L"PersistDataCount = %1!d!", m_ppdPersistData.size()));
+		addHeader(L"PersistDataCount = %1!d!", m_ppdPersistData.size());
 
 		if (m_ppdPersistData.size())
 		{
 			for (WORD iPersistElement = 0; iPersistElement < m_ppdPersistData.size(); iPersistElement++)
 			{
-				addHeader(strings::formatmessage(L"\r\n\r\n"));
-				addHeader(strings::formatmessage(L"Persist Element %1!d!:\r\n", iPersistElement));
+				addHeader(L"\r\n\r\n");
+				addHeader(L"Persist Element %1!d!:\r\n", iPersistElement);
 				addBlock(
 					m_ppdPersistData[iPersistElement].wPersistID,
-					strings::formatmessage(
-						L"PersistID = 0x%1!04X! = %2!ws!\r\n",
-						m_ppdPersistData[iPersistElement].wPersistID.getData(),
-						interpretprop::InterpretFlags(
-							flagPersistID, m_ppdPersistData[iPersistElement].wPersistID.getData())
-							.c_str()));
+					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
+					m_ppdPersistData[iPersistElement].wPersistID.getData(),
+					interpretprop::InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID.getData())
+						.c_str());
 				addBlock(
 					m_ppdPersistData[iPersistElement].wDataElementsSize,
-					strings::formatmessage(
-						L"DataElementsSize = 0x%1!04X!",
-						m_ppdPersistData[iPersistElement].wDataElementsSize.getData()));
+					L"DataElementsSize = 0x%1!04X!",
+					m_ppdPersistData[iPersistElement].wDataElementsSize.getData());
 
 				if (m_ppdPersistData[iPersistElement].ppeDataElement.size())
 				{
 					for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].ppeDataElement.size();
 						 iDataElement++)
 					{
-						addHeader(strings::formatmessage(L"\r\nDataElement: %1!d!\r\n", iDataElement));
+						addHeader(L"\r\nDataElement: %1!d!\r\n", iDataElement);
 
 						addBlock(
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
-							strings::formatmessage(
-								L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
-								m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID.getData(),
-								interpretprop::InterpretFlags(
-									flagElementID,
-									m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID.getData())
-									.c_str()));
+							L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
+							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID.getData(),
+							interpretprop::InterpretFlags(
+								flagElementID,
+								m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID.getData())
+								.c_str());
 
 						addBlock(
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize,
-							strings::formatmessage(
-								L"\tElementDataSize = 0x%1!04X!\r\n",
-								m_ppdPersistData[iPersistElement]
-									.ppeDataElement[iDataElement]
-									.wElementDataSize.getData()));
+							L"\tElementDataSize = 0x%1!04X!\r\n",
+							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize.getData());
 
-						addHeader(strings::formatmessage(L"\tElementData = "));
+						addHeader(L"\tElementData = ");
 						addBlockBytes(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData);
 					}
 				}

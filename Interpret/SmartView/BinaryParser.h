@@ -105,7 +105,6 @@ namespace smartview
 			return ret;
 		}
 
-		// TODO: Do we need block versions of the string getters?
 		std::string GetStringA(size_t cchChar = -1);
 		blockT<std::string> GetBlockStringA(size_t cchChar = -1)
 		{
