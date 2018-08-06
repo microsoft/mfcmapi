@@ -50,6 +50,8 @@ namespace smartview
 
 	private:
 		virtual void Parse() = 0;
+		// TODO: make this = 0 to ensure everyone has a ParseBlocks implementation
+		virtual void ParseBlocks() {}
 		virtual _Check_return_ std::wstring ToStringInternal() { return data.ToString(); }
 
 		bool m_bEnableJunk;

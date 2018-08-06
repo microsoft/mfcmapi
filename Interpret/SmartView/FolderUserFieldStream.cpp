@@ -51,8 +51,6 @@ namespace smartview
 				m_FieldDefinitionsW.push_back(folderFieldDefinitionW);
 			}
 		}
-
-		ParseBlocks();
 	}
 
 	FolderFieldDefinitionCommon FolderUserFieldStream::BinToFolderFieldDefinitionCommon()

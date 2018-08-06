@@ -24,7 +24,7 @@ namespace smartview
 	private:
 		void Parse() override;
 		PersistData BinToPersistData();
-		void ParseBlocks();
+		void ParseBlocks() override;
 
 		std::vector<PersistData> m_ppdPersistData;
 	};

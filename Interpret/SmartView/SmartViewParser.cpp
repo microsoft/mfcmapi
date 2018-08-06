@@ -19,6 +19,7 @@ namespace smartview
 	{
 		if (m_bParsed || m_Parser.Empty()) return;
 		Parse();
+		ParseBlocks();
 		m_bParsed = true;
 	}
 

@@ -38,7 +38,7 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		void ParseBlocks();
+		void ParseBlocks() override;
 
 		FolderFieldDefinitionCommon BinToFolderFieldDefinitionCommon();
 

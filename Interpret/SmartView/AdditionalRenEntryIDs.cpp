@@ -35,8 +35,6 @@ namespace smartview
 				m_ppdPersistData.push_back(BinToPersistData());
 			}
 		}
-
-		ParseBlocks();
 	}
 
 	PersistData AdditionalRenEntryIDs::BinToPersistData()
