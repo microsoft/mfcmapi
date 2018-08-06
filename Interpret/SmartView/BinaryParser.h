@@ -23,11 +23,14 @@ namespace smartview
 		void setSize(size_t _size) { cb = _size; }
 		size_t getOffset() const { return offset; }
 		void setOffset(size_t _offset) { offset = _offset; }
-		void addHeader(const std::wstring& _text) { children.emplace_back(block(_text)); }
-		void addBlock(const block& child, const std::wstring& _text)
+		template <typename... Args> void addHeader(const std::wstring& _text, Args... args)
+		{
+			children.emplace_back(block(strings::formatmessage(_text.c_str(), args...)));
+		}
+		template <typename... Args> void addBlock(const block& child, const std::wstring& _text, Args... args)
 		{
 			auto block = child;
-			block.text = _text;
+			block.text = strings::formatmessage(_text.c_str(), args...);
 			children.push_back(block);
 		}
 		void addBlockBytes(blockBytes child);

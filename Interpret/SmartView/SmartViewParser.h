@@ -44,8 +44,14 @@ namespace smartview
 
 		// Nu style parsing data
 		block data;
-		void addHeader(const std::wstring& text) { data.addHeader(text); }
-		void addBlock(const block& _block, const std::wstring& text) { data.addBlock(_block, text); }
+		template <typename... Args> void addHeader(const std::wstring& text, Args... args)
+		{
+			data.addHeader(text, args...);
+		}
+		template <typename... Args> void addBlock(const block& _block, const std::wstring& text, Args... args)
+		{
+			data.addBlock(_block, text, args...);
+		}
 		void addBlockBytes(const blockBytes& _block) { data.addBlockBytes(_block); }
 
 	private:
