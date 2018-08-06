@@ -5,60 +5,53 @@
 
 namespace smartview
 {
-	ReportTag::ReportTag()
-	{
-		m_Version = 0;
-		m_cbStoreEntryID = 0;
-		m_cbFolderEntryID = 0;
-		m_cbMessageEntryID = 0;
-		m_cbSearchFolderEntryID = 0;
-		m_cbMessageSearchKey = 0;
-		m_cchAnsiText = 0;
-	}
+	ReportTag::ReportTag() {}
 
 	void ReportTag::Parse()
 	{
-		m_Cookie = m_Parser.GetBYTES(9);
+		m_Cookie = m_Parser.GetBlockBYTES(9);
 
 		// Version is big endian, so we have to read individual bytes
-		const auto hiWord = m_Parser.Get<WORD>();
-		const auto loWord = m_Parser.Get<WORD>();
-		m_Version = hiWord << 16 | loWord;
+		const auto hiWord = m_Parser.GetBlock<WORD>();
+		const auto loWord = m_Parser.GetBlock<WORD>();
+		m_Version.setOffset(hiWord.getOffset());
+		m_Version.setSize(hiWord.getSize() + loWord.getSize());
+		m_Version.setData(hiWord.getData() << 16 | loWord.getData());
 
-		m_cbStoreEntryID = m_Parser.Get<DWORD>();
-		if (m_cbStoreEntryID)
+		m_cbStoreEntryID = m_Parser.GetBlock<DWORD>();
+		if (m_cbStoreEntryID.getData())
 		{
-			m_lpStoreEntryID = m_Parser.GetBYTES(m_cbStoreEntryID, _MaxEID);
+			m_lpStoreEntryID = m_Parser.GetBlockBYTES(m_cbStoreEntryID.getData(), _MaxEID);
 		}
 
-		m_cbFolderEntryID = m_Parser.Get<DWORD>();
-		if (m_cbFolderEntryID)
+		m_cbFolderEntryID = m_Parser.GetBlock<DWORD>();
+		if (m_cbFolderEntryID.getData())
 		{
-			m_lpFolderEntryID = m_Parser.GetBYTES(m_cbFolderEntryID, _MaxEID);
+			m_lpFolderEntryID = m_Parser.GetBlockBYTES(m_cbFolderEntryID.getData(), _MaxEID);
 		}
 
-		m_cbMessageEntryID = m_Parser.Get<DWORD>();
-		if (m_cbMessageEntryID)
+		m_cbMessageEntryID = m_Parser.GetBlock<DWORD>();
+		if (m_cbMessageEntryID.getData())
 		{
-			m_lpMessageEntryID = m_Parser.GetBYTES(m_cbMessageEntryID, _MaxEID);
+			m_lpMessageEntryID = m_Parser.GetBlockBYTES(m_cbMessageEntryID.getData(), _MaxEID);
 		}
 
-		m_cbSearchFolderEntryID = m_Parser.Get<DWORD>();
-		if (m_cbSearchFolderEntryID)
+		m_cbSearchFolderEntryID = m_Parser.GetBlock<DWORD>();
+		if (m_cbSearchFolderEntryID.getData())
 		{
-			m_lpSearchFolderEntryID = m_Parser.GetBYTES(m_cbSearchFolderEntryID, _MaxEID);
+			m_lpSearchFolderEntryID = m_Parser.GetBlockBYTES(m_cbSearchFolderEntryID.getData(), _MaxEID);
 		}
 
-		m_cbMessageSearchKey = m_Parser.Get<DWORD>();
-		if (m_cbMessageSearchKey)
+		m_cbMessageSearchKey = m_Parser.GetBlock<DWORD>();
+		if (m_cbMessageSearchKey.getData())
 		{
-			m_lpMessageSearchKey = m_Parser.GetBYTES(m_cbMessageSearchKey, _MaxEID);
+			m_lpMessageSearchKey = m_Parser.GetBlockBYTES(m_cbMessageSearchKey.getData(), _MaxEID);
 		}
 
-		m_cchAnsiText = m_Parser.Get<DWORD>();
-		if (m_cchAnsiText)
+		m_cchAnsiText = m_Parser.GetBlock<DWORD>();
+		if (m_cchAnsiText.getData())
 		{
-			m_lpszAnsiText = m_Parser.GetStringA(m_cchAnsiText);
+			m_lpszAnsiText = m_Parser.GetBlockStringA(m_cchAnsiText.getData());
 		}
 	}
 
@@ -66,47 +59,47 @@ namespace smartview
 	{
 		auto szReportTag = strings::formatmessage(IDS_REPORTTAGHEADER);
 
-		szReportTag += strings::BinToHexString(m_Cookie, true);
+		szReportTag += strings::BinToHexString(m_Cookie.getData(), true);
 
-		auto szFlags = interpretprop::InterpretFlags(flagReportTagVersion, m_Version);
-		szReportTag += strings::formatmessage(IDS_REPORTTAGVERSION, m_Version, szFlags.c_str());
+		auto szFlags = interpretprop::InterpretFlags(flagReportTagVersion, m_Version.getData());
+		szReportTag += strings::formatmessage(IDS_REPORTTAGVERSION, m_Version.getData(), szFlags.c_str());
 
-		if (m_cbStoreEntryID)
+		if (m_cbStoreEntryID.getData())
 		{
 			szReportTag += strings::formatmessage(IDS_REPORTTAGSTOREEID);
-			szReportTag += strings::BinToHexString(m_lpStoreEntryID, true);
+			szReportTag += strings::BinToHexString(m_lpStoreEntryID.getData(), true);
 		}
 
-		if (m_cbFolderEntryID)
+		if (m_cbFolderEntryID.getData())
 		{
 			szReportTag += strings::formatmessage(IDS_REPORTTAGFOLDEREID);
-			szReportTag += strings::BinToHexString(m_lpFolderEntryID, true);
+			szReportTag += strings::BinToHexString(m_lpFolderEntryID.getData(), true);
 		}
 
-		if (m_cbMessageEntryID)
+		if (m_cbMessageEntryID.getData())
 		{
 			szReportTag += strings::formatmessage(IDS_REPORTTAGMESSAGEEID);
-			szReportTag += strings::BinToHexString(m_lpMessageEntryID, true);
+			szReportTag += strings::BinToHexString(m_lpMessageEntryID.getData(), true);
 		}
 
-		if (m_cbSearchFolderEntryID)
+		if (m_cbSearchFolderEntryID.getData())
 		{
 			szReportTag += strings::formatmessage(IDS_REPORTTAGSFEID);
-			szReportTag += strings::BinToHexString(m_lpSearchFolderEntryID, true);
+			szReportTag += strings::BinToHexString(m_lpSearchFolderEntryID.getData(), true);
 		}
 
-		if (m_cbMessageSearchKey)
+		if (m_cbMessageSearchKey.getData())
 		{
 			szReportTag += strings::formatmessage(IDS_REPORTTAGMESSAGEKEY);
-			szReportTag += strings::BinToHexString(m_lpMessageSearchKey, true);
+			szReportTag += strings::BinToHexString(m_lpMessageSearchKey.getData(), true);
 		}
 
-		if (m_cchAnsiText)
+		if (m_cchAnsiText.getData())
 		{
 			szReportTag += strings::formatmessage(
 				IDS_REPORTTAGANSITEXT,
-				m_cchAnsiText,
-				m_lpszAnsiText.c_str()); // STRING_OK
+				m_cchAnsiText.getData(),
+				m_lpszAnsiText.getData().c_str()); // STRING_OK
 		}
 
 		return szReportTag;
