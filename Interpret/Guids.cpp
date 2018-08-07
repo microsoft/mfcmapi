@@ -49,7 +49,7 @@
 
 namespace guid
 {
-	std::wstring GUIDToString(_In_opt_ GUID guid) { return GUIDToString(&guid); }
+	std::wstring GUIDToString(_In_ GUID guid) { return GUIDToString(&guid); }
 
 	std::wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 	{
@@ -74,6 +74,8 @@ namespace guid
 			lpGUID->Data4[6],
 			lpGUID->Data4[7]);
 	}
+
+	std::wstring GUIDToStringAndName(_In_ GUID guid) { return GUIDToStringAndName(&guid); }
 
 	std::wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 	{
