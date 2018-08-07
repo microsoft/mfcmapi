@@ -11,7 +11,7 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		void ParseBlock() override;
+		void ParseBlocks() override;
 
 		blockBytes m_Cookie; // 8 characters + NULL terminator
 		blockT<DWORD> m_Version;
