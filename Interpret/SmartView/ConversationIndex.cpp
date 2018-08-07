@@ -97,34 +97,47 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring ConversationIndex::ToStringInternal()
+	void ConversationIndex::ParseBlocks()
 	{
+		addHeader(L"Conversation Index: \r\n");
+
 		std::wstring PropString;
 		std::wstring AltPropString;
 		strings::FileTimeToString(m_ftCurrent.getData(), PropString, AltPropString);
-		auto szGUID = guid::GUIDToString(m_guid.getData());
-		auto szConversationIndex = strings::formatmessage(
-			IDS_CONVERSATIONINDEXHEADER,
-			m_UnnamedByte.getData(),
+		addBlock(m_UnnamedByte, L"Unnamed byte = 0x%1!02X! = %1!d!\r\n", m_UnnamedByte.getData());
+		addBlock(
+			m_ftCurrent,
+			L"Current FILETIME: (Low = 0x%1!08X!, High = 0x%2!08X!) = %3!ws!\r\n",
 			m_ftCurrent.getData().dwLowDateTime,
 			m_ftCurrent.getData().dwHighDateTime,
-			PropString.c_str(),
-			szGUID.c_str());
+			PropString.c_str());
+		addBlock(m_guid, L"GUID = %1!ws!", guid::GUIDToString(m_guid.getData()).c_str());
 
 		if (m_lpResponseLevels.size())
 		{
 			for (ULONG i = 0; i < m_lpResponseLevels.size(); i++)
 			{
-				szConversationIndex += strings::formatmessage(
-					IDS_CONVERSATIONINDEXRESPONSELEVEL,
+				addBlock(
+					m_lpResponseLevels[i].DeltaCode,
+					L"\r\nResponseLevel[%1!d!].DeltaCode = %2!d!",
 					i,
-					m_lpResponseLevels[i].DeltaCode.getData(),
-					m_lpResponseLevels[i].TimeDelta.getData(),
-					m_lpResponseLevels[i].Random.getData(),
+					m_lpResponseLevels[i].DeltaCode.getData());
+				addBlock(
+					m_lpResponseLevels[i].TimeDelta,
+					L"\r\nResponseLevel[%1!d!].TimeDelta = 0x%2!08X! = %2!d!",
+					i,
+					m_lpResponseLevels[i].TimeDelta.getData());
+				addBlock(
+					m_lpResponseLevels[i].Random,
+					L"\r\nResponseLevel[%1!d!].Random = 0x%2!02X! = %2!d!",
+					i,
+					m_lpResponseLevels[i].Random.getData());
+				addBlock(
+					m_lpResponseLevels[i].Level,
+					L"\r\nResponseLevel[%1!d!].ResponseLevel = 0x%2!02X! = %2!d!",
+					i,
 					m_lpResponseLevels[i].Level.getData());
 			}
 		}
-
-		return szConversationIndex;
 	}
 }

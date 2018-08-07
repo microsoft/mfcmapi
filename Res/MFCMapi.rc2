@@ -1874,16 +1874,6 @@ IDS_EXTENDEDFLAGDATATODOVERSION "\r\n\tToDoFolderVersion = 0x%1!08X!"
 
 IDS_EXTENDEDFLAGUNKNOWN "\r\n\tUnknown Data = "
 
-IDS_CONVERSATIONINDEXHEADER "Conversation Index: \r\n\
-Unnamed byte = 0x%1!02X! = %1!d!\r\n\
-Current FILETIME: (Low = 0x%2!08X!, High = 0x%3!08X!) = %4!ws!\r\n\
-GUID = %5!ws!"
-
-IDS_CONVERSATIONINDEXRESPONSELEVEL "\r\nResponseLevel[%1!d!].DeltaCode = %2!d!\
-\r\nResponseLevel[%1!d!].TimeDelta = 0x%3!08X! = %3!d!\
-\r\nResponseLevel[%1!d!].Random = 0x%4!02X! = %4!d!\
-\r\nResponseLevel[%1!d!].ResponseLevel = 0x%5!02X! = %5!d!"
-
 IDS_TASKASSIGNERSHEADER "Task Assigners: \r\n\
 cAssigners = 0x%1!08X! = %1!d!"
 
