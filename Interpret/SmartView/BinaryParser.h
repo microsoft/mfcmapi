@@ -35,7 +35,7 @@ namespace smartview
 		}
 		void addBlock(const block& child) { children.push_back(child); }
 		void addBlockBytes(blockBytes child);
-		void addLine() { data.addHeader(L"\r\n)"); }
+		void addLine() { addHeader(L"\r\n"); }
 
 	private:
 		size_t offset;
