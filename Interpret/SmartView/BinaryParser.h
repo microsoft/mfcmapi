@@ -33,6 +33,7 @@ namespace smartview
 			block.text = strings::formatmessage(_text.c_str(), args...);
 			children.push_back(block);
 		}
+		void addBlock(const block& child) { children.push_back(child); }
 		void addBlockBytes(blockBytes child);
 
 	private:

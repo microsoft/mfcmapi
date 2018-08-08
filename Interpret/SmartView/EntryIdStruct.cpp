@@ -375,15 +375,15 @@ namespace smartview
 					szFlags.c_str());
 				addBlock(
 					m_OneOffRecipientObject.ANSI.DisplayName,
-					L"szDisplayName = %1!ws!\r\n",
+					L"szDisplayName = %1!hs!\r\n",
 					m_OneOffRecipientObject.ANSI.DisplayName.getData().c_str());
 				addBlock(
 					m_OneOffRecipientObject.ANSI.AddressType,
-					L"szAddressType = %1!ws!\r\n",
+					L"szAddressType = %1!hs!\r\n",
 					m_OneOffRecipientObject.ANSI.AddressType.getData().c_str());
 				addBlock(
 					m_OneOffRecipientObject.ANSI.EmailAddress,
-					L"szEmailAddress = %1!ws!",
+					L"szEmailAddress = %1!hs!",
 					m_OneOffRecipientObject.ANSI.EmailAddress.getData().c_str());
 			}
 		}
@@ -408,11 +408,12 @@ namespace smartview
 		// Contact Address Book / Personal Distribution List (PDL)
 		else if (eidtContact == m_ObjectType)
 		{
+			addHeader(L"\r\n");
 			auto szVersion =
 				interpretprop::InterpretFlags(flagContabVersion, m_ContactAddressBookObject.Version.getData());
 			addBlock(
 				m_ContactAddressBookObject.Version,
-				L"\r\nVersion = 0x%1!08X! = %2!ws!\r\n",
+				L"Version = 0x%1!08X! = %2!ws!\r\n",
 				m_ContactAddressBookObject.Version.getData(),
 				szVersion.c_str());
 
@@ -449,11 +450,11 @@ namespace smartview
 				break;
 			}
 
-			// TODO: Finish this
-			//for (auto entry : m_ContactAddressBookObject.lpEntryID)
-			//{
-			//	szEntryId += entry.ToString();
-			//}
+			for (auto entry : m_ContactAddressBookObject.lpEntryID)
+			{
+				entry.EnsureParsed();
+				addBlock(entry.data);
+			}
 		}
 		else if (eidtWAB == m_ObjectType)
 		{
@@ -464,18 +465,19 @@ namespace smartview
 				m_WAB.Type.getData(),
 				interpretprop::InterpretFlags(flagWABEntryIDType, m_WAB.Type.getData()).c_str());
 
-			// TODO: Finish this
-			//for (auto& entry : m_WAB.lpEntryID)
-			//{
-			//	szEntryId += entry.ToString();
-			//}
+			for (auto& entry : m_WAB.lpEntryID)
+			{
+				entry.EnsureParsed();
+				addBlock(entry.data);
+			}
 		}
 		else if (eidtMessageDatabase == m_ObjectType)
 		{
+			addHeader(L"\r\n");
 			auto szVersion = interpretprop::InterpretFlags(flagMDBVersion, m_MessageDatabaseObject.Version.getData());
 			addBlock(
 				m_MessageDatabaseObject.Version,
-				L"\r\nVersion = 0x%1!02X! = %2!ws!\r\n",
+				L"Version = 0x%1!02X! = %2!ws!\r\n",
 				m_MessageDatabaseObject.Version.getData(),
 				szVersion.c_str());
 
@@ -568,7 +570,7 @@ namespace smartview
 					interpretprop::InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v3.ulMagic.getData());
 				addBlock(
 					m_MessageDatabaseObject.v3.ulMagic,
-					L"\r\nMagic = 0x%1!08X! = %2!ws!\r\n",
+					L"Magic = 0x%1!08X! = %2!ws!\r\n",
 					m_MessageDatabaseObject.v3.ulMagic.getData(),
 					szV3Magic.c_str());
 				addBlock(
@@ -631,9 +633,9 @@ namespace smartview
 			addBlock(
 				m_FolderOrMessage.FolderObject.DatabaseGUID,
 				L"Folder Database GUID = %1!ws!\r\n",
-				guid::GUIDToStringAndName(m_FolderOrMessage.FolderObject.DatabaseGUID.getData()).c_str());
+				guid::GUIDToStringAndName(m_FolderOrMessage.MessageObject.FolderDatabaseGUID.getData()).c_str());
 			addHeader(L"Folder GlobalCounter = ");
-			addBlockBytes(m_FolderOrMessage.FolderObject.GlobalCounter);
+			addBlockBytes(m_FolderOrMessage.MessageObject.FolderGlobalCounter);
 
 			addHeader(L"\r\n");
 			addHeader(L"Pad1 = ");
@@ -644,6 +646,7 @@ namespace smartview
 				m_FolderOrMessage.MessageObject.MessageDatabaseGUID,
 				L"Message Database GUID = %1!ws!\r\n",
 				guid::GUIDToStringAndName(m_FolderOrMessage.MessageObject.MessageDatabaseGUID.getData()).c_str());
+			addHeader(L"Message GlobalCounter = ");
 			addBlockBytes(m_FolderOrMessage.MessageObject.MessageGlobalCounter);
 
 			addHeader(L"\r\n");

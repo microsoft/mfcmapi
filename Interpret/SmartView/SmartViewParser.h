@@ -52,6 +52,7 @@ namespace smartview
 		{
 			data.addBlock(_block, text, args...);
 		}
+		void addBlock(const block& child) { data.addBlock(child); }
 		void addBlockBytes(const blockBytes& _block) { data.addBlockBytes(_block); }
 
 	private:
