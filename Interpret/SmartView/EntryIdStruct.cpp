@@ -452,7 +452,6 @@ namespace smartview
 
 			for (auto entry : m_ContactAddressBookObject.lpEntryID)
 			{
-				entry.EnsureParsed();
 				addBlock(entry.data);
 			}
 		}
@@ -467,7 +466,6 @@ namespace smartview
 
 			for (auto& entry : m_WAB.lpEntryID)
 			{
-				entry.EnsureParsed();
 				addBlock(entry.data);
 			}
 		}
