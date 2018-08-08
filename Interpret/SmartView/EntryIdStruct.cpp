@@ -8,14 +8,11 @@
 
 namespace smartview
 {
-	EntryIdStruct::EntryIdStruct()
-		: m_FolderOrMessage(), m_MessageDatabaseObject(), m_AddressBookObject(), m_ContactAddressBookObject(), m_WAB()
-	{
-		m_ObjectType = eidtUnknown;
-	}
+	EntryIdStruct::EntryIdStruct() {}
 
 	void EntryIdStruct::Parse()
 	{
+		m_ObjectType = eidtUnknown;
 		m_abFlags = m_Parser.GetBlockBYTES(4);
 		if (!m_abFlags.getSize()) return;
 		m_ProviderUID = m_Parser.GetBlock<GUID>();
@@ -262,60 +259,63 @@ namespace smartview
 		if (eidtUnknown == m_ObjectType && m_abFlags.getData()[0] & MAPI_SHORTTERM) m_ObjectType = eidtShortTerm;
 	}
 
-	_Check_return_ std::wstring EntryIdStruct::ToStringInternal()
+	void EntryIdStruct::ParseBlocks()
 	{
-		std::wstring szEntryId;
-
 		switch (m_ObjectType)
 		{
 		case eidtUnknown:
-			szEntryId = strings::formatmessage(IDS_ENTRYIDUNKNOWN);
+			addHeader(L"Entry ID:\r\n");
 			break;
 		case eidtEphemeral:
-			szEntryId = strings::formatmessage(IDS_ENTRYIDEPHEMERALADDRESS);
+			addHeader(L"Ephemeral Entry ID:\r\n");
 			break;
 		case eidtShortTerm:
-			szEntryId = strings::formatmessage(IDS_ENTRYIDSHORTTERM);
+			addHeader(L"Short Term Entry ID:\r\n");
 			break;
 		case eidtFolder:
-			szEntryId = strings::formatmessage(IDS_ENTRYIDEXCHANGEFOLDER);
+			addHeader(L"Exchange Folder Entry ID:\r\n");
 			break;
 		case eidtMessage:
-			szEntryId = strings::formatmessage(IDS_ENTRYIDEXCHANGEMESSAGE);
+			addHeader(L"Exchange Message Entry ID:\r\n");
 			break;
 		case eidtMessageDatabase:
-			szEntryId = strings::formatmessage(IDS_ENTRYIDMAPIMESSAGESTORE);
+			addHeader(L"MAPI Message Store Entry ID:\r\n");
 			break;
 		case eidtOneOff:
-			szEntryId = strings::formatmessage(IDS_ENTRYIDMAPIONEOFF);
+			addHeader(L"MAPI One Off Recipient Entry ID:\r\n");
 			break;
 		case eidtAddressBook:
-			szEntryId = strings::formatmessage(IDS_ENTRYIDEXCHANGEADDRESS);
+			addHeader(L"Exchange Address Entry ID:\r\n");
 			break;
 		case eidtContact:
-			szEntryId = strings::formatmessage(IDS_ENTRYIDCONTACTADDRESS);
+			addHeader(L"Contact Address Book / PDL Entry ID:\r\n");
 			break;
 		case eidtWAB:
-			szEntryId = strings::formatmessage(IDS_ENTRYIDWRAPPEDENTRYID);
+			addHeader(L"Wrapped Entry ID:\r\n");
 			break;
 		}
 
-		if (!m_abFlags.getSize()) return szEntryId;
+		if (!m_abFlags.getSize()) return;
 		if (0 == (m_abFlags.getData()[0] | m_abFlags.getData()[1] | m_abFlags.getData()[2] | m_abFlags.getData()[3]))
 		{
-			szEntryId += strings::formatmessage(IDS_ENTRYIDHEADER1);
+			addHeader(L"abFlags = 0x00000000\r\n");
 		}
 		else if (0 == (m_abFlags.getData()[1] | m_abFlags.getData()[2] | m_abFlags.getData()[3]))
 		{
-			szEntryId += strings::formatmessage(
-				IDS_ENTRYIDHEADER2,
+			addBlock(
+				m_abFlags,
+				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n",
 				m_abFlags.getData()[0],
 				interpretprop::InterpretFlags(flagEntryId0, m_abFlags.getData()[0]).c_str());
+			addHeader(L"abFlags[1..3] = 0x000000\r\n");
 		}
 		else
 		{
-			szEntryId += strings::formatmessage(
-				IDS_ENTRYIDHEADER3,
+			addBlock(
+				m_abFlags,
+				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n"
+				L"abFlags[1] = 0x%3!02X!= %4!ws!\r\n"
+				L"abFlags[2..3] = 0x%5!02X!%6!02X!\r\n",
 				m_abFlags.getData()[0],
 				interpretprop::InterpretFlags(flagEntryId0, m_abFlags.getData()[0]).c_str(),
 				m_abFlags.getData()[1],
@@ -324,70 +324,102 @@ namespace smartview
 				m_abFlags.getData()[3]);
 		}
 
-		auto szGUID = guid::GUIDToStringAndName(m_ProviderUID.getData());
-		szEntryId += strings::formatmessage(IDS_ENTRYIDPROVIDERGUID, szGUID.c_str());
+		addBlock(m_ProviderUID, L"Provider GUID = %1!ws!", guid::GUIDToStringAndName(m_ProviderUID.getData()).c_str());
 
 		if (eidtEphemeral == m_ObjectType)
 		{
-			auto szVersion = interpretprop::InterpretFlags(flagExchangeABVersion, m_EphemeralObject.Version.getData());
-			auto szType = InterpretNumberAsStringProp(m_EphemeralObject.Type.getData(), PR_DISPLAY_TYPE);
+			addHeader(L"\r\n");
 
-			szEntryId += strings::formatmessage(
-				IDS_ENTRYIDEPHEMERALADDRESSDATA,
+			auto szVersion = interpretprop::InterpretFlags(flagExchangeABVersion, m_EphemeralObject.Version.getData());
+			addBlock(
+				m_EphemeralObject.Version,
+				L"Version = 0x%1!08X! = %2!ws!\r\n",
 				m_EphemeralObject.Version.getData(),
-				szVersion.c_str(),
-				m_EphemeralObject.Type.getData(),
-				szType.c_str());
+				szVersion.c_str());
+
+			auto szType = InterpretNumberAsStringProp(m_EphemeralObject.Type.getData(), PR_DISPLAY_TYPE);
+			addBlock(
+				m_EphemeralObject.Type, L"Type = 0x%1!08X! = %2!ws!", m_EphemeralObject.Type.getData(), szType.c_str());
 		}
 		else if (eidtOneOff == m_ObjectType)
 		{
 			auto szFlags = interpretprop::InterpretFlags(flagOneOffEntryId, m_OneOffRecipientObject.Bitmask.getData());
 			if (MAPI_UNICODE & m_OneOffRecipientObject.Bitmask.getData())
 			{
-				szEntryId += strings::formatmessage(
-					IDS_ONEOFFENTRYIDFOOTERUNICODE,
+				addHeader(L"\r\n");
+				addBlock(
+					m_OneOffRecipientObject.Bitmask,
+					L"dwBitmask: 0x%1!08X! = %2!ws!\r\n",
 					m_OneOffRecipientObject.Bitmask.getData(),
-					szFlags.c_str(),
-					m_OneOffRecipientObject.Unicode.DisplayName.getData().c_str(),
-					m_OneOffRecipientObject.Unicode.AddressType.getData().c_str(),
+					szFlags.c_str());
+				addBlock(
+					m_OneOffRecipientObject.Unicode.DisplayName,
+					L"szDisplayName = %1!ws!\r\n",
+					m_OneOffRecipientObject.Unicode.DisplayName.getData().c_str());
+				addBlock(
+					m_OneOffRecipientObject.Unicode.AddressType,
+					L"szAddressType = %1!ws!\r\n",
+					m_OneOffRecipientObject.Unicode.AddressType.getData().c_str());
+				addBlock(
+					m_OneOffRecipientObject.Unicode.EmailAddress,
+					L"szEmailAddress = %1!ws!",
 					m_OneOffRecipientObject.Unicode.EmailAddress.getData().c_str());
 			}
 			else
 			{
-				szEntryId += strings::formatmessage(
-					IDS_ONEOFFENTRYIDFOOTERANSI,
+				addHeader(L"\r\n");
+				addBlock(
+					m_OneOffRecipientObject.Bitmask,
+					L"dwBitmask: 0x%1!08X! = %2!ws!\r\n",
 					m_OneOffRecipientObject.Bitmask.getData(),
-					szFlags.c_str(),
-					m_OneOffRecipientObject.ANSI.DisplayName.getData().c_str(),
-					m_OneOffRecipientObject.ANSI.AddressType.getData().c_str(),
+					szFlags.c_str());
+				addBlock(
+					m_OneOffRecipientObject.ANSI.DisplayName,
+					L"szDisplayName = %1!ws!\r\n",
+					m_OneOffRecipientObject.ANSI.DisplayName.getData().c_str());
+				addBlock(
+					m_OneOffRecipientObject.ANSI.AddressType,
+					L"szAddressType = %1!ws!\r\n",
+					m_OneOffRecipientObject.ANSI.AddressType.getData().c_str());
+				addBlock(
+					m_OneOffRecipientObject.ANSI.EmailAddress,
+					L"szEmailAddress = %1!ws!",
 					m_OneOffRecipientObject.ANSI.EmailAddress.getData().c_str());
 			}
 		}
 		else if (eidtAddressBook == m_ObjectType)
 		{
+			addHeader(L"\r\n");
 			auto szVersion =
 				interpretprop::InterpretFlags(flagExchangeABVersion, m_AddressBookObject.Version.getData());
-			auto szType = InterpretNumberAsStringProp(m_AddressBookObject.Type.getData(), PR_DISPLAY_TYPE);
-
-			szEntryId += strings::formatmessage(
-				IDS_ENTRYIDEXCHANGEADDRESSDATA,
+			addBlock(
+				m_AddressBookObject.Version,
+				L"Version = 0x%1!08X! = %2!ws!\r\n",
 				m_AddressBookObject.Version.getData(),
-				szVersion.c_str(),
+				szVersion.c_str());
+			auto szType = InterpretNumberAsStringProp(m_AddressBookObject.Type.getData(), PR_DISPLAY_TYPE);
+			addBlock(
+				m_AddressBookObject.Type,
+				L"Type = 0x%1!08X! = %2!ws!\r\n",
 				m_AddressBookObject.Type.getData(),
-				szType.c_str(),
-				m_AddressBookObject.X500DN.getData().c_str());
+				szType.c_str());
+			addBlock(m_AddressBookObject.X500DN, L"X500DN = %1!hs!", m_AddressBookObject.X500DN.getData().c_str());
 		}
 		// Contact Address Book / Personal Distribution List (PDL)
 		else if (eidtContact == m_ObjectType)
 		{
 			auto szVersion =
 				interpretprop::InterpretFlags(flagContabVersion, m_ContactAddressBookObject.Version.getData());
-			auto szType = interpretprop::InterpretFlags(flagContabType, m_ContactAddressBookObject.Type.getData());
-
-			szEntryId += strings::formatmessage(
-				IDS_ENTRYIDCONTACTADDRESSDATAHEAD,
+			addBlock(
+				m_ContactAddressBookObject.Version,
+				L"\r\nVersion = 0x%1!08X! = %2!ws!\r\n",
 				m_ContactAddressBookObject.Version.getData(),
-				szVersion.c_str(),
+				szVersion.c_str());
+
+			auto szType = interpretprop::InterpretFlags(flagContabType, m_ContactAddressBookObject.Type.getData());
+			addBlock(
+				m_ContactAddressBookObject.Type,
+				L"Type = 0x%1!08X! = %2!ws!\r\n",
 				m_ContactAddressBookObject.Type.getData(),
 				szType.c_str());
 
@@ -395,64 +427,95 @@ namespace smartview
 			{
 			case CONTAB_USER:
 			case CONTAB_DISTLIST:
-				szEntryId += strings::formatmessage(
-					IDS_ENTRYIDCONTACTADDRESSDATAUSER,
+				addBlock(
+					m_ContactAddressBookObject.Index,
+					L"Index = 0x%1!08X! = %2!ws!\r\n",
 					m_ContactAddressBookObject.Index.getData(),
-					interpretprop::InterpretFlags(flagContabIndex, m_ContactAddressBookObject.Index.getData()).c_str(),
+					interpretprop::InterpretFlags(flagContabIndex, m_ContactAddressBookObject.Index.getData()).c_str());
+				addBlock(
+					m_ContactAddressBookObject.EntryIDCount,
+					L"EntryIDCount = 0x%1!08X!\r\n",
 					m_ContactAddressBookObject.EntryIDCount.getData());
 				break;
 			case CONTAB_ROOT:
 			case CONTAB_CONTAINER:
 			case CONTAB_SUBROOT:
-				szGUID = guid::GUIDToStringAndName(m_ContactAddressBookObject.muidID.getData());
-				szEntryId += strings::formatmessage(IDS_ENTRYIDCONTACTADDRESSDATACONTAINER, szGUID.c_str());
+				addBlock(
+					m_ContactAddressBookObject.muidID,
+					L"muidID = %1!ws!\r\n",
+					guid::GUIDToStringAndName(m_ContactAddressBookObject.muidID.getData()).c_str());
 				break;
 			default:
 				break;
 			}
 
-			for (auto entry : m_ContactAddressBookObject.lpEntryID)
-			{
-				szEntryId += entry.ToString();
-			}
+			// TODO: Finish this
+			//for (auto entry : m_ContactAddressBookObject.lpEntryID)
+			//{
+			//	szEntryId += entry.ToString();
+			//}
 		}
 		else if (eidtWAB == m_ObjectType)
 		{
-			szEntryId += strings::formatmessage(
-				IDS_ENTRYIDWRAPPEDENTRYIDDATA,
+			addHeader(L"\r\n");
+			addBlock(
+				m_WAB.Type,
+				L"Wrapped Entry Type = 0x%1!02X! = %2!ws!\r\n",
 				m_WAB.Type.getData(),
 				interpretprop::InterpretFlags(flagWABEntryIDType, m_WAB.Type.getData()).c_str());
 
-			for (auto& entry : m_WAB.lpEntryID)
-			{
-				szEntryId += entry.ToString();
-			}
+			// TODO: Finish this
+			//for (auto& entry : m_WAB.lpEntryID)
+			//{
+			//	szEntryId += entry.ToString();
+			//}
 		}
 		else if (eidtMessageDatabase == m_ObjectType)
 		{
 			auto szVersion = interpretprop::InterpretFlags(flagMDBVersion, m_MessageDatabaseObject.Version.getData());
-			auto szFlag = interpretprop::InterpretFlags(flagMDBFlag, m_MessageDatabaseObject.Flag.getData());
-
-			szEntryId += strings::formatmessage(
-				IDS_ENTRYIDMAPIMESSAGESTOREDATA,
+			addBlock(
+				m_MessageDatabaseObject.Version,
+				L"\r\nVersion = 0x%1!02X! = %2!ws!\r\n",
 				m_MessageDatabaseObject.Version.getData(),
-				szVersion.c_str(),
+				szVersion.c_str());
+
+			auto szFlag = interpretprop::InterpretFlags(flagMDBFlag, m_MessageDatabaseObject.Flag.getData());
+			addBlock(
+				m_MessageDatabaseObject.Flag,
+				L"Flag = 0x%1!02X! = %2!ws!\r\n",
 				m_MessageDatabaseObject.Flag.getData(),
-				szFlag.c_str(),
+				szFlag.c_str());
+
+			addBlock(
+				m_MessageDatabaseObject.DLLFileName,
+				L"DLLFileName = %1!hs!",
 				m_MessageDatabaseObject.DLLFileName.getData().c_str());
 			if (m_MessageDatabaseObject.bIsExchange)
 			{
+				addHeader(L"\r\n");
+
 				auto szWrappedType =
 					InterpretNumberAsStringProp(m_MessageDatabaseObject.WrappedType.getData(), PR_PROFILE_OPEN_FLAGS);
-
-				szGUID = guid::GUIDToStringAndName(m_MessageDatabaseObject.WrappedProviderUID.getData());
-				szEntryId += strings::formatmessage(
-					IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATA,
-					m_MessageDatabaseObject.WrappedFlags.getData(),
-					szGUID.c_str(),
+				addBlock(
+					m_MessageDatabaseObject.WrappedFlags,
+					L"Wrapped Flags = 0x%1!08X!\r\n",
+					m_MessageDatabaseObject.WrappedFlags.getData());
+				addBlock(
+					m_MessageDatabaseObject.WrappedProviderUID,
+					L"WrappedProviderUID = %1!ws!\r\n",
+					guid::GUIDToStringAndName(m_MessageDatabaseObject.WrappedProviderUID.getData()).c_str());
+				addBlock(
+					m_MessageDatabaseObject.WrappedType,
+					L"WrappedType = 0x%1!08X! = %2!ws!\r\n",
 					m_MessageDatabaseObject.WrappedType.getData(),
-					szWrappedType.c_str(),
-					m_MessageDatabaseObject.ServerShortname.getData().c_str(),
+					szWrappedType.c_str());
+				addBlock(
+					m_MessageDatabaseObject.ServerShortname,
+					L"ServerShortname = %1!hs!\r\n",
+					m_MessageDatabaseObject.ServerShortname.getData().c_str());
+				addBlock(
+					m_MessageDatabaseObject.MailboxDN,
+					L"MailboxDN = %1!hs!",
 					m_MessageDatabaseObject.MailboxDN.getData().c_str());
 			}
 
@@ -460,91 +523,132 @@ namespace smartview
 			{
 			case MDB_STORE_EID_V2_MAGIC:
 			{
+				addHeader(L"\r\n");
 				auto szV2Magic =
 					interpretprop::InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v2.ulMagic.getData());
+				addBlock(
+					m_MessageDatabaseObject.v2.ulMagic,
+					L"Magic = 0x%1!08X! = %2!ws!\r",
+					m_MessageDatabaseObject.v2.ulMagic.getData(),
+					szV2Magic.c_str());
+				addBlock(
+					m_MessageDatabaseObject.v2.ulSize,
+					L"Size = 0x%1!08X! = %1!d!\r\n",
+					m_MessageDatabaseObject.v2.ulSize.getData());
 				auto szV2Version =
 					interpretprop::InterpretFlags(flagEidVersion, m_MessageDatabaseObject.v2.ulVersion.getData());
-
-				szEntryId += strings::formatmessage(
-					IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV2,
-					m_MessageDatabaseObject.v2.ulMagic.getData(),
-					szV2Magic.c_str(),
-					m_MessageDatabaseObject.v2.ulSize.getData(),
+				addBlock(
+					m_MessageDatabaseObject.v2.ulVersion,
+					L"Version = 0x%1!08X! = %2!ws!\r\n",
 					m_MessageDatabaseObject.v2.ulVersion.getData(),
-					szV2Version.c_str(),
-					m_MessageDatabaseObject.v2.ulOffsetDN.getData(),
-					m_MessageDatabaseObject.v2.ulOffsetFQDN.getData(),
-					m_MessageDatabaseObject.v2DN.getData().c_str(),
+					szV2Version.c_str());
+				addBlock(
+					m_MessageDatabaseObject.v2.ulOffsetDN,
+					L"OffsetDN = 0x%1!08X!\r\n",
+					m_MessageDatabaseObject.v2.ulOffsetDN.getData());
+				addBlock(
+					m_MessageDatabaseObject.v2.ulOffsetFQDN,
+					L"OffsetFQDN = 0x%1!08X!\r\n",
+					m_MessageDatabaseObject.v2.ulOffsetFQDN.getData());
+				addBlock(
+					m_MessageDatabaseObject.v2DN, L"DN = %1!hs!\r\n", m_MessageDatabaseObject.v2DN.getData().c_str());
+				addBlock(
+					m_MessageDatabaseObject.v2FQDN,
+					L"FQDN = %1!ws!\r\n",
 					m_MessageDatabaseObject.v2FQDN.getData().c_str());
 
-				szEntryId += strings::BinToHexString(m_MessageDatabaseObject.v2Reserved.getData(), true);
+				addHeader(L"Reserved Bytes = ");
+				addBlockBytes(m_MessageDatabaseObject.v2Reserved);
 			}
 			break;
 			case MDB_STORE_EID_V3_MAGIC:
 			{
+				addHeader(L"\r\n");
 				auto szV3Magic =
 					interpretprop::InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v3.ulMagic.getData());
+				addBlock(
+					m_MessageDatabaseObject.v3.ulMagic,
+					L"\r\nMagic = 0x%1!08X! = %2!ws!\r\n",
+					m_MessageDatabaseObject.v3.ulMagic.getData(),
+					szV3Magic.c_str());
+				addBlock(
+					m_MessageDatabaseObject.v3.ulSize,
+					L"Size = 0x%1!08X! = %1!d!\r\n",
+					m_MessageDatabaseObject.v3.ulSize.getData());
 				auto szV3Version =
 					interpretprop::InterpretFlags(flagEidVersion, m_MessageDatabaseObject.v3.ulVersion.getData());
-
-				szEntryId += strings::formatmessage(
-					IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV3,
-					m_MessageDatabaseObject.v3.ulMagic.getData(),
-					szV3Magic.c_str(),
-					m_MessageDatabaseObject.v3.ulSize.getData(),
+				addBlock(
+					m_MessageDatabaseObject.v3.ulVersion,
+					L"Version = 0x%1!08X! = %2!ws!\r\n",
 					m_MessageDatabaseObject.v3.ulVersion.getData(),
-					szV3Version.c_str(),
-					m_MessageDatabaseObject.v3.ulOffsetSmtpAddress.getData(),
+					szV3Version.c_str());
+				addBlock(
+					m_MessageDatabaseObject.v3.ulOffsetSmtpAddress,
+					L"OffsetSmtpAddress = 0x%1!08X!\r\n",
+					m_MessageDatabaseObject.v3.ulOffsetSmtpAddress.getData());
+				addBlock(
+					m_MessageDatabaseObject.v3SmtpAddress,
+					L"SmtpAddress = %1!ws!\r\n",
 					m_MessageDatabaseObject.v3SmtpAddress.getData().c_str());
+				addHeader(L"Reserved Bytes = ");
 
-				szEntryId += strings::BinToHexString(m_MessageDatabaseObject.v2Reserved.getData(), true);
+				addBlockBytes(m_MessageDatabaseObject.v2Reserved);
 			}
 			break;
 			}
 		}
 		else if (eidtFolder == m_ObjectType)
 		{
+			addHeader(L"\r\n");
 			auto szType =
 				interpretprop::InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type.getData());
-
-			auto szDatabaseGUID = guid::GUIDToStringAndName(m_FolderOrMessage.FolderObject.DatabaseGUID.getData());
-
-			szEntryId += strings::formatmessage(
-				IDS_ENTRYIDEXCHANGEFOLDERDATA,
+			addBlock(
+				m_FolderOrMessage.Type,
+				L"Folder Type = 0x%1!04X! = %2!ws!\r\n",
 				m_FolderOrMessage.Type.getData(),
-				szType.c_str(),
-				szDatabaseGUID.c_str());
-			szEntryId += strings::BinToHexString(m_FolderOrMessage.FolderObject.GlobalCounter.getData(), true);
+				szType.c_str());
+			addBlock(
+				m_FolderOrMessage.FolderObject.DatabaseGUID,
+				L"Database GUID = %1!ws!\r\n",
+				guid::GUIDToStringAndName(m_FolderOrMessage.FolderObject.DatabaseGUID.getData()).c_str());
+			addHeader(L"GlobalCounter = ");
+			addBlockBytes(m_FolderOrMessage.FolderObject.GlobalCounter);
 
-			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEDATAPAD);
-			szEntryId += strings::BinToHexString(m_FolderOrMessage.FolderObject.Pad.getData(), true);
+			addHeader(L"\r\n");
+			addHeader(L"Pad = ");
+			addBlockBytes(m_FolderOrMessage.FolderObject.Pad);
 		}
 		else if (eidtMessage == m_ObjectType)
 		{
+			addHeader(L"\r\n");
 			auto szType =
 				interpretprop::InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type.getData());
-			auto szFolderDatabaseGUID =
-				guid::GUIDToStringAndName(m_FolderOrMessage.MessageObject.FolderDatabaseGUID.getData());
-			auto szMessageDatabaseGUID =
-				guid::GUIDToStringAndName(m_FolderOrMessage.MessageObject.MessageDatabaseGUID.getData());
-
-			szEntryId += strings::formatmessage(
-				IDS_ENTRYIDEXCHANGEMESSAGEDATA,
+			addBlock(
+				m_FolderOrMessage.Type,
+				L"Message Type = 0x%1!04X! = %2!ws!\r\n",
 				m_FolderOrMessage.Type.getData(),
-				szType.c_str(),
-				szFolderDatabaseGUID.c_str());
-			szEntryId += strings::BinToHexString(m_FolderOrMessage.MessageObject.FolderGlobalCounter.getData(), true);
+				szType.c_str());
+			addBlock(
+				m_FolderOrMessage.FolderObject.DatabaseGUID,
+				L"Folder Database GUID = %1!ws!\r\n",
+				guid::GUIDToStringAndName(m_FolderOrMessage.FolderObject.DatabaseGUID.getData()).c_str());
+			addHeader(L"Folder GlobalCounter = ");
+			addBlockBytes(m_FolderOrMessage.FolderObject.GlobalCounter);
 
-			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEDATAPADNUM, 1);
-			szEntryId += strings::BinToHexString(m_FolderOrMessage.MessageObject.Pad1.getData(), true);
+			addHeader(L"\r\n");
+			addHeader(L"Pad1 = ");
+			addBlockBytes(m_FolderOrMessage.MessageObject.Pad1);
 
-			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEMESSAGEDATAGUID, szMessageDatabaseGUID.c_str());
-			szEntryId += strings::BinToHexString(m_FolderOrMessage.MessageObject.MessageGlobalCounter.getData(), true);
+			addHeader(L"\r\n");
+			addBlock(
+				m_FolderOrMessage.MessageObject.MessageDatabaseGUID,
+				L"Message Database GUID = %1!ws!\r\n",
+				guid::GUIDToStringAndName(m_FolderOrMessage.MessageObject.MessageDatabaseGUID.getData()).c_str());
+			addBlockBytes(m_FolderOrMessage.MessageObject.MessageGlobalCounter);
 
-			szEntryId += strings::formatmessage(IDS_ENTRYIDEXCHANGEDATAPADNUM, 2);
-			szEntryId += strings::BinToHexString(m_FolderOrMessage.MessageObject.Pad2.getData(), true);
+			addHeader(L"\r\n");
+			addHeader(L"Pad2 = ");
+			addBlockBytes(m_FolderOrMessage.MessageObject.Pad2);
 		}
-
-		return szEntryId;
 	}
 }

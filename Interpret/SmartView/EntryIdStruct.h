@@ -138,7 +138,7 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
 		blockBytes m_abFlags; // 4 bytes
 		blockT<GUID> m_ProviderUID;
