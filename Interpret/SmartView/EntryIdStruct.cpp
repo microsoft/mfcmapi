@@ -328,7 +328,7 @@ namespace smartview
 
 		if (eidtEphemeral == m_ObjectType)
 		{
-			addHeader(L"\r\n");
+			addLine();
 
 			auto szVersion = interpretprop::InterpretFlags(flagExchangeABVersion, m_EphemeralObject.Version.getData());
 			addBlock(
@@ -346,7 +346,7 @@ namespace smartview
 			auto szFlags = interpretprop::InterpretFlags(flagOneOffEntryId, m_OneOffRecipientObject.Bitmask.getData());
 			if (MAPI_UNICODE & m_OneOffRecipientObject.Bitmask.getData())
 			{
-				addHeader(L"\r\n");
+				addLine();
 				addBlock(
 					m_OneOffRecipientObject.Bitmask,
 					L"dwBitmask: 0x%1!08X! = %2!ws!\r\n",
@@ -367,7 +367,7 @@ namespace smartview
 			}
 			else
 			{
-				addHeader(L"\r\n");
+				addLine();
 				addBlock(
 					m_OneOffRecipientObject.Bitmask,
 					L"dwBitmask: 0x%1!08X! = %2!ws!\r\n",
@@ -389,7 +389,7 @@ namespace smartview
 		}
 		else if (eidtAddressBook == m_ObjectType)
 		{
-			addHeader(L"\r\n");
+			addLine();
 			auto szVersion =
 				interpretprop::InterpretFlags(flagExchangeABVersion, m_AddressBookObject.Version.getData());
 			addBlock(
@@ -408,7 +408,7 @@ namespace smartview
 		// Contact Address Book / Personal Distribution List (PDL)
 		else if (eidtContact == m_ObjectType)
 		{
-			addHeader(L"\r\n");
+			addLine();
 			auto szVersion =
 				interpretprop::InterpretFlags(flagContabVersion, m_ContactAddressBookObject.Version.getData());
 			addBlock(
@@ -457,7 +457,7 @@ namespace smartview
 		}
 		else if (eidtWAB == m_ObjectType)
 		{
-			addHeader(L"\r\n");
+			addLine();
 			addBlock(
 				m_WAB.Type,
 				L"Wrapped Entry Type = 0x%1!02X! = %2!ws!\r\n",
@@ -471,7 +471,7 @@ namespace smartview
 		}
 		else if (eidtMessageDatabase == m_ObjectType)
 		{
-			addHeader(L"\r\n");
+			addLine();
 			auto szVersion = interpretprop::InterpretFlags(flagMDBVersion, m_MessageDatabaseObject.Version.getData());
 			addBlock(
 				m_MessageDatabaseObject.Version,
@@ -492,7 +492,7 @@ namespace smartview
 				m_MessageDatabaseObject.DLLFileName.getData().c_str());
 			if (m_MessageDatabaseObject.bIsExchange)
 			{
-				addHeader(L"\r\n");
+				addLine();
 
 				auto szWrappedType =
 					InterpretNumberAsStringProp(m_MessageDatabaseObject.WrappedType.getData(), PR_PROFILE_OPEN_FLAGS);
@@ -523,7 +523,7 @@ namespace smartview
 			{
 			case MDB_STORE_EID_V2_MAGIC:
 			{
-				addHeader(L"\r\n");
+				addLine();
 				auto szV2Magic =
 					interpretprop::InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v2.ulMagic.getData());
 				addBlock(
@@ -563,7 +563,7 @@ namespace smartview
 			break;
 			case MDB_STORE_EID_V3_MAGIC:
 			{
-				addHeader(L"\r\n");
+				addLine();
 				auto szV3Magic =
 					interpretprop::InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v3.ulMagic.getData());
 				addBlock(
@@ -599,7 +599,7 @@ namespace smartview
 		}
 		else if (eidtFolder == m_ObjectType)
 		{
-			addHeader(L"\r\n");
+			addLine();
 			auto szType =
 				interpretprop::InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type.getData());
 			addBlock(
@@ -614,13 +614,13 @@ namespace smartview
 			addHeader(L"GlobalCounter = ");
 			addBlockBytes(m_FolderOrMessage.FolderObject.GlobalCounter);
 
-			addHeader(L"\r\n");
+			addLine();
 			addHeader(L"Pad = ");
 			addBlockBytes(m_FolderOrMessage.FolderObject.Pad);
 		}
 		else if (eidtMessage == m_ObjectType)
 		{
-			addHeader(L"\r\n");
+			addLine();
 			auto szType =
 				interpretprop::InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type.getData());
 			addBlock(
@@ -635,11 +635,11 @@ namespace smartview
 			addHeader(L"Folder GlobalCounter = ");
 			addBlockBytes(m_FolderOrMessage.MessageObject.FolderGlobalCounter);
 
-			addHeader(L"\r\n");
+			addLine();
 			addHeader(L"Pad1 = ");
 			addBlockBytes(m_FolderOrMessage.MessageObject.Pad1);
 
-			addHeader(L"\r\n");
+			addLine();
 			addBlock(
 				m_FolderOrMessage.MessageObject.MessageDatabaseGUID,
 				L"Message Database GUID = %1!ws!\r\n",
@@ -647,7 +647,7 @@ namespace smartview
 			addHeader(L"Message GlobalCounter = ");
 			addBlockBytes(m_FolderOrMessage.MessageObject.MessageGlobalCounter);
 
-			addHeader(L"\r\n");
+			addLine();
 			addHeader(L"Pad2 = ");
 			addBlockBytes(m_FolderOrMessage.MessageObject.Pad2);
 		}

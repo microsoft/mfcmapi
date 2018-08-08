@@ -61,7 +61,7 @@ namespace smartview
 		addHeader(L"Cookie = ");
 		addBlockBytes(m_Cookie);
 
-		addHeader(L"\r\n");
+		addLine();
 		auto szFlags = interpretprop::InterpretFlags(flagReportTagVersion, m_Version.getData());
 		addBlock(m_Version, L"Version = 0x%1!08X! = %2!ws!", m_Version.getData(), szFlags.c_str());
 
@@ -97,7 +97,7 @@ namespace smartview
 
 		if (m_cchAnsiText.getData())
 		{
-			addHeader(L"\r\n");
+			addLine();
 			addBlock(m_cchAnsiText, L"cchAnsiText = 0x%1!08X!\r\n", m_cchAnsiText.getData());
 			addBlock(m_lpszAnsiText, L"AnsiText = %1!hs!", m_lpszAnsiText.getData().c_str());
 		}
