@@ -31,7 +31,7 @@ namespace smartview
 		m_EndTimeOffset = m_Parser.Get<DWORD>();
 		m_ExceptionCount = m_Parser.Get<WORD>();
 
-		if (m_ExceptionCount && m_ExceptionCount == m_RecurrencePattern.m_ModifiedInstanceCount &&
+		if (m_ExceptionCount && m_ExceptionCount == m_RecurrencePattern.m_ModifiedInstanceCount.getData() &&
 			m_ExceptionCount < _MaxEntriesSmall)
 		{
 			for (WORD i = 0; i < m_ExceptionCount; i++)
@@ -103,7 +103,7 @@ namespace smartview
 		m_ReservedBlock1Size = m_Parser.Get<DWORD>();
 		m_ReservedBlock1 = m_Parser.GetBYTES(m_ReservedBlock1Size, _MaxBytes);
 
-		if (m_ExceptionCount && m_ExceptionCount == m_RecurrencePattern.m_ModifiedInstanceCount &&
+		if (m_ExceptionCount && m_ExceptionCount == m_RecurrencePattern.m_ModifiedInstanceCount.getData() &&
 			m_ExceptionCount < _MaxEntriesSmall && m_ExceptionInfo.size())
 		{
 			for (WORD i = 0; i < m_ExceptionCount; i++)
