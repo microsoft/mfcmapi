@@ -1830,34 +1830,6 @@ ExtendedException[%1!d!].WideCharLocation: ""%3!ws!""\r\n"
 IDS_ARPEXRESERVED2 "ExtendedException[%1!d!].ReservedBlockEE2Size: 0x%2!08X!\r\n"
 IDS_ARPRESERVED2 "ReservedBlock2Size: 0x%1!08X!"
 
-IDS_RPHEADER "Recurrence Pattern: \r\n\
-ReaderVersion: 0x%1!04X!\r\n\
-WriterVersion: 0x%2!04X!\r\n\
-RecurFrequency: 0x%3!04X! = %4!ws!\r\n\
-PatternType: 0x%5!04X! = %6!ws!\r\n\
-CalendarType: 0x%7!04X! = %8!ws!\r\n\
-FirstDateTime: 0x%9!08X! = %9!d!\r\n\
-Period: 0x%10!08X! = %10!d!\r\n\
-SlidingFlag: 0x%11!08X!\r\n"
-
-IDS_RPPATTERNWEEK "PatternTypeSpecific.WeekRecurrencePattern: 0x%1!08X! = %2!ws!\r\n"
-IDS_RPPATTERNMONTH "PatternTypeSpecific.MonthRecurrencePattern: 0x%1!08X! = %1!d!\r\n"
-
-IDS_RPPATTERNMONTHNTH "PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek: 0x%1!08X! = %2!ws!\r\n\
-PatternTypeSpecific.MonthNthRecurrencePattern.N: 0x%3!08X! = %4!ws!\r\n"
-
-IDS_RPHEADER2 "EndType: 0x%1!08X! = %2!ws!\r\n\
-OccurrenceCount: 0x%3!08X! = %3!d!\r\n\
-FirstDOW: 0x%4!08X! = %5!ws!\r\n\
-DeletedInstanceCount: 0x%6!08X! = %6!d!\r\n"
-
-IDS_RPDELETEDINSTANCEDATES "DeletedInstanceDates[%1!d!]: 0x%2!08X! = %3!ws!\r\n"
-IDS_RPMODIFIEDINSTANCECOUNT "ModifiedInstanceCount: 0x%1!08X! = %1!d!\r\n"
-IDS_RPMODIFIEDINSTANCEDATES "ModifiedInstanceDates[%1!d!]: 0x%2!08X! = %3!ws!\r\n"
-
-IDS_RPDATE "StartDate: 0x%1!08X! = %1!d! = %2!ws!\r\n\
-EndDate: 0x%3!08X! = %3!d! = %4!ws!"
-
 IDS_FLAGS_PREFIX "Flags: "
 
 IDS_JUNKDATASIZE "\r\nUnparsed data size = 0x%1!08X!\r\n"
