@@ -54,6 +54,7 @@ namespace smartview
 		}
 		void addBlock(const block& child) { data.addBlock(child); }
 		void addBlockBytes(const blockBytes& _block) { data.addBlockBytes(_block); }
+		void addLine() { data.addLine(); }
 
 	private:
 		virtual void Parse() = 0;
