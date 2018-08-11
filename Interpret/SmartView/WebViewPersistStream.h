@@ -5,12 +5,12 @@ namespace smartview
 {
 	struct WebViewPersist
 	{
-		DWORD dwVersion;
-		DWORD dwType;
-		DWORD dwFlags;
-		std::vector<BYTE> dwUnused; // 7 DWORDs
-		DWORD cbData;
-		std::vector<BYTE> lpData;
+		blockT<DWORD >dwVersion;
+		blockT < DWORD> dwType;
+		blockT < DWORD >dwFlags;
+		blockBytes dwUnused; // 7 DWORDs
+		blockT < DWORD >cbData;
+		blockBytes lpData;
 	};
 
 	class WebViewPersistStream : public SmartViewParser
@@ -20,7 +20,7 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
 		DWORD m_cWebViews;
 		std::vector<WebViewPersist> m_lpWebViews;

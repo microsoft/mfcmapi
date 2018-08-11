@@ -1943,17 +1943,6 @@ cEntries = %1!d!\r\n\
 cbEntries = 0x%2!08X!"
 IDS_FELENTRYHEADER "\r\nEntry[%1!d!] Size = 0x%2!08X!"
 IDS_FELENTRYPADDING "Entry[%1!d!] Padding:"
-IDS_WEBVIEWSTREAMHEADER "Web View Persistence Object Stream\r\n\
-cWebViews = %1!d!"
-IDS_WEBVIEWHEADER "\r\n\r\nWeb View %1!d!\r\n\
-dwVersion = 0x%2!08X! = %3!ws!\r\n\
-dwType = 0x%4!08X! = %5!ws!\r\n\
-dwFlags = 0x%6!08X! = %7!ws!\r\n\
-dwUnused = "
-IDS_WEBVIEWCBDATA "\r\n\
-cbData = 0x%1!08X!"
-IDS_WEBVIEWURL "\r\nwzURL = "
-IDS_WEBVIEWDATA "\r\nlpData = "
 IDS_RECIPIENTROWSTREAMHEADER "Recipient Row Stream\r\n\
 cVersion = %1!d!\r\n\
 cRowCount = %2!d!\r\n"
