@@ -6,8 +6,8 @@ namespace smartview
 {
 	struct EntryListEntryStruct
 	{
-		DWORD EntryLength;
-		DWORD EntryLengthPad;
+		blockT<DWORD> EntryLength;
+		blockT<DWORD> EntryLengthPad;
 		EntryIdStruct EntryId;
 	};
 
@@ -18,10 +18,10 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
-		DWORD m_EntryCount;
-		DWORD m_Pad;
+		blockT<DWORD> m_EntryCount;
+		blockT<DWORD> m_Pad;
 
 		std::vector<EntryListEntryStruct> m_Entry;
 	};

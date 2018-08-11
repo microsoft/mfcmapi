@@ -4,50 +4,48 @@
 
 namespace smartview
 {
-	EntryList::EntryList()
-	{
-		m_EntryCount = 0;
-		m_Pad = 0;
-	}
+	EntryList::EntryList() {}
 
 	void EntryList::Parse()
 	{
-		m_EntryCount = m_Parser.Get<DWORD>();
-		m_Pad = m_Parser.Get<DWORD>();
+		m_EntryCount = m_Parser.GetBlock<DWORD>();
+		m_Pad = m_Parser.GetBlock<DWORD>();
 
-		if (m_EntryCount && m_EntryCount < _MaxEntriesLarge)
+		if (m_EntryCount.getData() && m_EntryCount.getData() < _MaxEntriesLarge)
 		{
 			{
-				for (DWORD i = 0; i < m_EntryCount; i++)
+				for (DWORD i = 0; i < m_EntryCount.getData(); i++)
 				{
 					EntryListEntryStruct entryListEntryStruct;
-					entryListEntryStruct.EntryLength = m_Parser.Get<DWORD>();
-					entryListEntryStruct.EntryLengthPad = m_Parser.Get<DWORD>();
+					entryListEntryStruct.EntryLength = m_Parser.GetBlock<DWORD>();
+					entryListEntryStruct.EntryLengthPad = m_Parser.GetBlock<DWORD>();
 					m_Entry.push_back(entryListEntryStruct);
 				}
 
-				for (DWORD i = 0; i < m_EntryCount; i++)
+				for (DWORD i = 0; i < m_EntryCount.getData(); i++)
 				{
-					const auto cbRemainingBytes = min(m_Entry[i].EntryLength, m_Parser.RemainingBytes());
+					const auto cbRemainingBytes = min(m_Entry[i].EntryLength.getData(), m_Parser.RemainingBytes());
 					m_Entry[i].EntryId.Init(cbRemainingBytes, m_Parser.GetCurrentAddress());
+					m_Entry[i].EntryId.EnsureParsed();
 					m_Parser.Advance(cbRemainingBytes);
 				}
 			}
 		}
 	}
 
-	_Check_return_ std::wstring EntryList::ToStringInternal()
+	void EntryList::ParseBlocks()
 	{
-		auto szEntryList = strings::formatmessage(IDS_ENTRYLISTDATA, m_EntryCount, m_Pad);
+		addBlock(m_EntryCount, L"EntryCount = 0x%1!08X!\r\n", m_EntryCount.getData());
+		addBlock(m_Pad, L"Pad = 0x%1!08X!", m_Pad.getData());
 
 		for (DWORD i = 0; i < m_Entry.size(); i++)
 		{
-			szEntryList +=
-				strings::formatmessage(IDS_ENTRYLISTENTRYID, i, m_Entry[i].EntryLength, m_Entry[i].EntryLengthPad);
-
-			szEntryList += m_Entry[i].EntryId.ToString();
+			addLine();
+			addHeader(L"EntryId[%1!d!]:\r\n", i);
+			addBlock(m_Entry[i].EntryLength, L"EntryLength = 0x%1!08X!\r\n", m_Entry[i].EntryLength.getData());
+			addBlock(m_Entry[i].EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", m_Entry[i].EntryLengthPad.getData());
+			addHeader(L"Entry Id = ");
+			addBlock(m_Entry[i].EntryId.getBlock());
 		}
-
-		return szEntryList;
 	}
 }

@@ -452,7 +452,7 @@ namespace smartview
 
 			for (auto entry : m_ContactAddressBookObject.lpEntryID)
 			{
-				addBlock(entry.data);
+				addBlock(entry.getBlock());
 			}
 		}
 		else if (eidtWAB == m_ObjectType)
@@ -466,7 +466,7 @@ namespace smartview
 
 			for (auto& entry : m_WAB.lpEntryID)
 			{
-				addBlock(entry.data);
+				addBlock(entry.getBlock());
 			}
 		}
 		else if (eidtMessageDatabase == m_ObjectType)

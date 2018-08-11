@@ -26,6 +26,7 @@ namespace smartview
 		void DisableJunkParsing();
 		size_t GetCurrentOffset() const;
 		void EnsureParsed();
+		block getBlock() const { return data; }
 
 	protected:
 		_Check_return_ std::wstring JunkDataToString(const std::vector<BYTE>& lpJunkData) const;
