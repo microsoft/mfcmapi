@@ -4,22 +4,19 @@
 
 namespace smartview
 {
-	XID::XID()
-	{
-		m_NamespaceGuid = {0};
-		m_cbLocalId = 0;
-	}
+	XID::XID() {}
 
 	void XID::Parse()
 	{
-		m_NamespaceGuid = m_Parser.Get<GUID>();
+		m_NamespaceGuid = m_Parser.GetBlock<GUID>();
 		m_cbLocalId = m_Parser.RemainingBytes();
-		m_LocalID = m_Parser.GetBYTES(m_cbLocalId, m_cbLocalId);
+		m_LocalID = m_Parser.GetBlockBYTES(m_cbLocalId, m_cbLocalId);
 	}
 
-	_Check_return_ std::wstring XID::ToStringInternal()
+	void XID::ParseBlocks()
 	{
-		return strings::formatmessage(
-			IDS_XID, guid::GUIDToString(&m_NamespaceGuid).c_str(), strings::BinToHexString(m_LocalID, true).c_str());
+		addHeader(L"XID:\r\n");
+		addBlock(m_NamespaceGuid, L"NamespaceGuid = %1!ws!\r\n", guid::GUIDToString(m_NamespaceGuid.getData()).c_str());
+		addBlock(m_LocalID, L"LocalId = %1!ws!", strings::BinToHexString(m_LocalID.getData(), true).c_str());
 	}
 }
