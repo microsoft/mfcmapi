@@ -6,10 +6,10 @@ namespace smartview
 {
 	struct FlatEntryID
 	{
-		DWORD dwSize;
+		blockT<DWORD> dwSize;
 		EntryIdStruct lpEntryID;
 
-		std::vector<BYTE> JunkData;
+		blockBytes JunkData;
 	};
 
 	class FlatEntryList : public SmartViewParser
@@ -21,8 +21,8 @@ namespace smartview
 		void Parse() override;
 		_Check_return_ std::wstring ToStringInternal() override;
 
-		DWORD m_cEntries;
-		DWORD m_cbEntries;
+		blockT<DWORD> m_cEntries;
+		blockT<DWORD> m_cbEntries;
 		std::vector<FlatEntryID> m_pEntryIDs;
 	};
 }
