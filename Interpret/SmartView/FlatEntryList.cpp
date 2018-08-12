@@ -58,9 +58,6 @@ namespace smartview
 			{
 				addLine();
 				addBlock(m_pEntryIDs[iFlatEntryList].lpEntryID.getBlock());
-				// TODO: maybe make this automatic?
-				auto junkData = m_pEntryIDs[iFlatEntryList].lpEntryID.getJunkData();
-				addBlock(junkData, JunkDataToString(junkData.getData()));
 			}
 
 			if (m_pEntryIDs[iFlatEntryList].JunkData.getData().size())

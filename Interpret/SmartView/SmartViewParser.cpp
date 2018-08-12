@@ -20,6 +20,13 @@ namespace smartview
 		if (m_bParsed || m_Parser.Empty()) return;
 		Parse();
 		ParseBlocks();
+
+		if (this->hasData() && m_bEnableJunk && m_Parser.RemainingBytes())
+		{
+			auto junkData = getJunkData();
+			addBlock(junkData, JunkDataToString(junkData.getData()));
+		}
+
 		m_bParsed = true;
 	}
 

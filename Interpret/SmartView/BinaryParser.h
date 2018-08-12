@@ -36,6 +36,7 @@ namespace smartview
 		void addBlock(const block& child) { children.push_back(child); }
 		void addBlockBytes(blockBytes child);
 		void addLine() { addHeader(L"\r\n"); }
+		bool hasData() const { return !text.empty() || children.size(); }
 
 	private:
 		size_t offset;
