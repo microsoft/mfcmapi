@@ -1778,55 +1778,6 @@ IDS_CONVERTCODEPAGE "Code Page For Conversion"
 IDS_CONVERTCHARSETTYPE "Character Set Type"
 IDS_CONVERTCHARSETAPPLYTYPE "Character Set Apply Type"
 
-IDS_ARPHEADER "\r\nAppointment Recurrence Pattern: \r\n\
-ReaderVersion2: 0x%1!08X!\r\n\
-WriterVersion2: 0x%2!08X!\r\n\
-StartTimeOffset: 0x%3!08X! = %3!d! = %4!ws!\r\n\
-EndTimeOffset: 0x%5!08X! = %5!d! = %6!ws!\r\n\
-ExceptionCount: 0x%7!04X!\r\n"
-
-IDS_ARPEXHEADER "ExceptionInfo[%1!d!].StartDateTime: 0x%2!08X! = %3!ws!\r\n\
-ExceptionInfo[%1!d!].EndDateTime: 0x%4!08X! = %5!ws!\r\n\
-ExceptionInfo[%1!d!].OriginalStartDate: 0x%6!08X! = %7!ws!\r\n\
-ExceptionInfo[%1!d!].OverrideFlags: 0x%8!04X! = %9!ws!\r\n"
-
-IDS_ARPEXSUBJECT "ExceptionInfo[%1!d!].SubjectLength: 0x%2!04X! = %2!d!\r\n\
-ExceptionInfo[%1!d!].SubjectLength2: 0x%3!04X! = %3!d!\r\n\
-ExceptionInfo[%1!d!].Subject: ""%4!hs!""\r\n"
-
-IDS_ARPEXMEETINGTYPE "ExceptionInfo[%1!d!].MeetingType: 0x%2!08X! = %3!ws!\r\n"
-IDS_ARPEXREMINDERDELTA "ExceptionInfo[%1!d!].ReminderDelta: 0x%2!08X!\r\n"
-IDS_ARPEXREMINDERSET "ExceptionInfo[%1!d!].ReminderSet: 0x%2!08X!\r\n"
-
-IDS_ARPEXLOCATION "ExceptionInfo[%1!d!].LocationLength: 0x%2!04X! = %2!d!\r\n\
-ExceptionInfo[%1!d!].LocationLength2: 0x%3!04X! = %3!d!\r\n\
-ExceptionInfo[%1!d!].Location: ""%4!hs!""\r\n"
-
-IDS_ARPEXBUSYSTATUS "ExceptionInfo[%1!d!].BusyStatus: 0x%2!08X! = %3!ws!\r\n"
-IDS_ARPEXATTACHMENT "ExceptionInfo[%1!d!].Attachment: 0x%2!08X!\r\n"
-IDS_ARPEXSUBTYPE "ExceptionInfo[%1!d!].SubType: 0x%2!08X!\r\n"
-IDS_ARPEXAPPOINTMENTCOLOR "ExceptionInfo[%1!d!].AppointmentColor: 0x%2!08X!\r\n"
-IDS_ARPRESERVED1 "ReservedBlock1Size: 0x%1!08X!\r\n"
-
-IDS_ARPEXCHANGEHIGHLIGHT "ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightSize: 0x%2!08X!\r\n\
-ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightValue: 0x%3!08X! = %4!ws!\r\n"
-
-IDS_ARPEXCHANGEHIGHLIGHTRESERVED "ExtendedException[%1!d!].ChangeHighlight.Reserved: "
-IDS_ARPEXRESERVED1 "ExtendedException[%1!d!].ReservedBlockEE1Size: 0x%2!08X!\r\n"
-
-IDS_ARPEXDATETIME "ExtendedException[%1!d!].StartDateTime: 0x%2!08X! = %3\r\n\
-ExtendedException[%1!d!].EndDateTime: 0x%4!08X! = %5!ws!\r\n\
-ExtendedException[%1!d!].OriginalStartDate: 0x%6!08X! = %7!ws!\r\n"
-
-IDS_ARPEXWIDESUBJECT "ExtendedException[%1!d!].WideCharSubjectLength: 0x%2!08X! = %2!d!\r\n\
-ExtendedException[%1!d!].WideCharSubject: ""%3!ws!""\r\n"
-
-IDS_ARPEXWIDELOCATION "ExtendedException[%1!d!].WideCharLocationLength: 0x%2!08X! = %2!d!\r\n\
-ExtendedException[%1!d!].WideCharLocation: ""%3!ws!""\r\n"
-
-IDS_ARPEXRESERVED2 "ExtendedException[%1!d!].ReservedBlockEE2Size: 0x%2!08X!\r\n"
-IDS_ARPRESERVED2 "ReservedBlock2Size: 0x%1!08X!"
-
 IDS_FLAGS_PREFIX "Flags: "
 
 IDS_JUNKDATASIZE "\r\nUnparsed data size = 0x%1!08X!\r\n"

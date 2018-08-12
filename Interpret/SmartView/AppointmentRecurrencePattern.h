@@ -9,30 +9,30 @@ namespace smartview
 	//   This structure specifies an exception
 	struct ExceptionInfo
 	{
-		DWORD StartDateTime;
-		DWORD EndDateTime;
-		DWORD OriginalStartDate;
-		WORD OverrideFlags;
-		WORD SubjectLength;
-		WORD SubjectLength2;
-		std::string Subject;
-		DWORD MeetingType;
-		DWORD ReminderDelta;
-		DWORD ReminderSet;
-		WORD LocationLength;
-		WORD LocationLength2;
-		std::string Location;
-		DWORD BusyStatus;
-		DWORD Attachment;
-		DWORD SubType;
-		DWORD AppointmentColor;
+		blockT<DWORD> StartDateTime;
+		blockT<DWORD> EndDateTime;
+		blockT<DWORD> OriginalStartDate;
+		blockT<WORD> OverrideFlags;
+		blockT<WORD> SubjectLength;
+		blockT<WORD> SubjectLength2;
+		blockStringA Subject;
+		blockT<DWORD> MeetingType;
+		blockT<DWORD> ReminderDelta;
+		blockT<DWORD> ReminderSet;
+		blockT<WORD> LocationLength;
+		blockT<WORD> LocationLength2;
+		blockStringA Location;
+		blockT<DWORD> BusyStatus;
+		blockT<DWORD> Attachment;
+		blockT<DWORD> SubType;
+		blockT<DWORD> AppointmentColor;
 	};
 
 	struct ChangeHighlight
 	{
-		DWORD ChangeHighlightSize;
-		DWORD ChangeHighlightValue;
-		std::vector<BYTE> Reserved;
+		blockT<DWORD> ChangeHighlightSize;
+		blockT<DWORD> ChangeHighlightValue;
+		blockBytes Reserved;
 	};
 
 	// ExtendedException
@@ -41,17 +41,17 @@ namespace smartview
 	struct ExtendedException
 	{
 		ChangeHighlight ChangeHighlight;
-		DWORD ReservedBlockEE1Size;
-		std::vector<BYTE> ReservedBlockEE1;
-		DWORD StartDateTime;
-		DWORD EndDateTime;
-		DWORD OriginalStartDate;
-		WORD WideCharSubjectLength;
-		std::wstring WideCharSubject;
-		WORD WideCharLocationLength;
-		std::wstring WideCharLocation;
-		DWORD ReservedBlockEE2Size;
-		std::vector<BYTE> ReservedBlockEE2;
+		blockT<DWORD> ReservedBlockEE1Size;
+		blockBytes ReservedBlockEE1;
+		blockT<DWORD> StartDateTime;
+		blockT<DWORD> EndDateTime;
+		blockT<DWORD> OriginalStartDate;
+		blockT<WORD> WideCharSubjectLength;
+		blockStringW WideCharSubject;
+		blockT<WORD> WideCharLocationLength;
+		blockStringW WideCharLocation;
+		blockT<DWORD> ReservedBlockEE2Size;
+		blockBytes ReservedBlockEE2;
 	};
 
 	// AppointmentRecurrencePattern
@@ -65,19 +65,19 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
 		RecurrencePattern m_RecurrencePattern;
-		DWORD m_ReaderVersion2;
-		DWORD m_WriterVersion2;
-		DWORD m_StartTimeOffset;
-		DWORD m_EndTimeOffset;
-		WORD m_ExceptionCount;
+		blockT<DWORD> m_ReaderVersion2;
+		blockT<DWORD> m_WriterVersion2;
+		blockT<DWORD> m_StartTimeOffset;
+		blockT<DWORD> m_EndTimeOffset;
+		blockT<WORD> m_ExceptionCount;
 		std::vector<ExceptionInfo> m_ExceptionInfo;
-		DWORD m_ReservedBlock1Size;
-		std::vector<BYTE> m_ReservedBlock1;
+		blockT<DWORD> m_ReservedBlock1Size;
+		blockBytes m_ReservedBlock1;
 		std::vector<ExtendedException> m_ExtendedException;
-		DWORD m_ReservedBlock2Size;
-		std::vector<BYTE> m_ReservedBlock2;
+		blockT<DWORD> m_ReservedBlock2Size;
+		blockBytes m_ReservedBlock2;
 	};
 }
