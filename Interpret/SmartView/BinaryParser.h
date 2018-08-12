@@ -67,6 +67,28 @@ namespace smartview
 		T data;
 	};
 
+	class blockStringA : public block
+	{
+	public:
+		blockStringA() {}
+		void setData(const std::string _data) { data = _data; }
+		std::string getData() const { return data; }
+
+	private:
+		std::string data;
+	};
+
+	class blockStringW : public block
+	{
+	public:
+		blockStringW() {}
+		void setData(const std::wstring _data) { data = _data; }
+		std::wstring getData() const { return data; }
+
+	private:
+		std::wstring data;
+	};
+
 	// TODO: Make all of this header only
 	// CBinaryParser - helper class for parsing binary data without
 	// worrying about whether you've run off the end of your buffer.
@@ -108,9 +130,9 @@ namespace smartview
 		}
 
 		std::string GetStringA(size_t cchChar = -1);
-		blockT<std::string> GetBlockStringA(size_t cchChar = -1)
+		blockStringA GetBlockStringA(size_t cchChar = -1)
 		{
-			auto ret = blockT<std::string>();
+			auto ret = blockStringA();
 			if (cchChar == -1)
 			{
 				cchChar =
@@ -128,9 +150,9 @@ namespace smartview
 			return ret;
 		}
 		std::wstring GetStringW(size_t cchChar = -1);
-		blockT<std::wstring> GetBlockStringW(size_t cchChar = -1)
+		blockStringW GetBlockStringW(size_t cchChar = -1)
 		{
-			auto ret = blockT<std::wstring>();
+			auto ret = blockStringW();
 			if (cchChar == -1)
 			{
 				cchChar =

@@ -18,7 +18,7 @@ namespace smartview
 		blockT<GUID> Guid{};
 		blockT<DWORD> LID{};
 		blockT<BYTE> NameSize{};
-		blockT<std::wstring> Name;
+		blockStringW Name;
 	};
 
 	// [MS-OXORULE]

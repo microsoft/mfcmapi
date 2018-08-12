@@ -26,6 +26,6 @@ namespace smartview
 		blockT<ULONG> m_cbMessageSearchKey;
 		blockBytes m_lpMessageSearchKey;
 		blockT<ULONG> m_cchAnsiText;
-		blockT<std::string> m_lpszAnsiText;
+		blockStringA m_lpszAnsiText;
 	};
 }

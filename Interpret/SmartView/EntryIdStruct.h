@@ -67,19 +67,19 @@ namespace smartview
 	{
 		blockT<BYTE> Version;
 		blockT<BYTE> Flag;
-		blockT<std::string> DLLFileName;
+		blockStringA DLLFileName;
 		bool bIsExchange;
 		blockT<ULONG> WrappedFlags;
 		blockT<GUID> WrappedProviderUID;
 		blockT<ULONG> WrappedType;
-		blockT<std::string> ServerShortname;
-		blockT<std::string> MailboxDN;
+		blockStringA ServerShortname;
+		blockStringA MailboxDN;
 		blockT<ULONG> MagicVersion;
 		MDB_STORE_EID_V2 v2;
 		MDB_STORE_EID_V3 v3;
-		blockT<std::string> v2DN;
-		blockT<std::wstring> v2FQDN;
-		blockT<std::wstring> v3SmtpAddress;
+		blockStringA v2DN;
+		blockStringW v2FQDN;
+		blockStringW v3SmtpAddress;
 		blockBytes v2Reserved; // 2 bytes
 	};
 
@@ -94,15 +94,15 @@ namespace smartview
 		blockT<DWORD> Bitmask;
 		struct Unicode
 		{
-			blockT<std::wstring> DisplayName;
-			blockT<std::wstring> AddressType;
-			blockT<std::wstring> EmailAddress;
+			blockStringW DisplayName;
+			blockStringW AddressType;
+			blockStringW EmailAddress;
 		} Unicode;
 		struct ANSI
 		{
-			blockT<std::string> DisplayName;
-			blockT<std::string> AddressType;
-			blockT<std::string> EmailAddress;
+			blockStringA DisplayName;
+			blockStringA AddressType;
+			blockStringA EmailAddress;
 		} ANSI;
 	};
 
@@ -110,7 +110,7 @@ namespace smartview
 	{
 		blockT<DWORD> Version;
 		blockT<DWORD> Type;
-		blockT<std::string> X500DN;
+		blockStringA X500DN;
 	};
 
 	class EntryIdStruct;

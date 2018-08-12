@@ -12,14 +12,14 @@ namespace smartview
 		blockT<DWORD> dwDisplay;
 		blockT<DWORD> iFmt;
 		blockT<WORD> wszFormulaLength;
-		blockT<std::wstring> wszFormula;
+		blockStringW wszFormula;
 	};
 
 	struct FolderFieldDefinitionA
 	{
 		blockT<DWORD> FieldType;
 		blockT<WORD> FieldNameLength;
-		blockT<std::string> FieldName;
+		blockStringA FieldName;
 		FolderFieldDefinitionCommon Common;
 	};
 
@@ -27,7 +27,7 @@ namespace smartview
 	{
 		blockT<DWORD> FieldType;
 		blockT<WORD> FieldNameLength;
-		blockT<std::wstring> FieldName;
+		blockStringW FieldName;
 		FolderFieldDefinitionCommon Common;
 	};
 
