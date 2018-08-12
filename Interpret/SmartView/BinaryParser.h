@@ -59,7 +59,7 @@ namespace smartview
 	template <class T> class blockT : public block
 	{
 	public:
-		blockT() {}
+		blockT() { memset(&data, 0, sizeof(data)); }
 		void setData(const T& _data) { data = _data; }
 		T getData() const { return data; }
 

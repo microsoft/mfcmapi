@@ -5,11 +5,11 @@ namespace smartview
 {
 	struct WebViewPersist
 	{
-		blockT<DWORD >dwVersion;
-		blockT < DWORD> dwType;
-		blockT < DWORD >dwFlags;
+		blockT<DWORD> dwVersion;
+		blockT<DWORD> dwType;
+		blockT<DWORD> dwFlags;
 		blockBytes dwUnused; // 7 DWORDs
-		blockT < DWORD >cbData;
+		blockT<DWORD> cbData;
 		blockBytes lpData;
 	};
 
