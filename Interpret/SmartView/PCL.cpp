@@ -4,12 +4,10 @@
 
 namespace smartview
 {
-	PCL::PCL() { m_cXID = 0; }
+	PCL::PCL() {}
 
 	void PCL::Parse()
 	{
-		m_cXID = 0;
-
 		// Run through the parser once to count the number of flag structs
 		for (;;)
 		{
@@ -33,34 +31,36 @@ namespace smartview
 			for (DWORD i = 0; i < m_cXID; i++)
 			{
 				SizedXID sizedXID;
-				sizedXID.XidSize = m_Parser.Get<BYTE>();
-				sizedXID.NamespaceGuid = m_Parser.Get<GUID>();
-				sizedXID.cbLocalId = sizedXID.XidSize - sizeof(GUID);
+				sizedXID.XidSize = m_Parser.GetBlock<BYTE>();
+				sizedXID.NamespaceGuid = m_Parser.GetBlock<GUID>();
+				sizedXID.cbLocalId = sizedXID.XidSize.getData() - sizeof(GUID);
 				if (m_Parser.RemainingBytes() < sizedXID.cbLocalId) break;
-				sizedXID.LocalID = m_Parser.GetBYTES(sizedXID.cbLocalId);
+				sizedXID.LocalID = m_Parser.GetBlockBYTES(sizedXID.cbLocalId);
 				m_lpXID.push_back(sizedXID);
 			}
 		}
 	}
 
-	_Check_return_ std::wstring PCL::ToStringInternal()
+	void PCL::ParseBlocks()
 	{
-		auto szPCLString = strings::formatmessage(IDS_PCLHEADER, m_cXID);
+		addHeader(L"Predecessor Change List:\r\n");
+		addHeader(L"Count = %1!d!", m_cXID);
 
 		if (!m_lpXID.empty())
 		{
 			auto i = 0;
 			for (auto& xid : m_lpXID)
 			{
-				szPCLString += strings::formatmessage(
-					IDS_PCLXID,
-					i++,
-					xid.XidSize,
-					guid::GUIDToString(&xid.NamespaceGuid).c_str(),
-					strings::BinToHexString(xid.LocalID, true).c_str());
+				addLine();
+				addHeader(L"XID[%1!d!]:\r\n", i++);
+				addBlock(xid.XidSize, L"XidSize = 0x%1!08X! = %1!d!\r\n", xid.XidSize.getData());
+				addBlock(
+					xid.NamespaceGuid,
+					L"NamespaceGuid = %1!ws!\r\n",
+					guid::GUIDToString(xid.NamespaceGuid.getData()).c_str());
+				addHeader(L"LocalId = ");
+				addBlockBytes(xid.LocalID);
 			}
 		}
-
-		return szPCLString;
 	}
 }

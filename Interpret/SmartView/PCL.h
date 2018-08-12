@@ -6,10 +6,10 @@ namespace smartview
 {
 	struct SizedXID
 	{
-		BYTE XidSize{};
-		GUID NamespaceGuid{};
+		blockT<BYTE> XidSize;
+		blockT<GUID> NamespaceGuid;
 		DWORD cbLocalId{};
-		std::vector<BYTE> LocalID;
+		blockBytes LocalID;
 	};
 
 	class PCL : public SmartViewParser
@@ -19,9 +19,9 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
-		DWORD m_cXID;
+		DWORD m_cXID{};
 		std::vector<SizedXID> m_lpXID;
 	};
 }
