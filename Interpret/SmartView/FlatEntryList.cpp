@@ -23,6 +23,7 @@ namespace smartview
 				const auto ulSize = min(flatEntryID.dwSize.getData(), m_Parser.RemainingBytes());
 
 				flatEntryID.lpEntryID.Init(ulSize, m_Parser.GetCurrentAddress());
+				flatEntryID.lpEntryID.EnsureParsed();
 
 				m_Parser.Advance(ulSize);
 
@@ -37,30 +38,37 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring FlatEntryList::ToStringInternal()
+	void FlatEntryList::ParseBlocks()
 	{
-		std::vector<std::wstring> flatEntryList;
-		flatEntryList.push_back(strings::formatmessage(IDS_FELHEADER, m_cEntries.getData(), m_cbEntries.getData()));
+		addHeader(L"Flat Entry List\r\n");
+		addBlock(m_cEntries, L"cEntries = %1!d!\r\n", m_cEntries.getData());
+		addBlock(m_cbEntries, L"cbEntries = 0x%1!08X!", m_cbEntries.getData());
 
 		for (DWORD iFlatEntryList = 0; iFlatEntryList < m_pEntryIDs.size(); iFlatEntryList++)
 		{
-			flatEntryList.push_back(strings::formatmessage(
-				IDS_FELENTRYHEADER, iFlatEntryList, m_pEntryIDs[iFlatEntryList].dwSize.getData()));
-			auto entryID = m_pEntryIDs[iFlatEntryList].lpEntryID.ToString();
+			addLine();
+			addLine();
+			addHeader(L"Entry[%1!d!] ", iFlatEntryList);
+			addBlock(
+				m_pEntryIDs[iFlatEntryList].dwSize,
+				L"Size = 0x%1!08X!",
+				m_pEntryIDs[iFlatEntryList].dwSize.getData());
 
-			if (entryID.length())
+			if (m_pEntryIDs[iFlatEntryList].lpEntryID.hasData())
 			{
-				flatEntryList.push_back(entryID);
+				addLine();
+				addBlock(m_pEntryIDs[iFlatEntryList].lpEntryID.getBlock());
+				// TODO: maybe make this automatic?
+				auto junkData = m_pEntryIDs[iFlatEntryList].lpEntryID.getJunkData();
+				addBlock(junkData, JunkDataToString(junkData.getData()));
 			}
 
 			if (m_pEntryIDs[iFlatEntryList].JunkData.getData().size())
 			{
-				flatEntryList.push_back(
-					strings::formatmessage(IDS_FELENTRYPADDING, iFlatEntryList) +
-					JunkDataToString(m_pEntryIDs[iFlatEntryList].JunkData.getData()));
+				addLine();
+				addHeader(L"Entry[%1!d!] Padding:", iFlatEntryList);
+				addHeader(JunkDataToString(m_pEntryIDs[iFlatEntryList].JunkData.getData()));
 			}
 		}
-
-		return strings::join(flatEntryList, L"\r\n"); //STRING_OK
 	}
 }

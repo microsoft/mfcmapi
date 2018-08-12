@@ -183,6 +183,7 @@ namespace smartview
 		}
 
 		std::vector<BYTE> GetRemainingData();
+		blockBytes GetBlockRemainingData() { return GetBlockBYTES(RemainingBytes()); }
 
 	private:
 		bool CheckRemainingBytes(size_t cbBytes) const;

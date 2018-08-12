@@ -27,6 +27,8 @@ namespace smartview
 		size_t GetCurrentOffset() const;
 		void EnsureParsed();
 		block getBlock() const { return data; }
+		blockBytes getJunkData() { return m_Parser.GetBlockRemainingData(); }
+		bool hasData() { return ToString().length() != 0; }
 
 	protected:
 		_Check_return_ std::wstring JunkDataToString(const std::vector<BYTE>& lpJunkData) const;

@@ -1931,11 +1931,6 @@ IDS_PROPDEFFIELDNAME "FieldName"
 IDS_PROPDEFCONTENT "\r\n\t\tContent = "
 IDS_MVROWBIN "Row %1!d!\r\n"
 IDS_MVROWLONG "Row %1!d!: %2!ws!"
-IDS_FELHEADER "Flat Entry List\r\n\
-cEntries = %1!d!\r\n\
-cbEntries = 0x%2!08X!"
-IDS_FELENTRYHEADER "\r\nEntry[%1!d!] Size = 0x%2!08X!"
-IDS_FELENTRYPADDING "Entry[%1!d!] Padding:"
 IDS_RECIPIENTROWSTREAMHEADER "Recipient Row Stream\r\n\
 cVersion = %1!d!\r\n\
 cRowCount = %2!d!\r\n"
