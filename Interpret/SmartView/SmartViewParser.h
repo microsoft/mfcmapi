@@ -51,6 +51,7 @@ namespace smartview
 		{
 			data.addHeader(text, args...);
 		}
+		void addBlock(const block& _block, const std::wstring& text) { data.addBlock(_block, text); }
 		template <typename... Args> void addBlock(const block& _block, const std::wstring& text, Args... args)
 		{
 			data.addBlock(_block, text, args...);

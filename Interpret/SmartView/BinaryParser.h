@@ -27,6 +27,12 @@ namespace smartview
 		{
 			children.emplace_back(block(strings::formatmessage(_text.c_str(), args...)));
 		}
+		void addBlock(const block& child, const std::wstring& _text)
+		{
+			auto block = child;
+			block.text = _text;
+			children.push_back(block);
+		}
 		template <typename... Args> void addBlock(const block& child, const std::wstring& _text, Args... args)
 		{
 			auto block = child;
