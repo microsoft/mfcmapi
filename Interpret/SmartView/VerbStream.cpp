@@ -55,49 +55,93 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring VerbStream::ToStringInternal()
+	_Check_return_ void VerbStream::ParseBlocks()
 	{
-		std::vector<std::wstring> verbStream;
-		verbStream.push_back(strings::formatmessage(IDS_VERBHEADER, m_Version.getData(), m_Count.getData()));
+		addHeader(L"Verb Stream\r\n");
+		addBlock(m_Version, L"Version = 0x%1!04X!\r\n", m_Version.getData());
+		addBlock(m_Count, L"Count = 0x%1!08X!", m_Count.getData());
 
 		for (ULONG i = 0; i < m_lpVerbData.size(); i++)
 		{
-			verbStream.push_back(strings::formatmessage(
-				IDS_VERBDATA,
-				i,
-				m_lpVerbData[i].VerbType.getData(),
-				m_lpVerbData[i].DisplayNameCount.getData(),
-				m_lpVerbData[i].DisplayName.getData().c_str(),
-				m_lpVerbData[i].MsgClsNameCount.getData(),
-				m_lpVerbData[i].MsgClsName.getData().c_str(),
-				m_lpVerbData[i].Internal1StringCount.getData(),
-				m_lpVerbData[i].Internal1String.getData().c_str(),
-				m_lpVerbData[i].DisplayNameCountRepeat.getData(),
-				m_lpVerbData[i].DisplayNameRepeat.getData().c_str(),
-				m_lpVerbData[i].Internal2.getData(),
-				m_lpVerbData[i].Internal3.getData(),
-				m_lpVerbData[i].fUseUSHeaders.getData(),
-				m_lpVerbData[i].Internal4.getData(),
-				m_lpVerbData[i].SendBehavior.getData(),
-				m_lpVerbData[i].Internal5.getData(),
+			addLine();
+			addLine();
+			addHeader(L"VerbData[%1!d!]\r\n", i);
+			addBlock(m_lpVerbData[i].VerbType, L"VerbType = 0x%1!08X!\r\n", m_lpVerbData[i].VerbType.getData());
+			addBlock(
+				m_lpVerbData[i].DisplayNameCount,
+				L"DisplayNameCount = 0x%1!02X!\r\n",
+				m_lpVerbData[i].DisplayNameCount.getData());
+			addBlock(
+				m_lpVerbData[i].DisplayName,
+				L"DisplayName = \"%1!hs!\"\r\n",
+				m_lpVerbData[i].DisplayName.getData().c_str());
+			addBlock(
+				m_lpVerbData[i].MsgClsNameCount,
+				L"MsgClsNameCount = 0x%1!02X!\r\n",
+				m_lpVerbData[i].MsgClsNameCount.getData());
+			addBlock(
+				m_lpVerbData[i].MsgClsName,
+				L"MsgClsName = \"%1!hs!\"\r\n",
+				m_lpVerbData[i].MsgClsName.getData().c_str());
+			addBlock(
+				m_lpVerbData[i].Internal1StringCount,
+				L"Internal1StringCount = 0x%1!02X!\r\n",
+				m_lpVerbData[i].Internal1StringCount.getData());
+			addBlock(
+				m_lpVerbData[i].Internal1String,
+				L"Internal1String = \"%1!hs!\"\r\n",
+				m_lpVerbData[i].Internal1String.getData().c_str());
+			addBlock(
+				m_lpVerbData[i].DisplayNameCountRepeat,
+				L"DisplayNameCountRepeat = 0x%1!02X!\r\n",
+				m_lpVerbData[i].DisplayNameCountRepeat.getData());
+			addBlock(
+				m_lpVerbData[i].DisplayNameRepeat,
+				L"DisplayNameRepeat = \"%1!hs!\"\r\n",
+				m_lpVerbData[i].DisplayNameRepeat.getData().c_str());
+			addBlock(m_lpVerbData[i].Internal2, L"Internal2 = 0x%1!08X!\r\n", m_lpVerbData[i].Internal2.getData());
+			addBlock(m_lpVerbData[i].Internal3, L"Internal3 = 0x%1!08X!\r\n", m_lpVerbData[i].Internal3.getData());
+			addBlock(
+				m_lpVerbData[i].fUseUSHeaders,
+				L"fUseUSHeaders = 0x%1!02X!\r\n",
+				m_lpVerbData[i].fUseUSHeaders.getData());
+			addBlock(m_lpVerbData[i].Internal4, L"Internal4 = 0x%1!08X!\r\n", m_lpVerbData[i].Internal4.getData());
+			addBlock(
+				m_lpVerbData[i].SendBehavior, L"SendBehavior = 0x%1!08X!\r\n", m_lpVerbData[i].SendBehavior.getData());
+			addBlock(m_lpVerbData[i].Internal5, L"Internal5 = 0x%1!08X!\r\n", m_lpVerbData[i].Internal5.getData());
+			addBlock(
+				m_lpVerbData[i].ID,
+				L"ID = 0x%1!08X! = %2!ws!\r\n",
 				m_lpVerbData[i].ID.getData(),
-				smartview::InterpretNumberAsStringProp(m_lpVerbData[i].ID.getData(), PR_LAST_VERB_EXECUTED).c_str(),
-				m_lpVerbData[i].Internal6.getData()));
+				smartview::InterpretNumberAsStringProp(m_lpVerbData[i].ID.getData(), PR_LAST_VERB_EXECUTED).c_str());
+			addBlock(m_lpVerbData[i].Internal6, L"Internal6 = 0x%1!08X!", m_lpVerbData[i].Internal6.getData());
 		}
 
-		verbStream.push_back(strings::formatmessage(IDS_VERBVERSION2, m_Version2.getData()));
+		addLine();
+		addLine();
+		addBlock(m_Version2, L"Version2 = 0x%1!04X!", m_Version2.getData());
 
 		for (ULONG i = 0; i < m_lpVerbExtraData.size(); i++)
 		{
-			verbStream.push_back(strings::formatmessage(
-				IDS_VERBEXTRADATA,
-				i,
-				m_lpVerbExtraData[i].DisplayNameCount.getData(),
-				m_lpVerbExtraData[i].DisplayName.getData().c_str(),
-				m_lpVerbExtraData[i].DisplayNameCountRepeat.getData(),
-				m_lpVerbExtraData[i].DisplayNameRepeat.getData().c_str()));
+			addLine();
+			addLine();
+			addHeader(L"VerbExtraData[%1!d!]\r\n", i);
+			addBlock(
+				m_lpVerbExtraData[i].DisplayNameCount,
+				L"DisplayNameCount = 0x%1!02X!\r\n",
+				m_lpVerbExtraData[i].DisplayNameCount.getData());
+			addBlock(
+				m_lpVerbExtraData[i].DisplayName,
+				L"DisplayName = \"%1!ws!\"\r\n",
+				m_lpVerbExtraData[i].DisplayName.getData().c_str());
+			addBlock(
+				m_lpVerbExtraData[i].DisplayNameCountRepeat,
+				L"DisplayNameCountRepeat = 0x%1!02X!\r\n",
+				m_lpVerbExtraData[i].DisplayNameCountRepeat.getData());
+			addBlock(
+				m_lpVerbExtraData[i].DisplayNameRepeat,
+				L"DisplayNameRepeat = \"%1!ws!\"",
+				m_lpVerbExtraData[i].DisplayNameRepeat.getData().c_str());
 		}
-
-		return strings::join(verbStream, L"\r\n\r\n");
 	}
 }

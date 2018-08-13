@@ -1579,33 +1579,7 @@ IDS_PTI8FORMATLABEL "I8: %1!X!-%2!08X!"
 IDS_PTI8FORMAT "%1!X!-%2!08X!"
 IDS_FIDMIDFORMATLABEL "Fid/Mid: %1!X!-%2!I64X!"
 IDS_FIDMIDFORMAT "%1!X!-%2!I64X!"
-IDS_VERBHEADER "Verb Stream\r\n\
-Version = 0x%1!04X!\r\n\
-Count = 0x%2!08X!"
-IDS_VERBDATA "VerbData[%1!d!]\r\n\
-VerbType = 0x%2!08X!\r\n\
-DisplayNameCount = 0x%3!02X!\r\n\
-DisplayName = ""%4!hs!""\r\n\
-MsgClsNameCount = 0x%5!02X!\r\n\
-MsgClsName = ""%6!hs!""\r\n\
-Internal1StringCount = 0x%7!02X!\r\n\
-Internal1String = ""%8!hs!""\r\n\
-DisplayNameCountRepeat = 0x%9!02X!\r\n\
-DisplayNameRepeat = ""%10!hs!""\r\n\
-Internal2 = 0x%11!08X!\r\n\
-Internal3 = 0x%12!08X!\r\n\
-fUseUSHeaders = 0x%13!02X!\r\n\
-Internal4 = 0x%14!08X!\r\n\
-SendBehavior = 0x%15!08X!\r\n\
-Internal5 = 0x%16!08X!\r\n\
-ID = 0x%17!08X! = %18!ws!\r\n\
-Internal6 = 0x%19!08X!"
-IDS_VERBVERSION2 "Version2 = 0x%1!04X!"
-IDS_VERBEXTRADATA "VerbExtraData[%1!d!]\r\n\
-DisplayNameCount = 0x%2!02X! \r\n\
-DisplayName = ""%3!ws!""\r\n\
-DisplayNameCountRepeat = 0x%4!02X!\r\n\
-DisplayNameRepeat = ""%5!ws!"""
+
 IDS_TOMBSTONEHEADER "Tombstone:\r\n\
 Identifier = 0x%1!08X!\r\n\
 HeaderSize = 0x%2!08X!\r\n\
