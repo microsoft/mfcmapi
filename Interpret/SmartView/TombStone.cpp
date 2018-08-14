@@ -5,23 +5,15 @@
 
 namespace smartview
 {
-	TombStone::TombStone()
-	{
-		m_Identifier = 0;
-		m_HeaderSize = 0;
-		m_Version = 0;
-		m_RecordsCount = 0;
-		m_ActualRecordsCount = 0;
-		m_RecordsSize = 0;
-	}
+	TombStone::TombStone() {}
 
 	void TombStone::Parse()
 	{
-		m_Identifier = m_Parser.Get<DWORD>();
-		m_HeaderSize = m_Parser.Get<DWORD>();
-		m_Version = m_Parser.Get<DWORD>();
-		m_RecordsCount = m_Parser.Get<DWORD>();
-		m_RecordsSize = m_Parser.Get<DWORD>();
+		m_Identifier = m_Parser.GetBlock<DWORD>();
+		m_HeaderSize = m_Parser.GetBlock<DWORD>();
+		m_Version = m_Parser.GetBlock<DWORD>();
+		m_RecordsCount = m_Parser.GetBlock<DWORD>();
+		m_RecordsSize = m_Parser.GetBlock<DWORD>();
 
 		// Run through the parser once to count the number of flag structs
 		const auto ulFlagOffset = m_Parser.GetCurrentOffset();
@@ -44,12 +36,13 @@ namespace smartview
 			for (ULONG i = 0; i < m_ActualRecordsCount; i++)
 			{
 				TombstoneRecord tombstoneRecord;
-				tombstoneRecord.StartTime = m_Parser.Get<DWORD>();
-				tombstoneRecord.EndTime = m_Parser.Get<DWORD>();
-				tombstoneRecord.GlobalObjectIdSize = m_Parser.Get<DWORD>();
-				tombstoneRecord.lpGlobalObjectId = m_Parser.GetBYTES(tombstoneRecord.GlobalObjectIdSize, _MaxBytes);
-				tombstoneRecord.UsernameSize = m_Parser.Get<WORD>();
-				tombstoneRecord.szUsername = m_Parser.GetStringA(tombstoneRecord.UsernameSize);
+				tombstoneRecord.StartTime = m_Parser.GetBlock<DWORD>();
+				tombstoneRecord.EndTime = m_Parser.GetBlock<DWORD>();
+				tombstoneRecord.GlobalObjectIdSize = m_Parser.GetBlock<DWORD>();
+				tombstoneRecord.lpGlobalObjectId =
+					m_Parser.GetBlockBYTES(tombstoneRecord.GlobalObjectIdSize.getData(), _MaxBytes);
+				tombstoneRecord.UsernameSize = m_Parser.GetBlock<WORD>();
+				tombstoneRecord.szUsername = m_Parser.GetBlockStringA(tombstoneRecord.UsernameSize.getData());
 				m_lpRecords.push_back(tombstoneRecord);
 			}
 		}
@@ -59,32 +52,33 @@ namespace smartview
 	{
 		auto szTombstoneString = strings::formatmessage(
 			IDS_TOMBSTONEHEADER,
-			m_Identifier,
-			m_HeaderSize,
-			m_Version,
-			m_RecordsCount,
+			m_Identifier.getData(),
+			m_HeaderSize.getData(),
+			m_Version.getData(),
+			m_RecordsCount.getData(),
 			m_ActualRecordsCount,
-			m_RecordsSize);
+			m_RecordsSize.getData());
 
 		for (ULONG i = 0; i < m_lpRecords.size(); i++)
 		{
-			const SBinary sBin = {static_cast<ULONG>(m_lpRecords[i].lpGlobalObjectId.size()),
-								  m_lpRecords[i].lpGlobalObjectId.data()};
-
-			auto szGoid = InterpretBinaryAsString(sBin, IDS_STGLOBALOBJECTID, nullptr);
+			auto szGoid = InterpretBinaryAsString(
+				SBinary{static_cast<ULONG>(m_lpRecords[i].lpGlobalObjectId.getData().size()),
+						m_lpRecords[i].lpGlobalObjectId.getData().data()},
+				IDS_STGLOBALOBJECTID,
+				nullptr);
 
 			szTombstoneString += strings::formatmessage(
 				IDS_TOMBSTONERECORD,
 				i,
-				m_lpRecords[i].StartTime,
-				RTimeToString(m_lpRecords[i].StartTime).c_str(),
-				m_lpRecords[i].EndTime,
-				RTimeToString(m_lpRecords[i].EndTime).c_str(),
-				m_lpRecords[i].GlobalObjectIdSize,
-				strings::BinToHexString(m_lpRecords[i].lpGlobalObjectId, true).c_str(),
+				m_lpRecords[i].StartTime.getData(),
+				RTimeToString(m_lpRecords[i].StartTime.getData()).c_str(),
+				m_lpRecords[i].EndTime.getData(),
+				RTimeToString(m_lpRecords[i].EndTime.getData()).c_str(),
+				m_lpRecords[i].GlobalObjectIdSize.getData(),
+				strings::BinToHexString(m_lpRecords[i].lpGlobalObjectId.getData(), true).c_str(),
 				szGoid.c_str(),
-				m_lpRecords[i].UsernameSize,
-				m_lpRecords[i].szUsername.c_str());
+				m_lpRecords[i].UsernameSize.getData(),
+				m_lpRecords[i].szUsername.getData().c_str());
 		}
 
 		return szTombstoneString;
