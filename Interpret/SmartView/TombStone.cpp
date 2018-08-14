@@ -48,16 +48,15 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring TombStone::ToStringInternal()
+	void TombStone::ParseBlocks()
 	{
-		auto szTombstoneString = strings::formatmessage(
-			IDS_TOMBSTONEHEADER,
-			m_Identifier.getData(),
-			m_HeaderSize.getData(),
-			m_Version.getData(),
-			m_RecordsCount.getData(),
-			m_ActualRecordsCount,
-			m_RecordsSize.getData());
+		addHeader(L"Tombstone:\r\n");
+		addBlock(m_Identifier, L"Identifier = 0x%1!08X!\r\n", m_Identifier.getData());
+		addBlock(m_HeaderSize, L"HeaderSize = 0x%1!08X!\r\n", m_HeaderSize.getData());
+		addBlock(m_Version, L"Version = 0x%1!08X!\r\n", m_Version.getData());
+		addBlock(m_RecordsCount, L"RecordsCount = 0x%1!08X!\r\n", m_RecordsCount.getData());
+		addHeader(L"ActualRecordsCount (computed) = 0x%1!08X!\r\n", m_ActualRecordsCount);
+		addBlock(m_RecordsSize, L"RecordsSize = 0x%1!08X!", m_RecordsSize.getData());
 
 		for (ULONG i = 0; i < m_lpRecords.size(); i++)
 		{
@@ -67,20 +66,30 @@ namespace smartview
 				IDS_STGLOBALOBJECTID,
 				nullptr);
 
-			szTombstoneString += strings::formatmessage(
-				IDS_TOMBSTONERECORD,
-				i,
+			addLine();
+			addHeader(L"Record[%1!d!]\r\n", i);
+			addBlock(
+				m_lpRecords[i].StartTime,
+				L"StartTime = 0x%1!08X! = %2!ws!\r\n",
 				m_lpRecords[i].StartTime.getData(),
-				RTimeToString(m_lpRecords[i].StartTime.getData()).c_str(),
+				RTimeToString(m_lpRecords[i].StartTime.getData()).c_str());
+			addBlock(
+				m_lpRecords[i].EndTime,
+				L"Endtime = 0x%1!08X! = %2!ws!\r\n",
 				m_lpRecords[i].EndTime.getData(),
-				RTimeToString(m_lpRecords[i].EndTime.getData()).c_str(),
-				m_lpRecords[i].GlobalObjectIdSize.getData(),
-				strings::BinToHexString(m_lpRecords[i].lpGlobalObjectId.getData(), true).c_str(),
-				szGoid.c_str(),
-				m_lpRecords[i].UsernameSize.getData(),
-				m_lpRecords[i].szUsername.getData().c_str());
+				RTimeToString(m_lpRecords[i].EndTime.getData()).c_str());
+			addBlock(
+				m_lpRecords[i].GlobalObjectIdSize,
+				L"GlobalObjectIdSize = 0x%1!08X!\r\n",
+				m_lpRecords[i].GlobalObjectIdSize.getData());
+			addBlock(
+				m_lpRecords[i].lpGlobalObjectId,
+				L"GlobalObjectId = %1!ws!\r\n",
+				strings::BinToHexString(m_lpRecords[i].lpGlobalObjectId.getData(), true).c_str());
+			addBlock(m_lpRecords[i].lpGlobalObjectId, L"%1!ws!\r\n", szGoid.c_str());
+			addBlock(
+				m_lpRecords[i].UsernameSize, L"UsernameSize= 0x%1!04X!\r\n", m_lpRecords[i].UsernameSize.getData());
+			addBlock(m_lpRecords[i].szUsername, L"szUsername = %1!hs!", m_lpRecords[i].szUsername.getData().c_str());
 		}
-
-		return szTombstoneString;
 	}
 }

@@ -1580,22 +1580,6 @@ IDS_PTI8FORMAT "%1!X!-%2!08X!"
 IDS_FIDMIDFORMATLABEL "Fid/Mid: %1!X!-%2!I64X!"
 IDS_FIDMIDFORMAT "%1!X!-%2!I64X!"
 
-IDS_TOMBSTONEHEADER "Tombstone:\r\n\
-Identifier = 0x%1!08X!\r\n\
-HeaderSize = 0x%2!08X!\r\n\
-Version = 0x%3!08X!\r\n\
-RecordsCount = 0x%4!08X!\r\n\
-ActualRecordsCount (computed) = 0x%5!08X!\r\n\
-RecordsSize = 0x%6!08X!"
-IDS_TOMBSTONERECORD "\r\nRecord[%1!d!]\r\n\
-StartTime = 0x%2!08X! = %3!ws!\r\n\
-Endtime = 0x%4!08X! = %5!ws!\r\n\
-GlobalObjectIdSize = 0x%6!08X!\r\n\
-GlobalObjectId = %7!ws!\r\n\
-%8!ws!\r\n\
-UsernameSize= 0x%9!04X!\r\n\
-szUsername = %10!hs!"
-
 // For InsertColumn
 IDS_ENTRY "Entry"
 IDS_TYPE "Type"

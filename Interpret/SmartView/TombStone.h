@@ -8,6 +8,7 @@ namespace smartview
 		blockT<DWORD> StartTime;
 		blockT<DWORD> EndTime;
 		blockT<DWORD> GlobalObjectIdSize;
+		// TODO: Convert to GlobalObjectId
 		blockBytes lpGlobalObjectId;
 		blockT<WORD> UsernameSize;
 		blockStringA szUsername;
@@ -20,7 +21,7 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
 		blockT<DWORD> m_Identifier;
 		blockT<DWORD> m_HeaderSize;
