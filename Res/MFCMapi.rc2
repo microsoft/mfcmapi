@@ -1452,31 +1452,6 @@ IDS_OPTIONSSTRUCTURE "lpOptions[0x%1!08X!].ulPropTag = %2!ws!\r\n\
 lpOptions[0x%1!08X!].Value = %3!ws!\r\n\
 \tAlt: %4!ws!\r\n"
 
-IDS_TIMEZONE "Time Zone: \r\n\
-lBias = 0x%1!08X! (%1!d!)\r\n\
-lStandardBias = 0x%2!08X! (%2!d!)\r\n\
-lDaylightBias = 0x%3!08X! (%3!d!)\r\n\
-\r\n\
-wStandardYear = 0x%4!04X! (%4!d!)\r\n\
-stStandardDate.wYear = 0x%5!X! (%5!d!)\r\n\
-stStandardDate.wMonth = 0x%6!X! (%6!d!)\r\n\
-stStandardDate.wDayOfWeek = 0x%7!X! (%7!d!)\r\n\
-stStandardDate.wDay = 0x%8!X! (%8!d!)\r\n\
-stStandardDate.wHour = 0x%9!X! (%9!d!)\r\n\
-stStandardDate.wMinute = 0x%10!X! (%10!d!)\r\n\
-stStandardDate.wSecond = 0x%11!X! (%11!d!)\r\n\
-stStandardDate.wMilliseconds = 0x%12!X! (%12!d!)\r\n\
-\r\n\
-wDaylightDate = 0x%13!04X! (%13!d!)\r\n\
-stDaylightDate.wYear = 0x%14!X! (%14!d!)\r\n\
-stDaylightDate.wMonth = 0x%15!X! (%15!d!)\r\n\
-stDaylightDate.wDayOfWeek = 0x%16!X! (%16!d!)\r\n\
-stDaylightDate.wDay = 0x%17!X! (%17!d!)\r\n\
-stDaylightDate.wHour = 0x%18!X! (%18!d!)\r\n\
-stDaylightDate.wMinute = 0x%19!X! (%19!d!)\r\n\
-stDaylightDate.wSecond = 0x%20!X! (%20!d!)\r\n\
-stDaylightDate.wMilliseconds = 0x%21!X! (%21!d!)"
-
 IDS_TIMEZONEDEFINITION "Time Zone Definition: \r\n\
 bMajorVersion = 0x%1!02X! (%1!d!)\r\n\
 bMinorVersion = 0x%2!02X! (%2!d!)\r\n\
