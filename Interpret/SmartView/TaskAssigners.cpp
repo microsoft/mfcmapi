@@ -29,34 +29,46 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring TaskAssigners::ToStringInternal()
+	void TaskAssigners::ParseBlocks()
 	{
-		std::wstring szTaskAssigners;
-
-		szTaskAssigners += strings::formatmessage(IDS_TASKASSIGNERSHEADER, m_cAssigners);
+		addHeader(L"Task Assigners: \r\n");
+		addBlock(m_cAssigners, L"cAssigners = 0x%1!08X! = %1!d!", m_cAssigners.getData());
 
 		for (DWORD i = 0; i < m_lpTaskAssigners.size(); i++)
 		{
-			szTaskAssigners += strings::formatmessage(IDS_TASKASSIGNEREID, i, m_lpTaskAssigners[i].cbEntryID);
+			addLine();
+			addHeader(L"Task Assigner[%1!d!]\r\n", i);
+			addBlock(
+				m_lpTaskAssigners[i].cbEntryID,
+				L"\tcbEntryID = 0x%1!08X! = %1!d!\r\n",
+				m_lpTaskAssigners[i].cbEntryID.getData());
+			addHeader(L"\tlpEntryID = ");
 
 			if (!m_lpTaskAssigners[i].lpEntryID.getData().empty())
 			{
-				szTaskAssigners += strings::BinToHexString(m_lpTaskAssigners[i].lpEntryID.getData(), true);
+				addBlockBytes(m_lpTaskAssigners[i].lpEntryID);
 			}
 
-			szTaskAssigners += strings::formatmessage(
-				IDS_TASKASSIGNERNAME,
-				m_lpTaskAssigners[i].szDisplayName.getData().c_str(),
+			addLine();
+			addBlock(
+				m_lpTaskAssigners[i].szDisplayName,
+				L"\tszDisplayName (ANSI) = %1!hs!",
+				m_lpTaskAssigners[i].szDisplayName.getData().c_str());
+			addLine();
+			addBlock(
+				m_lpTaskAssigners[i].wzDisplayName,
+				L"\tszDisplayName (Unicode) = %1!ws!",
 				m_lpTaskAssigners[i].wzDisplayName.getData().c_str());
 
 			if (!m_lpTaskAssigners[i].JunkData.getData().empty())
 			{
-				szTaskAssigners +=
-					strings::formatmessage(IDS_TASKASSIGNERJUNKDATA, m_lpTaskAssigners[i].JunkData.getData().size());
-				szTaskAssigners += strings::BinToHexString(m_lpTaskAssigners[i].JunkData.getData(), true);
+				addLine();
+				addBlock(
+					m_lpTaskAssigners[i].JunkData,
+					L"\tUnparsed Data Size = 0x%1!08X!\r\n",
+					m_lpTaskAssigners[i].JunkData.getData().size());
+				addBlockBytes(m_lpTaskAssigners[i].JunkData);
 			}
 		}
-
-		return szTaskAssigners;
 	}
 }

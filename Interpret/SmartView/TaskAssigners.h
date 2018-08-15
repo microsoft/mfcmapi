@@ -21,7 +21,7 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
 		blockT<DWORD> m_cAssigners;
 		std::vector<TaskAssigner> m_lpTaskAssigners;

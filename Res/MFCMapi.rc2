@@ -1746,18 +1746,6 @@ IDS_EXTENDEDFLAGDATATODOVERSION "\r\n\tToDoFolderVersion = 0x%1!08X!"
 
 IDS_EXTENDEDFLAGUNKNOWN "\r\n\tUnknown Data = "
 
-IDS_TASKASSIGNERSHEADER "Task Assigners: \r\n\
-cAssigners = 0x%1!08X! = %1!d!"
-
-IDS_TASKASSIGNEREID "\r\nTask Assigner[%1!d!]\r\n\
-\tcbEntryID = 0x%2!08X! = %2!d!\r\n\
-\tlpEntryID = "
-
-IDS_TASKASSIGNERNAME "\r\n\tszDisplayName (ANSI) = %1!hs!\
-\r\n\tszDisplayName (Unicode) = %2!ws!"
-
-IDS_TASKASSIGNERJUNKDATA "\r\n\tUnparsed Data Size = 0x%1!08X!\r\n"
-
 IDS_PROPERTYDATAHEADER "Property[%1!d!]\r\n\
 Property = 0x%2!08X!"
 IDS_PROPERTYDATA "PropString = %1!ws! AltPropString = %2!ws!"
