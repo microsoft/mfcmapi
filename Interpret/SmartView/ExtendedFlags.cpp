@@ -6,7 +6,7 @@
 
 namespace smartview
 {
-	ExtendedFlags::ExtendedFlags() { m_ulNumFlags = 0; }
+	ExtendedFlags::ExtendedFlags() {}
 
 	void ExtendedFlags::Parse()
 	{
@@ -35,8 +35,8 @@ namespace smartview
 			{
 				ExtendedFlag extendedFlag;
 
-				extendedFlag.Id = m_Parser.Get<BYTE>();
-				extendedFlag.Cb = m_Parser.Get<BYTE>();
+				extendedFlag.Id = m_Parser.GetBlock<BYTE>();
+				extendedFlag.Cb = m_Parser.GetBlock<BYTE>();
 
 				// If the structure says there's more bytes than remaining buffer, we're done parsing.
 				if (m_Parser.RemainingBytes() < extendedFlag.Cb)
@@ -49,30 +49,30 @@ namespace smartview
 				{
 				case EFPB_FLAGS:
 					if (extendedFlag.Cb == sizeof(DWORD))
-						extendedFlag.Data.ExtendedFlags = m_Parser.Get<DWORD>();
+						extendedFlag.Data.ExtendedFlags = m_Parser.GetBlock<DWORD>();
 					else
 						bBadData = true;
 					break;
 				case EFPB_CLSIDID:
 					if (extendedFlag.Cb == sizeof(GUID))
-						extendedFlag.Data.SearchFolderID = m_Parser.Get<GUID>();
+						extendedFlag.Data.SearchFolderID = m_Parser.GetBlock<GUID>();
 					else
 						bBadData = true;
 					break;
 				case EFPB_SFTAG:
 					if (extendedFlag.Cb == sizeof(DWORD))
-						extendedFlag.Data.SearchFolderTag = m_Parser.Get<DWORD>();
+						extendedFlag.Data.SearchFolderTag = m_Parser.GetBlock<DWORD>();
 					else
 						bBadData = true;
 					break;
 				case EFPB_TODO_VERSION:
 					if (extendedFlag.Cb == sizeof(DWORD))
-						extendedFlag.Data.ToDoFolderVersion = m_Parser.Get<DWORD>();
+						extendedFlag.Data.ToDoFolderVersion = m_Parser.GetBlock<DWORD>();
 					else
 						bBadData = true;
 					break;
 				default:
-					extendedFlag.lpUnknownData = m_Parser.GetBYTES(extendedFlag.Cb, _MaxBytes);
+					extendedFlag.lpUnknownData = m_Parser.GetBlockBYTES(extendedFlag.Cb, _MaxBytes);
 					break;
 				}
 
@@ -97,27 +97,27 @@ namespace smartview
 			for (const auto& extendedFlag : m_pefExtendedFlags)
 			{
 				auto szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlagType, extendedFlag.Id);
-				szExtendedFlags +=
-					strings::formatmessage(IDS_EXTENDEDFLAGID, extendedFlag.Id, szFlags.c_str(), extendedFlag.Cb);
+				szExtendedFlags += strings::formatmessage(
+					IDS_EXTENDEDFLAGID, extendedFlag.Id.getData(), szFlags.c_str(), extendedFlag.Cb.getData());
 
 				switch (extendedFlag.Id)
 				{
 				case EFPB_FLAGS:
 					szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags);
 					szExtendedFlags += strings::formatmessage(
-						IDS_EXTENDEDFLAGDATAFLAG, extendedFlag.Data.ExtendedFlags, szFlags.c_str());
+						IDS_EXTENDEDFLAGDATAFLAG, extendedFlag.Data.ExtendedFlags.getData(), szFlags.c_str());
 					break;
 				case EFPB_CLSIDID:
-					szFlags = guid::GUIDToString(&extendedFlag.Data.SearchFolderID);
+					szFlags = guid::GUIDToString(extendedFlag.Data.SearchFolderID);
 					szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATASFID, szFlags.c_str());
 					break;
 				case EFPB_SFTAG:
 					szExtendedFlags +=
-						strings::formatmessage(IDS_EXTENDEDFLAGDATASFTAG, extendedFlag.Data.SearchFolderTag);
+						strings::formatmessage(IDS_EXTENDEDFLAGDATASFTAG, extendedFlag.Data.SearchFolderTag.getData());
 					break;
 				case EFPB_TODO_VERSION:
-					szExtendedFlags +=
-						strings::formatmessage(IDS_EXTENDEDFLAGDATATODOVERSION, extendedFlag.Data.ToDoFolderVersion);
+					szExtendedFlags += strings::formatmessage(
+						IDS_EXTENDEDFLAGDATATODOVERSION, extendedFlag.Data.ToDoFolderVersion.getData());
 					break;
 				}
 

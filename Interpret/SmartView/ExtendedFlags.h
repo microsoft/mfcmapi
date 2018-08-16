@@ -5,15 +5,16 @@ namespace smartview
 {
 	struct ExtendedFlag
 	{
-		BYTE Id{};
-		BYTE Cb{};
-		union {
-			DWORD ExtendedFlags;
-			GUID SearchFolderID;
-			DWORD SearchFolderTag;
-			DWORD ToDoFolderVersion;
-		} Data{};
-		std::vector<BYTE> lpUnknownData;
+		blockT<BYTE> Id;
+		blockT<BYTE> Cb;
+		struct
+		{
+			blockT<DWORD> ExtendedFlags;
+			blockT<GUID> SearchFolderID;
+			blockT<DWORD> SearchFolderTag;
+			blockT<DWORD> ToDoFolderVersion;
+		} Data;
+		blockBytes lpUnknownData;
 	};
 
 	class ExtendedFlags : public SmartViewParser
@@ -25,7 +26,7 @@ namespace smartview
 		void Parse() override;
 		_Check_return_ std::wstring ToStringInternal() override;
 
-		ULONG m_ulNumFlags;
+		ULONG m_ulNumFlags{};
 		std::vector<ExtendedFlag> m_pefExtendedFlags;
 	};
 }
