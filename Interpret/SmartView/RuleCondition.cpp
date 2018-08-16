@@ -13,11 +13,11 @@ namespace smartview
 	void RuleCondition::Parse()
 	{
 		m_NamedPropertyInformation.NoOfNamedProps = m_Parser.GetBlock<WORD>();
-		if (m_NamedPropertyInformation.NoOfNamedProps.getData() &&
-			m_NamedPropertyInformation.NoOfNamedProps.getData() < _MaxEntriesLarge)
+		if (m_NamedPropertyInformation.NoOfNamedProps &&
+			m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
 		{
 			{
-				for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps.getData(); i++)
+				for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 				{
 					auto propId = m_Parser.GetBlock<WORD>();
 					m_NamedPropertyInformation.PropId.push_back(propId);
@@ -26,19 +26,19 @@ namespace smartview
 
 			m_NamedPropertyInformation.NamedPropertiesSize = m_Parser.GetBlock<DWORD>();
 			{
-				for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps.getData(); i++)
+				for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 				{
 					PropertyName propertyName;
 					propertyName.Kind = m_Parser.GetBlock<BYTE>();
 					propertyName.Guid = m_Parser.GetBlock<GUID>();
-					if (propertyName.Kind.getData() == MNID_ID)
+					if (propertyName.Kind == MNID_ID)
 					{
 						propertyName.LID = m_Parser.GetBlock<DWORD>();
 					}
-					else if (propertyName.Kind.getData() == MNID_STRING)
+					else if (propertyName.Kind == MNID_STRING)
 					{
 						propertyName.NameSize = m_Parser.GetBlock<BYTE>();
-						propertyName.Name = m_Parser.GetBlockStringW(propertyName.NameSize.getData() / sizeof(WCHAR));
+						propertyName.Name = m_Parser.GetBlockStringW(propertyName.NameSize / sizeof(WCHAR));
 					}
 
 					m_NamedPropertyInformation.PropertyName.push_back(propertyName);
@@ -81,14 +81,14 @@ namespace smartview
 				ruleCondition.push_back(strings::formatmessage(
 					IDS_RULECONNAMEPROPKIND, m_NamedPropertyInformation.PropertyName[i].Kind.getData()));
 
-				ruleCondition.push_back(guid::GUIDToString(m_NamedPropertyInformation.PropertyName[i].Guid.getData()));
+				ruleCondition.push_back(guid::GUIDToString(m_NamedPropertyInformation.PropertyName[i].Guid));
 
-				if (m_NamedPropertyInformation.PropertyName[i].Kind.getData() == MNID_ID)
+				if (m_NamedPropertyInformation.PropertyName[i].Kind == MNID_ID)
 				{
 					ruleCondition.push_back(strings::formatmessage(
 						IDS_RULECONNAMEPROPLID, m_NamedPropertyInformation.PropertyName[i].LID.getData()));
 				}
-				else if (m_NamedPropertyInformation.PropertyName[i].Kind.getData() == MNID_STRING)
+				else if (m_NamedPropertyInformation.PropertyName[i].Kind == MNID_STRING)
 				{
 					ruleCondition.push_back(strings::formatmessage(
 						IDS_RULENAMEPROPSIZE, m_NamedPropertyInformation.PropertyName[i].NameSize.getData()));

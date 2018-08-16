@@ -33,7 +33,7 @@ namespace smartview
 				SizedXID sizedXID;
 				sizedXID.XidSize = m_Parser.GetBlock<BYTE>();
 				sizedXID.NamespaceGuid = m_Parser.GetBlock<GUID>();
-				sizedXID.cbLocalId = sizedXID.XidSize.getData() - sizeof(GUID);
+				sizedXID.cbLocalId = sizedXID.XidSize - sizeof(GUID);
 				if (m_Parser.RemainingBytes() < sizedXID.cbLocalId) break;
 				sizedXID.LocalID = m_Parser.GetBlockBYTES(sizedXID.cbLocalId);
 				m_lpXID.push_back(sizedXID);

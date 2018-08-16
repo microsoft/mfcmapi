@@ -69,6 +69,8 @@ namespace smartview
 		blockT() { memset(&data, 0, sizeof(data)); }
 		void setData(const T& _data) { data = _data; }
 		T getData() const { return data; }
+		operator T&() { return data; }
+		operator T() const { return data; }
 
 	private:
 		T data;

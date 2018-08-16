@@ -37,13 +37,13 @@ namespace smartview
 
 		const auto b1 = m_Parser.GetBlock<BYTE>();
 		const auto b2 = m_Parser.GetBlock<BYTE>();
-		m_Year.setData(static_cast<WORD>(b1.getData() << 8 | b2.getData()));
+		m_Year.setData(static_cast<WORD>(b1 << 8 | b2));
 		m_Year.setOffset(b1.getOffset());
 		m_Year.setSize(b1.getSize() + b2.getSize());
 		addBlock(m_Year, L"Year: 0x%1!04X! = %1!d!\r\n", m_Year.getData());
 
 		m_Month = m_Parser.GetBlock<BYTE>();
-		const auto szFlags = interpretprop::InterpretFlags(flagGlobalObjectIdMonth, m_Month.getData());
+		const auto szFlags = interpretprop::InterpretFlags(flagGlobalObjectIdMonth, m_Month);
 		addBlock(m_Month, L"Month: 0x%1!02X! = %1!d! = %2!ws!\r\n", m_Month.getData(), szFlags.c_str());
 
 		m_Day = m_Parser.GetBlock<BYTE>();
@@ -52,7 +52,7 @@ namespace smartview
 		m_CreationTime = m_Parser.GetBlock<FILETIME>();
 		std::wstring propString;
 		std::wstring altPropString;
-		strings::FileTimeToString(m_CreationTime.getData(), propString, altPropString);
+		strings::FileTimeToString(m_CreationTime, propString, altPropString);
 		addBlock(
 			m_CreationTime,
 			L"Creation Time = 0x%1!08X!:0x%2!08X! = %3!ws!\r\n",
@@ -66,7 +66,7 @@ namespace smartview
 		m_dwSize = m_Parser.GetBlock<DWORD>();
 		addBlock(m_dwSize, L"Size: 0x%1!02X! = %1!d!\r\n", m_dwSize.getData());
 
-		m_lpData = m_Parser.GetBlockBYTES(m_dwSize.getData(), _MaxBytes);
+		m_lpData = m_Parser.GetBlockBYTES(m_dwSize, _MaxBytes);
 		if (m_lpData.getData().size())
 		{
 			addHeader(L"Data = ");

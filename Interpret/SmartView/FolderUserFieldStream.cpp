@@ -11,19 +11,17 @@ namespace smartview
 	void FolderUserFieldStream::Parse()
 	{
 		m_FolderUserFieldsAnsiCount = m_Parser.GetBlock<DWORD>();
-		if (m_FolderUserFieldsAnsiCount.getData() && m_FolderUserFieldsAnsiCount.getData() < _MaxEntriesSmall)
+		if (m_FolderUserFieldsAnsiCount && m_FolderUserFieldsAnsiCount < _MaxEntriesSmall)
 		{
-			for (DWORD i = 0; i < m_FolderUserFieldsAnsiCount.getData(); i++)
+			for (DWORD i = 0; i < m_FolderUserFieldsAnsiCount; i++)
 			{
 				FolderFieldDefinitionA folderFieldDefinitionA;
 				folderFieldDefinitionA.FieldType = m_Parser.GetBlock<DWORD>();
 				folderFieldDefinitionA.FieldNameLength = m_Parser.GetBlock<WORD>();
 
-				if (folderFieldDefinitionA.FieldNameLength.getData() &&
-					folderFieldDefinitionA.FieldNameLength.getData() < _MaxEntriesSmall)
+				if (folderFieldDefinitionA.FieldNameLength && folderFieldDefinitionA.FieldNameLength < _MaxEntriesSmall)
 				{
-					folderFieldDefinitionA.FieldName =
-						m_Parser.GetBlockStringA(folderFieldDefinitionA.FieldNameLength.getData());
+					folderFieldDefinitionA.FieldName = m_Parser.GetBlockStringA(folderFieldDefinitionA.FieldNameLength);
 				}
 
 				folderFieldDefinitionA.Common = BinToFolderFieldDefinitionCommon();
@@ -32,19 +30,17 @@ namespace smartview
 		}
 
 		m_FolderUserFieldsUnicodeCount = m_Parser.GetBlock<DWORD>();
-		if (m_FolderUserFieldsUnicodeCount.getData() && m_FolderUserFieldsUnicodeCount.getData() < _MaxEntriesSmall)
+		if (m_FolderUserFieldsUnicodeCount && m_FolderUserFieldsUnicodeCount < _MaxEntriesSmall)
 		{
-			for (DWORD i = 0; i < m_FolderUserFieldsUnicodeCount.getData(); i++)
+			for (DWORD i = 0; i < m_FolderUserFieldsUnicodeCount; i++)
 			{
 				FolderFieldDefinitionW folderFieldDefinitionW;
 				folderFieldDefinitionW.FieldType = m_Parser.GetBlock<DWORD>();
 				folderFieldDefinitionW.FieldNameLength = m_Parser.GetBlock<WORD>();
 
-				if (folderFieldDefinitionW.FieldNameLength.getData() &&
-					folderFieldDefinitionW.FieldNameLength.getData() < _MaxEntriesSmall)
+				if (folderFieldDefinitionW.FieldNameLength && folderFieldDefinitionW.FieldNameLength < _MaxEntriesSmall)
 				{
-					folderFieldDefinitionW.FieldName =
-						m_Parser.GetBlockStringW(folderFieldDefinitionW.FieldNameLength.getData());
+					folderFieldDefinitionW.FieldName = m_Parser.GetBlockStringW(folderFieldDefinitionW.FieldNameLength);
 				}
 
 				folderFieldDefinitionW.Common = BinToFolderFieldDefinitionCommon();
@@ -64,9 +60,9 @@ namespace smartview
 		common.dwDisplay = m_Parser.GetBlock<DWORD>();
 		common.iFmt = m_Parser.GetBlock<DWORD>();
 		common.wszFormulaLength = m_Parser.GetBlock<WORD>();
-		if (common.wszFormulaLength.getData() && common.wszFormulaLength.getData() < _MaxEntriesLarge)
+		if (common.wszFormulaLength && common.wszFormulaLength < _MaxEntriesLarge)
 		{
-			common.wszFormula = m_Parser.GetBlockStringW(common.wszFormulaLength.getData());
+			common.wszFormula = m_Parser.GetBlockStringW(common.wszFormulaLength);
 		}
 
 		return common;
@@ -77,7 +73,7 @@ namespace smartview
 		addHeader(L"Folder User Field Stream\r\n");
 
 		// Add child nodes to m_FolderUserFieldsAnsiCount before adding it to our output
-		if (m_FolderUserFieldsAnsiCount.getData() && !m_FieldDefinitionsA.empty())
+		if (m_FolderUserFieldsAnsiCount && !m_FieldDefinitionsA.empty())
 		{
 			auto i = 0;
 			for (auto& fieldDefinition : m_FieldDefinitionsA)
@@ -85,7 +81,7 @@ namespace smartview
 				m_FolderUserFieldsAnsiCount.addHeader(L"\r\n\r\n");
 				m_FolderUserFieldsAnsiCount.addHeader(L"Field %1!d!\r\n", i++);
 
-				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType.getData());
+				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
 				m_FolderUserFieldsAnsiCount.addBlock(
 					fieldDefinition.FieldType,
 					L"FieldType = 0x%1!08X! = %2!ws!\r\n",
@@ -98,10 +94,10 @@ namespace smartview
 				m_FolderUserFieldsAnsiCount.addBlock(
 					fieldDefinition.FieldName, L"FieldName = %1!hs!\r\n", fieldDefinition.FieldName.getData().c_str());
 
-				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid.getData());
+				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid);
 				m_FolderUserFieldsAnsiCount.addBlock(
 					fieldDefinition.Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());
-				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm.getData());
+				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
 				m_FolderUserFieldsAnsiCount.addBlock(
 					fieldDefinition.Common.fcapm,
 					L"fcapm = 0x%1!08X! = %2!ws!\r\n",
@@ -137,10 +133,11 @@ namespace smartview
 			L"FolderUserFieldAnsi.FieldDefinitionCount = %1!d!",
 			m_FolderUserFieldsAnsiCount.getData());
 
-		addHeader(L"\r\n\r\n");
+		addLine();
+		addLine();
 
 		// Add child nodes to m_FolderUserFieldsUnicodeCount before adding it to our output
-		if (m_FolderUserFieldsUnicodeCount.getData() && !m_FieldDefinitionsW.empty())
+		if (m_FolderUserFieldsUnicodeCount && !m_FieldDefinitionsW.empty())
 		{
 			auto i = 0;
 			for (auto& fieldDefinition : m_FieldDefinitionsW)
@@ -148,7 +145,7 @@ namespace smartview
 				m_FolderUserFieldsUnicodeCount.addHeader(L"\r\n\r\n");
 				m_FolderUserFieldsUnicodeCount.addHeader(L"Field %1!d!\r\n", i++);
 
-				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType.getData());
+				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
 				m_FolderUserFieldsUnicodeCount.addBlock(
 					fieldDefinition.FieldType,
 					L"FieldType = 0x%1!08X! = %2!ws!\r\n",
@@ -161,10 +158,10 @@ namespace smartview
 				m_FolderUserFieldsUnicodeCount.addBlock(
 					fieldDefinition.FieldName, L"FieldName = %1!ws!\r\n", fieldDefinition.FieldName.getData().c_str());
 
-				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid.getData());
+				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid);
 				m_FolderUserFieldsUnicodeCount.addBlock(
 					fieldDefinition.Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());
-				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm.getData());
+				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
 				m_FolderUserFieldsUnicodeCount.addBlock(
 					fieldDefinition.Common.fcapm,
 					L"fcapm = 0x%1!08X! = %2!ws!\r\n",

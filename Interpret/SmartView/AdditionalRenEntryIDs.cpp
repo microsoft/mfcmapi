@@ -18,11 +18,11 @@ namespace smartview
 			const auto wPersistID = m_Parser.GetBlock<WORD>();
 			const auto wDataElementSize = m_Parser.GetBlock<WORD>();
 			// Must have at least wDataElementSize bytes left to be a valid data element
-			if (m_Parser.RemainingBytes() < wDataElementSize.getData()) break;
+			if (m_Parser.RemainingBytes() < wDataElementSize) break;
 
-			m_Parser.Advance(wDataElementSize.getData());
+			m_Parser.Advance(wDataElementSize);
 			wPersistDataCount++;
-			if (wPersistID.getData() == PERISIST_SENTINEL) break;
+			if (wPersistID == PERISIST_SENTINEL) break;
 		}
 
 		// Now we parse for real
@@ -44,23 +44,22 @@ namespace smartview
 		persistData.wPersistID = m_Parser.GetBlock<WORD>();
 		persistData.wDataElementsSize = m_Parser.GetBlock<WORD>();
 
-		if (persistData.wPersistID.getData() != PERISIST_SENTINEL &&
-			m_Parser.RemainingBytes() >= persistData.wDataElementsSize.getData())
+		if (persistData.wPersistID != PERISIST_SENTINEL && m_Parser.RemainingBytes() >= persistData.wDataElementsSize)
 		{
 			// Build a new m_Parser to preread and count our elements
 			// This new m_Parser will only contain as much space as suggested in wDataElementsSize
-			CBinaryParser DataElementParser(persistData.wDataElementsSize.getData(), m_Parser.GetCurrentAddress());
+			CBinaryParser DataElementParser(persistData.wDataElementsSize, m_Parser.GetCurrentAddress());
 			for (;;)
 			{
 				if (DataElementParser.RemainingBytes() < 2 * sizeof(WORD)) break;
 				const auto wElementID = DataElementParser.GetBlock<WORD>();
 				const auto wElementDataSize = DataElementParser.GetBlock<WORD>();
 				// Must have at least wElementDataSize bytes left to be a valid element data
-				if (DataElementParser.RemainingBytes() < wElementDataSize.getData()) break;
+				if (DataElementParser.RemainingBytes() < wElementDataSize) break;
 
-				DataElementParser.Advance(wElementDataSize.getData());
+				DataElementParser.Advance(wElementDataSize);
 				wDataElementCount++;
-				if (wElementID.getData() == ELEMENT_SENTINEL) break;
+				if (wElementID == ELEMENT_SENTINEL) break;
 			}
 		}
 
@@ -71,9 +70,9 @@ namespace smartview
 				PersistElement persistElement;
 				persistElement.wElementID = m_Parser.GetBlock<WORD>();
 				persistElement.wElementDataSize = m_Parser.GetBlock<WORD>();
-				if (persistElement.wElementID.getData() == ELEMENT_SENTINEL) break;
+				if (persistElement.wElementID == ELEMENT_SENTINEL) break;
 				// Since this is a word, the size will never be too large
-				persistElement.lpbElementData = m_Parser.GetBlockBYTES(persistElement.wElementDataSize.getData());
+				persistElement.lpbElementData = m_Parser.GetBlockBYTES(persistElement.wElementDataSize);
 
 				persistData.ppeDataElement.push_back(persistElement);
 			}
@@ -81,7 +80,7 @@ namespace smartview
 
 		// We'll trust wDataElementsSize to dictate our record size.
 		// Count the 2 WORD size header fields too.
-		const auto cbRecordSize = persistData.wDataElementsSize.getData() + sizeof(WORD) * 2;
+		const auto cbRecordSize = persistData.wDataElementsSize + sizeof(WORD) * 2;
 
 		// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
 		if (m_Parser.GetCurrentOffset() < cbRecordSize)
@@ -107,8 +106,7 @@ namespace smartview
 					m_ppdPersistData[iPersistElement].wPersistID,
 					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
 					m_ppdPersistData[iPersistElement].wPersistID.getData(),
-					interpretprop::InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID.getData())
-						.c_str());
+					interpretprop::InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID).c_str());
 				addBlock(
 					m_ppdPersistData[iPersistElement].wDataElementsSize,
 					L"DataElementsSize = 0x%1!04X!",
@@ -127,7 +125,7 @@ namespace smartview
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID.getData(),
 							interpretprop::InterpretFlags(
 								flagElementID,
-								m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID.getData())
+								m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID)
 								.c_str());
 
 						addBlock(

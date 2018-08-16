@@ -11,10 +11,10 @@ namespace smartview
 		m_EntryCount = m_Parser.GetBlock<DWORD>();
 		m_Pad = m_Parser.GetBlock<DWORD>();
 
-		if (m_EntryCount.getData() && m_EntryCount.getData() < _MaxEntriesLarge)
+		if (m_EntryCount && m_EntryCount < _MaxEntriesLarge)
 		{
 			{
-				for (DWORD i = 0; i < m_EntryCount.getData(); i++)
+				for (DWORD i = 0; i < m_EntryCount; i++)
 				{
 					EntryListEntryStruct entryListEntryStruct;
 					entryListEntryStruct.EntryLength = m_Parser.GetBlock<DWORD>();
@@ -22,9 +22,9 @@ namespace smartview
 					m_Entry.push_back(entryListEntryStruct);
 				}
 
-				for (DWORD i = 0; i < m_EntryCount.getData(); i++)
+				for (DWORD i = 0; i < m_EntryCount; i++)
 				{
-					const auto cbRemainingBytes = min(m_Entry[i].EntryLength.getData(), m_Parser.RemainingBytes());
+					const auto cbRemainingBytes = min(m_Entry[i].EntryLength, m_Parser.RemainingBytes());
 					m_Entry[i].EntryId.Init(cbRemainingBytes, m_Parser.GetCurrentAddress());
 					m_Entry[i].EntryId.EnsureParsed();
 					m_Parser.Advance(cbRemainingBytes);

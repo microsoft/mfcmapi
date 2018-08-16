@@ -12,20 +12,20 @@ namespace smartview
 		m_Version = m_Parser.GetBlock<WORD>();
 		m_Count = m_Parser.GetBlock<DWORD>();
 
-		if (m_Count.getData() && m_Count.getData() < _MaxEntriesSmall)
+		if (m_Count && m_Count < _MaxEntriesSmall)
 		{
-			for (ULONG i = 0; i < m_Count.getData(); i++)
+			for (ULONG i = 0; i < m_Count; i++)
 			{
 				VerbData verbData;
 				verbData.VerbType = m_Parser.GetBlock<DWORD>();
 				verbData.DisplayNameCount = m_Parser.GetBlock<BYTE>();
-				verbData.DisplayName = m_Parser.GetBlockStringA(verbData.DisplayNameCount.getData());
+				verbData.DisplayName = m_Parser.GetBlockStringA(verbData.DisplayNameCount);
 				verbData.MsgClsNameCount = m_Parser.GetBlock<BYTE>();
-				verbData.MsgClsName = m_Parser.GetBlockStringA(verbData.MsgClsNameCount.getData());
+				verbData.MsgClsName = m_Parser.GetBlockStringA(verbData.MsgClsNameCount);
 				verbData.Internal1StringCount = m_Parser.GetBlock<BYTE>();
-				verbData.Internal1String = m_Parser.GetBlockStringA(verbData.Internal1StringCount.getData());
+				verbData.Internal1String = m_Parser.GetBlockStringA(verbData.Internal1StringCount);
 				verbData.DisplayNameCountRepeat = m_Parser.GetBlock<BYTE>();
-				verbData.DisplayNameRepeat = m_Parser.GetBlockStringA(verbData.DisplayNameCountRepeat.getData());
+				verbData.DisplayNameRepeat = m_Parser.GetBlockStringA(verbData.DisplayNameCountRepeat);
 				verbData.Internal2 = m_Parser.GetBlock<DWORD>();
 				verbData.Internal3 = m_Parser.GetBlock<BYTE>();
 				verbData.fUseUSHeaders = m_Parser.GetBlock<DWORD>();
@@ -40,16 +40,15 @@ namespace smartview
 
 		m_Version2 = m_Parser.GetBlock<WORD>();
 
-		if (m_Count.getData() && m_Count.getData() < _MaxEntriesSmall)
+		if (m_Count && m_Count < _MaxEntriesSmall)
 		{
-			for (ULONG i = 0; i < m_Count.getData(); i++)
+			for (ULONG i = 0; i < m_Count; i++)
 			{
 				VerbExtraData verbExtraData;
 				verbExtraData.DisplayNameCount = m_Parser.GetBlock<BYTE>();
-				verbExtraData.DisplayName = m_Parser.GetBlockStringW(verbExtraData.DisplayNameCount.getData());
+				verbExtraData.DisplayName = m_Parser.GetBlockStringW(verbExtraData.DisplayNameCount);
 				verbExtraData.DisplayNameCountRepeat = m_Parser.GetBlock<BYTE>();
-				verbExtraData.DisplayNameRepeat =
-					m_Parser.GetBlockStringW(verbExtraData.DisplayNameCountRepeat.getData());
+				verbExtraData.DisplayNameRepeat = m_Parser.GetBlockStringW(verbExtraData.DisplayNameCountRepeat);
 				m_lpVerbExtraData.push_back(verbExtraData);
 			}
 		}
@@ -113,7 +112,7 @@ namespace smartview
 				m_lpVerbData[i].ID,
 				L"ID = 0x%1!08X! = %2!ws!\r\n",
 				m_lpVerbData[i].ID.getData(),
-				smartview::InterpretNumberAsStringProp(m_lpVerbData[i].ID.getData(), PR_LAST_VERB_EXECUTED).c_str());
+				smartview::InterpretNumberAsStringProp(m_lpVerbData[i].ID, PR_LAST_VERB_EXECUTED).c_str());
 			addBlock(m_lpVerbData[i].Internal6, L"Internal6 = 0x%1!08X!", m_lpVerbData[i].Internal6.getData());
 		}
 

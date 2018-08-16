@@ -38,7 +38,7 @@ namespace smartview
 				webViewPersist.dwFlags = m_Parser.GetBlock<DWORD>();
 				webViewPersist.dwUnused = m_Parser.GetBlockBYTES(7 * sizeof(DWORD));
 				webViewPersist.cbData = m_Parser.GetBlock<DWORD>();
-				webViewPersist.lpData = m_Parser.GetBlockBYTES(webViewPersist.cbData.getData(), _MaxBytes);
+				webViewPersist.lpData = m_Parser.GetBlockBYTES(webViewPersist.cbData, _MaxBytes);
 				m_lpWebViews.push_back(webViewPersist);
 			}
 		}
@@ -58,17 +58,17 @@ namespace smartview
 				m_lpWebViews[i].dwVersion,
 				L"dwVersion = 0x%1!08X! = %2!ws!\r\n",
 				m_lpWebViews[i].dwVersion.getData(),
-				interpretprop::InterpretFlags(flagWebViewVersion, m_lpWebViews[i].dwVersion.getData()).c_str());
+				interpretprop::InterpretFlags(flagWebViewVersion, m_lpWebViews[i].dwVersion).c_str());
 			addBlock(
 				m_lpWebViews[i].dwType,
 				L"dwType = 0x%1!08X! = %2!ws!\r\n",
 				m_lpWebViews[i].dwType.getData(),
-				interpretprop::InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType.getData()).c_str());
+				interpretprop::InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType).c_str());
 			addBlock(
 				m_lpWebViews[i].dwFlags,
 				L"dwFlags = 0x%1!08X! = %2!ws!\r\n",
 				m_lpWebViews[i].dwFlags.getData(),
-				interpretprop::InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags.getData()).c_str());
+				interpretprop::InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags).c_str());
 			addHeader(L"dwUnused = ");
 
 			addBlockBytes(m_lpWebViews[i].dwUnused);
@@ -77,7 +77,7 @@ namespace smartview
 			addBlock(m_lpWebViews[i].cbData, L"cbData = 0x%1!08X!", m_lpWebViews[i].cbData.getData());
 
 			addLine();
-			switch (m_lpWebViews[i].dwType.getData())
+			switch (m_lpWebViews[i].dwType)
 			{
 			case WEBVIEWURL:
 			{

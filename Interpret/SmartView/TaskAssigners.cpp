@@ -9,16 +9,16 @@ namespace smartview
 	{
 		m_cAssigners = m_Parser.GetBlock<DWORD>();
 
-		if (m_cAssigners.getData() && m_cAssigners.getData() < _MaxEntriesSmall)
+		if (m_cAssigners && m_cAssigners < _MaxEntriesSmall)
 		{
-			for (DWORD i = 0; i < m_cAssigners.getData(); i++)
+			for (DWORD i = 0; i < m_cAssigners; i++)
 			{
 				TaskAssigner taskAssigner;
 				taskAssigner.cbAssigner = m_Parser.GetBlock<DWORD>();
-				const auto ulSize = min(taskAssigner.cbAssigner.getData(), (ULONG) m_Parser.RemainingBytes());
+				const auto ulSize = min(taskAssigner.cbAssigner, (ULONG) m_Parser.RemainingBytes());
 				CBinaryParser AssignerParser(ulSize, m_Parser.GetCurrentAddress());
 				taskAssigner.cbEntryID = AssignerParser.GetBlock<DWORD>();
-				taskAssigner.lpEntryID = AssignerParser.GetBlockBYTES(taskAssigner.cbEntryID.getData(), _MaxEID);
+				taskAssigner.lpEntryID = AssignerParser.GetBlockBYTES(taskAssigner.cbEntryID, _MaxEID);
 				taskAssigner.szDisplayName = AssignerParser.GetBlockStringA();
 				taskAssigner.wzDisplayName = AssignerParser.GetBlockStringW();
 				taskAssigner.JunkData = AssignerParser.GetBlockRemainingData();

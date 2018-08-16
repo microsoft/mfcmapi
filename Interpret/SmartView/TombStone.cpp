@@ -40,9 +40,9 @@ namespace smartview
 				tombstoneRecord.EndTime = m_Parser.GetBlock<DWORD>();
 				tombstoneRecord.GlobalObjectIdSize = m_Parser.GetBlock<DWORD>();
 				tombstoneRecord.lpGlobalObjectId =
-					m_Parser.GetBlockBYTES(tombstoneRecord.GlobalObjectIdSize.getData(), _MaxBytes);
+					m_Parser.GetBlockBYTES(tombstoneRecord.GlobalObjectIdSize, _MaxBytes);
 				tombstoneRecord.UsernameSize = m_Parser.GetBlock<WORD>();
-				tombstoneRecord.szUsername = m_Parser.GetBlockStringA(tombstoneRecord.UsernameSize.getData());
+				tombstoneRecord.szUsername = m_Parser.GetBlockStringA(tombstoneRecord.UsernameSize);
 				m_lpRecords.push_back(tombstoneRecord);
 			}
 		}
@@ -72,12 +72,12 @@ namespace smartview
 				m_lpRecords[i].StartTime,
 				L"StartTime = 0x%1!08X! = %2!ws!\r\n",
 				m_lpRecords[i].StartTime.getData(),
-				RTimeToString(m_lpRecords[i].StartTime.getData()).c_str());
+				RTimeToString(m_lpRecords[i].StartTime).c_str());
 			addBlock(
 				m_lpRecords[i].EndTime,
 				L"Endtime = 0x%1!08X! = %2!ws!\r\n",
 				m_lpRecords[i].EndTime.getData(),
-				RTimeToString(m_lpRecords[i].EndTime.getData()).c_str());
+				RTimeToString(m_lpRecords[i].EndTime).c_str());
 			addBlock(
 				m_lpRecords[i].GlobalObjectIdSize,
 				L"GlobalObjectIdSize = 0x%1!08X!\r\n",

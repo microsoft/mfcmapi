@@ -12,22 +12,22 @@ namespace smartview
 		// We read and report this, but ultimately, it's not used.
 		m_cbEntries = m_Parser.GetBlock<DWORD>();
 
-		if (m_cEntries.getData() && m_cEntries.getData() < _MaxEntriesLarge)
+		if (m_cEntries && m_cEntries < _MaxEntriesLarge)
 		{
-			for (DWORD iFlatEntryList = 0; iFlatEntryList < m_cEntries.getData(); iFlatEntryList++)
+			for (DWORD iFlatEntryList = 0; iFlatEntryList < m_cEntries; iFlatEntryList++)
 			{
 				FlatEntryID flatEntryID;
 				// Size here will be the length of the serialized entry ID
 				// We'll have to round it up to a multiple of 4 to read off padding
 				flatEntryID.dwSize = m_Parser.GetBlock<DWORD>();
-				const auto ulSize = min(flatEntryID.dwSize.getData(), m_Parser.RemainingBytes());
+				const auto ulSize = min(flatEntryID.dwSize, m_Parser.RemainingBytes());
 
 				flatEntryID.lpEntryID.Init(ulSize, m_Parser.GetCurrentAddress());
 				flatEntryID.lpEntryID.EnsureParsed();
 
 				m_Parser.Advance(ulSize);
 
-				const auto dwPAD = 3 - (flatEntryID.dwSize.getData() + 3) % 4;
+				const auto dwPAD = 3 - (flatEntryID.dwSize + 3) % 4;
 				if (dwPAD > 0)
 				{
 					flatEntryID.JunkData = m_Parser.GetBlockBYTES(dwPAD);

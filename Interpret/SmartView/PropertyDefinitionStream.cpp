@@ -13,14 +13,13 @@ namespace smartview
 		if (pParser)
 		{
 			packedAnsiString.cchLength = pParser->GetBlock<BYTE>();
-			if (0xFF == packedAnsiString.cchLength.getData())
+			if (0xFF == packedAnsiString.cchLength)
 			{
 				packedAnsiString.cchExtendedLength = pParser->GetBlock<WORD>();
 			}
 
 			packedAnsiString.szCharacters = pParser->GetBlockStringA(
-				packedAnsiString.cchExtendedLength.getData() ? packedAnsiString.cchExtendedLength.getData()
-															 : packedAnsiString.cchLength.getData());
+				packedAnsiString.cchExtendedLength ? packedAnsiString.cchExtendedLength.getData() : packedAnsiString.cchLength.getData());
 		}
 
 		return packedAnsiString;
@@ -32,14 +31,14 @@ namespace smartview
 		if (pParser)
 		{
 			packedUnicodeString.cchLength = pParser->GetBlock<BYTE>();
-			if (0xFF == packedUnicodeString.cchLength.getData())
+			if (0xFF == packedUnicodeString.cchLength)
 			{
 				packedUnicodeString.cchExtendedLength = pParser->GetBlock<WORD>();
 			}
 
 			packedUnicodeString.szCharacters = pParser->GetBlockStringW(
-				packedUnicodeString.cchExtendedLength.getData() ? packedUnicodeString.cchExtendedLength.getData()
-																: packedUnicodeString.cchLength.getData());
+				packedUnicodeString.cchExtendedLength ? packedUnicodeString.cchExtendedLength.getData()
+													  : packedUnicodeString.cchLength.getData());
 		}
 
 		return packedUnicodeString;
@@ -49,16 +48,16 @@ namespace smartview
 	{
 		m_wVersion = m_Parser.GetBlock<WORD>();
 		m_dwFieldDefinitionCount = m_Parser.GetBlock<DWORD>();
-		if (m_dwFieldDefinitionCount.getData() && m_dwFieldDefinitionCount.getData() < _MaxEntriesLarge)
+		if (m_dwFieldDefinitionCount && m_dwFieldDefinitionCount < _MaxEntriesLarge)
 		{
-			for (DWORD iDef = 0; iDef < m_dwFieldDefinitionCount.getData(); iDef++)
+			for (DWORD iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
 			{
 				FieldDefinition fieldDefinition;
 				fieldDefinition.dwFlags = m_Parser.GetBlock<DWORD>();
 				fieldDefinition.wVT = m_Parser.GetBlock<WORD>();
 				fieldDefinition.dwDispid = m_Parser.GetBlock<DWORD>();
 				fieldDefinition.wNmidNameLength = m_Parser.GetBlock<WORD>();
-				fieldDefinition.szNmidName = m_Parser.GetBlockStringW(fieldDefinition.wNmidNameLength.getData());
+				fieldDefinition.szNmidName = m_Parser.GetBlockStringW(fieldDefinition.wNmidNameLength);
 
 				fieldDefinition.pasNameANSI = ReadPackedAnsiString(&m_Parser);
 				fieldDefinition.pasFormulaANSI = ReadPackedAnsiString(&m_Parser);
@@ -66,7 +65,7 @@ namespace smartview
 				fieldDefinition.pasValidationTextANSI = ReadPackedAnsiString(&m_Parser);
 				fieldDefinition.pasErrorANSI = ReadPackedAnsiString(&m_Parser);
 
-				if (PropDefV2 == m_wVersion.getData())
+				if (PropDefV2 == m_wVersion)
 				{
 					fieldDefinition.dwInternalType = m_Parser.GetBlock<DWORD>();
 
@@ -93,7 +92,7 @@ namespace smartview
 						{
 							SkipBlock skipBlock;
 							skipBlock.dwSize = m_Parser.GetBlock<DWORD>();
-							skipBlock.lpbContent = m_Parser.GetBlockBYTES(skipBlock.dwSize.getData(), _MaxBytes);
+							skipBlock.lpbContent = m_Parser.GetBlockBYTES(skipBlock.dwSize, _MaxBytes);
 							fieldDefinition.psbSkipBlocks.push_back(skipBlock);
 						}
 					}
@@ -111,7 +110,7 @@ namespace smartview
 		auto data = block{};
 		data.addHeader(L"\r\n\t");
 
-		if (0xFF == ppasString->cchLength.getData())
+		if (0xFF == ppasString->cchLength)
 		{
 			data.addBlock(
 				ppasString->cchLength,
@@ -145,7 +144,7 @@ namespace smartview
 		auto data = block{};
 		data.addHeader(L"\r\n\t");
 
-		if (0xFF == ppusString->cchLength.getData())
+		if (0xFF == ppusString->cchLength)
 		{
 			data.addBlock(
 				ppusString->cchLength,
@@ -174,7 +173,7 @@ namespace smartview
 	void PropertyDefinitionStream::ParseBlocks()
 	{
 		addHeader(L"Property Definition Stream\r\n");
-		auto szVersion = interpretprop::InterpretFlags(flagPropDefVersion, m_wVersion.getData());
+		auto szVersion = interpretprop::InterpretFlags(flagPropDefVersion, m_wVersion);
 		addBlock(m_wVersion, L"Version = 0x%1!04X! = %2!ws!\r\n", m_wVersion.getData(), szVersion.c_str());
 		addBlock(m_dwFieldDefinitionCount, L"FieldDefinitionCount = 0x%1!08X!", m_dwFieldDefinitionCount.getData());
 
@@ -183,13 +182,13 @@ namespace smartview
 			addLine();
 			addHeader(L"Definition: %1!d!\r\n", iDef);
 
-			auto szFlags = interpretprop::InterpretFlags(flagPDOFlag, m_pfdFieldDefinitions[iDef].dwFlags.getData());
+			auto szFlags = interpretprop::InterpretFlags(flagPDOFlag, m_pfdFieldDefinitions[iDef].dwFlags);
 			addBlock(
 				m_pfdFieldDefinitions[iDef].dwFlags,
 				L"\tFlags = 0x%1!08X! = %2!ws!\r\n",
 				m_pfdFieldDefinitions[iDef].dwFlags.getData(),
 				szFlags.c_str());
-			auto szVarEnum = interpretprop::InterpretFlags(flagVarEnum, m_pfdFieldDefinitions[iDef].wVT.getData());
+			auto szVarEnum = interpretprop::InterpretFlags(flagVarEnum, m_pfdFieldDefinitions[iDef].wVT);
 			addBlock(
 				m_pfdFieldDefinitions[iDef].wVT,
 				L"\tVT = 0x%1!04X! = %2!ws!\r\n",
@@ -200,12 +199,11 @@ namespace smartview
 				L"\tDispID = 0x%1!08X!",
 				m_pfdFieldDefinitions[iDef].dwDispid.getData());
 
-			if (m_pfdFieldDefinitions[iDef].dwDispid.getData())
+			if (m_pfdFieldDefinitions[iDef].dwDispid)
 			{
-				if (m_pfdFieldDefinitions[iDef].dwDispid.getData() < 0x8000)
+				if (m_pfdFieldDefinitions[iDef].dwDispid < 0x8000)
 				{
-					auto propTagNames =
-						interpretprop::PropTagToPropName(m_pfdFieldDefinitions[iDef].dwDispid.getData(), false);
+					auto propTagNames = interpretprop::PropTagToPropName(m_pfdFieldDefinitions[iDef].dwDispid, false);
 					if (!propTagNames.bestGuess.empty())
 					{
 						addBlock(m_pfdFieldDefinitions[iDef].dwDispid, L" = %1!ws!", propTagNames.bestGuess.c_str());
@@ -223,7 +221,7 @@ namespace smartview
 					MAPINAMEID mnid = {nullptr};
 					mnid.lpguid = nullptr;
 					mnid.ulKind = MNID_ID;
-					mnid.Kind.lID = m_pfdFieldDefinitions[iDef].dwDispid.getData();
+					mnid.Kind.lID = m_pfdFieldDefinitions[iDef].dwDispid;
 					szDispidName = strings::join(interpretprop::NameIDToPropNames(&mnid), L", ");
 					if (!szDispidName.empty())
 					{
@@ -250,10 +248,9 @@ namespace smartview
 				PackedAnsiStringToBlock(L"ValidationTextANSI", &m_pfdFieldDefinitions[iDef].pasValidationTextANSI));
 			addBlock(PackedAnsiStringToBlock(L"ErrorANSI", &m_pfdFieldDefinitions[iDef].pasErrorANSI));
 
-			if (PropDefV2 == m_wVersion.getData())
+			if (PropDefV2 == m_wVersion)
 			{
-				szFlags = interpretprop::InterpretFlags(
-					flagInternalType, m_pfdFieldDefinitions[iDef].dwInternalType.getData());
+				szFlags = interpretprop::InterpretFlags(flagInternalType, m_pfdFieldDefinitions[iDef].dwInternalType);
 				addBlock(
 					m_pfdFieldDefinitions[iDef].dwInternalType,
 					L"\r\n\tInternalType = 0x%1!08X! = %2!ws!\r\n",
