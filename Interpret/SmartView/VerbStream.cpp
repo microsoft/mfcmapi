@@ -70,18 +70,12 @@ namespace smartview
 				m_lpVerbData[i].DisplayNameCount,
 				L"DisplayNameCount = 0x%1!02X!\r\n",
 				m_lpVerbData[i].DisplayNameCount.getData());
-			addBlock(
-				m_lpVerbData[i].DisplayName,
-				L"DisplayName = \"%1!hs!\"\r\n",
-				m_lpVerbData[i].DisplayName.getData().c_str());
+			addBlock(m_lpVerbData[i].DisplayName, L"DisplayName = \"%1!hs!\"\r\n", m_lpVerbData[i].DisplayName.c_str());
 			addBlock(
 				m_lpVerbData[i].MsgClsNameCount,
 				L"MsgClsNameCount = 0x%1!02X!\r\n",
 				m_lpVerbData[i].MsgClsNameCount.getData());
-			addBlock(
-				m_lpVerbData[i].MsgClsName,
-				L"MsgClsName = \"%1!hs!\"\r\n",
-				m_lpVerbData[i].MsgClsName.getData().c_str());
+			addBlock(m_lpVerbData[i].MsgClsName, L"MsgClsName = \"%1!hs!\"\r\n", m_lpVerbData[i].MsgClsName.c_str());
 			addBlock(
 				m_lpVerbData[i].Internal1StringCount,
 				L"Internal1StringCount = 0x%1!02X!\r\n",
@@ -89,7 +83,7 @@ namespace smartview
 			addBlock(
 				m_lpVerbData[i].Internal1String,
 				L"Internal1String = \"%1!hs!\"\r\n",
-				m_lpVerbData[i].Internal1String.getData().c_str());
+				m_lpVerbData[i].Internal1String.c_str());
 			addBlock(
 				m_lpVerbData[i].DisplayNameCountRepeat,
 				L"DisplayNameCountRepeat = 0x%1!02X!\r\n",
@@ -97,7 +91,7 @@ namespace smartview
 			addBlock(
 				m_lpVerbData[i].DisplayNameRepeat,
 				L"DisplayNameRepeat = \"%1!hs!\"\r\n",
-				m_lpVerbData[i].DisplayNameRepeat.getData().c_str());
+				m_lpVerbData[i].DisplayNameRepeat.c_str());
 			addBlock(m_lpVerbData[i].Internal2, L"Internal2 = 0x%1!08X!\r\n", m_lpVerbData[i].Internal2.getData());
 			addBlock(m_lpVerbData[i].Internal3, L"Internal3 = 0x%1!08X!\r\n", m_lpVerbData[i].Internal3.getData());
 			addBlock(
@@ -132,7 +126,7 @@ namespace smartview
 			addBlock(
 				m_lpVerbExtraData[i].DisplayName,
 				L"DisplayName = \"%1!ws!\"\r\n",
-				m_lpVerbExtraData[i].DisplayName.getData().c_str());
+				m_lpVerbExtraData[i].DisplayName.c_str());
 			addBlock(
 				m_lpVerbExtraData[i].DisplayNameCountRepeat,
 				L"DisplayNameCountRepeat = 0x%1!02X!\r\n",
@@ -140,7 +134,7 @@ namespace smartview
 			addBlock(
 				m_lpVerbExtraData[i].DisplayNameRepeat,
 				L"DisplayNameRepeat = \"%1!ws!\"",
-				m_lpVerbExtraData[i].DisplayNameRepeat.getData().c_str());
+				m_lpVerbExtraData[i].DisplayNameRepeat.c_str());
 		}
 	}
 }

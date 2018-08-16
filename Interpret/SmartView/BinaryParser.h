@@ -58,6 +58,8 @@ namespace smartview
 		blockBytes() {}
 		void setData(const std::vector<BYTE>& _data) { data = _data; }
 		std::vector<BYTE> getData() const { return data; }
+		operator std::vector<BYTE>&() { return data; }
+		operator std::vector<BYTE>() const { return data; }
 
 	private:
 		std::vector<BYTE> data;
@@ -82,6 +84,11 @@ namespace smartview
 		blockStringA() {}
 		void setData(const std::string _data) { data = _data; }
 		std::string getData() const { return data; }
+		operator std::string&() { return data; }
+		operator std::string() const { return data; }
+		_Ret_z_ const char* c_str() const noexcept { return data.c_str(); }
+		size_t length() const noexcept { return data.length(); }
+		bool empty() const noexcept { return data.empty(); }
 
 	private:
 		std::string data;
@@ -93,6 +100,11 @@ namespace smartview
 		blockStringW() {}
 		void setData(const std::wstring _data) { data = _data; }
 		std::wstring getData() const { return data; }
+		operator std::wstring&() { return data; }
+		operator std::wstring() const { return data; }
+		_Ret_z_ const wchar_t* c_str() const noexcept { return data.c_str(); }
+		size_t length() const noexcept { return data.length(); }
+		bool empty() const noexcept { return data.empty(); }
 
 	private:
 		std::wstring data;

@@ -227,7 +227,7 @@ namespace smartview
 						m_ExceptionInfo[i].Subject,
 						L"ExceptionInfo[%1!d!].Subject: \"%2!hs!\"\r\n",
 						i,
-						m_ExceptionInfo[i].Subject.getData().c_str());
+						m_ExceptionInfo[i].Subject.c_str());
 				}
 
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_MEETINGTYPE)
@@ -278,7 +278,7 @@ namespace smartview
 						m_ExceptionInfo[i].Location,
 						L"ExceptionInfo[%1!d!].Location: \"%2!hs!\"\r\n",
 						i,
-						m_ExceptionInfo[i].Location.getData().c_str());
+						m_ExceptionInfo[i].Location.c_str());
 				}
 
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_BUSYSTATUS)
@@ -403,7 +403,7 @@ namespace smartview
 							m_ExtendedException[i].WideCharSubject,
 							L"ExtendedException[%1!d!].WideCharSubject: \"%2!ws!\"\r\n",
 							i,
-							m_ExtendedException[i].WideCharSubject.getData().c_str());
+							m_ExtendedException[i].WideCharSubject.c_str());
 					}
 
 					if (m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
@@ -417,7 +417,7 @@ namespace smartview
 							m_ExtendedException[i].WideCharLocation,
 							L"ExtendedException[%1!d!].WideCharLocation: \"%2!ws!\"\r\n",
 							i,
-							m_ExtendedException[i].WideCharLocation.getData().c_str());
+							m_ExtendedException[i].WideCharLocation.c_str());
 					}
 				}
 

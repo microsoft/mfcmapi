@@ -99,7 +99,7 @@ namespace smartview
 		{
 			addLine();
 			addBlock(m_cchAnsiText, L"cchAnsiText = 0x%1!08X!\r\n", m_cchAnsiText.getData());
-			addBlock(m_lpszAnsiText, L"AnsiText = %1!hs!", m_lpszAnsiText.getData().c_str());
+			addBlock(m_lpszAnsiText, L"AnsiText = %1!hs!", m_lpszAnsiText.c_str());
 		}
 	}
 }

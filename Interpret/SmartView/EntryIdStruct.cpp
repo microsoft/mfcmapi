@@ -148,11 +148,11 @@ namespace smartview
 				m_MessageDatabaseObject.bIsExchange = false;
 
 				// We only know how to parse emsmdb.dll's wrapped entry IDs
-				if (!m_MessageDatabaseObject.DLLFileName.getData().empty() &&
+				if (!m_MessageDatabaseObject.DLLFileName.empty() &&
 					CSTR_EQUAL == CompareStringA(
 									  LOCALE_INVARIANT,
 									  NORM_IGNORECASE,
-									  m_MessageDatabaseObject.DLLFileName.getData().c_str(),
+									  m_MessageDatabaseObject.DLLFileName.c_str(),
 									  -1,
 									  "emsmdb.dll", // STRING_OK
 									  -1))
@@ -355,15 +355,15 @@ namespace smartview
 				addBlock(
 					m_OneOffRecipientObject.Unicode.DisplayName,
 					L"szDisplayName = %1!ws!\r\n",
-					m_OneOffRecipientObject.Unicode.DisplayName.getData().c_str());
+					m_OneOffRecipientObject.Unicode.DisplayName.c_str());
 				addBlock(
 					m_OneOffRecipientObject.Unicode.AddressType,
 					L"szAddressType = %1!ws!\r\n",
-					m_OneOffRecipientObject.Unicode.AddressType.getData().c_str());
+					m_OneOffRecipientObject.Unicode.AddressType.c_str());
 				addBlock(
 					m_OneOffRecipientObject.Unicode.EmailAddress,
 					L"szEmailAddress = %1!ws!",
-					m_OneOffRecipientObject.Unicode.EmailAddress.getData().c_str());
+					m_OneOffRecipientObject.Unicode.EmailAddress.c_str());
 			}
 			else
 			{
@@ -376,15 +376,15 @@ namespace smartview
 				addBlock(
 					m_OneOffRecipientObject.ANSI.DisplayName,
 					L"szDisplayName = %1!hs!\r\n",
-					m_OneOffRecipientObject.ANSI.DisplayName.getData().c_str());
+					m_OneOffRecipientObject.ANSI.DisplayName.c_str());
 				addBlock(
 					m_OneOffRecipientObject.ANSI.AddressType,
 					L"szAddressType = %1!hs!\r\n",
-					m_OneOffRecipientObject.ANSI.AddressType.getData().c_str());
+					m_OneOffRecipientObject.ANSI.AddressType.c_str());
 				addBlock(
 					m_OneOffRecipientObject.ANSI.EmailAddress,
 					L"szEmailAddress = %1!hs!",
-					m_OneOffRecipientObject.ANSI.EmailAddress.getData().c_str());
+					m_OneOffRecipientObject.ANSI.EmailAddress.c_str());
 			}
 		}
 		else if (eidtAddressBook == m_ObjectType)
@@ -402,7 +402,7 @@ namespace smartview
 				L"Type = 0x%1!08X! = %2!ws!\r\n",
 				m_AddressBookObject.Type.getData(),
 				szType.c_str());
-			addBlock(m_AddressBookObject.X500DN, L"X500DN = %1!hs!", m_AddressBookObject.X500DN.getData().c_str());
+			addBlock(m_AddressBookObject.X500DN, L"X500DN = %1!hs!", m_AddressBookObject.X500DN.c_str());
 		}
 		// Contact Address Book / Personal Distribution List (PDL)
 		else if (eidtContact == m_ObjectType)
@@ -487,7 +487,7 @@ namespace smartview
 			addBlock(
 				m_MessageDatabaseObject.DLLFileName,
 				L"DLLFileName = %1!hs!",
-				m_MessageDatabaseObject.DLLFileName.getData().c_str());
+				m_MessageDatabaseObject.DLLFileName.c_str());
 			if (m_MessageDatabaseObject.bIsExchange)
 			{
 				addLine();
@@ -510,11 +510,11 @@ namespace smartview
 				addBlock(
 					m_MessageDatabaseObject.ServerShortname,
 					L"ServerShortname = %1!hs!\r\n",
-					m_MessageDatabaseObject.ServerShortname.getData().c_str());
+					m_MessageDatabaseObject.ServerShortname.c_str());
 				addBlock(
 					m_MessageDatabaseObject.MailboxDN,
 					L"MailboxDN = %1!hs!",
-					m_MessageDatabaseObject.MailboxDN.getData().c_str());
+					m_MessageDatabaseObject.MailboxDN.c_str());
 			}
 
 			switch (m_MessageDatabaseObject.MagicVersion)
@@ -546,12 +546,8 @@ namespace smartview
 					m_MessageDatabaseObject.v2.ulOffsetFQDN,
 					L"OffsetFQDN = 0x%1!08X!\r\n",
 					m_MessageDatabaseObject.v2.ulOffsetFQDN.getData());
-				addBlock(
-					m_MessageDatabaseObject.v2DN, L"DN = %1!hs!\r\n", m_MessageDatabaseObject.v2DN.getData().c_str());
-				addBlock(
-					m_MessageDatabaseObject.v2FQDN,
-					L"FQDN = %1!ws!\r\n",
-					m_MessageDatabaseObject.v2FQDN.getData().c_str());
+				addBlock(m_MessageDatabaseObject.v2DN, L"DN = %1!hs!\r\n", m_MessageDatabaseObject.v2DN.c_str());
+				addBlock(m_MessageDatabaseObject.v2FQDN, L"FQDN = %1!ws!\r\n", m_MessageDatabaseObject.v2FQDN.c_str());
 
 				addHeader(L"Reserved Bytes = ");
 				addBlockBytes(m_MessageDatabaseObject.v2Reserved);
@@ -583,7 +579,7 @@ namespace smartview
 				addBlock(
 					m_MessageDatabaseObject.v3SmtpAddress,
 					L"SmtpAddress = %1!ws!\r\n",
-					m_MessageDatabaseObject.v3SmtpAddress.getData().c_str());
+					m_MessageDatabaseObject.v3SmtpAddress.c_str());
 				addHeader(L"Reserved Bytes = ");
 
 				addBlockBytes(m_MessageDatabaseObject.v2Reserved);

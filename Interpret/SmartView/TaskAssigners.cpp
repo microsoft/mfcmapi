@@ -53,12 +53,12 @@ namespace smartview
 			addBlock(
 				m_lpTaskAssigners[i].szDisplayName,
 				L"\tszDisplayName (ANSI) = %1!hs!",
-				m_lpTaskAssigners[i].szDisplayName.getData().c_str());
+				m_lpTaskAssigners[i].szDisplayName.c_str());
 			addLine();
 			addBlock(
 				m_lpTaskAssigners[i].wzDisplayName,
 				L"\tszDisplayName (Unicode) = %1!ws!",
-				m_lpTaskAssigners[i].wzDisplayName.getData().c_str());
+				m_lpTaskAssigners[i].wzDisplayName.c_str());
 
 			if (!m_lpTaskAssigners[i].JunkData.getData().empty())
 			{

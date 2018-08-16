@@ -92,7 +92,7 @@ namespace smartview
 					L"FieldNameLength = 0x%1!08X! = %1!d!\r\n",
 					fieldDefinition.FieldNameLength.getData());
 				m_FolderUserFieldsAnsiCount.addBlock(
-					fieldDefinition.FieldName, L"FieldName = %1!hs!\r\n", fieldDefinition.FieldName.getData().c_str());
+					fieldDefinition.FieldName, L"FieldName = %1!hs!\r\n", fieldDefinition.FieldName.c_str());
 
 				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid);
 				m_FolderUserFieldsAnsiCount.addBlock(
@@ -124,7 +124,7 @@ namespace smartview
 				m_FolderUserFieldsAnsiCount.addBlock(
 					fieldDefinition.Common.wszFormula,
 					L"wszFormula = %1!ws!",
-					fieldDefinition.Common.wszFormula.getData().c_str());
+					fieldDefinition.Common.wszFormula.c_str());
 			}
 		}
 
@@ -156,7 +156,7 @@ namespace smartview
 					L"FieldNameLength = 0x%1!08X! = %1!d!\r\n",
 					fieldDefinition.FieldNameLength.getData());
 				m_FolderUserFieldsUnicodeCount.addBlock(
-					fieldDefinition.FieldName, L"FieldName = %1!ws!\r\n", fieldDefinition.FieldName.getData().c_str());
+					fieldDefinition.FieldName, L"FieldName = %1!ws!\r\n", fieldDefinition.FieldName.c_str());
 
 				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid);
 				m_FolderUserFieldsUnicodeCount.addBlock(
@@ -188,7 +188,7 @@ namespace smartview
 				m_FolderUserFieldsUnicodeCount.addBlock(
 					fieldDefinition.Common.wszFormula,
 					L"wszFormula = %1!ws!",
-					fieldDefinition.Common.wszFormula.getData().c_str());
+					fieldDefinition.Common.wszFormula.c_str());
 			}
 		}
 

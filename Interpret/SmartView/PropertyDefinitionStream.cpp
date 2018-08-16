@@ -19,7 +19,8 @@ namespace smartview
 			}
 
 			packedAnsiString.szCharacters = pParser->GetBlockStringA(
-				packedAnsiString.cchExtendedLength ? packedAnsiString.cchExtendedLength.getData() : packedAnsiString.cchLength.getData());
+				packedAnsiString.cchExtendedLength ? packedAnsiString.cchExtendedLength.getData()
+												   : packedAnsiString.cchLength.getData());
 		}
 
 		return packedAnsiString;
@@ -127,10 +128,10 @@ namespace smartview
 				ppasString->cchLength.getData());
 		}
 
-		if (ppasString->szCharacters.getData().length())
+		if (ppasString->szCharacters.length())
 		{
 			data.addHeader(L" Characters = ");
-			data.addBlock(ppasString->szCharacters, strings::stringTowstring(ppasString->szCharacters.getData()));
+			data.addBlock(ppasString->szCharacters, strings::stringTowstring(ppasString->szCharacters));
 		}
 
 		return data;
@@ -161,10 +162,10 @@ namespace smartview
 				ppusString->cchLength.getData());
 		}
 
-		if (ppusString->szCharacters.getData().length())
+		if (ppusString->szCharacters.length())
 		{
 			data.addHeader(L" Characters = ");
-			data.addBlock(ppusString->szCharacters, ppusString->szCharacters.getData());
+			data.addBlock(ppusString->szCharacters, ppusString->szCharacters);
 		}
 
 		return data;
@@ -238,7 +239,7 @@ namespace smartview
 			addBlock(
 				m_pfdFieldDefinitions[iDef].szNmidName,
 				L"\tNmidName = %1!ws!",
-				m_pfdFieldDefinitions[iDef].szNmidName.getData().c_str());
+				m_pfdFieldDefinitions[iDef].szNmidName.c_str());
 
 			addBlock(PackedAnsiStringToBlock(L"NameAnsi", &m_pfdFieldDefinitions[iDef].pasNameANSI));
 			addBlock(PackedAnsiStringToBlock(L"FormulaANSI", &m_pfdFieldDefinitions[iDef].pasFormulaANSI));
