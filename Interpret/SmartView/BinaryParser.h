@@ -63,6 +63,7 @@ namespace smartview
 		size_t size() const noexcept { return _data.size(); }
 		bool empty() const noexcept { return _data.empty(); }
 		const BYTE* data() const noexcept { return _data.data(); }
+		BYTE operator[](const size_t _Pos) { return _data[_Pos]; }
 
 	private:
 		std::vector<BYTE> _data;

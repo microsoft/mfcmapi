@@ -18,7 +18,7 @@ namespace smartview
 		m_ProviderUID = m_Parser.GetBlock<GUID>();
 
 		// Ephemeral entry ID:
-		if (m_abFlags.getData()[0] == EPHEMERAL)
+		if (m_abFlags[0] == EPHEMERAL)
 		{
 			m_ObjectType = eidtEphemeral;
 		}
@@ -256,7 +256,7 @@ namespace smartview
 		}
 
 		// Check if we have an unidentified short term entry ID:
-		if (eidtUnknown == m_ObjectType && m_abFlags.getData()[0] & MAPI_SHORTTERM) m_ObjectType = eidtShortTerm;
+		if (eidtUnknown == m_ObjectType && m_abFlags[0] & MAPI_SHORTTERM) m_ObjectType = eidtShortTerm;
 	}
 
 	void EntryIdStruct::ParseBlocks()
@@ -296,17 +296,17 @@ namespace smartview
 		}
 
 		if (!m_abFlags.getSize()) return;
-		if (0 == (m_abFlags.getData()[0] | m_abFlags.getData()[1] | m_abFlags.getData()[2] | m_abFlags.getData()[3]))
+		if (0 == (m_abFlags[0] | m_abFlags[1] | m_abFlags[2] | m_abFlags[3]))
 		{
 			addHeader(L"abFlags = 0x00000000\r\n");
 		}
-		else if (0 == (m_abFlags.getData()[1] | m_abFlags.getData()[2] | m_abFlags.getData()[3]))
+		else if (0 == (m_abFlags[1] | m_abFlags[2] | m_abFlags[3]))
 		{
 			addBlock(
 				m_abFlags,
 				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n",
-				m_abFlags.getData()[0],
-				interpretprop::InterpretFlags(flagEntryId0, m_abFlags.getData()[0]).c_str());
+				m_abFlags[0],
+				interpretprop::InterpretFlags(flagEntryId0, m_abFlags[0]).c_str());
 			addHeader(L"abFlags[1..3] = 0x000000\r\n");
 		}
 		else
@@ -316,12 +316,12 @@ namespace smartview
 				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n"
 				L"abFlags[1] = 0x%3!02X!= %4!ws!\r\n"
 				L"abFlags[2..3] = 0x%5!02X!%6!02X!\r\n",
-				m_abFlags.getData()[0],
-				interpretprop::InterpretFlags(flagEntryId0, m_abFlags.getData()[0]).c_str(),
-				m_abFlags.getData()[1],
-				interpretprop::InterpretFlags(flagEntryId1, m_abFlags.getData()[1]).c_str(),
-				m_abFlags.getData()[2],
-				m_abFlags.getData()[3]);
+				m_abFlags[0],
+				interpretprop::InterpretFlags(flagEntryId0, m_abFlags[0]).c_str(),
+				m_abFlags[1],
+				interpretprop::InterpretFlags(flagEntryId1, m_abFlags[1]).c_str(),
+				m_abFlags[2],
+				m_abFlags[3]);
 		}
 
 		addBlock(m_ProviderUID, L"Provider GUID = %1!ws!", guid::GUIDToStringAndName(m_ProviderUID).c_str());
