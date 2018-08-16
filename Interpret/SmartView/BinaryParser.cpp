@@ -6,7 +6,7 @@ namespace smartview
 	void block::addBlockBytes(blockBytes child)
 	{
 		auto _block = child;
-		_block.text = strings::BinToHexString(child.getData(), true);
+		_block.text = strings::BinToHexString(child, true);
 		children.push_back(_block);
 	}
 

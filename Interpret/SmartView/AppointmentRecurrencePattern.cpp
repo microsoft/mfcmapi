@@ -362,7 +362,7 @@ namespace smartview
 					L"ExtendedException[%1!d!].ReservedBlockEE1Size: 0x%2!08X!\r\n",
 					i,
 					m_ExtendedException[i].ReservedBlockEE1Size.getData());
-				if (m_ExtendedException[i].ReservedBlockEE1.getData().size())
+				if (m_ExtendedException[i].ReservedBlockEE1.size())
 				{
 					addBlockBytes(m_ExtendedException[i].ReservedBlockEE1);
 				}

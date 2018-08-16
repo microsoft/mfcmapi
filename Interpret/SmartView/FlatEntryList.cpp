@@ -60,11 +60,11 @@ namespace smartview
 				addBlock(m_pEntryIDs[iFlatEntryList].lpEntryID.getBlock());
 			}
 
-			if (m_pEntryIDs[iFlatEntryList].JunkData.getData().size())
+			if (m_pEntryIDs[iFlatEntryList].JunkData.size())
 			{
 				addLine();
 				addHeader(L"Entry[%1!d!] Padding:", iFlatEntryList);
-				addHeader(JunkDataToString(m_pEntryIDs[iFlatEntryList].JunkData.getData()));
+				addHeader(JunkDataToString(m_pEntryIDs[iFlatEntryList].JunkData));
 			}
 		}
 	}

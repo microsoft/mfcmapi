@@ -67,7 +67,7 @@ namespace smartview
 		addBlock(m_dwSize, L"Size: 0x%1!02X! = %1!d!\r\n", m_dwSize.getData());
 
 		m_lpData = m_Parser.GetBlockBYTES(m_dwSize, _MaxBytes);
-		if (m_lpData.getData().size())
+		if (m_lpData.size())
 		{
 			addHeader(L"Data = ");
 			addBlockBytes(m_lpData);

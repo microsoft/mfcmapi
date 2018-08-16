@@ -56,13 +56,16 @@ namespace smartview
 	{
 	public:
 		blockBytes() {}
-		void setData(const std::vector<BYTE>& _data) { data = _data; }
-		std::vector<BYTE> getData() const { return data; }
-		operator std::vector<BYTE>&() { return data; }
-		operator std::vector<BYTE>() const { return data; }
+		void setData(const std::vector<BYTE>& data) { _data = data; }
+		std::vector<BYTE> getData() const { return _data; }
+		operator std::vector<BYTE>&() { return _data; }
+		operator std::vector<BYTE>() const { return _data; }
+		size_t size() const noexcept { return _data.size(); }
+		bool empty() const noexcept { return _data.empty(); }
+		const BYTE* data() const noexcept { return _data.data(); }
 
 	private:
-		std::vector<BYTE> data;
+		std::vector<BYTE> _data;
 	};
 
 	template <class T> class blockT : public block
@@ -199,7 +202,7 @@ namespace smartview
 			ret.setOffset(m_Offset);
 			ret.setData(GetBYTES(cbBytes, cbMaxBytes));
 			// Important that we set our size after getting data, because we may not have gotten the requested byte length
-			ret.setSize(ret.getData().size() * sizeof(BYTE));
+			ret.setSize(ret.size() * sizeof(BYTE));
 			return ret;
 		}
 

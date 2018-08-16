@@ -82,7 +82,7 @@ namespace smartview
 			case WEBVIEWURL:
 			{
 				addHeader(L"wzURL = ");
-				addBlock(m_lpWebViews[i].lpData, strings::BinToTextStringW(m_lpWebViews[i].lpData.getData(), false));
+				addBlock(m_lpWebViews[i].lpData, strings::BinToTextStringW(m_lpWebViews[i].lpData, false));
 				break;
 			}
 			default:

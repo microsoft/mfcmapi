@@ -268,14 +268,14 @@ namespace smartview
 						L"\t\tSize = 0x%1!08X!",
 						m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize.getData());
 
-					if (!m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent.getData().empty())
+					if (!m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent.empty())
 					{
 						if (0 == iSkip)
 						{
 							// Parse this on the fly
 							CBinaryParser ParserFirstBlock(
-								m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent.getData().size(),
-								m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent.getData().data());
+								m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent.size(),
+								m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent.data());
 							auto pusString = ReadPackedUnicodeString(&ParserFirstBlock);
 							addBlock(PackedUnicodeStringToBlock(L"\tFieldName", &pusString));
 						}

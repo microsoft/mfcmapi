@@ -24,7 +24,7 @@ namespace smartview
 		if (this->hasData() && m_bEnableJunk && m_Parser.RemainingBytes())
 		{
 			auto junkData = getJunkData();
-			addBlock(junkData, JunkDataToString(junkData.getData()));
+			addBlock(junkData, JunkDataToString(junkData));
 		}
 
 		m_bParsed = true;
