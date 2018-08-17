@@ -88,47 +88,56 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring ExtendedFlags::ToStringInternal()
+	void ExtendedFlags::ParseBlocks()
 	{
-		auto szExtendedFlags = strings::formatmessage(IDS_EXTENDEDFLAGSHEADER, m_ulNumFlags);
+		addHeader(L"Extended Flags:");
+		addHeader(L"\r\nNumber of flags = %1!d!", m_ulNumFlags);
 
 		if (m_pefExtendedFlags.size())
 		{
 			for (const auto& extendedFlag : m_pefExtendedFlags)
 			{
 				auto szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlagType, extendedFlag.Id);
-				szExtendedFlags += strings::formatmessage(
-					IDS_EXTENDEDFLAGID, extendedFlag.Id.getData(), szFlags.c_str(), extendedFlag.Cb.getData());
+				addBlock(extendedFlag.Id, L"\r\nId = 0x%1!02X! = %2!ws!", extendedFlag.Id.getData(), szFlags.c_str());
+				addBlock(extendedFlag.Cb, L"\r\nCb = 0x%1!02X! = %1!d!", extendedFlag.Cb.getData());
 
 				switch (extendedFlag.Id)
 				{
 				case EFPB_FLAGS:
-					szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags);
-					szExtendedFlags += strings::formatmessage(
-						IDS_EXTENDEDFLAGDATAFLAG, extendedFlag.Data.ExtendedFlags.getData(), szFlags.c_str());
+					addBlock(
+						extendedFlag.Data.ExtendedFlags,
+						L"\r\n\tExtended Flags = 0x%1!08X! = %2!ws!",
+						extendedFlag.Data.ExtendedFlags.getData(),
+						interpretprop::InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags).c_str());
 					break;
 				case EFPB_CLSIDID:
-					szFlags = guid::GUIDToString(extendedFlag.Data.SearchFolderID);
-					szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATASFID, szFlags.c_str());
+					addBlock(
+						extendedFlag.Data.SearchFolderID,
+						L"\r\n\tSearchFolderID = %1!ws!",
+						guid::GUIDToString(extendedFlag.Data.SearchFolderID).c_str());
 					break;
 				case EFPB_SFTAG:
-					szExtendedFlags +=
-						strings::formatmessage(IDS_EXTENDEDFLAGDATASFTAG, extendedFlag.Data.SearchFolderTag.getData());
+					addBlock(
+						extendedFlag.Data.SearchFolderTag,
+						L"\r\n\tSearchFolderTag = 0x%1!08X!",
+						extendedFlag.Data.SearchFolderTag.getData());
 					break;
 				case EFPB_TODO_VERSION:
-					szExtendedFlags += strings::formatmessage(
-						IDS_EXTENDEDFLAGDATATODOVERSION, extendedFlag.Data.ToDoFolderVersion.getData());
+					addBlock(
+						extendedFlag.Data.ToDoFolderVersion,
+						L"\r\n\tToDoFolderVersion = 0x%1!08X!",
+						extendedFlag.Data.ToDoFolderVersion.getData());
 					break;
 				}
 
 				if (extendedFlag.lpUnknownData.size())
 				{
-					szExtendedFlags += strings::loadstring(IDS_EXTENDEDFLAGUNKNOWN);
-					szExtendedFlags += strings::BinToHexString(extendedFlag.lpUnknownData, true);
+
+					addLine();
+					addHeader(L"\tUnknown Data = ");
+					addBlockBytes(extendedFlag.lpUnknownData);
 				}
 			}
 		}
-
-		return szExtendedFlags;
 	}
 }

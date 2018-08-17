@@ -28,7 +28,7 @@ namespace stringtest
 			Assert::AreEqual(std::wstring(L""), strings::loadstring(1234));
 
 			// A resource which does exist
-			Assert::AreEqual(std::wstring(L"\r\n\tUnknown Data = "), strings::loadstring(IDS_EXTENDEDFLAGUNKNOWN));
+			Assert::AreEqual(std::wstring(L"Flags: "), strings::loadstring(IDS_FLAGS_PREFIX));
 		}
 
 		TEST_METHOD(Test_format)

@@ -1709,18 +1709,6 @@ IDS_FLAGS_PREFIX "Flags: "
 
 IDS_JUNKDATASIZE "\r\nUnparsed data size = 0x%1!08X!\r\n"
 
-IDS_EXTENDEDFLAGSHEADER "Extended Flags: \r\n\
-Number of flags = %1!d!"
-
-IDS_EXTENDEDFLAGID "\r\nId = 0x%1!02X! = %2!ws!\
-\r\nCb = 0x%3!02X! = %3!d!"
-IDS_EXTENDEDFLAGDATAFLAG "\r\n\tExtended Flags = 0x%1!08X! = %2!ws!"
-IDS_EXTENDEDFLAGDATASFID "\r\n\tSearchFolderID = %1!ws!"
-IDS_EXTENDEDFLAGDATASFTAG "\r\n\tSearchFolderTag = 0x%1!08X!"
-IDS_EXTENDEDFLAGDATATODOVERSION "\r\n\tToDoFolderVersion = 0x%1!08X!"
-
-IDS_EXTENDEDFLAGUNKNOWN "\r\n\tUnknown Data = "
-
 IDS_PROPERTYDATAHEADER "Property[%1!d!]\r\n\
 Property = 0x%2!08X!"
 IDS_PROPERTYDATA "PropString = %1!ws! AltPropString = %2!ws!"
