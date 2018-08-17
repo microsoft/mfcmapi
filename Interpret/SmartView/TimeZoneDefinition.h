@@ -1,5 +1,6 @@
 #pragma once
 #include <Interpret/SmartView/SmartViewParser.h>
+#include <Interpret/SmartView/TimeZone.h>
 
 namespace smartview
 {
@@ -11,17 +12,17 @@ namespace smartview
 	//
 	struct TZRule
 	{
-		BYTE bMajorVersion;
-		BYTE bMinorVersion;
-		WORD wReserved;
-		WORD wTZRuleFlags;
-		WORD wYear;
-		std::vector<BYTE> X; // 14 bytes
-		DWORD lBias; // offset from GMT
-		DWORD lStandardBias; // offset from bias during standard time
-		DWORD lDaylightBias; // offset from bias during daylight time
-		SYSTEMTIME stStandardDate; // time to switch to standard time
-		SYSTEMTIME stDaylightDate; // time to switch to daylight time
+		blockT<BYTE> bMajorVersion;
+		blockT<BYTE> bMinorVersion;
+		blockT<WORD> wReserved;
+		blockT<WORD> wTZRuleFlags;
+		blockT<WORD> wYear;
+		blockBytes X; // 14 bytes
+		blockT<DWORD> lBias; // offset from GMT
+		blockT<DWORD> lStandardBias; // offset from bias during standard time
+		blockT<DWORD> lDaylightBias; // offset from bias during daylight time
+		SYSTEMTIMEBlock stStandardDate; // time to switch to standard time
+		SYSTEMTIMEBlock stDaylightDate; // time to switch to daylight time
 	};
 
 	// TimeZoneDefinition
@@ -35,15 +36,15 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
-		BYTE m_bMajorVersion;
-		BYTE m_bMinorVersion;
-		WORD m_cbHeader;
-		WORD m_wReserved;
-		WORD m_cchKeyName;
-		std::wstring m_szKeyName;
-		WORD m_cRules;
+		blockT<BYTE> m_bMajorVersion;
+		blockT<BYTE> m_bMinorVersion;
+		blockT<WORD> m_cbHeader;
+		blockT<WORD> m_wReserved;
+		blockT<WORD> m_cchKeyName;
+		blockStringW m_szKeyName;
+		blockT<WORD> m_cRules;
 		std::vector<TZRule> m_lpTZRule;
 	};
 }

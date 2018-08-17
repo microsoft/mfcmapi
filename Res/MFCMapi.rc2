@@ -1452,46 +1452,6 @@ IDS_OPTIONSSTRUCTURE "lpOptions[0x%1!08X!].ulPropTag = %2!ws!\r\n\
 lpOptions[0x%1!08X!].Value = %3!ws!\r\n\
 \tAlt: %4!ws!\r\n"
 
-IDS_TIMEZONEDEFINITION "Time Zone Definition: \r\n\
-bMajorVersion = 0x%1!02X! (%1!d!)\r\n\
-bMinorVersion = 0x%2!02X! (%2!d!)\r\n\
-cbHeader = 0x%3!04X! (%3!d!)\r\n\
-wReserved = 0x%4!04X! (%4!d!)\r\n\
-cchKeyName = 0x%5!04X! (%5!d!)\r\n\
-szKeyName = %6!ws!\r\n\
-cRules = 0x%7!04X! (%7!d!)"
-
-IDS_TZRULEHEADER "\r\n\r\n\
-TZRule[0x%1!X!].bMajorVersion = 0x%2!02X! (%2!d!)\r\n\
-TZRule[0x%1!X!].bMinorVersion = 0x%3!02X! (%3!d!)\r\n\
-TZRule[0x%1!X!].wReserved = 0x%4!04X! (%4!d!)\r\n\
-TZRule[0x%1!X!].wTZRuleFlags = 0x%5!04X! = %6!ws!\r\n\
-TZRule[0x%1!X!].wYear = 0x%7!04X! (%7!d!)\r\n\
-TZRule[0x%1!X!].X = "
-
-IDS_TZRULEFOOTER "\r\n\
-TZRule[0x%1!X!].lBias = 0x%2!08X! (%2!d!)\r\n\
-TZRule[0x%1!X!].lStandardBias = 0x%3!08X! (%3!d!)\r\n\
-TZRule[0x%1!X!].lDaylightBias = 0x%4!08X! (%4!d!)\r\n\
-\r\n\
-TZRule[0x%1!X!].stStandardDate.wYear = 0x%5!X! (%5!d!)\r\n\
-TZRule[0x%1!X!].stStandardDate.wMonth = 0x%6!X! (%6!d!)\r\n\
-TZRule[0x%1!X!].stStandardDate.wDayOfWeek = 0x%7!X! (%7!d!)\r\n\
-TZRule[0x%1!X!].stStandardDate.wDay = 0x%8!X! (%8!d!)\r\n\
-TZRule[0x%1!X!].stStandardDate.wHour = 0x%9!X! (%9!d!)\r\n\
-TZRule[0x%1!X!].stStandardDate.wMinute = 0x%10!X! (%10!d!)\r\n\
-TZRule[0x%1!X!].stStandardDate.wSecond = 0x%11!X! (%11!d!)\r\n\
-TZRule[0x%1!X!].stStandardDate.wMilliseconds = 0x%12!X! (%12!d!)\r\n\
-\r\n\
-TZRule[0x%1!X!].stDaylightDate.wYear = 0x%13!X! (%13!d!)\r\n\
-TZRule[0x%1!X!].stDaylightDate.wMonth = 0x%14!X! (%14!d!)\r\n\
-TZRule[0x%1!X!].stDaylightDate.wDayOfWeek = 0x%15!X! (%15!d!)\r\n\
-TZRule[0x%1!X!].stDaylightDate.wDay = 0x%16!X! (%16!d!)\r\n\
-TZRule[0x%1!X!].stDaylightDate.wHour = 0x%17!X! (%17!d!)\r\n\
-TZRule[0x%1!X!].stDaylightDate.wMinute = 0x%18!X! (%18!d!)\r\n\
-TZRule[0x%1!X!].stDaylightDate.wSecond = 0x%19!X! (%19!d!)\r\n\
-TZRule[0x%1!X!].stDaylightDate.wMilliseconds = 0x%20!X! (%20!d!)"
-
 IDS_NOCONTEXT "No Context"
 
 IDS_ACCESSREADANY "Read any"
