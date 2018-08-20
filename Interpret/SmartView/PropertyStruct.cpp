@@ -19,9 +19,9 @@ namespace smartview
 		}
 	}
 
-	void PropertyStruct::ParseBlocks() { data = PropsToStringBlock(m_Prop); }
+	void PropertyStruct::ParseBlocks() { data = SPropValueStructToBlock(m_Prop); }
 
-	_Check_return_ block PropsToStringBlock(std::vector<SPropValueStruct> props)
+	_Check_return_ block SPropValueStructToBlock(std::vector<SPropValueStruct> props)
 	{
 		auto blocks = block{};
 		for (DWORD i = 0; i < props.size(); i++)
