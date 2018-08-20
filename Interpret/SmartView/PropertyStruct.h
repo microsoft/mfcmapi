@@ -15,7 +15,9 @@ namespace smartview
 
 		DWORD m_PropCount;
 		LPSPropValue m_Prop;
+		std::vector<SPropValueStruct> m_Prop2;
 	};
 
+	_Check_return_ block PropsToStringBlock(std::vector<SPropValueStruct> props);
 	_Check_return_ std::wstring PropsToString(DWORD PropCount, LPSPropValue Prop);
 }

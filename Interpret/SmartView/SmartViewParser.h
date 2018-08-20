@@ -11,6 +11,91 @@
 
 namespace smartview
 {
+	struct FILETIMEBLock
+	{
+		blockT<DWORD> dwLowDateTime;
+		blockT<DWORD> dwHighDateTime;
+		operator FILETIME() const { return FILETIME{dwLowDateTime, dwHighDateTime}; }
+	};
+
+	struct SBinaryBlock
+	{
+		blockT<ULONG> cb;
+		blockBytes lpb;
+	};
+
+	struct StringArrayA
+	{
+		blockT<ULONG> cValues;
+		std::vector<blockStringA> lppszA;
+	};
+
+	struct StringArrayW
+	{
+		blockT<ULONG> cValues;
+		std::vector<blockStringW> lppszW;
+	};
+
+	struct PVBlock
+	{
+		blockT<LONG> l; /* case PT_LONG */
+		blockT<unsigned short int> b; /* case PT_BOOLEAN */
+		FILETIMEBLock ft; /* case PT_SYSTIME */
+		blockStringA lpszA; /* case PT_STRING8 */
+		SBinaryBlock bin; /* case PT_BINARY */
+		blockStringW lpszW; /* case PT_UNICODE */
+		SBinaryArray MVbin; /* case PT_MV_BINARY */
+		StringArrayA MVszA; /* case PT_MV_STRING8 */
+		StringArrayW MVszW; /* case PT_MV_UNICODE */
+		blockT<SCODE> err; /* case PT_ERROR */
+	};
+
+	struct SPropValueStruct
+	{
+		blockT<WORD> PropType;
+		blockT<WORD> PropID;
+		blockT<ULONG> ulPropTag;
+		ULONG dwAlignPad;
+		PVBlock Value;
+
+		SPropValue const getData()
+		{
+			auto prop = SPropValue{};
+			prop.ulPropTag = ulPropTag;
+			prop.dwAlignPad = dwAlignPad;
+			switch (PropType)
+			{
+			case PT_LONG:
+				prop.Value.l = Value.l;
+				break;
+			case PT_BOOLEAN:
+				prop.Value.b = Value.b;
+				break;
+			case PT_SYSTIME:
+				prop.Value.ft = Value.ft;
+				break;
+			case PT_STRING8:
+				prop.Value.lpszA = const_cast<LPSTR>(Value.lpszA.c_str());
+				break;
+			case PT_BINARY:
+				prop.Value.bin.cb = Value.bin.cb;
+				prop.Value.bin.lpb = const_cast<LPBYTE>(Value.bin.lpb.data());
+				break;
+			case PT_UNICODE:
+				prop.Value.lpszW = const_cast<LPWSTR>(Value.lpszW.c_str());
+				break;
+				//SBinaryArray MVbin; /* case PT_MV_BINARY */
+				//StringArrayA MVszA; /* case PT_MV_STRING8 */
+				//StringArrayW MVszW; /* case PT_MV_UNICODE */
+			case PT_ERROR:
+				prop.Value.err = Value.err;
+				break;
+			}
+
+			return prop;
+		}
+	};
+
 	class SmartViewParser;
 	typedef SmartViewParser FAR* LPSMARTVIEWPARSER;
 
@@ -35,6 +120,7 @@ namespace smartview
 		_Check_return_ std::wstring
 		JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const;
 		_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
+		_Check_return_ SPropValueStruct BinToSPropValueStruct(bool bStringPropsExcludeLength);
 
 		// These functions return pointers to memory backed and cleaned up by SmartViewParser
 		LPBYTE GetBYTES(size_t cbBytes);
