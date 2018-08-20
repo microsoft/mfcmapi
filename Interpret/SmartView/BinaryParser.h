@@ -77,6 +77,7 @@ namespace smartview
 		T getData() const { return data; }
 		operator T&() { return data; }
 		operator T() const { return data; }
+		void operator=(const T& _data) { data = _data; }
 
 	private:
 		T data;
