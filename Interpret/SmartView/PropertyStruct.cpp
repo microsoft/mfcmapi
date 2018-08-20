@@ -19,7 +19,7 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring PropertyStruct::ToStringInternal() { return PropsToStringBlock(m_Prop).ToString(); }
+	void PropertyStruct::ParseBlocks() { data = PropsToStringBlock(m_Prop); }
 
 	_Check_return_ block PropsToStringBlock(std::vector<SPropValueStruct> props)
 	{

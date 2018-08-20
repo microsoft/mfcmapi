@@ -11,7 +11,7 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
 		std::vector<SPropValueStruct> m_Prop;
 	};
