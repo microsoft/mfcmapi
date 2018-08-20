@@ -13,9 +13,7 @@ namespace smartview
 		void Parse() override;
 		_Check_return_ std::wstring ToStringInternal() override;
 
-		DWORD m_PropCount;
-		LPSPropValue m_Prop;
-		std::vector<SPropValueStruct> m_Prop2;
+		std::vector<SPropValueStruct> m_Prop;
 	};
 
 	_Check_return_ block PropsToStringBlock(std::vector<SPropValueStruct> props);

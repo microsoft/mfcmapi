@@ -5,11 +5,7 @@
 
 namespace smartview
 {
-	PropertyStruct::PropertyStruct()
-	{
-		m_PropCount = 0;
-		m_Prop = nullptr;
-	}
+	PropertyStruct::PropertyStruct() {}
 
 	void PropertyStruct::Parse()
 	{
@@ -17,41 +13,13 @@ namespace smartview
 		for (;;)
 		{
 			if (dwPropCount > _MaxEntriesSmall) break;
-			m_Prop2.push_back(BinToSPropValueStruct(false));
+			m_Prop.push_back(BinToSPropValueStruct(false));
 			if (!m_Parser.RemainingBytes()) break;
 			dwPropCount++;
 		}
-
-		m_Parser.Rewind();
-
-		// Have to count how many properties are here.
-		// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
-		const auto stBookmark = m_Parser.GetCurrentOffset();
-
-		dwPropCount = 0;
-
-		for (;;)
-		{
-			const auto lpProp = BinToSPropValue(1, false);
-			if (lpProp)
-			{
-				dwPropCount++;
-			}
-			else
-			{
-				break;
-			}
-
-			if (!m_Parser.RemainingBytes()) break;
-		}
-
-		m_Parser.SetCurrentOffset(stBookmark); // We're done with our first pass, restore the bookmark
-
-		m_PropCount = dwPropCount;
-		m_Prop = BinToSPropValue(dwPropCount, false);
 	}
 
-	_Check_return_ std::wstring PropertyStruct::ToStringInternal() { return PropsToStringBlock(m_Prop2).ToString(); }
+	_Check_return_ std::wstring PropertyStruct::ToStringInternal() { return PropsToStringBlock(m_Prop).ToString(); }
 
 	_Check_return_ block PropsToStringBlock(std::vector<SPropValueStruct> props)
 	{
