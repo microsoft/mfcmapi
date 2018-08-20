@@ -98,11 +98,10 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		std::vector<SPropValueStruct> m_Prop;
+		std::vector<SPropValueStruct> m_Props;
 
 		_Check_return_ SPropValueStruct BinToSPropValueStruct(bool bStringPropsExcludeLength);
 	};
 
-	_Check_return_ block SPropValueStructToBlock(std::vector<SPropValueStruct> props);
 	_Check_return_ std::wstring PropsToString(DWORD PropCount, LPSPropValue Prop);
 }

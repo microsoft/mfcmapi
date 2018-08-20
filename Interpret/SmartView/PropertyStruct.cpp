@@ -13,13 +13,58 @@ namespace smartview
 		for (;;)
 		{
 			if (dwPropCount > _MaxEntriesSmall) break;
-			m_Prop.push_back(BinToSPropValueStruct(false));
+			m_Props.push_back(BinToSPropValueStruct(false));
 			if (!m_Parser.RemainingBytes()) break;
 			dwPropCount++;
 		}
 	}
 
-	void PropertyStruct::ParseBlocks() { data = SPropValueStructToBlock(m_Prop); }
+	void PropertyStruct::ParseBlocks()
+	{
+		auto i = 0;
+		for (auto prop : m_Props)
+		{
+			if (i != 0)
+			{
+				addLine();
+			}
+
+			addHeader(L"Property[%1!d!]\r\n", i++);
+			addBlock(prop.ulPropTag, L"Property = 0x%1!08X!", prop.ulPropTag.getData());
+
+			auto propTagNames = interpretprop::PropTagToPropName(prop.ulPropTag, false);
+			if (!propTagNames.bestGuess.empty())
+			{
+				addLine();
+				addBlock(prop.ulPropTag, L"Name: %1!ws!", propTagNames.bestGuess.c_str());
+			}
+
+			if (!propTagNames.otherMatches.empty())
+			{
+				addLine();
+				addBlock(prop.ulPropTag, L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
+			}
+
+			std::wstring PropString;
+			std::wstring AltPropString;
+			auto sProp = prop.getData();
+			interpretprop::InterpretProp(&sProp, &PropString, &AltPropString);
+
+			// TODO: get proper blocks here
+			addLine();
+			addHeader(L"PropString = %1!ws! ", PropString.c_str());
+			addHeader(L"AltPropString = %1!ws!", AltPropString.c_str());
+
+			auto szSmartView = InterpretPropSmartView(&sProp, nullptr, nullptr, nullptr, false, false);
+
+			if (!szSmartView.empty())
+			{
+				// TODO: proper blocks here
+				addLine();
+				addHeader(L"Smart View: %1!ws!", szSmartView.c_str());
+			}
+		}
+	}
 
 	_Check_return_ SPropValueStruct PropertyStruct::BinToSPropValueStruct(bool bStringPropsExcludeLength)
 	{
@@ -107,55 +152,6 @@ namespace smartview
 		}
 
 		return prop;
-	}
-
-	_Check_return_ block SPropValueStructToBlock(std::vector<SPropValueStruct> props)
-	{
-		auto blocks = block{};
-		for (DWORD i = 0; i < props.size(); i++)
-		{
-			if (i != 0)
-			{
-				blocks.addLine();
-			}
-
-			blocks.addHeader(L"Property[%1!d!]\r\n", i);
-			blocks.addBlock(props[i].ulPropTag, L"Property = 0x%1!08X!", props[i].ulPropTag.getData());
-
-			auto propTagNames = interpretprop::PropTagToPropName(props[i].ulPropTag, false);
-			if (!propTagNames.bestGuess.empty())
-			{
-				blocks.addLine();
-				blocks.addBlock(props[i].ulPropTag, L"Name: %1!ws!", propTagNames.bestGuess.c_str());
-			}
-
-			if (!propTagNames.otherMatches.empty())
-			{
-				blocks.addLine();
-				blocks.addBlock(props[i].ulPropTag, L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
-			}
-
-			std::wstring PropString;
-			std::wstring AltPropString;
-			auto prop = props[i].getData();
-			interpretprop::InterpretProp(&prop, &PropString, &AltPropString);
-
-			// TODO: get proper blocks here
-			blocks.addLine();
-			blocks.addHeader(L"PropString = %1!ws! ", PropString.c_str());
-			blocks.addHeader(L"AltPropString = %1!ws!", AltPropString.c_str());
-
-			auto szSmartView = InterpretPropSmartView(&prop, nullptr, nullptr, nullptr, false, false);
-
-			if (!szSmartView.empty())
-			{
-				// TODO: proper blocks here
-				blocks.addLine();
-				blocks.addHeader(L"Smart View: %1!ws!", szSmartView.c_str());
-			}
-		}
-
-		return blocks;
 	}
 
 	_Check_return_ std::wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
