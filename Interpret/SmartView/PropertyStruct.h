@@ -93,11 +93,13 @@ namespace smartview
 	{
 	public:
 		PropertyStruct();
+		void SetMaxEntries(DWORD maxEntries) { m_MaxEntries = maxEntries; }
 
 	private:
 		void Parse() override;
 		void ParseBlocks() override;
 
+		DWORD m_MaxEntries = _MaxEntriesSmall;
 		std::vector<SPropValueStruct> m_Props;
 
 		_Check_return_ SPropValueStruct BinToSPropValueStruct(bool bStringPropsExcludeLength);

@@ -9,10 +9,14 @@ namespace smartview
 
 	void PropertyStruct::Parse()
 	{
+		// For consistancy with previous parsings, we'll refuse to parse if asked to parse more than _MaxEntriesSmall
+		// However, we may want to reconsider this choice.
+		if (m_MaxEntries > _MaxEntriesSmall) return;
+
 		DWORD dwPropCount = 0;
 		for (;;)
 		{
-			if (dwPropCount > _MaxEntriesSmall) break;
+			if (dwPropCount >= m_MaxEntries) break;
 			m_Props.push_back(BinToSPropValueStruct(false));
 			if (!m_Parser.RemainingBytes()) break;
 			dwPropCount++;
@@ -52,8 +56,8 @@ namespace smartview
 
 			// TODO: get proper blocks here
 			addLine();
-			addHeader(L"PropString = %1!ws! ", PropString.c_str());
-			addHeader(L"AltPropString = %1!ws!", AltPropString.c_str());
+			addHeader(L"PropString = %1!ws! ", strings::RemoveInvalidCharactersW(PropString, false).c_str());
+			addHeader(L"AltPropString = %1!ws!", strings::RemoveInvalidCharactersW(AltPropString, false).c_str());
 
 			auto szSmartView = InterpretPropSmartView(&sProp, nullptr, nullptr, nullptr, false, false);
 

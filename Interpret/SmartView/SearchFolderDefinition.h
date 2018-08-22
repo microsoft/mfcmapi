@@ -1,14 +1,15 @@
 #pragma once
 #include <Interpret/SmartView/SmartViewParser.h>
 #include <Interpret/SmartView/EntryList.h>
+#include <Interpret/SmartView/PropertyStruct.h>
 
 namespace smartview
 {
 	struct AddressListEntryStruct
 	{
-		DWORD PropertyCount;
-		DWORD Pad;
-		LPSPropValue Props;
+		blockT<DWORD> PropertyCount;
+		blockT<DWORD> Pad;
+		PropertyStruct Props;
 	};
 
 	class SearchFolderDefinition : public SmartViewParser
@@ -20,27 +21,27 @@ namespace smartview
 		void Parse() override;
 		_Check_return_ std::wstring ToStringInternal() override;
 
-		DWORD m_Version;
-		DWORD m_Flags;
-		DWORD m_NumericSearch;
-		BYTE m_TextSearchLength;
-		WORD m_TextSearchLengthExtended;
-		std::wstring m_TextSearch;
-		DWORD m_SkipLen1;
-		std::vector<BYTE> m_SkipBytes1;
-		DWORD m_DeepSearch;
-		BYTE m_FolderList1Length;
-		WORD m_FolderList1LengthExtended;
-		std::wstring m_FolderList1;
-		DWORD m_FolderList2Length;
+		blockT<DWORD> m_Version;
+		blockT<DWORD> m_Flags;
+		blockT<DWORD> m_NumericSearch;
+		blockT<BYTE> m_TextSearchLength;
+		blockT<WORD> m_TextSearchLengthExtended;
+		blockStringW m_TextSearch;
+		blockT<DWORD> m_SkipLen1;
+		blockBytes m_SkipBytes1;
+		blockT<DWORD> m_DeepSearch;
+		blockT<BYTE> m_FolderList1Length;
+		blockT<WORD> m_FolderList1LengthExtended;
+		blockStringW m_FolderList1;
+		blockT<DWORD> m_FolderList2Length;
 		EntryList m_FolderList2;
-		DWORD m_AddressCount; // SFST_BINARY
+		blockT<DWORD> m_AddressCount; // SFST_BINARY
 		std::vector<AddressListEntryStruct> m_Addresses; // SFST_BINARY
-		DWORD m_SkipLen2;
-		std::vector<BYTE> m_SkipBytes2;
-		std::wstring m_Restriction; // SFST_MRES
-		std::vector<BYTE> m_AdvancedSearchBytes; // SFST_FILTERSTREAM
-		DWORD m_SkipLen3;
-		std::vector<BYTE> m_SkipBytes3;
+		blockT<DWORD> m_SkipLen2;
+		blockBytes m_SkipBytes2;
+		blockStringW m_Restriction; // SFST_MRES
+		blockBytes m_AdvancedSearchBytes; // SFST_FILTERSTREAM
+		blockT<DWORD> m_SkipLen3;
+		blockBytes m_SkipBytes3;
 	};
 }
