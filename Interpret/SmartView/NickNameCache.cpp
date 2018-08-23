@@ -177,12 +177,14 @@ namespace smartview
 		{
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
+				if (i > 0) szNickNameCache += L"\r\n";
 				szNickNameCache += strings::formatmessage(IDS_NICKNAMEROWS, i, m_lpRows[i].cValues);
 
 				szNickNameCache += PropsToString(m_lpRows[i].cValues, m_lpRows[i].lpProps);
 			}
 		}
 
+		szNickNameCache += L"\r\n";
 		szNickNameCache += strings::formatmessage(IDS_NICKNAMEEXTRAINFO);
 		szNickNameCache += strings::BinToHexString(m_lpbEI, true);
 
