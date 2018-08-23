@@ -1691,31 +1691,6 @@ IDS_RULECONNAMEPROPLID "\r\n\tLID = 0x%1!08X!"
 IDS_RULENAMEPROPSIZE "\r\n\tNameSize = 0x%1!02X!\
 \r\n\tName = "
 
-IDS_SFDEFINITIONHEADER "Search Folder Definition:\r\n\
-Version = 0x%1!08X!\r\n\
-Flags = 0x%2!08X! = %3!ws!\r\n\
-Numeric Search = 0x%4!08X!\r\n\
-Text Search Length = 0x%5!02X!"
-IDS_SFDEFINITIONTEXTSEARCH "\r\nText Search Length Extended = 0x%1!04X!\r\n\
-Text Search = "
-IDS_SFDEFINITIONSKIPLEN1 "\r\nSkipLen1 = 0x%1!08X!"
-IDS_SFDEFINITIONSKIPBYTES1 "\r\nSkipBytes1 = "
-IDS_SFDEFINITIONDEEPSEARCH "\r\nDeep Search = 0x%1!08X!\r\n\
-Folder List 1 Length = 0x%2!02X!"
-IDS_SFDEFINITIONFOLDERLIST1 "\r\nFolder List 1 Length Extended = 0x%1!04X!\r\n\
-Folder List 1 = "
-IDS_SFDEFINITIONFOLDERLISTLENGTH2 "\r\nFolder List 2 Length = 0x%1!08X!"
-IDS_SFDEFINITIONFOLDERLIST2 "\r\nFolderList2 = \r\n"
-IDS_SFDEFINITIONADDRESSCOUNT "\r\nAddressCount = 0x%1!08X!"
-IDS_SFDEFINITIONADDRESSES "\r\nAddresses[%1!d!].PropertyCount = 0x%2!08X!\r\n\
-Addresses[%3!d!].Pad = 0x%4!08X!"
-IDS_SFDEFINITIONPROPERTIES "\r\nProperties[%1!d!]:\r\n"
-IDS_SFDEFINITIONSKIPLEN2 "\r\nSkipLen2 = 0x%1!08X!"
-IDS_SFDEFINITIONSKIPBYTES2 "\r\nSkipBytes2 = "
-IDS_SFDEFINITIONADVANCEDSEARCHLEN "\r\nAdvancedSearchLen = 0x%1!08X!"
-IDS_SFDEFINITIONADVANCEDSEARCHBYTES "\r\nAdvancedSearchBytes = "
-IDS_SFDEFINITIONSKIPLEN3 "\r\nSkipLen3 = 0x%1!08X!"
-IDS_SFDEFINITIONSKIPBYTES3 "\r\nSkipBytes3 = "
 IDS_MVROWBIN "Row %1!d!\r\n"
 IDS_MVROWLONG "Row %1!d!: %2!ws!"
 IDS_RECIPIENTROWSTREAMHEADER "Recipient Row Stream\r\n\
