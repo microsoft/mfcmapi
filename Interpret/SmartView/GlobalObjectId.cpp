@@ -19,10 +19,30 @@ namespace smartview
 
 	void GlobalObjectId::Parse()
 	{
+		m_Id = m_Parser.GetBlockBYTES(16);
+
+		const auto b1 = m_Parser.GetBlock<BYTE>();
+		const auto b2 = m_Parser.GetBlock<BYTE>();
+		m_Year.setData(static_cast<WORD>(b1 << 8 | b2));
+		m_Year.setOffset(b1.getOffset());
+		m_Year.setSize(b1.getSize() + b2.getSize());
+
+		m_Month = m_Parser.GetBlock<BYTE>();
+		const auto szFlags = interpretprop::InterpretFlags(flagGlobalObjectIdMonth, m_Month);
+
+		m_Day = m_Parser.GetBlock<BYTE>();
+
+		m_CreationTime = m_Parser.GetBlock<FILETIME>();
+		m_X = m_Parser.GetBlock<LARGE_INTEGER>();
+		m_dwSize = m_Parser.GetBlock<DWORD>();
+		m_lpData = m_Parser.GetBlockBYTES(m_dwSize, _MaxBytes);
+	}
+
+	void GlobalObjectId::ParseBlocks()
+	{
 		addHeader(L"Global Object ID:\r\n");
 		addHeader(L"Byte Array ID = ");
 
-		m_Id = m_Parser.GetBlockBYTES(16);
 		auto id = m_Id.getData();
 		addBlockBytes(m_Id);
 
@@ -35,21 +55,16 @@ namespace smartview
 			addHeader(L" = Unknown GUID\r\n");
 		}
 
-		const auto b1 = m_Parser.GetBlock<BYTE>();
-		const auto b2 = m_Parser.GetBlock<BYTE>();
-		m_Year.setData(static_cast<WORD>(b1 << 8 | b2));
-		m_Year.setOffset(b1.getOffset());
-		m_Year.setSize(b1.getSize() + b2.getSize());
 		addBlock(m_Year, L"Year: 0x%1!04X! = %1!d!\r\n", m_Year.getData());
 
-		m_Month = m_Parser.GetBlock<BYTE>();
-		const auto szFlags = interpretprop::InterpretFlags(flagGlobalObjectIdMonth, m_Month);
-		addBlock(m_Month, L"Month: 0x%1!02X! = %1!d! = %2!ws!\r\n", m_Month.getData(), szFlags.c_str());
+		addBlock(
+			m_Month,
+			L"Month: 0x%1!02X! = %1!d! = %2!ws!\r\n",
+			m_Month.getData(),
+			interpretprop::InterpretFlags(flagGlobalObjectIdMonth, m_Month).c_str());
 
-		m_Day = m_Parser.GetBlock<BYTE>();
 		addBlock(m_Day, L"Day: 0x%1!02X! = %1!d!\r\n", m_Day.getData());
 
-		m_CreationTime = m_Parser.GetBlock<FILETIME>();
 		std::wstring propString;
 		std::wstring altPropString;
 		strings::FileTimeToString(m_CreationTime, propString, altPropString);
@@ -60,13 +75,9 @@ namespace smartview
 			m_CreationTime.getData().dwLowDateTime,
 			propString.c_str());
 
-		m_X = m_Parser.GetBlock<LARGE_INTEGER>();
 		addBlock(m_X, L"X: 0x%1!08X!:0x%2!08X!\r\n", m_X.getData().HighPart, m_X.getData().LowPart);
-
-		m_dwSize = m_Parser.GetBlock<DWORD>();
 		addBlock(m_dwSize, L"Size: 0x%1!02X! = %1!d!\r\n", m_dwSize.getData());
 
-		m_lpData = m_Parser.GetBlockBYTES(m_dwSize, _MaxBytes);
 		if (m_lpData.size())
 		{
 			addHeader(L"Data = ");

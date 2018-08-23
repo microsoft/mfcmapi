@@ -10,6 +10,7 @@ namespace smartview
 
 	private:
 		void Parse() override;
+		void ParseBlocks() override;
 
 		blockBytes m_Id; // 16 bytes
 		blockT<WORD> m_Year;
