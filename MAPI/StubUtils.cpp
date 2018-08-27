@@ -31,8 +31,6 @@ namespace mapistub
 	 * function calls.
 	 */
 
-	std::vector<std::wstring> GetInstalledOutlookMAPI();
-
 	const WCHAR WszKeyNameMailClient[] = L"Software\\Clients\\Mail";
 	const WCHAR WszValueNameDllPathEx[] = L"DllPathEx";
 	const WCHAR WszValueNameDllPath[] = L"DllPath";
@@ -333,50 +331,6 @@ namespace mapistub
 		return hkeyMapiClient;
 	}
 
-	std::vector<std::wstring> GetMAPIPaths()
-	{
-		auto paths = std::vector<std::wstring>();
-		std::wstring szPath;
-		if (s_fForceSystemMAPI)
-		{
-			szPath = GetMAPISystemDir();
-			if (!szPath.empty()) paths.push_back(szPath);
-			return paths;
-		}
-
-		const auto hkeyMapiClient = GetHKeyMapiClient(WszOutlookMapiClientName);
-
-		szPath = RegQueryWszExpand(hkeyMapiClient, WszValueNameDllPathEx);
-		if (!szPath.empty()) paths.push_back(szPath);
-
-		auto outlookPaths = GetInstalledOutlookMAPI();
-		paths.insert(end(paths), std::begin(outlookPaths), std::end(outlookPaths));
-
-		szPath = RegQueryWszExpand(hkeyMapiClient, WszValueNameDllPath);
-		if (!szPath.empty()) paths.push_back(szPath);
-
-		szPath = GetMailClientFromMSIData(hkeyMapiClient);
-		if (!szPath.empty()) paths.push_back(szPath);
-
-		if (!s_fForceOutlookMAPI)
-		{
-			szPath = GetMAPISystemDir();
-			if (!szPath.empty()) paths.push_back(szPath);
-		}
-
-		if (hkeyMapiClient) RegCloseKey(hkeyMapiClient);
-		return paths;
-	}
-
-	WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH] = {
-		L"{5812C571-53F0-4467-BEFA-0A4F47A9437C}", // O16_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		L"{E83B4360-C208-4325-9504-0D23003A74A5}", // O15_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		L"{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}", // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		L"{24AAE126-0911-478F-A019-07B875EB9996}", // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		L"{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		L"{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (debug) // STRING_OK
-	};
-
 	// Looks up Outlook's path given its qualified component guid
 	std::wstring GetOutlookPath(_In_ const std::wstring& szCategory, _Out_opt_ bool* lpb64)
 	{
@@ -447,6 +401,15 @@ namespace mapistub
 		return path;
 	}
 
+	WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH] = {
+		L"{5812C571-53F0-4467-BEFA-0A4F47A9437C}", // O16_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{E83B4360-C208-4325-9504-0D23003A74A5}", // O15_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}", // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{24AAE126-0911-478F-A019-07B875EB9996}", // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (debug) // STRING_OK
+	};
+
 	std::wstring GetInstalledOutlookMAPI(int iOutlook)
 	{
 		output::DebugPrint(DBGLoadMAPI, L"Enter GetInstalledOutlookMAPI(%d)\n", iOutlook);
@@ -488,6 +451,41 @@ namespace mapistub
 		}
 
 		output::DebugPrint(DBGLoadMAPI, L"Exit GetInstalledOutlookMAPI: found nothing\n");
+		return paths;
+	}
+
+	std::vector<std::wstring> GetMAPIPaths()
+	{
+		auto paths = std::vector<std::wstring>();
+		std::wstring szPath;
+		if (s_fForceSystemMAPI)
+		{
+			szPath = GetMAPISystemDir();
+			if (!szPath.empty()) paths.push_back(szPath);
+			return paths;
+		}
+
+		const auto hkeyMapiClient = GetHKeyMapiClient(WszOutlookMapiClientName);
+
+		szPath = RegQueryWszExpand(hkeyMapiClient, WszValueNameDllPathEx);
+		if (!szPath.empty()) paths.push_back(szPath);
+
+		auto outlookPaths = GetInstalledOutlookMAPI();
+		paths.insert(end(paths), std::begin(outlookPaths), std::end(outlookPaths));
+
+		szPath = RegQueryWszExpand(hkeyMapiClient, WszValueNameDllPath);
+		if (!szPath.empty()) paths.push_back(szPath);
+
+		szPath = GetMailClientFromMSIData(hkeyMapiClient);
+		if (!szPath.empty()) paths.push_back(szPath);
+
+		if (!s_fForceOutlookMAPI)
+		{
+			szPath = GetMAPISystemDir();
+			if (!szPath.empty()) paths.push_back(szPath);
+		}
+
+		if (hkeyMapiClient) RegCloseKey(hkeyMapiClient);
 		return paths;
 	}
 
