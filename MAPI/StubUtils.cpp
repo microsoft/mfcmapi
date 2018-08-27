@@ -195,7 +195,7 @@ namespace mapistub
 
 				fReturn = pFGetCompPath(
 					strings::wstringTostring(szComponent).c_str(),
-					LPSTR(strings::wstringTostring(szQualifier).c_str()),
+					const_cast<LPSTR>(strings::wstringTostring(szQualifier).c_str()),
 					lpszPath,
 					cchPath,
 					fInstall);
