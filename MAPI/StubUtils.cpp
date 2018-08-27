@@ -465,7 +465,11 @@ namespace mapistub
 			return paths;
 		}
 
-		const auto hkeyMapiClient = GetHKeyMapiClient(WszOutlookMapiClientName);
+		auto hkeyMapiClient = HKEY{};
+		if (s_fForceOutlookMAPI)
+			hkeyMapiClient = GetHKeyMapiClient(WszOutlookMapiClientName);
+		else
+			hkeyMapiClient = GetHKeyMapiClient(strings::emptystring);
 
 		szPath = RegQueryWszExpand(hkeyMapiClient, WszValueNameDllPathEx);
 		if (!szPath.empty()) paths.push_back(szPath);
