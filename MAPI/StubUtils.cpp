@@ -210,65 +210,6 @@ namespace mapistub
 		return path;
 	}
 
-	HKEY GetHKeyMapiClient(const std::wstring& pwzProviderOverride)
-	{
-		output::DebugPrint(DBGLoadMAPI, L"Enter GetHKeyMapiClient (%ws)\n", pwzProviderOverride.c_str());
-		HKEY hMailKey = nullptr;
-
-		// Open HKLM\Software\Clients\Mail
-		auto hRes = WC_W32(RegOpenKeyExW(HKEY_LOCAL_MACHINE, WszKeyNameMailClient, 0, KEY_READ, &hMailKey));
-		if (FAILED(hRes))
-		{
-			hMailKey = nullptr;
-		}
-
-		// If a specific provider wasn't specified, load the name of the default MAPI provider
-		std::wstring defaultClient;
-		auto pwzProvider = pwzProviderOverride;
-		if (hMailKey && pwzProvider.empty())
-		{
-			const auto rgchMailClient = new (std::nothrow) WCHAR[MAX_PATH];
-			if (rgchMailClient)
-			{
-				// Get Outlook application path registry value
-				DWORD dwSize = MAX_PATH;
-				DWORD dwType = 0;
-				hRes = WC_W32(RegQueryValueExW(
-					hMailKey, nullptr, nullptr, &dwType, reinterpret_cast<LPBYTE>(rgchMailClient), &dwSize));
-				if (SUCCEEDED(hRes))
-				{
-					defaultClient = rgchMailClient;
-					output::DebugPrint(
-						DBGLoadMAPI,
-						L"GetHKeyMapiClient: HKLM\\%ws = %ws\n",
-						WszKeyNameMailClient,
-						defaultClient.c_str());
-				}
-
-				delete[] rgchMailClient;
-			}
-		}
-
-		if (pwzProvider.empty()) pwzProvider = defaultClient;
-
-		HKEY hkeyMapiClient = nullptr;
-		if (hMailKey && !pwzProvider.empty())
-		{
-			output::DebugPrint(DBGLoadMAPI, L"GetHKeyMapiClient: pwzProvider = %ws\n", pwzProvider.c_str());
-			hRes = WC_W32(RegOpenKeyExW(hMailKey, pwzProvider.c_str(), 0, KEY_READ, &hkeyMapiClient));
-			if (FAILED(hRes))
-			{
-				hkeyMapiClient = nullptr;
-			}
-		}
-
-		output::DebugPrint(
-			DBGLoadMAPI, L"Exit GetHKeyMapiClient.hkeyMapiClient found (%ws)\n", hkeyMapiClient ? L"true" : L"false");
-
-		if (hMailKey) RegCloseKey(hMailKey);
-		return hkeyMapiClient;
-	}
-
 	/*
 	 * GetMailClientFromMSIData
 	 * Attempt to locate the MAPI provider DLL via HKLM\Software\Clients\Mail\(provider)\MSIComponentID
@@ -331,6 +272,65 @@ namespace mapistub
 
 		output::DebugPrint(DBGLoadMAPI, L"Exit GetMAPISystemDir: found %ws\n", szDLLPath.c_str());
 		return szDLLPath;
+	}
+
+	HKEY GetHKeyMapiClient(const std::wstring& pwzProviderOverride)
+	{
+		output::DebugPrint(DBGLoadMAPI, L"Enter GetHKeyMapiClient (%ws)\n", pwzProviderOverride.c_str());
+		HKEY hMailKey = nullptr;
+
+		// Open HKLM\Software\Clients\Mail
+		auto hRes = WC_W32(RegOpenKeyExW(HKEY_LOCAL_MACHINE, WszKeyNameMailClient, 0, KEY_READ, &hMailKey));
+		if (FAILED(hRes))
+		{
+			hMailKey = nullptr;
+		}
+
+		// If a specific provider wasn't specified, load the name of the default MAPI provider
+		std::wstring defaultClient;
+		auto pwzProvider = pwzProviderOverride;
+		if (hMailKey && pwzProvider.empty())
+		{
+			const auto rgchMailClient = new (std::nothrow) WCHAR[MAX_PATH];
+			if (rgchMailClient)
+			{
+				// Get Outlook application path registry value
+				DWORD dwSize = MAX_PATH;
+				DWORD dwType = 0;
+				hRes = WC_W32(RegQueryValueExW(
+					hMailKey, nullptr, nullptr, &dwType, reinterpret_cast<LPBYTE>(rgchMailClient), &dwSize));
+				if (SUCCEEDED(hRes))
+				{
+					defaultClient = rgchMailClient;
+					output::DebugPrint(
+						DBGLoadMAPI,
+						L"GetHKeyMapiClient: HKLM\\%ws = %ws\n",
+						WszKeyNameMailClient,
+						defaultClient.c_str());
+				}
+
+				delete[] rgchMailClient;
+			}
+		}
+
+		if (pwzProvider.empty()) pwzProvider = defaultClient;
+
+		HKEY hkeyMapiClient = nullptr;
+		if (hMailKey && !pwzProvider.empty())
+		{
+			output::DebugPrint(DBGLoadMAPI, L"GetHKeyMapiClient: pwzProvider = %ws\n", pwzProvider.c_str());
+			hRes = WC_W32(RegOpenKeyExW(hMailKey, pwzProvider.c_str(), 0, KEY_READ, &hkeyMapiClient));
+			if (FAILED(hRes))
+			{
+				hkeyMapiClient = nullptr;
+			}
+		}
+
+		output::DebugPrint(
+			DBGLoadMAPI, L"Exit GetHKeyMapiClient.hkeyMapiClient found (%ws)\n", hkeyMapiClient ? L"true" : L"false");
+
+		if (hMailKey) RegCloseKey(hMailKey);
+		return hkeyMapiClient;
 	}
 
 	std::vector<std::wstring> GetMAPIPaths()
