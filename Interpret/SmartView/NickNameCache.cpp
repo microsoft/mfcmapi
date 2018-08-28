@@ -69,53 +69,90 @@ namespace smartview
 		prop.dwAlignPad = 0;
 
 		auto dwTemp = m_Parser.Get<DWORD>(); // reserved
-		const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 
 		switch (PropType)
 		{
 		case PT_I2:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.i = static_cast<short int>(liTemp.LowPart);
 			break;
+		}
 		case PT_LONG:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.l = liTemp.LowPart;
 			break;
+		}
 		case PT_ERROR:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.err = liTemp.LowPart;
 			break;
+		}
 		case PT_R4:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.flt = static_cast<float>(liTemp.QuadPart);
 			break;
+		}
 		case PT_DOUBLE:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.dbl = liTemp.LowPart;
 			break;
+		}
 		case PT_BOOLEAN:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.b = liTemp.LowPart ? true : false;
 			break;
+		}
 		case PT_SYSTIME:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.ft.dwHighDateTime = liTemp.HighPart;
 			prop.Value.ft.dwLowDateTime = liTemp.LowPart;
 			break;
+		}
 		case PT_I8:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.li = liTemp;
 			break;
+		}
 		case PT_STRING8:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			dwTemp = m_Parser.Get<DWORD>();
 			prop.Value.lpszA = GetStringA(dwTemp);
 			break;
+		}
 		case PT_UNICODE:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			dwTemp = m_Parser.Get<DWORD>();
 			prop.Value.lpszW = GetStringW(dwTemp / sizeof(WCHAR));
 			break;
+		}
 		case PT_CLSID:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.lpguid = reinterpret_cast<LPGUID>(GetBYTES(sizeof GUID));
 			break;
+		}
 		case PT_BINARY:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			dwTemp = m_Parser.Get<DWORD>();
 			prop.Value.bin.cb = dwTemp;
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
 			prop.Value.bin.lpb = GetBYTES(prop.Value.bin.cb);
 			break;
+		}
 		case PT_MV_BINARY:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			dwTemp = m_Parser.Get<DWORD>();
 			prop.Value.MVbin.cValues = dwTemp;
 			if (prop.Value.MVbin.cValues && prop.Value.MVbin.cValues < _MaxEntriesLarge)
@@ -133,7 +170,10 @@ namespace smartview
 				}
 			}
 			break;
+		}
 		case PT_MV_STRING8:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			dwTemp = m_Parser.Get<DWORD>();
 			prop.Value.MVszA.cValues = dwTemp;
 			if (prop.Value.MVszA.cValues && prop.Value.MVszA.cValues < _MaxEntriesLarge)
@@ -148,7 +188,10 @@ namespace smartview
 				}
 			}
 			break;
+		}
 		case PT_MV_UNICODE:
+		{
+			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 			dwTemp = m_Parser.Get<DWORD>();
 			prop.Value.MVszW.cValues = dwTemp;
 			if (prop.Value.MVszW.cValues && prop.Value.MVszW.cValues < _MaxEntriesLarge)
@@ -163,6 +206,7 @@ namespace smartview
 				}
 			}
 			break;
+		}
 		default:
 			break;
 		}
