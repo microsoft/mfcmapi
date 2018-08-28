@@ -123,27 +123,27 @@ namespace smartview
 		}
 		case PT_STRING8:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
+			(void) m_Parser.Get<LARGE_INTEGER>(); // union
 			const auto cb = m_Parser.Get<DWORD>();
 			prop.Value.lpszA = GetStringA(cb);
 			break;
 		}
 		case PT_UNICODE:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
+			(void) m_Parser.Get<LARGE_INTEGER>(); // union
 			const auto cb = m_Parser.Get<DWORD>();
 			prop.Value.lpszW = GetStringW(cb / sizeof(WCHAR));
 			break;
 		}
 		case PT_CLSID:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
+			(void) m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.lpguid = reinterpret_cast<LPGUID>(GetBYTES(sizeof GUID));
 			break;
 		}
 		case PT_BINARY:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
+			(void) m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.bin.cb = m_Parser.Get<DWORD>();
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
 			prop.Value.bin.lpb = GetBYTES(prop.Value.bin.cb);
@@ -151,7 +151,7 @@ namespace smartview
 		}
 		case PT_MV_BINARY:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
+			(void) m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.MVbin.cValues = m_Parser.Get<DWORD>();
 			if (prop.Value.MVbin.cValues && prop.Value.MVbin.cValues < _MaxEntriesLarge)
 			{
@@ -171,7 +171,7 @@ namespace smartview
 		}
 		case PT_MV_STRING8:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
+			(void) m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.MVszA.cValues = m_Parser.Get<DWORD>();
 			if (prop.Value.MVszA.cValues && prop.Value.MVszA.cValues < _MaxEntriesLarge)
 			{
@@ -189,7 +189,7 @@ namespace smartview
 		}
 		case PT_MV_UNICODE:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
+			(void) m_Parser.Get<LARGE_INTEGER>(); // union
 			prop.Value.MVszW.cValues = m_Parser.Get<DWORD>();
 			if (prop.Value.MVszW.cValues && prop.Value.MVszW.cValues < _MaxEntriesLarge)
 			{
