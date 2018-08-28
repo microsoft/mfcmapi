@@ -74,8 +74,8 @@ namespace smartview
 		{
 		case PT_I2:
 		{
-			prop.Value.i = m_Parser.Get<short int>();
-			m_Parser.Get<short int>();
+			prop.Value.i = m_Parser.Get<WORD>();
+			m_Parser.Get<WORD>();
 			m_Parser.Get<DWORD>();
 			break;
 		}
@@ -94,18 +94,18 @@ namespace smartview
 		case PT_R4:
 		{
 			prop.Value.flt = m_Parser.Get<float>();
+			m_Parser.Get<DWORD>();
 			break;
 		}
 		case PT_DOUBLE:
 		{
 			prop.Value.dbl = m_Parser.Get<double>();
-			m_Parser.Get<DWORD>();
 			break;
 		}
 		case PT_BOOLEAN:
 		{
-			prop.Value.b = m_Parser.Get<short int>();
-			m_Parser.Get<short int>();
+			prop.Value.b = m_Parser.Get<WORD>();
+			m_Parser.Get<WORD>();
 			m_Parser.Get<DWORD>();
 			break;
 		}
