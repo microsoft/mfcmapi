@@ -12,7 +12,8 @@ namespace smartview
 		void Parse() override;
 		_Check_return_ std::wstring ToStringInternal() override;
 
-		_Check_return_ LPSPropValue NickNameBinToSPropValue(DWORD dwPropCount);
+		_Check_return_ LPSPropValue NickNameBinToSPropValueArray(DWORD dwPropCount);
+		_Check_return_ SPropValue NickNameBinToSPropValue();
 
 		std::vector<BYTE> m_Metadata1; // 4 bytes
 		ULONG m_ulMajorVersion;
