@@ -104,7 +104,8 @@ namespace smartview
 		}
 		case PT_BOOLEAN:
 		{
-			prop.Value.b = m_Parser.Get<DWORD>() != 0;
+			prop.Value.b = m_Parser.Get<short int>();
+			m_Parser.Get<short int>();
 			m_Parser.Get<DWORD>();
 			break;
 		}
