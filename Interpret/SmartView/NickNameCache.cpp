@@ -74,51 +74,48 @@ namespace smartview
 		{
 		case PT_I2:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
-			prop.Value.i = static_cast<short int>(liTemp.LowPart);
+			prop.Value.i = m_Parser.Get<short int>();
+			m_Parser.Get<short int>();
+			m_Parser.Get<ULONG>();
 			break;
 		}
 		case PT_LONG:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
-			prop.Value.l = liTemp.LowPart;
+			prop.Value.l = m_Parser.Get<ULONG>();
+			m_Parser.Get<ULONG>();
 			break;
 		}
 		case PT_ERROR:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
-			prop.Value.err = liTemp.LowPart;
+			prop.Value.err = m_Parser.Get<ULONG>();
+			m_Parser.Get<ULONG>();
 			break;
 		}
 		case PT_R4:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
-			prop.Value.flt = static_cast<float>(liTemp.QuadPart);
+			prop.Value.flt = m_Parser.Get<float>();
 			break;
 		}
 		case PT_DOUBLE:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
-			prop.Value.dbl = liTemp.LowPart;
+			prop.Value.dbl = m_Parser.Get<double>();
+			m_Parser.Get<ULONG>();
 			break;
 		}
 		case PT_BOOLEAN:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
-			prop.Value.b = liTemp.LowPart ? true : false;
+			prop.Value.b = m_Parser.Get<ULONG>() != 0;
+			m_Parser.Get<ULONG>();
 			break;
 		}
 		case PT_SYSTIME:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
-			prop.Value.ft.dwHighDateTime = liTemp.HighPart;
-			prop.Value.ft.dwLowDateTime = liTemp.LowPart;
+			prop.Value.ft = m_Parser.Get<FILETIME>();
 			break;
 		}
 		case PT_I8:
 		{
-			const auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
-			prop.Value.li = liTemp;
+			prop.Value.li = m_Parser.Get<LARGE_INTEGER>();
 			break;
 		}
 		case PT_STRING8:
