@@ -76,19 +76,19 @@ namespace smartview
 		{
 			prop.Value.i = m_Parser.Get<short int>();
 			m_Parser.Get<short int>();
-			m_Parser.Get<ULONG>();
+			m_Parser.Get<DWORD>();
 			break;
 		}
 		case PT_LONG:
 		{
-			prop.Value.l = m_Parser.Get<ULONG>();
-			m_Parser.Get<ULONG>();
+			prop.Value.l = m_Parser.Get<DWORD>();
+			m_Parser.Get<DWORD>();
 			break;
 		}
 		case PT_ERROR:
 		{
-			prop.Value.err = m_Parser.Get<ULONG>();
-			m_Parser.Get<ULONG>();
+			prop.Value.err = m_Parser.Get<DWORD>();
+			m_Parser.Get<DWORD>();
 			break;
 		}
 		case PT_R4:
@@ -99,13 +99,13 @@ namespace smartview
 		case PT_DOUBLE:
 		{
 			prop.Value.dbl = m_Parser.Get<double>();
-			m_Parser.Get<ULONG>();
+			m_Parser.Get<DWORD>();
 			break;
 		}
 		case PT_BOOLEAN:
 		{
-			prop.Value.b = m_Parser.Get<ULONG>() != 0;
-			m_Parser.Get<ULONG>();
+			prop.Value.b = m_Parser.Get<DWORD>() != 0;
+			m_Parser.Get<DWORD>();
 			break;
 		}
 		case PT_SYSTIME:
