@@ -1,8 +1,15 @@
 #pragma once
 #include <Interpret/SmartView/SmartViewParser.h>
+#include <Interpret/SmartView/PropertyStruct.h>
 
 namespace smartview
 {
+	struct SRowStruct
+	{
+		blockT<DWORD> cValues;
+		PropertyStruct lpProps;
+	};
+
 	class NickNameCache : public SmartViewParser
 	{
 	public:
@@ -12,16 +19,13 @@ namespace smartview
 		void Parse() override;
 		_Check_return_ std::wstring ToStringInternal() override;
 
-		_Check_return_ LPSPropValue NickNameBinToSPropValueArray(DWORD dwPropCount);
-		_Check_return_ SPropValue NickNameBinToSPropValue();
-
-		std::vector<BYTE> m_Metadata1; // 4 bytes
-		ULONG m_ulMajorVersion;
-		ULONG m_ulMinorVersion;
-		DWORD m_cRowCount;
-		LPSRow m_lpRows;
-		ULONG m_cbEI;
-		std::vector<BYTE> m_lpbEI;
-		std::vector<BYTE> m_Metadata2; // 8 bytes
+		blockBytes m_Metadata1; // 4 bytes
+		blockT<DWORD> m_ulMajorVersion;
+		blockT<DWORD> m_ulMinorVersion;
+		blockT<DWORD> m_cRowCount;
+		std::vector<SRowStruct> m_lpRows;
+		blockT<DWORD> m_cbEI;
+		blockBytes m_lpbEI;
+		blockBytes m_Metadata2; // 8 bytes
 	};
 }
