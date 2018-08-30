@@ -438,6 +438,13 @@ namespace SmartViewTest
 			}));
 		}
 
+		TEST_METHOD(Test_STNICKNAMECACHE)
+		{
+			test(loadTestData({
+				SmartViewTestResource{IDS_STNICKNAMECACHE, parse_all, IDR_SV25NICKNAME2IN, IDR_SV25NICKNAME2OUT},
+			}));
+		}
+
 		TEST_METHOD(Test_STENCODEENTRYID)
 		{
 			test(loadTestData({
