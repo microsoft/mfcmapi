@@ -82,16 +82,24 @@ namespace smartview
 			prop.dwAlignPad = dwAlignPad;
 			switch (PropType)
 			{
-			//case PT_I2:
+			case PT_I2:
+				prop.Value.i = Value.i;
+				break;
 			case PT_LONG:
 				prop.Value.l = Value.l;
 				break;
-			//case PT_R4:
-			//case PT_DOUBLE:
+			case PT_R4:
+				prop.Value.flt = Value.flt;
+				break;
+			case PT_DOUBLE:
+				prop.Value.dbl = Value.dbl;
+				break;
 			case PT_BOOLEAN:
 				prop.Value.b = Value.b;
 				break;
-			//case PT_I8:
+			case PT_I8:
+				prop.Value.li = Value.li.getData();
+				break;
 			case PT_SYSTIME:
 				prop.Value.ft = Value.ft;
 				break;
@@ -105,7 +113,10 @@ namespace smartview
 			case PT_UNICODE:
 				prop.Value.lpszW = const_cast<LPWSTR>(Value.lpszW.str.c_str());
 				break;
-			//case PT_CLSID:
+			case PT_CLSID:
+				guid = Value.lpguid.getData();
+				prop.Value.lpguid = &guid;
+				break;
 			//case PT_MV_STRING8:
 			//case PT_MV_UNICODE:
 			//case PT_MV_BINARY:
@@ -116,6 +127,10 @@ namespace smartview
 
 			return prop;
 		}
+
+		// Any data we need to cache for getData can live here
+	private:
+		GUID guid;
 	};
 
 	// TODO: This class is a row of properties - it should be named better
