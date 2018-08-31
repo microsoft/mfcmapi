@@ -1501,15 +1501,6 @@ Textual SID: %3!ws!"
 IDS_FLAGTOSTRINGHEX "\r\n0x%1!08X! %2!ws!"
 IDS_FLAGTOSTRINGDEC "\r\n%1!5d! %2!ws!"
 
-IDS_NICKNAMEHEADER "Nickname Cache\r\n\
-Metadata1 = "
-IDS_NICKNAMEROWCOUNT "\r\nMajor Version = %1!d!\r\n\
-Minor Version = %2!d!\r\n\
-Row Count = %3!d!"
-IDS_NICKNAMEROWS "\r\nRow %1!d!\r\n\
-cValues = 0x%2!08X! = %2!d!\r\n"
-IDS_NICKNAMEEXTRAINFO "\r\nExtra Info = "
-IDS_NICKNAMEFOOTER "\r\nMetadata 2 = "
 IDS_PTI8FORMATLABEL "I8: %1!X!-%2!08X!"
 IDS_PTI8FORMAT "%1!X!-%2!08X!"
 IDS_FIDMIDFORMATLABEL "Fid/Mid: %1!X!-%2!I64X!"

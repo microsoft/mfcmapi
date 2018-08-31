@@ -39,32 +39,37 @@ namespace smartview
 		m_Metadata2 = m_Parser.GetBlockBYTES(8);
 	}
 
-	_Check_return_ std::wstring NickNameCache::ToStringInternal()
+	void NickNameCache::ParseBlocks()
 	{
-		auto szNickNameCache = strings::formatmessage(IDS_NICKNAMEHEADER);
-		szNickNameCache += strings::BinToHexString(m_Metadata1, true);
+		addHeader(L"Nickname Cache\r\n");
+		addHeader(L"Metadata1 = ");
+		addBlockBytes(m_Metadata1);
 
-		szNickNameCache += strings::formatmessage(
-			IDS_NICKNAMEROWCOUNT, m_ulMajorVersion.getData(), m_ulMinorVersion.getData(), m_cRowCount.getData());
+		addLine();
+		addBlock(m_ulMajorVersion, L"Major Version = %1!d!\r\n", m_ulMajorVersion.getData());
+		addBlock(m_ulMinorVersion, L"Minor Version = %1!d!\r\n", m_ulMinorVersion.getData());
+		addBlock(m_cRowCount, L"Row Count = %1!d!", m_cRowCount.getData());
 
 		if (m_cRowCount && m_lpRows.size())
 		{
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
-				if (i > 0) szNickNameCache += L"\r\n";
-				szNickNameCache += strings::formatmessage(IDS_NICKNAMEROWS, i, m_lpRows[i].cValues.getData());
+				if (i > 0) addLine();
+				addLine();
+				addHeader(L"Row %1!d!\r\n", i);
+				addBlock(m_lpRows[i].cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", m_lpRows[i].cValues.getData());
 
-				szNickNameCache += m_lpRows[i].lpProps.ToString();
+				addBlock(m_lpRows[i].lpProps.getBlock());
 			}
 		}
 
-		szNickNameCache += L"\r\n";
-		szNickNameCache += strings::formatmessage(IDS_NICKNAMEEXTRAINFO);
-		szNickNameCache += strings::BinToHexString(m_lpbEI, true);
+		addLine();
+		addLine();
+		addHeader(L"Extra Info = ");
+		addBlockBytes(m_lpbEI);
 
-		szNickNameCache += strings::formatmessage(IDS_NICKNAMEFOOTER);
-		szNickNameCache += strings::BinToHexString(m_Metadata2, true);
-
-		return szNickNameCache;
+		addLine();
+		addHeader(L"Metadata 2 = ");
+		addBlockBytes(m_Metadata2);
 	}
 }

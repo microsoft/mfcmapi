@@ -17,7 +17,7 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
 		blockBytes m_Metadata1; // 4 bytes
 		blockT<DWORD> m_ulMajorVersion;
