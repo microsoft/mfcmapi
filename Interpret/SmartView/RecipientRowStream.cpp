@@ -34,25 +34,25 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring RecipientRowStream::ToStringInternal()
+	void RecipientRowStream::ParseBlocks()
 	{
-		auto szRecipientRowStream =
-			strings::formatmessage(IDS_RECIPIENTROWSTREAMHEADER, m_cVersion.getData(), m_cRowCount.getData());
+		addHeader(L"Recipient Row Stream\r\n");
+		addBlock(m_cVersion, L"cVersion = %1!d!\r\n", m_cVersion.getData());
+		addBlock(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount.getData());
 		if (m_lpAdrEntry.size() && m_cRowCount)
 		{
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
-				szRecipientRowStream += strings::formatmessage(
-					IDS_RECIPIENTROWSTREAMROW,
-					i,
-					m_lpAdrEntry[i].cValues.getData(),
+				addHeader(L"\r\nRow %1!d!\r\n", i);
+				addBlock(
+					m_lpAdrEntry[i].cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", m_lpAdrEntry[i].cValues.getData());
+				addBlock(
+					m_lpAdrEntry[i].ulReserved1,
+					L"ulReserved1 = 0x%1!08X! = %1!d!\r\n",
 					m_lpAdrEntry[i].ulReserved1.getData());
 
-				// TODO: Use blocks
-				szRecipientRowStream += m_lpAdrEntry[i].rgPropVals.ToString();
+				addBlock(m_lpAdrEntry[i].rgPropVals.getBlock());
 			}
 		}
-
-		return szRecipientRowStream;
 	}
 }

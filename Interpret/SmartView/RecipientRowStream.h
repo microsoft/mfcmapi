@@ -9,7 +9,7 @@ namespace smartview
 		blockT<DWORD> ulReserved1;
 		blockT<DWORD> cValues;
 		PropertyStruct rgPropVals;
-	} ;
+	};
 
 	class RecipientRowStream : public SmartViewParser
 	{
@@ -18,7 +18,7 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
 		blockT<DWORD> m_cVersion;
 		blockT<DWORD> m_cRowCount;
