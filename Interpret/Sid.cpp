@@ -56,12 +56,12 @@ namespace sid
 		return TextualSid;
 	}
 
-	_Check_return_ std::wstring LookupAccountSid(PSID SidStart, _In_ std::wstring& sidDomain)
+	_Check_return_ SidAccount LookupAccountSid(PSID SidStart)
 	{
 		// TODO: Make use of SidNameUse information
-		auto cchSidName = DWORD();
-		auto cchSidDomain = DWORD();
-		auto SidNameUse = SID_NAME_USE();
+		auto cchSidName = DWORD{};
+		auto cchSidDomain = DWORD{};
+		auto SidNameUse = SID_NAME_USE{};
 
 		if (!LookupAccountSidW(nullptr, SidStart, nullptr, &cchSidName, nullptr, &cchSidDomain, &SidNameUse))
 		{
@@ -82,12 +82,12 @@ namespace sid
 			SidStart,
 			cchSidName ? &sidNameBuf.at(0) : nullptr,
 			&cchSidName,
-			cchSidDomain ? & sidDomainBuf.at(0) : nullptr,
+			cchSidDomain ? &sidDomainBuf.at(0) : nullptr,
 			&cchSidDomain,
 			&SidNameUse));
 
-		sidDomain = std::wstring(sidDomainBuf.begin(), sidDomainBuf.end());
-		return std::wstring(sidNameBuf.begin(), sidNameBuf.end());
+		return SidAccount(
+			std::wstring(sidDomainBuf.begin(), sidDomainBuf.end()), std::wstring(sidNameBuf.begin(), sidNameBuf.end()));
 	}
 
 	std::wstring ACEToString(_In_ void* pACE, eAceType acetype)
@@ -152,19 +152,15 @@ namespace sid
 			break;
 		};
 
-		auto szDomain = std::wstring();
-		auto szName = sid::LookupAccountSid(SidStart, szDomain);
-
-		if (szName.empty()) szName = strings::formatmessage(IDS_NONAME);
-		if (szDomain.empty()) szDomain = strings::formatmessage(IDS_NODOMAIN);
+		auto sidAccount = sid::LookupAccountSid(SidStart);
 
 		auto szSID = GetTextualSid(SidStart);
 		if (szSID.empty()) szSID = strings::formatmessage(IDS_NOSID);
 
 		aceString.push_back(strings::formatmessage(
 			IDS_SIDACCOUNT,
-			szDomain.c_str(),
-			szName.c_str(),
+			sidAccount.getDomain().c_str(),
+			sidAccount.getName().c_str(),
 			szSID.c_str(),
 			AceType,
 			szAceType.c_str(),

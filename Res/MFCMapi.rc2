@@ -1494,10 +1494,6 @@ IDS_SIDFLAGS "Flags: 0x%1!08X!"
 
 IDS_INVALIDSD "This is not a valid security descriptor."
 
-IDS_SIDHEADER "SID: \r\n\
-User: %1!ws!\\%2!ws!\r\n\
-Textual SID: %3!ws!"
-
 IDS_FLAGTOSTRINGHEX "\r\n0x%1!08X! %2!ws!"
 IDS_FLAGTOSTRINGDEC "\r\n%1!5d! %2!ws!"
 

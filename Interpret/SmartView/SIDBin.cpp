@@ -4,27 +4,26 @@
 
 namespace smartview
 {
-	void SIDBin::Parse()
-	{
-		const PSID SidStart = const_cast<LPBYTE>(m_Parser.GetCurrentAddress());
-		const auto cbSid = m_Parser.RemainingBytes();
-		m_Parser.Advance(cbSid);
+	void SIDBin::Parse() { m_SIDbin = m_Parser.GetBlockBYTES(m_Parser.RemainingBytes()); }
 
-		if (SidStart &&
-			cbSid >= sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * static_cast<PISID>(SidStart)->SubAuthorityCount &&
-			IsValidSid(SidStart))
+	void SIDBin::ParseBlocks()
+	{
+		auto lpByte = m_SIDbin.data();
+		auto piSid = (PISID) lpByte;
+		auto sidAccount = sid::SidAccount{};
+		auto sidString = std::wstring{};
+		if (!m_SIDbin.empty() &&
+			m_SIDbin.size() >= sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * piSid->SubAuthorityCount &&
+			IsValidSid(piSid))
 		{
-			m_lpSidName = sid::LookupAccountSid(SidStart, m_lpSidDomain);
-			m_lpStringSid = sid::GetTextualSid(SidStart);
+			sidAccount = sid::LookupAccountSid(piSid);
+			sidString = sid::GetTextualSid(piSid);
 		}
-	}
 
-	_Check_return_ std::wstring SIDBin::ToStringInternal()
-	{
-		auto szDomain = !m_lpSidDomain.empty() ? m_lpSidDomain : strings::formatmessage(IDS_NODOMAIN);
-		auto szName = !m_lpSidName.empty() ? m_lpSidName : strings::formatmessage(IDS_NONAME);
-		auto szSID = !m_lpStringSid.empty() ? m_lpStringSid : strings::formatmessage(IDS_NOSID);
+		addHeader(L"SID: \r\n");
+		addBlock(m_SIDbin, L"User: %1!ws!\\%2!ws!\r\n", sidAccount.getDomain().c_str(), sidAccount.getName().c_str());
 
-		return strings::formatmessage(IDS_SIDHEADER, szDomain.c_str(), szName.c_str(), szSID.c_str());
+		if (sidString.empty()) sidString = strings::formatmessage(IDS_NOSID);
+		addBlock(m_SIDbin, L"Textual SID: %1!ws!", sidString.c_str());
 	}
 }

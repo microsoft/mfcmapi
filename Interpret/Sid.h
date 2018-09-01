@@ -9,8 +9,24 @@ namespace sid
 		acetypeFreeBusy
 	};
 
+	struct SidAccount
+	{
+	public:
+		SidAccount(){};
+		SidAccount(std::wstring _domain, std::wstring _name) : domain(_domain), name(_name){};
+		_Check_return_ std::wstring getDomain()
+		{
+			return !domain.empty() ? domain : strings::formatmessage(IDS_NODOMAIN);
+		}
+		_Check_return_ std::wstring getName() { return !name.empty() ? name : strings::formatmessage(IDS_NONAME); }
+
+	private:
+		std::wstring domain;
+		std::wstring name;
+	};
+
 	_Check_return_ std::wstring GetTextualSid(_In_ PSID pSid);
-	_Check_return_ std::wstring LookupAccountSid(PSID SidStart, _In_ std::wstring& sidDomain);
+	_Check_return_ SidAccount LookupAccountSid(PSID SidStart);
 	_Check_return_ std::wstring
 	SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype, _In_ std::wstring& sdInfo);
 }
