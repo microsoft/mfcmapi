@@ -13,9 +13,10 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
 		LPMAPIPROP m_lpMAPIProp;
 		bool m_bFB;
+		blockBytes m_SDbin;
 	};
 }

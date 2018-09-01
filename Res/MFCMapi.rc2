@@ -1478,11 +1478,6 @@ IDS_ACCESSREADCONTROL "Read Control"
 IDS_ACCESSSIMPLEFREEBUSY "Simple FreeBusy"
 IDS_ACCESSDETAILEDFREEBUSY "Detailed FreeBusy"
 
-IDS_SECURITYDESCRIPTORHEADER "Security Descriptor: \r\n\
-Security Info: "
-IDS_SECURITYDESCRIPTORVERSION "Security Version: 0x%1!04X! = %2!ws!\r\n\
-Descriptor:"
-
 IDS_SIDACCOUNT "Account: %1!ws!\\%2!ws!\r\n\
 SID: %3!ws!\r\n\
 Access Type: 0x%4!08X! = %5!ws!\r\n\

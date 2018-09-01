@@ -181,19 +181,18 @@ namespace sid
 		return strings::join(aceString, L"\r\n");
 	}
 
-	_Check_return_ std::wstring
-	SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype, _In_ std::wstring& sdInfo)
+	_Check_return_ SecurityDescriptor SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype)
 	{
-		if (!lpBuf) return strings::emptystring;
+		if (!lpBuf) return {};
 
 		const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(lpBuf);
 
 		if (CbSecurityDescriptorHeader(lpBuf) > cbBuf || !IsValidSecurityDescriptor(pSecurityDescriptor))
 		{
-			return strings::formatmessage(IDS_INVALIDSD);
+			return SecurityDescriptor(strings::formatmessage(IDS_INVALIDSD), strings::emptystring);
 		}
 
-		sdInfo = interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf));
+		auto sdInfo = interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf));
 
 		BOOL bValidDACL = false;
 		PACL pACL = nullptr;
@@ -216,9 +215,9 @@ namespace sid
 				}
 			}
 
-			return strings::join(sdString, L"\r\n");
+			return SecurityDescriptor(strings::join(sdString, L"\r\n"), sdInfo);
 		}
 
-		return strings::emptystring;
+		return SecurityDescriptor(strings::emptystring, sdInfo);
 	}
 }

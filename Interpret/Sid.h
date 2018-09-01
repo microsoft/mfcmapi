@@ -25,8 +25,15 @@ namespace sid
 		std::wstring name;
 	};
 
+	struct SecurityDescriptor
+	{
+		SecurityDescriptor(){};
+		SecurityDescriptor(std::wstring _dacl, std::wstring _info) : dacl(_dacl), info(_info){};
+		std::wstring dacl;
+		std::wstring info;
+	};
+
 	_Check_return_ std::wstring GetTextualSid(_In_ PSID pSid);
 	_Check_return_ SidAccount LookupAccountSid(PSID SidStart);
-	_Check_return_ std::wstring
-	SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype, _In_ std::wstring& sdInfo);
+	_Check_return_ SecurityDescriptor SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype);
 }
