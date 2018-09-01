@@ -8,8 +8,7 @@ namespace smartview
 
 	void SIDBin::ParseBlocks()
 	{
-		auto lpByte = m_SIDbin.data();
-		auto piSid = (PISID) lpByte;
+		auto piSid = reinterpret_cast<PISID>(const_cast<LPBYTE>(m_SIDbin.data()));
 		auto sidAccount = sid::SidAccount{};
 		auto sidString = std::wstring{};
 		if (!m_SIDbin.empty() &&
