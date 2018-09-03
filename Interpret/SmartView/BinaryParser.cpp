@@ -82,14 +82,4 @@ namespace smartview
 
 		return true;
 	}
-
-	std::vector<BYTE> CBinaryParser::GetBYTES(size_t cbBytes, size_t cbMaxBytes)
-	{
-		if (!cbBytes || !CheckRemainingBytes(cbBytes)) return std::vector<BYTE>();
-		if (cbMaxBytes != -1 && cbBytes > cbMaxBytes) return std::vector<BYTE>();
-		std::vector<BYTE> ret(
-			const_cast<LPBYTE>(GetCurrentAddress()), const_cast<LPBYTE>(GetCurrentAddress() + cbBytes));
-		m_Offset += cbBytes;
-		return ret;
-	}
 }

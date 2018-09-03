@@ -204,13 +204,19 @@ namespace smartview
 			return ret;
 		}
 
-		std::vector<BYTE> GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);
 		blockBytes GetBlockBYTES(size_t cbBytes, size_t cbMaxBytes = -1)
 		{
 			// TODO: Should we track when the returned byte length is less than requested?
 			auto ret = blockBytes();
 			ret.setOffset(m_Offset);
-			ret.setData(GetBYTES(cbBytes, cbMaxBytes));
+
+			if (cbBytes && CheckRemainingBytes(cbBytes) && (cbMaxBytes == -1 || cbBytes <= cbMaxBytes))
+			{
+				ret.setData(std::vector<BYTE>{const_cast<LPBYTE>(GetCurrentAddress()),
+											  const_cast<LPBYTE>(GetCurrentAddress() + cbBytes)});
+				m_Offset += cbBytes;
+			}
+
 			// Important that we set our size after getting data, because we may not have gotten the requested byte length
 			ret.setSize(ret.size() * sizeof(BYTE));
 			return ret;
