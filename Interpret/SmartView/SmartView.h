@@ -26,6 +26,13 @@ namespace smartview
 	std::wstring
 	InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp);
 	std::wstring InterpretNumberAsString(
+		LONGLONG val,
+		ULONG ulPropTag,
+		ULONG ulPropNameID,
+		_In_opt_z_ LPWSTR lpszPropNameString,
+		_In_opt_ LPCGUID lpguidNamedProp,
+		bool bLabel);
+	std::wstring InterpretNumberAsString(
 		_PV pV,
 		ULONG ulPropTag,
 		ULONG ulPropNameID,

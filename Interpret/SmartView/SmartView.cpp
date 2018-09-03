@@ -369,11 +369,11 @@ namespace smartview
 		return InterpretNumberAsString(pV, PT_LONG, ulPropNameID, nullptr, lpguidNamedProp, false);
 	}
 
-	// Interprets a PT_LONG, PT_I2. or PT_I8 found in lpProp and returns a string
+	// Interprets a LONGLONG and returns a string
 	// Will not return a string if the lpProp is not a PT_LONG/PT_I2/PT_I8 or we don't recognize the property
 	// Will use named property details to look up named property flags
 	std::wstring InterpretNumberAsString(
-		_PV pV,
+		LONGLONG val,
 		ULONG ulPropTag,
 		ULONG ulPropNameID,
 		_In_opt_z_ LPWSTR lpszPropNameString,
@@ -393,20 +393,24 @@ namespace smartview
 		switch (iParser)
 		{
 		case IDS_STLONGRTIME:
-			lpszResultString = RTimeToSzString(pV.ul, bLabel);
+			lpszResultString = RTimeToSzString(static_cast<DWORD>(val), bLabel);
 			break;
 		case IDS_STPTI8:
-			lpszResultString = PTI8ToSzString(pV.li, bLabel);
-			break;
+		{
+			auto li = LARGE_INTEGER{};
+			li.QuadPart = val;
+			lpszResultString = PTI8ToSzString(li, bLabel);
+		}
+		break;
 		case IDS_STSFIDMID:
-			lpszResultString = FidMidToSzString(pV.li.QuadPart, bLabel);
+			lpszResultString = FidMidToSzString(val, bLabel);
 			break;
 			// insert future parsers here
 		default:
 			ulPropID = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp);
 			if (ulPropID)
 			{
-				lpszResultString += interpretprop::InterpretFlags(ulPropID, pV.ul);
+				lpszResultString += interpretprop::InterpretFlags(ulPropID, static_cast<LONG>(val));
 
 				if (bLabel && !lpszResultString.empty())
 				{
@@ -418,6 +422,34 @@ namespace smartview
 		}
 
 		return lpszResultString;
+	}
+
+	// Interprets a PT_LONG, PT_I2. or PT_I8 found in lpProp and returns a string
+	// Will not return a string if the lpProp is not a PT_LONG/PT_I2/PT_I8 or we don't recognize the property
+	// Will use named property details to look up named property flags
+	std::wstring InterpretNumberAsString(
+		_PV pV,
+		ULONG ulPropTag,
+		ULONG ulPropNameID,
+		_In_opt_z_ LPWSTR lpszPropNameString,
+		_In_opt_ LPCGUID lpguidNamedProp,
+		bool bLabel)
+	{
+		switch (PROP_TYPE(ulPropTag))
+		{
+		case PT_LONG:
+			return InterpretNumberAsString(pV.ul, ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp, bLabel);
+			break;
+		case PT_I2:
+			return InterpretNumberAsString(pV.i, ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp, bLabel);
+			break;
+		case PT_I8:
+			return InterpretNumberAsString(
+				pV.li.QuadPart, ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp, bLabel);
+			break;
+		}
+
+		return strings::emptystring;
 	}
 
 	std::wstring InterpretMVLongAsString(

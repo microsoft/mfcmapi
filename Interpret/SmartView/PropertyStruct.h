@@ -1,6 +1,8 @@
 #pragma once
 #include <Interpret/SmartView/SmartViewParser.h>
 #include <MAPIDefs.h>
+#include <Interpret/InterpretProp.h>
+#include <Interpret/SmartView/SmartView.h>
 
 namespace smartview
 {
@@ -73,6 +75,16 @@ namespace smartview
 		blockT<ULONG> ulPropTag;
 		ULONG dwAlignPad;
 		PVBlock Value;
+		_Check_return_ const std::wstring PropString()
+		{
+			EnsurePropStrings();
+			return propString;
+		}
+		_Check_return_ const std::wstring AltPropString()
+		{
+			EnsurePropStrings();
+			return altPropString;
+		}
 
 		// TODO: Fill in missing cases with test coverage
 		SPropValue const getData()
@@ -128,9 +140,42 @@ namespace smartview
 			return prop;
 		}
 
+		void EnsurePropStrings()
+		{
+			if (propStringsGenerated) return;
+			auto sProp = getData();
+			interpretprop::InterpretProp(&sProp, &propString, &altPropString);
+
+			propString = strings::RemoveInvalidCharactersW(propString, false);
+			altPropString = strings::RemoveInvalidCharactersW(altPropString, false);
+			propStringsGenerated = true;
+		}
+
+		_Check_return_ std::wstring PropNum()
+		{
+			switch (PROP_TYPE(ulPropTag))
+			{
+			case PT_LONG:
+				return smartview::InterpretNumberAsString(Value.l, ulPropTag, 0, nullptr, nullptr, false);
+				break;
+			case PT_I2:
+				return smartview::InterpretNumberAsString(Value.i, ulPropTag, 0, nullptr, nullptr, false);
+				break;
+			case PT_I8:
+				return smartview::InterpretNumberAsString(
+					Value.li.getData().QuadPart, ulPropTag, 0, nullptr, nullptr, false);
+				break;
+			}
+
+			return strings::emptystring;
+		}
+
 		// Any data we need to cache for getData can live here
 	private:
 		GUID guid;
+		std::wstring propString;
+		std::wstring altPropString;
+		bool propStringsGenerated = false;
 	};
 
 	// TODO: This class is a row of properties - it should be named better
@@ -140,6 +185,7 @@ namespace smartview
 		PropertyStruct();
 		void SetMaxEntries(DWORD maxEntries) { m_MaxEntries = maxEntries; }
 		void EnableNickNameParsing() { m_NickName = true; }
+		_Check_return_ std::vector<SPropValueStruct> Props() { return m_Props; } // TODO: add const
 
 	private:
 		void Parse() override;
@@ -151,6 +197,4 @@ namespace smartview
 
 		_Check_return_ SPropValueStruct BinToSPropValueStruct();
 	};
-
-	_Check_return_ std::wstring PropsToString(DWORD PropCount, LPSPropValue Prop);
 }

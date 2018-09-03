@@ -230,10 +230,10 @@ namespace smartview
 				addLine();
 				addHeader(L"AdvancedSearchBytes = ");
 				addBlockBytes(m_AdvancedSearchBytes);
+				addLine();
 			}
 		}
 
-		addLine();
 		addBlock(m_SkipLen3, L"SkipLen3 = 0x%1!08X!", m_SkipLen3.getData());
 
 		if (m_SkipLen3)

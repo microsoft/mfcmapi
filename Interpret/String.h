@@ -43,6 +43,7 @@ namespace strings
 	std::wstring StripCharacter(const std::wstring& szString, const WCHAR& character);
 	std::wstring StripCarriage(const std::wstring& szString);
 	std::wstring StripCRLF(const std::wstring& szString);
+	std::wstring trimWhitespace(const std::wstring& szString);
 	std::wstring trim(const std::wstring& szString);
 	std::wstring replace(const std::wstring& str, const std::function<bool(const WCHAR&)>& func, const WCHAR& chr);
 	std::wstring ScrubStringForXML(const std::wstring& szString);

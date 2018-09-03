@@ -1658,8 +1658,6 @@ IDS_PROPERTYDATASMARTVIEW "Smart View: %1!ws!"
 IDS_PROPERTYDATANAME "Name: %1!ws!"
 IDS_PROPERTYDATAPARTIALMATCHES "Other Matches: %1!ws!"
 
-IDS_RESTRICTIONDATA "Restriction:\r\n"
-
 IDS_EXRULECONHEADER "Extended Rule Condition\
 \r\nNumber of named props = 0x%1!04X!"
 IDS_RULECONHEADER "Rule Condition\

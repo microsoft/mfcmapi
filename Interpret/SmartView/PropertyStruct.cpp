@@ -49,16 +49,12 @@ namespace smartview
 				addBlock(prop.ulPropTag, L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
 			}
 
-			std::wstring PropString;
-			std::wstring AltPropString;
-			auto sProp = prop.getData();
-			interpretprop::InterpretProp(&sProp, &PropString, &AltPropString);
-
 			// TODO: get proper blocks here
 			addLine();
-			addHeader(L"PropString = %1!ws! ", strings::RemoveInvalidCharactersW(PropString, false).c_str());
-			addHeader(L"AltPropString = %1!ws!", strings::RemoveInvalidCharactersW(AltPropString, false).c_str());
+			addHeader(L"PropString = %1!ws! ", prop.PropString().c_str());
+			addHeader(L"AltPropString = %1!ws!", prop.AltPropString().c_str());
 
+			auto sProp = prop.getData();
 			auto szSmartView = InterpretPropSmartView(&sProp, nullptr, nullptr, nullptr, false, false);
 
 			if (!szSmartView.empty())
@@ -238,46 +234,5 @@ namespace smartview
 		}
 
 		return prop;
-	}
-
-	_Check_return_ std::wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
-	{
-		std::vector<std::wstring> property;
-
-		if (Prop)
-		{
-			for (DWORD i = 0; i < PropCount; i++)
-			{
-				std::wstring PropString;
-				std::wstring AltPropString;
-
-				property.push_back(strings::formatmessage(IDS_PROPERTYDATAHEADER, i, Prop[i].ulPropTag));
-
-				auto propTagNames = interpretprop::PropTagToPropName(Prop[i].ulPropTag, false);
-				if (!propTagNames.bestGuess.empty())
-				{
-					property.push_back(strings::formatmessage(IDS_PROPERTYDATANAME, propTagNames.bestGuess.c_str()));
-				}
-
-				if (!propTagNames.otherMatches.empty())
-				{
-					property.push_back(
-						strings::formatmessage(IDS_PROPERTYDATAPARTIALMATCHES, propTagNames.otherMatches.c_str()));
-				}
-
-				interpretprop::InterpretProp(&Prop[i], &PropString, &AltPropString);
-				property.push_back(strings::RemoveInvalidCharactersW(
-					strings::formatmessage(IDS_PROPERTYDATA, PropString.c_str(), AltPropString.c_str()), false));
-
-				auto szSmartView = InterpretPropSmartView(&Prop[i], nullptr, nullptr, nullptr, false, false);
-
-				if (!szSmartView.empty())
-				{
-					property.push_back(strings::formatmessage(IDS_PROPERTYDATASMARTVIEW, szSmartView.c_str()));
-				}
-			}
-		}
-
-		return strings::join(property, L"\r\n");
 	}
 }

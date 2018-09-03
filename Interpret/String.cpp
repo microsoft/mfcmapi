@@ -275,6 +275,14 @@ namespace strings
 		});
 	}
 
+	std::wstring trimWhitespace(const std::wstring& szString)
+	{
+		const auto first = szString.find_first_not_of(L" \r\n\t");
+		if (first == std::string::npos) return emptystring;
+		const auto last = szString.find_last_not_of(L" \r\n\t");
+		return szString.substr(first, last - first + 1);
+	}
+
 	std::wstring trim(const std::wstring& szString)
 	{
 		const auto first = szString.find_first_not_of(' ');

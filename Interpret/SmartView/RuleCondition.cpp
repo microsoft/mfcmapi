@@ -99,6 +99,6 @@ namespace smartview
 
 		ruleCondition.push_back(m_lpRes.ToString());
 
-		return strings::join(ruleCondition, L"\r\n"); // STRING_OK
+		return strings::trimWhitespace(strings::join(ruleCondition, L"\r\n")); // STRING_OK
 	}
 }

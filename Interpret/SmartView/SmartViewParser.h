@@ -2,7 +2,7 @@
 #include <Interpret/SmartView/BinaryParser.h>
 
 #define _MaxBytes 0xFFFF
-#define _MaxDepth 50
+#define _MaxDepth 25
 #define _MaxEID 500
 #define _MaxEntriesSmall 500
 #define _MaxEntriesLarge 1000
@@ -34,14 +34,6 @@ namespace smartview
 		_Check_return_ std::wstring JunkDataToString(const std::vector<BYTE>& lpJunkData) const;
 		_Check_return_ std::wstring
 		JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const;
-		_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
-
-		// These functions return pointers to memory backed and cleaned up by SmartViewParser
-		LPBYTE GetBYTES(size_t cbBytes);
-		LPSTR GetStringA(size_t cchChar = -1);
-		LPWSTR GetStringW(size_t cchChar = -1);
-		LPBYTE Allocate(size_t cbBytes);
-		LPBYTE AllocateArray(size_t cArray, size_t cbEntry);
 
 		CBinaryParser m_Parser;
 
@@ -68,10 +60,5 @@ namespace smartview
 
 		bool m_bEnableJunk;
 		bool m_bParsed;
-
-		// We use list instead of vector so our nodes never get reallocated
-		std::list<std::string> m_stringCache;
-		std::list<std::wstring> m_wstringCache;
-		std::list<std::vector<BYTE>> m_binCache;
 	};
 }

@@ -44,9 +44,11 @@ namespace smartview
 		void addLine() { addHeader(L"\r\n"); }
 		bool hasData() const { return !text.empty() || children.size(); }
 
-	private:
+	protected:
 		size_t offset;
 		size_t cb;
+
+	private:
 		std::wstring text;
 		std::vector<block> children;
 		bool header;
@@ -77,6 +79,12 @@ namespace smartview
 		T getData() const { return data; }
 		operator T&() { return data; }
 		operator T() const { return data; }
+		void operator=(const blockT<T>& _data)
+		{
+			data = _data.data;
+			cb = _data.getSize();
+			offset = _data.getOffset();
+		}
 		void operator=(const T& _data) { data = _data; }
 
 	private:
