@@ -6,8 +6,6 @@
 
 namespace smartview
 {
-	RuleCondition::RuleCondition() { m_bExtended = false; }
-
 	void RuleCondition::Init(bool bExtended) { m_bExtended = bExtended; }
 
 	void RuleCondition::Parse()

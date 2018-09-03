@@ -5,8 +5,6 @@
 
 namespace smartview
 {
-	WebViewPersistStream::WebViewPersistStream() { m_cWebViews = 0; }
-
 	void WebViewPersistStream::Parse()
 	{
 		// Run through the parser once to count the number of web view structs

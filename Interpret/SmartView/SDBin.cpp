@@ -9,12 +9,6 @@
 
 namespace smartview
 {
-	SDBin::SDBin()
-	{
-		m_lpMAPIProp = nullptr;
-		m_bFB = false;
-	}
-
 	SDBin::~SDBin()
 	{
 		if (m_lpMAPIProp) m_lpMAPIProp->Release();

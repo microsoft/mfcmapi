@@ -37,8 +37,6 @@ namespace smartview
 	class RuleCondition : public SmartViewParser
 	{
 	public:
-		RuleCondition();
-
 		void Init(bool bExtended);
 
 	private:
@@ -47,6 +45,6 @@ namespace smartview
 
 		NamedPropertyInformation m_NamedPropertyInformation;
 		RestrictionStruct m_lpRes;
-		bool m_bExtended;
+		bool m_bExtended = false;
 	};
 }

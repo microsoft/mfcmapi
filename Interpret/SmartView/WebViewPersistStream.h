@@ -15,14 +15,11 @@ namespace smartview
 
 	class WebViewPersistStream : public SmartViewParser
 	{
-	public:
-		WebViewPersistStream();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;
 
-		DWORD m_cWebViews;
+		DWORD m_cWebViews = 0;
 		std::vector<WebViewPersist> m_lpWebViews;
 	};
 }

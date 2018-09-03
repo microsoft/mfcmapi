@@ -6,7 +6,6 @@ namespace smartview
 	class SDBin : public SmartViewParser
 	{
 	public:
-		SDBin();
 		~SDBin();
 
 		void Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
@@ -15,8 +14,8 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		LPMAPIPROP m_lpMAPIProp;
-		bool m_bFB;
+		LPMAPIPROP m_lpMAPIProp = 0;
+		bool m_bFB = false;
 		blockBytes m_SDbin;
 	};
 }
