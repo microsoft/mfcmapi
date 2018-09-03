@@ -92,6 +92,4 @@ namespace smartview
 		m_Offset += cbBytes;
 		return ret;
 	}
-
-	std::vector<BYTE> CBinaryParser::GetRemainingData() { return GetBYTES(RemainingBytes()); }
 }

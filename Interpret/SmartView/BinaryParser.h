@@ -216,7 +216,6 @@ namespace smartview
 			return ret;
 		}
 
-		std::vector<BYTE> GetRemainingData();
 		blockBytes GetBlockRemainingData() { return GetBlockBYTES(RemainingBytes()); }
 
 	private:
