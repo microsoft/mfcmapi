@@ -13,8 +13,7 @@ namespace smartview
 	void RuleCondition::Parse()
 	{
 		m_NamedPropertyInformation.NoOfNamedProps = m_Parser.GetBlock<WORD>();
-		if (m_NamedPropertyInformation.NoOfNamedProps &&
-			m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
+		if (m_NamedPropertyInformation.NoOfNamedProps && m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
 		{
 			{
 				for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
@@ -53,52 +52,76 @@ namespace smartview
 		m_Parser.Advance(m_lpRes.GetCurrentOffset());
 	}
 
-	_Check_return_ std::wstring RuleCondition::ToStringInternal()
+	void RuleCondition::ParseBlocks()
 	{
-		std::vector<std::wstring> ruleCondition;
-
 		if (m_bExtended)
 		{
-			ruleCondition.push_back(
-				strings::formatmessage(IDS_EXRULECONHEADER, m_NamedPropertyInformation.NoOfNamedProps.getData()));
+			addHeader(L"Extended Rule Condition\r\n");
+			addBlock(
+				m_NamedPropertyInformation.NoOfNamedProps,
+				L"Number of named props = 0x%1!04X!",
+				m_NamedPropertyInformation.NoOfNamedProps.getData());
 		}
 		else
 		{
-			ruleCondition.push_back(
-				strings::formatmessage(IDS_RULECONHEADER, m_NamedPropertyInformation.NoOfNamedProps.getData()));
+			addHeader(L"Rule Condition\r\n");
+			addBlock(
+				m_NamedPropertyInformation.NoOfNamedProps,
+				L"Number of named props = 0x%1!04X!",
+				m_NamedPropertyInformation.NoOfNamedProps.getData());
 		}
 
+		addLine();
 		if (m_NamedPropertyInformation.PropId.size())
 		{
-			ruleCondition.push_back(strings::formatmessage(
-				IDS_RULECONNAMEPROPSIZE, m_NamedPropertyInformation.NamedPropertiesSize.getData()));
+			addLine();
+			addBlock(
+				m_NamedPropertyInformation.NamedPropertiesSize,
+				L"Named prop size = 0x%1!08X!",
+				m_NamedPropertyInformation.NamedPropertiesSize.getData());
 
 			for (size_t i = 0; i < m_NamedPropertyInformation.PropId.size(); i++)
 			{
-				ruleCondition.push_back(
-					strings::formatmessage(IDS_RULECONNAMEPROPID, i, m_NamedPropertyInformation.PropId[i].getData()));
+				addLine();
+				addHeader(L"Named Prop 0x%1!04X!\r\n", i);
+				addBlock(
+					m_NamedPropertyInformation.PropId[i],
+					L"\tPropID = 0x%2!04X!\r\n",
+					m_NamedPropertyInformation.PropId[i].getData());
 
-				ruleCondition.push_back(strings::formatmessage(
-					IDS_RULECONNAMEPROPKIND, m_NamedPropertyInformation.PropertyName[i].Kind.getData()));
-
-				ruleCondition.push_back(guid::GUIDToString(m_NamedPropertyInformation.PropertyName[i].Guid));
+				addBlock(
+					m_NamedPropertyInformation.PropertyName[i].Kind,
+					L"\tKind = 0x%1!02X!\r\n",
+					m_NamedPropertyInformation.PropertyName[i].Kind.getData());
+				addBlock(
+					m_NamedPropertyInformation.PropertyName[i].Guid,
+					L"\tGuid = %1!ws!",
+					guid::GUIDToString(m_NamedPropertyInformation.PropertyName[i].Guid).c_str());
 
 				if (m_NamedPropertyInformation.PropertyName[i].Kind == MNID_ID)
 				{
-					ruleCondition.push_back(strings::formatmessage(
-						IDS_RULECONNAMEPROPLID, m_NamedPropertyInformation.PropertyName[i].LID.getData()));
+					addLine();
+					addBlock(
+						m_NamedPropertyInformation.PropertyName[i].LID,
+						L"\tLID = 0x%1!08X!",
+						m_NamedPropertyInformation.PropertyName[i].LID.getData());
 				}
 				else if (m_NamedPropertyInformation.PropertyName[i].Kind == MNID_STRING)
 				{
-					ruleCondition.push_back(strings::formatmessage(
-						IDS_RULENAMEPROPSIZE, m_NamedPropertyInformation.PropertyName[i].NameSize.getData()));
-					ruleCondition.push_back(m_NamedPropertyInformation.PropertyName[i].Name.getData());
+					addLine();
+					addBlock(
+						m_NamedPropertyInformation.PropertyName[i].NameSize,
+						L"\tNameSize = 0x%1!02X!",
+						m_NamedPropertyInformation.PropertyName[i].NameSize.getData());
+					addLine();
+					addHeader(L"\tName = ");
+					addBlock(
+						m_NamedPropertyInformation.PropertyName[i].Name,
+						m_NamedPropertyInformation.PropertyName[i].Name.getData());
 				}
 			}
 		}
 
-		ruleCondition.push_back(m_lpRes.ToString());
-
-		return strings::trimWhitespace(strings::join(ruleCondition, L"\r\n")); // STRING_OK
+		addBlock(m_lpRes.getBlock());
 	}
 }

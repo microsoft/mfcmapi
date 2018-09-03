@@ -43,7 +43,7 @@ namespace smartview
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
 		NamedPropertyInformation m_NamedPropertyInformation;
 		RestrictionStruct m_lpRes;

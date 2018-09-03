@@ -1658,19 +1658,6 @@ IDS_PROPERTYDATASMARTVIEW "Smart View: %1!ws!"
 IDS_PROPERTYDATANAME "Name: %1!ws!"
 IDS_PROPERTYDATAPARTIALMATCHES "Other Matches: %1!ws!"
 
-IDS_EXRULECONHEADER "Extended Rule Condition\
-\r\nNumber of named props = 0x%1!04X!"
-IDS_RULECONHEADER "Rule Condition\
-\r\nNumber of named props = 0x%1!04X!"
-IDS_RULECONNAMEPROPSIZE "\r\nNamed prop size = 0x%1!08X!"
-IDS_RULECONNAMEPROPID "\r\nNamed Prop 0x%1!04X!\
-\r\n\tPropID = 0x%2!04X!"
-IDS_RULECONNAMEPROPKIND "\r\n\tKind = 0x%1!02X!\
-\r\n\tGuid = "
-IDS_RULECONNAMEPROPLID "\r\n\tLID = 0x%1!08X!"
-IDS_RULENAMEPROPSIZE "\r\n\tNameSize = 0x%1!02X!\
-\r\n\tName = "
-
 IDS_MVROWBIN "Row %1!d!\r\n"
 IDS_MVROWLONG "Row %1!d!: %2!ws!"
 IDS_OPENBODY "Body: Open to view"
