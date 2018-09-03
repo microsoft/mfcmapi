@@ -35,7 +35,7 @@ namespace smartview
 		if (m_Parser.Empty()) return L"";
 		EnsureParsed();
 
-		auto szParsedString = ToStringInternal();
+		auto szParsedString = data.ToString();
 
 		if (m_bEnableJunk)
 		{
