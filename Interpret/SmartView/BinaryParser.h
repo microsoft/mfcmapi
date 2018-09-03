@@ -163,7 +163,6 @@ namespace smartview
 			return ret;
 		}
 
-		std::string GetStringA(size_t cchChar = -1);
 		blockStringA GetBlockStringA(size_t cchChar = -1)
 		{
 			auto ret = blockStringA();
@@ -183,7 +182,7 @@ namespace smartview
 			m_Offset += sizeof CHAR * cchChar;
 			return ret;
 		}
-		std::wstring GetStringW(size_t cchChar = -1);
+
 		blockStringW GetBlockStringW(size_t cchChar = -1)
 		{
 			auto ret = blockStringW();
@@ -204,6 +203,7 @@ namespace smartview
 			m_Offset += sizeof WCHAR * cchChar;
 			return ret;
 		}
+
 		std::vector<BYTE> GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);
 		blockBytes GetBlockBYTES(size_t cbBytes, size_t cbMaxBytes = -1)
 		{

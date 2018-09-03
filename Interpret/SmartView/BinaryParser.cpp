@@ -83,34 +83,6 @@ namespace smartview
 		return true;
 	}
 
-	std::string CBinaryParser::GetStringA(size_t cchChar)
-	{
-		if (cchChar == -1)
-		{
-			cchChar =
-				strnlen_s(reinterpret_cast<LPCSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof CHAR) + 1;
-		}
-
-		if (!cchChar || !CheckRemainingBytes(sizeof CHAR * cchChar)) return "";
-		const std::string ret(reinterpret_cast<LPCSTR>(GetCurrentAddress()), cchChar);
-		m_Offset += sizeof CHAR * cchChar;
-		return strings::RemoveInvalidCharactersA(ret);
-	}
-
-	std::wstring CBinaryParser::GetStringW(size_t cchChar)
-	{
-		if (cchChar == -1)
-		{
-			cchChar =
-				wcsnlen_s(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof WCHAR) + 1;
-		}
-
-		if (!cchChar || !CheckRemainingBytes(sizeof WCHAR * cchChar)) return strings::emptystring;
-		const std::wstring ret(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), cchChar);
-		m_Offset += sizeof WCHAR * cchChar;
-		return strings::RemoveInvalidCharactersW(ret);
-	}
-
 	std::vector<BYTE> CBinaryParser::GetBYTES(size_t cbBytes, size_t cbMaxBytes)
 	{
 		if (!cbBytes || !CheckRemainingBytes(cbBytes)) return std::vector<BYTE>();
