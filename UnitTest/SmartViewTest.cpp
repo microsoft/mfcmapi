@@ -308,13 +308,13 @@ namespace SmartViewTest
 		TEST_METHOD(Test_STPROPERTY)
 		{
 			test(loadTestData({
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP1IN, IDR_SV11PROP1OUT},
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP2IN, IDR_SV11PROP2OUT},
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP3IN, IDR_SV11PROP3OUT},
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP4IN, IDR_SV11PROP4OUT},
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP5IN, IDR_SV11PROP5OUT},
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP6IN, IDR_SV11PROP6OUT},
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP7IN, IDR_SV11PROP7OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP1IN, IDR_SV11PROP1OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP2IN, IDR_SV11PROP2OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP3IN, IDR_SV11PROP3OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP4IN, IDR_SV11PROP4OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP5IN, IDR_SV11PROP5OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP6IN, IDR_SV11PROP6OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP7IN, IDR_SV11PROP7OUT},
 			}));
 		}
 

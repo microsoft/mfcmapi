@@ -1,6 +1,6 @@
 #pragma once
 #include <Interpret/SmartView/SmartViewParser.h>
-#include <Interpret/SmartView/PropertyStruct.h>
+#include <Interpret/SmartView/PropertiesStruct.h>
 
 namespace smartview
 {
@@ -28,7 +28,7 @@ namespace smartview
 	{
 		blockT<DWORD> ulFuzzyLevel;
 		blockT<DWORD> ulPropTag;
-		PropertyStruct lpProp;
+		PropertiesStruct lpProp;
 	};
 
 	struct SBitMaskRestrictionStruct
@@ -42,7 +42,7 @@ namespace smartview
 	{
 		blockT<DWORD> relop;
 		blockT<DWORD> ulPropTag;
-		PropertyStruct lpProp;
+		PropertiesStruct lpProp;
 	};
 
 	struct SComparePropsRestrictionStruct
@@ -76,14 +76,14 @@ namespace smartview
 	{
 		blockT<DWORD> cValues; /* # of properties in lpProp */
 		std::vector<SRestrictionStruct> lpRes;
-		PropertyStruct lpProp;
+		PropertiesStruct lpProp;
 	};
 
 	struct SAnnotationRestrictionStruct
 	{
 		blockT<DWORD> cValues; /* # of properties in lpProp */
 		std::vector<SRestrictionStruct> lpRes;
-		PropertyStruct lpProp;
+		PropertiesStruct lpProp;
 	};
 
 	struct SCountRestrictionStruct
@@ -120,7 +120,7 @@ namespace smartview
 		void ParseBlocks() override;
 
 		SRestrictionStruct BinToRestriction(ULONG ulDepth, bool bRuleCondition, bool bExtendedCount);
-		PropertyStruct BinToProps(DWORD cValues, bool bRuleCondition);
+		PropertiesStruct BinToProps(DWORD cValues, bool bRuleCondition);
 
 		void ParseRestriction(_In_ SRestrictionStruct& lpRes, ULONG ulTabLevel);
 

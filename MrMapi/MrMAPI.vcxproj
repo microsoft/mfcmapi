@@ -493,7 +493,7 @@
     <ClInclude Include="..\Interpret\SmartView\NickNameCache.h" />
     <ClInclude Include="..\Interpret\SmartView\PCL.h" />
     <ClInclude Include="..\Interpret\SmartView\PropertyDefinitionStream.h" />
-    <ClInclude Include="..\Interpret\SmartView\PropertyStruct.h" />
+    <ClInclude Include="..\Interpret\SmartView\PropertiesStruct.h" />
     <ClInclude Include="..\Interpret\SmartView\RecipientRowStream.h" />
     <ClInclude Include="..\Interpret\SmartView\RecurrencePattern.h" />
     <ClInclude Include="..\Interpret\SmartView\ReportTag.h" />
@@ -589,7 +589,7 @@
     <ClCompile Include="..\Interpret\SmartView\NickNameCache.cpp" />
     <ClCompile Include="..\Interpret\SmartView\PCL.cpp" />
     <ClCompile Include="..\Interpret\SmartView\PropertyDefinitionStream.cpp" />
-    <ClCompile Include="..\Interpret\SmartView\PropertyStruct.cpp" />
+    <ClCompile Include="..\Interpret\SmartView\PropertiesStruct.cpp" />
     <ClCompile Include="..\Interpret\SmartView\RecipientRowStream.cpp" />
     <ClCompile Include="..\Interpret\SmartView\RecurrencePattern.cpp" />
     <ClCompile Include="..\Interpret\SmartView\ReportTag.cpp" />

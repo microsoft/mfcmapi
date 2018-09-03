@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/RestrictionStruct.h>
-#include <Interpret/SmartView/PropertyStruct.h>
+#include <Interpret/SmartView/PropertiesStruct.h>
 #include <Interpret/String.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
@@ -164,9 +164,9 @@ namespace smartview
 		return srRestriction;
 	}
 
-	PropertyStruct RestrictionStruct::BinToProps(DWORD cValues, bool bRuleCondition)
+	PropertiesStruct RestrictionStruct::BinToProps(DWORD cValues, bool bRuleCondition)
 	{
-		auto props = PropertyStruct{};
+		auto props = PropertiesStruct{};
 		props.Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 		props.DisableJunkParsing();
 		props.SetMaxEntries(cValues);

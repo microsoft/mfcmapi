@@ -320,10 +320,10 @@
     <ClInclude Include="..\Interpret\SmartView\PropertyDefinitionStream.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
-    <ClCompile Include="..\Interpret\SmartView\PropertyStruct.cpp">
+    <ClCompile Include="..\Interpret\SmartView\PropertiesStruct.cpp">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClCompile>
-    <ClInclude Include="..\Interpret\SmartView\PropertyStruct.h">
+    <ClInclude Include="..\Interpret\SmartView\PropertiesStruct.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
     <ClCompile Include="..\Interpret\SmartView\RecipientRowStream.cpp">

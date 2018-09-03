@@ -118,6 +118,9 @@
     <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
     <ClInclude Include="MAPI\MapiMemory.h" />
+    <ClInclude Include="Interpret\SmartView\PropertiesStruct.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -155,6 +158,9 @@
     </ClCompile>
     <ClCompile Include="MAPI\Version.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Interpret\SmartView\PropertiesStruct.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -307,12 +313,6 @@
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClCompile>
     <ClInclude Include="Interpret\SmartView\PropertyDefinitionStream.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\PropertyStruct.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\PropertyStruct.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
     <ClCompile Include="Interpret\SmartView\RecipientRowStream.cpp">

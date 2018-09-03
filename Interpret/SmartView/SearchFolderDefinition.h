@@ -1,7 +1,7 @@
 #pragma once
 #include <Interpret/SmartView/SmartViewParser.h>
 #include <Interpret/SmartView/EntryList.h>
-#include <Interpret/SmartView/PropertyStruct.h>
+#include <Interpret/SmartView/PropertiesStruct.h>
 
 namespace smartview
 {
@@ -9,7 +9,7 @@ namespace smartview
 	{
 		blockT<DWORD> PropertyCount;
 		blockT<DWORD> Pad;
-		PropertyStruct Props;
+		PropertiesStruct Props;
 	};
 
 	class SearchFolderDefinition : public SmartViewParser

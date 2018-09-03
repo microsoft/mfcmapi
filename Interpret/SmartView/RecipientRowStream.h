@@ -1,6 +1,6 @@
 #pragma once
 #include <Interpret/SmartView/SmartViewParser.h>
-#include <Interpret/SmartView/PropertyStruct.h>
+#include <Interpret/SmartView/PropertiesStruct.h>
 
 namespace smartview
 {
@@ -8,7 +8,7 @@ namespace smartview
 	{
 		blockT<DWORD> ulReserved1;
 		blockT<DWORD> cValues;
-		PropertyStruct rgPropVals;
+		PropertiesStruct rgPropVals;
 	};
 
 	class RecipientRowStream : public SmartViewParser

@@ -1,13 +1,13 @@
 #pragma once
 #include <Interpret/SmartView/SmartViewParser.h>
-#include <Interpret/SmartView/PropertyStruct.h>
+#include <Interpret/SmartView/PropertiesStruct.h>
 
 namespace smartview
 {
 	struct SRowStruct
 	{
 		blockT<DWORD> cValues;
-		PropertyStruct lpProps;
+		PropertiesStruct lpProps;
 	};
 
 	class NickNameCache : public SmartViewParser

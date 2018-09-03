@@ -22,7 +22,7 @@
 #include <Interpret/SmartView/EntryList.h>
 #include <Interpret/SmartView/RuleCondition.h>
 #include <Interpret/SmartView/RestrictionStruct.h>
-#include <Interpret/SmartView/PropertyStruct.h>
+#include <Interpret/SmartView/PropertiesStruct.h>
 #include <Interpret/SmartView/EntryIdStruct.h>
 #include <Interpret/SmartView/GlobalObjectId.h>
 #include <Interpret/SmartView/TaskAssigners.h>
@@ -98,8 +98,8 @@ namespace smartview
 			if (parser) parser->Init(false, true);
 			return parser;
 		}
-		case IDS_STPROPERTY:
-			return new PropertyStruct();
+		case IDS_STPROPERTIES:
+			return new PropertiesStruct();
 		case IDS_STENTRYID:
 			return new EntryIdStruct();
 		case IDS_STGLOBALOBJECTID:

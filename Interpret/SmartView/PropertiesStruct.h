@@ -178,8 +178,7 @@ namespace smartview
 		bool propStringsGenerated{};
 	};
 
-	// TODO: This class is a row of properties - it should be named better
-	class PropertyStruct : public SmartViewParser
+	class PropertiesStruct : public SmartViewParser
 	{
 	public:
 		void SetMaxEntries(DWORD maxEntries) { m_MaxEntries = maxEntries; }

@@ -1,11 +1,11 @@
 #include <StdAfx.h>
-#include <Interpret/SmartView/PropertyStruct.h>
+#include <Interpret/SmartView/PropertiesStruct.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/SmartView/SmartView.h>
 
 namespace smartview
 {
-	void PropertyStruct::Parse()
+	void PropertiesStruct::Parse()
 	{
 		// For consistancy with previous parsings, we'll refuse to parse if asked to parse more than _MaxEntriesSmall
 		// However, we may want to reconsider this choice.
@@ -21,7 +21,7 @@ namespace smartview
 		}
 	}
 
-	void PropertyStruct::ParseBlocks()
+	void PropertiesStruct::ParseBlocks()
 	{
 		auto i = 0;
 		for (auto prop : m_Props)
@@ -64,7 +64,7 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ SPropValueStruct PropertyStruct::BinToSPropValueStruct()
+	_Check_return_ SPropValueStruct PropertiesStruct::BinToSPropValueStruct()
 	{
 		const auto ulCurrOffset = m_Parser.GetCurrentOffset();
 
