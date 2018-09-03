@@ -14,9 +14,6 @@ namespace smartview
 
 	class ConversationIndex : public SmartViewParser
 	{
-	public:
-		ConversationIndex();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

@@ -6,8 +6,6 @@
 
 namespace smartview
 {
-	ExtendedFlags::ExtendedFlags() {}
-
 	void ExtendedFlags::Parse()
 	{
 		// Run through the parser once to count the number of flag structs

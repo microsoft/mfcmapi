@@ -31,9 +31,6 @@ namespace smartview
 	//   and future timezone shift rules for daylight savings time, etc.
 	class TimeZoneDefinition : public SmartViewParser
 	{
-	public:
-		TimeZoneDefinition();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

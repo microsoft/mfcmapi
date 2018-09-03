@@ -5,8 +5,6 @@
 
 namespace smartview
 {
-	GlobalObjectId::GlobalObjectId() {}
-
 	// clang-format off
 	static const BYTE s_rgbSPlus[] =
 	{

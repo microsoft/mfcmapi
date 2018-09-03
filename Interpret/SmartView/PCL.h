@@ -14,9 +14,6 @@ namespace smartview
 
 	class PCL : public SmartViewParser
 	{
-	public:
-		PCL();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

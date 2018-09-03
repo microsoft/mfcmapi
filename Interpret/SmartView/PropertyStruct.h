@@ -182,7 +182,6 @@ namespace smartview
 	class PropertyStruct : public SmartViewParser
 	{
 	public:
-		PropertyStruct();
 		void SetMaxEntries(DWORD maxEntries) { m_MaxEntries = maxEntries; }
 		void EnableNickNameParsing() { m_NickName = true; }
 		_Check_return_ std::vector<SPropValueStruct> Props() { return m_Props; } // TODO: add const

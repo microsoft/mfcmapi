@@ -14,9 +14,6 @@ namespace smartview
 
 	class FlatEntryList : public SmartViewParser
 	{
-	public:
-		FlatEntryList();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

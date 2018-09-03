@@ -3,8 +3,6 @@
 
 namespace smartview
 {
-	FlatEntryList::FlatEntryList() {}
-
 	void FlatEntryList::Parse()
 	{
 		m_cEntries = m_Parser.Get<DWORD>();

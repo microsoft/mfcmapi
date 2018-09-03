@@ -6,8 +6,6 @@
 
 namespace smartview
 {
-	RecurrencePattern::RecurrencePattern() {}
-
 	void RecurrencePattern::Parse()
 	{
 		m_ReaderVersion = m_Parser.Get<WORD>();

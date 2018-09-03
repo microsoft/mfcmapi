@@ -4,8 +4,6 @@
 
 namespace smartview
 {
-	NickNameCache::NickNameCache() {}
-
 	void NickNameCache::Parse()
 	{
 		m_Metadata1 = m_Parser.GetBYTES(4);

@@ -4,8 +4,6 @@
 
 namespace smartview
 {
-	ConversationIndex::ConversationIndex() {}
-
 	void ConversationIndex::Parse()
 	{
 		m_UnnamedByte = m_Parser.Get<BYTE>();

@@ -5,8 +5,6 @@
 
 namespace smartview
 {
-	TombStone::TombStone() {}
-
 	void TombStone::Parse()
 	{
 		m_Identifier = m_Parser.Get<DWORD>();

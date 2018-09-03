@@ -4,8 +4,6 @@
 
 namespace smartview
 {
-	EntryList::EntryList() {}
-
 	void EntryList::Parse()
 	{
 		m_EntryCount = m_Parser.Get<DWORD>();

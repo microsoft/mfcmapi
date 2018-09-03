@@ -5,9 +5,6 @@ namespace smartview
 {
 	class XID : public SmartViewParser
 	{
-	public:
-		XID();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

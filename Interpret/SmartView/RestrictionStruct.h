@@ -113,8 +113,6 @@ namespace smartview
 	class RestrictionStruct : public SmartViewParser
 	{
 	public:
-		RestrictionStruct();
-
 		void Init(bool bRuleCondition, bool bExtended);
 
 	private:

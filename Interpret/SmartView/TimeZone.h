@@ -24,9 +24,6 @@ namespace smartview
 	//   describing the names 'daylight' and 'standard' time are omitted.
 	class TimeZone : public SmartViewParser
 	{
-	public:
-		TimeZone();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

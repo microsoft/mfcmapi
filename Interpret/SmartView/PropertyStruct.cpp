@@ -5,8 +5,6 @@
 
 namespace smartview
 {
-	PropertyStruct::PropertyStruct() {}
-
 	void PropertyStruct::Parse()
 	{
 		// For consistancy with previous parsings, we'll refuse to parse if asked to parse more than _MaxEntriesSmall

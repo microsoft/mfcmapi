@@ -5,8 +5,6 @@
 
 namespace smartview
 {
-	TimeZoneDefinition::TimeZoneDefinition() {}
-
 	void TimeZoneDefinition::Parse()
 	{
 		m_bMajorVersion = m_Parser.Get<BYTE>();

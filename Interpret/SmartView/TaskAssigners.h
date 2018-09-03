@@ -16,9 +16,6 @@ namespace smartview
 
 	class TaskAssigners : public SmartViewParser
 	{
-	public:
-		TaskAssigners();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

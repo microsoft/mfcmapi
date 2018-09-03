@@ -5,8 +5,6 @@
 
 namespace smartview
 {
-	PropertyDefinitionStream::PropertyDefinitionStream() {}
-
 	PackedAnsiString ReadPackedAnsiString(_In_ CBinaryParser* pParser)
 	{
 		PackedAnsiString packedAnsiString;

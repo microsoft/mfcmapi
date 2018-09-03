@@ -33,9 +33,6 @@ namespace smartview
 
 	class FolderUserFieldStream : public SmartViewParser
 	{
-	public:
-		FolderUserFieldStream();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

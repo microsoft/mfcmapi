@@ -19,9 +19,6 @@ namespace smartview
 
 	class ExtendedFlags : public SmartViewParser
 	{
-	public:
-		ExtendedFlags();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

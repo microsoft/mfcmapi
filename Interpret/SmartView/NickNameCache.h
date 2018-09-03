@@ -12,9 +12,6 @@ namespace smartview
 
 	class NickNameCache : public SmartViewParser
 	{
-	public:
-		NickNameCache();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

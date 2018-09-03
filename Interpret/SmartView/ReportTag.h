@@ -6,9 +6,6 @@ namespace smartview
 	// [MS-OXOMSG].pdf
 	class ReportTag : public SmartViewParser
 	{
-	public:
-		ReportTag();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

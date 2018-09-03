@@ -16,9 +16,6 @@ namespace smartview
 
 	class TombStone : public SmartViewParser
 	{
-	public:
-		TombStone();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

@@ -3,8 +3,6 @@
 
 namespace smartview
 {
-	TimeZone::TimeZone() {}
-
 	void TimeZone::Parse()
 	{
 		m_lBias = m_Parser.Get<DWORD>();

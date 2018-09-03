@@ -21,8 +21,6 @@ namespace smartview
 	class RecurrencePattern : public SmartViewParser
 	{
 	public:
-		RecurrencePattern();
-
 		blockT<DWORD> m_ModifiedInstanceCount;
 
 	private:

@@ -13,9 +13,6 @@ namespace smartview
 
 	class RecipientRowStream : public SmartViewParser
 	{
-	public:
-		RecipientRowStream();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

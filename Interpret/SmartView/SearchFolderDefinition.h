@@ -14,9 +14,6 @@ namespace smartview
 
 	class SearchFolderDefinition : public SmartViewParser
 	{
-	public:
-		SearchFolderDefinition();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

@@ -4,8 +4,6 @@
 
 namespace smartview
 {
-	XID::XID() {}
-
 	void XID::Parse()
 	{
 		m_NamespaceGuid = m_Parser.Get<GUID>();

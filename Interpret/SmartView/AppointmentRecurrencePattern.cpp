@@ -7,8 +7,6 @@
 
 namespace smartview
 {
-	AppointmentRecurrencePattern::AppointmentRecurrencePattern() {}
-
 	void AppointmentRecurrencePattern::Parse()
 	{
 		m_RecurrencePattern.Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());

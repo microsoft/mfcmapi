@@ -6,8 +6,6 @@
 
 namespace smartview
 {
-	FolderUserFieldStream::FolderUserFieldStream() {}
-
 	void FolderUserFieldStream::Parse()
 	{
 		m_FolderUserFieldsAnsiCount = m_Parser.Get<DWORD>();

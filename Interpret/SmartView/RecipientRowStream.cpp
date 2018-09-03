@@ -5,8 +5,6 @@
 
 namespace smartview
 {
-	RecipientRowStream::RecipientRowStream() {}
-
 	void RecipientRowStream::Parse()
 	{
 		m_cVersion = m_Parser.Get<DWORD>();

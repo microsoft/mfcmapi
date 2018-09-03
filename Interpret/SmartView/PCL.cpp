@@ -4,8 +4,6 @@
 
 namespace smartview
 {
-	PCL::PCL() {}
-
 	void PCL::Parse()
 	{
 		// Run through the parser once to count the number of flag structs

@@ -3,8 +3,6 @@
 
 namespace smartview
 {
-	TaskAssigners::TaskAssigners() {}
-
 	void TaskAssigners::Parse()
 	{
 		m_cAssigners = m_Parser.Get<DWORD>();

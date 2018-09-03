@@ -60,9 +60,6 @@ namespace smartview
 	//   including information about exception property values.
 	class AppointmentRecurrencePattern : public SmartViewParser
 	{
-	public:
-		AppointmentRecurrencePattern();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

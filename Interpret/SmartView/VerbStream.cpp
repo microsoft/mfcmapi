@@ -5,8 +5,6 @@
 
 namespace smartview
 {
-	VerbStream::VerbStream() {}
-
 	void VerbStream::Parse()
 	{
 		m_Version = m_Parser.Get<WORD>();

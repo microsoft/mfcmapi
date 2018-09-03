@@ -5,9 +5,6 @@ namespace smartview
 {
 	class GlobalObjectId : public SmartViewParser
 	{
-	public:
-		GlobalObjectId();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

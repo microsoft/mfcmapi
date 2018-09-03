@@ -42,9 +42,6 @@ namespace smartview
 
 	class PropertyDefinitionStream : public SmartViewParser
 	{
-	public:
-		PropertyDefinitionStream();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

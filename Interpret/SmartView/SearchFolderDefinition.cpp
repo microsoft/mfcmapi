@@ -8,8 +8,6 @@
 
 namespace smartview
 {
-	SearchFolderDefinition::SearchFolderDefinition() {}
-
 	void SearchFolderDefinition::Parse()
 	{
 		m_Version = m_Parser.Get<DWORD>();

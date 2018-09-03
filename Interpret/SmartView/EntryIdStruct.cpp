@@ -8,8 +8,6 @@
 
 namespace smartview
 {
-	EntryIdStruct::EntryIdStruct() {}
-
 	void EntryIdStruct::Parse()
 	{
 		m_ObjectType = eidtUnknown;

@@ -5,8 +5,6 @@
 
 namespace smartview
 {
-	ReportTag::ReportTag() {}
-
 	void ReportTag::Parse()
 	{
 		m_Cookie = m_Parser.GetBYTES(9);

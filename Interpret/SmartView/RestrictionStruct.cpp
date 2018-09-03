@@ -8,8 +8,6 @@
 
 namespace smartview
 {
-	RestrictionStruct::RestrictionStruct() {}
-
 	void RestrictionStruct::Init(bool bRuleCondition, bool bExtended)
 	{
 		m_bRuleCondition = bRuleCondition;

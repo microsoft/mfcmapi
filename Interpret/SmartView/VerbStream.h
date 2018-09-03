@@ -34,9 +34,6 @@ namespace smartview
 
 	class VerbStream : public SmartViewParser
 	{
-	public:
-		VerbStream();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

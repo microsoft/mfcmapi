@@ -133,9 +133,6 @@ namespace smartview
 
 	class EntryIdStruct : public SmartViewParser
 	{
-	public:
-		EntryIdStruct();
-
 	private:
 		void Parse() override;
 		void ParseBlocks() override;
