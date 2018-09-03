@@ -35,7 +35,7 @@ namespace smartview
 		if (m_Parser.Empty()) return L"";
 		EnsureParsed();
 
-		auto szParsedString = data.ToString();
+		auto szParsedString = strings::trimWhitespace(data.ToString());
 
 		if (m_bEnableJunk)
 		{
