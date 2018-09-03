@@ -45,6 +45,6 @@ namespace smartview
 
 		NamedPropertyInformation m_NamedPropertyInformation;
 		RestrictionStruct m_lpRes;
-		bool m_bExtended = false;
+		bool m_bExtended{};
 	};
 }

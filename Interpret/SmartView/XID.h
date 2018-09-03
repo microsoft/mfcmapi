@@ -10,7 +10,7 @@ namespace smartview
 		void ParseBlocks() override;
 
 		blockT<GUID> m_NamespaceGuid;
-		size_t m_cbLocalId;
+		size_t m_cbLocalId{};
 		blockBytes m_LocalID;
 	};
 }

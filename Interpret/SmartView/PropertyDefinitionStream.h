@@ -36,7 +36,7 @@ namespace smartview
 		PackedAnsiString pasValidationTextANSI;
 		PackedAnsiString pasErrorANSI;
 		blockT<DWORD> dwInternalType;
-		DWORD dwSkipBlockCount;
+		DWORD dwSkipBlockCount{};
 		std::vector<SkipBlock> psbSkipBlocks;
 	};
 

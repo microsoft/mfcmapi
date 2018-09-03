@@ -19,7 +19,7 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		DWORD m_cWebViews = 0;
+		DWORD m_cWebViews{};
 		std::vector<WebViewPersist> m_lpWebViews;
 	};
 }

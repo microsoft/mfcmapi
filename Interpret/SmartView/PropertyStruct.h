@@ -73,7 +73,7 @@ namespace smartview
 		blockT<WORD> PropType;
 		blockT<WORD> PropID;
 		blockT<ULONG> ulPropTag;
-		ULONG dwAlignPad;
+		ULONG dwAlignPad{};
 		PVBlock Value;
 		_Check_return_ const std::wstring PropString()
 		{
@@ -172,10 +172,10 @@ namespace smartview
 
 		// Any data we need to cache for getData can live here
 	private:
-		GUID guid;
+		GUID guid{};
 		std::wstring propString;
 		std::wstring altPropString;
-		bool propStringsGenerated = false;
+		bool propStringsGenerated{};
 	};
 
 	// TODO: This class is a row of properties - it should be named better
@@ -190,8 +190,8 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		bool m_NickName = false;
-		DWORD m_MaxEntries = _MaxEntriesSmall;
+		bool m_NickName{};
+		DWORD m_MaxEntries{_MaxEntriesSmall};
 		std::vector<SPropValueStruct> m_Props;
 
 		_Check_return_ SPropValueStruct BinToSPropValueStruct();

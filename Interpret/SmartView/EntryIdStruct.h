@@ -68,7 +68,7 @@ namespace smartview
 		blockT<BYTE> Version;
 		blockT<BYTE> Flag;
 		blockStringA DLLFileName;
-		bool bIsExchange;
+		bool bIsExchange{};
 		blockT<ULONG> WrappedFlags;
 		blockT<GUID> WrappedProviderUID;
 		blockT<ULONG> WrappedType;

@@ -124,8 +124,8 @@ namespace smartview
 
 		void ParseRestriction(_In_ SRestrictionStruct& lpRes, ULONG ulTabLevel);
 
-		bool m_bRuleCondition = false;
-		bool m_bExtended = false;
+		bool m_bRuleCondition{};
+		bool m_bExtended{};
 		SRestrictionStruct m_lpRes;
 	};
 }

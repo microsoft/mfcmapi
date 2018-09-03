@@ -14,8 +14,8 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		LPMAPIPROP m_lpMAPIProp = 0;
-		bool m_bFB = false;
+		LPMAPIPROP m_lpMAPIProp{};
+		bool m_bFB{};
 		blockBytes m_SDbin;
 	};
 }
