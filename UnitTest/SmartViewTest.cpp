@@ -31,7 +31,7 @@ namespace SmartViewTest
 		static const bool parse_all = true;
 		static const bool assert_on_failure = true;
 		static const bool limit_output = true;
-		static const bool ignore_trailing_whitespace = true;
+		static const bool ignore_trailing_whitespace = false;
 
 		// Assert::AreEqual doesn't do full logging, so we roll our own
 		void AreEqualEx(
