@@ -7,21 +7,21 @@ namespace smartview
 
 	void TaskAssigners::Parse()
 	{
-		m_cAssigners = m_Parser.GetBlock<DWORD>();
+		m_cAssigners = m_Parser.Get<DWORD>();
 
 		if (m_cAssigners && m_cAssigners < _MaxEntriesSmall)
 		{
 			for (DWORD i = 0; i < m_cAssigners; i++)
 			{
 				TaskAssigner taskAssigner;
-				taskAssigner.cbAssigner = m_Parser.GetBlock<DWORD>();
+				taskAssigner.cbAssigner = m_Parser.Get<DWORD>();
 				const auto ulSize = min(taskAssigner.cbAssigner, (ULONG) m_Parser.RemainingBytes());
 				CBinaryParser AssignerParser(ulSize, m_Parser.GetCurrentAddress());
-				taskAssigner.cbEntryID = AssignerParser.GetBlock<DWORD>();
-				taskAssigner.lpEntryID = AssignerParser.GetBlockBYTES(taskAssigner.cbEntryID, _MaxEID);
-				taskAssigner.szDisplayName = AssignerParser.GetBlockStringA();
-				taskAssigner.wzDisplayName = AssignerParser.GetBlockStringW();
-				taskAssigner.JunkData = AssignerParser.GetBlockRemainingData();
+				taskAssigner.cbEntryID = AssignerParser.Get<DWORD>();
+				taskAssigner.lpEntryID = AssignerParser.GetBYTES(taskAssigner.cbEntryID, _MaxEID);
+				taskAssigner.szDisplayName = AssignerParser.GetStringA();
+				taskAssigner.wzDisplayName = AssignerParser.GetStringW();
+				taskAssigner.JunkData = AssignerParser.GetRemainingData();
 
 				m_Parser.Advance(ulSize);
 				m_lpTaskAssigners.push_back(taskAssigner);

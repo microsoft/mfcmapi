@@ -8,17 +8,17 @@ namespace smartview
 
 	void NickNameCache::Parse()
 	{
-		m_Metadata1 = m_Parser.GetBlockBYTES(4);
-		m_ulMajorVersion = m_Parser.GetBlock<DWORD>();
-		m_ulMinorVersion = m_Parser.GetBlock<DWORD>();
-		m_cRowCount = m_Parser.GetBlock<DWORD>();
+		m_Metadata1 = m_Parser.GetBYTES(4);
+		m_ulMajorVersion = m_Parser.Get<DWORD>();
+		m_ulMinorVersion = m_Parser.Get<DWORD>();
+		m_cRowCount = m_Parser.Get<DWORD>();
 
 		if (m_cRowCount && m_cRowCount < _MaxEntriesEnormous)
 		{
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
 				auto row = SRowStruct{};
-				row.cValues = m_Parser.GetBlock<DWORD>();
+				row.cValues = m_Parser.Get<DWORD>();
 
 				if (row.cValues && row.cValues < _MaxEntriesSmall)
 				{
@@ -34,9 +34,9 @@ namespace smartview
 			}
 		}
 
-		m_cbEI = m_Parser.GetBlock<DWORD>();
-		m_lpbEI = m_Parser.GetBlockBYTES(m_cbEI, _MaxBytes);
-		m_Metadata2 = m_Parser.GetBlockBYTES(8);
+		m_cbEI = m_Parser.Get<DWORD>();
+		m_lpbEI = m_Parser.GetBYTES(m_cbEI, _MaxBytes);
+		m_Metadata2 = m_Parser.GetBYTES(8);
 	}
 
 	void NickNameCache::ParseBlocks()

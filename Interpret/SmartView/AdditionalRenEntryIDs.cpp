@@ -15,8 +15,8 @@ namespace smartview
 		for (;;)
 		{
 			if (m_Parser.RemainingBytes() < 2 * sizeof(WORD)) break;
-			const auto wPersistID = m_Parser.GetBlock<WORD>();
-			const auto wDataElementSize = m_Parser.GetBlock<WORD>();
+			const auto wPersistID = m_Parser.Get<WORD>();
+			const auto wDataElementSize = m_Parser.Get<WORD>();
 			// Must have at least wDataElementSize bytes left to be a valid data element
 			if (m_Parser.RemainingBytes() < wDataElementSize) break;
 
@@ -41,8 +41,8 @@ namespace smartview
 	{
 		PersistData persistData;
 		WORD wDataElementCount = 0;
-		persistData.wPersistID = m_Parser.GetBlock<WORD>();
-		persistData.wDataElementsSize = m_Parser.GetBlock<WORD>();
+		persistData.wPersistID = m_Parser.Get<WORD>();
+		persistData.wDataElementsSize = m_Parser.Get<WORD>();
 
 		if (persistData.wPersistID != PERISIST_SENTINEL && m_Parser.RemainingBytes() >= persistData.wDataElementsSize)
 		{
@@ -52,8 +52,8 @@ namespace smartview
 			for (;;)
 			{
 				if (DataElementParser.RemainingBytes() < 2 * sizeof(WORD)) break;
-				const auto wElementID = DataElementParser.GetBlock<WORD>();
-				const auto wElementDataSize = DataElementParser.GetBlock<WORD>();
+				const auto wElementID = DataElementParser.Get<WORD>();
+				const auto wElementDataSize = DataElementParser.Get<WORD>();
 				// Must have at least wElementDataSize bytes left to be a valid element data
 				if (DataElementParser.RemainingBytes() < wElementDataSize) break;
 
@@ -68,11 +68,11 @@ namespace smartview
 			for (WORD iDataElement = 0; iDataElement < wDataElementCount; iDataElement++)
 			{
 				PersistElement persistElement;
-				persistElement.wElementID = m_Parser.GetBlock<WORD>();
-				persistElement.wElementDataSize = m_Parser.GetBlock<WORD>();
+				persistElement.wElementID = m_Parser.Get<WORD>();
+				persistElement.wElementDataSize = m_Parser.Get<WORD>();
 				if (persistElement.wElementID == ELEMENT_SENTINEL) break;
 				// Since this is a word, the size will never be too large
-				persistElement.lpbElementData = m_Parser.GetBlockBYTES(persistElement.wElementDataSize);
+				persistElement.lpbElementData = m_Parser.GetBYTES(persistElement.wElementDataSize);
 
 				persistData.ppeDataElement.push_back(persistElement);
 			}
@@ -85,7 +85,7 @@ namespace smartview
 		// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
 		if (m_Parser.GetCurrentOffset() < cbRecordSize)
 		{
-			persistData.JunkData = m_Parser.GetBlockBYTES(cbRecordSize - m_Parser.GetCurrentOffset());
+			persistData.JunkData = m_Parser.GetBYTES(cbRecordSize - m_Parser.GetCurrentOffset());
 		}
 
 		return persistData;

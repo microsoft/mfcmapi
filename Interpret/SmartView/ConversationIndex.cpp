@@ -8,18 +8,18 @@ namespace smartview
 
 	void ConversationIndex::Parse()
 	{
-		m_UnnamedByte = m_Parser.GetBlock<BYTE>();
-		auto h1 = m_Parser.GetBlock<BYTE>();
-		auto h2 = m_Parser.GetBlock<BYTE>();
-		auto h3 = m_Parser.GetBlock<BYTE>();
+		m_UnnamedByte = m_Parser.Get<BYTE>();
+		auto h1 = m_Parser.Get<BYTE>();
+		auto h2 = m_Parser.Get<BYTE>();
+		auto h3 = m_Parser.Get<BYTE>();
 
 		// Encoding of the file time drops the high byte, which is always 1
 		// So we add it back to get a time which makes more sense
 		auto ft = FILETIME{};
 		ft.dwHighDateTime = 1 << 24 | h1 << 16 | h2 << 8 | h3;
 
-		auto l1 = m_Parser.GetBlock<BYTE>();
-		auto l2 = m_Parser.GetBlock<BYTE>();
+		auto l1 = m_Parser.Get<BYTE>();
+		auto l2 = m_Parser.Get<BYTE>();
 		ft.dwLowDateTime = l1 << 24 | l2 << 16;
 
 		m_ftCurrent.setOffset(h1.getOffset());
@@ -27,25 +27,25 @@ namespace smartview
 		m_ftCurrent.setData(ft);
 
 		auto guid = GUID{};
-		auto g1 = m_Parser.GetBlock<BYTE>();
-		auto g2 = m_Parser.GetBlock<BYTE>();
-		auto g3 = m_Parser.GetBlock<BYTE>();
-		auto g4 = m_Parser.GetBlock<BYTE>();
+		auto g1 = m_Parser.Get<BYTE>();
+		auto g2 = m_Parser.Get<BYTE>();
+		auto g3 = m_Parser.Get<BYTE>();
+		auto g4 = m_Parser.Get<BYTE>();
 		guid.Data1 = g1 << 24 | g2 << 16 | g3 << 8 | g4;
 
-		auto g5 = m_Parser.GetBlock<BYTE>();
-		auto g6 = m_Parser.GetBlock<BYTE>();
+		auto g5 = m_Parser.Get<BYTE>();
+		auto g6 = m_Parser.Get<BYTE>();
 		guid.Data2 = static_cast<unsigned short>(g5 << 8 | g6);
 
-		auto g7 = m_Parser.GetBlock<BYTE>();
-		auto g8 = m_Parser.GetBlock<BYTE>();
+		auto g7 = m_Parser.Get<BYTE>();
+		auto g8 = m_Parser.Get<BYTE>();
 		guid.Data3 = static_cast<unsigned short>(g7 << 8 | g8);
 
 		auto size = g1.getSize() + g2.getSize() + g3.getSize() + g4.getSize() + g5.getSize() + g6.getSize() +
 					g7.getSize() + g8.getSize();
 		for (auto& i : guid.Data4)
 		{
-			auto d = m_Parser.GetBlock<BYTE>();
+			auto d = m_Parser.Get<BYTE>();
 			i = d;
 			size += d.getSize();
 		}
@@ -65,10 +65,10 @@ namespace smartview
 			for (ULONG i = 0; i < m_ulResponseLevels; i++)
 			{
 				ResponseLevel responseLevel{};
-				auto r1 = m_Parser.GetBlock<BYTE>();
-				auto r2 = m_Parser.GetBlock<BYTE>();
-				auto r3 = m_Parser.GetBlock<BYTE>();
-				auto r4 = m_Parser.GetBlock<BYTE>();
+				auto r1 = m_Parser.Get<BYTE>();
+				auto r2 = m_Parser.Get<BYTE>();
+				auto r3 = m_Parser.Get<BYTE>();
+				auto r4 = m_Parser.Get<BYTE>();
 				responseLevel.TimeDelta.setOffset(r1.getOffset());
 				responseLevel.TimeDelta.setSize(r1.getSize() + r2.getSize() + r3.getSize() + r4.getSize());
 				responseLevel.TimeDelta.setData(
@@ -83,7 +83,7 @@ namespace smartview
 					responseLevel.DeltaCode.setData(true);
 				}
 
-				auto r5 = m_Parser.GetBlock<BYTE>();
+				auto r5 = m_Parser.Get<BYTE>();
 				responseLevel.Random.setOffset(r5.getOffset());
 				responseLevel.Random.setSize(r5.getSize());
 				responseLevel.Random.setData(static_cast<BYTE>(r5 >> 4));

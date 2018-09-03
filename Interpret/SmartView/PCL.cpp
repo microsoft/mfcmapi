@@ -14,7 +14,7 @@ namespace smartview
 			// Must have at least 1 byte left to have another XID
 			if (m_Parser.RemainingBytes() <= sizeof(BYTE)) break;
 
-			const auto XidSize = m_Parser.GetBlock<BYTE>();
+			const auto XidSize = m_Parser.Get<BYTE>();
 			if (m_Parser.RemainingBytes() >= XidSize)
 			{
 				m_Parser.Advance(XidSize);
@@ -31,11 +31,11 @@ namespace smartview
 			for (DWORD i = 0; i < m_cXID; i++)
 			{
 				SizedXID sizedXID;
-				sizedXID.XidSize = m_Parser.GetBlock<BYTE>();
-				sizedXID.NamespaceGuid = m_Parser.GetBlock<GUID>();
+				sizedXID.XidSize = m_Parser.Get<BYTE>();
+				sizedXID.NamespaceGuid = m_Parser.Get<GUID>();
 				sizedXID.cbLocalId = sizedXID.XidSize - sizeof(GUID);
 				if (m_Parser.RemainingBytes() < sizedXID.cbLocalId) break;
-				sizedXID.LocalID = m_Parser.GetBlockBYTES(sizedXID.cbLocalId);
+				sizedXID.LocalID = m_Parser.GetBYTES(sizedXID.cbLocalId);
 				m_lpXID.push_back(sizedXID);
 			}
 		}

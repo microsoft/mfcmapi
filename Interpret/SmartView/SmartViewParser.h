@@ -27,7 +27,7 @@ namespace smartview
 		size_t GetCurrentOffset() const;
 		void EnsureParsed();
 		block getBlock() const { return data; }
-		blockBytes getJunkData() { return m_Parser.GetBlockRemainingData(); }
+		blockBytes getJunkData() { return m_Parser.GetRemainingData(); }
 		bool hasData() { return data.hasData(); }
 
 	protected:

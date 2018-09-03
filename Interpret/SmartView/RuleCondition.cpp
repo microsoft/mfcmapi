@@ -12,32 +12,32 @@ namespace smartview
 
 	void RuleCondition::Parse()
 	{
-		m_NamedPropertyInformation.NoOfNamedProps = m_Parser.GetBlock<WORD>();
+		m_NamedPropertyInformation.NoOfNamedProps = m_Parser.Get<WORD>();
 		if (m_NamedPropertyInformation.NoOfNamedProps && m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
 		{
 			{
 				for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 				{
-					auto propId = m_Parser.GetBlock<WORD>();
+					auto propId = m_Parser.Get<WORD>();
 					m_NamedPropertyInformation.PropId.push_back(propId);
 				}
 			}
 
-			m_NamedPropertyInformation.NamedPropertiesSize = m_Parser.GetBlock<DWORD>();
+			m_NamedPropertyInformation.NamedPropertiesSize = m_Parser.Get<DWORD>();
 			{
 				for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 				{
 					PropertyName propertyName;
-					propertyName.Kind = m_Parser.GetBlock<BYTE>();
-					propertyName.Guid = m_Parser.GetBlock<GUID>();
+					propertyName.Kind = m_Parser.Get<BYTE>();
+					propertyName.Guid = m_Parser.Get<GUID>();
 					if (propertyName.Kind == MNID_ID)
 					{
-						propertyName.LID = m_Parser.GetBlock<DWORD>();
+						propertyName.LID = m_Parser.Get<DWORD>();
 					}
 					else if (propertyName.Kind == MNID_STRING)
 					{
-						propertyName.NameSize = m_Parser.GetBlock<BYTE>();
-						propertyName.Name = m_Parser.GetBlockStringW(propertyName.NameSize / sizeof(WCHAR));
+						propertyName.NameSize = m_Parser.Get<BYTE>();
+						propertyName.Name = m_Parser.GetStringW(propertyName.NameSize / sizeof(WCHAR));
 					}
 
 					m_NamedPropertyInformation.PropertyName.push_back(propertyName);

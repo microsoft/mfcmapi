@@ -71,104 +71,104 @@ namespace smartview
 		const auto ulCurrOffset = m_Parser.GetCurrentOffset();
 
 		auto prop = SPropValueStruct{};
-		prop.PropType = m_Parser.GetBlock<WORD>();
-		prop.PropID = m_Parser.GetBlock<WORD>();
+		prop.PropType = m_Parser.Get<WORD>();
+		prop.PropID = m_Parser.Get<WORD>();
 
 		prop.ulPropTag = PROP_TAG(prop.PropType, prop.PropID);
 		prop.ulPropTag.setSize(prop.PropType.getSize() + prop.PropID.getSize());
 		prop.ulPropTag.setOffset(prop.PropType.getOffset());
 		prop.dwAlignPad = 0;
 
-		if (m_NickName) (void) m_Parser.GetBlock<DWORD>(); // reserved
+		if (m_NickName) (void) m_Parser.Get<DWORD>(); // reserved
 
 		switch (prop.PropType)
 		{
 		case PT_I2:
 			// TODO: Insert proper property struct parsing here
-			if (m_NickName) prop.Value.i = m_Parser.GetBlock<WORD>();
-			if (m_NickName) m_Parser.GetBlock<WORD>();
-			if (m_NickName) m_Parser.GetBlock<DWORD>();
+			if (m_NickName) prop.Value.i = m_Parser.Get<WORD>();
+			if (m_NickName) m_Parser.Get<WORD>();
+			if (m_NickName) m_Parser.Get<DWORD>();
 			break;
 		case PT_LONG:
-			prop.Value.l = m_Parser.GetBlock<DWORD>();
-			if (m_NickName) m_Parser.GetBlock<DWORD>();
+			prop.Value.l = m_Parser.Get<DWORD>();
+			if (m_NickName) m_Parser.Get<DWORD>();
 			break;
 		case PT_ERROR:
-			prop.Value.err = m_Parser.GetBlock<DWORD>();
-			if (m_NickName) m_Parser.GetBlock<DWORD>();
+			prop.Value.err = m_Parser.Get<DWORD>();
+			if (m_NickName) m_Parser.Get<DWORD>();
 			break;
 		case PT_R4:
-			prop.Value.flt = m_Parser.GetBlock<float>();
-			if (m_NickName) m_Parser.GetBlock<DWORD>();
+			prop.Value.flt = m_Parser.Get<float>();
+			if (m_NickName) m_Parser.Get<DWORD>();
 			break;
 		case PT_DOUBLE:
-			prop.Value.dbl = m_Parser.GetBlock<double>();
+			prop.Value.dbl = m_Parser.Get<double>();
 			break;
 		case PT_BOOLEAN:
-			prop.Value.b = m_Parser.GetBlock<WORD>();
-			if (m_NickName) m_Parser.GetBlock<WORD>();
-			if (m_NickName) m_Parser.GetBlock<DWORD>();
+			prop.Value.b = m_Parser.Get<WORD>();
+			if (m_NickName) m_Parser.Get<WORD>();
+			if (m_NickName) m_Parser.Get<DWORD>();
 			break;
 		case PT_I8:
-			prop.Value.li = m_Parser.GetBlock<LARGE_INTEGER>();
+			prop.Value.li = m_Parser.Get<LARGE_INTEGER>();
 			break;
 		case PT_SYSTIME:
-			prop.Value.ft.dwHighDateTime = m_Parser.GetBlock<DWORD>();
-			prop.Value.ft.dwLowDateTime = m_Parser.GetBlock<DWORD>();
+			prop.Value.ft.dwHighDateTime = m_Parser.Get<DWORD>();
+			prop.Value.ft.dwLowDateTime = m_Parser.Get<DWORD>();
 			break;
 		case PT_STRING8:
 			if (m_NickName)
 			{
-				(void) m_Parser.GetBlock<LARGE_INTEGER>(); // union
-				prop.Value.lpszA.cb = m_Parser.GetBlock<DWORD>();
+				(void) m_Parser.Get<LARGE_INTEGER>(); // union
+				prop.Value.lpszA.cb = m_Parser.Get<DWORD>();
 			}
 			else
 			{
-				prop.Value.lpszA.cb = m_Parser.GetBlock<WORD>();
+				prop.Value.lpszA.cb = m_Parser.Get<WORD>();
 			}
 
-			prop.Value.lpszA.str = m_Parser.GetBlockStringA(prop.Value.lpszA.cb);
+			prop.Value.lpszA.str = m_Parser.GetStringA(prop.Value.lpszA.cb);
 			break;
 		case PT_BINARY:
 			if (m_NickName)
 			{
-				(void) m_Parser.GetBlock<LARGE_INTEGER>(); // union
-				prop.Value.bin.cb = m_Parser.GetBlock<DWORD>();
+				(void) m_Parser.Get<LARGE_INTEGER>(); // union
+				prop.Value.bin.cb = m_Parser.Get<DWORD>();
 			}
 			else
 			{
-				prop.Value.bin.cb = m_Parser.GetBlock<WORD>();
+				prop.Value.bin.cb = m_Parser.Get<WORD>();
 			}
 
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
-			prop.Value.bin.lpb = m_Parser.GetBlockBYTES(prop.Value.bin.cb);
+			prop.Value.bin.lpb = m_Parser.GetBYTES(prop.Value.bin.cb);
 			break;
 		case PT_UNICODE:
 			if (m_NickName)
 			{
-				(void) m_Parser.GetBlock<LARGE_INTEGER>(); // union
-				prop.Value.lpszW.cb = m_Parser.GetBlock<DWORD>();
+				(void) m_Parser.Get<LARGE_INTEGER>(); // union
+				prop.Value.lpszW.cb = m_Parser.Get<DWORD>();
 			}
 			else
 			{
-				prop.Value.lpszW.cb = m_Parser.GetBlock<WORD>();
+				prop.Value.lpszW.cb = m_Parser.Get<WORD>();
 			}
 
-			prop.Value.lpszW.str = m_Parser.GetBlockStringW(prop.Value.lpszW.cb / sizeof(WCHAR));
+			prop.Value.lpszW.str = m_Parser.GetStringW(prop.Value.lpszW.cb / sizeof(WCHAR));
 			break;
 		case PT_CLSID:
-			if (m_NickName) (void) m_Parser.GetBlock<LARGE_INTEGER>(); // union
-			prop.Value.lpguid = m_Parser.GetBlock<GUID>();
+			if (m_NickName) (void) m_Parser.Get<LARGE_INTEGER>(); // union
+			prop.Value.lpguid = m_Parser.Get<GUID>();
 			break;
 		case PT_MV_STRING8:
 			if (m_NickName)
 			{
-				(void) m_Parser.GetBlock<LARGE_INTEGER>(); // union
-				prop.Value.MVszA.cValues = m_Parser.GetBlock<DWORD>();
+				(void) m_Parser.Get<LARGE_INTEGER>(); // union
+				prop.Value.MVszA.cValues = m_Parser.Get<DWORD>();
 			}
 			else
 			{
-				prop.Value.MVszA.cValues = m_Parser.GetBlock<WORD>();
+				prop.Value.MVszA.cValues = m_Parser.Get<WORD>();
 			}
 
 			if (prop.Value.MVszA.cValues)
@@ -176,19 +176,19 @@ namespace smartview
 			{
 				for (ULONG j = 0; j < prop.Value.MVszA.cValues; j++)
 				{
-					prop.Value.MVszA.lppszA.emplace_back(m_Parser.GetBlockStringA());
+					prop.Value.MVszA.lppszA.emplace_back(m_Parser.GetStringA());
 				}
 			}
 			break;
 		case PT_MV_UNICODE:
 			if (m_NickName)
 			{
-				(void) m_Parser.GetBlock<LARGE_INTEGER>(); // union
-				prop.Value.MVszW.cValues = m_Parser.GetBlock<DWORD>();
+				(void) m_Parser.Get<LARGE_INTEGER>(); // union
+				prop.Value.MVszW.cValues = m_Parser.Get<DWORD>();
 			}
 			else
 			{
-				prop.Value.MVszW.cValues = m_Parser.GetBlock<WORD>();
+				prop.Value.MVszW.cValues = m_Parser.Get<WORD>();
 			}
 
 			if (prop.Value.MVszW.cValues)
@@ -196,19 +196,19 @@ namespace smartview
 			{
 				for (ULONG j = 0; j < prop.Value.MVszW.cValues; j++)
 				{
-					prop.Value.MVszW.lppszW.emplace_back(m_Parser.GetBlockStringW());
+					prop.Value.MVszW.lppszW.emplace_back(m_Parser.GetStringW());
 				}
 			}
 			break;
 		case PT_MV_BINARY:
 			if (m_NickName)
 			{
-				(void) m_Parser.GetBlock<LARGE_INTEGER>(); // union
-				prop.Value.MVbin.cValues = m_Parser.GetBlock<DWORD>();
+				(void) m_Parser.Get<LARGE_INTEGER>(); // union
+				prop.Value.MVbin.cValues = m_Parser.Get<DWORD>();
 			}
 			else
 			{
-				prop.Value.MVbin.cValues = m_Parser.GetBlock<WORD>();
+				prop.Value.MVbin.cValues = m_Parser.Get<WORD>();
 			}
 
 			if (prop.Value.MVbin.cValues && prop.Value.MVbin.cValues < _MaxEntriesLarge)
@@ -216,9 +216,9 @@ namespace smartview
 				for (ULONG j = 0; j < prop.Value.MVbin.cValues; j++)
 				{
 					auto bin = SBinaryBlock{};
-					bin.cb = m_Parser.GetBlock<DWORD>();
+					bin.cb = m_Parser.Get<DWORD>();
 					// Note that we're not placing a restriction on how large a multivalued binary property we can parse. May need to revisit this.
-					bin.lpb = m_Parser.GetBlockBYTES(bin.cb);
+					bin.lpb = m_Parser.GetBYTES(bin.cb);
 					prop.Value.MVbin.lpbin.push_back(bin);
 				}
 			}

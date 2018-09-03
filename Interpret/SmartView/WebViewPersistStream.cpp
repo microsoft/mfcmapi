@@ -15,7 +15,7 @@ namespace smartview
 			// Must have at least 2 bytes left to have another struct
 			if (m_Parser.RemainingBytes() < sizeof(DWORD) * 11) break;
 			m_Parser.Advance(sizeof(DWORD) * 10);
-			const auto cbData = m_Parser.GetBlock<DWORD>();
+			const auto cbData = m_Parser.Get<DWORD>();
 
 			// Must have at least cbData bytes left to be a valid flag
 			if (m_Parser.RemainingBytes() < cbData) break;
@@ -33,12 +33,12 @@ namespace smartview
 			for (ULONG i = 0; i < cWebViews; i++)
 			{
 				WebViewPersist webViewPersist;
-				webViewPersist.dwVersion = m_Parser.GetBlock<DWORD>();
-				webViewPersist.dwType = m_Parser.GetBlock<DWORD>();
-				webViewPersist.dwFlags = m_Parser.GetBlock<DWORD>();
-				webViewPersist.dwUnused = m_Parser.GetBlockBYTES(7 * sizeof(DWORD));
-				webViewPersist.cbData = m_Parser.GetBlock<DWORD>();
-				webViewPersist.lpData = m_Parser.GetBlockBYTES(webViewPersist.cbData, _MaxBytes);
+				webViewPersist.dwVersion = m_Parser.Get<DWORD>();
+				webViewPersist.dwType = m_Parser.Get<DWORD>();
+				webViewPersist.dwFlags = m_Parser.Get<DWORD>();
+				webViewPersist.dwUnused = m_Parser.GetBYTES(7 * sizeof(DWORD));
+				webViewPersist.cbData = m_Parser.Get<DWORD>();
+				webViewPersist.lpData = m_Parser.GetBYTES(webViewPersist.cbData, _MaxBytes);
 				m_lpWebViews.push_back(webViewPersist);
 			}
 		}

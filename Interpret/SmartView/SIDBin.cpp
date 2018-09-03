@@ -4,7 +4,7 @@
 
 namespace smartview
 {
-	void SIDBin::Parse() { m_SIDbin = m_Parser.GetBlockBYTES(m_Parser.RemainingBytes()); }
+	void SIDBin::Parse() { m_SIDbin = m_Parser.GetBYTES(m_Parser.RemainingBytes()); }
 
 	void SIDBin::ParseBlocks()
 	{

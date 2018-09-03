@@ -15,8 +15,8 @@ namespace smartview
 		{
 			// Must have at least 2 bytes left to have another flag
 			if (m_Parser.RemainingBytes() < 2) break;
-			(void) m_Parser.GetBlock<BYTE>();
-			const auto cbData = m_Parser.GetBlock<BYTE>();
+			(void) m_Parser.Get<BYTE>();
+			const auto cbData = m_Parser.Get<BYTE>();
 			// Must have at least cbData bytes left to be a valid flag
 			if (m_Parser.RemainingBytes() < cbData) break;
 
@@ -35,8 +35,8 @@ namespace smartview
 			{
 				ExtendedFlag extendedFlag;
 
-				extendedFlag.Id = m_Parser.GetBlock<BYTE>();
-				extendedFlag.Cb = m_Parser.GetBlock<BYTE>();
+				extendedFlag.Id = m_Parser.Get<BYTE>();
+				extendedFlag.Cb = m_Parser.Get<BYTE>();
 
 				// If the structure says there's more bytes than remaining buffer, we're done parsing.
 				if (m_Parser.RemainingBytes() < extendedFlag.Cb)
@@ -49,30 +49,30 @@ namespace smartview
 				{
 				case EFPB_FLAGS:
 					if (extendedFlag.Cb == sizeof(DWORD))
-						extendedFlag.Data.ExtendedFlags = m_Parser.GetBlock<DWORD>();
+						extendedFlag.Data.ExtendedFlags = m_Parser.Get<DWORD>();
 					else
 						bBadData = true;
 					break;
 				case EFPB_CLSIDID:
 					if (extendedFlag.Cb == sizeof(GUID))
-						extendedFlag.Data.SearchFolderID = m_Parser.GetBlock<GUID>();
+						extendedFlag.Data.SearchFolderID = m_Parser.Get<GUID>();
 					else
 						bBadData = true;
 					break;
 				case EFPB_SFTAG:
 					if (extendedFlag.Cb == sizeof(DWORD))
-						extendedFlag.Data.SearchFolderTag = m_Parser.GetBlock<DWORD>();
+						extendedFlag.Data.SearchFolderTag = m_Parser.Get<DWORD>();
 					else
 						bBadData = true;
 					break;
 				case EFPB_TODO_VERSION:
 					if (extendedFlag.Cb == sizeof(DWORD))
-						extendedFlag.Data.ToDoFolderVersion = m_Parser.GetBlock<DWORD>();
+						extendedFlag.Data.ToDoFolderVersion = m_Parser.Get<DWORD>();
 					else
 						bBadData = true;
 					break;
 				default:
-					extendedFlag.lpUnknownData = m_Parser.GetBlockBYTES(extendedFlag.Cb, _MaxBytes);
+					extendedFlag.lpUnknownData = m_Parser.GetBYTES(extendedFlag.Cb, _MaxBytes);
 					break;
 				}
 

@@ -8,8 +8,8 @@ namespace smartview
 
 	void EntryList::Parse()
 	{
-		m_EntryCount = m_Parser.GetBlock<DWORD>();
-		m_Pad = m_Parser.GetBlock<DWORD>();
+		m_EntryCount = m_Parser.Get<DWORD>();
+		m_Pad = m_Parser.Get<DWORD>();
 
 		if (m_EntryCount && m_EntryCount < _MaxEntriesLarge)
 		{
@@ -17,8 +17,8 @@ namespace smartview
 				for (DWORD i = 0; i < m_EntryCount; i++)
 				{
 					EntryListEntryStruct entryListEntryStruct;
-					entryListEntryStruct.EntryLength = m_Parser.GetBlock<DWORD>();
-					entryListEntryStruct.EntryLengthPad = m_Parser.GetBlock<DWORD>();
+					entryListEntryStruct.EntryLength = m_Parser.Get<DWORD>();
+					entryListEntryStruct.EntryLengthPad = m_Parser.Get<DWORD>();
 					m_Entry.push_back(entryListEntryStruct);
 				}
 
