@@ -79,7 +79,7 @@ namespace smartview
 					for (;;)
 					{
 						dwSkipBlockCount++;
-						const auto dwBlock = m_Parser.Get<DWORD>();
+						const auto dwBlock = m_Parser.GetBlock<DWORD>();
 						if (!dwBlock) break; // we hit the last, zero byte block, or the end of the buffer
 						m_Parser.Advance(dwBlock);
 					}

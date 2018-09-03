@@ -15,8 +15,8 @@ namespace smartview
 		{
 			// Must have at least 2 bytes left to have another flag
 			if (m_Parser.RemainingBytes() < 2) break;
-			(void) m_Parser.Get<BYTE>();
-			const auto cbData = m_Parser.Get<BYTE>();
+			(void) m_Parser.GetBlock<BYTE>();
+			const auto cbData = m_Parser.GetBlock<BYTE>();
 			// Must have at least cbData bytes left to be a valid flag
 			if (m_Parser.RemainingBytes() < cbData) break;
 

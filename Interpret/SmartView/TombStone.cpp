@@ -21,10 +21,10 @@ namespace smartview
 		{
 			// Must have at least 2 bytes left to have another flag
 			if (m_Parser.RemainingBytes() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
-			(void) m_Parser.Get<DWORD>();
-			(void) m_Parser.Get<DWORD>();
-			m_Parser.Advance(m_Parser.Get<DWORD>());
-			m_Parser.Advance(m_Parser.Get<WORD>());
+			(void) m_Parser.GetBlock<DWORD>();
+			(void) m_Parser.GetBlock<DWORD>();
+			m_Parser.Advance(m_Parser.GetBlock<DWORD>());
+			m_Parser.Advance(m_Parser.GetBlock<WORD>());
 			m_ActualRecordsCount++;
 		}
 

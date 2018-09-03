@@ -113,8 +113,8 @@ namespace smartview
 			prop.Value.li = m_Parser.GetBlock<LARGE_INTEGER>();
 			break;
 		case PT_SYSTIME:
-			prop.Value.ft.dwHighDateTime = m_Parser.Get<DWORD>();
-			prop.Value.ft.dwLowDateTime = m_Parser.Get<DWORD>();
+			prop.Value.ft.dwHighDateTime = m_Parser.GetBlock<DWORD>();
+			prop.Value.ft.dwLowDateTime = m_Parser.GetBlock<DWORD>();
 			break;
 		case PT_STRING8:
 			if (m_NickName)

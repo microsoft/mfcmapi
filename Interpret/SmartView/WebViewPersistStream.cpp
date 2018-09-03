@@ -15,7 +15,7 @@ namespace smartview
 			// Must have at least 2 bytes left to have another struct
 			if (m_Parser.RemainingBytes() < sizeof(DWORD) * 11) break;
 			m_Parser.Advance(sizeof(DWORD) * 10);
-			const auto cbData = m_Parser.Get<DWORD>();
+			const auto cbData = m_Parser.GetBlock<DWORD>();
 
 			// Must have at least cbData bytes left to be a valid flag
 			if (m_Parser.RemainingBytes() < cbData) break;

@@ -14,7 +14,7 @@ namespace smartview
 			// Must have at least 1 byte left to have another XID
 			if (m_Parser.RemainingBytes() <= sizeof(BYTE)) break;
 
-			const auto XidSize = m_Parser.Get<BYTE>();
+			const auto XidSize = m_Parser.GetBlock<BYTE>();
 			if (m_Parser.RemainingBytes() >= XidSize)
 			{
 				m_Parser.Advance(XidSize);
