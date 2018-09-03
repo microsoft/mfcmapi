@@ -32,8 +32,6 @@ namespace smartview
 
 	protected:
 		_Check_return_ std::wstring JunkDataToString(const std::vector<BYTE>& lpJunkData) const;
-		_Check_return_ std::wstring
-		JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const;
 
 		CBinaryParser m_Parser;
 

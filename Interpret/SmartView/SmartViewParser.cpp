@@ -37,11 +37,6 @@ namespace smartview
 
 		auto szParsedString = strings::trimWhitespace(data.ToString());
 
-		if (m_bEnableJunk)
-		{
-			szParsedString += JunkDataToString(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
-		}
-
 		// If we built a string with embedded nulls in it, replace them with dots.
 		std::replace_if(
 			szParsedString.begin(), szParsedString.end(), [](const WCHAR& chr) { return chr == L'\0'; }, L'.');
@@ -59,20 +54,6 @@ namespace smartview
 			static_cast<UINT>(lpJunkData.size()));
 		auto szJunk = strings::formatmessage(IDS_JUNKDATASIZE, lpJunkData.size());
 		szJunk += strings::BinToHexString(lpJunkData, true);
-		return szJunk;
-	}
-
-	_Check_return_ std::wstring
-	SmartViewParser::JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const
-	{
-		if (!cbJunkData || !lpJunkData) return L"";
-		output::DebugPrint(
-			DBGSmartView,
-			L"Had 0x%08X = %u bytes left over.\n",
-			static_cast<int>(cbJunkData),
-			static_cast<UINT>(cbJunkData));
-		auto szJunk = strings::formatmessage(IDS_JUNKDATASIZE, cbJunkData);
-		szJunk += strings::BinToHexString(lpJunkData, static_cast<ULONG>(cbJunkData), true);
 		return szJunk;
 	}
 }
