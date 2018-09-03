@@ -1651,13 +1651,6 @@ IDS_FLAGS_PREFIX "Flags: "
 
 IDS_JUNKDATASIZE "\r\nUnparsed data size = 0x%1!08X!\r\n"
 
-IDS_PROPERTYDATAHEADER "Property[%1!d!]\r\n\
-Property = 0x%2!08X!"
-IDS_PROPERTYDATA "PropString = %1!ws! AltPropString = %2!ws!"
-IDS_PROPERTYDATASMARTVIEW "Smart View: %1!ws!"
-IDS_PROPERTYDATANAME "Name: %1!ws!"
-IDS_PROPERTYDATAPARTIALMATCHES "Other Matches: %1!ws!"
-
 IDS_MVROWBIN "Row %1!d!\r\n"
 IDS_MVROWLONG "Row %1!d!: %2!ws!"
 IDS_OPENBODY "Body: Open to view"
