@@ -13,12 +13,9 @@ namespace smartview
 		m_NamedPropertyInformation.NoOfNamedProps = m_Parser.Get<WORD>();
 		if (m_NamedPropertyInformation.NoOfNamedProps && m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
 		{
+			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
-				for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
-				{
-					auto propId = m_Parser.Get<WORD>();
-					m_NamedPropertyInformation.PropId.push_back(propId);
-				}
+				m_NamedPropertyInformation.PropId.push_back(m_Parser.Get<WORD>());
 			}
 
 			m_NamedPropertyInformation.NamedPropertiesSize = m_Parser.Get<DWORD>();
@@ -52,23 +49,13 @@ namespace smartview
 
 	void RuleCondition::ParseBlocks()
 	{
-		if (m_bExtended)
-		{
-			addHeader(L"Extended Rule Condition\r\n");
-			addBlock(
-				m_NamedPropertyInformation.NoOfNamedProps,
-				L"Number of named props = 0x%1!04X!",
-				m_NamedPropertyInformation.NoOfNamedProps.getData());
-		}
-		else
-		{
-			addHeader(L"Rule Condition\r\n");
-			addBlock(
-				m_NamedPropertyInformation.NoOfNamedProps,
-				L"Number of named props = 0x%1!04X!",
-				m_NamedPropertyInformation.NoOfNamedProps.getData());
-		}
+		addHeader(m_bExtended ? L"Extended Rule Condition" : L"Rule Condition");
 
+		addLine();
+		addBlock(
+			m_NamedPropertyInformation.NoOfNamedProps,
+			L"Number of named props = 0x%1!04X!",
+			m_NamedPropertyInformation.NoOfNamedProps.getData());
 		addLine();
 		if (m_NamedPropertyInformation.PropId.size())
 		{
@@ -96,9 +83,9 @@ namespace smartview
 					L"\tGuid = %1!ws!",
 					guid::GUIDToString(m_NamedPropertyInformation.PropertyName[i].Guid).c_str());
 
+				addLine();
 				if (m_NamedPropertyInformation.PropertyName[i].Kind == MNID_ID)
 				{
-					addLine();
 					addBlock(
 						m_NamedPropertyInformation.PropertyName[i].LID,
 						L"\tLID = 0x%1!08X!",
@@ -106,7 +93,6 @@ namespace smartview
 				}
 				else if (m_NamedPropertyInformation.PropertyName[i].Kind == MNID_STRING)
 				{
-					addLine();
 					addBlock(
 						m_NamedPropertyInformation.PropertyName[i].NameSize,
 						L"\tNameSize = 0x%1!02X!",
