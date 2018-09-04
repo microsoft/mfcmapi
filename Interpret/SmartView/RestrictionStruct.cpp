@@ -183,7 +183,6 @@ namespace smartview
 		// There may be restrictions with over 100 nested levels, but we're not going to try to parse them
 #define _MaxRestrictionNesting 100
 
-	// TODO: add const to parameter
 	void RestrictionStruct::ParseRestriction(_In_ const SRestrictionStruct& lpRes, ULONG ulTabLevel)
 	{
 		if (ulTabLevel > _MaxRestrictionNesting)
