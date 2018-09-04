@@ -115,17 +115,26 @@ namespace smartview
 			prop.Value.ft.dwLowDateTime = m_Parser.Get<DWORD>();
 			break;
 		case PT_STRING8:
-			if (m_NickName)
+			if (m_RuleCondition)
 			{
-				(void) m_Parser.Get<LARGE_INTEGER>(); // union
-				prop.Value.lpszA.cb = m_Parser.Get<DWORD>();
+				prop.Value.lpszA.str = m_Parser.GetStringA();
+				prop.Value.lpszA.cb = prop.Value.lpszA.str.length();
 			}
 			else
 			{
-				prop.Value.lpszA.cb = m_Parser.Get<WORD>();
+				if (m_NickName)
+				{
+					(void) m_Parser.Get<LARGE_INTEGER>(); // union
+					prop.Value.lpszA.cb = m_Parser.Get<DWORD>();
+				}
+				else
+				{
+					prop.Value.lpszA.cb = m_Parser.Get<WORD>();
+				}
+
+				prop.Value.lpszA.str = m_Parser.GetStringA(prop.Value.lpszA.cb);
 			}
 
-			prop.Value.lpszA.str = m_Parser.GetStringA(prop.Value.lpszA.cb);
 			break;
 		case PT_BINARY:
 			if (m_NickName)
@@ -142,17 +151,25 @@ namespace smartview
 			prop.Value.bin.lpb = m_Parser.GetBYTES(prop.Value.bin.cb);
 			break;
 		case PT_UNICODE:
-			if (m_NickName)
+			if (m_RuleCondition)
 			{
-				(void) m_Parser.Get<LARGE_INTEGER>(); // union
-				prop.Value.lpszW.cb = m_Parser.Get<DWORD>();
+				prop.Value.lpszW.str = m_Parser.GetStringW();
+				prop.Value.lpszW.cb = prop.Value.lpszW.str.length();
 			}
 			else
 			{
-				prop.Value.lpszW.cb = m_Parser.Get<WORD>();
-			}
+				if (m_NickName)
+				{
+					(void) m_Parser.Get<LARGE_INTEGER>(); // union
+					prop.Value.lpszW.cb = m_Parser.Get<DWORD>();
+				}
+				else
+				{
+					prop.Value.lpszW.cb = m_Parser.Get<WORD>();
+				}
 
-			prop.Value.lpszW.str = m_Parser.GetStringW(prop.Value.lpszW.cb / sizeof(WCHAR));
+				prop.Value.lpszW.str = m_Parser.GetStringW(prop.Value.lpszW.cb / sizeof(WCHAR));
+			}
 			break;
 		case PT_CLSID:
 			if (m_NickName) (void) m_Parser.Get<LARGE_INTEGER>(); // union

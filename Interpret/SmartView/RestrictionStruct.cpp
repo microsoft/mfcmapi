@@ -23,13 +23,14 @@ namespace smartview
 	}
 
 	// Helper function for both RestrictionStruct and RuleConditionStruct
-	// If bRuleCondition is true, parse restrictions as defined in [MS-OXCDATA] 2.13
+	// If bRuleCondition is true, parse restrictions as defined in [MS-OXCDATA] 2.12
 	// If bRuleCondition is true, bExtendedCount controls whether the count fields in AND/OR restrictions is 16 or 32 bits
 	//   https://msdn.microsoft.com/en-us/library/ee201126(v=exchg.80).aspx
 	// If bRuleCondition is false, parse restrictions as defined in [MS-OXOCFG] 2.2.6.1.2
 	// If bRuleCondition is false, ignore bExtendedCount (assumes true)
 	//   https://msdn.microsoft.com/en-us/library/ee217813(v=exchg.80).aspx
 	// Never fails, but will not parse restrictions above _MaxDepth
+	// [MS-OXCDATA] 2.11.4 TaggedPropertyValue Structure
 	SRestrictionStruct RestrictionStruct::BinToRestriction(ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
 	{
 		auto srRestriction = SRestrictionStruct{};
@@ -166,12 +167,13 @@ namespace smartview
 		return srRestriction;
 	}
 
-	PropertiesStruct RestrictionStruct::BinToProps(DWORD cValues, bool /*bRuleCondition*/)
+	PropertiesStruct RestrictionStruct::BinToProps(DWORD cValues, bool bRuleCondition)
 	{
 		auto props = PropertiesStruct{};
 		props.Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 		props.DisableJunkParsing();
 		props.SetMaxEntries(cValues);
+		if (bRuleCondition) props.EnableRuleConditionParsing();
 		props.EnsureParsed();
 		m_Parser.Advance(props.GetCurrentOffset());
 

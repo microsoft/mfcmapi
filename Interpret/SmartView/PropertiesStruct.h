@@ -183,6 +183,7 @@ namespace smartview
 	public:
 		void SetMaxEntries(DWORD maxEntries) { m_MaxEntries = maxEntries; }
 		void EnableNickNameParsing() { m_NickName = true; }
+		void EnableRuleConditionParsing() { m_RuleCondition = true; }
 		_Check_return_ std::vector<SPropValueStruct> Props() { return m_Props; } // TODO: add const
 
 	private:
@@ -190,6 +191,7 @@ namespace smartview
 		void ParseBlocks() override;
 
 		bool m_NickName{};
+		bool m_RuleCondition{};
 		DWORD m_MaxEntries{_MaxEntriesSmall};
 		std::vector<SPropValueStruct> m_Props;
 
