@@ -6,7 +6,7 @@
 
 namespace sid
 {
-	_Check_return_ std::wstring GetTextualSid(_In_ PSID pSid)
+	_Check_return_ const std::wstring GetTextualSid(_In_ PSID pSid)
 	{
 		// Validate the binary SID.
 		if (!IsValidSid(pSid)) return L"";
@@ -56,7 +56,7 @@ namespace sid
 		return TextualSid;
 	}
 
-	_Check_return_ SidAccount LookupAccountSid(PSID SidStart)
+	_Check_return_ const SidAccount LookupAccountSid(PSID SidStart)
 	{
 		// TODO: Make use of SidNameUse information
 		auto cchSidName = DWORD{};
@@ -181,7 +181,7 @@ namespace sid
 		return strings::join(aceString, L"\r\n");
 	}
 
-	_Check_return_ SecurityDescriptor SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype)
+	_Check_return_ const SecurityDescriptor SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype)
 	{
 		if (!lpBuf) return {};
 
