@@ -119,8 +119,8 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		SRestrictionStruct BinToRestriction(ULONG ulDepth, bool bRuleCondition, bool bExtendedCount);
-		PropertiesStruct BinToProps(DWORD cValues, bool bRuleCondition);
+		const SRestrictionStruct BinToRestriction(ULONG ulDepth, bool bRuleCondition, bool bExtendedCount);
+		const PropertiesStruct BinToProps(DWORD cValues, bool bRuleCondition);
 
 		void ParseRestriction(_In_ const SRestrictionStruct& lpRes, ULONG ulTabLevel);
 

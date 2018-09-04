@@ -31,7 +31,7 @@ namespace smartview
 	//   https://msdn.microsoft.com/en-us/library/ee217813(v=exchg.80).aspx
 	// Never fails, but will not parse restrictions above _MaxDepth
 	// [MS-OXCDATA] 2.11.4 TaggedPropertyValue Structure
-	SRestrictionStruct RestrictionStruct::BinToRestriction(ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
+	const SRestrictionStruct RestrictionStruct::BinToRestriction(ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
 	{
 		auto srRestriction = SRestrictionStruct{};
 
@@ -167,7 +167,7 @@ namespace smartview
 		return srRestriction;
 	}
 
-	PropertiesStruct RestrictionStruct::BinToProps(DWORD cValues, bool bRuleCondition)
+	const PropertiesStruct RestrictionStruct::BinToProps(DWORD cValues, bool bRuleCondition)
 	{
 		auto props = PropertiesStruct{};
 		props.Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
