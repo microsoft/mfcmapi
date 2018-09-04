@@ -9,7 +9,7 @@ namespace strings
 {
 	std::wstring emptystring = L"";
 
-	std::wstring formatV(LPCWSTR szMsg, va_list argList)
+	const std::wstring formatV(LPCWSTR szMsg, va_list argList)
 	{
 		auto len = _vscwprintf(szMsg, argList);
 		if (0 != len)
@@ -35,7 +35,7 @@ namespace strings
 #endif
 
 	// Takes format strings with %x %d...
-	std::wstring format(LPCWSTR szMsg, ...)
+	const std::wstring format(LPCWSTR szMsg, ...)
 	{
 		va_list argList;
 		va_start(argList, szMsg);
@@ -51,7 +51,7 @@ namespace strings
 	// to populate an appropriate HINSTANCE
 	void setTestInstance(HINSTANCE hInstance) { g_testInstance = hInstance; }
 
-	std::wstring loadstring(DWORD dwID)
+	const std::wstring loadstring(DWORD dwID)
 	{
 		std::wstring fmtString;
 		LPWSTR buffer = nullptr;
@@ -65,7 +65,7 @@ namespace strings
 		return fmtString;
 	}
 
-	std::wstring formatmessageV(LPCWSTR szMsg, va_list argList)
+	const std::wstring formatmessageV(LPCWSTR szMsg, va_list argList)
 	{
 		LPWSTR buffer = nullptr;
 		const auto dw = FormatMessageW(
@@ -86,7 +86,7 @@ namespace strings
 		return L"";
 	}
 
-	std::wstring formatmessagesys(DWORD dwID)
+	const std::wstring formatmessagesys(DWORD dwID)
 	{
 		LPWSTR buffer = nullptr;
 		const auto dw = FormatMessageW(
@@ -108,7 +108,7 @@ namespace strings
 	}
 
 	// Takes format strings with %1 %2 %3...
-	std::wstring formatmessage(DWORD dwID, ...)
+	const std::wstring formatmessage(DWORD dwID, ...)
 	{
 		va_list argList;
 		va_start(argList, dwID);
@@ -118,7 +118,7 @@ namespace strings
 	}
 
 	// Takes format strings with %1 %2 %3...
-	std::wstring formatmessage(LPCWSTR szMsg, ...)
+	const std::wstring formatmessage(LPCWSTR szMsg, ...)
 	{
 		va_list argList;
 		va_start(argList, szMsg);
@@ -127,7 +127,7 @@ namespace strings
 		return ret;
 	}
 
-	tstring wstringTotstring(const std::wstring& src)
+	const tstring wstringTotstring(const std::wstring& src)
 	{
 #ifdef _UNICODE
 		return src;
@@ -136,9 +136,9 @@ namespace strings
 #endif
 	}
 
-	std::string wstringTostring(const std::wstring& src) { return std::string(src.begin(), src.end()); }
+	const std::string wstringTostring(const std::wstring& src) { return std::string(src.begin(), src.end()); }
 
-	std::wstring stringTowstring(const std::string& src)
+	const std::wstring stringTowstring(const std::string& src)
 	{
 		std::wstring dst;
 		dst.reserve(src.length());
@@ -150,7 +150,7 @@ namespace strings
 		return dst;
 	}
 
-	std::wstring LPCTSTRToWstring(LPCTSTR src)
+	const std::wstring LPCTSTRToWstring(LPCTSTR src)
 	{
 #ifdef UNICODE
 		return src ? src : L"";
@@ -161,7 +161,7 @@ namespace strings
 
 	// Careful calling this with string as it *will* lose embedded null
 	// use stringTowstring instead
-	std::wstring LPCSTRToWstring(LPCSTR src)
+	const std::wstring LPCSTRToWstring(LPCSTR src)
 	{
 		if (!src) return L"";
 		std::string ansi = src;

@@ -14,11 +14,14 @@ namespace sid
 	public:
 		SidAccount(){};
 		SidAccount(std::wstring _domain, std::wstring _name) : domain(_domain), name(_name){};
-		_Check_return_ std::wstring getDomain()
+		_Check_return_ const std::wstring getDomain()
 		{
 			return !domain.empty() ? domain : strings::formatmessage(IDS_NODOMAIN);
 		}
-		_Check_return_ std::wstring getName() { return !name.empty() ? name : strings::formatmessage(IDS_NONAME); }
+		_Check_return_ const std::wstring getName()
+		{
+			return !name.empty() ? name : strings::formatmessage(IDS_NONAME);
+		}
 
 	private:
 		std::wstring domain;

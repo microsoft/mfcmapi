@@ -17,22 +17,22 @@ namespace strings
 
 	extern std::wstring emptystring;
 	void setTestInstance(HINSTANCE hInstance);
-	std::wstring loadstring(DWORD dwID);
-	std::wstring formatV(LPCWSTR szMsg, va_list argList);
-	std::wstring format(LPCWSTR szMsg, ...);
+	const std::wstring loadstring(DWORD dwID);
+	const std::wstring formatV(LPCWSTR szMsg, va_list argList);
+	const std::wstring format(LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef format
 #define format(fmt, ...) (wprintf(fmt, __VA_ARGS__), format(fmt, __VA_ARGS__))
 #endif
 
-	std::wstring formatmessagesys(DWORD dwID);
-	std::wstring formatmessage(DWORD dwID, ...);
-	std::wstring formatmessage(LPCWSTR szMsg, ...);
-	tstring wstringTotstring(const std::wstring& src);
-	std::string wstringTostring(const std::wstring& src);
-	std::wstring stringTowstring(const std::string& src);
-	std::wstring LPCTSTRToWstring(LPCTSTR src);
-	std::wstring LPCSTRToWstring(LPCSTR src);
+	const std::wstring formatmessagesys(DWORD dwID);
+	const std::wstring formatmessage(DWORD dwID, ...);
+	const std::wstring formatmessage(LPCWSTR szMsg, ...);
+	const tstring wstringTotstring(const std::wstring& src);
+	const std::string wstringTostring(const std::wstring& src);
+	const std::wstring stringTowstring(const std::string& src);
+	const std::wstring LPCTSTRToWstring(LPCTSTR src);
+	const std::wstring LPCSTRToWstring(LPCSTR src);
 	LPCWSTR wstringToLPCWSTR(const std::wstring& src);
 	std::wstring wstringToLower(const std::wstring& src);
 	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters = true);

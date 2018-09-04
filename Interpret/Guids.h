@@ -3,13 +3,13 @@
 
 namespace guid
 {
-	std::wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
-	std::wstring GUIDToString(_In_ GUID guid);
-	std::wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID);
-	std::wstring GUIDToStringAndName(_In_ GUID guid);
+	const std::wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
+	const std::wstring GUIDToString(_In_ GUID guid);
+	const std::wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID);
+	const std::wstring GUIDToStringAndName(_In_ GUID guid);
 	LPCGUID GUIDNameToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped);
-	_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID);
-	_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped);
+	_Check_return_ const GUID StringToGUID(_In_ const std::wstring& szGUID);
+	_Check_return_ const GUID StringToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped);
 
 #pragma region "GUID definitions"
 	// clang-format off
