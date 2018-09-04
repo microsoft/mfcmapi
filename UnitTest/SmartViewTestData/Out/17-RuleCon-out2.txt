@@ -14,7 +14,7 @@ lpRes->res.resSub.lpRes
 			Alt: 0x1
 		lpRes->res.resComment.lpProp[0x00000001].ulPropTag = 0x00010102 (PT_BINARY): PR_EMS_TEMPLATE_BLOB: (PidTagTemplateData, PR_ACKNOWLEDGEMENT_MODE, PidTagAcknowledgementMode, PR_CERT_PROP_VERSION)
 		lpRes->res.resComment.lpProp[0x00000001].Value = cb: 83 lpb: 0000DCA740C8C042101AB4B908002B2FE18201000000010000002F6F3D6D6963726F736F66742F6F753D736F6D65626F6479656C73652F636E3D7468697369736E6F74796F752F636E3D31323334353500B084
-			Alt: ..Ü§@ÈÀB..´¹..+/á........./o=microsoft/ou=somebodyelse/cn=thisisnotyou/cn=123455.°.
+			Alt: ....@..B......+/........../o=microsoft/ou=somebodyelse/cn=thisisnotyou/cn=123455...
 		lpRes->res.resComment.lpProp[0x00000002].ulPropTag = 0x004F0001 (PT_NULL): PR_REPLY_RECIPIENT_ENTRIES: (PidTagReplyRecipientEntries, ptagReplyRecipientEntries)
 		lpRes->res.resComment.lpProp[0x00000002].Value = 
 			Alt: 
