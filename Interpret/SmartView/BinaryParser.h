@@ -142,7 +142,7 @@ namespace smartview
 		void SetCurrentOffset(size_t stOffset);
 		size_t RemainingBytes() const;
 
-		template <typename T> blockT<T> Get()
+		template <typename T> const blockT<T> Get()
 		{
 			auto ret = blockT<T>();
 			// TODO: Consider what a failure block really looks like
@@ -156,7 +156,7 @@ namespace smartview
 			return ret;
 		}
 
-		blockStringA GetStringA(size_t cchChar = -1)
+		const blockStringA GetStringA(size_t cchChar = -1)
 		{
 			auto ret = blockStringA();
 			if (cchChar == -1)
@@ -176,7 +176,7 @@ namespace smartview
 			return ret;
 		}
 
-		blockStringW GetStringW(size_t cchChar = -1)
+		const blockStringW GetStringW(size_t cchChar = -1)
 		{
 			auto ret = blockStringW();
 			if (cchChar == -1)
@@ -197,7 +197,7 @@ namespace smartview
 			return ret;
 		}
 
-		blockBytes GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1)
+		const blockBytes GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1)
 		{
 			// TODO: Should we track when the returned byte length is less than requested?
 			auto ret = blockBytes();
@@ -215,7 +215,7 @@ namespace smartview
 			return ret;
 		}
 
-		blockBytes GetRemainingData() { return GetBYTES(RemainingBytes()); }
+		const blockBytes GetRemainingData() { return GetBYTES(RemainingBytes()); }
 
 	private:
 		bool CheckRemainingBytes(size_t cbBytes) const;
