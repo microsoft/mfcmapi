@@ -8,7 +8,7 @@ namespace smartview
 	public:
 		block() : header(true), offset(0), cb(0), text(L"") {}
 		block(const std::wstring _text) : header(true), offset(0), cb(0), text(_text) {}
-		std::wstring ToString() const
+		const std::wstring ToString() const
 		{
 			std::vector<std::wstring> items;
 			items.emplace_back(text);
@@ -59,9 +59,9 @@ namespace smartview
 	public:
 		blockBytes() {}
 		void setData(const std::vector<BYTE>& data) { _data = data; }
-		std::vector<BYTE> getData() const { return _data; }
-		operator std::vector<BYTE>&() { return _data; }
-		operator std::vector<BYTE>() const { return _data; }
+		const std::vector<BYTE> getData() const { return _data; }
+		operator const std::vector<BYTE>&() { return _data; }
+		operator const std::vector<BYTE>() const { return _data; }
 		size_t size() const noexcept { return _data.size(); }
 		bool empty() const noexcept { return _data.empty(); }
 		const BYTE* data() const noexcept { return _data.data(); }
