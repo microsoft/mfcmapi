@@ -96,7 +96,7 @@ namespace smartview
 
 	LPBYTE SmartViewParser::AllocateArray(size_t cArray, size_t cbEntry) { return Allocate(cArray * cbEntry); }
 
-	_Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength)
+	_Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, bool bRuleCondition)
 	{
 		if (!dwPropCount || dwPropCount > _MaxEntriesSmall) return nullptr;
 		auto pspvProperty = reinterpret_cast<SPropValue*>(AllocateArray(dwPropCount, sizeof SPropValue));
@@ -123,8 +123,9 @@ namespace smartview
 				pspvProperty[i].Value.b = m_Parser.Get<WORD>();
 				break;
 			case PT_UNICODE:
-				if (bStringPropsExcludeLength)
+				if (bRuleCondition)
 				{
+					// In rule conditions, string props exclude length
 					pspvProperty[i].Value.lpszW = GetStringW();
 				}
 				else
@@ -134,8 +135,9 @@ namespace smartview
 				}
 				break;
 			case PT_STRING8:
-				if (bStringPropsExcludeLength)
+				if (bRuleCondition)
 				{
+					// In rule conditions, string props exclude length
 					pspvProperty[i].Value.lpszA = GetStringA();
 				}
 				else
@@ -149,7 +151,15 @@ namespace smartview
 				pspvProperty[i].Value.ft.dwLowDateTime = m_Parser.Get<DWORD>();
 				break;
 			case PT_BINARY:
-				pspvProperty[i].Value.bin.cb = m_Parser.Get<WORD>();
+				if (bRuleCondition)
+				{
+					pspvProperty[i].Value.bin.cb = m_Parser.Get<DWORD>();
+				}
+				else
+				{
+					pspvProperty[i].Value.bin.cb = m_Parser.Get<WORD>();
+				}
+
 				// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
 				pspvProperty[i].Value.bin.lpb = GetBYTES(pspvProperty[i].Value.bin.cb);
 				break;
@@ -189,4 +199,4 @@ namespace smartview
 
 		return pspvProperty;
 	}
-}
+} // namespace smartview
