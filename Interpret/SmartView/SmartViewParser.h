@@ -28,7 +28,7 @@ namespace smartview
 		void EnsureParsed();
 		block getBlock() const { return data; }
 		blockBytes getJunkData() { return m_Parser.GetRemainingData(); }
-		bool hasData() { return data.hasData(); }
+		bool hasData() const { return data.hasData(); }
 
 	protected:
 		_Check_return_ std::wstring JunkDataToString(const std::vector<BYTE>& lpJunkData) const;
@@ -37,12 +37,12 @@ namespace smartview
 
 		// Nu style parsing data
 		block data;
-		template <typename... Args> void addHeader(const std::wstring& text, Args... args)
+		template <typename... Args> void addHeader(const std::wstring& text, const Args... args)
 		{
 			data.addHeader(text, args...);
 		}
 		void addBlock(const block& _block, const std::wstring& text) { data.addBlock(_block, text); }
-		template <typename... Args> void addBlock(const block& _block, const std::wstring& text, Args... args)
+		template <typename... Args> void addBlock(const block& _block, const std::wstring& text, const Args... args)
 		{
 			data.addBlock(_block, text, args...);
 		}
