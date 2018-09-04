@@ -184,7 +184,7 @@ namespace smartview
 #define _MaxRestrictionNesting 100
 
 	// TODO: add const to parameter
-	void RestrictionStruct::ParseRestriction(_In_ SRestrictionStruct& lpRes, ULONG ulTabLevel)
+	void RestrictionStruct::ParseRestriction(_In_ const SRestrictionStruct& lpRes, ULONG ulTabLevel)
 	{
 		if (ulTabLevel > _MaxRestrictionNesting)
 		{

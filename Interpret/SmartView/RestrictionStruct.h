@@ -122,7 +122,7 @@ namespace smartview
 		SRestrictionStruct BinToRestriction(ULONG ulDepth, bool bRuleCondition, bool bExtendedCount);
 		PropertiesStruct BinToProps(DWORD cValues, bool bRuleCondition);
 
-		void ParseRestriction(_In_ SRestrictionStruct& lpRes, ULONG ulTabLevel);
+		void ParseRestriction(_In_ const SRestrictionStruct& lpRes, ULONG ulTabLevel);
 
 		bool m_bRuleCondition{};
 		bool m_bExtended{};
