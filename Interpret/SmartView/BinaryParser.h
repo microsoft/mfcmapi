@@ -96,7 +96,7 @@ namespace smartview
 	public:
 		blockStringA() {}
 		void setData(const std::string _data) { data = _data; }
-		std::string getData() const { return data; }
+		const std::string getData() const { return data; }
 		operator std::string&() { return data; }
 		operator std::string() const { return data; }
 		_Ret_z_ const char* c_str() const noexcept { return data.c_str(); }
@@ -112,7 +112,7 @@ namespace smartview
 	public:
 		blockStringW() {}
 		void setData(const std::wstring _data) { data = _data; }
-		std::wstring getData() const { return data; }
+		const std::wstring getData() const { return data; }
 		operator std::wstring&() { return data; }
 		operator std::wstring() const { return data; }
 		_Ret_z_ const wchar_t* c_str() const noexcept { return data.c_str(); }
