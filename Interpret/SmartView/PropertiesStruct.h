@@ -87,7 +87,7 @@ namespace smartview
 		}
 
 		// TODO: Fill in missing cases with test coverage
-		SPropValue const getData()
+		const SPropValue getData()
 		{
 			auto prop = SPropValue{};
 			prop.ulPropTag = ulPropTag;
@@ -151,7 +151,7 @@ namespace smartview
 			propStringsGenerated = true;
 		}
 
-		_Check_return_ std::wstring PropNum()
+		_Check_return_ const std::wstring PropNum() const
 		{
 			switch (PROP_TYPE(ulPropTag))
 			{
@@ -195,6 +195,6 @@ namespace smartview
 		DWORD m_MaxEntries{_MaxEntriesSmall};
 		std::vector<SPropValueStruct> m_Props;
 
-		_Check_return_ SPropValueStruct BinToSPropValueStruct();
+		_Check_return_ const SPropValueStruct BinToSPropValueStruct();
 	};
 }

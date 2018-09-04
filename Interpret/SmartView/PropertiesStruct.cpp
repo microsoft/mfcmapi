@@ -64,7 +64,7 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ SPropValueStruct PropertiesStruct::BinToSPropValueStruct()
+	_Check_return_ const SPropValueStruct PropertiesStruct::BinToSPropValueStruct()
 	{
 		const auto ulCurrOffset = m_Parser.GetCurrentOffset();
 
