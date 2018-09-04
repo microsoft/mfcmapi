@@ -524,7 +524,7 @@ namespace strings
 		return nullptr;
 	}
 
-	std::vector<std::wstring> split(const std::wstring& str, const wchar_t delim)
+	const std::vector<std::wstring> split(const std::wstring& str, const wchar_t delim)
 	{
 		auto ss = std::wstringstream(str);
 		std::wstring item;
@@ -537,7 +537,7 @@ namespace strings
 		return elems;
 	}
 
-	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim)
+	const std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim)
 	{
 		std::wstringstream ss;
 		for (size_t i = 0; i < elems.size(); ++i)
@@ -549,7 +549,7 @@ namespace strings
 		return ss.str();
 	}
 
-	std::wstring join(const std::vector<std::wstring>& elems, const wchar_t delim)
+	const std::wstring join(const std::vector<std::wstring>& elems, const wchar_t delim)
 	{
 		return join(elems, std::wstring(1, delim));
 	}

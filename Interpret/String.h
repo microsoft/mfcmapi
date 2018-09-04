@@ -62,9 +62,9 @@ namespace strings
 	const std::vector<BYTE> HexStringToBin(_In_ const std::wstring& input, size_t cbTarget = 0);
 	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin);
 
-	std::vector<std::wstring> split(const std::wstring& str, wchar_t delim);
-	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim);
-	std::wstring join(const std::vector<std::wstring>& elems, wchar_t delim);
+	const std::vector<std::wstring> split(const std::wstring& str, wchar_t delim);
+	const std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim);
+	const std::wstring join(const std::vector<std::wstring>& elems, wchar_t delim);
 
 	// Base64 functions
 	const std::vector<BYTE> Base64Decode(const std::wstring& szEncodedStr);
