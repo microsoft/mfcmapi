@@ -184,7 +184,7 @@ namespace smartview
 		void SetMaxEntries(DWORD maxEntries) { m_MaxEntries = maxEntries; }
 		void EnableNickNameParsing() { m_NickName = true; }
 		void EnableRuleConditionParsing() { m_RuleCondition = true; }
-		_Check_return_ std::vector<SPropValueStruct> Props() { return m_Props; } // TODO: add const
+		_Check_return_ std::vector<SPropValueStruct> Props() const { return m_Props; } // TODO: add const
 
 	private:
 		void Parse() override;
