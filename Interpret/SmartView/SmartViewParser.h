@@ -21,13 +21,13 @@ namespace smartview
 		virtual ~SmartViewParser() = default;
 
 		void Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin);
-		_Check_return_ std::wstring ToString();
+		_Check_return_ const std::wstring ToString();
 
 		void DisableJunkParsing();
 		size_t GetCurrentOffset() const;
 		void EnsureParsed();
-		block getBlock() const { return data; }
-		blockBytes getJunkData() { return m_Parser.GetRemainingData(); }
+		const block getBlock() const { return data; }
+		const blockBytes getJunkData() { return m_Parser.GetRemainingData(); }
 		bool hasData() const { return data.hasData(); }
 
 	protected:
