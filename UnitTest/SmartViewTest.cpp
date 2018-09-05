@@ -271,6 +271,8 @@ namespace SmartViewTest
 		{
 			test(loadTestData({
 				SmartViewTestResource{IDS_STEXTENDEDRULECONDITION, parse_all, IDR_SV7EXRULE1IN, IDR_SV7EXRULE1OUT},
+				SmartViewTestResource{IDS_STEXTENDEDRULECONDITION, parse_all, IDR_SV7EXRULE2IN, IDR_SV7EXRULE2OUT},
+				SmartViewTestResource{IDS_STEXTENDEDRULECONDITION, parse_all, IDR_SV7EXRULE3IN, IDR_SV7EXRULE3OUT},
 			}));
 		}
 

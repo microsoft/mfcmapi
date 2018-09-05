@@ -31,7 +31,7 @@ namespace smartview
 		_Check_return_ std::wstring JunkDataToString(const std::vector<BYTE>& lpJunkData) const;
 		_Check_return_ std::wstring
 		JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const;
-		_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
+		_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bRuleCondition);
 
 		// These functions return pointers to memory backed and cleaned up by SmartViewParser
 		LPBYTE GetBYTES(size_t cbBytes);
