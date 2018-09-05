@@ -325,10 +325,11 @@ namespace strings
 
 	const std::wstring indent(int iIndent) { return std::wstring(iIndent, L'\t'); }
 
+	// Find valid UTF-8 characters
 	bool InvalidCharacter(ULONG chr, bool bMultiLine)
 	{
 		// Remove high range of unprintable characters
-		if (chr >= 0x80 && chr <= 0x9F) return true;
+		if (chr >= 0x80) return true;
 		// Any printable extended ASCII character gets mapped directly
 		if (chr >= 0x20 && chr <= 0xFE)
 		{

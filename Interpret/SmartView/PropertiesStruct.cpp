@@ -140,6 +140,10 @@ namespace smartview
 			if (m_NickName)
 			{
 				(void) m_Parser.Get<LARGE_INTEGER>(); // union
+			}
+
+			if (m_RuleCondition || m_NickName)
+			{
 				prop.Value.bin.cb = m_Parser.Get<DWORD>();
 			}
 			else

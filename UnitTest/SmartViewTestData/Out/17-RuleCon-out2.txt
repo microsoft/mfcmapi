@@ -13,995 +13,995 @@ lpRes->res.resSub.lpRes
 		lpRes->res.resComment.lpProp[0x00000000].Value = 1
 			Alt: 0x1
 		lpRes->res.resComment.lpProp[0x00000001].ulPropTag = 0x00010102 (PT_BINARY): PR_EMS_TEMPLATE_BLOB: (PidTagTemplateData, PR_ACKNOWLEDGEMENT_MODE, PidTagAcknowledgementMode, PR_CERT_PROP_VERSION)
-		lpRes->res.resComment.lpProp[0x00000001].Value = cb: 83 lpb: 00000000DCA740C8C042101AB4B908002B2FE18201000000010000002F6F3D6D6963726F736F66742F6F753D736F6D65626F6479656C73652F636E3D7468697369736E6F74796F752F636E3D31323334353500
-			Alt: ....Ü§@ÈÀB..´¹..+/á........./o=microsoft/ou=somebodyelse/cn=thisisnotyou/cn=123455.
-		lpRes->res.resComment.lpProp[0x00000002].ulPropTag = 0x000184B0 (0x84b0): PR_ACKNOWLEDGEMENT_MODE: (PidTagAcknowledgementMode, PR_CERT_PROP_VERSION, PR_EMS_TEMPLATE_BLOB, PidTagTemplateData)
+		lpRes->res.resComment.lpProp[0x00000001].Value = cb: 83 lpb: 0000DCA740C8C042101AB4B908002B2FE18201000000010000002F6F3D6D6963726F736F66742F6F753D736F6D65626F6479656C73652F636E3D7468697369736E6F74796F752F636E3D31323334353500B084
+			Alt: ....@..B......+/........../o=microsoft/ou=somebodyelse/cn=thisisnotyou/cn=123455...
+		lpRes->res.resComment.lpProp[0x00000002].ulPropTag = 0x004F0001 (PT_NULL): PR_REPLY_RECIPIENT_ENTRIES: (PidTagReplyRecipientEntries, ptagReplyRecipientEntries)
 		lpRes->res.resComment.lpProp[0x00000002].Value = 
 			Alt: 
-		lpRes->res.resComment.lpProp[0x00000003].ulPropTag = 0x0054004F (0x004f): PR_REPORT_SEARCH_KEY: (PidTagReportSearchKey, ptagReportSearchKey)
+		lpRes->res.resComment.lpProp[0x00000003].ulPropTag = 0x006F0054 (0x0054)
 		lpRes->res.resComment.lpProp[0x00000003].Value = 
 			Alt: 
 		lpRes->res.resComment.lpRes
 			lpRes->rt = 0x0 = RES_AND
-			lpRes->res.resAnd.cRes = 0x0000006F
+			lpRes->res.resAnd.cRes = 0x0000006C
 			lpRes->res.resAnd.lpRes[0x00000000]
-				lpRes->rt = 0x6C = 0x6C
+				lpRes->rt = 0x73 = 0x73
 			lpRes->res.resAnd.lpRes[0x00000001]
 				lpRes->rt = 0x0 = RES_AND
-				lpRes->res.resAnd.cRes = 0x00000073
+				lpRes->res.resAnd.cRes = 0x00000020
 				lpRes->res.resAnd.lpRes[0x00000000]
-					lpRes->rt = 0x20 = 0x20
+					lpRes->rt = 0x43 = 0x43
 				lpRes->res.resAnd.lpRes[0x00000001]
 					lpRes->rt = 0x0 = RES_AND
-					lpRes->res.resAnd.cRes = 0x00000043
+					lpRes->res.resAnd.cRes = 0x00000068
 					lpRes->res.resAnd.lpRes[0x00000000]
-						lpRes->rt = 0x68 = 0x68
+						lpRes->rt = 0x65 = 0x65
 					lpRes->res.resAnd.lpRes[0x00000001]
 						lpRes->rt = 0x0 = RES_AND
-						lpRes->res.resAnd.cRes = 0x00000065
+						lpRes->res.resAnd.cRes = 0x00000063
 						lpRes->res.resAnd.lpRes[0x00000000]
-							lpRes->rt = 0x63 = 0x63
+							lpRes->rt = 0x6B = 0x6B
 						lpRes->res.resAnd.lpRes[0x00000001]
 							lpRes->rt = 0x0 = RES_AND
-							lpRes->res.resAnd.cRes = 0x0000006B
+							lpRes->res.resAnd.cRes = 0x00000069
 							lpRes->res.resAnd.lpRes[0x00000000]
-								lpRes->rt = 0x69 = 0x69
+								lpRes->rt = 0x6E = 0x6E
 							lpRes->res.resAnd.lpRes[0x00000001]
 								lpRes->rt = 0x0 = RES_AND
-								lpRes->res.resAnd.cRes = 0x0000006E
+								lpRes->res.resAnd.cRes = 0x00000073
 								lpRes->res.resAnd.lpRes[0x00000000]
-									lpRes->rt = 0x73 = 0x73
-								lpRes->res.resAnd.lpRes[0x00000001]
 									lpRes->rt = 0x0 = RES_AND
-									lpRes->res.resAnd.cRes = 0x00000000
-								lpRes->res.resAnd.lpRes[0x00000002]
-									lpRes->rt = 0x3 = RES_CONTENT
-									lpRes->res.resContent.ulFuzzyLevel = FL_IGNORECASE | 0x1380000 | FL_FULLSTRING = 0x01390000
-									lpRes->res.resContent.ulPropTag = 0x01000000 (PT_UNSPECIFIED)
-									lpRes->res.resContent.lpProp->ulPropTag = 0x01020404 (0x0404)
-									lpRes->res.resContent.lpProp->Value = 
-										Alt: 
-								lpRes->res.resAnd.lpRes[0x00000003]
-									lpRes->rt = 0xB = RES_COUNT
-									lpRes->res.resCount.ulCount = 0x0B010230
-									lpRes->res.resCount.lpRes
-										lpRes->rt = 0x30 = 0x30
-								lpRes->res.resAnd.lpRes[0x00000004]
-									lpRes->rt = 0x3A = 0x3A
-								lpRes->res.resAnd.lpRes[0x00000005]
-									lpRes->rt = 0x0 = RES_AND
-									lpRes->res.resAnd.cRes = 0x00005845
-								lpRes->res.resAnd.lpRes[0x00000006]
-									lpRes->rt = 0x3A = 0x3A
-								lpRes->res.resAnd.lpRes[0x00000007]
-									lpRes->rt = 0x2F = 0x2F
-								lpRes->res.resAnd.lpRes[0x00000008]
-									lpRes->rt = 0x4F = 0x4F
-								lpRes->res.resAnd.lpRes[0x00000009]
-									lpRes->rt = 0x3D = 0x3D
-								lpRes->res.resAnd.lpRes[0x0000000A]
-									lpRes->rt = 0x53 = 0x53
-								lpRes->res.resAnd.lpRes[0x0000000B]
-									lpRes->rt = 0x4F = 0x4F
-								lpRes->res.resAnd.lpRes[0x0000000C]
-									lpRes->rt = 0x4D = 0x4D
-								lpRes->res.resAnd.lpRes[0x0000000D]
-									lpRes->rt = 0x45 = 0x45
-								lpRes->res.resAnd.lpRes[0x0000000E]
-									lpRes->rt = 0x4F = 0x4F
-								lpRes->res.resAnd.lpRes[0x0000000F]
-									lpRes->rt = 0x4E = 0x4E
-								lpRes->res.resAnd.lpRes[0x00000010]
-									lpRes->rt = 0x45 = 0x45
-								lpRes->res.resAnd.lpRes[0x00000011]
-									lpRes->rt = 0x45 = 0x45
-								lpRes->res.resAnd.lpRes[0x00000012]
-									lpRes->rt = 0x45 = 0x45
-								lpRes->res.resAnd.lpRes[0x00000013]
-									lpRes->rt = 0x2F = 0x2F
-								lpRes->res.resAnd.lpRes[0x00000014]
-									lpRes->rt = 0x4F = 0x4F
-								lpRes->res.resAnd.lpRes[0x00000015]
-									lpRes->rt = 0x55 = 0x55
-								lpRes->res.resAnd.lpRes[0x00000016]
-									lpRes->rt = 0x3D = 0x3D
-								lpRes->res.resAnd.lpRes[0x00000017]
-									lpRes->rt = 0x53 = 0x53
-								lpRes->res.resAnd.lpRes[0x00000018]
-									lpRes->rt = 0x4F = 0x4F
-								lpRes->res.resAnd.lpRes[0x00000019]
-									lpRes->rt = 0x4D = 0x4D
-								lpRes->res.resAnd.lpRes[0x0000001A]
-									lpRes->rt = 0x45 = 0x45
-								lpRes->res.resAnd.lpRes[0x0000001B]
-									lpRes->rt = 0x42 = 0x42
-								lpRes->res.resAnd.lpRes[0x0000001C]
-									lpRes->rt = 0x4F = 0x4F
-								lpRes->res.resAnd.lpRes[0x0000001D]
-									lpRes->rt = 0x44 = 0x44
-								lpRes->res.resAnd.lpRes[0x0000001E]
-									lpRes->rt = 0x59 = 0x59
-								lpRes->res.resAnd.lpRes[0x0000001F]
-									lpRes->rt = 0x45 = 0x45
-								lpRes->res.resAnd.lpRes[0x00000020]
-									lpRes->rt = 0x4C = 0x4C
-								lpRes->res.resAnd.lpRes[0x00000021]
-									lpRes->rt = 0x53 = 0x53
-								lpRes->res.resAnd.lpRes[0x00000022]
-									lpRes->rt = 0x45 = 0x45
-								lpRes->res.resAnd.lpRes[0x00000023]
-									lpRes->rt = 0x2F = 0x2F
-								lpRes->res.resAnd.lpRes[0x00000024]
-									lpRes->rt = 0x43 = 0x43
-								lpRes->res.resAnd.lpRes[0x00000025]
-									lpRes->rt = 0x4E = 0x4E
-								lpRes->res.resAnd.lpRes[0x00000026]
-									lpRes->rt = 0x3D = 0x3D
-								lpRes->res.resAnd.lpRes[0x00000027]
-									lpRes->rt = 0x54 = 0x54
-								lpRes->res.resAnd.lpRes[0x00000028]
-									lpRes->rt = 0x48 = 0x48
-								lpRes->res.resAnd.lpRes[0x00000029]
-									lpRes->rt = 0x49 = 0x49
-								lpRes->res.resAnd.lpRes[0x0000002A]
-									lpRes->rt = 0x53 = 0x53
-								lpRes->res.resAnd.lpRes[0x0000002B]
-									lpRes->rt = 0x49 = 0x49
-								lpRes->res.resAnd.lpRes[0x0000002C]
-									lpRes->rt = 0x53 = 0x53
-								lpRes->res.resAnd.lpRes[0x0000002D]
-									lpRes->rt = 0x4E = 0x4E
-								lpRes->res.resAnd.lpRes[0x0000002E]
-									lpRes->rt = 0x4F = 0x4F
-								lpRes->res.resAnd.lpRes[0x0000002F]
-									lpRes->rt = 0x54 = 0x54
-								lpRes->res.resAnd.lpRes[0x00000030]
-									lpRes->rt = 0x59 = 0x59
-								lpRes->res.resAnd.lpRes[0x00000031]
-									lpRes->rt = 0x4F = 0x4F
-								lpRes->res.resAnd.lpRes[0x00000032]
-									lpRes->rt = 0x55 = 0x55
-								lpRes->res.resAnd.lpRes[0x00000033]
-									lpRes->rt = 0x2F = 0x2F
-								lpRes->res.resAnd.lpRes[0x00000034]
-									lpRes->rt = 0x43 = 0x43
-								lpRes->res.resAnd.lpRes[0x00000035]
-									lpRes->rt = 0x4E = 0x4E
-								lpRes->res.resAnd.lpRes[0x00000036]
-									lpRes->rt = 0x3D = 0x3D
-								lpRes->res.resAnd.lpRes[0x00000037]
-									lpRes->rt = 0x31 = 0x31
-								lpRes->res.resAnd.lpRes[0x00000038]
-									lpRes->rt = 0x32 = 0x32
-								lpRes->res.resAnd.lpRes[0x00000039]
-									lpRes->rt = 0x33 = 0x33
-								lpRes->res.resAnd.lpRes[0x0000003A]
-									lpRes->rt = 0x34 = 0x34
-								lpRes->res.resAnd.lpRes[0x0000003B]
-									lpRes->rt = 0x35 = 0x35
-								lpRes->res.resAnd.lpRes[0x0000003C]
-									lpRes->rt = 0x35 = 0x35
-								lpRes->res.resAnd.lpRes[0x0000003D]
-									lpRes->rt = 0x0 = RES_AND
-									lpRes->res.resAnd.cRes = 0x0000040A
+									lpRes->res.resAnd.cRes = 0x00000300
 									lpRes->res.resAnd.lpRes[0x00000000]
-										lpRes->rt = 0x3 = RES_CONTENT
-										lpRes->res.resContent.ulFuzzyLevel = 0x1600000 | FL_FULLSTRING = 0x01600000
-										lpRes->res.resContent.ulPropTag = 0x02000000 (PT_UNSPECIFIED)
-										lpRes->res.resContent.lpProp->ulPropTag = 0x53000101 (0x0101)
-										lpRes->res.resContent.lpProp->Value = 
-											Alt: 
+										lpRes->rt = 0x0 = RES_AND
+										lpRes->res.resAnd.cRes = 0x00003900
 									lpRes->res.resAnd.lpRes[0x00000001]
-										lpRes->rt = 0x0 = RES_AND
-										lpRes->res.resAnd.cRes = 0x00000000
-									lpRes->res.resAnd.lpRes[0x00000002]
-										lpRes->rt = 0x0 = RES_AND
-										lpRes->res.resAnd.cRes = 0x0000DC00
-									lpRes->res.resAnd.lpRes[0x00000003]
-										lpRes->rt = 0xA7 = 0xA7
-									lpRes->res.resAnd.lpRes[0x00000004]
-										lpRes->rt = 0x40 = 0x40
-									lpRes->res.resAnd.lpRes[0x00000005]
-										lpRes->rt = 0xC8 = 0xC8
-									lpRes->res.resAnd.lpRes[0x00000006]
-										lpRes->rt = 0xC0 = 0xC0
-									lpRes->res.resAnd.lpRes[0x00000007]
-										lpRes->rt = 0x42 = 0x42
-									lpRes->res.resAnd.lpRes[0x00000008]
-										lpRes->rt = 0x10 = 0x10
-									lpRes->res.resAnd.lpRes[0x00000009]
-										lpRes->rt = 0x1A = 0x1A
-									lpRes->res.resAnd.lpRes[0x0000000A]
-										lpRes->rt = 0xB4 = 0xB4
-									lpRes->res.resAnd.lpRes[0x0000000B]
-										lpRes->rt = 0xB9 = 0xB9
-									lpRes->res.resAnd.lpRes[0x0000000C]
-										lpRes->rt = 0x8 = RES_EXIST
-										lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-										lpRes->res.resExist.ulReserved1 = 0x00000000
-										lpRes->res.resExist.ulReserved2 = 0x00000000
-									lpRes->res.resAnd.lpRes[0x0000000D]
-										lpRes->rt = 0x82 = 0x82
-									lpRes->res.resAnd.lpRes[0x0000000E]
 										lpRes->rt = 0x1 = RES_OR
 										lpRes->res.resOr.cRes = 0x00000000
-									lpRes->res.resAnd.lpRes[0x0000000F]
+									lpRes->res.resAnd.lpRes[0x00000002]
 										lpRes->rt = 0x0 = RES_AND
-										lpRes->res.resAnd.cRes = 0x00000001
+										lpRes->res.resAnd.cRes = 0x00000401
 										lpRes->res.resAnd.lpRes[0x00000000]
-											lpRes->rt = 0x0 = RES_AND
-											lpRes->res.resAnd.cRes = 0x00002F00
-									lpRes->res.resAnd.lpRes[0x00000010]
-										lpRes->rt = 0x6F = 0x6F
-									lpRes->res.resAnd.lpRes[0x00000011]
-										lpRes->rt = 0x3D = 0x3D
-									lpRes->res.resAnd.lpRes[0x00000012]
-										lpRes->rt = 0x73 = 0x73
-									lpRes->res.resAnd.lpRes[0x00000013]
-										lpRes->rt = 0x6F = 0x6F
-									lpRes->res.resAnd.lpRes[0x00000014]
-										lpRes->rt = 0x6D = 0x6D
-									lpRes->res.resAnd.lpRes[0x00000015]
-										lpRes->rt = 0x65 = 0x65
-									lpRes->res.resAnd.lpRes[0x00000016]
-										lpRes->rt = 0x6F = 0x6F
-									lpRes->res.resAnd.lpRes[0x00000017]
-										lpRes->rt = 0x6E = 0x6E
-									lpRes->res.resAnd.lpRes[0x00000018]
-										lpRes->rt = 0x65 = 0x65
-									lpRes->res.resAnd.lpRes[0x00000019]
-										lpRes->rt = 0x65 = 0x65
-									lpRes->res.resAnd.lpRes[0x0000001A]
-										lpRes->rt = 0x65 = 0x65
-									lpRes->res.resAnd.lpRes[0x0000001B]
-										lpRes->rt = 0x2F = 0x2F
-									lpRes->res.resAnd.lpRes[0x0000001C]
-										lpRes->rt = 0x6F = 0x6F
-									lpRes->res.resAnd.lpRes[0x0000001D]
-										lpRes->rt = 0x75 = 0x75
-									lpRes->res.resAnd.lpRes[0x0000001E]
-										lpRes->rt = 0x3D = 0x3D
-									lpRes->res.resAnd.lpRes[0x0000001F]
-										lpRes->rt = 0x74 = 0x74
-									lpRes->res.resAnd.lpRes[0x00000020]
-										lpRes->rt = 0x68 = 0x68
-									lpRes->res.resAnd.lpRes[0x00000021]
-										lpRes->rt = 0x69 = 0x69
-									lpRes->res.resAnd.lpRes[0x00000022]
-										lpRes->rt = 0x73 = 0x73
-									lpRes->res.resAnd.lpRes[0x00000023]
-										lpRes->rt = 0x69 = 0x69
-									lpRes->res.resAnd.lpRes[0x00000024]
-										lpRes->rt = 0x73 = 0x73
-									lpRes->res.resAnd.lpRes[0x00000025]
-										lpRes->rt = 0x6E = 0x6E
-									lpRes->res.resAnd.lpRes[0x00000026]
-										lpRes->rt = 0x6F = 0x6F
-									lpRes->res.resAnd.lpRes[0x00000027]
-										lpRes->rt = 0x74 = 0x74
-									lpRes->res.resAnd.lpRes[0x00000028]
-										lpRes->rt = 0x79 = 0x79
-									lpRes->res.resAnd.lpRes[0x00000029]
-										lpRes->rt = 0x6F = 0x6F
-									lpRes->res.resAnd.lpRes[0x0000002A]
-										lpRes->rt = 0x75 = 0x75
-									lpRes->res.resAnd.lpRes[0x0000002B]
-										lpRes->rt = 0x2F = 0x2F
-									lpRes->res.resAnd.lpRes[0x0000002C]
-										lpRes->rt = 0x63 = 0x63
-									lpRes->res.resAnd.lpRes[0x0000002D]
-										lpRes->rt = 0x6E = 0x6E
-									lpRes->res.resAnd.lpRes[0x0000002E]
-										lpRes->rt = 0x3D = 0x3D
-									lpRes->res.resAnd.lpRes[0x0000002F]
-										lpRes->rt = 0x73 = 0x73
-									lpRes->res.resAnd.lpRes[0x00000030]
-										lpRes->rt = 0x6F = 0x6F
-									lpRes->res.resAnd.lpRes[0x00000031]
-										lpRes->rt = 0x6D = 0x6D
-									lpRes->res.resAnd.lpRes[0x00000032]
-										lpRes->rt = 0x65 = 0x65
-									lpRes->res.resAnd.lpRes[0x00000033]
-										lpRes->rt = 0x62 = 0x62
-									lpRes->res.resAnd.lpRes[0x00000034]
-										lpRes->rt = 0x6F = 0x6F
-									lpRes->res.resAnd.lpRes[0x00000035]
-										lpRes->rt = 0x64 = 0x64
-									lpRes->res.resAnd.lpRes[0x00000036]
-										lpRes->rt = 0x79 = 0x79
-									lpRes->res.resAnd.lpRes[0x00000037]
-										lpRes->rt = 0x65 = 0x65
-									lpRes->res.resAnd.lpRes[0x00000038]
-										lpRes->rt = 0x6C = 0x6C
-									lpRes->res.resAnd.lpRes[0x00000039]
-										lpRes->rt = 0x73 = 0x73
-									lpRes->res.resAnd.lpRes[0x0000003A]
-										lpRes->rt = 0x65 = 0x65
-									lpRes->res.resAnd.lpRes[0x0000003B]
-										lpRes->rt = 0x2F = 0x2F
-									lpRes->res.resAnd.lpRes[0x0000003C]
-										lpRes->rt = 0x63 = 0x63
-									lpRes->res.resAnd.lpRes[0x0000003D]
-										lpRes->rt = 0x6E = 0x6E
-									lpRes->res.resAnd.lpRes[0x0000003E]
-										lpRes->rt = 0x3D = 0x3D
-									lpRes->res.resAnd.lpRes[0x0000003F]
-										lpRes->rt = 0x31 = 0x31
-									lpRes->res.resAnd.lpRes[0x00000040]
-										lpRes->rt = 0x32 = 0x32
-									lpRes->res.resAnd.lpRes[0x00000041]
-										lpRes->rt = 0x33 = 0x33
-									lpRes->res.resAnd.lpRes[0x00000042]
-										lpRes->rt = 0x34 = 0x34
-									lpRes->res.resAnd.lpRes[0x00000043]
-										lpRes->rt = 0x35 = 0x35
-									lpRes->res.resAnd.lpRes[0x00000044]
-										lpRes->rt = 0x38 = 0x38
-									lpRes->res.resAnd.lpRes[0x00000045]
-										lpRes->rt = 0x0 = RES_AND
-										lpRes->res.resAnd.cRes = 0x000084B0
-									lpRes->res.resAnd.lpRes[0x00000046]
-										lpRes->rt = 0x1 = RES_OR
-										lpRes->res.resOr.cRes = 0x00004F00
-									lpRes->res.resAnd.lpRes[0x00000047]
-										lpRes->rt = 0x0 = RES_AND
-										lpRes->res.resAnd.cRes = 0x00000066
-										lpRes->res.resAnd.lpRes[0x00000000]
-											lpRes->rt = 0x66 = 0x66
+											lpRes->rt = 0x4 = RES_PROPERTY
+											lpRes->res.resProperty.relop = RELOP_GT = 0x00000002
+											lpRes->res.resProperty.ulPropTag = 0x02300B01 (0x0b01)
+											lpRes->res.resProperty.lpProp->ulPropTag = 0x3A300B01 (0x0b01): PR_ASSISTANT: (PR_ASSISTANT_A, PR_ASSISTANT_W, PidTagAssistant)
+											lpRes->res.resProperty.lpProp->Value = 
+												Alt: 
 										lpRes->res.resAnd.lpRes[0x00000001]
 											lpRes->rt = 0x0 = RES_AND
-											lpRes->res.resAnd.cRes = 0x00000069
+											lpRes->res.resAnd.cRes = 0x00005845
+										lpRes->res.resAnd.lpRes[0x00000002]
+											lpRes->rt = 0x3A = 0x3A
+										lpRes->res.resAnd.lpRes[0x00000003]
+											lpRes->rt = 0x2F = 0x2F
+										lpRes->res.resAnd.lpRes[0x00000004]
+											lpRes->rt = 0x4F = 0x4F
+										lpRes->res.resAnd.lpRes[0x00000005]
+											lpRes->rt = 0x3D = 0x3D
+										lpRes->res.resAnd.lpRes[0x00000006]
+											lpRes->rt = 0x53 = 0x53
+										lpRes->res.resAnd.lpRes[0x00000007]
+											lpRes->rt = 0x4F = 0x4F
+										lpRes->res.resAnd.lpRes[0x00000008]
+											lpRes->rt = 0x4D = 0x4D
+										lpRes->res.resAnd.lpRes[0x00000009]
+											lpRes->rt = 0x45 = 0x45
+										lpRes->res.resAnd.lpRes[0x0000000A]
+											lpRes->rt = 0x4F = 0x4F
+										lpRes->res.resAnd.lpRes[0x0000000B]
+											lpRes->rt = 0x4E = 0x4E
+										lpRes->res.resAnd.lpRes[0x0000000C]
+											lpRes->rt = 0x45 = 0x45
+										lpRes->res.resAnd.lpRes[0x0000000D]
+											lpRes->rt = 0x45 = 0x45
+										lpRes->res.resAnd.lpRes[0x0000000E]
+											lpRes->rt = 0x45 = 0x45
+										lpRes->res.resAnd.lpRes[0x0000000F]
+											lpRes->rt = 0x2F = 0x2F
+										lpRes->res.resAnd.lpRes[0x00000010]
+											lpRes->rt = 0x4F = 0x4F
+										lpRes->res.resAnd.lpRes[0x00000011]
+											lpRes->rt = 0x55 = 0x55
+										lpRes->res.resAnd.lpRes[0x00000012]
+											lpRes->rt = 0x3D = 0x3D
+										lpRes->res.resAnd.lpRes[0x00000013]
+											lpRes->rt = 0x53 = 0x53
+										lpRes->res.resAnd.lpRes[0x00000014]
+											lpRes->rt = 0x4F = 0x4F
+										lpRes->res.resAnd.lpRes[0x00000015]
+											lpRes->rt = 0x4D = 0x4D
+										lpRes->res.resAnd.lpRes[0x00000016]
+											lpRes->rt = 0x45 = 0x45
+										lpRes->res.resAnd.lpRes[0x00000017]
+											lpRes->rt = 0x42 = 0x42
+										lpRes->res.resAnd.lpRes[0x00000018]
+											lpRes->rt = 0x4F = 0x4F
+										lpRes->res.resAnd.lpRes[0x00000019]
+											lpRes->rt = 0x44 = 0x44
+										lpRes->res.resAnd.lpRes[0x0000001A]
+											lpRes->rt = 0x59 = 0x59
+										lpRes->res.resAnd.lpRes[0x0000001B]
+											lpRes->rt = 0x45 = 0x45
+										lpRes->res.resAnd.lpRes[0x0000001C]
+											lpRes->rt = 0x4C = 0x4C
+										lpRes->res.resAnd.lpRes[0x0000001D]
+											lpRes->rt = 0x53 = 0x53
+										lpRes->res.resAnd.lpRes[0x0000001E]
+											lpRes->rt = 0x45 = 0x45
+										lpRes->res.resAnd.lpRes[0x0000001F]
+											lpRes->rt = 0x2F = 0x2F
+										lpRes->res.resAnd.lpRes[0x00000020]
+											lpRes->rt = 0x43 = 0x43
+										lpRes->res.resAnd.lpRes[0x00000021]
+											lpRes->rt = 0x4E = 0x4E
+										lpRes->res.resAnd.lpRes[0x00000022]
+											lpRes->rt = 0x3D = 0x3D
+										lpRes->res.resAnd.lpRes[0x00000023]
+											lpRes->rt = 0x54 = 0x54
+										lpRes->res.resAnd.lpRes[0x00000024]
+											lpRes->rt = 0x48 = 0x48
+										lpRes->res.resAnd.lpRes[0x00000025]
+											lpRes->rt = 0x49 = 0x49
+										lpRes->res.resAnd.lpRes[0x00000026]
+											lpRes->rt = 0x53 = 0x53
+										lpRes->res.resAnd.lpRes[0x00000027]
+											lpRes->rt = 0x49 = 0x49
+										lpRes->res.resAnd.lpRes[0x00000028]
+											lpRes->rt = 0x53 = 0x53
+										lpRes->res.resAnd.lpRes[0x00000029]
+											lpRes->rt = 0x4E = 0x4E
+										lpRes->res.resAnd.lpRes[0x0000002A]
+											lpRes->rt = 0x4F = 0x4F
+										lpRes->res.resAnd.lpRes[0x0000002B]
+											lpRes->rt = 0x54 = 0x54
+										lpRes->res.resAnd.lpRes[0x0000002C]
+											lpRes->rt = 0x59 = 0x59
+										lpRes->res.resAnd.lpRes[0x0000002D]
+											lpRes->rt = 0x4F = 0x4F
+										lpRes->res.resAnd.lpRes[0x0000002E]
+											lpRes->rt = 0x55 = 0x55
+										lpRes->res.resAnd.lpRes[0x0000002F]
+											lpRes->rt = 0x2F = 0x2F
+										lpRes->res.resAnd.lpRes[0x00000030]
+											lpRes->rt = 0x43 = 0x43
+										lpRes->res.resAnd.lpRes[0x00000031]
+											lpRes->rt = 0x4E = 0x4E
+										lpRes->res.resAnd.lpRes[0x00000032]
+											lpRes->rt = 0x3D = 0x3D
+										lpRes->res.resAnd.lpRes[0x00000033]
+											lpRes->rt = 0x31 = 0x31
+										lpRes->res.resAnd.lpRes[0x00000034]
+											lpRes->rt = 0x32 = 0x32
+										lpRes->res.resAnd.lpRes[0x00000035]
+											lpRes->rt = 0x33 = 0x33
+										lpRes->res.resAnd.lpRes[0x00000036]
+											lpRes->rt = 0x34 = 0x34
+										lpRes->res.resAnd.lpRes[0x00000037]
+											lpRes->rt = 0x35 = 0x35
+										lpRes->res.resAnd.lpRes[0x00000038]
+											lpRes->rt = 0x35 = 0x35
+										lpRes->res.resAnd.lpRes[0x00000039]
+											lpRes->rt = 0x0 = RES_AND
+											lpRes->res.resAnd.cRes = 0x0000040A
 											lpRes->res.resAnd.lpRes[0x00000000]
-												lpRes->rt = 0x63 = 0x63
+												lpRes->rt = 0x3 = RES_CONTENT
+												lpRes->res.resContent.ulFuzzyLevel = 0x1600000 | FL_FULLSTRING = 0x01600000
+												lpRes->res.resContent.ulPropTag = 0x02000000 (PT_UNSPECIFIED)
+												lpRes->res.resContent.lpProp->ulPropTag = 0x53000101 (0x0101)
+												lpRes->res.resContent.lpProp->Value = 
+													Alt: 
 											lpRes->res.resAnd.lpRes[0x00000001]
 												lpRes->rt = 0x0 = RES_AND
-												lpRes->res.resAnd.cRes = 0x00000065
+												lpRes->res.resAnd.cRes = 0x00000000
+											lpRes->res.resAnd.lpRes[0x00000002]
+												lpRes->rt = 0x0 = RES_AND
+												lpRes->res.resAnd.cRes = 0x0000DC00
+											lpRes->res.resAnd.lpRes[0x00000003]
+												lpRes->rt = 0xA7 = 0xA7
+											lpRes->res.resAnd.lpRes[0x00000004]
+												lpRes->rt = 0x40 = 0x40
+											lpRes->res.resAnd.lpRes[0x00000005]
+												lpRes->rt = 0xC8 = 0xC8
+											lpRes->res.resAnd.lpRes[0x00000006]
+												lpRes->rt = 0xC0 = 0xC0
+											lpRes->res.resAnd.lpRes[0x00000007]
+												lpRes->rt = 0x42 = 0x42
+											lpRes->res.resAnd.lpRes[0x00000008]
+												lpRes->rt = 0x10 = 0x10
+											lpRes->res.resAnd.lpRes[0x00000009]
+												lpRes->rt = 0x1A = 0x1A
+											lpRes->res.resAnd.lpRes[0x0000000A]
+												lpRes->rt = 0xB4 = 0xB4
+											lpRes->res.resAnd.lpRes[0x0000000B]
+												lpRes->rt = 0xB9 = 0xB9
+											lpRes->res.resAnd.lpRes[0x0000000C]
+												lpRes->rt = 0x8 = RES_EXIST
+												lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
+												lpRes->res.resExist.ulReserved1 = 0x00000000
+												lpRes->res.resExist.ulReserved2 = 0x00000000
+											lpRes->res.resAnd.lpRes[0x0000000D]
+												lpRes->rt = 0x82 = 0x82
+											lpRes->res.resAnd.lpRes[0x0000000E]
+												lpRes->rt = 0x1 = RES_OR
+												lpRes->res.resOr.cRes = 0x00000000
+											lpRes->res.resAnd.lpRes[0x0000000F]
+												lpRes->rt = 0x0 = RES_AND
+												lpRes->res.resAnd.cRes = 0x00000001
 												lpRes->res.resAnd.lpRes[0x00000000]
-													lpRes->rt = 0x20 = 0x20
+													lpRes->rt = 0x0 = RES_AND
+													lpRes->res.resAnd.cRes = 0x00002F00
+											lpRes->res.resAnd.lpRes[0x00000010]
+												lpRes->rt = 0x6F = 0x6F
+											lpRes->res.resAnd.lpRes[0x00000011]
+												lpRes->rt = 0x3D = 0x3D
+											lpRes->res.resAnd.lpRes[0x00000012]
+												lpRes->rt = 0x73 = 0x73
+											lpRes->res.resAnd.lpRes[0x00000013]
+												lpRes->rt = 0x6F = 0x6F
+											lpRes->res.resAnd.lpRes[0x00000014]
+												lpRes->rt = 0x6D = 0x6D
+											lpRes->res.resAnd.lpRes[0x00000015]
+												lpRes->rt = 0x65 = 0x65
+											lpRes->res.resAnd.lpRes[0x00000016]
+												lpRes->rt = 0x6F = 0x6F
+											lpRes->res.resAnd.lpRes[0x00000017]
+												lpRes->rt = 0x6E = 0x6E
+											lpRes->res.resAnd.lpRes[0x00000018]
+												lpRes->rt = 0x65 = 0x65
+											lpRes->res.resAnd.lpRes[0x00000019]
+												lpRes->rt = 0x65 = 0x65
+											lpRes->res.resAnd.lpRes[0x0000001A]
+												lpRes->rt = 0x65 = 0x65
+											lpRes->res.resAnd.lpRes[0x0000001B]
+												lpRes->rt = 0x2F = 0x2F
+											lpRes->res.resAnd.lpRes[0x0000001C]
+												lpRes->rt = 0x6F = 0x6F
+											lpRes->res.resAnd.lpRes[0x0000001D]
+												lpRes->rt = 0x75 = 0x75
+											lpRes->res.resAnd.lpRes[0x0000001E]
+												lpRes->rt = 0x3D = 0x3D
+											lpRes->res.resAnd.lpRes[0x0000001F]
+												lpRes->rt = 0x74 = 0x74
+											lpRes->res.resAnd.lpRes[0x00000020]
+												lpRes->rt = 0x68 = 0x68
+											lpRes->res.resAnd.lpRes[0x00000021]
+												lpRes->rt = 0x69 = 0x69
+											lpRes->res.resAnd.lpRes[0x00000022]
+												lpRes->rt = 0x73 = 0x73
+											lpRes->res.resAnd.lpRes[0x00000023]
+												lpRes->rt = 0x69 = 0x69
+											lpRes->res.resAnd.lpRes[0x00000024]
+												lpRes->rt = 0x73 = 0x73
+											lpRes->res.resAnd.lpRes[0x00000025]
+												lpRes->rt = 0x6E = 0x6E
+											lpRes->res.resAnd.lpRes[0x00000026]
+												lpRes->rt = 0x6F = 0x6F
+											lpRes->res.resAnd.lpRes[0x00000027]
+												lpRes->rt = 0x74 = 0x74
+											lpRes->res.resAnd.lpRes[0x00000028]
+												lpRes->rt = 0x79 = 0x79
+											lpRes->res.resAnd.lpRes[0x00000029]
+												lpRes->rt = 0x6F = 0x6F
+											lpRes->res.resAnd.lpRes[0x0000002A]
+												lpRes->rt = 0x75 = 0x75
+											lpRes->res.resAnd.lpRes[0x0000002B]
+												lpRes->rt = 0x2F = 0x2F
+											lpRes->res.resAnd.lpRes[0x0000002C]
+												lpRes->rt = 0x63 = 0x63
+											lpRes->res.resAnd.lpRes[0x0000002D]
+												lpRes->rt = 0x6E = 0x6E
+											lpRes->res.resAnd.lpRes[0x0000002E]
+												lpRes->rt = 0x3D = 0x3D
+											lpRes->res.resAnd.lpRes[0x0000002F]
+												lpRes->rt = 0x73 = 0x73
+											lpRes->res.resAnd.lpRes[0x00000030]
+												lpRes->rt = 0x6F = 0x6F
+											lpRes->res.resAnd.lpRes[0x00000031]
+												lpRes->rt = 0x6D = 0x6D
+											lpRes->res.resAnd.lpRes[0x00000032]
+												lpRes->rt = 0x65 = 0x65
+											lpRes->res.resAnd.lpRes[0x00000033]
+												lpRes->rt = 0x62 = 0x62
+											lpRes->res.resAnd.lpRes[0x00000034]
+												lpRes->rt = 0x6F = 0x6F
+											lpRes->res.resAnd.lpRes[0x00000035]
+												lpRes->rt = 0x64 = 0x64
+											lpRes->res.resAnd.lpRes[0x00000036]
+												lpRes->rt = 0x79 = 0x79
+											lpRes->res.resAnd.lpRes[0x00000037]
+												lpRes->rt = 0x65 = 0x65
+											lpRes->res.resAnd.lpRes[0x00000038]
+												lpRes->rt = 0x6C = 0x6C
+											lpRes->res.resAnd.lpRes[0x00000039]
+												lpRes->rt = 0x73 = 0x73
+											lpRes->res.resAnd.lpRes[0x0000003A]
+												lpRes->rt = 0x65 = 0x65
+											lpRes->res.resAnd.lpRes[0x0000003B]
+												lpRes->rt = 0x2F = 0x2F
+											lpRes->res.resAnd.lpRes[0x0000003C]
+												lpRes->rt = 0x63 = 0x63
+											lpRes->res.resAnd.lpRes[0x0000003D]
+												lpRes->rt = 0x6E = 0x6E
+											lpRes->res.resAnd.lpRes[0x0000003E]
+												lpRes->rt = 0x3D = 0x3D
+											lpRes->res.resAnd.lpRes[0x0000003F]
+												lpRes->rt = 0x31 = 0x31
+											lpRes->res.resAnd.lpRes[0x00000040]
+												lpRes->rt = 0x32 = 0x32
+											lpRes->res.resAnd.lpRes[0x00000041]
+												lpRes->rt = 0x33 = 0x33
+											lpRes->res.resAnd.lpRes[0x00000042]
+												lpRes->rt = 0x34 = 0x34
+											lpRes->res.resAnd.lpRes[0x00000043]
+												lpRes->rt = 0x35 = 0x35
+											lpRes->res.resAnd.lpRes[0x00000044]
+												lpRes->rt = 0x38 = 0x38
+											lpRes->res.resAnd.lpRes[0x00000045]
+												lpRes->rt = 0x0 = RES_AND
+												lpRes->res.resAnd.cRes = 0x000084B0
+											lpRes->res.resAnd.lpRes[0x00000046]
+												lpRes->rt = 0x1 = RES_OR
+												lpRes->res.resOr.cRes = 0x00004F00
+											lpRes->res.resAnd.lpRes[0x00000047]
+												lpRes->rt = 0x0 = RES_AND
+												lpRes->res.resAnd.cRes = 0x00000066
+												lpRes->res.resAnd.lpRes[0x00000000]
+													lpRes->rt = 0x66 = 0x66
 												lpRes->res.resAnd.lpRes[0x00000001]
 													lpRes->rt = 0x0 = RES_AND
-													lpRes->res.resAnd.cRes = 0x00000042
+													lpRes->res.resAnd.cRes = 0x00000069
 													lpRes->res.resAnd.lpRes[0x00000000]
-														lpRes->rt = 0x75 = 0x75
+														lpRes->rt = 0x63 = 0x63
 													lpRes->res.resAnd.lpRes[0x00000001]
 														lpRes->rt = 0x0 = RES_AND
-														lpRes->res.resAnd.cRes = 0x00000069
+														lpRes->res.resAnd.cRes = 0x00000065
 														lpRes->res.resAnd.lpRes[0x00000000]
-															lpRes->rt = 0x6C = 0x6C
+															lpRes->rt = 0x20 = 0x20
 														lpRes->res.resAnd.lpRes[0x00000001]
 															lpRes->rt = 0x0 = RES_AND
-															lpRes->res.resAnd.cRes = 0x00000064
+															lpRes->res.resAnd.cRes = 0x00000042
 															lpRes->res.resAnd.lpRes[0x00000000]
-																lpRes->rt = 0x20 = 0x20
+																lpRes->rt = 0x75 = 0x75
 															lpRes->res.resAnd.lpRes[0x00000001]
 																lpRes->rt = 0x0 = RES_AND
-																lpRes->res.resAnd.cRes = 0x00000053
+																lpRes->res.resAnd.cRes = 0x00000069
 																lpRes->res.resAnd.lpRes[0x00000000]
-																	lpRes->rt = 0x74 = 0x74
+																	lpRes->rt = 0x6C = 0x6C
 																lpRes->res.resAnd.lpRes[0x00000001]
 																	lpRes->rt = 0x0 = RES_AND
-																	lpRes->res.resAnd.cRes = 0x00000061
+																	lpRes->res.resAnd.cRes = 0x00000064
 																	lpRes->res.resAnd.lpRes[0x00000000]
-																		lpRes->rt = 0x74 = 0x74
+																		lpRes->rt = 0x20 = 0x20
 																	lpRes->res.resAnd.lpRes[0x00000001]
 																		lpRes->rt = 0x0 = RES_AND
-																		lpRes->res.resAnd.cRes = 0x00000075
+																		lpRes->res.resAnd.cRes = 0x00000053
 																		lpRes->res.resAnd.lpRes[0x00000000]
-																			lpRes->rt = 0x73 = 0x73
+																			lpRes->rt = 0x74 = 0x74
 																		lpRes->res.resAnd.lpRes[0x00000001]
 																			lpRes->rt = 0x0 = RES_AND
-																			lpRes->res.resAnd.cRes = 0x00000000
-																		lpRes->res.resAnd.lpRes[0x00000002]
-																			lpRes->rt = 0x3 = RES_CONTENT
-																			lpRes->res.resContent.ulFuzzyLevel = FL_IGNORECASE | 0x1380000 | FL_FULLSTRING = 0x01390000
-																			lpRes->res.resContent.ulPropTag = 0x01000000 (PT_UNSPECIFIED)
-																			lpRes->res.resContent.lpProp->ulPropTag = 0x01020404 (0x0404)
-																			lpRes->res.resContent.lpProp->Value = 
-																				Alt: 
-																		lpRes->res.resAnd.lpRes[0x00000003]
-																			lpRes->rt = 0xB = RES_COUNT
-																			lpRes->res.resCount.ulCount = 0x0B010230
-																			lpRes->res.resCount.lpRes
-																				lpRes->rt = 0x30 = 0x30
-																		lpRes->res.resAnd.lpRes[0x00000004]
-																			lpRes->rt = 0x3A = 0x3A
-																		lpRes->res.resAnd.lpRes[0x00000005]
-																			lpRes->rt = 0x0 = RES_AND
-																			lpRes->res.resAnd.cRes = 0x00005845
-																		lpRes->res.resAnd.lpRes[0x00000006]
-																			lpRes->rt = 0x3A = 0x3A
-																		lpRes->res.resAnd.lpRes[0x00000007]
-																			lpRes->rt = 0x2F = 0x2F
-																		lpRes->res.resAnd.lpRes[0x00000008]
-																			lpRes->rt = 0x4F = 0x4F
-																		lpRes->res.resAnd.lpRes[0x00000009]
-																			lpRes->rt = 0x3D = 0x3D
-																		lpRes->res.resAnd.lpRes[0x0000000A]
-																			lpRes->rt = 0x53 = 0x53
-																		lpRes->res.resAnd.lpRes[0x0000000B]
-																			lpRes->rt = 0x4F = 0x4F
-																		lpRes->res.resAnd.lpRes[0x0000000C]
-																			lpRes->rt = 0x4D = 0x4D
-																		lpRes->res.resAnd.lpRes[0x0000000D]
-																			lpRes->rt = 0x45 = 0x45
-																		lpRes->res.resAnd.lpRes[0x0000000E]
-																			lpRes->rt = 0x42 = 0x42
-																		lpRes->res.resAnd.lpRes[0x0000000F]
-																			lpRes->rt = 0x4F = 0x4F
-																		lpRes->res.resAnd.lpRes[0x00000010]
-																			lpRes->rt = 0x44 = 0x44
-																		lpRes->res.resAnd.lpRes[0x00000011]
-																			lpRes->rt = 0x59 = 0x59
-																		lpRes->res.resAnd.lpRes[0x00000012]
-																			lpRes->rt = 0x59 = 0x59
-																		lpRes->res.resAnd.lpRes[0x00000013]
-																			lpRes->rt = 0x2F = 0x2F
-																		lpRes->res.resAnd.lpRes[0x00000014]
-																			lpRes->rt = 0x4F = 0x4F
-																		lpRes->res.resAnd.lpRes[0x00000015]
-																			lpRes->rt = 0x55 = 0x55
-																		lpRes->res.resAnd.lpRes[0x00000016]
-																			lpRes->rt = 0x3D = 0x3D
-																		lpRes->res.resAnd.lpRes[0x00000017]
-																			lpRes->rt = 0x53 = 0x53
-																		lpRes->res.resAnd.lpRes[0x00000018]
-																			lpRes->rt = 0x4F = 0x4F
-																		lpRes->res.resAnd.lpRes[0x00000019]
-																			lpRes->rt = 0x4D = 0x4D
-																		lpRes->res.resAnd.lpRes[0x0000001A]
-																			lpRes->rt = 0x45 = 0x45
-																		lpRes->res.resAnd.lpRes[0x0000001B]
-																			lpRes->rt = 0x42 = 0x42
-																		lpRes->res.resAnd.lpRes[0x0000001C]
-																			lpRes->rt = 0x4F = 0x4F
-																		lpRes->res.resAnd.lpRes[0x0000001D]
-																			lpRes->rt = 0x44 = 0x44
-																		lpRes->res.resAnd.lpRes[0x0000001E]
-																			lpRes->rt = 0x59 = 0x59
-																		lpRes->res.resAnd.lpRes[0x0000001F]
-																			lpRes->rt = 0x45 = 0x45
-																		lpRes->res.resAnd.lpRes[0x00000020]
-																			lpRes->rt = 0x4C = 0x4C
-																		lpRes->res.resAnd.lpRes[0x00000021]
-																			lpRes->rt = 0x53 = 0x53
-																		lpRes->res.resAnd.lpRes[0x00000022]
-																			lpRes->rt = 0x45 = 0x45
-																		lpRes->res.resAnd.lpRes[0x00000023]
-																			lpRes->rt = 0x2F = 0x2F
-																		lpRes->res.resAnd.lpRes[0x00000024]
-																			lpRes->rt = 0x43 = 0x43
-																		lpRes->res.resAnd.lpRes[0x00000025]
-																			lpRes->rt = 0x4E = 0x4E
-																		lpRes->res.resAnd.lpRes[0x00000026]
-																			lpRes->rt = 0x3D = 0x3D
-																		lpRes->res.resAnd.lpRes[0x00000027]
-																			lpRes->rt = 0x54 = 0x54
-																		lpRes->res.resAnd.lpRes[0x00000028]
-																			lpRes->rt = 0x48 = 0x48
-																		lpRes->res.resAnd.lpRes[0x00000029]
-																			lpRes->rt = 0x49 = 0x49
-																		lpRes->res.resAnd.lpRes[0x0000002A]
-																			lpRes->rt = 0x53 = 0x53
-																		lpRes->res.resAnd.lpRes[0x0000002B]
-																			lpRes->rt = 0x49 = 0x49
-																		lpRes->res.resAnd.lpRes[0x0000002C]
-																			lpRes->rt = 0x53 = 0x53
-																		lpRes->res.resAnd.lpRes[0x0000002D]
-																			lpRes->rt = 0x4E = 0x4E
-																		lpRes->res.resAnd.lpRes[0x0000002E]
-																			lpRes->rt = 0x4F = 0x4F
-																		lpRes->res.resAnd.lpRes[0x0000002F]
-																			lpRes->rt = 0x54 = 0x54
-																		lpRes->res.resAnd.lpRes[0x00000030]
-																			lpRes->rt = 0x59 = 0x59
-																		lpRes->res.resAnd.lpRes[0x00000031]
-																			lpRes->rt = 0x4F = 0x4F
-																		lpRes->res.resAnd.lpRes[0x00000032]
-																			lpRes->rt = 0x55 = 0x55
-																		lpRes->res.resAnd.lpRes[0x00000033]
-																			lpRes->rt = 0x2F = 0x2F
-																		lpRes->res.resAnd.lpRes[0x00000034]
-																			lpRes->rt = 0x43 = 0x43
-																		lpRes->res.resAnd.lpRes[0x00000035]
-																			lpRes->rt = 0x4E = 0x4E
-																		lpRes->res.resAnd.lpRes[0x00000036]
-																			lpRes->rt = 0x3D = 0x3D
-																		lpRes->res.resAnd.lpRes[0x00000037]
-																			lpRes->rt = 0x31 = 0x31
-																		lpRes->res.resAnd.lpRes[0x00000038]
-																			lpRes->rt = 0x32 = 0x32
-																		lpRes->res.resAnd.lpRes[0x00000039]
-																			lpRes->rt = 0x33 = 0x33
-																		lpRes->res.resAnd.lpRes[0x0000003A]
-																			lpRes->rt = 0x34 = 0x34
-																		lpRes->res.resAnd.lpRes[0x0000003B]
-																			lpRes->rt = 0x35 = 0x35
-																		lpRes->res.resAnd.lpRes[0x0000003C]
-																			lpRes->rt = 0x38 = 0x38
-																		lpRes->res.resAnd.lpRes[0x0000003D]
-																			lpRes->rt = 0x0 = RES_AND
-																			lpRes->res.resAnd.cRes = 0x0000040A
+																			lpRes->res.resAnd.cRes = 0x00000061
 																			lpRes->res.resAnd.lpRes[0x00000000]
-																				lpRes->rt = 0x3 = RES_CONTENT
-																				lpRes->res.resContent.ulFuzzyLevel = 0x1600000 | FL_FULLSTRING = 0x01600000
-																				lpRes->res.resContent.ulPropTag = 0x02000000 (PT_UNSPECIFIED)
-																				lpRes->res.resContent.lpProp->ulPropTag = 0x73000101 (0x0101)
-																				lpRes->res.resContent.lpProp->Value = 
-																					Alt: 
+																				lpRes->rt = 0x74 = 0x74
 																			lpRes->res.resAnd.lpRes[0x00000001]
 																				lpRes->rt = 0x0 = RES_AND
-																				lpRes->res.resAnd.cRes = 0x00000000
-																			lpRes->res.resAnd.lpRes[0x00000002]
-																				lpRes->rt = 0x0 = RES_AND
-																				lpRes->res.resAnd.cRes = 0x0000DC00
-																			lpRes->res.resAnd.lpRes[0x00000003]
-																				lpRes->rt = 0xA7 = 0xA7
-																			lpRes->res.resAnd.lpRes[0x00000004]
-																				lpRes->rt = 0x40 = 0x40
-																			lpRes->res.resAnd.lpRes[0x00000005]
-																				lpRes->rt = 0xC8 = 0xC8
-																			lpRes->res.resAnd.lpRes[0x00000006]
-																				lpRes->rt = 0xC0 = 0xC0
-																			lpRes->res.resAnd.lpRes[0x00000007]
-																				lpRes->rt = 0x42 = 0x42
-																			lpRes->res.resAnd.lpRes[0x00000008]
-																				lpRes->rt = 0x10 = 0x10
-																			lpRes->res.resAnd.lpRes[0x00000009]
-																				lpRes->rt = 0x1A = 0x1A
-																			lpRes->res.resAnd.lpRes[0x0000000A]
-																				lpRes->rt = 0xB4 = 0xB4
-																			lpRes->res.resAnd.lpRes[0x0000000B]
-																				lpRes->rt = 0xB9 = 0xB9
-																			lpRes->res.resAnd.lpRes[0x0000000C]
-																				lpRes->rt = 0x8 = RES_EXIST
-																				lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																				lpRes->res.resExist.ulReserved1 = 0x00000000
-																				lpRes->res.resExist.ulReserved2 = 0x00000000
-																			lpRes->res.resAnd.lpRes[0x0000000D]
-																				lpRes->rt = 0x82 = 0x82
-																			lpRes->res.resAnd.lpRes[0x0000000E]
-																				lpRes->rt = 0x1 = RES_OR
-																				lpRes->res.resOr.cRes = 0x00000000
-																			lpRes->res.resAnd.lpRes[0x0000000F]
-																				lpRes->rt = 0x0 = RES_AND
-																				lpRes->res.resAnd.cRes = 0x00000001
+																				lpRes->res.resAnd.cRes = 0x00000075
 																				lpRes->res.resAnd.lpRes[0x00000000]
-																					lpRes->rt = 0x0 = RES_AND
-																					lpRes->res.resAnd.cRes = 0x00002F00
-																			lpRes->res.resAnd.lpRes[0x00000010]
-																				lpRes->rt = 0x6F = 0x6F
-																			lpRes->res.resAnd.lpRes[0x00000011]
-																				lpRes->rt = 0x3D = 0x3D
-																			lpRes->res.resAnd.lpRes[0x00000012]
-																				lpRes->rt = 0x73 = 0x73
-																			lpRes->res.resAnd.lpRes[0x00000013]
-																				lpRes->rt = 0x6F = 0x6F
-																			lpRes->res.resAnd.lpRes[0x00000014]
-																				lpRes->rt = 0x6D = 0x6D
-																			lpRes->res.resAnd.lpRes[0x00000015]
-																				lpRes->rt = 0x65 = 0x65
-																			lpRes->res.resAnd.lpRes[0x00000016]
-																				lpRes->rt = 0x62 = 0x62
-																			lpRes->res.resAnd.lpRes[0x00000017]
-																				lpRes->rt = 0x6F = 0x6F
-																			lpRes->res.resAnd.lpRes[0x00000018]
-																				lpRes->rt = 0x64 = 0x64
-																			lpRes->res.resAnd.lpRes[0x00000019]
-																				lpRes->rt = 0x79 = 0x79
-																			lpRes->res.resAnd.lpRes[0x0000001A]
-																				lpRes->rt = 0x79 = 0x79
-																			lpRes->res.resAnd.lpRes[0x0000001B]
-																				lpRes->rt = 0x2F = 0x2F
-																			lpRes->res.resAnd.lpRes[0x0000001C]
-																				lpRes->rt = 0x6F = 0x6F
-																			lpRes->res.resAnd.lpRes[0x0000001D]
-																				lpRes->rt = 0x75 = 0x75
-																			lpRes->res.resAnd.lpRes[0x0000001E]
-																				lpRes->rt = 0x3D = 0x3D
-																			lpRes->res.resAnd.lpRes[0x0000001F]
-																				lpRes->rt = 0x73 = 0x73
-																			lpRes->res.resAnd.lpRes[0x00000020]
-																				lpRes->rt = 0x6F = 0x6F
-																			lpRes->res.resAnd.lpRes[0x00000021]
-																				lpRes->rt = 0x6D = 0x6D
-																			lpRes->res.resAnd.lpRes[0x00000022]
-																				lpRes->rt = 0x65 = 0x65
-																			lpRes->res.resAnd.lpRes[0x00000023]
-																				lpRes->rt = 0x62 = 0x62
-																			lpRes->res.resAnd.lpRes[0x00000024]
-																				lpRes->rt = 0x6F = 0x6F
-																			lpRes->res.resAnd.lpRes[0x00000025]
-																				lpRes->rt = 0x64 = 0x64
-																			lpRes->res.resAnd.lpRes[0x00000026]
-																				lpRes->rt = 0x79 = 0x79
-																			lpRes->res.resAnd.lpRes[0x00000027]
-																				lpRes->rt = 0x65 = 0x65
-																			lpRes->res.resAnd.lpRes[0x00000028]
-																				lpRes->rt = 0x6C = 0x6C
-																			lpRes->res.resAnd.lpRes[0x00000029]
-																				lpRes->rt = 0x73 = 0x73
-																			lpRes->res.resAnd.lpRes[0x0000002A]
-																				lpRes->rt = 0x65 = 0x65
-																			lpRes->res.resAnd.lpRes[0x0000002B]
-																				lpRes->rt = 0x2F = 0x2F
-																			lpRes->res.resAnd.lpRes[0x0000002C]
-																				lpRes->rt = 0x63 = 0x63
-																			lpRes->res.resAnd.lpRes[0x0000002D]
-																				lpRes->rt = 0x6E = 0x6E
-																			lpRes->res.resAnd.lpRes[0x0000002E]
-																				lpRes->rt = 0x3D = 0x3D
-																			lpRes->res.resAnd.lpRes[0x0000002F]
-																				lpRes->rt = 0x74 = 0x74
-																			lpRes->res.resAnd.lpRes[0x00000030]
-																				lpRes->rt = 0x68 = 0x68
-																			lpRes->res.resAnd.lpRes[0x00000031]
-																				lpRes->rt = 0x69 = 0x69
-																			lpRes->res.resAnd.lpRes[0x00000032]
-																				lpRes->rt = 0x73 = 0x73
-																			lpRes->res.resAnd.lpRes[0x00000033]
-																				lpRes->rt = 0x69 = 0x69
-																			lpRes->res.resAnd.lpRes[0x00000034]
-																				lpRes->rt = 0x73 = 0x73
-																			lpRes->res.resAnd.lpRes[0x00000035]
-																				lpRes->rt = 0x6E = 0x6E
-																			lpRes->res.resAnd.lpRes[0x00000036]
-																				lpRes->rt = 0x6F = 0x6F
-																			lpRes->res.resAnd.lpRes[0x00000037]
-																				lpRes->rt = 0x74 = 0x74
-																			lpRes->res.resAnd.lpRes[0x00000038]
-																				lpRes->rt = 0x79 = 0x79
-																			lpRes->res.resAnd.lpRes[0x00000039]
-																				lpRes->rt = 0x6F = 0x6F
-																			lpRes->res.resAnd.lpRes[0x0000003A]
-																				lpRes->rt = 0x75 = 0x75
-																			lpRes->res.resAnd.lpRes[0x0000003B]
-																				lpRes->rt = 0x2F = 0x2F
-																			lpRes->res.resAnd.lpRes[0x0000003C]
-																				lpRes->rt = 0x63 = 0x63
-																			lpRes->res.resAnd.lpRes[0x0000003D]
-																				lpRes->rt = 0x6E = 0x6E
-																			lpRes->res.resAnd.lpRes[0x0000003E]
-																				lpRes->rt = 0x3D = 0x3D
-																			lpRes->res.resAnd.lpRes[0x0000003F]
-																				lpRes->rt = 0x7B = 0x7B
-																			lpRes->res.resAnd.lpRes[0x00000040]
-																				lpRes->rt = 0x42 = 0x42
-																			lpRes->res.resAnd.lpRes[0x00000041]
-																				lpRes->rt = 0x37 = 0x37
-																			lpRes->res.resAnd.lpRes[0x00000042]
-																				lpRes->rt = 0x41 = 0x41
-																			lpRes->res.resAnd.lpRes[0x00000043]
-																				lpRes->rt = 0x37 = 0x37
-																			lpRes->res.resAnd.lpRes[0x00000044]
-																				lpRes->rt = 0x38 = 0x38
-																			lpRes->res.resAnd.lpRes[0x00000045]
-																				lpRes->rt = 0x35 = 0x35
-																			lpRes->res.resAnd.lpRes[0x00000046]
-																				lpRes->rt = 0x31 = 0x31
-																			lpRes->res.resAnd.lpRes[0x00000047]
-																				lpRes->rt = 0x41 = 0x41
-																			lpRes->res.resAnd.lpRes[0x00000048]
-																				lpRes->rt = 0x2D = 0x2D
-																			lpRes->res.resAnd.lpRes[0x00000049]
-																				lpRes->rt = 0x44 = 0x44
-																			lpRes->res.resAnd.lpRes[0x0000004A]
-																				lpRes->rt = 0x37 = 0x37
-																			lpRes->res.resAnd.lpRes[0x0000004B]
-																				lpRes->rt = 0x32 = 0x32
-																			lpRes->res.resAnd.lpRes[0x0000004C]
-																				lpRes->rt = 0x43 = 0x43
-																			lpRes->res.resAnd.lpRes[0x0000004D]
-																				lpRes->rt = 0x2D = 0x2D
-																			lpRes->res.resAnd.lpRes[0x0000004E]
-																				lpRes->rt = 0x34 = 0x34
-																			lpRes->res.resAnd.lpRes[0x0000004F]
-																				lpRes->rt = 0x43 = 0x43
-																			lpRes->res.resAnd.lpRes[0x00000050]
-																				lpRes->rt = 0x43 = 0x43
-																			lpRes->res.resAnd.lpRes[0x00000051]
-																				lpRes->rt = 0x45 = 0x45
-																			lpRes->res.resAnd.lpRes[0x00000052]
-																				lpRes->rt = 0x2D = 0x2D
-																			lpRes->res.resAnd.lpRes[0x00000053]
-																				lpRes->rt = 0x42 = 0x42
-																			lpRes->res.resAnd.lpRes[0x00000054]
-																				lpRes->rt = 0x31 = 0x31
-																			lpRes->res.resAnd.lpRes[0x00000055]
-																				lpRes->rt = 0x31 = 0x31
-																			lpRes->res.resAnd.lpRes[0x00000056]
-																				lpRes->rt = 0x42 = 0x42
-																			lpRes->res.resAnd.lpRes[0x00000057]
-																				lpRes->rt = 0x2D = 0x2D
-																			lpRes->res.resAnd.lpRes[0x00000058]
-																				lpRes->rt = 0x38 = 0x38
-																			lpRes->res.resAnd.lpRes[0x00000059]
-																				lpRes->rt = 0x45 = 0x45
-																			lpRes->res.resAnd.lpRes[0x0000005A]
-																				lpRes->rt = 0x38 = 0x38
-																			lpRes->res.resAnd.lpRes[0x0000005B]
-																				lpRes->rt = 0x41 = 0x41
-																			lpRes->res.resAnd.lpRes[0x0000005C]
-																				lpRes->rt = 0x39 = 0x39
-																			lpRes->res.resAnd.lpRes[0x0000005D]
-																				lpRes->rt = 0x37 = 0x37
-																			lpRes->res.resAnd.lpRes[0x0000005E]
-																				lpRes->rt = 0x34 = 0x34
-																			lpRes->res.resAnd.lpRes[0x0000005F]
-																				lpRes->rt = 0x42 = 0x42
-																			lpRes->res.resAnd.lpRes[0x00000060]
-																				lpRes->rt = 0x37 = 0x37
-																			lpRes->res.resAnd.lpRes[0x00000061]
-																				lpRes->rt = 0x38 = 0x38
-																			lpRes->res.resAnd.lpRes[0x00000062]
-																				lpRes->rt = 0x33 = 0x33
-																			lpRes->res.resAnd.lpRes[0x00000063]
-																				lpRes->rt = 0x44 = 0x44
-																			lpRes->res.resAnd.lpRes[0x00000064]
-																				lpRes->rt = 0x7D = 0x7D
-																			lpRes->res.resAnd.lpRes[0x00000065]
-																				lpRes->rt = 0x0 = RES_AND
-																				lpRes->res.resAnd.cRes = 0x000084B0
-																			lpRes->res.resAnd.lpRes[0x00000066]
-																				lpRes->rt = 0x1 = RES_OR
-																				lpRes->res.resOr.cRes = 0x00004300
-																			lpRes->res.resAnd.lpRes[0x00000067]
-																				lpRes->rt = 0x0 = RES_AND
-																				lpRes->res.resAnd.cRes = 0x0000006F
-																				lpRes->res.resAnd.lpRes[0x00000000]
-																					lpRes->rt = 0x72 = 0x72
+																					lpRes->rt = 0x73 = 0x73
 																				lpRes->res.resAnd.lpRes[0x00000001]
 																					lpRes->rt = 0x0 = RES_AND
-																					lpRes->res.resAnd.cRes = 0x00000065
+																					lpRes->res.resAnd.cRes = 0x00000000
+																				lpRes->res.resAnd.lpRes[0x00000002]
+																					lpRes->rt = 0x3 = RES_CONTENT
+																					lpRes->res.resContent.ulFuzzyLevel = FL_IGNORECASE | 0x1380000 | FL_FULLSTRING = 0x01390000
+																					lpRes->res.resContent.ulPropTag = 0x01000000 (PT_UNSPECIFIED)
+																					lpRes->res.resContent.lpProp->ulPropTag = 0x01020404 (0x0404)
+																					lpRes->res.resContent.lpProp->Value = 
+																						Alt: 
+																				lpRes->res.resAnd.lpRes[0x00000003]
+																					lpRes->rt = 0xB = RES_COUNT
+																					lpRes->res.resCount.ulCount = 0x0B010230
+																					lpRes->res.resCount.lpRes
+																						lpRes->rt = 0x30 = 0x30
+																				lpRes->res.resAnd.lpRes[0x00000004]
+																					lpRes->rt = 0x3A = 0x3A
+																				lpRes->res.resAnd.lpRes[0x00000005]
+																					lpRes->rt = 0x0 = RES_AND
+																					lpRes->res.resAnd.cRes = 0x00005845
+																				lpRes->res.resAnd.lpRes[0x00000006]
+																					lpRes->rt = 0x3A = 0x3A
+																				lpRes->res.resAnd.lpRes[0x00000007]
+																					lpRes->rt = 0x2F = 0x2F
+																				lpRes->res.resAnd.lpRes[0x00000008]
+																					lpRes->rt = 0x4F = 0x4F
+																				lpRes->res.resAnd.lpRes[0x00000009]
+																					lpRes->rt = 0x3D = 0x3D
+																				lpRes->res.resAnd.lpRes[0x0000000A]
+																					lpRes->rt = 0x53 = 0x53
+																				lpRes->res.resAnd.lpRes[0x0000000B]
+																					lpRes->rt = 0x4F = 0x4F
+																				lpRes->res.resAnd.lpRes[0x0000000C]
+																					lpRes->rt = 0x4D = 0x4D
+																				lpRes->res.resAnd.lpRes[0x0000000D]
+																					lpRes->rt = 0x45 = 0x45
+																				lpRes->res.resAnd.lpRes[0x0000000E]
+																					lpRes->rt = 0x42 = 0x42
+																				lpRes->res.resAnd.lpRes[0x0000000F]
+																					lpRes->rt = 0x4F = 0x4F
+																				lpRes->res.resAnd.lpRes[0x00000010]
+																					lpRes->rt = 0x44 = 0x44
+																				lpRes->res.resAnd.lpRes[0x00000011]
+																					lpRes->rt = 0x59 = 0x59
+																				lpRes->res.resAnd.lpRes[0x00000012]
+																					lpRes->rt = 0x59 = 0x59
+																				lpRes->res.resAnd.lpRes[0x00000013]
+																					lpRes->rt = 0x2F = 0x2F
+																				lpRes->res.resAnd.lpRes[0x00000014]
+																					lpRes->rt = 0x4F = 0x4F
+																				lpRes->res.resAnd.lpRes[0x00000015]
+																					lpRes->rt = 0x55 = 0x55
+																				lpRes->res.resAnd.lpRes[0x00000016]
+																					lpRes->rt = 0x3D = 0x3D
+																				lpRes->res.resAnd.lpRes[0x00000017]
+																					lpRes->rt = 0x53 = 0x53
+																				lpRes->res.resAnd.lpRes[0x00000018]
+																					lpRes->rt = 0x4F = 0x4F
+																				lpRes->res.resAnd.lpRes[0x00000019]
+																					lpRes->rt = 0x4D = 0x4D
+																				lpRes->res.resAnd.lpRes[0x0000001A]
+																					lpRes->rt = 0x45 = 0x45
+																				lpRes->res.resAnd.lpRes[0x0000001B]
+																					lpRes->rt = 0x42 = 0x42
+																				lpRes->res.resAnd.lpRes[0x0000001C]
+																					lpRes->rt = 0x4F = 0x4F
+																				lpRes->res.resAnd.lpRes[0x0000001D]
+																					lpRes->rt = 0x44 = 0x44
+																				lpRes->res.resAnd.lpRes[0x0000001E]
+																					lpRes->rt = 0x59 = 0x59
+																				lpRes->res.resAnd.lpRes[0x0000001F]
+																					lpRes->rt = 0x45 = 0x45
+																				lpRes->res.resAnd.lpRes[0x00000020]
+																					lpRes->rt = 0x4C = 0x4C
+																				lpRes->res.resAnd.lpRes[0x00000021]
+																					lpRes->rt = 0x53 = 0x53
+																				lpRes->res.resAnd.lpRes[0x00000022]
+																					lpRes->rt = 0x45 = 0x45
+																				lpRes->res.resAnd.lpRes[0x00000023]
+																					lpRes->rt = 0x2F = 0x2F
+																				lpRes->res.resAnd.lpRes[0x00000024]
+																					lpRes->rt = 0x43 = 0x43
+																				lpRes->res.resAnd.lpRes[0x00000025]
+																					lpRes->rt = 0x4E = 0x4E
+																				lpRes->res.resAnd.lpRes[0x00000026]
+																					lpRes->rt = 0x3D = 0x3D
+																				lpRes->res.resAnd.lpRes[0x00000027]
+																					lpRes->rt = 0x54 = 0x54
+																				lpRes->res.resAnd.lpRes[0x00000028]
+																					lpRes->rt = 0x48 = 0x48
+																				lpRes->res.resAnd.lpRes[0x00000029]
+																					lpRes->rt = 0x49 = 0x49
+																				lpRes->res.resAnd.lpRes[0x0000002A]
+																					lpRes->rt = 0x53 = 0x53
+																				lpRes->res.resAnd.lpRes[0x0000002B]
+																					lpRes->rt = 0x49 = 0x49
+																				lpRes->res.resAnd.lpRes[0x0000002C]
+																					lpRes->rt = 0x53 = 0x53
+																				lpRes->res.resAnd.lpRes[0x0000002D]
+																					lpRes->rt = 0x4E = 0x4E
+																				lpRes->res.resAnd.lpRes[0x0000002E]
+																					lpRes->rt = 0x4F = 0x4F
+																				lpRes->res.resAnd.lpRes[0x0000002F]
+																					lpRes->rt = 0x54 = 0x54
+																				lpRes->res.resAnd.lpRes[0x00000030]
+																					lpRes->rt = 0x59 = 0x59
+																				lpRes->res.resAnd.lpRes[0x00000031]
+																					lpRes->rt = 0x4F = 0x4F
+																				lpRes->res.resAnd.lpRes[0x00000032]
+																					lpRes->rt = 0x55 = 0x55
+																				lpRes->res.resAnd.lpRes[0x00000033]
+																					lpRes->rt = 0x2F = 0x2F
+																				lpRes->res.resAnd.lpRes[0x00000034]
+																					lpRes->rt = 0x43 = 0x43
+																				lpRes->res.resAnd.lpRes[0x00000035]
+																					lpRes->rt = 0x4E = 0x4E
+																				lpRes->res.resAnd.lpRes[0x00000036]
+																					lpRes->rt = 0x3D = 0x3D
+																				lpRes->res.resAnd.lpRes[0x00000037]
+																					lpRes->rt = 0x31 = 0x31
+																				lpRes->res.resAnd.lpRes[0x00000038]
+																					lpRes->rt = 0x32 = 0x32
+																				lpRes->res.resAnd.lpRes[0x00000039]
+																					lpRes->rt = 0x33 = 0x33
+																				lpRes->res.resAnd.lpRes[0x0000003A]
+																					lpRes->rt = 0x34 = 0x34
+																				lpRes->res.resAnd.lpRes[0x0000003B]
+																					lpRes->rt = 0x35 = 0x35
+																				lpRes->res.resAnd.lpRes[0x0000003C]
+																					lpRes->rt = 0x38 = 0x38
+																				lpRes->res.resAnd.lpRes[0x0000003D]
+																					lpRes->rt = 0x0 = RES_AND
+																					lpRes->res.resAnd.cRes = 0x0000040A
 																					lpRes->res.resAnd.lpRes[0x00000000]
-																						lpRes->rt = 0x20 = 0x20
+																						lpRes->rt = 0x3 = RES_CONTENT
+																						lpRes->res.resContent.ulFuzzyLevel = 0x1600000 | FL_FULLSTRING = 0x01600000
+																						lpRes->res.resContent.ulPropTag = 0x02000000 (PT_UNSPECIFIED)
+																						lpRes->res.resContent.lpProp->ulPropTag = 0x73000101 (0x0101)
+																						lpRes->res.resContent.lpProp->Value = 
+																							Alt: 
 																					lpRes->res.resAnd.lpRes[0x00000001]
 																						lpRes->rt = 0x0 = RES_AND
-																						lpRes->res.resAnd.cRes = 0x00000057
+																						lpRes->res.resAnd.cRes = 0x00000000
+																					lpRes->res.resAnd.lpRes[0x00000002]
+																						lpRes->rt = 0x0 = RES_AND
+																						lpRes->res.resAnd.cRes = 0x0000DC00
+																					lpRes->res.resAnd.lpRes[0x00000003]
+																						lpRes->rt = 0xA7 = 0xA7
+																					lpRes->res.resAnd.lpRes[0x00000004]
+																						lpRes->rt = 0x40 = 0x40
+																					lpRes->res.resAnd.lpRes[0x00000005]
+																						lpRes->rt = 0xC8 = 0xC8
+																					lpRes->res.resAnd.lpRes[0x00000006]
+																						lpRes->rt = 0xC0 = 0xC0
+																					lpRes->res.resAnd.lpRes[0x00000007]
+																						lpRes->rt = 0x42 = 0x42
+																					lpRes->res.resAnd.lpRes[0x00000008]
+																						lpRes->rt = 0x10 = 0x10
+																					lpRes->res.resAnd.lpRes[0x00000009]
+																						lpRes->rt = 0x1A = 0x1A
+																					lpRes->res.resAnd.lpRes[0x0000000A]
+																						lpRes->rt = 0xB4 = 0xB4
+																					lpRes->res.resAnd.lpRes[0x0000000B]
+																						lpRes->rt = 0xB9 = 0xB9
+																					lpRes->res.resAnd.lpRes[0x0000000C]
+																						lpRes->rt = 0x8 = RES_EXIST
+																						lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
+																						lpRes->res.resExist.ulReserved1 = 0x00000000
+																						lpRes->res.resExist.ulReserved2 = 0x00000000
+																					lpRes->res.resAnd.lpRes[0x0000000D]
+																						lpRes->rt = 0x82 = 0x82
+																					lpRes->res.resAnd.lpRes[0x0000000E]
+																						lpRes->rt = 0x1 = RES_OR
+																						lpRes->res.resOr.cRes = 0x00000000
+																					lpRes->res.resAnd.lpRes[0x0000000F]
+																						lpRes->rt = 0x0 = RES_AND
+																						lpRes->res.resAnd.cRes = 0x00000001
 																						lpRes->res.resAnd.lpRes[0x00000000]
-																							lpRes->rt = 0x6F = 0x6F
+																							lpRes->rt = 0x0 = RES_AND
+																							lpRes->res.resAnd.cRes = 0x00002F00
+																					lpRes->res.resAnd.lpRes[0x00000010]
+																						lpRes->rt = 0x6F = 0x6F
+																					lpRes->res.resAnd.lpRes[0x00000011]
+																						lpRes->rt = 0x3D = 0x3D
+																					lpRes->res.resAnd.lpRes[0x00000012]
+																						lpRes->rt = 0x73 = 0x73
+																					lpRes->res.resAnd.lpRes[0x00000013]
+																						lpRes->rt = 0x6F = 0x6F
+																					lpRes->res.resAnd.lpRes[0x00000014]
+																						lpRes->rt = 0x6D = 0x6D
+																					lpRes->res.resAnd.lpRes[0x00000015]
+																						lpRes->rt = 0x65 = 0x65
+																					lpRes->res.resAnd.lpRes[0x00000016]
+																						lpRes->rt = 0x62 = 0x62
+																					lpRes->res.resAnd.lpRes[0x00000017]
+																						lpRes->rt = 0x6F = 0x6F
+																					lpRes->res.resAnd.lpRes[0x00000018]
+																						lpRes->rt = 0x64 = 0x64
+																					lpRes->res.resAnd.lpRes[0x00000019]
+																						lpRes->rt = 0x79 = 0x79
+																					lpRes->res.resAnd.lpRes[0x0000001A]
+																						lpRes->rt = 0x79 = 0x79
+																					lpRes->res.resAnd.lpRes[0x0000001B]
+																						lpRes->rt = 0x2F = 0x2F
+																					lpRes->res.resAnd.lpRes[0x0000001C]
+																						lpRes->rt = 0x6F = 0x6F
+																					lpRes->res.resAnd.lpRes[0x0000001D]
+																						lpRes->rt = 0x75 = 0x75
+																					lpRes->res.resAnd.lpRes[0x0000001E]
+																						lpRes->rt = 0x3D = 0x3D
+																					lpRes->res.resAnd.lpRes[0x0000001F]
+																						lpRes->rt = 0x73 = 0x73
+																					lpRes->res.resAnd.lpRes[0x00000020]
+																						lpRes->rt = 0x6F = 0x6F
+																					lpRes->res.resAnd.lpRes[0x00000021]
+																						lpRes->rt = 0x6D = 0x6D
+																					lpRes->res.resAnd.lpRes[0x00000022]
+																						lpRes->rt = 0x65 = 0x65
+																					lpRes->res.resAnd.lpRes[0x00000023]
+																						lpRes->rt = 0x62 = 0x62
+																					lpRes->res.resAnd.lpRes[0x00000024]
+																						lpRes->rt = 0x6F = 0x6F
+																					lpRes->res.resAnd.lpRes[0x00000025]
+																						lpRes->rt = 0x64 = 0x64
+																					lpRes->res.resAnd.lpRes[0x00000026]
+																						lpRes->rt = 0x79 = 0x79
+																					lpRes->res.resAnd.lpRes[0x00000027]
+																						lpRes->rt = 0x65 = 0x65
+																					lpRes->res.resAnd.lpRes[0x00000028]
+																						lpRes->rt = 0x6C = 0x6C
+																					lpRes->res.resAnd.lpRes[0x00000029]
+																						lpRes->rt = 0x73 = 0x73
+																					lpRes->res.resAnd.lpRes[0x0000002A]
+																						lpRes->rt = 0x65 = 0x65
+																					lpRes->res.resAnd.lpRes[0x0000002B]
+																						lpRes->rt = 0x2F = 0x2F
+																					lpRes->res.resAnd.lpRes[0x0000002C]
+																						lpRes->rt = 0x63 = 0x63
+																					lpRes->res.resAnd.lpRes[0x0000002D]
+																						lpRes->rt = 0x6E = 0x6E
+																					lpRes->res.resAnd.lpRes[0x0000002E]
+																						lpRes->rt = 0x3D = 0x3D
+																					lpRes->res.resAnd.lpRes[0x0000002F]
+																						lpRes->rt = 0x74 = 0x74
+																					lpRes->res.resAnd.lpRes[0x00000030]
+																						lpRes->rt = 0x68 = 0x68
+																					lpRes->res.resAnd.lpRes[0x00000031]
+																						lpRes->rt = 0x69 = 0x69
+																					lpRes->res.resAnd.lpRes[0x00000032]
+																						lpRes->rt = 0x73 = 0x73
+																					lpRes->res.resAnd.lpRes[0x00000033]
+																						lpRes->rt = 0x69 = 0x69
+																					lpRes->res.resAnd.lpRes[0x00000034]
+																						lpRes->rt = 0x73 = 0x73
+																					lpRes->res.resAnd.lpRes[0x00000035]
+																						lpRes->rt = 0x6E = 0x6E
+																					lpRes->res.resAnd.lpRes[0x00000036]
+																						lpRes->rt = 0x6F = 0x6F
+																					lpRes->res.resAnd.lpRes[0x00000037]
+																						lpRes->rt = 0x74 = 0x74
+																					lpRes->res.resAnd.lpRes[0x00000038]
+																						lpRes->rt = 0x79 = 0x79
+																					lpRes->res.resAnd.lpRes[0x00000039]
+																						lpRes->rt = 0x6F = 0x6F
+																					lpRes->res.resAnd.lpRes[0x0000003A]
+																						lpRes->rt = 0x75 = 0x75
+																					lpRes->res.resAnd.lpRes[0x0000003B]
+																						lpRes->rt = 0x2F = 0x2F
+																					lpRes->res.resAnd.lpRes[0x0000003C]
+																						lpRes->rt = 0x63 = 0x63
+																					lpRes->res.resAnd.lpRes[0x0000003D]
+																						lpRes->rt = 0x6E = 0x6E
+																					lpRes->res.resAnd.lpRes[0x0000003E]
+																						lpRes->rt = 0x3D = 0x3D
+																					lpRes->res.resAnd.lpRes[0x0000003F]
+																						lpRes->rt = 0x7B = 0x7B
+																					lpRes->res.resAnd.lpRes[0x00000040]
+																						lpRes->rt = 0x42 = 0x42
+																					lpRes->res.resAnd.lpRes[0x00000041]
+																						lpRes->rt = 0x37 = 0x37
+																					lpRes->res.resAnd.lpRes[0x00000042]
+																						lpRes->rt = 0x41 = 0x41
+																					lpRes->res.resAnd.lpRes[0x00000043]
+																						lpRes->rt = 0x37 = 0x37
+																					lpRes->res.resAnd.lpRes[0x00000044]
+																						lpRes->rt = 0x38 = 0x38
+																					lpRes->res.resAnd.lpRes[0x00000045]
+																						lpRes->rt = 0x35 = 0x35
+																					lpRes->res.resAnd.lpRes[0x00000046]
+																						lpRes->rt = 0x31 = 0x31
+																					lpRes->res.resAnd.lpRes[0x00000047]
+																						lpRes->rt = 0x41 = 0x41
+																					lpRes->res.resAnd.lpRes[0x00000048]
+																						lpRes->rt = 0x2D = 0x2D
+																					lpRes->res.resAnd.lpRes[0x00000049]
+																						lpRes->rt = 0x44 = 0x44
+																					lpRes->res.resAnd.lpRes[0x0000004A]
+																						lpRes->rt = 0x37 = 0x37
+																					lpRes->res.resAnd.lpRes[0x0000004B]
+																						lpRes->rt = 0x32 = 0x32
+																					lpRes->res.resAnd.lpRes[0x0000004C]
+																						lpRes->rt = 0x43 = 0x43
+																					lpRes->res.resAnd.lpRes[0x0000004D]
+																						lpRes->rt = 0x2D = 0x2D
+																					lpRes->res.resAnd.lpRes[0x0000004E]
+																						lpRes->rt = 0x34 = 0x34
+																					lpRes->res.resAnd.lpRes[0x0000004F]
+																						lpRes->rt = 0x43 = 0x43
+																					lpRes->res.resAnd.lpRes[0x00000050]
+																						lpRes->rt = 0x43 = 0x43
+																					lpRes->res.resAnd.lpRes[0x00000051]
+																						lpRes->rt = 0x45 = 0x45
+																					lpRes->res.resAnd.lpRes[0x00000052]
+																						lpRes->rt = 0x2D = 0x2D
+																					lpRes->res.resAnd.lpRes[0x00000053]
+																						lpRes->rt = 0x42 = 0x42
+																					lpRes->res.resAnd.lpRes[0x00000054]
+																						lpRes->rt = 0x31 = 0x31
+																					lpRes->res.resAnd.lpRes[0x00000055]
+																						lpRes->rt = 0x31 = 0x31
+																					lpRes->res.resAnd.lpRes[0x00000056]
+																						lpRes->rt = 0x42 = 0x42
+																					lpRes->res.resAnd.lpRes[0x00000057]
+																						lpRes->rt = 0x2D = 0x2D
+																					lpRes->res.resAnd.lpRes[0x00000058]
+																						lpRes->rt = 0x38 = 0x38
+																					lpRes->res.resAnd.lpRes[0x00000059]
+																						lpRes->rt = 0x45 = 0x45
+																					lpRes->res.resAnd.lpRes[0x0000005A]
+																						lpRes->rt = 0x38 = 0x38
+																					lpRes->res.resAnd.lpRes[0x0000005B]
+																						lpRes->rt = 0x41 = 0x41
+																					lpRes->res.resAnd.lpRes[0x0000005C]
+																						lpRes->rt = 0x39 = 0x39
+																					lpRes->res.resAnd.lpRes[0x0000005D]
+																						lpRes->rt = 0x37 = 0x37
+																					lpRes->res.resAnd.lpRes[0x0000005E]
+																						lpRes->rt = 0x34 = 0x34
+																					lpRes->res.resAnd.lpRes[0x0000005F]
+																						lpRes->rt = 0x42 = 0x42
+																					lpRes->res.resAnd.lpRes[0x00000060]
+																						lpRes->rt = 0x37 = 0x37
+																					lpRes->res.resAnd.lpRes[0x00000061]
+																						lpRes->rt = 0x38 = 0x38
+																					lpRes->res.resAnd.lpRes[0x00000062]
+																						lpRes->rt = 0x33 = 0x33
+																					lpRes->res.resAnd.lpRes[0x00000063]
+																						lpRes->rt = 0x44 = 0x44
+																					lpRes->res.resAnd.lpRes[0x00000064]
+																						lpRes->rt = 0x7D = 0x7D
+																					lpRes->res.resAnd.lpRes[0x00000065]
+																						lpRes->rt = 0x0 = RES_AND
+																						lpRes->res.resAnd.cRes = 0x000084B0
+																					lpRes->res.resAnd.lpRes[0x00000066]
+																						lpRes->rt = 0x1 = RES_OR
+																						lpRes->res.resOr.cRes = 0x00004300
+																					lpRes->res.resAnd.lpRes[0x00000067]
+																						lpRes->rt = 0x0 = RES_AND
+																						lpRes->res.resAnd.cRes = 0x0000006F
+																						lpRes->res.resAnd.lpRes[0x00000000]
+																							lpRes->rt = 0x72 = 0x72
 																						lpRes->res.resAnd.lpRes[0x00000001]
 																							lpRes->rt = 0x0 = RES_AND
-																							lpRes->res.resAnd.cRes = 0x00000072
+																							lpRes->res.resAnd.cRes = 0x00000065
 																							lpRes->res.resAnd.lpRes[0x00000000]
-																								lpRes->rt = 0x64 = 0x64
+																								lpRes->rt = 0x20 = 0x20
 																							lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->rt = 0x0 = RES_AND
-																								lpRes->res.resAnd.cRes = 0x00000020
+																								lpRes->res.resAnd.cRes = 0x00000057
 																								lpRes->res.resAnd.lpRes[0x00000000]
-																									lpRes->rt = 0x48 = 0x48
+																									lpRes->rt = 0x6F = 0x6F
 																								lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->rt = 0x0 = RES_AND
-																									lpRes->res.resAnd.cRes = 0x0000006F
+																									lpRes->res.resAnd.cRes = 0x00000072
 																								lpRes->res.resAnd.lpRes[0x00000002]
-																									lpRes->rt = 0x74 = 0x74
+																									lpRes->rt = 0x64 = 0x64
 																								lpRes->res.resAnd.lpRes[0x00000003]
 																									lpRes->rt = 0x0 = RES_AND
-																									lpRes->res.resAnd.cRes = 0x00000066
+																									lpRes->res.resAnd.cRes = 0x00000020
 																								lpRes->res.resAnd.lpRes[0x00000004]
-																									lpRes->rt = 0x69 = 0x69
+																									lpRes->rt = 0x48 = 0x48
 																								lpRes->res.resAnd.lpRes[0x00000005]
 																									lpRes->rt = 0x0 = RES_AND
-																									lpRes->res.resAnd.cRes = 0x00000078
+																									lpRes->res.resAnd.cRes = 0x0000006F
 																								lpRes->res.resAnd.lpRes[0x00000006]
-																									lpRes->rt = 0x20 = 0x20
+																									lpRes->rt = 0x74 = 0x74
 																								lpRes->res.resAnd.lpRes[0x00000007]
 																									lpRes->rt = 0x0 = RES_AND
-																									lpRes->res.resAnd.cRes = 0x00000043
+																									lpRes->res.resAnd.cRes = 0x00000066
 																								lpRes->res.resAnd.lpRes[0x00000008]
-																									lpRes->rt = 0x6F = 0x6F
+																									lpRes->rt = 0x69 = 0x69
 																								lpRes->res.resAnd.lpRes[0x00000009]
 																									lpRes->rt = 0x0 = RES_AND
-																									lpRes->res.resAnd.cRes = 0x0000006E
+																									lpRes->res.resAnd.cRes = 0x00000078
 																								lpRes->res.resAnd.lpRes[0x0000000A]
-																									lpRes->rt = 0x74 = 0x74
+																									lpRes->rt = 0x20 = 0x20
 																								lpRes->res.resAnd.lpRes[0x0000000B]
 																									lpRes->rt = 0x0 = RES_AND
-																									lpRes->res.resAnd.cRes = 0x00000061
+																									lpRes->res.resAnd.cRes = 0x00000043
 																								lpRes->res.resAnd.lpRes[0x0000000C]
-																									lpRes->rt = 0x63 = 0x63
+																									lpRes->rt = 0x6F = 0x6F
 																								lpRes->res.resAnd.lpRes[0x0000000D]
 																									lpRes->rt = 0x0 = RES_AND
-																									lpRes->res.resAnd.cRes = 0x00000074
+																									lpRes->res.resAnd.cRes = 0x0000006E
 																								lpRes->res.resAnd.lpRes[0x0000000E]
-																									lpRes->rt = 0x73 = 0x73
+																									lpRes->rt = 0x74 = 0x74
 																								lpRes->res.resAnd.lpRes[0x0000000F]
 																									lpRes->rt = 0x0 = RES_AND
-																									lpRes->res.resAnd.cRes = 0x00000000
+																									lpRes->res.resAnd.cRes = 0x00000061
 																								lpRes->res.resAnd.lpRes[0x00000010]
+																									lpRes->rt = 0x63 = 0x63
+																								lpRes->res.resAnd.lpRes[0x00000011]
+																									lpRes->rt = 0x0 = RES_AND
+																									lpRes->res.resAnd.cRes = 0x00000074
+																								lpRes->res.resAnd.lpRes[0x00000012]
+																									lpRes->rt = 0x73 = 0x73
+																								lpRes->res.resAnd.lpRes[0x00000013]
+																									lpRes->rt = 0x0 = RES_AND
+																									lpRes->res.resAnd.cRes = 0x00000000
+																								lpRes->res.resAnd.lpRes[0x00000014]
 																									lpRes->rt = 0x3 = RES_CONTENT
 																									lpRes->res.resContent.ulFuzzyLevel = FL_IGNORECASE | 0x1380000 | FL_FULLSTRING = 0x01390000
 																									lpRes->res.resContent.ulPropTag = 0x01000000 (PT_UNSPECIFIED)
 																									lpRes->res.resContent.lpProp->ulPropTag = 0x01020404 (0x0404)
 																									lpRes->res.resContent.lpProp->Value = 
 																										Alt: 
-																								lpRes->res.resAnd.lpRes[0x00000011]
+																								lpRes->res.resAnd.lpRes[0x00000015]
 																									lpRes->rt = 0xB = RES_COUNT
 																									lpRes->res.resCount.ulCount = 0x0B010230
 																									lpRes->res.resCount.lpRes
-																								lpRes->res.resAnd.lpRes[0x00000012]
+																								lpRes->res.resAnd.lpRes[0x00000016]
 																									lpRes->rt = 0x30 = 0x30
-																								lpRes->res.resAnd.lpRes[0x00000013]
+																								lpRes->res.resAnd.lpRes[0x00000017]
 																									lpRes->rt = 0x5A = 0x5A
-																								lpRes->res.resAnd.lpRes[0x00000014]
+																								lpRes->res.resAnd.lpRes[0x00000018]
 																									lpRes->rt = 0x0 = RES_AND
 																									lpRes->res.resAnd.cRes = 0x00005845
-																								lpRes->res.resAnd.lpRes[0x00000015]
-																									lpRes->rt = 0x3A = 0x3A
-																								lpRes->res.resAnd.lpRes[0x00000016]
-																									lpRes->rt = 0x2F = 0x2F
-																								lpRes->res.resAnd.lpRes[0x00000017]
-																									lpRes->rt = 0x4F = 0x4F
-																								lpRes->res.resAnd.lpRes[0x00000018]
-																									lpRes->rt = 0x3D = 0x3D
 																								lpRes->res.resAnd.lpRes[0x00000019]
-																									lpRes->rt = 0x53 = 0x53
+																									lpRes->rt = 0x3A = 0x3A
 																								lpRes->res.resAnd.lpRes[0x0000001A]
-																									lpRes->rt = 0x4F = 0x4F
+																									lpRes->rt = 0x2F = 0x2F
 																								lpRes->res.resAnd.lpRes[0x0000001B]
-																									lpRes->rt = 0x4D = 0x4D
+																									lpRes->rt = 0x4F = 0x4F
 																								lpRes->res.resAnd.lpRes[0x0000001C]
-																									lpRes->rt = 0x45 = 0x45
+																									lpRes->rt = 0x3D = 0x3D
 																								lpRes->res.resAnd.lpRes[0x0000001D]
-																									lpRes->rt = 0x42 = 0x42
+																									lpRes->rt = 0x53 = 0x53
 																								lpRes->res.resAnd.lpRes[0x0000001E]
 																									lpRes->rt = 0x4F = 0x4F
 																								lpRes->res.resAnd.lpRes[0x0000001F]
+																									lpRes->rt = 0x4D = 0x4D
+																								lpRes->res.resAnd.lpRes[0x00000020]
+																									lpRes->rt = 0x45 = 0x45
+																								lpRes->res.resAnd.lpRes[0x00000021]
+																									lpRes->rt = 0x42 = 0x42
+																								lpRes->res.resAnd.lpRes[0x00000022]
+																									lpRes->rt = 0x4F = 0x4F
+																								lpRes->res.resAnd.lpRes[0x00000023]
 																									lpRes->rt = 0x44 = 0x44
+																								lpRes->res.resAnd.lpRes[0x00000024]
+																									lpRes->rt = 0x59 = 0x59
+																								lpRes->res.resAnd.lpRes[0x00000025]
+																									lpRes->rt = 0x54 = 0x54
+																								lpRes->res.resAnd.lpRes[0x00000026]
+																									lpRes->rt = 0x2F = 0x2F
+																								lpRes->res.resAnd.lpRes[0x00000027]
+																									lpRes->rt = 0x4F = 0x4F
+																								lpRes->res.resAnd.lpRes[0x00000028]
+																									lpRes->rt = 0x55 = 0x55
+																								lpRes->res.resAnd.lpRes[0x00000029]
+																									lpRes->rt = 0x3D = 0x3D
+																								lpRes->res.resAnd.lpRes[0x0000002A]
+																									lpRes->rt = 0x53 = 0x53
+																								lpRes->res.resAnd.lpRes[0x0000002B]
+																									lpRes->rt = 0x4F = 0x4F
+																								lpRes->res.resAnd.lpRes[0x0000002C]
+																									lpRes->rt = 0x4D = 0x4D
+																								lpRes->res.resAnd.lpRes[0x0000002D]
+																									lpRes->rt = 0x45 = 0x45
+																								lpRes->res.resAnd.lpRes[0x0000002E]
+																									lpRes->rt = 0x42 = 0x42
+																								lpRes->res.resAnd.lpRes[0x0000002F]
+																									lpRes->rt = 0x4F = 0x4F
+																								lpRes->res.resAnd.lpRes[0x00000030]
+																									lpRes->rt = 0x44 = 0x44
+																								lpRes->res.resAnd.lpRes[0x00000031]
+																									lpRes->rt = 0x59 = 0x59
+																								lpRes->res.resAnd.lpRes[0x00000032]
+																									lpRes->rt = 0x45 = 0x45
+																								lpRes->res.resAnd.lpRes[0x00000033]
+																									lpRes->rt = 0x4C = 0x4C
+																								lpRes->res.resAnd.lpRes[0x00000034]
+																									lpRes->rt = 0x53 = 0x53
+																								lpRes->res.resAnd.lpRes[0x00000035]
+																									lpRes->rt = 0x45 = 0x45
+																								lpRes->res.resAnd.lpRes[0x00000036]
+																									lpRes->rt = 0x2F = 0x2F
+																								lpRes->res.resAnd.lpRes[0x00000037]
+																									lpRes->rt = 0x43 = 0x43
+																								lpRes->res.resAnd.lpRes[0x00000038]
+																									lpRes->rt = 0x4E = 0x4E
+																								lpRes->res.resAnd.lpRes[0x00000039]
+																									lpRes->rt = 0x3D = 0x3D
+																								lpRes->res.resAnd.lpRes[0x0000003A]
+																									lpRes->rt = 0x54 = 0x54
+																								lpRes->res.resAnd.lpRes[0x0000003B]
+																									lpRes->rt = 0x48 = 0x48
+																								lpRes->res.resAnd.lpRes[0x0000003C]
+																									lpRes->rt = 0x49 = 0x49
+																								lpRes->res.resAnd.lpRes[0x0000003D]
+																									lpRes->rt = 0x53 = 0x53
+																								lpRes->res.resAnd.lpRes[0x0000003E]
+																									lpRes->rt = 0x49 = 0x49
+																								lpRes->res.resAnd.lpRes[0x0000003F]
+																									lpRes->rt = 0x53 = 0x53
+																								lpRes->res.resAnd.lpRes[0x00000040]
+																									lpRes->rt = 0x4E = 0x4E
+																								lpRes->res.resAnd.lpRes[0x00000041]
+																									lpRes->rt = 0x4F = 0x4F
+																								lpRes->res.resAnd.lpRes[0x00000042]
+																									lpRes->rt = 0x54 = 0x54
+																								lpRes->res.resAnd.lpRes[0x00000043]
+																									lpRes->rt = 0x59 = 0x59
+																								lpRes->res.resAnd.lpRes[0x00000044]
+																									lpRes->rt = 0x4F = 0x4F
+																								lpRes->res.resAnd.lpRes[0x00000045]
+																									lpRes->rt = 0x55 = 0x55
+																								lpRes->res.resAnd.lpRes[0x00000046]
+																									lpRes->rt = 0x2F = 0x2F
+																								lpRes->res.resAnd.lpRes[0x00000047]
+																									lpRes->rt = 0x43 = 0x43
+																								lpRes->res.resAnd.lpRes[0x00000048]
+																									lpRes->rt = 0x4E = 0x4E
+																								lpRes->res.resAnd.lpRes[0x00000049]
+																									lpRes->rt = 0x3D = 0x3D
+																								lpRes->res.resAnd.lpRes[0x0000004A]
+																									lpRes->rt = 0x7B = 0x7B
+																								lpRes->res.resAnd.lpRes[0x0000004B]
+																									lpRes->rt = 0x42 = 0x42
+																								lpRes->res.resAnd.lpRes[0x0000004C]
+																									lpRes->rt = 0x37 = 0x37
+																								lpRes->res.resAnd.lpRes[0x0000004D]
+																									lpRes->rt = 0x41 = 0x41
+																								lpRes->res.resAnd.lpRes[0x0000004E]
+																									lpRes->rt = 0x37 = 0x37
+																								lpRes->res.resAnd.lpRes[0x0000004F]
+																									lpRes->rt = 0x38 = 0x38
+																								lpRes->res.resAnd.lpRes[0x00000050]
+																									lpRes->rt = 0x35 = 0x35
+																								lpRes->res.resAnd.lpRes[0x00000051]
+																									lpRes->rt = 0x31 = 0x31
+																								lpRes->res.resAnd.lpRes[0x00000052]
+																									lpRes->rt = 0x41 = 0x41
+																								lpRes->res.resAnd.lpRes[0x00000053]
+																									lpRes->rt = 0x2D = 0x2D
+																								lpRes->res.resAnd.lpRes[0x00000054]
+																									lpRes->rt = 0x44 = 0x44
+																								lpRes->res.resAnd.lpRes[0x00000055]
+																									lpRes->rt = 0x37 = 0x37
+																								lpRes->res.resAnd.lpRes[0x00000056]
+																									lpRes->rt = 0x32 = 0x32
 																							lpRes->res.resAnd.lpRes[0x00000002]
-																								lpRes->rt = 0x59 = 0x59
+																								lpRes->rt = 0x43 = 0x43
 																							lpRes->res.resAnd.lpRes[0x00000003]
-																								lpRes->rt = 0x54 = 0x54
+																								lpRes->rt = 0x2D = 0x2D
 																							lpRes->res.resAnd.lpRes[0x00000004]
-																								lpRes->rt = 0x2F = 0x2F
+																								lpRes->rt = 0x34 = 0x34
 																							lpRes->res.resAnd.lpRes[0x00000005]
-																								lpRes->rt = 0x4F = 0x4F
+																								lpRes->rt = 0x43 = 0x43
 																							lpRes->res.resAnd.lpRes[0x00000006]
-																								lpRes->rt = 0x55 = 0x55
+																								lpRes->rt = 0x43 = 0x43
 																							lpRes->res.resAnd.lpRes[0x00000007]
-																								lpRes->rt = 0x3D = 0x3D
-																							lpRes->res.resAnd.lpRes[0x00000008]
-																								lpRes->rt = 0x53 = 0x53
-																							lpRes->res.resAnd.lpRes[0x00000009]
-																								lpRes->rt = 0x4F = 0x4F
-																							lpRes->res.resAnd.lpRes[0x0000000A]
-																								lpRes->rt = 0x4D = 0x4D
-																							lpRes->res.resAnd.lpRes[0x0000000B]
 																								lpRes->rt = 0x45 = 0x45
+																							lpRes->res.resAnd.lpRes[0x00000008]
+																								lpRes->rt = 0x2D = 0x2D
+																							lpRes->res.resAnd.lpRes[0x00000009]
+																								lpRes->rt = 0x42 = 0x42
+																							lpRes->res.resAnd.lpRes[0x0000000A]
+																								lpRes->rt = 0x31 = 0x31
+																							lpRes->res.resAnd.lpRes[0x0000000B]
+																								lpRes->rt = 0x31 = 0x31
 																							lpRes->res.resAnd.lpRes[0x0000000C]
 																								lpRes->rt = 0x42 = 0x42
 																							lpRes->res.resAnd.lpRes[0x0000000D]
-																								lpRes->rt = 0x4F = 0x4F
+																								lpRes->rt = 0x2D = 0x2D
 																							lpRes->res.resAnd.lpRes[0x0000000E]
-																								lpRes->rt = 0x44 = 0x44
+																								lpRes->rt = 0x38 = 0x38
 																							lpRes->res.resAnd.lpRes[0x0000000F]
-																								lpRes->rt = 0x59 = 0x59
+																								lpRes->rt = 0x45 = 0x45
 																							lpRes->res.resAnd.lpRes[0x00000010]
-																								lpRes->rt = 0x45 = 0x45
+																								lpRes->rt = 0x38 = 0x38
 																							lpRes->res.resAnd.lpRes[0x00000011]
-																								lpRes->rt = 0x4C = 0x4C
+																								lpRes->rt = 0x41 = 0x41
 																							lpRes->res.resAnd.lpRes[0x00000012]
-																								lpRes->rt = 0x53 = 0x53
-																							lpRes->res.resAnd.lpRes[0x00000013]
-																								lpRes->rt = 0x45 = 0x45
-																							lpRes->res.resAnd.lpRes[0x00000014]
-																								lpRes->rt = 0x2F = 0x2F
-																							lpRes->res.resAnd.lpRes[0x00000015]
-																								lpRes->rt = 0x43 = 0x43
-																							lpRes->res.resAnd.lpRes[0x00000016]
-																								lpRes->rt = 0x4E = 0x4E
-																							lpRes->res.resAnd.lpRes[0x00000017]
-																								lpRes->rt = 0x3D = 0x3D
-																							lpRes->res.resAnd.lpRes[0x00000018]
-																								lpRes->rt = 0x54 = 0x54
-																							lpRes->res.resAnd.lpRes[0x00000019]
-																								lpRes->rt = 0x48 = 0x48
-																							lpRes->res.resAnd.lpRes[0x0000001A]
-																								lpRes->rt = 0x49 = 0x49
-																							lpRes->res.resAnd.lpRes[0x0000001B]
-																								lpRes->rt = 0x53 = 0x53
-																							lpRes->res.resAnd.lpRes[0x0000001C]
-																								lpRes->rt = 0x49 = 0x49
-																							lpRes->res.resAnd.lpRes[0x0000001D]
-																								lpRes->rt = 0x53 = 0x53
-																							lpRes->res.resAnd.lpRes[0x0000001E]
-																								lpRes->rt = 0x4E = 0x4E
-																							lpRes->res.resAnd.lpRes[0x0000001F]
-																								lpRes->rt = 0x4F = 0x4F
-																							lpRes->res.resAnd.lpRes[0x00000020]
-																								lpRes->rt = 0x54 = 0x54
-																							lpRes->res.resAnd.lpRes[0x00000021]
-																								lpRes->rt = 0x59 = 0x59
-																							lpRes->res.resAnd.lpRes[0x00000022]
-																								lpRes->rt = 0x4F = 0x4F
-																							lpRes->res.resAnd.lpRes[0x00000023]
-																								lpRes->rt = 0x55 = 0x55
-																							lpRes->res.resAnd.lpRes[0x00000024]
-																								lpRes->rt = 0x2F = 0x2F
-																							lpRes->res.resAnd.lpRes[0x00000025]
-																								lpRes->rt = 0x43 = 0x43
-																							lpRes->res.resAnd.lpRes[0x00000026]
-																								lpRes->rt = 0x4E = 0x4E
-																							lpRes->res.resAnd.lpRes[0x00000027]
-																								lpRes->rt = 0x3D = 0x3D
-																							lpRes->res.resAnd.lpRes[0x00000028]
-																								lpRes->rt = 0x7B = 0x7B
-																							lpRes->res.resAnd.lpRes[0x00000029]
-																								lpRes->rt = 0x42 = 0x42
-																							lpRes->res.resAnd.lpRes[0x0000002A]
-																								lpRes->rt = 0x37 = 0x37
-																							lpRes->res.resAnd.lpRes[0x0000002B]
-																								lpRes->rt = 0x41 = 0x41
-																							lpRes->res.resAnd.lpRes[0x0000002C]
-																								lpRes->rt = 0x37 = 0x37
-																							lpRes->res.resAnd.lpRes[0x0000002D]
-																								lpRes->rt = 0x38 = 0x38
-																							lpRes->res.resAnd.lpRes[0x0000002E]
-																								lpRes->rt = 0x35 = 0x35
-																							lpRes->res.resAnd.lpRes[0x0000002F]
-																								lpRes->rt = 0x31 = 0x31
-																							lpRes->res.resAnd.lpRes[0x00000030]
-																								lpRes->rt = 0x41 = 0x41
-																							lpRes->res.resAnd.lpRes[0x00000031]
-																								lpRes->rt = 0x2D = 0x2D
-																							lpRes->res.resAnd.lpRes[0x00000032]
-																								lpRes->rt = 0x44 = 0x44
-																							lpRes->res.resAnd.lpRes[0x00000033]
-																								lpRes->rt = 0x37 = 0x37
-																							lpRes->res.resAnd.lpRes[0x00000034]
-																								lpRes->rt = 0x32 = 0x32
-																							lpRes->res.resAnd.lpRes[0x00000035]
-																								lpRes->rt = 0x43 = 0x43
-																							lpRes->res.resAnd.lpRes[0x00000036]
-																								lpRes->rt = 0x2D = 0x2D
-																							lpRes->res.resAnd.lpRes[0x00000037]
-																								lpRes->rt = 0x34 = 0x34
-																							lpRes->res.resAnd.lpRes[0x00000038]
-																								lpRes->rt = 0x43 = 0x43
-																							lpRes->res.resAnd.lpRes[0x00000039]
-																								lpRes->rt = 0x43 = 0x43
-																							lpRes->res.resAnd.lpRes[0x0000003A]
-																								lpRes->rt = 0x45 = 0x45
-																							lpRes->res.resAnd.lpRes[0x0000003B]
-																								lpRes->rt = 0x2D = 0x2D
-																							lpRes->res.resAnd.lpRes[0x0000003C]
-																								lpRes->rt = 0x42 = 0x42
-																							lpRes->res.resAnd.lpRes[0x0000003D]
-																								lpRes->rt = 0x31 = 0x31
-																							lpRes->res.resAnd.lpRes[0x0000003E]
-																								lpRes->rt = 0x31 = 0x31
-																							lpRes->res.resAnd.lpRes[0x0000003F]
-																								lpRes->rt = 0x42 = 0x42
-																							lpRes->res.resAnd.lpRes[0x00000040]
-																								lpRes->rt = 0x2D = 0x2D
-																							lpRes->res.resAnd.lpRes[0x00000041]
-																								lpRes->rt = 0x38 = 0x38
-																							lpRes->res.resAnd.lpRes[0x00000042]
-																								lpRes->rt = 0x45 = 0x45
-																							lpRes->res.resAnd.lpRes[0x00000043]
-																								lpRes->rt = 0x38 = 0x38
-																							lpRes->res.resAnd.lpRes[0x00000044]
-																								lpRes->rt = 0x41 = 0x41
-																							lpRes->res.resAnd.lpRes[0x00000045]
 																								lpRes->rt = 0x39 = 0x39
-																							lpRes->res.resAnd.lpRes[0x00000046]
+																							lpRes->res.resAnd.lpRes[0x00000013]
 																								lpRes->rt = 0x37 = 0x37
-																							lpRes->res.resAnd.lpRes[0x00000047]
+																							lpRes->res.resAnd.lpRes[0x00000014]
 																								lpRes->rt = 0x34 = 0x34
-																							lpRes->res.resAnd.lpRes[0x00000048]
+																							lpRes->res.resAnd.lpRes[0x00000015]
 																								lpRes->rt = 0x42 = 0x42
-																							lpRes->res.resAnd.lpRes[0x00000049]
+																							lpRes->res.resAnd.lpRes[0x00000016]
 																								lpRes->rt = 0x37 = 0x37
-																							lpRes->res.resAnd.lpRes[0x0000004A]
+																							lpRes->res.resAnd.lpRes[0x00000017]
 																								lpRes->rt = 0x38 = 0x38
-																							lpRes->res.resAnd.lpRes[0x0000004B]
+																							lpRes->res.resAnd.lpRes[0x00000018]
 																								lpRes->rt = 0x33 = 0x33
-																							lpRes->res.resAnd.lpRes[0x0000004C]
+																							lpRes->res.resAnd.lpRes[0x00000019]
 																								lpRes->rt = 0x44 = 0x44
-																							lpRes->res.resAnd.lpRes[0x0000004D]
+																							lpRes->res.resAnd.lpRes[0x0000001A]
 																								lpRes->rt = 0x7D = 0x7D
-																							lpRes->res.resAnd.lpRes[0x0000004E]
+																							lpRes->res.resAnd.lpRes[0x0000001B]
 																								lpRes->rt = 0x0 = RES_AND
 																								lpRes->res.resAnd.cRes = 0x00000000
-																							lpRes->res.resAnd.lpRes[0x0000004F]
+																							lpRes->res.resAnd.lpRes[0x0000001C]
 																								lpRes->rt = 0x0 = RES_AND
 																								lpRes->res.resAnd.cRes = 0x00000000
