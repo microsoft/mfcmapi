@@ -2147,7 +2147,7 @@ IDS_FELHEADER "Flat Entry List\r\n\
 cEntries = %1!d!\r\n\
 cbEntries = 0x%2!08X!"
 IDS_FELENTRYHEADER "\r\nEntry[%1!d!] Size = 0x%2!08X!"
-IDS_FELENTRYPADDING "Entry[%1!d!] Padding:"
+IDS_FELENTRYPADDING "Entry[%1!d!] Padding:\r\n"
 IDS_WEBVIEWSTREAMHEADER "Web View Persistence Object Stream\r\n\
 cWebViews = %1!d!"
 IDS_WEBVIEWHEADER "\r\n\r\nWeb View %1!d!\r\n\
