@@ -28,7 +28,7 @@ namespace smartview
 				const auto dwPAD = 3 - (flatEntryID.dwSize + 3) % 4;
 				if (dwPAD > 0)
 				{
-					flatEntryID.JunkData = m_Parser.GetBYTES(dwPAD);
+					flatEntryID.padding = m_Parser.GetBYTES(dwPAD);
 				}
 
 				m_pEntryIDs.push_back(flatEntryID);
@@ -48,9 +48,7 @@ namespace smartview
 			addLine();
 			addHeader(L"Entry[%1!d!] ", iFlatEntryList);
 			addBlock(
-				m_pEntryIDs[iFlatEntryList].dwSize,
-				L"Size = 0x%1!08X!",
-				m_pEntryIDs[iFlatEntryList].dwSize.getData());
+				m_pEntryIDs[iFlatEntryList].dwSize, L"Size = 0x%1!08X!", m_pEntryIDs[iFlatEntryList].dwSize.getData());
 
 			if (m_pEntryIDs[iFlatEntryList].lpEntryID.hasData())
 			{
@@ -58,11 +56,13 @@ namespace smartview
 				addBlock(m_pEntryIDs[iFlatEntryList].lpEntryID.getBlock());
 			}
 
-			if (m_pEntryIDs[iFlatEntryList].JunkData.size())
+			if (m_pEntryIDs[iFlatEntryList].padding.size())
 			{
 				addLine();
-				addHeader(L"Entry[%1!d!] Padding:", iFlatEntryList);
-				addHeader(JunkDataToString(m_pEntryIDs[iFlatEntryList].JunkData));
+				addHeader(L"Entry[%1!d!] Padding:\r\n", iFlatEntryList);
+				addBlock(
+					m_pEntryIDs[iFlatEntryList].padding,
+					strings::BinToHexString(m_pEntryIDs[iFlatEntryList].padding, true));
 			}
 		}
 	}

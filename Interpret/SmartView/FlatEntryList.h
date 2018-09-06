@@ -9,7 +9,7 @@ namespace smartview
 		blockT<DWORD> dwSize;
 		EntryIdStruct lpEntryID;
 
-		blockBytes JunkData;
+		blockBytes padding;
 	};
 
 	class FlatEntryList : public SmartViewParser

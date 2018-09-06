@@ -103,7 +103,15 @@ namespace smartview
 			prop.Value.dbl = m_Parser.Get<double>();
 			break;
 		case PT_BOOLEAN:
-			prop.Value.b = m_Parser.Get<WORD>();
+			if (m_RuleCondition)
+			{
+				prop.Value.b = m_Parser.Get<BYTE>();
+			}
+			else
+			{
+				prop.Value.b = m_Parser.Get<WORD>();
+			}
+
 			if (m_NickName) m_Parser.Get<WORD>();
 			if (m_NickName) m_Parser.Get<DWORD>();
 			break;
