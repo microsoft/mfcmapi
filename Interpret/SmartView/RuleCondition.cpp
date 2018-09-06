@@ -57,7 +57,7 @@ namespace smartview
 			L"Number of named props = 0x%1!04X!",
 			m_NamedPropertyInformation.NoOfNamedProps.getData());
 		addLine();
-		if (m_NamedPropertyInformation.PropId.size())
+		if (!m_NamedPropertyInformation.PropId.empty())
 		{
 			addLine();
 			addBlock(
@@ -108,4 +108,4 @@ namespace smartview
 
 		addBlock(m_lpRes.getBlock());
 	}
-}
+} // namespace smartview
