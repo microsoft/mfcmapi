@@ -58,7 +58,6 @@ namespace smartview
 	class blockBytes : public block
 	{
 	public:
-		blockBytes() = default;
 		void setData(const std::vector<BYTE>& data) { _data = data; }
 		std::vector<BYTE> getData() const { return _data; }
 		operator const std::vector<BYTE>&() const { return _data; }
@@ -100,7 +99,6 @@ namespace smartview
 	class blockStringA : public block
 	{
 	public:
-		blockStringA() = default;
 		void setData(const std::string& _data) { data = _data; }
 		std::string getData() const { return data; }
 		operator std::string&() { return data; }
@@ -116,7 +114,6 @@ namespace smartview
 	class blockStringW : public block
 	{
 	public:
-		blockStringW() = default;
 		void setData(const std::wstring& _data) { data = _data; }
 		std::wstring getData() const { return data; }
 		operator std::wstring&() { return data; }

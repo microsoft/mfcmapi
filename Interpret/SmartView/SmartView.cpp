@@ -357,14 +357,14 @@ namespace smartview
 
 	std::wstring InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag)
 	{
-		_PV pV = {0};
+		auto pV = _PV{};
 		pV.ul = ulVal;
 		return InterpretNumberAsString(pV, ulPropTag, NULL, nullptr, nullptr, false);
 	}
 
 	std::wstring InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp)
 	{
-		_PV pV = {0};
+		auto pV = _PV{};
 		pV.ul = ulVal;
 		return InterpretNumberAsString(pV, PT_LONG, ulPropNameID, nullptr, lpguidNamedProp, false);
 	}
@@ -439,14 +439,11 @@ namespace smartview
 		{
 		case PT_LONG:
 			return InterpretNumberAsString(pV.ul, ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp, bLabel);
-			break;
 		case PT_I2:
 			return InterpretNumberAsString(pV.i, ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp, bLabel);
-			break;
 		case PT_I8:
 			return InterpretNumberAsString(
 				pV.li.QuadPart, ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp, bLabel);
-			break;
 		}
 
 		return strings::emptystring;
@@ -466,7 +463,7 @@ namespace smartview
 
 		for (ULONG ulRow = 0; ulRow < myLongArray.cValues; ulRow++)
 		{
-			_PV pV = {0};
+			auto pV = _PV{};
 			pV.ul = myLongArray.lpl[ulRow];
 			szSmartView = InterpretNumberAsString(
 				pV, CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, nullptr, lpguidNamedProp, true);
@@ -522,7 +519,7 @@ namespace smartview
 		std::wstring rTimeString;
 		std::wstring rTimeAltString;
 		FILETIME fTime = {0};
-		LARGE_INTEGER liNumSec = {0};
+		LARGE_INTEGER liNumSec = {};
 		liNumSec.LowPart = rTime;
 		// Resolution of RTime is in minutes, FILETIME is in 100 nanosecond intervals
 		// Scale between the two is 10000000*60
