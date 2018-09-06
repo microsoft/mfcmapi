@@ -49,9 +49,9 @@
 
 namespace guid
 {
-	const std::wstring GUIDToString(_In_ GUID guid) { return GUIDToString(&guid); }
+	std::wstring GUIDToString(_In_ GUID guid) { return GUIDToString(&guid); }
 
-	const std::wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
+	std::wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 	{
 		GUID nullGUID = {0};
 
@@ -75,9 +75,9 @@ namespace guid
 			lpGUID->Data4[7]);
 	}
 
-	const std::wstring GUIDToStringAndName(_In_ GUID guid) { return GUIDToStringAndName(&guid); }
+	std::wstring GUIDToStringAndName(_In_ GUID guid) { return GUIDToStringAndName(&guid); }
 
-	const std::wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
+	std::wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 	{
 		auto szGUID = GUIDToString(lpGUID);
 
@@ -134,9 +134,9 @@ namespace guid
 		return lpGuidRet;
 	}
 
-	_Check_return_ const GUID StringToGUID(_In_ const std::wstring& szGUID) { return StringToGUID(szGUID, false); }
+	_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID) { return StringToGUID(szGUID, false); }
 
-	_Check_return_ const GUID StringToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped)
+	_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped)
 	{
 		auto guid = GUID_NULL;
 		if (szGUID.empty()) return guid;

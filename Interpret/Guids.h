@@ -3,13 +3,13 @@
 
 namespace guid
 {
-	const std::wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
-	const std::wstring GUIDToString(_In_ GUID guid);
-	const std::wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID);
-	const std::wstring GUIDToStringAndName(_In_ GUID guid);
+	std::wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
+	std::wstring GUIDToString(_In_ GUID guid);
+	std::wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID);
+	std::wstring GUIDToStringAndName(_In_ GUID guid);
 	LPCGUID GUIDNameToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped);
-	_Check_return_ const GUID StringToGUID(_In_ const std::wstring& szGUID);
-	_Check_return_ const GUID StringToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped);
+	_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID);
+	_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped);
 
 #pragma region "GUID definitions"
 	// clang-format off
@@ -17,18 +17,18 @@ namespace guid
 	DEFINE_OLEGUID(PS_INTERNET_HEADERS, 0x00020386, 0, 0);
 
 	// http://msdn2.microsoft.com/en-us/library/bb905283.aspx
-	DEFINE_OLEGUID(PSETID_Appointment, MAKELONG(0x2000 + (0x2), 0x0006), 0, 0);
-	DEFINE_OLEGUID(PSETID_Task, MAKELONG(0x2000 + (0x3), 0x0006), 0, 0);
-	DEFINE_OLEGUID(PSETID_Address, MAKELONG(0x2000 + (0x4), 0x0006), 0, 0);
-	DEFINE_OLEGUID(PSETID_Common, MAKELONG(0x2000 + (0x8), 0x0006), 0, 0);
-	DEFINE_OLEGUID(PSETID_Log, MAKELONG(0x2000 + (0xA), 0x0006), 0, 0);
+	DEFINE_OLEGUID(PSETID_Appointment, MAKELONG(0x2000 + 0x2, 0x0006), 0, 0);
+	DEFINE_OLEGUID(PSETID_Task, MAKELONG(0x2000 + 0x3, 0x0006), 0, 0);
+	DEFINE_OLEGUID(PSETID_Address, MAKELONG(0x2000 + 0x4, 0x0006), 0, 0);
+	DEFINE_OLEGUID(PSETID_Common, MAKELONG(0x2000 + 0x8, 0x0006), 0, 0);
+	DEFINE_OLEGUID(PSETID_Log, MAKELONG(0x2000 + 0xA, 0x0006), 0, 0);
 	DEFINE_GUID(PSETID_Meeting, MAKELONG(0xDA90, 0x6ED8), 0x450B, 0x101B, 0x98, 0xDA, 0x0, 0xAA, 0x0, 0x3F, 0x13, 0x05);
 	// [MS-OXPROPS].pdf
-	DEFINE_OLEGUID(PSETID_Note, MAKELONG(0x2000 + (0xE), 0x0006), 0, 0);
-	DEFINE_OLEGUID(PSETID_Report, MAKELONG(0x2000 + (0x13), 0x0006), 0, 0);
-	DEFINE_OLEGUID(PSETID_Remote, MAKELONG(0x2000 + (0x14), 0x0006), 0, 0);
-	DEFINE_OLEGUID(PSETID_Sharing, MAKELONG(0x2000 + (64), 0x0006), 0, 0);
-	DEFINE_OLEGUID(PSETID_PostRss, MAKELONG(0x2000 + (65), 0x0006), 0, 0);
+	DEFINE_OLEGUID(PSETID_Note, MAKELONG(0x2000 + 0xE, 0x0006), 0, 0);
+	DEFINE_OLEGUID(PSETID_Report, MAKELONG(0x2000 + 0x13, 0x0006), 0, 0);
+	DEFINE_OLEGUID(PSETID_Remote, MAKELONG(0x2000 + 0x14, 0x0006), 0, 0);
+	DEFINE_OLEGUID(PSETID_Sharing, MAKELONG(0x2000 + 64, 0x0006), 0, 0);
+	DEFINE_OLEGUID(PSETID_PostRss, MAKELONG(0x2000 + 65, 0x0006), 0, 0);
 	DEFINE_GUID(PSETID_UnifiedMessaging, 0x4442858E, 0xA9E3, 0x4E80, 0xB9, 0x00, 0x31, 0x7A, 0x21, 0x0C, 0xC1, 0x5B);
 	DEFINE_GUID(PSETID_AirSync, 0x71035549, 0x0739, 0x4DCB, 0x91, 0x63, 0x00, 0xF0, 0x58, 0x0D, 0xBB, 0xDF);
 	DEFINE_GUID(PSETID_CalendarAssistant, 0x11000E07, 0xB51B, 0x40D6, 0xAF, 0x21, 0xCA, 0xA8, 0x5E, 0xDA, 0xB1, 0xD0);
@@ -70,7 +70,7 @@ namespace guid
 	// {4b401570-b77b-11d0-9da5-00c04fd65685}
 	DEFINE_GUID(IID_IConverterSession, 0x4b401570, 0xb77b, 0x11d0, 0x9d, 0xa5, 0x0, 0xc0, 0x4f, 0xd6, 0x56, 0x85);
 
-	DEFINE_OLEGUID(PSUNKNOWN, MAKELONG(0x2000 + (999), 0x0006), 0, 0);
+	DEFINE_OLEGUID(PSUNKNOWN, MAKELONG(0x2000 + 999, 0x0006), 0, 0);
 
 	// [MS-OXCDATA].pdf
 	// Exchange Private Store Provider
@@ -133,4 +133,4 @@ namespace guid
 	DEFINE_OLEGUID(CLSID_JournalFolder, 0x00067808, 0, 0);
 	// clang-format on
 #pragma endregion
-}
+} // namespace guid

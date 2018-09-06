@@ -31,7 +31,7 @@ namespace smartview
 	//   https://msdn.microsoft.com/en-us/library/ee217813(v=exchg.80).aspx
 	// Never fails, but will not parse restrictions above _MaxDepth
 	// [MS-OXCDATA] 2.11.4 TaggedPropertyValue Structure
-	const SRestrictionStruct RestrictionStruct::BinToRestriction(ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
+	SRestrictionStruct RestrictionStruct::BinToRestriction(ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
 	{
 		auto srRestriction = SRestrictionStruct{};
 
@@ -167,7 +167,7 @@ namespace smartview
 		return srRestriction;
 	}
 
-	const PropertiesStruct RestrictionStruct::BinToProps(DWORD cValues, bool bRuleCondition)
+	PropertiesStruct RestrictionStruct::BinToProps(DWORD cValues, bool bRuleCondition)
 	{
 		auto props = PropertiesStruct{};
 		props.Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
@@ -358,7 +358,7 @@ namespace smartview
 				L"%1!ws!lpRes->res.resBitMask.ulMask = 0x%2!08X!",
 				szTabs.c_str(),
 				lpRes.resBitMask.ulMask.getData());
-			szPropNum = smartview::InterpretNumberAsStringProp(lpRes.resBitMask.ulMask, lpRes.resBitMask.ulPropTag);
+			szPropNum = InterpretNumberAsStringProp(lpRes.resBitMask.ulMask, lpRes.resBitMask.ulPropTag);
 			if (!szPropNum.empty())
 			{
 				addBlock(lpRes.resBitMask.ulMask, L": %1!ws!", szPropNum.c_str());

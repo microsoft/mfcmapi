@@ -12,13 +12,14 @@ namespace sid
 	struct SidAccount
 	{
 	public:
-		SidAccount(){};
-		SidAccount(std::wstring _domain, std::wstring _name) : domain(_domain), name(_name){};
-		_Check_return_ const std::wstring getDomain() const
+		SidAccount() = default;
+		;
+		SidAccount(const std::wstring& _domain, const std::wstring& _name) : domain(_domain), name(_name){};
+		_Check_return_ std::wstring getDomain() const
 		{
 			return !domain.empty() ? domain : strings::formatmessage(IDS_NODOMAIN);
 		}
-		_Check_return_ const std::wstring getName() const
+		_Check_return_ std::wstring getName() const
 		{
 			return !name.empty() ? name : strings::formatmessage(IDS_NONAME);
 		}
@@ -30,13 +31,13 @@ namespace sid
 
 	struct SecurityDescriptor
 	{
-		SecurityDescriptor(){};
-		SecurityDescriptor(std::wstring _dacl, std::wstring _info) : dacl(_dacl), info(_info){};
+		SecurityDescriptor() = default;
+		SecurityDescriptor(const std::wstring& _dacl, const std::wstring& _info) : dacl(_dacl), info(_info){};
 		std::wstring dacl;
 		std::wstring info;
 	};
 
-	_Check_return_ const std::wstring GetTextualSid(_In_ PSID pSid);
-	_Check_return_ const SidAccount LookupAccountSid(PSID SidStart);
-	_Check_return_ const SecurityDescriptor SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype);
-}
+	_Check_return_ std::wstring GetTextualSid(_In_ PSID pSid);
+	_Check_return_ SidAccount LookupAccountSid(PSID SidStart);
+	_Check_return_ SecurityDescriptor SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype);
+} // namespace sid
