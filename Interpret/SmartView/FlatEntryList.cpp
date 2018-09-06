@@ -3,11 +3,7 @@
 
 namespace smartview
 {
-	FlatEntryList::FlatEntryList()
-	{
-		m_cEntries = 0;
-		m_cbEntries = 0;
-	}
+	FlatEntryList::FlatEntryList() {}
 
 	void FlatEntryList::Parse()
 	{
@@ -33,7 +29,7 @@ namespace smartview
 				const auto dwPAD = 3 - (flatEntryID.dwSize + 3) % 4;
 				if (dwPAD > 0)
 				{
-					flatEntryID.JunkData = m_Parser.GetBYTES(dwPAD);
+					flatEntryID.m_Padding = m_Parser.GetBYTES(dwPAD);
 				}
 
 				m_pEntryIDs.push_back(flatEntryID);
@@ -57,11 +53,12 @@ namespace smartview
 				flatEntryList.push_back(entryID);
 			}
 
-			if (m_pEntryIDs[iFlatEntryList].JunkData.size())
+			if (m_pEntryIDs[iFlatEntryList].m_Padding.size())
 			{
 				flatEntryList.push_back(
-					strings::formatmessage(IDS_FELENTRYPADDING, iFlatEntryList) +
-					JunkDataToString(m_pEntryIDs[iFlatEntryList].JunkData));
+					strings::formatmessage(
+						IDS_FELENTRYPADDING, iFlatEntryList)+
+					strings::BinToHexString(m_pEntryIDs[iFlatEntryList].m_Padding, true));
 			}
 		}
 

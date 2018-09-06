@@ -1,0 +1,9 @@
+Extended Rule Condition
+Number of named props = 0x0000
+Restriction:
+lpRes->rt = 0x4 = RES_PROPERTY
+lpRes->res.resProperty.relop = RELOP_EQ = 0x00000004
+lpRes->res.resProperty.ulPropTag = 0x0059000B (PT_BOOLEAN): PR_MESSAGE_RECIP_ME: (PidTagMessageRecipientMe, ptagMessageRecipMe)
+lpRes->res.resProperty.lpProp->ulPropTag = 0x0059000B (PT_BOOLEAN): PR_MESSAGE_RECIP_ME: (PidTagMessageRecipientMe, ptagMessageRecipMe)
+lpRes->res.resProperty.lpProp->Value = True
+	Alt: 

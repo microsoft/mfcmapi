@@ -120,7 +120,14 @@ namespace smartview
 				pspvProperty[i].Value.err = m_Parser.Get<DWORD>();
 				break;
 			case PT_BOOLEAN:
-				pspvProperty[i].Value.b = m_Parser.Get<WORD>();
+				if (bRuleCondition)
+				{
+					pspvProperty[i].Value.b = m_Parser.Get<BYTE>();
+				}
+				else
+				{
+					pspvProperty[i].Value.b = m_Parser.Get<WORD>();
+				}
 				break;
 			case PT_UNICODE:
 				if (bRuleCondition)
