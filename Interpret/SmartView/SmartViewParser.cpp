@@ -23,14 +23,14 @@ namespace smartview
 
 		if (this->hasData() && m_bEnableJunk && m_Parser.RemainingBytes())
 		{
-			auto junkData = getJunkData();
+			const auto junkData = getJunkData();
 			addBlock(junkData, JunkDataToString(junkData));
 		}
 
 		m_bParsed = true;
 	}
 
-	_Check_return_ const std::wstring SmartViewParser::ToString()
+	_Check_return_ std::wstring SmartViewParser::ToString()
 	{
 		if (m_Parser.Empty()) return L"";
 		EnsureParsed();
@@ -56,4 +56,4 @@ namespace smartview
 		szJunk += strings::BinToHexString(lpJunkData, true);
 		return szJunk;
 	}
-}
+} // namespace smartview

@@ -6,13 +6,14 @@ namespace smartview
 	class block
 	{
 	public:
-		block() : header(true), offset(0), cb(0), text(L"") {}
-		block(const std::wstring _text) : header(true), offset(0), cb(0), text(_text) {}
-		const std::wstring ToString() const
+		block() : offset(0), cb(0), text(L""), header(true) {}
+		block(const std::wstring& _text) : offset(0), cb(0), text(_text), header(true) {}
+
+		std::wstring ToString() const
 		{
 			std::vector<std::wstring> items;
 			items.emplace_back(text);
-			for (auto item : children)
+			for (const auto& item : children)
 			{
 				items.emplace_back(item.ToString());
 			}
@@ -40,9 +41,9 @@ namespace smartview
 			children.push_back(block);
 		}
 		void addBlock(const block& child) { children.push_back(child); }
-		void addBlockBytes(blockBytes child);
+		void addBlockBytes(const blockBytes& child);
 		void addLine() { addHeader(L"\r\n"); }
-		bool hasData() const { return !text.empty() || children.size(); }
+		bool hasData() const { return !text.empty() || !children.empty(); }
 
 	protected:
 		size_t offset;
@@ -57,10 +58,10 @@ namespace smartview
 	class blockBytes : public block
 	{
 	public:
-		blockBytes() {}
+		blockBytes() = default;
 		void setData(const std::vector<BYTE>& data) { _data = data; }
-		const std::vector<BYTE> getData() const { return _data; }
-		operator const std::vector<BYTE>&() { return _data; }
+		std::vector<BYTE> getData() const { return _data; }
+		operator const std::vector<BYTE>&() const { return _data; }
 		operator const std::vector<BYTE>() const { return _data; }
 		size_t size() const noexcept { return _data.size(); }
 		bool empty() const noexcept { return _data.empty(); }
@@ -76,16 +77,21 @@ namespace smartview
 	public:
 		blockT() { memset(&data, 0, sizeof(data)); }
 		void setData(const T& _data) { data = _data; }
-		const T getData() const { return data; }
+		T getData() const { return data; }
 		operator T&() { return data; }
 		operator T() const { return data; }
-		void operator=(const blockT<T>& _data)
+		T& operator=(const blockT<T>& _data)
 		{
 			data = _data.data;
 			cb = _data.getSize();
 			offset = _data.getOffset();
+			return *this;
 		}
-		void operator=(const T& _data) { data = _data; }
+		T& operator=(const T& _data)
+		{
+			data = _data;
+			return *this;
+		}
 
 	private:
 		T data;
@@ -94,9 +100,9 @@ namespace smartview
 	class blockStringA : public block
 	{
 	public:
-		blockStringA() {}
-		void setData(const std::string _data) { data = _data; }
-		const std::string getData() const { return data; }
+		blockStringA() = default;
+		void setData(const std::string& _data) { data = _data; }
+		std::string getData() const { return data; }
 		operator std::string&() { return data; }
 		operator std::string() const { return data; }
 		_Ret_z_ const char* c_str() const noexcept { return data.c_str(); }
@@ -110,9 +116,9 @@ namespace smartview
 	class blockStringW : public block
 	{
 	public:
-		blockStringW() {}
-		void setData(const std::wstring _data) { data = _data; }
-		const std::wstring getData() const { return data; }
+		blockStringW() = default;
+		void setData(const std::wstring& _data) { data = _data; }
+		std::wstring getData() const { return data; }
 		operator std::wstring&() { return data; }
 		operator std::wstring() const { return data; }
 		_Ret_z_ const wchar_t* c_str() const noexcept { return data.c_str(); }
@@ -142,7 +148,7 @@ namespace smartview
 		void SetCurrentOffset(size_t stOffset);
 		size_t RemainingBytes() const;
 
-		template <typename T> const blockT<T> Get()
+		template <typename T> blockT<T> Get()
 		{
 			auto ret = blockT<T>();
 			// TODO: Consider what a failure block really looks like
@@ -156,7 +162,7 @@ namespace smartview
 			return ret;
 		}
 
-		const blockStringA GetStringA(size_t cchChar = -1)
+		blockStringA GetStringA(size_t cchChar = -1)
 		{
 			auto ret = blockStringA();
 			if (cchChar == -1)
@@ -176,7 +182,7 @@ namespace smartview
 			return ret;
 		}
 
-		const blockStringW GetStringW(size_t cchChar = -1)
+		blockStringW GetStringW(size_t cchChar = -1)
 		{
 			auto ret = blockStringW();
 			if (cchChar == -1)
@@ -197,7 +203,7 @@ namespace smartview
 			return ret;
 		}
 
-		const blockBytes GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1)
+		blockBytes GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1)
 		{
 			// TODO: Should we track when the returned byte length is less than requested?
 			auto ret = blockBytes();
@@ -215,11 +221,11 @@ namespace smartview
 			return ret;
 		}
 
-		const blockBytes GetRemainingData() { return GetBYTES(RemainingBytes()); }
+		blockBytes GetRemainingData() { return GetBYTES(RemainingBytes()); }
 
 	private:
 		bool CheckRemainingBytes(size_t cbBytes) const;
 		std::vector<BYTE> m_Bin;
 		size_t m_Offset{};
 	};
-}
+} // namespace smartview
