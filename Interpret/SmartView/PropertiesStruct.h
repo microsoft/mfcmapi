@@ -195,6 +195,6 @@ namespace smartview
 		DWORD m_MaxEntries{_MaxEntriesSmall};
 		std::vector<SPropValueStruct> m_Props;
 
-		_Check_return_ const SPropValueStruct BinToSPropValueStruct();
+		_Check_return_ SPropValueStruct BinToSPropValueStruct();
 	};
-}
+} // namespace smartview
