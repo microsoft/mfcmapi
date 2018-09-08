@@ -143,7 +143,7 @@ namespace interpretprop
 		return szOut;
 	}
 
-		// There may be restrictions with over 100 nested levels, but we're not going to try to parse them
+	// There may be restrictions with over 100 nested levels, but we're not going to try to parse them
 #define _MaxRestrictionNesting 100
 
 	std::wstring RestrictionToString(_In_ const _SRestriction* lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel)
@@ -403,12 +403,10 @@ namespace interpretprop
 		case OP_MOVE:
 		case OP_COPY:
 		{
-			SBinary sBinStore = {0};
-			SBinary sBinFld = {0};
-			sBinStore.cb = action.actMoveCopy.cbStoreEntryId;
-			sBinStore.lpb = reinterpret_cast<LPBYTE>(action.actMoveCopy.lpStoreEntryId);
-			sBinFld.cb = action.actMoveCopy.cbFldEntryId;
-			sBinFld.lpb = reinterpret_cast<LPBYTE>(action.actMoveCopy.lpFldEntryId);
+			auto sBinStore =
+				SBinary{action.actMoveCopy.cbStoreEntryId, reinterpret_cast<LPBYTE>(action.actMoveCopy.lpStoreEntryId)};
+			auto sBinFld =
+				SBinary{action.actMoveCopy.cbFldEntryId, reinterpret_cast<LPBYTE>(action.actMoveCopy.lpFldEntryId)};
 
 			actstring += strings::formatmessage(
 				IDS_ACTIONOPMOVECOPY,
@@ -422,9 +420,7 @@ namespace interpretprop
 		case OP_OOF_REPLY:
 		{
 
-			SBinary sBin = {0};
-			sBin.cb = action.actReply.cbEntryId;
-			sBin.lpb = reinterpret_cast<LPBYTE>(action.actReply.lpEntryId);
+			auto sBin = SBinary{action.actReply.cbEntryId, reinterpret_cast<LPBYTE>(action.actReply.lpEntryId)};
 			auto szGUID = guid::GUIDToStringAndName(&action.actReply.guidReplyTemplate);
 
 			actstring += strings::formatmessage(
@@ -436,9 +432,7 @@ namespace interpretprop
 		}
 		case OP_DEFER_ACTION:
 		{
-			SBinary sBin = {0};
-			sBin.cb = action.actDeferAction.cbData;
-			sBin.lpb = static_cast<LPBYTE>(action.actDeferAction.pbData);
+			auto sBin = SBinary{action.actDeferAction.cbData, static_cast<LPBYTE>(action.actDeferAction.pbData)};
 
 			actstring += strings::formatmessage(
 				IDS_ACTIONOPDEFER,
@@ -596,7 +590,7 @@ namespace interpretprop
 		if (lpTag1->ulSortOrder < lpTag2->ulSortOrder) return false;
 		if (lpTag1->ulSortOrder == lpTag2->ulSortOrder)
 		{
-			return wcscmp(lpTag1->lpszName, lpTag2->lpszName) > 0 ? false : true;
+			return wcscmp(lpTag1->lpszName, lpTag2->lpszName) <= 0;
 		}
 		return true;
 	}
@@ -1030,4 +1024,4 @@ namespace interpretprop
 
 		return szFlagString;
 	}
-}
+} // namespace interpretprop

@@ -519,4 +519,4 @@ namespace SmartViewTest
 			}));
 		}
 	};
-}
+} // namespace SmartViewTest

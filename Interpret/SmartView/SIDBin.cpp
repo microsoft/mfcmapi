@@ -8,7 +8,7 @@ namespace smartview
 
 	void SIDBin::ParseBlocks()
 	{
-		auto piSid = reinterpret_cast<PISID>(const_cast<LPBYTE>(m_SIDbin.data()));
+		const auto piSid = reinterpret_cast<PISID>(const_cast<LPBYTE>(m_SIDbin.data()));
 		auto sidAccount = sid::SidAccount{};
 		auto sidString = std::wstring{};
 		if (!m_SIDbin.empty() &&
@@ -25,4 +25,4 @@ namespace smartview
 		if (sidString.empty()) sidString = strings::formatmessage(IDS_NOSID);
 		addBlock(m_SIDbin, L"Textual SID: %1!ws!", sidString.c_str());
 	}
-}
+} // namespace smartview

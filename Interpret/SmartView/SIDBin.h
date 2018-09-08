@@ -11,4 +11,4 @@ namespace smartview
 
 		blockBytes m_SIDbin;
 	};
-}
+} // namespace smartview
