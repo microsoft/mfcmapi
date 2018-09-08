@@ -64,19 +64,27 @@ namespace smartview
 		const auto cbRemaining = RemainingBytes();
 		if (cbBytes > cbRemaining)
 		{
-			output::DebugPrintEx(
-				DBGSmartView,
-				CLASS,
-				L"CheckRemainingBytes",
-				L"Bytes requested (0x%08X = %u) > remaining bytes (0x%08X = %u)\n",
-				static_cast<int>(cbBytes),
-				static_cast<UINT>(cbBytes),
-				static_cast<int>(cbRemaining),
-				static_cast<UINT>(cbRemaining));
-			output::DebugPrintEx(
-				DBGSmartView, CLASS, L"CheckRemainingBytes", L"Total Bytes: 0x%08X = %u\n", m_Bin.size(), m_Bin.size());
-			output::DebugPrintEx(
-				DBGSmartView, CLASS, L"CheckRemainingBytes", L"Current offset: 0x%08X = %d\n", m_Offset, m_Offset);
+			if (fIsSetv(DBGSmartView))
+			{
+				output::DebugPrintEx(
+					DBGSmartView,
+					CLASS,
+					L"CheckRemainingBytes",
+					L"Bytes requested (0x%08X = %u) > remaining bytes (0x%08X = %u)\n",
+					static_cast<int>(cbBytes),
+					static_cast<UINT>(cbBytes),
+					static_cast<int>(cbRemaining),
+					static_cast<UINT>(cbRemaining));
+				output::DebugPrintEx(
+					DBGSmartView,
+					CLASS,
+					L"CheckRemainingBytes",
+					L"Total Bytes: 0x%08X = %u\n",
+					m_Bin.size(),
+					m_Bin.size());
+				output::DebugPrintEx(
+					DBGSmartView, CLASS, L"CheckRemainingBytes", L"Current offset: 0x%08X = %d\n", m_Offset, m_Offset);
+			}
 			return false;
 		}
 
