@@ -24,4 +24,4 @@ namespace smartview
 		ULONG m_ulResponseLevels;
 		std::vector<ResponseLevel> m_lpResponseLevels;
 	};
-}
+} // namespace smartview

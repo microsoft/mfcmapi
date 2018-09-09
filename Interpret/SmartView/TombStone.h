@@ -28,4 +28,4 @@ namespace smartview
 		blockT<DWORD> m_RecordsSize;
 		std::vector<TombstoneRecord> m_lpRecords;
 	};
-}
+} // namespace smartview

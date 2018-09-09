@@ -327,5 +327,5 @@ namespace mapi
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::LookupSids\n");
 			return E_NOTIMPL;
 		}
-	}
-}
+	} // namespace mapiui
+} // namespace mapi

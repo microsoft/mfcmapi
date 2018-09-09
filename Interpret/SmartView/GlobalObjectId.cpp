@@ -82,4 +82,4 @@ namespace smartview
 			addBlock(m_lpData);
 		}
 	}
-}
+} // namespace smartview

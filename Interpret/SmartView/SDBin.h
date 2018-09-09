@@ -18,4 +18,4 @@ namespace smartview
 		bool m_bFB{};
 		blockBytes m_SDbin;
 	};
-}
+} // namespace smartview

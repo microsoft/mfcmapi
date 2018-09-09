@@ -18,4 +18,4 @@ namespace smartview
 		blockT<DWORD> m_dwSize;
 		blockBytes m_lpData;
 	};
-}
+} // namespace smartview

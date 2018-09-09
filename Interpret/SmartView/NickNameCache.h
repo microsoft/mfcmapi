@@ -25,4 +25,4 @@ namespace smartview
 		blockBytes m_lpbEI;
 		blockBytes m_Metadata2; // 8 bytes
 	};
-}
+} // namespace smartview

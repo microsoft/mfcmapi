@@ -41,4 +41,4 @@ namespace smartview
 		blockT<DWORD> m_SkipLen3;
 		blockBytes m_SkipBytes3;
 	};
-}
+} // namespace smartview

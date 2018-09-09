@@ -8,7 +8,8 @@ namespace smartview
 	// =====================
 	//   This structure specifies the details of the recurrence type
 	//
-	struct PatternTypeSpecific {
+	struct PatternTypeSpecific
+	{
 		blockT<DWORD> WeekRecurrencePattern;
 		blockT<DWORD> MonthRecurrencePattern;
 		struct
@@ -45,4 +46,4 @@ namespace smartview
 		blockT<DWORD> m_StartDate;
 		blockT<DWORD> m_EndDate;
 	};
-}
+} // namespace smartview

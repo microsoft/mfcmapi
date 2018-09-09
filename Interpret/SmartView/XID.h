@@ -13,4 +13,4 @@ namespace smartview
 		size_t m_cbLocalId{};
 		blockBytes m_LocalID;
 	};
-}
+} // namespace smartview

@@ -100,4 +100,4 @@ namespace smartview
 			addBlock(m_lpszAnsiText, L"AnsiText = %1!hs!", m_lpszAnsiText.c_str());
 		}
 	}
-}
+} // namespace smartview

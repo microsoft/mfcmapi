@@ -52,4 +52,4 @@ namespace smartview
 		RestrictionStruct m_lpRes;
 		bool m_bExtended{};
 	};
-}
+} // namespace smartview

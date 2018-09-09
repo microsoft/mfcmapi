@@ -148,4 +148,4 @@ namespace smartview
 		ContactAddressBookObject m_ContactAddressBookObject;
 		WAB m_WAB;
 	};
-}
+} // namespace smartview

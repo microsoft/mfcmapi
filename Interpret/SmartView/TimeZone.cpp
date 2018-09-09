@@ -85,4 +85,4 @@ namespace smartview
 			L"stDaylightDate.wMilliseconds = 0x%1!X! (%1!d!)",
 			m_stDaylightDate.wMilliseconds.getData());
 	}
-}
+} // namespace smartview

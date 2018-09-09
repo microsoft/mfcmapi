@@ -44,4 +44,4 @@ namespace smartview
 		blockT<DWORD> m_FolderUserFieldsUnicodeCount;
 		std::vector<FolderFieldDefinitionW> m_FieldDefinitionsW;
 	};
-}
+} // namespace smartview

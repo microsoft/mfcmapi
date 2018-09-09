@@ -184,4 +184,4 @@ namespace smartview
 		BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_PUBLISH_END, IDS_STLONGRTIME)
 		// clang-format on
 	};
-}
+} // namespace smartview

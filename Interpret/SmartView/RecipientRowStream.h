@@ -21,4 +21,4 @@ namespace smartview
 		blockT<DWORD> m_cRowCount;
 		std::vector<ADRENTRYStruct> m_lpAdrEntry;
 	};
-}
+} // namespace smartview

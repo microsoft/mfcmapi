@@ -36,4 +36,4 @@ namespace smartview
 		blockT<WORD> m_wDaylightDate;
 		SYSTEMTIMEBlock m_stDaylightDate; // time to switch to daylight time
 	};
-}
+} // namespace smartview

@@ -26,4 +26,4 @@ namespace smartview
 		ULONG m_ulNumFlags{};
 		std::vector<ExtendedFlag> m_pefExtendedFlags;
 	};
-}
+} // namespace smartview

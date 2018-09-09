@@ -22,4 +22,4 @@ namespace smartview
 		DWORD m_cWebViews{};
 		std::vector<WebViewPersist> m_lpWebViews;
 	};
-}
+} // namespace smartview

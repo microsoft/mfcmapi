@@ -23,4 +23,4 @@ namespace smartview
 		blockT<DWORD> m_cAssigners;
 		std::vector<TaskAssigner> m_lpTaskAssigners;
 	};
-}
+} // namespace smartview

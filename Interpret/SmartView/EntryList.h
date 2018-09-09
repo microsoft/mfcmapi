@@ -22,4 +22,4 @@ namespace smartview
 
 		std::vector<EntryListEntryStruct> m_Entry;
 	};
-}
+} // namespace smartview

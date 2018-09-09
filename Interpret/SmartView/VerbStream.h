@@ -44,4 +44,4 @@ namespace smartview
 		blockT<WORD> m_Version2;
 		std::vector<VerbExtraData> m_lpVerbExtraData;
 	};
-}
+} // namespace smartview

@@ -52,4 +52,4 @@ namespace smartview
 		addHeader(L"Descriptor:\r\n");
 		addBlock(m_SDbin, sd.dacl);
 	}
-}
+} // namespace smartview

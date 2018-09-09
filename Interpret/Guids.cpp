@@ -161,4 +161,4 @@ namespace guid
 
 		return guid;
 	}
-}
+} // namespace guid

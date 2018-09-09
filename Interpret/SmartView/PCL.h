@@ -21,4 +21,4 @@ namespace smartview
 		DWORD m_cXID{};
 		std::vector<SizedXID> m_lpXID;
 	};
-}
+} // namespace smartview

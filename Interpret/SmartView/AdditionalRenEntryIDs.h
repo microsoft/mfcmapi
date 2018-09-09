@@ -28,4 +28,4 @@ namespace smartview
 
 		std::vector<PersistData> m_ppdPersistData;
 	};
-}
+} // namespace smartview

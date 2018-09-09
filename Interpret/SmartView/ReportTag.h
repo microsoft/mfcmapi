@@ -25,4 +25,4 @@ namespace smartview
 		blockT<ULONG> m_cchAnsiText;
 		blockStringA m_lpszAnsiText;
 	};
-}
+} // namespace smartview

@@ -77,4 +77,4 @@ namespace smartview
 		blockT<DWORD> m_ReservedBlock2Size;
 		blockBytes m_ReservedBlock2;
 	};
-}
+} // namespace smartview

@@ -50,4 +50,4 @@ namespace smartview
 		blockT<DWORD> m_dwFieldDefinitionCount;
 		std::vector<FieldDefinition> m_pfdFieldDefinitions;
 	};
-}
+} // namespace smartview

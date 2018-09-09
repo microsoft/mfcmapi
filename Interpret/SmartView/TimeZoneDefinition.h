@@ -44,4 +44,4 @@ namespace smartview
 		blockT<WORD> m_cRules;
 		std::vector<TZRule> m_lpTZRule;
 	};
-}
+} // namespace smartview

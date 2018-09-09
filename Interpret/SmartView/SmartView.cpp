@@ -585,4 +585,4 @@ namespace smartview
 
 		return strings::formatmessage(IDS_FIDMIDFORMAT, WGetReplId(*pid), UllGetIdGlobcnt(*pid));
 	}
-}
+} // namespace smartview
