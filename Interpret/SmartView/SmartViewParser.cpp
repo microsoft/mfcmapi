@@ -9,7 +9,7 @@ namespace smartview
 		m_bEnableJunk = true;
 	}
 
-	void SmartViewParser::Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { m_Parser.Init(cbBin, lpBin); }
+	void SmartViewParser::init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { m_Parser.init(cbBin, lpBin); }
 
 	void SmartViewParser::DisableJunkParsing() { m_bEnableJunk = false; }
 
@@ -17,7 +17,7 @@ namespace smartview
 
 	void SmartViewParser::EnsureParsed()
 	{
-		if (m_bParsed || m_Parser.Empty()) return;
+		if (m_bParsed || m_Parser.empty()) return;
 		Parse();
 		ParseBlocks();
 
@@ -32,7 +32,7 @@ namespace smartview
 
 	_Check_return_ std::wstring SmartViewParser::ToString()
 	{
-		if (m_Parser.Empty()) return L"";
+		if (m_Parser.empty()) return L"";
 		EnsureParsed();
 
 		auto szParsedString = strings::trimWhitespace(data.ToString());

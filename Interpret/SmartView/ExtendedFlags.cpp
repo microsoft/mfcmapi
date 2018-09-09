@@ -18,12 +18,12 @@ namespace smartview
 			// Must have at least cbData bytes left to be a valid flag
 			if (m_Parser.RemainingBytes() < cbData) break;
 
-			m_Parser.Advance(cbData);
+			m_Parser.advance(cbData);
 			m_ulNumFlags++;
 		}
 
 		// Now we parse for real
-		m_Parser.Rewind();
+		m_Parser.rewind();
 
 		if (m_ulNumFlags && m_ulNumFlags < _MaxEntriesSmall)
 		{

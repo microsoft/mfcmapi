@@ -15,14 +15,14 @@ namespace smartview
 			const auto XidSize = m_Parser.Get<BYTE>();
 			if (m_Parser.RemainingBytes() >= XidSize)
 			{
-				m_Parser.Advance(XidSize);
+				m_Parser.advance(XidSize);
 			}
 
 			m_cXID++;
 		}
 
 		// Now we parse for real
-		m_Parser.Rewind();
+		m_Parser.rewind();
 
 		if (m_cXID && m_cXID < _MaxEntriesSmall)
 		{

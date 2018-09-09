@@ -21,11 +21,11 @@ namespace smartview
 
 				if (entry.cValues && entry.cValues < _MaxEntriesSmall)
 				{
-					entry.rgPropVals.Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
+					entry.rgPropVals.init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 					entry.rgPropVals.DisableJunkParsing();
 					entry.rgPropVals.SetMaxEntries(entry.cValues);
 					entry.rgPropVals.EnsureParsed();
-					m_Parser.Advance(entry.rgPropVals.GetCurrentOffset());
+					m_Parser.advance(entry.rgPropVals.GetCurrentOffset());
 				}
 
 				m_lpAdrEntry.push_back(entry);

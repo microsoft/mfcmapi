@@ -9,10 +9,10 @@ namespace smartview
 {
 	void AppointmentRecurrencePattern::Parse()
 	{
-		m_RecurrencePattern.Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
+		m_RecurrencePattern.init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 		m_RecurrencePattern.DisableJunkParsing();
 		m_RecurrencePattern.EnsureParsed();
-		m_Parser.Advance(m_RecurrencePattern.GetCurrentOffset());
+		m_Parser.advance(m_RecurrencePattern.GetCurrentOffset());
 
 		m_ReaderVersion2 = m_Parser.Get<DWORD>();
 		m_WriterVersion2 = m_Parser.Get<DWORD>();

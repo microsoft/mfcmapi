@@ -95,7 +95,7 @@ namespace smartview
 		case IDS_STRESTRICTION:
 		{
 			auto parser = new (std::nothrow) RestrictionStruct();
-			if (parser) parser->Init(false, true);
+			if (parser) parser->init(false, true);
 			return parser;
 		}
 		case IDS_STPROPERTIES:
@@ -494,7 +494,7 @@ namespace smartview
 		auto svp = GetSmartViewParser(iStructType, lpMAPIProp);
 		if (svp)
 		{
-			svp->Init(myBin.cb, myBin.lpb);
+			svp->init(myBin.cb, myBin.lpb);
 			szResultString = svp->ToString();
 			delete svp;
 			return szResultString;

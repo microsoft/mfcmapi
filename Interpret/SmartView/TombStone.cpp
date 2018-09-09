@@ -21,8 +21,8 @@ namespace smartview
 			if (m_Parser.RemainingBytes() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
 			(void) m_Parser.Get<DWORD>();
 			(void) m_Parser.Get<DWORD>();
-			m_Parser.Advance(m_Parser.Get<DWORD>());
-			m_Parser.Advance(m_Parser.Get<WORD>());
+			m_Parser.advance(m_Parser.Get<DWORD>());
+			m_Parser.advance(m_Parser.Get<WORD>());
 			m_ActualRecordsCount++;
 		}
 

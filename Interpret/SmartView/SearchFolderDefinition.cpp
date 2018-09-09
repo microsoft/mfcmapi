@@ -51,10 +51,10 @@ namespace smartview
 		{
 			auto cbRemainingBytes = m_Parser.RemainingBytes();
 			cbRemainingBytes = min(m_FolderList2Length, cbRemainingBytes);
-			m_FolderList2.Init(cbRemainingBytes, m_Parser.GetCurrentAddress());
+			m_FolderList2.init(cbRemainingBytes, m_Parser.GetCurrentAddress());
 			m_FolderList2.EnsureParsed();
 
-			m_Parser.Advance(cbRemainingBytes);
+			m_Parser.advance(cbRemainingBytes);
 		}
 
 		if (SFST_BINARY & m_Flags)
@@ -70,11 +70,11 @@ namespace smartview
 					addressListEntryStruct.Pad = m_Parser.Get<DWORD>();
 					if (addressListEntryStruct.PropertyCount)
 					{
-						addressListEntryStruct.Props.Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
+						addressListEntryStruct.Props.init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 						addressListEntryStruct.Props.SetMaxEntries(addressListEntryStruct.PropertyCount);
 						addressListEntryStruct.Props.DisableJunkParsing();
 						addressListEntryStruct.Props.EnsureParsed();
-						m_Parser.Advance(addressListEntryStruct.Props.GetCurrentOffset());
+						m_Parser.advance(addressListEntryStruct.Props.GetCurrentOffset());
 					}
 
 					m_Addresses.push_back(addressListEntryStruct);
@@ -88,13 +88,13 @@ namespace smartview
 		if (SFST_MRES & m_Flags)
 		{
 			RestrictionStruct res;
-			res.Init(false, true);
-			res.SmartViewParser::Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
+			res.init(false, true);
+			res.SmartViewParser::init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 			res.DisableJunkParsing();
 			m_Restriction = blockStringW{};
 			// TODO: Make this a proper block
 			m_Restriction.setData(res.ToString());
-			m_Parser.Advance(res.GetCurrentOffset());
+			m_Parser.advance(res.GetCurrentOffset());
 		}
 
 		if (SFST_FILTERSTREAM & m_Flags)

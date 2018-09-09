@@ -22,7 +22,7 @@ namespace smartview
 				taskAssigner.wzDisplayName = AssignerParser.GetStringW();
 				taskAssigner.JunkData = AssignerParser.GetRemainingData();
 
-				m_Parser.Advance(ulSize);
+				m_Parser.advance(ulSize);
 				m_lpTaskAssigners.push_back(taskAssigner);
 			}
 		}

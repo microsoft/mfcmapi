@@ -20,7 +20,7 @@ namespace smartview
 		SmartViewParser();
 		virtual ~SmartViewParser() = default;
 
-		void Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin);
+		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin);
 		_Check_return_  std::wstring ToString();
 
 		void DisableJunkParsing();

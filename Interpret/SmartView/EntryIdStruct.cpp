@@ -117,10 +117,10 @@ namespace smartview
 				}
 
 				EntryIdStruct entryIdStruct;
-				entryIdStruct.Init(cbRemainingBytes, m_Parser.GetCurrentAddress());
+				entryIdStruct.init(cbRemainingBytes, m_Parser.GetCurrentAddress());
 				entryIdStruct.DisableJunkParsing();
 				entryIdStruct.EnsureParsed();
-				m_Parser.Advance(entryIdStruct.GetCurrentOffset());
+				m_Parser.advance(entryIdStruct.GetCurrentOffset());
 				m_ContactAddressBookObject.lpEntryID.push_back(entryIdStruct);
 			}
 			break;
@@ -131,10 +131,10 @@ namespace smartview
 				m_WAB.Type = m_Parser.Get<BYTE>();
 
 				EntryIdStruct entryIdStruct;
-				entryIdStruct.Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
+				entryIdStruct.init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 				entryIdStruct.DisableJunkParsing();
 				entryIdStruct.EnsureParsed();
-				m_Parser.Advance(entryIdStruct.GetCurrentOffset());
+				m_Parser.advance(entryIdStruct.GetCurrentOffset());
 				m_WAB.lpEntryID.push_back(entryIdStruct);
 			}
 			break;
@@ -158,7 +158,7 @@ namespace smartview
 					m_MessageDatabaseObject.bIsExchange = true;
 					auto cbRead = m_Parser.GetCurrentOffset();
 					// Advance to the next multiple of 4
-					m_Parser.Advance(3 - (cbRead + 3) % 4);
+					m_Parser.advance(3 - (cbRead + 3) % 4);
 					m_MessageDatabaseObject.WrappedFlags = m_Parser.Get<DWORD>();
 					m_MessageDatabaseObject.WrappedProviderUID = m_Parser.Get<GUID>();
 					m_MessageDatabaseObject.WrappedType = m_Parser.Get<DWORD>();

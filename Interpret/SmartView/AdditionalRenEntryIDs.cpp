@@ -20,13 +20,13 @@ namespace smartview
 			// Must have at least wDataElementSize bytes left to be a valid data element
 			if (m_Parser.RemainingBytes() < wDataElementSize) break;
 
-			m_Parser.Advance(wDataElementSize);
+			m_Parser.advance(wDataElementSize);
 			wPersistDataCount++;
 			if (wPersistID == PERISIST_SENTINEL) break;
 		}
 
 		// Now we parse for real
-		m_Parser.Rewind();
+		m_Parser.rewind();
 
 		if (wPersistDataCount && wPersistDataCount < _MaxEntriesSmall)
 		{
@@ -58,7 +58,7 @@ namespace smartview
 				// Must have at least wElementDataSize bytes left to be a valid element data
 				if (DataElementParser.RemainingBytes() < wElementDataSize) break;
 
-				DataElementParser.Advance(wElementDataSize);
+				DataElementParser.advance(wElementDataSize);
 				wDataElementCount++;
 				if (wElementID == ELEMENT_SENTINEL) break;
 			}

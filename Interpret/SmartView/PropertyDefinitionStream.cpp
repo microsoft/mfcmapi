@@ -79,7 +79,7 @@ namespace smartview
 						dwSkipBlockCount++;
 						const auto dwBlock = m_Parser.Get<DWORD>();
 						if (!dwBlock) break; // we hit the last, zero byte block, or the end of the buffer
-						m_Parser.Advance(dwBlock);
+						m_Parser.advance(dwBlock);
 					}
 
 					m_Parser.SetCurrentOffset(stBookmark); // We're done with our first pass, restore the bookmark

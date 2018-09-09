@@ -12,17 +12,17 @@ namespace smartview
 	class CBinaryParser
 	{
 	public:
-		CBinaryParser() {}
-		CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { Init(cbBin, lpBin); }
-		void Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
+		CBinaryParser() = default;
+		CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { init(cbBin, lpBin); }
+		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 		{
 			m_Bin = lpBin && cbBin ? std::vector<BYTE>(lpBin, lpBin + cbBin) : std::vector<BYTE>{};
 			m_Offset = 0;
 		}
 
-		bool Empty() const { return m_Bin.empty(); }
-		void Advance(size_t cbAdvance) { m_Offset += cbAdvance; }
-		void Rewind() { m_Offset = 0; }
+		bool empty() const { return m_Bin.empty(); }
+		void advance(size_t cbAdvance) { m_Offset += cbAdvance; }
+		void rewind() { m_Offset = 0; }
 		size_t GetCurrentOffset() const { return m_Offset; }
 		const BYTE* GetCurrentAddress() const { return m_Bin.data() + m_Offset; }
 		// Moves the parser to an offset obtained from GetCurrentOffset
@@ -35,10 +35,10 @@ namespace smartview
 
 		template <typename T> blockT<T> Get()
 		{
-			auto ret = blockT<T>();
 			// TODO: Consider what a failure block really looks like
-			if (!CheckRemainingBytes(sizeof T)) return ret;
+			if (!CheckRemainingBytes(sizeof T)) return {};
 
+			auto ret = blockT<T>();
 			ret.setOffset(m_Offset);
 			// TODO: Can we remove this cast?
 			ret.setData(*reinterpret_cast<const T*>(GetCurrentAddress()));
@@ -49,7 +49,6 @@ namespace smartview
 
 		blockStringA GetStringA(size_t cchChar = -1)
 		{
-			auto ret = blockStringA();
 			if (cchChar == -1)
 			{
 				cchChar =
@@ -57,8 +56,9 @@ namespace smartview
 					1;
 			}
 
-			if (!cchChar || !CheckRemainingBytes(sizeof CHAR * cchChar)) return ret;
+			if (!cchChar || !CheckRemainingBytes(sizeof CHAR * cchChar)) return {};
 
+			auto ret = blockStringA();
 			ret.setOffset(m_Offset);
 			ret.setData(
 				strings::RemoveInvalidCharactersA(std::string(reinterpret_cast<LPCSTR>(GetCurrentAddress()), cchChar)));
@@ -69,7 +69,6 @@ namespace smartview
 
 		blockStringW GetStringW(size_t cchChar = -1)
 		{
-			auto ret = blockStringW();
 			if (cchChar == -1)
 			{
 				cchChar =
@@ -78,8 +77,9 @@ namespace smartview
 					1;
 			}
 
-			if (!cchChar || !CheckRemainingBytes(sizeof WCHAR * cchChar)) return ret;
+			if (!cchChar || !CheckRemainingBytes(sizeof WCHAR * cchChar)) return {};
 
+			auto ret = blockStringW();
 			ret.setOffset(m_Offset);
 			ret.setData(strings::RemoveInvalidCharactersW(
 				std::wstring(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), cchChar)));

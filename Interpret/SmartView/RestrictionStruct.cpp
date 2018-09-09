@@ -8,7 +8,7 @@
 
 namespace smartview
 {
-	void RestrictionStruct::Init(bool bRuleCondition, bool bExtended)
+	void RestrictionStruct::init(bool bRuleCondition, bool bExtended)
 	{
 		m_bRuleCondition = bRuleCondition;
 		m_bExtended = bExtended;
@@ -175,12 +175,12 @@ namespace smartview
 	PropertiesStruct RestrictionStruct::BinToProps(DWORD cValues, bool bRuleCondition)
 	{
 		auto props = PropertiesStruct{};
-		props.Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
+		props.init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 		props.DisableJunkParsing();
 		props.SetMaxEntries(cValues);
 		if (bRuleCondition) props.EnableRuleConditionParsing();
 		props.EnsureParsed();
-		m_Parser.Advance(props.GetCurrentOffset());
+		m_Parser.advance(props.GetCurrentOffset());
 
 		return props;
 	}
