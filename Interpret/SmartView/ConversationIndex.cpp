@@ -60,6 +60,7 @@ namespace smartview
 
 		if (m_ulResponseLevels && m_ulResponseLevels < _MaxEntriesSmall)
 		{
+			m_lpResponseLevels.reserve(m_ulResponseLevels);
 			for (ULONG i = 0; i < m_ulResponseLevels; i++)
 			{
 				ResponseLevel responseLevel{};
@@ -69,8 +70,7 @@ namespace smartview
 				auto r4 = m_Parser.Get<BYTE>();
 				responseLevel.TimeDelta.setOffset(r1.getOffset());
 				responseLevel.TimeDelta.setSize(r1.getSize() + r2.getSize() + r3.getSize() + r4.getSize());
-				responseLevel.TimeDelta.setData(
-					r1 << 24 | r2 << 16 | r3 << 8 | r4);
+				responseLevel.TimeDelta.setData(r1 << 24 | r2 << 16 | r3 << 8 | r4);
 
 				responseLevel.DeltaCode.setOffset(responseLevel.TimeDelta.getOffset());
 				responseLevel.DeltaCode.setSize(responseLevel.TimeDelta.getSize());
@@ -138,4 +138,4 @@ namespace smartview
 			}
 		}
 	}
-}
+} // namespace smartview

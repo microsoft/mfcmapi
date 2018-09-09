@@ -30,6 +30,7 @@ namespace smartview
 
 		if (wPersistDataCount && wPersistDataCount < _MaxEntriesSmall)
 		{
+			m_ppdPersistData.reserve(wPersistDataCount);
 			for (WORD iPersistElement = 0; iPersistElement < wPersistDataCount; iPersistElement++)
 			{
 				m_ppdPersistData.push_back(BinToPersistData());
@@ -65,6 +66,7 @@ namespace smartview
 
 		if (wDataElementCount && wDataElementCount < _MaxEntriesSmall)
 		{
+			persistData.ppeDataElement.reserve(wDataElementCount);
 			for (WORD iDataElement = 0; iDataElement < wDataElementCount; iDataElement++)
 			{
 				PersistElement persistElement;
@@ -143,4 +145,4 @@ namespace smartview
 			}
 		}
 	}
-}
+} // namespace smartview

@@ -11,22 +11,21 @@ namespace smartview
 
 		if (m_EntryCount && m_EntryCount < _MaxEntriesLarge)
 		{
+			m_Entry.reserve(m_EntryCount);
+			for (DWORD i = 0; i < m_EntryCount; i++)
 			{
-				for (DWORD i = 0; i < m_EntryCount; i++)
-				{
-					EntryListEntryStruct entryListEntryStruct;
-					entryListEntryStruct.EntryLength = m_Parser.Get<DWORD>();
-					entryListEntryStruct.EntryLengthPad = m_Parser.Get<DWORD>();
-					m_Entry.push_back(entryListEntryStruct);
-				}
+				EntryListEntryStruct entryListEntryStruct;
+				entryListEntryStruct.EntryLength = m_Parser.Get<DWORD>();
+				entryListEntryStruct.EntryLengthPad = m_Parser.Get<DWORD>();
+				m_Entry.push_back(entryListEntryStruct);
+			}
 
-				for (DWORD i = 0; i < m_EntryCount; i++)
-				{
-					const auto cbRemainingBytes = min(m_Entry[i].EntryLength, m_Parser.RemainingBytes());
-					m_Entry[i].EntryId.Init(cbRemainingBytes, m_Parser.GetCurrentAddress());
-					m_Entry[i].EntryId.EnsureParsed();
-					m_Parser.Advance(cbRemainingBytes);
-				}
+			for (DWORD i = 0; i < m_EntryCount; i++)
+			{
+				const auto cbRemainingBytes = min(m_Entry[i].EntryLength, m_Parser.RemainingBytes());
+				m_Entry[i].EntryId.Init(cbRemainingBytes, m_Parser.GetCurrentAddress());
+				m_Entry[i].EntryId.EnsureParsed();
+				m_Parser.Advance(cbRemainingBytes);
 			}
 		}
 	}
@@ -46,4 +45,4 @@ namespace smartview
 			addBlock(m_Entry[i].EntryId.getBlock());
 		}
 	}
-}
+} // namespace smartview

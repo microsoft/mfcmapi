@@ -11,6 +11,7 @@ namespace smartview
 		m_FolderUserFieldsAnsiCount = m_Parser.Get<DWORD>();
 		if (m_FolderUserFieldsAnsiCount && m_FolderUserFieldsAnsiCount < _MaxEntriesSmall)
 		{
+			m_FieldDefinitionsA.reserve(m_FolderUserFieldsAnsiCount);
 			for (DWORD i = 0; i < m_FolderUserFieldsAnsiCount; i++)
 			{
 				FolderFieldDefinitionA folderFieldDefinitionA;
@@ -30,6 +31,7 @@ namespace smartview
 		m_FolderUserFieldsUnicodeCount = m_Parser.Get<DWORD>();
 		if (m_FolderUserFieldsUnicodeCount && m_FolderUserFieldsUnicodeCount < _MaxEntriesSmall)
 		{
+			m_FieldDefinitionsW.reserve(m_FolderUserFieldsUnicodeCount);
 			for (DWORD i = 0; i < m_FolderUserFieldsUnicodeCount; i++)
 			{
 				FolderFieldDefinitionW folderFieldDefinitionW;
@@ -195,4 +197,4 @@ namespace smartview
 			L"FolderUserFieldUnicode.FieldDefinitionCount = %1!d!",
 			m_FolderUserFieldsUnicodeCount.getData());
 	}
-}
+} // namespace smartview

@@ -638,4 +638,4 @@ namespace smartview
 			addBlockBytes(m_FolderOrMessage.MessageObject.Pad2);
 		}
 	}
-}
+} // namespace smartview

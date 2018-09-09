@@ -12,6 +12,7 @@ namespace smartview
 
 		if (m_Count && m_Count < _MaxEntriesSmall)
 		{
+			m_lpVerbData.reserve(m_Count);
 			for (ULONG i = 0; i < m_Count; i++)
 			{
 				VerbData verbData;
@@ -40,6 +41,7 @@ namespace smartview
 
 		if (m_Count && m_Count < _MaxEntriesSmall)
 		{
+			m_lpVerbExtraData.reserve(m_Count);
 			for (ULONG i = 0; i < m_Count; i++)
 			{
 				VerbExtraData verbExtraData;
@@ -135,4 +137,4 @@ namespace smartview
 				m_lpVerbExtraData[i].DisplayNameRepeat.c_str());
 		}
 	}
-}
+} // namespace smartview

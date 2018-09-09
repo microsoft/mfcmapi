@@ -13,6 +13,7 @@ namespace smartview
 
 		if (m_cRowCount && m_cRowCount < _MaxEntriesEnormous)
 		{
+			m_lpRows.reserve(m_cRowCount);
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
 				auto row = SRowStruct{};
@@ -70,4 +71,4 @@ namespace smartview
 		addHeader(L"Metadata 2 = ");
 		addBlockBytes(m_Metadata2);
 	}
-}
+} // namespace smartview

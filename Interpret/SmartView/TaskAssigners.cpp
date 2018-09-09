@@ -9,6 +9,7 @@ namespace smartview
 
 		if (m_cAssigners && m_cAssigners < _MaxEntriesSmall)
 		{
+			m_lpTaskAssigners.reserve(m_cAssigners);
 			for (DWORD i = 0; i < m_cAssigners; i++)
 			{
 				TaskAssigner taskAssigner;
@@ -69,4 +70,4 @@ namespace smartview
 			}
 		}
 	}
-}
+} // namespace smartview

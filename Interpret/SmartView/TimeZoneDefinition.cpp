@@ -17,6 +17,7 @@ namespace smartview
 
 		if (m_cRules && m_cRules < _MaxEntriesSmall)
 		{
+			m_lpTZRule.reserve(m_cRules);
 			for (ULONG i = 0; i < m_cRules; i++)
 			{
 				TZRule tzRule;
@@ -194,4 +195,4 @@ namespace smartview
 				m_lpTZRule[i].stDaylightDate.wMilliseconds.getData());
 		}
 	}
-}
+} // namespace smartview

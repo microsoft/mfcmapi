@@ -28,6 +28,7 @@ namespace smartview
 		const auto cWebViews = m_cWebViews;
 		if (cWebViews && cWebViews < _MaxEntriesSmall)
 		{
+			m_lpWebViews.reserve(cWebViews);
 			for (ULONG i = 0; i < cWebViews; i++)
 			{
 				WebViewPersist webViewPersist;
@@ -90,4 +91,4 @@ namespace smartview
 			}
 		}
 	}
-}
+} // namespace smartview

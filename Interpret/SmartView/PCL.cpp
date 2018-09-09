@@ -26,6 +26,7 @@ namespace smartview
 
 		if (m_cXID && m_cXID < _MaxEntriesSmall)
 		{
+			m_lpXID.reserve(m_cXID);
 			for (DWORD i = 0; i < m_cXID; i++)
 			{
 				SizedXID sizedXID;
@@ -61,4 +62,4 @@ namespace smartview
 			}
 		}
 	}
-}
+} // namespace smartview

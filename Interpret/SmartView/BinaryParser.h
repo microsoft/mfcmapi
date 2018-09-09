@@ -1,4 +1,5 @@
 #pragma once
+#include <utility>
 
 namespace smartview
 {
@@ -7,15 +8,16 @@ namespace smartview
 	{
 	public:
 		block() : offset(0), cb(0), text(L""), header(true) {}
-		block(const std::wstring& _text) : offset(0), cb(0), text(_text), header(true) {}
+		explicit block(std::wstring _text) : offset(0), cb(0), text(std::move(_text)), header(true) {}
 
 		std::wstring ToString() const
 		{
 			std::vector<std::wstring> items;
-			items.emplace_back(text);
+			items.reserve(children.size() + 1);
+			items.push_back(text);
 			for (const auto& item : children)
 			{
-				items.emplace_back(item.ToString());
+				items.push_back(item.ToString());
 			}
 
 			return strings::join(items, strings::emptystring);

@@ -29,6 +29,7 @@ namespace smartview
 		{
 			auto bBadData = false;
 
+			m_pefExtendedFlags.reserve(m_ulNumFlags);
 			for (ULONG i = 0; i < m_ulNumFlags; i++)
 			{
 				ExtendedFlag extendedFlag;
@@ -138,4 +139,4 @@ namespace smartview
 			}
 		}
 	}
-}
+} // namespace smartview

@@ -12,6 +12,7 @@ namespace smartview
 
 		if (m_cRowCount && m_cRowCount < _MaxEntriesSmall)
 		{
+			m_lpAdrEntry.reserve(m_cRowCount);
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
 				auto entry = ADRENTRYStruct{};
@@ -53,4 +54,4 @@ namespace smartview
 			}
 		}
 	}
-}
+} // namespace smartview

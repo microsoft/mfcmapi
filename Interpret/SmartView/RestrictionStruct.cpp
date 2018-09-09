@@ -58,11 +58,15 @@ namespace smartview
 
 			if (srRestriction.resAnd.cRes && srRestriction.resAnd.cRes < _MaxEntriesExtraLarge && ulDepth < _MaxDepth)
 			{
+				srRestriction.resAnd.lpRes.reserve(srRestriction.resAnd.cRes);
 				for (ULONG i = 0; i < srRestriction.resAnd.cRes; i++)
 				{
 					if (!m_Parser.RemainingBytes()) break;
 					srRestriction.resAnd.lpRes.push_back(BinToRestriction(ulDepth + 1, bRuleCondition, bExtendedCount));
 				}
+
+				// TODO: Should we do this?
+				//srRestriction.resAnd.lpRes.shrink_to_fit();
 			}
 			break;
 		case RES_OR:
@@ -77,6 +81,7 @@ namespace smartview
 
 			if (srRestriction.resOr.cRes && srRestriction.resOr.cRes < _MaxEntriesExtraLarge && ulDepth < _MaxDepth)
 			{
+				srRestriction.resOr.lpRes.reserve(srRestriction.resOr.cRes);
 				for (ULONG i = 0; i < srRestriction.resOr.cRes; i++)
 				{
 					if (!m_Parser.RemainingBytes()) break;
@@ -180,7 +185,7 @@ namespace smartview
 		return props;
 	}
 
-		// There may be restrictions with over 100 nested levels, but we're not going to try to parse them
+	// There may be restrictions with over 100 nested levels, but we're not going to try to parse them
 #define _MaxRestrictionNesting 100
 
 	void RestrictionStruct::ParseRestriction(_In_ const SRestrictionStruct& lpRes, ULONG ulTabLevel)
@@ -483,4 +488,4 @@ namespace smartview
 			break;
 		}
 	}
-}
+} // namespace smartview

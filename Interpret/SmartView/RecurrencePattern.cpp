@@ -44,6 +44,7 @@ namespace smartview
 
 		if (m_DeletedInstanceCount && m_DeletedInstanceCount < _MaxEntriesSmall)
 		{
+			m_DeletedInstanceDates.reserve(m_DeletedInstanceCount);
 			for (DWORD i = 0; i < m_DeletedInstanceCount; i++)
 			{
 				m_DeletedInstanceDates.push_back(m_Parser.Get<DWORD>());
@@ -55,6 +56,7 @@ namespace smartview
 		if (m_ModifiedInstanceCount && m_ModifiedInstanceCount <= m_DeletedInstanceCount &&
 			m_ModifiedInstanceCount < _MaxEntriesSmall)
 		{
+			m_ModifiedInstanceDates.reserve(m_ModifiedInstanceCount);
 			for (DWORD i = 0; i < m_ModifiedInstanceCount; i++)
 			{
 				m_ModifiedInstanceDates.push_back(m_Parser.Get<DWORD>());
@@ -172,9 +174,6 @@ namespace smartview
 			m_StartDate.getData(),
 			RTimeToString(m_StartDate).c_str());
 		addBlock(
-			m_EndDate,
-			L"EndDate: 0x%1!08X! = %1!d! = %2!ws!",
-			m_EndDate.getData(),
-			RTimeToString(m_EndDate).c_str());
+			m_EndDate, L"EndDate: 0x%1!08X! = %1!d! = %2!ws!", m_EndDate.getData(), RTimeToString(m_EndDate).c_str());
 	}
-}
+} // namespace smartview

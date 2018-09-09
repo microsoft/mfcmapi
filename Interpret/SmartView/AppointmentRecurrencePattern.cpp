@@ -23,6 +23,7 @@ namespace smartview
 		if (m_ExceptionCount && m_ExceptionCount == m_RecurrencePattern.m_ModifiedInstanceCount &&
 			m_ExceptionCount < _MaxEntriesSmall)
 		{
+			m_ExceptionInfo.reserve(m_ExceptionCount);
 			for (WORD i = 0; i < m_ExceptionCount; i++)
 			{
 				ExceptionInfo exceptionInfo;
@@ -437,4 +438,4 @@ namespace smartview
 			addBlockBytes(m_ReservedBlock2);
 		}
 	}
-}
+} // namespace smartview

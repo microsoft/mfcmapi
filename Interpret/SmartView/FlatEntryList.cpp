@@ -12,6 +12,7 @@ namespace smartview
 
 		if (m_cEntries && m_cEntries < _MaxEntriesLarge)
 		{
+			m_pEntryIDs.reserve(m_cEntries);
 			for (DWORD iFlatEntryList = 0; iFlatEntryList < m_cEntries; iFlatEntryList++)
 			{
 				FlatEntryID flatEntryID;
@@ -66,4 +67,4 @@ namespace smartview
 			}
 		}
 	}
-}
+} // namespace smartview

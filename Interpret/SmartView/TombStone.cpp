@@ -31,14 +31,14 @@ namespace smartview
 
 		if (m_ActualRecordsCount && m_ActualRecordsCount < _MaxEntriesSmall)
 		{
+			m_lpRecords.reserve(m_ActualRecordsCount);
 			for (ULONG i = 0; i < m_ActualRecordsCount; i++)
 			{
 				TombstoneRecord tombstoneRecord;
 				tombstoneRecord.StartTime = m_Parser.Get<DWORD>();
 				tombstoneRecord.EndTime = m_Parser.Get<DWORD>();
 				tombstoneRecord.GlobalObjectIdSize = m_Parser.Get<DWORD>();
-				tombstoneRecord.lpGlobalObjectId =
-					m_Parser.GetBYTES(tombstoneRecord.GlobalObjectIdSize, _MaxBytes);
+				tombstoneRecord.lpGlobalObjectId = m_Parser.GetBYTES(tombstoneRecord.GlobalObjectIdSize, _MaxBytes);
 				tombstoneRecord.UsernameSize = m_Parser.Get<WORD>();
 				tombstoneRecord.szUsername = m_Parser.GetStringA(tombstoneRecord.UsernameSize);
 				m_lpRecords.push_back(tombstoneRecord);
@@ -90,4 +90,4 @@ namespace smartview
 			addBlock(m_lpRecords[i].szUsername, L"szUsername = %1!hs!", m_lpRecords[i].szUsername.c_str());
 		}
 	}
-}
+} // namespace smartview

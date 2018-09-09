@@ -12,6 +12,13 @@ namespace smartview
 		if (m_MaxEntries > _MaxEntriesSmall) return;
 
 		DWORD dwPropCount = 0;
+
+		// If we have a non-default max, it was computed elsewhere and we do expect to have that many entries. So we can reserve.
+		if (m_MaxEntries != _MaxEntriesSmall)
+		{
+			m_Props.reserve(m_MaxEntries);
+		}
+
 		for (;;)
 		{
 			if (dwPropCount >= m_MaxEntries) break;
@@ -201,9 +208,10 @@ namespace smartview
 			if (prop.Value.MVszA.cValues)
 			//if (prop.Value.MVszA.cValues && prop.Value.MVszA.cValues < _MaxEntriesLarge)
 			{
+				prop.Value.MVszA.lppszA.reserve(prop.Value.MVszA.cValues);
 				for (ULONG j = 0; j < prop.Value.MVszA.cValues; j++)
 				{
-					prop.Value.MVszA.lppszA.emplace_back(m_Parser.GetStringA());
+					prop.Value.MVszA.lppszA.push_back(m_Parser.GetStringA());
 				}
 			}
 			break;
@@ -221,6 +229,7 @@ namespace smartview
 			if (prop.Value.MVszW.cValues)
 			//if (prop.Value.MVszW.cValues && prop.Value.MVszW.cValues < _MaxEntriesLarge)
 			{
+				prop.Value.MVszW.lppszW.reserve(prop.Value.MVszW.cValues);
 				for (ULONG j = 0; j < prop.Value.MVszW.cValues; j++)
 				{
 					prop.Value.MVszW.lppszW.emplace_back(m_Parser.GetStringW());

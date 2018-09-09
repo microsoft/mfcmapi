@@ -87,6 +87,7 @@ namespace smartview
 					fieldDefinition.dwSkipBlockCount = dwSkipBlockCount;
 					if (fieldDefinition.dwSkipBlockCount && fieldDefinition.dwSkipBlockCount < _MaxEntriesSmall)
 					{
+						fieldDefinition.psbSkipBlocks.reserve(fieldDefinition.dwSkipBlockCount);
 						for (DWORD iSkip = 0; iSkip < fieldDefinition.dwSkipBlockCount; iSkip++)
 						{
 							SkipBlock skipBlock;
@@ -102,7 +103,8 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ block PackedAnsiStringToBlock(_In_ const std::wstring szFieldName, _In_ PackedAnsiString* ppasString)
+	_Check_return_ block
+	PackedAnsiStringToBlock(_In_ const std::wstring& szFieldName, _In_ PackedAnsiString* ppasString)
 	{
 		if (!ppasString) return {};
 
@@ -136,7 +138,7 @@ namespace smartview
 	}
 
 	_Check_return_ block
-	PackedUnicodeStringToBlock(_In_ const std::wstring szFieldName, _In_ PackedUnicodeString* ppusString)
+	PackedUnicodeStringToBlock(_In_ const std::wstring& szFieldName, _In_ PackedUnicodeString* ppusString)
 	{
 		if (!ppusString) return {};
 
@@ -288,4 +290,4 @@ namespace smartview
 			}
 		}
 	}
-}
+} // namespace smartview

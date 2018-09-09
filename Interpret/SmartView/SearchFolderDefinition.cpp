@@ -62,6 +62,7 @@ namespace smartview
 			m_AddressCount = m_Parser.Get<DWORD>();
 			if (m_AddressCount && m_AddressCount < _MaxEntriesSmall)
 			{
+				m_Addresses.reserve(m_AddressCount);
 				for (DWORD i = 0; i < m_AddressCount; i++)
 				{
 					AddressListEntryStruct addressListEntryStruct{};
@@ -241,4 +242,4 @@ namespace smartview
 			addBlockBytes(m_SkipBytes3);
 		}
 	}
-}
+} // namespace smartview

@@ -1,6 +1,6 @@
 #pragma once
 #include <Interpret/SmartView/SmartViewParser.h>
-#include <MAPIDefs.h>
+#include <MAPIDefS.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/SmartView/SmartView.h>
 
@@ -75,19 +75,19 @@ namespace smartview
 		blockT<ULONG> ulPropTag;
 		ULONG dwAlignPad{};
 		PVBlock Value;
-		_Check_return_ const std::wstring PropString()
+		_Check_return_ std::wstring PropString()
 		{
 			EnsurePropStrings();
 			return propString;
 		}
-		_Check_return_ const std::wstring AltPropString()
+		_Check_return_ std::wstring AltPropString()
 		{
 			EnsurePropStrings();
 			return altPropString;
 		}
 
 		// TODO: Fill in missing cases with test coverage
-		const SPropValue getData()
+		SPropValue getData()
 		{
 			auto prop = SPropValue{};
 			prop.ulPropTag = ulPropTag;
@@ -151,20 +151,16 @@ namespace smartview
 			propStringsGenerated = true;
 		}
 
-		_Check_return_ const std::wstring PropNum() const
+		_Check_return_ std::wstring PropNum() const
 		{
 			switch (PROP_TYPE(ulPropTag))
 			{
 			case PT_LONG:
-				return smartview::InterpretNumberAsString(Value.l, ulPropTag, 0, nullptr, nullptr, false);
-				break;
+				return InterpretNumberAsString(Value.l, ulPropTag, 0, nullptr, nullptr, false);
 			case PT_I2:
-				return smartview::InterpretNumberAsString(Value.i, ulPropTag, 0, nullptr, nullptr, false);
-				break;
+				return InterpretNumberAsString(Value.i, ulPropTag, 0, nullptr, nullptr, false);
 			case PT_I8:
-				return smartview::InterpretNumberAsString(
-					Value.li.getData().QuadPart, ulPropTag, 0, nullptr, nullptr, false);
-				break;
+				return InterpretNumberAsString(Value.li.getData().QuadPart, ulPropTag, 0, nullptr, nullptr, false);
 			}
 
 			return strings::emptystring;
@@ -184,7 +180,7 @@ namespace smartview
 		void SetMaxEntries(DWORD maxEntries) { m_MaxEntries = maxEntries; }
 		void EnableNickNameParsing() { m_NickName = true; }
 		void EnableRuleConditionParsing() { m_RuleCondition = true; }
-		_Check_return_ std::vector<SPropValueStruct> Props() const { return m_Props; } // TODO: add const
+		_Check_return_ std::vector<SPropValueStruct> Props() const { return m_Props; }
 
 	private:
 		void Parse() override;
