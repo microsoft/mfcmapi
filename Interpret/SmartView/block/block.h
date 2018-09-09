@@ -2,14 +2,14 @@
 
 namespace smartview
 {
-	class blockBytes;
 	class block
 	{
 	public:
 		block() : offset(0), cb(0), text(L""), header(true) {}
 		explicit block(std::wstring _text) : offset(0), cb(0), text(std::move(_text)), header(true) {}
 
-		std::wstring ToString() const
+		virtual std::wstring ToStringInternal() const { return text; }
+		virtual std::wstring ToString() const
 		{
 			std::vector<std::wstring> items;
 			items.reserve(children.size() + 1);
@@ -45,8 +45,13 @@ namespace smartview
 			children.push_back(block);
 		}
 
-		void addBlock(const block& child) { children.push_back(child); }
-		void addBlockBytes(const blockBytes& child);
+		void addBlock(const block& child)
+		{
+			auto block = child;
+			block.text = child.ToStringInternal();
+			children.push_back(block);
+		}
+
 		void addLine() { addHeader(L"\r\n"); }
 		bool hasData() const { return !text.empty() || !children.empty(); }
 

@@ -47,12 +47,10 @@ namespace smartview
 			data.addBlock(_block, text, args...);
 		}
 		void addBlock(const block& child) { data.addBlock(child); }
-		void addBlockBytes(const blockBytes& _block) { data.addBlockBytes(_block); }
 		void addLine() { data.addLine(); }
 
 	private:
 		virtual void Parse() = 0;
-		// TODO: make this = 0 to ensure everyone has a ParseBlocks implementation
 		virtual void ParseBlocks() = 0;
 
 		bool m_bEnableJunk;

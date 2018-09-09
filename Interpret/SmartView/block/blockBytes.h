@@ -14,6 +14,7 @@ namespace smartview
 		bool empty() const noexcept { return _data.empty(); }
 		const BYTE* data() const noexcept { return _data.data(); }
 		BYTE operator[](const size_t _Pos) { return _data[_Pos]; }
+		std::wstring ToStringInternal() const override { return strings::BinToHexString(_data, true); }
 
 	private:
 		std::vector<BYTE> _data;

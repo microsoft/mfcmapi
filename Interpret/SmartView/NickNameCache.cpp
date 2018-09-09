@@ -42,7 +42,7 @@ namespace smartview
 	{
 		addHeader(L"Nickname Cache\r\n");
 		addHeader(L"Metadata1 = ");
-		addBlockBytes(m_Metadata1);
+		addBlock(m_Metadata1);
 
 		addLine();
 		addBlock(m_ulMajorVersion, L"Major Version = %1!d!\r\n", m_ulMajorVersion.getData());
@@ -65,10 +65,10 @@ namespace smartview
 		addLine();
 		addLine();
 		addHeader(L"Extra Info = ");
-		addBlockBytes(m_lpbEI);
+		addBlock(m_lpbEI);
 
 		addLine();
 		addHeader(L"Metadata 2 = ");
-		addBlockBytes(m_Metadata2);
+		addBlock(m_Metadata2);
 	}
 } // namespace smartview

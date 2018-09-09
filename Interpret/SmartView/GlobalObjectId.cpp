@@ -42,7 +42,7 @@ namespace smartview
 		addHeader(L"Byte Array ID = ");
 
 		auto id = m_Id.getData();
-		addBlockBytes(m_Id);
+		addBlock(m_Id);
 
 		if (equal(id.begin(), id.end(), s_rgbSPlus))
 		{
@@ -79,7 +79,7 @@ namespace smartview
 		if (m_lpData.size())
 		{
 			addHeader(L"Data = ");
-			addBlockBytes(m_lpData);
+			addBlock(m_lpData);
 		}
 	}
 }

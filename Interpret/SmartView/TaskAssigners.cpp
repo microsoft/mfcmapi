@@ -45,7 +45,7 @@ namespace smartview
 
 			if (!m_lpTaskAssigners[i].lpEntryID.empty())
 			{
-				addBlockBytes(m_lpTaskAssigners[i].lpEntryID);
+				addBlock(m_lpTaskAssigners[i].lpEntryID);
 			}
 
 			addLine();
@@ -66,7 +66,7 @@ namespace smartview
 					m_lpTaskAssigners[i].JunkData,
 					L"\tUnparsed Data Size = 0x%1!08X!\r\n",
 					m_lpTaskAssigners[i].JunkData.size());
-				addBlockBytes(m_lpTaskAssigners[i].JunkData);
+				addBlock(m_lpTaskAssigners[i].JunkData);
 			}
 		}
 	}

@@ -323,7 +323,7 @@ namespace smartview
 		addBlock(m_ReservedBlock1Size, L"ReservedBlock1Size: 0x%1!08X!\r\n", m_ReservedBlock1Size.getData());
 		if (m_ReservedBlock1Size)
 		{
-			addBlockBytes(m_ReservedBlock1);
+			addBlock(m_ReservedBlock1);
 		}
 
 		if (m_ExtendedException.size())
@@ -352,7 +352,7 @@ namespace smartview
 					{
 						addHeader(L"ExtendedException[%1!d!].ChangeHighlight.Reserved:", i);
 
-						addBlockBytes(m_ExtendedException[i].ChangeHighlight.Reserved);
+						addBlock(m_ExtendedException[i].ChangeHighlight.Reserved);
 					}
 				}
 
@@ -363,7 +363,7 @@ namespace smartview
 					m_ExtendedException[i].ReservedBlockEE1Size.getData());
 				if (m_ExtendedException[i].ReservedBlockEE1.size())
 				{
-					addBlockBytes(m_ExtendedException[i].ReservedBlockEE1);
+					addBlock(m_ExtendedException[i].ReservedBlockEE1);
 				}
 
 				if (i < m_ExceptionInfo.size())
@@ -427,7 +427,7 @@ namespace smartview
 					m_ExtendedException[i].ReservedBlockEE2Size.getData());
 				if (m_ExtendedException[i].ReservedBlockEE2Size)
 				{
-					addBlockBytes(m_ExtendedException[i].ReservedBlockEE2);
+					addBlock(m_ExtendedException[i].ReservedBlockEE2);
 				}
 			}
 		}
@@ -435,7 +435,7 @@ namespace smartview
 		addBlock(m_ReservedBlock2Size, L"ReservedBlock2Size: 0x%1!08X!", m_ReservedBlock2Size.getData());
 		if (m_ReservedBlock2Size)
 		{
-			addBlockBytes(m_ReservedBlock2);
+			addBlock(m_ReservedBlock2);
 		}
 	}
 } // namespace smartview

@@ -70,7 +70,7 @@ namespace smartview
 				interpretprop::InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags).c_str());
 			addHeader(L"dwUnused = ");
 
-			addBlockBytes(m_lpWebViews[i].dwUnused);
+			addBlock(m_lpWebViews[i].dwUnused);
 
 			addLine();
 			addBlock(m_lpWebViews[i].cbData, L"cbData = 0x%1!08X!", m_lpWebViews[i].cbData.getData());
@@ -86,7 +86,7 @@ namespace smartview
 			}
 			default:
 				addHeader(L"lpData = ");
-				addBlockBytes(m_lpWebViews[i].lpData);
+				addBlock(m_lpWebViews[i].lpData);
 				break;
 			}
 		}

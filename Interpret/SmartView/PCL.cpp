@@ -58,7 +58,7 @@ namespace smartview
 					L"NamespaceGuid = %1!ws!\r\n",
 					guid::GUIDToString(xid.NamespaceGuid.getData()).c_str());
 				addHeader(L"LocalId = ");
-				addBlockBytes(xid.LocalID);
+				addBlock(xid.LocalID);
 			}
 		}
 	}

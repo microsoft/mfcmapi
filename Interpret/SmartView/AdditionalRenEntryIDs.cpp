@@ -136,7 +136,7 @@ namespace smartview
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize.getData());
 
 						addHeader(L"\tElementData = ");
-						addBlockBytes(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData);
+						addBlock(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData);
 					}
 				}
 

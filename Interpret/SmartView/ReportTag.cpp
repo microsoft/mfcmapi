@@ -57,7 +57,7 @@ namespace smartview
 	{
 		addHeader(L"Report Tag: \r\n");
 		addHeader(L"Cookie = ");
-		addBlockBytes(m_Cookie);
+		addBlock(m_Cookie);
 
 		addLine();
 		auto szFlags = interpretprop::InterpretFlags(flagReportTagVersion, m_Version);
@@ -66,31 +66,31 @@ namespace smartview
 		if (m_cbStoreEntryID)
 		{
 			addHeader(L"\r\nStoreEntryID = ");
-			addBlockBytes(m_lpStoreEntryID);
+			addBlock(m_lpStoreEntryID);
 		}
 
 		if (m_cbFolderEntryID)
 		{
 			addHeader(L"\r\nFolderEntryID = ");
-			addBlockBytes(m_lpFolderEntryID);
+			addBlock(m_lpFolderEntryID);
 		}
 
 		if (m_cbMessageEntryID)
 		{
 			addHeader(L"\r\nMessageEntryID = ");
-			addBlockBytes(m_lpMessageEntryID);
+			addBlock(m_lpMessageEntryID);
 		}
 
 		if (m_cbSearchFolderEntryID)
 		{
 			addHeader(L"\r\nSearchFolderEntryID = ");
-			addBlockBytes(m_lpSearchFolderEntryID);
+			addBlock(m_lpSearchFolderEntryID);
 		}
 
 		if (m_cbMessageSearchKey)
 		{
 			addHeader(L"\r\nMessageSearchKey = ");
-			addBlockBytes(m_lpMessageSearchKey);
+			addBlock(m_lpMessageSearchKey);
 		}
 
 		if (m_cchAnsiText)

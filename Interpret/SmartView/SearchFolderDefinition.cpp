@@ -149,7 +149,7 @@ namespace smartview
 			addLine();
 			addHeader(L"SkipBytes1 = ");
 
-			addBlockBytes(m_SkipBytes1);
+			addBlock(m_SkipBytes1);
 		}
 
 		addLine();
@@ -209,7 +209,7 @@ namespace smartview
 		{
 			addLine();
 			addHeader(L"SkipBytes2 = ");
-			addBlockBytes(m_SkipBytes2);
+			addBlock(m_SkipBytes2);
 		}
 
 		if (!m_Restriction.empty())
@@ -228,7 +228,7 @@ namespace smartview
 			{
 				addLine();
 				addHeader(L"AdvancedSearchBytes = ");
-				addBlockBytes(m_AdvancedSearchBytes);
+				addBlock(m_AdvancedSearchBytes);
 			}
 		}
 
@@ -239,7 +239,7 @@ namespace smartview
 		{
 			addLine();
 			addHeader(L"SkipBytes3 = ");
-			addBlockBytes(m_SkipBytes3);
+			addBlock(m_SkipBytes3);
 		}
 	}
 } // namespace smartview

@@ -134,7 +134,7 @@ namespace smartview
 
 					addLine();
 					addHeader(L"\tUnknown Data = ");
-					addBlockBytes(extendedFlag.lpUnknownData);
+					addBlock(extendedFlag.lpUnknownData);
 				}
 			}
 		}

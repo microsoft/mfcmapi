@@ -93,7 +93,7 @@ namespace smartview
 				i,
 				m_lpTZRule[i].wYear.getData());
 			addHeader(L"TZRule[0x%1!X!].X = ", i);
-			addBlockBytes(m_lpTZRule[i].X);
+			addBlock(m_lpTZRule[i].X);
 
 			addLine();
 			addBlock(

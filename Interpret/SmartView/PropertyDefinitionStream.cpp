@@ -283,7 +283,7 @@ namespace smartview
 						{
 							addLine();
 							addHeader(L"\t\tContent = ");
-							addBlockBytes(m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent);
+							addBlock(m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent);
 						}
 					}
 				}

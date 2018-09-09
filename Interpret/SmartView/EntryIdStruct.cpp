@@ -548,7 +548,7 @@ namespace smartview
 				addBlock(m_MessageDatabaseObject.v2FQDN, L"FQDN = %1!ws!\r\n", m_MessageDatabaseObject.v2FQDN.c_str());
 
 				addHeader(L"Reserved Bytes = ");
-				addBlockBytes(m_MessageDatabaseObject.v2Reserved);
+				addBlock(m_MessageDatabaseObject.v2Reserved);
 			}
 			break;
 			case MDB_STORE_EID_V3_MAGIC:
@@ -580,7 +580,7 @@ namespace smartview
 					m_MessageDatabaseObject.v3SmtpAddress.c_str());
 				addHeader(L"Reserved Bytes = ");
 
-				addBlockBytes(m_MessageDatabaseObject.v2Reserved);
+				addBlock(m_MessageDatabaseObject.v2Reserved);
 			}
 			break;
 			}
@@ -599,11 +599,11 @@ namespace smartview
 				L"Database GUID = %1!ws!\r\n",
 				guid::GUIDToStringAndName(m_FolderOrMessage.FolderObject.DatabaseGUID).c_str());
 			addHeader(L"GlobalCounter = ");
-			addBlockBytes(m_FolderOrMessage.FolderObject.GlobalCounter);
+			addBlock(m_FolderOrMessage.FolderObject.GlobalCounter);
 
 			addLine();
 			addHeader(L"Pad = ");
-			addBlockBytes(m_FolderOrMessage.FolderObject.Pad);
+			addBlock(m_FolderOrMessage.FolderObject.Pad);
 		}
 		else if (eidtMessage == m_ObjectType)
 		{
@@ -619,11 +619,11 @@ namespace smartview
 				L"Folder Database GUID = %1!ws!\r\n",
 				guid::GUIDToStringAndName(m_FolderOrMessage.MessageObject.FolderDatabaseGUID).c_str());
 			addHeader(L"Folder GlobalCounter = ");
-			addBlockBytes(m_FolderOrMessage.MessageObject.FolderGlobalCounter);
+			addBlock(m_FolderOrMessage.MessageObject.FolderGlobalCounter);
 
 			addLine();
 			addHeader(L"Pad1 = ");
-			addBlockBytes(m_FolderOrMessage.MessageObject.Pad1);
+			addBlock(m_FolderOrMessage.MessageObject.Pad1);
 
 			addLine();
 			addBlock(
@@ -631,11 +631,11 @@ namespace smartview
 				L"Message Database GUID = %1!ws!\r\n",
 				guid::GUIDToStringAndName(m_FolderOrMessage.MessageObject.MessageDatabaseGUID).c_str());
 			addHeader(L"Message GlobalCounter = ");
-			addBlockBytes(m_FolderOrMessage.MessageObject.MessageGlobalCounter);
+			addBlock(m_FolderOrMessage.MessageObject.MessageGlobalCounter);
 
 			addLine();
 			addHeader(L"Pad2 = ");
-			addBlockBytes(m_FolderOrMessage.MessageObject.Pad2);
+			addBlock(m_FolderOrMessage.MessageObject.Pad2);
 		}
 	}
 } // namespace smartview
