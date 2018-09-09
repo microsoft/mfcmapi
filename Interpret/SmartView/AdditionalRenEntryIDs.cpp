@@ -140,8 +140,12 @@ namespace smartview
 					}
 				}
 
-				// TODO: This should be a proper block
-				addHeader(JunkDataToString(m_ppdPersistData[iPersistElement].JunkData));
+				if (!m_ppdPersistData[iPersistElement].JunkData.empty())
+				{
+					addLine();
+					addHeader(L"Unparsed data size = 0x%1!08X!\r\n", m_ppdPersistData[iPersistElement].JunkData.size());
+					addBlock(m_ppdPersistData[iPersistElement].JunkData);
+				}
 			}
 		}
 	}
