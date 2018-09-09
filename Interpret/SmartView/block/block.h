@@ -6,9 +6,7 @@ namespace smartview
 	{
 	public:
 		block() : offset(0), cb(0), text(L""), header(true) {}
-		explicit block(std::wstring _text) : offset(0), cb(0), text(std::move(_text)), header(true) {}
 
-		virtual std::wstring ToStringInternal() const { return text; }
 		virtual std::wstring ToString() const
 		{
 			std::vector<std::wstring> items;
@@ -60,6 +58,8 @@ namespace smartview
 		size_t cb;
 
 	private:
+		explicit block(std::wstring _text) : offset(0), cb(0), text(std::move(_text)), header(true) {}
+		virtual std::wstring ToStringInternal() const { return text; }
 		std::wstring text;
 		std::vector<block> children;
 		bool header;

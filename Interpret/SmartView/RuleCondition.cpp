@@ -102,7 +102,7 @@ namespace smartview
 					addHeader(L"\tName = ");
 					addBlock(
 						m_NamedPropertyInformation.PropertyName[i].Name,
-						m_NamedPropertyInformation.PropertyName[i].Name.getData());
+						m_NamedPropertyInformation.PropertyName[i].Name.c_str());
 				}
 			}
 		}
