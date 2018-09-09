@@ -5,10 +5,6 @@ namespace smartview
 {
 	static std::wstring CLASS = L"CBinaryParser";
 
-	CBinaryParser::CBinaryParser() { m_Offset = 0; }
-
-	CBinaryParser::CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { Init(cbBin, lpBin); }
-
 	void CBinaryParser::Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 	{
 		output::DebugPrintEx(
@@ -17,19 +13,11 @@ namespace smartview
 		m_Offset = 0;
 	}
 
-	bool CBinaryParser::Empty() const { return m_Bin.empty(); }
-
-	void CBinaryParser::Advance(size_t cbAdvance) { m_Offset += cbAdvance; }
-
 	void CBinaryParser::Rewind()
 	{
 		output::DebugPrintEx(DBGSmartView, CLASS, L"Rewind", L"Rewinding to the beginning of the stream\n");
 		m_Offset = 0;
 	}
-
-	size_t CBinaryParser::GetCurrentOffset() const { return m_Offset; }
-
-	const BYTE* CBinaryParser::GetCurrentAddress() const { return m_Bin.data() + m_Offset; }
 
 	void CBinaryParser::SetCurrentOffset(size_t stOffset)
 	{

@@ -13,15 +13,15 @@ namespace smartview
 	class CBinaryParser
 	{
 	public:
-		CBinaryParser();
-		CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin);
+		CBinaryParser() { m_Offset = 0; }
+		CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { Init(cbBin, lpBin); }
 
-		bool Empty() const;
+		bool Empty() const { return m_Bin.empty(); }
 		void Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin);
-		void Advance(size_t cbAdvance);
+		void Advance(size_t cbAdvance) { m_Offset += cbAdvance; }
 		void Rewind();
-		size_t GetCurrentOffset() const;
-		const BYTE* GetCurrentAddress() const;
+		size_t GetCurrentOffset() const { return m_Offset; }
+		const BYTE* GetCurrentAddress() const { return m_Bin.data() + m_Offset; }
 		// Moves the parser to an offset obtained from GetCurrentOffset
 		void SetCurrentOffset(size_t stOffset);
 		size_t RemainingBytes() const;
