@@ -23,8 +23,11 @@ namespace smartview
 
 		if (this->hasData() && m_bEnableJunk && m_Parser.RemainingBytes())
 		{
-			const auto junkData = getJunkData();
-			addBlock(junkData, JunkDataToString(junkData));
+			const auto junkData = m_Parser.GetRemainingData();
+
+			addLine();
+			addHeader(L"Unparsed data size = 0x%1!08X!\r\n", junkData.size());
+			addBlock(junkData);
 		}
 
 		m_bParsed = true;
@@ -42,18 +45,5 @@ namespace smartview
 			szParsedString.begin(), szParsedString.end(), [](const WCHAR& chr) { return chr == L'\0'; }, L'.');
 
 		return szParsedString;
-	}
-
-	_Check_return_ std::wstring SmartViewParser::JunkDataToString(const std::vector<BYTE>& lpJunkData) const
-	{
-		if (lpJunkData.empty()) return strings::emptystring;
-		output::DebugPrint(
-			DBGSmartView,
-			L"Had 0x%08X = %u bytes left over.\n",
-			static_cast<int>(lpJunkData.size()),
-			static_cast<UINT>(lpJunkData.size()));
-		auto szJunk = strings::formatmessage(IDS_JUNKDATASIZE, lpJunkData.size());
-		szJunk += strings::BinToHexString(lpJunkData, true);
-		return szJunk;
 	}
 } // namespace smartview
