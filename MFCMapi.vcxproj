@@ -547,6 +547,11 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Interpret\Sid.h" />
+    <ClInclude Include="Interpret\SmartView\block\blockStringW.h" />
+    <ClInclude Include="Interpret\SmartView\block\blockStringA.h" />
+    <ClInclude Include="Interpret\SmartView\block\blockT.h" />
+    <ClInclude Include="Interpret\SmartView\block\block.h" />
+    <ClInclude Include="Interpret\SmartView\block\blockBytes.h" />
     <ClInclude Include="MAPI\MapiMemory.h" />
     <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
@@ -797,6 +802,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="Interpret\SmartView\AdditionalRenEntryIDs.cpp" />
     <ClCompile Include="Interpret\SmartView\AppointmentRecurrencePattern.cpp" />
     <ClCompile Include="Interpret\SmartView\BinaryParser.cpp" />
+    <ClCompile Include="Interpret\SmartView\block\block.cpp" />
     <ClCompile Include="Interpret\SmartView\ConversationIndex.cpp" />
     <ClCompile Include="Interpret\SmartView\EntryIdStruct.cpp" />
     <ClCompile Include="Interpret\SmartView\EntryList.cpp" />

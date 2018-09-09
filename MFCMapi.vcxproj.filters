@@ -121,6 +121,11 @@
     <ClInclude Include="Interpret\SmartView\PropertiesStruct.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
+    <ClInclude Include="Interpret\SmartView\block\block.h" />
+    <ClInclude Include="Interpret\SmartView\block\blockBytes.h" />
+    <ClInclude Include="Interpret\SmartView\block\blockT.h" />
+    <ClInclude Include="Interpret\SmartView\block\blockStringA.h" />
+    <ClInclude Include="Interpret\SmartView\block\blockStringW.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -160,6 +165,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Interpret\SmartView\PropertiesStruct.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClCompile Include="Interpret\SmartView\block\block.cpp">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClCompile>
   </ItemGroup>

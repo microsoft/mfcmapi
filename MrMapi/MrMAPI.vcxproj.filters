@@ -36,6 +36,9 @@
     <Filter Include="Source Files\MAPI\Cache">
       <UniqueIdentifier>{dff14349-20ea-46e6-b97e-3352c668cc42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Interpret\SmartView\block">
+      <UniqueIdentifier>{9cacf240-42fc-4538-9f1f-6965287c2b27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Res\Resource.h">
@@ -51,6 +54,21 @@
     </ClInclude>
     <ClInclude Include="..\MAPI\Cache\NamedPropCache.h">
       <Filter>Source Files\MAPI\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interpret\SmartView\block\block.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interpret\SmartView\block\blockBytes.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interpret\SmartView\block\blockStringA.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interpret\SmartView\block\blockStringW.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interpret\SmartView\block\blockT.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +98,9 @@
     </ClCompile>
     <ClCompile Include="..\MAPI\Cache\NamedPropCache.cpp">
       <Filter>Source Files\MAPI\Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Interpret\SmartView\block\block.cpp">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
