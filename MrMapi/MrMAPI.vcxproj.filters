@@ -275,9 +275,6 @@
     <ClInclude Include="..\Interpret\SmartView\AppointmentRecurrencePattern.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
-    <ClCompile Include="..\Interpret\SmartView\BinaryParser.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
     <ClInclude Include="..\Interpret\SmartView\BinaryParser.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>

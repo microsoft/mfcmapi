@@ -7,17 +7,16 @@
 
 namespace smartview
 {
-	// TODO: Make all of this header only
 	// CBinaryParser - helper class for parsing binary data without
 	// worrying about whether you've run off the end of your buffer.
 	class CBinaryParser
 	{
 	public:
-		CBinaryParser() { m_Offset = 0; }
+		CBinaryParser() {}
 		CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { Init(cbBin, lpBin); }
 		void Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 		{
-			m_Bin = lpBin && cbBin ? std::vector<BYTE>(lpBin, lpBin + cbBin) : std::vector<BYTE>();
+			m_Bin = lpBin && cbBin ? std::vector<BYTE>(lpBin, lpBin + cbBin) : std::vector<BYTE>{};
 			m_Offset = 0;
 		}
 
