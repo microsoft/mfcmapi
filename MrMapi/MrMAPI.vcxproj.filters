@@ -99,9 +99,6 @@
     <ClCompile Include="..\MAPI\Cache\NamedPropCache.cpp">
       <Filter>Source Files\MAPI\Cache</Filter>
     </ClCompile>
-    <ClCompile Include="..\Interpret\SmartView\block\block.cpp">
-      <Filter>Source Files\Interpret\SmartView\block</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MMAcls.cpp">

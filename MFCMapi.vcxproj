@@ -801,7 +801,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\Dialogs\SingleRecipientDialog.cpp" />
     <ClCompile Include="Interpret\SmartView\AdditionalRenEntryIDs.cpp" />
     <ClCompile Include="Interpret\SmartView\AppointmentRecurrencePattern.cpp" />
-    <ClCompile Include="Interpret\SmartView\block\block.cpp" />
     <ClCompile Include="Interpret\SmartView\ConversationIndex.cpp" />
     <ClCompile Include="Interpret\SmartView\EntryIdStruct.cpp" />
     <ClCompile Include="Interpret\SmartView\EntryList.cpp" />

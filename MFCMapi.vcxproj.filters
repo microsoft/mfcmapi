@@ -167,9 +167,6 @@
     <ClCompile Include="Interpret\SmartView\PropertiesStruct.cpp">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClCompile>
-    <ClCompile Include="Interpret\SmartView\block\block.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IO\Error.cpp">
