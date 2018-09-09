@@ -15,16 +15,24 @@ namespace smartview
 	public:
 		CBinaryParser() { m_Offset = 0; }
 		CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { Init(cbBin, lpBin); }
+		void Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
+		{
+			m_Bin = lpBin && cbBin ? std::vector<BYTE>(lpBin, lpBin + cbBin) : std::vector<BYTE>();
+			m_Offset = 0;
+		}
 
 		bool Empty() const { return m_Bin.empty(); }
-		void Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin);
 		void Advance(size_t cbAdvance) { m_Offset += cbAdvance; }
-		void Rewind();
+		void Rewind() { m_Offset = 0; }
 		size_t GetCurrentOffset() const { return m_Offset; }
 		const BYTE* GetCurrentAddress() const { return m_Bin.data() + m_Offset; }
 		// Moves the parser to an offset obtained from GetCurrentOffset
-		void SetCurrentOffset(size_t stOffset);
-		size_t RemainingBytes() const;
+		void SetCurrentOffset(size_t stOffset) { m_Offset = stOffset; }
+
+		// If we're before the end of the buffer, return the count of remaining bytes
+		// If we're at or past the end of the buffer, return 0
+		// If we're before the beginning of the buffer, return 0
+		size_t CBinaryParser::RemainingBytes() const { return m_Offset > m_Bin.size() ? 0 : m_Bin.size() - m_Offset; }
 
 		template <typename T> blockT<T> Get()
 		{
@@ -102,7 +110,7 @@ namespace smartview
 		blockBytes GetRemainingData() { return GetBYTES(RemainingBytes()); }
 
 	private:
-		bool CheckRemainingBytes(size_t cbBytes) const;
+		bool CheckRemainingBytes(size_t cbBytes) const { return cbBytes <= RemainingBytes(); }
 		std::vector<BYTE> m_Bin;
 		size_t m_Offset{};
 	};
