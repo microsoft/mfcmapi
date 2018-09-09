@@ -7,29 +7,13 @@ namespace smartview
 
 	void CBinaryParser::Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 	{
-		output::DebugPrintEx(
-			DBGSmartView, CLASS, L"Init", L"cbBin = 0x%08X = %u\n", static_cast<int>(cbBin), static_cast<UINT>(cbBin));
 		m_Bin = lpBin && cbBin ? std::vector<BYTE>(lpBin, lpBin + cbBin) : std::vector<BYTE>();
 		m_Offset = 0;
 	}
 
-	void CBinaryParser::Rewind()
-	{
-		output::DebugPrintEx(DBGSmartView, CLASS, L"Rewind", L"Rewinding to the beginning of the stream\n");
-		m_Offset = 0;
-	}
+	void CBinaryParser::Rewind() { m_Offset = 0; }
 
-	void CBinaryParser::SetCurrentOffset(size_t stOffset)
-	{
-		output::DebugPrintEx(
-			DBGSmartView,
-			CLASS,
-			L"SetCurrentOffset",
-			L"Setting offset 0x%08X = %u bytes.\n",
-			static_cast<int>(stOffset),
-			static_cast<UINT>(stOffset));
-		m_Offset = stOffset;
-	}
+	void CBinaryParser::SetCurrentOffset(size_t stOffset) { m_Offset = stOffset; }
 
 	// If we're before the end of the buffer, return the count of remaining bytes
 	// If we're at or past the end of the buffer, return 0
@@ -40,35 +24,5 @@ namespace smartview
 		return m_Bin.size() - m_Offset;
 	}
 
-	bool CBinaryParser::CheckRemainingBytes(size_t cbBytes) const
-	{
-		const auto cbRemaining = RemainingBytes();
-		if (cbBytes > cbRemaining)
-		{
-			if (fIsSetv(DBGSmartView))
-			{
-				output::DebugPrintEx(
-					DBGSmartView,
-					CLASS,
-					L"CheckRemainingBytes",
-					L"Bytes requested (0x%08X = %u) > remaining bytes (0x%08X = %u)\n",
-					static_cast<int>(cbBytes),
-					static_cast<UINT>(cbBytes),
-					static_cast<int>(cbRemaining),
-					static_cast<UINT>(cbRemaining));
-				output::DebugPrintEx(
-					DBGSmartView,
-					CLASS,
-					L"CheckRemainingBytes",
-					L"Total Bytes: 0x%08X = %u\n",
-					m_Bin.size(),
-					m_Bin.size());
-				output::DebugPrintEx(
-					DBGSmartView, CLASS, L"CheckRemainingBytes", L"Current offset: 0x%08X = %d\n", m_Offset, m_Offset);
-			}
-			return false;
-		}
-
-		return true;
-	}
+	bool CBinaryParser::CheckRemainingBytes(size_t cbBytes) const { return cbBytes <= RemainingBytes(); }
 } // namespace smartview
