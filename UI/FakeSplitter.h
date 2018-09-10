@@ -23,8 +23,8 @@ namespace controls
 		virtual ~CFakeSplitter();
 
 		void Init(HWND hWnd);
-		void SetPaneOne(CWnd* PaneOne);
-		void SetPaneTwo(CWnd* PaneTwo);
+		void SetPaneOne(HWND paneOne);
+		void SetPaneTwo(HWND paneTwo);
 		void SetPercent(FLOAT iNewPercent);
 		void SetSplitType(SplitType stSplitType);
 
@@ -42,8 +42,8 @@ namespace controls
 
 		bool m_bTracking{};
 		FLOAT m_flSplitPercent{0.5};
-		CWnd* m_PaneOne{};
-		CWnd* m_PaneTwo{};
+		HWND m_PaneOne{};
+		HWND m_PaneTwo{};
 		int m_iSplitWidth{};
 		int m_iSplitPos{1};
 		SplitType m_SplitType{SplitHorizontal};

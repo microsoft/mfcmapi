@@ -91,9 +91,9 @@ namespace controls
 		return CWnd::WindowProc(message, wParam, lParam);
 	}
 
-	void CFakeSplitter::SetPaneOne(CWnd* PaneOne)
+	void CFakeSplitter::SetPaneOne(HWND paneOne)
 	{
-		m_PaneOne = PaneOne;
+		m_PaneOne = paneOne;
 		if (m_PaneOne)
 		{
 			m_iSplitWidth = 7;
@@ -104,7 +104,7 @@ namespace controls
 		}
 	}
 
-	void CFakeSplitter::SetPaneTwo(CWnd* PaneTwo) { m_PaneTwo = PaneTwo; }
+	void CFakeSplitter::SetPaneTwo(HWND paneTwo) { m_PaneTwo = paneTwo; }
 
 	void CFakeSplitter::OnSize(UINT /*nType*/, int cx, int cy)
 	{
@@ -113,7 +113,7 @@ namespace controls
 		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 		if (hdwp)
 		{
-			if (m_PaneOne && m_PaneOne->m_hWnd)
+			if (m_PaneOne)
 			{
 				CRect r1;
 				if (SplitHorizontal == m_SplitType)
@@ -125,10 +125,10 @@ namespace controls
 					r1.SetRect(0, 0, cx, m_iSplitPos);
 				}
 
-				DeferWindowPos(hdwp, m_PaneOne->m_hWnd, nullptr, 0, 0, r1.Width(), r1.Height(), SWP_NOZORDER);
+				DeferWindowPos(hdwp, m_PaneOne, nullptr, 0, 0, r1.Width(), r1.Height(), SWP_NOZORDER);
 			}
 
-			if (m_PaneTwo && m_PaneTwo->m_hWnd)
+			if (m_PaneTwo)
 			{
 				CRect r2;
 				if (SplitHorizontal == m_SplitType)
@@ -148,8 +148,7 @@ namespace controls
 						cy); // bottom right corner
 				}
 
-				DeferWindowPos(
-					hdwp, m_PaneTwo->m_hWnd, nullptr, r2.left, r2.top, r2.Width(), r2.Height(), SWP_NOZORDER);
+				DeferWindowPos(hdwp, m_PaneTwo, nullptr, r2.left, r2.top, r2.Width(), r2.Height(), SWP_NOZORDER);
 			}
 
 			EC_B_S(EndDeferWindowPos(hdwp));

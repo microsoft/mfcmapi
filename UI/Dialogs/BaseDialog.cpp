@@ -156,8 +156,9 @@ namespace dialog
 			m_lpPropDisplay =
 				new controls::sortlistctrl::CSingleMAPIPropListCtrl(m_lpFakeSplitter, this, m_lpMapiObjects, m_bIsAB);
 
-			if (m_lpPropDisplay) m_lpFakeSplitter->SetPaneTwo(m_lpPropDisplay);
+			if (m_lpPropDisplay) m_lpFakeSplitter->SetPaneTwo(m_lpPropDisplay->GetSafeHwnd());
 		}
+
 		return false;
 	}
 
