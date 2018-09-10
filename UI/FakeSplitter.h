@@ -43,7 +43,7 @@ namespace controls
 		FLOAT m_flSplitPercent{0.5};
 		CWnd* m_PaneOne{};
 		CWnd* m_PaneTwo{};
-		int m_iSplitWidth;
+		int m_iSplitWidth{};
 		int m_iSplitPos{1};
 		SplitType m_SplitType{SplitHorizontal};
 		HCURSOR m_hSplitCursorV{};
