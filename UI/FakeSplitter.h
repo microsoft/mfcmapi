@@ -39,13 +39,13 @@ namespace controls
 		void StopTracking();
 		void CalcSplitPos();
 
-		bool m_bTracking;
-		FLOAT m_flSplitPercent;
-		CWnd* m_PaneOne;
-		CWnd* m_PaneTwo;
+		bool m_bTracking{};
+		FLOAT m_flSplitPercent{0.5};
+		CWnd* m_PaneOne{};
+		CWnd* m_PaneTwo{};
 		int m_iSplitWidth;
-		int m_iSplitPos;
-		SplitType m_SplitType;
+		int m_iSplitPos{1};
+		SplitType m_SplitType{SplitHorizontal};
 		HCURSOR m_hSplitCursorV{};
 		HCURSOR m_hSplitCursorH{};
 

@@ -18,16 +18,6 @@ namespace controls
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 
-		m_bTracking = false;
-		m_flSplitPercent = 0.5;
-		m_iSplitWidth = 0;
-
-		m_PaneOne = nullptr;
-		m_PaneTwo = nullptr;
-
-		m_SplitType = SplitHorizontal; // this doesn't mean anything yet
-		m_iSplitPos = 1;
-
 		WNDCLASSEX wc = {0};
 		const auto hInst = AfxGetInstanceHandle();
 		if (!::GetClassInfoEx(hInst, _T("FakeSplitter"), &wc)) // STRING_OK
