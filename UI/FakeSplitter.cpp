@@ -14,20 +14,12 @@ namespace controls
 		SplitterHit = 1
 	};
 
-	CFakeSplitter::CFakeSplitter(_In_ dialog::CBaseDialog* lpHostDlg)
+	CFakeSplitter::CFakeSplitter(HWND hWnd)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		CRect pRect;
 
 		m_bTracking = false;
-
-		m_lpHostDlg = lpHostDlg;
-		m_lpHostDlg->AddRef();
-
-		m_lpHostDlg->GetClientRect(pRect);
-
 		m_flSplitPercent = 0.5;
-
 		m_iSplitWidth = 0;
 
 		m_PaneOne = nullptr;
@@ -49,14 +41,19 @@ namespace controls
 			RegisterClassEx(&wc);
 		}
 
-		EC_B_S(Create(
+		// WS_CLIPCHILDREN is used to reduce flicker
+		EC_B_S(CreateEx(
+			0,
 			_T("FakeSplitter"), // STRING_OK
 			_T("FakeSplitter"), // STRING_OK
-			WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN // required to reduce flicker
-				| WS_VISIBLE,
-			pRect,
-			lpHostDlg,
-			IDC_FAKE_SPLITTER));
+			WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE,
+			0,
+			0,
+			0,
+			0,
+			hWnd,
+			reinterpret_cast<HMENU>(static_cast<INT_PTR>(IDC_FAKE_SPLITTER)),
+			nullptr));
 
 		// Necessary for TAB to work. Without this, all TABS get stuck on the fake splitter control
 		// instead of passing to the children. Haven't tested with nested splitters.
@@ -73,7 +70,6 @@ namespace controls
 		(void) DestroyCursor(m_hSplitCursorH);
 		(void) DestroyCursor(m_hSplitCursorV);
 		CWnd::DestroyWindow();
-		if (m_lpHostDlg) m_lpHostDlg->Release();
 	}
 
 	BEGIN_MESSAGE_MAP(CFakeSplitter, CWnd)
@@ -355,4 +351,4 @@ namespace controls
 
 		::EndPaint(m_hWnd, &ps);
 	}
-}
+} // namespace controls

@@ -19,7 +19,7 @@ namespace controls
 	class CFakeSplitter : public CWnd
 	{
 	public:
-		CFakeSplitter(_In_ dialog::CBaseDialog* lpHostDlg);
+		CFakeSplitter(HWND hWnd);
 		virtual ~CFakeSplitter();
 
 		void SetPaneOne(CWnd* PaneOne);
@@ -39,7 +39,6 @@ namespace controls
 		void StopTracking();
 		void CalcSplitPos();
 
-		dialog::CBaseDialog* m_lpHostDlg;
 		bool m_bTracking;
 		FLOAT m_flSplitPercent;
 		CWnd* m_PaneOne;
@@ -52,4 +51,4 @@ namespace controls
 
 		DECLARE_MESSAGE_MAP()
 	};
-}
+} // namespace controls
