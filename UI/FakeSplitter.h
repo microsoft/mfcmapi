@@ -19,9 +19,10 @@ namespace controls
 	class CFakeSplitter : public CWnd
 	{
 	public:
-		CFakeSplitter(HWND hWnd);
+		CFakeSplitter() = default;
 		virtual ~CFakeSplitter();
 
+		void Init(HWND hWnd);
 		void SetPaneOne(CWnd* PaneOne);
 		void SetPaneTwo(CWnd* PaneTwo);
 		void SetPercent(FLOAT iNewPercent);

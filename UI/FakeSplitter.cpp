@@ -14,10 +14,16 @@ namespace controls
 		SplitterHit = 1
 	};
 
-	CFakeSplitter::CFakeSplitter(HWND hWnd)
+	CFakeSplitter::~CFakeSplitter()
 	{
-		TRACE_CONSTRUCTOR(CLASS);
+		TRACE_DESTRUCTOR(CLASS);
+		(void) DestroyCursor(m_hSplitCursorH);
+		(void) DestroyCursor(m_hSplitCursorV);
+		CWnd::DestroyWindow();
+	}
 
+	void CFakeSplitter::Init(HWND hWnd)
+	{
 		WNDCLASSEX wc = {0};
 		const auto hInst = AfxGetInstanceHandle();
 		if (!::GetClassInfoEx(hInst, _T("FakeSplitter"), &wc)) // STRING_OK
@@ -52,14 +58,6 @@ namespace controls
 		// Load split cursors
 		m_hSplitCursorV = EC_D(HCURSOR, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITV)));
 		m_hSplitCursorH = EC_D(HCURSOR, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITH)));
-	}
-
-	CFakeSplitter::~CFakeSplitter()
-	{
-		TRACE_DESTRUCTOR(CLASS);
-		(void) DestroyCursor(m_hSplitCursorH);
-		(void) DestroyCursor(m_hSplitCursorV);
-		CWnd::DestroyWindow();
 	}
 
 	BEGIN_MESSAGE_MAP(CFakeSplitter, CWnd)
