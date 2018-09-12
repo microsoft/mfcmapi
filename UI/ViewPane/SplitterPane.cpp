@@ -99,10 +99,11 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
-	void SplitterPane::SetWindowPos(int x, int y, int width, int height)
+	void SplitterPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
-		output::DebugPrint(DBGDraw, L"SplitterPane::SetWindowPos x:%d y:%d width:%d height: %d\n", x, y, width, height);
-		m_lpSplitter->SetWindowPos(NULL, x, y, width, height, SWP_NOZORDER);
+		output::DebugPrint(
+			DBGDraw, L"SplitterPane::DeferWindowPos x:%d y:%d width:%d height: %d\n", x, y, width, height);
+		::DeferWindowPos(hWinPosInfo, m_lpSplitter->GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER);
 		m_lpSplitter->OnSize(NULL, width, height);
 	}
 } // namespace viewpane

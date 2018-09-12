@@ -51,10 +51,10 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
-	void CheckPane::SetWindowPos(int x, int y, int width, int height)
+	void CheckPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
-		output::DebugPrint(DBGDraw, L"CheckPane::SetWindowPos x:%d width:%d \n", x, width);
-		EC_B_S(m_Check.SetWindowPos(NULL, x, y, width, height, SWP_NOZORDER));
+		output::DebugPrint(DBGDraw, L"CheckPane::DeferWindowPos x:%d width:%d \n", x, width);
+		EC_B_S(::DeferWindowPos(hWinPosInfo, m_Check.GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER));
 	}
 
 	void CheckPane::CommitUIValues()
@@ -124,4 +124,4 @@ namespace viewpane
 			false,
 			DT_SINGLELINE | DT_VCENTER);
 	}
-}
+} // namespace viewpane

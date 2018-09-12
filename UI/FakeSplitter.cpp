@@ -132,7 +132,7 @@ namespace controls
 
 				if (m_ViewPaneOne)
 				{
-					m_ViewPaneOne->SetWindowPos(0, 0, r1.Width(), r1.Height());
+					m_ViewPaneOne->DeferWindowPos(hdwp, 0, 0, r1.Width(), r1.Height());
 				}
 			}
 
@@ -163,7 +163,7 @@ namespace controls
 
 				if (m_ViewPaneTwo)
 				{
-					m_ViewPaneTwo->SetWindowPos(r2.left, r2.top, r2.Width(), r2.Height());
+					m_ViewPaneTwo->DeferWindowPos(hdwp, r2.left, r2.top, r2.Width(), r2.Height());
 				}
 			}
 

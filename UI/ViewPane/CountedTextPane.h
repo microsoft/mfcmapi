@@ -12,7 +12,7 @@ namespace viewpane
 	private:
 		CountedTextPane();
 		void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
-		void SetWindowPos(int x, int y, int width, int height) override;
+		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetMinWidth(_In_ HDC hdc) override;
 		int GetFixedHeight() override;
 		int GetLines() override;
@@ -22,4 +22,4 @@ namespace viewpane
 		int m_iCountLabelWidth; // The width of the string
 		size_t m_iCount; // The numeric count
 	};
-}
+} // namespace viewpane

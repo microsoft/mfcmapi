@@ -162,7 +162,7 @@ namespace viewpane
 		return 0;
 	}
 
-	void TextPane::SetWindowPos(int x, int y, int width, int height)
+	void TextPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
 		auto iVariableHeight = height - GetFixedHeight();
 		if (0 != m_iControl)
@@ -173,7 +173,7 @@ namespace viewpane
 
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
 		EC_B_S(m_EditBox.ShowWindow(cmdShow));
-		ViewPane::SetWindowPos(x, y, width, height);
+		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
 
 		if (m_bCollapsible)
 		{
@@ -190,7 +190,15 @@ namespace viewpane
 			height -= m_iSmallHeightMargin; // This is the bottom margin
 		}
 
-		EC_B_S(m_EditBox.SetWindowPos(NULL, x, y, width, m_bCollapsible ? iVariableHeight : height, SWP_NOZORDER));
+		EC_B_S(::DeferWindowPos(
+			hWinPosInfo,
+			m_EditBox.GetSafeHwnd(),
+			nullptr,
+			x,
+			y,
+			width,
+			m_bCollapsible ? iVariableHeight : height,
+			SWP_NOZORDER));
 	}
 
 	void TextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
@@ -431,4 +439,4 @@ namespace viewpane
 	}
 
 	void TextPane::ShowWindow(int nCmdShow) { m_EditBox.ShowWindow(nCmdShow); }
-}
+} // namespace viewpane
