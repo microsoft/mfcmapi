@@ -53,7 +53,7 @@ namespace viewpane
 
 	void CheckPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
-		output::DebugPrint(DBGDraw, L"CheckPane::SetWindowPos x:%d width:%d \n", x, width);
+		output::DebugPrint(DBGDraw, L"CheckPane::DeferWindowPos x:%d width:%d \n", x, width);
 		EC_B_S(::DeferWindowPos(hWinPosInfo, m_Check.GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER));
 	}
 

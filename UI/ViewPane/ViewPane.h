@@ -10,7 +10,6 @@ namespace viewpane
 
 		void SetLabel(UINT uidLabel, bool bReadOnly);
 		virtual void Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC hdc);
-		void SetWindowPos(int x, int y, int width, int height);
 		virtual void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 
 		virtual void CommitUIValues() = 0;

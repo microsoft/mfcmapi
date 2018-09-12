@@ -27,16 +27,6 @@ namespace viewpane
 		m_hWndParent = nullptr;
 	}
 
-	void ViewPane::SetWindowPos(int x, int y, int width, int height)
-	{
-		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
-		if (hdwp)
-		{
-			DeferWindowPos(hdwp, x, y, width, height);
-			EC_B_S(EndDeferWindowPos(hdwp));
-		}
-	}
-
 	void ViewPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int /*height*/)
 	{
 		if (m_bCollapsible)
