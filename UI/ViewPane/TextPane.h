@@ -21,7 +21,7 @@ namespace viewpane
 		static TextPane* CreateCollapsibleTextPane(UINT uidLabel, bool bReadOnly);
 
 		void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
-		void SetWindowPos(int x, int y, int width, int height) override;
+		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetFixedHeight() override;
 		int GetLines() override;
 
@@ -52,4 +52,4 @@ namespace viewpane
 		bool m_bCommitted;
 		bool m_bMultiline;
 	};
-}
+} // namespace viewpane
