@@ -659,6 +659,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\ViewPane\DropDownPane.h" />
     <ClInclude Include="UI\ViewPane\ListPane.h" />
     <ClInclude Include="UI\ViewPane\SmartViewPane.h" />
+    <ClInclude Include="UI\ViewPane\SplitterPane.h" />
     <ClInclude Include="UI\ViewPane\TextPane.h" />
     <ClInclude Include="UI\ViewPane\ViewPane.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MsgServiceTableDlg.h" />
@@ -849,6 +850,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\ViewPane\DropDownPane.cpp" />
     <ClCompile Include="UI\ViewPane\ListPane.cpp" />
     <ClCompile Include="UI\ViewPane\SmartViewPane.cpp" />
+    <ClCompile Include="UI\ViewPane\SplitterPane.cpp" />
     <ClCompile Include="UI\ViewPane\TextPane.cpp" />
     <ClCompile Include="UI\ViewPane\ViewPane.cpp" />
   </ItemGroup>

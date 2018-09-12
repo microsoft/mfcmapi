@@ -113,7 +113,7 @@ namespace controls
 		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 		if (hdwp)
 		{
-			if (m_PaneOne)
+			if (m_PaneOne || m_ViewPaneOne)
 			{
 				CRect r1;
 				if (SplitHorizontal == m_SplitType)
@@ -125,10 +125,18 @@ namespace controls
 					r1.SetRect(0, 0, cx, m_iSplitPos);
 				}
 
-				DeferWindowPos(hdwp, m_PaneOne, nullptr, 0, 0, r1.Width(), r1.Height(), SWP_NOZORDER);
+				if (m_PaneOne)
+				{
+					DeferWindowPos(hdwp, m_PaneOne, nullptr, 0, 0, r1.Width(), r1.Height(), SWP_NOZORDER);
+				}
+
+				if (m_ViewPaneOne)
+				{
+					m_ViewPaneOne->SetWindowPos(0, 0, r1.Width(), r1.Height());
+				}
 			}
 
-			if (m_PaneTwo)
+			if (m_PaneTwo || m_ViewPaneTwo)
 			{
 				CRect r2;
 				if (SplitHorizontal == m_SplitType)
@@ -148,13 +156,21 @@ namespace controls
 						cy); // bottom right corner
 				}
 
-				DeferWindowPos(hdwp, m_PaneTwo, nullptr, r2.left, r2.top, r2.Width(), r2.Height(), SWP_NOZORDER);
+				if (m_PaneTwo)
+				{
+					DeferWindowPos(hdwp, m_PaneTwo, nullptr, r2.left, r2.top, r2.Width(), r2.Height(), SWP_NOZORDER);
+				}
+
+				if (m_ViewPaneTwo)
+				{
+					m_ViewPaneTwo->SetWindowPos(r2.left, r2.top, r2.Width(), r2.Height());
+				}
 			}
 
 			EC_B_S(EndDeferWindowPos(hdwp));
 		}
 
-		if (m_PaneOne && m_PaneTwo)
+		if ((m_PaneOne || m_ViewPaneOne) && (m_PaneTwo || m_ViewPaneTwo))
 		{
 			// Invalidate our splitter region to force a redraw
 			if (SplitHorizontal == m_SplitType)
@@ -170,7 +186,7 @@ namespace controls
 
 	void CFakeSplitter::CalcSplitPos()
 	{
-		if (!m_PaneOne)
+		if (!m_PaneOne && !m_ViewPaneOne)
 		{
 			m_iSplitPos = 0;
 			return;
@@ -213,7 +229,7 @@ namespace controls
 
 	_Check_return_ int CFakeSplitter::HitTest(LONG x, LONG y) const
 	{
-		if (!m_PaneOne) return noHit;
+		if (!m_PaneOne && !m_ViewPaneOne) return noHit;
 
 		LONG lTestPos;
 
@@ -233,7 +249,7 @@ namespace controls
 
 	void CFakeSplitter::OnMouseMove(UINT /*nFlags*/, CPoint point)
 	{
-		if (!m_PaneOne) return;
+		if (!m_PaneOne && !m_ViewPaneOne) return;
 
 		// If we don't have GetCapture, then we don't want to track right now.
 		if (GetCapture() != this) StopTracking();

@@ -126,6 +126,7 @@
     <ClInclude Include="Interpret\SmartView\block\blockT.h" />
     <ClInclude Include="Interpret\SmartView\block\blockStringA.h" />
     <ClInclude Include="Interpret\SmartView\block\blockStringW.h" />
+    <ClInclude Include="UI\ViewPane\SplitterPane.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -166,6 +167,9 @@
     </ClCompile>
     <ClCompile Include="Interpret\SmartView\PropertiesStruct.cpp">
       <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\ViewPane\SplitterPane.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

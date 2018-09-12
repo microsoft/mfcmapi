@@ -1,4 +1,5 @@
 #pragma once
+#include <UI/ViewPane/ViewPane.h>
 // List splitter control which hosts two controls either horizontally or vertically
 
 namespace dialog
@@ -25,11 +26,26 @@ namespace controls
 		void Init(HWND hWnd);
 		void SetPaneOne(HWND paneOne);
 		void SetPaneTwo(HWND paneTwo);
+		void SetPaneOne(viewpane::ViewPane* paneOne)
+		{
+			m_ViewPaneOne = paneOne;
+			if (m_ViewPaneOne)
+			{
+				m_iSplitWidth = 7;
+			}
+			else
+			{
+				m_iSplitWidth = 0;
+			}
+		}
+
+		void SetPaneTwo(viewpane::ViewPane* paneTwo) { m_ViewPaneTwo = paneTwo; }
+
 		void SetPercent(FLOAT iNewPercent);
 		void SetSplitType(SplitType stSplitType);
+		void OnSize(UINT nType, int cx, int cy);
 
 	private:
-		void OnSize(UINT nType, int cx, int cy);
 		void OnPaint();
 		void OnMouseMove(UINT nFlags, CPoint point);
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
@@ -44,6 +60,8 @@ namespace controls
 		FLOAT m_flSplitPercent{0.5};
 		HWND m_PaneOne{};
 		HWND m_PaneTwo{};
+		viewpane::ViewPane* m_ViewPaneOne{};
+		viewpane::ViewPane* m_ViewPaneTwo{};
 		int m_iSplitWidth{};
 		int m_iSplitPos{1};
 		SplitType m_SplitType{SplitHorizontal};
