@@ -87,7 +87,7 @@ namespace viewpane
 		return LINES_MULTILINEEDIT;
 	}
 
-	void CountedTextPane::SetWindowPos(int x, int y, int width, int height)
+	void CountedTextPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
 		const auto iVariableHeight = height - GetFixedHeight();
 		if (0 != m_iControl)
@@ -96,19 +96,27 @@ namespace viewpane
 			height -= m_iSmallHeightMargin;
 		}
 
-		ViewPane::SetWindowPos(x, y, width, height);
+		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
 
 		if (!m_bCollapsed)
 		{
 			EC_B_S(m_Count.ShowWindow(SW_SHOW));
 			EC_B_S(m_EditBox.ShowWindow(SW_SHOW));
 
-			EC_B_S(m_Count.SetWindowPos(
-				nullptr, x + width - m_iCountLabelWidth, y, m_iCountLabelWidth, m_iLabelHeight, SWP_NOZORDER));
+			EC_B_S(::DeferWindowPos(
+				hWinPosInfo,
+				m_Count.GetSafeHwnd(),
+				nullptr,
+				x + width - m_iCountLabelWidth,
+				y,
+				m_iCountLabelWidth,
+				m_iLabelHeight,
+				SWP_NOZORDER));
 
 			y += m_iLabelHeight + m_iSmallHeightMargin;
 
-			EC_B_S(m_EditBox.SetWindowPos(NULL, x, y, width, iVariableHeight, SWP_NOZORDER));
+			EC_B_S(::DeferWindowPos(
+				hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, y, width, iVariableHeight, SWP_NOZORDER));
 		}
 		else
 		{
@@ -118,4 +126,4 @@ namespace viewpane
 	}
 
 	void CountedTextPane::SetCount(size_t iCount) { m_iCount = iCount; }
-}
+} // namespace viewpane

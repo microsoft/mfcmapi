@@ -27,23 +27,36 @@ namespace viewpane
 		m_hWndParent = nullptr;
 	}
 
-	void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
+	void ViewPane::SetWindowPos(int x, int y, int width, int height)
+	{
+		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
+		if (hdwp)
+		{
+			DeferWindowPos(hdwp, x, y, width, height);
+			EC_B_S(EndDeferWindowPos(hdwp));
+		}
+	}
+
+	void ViewPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int /*height*/)
 	{
 		if (m_bCollapsible)
 		{
 			StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::bsUpArrow : ui::bsDownArrow);
-			m_CollapseButton.SetWindowPos(nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER);
+			::DeferWindowPos(
+				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER);
 			x += m_iButtonHeight;
 		}
 
 		output::DebugPrint(
 			DBGDraw,
-			L"ViewPane::SetWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
+			L"ViewPane::DeferWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
 			x,
 			width,
 			x + m_iButtonHeight,
 			m_iLabelWidth);
-		EC_B_S(m_Label.SetWindowPos(nullptr, x, y, m_iLabelWidth, m_iLabelHeight, SWP_NOZORDER));
+
+		::DeferWindowPos(
+			hWinPosInfo, m_Label.GetSafeHwnd(), nullptr, x, y, m_iLabelWidth, m_iLabelHeight, SWP_NOZORDER);
 	}
 
 	void ViewPane::SetLabel(UINT uidLabel, bool bReadOnly)
@@ -136,4 +149,4 @@ namespace viewpane
 	bool ViewPane::MatchID(UINT nID) const { return nID == m_nID; }
 
 	void ViewPane::UpdateButtons() {}
-}
+} // namespace viewpane
