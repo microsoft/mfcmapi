@@ -87,7 +87,8 @@ namespace viewpane
 		return iHeight;
 	}
 
-	void DropDownPane::SetWindowPos(int x, int y, int width, int /*height*/)
+	void
+	DropDownPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int /*height*/)
 	{
 		if (0 != m_iControl)
 		{
@@ -96,7 +97,8 @@ namespace viewpane
 
 		if (!m_szLabel.empty())
 		{
-			EC_B_S(m_Label.SetWindowPos(nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER));
+			EC_B_S(::DeferWindowPos(
+				hWinPosInfo, m_Label.GetSafeHwnd(), nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER));
 			y += m_iLabelHeight;
 		}
 
@@ -105,7 +107,8 @@ namespace viewpane
 		// This will give us something between 4 and 10 entries
 		const auto ulDrops = static_cast<int>(min(10, 1 + max(m_DropList.size(), 4)));
 
-		EC_B_S(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
+		EC_B_S(::DeferWindowPos(
+			hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
 	}
 
 	void DropDownPane::CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
@@ -270,4 +273,4 @@ namespace viewpane
 			m_DropDown.SetCurSel(static_cast<int>(iSelection));
 		}
 	}
-}
+} // namespace viewpane
