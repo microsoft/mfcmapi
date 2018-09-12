@@ -73,7 +73,7 @@ namespace viewpane
 		return 0;
 	}
 
-	void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
+	void SmartViewPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
 		const auto visibility = !m_bDoDropDown && !m_bHasData ? SW_HIDE : SW_SHOW;
 		EC_B_S(m_CollapseButton.ShowWindow(visibility));
@@ -85,7 +85,7 @@ namespace viewpane
 			height -= m_iSmallHeightMargin;
 		}
 
-		ViewPane::SetWindowPos(x, y, width, height);
+		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
 
 		y += m_iLabelHeight + m_iSmallHeightMargin;
 		height -= m_iButtonHeight + m_iSmallHeightMargin;
@@ -94,13 +94,14 @@ namespace viewpane
 		{
 			if (m_bDoDropDown)
 			{
-				EC_B_S(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * 10, SWP_NOZORDER));
+				EC_B_S(::DeferWindowPos(
+					hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, y, width, m_iEditHeight * 10, SWP_NOZORDER));
 
 				y += m_iEditHeight;
 				height -= m_iEditHeight;
 			}
 
-			m_TextPane.SetWindowPos(x, y, width, height);
+			m_TextPane.DeferWindowPos(hWinPosInfo, x, y, width, height);
 		}
 
 		EC_B_S(m_DropDown.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
@@ -158,4 +159,4 @@ namespace viewpane
 		m_bHasData = !szSmartView.empty();
 		SetStringW(szSmartView);
 	}
-}
+} // namespace viewpane

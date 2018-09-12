@@ -154,7 +154,7 @@ namespace viewpane
 		return ViewPane::HandleChange(nID);
 	}
 
-	void ListPane::SetWindowPos(int x, int y, int width, int height)
+	void ListPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
 		const auto iVariableHeight = height - GetFixedHeight();
 		if (0 != m_iControl)
@@ -163,12 +163,13 @@ namespace viewpane
 			height -= m_iSmallHeightMargin;
 		}
 
-		ViewPane::SetWindowPos(x, y, width, height);
+		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
 		y += m_iLabelHeight + m_iSmallHeightMargin;
 
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
 		EC_B_S(m_List.ShowWindow(cmdShow));
-		EC_B_S(m_List.SetWindowPos(NULL, x, y, width, iVariableHeight, SWP_NOZORDER));
+		EC_B_S(
+			::DeferWindowPos(hWinPosInfo, m_List.GetSafeHwnd(), nullptr, x, y, width, iVariableHeight, SWP_NOZORDER));
 		y += iVariableHeight;
 
 		if (!m_bReadOnly)
@@ -182,7 +183,9 @@ namespace viewpane
 			for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 			{
 				EC_B_S(m_ButtonArray[iButton].ShowWindow(cmdShow));
-				EC_B_S(m_ButtonArray[iButton].SetWindowPos(
+				EC_B_S(::DeferWindowPos(
+					hWinPosInfo,
+					m_ButtonArray[iButton].GetSafeHwnd(),
 					nullptr,
 					iOffset - iSlotWidth * (NUMLISTBUTTONS - iButton),
 					y,
@@ -240,10 +243,7 @@ namespace viewpane
 		return nullptr;
 	}
 
-	void ListPane::InsertColumn(int nCol, UINT uidText)
-	{
-		m_List.InsertColumnW(nCol, strings::loadstring(uidText));
-	}
+	void ListPane::InsertColumn(int nCol, UINT uidText) { m_List.InsertColumnW(nCol, strings::loadstring(uidText)); }
 
 	void ListPane::SetColumnType(int nCol, ULONG ulPropType) const
 	{
@@ -434,4 +434,4 @@ namespace viewpane
 	{
 		return m_List.GetItemText(nItem, nSubItem);
 	}
-}
+} // namespace viewpane
