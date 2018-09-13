@@ -18,7 +18,7 @@ namespace viewpane
 		}
 		void SetPaneTwo(int iControl, ViewPane* paneTwo)
 		{
-			m_PaneOneControl = iControl;
+			m_PaneTwoControl = iControl;
 			m_PaneTwo = paneTwo;
 		}
 
