@@ -33,6 +33,8 @@ namespace ui
 		cBlue,
 		cMedBlue,
 		cPaleBlue,
+		cPink,
+		cLavender,
 		cColorEnd
 	};
 
@@ -48,6 +50,8 @@ namespace ui
 		RGB(0x00, 0x72, 0xC6), // cBlue
 		RGB(0xCD, 0xE6, 0xF7), // cMedBlue
 		RGB(0xE6, 0xF2, 0xFA), // cPaleBlue
+		RGB(0xFF, 0xC0, 0xCB), // cPink
+		RGB(0xE6, 0xE6, 0xFA), // cLavender
 	};
 
 	// Fixed mapping of UI elements to colors

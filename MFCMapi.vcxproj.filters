@@ -118,6 +118,7 @@
     <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
     <ClInclude Include="MAPI\MapiMemory.h" />
+    <ClInclude Include="UI\ViewPane\SplitterPane.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -154,6 +155,9 @@
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="MAPI\Version.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\ViewPane\SplitterPane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

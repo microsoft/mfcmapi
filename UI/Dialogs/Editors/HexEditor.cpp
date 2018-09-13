@@ -3,6 +3,7 @@
 #include <UI/FileDialogEx.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/ViewPane/SmartViewPane.h>
+#include <UI/ViewPane/SplitterPane.h>
 #include <MAPI/Cache/GlobalCache.h>
 #include <MAPI/MAPIFunctions.h>
 
@@ -14,6 +15,7 @@ namespace dialog
 
 		enum __HexEditorFields
 		{
+			HEXED_TEXT,
 			HEXED_ANSI,
 			HEXED_UNICODE,
 			HEXED_BASE64,
@@ -35,8 +37,10 @@ namespace dialog
 			m_lpMapiObjects = lpMapiObjects;
 			if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
 
-			InitPane(HEXED_ANSI, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ANSISTRING, false));
-			InitPane(HEXED_UNICODE, viewpane::TextPane::CreateCollapsibleTextPane(IDS_UNISTRING, false));
+			auto splitter = viewpane::SplitterPane::CreateHorizontalPane();
+			InitPane(HEXED_TEXT, splitter);
+			splitter->SetPaneOne(HEXED_ANSI, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ANSISTRING, false));
+			splitter->SetPaneTwo(HEXED_UNICODE, viewpane::TextPane::CreateCollapsibleTextPane(IDS_UNISTRING, false));
 			InitPane(HEXED_BASE64, viewpane::CountedTextPane::Create(IDS_BASE64STRING, false, IDS_CCH));
 			InitPane(HEXED_HEX, viewpane::CountedTextPane::Create(IDS_HEX, false, IDS_CB));
 			InitPane(HEXED_SMARTVIEW, viewpane::SmartViewPane::Create(IDS_SMARTVIEW));
@@ -70,6 +74,7 @@ namespace dialog
 			size_t cchEncodeStr = 0;
 			switch (i)
 			{
+				// TODO: Get these routed into our splitter
 			case HEXED_ANSI:
 			{
 				auto text = GetStringA(HEXED_ANSI);
@@ -248,5 +253,5 @@ namespace dialog
 
 		// Close
 		void CHexEditor::OnEditAction3() { OnOK(); }
-	}
-}
+	} // namespace editor
+} // namespace dialog

@@ -208,7 +208,7 @@ namespace dialog
 
 			if (m_lpHierarchyTableTreeCtrl)
 			{
-				m_lpFakeSplitter->SetPaneOne(m_lpHierarchyTableTreeCtrl);
+				m_lpFakeSplitter->SetPaneOne(m_lpHierarchyTableTreeCtrl->GetSafeHwnd());
 
 				m_lpFakeSplitter->SetPercent(0.25);
 			}
@@ -327,4 +327,4 @@ namespace dialog
 	{
 		addin::InvokeAddInMenu(lpParams);
 	}
-}
+} // namespace dialog

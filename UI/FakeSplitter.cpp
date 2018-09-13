@@ -14,28 +14,16 @@ namespace controls
 		SplitterHit = 1
 	};
 
-	CFakeSplitter::CFakeSplitter(_In_ dialog::CBaseDialog* lpHostDlg)
+	CFakeSplitter::~CFakeSplitter()
 	{
-		TRACE_CONSTRUCTOR(CLASS);
-		CRect pRect;
+		TRACE_DESTRUCTOR(CLASS);
+		(void) DestroyCursor(m_hSplitCursorH);
+		(void) DestroyCursor(m_hSplitCursorV);
+		CWnd::DestroyWindow();
+	}
 
-		m_bTracking = false;
-
-		m_lpHostDlg = lpHostDlg;
-		m_lpHostDlg->AddRef();
-
-		m_lpHostDlg->GetClientRect(pRect);
-
-		m_flSplitPercent = 0.5;
-
-		m_iSplitWidth = 0;
-
-		m_PaneOne = nullptr;
-		m_PaneTwo = nullptr;
-
-		m_SplitType = SplitHorizontal; // this doesn't mean anything yet
-		m_iSplitPos = 1;
-
+	void CFakeSplitter::Init(HWND hWnd)
+	{
 		WNDCLASSEX wc = {0};
 		const auto hInst = AfxGetInstanceHandle();
 		if (!::GetClassInfoEx(hInst, _T("FakeSplitter"), &wc)) // STRING_OK
@@ -49,14 +37,19 @@ namespace controls
 			RegisterClassEx(&wc);
 		}
 
-		EC_B_S(Create(
+		// WS_CLIPCHILDREN is used to reduce flicker
+		EC_B_S(CreateEx(
+			0,
 			_T("FakeSplitter"), // STRING_OK
 			_T("FakeSplitter"), // STRING_OK
-			WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN // required to reduce flicker
-				| WS_VISIBLE,
-			pRect,
-			lpHostDlg,
-			IDC_FAKE_SPLITTER));
+			WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE,
+			0,
+			0,
+			0,
+			0,
+			hWnd,
+			reinterpret_cast<HMENU>(static_cast<INT_PTR>(IDC_FAKE_SPLITTER)),
+			nullptr));
 
 		// Necessary for TAB to work. Without this, all TABS get stuck on the fake splitter control
 		// instead of passing to the children. Haven't tested with nested splitters.
@@ -65,15 +58,6 @@ namespace controls
 		// Load split cursors
 		m_hSplitCursorV = EC_D(HCURSOR, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITV)));
 		m_hSplitCursorH = EC_D(HCURSOR, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITH)));
-	}
-
-	CFakeSplitter::~CFakeSplitter()
-	{
-		TRACE_DESTRUCTOR(CLASS);
-		(void) DestroyCursor(m_hSplitCursorH);
-		(void) DestroyCursor(m_hSplitCursorV);
-		CWnd::DestroyWindow();
-		if (m_lpHostDlg) m_lpHostDlg->Release();
 	}
 
 	BEGIN_MESSAGE_MAP(CFakeSplitter, CWnd)
@@ -107,9 +91,9 @@ namespace controls
 		return CWnd::WindowProc(message, wParam, lParam);
 	}
 
-	void CFakeSplitter::SetPaneOne(CWnd* PaneOne)
+	void CFakeSplitter::SetPaneOne(HWND paneOne)
 	{
-		m_PaneOne = PaneOne;
+		m_PaneOne = paneOne;
 		if (m_PaneOne)
 		{
 			m_iSplitWidth = 7;
@@ -120,7 +104,7 @@ namespace controls
 		}
 	}
 
-	void CFakeSplitter::SetPaneTwo(CWnd* PaneTwo) { m_PaneTwo = PaneTwo; }
+	void CFakeSplitter::SetPaneTwo(HWND paneTwo) { m_PaneTwo = paneTwo; }
 
 	void CFakeSplitter::OnSize(UINT /*nType*/, int cx, int cy)
 	{
@@ -129,7 +113,7 @@ namespace controls
 		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 		if (hdwp)
 		{
-			if (m_PaneOne && m_PaneOne->m_hWnd)
+			if (m_PaneOne || m_ViewPaneOne)
 			{
 				CRect r1;
 				if (SplitHorizontal == m_SplitType)
@@ -141,10 +125,18 @@ namespace controls
 					r1.SetRect(0, 0, cx, m_iSplitPos);
 				}
 
-				DeferWindowPos(hdwp, m_PaneOne->m_hWnd, nullptr, 0, 0, r1.Width(), r1.Height(), SWP_NOZORDER);
+				if (m_PaneOne)
+				{
+					DeferWindowPos(hdwp, m_PaneOne, nullptr, 0, 0, r1.Width(), r1.Height(), SWP_NOZORDER);
+				}
+
+				if (m_ViewPaneOne)
+				{
+					m_ViewPaneOne->DeferWindowPos(hdwp, 0, 0, r1.Width(), r1.Height());
+				}
 			}
 
-			if (m_PaneTwo && m_PaneTwo->m_hWnd)
+			if (m_PaneTwo || m_ViewPaneTwo)
 			{
 				CRect r2;
 				if (SplitHorizontal == m_SplitType)
@@ -164,14 +156,21 @@ namespace controls
 						cy); // bottom right corner
 				}
 
-				DeferWindowPos(
-					hdwp, m_PaneTwo->m_hWnd, nullptr, r2.left, r2.top, r2.Width(), r2.Height(), SWP_NOZORDER);
+				if (m_PaneTwo)
+				{
+					DeferWindowPos(hdwp, m_PaneTwo, nullptr, r2.left, r2.top, r2.Width(), r2.Height(), SWP_NOZORDER);
+				}
+
+				if (m_ViewPaneTwo)
+				{
+					m_ViewPaneTwo->DeferWindowPos(hdwp, r2.left, r2.top, r2.Width(), r2.Height());
+				}
 			}
 
 			EC_B_S(EndDeferWindowPos(hdwp));
 		}
 
-		if (m_PaneOne && m_PaneTwo)
+		if ((m_PaneOne || m_ViewPaneOne) && (m_PaneTwo || m_ViewPaneTwo))
 		{
 			// Invalidate our splitter region to force a redraw
 			if (SplitHorizontal == m_SplitType)
@@ -187,7 +186,7 @@ namespace controls
 
 	void CFakeSplitter::CalcSplitPos()
 	{
-		if (!m_PaneOne)
+		if (!m_PaneOne && !m_ViewPaneOne)
 		{
 			m_iSplitPos = 0;
 			return;
@@ -230,7 +229,7 @@ namespace controls
 
 	_Check_return_ int CFakeSplitter::HitTest(LONG x, LONG y) const
 	{
-		if (!m_PaneOne) return noHit;
+		if (!m_PaneOne && !m_ViewPaneOne) return noHit;
 
 		LONG lTestPos;
 
@@ -250,7 +249,7 @@ namespace controls
 
 	void CFakeSplitter::OnMouseMove(UINT /*nFlags*/, CPoint point)
 	{
-		if (!m_PaneOne) return;
+		if (!m_PaneOne && !m_ViewPaneOne) return;
 
 		// If we don't have GetCapture, then we don't want to track right now.
 		if (GetCapture() != this) StopTracking();
@@ -355,4 +354,4 @@ namespace controls
 
 		::EndPaint(m_hWnd, &ps);
 	}
-}
+} // namespace controls
