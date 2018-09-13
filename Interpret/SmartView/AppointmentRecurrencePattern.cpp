@@ -7,23 +7,12 @@
 
 namespace smartview
 {
-	AppointmentRecurrencePattern::AppointmentRecurrencePattern()
-	{
-		m_ReaderVersion2 = 0;
-		m_WriterVersion2 = 0;
-		m_StartTimeOffset = 0;
-		m_EndTimeOffset = 0;
-		m_ExceptionCount = 0;
-		m_ReservedBlock1Size = 0;
-		m_ReservedBlock2Size = 0;
-	}
-
 	void AppointmentRecurrencePattern::Parse()
 	{
-		m_RecurrencePattern.Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
+		m_RecurrencePattern.init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 		m_RecurrencePattern.DisableJunkParsing();
 		m_RecurrencePattern.EnsureParsed();
-		m_Parser.Advance(m_RecurrencePattern.GetCurrentOffset());
+		m_Parser.advance(m_RecurrencePattern.GetCurrentOffset());
 
 		m_ReaderVersion2 = m_Parser.Get<DWORD>();
 		m_WriterVersion2 = m_Parser.Get<DWORD>();
@@ -34,6 +23,7 @@ namespace smartview
 		if (m_ExceptionCount && m_ExceptionCount == m_RecurrencePattern.m_ModifiedInstanceCount &&
 			m_ExceptionCount < _MaxEntriesSmall)
 		{
+			m_ExceptionInfo.reserve(m_ExceptionCount);
 			for (WORD i = 0; i < m_ExceptionCount; i++)
 			{
 				ExceptionInfo exceptionInfo;
@@ -109,14 +99,6 @@ namespace smartview
 			for (WORD i = 0; i < m_ExceptionCount; i++)
 			{
 				ExtendedException extendedException;
-				extendedException.ReservedBlockEE2Size = 0;
-				extendedException.ReservedBlockEE1Size = 0;
-				extendedException.StartDateTime = 0;
-				extendedException.EndDateTime = 0;
-				extendedException.OriginalStartDate = 0;
-				extendedException.WideCharSubjectLength = 0;
-				extendedException.WideCharLocationLength = 0;
-				extendedException.ReservedBlockEE2Size = 0;
 
 				std::vector<BYTE> ReservedBlockEE2;
 				if (m_WriterVersion2 >= 0x0003009)
@@ -176,47 +158,74 @@ namespace smartview
 		m_ReservedBlock2 = m_Parser.GetBYTES(m_ReservedBlock2Size, _MaxBytes);
 	}
 
-	_Check_return_ std::wstring AppointmentRecurrencePattern::ToStringInternal()
+	void AppointmentRecurrencePattern::ParseBlocks()
 	{
-		std::wstring szTmp;
+		addBlock(m_RecurrencePattern.getBlock());
 
-		auto szARP = m_RecurrencePattern.ToString();
-
-		szARP += strings::formatmessage(
-			IDS_ARPHEADER,
-			m_ReaderVersion2,
-			m_WriterVersion2,
+		addLine();
+		addHeader(L"Appointment Recurrence Pattern: \r\n");
+		addBlock(m_ReaderVersion2, L"ReaderVersion2: 0x%1!08X!\r\n", m_ReaderVersion2.getData());
+		addBlock(m_WriterVersion2, L"WriterVersion2: 0x%1!08X!\r\n", m_WriterVersion2.getData());
+		addBlock(
 			m_StartTimeOffset,
-			RTimeToString(m_StartTimeOffset).c_str(),
+			L"StartTimeOffset: 0x%1!08X! = %1!d! = %2!ws!\r\n",
+			m_StartTimeOffset.getData(),
+			RTimeToString(m_StartTimeOffset).c_str());
+		addBlock(
 			m_EndTimeOffset,
-			RTimeToString(m_EndTimeOffset).c_str(),
-			m_ExceptionCount);
+			L"EndTimeOffset: 0x%1!08X! = %1!d! = %2!ws!\r\n",
+			m_EndTimeOffset.getData(),
+			RTimeToString(m_EndTimeOffset).c_str());
+		addBlock(m_ExceptionCount, L"ExceptionCount: 0x%1!04X!\r\n", m_ExceptionCount.getData());
 
 		if (m_ExceptionInfo.size())
 		{
 			for (WORD i = 0; i < m_ExceptionInfo.size(); i++)
 			{
+				addBlock(
+					m_ExceptionInfo[i].StartDateTime,
+					L"ExceptionInfo[%1!d!].StartDateTime: 0x%2!08X! = %3!ws!\r\n",
+					i,
+					m_ExceptionInfo[i].StartDateTime.getData(),
+					RTimeToString(m_ExceptionInfo[i].StartDateTime).c_str());
+				addBlock(
+					m_ExceptionInfo[i].EndDateTime,
+					L"ExceptionInfo[%1!d!].EndDateTime: 0x%2!08X! = %3!ws!\r\n",
+					i,
+					m_ExceptionInfo[i].EndDateTime.getData(),
+					RTimeToString(m_ExceptionInfo[i].EndDateTime).c_str());
+				addBlock(
+					m_ExceptionInfo[i].OriginalStartDate,
+					L"ExceptionInfo[%1!d!].OriginalStartDate: 0x%2!08X! = %3!ws!\r\n",
+					i,
+					m_ExceptionInfo[i].OriginalStartDate.getData(),
+					RTimeToString(m_ExceptionInfo[i].OriginalStartDate).c_str());
 				auto szOverrideFlags =
 					interpretprop::InterpretFlags(flagOverrideFlags, m_ExceptionInfo[i].OverrideFlags);
-				auto szExceptionInfo = strings::formatmessage(
-					IDS_ARPEXHEADER,
-					i,
-					m_ExceptionInfo[i].StartDateTime,
-					RTimeToString(m_ExceptionInfo[i].StartDateTime).c_str(),
-					m_ExceptionInfo[i].EndDateTime,
-					RTimeToString(m_ExceptionInfo[i].EndDateTime).c_str(),
-					m_ExceptionInfo[i].OriginalStartDate,
-					RTimeToString(m_ExceptionInfo[i].OriginalStartDate).c_str(),
+				addBlock(
 					m_ExceptionInfo[i].OverrideFlags,
+					L"ExceptionInfo[%1!d!].OverrideFlags: 0x%2!04X! = %3!ws!\r\n",
+					i,
+					m_ExceptionInfo[i].OverrideFlags.getData(),
 					szOverrideFlags.c_str());
 
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT)
 				{
-					szExceptionInfo += strings::formatmessage(
-						IDS_ARPEXSUBJECT,
-						i,
+					addBlock(
 						m_ExceptionInfo[i].SubjectLength,
+						L"ExceptionInfo[%1!d!].SubjectLength: 0x%2!04X! = %2!d!\r\n",
+						i,
+						m_ExceptionInfo[i].SubjectLength.getData());
+					addBlock(
 						m_ExceptionInfo[i].SubjectLength2,
+						L"ExceptionInfo[%1!d!].SubjectLength2: 0x%2!04X! = %2!d!\r\n",
+						i,
+						m_ExceptionInfo[i].SubjectLength2.getData());
+
+					addBlock(
+						m_ExceptionInfo[i].Subject,
+						L"ExceptionInfo[%1!d!].Subject: \"%2!hs!\"\r\n",
+						i,
 						m_ExceptionInfo[i].Subject.c_str());
 				}
 
@@ -226,28 +235,48 @@ namespace smartview
 						m_ExceptionInfo[i].MeetingType,
 						dispidApptStateFlags,
 						const_cast<LPGUID>(&guid::PSETID_Appointment));
-					szExceptionInfo += strings::formatmessage(
-						IDS_ARPEXMEETINGTYPE, i, m_ExceptionInfo[i].MeetingType, szFlags.c_str());
+					addBlock(
+						m_ExceptionInfo[i].MeetingType,
+						L"ExceptionInfo[%1!d!].MeetingType: 0x%2!08X! = %3!ws!\r\n",
+						i,
+						m_ExceptionInfo[i].MeetingType.getData(),
+						szFlags.c_str());
 				}
 
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_REMINDERDELTA)
 				{
-					szExceptionInfo +=
-						strings::formatmessage(IDS_ARPEXREMINDERDELTA, i, m_ExceptionInfo[i].ReminderDelta);
+					addBlock(
+						m_ExceptionInfo[i].ReminderDelta,
+						L"ExceptionInfo[%1!d!].ReminderDelta: 0x%2!08X!\r\n",
+						i,
+						m_ExceptionInfo[i].ReminderDelta.getData());
 				}
 
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_REMINDER)
 				{
-					szExceptionInfo += strings::formatmessage(IDS_ARPEXREMINDERSET, i, m_ExceptionInfo[i].ReminderSet);
+					addBlock(
+						m_ExceptionInfo[i].ReminderSet,
+						L"ExceptionInfo[%1!d!].ReminderSet: 0x%2!08X!\r\n",
+						i,
+						m_ExceptionInfo[i].ReminderSet.getData());
 				}
 
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
 				{
-					szExceptionInfo += strings::formatmessage(
-						IDS_ARPEXLOCATION,
-						i,
+					addBlock(
 						m_ExceptionInfo[i].LocationLength,
+						L"ExceptionInfo[%1!d!].LocationLength: 0x%2!04X! = %2!d!\r\n",
+						i,
+						m_ExceptionInfo[i].LocationLength.getData());
+					addBlock(
 						m_ExceptionInfo[i].LocationLength2,
+						L"ExceptionInfo[%1!d!].LocationLength2: 0x%2!04X! = %2!d!\r\n",
+						i,
+						m_ExceptionInfo[i].LocationLength2.getData());
+					addBlock(
+						m_ExceptionInfo[i].Location,
+						L"ExceptionInfo[%1!d!].Location: \"%2!hs!\"\r\n",
+						i,
 						m_ExceptionInfo[i].Location.c_str());
 				}
 
@@ -255,68 +284,86 @@ namespace smartview
 				{
 					auto szFlags = InterpretNumberAsStringNamedProp(
 						m_ExceptionInfo[i].BusyStatus, dispidBusyStatus, const_cast<LPGUID>(&guid::PSETID_Appointment));
-					szExceptionInfo +=
-						strings::formatmessage(IDS_ARPEXBUSYSTATUS, i, m_ExceptionInfo[i].BusyStatus, szFlags.c_str());
+					addBlock(
+						m_ExceptionInfo[i].BusyStatus,
+						L"ExceptionInfo[%1!d!].BusyStatus: 0x%2!08X! = %3!ws!\r\n",
+						i,
+						m_ExceptionInfo[i].BusyStatus.getData(),
+						szFlags.c_str());
 				}
 
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_ATTACHMENT)
 				{
-					szExceptionInfo += strings::formatmessage(IDS_ARPEXATTACHMENT, i, m_ExceptionInfo[i].Attachment);
+					addBlock(
+						m_ExceptionInfo[i].Attachment,
+						L"ExceptionInfo[%1!d!].Attachment: 0x%2!08X!\r\n",
+						i,
+						m_ExceptionInfo[i].Attachment.getData());
 				}
 
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBTYPE)
 				{
-					szExceptionInfo += strings::formatmessage(IDS_ARPEXSUBTYPE, i, m_ExceptionInfo[i].SubType);
+					addBlock(
+						m_ExceptionInfo[i].SubType,
+						L"ExceptionInfo[%1!d!].SubType: 0x%2!08X!\r\n",
+						i,
+						m_ExceptionInfo[i].SubType.getData());
 				}
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_APPTCOLOR)
 				{
-					szExceptionInfo +=
-						strings::formatmessage(IDS_ARPEXAPPOINTMENTCOLOR, i, m_ExceptionInfo[i].AppointmentColor);
+					addBlock(
+						m_ExceptionInfo[i].AppointmentColor,
+						L"ExceptionInfo[%1!d!].AppointmentColor: 0x%2!08X!\r\n",
+						i,
+						m_ExceptionInfo[i].AppointmentColor.getData());
 				}
-
-				szARP += szExceptionInfo;
 			}
 		}
 
-		szARP += strings::formatmessage(IDS_ARPRESERVED1, m_ReservedBlock1Size);
+		addBlock(m_ReservedBlock1Size, L"ReservedBlock1Size: 0x%1!08X!\r\n", m_ReservedBlock1Size.getData());
 		if (m_ReservedBlock1Size)
 		{
-			szARP += strings::BinToHexString(m_ReservedBlock1, true);
+			addBlock(m_ReservedBlock1);
 		}
 
 		if (m_ExtendedException.size())
 		{
 			for (size_t i = 0; i < m_ExtendedException.size(); i++)
 			{
-				std::wstring szExtendedException;
 				if (m_WriterVersion2 >= 0x00003009)
 				{
 					auto szFlags = InterpretNumberAsStringNamedProp(
 						m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue,
 						dispidChangeHighlight,
 						const_cast<LPGUID>(&guid::PSETID_Appointment));
-					szExtendedException += strings::formatmessage(
-						IDS_ARPEXCHANGEHIGHLIGHT,
-						i,
+					addBlock(
 						m_ExtendedException[i].ChangeHighlight.ChangeHighlightSize,
+						L"ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightSize: 0x%2!08X!\r\n",
+						i,
+						m_ExtendedException[i].ChangeHighlight.ChangeHighlightSize.getData());
+					addBlock(
 						m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue,
+						L"ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightValue: 0x%2!08X! = %3!ws!\r\n",
+						i,
+						m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue.getData(),
 						szFlags.c_str());
 
 					if (m_ExtendedException[i].ChangeHighlight.ChangeHighlightSize > sizeof(DWORD))
 					{
-						szExtendedException += strings::formatmessage(IDS_ARPEXCHANGEHIGHLIGHTRESERVED, i);
+						addHeader(L"ExtendedException[%1!d!].ChangeHighlight.Reserved:", i);
 
-						szExtendedException +=
-							strings::BinToHexString(m_ExtendedException[i].ChangeHighlight.Reserved, true);
-						szExtendedException += L"\n"; // STRING_OK
+						addBlock(m_ExtendedException[i].ChangeHighlight.Reserved);
 					}
 				}
 
-				szExtendedException +=
-					strings::formatmessage(IDS_ARPEXRESERVED1, i, m_ExtendedException[i].ReservedBlockEE1Size);
+				addBlock(
+					m_ExtendedException[i].ReservedBlockEE1Size,
+					L"ExtendedException[%1!d!].ReservedBlockEE1Size: 0x%2!08X!\r\n",
+					i,
+					m_ExtendedException[i].ReservedBlockEE1Size.getData());
 				if (m_ExtendedException[i].ReservedBlockEE1.size())
 				{
-					szExtendedException += strings::BinToHexString(m_ExtendedException[i].ReservedBlockEE1, true);
+					addBlock(m_ExtendedException[i].ReservedBlockEE1);
 				}
 
 				if (i < m_ExceptionInfo.size())
@@ -324,53 +371,71 @@ namespace smartview
 					if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT ||
 						m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
 					{
-						szExtendedException += strings::formatmessage(
-							IDS_ARPEXDATETIME,
-							i,
+						addBlock(
 							m_ExtendedException[i].StartDateTime,
-							RTimeToString(m_ExtendedException[i].StartDateTime).c_str(),
+							L"ExtendedException[%1!d!].StartDateTime: 0x%2!08X! = %3\r\n",
+							i,
+							m_ExtendedException[i].StartDateTime.getData(),
+							RTimeToString(m_ExtendedException[i].StartDateTime).c_str());
+						addBlock(
 							m_ExtendedException[i].EndDateTime,
-							RTimeToString(m_ExtendedException[i].EndDateTime).c_str(),
+							L"ExtendedException[%1!d!].EndDateTime: 0x%2!08X! = %3!ws!\r\n",
+							i,
+							m_ExtendedException[i].EndDateTime.getData(),
+							RTimeToString(m_ExtendedException[i].EndDateTime).c_str());
+						addBlock(
 							m_ExtendedException[i].OriginalStartDate,
+							L"ExtendedException[%1!d!].OriginalStartDate: 0x%2!08X! = %3!ws!\r\n",
+							i,
+							m_ExtendedException[i].OriginalStartDate.getData(),
 							RTimeToString(m_ExtendedException[i].OriginalStartDate).c_str());
 					}
 
 					if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT)
 					{
-						szExtendedException += strings::formatmessage(
-							IDS_ARPEXWIDESUBJECT,
-							i,
+						addBlock(
 							m_ExtendedException[i].WideCharSubjectLength,
+							L"ExtendedException[%1!d!].WideCharSubjectLength: 0x%2!08X! = %2!d!\r\n",
+							i,
+							m_ExtendedException[i].WideCharSubjectLength.getData());
+						addBlock(
+							m_ExtendedException[i].WideCharSubject,
+							L"ExtendedException[%1!d!].WideCharSubject: \"%2!ws!\"\r\n",
+							i,
 							m_ExtendedException[i].WideCharSubject.c_str());
 					}
 
 					if (m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
 					{
-						szExtendedException += strings::formatmessage(
-							IDS_ARPEXWIDELOCATION,
-							i,
+						addBlock(
 							m_ExtendedException[i].WideCharLocationLength,
+							L"ExtendedException[%1!d!].WideCharLocationLength: 0x%2!08X! = %2!d!\r\n",
+							i,
+							m_ExtendedException[i].WideCharLocationLength.getData());
+						addBlock(
+							m_ExtendedException[i].WideCharLocation,
+							L"ExtendedException[%1!d!].WideCharLocation: \"%2!ws!\"\r\n",
+							i,
 							m_ExtendedException[i].WideCharLocation.c_str());
 					}
 				}
 
-				szExtendedException +=
-					strings::formatmessage(IDS_ARPEXRESERVED2, i, m_ExtendedException[i].ReservedBlockEE2Size);
+				addBlock(
+					m_ExtendedException[i].ReservedBlockEE2Size,
+					L"ExtendedException[%1!d!].ReservedBlockEE2Size: 0x%2!08X!\r\n",
+					i,
+					m_ExtendedException[i].ReservedBlockEE2Size.getData());
 				if (m_ExtendedException[i].ReservedBlockEE2Size)
 				{
-					szExtendedException += strings::BinToHexString(m_ExtendedException[i].ReservedBlockEE2, true);
+					addBlock(m_ExtendedException[i].ReservedBlockEE2);
 				}
-
-				szARP += szExtendedException;
 			}
 		}
 
-		szARP += strings::formatmessage(IDS_ARPRESERVED2, m_ReservedBlock2Size);
+		addBlock(m_ReservedBlock2Size, L"ReservedBlock2Size: 0x%1!08X!", m_ReservedBlock2Size.getData());
 		if (m_ReservedBlock2Size)
 		{
-			szARP += strings::BinToHexString(m_ReservedBlock2, true);
+			addBlock(m_ReservedBlock2);
 		}
-
-		return szARP;
 	}
-}
+} // namespace smartview

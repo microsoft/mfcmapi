@@ -22,7 +22,7 @@
 #include <Interpret/SmartView/EntryList.h>
 #include <Interpret/SmartView/RuleCondition.h>
 #include <Interpret/SmartView/RestrictionStruct.h>
-#include <Interpret/SmartView/PropertyStruct.h>
+#include <Interpret/SmartView/PropertiesStruct.h>
 #include <Interpret/SmartView/EntryIdStruct.h>
 #include <Interpret/SmartView/GlobalObjectId.h>
 #include <Interpret/SmartView/TaskAssigners.h>
@@ -95,11 +95,11 @@ namespace smartview
 		case IDS_STRESTRICTION:
 		{
 			auto parser = new (std::nothrow) RestrictionStruct();
-			if (parser) parser->Init(false, true);
+			if (parser) parser->init(false, true);
 			return parser;
 		}
-		case IDS_STPROPERTY:
-			return new PropertyStruct();
+		case IDS_STPROPERTIES:
+			return new PropertiesStruct();
 		case IDS_STENTRYID:
 			return new EntryIdStruct();
 		case IDS_STGLOBALOBJECTID:
@@ -357,23 +357,23 @@ namespace smartview
 
 	std::wstring InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag)
 	{
-		_PV pV = {0};
+		auto pV = _PV{};
 		pV.ul = ulVal;
 		return InterpretNumberAsString(pV, ulPropTag, NULL, nullptr, nullptr, false);
 	}
 
 	std::wstring InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp)
 	{
-		_PV pV = {0};
+		auto pV = _PV{};
 		pV.ul = ulVal;
 		return InterpretNumberAsString(pV, PT_LONG, ulPropNameID, nullptr, lpguidNamedProp, false);
 	}
 
-	// Interprets a PT_LONG, PT_I2. or PT_I8 found in lpProp and returns a string
+	// Interprets a LONGLONG and returns a string
 	// Will not return a string if the lpProp is not a PT_LONG/PT_I2/PT_I8 or we don't recognize the property
 	// Will use named property details to look up named property flags
 	std::wstring InterpretNumberAsString(
-		_PV pV,
+		LONGLONG val,
 		ULONG ulPropTag,
 		ULONG ulPropNameID,
 		_In_opt_z_ LPWSTR lpszPropNameString,
@@ -393,20 +393,24 @@ namespace smartview
 		switch (iParser)
 		{
 		case IDS_STLONGRTIME:
-			lpszResultString = RTimeToSzString(pV.ul, bLabel);
+			lpszResultString = RTimeToSzString(static_cast<DWORD>(val), bLabel);
 			break;
 		case IDS_STPTI8:
-			lpszResultString = PTI8ToSzString(pV.li, bLabel);
-			break;
+		{
+			auto li = LARGE_INTEGER{};
+			li.QuadPart = val;
+			lpszResultString = PTI8ToSzString(li, bLabel);
+		}
+		break;
 		case IDS_STSFIDMID:
-			lpszResultString = FidMidToSzString(pV.li.QuadPart, bLabel);
+			lpszResultString = FidMidToSzString(val, bLabel);
 			break;
 			// insert future parsers here
 		default:
 			ulPropID = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp);
 			if (ulPropID)
 			{
-				lpszResultString += interpretprop::InterpretFlags(ulPropID, pV.ul);
+				lpszResultString += interpretprop::InterpretFlags(ulPropID, static_cast<LONG>(val));
 
 				if (bLabel && !lpszResultString.empty())
 				{
@@ -418,6 +422,31 @@ namespace smartview
 		}
 
 		return lpszResultString;
+	}
+
+	// Interprets a PT_LONG, PT_I2. or PT_I8 found in lpProp and returns a string
+	// Will not return a string if the lpProp is not a PT_LONG/PT_I2/PT_I8 or we don't recognize the property
+	// Will use named property details to look up named property flags
+	std::wstring InterpretNumberAsString(
+		_PV pV,
+		ULONG ulPropTag,
+		ULONG ulPropNameID,
+		_In_opt_z_ LPWSTR lpszPropNameString,
+		_In_opt_ LPCGUID lpguidNamedProp,
+		bool bLabel)
+	{
+		switch (PROP_TYPE(ulPropTag))
+		{
+		case PT_LONG:
+			return InterpretNumberAsString(pV.ul, ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp, bLabel);
+		case PT_I2:
+			return InterpretNumberAsString(pV.i, ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp, bLabel);
+		case PT_I8:
+			return InterpretNumberAsString(
+				pV.li.QuadPart, ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp, bLabel);
+		}
+
+		return strings::emptystring;
 	}
 
 	std::wstring InterpretMVLongAsString(
@@ -434,7 +463,7 @@ namespace smartview
 
 		for (ULONG ulRow = 0; ulRow < myLongArray.cValues; ulRow++)
 		{
-			_PV pV = {0};
+			auto pV = _PV{};
 			pV.ul = myLongArray.lpl[ulRow];
 			szSmartView = InterpretNumberAsString(
 				pV, CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, nullptr, lpguidNamedProp, true);
@@ -465,7 +494,7 @@ namespace smartview
 		auto svp = GetSmartViewParser(iStructType, lpMAPIProp);
 		if (svp)
 		{
-			svp->Init(myBin.cb, myBin.lpb);
+			svp->init(myBin.cb, myBin.lpb);
 			szResultString = svp->ToString();
 			delete svp;
 			return szResultString;
@@ -490,7 +519,7 @@ namespace smartview
 		std::wstring rTimeString;
 		std::wstring rTimeAltString;
 		FILETIME fTime = {0};
-		LARGE_INTEGER liNumSec = {0};
+		LARGE_INTEGER liNumSec = {};
 		liNumSec.LowPart = rTime;
 		// Resolution of RTime is in minutes, FILETIME is in 100 nanosecond intervals
 		// Scale between the two is 10000000*60
@@ -556,4 +585,4 @@ namespace smartview
 
 		return strings::formatmessage(IDS_FIDMIDFORMAT, WGetReplId(*pid), UllGetIdGlobcnt(*pid));
 	}
-}
+} // namespace smartview

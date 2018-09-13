@@ -273,7 +273,7 @@ namespace addin
 				const auto szSpec = szDir + L"\\*.dll"; // STRING_OK
 				output::DebugPrint(DBGAddInPlumbing, L"File spec = \"%ws\"\n", szSpec.c_str());
 
-				WIN32_FIND_DATAW FindFileData = {0};
+				WIN32_FIND_DATAW FindFileData = {};
 				const auto hFind = FindFirstFileW(szSpec.c_str(), &FindFileData);
 
 				if (hFind == INVALID_HANDLE_VALUE)
@@ -477,7 +477,7 @@ namespace addin
 	{
 		if (uidMsg < ID_ADDINMENU) return nullptr;
 
-		MENUITEMINFOW subMenu = {0};
+		MENUITEMINFOW subMenu = {};
 		subMenu.cbSize = sizeof(MENUITEMINFO);
 		subMenu.fMask = MIIM_STATE | MIIM_ID | MIIM_DATA;
 
@@ -612,7 +612,7 @@ namespace addin
 		for (ULONG i = 1; i < ulFlags; i++)
 		{
 			const auto NextItem = lpFlags[i];
-			ULONG iLoc = 0;
+			auto iLoc = ULONG{};
 			for (iLoc = i; iLoc > 0; iLoc--)
 			{
 				if (lpFlags[iLoc - 1].ulFlagName <= NextItem.ulFlagName) break;
@@ -805,7 +805,7 @@ namespace addin
 	{
 		if (!fIsSet(DBGAddIn)) return;
 
-		va_list argList = nullptr;
+		auto argList = va_list{};
 		va_start(argList, szMsg);
 		const auto szAddInLogString = strings::formatV(szMsg, argList);
 		va_end(argList);
@@ -1051,4 +1051,4 @@ namespace addin
 
 		return L"No parser found";
 	}
-}
+} // namespace addin

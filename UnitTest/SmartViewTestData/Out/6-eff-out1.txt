@@ -1,4 +1,4 @@
-Extended Flags: 
+Extended Flags:
 Number of flags = 2
 Id = 0x01 = EFPB_FLAGS
 Cb = 0x04 = 4

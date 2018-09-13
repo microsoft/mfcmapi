@@ -5,13 +5,6 @@
 
 namespace smartview
 {
-	VerbStream::VerbStream()
-	{
-		m_Version = 0;
-		m_Count = 0;
-		m_Version2 = 0;
-	}
-
 	void VerbStream::Parse()
 	{
 		m_Version = m_Parser.Get<WORD>();
@@ -19,6 +12,7 @@ namespace smartview
 
 		if (m_Count && m_Count < _MaxEntriesSmall)
 		{
+			m_lpVerbData.reserve(m_Count);
 			for (ULONG i = 0; i < m_Count; i++)
 			{
 				VerbData verbData;
@@ -47,6 +41,7 @@ namespace smartview
 
 		if (m_Count && m_Count < _MaxEntriesSmall)
 		{
+			m_lpVerbExtraData.reserve(m_Count);
 			for (ULONG i = 0; i < m_Count; i++)
 			{
 				VerbExtraData verbExtraData;
@@ -59,50 +54,87 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring VerbStream::ToStringInternal()
+	_Check_return_ void VerbStream::ParseBlocks()
 	{
-		std::vector<std::wstring> verbStream;
-		verbStream.push_back(strings::formatmessage(IDS_VERBHEADER, m_Version, m_Count));
+		addHeader(L"Verb Stream\r\n");
+		addBlock(m_Version, L"Version = 0x%1!04X!\r\n", m_Version.getData());
+		addBlock(m_Count, L"Count = 0x%1!08X!", m_Count.getData());
 
 		for (ULONG i = 0; i < m_lpVerbData.size(); i++)
 		{
-			auto szVerb = smartview::InterpretNumberAsStringProp(m_lpVerbData[i].ID, PR_LAST_VERB_EXECUTED);
-			verbStream.push_back(strings::formatmessage(
-				IDS_VERBDATA,
-				i,
-				m_lpVerbData[i].VerbType,
+			addLine();
+			addLine();
+			addHeader(L"VerbData[%1!d!]\r\n", i);
+			addBlock(m_lpVerbData[i].VerbType, L"VerbType = 0x%1!08X!\r\n", m_lpVerbData[i].VerbType.getData());
+			addBlock(
 				m_lpVerbData[i].DisplayNameCount,
-				m_lpVerbData[i].DisplayName.c_str(),
+				L"DisplayNameCount = 0x%1!02X!\r\n",
+				m_lpVerbData[i].DisplayNameCount.getData());
+			addBlock(m_lpVerbData[i].DisplayName, L"DisplayName = \"%1!hs!\"\r\n", m_lpVerbData[i].DisplayName.c_str());
+			addBlock(
 				m_lpVerbData[i].MsgClsNameCount,
-				m_lpVerbData[i].MsgClsName.c_str(),
+				L"MsgClsNameCount = 0x%1!02X!\r\n",
+				m_lpVerbData[i].MsgClsNameCount.getData());
+			addBlock(m_lpVerbData[i].MsgClsName, L"MsgClsName = \"%1!hs!\"\r\n", m_lpVerbData[i].MsgClsName.c_str());
+			addBlock(
 				m_lpVerbData[i].Internal1StringCount,
-				m_lpVerbData[i].Internal1String.c_str(),
+				L"Internal1StringCount = 0x%1!02X!\r\n",
+				m_lpVerbData[i].Internal1StringCount.getData());
+			addBlock(
+				m_lpVerbData[i].Internal1String,
+				L"Internal1String = \"%1!hs!\"\r\n",
+				m_lpVerbData[i].Internal1String.c_str());
+			addBlock(
 				m_lpVerbData[i].DisplayNameCountRepeat,
-				m_lpVerbData[i].DisplayNameRepeat.c_str(),
-				m_lpVerbData[i].Internal2,
-				m_lpVerbData[i].Internal3,
+				L"DisplayNameCountRepeat = 0x%1!02X!\r\n",
+				m_lpVerbData[i].DisplayNameCountRepeat.getData());
+			addBlock(
+				m_lpVerbData[i].DisplayNameRepeat,
+				L"DisplayNameRepeat = \"%1!hs!\"\r\n",
+				m_lpVerbData[i].DisplayNameRepeat.c_str());
+			addBlock(m_lpVerbData[i].Internal2, L"Internal2 = 0x%1!08X!\r\n", m_lpVerbData[i].Internal2.getData());
+			addBlock(m_lpVerbData[i].Internal3, L"Internal3 = 0x%1!08X!\r\n", m_lpVerbData[i].Internal3.getData());
+			addBlock(
 				m_lpVerbData[i].fUseUSHeaders,
-				m_lpVerbData[i].Internal4,
-				m_lpVerbData[i].SendBehavior,
-				m_lpVerbData[i].Internal5,
+				L"fUseUSHeaders = 0x%1!02X!\r\n",
+				m_lpVerbData[i].fUseUSHeaders.getData());
+			addBlock(m_lpVerbData[i].Internal4, L"Internal4 = 0x%1!08X!\r\n", m_lpVerbData[i].Internal4.getData());
+			addBlock(
+				m_lpVerbData[i].SendBehavior, L"SendBehavior = 0x%1!08X!\r\n", m_lpVerbData[i].SendBehavior.getData());
+			addBlock(m_lpVerbData[i].Internal5, L"Internal5 = 0x%1!08X!\r\n", m_lpVerbData[i].Internal5.getData());
+			addBlock(
 				m_lpVerbData[i].ID,
-				szVerb.c_str(),
-				m_lpVerbData[i].Internal6));
+				L"ID = 0x%1!08X! = %2!ws!\r\n",
+				m_lpVerbData[i].ID.getData(),
+				smartview::InterpretNumberAsStringProp(m_lpVerbData[i].ID, PR_LAST_VERB_EXECUTED).c_str());
+			addBlock(m_lpVerbData[i].Internal6, L"Internal6 = 0x%1!08X!", m_lpVerbData[i].Internal6.getData());
 		}
 
-		verbStream.push_back(strings::formatmessage(IDS_VERBVERSION2, m_Version2));
+		addLine();
+		addLine();
+		addBlock(m_Version2, L"Version2 = 0x%1!04X!", m_Version2.getData());
 
 		for (ULONG i = 0; i < m_lpVerbExtraData.size(); i++)
 		{
-			verbStream.push_back(strings::formatmessage(
-				IDS_VERBEXTRADATA,
-				i,
+			addLine();
+			addLine();
+			addHeader(L"VerbExtraData[%1!d!]\r\n", i);
+			addBlock(
 				m_lpVerbExtraData[i].DisplayNameCount,
-				m_lpVerbExtraData[i].DisplayName.c_str(),
+				L"DisplayNameCount = 0x%1!02X!\r\n",
+				m_lpVerbExtraData[i].DisplayNameCount.getData());
+			addBlock(
+				m_lpVerbExtraData[i].DisplayName,
+				L"DisplayName = \"%1!ws!\"\r\n",
+				m_lpVerbExtraData[i].DisplayName.c_str());
+			addBlock(
 				m_lpVerbExtraData[i].DisplayNameCountRepeat,
-				m_lpVerbExtraData[i].DisplayNameRepeat.c_str()));
+				L"DisplayNameCountRepeat = 0x%1!02X!\r\n",
+				m_lpVerbExtraData[i].DisplayNameCountRepeat.getData());
+			addBlock(
+				m_lpVerbExtraData[i].DisplayNameRepeat,
+				L"DisplayNameRepeat = \"%1!ws!\"",
+				m_lpVerbExtraData[i].DisplayNameRepeat.c_str());
 		}
-
-		return strings::join(verbStream, L"\r\n\r\n");
 	}
-}
+} // namespace smartview

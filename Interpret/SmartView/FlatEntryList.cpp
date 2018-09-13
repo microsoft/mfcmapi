@@ -3,8 +3,6 @@
 
 namespace smartview
 {
-	FlatEntryList::FlatEntryList() {}
-
 	void FlatEntryList::Parse()
 	{
 		m_cEntries = m_Parser.Get<DWORD>();
@@ -14,6 +12,7 @@ namespace smartview
 
 		if (m_cEntries && m_cEntries < _MaxEntriesLarge)
 		{
+			m_pEntryIDs.reserve(m_cEntries);
 			for (DWORD iFlatEntryList = 0; iFlatEntryList < m_cEntries; iFlatEntryList++)
 			{
 				FlatEntryID flatEntryID;
@@ -22,14 +21,15 @@ namespace smartview
 				flatEntryID.dwSize = m_Parser.Get<DWORD>();
 				const auto ulSize = min(flatEntryID.dwSize, m_Parser.RemainingBytes());
 
-				flatEntryID.lpEntryID.Init(ulSize, m_Parser.GetCurrentAddress());
+				flatEntryID.lpEntryID.init(ulSize, m_Parser.GetCurrentAddress());
+				flatEntryID.lpEntryID.EnsureParsed();
 
-				m_Parser.Advance(ulSize);
+				m_Parser.advance(ulSize);
 
 				const auto dwPAD = 3 - (flatEntryID.dwSize + 3) % 4;
 				if (dwPAD > 0)
 				{
-					flatEntryID.m_Padding = m_Parser.GetBYTES(dwPAD);
+					flatEntryID.padding = m_Parser.GetBYTES(dwPAD);
 				}
 
 				m_pEntryIDs.push_back(flatEntryID);
@@ -37,31 +37,34 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring FlatEntryList::ToStringInternal()
+	void FlatEntryList::ParseBlocks()
 	{
-		std::vector<std::wstring> flatEntryList;
-		flatEntryList.push_back(strings::formatmessage(IDS_FELHEADER, m_cEntries, m_cbEntries));
+		addHeader(L"Flat Entry List\r\n");
+		addBlock(m_cEntries, L"cEntries = %1!d!\r\n", m_cEntries.getData());
+		addBlock(m_cbEntries, L"cbEntries = 0x%1!08X!", m_cbEntries.getData());
 
 		for (DWORD iFlatEntryList = 0; iFlatEntryList < m_pEntryIDs.size(); iFlatEntryList++)
 		{
-			flatEntryList.push_back(
-				strings::formatmessage(IDS_FELENTRYHEADER, iFlatEntryList, m_pEntryIDs[iFlatEntryList].dwSize));
-			auto entryID = m_pEntryIDs[iFlatEntryList].lpEntryID.ToString();
+			addLine();
+			addLine();
+			addHeader(L"Entry[%1!d!] ", iFlatEntryList);
+			addBlock(
+				m_pEntryIDs[iFlatEntryList].dwSize, L"Size = 0x%1!08X!", m_pEntryIDs[iFlatEntryList].dwSize.getData());
 
-			if (entryID.length())
+			if (m_pEntryIDs[iFlatEntryList].lpEntryID.hasData())
 			{
-				flatEntryList.push_back(entryID);
+				addLine();
+				addBlock(m_pEntryIDs[iFlatEntryList].lpEntryID.getBlock());
 			}
 
-			if (m_pEntryIDs[iFlatEntryList].m_Padding.size())
+			if (m_pEntryIDs[iFlatEntryList].padding.size())
 			{
-				flatEntryList.push_back(
-					strings::formatmessage(
-						IDS_FELENTRYPADDING, iFlatEntryList)+
-					strings::BinToHexString(m_pEntryIDs[iFlatEntryList].m_Padding, true));
+				addLine();
+				addHeader(L"Entry[%1!d!] Padding:\r\n", iFlatEntryList);
+				addBlock(
+					m_pEntryIDs[iFlatEntryList].padding,
+					strings::BinToHexString(m_pEntryIDs[iFlatEntryList].padding, true));
 			}
 		}
-
-		return strings::join(flatEntryList, L"\r\n"); //STRING_OK
 	}
-}
+} // namespace smartview

@@ -158,4 +158,4 @@ namespace property
 
 		return L"";
 	}
-}
+} // namespace property

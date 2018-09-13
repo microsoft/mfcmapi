@@ -37,4 +37,4 @@ namespace property
 		std::vector<Parsing> m_AltParsing;
 		Attributes m_attributes;
 	};
-}
+} // namespace property

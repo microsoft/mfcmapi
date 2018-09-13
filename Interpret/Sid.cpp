@@ -56,12 +56,12 @@ namespace sid
 		return TextualSid;
 	}
 
-	_Check_return_ std::wstring LookupAccountSid(PSID SidStart, _In_ std::wstring& sidDomain)
+	_Check_return_ SidAccount LookupAccountSid(PSID SidStart)
 	{
 		// TODO: Make use of SidNameUse information
-		auto cchSidName = DWORD();
-		auto cchSidDomain = DWORD();
-		auto SidNameUse = SID_NAME_USE();
+		auto cchSidName = DWORD{};
+		auto cchSidDomain = DWORD{};
+		auto SidNameUse = SID_NAME_USE{};
 
 		if (!LookupAccountSidW(nullptr, SidStart, nullptr, &cchSidName, nullptr, &cchSidDomain, &SidNameUse))
 		{
@@ -82,12 +82,12 @@ namespace sid
 			SidStart,
 			cchSidName ? &sidNameBuf.at(0) : nullptr,
 			&cchSidName,
-			cchSidDomain ? & sidDomainBuf.at(0) : nullptr,
+			cchSidDomain ? &sidDomainBuf.at(0) : nullptr,
 			&cchSidDomain,
 			&SidNameUse));
 
-		sidDomain = std::wstring(sidDomainBuf.begin(), sidDomainBuf.end());
-		return std::wstring(sidNameBuf.begin(), sidNameBuf.end());
+		return SidAccount(
+			std::wstring(sidDomainBuf.begin(), sidDomainBuf.end()), std::wstring(sidNameBuf.begin(), sidNameBuf.end()));
 	}
 
 	std::wstring ACEToString(_In_ void* pACE, eAceType acetype)
@@ -152,19 +152,15 @@ namespace sid
 			break;
 		};
 
-		auto szDomain = std::wstring();
-		auto szName = sid::LookupAccountSid(SidStart, szDomain);
-
-		if (szName.empty()) szName = strings::formatmessage(IDS_NONAME);
-		if (szDomain.empty()) szDomain = strings::formatmessage(IDS_NODOMAIN);
+		auto sidAccount = sid::LookupAccountSid(SidStart);
 
 		auto szSID = GetTextualSid(SidStart);
 		if (szSID.empty()) szSID = strings::formatmessage(IDS_NOSID);
 
 		aceString.push_back(strings::formatmessage(
 			IDS_SIDACCOUNT,
-			szDomain.c_str(),
-			szName.c_str(),
+			sidAccount.getDomain().c_str(),
+			sidAccount.getName().c_str(),
 			szSID.c_str(),
 			AceType,
 			szAceType.c_str(),
@@ -185,19 +181,18 @@ namespace sid
 		return strings::join(aceString, L"\r\n");
 	}
 
-	_Check_return_ std::wstring
-	SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype, _In_ std::wstring& sdInfo)
+	_Check_return_ SecurityDescriptor SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype)
 	{
-		if (!lpBuf) return strings::emptystring;
+		if (!lpBuf) return {};
 
 		const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(lpBuf);
 
 		if (CbSecurityDescriptorHeader(lpBuf) > cbBuf || !IsValidSecurityDescriptor(pSecurityDescriptor))
 		{
-			return strings::formatmessage(IDS_INVALIDSD);
+			return SecurityDescriptor(strings::formatmessage(IDS_INVALIDSD), strings::emptystring);
 		}
 
-		sdInfo = interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf));
+		const auto sdInfo = interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf));
 
 		BOOL bValidDACL = false;
 		PACL pACL = nullptr;
@@ -220,9 +215,9 @@ namespace sid
 				}
 			}
 
-			return strings::join(sdString, L"\r\n");
+			return SecurityDescriptor(strings::join(sdString, L"\r\n"), sdInfo);
 		}
 
-		return strings::emptystring;
+		return SecurityDescriptor(strings::emptystring, sdInfo);
 	}
-}
+} // namespace sid

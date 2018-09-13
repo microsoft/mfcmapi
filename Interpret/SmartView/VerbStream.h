@@ -5,46 +5,43 @@ namespace smartview
 {
 	struct VerbData
 	{
-		DWORD VerbType;
-		BYTE DisplayNameCount;
-		std::string DisplayName;
-		BYTE MsgClsNameCount;
-		std::string MsgClsName;
-		BYTE Internal1StringCount;
-		std::string Internal1String;
-		BYTE DisplayNameCountRepeat;
-		std::string DisplayNameRepeat;
-		DWORD Internal2;
-		BYTE Internal3;
-		DWORD fUseUSHeaders;
-		DWORD Internal4;
-		DWORD SendBehavior;
-		DWORD Internal5;
-		DWORD ID;
-		DWORD Internal6;
+		blockT<DWORD> VerbType;
+		blockT<BYTE> DisplayNameCount;
+		blockStringA DisplayName;
+		blockT<BYTE> MsgClsNameCount;
+		blockStringA MsgClsName;
+		blockT<BYTE> Internal1StringCount;
+		blockStringA Internal1String;
+		blockT<BYTE> DisplayNameCountRepeat;
+		blockStringA DisplayNameRepeat;
+		blockT<DWORD> Internal2;
+		blockT<BYTE> Internal3;
+		blockT<DWORD> fUseUSHeaders;
+		blockT<DWORD> Internal4;
+		blockT<DWORD> SendBehavior;
+		blockT<DWORD> Internal5;
+		blockT<DWORD> ID;
+		blockT<DWORD> Internal6;
 	};
 
 	struct VerbExtraData
 	{
-		BYTE DisplayNameCount;
-		std::wstring DisplayName;
-		BYTE DisplayNameCountRepeat;
-		std::wstring DisplayNameRepeat;
+		blockT<BYTE> DisplayNameCount;
+		blockStringW DisplayName;
+		blockT<BYTE> DisplayNameCountRepeat;
+		blockStringW DisplayNameRepeat;
 	};
 
 	class VerbStream : public SmartViewParser
 	{
-	public:
-		VerbStream();
-
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
-		WORD m_Version;
-		DWORD m_Count;
+		blockT<WORD> m_Version;
+		blockT<DWORD> m_Count;
 		std::vector<VerbData> m_lpVerbData;
-		WORD m_Version2;
+		blockT<WORD> m_Version2;
 		std::vector<VerbExtraData> m_lpVerbExtraData;
 	};
-}
+} // namespace smartview

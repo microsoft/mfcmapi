@@ -3,14 +3,13 @@
 
 namespace smartview
 {
-	TaskAssigners::TaskAssigners() { m_cAssigners = 0; }
-
 	void TaskAssigners::Parse()
 	{
 		m_cAssigners = m_Parser.Get<DWORD>();
 
 		if (m_cAssigners && m_cAssigners < _MaxEntriesSmall)
 		{
+			m_lpTaskAssigners.reserve(m_cAssigners);
 			for (DWORD i = 0; i < m_cAssigners; i++)
 			{
 				TaskAssigner taskAssigner;
@@ -23,40 +22,52 @@ namespace smartview
 				taskAssigner.wzDisplayName = AssignerParser.GetStringW();
 				taskAssigner.JunkData = AssignerParser.GetRemainingData();
 
-				m_Parser.Advance(ulSize);
+				m_Parser.advance(ulSize);
 				m_lpTaskAssigners.push_back(taskAssigner);
 			}
 		}
 	}
 
-	_Check_return_ std::wstring TaskAssigners::ToStringInternal()
+	void TaskAssigners::ParseBlocks()
 	{
-		std::wstring szTaskAssigners;
-
-		szTaskAssigners += strings::formatmessage(IDS_TASKASSIGNERSHEADER, m_cAssigners);
+		addHeader(L"Task Assigners: \r\n");
+		addBlock(m_cAssigners, L"cAssigners = 0x%1!08X! = %1!d!", m_cAssigners.getData());
 
 		for (DWORD i = 0; i < m_lpTaskAssigners.size(); i++)
 		{
-			szTaskAssigners += strings::formatmessage(IDS_TASKASSIGNEREID, i, m_lpTaskAssigners[i].cbEntryID);
+			addLine();
+			addHeader(L"Task Assigner[%1!d!]\r\n", i);
+			addBlock(
+				m_lpTaskAssigners[i].cbEntryID,
+				L"\tcbEntryID = 0x%1!08X! = %1!d!\r\n",
+				m_lpTaskAssigners[i].cbEntryID.getData());
+			addHeader(L"\tlpEntryID = ");
 
 			if (!m_lpTaskAssigners[i].lpEntryID.empty())
 			{
-				szTaskAssigners += strings::BinToHexString(m_lpTaskAssigners[i].lpEntryID, true);
+				addBlock(m_lpTaskAssigners[i].lpEntryID);
 			}
 
-			szTaskAssigners += strings::formatmessage(
-				IDS_TASKASSIGNERNAME,
-				m_lpTaskAssigners[i].szDisplayName.c_str(),
+			addLine();
+			addBlock(
+				m_lpTaskAssigners[i].szDisplayName,
+				L"\tszDisplayName (ANSI) = %1!hs!",
+				m_lpTaskAssigners[i].szDisplayName.c_str());
+			addLine();
+			addBlock(
+				m_lpTaskAssigners[i].wzDisplayName,
+				L"\tszDisplayName (Unicode) = %1!ws!",
 				m_lpTaskAssigners[i].wzDisplayName.c_str());
 
 			if (!m_lpTaskAssigners[i].JunkData.empty())
 			{
-				szTaskAssigners +=
-					strings::formatmessage(IDS_TASKASSIGNERJUNKDATA, m_lpTaskAssigners[i].JunkData.size());
-				szTaskAssigners += strings::BinToHexString(m_lpTaskAssigners[i].JunkData, true);
+				addLine();
+				addBlock(
+					m_lpTaskAssigners[i].JunkData,
+					L"\tUnparsed Data Size = 0x%1!08X!\r\n",
+					m_lpTaskAssigners[i].JunkData.size());
+				addBlock(m_lpTaskAssigners[i].JunkData);
 			}
 		}
-
-		return szTaskAssigners;
 	}
-}
+} // namespace smartview

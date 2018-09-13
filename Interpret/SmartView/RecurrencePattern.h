@@ -8,43 +8,42 @@ namespace smartview
 	// =====================
 	//   This structure specifies the details of the recurrence type
 	//
-	union PatternTypeSpecific {
-		DWORD WeekRecurrencePattern;
-		DWORD MonthRecurrencePattern;
+	struct PatternTypeSpecific
+	{
+		blockT<DWORD> WeekRecurrencePattern;
+		blockT<DWORD> MonthRecurrencePattern;
 		struct
 		{
-			DWORD DayOfWeek;
-			DWORD N;
+			blockT<DWORD> DayOfWeek;
+			blockT<DWORD> N;
 		} MonthNthRecurrencePattern;
 	};
 
 	class RecurrencePattern : public SmartViewParser
 	{
 	public:
-		RecurrencePattern();
-
-		DWORD m_ModifiedInstanceCount;
+		blockT<DWORD> m_ModifiedInstanceCount;
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
-		WORD m_ReaderVersion;
-		WORD m_WriterVersion;
-		WORD m_RecurFrequency;
-		WORD m_PatternType;
-		WORD m_CalendarType;
-		DWORD m_FirstDateTime;
-		DWORD m_Period;
-		DWORD m_SlidingFlag;
+		blockT<WORD> m_ReaderVersion;
+		blockT<WORD> m_WriterVersion;
+		blockT<WORD> m_RecurFrequency;
+		blockT<WORD> m_PatternType;
+		blockT<WORD> m_CalendarType;
+		blockT<DWORD> m_FirstDateTime;
+		blockT<DWORD> m_Period;
+		blockT<DWORD> m_SlidingFlag;
 		PatternTypeSpecific m_PatternTypeSpecific;
-		DWORD m_EndType;
-		DWORD m_OccurrenceCount;
-		DWORD m_FirstDOW;
-		DWORD m_DeletedInstanceCount;
-		std::vector<DWORD> m_DeletedInstanceDates;
-		std::vector<DWORD> m_ModifiedInstanceDates;
-		DWORD m_StartDate;
-		DWORD m_EndDate;
+		blockT<DWORD> m_EndType;
+		blockT<DWORD> m_OccurrenceCount;
+		blockT<DWORD> m_FirstDOW;
+		blockT<DWORD> m_DeletedInstanceCount;
+		std::vector<blockT<DWORD>> m_DeletedInstanceDates;
+		std::vector<blockT<DWORD>> m_ModifiedInstanceDates;
+		blockT<DWORD> m_StartDate;
+		blockT<DWORD> m_EndDate;
 	};
-}
+} // namespace smartview

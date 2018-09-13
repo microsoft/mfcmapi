@@ -30,4 +30,4 @@ namespace property
 	private:
 		std::vector<Attribute> m_attributes;
 	};
-}
+} // namespace property

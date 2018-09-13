@@ -6,8 +6,6 @@
 
 namespace smartview
 {
-	ExtendedFlags::ExtendedFlags() { m_ulNumFlags = 0; }
-
 	void ExtendedFlags::Parse()
 	{
 		// Run through the parser once to count the number of flag structs
@@ -20,17 +18,18 @@ namespace smartview
 			// Must have at least cbData bytes left to be a valid flag
 			if (m_Parser.RemainingBytes() < cbData) break;
 
-			m_Parser.Advance(cbData);
+			m_Parser.advance(cbData);
 			m_ulNumFlags++;
 		}
 
 		// Now we parse for real
-		m_Parser.Rewind();
+		m_Parser.rewind();
 
 		if (m_ulNumFlags && m_ulNumFlags < _MaxEntriesSmall)
 		{
 			auto bBadData = false;
 
+			m_pefExtendedFlags.reserve(m_ulNumFlags);
 			for (ULONG i = 0; i < m_ulNumFlags; i++)
 			{
 				ExtendedFlag extendedFlag;
@@ -88,47 +87,56 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring ExtendedFlags::ToStringInternal()
+	void ExtendedFlags::ParseBlocks()
 	{
-		auto szExtendedFlags = strings::formatmessage(IDS_EXTENDEDFLAGSHEADER, m_ulNumFlags);
+		addHeader(L"Extended Flags:");
+		addHeader(L"\r\nNumber of flags = %1!d!", m_ulNumFlags);
 
 		if (m_pefExtendedFlags.size())
 		{
 			for (const auto& extendedFlag : m_pefExtendedFlags)
 			{
 				auto szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlagType, extendedFlag.Id);
-				szExtendedFlags +=
-					strings::formatmessage(IDS_EXTENDEDFLAGID, extendedFlag.Id, szFlags.c_str(), extendedFlag.Cb);
+				addBlock(extendedFlag.Id, L"\r\nId = 0x%1!02X! = %2!ws!", extendedFlag.Id.getData(), szFlags.c_str());
+				addBlock(extendedFlag.Cb, L"\r\nCb = 0x%1!02X! = %1!d!", extendedFlag.Cb.getData());
 
 				switch (extendedFlag.Id)
 				{
 				case EFPB_FLAGS:
-					szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags);
-					szExtendedFlags += strings::formatmessage(
-						IDS_EXTENDEDFLAGDATAFLAG, extendedFlag.Data.ExtendedFlags, szFlags.c_str());
+					addBlock(
+						extendedFlag.Data.ExtendedFlags,
+						L"\r\n\tExtended Flags = 0x%1!08X! = %2!ws!",
+						extendedFlag.Data.ExtendedFlags.getData(),
+						interpretprop::InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags).c_str());
 					break;
 				case EFPB_CLSIDID:
-					szFlags = guid::GUIDToString(&extendedFlag.Data.SearchFolderID);
-					szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATASFID, szFlags.c_str());
+					addBlock(
+						extendedFlag.Data.SearchFolderID,
+						L"\r\n\tSearchFolderID = %1!ws!",
+						guid::GUIDToString(extendedFlag.Data.SearchFolderID).c_str());
 					break;
 				case EFPB_SFTAG:
-					szExtendedFlags +=
-						strings::formatmessage(IDS_EXTENDEDFLAGDATASFTAG, extendedFlag.Data.SearchFolderTag);
+					addBlock(
+						extendedFlag.Data.SearchFolderTag,
+						L"\r\n\tSearchFolderTag = 0x%1!08X!",
+						extendedFlag.Data.SearchFolderTag.getData());
 					break;
 				case EFPB_TODO_VERSION:
-					szExtendedFlags +=
-						strings::formatmessage(IDS_EXTENDEDFLAGDATATODOVERSION, extendedFlag.Data.ToDoFolderVersion);
+					addBlock(
+						extendedFlag.Data.ToDoFolderVersion,
+						L"\r\n\tToDoFolderVersion = 0x%1!08X!",
+						extendedFlag.Data.ToDoFolderVersion.getData());
 					break;
 				}
 
 				if (extendedFlag.lpUnknownData.size())
 				{
-					szExtendedFlags += strings::loadstring(IDS_EXTENDEDFLAGUNKNOWN);
-					szExtendedFlags += strings::BinToHexString(extendedFlag.lpUnknownData, true);
+
+					addLine();
+					addHeader(L"\tUnknown Data = ");
+					addBlock(extendedFlag.lpUnknownData);
 				}
 			}
 		}
-
-		return szExtendedFlags;
 	}
-}
+} // namespace smartview

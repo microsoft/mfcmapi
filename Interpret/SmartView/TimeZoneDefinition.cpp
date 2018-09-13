@@ -5,16 +5,6 @@
 
 namespace smartview
 {
-	TimeZoneDefinition::TimeZoneDefinition()
-	{
-		m_bMajorVersion = 0;
-		m_bMinorVersion = 0;
-		m_cbHeader = 0;
-		m_wReserved = 0;
-		m_cchKeyName = 0;
-		m_cRules = 0;
-	}
-
 	void TimeZoneDefinition::Parse()
 	{
 		m_bMajorVersion = m_Parser.Get<BYTE>();
@@ -27,6 +17,7 @@ namespace smartview
 
 		if (m_cRules && m_cRules < _MaxEntriesSmall)
 		{
+			m_lpTZRule.reserve(m_cRules);
 			for (ULONG i = 0; i < m_cRules; i++)
 			{
 				TZRule tzRule;
@@ -60,57 +51,148 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring TimeZoneDefinition::ToStringInternal()
+	void TimeZoneDefinition::ParseBlocks()
 	{
-		auto szTimeZoneDefinition = strings::formatmessage(
-			IDS_TIMEZONEDEFINITION,
-			m_bMajorVersion,
-			m_bMinorVersion,
-			m_cbHeader,
-			m_wReserved,
-			m_cchKeyName,
-			m_szKeyName.c_str(),
-			m_cRules);
+		addHeader(L"Time Zone Definition: \r\n");
+		addBlock(m_bMajorVersion, L"bMajorVersion = 0x%1!02X! (%1!d!)\r\n", m_bMajorVersion.getData());
+		addBlock(m_bMinorVersion, L"bMinorVersion = 0x%1!02X! (%1!d!)\r\n", m_bMinorVersion.getData());
+		addBlock(m_cbHeader, L"cbHeader = 0x%1!04X! (%1!d!)\r\n", m_cbHeader.getData());
+		addBlock(m_wReserved, L"wReserved = 0x%1!04X! (%1!d!)\r\n", m_wReserved.getData());
+		addBlock(m_cchKeyName, L"cchKeyName = 0x%1!04X! (%1!d!)\r\n", m_cchKeyName.getData());
+		addBlock(m_szKeyName, L"szKeyName = %1!ws!\r\n", m_szKeyName.c_str());
+		addBlock(m_cRules, L"cRules = 0x%1!04X! (%1!d!)", m_cRules.getData());
 
 		for (WORD i = 0; i < m_lpTZRule.size(); i++)
 		{
-			auto szFlags = interpretprop::InterpretFlags(flagTZRule, m_lpTZRule[i].wTZRuleFlags);
-			szTimeZoneDefinition += strings::formatmessage(
-				IDS_TZRULEHEADER,
-				i,
+			addLine();
+			addLine();
+			addBlock(
 				m_lpTZRule[i].bMajorVersion,
-				m_lpTZRule[i].bMinorVersion,
-				m_lpTZRule[i].wReserved,
-				m_lpTZRule[i].wTZRuleFlags,
-				szFlags.c_str(),
-				m_lpTZRule[i].wYear);
-
-			szTimeZoneDefinition += strings::BinToHexString(m_lpTZRule[i].X, true);
-
-			szTimeZoneDefinition += strings::formatmessage(
-				IDS_TZRULEFOOTER,
+				L"TZRule[0x%1!X!].bMajorVersion = 0x%2!02X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].lBias,
-				m_lpTZRule[i].lStandardBias,
-				m_lpTZRule[i].lDaylightBias,
-				m_lpTZRule[i].stStandardDate.wYear,
-				m_lpTZRule[i].stStandardDate.wMonth,
-				m_lpTZRule[i].stStandardDate.wDayOfWeek,
-				m_lpTZRule[i].stStandardDate.wDay,
-				m_lpTZRule[i].stStandardDate.wHour,
-				m_lpTZRule[i].stStandardDate.wMinute,
-				m_lpTZRule[i].stStandardDate.wSecond,
-				m_lpTZRule[i].stStandardDate.wMilliseconds,
-				m_lpTZRule[i].stDaylightDate.wYear,
-				m_lpTZRule[i].stDaylightDate.wMonth,
-				m_lpTZRule[i].stDaylightDate.wDayOfWeek,
-				m_lpTZRule[i].stDaylightDate.wDay,
-				m_lpTZRule[i].stDaylightDate.wHour,
-				m_lpTZRule[i].stDaylightDate.wMinute,
-				m_lpTZRule[i].stDaylightDate.wSecond,
-				m_lpTZRule[i].stDaylightDate.wMilliseconds);
-		}
+				m_lpTZRule[i].bMajorVersion.getData());
+			addBlock(
+				m_lpTZRule[i].bMinorVersion,
+				L"TZRule[0x%1!X!].bMinorVersion = 0x%2!02X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].bMinorVersion.getData());
+			addBlock(
+				m_lpTZRule[i].wReserved,
+				L"TZRule[0x%1!X!].wReserved = 0x%2!04X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].wReserved.getData());
+			addBlock(
+				m_lpTZRule[i].wTZRuleFlags,
+				L"TZRule[0x%1!X!].wTZRuleFlags = 0x%2!04X! = %3!ws!\r\n",
+				i,
+				m_lpTZRule[i].wTZRuleFlags.getData(),
+				interpretprop::InterpretFlags(flagTZRule, m_lpTZRule[i].wTZRuleFlags).c_str());
+			addBlock(
+				m_lpTZRule[i].wTZRuleFlags,
+				L"TZRule[0x%1!X!].wYear = 0x%2!04X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].wYear.getData());
+			addHeader(L"TZRule[0x%1!X!].X = ", i);
+			addBlock(m_lpTZRule[i].X);
 
-		return szTimeZoneDefinition;
+			addLine();
+			addBlock(
+				m_lpTZRule[i].lBias,
+				L"TZRule[0x%1!X!].lBias = 0x%2!08X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].lBias.getData());
+			addBlock(
+				m_lpTZRule[i].lStandardBias,
+				L"TZRule[0x%1!X!].lStandardBias = 0x%2!08X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].lStandardBias.getData());
+			addBlock(
+				m_lpTZRule[i].lDaylightBias,
+				L"TZRule[0x%1!X!].lDaylightBias = 0x%2!08X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].lDaylightBias.getData());
+			addLine();
+			addBlock(
+				m_lpTZRule[i].stStandardDate.wYear,
+				L"TZRule[0x%1!X!].stStandardDate.wYear = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stStandardDate.wYear.getData());
+			addBlock(
+				m_lpTZRule[i].stStandardDate.wMonth,
+				L"TZRule[0x%1!X!].stStandardDate.wMonth = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stStandardDate.wMonth.getData());
+			addBlock(
+				m_lpTZRule[i].stStandardDate.wDayOfWeek,
+				L"TZRule[0x%1!X!].stStandardDate.wDayOfWeek = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stStandardDate.wDayOfWeek.getData());
+			addBlock(
+				m_lpTZRule[i].stStandardDate.wDay,
+				L"TZRule[0x%1!X!].stStandardDate.wDay = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stStandardDate.wDay.getData());
+			addBlock(
+				m_lpTZRule[i].stStandardDate.wHour,
+				L"TZRule[0x%1!X!].stStandardDate.wHour = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stStandardDate.wHour.getData());
+			addBlock(
+				m_lpTZRule[i].stStandardDate.wMinute,
+				L"TZRule[0x%1!X!].stStandardDate.wMinute = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stStandardDate.wMinute.getData());
+			addBlock(
+				m_lpTZRule[i].stStandardDate.wSecond,
+				L"TZRule[0x%1!X!].stStandardDate.wSecond = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stStandardDate.wSecond.getData());
+			addBlock(
+				m_lpTZRule[i].stStandardDate.wMilliseconds,
+				L"TZRule[0x%1!X!].stStandardDate.wMilliseconds = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stStandardDate.wMilliseconds.getData());
+			addLine();
+			addBlock(
+				m_lpTZRule[i].stDaylightDate.wYear,
+				L"TZRule[0x%1!X!].stDaylightDate.wYear = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stDaylightDate.wYear.getData());
+			addBlock(
+				m_lpTZRule[i].stDaylightDate.wMonth,
+				L"TZRule[0x%1!X!].stDaylightDate.wMonth = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stDaylightDate.wMonth.getData());
+			addBlock(
+				m_lpTZRule[i].stDaylightDate.wDayOfWeek,
+				L"TZRule[0x%1!X!].stDaylightDate.wDayOfWeek = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stDaylightDate.wDayOfWeek.getData());
+			addBlock(
+				m_lpTZRule[i].stDaylightDate.wDay,
+				L"TZRule[0x%1!X!].stDaylightDate.wDay = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stDaylightDate.wDay.getData());
+			addBlock(
+				m_lpTZRule[i].stDaylightDate.wHour,
+				L"TZRule[0x%1!X!].stDaylightDate.wHour = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stDaylightDate.wHour.getData());
+			addBlock(
+				m_lpTZRule[i].stDaylightDate.wMinute,
+				L"TZRule[0x%1!X!].stDaylightDate.wMinute = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stDaylightDate.wMinute.getData());
+			addBlock(
+				m_lpTZRule[i].stDaylightDate.wSecond,
+				L"TZRule[0x%1!X!].stDaylightDate.wSecond = 0x%2!X! (%2!d!)\r\n",
+				i,
+				m_lpTZRule[i].stDaylightDate.wSecond.getData());
+			addBlock(
+				m_lpTZRule[i].stDaylightDate.wMilliseconds,
+				L"TZRule[0x%1!X!].stDaylightDate.wMilliseconds = 0x%2!X! (%2!d!)",
+				i,
+				m_lpTZRule[i].stDaylightDate.wMilliseconds.getData());
+		}
 	}
-}
+} // namespace smartview

@@ -123,7 +123,7 @@ enum __ParsingTypeEnum
 	IDS_STFLATENTRYLIST,
 	IDS_STFOLDERUSERFIELDS,
 	IDS_STGLOBALOBJECTID,
-	IDS_STPROPERTY,
+	IDS_STPROPERTIES,
 	IDS_STPROPERTYDEFINITIONSTREAM,
 	IDS_STRECIPIENTROWSTREAM,
 	IDS_STRECURRENCEPATTERN,
@@ -559,7 +559,7 @@ namespace addin
 	void MergeAddInArrays();
 	std::wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	std::wstring AddInStructTypeToString(__ParsingTypeEnum iStructType);
-}
+} // namespace addin
 
 extern std::vector<NAME_ARRAY_ENTRY_V2> PropTagArray;
 extern std::vector<NAME_ARRAY_ENTRY> PropTypeArray;

@@ -15,7 +15,7 @@ namespace smartview
 		{IDS_STFLATENTRYLIST, L"Flat Entry List"}, // STRING_OK
 		{IDS_STFOLDERUSERFIELDS, L"Folder User Fields Stream"}, // STRING_OK
 		{IDS_STGLOBALOBJECTID, L"Global Object Id"}, // STRING_OK
-		{IDS_STPROPERTY, L"Property"}, // STRING_OK
+		{IDS_STPROPERTIES, L"Property"}, // STRING_OK
 		{IDS_STPROPERTYDEFINITIONSTREAM, L"Property Definition Stream"}, // STRING_OK
 		{IDS_STRECIPIENTROWSTREAM, L"Recipient Row Stream"}, // STRING_OK
 		{IDS_STRECURRENCEPATTERN, L"Recurrence Pattern"}, // STRING_OK
@@ -184,4 +184,4 @@ namespace smartview
 		BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_PUBLISH_END, IDS_STLONGRTIME)
 		// clang-format on
 	};
-}
+} // namespace smartview

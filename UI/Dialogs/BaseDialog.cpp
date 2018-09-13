@@ -149,15 +149,16 @@ namespace dialog
 
 		SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
-		m_lpFakeSplitter = new controls::CFakeSplitter(this);
-
+		m_lpFakeSplitter = new controls::CFakeSplitter();
 		if (m_lpFakeSplitter)
 		{
+			m_lpFakeSplitter->Init(m_hWnd);
 			m_lpPropDisplay =
 				new controls::sortlistctrl::CSingleMAPIPropListCtrl(m_lpFakeSplitter, this, m_lpMapiObjects, m_bIsAB);
 
-			if (m_lpPropDisplay) m_lpFakeSplitter->SetPaneTwo(m_lpPropDisplay);
+			if (m_lpPropDisplay) m_lpFakeSplitter->SetPaneTwo(m_lpPropDisplay->GetSafeHwnd());
 		}
+
 		return false;
 	}
 
@@ -1019,4 +1020,4 @@ namespace dialog
 	_Check_return_ ui::CParentWnd* CBaseDialog::GetParentWnd() const { return m_lpParent; }
 
 	_Check_return_ cache::CMapiObjects* CBaseDialog::GetMapiObjects() const { return m_lpMapiObjects; }
-}
+} // namespace dialog

@@ -53,4 +53,4 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000000
 iFmt = 0x00000000
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
+wszFormula =

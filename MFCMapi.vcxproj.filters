@@ -118,6 +118,15 @@
     <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
     <ClInclude Include="MAPI\MapiMemory.h" />
+    <ClInclude Include="Interpret\SmartView\PropertiesStruct.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\SmartView\block\block.h" />
+    <ClInclude Include="Interpret\SmartView\block\blockBytes.h" />
+    <ClInclude Include="Interpret\SmartView\block\blockT.h" />
+    <ClInclude Include="Interpret\SmartView\block\blockStringA.h" />
+    <ClInclude Include="Interpret\SmartView\block\blockStringW.h" />
+    <ClInclude Include="UI\ViewPane\SplitterPane.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -154,6 +163,12 @@
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="MAPI\Version.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Interpret\SmartView\PropertiesStruct.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\ViewPane\SplitterPane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -243,9 +258,6 @@
     <ClInclude Include="Interpret\SmartView\AppointmentRecurrencePattern.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
-    <ClCompile Include="Interpret\SmartView\BinaryParser.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
     <ClInclude Include="Interpret\SmartView\BinaryParser.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
@@ -307,12 +319,6 @@
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClCompile>
     <ClInclude Include="Interpret\SmartView\PropertyDefinitionStream.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\PropertyStruct.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\PropertyStruct.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
     <ClCompile Include="Interpret\SmartView\RecipientRowStream.cpp">

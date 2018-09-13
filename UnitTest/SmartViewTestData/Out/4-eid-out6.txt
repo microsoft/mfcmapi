@@ -8,4 +8,4 @@ Wrapped Flags = 0x00000000
 WrappedProviderUID = {1002831C-66AA-CD11-9BC8-00AA002FC45A} = g_muidStorePublic
 WrappedType = 0x00000006 = OPENSTORE_PUBLIC | OPENSTORE_HOME_LOGON
 ServerShortname = SERVER102
-MailboxDN = 
+MailboxDN =

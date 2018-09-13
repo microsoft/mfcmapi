@@ -1,30 +1,13 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/SearchFolderDefinition.h>
 #include <Interpret/SmartView/RestrictionStruct.h>
-#include <Interpret/SmartView/PropertyStruct.h>
+#include <Interpret/SmartView/PropertiesStruct.h>
 #include <Interpret/String.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
 
 namespace smartview
 {
-	SearchFolderDefinition::SearchFolderDefinition()
-	{
-		m_Version = 0;
-		m_Flags = 0;
-		m_NumericSearch = 0;
-		m_TextSearchLength = 0;
-		m_TextSearchLengthExtended = 0;
-		m_SkipLen1 = 0;
-		m_DeepSearch = 0;
-		m_FolderList1Length = 0;
-		m_FolderList1LengthExtended = 0;
-		m_FolderList2Length = 0;
-		m_AddressCount = 0;
-		m_SkipLen2 = 0;
-		m_SkipLen3 = 0;
-	}
-
 	void SearchFolderDefinition::Parse()
 	{
 		m_Version = m_Parser.Get<DWORD>();
@@ -68,9 +51,10 @@ namespace smartview
 		{
 			auto cbRemainingBytes = m_Parser.RemainingBytes();
 			cbRemainingBytes = min(m_FolderList2Length, cbRemainingBytes);
-			m_FolderList2.Init(cbRemainingBytes, m_Parser.GetCurrentAddress());
+			m_FolderList2.init(cbRemainingBytes, m_Parser.GetCurrentAddress());
+			m_FolderList2.EnsureParsed();
 
-			m_Parser.Advance(cbRemainingBytes);
+			m_Parser.advance(cbRemainingBytes);
 		}
 
 		if (SFST_BINARY & m_Flags)
@@ -78,6 +62,7 @@ namespace smartview
 			m_AddressCount = m_Parser.Get<DWORD>();
 			if (m_AddressCount && m_AddressCount < _MaxEntriesSmall)
 			{
+				m_Addresses.reserve(m_AddressCount);
 				for (DWORD i = 0; i < m_AddressCount; i++)
 				{
 					AddressListEntryStruct addressListEntryStruct{};
@@ -85,7 +70,11 @@ namespace smartview
 					addressListEntryStruct.Pad = m_Parser.Get<DWORD>();
 					if (addressListEntryStruct.PropertyCount)
 					{
-						addressListEntryStruct.Props = BinToSPropValue(addressListEntryStruct.PropertyCount, false);
+						addressListEntryStruct.Props.init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
+						addressListEntryStruct.Props.SetMaxEntries(addressListEntryStruct.PropertyCount);
+						addressListEntryStruct.Props.DisableJunkParsing();
+						addressListEntryStruct.Props.EnsureParsed();
+						m_Parser.advance(addressListEntryStruct.Props.GetCurrentOffset());
 					}
 
 					m_Addresses.push_back(addressListEntryStruct);
@@ -99,11 +88,13 @@ namespace smartview
 		if (SFST_MRES & m_Flags)
 		{
 			RestrictionStruct res;
-			res.Init(false, true);
-			res.SmartViewParser::Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
+			res.init(false, true);
+			res.SmartViewParser::init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 			res.DisableJunkParsing();
-			m_Restriction = res.ToString();
-			m_Parser.Advance(res.GetCurrentOffset());
+			m_Restriction = blockStringW{};
+			// TODO: Make this a proper block
+			m_Restriction.setData(res.ToString());
+			m_Parser.advance(res.GetCurrentOffset());
 		}
 
 		if (SFST_FILTERSTREAM & m_Flags)
@@ -124,100 +115,131 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring SearchFolderDefinition::ToStringInternal()
+	void SearchFolderDefinition::ParseBlocks()
 	{
-		auto szFlags = InterpretNumberAsStringProp(m_Flags, PR_WB_SF_STORAGE_TYPE);
-		auto szSearchFolderDefinition = strings::formatmessage(
-			IDS_SFDEFINITIONHEADER, m_Version, m_Flags, szFlags.c_str(), m_NumericSearch, m_TextSearchLength);
+		addHeader(L"Search Folder Definition:\r\n");
+		addBlock(m_Version, L"Version = 0x%1!08X!\r\n", m_Version.getData());
+		addBlock(
+			m_Flags,
+			L"Flags = 0x%1!08X! = %2!ws!\r\n",
+			m_Flags.getData(),
+			InterpretNumberAsStringProp(m_Flags, PR_WB_SF_STORAGE_TYPE).c_str());
+		addBlock(m_NumericSearch, L"Numeric Search = 0x%1!08X!\r\n", m_NumericSearch.getData());
+		addBlock(m_TextSearchLength, L"Text Search Length = 0x%1!02X!", m_TextSearchLength.getData());
 
 		if (m_TextSearchLength)
 		{
-			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONTEXTSEARCH, m_TextSearchLengthExtended);
-
+			addLine();
+			addBlock(
+				m_TextSearchLengthExtended,
+				L"Text Search Length Extended = 0x%1!04X!\r\n",
+				m_TextSearchLengthExtended.getData());
+			addHeader(L"Text Search = ");
 			if (!m_TextSearch.empty())
 			{
-				szSearchFolderDefinition += m_TextSearch;
+				addBlock(m_TextSearch, m_TextSearch.c_str());
 			}
 		}
 
-		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPLEN1, m_SkipLen1);
+		addLine();
+		addBlock(m_SkipLen1, L"SkipLen1 = 0x%1!08X!", m_SkipLen1.getData());
 
 		if (m_SkipLen1)
 		{
-			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPBYTES1);
-			szSearchFolderDefinition += strings::BinToHexString(m_SkipBytes1, true);
+			addLine();
+			addHeader(L"SkipBytes1 = ");
+
+			addBlock(m_SkipBytes1);
 		}
 
-		szSearchFolderDefinition +=
-			strings::formatmessage(IDS_SFDEFINITIONDEEPSEARCH, m_DeepSearch, m_FolderList1Length);
+		addLine();
+		addBlock(m_DeepSearch, L"Deep Search = 0x%1!08X!\r\n", m_DeepSearch.getData());
+		addBlock(m_FolderList1Length, L"Folder List 1 Length = 0x%1!02X!", m_FolderList1Length.getData());
 
 		if (m_FolderList1Length)
 		{
-			szSearchFolderDefinition +=
-				strings::formatmessage(IDS_SFDEFINITIONFOLDERLIST1, m_FolderList1LengthExtended);
+			addLine();
+			addBlock(
+				m_FolderList1LengthExtended,
+				L"Folder List 1 Length Extended = 0x%1!04X!\r\n",
+				m_FolderList1LengthExtended.getData());
+			addHeader(L"Folder List 1 = ");
 
 			if (!m_FolderList1.empty())
 			{
-				szSearchFolderDefinition += m_FolderList1;
+				addBlock(m_FolderList1, m_FolderList1.c_str());
 			}
 		}
 
-		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONFOLDERLISTLENGTH2, m_FolderList2Length);
+		addLine();
+		addBlock(m_FolderList2Length, L"Folder List 2 Length = 0x%1!08X!", m_FolderList2Length.getData());
 
 		if (m_FolderList2Length)
 		{
-			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONFOLDERLIST2);
-			szSearchFolderDefinition += m_FolderList2.ToString();
+			addLine();
+			addHeader(L"FolderList2 = \r\n");
+			addBlock(m_FolderList2.getBlock());
 		}
 
 		if (SFST_BINARY & m_Flags)
 		{
-			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONADDRESSCOUNT, m_AddressCount);
+			addLine();
+			addBlock(m_AddressCount, L"AddressCount = 0x%1!08X!", m_AddressCount.getData());
 
 			for (DWORD i = 0; i < m_Addresses.size(); i++)
 			{
-				szSearchFolderDefinition += strings::formatmessage(
-					IDS_SFDEFINITIONADDRESSES, i, m_Addresses[i].PropertyCount, i, m_Addresses[i].Pad);
+				addLine();
+				addBlock(
+					m_Addresses[i].PropertyCount,
+					L"Addresses[%1!d!].PropertyCount = 0x%2!08X!\r\n",
+					i,
+					m_Addresses[i].PropertyCount.getData());
+				addBlock(m_Addresses[i].Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!", i, m_Addresses[i].Pad.getData());
 
-				szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONPROPERTIES, i);
-				szSearchFolderDefinition += PropsToString(m_Addresses[i].PropertyCount, m_Addresses[i].Props);
+				addLine();
+				addHeader(L"Properties[%1!d!]:\r\n", i);
+				addBlock(m_Addresses[i].Props.getBlock());
 			}
 		}
 
-		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPLEN2, m_SkipLen2);
+		addLine();
+		addBlock(m_SkipLen2, L"SkipLen2 = 0x%1!08X!", m_SkipLen2.getData());
 
 		if (m_SkipLen2)
 		{
-			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPBYTES2);
-			szSearchFolderDefinition += strings::BinToHexString(m_SkipBytes2, true);
+			addLine();
+			addHeader(L"SkipBytes2 = ");
+			addBlock(m_SkipBytes2);
 		}
 
 		if (!m_Restriction.empty())
 		{
-			szSearchFolderDefinition += L"\r\n"; // STRING_OK
-			szSearchFolderDefinition += m_Restriction;
+			addLine();
+			// TODO: Use a proper block here
+			addBlock(m_Restriction, m_Restriction.c_str());
 		}
 
 		if (SFST_FILTERSTREAM & m_Flags)
 		{
-			szSearchFolderDefinition +=
-				strings::formatmessage(IDS_SFDEFINITIONADVANCEDSEARCHLEN, m_AdvancedSearchBytes.size());
+			addLine();
+			addBlock(m_AdvancedSearchBytes, L"AdvancedSearchLen = 0x%1!08X!", m_AdvancedSearchBytes.size());
 
 			if (!m_AdvancedSearchBytes.empty())
 			{
-				szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONADVANCEDSEARCHBYTES);
-				szSearchFolderDefinition += strings::BinToHexString(m_AdvancedSearchBytes, true);
+				addLine();
+				addHeader(L"AdvancedSearchBytes = ");
+				addBlock(m_AdvancedSearchBytes);
 			}
 		}
 
-		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPLEN3, m_SkipLen3);
+		addLine();
+		addBlock(m_SkipLen3, L"SkipLen3 = 0x%1!08X!", m_SkipLen3.getData());
 
 		if (m_SkipLen3)
 		{
-			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPBYTES3);
-			szSearchFolderDefinition += strings::BinToHexString(m_SkipBytes3, true);
+			addLine();
+			addHeader(L"SkipBytes3 = ");
+			addBlock(m_SkipBytes3);
 		}
-
-		return szSearchFolderDefinition;
 	}
-}
+} // namespace smartview

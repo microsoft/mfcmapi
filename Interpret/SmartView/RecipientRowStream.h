@@ -1,19 +1,24 @@
 #pragma once
 #include <Interpret/SmartView/SmartViewParser.h>
+#include <Interpret/SmartView/PropertiesStruct.h>
 
 namespace smartview
 {
+	struct ADRENTRYStruct
+	{
+		blockT<DWORD> ulReserved1;
+		blockT<DWORD> cValues;
+		PropertiesStruct rgPropVals;
+	};
+
 	class RecipientRowStream : public SmartViewParser
 	{
-	public:
-		RecipientRowStream();
-
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
-		DWORD m_cVersion;
-		DWORD m_cRowCount;
-		LPADRENTRY m_lpAdrEntry;
+		blockT<DWORD> m_cVersion;
+		blockT<DWORD> m_cRowCount;
+		std::vector<ADRENTRYStruct> m_lpAdrEntry;
 	};
-}
+} // namespace smartview
