@@ -90,8 +90,8 @@ namespace viewpane
 		{
 			m_lpSplitter->Init(pParent->GetSafeHwnd());
 			m_lpSplitter->SetSplitType(m_bVertical ? controls::SplitVertical : controls::SplitHorizontal);
-			m_PaneOne->Initialize(m_PaneOneControl, pParent, hdc);
-			m_PaneTwo->Initialize(m_PaneTwoControl, pParent, hdc);
+			m_PaneOne->Initialize(m_PaneOneControl, m_lpSplitter, hdc);
+			m_PaneTwo->Initialize(m_PaneTwoControl, m_lpSplitter, hdc);
 			m_lpSplitter->SetPaneOne(m_PaneOne);
 			m_lpSplitter->SetPaneTwo(m_PaneTwo);
 		}
