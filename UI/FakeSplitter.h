@@ -44,6 +44,7 @@ namespace controls
 		void SetPercent(FLOAT iNewPercent);
 		void SetSplitType(SplitType stSplitType);
 		void OnSize(UINT nType, int cx, int cy);
+		int GetSplitWidth() { return m_iSplitWidth; }
 
 	private:
 		void OnPaint();

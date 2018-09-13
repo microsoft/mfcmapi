@@ -24,8 +24,9 @@ namespace viewpane
 	{
 		if (m_bVertical)
 		{
-			// TODO: Add width of splitter here
-			return m_PaneOne->GetMinWidth(hdc) + m_PaneTwo->GetMinWidth(hdc);
+			return m_PaneOne->GetMinWidth(hdc) + m_PaneTwo->GetMinWidth(hdc) + m_lpSplitter
+					   ? m_lpSplitter->GetSplitWidth()
+					   : 0;
 		}
 		else
 		{
@@ -41,8 +42,9 @@ namespace viewpane
 		}
 		else
 		{
-			// TODO: Add height of splitter here
-			return m_PaneOne->GetFixedHeight() + m_PaneTwo->GetFixedHeight();
+			return m_PaneOne->GetFixedHeight() + m_PaneTwo->GetFixedHeight() + m_lpSplitter
+					   ? m_lpSplitter->GetSplitWidth()
+					   : 0;
 		}
 	}
 
