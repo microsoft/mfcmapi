@@ -763,192 +763,174 @@ namespace dialog
 		void CEditor::OnSize(UINT nType, int cx, int cy)
 		{
 			CMyDialog::OnSize(nType, cx, cy);
+			const auto iCXMargin = m_iSideMargin;
+			auto iFullWidth = cx - 2 * iCXMargin;
+
+			output::DebugPrint(
+				DBGDraw, L"CEditor::OnSize cx=%d iFullWidth=%d iCXMargin=%d\n", cx, iFullWidth, iCXMargin);
+
+			auto iPromptLineCount = 0;
+			if (m_bHasPrompt)
+			{
+				iPromptLineCount =
+					m_Prompt.GetLineCount() + 1; // we allow space for the prompt and one line of whitespace
+			}
+
+			auto iCYBottom = cy - m_iButtonHeight - m_iMargin; // Top of Buttons
+			auto iCYTop = m_iTextHeight * iPromptLineCount + m_iMargin; // Bottom of prompt
+
+			if (m_bHasPrompt)
+			{
+				// Position prompt at top
+				EC_B_S(m_Prompt.SetWindowPos(
+					nullptr, // z-order
+					iCXMargin, // new x
+					m_iMargin, // new y
+					iFullWidth, // Full width
+					m_iTextHeight * iPromptLineCount,
+					SWP_NOZORDER));
+			}
+
+			if (m_cButtons)
+			{
+				const auto iSlotWidth = m_iButtonWidth + m_iMargin;
+				const auto iOffset = cx - m_iSideMargin + m_iMargin;
+				auto iButton = 0;
+
+				// Position buttons at the bottom, on the right
+				if (m_bButtonFlags & CEDITOR_BUTTON_OK)
+				{
+					EC_B_S(m_OkButton.SetWindowPos(
+						nullptr,
+						iOffset - iSlotWidth * (m_cButtons - iButton), // new x
+						iCYBottom, // new y
+						m_iButtonWidth,
+						m_iButtonHeight,
+						SWP_NOZORDER));
+					iButton++;
+				}
+
+				if (m_bButtonFlags & CEDITOR_BUTTON_ACTION1)
+				{
+					EC_B_S(m_ActionButton1.SetWindowPos(
+						nullptr,
+						iOffset - iSlotWidth * (m_cButtons - iButton), // new x
+						iCYBottom, // new y
+						m_iButtonWidth,
+						m_iButtonHeight,
+						SWP_NOZORDER));
+					iButton++;
+				}
+
+				if (m_bButtonFlags & CEDITOR_BUTTON_ACTION2)
+				{
+					EC_B_S(m_ActionButton2.SetWindowPos(
+						nullptr,
+						iOffset - iSlotWidth * (m_cButtons - iButton), // new x
+						iCYBottom, // new y
+						m_iButtonWidth,
+						m_iButtonHeight,
+						SWP_NOZORDER));
+					iButton++;
+				}
+
+				if (m_bButtonFlags & CEDITOR_BUTTON_ACTION3)
+				{
+					EC_B_S(m_ActionButton3.SetWindowPos(
+						nullptr,
+						iOffset - iSlotWidth * (m_cButtons - iButton), // new x
+						iCYBottom, // new y
+						m_iButtonWidth,
+						m_iButtonHeight,
+						SWP_NOZORDER));
+					iButton++;
+				}
+
+				if (m_bButtonFlags & CEDITOR_BUTTON_CANCEL)
+				{
+					EC_B_S(m_CancelButton.SetWindowPos(
+						nullptr,
+						iOffset - iSlotWidth * (m_cButtons - iButton), // new x
+						iCYBottom, // new y
+						m_iButtonWidth,
+						m_iButtonHeight,
+						SWP_NOZORDER));
+				}
+			}
+
+			iCYBottom -= m_iMargin; // add a margin above the buttons
+			// at this point, iCYTop and iCYBottom reflect our free space, so we can calc multiline height
+
+			// Calculate how much space a 'line' of a variable height control should be
+			auto iLineHeight = 0;
+			auto iFixedHeight = 0;
+			auto iVariableLines = 0;
+			for (const auto& pane : m_lpControls)
+			{
+				if (pane)
+				{
+					iFixedHeight += pane->GetFixedHeight();
+					iVariableLines += pane->GetLines();
+				}
+			}
+
+			if (iVariableLines) iLineHeight = (iCYBottom - iCYTop - iFixedHeight) / iVariableLines;
+
+			// There may be some unaccounted slack space after all this. Compute it so we can give it to a control.
+			UINT iSlackSpace = iCYBottom - iCYTop - iFixedHeight - iVariableLines * iLineHeight;
+
+			auto iScrollPos = 0;
+			if (m_bEnableScroll)
+			{
+				if (iCYBottom - iCYTop < m_iScrollClient)
+				{
+					const auto iScrollWidth = GetSystemMetrics(SM_CXVSCROLL);
+					iFullWidth -= iScrollWidth;
+					output::DebugPrint(
+						DBGDraw,
+						L"CEditor::OnSize Scroll iScrollWidth=%d new iFullWidth=%d\n",
+						iScrollWidth,
+						iFullWidth);
+					output::DebugPrint(
+						DBGDraw, L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n", iFullWidth + iCXMargin);
+					::SetWindowPos(
+						m_hWndVertScroll,
+						nullptr,
+						iFullWidth + iCXMargin,
+						iCYTop,
+						iScrollWidth,
+						iCYBottom - iCYTop,
+						SWP_NOZORDER);
+					SCROLLINFO si = {0};
+					si.cbSize = sizeof si;
+					si.fMask = SIF_POS;
+					::GetScrollInfo(m_hWndVertScroll, SB_CTL, &si);
+					iScrollPos = si.nPos;
+
+					si.nMin = 0;
+					si.nMax = m_iScrollClient;
+					si.nPage = iCYBottom - iCYTop;
+					si.fMask = SIF_RANGE | SIF_PAGE;
+					::SetScrollInfo(m_hWndVertScroll, SB_CTL, &si, FALSE);
+					::ShowScrollBar(m_hWndVertScroll, SB_CTL, TRUE);
+					m_bScrollVisible = true;
+				}
+				else
+				{
+					::ShowScrollBar(m_hWndVertScroll, SB_CTL, FALSE);
+					m_bScrollVisible = false;
+				}
+
+				output::DebugPrint(DBGDraw, L"CEditor::OnSize m_ScrollWindow positioned at=%d\n", iCXMargin);
+				::SetWindowPos(
+
+					m_ScrollWindow.m_hWnd, nullptr, iCXMargin, iCYTop, iFullWidth, iCYBottom - iCYTop, SWP_NOZORDER);
+				iCYTop = -iScrollPos; // We get scrolling for free by adjusting our top
+			}
+
 			const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 			if (hdwp)
 			{
-				const auto iCXMargin = m_iSideMargin;
-				auto iFullWidth = cx - 2 * iCXMargin;
-
-				output::DebugPrint(
-					DBGDraw, L"CEditor::OnSize cx=%d iFullWidth=%d iCXMargin=%d\n", cx, iFullWidth, iCXMargin);
-
-				auto iPromptLineCount = 0;
-				if (m_bHasPrompt)
-				{
-					iPromptLineCount =
-						m_Prompt.GetLineCount() + 1; // we allow space for the prompt and one line of whitespace
-				}
-
-				auto iCYBottom = cy - m_iButtonHeight - m_iMargin; // Top of Buttons
-				auto iCYTop = m_iTextHeight * iPromptLineCount + m_iMargin; // Bottom of prompt
-
-				if (m_bHasPrompt)
-				{
-					// Position prompt at top
-					EC_B_S(::DeferWindowPos(
-						hdwp,
-						m_Prompt.GetSafeHwnd(),
-						nullptr, // z-order
-						iCXMargin, // new x
-						m_iMargin, // new y
-						iFullWidth, // Full width
-						m_iTextHeight * iPromptLineCount,
-						SWP_NOZORDER));
-				}
-
-				if (m_cButtons)
-				{
-					const auto iSlotWidth = m_iButtonWidth + m_iMargin;
-					const auto iOffset = cx - m_iSideMargin + m_iMargin;
-					auto iButton = 0;
-
-					// Position buttons at the bottom, on the right
-					if (m_bButtonFlags & CEDITOR_BUTTON_OK)
-					{
-						EC_B_S(::DeferWindowPos(
-							hdwp,
-							m_OkButton.GetSafeHwnd(),
-							nullptr,
-							iOffset - iSlotWidth * (m_cButtons - iButton), // new x
-							iCYBottom, // new y
-							m_iButtonWidth,
-							m_iButtonHeight,
-							SWP_NOZORDER));
-						iButton++;
-					}
-
-					if (m_bButtonFlags & CEDITOR_BUTTON_ACTION1)
-					{
-						EC_B_S(::DeferWindowPos(
-							hdwp,
-							m_ActionButton1.GetSafeHwnd(),
-							nullptr,
-							iOffset - iSlotWidth * (m_cButtons - iButton), // new x
-							iCYBottom, // new y
-							m_iButtonWidth,
-							m_iButtonHeight,
-							SWP_NOZORDER));
-						iButton++;
-					}
-
-					if (m_bButtonFlags & CEDITOR_BUTTON_ACTION2)
-					{
-						EC_B_S(::DeferWindowPos(
-							hdwp,
-							m_ActionButton2.GetSafeHwnd(),
-							nullptr,
-							iOffset - iSlotWidth * (m_cButtons - iButton), // new x
-							iCYBottom, // new y
-							m_iButtonWidth,
-							m_iButtonHeight,
-							SWP_NOZORDER));
-						iButton++;
-					}
-
-					if (m_bButtonFlags & CEDITOR_BUTTON_ACTION3)
-					{
-						EC_B_S(::DeferWindowPos(
-							hdwp,
-							m_ActionButton3.GetSafeHwnd(),
-							nullptr,
-							iOffset - iSlotWidth * (m_cButtons - iButton), // new x
-							iCYBottom, // new y
-							m_iButtonWidth,
-							m_iButtonHeight,
-							SWP_NOZORDER));
-						iButton++;
-					}
-
-					if (m_bButtonFlags & CEDITOR_BUTTON_CANCEL)
-					{
-						EC_B_S(::DeferWindowPos(
-							hdwp,
-							m_CancelButton.GetSafeHwnd(),
-							nullptr,
-							iOffset - iSlotWidth * (m_cButtons - iButton), // new x
-							iCYBottom, // new y
-							m_iButtonWidth,
-							m_iButtonHeight,
-							SWP_NOZORDER));
-					}
-				}
-
-				iCYBottom -= m_iMargin; // add a margin above the buttons
-				// at this point, iCYTop and iCYBottom reflect our free space, so we can calc multiline height
-
-				// Calculate how much space a 'line' of a variable height control should be
-				auto iLineHeight = 0;
-				auto iFixedHeight = 0;
-				auto iVariableLines = 0;
-				for (const auto& pane : m_lpControls)
-				{
-					if (pane)
-					{
-						iFixedHeight += pane->GetFixedHeight();
-						iVariableLines += pane->GetLines();
-					}
-				}
-
-				if (iVariableLines) iLineHeight = (iCYBottom - iCYTop - iFixedHeight) / iVariableLines;
-
-				// There may be some unaccounted slack space after all this. Compute it so we can give it to a control.
-				UINT iSlackSpace = iCYBottom - iCYTop - iFixedHeight - iVariableLines * iLineHeight;
-
-				auto iScrollPos = 0;
-				if (m_bEnableScroll)
-				{
-					if (iCYBottom - iCYTop < m_iScrollClient)
-					{
-						const auto iScrollWidth = GetSystemMetrics(SM_CXVSCROLL);
-						iFullWidth -= iScrollWidth;
-						output::DebugPrint(
-							DBGDraw,
-							L"CEditor::OnSize Scroll iScrollWidth=%d new iFullWidth=%d\n",
-							iScrollWidth,
-							iFullWidth);
-						output::DebugPrint(
-							DBGDraw, L"CEditor::OnSize m_hWndVertScroll positioned at=%d\n", iFullWidth + iCXMargin);
-						::DeferWindowPos(
-							hdwp,
-							m_hWndVertScroll,
-							nullptr,
-							iFullWidth + iCXMargin,
-							iCYTop,
-							iScrollWidth,
-							iCYBottom - iCYTop,
-							SWP_NOZORDER);
-						SCROLLINFO si = {0};
-						si.cbSize = sizeof si;
-						si.fMask = SIF_POS;
-						::GetScrollInfo(m_hWndVertScroll, SB_CTL, &si);
-						iScrollPos = si.nPos;
-
-						si.nMin = 0;
-						si.nMax = m_iScrollClient;
-						si.nPage = iCYBottom - iCYTop;
-						si.fMask = SIF_RANGE | SIF_PAGE;
-						::SetScrollInfo(m_hWndVertScroll, SB_CTL, &si, FALSE);
-						::ShowScrollBar(m_hWndVertScroll, SB_CTL, TRUE);
-						m_bScrollVisible = true;
-					}
-					else
-					{
-						::ShowScrollBar(m_hWndVertScroll, SB_CTL, FALSE);
-						m_bScrollVisible = false;
-					}
-
-					output::DebugPrint(DBGDraw, L"CEditor::OnSize m_ScrollWindow positioned at=%d\n", iCXMargin);
-					::DeferWindowPos(
-						hdwp,
-						m_ScrollWindow.m_hWnd,
-						nullptr,
-						iCXMargin,
-						iCYTop,
-						iFullWidth,
-						iCYBottom - iCYTop,
-						SWP_NOZORDER);
-					iCYTop = -iScrollPos; // We get scrolling for free by adjusting our top
-				}
 
 				for (const auto& pane : m_lpControls)
 				{
@@ -984,9 +966,8 @@ namespace dialog
 						iCYTop += iControlHeight;
 					}
 				}
-
-				EC_B_S(EndDeferWindowPos(hdwp));
 			}
+			EC_B_S(EndDeferWindowPos(hdwp));
 		}
 
 		void CEditor::DeleteControls()
