@@ -187,9 +187,7 @@ namespace dialog
 			UINT m_uidActionButtonText2{};
 			UINT m_uidActionButtonText3{};
 
-			// Much of this class assumes this list of controls is in order by and matches
-			// the control number assigned to the view pane
-			// HandleChange is bad about this
+			// Panes are held in the order in which they render on screen
 			std::vector<viewpane::ViewPane*> m_lpControls{}; // array of controls
 
 			bool m_bEnableScroll{};

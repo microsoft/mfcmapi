@@ -28,14 +28,16 @@ namespace viewpane
 			int iButtonHeight, // Height of buttons below the control
 			int iEditHeight); // Height of an edit control
 		void SetAddInLabel(const std::wstring& szLabel);
-		bool MatchID(UINT nID) const;
 		virtual void UpdateButtons();
 		void SetControl(int iControl) { m_iControl = iControl; }
 		// Return a pane with a matching control #. Can be overriden to allow container panes to return subpanes.
-		virtual ViewPane* GetControl(int iControl) { return m_iControl == iControl ? this : nullptr; }
+		virtual ViewPane* GetPaneByID(int iControl) { return m_iControl == iControl ? this : nullptr; }
+		// Return a pane with a matching nID. Can be overriden to allow container panes to return subpanes.
+		virtual ViewPane* GetPaneByNID(UINT nID) { return nID == m_nID ? this : nullptr; }
+		ULONG GetID() { return m_iControl; }
 
 	protected:
-		int m_iControl{-1}; // Number of the view pane in the view - used for callbacks and layout
+		int m_iControl{-1}; // ID of the view pane in the view - used for callbacks and layout
 		bool m_bInitialized{false};
 		bool m_bReadOnly{true};
 		std::wstring m_szLabel; // Text to push into UI in Initialize

@@ -990,7 +990,7 @@ namespace dialog
 			{
 				if (pane)
 				{
-					auto match = pane->GetControl(iControl);
+					auto match = pane->GetPaneByID(iControl);
 					if (match) return match;
 				}
 			}
@@ -1285,29 +1285,31 @@ namespace dialog
 			}
 		}
 
-		// Given a nID, looks through m_lpControls for a control with the same ID
-		// Uses MatchID to make a match
+		// Given a nID, looks for a control with the same nID
+		// Uses ViewPane::GetPaneByNID to make a match
 		// Will ask panes if they have child panes that match - what they return is up to them
-		// For matches in m_lpControls, returns the index of the matching control.
+		// Returns the ID (not nID) or the matching pane.
 		_Check_return_ ULONG CEditor::HandleChange(UINT nID)
 		{
 			if (m_lpControls.empty()) return static_cast<ULONG>(-1);
-			for (ULONG iControl = 0; iControl < m_lpControls.size(); iControl++)
+			for (const auto& pane : m_lpControls)
 			{
-				auto pane = GetPane(iControl);
-				if (!pane) continue;
-				// Either our change came from one of our top level controls/views
-				if (pane->MatchID(nID))
+				if (pane)
 				{
-					return iControl;
-				}
+					// Either the pane matches by nID, or can return a subpane which matches by nID.
+					auto match = pane->GetPaneByNID(nID);
+					if (match)
+					{
+						return match->GetID();
+					}
 
-				// Or the top level control/view has a control in it that can handle it
-				// In which case stop looking.
-				// We do not return the control number because this is a button event, not an edit change
-				if (pane->HandleChange(nID) != -1)
-				{
-					return static_cast<ULONG>(-1);
+					// Or the top level control/view has a control in it that can handle it
+					// In which case stop looking.
+					// We do not return the control number because this is a button event, not an edit change
+					if (pane->HandleChange(nID) != -1)
+					{
+						return static_cast<ULONG>(-1);
+					}
 				}
 			}
 

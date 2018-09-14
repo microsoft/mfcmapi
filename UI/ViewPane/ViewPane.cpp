@@ -113,7 +113,5 @@ namespace viewpane
 
 	void ViewPane::SetAddInLabel(const std::wstring& szLabel) { m_szLabel = szLabel; }
 
-	bool ViewPane::MatchID(UINT nID) const { return nID == m_nID; }
-
 	void ViewPane::UpdateButtons() {}
 } // namespace viewpane
