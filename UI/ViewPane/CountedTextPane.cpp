@@ -20,13 +20,7 @@ namespace viewpane
 		return lpPane;
 	}
 
-	CountedTextPane::CountedTextPane()
-	{
-		m_iCountLabelWidth = 0;
-		m_iCount = 0;
-	}
-
-	void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+	void CountedTextPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
 		EC_B_S(m_Count.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, IDD_COUNTLABEL));
@@ -34,7 +28,7 @@ namespace viewpane
 		ui::SubclassLabel(m_Count.m_hWnd);
 		StyleLabel(m_Count.m_hWnd, ui::lsPaneHeaderText);
 
-		TextPane::Initialize(iControl, pParent, hdc);
+		TextPane::Initialize(pParent, hdc);
 	}
 
 	int CountedTextPane::GetMinWidth(_In_ HDC hdc)

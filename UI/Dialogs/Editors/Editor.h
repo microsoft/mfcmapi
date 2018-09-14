@@ -13,8 +13,8 @@ namespace dialog
 {
 	namespace editor
 	{
-	// Buttons for CEditor
-	//#define CEDITOR_BUTTON_OK 0x00000001 // Duplicated from MFCMAPI.h - do not modify
+		// Buttons for CEditor
+		//#define CEDITOR_BUTTON_OK 0x00000001 // Duplicated from MFCMAPI.h - do not modify
 #define CEDITOR_BUTTON_ACTION1 0x00000002
 #define CEDITOR_BUTTON_ACTION2 0x00000004
 //#define CEDITOR_BUTTON_CANCEL 0x00000008 // Duplicated from MFCMAPI.h - do not modify
@@ -55,9 +55,13 @@ namespace dialog
 
 			void LoadString(ULONG i, UINT uidMsg) const;
 			void SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const;
-			void SetHex(ULONG i, ULONG ulVal) const;
-			void SetDecimal(ULONG i, ULONG ulVal) const;
-			void SetSize(ULONG i, size_t cb) const;
+			void SetHex(ULONG i, ULONG ulVal) const { SetStringf(i, L"0x%08X", ulVal); } // STRING_OK
+			void SetDecimal(ULONG i, ULONG ulVal) const { SetStringf(i, L"%u", ulVal); } // STRING_OK
+			// Updates pane using SetStringW
+			void SetSize(ULONG i, size_t cb) const
+			{
+				SetStringf(i, L"0x%08X = %u", static_cast<int>(cb), static_cast<UINT>(cb)); // STRING_OK
+			}
 
 			// Get values after we've done the DisplayDialog
 			viewpane::ViewPane* GetPane(ULONG iPane) const;
@@ -79,7 +83,10 @@ namespace dialog
 			// Use this function to implement list editing
 			// return true to indicate the entry was changed, false to indicate it was not
 			_Check_return_ virtual bool
-			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData);
+			DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ controls::sortlistdata::SortListData* /*lpData*/)
+			{
+				return false;
+			}
 
 		protected:
 			// Functions used by derived classes during init
@@ -92,7 +99,8 @@ namespace dialog
 			void ResizeList(ULONG iControl, bool bSort) const;
 
 			// Functions used by derived classes during handle change events
-			std::vector<BYTE> GetBinary(ULONG i) const;
+			// Returns a binary buffer which is represented by the hex string
+			std::vector<BYTE> GetBinary(ULONG i) const { return strings::HexStringToBin(GetStringW(i)); }
 			_Check_return_ std::string GetStringA(ULONG iControl) const;
 			_Check_return_ ULONG GetListCount(ULONG iControl) const;
 			_Check_return_ controls::sortlistdata::SortListData* GetListRowData(ULONG iControl, int iRow) const;
@@ -107,14 +115,14 @@ namespace dialog
 			// protected since derived classes need to call the base implementation
 			_Check_return_ virtual ULONG HandleChange(UINT nID);
 
-			void EnableScroll();
+			void EnableScroll() { m_bEnableScroll = true; }
 
 		private:
 			// Overridable functions
 			// use these functions to implement custom edit buttons
-			virtual void OnEditAction1();
-			virtual void OnEditAction2();
-			virtual void OnEditAction3();
+			virtual void OnEditAction1() {}
+			virtual void OnEditAction2() {}
+			virtual void OnEditAction3() {}
 
 			// private constructor invoked from public constructors
 			void Constructor(
@@ -128,7 +136,10 @@ namespace dialog
 
 			void DeleteControls();
 			_Check_return_ SIZE ComputeWorkArea(SIZE sScreen);
-			void OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI);
+			void OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI)
+			{
+				lpMMI->ptMinTrackSize = POINT{m_iMinWidth, m_iMinHeight};
+			}
 			void OnSetDefaultSize();
 			_Check_return_ LRESULT OnNcHitTest(CPoint point);
 			void OnSize(UINT nType, int cx, int cy);
@@ -187,5 +198,5 @@ namespace dialog
 
 			DECLARE_MESSAGE_MAP()
 		};
-	}
-}
+	} // namespace editor
+} // namespace dialog

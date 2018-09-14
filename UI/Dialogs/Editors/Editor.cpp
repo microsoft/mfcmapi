@@ -387,12 +387,11 @@ namespace dialog
 			}
 
 			SetMargins(); // Not all margins have been computed yet, but some have and we can use them during Initialize
-			for (ULONG i = 0; i < m_lpControls.size(); i++)
+			for (const auto& pane : m_lpControls)
 			{
-				auto pane = GetPane(i);
 				if (pane)
 				{
-					pane->Initialize(i, pParent, hdc);
+					pane->Initialize(pParent, hdc);
 				}
 			}
 
@@ -722,12 +721,6 @@ namespace dialog
 			m_iMinWidth = min(m_iMinWidth, MAX_WIDTH);
 		}
 
-		void CEditor::OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI)
-		{
-			lpMMI->ptMinTrackSize.x = m_iMinWidth;
-			lpMMI->ptMinTrackSize.y = m_iMinHeight;
-		}
-
 		// Recalculates our line heights and window defaults, then redraws the window with the new dimensions
 		void CEditor::OnRecalcLayout()
 		{
@@ -931,7 +924,6 @@ namespace dialog
 			const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 			if (hdwp)
 			{
-
 				for (const auto& pane : m_lpControls)
 				{
 					// Calculate height for multiline edit boxes and lists
@@ -967,6 +959,7 @@ namespace dialog
 					}
 				}
 			}
+
 			EC_B_S(EndDeferWindowPos(hdwp));
 		}
 
@@ -983,6 +976,8 @@ namespace dialog
 		// TODO: Use iNum as a proper accessor name
 		void CEditor::InitPane(ULONG iNum, viewpane::ViewPane* lpPane)
 		{
+			if (!lpPane) return;
+			lpPane->SetControl(iNum);
 			const auto listPane = dynamic_cast<viewpane::ListPane*>(lpPane);
 			if (listPane) m_ulListNum = iNum;
 			m_lpControls.push_back(lpPane);
@@ -1037,7 +1032,7 @@ namespace dialog
 			}
 			else
 			{
-				SetStringW(i, L"");
+				SetStringW(i, std::wstring{});
 			}
 		}
 
@@ -1050,7 +1045,7 @@ namespace dialog
 			}
 			else
 			{
-				SetStringW(i, L"");
+				SetStringW(i, std::wstring{});
 			}
 		}
 
@@ -1063,15 +1058,6 @@ namespace dialog
 				pane->SetBinary(lpb, cb);
 			}
 		}
-
-		// Updates pane using SetStringW
-		void CEditor::SetSize(ULONG i, size_t cb) const
-		{
-			SetStringf(i, L"0x%08X = %u", static_cast<int>(cb), static_cast<UINT>(cb)); // STRING_OK
-		}
-
-		// Returns a binary buffer which is represented by the hex string
-		std::vector<BYTE> CEditor::GetBinary(ULONG i) const { return strings::HexStringToBin(GetStringW(i)); }
 
 		// converts string in a text(edit) control into an entry ID
 		// Can base64 decode if needed
@@ -1104,16 +1090,6 @@ namespace dialog
 			}
 
 			return hRes;
-		}
-
-		void CEditor::SetHex(ULONG i, ULONG ulVal) const
-		{
-			SetStringf(i, L"0x%08X", ulVal); // STRING_OK
-		}
-
-		void CEditor::SetDecimal(ULONG i, ULONG ulVal) const
-		{
-			SetStringf(i, L"%u", ulVal); // STRING_OK
 		}
 
 		void
@@ -1175,7 +1151,7 @@ namespace dialog
 				return strings::wstringTostring(pane->GetStringW());
 			}
 
-			return "";
+			return std::string{};
 		}
 
 		_Check_return_ ULONG CEditor::GetHex(ULONG i) const
@@ -1347,31 +1323,5 @@ namespace dialog
 
 			return false;
 		}
-
-		void CEditor::OnEditAction1()
-		{
-			// Not Implemented
-		}
-
-		void CEditor::OnEditAction2()
-		{
-			// Not Implemented
-		}
-
-		void CEditor::OnEditAction3()
-		{
-			// Not Implemented
-		}
-
-		// Will be invoked on both edit button and double-click
-		// return true to indicate the entry was changed, false to indicate it was not
-		_Check_return_ bool
-		CEditor::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ controls::sortlistdata::SortListData* /*lpData*/)
-		{
-			// Not Implemented
-			return false;
-		}
-
-		void CEditor::EnableScroll() { m_bEnableScroll = true; }
 	} // namespace editor
 } // namespace dialog

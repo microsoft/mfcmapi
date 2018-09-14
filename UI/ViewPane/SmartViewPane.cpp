@@ -19,25 +19,20 @@ namespace viewpane
 		return pane;
 	}
 
-	SmartViewPane::SmartViewPane()
+	void SmartViewPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
 		m_TextPane.SetMultiline();
 		m_TextPane.SetLabel(NULL, true);
-		m_bHasData = false;
-		m_bDoDropDown = true;
 		m_bReadOnly = true;
-	}
 
-	void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
-	{
 		for (const auto& smartViewParserType : SmartViewParserTypeArray)
 		{
 			InsertDropString(smartViewParserType.lpszName, smartViewParserType.ulValue);
 		}
 
-		DropDownPane::Initialize(iControl, pParent, hdc);
+		DropDownPane::Initialize(pParent, hdc);
 		// The control id of this text pane doesn't matter, so leave it at 0
-		m_TextPane.Initialize(0, pParent, hdc);
+		m_TextPane.Initialize(pParent, hdc);
 
 		m_bInitialized = true;
 	}

@@ -20,10 +20,9 @@ namespace viewpane
 		_Check_return_ DWORD_PTR GetDropDownValue() const;
 
 	protected:
-		DropDownPane();
 		void SetSelection(DWORD_PTR iSelection);
-		void CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc);
-		void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
+		void CreateControl(_In_ CWnd* pParent, _In_ HDC hdc);
+		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
 
 		CComboBox m_DropDown;
 
@@ -35,7 +34,7 @@ namespace viewpane
 
 		std::vector<std::pair<std::wstring, ULONG>> m_DropList;
 		std::wstring m_lpszSelectionString;
-		int m_iDropSelection;
-		DWORD_PTR m_iDropSelectionValue;
+		int m_iDropSelection{CB_ERR};
+		DWORD_PTR m_iDropSelectionValue{0};
 	};
 }

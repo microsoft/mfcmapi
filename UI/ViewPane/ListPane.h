@@ -29,12 +29,11 @@ namespace viewpane
 		bool IsDirty() override;
 
 	private:
-		ListPane();
 		void Setup(bool bAllowSort, DoListEditCallback callback);
 
 		void UpdateButtons() override;
 
-		void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
+		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		void CommitUIValues() override;
 		int GetMinWidth(_In_ HDC hdc) override;
@@ -49,8 +48,8 @@ namespace viewpane
 		void OnAddListEntry();
 		void OnDeleteListEntry(bool bDoDirty);
 
-		bool m_bDirty;
-		bool m_bAllowSort;
+		bool m_bDirty{false};
+		bool m_bAllowSort{false};
 
 		DoListEditCallback m_callback;
 		controls::sortlistctrl::CSortListCtrl m_List;
@@ -67,6 +66,6 @@ namespace viewpane
 			IDD_LISTMOVEUP,
 		};
 
-		int m_iButtonWidth;
+		int m_iButtonWidth{50};
 	};
 }

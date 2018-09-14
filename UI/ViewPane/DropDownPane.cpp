@@ -47,12 +47,6 @@ namespace viewpane
 		return pane;
 	}
 
-	DropDownPane::DropDownPane()
-	{
-		m_iDropSelection = CB_ERR;
-		m_iDropSelectionValue = 0;
-	}
-
 	int DropDownPane::GetMinWidth(_In_ HDC hdc)
 	{
 		auto cxDropDown = 0;
@@ -111,9 +105,9 @@ namespace viewpane
 			hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
 	}
 
-	void DropDownPane::CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+	void DropDownPane::CreateControl(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		ViewPane::Initialize(iControl, pParent, hdc);
+		ViewPane::Initialize(pParent, hdc);
 
 		const auto ulDrops = 1 + (!m_DropList.empty() ? min(m_DropList.size(), 4) : 4);
 		const auto dropHeight = ulDrops * (pParent ? ui::GetEditHeight(pParent->m_hWnd) : 0x1e);
@@ -139,9 +133,9 @@ namespace viewpane
 		SendMessage(m_DropDown.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 	}
 
-	void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+	void DropDownPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		CreateControl(iControl, pParent, hdc);
+		CreateControl(pParent, hdc);
 
 		auto iDropNum = 0;
 		for (const auto& drop : m_DropList)

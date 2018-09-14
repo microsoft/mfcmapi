@@ -201,9 +201,9 @@ namespace viewpane
 			SWP_NOZORDER));
 	}
 
-	void TextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
+	void TextPane::Initialize(_In_ CWnd* pParent, _In_ HDC /*hdc*/)
 	{
-		ViewPane::Initialize(iControl, pParent, nullptr);
+		ViewPane::Initialize(pParent, nullptr);
 
 		EC_B_S(m_EditBox.Create(
 			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_BORDER | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL |

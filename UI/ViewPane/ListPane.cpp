@@ -33,25 +33,18 @@ namespace viewpane
 		return pane;
 	}
 
-	ListPane::ListPane()
-	{
-		m_iButtonWidth = 50;
-		m_List.AllowEscapeClose();
-		m_bDirty = false;
-		m_bAllowSort = false;
-	}
-
 	void ListPane::Setup(bool bAllowSort, DoListEditCallback callback)
 	{
+		m_List.AllowEscapeClose();
 		m_bAllowSort = bAllowSort;
 		m_callback = std::move(callback);
 	}
 
 	bool ListPane::IsDirty() { return m_bDirty; }
 
-	void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+	void ListPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		ViewPane::Initialize(iControl, pParent, nullptr);
+		ViewPane::Initialize(pParent, nullptr);
 
 		DWORD dwListStyle = LVS_SINGLESEL | WS_BORDER;
 		if (!m_bAllowSort) dwListStyle |= LVS_NOSORTHEADER;

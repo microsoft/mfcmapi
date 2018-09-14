@@ -35,9 +35,9 @@ namespace viewpane
 
 	int CheckPane::GetFixedHeight() { return m_iButtonHeight; }
 
-	void CheckPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
+	void CheckPane::Initialize(_In_ CWnd* pParent, _In_ HDC /*hdc*/)
 	{
-		ViewPane::Initialize(iControl, pParent, nullptr);
+		ViewPane::Initialize(pParent, nullptr);
 
 		EC_B_S(m_Check.Create(
 			NULL,

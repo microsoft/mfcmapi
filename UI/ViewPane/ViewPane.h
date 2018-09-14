@@ -5,11 +5,10 @@ namespace viewpane
 	class ViewPane
 	{
 	public:
-		ViewPane();
 		virtual ~ViewPane() = default;
 
 		void SetLabel(UINT uidLabel, bool bReadOnly);
-		virtual void Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC hdc);
+		virtual void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc);
 		virtual void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 
 		virtual void CommitUIValues() = 0;
@@ -31,27 +30,28 @@ namespace viewpane
 		void SetAddInLabel(const std::wstring& szLabel);
 		bool MatchID(UINT nID) const;
 		virtual void UpdateButtons();
+		void SetControl(int iControl) { m_iControl = iControl; }
 
 	protected:
-		int m_iControl; // Number of the view pane in the view - used for callbacks and layout
-		bool m_bInitialized;
-		bool m_bReadOnly;
+		int m_iControl{-1}; // Number of the view pane in the view - used for callbacks and layout
+		bool m_bInitialized{false};
+		bool m_bReadOnly{true};
 		std::wstring m_szLabel; // Text to push into UI in Initialize
 		int m_iLabelWidth; // The width of the label
 		CEdit m_Label;
-		UINT m_nID; // Id for matching change notifications back to controls
-		HWND m_hWndParent;
-		bool m_bCollapsible;
-		bool m_bCollapsed;
+		UINT m_nID{0}; // Id for matching change notifications back to controls
+		HWND m_hWndParent{nullptr};
+		bool m_bCollapsible{false};
+		bool m_bCollapsed{false};
 		CButton m_CollapseButton;
 
 		// Margins
-		int m_iMargin;
-		int m_iSideMargin;
-		int m_iLabelHeight; // Height of the label
-		int m_iSmallHeightMargin;
-		int m_iLargeHeightMargin;
-		int m_iButtonHeight; // Height of buttons below the control
-		int m_iEditHeight; // Height of an edit control
+		int m_iMargin{0};
+		int m_iSideMargin{0};
+		int m_iLabelHeight{0}; // Height of the label
+		int m_iSmallHeightMargin{0};
+		int m_iLargeHeightMargin{0};
+		int m_iButtonHeight{0}; // Height of buttons below the control
+		int m_iEditHeight{0}; // Height of an edit control
 	};
 } // namespace viewpane

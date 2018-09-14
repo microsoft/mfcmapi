@@ -5,28 +5,6 @@
 
 namespace viewpane
 {
-	ViewPane::ViewPane()
-	{
-		m_iControl = -1;
-
-		m_nID = 0;
-		m_bCollapsible = false;
-		m_bCollapsed = false;
-		m_bReadOnly = true;
-		m_bInitialized = false;
-		m_iMargin = 0;
-		m_iSideMargin = 0;
-		m_iLabelHeight = 0;
-		m_iSmallHeightMargin = 0;
-		m_iLargeHeightMargin = 0;
-		m_iButtonHeight = 0;
-		m_iEditHeight = 0;
-		m_iSmallHeightMargin = 0;
-		m_iLabelWidth = 0;
-
-		m_hWndParent = nullptr;
-	}
-
 	void ViewPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int /*height*/)
 	{
 		if (m_bCollapsible)
@@ -59,9 +37,8 @@ namespace viewpane
 		}
 	}
 
-	void ViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC /*hdc*/)
+	void ViewPane::Initialize(_In_ CWnd* pParent, _In_opt_ HDC /*hdc*/)
 	{
-		m_iControl = iControl;
 		if (pParent) m_hWndParent = pParent->m_hWnd;
 		const UINT iCurIDLabel = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl;
 		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl + 1;
@@ -80,7 +57,7 @@ namespace viewpane
 				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 				CRect(0, 0, 0, 0),
 				pParent,
-				IDD_COLLAPSE + iControl));
+				IDD_COLLAPSE + m_iControl));
 		}
 	}
 

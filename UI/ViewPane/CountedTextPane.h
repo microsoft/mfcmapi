@@ -10,8 +10,7 @@ namespace viewpane
 		void SetCount(size_t iCount);
 
 	private:
-		CountedTextPane();
-		void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
+		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetMinWidth(_In_ HDC hdc) override;
 		int GetFixedHeight() override;
@@ -19,7 +18,7 @@ namespace viewpane
 
 		CEdit m_Count; // The display of the count
 		std::wstring m_szCountLabel; // String name of the count
-		int m_iCountLabelWidth; // The width of the string
-		size_t m_iCount; // The numeric count
+		int m_iCountLabelWidth{0}; // The width of the string
+		size_t m_iCount{0}; // The numeric count
 	};
 } // namespace viewpane
