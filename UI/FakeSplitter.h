@@ -61,6 +61,7 @@ namespace controls
 		FLOAT m_flSplitPercent{0.5};
 		HWND m_PaneOne{};
 		HWND m_PaneTwo{};
+		HWND m_hwndParent{};
 		viewpane::ViewPane* m_ViewPaneOne{};
 		viewpane::ViewPane* m_ViewPaneTwo{};
 		int m_iSplitWidth{};

@@ -60,6 +60,13 @@ namespace viewpane
 		}
 	}
 
+	ULONG SplitterPane::HandleChange(UINT nID)
+	{
+		if (m_PaneOne->MatchID(nID) || m_PaneTwo->MatchID(nID)) return nID;
+
+		return ViewPane::HandleChange(nID);
+	}
+
 	void SplitterPane::SetMargins(
 		int iMargin,
 		int iSideMargin,

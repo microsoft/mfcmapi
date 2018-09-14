@@ -24,6 +24,7 @@ namespace controls
 
 	void CFakeSplitter::Init(HWND hWnd)
 	{
+		m_hwndParent = hWnd;
 		WNDCLASSEX wc = {0};
 		const auto hInst = AfxGetInstanceHandle();
 		if (!::GetClassInfoEx(hInst, _T("FakeSplitter"), &wc)) // STRING_OK
@@ -47,7 +48,7 @@ namespace controls
 			0,
 			0,
 			0,
-			hWnd,
+			m_hwndParent,
 			reinterpret_cast<HMENU>(static_cast<INT_PTR>(IDC_FAKE_SPLITTER)),
 			nullptr));
 
@@ -86,6 +87,17 @@ namespace controls
 			if (LOWORD(lParam) == HTCLIENT && reinterpret_cast<HWND>(wParam) == this->m_hWnd && !m_bTracking)
 				return true; // we will handle it in the mouse move
 			break;
+		case WM_COMMAND:
+		{
+			const auto nCode = HIWORD(wParam);
+			const auto idFrom = LOWORD(wParam);
+			if (EN_CHANGE == nCode || CBN_SELCHANGE == nCode || CBN_EDITCHANGE == nCode)
+			{
+				::SendMessage(m_hwndParent, message, wParam, lParam);
+			}
+
+			break;
+		}
 		}
 
 		return CWnd::WindowProc(message, wParam, lParam);

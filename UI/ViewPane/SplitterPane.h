@@ -29,6 +29,7 @@ namespace viewpane
 		int GetMinWidth(_In_ HDC hdc) override;
 		int GetFixedHeight() override;
 		int GetLines() override;
+		ULONG HandleChange(UINT nID) override;
 		void SetMargins(
 			int iMargin,
 			int iSideMargin,
