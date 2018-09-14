@@ -44,7 +44,7 @@ namespace dialog
 
 			// These functions can be used to set up a data editing dialog
 			void SetPromptPostFix(_In_ const std::wstring& szMsg);
-			void InitPane(ULONG iNum, viewpane::ViewPane* lpPane);
+			void InitPane(ULONG iControl, viewpane::ViewPane* lpPane);
 			void SetStringA(ULONG i, const std::string& szMsg) const;
 			void SetStringW(ULONG i, const std::wstring& szMsg) const;
 			void SetStringf(ULONG i, LPCWSTR szMsg, ...) const;
@@ -64,7 +64,7 @@ namespace dialog
 			}
 
 			// Get values after we've done the DisplayDialog
-			viewpane::ViewPane* GetPane(ULONG iPane) const;
+			viewpane::ViewPane* GetPane(ULONG iControl) const;
 			std::wstring GetStringW(ULONG i) const;
 			_Check_return_ ULONG GetHex(ULONG i) const;
 			_Check_return_ ULONG GetDecimal(ULONG i) const;
@@ -187,6 +187,10 @@ namespace dialog
 			UINT m_uidActionButtonText2{};
 			UINT m_uidActionButtonText3{};
 
+			// So much of this class assumes this list of controls is in order by and matches
+			// the control number assigned to the view pane
+			// GetPane is a horrible offender - it accesses by index, not by control number
+			// HandleChange is also bad about this
 			std::vector<viewpane::ViewPane*> m_lpControls{}; // array of controls
 
 			bool m_bEnableScroll{};

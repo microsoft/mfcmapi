@@ -60,15 +60,15 @@ namespace dialog
 
 		_Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto iControl = CEditor::HandleChange(nID);
 
-			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
+			if (iControl == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
 			LPBYTE lpb = nullptr;
 			size_t cb = 0;
 			std::wstring szEncodeStr;
 			size_t cchEncodeStr = 0;
-			switch (i)
+			switch (iControl)
 			{
 			case HEXED_ANSI:
 			{
@@ -150,7 +150,7 @@ namespace dialog
 				break;
 			}
 
-			if (HEXED_SMARTVIEW != i)
+			if (HEXED_SMARTVIEW != iControl)
 			{
 				// length of base64 encoded string
 				auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(HEXED_BASE64));
@@ -172,7 +172,7 @@ namespace dialog
 			// Force the new layout
 			OnRecalcLayout();
 
-			return i;
+			return iControl;
 		}
 
 		void CHexEditor::UpdateParser() const

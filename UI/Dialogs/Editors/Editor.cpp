@@ -973,21 +973,22 @@ namespace dialog
 			m_lpControls.clear();
 		}
 
-		// TODO: Use iNum as a proper accessor name
-		void CEditor::InitPane(ULONG iNum, viewpane::ViewPane* lpPane)
+		void CEditor::InitPane(ULONG iControl, viewpane::ViewPane* lpPane)
 		{
 			if (!lpPane) return;
-			lpPane->SetControl(iNum);
+			lpPane->SetControl(iControl);
 			const auto listPane = dynamic_cast<viewpane::ListPane*>(lpPane);
-			if (listPane) m_ulListNum = iNum;
+			if (listPane) m_ulListNum = iControl;
 			m_lpControls.push_back(lpPane);
 		}
 
 		// TODO: Use iPane as a proper accessor name
-		viewpane::ViewPane* CEditor::GetPane(ULONG iPane) const
+		// Idea here is to return the pane where iControl matches ViewPane::m_iControl
+		// However, in practice, it's using iControl to index m_lpControls
+		viewpane::ViewPane* CEditor::GetPane(ULONG iControl) const
 		{
-			if (iPane < 0 || iPane >= m_lpControls.size()) return nullptr;
-			return m_lpControls[iPane];
+			if (iControl < 0 || iControl >= m_lpControls.size()) return nullptr;
+			return m_lpControls[iControl];
 		}
 
 		void CEditor::SetPromptPostFix(_In_ const std::wstring& szMsg)
@@ -1277,17 +1278,21 @@ namespace dialog
 			}
 		}
 
+		// Given a nID, looks through m_lpControls for a control with the same ID
+		// Uses MatchID to make a match
+		// Will ask panes if they have child panes that match - what they return is up to them
+		// For matches in m_lpControls, returns the index of the matching control.
 		_Check_return_ ULONG CEditor::HandleChange(UINT nID)
 		{
 			if (m_lpControls.empty()) return static_cast<ULONG>(-1);
-			for (ULONG i = 0; i < m_lpControls.size(); i++)
+			for (ULONG iControl = 0; iControl < m_lpControls.size(); iControl++)
 			{
-				auto pane = GetPane(i);
+				auto pane = GetPane(iControl);
 				if (!pane) continue;
 				// Either our change came from one of our top level controls/views
 				if (pane->MatchID(nID))
 				{
-					return i;
+					return iControl;
 				}
 
 				// Or the top level control/view has a control in it that can handle it

@@ -407,27 +407,27 @@ namespace dialog
 
 		_Check_return_ ULONG CMultiValuePropertyEditor::HandleChange(UINT nID)
 		{
-			auto i = static_cast<ULONG>(-1);
+			auto iControl = static_cast<ULONG>(-1);
 
 			// We check against the list pane first so we can track if it handled the change,
 			// because if it did, we're going to recalculate smart view.
 			auto lpPane = dynamic_cast<viewpane::ListPane*>(GetPane(0));
 			if (lpPane)
 			{
-				i = lpPane->HandleChange(nID);
+				iControl = lpPane->HandleChange(nID);
 			}
 
-			if (i == static_cast<ULONG>(-1))
+			if (iControl == static_cast<ULONG>(-1))
 			{
-				i = CEditor::HandleChange(nID);
+				iControl = CEditor::HandleChange(nID);
 			}
 
-			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
+			if (iControl == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
 			UpdateSmartView();
 			OnRecalcLayout();
 
-			return i;
+			return iControl;
 		}
 	}
 }

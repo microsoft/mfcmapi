@@ -50,22 +50,22 @@ namespace dialog
 
 		_Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto iControl = CEditor::HandleChange(nID);
 
-			if (i == 0)
+			if (iControl == 0)
 			{
 				SetStringW(1, interpretprop::InterpretFlags(flagRelop, GetHex(0)));
 			}
-			else if (i == 2)
+			else if (iControl == 2)
 			{
 				SetStringW(3, interpretprop::TagToString(GetPropTag(2), nullptr, false, true));
 			}
-			else if (i == 4)
+			else if (iControl == 4)
 			{
 				SetStringW(5, interpretprop::TagToString(GetPropTag(4), nullptr, false, true));
 			}
 
-			return i;
+			return iControl;
 		}
 
 		// This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
@@ -164,10 +164,10 @@ namespace dialog
 
 		_Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto iControl = CEditor::HandleChange(nID);
 
 			std::wstring szFlags;
-			if (i == 0)
+			if (iControl == 0)
 			{
 				if (RES_CONTENT == m_ulResType)
 				{
@@ -178,11 +178,11 @@ namespace dialog
 					SetStringW(1, interpretprop::InterpretFlags(flagRelop, GetHex(0)));
 				}
 			}
-			else if (i == 2)
+			else if (iControl == 2)
 			{
 				SetStringW(3, interpretprop::TagToString(GetPropTag(2), nullptr, false, true));
 			}
-			else if (i == 4)
+			else if (iControl == 4)
 			{
 				SetStringW(5, interpretprop::TagToString(GetPropTag(4), nullptr, false, true));
 				m_lpOldProp = nullptr;
@@ -191,7 +191,7 @@ namespace dialog
 				SetStringW(7, L"");
 			}
 
-			return i;
+			return iControl;
 		}
 
 		_Check_return_ LPSPropValue CResCombinedEditor::DetachModifiedSPropValue()
@@ -267,18 +267,18 @@ namespace dialog
 
 		_Check_return_ ULONG CResBitmaskEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto iControl = CEditor::HandleChange(nID);
 
-			if (i == 0)
+			if (iControl == 0)
 			{
 				SetStringW(1, interpretprop::InterpretFlags(flagBitmask, GetHex(0)));
 			}
-			else if (i == 2)
+			else if (iControl == 2)
 			{
 				SetStringW(3, interpretprop::TagToString(GetPropTag(2), nullptr, false, true));
 			}
 
-			return i;
+			return iControl;
 		}
 
 		static std::wstring SIZECLASS = L"CResSizeEditor"; // STRING_OK
@@ -315,18 +315,18 @@ namespace dialog
 
 		_Check_return_ ULONG CResSizeEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto iControl = CEditor::HandleChange(nID);
 
-			if (i == 0)
+			if (iControl == 0)
 			{
 				SetStringW(1, interpretprop::InterpretFlags(flagRelop, GetHex(0)));
 			}
-			else if (i == 2)
+			else if (iControl == 2)
 			{
 				SetStringW(3, interpretprop::TagToString(GetPropTag(2), nullptr, false, true));
 			}
 
-			return i;
+			return iControl;
 		}
 
 		static std::wstring EXISTCLASS = L"CResExistEditor"; // STRING_OK
@@ -354,14 +354,14 @@ namespace dialog
 
 		_Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto iControl = CEditor::HandleChange(nID);
 
-			if (i == 0)
+			if (iControl == 0)
 			{
 				SetStringW(1, interpretprop::TagToString(GetPropTag(0), nullptr, false, true));
 			}
 
-			return i;
+			return iControl;
 		}
 
 		// This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
@@ -422,14 +422,14 @@ namespace dialog
 
 		_Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto iControl = CEditor::HandleChange(nID);
 
-			if (i == 0)
+			if (iControl == 0)
 			{
 				SetStringW(1, interpretprop::TagToString(GetPropTag(0), nullptr, false, true));
 			}
 
-			return i;
+			return iControl;
 		}
 
 		_Check_return_ LPSRestriction CResSubResEditor::DetachModifiedSRestriction()
@@ -524,28 +524,28 @@ namespace dialog
 			case RES_AND:
 				InsertColumn(ulListNum, 1, IDS_SUBRESTRICTION);
 
-				for (ULONG i = 0; i < lpRes->res.resAnd.cRes; i++)
+				for (ULONG iControl = 0; iControl < lpRes->res.resAnd.cRes; iControl++)
 				{
-					lpData = InsertListRow(ulListNum, i, std::to_wstring(i));
+					lpData = InsertListRow(ulListNum, iControl, std::to_wstring(iControl));
 					if (lpData)
 					{
-						lpData->InitializeRes(&lpRes->res.resAnd.lpRes[i]);
+						lpData->InitializeRes(&lpRes->res.resAnd.lpRes[iControl]);
 						SetListString(
-							ulListNum, i, 1, interpretprop::RestrictionToString(&lpRes->res.resAnd.lpRes[i], nullptr));
+							ulListNum, iControl, 1, interpretprop::RestrictionToString(&lpRes->res.resAnd.lpRes[iControl], nullptr));
 					}
 				}
 				break;
 			case RES_OR:
 				InsertColumn(ulListNum, 1, IDS_SUBRESTRICTION);
 
-				for (ULONG i = 0; i < lpRes->res.resOr.cRes; i++)
+				for (ULONG iControl = 0; iControl < lpRes->res.resOr.cRes; iControl++)
 				{
-					lpData = InsertListRow(ulListNum, i, std::to_wstring(i));
+					lpData = InsertListRow(ulListNum, iControl, std::to_wstring(iControl));
 					if (lpData)
 					{
-						lpData->InitializeRes(&lpRes->res.resOr.lpRes[i]);
+						lpData->InitializeRes(&lpRes->res.resOr.lpRes[iControl]);
 						SetListString(
-							ulListNum, i, 1, interpretprop::RestrictionToString(&lpRes->res.resOr.lpRes[i], nullptr));
+							ulListNum, iControl, 1, interpretprop::RestrictionToString(&lpRes->res.resOr.lpRes[iControl], nullptr));
 					}
 				}
 				break;
@@ -580,20 +580,20 @@ namespace dialog
 			auto lpNewResArray = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * ulNewResCount, m_lpAllocParent);
 			if (lpNewResArray)
 			{
-				for (ULONG i = 0; i < ulNewResCount; i++)
+				for (ULONG iControl = 0; iControl < ulNewResCount; iControl++)
 				{
-					const auto lpData = GetListRowData(0, i);
+					const auto lpData = GetListRowData(0, iControl);
 					if (lpData && lpData->Res())
 					{
 						if (lpData->Res()->m_lpNewRes)
 						{
-							memcpy(&lpNewResArray[i], lpData->Res()->m_lpNewRes, sizeof(SRestriction));
+							memcpy(&lpNewResArray[iControl], lpData->Res()->m_lpNewRes, sizeof(SRestriction));
 							memset(lpData->Res()->m_lpNewRes, 0, sizeof(SRestriction));
 						}
 						else
 						{
 							EC_H_S(mapi::HrCopyRestrictionArray(
-								lpData->Res()->m_lpOldRes, m_lpAllocParent, 1, &lpNewResArray[i]));
+								lpData->Res()->m_lpOldRes, m_lpAllocParent, 1, &lpNewResArray[iControl]));
 						}
 					}
 				}
@@ -713,17 +713,17 @@ namespace dialog
 			InsertColumn(ulListNum, 2, IDS_VALUE);
 			InsertColumn(ulListNum, 3, IDS_ALTERNATEVIEW);
 
-			for (ULONG i = 0; i < cProps; i++)
+			for (ULONG iControl = 0; iControl < cProps; iControl++)
 			{
-				auto lpData = InsertListRow(ulListNum, i, std::to_wstring(i));
+				auto lpData = InsertListRow(ulListNum, iControl, std::to_wstring(iControl));
 				if (lpData)
 				{
-					lpData->InitializeComment(&lpProps[i]);
+					lpData->InitializeComment(&lpProps[iControl]);
 					SetListString(
-						ulListNum, i, 1, interpretprop::TagToString(lpProps[i].ulPropTag, nullptr, false, true));
-					interpretprop::InterpretProp(&lpProps[i], &szProp, &szAltProp);
-					SetListString(ulListNum, i, 2, szProp);
-					SetListString(ulListNum, i, 3, szAltProp);
+						ulListNum, iControl, 1, interpretprop::TagToString(lpProps[iControl].ulPropTag, nullptr, false, true));
+					interpretprop::InterpretProp(&lpProps[iControl], &szProp, &szAltProp);
+					SetListString(ulListNum, iControl, 2, szProp);
+					SetListString(ulListNum, iControl, 3, szAltProp);
 				}
 			}
 
@@ -808,15 +808,15 @@ namespace dialog
 					mapi::allocate<LPSPropValue>(sizeof(SPropValue) * ulNewCommentProp, m_lpAllocParent);
 				if (lpNewCommentProp)
 				{
-					for (ULONG i = 0; i < ulNewCommentProp; i++)
+					for (ULONG iControl = 0; iControl < ulNewCommentProp; iControl++)
 					{
-						const auto lpData = GetListRowData(0, i);
+						const auto lpData = GetListRowData(0, iControl);
 						if (lpData && lpData->Comment())
 						{
 							if (lpData->Comment()->m_lpNewProp)
 							{
 								EC_H_S(mapi::MyPropCopyMore(
-									&lpNewCommentProp[i],
+									&lpNewCommentProp[iControl],
 									lpData->Comment()->m_lpNewProp,
 									MAPIAllocateMore,
 									m_lpAllocParent));
@@ -824,7 +824,7 @@ namespace dialog
 							else
 							{
 								EC_H_S(mapi::MyPropCopyMore(
-									&lpNewCommentProp[i],
+									&lpNewCommentProp[iControl],
 									lpData->Comment()->m_lpOldProp,
 									MAPIAllocateMore,
 									m_lpAllocParent));
@@ -947,16 +947,16 @@ namespace dialog
 		// so I can react to it if I need to
 		_Check_return_ ULONG CRestrictEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto iControl = CEditor::HandleChange(nID);
 
 			// If the restriction type changed
-			if (i == 0)
+			if (iControl == 0)
 			{
-				if (!m_lpOutputRes) return i;
+				if (!m_lpOutputRes) return iControl;
 				const auto ulOldResType = m_lpOutputRes->rt;
-				const auto ulNewResType = GetHex(i);
+				const auto ulNewResType = GetHex(iControl);
 
-				if (ulOldResType == ulNewResType) return i;
+				if (ulOldResType == ulNewResType) return iControl;
 
 				SetStringW(1, interpretprop::InterpretFlags(flagRestrictionType, ulNewResType));
 
@@ -988,7 +988,7 @@ namespace dialog
 
 				SetStringW(2, interpretprop::RestrictionToString(m_lpOutputRes, nullptr));
 			}
-			return i;
+			return iControl;
 		}
 
 		void CRestrictEditor::OnEditAction1()
@@ -1303,14 +1303,14 @@ namespace dialog
 
 		_Check_return_ ULONG CCriteriaEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto iControl = CEditor::HandleChange(nID);
 
-			if (i == 2)
+			if (iControl == 2)
 			{
-				SetStringW(3, interpretprop::InterpretFlags(flagSearchFlag, GetHex(i)));
+				SetStringW(3, interpretprop::InterpretFlags(flagSearchFlag, GetHex(iControl)));
 			}
 
-			return i;
+			return iControl;
 		}
 
 		// Whoever gets this MUST MAPIFreeBuffer
@@ -1342,17 +1342,17 @@ namespace dialog
 
 			if (lpEntryList)
 			{
-				for (ULONG i = 0; i < lpEntryList->cValues; i++)
+				for (ULONG iControl = 0; iControl < lpEntryList->cValues; iControl++)
 				{
-					auto lpData = InsertListRow(ulListNum, i, std::to_wstring(i));
+					auto lpData = InsertListRow(ulListNum, iControl, std::to_wstring(iControl));
 					if (lpData)
 					{
-						lpData->InitializeBinary(&lpEntryList->lpbin[i]);
+						lpData->InitializeBinary(&lpEntryList->lpbin[iControl]);
 					}
 
-					SetListString(ulListNum, i, 1, std::to_wstring(lpEntryList->lpbin[i].cb));
-					SetListString(ulListNum, i, 2, strings::BinToHexString(&lpEntryList->lpbin[i], false));
-					SetListString(ulListNum, i, 3, strings::BinToTextString(&lpEntryList->lpbin[i], true));
+					SetListString(ulListNum, iControl, 1, std::to_wstring(lpEntryList->lpbin[iControl].cb));
+					SetListString(ulListNum, iControl, 2, strings::BinToHexString(&lpEntryList->lpbin[iControl], false));
+					SetListString(ulListNum, iControl, 3, strings::BinToTextString(&lpEntryList->lpbin[iControl], true));
 					if (lpData) lpData->bItemFullyLoaded = true;
 				}
 			}
@@ -1434,28 +1434,28 @@ namespace dialog
 				m_lpNewEntryList->lpbin =
 					mapi::allocate<LPSBinary>(m_lpNewEntryList->cValues * sizeof(SBinary), m_lpNewEntryList);
 
-				for (ULONG i = 0; i < m_lpNewEntryList->cValues; i++)
+				for (ULONG iControl = 0; iControl < m_lpNewEntryList->cValues; iControl++)
 				{
-					const auto lpData = GetListRowData(LISTNUM, i);
+					const auto lpData = GetListRowData(LISTNUM, iControl);
 					if (lpData && lpData->Binary())
 					{
 						if (lpData->Binary()->m_NewBin.lpb)
 						{
-							m_lpNewEntryList->lpbin[i].cb = lpData->Binary()->m_NewBin.cb;
-							m_lpNewEntryList->lpbin[i].lpb = lpData->Binary()->m_NewBin.lpb;
+							m_lpNewEntryList->lpbin[iControl].cb = lpData->Binary()->m_NewBin.cb;
+							m_lpNewEntryList->lpbin[iControl].lpb = lpData->Binary()->m_NewBin.lpb;
 							// clean out the source
 							lpData->Binary()->m_OldBin.lpb = nullptr;
 						}
 						else
 						{
-							m_lpNewEntryList->lpbin[i].cb = lpData->Binary()->m_OldBin.cb;
-							m_lpNewEntryList->lpbin[i].lpb =
-								mapi::allocate<LPBYTE>(m_lpNewEntryList->lpbin[i].cb, m_lpNewEntryList);
+							m_lpNewEntryList->lpbin[iControl].cb = lpData->Binary()->m_OldBin.cb;
+							m_lpNewEntryList->lpbin[iControl].lpb =
+								mapi::allocate<LPBYTE>(m_lpNewEntryList->lpbin[iControl].cb, m_lpNewEntryList);
 
 							memcpy(
-								m_lpNewEntryList->lpbin[i].lpb,
+								m_lpNewEntryList->lpbin[iControl].lpb,
 								lpData->Binary()->m_OldBin.lpb,
-								m_lpNewEntryList->lpbin[i].cb);
+								m_lpNewEntryList->lpbin[iControl].cb);
 						}
 					}
 				}

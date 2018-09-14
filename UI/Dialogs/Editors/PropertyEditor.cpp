@@ -603,9 +603,9 @@ namespace dialog
 
 		_Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto iControl = CEditor::HandleChange(nID);
 
-			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
+			if (iControl == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
 			std::wstring szTmpString;
 			std::wstring szTemp1;
@@ -631,13 +631,13 @@ namespace dialog
 			switch (PROP_TYPE(m_ulPropTag))
 			{
 			case PT_I2: // signed 16 bit
-				szTmpString = GetStringW(i);
-				if (i == 0)
+				szTmpString = GetStringW(iControl);
+				if (iControl == 0)
 				{
 					iVal = static_cast<short int>(strings::wstringToLong(szTmpString, 10));
 					SetHex(1, iVal);
 				}
-				else if (i == 1)
+				else if (iControl == 1)
 				{
 					lVal = static_cast<short int>(strings::wstringToLong(szTmpString, 16));
 					SetDecimal(0, lVal);
@@ -653,13 +653,13 @@ namespace dialog
 
 				break;
 			case PT_LONG: // unsigned 32 bit
-				szTmpString = GetStringW(i);
-				if (i == 0)
+				szTmpString = GetStringW(iControl);
+				if (iControl == 0)
 				{
 					lVal = static_cast<LONG>(strings::wstringToUlong(szTmpString, 10));
 					SetHex(1, lVal);
 				}
-				else if (i == 1)
+				else if (iControl == 1)
 				{
 					lVal = static_cast<LONG>(strings::wstringToUlong(szTmpString, 16));
 					SetStringf(0, L"%d", lVal); // STRING_OK
@@ -675,7 +675,7 @@ namespace dialog
 
 				break;
 			case PT_CURRENCY:
-				if (i == 0 || i == 1)
+				if (iControl == 0 || iControl == 1)
 				{
 					szTmpString = GetStringW(0);
 					curVal.Hi = strings::wstringToUlong(szTmpString, 16);
@@ -683,9 +683,9 @@ namespace dialog
 					curVal.Lo = strings::wstringToUlong(szTmpString, 16);
 					SetStringW(2, strings::CurrencyToString(curVal));
 				}
-				else if (i == 2)
+				else if (iControl == 2)
 				{
-					szTmpString = GetStringW(i);
+					szTmpString = GetStringW(iControl);
 					szTmpString = strings::StripCharacter(szTmpString, L'.');
 					curVal.int64 = strings::wstringToInt64(szTmpString);
 					SetHex(0, static_cast<int>(curVal.Hi));
@@ -694,7 +694,7 @@ namespace dialog
 
 				break;
 			case PT_I8:
-				if (i == 0 || i == 1)
+				if (iControl == 0 || iControl == 1)
 				{
 					szTmpString = GetStringW(0);
 					liVal.HighPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16));
@@ -702,9 +702,9 @@ namespace dialog
 					liVal.LowPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16));
 					SetStringf(2, L"%I64d", liVal.QuadPart); // STRING_OK
 				}
-				else if (i == 2)
+				else if (iControl == 2)
 				{
-					szTmpString = GetStringW(i);
+					szTmpString = GetStringW(iControl);
 					liVal.QuadPart = strings::wstringToInt64(szTmpString);
 					SetHex(0, static_cast<int>(liVal.HighPart));
 					SetHex(1, static_cast<int>(liVal.LowPart));
@@ -729,14 +729,14 @@ namespace dialog
 				SetStringW(2, szTemp1);
 				break;
 			case PT_BINARY:
-				if (i == 0 || i == 2)
+				if (iControl == 0 || iControl == 2)
 				{
 					bin = GetBinary(0);
-					if (i == 0) SetStringA(1, std::string(LPCSTR(bin.data()), bin.size())); // ansi string
+					if (iControl == 0) SetStringA(1, std::string(LPCSTR(bin.data()), bin.size())); // ansi string
 					Bin.lpb = bin.data();
 					Bin.cb = ULONG(bin.size());
 				}
-				else if (i == 1)
+				else if (iControl == 1)
 				{
 					lpszA = GetStringA(1); // Do not free this
 					Bin.lpb = LPBYTE(lpszA.c_str());
@@ -754,7 +754,7 @@ namespace dialog
 				if (m_lpSmartView) m_lpSmartView->Parse(Bin);
 				break;
 			case PT_STRING8:
-				if (i == 0)
+				if (iControl == 0)
 				{
 					size_t cbStr = 0;
 					lpszA = GetStringA(0);
@@ -773,7 +773,7 @@ namespace dialog
 					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
 					if (lpPane) lpPane->SetCount(cbStr);
 				}
-				else if (i == 1)
+				else if (iControl == 1)
 				{
 					bin = GetBinary(1);
 
@@ -788,7 +788,7 @@ namespace dialog
 
 				break;
 			case PT_UNICODE:
-				if (i == 0)
+				if (iControl == 0)
 				{
 					lpszW = GetStringW(0);
 
@@ -806,7 +806,7 @@ namespace dialog
 					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
 					if (lpPane) lpPane->SetCount(lpszW.length());
 				}
-				else if (i == 1)
+				else if (iControl == 1)
 				{
 					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
 					bin = GetBinary(1);
@@ -831,7 +831,7 @@ namespace dialog
 			}
 
 			OnRecalcLayout();
-			return i;
+			return iControl;
 		}
 	}
 }
