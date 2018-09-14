@@ -982,13 +982,20 @@ namespace dialog
 			m_lpControls.push_back(lpPane);
 		}
 
-		// TODO: Use iPane as a proper accessor name
-		// Idea here is to return the pane where iControl matches ViewPane::m_iControl
-		// However, in practice, it's using iControl to index m_lpControls
+		// Returns the first pane with a matching iControl.
+		// Container panes may return a sub pane.
 		viewpane::ViewPane* CEditor::GetPane(ULONG iControl) const
 		{
-			if (iControl < 0 || iControl >= m_lpControls.size()) return nullptr;
-			return m_lpControls[iControl];
+			for (const auto& pane : m_lpControls)
+			{
+				if (pane)
+				{
+					auto match = pane->GetControl(iControl);
+					if (match) return match;
+				}
+			}
+
+			return nullptr;
 		}
 
 		void CEditor::SetPromptPostFix(_In_ const std::wstring& szMsg)

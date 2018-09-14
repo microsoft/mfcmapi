@@ -187,10 +187,9 @@ namespace dialog
 			UINT m_uidActionButtonText2{};
 			UINT m_uidActionButtonText3{};
 
-			// So much of this class assumes this list of controls is in order by and matches
+			// Much of this class assumes this list of controls is in order by and matches
 			// the control number assigned to the view pane
-			// GetPane is a horrible offender - it accesses by index, not by control number
-			// HandleChange is also bad about this
+			// HandleChange is bad about this
 			std::vector<viewpane::ViewPane*> m_lpControls{}; // array of controls
 
 			bool m_bEnableScroll{};

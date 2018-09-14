@@ -31,6 +31,8 @@ namespace viewpane
 		bool MatchID(UINT nID) const;
 		virtual void UpdateButtons();
 		void SetControl(int iControl) { m_iControl = iControl; }
+		// Return a pane with a matching control #. Can be overriden to allow container panes to return subpanes.
+		virtual ViewPane* GetControl(int iControl) { return m_iControl == iControl ? this : nullptr; }
 
 	protected:
 		int m_iControl{-1}; // Number of the view pane in the view - used for callbacks and layout
