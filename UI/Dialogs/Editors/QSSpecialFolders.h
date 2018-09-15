@@ -6,6 +6,6 @@ namespace dialog
 
 	namespace editor
 	{
-		void OnQSCheckSpecialFolders(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd);
+		void OnQSCheckSpecialFolders(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd);
 	}
 }

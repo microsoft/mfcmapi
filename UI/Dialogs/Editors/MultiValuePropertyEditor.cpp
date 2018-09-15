@@ -86,11 +86,12 @@ namespace dialog
 
 		void CMultiValuePropertyEditor::InitPropertyControls()
 		{
-			InitPane(0, viewpane::ListPane::Create(IDS_PROPVALUES, false, false, ListEditCallBack(this)));
+			AddPane(viewpane::ListPane::Create(0, IDS_PROPVALUES, false, false, ListEditCallBack(this)));
+			SetListID(0);
 			if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag) || PT_MV_LONG == PROP_TYPE(m_ulPropTag))
 			{
-				auto lpPane = viewpane::SmartViewPane::Create(IDS_SMARTVIEW);
-				InitPane(1, lpPane);
+				auto lpPane = viewpane::SmartViewPane::Create(1, IDS_SMARTVIEW);
+				AddPane(lpPane);
 
 				if (lpPane && PT_MV_LONG == PROP_TYPE(m_ulPropTag))
 				{
@@ -123,7 +124,7 @@ namespace dialog
 				{
 					lpData->InitializeMV(m_lpsInputValue, iMVCount);
 
-					SPropValue sProp = {0};
+					auto sProp = SPropValue{};
 					sProp.ulPropTag =
 						CHANGE_PROP_TYPE(m_lpsInputValue->ulPropTag, PROP_TYPE(m_lpsInputValue->ulPropTag) & ~MV_FLAG);
 					sProp.Value = lpData->MV()->m_val;
@@ -287,14 +288,14 @@ namespace dialog
 
 			LPSPropProblemArray lpProblemArray = nullptr;
 
-			auto hRes = EC_MAPI(m_lpMAPIProp->SetProps(1, m_lpsOutputValue, &lpProblemArray));
+			const auto hRes = EC_MAPI(m_lpMAPIProp->SetProps(1, m_lpsOutputValue, &lpProblemArray));
 
 			EC_PROBLEMARRAY(lpProblemArray);
 			MAPIFreeBuffer(lpProblemArray);
 
 			if (SUCCEEDED(hRes))
 			{
-				hRes = EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+				EC_MAPI_S(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 			}
 		}
 
@@ -317,13 +318,13 @@ namespace dialog
 				lpData->InitializeMV(nullptr);
 			}
 
-			SPropValue tmpPropVal = {0};
+			SPropValue tmpPropVal = {};
 			// Strip off MV_FLAG since we're displaying only a row
 			tmpPropVal.ulPropTag = m_ulPropTag & ~MV_FLAG;
 			tmpPropVal.Value = lpData->MV()->m_val;
 
 			LPSPropValue lpNewValue = nullptr;
-			auto hRes = WC_H(DisplayPropertyEditor(
+			const auto hRes = WC_H(DisplayPropertyEditor(
 				this,
 				IDS_EDITROW,
 				NULL,
@@ -373,7 +374,7 @@ namespace dialog
 			auto lpPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
 			if (lpPane)
 			{
-				auto lpsProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
+				const auto lpsProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 				if (lpsProp)
 				{
 					WriteMultiValueStringsToSPropValue(static_cast<LPVOID>(lpsProp), lpsProp);
@@ -407,27 +408,27 @@ namespace dialog
 
 		_Check_return_ ULONG CMultiValuePropertyEditor::HandleChange(UINT nID)
 		{
-			auto i = static_cast<ULONG>(-1);
+			auto paneID = static_cast<ULONG>(-1);
 
 			// We check against the list pane first so we can track if it handled the change,
 			// because if it did, we're going to recalculate smart view.
 			auto lpPane = dynamic_cast<viewpane::ListPane*>(GetPane(0));
 			if (lpPane)
 			{
-				i = lpPane->HandleChange(nID);
+				paneID = lpPane->HandleChange(nID);
 			}
 
-			if (i == static_cast<ULONG>(-1))
+			if (paneID == static_cast<ULONG>(-1))
 			{
-				i = CEditor::HandleChange(nID);
+				paneID = CEditor::HandleChange(nID);
 			}
 
-			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
+			if (paneID == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
 			UpdateSmartView();
 			OnRecalcLayout();
 
-			return i;
+			return paneID;
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog

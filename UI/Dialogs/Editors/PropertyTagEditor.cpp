@@ -48,18 +48,18 @@ namespace dialog
 
 			if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-			InitPane(PROPTAG_TAG, viewpane::TextPane::CreateSingleLinePane(IDS_PROPTAG, false));
-			InitPane(PROPTAG_ID, viewpane::TextPane::CreateSingleLinePane(IDS_PROPID, false));
-			InitPane(PROPTAG_TYPE, viewpane::DropDownPane::Create(IDS_PROPTYPE, 0, nullptr, false));
-			InitPane(PROPTAG_NAME, viewpane::TextPane::CreateSingleLinePane(IDS_PROPNAME, true));
-			InitPane(PROPTAG_TYPESTRING, viewpane::TextPane::CreateSingleLinePane(IDS_PROPTYPE, true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(PROPTAG_TAG, IDS_PROPTAG, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(PROPTAG_ID, IDS_PROPID, false));
+			AddPane(viewpane::DropDownPane::Create(PROPTAG_TYPE, IDS_PROPTYPE, 0, nullptr, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(PROPTAG_NAME, IDS_PROPNAME, true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(PROPTAG_TYPESTRING, IDS_PROPTYPE, true));
 
 			// Map named properties if we can, but not for Address Books
 			if (m_lpMAPIProp && !m_bIsAB)
 			{
-				InitPane(PROPTAG_NAMEPROPKIND, viewpane::DropDownPane::Create(IDS_NAMEPROPKIND, 0, nullptr, true));
-				InitPane(PROPTAG_NAMEPROPNAME, viewpane::TextPane::CreateSingleLinePane(IDS_NAMEPROPNAME, false));
-				InitPane(PROPTAG_NAMEPROPGUID, viewpane::DropDownPane::CreateGuid(IDS_NAMEPROPGUID, false));
+				AddPane(viewpane::DropDownPane::Create(PROPTAG_NAMEPROPKIND, IDS_NAMEPROPKIND, 0, nullptr, true));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(PROPTAG_NAMEPROPNAME, IDS_NAMEPROPNAME, false));
+				AddPane(viewpane::DropDownPane::CreateGuid(PROPTAG_NAMEPROPGUID, IDS_NAMEPROPGUID, false));
 			}
 
 			// initialize our dropdowns here
@@ -192,7 +192,7 @@ namespace dialog
 			if (NamedID.lpguid && (MNID_ID == NamedID.ulKind && NamedID.Kind.lID ||
 								   MNID_STRING == NamedID.ulKind && NamedID.Kind.lpwstrName))
 			{
-				auto lpNamedPropTags = cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0);
+				const auto lpNamedPropTags = cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0);
 				if (lpNamedPropTags)
 				{
 					m_ulPropTag = CHANGE_PROP_TYPE(lpNamedPropTags->aulPropTag[0], ulPropType);
@@ -219,11 +219,11 @@ namespace dialog
 
 		_Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
-			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
+			if (paneID == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
-			switch (i)
+			switch (paneID)
 			{
 			case PROPTAG_TAG: // Prop tag changed
 				m_ulPropTag = GetPropTag(PROPTAG_TAG);
@@ -246,15 +246,15 @@ namespace dialog
 			case PROPTAG_NAMEPROPKIND:
 			case PROPTAG_NAMEPROPNAME:
 			case PROPTAG_NAMEPROPGUID:
-				LookupNamedProp(i, false);
+				LookupNamedProp(paneID, false);
 				break;
 			default:
-				return i;
+				return paneID;
 			}
 
-			PopulateFields(i);
+			PopulateFields(paneID);
 
-			return i;
+			return paneID;
 		}
 
 		// Fill out the fields in the form
@@ -300,7 +300,7 @@ namespace dialog
 				lpTagArray->cValues = 1;
 				lpTagArray->aulPropTag[0] = m_ulPropTag;
 
-				auto hRes = WC_H_GETPROPS(
+				const auto hRes = WC_H_GETPROPS(
 					cache::GetNamesFromIDs(m_lpMAPIProp, &lpTagArray, NULL, NULL, &ulPropNames, &lppPropNames));
 				if (SUCCEEDED(hRes) && ulPropNames == lpTagArray->cValues && lppPropNames && lppPropNames[0])
 				{
@@ -351,9 +351,9 @@ namespace dialog
 			}
 		}
 
-		_Check_return_ std::wstring CPropertyTagEditor::GetDropStringUseControl(ULONG iControl) const
+		_Check_return_ std::wstring CPropertyTagEditor::GetDropStringUseControl(ULONG id) const
 		{
-			const auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(iControl));
+			const auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
 			if (lpPane)
 			{
 				return lpPane->GetDropStringUseControl();
@@ -362,9 +362,9 @@ namespace dialog
 			return strings::emptystring;
 		}
 
-		_Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG iControl) const
+		_Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG id) const
 		{
-			const auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(iControl));
+			const auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
 			if (lpPane)
 			{
 				return lpPane->GetDropDownSelection();
@@ -373,13 +373,13 @@ namespace dialog
 			return CB_ERR;
 		}
 
-		void CPropertyTagEditor::InsertDropString(ULONG iControl, int iRow, _In_ const std::wstring& szText) const
+		void CPropertyTagEditor::InsertDropString(ULONG id, int iRow, _In_ const std::wstring& szText) const
 		{
-			auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(iControl));
+			auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
 			if (lpPane)
 			{
 				lpPane->InsertDropString(szText, iRow);
 			}
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog

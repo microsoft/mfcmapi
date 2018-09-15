@@ -7,30 +7,35 @@ namespace viewpane
 {
 	static std::wstring CLASS = L"TextPane";
 
-	TextPane* TextPane::CreateMultiLinePane(UINT uidLabel, bool bReadOnly)
+	TextPane* TextPane::CreateMultiLinePane(int paneID, UINT uidLabel, bool bReadOnly)
 	{
-		return CreateSingleLinePane(uidLabel, bReadOnly, true);
+		return CreateSingleLinePane(paneID, uidLabel, bReadOnly, true);
 	}
 
-	TextPane* TextPane::CreateMultiLinePane(UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly)
+	TextPane* TextPane::CreateMultiLinePane(int paneID, UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly)
 	{
-		return CreateSingleLinePane(uidLabel, szVal, bReadOnly, true);
+		return CreateSingleLinePane(paneID, uidLabel, szVal, bReadOnly, true);
 	}
 
-	TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine)
+	TextPane* TextPane::CreateSingleLinePane(int paneID, UINT uidLabel, bool bReadOnly, bool bMultiLine)
 	{
 		auto lpPane = new (std::nothrow) TextPane();
 		if (lpPane)
 		{
 			lpPane->m_bMultiline = bMultiLine;
 			lpPane->SetLabel(uidLabel, bReadOnly);
+			lpPane->m_paneID = paneID;
 		}
 
 		return lpPane;
 	}
 
-	TextPane*
-	TextPane::CreateSingleLinePane(UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly, bool bMultiLine)
+	TextPane* TextPane::CreateSingleLinePane(
+		int paneID,
+		UINT uidLabel,
+		_In_ const std::wstring& szVal,
+		bool bReadOnly,
+		bool bMultiLine)
 	{
 		auto lpPane = new (std::nothrow) TextPane();
 		if (lpPane)
@@ -38,12 +43,13 @@ namespace viewpane
 			lpPane->m_bMultiline = bMultiLine;
 			lpPane->SetLabel(uidLabel, bReadOnly);
 			lpPane->SetStringW(szVal);
+			lpPane->m_paneID = paneID;
 		}
 
 		return lpPane;
 	}
 
-	TextPane* TextPane::CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly)
+	TextPane* TextPane::CreateSingleLinePaneID(int paneID, UINT uidLabel, UINT uidVal, bool bReadOnly)
 	{
 		auto lpPane = new (std::nothrow) TextPane();
 
@@ -51,12 +57,13 @@ namespace viewpane
 		{
 			lpPane->SetLabel(uidLabel, bReadOnly);
 			lpPane->SetStringW(strings::loadstring(uidVal));
+			lpPane->m_paneID = paneID;
 		}
 
 		return lpPane;
 	}
 
-	TextPane* TextPane::CreateCollapsibleTextPane(UINT uidLabel, bool bReadOnly)
+	TextPane* TextPane::CreateCollapsibleTextPane(int paneID, UINT uidLabel, bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) TextPane();
 		if (pane)
@@ -64,6 +71,7 @@ namespace viewpane
 			pane->SetMultiline();
 			pane->SetLabel(uidLabel, bReadOnly);
 			pane->m_bCollapsible = true;
+			pane->m_paneID = paneID;
 		}
 
 		return pane;
@@ -118,7 +126,7 @@ namespace viewpane
 	int TextPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
-		if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
+		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
 		if (m_bCollapsible)
 		{
@@ -162,10 +170,10 @@ namespace viewpane
 		return 0;
 	}
 
-	void TextPane::SetWindowPos(int x, int y, int width, int height)
+	void TextPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
 		auto iVariableHeight = height - GetFixedHeight();
-		if (0 != m_iControl)
+		if (0 != m_paneID)
 		{
 			y += m_iSmallHeightMargin;
 			height -= m_iSmallHeightMargin;
@@ -173,7 +181,7 @@ namespace viewpane
 
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
 		EC_B_S(m_EditBox.ShowWindow(cmdShow));
-		ViewPane::SetWindowPos(x, y, width, height);
+		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
 
 		if (m_bCollapsible)
 		{
@@ -190,12 +198,20 @@ namespace viewpane
 			height -= m_iSmallHeightMargin; // This is the bottom margin
 		}
 
-		EC_B_S(m_EditBox.SetWindowPos(NULL, x, y, width, m_bCollapsible ? iVariableHeight : height, SWP_NOZORDER));
+		EC_B_S(::DeferWindowPos(
+			hWinPosInfo,
+			m_EditBox.GetSafeHwnd(),
+			nullptr,
+			x,
+			y,
+			width,
+			m_bCollapsible ? iVariableHeight : height,
+			SWP_NOZORDER));
 	}
 
-	void TextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
+	void TextPane::Initialize(_In_ CWnd* pParent, _In_ HDC /*hdc*/)
 	{
-		ViewPane::Initialize(iControl, pParent, nullptr);
+		ViewPane::Initialize(pParent, nullptr);
 
 		EC_B_S(m_EditBox.Create(
 			WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_BORDER | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL |
@@ -318,7 +334,7 @@ namespace viewpane
 
 	void TextPane::SetReadOnly()
 	{
-		m_EditBox.SetBackgroundColor(false, ui::MyGetSysColor(ui::cBackgroundReadOnly));
+		m_EditBox.SetBackgroundColor(false, MyGetSysColor(ui::cBackgroundReadOnly));
 		m_EditBox.SetReadOnly();
 	}
 
@@ -333,19 +349,17 @@ namespace viewpane
 	std::wstring TextPane::GetUIValue() const
 	{
 		std::wstring value;
-		GETTEXTLENGTHEX getTextLength = {0};
-		getTextLength.flags = GTL_PRECISE | GTL_NUMCHARS;
-		getTextLength.codepage = 1200;
+		auto getTextLength = GETTEXTLENGTHEX{GTL_PRECISE | GTL_NUMCHARS, 1200}; // 1200 for Unicode
 
-		auto cchText = static_cast<size_t>(::SendMessage(
-			m_EditBox.m_hWnd, EM_GETTEXTLENGTHEX, reinterpret_cast<WPARAM>(&getTextLength), static_cast<LPARAM>(0)));
-		if (E_INVALIDARG == cchText)
+		auto lResult = ::SendMessage(
+			m_EditBox.m_hWnd, EM_GETTEXTLENGTHEX, reinterpret_cast<WPARAM>(&getTextLength), static_cast<LPARAM>(0));
+		if (lResult == E_INVALIDARG)
 		{
 			// We didn't get a length - try another method
-			cchText = static_cast<size_t>(
-				::SendMessage(m_EditBox.m_hWnd, WM_GETTEXTLENGTH, static_cast<WPARAM>(0), static_cast<LPARAM>(0)));
+			lResult = ::SendMessage(m_EditBox.m_hWnd, WM_GETTEXTLENGTH, static_cast<WPARAM>(0), static_cast<LPARAM>(0));
 		}
 
+		const auto cchText = static_cast<size_t>(lResult);
 		if (cchText)
 		{
 			// Allocate a buffer large enough for either kind of string, along with a null terminator
@@ -354,7 +368,7 @@ namespace viewpane
 			auto buffer = new (std::nothrow) BYTE[cbBuffer];
 			if (buffer)
 			{
-				GETTEXTEX getText = {0};
+				GETTEXTEX getText = {};
 				getText.cb = DWORD(cbBuffer);
 				getText.flags = GT_DEFAULT;
 				getText.codepage = 1200;
@@ -419,7 +433,7 @@ namespace viewpane
 		if (bin.data() != nullptr)
 		{
 			ULONG cbWritten = 0;
-			auto hRes = EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
+			const auto hRes = EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 			output::DebugPrintEx(
 				DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
 
@@ -431,4 +445,4 @@ namespace viewpane
 	}
 
 	void TextPane::ShowWindow(int nCmdShow) { m_EditBox.ShowWindow(nCmdShow); }
-}
+} // namespace viewpane

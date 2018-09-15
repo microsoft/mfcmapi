@@ -14,15 +14,11 @@ namespace dialog
 	{
 		static std::wstring CLASS = L"CEditor";
 
-#define NOLIST 0XFFFFFFFF
-
 #define MAX_WIDTH 1750
 
 		// After we compute dialog size minimums, when actually set an initial size, we won't go smaller than this
 #define MIN_WIDTH 600
 #define MIN_HEIGHT 350
-
-#define INVALIDRANGE(iVal) ((iVal) >= m_lpControls.size())
 
 #define LINES_SCROLL 12
 
@@ -63,8 +59,6 @@ namespace dialog
 			UINT uidActionButtonText3)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
-
-			m_ulListNum = NOLIST;
 
 			m_bEnableScroll = false;
 			m_hWndVertScroll = nullptr;
@@ -121,7 +115,7 @@ namespace dialog
 		CEditor::~CEditor()
 		{
 			TRACE_DESTRUCTOR(CLASS);
-			DeleteControls();
+			DeletePanes();
 		}
 
 		BEGIN_MESSAGE_MAP(CEditor, CMyDialog)
@@ -137,8 +131,8 @@ namespace dialog
 			case WM_HELP:
 				DisplayAboutDlg(this);
 				return true;
-				// I can handle notify messages for my child list control since I am the parent window
-				// This makes it easy for me to customize the child control to do what I want
+				// I can handle notify messages for my child list pane since I am the parent window
+				// This makes it easy for me to customize the child pane to do what I want
 			case WM_NOTIFY:
 			{
 				const auto pHdr = reinterpret_cast<LPNMHDR>(lParam);
@@ -147,7 +141,7 @@ namespace dialog
 				{
 				case NM_DBLCLK:
 				case NM_RETURN:
-					auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(m_ulListNum));
+					auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(m_listID));
 					if (pane)
 					{
 						(void) pane->HandleChange(IDD_LISTEDIT);
@@ -190,9 +184,9 @@ namespace dialog
 			}
 			case WM_ERASEBKGND:
 			{
-				RECT rect = {0};
+				auto rect = RECT{};
 				::GetClientRect(m_hWnd, &rect);
-				const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), ui::GetSysBrush(ui::cBackground));
+				const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(ui::cBackground));
 				const auto bRet = PatBlt(
 					reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
 				SelectObject(reinterpret_cast<HDC>(wParam), hOld);
@@ -222,7 +216,7 @@ namespace dialog
 			{
 				const auto wScrollType = LOWORD(wParam);
 				const auto hWndScroll = reinterpret_cast<HWND>(lParam);
-				SCROLLINFO si = {0};
+				auto si = SCROLLINFO{};
 
 				si.cbSize = sizeof si;
 				si.fMask = SIF_ALL;
@@ -286,10 +280,9 @@ namespace dialog
 		// AddIn functions
 		void CEditor::SetAddInTitle(const std::wstring& szTitle) { m_szAddInTitle = szTitle; }
 
-		void CEditor::SetAddInLabel(ULONG i, const std::wstring& szLabel) const
+		void CEditor::SetAddInLabel(ULONG id, const std::wstring& szLabel) const
 		{
-			if (INVALIDRANGE(i)) return;
-			auto pane = GetPane(i);
+			auto pane = GetPane(id);
 			if (pane) pane->SetAddInLabel(szLabel);
 		}
 
@@ -323,7 +316,7 @@ namespace dialog
 			const auto bRet = CMyDialog::OnInitDialog();
 
 			m_szTitle = szPostfix + m_szAddInTitle;
-			::SetWindowTextW(m_hWnd, m_szTitle.c_str());
+			SetWindowTextW(m_hWnd, m_szTitle.c_str());
 
 			SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
@@ -346,7 +339,7 @@ namespace dialog
 					CRect(0, 0, 0, 0),
 					this,
 					IDC_PROMPT));
-				::SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
+				SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
 
 				ui::SubclassLabel(m_Prompt.m_hWnd);
 			}
@@ -387,12 +380,11 @@ namespace dialog
 			}
 
 			SetMargins(); // Not all margins have been computed yet, but some have and we can use them during Initialize
-			for (ULONG i = 0; i < m_lpControls.size(); i++)
+			for (const auto& pane : m_Panes)
 			{
-				auto pane = GetPane(i);
 				if (pane)
 				{
-					pane->Initialize(i, pParent, hdc);
+					pane->Initialize(pParent, hdc);
 				}
 			}
 
@@ -486,7 +478,7 @@ namespace dialog
 		void CEditor::OnOK()
 		{
 			// save data from the UI back into variables that we can query later
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
@@ -498,15 +490,15 @@ namespace dialog
 		}
 
 		// This should work whether the editor is active/displayed or not
-		GUID CEditor::GetSelectedGUID(ULONG iControl, bool bByteSwapped) const
+		GUID CEditor::GetSelectedGUID(ULONG id, bool bByteSwapped) const
 		{
-			const auto pane = dynamic_cast<viewpane::DropDownPane*>(GetPane(iControl));
+			const auto pane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetSelectedGUID(bByteSwapped);
 			}
 
-			return {0};
+			return {};
 		}
 
 		// Display a dialog
@@ -514,7 +506,7 @@ namespace dialog
 		// Any errors will be logged and do not need to be bubbled up.
 		_Check_return_ bool CEditor::DisplayDialog()
 		{
-			auto iDlgRet = EC_D_DIALOG(DoModal());
+			const auto iDlgRet = EC_D_DIALOG(DoModal());
 			switch (iDlgRet)
 			{
 			case IDOK:
@@ -533,7 +525,7 @@ namespace dialog
 		// Push current margin settings to the view panes
 		void CEditor::SetMargins() const
 		{
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
@@ -569,7 +561,7 @@ namespace dialog
 					const auto szLine = new TCHAR[len + 1];
 					memset(szLine, 0, len + 1);
 
-					lpPrompt->GetLine(i, szLine, len);
+					(void) lpPrompt->GetLine(i, szLine, len);
 
 					int iWidth = LOWORD(::GetTabbedTextExtent(hdc, szLine, len, 0, nullptr));
 					delete[] szLine;
@@ -602,8 +594,6 @@ namespace dialog
 		// Good is defined as big enough to display all elements at a minimum size, including title
 		_Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 		{
-			SIZE sArea = {0};
-
 			// Figure a good width (cx)
 			auto cx = 0;
 
@@ -618,7 +608,7 @@ namespace dialog
 
 			SetMargins();
 			// width
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
@@ -641,8 +631,8 @@ namespace dialog
 			cx = max(cx, (int) (m_cButtons * m_iButtonWidth + m_iMargin * (m_cButtons - 1)));
 			output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea buttons->%d \n", cx);
 
-			// cx now contains the width of the widest prompt string or control
-			// Add a margin around that to frame our controls in the client area:
+			// cx now contains the width of the widest prompt string or pane
+			// Add a margin around that to frame our panes in the client area:
 			cx += 2 * m_iSideMargin;
 			output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea +m_iSideMargin->%d \n", cx);
 
@@ -656,31 +646,29 @@ namespace dialog
 			auto cy = 2 * m_iMargin; // margins top and bottom
 			cy += iPromptLineCount * m_iTextHeight; // prompt text
 			cy += m_iButtonHeight; // Button height
-			cy += m_iMargin; // add a little height between the buttons and our edit controls
+			cy += m_iMargin; // add a little height between the buttons and our panes
 
-			auto iControlHeight = 0;
-			for (const auto& pane : m_lpControls)
+			auto panesHeight = 0;
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
-					iControlHeight += pane->GetFixedHeight() + pane->GetLines() * m_iEditHeight;
+					panesHeight += pane->GetFixedHeight() + pane->GetLines() * m_iEditHeight;
 				}
 			}
 
 			if (m_bEnableScroll)
 			{
-				m_iScrollClient = iControlHeight;
+				m_iScrollClient = panesHeight;
 				cy += LINES_SCROLL * m_iEditHeight;
 			}
 			else
 			{
-				cy += iControlHeight;
+				cy += panesHeight;
 			}
 			// Done figuring a good height (cy)
 
-			sArea.cx = cx;
-			sArea.cy = cy;
-			return sArea;
+			return SIZE{cx, cy};
 		}
 
 		void CEditor::OnSetDefaultSize()
@@ -722,18 +710,12 @@ namespace dialog
 			m_iMinWidth = min(m_iMinWidth, MAX_WIDTH);
 		}
 
-		void CEditor::OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI)
-		{
-			lpMMI->ptMinTrackSize.x = m_iMinWidth;
-			lpMMI->ptMinTrackSize.y = m_iMinHeight;
-		}
-
 		// Recalculates our line heights and window defaults, then redraws the window with the new dimensions
 		void CEditor::OnRecalcLayout()
 		{
 			OnSetDefaultSize();
 
-			RECT rc = {0};
+			auto rc = RECT{};
 			::GetClientRect(m_hWnd, &rc);
 			(void) ::PostMessage(
 				m_hWnd,
@@ -764,7 +746,6 @@ namespace dialog
 		{
 			CMyDialog::OnSize(nType, cx, cy);
 			const auto iCXMargin = m_iSideMargin;
-
 			auto iFullWidth = cx - 2 * iCXMargin;
 
 			output::DebugPrint(
@@ -862,11 +843,11 @@ namespace dialog
 			iCYBottom -= m_iMargin; // add a margin above the buttons
 			// at this point, iCYTop and iCYBottom reflect our free space, so we can calc multiline height
 
-			// Calculate how much space a 'line' of a variable height control should be
+			// Calculate how much space a 'line' of a variable height pane should be
 			auto iLineHeight = 0;
 			auto iFixedHeight = 0;
 			auto iVariableLines = 0;
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
@@ -877,7 +858,7 @@ namespace dialog
 
 			if (iVariableLines) iLineHeight = (iCYBottom - iCYTop - iFixedHeight) / iVariableLines;
 
-			// There may be some unaccounted slack space after all this. Compute it so we can give it to a control.
+			// There may be some unaccounted slack space after all this. Compute it so we can give it to a pane.
 			UINT iSlackSpace = iCYBottom - iCYTop - iFixedHeight - iVariableLines * iLineHeight;
 
 			auto iScrollPos = 0;
@@ -902,7 +883,7 @@ namespace dialog
 						iScrollWidth,
 						iCYBottom - iCYTop,
 						SWP_NOZORDER);
-					SCROLLINFO si = {0};
+					auto si = SCROLLINFO{};
 					si.cbSize = sizeof si;
 					si.fMask = SIF_POS;
 					::GetScrollInfo(m_hWndVertScroll, SB_CTL, &si);
@@ -924,68 +905,83 @@ namespace dialog
 
 				output::DebugPrint(DBGDraw, L"CEditor::OnSize m_ScrollWindow positioned at=%d\n", iCXMargin);
 				::SetWindowPos(
+
 					m_ScrollWindow.m_hWnd, nullptr, iCXMargin, iCYTop, iFullWidth, iCYBottom - iCYTop, SWP_NOZORDER);
 				iCYTop = -iScrollPos; // We get scrolling for free by adjusting our top
 			}
 
-			for (const auto& pane : m_lpControls)
+			const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
+			if (hdwp)
 			{
-				// Calculate height for multiline edit boxes and lists
-				// If we had any slack space, parcel it out Monopoly house style over the controls
-				// This ensures a smooth resize experience
-				if (pane)
+				for (const auto& pane : m_Panes)
 				{
-					auto iViewHeight = 0;
-					const UINT iLines = pane->GetLines();
-					if (iLines)
+					// Calculate height for multiline edit boxes and lists
+					// If we had any slack space, parcel it out Monopoly house style over the panes
+					// This ensures a smooth resize experience
+					if (pane)
 					{
-						iViewHeight = iLines * iLineHeight;
-						if (iSlackSpace >= iLines)
+						auto iViewHeight = 0;
+						const UINT iLines = pane->GetLines();
+						if (iLines)
 						{
-							iViewHeight += iLines;
-							iSlackSpace -= iLines;
+							iViewHeight = iLines * iLineHeight;
+							if (iSlackSpace >= iLines)
+							{
+								iViewHeight += iLines;
+								iSlackSpace -= iLines;
+							}
+							else if (iSlackSpace)
+							{
+								iViewHeight += iSlackSpace;
+								iSlackSpace = 0;
+							}
 						}
-						else if (iSlackSpace)
-						{
-							iViewHeight += iSlackSpace;
-							iSlackSpace = 0;
-						}
-					}
 
-					const auto iControlHeight = iViewHeight + pane->GetFixedHeight();
-					pane->SetWindowPos(
-						iCXMargin, // x
-						iCYTop, // y
-						iFullWidth, // width
-						iControlHeight); // height
-					iCYTop += iControlHeight;
+						const auto paneHeight = iViewHeight + pane->GetFixedHeight();
+						pane->DeferWindowPos(
+							hdwp,
+							iCXMargin, // x
+							iCYTop, // y
+							iFullWidth, // width
+							paneHeight); // height
+						iCYTop += paneHeight;
+					}
 				}
 			}
+
+			EC_B_S(EndDeferWindowPos(hdwp));
 		}
 
-		void CEditor::DeleteControls()
+		void CEditor::DeletePanes()
 		{
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				delete[] pane;
 			}
 
-			m_lpControls.clear();
+			m_Panes.clear();
 		}
 
-		// TODO: Use iNum as a proper accessor name
-		void CEditor::InitPane(ULONG iNum, viewpane::ViewPane* lpPane)
+		void CEditor::AddPane(viewpane::ViewPane* lpPane)
 		{
-			const auto listPane = dynamic_cast<viewpane::ListPane*>(lpPane);
-			if (listPane) m_ulListNum = iNum;
-			m_lpControls.push_back(lpPane);
+			if (!lpPane) return;
+			m_Panes.push_back(lpPane);
 		}
 
-		// TODO: Use iPane as a proper accessor name
-		viewpane::ViewPane* CEditor::GetPane(ULONG iPane) const
+		// Returns the first pane with a matching id.
+		// Container panes may return a sub pane.
+		viewpane::ViewPane* CEditor::GetPane(ULONG id) const
 		{
-			if (iPane < 0 || iPane >= m_lpControls.size()) return nullptr;
-			return m_lpControls[iPane];
+			for (const auto& pane : m_Panes)
+			{
+				if (pane)
+				{
+					const auto match = pane->GetPaneByID(id);
+					if (match) return match;
+				}
+			}
+
+			return nullptr;
 		}
 
 		void CEditor::SetPromptPostFix(_In_ const std::wstring& szMsg)
@@ -995,9 +991,9 @@ namespace dialog
 		}
 
 		// Sets string
-		void CEditor::SetStringA(ULONG i, const std::string& szMsg) const
+		void CEditor::SetStringA(ULONG id, const std::string& szMsg) const
 		{
-			auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
+			auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
 			if (pane)
 			{
 				pane->SetStringW(strings::stringTowstring(szMsg));
@@ -1005,9 +1001,9 @@ namespace dialog
 		}
 
 		// Sets string
-		void CEditor::SetStringW(ULONG i, const std::wstring& szMsg) const
+		void CEditor::SetStringW(ULONG id, const std::wstring& szMsg) const
 		{
-			auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
+			auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
 			if (pane)
 			{
 				pane->SetStringW(szMsg);
@@ -1019,58 +1015,49 @@ namespace dialog
 #endif
 
 		// Updates pane using SetStringW
-		void CEditor::SetStringf(ULONG i, LPCWSTR szMsg, ...) const
+		void CEditor::SetStringf(ULONG id, LPCWSTR szMsg, ...) const
 		{
 			if (szMsg[0])
 			{
-				va_list argList = nullptr;
+				auto argList = va_list{};
 				va_start(argList, szMsg);
-				SetStringW(i, strings::formatV(szMsg, argList));
+				SetStringW(id, strings::formatV(szMsg, argList));
 				va_end(argList);
 			}
 			else
 			{
-				SetStringW(i, L"");
+				SetStringW(id, std::wstring{});
 			}
 		}
 
 		// Updates pane using SetStringW
-		void CEditor::LoadString(ULONG i, UINT uidMsg) const
+		void CEditor::LoadString(ULONG id, UINT uidMsg) const
 		{
 			if (uidMsg)
 			{
-				SetStringW(i, strings::loadstring(uidMsg));
+				SetStringW(id, strings::loadstring(uidMsg));
 			}
 			else
 			{
-				SetStringW(i, L"");
+				SetStringW(id, std::wstring{});
 			}
 		}
 
 		// Updates pane using SetBinary
-		void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
+		void CEditor::SetBinary(ULONG id, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
 		{
-			auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
+			auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
 			if (pane)
 			{
 				pane->SetBinary(lpb, cb);
 			}
 		}
 
-		// Updates pane using SetStringW
-		void CEditor::SetSize(ULONG i, size_t cb) const
-		{
-			SetStringf(i, L"0x%08X = %u", static_cast<int>(cb), static_cast<UINT>(cb)); // STRING_OK
-		}
-
-		// Returns a binary buffer which is represented by the hex string
-		std::vector<BYTE> CEditor::GetBinary(ULONG i) const { return strings::HexStringToBin(GetStringW(i)); }
-
-		// converts string in a text(edit) control into an entry ID
+		// Converts string in a text(edit) pane into an entry ID
 		// Can base64 decode if needed
 		// entryID is allocated with new, free with delete[]
 		_Check_return_ HRESULT
-		CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID) const
+		CEditor::GetEntryID(ULONG id, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID) const
 		{
 			if (!lpcbBin || !lppEID) return MAPI_E_INVALID_PARAMETER;
 
@@ -1078,7 +1065,7 @@ namespace dialog
 			*lppEID = nullptr;
 
 			const auto hRes = S_OK;
-			auto szString = GetStringW(i);
+			auto szString = GetStringW(id);
 
 			if (!szString.empty())
 			{
@@ -1099,20 +1086,9 @@ namespace dialog
 			return hRes;
 		}
 
-		void CEditor::SetHex(ULONG i, ULONG ulVal) const
+		void CEditor::SetListString(ULONG id, ULONG iListRow, ULONG iListCol, const std::wstring& szListString) const
 		{
-			SetStringf(i, L"0x%08X", ulVal); // STRING_OK
-		}
-
-		void CEditor::SetDecimal(ULONG i, ULONG ulVal) const
-		{
-			SetStringf(i, L"%u", ulVal); // STRING_OK
-		}
-
-		void
-		CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, const std::wstring& szListString) const
-		{
-			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
+			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
 			if (pane)
 			{
 				pane->SetListString(iListRow, iListCol, szListString);
@@ -1120,9 +1096,9 @@ namespace dialog
 		}
 
 		_Check_return_ controls::sortlistdata::SortListData*
-		CEditor::InsertListRow(ULONG iControl, int iRow, const std::wstring& szText) const
+		CEditor::InsertListRow(ULONG id, int iRow, const std::wstring& szText) const
 		{
-			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
+			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
 			if (pane)
 			{
 				return pane->InsertRow(iRow, szText);
@@ -1131,27 +1107,27 @@ namespace dialog
 			return nullptr;
 		}
 
-		void CEditor::ClearList(ULONG iControl) const
+		void CEditor::ClearList(ULONG id) const
 		{
-			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
+			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
 			if (pane)
 			{
 				pane->ClearList();
 			}
 		}
 
-		void CEditor::ResizeList(ULONG iControl, bool bSort) const
+		void CEditor::ResizeList(ULONG id, bool bSort) const
 		{
-			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
+			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
 			if (pane)
 			{
 				pane->ResizeList(bSort);
 			}
 		}
 
-		std::wstring CEditor::GetStringW(ULONG i) const
+		std::wstring CEditor::GetStringW(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
+			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetStringW();
@@ -1160,20 +1136,20 @@ namespace dialog
 			return strings::emptystring;
 		}
 
-		_Check_return_ std::string CEditor::GetStringA(ULONG iControl) const
+		_Check_return_ std::string CEditor::GetStringA(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(iControl));
+			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
 			if (pane)
 			{
 				return strings::wstringTostring(pane->GetStringW());
 			}
 
-			return "";
+			return std::string{};
 		}
 
-		_Check_return_ ULONG CEditor::GetHex(ULONG i) const
+		_Check_return_ ULONG CEditor::GetHex(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
+			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
 			if (pane)
 			{
 				return strings::wstringToUlong(pane->GetStringW(), 16);
@@ -1182,9 +1158,9 @@ namespace dialog
 			return 0;
 		}
 
-		_Check_return_ ULONG CEditor::GetListCount(ULONG iControl) const
+		_Check_return_ ULONG CEditor::GetListCount(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
+			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetItemCount();
@@ -1193,9 +1169,9 @@ namespace dialog
 			return 0;
 		}
 
-		_Check_return_ controls::sortlistdata::SortListData* CEditor::GetListRowData(ULONG iControl, int iRow) const
+		_Check_return_ controls::sortlistdata::SortListData* CEditor::GetListRowData(ULONG id, int iRow) const
 		{
-			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(iControl));
+			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetItemData(iRow);
@@ -1204,15 +1180,15 @@ namespace dialog
 			return nullptr;
 		}
 
-		_Check_return_ bool CEditor::IsDirty(ULONG iControl) const
+		_Check_return_ bool CEditor::IsDirty(ULONG id) const
 		{
-			auto pane = GetPane(iControl);
+			auto pane = GetPane(id);
 			return pane ? pane->IsDirty() : false;
 		}
 
-		_Check_return_ ULONG CEditor::GetPropTag(ULONG i) const
+		_Check_return_ ULONG CEditor::GetPropTag(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
+			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
 			if (pane)
 			{
 
@@ -1231,9 +1207,9 @@ namespace dialog
 			return 0;
 		}
 
-		_Check_return_ ULONG CEditor::GetDecimal(ULONG i) const
+		_Check_return_ ULONG CEditor::GetDecimal(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(i));
+			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
 			if (pane)
 			{
 				return strings::wstringToUlong(pane->GetStringW(), 10);
@@ -1242,9 +1218,9 @@ namespace dialog
 			return 0;
 		}
 
-		_Check_return_ bool CEditor::GetCheck(ULONG i) const
+		_Check_return_ bool CEditor::GetCheck(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::CheckPane*>(GetPane(i));
+			const auto pane = dynamic_cast<viewpane::CheckPane*>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetCheck();
@@ -1253,9 +1229,9 @@ namespace dialog
 			return false;
 		}
 
-		_Check_return_ int CEditor::GetDropDown(ULONG i) const
+		_Check_return_ int CEditor::GetDropDown(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::DropDownPane*>(GetPane(i));
+			const auto pane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetDropDown();
@@ -1264,9 +1240,9 @@ namespace dialog
 			return CB_ERR;
 		}
 
-		_Check_return_ DWORD_PTR CEditor::GetDropDownValue(ULONG i) const
+		_Check_return_ DWORD_PTR CEditor::GetDropDownValue(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::DropDownPane*>(GetPane(i));
+			const auto pane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetDropDownValue();
@@ -1275,18 +1251,18 @@ namespace dialog
 			return 0;
 		}
 
-		void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText) const
+		void CEditor::InsertColumn(ULONG id, int nCol, UINT uidText) const
 		{
-			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(ulListNum));
+			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
 			if (pane)
 			{
 				pane->InsertColumn(nCol, uidText);
 			}
 		}
 
-		void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulPropType) const
+		void CEditor::InsertColumn(ULONG id, int nCol, UINT uidText, ULONG ulPropType) const
 		{
-			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(ulListNum));
+			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
 			if (pane)
 			{
 				pane->InsertColumn(nCol, uidText);
@@ -1294,25 +1270,31 @@ namespace dialog
 			}
 		}
 
+		// Given a nID, looks for a pane with the same nID
+		// Uses ViewPane::GetPaneByNID to make a match
+		// Will ask panes if they have child panes that match - what they return is up to them
+		// Returns the ID (not nID) or the matching pane.
 		_Check_return_ ULONG CEditor::HandleChange(UINT nID)
 		{
-			if (m_lpControls.empty()) return static_cast<ULONG>(-1);
-			for (ULONG i = 0; i < m_lpControls.size(); i++)
+			if (m_Panes.empty()) return static_cast<ULONG>(-1);
+			for (const auto& pane : m_Panes)
 			{
-				auto pane = GetPane(i);
-				if (!pane) continue;
-				// Either our change came from one of our top level controls/views
-				if (pane->MatchID(nID))
+				if (pane)
 				{
-					return i;
-				}
+					// Either the pane matches by nID, or can return a subpane which matches by nID.
+					const auto match = pane->GetPaneByNID(nID);
+					if (match)
+					{
+						return match->GetID();
+					}
 
-				// Or the top level control/view has a control in it that can handle it
-				// In which case stop looking.
-				// We do not return the control number because this is a button event, not an edit change
-				if (pane->HandleChange(nID) != -1)
-				{
-					return static_cast<ULONG>(-1);
+					// Or the top level pane has a control or pane in it that can handle the change
+					// In which case stop looking.
+					// We do not return the pane's ID number because this is a button event, not an edit change
+					if (pane->HandleChange(nID) != static_cast<ULONG>(-1))
+					{
+						return static_cast<ULONG>(-1);
+					}
 				}
 			}
 
@@ -1321,7 +1303,7 @@ namespace dialog
 
 		void CEditor::UpdateButtons() const
 		{
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
@@ -1330,9 +1312,9 @@ namespace dialog
 			}
 		}
 
-		_Check_return_ bool CEditor::OnEditListEntry(ULONG ulListNum) const
+		_Check_return_ bool CEditor::OnEditListEntry(ULONG id) const
 		{
-			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(ulListNum));
+			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
 			if (pane)
 			{
 				return pane->OnEditListEntry();
@@ -1340,31 +1322,5 @@ namespace dialog
 
 			return false;
 		}
-
-		void CEditor::OnEditAction1()
-		{
-			// Not Implemented
-		}
-
-		void CEditor::OnEditAction2()
-		{
-			// Not Implemented
-		}
-
-		void CEditor::OnEditAction3()
-		{
-			// Not Implemented
-		}
-
-		// Will be invoked on both edit button and double-click
-		// return true to indicate the entry was changed, false to indicate it was not
-		_Check_return_ bool
-		CEditor::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ controls::sortlistdata::SortListData* /*lpData*/)
-		{
-			// Not Implemented
-			return false;
-		}
-
-		void CEditor::EnableScroll() { m_bEnableScroll = true; }
-	}
-}
+	} // namespace editor
+} // namespace dialog

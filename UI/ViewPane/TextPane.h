@@ -6,22 +6,20 @@ namespace viewpane
 	class TextPane : public ViewPane
 	{
 	public:
-		TextPane()
-		{
-			m_bMultiline = false;
-			m_bCommitted = false;
-		}
+		static TextPane* CreateMultiLinePane(int paneID, UINT uidLabel, bool bReadOnly);
+		static TextPane* CreateMultiLinePane(int paneID, UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly);
+		static TextPane* CreateSingleLinePane(int paneID, UINT uidLabel, bool bReadOnly, bool bMultiLine = false);
+		static TextPane* CreateSingleLinePane(
+			int paneID,
+			UINT uidLabel,
+			_In_ const std::wstring& szVal,
+			bool bReadOnly,
+			bool bMultiLine = false);
+		static TextPane* CreateSingleLinePaneID(int paneID, UINT uidLabel, UINT uidVal, bool bReadOnly);
+		static TextPane* CreateCollapsibleTextPane(int paneID, UINT uidLabel, bool bReadOnly);
 
-		static TextPane* CreateMultiLinePane(UINT uidLabel, bool bReadOnly);
-		static TextPane* CreateMultiLinePane(UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly);
-		static TextPane* CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine = false);
-		static TextPane*
-		CreateSingleLinePane(UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly, bool bMultiLine = false);
-		static TextPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly);
-		static TextPane* CreateCollapsibleTextPane(UINT uidLabel, bool bReadOnly);
-
-		void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
-		void SetWindowPos(int x, int y, int width, int height) override;
+		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
+		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetFixedHeight() override;
 		int GetLines() override;
 
@@ -49,7 +47,7 @@ namespace viewpane
 		void SetEditBoxText();
 
 		std::wstring m_lpszW;
-		bool m_bCommitted;
-		bool m_bMultiline;
+		bool m_bCommitted{false};
+		bool m_bMultiline{false};
 	};
-}
+} // namespace viewpane

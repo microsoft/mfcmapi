@@ -4,9 +4,7 @@
 
 namespace viewpane
 {
-	static std::wstring CLASS = L"CountedTextPane";
-
-	CountedTextPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
+	CountedTextPane* CountedTextPane::Create(int paneID, UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
 	{
 		auto lpPane = new (std::nothrow) CountedTextPane();
 		if (lpPane)
@@ -15,18 +13,13 @@ namespace viewpane
 			lpPane->SetMultiline();
 			lpPane->SetLabel(uidLabel, bReadOnly);
 			lpPane->m_bCollapsible = true;
+			lpPane->m_paneID = paneID;
 		}
 
 		return lpPane;
 	}
 
-	CountedTextPane::CountedTextPane()
-	{
-		m_iCountLabelWidth = 0;
-		m_iCount = 0;
-	}
-
-	void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+	void CountedTextPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
 		EC_B_S(m_Count.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, IDD_COUNTLABEL));
@@ -34,7 +27,7 @@ namespace viewpane
 		ui::SubclassLabel(m_Count.m_hWnd);
 		StyleLabel(m_Count.m_hWnd, ui::lsPaneHeaderText);
 
-		TextPane::Initialize(iControl, pParent, hdc);
+		TextPane::Initialize(pParent, hdc);
 	}
 
 	int CountedTextPane::GetMinWidth(_In_ HDC hdc)
@@ -60,7 +53,7 @@ namespace viewpane
 	int CountedTextPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
-		if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
+		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
 		// Our expand/collapse button
 		iHeight += m_iButtonHeight;
@@ -87,28 +80,36 @@ namespace viewpane
 		return LINES_MULTILINEEDIT;
 	}
 
-	void CountedTextPane::SetWindowPos(int x, int y, int width, int height)
+	void CountedTextPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
 		const auto iVariableHeight = height - GetFixedHeight();
-		if (0 != m_iControl)
+		if (0 != m_paneID)
 		{
 			y += m_iSmallHeightMargin;
 			height -= m_iSmallHeightMargin;
 		}
 
-		ViewPane::SetWindowPos(x, y, width, height);
+		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
 
 		if (!m_bCollapsed)
 		{
 			EC_B_S(m_Count.ShowWindow(SW_SHOW));
 			EC_B_S(m_EditBox.ShowWindow(SW_SHOW));
 
-			EC_B_S(m_Count.SetWindowPos(
-				nullptr, x + width - m_iCountLabelWidth, y, m_iCountLabelWidth, m_iLabelHeight, SWP_NOZORDER));
+			EC_B_S(::DeferWindowPos(
+				hWinPosInfo,
+				m_Count.GetSafeHwnd(),
+				nullptr,
+				x + width - m_iCountLabelWidth,
+				y,
+				m_iCountLabelWidth,
+				m_iLabelHeight,
+				SWP_NOZORDER));
 
 			y += m_iLabelHeight + m_iSmallHeightMargin;
 
-			EC_B_S(m_EditBox.SetWindowPos(NULL, x, y, width, iVariableHeight, SWP_NOZORDER));
+			EC_B_S(::DeferWindowPos(
+				hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, y, width, iVariableHeight, SWP_NOZORDER));
 		}
 		else
 		{
@@ -118,4 +119,4 @@ namespace viewpane
 	}
 
 	void CountedTextPane::SetCount(size_t iCount) { m_iCount = iCount; }
-}
+} // namespace viewpane

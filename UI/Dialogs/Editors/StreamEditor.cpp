@@ -150,17 +150,17 @@ namespace dialog
 
 			// Let's crack our property open and see what kind of controls we'll need for it
 			// One control for text stream, one for binary
-			InitPane(m_iTextBox, viewpane::TextPane::CreateCollapsibleTextPane(IDS_STREAMTEXT, false));
+			AddPane(viewpane::TextPane::CreateCollapsibleTextPane(m_iTextBox, IDS_STREAMTEXT, false));
 			if (bUseWrapEx)
 			{
-				InitPane(m_iFlagBox, viewpane::TextPane::CreateSingleLinePane(IDS_STREAMFLAGS, true));
-				InitPane(m_iCodePageBox, viewpane::TextPane::CreateSingleLinePane(IDS_CODEPAGE, true));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(m_iFlagBox, IDS_STREAMFLAGS, true));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(m_iCodePageBox, IDS_CODEPAGE, true));
 			}
 
-			InitPane(m_iBinBox, viewpane::CountedTextPane::Create(IDS_STREAMBIN, false, IDS_CB));
+			AddPane(viewpane::CountedTextPane::Create(m_iBinBox, IDS_STREAMBIN, false, IDS_CB));
 			if (m_bDoSmartView)
 			{
-				InitPane(m_iSmartViewBox, viewpane::SmartViewPane::Create(IDS_SMARTVIEW));
+				AddPane(viewpane::SmartViewPane::Create(m_iSmartViewBox, IDS_SMARTVIEW));
 			}
 		}
 
@@ -183,7 +183,7 @@ namespace dialog
 				auto lpSmartView = dynamic_cast<viewpane::SmartViewPane*>(GetPane(m_iSmartViewBox));
 				if (lpSmartView)
 				{
-					SPropValue sProp = {0};
+					SPropValue sProp = {};
 					sProp.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY);
 					auto bin = GetBinary(m_iBinBox);
 					sProp.Value.bin.lpb = bin.data();
@@ -390,12 +390,12 @@ namespace dialog
 
 				auto bin = GetBinary(m_iBinBox);
 
-				auto hRes = EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
+				const auto hRes = EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 				output::DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
 
 				if (SUCCEEDED(hRes))
 				{
-					hRes = EC_MAPI(m_lpStream->Commit(STGC_DEFAULT));
+					EC_MAPI_S(m_lpStream->Commit(STGC_DEFAULT));
 				}
 
 				if (m_bDisableSave)
@@ -404,7 +404,7 @@ namespace dialog
 				}
 				else
 				{
-					hRes = EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+					EC_MAPI_S(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 				}
 			}
 
@@ -414,12 +414,12 @@ namespace dialog
 
 		_Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
-			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
+			if (paneID == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
 			auto lpBinPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(m_iBinBox));
-			if (m_iTextBox == i && lpBinPane)
+			if (m_iTextBox == paneID && lpBinPane)
 			{
 				switch (m_ulEditorType)
 				{
@@ -442,7 +442,7 @@ namespace dialog
 					break;
 				}
 			}
-			else if (m_iBinBox == i)
+			else if (m_iBinBox == paneID)
 			{
 				auto bin = GetBinary(m_iBinBox);
 				{
@@ -470,11 +470,7 @@ namespace dialog
 				{
 					auto bin = GetBinary(m_iBinBox);
 
-					SBinary Bin = {0};
-					Bin.cb = ULONG(bin.size());
-					Bin.lpb = bin.data();
-
-					lpSmartView->Parse(Bin);
+					lpSmartView->Parse(SBinary{ULONG(bin.size()), bin.data()});
 				}
 			}
 
@@ -486,12 +482,12 @@ namespace dialog
 			}
 
 			OnRecalcLayout();
-			return i;
+			return paneID;
 		}
 
-		void CStreamEditor::SetEditReadOnly(ULONG iControl) const
+		void CStreamEditor::SetEditReadOnly(ULONG id) const
 		{
-			auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(iControl));
+			auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
 			if (lpPane)
 			{
 				lpPane->SetReadOnly();
@@ -499,5 +495,5 @@ namespace dialog
 		}
 
 		void CStreamEditor::DisableSave() { m_bDisableSave = true; }
-	}
-}
+	} // namespace editor
+} // namespace dialog

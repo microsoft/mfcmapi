@@ -41,7 +41,8 @@ namespace dialog
 			m_lpMAPIProp = lpMAPIProp;
 			if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-			InitPane(0, viewpane::ListPane::Create(IDS_PROPTAGARRAY, false, false, ListEditCallBack(this)));
+			AddPane(viewpane::ListPane::Create(0, IDS_PROPTAGARRAY, false, false, ListEditCallBack(this)));
+			SetListID(0);
 		}
 
 		CTagArrayEditor::~CTagArrayEditor()
@@ -192,11 +193,10 @@ namespace dialog
 		void CTagArrayEditor::OnEditAction1()
 		{
 			if (!m_lpContentsTable) return;
-			auto hRes = S_OK;
 			ULONG ulQueryColumnFlags = NULL;
 
 			CEditor MyData(this, IDS_QUERYCOLUMNS, IDS_QUERYCOLUMNSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_QUERYCOLUMNFLAGS, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_QUERYCOLUMNFLAGS, false));
 			MyData.SetHex(0, ulQueryColumnFlags);
 
 			if (!MyData.DisplayDialog()) return;
@@ -204,7 +204,7 @@ namespace dialog
 			ulQueryColumnFlags = MyData.GetHex(0);
 			LPSPropTagArray lpTagArray = nullptr;
 
-			hRes = EC_MAPI(m_lpContentsTable->QueryColumns(ulQueryColumnFlags, &lpTagArray));
+			const auto hRes = EC_MAPI(m_lpContentsTable->QueryColumns(ulQueryColumnFlags, &lpTagArray));
 
 			if (SUCCEEDED(hRes))
 			{
@@ -221,7 +221,7 @@ namespace dialog
 			if (!m_lpContentsTable) return;
 
 			CEditor MyData(this, IDS_SETCOLUMNS, IDS_SETCOLUMNSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SETCOLUMNFLAGS, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SETCOLUMNFLAGS, false));
 			MyData.SetHex(0, m_ulSetColumnsFlags);
 
 			if (MyData.DisplayDialog())
@@ -229,5 +229,5 @@ namespace dialog
 				m_ulSetColumnsFlags = MyData.GetHex(0);
 			}
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog

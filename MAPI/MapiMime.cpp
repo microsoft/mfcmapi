@@ -234,18 +234,18 @@ namespace mapi
 			dialog::editor::CEditor MyData(
 				pParentWnd, IDS_CONVERTTOEML, IDS_CONVERTTOEMLPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTFLAGS, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CONVERTFLAGS, false));
 			MyData.SetHex(0, CCSF_SMTP);
-			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_CONVERTDOENCODINGTYPE, false, false));
-			MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTENCODINGTYPE, false));
+			MyData.AddPane(viewpane::CheckPane::Create(1, IDS_CONVERTDOENCODINGTYPE, false, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_CONVERTENCODINGTYPE, false));
 			MyData.SetHex(2, IET_7BIT);
-			MyData.InitPane(3, viewpane::CheckPane::Create(IDS_CONVERTDOMIMESAVETYPE, false, false));
-			MyData.InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTMIMESAVETYPE, false));
+			MyData.AddPane(viewpane::CheckPane::Create(3, IDS_CONVERTDOMIMESAVETYPE, false, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(4, IDS_CONVERTMIMESAVETYPE, false));
 			MyData.SetHex(4, SAVE_RFC822);
-			MyData.InitPane(5, viewpane::CheckPane::Create(IDS_CONVERTDOWRAPLINES, false, false));
-			MyData.InitPane(6, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTWRAPLINECOUNT, false));
+			MyData.AddPane(viewpane::CheckPane::Create(5, IDS_CONVERTDOWRAPLINES, false, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(6, IDS_CONVERTWRAPLINECOUNT, false));
 			MyData.SetDecimal(6, 74);
-			MyData.InitPane(7, viewpane::CheckPane::Create(IDS_CONVERTDOADRBOOK, false, false));
+			MyData.AddPane(viewpane::CheckPane::Create(7, IDS_CONVERTDOADRBOOK, false, false));
 
 			if (!MyData.DisplayDialog()) return MAPI_E_USER_CANCEL;
 
@@ -274,19 +274,19 @@ namespace mapi
 			dialog::editor::CEditor MyData(
 				pParentWnd, IDS_CONVERTFROMEML, IDS_CONVERTFROMEMLPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTFLAGS, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CONVERTFLAGS, false));
 			MyData.SetHex(0, CCSF_SMTP);
-			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_CONVERTCODEPAGE, false, false));
-			MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTCODEPAGE, false));
+			MyData.AddPane(viewpane::CheckPane::Create(1, IDS_CONVERTCODEPAGE, false, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_CONVERTCODEPAGE, false));
 			MyData.SetDecimal(2, CP_USASCII);
-			MyData.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTCHARSETTYPE, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(3, IDS_CONVERTCHARSETTYPE, false));
 			MyData.SetDecimal(3, CHARSET_BODY);
-			MyData.InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_CONVERTCHARSETAPPLYTYPE, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(4, IDS_CONVERTCHARSETAPPLYTYPE, false));
 			MyData.SetDecimal(4, CSET_APPLY_UNTAGGED);
-			MyData.InitPane(5, viewpane::CheckPane::Create(IDS_CONVERTDOADRBOOK, false, false));
+			MyData.AddPane(viewpane::CheckPane::Create(5, IDS_CONVERTDOADRBOOK, false, false));
 			if (pbUnicode)
 			{
-				MyData.InitPane(6, viewpane::CheckPane::Create(IDS_SAVEUNICODE, false, false));
+				MyData.AddPane(viewpane::CheckPane::Create(6, IDS_SAVEUNICODE, false, false));
 			}
 
 			if (!MyData.DisplayDialog()) return MAPI_E_USER_CANCEL;
@@ -312,5 +312,5 @@ namespace mapi
 			return hRes;
 		}
 #endif
-	}
-}
+	} // namespace mapimime
+} // namespace mapi

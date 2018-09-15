@@ -193,14 +193,14 @@ namespace controls
 			if (SUCCEEDED(hRes))
 			{
 				dialog::editor::CEditor MyData(this, IDS_GETSTATUS, IDS_GETSTATUSPROMPT, CEDITOR_BUTTON_OK);
-				MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, true));
+				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, 0, true));
 				MyData.SetHex(0, ulTableStatus);
 				auto szFlags = interpretprop::InterpretFlags(flagTableStatus, ulTableStatus);
-				MyData.InitPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLESTATUS, szFlags, true));
-				MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLETYPE, true));
+				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLESTATUS, 1, szFlags, true));
+				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLETYPE, 2, true));
 				MyData.SetHex(2, ulTableType);
 				szFlags = interpretprop::InterpretFlags(flagTableType, ulTableType);
-				MyData.InitPane(3, viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLETYPE, szFlags, true));
+				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLETYPE, 3, szFlags, true));
 
 				(void) MyData.DisplayDialog();
 			}
@@ -1664,5 +1664,5 @@ namespace controls
 			output::DebugPrintEx(DBGGeneric, CLASS, L"msgOnGetIndex", L"No match found: 0x%08X\n", iItem);
 			return -1;
 		}
-	}
-}
+	} // namespace sortlistctrl
+} // namespace controls

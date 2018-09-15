@@ -335,7 +335,7 @@ namespace dialog
 				dialog::editor::CEditor MyData(
 					lpHostDlg, IDS_ACLTABLE, IDS_ACLTABLEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-				MyData.InitPane(0, viewpane::CheckPane::Create(IDS_FBRIGHTSVISIBLE, false, false));
+				MyData.AddPane(viewpane::CheckPane::Create(0, IDS_FBRIGHTSVISIBLE, false, false));
 
 				if (MyData.DisplayDialog())
 				{
@@ -380,7 +380,7 @@ namespace dialog
 			{
 				const auto szPrevErr =
 					strings::formatmessage(IDS_PREVIOUSCALL, error::ErrorNameFromErrorCode(hResPrev).c_str(), hResPrev);
-				Cancel.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ERROR, szPrevErr, true));
+				Cancel.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_ERROR, szPrevErr, true));
 			}
 
 			if (Cancel.DisplayDialog())
@@ -418,13 +418,13 @@ namespace dialog
 				IDS_DISPLAYMAILBOXTABLE,
 				IDS_SERVERNAMEPROMPT,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
-			MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_OFFSET, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SERVERNAME, szServerName, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_OFFSET, false));
 			MyData.SetHex(1, 0);
-			MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_MAILBOXGUID, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_MAILBOXGUID, false));
 			UINT uidDropDown[] = {IDS_GETMBXINTERFACE1, IDS_GETMBXINTERFACE3, IDS_GETMBXINTERFACE5};
-			MyData.InitPane(
-				3, viewpane::DropDownPane::Create(IDS_GETMBXINTERFACE, _countof(uidDropDown), uidDropDown, true));
+			MyData.AddPane(
+				viewpane::DropDownPane::Create(3, IDS_GETMBXINTERFACE, _countof(uidDropDown), uidDropDown, true));
 
 			if (MyData.DisplayDialog())
 			{
@@ -535,15 +535,15 @@ namespace dialog
 				IDS_DISPLAYPFTABLE,
 				IDS_DISPLAYPFTABLEPROMPT,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
-			MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_OFFSET, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SERVERNAME, szServerName, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_OFFSET, false));
 			MyData.SetHex(1, 0);
-			MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_FLAGS, false));
 			MyData.SetHex(2, MDB_IPM);
-			MyData.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_PUBLICFOLDERGUID, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(3, IDS_PUBLICFOLDERGUID, false));
 			UINT uidDropDown[] = {IDS_GETPFINTERFACE1, IDS_GETPFINTERFACE4, IDS_GETPFINTERFACE5};
-			MyData.InitPane(
-				4, viewpane::DropDownPane::Create(IDS_GETMBXINTERFACE, _countof(uidDropDown), uidDropDown, true));
+			MyData.AddPane(
+				viewpane::DropDownPane::Create(4, IDS_GETMBXINTERFACE, _countof(uidDropDown), uidDropDown, true));
 			if (MyData.DisplayDialog())
 			{
 				if (0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(4))
@@ -651,8 +651,8 @@ namespace dialog
 			output::DebugPrint(DBGForms, L"OnResolveMessageClass: resolving message class\n");
 			dialog::editor::CEditor MyData(
 				nullptr, IDS_RESOLVECLASS, IDS_RESOLVECLASSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
-			MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CLASS, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_FLAGS, false));
 
 			if (MyData.DisplayDialog())
 			{
@@ -718,4 +718,4 @@ namespace dialog
 			lpMAPIFormMgr->Release();
 		}
 	}
-}
+} // namespace dialog

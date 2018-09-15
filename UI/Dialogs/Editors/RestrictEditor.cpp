@@ -29,43 +29,39 @@ namespace dialog
 			TRACE_CONSTRUCTOR(COMPCLASS);
 
 			SetPromptPostFix(interpretprop::AllFlagsToString(flagRelop, false));
-			InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RELOP, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_RELOP, false));
 			SetHex(0, ulRelop);
 			const auto szFlags = interpretprop::InterpretFlags(flagRelop, ulRelop);
-			InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RELOP, szFlags, true));
-			InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG1, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_RELOP, szFlags, true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULPROPTAG1, false));
 			SetHex(2, ulPropTag1);
-			InitPane(
-				3,
-				viewpane::TextPane::CreateSingleLinePane(
-					IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag1, nullptr, false, true), true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(
+				3, IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag1, nullptr, false, true), true));
 
-			InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG2, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(4, IDS_ULPROPTAG2, false));
 			SetHex(4, ulPropTag2);
-			InitPane(
-				5,
-				viewpane::TextPane::CreateSingleLinePane(
-					IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag2, nullptr, false, true), true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(
+				5, IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag2, nullptr, false, true), true));
 		}
 
 		_Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
-			if (i == 0)
+			if (paneID == 0)
 			{
 				SetStringW(1, interpretprop::InterpretFlags(flagRelop, GetHex(0)));
 			}
-			else if (i == 2)
+			else if (paneID == 2)
 			{
 				SetStringW(3, interpretprop::TagToString(GetPropTag(2), nullptr, false, true));
 			}
-			else if (i == 4)
+			else if (paneID == 4)
 			{
 				SetStringW(5, interpretprop::TagToString(GetPropTag(4), nullptr, false, true));
 			}
 
-			return i;
+			return paneID;
 		}
 
 		// This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
@@ -125,49 +121,46 @@ namespace dialog
 			{
 				SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
 
-				InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_ULFUZZYLEVEL, false));
 				SetHex(0, ulCompare);
 				szFlags = interpretprop::InterpretFlags(flagFuzzyLevel, ulCompare);
-				InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, szFlags, true));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_ULFUZZYLEVEL, szFlags, true));
 			}
 			else if (RES_PROPERTY == m_ulResType)
 			{
 				SetPromptPostFix(interpretprop::AllFlagsToString(flagRelop, false));
-				InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RELOP, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_RELOP, false));
 				SetHex(0, ulCompare);
 				szFlags = interpretprop::InterpretFlags(flagRelop, ulCompare);
-				InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RELOP, szFlags, true));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_RELOP, szFlags, true));
 			}
 
-			InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULPROPTAG, false));
 			SetHex(2, ulPropTag);
-			InitPane(
-				3,
-				viewpane::TextPane::CreateSingleLinePane(
-					IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(
+				3, IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
 
-			InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_LPPROPULPROPTAG, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(4, IDS_LPPROPULPROPTAG, false));
 			if (lpProp) SetHex(4, lpProp->ulPropTag);
-			InitPane(
+			AddPane(viewpane::TextPane::CreateSingleLinePane(
 				5,
-				viewpane::TextPane::CreateSingleLinePane(
-					IDS_LPPROPULPROPTAG,
-					lpProp ? interpretprop::TagToString(lpProp->ulPropTag, nullptr, false, true) : strings::emptystring,
-					true));
+				IDS_LPPROPULPROPTAG,
+				lpProp ? interpretprop::TagToString(lpProp->ulPropTag, nullptr, false, true) : strings::emptystring,
+				true));
 
 			std::wstring szProp;
 			std::wstring szAltProp;
 			if (lpProp) interpretprop::InterpretProp(lpProp, &szProp, &szAltProp);
-			InitPane(6, viewpane::TextPane::CreateMultiLinePane(IDS_LPPROP, szProp, true));
-			InitPane(7, viewpane::TextPane::CreateMultiLinePane(IDS_LPPROPALTVIEW, szAltProp, true));
+			AddPane(viewpane::TextPane::CreateMultiLinePane(6, IDS_LPPROP, szProp, true));
+			AddPane(viewpane::TextPane::CreateMultiLinePane(7, IDS_LPPROPALTVIEW, szAltProp, true));
 		}
 
 		_Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
 			std::wstring szFlags;
-			if (i == 0)
+			if (paneID == 0)
 			{
 				if (RES_CONTENT == m_ulResType)
 				{
@@ -178,11 +171,11 @@ namespace dialog
 					SetStringW(1, interpretprop::InterpretFlags(flagRelop, GetHex(0)));
 				}
 			}
-			else if (i == 2)
+			else if (paneID == 2)
 			{
 				SetStringW(3, interpretprop::TagToString(GetPropTag(2), nullptr, false, true));
 			}
-			else if (i == 4)
+			else if (paneID == 4)
 			{
 				SetStringW(5, interpretprop::TagToString(GetPropTag(4), nullptr, false, true));
 				m_lpOldProp = nullptr;
@@ -191,7 +184,7 @@ namespace dialog
 				SetStringW(7, L"");
 			}
 
-			return i;
+			return paneID;
 		}
 
 		_Check_return_ LPSPropValue CResCombinedEditor::DetachModifiedSPropValue()
@@ -209,7 +202,7 @@ namespace dialog
 			LPSPropValue lpOutProp = nullptr;
 			if (m_lpNewProp) lpEditProp = m_lpNewProp;
 
-			auto hRes = WC_H(DisplayPropertyEditor(
+			const auto hRes = WC_H(DisplayPropertyEditor(
 				this,
 				IDS_PROPEDITOR,
 				NULL,
@@ -250,35 +243,33 @@ namespace dialog
 			TRACE_CONSTRUCTOR(BITMASKCLASS);
 
 			SetPromptPostFix(interpretprop::AllFlagsToString(flagBitmask, false));
-			InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RELBMR, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_RELBMR, false));
 			SetHex(0, relBMR);
 			const auto szFlags = interpretprop::InterpretFlags(flagBitmask, relBMR);
-			InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RELBMR, szFlags, true));
-			InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_RELBMR, szFlags, true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULPROPTAG, false));
 			SetHex(2, ulPropTag);
-			InitPane(
-				3,
-				viewpane::TextPane::CreateSingleLinePane(
-					IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(
+				3, IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
 
-			InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_MASK, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(4, IDS_MASK, false));
 			SetHex(4, ulMask);
 		}
 
 		_Check_return_ ULONG CResBitmaskEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
-			if (i == 0)
+			if (paneID == 0)
 			{
 				SetStringW(1, interpretprop::InterpretFlags(flagBitmask, GetHex(0)));
 			}
-			else if (i == 2)
+			else if (paneID == 2)
 			{
 				SetStringW(3, interpretprop::TagToString(GetPropTag(2), nullptr, false, true));
 			}
 
-			return i;
+			return paneID;
 		}
 
 		static std::wstring SIZECLASS = L"CResSizeEditor"; // STRING_OK
@@ -297,36 +288,34 @@ namespace dialog
 			TRACE_CONSTRUCTOR(SIZECLASS);
 
 			SetPromptPostFix(interpretprop::AllFlagsToString(flagRelop, false));
-			InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RELOP, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_RELOP, false));
 			SetHex(0, relop);
 			const auto szFlags = interpretprop::InterpretFlags(flagRelop, relop);
-			InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RELOP, szFlags, true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_RELOP, szFlags, true));
 
-			InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULPROPTAG, false));
 			SetHex(2, ulPropTag);
-			InitPane(
-				3,
-				viewpane::TextPane::CreateSingleLinePane(
-					IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(
+				3, IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
 
-			InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_CB, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(4, IDS_CB, false));
 			SetHex(4, cb);
 		}
 
 		_Check_return_ ULONG CResSizeEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
-			if (i == 0)
+			if (paneID == 0)
 			{
 				SetStringW(1, interpretprop::InterpretFlags(flagRelop, GetHex(0)));
 			}
-			else if (i == 2)
+			else if (paneID == 2)
 			{
 				SetStringW(3, interpretprop::TagToString(GetPropTag(2), nullptr, false, true));
 			}
 
-			return i;
+			return paneID;
 		}
 
 		static std::wstring EXISTCLASS = L"CResExistEditor"; // STRING_OK
@@ -344,24 +333,22 @@ namespace dialog
 		{
 			TRACE_CONSTRUCTOR(EXISTCLASS);
 
-			InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULPROPTAG, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_ULPROPTAG, false));
 			SetHex(0, ulPropTag);
-			InitPane(
-				1,
-				viewpane::TextPane::CreateSingleLinePane(
-					IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(
+				1, IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
 		}
 
 		_Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
-			if (i == 0)
+			if (paneID == 0)
 			{
 				SetStringW(1, interpretprop::TagToString(GetPropTag(0), nullptr, false, true));
 			}
 
-			return i;
+			return paneID;
 		}
 
 		// This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
@@ -407,29 +394,25 @@ namespace dialog
 			m_lpNewRes = nullptr;
 			m_lpAllocParent = lpAllocParent;
 
-			InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULSUBOBJECT, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_ULSUBOBJECT, false));
 			SetHex(0, ulSubObject);
-			InitPane(
-				1,
-				viewpane::TextPane::CreateSingleLinePane(
-					IDS_ULSUBOBJECT, interpretprop::TagToString(ulSubObject, nullptr, false, true), true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(
+				1, IDS_ULSUBOBJECT, interpretprop::TagToString(ulSubObject, nullptr, false, true), true));
 
-			InitPane(
-				2,
-				viewpane::TextPane::CreateMultiLinePane(
-					IDS_LPRES, interpretprop::RestrictionToString(lpRes, nullptr), true));
+			AddPane(viewpane::TextPane::CreateMultiLinePane(
+				2, IDS_LPRES, interpretprop::RestrictionToString(lpRes, nullptr), true));
 		}
 
 		_Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
-			if (i == 0)
+			if (paneID == 0)
 			{
 				SetStringW(1, interpretprop::TagToString(GetPropTag(0), nullptr, false, true));
 			}
 
-			return i;
+			return paneID;
 		}
 
 		_Check_return_ LPSRestriction CResSubResEditor::DetachModifiedSRestriction()
@@ -487,7 +470,8 @@ namespace dialog
 			m_ulNewResCount = NULL;
 			m_lpAllocParent = lpAllocParent;
 
-			InitPane(0, viewpane::ListPane::Create(IDS_SUBRESTRICTIONS, false, false, ListEditCallBack(this)));
+			AddPane(viewpane::ListPane::Create(0, IDS_SUBRESTRICTIONS, false, false, ListEditCallBack(this)));
+			SetListID(0);
 		}
 
 		// Used to call functions which need to be called AFTER controls are created
@@ -524,28 +508,34 @@ namespace dialog
 			case RES_AND:
 				InsertColumn(ulListNum, 1, IDS_SUBRESTRICTION);
 
-				for (ULONG i = 0; i < lpRes->res.resAnd.cRes; i++)
+				for (ULONG paneID = 0; paneID < lpRes->res.resAnd.cRes; paneID++)
 				{
-					lpData = InsertListRow(ulListNum, i, std::to_wstring(i));
+					lpData = InsertListRow(ulListNum, paneID, std::to_wstring(paneID));
 					if (lpData)
 					{
-						lpData->InitializeRes(&lpRes->res.resAnd.lpRes[i]);
+						lpData->InitializeRes(&lpRes->res.resAnd.lpRes[paneID]);
 						SetListString(
-							ulListNum, i, 1, interpretprop::RestrictionToString(&lpRes->res.resAnd.lpRes[i], nullptr));
+							ulListNum,
+							paneID,
+							1,
+							interpretprop::RestrictionToString(&lpRes->res.resAnd.lpRes[paneID], nullptr));
 					}
 				}
 				break;
 			case RES_OR:
 				InsertColumn(ulListNum, 1, IDS_SUBRESTRICTION);
 
-				for (ULONG i = 0; i < lpRes->res.resOr.cRes; i++)
+				for (ULONG paneID = 0; paneID < lpRes->res.resOr.cRes; paneID++)
 				{
-					lpData = InsertListRow(ulListNum, i, std::to_wstring(i));
+					lpData = InsertListRow(ulListNum, paneID, std::to_wstring(paneID));
 					if (lpData)
 					{
-						lpData->InitializeRes(&lpRes->res.resOr.lpRes[i]);
+						lpData->InitializeRes(&lpRes->res.resOr.lpRes[paneID]);
 						SetListString(
-							ulListNum, i, 1, interpretprop::RestrictionToString(&lpRes->res.resOr.lpRes[i], nullptr));
+							ulListNum,
+							paneID,
+							1,
+							interpretprop::RestrictionToString(&lpRes->res.resOr.lpRes[paneID], nullptr));
 					}
 				}
 				break;
@@ -580,20 +570,20 @@ namespace dialog
 			auto lpNewResArray = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * ulNewResCount, m_lpAllocParent);
 			if (lpNewResArray)
 			{
-				for (ULONG i = 0; i < ulNewResCount; i++)
+				for (ULONG paneID = 0; paneID < ulNewResCount; paneID++)
 				{
-					const auto lpData = GetListRowData(0, i);
+					const auto lpData = GetListRowData(0, paneID);
 					if (lpData && lpData->Res())
 					{
 						if (lpData->Res()->m_lpNewRes)
 						{
-							memcpy(&lpNewResArray[i], lpData->Res()->m_lpNewRes, sizeof(SRestriction));
+							memcpy(&lpNewResArray[paneID], lpData->Res()->m_lpNewRes, sizeof(SRestriction));
 							memset(lpData->Res()->m_lpNewRes, 0, sizeof(SRestriction));
 						}
 						else
 						{
 							EC_H_S(mapi::HrCopyRestrictionArray(
-								lpData->Res()->m_lpOldRes, m_lpAllocParent, 1, &lpNewResArray[i]));
+								lpData->Res()->m_lpOldRes, m_lpAllocParent, 1, &lpNewResArray[paneID]));
 						}
 					}
 				}
@@ -652,16 +642,14 @@ namespace dialog
 			m_lpNewCommentProp = nullptr;
 			m_lpAllocParent = lpAllocParent;
 
-			InitPane(
-				0,
-				viewpane::ListPane::CreateCollapsibleListPane(
-					IDS_SUBRESTRICTION, false, false, ListEditCallBack(this)));
-			InitPane(
+			AddPane(viewpane::ListPane::CreateCollapsibleListPane(
+				0, IDS_SUBRESTRICTION, false, false, ListEditCallBack(this)));
+			SetListID(0);
+			AddPane(viewpane::TextPane::CreateMultiLinePane(
 				1,
-				viewpane::TextPane::CreateMultiLinePane(
-					IDS_RESTRICTIONTEXT,
-					interpretprop::RestrictionToString(m_lpSourceRes->res.resComment.lpRes, nullptr),
-					true));
+				IDS_RESTRICTIONTEXT,
+				interpretprop::RestrictionToString(m_lpSourceRes->res.resComment.lpRes, nullptr),
+				true));
 		}
 
 		// Used to call functions which need to be called AFTER controls are created
@@ -713,17 +701,20 @@ namespace dialog
 			InsertColumn(ulListNum, 2, IDS_VALUE);
 			InsertColumn(ulListNum, 3, IDS_ALTERNATEVIEW);
 
-			for (ULONG i = 0; i < cProps; i++)
+			for (ULONG paneID = 0; paneID < cProps; paneID++)
 			{
-				auto lpData = InsertListRow(ulListNum, i, std::to_wstring(i));
+				auto lpData = InsertListRow(ulListNum, paneID, std::to_wstring(paneID));
 				if (lpData)
 				{
-					lpData->InitializeComment(&lpProps[i]);
+					lpData->InitializeComment(&lpProps[paneID]);
 					SetListString(
-						ulListNum, i, 1, interpretprop::TagToString(lpProps[i].ulPropTag, nullptr, false, true));
-					interpretprop::InterpretProp(&lpProps[i], &szProp, &szAltProp);
-					SetListString(ulListNum, i, 2, szProp);
-					SetListString(ulListNum, i, 3, szAltProp);
+						ulListNum,
+						paneID,
+						1,
+						interpretprop::TagToString(lpProps[paneID].ulPropTag, nullptr, false, true));
+					interpretprop::InterpretProp(&lpProps[paneID], &szProp, &szAltProp);
+					SetListString(ulListNum, paneID, 2, szProp);
+					SetListString(ulListNum, paneID, 3, szAltProp);
 				}
 			}
 
@@ -752,20 +743,20 @@ namespace dialog
 			auto lpSourceProp =
 				lpData->Comment()->m_lpNewProp ? lpData->Comment()->m_lpNewProp : lpData->Comment()->m_lpOldProp;
 
-			SPropValue sProp = {0};
+			auto sProp = SPropValue{};
 
 			if (!lpSourceProp)
 			{
 				CEditor MyTag(this, IDS_TAG, IDS_TAGPROMPT, true);
 
-				MyTag.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_TAG, false));
+				MyTag.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_TAG, false));
 
 				if (!MyTag.DisplayDialog()) return false;
 				sProp.ulPropTag = MyTag.GetHex(0);
 				lpSourceProp = &sProp;
 			}
 
-			auto hRes = WC_H(DisplayPropertyEditor(
+			const auto hRes = WC_H(DisplayPropertyEditor(
 				this,
 				IDS_PROPEDITOR,
 				NULL,
@@ -808,15 +799,15 @@ namespace dialog
 					mapi::allocate<LPSPropValue>(sizeof(SPropValue) * ulNewCommentProp, m_lpAllocParent);
 				if (lpNewCommentProp)
 				{
-					for (ULONG i = 0; i < ulNewCommentProp; i++)
+					for (ULONG paneID = 0; paneID < ulNewCommentProp; paneID++)
 					{
-						const auto lpData = GetListRowData(0, i);
+						const auto lpData = GetListRowData(0, paneID);
 						if (lpData && lpData->Comment())
 						{
 							if (lpData->Comment()->m_lpNewProp)
 							{
 								EC_H_S(mapi::MyPropCopyMore(
-									&lpNewCommentProp[i],
+									&lpNewCommentProp[paneID],
 									lpData->Comment()->m_lpNewProp,
 									MAPIAllocateMore,
 									m_lpAllocParent));
@@ -824,7 +815,7 @@ namespace dialog
 							else
 							{
 								EC_H_S(mapi::MyPropCopyMore(
-									&lpNewCommentProp[i],
+									&lpNewCommentProp[paneID],
 									lpData->Comment()->m_lpOldProp,
 									MAPIAllocateMore,
 									m_lpAllocParent));
@@ -886,15 +877,11 @@ namespace dialog
 			}
 
 			SetPromptPostFix(interpretprop::AllFlagsToString(flagRestrictionType, true));
-			InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RESTRICTIONTYPE, false)); // type as a number
-			InitPane(
-				1,
-				viewpane::TextPane::CreateSingleLinePane(
-					IDS_RESTRICTIONTYPE, true)); // type as a string (flagRestrictionType)
-			InitPane(
-				2,
-				viewpane::TextPane::CreateMultiLinePane(
-					IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(GetSourceRes(), nullptr), true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_RESTRICTIONTYPE, false)); // type as a number
+			AddPane(viewpane::TextPane::CreateSingleLinePane(
+				1, IDS_RESTRICTIONTYPE, true)); // type as a string (flagRestrictionType)
+			AddPane(viewpane::TextPane::CreateMultiLinePane(
+				2, IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(GetSourceRes(), nullptr), true));
 		}
 
 		CRestrictEditor::~CRestrictEditor()
@@ -947,16 +934,16 @@ namespace dialog
 		// so I can react to it if I need to
 		_Check_return_ ULONG CRestrictEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
 			// If the restriction type changed
-			if (i == 0)
+			if (paneID == 0)
 			{
-				if (!m_lpOutputRes) return i;
+				if (!m_lpOutputRes) return paneID;
 				const auto ulOldResType = m_lpOutputRes->rt;
-				const auto ulNewResType = GetHex(i);
+				const auto ulNewResType = GetHex(paneID);
 
-				if (ulOldResType == ulNewResType) return i;
+				if (ulOldResType == ulNewResType) return paneID;
 
 				SetStringW(1, interpretprop::InterpretFlags(flagRestrictionType, ulNewResType));
 
@@ -988,7 +975,7 @@ namespace dialog
 
 				SetStringW(2, interpretprop::RestrictionToString(m_lpOutputRes, nullptr));
 			}
-			return i;
+			return paneID;
 		}
 
 		void CRestrictEditor::OnEditAction1()
@@ -1261,19 +1248,18 @@ namespace dialog
 			m_ulNewSearchFlags = NULL;
 
 			SetPromptPostFix(interpretprop::AllFlagsToString(flagSearchFlag, true));
-			InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SEARCHSTATE, true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SEARCHSTATE, true));
 			SetHex(0, ulSearchState);
 			const auto szFlags = interpretprop::InterpretFlags(flagSearchState, ulSearchState);
-			InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_SEARCHSTATE, szFlags, true));
-			InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_SEARCHSTATE, szFlags, true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_SEARCHFLAGS, false));
 			SetHex(2, 0);
-			InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, true));
-			InitPane(
-				4, viewpane::ListPane::CreateCollapsibleListPane(IDS_EIDLIST, false, false, ListEditCallBack(this)));
-			InitPane(
-				5,
-				viewpane::TextPane::CreateMultiLinePane(
-					IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(m_lpSourceRes, nullptr), true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(3, IDS_SEARCHFLAGS, true));
+			AddPane(
+				viewpane::ListPane::CreateCollapsibleListPane(4, IDS_EIDLIST, false, false, ListEditCallBack(this)));
+			SetListID(4);
+			AddPane(viewpane::TextPane::CreateMultiLinePane(
+				5, IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(m_lpSourceRes, nullptr), true));
 		}
 
 		CCriteriaEditor::~CCriteriaEditor()
@@ -1303,14 +1289,14 @@ namespace dialog
 
 		_Check_return_ ULONG CCriteriaEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
-			if (i == 2)
+			if (paneID == 2)
 			{
-				SetStringW(3, interpretprop::InterpretFlags(flagSearchFlag, GetHex(i)));
+				SetStringW(3, interpretprop::InterpretFlags(flagSearchFlag, GetHex(paneID)));
 			}
 
-			return i;
+			return paneID;
 		}
 
 		// Whoever gets this MUST MAPIFreeBuffer
@@ -1342,17 +1328,17 @@ namespace dialog
 
 			if (lpEntryList)
 			{
-				for (ULONG i = 0; i < lpEntryList->cValues; i++)
+				for (ULONG iRow = 0; iRow < lpEntryList->cValues; iRow++)
 				{
-					auto lpData = InsertListRow(ulListNum, i, std::to_wstring(i));
+					auto lpData = InsertListRow(ulListNum, iRow, std::to_wstring(iRow));
 					if (lpData)
 					{
-						lpData->InitializeBinary(&lpEntryList->lpbin[i]);
+						lpData->InitializeBinary(&lpEntryList->lpbin[iRow]);
 					}
 
-					SetListString(ulListNum, i, 1, std::to_wstring(lpEntryList->lpbin[i].cb));
-					SetListString(ulListNum, i, 2, strings::BinToHexString(&lpEntryList->lpbin[i], false));
-					SetListString(ulListNum, i, 3, strings::BinToTextString(&lpEntryList->lpbin[i], true));
+					SetListString(ulListNum, iRow, 1, std::to_wstring(lpEntryList->lpbin[iRow].cb));
+					SetListString(ulListNum, iRow, 2, strings::BinToHexString(&lpEntryList->lpbin[iRow], false));
+					SetListString(ulListNum, iRow, 3, strings::BinToTextString(&lpEntryList->lpbin[iRow], true));
 					if (lpData) lpData->bItemFullyLoaded = true;
 				}
 			}
@@ -1391,7 +1377,7 @@ namespace dialog
 
 			CEditor BinEdit(this, IDS_EIDEDITOR, IDS_EIDEDITORPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-			LPSBinary lpSourcebin = nullptr;
+			auto lpSourcebin = LPSBinary{};
 			if (lpData->Binary()->m_OldBin.lpb)
 			{
 				lpSourcebin = &lpData->Binary()->m_OldBin;
@@ -1401,9 +1387,8 @@ namespace dialog
 				lpSourcebin = &lpData->Binary()->m_NewBin;
 			}
 
-			BinEdit.InitPane(
-				0,
-				viewpane::TextPane::CreateSingleLinePane(IDS_EID, strings::BinToHexString(lpSourcebin, false), false));
+			BinEdit.AddPane(viewpane::TextPane::CreateSingleLinePane(
+				0, IDS_EID, strings::BinToHexString(lpSourcebin, false), false));
 
 			if (BinEdit.DisplayDialog())
 			{
@@ -1434,28 +1419,28 @@ namespace dialog
 				m_lpNewEntryList->lpbin =
 					mapi::allocate<LPSBinary>(m_lpNewEntryList->cValues * sizeof(SBinary), m_lpNewEntryList);
 
-				for (ULONG i = 0; i < m_lpNewEntryList->cValues; i++)
+				for (ULONG paneID = 0; paneID < m_lpNewEntryList->cValues; paneID++)
 				{
-					const auto lpData = GetListRowData(LISTNUM, i);
+					const auto lpData = GetListRowData(LISTNUM, paneID);
 					if (lpData && lpData->Binary())
 					{
 						if (lpData->Binary()->m_NewBin.lpb)
 						{
-							m_lpNewEntryList->lpbin[i].cb = lpData->Binary()->m_NewBin.cb;
-							m_lpNewEntryList->lpbin[i].lpb = lpData->Binary()->m_NewBin.lpb;
+							m_lpNewEntryList->lpbin[paneID].cb = lpData->Binary()->m_NewBin.cb;
+							m_lpNewEntryList->lpbin[paneID].lpb = lpData->Binary()->m_NewBin.lpb;
 							// clean out the source
 							lpData->Binary()->m_OldBin.lpb = nullptr;
 						}
 						else
 						{
-							m_lpNewEntryList->lpbin[i].cb = lpData->Binary()->m_OldBin.cb;
-							m_lpNewEntryList->lpbin[i].lpb =
-								mapi::allocate<LPBYTE>(m_lpNewEntryList->lpbin[i].cb, m_lpNewEntryList);
+							m_lpNewEntryList->lpbin[paneID].cb = lpData->Binary()->m_OldBin.cb;
+							m_lpNewEntryList->lpbin[paneID].lpb =
+								mapi::allocate<LPBYTE>(m_lpNewEntryList->lpbin[paneID].cb, m_lpNewEntryList);
 
 							memcpy(
-								m_lpNewEntryList->lpbin[i].lpb,
+								m_lpNewEntryList->lpbin[paneID].lpb,
 								lpData->Binary()->m_OldBin.lpb,
-								m_lpNewEntryList->lpbin[i].cb);
+								m_lpNewEntryList->lpbin[paneID].cb);
 						}
 					}
 				}
@@ -1468,5 +1453,5 @@ namespace dialog
 
 			m_ulNewSearchFlags = GetHex(2);
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog

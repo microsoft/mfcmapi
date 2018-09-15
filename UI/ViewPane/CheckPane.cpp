@@ -4,15 +4,14 @@
 
 namespace viewpane
 {
-	static std::wstring CLASS = L"CheckPane";
-
-	CheckPane* CheckPane::Create(UINT uidLabel, bool bVal, bool bReadOnly)
+	CheckPane* CheckPane::Create(int paneID, UINT uidLabel, bool bVal, bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) CheckPane();
 		if (pane)
 		{
 			pane->m_bCheckValue = bVal;
 			pane->SetLabel(uidLabel, bReadOnly);
+			pane->m_paneID = paneID;
 		}
 
 		return pane;
@@ -35,9 +34,9 @@ namespace viewpane
 
 	int CheckPane::GetFixedHeight() { return m_iButtonHeight; }
 
-	void CheckPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
+	void CheckPane::Initialize(_In_ CWnd* pParent, _In_ HDC /*hdc*/)
 	{
-		ViewPane::Initialize(iControl, pParent, nullptr);
+		ViewPane::Initialize(pParent, nullptr);
 
 		EC_B_S(m_Check.Create(
 			NULL,
@@ -51,10 +50,10 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
-	void CheckPane::SetWindowPos(int x, int y, int width, int height)
+	void CheckPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
-		output::DebugPrint(DBGDraw, L"CheckPane::SetWindowPos x:%d width:%d \n", x, width);
-		EC_B_S(m_Check.SetWindowPos(NULL, x, y, width, height, SWP_NOZORDER));
+		output::DebugPrint(DBGDraw, L"CheckPane::DeferWindowPos x:%d width:%d \n", x, width);
+		EC_B_S(::DeferWindowPos(hWinPosInfo, m_Check.GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER));
 	}
 
 	void CheckPane::CommitUIValues()
@@ -81,7 +80,7 @@ namespace viewpane
 
 		const auto lCheck = GetSystemMetrics(SM_CXMENUCHECK);
 		const auto lEdge = lCheck / 5;
-		RECT rcCheck = {0};
+		auto rcCheck = RECT{0};
 		rcCheck.left = rc.left;
 		rcCheck.right = rcCheck.left + lCheck;
 		rcCheck.top = (rc.bottom - rc.top - lCheck) / 2;
@@ -119,9 +118,9 @@ namespace viewpane
 		ui::DrawSegoeTextW(
 			hDC,
 			szButton,
-			bDisabled ? ui::MyGetSysColor(ui::cTextDisabled) : ui::MyGetSysColor(ui::cText),
+			bDisabled ? MyGetSysColor(ui::cTextDisabled) : MyGetSysColor(ui::cText),
 			rcLabel,
 			false,
 			DT_SINGLELINE | DT_VCENTER);
 	}
-}
+} // namespace viewpane

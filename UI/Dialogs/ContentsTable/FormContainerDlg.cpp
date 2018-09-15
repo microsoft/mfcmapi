@@ -207,7 +207,7 @@ namespace dialog
 		output::DebugPrintEx(DBGForms, CLASS, L"OnInstallForm", L"installing form\n");
 		editor::CEditor MyFlags(
 			this, IDS_INSTALLFORM, IDS_INSTALLFORMPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyFlags.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+		MyFlags.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLAGS, false));
 		MyFlags.SetHex(0, MAPIFORM_INSTALL_DIALOG);
 
 		if (!MyFlags.DisplayDialog()) return;
@@ -260,7 +260,7 @@ namespace dialog
 
 		output::DebugPrintEx(DBGForms, CLASS, L"OnRemoveForm", L"removing form\n");
 		editor::CEditor MyClass(this, IDS_REMOVEFORM, IDS_REMOVEFORMPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyClass.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
+		MyClass.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CLASS, false));
 
 		if (!MyClass.DisplayDialog()) return;
 
@@ -281,8 +281,8 @@ namespace dialog
 		output::DebugPrintEx(DBGForms, CLASS, L"OnResolveMessageClass", L"resolving message class\n");
 		editor::CEditor MyData(
 			this, IDS_RESOLVECLASS, IDS_RESOLVECLASSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
-		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CLASS, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_FLAGS, false));
 
 		if (!MyData.DisplayDialog()) return;
 		auto szClass = strings::wstringTostring(MyData.GetStringW(0)); // ResolveMessageClass requires an ANSI string
@@ -315,9 +315,9 @@ namespace dialog
 			DBGForms, CLASS, L"OnResolveMultipleMessageClasses", L"resolving multiple message classes\n");
 		editor::CEditor MyData(
 			this, IDS_RESOLVECLASSES, IDS_RESOLVECLASSESPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NUMBER, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_NUMBER, false));
 		MyData.SetDecimal(0, 1);
-		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_FLAGS, false));
 
 		if (!MyData.DisplayDialog()) return;
 
@@ -335,7 +335,7 @@ namespace dialog
 				{
 					editor::CEditor MyClass(
 						this, IDS_ENTERMSGCLASS, IDS_ENTERMSGCLASSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-					MyClass.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
+					MyClass.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CLASS, false));
 
 					// Assume we're gonna fail until we succeed
 					bCancel = true;
@@ -397,7 +397,7 @@ namespace dialog
 		output::DebugPrintEx(DBGForms, CLASS, L"OnCalcFormPropSet", L"calculating form property set\n");
 		editor::CEditor MyData(
 			this, IDS_CALCFORMPROPSET, IDS_CALCFORMPROPSETPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLAGS, false));
 		MyData.SetHex(0, FORMPROPSET_UNION);
 
 		if (!MyData.DisplayDialog()) return;
@@ -429,7 +429,7 @@ namespace dialog
 				DBGForms, CLASS, L"OnGetDisplay", L"Got display name \"%ws\"\n", szDisplayName.c_str());
 			editor::CEditor MyOutput(
 				this, IDS_GETDISPLAY, IDS_GETDISPLAYPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyOutput.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_GETDISPLAY, szDisplayName, true));
+			MyOutput.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_GETDISPLAY, szDisplayName, true));
 			(void) MyOutput.DisplayDialog();
 			MAPIFreeBuffer(lpszDisplayName);
 		}
@@ -454,4 +454,4 @@ namespace dialog
 			lpParams->lpFormInfoProp = nullptr;
 		}
 	}
-}
+} // namespace dialog

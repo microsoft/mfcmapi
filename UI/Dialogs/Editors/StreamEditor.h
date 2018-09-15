@@ -32,7 +32,7 @@ namespace dialog
 			void WriteTextStreamToProperty();
 			_Check_return_ ULONG HandleChange(UINT nID) override;
 			void OnOK() override;
-			void SetEditReadOnly(ULONG iControl) const;
+			void SetEditReadOnly(ULONG id) const;
 
 			// source variables
 			LPMAPIPROP m_lpMAPIProp;
