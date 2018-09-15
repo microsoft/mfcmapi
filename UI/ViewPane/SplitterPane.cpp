@@ -1,22 +1,20 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/SplitterPane.h>
-#include <UI/UIFunctions.h>
 
 namespace viewpane
 {
-	static std::wstring CLASS = L"SplitterPane";
-
-	SplitterPane* SplitterPane::CreateVerticalPane()
+	SplitterPane* SplitterPane::CreateVerticalPane(int paneID)
 	{
-		auto pane = SplitterPane::CreateHorizontalPane();
+		const auto pane = CreateHorizontalPane(paneID);
 		pane->m_bVertical = true;
 
 		return pane;
 	}
 
-	SplitterPane* SplitterPane::CreateHorizontalPane()
+	SplitterPane* SplitterPane::CreateHorizontalPane(int paneID)
 	{
-		auto pane = new (std::nothrow) SplitterPane();
+		const auto pane = new (std::nothrow) SplitterPane();
+		pane->m_paneID = paneID;
 		return pane;
 	}
 
@@ -62,7 +60,11 @@ namespace viewpane
 
 	ULONG SplitterPane::HandleChange(UINT nID)
 	{
-		if (m_PaneOne->MatchID(nID) || m_PaneTwo->MatchID(nID)) return nID;
+		auto pane = m_PaneOne->GetPaneByNID(nID);
+		if (pane) return pane->GetID();
+
+		pane = m_PaneTwo->GetPaneByNID(nID);
+		if (pane) return pane->GetID();
 
 		return ViewPane::HandleChange(nID);
 	}
@@ -89,9 +91,9 @@ namespace viewpane
 		}
 	}
 
-	void SplitterPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+	void SplitterPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		ViewPane::Initialize(iControl, pParent, nullptr);
+		ViewPane::Initialize(pParent, nullptr);
 
 		m_lpSplitter = new controls::CFakeSplitter();
 
@@ -99,8 +101,8 @@ namespace viewpane
 		{
 			m_lpSplitter->Init(pParent->GetSafeHwnd());
 			m_lpSplitter->SetSplitType(m_bVertical ? controls::SplitVertical : controls::SplitHorizontal);
-			m_PaneOne->Initialize(m_PaneOneControl, m_lpSplitter, hdc);
-			m_PaneTwo->Initialize(m_PaneTwoControl, m_lpSplitter, hdc);
+			m_PaneOne->Initialize(m_lpSplitter, hdc);
+			m_PaneTwo->Initialize(m_lpSplitter, hdc);
 			m_lpSplitter->SetPaneOne(m_PaneOne);
 			m_lpSplitter->SetPaneTwo(m_PaneTwo);
 		}

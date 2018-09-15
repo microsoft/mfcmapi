@@ -9,21 +9,21 @@ namespace viewpane
 	public:
 		SplitterPane() : m_bVertical(false) {}
 
-		static SplitterPane* CreateHorizontalPane();
-		static SplitterPane* CreateVerticalPane();
-		void SetPaneOne(int iControl, ViewPane* paneOne)
+		static SplitterPane* CreateHorizontalPane(int paneID);
+		static SplitterPane* CreateVerticalPane(int paneID);
+		void SetPaneOne(ViewPane* paneOne)
 		{
-			m_PaneOneControl = iControl;
+			m_PaneOneControl = paneOne->GetID();
 			m_PaneOne = paneOne;
 		}
-		void SetPaneTwo(int iControl, ViewPane* paneTwo)
+		void SetPaneTwo(ViewPane* paneTwo)
 		{
-			m_PaneTwoControl = iControl;
+			m_PaneTwoControl = paneTwo->GetID();
 			m_PaneTwo = paneTwo;
 		}
 
 	private:
-		void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
+		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		void CommitUIValues() override {}
 		int GetMinWidth(_In_ HDC hdc) override;
@@ -37,7 +37,7 @@ namespace viewpane
 			int iSmallHeightMargin,
 			int iLargeHeightMargin,
 			int iButtonHeight, // Height of buttons below the control
-			int iEditHeight); // height of an edit control
+			int iEditHeight) override; // height of an edit control
 
 		controls::CFakeSplitter* m_lpSplitter{};
 		int m_PaneOneControl{};
