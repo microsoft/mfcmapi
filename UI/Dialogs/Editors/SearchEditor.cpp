@@ -36,10 +36,10 @@ namespace dialog
 			m_lpMAPIProp = lpMAPIProp;
 			if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-			InitPane(PROPNAME, viewpane::TextPane::CreateSingleLinePane(IDS_PROPNAME, true));
-			InitPane(SEARCHTERM, viewpane::TextPane::CreateSingleLinePane(IDS_PROPVALUE, false));
-			InitPane(FUZZYLEVEL, viewpane::DropDownPane::Create(IDS_SEARCHTYPE, 0, nullptr, false));
-			InitPane(FINDROW, viewpane::CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(PROPNAME, IDS_PROPNAME, true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(SEARCHTERM, IDS_PROPVALUE, false));
+			AddPane(viewpane::DropDownPane::Create(FUZZYLEVEL, IDS_SEARCHTYPE, 0, nullptr, false));
+			AddPane(viewpane::CheckPane::Create(FINDROW, IDS_APPLYUSINGFINDROW, false, false));
 
 			// initialize our dropdowns here
 			auto ulDropNum = 0;
@@ -66,13 +66,8 @@ namespace dialog
 		_Check_return_ const SRestriction* CSearchEditor::GetRestriction() const
 		{
 			// Allocate and create our SRestriction
-			auto lpRes = mapi::CreatePropertyStringRestriction(
-				CHANGE_PROP_TYPE(m_ulPropTag, PT_UNICODE),
-				GetStringW(CSearchEditor::SearchFields::SEARCHTERM),
-				m_ulFuzzyLevel,
-				nullptr);
-
-			return lpRes;
+			return mapi::CreatePropertyStringRestriction(
+				CHANGE_PROP_TYPE(m_ulPropTag, PT_UNICODE), GetStringW(SEARCHTERM), m_ulFuzzyLevel, nullptr);
 		}
 
 		// Select a property tag
@@ -94,22 +89,22 @@ namespace dialog
 
 		_Check_return_ ULONG CSearchEditor::HandleChange(UINT nID)
 		{
-			const auto i = static_cast<SearchFields>(CEditor::HandleChange(nID));
+			const auto paneID = static_cast<SearchFields>(CEditor::HandleChange(nID));
 
-			if (i == static_cast<SearchFields>(-1)) return static_cast<ULONG>(-1);
+			if (paneID == static_cast<SearchFields>(-1)) return static_cast<ULONG>(-1);
 
-			switch (i)
+			switch (paneID)
 			{
 			case FUZZYLEVEL:
 				m_ulFuzzyLevel = GetSelectedFuzzyLevel();
 				break;
 			default:
-				return i;
+				return paneID;
 			}
 
-			PopulateFields(i);
+			PopulateFields(paneID);
 
-			return i;
+			return paneID;
 		}
 
 		// Fill out the fields in the form
@@ -153,5 +148,5 @@ namespace dialog
 
 			return FL_FULLSTRING;
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog

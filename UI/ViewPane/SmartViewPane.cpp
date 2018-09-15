@@ -5,39 +5,33 @@
 
 namespace viewpane
 {
-	static std::wstring CLASS = L"SmartViewPane";
-
-	SmartViewPane* SmartViewPane::Create(UINT uidLabel)
+	SmartViewPane* SmartViewPane::Create(int paneID, UINT uidLabel)
 	{
 		auto pane = new (std::nothrow) SmartViewPane();
 		if (pane)
 		{
 			pane->SetLabel(uidLabel, true);
 			pane->m_bCollapsible = true;
+			pane->m_paneID = paneID;
 		}
 
 		return pane;
 	}
 
-	SmartViewPane::SmartViewPane()
+	void SmartViewPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
 		m_TextPane.SetMultiline();
 		m_TextPane.SetLabel(NULL, true);
-		m_bHasData = false;
-		m_bDoDropDown = true;
 		m_bReadOnly = true;
-	}
 
-	void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
-	{
 		for (const auto& smartViewParserType : SmartViewParserTypeArray)
 		{
 			InsertDropString(smartViewParserType.lpszName, smartViewParserType.ulValue);
 		}
 
-		DropDownPane::Initialize(iControl, pParent, hdc);
+		DropDownPane::Initialize(pParent, hdc);
 		// The control id of this text pane doesn't matter, so leave it at 0
-		m_TextPane.Initialize(0, pParent, hdc);
+		m_TextPane.Initialize(pParent, hdc);
 
 		m_bInitialized = true;
 	}
@@ -48,7 +42,7 @@ namespace viewpane
 
 		auto iHeight = 0;
 
-		if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
+		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
 		// Our expand/collapse button
 		iHeight += m_iButtonHeight;
@@ -79,7 +73,7 @@ namespace viewpane
 		EC_B_S(m_CollapseButton.ShowWindow(visibility));
 		EC_B_S(m_Label.ShowWindow(visibility));
 
-		if (0 != m_iControl)
+		if (0 != m_paneID)
 		{
 			y += m_iSmallHeightMargin;
 			height -= m_iSmallHeightMargin;

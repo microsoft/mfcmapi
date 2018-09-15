@@ -5,28 +5,6 @@
 
 namespace viewpane
 {
-	ViewPane::ViewPane()
-	{
-		m_iControl = -1;
-
-		m_nID = 0;
-		m_bCollapsible = false;
-		m_bCollapsed = false;
-		m_bReadOnly = true;
-		m_bInitialized = false;
-		m_iMargin = 0;
-		m_iSideMargin = 0;
-		m_iLabelHeight = 0;
-		m_iSmallHeightMargin = 0;
-		m_iLargeHeightMargin = 0;
-		m_iButtonHeight = 0;
-		m_iEditHeight = 0;
-		m_iSmallHeightMargin = 0;
-		m_iLabelWidth = 0;
-
-		m_hWndParent = nullptr;
-	}
-
 	void ViewPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int /*height*/)
 	{
 		if (m_bCollapsible)
@@ -59,12 +37,12 @@ namespace viewpane
 		}
 	}
 
-	void ViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC /*hdc*/)
+	void ViewPane::Initialize(_In_ CWnd* pParent, _In_opt_ HDC /*hdc*/)
 	{
-		m_iControl = iControl;
 		if (pParent) m_hWndParent = pParent->m_hWnd;
-		const UINT iCurIDLabel = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl;
-		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl + 1;
+		// We compute nID for our view, the label, and collapse button all from the pane's base ID.
+		const UINT iCurIDLabel = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID;
+		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID + 1;
 
 		EC_B_S(m_Label.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, iCurIDLabel));
@@ -75,12 +53,13 @@ namespace viewpane
 		{
 			StyleLabel(m_Label.m_hWnd, ui::lsPaneHeaderLabel);
 
+			// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
 			EC_B_S(m_CollapseButton.Create(
 				NULL,
 				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 				CRect(0, 0, 0, 0),
 				pParent,
-				IDD_COLLAPSE + iControl));
+				IDD_COLLAPSE + m_nID));
 		}
 	}
 
@@ -99,10 +78,12 @@ namespace viewpane
 
 	ULONG ViewPane::HandleChange(UINT nID)
 	{
-		if (static_cast<UINT>(IDD_COLLAPSE + m_iControl) == nID)
+		// Collapse buttons have a nID IDD_COLLAPSE higher than nID of the pane they toggle.
+		// So if we get asked about one that matches, we can assume it's time to toggle our collapse.
+		if (IDD_COLLAPSE + m_nID == nID)
 		{
 			OnToggleCollapse();
-			return m_iControl;
+			return m_paneID;
 		}
 
 		return static_cast<ULONG>(-1);
@@ -135,8 +116,6 @@ namespace viewpane
 	}
 
 	void ViewPane::SetAddInLabel(const std::wstring& szLabel) { m_szLabel = szLabel; }
-
-	bool ViewPane::MatchID(UINT nID) const { return nID == m_nID; }
 
 	void ViewPane::UpdateButtons() {}
 } // namespace viewpane

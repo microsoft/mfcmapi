@@ -39,11 +39,11 @@ namespace dialog
 
 			auto splitter = viewpane::SplitterPane::CreateHorizontalPane();
 			InitPane(HEXED_TEXT, splitter);
-			splitter->SetPaneOne(HEXED_ANSI, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ANSISTRING, false));
-			splitter->SetPaneTwo(HEXED_UNICODE, viewpane::TextPane::CreateCollapsibleTextPane(IDS_UNISTRING, false));
-			InitPane(HEXED_BASE64, viewpane::CountedTextPane::Create(IDS_BASE64STRING, false, IDS_CCH));
-			InitPane(HEXED_HEX, viewpane::CountedTextPane::Create(IDS_HEX, false, IDS_CB));
-			InitPane(HEXED_SMARTVIEW, viewpane::SmartViewPane::Create(IDS_SMARTVIEW));
+			splitter->SetPaneOne(viewpane::TextPane::CreateCollapsibleTextPane(HEXED_ANSI, IDS_ANSISTRING, false));
+			splitter->SetPaneTwo(viewpane::TextPane::CreateCollapsibleTextPane(HEXED_UNICODE, IDS_UNISTRING, false));
+			AddPane(viewpane::CountedTextPane::Create(HEXED_BASE64, IDS_BASE64STRING, false, IDS_CCH));
+			AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
+			AddPane(viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW));
 			DisplayParentedDialog(pParentWnd, 1000);
 		}
 
@@ -64,15 +64,15 @@ namespace dialog
 
 		_Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
-			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
+			if (paneID == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
-			LPBYTE lpb = nullptr;
+			auto lpb = LPBYTE{};
 			size_t cb = 0;
 			std::wstring szEncodeStr;
 			size_t cchEncodeStr = 0;
-			switch (i)
+			switch (paneID)
 			{
 				// TODO: Get these routed into our splitter
 			case HEXED_ANSI:
@@ -155,7 +155,7 @@ namespace dialog
 				break;
 			}
 
-			if (HEXED_SMARTVIEW != i)
+			if (HEXED_SMARTVIEW != paneID)
 			{
 				// length of base64 encoded string
 				auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(HEXED_BASE64));
@@ -177,7 +177,7 @@ namespace dialog
 			// Force the new layout
 			OnRecalcLayout();
 
-			return i;
+			return paneID;
 		}
 
 		void CHexEditor::UpdateParser() const
@@ -187,10 +187,7 @@ namespace dialog
 			if (lpPane)
 			{
 				auto bin = GetBinary(HEXED_HEX);
-				SBinary Bin = {0};
-				Bin.lpb = bin.data();
-				Bin.cb = ULONG(bin.size());
-				lpPane->Parse(Bin);
+				lpPane->Parse(SBinary{ULONG(bin.size()), bin.data()});
 			}
 		}
 

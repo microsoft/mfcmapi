@@ -61,10 +61,10 @@ namespace dialog
 				  NULL)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
-			InitPane(DBGVIEW_TAGS, viewpane::TextPane::CreateSingleLinePane(IDS_REGKEY_DEBUG_TAG, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(DBGVIEW_TAGS, IDS_REGKEY_DEBUG_TAG, false));
 			SetHex(DBGVIEW_TAGS, output::GetDebugLevel());
-			InitPane(DBGVIEW_PAUSE, viewpane::CheckPane::Create(IDS_PAUSE, false, false));
-			InitPane(DBGVIEW_VIEW, viewpane::TextPane::CreateMultiLinePane(NULL, true));
+			AddPane(viewpane::CheckPane::Create(DBGVIEW_PAUSE, IDS_PAUSE, false, false));
+			AddPane(viewpane::TextPane::CreateMultiLinePane(DBGVIEW_VIEW, NULL, true));
 			m_bPaused = false;
 			DisplayParentedDialog(pParentWnd, 800);
 		}
@@ -83,11 +83,11 @@ namespace dialog
 
 		_Check_return_ ULONG CDbgView::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
-			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
+			if (paneID == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
-			switch (i)
+			switch (paneID)
 			{
 			case DBGVIEW_TAGS:
 			{
@@ -105,7 +105,7 @@ namespace dialog
 				break;
 			}
 
-			return i;
+			return paneID;
 		}
 
 		// Clear
@@ -131,5 +131,5 @@ namespace dialog
 				lpPane->AppendString(szMsg);
 			}
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog
