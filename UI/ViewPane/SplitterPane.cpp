@@ -22,13 +22,13 @@ namespace viewpane
 	{
 		if (m_bVertical)
 		{
-			return m_PaneOne->GetMinWidth(hdc) + m_PaneTwo->GetMinWidth(hdc) + m_lpSplitter
-					   ? m_lpSplitter->GetSplitWidth()
-					   : 0;
+			return max(m_PaneOne->GetMinWidth(hdc), m_PaneTwo->GetMinWidth(hdc));
 		}
 		else
 		{
-			return max(m_PaneOne->GetMinWidth(hdc), m_PaneTwo->GetMinWidth(hdc));
+			return m_PaneOne->GetMinWidth(hdc) + m_PaneTwo->GetMinWidth(hdc) + m_lpSplitter
+					   ? m_lpSplitter->GetSplitWidth()
+					   : 0;
 		}
 	}
 
@@ -36,13 +36,13 @@ namespace viewpane
 	{
 		if (m_bVertical)
 		{
-			return max(m_PaneOne->GetFixedHeight(), m_PaneTwo->GetFixedHeight());
-		}
-		else
-		{
 			return m_PaneOne->GetFixedHeight() + m_PaneTwo->GetFixedHeight() + m_lpSplitter
 					   ? m_lpSplitter->GetSplitWidth()
 					   : 0;
+		}
+		else
+		{
+			return max(m_PaneOne->GetFixedHeight(), m_PaneTwo->GetFixedHeight());
 		}
 	}
 
