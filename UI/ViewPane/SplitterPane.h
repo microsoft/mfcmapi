@@ -7,19 +7,25 @@ namespace viewpane
 	class SplitterPane : public ViewPane
 	{
 	public:
-		SplitterPane() : m_bVertical(false) {}
-
 		static SplitterPane* CreateHorizontalPane(int paneID);
 		static SplitterPane* CreateVerticalPane(int paneID);
-		void SetPaneOne(ViewPane* paneOne)
+		void SetPaneOne(ViewPane* paneOne) { m_PaneOne = paneOne; }
+		void SetPaneTwo(ViewPane* paneTwo) { m_PaneTwo = paneTwo; }
+		// Return a pane with a matching control #.
+		ViewPane* GetPaneByID(int id) override
 		{
-			m_PaneOneControl = paneOne->GetID();
-			m_PaneOne = paneOne;
+			if (m_paneID == id) return this;
+			const auto pane = m_PaneOne->GetPaneByID(id);
+			if (pane) return pane;
+			return m_PaneTwo->GetPaneByID(id);
 		}
-		void SetPaneTwo(ViewPane* paneTwo)
+		// Return a pane with a matching nID.
+		ViewPane* GetPaneByNID(UINT nID) override
 		{
-			m_PaneTwoControl = paneTwo->GetID();
-			m_PaneTwo = paneTwo;
+			if (m_nID == nID) return this;
+			const auto pane = m_PaneOne->GetPaneByNID(nID);
+			if (pane) return pane;
+			return m_PaneTwo->GetPaneByNID(nID);
 		}
 
 	private:
@@ -40,9 +46,7 @@ namespace viewpane
 			int iEditHeight) override; // height of an edit control
 
 		controls::CFakeSplitter* m_lpSplitter{};
-		int m_PaneOneControl{};
 		ViewPane* m_PaneOne{};
-		int m_PaneTwoControl{};
 		ViewPane* m_PaneTwo{};
 		bool m_bVertical{};
 	};
