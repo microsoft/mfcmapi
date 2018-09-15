@@ -35,7 +35,7 @@ namespace dialog
 			m_lpMDB = lpMDB;
 			if (m_lpMDB) m_lpMDB->AddRef();
 
-			AddPane(0, viewpane::ListPane::Create(NULL, true, true, ListEditCallBack(this)));
+			AddPane(viewpane::ListPane::Create(0, NULL, true, true, ListEditCallBack(this)));
 			SetListID(0);
 		}
 
@@ -198,7 +198,7 @@ namespace dialog
 			if (!lpData) return false;
 
 			CEditor MyResults(this, IDS_QSSPECIALFOLDER, NULL, CEDITOR_BUTTON_OK);
-			MyResults.AddPane(0, viewpane::TextPane::CreateMultiLinePane(NULL, true));
+			MyResults.AddPane(viewpane::TextPane::CreateMultiLinePane(0, NULL, true));
 
 			std::wstring szTmp;
 			const auto listPane = dynamic_cast<viewpane::ListPane*>(GetPane(ulListNum));
@@ -236,5 +236,5 @@ namespace dialog
 
 			lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog

@@ -6,7 +6,7 @@ namespace viewpane
 	class CheckPane : public ViewPane
 	{
 	public:
-		static CheckPane* Create(UINT uidLabel, bool bVal, bool bReadOnly);
+		static CheckPane* Create(int paneID, UINT uidLabel, bool bVal, bool bReadOnly);
 		bool GetCheck() const;
 		static void Draw(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemState);
 

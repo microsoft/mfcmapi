@@ -2337,8 +2337,8 @@ namespace mapi
 				nullptr, IDS_COPYTO, IDS_COPYPASTEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 			MyData.AddPane(
-				0, viewpane::TextPane::CreateSingleLinePane(IDS_INTERFACE, guid::GUIDToStringAndName(lpGUID), false));
-			MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+				viewpane::TextPane::CreateSingleLinePane(0, IDS_INTERFACE, guid::GUIDToStringAndName(lpGUID), false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_FLAGS, false));
 			MyData.SetHex(1, MAPI_DIALOG);
 
 			if (!MyData.DisplayDialog()) return MAPI_E_USER_CANCEL;
@@ -2934,4 +2934,4 @@ namespace mapi
 
 		return hRes;
 	}
-}
+} // namespace mapi

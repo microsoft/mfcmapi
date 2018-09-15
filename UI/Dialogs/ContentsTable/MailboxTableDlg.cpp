@@ -120,7 +120,7 @@ namespace dialog
 		editor::CEditor MyPrompt(
 			this, IDS_OPENWITHFLAGS, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-		MyPrompt.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
+		MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CREATESTORENTRYIDFLAGS, false));
 		MyPrompt.SetHex(0, OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 		if (MyPrompt.DisplayDialog())
 		{
@@ -144,8 +144,8 @@ namespace dialog
 			this, IDS_SEARCHCRITERIA, IDS_MBSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
 
-		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));
-		MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_NAME, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_ULFUZZYLEVEL, false));
 		MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
 
 		if (!MyData.DisplayDialog()) return;
@@ -158,4 +158,4 @@ namespace dialog
 
 		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
 	}
-}
+} // namespace dialog

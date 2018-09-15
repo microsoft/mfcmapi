@@ -113,8 +113,8 @@ namespace dialog
 	{
 		editor::CEditor MyData(this, IDS_ACLADDITEM, IDS_ACLADDITEMPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_MEMBER_RIGHTS), true));
-		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_USEREID, false));
-		MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_MASKINHEX, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_USEREID, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_MASKINHEX, false));
 		MyData.SetHex(1, 0);
 
 		if (!MyData.DisplayDialog())
@@ -257,4 +257,4 @@ namespace dialog
 
 		addin::InvokeAddInMenu(lpParams);
 	}
-}
+} // namespace dialog

@@ -7,13 +7,14 @@ namespace viewpane
 {
 	static std::wstring CLASS = L"SmartViewPane";
 
-	SmartViewPane* SmartViewPane::Create(UINT uidLabel)
+	SmartViewPane* SmartViewPane::Create(int paneID, UINT uidLabel)
 	{
 		auto pane = new (std::nothrow) SmartViewPane();
 		if (pane)
 		{
 			pane->SetLabel(uidLabel, true);
 			pane->m_bCollapsible = true;
+			pane->m_paneID = paneID;
 		}
 
 		return pane;

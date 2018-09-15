@@ -36,10 +36,10 @@ namespace dialog
 			m_lpMAPIProp = lpMAPIProp;
 			if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-			AddPane(PROPNAME, viewpane::TextPane::CreateSingleLinePane(IDS_PROPNAME, true));
-			AddPane(SEARCHTERM, viewpane::TextPane::CreateSingleLinePane(IDS_PROPVALUE, false));
-			AddPane(FUZZYLEVEL, viewpane::DropDownPane::Create(IDS_SEARCHTYPE, 0, nullptr, false));
-			AddPane(FINDROW, viewpane::CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(PROPNAME, IDS_PROPNAME, true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(SEARCHTERM, IDS_PROPVALUE, false));
+			AddPane(viewpane::DropDownPane::Create(FUZZYLEVEL, IDS_SEARCHTYPE, 0, nullptr, false));
+			AddPane(viewpane::CheckPane::Create(FINDROW, IDS_APPLYUSINGFINDROW, false, false));
 
 			// initialize our dropdowns here
 			auto ulDropNum = 0;
@@ -153,5 +153,5 @@ namespace dialog
 
 			return FL_FULLSTRING;
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog

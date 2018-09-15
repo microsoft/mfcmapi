@@ -86,12 +86,12 @@ namespace dialog
 
 		void CMultiValuePropertyEditor::InitPropertyControls()
 		{
-			AddPane(0, viewpane::ListPane::Create(IDS_PROPVALUES, false, false, ListEditCallBack(this)));
+			AddPane(viewpane::ListPane::Create(0, IDS_PROPVALUES, false, false, ListEditCallBack(this)));
 			SetListID(0);
 			if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag) || PT_MV_LONG == PROP_TYPE(m_ulPropTag))
 			{
-				auto lpPane = viewpane::SmartViewPane::Create(IDS_SMARTVIEW);
-				AddPane(1, lpPane);
+				auto lpPane = viewpane::SmartViewPane::Create(1, IDS_SMARTVIEW);
+				AddPane(lpPane);
 
 				if (lpPane && PT_MV_LONG == PROP_TYPE(m_ulPropTag))
 				{
@@ -430,5 +430,5 @@ namespace dialog
 
 			return paneID;
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog

@@ -238,7 +238,7 @@ namespace dialog
 			editor::CEditor MyData(
 				this, IDS_CALLCOPYENTRIES, IDS_CALLCOPYENTRIESPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-			MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLAGS, false));
 			MyData.SetHex(0, CREATE_CHECK_DUP_STRICT);
 
 			if (MyData.DisplayDialog())
@@ -265,7 +265,7 @@ namespace dialog
 		editor::CEditor MyData(
 			this, IDS_SEARCHCRITERIA, IDS_ABSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_NAME, false));
 
 		if (!MyData.DisplayDialog()) return;
 
@@ -295,4 +295,4 @@ namespace dialog
 			lpParams->lpMailUser = nullptr;
 		}
 	}
-}
+} // namespace dialog

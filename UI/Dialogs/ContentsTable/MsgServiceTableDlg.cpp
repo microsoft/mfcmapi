@@ -214,8 +214,8 @@ namespace dialog
 		editor::CEditor MyUID(
 			this, IDS_OPENPROFSECT, IDS_OPENPROFSECTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyUID.AddPane(0, viewpane::DropDownPane::CreateGuid(IDS_MAPIUID, false));
-		MyUID.AddPane(1, viewpane::CheckPane::Create(IDS_MAPIUIDBYTESWAPPED, false, false));
+		MyUID.AddPane(viewpane::DropDownPane::CreateGuid(0, IDS_MAPIUID, false));
+		MyUID.AddPane(viewpane::CheckPane::Create(1, IDS_MAPIUIDBYTESWAPPED, false, false));
 
 		if (!MyUID.DisplayDialog()) return;
 
@@ -283,4 +283,4 @@ namespace dialog
 			lpParams->lpProfSect = nullptr;
 		}
 	}
-}
+} // namespace dialog

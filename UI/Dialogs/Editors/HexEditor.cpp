@@ -35,11 +35,11 @@ namespace dialog
 			m_lpMapiObjects = lpMapiObjects;
 			if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
 
-			AddPane(HEXED_ANSI, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ANSISTRING, false));
-			AddPane(HEXED_UNICODE, viewpane::TextPane::CreateCollapsibleTextPane(IDS_UNISTRING, false));
-			AddPane(HEXED_BASE64, viewpane::CountedTextPane::Create(IDS_BASE64STRING, false, IDS_CCH));
-			AddPane(HEXED_HEX, viewpane::CountedTextPane::Create(IDS_HEX, false, IDS_CB));
-			AddPane(HEXED_SMARTVIEW, viewpane::SmartViewPane::Create(IDS_SMARTVIEW));
+			AddPane(viewpane::TextPane::CreateCollapsibleTextPane(HEXED_ANSI, IDS_ANSISTRING, false));
+			AddPane(viewpane::TextPane::CreateCollapsibleTextPane(HEXED_UNICODE, IDS_UNISTRING, false));
+			AddPane(viewpane::CountedTextPane::Create(HEXED_BASE64, IDS_BASE64STRING, false, IDS_CCH));
+			AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
+			AddPane(viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW));
 			DisplayParentedDialog(pParentWnd, 1000);
 		}
 
@@ -248,5 +248,5 @@ namespace dialog
 
 		// Close
 		void CHexEditor::OnEditAction3() { OnOK(); }
-	}
-}
+	} // namespace editor
+} // namespace dialog

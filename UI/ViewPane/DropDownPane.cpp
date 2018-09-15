@@ -9,29 +9,31 @@ namespace viewpane
 	static std::wstring CLASS = L"DropDownPane";
 
 	DropDownPane* DropDownPane::Create(
+		int paneID,
 		UINT uidLabel,
 		ULONG ulDropList,
 		_In_opt_count_(ulDropList) UINT* lpuidDropList,
 		bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) DropDownPane();
-		if (pane && lpuidDropList)
-		{
-			for (ULONG iDropNum = 0; iDropNum < ulDropList; iDropNum++)
-			{
-				pane->InsertDropString(strings::loadstring(lpuidDropList[iDropNum]), lpuidDropList[iDropNum]);
-			}
-		}
-
 		if (pane)
 		{
+			if (lpuidDropList)
+			{
+				for (ULONG iDropNum = 0; iDropNum < ulDropList; iDropNum++)
+				{
+					pane->InsertDropString(strings::loadstring(lpuidDropList[iDropNum]), lpuidDropList[iDropNum]);
+				}
+			}
+
 			pane->SetLabel(uidLabel, bReadOnly);
+			pane->m_paneID = paneID;
 		}
 
 		return pane;
 	}
 
-	DropDownPane* DropDownPane::CreateGuid(UINT uidLabel, bool bReadOnly)
+	DropDownPane* DropDownPane::CreateGuid(int paneID, UINT uidLabel, bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) DropDownPane();
 		if (pane)
@@ -42,6 +44,7 @@ namespace viewpane
 			}
 
 			pane->SetLabel(uidLabel, bReadOnly);
+			pane->m_paneID = paneID;
 		}
 
 		return pane;

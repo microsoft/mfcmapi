@@ -6,9 +6,13 @@ namespace viewpane
 	class DropDownPane : public ViewPane
 	{
 	public:
-		static DropDownPane*
-		Create(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly);
-		static DropDownPane* CreateGuid(UINT uidLabel, bool bReadOnly);
+		static DropDownPane* Create(
+			int paneID,
+			UINT uidLabel,
+			ULONG ulDropList,
+			_In_opt_count_(ulDropList) UINT* lpuidDropList,
+			bool bReadOnly);
+		static DropDownPane* CreateGuid(int paneID, UINT uidLabel, bool bReadOnly);
 
 		void SetDropDownSelection(_In_ const std::wstring& szText);
 		void InsertDropString(_In_ const std::wstring& szText, ULONG ulValue);
@@ -37,4 +41,4 @@ namespace viewpane
 		int m_iDropSelection{CB_ERR};
 		DWORD_PTR m_iDropSelectionValue{0};
 	};
-}
+} // namespace viewpane

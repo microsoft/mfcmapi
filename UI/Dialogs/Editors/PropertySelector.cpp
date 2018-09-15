@@ -22,7 +22,7 @@ namespace dialog
 
 			if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-			AddPane(0, viewpane::ListPane::Create(IDS_KNOWNPROPTAGS, true, true, ListEditCallBack(this)));
+			AddPane(viewpane::ListPane::Create(0, IDS_KNOWNPROPTAGS, true, true, ListEditCallBack(this)));
 			SetListID(0);
 		}
 
@@ -86,8 +86,7 @@ namespace dialog
 
 		_Check_return_ ULONG CPropertySelector::GetPropertyTag() const { return m_ulPropTag; }
 
-		_Check_return_ controls::sortlistdata::SortListData*
-		CPropertySelector::GetSelectedListRowData(ULONG id) const
+		_Check_return_ controls::sortlistdata::SortListData* CPropertySelector::GetSelectedListRowData(ULONG id) const
 		{
 			const auto lpPane = static_cast<viewpane::ListPane*>(GetPane(id));
 			if (lpPane)
@@ -97,5 +96,5 @@ namespace dialog
 
 			return nullptr;
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog

@@ -6,13 +6,14 @@ namespace viewpane
 {
 	static std::wstring CLASS = L"CheckPane";
 
-	CheckPane* CheckPane::Create(UINT uidLabel, bool bVal, bool bReadOnly)
+	CheckPane* CheckPane::Create(int paneID, UINT uidLabel, bool bVal, bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) CheckPane();
 		if (pane)
 		{
 			pane->m_bCheckValue = bVal;
 			pane->SetLabel(uidLabel, bReadOnly);
+			pane->m_paneID = paneID;
 		}
 
 		return pane;

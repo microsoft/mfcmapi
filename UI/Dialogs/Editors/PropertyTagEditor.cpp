@@ -48,18 +48,18 @@ namespace dialog
 
 			if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-			AddPane(PROPTAG_TAG, viewpane::TextPane::CreateSingleLinePane(IDS_PROPTAG, false));
-			AddPane(PROPTAG_ID, viewpane::TextPane::CreateSingleLinePane(IDS_PROPID, false));
-			AddPane(PROPTAG_TYPE, viewpane::DropDownPane::Create(IDS_PROPTYPE, 0, nullptr, false));
-			AddPane(PROPTAG_NAME, viewpane::TextPane::CreateSingleLinePane(IDS_PROPNAME, true));
-			AddPane(PROPTAG_TYPESTRING, viewpane::TextPane::CreateSingleLinePane(IDS_PROPTYPE, true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(PROPTAG_TAG, IDS_PROPTAG, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(PROPTAG_ID, IDS_PROPID, false));
+			AddPane(viewpane::DropDownPane::Create(PROPTAG_TYPE, IDS_PROPTYPE, 0, nullptr, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(PROPTAG_NAME, IDS_PROPNAME, true));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(PROPTAG_TYPESTRING, IDS_PROPTYPE, true));
 
 			// Map named properties if we can, but not for Address Books
 			if (m_lpMAPIProp && !m_bIsAB)
 			{
-				AddPane(PROPTAG_NAMEPROPKIND, viewpane::DropDownPane::Create(IDS_NAMEPROPKIND, 0, nullptr, true));
-				AddPane(PROPTAG_NAMEPROPNAME, viewpane::TextPane::CreateSingleLinePane(IDS_NAMEPROPNAME, false));
-				AddPane(PROPTAG_NAMEPROPGUID, viewpane::DropDownPane::CreateGuid(IDS_NAMEPROPGUID, false));
+				AddPane(viewpane::DropDownPane::Create(PROPTAG_NAMEPROPKIND, IDS_NAMEPROPKIND, 0, nullptr, true));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(PROPTAG_NAMEPROPNAME, IDS_NAMEPROPNAME, false));
+				AddPane(viewpane::DropDownPane::CreateGuid(PROPTAG_NAMEPROPGUID, IDS_NAMEPROPGUID, false));
 			}
 
 			// initialize our dropdowns here
@@ -381,5 +381,5 @@ namespace dialog
 				lpPane->InsertDropString(szText, iRow);
 			}
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog

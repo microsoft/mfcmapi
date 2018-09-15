@@ -317,8 +317,8 @@ namespace dialog
 		editor::CEditor MyData(
 			this, IDS_SEARCHCRITERIA, IDS_RANGESEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SUBSTRING, false));
-		MyData.AddPane(1, viewpane::CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SUBSTRING, false));
+		MyData.AddPane(viewpane::CheckPane::Create(1, IDS_APPLYUSINGFINDROW, false, false));
 
 		if (!MyData.DisplayDialog()) return;
 
@@ -387,12 +387,12 @@ namespace dialog
 
 		editor::CEditor MyData(this, IDS_SORTTABLE, IDS_SORTTABLEPROMPT1, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CSORTS, false));
-		MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_CCATS, false));
-		MyData.AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_CEXPANDED, false));
-		MyData.AddPane(3, viewpane::CheckPane::Create(IDS_TBLASYNC, false, false));
-		MyData.AddPane(4, viewpane::CheckPane::Create(IDS_TBLBATCH, false, false));
-		MyData.AddPane(5, viewpane::CheckPane::Create(IDS_REFRESHAFTERSORT, true, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CSORTS, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_CCATS, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_CEXPANDED, false));
+		MyData.AddPane(viewpane::CheckPane::Create(3, IDS_TBLASYNC, false, false));
+		MyData.AddPane(viewpane::CheckPane::Create(4, IDS_TBLBATCH, false, false));
+		MyData.AddPane(viewpane::CheckPane::Create(5, IDS_REFRESHAFTERSORT, true, false));
 
 		if (!MyData.DisplayDialog()) return;
 
@@ -435,7 +435,7 @@ namespace dialog
 										  IDS_DDTABLESORTCATEGMAX,
 										  IDS_DDTABLESORTCATEGMIN};
 					MySortOrderDlg.AddPane(
-						0, viewpane::DropDownPane::Create(IDS_SORTORDER, _countof(uidDropDown), uidDropDown, true));
+						viewpane::DropDownPane::Create(0, IDS_SORTORDER, _countof(uidDropDown), uidDropDown, true));
 
 					if (MySortOrderDlg.DisplayDialog())
 					{
@@ -623,4 +623,4 @@ namespace dialog
 
 		return false;
 	}
-}
+} // namespace dialog

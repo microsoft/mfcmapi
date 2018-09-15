@@ -46,7 +46,7 @@ namespace dialog
 
 			// These functions can be used to set up a data editing dialog
 			void SetPromptPostFix(_In_ const std::wstring& szMsg);
-			void AddPane(ULONG id, viewpane::ViewPane* lpPane);
+			void AddPane(viewpane::ViewPane* lpPane);
 			void SetStringA(ULONG id, const std::string& szMsg) const;
 			void SetStringW(ULONG id, const std::wstring& szMsg) const;
 			void SetStringf(ULONG id, LPCWSTR szMsg, ...) const;

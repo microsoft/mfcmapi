@@ -394,7 +394,7 @@ namespace dialog
 			editor::CEditor MyPrompt(
 				this, IDS_OPENDEFMSGSTORE, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-			MyPrompt.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
+			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CREATESTORENTRYIDFLAGS, false));
 			MyPrompt.SetHex(0, NULL);
 			if (MyPrompt.DisplayDialog())
 			{
@@ -448,12 +448,12 @@ namespace dialog
 		editor::CEditor MyEID(
 			this, IDS_OPENSTOREEID, IDS_OPENSTOREEIDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyEID.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EID, false));
-		MyEID.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+		MyEID.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_EID, false));
+		MyEID.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_FLAGS, false));
 		MyEID.SetHex(1, MDB_WRITE);
-		MyEID.AddPane(2, viewpane::CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
-		MyEID.AddPane(3, viewpane::CheckPane::Create(IDS_DISPLAYPROPS, false, false));
-		MyEID.AddPane(4, viewpane::CheckPane::Create(IDS_UNWRAPSTORE, false, false));
+		MyEID.AddPane(viewpane::CheckPane::Create(2, IDS_EIDBASE64ENCODED, false, false));
+		MyEID.AddPane(viewpane::CheckPane::Create(3, IDS_DISPLAYPROPS, false, false));
+		MyEID.AddPane(viewpane::CheckPane::Create(4, IDS_UNWRAPSTORE, false, false));
 
 		if (!MyEID.DisplayDialog()) return;
 
@@ -505,7 +505,7 @@ namespace dialog
 		editor::CEditor MyPrompt(
 			this, IDS_OPENPUBSTORE, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-		MyPrompt.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
+		MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CREATESTORENTRYIDFLAGS, false));
 		MyPrompt.SetHex(0, NULL);
 		if (!MyPrompt.DisplayDialog()) return;
 
@@ -528,8 +528,8 @@ namespace dialog
 		editor::CEditor MyPrompt(
 			this, IDS_OPENPUBSTORE, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-		MyPrompt.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
-		MyPrompt.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
+		MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SERVERNAME, false));
+		MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_CREATESTORENTRYIDFLAGS, false));
 		MyPrompt.SetHex(1, OPENSTORE_PUBLIC);
 		if (!MyPrompt.DisplayDialog()) return;
 
@@ -694,7 +694,7 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_DUMPSERVERPRIVATESTORE, IDS_SERVERNAMEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SERVERNAME, szServerName, false));
 
 		if (!MyData.DisplayDialog()) return;
 
@@ -729,7 +729,7 @@ namespace dialog
 		if (!m_lpMapiObjects) return;
 
 		editor::CEditor MyData(this, IDS_LOGOFF, IDS_LOGOFFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLAGSINHEX, false));
 		MyData.SetHex(0, MAPI_LOGOFF_UI);
 
 		if (!MyData.DisplayDialog()) return;
@@ -763,8 +763,8 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_PROFFORMAPILOGON, IDS_PROFFORMAPILOGONPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILE, false));
-		MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_PROFILE, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_FLAGSINHEX, false));
 		MyData.SetHex(1, MAPI_EXTENDED | MAPI_EXPLICIT_PROFILE | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI);
 
 		if (MyData.DisplayDialog())
@@ -824,7 +824,7 @@ namespace dialog
 		{
 			editor::CEditor MyFlags(
 				this, IDS_SELECTFORM, IDS_SELECTFORMPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyFlags.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+			MyFlags.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLAGS, false));
 			MyFlags.SetHex(0, MAPIFORM_SELECT_ALL_REGISTRIES);
 
 			if (MyFlags.DisplayDialog())
@@ -859,7 +859,7 @@ namespace dialog
 		{
 			editor::CEditor MyFlags(
 				this, IDS_OPENFORMCONTAINER, IDS_OPENFORMCONTAINERPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyFlags.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_HFRMREG, false));
+			MyFlags.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_HFRMREG, false));
 			MyFlags.SetHex(0, MAPIFORM_SELECT_ALL_REGISTRIES);
 
 			if (MyFlags.DisplayDialog())
@@ -903,7 +903,7 @@ namespace dialog
 		if (!szDLLPath.empty())
 		{
 			const auto szFullPath = szDLLPath + L"\\mapi32.dll";
-			MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PATH, szFullPath, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_PATH, szFullPath, false));
 		}
 
 		if (MyData.DisplayDialog())
@@ -930,7 +930,7 @@ namespace dialog
 		const auto hMAPI = mapistub::GetMAPIHandle();
 
 		editor::CEditor MyData(this, IDS_MAPIPATHTITLE, NULL, CEDITOR_BUTTON_OK);
-		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FILEPATH, true));
 		if (hMAPI)
 		{
 			const auto szMAPIPath = file::GetModuleFileName(hMAPI);
@@ -940,16 +940,10 @@ namespace dialog
 			}
 		}
 
-		MyData.AddPane(
-			1,
-			viewpane::CheckPane::Create(
-				IDS_REGKEY_FORCEOUTLOOKMAPI,
-				0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD,
-				true));
-		MyData.AddPane(
-			2,
-			viewpane::CheckPane::Create(
-				IDS_REGKEY_FORCESYSTEMMAPI, 0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD, true));
+		MyData.AddPane(viewpane::CheckPane::Create(
+			IDS_REGKEY_FORCEOUTLOOKMAPI, 1, 0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD, true));
+		MyData.AddPane(viewpane::CheckPane::Create(
+			IDS_REGKEY_FORCESYSTEMMAPI, 2, 0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD, true));
 
 		(void) MyData.DisplayDialog();
 	}
@@ -959,7 +953,7 @@ namespace dialog
 		if (!m_lpMapiObjects) return;
 
 		editor::CEditor MyData(this, IDS_MAPIINIT, IDS_MAPIINITPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLAGSINHEX, false));
 		MyData.SetHex(0, NULL);
 
 		if (MyData.DisplayDialog())
@@ -1013,7 +1007,7 @@ namespace dialog
 		editor::CEditor MyData(
 			this, IDS_QUERYDEFMSGOPT, IDS_ADDRESSTYPEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.AddPane(
-			0, viewpane::TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
+			viewpane::TextPane::CreateSingleLinePane(0, IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
 
 		if (!MyData.DisplayDialog()) return;
 
@@ -1031,7 +1025,7 @@ namespace dialog
 			output::DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
 
 			editor::CEditor MyResult(this, IDS_QUERYDEFMSGOPT, IDS_RESULTOFCALLPROMPT, CEDITOR_BUTTON_OK);
-			MyResult.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_COUNTOPTIONS, true));
+			MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_COUNTOPTIONS, true));
 			MyResult.SetHex(0, cValues);
 
 			std::wstring szPropString;
@@ -1048,7 +1042,7 @@ namespace dialog
 					szAltProp.c_str());
 			}
 
-			MyResult.AddPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_OPTIONS, szPropString, true));
+			MyResult.AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_OPTIONS, szPropString, true));
 
 			(void) MyResult.DisplayDialog();
 
@@ -1065,7 +1059,7 @@ namespace dialog
 		editor::CEditor MyData(
 			this, IDS_QUERYDEFRECIPOPT, IDS_ADDRESSTYPEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.AddPane(
-			0, viewpane::TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
+			viewpane::TextPane::CreateSingleLinePane(0, IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
 
 		if (!MyData.DisplayDialog()) return;
 
@@ -1085,7 +1079,7 @@ namespace dialog
 			output::DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
 
 			editor::CEditor MyResult(this, IDS_QUERYDEFRECIPOPT, IDS_RESULTOFCALLPROMPT, CEDITOR_BUTTON_OK);
-			MyResult.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_COUNTOPTIONS, true));
+			MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_COUNTOPTIONS, true));
 			MyResult.SetHex(0, cValues);
 
 			std::wstring szPropString;
@@ -1102,7 +1096,7 @@ namespace dialog
 					szAltProp.c_str());
 			}
 
-			MyResult.AddPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_OPTIONS, szPropString, true));
+			MyResult.AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_OPTIONS, szPropString, true));
 
 			(void) MyResult.DisplayDialog();
 
@@ -1125,7 +1119,7 @@ namespace dialog
 		if (cbEntryID && lpEntryID)
 		{
 			editor::CEditor MyPrompt(this, IDS_QUERYID, IDS_QUERYIDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyPrompt.AddPane(0, viewpane::CheckPane::Create(IDS_DISPLAYDETAILSDLG, false, false));
+			MyPrompt.AddPane(viewpane::CheckPane::Create(0, IDS_DISPLAYDETAILSDLG, false, false));
 			if (MyPrompt.DisplayDialog())
 			{
 				if (MyPrompt.GetCheck(0))
@@ -1176,7 +1170,7 @@ namespace dialog
 			{
 				editor::CEditor MyData(
 					this, IDS_SETDEFSTORE, IDS_SETDEFSTOREPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLAGS, false));
 				MyData.SetHex(0, MAPI_DEFAULT_STORE);
 
 				if (MyData.DisplayDialog())
@@ -1194,7 +1188,7 @@ namespace dialog
 		if (!lpMAPISession) return;
 
 		editor::CEditor MyData(this, IDS_ISATTBLOCKED, IDS_ENTERFILENAME, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILENAME, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FILENAME, false));
 
 		if (MyData.DisplayDialog())
 		{
@@ -1204,7 +1198,7 @@ namespace dialog
 			{
 				editor::CEditor MyResult(this, IDS_ISATTBLOCKED, IDS_RESULTOFCALLPROMPT, CEDITOR_BUTTON_OK);
 				const auto szResult = strings::loadstring(bBlocked ? IDS_TRUE : IDS_FALSE);
-				MyResult.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_RESULT, szResult, true));
+				MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_RESULT, szResult, true));
 
 				(void) MyResult.DisplayDialog();
 			}
@@ -1241,10 +1235,10 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_LAUNCHPROFWIZ, IDS_LAUNCHPROFWIZPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLAGS, false));
 		MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
 		MyData.AddPane(
-			1, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
+			viewpane::TextPane::CreateSingleLinePane(1, IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
 
 		if (MyData.DisplayDialog())
 		{
@@ -1645,4 +1639,4 @@ namespace dialog
 			lpParams->lpMDB = nullptr;
 		}
 	}
-}
+} // namespace dialog

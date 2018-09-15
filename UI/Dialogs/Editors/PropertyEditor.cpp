@@ -13,6 +13,8 @@ namespace dialog
 {
 	namespace editor
 	{
+		// ID for our smartview control
+		static const int s_smartViewPaneID = 99;
 		_Check_return_ HRESULT DisplayPropertyEditor(
 			_In_ CWnd* pParentWnd,
 			UINT uidTitle,
@@ -164,7 +166,7 @@ namespace dialog
 			case PT_BINARY:
 			case PT_LONG:
 				// This will be freed by the pane that we pass it to.
-				m_lpSmartView = viewpane::SmartViewPane::Create(IDS_SMARTVIEW);
+				m_lpSmartView = viewpane::SmartViewPane::Create(s_smartViewPaneID, IDS_SMARTVIEW);
 			}
 
 			const auto smartView = smartview::InterpretPropSmartView2(
@@ -187,7 +189,7 @@ namespace dialog
 			switch (PROP_TYPE(m_ulPropTag))
 			{
 			case PT_APPTIME:
-				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_DOUBLE, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_DOUBLE, false));
 				if (m_lpsInputValue)
 				{
 					SetStringf(0, L"%f", m_lpsInputValue->Value.at); // STRING_OK
@@ -199,13 +201,11 @@ namespace dialog
 
 				break;
 			case PT_BOOLEAN:
-				AddPane(
-					0,
-					viewpane::CheckPane::Create(
-						IDS_BOOLEAN, m_lpsInputValue ? 0 != m_lpsInputValue->Value.b : false, false));
+				AddPane(viewpane::CheckPane::Create(
+					0, IDS_BOOLEAN, m_lpsInputValue ? 0 != m_lpsInputValue->Value.b : false, false));
 				break;
 			case PT_DOUBLE:
-				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_DOUBLE, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_DOUBLE, false));
 				if (m_lpsInputValue)
 				{
 					SetStringf(0, L"%f", m_lpsInputValue->Value.dbl); // STRING_OK
@@ -217,10 +217,10 @@ namespace dialog
 
 				break;
 			case PT_OBJECT:
-				AddPane(0, viewpane::TextPane::CreateSingleLinePaneID(IDS_OBJECT, IDS_OBJECTVALUE, true));
+				AddPane(viewpane::TextPane::CreateSingleLinePaneID(0, IDS_OBJECT, IDS_OBJECTVALUE, true));
 				break;
 			case PT_R4:
-				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLOAT, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLOAT, false));
 				if (m_lpsInputValue)
 				{
 					SetStringf(0, L"%f", m_lpsInputValue->Value.flt); // STRING_OK
@@ -232,8 +232,8 @@ namespace dialog
 
 				break;
 			case PT_STRING8:
-				AddPane(0, viewpane::CountedTextPane::Create(IDS_ANSISTRING, false, IDS_CCH));
-				AddPane(1, viewpane::CountedTextPane::Create(IDS_BIN, false, IDS_CB));
+				AddPane(viewpane::CountedTextPane::Create(0, IDS_ANSISTRING, false, IDS_CCH));
+				AddPane(viewpane::CountedTextPane::Create(1, IDS_BIN, false, IDS_CB));
 				if (m_lpsInputValue && mapi::CheckStringProp(m_lpsInputValue, PT_STRING8))
 				{
 					auto lpszA = std::string(m_lpsInputValue->Value.lpszA);
@@ -254,8 +254,8 @@ namespace dialog
 
 				break;
 			case PT_UNICODE:
-				AddPane(0, viewpane::CountedTextPane::Create(IDS_UNISTRING, false, IDS_CCH));
-				AddPane(1, viewpane::CountedTextPane::Create(IDS_BIN, false, IDS_CB));
+				AddPane(viewpane::CountedTextPane::Create(0, IDS_UNISTRING, false, IDS_CCH));
+				AddPane(viewpane::CountedTextPane::Create(1, IDS_BIN, false, IDS_CB));
 				if (m_lpsInputValue && mapi::CheckStringProp(m_lpsInputValue, PT_UNICODE))
 				{
 					auto lpszW = std::wstring(m_lpsInputValue->Value.lpszW);
@@ -276,9 +276,9 @@ namespace dialog
 
 				break;
 			case PT_CURRENCY:
-				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_HI, false));
-				AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_LO, false));
-				AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_CURRENCY, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_HI, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_LO, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_CURRENCY, false));
 				if (m_lpsInputValue)
 				{
 					SetHex(0, m_lpsInputValue->Value.cur.Hi);
@@ -294,8 +294,8 @@ namespace dialog
 
 				break;
 			case PT_ERROR:
-				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ERRORCODEHEX, true));
-				AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ERRORNAME, true));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_ERRORCODEHEX, true));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_ERRORNAME, true));
 				if (m_lpsInputValue)
 				{
 					SetHex(0, m_lpsInputValue->Value.err);
@@ -304,9 +304,9 @@ namespace dialog
 
 				break;
 			case PT_I2:
-				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SIGNEDDECIMAL, false));
-				AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_HEX, false));
-				AddPane(2, m_lpSmartView);
+				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SIGNEDDECIMAL, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_HEX, false));
+				AddPane(m_lpSmartView);
 				if (m_lpsInputValue)
 				{
 					SetDecimal(0, m_lpsInputValue->Value.i);
@@ -326,10 +326,10 @@ namespace dialog
 
 				break;
 			case PT_I8:
-				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_HIGHPART, false));
-				AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_LOWPART, false));
-				AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_DECIMAL, false));
-				AddPane(3, m_lpSmartView);
+				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_HIGHPART, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_LOWPART, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_DECIMAL, false));
+				AddPane(m_lpSmartView);
 
 				if (m_lpsInputValue)
 				{
@@ -352,10 +352,10 @@ namespace dialog
 
 				break;
 			case PT_BINARY:
-				lpPane = viewpane::CountedTextPane::Create(IDS_BIN, false, IDS_CB);
-				AddPane(0, lpPane);
-				AddPane(1, viewpane::CountedTextPane::Create(IDS_TEXT, false, IDS_CCH));
-				AddPane(2, m_lpSmartView);
+				lpPane = viewpane::CountedTextPane::Create(0, IDS_BIN, false, IDS_CB);
+				AddPane(lpPane);
+				AddPane(viewpane::CountedTextPane::Create(1, IDS_TEXT, false, IDS_CCH));
+				AddPane(m_lpSmartView);
 
 				if (m_lpsInputValue)
 				{
@@ -383,9 +383,9 @@ namespace dialog
 
 				break;
 			case PT_LONG:
-				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_UNSIGNEDDECIMAL, false));
-				AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_HEX, false));
-				AddPane(2, m_lpSmartView);
+				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_UNSIGNEDDECIMAL, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_HEX, false));
+				AddPane(m_lpSmartView);
 				if (m_lpsInputValue)
 				{
 					SetStringf(0, L"%d", m_lpsInputValue->Value.l); // STRING_OK
@@ -406,9 +406,9 @@ namespace dialog
 
 				break;
 			case PT_SYSTIME:
-				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_LOWDATETIME, false));
-				AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_HIGHDATETIME, false));
-				AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_DATE, true));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_LOWDATETIME, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_HIGHDATETIME, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_DATE, true));
 				if (m_lpsInputValue)
 				{
 					SetHex(0, static_cast<int>(m_lpsInputValue->Value.ft.dwLowDateTime));
@@ -424,7 +424,7 @@ namespace dialog
 
 				break;
 			case PT_CLSID:
-				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_GUID, false));
+				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_GUID, false));
 				if (m_lpsInputValue)
 				{
 					szGuid = guid::GUIDToStringAndName(m_lpsInputValue->Value.lpguid);
@@ -437,19 +437,19 @@ namespace dialog
 				SetStringW(0, szGuid);
 				break;
 			case PT_SRESTRICTION:
-				AddPane(0, viewpane::TextPane::CreateCollapsibleTextPane(IDS_RESTRICTION, true));
+				AddPane(viewpane::TextPane::CreateCollapsibleTextPane(0, IDS_RESTRICTION, true));
 				interpretprop::InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
 				SetStringW(0, szTemp1);
 				break;
 			case PT_ACTIONS:
-				AddPane(0, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ACTIONS, true));
+				AddPane(viewpane::TextPane::CreateCollapsibleTextPane(0, IDS_ACTIONS, true));
 				interpretprop::InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
 				SetStringW(0, szTemp1);
 				break;
 			default:
 				interpretprop::InterpretProp(m_lpsInputValue, &szTemp1, &szTemp2);
-				AddPane(0, viewpane::TextPane::CreateCollapsibleTextPane(IDS_VALUE, true));
-				AddPane(1, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ALTERNATEVIEW, true));
+				AddPane(viewpane::TextPane::CreateCollapsibleTextPane(0, IDS_VALUE, true));
+				AddPane(viewpane::TextPane::CreateCollapsibleTextPane(1, IDS_ALTERNATEVIEW, true));
 				SetStringW(IDS_VALUE, szTemp1);
 				SetStringW(IDS_ALTERNATEVIEW, szTemp2);
 				break;
@@ -729,7 +729,7 @@ namespace dialog
 				SetStringW(2, szTemp1);
 				break;
 			case PT_BINARY:
-				if (paneID == 0 || paneID == 2)
+				if (paneID == 0 || paneID == s_smartViewPaneID)
 				{
 					bin = GetBinary(0);
 					if (paneID == 0) SetStringA(1, std::string(LPCSTR(bin.data()), bin.size())); // ansi string
@@ -833,5 +833,5 @@ namespace dialog
 			OnRecalcLayout();
 			return paneID;
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog

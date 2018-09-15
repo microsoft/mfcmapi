@@ -61,10 +61,10 @@ namespace dialog
 				  NULL)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
-			AddPane(DBGVIEW_TAGS, viewpane::TextPane::CreateSingleLinePane(IDS_REGKEY_DEBUG_TAG, false));
+			AddPane(viewpane::TextPane::CreateSingleLinePane(DBGVIEW_TAGS, IDS_REGKEY_DEBUG_TAG, false));
 			SetHex(DBGVIEW_TAGS, output::GetDebugLevel());
-			AddPane(DBGVIEW_PAUSE, viewpane::CheckPane::Create(IDS_PAUSE, false, false));
-			AddPane(DBGVIEW_VIEW, viewpane::TextPane::CreateMultiLinePane(NULL, true));
+			AddPane(viewpane::CheckPane::Create(DBGVIEW_PAUSE, IDS_PAUSE, false, false));
+			AddPane(viewpane::TextPane::CreateMultiLinePane(DBGVIEW_VIEW, NULL, true));
 			m_bPaused = false;
 			DisplayParentedDialog(pParentWnd, 800);
 		}
@@ -131,5 +131,5 @@ namespace dialog
 				lpPane->AppendString(szMsg);
 			}
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog

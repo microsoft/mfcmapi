@@ -7,7 +7,7 @@ namespace viewpane
 	class SmartViewPane : public DropDownPane
 	{
 	public:
-		static SmartViewPane* Create(UINT uidLabel);
+		static SmartViewPane* Create(int paneID, UINT uidLabel);
 
 		void SetStringW(const std::wstring& szMsg);
 		void DisableDropDown();

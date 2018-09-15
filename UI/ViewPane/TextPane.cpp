@@ -7,30 +7,35 @@ namespace viewpane
 {
 	static std::wstring CLASS = L"TextPane";
 
-	TextPane* TextPane::CreateMultiLinePane(UINT uidLabel, bool bReadOnly)
+	TextPane* TextPane::CreateMultiLinePane(int paneID, UINT uidLabel, bool bReadOnly)
 	{
-		return CreateSingleLinePane(uidLabel, bReadOnly, true);
+		return CreateSingleLinePane(paneID, uidLabel, bReadOnly, true);
 	}
 
-	TextPane* TextPane::CreateMultiLinePane(UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly)
+	TextPane* TextPane::CreateMultiLinePane(int paneID, UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly)
 	{
-		return CreateSingleLinePane(uidLabel, szVal, bReadOnly, true);
+		return CreateSingleLinePane(paneID, uidLabel, szVal, bReadOnly, true);
 	}
 
-	TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine)
+	TextPane* TextPane::CreateSingleLinePane(int paneID, UINT uidLabel, bool bReadOnly, bool bMultiLine)
 	{
 		auto lpPane = new (std::nothrow) TextPane();
 		if (lpPane)
 		{
 			lpPane->m_bMultiline = bMultiLine;
 			lpPane->SetLabel(uidLabel, bReadOnly);
+			lpPane->m_paneID = paneID;
 		}
 
 		return lpPane;
 	}
 
-	TextPane*
-	TextPane::CreateSingleLinePane(UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly, bool bMultiLine)
+	TextPane* TextPane::CreateSingleLinePane(
+		int paneID,
+		UINT uidLabel,
+		_In_ const std::wstring& szVal,
+		bool bReadOnly,
+		bool bMultiLine)
 	{
 		auto lpPane = new (std::nothrow) TextPane();
 		if (lpPane)
@@ -38,12 +43,13 @@ namespace viewpane
 			lpPane->m_bMultiline = bMultiLine;
 			lpPane->SetLabel(uidLabel, bReadOnly);
 			lpPane->SetStringW(szVal);
+			lpPane->m_paneID = paneID;
 		}
 
 		return lpPane;
 	}
 
-	TextPane* TextPane::CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly)
+	TextPane* TextPane::CreateSingleLinePaneID(int paneID, UINT uidLabel, UINT uidVal, bool bReadOnly)
 	{
 		auto lpPane = new (std::nothrow) TextPane();
 
@@ -51,12 +57,13 @@ namespace viewpane
 		{
 			lpPane->SetLabel(uidLabel, bReadOnly);
 			lpPane->SetStringW(strings::loadstring(uidVal));
+			lpPane->m_paneID = paneID;
 		}
 
 		return lpPane;
 	}
 
-	TextPane* TextPane::CreateCollapsibleTextPane(UINT uidLabel, bool bReadOnly)
+	TextPane* TextPane::CreateCollapsibleTextPane(int paneID, UINT uidLabel, bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) TextPane();
 		if (pane)
@@ -64,6 +71,7 @@ namespace viewpane
 			pane->SetMultiline();
 			pane->SetLabel(uidLabel, bReadOnly);
 			pane->m_bCollapsible = true;
+			pane->m_paneID = paneID;
 		}
 
 		return pane;

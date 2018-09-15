@@ -6,7 +6,7 @@ namespace viewpane
 {
 	static std::wstring CLASS = L"CountedTextPane";
 
-	CountedTextPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
+	CountedTextPane* CountedTextPane::Create(int paneID, UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
 	{
 		auto lpPane = new (std::nothrow) CountedTextPane();
 		if (lpPane)
@@ -15,6 +15,7 @@ namespace viewpane
 			lpPane->SetMultiline();
 			lpPane->SetLabel(uidLabel, bReadOnly);
 			lpPane->m_bCollapsible = true;
+			lpPane->m_paneID = paneID;
 		}
 
 		return lpPane;

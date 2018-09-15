@@ -999,9 +999,9 @@ namespace controls
 					IDS_FINDNAMEPROPSLIMIT,
 					IDS_FINDNAMEPROPSLIMITPROMPT,
 					CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_LOWERBOUND, false));
+				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_LOWERBOUND, false));
 				MyData.SetHex(0, __LOWERBOUND);
-				MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_UPPERBOUND, false));
+				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_UPPERBOUND, false));
 				MyData.SetHex(1, __UPPERBOUNDDEFAULT);
 
 				if (MyData.DisplayDialog())
@@ -1144,10 +1144,10 @@ namespace controls
 					ulHighestKnown = ulCurrent;
 				}
 
-				MyResult.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_HIGHESTNAMEDPROPTOTAL, true));
+				MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_HIGHESTNAMEDPROPTOTAL, true));
 				MyResult.SetDecimal(0, ulHighestKnown - 0x8000);
 
-				MyResult.AddPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_HIGHESTNAMEDPROPNUM, true));
+				MyResult.AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_HIGHESTNAMEDPROPNUM, true));
 
 				if (hRes == S_OK && ulPropNames == 1 && lppPropNames && *lppPropNames)
 				{
@@ -1167,7 +1167,7 @@ namespace controls
 			}
 			else
 			{
-				MyResult.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_HIGHESTNAMEDPROPTOTAL, true));
+				MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_HIGHESTNAMEDPROPTOTAL, true));
 				MyResult.LoadString(0, IDS_HIGHESTNAMEDPROPNOTFOUND);
 			}
 
@@ -1425,7 +1425,7 @@ namespace controls
 			{
 				dialog::editor::CEditor MyPrompt(
 					this, IDS_USEWRAPEX, IDS_USEWRAPEXPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				MyPrompt.AddPane(0, viewpane::CheckPane::Create(IDS_USEWRAPEX, true, false));
+				MyPrompt.AddPane(viewpane::CheckPane::Create(0, IDS_USEWRAPEX, true, false));
 
 				if (!MyPrompt.DisplayDialog()) return;
 
@@ -1444,11 +1444,11 @@ namespace controls
 
 					dialog::editor::CEditor MyPrompt2(
 						this, IDS_WRAPEXFLAGS, IDS_WRAPEXFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-					MyPrompt2.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_WRAPEXFLAGS, false));
+					MyPrompt2.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_WRAPEXFLAGS, false));
 					MyPrompt2.SetHex(0, MAPI_NATIVE_BODY);
-					MyPrompt2.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULINCODEPAGE, false));
+					MyPrompt2.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_ULINCODEPAGE, false));
 					MyPrompt2.SetDecimal(1, ulInCodePage);
-					MyPrompt2.AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULOUTCODEPAGE, false));
+					MyPrompt2.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULOUTCODEPAGE, false));
 					MyPrompt2.SetDecimal(2, 0);
 
 					if (!MyPrompt2.DisplayDialog()) return;
@@ -1510,10 +1510,10 @@ namespace controls
 				this, IDS_PASTEPROP, IDS_PASTEPROPPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 			UINT uidDropDown[] = {IDS_DDCOPYPROPS, IDS_DDGETSETPROPS, IDS_DDCOPYSTREAM};
-			MyData.AddPane(0, viewpane::DropDownPane::Create(IDS_COPYSTYLE, _countof(uidDropDown), uidDropDown, true));
-			MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_SOURCEPROP, false));
+			MyData.AddPane(viewpane::DropDownPane::Create(0, IDS_COPYSTYLE, _countof(uidDropDown), uidDropDown, true));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_SOURCEPROP, false));
 			MyData.SetHex(1, ulSourcePropTag);
-			MyData.AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_TARGETPROP, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_TARGETPROP, false));
 			MyData.SetHex(2, ulSourcePropTag);
 
 			if (!MyData.DisplayDialog()) return;
@@ -1533,8 +1533,8 @@ namespace controls
 					this, IDS_PASTEPROP, IDS_COPYPASTEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 				const auto szGuid = guid::GUIDToStringAndName(&IID_IMAPIProp);
-				MyCopyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_INTERFACE, szGuid, false));
-				MyCopyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+				MyCopyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_INTERFACE, szGuid, false));
+				MyCopyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_FLAGS, false));
 				MyCopyData.SetHex(1, MAPI_DIALOG);
 
 				if (!MyCopyData.DisplayDialog()) return;
@@ -1732,7 +1732,7 @@ namespace controls
 			dialog::editor::CEditor MyData(
 				this, IDS_OPENPROPASTABLE, IDS_OPENPROPASTABLEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-			MyData.AddPane(0, viewpane::CheckPane::Create(IDS_OPENASEXTABLE, false, false));
+			MyData.AddPane(viewpane::CheckPane::Create(0, IDS_OPENASEXTABLE, false, false));
 			if (!MyData.DisplayDialog()) return;
 
 			if (MyData.GetCheck(0))
@@ -1766,9 +1766,9 @@ namespace controls
 					this, IDS_PASTENAMEDPROPS, IDS_PASTENAMEDPROPSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 				const auto szGuid = guid::GUIDToStringAndName(&PS_PUBLIC_STRINGS);
-				MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_GUID, szGuid, false));
-				MyData.AddPane(1, viewpane::CheckPane::Create(IDS_MAPIMOVE, false, false));
-				MyData.AddPane(2, viewpane::CheckPane::Create(IDS_MAPINOREPLACE, false, false));
+				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_GUID, szGuid, false));
+				MyData.AddPane(viewpane::CheckPane::Create(1, IDS_MAPIMOVE, false, false));
+				MyData.AddPane(viewpane::CheckPane::Create(2, IDS_MAPINOREPLACE, false, false));
 
 				if (!MyData.DisplayDialog()) return;
 
@@ -1841,5 +1841,5 @@ namespace controls
 			addin::InvokeAddInMenu(&MyAddInMenuParams);
 			return true;
 		}
-	}
-}
+	} // namespace sortlistctrl
+} // namespace controls

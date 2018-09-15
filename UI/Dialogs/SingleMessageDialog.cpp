@@ -88,7 +88,7 @@ namespace dialog
 
 		editor::CEditor MyData(this, IDS_CALLRTFSYNC, IDS_CALLRTFSYNCPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLAGS, false));
 		MyData.SetHex(0, RTF_SYNC_RTF_CHANGED);
 
 		if (MyData.DisplayDialog())
@@ -212,4 +212,4 @@ namespace dialog
 			(void) m_lpPropDisplay->RefreshMAPIPropList();
 		}
 	}
-}
+} // namespace dialog

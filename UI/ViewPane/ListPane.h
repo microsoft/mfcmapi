@@ -10,9 +10,14 @@ namespace viewpane
 	class ListPane : public ViewPane
 	{
 	public:
-		static ListPane* Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback);
 		static ListPane*
-		CreateCollapsibleListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback);
+		Create(int paneID, UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback);
+		static ListPane* CreateCollapsibleListPane(
+			int paneID,
+			UINT uidLabel,
+			bool bAllowSort,
+			bool bReadOnly,
+			DoListEditCallback callback);
 
 		ULONG HandleChange(UINT nID) override;
 		void SetListString(ULONG iListRow, ULONG iListCol, const std::wstring& szListString);
@@ -68,4 +73,4 @@ namespace viewpane
 
 		int m_iButtonWidth{50};
 	};
-}
+} // namespace viewpane
