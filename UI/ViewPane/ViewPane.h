@@ -29,7 +29,7 @@ namespace viewpane
 			int iEditHeight); // Height of an edit control
 		void SetAddInLabel(const std::wstring& szLabel);
 		virtual void UpdateButtons();
-		ULONG GetID() { return m_paneID; }
+		ULONG GetID() const { return m_paneID; }
 		// Return a pane with a matching control #. Can be overriden to allow container panes to return subpanes.
 		virtual ViewPane* GetPaneByID(int id) { return m_paneID == id ? this : nullptr; }
 		// Return a pane with a matching nID. Can be overriden to allow container panes to return subpanes.
@@ -40,7 +40,7 @@ namespace viewpane
 		bool m_bInitialized{false};
 		bool m_bReadOnly{true};
 		std::wstring m_szLabel; // Text to push into UI in Initialize
-		int m_iLabelWidth; // The width of the label
+		int m_iLabelWidth{0}; // The width of the label
 		CEdit m_Label;
 		UINT m_nID{0}; // NID for matching change notifications back to controls. Also used for Create calls.
 		HWND m_hWndParent{nullptr};

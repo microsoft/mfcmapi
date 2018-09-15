@@ -334,7 +334,7 @@ namespace viewpane
 
 	void TextPane::SetReadOnly()
 	{
-		m_EditBox.SetBackgroundColor(false, ui::MyGetSysColor(ui::cBackgroundReadOnly));
+		m_EditBox.SetBackgroundColor(false, MyGetSysColor(ui::cBackgroundReadOnly));
 		m_EditBox.SetReadOnly();
 	}
 
@@ -349,19 +349,17 @@ namespace viewpane
 	std::wstring TextPane::GetUIValue() const
 	{
 		std::wstring value;
-		GETTEXTLENGTHEX getTextLength = {0};
-		getTextLength.flags = GTL_PRECISE | GTL_NUMCHARS;
-		getTextLength.codepage = 1200;
+		auto getTextLength = GETTEXTLENGTHEX{GTL_PRECISE | GTL_NUMCHARS, 1200}; // 1200 for Unicode
 
-		auto cchText = static_cast<size_t>(::SendMessage(
-			m_EditBox.m_hWnd, EM_GETTEXTLENGTHEX, reinterpret_cast<WPARAM>(&getTextLength), static_cast<LPARAM>(0)));
-		if (E_INVALIDARG == cchText)
+		auto lResult = ::SendMessage(
+			m_EditBox.m_hWnd, EM_GETTEXTLENGTHEX, reinterpret_cast<WPARAM>(&getTextLength), static_cast<LPARAM>(0));
+		if (lResult == E_INVALIDARG)
 		{
 			// We didn't get a length - try another method
-			cchText = static_cast<size_t>(
-				::SendMessage(m_EditBox.m_hWnd, WM_GETTEXTLENGTH, static_cast<WPARAM>(0), static_cast<LPARAM>(0)));
+			lResult = ::SendMessage(m_EditBox.m_hWnd, WM_GETTEXTLENGTH, static_cast<WPARAM>(0), static_cast<LPARAM>(0));
 		}
 
+		const auto cchText = static_cast<size_t>(lResult);
 		if (cchText)
 		{
 			// Allocate a buffer large enough for either kind of string, along with a null terminator
@@ -370,7 +368,7 @@ namespace viewpane
 			auto buffer = new (std::nothrow) BYTE[cbBuffer];
 			if (buffer)
 			{
-				GETTEXTEX getText = {0};
+				GETTEXTEX getText = {};
 				getText.cb = DWORD(cbBuffer);
 				getText.flags = GT_DEFAULT;
 				getText.codepage = 1200;
@@ -435,7 +433,7 @@ namespace viewpane
 		if (bin.data() != nullptr)
 		{
 			ULONG cbWritten = 0;
-			auto hRes = EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
+			const auto hRes = EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 			output::DebugPrintEx(
 				DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
 

@@ -246,7 +246,7 @@ namespace viewpane
 
 	void ListPane::SetColumnType(int nCol, ULONG ulPropType) const
 	{
-		HDITEM hdItem = {0};
+		HDITEM hdItem = {};
 		auto lpMyHeader = m_List.GetHeaderCtrl();
 
 		if (lpMyHeader)
@@ -397,7 +397,7 @@ namespace viewpane
 
 		if (iItem == -1) return;
 
-		auto hRes = EC_B(m_List.DeleteItem(iItem));
+		const auto hRes = EC_B(m_List.DeleteItem(iItem));
 		m_List.SetSelectedItem(iItem);
 
 		if (hRes == S_OK && bDoDirty)

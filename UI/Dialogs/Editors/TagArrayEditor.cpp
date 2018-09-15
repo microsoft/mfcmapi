@@ -193,7 +193,6 @@ namespace dialog
 		void CTagArrayEditor::OnEditAction1()
 		{
 			if (!m_lpContentsTable) return;
-			auto hRes = S_OK;
 			ULONG ulQueryColumnFlags = NULL;
 
 			CEditor MyData(this, IDS_QUERYCOLUMNS, IDS_QUERYCOLUMNSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -205,7 +204,7 @@ namespace dialog
 			ulQueryColumnFlags = MyData.GetHex(0);
 			LPSPropTagArray lpTagArray = nullptr;
 
-			hRes = EC_MAPI(m_lpContentsTable->QueryColumns(ulQueryColumnFlags, &lpTagArray));
+			const auto hRes = EC_MAPI(m_lpContentsTable->QueryColumns(ulQueryColumnFlags, &lpTagArray));
 
 			if (SUCCEEDED(hRes))
 			{

@@ -202,7 +202,7 @@ namespace dialog
 			LPSPropValue lpOutProp = nullptr;
 			if (m_lpNewProp) lpEditProp = m_lpNewProp;
 
-			auto hRes = WC_H(DisplayPropertyEditor(
+			const auto hRes = WC_H(DisplayPropertyEditor(
 				this,
 				IDS_PROPEDITOR,
 				NULL,
@@ -743,7 +743,7 @@ namespace dialog
 			auto lpSourceProp =
 				lpData->Comment()->m_lpNewProp ? lpData->Comment()->m_lpNewProp : lpData->Comment()->m_lpOldProp;
 
-			SPropValue sProp = {0};
+			auto sProp = SPropValue{};
 
 			if (!lpSourceProp)
 			{
@@ -756,7 +756,7 @@ namespace dialog
 				lpSourceProp = &sProp;
 			}
 
-			auto hRes = WC_H(DisplayPropertyEditor(
+			const auto hRes = WC_H(DisplayPropertyEditor(
 				this,
 				IDS_PROPEDITOR,
 				NULL,
@@ -1377,7 +1377,7 @@ namespace dialog
 
 			CEditor BinEdit(this, IDS_EIDEDITOR, IDS_EIDEDITORPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-			LPSBinary lpSourcebin = nullptr;
+			auto lpSourcebin = LPSBinary{};
 			if (lpData->Binary()->m_OldBin.lpb)
 			{
 				lpSourcebin = &lpData->Binary()->m_OldBin;

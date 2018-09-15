@@ -4,8 +4,6 @@
 
 namespace viewpane
 {
-	static std::wstring CLASS = L"CountedTextPane";
-
 	CountedTextPane* CountedTextPane::Create(int paneID, UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
 	{
 		auto lpPane = new (std::nothrow) CountedTextPane();

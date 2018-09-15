@@ -5,8 +5,6 @@
 
 namespace viewpane
 {
-	static std::wstring CLASS = L"SmartViewPane";
-
 	SmartViewPane* SmartViewPane::Create(int paneID, UINT uidLabel)
 	{
 		auto pane = new (std::nothrow) SmartViewPane();

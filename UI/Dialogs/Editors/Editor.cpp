@@ -184,9 +184,9 @@ namespace dialog
 			}
 			case WM_ERASEBKGND:
 			{
-				RECT rect = {0};
+				auto rect = RECT{};
 				::GetClientRect(m_hWnd, &rect);
-				const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), ui::GetSysBrush(ui::cBackground));
+				const auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(ui::cBackground));
 				const auto bRet = PatBlt(
 					reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
 				SelectObject(reinterpret_cast<HDC>(wParam), hOld);
@@ -216,7 +216,7 @@ namespace dialog
 			{
 				const auto wScrollType = LOWORD(wParam);
 				const auto hWndScroll = reinterpret_cast<HWND>(lParam);
-				SCROLLINFO si = {0};
+				auto si = SCROLLINFO{};
 
 				si.cbSize = sizeof si;
 				si.fMask = SIF_ALL;
@@ -316,7 +316,7 @@ namespace dialog
 			const auto bRet = CMyDialog::OnInitDialog();
 
 			m_szTitle = szPostfix + m_szAddInTitle;
-			::SetWindowTextW(m_hWnd, m_szTitle.c_str());
+			SetWindowTextW(m_hWnd, m_szTitle.c_str());
 
 			SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
@@ -339,7 +339,7 @@ namespace dialog
 					CRect(0, 0, 0, 0),
 					this,
 					IDC_PROMPT));
-				::SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
+				SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
 
 				ui::SubclassLabel(m_Prompt.m_hWnd);
 			}
@@ -506,7 +506,7 @@ namespace dialog
 		// Any errors will be logged and do not need to be bubbled up.
 		_Check_return_ bool CEditor::DisplayDialog()
 		{
-			auto iDlgRet = EC_D_DIALOG(DoModal());
+			const auto iDlgRet = EC_D_DIALOG(DoModal());
 			switch (iDlgRet)
 			{
 			case IDOK:
@@ -561,7 +561,7 @@ namespace dialog
 					const auto szLine = new TCHAR[len + 1];
 					memset(szLine, 0, len + 1);
 
-					lpPrompt->GetLine(i, szLine, len);
+					(void) lpPrompt->GetLine(i, szLine, len);
 
 					int iWidth = LOWORD(::GetTabbedTextExtent(hdc, szLine, len, 0, nullptr));
 					delete[] szLine;
@@ -594,8 +594,6 @@ namespace dialog
 		// Good is defined as big enough to display all elements at a minimum size, including title
 		_Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 		{
-			SIZE sArea = {0};
-
 			// Figure a good width (cx)
 			auto cx = 0;
 
@@ -670,9 +668,7 @@ namespace dialog
 			}
 			// Done figuring a good height (cy)
 
-			sArea.cx = cx;
-			sArea.cy = cy;
-			return sArea;
+			return SIZE{cx, cy};
 		}
 
 		void CEditor::OnSetDefaultSize()
@@ -719,7 +715,7 @@ namespace dialog
 		{
 			OnSetDefaultSize();
 
-			RECT rc = {0};
+			auto rc = RECT{};
 			::GetClientRect(m_hWnd, &rc);
 			(void) ::PostMessage(
 				m_hWnd,
@@ -887,7 +883,7 @@ namespace dialog
 						iScrollWidth,
 						iCYBottom - iCYTop,
 						SWP_NOZORDER);
-					SCROLLINFO si = {0};
+					auto si = SCROLLINFO{};
 					si.cbSize = sizeof si;
 					si.fMask = SIF_POS;
 					::GetScrollInfo(m_hWndVertScroll, SB_CTL, &si);
@@ -980,7 +976,7 @@ namespace dialog
 			{
 				if (pane)
 				{
-					auto match = pane->GetPaneByID(id);
+					const auto match = pane->GetPaneByID(id);
 					if (match) return match;
 				}
 			}
@@ -1023,7 +1019,7 @@ namespace dialog
 		{
 			if (szMsg[0])
 			{
-				va_list argList = nullptr;
+				auto argList = va_list{};
 				va_start(argList, szMsg);
 				SetStringW(id, strings::formatV(szMsg, argList));
 				va_end(argList);
@@ -1286,7 +1282,7 @@ namespace dialog
 				if (pane)
 				{
 					// Either the pane matches by nID, or can return a subpane which matches by nID.
-					auto match = pane->GetPaneByNID(nID);
+					const auto match = pane->GetPaneByNID(nID);
 					if (match)
 					{
 						return match->GetID();
@@ -1295,7 +1291,7 @@ namespace dialog
 					// Or the top level pane has a control or pane in it that can handle the change
 					// In which case stop looking.
 					// We do not return the pane's ID number because this is a button event, not an edit change
-					if (pane->HandleChange(nID) != -1)
+					if (pane->HandleChange(nID) != static_cast<ULONG>(-1))
 					{
 						return static_cast<ULONG>(-1);
 					}

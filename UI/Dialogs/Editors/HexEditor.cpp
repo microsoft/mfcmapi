@@ -64,7 +64,7 @@ namespace dialog
 
 			if (paneID == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
-			LPBYTE lpb = nullptr;
+			auto lpb = LPBYTE{};
 			size_t cb = 0;
 			std::wstring szEncodeStr;
 			size_t cchEncodeStr = 0;
@@ -182,10 +182,7 @@ namespace dialog
 			if (lpPane)
 			{
 				auto bin = GetBinary(HEXED_HEX);
-				SBinary Bin = {0};
-				Bin.lpb = bin.data();
-				Bin.cb = ULONG(bin.size());
-				lpPane->Parse(Bin);
+				lpPane->Parse(SBinary{ULONG(bin.size()), bin.data()});
 			}
 		}
 

@@ -33,7 +33,7 @@ namespace dialog
 			// We got a MAPI prop object and no input value, go look one up
 			if (lpMAPIProp && !lpsPropValue)
 			{
-				SPropTagArray sTag = {0};
+				auto sTag = SPropTagArray{};
 				sTag.cValues = 1;
 				sTag.aulPropTag[0] =
 					PROP_TYPE(ulPropTag) == PT_ERROR ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
@@ -582,7 +582,7 @@ namespace dialog
 
 			LPSPropProblemArray lpProblemArray = nullptr;
 
-			auto hRes = EC_MAPI(m_lpMAPIProp->SetProps(1, m_lpsOutputValue, &lpProblemArray));
+			const auto hRes = EC_MAPI(m_lpMAPIProp->SetProps(1, m_lpsOutputValue, &lpProblemArray));
 
 			EC_PROBLEMARRAY(lpProblemArray);
 			MAPIFreeBuffer(lpProblemArray);
@@ -611,14 +611,9 @@ namespace dialog
 			std::wstring szTemp1;
 			std::wstring szTemp2;
 			std::wstring szSmartView;
-			SPropValue sProp = {0};
+			auto sProp = SPropValue{};
 
-			short int iVal = 0;
-			LONG lVal = 0;
-			CURRENCY curVal = {0};
-			LARGE_INTEGER liVal = {0};
-			FILETIME ftVal = {0};
-			SBinary Bin = {0};
+			//auto Bin = SBinary{};
 			std::vector<BYTE> bin;
 			std::string lpszA;
 			std::wstring lpszW;
@@ -634,17 +629,16 @@ namespace dialog
 				szTmpString = GetStringW(paneID);
 				if (paneID == 0)
 				{
-					iVal = static_cast<short int>(strings::wstringToLong(szTmpString, 10));
-					SetHex(1, iVal);
+					sProp.Value.i = static_cast<short int>(strings::wstringToLong(szTmpString, 10));
+					SetHex(1, sProp.Value.i);
 				}
 				else if (paneID == 1)
 				{
-					lVal = static_cast<short int>(strings::wstringToLong(szTmpString, 16));
-					SetDecimal(0, lVal);
+					sProp.Value.i = static_cast<short int>(strings::wstringToLong(szTmpString, 16));
+					SetDecimal(0, sProp.Value.i);
 				}
 
 				sProp.ulPropTag = m_ulPropTag;
-				sProp.Value.i = iVal;
 
 				szSmartView =
 					smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow);
@@ -656,17 +650,16 @@ namespace dialog
 				szTmpString = GetStringW(paneID);
 				if (paneID == 0)
 				{
-					lVal = static_cast<LONG>(strings::wstringToUlong(szTmpString, 10));
-					SetHex(1, lVal);
+					sProp.Value.l = static_cast<LONG>(strings::wstringToUlong(szTmpString, 10));
+					SetHex(1, sProp.Value.l);
 				}
 				else if (paneID == 1)
 				{
-					lVal = static_cast<LONG>(strings::wstringToUlong(szTmpString, 16));
-					SetStringf(0, L"%d", lVal); // STRING_OK
+					sProp.Value.l = static_cast<LONG>(strings::wstringToUlong(szTmpString, 16));
+					SetStringf(0, L"%d", sProp.Value.l); // STRING_OK
 				}
 
 				sProp.ulPropTag = m_ulPropTag;
-				sProp.Value.l = lVal;
 
 				szSmartView =
 					smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow);
@@ -678,18 +671,18 @@ namespace dialog
 				if (paneID == 0 || paneID == 1)
 				{
 					szTmpString = GetStringW(0);
-					curVal.Hi = strings::wstringToUlong(szTmpString, 16);
+					sProp.Value.cur.Hi = strings::wstringToUlong(szTmpString, 16);
 					szTmpString = GetStringW(1);
-					curVal.Lo = strings::wstringToUlong(szTmpString, 16);
-					SetStringW(2, strings::CurrencyToString(curVal));
+					sProp.Value.cur.Lo = strings::wstringToUlong(szTmpString, 16);
+					SetStringW(2, strings::CurrencyToString(sProp.Value.cur));
 				}
 				else if (paneID == 2)
 				{
 					szTmpString = GetStringW(paneID);
 					szTmpString = strings::StripCharacter(szTmpString, L'.');
-					curVal.int64 = strings::wstringToInt64(szTmpString);
-					SetHex(0, static_cast<int>(curVal.Hi));
-					SetHex(1, static_cast<int>(curVal.Lo));
+					sProp.Value.cur.int64 = strings::wstringToInt64(szTmpString);
+					SetHex(0, static_cast<int>(sProp.Value.cur.Hi));
+					SetHex(1, static_cast<int>(sProp.Value.cur.Lo));
 				}
 
 				break;
@@ -697,21 +690,20 @@ namespace dialog
 				if (paneID == 0 || paneID == 1)
 				{
 					szTmpString = GetStringW(0);
-					liVal.HighPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16));
+					sProp.Value.li.HighPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16));
 					szTmpString = GetStringW(1);
-					liVal.LowPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16));
-					SetStringf(2, L"%I64d", liVal.QuadPart); // STRING_OK
+					sProp.Value.li.LowPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16));
+					SetStringf(2, L"%I64d", sProp.Value.li.QuadPart); // STRING_OK
 				}
 				else if (paneID == 2)
 				{
 					szTmpString = GetStringW(paneID);
-					liVal.QuadPart = strings::wstringToInt64(szTmpString);
-					SetHex(0, static_cast<int>(liVal.HighPart));
-					SetHex(1, static_cast<int>(liVal.LowPart));
+					sProp.Value.li.QuadPart = strings::wstringToInt64(szTmpString);
+					SetHex(0, static_cast<int>(sProp.Value.li.HighPart));
+					SetHex(1, static_cast<int>(sProp.Value.li.LowPart));
 				}
 
 				sProp.ulPropTag = m_ulPropTag;
-				sProp.Value.li = liVal;
 
 				szSmartView =
 					smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow);
@@ -721,11 +713,11 @@ namespace dialog
 				break;
 			case PT_SYSTIME: // components are unsigned hex
 				szTmpString = GetStringW(0);
-				ftVal.dwLowDateTime = strings::wstringToUlong(szTmpString, 16);
+				sProp.Value.ft.dwLowDateTime = strings::wstringToUlong(szTmpString, 16);
 				szTmpString = GetStringW(1);
-				ftVal.dwHighDateTime = strings::wstringToUlong(szTmpString, 16);
+				sProp.Value.ft.dwHighDateTime = strings::wstringToUlong(szTmpString, 16);
 
-				strings::FileTimeToString(ftVal, szTemp1, szTemp2);
+				strings::FileTimeToString(sProp.Value.ft, szTemp1, szTemp2);
 				SetStringW(2, szTemp1);
 				break;
 			case PT_BINARY:
@@ -733,25 +725,25 @@ namespace dialog
 				{
 					bin = GetBinary(0);
 					if (paneID == 0) SetStringA(1, std::string(LPCSTR(bin.data()), bin.size())); // ansi string
-					Bin.lpb = bin.data();
-					Bin.cb = ULONG(bin.size());
+					sProp.Value.bin.lpb = bin.data();
+					sProp.Value.bin.cb = static_cast<ULONG>(bin.size());
 				}
 				else if (paneID == 1)
 				{
 					lpszA = GetStringA(1); // Do not free this
-					Bin.lpb = LPBYTE(lpszA.c_str());
-					Bin.cb = ULONG(sizeof(CHAR) * lpszA.length());
+					sProp.Value.bin.lpb = LPBYTE(lpszA.c_str());
+					sProp.Value.bin.cb = sizeof(CHAR) * lpszA.length();
 
-					SetBinary(0, Bin.lpb, Bin.cb);
+					SetBinary(0, sProp.Value.bin.lpb, sProp.Value.bin.cb);
 				}
 
 				lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
-				if (lpPane) lpPane->SetCount(Bin.cb);
+				if (lpPane) lpPane->SetCount(sProp.Value.bin.cb);
 
 				lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(1));
-				if (lpPane) lpPane->SetCount(Bin.cb);
+				if (lpPane) lpPane->SetCount(sProp.Value.bin.cb);
 
-				if (m_lpSmartView) m_lpSmartView->Parse(Bin);
+				if (m_lpSmartView) m_lpSmartView->Parse(sProp.Value.bin);
 				break;
 			case PT_STRING8:
 				if (paneID == 0)

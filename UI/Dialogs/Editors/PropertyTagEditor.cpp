@@ -192,7 +192,7 @@ namespace dialog
 			if (NamedID.lpguid && (MNID_ID == NamedID.ulKind && NamedID.Kind.lID ||
 								   MNID_STRING == NamedID.ulKind && NamedID.Kind.lpwstrName))
 			{
-				auto lpNamedPropTags = cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0);
+				const auto lpNamedPropTags = cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0);
 				if (lpNamedPropTags)
 				{
 					m_ulPropTag = CHANGE_PROP_TYPE(lpNamedPropTags->aulPropTag[0], ulPropType);
@@ -300,7 +300,7 @@ namespace dialog
 				lpTagArray->cValues = 1;
 				lpTagArray->aulPropTag[0] = m_ulPropTag;
 
-				auto hRes = WC_H_GETPROPS(
+				const auto hRes = WC_H_GETPROPS(
 					cache::GetNamesFromIDs(m_lpMAPIProp, &lpTagArray, NULL, NULL, &ulPropNames, &lppPropNames));
 				if (SUCCEEDED(hRes) && ulPropNames == lpTagArray->cValues && lppPropNames && lppPropNames[0])
 				{

@@ -6,8 +6,6 @@
 
 namespace viewpane
 {
-	static std::wstring CLASS = L"DropDownPane";
-
 	DropDownPane* DropDownPane::Create(
 		int paneID,
 		UINT uidLabel,

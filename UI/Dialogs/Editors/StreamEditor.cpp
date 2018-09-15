@@ -183,7 +183,7 @@ namespace dialog
 				auto lpSmartView = dynamic_cast<viewpane::SmartViewPane*>(GetPane(m_iSmartViewBox));
 				if (lpSmartView)
 				{
-					SPropValue sProp = {0};
+					SPropValue sProp = {};
 					sProp.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY);
 					auto bin = GetBinary(m_iBinBox);
 					sProp.Value.bin.lpb = bin.data();
@@ -390,12 +390,12 @@ namespace dialog
 
 				auto bin = GetBinary(m_iBinBox);
 
-				auto hRes = EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
+				const auto hRes = EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 				output::DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
 
 				if (SUCCEEDED(hRes))
 				{
-					hRes = EC_MAPI(m_lpStream->Commit(STGC_DEFAULT));
+					EC_MAPI_S(m_lpStream->Commit(STGC_DEFAULT));
 				}
 
 				if (m_bDisableSave)
@@ -404,7 +404,7 @@ namespace dialog
 				}
 				else
 				{
-					hRes = EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+					EC_MAPI_S(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 				}
 			}
 
@@ -470,11 +470,7 @@ namespace dialog
 				{
 					auto bin = GetBinary(m_iBinBox);
 
-					SBinary Bin = {0};
-					Bin.cb = ULONG(bin.size());
-					Bin.lpb = bin.data();
-
-					lpSmartView->Parse(Bin);
+					lpSmartView->Parse(SBinary{ULONG(bin.size()), bin.data()});
 				}
 			}
 

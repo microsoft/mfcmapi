@@ -66,13 +66,8 @@ namespace dialog
 		_Check_return_ const SRestriction* CSearchEditor::GetRestriction() const
 		{
 			// Allocate and create our SRestriction
-			auto lpRes = mapi::CreatePropertyStringRestriction(
-				CHANGE_PROP_TYPE(m_ulPropTag, PT_UNICODE),
-				GetStringW(CSearchEditor::SearchFields::SEARCHTERM),
-				m_ulFuzzyLevel,
-				nullptr);
-
-			return lpRes;
+			return mapi::CreatePropertyStringRestriction(
+				CHANGE_PROP_TYPE(m_ulPropTag, PT_UNICODE), GetStringW(SEARCHTERM), m_ulFuzzyLevel, nullptr);
 		}
 
 		// Select a property tag

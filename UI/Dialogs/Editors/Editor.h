@@ -20,7 +20,7 @@ namespace dialog
 //#define CEDITOR_BUTTON_CANCEL 0x00000008 // Duplicated from MFCMAPI.h - do not modify
 #define CEDITOR_BUTTON_ACTION3 0x00000010
 
-		#define NOLIST 0XFFFFFFFF
+#define NOLIST 0XFFFFFFFF
 
 		template <typename T> viewpane::DoListEditCallback ListEditCallBack(T* editor)
 		{
@@ -80,7 +80,7 @@ namespace dialog
 
 			// AddIn functions
 			void SetAddInTitle(const std::wstring& szTitle);
-			void SetAddInLabel(ULONG i, const std::wstring& szLabel) const;
+			void SetAddInLabel(ULONG id, const std::wstring& szLabel) const;
 
 			// Use this function to implement list editing
 			// return true to indicate the entry was changed, false to indicate it was not

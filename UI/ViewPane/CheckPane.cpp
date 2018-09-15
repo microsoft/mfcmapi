@@ -4,8 +4,6 @@
 
 namespace viewpane
 {
-	static std::wstring CLASS = L"CheckPane";
-
 	CheckPane* CheckPane::Create(int paneID, UINT uidLabel, bool bVal, bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) CheckPane();
@@ -82,7 +80,7 @@ namespace viewpane
 
 		const auto lCheck = GetSystemMetrics(SM_CXMENUCHECK);
 		const auto lEdge = lCheck / 5;
-		RECT rcCheck = {0};
+		auto rcCheck = RECT{0};
 		rcCheck.left = rc.left;
 		rcCheck.right = rcCheck.left + lCheck;
 		rcCheck.top = (rc.bottom - rc.top - lCheck) / 2;
@@ -120,7 +118,7 @@ namespace viewpane
 		ui::DrawSegoeTextW(
 			hDC,
 			szButton,
-			bDisabled ? ui::MyGetSysColor(ui::cTextDisabled) : ui::MyGetSysColor(ui::cText),
+			bDisabled ? MyGetSysColor(ui::cTextDisabled) : MyGetSysColor(ui::cText),
 			rcLabel,
 			false,
 			DT_SINGLELINE | DT_VCENTER);

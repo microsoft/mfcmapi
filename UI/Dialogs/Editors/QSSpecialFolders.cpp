@@ -121,7 +121,7 @@ namespace dialog
 					SetListString(ulListNum, iRow, iCol, mapi::FolderNames[i]);
 					iCol++;
 
-					auto defaultEid = mapi::GetDefaultFolderEID(i, m_lpMDB);
+					const auto defaultEid = mapi::GetDefaultFolderEID(i, m_lpMDB);
 					if (defaultEid)
 					{
 						SPropValue eid = {};
@@ -131,8 +131,8 @@ namespace dialog
 						SetListString(ulListNum, iRow, iCol, szProp);
 						iCol++;
 
-						auto lpFolder =
-							mapi::CallOpenEntry<LPMAPIFOLDER>(m_lpMDB, NULL, NULL, NULL, defaultEid, NULL, NULL, NULL);
+						auto lpFolder = mapi::CallOpenEntry<LPMAPIFOLDER>(
+							m_lpMDB, nullptr, nullptr, nullptr, defaultEid, nullptr, NULL, nullptr);
 						if (lpFolder)
 						{
 							ULONG ulProps = 0;
@@ -221,10 +221,10 @@ namespace dialog
 			return MyResults.DisplayDialog();
 		}
 
-		void OnQSCheckSpecialFolders(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
+		void OnQSCheckSpecialFolders(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		{
 			lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTCHECKINGSPECIALFOLDERS);
-			lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
+			(void) lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
 			auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 			if (lpMDB)
