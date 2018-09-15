@@ -30,7 +30,7 @@ namespace viewpane
 		void SetAddInLabel(const std::wstring& szLabel);
 		virtual void UpdateButtons();
 		ULONG GetID() const { return m_paneID; }
-		// Return a pane with a matching control #. Can be overriden to allow container panes to return subpanes.
+		// Return a pane with a matching paneID. Can be overriden to allow container panes to return subpanes.
 		virtual ViewPane* GetPaneByID(int id) { return m_paneID == id ? this : nullptr; }
 		// Return a pane with a matching nID. Can be overriden to allow container panes to return subpanes.
 		virtual ViewPane* GetPaneByNID(UINT nID) { return nID == m_nID ? this : nullptr; }

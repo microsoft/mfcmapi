@@ -11,7 +11,7 @@ namespace viewpane
 		static SplitterPane* CreateVerticalPane(int paneID);
 		void SetPaneOne(ViewPane* paneOne) { m_PaneOne = paneOne; }
 		void SetPaneTwo(ViewPane* paneTwo) { m_PaneTwo = paneTwo; }
-		// Return a pane with a matching control #.
+		// Return a pane with a matching paneID.
 		ViewPane* GetPaneByID(int id) override
 		{
 			if (m_paneID == id) return this;
