@@ -20,6 +20,8 @@ namespace dialog
 //#define CEDITOR_BUTTON_CANCEL 0x00000008 // Duplicated from MFCMAPI.h - do not modify
 #define CEDITOR_BUTTON_ACTION3 0x00000010
 
+#define NOLIST 0XFFFFFFFF
+
 		template <typename T> viewpane::DoListEditCallback ListEditCallBack(T* editor)
 		{
 			return [editor](auto a, auto b, auto c) { return editor->DoListEdit(a, b, c); };
@@ -45,36 +47,36 @@ namespace dialog
 			// These functions can be used to set up a data editing dialog
 			void SetPromptPostFix(_In_ const std::wstring& szMsg);
 			void InitPane(ULONG id, viewpane::ViewPane* lpPane);
-			void SetStringA(ULONG i, const std::string& szMsg) const;
-			void SetStringW(ULONG i, const std::wstring& szMsg) const;
-			void SetStringf(ULONG i, LPCWSTR szMsg, ...) const;
+			void SetStringA(ULONG id, const std::string& szMsg) const;
+			void SetStringW(ULONG id, const std::wstring& szMsg) const;
+			void SetStringf(ULONG id, LPCWSTR szMsg, ...) const;
 #ifdef CHECKFORMATPARAMS
 #undef SetStringf
 #define SetStringf(i, fmt, ...) SetStringf(i, fmt, __VA_ARGS__), wprintf(fmt, __VA_ARGS__)
 #endif
 
-			void LoadString(ULONG i, UINT uidMsg) const;
-			void SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const;
-			void SetHex(ULONG i, ULONG ulVal) const { SetStringf(i, L"0x%08X", ulVal); } // STRING_OK
-			void SetDecimal(ULONG i, ULONG ulVal) const { SetStringf(i, L"%u", ulVal); } // STRING_OK
+			void LoadString(ULONG id, UINT uidMsg) const;
+			void SetBinary(ULONG id, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const;
+			void SetHex(ULONG id, ULONG ulVal) const { SetStringf(id, L"0x%08X", ulVal); } // STRING_OK
+			void SetDecimal(ULONG id, ULONG ulVal) const { SetStringf(id, L"%u", ulVal); } // STRING_OK
 			// Updates pane using SetStringW
-			void SetSize(ULONG i, size_t cb) const
+			void SetSize(ULONG id, size_t cb) const
 			{
-				SetStringf(i, L"0x%08X = %u", static_cast<int>(cb), static_cast<UINT>(cb)); // STRING_OK
+				SetStringf(id, L"0x%08X = %u", static_cast<int>(cb), static_cast<UINT>(cb)); // STRING_OK
 			}
 
 			// Get values after we've done the DisplayDialog
-			viewpane::ViewPane* GetPane(ULONG iControl) const;
-			std::wstring GetStringW(ULONG i) const;
-			_Check_return_ ULONG GetHex(ULONG i) const;
-			_Check_return_ ULONG GetDecimal(ULONG i) const;
-			_Check_return_ ULONG GetPropTag(ULONG i) const;
-			_Check_return_ bool GetCheck(ULONG i) const;
-			_Check_return_ int GetDropDown(ULONG i) const;
-			_Check_return_ DWORD_PTR GetDropDownValue(ULONG i) const;
+			viewpane::ViewPane* GetPane(ULONG id) const;
+			std::wstring GetStringW(ULONG id) const;
+			_Check_return_ ULONG GetHex(ULONG id) const;
+			_Check_return_ ULONG GetDecimal(ULONG id) const;
+			_Check_return_ ULONG GetPropTag(ULONG id) const;
+			_Check_return_ bool GetCheck(ULONG id) const;
+			_Check_return_ int GetDropDown(ULONG id) const;
+			_Check_return_ DWORD_PTR GetDropDownValue(ULONG id) const;
 			_Check_return_ HRESULT
-			GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID) const;
-			GUID GetSelectedGUID(ULONG iControl, bool bByteSwapped) const;
+			GetEntryID(ULONG id, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID) const;
+			GUID GetSelectedGUID(ULONG id, bool bByteSwapped) const;
 
 			// AddIn functions
 			void SetAddInTitle(const std::wstring& szTitle);
@@ -90,21 +92,21 @@ namespace dialog
 
 		protected:
 			// Functions used by derived classes during init
-			void InsertColumn(ULONG ulListNum, int nCol, UINT uidText) const;
-			void InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulPropType) const;
-			void SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, const std::wstring& szListString) const;
+			void InsertColumn(ULONG id, int nCol, UINT uidText) const;
+			void InsertColumn(ULONG id, int nCol, UINT uidText, ULONG ulPropType) const;
+			void SetListString(ULONG id, ULONG iListRow, ULONG iListCol, const std::wstring& szListString) const;
 			_Check_return_ controls::sortlistdata::SortListData*
-			InsertListRow(ULONG iControl, int iRow, const std::wstring& szText) const;
-			void ClearList(ULONG iControl) const;
-			void ResizeList(ULONG iControl, bool bSort) const;
+			InsertListRow(ULONG id, int iRow, const std::wstring& szText) const;
+			void ClearList(ULONG id) const;
+			void ResizeList(ULONG id, bool bSort) const;
 
 			// Functions used by derived classes during handle change events
 			// Returns a binary buffer which is represented by the hex string
-			std::vector<BYTE> GetBinary(ULONG i) const { return strings::HexStringToBin(GetStringW(i)); }
-			_Check_return_ std::string GetStringA(ULONG iControl) const;
-			_Check_return_ ULONG GetListCount(ULONG iControl) const;
-			_Check_return_ controls::sortlistdata::SortListData* GetListRowData(ULONG iControl, int iRow) const;
-			_Check_return_ bool IsDirty(ULONG iControl) const;
+			std::vector<BYTE> GetBinary(ULONG id) const { return strings::HexStringToBin(GetStringW(id)); }
+			_Check_return_ std::string GetStringA(ULONG id) const;
+			_Check_return_ ULONG GetListCount(ULONG id) const;
+			_Check_return_ controls::sortlistdata::SortListData* GetListRowData(ULONG id, int iRow) const;
+			_Check_return_ bool IsDirty(ULONG id) const;
 
 			// Called to enable/disable buttons based on number of items
 			void UpdateButtons() const;
@@ -147,8 +149,8 @@ namespace dialog
 			void SetMargins() const;
 
 			// List functions and data
-			_Check_return_ bool OnEditListEntry(ULONG ulListNum) const;
-			ULONG m_ulListNum{}; // Only supporting one list right now - this is the control ID for it
+			_Check_return_ bool OnEditListEntry(ULONG id) const;
+			ULONG m_ulListID{NOLIST}; // Only supporting one list right now - this is the control ID for it
 
 			// Our UI controls. Only valid during display.
 			bool m_bHasPrompt{};
