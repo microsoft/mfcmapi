@@ -7,20 +7,25 @@ namespace viewpane
 {
 	static std::wstring CLASS = L"ListPane";
 
-	ListPane* ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
+	ListPane* ListPane::Create(int paneID, UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
 	{
 		auto pane = new (std::nothrow) ListPane();
 		if (pane)
 		{
 			pane->Setup(bAllowSort, std::move(callback));
 			pane->SetLabel(uidLabel, bReadOnly);
+			pane->m_paneID = paneID;
 		}
 
 		return pane;
 	}
 
-	ListPane*
-	ListPane::CreateCollapsibleListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
+	ListPane* ListPane::CreateCollapsibleListPane(
+		int paneID,
+		UINT uidLabel,
+		bool bAllowSort,
+		bool bReadOnly,
+		DoListEditCallback callback)
 	{
 		auto pane = new (std::nothrow) ListPane();
 		if (pane)
@@ -28,30 +33,24 @@ namespace viewpane
 			pane->Setup(bAllowSort, std::move(callback));
 			pane->SetLabel(uidLabel, bReadOnly);
 			pane->m_bCollapsible = true;
+			pane->m_paneID = paneID;
 		}
 
 		return pane;
 	}
 
-	ListPane::ListPane()
-	{
-		m_iButtonWidth = 50;
-		m_List.AllowEscapeClose();
-		m_bDirty = false;
-		m_bAllowSort = false;
-	}
-
 	void ListPane::Setup(bool bAllowSort, DoListEditCallback callback)
 	{
+		m_List.AllowEscapeClose();
 		m_bAllowSort = bAllowSort;
 		m_callback = std::move(callback);
 	}
 
 	bool ListPane::IsDirty() { return m_bDirty; }
 
-	void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+	void ListPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		ViewPane::Initialize(iControl, pParent, nullptr);
+		ViewPane::Initialize(pParent, nullptr);
 
 		DWORD dwListStyle = LVS_SINGLESEL | WS_BORDER;
 		if (!m_bAllowSort) dwListStyle |= LVS_NOSORTHEADER;
@@ -89,7 +88,7 @@ namespace viewpane
 	int ListPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
-		if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
+		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
 		if (m_bCollapsible)
 		{
@@ -157,7 +156,7 @@ namespace viewpane
 	void ListPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
 		const auto iVariableHeight = height - GetFixedHeight();
-		if (0 != m_iControl)
+		if (0 != m_paneID)
 		{
 			y += m_iSmallHeightMargin;
 			height -= m_iSmallHeightMargin;
@@ -247,7 +246,7 @@ namespace viewpane
 
 	void ListPane::SetColumnType(int nCol, ULONG ulPropType) const
 	{
-		HDITEM hdItem = {0};
+		HDITEM hdItem = {};
 		auto lpMyHeader = m_List.GetHeaderCtrl();
 
 		if (lpMyHeader)
@@ -398,7 +397,7 @@ namespace viewpane
 
 		if (iItem == -1) return;
 
-		auto hRes = EC_B(m_List.DeleteItem(iItem));
+		const auto hRes = EC_B(m_List.DeleteItem(iItem));
 		m_List.SetSelectedItem(iItem);
 
 		if (hRes == S_OK && bDoDirty)
@@ -422,7 +421,7 @@ namespace viewpane
 		auto bDidEdit = false;
 		if (m_callback)
 		{
-			bDidEdit = m_callback(m_iControl, iItem, lpData);
+			bDidEdit = m_callback(m_paneID, iItem, lpData);
 		}
 
 		// the list is dirty now if the edit succeeded or it was already dirty

@@ -124,7 +124,7 @@ namespace dialog
 				IDS_DISPLAYHIEARCHYTABLE,
 				IDS_DISPLAYHIEARCHYTABLEPROMPT,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_CONVENIENTDEPTH, false, false));
+			MyData.AddPane(viewpane::CheckPane::Create(0, IDS_CONVENIENTDEPTH, false, false));
 
 			if (MyData.DisplayDialog())
 			{
@@ -327,4 +327,4 @@ namespace dialog
 	{
 		addin::InvokeAddInMenu(lpParams);
 	}
-}
+} // namespace dialog

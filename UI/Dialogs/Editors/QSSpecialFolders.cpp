@@ -35,7 +35,8 @@ namespace dialog
 			m_lpMDB = lpMDB;
 			if (m_lpMDB) m_lpMDB->AddRef();
 
-			InitPane(0, viewpane::ListPane::Create(NULL, true, true, ListEditCallBack(this)));
+			AddPane(viewpane::ListPane::Create(0, NULL, true, true, ListEditCallBack(this)));
+			SetListID(0);
 		}
 
 		SpecialFolderEditor::~SpecialFolderEditor()
@@ -120,7 +121,7 @@ namespace dialog
 					SetListString(ulListNum, iRow, iCol, mapi::FolderNames[i]);
 					iCol++;
 
-					auto defaultEid = mapi::GetDefaultFolderEID(i, m_lpMDB);
+					const auto defaultEid = mapi::GetDefaultFolderEID(i, m_lpMDB);
 					if (defaultEid)
 					{
 						SPropValue eid = {};
@@ -130,8 +131,8 @@ namespace dialog
 						SetListString(ulListNum, iRow, iCol, szProp);
 						iCol++;
 
-						auto lpFolder =
-							mapi::CallOpenEntry<LPMAPIFOLDER>(m_lpMDB, NULL, NULL, NULL, defaultEid, NULL, NULL, NULL);
+						auto lpFolder = mapi::CallOpenEntry<LPMAPIFOLDER>(
+							m_lpMDB, nullptr, nullptr, nullptr, defaultEid, nullptr, NULL, nullptr);
 						if (lpFolder)
 						{
 							ULONG ulProps = 0;
@@ -197,7 +198,7 @@ namespace dialog
 			if (!lpData) return false;
 
 			CEditor MyResults(this, IDS_QSSPECIALFOLDER, NULL, CEDITOR_BUTTON_OK);
-			MyResults.InitPane(0, viewpane::TextPane::CreateMultiLinePane(NULL, true));
+			MyResults.AddPane(viewpane::TextPane::CreateMultiLinePane(0, NULL, true));
 
 			std::wstring szTmp;
 			const auto listPane = dynamic_cast<viewpane::ListPane*>(GetPane(ulListNum));
@@ -220,10 +221,10 @@ namespace dialog
 			return MyResults.DisplayDialog();
 		}
 
-		void OnQSCheckSpecialFolders(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
+		void OnQSCheckSpecialFolders(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		{
 			lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTCHECKINGSPECIALFOLDERS);
-			lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
+			(void) lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
 			auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 			if (lpMDB)
@@ -235,5 +236,5 @@ namespace dialog
 
 			lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
 		}
-	}
-}
+	} // namespace editor
+} // namespace dialog

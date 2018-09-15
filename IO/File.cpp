@@ -444,7 +444,7 @@ namespace file
 		dialog::editor::CEditor MyData(
 			nullptr, IDS_EXPORTTITLE, IDS_EXPORTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EXPORTSEARCHTERM, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(IDS_EXPORTSEARCHTERM, 0, false));
 
 		if (!MyData.DisplayDialog()) return;
 
@@ -1343,4 +1343,4 @@ namespace file
 
 		return versionStrings;
 	}
-}
+} // namespace file

@@ -67,8 +67,8 @@ namespace dialog
 			this, IDS_SEARCHCRITERIA, IDS_PFSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
 
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NAME, false));
-		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_NAME, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_ULFUZZYLEVEL, false));
 		MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
 
 		if (!MyData.DisplayDialog()) return;
@@ -81,4 +81,4 @@ namespace dialog
 
 		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
 	}
-}
+} // namespace dialog

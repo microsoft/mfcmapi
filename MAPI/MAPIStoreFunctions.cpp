@@ -229,7 +229,7 @@ namespace mapi
 				// prompt the user to enter a server name
 				dialog::editor::CEditor MyData(
 					nullptr, IDS_SERVERNAME, IDS_SERVERNAMEMISSINGPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
+				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SERVERNAME, false));
 
 				if (MyData.DisplayDialog())
 				{
@@ -395,13 +395,7 @@ namespace mapi
 				return nullptr;
 			}
 
-			auto eid = CreateStoreEntryID(
-				lpMDB,
-				lpszMsgStoreDN,
-				lpszMailboxDN,
-				smtpAddress,
-				ulFlags,
-				bForceServer);
+			auto eid = CreateStoreEntryID(lpMDB, lpszMsgStoreDN, lpszMailboxDN, smtpAddress, ulFlags, bForceServer);
 
 			LPMDB lpMailboxMDB = nullptr;
 			if (eid.cb && eid.lpb)
@@ -532,15 +526,13 @@ namespace mapi
 			dialog::editor::CEditor MyPrompt(
 				nullptr, IDS_OPENOTHERUSER, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-			MyPrompt.InitPane(
-				0,
-				viewpane::TextPane::CreateSingleLinePane(
-					IDS_SERVERNAME, strings::stringTowstring(szServerName), false));
-			MyPrompt.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_USERDN, szMailboxDN, false));
-			MyPrompt.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_USER_SMTP_ADDRESS, false));
-			MyPrompt.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
+			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(
+				0, IDS_SERVERNAME, strings::stringTowstring(szServerName), false));
+			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_USERDN, szMailboxDN, false));
+			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_USER_SMTP_ADDRESS, false));
+			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(3, IDS_CREATESTORENTRYIDFLAGS, false));
 			MyPrompt.SetHex(3, ulFlags);
-			MyPrompt.InitPane(4, viewpane::CheckPane::Create(IDS_FORCESERVER, false, false));
+			MyPrompt.AddPane(viewpane::CheckPane::Create(4, IDS_FORCESERVER, false, false));
 			if (!MyPrompt.DisplayDialog()) return nullptr;
 
 			return OpenOtherUsersMailbox(
@@ -760,5 +752,5 @@ namespace mapi
 
 			return lpUnwrappedMDB;
 		}
-	}
-}
+	} // namespace store
+} // namespace mapi
