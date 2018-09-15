@@ -2336,9 +2336,9 @@ namespace mapi
 			dialog::editor::CEditor MyData(
 				nullptr, IDS_COPYTO, IDS_COPYPASTEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-			MyData.InitPane(
+			MyData.AddPane(
 				0, viewpane::TextPane::CreateSingleLinePane(IDS_INTERFACE, guid::GUIDToStringAndName(lpGUID), false));
-			MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+			MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 			MyData.SetHex(1, MAPI_DIALOG);
 
 			if (!MyData.DisplayDialog()) return MAPI_E_USER_CANCEL;

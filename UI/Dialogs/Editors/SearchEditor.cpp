@@ -36,10 +36,10 @@ namespace dialog
 			m_lpMAPIProp = lpMAPIProp;
 			if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-			InitPane(PROPNAME, viewpane::TextPane::CreateSingleLinePane(IDS_PROPNAME, true));
-			InitPane(SEARCHTERM, viewpane::TextPane::CreateSingleLinePane(IDS_PROPVALUE, false));
-			InitPane(FUZZYLEVEL, viewpane::DropDownPane::Create(IDS_SEARCHTYPE, 0, nullptr, false));
-			InitPane(FINDROW, viewpane::CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
+			AddPane(PROPNAME, viewpane::TextPane::CreateSingleLinePane(IDS_PROPNAME, true));
+			AddPane(SEARCHTERM, viewpane::TextPane::CreateSingleLinePane(IDS_PROPVALUE, false));
+			AddPane(FUZZYLEVEL, viewpane::DropDownPane::Create(IDS_SEARCHTYPE, 0, nullptr, false));
+			AddPane(FINDROW, viewpane::CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
 
 			// initialize our dropdowns here
 			auto ulDropNum = 0;

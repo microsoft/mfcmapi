@@ -214,8 +214,8 @@ namespace dialog
 		editor::CEditor MyUID(
 			this, IDS_OPENPROFSECT, IDS_OPENPROFSECTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyUID.InitPane(0, viewpane::DropDownPane::CreateGuid(IDS_MAPIUID, false));
-		MyUID.InitPane(1, viewpane::CheckPane::Create(IDS_MAPIUIDBYTESWAPPED, false, false));
+		MyUID.AddPane(0, viewpane::DropDownPane::CreateGuid(IDS_MAPIUID, false));
+		MyUID.AddPane(1, viewpane::CheckPane::Create(IDS_MAPIUIDBYTESWAPPED, false, false));
 
 		if (!MyUID.DisplayDialog()) return;
 

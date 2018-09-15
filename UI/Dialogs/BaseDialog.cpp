@@ -665,7 +665,7 @@ namespace dialog
 
 		const auto szVersionString = version::GetOutlookVersionString();
 
-		MyEID.InitPane(0, viewpane::TextPane::CreateMultiLinePane(IDS_OUTLOOKVERSIONPROMPT, szVersionString, true));
+		MyEID.AddPane(0, viewpane::TextPane::CreateMultiLinePane(IDS_OUTLOOKVERSIONPROMPT, szVersionString, true));
 		(void) MyEID.DisplayDialog();
 	}
 
@@ -675,32 +675,32 @@ namespace dialog
 
 		editor::CEditor MyEID(this, IDS_OPENEID, IDS_OPENEIDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyEID.InitPane(
+		MyEID.AddPane(
 			0, viewpane::TextPane::CreateSingleLinePane(IDS_EID, strings::BinToHexString(lpBin, false), false));
 
 		const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-		MyEID.InitPane(1, viewpane::CheckPane::Create(IDS_USEMDB, lpMDB != nullptr, lpMDB == nullptr));
+		MyEID.AddPane(1, viewpane::CheckPane::Create(IDS_USEMDB, lpMDB != nullptr, lpMDB == nullptr));
 
 		auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
 		if (lpAB)
-			MyEID.InitPane(2, viewpane::CheckPane::Create(IDS_USEAB, true, lpAB == nullptr));
+			MyEID.AddPane(2, viewpane::CheckPane::Create(IDS_USEAB, true, lpAB == nullptr));
 		else
-			MyEID.InitPane(2, viewpane::CheckPane::Create(IDS_USEAB, false, lpAB == nullptr));
+			MyEID.AddPane(2, viewpane::CheckPane::Create(IDS_USEAB, false, lpAB == nullptr));
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-		MyEID.InitPane(3, viewpane::CheckPane::Create(IDS_SESSION, lpMAPISession != nullptr, lpMAPISession == nullptr));
+		MyEID.AddPane(3, viewpane::CheckPane::Create(IDS_SESSION, lpMAPISession != nullptr, lpMAPISession == nullptr));
 
-		MyEID.InitPane(4, viewpane::CheckPane::Create(IDS_PASSMAPIMODIFY, false, false));
+		MyEID.AddPane(4, viewpane::CheckPane::Create(IDS_PASSMAPIMODIFY, false, false));
 
-		MyEID.InitPane(5, viewpane::CheckPane::Create(IDS_PASSMAPINOCACHE, false, false));
+		MyEID.AddPane(5, viewpane::CheckPane::Create(IDS_PASSMAPINOCACHE, false, false));
 
-		MyEID.InitPane(6, viewpane::CheckPane::Create(IDS_PASSMAPICACHEONLY, false, false));
+		MyEID.AddPane(6, viewpane::CheckPane::Create(IDS_PASSMAPICACHEONLY, false, false));
 
-		MyEID.InitPane(7, viewpane::CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
+		MyEID.AddPane(7, viewpane::CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
 
-		MyEID.InitPane(8, viewpane::CheckPane::Create(IDS_ATTEMPTIADDRBOOKDETAILSCALL, false, lpAB == nullptr));
+		MyEID.AddPane(8, viewpane::CheckPane::Create(IDS_ATTEMPTIADDRBOOKDETAILSCALL, false, lpAB == nullptr));
 
-		MyEID.InitPane(9, viewpane::CheckPane::Create(IDS_EIDISCONTAB, false, false));
+		MyEID.AddPane(9, viewpane::CheckPane::Create(IDS_EIDISCONTAB, false, false));
 
 		if (!MyEID.DisplayDialog()) return;
 
@@ -789,14 +789,14 @@ namespace dialog
 		editor::CEditor MyEIDs(
 			this, IDS_COMPAREEIDS, IDS_COMPAREEIDSPROMPTS, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyEIDs.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EID1, false));
-		MyEIDs.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_EID2, false));
+		MyEIDs.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EID1, false));
+		MyEIDs.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_EID2, false));
 
 		UINT uidDropDown[] = {IDS_DDMESSAGESTORE, IDS_DDSESSION, IDS_DDADDRESSBOOK};
-		MyEIDs.InitPane(
+		MyEIDs.AddPane(
 			2, viewpane::DropDownPane::Create(IDS_OBJECTFORCOMPAREEID, _countof(uidDropDown), uidDropDown, true));
 
-		MyEIDs.InitPane(3, viewpane::CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
+		MyEIDs.AddPane(3, viewpane::CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
 
 		if (!MyEIDs.DisplayDialog()) return;
 
@@ -859,10 +859,10 @@ namespace dialog
 		editor::CEditor MyStoreEID(
 			this, IDS_COMPUTESTOREHASH, IDS_COMPUTESTOREHASHPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyStoreEID.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_STOREEID, false));
-		MyStoreEID.InitPane(1, viewpane::CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
-		MyStoreEID.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_FILENAME, false));
-		MyStoreEID.InitPane(3, viewpane::CheckPane::Create(IDS_PUBLICFOLDERSTORE, false, false));
+		MyStoreEID.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_STOREEID, false));
+		MyStoreEID.AddPane(1, viewpane::CheckPane::Create(IDS_EIDBASE64ENCODED, false, false));
+		MyStoreEID.AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_FILENAME, false));
+		MyStoreEID.AddPane(3, viewpane::CheckPane::Create(IDS_PUBLICFOLDERSTORE, false, false));
 
 		if (!MyStoreEID.DisplayDialog()) return;
 
@@ -897,11 +897,11 @@ namespace dialog
 		editor::CEditor MyData(
 			this, IDS_NOTIFICATIONS, IDS_NOTIFICATIONSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagNotifEventType, true));
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EID, false));
-		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULEVENTMASK, false));
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_EID, false));
+		MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ULEVENTMASK, false));
 		MyData.SetHex(1, fnevNewMail);
 		UINT uidDropDown[] = {IDS_DDMESSAGESTORE, IDS_DDSESSION, IDS_DDADDRESSBOOK};
-		MyData.InitPane(
+		MyData.AddPane(
 			2, viewpane::DropDownPane::Create(IDS_OBJECTFORADVISE, _countof(uidDropDown), uidDropDown, true));
 
 		if (MyData.DisplayDialog())

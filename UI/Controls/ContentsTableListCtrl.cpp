@@ -193,14 +193,14 @@ namespace controls
 			if (SUCCEEDED(hRes))
 			{
 				dialog::editor::CEditor MyData(this, IDS_GETSTATUS, IDS_GETSTATUSPROMPT, CEDITOR_BUTTON_OK);
-				MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, true));
+				MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, true));
 				MyData.SetHex(0, ulTableStatus);
 				auto szFlags = interpretprop::InterpretFlags(flagTableStatus, ulTableStatus);
-				MyData.InitPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLESTATUS, szFlags, true));
-				MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLETYPE, true));
+				MyData.AddPane(1, viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLESTATUS, szFlags, true));
+				MyData.AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLETYPE, true));
 				MyData.SetHex(2, ulTableType);
 				szFlags = interpretprop::InterpretFlags(flagTableType, ulTableType);
-				MyData.InitPane(3, viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLETYPE, szFlags, true));
+				MyData.AddPane(3, viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLETYPE, szFlags, true));
 
 				(void) MyData.DisplayDialog();
 			}

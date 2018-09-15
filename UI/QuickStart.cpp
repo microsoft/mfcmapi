@@ -235,8 +235,8 @@ namespace dialog
 			if (!szNicknames.empty() && lpsProp)
 			{
 				dialog::editor::CEditor MyResults(lpHostDlg, IDS_NICKNAME, NULL, CEDITOR_BUTTON_OK);
-				MyResults.InitPane(0, viewpane::TextPane::CreateCollapsibleTextPane(NULL, true));
-				MyResults.InitPane(1, viewpane::CountedTextPane::Create(IDS_HEX, true, IDS_CB));
+				MyResults.AddPane(0, viewpane::TextPane::CreateCollapsibleTextPane(NULL, true));
+				MyResults.AddPane(1, viewpane::CountedTextPane::Create(IDS_HEX, true, IDS_CB));
 
 				MyResults.SetStringW(0, szNicknames);
 
@@ -364,7 +364,7 @@ namespace dialog
 
 			// Display our dialog
 			dialog::editor::CEditor MyResults(lpHostDlg, IDS_QUOTA, NULL, CEDITOR_BUTTON_OK);
-			MyResults.InitPane(0, viewpane::TextPane::CreateMultiLinePane(NULL, true));
+			MyResults.AddPane(0, viewpane::TextPane::CreateMultiLinePane(NULL, true));
 			MyResults.SetStringW(0, szQuotaString);
 
 			(void) MyResults.DisplayDialog();
@@ -424,8 +424,8 @@ namespace dialog
 
 		if (lpThumbnail)
 		{
-			MyResults.InitPane(0, viewpane::CountedTextPane::Create(IDS_HEX, true, IDS_CB));
-			MyResults.InitPane(1, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ANSISTRING, true));
+			MyResults.AddPane(0, viewpane::CountedTextPane::Create(IDS_HEX, true, IDS_CB));
+			MyResults.AddPane(1, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ANSISTRING, true));
 
 			auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(MyResults.GetPane(0));
 			if (lpPane) lpPane->SetCount(lpThumbnail->Value.bin.cb);
@@ -435,7 +435,7 @@ namespace dialog
 		}
 		else
 		{
-			MyResults.InitPane(0, viewpane::TextPane::CreateSingleLinePaneID(0, IDS_QSTHUMBNAILNOTFOUND, true));
+			MyResults.AddPane(0, viewpane::TextPane::CreateSingleLinePaneID(0, IDS_QSTHUMBNAILNOTFOUND, true));
 		}
 
 		(void) MyResults.DisplayDialog();

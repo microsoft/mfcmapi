@@ -52,7 +52,7 @@ namespace mapi
 			output::DebugPrint(DBGGeneric, L"DisplayMAPISVCPath()\n");
 
 			dialog::editor::CEditor MyData(pParentWnd, IDS_MAPISVCTITLE, IDS_MAPISVCTEXT, CEDITOR_BUTTON_OK);
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
+			MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
 			MyData.SetStringW(0, GetMAPISVCPath());
 
 			(void) MyData.DisplayDialog();
@@ -301,8 +301,8 @@ namespace mapi
 		{
 			dialog::editor::CEditor MyData(
 				nullptr, IDS_ADDSERVICESTOINF, IDS_ADDSERVICESTOINFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_EXCHANGE, false, false));
-			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_PST, false, false));
+			MyData.AddPane(0, viewpane::CheckPane::Create(IDS_EXCHANGE, false, false));
+			MyData.AddPane(1, viewpane::CheckPane::Create(IDS_PST, false, false));
 
 			if (MyData.DisplayDialog())
 			{
@@ -322,8 +322,8 @@ namespace mapi
 		{
 			dialog::editor::CEditor MyData(
 				nullptr, IDS_REMOVEFROMINF, IDS_REMOVEFROMINFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_EXCHANGE, false, false));
-			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_PST, false, false));
+			MyData.AddPane(0, viewpane::CheckPane::Create(IDS_EXCHANGE, false, false));
+			MyData.AddPane(1, viewpane::CheckPane::Create(IDS_PST, false, false));
 
 			if (MyData.DisplayDialog())
 			{

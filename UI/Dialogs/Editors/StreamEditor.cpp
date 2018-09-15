@@ -150,17 +150,17 @@ namespace dialog
 
 			// Let's crack our property open and see what kind of controls we'll need for it
 			// One control for text stream, one for binary
-			InitPane(m_iTextBox, viewpane::TextPane::CreateCollapsibleTextPane(IDS_STREAMTEXT, false));
+			AddPane(m_iTextBox, viewpane::TextPane::CreateCollapsibleTextPane(IDS_STREAMTEXT, false));
 			if (bUseWrapEx)
 			{
-				InitPane(m_iFlagBox, viewpane::TextPane::CreateSingleLinePane(IDS_STREAMFLAGS, true));
-				InitPane(m_iCodePageBox, viewpane::TextPane::CreateSingleLinePane(IDS_CODEPAGE, true));
+				AddPane(m_iFlagBox, viewpane::TextPane::CreateSingleLinePane(IDS_STREAMFLAGS, true));
+				AddPane(m_iCodePageBox, viewpane::TextPane::CreateSingleLinePane(IDS_CODEPAGE, true));
 			}
 
-			InitPane(m_iBinBox, viewpane::CountedTextPane::Create(IDS_STREAMBIN, false, IDS_CB));
+			AddPane(m_iBinBox, viewpane::CountedTextPane::Create(IDS_STREAMBIN, false, IDS_CB));
 			if (m_bDoSmartView)
 			{
-				InitPane(m_iSmartViewBox, viewpane::SmartViewPane::Create(IDS_SMARTVIEW));
+				AddPane(m_iSmartViewBox, viewpane::SmartViewPane::Create(IDS_SMARTVIEW));
 			}
 		}
 

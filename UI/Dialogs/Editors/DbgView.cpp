@@ -61,10 +61,10 @@ namespace dialog
 				  NULL)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
-			InitPane(DBGVIEW_TAGS, viewpane::TextPane::CreateSingleLinePane(IDS_REGKEY_DEBUG_TAG, false));
+			AddPane(DBGVIEW_TAGS, viewpane::TextPane::CreateSingleLinePane(IDS_REGKEY_DEBUG_TAG, false));
 			SetHex(DBGVIEW_TAGS, output::GetDebugLevel());
-			InitPane(DBGVIEW_PAUSE, viewpane::CheckPane::Create(IDS_PAUSE, false, false));
-			InitPane(DBGVIEW_VIEW, viewpane::TextPane::CreateMultiLinePane(NULL, true));
+			AddPane(DBGVIEW_PAUSE, viewpane::CheckPane::Create(IDS_PAUSE, false, false));
+			AddPane(DBGVIEW_VIEW, viewpane::TextPane::CreateMultiLinePane(NULL, true));
 			m_bPaused = false;
 			DisplayParentedDialog(pParentWnd, 800);
 		}

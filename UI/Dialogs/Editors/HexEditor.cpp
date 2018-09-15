@@ -35,11 +35,11 @@ namespace dialog
 			m_lpMapiObjects = lpMapiObjects;
 			if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
 
-			InitPane(HEXED_ANSI, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ANSISTRING, false));
-			InitPane(HEXED_UNICODE, viewpane::TextPane::CreateCollapsibleTextPane(IDS_UNISTRING, false));
-			InitPane(HEXED_BASE64, viewpane::CountedTextPane::Create(IDS_BASE64STRING, false, IDS_CCH));
-			InitPane(HEXED_HEX, viewpane::CountedTextPane::Create(IDS_HEX, false, IDS_CB));
-			InitPane(HEXED_SMARTVIEW, viewpane::SmartViewPane::Create(IDS_SMARTVIEW));
+			AddPane(HEXED_ANSI, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ANSISTRING, false));
+			AddPane(HEXED_UNICODE, viewpane::TextPane::CreateCollapsibleTextPane(IDS_UNISTRING, false));
+			AddPane(HEXED_BASE64, viewpane::CountedTextPane::Create(IDS_BASE64STRING, false, IDS_CCH));
+			AddPane(HEXED_HEX, viewpane::CountedTextPane::Create(IDS_HEX, false, IDS_CB));
+			AddPane(HEXED_SMARTVIEW, viewpane::SmartViewPane::Create(IDS_SMARTVIEW));
 			DisplayParentedDialog(pParentWnd, 1000);
 		}
 

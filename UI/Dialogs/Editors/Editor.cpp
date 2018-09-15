@@ -966,7 +966,7 @@ namespace dialog
 			m_Panes.clear();
 		}
 
-		void CEditor::InitPane(ULONG id, viewpane::ViewPane* lpPane)
+		void CEditor::AddPane(ULONG id, viewpane::ViewPane* lpPane)
 		{
 			if (!lpPane) return;
 			lpPane->SetID(id);

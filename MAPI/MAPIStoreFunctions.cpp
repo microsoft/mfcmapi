@@ -229,7 +229,7 @@ namespace mapi
 				// prompt the user to enter a server name
 				dialog::editor::CEditor MyData(
 					nullptr, IDS_SERVERNAME, IDS_SERVERNAMEMISSINGPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
+				MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
 
 				if (MyData.DisplayDialog())
 				{
@@ -532,15 +532,15 @@ namespace mapi
 			dialog::editor::CEditor MyPrompt(
 				nullptr, IDS_OPENOTHERUSER, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-			MyPrompt.InitPane(
+			MyPrompt.AddPane(
 				0,
 				viewpane::TextPane::CreateSingleLinePane(
 					IDS_SERVERNAME, strings::stringTowstring(szServerName), false));
-			MyPrompt.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_USERDN, szMailboxDN, false));
-			MyPrompt.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_USER_SMTP_ADDRESS, false));
-			MyPrompt.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
+			MyPrompt.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_USERDN, szMailboxDN, false));
+			MyPrompt.AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_USER_SMTP_ADDRESS, false));
+			MyPrompt.AddPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 			MyPrompt.SetHex(3, ulFlags);
-			MyPrompt.InitPane(4, viewpane::CheckPane::Create(IDS_FORCESERVER, false, false));
+			MyPrompt.AddPane(4, viewpane::CheckPane::Create(IDS_FORCESERVER, false, false));
 			if (!MyPrompt.DisplayDialog()) return nullptr;
 
 			return OpenOtherUsersMailbox(

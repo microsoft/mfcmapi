@@ -138,9 +138,9 @@ namespace dialog
 	{
 		editor::CEditor MyData(
 			this, IDS_LAUNCHPROFWIZ, IDS_LAUNCHPROFWIZPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
-		MyData.InitPane(
+		MyData.AddPane(
 			1, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, std::wstring(L"MSEMS"), false)); // STRING_OK
 
 		if (!MyData.DisplayDialog()) return;
@@ -162,8 +162,8 @@ namespace dialog
 
 		editor::CEditor MyData(this, IDS_NEWEXPROF, IDS_NEWEXPROFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
-		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_MAILBOXNAME, false));
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
+		MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_MAILBOXNAME, false));
 
 		if (!MyData.DisplayDialog()) return;
 
@@ -214,9 +214,9 @@ namespace dialog
 				if (!lpListData || !lpListData->Contents()) break;
 
 				editor::CEditor MyFile(this, IDS_PSTPATH, IDS_PSTPATHPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				MyFile.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, file, false));
-				MyFile.InitPane(1, viewpane::CheckPane::Create(IDS_PSTDOPW, false, false));
-				MyFile.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_PSTPW, false));
+				MyFile.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, file, false));
+				MyFile.AddPane(1, viewpane::CheckPane::Create(IDS_PSTDOPW, false, false));
+				MyFile.AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_PSTPW, false));
 
 				if (MyFile.DisplayDialog())
 				{
@@ -258,8 +258,8 @@ namespace dialog
 		if (!m_lpContentsTableListCtrl) return;
 
 		editor::CEditor MyData(this, IDS_NEWSERVICE, IDS_NEWSERVICEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, false));
-		MyData.InitPane(1, viewpane::CheckPane::Create(IDS_DISPLAYSERVICEUI, true, false));
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SERVICE, false));
+		MyData.AddPane(1, viewpane::CheckPane::Create(IDS_DISPLAYSERVICEUI, true, false));
 
 		if (!MyData.DisplayDialog()) return;
 
@@ -291,7 +291,7 @@ namespace dialog
 	void CProfileListDlg::OnCreateProfile()
 	{
 		editor::CEditor MyData(this, IDS_NEWPROF, IDS_NEWPROFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILE, false));
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILE, false));
 
 		if (!MyData.DisplayDialog()) return;
 
@@ -370,11 +370,11 @@ namespace dialog
 			editor::CEditor MyData(
 				this, IDS_PROFILESERVERVERSIONTITLE, IDS_PROFILESERVERVERSIONPROMPT, CEDITOR_BUTTON_OK);
 
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSION, true));
-			MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMAJOR, true));
-			MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINOR, true));
-			MyData.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONBUILD, true));
-			MyData.InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINORBUILD, true));
+			MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSION, true));
+			MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMAJOR, true));
+			MyData.AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINOR, true));
+			MyData.AddPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONBUILD, true));
+			MyData.AddPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINORBUILD, true));
 
 			if (bFoundServerVersion)
 			{
@@ -442,7 +442,7 @@ namespace dialog
 	void CProfileListDlg::OnOpenProfileByName()
 	{
 		editor::CEditor MyData(this, IDS_OPENPROFILE, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_OPENPROFILEPROMPT, false));
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_OPENPROFILEPROMPT, false));
 
 		if (MyData.DisplayDialog())
 		{
@@ -481,7 +481,7 @@ namespace dialog
 
 		editor::CEditor MyData(this, IDS_COPYPROFILE, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(
+		MyData.AddPane(
 			0,
 			viewpane::TextPane::CreateSingleLinePane(
 				IDS_COPYPROFILEPROMPT, strings::stringTowstring(szOldProfile), false));

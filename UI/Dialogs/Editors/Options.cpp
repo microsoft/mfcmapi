@@ -38,28 +38,28 @@ namespace dialog
 			{
 				if (registry::regoptCheck == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					InitPane(
+					AddPane(
 						ulReg,
 						viewpane::CheckPane::Create(
 							registry::RegKeys[ulReg].uiOptionsPrompt, 0 != registry::RegKeys[ulReg].ulCurDWORD, false));
 				}
 				else if (registry::regoptString == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					InitPane(
+					AddPane(
 						ulReg,
 						viewpane::TextPane::CreateSingleLinePane(
 							registry::RegKeys[ulReg].uiOptionsPrompt, registry::RegKeys[ulReg].szCurSTRING, false));
 				}
 				else if (registry::regoptStringHex == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					InitPane(
+					AddPane(
 						ulReg,
 						viewpane::TextPane::CreateSingleLinePane(registry::RegKeys[ulReg].uiOptionsPrompt, false));
 					SetHex(ulReg, registry::RegKeys[ulReg].ulCurDWORD);
 				}
 				else if (registry::regoptStringDec == registry::RegKeys[ulReg].ulRegOptType)
 				{
-					InitPane(
+					AddPane(
 						ulReg,
 						viewpane::TextPane::CreateSingleLinePane(registry::RegKeys[ulReg].uiOptionsPrompt, false));
 					SetDecimal(ulReg, registry::RegKeys[ulReg].ulCurDWORD);

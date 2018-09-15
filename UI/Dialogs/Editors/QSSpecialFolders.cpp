@@ -35,7 +35,7 @@ namespace dialog
 			m_lpMDB = lpMDB;
 			if (m_lpMDB) m_lpMDB->AddRef();
 
-			InitPane(0, viewpane::ListPane::Create(NULL, true, true, ListEditCallBack(this)));
+			AddPane(0, viewpane::ListPane::Create(NULL, true, true, ListEditCallBack(this)));
 			SetListID(0);
 		}
 
@@ -198,7 +198,7 @@ namespace dialog
 			if (!lpData) return false;
 
 			CEditor MyResults(this, IDS_QSSPECIALFOLDER, NULL, CEDITOR_BUTTON_OK);
-			MyResults.InitPane(0, viewpane::TextPane::CreateMultiLinePane(NULL, true));
+			MyResults.AddPane(0, viewpane::TextPane::CreateMultiLinePane(NULL, true));
 
 			std::wstring szTmp;
 			const auto listPane = dynamic_cast<viewpane::ListPane*>(GetPane(ulListNum));

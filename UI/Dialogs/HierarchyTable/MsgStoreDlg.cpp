@@ -336,7 +336,7 @@ namespace dialog
 			editor::CEditor MyData(
 				this, IDS_PASTEFOLDER, IDS_PASTEFOLDERPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_PASTEFOLDERCONTENTS, false, false));
+			MyData.AddPane(0, viewpane::CheckPane::Create(IDS_PASTEFOLDERCONTENTS, false, false));
 			if (MyData.DisplayDialog())
 			{
 				const auto bPasteContents = MyData.GetCheck(0);
@@ -369,7 +369,7 @@ namespace dialog
 			editor::CEditor MyData(
 				this, IDS_COPYMESSAGE, IDS_COPYMESSAGEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_MESSAGEMOVE, false, false));
+			MyData.AddPane(0, viewpane::CheckPane::Create(IDS_MESSAGEMOVE, false, false));
 			if (MyData.DisplayDialog())
 			{
 				auto ulMoveMessage = MyData.GetCheck(0) ? MESSAGE_MOVE : 0;
@@ -425,9 +425,9 @@ namespace dialog
 
 			editor::CEditor MyData(
 				this, IDS_PASTEFOLDER, IDS_PASTEFOLDERNEWNAMEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FOLDERNAME, false));
-			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_COPYSUBFOLDERS, false, false));
-			MyData.InitPane(2, viewpane::CheckPane::Create(IDS_FOLDERMOVE, false, false));
+			MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FOLDERNAME, false));
+			MyData.AddPane(1, viewpane::CheckPane::Create(IDS_COPYSUBFOLDERS, false, false));
+			MyData.AddPane(2, viewpane::CheckPane::Create(IDS_FOLDERMOVE, false, false));
 
 			// Get required properties from the source folder
 			EC_H_GETPROPS_S(
@@ -502,9 +502,9 @@ namespace dialog
 
 			editor::CEditor MyData(
 				this, IDS_COPYFOLDERCONTENTS, IDS_PICKOPTIONSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_COPYASSOCIATEDITEMS, false, false));
-			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_MOVEMESSAGES, false, false));
-			MyData.InitPane(2, viewpane::CheckPane::Create(IDS_SINGLECALLCOPY, true, false));
+			MyData.AddPane(0, viewpane::CheckPane::Create(IDS_COPYASSOCIATEDITEMS, false, false));
+			MyData.AddPane(1, viewpane::CheckPane::Create(IDS_MOVEMESSAGES, false, false));
+			MyData.AddPane(2, viewpane::CheckPane::Create(IDS_SINGLECALLCOPY, true, false));
 			if (MyData.DisplayDialog())
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -541,7 +541,7 @@ namespace dialog
 
 			editor::CEditor MyData(
 				this, IDS_COPYFOLDERRULES, IDS_COPYFOLDERRULESPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_REPLACERULES, false, false));
+			MyData.AddPane(0, viewpane::CheckPane::Create(IDS_REPLACERULES, false, false));
 			if (MyData.DisplayDialog())
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -562,13 +562,13 @@ namespace dialog
 		editor::CEditor MyData(
 			this, IDS_ADDSUBFOLDER, IDS_ADDSUBFOLDERPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_FOLDER_TYPE), true));
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePaneID(IDS_FOLDERNAME, IDS_FOLDERNAMEVALUE, false));
-		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FOLDERTYPE, false));
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePaneID(IDS_FOLDERNAME, IDS_FOLDERNAMEVALUE, false));
+		MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_FOLDERTYPE, false));
 		MyData.SetHex(1, FOLDER_GENERIC);
 		auto szProduct = strings::loadstring(ID_PRODUCTNAME);
 		const auto szFolderComment = strings::formatmessage(IDS_FOLDERCOMMENTVALUE, szProduct.c_str());
-		MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_FOLDERCOMMENT, szFolderComment, false));
-		MyData.InitPane(3, viewpane::CheckPane::Create(IDS_PASSOPENIFEXISTS, false, false));
+		MyData.AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_FOLDERCOMMENT, szFolderComment, false));
+		MyData.AddPane(3, viewpane::CheckPane::Create(IDS_PASSOPENIFEXISTS, false, false));
 
 		auto lpMAPIFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
 
@@ -683,9 +683,9 @@ namespace dialog
 		{
 			editor::CEditor MyData(
 				this, IDS_DELETEITEMSANDSUB, IDS_DELETEITEMSANDSUBPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_DELASSOCIATED, false, false));
-			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_HARDDELETION, false, false));
-			MyData.InitPane(2, viewpane::CheckPane::Create(IDS_MANUALLYEMPTYFOLDER, false, false));
+			MyData.AddPane(0, viewpane::CheckPane::Create(IDS_DELASSOCIATED, false, false));
+			MyData.AddPane(1, viewpane::CheckPane::Create(IDS_HARDDELETION, false, false));
+			MyData.AddPane(2, viewpane::CheckPane::Create(IDS_MANUALLYEMPTYFOLDER, false, false));
 
 			if (MyData.DisplayDialog())
 			{
@@ -751,7 +751,7 @@ namespace dialog
 				{
 					editor::CEditor MyData(
 						this, IDS_DELETEFOLDER, IDS_DELETEFOLDERPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-					MyData.InitPane(0, viewpane::CheckPane::Create(IDS_HARDDELETION, false, false));
+					MyData.AddPane(0, viewpane::CheckPane::Create(IDS_HARDDELETION, false, false));
 
 					if (MyData.DisplayDialog())
 					{
@@ -812,8 +812,8 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_SAVEFOLDERASMSG, IDS_SAVEFOLDERASMSGPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, viewpane::CheckPane::Create(IDS_SAVEASSOCIATEDCONTENTS, false, false));
-		MyData.InitPane(1, viewpane::CheckPane::Create(IDS_SAVEUNICODE, false, false));
+		MyData.AddPane(0, viewpane::CheckPane::Create(IDS_SAVEASSOCIATEDCONTENTS, false, false));
+		MyData.AddPane(1, viewpane::CheckPane::Create(IDS_SAVEUNICODE, false, false));
 		if (MyData.DisplayDialog())
 		{
 			auto szDir = file::GetDirectoryPath(m_hWnd);
@@ -839,9 +839,9 @@ namespace dialog
 		{
 			editor::CEditor MyData(
 				this, IDS_SAVEFOLDERASPROPFILES, IDS_PICKOPTIONSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::CheckPane::Create(IDS_RECURSESUBFOLDERS, false, false));
-			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_SAVEREGULARCONTENTS, true, false));
-			MyData.InitPane(2, viewpane::CheckPane::Create(IDS_SAVEASSOCIATEDCONTENTS, true, false));
+			MyData.AddPane(0, viewpane::CheckPane::Create(IDS_RECURSESUBFOLDERS, false, false));
+			MyData.AddPane(1, viewpane::CheckPane::Create(IDS_SAVEREGULARCONTENTS, true, false));
+			MyData.AddPane(2, viewpane::CheckPane::Create(IDS_SAVEASSOCIATEDCONTENTS, true, false));
 
 			if (MyData.DisplayDialog())
 			{
@@ -875,8 +875,8 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_SETRECFOLDER, IDS_SETRECFOLDERPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
-		MyData.InitPane(1, viewpane::CheckPane::Create(IDS_DELETEASSOCIATION, false, false));
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, false));
+		MyData.AddPane(1, viewpane::CheckPane::Create(IDS_DELETEASSOCIATION, false, false));
 
 		// Find the highlighted item
 		const auto lpEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
@@ -963,8 +963,8 @@ namespace dialog
 
 			editor::CEditor MyData(
 				this, IDS_RESTOREDELFOLD, IDS_RESTOREDELFOLDPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FOLDERNAME, false));
-			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_COPYSUBFOLDERS, false, false));
+			MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FOLDERNAME, false));
+			MyData.AddPane(1, viewpane::CheckPane::Create(IDS_COPYSUBFOLDERS, false, false));
 
 			if (lpProps)
 			{
@@ -1030,8 +1030,8 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_VALIDATEIPMSUB, IDS_PICKOPTIONSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, viewpane::CheckPane::Create(IDS_MAPIFORCECREATE, false, false));
-		MyData.InitPane(1, viewpane::CheckPane::Create(IDS_MAPIFULLIPMTREE, false, false));
+		MyData.AddPane(0, viewpane::CheckPane::Create(IDS_MAPIFORCECREATE, false, false));
+		MyData.AddPane(1, viewpane::CheckPane::Create(IDS_MAPIFULLIPMTREE, false, false));
 
 		if (MyData.DisplayDialog())
 		{

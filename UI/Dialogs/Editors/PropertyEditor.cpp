@@ -187,7 +187,7 @@ namespace dialog
 			switch (PROP_TYPE(m_ulPropTag))
 			{
 			case PT_APPTIME:
-				InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_DOUBLE, false));
+				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_DOUBLE, false));
 				if (m_lpsInputValue)
 				{
 					SetStringf(0, L"%f", m_lpsInputValue->Value.at); // STRING_OK
@@ -199,13 +199,13 @@ namespace dialog
 
 				break;
 			case PT_BOOLEAN:
-				InitPane(
+				AddPane(
 					0,
 					viewpane::CheckPane::Create(
 						IDS_BOOLEAN, m_lpsInputValue ? 0 != m_lpsInputValue->Value.b : false, false));
 				break;
 			case PT_DOUBLE:
-				InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_DOUBLE, false));
+				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_DOUBLE, false));
 				if (m_lpsInputValue)
 				{
 					SetStringf(0, L"%f", m_lpsInputValue->Value.dbl); // STRING_OK
@@ -217,10 +217,10 @@ namespace dialog
 
 				break;
 			case PT_OBJECT:
-				InitPane(0, viewpane::TextPane::CreateSingleLinePaneID(IDS_OBJECT, IDS_OBJECTVALUE, true));
+				AddPane(0, viewpane::TextPane::CreateSingleLinePaneID(IDS_OBJECT, IDS_OBJECTVALUE, true));
 				break;
 			case PT_R4:
-				InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLOAT, false));
+				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLOAT, false));
 				if (m_lpsInputValue)
 				{
 					SetStringf(0, L"%f", m_lpsInputValue->Value.flt); // STRING_OK
@@ -232,8 +232,8 @@ namespace dialog
 
 				break;
 			case PT_STRING8:
-				InitPane(0, viewpane::CountedTextPane::Create(IDS_ANSISTRING, false, IDS_CCH));
-				InitPane(1, viewpane::CountedTextPane::Create(IDS_BIN, false, IDS_CB));
+				AddPane(0, viewpane::CountedTextPane::Create(IDS_ANSISTRING, false, IDS_CCH));
+				AddPane(1, viewpane::CountedTextPane::Create(IDS_BIN, false, IDS_CB));
 				if (m_lpsInputValue && mapi::CheckStringProp(m_lpsInputValue, PT_STRING8))
 				{
 					auto lpszA = std::string(m_lpsInputValue->Value.lpszA);
@@ -254,8 +254,8 @@ namespace dialog
 
 				break;
 			case PT_UNICODE:
-				InitPane(0, viewpane::CountedTextPane::Create(IDS_UNISTRING, false, IDS_CCH));
-				InitPane(1, viewpane::CountedTextPane::Create(IDS_BIN, false, IDS_CB));
+				AddPane(0, viewpane::CountedTextPane::Create(IDS_UNISTRING, false, IDS_CCH));
+				AddPane(1, viewpane::CountedTextPane::Create(IDS_BIN, false, IDS_CB));
 				if (m_lpsInputValue && mapi::CheckStringProp(m_lpsInputValue, PT_UNICODE))
 				{
 					auto lpszW = std::wstring(m_lpsInputValue->Value.lpszW);
@@ -276,9 +276,9 @@ namespace dialog
 
 				break;
 			case PT_CURRENCY:
-				InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_HI, false));
-				InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_LO, false));
-				InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_CURRENCY, false));
+				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_HI, false));
+				AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_LO, false));
+				AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_CURRENCY, false));
 				if (m_lpsInputValue)
 				{
 					SetHex(0, m_lpsInputValue->Value.cur.Hi);
@@ -294,8 +294,8 @@ namespace dialog
 
 				break;
 			case PT_ERROR:
-				InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ERRORCODEHEX, true));
-				InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ERRORNAME, true));
+				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_ERRORCODEHEX, true));
+				AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_ERRORNAME, true));
 				if (m_lpsInputValue)
 				{
 					SetHex(0, m_lpsInputValue->Value.err);
@@ -304,9 +304,9 @@ namespace dialog
 
 				break;
 			case PT_I2:
-				InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SIGNEDDECIMAL, false));
-				InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_HEX, false));
-				InitPane(2, m_lpSmartView);
+				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_SIGNEDDECIMAL, false));
+				AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_HEX, false));
+				AddPane(2, m_lpSmartView);
 				if (m_lpsInputValue)
 				{
 					SetDecimal(0, m_lpsInputValue->Value.i);
@@ -326,10 +326,10 @@ namespace dialog
 
 				break;
 			case PT_I8:
-				InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_HIGHPART, false));
-				InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_LOWPART, false));
-				InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_DECIMAL, false));
-				InitPane(3, m_lpSmartView);
+				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_HIGHPART, false));
+				AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_LOWPART, false));
+				AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_DECIMAL, false));
+				AddPane(3, m_lpSmartView);
 
 				if (m_lpsInputValue)
 				{
@@ -353,9 +353,9 @@ namespace dialog
 				break;
 			case PT_BINARY:
 				lpPane = viewpane::CountedTextPane::Create(IDS_BIN, false, IDS_CB);
-				InitPane(0, lpPane);
-				InitPane(1, viewpane::CountedTextPane::Create(IDS_TEXT, false, IDS_CCH));
-				InitPane(2, m_lpSmartView);
+				AddPane(0, lpPane);
+				AddPane(1, viewpane::CountedTextPane::Create(IDS_TEXT, false, IDS_CCH));
+				AddPane(2, m_lpSmartView);
 
 				if (m_lpsInputValue)
 				{
@@ -383,9 +383,9 @@ namespace dialog
 
 				break;
 			case PT_LONG:
-				InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_UNSIGNEDDECIMAL, false));
-				InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_HEX, false));
-				InitPane(2, m_lpSmartView);
+				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_UNSIGNEDDECIMAL, false));
+				AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_HEX, false));
+				AddPane(2, m_lpSmartView);
 				if (m_lpsInputValue)
 				{
 					SetStringf(0, L"%d", m_lpsInputValue->Value.l); // STRING_OK
@@ -406,9 +406,9 @@ namespace dialog
 
 				break;
 			case PT_SYSTIME:
-				InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_LOWDATETIME, false));
-				InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_HIGHDATETIME, false));
-				InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_DATE, true));
+				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_LOWDATETIME, false));
+				AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_HIGHDATETIME, false));
+				AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_DATE, true));
 				if (m_lpsInputValue)
 				{
 					SetHex(0, static_cast<int>(m_lpsInputValue->Value.ft.dwLowDateTime));
@@ -424,7 +424,7 @@ namespace dialog
 
 				break;
 			case PT_CLSID:
-				InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_GUID, false));
+				AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_GUID, false));
 				if (m_lpsInputValue)
 				{
 					szGuid = guid::GUIDToStringAndName(m_lpsInputValue->Value.lpguid);
@@ -437,19 +437,19 @@ namespace dialog
 				SetStringW(0, szGuid);
 				break;
 			case PT_SRESTRICTION:
-				InitPane(0, viewpane::TextPane::CreateCollapsibleTextPane(IDS_RESTRICTION, true));
+				AddPane(0, viewpane::TextPane::CreateCollapsibleTextPane(IDS_RESTRICTION, true));
 				interpretprop::InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
 				SetStringW(0, szTemp1);
 				break;
 			case PT_ACTIONS:
-				InitPane(0, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ACTIONS, true));
+				AddPane(0, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ACTIONS, true));
 				interpretprop::InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
 				SetStringW(0, szTemp1);
 				break;
 			default:
 				interpretprop::InterpretProp(m_lpsInputValue, &szTemp1, &szTemp2);
-				InitPane(0, viewpane::TextPane::CreateCollapsibleTextPane(IDS_VALUE, true));
-				InitPane(1, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ALTERNATEVIEW, true));
+				AddPane(0, viewpane::TextPane::CreateCollapsibleTextPane(IDS_VALUE, true));
+				AddPane(1, viewpane::TextPane::CreateCollapsibleTextPane(IDS_ALTERNATEVIEW, true));
 				SetStringW(IDS_VALUE, szTemp1);
 				SetStringW(IDS_ALTERNATEVIEW, szTemp2);
 				break;

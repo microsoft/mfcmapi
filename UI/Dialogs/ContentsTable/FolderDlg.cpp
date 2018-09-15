@@ -352,13 +352,13 @@ namespace dialog
 
 		editor::CEditor MyData(this, IDS_ADDONEOFF, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePaneID(IDS_DISPLAYNAME, IDS_DISPLAYNAMEVALUE, false));
-		MyData.InitPane(
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePaneID(IDS_DISPLAYNAME, IDS_DISPLAYNAMEVALUE, false));
+		MyData.AddPane(
 			1, viewpane::TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
-		MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePaneID(IDS_ADDRESS, IDS_ADDRESSVALUE, false));
-		MyData.InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_RECIPTYPE, false));
+		MyData.AddPane(2, viewpane::TextPane::CreateSingleLinePaneID(IDS_ADDRESS, IDS_ADDRESSVALUE, false));
+		MyData.AddPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_RECIPTYPE, false));
 		MyData.SetHex(3, MAPI_TO);
-		MyData.InitPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_RECIPCOUNT, false));
+		MyData.AddPane(4, viewpane::TextPane::CreateSingleLinePane(IDS_RECIPCOUNT, false));
 		MyData.SetDecimal(4, 1);
 
 		if (!MyData.DisplayDialog()) return;
@@ -445,9 +445,9 @@ namespace dialog
 
 		editor::CEditor MyData(this, IDS_COPYMESSAGE, IDS_COPYMESSAGEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, viewpane::CheckPane::Create(IDS_MESSAGEMOVE, false, false));
+		MyData.AddPane(0, viewpane::CheckPane::Create(IDS_MESSAGEMOVE, false, false));
 		UINT uidDropDown[] = {IDS_DDCOPYMESSAGES, IDS_DDCOPYTO};
-		MyData.InitPane(1, viewpane::DropDownPane::Create(IDS_COPYINTERFACE, _countof(uidDropDown), uidDropDown, true));
+		MyData.AddPane(1, viewpane::DropDownPane::Create(IDS_COPYINTERFACE, _countof(uidDropDown), uidDropDown, true));
 
 		if (!MyData.DisplayDialog()) return false;
 
@@ -570,7 +570,7 @@ namespace dialog
 		editor::CEditor MyData(
 			this, IDS_DELETEATTACHMENTS, IDS_DELETEATTACHMENTSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILENAME, false));
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FILENAME, false));
 
 		if (!MyData.DisplayDialog()) return;
 
@@ -626,10 +626,10 @@ namespace dialog
 			UINT uidDropDown[] = {IDS_DDDELETETODELETED, IDS_DDDELETETORETENTION, IDS_DDDELETEHARDDELETE};
 
 			if (bShift)
-				MyData.InitPane(
+				MyData.AddPane(
 					0, viewpane::DropDownPane::Create(IDS_DELSTYLE, _countof(uidDropDown), uidDropDown, true));
 			else
-				MyData.InitPane(
+				MyData.AddPane(
 					0, viewpane::DropDownPane::Create(IDS_DELSTYLE, _countof(uidDropDown) - 1, &uidDropDown[1], true));
 
 			if (MyData.DisplayDialog())
@@ -742,7 +742,7 @@ namespace dialog
 			editor::CEditor MyData(this, IDS_LOADMSG, IDS_LOADMSGPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 			UINT uidDropDown[] = {IDS_DDLOADTOFOLDER, IDS_DDDISPLAYPROPSONLY};
-			MyData.InitPane(0, viewpane::DropDownPane::Create(IDS_LOADSTYLE, _countof(uidDropDown), uidDropDown, true));
+			MyData.AddPane(0, viewpane::DropDownPane::Create(IDS_LOADSTYLE, _countof(uidDropDown), uidDropDown, true));
 
 			if (!MyData.DisplayDialog()) return;
 
@@ -833,7 +833,7 @@ namespace dialog
 		editor::CEditor MyData(
 			this, IDS_MANUALRESOLVE, IDS_MANUALRESOLVEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_DISPLAYNAME, false));
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_DISPLAYNAME, false));
 
 		if (!MyData.DisplayDialog()) return;
 		do
@@ -947,7 +947,7 @@ namespace dialog
 			editor::CEditor MyPrompt1(
 				this, IDS_NEWCUSTOMFORM, IDS_NEWCUSTOMFORMPROMPT1, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			UINT uidDropDown[] = {IDS_DDENTERFORMCLASS, IDS_DDFOLDERFORMLIBRARY, IDS_DDORGFORMLIBRARY};
-			MyPrompt1.InitPane(
+			MyPrompt1.AddPane(
 				0, viewpane::DropDownPane::Create(IDS_LOCATIONOFFORM, _countof(uidDropDown), uidDropDown, true));
 
 			if (!MyPrompt1.DisplayDialog()) return;
@@ -955,7 +955,7 @@ namespace dialog
 
 			editor::CEditor MyClass(
 				this, IDS_NEWCUSTOMFORM, IDS_NEWCUSTOMFORMPROMPT2, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyClass.InitPane(
+			MyClass.AddPane(
 				0,
 				viewpane::TextPane::CreateSingleLinePane(IDS_FORMTYPE, std::wstring(L"IPM.Note"), false)); // STRING_OK
 
@@ -1111,7 +1111,7 @@ namespace dialog
 				this, IDS_EXECUTEVERB, IDS_EXECUTEVERBPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_LAST_VERB_EXECUTED), false));
 
-			MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_VERB, false));
+			MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_VERB, false));
 			MyData.SetDecimal(0, EXCHIVERB_OPEN);
 
 			if (!MyData.DisplayDialog()) return;
@@ -1183,7 +1183,7 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_REMOVEONEOFF, IDS_REMOVEONEOFFPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, viewpane::CheckPane::Create(IDS_REMOVEPROPDEFSTREAM, true, false));
+		MyData.AddPane(0, viewpane::CheckPane::Create(IDS_REMOVEPROPDEFSTREAM, true, false));
 
 		if (!MyData.DisplayDialog()) return;
 
@@ -1222,7 +1222,7 @@ namespace dialog
 
 		editor::CEditor MyData(this, IDS_CALLRTFSYNC, IDS_CALLRTFSYNCPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(0, RTF_SYNC_RTF_CHANGED);
 
 		if (MyData.DisplayDialog())
@@ -1315,12 +1315,12 @@ namespace dialog
 							  IDS_DDEMLFILE,
 							  IDS_DDEMLFILEUSINGICONVERTERSESSION,
 							  IDS_DDTNEFFILE};
-		MyData.InitPane(
+		MyData.AddPane(
 			0, viewpane::DropDownPane::Create(IDS_FORMATTOSAVEMESSAGE, _countof(uidDropDown), uidDropDown, true));
 		const auto numSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 		if (numSelected > 1)
 		{
-			MyData.InitPane(1, viewpane::CheckPane::Create(IDS_EXPORTPROMPTLOCATION, false, false));
+			MyData.AddPane(1, viewpane::CheckPane::Create(IDS_EXPORTPROMPTLOCATION, false, false));
 		}
 
 		if (!MyData.DisplayDialog()) return;
@@ -1552,12 +1552,12 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_SENDBULKMAIL, IDS_SENDBULKMAILPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NUMMESSAGES, false));
-		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RECIPNAME, false));
-		MyData.InitPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_SUBJECT, false));
-		MyData.InitPane(
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_NUMMESSAGES, false));
+		MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_RECIPNAME, false));
+		MyData.AddPane(2, viewpane::TextPane::CreateSingleLinePane(IDS_SUBJECT, false));
+		MyData.AddPane(
 			3, viewpane::TextPane::CreateSingleLinePane(IDS_CLASS, std::wstring(L"IPM.Note"), false)); // STRING_OK
-		MyData.InitPane(4, viewpane::TextPane::CreateMultiLinePane(IDS_BODY, false));
+		MyData.AddPane(4, viewpane::TextPane::CreateMultiLinePane(IDS_BODY, false));
 
 		if (!m_lpFolder) return;
 
@@ -1599,7 +1599,7 @@ namespace dialog
 		editor::CEditor MyFlags(
 			this, IDS_SETREADFLAG, IDS_SETREADFLAGPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyFlags.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
+		MyFlags.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
 		MyFlags.SetHex(0, CLEAR_READ_FLAG);
 
 		if (!MyFlags.DisplayDialog()) return;
@@ -1653,7 +1653,7 @@ namespace dialog
 
 		editor::CEditor MyAddress(
 			this, IDS_MESSAGEOPTIONS, IDS_ADDRESSTYPEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyAddress.InitPane(
+		MyAddress.AddPane(
 			0, viewpane::TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, std::wstring(L"EX"), false)); // STRING_OK
 		if (!MyAddress.DisplayDialog()) return;
 
@@ -1827,7 +1827,7 @@ namespace dialog
 			if (SUCCEEDED(hRes))
 			{
 				editor::CEditor MyStatus(this, IDS_MESSAGESTATUS, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				MyStatus.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_MESSAGESTATUS, true));
+				MyStatus.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_MESSAGESTATUS, true));
 				MyStatus.SetHex(0, ulMessageStatus);
 
 				(void) MyStatus.DisplayDialog();
@@ -1847,8 +1847,8 @@ namespace dialog
 		editor::CEditor MyData(
 			this, IDS_SETMSGSTATUS, IDS_SETMSGSTATUSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_STATUSINHEX, false));
-		MyData.InitPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_MASKINHEX, false));
+		MyData.AddPane(0, viewpane::TextPane::CreateSingleLinePane(IDS_STATUSINHEX, false));
+		MyData.AddPane(1, viewpane::TextPane::CreateSingleLinePane(IDS_MASKINHEX, false));
 
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnSetMessageStatus", L"\n");
 

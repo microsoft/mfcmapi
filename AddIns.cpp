@@ -849,7 +849,7 @@ namespace addin
 				switch (lpDialog->lpDialogControls[i].cType)
 				{
 				case ADDIN_CTRL_CHECK:
-					MyComplexDialog.InitPane(
+					MyComplexDialog.AddPane(
 						i,
 						viewpane::CheckPane::Create(
 							NULL,
@@ -860,7 +860,7 @@ namespace addin
 				{
 					if (lpDialog->lpDialogControls[i].bMultiLine)
 					{
-						MyComplexDialog.InitPane(
+						MyComplexDialog.AddPane(
 							i,
 							viewpane::TextPane::CreateCollapsibleTextPane(
 								NULL, lpDialog->lpDialogControls[i].bReadOnly));
@@ -868,7 +868,7 @@ namespace addin
 					}
 					else
 					{
-						MyComplexDialog.InitPane(
+						MyComplexDialog.AddPane(
 							i,
 							viewpane::TextPane::CreateSingleLinePane(
 								NULL,
@@ -881,26 +881,26 @@ namespace addin
 				case ADDIN_CTRL_EDIT_BINARY:
 					if (lpDialog->lpDialogControls[i].bMultiLine)
 					{
-						MyComplexDialog.InitPane(
+						MyComplexDialog.AddPane(
 							i,
 							viewpane::TextPane::CreateCollapsibleTextPane(
 								NULL, lpDialog->lpDialogControls[i].bReadOnly));
 					}
 					else
 					{
-						MyComplexDialog.InitPane(
+						MyComplexDialog.AddPane(
 							i, viewpane::TextPane::CreateSingleLinePane(NULL, lpDialog->lpDialogControls[i].bReadOnly));
 					}
 					MyComplexDialog.SetBinary(
 						i, lpDialog->lpDialogControls[i].lpBin, lpDialog->lpDialogControls[i].cbBin);
 					break;
 				case ADDIN_CTRL_EDIT_NUM_DECIMAL:
-					MyComplexDialog.InitPane(
+					MyComplexDialog.AddPane(
 						i, viewpane::TextPane::CreateSingleLinePane(NULL, lpDialog->lpDialogControls[i].bReadOnly));
 					MyComplexDialog.SetDecimal(i, lpDialog->lpDialogControls[i].ulDefaultNum);
 					break;
 				case ADDIN_CTRL_EDIT_NUM_HEX:
-					MyComplexDialog.InitPane(
+					MyComplexDialog.AddPane(
 						i, viewpane::TextPane::CreateSingleLinePane(NULL, lpDialog->lpDialogControls[i].bReadOnly));
 					MyComplexDialog.SetHex(i, lpDialog->lpDialogControls[i].ulDefaultNum);
 					break;
