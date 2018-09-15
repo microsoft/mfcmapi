@@ -43,7 +43,7 @@ namespace viewpane
 		std::wstring m_szLabel; // Text to push into UI in Initialize
 		int m_iLabelWidth; // The width of the label
 		CEdit m_Label;
-		UINT m_nID{0}; // Id for matching change notifications back to controls
+		UINT m_nID{0}; // NID for matching change notifications back to controls. Also used for Create calls.
 		HWND m_hWndParent{nullptr};
 		bool m_bCollapsible{false};
 		bool m_bCollapsed{false};

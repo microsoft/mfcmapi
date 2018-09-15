@@ -40,6 +40,7 @@ namespace viewpane
 	void ViewPane::Initialize(_In_ CWnd* pParent, _In_opt_ HDC /*hdc*/)
 	{
 		if (pParent) m_hWndParent = pParent->m_hWnd;
+		// We compute nID for our view, the label, and collapse button all from the pane's base ID.
 		const UINT iCurIDLabel = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl;
 		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl + 1;
 
