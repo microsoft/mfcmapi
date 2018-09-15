@@ -74,7 +74,6 @@ namespace dialog
 			size_t cchEncodeStr = 0;
 			switch (paneID)
 			{
-				// TODO: Get these routed into our splitter
 			case HEXED_ANSI:
 			{
 				auto text = GetStringA(HEXED_ANSI);
