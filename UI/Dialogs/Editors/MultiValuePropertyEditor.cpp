@@ -87,6 +87,7 @@ namespace dialog
 		void CMultiValuePropertyEditor::InitPropertyControls()
 		{
 			InitPane(0, viewpane::ListPane::Create(IDS_PROPVALUES, false, false, ListEditCallBack(this)));
+			SetListID(0);
 			if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag) || PT_MV_LONG == PROP_TYPE(m_ulPropTag))
 			{
 				auto lpPane = viewpane::SmartViewPane::Create(IDS_SMARTVIEW);

@@ -141,7 +141,7 @@ namespace dialog
 				{
 				case NM_DBLCLK:
 				case NM_RETURN:
-					auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(m_ulListID));
+					auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(m_listID));
 					if (pane)
 					{
 						(void) pane->HandleChange(IDD_LISTEDIT);
@@ -970,8 +970,6 @@ namespace dialog
 		{
 			if (!lpPane) return;
 			lpPane->SetID(id);
-			const auto listPane = dynamic_cast<viewpane::ListPane*>(lpPane);
-			if (listPane) m_ulListID = id;
 			m_Panes.push_back(lpPane);
 		}
 

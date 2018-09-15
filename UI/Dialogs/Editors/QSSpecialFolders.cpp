@@ -36,6 +36,7 @@ namespace dialog
 			if (m_lpMDB) m_lpMDB->AddRef();
 
 			InitPane(0, viewpane::ListPane::Create(NULL, true, true, ListEditCallBack(this)));
+			SetListID(0);
 		}
 
 		SpecialFolderEditor::~SpecialFolderEditor()

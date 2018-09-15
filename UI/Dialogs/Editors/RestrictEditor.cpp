@@ -488,6 +488,7 @@ namespace dialog
 			m_lpAllocParent = lpAllocParent;
 
 			InitPane(0, viewpane::ListPane::Create(IDS_SUBRESTRICTIONS, false, false, ListEditCallBack(this)));
+			SetListID(0);
 		}
 
 		// Used to call functions which need to be called AFTER controls are created
@@ -662,6 +663,7 @@ namespace dialog
 				0,
 				viewpane::ListPane::CreateCollapsibleListPane(
 					IDS_SUBRESTRICTION, false, false, ListEditCallBack(this)));
+			SetListID(0);
 			InitPane(
 				1,
 				viewpane::TextPane::CreateMultiLinePane(
@@ -1279,6 +1281,7 @@ namespace dialog
 			InitPane(3, viewpane::TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, true));
 			InitPane(
 				4, viewpane::ListPane::CreateCollapsibleListPane(IDS_EIDLIST, false, false, ListEditCallBack(this)));
+			SetListID(4);
 			InitPane(
 				5,
 				viewpane::TextPane::CreateMultiLinePane(

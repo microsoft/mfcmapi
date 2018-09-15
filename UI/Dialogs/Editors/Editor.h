@@ -99,6 +99,7 @@ namespace dialog
 			InsertListRow(ULONG id, int iRow, const std::wstring& szText) const;
 			void ClearList(ULONG id) const;
 			void ResizeList(ULONG id, bool bSort) const;
+			void SetListID(ULONG id) { m_listID = id; }
 
 			// Functions used by derived classes during handle change events
 			// Returns a binary buffer which is represented by the hex string
@@ -150,7 +151,7 @@ namespace dialog
 
 			// List functions and data
 			_Check_return_ bool OnEditListEntry(ULONG id) const;
-			ULONG m_ulListID{NOLIST}; // Only supporting one list right now - this is the pane ID for it
+			ULONG m_listID{NOLIST}; // Only supporting one list right now - this is the pane ID for it
 
 			// Our UI controls. Only valid during display.
 			bool m_bHasPrompt{};

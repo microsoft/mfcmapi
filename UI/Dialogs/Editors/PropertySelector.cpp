@@ -23,6 +23,7 @@ namespace dialog
 			if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
 			InitPane(0, viewpane::ListPane::Create(IDS_KNOWNPROPTAGS, true, true, ListEditCallBack(this)));
+			SetListID(0);
 		}
 
 		CPropertySelector::~CPropertySelector()
