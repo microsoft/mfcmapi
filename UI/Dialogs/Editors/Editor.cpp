@@ -115,7 +115,7 @@ namespace dialog
 		CEditor::~CEditor()
 		{
 			TRACE_DESTRUCTOR(CLASS);
-			DeleteControls();
+			DeletePanes();
 		}
 
 		BEGIN_MESSAGE_MAP(CEditor, CMyDialog)
@@ -380,7 +380,7 @@ namespace dialog
 			}
 
 			SetMargins(); // Not all margins have been computed yet, but some have and we can use them during Initialize
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
@@ -478,7 +478,7 @@ namespace dialog
 		void CEditor::OnOK()
 		{
 			// save data from the UI back into variables that we can query later
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
@@ -525,7 +525,7 @@ namespace dialog
 		// Push current margin settings to the view panes
 		void CEditor::SetMargins() const
 		{
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
@@ -610,7 +610,7 @@ namespace dialog
 
 			SetMargins();
 			// width
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
@@ -648,25 +648,25 @@ namespace dialog
 			auto cy = 2 * m_iMargin; // margins top and bottom
 			cy += iPromptLineCount * m_iTextHeight; // prompt text
 			cy += m_iButtonHeight; // Button height
-			cy += m_iMargin; // add a little height between the buttons and our edit controls
+			cy += m_iMargin; // add a little height between the buttons and our panes
 
-			auto iControlHeight = 0;
-			for (const auto& pane : m_lpControls)
+			auto panesHeight = 0;
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
-					iControlHeight += pane->GetFixedHeight() + pane->GetLines() * m_iEditHeight;
+					panesHeight += pane->GetFixedHeight() + pane->GetLines() * m_iEditHeight;
 				}
 			}
 
 			if (m_bEnableScroll)
 			{
-				m_iScrollClient = iControlHeight;
+				m_iScrollClient = panesHeight;
 				cy += LINES_SCROLL * m_iEditHeight;
 			}
 			else
 			{
-				cy += iControlHeight;
+				cy += panesHeight;
 			}
 			// Done figuring a good height (cy)
 
@@ -851,7 +851,7 @@ namespace dialog
 			auto iLineHeight = 0;
 			auto iFixedHeight = 0;
 			auto iVariableLines = 0;
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
@@ -917,7 +917,7 @@ namespace dialog
 			const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 			if (hdwp)
 			{
-				for (const auto& pane : m_lpControls)
+				for (const auto& pane : m_Panes)
 				{
 					// Calculate height for multiline edit boxes and lists
 					// If we had any slack space, parcel it out Monopoly house style over the panes
@@ -941,14 +941,14 @@ namespace dialog
 							}
 						}
 
-						const auto iControlHeight = iViewHeight + pane->GetFixedHeight();
+						const auto paneHeight = iViewHeight + pane->GetFixedHeight();
 						pane->DeferWindowPos(
 							hdwp,
 							iCXMargin, // x
 							iCYTop, // y
 							iFullWidth, // width
-							iControlHeight); // height
-						iCYTop += iControlHeight;
+							paneHeight); // height
+						iCYTop += paneHeight;
 					}
 				}
 			}
@@ -956,14 +956,14 @@ namespace dialog
 			EC_B_S(EndDeferWindowPos(hdwp));
 		}
 
-		void CEditor::DeleteControls()
+		void CEditor::DeletePanes()
 		{
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				delete[] pane;
 			}
 
-			m_lpControls.clear();
+			m_Panes.clear();
 		}
 
 		void CEditor::InitPane(ULONG id, viewpane::ViewPane* lpPane)
@@ -972,14 +972,14 @@ namespace dialog
 			lpPane->SetID(id);
 			const auto listPane = dynamic_cast<viewpane::ListPane*>(lpPane);
 			if (listPane) m_ulListID = id;
-			m_lpControls.push_back(lpPane);
+			m_Panes.push_back(lpPane);
 		}
 
 		// Returns the first pane with a matching id.
 		// Container panes may return a sub pane.
 		viewpane::ViewPane* CEditor::GetPane(ULONG id) const
 		{
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
@@ -1283,8 +1283,8 @@ namespace dialog
 		// Returns the ID (not nID) or the matching pane.
 		_Check_return_ ULONG CEditor::HandleChange(UINT nID)
 		{
-			if (m_lpControls.empty()) return static_cast<ULONG>(-1);
-			for (const auto& pane : m_lpControls)
+			if (m_Panes.empty()) return static_cast<ULONG>(-1);
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
@@ -1295,7 +1295,7 @@ namespace dialog
 						return match->GetID();
 					}
 
-					// Or the top level pane has a control in it that can handle it
+					// Or the top level pane has a control or pane in it that can handle the change
 					// In which case stop looking.
 					// We do not return the pane's ID number because this is a button event, not an edit change
 					if (pane->HandleChange(nID) != -1)
@@ -1310,7 +1310,7 @@ namespace dialog
 
 		void CEditor::UpdateButtons() const
 		{
-			for (const auto& pane : m_lpControls)
+			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{

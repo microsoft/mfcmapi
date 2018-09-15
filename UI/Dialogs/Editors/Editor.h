@@ -20,7 +20,7 @@ namespace dialog
 //#define CEDITOR_BUTTON_CANCEL 0x00000008 // Duplicated from MFCMAPI.h - do not modify
 #define CEDITOR_BUTTON_ACTION3 0x00000010
 
-#define NOLIST 0XFFFFFFFF
+		#define NOLIST 0XFFFFFFFF
 
 		template <typename T> viewpane::DoListEditCallback ListEditCallBack(T* editor)
 		{
@@ -136,7 +136,7 @@ namespace dialog
 				UINT uidActionButtonText2,
 				UINT uidActionButtonText3);
 
-			void DeleteControls();
+			void DeletePanes();
 			_Check_return_ SIZE ComputeWorkArea(SIZE sScreen);
 			void OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI)
 			{
@@ -150,7 +150,7 @@ namespace dialog
 
 			// List functions and data
 			_Check_return_ bool OnEditListEntry(ULONG id) const;
-			ULONG m_ulListID{NOLIST}; // Only supporting one list right now - this is the control ID for it
+			ULONG m_ulListID{NOLIST}; // Only supporting one list right now - this is the pane ID for it
 
 			// Our UI controls. Only valid during display.
 			bool m_bHasPrompt{};
@@ -190,7 +190,7 @@ namespace dialog
 			UINT m_uidActionButtonText3{};
 
 			// Panes are held in the order in which they render on screen
-			std::vector<viewpane::ViewPane*> m_lpControls{}; // array of controls
+			std::vector<viewpane::ViewPane*> m_Panes{};
 
 			bool m_bEnableScroll{};
 			CWnd m_ScrollWindow;
