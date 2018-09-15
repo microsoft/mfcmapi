@@ -973,12 +973,12 @@ namespace dialog
 			m_lpControls.clear();
 		}
 
-		void CEditor::InitPane(ULONG iControl, viewpane::ViewPane* lpPane)
+		void CEditor::InitPane(ULONG id, viewpane::ViewPane* lpPane)
 		{
 			if (!lpPane) return;
-			lpPane->SetControl(iControl);
+			lpPane->SetID(id);
 			const auto listPane = dynamic_cast<viewpane::ListPane*>(lpPane);
-			if (listPane) m_ulListNum = iControl;
+			if (listPane) m_ulListNum = id;
 			m_lpControls.push_back(lpPane);
 		}
 

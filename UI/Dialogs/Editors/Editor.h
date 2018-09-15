@@ -44,7 +44,7 @@ namespace dialog
 
 			// These functions can be used to set up a data editing dialog
 			void SetPromptPostFix(_In_ const std::wstring& szMsg);
-			void InitPane(ULONG iControl, viewpane::ViewPane* lpPane);
+			void InitPane(ULONG id, viewpane::ViewPane* lpPane);
 			void SetStringA(ULONG i, const std::string& szMsg) const;
 			void SetStringW(ULONG i, const std::wstring& szMsg) const;
 			void SetStringf(ULONG i, LPCWSTR szMsg, ...) const;
@@ -148,7 +148,7 @@ namespace dialog
 
 			// List functions and data
 			_Check_return_ bool OnEditListEntry(ULONG ulListNum) const;
-			ULONG m_ulListNum{}; // Only supporting one list right now - this is the control number for it
+			ULONG m_ulListNum{}; // Only supporting one list right now - this is the control ID for it
 
 			// Our UI controls. Only valid during display.
 			bool m_bHasPrompt{};
