@@ -60,11 +60,12 @@ namespace viewpane
 
 	ULONG SplitterPane::HandleChange(UINT nID)
 	{
-		auto pane = m_PaneOne->GetPaneByNID(nID);
-		if (pane) return pane->GetID();
+		// See if the panes can handle the change first
+		auto paneID = m_PaneOne->HandleChange(nID);
+		if (paneID != static_cast<ULONG>(-1)) return paneID;
 
-		pane = m_PaneTwo->GetPaneByNID(nID);
-		if (pane) return pane->GetID();
+		paneID = m_PaneTwo->HandleChange(nID);
+		if (paneID != static_cast<ULONG>(-1)) return paneID;
 
 		return ViewPane::HandleChange(nID);
 	}

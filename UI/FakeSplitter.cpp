@@ -90,8 +90,7 @@ namespace controls
 		case WM_COMMAND:
 		{
 			const auto nCode = HIWORD(wParam);
-			const auto idFrom = LOWORD(wParam);
-			if (EN_CHANGE == nCode || CBN_SELCHANGE == nCode || CBN_EDITCHANGE == nCode)
+			if (EN_CHANGE == nCode || CBN_SELCHANGE == nCode || CBN_EDITCHANGE == nCode|| BN_CLICKED == nCode)
 			{
 				::SendMessage(m_hwndParent, message, wParam, lParam);
 			}
