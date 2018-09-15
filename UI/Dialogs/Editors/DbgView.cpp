@@ -83,11 +83,11 @@ namespace dialog
 
 		_Check_return_ ULONG CDbgView::HandleChange(UINT nID)
 		{
-			const auto iControl = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
-			if (iControl == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
+			if (paneID == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
-			switch (iControl)
+			switch (paneID)
 			{
 			case DBGVIEW_TAGS:
 			{
@@ -105,7 +105,7 @@ namespace dialog
 				break;
 			}
 
-			return iControl;
+			return paneID;
 		}
 
 		// Clear

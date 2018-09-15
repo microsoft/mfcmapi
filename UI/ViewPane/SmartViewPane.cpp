@@ -43,7 +43,7 @@ namespace viewpane
 
 		auto iHeight = 0;
 
-		if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
+		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
 		// Our expand/collapse button
 		iHeight += m_iButtonHeight;
@@ -74,7 +74,7 @@ namespace viewpane
 		EC_B_S(m_CollapseButton.ShowWindow(visibility));
 		EC_B_S(m_Label.ShowWindow(visibility));
 
-		if (0 != m_iControl)
+		if (0 != m_paneID)
 		{
 			y += m_iSmallHeightMargin;
 			height -= m_iSmallHeightMargin;

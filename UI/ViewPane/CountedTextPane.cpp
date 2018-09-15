@@ -54,7 +54,7 @@ namespace viewpane
 	int CountedTextPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
-		if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
+		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
 		// Our expand/collapse button
 		iHeight += m_iButtonHeight;
@@ -84,7 +84,7 @@ namespace viewpane
 	void CountedTextPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
 		const auto iVariableHeight = height - GetFixedHeight();
-		if (0 != m_iControl)
+		if (0 != m_paneID)
 		{
 			y += m_iSmallHeightMargin;
 			height -= m_iSmallHeightMargin;

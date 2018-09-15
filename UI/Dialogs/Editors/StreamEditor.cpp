@@ -414,12 +414,12 @@ namespace dialog
 
 		_Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
-			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
+			if (paneID == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
 			auto lpBinPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(m_iBinBox));
-			if (m_iTextBox == i && lpBinPane)
+			if (m_iTextBox == paneID && lpBinPane)
 			{
 				switch (m_ulEditorType)
 				{
@@ -442,7 +442,7 @@ namespace dialog
 					break;
 				}
 			}
-			else if (m_iBinBox == i)
+			else if (m_iBinBox == paneID)
 			{
 				auto bin = GetBinary(m_iBinBox);
 				{
@@ -486,12 +486,12 @@ namespace dialog
 			}
 
 			OnRecalcLayout();
-			return i;
+			return paneID;
 		}
 
-		void CStreamEditor::SetEditReadOnly(ULONG iControl) const
+		void CStreamEditor::SetEditReadOnly(ULONG id) const
 		{
-			auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(iControl));
+			auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
 			if (lpPane)
 			{
 				lpPane->SetReadOnly();

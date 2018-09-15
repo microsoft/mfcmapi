@@ -82,7 +82,7 @@ namespace viewpane
 	int ListPane::GetFixedHeight()
 	{
 		auto iHeight = 0;
-		if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
+		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
 		if (m_bCollapsible)
 		{
@@ -150,7 +150,7 @@ namespace viewpane
 	void ListPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
 		const auto iVariableHeight = height - GetFixedHeight();
-		if (0 != m_iControl)
+		if (0 != m_paneID)
 		{
 			y += m_iSmallHeightMargin;
 			height -= m_iSmallHeightMargin;
@@ -415,7 +415,7 @@ namespace viewpane
 		auto bDidEdit = false;
 		if (m_callback)
 		{
-			bDidEdit = m_callback(m_iControl, iItem, lpData);
+			bDidEdit = m_callback(m_paneID, iItem, lpData);
 		}
 
 		// the list is dirty now if the edit succeeded or it was already dirty

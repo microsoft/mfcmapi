@@ -67,7 +67,7 @@ namespace viewpane
 	{
 		auto iHeight = 0;
 
-		if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
+		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
 		if (!m_szLabel.empty())
 		{
@@ -84,7 +84,7 @@ namespace viewpane
 	void
 	DropDownPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int /*height*/)
 	{
-		if (0 != m_iControl)
+		if (0 != m_paneID)
 		{
 			y += m_iSmallHeightMargin;
 		}

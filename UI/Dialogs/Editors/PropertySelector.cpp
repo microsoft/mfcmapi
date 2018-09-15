@@ -86,9 +86,9 @@ namespace dialog
 		_Check_return_ ULONG CPropertySelector::GetPropertyTag() const { return m_ulPropTag; }
 
 		_Check_return_ controls::sortlistdata::SortListData*
-		CPropertySelector::GetSelectedListRowData(ULONG iControl) const
+		CPropertySelector::GetSelectedListRowData(ULONG id) const
 		{
-			const auto lpPane = static_cast<viewpane::ListPane*>(GetPane(iControl));
+			const auto lpPane = static_cast<viewpane::ListPane*>(GetPane(id));
 			if (lpPane)
 			{
 				return lpPane->GetSelectedListRowData();

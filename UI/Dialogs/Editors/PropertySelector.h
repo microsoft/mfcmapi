@@ -18,7 +18,7 @@ namespace dialog
 		private:
 			BOOL OnInitDialog() override;
 			void OnOK() override;
-			_Check_return_ controls::sortlistdata::SortListData* GetSelectedListRowData(ULONG iControl) const;
+			_Check_return_ controls::sortlistdata::SortListData* GetSelectedListRowData(ULONG id) const;
 
 			ULONG m_ulPropTag;
 			bool m_bIncludeABProps;

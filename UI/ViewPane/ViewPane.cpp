@@ -41,8 +41,8 @@ namespace viewpane
 	{
 		if (pParent) m_hWndParent = pParent->m_hWnd;
 		// We compute nID for our view, the label, and collapse button all from the pane's base ID.
-		const UINT iCurIDLabel = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl;
-		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl + 1;
+		const UINT iCurIDLabel = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID;
+		m_nID = IDC_PROP_CONTROL_ID_BASE + 2 * m_paneID + 1;
 
 		EC_B_S(m_Label.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, iCurIDLabel));
@@ -83,7 +83,7 @@ namespace viewpane
 		if (IDD_COLLAPSE + m_nID == nID)
 		{
 			OnToggleCollapse();
-			return m_iControl;
+			return m_paneID;
 		}
 
 		return static_cast<ULONG>(-1);

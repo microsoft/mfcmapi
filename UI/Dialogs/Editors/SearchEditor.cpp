@@ -94,22 +94,22 @@ namespace dialog
 
 		_Check_return_ ULONG CSearchEditor::HandleChange(UINT nID)
 		{
-			const auto iControl = static_cast<SearchFields>(CEditor::HandleChange(nID));
+			const auto paneID = static_cast<SearchFields>(CEditor::HandleChange(nID));
 
-			if (iControl == static_cast<SearchFields>(-1)) return static_cast<ULONG>(-1);
+			if (paneID == static_cast<SearchFields>(-1)) return static_cast<ULONG>(-1);
 
-			switch (iControl)
+			switch (paneID)
 			{
 			case FUZZYLEVEL:
 				m_ulFuzzyLevel = GetSelectedFuzzyLevel();
 				break;
 			default:
-				return iControl;
+				return paneID;
 			}
 
-			PopulateFields(iControl);
+			PopulateFields(paneID);
 
-			return iControl;
+			return paneID;
 		}
 
 		// Fill out the fields in the form

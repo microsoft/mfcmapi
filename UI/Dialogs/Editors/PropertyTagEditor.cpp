@@ -219,11 +219,11 @@ namespace dialog
 
 		_Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 		{
-			const auto i = CEditor::HandleChange(nID);
+			const auto paneID = CEditor::HandleChange(nID);
 
-			if (i == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
+			if (paneID == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
-			switch (i)
+			switch (paneID)
 			{
 			case PROPTAG_TAG: // Prop tag changed
 				m_ulPropTag = GetPropTag(PROPTAG_TAG);
@@ -246,15 +246,15 @@ namespace dialog
 			case PROPTAG_NAMEPROPKIND:
 			case PROPTAG_NAMEPROPNAME:
 			case PROPTAG_NAMEPROPGUID:
-				LookupNamedProp(i, false);
+				LookupNamedProp(paneID, false);
 				break;
 			default:
-				return i;
+				return paneID;
 			}
 
-			PopulateFields(i);
+			PopulateFields(paneID);
 
-			return i;
+			return paneID;
 		}
 
 		// Fill out the fields in the form
@@ -351,9 +351,9 @@ namespace dialog
 			}
 		}
 
-		_Check_return_ std::wstring CPropertyTagEditor::GetDropStringUseControl(ULONG iControl) const
+		_Check_return_ std::wstring CPropertyTagEditor::GetDropStringUseControl(ULONG id) const
 		{
-			const auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(iControl));
+			const auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
 			if (lpPane)
 			{
 				return lpPane->GetDropStringUseControl();
@@ -362,9 +362,9 @@ namespace dialog
 			return strings::emptystring;
 		}
 
-		_Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG iControl) const
+		_Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG id) const
 		{
-			const auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(iControl));
+			const auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
 			if (lpPane)
 			{
 				return lpPane->GetDropDownSelection();
@@ -373,9 +373,9 @@ namespace dialog
 			return CB_ERR;
 		}
 
-		void CPropertyTagEditor::InsertDropString(ULONG iControl, int iRow, _In_ const std::wstring& szText) const
+		void CPropertyTagEditor::InsertDropString(ULONG id, int iRow, _In_ const std::wstring& szText) const
 		{
-			auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(iControl));
+			auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
 			if (lpPane)
 			{
 				lpPane->InsertDropString(szText, iRow);
