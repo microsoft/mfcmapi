@@ -732,7 +732,7 @@ namespace dialog
 				{
 					lpszA = GetStringA(1); // Do not free this
 					sProp.Value.bin.lpb = LPBYTE(lpszA.c_str());
-					sProp.Value.bin.cb = sizeof(CHAR) * lpszA.length();
+					sProp.Value.bin.cb = static_cast<ULONG>(sizeof(CHAR) * lpszA.length());
 
 					SetBinary(0, sProp.Value.bin.lpb, sProp.Value.bin.cb);
 				}
