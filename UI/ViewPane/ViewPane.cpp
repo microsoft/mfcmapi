@@ -52,12 +52,13 @@ namespace viewpane
 		{
 			StyleLabel(m_Label.m_hWnd, ui::lsPaneHeaderLabel);
 
+			// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
 			EC_B_S(m_CollapseButton.Create(
 				NULL,
 				WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
 				CRect(0, 0, 0, 0),
 				pParent,
-				IDD_COLLAPSE + m_iControl));
+				IDD_COLLAPSE + m_nID));
 		}
 	}
 
@@ -76,7 +77,9 @@ namespace viewpane
 
 	ULONG ViewPane::HandleChange(UINT nID)
 	{
-		if (static_cast<UINT>(IDD_COLLAPSE + m_iControl) == nID)
+		// Collapse buttons have a nID IDD_COLLAPSE higher than nID of the pane they toggle.
+		// So if we get asked about one that matches, we can assume it's time to toggle our collapse.
+		if (IDD_COLLAPSE + m_nID == nID)
 		{
 			OnToggleCollapse();
 			return m_iControl;
