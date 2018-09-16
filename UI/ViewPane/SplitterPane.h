@@ -12,7 +12,7 @@ namespace viewpane
 		void SetPaneOne(ViewPane* paneOne) { m_PaneOne = paneOne; }
 		void SetPaneTwo(ViewPane* paneTwo) { m_PaneTwo = paneTwo; }
 		// Return a pane with a matching paneID.
-		ViewPane* GetPaneByID(int id) override
+		ViewPane* GetPaneByID(const int id) override
 		{
 			if (m_paneID == id) return this;
 			const auto pane = m_PaneOne->GetPaneByID(id);
@@ -20,7 +20,7 @@ namespace viewpane
 			return m_PaneTwo->GetPaneByID(id);
 		}
 		// Return a pane with a matching nID.
-		ViewPane* GetPaneByNID(UINT nID) override
+		ViewPane* GetPaneByNID(const UINT nID) override
 		{
 			if (m_nID == nID) return this;
 			const auto pane = m_PaneOne->GetPaneByNID(nID);

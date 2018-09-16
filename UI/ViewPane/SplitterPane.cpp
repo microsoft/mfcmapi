@@ -3,7 +3,7 @@
 
 namespace viewpane
 {
-	SplitterPane* SplitterPane::CreateVerticalPane(int paneID)
+	SplitterPane* SplitterPane::CreateVerticalPane(const int paneID)
 	{
 		const auto pane = CreateHorizontalPane(paneID);
 		pane->m_bVertical = true;
@@ -11,7 +11,7 @@ namespace viewpane
 		return pane;
 	}
 
-	SplitterPane* SplitterPane::CreateHorizontalPane(int paneID)
+	SplitterPane* SplitterPane::CreateHorizontalPane(const int paneID)
 	{
 		const auto pane = new (std::nothrow) SplitterPane();
 		pane->m_paneID = paneID;
@@ -58,7 +58,7 @@ namespace viewpane
 		}
 	}
 
-	ULONG SplitterPane::HandleChange(UINT nID)
+	ULONG SplitterPane::HandleChange(const UINT nID)
 	{
 		// See if the panes can handle the change first
 		auto paneID = m_PaneOne->HandleChange(nID);
@@ -71,13 +71,13 @@ namespace viewpane
 	}
 
 	void SplitterPane::SetMargins(
-		int iMargin,
-		int iSideMargin,
-		int iLabelHeight, // Height of the label
-		int iSmallHeightMargin,
-		int iLargeHeightMargin,
-		int iButtonHeight, // Height of buttons below the control
-		int iEditHeight) // height of an edit control
+		const int iMargin,
+		const int iSideMargin,
+		const int iLabelHeight, // Height of the label
+		const int iSmallHeightMargin,
+		const int iLargeHeightMargin,
+		const int iButtonHeight, // Height of buttons below the control
+		const int iEditHeight) // height of an edit control
 	{
 		if (m_PaneOne)
 		{
@@ -111,7 +111,7 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
-	void SplitterPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
+	void SplitterPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ const int x, _In_ const int y, _In_ const int width, _In_ const int height)
 	{
 		output::DebugPrint(
 			DBGDraw, L"SplitterPane::DeferWindowPos x:%d y:%d width:%d height: %d\n", x, y, width, height);
