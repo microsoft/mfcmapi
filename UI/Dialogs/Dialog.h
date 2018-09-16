@@ -20,8 +20,6 @@ namespace dialog
 
 	private:
 		void Constructor();
-		void OnMeasureItem(int nIDCtl, _In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-		void OnDrawItem(int nIDCtl, _In_ LPDRAWITEMSTRUCT lpDrawItemStruct);
 		LRESULT NCHitTest(WPARAM wParam, LPARAM lParam);
 		ui::CParentWnd* m_lpNonModalParent;
 		CWnd* m_hwndCenteringWindow;
@@ -29,7 +27,5 @@ namespace dialog
 		bool m_bStatus;
 		int m_iStatusHeight;
 		HWND m_hWndPrevious;
-
-		DECLARE_MESSAGE_MAP()
 	};
 }
