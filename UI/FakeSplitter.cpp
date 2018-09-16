@@ -97,6 +97,8 @@ namespace controls
 
 			break;
 		}
+		case WM_NOTIFY:
+			::SendMessage(m_hwndParent, message, wParam, lParam);
 		}
 
 		return CWnd::WindowProc(message, wParam, lParam);
