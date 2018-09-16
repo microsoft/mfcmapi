@@ -36,11 +36,6 @@ namespace dialog
 		if (m_lpNonModalParent) m_lpNonModalParent->Release();
 	}
 
-	BEGIN_MESSAGE_MAP(CMyDialog, CDialog)
-	ON_WM_MEASUREITEM()
-	ON_WM_DRAWITEM()
-	END_MESSAGE_MAP()
-
 	void CMyDialog::SetStatusHeight(int iHeight) { m_iStatusHeight = iHeight; }
 
 	int CMyDialog::GetStatusHeight() const { return m_iStatusHeight; }
@@ -317,17 +312,5 @@ namespace dialog
 		}
 
 		return false;
-	}
-
-	// Measure menu item widths
-	void CMyDialog::OnMeasureItem(int /*nIDCtl*/, _In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
-	{
-		ui::MeasureItem(lpMeasureItemStruct);
-	}
-
-	// Draw menu items
-	void CMyDialog::OnDrawItem(int /*nIDCtl*/, _In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
-	{
-		ui::DrawItem(lpDrawItemStruct);
 	}
 }
