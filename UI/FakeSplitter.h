@@ -44,12 +44,12 @@ namespace controls
 		void SetPercent(FLOAT iNewPercent);
 		void SetSplitType(SplitType stSplitType);
 		void OnSize(UINT nType, int cx, int cy);
-		int GetSplitWidth() { return m_iSplitWidth; }
+		int GetSplitWidth() const { return m_iSplitWidth; }
 
 	private:
 		void OnPaint();
 		void OnMouseMove(UINT nFlags, CPoint point);
-		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 		_Check_return_ int HitTest(LONG x, LONG y) const;
 
 		// starting and stopping tracking

@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <UI/FakeSplitter.h>
-#include <UI/Dialogs/BaseDialog.h>
 #include <UI/UIFunctions.h>
 #include <UI/DoubleBuffer.h>
 
@@ -25,7 +24,7 @@ namespace controls
 	void CFakeSplitter::Init(HWND hWnd)
 	{
 		m_hwndParent = hWnd;
-		WNDCLASSEX wc = {0};
+		WNDCLASSEX wc = {};
 		const auto hInst = AfxGetInstanceHandle();
 		if (!::GetClassInfoEx(hInst, _T("FakeSplitter"), &wc)) // STRING_OK
 		{
@@ -33,7 +32,7 @@ namespace controls
 			wc.style = 0; // not passing CS_VREDRAW | CS_HREDRAW fixes flicker
 			wc.lpszClassName = _T("FakeSplitter"); // STRING_OK
 			wc.lpfnWndProc = ::DefWindowProc;
-			wc.hbrBackground = ui::GetSysBrush(ui::cBackground); // helps spot flashing
+			wc.hbrBackground = GetSysBrush(ui::cBackground); // helps spot flashing
 
 			RegisterClassEx(&wc);
 		}
@@ -67,7 +66,7 @@ namespace controls
 	ON_WM_PAINT()
 	END_MESSAGE_MAP()
 
-	LRESULT CFakeSplitter::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+	LRESULT CFakeSplitter::WindowProc(const UINT message, const WPARAM wParam, const LPARAM lParam)
 	{
 		LRESULT lRes = 0;
 		if (ui::HandleControlUI(message, wParam, lParam, &lRes)) return lRes;
@@ -91,7 +90,7 @@ namespace controls
 		case WM_COMMAND:
 		{
 			const auto nCode = HIWORD(wParam);
-			if (EN_CHANGE == nCode || CBN_SELCHANGE == nCode || CBN_EDITCHANGE == nCode|| BN_CLICKED == nCode)
+			if (EN_CHANGE == nCode || CBN_SELCHANGE == nCode || CBN_EDITCHANGE == nCode || BN_CLICKED == nCode)
 			{
 				::SendMessage(m_hwndParent, message, wParam, lParam);
 			}
@@ -118,7 +117,7 @@ namespace controls
 
 	void CFakeSplitter::SetPaneTwo(HWND paneTwo) { m_PaneTwo = paneTwo; }
 
-	void CFakeSplitter::OnSize(UINT /*nType*/, int cx, int cy)
+	void CFakeSplitter::OnSize(UINT /*nType*/, const int cx, const int cy)
 	{
 		CalcSplitPos();
 
@@ -211,7 +210,7 @@ namespace controls
 		}
 	}
 
-	void CFakeSplitter::SetPercent(FLOAT iNewPercent)
+	void CFakeSplitter::SetPercent(const FLOAT iNewPercent)
 	{
 		if (iNewPercent < 0.0 || iNewPercent > 1.0) return;
 		m_flSplitPercent = iNewPercent;
@@ -225,9 +224,9 @@ namespace controls
 		OnSize(0, rect.Width(), rect.Height());
 	}
 
-	void CFakeSplitter::SetSplitType(SplitType stSplitType) { m_SplitType = stSplitType; }
+	void CFakeSplitter::SetSplitType(const SplitType stSplitType) { m_SplitType = stSplitType; }
 
-	_Check_return_ int CFakeSplitter::HitTest(LONG x, LONG y) const
+	_Check_return_ int CFakeSplitter::HitTest(const LONG x, const LONG y) const
 	{
 		if (!m_PaneOne && !m_ViewPaneOne) return noHit;
 
@@ -247,7 +246,7 @@ namespace controls
 		return noHit;
 	}
 
-	void CFakeSplitter::OnMouseMove(UINT /*nFlags*/, CPoint point)
+	void CFakeSplitter::OnMouseMove(UINT /*nFlags*/, const CPoint point)
 	{
 		if (!m_PaneOne && !m_ViewPaneOne) return;
 
@@ -281,7 +280,7 @@ namespace controls
 		}
 	}
 
-	void CFakeSplitter::StartTracking(int ht)
+	void CFakeSplitter::StartTracking(const int ht)
 	{
 		if (ht == noHit) return;
 
@@ -314,18 +313,18 @@ namespace controls
 
 	void CFakeSplitter::OnPaint()
 	{
-		PAINTSTRUCT ps = {nullptr};
+		auto ps = PAINTSTRUCT{};
 		::BeginPaint(m_hWnd, &ps);
 		if (ps.hdc)
 		{
-			RECT rcWin = {0};
+			auto rcWin = RECT{};
 			::GetClientRect(m_hWnd, &rcWin);
 			ui::CDoubleBuffer db;
 			auto hdc = ps.hdc;
 			db.Begin(hdc, rcWin);
 
 			auto rcSplitter = rcWin;
-			FillRect(hdc, &rcSplitter, ui::GetSysBrush(ui::cBackground));
+			FillRect(hdc, &rcSplitter, GetSysBrush(ui::cBackground));
 
 			POINT pts[2]; // 0 is left top, 1 is right bottom
 			if (SplitHorizontal == m_SplitType)
@@ -344,7 +343,7 @@ namespace controls
 			}
 
 			// Draw the splitter bar
-			const auto hpenOld = SelectObject(hdc, ui::GetPen(m_bTracking ? ui::cSolidPen : ui::cDashedPen));
+			const auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? ui::cSolidPen : ui::cDashedPen));
 			MoveToEx(hdc, pts[0].x, pts[0].y, nullptr);
 			LineTo(hdc, pts[1].x, pts[1].y);
 			(void) SelectObject(hdc, hpenOld);
