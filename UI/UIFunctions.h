@@ -138,8 +138,8 @@ namespace ui
 	void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeaderHeight, bool bRedraw);
 
 	// Menu and Combo box
-	void MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	void DrawItem(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct);
+	bool MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct);
+	bool DrawItem(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct);
 	std::wstring GetLBText(HWND hwnd, int nIndex);
 
 	// Status Bar

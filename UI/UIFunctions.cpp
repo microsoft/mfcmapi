@@ -531,7 +531,7 @@ namespace ui
 		case cDashedPen:
 		{
 			lbr.lbColor = MyGetSysColor(cFrameSelected);
-			DWORD rgStyle[2] = {1,3};
+			DWORD rgStyle[2] = {1, 3};
 			g_Pens[cDashedPen] = ExtCreatePen(PS_GEOMETRIC | PS_USERSTYLE, 1, &lbr, 2, rgStyle);
 			return g_Pens[cDashedPen];
 		}
@@ -1388,16 +1388,21 @@ namespace ui
 		}
 	}
 
-	void MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
+	// Returns true if handled, false otherwise
+	bool MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	{
 		if (ODT_MENU == lpMeasureItemStruct->CtlType)
 		{
 			MeasureMenu(lpMeasureItemStruct);
+			return true;
 		}
 		else if (ODT_COMBOBOX == lpMeasureItemStruct->CtlType)
 		{
 			lpMeasureItemStruct->itemHeight = GetEditHeight(nullptr);
+			return true;
 		}
+
+		return false;
 	}
 
 	void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
@@ -1554,18 +1559,23 @@ namespace ui
 			DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 	}
 
-	void DrawItem(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
+	// Returns true if handled, false otherwise
+	bool DrawItem(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	{
-		if (!lpDrawItemStruct) return;
+		if (!lpDrawItemStruct) return false;
 
 		if (ODT_MENU == lpDrawItemStruct->CtlType)
 		{
 			DrawMenu(lpDrawItemStruct);
+			return true;
 		}
 		else if (ODT_COMBOBOX == lpDrawItemStruct->CtlType)
 		{
 			DrawComboBox(lpDrawItemStruct);
+			return true;
 		}
+
+		return false;
 	}
 
 	// Paint the status bar with double buffering to avoid flicker
@@ -1932,6 +1942,12 @@ namespace ui
 		*lpResult = 0;
 		switch (message)
 		{
+		case WM_DRAWITEM:
+			if (DrawItem(reinterpret_cast<LPDRAWITEMSTRUCT>(lParam))) return true;
+			break;
+		case WM_MEASUREITEM:
+			if (MeasureItem(reinterpret_cast<LPMEASUREITEMSTRUCT>(lParam))) return true;
+			break;
 		case WM_ERASEBKGND:
 			return true;
 		case WM_CTLCOLORSTATIC:
@@ -2040,4 +2056,4 @@ namespace ui
 	{
 		EC_B_S(::SetProp(hWnd, LABEL_STYLE, reinterpret_cast<HANDLE>(lsStyle)));
 	}
-}
+} // namespace ui

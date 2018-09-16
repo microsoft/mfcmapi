@@ -322,12 +322,12 @@ namespace dialog
 	// Measure menu item widths
 	void CMyDialog::OnMeasureItem(int /*nIDCtl*/, _In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	{
-		ui::MeasureItem(lpMeasureItemStruct);
+		(void)ui::MeasureItem(lpMeasureItemStruct);
 	}
 
 	// Draw menu items
 	void CMyDialog::OnDrawItem(int /*nIDCtl*/, _In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	{
-		ui::DrawItem(lpDrawItemStruct);
+		(void)ui::DrawItem(lpDrawItemStruct);
 	}
 }
