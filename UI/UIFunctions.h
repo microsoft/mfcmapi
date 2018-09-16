@@ -102,10 +102,10 @@ namespace ui
 	// member.
 	struct MenuEntry
 	{
-		MSAAMENUINFO m_MSAA; // MSAA info - must be first element.
+		MSAAMENUINFO m_MSAA{}; // MSAA info - must be first element.
 		std::wstring m_pName; // Menu text for display. Empty for separator item.
-		BOOL m_bOnMenuBar;
-		ULONG_PTR m_AddInData;
+		BOOL m_bOnMenuBar{};
+		ULONG_PTR m_AddInData{};
 	};
 	typedef MenuEntry* LPMENUENTRY;
 
@@ -124,7 +124,7 @@ namespace ui
 	void SubclassEdit(_In_ HWND hWnd, _In_ HWND hWndParent, bool bReadOnly);
 
 	// List
-	void CustomDrawList(_In_ LPNMLVCUSTOMDRAW lvcd, _In_ LRESULT* pResult, DWORD_PTR iItemCur);
+	void CustomDrawList(_In_ LPNMLVCUSTOMDRAW lvcd, _In_ LRESULT* pResult, DWORD_PTR iItemCurHover);
 	void DrawListItemGlow(_In_ HWND hWnd, UINT itemID);
 
 	// Tree
@@ -133,7 +133,7 @@ namespace ui
 	void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool bGlow, bool bHover);
 
 	// Header
-	void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ const RECT& lprc, bool bButton, bool bUp);
+	void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ const RECT& rc, bool bButton, bool bUp);
 	void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeaderHeight, bool bRedraw);
 
@@ -181,4 +181,4 @@ namespace ui
 		_In_ const RECT& rc,
 		bool bBold,
 		_In_ UINT format);
-}
+} // namespace ui
