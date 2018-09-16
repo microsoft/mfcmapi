@@ -125,6 +125,7 @@ namespace controls
 		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 		if (hdwp)
 		{
+			InvalidateRect(CRect(0, 0, cx, cy), false);
 			if (m_PaneOne || m_ViewPaneOne)
 			{
 				CRect r1;
@@ -180,19 +181,6 @@ namespace controls
 			}
 
 			EC_B_S(EndDeferWindowPos(hdwp));
-		}
-
-		if ((m_PaneOne || m_ViewPaneOne) && (m_PaneTwo || m_ViewPaneTwo))
-		{
-			// Invalidate our splitter region to force a redraw
-			if (SplitHorizontal == m_SplitType)
-			{
-				InvalidateRect(CRect(m_iSplitPos, 0, m_iSplitPos + m_iSplitWidth, cy), false);
-			}
-			else
-			{
-				InvalidateRect(CRect(0, m_iSplitPos, cx, m_iSplitPos + m_iSplitWidth), false);
-			}
 		}
 	}
 
