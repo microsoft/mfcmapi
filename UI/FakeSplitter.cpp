@@ -76,8 +76,6 @@ namespace controls
 		{
 		case WM_HELP:
 			return true;
-		case WM_ERASEBKGND:
-			return true;
 		case WM_LBUTTONUP:
 		case WM_CANCELMODE: // Called if focus changes while we're adjusting the splitter
 			StopTracking();
