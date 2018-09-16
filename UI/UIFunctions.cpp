@@ -530,8 +530,8 @@ namespace ui
 		}
 		case cDashedPen:
 		{
-			lbr.lbColor = MyGetSysColor(cFrameUnselected);
-			DWORD rgStyle[2] = {1, 3};
+			lbr.lbColor = MyGetSysColor(cFrameSelected);
+			DWORD rgStyle[2] = {1,3};
 			g_Pens[cDashedPen] = ExtCreatePen(PS_GEOMETRIC | PS_USERSTYLE, 1, &lbr, 2, rgStyle);
 			return g_Pens[cDashedPen];
 		}
