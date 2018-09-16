@@ -21,11 +21,10 @@ namespace dialog
 	private:
 		void Constructor();
 		LRESULT NCHitTest(WPARAM wParam, LPARAM lParam);
-		ui::CParentWnd* m_lpNonModalParent;
-		CWnd* m_hwndCenteringWindow;
-		UINT m_iAutoCenterWidth;
-		bool m_bStatus;
-		int m_iStatusHeight;
-		HWND m_hWndPrevious;
+		ui::CParentWnd* m_lpNonModalParent{};
+		CWnd* m_hwndCenteringWindow{};
+		UINT m_iAutoCenterWidth{};
+		int m_iStatusHeight{};
+		HWND m_hWndPrevious{};
 	};
 }
