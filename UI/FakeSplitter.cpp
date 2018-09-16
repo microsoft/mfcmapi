@@ -69,6 +69,9 @@ namespace controls
 
 	LRESULT CFakeSplitter::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
+		LRESULT lRes = 0;
+		if (ui::HandleControlUI(message, wParam, lParam, &lRes)) return lRes;
+
 		switch (message)
 		{
 		case WM_HELP:
@@ -97,8 +100,6 @@ namespace controls
 
 			break;
 		}
-		case WM_NOTIFY:
-			::SendMessage(m_hwndParent, message, wParam, lParam);
 		}
 
 		return CWnd::WindowProc(message, wParam, lParam);
