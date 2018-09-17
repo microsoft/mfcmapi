@@ -16,6 +16,8 @@ namespace controls
 	CFakeSplitter::~CFakeSplitter()
 	{
 		TRACE_DESTRUCTOR(CLASS);
+		delete m_ViewPaneOne;
+		delete m_ViewPaneTwo;
 		(void) DestroyCursor(m_hSplitCursorH);
 		(void) DestroyCursor(m_hSplitCursorV);
 		CWnd::DestroyWindow();
@@ -73,6 +75,9 @@ namespace controls
 
 		switch (message)
 		{
+		case WM_CLOSE:
+			::SendMessage(m_hwndParent, message, wParam, lParam);
+			return true;
 		case WM_HELP:
 			return true;
 		case WM_LBUTTONUP:
