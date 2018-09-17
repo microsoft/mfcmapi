@@ -9,6 +9,7 @@ namespace viewpane
 	public:
 		static SplitterPane* CreateHorizontalPane(int paneID);
 		static SplitterPane* CreateVerticalPane(int paneID);
+		~SplitterPane() { delete m_lpSplitter; }
 		void SetPaneOne(ViewPane* paneOne) { m_PaneOne = paneOne; }
 		void SetPaneTwo(ViewPane* paneTwo) { m_PaneTwo = paneTwo; }
 		// Return a pane with a matching paneID.
