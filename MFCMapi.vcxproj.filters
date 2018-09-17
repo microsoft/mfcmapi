@@ -118,6 +118,7 @@
     <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
     <ClInclude Include="MAPI\MapiMemory.h" />
+    <ClInclude Include="UI\ViewPane\SplitterPane.h" />
     <ClInclude Include="Interpret\SmartView\PropertiesStruct.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
@@ -166,6 +167,9 @@
     </ClCompile>
     <ClCompile Include="Interpret\SmartView\PropertiesStruct.cpp">
       <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\ViewPane\SplitterPane.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

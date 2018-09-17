@@ -31,7 +31,7 @@ namespace dialog
 	CBaseDialog::CBaseDialog(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ cache::CMapiObjects* lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
-		ULONG ulAddInContext)
+		const ULONG ulAddInContext)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_szTitle = strings::loadstring(IDS_BASEDIALOG);
@@ -112,7 +112,7 @@ namespace dialog
 	ON_MESSAGE(WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, msgOnClearSingleMAPIPropList)
 	END_MESSAGE_MAP()
 
-	LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+	LRESULT CBaseDialog::WindowProc(const UINT message, const WPARAM wParam, const LPARAM lParam)
 	{
 		switch (message)
 		{
@@ -149,19 +149,23 @@ namespace dialog
 
 		SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
-		m_lpFakeSplitter = new controls::CFakeSplitter(this);
-
+		m_lpFakeSplitter = new controls::CFakeSplitter();
 		if (m_lpFakeSplitter)
 		{
+			m_lpFakeSplitter->Init(m_hWnd);
 			m_lpPropDisplay =
 				new controls::sortlistctrl::CSingleMAPIPropListCtrl(m_lpFakeSplitter, this, m_lpMapiObjects, m_bIsAB);
 
-			if (m_lpPropDisplay) m_lpFakeSplitter->SetPaneTwo(m_lpPropDisplay);
+			if (m_lpPropDisplay) m_lpFakeSplitter->SetPaneTwo(m_lpPropDisplay->GetSafeHwnd());
 		}
+
 		return false;
 	}
 
-	void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuResource, UINT uidClassMenuTitle)
+	void CBaseDialog::CreateDialogAndMenu(
+		const UINT nIDMenuResource,
+		const UINT uiClassMenuResource,
+		const UINT uidClassMenuTitle)
 	{
 		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 
@@ -176,11 +180,11 @@ namespace dialog
 		}
 		else
 		{
-			hMenu = ::CreateMenu();
+			hMenu = CreateMenu();
 		}
 
 		const auto hMenuOld = ::GetMenu(m_hWnd);
-		if (hMenuOld) ::DestroyMenu(hMenuOld);
+		if (hMenuOld) DestroyMenu(hMenuOld);
 		::SetMenu(m_hWnd, hMenu);
 
 		AddMenu(hMenu, IDR_MENU_PROPERTY, IDS_PROPERTYMENU, static_cast<unsigned>(-1));
@@ -191,17 +195,17 @@ namespace dialog
 
 		AddMenu(hMenu, IDR_MENU_TOOLS, IDS_TOOLSMENU, static_cast<unsigned>(-1));
 
-		const auto hSub = ::GetSubMenu(hMenu, 0);
+		const auto hSub = GetSubMenu(hMenu, 0);
 		::AppendMenu(hSub, MF_SEPARATOR, NULL, nullptr);
 		auto szExit = strings::loadstring(IDS_EXIT);
-		::AppendMenuW(hSub, MF_ENABLED | MF_STRING, IDCANCEL, szExit.c_str());
+		AppendMenuW(hSub, MF_ENABLED | MF_STRING, IDCANCEL, szExit.c_str());
 
 		// Make sure the menu background is filled in the right color
-		MENUINFO mi = {0};
+		auto mi = MENUINFO{};
 		mi.cbSize = sizeof(MENUINFO);
 		mi.fMask = MIM_BACKGROUND;
-		mi.hbrBack = ui::GetSysBrush(ui::cBackground);
-		::SetMenuInfo(hMenu, &mi);
+		mi.hbrBack = GetSysBrush(ui::cBackground);
+		SetMenuInfo(hMenu, &mi);
 
 		ui::ConvertMenuOwnerDraw(hMenu, true);
 
@@ -209,7 +213,7 @@ namespace dialog
 		DrawMenuBar();
 	}
 
-	_Check_return_ bool CBaseDialog::HandleMenu(WORD wMenuSelect)
+	_Check_return_ bool CBaseDialog::HandleMenu(const WORD wMenuSelect)
 	{
 		output::DebugPrint(DBGMenu, L"CBaseDialog::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 		switch (wMenuSelect)
@@ -262,14 +266,18 @@ namespace dialog
 
 	// Checks flags on add-in menu items to ensure they should be enabled
 	// Override to support context sensitive scenarios
-	void CBaseDialog::EnableAddInMenus(_In_ HMENU hMenu, ULONG ulMenu, _In_ LPMENUITEM /*lpAddInMenu*/, UINT uiEnable)
+	void CBaseDialog::EnableAddInMenus(
+		_In_ HMENU hMenu,
+		const ULONG ulMenu,
+		_In_ LPMENUITEM /*lpAddInMenu*/,
+		const UINT uiEnable)
 	{
-		if (hMenu) ::EnableMenuItem(hMenu, ulMenu, uiEnable);
+		if (hMenu) EnableMenuItem(hMenu, ulMenu, uiEnable);
 	}
 
 	// Help strings can be found in mfcmapi.rc2
 	// Will preserve the existing text in the right status pane, restoring it when we stop displaying menus
-	void CBaseDialog::OnMenuSelect(UINT nItemID, UINT nFlags, HMENU /*hSysMenu*/)
+	void CBaseDialog::OnMenuSelect(const UINT nItemID, const UINT nFlags, HMENU /*hSysMenu*/)
 	{
 		if (!m_bDisplayingMenuText)
 		{
@@ -291,7 +299,16 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ bool CBaseDialog::HandleKeyDown(UINT nChar, bool bShift, bool bCtrl, bool bMenu)
+	/**
+	 * \brief 
+	 * \param nChar 
+	 * \param bShift 
+	 * \param bCtrl 
+	 * \param bMenu 
+	 * \return 
+	 */
+	_Check_return_ bool
+	CBaseDialog::HandleKeyDown(const UINT nChar, const bool bShift, const bool bCtrl, const bool bMenu)
 	{
 		output::DebugPrintEx(
 			DBGMenu,
@@ -467,14 +484,14 @@ namespace dialog
 		}
 	}
 
-	void CBaseDialog::AddMenu(HMENU hMenuBar, UINT uiResource, UINT uidTitle, UINT uiPos)
+	void CBaseDialog::AddMenu(HMENU hMenuBar, const UINT uiResource, const UINT uidTitle, const UINT uiPos)
 	{
 		auto hMenuToAdd = ::LoadMenu(nullptr, MAKEINTRESOURCE(uiResource));
 
 		if (hMenuBar && hMenuToAdd)
 		{
 			auto szTitle = strings::loadstring(uidTitle);
-			::InsertMenuW(
+			InsertMenuW(
 				hMenuBar, uiPos, MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(hMenuToAdd), szTitle.c_str());
 			if (IDR_MENU_PROPERTY == uiResource)
 			{
@@ -483,7 +500,7 @@ namespace dialog
 		}
 	}
 
-	void CBaseDialog::OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized)
+	void CBaseDialog::OnActivate(const UINT nState, _In_ CWnd* pWndOther, const BOOL bMinimized)
 	{
 		CMyDialog::OnActivate(nState, pWndOther, bMinimized);
 		if (nState == 1 && !bMinimized) EC_B_S(RedrawWindow());
@@ -494,14 +511,14 @@ namespace dialog
 		const auto iData1 = !m_StatusMessages[STATUSDATA1].empty();
 		const auto iData2 = !m_StatusMessages[STATUSDATA2].empty();
 
-		SIZE sizeData1 = {0};
-		SIZE sizeData2 = {0};
+		auto sizeData1 = SIZE{};
+		auto sizeData2 = SIZE{};
 		if (iData1 || iData2)
 		{
 			const auto hdc = ::GetDC(m_hWnd);
 			if (hdc)
 			{
-				const auto hfontOld = ::SelectObject(hdc, ui::GetSegoeFontBold());
+				const auto hfontOld = SelectObject(hdc, ui::GetSegoeFontBold());
 
 				if (iData1)
 				{
@@ -513,7 +530,7 @@ namespace dialog
 					sizeData2 = ui::GetTextExtentPoint32(hdc, m_StatusMessages[STATUSDATA2]);
 				}
 
-				::SelectObject(hdc, hfontOld);
+				SelectObject(hdc, hfontOld);
 				::ReleaseDC(m_hWnd, hdc);
 			}
 		}
@@ -528,7 +545,7 @@ namespace dialog
 		m_StatusWidth[STATUSDATA1] = iWidthData1;
 		m_StatusWidth[STATUSDATA2] = iWidthData2;
 		m_StatusWidth[STATUSINFOTEXT] = -1;
-		RECT rcStatus = {0};
+		auto rcStatus = RECT{};
 		::GetClientRect(m_hWnd, &rcStatus);
 		rcStatus.top = rcStatus.bottom - GetStatusHeight();
 
@@ -536,14 +553,14 @@ namespace dialog
 		::RedrawWindow(m_hWnd, &rcStatus, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	}
 
-	void CBaseDialog::OnSize(UINT /* nType*/, int cx, int cy)
+	void CBaseDialog::OnSize(UINT /* nType*/, const int cx, const int cy)
 	{
 		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(1));
 		if (hdwp)
 		{
 			const auto iHeight = GetStatusHeight();
 			const auto iNewCY = cy - iHeight;
-			RECT rcStatus = {0};
+			auto rcStatus = RECT{};
 			::GetClientRect(m_hWnd, &rcStatus);
 			if (rcStatus.bottom - rcStatus.top > iHeight)
 			{
@@ -561,26 +578,26 @@ namespace dialog
 		}
 	}
 
-	void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, _In_ const std::wstring& szMsg)
+	void CBaseDialog::UpdateStatusBarText(const __StatusPaneEnum nPos, _In_ const std::wstring& szMsg)
 	{
 		if (nPos < STATUSBARNUMPANES) m_StatusMessages[nPos] = szMsg;
 
 		SetStatusWidths();
 	}
 
-	void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg)
+	void __cdecl CBaseDialog::UpdateStatusBarText(const __StatusPaneEnum nPos, const UINT uidMsg)
 	{
 		UpdateStatusBarText(nPos, uidMsg, strings::emptystring, strings::emptystring, strings::emptystring);
 	}
 
-	void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1)
+	void __cdecl CBaseDialog::UpdateStatusBarText(const __StatusPaneEnum nPos, UINT const uidMsg, ULONG const ulParam1)
 	{
 		auto szParam1 = std::to_wstring(ulParam1);
 		UpdateStatusBarText(nPos, uidMsg, szParam1, strings::emptystring, strings::emptystring);
 	}
 
 	void __cdecl CBaseDialog::UpdateStatusBarText(
-		__StatusPaneEnum nPos,
+		__StatusPaneEnum const nPos,
 		UINT uidMsg,
 		std::wstring& szParam1,
 		std::wstring& szParam2,
@@ -591,7 +608,7 @@ namespace dialog
 		// MAPI Load paths take special handling
 		if (uidMsg >= ID_LOADMAPIMENUMIN && uidMsg <= ID_LOADMAPIMENUMAX)
 		{
-			MENUITEMINFOW mii = {0};
+			auto mii = MENUITEMINFOW{};
 			mii.cbSize = sizeof(MENUITEMINFO);
 			mii.fMask = MIIM_DATA;
 
@@ -623,7 +640,7 @@ namespace dialog
 		auto szTitle = strings::formatmessage(IDS_TITLEBARMESSAGE, m_szTitle.c_str(), szMsg.c_str());
 
 		// set the title bar
-		::SetWindowTextW(m_hWnd, szTitle.c_str());
+		SetWindowTextW(m_hWnd, szTitle.c_str());
 	}
 
 	void CBaseDialog::UpdateTitleBarText() const
@@ -631,16 +648,16 @@ namespace dialog
 		auto szTitle = strings::formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str());
 
 		// set the title bar
-		::SetWindowTextW(m_hWnd, szTitle.c_str());
+		SetWindowTextW(m_hWnd, szTitle.c_str());
 	}
 
-	void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const std::wstring& status)
+	void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum const pane, const std::wstring& status)
 	{
 		(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, pane, reinterpret_cast<LPARAM>(status.c_str()));
 	}
 
 	// WM_MFCMAPI_UPDATESTATUSBAR
-	_Check_return_ LRESULT CBaseDialog::msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam)
+	_Check_return_ LRESULT CBaseDialog::msgOnUpdateStatusBar(WPARAM wParam, LPARAM const lParam)
 	{
 		const auto iPane = static_cast<__StatusPaneEnum>(wParam);
 		const std::wstring szStr = reinterpret_cast<LPWSTR>(lParam);
@@ -779,7 +796,6 @@ namespace dialog
 
 	void CBaseDialog::OnCompareEntryIDs()
 	{
-		auto hRes = S_OK;
 		if (!m_lpMapiObjects) return;
 
 		auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
@@ -813,7 +829,7 @@ namespace dialog
 		LPENTRYID lpEntryID2 = nullptr;
 		size_t cbBin2 = NULL;
 
-		hRes = EC_H(MyEIDs.GetEntryID(0, MyEIDs.GetCheck(3), &cbBin1, &lpEntryID1));
+		auto hRes = EC_H(MyEIDs.GetEntryID(0, MyEIDs.GetCheck(3), &cbBin1, &lpEntryID1));
 
 		if (SUCCEEDED(hRes))
 		{
@@ -1010,7 +1026,7 @@ namespace dialog
 
 	void CBaseDialog::OnDispatchNotifications() { EC_MAPI_S(HrDispatchNotifications(NULL)); }
 
-	_Check_return_ bool CBaseDialog::HandleAddInMenu(WORD wMenuSelect)
+	_Check_return_ bool CBaseDialog::HandleAddInMenu(const WORD wMenuSelect)
 	{
 		output::DebugPrintEx(DBGAddInPlumbing, CLASS, L"HandleAddInMenu", L"wMenuSelect = 0x%08X\n", wMenuSelect);
 		return false;

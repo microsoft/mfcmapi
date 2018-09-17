@@ -8,9 +8,9 @@ namespace dialog
 {
 	static std::wstring CLASS = L"CMyDialog";
 
-	CMyDialog::CMyDialog() : CDialog() { Constructor(); }
+	CMyDialog::CMyDialog() { Constructor(); }
 
-	CMyDialog::CMyDialog(UINT nIDTemplate, CWnd* pParentWnd) : CDialog(nIDTemplate, pParentWnd) { Constructor(); }
+	CMyDialog::CMyDialog(const UINT nIDTemplate, CWnd* pParentWnd) : CDialog(nIDTemplate, pParentWnd) { Constructor(); }
 
 	void CMyDialog::Constructor()
 	{
@@ -36,16 +36,11 @@ namespace dialog
 		if (m_lpNonModalParent) m_lpNonModalParent->Release();
 	}
 
-	BEGIN_MESSAGE_MAP(CMyDialog, CDialog)
-	ON_WM_MEASUREITEM()
-	ON_WM_DRAWITEM()
-	END_MESSAGE_MAP()
-
-	void CMyDialog::SetStatusHeight(int iHeight) { m_iStatusHeight = iHeight; }
+	void CMyDialog::SetStatusHeight(const int iHeight) { m_iStatusHeight = iHeight; }
 
 	int CMyDialog::GetStatusHeight() const { return m_iStatusHeight; }
 
-	std::wstring FormatHT(LRESULT ht)
+	std::wstring FormatHT(const LRESULT ht)
 	{
 		std::wstring szRet;
 		switch (ht)
@@ -83,7 +78,7 @@ namespace dialog
 		output::DebugPrint(DBGUI, L"CheckButtons: pt = %d %d", pt.x, pt.y);
 
 		// Get the screen coordinates of our window
-		RECT rcWindow = {0};
+		auto rcWindow = RECT{};
 		GetWindowRect(hWnd, &rcWindow);
 
 		// We subtract to get coordinates relative to our window
@@ -92,9 +87,9 @@ namespace dialog
 		pt.y -= rcWindow.top;
 		output::Outputf(DBGUI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
 
-		RECT rcCloseIcon = {0};
-		RECT rcMaxIcon = {0};
-		RECT rcMinIcon = {0};
+		auto rcCloseIcon = RECT{};
+		auto rcMaxIcon = RECT{};
+		auto rcMinIcon = RECT{};
 		ui::GetCaptionRects(hWnd, nullptr, nullptr, &rcCloseIcon, &rcMaxIcon, &rcMinIcon, nullptr);
 		output::DebugPrint(
 			DBGUI, L"rcMinIcon: %d %d %d %d\n", rcMinIcon.left, rcMinIcon.top, rcMinIcon.right, rcMinIcon.bottom);
@@ -118,7 +113,7 @@ namespace dialog
 
 	// Handles WM_NCHITTEST, substituting our custom button locations for the default ones
 	// Everything else stays the same
-	LRESULT CMyDialog::NCHitTest(WPARAM wParam, LPARAM lParam)
+	LRESULT CMyDialog::NCHitTest(const WPARAM wParam, LPARAM const lParam)
 	{
 		// These are screen coordinates of the mouse pointer
 		const POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
@@ -139,7 +134,7 @@ namespace dialog
 	}
 
 	// Performs an non-client hittest using coordinates from WM_MOUSE* messages
-	LRESULT NCHitTestMouse(HWND hWnd, LPARAM lParam)
+	LRESULT NCHitTestMouse(HWND hWnd, const LPARAM lParam)
 	{
 		// These are client coordinates - we need to translate them to screen coordinates
 		POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
@@ -152,13 +147,13 @@ namespace dialog
 		return ht;
 	}
 
-	bool DepressSystemButton(HWND hWnd, int iHitTest)
+	bool DepressSystemButton(HWND hWnd, const int iHitTest)
 	{
 		ui::DrawSystemButtons(hWnd, nullptr, iHitTest, false);
 		SetCapture(hWnd);
 		for (;;)
 		{
-			MSG msg = {nullptr};
+			auto msg = MSG{};
 			if (::PeekMessage(&msg, hWnd, WM_MOUSEFIRST, WM_MOUSELAST, PM_REMOVE))
 			{
 				switch (msg.message)
@@ -182,7 +177,7 @@ namespace dialog
 #define WM_NCUAHDRAWCAPTION 0x00AE
 #define WM_NCUAHDRAWFRAME 0x00AF
 
-	LRESULT CMyDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+	LRESULT CMyDialog::WindowProc(const UINT message, const WPARAM wParam, LPARAM lParam)
 	{
 		LRESULT lRes = 0;
 		if (ui::HandleControlUI(message, wParam, lParam, &lRes)) return lRes;
@@ -241,7 +236,7 @@ namespace dialog
 				const auto hRes = import::pfnSHGetPropertyStoreForWindow(m_hWnd, IID_PPV_ARGS(&pps));
 				if (SUCCEEDED(hRes) && pps)
 				{
-					PROPVARIANT var = {0};
+					auto var = PROPVARIANT{};
 					var.vt = VT_LPWSTR;
 					var.pwszVal = const_cast<LPWSTR>(L"Microsoft.MFCMAPI");
 
@@ -257,7 +252,7 @@ namespace dialog
 				// This avoids repaints whenever the system menu is later accessed.
 				// We eliminate classic mode visual artifacts with this call.
 				(void) ::GetSystemMenu(m_hWnd, false);
-				MENUBARINFO mbi = {0};
+				auto mbi = MENUBARINFO{};
 				mbi.cbSize = sizeof mbi;
 				(void) GetMenuBarInfo(m_hWnd, OBJID_SYSMENU, 0, &mbi);
 			}
@@ -267,7 +262,7 @@ namespace dialog
 		return CDialog::WindowProc(message, wParam, lParam);
 	}
 
-	void CMyDialog::DisplayParentedDialog(ui::CParentWnd* lpNonModalParent, UINT iAutoCenterWidth)
+	void CMyDialog::DisplayParentedDialog(ui::CParentWnd* lpNonModalParent, const UINT iAutoCenterWidth)
 	{
 		m_iAutoCenterWidth = iAutoCenterWidth;
 		m_lpszTemplateName = MAKEINTRESOURCE(IDD_BLANK_DIALOG);
@@ -305,7 +300,7 @@ namespace dialog
 			IDD_BLANK_DIALOG == reinterpret_cast<intptr_t>(m_lpszTemplateName))
 		{
 			// Cheap cascade effect
-			RECT rc = {0};
+			auto rc = RECT{};
 			(void) ::GetWindowRect(m_hWndPrevious, &rc);
 			const LONG lOffset = GetSystemMetrics(SM_CXSMSIZE);
 			(void) ::SetWindowPos(
@@ -317,17 +312,5 @@ namespace dialog
 		}
 
 		return false;
-	}
-
-	// Measure menu item widths
-	void CMyDialog::OnMeasureItem(int /*nIDCtl*/, _In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
-	{
-		ui::MeasureItem(lpMeasureItemStruct);
-	}
-
-	// Draw menu items
-	void CMyDialog::OnDrawItem(int /*nIDCtl*/, _In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
-	{
-		ui::DrawItem(lpDrawItemStruct);
 	}
 }
