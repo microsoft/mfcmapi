@@ -75,6 +75,9 @@ namespace controls
 
 		switch (message)
 		{
+		case WM_CLOSE:
+			::SendMessage(m_hwndParent, message, wParam, lParam);
+			return true;
 		case WM_HELP:
 			return true;
 		case WM_LBUTTONUP:
