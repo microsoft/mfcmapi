@@ -3,6 +3,12 @@
 
 namespace viewpane
 {
+	struct Range
+	{
+		LONG start;
+		LONG length;
+	};
+
 	class TextPane : public ViewPane
 	{
 	public:
@@ -36,6 +42,17 @@ namespace viewpane
 		bool IsDirty() override;
 
 		std::wstring GetStringW() const;
+		void AddHighlight(const Range& range)
+		{
+			m_highlights.emplace_back(range);
+			DoHighlights();
+		}
+		void ClearHighlight()
+		{
+			m_highlights.clear();
+			DoHighlights();
+		}
+		void DoHighlights();
 
 	protected:
 		CRichEditCtrl m_EditBox;
@@ -49,5 +66,6 @@ namespace viewpane
 		std::wstring m_lpszW;
 		bool m_bCommitted{false};
 		bool m_bMultiline{false};
+		std::vector<Range> m_highlights;
 	};
 } // namespace viewpane

@@ -7,17 +7,22 @@ namespace viewpane
 {
 	static std::wstring CLASS = L"TextPane";
 
-	TextPane* TextPane::CreateMultiLinePane(int paneID, UINT uidLabel, bool bReadOnly)
+	TextPane* TextPane::CreateMultiLinePane(const int paneID, const UINT uidLabel, const bool bReadOnly)
 	{
 		return CreateSingleLinePane(paneID, uidLabel, bReadOnly, true);
 	}
 
-	TextPane* TextPane::CreateMultiLinePane(int paneID, UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly)
+	TextPane* TextPane::CreateMultiLinePane(
+		const int paneID,
+		const UINT uidLabel,
+		_In_ const std::wstring& szVal,
+		const bool bReadOnly)
 	{
 		return CreateSingleLinePane(paneID, uidLabel, szVal, bReadOnly, true);
 	}
 
-	TextPane* TextPane::CreateSingleLinePane(int paneID, UINT uidLabel, bool bReadOnly, bool bMultiLine)
+	TextPane*
+	TextPane::CreateSingleLinePane(const int paneID, const UINT uidLabel, const bool bReadOnly, const bool bMultiLine)
 	{
 		auto lpPane = new (std::nothrow) TextPane();
 		if (lpPane)
@@ -31,11 +36,11 @@ namespace viewpane
 	}
 
 	TextPane* TextPane::CreateSingleLinePane(
-		int paneID,
-		UINT uidLabel,
+		const int paneID,
+		const UINT uidLabel,
 		_In_ const std::wstring& szVal,
-		bool bReadOnly,
-		bool bMultiLine)
+		const bool bReadOnly,
+		const bool bMultiLine)
 	{
 		auto lpPane = new (std::nothrow) TextPane();
 		if (lpPane)
@@ -49,7 +54,8 @@ namespace viewpane
 		return lpPane;
 	}
 
-	TextPane* TextPane::CreateSingleLinePaneID(int paneID, UINT uidLabel, UINT uidVal, bool bReadOnly)
+	TextPane*
+	TextPane::CreateSingleLinePaneID(const int paneID, const UINT uidLabel, const UINT uidVal, const bool bReadOnly)
 	{
 		auto lpPane = new (std::nothrow) TextPane();
 
@@ -63,7 +69,7 @@ namespace viewpane
 		return lpPane;
 	}
 
-	TextPane* TextPane::CreateCollapsibleTextPane(int paneID, UINT uidLabel, bool bReadOnly)
+	TextPane* TextPane::CreateCollapsibleTextPane(const int paneID, const UINT uidLabel, const bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) TextPane();
 		if (pane)
@@ -79,7 +85,7 @@ namespace viewpane
 
 	// Imports binary data from a stream, converting it to hex format before returning
 	_Check_return_ static DWORD CALLBACK
-	EditStreamReadCallBack(DWORD_PTR dwCookie, _In_ LPBYTE pbBuff, LONG cb, _In_count_(cb) LONG* pcb)
+	EditStreamReadCallBack(const DWORD_PTR dwCookie, _In_ LPBYTE pbBuff, const LONG cb, _In_count_(cb) LONG* pcb)
 	{
 		if (!pbBuff || !pcb || !dwCookie) return 0;
 
@@ -250,7 +256,7 @@ namespace viewpane
 	};
 
 	_Check_return_ static DWORD CALLBACK
-	FakeEditStreamReadCallBack(DWORD_PTR dwCookie, _In_ LPBYTE pbBuff, LONG cb, _In_count_(cb) LONG* pcb)
+	FakeEditStreamReadCallBack(const DWORD_PTR dwCookie, _In_ LPBYTE pbBuff, const LONG cb, _In_count_(cb) LONG* pcb)
 	{
 		if (!pbBuff || !pcb || !dwCookie) return 0;
 
@@ -303,7 +309,7 @@ namespace viewpane
 		SetEditBoxText();
 	}
 
-	void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
+	void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, const size_t cb)
 	{
 		if (!lpb || !cb)
 		{
@@ -444,5 +450,49 @@ namespace viewpane
 		}
 	}
 
-	void TextPane::ShowWindow(int nCmdShow) { m_EditBox.ShowWindow(nCmdShow); }
+	void TextPane::ShowWindow(const int nCmdShow) { m_EditBox.ShowWindow(nCmdShow); }
+
+	void TextPane::DoHighlights()
+	{
+		// Disable events and turn off redraw so we can mess with the control without flicker and stuff
+		const auto eventMask = ::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETEVENTMASK, 0, 0);
+		::SendMessage(m_EditBox.GetSafeHwnd(), WM_SETREDRAW, false, 0);
+
+		// Grab the original range so we can restore it later
+		auto originalRange = CHARRANGE{};
+		::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXGETSEL, 0, reinterpret_cast<LPARAM>(&originalRange));
+
+		// Select the entire range
+		auto wholeRange = CHARRANGE{0, -1};
+		::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&wholeRange));
+
+		// Wipe our current formatting
+		auto charformat = CHARFORMAT2A{};
+		charformat.cbSize = sizeof charformat;
+		charformat.dwMask = CFM_COLOR | CFM_BACKCOLOR;
+		charformat.dwEffects = CFE_AUTOCOLOR | CFE_AUTOBACKCOLOR;
+		::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&charformat));
+
+		// Clear out CFE_AUTOCOLOR and CFE_AUTOBACKCOLOR so we can change color
+		charformat.dwEffects = 0;
+		for (const auto range : m_highlights)
+		{
+			auto charrange = CHARRANGE{range.start, range.start + range.length};
+			::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&charrange));
+
+			charformat.crTextColor = MyGetSysColor(ui::cBackground);
+			charformat.crBackColor = MyGetSysColor(ui::cText);
+			::SendMessage(
+				m_EditBox.GetSafeHwnd(), EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&charformat));
+		}
+
+		// Set our original selection range back
+		::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&originalRange));
+		::SendMessage(m_EditBox.GetSafeHwnd(), EM_HIDESELECTION, false, 0);
+
+		// Reenable redraw and events
+		::SendMessage(m_EditBox.GetSafeHwnd(), WM_SETREDRAW, true, 0);
+		InvalidateRect(m_EditBox.GetSafeHwnd(), nullptr, true);
+		::SendMessage(m_EditBox.GetSafeHwnd(), EM_SETEVENTMASK, 0, eventMask);
+	}
 } // namespace viewpane

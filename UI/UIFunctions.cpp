@@ -77,6 +77,8 @@ namespace ui
 		cWhite, // cStatusText
 		cPaleBlue, // cPaneHeaderBackground,
 		cBlack, // cPaneHeaderText,
+		cPink, // cTestPink,
+		cLavender, // cTestLavender,
 	};
 
 	// Mapping of UI elements to system colors
