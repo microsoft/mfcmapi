@@ -15,21 +15,22 @@ namespace dialog
 
 namespace controls
 {
-	class CHierarchyTableTreeCtrl : public StyleTreeCtrl 
+	class CHierarchyTableTreeCtrl : public StyleTreeCtrl
 	{
 	public:
-		CHierarchyTableTreeCtrl(
-			_In_ CWnd* pCreateParent,
-			_In_ cache::CMapiObjects* lpMapiObjects,
-			_In_ dialog::CHierarchyTableDlg* lpHostDlg,
-			ULONG ulDisplayFlags,
-			UINT nIDContextMenu);
+		CHierarchyTableTreeCtrl();
 		virtual ~CHierarchyTableTreeCtrl();
 
 		STDMETHODIMP_(ULONG) AddRef();
 		STDMETHODIMP_(ULONG) Release();
 
 		// Initialization
+		void Create(
+			_In_ CWnd* pCreateParent,
+			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_ dialog::CHierarchyTableDlg* lpHostDlg,
+			ULONG ulDisplayFlags,
+			UINT nIDContextMenu);
 		_Check_return_ HRESULT LoadHierarchyTable(_In_ LPMAPICONTAINER lpMAPIContainer);
 		_Check_return_ HRESULT RefreshHierarchyTable();
 
@@ -89,4 +90,4 @@ namespace controls
 
 		DECLARE_MESSAGE_MAP()
 	};
-}
+} // namespace controls

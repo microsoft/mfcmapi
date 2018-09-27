@@ -203,11 +203,12 @@ namespace dialog
 
 		if (m_lpFakeSplitter)
 		{
-			m_lpHierarchyTableTreeCtrl = new controls::CHierarchyTableTreeCtrl(
-				m_lpFakeSplitter, m_lpMapiObjects, this, m_ulDisplayFlags, m_nIDContextMenu);
+			m_lpHierarchyTableTreeCtrl = new controls::CHierarchyTableTreeCtrl();
 
 			if (m_lpHierarchyTableTreeCtrl)
 			{
+				m_lpHierarchyTableTreeCtrl->Create(
+					m_lpFakeSplitter, m_lpMapiObjects, this, m_ulDisplayFlags, m_nIDContextMenu);
 				m_lpFakeSplitter->SetPaneOne(m_lpHierarchyTableTreeCtrl->GetSafeHwnd());
 
 				m_lpFakeSplitter->SetPercent(0.25);

@@ -42,54 +42,16 @@ namespace controls
 
 	static std::wstring CLASS = L"CHierarchyTableTreeCtrl";
 
-	CHierarchyTableTreeCtrl::CHierarchyTableTreeCtrl(
-		_In_ CWnd* pCreateParent,
-		_In_ cache::CMapiObjects* lpMapiObjects,
-		_In_ dialog::CHierarchyTableDlg* lpHostDlg,
-		ULONG ulDisplayFlags,
-		UINT nIDContextMenu)
+	CHierarchyTableTreeCtrl::CHierarchyTableTreeCtrl()
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		CRect pRect;
-
 		m_cRef = 1;
 		m_bShuttingDown = false;
-
-		// We borrow our parent's Mapi objects
-		m_lpMapiObjects = lpMapiObjects;
-		if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
-
-		m_lpHostDlg = lpHostDlg;
-		if (m_lpHostDlg)
-		{
-			m_lpHostDlg->AddRef();
-			m_lpHostDlg->GetClientRect(pRect);
-		}
-
 		m_lpContainer = nullptr;
 		m_ulContainerType = NULL;
-
-		m_ulDisplayFlags = ulDisplayFlags;
-
 		m_bItemSelected = false;
-
-		m_nIDContextMenu = nIDContextMenu;
-
 		m_hItemCurHover = nullptr;
 		m_HoverButton = false;
-
-		Create(
-			TVS_HASBUTTONS | TVS_LINESATROOT | TVS_EDITLABELS | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS |
-				TVS_FULLROWSELECT | WS_CHILD |
-				WS_TABSTOP
-				//| WS_CLIPCHILDREN
-				| WS_CLIPSIBLINGS | WS_VISIBLE,
-			pRect,
-			pCreateParent,
-			IDC_FOLDER_TREE);
-		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::cBackground));
-		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::cText));
-		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 	}
 
 	CHierarchyTableTreeCtrl::~CHierarchyTableTreeCtrl()
@@ -116,6 +78,44 @@ namespace controls
 		TRACE_RELEASE(CLASS, lCount);
 		if (!lCount) delete this;
 		return lCount;
+	}
+
+	void CHierarchyTableTreeCtrl::Create(
+		_In_ CWnd* pCreateParent,
+		_In_ cache::CMapiObjects* lpMapiObjects,
+		_In_ dialog::CHierarchyTableDlg* lpHostDlg,
+		ULONG ulDisplayFlags,
+		UINT nIDContextMenu)
+	{
+		CRect pRect;
+
+		// We borrow our parent's Mapi objects
+		m_lpMapiObjects = lpMapiObjects;
+		if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
+
+		m_lpHostDlg = lpHostDlg;
+		if (m_lpHostDlg)
+		{
+			m_lpHostDlg->AddRef();
+			m_lpHostDlg->GetClientRect(pRect);
+		}
+
+		m_ulDisplayFlags = ulDisplayFlags;
+
+		m_nIDContextMenu = nIDContextMenu;
+
+		CTreeCtrl::Create(
+			TVS_HASBUTTONS | TVS_LINESATROOT | TVS_EDITLABELS | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS |
+				TVS_FULLROWSELECT | WS_CHILD |
+				WS_TABSTOP
+				//| WS_CLIPCHILDREN
+				| WS_CLIPSIBLINGS | WS_VISIBLE,
+			pRect,
+			pCreateParent,
+			IDC_FOLDER_TREE);
+		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::cBackground));
+		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::cText));
+		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 	}
 
 	BEGIN_MESSAGE_MAP(CHierarchyTableTreeCtrl, CTreeCtrl)
@@ -1285,4 +1285,4 @@ namespace controls
 	{
 		ui::CustomDrawTree(pNMHDR, pResult, m_HoverButton, m_hItemCurHover);
 	}
-}
+} // namespace controls
