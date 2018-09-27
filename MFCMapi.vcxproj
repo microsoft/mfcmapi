@@ -592,6 +592,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\ContentsTable\MailboxTableDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MainDlg.h" />
     <ClInclude Include="MAPI\MAPIABFunctions.h" />
+    <ClInclude Include="UI\ViewPane\TreePane.h" />
     <ClInclude Include="UI\MAPIFormFunctions.h" />
     <ClInclude Include="MAPI\MAPIFunctions.h" />
     <ClInclude Include="MAPI\MapiMime.h" />
@@ -756,6 +757,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\Dialogs\ContentsTable\MailboxTableDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\MainDlg.cpp" />
     <ClCompile Include="MAPI\MAPIABFunctions.cpp" />
+    <ClCompile Include="UI\ViewPane\TreePane.cpp" />
     <ClCompile Include="UI\MAPIFormFunctions.cpp" />
     <ClCompile Include="MAPI\MAPIFunctions.cpp" />
     <ClCompile Include="MAPI\MapiMime.cpp" />

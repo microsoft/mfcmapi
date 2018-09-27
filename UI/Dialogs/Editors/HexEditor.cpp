@@ -4,6 +4,7 @@
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/ViewPane/SmartViewPane.h>
 #include <UI/ViewPane/SplitterPane.h>
+#include <UI/ViewPane/TreePane.h>
 #include <MAPI/Cache/GlobalCache.h>
 #include <MAPI/MAPIFunctions.h>
 
@@ -20,6 +21,7 @@ namespace dialog
 			HEXED_UNICODE,
 			HEXED_BASE64,
 			HEXED_HEX,
+			HEXED_TREE,
 			HEXED_SMARTVIEW
 		};
 
@@ -43,6 +45,7 @@ namespace dialog
 			splitter->SetPaneTwo(viewpane::TextPane::CreateCollapsibleTextPane(HEXED_UNICODE, IDS_UNISTRING, false));
 			AddPane(viewpane::CountedTextPane::Create(HEXED_BASE64, IDS_BASE64STRING, false, IDS_CCH));
 			AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
+			AddPane(viewpane::TreePane::Create(HEXED_TREE, IDS_HEX, true));
 			AddPane(viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW));
 			DisplayParentedDialog(pParentWnd, 1000);
 		}
