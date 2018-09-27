@@ -20,9 +20,6 @@ namespace controls
 	public:
 		virtual ~CHierarchyTableTreeCtrl();
 
-		STDMETHODIMP_(ULONG) AddRef();
-		STDMETHODIMP_(ULONG) Release();
-
 		// Initialization
 		void Create(
 			_In_ CWnd* pCreateParent,
@@ -75,7 +72,6 @@ namespace controls
 		_Check_return_ LRESULT msgOnModifyItem(WPARAM wParam, LPARAM lParam);
 		_Check_return_ LRESULT msgOnRefreshTable(WPARAM wParam, LPARAM lParam);
 
-		LONG m_cRef{1};
 		dialog::CHierarchyTableDlg* m_lpHostDlg{nullptr};
 		cache::CMapiObjects* m_lpMapiObjects{nullptr};
 		LPMAPICONTAINER m_lpContainer{nullptr};

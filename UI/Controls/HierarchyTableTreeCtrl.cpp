@@ -53,21 +53,6 @@ namespace controls
 		if (m_lpMapiObjects) m_lpMapiObjects->Release();
 	}
 
-	STDMETHODIMP_(ULONG) CHierarchyTableTreeCtrl::AddRef()
-	{
-		const auto lCount = InterlockedIncrement(&m_cRef);
-		TRACE_ADDREF(CLASS, lCount);
-		return lCount;
-	}
-
-	STDMETHODIMP_(ULONG) CHierarchyTableTreeCtrl::Release()
-	{
-		const auto lCount = InterlockedDecrement(&m_cRef);
-		TRACE_RELEASE(CLASS, lCount);
-		if (!lCount) delete this;
-		return lCount;
-	}
-
 	void CHierarchyTableTreeCtrl::Create(
 		_In_ CWnd* pCreateParent,
 		_In_ cache::CMapiObjects* lpMapiObjects,
