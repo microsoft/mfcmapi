@@ -1,6 +1,7 @@
 #pragma once
 #include <Enums.h>
 #include <UI/Controls/SortList/SortListData.h>
+#include <UI/Controls/StyleTreeCtrl.h>
 
 namespace cache
 {
@@ -14,7 +15,7 @@ namespace dialog
 
 namespace controls
 {
-	class CHierarchyTableTreeCtrl : public CTreeCtrl
+	class CHierarchyTableTreeCtrl : public StyleTreeCtrl 
 	{
 	public:
 		CHierarchyTableTreeCtrl(

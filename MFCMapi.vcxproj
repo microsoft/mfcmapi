@@ -550,6 +550,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="MAPI\MapiMemory.h" />
     <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
+    <ClInclude Include="UI\Controls\StyleTreeCtrl.h" />
     <ClInclude Include="UI\Dialogs\HierarchyTable\ABContDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\ABDlg.h" />
     <ClInclude Include="UI\Dialogs\AboutDlg.h" />
@@ -719,6 +720,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   <ItemGroup>
     <ClCompile Include="Interpret\Sid.cpp" />
     <ClCompile Include="MAPI\Version.cpp" />
+    <ClCompile Include="UI\Controls\StyleTreeCtrl.cpp" />
     <ClCompile Include="UI\Dialogs\HierarchyTable\ABContDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\AbDlg.cpp" />
     <ClCompile Include="UI\Dialogs\AboutDlg.cpp" />
