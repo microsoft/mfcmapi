@@ -18,7 +18,6 @@ namespace controls
 	class CHierarchyTableTreeCtrl : public StyleTreeCtrl
 	{
 	public:
-		CHierarchyTableTreeCtrl();
 		virtual ~CHierarchyTableTreeCtrl();
 
 		STDMETHODIMP_(ULONG) AddRef();
@@ -76,17 +75,17 @@ namespace controls
 		_Check_return_ LRESULT msgOnModifyItem(WPARAM wParam, LPARAM lParam);
 		_Check_return_ LRESULT msgOnRefreshTable(WPARAM wParam, LPARAM lParam);
 
-		LONG m_cRef;
-		dialog::CHierarchyTableDlg* m_lpHostDlg;
-		cache::CMapiObjects* m_lpMapiObjects;
-		LPMAPICONTAINER m_lpContainer;
-		ULONG m_ulContainerType;
-		ULONG m_ulDisplayFlags;
-		UINT m_nIDContextMenu;
-		bool m_bItemSelected;
-		bool m_bShuttingDown;
-		HTREEITEM m_hItemCurHover;
-		bool m_HoverButton;
+		LONG m_cRef{1};
+		dialog::CHierarchyTableDlg* m_lpHostDlg{nullptr};
+		cache::CMapiObjects* m_lpMapiObjects{nullptr};
+		LPMAPICONTAINER m_lpContainer{nullptr};
+		ULONG m_ulContainerType{NULL};
+		ULONG m_ulDisplayFlags{dfNormal};
+		UINT m_nIDContextMenu{0};
+		bool m_bItemSelected{false};
+		bool m_bShuttingDown{false};
+		HTREEITEM m_hItemCurHover{nullptr};
+		bool m_HoverButton{false};
 
 		DECLARE_MESSAGE_MAP()
 	};

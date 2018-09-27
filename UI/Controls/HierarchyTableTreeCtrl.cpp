@@ -42,18 +42,6 @@ namespace controls
 
 	static std::wstring CLASS = L"CHierarchyTableTreeCtrl";
 
-	CHierarchyTableTreeCtrl::CHierarchyTableTreeCtrl()
-	{
-		TRACE_CONSTRUCTOR(CLASS);
-		m_cRef = 1;
-		m_bShuttingDown = false;
-		m_lpContainer = nullptr;
-		m_ulContainerType = NULL;
-		m_bItemSelected = false;
-		m_hItemCurHover = nullptr;
-		m_HoverButton = false;
-	}
-
 	CHierarchyTableTreeCtrl::~CHierarchyTableTreeCtrl()
 	{
 		TRACE_DESTRUCTOR(CLASS);
