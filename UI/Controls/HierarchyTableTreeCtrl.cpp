@@ -49,7 +49,6 @@ namespace controls
 		CWnd::DestroyWindow();
 
 		if (m_lpContainer) m_lpContainer->Release();
-		if (m_lpHostDlg) m_lpHostDlg->Release();
 		if (m_lpMapiObjects) m_lpMapiObjects->Release();
 	}
 
@@ -65,11 +64,6 @@ namespace controls
 		if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
 
 		m_lpHostDlg = lpHostDlg;
-		if (m_lpHostDlg)
-		{
-			m_lpHostDlg->AddRef();
-		}
-
 		m_ulDisplayFlags = ulDisplayFlags;
 
 		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu);

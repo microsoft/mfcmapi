@@ -1,16 +1,12 @@
 #pragma once
 #include <UI/Dialogs/BaseDialog.h>
+#include <UI/Controls/HierarchyTableTreeCtrl.h>
 
 class CParentWnd;
 
 namespace cache
 {
 	class CMapiObjects;
-}
-
-namespace controls
-{
-	class CHierarchyTableTreeCtrl;
 }
 
 namespace dialog
@@ -35,7 +31,7 @@ namespace dialog
 		LPMAPICONTAINER GetRootContainer() { return m_lpContainer; }
 		void SetRootContainer(LPUNKNOWN container);
 
-		controls::CHierarchyTableTreeCtrl* m_lpHierarchyTableTreeCtrl;
+		controls::CHierarchyTableTreeCtrl m_lpHierarchyTableTreeCtrl;
 		ULONG m_ulDisplayFlags;
 
 	private:

@@ -8,13 +8,9 @@ namespace controls
 	public:
 		void Create(_In_ CWnd* pCreateParent, UINT nIDContextMenu);
 
-		STDMETHODIMP_(ULONG) AddRef();
-		STDMETHODIMP_(ULONG) Release();
-
 		// TODO: Make this private
 		UINT m_nIDContextMenu{0};
 
 	private:
-		LONG m_cRef{1};
 	};
 } // namespace controls

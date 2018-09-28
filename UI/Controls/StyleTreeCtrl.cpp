@@ -20,19 +20,4 @@ namespace controls
 		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::cText));
 		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 	}
-
-	STDMETHODIMP_(ULONG) StyleTreeCtrl::AddRef()
-	{
-		const auto lCount = InterlockedIncrement(&m_cRef);
-		TRACE_ADDREF(CLASS, lCount);
-		return lCount;
-	}
-
-	STDMETHODIMP_(ULONG) StyleTreeCtrl::Release()
-	{
-		const auto lCount = InterlockedDecrement(&m_cRef);
-		TRACE_RELEASE(CLASS, lCount);
-		if (!lCount) delete this;
-		return lCount;
-	}
 } // namespace controls
