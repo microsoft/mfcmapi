@@ -87,15 +87,40 @@ namespace viewpane
 	{
 		output::DebugPrint(DBGDraw, L"TreePane::DeferWindowPos x:%d y:%d width:%d height:%d \n", x, y, width, height);
 
-		if (!m_bCollapsed)
+		auto iVariableHeight = height - GetFixedHeight();
+		if (0 != m_paneID)
 		{
-			EC_B_S(m_Tree.ShowWindow(SW_SHOW));
-			EC_B_S(::DeferWindowPos(hWinPosInfo, m_Tree.GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER));
+			y += m_iSmallHeightMargin;
+			height -= m_iSmallHeightMargin;
+		}
+
+		EC_B_S(m_Tree.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
+		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
+
+		if (m_bCollapsible)
+		{
+			y += m_iLabelHeight + m_iSmallHeightMargin;
 		}
 		else
 		{
-			EC_B_S(m_Tree.ShowWindow(SW_HIDE));
+			if (!m_szLabel.empty())
+			{
+				y += m_iLabelHeight;
+				height -= m_iLabelHeight;
+			}
+
+			height -= m_iSmallHeightMargin; // This is the bottom margin
 		}
+
+		EC_B_S(::DeferWindowPos(
+			hWinPosInfo,
+			m_Tree.GetSafeHwnd(),
+			nullptr,
+			x,
+			y,
+			width,
+			m_bCollapsible ? iVariableHeight : height,
+			SWP_NOZORDER));
 	}
 
 	void TreePane::CommitUIValues() {}
