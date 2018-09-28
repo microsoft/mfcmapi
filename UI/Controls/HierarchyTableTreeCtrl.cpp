@@ -69,7 +69,7 @@ namespace controls
 		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu);
 	}
 
-	BEGIN_MESSAGE_MAP(CHierarchyTableTreeCtrl, CTreeCtrl)
+	BEGIN_MESSAGE_MAP(CHierarchyTableTreeCtrl, StyleTreeCtrl)
 	ON_NOTIFY_REFLECT(TVN_GETDISPINFO, OnGetDispInfo)
 	ON_NOTIFY_REFLECT(TVN_SELCHANGED, OnSelChanged)
 	ON_NOTIFY_REFLECT(TVN_ENDLABELEDIT, OnEndLabelEdit)
@@ -77,7 +77,6 @@ namespace controls
 	ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteItem)
 	ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
 	ON_NOTIFY_REFLECT(NM_RCLICK, OnRightClick)
-	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
 	ON_WM_KEYDOWN()
 	ON_WM_GETDLGCODE()
 	ON_WM_CONTEXTMENU()
@@ -86,74 +85,6 @@ namespace controls
 	ON_MESSAGE(WM_MFCMAPI_MODIFYITEM, msgOnModifyItem)
 	ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
 	END_MESSAGE_MAP()
-
-	LRESULT CHierarchyTableTreeCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
-	{
-		// Read the current hover local, since we need to clear it before we do any drawing
-		const auto hItemCurHover = m_hItemCurHover;
-		switch (message)
-		{
-		case WM_MOUSEMOVE:
-		{
-			TVHITTESTINFO tvHitTestInfo = {0};
-			tvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
-			tvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
-
-			WC_B_S(::SendMessage(m_hWnd, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&tvHitTestInfo)));
-			if (tvHitTestInfo.hItem)
-			{
-				if (tvHitTestInfo.flags & TVHT_ONITEMBUTTON)
-				{
-					m_HoverButton = true;
-				}
-				else
-				{
-					m_HoverButton = false;
-				}
-
-				// If this is a new glow, clean up the old glow and track for leaving the control
-				if (hItemCurHover != tvHitTestInfo.hItem)
-				{
-					ui::DrawTreeItemGlow(m_hWnd, tvHitTestInfo.hItem);
-
-					if (hItemCurHover)
-					{
-						m_hItemCurHover = nullptr;
-						ui::DrawTreeItemGlow(m_hWnd, hItemCurHover);
-					}
-
-					m_hItemCurHover = tvHitTestInfo.hItem;
-
-					TRACKMOUSEEVENT tmEvent = {0};
-					tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
-					tmEvent.dwFlags = TME_LEAVE;
-					tmEvent.hwndTrack = m_hWnd;
-
-					WC_B_S(TrackMouseEvent(&tmEvent));
-				}
-			}
-			else
-			{
-				if (hItemCurHover)
-				{
-					m_hItemCurHover = nullptr;
-					ui::DrawTreeItemGlow(m_hWnd, hItemCurHover);
-				}
-			}
-			break;
-		}
-		case WM_MOUSELEAVE:
-			if (hItemCurHover)
-			{
-				m_hItemCurHover = nullptr;
-				ui::DrawTreeItemGlow(m_hWnd, hItemCurHover);
-			}
-
-			return NULL;
-		}
-
-		return CTreeCtrl::WindowProc(message, wParam, lParam);
-	}
 
 	_Check_return_ HRESULT CHierarchyTableTreeCtrl::RefreshHierarchyTable()
 	{
@@ -1230,10 +1161,5 @@ namespace controls
 
 		output::DebugPrintEx(DBGGeneric, CLASS, L"FindNode", L"No match found\n");
 		return nullptr;
-	}
-
-	void CHierarchyTableTreeCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
-	{
-		ui::CustomDrawTree(pNMHDR, pResult, m_HoverButton, m_hItemCurHover);
 	}
 } // namespace controls

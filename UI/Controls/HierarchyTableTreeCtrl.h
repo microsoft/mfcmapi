@@ -39,7 +39,6 @@ namespace controls
 
 	private:
 		// Overrides from base class
-		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 		void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
 		_Check_return_ HRESULT ExpandNode(HTREEITEM hParent) const;
@@ -48,7 +47,6 @@ namespace controls
 		_Check_return_ LPMAPITABLE
 		GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bRegNotifs) const;
 		void OnContextMenu(_In_ CWnd* pWnd, CPoint pos);
-		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnDblclk(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
@@ -79,8 +77,6 @@ namespace controls
 		ULONG m_ulDisplayFlags{dfNormal};
 		bool m_bItemSelected{false};
 		bool m_bShuttingDown{false};
-		HTREEITEM m_hItemCurHover{nullptr};
-		bool m_HoverButton{false};
 
 		DECLARE_MESSAGE_MAP()
 	};
