@@ -24,7 +24,7 @@ namespace viewpane
 	void TreePane::Initialize(_In_ CWnd* pParent, _In_ HDC /*hdc*/)
 	{
 		ViewPane::Initialize(pParent, nullptr);
-//		m_Tree.Create(pParent, dwListStyle, m_nID, false);
+		m_Tree.Create(pParent, 0);
 
 		m_bInitialized = true;
 	}

@@ -77,7 +77,6 @@ namespace controls
 		LPMAPICONTAINER m_lpContainer{nullptr};
 		ULONG m_ulContainerType{NULL};
 		ULONG m_ulDisplayFlags{dfNormal};
-		UINT m_nIDContextMenu{0};
 		bool m_bItemSelected{false};
 		bool m_bShuttingDown{false};
 		HTREEITEM m_hItemCurHover{nullptr};

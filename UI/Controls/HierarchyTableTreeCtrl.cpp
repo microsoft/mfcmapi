@@ -60,8 +60,6 @@ namespace controls
 		ULONG ulDisplayFlags,
 		UINT nIDContextMenu)
 	{
-		CRect pRect;
-
 		// We borrow our parent's Mapi objects
 		m_lpMapiObjects = lpMapiObjects;
 		if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
@@ -70,25 +68,11 @@ namespace controls
 		if (m_lpHostDlg)
 		{
 			m_lpHostDlg->AddRef();
-			m_lpHostDlg->GetClientRect(pRect);
 		}
 
 		m_ulDisplayFlags = ulDisplayFlags;
 
-		m_nIDContextMenu = nIDContextMenu;
-
-		CTreeCtrl::Create(
-			TVS_HASBUTTONS | TVS_LINESATROOT | TVS_EDITLABELS | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS |
-				TVS_FULLROWSELECT | WS_CHILD |
-				WS_TABSTOP
-				//| WS_CLIPCHILDREN
-				| WS_CLIPSIBLINGS | WS_VISIBLE,
-			pRect,
-			pCreateParent,
-			IDC_FOLDER_TREE);
-		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::cBackground));
-		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::cText));
-		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
+		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu);
 	}
 
 	BEGIN_MESSAGE_MAP(CHierarchyTableTreeCtrl, CTreeCtrl)
