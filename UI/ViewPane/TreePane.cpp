@@ -39,27 +39,27 @@ namespace viewpane
 	int TreePane::GetFixedHeight()
 	{
 		auto iHeight = 0;
-		//if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
+		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
-		//if (m_bCollapsible)
-		//{
-		//	// Our expand/collapse button
-		//	iHeight += m_iButtonHeight;
-		//}
-		//else if (!m_szLabel.empty())
-		//{
-		//	iHeight += m_iLabelHeight;
-		//}
+		if (m_bCollapsible)
+		{
+			// Our expand/collapse button
+			iHeight += m_iButtonHeight;
+		}
+		else if (!m_szLabel.empty())
+		{
+			iHeight += m_iLabelHeight;
+		}
 
-		//if (!m_bCollapsed)
-		//{
-		//	iHeight += m_iSmallHeightMargin;
+		if (!m_bCollapsed)
+		{
+			iHeight += m_iSmallHeightMargin;
 
-		//	if (!m_bReadOnly)
-		//	{
-		//		iHeight += m_iLargeHeightMargin + m_iButtonHeight;
-		//	}
-		//}
+			if (!m_bReadOnly)
+			{
+				iHeight += m_iLargeHeightMargin + m_iButtonHeight;
+			}
+		}
 
 		return iHeight;
 	}
@@ -83,46 +83,19 @@ namespace viewpane
 		return ViewPane::HandleChange(nID);
 	}
 
-	void TreePane::DeferWindowPos(_In_ HDWP /*hWinPosInfo*/, _In_ int /*x*/, _In_ int /*y*/, _In_ int /*width*/, _In_ int /*height*/)
+	void TreePane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
 	{
-		//const auto iVariableHeight = height - GetFixedHeight();
-		//if (0 != m_paneID)
-		//{
-		//	y += m_iSmallHeightMargin;
-		//	height -= m_iSmallHeightMargin;
-		//}
+		output::DebugPrint(DBGDraw, L"TreePane::DeferWindowPos x:%d y:%d width:%d height:%d \n", x, y, width, height);
 
-		//ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
-		//y += m_iLabelHeight + m_iSmallHeightMargin;
-
-		//const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
-		//EC_B_S(m_List.ShowWindow(cmdShow));
-		//EC_B_S(
-		//	::DeferWindowPos(hWinPosInfo, m_List.GetSafeHwnd(), nullptr, x, y, width, iVariableHeight, SWP_NOZORDER));
-		//y += iVariableHeight;
-
-		//if (!m_bReadOnly)
-		//{
-		//	// buttons go below the list:
-		//	y += m_iLargeHeightMargin;
-
-		//	const auto iSlotWidth = m_iButtonWidth + m_iMargin;
-		//	const auto iOffset = width + m_iSideMargin + m_iMargin;
-
-		//	for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
-		//	{
-		//		EC_B_S(m_ButtonArray[iButton].ShowWindow(cmdShow));
-		//		EC_B_S(::DeferWindowPos(
-		//			hWinPosInfo,
-		//			m_ButtonArray[iButton].GetSafeHwnd(),
-		//			nullptr,
-		//			iOffset - iSlotWidth * (NUMLISTBUTTONS - iButton),
-		//			y,
-		//			m_iButtonWidth,
-		//			m_iButtonHeight,
-		//			SWP_NOZORDER));
-		//	}
-		//}
+		if (!m_bCollapsed)
+		{
+			EC_B_S(m_Tree.ShowWindow(SW_SHOW));
+			EC_B_S(::DeferWindowPos(hWinPosInfo, m_Tree.GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER));
+		}
+		else
+		{
+			EC_B_S(m_Tree.ShowWindow(SW_HIDE));
+		}
 	}
 
 	void TreePane::CommitUIValues() {}
