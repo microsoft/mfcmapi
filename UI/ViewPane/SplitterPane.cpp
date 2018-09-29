@@ -74,7 +74,6 @@ namespace viewpane
 			}
 		}
 
-
 		return iHeight;
 	}
 
