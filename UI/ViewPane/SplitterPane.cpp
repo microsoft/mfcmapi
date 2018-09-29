@@ -70,7 +70,10 @@ namespace viewpane
 			}
 		}
 
-		iHeight += m_iSmallHeightMargin; // Bottom margin
+		if (m_bCollapsed)
+		{
+			iHeight += m_iSmallHeightMargin; // Bottom margin
+		}
 
 		return iHeight;
 	}
