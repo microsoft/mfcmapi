@@ -33,9 +33,8 @@ namespace viewpane
 		}
 		else
 		{
-			return m_PaneOne->GetMinWidth(hdc) + m_PaneTwo->GetMinWidth(hdc) + m_lpSplitter
-					   ? m_lpSplitter->GetSplitWidth()
-					   : 0;
+			return m_PaneOne->GetMinWidth(hdc) + m_PaneTwo->GetMinWidth(hdc) +
+				   (m_lpSplitter ? m_lpSplitter->GetSplitWidth() : 0);
 		}
 	}
 
