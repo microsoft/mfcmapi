@@ -44,11 +44,7 @@ namespace viewpane
 		// TODO: Better way to find the top pane
 		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
-		if (m_bCollapsible)
-		{
-			// Our expand/collapse button
-			iHeight += m_iButtonHeight;
-		}
+		iHeight += GetLabelHeight();
 
 		if (m_bCollapsed)
 		{

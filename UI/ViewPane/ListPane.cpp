@@ -97,15 +97,7 @@ namespace viewpane
 		auto iHeight = 0;
 		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
-		if (m_bCollapsible)
-		{
-			// Our expand/collapse button
-			iHeight += m_iButtonHeight;
-		}
-		else if (!m_szLabel.empty())
-		{
-			iHeight += m_iLabelHeight;
-		}
+		iHeight += GetLabelHeight();
 
 		if (!m_bCollapsed)
 		{

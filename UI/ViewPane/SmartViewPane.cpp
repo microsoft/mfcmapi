@@ -46,9 +46,7 @@ namespace viewpane
 
 		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
-		// Our expand/collapse button
-		iHeight += m_iButtonHeight;
-		// Control label will be next to this
+		iHeight += GetLabelHeight();
 
 		if (m_bDoDropDown && !m_bCollapsed)
 		{

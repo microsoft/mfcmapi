@@ -138,16 +138,7 @@ namespace viewpane
 		auto iHeight = 0;
 		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
-		if (m_bCollapsible)
-		{
-			// Our expand/collapse button
-			iHeight += m_iButtonHeight;
-		}
-		else if (!m_szLabel.empty())
-		{
-			// Text labels will bump directly against their edit control, so we don't add a margin here
-			iHeight += m_iLabelHeight;
-		}
+		iHeight += GetLabelHeight();
 
 		// A small margin between our button and the edit control, if we're collapsible and not collapsed
 		if (!m_bCollapsed && m_bCollapsible)
