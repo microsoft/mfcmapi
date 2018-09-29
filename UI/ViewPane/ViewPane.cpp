@@ -11,7 +11,7 @@ namespace viewpane
 		{
 			StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::bsUpArrow : ui::bsDownArrow);
 			::DeferWindowPos(
-				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER);
+				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, x, y, width, m_iButtonHeight, SWP_NOZORDER);
 			x += m_iButtonHeight;
 		}
 
