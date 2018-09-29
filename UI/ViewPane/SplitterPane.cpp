@@ -41,28 +41,55 @@ namespace viewpane
 
 	int SplitterPane::GetFixedHeight()
 	{
-		if (m_bVertical)
+		auto iHeight = 0;
+		// TODO: Better way to find the top pane
+		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
+
+		if (m_bCollapsible)
 		{
-			return m_PaneOne->GetFixedHeight() + m_PaneTwo->GetFixedHeight() + m_lpSplitter
-					   ? m_lpSplitter->GetSplitWidth()
-					   : 0;
+			// Our expand/collapse button
+			iHeight += m_iButtonHeight;
 		}
-		else
+
+		// A small margin between our button and the splitter control, if we're collapsible and not collapsed
+		if (!m_bCollapsed && m_bCollapsible)
 		{
-			return max(m_PaneOne->GetFixedHeight(), m_PaneTwo->GetFixedHeight());
+			iHeight += m_iSmallHeightMargin;
 		}
+
+		if (!m_bCollapsed)
+		{
+			if (m_bVertical)
+			{
+				iHeight += m_PaneOne->GetFixedHeight() + m_PaneTwo->GetFixedHeight() +
+						   (m_lpSplitter ? m_lpSplitter->GetSplitWidth() : 0);
+			}
+			else
+			{
+				iHeight += max(m_PaneOne->GetFixedHeight(), m_PaneTwo->GetFixedHeight());
+			}
+		}
+
+		iHeight += m_iSmallHeightMargin; // Bottom margin
+
+		return iHeight;
 	}
 
 	int SplitterPane::GetLines()
 	{
-		if (m_bVertical)
+		if (!m_bCollapsed)
 		{
-			return m_PaneOne->GetLines() + m_PaneTwo->GetLines();
+			if (m_bVertical)
+			{
+				return m_PaneOne->GetLines() + m_PaneTwo->GetLines();
+			}
+			else
+			{
+				return max(m_PaneOne->GetLines(), m_PaneTwo->GetLines());
+			}
 		}
-		else
-		{
-			return max(m_PaneOne->GetLines(), m_PaneTwo->GetLines());
-		}
+
+		return 0;
 	}
 
 	ULONG SplitterPane::HandleChange(const UINT nID)
@@ -131,40 +158,37 @@ namespace viewpane
 		output::DebugPrint(
 			DBGDraw, L"SplitterPane::DeferWindowPos x:%d y:%d width:%d height: %d\n", x, y, width, height);
 
-		auto iVariableHeight = height - GetFixedHeight();
 		if (0 != m_paneID)
 		{
 			y += m_iSmallHeightMargin;
 			height -= m_iSmallHeightMargin;
 		}
 
-		EC_B_S(m_lpSplitter->ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
 		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
 
-		if (m_bCollapsible)
+		if (m_bCollapsed)
 		{
-			y += m_iLabelHeight + m_iSmallHeightMargin;
+			EC_B_S(m_lpSplitter->ShowWindow(SW_HIDE));
 		}
 		else
 		{
-			if (!m_szLabel.empty())
+			if (m_bCollapsible)
 			{
-				y += m_iLabelHeight;
-				height -= m_iLabelHeight;
+				y += m_iLabelHeight + m_iSmallHeightMargin;
+				height -= m_iLabelHeight + m_iSmallHeightMargin;
 			}
 
-			height -= m_iSmallHeightMargin; // This is the bottom margin
+			EC_B_S(m_lpSplitter->ShowWindow(SW_SHOW));
+			::DeferWindowPos(
+				hWinPosInfo,
+				m_lpSplitter->GetSafeHwnd(),
+				nullptr,
+				x,
+				y,
+				width,
+				height,
+				SWP_NOZORDER);
+			m_lpSplitter->OnSize(NULL, width, height);
 		}
-
-		::DeferWindowPos(
-			hWinPosInfo,
-			m_lpSplitter->GetSafeHwnd(),
-			nullptr,
-			x,
-			y,
-			width,
-			m_bCollapsible ? iVariableHeight : height,
-			SWP_NOZORDER);
-		m_lpSplitter->OnSize(NULL, width, m_bCollapsible ? iVariableHeight : height);
 	}
 } // namespace viewpane
