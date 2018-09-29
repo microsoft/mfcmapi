@@ -51,14 +51,18 @@ namespace viewpane
 			iHeight += m_iButtonHeight;
 		}
 
-		// A small margin between our button and the splitter control, if we're collapsible and not collapsed
-		if (!m_bCollapsed && m_bCollapsible)
+		if (m_bCollapsed)
 		{
-			iHeight += m_iSmallHeightMargin;
+			iHeight += m_iSmallHeightMargin; // Bottom margin
 		}
-
-		if (!m_bCollapsed)
+		else
 		{
+			// A small margin between our button and the splitter control, if we're collapsible and not collapsed
+			if (m_bCollapsible)
+			{
+				iHeight += m_iSmallHeightMargin;
+			}
+
 			if (m_bVertical)
 			{
 				iHeight += m_PaneOne->GetFixedHeight() + m_PaneTwo->GetFixedHeight() +
@@ -70,10 +74,6 @@ namespace viewpane
 			}
 		}
 
-		if (m_bCollapsed)
-		{
-			iHeight += m_iSmallHeightMargin; // Bottom margin
-		}
 
 		return iHeight;
 	}
