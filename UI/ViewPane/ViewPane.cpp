@@ -5,13 +5,15 @@
 
 namespace viewpane
 {
+	// Draw our collapse button and label, if needed.
+	// Draws everything to m_iLabelHeight
 	void ViewPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int /*height*/)
 	{
 		if (m_bCollapsible)
 		{
 			StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::bsUpArrow : ui::bsDownArrow);
 			::DeferWindowPos(
-				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, x, y, width, m_iButtonHeight, SWP_NOZORDER);
+				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER);
 			x += m_iButtonHeight;
 		}
 
