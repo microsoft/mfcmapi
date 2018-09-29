@@ -179,15 +179,7 @@ namespace viewpane
 			}
 
 			EC_B_S(m_lpSplitter->ShowWindow(SW_SHOW));
-			::DeferWindowPos(
-				hWinPosInfo,
-				m_lpSplitter->GetSafeHwnd(),
-				nullptr,
-				x,
-				y,
-				width,
-				height,
-				SWP_NOZORDER);
+			::DeferWindowPos(hWinPosInfo, m_lpSplitter->GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER);
 			m_lpSplitter->OnSize(NULL, width, height);
 		}
 	}
