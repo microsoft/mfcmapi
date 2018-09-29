@@ -5,12 +5,13 @@
 
 namespace viewpane
 {
-	SmartViewPane* SmartViewPane::Create(int paneID, UINT uidLabel)
+	SmartViewPane* SmartViewPane::Create(const int paneID, const UINT uidLabel)
 	{
 		auto pane = new (std::nothrow) SmartViewPane();
 		if (pane)
 		{
-			pane->SetLabel(uidLabel, true);
+			pane->SetLabel(uidLabel);
+			pane->SetReadOnly(true);
 			pane->m_bCollapsible = true;
 			pane->m_paneID = paneID;
 		}
@@ -21,7 +22,8 @@ namespace viewpane
 	void SmartViewPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
 		m_TextPane.SetMultiline();
-		m_TextPane.SetLabel(NULL, true);
+		m_TextPane.SetLabel(NULL);
+		m_TextPane.ViewPane::SetReadOnly(true);
 		m_bReadOnly = true;
 
 		for (const auto& smartViewParserType : SmartViewParserTypeArray)

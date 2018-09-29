@@ -4,14 +4,16 @@
 
 namespace viewpane
 {
-	CountedTextPane* CountedTextPane::Create(int paneID, UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
+	CountedTextPane*
+	CountedTextPane::Create(const int paneID, const UINT uidLabel, const bool bReadOnly, const UINT uidCountLabel)
 	{
 		auto lpPane = new (std::nothrow) CountedTextPane();
 		if (lpPane)
 		{
 			lpPane->m_szCountLabel = strings::loadstring(uidCountLabel);
 			lpPane->SetMultiline();
-			lpPane->SetLabel(uidLabel, bReadOnly);
+			lpPane->SetLabel(uidLabel);
+			lpPane->ViewPane::SetReadOnly(bReadOnly);
 			lpPane->m_bCollapsible = true;
 			lpPane->m_paneID = paneID;
 		}

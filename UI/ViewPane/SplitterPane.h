@@ -7,8 +7,8 @@ namespace viewpane
 	class SplitterPane : public ViewPane
 	{
 	public:
-		static SplitterPane* CreateHorizontalPane(int paneID);
-		static SplitterPane* CreateVerticalPane(int paneID);
+		static SplitterPane* CreateHorizontalPane(int paneID, UINT uidLabel);
+		static SplitterPane* CreateVerticalPane(int paneID, UINT uidLabel);
 		~SplitterPane() { delete m_lpSplitter; }
 		void SetPaneOne(ViewPane* paneOne) { m_PaneOne = paneOne; }
 		void SetPaneTwo(ViewPane* paneTwo) { m_PaneTwo = paneTwo; }

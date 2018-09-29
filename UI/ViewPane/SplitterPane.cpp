@@ -3,17 +3,23 @@
 
 namespace viewpane
 {
-	SplitterPane* SplitterPane::CreateVerticalPane(const int paneID)
+	SplitterPane* SplitterPane::CreateVerticalPane(const int paneID, const UINT uidLabel)
 	{
-		const auto pane = CreateHorizontalPane(paneID);
+		const auto pane = CreateHorizontalPane(paneID, uidLabel);
 		pane->m_bVertical = true;
 
 		return pane;
 	}
 
-	SplitterPane* SplitterPane::CreateHorizontalPane(const int paneID)
+	SplitterPane* SplitterPane::CreateHorizontalPane(const int paneID, const UINT uidLabel)
 	{
 		const auto pane = new (std::nothrow) SplitterPane();
+		pane->SetLabel(uidLabel);
+		if (uidLabel)
+		{
+			pane->m_bCollapsible = true;
+		}
+
 		pane->m_paneID = paneID;
 		return pane;
 	}
@@ -111,7 +117,12 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
-	void SplitterPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ const int x, _In_ const int y, _In_ const int width, _In_ const int height)
+	void SplitterPane::DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		_In_ const int x,
+		_In_ const int y,
+		_In_ const int width,
+		_In_ const int height)
 	{
 		output::DebugPrint(
 			DBGDraw, L"SplitterPane::DeferWindowPos x:%d y:%d width:%d height: %d\n", x, y, width, height);

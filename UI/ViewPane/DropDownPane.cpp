@@ -7,11 +7,11 @@
 namespace viewpane
 {
 	DropDownPane* DropDownPane::Create(
-		int paneID,
-		UINT uidLabel,
-		ULONG ulDropList,
+		const int paneID,
+		const UINT uidLabel,
+		const ULONG ulDropList,
 		_In_opt_count_(ulDropList) UINT* lpuidDropList,
-		bool bReadOnly)
+		const bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) DropDownPane();
 		if (pane)
@@ -24,14 +24,15 @@ namespace viewpane
 				}
 			}
 
-			pane->SetLabel(uidLabel, bReadOnly);
+			pane->SetLabel(uidLabel);
+			pane->SetReadOnly(bReadOnly);
 			pane->m_paneID = paneID;
 		}
 
 		return pane;
 	}
 
-	DropDownPane* DropDownPane::CreateGuid(int paneID, UINT uidLabel, bool bReadOnly)
+	DropDownPane* DropDownPane::CreateGuid(const int paneID, const UINT uidLabel, const bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) DropDownPane();
 		if (pane)
@@ -41,7 +42,8 @@ namespace viewpane
 				pane->InsertDropString(guid::GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid), iDropNum);
 			}
 
-			pane->SetLabel(uidLabel, bReadOnly);
+			pane->SetLabel(uidLabel);
+			pane->SetReadOnly(bReadOnly);
 			pane->m_paneID = paneID;
 		}
 

@@ -7,7 +7,9 @@ namespace viewpane
 	public:
 		virtual ~ViewPane() = default;
 
-		void SetLabel(UINT uidLabel, bool bReadOnly);
+		void SetLabel(const UINT uidLabel) { m_szLabel = strings::loadstring(uidLabel); }
+		void SetReadOnly(const bool bReadOnly) { m_bReadOnly = bReadOnly; }
+
 		virtual void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc);
 		virtual void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 

@@ -7,13 +7,19 @@ namespace viewpane
 {
 	static std::wstring CLASS = L"ListPane";
 
-	ListPane* ListPane::Create(int paneID, UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
+	ListPane* ListPane::Create(
+		const int paneID,
+		const UINT uidLabel,
+		const bool bAllowSort,
+		const bool bReadOnly,
+		DoListEditCallback callback)
 	{
 		auto pane = new (std::nothrow) ListPane();
 		if (pane)
 		{
 			pane->Setup(bAllowSort, std::move(callback));
-			pane->SetLabel(uidLabel, bReadOnly);
+			pane->SetLabel(uidLabel);
+			pane->SetReadOnly(bReadOnly);
 			pane->m_paneID = paneID;
 		}
 
@@ -21,17 +27,18 @@ namespace viewpane
 	}
 
 	ListPane* ListPane::CreateCollapsibleListPane(
-		int paneID,
-		UINT uidLabel,
-		bool bAllowSort,
-		bool bReadOnly,
+		const int paneID,
+		const UINT uidLabel,
+		const bool bAllowSort,
+		const bool bReadOnly,
 		DoListEditCallback callback)
 	{
 		auto pane = new (std::nothrow) ListPane();
 		if (pane)
 		{
 			pane->Setup(bAllowSort, std::move(callback));
-			pane->SetLabel(uidLabel, bReadOnly);
+			pane->SetLabel(uidLabel);
+			pane->SetReadOnly(bReadOnly);
 			pane->m_bCollapsible = true;
 			pane->m_paneID = paneID;
 		}

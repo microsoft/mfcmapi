@@ -27,16 +27,6 @@ namespace viewpane
 			hWinPosInfo, m_Label.GetSafeHwnd(), nullptr, x, y, m_iLabelWidth, m_iLabelHeight, SWP_NOZORDER);
 	}
 
-	void ViewPane::SetLabel(UINT uidLabel, bool bReadOnly)
-	{
-		m_bReadOnly = bReadOnly;
-
-		if (uidLabel)
-		{
-			m_szLabel = strings::loadstring(uidLabel);
-		}
-	}
-
 	void ViewPane::Initialize(_In_ CWnd* pParent, _In_opt_ HDC /*hdc*/)
 	{
 		if (pParent) m_hWndParent = pParent->m_hWnd;

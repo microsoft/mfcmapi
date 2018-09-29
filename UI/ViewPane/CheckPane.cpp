@@ -4,13 +4,14 @@
 
 namespace viewpane
 {
-	CheckPane* CheckPane::Create(int paneID, UINT uidLabel, bool bVal, bool bReadOnly)
+	CheckPane* CheckPane::Create(const int paneID, const UINT uidLabel, const bool bVal, const bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) CheckPane();
 		if (pane)
 		{
 			pane->m_bCheckValue = bVal;
-			pane->SetLabel(uidLabel, bReadOnly);
+			pane->SetLabel(uidLabel);
+			pane->SetReadOnly(bReadOnly);
 			pane->m_paneID = paneID;
 		}
 
@@ -68,7 +69,7 @@ namespace viewpane
 		return m_bCheckValue;
 	}
 
-	void CheckPane::Draw(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemState)
+	void CheckPane::Draw(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, const UINT itemState)
 	{
 		WCHAR szButton[255];
 		GetWindowTextW(hWnd, szButton, _countof(szButton));

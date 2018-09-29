@@ -28,7 +28,8 @@ namespace viewpane
 		if (lpPane)
 		{
 			lpPane->m_bMultiline = bMultiLine;
-			lpPane->SetLabel(uidLabel, bReadOnly);
+			lpPane->SetLabel(uidLabel);
+			lpPane->ViewPane::SetReadOnly(bReadOnly);
 			lpPane->m_paneID = paneID;
 		}
 
@@ -46,7 +47,8 @@ namespace viewpane
 		if (lpPane)
 		{
 			lpPane->m_bMultiline = bMultiLine;
-			lpPane->SetLabel(uidLabel, bReadOnly);
+			lpPane->SetLabel(uidLabel);
+			lpPane->ViewPane::SetReadOnly(bReadOnly);
 			lpPane->SetStringW(szVal);
 			lpPane->m_paneID = paneID;
 		}
@@ -61,7 +63,8 @@ namespace viewpane
 
 		if (lpPane && uidVal)
 		{
-			lpPane->SetLabel(uidLabel, bReadOnly);
+			lpPane->SetLabel(uidLabel);
+			lpPane->ViewPane::SetReadOnly(bReadOnly);
 			lpPane->SetStringW(strings::loadstring(uidVal));
 			lpPane->m_paneID = paneID;
 		}
@@ -75,7 +78,8 @@ namespace viewpane
 		if (pane)
 		{
 			pane->SetMultiline();
-			pane->SetLabel(uidLabel, bReadOnly);
+			pane->SetLabel(uidLabel);
+			pane->ViewPane::SetReadOnly(bReadOnly);
 			pane->m_bCollapsible = true;
 			pane->m_paneID = paneID;
 		}
