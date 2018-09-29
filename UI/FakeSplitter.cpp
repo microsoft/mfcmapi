@@ -122,6 +122,7 @@ namespace controls
 
 	void CFakeSplitter::SetPaneTwo(HWND paneTwo) { m_PaneTwo = paneTwo; }
 
+	// TODO: Break out DeferWindowPos guts so SplitterPane can call them directly
 	void CFakeSplitter::OnSize(UINT /*nType*/, const int cx, const int cy)
 	{
 		CalcSplitPos();

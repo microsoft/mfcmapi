@@ -85,6 +85,9 @@ namespace viewpane
 		const int iButtonHeight, // Height of buttons below the control
 		const int iEditHeight) // height of an edit control
 	{
+		ViewPane::SetMargins(
+			iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
+
 		if (m_PaneOne)
 		{
 			m_PaneOne->SetMargins(
@@ -120,13 +123,47 @@ namespace viewpane
 	void SplitterPane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
-		_In_ const int y,
+		_In_ int y,
 		_In_ const int width,
-		_In_ const int height)
+		_In_ int height)
 	{
 		output::DebugPrint(
 			DBGDraw, L"SplitterPane::DeferWindowPos x:%d y:%d width:%d height: %d\n", x, y, width, height);
-		::DeferWindowPos(hWinPosInfo, m_lpSplitter->GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER);
-		m_lpSplitter->OnSize(NULL, width, height);
+
+		auto iVariableHeight = height - GetFixedHeight();
+		if (0 != m_paneID)
+		{
+			y += m_iSmallHeightMargin;
+			height -= m_iSmallHeightMargin;
+		}
+
+		EC_B_S(m_lpSplitter->ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
+		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
+
+		if (m_bCollapsible)
+		{
+			y += m_iLabelHeight + m_iSmallHeightMargin;
+		}
+		else
+		{
+			if (!m_szLabel.empty())
+			{
+				y += m_iLabelHeight;
+				height -= m_iLabelHeight;
+			}
+
+			height -= m_iSmallHeightMargin; // This is the bottom margin
+		}
+
+		::DeferWindowPos(
+			hWinPosInfo,
+			m_lpSplitter->GetSafeHwnd(),
+			nullptr,
+			x,
+			y,
+			width,
+			m_bCollapsible ? iVariableHeight : height,
+			SWP_NOZORDER);
+		m_lpSplitter->OnSize(NULL, width, m_bCollapsible ? iVariableHeight : height);
 	}
 } // namespace viewpane
