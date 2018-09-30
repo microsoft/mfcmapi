@@ -44,6 +44,7 @@ namespace controls
 		void SetPercent(FLOAT iNewPercent);
 		void SetSplitType(SplitType stSplitType);
 		void OnSize(UINT nType, int cx, int cy);
+		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 		int GetSplitWidth() const { return m_iSplitWidth; }
 
 	private:

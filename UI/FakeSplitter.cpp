@@ -122,7 +122,6 @@ namespace controls
 
 	void CFakeSplitter::SetPaneTwo(HWND paneTwo) { m_PaneTwo = paneTwo; }
 
-	// TODO: Break out DeferWindowPos guts so SplitterPane can call them directly
 	void CFakeSplitter::OnSize(UINT /*nType*/, const int cx, const int cy)
 	{
 		CalcSplitPos();
@@ -130,62 +129,72 @@ namespace controls
 		const auto hdwp = WC_D(HDWP, BeginDeferWindowPos(2));
 		if (hdwp)
 		{
-			InvalidateRect(CRect(0, 0, cx, cy), false);
-			if (m_PaneOne || m_ViewPaneOne)
-			{
-				CRect r1;
-				if (SplitHorizontal == m_SplitType)
-				{
-					r1.SetRect(0, 0, m_iSplitPos, cy);
-				}
-				else
-				{
-					r1.SetRect(0, 0, cx, m_iSplitPos);
-				}
-
-				if (m_PaneOne)
-				{
-					DeferWindowPos(hdwp, m_PaneOne, nullptr, 0, 0, r1.Width(), r1.Height(), SWP_NOZORDER);
-				}
-
-				if (m_ViewPaneOne)
-				{
-					m_ViewPaneOne->DeferWindowPos(hdwp, 0, 0, r1.Width(), r1.Height());
-				}
-			}
-
-			if (m_PaneTwo || m_ViewPaneTwo)
-			{
-				CRect r2;
-				if (SplitHorizontal == m_SplitType)
-				{
-					r2.SetRect(
-						m_iSplitPos + m_iSplitWidth, // new x
-						0, // new y
-						cx, // bottom right corner
-						cy); // bottom right corner
-				}
-				else
-				{
-					r2.SetRect(
-						0, // new x
-						m_iSplitPos + m_iSplitWidth, // new y
-						cx, // bottom right corner
-						cy); // bottom right corner
-				}
-
-				if (m_PaneTwo)
-				{
-					DeferWindowPos(hdwp, m_PaneTwo, nullptr, r2.left, r2.top, r2.Width(), r2.Height(), SWP_NOZORDER);
-				}
-
-				if (m_ViewPaneTwo)
-				{
-					m_ViewPaneTwo->DeferWindowPos(hdwp, r2.left, r2.top, r2.Width(), r2.Height());
-				}
-			}
-
+			DeferWindowPos(hdwp, 0, 0, cx, cy);
 			EC_B_S(EndDeferWindowPos(hdwp));
+		}
+	}
+
+	void CFakeSplitter::DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		_In_ const int x,
+		_In_ const int y,
+		_In_ const int width,
+		_In_ const int height)
+	{
+		InvalidateRect(CRect(x, y, width, height), false);
+		if (m_PaneOne || m_ViewPaneOne)
+		{
+			CRect r1;
+			if (SplitHorizontal == m_SplitType)
+			{
+				r1.SetRect(x, y, m_iSplitPos, height);
+			}
+			else
+			{
+				r1.SetRect(x, y, width, m_iSplitPos);
+			}
+
+			if (m_PaneOne)
+			{
+				::DeferWindowPos(hWinPosInfo, m_PaneOne, nullptr, x, y, r1.Width(), r1.Height(), SWP_NOZORDER);
+			}
+
+			if (m_ViewPaneOne)
+			{
+				m_ViewPaneOne->DeferWindowPos(hWinPosInfo, x, y, r1.Width(), r1.Height());
+			}
+		}
+
+		if (m_PaneTwo || m_ViewPaneTwo)
+		{
+			CRect r2;
+			if (SplitHorizontal == m_SplitType)
+			{
+				r2.SetRect(
+					x + m_iSplitPos + m_iSplitWidth, // new x
+					y, // new y
+					width, // bottom right corner
+					height); // bottom right corner
+			}
+			else
+			{
+				r2.SetRect(
+					x, // new x
+					y + m_iSplitPos + m_iSplitWidth, // new y
+					width, // bottom right corner
+					height); // bottom right corner
+			}
+
+			if (m_PaneTwo)
+			{
+				::DeferWindowPos(
+					hWinPosInfo, m_PaneTwo, nullptr, r2.left, r2.top, r2.Width(), r2.Height(), SWP_NOZORDER);
+			}
+
+			if (m_ViewPaneTwo)
+			{
+				m_ViewPaneTwo->DeferWindowPos(hWinPosInfo, r2.left, r2.top, r2.Width(), r2.Height());
+			}
 		}
 	}
 
