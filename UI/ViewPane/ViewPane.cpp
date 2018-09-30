@@ -29,7 +29,7 @@ namespace viewpane
 			hWinPosInfo, m_Label.GetSafeHwnd(), nullptr, x, y, m_iLabelWidth, m_iLabelHeight, SWP_NOZORDER);
 	}
 
-	void ViewPane::Initialize(_In_ CWnd* pParent, _In_opt_ HDC /*hdc*/)
+	void ViewPane::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc)
 	{
 		if (pParent) m_hWndParent = pParent->m_hWnd;
 		// We compute nID for our view, the label, and collapse button all from the pane's base ID.
@@ -53,20 +53,12 @@ namespace viewpane
 				pParent,
 				IDD_COLLAPSE + m_nID));
 		}
-	}
 
-	bool ViewPane::IsDirty() { return false; }
-
-	int ViewPane::GetMinWidth(_In_ HDC hdc)
-	{
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
 		m_iLabelWidth = sizeText.cx;
 		output::DebugPrint(
-			DBGDraw, L"ViewPane::GetMinWidth m_iLabelWidth:%d \"%ws\"\n", m_iLabelWidth, m_szLabel.c_str());
-		return m_iLabelWidth;
+			DBGDraw, L"ViewPane::Initialize m_iLabelWidth:%d \"%ws\"\n", m_iLabelWidth, m_szLabel.c_str());
 	}
-
-	int ViewPane::GetLines() { return 0; }
 
 	ULONG ViewPane::HandleChange(UINT nID)
 	{

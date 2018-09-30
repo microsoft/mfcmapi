@@ -57,7 +57,7 @@ namespace viewpane
 
 	void ListPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		ViewPane::Initialize(pParent, nullptr);
+		ViewPane::Initialize(pParent, hdc);
 
 		DWORD dwListStyle = LVS_SINGLESEL | WS_BORDER;
 		if (!m_bAllowSort) dwListStyle |= LVS_NOSORTHEADER;

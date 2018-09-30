@@ -26,7 +26,6 @@ namespace viewpane
 
 	int SplitterPane::GetMinWidth(_In_ HDC hdc)
 	{
-		(void) ViewPane::GetMinWidth(hdc);
 		if (m_bVertical)
 		{
 			return max(m_PaneOne->GetMinWidth(hdc), m_PaneTwo->GetMinWidth(hdc));
@@ -128,7 +127,7 @@ namespace viewpane
 
 	void SplitterPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		ViewPane::Initialize(pParent, nullptr);
+		ViewPane::Initialize(pParent, hdc);
 
 		m_lpSplitter = new controls::CFakeSplitter();
 

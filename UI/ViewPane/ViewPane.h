@@ -14,10 +14,10 @@ namespace viewpane
 		virtual void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 
 		virtual void CommitUIValues() = 0;
-		virtual bool IsDirty();
-		virtual int GetMinWidth(_In_ HDC hdc);
+		virtual bool IsDirty() { return false; }
+		virtual int GetMinWidth(_In_ HDC /*hdc*/) { return m_iLabelWidth; }
 		virtual int GetFixedHeight() = 0;
-		virtual int GetLines();
+		virtual int GetLines() { return 0; }
 		virtual ULONG HandleChange(UINT nID);
 		void OnToggleCollapse();
 
