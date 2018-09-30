@@ -70,46 +70,52 @@ namespace viewpane
 		return iHeight;
 	}
 
-	int CountedTextPane::GetLines()
-	{
-		if (m_bCollapsed)
-		{
-			return 0;
-		}
+	int CountedTextPane::GetLines() { return m_bCollapsed ? 0 : LINES_MULTILINEEDIT; }
 
-		return LINES_MULTILINEEDIT;
-	}
-
-	void CountedTextPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
+	void CountedTextPane::DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		_In_ const int x,
+		_In_ const int y,
+		_In_ const int width,
+		_In_ const int height)
 	{
-		const auto iVariableHeight = height - GetFixedHeight();
+		auto curY = y;
+		const auto labelHeight = GetLabelHeight();
 		if (0 != m_paneID)
 		{
-			y += m_iSmallHeightMargin;
-			height -= m_iSmallHeightMargin;
+			curY += m_iSmallHeightMargin;
 		}
 
-		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
+		// Layout our label
+		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 
 		if (!m_bCollapsed)
 		{
 			EC_B_S(m_Count.ShowWindow(SW_SHOW));
 			EC_B_S(m_EditBox.ShowWindow(SW_SHOW));
 
+			// Drop the count on top of the label we drew above
 			EC_B_S(::DeferWindowPos(
 				hWinPosInfo,
 				m_Count.GetSafeHwnd(),
 				nullptr,
 				x + width - m_iCountLabelWidth,
-				y,
+				curY,
 				m_iCountLabelWidth,
-				m_iLabelHeight,
+				labelHeight,
 				SWP_NOZORDER));
 
-			y += m_iLabelHeight + m_iSmallHeightMargin;
+			curY += labelHeight + m_iSmallHeightMargin;
 
 			EC_B_S(::DeferWindowPos(
-				hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, y, width, iVariableHeight, SWP_NOZORDER));
+				hWinPosInfo,
+				m_EditBox.GetSafeHwnd(),
+				nullptr,
+				x,
+				curY,
+				width,
+				height - (curY - y) - m_iSmallHeightMargin,
+				SWP_NOZORDER));
 		}
 		else
 		{

@@ -42,11 +42,7 @@ namespace viewpane
 		// Will return 0 if we have no label or button
 		int GetLabelHeight() const
 		{
-			// Our expand/collapse button
-			if (m_bCollapsible) return m_iButtonHeight;
-
-			// Text labels will bump directly against their edit control, so we don't add a margin here
-			if (!m_szLabel.empty()) return m_iLabelHeight;
+			if (m_bCollapsible || !m_szLabel.empty()) return max(m_iButtonHeight, m_iLabelHeight);
 
 			return 0;
 		}

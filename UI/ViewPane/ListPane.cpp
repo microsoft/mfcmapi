@@ -152,28 +152,34 @@ namespace viewpane
 		return ViewPane::HandleChange(nID);
 	}
 
-	void ListPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
+	void ListPane::DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		_In_ const int x,
+		_In_ const int y,
+		_In_ const int width,
+		_In_ const int height)
 	{
-		const auto iVariableHeight = height - GetFixedHeight();
+		auto curY = y;
+		const auto labelHeight = GetLabelHeight();
 		if (0 != m_paneID)
 		{
-			y += m_iSmallHeightMargin;
-			height -= m_iSmallHeightMargin;
+			curY += m_iSmallHeightMargin;
 		}
 
-		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
-		y += m_iLabelHeight + m_iSmallHeightMargin;
+		// Layout our label
+		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+		curY += labelHeight + m_iSmallHeightMargin;
 
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
 		EC_B_S(m_List.ShowWindow(cmdShow));
-		EC_B_S(
-			::DeferWindowPos(hWinPosInfo, m_List.GetSafeHwnd(), nullptr, x, y, width, iVariableHeight, SWP_NOZORDER));
-		y += iVariableHeight;
+		auto listHeight = height - (curY - y);
+		if (!m_bReadOnly) listHeight -= (m_iLargeHeightMargin + m_iButtonHeight);
+		EC_B_S(::DeferWindowPos(hWinPosInfo, m_List.GetSafeHwnd(), nullptr, x, curY, width, listHeight, SWP_NOZORDER));
 
 		if (!m_bReadOnly)
 		{
 			// buttons go below the list:
-			y += m_iLargeHeightMargin;
+			curY += listHeight + m_iLargeHeightMargin;
 
 			const auto iSlotWidth = m_iButtonWidth + m_iMargin;
 			const auto iOffset = width + m_iSideMargin + m_iMargin;
@@ -186,7 +192,7 @@ namespace viewpane
 					m_ButtonArray[iButton].GetSafeHwnd(),
 					nullptr,
 					iOffset - iSlotWidth * (NUMLISTBUTTONS - iButton),
-					y,
+					curY,
 					m_iButtonWidth,
 					m_iButtonHeight,
 					SWP_NOZORDER));

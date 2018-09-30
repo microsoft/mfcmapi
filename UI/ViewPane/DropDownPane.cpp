@@ -72,10 +72,7 @@ namespace viewpane
 
 		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
-		if (!m_szLabel.empty())
-		{
-			iHeight += m_iLabelHeight;
-		}
+		iHeight += GetLabelHeight();
 
 		iHeight += m_iEditHeight; // Height of the dropdown
 
@@ -84,19 +81,25 @@ namespace viewpane
 		return iHeight;
 	}
 
-	void
-	DropDownPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int /*height*/)
+	void DropDownPane::DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		_In_ const int x,
+		_In_ const int y,
+		_In_ const int width,
+		_In_ const int /*height*/)
 	{
+		auto curY = y;
+		const auto labelHeight = GetLabelHeight();
 		if (0 != m_paneID)
 		{
-			y += m_iSmallHeightMargin;
+			curY += m_iSmallHeightMargin;
 		}
 
 		if (!m_szLabel.empty())
 		{
 			EC_B_S(::DeferWindowPos(
-				hWinPosInfo, m_Label.GetSafeHwnd(), nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER));
-			y += m_iLabelHeight;
+				hWinPosInfo, m_Label.GetSafeHwnd(), nullptr, x, curY, width, labelHeight, SWP_NOZORDER));
+			curY += labelHeight;
 		}
 
 		// Note - Real height of a combo box is fixed at m_iEditHeight
@@ -105,7 +108,7 @@ namespace viewpane
 		const auto ulDrops = static_cast<int>(min(10, 1 + max(m_DropList.size(), 4)));
 
 		EC_B_S(::DeferWindowPos(
-			hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
+			hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, curY, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
 	}
 
 	void DropDownPane::CreateControl(_In_ CWnd* pParent, _In_ HDC hdc)

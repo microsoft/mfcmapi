@@ -140,12 +140,6 @@ namespace viewpane
 
 		iHeight += GetLabelHeight();
 
-		// A small margin between our button and the edit control, if we're collapsible and not collapsed
-		if (!m_bCollapsed && m_bCollapsible)
-		{
-			iHeight += m_iSmallHeightMargin;
-		}
-
 		if (!m_bMultiline)
 		{
 			iHeight += m_iEditHeight;
@@ -171,42 +165,35 @@ namespace viewpane
 		return 0;
 	}
 
-	void TextPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
+	void TextPane::DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		_In_ const int x,
+		_In_ const int y,
+		_In_ const int width,
+		_In_ const int height)
 	{
-		auto iVariableHeight = height - GetFixedHeight();
+		auto curY = y;
+		const auto labelHeight = GetLabelHeight();
 		if (0 != m_paneID)
 		{
-			y += m_iSmallHeightMargin;
-			height -= m_iSmallHeightMargin;
+			curY += m_iSmallHeightMargin;
 		}
 
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
 		EC_B_S(m_EditBox.ShowWindow(cmdShow));
-		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
+		// Layout our label
+		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 
-		if (m_bCollapsible)
-		{
-			y += m_iLabelHeight + m_iSmallHeightMargin;
-		}
-		else
-		{
-			if (!m_szLabel.empty())
-			{
-				y += m_iLabelHeight;
-				height -= m_iLabelHeight;
-			}
-
-			height -= m_iSmallHeightMargin; // This is the bottom margin
-		}
+		curY += labelHeight + m_iSmallHeightMargin;
 
 		EC_B_S(::DeferWindowPos(
 			hWinPosInfo,
 			m_EditBox.GetSafeHwnd(),
 			nullptr,
 			x,
-			y,
+			curY,
 			width,
-			m_bCollapsible ? iVariableHeight : height,
+			height - (curY - y) - m_iSmallHeightMargin,
 			SWP_NOZORDER));
 	}
 
