@@ -12,7 +12,12 @@ namespace viewpane
 		auto pane = new (std::nothrow) TreePane();
 		if (pane)
 		{
-			pane->SetLabel(uidLabel);
+			if (uidLabel)
+			{
+				pane->SetLabel(uidLabel);
+				pane->m_bCollapsible = true;
+			}
+
 			pane->SetReadOnly(bReadOnly);
 			pane->m_paneID = paneID;
 		}
@@ -22,9 +27,9 @@ namespace viewpane
 
 	bool TreePane::IsDirty() { return m_bDirty; }
 
-	void TreePane::Initialize(_In_ CWnd* pParent, _In_ HDC /*hdc*/)
+	void TreePane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		ViewPane::Initialize(pParent, nullptr);
+		ViewPane::Initialize(pParent, hdc);
 		m_Tree.Create(pParent, 0);
 
 		// TODO: Don't leave this here
@@ -52,25 +57,19 @@ namespace viewpane
 		auto iHeight = 0;
 		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
-		if (m_bCollapsible)
+		const auto labelHeight = GetLabelHeight();
+
+		if (labelHeight)
 		{
-			// Our expand/collapse button
-			iHeight += m_iButtonHeight;
-		}
-		else if (!m_szLabel.empty())
-		{
-			iHeight += m_iLabelHeight;
+			iHeight += labelHeight;
 		}
 
-		if (!m_bCollapsed)
+		if (m_bCollapsible && !m_bCollapsed)
 		{
 			iHeight += m_iSmallHeightMargin;
-
-			if (!m_bReadOnly)
-			{
-				iHeight += m_iLargeHeightMargin + m_iButtonHeight;
-			}
 		}
+
+		iHeight += m_iSmallHeightMargin;
 
 		return iHeight;
 	}
@@ -94,44 +93,34 @@ namespace viewpane
 		return ViewPane::HandleChange(nID);
 	}
 
-	void TreePane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
+	void TreePane::DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		_In_ const int x,
+		_In_ const int y,
+		_In_ const int width,
+		_In_ const int height)
 	{
 		output::DebugPrint(DBGDraw, L"TreePane::DeferWindowPos x:%d y:%d width:%d height:%d \n", x, y, width, height);
 
-		auto iVariableHeight = height - GetFixedHeight();
+		auto curY = y;
+		const auto labelHeight = GetLabelHeight();
 		if (0 != m_paneID)
 		{
-			y += m_iSmallHeightMargin;
-			height -= m_iSmallHeightMargin;
+			curY += m_iSmallHeightMargin;
 		}
 
 		EC_B_S(m_Tree.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
-		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
+		// Layout our label
+		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 
-		if (m_bCollapsible)
+		if (labelHeight)
 		{
-			y += m_iLabelHeight + m_iSmallHeightMargin;
-		}
-		else
-		{
-			if (!m_szLabel.empty())
-			{
-				y += m_iLabelHeight;
-				height -= m_iLabelHeight;
-			}
-
-			height -= m_iSmallHeightMargin; // This is the bottom margin
+			curY += labelHeight + m_iSmallHeightMargin;
 		}
 
-		EC_B_S(::DeferWindowPos(
-			hWinPosInfo,
-			m_Tree.GetSafeHwnd(),
-			nullptr,
-			x,
-			y,
-			width,
-			m_bCollapsible ? iVariableHeight : height,
-			SWP_NOZORDER));
+		auto treeHeight = height - (curY - y) - m_iSmallHeightMargin;
+
+		EC_B_S(::DeferWindowPos(hWinPosInfo, m_Tree.GetSafeHwnd(), nullptr, x, curY, width, treeHeight, SWP_NOZORDER));
 	}
 
 	void TreePane::CommitUIValues() {}
