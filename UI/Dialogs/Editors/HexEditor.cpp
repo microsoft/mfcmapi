@@ -40,7 +40,7 @@ namespace dialog
 			auto splitter = viewpane::SplitterPane::CreateHorizontalPane(HEXED_TEXT, IDS_TEXT);
 			AddPane(splitter);
 			splitter->SetPaneOne(viewpane::TextPane::CreateCollapsibleTextPane(HEXED_ANSI, IDS_ANSISTRING, false));
-			splitter->SetPaneTwo(viewpane::TextPane::CreateMultiLinePane(HEXED_UNICODE, IDS_UNISTRING, false));
+			splitter->SetPaneTwo(viewpane::TextPane::CreateMultiLinePane(HEXED_UNICODE, NULL, false));
 			AddPane(viewpane::CountedTextPane::Create(HEXED_BASE64, IDS_BASE64STRING, false, IDS_CCH));
 			AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
 			AddPane(viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW));

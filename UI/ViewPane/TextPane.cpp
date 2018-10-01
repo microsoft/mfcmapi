@@ -184,17 +184,15 @@ namespace viewpane
 		// Layout our label
 		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 
-		curY += labelHeight + m_iSmallHeightMargin;
+		auto editHeight = height - (curY - y) - m_iSmallHeightMargin;
+		if (labelHeight)
+		{
+			curY += labelHeight + m_iSmallHeightMargin;
+			editHeight -= labelHeight + m_iSmallHeightMargin;
+		}
 
-		EC_B_S(::DeferWindowPos(
-			hWinPosInfo,
-			m_EditBox.GetSafeHwnd(),
-			nullptr,
-			x,
-			curY,
-			width,
-			height - (curY - y) - m_iSmallHeightMargin,
-			SWP_NOZORDER));
+		EC_B_S(
+			::DeferWindowPos(hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, width, editHeight, SWP_NOZORDER));
 	}
 
 	void TextPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
