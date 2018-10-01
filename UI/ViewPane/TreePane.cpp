@@ -45,12 +45,7 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
-	int TreePane::GetMinWidth(_In_ HDC /*hdc*/)
-	{
-		return 100;
-		//return max(
-		//	ViewPane::GetMinWidth(hdc), (int) (NUMLISTBUTTONS * m_iButtonWidth + m_iMargin * (NUMLISTBUTTONS - 1)));
-	}
+	int TreePane::GetMinWidth(_In_ HDC hdc) { return ViewPane::GetMinWidth(hdc); }
 
 	int TreePane::GetFixedHeight()
 	{
