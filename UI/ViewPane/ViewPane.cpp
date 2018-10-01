@@ -5,14 +5,23 @@
 
 namespace viewpane
 {
-	void ViewPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int /*height*/)
+	// Draw our collapse button and label, if needed.
+	// Draws everything to GetLabelHeight()
+	void ViewPane::DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		const _In_ int x,
+		const _In_ int y,
+		const _In_ int width,
+		const _In_ int /*height*/)
 	{
+		const auto labelHeight = GetLabelHeight();
+		auto curX = x;
 		if (m_bCollapsible)
 		{
 			StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? ui::bsUpArrow : ui::bsDownArrow);
 			::DeferWindowPos(
-				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER);
-			x += m_iButtonHeight;
+				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, curX, y, width, labelHeight, SWP_NOZORDER);
+			curX += m_iButtonHeight;
 		}
 
 		output::DebugPrint(
@@ -20,24 +29,14 @@ namespace viewpane
 			L"ViewPane::DeferWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
 			x,
 			width,
-			x + m_iButtonHeight,
+			curX,
 			m_iLabelWidth);
 
 		::DeferWindowPos(
-			hWinPosInfo, m_Label.GetSafeHwnd(), nullptr, x, y, m_iLabelWidth, m_iLabelHeight, SWP_NOZORDER);
+			hWinPosInfo, m_Label.GetSafeHwnd(), nullptr, curX, y, m_iLabelWidth, labelHeight, SWP_NOZORDER);
 	}
 
-	void ViewPane::SetLabel(UINT uidLabel, bool bReadOnly)
-	{
-		m_bReadOnly = bReadOnly;
-
-		if (uidLabel)
-		{
-			m_szLabel = strings::loadstring(uidLabel);
-		}
-	}
-
-	void ViewPane::Initialize(_In_ CWnd* pParent, _In_opt_ HDC /*hdc*/)
+	void ViewPane::Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc)
 	{
 		if (pParent) m_hWndParent = pParent->m_hWnd;
 		// We compute nID for our view, the label, and collapse button all from the pane's base ID.
@@ -61,20 +60,12 @@ namespace viewpane
 				pParent,
 				IDD_COLLAPSE + m_nID));
 		}
-	}
 
-	bool ViewPane::IsDirty() { return false; }
-
-	int ViewPane::GetMinWidth(_In_ HDC hdc)
-	{
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
 		m_iLabelWidth = sizeText.cx;
 		output::DebugPrint(
-			DBGDraw, L"ViewPane::GetMinWidth m_iLabelWidth:%d \"%ws\"\n", m_iLabelWidth, m_szLabel.c_str());
-		return m_iLabelWidth;
+			DBGDraw, L"ViewPane::Initialize m_iLabelWidth:%d \"%ws\"\n", m_iLabelWidth, m_szLabel.c_str());
 	}
-
-	int ViewPane::GetLines() { return 0; }
 
 	ULONG ViewPane::HandleChange(UINT nID)
 	{
