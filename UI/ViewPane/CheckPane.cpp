@@ -4,13 +4,14 @@
 
 namespace viewpane
 {
-	CheckPane* CheckPane::Create(int paneID, UINT uidLabel, bool bVal, bool bReadOnly)
+	CheckPane* CheckPane::Create(const int paneID, const UINT uidLabel, const bool bVal, const bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) CheckPane();
 		if (pane)
 		{
 			pane->m_bCheckValue = bVal;
-			pane->SetLabel(uidLabel, bReadOnly);
+			pane->SetLabel(uidLabel);
+			pane->SetReadOnly(bReadOnly);
 			pane->m_paneID = paneID;
 		}
 
@@ -34,9 +35,9 @@ namespace viewpane
 
 	int CheckPane::GetFixedHeight() { return m_iButtonHeight; }
 
-	void CheckPane::Initialize(_In_ CWnd* pParent, _In_ HDC /*hdc*/)
+	void CheckPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		ViewPane::Initialize(pParent, nullptr);
+		ViewPane::Initialize(pParent, hdc);
 
 		EC_B_S(m_Check.Create(
 			NULL,
@@ -50,7 +51,12 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
-	void CheckPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
+	void CheckPane::DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		_In_ const int x,
+		_In_ const int y,
+		_In_ const int width,
+		_In_ const int height)
 	{
 		output::DebugPrint(DBGDraw, L"CheckPane::DeferWindowPos x:%d width:%d \n", x, width);
 		EC_B_S(::DeferWindowPos(hWinPosInfo, m_Check.GetSafeHwnd(), nullptr, x, y, width, height, SWP_NOZORDER));
@@ -68,7 +74,7 @@ namespace viewpane
 		return m_bCheckValue;
 	}
 
-	void CheckPane::Draw(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemState)
+	void CheckPane::Draw(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, const UINT itemState)
 	{
 		WCHAR szButton[255];
 		GetWindowTextW(hWnd, szButton, _countof(szButton));

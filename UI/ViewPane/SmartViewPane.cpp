@@ -5,12 +5,13 @@
 
 namespace viewpane
 {
-	SmartViewPane* SmartViewPane::Create(int paneID, UINT uidLabel)
+	SmartViewPane* SmartViewPane::Create(const int paneID, const UINT uidLabel)
 	{
 		auto pane = new (std::nothrow) SmartViewPane();
 		if (pane)
 		{
-			pane->SetLabel(uidLabel, true);
+			pane->SetLabel(uidLabel);
+			pane->SetReadOnly(true);
 			pane->m_bCollapsible = true;
 			pane->m_paneID = paneID;
 		}
@@ -21,7 +22,8 @@ namespace viewpane
 	void SmartViewPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
 		m_TextPane.SetMultiline();
-		m_TextPane.SetLabel(NULL, true);
+		m_TextPane.SetLabel(NULL);
+		m_TextPane.ViewPane::SetReadOnly(true);
 		m_bReadOnly = true;
 
 		for (const auto& smartViewParserType : SmartViewParserTypeArray)
@@ -44,9 +46,7 @@ namespace viewpane
 
 		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
-		// Our expand/collapse button
-		iHeight += m_iButtonHeight;
-		// Control label will be next to this
+		iHeight += GetLabelHeight();
 
 		if (m_bDoDropDown && !m_bCollapsed)
 		{
@@ -67,35 +67,40 @@ namespace viewpane
 		return 0;
 	}
 
-	void SmartViewPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
+	void SmartViewPane::DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		_In_ const int x,
+		_In_ const int y,
+		_In_ const int width,
+		_In_ const int height)
 	{
 		const auto visibility = !m_bDoDropDown && !m_bHasData ? SW_HIDE : SW_SHOW;
 		EC_B_S(m_CollapseButton.ShowWindow(visibility));
 		EC_B_S(m_Label.ShowWindow(visibility));
 
+		auto curY = y;
+		const auto labelHeight = GetLabelHeight();
 		if (0 != m_paneID)
 		{
-			y += m_iSmallHeightMargin;
-			height -= m_iSmallHeightMargin;
+			curY += m_iSmallHeightMargin;
 		}
 
-		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
+		// Layout our label
+		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 
-		y += m_iLabelHeight + m_iSmallHeightMargin;
-		height -= m_iButtonHeight + m_iSmallHeightMargin;
+		curY += labelHeight + m_iSmallHeightMargin;
 
 		if (!m_bCollapsed)
 		{
 			if (m_bDoDropDown)
 			{
 				EC_B_S(::DeferWindowPos(
-					hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, y, width, m_iEditHeight * 10, SWP_NOZORDER));
+					hWinPosInfo, m_DropDown.GetSafeHwnd(), nullptr, x, curY, width, m_iEditHeight * 10, SWP_NOZORDER));
 
-				y += m_iEditHeight;
-				height -= m_iEditHeight;
+				curY += m_iEditHeight;
 			}
 
-			m_TextPane.DeferWindowPos(hWinPosInfo, x, y, width, height);
+			m_TextPane.DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 		}
 
 		EC_B_S(m_DropDown.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));

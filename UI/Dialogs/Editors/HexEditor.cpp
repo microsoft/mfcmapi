@@ -39,10 +39,10 @@ namespace dialog
 			m_lpMapiObjects = lpMapiObjects;
 			if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
 
-			auto splitter = viewpane::SplitterPane::CreateHorizontalPane(HEXED_TEXT);
+			auto splitter = viewpane::SplitterPane::CreateHorizontalPane(HEXED_TEXT, IDS_TEXTANSIUNICODE);
 			AddPane(splitter);
-			splitter->SetPaneOne(viewpane::TextPane::CreateCollapsibleTextPane(HEXED_ANSI, IDS_ANSISTRING, false));
-			splitter->SetPaneTwo(viewpane::TextPane::CreateCollapsibleTextPane(HEXED_UNICODE, IDS_UNISTRING, false));
+			splitter->SetPaneOne(viewpane::TextPane::CreateMultiLinePane(HEXED_ANSI, NULL, false));
+			splitter->SetPaneTwo(viewpane::TextPane::CreateMultiLinePane(HEXED_UNICODE, NULL, false));
 			AddPane(viewpane::CountedTextPane::Create(HEXED_BASE64, IDS_BASE64STRING, false, IDS_CCH));
 			AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
 			AddPane(viewpane::TreePane::Create(HEXED_TREE, IDS_HEX, true));
