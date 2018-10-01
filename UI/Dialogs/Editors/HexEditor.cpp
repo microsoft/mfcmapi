@@ -37,7 +37,7 @@ namespace dialog
 			m_lpMapiObjects = lpMapiObjects;
 			if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
 
-			auto splitter = viewpane::SplitterPane::CreateHorizontalPane(HEXED_TEXT, IDS_TEXT);
+			auto splitter = viewpane::SplitterPane::CreateHorizontalPane(HEXED_TEXT, IDS_TEXTANSIUNICODE);
 			AddPane(splitter);
 			splitter->SetPaneOne(viewpane::TextPane::CreateMultiLinePane(HEXED_ANSI, NULL, false));
 			splitter->SetPaneTwo(viewpane::TextPane::CreateMultiLinePane(HEXED_UNICODE, NULL, false));
