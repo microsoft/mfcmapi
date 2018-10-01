@@ -12,7 +12,8 @@ namespace viewpane
 		auto pane = new (std::nothrow) TreePane();
 		if (pane)
 		{
-			pane->SetLabel(uidLabel, bReadOnly);
+			pane->SetLabel(uidLabel);
+			pane->SetReadOnly(bReadOnly);
 			pane->m_paneID = paneID;
 		}
 

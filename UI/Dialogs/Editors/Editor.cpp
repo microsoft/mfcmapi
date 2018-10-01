@@ -316,7 +316,7 @@ namespace dialog
 			const auto bRet = CMyDialog::OnInitDialog();
 
 			m_szTitle = szPostfix + m_szAddInTitle;
-			SetWindowTextW(m_hWnd, m_szTitle.c_str());
+			::SetWindowTextW(m_hWnd, m_szTitle.c_str());
 
 			SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
@@ -339,7 +339,7 @@ namespace dialog
 					CRect(0, 0, 0, 0),
 					this,
 					IDC_PROMPT));
-				SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
+				::SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
 
 				ui::SubclassLabel(m_Prompt.m_hWnd);
 			}
