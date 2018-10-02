@@ -1,5 +1,4 @@
 #pragma once
-#include <Enums.h>
 
 namespace controls
 {
@@ -7,6 +6,12 @@ namespace controls
 	{
 	public:
 		void Create(_In_ CWnd* pCreateParent, UINT nIDContextMenu);
+
+		// Node management
+		// Override to provide custom deletion of node data
+		virtual void FreeNodeData(LPARAM /*lpData*/) const {};
+		// Removes any existing node data and replaces it with lpData
+		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
 
 		// TODO: Make this private
 		UINT m_nIDContextMenu{0};

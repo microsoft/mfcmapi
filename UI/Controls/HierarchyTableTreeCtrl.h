@@ -63,8 +63,7 @@ namespace controls
 		AddNode(_In_ const std::wstring& szName, HTREEITEM hParent, sortlistdata::SortListData* lpData, bool bGetTable)
 			const;
 		void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, bool bGetTable) const;
-		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
-		void FreeNodeData(LPARAM lpData) const;
+		void FreeNodeData(LPARAM lpData) const override;
 
 		// Custom messages
 		_Check_return_ LRESULT msgOnAddItem(WPARAM wParam, LPARAM lParam);

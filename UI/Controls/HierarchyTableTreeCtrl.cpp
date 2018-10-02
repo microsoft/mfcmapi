@@ -138,30 +138,6 @@ namespace controls
 		delete reinterpret_cast<sortlistdata::SortListData*>(lpData);
 	}
 
-	// Removes any existing node data and replaces it with lpData
-	void CHierarchyTableTreeCtrl::SetNodeData(HWND hWnd, HTREEITEM hItem, const LPARAM lpData) const
-	{
-		if (lpData)
-		{
-			TVITEM tvItem = {0};
-			tvItem.hItem = hItem;
-			tvItem.mask = TVIF_PARAM;
-			if (TreeView_GetItem(hWnd, &tvItem) && tvItem.lParam)
-			{
-				output::DebugPrintEx(DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, replacing data\n", hItem);
-				FreeNodeData(tvItem.lParam);
-			}
-			else
-			{
-				output::DebugPrintEx(DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, first data\n", hItem);
-			}
-
-			tvItem.lParam = lpData;
-			TreeView_SetItem(hWnd, &tvItem);
-			// The tree now owns our lpData
-		}
-	}
-
 	_Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer) const
 	{
 		LPSPropValue lpProps = nullptr;
@@ -910,7 +886,7 @@ namespace controls
 					static_cast<int>(lpData->Node()->m_ulAdviseConnection));
 			}
 
-			delete lpData;
+			FreeNodeData(pNMTreeView->itemOld.lParam);
 
 			if (!m_bShuttingDown)
 			{

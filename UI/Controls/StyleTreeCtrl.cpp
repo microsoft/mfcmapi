@@ -98,4 +98,27 @@ namespace controls
 		ui::CustomDrawTree(pNMHDR, pResult, m_HoverButton, m_hItemCurHover);
 	}
 
+	// Removes any existing node data and replaces it with lpData
+	void StyleTreeCtrl::SetNodeData(HWND hWnd, HTREEITEM hItem, const LPARAM lpData) const
+	{
+		if (lpData)
+		{
+			TVITEM tvItem = {0};
+			tvItem.hItem = hItem;
+			tvItem.mask = TVIF_PARAM;
+			if (TreeView_GetItem(hWnd, &tvItem) && tvItem.lParam)
+			{
+				output::DebugPrintEx(DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, replacing data\n", hItem);
+				FreeNodeData(tvItem.lParam);
+			}
+			else
+			{
+				output::DebugPrintEx(DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, first data\n", hItem);
+			}
+
+			tvItem.lParam = lpData;
+			TreeView_SetItem(hWnd, &tvItem);
+			// The tree now owns our lpData
+		}
+	}
 } // namespace controls
