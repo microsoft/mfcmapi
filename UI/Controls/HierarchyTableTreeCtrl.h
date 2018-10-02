@@ -57,12 +57,14 @@ namespace controls
 		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void UpdateSelectionUI(HTREEITEM hItem) const;
 
-		// Node insertion
+		// Node management
 		_Check_return_ HRESULT AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer) const;
 		void
 		AddNode(_In_ const std::wstring& szName, HTREEITEM hParent, sortlistdata::SortListData* lpData, bool bGetTable)
 			const;
 		void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, bool bGetTable) const;
+		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
+		void FreeNodeData(LPARAM lpData) const;
 
 		// Custom messages
 		_Check_return_ LRESULT msgOnAddItem(WPARAM wParam, LPARAM lParam);

@@ -133,8 +133,13 @@ namespace controls
 		return hRes;
 	}
 
+	void CHierarchyTableTreeCtrl::FreeNodeData(const LPARAM lpData) const
+	{
+		delete reinterpret_cast<sortlistdata::SortListData*>(lpData);
+	}
+
 	// Removes any existing node data and replaces it with lpData
-	void SetNodeData(HWND hWnd, HTREEITEM hItem, sortlistdata::SortListData* lpData)
+	void CHierarchyTableTreeCtrl::SetNodeData(HWND hWnd, HTREEITEM hItem, const LPARAM lpData) const
 	{
 		if (lpData)
 		{
@@ -144,14 +149,14 @@ namespace controls
 			if (TreeView_GetItem(hWnd, &tvItem) && tvItem.lParam)
 			{
 				output::DebugPrintEx(DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, replacing data\n", hItem);
-				delete reinterpret_cast<sortlistdata::SortListData*>(tvItem.lParam);
+				FreeNodeData(tvItem.lParam);
 			}
 			else
 			{
 				output::DebugPrintEx(DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, first data\n", hItem);
 			}
 
-			tvItem.lParam = reinterpret_cast<LPARAM>(lpData);
+			tvItem.lParam = lpData;
 			TreeView_SetItem(hWnd, &tvItem);
 			// The tree now owns our lpData
 		}
@@ -242,7 +247,7 @@ namespace controls
 		const auto hItem =
 			reinterpret_cast<HTREEITEM>(::SendMessage(m_hWnd, TVM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&tvInsert)));
 
-		SetNodeData(m_hWnd, hItem, lpData);
+		SetNodeData(m_hWnd, hItem, reinterpret_cast<LPARAM>(lpData));
 
 		if (bGetTable && (registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || hParent != TVI_ROOT))
 		{
@@ -1058,7 +1063,7 @@ namespace controls
 			if (lpData)
 			{
 				lpData->InitializeNode(&NewRow);
-				SetNodeData(m_hWnd, hModifyItem, lpData);
+				SetNodeData(m_hWnd, hModifyItem, reinterpret_cast<LPARAM>(lpData));
 			}
 
 			if (hParent)
