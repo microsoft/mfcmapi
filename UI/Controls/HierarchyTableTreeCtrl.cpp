@@ -83,6 +83,8 @@ namespace controls
 	ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
 	END_MESSAGE_MAP()
 
+	// TODO: I think the skeleton of this logic can be moved down as a Refresh function
+	// With a callback for the actual reload
 	_Check_return_ HRESULT CHierarchyTableTreeCtrl::RefreshHierarchyTable()
 	{
 		// Turn off redraw while we work on the window
@@ -345,6 +347,7 @@ namespace controls
 		return lpData->Node()->m_lpHierarchyTable;
 	}
 
+	// TODO: Make this an override handler
 	// Add the first level contents of lpMAPIContainer under the Parent node
 	_Check_return_ HRESULT CHierarchyTableTreeCtrl::ExpandNode(HTREEITEM hParent) const
 	{
@@ -385,6 +388,8 @@ namespace controls
 		return hRes;
 	}
 
+	// Used to find out if an item should have children
+	// TODO: Split logic for child detection into a handler, then move the rest down
 	void CHierarchyTableTreeCtrl::OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
 		const auto lpDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
@@ -572,6 +577,7 @@ namespace controls
 		*pResult = 1;
 	}
 
+	// TODO: Split out an OnEnter handler and move the rest down
 	void CHierarchyTableTreeCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	{
 		output::DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
@@ -762,6 +768,7 @@ namespace controls
 		return lpContainer;
 	}
 
+	// TODO: This can be moved down leaving ExpandNode as an overridden handler
 	// When + is clicked, add all entries in the table as children
 	void CHierarchyTableTreeCtrl::OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
