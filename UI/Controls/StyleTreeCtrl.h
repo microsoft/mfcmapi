@@ -25,6 +25,7 @@ namespace controls
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+		_Check_return_ UINT OnGetDlgCode();
 
 		HTREEITEM m_hItemCurHover{nullptr};
 		bool m_HoverButton{false};

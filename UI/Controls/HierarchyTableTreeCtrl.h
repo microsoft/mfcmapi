@@ -50,7 +50,6 @@ namespace controls
 		void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-		_Check_return_ UINT OnGetDlgCode();
 		void OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnRightClick(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnItemSelected(HTREEITEM hItem) const override;

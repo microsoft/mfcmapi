@@ -78,7 +78,6 @@ namespace controls
 	ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
 	ON_NOTIFY_REFLECT(NM_RCLICK, OnRightClick)
 	ON_WM_KEYDOWN()
-	ON_WM_GETDLGCODE()
 	ON_WM_CONTEXTMENU()
 	ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
 	ON_MESSAGE(WM_MFCMAPI_DELETEITEM, msgOnDeleteItem)
@@ -595,21 +594,6 @@ namespace controls
 				CTreeCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
 			}
 		}
-	}
-
-	// Assert that we want all keyboard input (including ENTER!)
-	_Check_return_ UINT CHierarchyTableTreeCtrl::OnGetDlgCode()
-	{
-		auto iDlgCode = CTreeCtrl::OnGetDlgCode() | DLGC_WANTMESSAGE;
-
-		// to make sure that the control key is not pressed
-		if (GetKeyState(VK_CONTROL) >= 0 && m_hWnd == ::GetFocus())
-		{
-			// to make sure that the Tab key is pressed
-			if (GetKeyState(VK_TAB) < 0) iDlgCode &= ~(DLGC_WANTALLKEYS | DLGC_WANTMESSAGE | DLGC_WANTTAB);
-		}
-
-		return iDlgCode;
 	}
 
 	void CHierarchyTableTreeCtrl::OnRightClick(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)

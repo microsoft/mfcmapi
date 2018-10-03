@@ -23,6 +23,7 @@ namespace controls
 
 	BEGIN_MESSAGE_MAP(StyleTreeCtrl, CTreeCtrl)
 	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
+	ON_WM_GETDLGCODE()
 	END_MESSAGE_MAP()
 
 	LRESULT StyleTreeCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -140,4 +141,18 @@ namespace controls
 		if (pResult) *pResult = 0;
 	}
 
+		// Assert that we want all keyboard input (including ENTER!)
+	_Check_return_ UINT StyleTreeCtrl::OnGetDlgCode()
+	{
+		auto iDlgCode = CTreeCtrl::OnGetDlgCode() | DLGC_WANTMESSAGE;
+
+		// to make sure that the control key is not pressed
+		if (GetKeyState(VK_CONTROL) >= 0 && m_hWnd == ::GetFocus())
+		{
+			// to make sure that the Tab key is pressed
+			if (GetKeyState(VK_TAB) < 0) iDlgCode &= ~(DLGC_WANTALLKEYS | DLGC_WANTMESSAGE | DLGC_WANTTAB);
+		}
+
+		return iDlgCode;
+	}
 } // namespace controls
