@@ -121,4 +121,23 @@ namespace controls
 			// The tree now owns our lpData
 		}
 	}
+
+	void StyleTreeCtrl::OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
+	{
+		const auto pNMTV = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+
+		if (pNMTV && pNMTV->itemNew.hItem)
+		{
+			m_bItemSelected = true;
+
+			OnItemSelected(pNMTV->itemNew.hItem);
+		}
+		else
+		{
+			m_bItemSelected = false;
+		}
+
+		if (pResult) *pResult = 0;
+	}
+
 } // namespace controls

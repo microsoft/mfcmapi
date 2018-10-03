@@ -91,7 +91,7 @@ namespace controls
 		// Turn off redraw while we work on the window
 		SetRedraw(false);
 
-		m_bItemSelected = false; // clear this just in case
+		OnSelChanged(nullptr, nullptr);
 
 		auto hRes = EC_B(DeleteItem(GetRootItem()));
 
@@ -438,30 +438,30 @@ namespace controls
 		*pResult = 0;
 	}
 
-	void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem) const
+	void CHierarchyTableTreeCtrl::OnItemSelected(HTREEITEM hItem) const
 	{
-		LPMAPICONTAINER lpMAPIContainer = nullptr;
-		LPSPropValue lpProps = nullptr;
-		ULONG cVals = 0;
-		UINT uiMsg = IDS_STATUSTEXTNOFOLDER;
-		std::wstring szParam1;
-		std::wstring szParam2;
-		std::wstring szParam3;
-
-		output::DebugPrintEx(DBGHierarchy, CLASS, L"UpdateSelectionUI", L"%p\n", hItem);
+		output::DebugPrintEx(DBGHierarchy, CLASS, L"OnItemSelected", L"%p\n", hItem);
 
 		if (!m_lpHostDlg) return;
 
 		// Have to request modify or this object is read only in the single prop control.
+		LPMAPICONTAINER lpMAPIContainer = nullptr;
 		GetContainer(hItem, mfcmapiREQUEST_MODIFY, &lpMAPIContainer);
 
 		// make sure we've gotten the hierarchy table for this node
 		(void) GetHierarchyTable(
 			hItem, lpMAPIContainer, 0 != registry::RegKeys[registry::regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
 
+		UINT uiMsg = IDS_STATUSTEXTNOFOLDER;
+		std::wstring szParam1;
+		std::wstring szParam2;
+		std::wstring szParam3;
+
 		if (lpMAPIContainer)
 		{
 			// Get some props for status bar
+			LPSPropValue lpProps = nullptr;
+			ULONG cVals = 0;
 			WC_H_GETPROPS_S(
 				lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCountCols), fMapiUnicode, &cVals, &lpProps));
 			if (lpProps)
@@ -475,7 +475,9 @@ namespace controls
 						szParam1 = L"?"; // STRING_OK
 					}
 					else
+					{
 						szParam1 = std::to_wstring(lpProps[htcPR_CONTENT_COUNT].Value.ul);
+					}
 
 					if (PT_ERROR == PROP_TYPE(lpProps[htcPR_ASSOC_CONTENT_COUNT].ulPropTag))
 					{
@@ -483,7 +485,9 @@ namespace controls
 						szParam2 = L"?"; // STRING_OK
 					}
 					else
+					{
 						szParam2 = std::to_wstring(lpProps[htcPR_ASSOC_CONTENT_COUNT].Value.ul);
+					}
 				}
 				else
 				{
@@ -494,7 +498,9 @@ namespace controls
 						szParam1 = L"?"; // STRING_OK
 					}
 					else
+					{
 						szParam1 = std::to_wstring(lpProps[htcPR_DELETED_MSG_COUNT].Value.ul);
+					}
 
 					if (PT_ERROR == PROP_TYPE(lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].ulPropTag))
 					{
@@ -503,7 +509,9 @@ namespace controls
 						szParam2 = L"?"; // STRING_OK
 					}
 					else
+					{
 						szParam2 = std::to_wstring(lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].Value.ul);
+					}
 
 					if (PT_ERROR == PROP_TYPE(lpProps[htcPR_DELETED_FOLDER_COUNT].ulPropTag))
 					{
@@ -511,8 +519,11 @@ namespace controls
 						szParam3 = L"?"; // STRING_OK
 					}
 					else
+					{
 						szParam3 = std::to_wstring(lpProps[htcPR_DELETED_FOLDER_COUNT].Value.ul);
+					}
 				}
+
 				MAPIFreeBuffer(lpProps);
 			}
 		}
@@ -521,8 +532,8 @@ namespace controls
 
 		m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpMAPIContainer, GetSortListData(hItem));
 
-		WCHAR szText[255] = {0};
-		TVITEMEXW item = {0};
+		WCHAR szText[255] = {};
+		auto item = TVITEMEXW{};
 		item.mask = TVIF_TEXT;
 		item.pszText = szText;
 		item.cchTextMax = _countof(szText);
@@ -531,26 +542,6 @@ namespace controls
 		m_lpHostDlg->UpdateTitleBarText(szText);
 
 		if (lpMAPIContainer) lpMAPIContainer->Release();
-	}
-
-	_Check_return_ bool CHierarchyTableTreeCtrl::IsItemSelected() const { return m_bItemSelected; }
-
-	void CHierarchyTableTreeCtrl::OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
-	{
-		const auto pNMTV = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
-
-		if (pNMTV && pNMTV->itemNew.hItem)
-		{
-			m_bItemSelected = true;
-
-			UpdateSelectionUI(pNMTV->itemNew.hItem);
-		}
-		else
-		{
-			m_bItemSelected = false;
-		}
-
-		*pResult = 0;
 	}
 
 	// This function will be called when we edit a node so we can attempt to commit the changes
@@ -1048,7 +1039,7 @@ namespace controls
 			}
 		}
 
-		if (hModifyItem == GetSelectedItem()) UpdateSelectionUI(hModifyItem);
+		if (hModifyItem == GetSelectedItem()) OnItemSelected(hModifyItem);
 
 		return hRes;
 	}

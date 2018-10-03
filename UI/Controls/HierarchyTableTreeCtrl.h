@@ -35,7 +35,6 @@ namespace controls
 		_Check_return_ LPSBinary GetSelectedItemEID() const;
 		_Check_return_ sortlistdata::SortListData* GetSelectedItemData() const;
 		_Check_return_ sortlistdata::SortListData* GetSortListData(HTREEITEM iItem) const;
-		_Check_return_ bool IsItemSelected() const;
 
 	private:
 		// Overrides from base class
@@ -54,8 +53,7 @@ namespace controls
 		_Check_return_ UINT OnGetDlgCode();
 		void OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnRightClick(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-		void UpdateSelectionUI(HTREEITEM hItem) const;
+		void OnItemSelected(HTREEITEM hItem) const override;
 
 		// Node management
 		_Check_return_ HRESULT AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer) const;
@@ -76,7 +74,6 @@ namespace controls
 		LPMAPICONTAINER m_lpContainer{nullptr};
 		ULONG m_ulContainerType{NULL};
 		ULONG m_ulDisplayFlags{dfNormal};
-		bool m_bItemSelected{false};
 		bool m_bShuttingDown{false};
 
 		DECLARE_MESSAGE_MAP()

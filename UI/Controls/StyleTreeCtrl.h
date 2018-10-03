@@ -13,6 +13,10 @@ namespace controls
 		// Removes any existing node data and replaces it with lpData
 		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
 
+		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+		_Check_return_ bool IsItemSelected() const { return m_bItemSelected; }
+		virtual void OnItemSelected(HTREEITEM /*hItem*/) const {};
+
 		// TODO: Make this private
 		UINT m_nIDContextMenu{0};
 
@@ -24,6 +28,7 @@ namespace controls
 
 		HTREEITEM m_hItemCurHover{nullptr};
 		bool m_HoverButton{false};
+		bool m_bItemSelected{false};
 
 		// TODO: Kill this and use WindowProc instead
 		DECLARE_MESSAGE_MAP()
