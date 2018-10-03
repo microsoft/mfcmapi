@@ -274,7 +274,7 @@ namespace controls
 			}
 			else
 			{
-				GetContainer(hItem, mfcmapiDO_NOT_REQUEST_MODIFY, &lpMAPIContainer);
+				lpMAPIContainer = GetContainer(hItem, mfcmapiDO_NOT_REQUEST_MODIFY);
 			}
 
 			if (lpMAPIContainer)
@@ -445,8 +445,7 @@ namespace controls
 		if (!m_lpHostDlg) return;
 
 		// Have to request modify or this object is read only in the single prop control.
-		LPMAPICONTAINER lpMAPIContainer = nullptr;
-		GetContainer(hItem, mfcmapiREQUEST_MODIFY, &lpMAPIContainer);
+		auto lpMAPIContainer = GetContainer(hItem, mfcmapiREQUEST_MODIFY);
 
 		// make sure we've gotten the hierarchy table for this node
 		(void) GetHierarchyTable(
@@ -553,8 +552,7 @@ namespace controls
 
 		if (!pTVDispInfo || !pTVDispInfo->item.pszText) return;
 
-		LPMAPICONTAINER lpMAPIContainer = nullptr;
-		GetContainer(pTVDispInfo->item.hItem, mfcmapiREQUEST_MODIFY, &lpMAPIContainer);
+		auto lpMAPIContainer = GetContainer(pTVDispInfo->item.hItem, mfcmapiREQUEST_MODIFY);
 		if (!lpMAPIContainer) return;
 
 		SPropValue sDisplayName;
@@ -687,28 +685,21 @@ namespace controls
 		return nullptr;
 	}
 
-	_Check_return_ LPMAPICONTAINER CHierarchyTableTreeCtrl::GetSelectedContainer(__mfcmapiModifyEnum bModify) const
+	_Check_return_ LPMAPICONTAINER
+	CHierarchyTableTreeCtrl::GetSelectedContainer(const __mfcmapiModifyEnum bModify) const
 	{
-		LPMAPICONTAINER lpSelectedContainer = nullptr;
-
-		GetContainer(GetSelectedItem(), bModify, &lpSelectedContainer);
-
-		return lpSelectedContainer;
+		return GetContainer(GetSelectedItem(), bModify);
 	}
 
-	void CHierarchyTableTreeCtrl::GetContainer(
-		HTREEITEM Item,
-		__mfcmapiModifyEnum bModify,
-		_In_ LPMAPICONTAINER* lppContainer) const
+	_Check_return_ LPMAPICONTAINER
+	CHierarchyTableTreeCtrl::GetContainer(HTREEITEM Item, const __mfcmapiModifyEnum bModify) const
 	{
+		if (!Item) return nullptr;
+
 		auto hRes = S_OK;
 		ULONG ulObjType = 0;
 		SBinary NullBin = {0};
 		LPMAPICONTAINER lpContainer = nullptr;
-
-		*lppContainer = nullptr;
-
-		if (!Item) return;
 
 		output::DebugPrintEx(
 			DBGGeneric,
@@ -726,7 +717,7 @@ namespace controls
 			// We didn't get an entryID, so log it and get out of here
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"GetContainer", L"GetSortListData returned NULL or lpEntryID is NULL\n");
-			return;
+			return nullptr;
 		}
 
 		auto ulFlags = mfcmapiREQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL;
@@ -803,7 +794,7 @@ namespace controls
 			output::DebugPrint(DBGGeneric, L"\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n", hRes);
 			// We failed to open the item with MAPI_MODIFY.
 			// Let's try to open it with NULL
-			GetContainer(Item, mfcmapiDO_NOT_REQUEST_MODIFY, &lpContainer);
+			lpContainer = GetContainer(Item, mfcmapiDO_NOT_REQUEST_MODIFY);
 		}
 
 		// Ok - we're just out of luck
@@ -813,7 +804,6 @@ namespace controls
 			hRes = MAPI_E_NOT_FOUND;
 		}
 
-		if (lpContainer) *lppContainer = lpContainer;
 		output::DebugPrintEx(
 			DBGGeneric,
 			CLASS,
@@ -822,6 +812,8 @@ namespace controls
 			lpContainer,
 			ulObjType,
 			hRes);
+
+		return lpContainer;
 	}
 
 	// When + is clicked, add all entries in the table as children

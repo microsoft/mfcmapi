@@ -42,7 +42,7 @@ namespace controls
 
 		_Check_return_ HRESULT ExpandNode(HTREEITEM hParent) const;
 		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
-		void GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify, _In_ LPMAPICONTAINER* lppContainer) const;
+		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify) const;
 		_Check_return_ LPMAPITABLE
 		GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bRegNotifs) const;
 		void OnContextMenu(_In_ CWnd* pWnd, CPoint pos);
