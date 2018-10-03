@@ -26,6 +26,7 @@ namespace controls
 
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		_Check_return_ UINT OnGetDlgCode();
+		void StyleTreeCtrl::OnRightClick(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 
 		HTREEITEM m_hItemCurHover{nullptr};
 		bool m_HoverButton{false};

@@ -51,7 +51,6 @@ namespace controls
 		void OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-		void OnRightClick(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnItemSelected(HTREEITEM hItem) const override;
 
 		// Node management

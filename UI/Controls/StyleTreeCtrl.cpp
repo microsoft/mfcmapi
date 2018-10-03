@@ -24,6 +24,7 @@ namespace controls
 	BEGIN_MESSAGE_MAP(StyleTreeCtrl, CTreeCtrl)
 	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
 	ON_WM_GETDLGCODE()
+	ON_NOTIFY_REFLECT(NM_RCLICK, OnRightClick)
 	END_MESSAGE_MAP()
 
 	LRESULT StyleTreeCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -141,7 +142,7 @@ namespace controls
 		if (pResult) *pResult = 0;
 	}
 
-		// Assert that we want all keyboard input (including ENTER!)
+	// Assert that we want all keyboard input (including ENTER!)
 	_Check_return_ UINT StyleTreeCtrl::OnGetDlgCode()
 	{
 		auto iDlgCode = CTreeCtrl::OnGetDlgCode() | DLGC_WANTMESSAGE;
@@ -154,5 +155,14 @@ namespace controls
 		}
 
 		return iDlgCode;
+	}
+
+	void StyleTreeCtrl::OnRightClick(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
+	{
+		// Send WM_CONTEXTMENU to self
+		(void) SendMessage(WM_CONTEXTMENU, reinterpret_cast<WPARAM>(m_hWnd), GetMessagePos());
+
+		// Mark message as handled and suppress default handling
+		*pResult = 1;
 	}
 } // namespace controls

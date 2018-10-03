@@ -76,7 +76,6 @@ namespace controls
 	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, OnItemExpanding)
 	ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteItem)
 	ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
-	ON_NOTIFY_REFLECT(NM_RCLICK, OnRightClick)
 	ON_WM_KEYDOWN()
 	ON_WM_CONTEXTMENU()
 	ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
@@ -594,15 +593,6 @@ namespace controls
 				CTreeCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
 			}
 		}
-	}
-
-	void CHierarchyTableTreeCtrl::OnRightClick(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
-	{
-		// Send WM_CONTEXTMENU to self
-		(void) SendMessage(WM_CONTEXTMENU, reinterpret_cast<WPARAM>(m_hWnd), GetMessagePos());
-
-		// Mark message as handled and suppress default handling
-		*pResult = 1;
 	}
 
 	void CHierarchyTableTreeCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
