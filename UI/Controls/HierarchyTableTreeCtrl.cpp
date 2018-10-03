@@ -77,7 +77,6 @@ namespace controls
 	ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteItem)
 	ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
 	ON_WM_KEYDOWN()
-	ON_WM_CONTEXTMENU()
 	ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
 	ON_MESSAGE(WM_MFCMAPI_DELETEITEM, msgOnDeleteItem)
 	ON_MESSAGE(WM_MFCMAPI_MODIFYITEM, msgOnModifyItem)
@@ -595,37 +594,10 @@ namespace controls
 		}
 	}
 
-	void CHierarchyTableTreeCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
+	// TODO: Can this be moved down?
+	void CHierarchyTableTreeCtrl::HandleContextMenu(const int x, const int y)
 	{
-		if (pWnd && -1 == pos.x && -1 == pos.y)
-		{
-			// Find the highlighted item
-			const auto item = GetSelectedItem();
-
-			if (item)
-			{
-				RECT rc = {0};
-				GetItemRect(item, &rc, true);
-				pos.x = rc.left;
-				pos.y = rc.top;
-				::ClientToScreen(pWnd->m_hWnd, &pos);
-			}
-		}
-		else
-		{
-			// Select the item that is at the point pos.
-			UINT uFlags = NULL;
-			auto ptTree = pos;
-			ScreenToClient(&ptTree);
-			const auto hClickedItem = HitTest(ptTree, &uFlags);
-
-			if (hClickedItem != nullptr && TVHT_ONITEM & uFlags)
-			{
-				Select(hClickedItem, TVGN_CARET);
-			}
-		}
-
-		ui::DisplayContextMenu(m_nIDContextMenu, IDR_MENU_HIERARCHY_TABLE, m_lpHostDlg->m_hWnd, pos.x, pos.y);
+		ui::DisplayContextMenu(m_nIDContextMenu, IDR_MENU_HIERARCHY_TABLE, m_lpHostDlg->m_hWnd, x, y);
 	}
 
 	_Check_return_ sortlistdata::SortListData* CHierarchyTableTreeCtrl::GetSelectedItemData() const

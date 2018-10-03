@@ -26,7 +26,9 @@ namespace controls
 
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		_Check_return_ UINT OnGetDlgCode();
-		void StyleTreeCtrl::OnRightClick(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+		void OnRightClick(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+		virtual void HandleContextMenu(const int /*x*/, const int /*y*/) {}
+		void OnContextMenu(_In_ CWnd* pWnd, CPoint pos);
 
 		HTREEITEM m_hItemCurHover{nullptr};
 		bool m_HoverButton{false};

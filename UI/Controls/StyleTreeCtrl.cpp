@@ -25,6 +25,7 @@ namespace controls
 	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
 	ON_WM_GETDLGCODE()
 	ON_NOTIFY_REFLECT(NM_RCLICK, OnRightClick)
+	ON_WM_CONTEXTMENU()
 	END_MESSAGE_MAP()
 
 	LRESULT StyleTreeCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -164,5 +165,40 @@ namespace controls
 
 		// Mark message as handled and suppress default handling
 		*pResult = 1;
+	}
+
+	void StyleTreeCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
+	{
+		// If we don't have a position, this may be keyboard initiated context menu. Use the highlighted/selected item to find a position.
+		if (pWnd && -1 == pos.x && -1 == pos.y)
+		{
+			// Find the highlighted item
+			const auto item = GetSelectedItem();
+
+			if (item)
+			{
+				RECT rc = {0};
+				GetItemRect(item, &rc, true);
+				pos.x = rc.left;
+				pos.y = rc.top;
+				::ClientToScreen(pWnd->m_hWnd, &pos);
+			}
+		}
+		// If we have a position, make sure the item at that position is selected.
+		else
+		{
+			// Select the item that is at the point pos.
+			UINT uFlags = NULL;
+			auto ptTree = pos;
+			ScreenToClient(&ptTree);
+			const auto hClickedItem = HitTest(ptTree, &uFlags);
+
+			if (hClickedItem != nullptr && TVHT_ONITEM & uFlags)
+			{
+				Select(hClickedItem, TVGN_CARET);
+			}
+		}
+
+		HandleContextMenu(pos.x, pos.y);
 	}
 } // namespace controls
