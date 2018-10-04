@@ -16,6 +16,9 @@ namespace controls
 		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		_Check_return_ bool IsItemSelected() const { return m_bItemSelected; }
 		virtual void OnItemSelected(HTREEITEM /*hItem*/) const {};
+		virtual bool HasChildren(_In_ HTREEITEM /*hItem*/) const { return true; }
+
+		void OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 
 		// TODO: Make this private
 		UINT m_nIDContextMenu{0};

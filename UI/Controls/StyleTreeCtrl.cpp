@@ -23,8 +23,9 @@ namespace controls
 
 	BEGIN_MESSAGE_MAP(StyleTreeCtrl, CTreeCtrl)
 	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
-	ON_WM_GETDLGCODE()
 	ON_NOTIFY_REFLECT(NM_RCLICK, OnRightClick)
+	ON_NOTIFY_REFLECT(TVN_GETDISPINFO, OnGetDispInfo)
+	ON_WM_GETDLGCODE()
 	ON_WM_CONTEXTMENU()
 	END_MESSAGE_MAP()
 
@@ -141,6 +142,18 @@ namespace controls
 		}
 
 		if (pResult) *pResult = 0;
+	}
+
+	void StyleTreeCtrl::OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
+	{
+		const auto lpDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
+
+		if (lpDispInfo && lpDispInfo->item.mask & TVIF_CHILDREN)
+		{
+			lpDispInfo->item.cChildren = HasChildren(reinterpret_cast<HTREEITEM>(lpDispInfo->item.lParam));
+		}
+
+		*pResult = 0;
 	}
 
 	// Assert that we want all keyboard input (including ENTER!)

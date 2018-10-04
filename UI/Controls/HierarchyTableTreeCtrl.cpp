@@ -70,7 +70,6 @@ namespace controls
 	}
 
 	BEGIN_MESSAGE_MAP(CHierarchyTableTreeCtrl, StyleTreeCtrl)
-	ON_NOTIFY_REFLECT(TVN_GETDISPINFO, OnGetDispInfo)
 	ON_NOTIFY_REFLECT(TVN_SELCHANGED, OnSelChanged)
 	ON_NOTIFY_REFLECT(TVN_ENDLABELEDIT, OnEndLabelEdit)
 	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, OnItemExpanding)
@@ -385,7 +384,7 @@ namespace controls
 		return hRes;
 	}
 
-	bool CHierarchyTableTreeCtrl::HasChildren(_In_ HTREEITEM hItem)
+	bool CHierarchyTableTreeCtrl::HasChildren(_In_ HTREEITEM hItem) const
 	{
 		if (m_ulDisplayFlags & dfDeleted)
 		{
@@ -423,18 +422,6 @@ namespace controls
 		}
 
 		return false;
-	}
-
-	void CHierarchyTableTreeCtrl::OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
-	{
-		const auto lpDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
-
-		if (lpDispInfo && lpDispInfo->item.mask & TVIF_CHILDREN)
-		{
-			lpDispInfo->item.cChildren = HasChildren(reinterpret_cast<HTREEITEM>(lpDispInfo->item.lParam));
-		}
-
-		*pResult = 0;
 	}
 
 	void CHierarchyTableTreeCtrl::OnItemSelected(HTREEITEM hItem) const

@@ -36,6 +36,8 @@ namespace controls
 		_Check_return_ sortlistdata::SortListData* GetSelectedItemData() const;
 		_Check_return_ sortlistdata::SortListData* GetSortListData(HTREEITEM iItem) const;
 
+		bool HasChildren(_In_ HTREEITEM hItem) const override;
+
 	private:
 		// Overrides from base class
 		void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
@@ -48,11 +50,9 @@ namespace controls
 		void OnDblclk(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-		void OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnItemSelected(HTREEITEM hItem) const override;
 		void HandleContextMenu(int x, int y) override;
-		bool HasChildren(_In_ HTREEITEM hItem);
 
 		// Node management
 		_Check_return_ HRESULT AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer) const;
