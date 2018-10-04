@@ -51,7 +51,8 @@ namespace controls
 		void OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnItemSelected(HTREEITEM hItem) const override;
-		void HandleContextMenu(const int x, const int y) override;
+		void HandleContextMenu(int x, int y) override;
+		bool HasChildren(_In_ HTREEITEM hItem);
 
 		// Node management
 		_Check_return_ HRESULT AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer) const;

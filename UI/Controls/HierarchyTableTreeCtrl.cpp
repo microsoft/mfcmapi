@@ -385,53 +385,55 @@ namespace controls
 		return hRes;
 	}
 
+	bool CHierarchyTableTreeCtrl::HasChildren(_In_ HTREEITEM hItem)
+	{
+		if (m_ulDisplayFlags & dfDeleted)
+		{
+			return true;
+		}
+
+		const auto lpData = reinterpret_cast<sortlistdata::SortListData*>(hItem);
+
+		if (lpData && lpData->Node())
+		{
+			if (lpData->Node()->m_cSubfolders >= 0)
+			{
+				return lpData->Node()->m_cSubfolders > 0;
+			}
+
+			LPCTSTR szName = nullptr;
+			if (PROP_TYPE(lpData->lpSourceProps[0].ulPropTag) == PT_TSTRING)
+				szName = lpData->lpSourceProps[0].Value.LPSZ;
+			output::DebugPrintEx(
+				DBGHierarchy,
+				CLASS,
+				L"HasChildren",
+				L"Using Hierarchy table %d %p %ws\n",
+				lpData->Node()->m_cSubfolders,
+				lpData->Node()->m_lpHierarchyTable,
+				strings::LPCTSTRToWstring(szName).c_str());
+			// Won't force the hierarchy table - just get it if we've already got it
+			auto lpHierarchyTable = lpData->Node()->m_lpHierarchyTable;
+			if (lpHierarchyTable)
+			{
+				auto ulRowCount = ULONG{};
+				const auto hRes = WC_MAPI(lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
+				return !(hRes == S_OK && !ulRowCount);
+			}
+		}
+
+		return false;
+	}
+
 	void CHierarchyTableTreeCtrl::OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
 		const auto lpDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
 
 		if (lpDispInfo && lpDispInfo->item.mask & TVIF_CHILDREN)
 		{
-			const auto lpData = reinterpret_cast<sortlistdata::SortListData*>(lpDispInfo->item.lParam);
-
-			if (lpData && lpData->Node())
-			{
-				if (m_ulDisplayFlags & dfDeleted)
-				{
-					lpDispInfo->item.cChildren = 1;
-				}
-				else if (lpData->Node()->m_cSubfolders >= 0)
-				{
-					lpDispInfo->item.cChildren = lpData->Node()->m_cSubfolders ? 1 : 0;
-				}
-				else
-				{
-					LPCTSTR szName = nullptr;
-					if (PROP_TYPE(lpData->lpSourceProps[0].ulPropTag) == PT_TSTRING)
-						szName = lpData->lpSourceProps[0].Value.LPSZ;
-					output::DebugPrintEx(
-						DBGHierarchy,
-						CLASS,
-						L"OnGetDispInfo",
-						L"Using Hierarchy table %d %p %ws\n",
-						lpData->Node()->m_cSubfolders,
-						lpData->Node()->m_lpHierarchyTable,
-						strings::LPCTSTRToWstring(szName).c_str());
-					// won't force the hierarchy table - just get it if we've already got it
-					auto lpHierarchyTable = lpData->Node()->m_lpHierarchyTable;
-					if (lpHierarchyTable)
-					{
-						lpDispInfo->item.cChildren = 1;
-						auto hRes = S_OK;
-						ULONG ulRowCount = NULL;
-						hRes = WC_MAPI(lpHierarchyTable->GetRowCount(NULL, &ulRowCount));
-						if (hRes == S_OK && !ulRowCount)
-						{
-							lpDispInfo->item.cChildren = 0;
-						}
-					}
-				}
-			}
+			lpDispInfo->item.cChildren = HasChildren(reinterpret_cast<HTREEITEM>(lpDispInfo->item.lParam));
 		}
+
 		*pResult = 0;
 	}
 
