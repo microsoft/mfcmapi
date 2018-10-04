@@ -25,6 +25,7 @@ namespace controls
 	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
 	ON_NOTIFY_REFLECT(NM_RCLICK, OnRightClick)
 	ON_NOTIFY_REFLECT(TVN_GETDISPINFO, OnGetDispInfo)
+	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, OnItemExpanding)
 	ON_WM_GETDLGCODE()
 	ON_WM_CONTEXTMENU()
 	END_MESSAGE_MAP()
@@ -213,5 +214,32 @@ namespace controls
 		}
 
 		HandleContextMenu(pos.x, pos.y);
+	}
+
+	// When + is clicked, add all entries in the table as children
+	void StyleTreeCtrl::OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
+	{
+		*pResult = 0;
+
+		const auto pNMTreeView = reinterpret_cast<NM_TREEVIEW*>(pNMHDR);
+		if (pNMTreeView)
+		{
+			output::DebugPrintEx(
+				DBGHierarchy,
+				CLASS,
+				L"OnItemExpanding",
+				L"Expanding item %p \"%ws\" action = 0x%08X state = 0x%08X\n",
+				pNMTreeView->itemNew.hItem,
+				strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str(),
+				pNMTreeView->action,
+				pNMTreeView->itemNew.state);
+			if (pNMTreeView->action & TVE_EXPAND)
+			{
+				if (!(pNMTreeView->itemNew.state & TVIS_EXPANDEDONCE))
+				{
+					ExpandNode(pNMTreeView->itemNew.hItem);
+				}
+			}
+		}
 	}
 } // namespace controls

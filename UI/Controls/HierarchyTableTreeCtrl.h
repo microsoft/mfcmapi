@@ -42,7 +42,7 @@ namespace controls
 		// Overrides from base class
 		void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
-		_Check_return_ HRESULT ExpandNode(HTREEITEM hParent) const;
+		void ExpandNode(HTREEITEM hParent) const override;
 		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
 		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify) const;
 		_Check_return_ LPMAPITABLE
@@ -50,7 +50,6 @@ namespace controls
 		void OnDblclk(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-		void OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnItemSelected(HTREEITEM hItem) const override;
 		void HandleContextMenu(int x, int y) override;
 

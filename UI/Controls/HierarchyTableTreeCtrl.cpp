@@ -72,7 +72,6 @@ namespace controls
 	BEGIN_MESSAGE_MAP(CHierarchyTableTreeCtrl, StyleTreeCtrl)
 	ON_NOTIFY_REFLECT(TVN_SELCHANGED, OnSelChanged)
 	ON_NOTIFY_REFLECT(TVN_ENDLABELEDIT, OnEndLabelEdit)
-	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, OnItemExpanding)
 	ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteItem)
 	ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
 	ON_WM_KEYDOWN()
@@ -345,16 +344,13 @@ namespace controls
 	}
 
 	// Add the first level contents of lpMAPIContainer under the Parent node
-	_Check_return_ HRESULT CHierarchyTableTreeCtrl::ExpandNode(HTREEITEM hParent) const
+	void CHierarchyTableTreeCtrl::ExpandNode(HTREEITEM hParent) const
 	{
-		LPSRowSet pRows = nullptr;
-		auto hRes = S_OK;
-		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-
-		if (!m_hWnd) return S_OK;
-		if (!hParent) return MAPI_E_INVALID_PARAMETER;
 		output::DebugPrintEx(DBGHierarchy, CLASS, L"ExpandNode", L"Expanding %p\n", hParent);
+		if (!m_hWnd || !hParent) return;
 
+		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+		auto pRows = LPSRowSet{};
 		auto lpHierarchyTable =
 			GetHierarchyTable(hParent, nullptr, 0 != registry::RegKeys[registry::regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
 		if (lpHierarchyTable)
@@ -362,7 +358,7 @@ namespace controls
 			// go to the first row
 			EC_MAPI_S(lpHierarchyTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 
-			ULONG i = 0;
+			auto i = ULONG{};
 			// get each row in turn and add it to the list
 			// TODO: Query several rows at once
 			for (;;)
@@ -370,7 +366,7 @@ namespace controls
 				// Note - we're saving the rows off in AddNode, so we don't FreeProws this...we just MAPIFreeBuffer the array
 				if (pRows) MAPIFreeBuffer(pRows);
 				pRows = nullptr;
-				hRes = EC_MAPI(lpHierarchyTable->QueryRows(1, NULL, &pRows));
+				const auto hRes = EC_MAPI(lpHierarchyTable->QueryRows(1, NULL, &pRows));
 				if (FAILED(hRes) || !pRows || !pRows->cRows) break;
 				// Now we can process the row!
 
@@ -381,7 +377,6 @@ namespace controls
 
 		// Note - we're saving the props off in AddNode, so we don't FreeProws this...we just MAPIFreeBuffer the array
 		if (pRows) MAPIFreeBuffer(pRows);
-		return hRes;
 	}
 
 	bool CHierarchyTableTreeCtrl::HasChildren(_In_ HTREEITEM hItem) const
@@ -749,33 +744,6 @@ namespace controls
 			hRes);
 
 		return lpContainer;
-	}
-
-	// When + is clicked, add all entries in the table as children
-	void CHierarchyTableTreeCtrl::OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
-	{
-		*pResult = 0;
-
-		const auto pNMTreeView = reinterpret_cast<NM_TREEVIEW*>(pNMHDR);
-		if (pNMTreeView)
-		{
-			output::DebugPrintEx(
-				DBGHierarchy,
-				CLASS,
-				L"OnItemExpanding",
-				L"Expanding item %p \"%ws\" action = 0x%08X state = 0x%08X\n",
-				pNMTreeView->itemNew.hItem,
-				strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str(),
-				pNMTreeView->action,
-				pNMTreeView->itemNew.state);
-			if (pNMTreeView->action & TVE_EXPAND)
-			{
-				if (!(pNMTreeView->itemNew.state & TVIS_EXPANDEDONCE))
-				{
-					EC_H_S(ExpandNode(pNMTreeView->itemNew.hItem));
-				}
-			}
-		}
 	}
 
 	// Tree control will call this for every node it deletes.

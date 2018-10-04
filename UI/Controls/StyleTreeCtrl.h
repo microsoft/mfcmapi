@@ -17,6 +17,7 @@ namespace controls
 		_Check_return_ bool IsItemSelected() const { return m_bItemSelected; }
 		virtual void OnItemSelected(HTREEITEM /*hItem*/) const {};
 		virtual bool HasChildren(_In_ HTREEITEM /*hItem*/) const { return true; }
+		virtual void ExpandNode(HTREEITEM /*hParent*/) const {}
 
 		void OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 
@@ -32,6 +33,7 @@ namespace controls
 		void OnRightClick(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		virtual void HandleContextMenu(const int /*x*/, const int /*y*/) {}
 		void OnContextMenu(_In_ CWnd* pWnd, CPoint pos);
+		void OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 
 		HTREEITEM m_hItemCurHover{nullptr};
 		bool m_HoverButton{false};
