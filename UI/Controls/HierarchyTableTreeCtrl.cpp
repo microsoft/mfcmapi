@@ -81,6 +81,8 @@ namespace controls
 	ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
 	END_MESSAGE_MAP()
 
+	// TODO: I think the skeleton of this logic can be moved down as a Refresh function
+	// With a callback for the actual reload
 	_Check_return_ HRESULT CHierarchyTableTreeCtrl::RefreshHierarchyTable()
 	{
 		// Turn off redraw while we work on the window
@@ -343,6 +345,7 @@ namespace controls
 		return lpData->Node()->m_lpHierarchyTable;
 	}
 
+	// TODO: Make this an override handler
 	// Add the first level contents of lpMAPIContainer under the Parent node
 	void CHierarchyTableTreeCtrl::ExpandNode(HTREEITEM hParent) const
 	{
@@ -556,6 +559,7 @@ namespace controls
 		*pResult = 1;
 	}
 
+	// TODO: Split out an OnEnter handler and move the rest down
 	void CHierarchyTableTreeCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	{
 		output::DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
