@@ -30,7 +30,7 @@ namespace controls
 	ON_WM_CONTEXTMENU()
 	END_MESSAGE_MAP()
 
-	LRESULT StyleTreeCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+	LRESULT StyleTreeCtrl::WindowProc(const UINT message, const WPARAM wParam, const LPARAM lParam)
 	{
 		// Read the current hover local, since we need to clear it before we do any drawing
 		const auto hItemCurHover = m_hItemCurHover;
@@ -38,7 +38,7 @@ namespace controls
 		{
 		case WM_MOUSEMOVE:
 		{
-			TVHITTESTINFO tvHitTestInfo = {0};
+			auto tvHitTestInfo = TVHITTESTINFO{};
 			tvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 			tvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
@@ -67,7 +67,7 @@ namespace controls
 
 					m_hItemCurHover = tvHitTestInfo.hItem;
 
-					TRACKMOUSEEVENT tmEvent = {0};
+					auto tmEvent = TRACKMOUSEEVENT{};
 					tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
 					tmEvent.dwFlags = TME_LEAVE;
 					tmEvent.hwndTrack = m_hWnd;
@@ -108,7 +108,7 @@ namespace controls
 	{
 		if (lpData)
 		{
-			TVITEM tvItem = {0};
+			auto tvItem = TVITEM{};
 			tvItem.hItem = hItem;
 			tvItem.mask = TVIF_PARAM;
 			if (TreeView_GetItem(hWnd, &tvItem) && tvItem.lParam)
@@ -191,8 +191,8 @@ namespace controls
 
 			if (item)
 			{
-				RECT rc = {0};
-				GetItemRect(item, &rc, true);
+				auto rc = RECT{};
+				(void) GetItemRect(item, &rc, true);
 				pos.x = rc.left;
 				pos.y = rc.top;
 				::ClientToScreen(pWnd->m_hWnd, &pos);

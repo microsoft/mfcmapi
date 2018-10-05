@@ -56,8 +56,8 @@ namespace controls
 		_In_ CWnd* pCreateParent,
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_ dialog::CHierarchyTableDlg* lpHostDlg,
-		ULONG ulDisplayFlags,
-		UINT nIDContextMenu)
+		const ULONG ulDisplayFlags,
+		const UINT nIDContextMenu)
 	{
 		// We borrow our parent's Mapi objects
 		m_lpMapiObjects = lpMapiObjects;
@@ -200,7 +200,7 @@ namespace controls
 		_In_ const std::wstring& szName,
 		HTREEITEM hParent,
 		sortlistdata::SortListData* lpData,
-		bool bGetTable) const
+		const bool bGetTable) const
 	{
 		output::DebugPrintEx(
 			DBGHierarchy,
@@ -210,7 +210,7 @@ namespace controls
 			szName.c_str(),
 			hParent,
 			bGetTable);
-		TVINSERTSTRUCTW tvInsert = {nullptr};
+		auto tvInsert = TVINSERTSTRUCTW{};
 
 		tvInsert.hParent = hParent;
 		tvInsert.hInsertAfter = TVI_SORT;
@@ -228,7 +228,7 @@ namespace controls
 		}
 	}
 
-	void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, bool bGetTable) const
+	void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const bool bGetTable) const
 	{
 		if (!lpsRow) return;
 
@@ -256,7 +256,7 @@ namespace controls
 	_Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(
 		HTREEITEM hItem,
 		_In_opt_ LPMAPICONTAINER lpMAPIContainer,
-		bool bRegNotifs) const
+		const bool bRegNotifs) const
 	{
 		auto hRes = S_OK;
 		const auto lpData = GetSortListData(hItem);
@@ -560,7 +560,7 @@ namespace controls
 	}
 
 	// TODO: Split out an OnEnter handler and move the rest down
-	void CHierarchyTableTreeCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+	void CHierarchyTableTreeCtrl::OnKeyDown(const UINT nChar, const UINT nRepCnt, const UINT nFlags)
 	{
 		output::DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
 
@@ -631,8 +631,8 @@ namespace controls
 		if (!Item) return nullptr;
 
 		auto hRes = S_OK;
-		ULONG ulObjType = 0;
-		SBinary NullBin = {0};
+		auto ulObjType = ULONG{};
+		auto NullBin = SBinary{};
 		LPMAPICONTAINER lpContainer = nullptr;
 
 		output::DebugPrintEx(
@@ -790,7 +790,7 @@ namespace controls
 						DBGHierarchy, CLASS, L"OnDeleteItem", L"%p has no siblings\n", pNMTreeView->itemOld.hItem);
 					const auto hParent = TreeView_GetParent(m_hWnd, pNMTreeView->itemOld.hItem);
 					TreeView_SetItemState(m_hWnd, hParent, 0, TVIS_EXPANDED | TVIS_EXPANDEDONCE);
-					TVITEM tvItem = {0};
+					auto tvItem = TVITEM{};
 					tvItem.hItem = hParent;
 					tvItem.mask = TVIF_PARAM;
 					if (TreeView_GetItem(m_hWnd, &tvItem) && tvItem.lParam)
@@ -811,7 +811,7 @@ namespace controls
 	// WM_MFCMAPI_ADDITEM
 	// If the parent has been expanded once, add the new row
 	// Otherwise, ditch the notification
-	_Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnAddItem(WPARAM wParam, LPARAM lParam)
+	_Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnAddItem(const WPARAM wParam, const LPARAM lParam)
 	{
 		const auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
 		const auto hParent = reinterpret_cast<HTREEITEM>(lParam);
@@ -828,19 +828,18 @@ namespace controls
 		const int iState = GetItemState(hParent, NULL);
 		if (iState & TVIS_EXPANDEDONCE)
 		{
-			auto hRes = S_OK;
 			// We make this copy here and pass it in to AddNode, where it is grabbed by SortListData::InitializeContents to be part of the item data
 			// The mem will be freed when the item data is cleaned up - do not free here
-			SRow NewRow = {0};
+			auto NewRow = SRow{};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-			hRes = WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
+			WC_MAPI_S(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 			AddNode(&NewRow, hParent, true);
 		}
 		else
 		{
 			// in case the item doesn't know it has children, let it know
-			TVITEM tvItem = {0};
+			auto tvItem = TVITEM{};
 			tvItem.hItem = hParent;
 			tvItem.mask = TVIF_PARAM;
 			if (TreeView_GetItem(m_hWnd, &tvItem) && tvItem.lParam)
@@ -858,7 +857,7 @@ namespace controls
 
 	// WM_MFCMAPI_DELETEITEM
 	// Remove the child node.
-	_Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnDeleteItem(WPARAM wParam, LPARAM lParam)
+	_Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnDeleteItem(const WPARAM wParam, const LPARAM lParam)
 	{
 		auto hRes = S_OK;
 		auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
@@ -883,7 +882,7 @@ namespace controls
 
 	// WM_MFCMAPI_MODIFYITEM
 	// Update any UI for the node and resort if needed.
-	_Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, LPARAM lParam)
+	_Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(const WPARAM wParam, const LPARAM lParam)
 	{
 		auto hRes = S_OK;
 		auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
@@ -913,15 +912,15 @@ namespace controls
 				szText = strings::loadstring(IDS_UNKNOWNNAME);
 			}
 
-			TVITEMEXW item = {0};
+			auto item = TVITEMEXW{};
 			item.mask = TVIF_TEXT;
 			item.pszText = const_cast<LPWSTR>(szText.c_str());
 			item.hItem = hModifyItem;
-			hRes = EC_B(::SendMessage(m_hWnd, TVM_SETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+			EC_B_S(::SendMessage(m_hWnd, TVM_SETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
 
 			// We make this copy here and pass it in to the node
 			// The mem will be freed when the item data is cleaned up - do not free here
-			SRow NewRow = {0};
+			auto NewRow = SRow{};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 			hRes = WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
@@ -946,7 +945,7 @@ namespace controls
 	// WM_MFCMAPI_REFRESHTABLE
 	// If node was expanded, collapse it to remove all children
 	// Then, if the node does have children, reexpand it.
-	_Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnRefreshTable(WPARAM wParam, LPARAM /*lParam*/)
+	_Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnRefreshTable(const WPARAM wParam, LPARAM /*lParam*/)
 	{
 		auto hRes = S_OK;
 		const auto hRefreshItem = reinterpret_cast<HTREEITEM>(wParam);
@@ -964,7 +963,7 @@ namespace controls
 			auto hChild = GetChildItem(hRefreshItem);
 			while (hChild)
 			{
-				hRes = EC_B(DeleteItem(hChild));
+				EC_B_S(DeleteItem(hChild));
 				hChild = GetChildItem(hRefreshItem);
 			}
 
