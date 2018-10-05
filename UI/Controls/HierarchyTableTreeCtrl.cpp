@@ -81,32 +81,15 @@ namespace controls
 	ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
 	END_MESSAGE_MAP()
 
-	// TODO: I think the skeleton of this logic can be moved down as a Refresh function
-	// With a callback for the actual reload
-	_Check_return_ HRESULT CHierarchyTableTreeCtrl::RefreshHierarchyTable()
+	void CHierarchyTableTreeCtrl::OnRefresh() const
 	{
-		// Turn off redraw while we work on the window
-		SetRedraw(false);
-
-		OnSelChanged(nullptr, nullptr);
-
-		auto hRes = EC_B(DeleteItem(GetRootItem()));
-
-		if (SUCCEEDED(hRes) && m_lpContainer)
-		{
-			hRes = EC_H(AddRootNode(m_lpContainer));
-		}
+		AddRootNode();
 
 		if (m_lpHostDlg) m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
-
-		// Turn redraw back on to update our view
-		SetRedraw(true);
-		return hRes;
 	}
 
-	_Check_return_ HRESULT CHierarchyTableTreeCtrl::LoadHierarchyTable(_In_ LPMAPICONTAINER lpMAPIContainer)
+	void CHierarchyTableTreeCtrl::LoadHierarchyTable(_In_ LPMAPICONTAINER lpMAPIContainer)
 	{
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (m_lpContainer) m_lpContainer->Release();
@@ -114,20 +97,12 @@ namespace controls
 		m_ulContainerType = NULL;
 
 		// If we weren't passed a container to load, give up
-		if (!m_lpContainer) return hRes;
+		if (!m_lpContainer) return;
 		m_lpContainer->AddRef();
 
 		m_ulContainerType = mapi::GetMAPIObjectType(lpMAPIContainer);
 
-		hRes = WC_H(RefreshHierarchyTable());
-		if (hRes == MAPI_E_NOT_FOUND)
-		{
-			WARNHRESMSG(hRes, IDS_HIERARCHNOTFOUND);
-		}
-		else
-			CHECKHRESMSG(hRes, IDS_REFRESHHIERARCHYFAILED);
-
-		return hRes;
+		Refresh();
 	}
 
 	void CHierarchyTableTreeCtrl::FreeNodeData(const LPARAM lpData) const
@@ -135,18 +110,17 @@ namespace controls
 		delete reinterpret_cast<sortlistdata::SortListData*>(lpData);
 	}
 
-	_Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer) const
+	void CHierarchyTableTreeCtrl::AddRootNode() const
 	{
+		if (!m_lpContainer || !m_hWnd) return;
 		LPSPropValue lpProps = nullptr;
 		LPSPropValue lpRootName = nullptr; // don't free
 		LPSBinary lpEIDBin = nullptr; // don't free
-		if (!m_hWnd) return S_OK;
-		if (!lpMAPIContainer) return MAPI_E_INVALID_PARAMETER;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		ULONG cVals = 0;
 
-		WC_H_GETPROPS_S(lpMAPIContainer->GetProps(LPSPropTagArray(&sptHTCols), fMapiUnicode, &cVals, &lpProps));
+		WC_H_GETPROPS_S(m_lpContainer->GetProps(LPSPropTagArray(&sptHTCols), fMapiUnicode, &cVals, &lpProps));
 
 		// Get the entry ID for the Root Container
 		if (!lpProps || PT_ERROR == PROP_TYPE(lpProps[htPR_ENTRYID].ulPropTag))
@@ -193,7 +167,6 @@ namespace controls
 		}
 
 		// Node owns the lpProps memory now, so we don't free it
-		return S_OK;
 	}
 
 	void CHierarchyTableTreeCtrl::AddNode(

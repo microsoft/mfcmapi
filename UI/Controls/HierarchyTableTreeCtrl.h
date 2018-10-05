@@ -27,8 +27,7 @@ namespace controls
 			_In_ dialog::CHierarchyTableDlg* lpHostDlg,
 			ULONG ulDisplayFlags,
 			UINT nIDContextMenu);
-		_Check_return_ HRESULT LoadHierarchyTable(_In_ LPMAPICONTAINER lpMAPIContainer);
-		_Check_return_ HRESULT RefreshHierarchyTable();
+		void LoadHierarchyTable(_In_ LPMAPICONTAINER lpMAPIContainer);
 
 		// Selected item accessors
 		_Check_return_ LPMAPICONTAINER GetSelectedContainer(__mfcmapiModifyEnum bModify) const;
@@ -52,9 +51,10 @@ namespace controls
 		void OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnItemSelected(HTREEITEM hItem) const override;
 		void HandleContextMenu(int x, int y) override;
+		void OnRefresh() const override;
 
 		// Node management
-		_Check_return_ HRESULT AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer) const;
+		void AddRootNode() const;
 		void
 		AddNode(_In_ const std::wstring& szName, HTREEITEM hParent, sortlistdata::SortListData* lpData, bool bGetTable)
 			const;

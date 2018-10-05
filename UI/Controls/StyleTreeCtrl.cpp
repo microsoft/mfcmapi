@@ -242,4 +242,18 @@ namespace controls
 			}
 		}
 	}
+
+	void StyleTreeCtrl::Refresh()
+		{
+			// Turn off redraw while we work on the window
+			SetRedraw(false);
+
+			OnSelChanged(nullptr, nullptr);
+
+			EC_B_S(DeleteItem(GetRootItem()));
+			OnRefresh();
+
+			// Turn redraw back on to update our view
+			SetRedraw(true);
+		}
 } // namespace controls

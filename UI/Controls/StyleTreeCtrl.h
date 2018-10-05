@@ -7,6 +7,7 @@ namespace controls
 	public:
 		void Create(_In_ CWnd* pCreateParent, UINT nIDContextMenu);
 		_Check_return_ bool IsItemSelected() const { return m_bItemSelected; }
+		void Refresh();
 
 	protected:
 		// Node management
@@ -23,6 +24,7 @@ namespace controls
 		virtual void OnItemSelected(HTREEITEM /*hItem*/) const {};
 		virtual bool HasChildren(_In_ HTREEITEM /*hItem*/) const { return true; }
 		virtual void ExpandNode(HTREEITEM /*hParent*/) const {}
+		virtual void OnRefresh() const {}
 
 		void OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 

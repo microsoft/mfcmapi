@@ -219,7 +219,7 @@ namespace dialog
 
 		if (m_lpHierarchyTableTreeCtrl)
 		{
-			EC_H_S(m_lpHierarchyTableTreeCtrl.LoadHierarchyTable(m_lpContainer));
+			m_lpHierarchyTableTreeCtrl.LoadHierarchyTable(m_lpContainer);
 		}
 	}
 
@@ -247,7 +247,7 @@ namespace dialog
 	void CHierarchyTableDlg::OnRefreshView()
 	{
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
-		if (m_lpHierarchyTableTreeCtrl) EC_H_S(m_lpHierarchyTableTreeCtrl.RefreshHierarchyTable());
+		if (m_lpHierarchyTableTreeCtrl) m_lpHierarchyTableTreeCtrl.Refresh();
 	}
 
 	_Check_return_ bool CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
