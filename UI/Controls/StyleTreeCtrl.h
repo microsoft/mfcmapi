@@ -17,7 +17,8 @@ namespace controls
 		// Removes any existing node data and replaces it with lpData
 		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
 		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-		HTREEITEM AddChildNode(_In_ const std::wstring& szName, HTREEITEM hParent, LPARAM lpData, bool bGetTable) const;
+		HTREEITEM
+		AddChildNode(_In_ const std::wstring& szName, HTREEITEM hParent, LPARAM lpData, bool bFireCallback) const;
 
 		UINT m_nIDContextMenu{0};
 		bool m_bShuttingDown{false};

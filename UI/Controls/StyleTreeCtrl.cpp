@@ -172,17 +172,21 @@ namespace controls
 	}
 
 	HTREEITEM
-	StyleTreeCtrl::AddChildNode(_In_ const std::wstring& szName, HTREEITEM hParent, LPARAM lpData, const bool bGetTable)
+	StyleTreeCtrl::AddChildNode(
+		_In_ const std::wstring& szName,
+		HTREEITEM hParent,
+		LPARAM lpData,
+		const bool bFireCallback)
 		const
 	{
 		output::DebugPrintEx(
 			DBGHierarchy,
 			CLASS,
 			L"AddNode",
-			L"Adding Node \"%ws\" under node %p, bGetTable = 0x%X\n",
+			L"Adding Node \"%ws\" under node %p, bFireCallback = 0x%X\n",
 			szName.c_str(),
 			hParent,
-			bGetTable);
+			bFireCallback);
 		auto tvInsert = TVINSERTSTRUCTW{};
 
 		tvInsert.hParent = hParent;
@@ -195,7 +199,7 @@ namespace controls
 
 		SetNodeData(m_hWnd, hItem, lpData);
 
-		if (bGetTable)
+		if (bFireCallback)
 		{
 			OnItemAdded(hItem);
 		}
