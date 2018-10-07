@@ -11,6 +11,7 @@ namespace controls
 
 	protected:
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+		BOOL PreTranslateMessage(MSG* pMsg) override;
 
 		// Node management
 		// Removes any existing node data and replaces it with lpData

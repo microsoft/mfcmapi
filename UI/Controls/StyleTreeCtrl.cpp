@@ -104,6 +104,27 @@ namespace controls
 		return CTreeCtrl::WindowProc(message, wParam, lParam);
 	}
 
+	BOOL StyleTreeCtrl::PreTranslateMessage(MSG* pMsg)
+	{
+		// If edit control is visible in tree view control, when you send a
+		// WM_KEYDOWN message to the edit control it will dismiss the edit
+		// control. When the ENTER key was sent to the edit control, the
+		// parent window of the tree view control is responsible for updating
+		// the item's label in TVN_ENDLABELEDIT notification code.
+		if (pMsg && pMsg->message == WM_KEYDOWN &&
+			(pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE))
+		{
+			const auto edit = GetEditControl();
+			if (edit)
+			{
+				edit->SendMessage(WM_KEYDOWN, pMsg->wParam, pMsg->lParam);
+				return true;
+			}
+		}
+
+		return CTreeCtrl::PreTranslateMessage(pMsg);
+	}
+
 	void StyleTreeCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
 		ui::CustomDrawTree(pNMHDR, pResult, m_HoverButton, m_hItemCurHover);

@@ -223,27 +223,6 @@ namespace dialog
 		}
 	}
 
-	// Per Q167960 BUG: ESC/ENTER Keys Do Not Work When Editing CTreeCtrl Labels
-	BOOL CHierarchyTableDlg::PreTranslateMessage(MSG* pMsg)
-	{
-		// If edit control is visible in tree view control, when you send a
-		// WM_KEYDOWN message to the edit control it will dismiss the edit
-		// control. When the ENTER key was sent to the edit control, the
-		// parent window of the tree view control is responsible for updating
-		// the item's label in TVN_ENDLABELEDIT notification code.
-		if (m_lpHierarchyTableTreeCtrl && pMsg && pMsg->message == WM_KEYDOWN &&
-			(pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE))
-		{
-			const auto edit = m_lpHierarchyTableTreeCtrl.GetEditControl();
-			if (edit)
-			{
-				edit->SendMessage(WM_KEYDOWN, pMsg->wParam, pMsg->lParam);
-				return true;
-			}
-		}
-		return CMyDialog::PreTranslateMessage(pMsg);
-	}
-
 	void CHierarchyTableDlg::OnRefreshView()
 	{
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");

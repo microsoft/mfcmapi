@@ -46,8 +46,6 @@ namespace dialog
 		BOOL OnInitDialog() override;
 		void OnRefreshView() override;
 
-		BOOL PreTranslateMessage(MSG* pMsg) override;
-
 		// Menu items
 		void OnDisplayHierarchyTable();
 		void OnDisplayItem();
