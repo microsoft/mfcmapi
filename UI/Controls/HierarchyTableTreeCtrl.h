@@ -53,6 +53,7 @@ namespace controls
 
 		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
 		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify) const;
+		void Advise(HTREEITEM hItem, sortlistdata::SortListData* lpData) const;
 		_Check_return_ LPMAPITABLE
 		GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bRegNotifs) const;
 
