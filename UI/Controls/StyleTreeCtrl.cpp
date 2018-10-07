@@ -6,8 +6,9 @@ namespace controls
 {
 	static std::wstring CLASS = L"StyleTreeCtrl";
 
-	void StyleTreeCtrl::Create(_In_ CWnd* pCreateParent, const UINT nIDContextMenu)
+	void StyleTreeCtrl::Create(_In_ CWnd* pCreateParent, const UINT nIDContextMenu, const bool bReadOnly)
 	{
+		m_bReadOnly = bReadOnly;
 		m_nIDContextMenu = nIDContextMenu;
 
 		CTreeCtrl::Create(
@@ -28,6 +29,11 @@ namespace controls
 	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, OnItemExpanding)
 	ON_WM_GETDLGCODE()
 	ON_WM_CONTEXTMENU()
+	ON_NOTIFY_REFLECT(TVN_SELCHANGED, OnSelChanged)
+	ON_NOTIFY_REFLECT(TVN_ENDLABELEDIT, OnEndLabelEdit)
+	ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteItem)
+	ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
+	ON_WM_KEYDOWN()
 	END_MESSAGE_MAP()
 
 	LRESULT StyleTreeCtrl::WindowProc(const UINT message, const WPARAM wParam, const LPARAM lParam)
@@ -244,16 +250,93 @@ namespace controls
 	}
 
 	void StyleTreeCtrl::Refresh()
+	{
+		// Turn off redraw while we work on the window
+		SetRedraw(false);
+
+		OnSelChanged(nullptr, nullptr);
+
+		EC_B_S(DeleteItem(GetRootItem()));
+		OnRefresh();
+
+		// Turn redraw back on to update our view
+		SetRedraw(true);
+	}
+
+	// This function will be called when we edit a node so we can attempt to commit the changes
+	// TODO: In non-unicode builds, this gives us ANSI strings - need to figure out how to change that
+	void StyleTreeCtrl::OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
+	{
+		const auto pTVDispInfo = reinterpret_cast<TV_DISPINFO*>(pNMHDR);
+		*pResult = 0;
+
+		if (!pTVDispInfo || !pTVDispInfo->item.pszText) return;
+
+		OnLabelEdit(pTVDispInfo->item.hItem, pTVDispInfo->item.pszText);
+	}
+
+	void StyleTreeCtrl::OnDblclk(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
+	{
+		OnDisplaySelectedItem();
+
+		// Don't do default behavior for double-click (We only want '+' sign expansion.
+		// Double click should display the item, not expand the tree.)
+		*pResult = 1;
+	}
+
+	void StyleTreeCtrl::OnKeyDown(const UINT nChar, const UINT nRepCnt, const UINT nFlags)
+	{
+		output::DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
+
+		const auto bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
+		const auto bShiftPressed = GetKeyState(VK_SHIFT) < 0;
+		const auto bMenuPressed = GetKeyState(VK_MENU) < 0;
+
+		if (!bMenuPressed && !HandleKeyDown(nChar, bShiftPressed, bCtrlPressed, bMenuPressed))
 		{
-			// Turn off redraw while we work on the window
-			SetRedraw(false);
-
-			OnSelChanged(nullptr, nullptr);
-
-			EC_B_S(DeleteItem(GetRootItem()));
-			OnRefresh();
-
-			// Turn redraw back on to update our view
-			SetRedraw(true);
+			CTreeCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
 		}
+	}
+
+	// Tree control will call this for every node it deletes.
+	void StyleTreeCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
+	{
+		const auto pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+		if (pNMTreeView)
+		{
+			output::DebugPrintEx(
+				DBGHierarchy,
+				CLASS,
+				L"OnDeleteItem",
+				L"Deleting item %p \"%ws\"\n",
+				pNMTreeView->itemOld.hItem,
+				strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str());
+
+			FreeNodeData(pNMTreeView->itemOld.lParam);
+
+			if (!m_bShuttingDown)
+			{
+				// Collapse the parent if this is the last child
+				const auto hPrev = TreeView_GetPrevSibling(m_hWnd, pNMTreeView->itemOld.hItem);
+				const auto hNext = TreeView_GetNextSibling(m_hWnd, pNMTreeView->itemOld.hItem);
+
+				if (!(hPrev || hNext))
+				{
+					output::DebugPrintEx(
+						DBGHierarchy, CLASS, L"OnDeleteItem", L"%p has no siblings\n", pNMTreeView->itemOld.hItem);
+					const auto hParent = TreeView_GetParent(m_hWnd, pNMTreeView->itemOld.hItem);
+					TreeView_SetItemState(m_hWnd, hParent, 0, TVIS_EXPANDED | TVIS_EXPANDEDONCE);
+					auto tvItem = TVITEM{};
+					tvItem.hItem = hParent;
+					tvItem.mask = TVIF_PARAM;
+					if (TreeView_GetItem(m_hWnd, &tvItem) && tvItem.lParam)
+					{
+						OnLastChildDeleted(tvItem.lParam);
+					}
+				}
+			}
+		}
+
+		*pResult = 0;
+	}
 } // namespace controls

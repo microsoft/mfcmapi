@@ -30,7 +30,7 @@ namespace viewpane
 	void TreePane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
 		ViewPane::Initialize(pParent, hdc);
-		m_Tree.Create(pParent, 0);
+		m_Tree.Create(pParent, 0, m_bReadOnly);
 
 		// TODO: Don't leave this here
 		TVINSERTSTRUCTW tvInsert = {nullptr};

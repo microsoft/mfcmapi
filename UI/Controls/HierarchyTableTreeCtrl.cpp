@@ -66,15 +66,10 @@ namespace controls
 		m_lpHostDlg = lpHostDlg;
 		m_ulDisplayFlags = ulDisplayFlags;
 
-		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu);
+		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu, false);
 	}
 
 	BEGIN_MESSAGE_MAP(CHierarchyTableTreeCtrl, StyleTreeCtrl)
-	ON_NOTIFY_REFLECT(TVN_SELCHANGED, OnSelChanged)
-	ON_NOTIFY_REFLECT(TVN_ENDLABELEDIT, OnEndLabelEdit)
-	ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteItem)
-	ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
-	ON_WM_KEYDOWN()
 	ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
 	ON_MESSAGE(WM_MFCMAPI_DELETEITEM, msgOnDeleteItem)
 	ON_MESSAGE(WM_MFCMAPI_MODIFYITEM, msgOnModifyItem)
@@ -107,7 +102,19 @@ namespace controls
 
 	void CHierarchyTableTreeCtrl::FreeNodeData(const LPARAM lpData) const
 	{
-		delete reinterpret_cast<sortlistdata::SortListData*>(lpData);
+		auto* lpNodeData = reinterpret_cast<sortlistdata::SortListData*>(lpData);
+		if (lpNodeData && lpNodeData->Node() && lpNodeData->Node()->m_lpAdviseSink)
+		{
+			output::DebugPrintEx(
+				DBGHierarchy,
+				CLASS,
+				L"OnDeleteItem",
+				L"Unadvising %p, ulAdviseConnection = 0x%08X\n",
+				lpNodeData->Node()->m_lpAdviseSink,
+				static_cast<int>(lpNodeData->Node()->m_ulAdviseConnection));
+		}
+
+		delete reinterpret_cast<sortlistdata::SortListData*>(lpNodeData);
 	}
 
 	void CHierarchyTableTreeCtrl::AddRootNode() const
@@ -500,59 +507,43 @@ namespace controls
 		if (lpMAPIContainer) lpMAPIContainer->Release();
 	}
 
-	// This function will be called when we edit a node so we can attempt to commit the changes
-	// TODO: In non-unicode builds, this gives us ANSI strings - need to figure out how to change that
-	void CHierarchyTableTreeCtrl::OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
+	void CHierarchyTableTreeCtrl::OnLabelEdit(HTREEITEM hItem, LPTSTR szText)
 	{
-		const auto pTVDispInfo = reinterpret_cast<TV_DISPINFO*>(pNMHDR);
-		*pResult = 0;
-
-		if (!pTVDispInfo || !pTVDispInfo->item.pszText) return;
-
-		auto lpMAPIContainer = GetContainer(pTVDispInfo->item.hItem, mfcmapiREQUEST_MODIFY);
+		auto lpMAPIContainer = GetContainer(hItem, mfcmapiREQUEST_MODIFY);
 		if (!lpMAPIContainer) return;
 
 		SPropValue sDisplayName;
 		sDisplayName.ulPropTag = PR_DISPLAY_NAME;
-		sDisplayName.Value.LPSZ = pTVDispInfo->item.pszText;
+		sDisplayName.Value.LPSZ = szText;
 
 		EC_MAPI_S(HrSetOneProp(lpMAPIContainer, &sDisplayName));
 
 		lpMAPIContainer->Release();
 	}
 
-	void CHierarchyTableTreeCtrl::OnDblclk(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
+	void CHierarchyTableTreeCtrl::OnDisplaySelectedItem()
 	{
 		// Due to problems with focus...we have to post instead of calling OnDisplayItem directly.
 		// Post the message to display the item
 		if (m_lpHostDlg) m_lpHostDlg->PostMessage(WM_COMMAND, ID_DISPLAYSELECTEDITEM, NULL);
-
-		// Don't do default behavior for double-click (We only want '+' sign expansion.
-		// Double click should display the item, not expand the tree.)
-		*pResult = 1;
 	}
 
-	// TODO: Split out an OnEnter handler and move the rest down
-	void CHierarchyTableTreeCtrl::OnKeyDown(const UINT nChar, const UINT nRepCnt, const UINT nFlags)
+	bool CHierarchyTableTreeCtrl::HandleKeyDown(
+		const UINT nChar,
+		const bool bShiftPressed,
+		const bool bCtrlPressed,
+		const bool bMenuPressed)
 	{
-		output::DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
-
-		const auto bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
-		const auto bShiftPressed = GetKeyState(VK_SHIFT) < 0;
-		const auto bMenuPressed = GetKeyState(VK_MENU) < 0;
-
-		if (!bMenuPressed)
+		if (VK_RETURN == nChar && bCtrlPressed)
 		{
-			if (VK_RETURN == nChar && bCtrlPressed)
-			{
-				output::DebugPrintEx(DBGGeneric, CLASS, L"OnKeyDown", L"calling Display Associated Contents\n");
-				if (m_lpHostDlg) m_lpHostDlg->PostMessage(WM_COMMAND, ID_DISPLAYASSOCIATEDCONTENTS, NULL);
-			}
-			else if (!m_lpHostDlg || !m_lpHostDlg->HandleKeyDown(nChar, bShiftPressed, bCtrlPressed, bMenuPressed))
-			{
-				CTreeCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
-			}
+			output::DebugPrintEx(DBGGeneric, CLASS, L"OnKeyDown", L"calling Display Associated Contents\n");
+			if (m_lpHostDlg) m_lpHostDlg->PostMessage(WM_COMMAND, ID_DISPLAYASSOCIATEDCONTENTS, NULL);
+			return true;
 		}
+
+		if (m_lpHostDlg) return m_lpHostDlg->HandleKeyDown(nChar, bShiftPressed, bCtrlPressed, bMenuPressed);
+
+		return false;
 	}
 
 	// TODO: Can this be moved down?
@@ -723,62 +714,13 @@ namespace controls
 		return lpContainer;
 	}
 
-	// Tree control will call this for every node it deletes.
-	void CHierarchyTableTreeCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
+	void CHierarchyTableTreeCtrl::OnLastChildDeleted(LPARAM lpData)
 	{
-		const auto pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
-		if (pNMTreeView)
+		const auto lpNodeData = reinterpret_cast<sortlistdata::SortListData*>(lpData);
+		if (lpNodeData && lpNodeData->Node())
 		{
-			auto* lpData = reinterpret_cast<sortlistdata::SortListData*>(pNMTreeView->itemOld.lParam);
-			output::DebugPrintEx(
-				DBGHierarchy,
-				CLASS,
-				L"OnDeleteItem",
-				L"Deleting item %p \"%ws\"\n",
-				pNMTreeView->itemOld.hItem,
-				strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str());
-
-			if (lpData && lpData->Node() && lpData->Node()->m_lpAdviseSink)
-			{
-				output::DebugPrintEx(
-					DBGHierarchy,
-					CLASS,
-					L"OnDeleteItem",
-					L"Unadvising %p, ulAdviseConnection = 0x%08X\n",
-					lpData->Node()->m_lpAdviseSink,
-					static_cast<int>(lpData->Node()->m_ulAdviseConnection));
-			}
-
-			FreeNodeData(pNMTreeView->itemOld.lParam);
-
-			if (!m_bShuttingDown)
-			{
-				// Collapse the parent if this is the last child
-				const auto hPrev = TreeView_GetPrevSibling(m_hWnd, pNMTreeView->itemOld.hItem);
-				const auto hNext = TreeView_GetNextSibling(m_hWnd, pNMTreeView->itemOld.hItem);
-
-				if (!(hPrev || hNext))
-				{
-					output::DebugPrintEx(
-						DBGHierarchy, CLASS, L"OnDeleteItem", L"%p has no siblings\n", pNMTreeView->itemOld.hItem);
-					const auto hParent = TreeView_GetParent(m_hWnd, pNMTreeView->itemOld.hItem);
-					TreeView_SetItemState(m_hWnd, hParent, 0, TVIS_EXPANDED | TVIS_EXPANDEDONCE);
-					auto tvItem = TVITEM{};
-					tvItem.hItem = hParent;
-					tvItem.mask = TVIF_PARAM;
-					if (TreeView_GetItem(m_hWnd, &tvItem) && tvItem.lParam)
-					{
-						lpData = reinterpret_cast<sortlistdata::SortListData*>(tvItem.lParam);
-						if (lpData && lpData->Node())
-						{
-							lpData->Node()->m_cSubfolders = 0;
-						}
-					}
-				}
-			}
+			lpNodeData->Node()->m_cSubfolders = 0;
 		}
-
-		*pResult = 0;
 	}
 
 	// WM_MFCMAPI_ADDITEM

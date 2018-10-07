@@ -39,19 +39,20 @@ namespace controls
 
 	private:
 		// Overrides from base class
-		void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-
 		void ExpandNode(HTREEITEM hParent) const override;
+		void OnItemSelected(HTREEITEM hItem) const override;
+		void HandleContextMenu(int x, int y) override;
+		void OnRefresh() const override;
+		void OnLabelEdit(HTREEITEM hItem, LPTSTR szText) override;
+		void OnDisplaySelectedItem() override;
+		bool HandleKeyDown(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed) override;
+		void OnLastChildDeleted(LPARAM /*lpData*/) override;
+		void FreeNodeData(LPARAM lpData) const override;
+
 		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
 		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify) const;
 		_Check_return_ LPMAPITABLE
 		GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bRegNotifs) const;
-		void OnDblclk(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-		void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-		void OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-		void OnItemSelected(HTREEITEM hItem) const override;
-		void HandleContextMenu(int x, int y) override;
-		void OnRefresh() const override;
 
 		// Node management
 		void AddRootNode() const;
@@ -59,7 +60,6 @@ namespace controls
 		AddNode(_In_ const std::wstring& szName, HTREEITEM hParent, sortlistdata::SortListData* lpData, bool bGetTable)
 			const;
 		void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, bool bGetTable) const;
-		void FreeNodeData(LPARAM lpData) const override;
 
 		// Custom messages
 		_Check_return_ LRESULT msgOnAddItem(WPARAM wParam, LPARAM lParam);
@@ -72,7 +72,6 @@ namespace controls
 		LPMAPICONTAINER m_lpContainer{nullptr};
 		ULONG m_ulContainerType{NULL};
 		ULONG m_ulDisplayFlags{dfNormal};
-		bool m_bShuttingDown{false};
 
 		DECLARE_MESSAGE_MAP()
 	};
