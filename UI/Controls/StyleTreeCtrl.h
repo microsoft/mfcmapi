@@ -10,6 +10,8 @@ namespace controls
 		void Refresh();
 
 	protected:
+		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+
 		// Node management
 		// Removes any existing node data and replaces it with lpData
 		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
@@ -39,7 +41,6 @@ namespace controls
 		void OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 
 		// Overrides from base class
-		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 		void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);

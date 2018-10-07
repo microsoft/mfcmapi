@@ -39,6 +39,7 @@ namespace controls
 
 	private:
 		// Overrides from base class
+		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 		void ExpandNode(HTREEITEM hParent) const override;
 		void OnItemSelected(HTREEITEM hItem) const override;
 		void HandleContextMenu(int x, int y) override;
@@ -72,7 +73,5 @@ namespace controls
 		LPMAPICONTAINER m_lpContainer{nullptr};
 		ULONG m_ulContainerType{NULL};
 		ULONG m_ulDisplayFlags{dfNormal};
-
-		DECLARE_MESSAGE_MAP()
 	};
 } // namespace controls

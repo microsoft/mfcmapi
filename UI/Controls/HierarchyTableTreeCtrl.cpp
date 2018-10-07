@@ -69,12 +69,22 @@ namespace controls
 		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu, false);
 	}
 
-	BEGIN_MESSAGE_MAP(CHierarchyTableTreeCtrl, StyleTreeCtrl)
-	ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
-	ON_MESSAGE(WM_MFCMAPI_DELETEITEM, msgOnDeleteItem)
-	ON_MESSAGE(WM_MFCMAPI_MODIFYITEM, msgOnModifyItem)
-	ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
-	END_MESSAGE_MAP()
+	LRESULT CHierarchyTableTreeCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+	{
+		switch (message)
+		{
+		case WM_MFCMAPI_ADDITEM:
+			return msgOnAddItem(wParam, lParam);
+		case WM_MFCMAPI_DELETEITEM:
+			return msgOnDeleteItem(wParam, lParam);
+		case WM_MFCMAPI_MODIFYITEM:
+			return msgOnModifyItem(wParam, lParam);
+		case WM_MFCMAPI_REFRESHTABLE:
+			return msgOnRefreshTable(wParam, lParam);
+		}
+
+		return StyleTreeCtrl::WindowProc(message, wParam, lParam);
+	}
 
 	void CHierarchyTableTreeCtrl::OnRefresh() const
 	{
