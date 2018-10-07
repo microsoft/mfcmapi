@@ -335,7 +335,6 @@ namespace controls
 		return lpData->Node()->m_lpHierarchyTable;
 	}
 
-	// TODO: Make this an override handler
 	// Add the first level contents of lpMAPIContainer under the Parent node
 	void CHierarchyTableTreeCtrl::ExpandNode(HTREEITEM hParent) const
 	{

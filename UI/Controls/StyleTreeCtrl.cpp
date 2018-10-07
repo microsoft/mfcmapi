@@ -243,7 +243,6 @@ namespace controls
 		HandleContextMenu(pos.x, pos.y);
 	}
 
-	// When + is clicked, add all entries in the table as children
 	void StyleTreeCtrl::OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
 		*pResult = 0;
