@@ -765,7 +765,7 @@ namespace dialog
 
 				if (bDelete)
 				{
-					auto ulFlags = DEL_FOLDERS | DEL_MESSAGES | bHardDelete ? DELETE_HARD_DELETE : 0;
+					auto ulFlags = DEL_FOLDERS | DEL_MESSAGES | (bHardDelete ? DELETE_HARD_DELETE : 0);
 
 					output::DebugPrintEx(
 						DBGDeleteSelectedItem,
@@ -787,8 +787,11 @@ namespace dialog
 						lpProgress,
 						ulFlags));
 
-					// Delete the item from the UI since we cannot rely on notifications to handle this for us
-					WC_B_S(m_lpHierarchyTableTreeCtrl->DeleteItem(hItem));
+					if (SUCCEEDED(hRes))
+					{
+						// Delete the item from the UI since we cannot rely on notifications to handle this for us
+						WC_B_S(m_lpHierarchyTableTreeCtrl->DeleteItem(hItem));
+					}
 
 					if (lpProgress) lpProgress->Release();
 				}
