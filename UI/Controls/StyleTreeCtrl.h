@@ -17,6 +17,7 @@ namespace controls
 		// Removes any existing node data and replaces it with lpData
 		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
 		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+		HTREEITEM AddChildNode(_In_ const std::wstring& szName, HTREEITEM hParent, LPARAM lpData, bool bGetTable) const;
 
 		UINT m_nIDContextMenu{0};
 		bool m_bShuttingDown{false};
@@ -32,6 +33,7 @@ namespace controls
 		virtual void OnLabelEdit(HTREEITEM /*hItem*/, LPTSTR /*szText*/) {}
 		virtual void OnDisplaySelectedItem() {}
 		virtual void OnLastChildDeleted(LPARAM /*lpData*/) {}
+		virtual void OnItemAdded(HTREEITEM /*hItem*/) const {}
 
 		// Return true to signal keystroke has been handled
 		virtual bool HandleKeyDown(UINT /*nChar*/, bool /*bShiftPressed*/, bool /*bCtrlPressed*/, bool /*bMenuPressed*/)

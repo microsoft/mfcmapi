@@ -111,8 +111,7 @@ namespace controls
 		// control. When the ENTER key was sent to the edit control, the
 		// parent window of the tree view control is responsible for updating
 		// the item's label in TVN_ENDLABELEDIT notification code.
-		if (pMsg && pMsg->message == WM_KEYDOWN &&
-			(pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE))
+		if (pMsg && pMsg->message == WM_KEYDOWN && (pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE))
 		{
 			const auto edit = GetEditControl();
 			if (edit)
@@ -170,6 +169,38 @@ namespace controls
 		}
 
 		if (pResult) *pResult = 0;
+	}
+
+	HTREEITEM
+	StyleTreeCtrl::AddChildNode(_In_ const std::wstring& szName, HTREEITEM hParent, LPARAM lpData, const bool bGetTable)
+		const
+	{
+		output::DebugPrintEx(
+			DBGHierarchy,
+			CLASS,
+			L"AddNode",
+			L"Adding Node \"%ws\" under node %p, bGetTable = 0x%X\n",
+			szName.c_str(),
+			hParent,
+			bGetTable);
+		auto tvInsert = TVINSERTSTRUCTW{};
+
+		tvInsert.hParent = hParent;
+		tvInsert.hInsertAfter = TVI_SORT;
+		tvInsert.item.mask = TVIF_CHILDREN | TVIF_TEXT;
+		tvInsert.item.cChildren = I_CHILDRENCALLBACK;
+		tvInsert.item.pszText = const_cast<LPWSTR>(szName.c_str());
+		const auto hItem =
+			reinterpret_cast<HTREEITEM>(::SendMessage(m_hWnd, TVM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&tvInsert)));
+
+		SetNodeData(m_hWnd, hItem, lpData);
+
+		if (bGetTable && (registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || hParent != TVI_ROOT))
+		{
+			OnItemAdded(hItem);
+		}
+
+		return hItem;
 	}
 
 	void StyleTreeCtrl::OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)

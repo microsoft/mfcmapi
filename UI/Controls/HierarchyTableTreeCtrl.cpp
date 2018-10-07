@@ -127,6 +127,8 @@ namespace controls
 		delete reinterpret_cast<sortlistdata::SortListData*>(lpNodeData);
 	}
 
+	void CHierarchyTableTreeCtrl::OnItemAdded(HTREEITEM hItem) const { (void) GetHierarchyTable(hItem, nullptr, true); }
+
 	void CHierarchyTableTreeCtrl::AddRootNode() const
 	{
 		if (!m_lpContainer || !m_hWnd) return;
@@ -180,42 +182,10 @@ namespace controls
 				true, // Always assume root nodes have children so we always paint an expanding icon
 				lpProps ? lpProps[htPR_CONTAINER_FLAGS].Value.ul : MAPI_E_NOT_FOUND);
 
-			AddNode(szName, TVI_ROOT, lpData, true);
+			(void) AddChildNode(szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), true);
 		}
 
 		// Node owns the lpProps memory now, so we don't free it
-	}
-
-	void CHierarchyTableTreeCtrl::AddNode(
-		_In_ const std::wstring& szName,
-		HTREEITEM hParent,
-		sortlistdata::SortListData* lpData,
-		const bool bGetTable) const
-	{
-		output::DebugPrintEx(
-			DBGHierarchy,
-			CLASS,
-			L"AddNode",
-			L"Adding Node \"%ws\" under node %p, bGetTable = 0x%X\n",
-			szName.c_str(),
-			hParent,
-			bGetTable);
-		auto tvInsert = TVINSERTSTRUCTW{};
-
-		tvInsert.hParent = hParent;
-		tvInsert.hInsertAfter = TVI_SORT;
-		tvInsert.item.mask = TVIF_CHILDREN | TVIF_TEXT;
-		tvInsert.item.cChildren = I_CHILDRENCALLBACK;
-		tvInsert.item.pszText = const_cast<LPWSTR>(szName.c_str());
-		const auto hItem =
-			reinterpret_cast<HTREEITEM>(::SendMessage(m_hWnd, TVM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&tvInsert)));
-
-		SetNodeData(m_hWnd, hItem, reinterpret_cast<LPARAM>(lpData));
-
-		if (bGetTable && (registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || hParent != TVI_ROOT))
-		{
-			(void) GetHierarchyTable(hItem, nullptr, true);
-		}
 	}
 
 	void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const bool bGetTable) const
@@ -232,6 +202,7 @@ namespace controls
 		{
 			szName = strings::loadstring(IDS_UNKNOWNNAME);
 		}
+
 		output::DebugPrintEx(DBGHierarchy, CLASS, L"AddNode", L"Adding to %p: %ws\n", hParent, szName.c_str());
 
 		auto lpData = new sortlistdata::SortListData();
@@ -239,7 +210,7 @@ namespace controls
 		{
 			lpData->InitializeNode(lpsRow);
 
-			AddNode(szName, hParent, lpData, bGetTable);
+			(void) AddChildNode(szName, hParent, reinterpret_cast<LPARAM>(lpData), bGetTable);
 		}
 	}
 
@@ -284,51 +255,48 @@ namespace controls
 			}
 		}
 
-		if (lpData->Node()->m_lpHierarchyTable && !lpData->Node()->m_lpAdviseSink)
+		// set up our advise sink
+		if (bRegNotifs && lpData->Node()->m_lpHierarchyTable && !lpData->Node()->m_lpAdviseSink &&
+			(registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || GetRootItem() != hItem))
 		{
-			// set up our advise sink
-			if (bRegNotifs &&
-				(registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || GetRootItem() != hItem))
+			output::DebugPrintEx(
+				DBGNotify,
+				CLASS,
+				L"GetHierarchyTable",
+				L"Advise sink for \"%ws\" = %p\n",
+				strings::LPCTSTRToWstring(GetItemText(hItem)).c_str(),
+				hItem);
+			lpData->Node()->m_lpAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, hItem);
+
+			if (lpData->Node()->m_lpAdviseSink)
 			{
+				hRes = WC_MAPI(lpData->Node()->m_lpHierarchyTable->Advise(
+					fnevTableModified,
+					static_cast<IMAPIAdviseSink*>(lpData->Node()->m_lpAdviseSink),
+					&lpData->Node()->m_ulAdviseConnection));
+				if (hRes == MAPI_E_NO_SUPPORT) // Some tables don't support this!
+				{
+					if (lpData->Node()->m_lpAdviseSink) lpData->Node()->m_lpAdviseSink->Release();
+					lpData->Node()->m_lpAdviseSink = nullptr;
+					output::DebugPrint(DBGNotify, L"This table doesn't support notifications\n");
+				}
+				else if (hRes == S_OK)
+				{
+					const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+					if (lpMDB)
+					{
+						lpData->Node()->m_lpAdviseSink->SetAdviseTarget(lpMDB);
+						mapi::ForceRop(lpMDB);
+					}
+				}
+
 				output::DebugPrintEx(
 					DBGNotify,
 					CLASS,
 					L"GetHierarchyTable",
-					L"Advise sink for \"%ws\" = %p\n",
-					strings::LPCTSTRToWstring(GetItemText(hItem)).c_str(),
-					hItem);
-				lpData->Node()->m_lpAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, hItem);
-
-				if (lpData->Node()->m_lpAdviseSink)
-				{
-					hRes = WC_MAPI(lpData->Node()->m_lpHierarchyTable->Advise(
-						fnevTableModified,
-						static_cast<IMAPIAdviseSink*>(lpData->Node()->m_lpAdviseSink),
-						&lpData->Node()->m_ulAdviseConnection));
-					if (hRes == MAPI_E_NO_SUPPORT) // Some tables don't support this!
-					{
-						if (lpData->Node()->m_lpAdviseSink) lpData->Node()->m_lpAdviseSink->Release();
-						lpData->Node()->m_lpAdviseSink = nullptr;
-						output::DebugPrint(DBGNotify, L"This table doesn't support notifications\n");
-					}
-					else if (hRes == S_OK)
-					{
-						const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-						if (lpMDB)
-						{
-							lpData->Node()->m_lpAdviseSink->SetAdviseTarget(lpMDB);
-							mapi::ForceRop(lpMDB);
-						}
-					}
-
-					output::DebugPrintEx(
-						DBGNotify,
-						CLASS,
-						L"GetHierarchyTable",
-						L"Advise sink %p, ulAdviseConnection = 0x%08X\n",
-						lpData->Node()->m_lpAdviseSink,
-						static_cast<int>(lpData->Node()->m_ulAdviseConnection));
-				}
+					L"Advise sink %p, ulAdviseConnection = 0x%08X\n",
+					lpData->Node()->m_lpAdviseSink,
+					static_cast<int>(lpData->Node()->m_ulAdviseConnection));
 			}
 		}
 
