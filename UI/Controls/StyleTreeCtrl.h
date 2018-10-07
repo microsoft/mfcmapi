@@ -8,6 +8,8 @@ namespace controls
 		void Create(_In_ CWnd* pCreateParent, UINT nIDContextMenu, bool bReadOnly);
 		_Check_return_ bool IsItemSelected() const { return m_bItemSelected; }
 		void Refresh();
+		HTREEITEM
+		AddChildNode(_In_ const std::wstring& szName, HTREEITEM hParent, LPARAM lpData, bool bFireCallback) const;
 
 	protected:
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -17,8 +19,6 @@ namespace controls
 		// Removes any existing node data and replaces it with lpData
 		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
 		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-		HTREEITEM
-		AddChildNode(_In_ const std::wstring& szName, HTREEITEM hParent, LPARAM lpData, bool bFireCallback) const;
 
 		UINT m_nIDContextMenu{0};
 		bool m_bShuttingDown{false};

@@ -32,15 +32,9 @@ namespace viewpane
 		ViewPane::Initialize(pParent, hdc);
 		m_Tree.Create(pParent, 0, m_bReadOnly);
 
-		// TODO: Don't leave this here
-		TVINSERTSTRUCTW tvInsert = {nullptr};
-		auto szName = std::wstring(L"TEST");
-		tvInsert.hParent = nullptr;
-		tvInsert.hInsertAfter = TVI_SORT;
-		tvInsert.item.mask = TVIF_CHILDREN | TVIF_TEXT;
-		tvInsert.item.cChildren = I_CHILDRENCALLBACK;
-		tvInsert.item.pszText = const_cast<LPWSTR>(szName.c_str());
-		::SendMessage(m_Tree.GetSafeHwnd(), TVM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&tvInsert));
+		const auto root = m_Tree.AddChildNode(L"ROOT", nullptr, 0, false);
+		(void) m_Tree.AddChildNode(L"child1", root, 0, false);
+		(void) m_Tree.AddChildNode(L"child2", root, 0, false);
 
 		m_bInitialized = true;
 	}
