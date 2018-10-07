@@ -127,7 +127,13 @@ namespace controls
 		delete reinterpret_cast<sortlistdata::SortListData*>(lpNodeData);
 	}
 
-	void CHierarchyTableTreeCtrl::OnItemAdded(HTREEITEM hItem) const { (void) GetHierarchyTable(hItem, nullptr, true); }
+	void CHierarchyTableTreeCtrl::OnItemAdded(HTREEITEM hItem) const
+	{
+		if (registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || hItem != TVI_ROOT)
+		{
+			(void) GetHierarchyTable(hItem, nullptr, true);
+		}
+	}
 
 	void CHierarchyTableTreeCtrl::AddRootNode() const
 	{

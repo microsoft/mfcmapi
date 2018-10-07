@@ -195,7 +195,7 @@ namespace controls
 
 		SetNodeData(m_hWnd, hItem, lpData);
 
-		if (bGetTable && (registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || hParent != TVI_ROOT))
+		if (bGetTable)
 		{
 			OnItemAdded(hItem);
 		}
