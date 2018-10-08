@@ -19,7 +19,7 @@ namespace controls
 			IDC_FOLDER_TREE);
 		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::cBackground));
 		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::cText));
-		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
+		SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 	}
 
 	BEGIN_MESSAGE_MAP(StyleTreeCtrl, CTreeCtrl)
@@ -176,17 +176,16 @@ namespace controls
 		_In_ const std::wstring& szName,
 		HTREEITEM hParent,
 		LPARAM lpData,
-		const bool bFireCallback)
-		const
+		const DoNodeAddedCallback& callback) const
 	{
 		output::DebugPrintEx(
 			DBGHierarchy,
 			CLASS,
 			L"AddNode",
-			L"Adding Node \"%ws\" under node %p, bFireCallback = 0x%X\n",
+			L"Adding Node \"%ws\" under node %p, callback = %ws\n",
 			szName.c_str(),
 			hParent,
-			bFireCallback);
+			callback != nullptr ? L"true" : L"false");
 		auto tvInsert = TVINSERTSTRUCTW{};
 
 		tvInsert.hParent = hParent;
@@ -199,9 +198,9 @@ namespace controls
 
 		SetNodeData(m_hWnd, hItem, lpData);
 
-		if (bFireCallback)
+		if (callback)
 		{
-			OnItemAdded(hItem);
+			callback(hItem);
 		}
 
 		return hItem;

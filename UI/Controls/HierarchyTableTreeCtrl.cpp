@@ -188,13 +188,14 @@ namespace controls
 				true, // Always assume root nodes have children so we always paint an expanding icon
 				lpProps ? lpProps[htPR_CONTAINER_FLAGS].Value.ul : MAPI_E_NOT_FOUND);
 
-			(void) AddChildNode(szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), true);
+			(void) AddChildNode(szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), NodeAddedCallback(this));
 		}
 
 		// Node owns the lpProps memory now, so we don't free it
 	}
 
-	void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const bool bGetTable) const
+	void
+	CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const DoNodeAddedCallback& callback) const
 	{
 		if (!lpsRow) return;
 
@@ -216,7 +217,7 @@ namespace controls
 		{
 			lpData->InitializeNode(lpsRow);
 
-			(void) AddChildNode(szName, hParent, reinterpret_cast<LPARAM>(lpData), bGetTable);
+			(void) AddChildNode(szName, hParent, reinterpret_cast<LPARAM>(lpData), callback);
 		}
 	}
 
@@ -237,7 +238,7 @@ namespace controls
 
 			if (lpData->Node()->m_lpAdviseSink)
 			{
-				auto hRes = WC_MAPI(lpData->Node()->m_lpHierarchyTable->Advise(
+				const auto hRes = WC_MAPI(lpData->Node()->m_lpHierarchyTable->Advise(
 					fnevTableModified,
 					static_cast<IMAPIAdviseSink*>(lpData->Node()->m_lpAdviseSink),
 					&lpData->Node()->m_ulAdviseConnection));
@@ -344,7 +345,7 @@ namespace controls
 				if (FAILED(hRes) || !pRows || !pRows->cRows) break;
 				// Now we can process the row!
 
-				AddNode(pRows->aRow, hParent, false);
+				AddNode(pRows->aRow, hParent, nullptr);
 				i++;
 			}
 		}
@@ -740,7 +741,7 @@ namespace controls
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 			WC_MAPI_S(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
-			AddNode(&NewRow, hParent, true);
+			AddNode(&NewRow, hParent, NodeAddedCallback(this));
 		}
 		else
 		{

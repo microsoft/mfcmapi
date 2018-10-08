@@ -2,6 +2,8 @@
 
 namespace controls
 {
+	typedef std::function<void(HTREEITEM hItem)> DoNodeAddedCallback;
+
 	class StyleTreeCtrl : public CTreeCtrl
 	{
 	public:
@@ -9,7 +11,11 @@ namespace controls
 		_Check_return_ bool IsItemSelected() const { return m_bItemSelected; }
 		void Refresh();
 		HTREEITEM
-		AddChildNode(_In_ const std::wstring& szName, HTREEITEM hParent, LPARAM lpData, bool bFireCallback) const;
+		AddChildNode(
+			_In_ const std::wstring& szName,
+			HTREEITEM hParent,
+			LPARAM lpData,
+			const DoNodeAddedCallback& callback) const;
 
 	protected:
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -34,7 +40,6 @@ namespace controls
 		virtual void OnLabelEdit(HTREEITEM /*hItem*/, LPTSTR /*szText*/) {}
 		virtual void OnDisplaySelectedItem() {}
 		virtual void OnLastChildDeleted(LPARAM /*lpData*/) {}
-		virtual void OnItemAdded(HTREEITEM /*hItem*/) const {}
 
 		// Return true to signal keystroke has been handled
 		virtual bool HandleKeyDown(UINT /*nChar*/, bool /*bShiftPressed*/, bool /*bCtrlPressed*/, bool /*bMenuPressed*/)

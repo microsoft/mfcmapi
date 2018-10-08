@@ -17,6 +17,11 @@ namespace controls
 {
 	class CHierarchyTableTreeCtrl : public StyleTreeCtrl
 	{
+		template <typename T> static DoNodeAddedCallback NodeAddedCallback(const T* const ctrl)
+		{
+			return [ctrl](auto a) { return ctrl->OnItemAdded(a); };
+		}
+
 	public:
 		virtual ~CHierarchyTableTreeCtrl();
 
@@ -49,7 +54,7 @@ namespace controls
 		bool HandleKeyDown(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed) override;
 		void OnLastChildDeleted(LPARAM /*lpData*/) override;
 		void FreeNodeData(LPARAM lpData) const override;
-		void OnItemAdded(HTREEITEM hItem) const override;
+		void OnItemAdded(HTREEITEM hItem) const;
 
 		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
 		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify) const;
@@ -59,7 +64,7 @@ namespace controls
 
 		// Node management
 		void AddRootNode() const;
-		void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, bool bGetTable) const;
+		void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const DoNodeAddedCallback& callback) const;
 
 		// Custom messages
 		_Check_return_ LRESULT msgOnAddItem(WPARAM wParam, LPARAM lParam);
