@@ -19,7 +19,7 @@ namespace controls
 			IDC_FOLDER_TREE);
 		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::cBackground));
 		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::cText));
-		SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
+		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 	}
 
 	BEGIN_MESSAGE_MAP(StyleTreeCtrl, CTreeCtrl)
