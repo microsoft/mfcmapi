@@ -27,23 +27,28 @@ namespace controls
 	ON_NOTIFY_REFLECT(NM_RCLICK, OnRightClick)
 	ON_NOTIFY_REFLECT(TVN_GETDISPINFO, OnGetDispInfo)
 	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, OnItemExpanding)
-	ON_WM_GETDLGCODE()
-	ON_WM_CONTEXTMENU()
 	ON_NOTIFY_REFLECT(TVN_SELCHANGED, OnSelChanged)
 	ON_NOTIFY_REFLECT(TVN_ENDLABELEDIT, OnEndLabelEdit)
 	ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteItem)
 	ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
-	ON_WM_KEYDOWN()
 	END_MESSAGE_MAP()
 
 	LRESULT StyleTreeCtrl::WindowProc(const UINT message, const WPARAM wParam, const LPARAM lParam)
 	{
 		// Read the current hover local, since we need to clear it before we do any drawing
-		const auto hItemCurHover = m_hItemCurHover;
 		switch (message)
 		{
+		case WM_GETDLGCODE:
+			return OnGetDlgCode();
+		case WM_CONTEXTMENU:
+			OnContextMenu(reinterpret_cast<HWND>(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+			return 0;
+		case WM_KEYDOWN:
+			OnKeyDown(static_cast<UINT>(wParam), LOWORD(lParam), HIWORD(lParam));
+			return 0;
 		case WM_MOUSEMOVE:
 		{
+			const auto hItemCurHover = m_hItemCurHover;
 			auto tvHitTestInfo = TVHITTESTINFO{};
 			tvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 			tvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
@@ -92,8 +97,9 @@ namespace controls
 			break;
 		}
 		case WM_MOUSELEAVE:
-			if (hItemCurHover)
+			if (m_hItemCurHover)
 			{
+				const auto hItemCurHover = m_hItemCurHover;
 				m_hItemCurHover = nullptr;
 				ui::DrawTreeItemGlow(m_hWnd, hItemCurHover);
 			}
@@ -175,7 +181,7 @@ namespace controls
 	StyleTreeCtrl::AddChildNode(
 		_In_ const std::wstring& szName,
 		HTREEITEM hParent,
-		LPARAM lpData,
+		const LPARAM lpData,
 		const DoNodeAddedCallback& callback) const
 	{
 		output::DebugPrintEx(
@@ -242,10 +248,11 @@ namespace controls
 		*pResult = 1;
 	}
 
-	void StyleTreeCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
+	void StyleTreeCtrl::OnContextMenu(_In_ HWND hwnd, const int x, const int y)
 	{
+		auto pos = POINT{x, y};
 		// If we don't have a position, this may be keyboard initiated context menu. Use the highlighted/selected item to find a position.
-		if (pWnd && -1 == pos.x && -1 == pos.y)
+		if (hwnd && -1 == pos.x && -1 == pos.y)
 		{
 			// Find the highlighted item
 			const auto item = GetSelectedItem();
@@ -256,7 +263,7 @@ namespace controls
 				(void) GetItemRect(item, &rc, true);
 				pos.x = rc.left;
 				pos.y = rc.top;
-				::ClientToScreen(pWnd->m_hWnd, &pos);
+				::ClientToScreen(hwnd, &pos);
 			}
 		}
 		// If we have a position, make sure the item at that position is selected.

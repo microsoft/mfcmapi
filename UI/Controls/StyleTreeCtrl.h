@@ -57,7 +57,7 @@ namespace controls
 		void OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		_Check_return_ UINT OnGetDlgCode();
 		virtual void HandleContextMenu(const int /*x*/, const int /*y*/) {}
-		void OnContextMenu(_In_ CWnd* pWnd, CPoint pos);
+		void OnContextMenu(_In_ HWND hwnd, int x, int y);
 		void OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnDblclk(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
