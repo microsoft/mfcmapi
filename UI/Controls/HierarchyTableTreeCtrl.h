@@ -40,8 +40,6 @@ namespace controls
 		_Check_return_ sortlistdata::SortListData* GetSelectedItemData() const;
 		_Check_return_ sortlistdata::SortListData* GetSortListData(HTREEITEM iItem) const;
 
-		bool HasChildren(_In_ HTREEITEM hItem) const override;
-
 	private:
 		// Overrides from base class
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -55,6 +53,7 @@ namespace controls
 		void OnLastChildDeleted(LPARAM /*lpData*/) override;
 		void FreeNodeData(LPARAM lpData) const override;
 		void OnItemAdded(HTREEITEM hItem) const;
+		bool HasChildren(_In_ HTREEITEM hItem) const;
 
 		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
 		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify) const;

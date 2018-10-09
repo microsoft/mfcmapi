@@ -180,7 +180,6 @@ namespace controls
 		_In_ const std::wstring& szName,
 		HTREEITEM hParent,
 		const LPARAM lpData,
-		const bool bUseHasChildCallback,
 		const HTREEITEM_Callback& callback) const
 	{
 		output::DebugPrintEx(
@@ -196,7 +195,7 @@ namespace controls
 		tvInsert.hParent = hParent;
 		tvInsert.hInsertAfter = TVI_SORT;
 		tvInsert.item.mask = TVIF_CHILDREN | TVIF_TEXT;
-		tvInsert.item.cChildren = bUseHasChildCallback ? I_CHILDRENCALLBACK : I_CHILDRENAUTO;
+		tvInsert.item.cChildren = HasChildrenCallback ? I_CHILDRENCALLBACK : I_CHILDRENAUTO;
 		tvInsert.item.pszText = const_cast<LPWSTR>(szName.c_str());
 		const auto hItem =
 			reinterpret_cast<HTREEITEM>(::SendMessage(m_hWnd, TVM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&tvInsert)));
@@ -215,9 +214,9 @@ namespace controls
 	{
 		const auto lpDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
 
-		if (lpDispInfo && lpDispInfo->item.mask & TVIF_CHILDREN)
+		if (lpDispInfo && lpDispInfo->item.mask & TVIF_CHILDREN && HasChildrenCallback)
 		{
-			lpDispInfo->item.cChildren = HasChildren(reinterpret_cast<HTREEITEM>(lpDispInfo->item.lParam));
+			lpDispInfo->item.cChildren = HasChildrenCallback(reinterpret_cast<HTREEITEM>(lpDispInfo->item.lParam));
 		}
 
 		*pResult = 0;

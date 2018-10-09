@@ -66,6 +66,8 @@ namespace controls
 		m_lpHostDlg = lpHostDlg;
 		m_ulDisplayFlags = ulDisplayFlags;
 
+		SetHasChildrenCallback([&](HTREEITEM hItem) -> bool { return HasChildren(hItem); });
+
 		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu, false);
 	}
 
@@ -188,7 +190,7 @@ namespace controls
 				true, // Always assume root nodes have children so we always paint an expanding icon
 				lpProps ? lpProps[htPR_CONTAINER_FLAGS].Value.ul : MAPI_E_NOT_FOUND);
 
-			(void) AddChildNode(szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), true, NodeAddedCallback(this));
+			(void) AddChildNode(szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), NodeAddedCallback(this));
 		}
 
 		// Node owns the lpProps memory now, so we don't free it
@@ -217,7 +219,7 @@ namespace controls
 		{
 			lpData->InitializeNode(lpsRow);
 
-			(void) AddChildNode(szName, hParent, reinterpret_cast<LPARAM>(lpData), true, callback);
+			(void) AddChildNode(szName, hParent, reinterpret_cast<LPARAM>(lpData), callback);
 		}
 	}
 

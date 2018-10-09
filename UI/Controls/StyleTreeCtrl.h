@@ -6,6 +6,7 @@ namespace controls
 	{
 	public:
 		typedef std::function<void(HTREEITEM hItem)> HTREEITEM_Callback;
+		typedef std::function<bool(HTREEITEM hItem)> HTREEITEM_bool_Callback;
 
 		void Create(_In_ CWnd* pCreateParent, UINT nIDContextMenu, bool bReadOnly);
 		_Check_return_ bool IsItemSelected() const { return m_bItemSelected; }
@@ -15,7 +16,6 @@ namespace controls
 			_In_ const std::wstring& szName,
 			HTREEITEM hParent,
 			LPARAM lpData,
-			bool bUseHasChildCallback,
 			const HTREEITEM_Callback& callback) const;
 
 	protected:
@@ -26,6 +26,8 @@ namespace controls
 		// Removes any existing node data and replaces it with lpData
 		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
 		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+		// Callbacks
+		void SetHasChildrenCallback(const HTREEITEM_bool_Callback& callback) { HasChildrenCallback = callback; }
 
 		UINT m_nIDContextMenu{0};
 		bool m_bShuttingDown{false};
@@ -35,7 +37,6 @@ namespace controls
 		// Override to provide custom deletion of node data
 		virtual void FreeNodeData(LPARAM /*lpData*/) const {};
 		virtual void OnItemSelected(HTREEITEM /*hItem*/) const {};
-		virtual bool HasChildren(_In_ HTREEITEM /*hItem*/) const { return true; }
 		virtual void ExpandNode(HTREEITEM /*hParent*/) const {}
 		virtual void OnRefresh() const {}
 		virtual void OnLabelEdit(HTREEITEM /*hItem*/, LPTSTR /*szText*/) {}
@@ -67,6 +68,9 @@ namespace controls
 		bool m_HoverButton{false};
 		bool m_bItemSelected{false};
 		bool m_bReadOnly{false};
+
+		// Callbacks
+		HTREEITEM_bool_Callback HasChildrenCallback = nullptr;
 
 		DECLARE_MESSAGE_MAP()
 	};
