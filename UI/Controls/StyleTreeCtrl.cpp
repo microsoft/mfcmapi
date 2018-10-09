@@ -11,12 +11,10 @@ namespace controls
 		m_bReadOnly = bReadOnly;
 		m_nIDContextMenu = nIDContextMenu;
 
-		CTreeCtrl::Create(
-			TVS_HASBUTTONS | TVS_LINESATROOT | TVS_EDITLABELS | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS |
-				TVS_FULLROWSELECT | WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | WS_VISIBLE,
-			CRect(0, 0, 0, 0),
-			pCreateParent,
-			IDC_FOLDER_TREE);
+		auto style = TVS_HASBUTTONS | TVS_LINESATROOT | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | TVS_FULLROWSELECT |
+					 WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | WS_VISIBLE;
+		if (!bReadOnly) style |= TVS_EDITLABELS;
+		CTreeCtrl::Create(style, CRect(0, 0, 0, 0), pCreateParent, IDC_FOLDER_TREE);
 		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::cBackground));
 		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::cText));
 		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
