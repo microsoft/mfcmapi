@@ -15,6 +15,7 @@ namespace controls
 			_In_ const std::wstring& szName,
 			HTREEITEM hParent,
 			LPARAM lpData,
+			const bool bUseHasChildCallback,
 			const DoNodeAddedCallback& callback) const;
 
 	protected:

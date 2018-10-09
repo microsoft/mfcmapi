@@ -180,6 +180,7 @@ namespace controls
 		_In_ const std::wstring& szName,
 		HTREEITEM hParent,
 		const LPARAM lpData,
+		const bool bUseHasChildCallback,
 		const DoNodeAddedCallback& callback) const
 	{
 		output::DebugPrintEx(
@@ -195,7 +196,7 @@ namespace controls
 		tvInsert.hParent = hParent;
 		tvInsert.hInsertAfter = TVI_SORT;
 		tvInsert.item.mask = TVIF_CHILDREN | TVIF_TEXT;
-		tvInsert.item.cChildren = I_CHILDRENCALLBACK;
+		tvInsert.item.cChildren = bUseHasChildCallback ? I_CHILDRENCALLBACK : I_CHILDRENAUTO;
 		tvInsert.item.pszText = const_cast<LPWSTR>(szName.c_str());
 		const auto hItem =
 			reinterpret_cast<HTREEITEM>(::SendMessage(m_hWnd, TVM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&tvInsert)));
