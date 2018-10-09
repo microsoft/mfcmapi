@@ -17,7 +17,7 @@ namespace controls
 {
 	class CHierarchyTableTreeCtrl : public StyleTreeCtrl
 	{
-		template <typename T> static DoNodeAddedCallback NodeAddedCallback(const T* const ctrl)
+		template <typename T> static HTREEITEM_Callback NodeAddedCallback(const T* const ctrl)
 		{
 			return [ctrl](auto a) { return ctrl->OnItemAdded(a); };
 		}
@@ -64,7 +64,7 @@ namespace controls
 
 		// Node management
 		void AddRootNode() const;
-		void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const DoNodeAddedCallback& callback) const;
+		void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const HTREEITEM_Callback& callback) const;
 
 		// Custom messages
 		_Check_return_ LRESULT msgOnAddItem(WPARAM wParam, LPARAM lParam);

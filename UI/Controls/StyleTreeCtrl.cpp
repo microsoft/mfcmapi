@@ -181,7 +181,7 @@ namespace controls
 		HTREEITEM hParent,
 		const LPARAM lpData,
 		const bool bUseHasChildCallback,
-		const DoNodeAddedCallback& callback) const
+		const HTREEITEM_Callback& callback) const
 	{
 		output::DebugPrintEx(
 			DBGHierarchy,

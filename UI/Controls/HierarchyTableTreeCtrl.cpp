@@ -195,7 +195,7 @@ namespace controls
 	}
 
 	void
-	CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const DoNodeAddedCallback& callback) const
+	CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const HTREEITEM_Callback& callback) const
 	{
 		if (!lpsRow) return;
 
