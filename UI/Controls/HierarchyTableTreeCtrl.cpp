@@ -71,7 +71,7 @@ namespace controls
 		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu, false);
 	}
 
-	LRESULT CHierarchyTableTreeCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+	LRESULT CHierarchyTableTreeCtrl::WindowProc(const UINT message, const WPARAM wParam, const LPARAM lParam)
 	{
 		switch (message)
 		{
@@ -95,7 +95,7 @@ namespace controls
 		if (m_lpHostDlg) m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
 	}
 
-	void CHierarchyTableTreeCtrl::LoadHierarchyTable(_In_ LPMAPICONTAINER lpMAPIContainer)
+	void CHierarchyTableTreeCtrl::LoadHierarchyTable(_In_ const LPMAPICONTAINER lpMAPIContainer)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -197,7 +197,7 @@ namespace controls
 	}
 
 	void
-	CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, const HTREEITEM_Callback& callback) const
+	CHierarchyTableTreeCtrl::AddNode(_In_ const LPSRow lpsRow, HTREEITEM hParent, const HTREEITEM_Callback& callback) const
 	{
 		if (!lpsRow) return;
 
@@ -708,7 +708,7 @@ namespace controls
 		return lpContainer;
 	}
 
-	void CHierarchyTableTreeCtrl::OnLastChildDeleted(LPARAM lpData)
+	void CHierarchyTableTreeCtrl::OnLastChildDeleted(const LPARAM lpData)
 	{
 		const auto lpNodeData = reinterpret_cast<sortlistdata::SortListData*>(lpData);
 		if (lpNodeData && lpNodeData->Node())
