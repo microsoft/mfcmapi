@@ -28,6 +28,7 @@ namespace controls
 		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		// Callbacks
 		void SetHasChildrenCallback(const HTREEITEM_bool_Callback& callback) { HasChildrenCallback = callback; }
+		void SetItemSelectedCallback(const HTREEITEM_Callback& callback) { ItemSelectedCallback = callback; }
 
 		UINT m_nIDContextMenu{0};
 		bool m_bShuttingDown{false};
@@ -36,7 +37,6 @@ namespace controls
 		// Overrides for derived controls to customize behavior
 		// Override to provide custom deletion of node data
 		virtual void FreeNodeData(LPARAM /*lpData*/) const {};
-		virtual void OnItemSelected(HTREEITEM /*hItem*/) const {};
 		virtual void ExpandNode(HTREEITEM /*hParent*/) const {}
 		virtual void OnRefresh() const {}
 		virtual void OnLabelEdit(HTREEITEM /*hItem*/, LPTSTR /*szText*/) {}
@@ -71,6 +71,7 @@ namespace controls
 
 		// Callbacks
 		HTREEITEM_bool_Callback HasChildrenCallback = nullptr;
+		HTREEITEM_Callback ItemSelectedCallback = nullptr;
 
 		DECLARE_MESSAGE_MAP()
 	};

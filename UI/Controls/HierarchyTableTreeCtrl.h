@@ -17,11 +17,6 @@ namespace controls
 {
 	class CHierarchyTableTreeCtrl : public StyleTreeCtrl
 	{
-		template <typename T> static HTREEITEM_Callback NodeAddedCallback(const T* const ctrl)
-		{
-			return [ctrl](auto a) { return ctrl->OnItemAdded(a); };
-		}
-
 	public:
 		virtual ~CHierarchyTableTreeCtrl();
 
@@ -44,7 +39,6 @@ namespace controls
 		// Overrides from base class
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 		void ExpandNode(HTREEITEM hParent) const override;
-		void OnItemSelected(HTREEITEM hItem) const override;
 		void HandleContextMenu(int x, int y) override;
 		void OnRefresh() const override;
 		void OnLabelEdit(HTREEITEM hItem, LPTSTR szText) override;
@@ -54,6 +48,7 @@ namespace controls
 		void FreeNodeData(LPARAM lpData) const override;
 		void OnItemAdded(HTREEITEM hItem) const;
 		bool HasChildren(_In_ HTREEITEM hItem) const;
+		void OnItemSelected(HTREEITEM hItem) const;
 
 		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
 		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify) const;

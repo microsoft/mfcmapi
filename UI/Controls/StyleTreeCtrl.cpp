@@ -165,7 +165,7 @@ namespace controls
 		{
 			m_bItemSelected = true;
 
-			OnItemSelected(pNMTV->itemNew.hItem);
+			if (ItemSelectedCallback) ItemSelectedCallback(pNMTV->itemNew.hItem);
 		}
 		else
 		{

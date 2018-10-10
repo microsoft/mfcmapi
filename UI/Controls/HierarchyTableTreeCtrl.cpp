@@ -66,7 +66,9 @@ namespace controls
 		m_lpHostDlg = lpHostDlg;
 		m_ulDisplayFlags = ulDisplayFlags;
 
+		// Setup callbacks
 		SetHasChildrenCallback([&](HTREEITEM hItem) -> bool { return HasChildren(hItem); });
+		SetItemSelectedCallback([&](HTREEITEM hItem) -> void { return OnItemSelected(hItem); });
 
 		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu, false);
 	}
@@ -190,14 +192,17 @@ namespace controls
 				true, // Always assume root nodes have children so we always paint an expanding icon
 				lpProps ? lpProps[htPR_CONTAINER_FLAGS].Value.ul : MAPI_E_NOT_FOUND);
 
-			(void) AddChildNode(szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), NodeAddedCallback(this));
+			(void) AddChildNode(szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), [&](HTREEITEM hItem) -> void {
+				return OnItemAdded(hItem);
+			});
 		}
 
 		// Node owns the lpProps memory now, so we don't free it
 	}
 
 	void
-	CHierarchyTableTreeCtrl::AddNode(_In_ const LPSRow lpsRow, HTREEITEM hParent, const HTREEITEM_Callback& callback) const
+	CHierarchyTableTreeCtrl::AddNode(_In_ const LPSRow lpsRow, HTREEITEM hParent, const HTREEITEM_Callback& callback)
+		const
 	{
 		if (!lpsRow) return;
 
@@ -743,7 +748,7 @@ namespace controls
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 			WC_MAPI_S(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
-			AddNode(&NewRow, hParent, NodeAddedCallback(this));
+			AddNode(&NewRow, hParent, [&](HTREEITEM hItem) -> void { return OnItemAdded(hItem); });
 		}
 		else
 		{
