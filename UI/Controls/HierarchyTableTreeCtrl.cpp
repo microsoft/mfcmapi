@@ -200,9 +200,10 @@ namespace controls
 		// Node owns the lpProps memory now, so we don't free it
 	}
 
-	void
-	CHierarchyTableTreeCtrl::AddNode(_In_ const LPSRow lpsRow, HTREEITEM hParent, const HTREEITEM_Callback& callback)
-		const
+	void CHierarchyTableTreeCtrl::AddNode(
+		_In_ const LPSRow lpsRow,
+		HTREEITEM hParent,
+		const std::function<void(HTREEITEM hItem)>& callback) const
 	{
 		if (!lpsRow) return;
 

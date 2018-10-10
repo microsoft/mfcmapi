@@ -180,7 +180,7 @@ namespace controls
 		_In_ const std::wstring& szName,
 		HTREEITEM hParent,
 		const LPARAM lpData,
-		const HTREEITEM_Callback& callback) const
+		const std::function<void(HTREEITEM hItem)>& callback) const
 	{
 		output::DebugPrintEx(
 			DBGHierarchy,

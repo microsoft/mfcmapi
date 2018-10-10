@@ -5,8 +5,6 @@ namespace controls
 	class StyleTreeCtrl : public CTreeCtrl
 	{
 	public:
-		typedef std::function<void(HTREEITEM hItem)> HTREEITEM_Callback;
-
 		void Create(_In_ CWnd* pCreateParent, UINT nIDContextMenu, bool bReadOnly);
 		_Check_return_ bool IsItemSelected() const { return m_bItemSelected; }
 		void Refresh();
@@ -15,7 +13,7 @@ namespace controls
 			_In_ const std::wstring& szName,
 			HTREEITEM hParent,
 			LPARAM lpData,
-			const HTREEITEM_Callback& callback) const;
+			const std::function<void(HTREEITEM hItem)>& callback) const;
 
 	protected:
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
