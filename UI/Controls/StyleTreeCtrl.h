@@ -6,7 +6,6 @@ namespace controls
 	{
 	public:
 		typedef std::function<void(HTREEITEM hItem)> HTREEITEM_Callback;
-		typedef std::function<bool(HTREEITEM hItem)> HTREEITEM_bool_Callback;
 
 		void Create(_In_ CWnd* pCreateParent, UINT nIDContextMenu, bool bReadOnly);
 		_Check_return_ bool IsItemSelected() const { return m_bItemSelected; }
@@ -27,8 +26,14 @@ namespace controls
 		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
 		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		// Callbacks
-		void SetHasChildrenCallback(const HTREEITEM_bool_Callback& callback) { HasChildrenCallback = callback; }
-		void SetItemSelectedCallback(const HTREEITEM_Callback& callback) { ItemSelectedCallback = callback; }
+		void SetHasChildrenCallback(const std::function<bool(HTREEITEM hItem)>& callback)
+		{
+			HasChildrenCallback = callback;
+		}
+		void SetItemSelectedCallback(const std::function<void(HTREEITEM hItem)>& callback)
+		{
+			ItemSelectedCallback = callback;
+		}
 
 		UINT m_nIDContextMenu{0};
 		bool m_bShuttingDown{false};
@@ -70,8 +75,8 @@ namespace controls
 		bool m_bReadOnly{false};
 
 		// Callbacks
-		HTREEITEM_bool_Callback HasChildrenCallback = nullptr;
-		HTREEITEM_Callback ItemSelectedCallback = nullptr;
+		std::function<bool(HTREEITEM hItem)> HasChildrenCallback = nullptr;
+		std::function<void(HTREEITEM hItem)> ItemSelectedCallback = nullptr;
 
 		DECLARE_MESSAGE_MAP()
 	};
