@@ -15,14 +15,6 @@ namespace controls
 			LPARAM lpData,
 			const std::function<void(HTREEITEM hItem)>& callback) const;
 
-	protected:
-		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
-		BOOL PreTranslateMessage(MSG* pMsg) override;
-
-		// Node management
-		// Removes any existing node data and replaces it with lpData
-		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
-		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		// Callbacks
 		void SetHasChildrenCallback(const std::function<bool(HTREEITEM hItem)>& callback)
 		{
@@ -32,6 +24,15 @@ namespace controls
 		{
 			ItemSelectedCallback = callback;
 		}
+
+	protected:
+		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+		BOOL PreTranslateMessage(MSG* pMsg) override;
+
+		// Node management
+		// Removes any existing node data and replaces it with lpData
+		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
+		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 
 		UINT m_nIDContextMenu{0};
 		bool m_bShuttingDown{false};

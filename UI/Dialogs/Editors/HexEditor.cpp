@@ -45,8 +45,25 @@ namespace dialog
 			splitter->SetPaneTwo(viewpane::TextPane::CreateMultiLinePane(HEXED_UNICODE, NULL, false));
 			AddPane(viewpane::CountedTextPane::Create(HEXED_BASE64, IDS_BASE64STRING, false, IDS_CCH));
 			AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
-			AddPane(viewpane::TreePane::Create(HEXED_TREE, IDS_HEX, true));
+			auto tree = viewpane::TreePane::Create(HEXED_TREE, IDS_HEX, true);
+			AddPane(tree);
+			tree->m_Tree.SetItemSelectedCallback([&](HTREEITEM hItem) -> void {
+				auto pane = dynamic_cast<viewpane::TreePane*>(GetPane(HEXED_TREE));
+				if (pane)
+				{
+					WCHAR szText[255] = {};
+					auto item = TVITEMEXW{};
+					item.mask = TVIF_TEXT;
+					item.pszText = szText;
+					item.cchTextMax = _countof(szText);
+					item.hItem = hItem;
+					WC_B_S(::SendMessage(pane->m_Tree.GetSafeHwnd(), TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+
+					SetStringW(HEXED_ANSI, szText);
+				}
+			});
 			AddPane(viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW));
+
 			DisplayParentedDialog(pParentWnd, 1000);
 		}
 
@@ -65,7 +82,7 @@ namespace dialog
 
 		void CHexEditor::OnCancel() { OnOK(); }
 
-		_Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
+		_Check_return_ ULONG CHexEditor::HandleChange(const UINT nID)
 		{
 			const auto paneID = CEditor::HandleChange(nID);
 

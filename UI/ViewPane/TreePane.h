@@ -11,6 +11,7 @@ namespace viewpane
 
 		ULONG HandleChange(UINT nID) override;
 		bool IsDirty() override;
+		controls::StyleTreeCtrl m_Tree;
 
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
@@ -21,8 +22,5 @@ namespace viewpane
 		int GetLines() override;
 
 		bool m_bDirty{false};
-		bool m_bAllowSort{false};
-
-		controls::StyleTreeCtrl m_Tree;
 	};
 } // namespace viewpane
