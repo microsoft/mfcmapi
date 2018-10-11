@@ -69,6 +69,9 @@ namespace controls
 		// Setup callbacks
 		SetHasChildrenCallback([&](HTREEITEM hItem) -> bool { return HasChildren(hItem); });
 		SetItemSelectedCallback([&](HTREEITEM hItem) -> void { return OnItemSelected(hItem); });
+		SetKeyDownCallback([&](UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed) -> bool {
+			return HandleKeyDown(nChar, bShiftPressed, bCtrlPressed, bMenuPressed);
+		});
 
 		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu, false);
 	}

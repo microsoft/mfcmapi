@@ -43,7 +43,7 @@ namespace controls
 		void OnRefresh() const override;
 		void OnLabelEdit(HTREEITEM hItem, LPTSTR szText) override;
 		void OnDisplaySelectedItem() override;
-		bool HandleKeyDown(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed) override;
+		bool HandleKeyDown(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed);
 		void OnLastChildDeleted(LPARAM /*lpData*/) override;
 		void FreeNodeData(LPARAM lpData) const override;
 		void OnItemAdded(HTREEITEM hItem) const;

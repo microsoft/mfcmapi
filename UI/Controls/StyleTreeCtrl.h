@@ -24,6 +24,11 @@ namespace controls
 		{
 			ItemSelectedCallback = callback;
 		}
+		void SetKeyDownCallback(
+			const std::function<bool(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed)>& callback)
+		{
+			KeyDownCallback = callback;
+		}
 
 	protected:
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -46,12 +51,6 @@ namespace controls
 		virtual void OnLabelEdit(HTREEITEM /*hItem*/, LPTSTR /*szText*/) {}
 		virtual void OnDisplaySelectedItem() {}
 		virtual void OnLastChildDeleted(LPARAM /*lpData*/) {}
-
-		// Return true to signal keystroke has been handled
-		virtual bool HandleKeyDown(UINT /*nChar*/, bool /*bShiftPressed*/, bool /*bCtrlPressed*/, bool /*bMenuPressed*/)
-		{
-			return false;
-		}
 
 		void OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 
@@ -76,6 +75,8 @@ namespace controls
 		// Callbacks
 		std::function<bool(HTREEITEM hItem)> HasChildrenCallback = nullptr;
 		std::function<void(HTREEITEM hItem)> ItemSelectedCallback = nullptr;
+		std::function<bool(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed)> KeyDownCallback =
+			nullptr;
 
 		DECLARE_MESSAGE_MAP()
 	};
