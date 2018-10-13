@@ -5,7 +5,7 @@ namespace controls
 	class StyleTreeCtrl : public CTreeCtrl
 	{
 	public:
-		void Create(_In_ CWnd* pCreateParent, UINT nIDContextMenu, bool bReadOnly);
+		void Create(_In_ CWnd* pCreateParent, bool bReadOnly);
 		_Check_return_ bool IsItemSelected() const { return m_bItemSelected; }
 		void Refresh();
 		HTREEITEM
@@ -45,7 +45,6 @@ namespace controls
 		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
 		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 
-		UINT m_nIDContextMenu{0};
 		bool m_bShuttingDown{false};
 
 	private:

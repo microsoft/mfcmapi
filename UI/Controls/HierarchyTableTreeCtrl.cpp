@@ -65,6 +65,7 @@ namespace controls
 
 		m_lpHostDlg = lpHostDlg;
 		m_ulDisplayFlags = ulDisplayFlags;
+		m_nIDContextMenu = nIDContextMenu;
 
 		// Setup callbacks
 		HasChildrenCallback = [&](auto _1) { return HasChildren(_1); };
@@ -78,7 +79,7 @@ namespace controls
 		OnLastChildDeletedCallback = [&](auto _1) { return OnLastChildDeleted(_1); };
 		HandleContextMenuCallback = [&](auto _1, auto _2) { return HandleContextMenu(_1, _2); };
 
-		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu, false);
+		StyleTreeCtrl::Create(pCreateParent, false);
 	}
 
 	LRESULT CHierarchyTableTreeCtrl::WindowProc(const UINT message, const WPARAM wParam, const LPARAM lParam)

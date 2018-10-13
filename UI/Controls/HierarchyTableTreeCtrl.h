@@ -73,5 +73,6 @@ namespace controls
 		LPMAPICONTAINER m_lpContainer{nullptr};
 		ULONG m_ulContainerType{NULL};
 		ULONG m_ulDisplayFlags{dfNormal};
+		UINT m_nIDContextMenu{0};
 	};
 } // namespace controls

@@ -6,10 +6,9 @@ namespace controls
 {
 	static std::wstring CLASS = L"StyleTreeCtrl";
 
-	void StyleTreeCtrl::Create(_In_ CWnd* pCreateParent, const UINT nIDContextMenu, const bool bReadOnly)
+	void StyleTreeCtrl::Create(_In_ CWnd* pCreateParent, const bool bReadOnly)
 	{
 		m_bReadOnly = bReadOnly;
-		m_nIDContextMenu = nIDContextMenu;
 
 		auto style = TVS_HASBUTTONS | TVS_LINESATROOT | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | TVS_FULLROWSELECT |
 					 WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | WS_VISIBLE;
