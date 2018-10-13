@@ -7,13 +7,19 @@ namespace viewpane
 {
 	static std::wstring CLASS = L"ListPane";
 
-	ListPane* ListPane::Create(int paneID, UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
+	ListPane* ListPane::Create(
+		const int paneID,
+		const UINT uidLabel,
+		const bool bAllowSort,
+		const bool bReadOnly,
+		DoListEditCallback callback)
 	{
 		auto pane = new (std::nothrow) ListPane();
 		if (pane)
 		{
 			pane->Setup(bAllowSort, std::move(callback));
-			pane->SetLabel(uidLabel, bReadOnly);
+			pane->SetLabel(uidLabel);
+			pane->SetReadOnly(bReadOnly);
 			pane->m_paneID = paneID;
 		}
 
@@ -21,17 +27,18 @@ namespace viewpane
 	}
 
 	ListPane* ListPane::CreateCollapsibleListPane(
-		int paneID,
-		UINT uidLabel,
-		bool bAllowSort,
-		bool bReadOnly,
+		const int paneID,
+		const UINT uidLabel,
+		const bool bAllowSort,
+		const bool bReadOnly,
 		DoListEditCallback callback)
 	{
 		auto pane = new (std::nothrow) ListPane();
 		if (pane)
 		{
 			pane->Setup(bAllowSort, std::move(callback));
-			pane->SetLabel(uidLabel, bReadOnly);
+			pane->SetLabel(uidLabel);
+			pane->SetReadOnly(bReadOnly);
 			pane->m_bCollapsible = true;
 			pane->m_paneID = paneID;
 		}
@@ -50,7 +57,7 @@ namespace viewpane
 
 	void ListPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		ViewPane::Initialize(pParent, nullptr);
+		ViewPane::Initialize(pParent, hdc);
 
 		DWORD dwListStyle = LVS_SINGLESEL | WS_BORDER;
 		if (!m_bAllowSort) dwListStyle |= LVS_NOSORTHEADER;
@@ -79,10 +86,10 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
-	int ListPane::GetMinWidth(_In_ HDC hdc)
+	int ListPane::GetMinWidth()
 	{
 		return max(
-			ViewPane::GetMinWidth(hdc), (int) (NUMLISTBUTTONS * m_iButtonWidth + m_iMargin * (NUMLISTBUTTONS - 1)));
+			ViewPane::GetMinWidth(), (int) (NUMLISTBUTTONS * m_iButtonWidth + m_iMargin * (NUMLISTBUTTONS - 1)));
 	}
 
 	int ListPane::GetFixedHeight()
@@ -90,15 +97,7 @@ namespace viewpane
 		auto iHeight = 0;
 		if (0 != m_paneID) iHeight += m_iSmallHeightMargin; // Top margin
 
-		if (m_bCollapsible)
-		{
-			// Our expand/collapse button
-			iHeight += m_iButtonHeight;
-		}
-		else if (!m_szLabel.empty())
-		{
-			iHeight += m_iLabelHeight;
-		}
+		iHeight += GetLabelHeight();
 
 		if (!m_bCollapsed)
 		{
@@ -153,28 +152,34 @@ namespace viewpane
 		return ViewPane::HandleChange(nID);
 	}
 
-	void ListPane::DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height)
+	void ListPane::DeferWindowPos(
+		_In_ HDWP hWinPosInfo,
+		_In_ const int x,
+		_In_ const int y,
+		_In_ const int width,
+		_In_ const int height)
 	{
-		const auto iVariableHeight = height - GetFixedHeight();
+		auto curY = y;
+		const auto labelHeight = GetLabelHeight();
 		if (0 != m_paneID)
 		{
-			y += m_iSmallHeightMargin;
-			height -= m_iSmallHeightMargin;
+			curY += m_iSmallHeightMargin;
 		}
 
-		ViewPane::DeferWindowPos(hWinPosInfo, x, y, width, height);
-		y += m_iLabelHeight + m_iSmallHeightMargin;
+		// Layout our label
+		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+		curY += labelHeight + m_iSmallHeightMargin;
 
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
 		EC_B_S(m_List.ShowWindow(cmdShow));
-		EC_B_S(
-			::DeferWindowPos(hWinPosInfo, m_List.GetSafeHwnd(), nullptr, x, y, width, iVariableHeight, SWP_NOZORDER));
-		y += iVariableHeight;
+		auto listHeight = height - (curY - y);
+		if (!m_bReadOnly) listHeight -= (m_iLargeHeightMargin + m_iButtonHeight);
+		EC_B_S(::DeferWindowPos(hWinPosInfo, m_List.GetSafeHwnd(), nullptr, x, curY, width, listHeight, SWP_NOZORDER));
 
 		if (!m_bReadOnly)
 		{
 			// buttons go below the list:
-			y += m_iLargeHeightMargin;
+			curY += listHeight + m_iLargeHeightMargin;
 
 			const auto iSlotWidth = m_iButtonWidth + m_iMargin;
 			const auto iOffset = width + m_iSideMargin + m_iMargin;
@@ -187,7 +192,7 @@ namespace viewpane
 					m_ButtonArray[iButton].GetSafeHwnd(),
 					nullptr,
 					iOffset - iSlotWidth * (NUMLISTBUTTONS - iButton),
-					y,
+					curY,
 					m_iButtonWidth,
 					m_iButtonHeight,
 					SWP_NOZORDER));

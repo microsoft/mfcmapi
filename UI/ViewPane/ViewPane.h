@@ -7,15 +7,17 @@ namespace viewpane
 	public:
 		virtual ~ViewPane() = default;
 
-		void SetLabel(UINT uidLabel, bool bReadOnly);
+		void SetLabel(const UINT uidLabel) { m_szLabel = strings::loadstring(uidLabel); }
+		void SetReadOnly(const bool bReadOnly) { m_bReadOnly = bReadOnly; }
+
 		virtual void Initialize(_In_ CWnd* pParent, _In_opt_ HDC hdc);
 		virtual void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 
 		virtual void CommitUIValues() = 0;
-		virtual bool IsDirty();
-		virtual int GetMinWidth(_In_ HDC hdc);
+		virtual bool IsDirty() { return false; }
+		virtual int GetMinWidth() { return (m_bCollapsible ? m_iButtonHeight : 0) + m_iLabelWidth; }
 		virtual int GetFixedHeight() = 0;
-		virtual int GetLines();
+		virtual int GetLines() { return 0; }
 		virtual ULONG HandleChange(UINT nID);
 		void OnToggleCollapse();
 
@@ -36,6 +38,14 @@ namespace viewpane
 		virtual ViewPane* GetPaneByNID(UINT nID) { return nID == m_nID ? this : nullptr; }
 
 	protected:
+		// Returns the height of our label, accounting for an expand/collapse button
+		// Will return 0 if we have no label or button
+		int GetLabelHeight() const
+		{
+			if (m_bCollapsible || !m_szLabel.empty()) return max(m_iButtonHeight, m_iLabelHeight);
+
+			return 0;
+		}
 		int m_paneID{-1}; // ID of the view pane in the view - used for callbacks and layout
 		bool m_bInitialized{false};
 		bool m_bReadOnly{true};

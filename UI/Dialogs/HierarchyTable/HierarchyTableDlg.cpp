@@ -35,7 +35,6 @@ namespace dialog
 		m_nIDContextMenu = nIDContextMenu;
 
 		m_ulDisplayFlags = dfNormal;
-		m_lpHierarchyTableTreeCtrl = nullptr;
 		m_lpContainer = mapi::safe_cast<LPMAPICONTAINER>(lpRootContainer);
 	}
 
@@ -58,7 +57,7 @@ namespace dialog
 		{
 			if (m_lpHierarchyTableTreeCtrl)
 			{
-				const auto bItemSelected = m_lpHierarchyTableTreeCtrl->IsItemSelected();
+				const auto bItemSelected = m_lpHierarchyTableTreeCtrl.IsItemSelected();
 				pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM, DIM(bItemSelected));
 				pMenu->EnableMenuItem(ID_DISPLAYHIERARCHYTABLE, DIM(bItemSelected));
 				pMenu->EnableMenuItem(ID_EDITSEARCHCRITERIA, DIM(bItemSelected));
@@ -90,14 +89,12 @@ namespace dialog
 	void CHierarchyTableDlg::OnCancel()
 	{
 		ShowWindow(SW_HIDE);
-		if (m_lpHierarchyTableTreeCtrl) m_lpHierarchyTableTreeCtrl->Release();
-		m_lpHierarchyTableTreeCtrl = nullptr;
 		CBaseDialog::OnCancel();
 	}
 
 	void CHierarchyTableDlg::OnDisplayItem()
 	{
-		auto lpMAPIContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIContainer = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 		if (!lpMAPIContainer)
 		{
 			WARNHRESMSG(MAPI_E_NOT_FOUND, IDS_NOITEMSELECTED);
@@ -115,7 +112,7 @@ namespace dialog
 
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpContainer = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 		if (lpContainer)
 		{
@@ -147,7 +144,7 @@ namespace dialog
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		// Find the highlighted item
-		auto container = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto container = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 		if (!container) return;
 		auto lpMAPIFolder = mapi::safe_cast<LPMAPIFOLDER>(container);
 		container->Release();
@@ -203,15 +200,11 @@ namespace dialog
 
 		if (m_lpFakeSplitter)
 		{
-			m_lpHierarchyTableTreeCtrl = new controls::CHierarchyTableTreeCtrl(
+			m_lpHierarchyTableTreeCtrl.Create(
 				m_lpFakeSplitter, m_lpMapiObjects, this, m_ulDisplayFlags, m_nIDContextMenu);
+			m_lpFakeSplitter->SetPaneOne(m_lpHierarchyTableTreeCtrl.GetSafeHwnd());
 
-			if (m_lpHierarchyTableTreeCtrl)
-			{
-				m_lpFakeSplitter->SetPaneOne(m_lpHierarchyTableTreeCtrl->GetSafeHwnd());
-
-				m_lpFakeSplitter->SetPercent(0.25);
-			}
+			m_lpFakeSplitter->SetPercent(0.25);
 		}
 
 		UpdateTitleBarText();
@@ -226,35 +219,14 @@ namespace dialog
 
 		if (m_lpHierarchyTableTreeCtrl)
 		{
-			EC_H_S(m_lpHierarchyTableTreeCtrl->LoadHierarchyTable(m_lpContainer));
+			m_lpHierarchyTableTreeCtrl.LoadHierarchyTable(m_lpContainer);
 		}
-	}
-
-	// Per Q167960 BUG: ESC/ENTER Keys Do Not Work When Editing CTreeCtrl Labels
-	BOOL CHierarchyTableDlg::PreTranslateMessage(MSG* pMsg)
-	{
-		// If edit control is visible in tree view control, when you send a
-		// WM_KEYDOWN message to the edit control it will dismiss the edit
-		// control. When the ENTER key was sent to the edit control, the
-		// parent window of the tree view control is responsible for updating
-		// the item's label in TVN_ENDLABELEDIT notification code.
-		if (m_lpHierarchyTableTreeCtrl && pMsg && pMsg->message == WM_KEYDOWN &&
-			(pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE))
-		{
-			const auto edit = m_lpHierarchyTableTreeCtrl->GetEditControl();
-			if (edit)
-			{
-				edit->SendMessage(WM_KEYDOWN, pMsg->wParam, pMsg->lParam);
-				return true;
-			}
-		}
-		return CMyDialog::PreTranslateMessage(pMsg);
 	}
 
 	void CHierarchyTableDlg::OnRefreshView()
 	{
 		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
-		if (m_lpHierarchyTableTreeCtrl) EC_H_S(m_lpHierarchyTableTreeCtrl->RefreshHierarchyTable());
+		if (m_lpHierarchyTableTreeCtrl) m_lpHierarchyTableTreeCtrl.Refresh();
 	}
 
 	_Check_return_ bool CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
@@ -300,7 +272,7 @@ namespace dialog
 			SRow MyRow = {0};
 
 			// If we have a row to give, give it - it's free
-			const auto lpData = m_lpHierarchyTableTreeCtrl->GetSelectedItemData();
+			const auto lpData = m_lpHierarchyTableTreeCtrl.GetSelectedItemData();
 			if (lpData)
 			{
 				MyRow.cValues = lpData->cSourceProps;
@@ -311,7 +283,7 @@ namespace dialog
 
 			if (!(ulFlags & MENU_FLAGS_ROW))
 			{
-				lpContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(fRequestModify);
+				lpContainer = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(fRequestModify);
 			}
 
 			HandleAddInMenuSingle(&MyAddInMenuParams, nullptr, lpContainer);

@@ -107,7 +107,7 @@ namespace dialog
 	{
 		if (!pMenu) return;
 
-		const auto bItemSelected = m_lpHierarchyTableTreeCtrl && m_lpHierarchyTableTreeCtrl->IsItemSelected();
+		const auto bItemSelected = m_lpHierarchyTableTreeCtrl && m_lpHierarchyTableTreeCtrl.IsItemSelected();
 
 		const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 		pMenu->EnableMenuItem(ID_PASTE, DIM((ulStatus != BUFFER_EMPTY) && bItemSelected));
@@ -150,7 +150,7 @@ namespace dialog
 	LPMAPIFOLDER CMsgStoreDlg::GetSelectedFolder(__mfcmapiModifyEnum bModify) const
 	{
 		if (!m_lpHierarchyTableTreeCtrl) return nullptr;
-		auto container = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(bModify);
+		auto container = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(bModify);
 		if (!container) return nullptr;
 
 		auto ret = mapi::safe_cast<LPMAPIFOLDER>(container);
@@ -212,7 +212,7 @@ namespace dialog
 	{
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
@@ -271,7 +271,7 @@ namespace dialog
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
@@ -325,7 +325,7 @@ namespace dialog
 		const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 
 		// Get the destination Folder
-		auto lpMAPIDestFolder = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIDestFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 		if (lpMAPIDestFolder && ulStatus & BUFFER_MESSAGES && ulStatus & BUFFER_PARENTFOLDER)
 		{
@@ -362,7 +362,7 @@ namespace dialog
 		const auto lpEIDs = cache::CGlobalCache::getInstance().GetMessagesToCopy();
 		auto lpMAPISourceFolder = cache::CGlobalCache::getInstance().GetSourceParentFolder();
 		// Get the destination Folder
-		auto lpMAPIDestFolder = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIDestFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 		if (lpMAPIDestFolder && lpMAPISourceFolder && lpEIDs)
 		{
@@ -595,7 +595,7 @@ namespace dialog
 	{
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
@@ -609,7 +609,7 @@ namespace dialog
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		// Find the highlighted item
-		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
@@ -624,7 +624,7 @@ namespace dialog
 		if (!m_lpHierarchyTableTreeCtrl || !m_lpMapiObjects) return;
 
 		// Find the highlighted item
-		const auto lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
+		const auto lpItemEID = m_lpHierarchyTableTreeCtrl.GetSelectedItemEID();
 
 		if (lpItemEID)
 		{
@@ -656,7 +656,7 @@ namespace dialog
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		// Must open the folder with MODIFY permissions if I'm going to restore the folder!
-		auto lpFolder = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 		if (lpFolder)
 		{
@@ -728,10 +728,10 @@ namespace dialog
 
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
-		const auto hItem = m_lpHierarchyTableTreeCtrl->GetSelectedItem();
+		const auto hItem = m_lpHierarchyTableTreeCtrl.GetSelectedItem();
 		if (hItem)
 		{
-			const auto lpData = m_lpHierarchyTableTreeCtrl->GetSortListData(hItem);
+			const auto lpData = m_lpHierarchyTableTreeCtrl.GetSortListData(hItem);
 			if (lpData && lpData->Node()) lpItemEID = lpData->Node()->m_lpEntryID;
 		}
 
@@ -765,7 +765,7 @@ namespace dialog
 
 				if (bDelete)
 				{
-					auto ulFlags = DEL_FOLDERS | DEL_MESSAGES | bHardDelete ? DELETE_HARD_DELETE : 0;
+					auto ulFlags = DEL_FOLDERS | DEL_MESSAGES | (bHardDelete ? DELETE_HARD_DELETE : 0);
 
 					output::DebugPrintEx(
 						DBGDeleteSelectedItem,
@@ -787,8 +787,11 @@ namespace dialog
 						lpProgress,
 						ulFlags));
 
-					// Delete the item from the UI since we cannot rely on notifications to handle this for us
-					WC_B_S(m_lpHierarchyTableTreeCtrl->DeleteItem(hItem));
+					if (SUCCEEDED(hRes))
+					{
+						// Delete the item from the UI since we cannot rely on notifications to handle this for us
+						WC_B_S(m_lpHierarchyTableTreeCtrl.DeleteItem(hItem));
+					}
 
 					if (lpProgress) lpProgress->Release();
 				}
@@ -879,7 +882,7 @@ namespace dialog
 		MyData.AddPane(viewpane::CheckPane::Create(1, IDS_DELETEASSOCIATION, false, false));
 
 		// Find the highlighted item
-		const auto lpEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
+		const auto lpEID = m_lpHierarchyTableTreeCtrl.GetSelectedItemEID();
 
 		if (MyData.DisplayDialog())
 		{

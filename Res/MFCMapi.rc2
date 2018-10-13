@@ -862,6 +862,7 @@ IDS_CLASS "Class:"
 IDS_NUMBER "Number:"
 
 // HexEditor.cpp
+IDS_TEXTANSIUNICODE "Text (Ansi/Unicode)"
 IDS_ANSISTRING "Ansi"
 IDS_UNISTRING "Unicode"
 IDS_CCH "Count of characters"
