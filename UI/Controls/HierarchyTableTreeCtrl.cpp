@@ -67,18 +67,15 @@ namespace controls
 		m_ulDisplayFlags = ulDisplayFlags;
 
 		// Setup callbacks
-		HasChildrenCallback = [&](HTREEITEM hItem) -> bool { return HasChildren(hItem); };
-		ItemSelectedCallback = [&](HTREEITEM hItem) -> void { return OnItemSelected(hItem); };
-		KeyDownCallback =
-			[&](UINT nChar, const bool bShiftPressed, const bool bCtrlPressed, const bool bMenuPressed) -> bool {
-			return HandleKeyDown(nChar, bShiftPressed, bCtrlPressed, bMenuPressed);
-		};
-		FreeNodeDataCallback = [&](LPARAM lpData) -> void { return FreeNodeData(lpData); };
-		ExpandNodeCallback = [&](HTREEITEM hParent) -> void { return ExpandNode(hParent); };
-		OnRefreshCallback = [&]() -> void { return OnRefresh(); };
-		OnLabelEditCallback = [&](HTREEITEM hItem, LPTSTR szText) -> void { return OnLabelEdit(hItem, szText); };
-		OnDisplaySelectedItemCallback = [&]() -> void { return OnDisplaySelectedItem(); };
-		OnLastChildDeletedCallback = [&](LPARAM lpData) -> void { return OnLastChildDeleted(lpData); };
+		HasChildrenCallback = [&](auto _1) -> auto { return HasChildren(_1); };
+		ItemSelectedCallback = [&](auto _1) -> auto { return OnItemSelected(_1); };
+		KeyDownCallback = [&](auto _1, auto _2, auto _3, auto _4) -> auto { return HandleKeyDown(_1, _2, _3, _4); };
+		FreeNodeDataCallback = [&](auto _1) -> auto { return FreeNodeData(_1); };
+		ExpandNodeCallback = [&](auto _1) -> auto { return ExpandNode(_1); };
+		OnRefreshCallback = [&]() -> auto { return OnRefresh(); };
+		OnLabelEditCallback = [&](auto _1, auto _2) -> auto { return OnLabelEdit(_1, _2); };
+		OnDisplaySelectedItemCallback = [&]() -> auto { return OnDisplaySelectedItem(); };
+		OnLastChildDeletedCallback = [&](auto _1) -> auto { return OnLastChildDeleted(_1); };
 
 		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu, false);
 	}
@@ -202,9 +199,8 @@ namespace controls
 				true, // Always assume root nodes have children so we always paint an expanding icon
 				lpProps ? lpProps[htPR_CONTAINER_FLAGS].Value.ul : MAPI_E_NOT_FOUND);
 
-			(void) AddChildNode(szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), [&](HTREEITEM hItem) -> void {
-				return OnItemAdded(hItem);
-			});
+			(void) AddChildNode(
+				szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), [&](auto _1) -> auto { return OnItemAdded(_1); });
 		}
 
 		// Node owns the lpProps memory now, so we don't free it
@@ -759,7 +755,7 @@ namespace controls
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 			WC_MAPI_S(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
-			AddNode(&NewRow, hParent, [&](HTREEITEM hItem) -> void { return OnItemAdded(hItem); });
+			AddNode(&NewRow, hParent, [&](auto _1) -> auto { return OnItemAdded(_1); });
 		}
 		else
 		{
