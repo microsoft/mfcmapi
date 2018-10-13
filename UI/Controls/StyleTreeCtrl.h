@@ -16,19 +16,19 @@ namespace controls
 			const std::function<void(HTREEITEM hItem)>& callback) const;
 
 		// Callbacks
-		void SetHasChildrenCallback(const std::function<bool(HTREEITEM hItem)>& callback)
-		{
-			HasChildrenCallback = callback;
-		}
-		void SetItemSelectedCallback(const std::function<void(HTREEITEM hItem)>& callback)
-		{
-			ItemSelectedCallback = callback;
-		}
-		void SetKeyDownCallback(
-			const std::function<bool(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed)>& callback)
-		{
-			KeyDownCallback = callback;
-		}
+		std::function<bool(HTREEITEM hItem)> HasChildrenCallback = nullptr;
+		std::function<void(HTREEITEM hItem)> ItemSelectedCallback = nullptr;
+		std::function<bool(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed)> KeyDownCallback =
+			[&](const UINT nChar, bool /*bShiftPressed*/, bool /*bCtrlPressed*/, bool /*bMenuPressed*/) -> bool {
+			if (nChar == VK_ESCAPE)
+			{
+				::SendMessage(this->GetParent()->GetSafeHwnd(), WM_CLOSE, NULL, NULL);
+				return true;
+			}
+
+			return false;
+		};
+
 
 	protected:
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -71,20 +71,6 @@ namespace controls
 		bool m_HoverButton{false};
 		bool m_bItemSelected{false};
 		bool m_bReadOnly{false};
-
-		// Callbacks
-		std::function<bool(HTREEITEM hItem)> HasChildrenCallback = nullptr;
-		std::function<void(HTREEITEM hItem)> ItemSelectedCallback = nullptr;
-		std::function<bool(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed)> KeyDownCallback =
-			[&](const UINT nChar, bool /*bShiftPressed*/, bool /*bCtrlPressed*/, bool /*bMenuPressed*/) -> bool {
-			if (nChar == VK_ESCAPE)
-			{
-				::SendMessage(this->GetParent()->GetSafeHwnd(), WM_CLOSE, NULL, NULL);
-				return true;
-			}
-
-			return false;
-		};
 
 		DECLARE_MESSAGE_MAP()
 	};

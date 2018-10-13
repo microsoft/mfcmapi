@@ -47,7 +47,7 @@ namespace dialog
 			AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
 			auto tree = viewpane::TreePane::Create(HEXED_TREE, IDS_HEX, true);
 			AddPane(tree);
-			tree->m_Tree.SetItemSelectedCallback([&](HTREEITEM hItem) -> void {
+			tree->m_Tree.ItemSelectedCallback = [&](HTREEITEM hItem) -> void {
 				auto pane = dynamic_cast<viewpane::TreePane*>(GetPane(HEXED_TREE));
 				if (pane)
 				{
@@ -61,7 +61,7 @@ namespace dialog
 
 					SetStringW(HEXED_ANSI, szText);
 				}
-			});
+			};
 			AddPane(viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW));
 
 			DisplayParentedDialog(pParentWnd, 1000);

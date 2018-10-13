@@ -67,11 +67,11 @@ namespace controls
 		m_ulDisplayFlags = ulDisplayFlags;
 
 		// Setup callbacks
-		SetHasChildrenCallback([&](HTREEITEM hItem) -> bool { return HasChildren(hItem); });
-		SetItemSelectedCallback([&](HTREEITEM hItem) -> void { return OnItemSelected(hItem); });
-		SetKeyDownCallback([&](UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed) -> bool {
+		HasChildrenCallback = [&](HTREEITEM hItem) -> bool { return HasChildren(hItem); };
+		ItemSelectedCallback = [&](HTREEITEM hItem) -> void { return OnItemSelected(hItem); };
+		KeyDownCallback = [&](UINT nChar, const bool bShiftPressed, const bool bCtrlPressed, const bool bMenuPressed) -> bool {
 			return HandleKeyDown(nChar, bShiftPressed, bCtrlPressed, bMenuPressed);
-		});
+		};
 
 		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu, false);
 	}
