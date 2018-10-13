@@ -73,15 +73,6 @@ namespace viewpane
 		return 4;
 	}
 
-	ULONG TreePane::HandleChange(UINT nID)
-	{
-		//switch (nID)
-		//{
-		//}
-
-		return ViewPane::HandleChange(nID);
-	}
-
 	void TreePane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
@@ -111,6 +102,4 @@ namespace viewpane
 
 		EC_B_S(::DeferWindowPos(hWinPosInfo, m_Tree.GetSafeHwnd(), nullptr, x, curY, width, treeHeight, SWP_NOZORDER));
 	}
-
-	void TreePane::CommitUIValues() {}
 } // namespace viewpane
