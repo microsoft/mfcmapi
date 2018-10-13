@@ -18,21 +18,6 @@ namespace controls
 		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::cBackground));
 		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::cText));
 		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
-
-		// Default key down handler
-		if (!KeyDownCallback)
-		{
-			KeyDownCallback =
-				[&](const UINT nChar, bool /*bShiftPressed*/, bool /*bCtrlPressed*/, bool /*bMenuPressed*/) -> bool {
-				if (nChar == VK_ESCAPE)
-				{
-					::SendMessage(this->GetParent()->GetSafeHwnd(), WM_CLOSE, VK_ESCAPE, NULL);
-					return true;
-				}
-
-				return false;
-			};
-		}
 	}
 
 	BEGIN_MESSAGE_MAP(StyleTreeCtrl, CTreeCtrl)

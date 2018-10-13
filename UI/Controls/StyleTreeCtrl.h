@@ -76,7 +76,15 @@ namespace controls
 		std::function<bool(HTREEITEM hItem)> HasChildrenCallback = nullptr;
 		std::function<void(HTREEITEM hItem)> ItemSelectedCallback = nullptr;
 		std::function<bool(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed)> KeyDownCallback =
-			nullptr;
+			[&](const UINT nChar, bool /*bShiftPressed*/, bool /*bCtrlPressed*/, bool /*bMenuPressed*/) -> bool {
+			if (nChar == VK_ESCAPE)
+			{
+				::SendMessage(this->GetParent()->GetSafeHwnd(), WM_CLOSE, NULL, NULL);
+				return true;
+			}
+
+			return false;
+		};
 
 		DECLARE_MESSAGE_MAP()
 	};
