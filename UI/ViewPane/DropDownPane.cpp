@@ -50,9 +50,10 @@ namespace viewpane
 		return pane;
 	}
 
-	int DropDownPane::GetMinWidth(_In_ HDC hdc)
+	int DropDownPane::GetMinWidth()
 	{
 		auto cxDropDown = 0;
+		const auto hdc = ::GetDC(m_DropDown.GetSafeHwnd());
 		for (auto iDropString = 0; iDropString < m_DropDown.GetCount(); iDropString++)
 		{
 			const auto szDropString = ui::GetLBText(m_DropDown.m_hWnd, iDropString);
@@ -60,10 +61,12 @@ namespace viewpane
 			cxDropDown = max(cxDropDown, sizeDrop.cx);
 		}
 
+		::ReleaseDC(m_DropDown.GetSafeHwnd(), hdc);
+
 		// Add scroll bar and margins for our frame
 		cxDropDown += GetSystemMetrics(SM_CXVSCROLL) + 2 * GetSystemMetrics(SM_CXFIXEDFRAME);
 
-		return max(ViewPane::GetMinWidth(hdc), cxDropDown);
+		return max(ViewPane::GetMinWidth(), cxDropDown);
 	}
 
 	int DropDownPane::GetFixedHeight()

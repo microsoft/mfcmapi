@@ -32,9 +32,9 @@ namespace viewpane
 		TextPane::Initialize(pParent, hdc);
 	}
 
-	int CountedTextPane::GetMinWidth(_In_ HDC hdc)
+	int CountedTextPane::GetMinWidth()
 	{
-		const auto iLabelWidth = TextPane::GetMinWidth(hdc);
+		const auto iLabelWidth = TextPane::GetMinWidth();
 
 		auto szCount = strings::format(
 			L"%ws: 0x%08X = %u",
@@ -43,7 +43,9 @@ namespace viewpane
 			static_cast<UINT>(m_iCount)); // STRING_OK
 		SetWindowTextW(m_Count.m_hWnd, szCount.c_str());
 
+		const auto hdc = ::GetDC(m_Count.GetSafeHwnd());
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, szCount);
+		::ReleaseDC(m_Count.GetSafeHwnd(), hdc);
 		m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
 
 		// Button, margin, label, margin, count label

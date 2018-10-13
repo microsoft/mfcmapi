@@ -15,7 +15,7 @@ namespace viewpane
 
 		virtual void CommitUIValues() = 0;
 		virtual bool IsDirty() { return false; }
-		virtual int GetMinWidth(_In_ HDC /*hdc*/) { return m_iLabelWidth; }
+		virtual int GetMinWidth() { return m_iLabelWidth; }
 		virtual int GetFixedHeight() = 0;
 		virtual int GetLines() { return 0; }
 		virtual ULONG HandleChange(UINT nID);

@@ -24,15 +24,15 @@ namespace viewpane
 		return pane;
 	}
 
-	int SplitterPane::GetMinWidth(_In_ HDC hdc)
+	int SplitterPane::GetMinWidth()
 	{
 		if (m_bVertical)
 		{
-			return max(m_PaneOne->GetMinWidth(hdc), m_PaneTwo->GetMinWidth(hdc));
+			return max(m_PaneOne->GetMinWidth(), m_PaneTwo->GetMinWidth());
 		}
 		else
 		{
-			return m_PaneOne->GetMinWidth(hdc) + m_PaneTwo->GetMinWidth(hdc) +
+			return m_PaneOne->GetMinWidth() + m_PaneTwo->GetMinWidth() +
 				   (m_lpSplitter ? m_lpSplitter->GetSplitWidth() : 0);
 		}
 	}

@@ -14,7 +14,7 @@ namespace viewpane
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		void CommitUIValues() override;
-		int GetMinWidth(_In_ HDC hdc) override;
+		int GetMinWidth() override;
 		int GetFixedHeight() override;
 
 		CButton m_Check;

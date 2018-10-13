@@ -86,10 +86,10 @@ namespace viewpane
 		m_bInitialized = true;
 	}
 
-	int ListPane::GetMinWidth(_In_ HDC hdc)
+	int ListPane::GetMinWidth()
 	{
 		return max(
-			ViewPane::GetMinWidth(hdc), (int) (NUMLISTBUTTONS * m_iButtonWidth + m_iMargin * (NUMLISTBUTTONS - 1)));
+			ViewPane::GetMinWidth(), (int) (NUMLISTBUTTONS * m_iButtonWidth + m_iMargin * (NUMLISTBUTTONS - 1)));
 	}
 
 	int ListPane::GetFixedHeight()
