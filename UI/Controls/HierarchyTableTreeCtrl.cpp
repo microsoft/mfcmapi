@@ -194,7 +194,7 @@ namespace controls
 		{
 			lpData->InitializeNode(
 				cVals,
-				lpProps, // pass our lpProps to be archived
+				lpProps, // Pass our lpProps to be archived
 				lpEIDBin,
 				nullptr,
 				true, // Always assume root nodes have children so we always paint an expanding icon
@@ -238,7 +238,7 @@ namespace controls
 
 	void CHierarchyTableTreeCtrl::Advise(HTREEITEM hItem, sortlistdata::SortListData* lpData) const
 	{
-		// set up our advise sink
+		// Set up our advise sink
 		if (lpData->Node()->m_lpHierarchyTable && !lpData->Node()->m_lpAdviseSink &&
 			(registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || GetRootItem() != hItem))
 		{
@@ -265,7 +265,7 @@ namespace controls
 				}
 				else if (hRes == S_OK)
 				{
-					const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+					const auto lpMDB = m_lpMapiObjects->GetMDB(); // Do not release
 					if (lpMDB)
 					{
 						lpData->Node()->m_lpAdviseSink->SetAdviseTarget(lpMDB);
@@ -309,8 +309,8 @@ namespace controls
 				// Get the hierarchy table for the node and shove it into the data
 				LPMAPITABLE lpHierarchyTable = nullptr;
 
-				// on the AB, something about this call triggers table reloads on the parent hierarchy table
-				// no idea why they're triggered - doesn't happen for all AB providers
+				// On the AB, something about this call triggers table reloads on the parent hierarchy table
+				// No idea why they're triggered - doesn't happen for all AB providers
 				WC_MAPI_S(lpMAPIContainer->GetHierarchyTable(
 					(m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | fMapiUnicode, &lpHierarchyTable));
 
@@ -324,7 +324,7 @@ namespace controls
 			}
 		}
 
-		// set up our advise sink
+		// Set up our advise sink
 		if (bRegNotifs)
 		{
 			Advise(hItem, lpData);
@@ -345,11 +345,11 @@ namespace controls
 			GetHierarchyTable(hParent, nullptr, 0 != registry::RegKeys[registry::regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
 		if (lpHierarchyTable)
 		{
-			// go to the first row
+			// Go to the first row
 			EC_MAPI_S(lpHierarchyTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 
 			auto i = ULONG{};
-			// get each row in turn and add it to the list
+			// Get each row in turn and add it to the list
 			// TODO: Query several rows at once
 			for (;;)
 			{
@@ -418,7 +418,7 @@ namespace controls
 		// Have to request modify or this object is read only in the single prop control.
 		auto lpMAPIContainer = GetContainer(hItem, mfcmapiREQUEST_MODIFY);
 
-		// make sure we've gotten the hierarchy table for this node
+		// Make sure we've gotten the hierarchy table for this node
 		(void) GetHierarchyTable(
 			hItem, lpMAPIContainer, 0 != registry::RegKeys[registry::regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
 
@@ -553,7 +553,6 @@ namespace controls
 		return false;
 	}
 
-	// TODO: Can this be moved down?
 	void CHierarchyTableTreeCtrl::HandleContextMenu(const int x, const int y)
 	{
 		ui::DisplayContextMenu(m_nIDContextMenu, IDR_MENU_HIERARCHY_TABLE, m_lpHostDlg->m_hWnd, x, y);
@@ -581,12 +580,13 @@ namespace controls
 		// Find the highlighted item
 		const auto Item = GetSelectedItem();
 
-		// get the EID associated with it
+		// Get the EID associated with it
 		if (Item)
 		{
 			const auto lpData = GetSortListData(Item);
 			if (lpData && lpData->Node()) return lpData->Node()->m_lpEntryID;
 		}
+
 		return nullptr;
 	}
 
@@ -693,7 +693,7 @@ namespace controls
 				&ulObjType);
 		}
 
-		// if we failed because write access was denied, try again if acceptable
+		// If we failed because write access was denied, try again if acceptable
 		if (!lpContainer && FAILED(hRes) && mfcmapiREQUEST_MODIFY == bModify)
 		{
 			output::DebugPrint(DBGGeneric, L"\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n", hRes);
@@ -746,7 +746,7 @@ namespace controls
 			hParent,
 			strings::LPCTSTRToWstring(GetItemText(hParent)).c_str());
 
-		// only need to add the node if we're expanded
+		// Only need to add the node if we're expanded
 		const int iState = GetItemState(hParent, NULL);
 		if (iState & TVIS_EXPANDEDONCE)
 		{
@@ -911,7 +911,7 @@ namespace controls
 	}
 
 	// This function steps through the list control to find the entry with this instance key
-	// return NULL if item not found
+	// Return NULL if item not found
 	_Check_return_ HTREEITEM CHierarchyTableTreeCtrl::FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const
 	{
 		if (!lpInstance || !hParent) return nullptr;

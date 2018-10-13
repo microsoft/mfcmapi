@@ -227,10 +227,10 @@ namespace controls
 	{
 		auto iDlgCode = CTreeCtrl::OnGetDlgCode() | DLGC_WANTMESSAGE;
 
-		// to make sure that the control key is not pressed
+		// Make sure that the control key is not pressed
 		if (GetKeyState(VK_CONTROL) >= 0 && m_hWnd == ::GetFocus())
 		{
-			// to make sure that the Tab key is pressed
+			// Make sure that the Tab key is pressed
 			if (GetKeyState(VK_TAB) < 0) iDlgCode &= ~(DLGC_WANTALLKEYS | DLGC_WANTMESSAGE | DLGC_WANTTAB);
 		}
 
