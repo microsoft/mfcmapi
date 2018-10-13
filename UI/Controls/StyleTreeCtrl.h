@@ -19,7 +19,7 @@ namespace controls
 		std::function<bool(HTREEITEM hItem)> HasChildrenCallback = nullptr;
 		std::function<void(HTREEITEM hItem)> ItemSelectedCallback = nullptr;
 		std::function<bool(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed)> KeyDownCallback =
-			[&](const UINT nChar, bool /*bShiftPressed*/, bool /*bCtrlPressed*/, bool /*bMenuPressed*/) -> bool {
+			[&](auto nChar, auto, auto, auto) -> bool {
 			if (nChar == VK_ESCAPE)
 			{
 				::SendMessage(this->GetParent()->GetSafeHwnd(), WM_CLOSE, NULL, NULL);
