@@ -15,7 +15,7 @@ namespace viewpane
 
 		virtual void CommitUIValues() = 0;
 		virtual bool IsDirty() { return false; }
-		virtual int GetMinWidth() { return m_iLabelWidth; }
+		virtual int GetMinWidth() { return (m_bCollapsible ? m_iButtonHeight : 0) + m_iLabelWidth; }
 		virtual int GetFixedHeight() = 0;
 		virtual int GetLines() { return 0; }
 		virtual ULONG HandleChange(UINT nID);
