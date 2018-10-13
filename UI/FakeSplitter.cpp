@@ -219,6 +219,23 @@ namespace controls
 		}
 
 		m_iSplitPos = static_cast<int>(static_cast<FLOAT>(iCurSpan) * m_flSplitPercent);
+		auto paneOneMinSpan = PaneOneMinSpanCallback ? PaneOneMinSpanCallback() : 0;
+		auto paneTwoMinSpan = PaneTwoMinSpanCallback ? PaneTwoMinSpanCallback() : 0;
+		if (paneOneMinSpan + paneTwoMinSpan + m_iSplitWidth + 1 >= iCurSpan)
+		{
+			paneOneMinSpan = 0;
+			paneTwoMinSpan = 0;
+		}
+
+		if (m_iSplitPos < paneOneMinSpan)
+		{
+			m_iSplitPos = paneOneMinSpan;
+		}
+		else if (iCurSpan - m_iSplitPos < paneTwoMinSpan)
+		{
+			m_iSplitPos = iCurSpan - paneTwoMinSpan;
+		}
+
 		if (m_iSplitPos + m_iSplitWidth + 1 >= iCurSpan)
 		{
 			m_iSplitPos = m_iSplitPos - m_iSplitWidth - 1;

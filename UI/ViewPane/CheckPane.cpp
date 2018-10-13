@@ -18,9 +18,9 @@ namespace viewpane
 		return pane;
 	}
 
-	int CheckPane::GetMinWidth(_In_ HDC hdc)
+	int CheckPane::GetMinWidth()
 	{
-		const auto label = ViewPane::GetMinWidth(hdc);
+		const auto label = ViewPane::GetMinWidth();
 		const auto check = GetSystemMetrics(SM_CXMENUCHECK);
 		const auto edge = check / 5;
 		output::DebugPrint(

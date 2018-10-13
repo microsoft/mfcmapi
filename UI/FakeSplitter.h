@@ -47,6 +47,10 @@ namespace controls
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height);
 		int GetSplitWidth() const { return m_iSplitWidth; }
 
+		// Callbacks
+		std::function<int()> PaneOneMinSpanCallback= nullptr;
+		std::function<int()> PaneTwoMinSpanCallback = nullptr;
+
 	private:
 		void OnPaint();
 		void OnMouseMove(UINT nFlags, CPoint point);

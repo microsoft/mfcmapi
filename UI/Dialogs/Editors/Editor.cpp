@@ -612,7 +612,7 @@ namespace dialog
 			{
 				if (pane)
 				{
-					cx = max(cx, pane->GetMinWidth(hdc));
+					cx = max(cx, pane->GetMinWidth());
 				}
 			}
 
