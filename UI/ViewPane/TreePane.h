@@ -9,7 +9,6 @@ namespace viewpane
 	public:
 		static TreePane* Create(int paneID, UINT uidLabel, bool bReadOnly);
 
-		bool IsDirty() override;
 		controls::StyleTreeCtrl m_Tree;
 
 	private:
@@ -19,7 +18,5 @@ namespace viewpane
 		int GetMinWidth(_In_ HDC hdc) override;
 		int GetFixedHeight() override;
 		int GetLines() override;
-
-		bool m_bDirty{false};
 	};
 } // namespace viewpane

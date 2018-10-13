@@ -25,8 +25,6 @@ namespace viewpane
 		return pane;
 	}
 
-	bool TreePane::IsDirty() { return m_bDirty; }
-
 	void TreePane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
 		ViewPane::Initialize(pParent, hdc);
