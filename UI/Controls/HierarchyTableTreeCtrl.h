@@ -39,9 +39,9 @@ namespace controls
 		// Overrides from base class
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 		void HandleContextMenu(int x, int y) override;
-		void OnItemAdded(HTREEITEM hItem) const;
 
 		// Callback functions
+		void OnItemAdded(HTREEITEM hItem) const;
 		bool HasChildren(_In_ HTREEITEM hItem) const;
 		void OnItemSelected(HTREEITEM hItem) const;
 		bool HandleKeyDown(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed);
