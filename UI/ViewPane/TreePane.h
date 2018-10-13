@@ -9,7 +9,6 @@ namespace viewpane
 	public:
 		static TreePane* Create(int paneID, UINT uidLabel, bool bReadOnly);
 
-		controls::StyleTreeCtrl m_Tree;
 		std::function<void(controls::StyleTreeCtrl& tree)> InitializeCallback = nullptr;
 
 	private:
@@ -18,5 +17,7 @@ namespace viewpane
 		void CommitUIValues() override{};
 		int GetFixedHeight() override;
 		int GetLines() override { return m_bCollapsed ? 0 : 4; }
+
+		controls::StyleTreeCtrl m_Tree;
 	};
 } // namespace viewpane
