@@ -76,6 +76,7 @@ namespace controls
 		OnLabelEditCallback = [&](auto _1, auto _2) { return OnLabelEdit(_1, _2); };
 		OnDisplaySelectedItemCallback = [&]() { return OnDisplaySelectedItem(); };
 		OnLastChildDeletedCallback = [&](auto _1) { return OnLastChildDeleted(_1); };
+		HandleContextMenuCallback = [&](auto _1, auto _2) { return HandleContextMenu(_1, _2); };
 
 		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu, false);
 	}

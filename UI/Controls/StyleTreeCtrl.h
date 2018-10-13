@@ -34,6 +34,7 @@ namespace controls
 		std::function<void(HTREEITEM hItem, LPTSTR szText)> OnLabelEditCallback = nullptr;
 		std::function<void()> OnDisplaySelectedItemCallback = nullptr;
 		std::function<void(LPARAM lpData)> OnLastChildDeletedCallback = nullptr;
+		std::function<void(int x, int y)> HandleContextMenuCallback = nullptr;
 
 	protected:
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -57,7 +58,6 @@ namespace controls
 		void OnRightClick(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		_Check_return_ UINT OnGetDlgCode();
-		virtual void HandleContextMenu(const int /*x*/, const int /*y*/) {}
 		void OnContextMenu(_In_ HWND hwnd, int x, int y);
 		void OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 		void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);

@@ -38,7 +38,6 @@ namespace controls
 	private:
 		// Overrides from base class
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
-		void HandleContextMenu(int x, int y) override;
 
 		// Callback functions
 		void OnItemAdded(HTREEITEM hItem) const;
@@ -51,6 +50,7 @@ namespace controls
 		void OnLabelEdit(HTREEITEM hItem, LPTSTR szText);
 		void OnDisplaySelectedItem();
 		void OnLastChildDeleted(LPARAM /*lpData*/);
+		void HandleContextMenu(int x, int y);
 
 		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
 		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify) const;

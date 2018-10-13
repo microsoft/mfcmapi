@@ -279,7 +279,7 @@ namespace controls
 			}
 		}
 
-		HandleContextMenu(pos.x, pos.y);
+		if (HandleContextMenuCallback) HandleContextMenuCallback(pos.x, pos.y);
 	}
 
 	void StyleTreeCtrl::OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
