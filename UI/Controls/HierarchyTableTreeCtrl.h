@@ -38,17 +38,19 @@ namespace controls
 	private:
 		// Overrides from base class
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
-		void ExpandNode(HTREEITEM hParent) const override;
 		void HandleContextMenu(int x, int y) override;
-		void OnRefresh() const override;
-		void OnLabelEdit(HTREEITEM hItem, LPTSTR szText) override;
-		void OnDisplaySelectedItem() override;
-		bool HandleKeyDown(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed);
-		void OnLastChildDeleted(LPARAM /*lpData*/) override;
-		void FreeNodeData(LPARAM lpData) const override;
 		void OnItemAdded(HTREEITEM hItem) const;
+
+		// Callback functions
 		bool HasChildren(_In_ HTREEITEM hItem) const;
 		void OnItemSelected(HTREEITEM hItem) const;
+		bool HandleKeyDown(UINT nChar, bool bShiftPressed, bool bCtrlPressed, bool bMenuPressed);
+		void FreeNodeData(LPARAM lpData) const;
+		void ExpandNode(HTREEITEM hParent) const;
+		void OnRefresh() const;
+		void OnLabelEdit(HTREEITEM hItem, LPTSTR szText);
+		void OnDisplaySelectedItem();
+		void OnLastChildDeleted(LPARAM /*lpData*/);
 
 		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
 		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify) const;

@@ -144,7 +144,7 @@ namespace controls
 			if (TreeView_GetItem(hWnd, &tvItem) && tvItem.lParam)
 			{
 				output::DebugPrintEx(DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, replacing data\n", hItem);
-				FreeNodeData(tvItem.lParam);
+				if (FreeNodeDataCallback) FreeNodeDataCallback(tvItem.lParam);
 			}
 			else
 			{
@@ -302,7 +302,7 @@ namespace controls
 			{
 				if (!(pNMTreeView->itemNew.state & TVIS_EXPANDEDONCE))
 				{
-					ExpandNode(pNMTreeView->itemNew.hItem);
+					if (ExpandNodeCallback) ExpandNodeCallback(pNMTreeView->itemNew.hItem);
 				}
 			}
 		}
@@ -316,7 +316,7 @@ namespace controls
 		OnSelChanged(nullptr, nullptr);
 
 		EC_B_S(DeleteItem(GetRootItem()));
-		OnRefresh();
+		if (OnRefreshCallback) OnRefreshCallback();
 
 		// Turn redraw back on to update our view
 		SetRedraw(true);
@@ -331,12 +331,12 @@ namespace controls
 
 		if (!pTVDispInfo || !pTVDispInfo->item.pszText) return;
 
-		OnLabelEdit(pTVDispInfo->item.hItem, pTVDispInfo->item.pszText);
+		if (OnLabelEditCallback) OnLabelEditCallback(pTVDispInfo->item.hItem, pTVDispInfo->item.pszText);
 	}
 
 	void StyleTreeCtrl::OnDblclk(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
 	{
-		OnDisplaySelectedItem();
+		if (OnDisplaySelectedItemCallback) OnDisplaySelectedItemCallback();
 
 		// Don't do default behavior for double-click (We only want '+' sign expansion.
 		// Double click should display the item, not expand the tree.)
@@ -374,7 +374,7 @@ namespace controls
 				pNMTreeView->itemOld.hItem,
 				strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str());
 
-			FreeNodeData(pNMTreeView->itemOld.lParam);
+			if (FreeNodeDataCallback) FreeNodeDataCallback(pNMTreeView->itemOld.lParam);
 
 			if (!m_bShuttingDown)
 			{
@@ -393,7 +393,7 @@ namespace controls
 					tvItem.mask = TVIF_PARAM;
 					if (TreeView_GetItem(m_hWnd, &tvItem) && tvItem.lParam)
 					{
-						OnLastChildDeleted(tvItem.lParam);
+						if (OnLastChildDeletedCallback) OnLastChildDeletedCallback(tvItem.lParam);
 					}
 				}
 			}

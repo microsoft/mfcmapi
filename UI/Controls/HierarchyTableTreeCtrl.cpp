@@ -69,9 +69,16 @@ namespace controls
 		// Setup callbacks
 		HasChildrenCallback = [&](HTREEITEM hItem) -> bool { return HasChildren(hItem); };
 		ItemSelectedCallback = [&](HTREEITEM hItem) -> void { return OnItemSelected(hItem); };
-		KeyDownCallback = [&](UINT nChar, const bool bShiftPressed, const bool bCtrlPressed, const bool bMenuPressed) -> bool {
+		KeyDownCallback =
+			[&](UINT nChar, const bool bShiftPressed, const bool bCtrlPressed, const bool bMenuPressed) -> bool {
 			return HandleKeyDown(nChar, bShiftPressed, bCtrlPressed, bMenuPressed);
 		};
+		FreeNodeDataCallback = [&](LPARAM lpData) -> void { return FreeNodeData(lpData); };
+		ExpandNodeCallback = [&](HTREEITEM hParent) -> void { return ExpandNode(hParent); };
+		OnRefreshCallback = [&]() -> void { return OnRefresh(); };
+		OnLabelEditCallback = [&](HTREEITEM hItem, LPTSTR szText) -> void { return OnLabelEdit(hItem, szText); };
+		OnDisplaySelectedItemCallback = [&]() -> void { return OnDisplaySelectedItem(); };
+		OnLastChildDeletedCallback = [&](LPARAM lpData) -> void { return OnLastChildDeleted(lpData); };
 
 		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu, false);
 	}

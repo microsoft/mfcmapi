@@ -28,7 +28,12 @@ namespace controls
 
 			return false;
 		};
-
+		std::function<void(LPARAM lpData)> FreeNodeDataCallback = nullptr;
+		std::function<void(HTREEITEM hParent)> ExpandNodeCallback = nullptr;
+		std::function<void()> OnRefreshCallback = nullptr;
+		std::function<void(HTREEITEM hItem, LPTSTR szText)> OnLabelEditCallback = nullptr;
+		std::function<void()> OnDisplaySelectedItemCallback = nullptr;
+		std::function<void(LPARAM lpData)> OnLastChildDeletedCallback = nullptr;
 
 	protected:
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -43,15 +48,6 @@ namespace controls
 		bool m_bShuttingDown{false};
 
 	private:
-		// Overrides for derived controls to customize behavior
-		// Override to provide custom deletion of node data
-		virtual void FreeNodeData(LPARAM /*lpData*/) const {};
-		virtual void ExpandNode(HTREEITEM /*hParent*/) const {}
-		virtual void OnRefresh() const {}
-		virtual void OnLabelEdit(HTREEITEM /*hItem*/, LPTSTR /*szText*/) {}
-		virtual void OnDisplaySelectedItem() {}
-		virtual void OnLastChildDeleted(LPARAM /*lpData*/) {}
-
 		void OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 
 		// Overrides from base class
