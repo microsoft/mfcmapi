@@ -47,8 +47,8 @@ namespace dialog
 			AddPane(viewpane::CountedTextPane::Create(HEXED_BASE64, IDS_BASE64STRING, false, IDS_CCH));
 
 			auto tree = viewpane::TreePane::Create(HEXED_TREE, IDS_HEX, true);
-			tree->InitializeCallback = [&](viewpane::TreePane& tree) {
-				tree.m_Tree.ItemSelectedCallback = [&](auto hItem) {
+			tree->InitializeCallback = [&](controls::StyleTreeCtrl& tree) {
+				tree.ItemSelectedCallback = [&](auto hItem) {
 					{
 						WCHAR szText[255] = {};
 						auto item = TVITEMEXW{};
@@ -57,7 +57,7 @@ namespace dialog
 						item.cchTextMax = _countof(szText);
 						item.hItem = hItem;
 						WC_B_S(::SendMessage(
-							tree.m_Tree.GetSafeHwnd(), TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+							tree.GetSafeHwnd(), TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
 
 						SetStringW(HEXED_ANSI, szText);
 					}

@@ -30,7 +30,7 @@ namespace viewpane
 		ViewPane::Initialize(pParent, hdc);
 		m_Tree.Create(pParent, 0, m_bReadOnly);
 
-		if (InitializeCallback) InitializeCallback(*this);
+		if (InitializeCallback) InitializeCallback(m_Tree);
 		m_bInitialized = true;
 	}
 
