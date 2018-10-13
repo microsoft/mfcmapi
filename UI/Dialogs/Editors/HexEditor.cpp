@@ -4,6 +4,7 @@
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/ViewPane/SmartViewPane.h>
 #include <UI/ViewPane/SplitterPane.h>
+#include <UI/ViewPane/TreePane.h>
 #include <MAPI/Cache/GlobalCache.h>
 #include <MAPI/MAPIFunctions.h>
 
@@ -20,7 +21,9 @@ namespace dialog
 			HEXED_UNICODE,
 			HEXED_BASE64,
 			HEXED_HEX,
-			HEXED_SMARTVIEW
+			HEXED_SMARTVIEW,
+			HEXED_SPLITTER2,
+			HEXED_TREE
 		};
 
 		CHexEditor::CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects)
@@ -43,8 +46,36 @@ namespace dialog
 			splitter->SetPaneTwo(viewpane::TextPane::CreateMultiLinePane(HEXED_UNICODE, NULL, false));
 			AddPane(viewpane::CountedTextPane::Create(HEXED_BASE64, IDS_BASE64STRING, false, IDS_CCH));
 
+			auto tree = viewpane::TreePane::Create(HEXED_TREE, IDS_HEX, true);
+			tree->InitializeCallback = [&](controls::StyleTreeCtrl& tree) {
+				tree.ItemSelectedCallback = [&](auto hItem) {
+					{
+						WCHAR szText[255] = {};
+						auto item = TVITEMEXW{};
+						item.mask = TVIF_TEXT;
+						item.pszText = szText;
+						item.cchTextMax = _countof(szText);
+						item.hItem = hItem;
+						WC_B_S(::SendMessage(tree.GetSafeHwnd(), TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+
+						SetStringW(HEXED_ANSI, szText);
+					}
+				};
+
+				const auto root = tree.AddChildNode(L"ROOT", nullptr, 0, nullptr);
+				auto child1 = tree.AddChildNode(L"child1", root, 0, nullptr);
+				(void) tree.AddChildNode(L"child2", child1, 0, nullptr);
+				auto child3 = tree.AddChildNode(L"child3", root, 0, nullptr);
+				(void) tree.AddChildNode(L"child4", child3, 0, nullptr);
+				(void) tree.AddChildNode(L"child5", child3, 0, nullptr);
+			};
+
+			auto splitter2 = viewpane::SplitterPane::CreateHorizontalPane(HEXED_SPLITTER2, IDS_TEXTANSIUNICODE);
+			AddPane(splitter2);
+			splitter2->SetPaneOne(tree);
+			splitter2->SetPaneTwo(viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW));
+
 			AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
-			AddPane(viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW));
 			DisplayParentedDialog(pParentWnd, 1000);
 		}
 

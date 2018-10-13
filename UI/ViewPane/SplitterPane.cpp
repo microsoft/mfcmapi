@@ -139,6 +139,16 @@ namespace viewpane
 			m_PaneTwo->Initialize(m_lpSplitter, hdc);
 			m_lpSplitter->SetPaneOne(m_PaneOne);
 			m_lpSplitter->SetPaneTwo(m_PaneTwo);
+			if (m_bVertical)
+			{
+				m_lpSplitter->PaneOneMinSpanCallback = [&] { return m_PaneOne ? m_PaneOne->GetFixedHeight() : 0; };
+				m_lpSplitter->PaneTwoMinSpanCallback = [&] { return m_PaneTwo ? m_PaneTwo->GetFixedHeight() : 0; };
+			}
+			else
+			{
+				m_lpSplitter->PaneOneMinSpanCallback = [&] { return m_PaneOne ? m_PaneOne->GetMinWidth() : 0; };
+				m_lpSplitter->PaneTwoMinSpanCallback = [&] { return m_PaneTwo ? m_PaneTwo->GetMinWidth() : 0; };
+			}
 		}
 
 		m_bInitialized = true;
