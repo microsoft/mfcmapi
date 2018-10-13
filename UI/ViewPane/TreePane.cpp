@@ -70,16 +70,6 @@ namespace viewpane
 		return iHeight;
 	}
 
-	int TreePane::GetLines()
-	{
-		if (m_bCollapsed)
-		{
-			return 0;
-		}
-
-		return 4;
-	}
-
 	void TreePane::DeferWindowPos(
 		_In_ HDWP hWinPosInfo,
 		_In_ const int x,
