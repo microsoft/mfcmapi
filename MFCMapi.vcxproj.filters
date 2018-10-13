@@ -118,7 +118,15 @@
     <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
     <ClInclude Include="MAPI\MapiMemory.h" />
-    <ClInclude Include="UI\ViewPane\SplitterPane.h" />
+    <ClInclude Include="UI\Controls\StyleTreeCtrl.h">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\ViewPane\SplitterPane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\ViewPane\TreePane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -157,8 +165,14 @@
     <ClCompile Include="MAPI\Version.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UI\Controls\StyleTreeCtrl.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\ViewPane\TreePane.cpp">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
     <ClCompile Include="UI\ViewPane\SplitterPane.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UI\ViewPane</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

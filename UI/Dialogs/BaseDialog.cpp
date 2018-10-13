@@ -640,7 +640,7 @@ namespace dialog
 		auto szTitle = strings::formatmessage(IDS_TITLEBARMESSAGE, m_szTitle.c_str(), szMsg.c_str());
 
 		// set the title bar
-		SetWindowTextW(m_hWnd, szTitle.c_str());
+		::SetWindowTextW(m_hWnd, szTitle.c_str());
 	}
 
 	void CBaseDialog::UpdateTitleBarText() const
@@ -648,7 +648,7 @@ namespace dialog
 		auto szTitle = strings::formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str());
 
 		// set the title bar
-		SetWindowTextW(m_hWnd, szTitle.c_str());
+		::SetWindowTextW(m_hWnd, szTitle.c_str());
 	}
 
 	void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum const pane, const std::wstring& status)

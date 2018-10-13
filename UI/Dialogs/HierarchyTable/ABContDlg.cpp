@@ -50,7 +50,7 @@ namespace dialog
 
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-		const auto lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
+		const auto lpItemEID = m_lpHierarchyTableTreeCtrl.GetSelectedItemEID();
 
 		if (lpItemEID)
 		{
@@ -68,7 +68,7 @@ namespace dialog
 
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-		const auto lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
+		const auto lpItemEID = m_lpHierarchyTableTreeCtrl.GetSelectedItemEID();
 
 		if (lpItemEID)
 		{
