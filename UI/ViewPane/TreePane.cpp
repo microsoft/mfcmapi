@@ -33,11 +33,20 @@ namespace viewpane
 		const auto root = m_Tree.AddChildNode(L"ROOT", nullptr, 0, nullptr);
 		(void) m_Tree.AddChildNode(L"child1", root, 0, nullptr);
 		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
+		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
+		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
+		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
+		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
+		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
+		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
+		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
+		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
+		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
+		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
+		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
 
 		m_bInitialized = true;
 	}
-
-	int TreePane::GetMinWidth(_In_ HDC hdc) { return ViewPane::GetMinWidth(hdc); }
 
 	int TreePane::GetFixedHeight()
 	{
