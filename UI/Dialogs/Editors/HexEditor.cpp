@@ -49,8 +49,6 @@ namespace dialog
 			auto tree = viewpane::TreePane::Create(HEXED_TREE, IDS_HEX, true);
 			tree->InitializeCallback = [&](viewpane::TreePane& tree) {
 				tree.m_Tree.ItemSelectedCallback = [&](auto hItem) {
-					auto pane = dynamic_cast<viewpane::TreePane*>(GetPane(HEXED_TREE));
-					if (pane)
 					{
 						WCHAR szText[255] = {};
 						auto item = TVITEMEXW{};
@@ -59,7 +57,7 @@ namespace dialog
 						item.cchTextMax = _countof(szText);
 						item.hItem = hItem;
 						WC_B_S(::SendMessage(
-							pane->m_Tree.GetSafeHwnd(), TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+							tree.m_Tree.GetSafeHwnd(), TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
 
 						SetStringW(HEXED_ANSI, szText);
 					}
