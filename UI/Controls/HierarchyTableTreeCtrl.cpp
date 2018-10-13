@@ -67,15 +67,15 @@ namespace controls
 		m_ulDisplayFlags = ulDisplayFlags;
 
 		// Setup callbacks
-		HasChildrenCallback = [&](auto _1) -> auto { return HasChildren(_1); };
-		ItemSelectedCallback = [&](auto _1) -> auto { return OnItemSelected(_1); };
-		KeyDownCallback = [&](auto _1, auto _2, auto _3, auto _4) -> auto { return HandleKeyDown(_1, _2, _3, _4); };
-		FreeNodeDataCallback = [&](auto _1) -> auto { return FreeNodeData(_1); };
-		ExpandNodeCallback = [&](auto _1) -> auto { return ExpandNode(_1); };
-		OnRefreshCallback = [&]() -> auto { return OnRefresh(); };
-		OnLabelEditCallback = [&](auto _1, auto _2) -> auto { return OnLabelEdit(_1, _2); };
-		OnDisplaySelectedItemCallback = [&]() -> auto { return OnDisplaySelectedItem(); };
-		OnLastChildDeletedCallback = [&](auto _1) -> auto { return OnLastChildDeleted(_1); };
+		HasChildrenCallback = [&](auto _1) { return HasChildren(_1); };
+		ItemSelectedCallback = [&](auto _1) { return OnItemSelected(_1); };
+		KeyDownCallback = [&](auto _1, auto _2, auto _3, auto _4) { return HandleKeyDown(_1, _2, _3, _4); };
+		FreeNodeDataCallback = [&](auto _1) { return FreeNodeData(_1); };
+		ExpandNodeCallback = [&](auto _1) { return ExpandNode(_1); };
+		OnRefreshCallback = [&] { return OnRefresh(); };
+		OnLabelEditCallback = [&](auto _1, auto _2) { return OnLabelEdit(_1, _2); };
+		OnDisplaySelectedItemCallback = [&]() { return OnDisplaySelectedItem(); };
+		OnLastChildDeletedCallback = [&](auto _1) { return OnLastChildDeleted(_1); };
 
 		StyleTreeCtrl::Create(pCreateParent, nIDContextMenu, false);
 	}
@@ -200,7 +200,7 @@ namespace controls
 				lpProps ? lpProps[htPR_CONTAINER_FLAGS].Value.ul : MAPI_E_NOT_FOUND);
 
 			(void) AddChildNode(
-				szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), [&](auto _1) -> auto { return OnItemAdded(_1); });
+				szName, TVI_ROOT, reinterpret_cast<LPARAM>(lpData), [&](auto _1) { return OnItemAdded(_1); });
 		}
 
 		// Node owns the lpProps memory now, so we don't free it
@@ -755,7 +755,7 @@ namespace controls
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 			WC_MAPI_S(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
-			AddNode(&NewRow, hParent, [&](auto _1) -> auto { return OnItemAdded(_1); });
+			AddNode(&NewRow, hParent, [&](auto _1) { return OnItemAdded(_1); });
 		}
 		else
 		{
