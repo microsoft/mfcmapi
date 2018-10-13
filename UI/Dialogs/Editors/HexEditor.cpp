@@ -21,8 +21,9 @@ namespace dialog
 			HEXED_UNICODE,
 			HEXED_BASE64,
 			HEXED_HEX,
+			HEXED_SMARTVIEW,
 			HEXED_TREE,
-			HEXED_SMARTVIEW
+			HEXED_SPLITTER2,
 		};
 
 		CHexEditor::CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects)
@@ -44,9 +45,16 @@ namespace dialog
 			splitter->SetPaneOne(viewpane::TextPane::CreateMultiLinePane(HEXED_ANSI, NULL, false));
 			splitter->SetPaneTwo(viewpane::TextPane::CreateMultiLinePane(HEXED_UNICODE, NULL, false));
 			AddPane(viewpane::CountedTextPane::Create(HEXED_BASE64, IDS_BASE64STRING, false, IDS_CCH));
-			AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
+
 			auto tree = viewpane::TreePane::Create(HEXED_TREE, IDS_HEX, true);
-			AddPane(tree);
+			tree->InitializeCallback = [&](viewpane::TreePane& tree) {
+				const auto root = tree.AddChildNode(L"ROOT", nullptr, 0, nullptr);
+				auto child1 = tree.AddChildNode(L"child1", root, 0, nullptr);
+				(void) tree.AddChildNode(L"child2", child1, 0, nullptr);
+				auto child3 = tree.AddChildNode(L"child3", root, 0, nullptr);
+				(void) tree.AddChildNode(L"child4", child3, 0, nullptr);
+				(void) tree.AddChildNode(L"child5", child3, 0, nullptr);
+			};
 
 			tree->m_Tree.ItemSelectedCallback = [&](auto hItem) {
 				auto pane = dynamic_cast<viewpane::TreePane*>(GetPane(HEXED_TREE));
@@ -63,8 +71,13 @@ namespace dialog
 					SetStringW(HEXED_ANSI, szText);
 				}
 			};
-			AddPane(viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW));
 
+			auto splitter2 = viewpane::SplitterPane::CreateHorizontalPane(HEXED_SPLITTER2, IDS_TEXTANSIUNICODE);
+			AddPane(splitter2);
+			splitter2->SetPaneOne(tree);
+			splitter2->SetPaneTwo(viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW));
+
+			AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
 			DisplayParentedDialog(pParentWnd, 1000);
 		}
 

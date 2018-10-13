@@ -10,6 +10,17 @@ namespace viewpane
 		static TreePane* Create(int paneID, UINT uidLabel, bool bReadOnly);
 
 		controls::StyleTreeCtrl m_Tree;
+		std::function<void(TreePane& tree)> InitializeCallback = nullptr;
+
+		HTREEITEM
+		AddChildNode(
+			_In_ const std::wstring& szName,
+			HTREEITEM hParent,
+			LPARAM lpData,
+			const std::function<void(HTREEITEM hItem)>& callback)
+		{
+			return m_Tree.AddChildNode(szName, hParent, lpData, callback);
+		};
 
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;

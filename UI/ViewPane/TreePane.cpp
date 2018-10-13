@@ -30,21 +30,7 @@ namespace viewpane
 		ViewPane::Initialize(pParent, hdc);
 		m_Tree.Create(pParent, 0, m_bReadOnly);
 
-		const auto root = m_Tree.AddChildNode(L"ROOT", nullptr, 0, nullptr);
-		(void) m_Tree.AddChildNode(L"child1", root, 0, nullptr);
-		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
-		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
-		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
-		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
-		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
-		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
-		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
-		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
-		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
-		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
-		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
-		(void) m_Tree.AddChildNode(L"child2", root, 0, nullptr);
-
+		if (InitializeCallback) InitializeCallback(*this);
 		m_bInitialized = true;
 	}
 
