@@ -1,6 +1,5 @@
 #pragma once
 #include <UI/ViewPane/DropDownPane.h>
-#include <UI/ViewPane/TextPane.h>
 #include <UI/ViewPane/SplitterPane.h>
 #include <UI/ViewPane/TreePane.h>
 #include <Interpret/SmartView/SmartViewParser.h>
@@ -23,7 +22,7 @@ namespace viewpane
 		int GetFixedHeight() override;
 		int GetLines() override;
 		void RefreshTree(smartview::LPSMARTVIEWPARSER svp);
-		void AddChildren(HTREEITEM hItem, smartview::block data);
+		void AddChildren(HTREEITEM hItem, const smartview::block& data);
 
 		void SetMargins(
 			int iMargin,
@@ -35,7 +34,7 @@ namespace viewpane
 			int iEditHeight) override; // height of an edit control
 
 		SplitterPane m_Splitter;
-		TreePane* m_TreePane;
+		TreePane* m_TreePane{nullptr};
 		bool m_bHasData{false};
 		bool m_bDoDropDown{true};
 	};

@@ -1,5 +1,6 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/SmartViewPane.h>
+#include <UI/ViewPane/TextPane.h>
 #include <Interpret/String.h>
 #include <Interpret/SmartView/SmartView.h>
 
@@ -114,13 +115,13 @@ namespace viewpane
 	}
 
 	void SmartViewPane::SetMargins(
-		int iMargin,
-		int iSideMargin,
-		int iLabelHeight, // Height of the label
-		int iSmallHeightMargin,
-		int iLargeHeightMargin,
-		int iButtonHeight, // Height of buttons below the control
-		int iEditHeight) // height of an edit control
+		const int iMargin,
+		const int iSideMargin,
+		const int iLabelHeight, // Height of the label
+		const int iSmallHeightMargin,
+		const int iLargeHeightMargin,
+		const int iButtonHeight, // Height of buttons below the control
+		const int iEditHeight) // height of an edit control
 	{
 		m_Splitter.SetMargins(
 			iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
@@ -139,7 +140,7 @@ namespace viewpane
 			m_bHasData = false;
 		}
 
-		auto lpPane = dynamic_cast<viewpane::TextPane*>(m_Splitter.GetPaneByID(SV_TEXT));
+		auto lpPane = dynamic_cast<TextPane*>(m_Splitter.GetPaneByID(SV_TEXT));
 
 		if (lpPane)
 		{
@@ -149,7 +150,7 @@ namespace viewpane
 
 	void SmartViewPane::DisableDropDown() { m_bDoDropDown = false; }
 
-	void SmartViewPane::SetParser(__ParsingTypeEnum iParser)
+	void SmartViewPane::SetParser(const __ParsingTypeEnum iParser)
 	{
 		for (size_t iDropNum = 0; iDropNum < SmartViewParserTypeArray.size(); iDropNum++)
 		{
@@ -161,7 +162,7 @@ namespace viewpane
 		}
 	}
 
-	void SmartViewPane::Parse(SBinary myBin)
+	void SmartViewPane::Parse(const SBinary myBin)
 	{
 		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
 		auto szSmartView = std::wstring{};
@@ -183,7 +184,7 @@ namespace viewpane
 		SetStringW(szSmartView);
 	}
 
-	void SmartViewPane::RefreshTree(smartview::LPSMARTVIEWPARSER svp)
+	void SmartViewPane::RefreshTree(const smartview::LPSMARTVIEWPARSER svp)
 	{
 		if (!m_TreePane) return;
 		m_TreePane->m_Tree.Refresh();
@@ -209,7 +210,7 @@ namespace viewpane
 		AddChildren(nullptr, svp->getBlock());
 	}
 
-	void SmartViewPane::AddChildren(HTREEITEM parent, smartview::block data)
+	void SmartViewPane::AddChildren(HTREEITEM parent, const smartview::block& data)
 	{
 		if (!m_TreePane) return;
 		const auto root = m_TreePane->m_Tree.AddChildNode(data.getText(), parent, 0, nullptr);
@@ -217,5 +218,11 @@ namespace viewpane
 		{
 			AddChildren(root, item);
 		}
+
+		WC_B_S(::SendMessage(
+			m_TreePane->m_Tree.GetSafeHwnd(),
+			TVM_EXPAND,
+			static_cast<WPARAM>(TVE_EXPAND),
+			reinterpret_cast<LPARAM>(root)));
 	}
 } // namespace viewpane
