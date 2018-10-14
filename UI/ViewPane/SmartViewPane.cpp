@@ -5,6 +5,12 @@
 
 namespace viewpane
 {
+	enum __SmartViewFields
+	{
+		SV_TREE,
+		SV_TEXT
+	};
+
 	SmartViewPane* SmartViewPane::Create(const int paneID, const UINT uidLabel)
 	{
 		auto pane = new (std::nothrow) SmartViewPane();
@@ -21,9 +27,6 @@ namespace viewpane
 
 	void SmartViewPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		m_TextPane.SetMultiline();
-		m_TextPane.SetLabel(NULL);
-		m_TextPane.ViewPane::SetReadOnly(true);
 		m_bReadOnly = true;
 
 		for (const auto& smartViewParserType : SmartViewParserTypeArray)
@@ -32,8 +35,11 @@ namespace viewpane
 		}
 
 		DropDownPane::Initialize(pParent, hdc);
-		// The control id of this text pane doesn't matter, so leave it at 0
-		m_TextPane.Initialize(pParent, hdc);
+
+		auto tree = TreePane::Create(SV_TREE, 0, true);
+		m_Splitter.SetPaneOne(tree);
+		m_Splitter.SetPaneTwo(TextPane::CreateMultiLinePane(SV_TEXT, 0, true));
+		m_Splitter.Initialize(pParent, hdc);
 
 		m_bInitialized = true;
 	}
@@ -51,7 +57,7 @@ namespace viewpane
 		if (m_bDoDropDown && !m_bCollapsed)
 		{
 			iHeight += m_iEditHeight; // Height of the dropdown
-			iHeight += m_TextPane.GetFixedHeight();
+			iHeight += m_Splitter.GetFixedHeight();
 		}
 
 		return iHeight;
@@ -61,7 +67,7 @@ namespace viewpane
 	{
 		if (!m_bCollapsed && m_bHasData)
 		{
-			return m_TextPane.GetLines();
+			return m_Splitter.GetLines();
 		}
 
 		return 0;
@@ -100,11 +106,11 @@ namespace viewpane
 				curY += m_iEditHeight;
 			}
 
-			m_TextPane.DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+			m_Splitter.DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 		}
 
 		EC_B_S(m_DropDown.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
-		m_TextPane.ShowWindow(m_bCollapsed || !m_bHasData ? SW_HIDE : SW_SHOW);
+		m_Splitter.ShowWindow(m_bCollapsed || !m_bHasData ? SW_HIDE : SW_SHOW);
 	}
 
 	void SmartViewPane::SetMargins(
@@ -116,7 +122,7 @@ namespace viewpane
 		int iButtonHeight, // Height of buttons below the control
 		int iEditHeight) // height of an edit control
 	{
-		m_TextPane.SetMargins(
+		m_Splitter.SetMargins(
 			iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
 		ViewPane::SetMargins(
 			iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
@@ -133,7 +139,12 @@ namespace viewpane
 			m_bHasData = false;
 		}
 
-		m_TextPane.SetStringW(szMsg);
+		auto lpPane = dynamic_cast<viewpane::TextPane*>(m_Splitter.GetPaneByID(SV_TEXT));
+
+		if (lpPane)
+		{
+			lpPane->SetStringW(szMsg);
+		}
 	}
 
 	void SmartViewPane::DisableDropDown() { m_bDoDropDown = false; }

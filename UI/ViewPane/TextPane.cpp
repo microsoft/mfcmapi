@@ -430,8 +430,6 @@ namespace viewpane
 		}
 	}
 
-	void TextPane::ShowWindow(const int nCmdShow) { m_EditBox.ShowWindow(nCmdShow); }
-
 	void TextPane::DoHighlights()
 	{
 		// Disable events and turn off redraw so we can mess with the control without flicker and stuff

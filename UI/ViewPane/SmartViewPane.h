@@ -1,6 +1,8 @@
 #pragma once
 #include <UI/ViewPane/DropDownPane.h>
 #include <UI/ViewPane/TextPane.h>
+#include <UI/ViewPane/SplitterPane.h>
+#include <UI/ViewPane/TreePane.h>
 
 namespace viewpane
 {
@@ -29,7 +31,7 @@ namespace viewpane
 			int iButtonHeight, // Height of buttons below the control
 			int iEditHeight) override; // height of an edit control
 
-		TextPane m_TextPane;
+		SplitterPane m_Splitter;
 		bool m_bHasData{false};
 		bool m_bDoDropDown{true};
 	};
