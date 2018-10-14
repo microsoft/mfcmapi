@@ -168,5 +168,37 @@ namespace viewpane
 
 		m_bHasData = !szSmartView.empty();
 		SetStringW(szSmartView);
+		RefreshTree();
 	}
+
+	void SmartViewPane::RefreshTree()
+	{
+		auto pane = dynamic_cast<viewpane::TreePane*>(m_Splitter.GetPaneByID(SV_TREE));
+		if (!pane) return;
+
+		pane->m_Tree.Refresh();
+		pane->m_Tree.ItemSelectedCallback = [&](auto hItem) {
+			{
+				auto pane = dynamic_cast<viewpane::TreePane*>(m_Splitter.GetPaneByID(SV_TREE));
+				if (!pane) return;
+				WCHAR szText[255] = {};
+				auto item = TVITEMEXW{};
+				item.mask = TVIF_TEXT;
+				item.pszText = szText;
+				item.cchTextMax = _countof(szText);
+				item.hItem = hItem;
+				WC_B_S(::SendMessage(pane->m_Tree.GetSafeHwnd(), TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+
+				SetStringW(szText);
+			}
+		};
+
+		const auto root = pane->m_Tree.AddChildNode(L"ROOT", nullptr, 0, nullptr);
+		auto child1 = pane->m_Tree.AddChildNode(L"child1", root, 0, nullptr);
+		(void) pane->m_Tree.AddChildNode(L"child2", child1, 0, nullptr);
+		auto child3 = pane->m_Tree.AddChildNode(L"child3", root, 0, nullptr);
+		(void) pane->m_Tree.AddChildNode(L"child4", child3, 0, nullptr);
+		(void) pane->m_Tree.AddChildNode(L"child5", child3, 0, nullptr);
+	}
+
 } // namespace viewpane
