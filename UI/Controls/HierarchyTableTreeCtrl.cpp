@@ -66,6 +66,7 @@ namespace controls
 		m_lpHostDlg = lpHostDlg;
 		m_ulDisplayFlags = ulDisplayFlags;
 		m_nIDContextMenu = nIDContextMenu;
+		m_bSortNodes = true;
 
 		// Setup callbacks
 		HasChildrenCallback = [&](auto _1) { return HasChildren(_1); };

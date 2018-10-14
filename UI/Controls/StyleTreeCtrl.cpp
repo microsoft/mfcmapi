@@ -192,7 +192,7 @@ namespace controls
 		auto tvInsert = TVINSERTSTRUCTW{};
 
 		tvInsert.hParent = hParent;
-		tvInsert.hInsertAfter = TVI_SORT;
+		tvInsert.hInsertAfter = m_bSortNodes ? TVI_SORT : hParent;
 		tvInsert.item.mask = TVIF_CHILDREN | TVIF_TEXT;
 		tvInsert.item.cChildren = HasChildrenCallback ? I_CHILDRENCALLBACK : I_CHILDRENAUTO;
 		tvInsert.item.pszText = const_cast<LPWSTR>(szName.c_str());

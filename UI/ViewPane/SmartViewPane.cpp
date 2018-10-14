@@ -36,8 +36,8 @@ namespace viewpane
 
 		DropDownPane::Initialize(pParent, hdc);
 
-		auto tree = TreePane::Create(SV_TREE, 0, true);
-		m_Splitter.SetPaneOne(tree);
+		m_TreePane = TreePane::Create(SV_TREE, 0, true);
+		m_Splitter.SetPaneOne(m_TreePane);
 		m_Splitter.SetPaneTwo(TextPane::CreateMultiLinePane(SV_TEXT, 0, true));
 		m_Splitter.Initialize(pParent, hdc);
 
@@ -164,41 +164,58 @@ namespace viewpane
 	void SmartViewPane::Parse(SBinary myBin)
 	{
 		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
-		auto szSmartView = smartview::InterpretBinaryAsString(myBin, iStructType, nullptr);
+		auto szSmartView = std::wstring{};
+		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
+		if (svp)
+		{
+			svp->init(myBin.cb, myBin.lpb);
+			szSmartView = svp->ToString();
+			RefreshTree(svp);
+			delete svp;
+		}
+
+		if (szSmartView.empty())
+		{
+			szSmartView = smartview::InterpretBinaryAsString(myBin, iStructType, nullptr);
+		}
 
 		m_bHasData = !szSmartView.empty();
 		SetStringW(szSmartView);
-		RefreshTree();
 	}
 
-	void SmartViewPane::RefreshTree()
+	void SmartViewPane::RefreshTree(smartview::LPSMARTVIEWPARSER svp)
 	{
-		auto pane = dynamic_cast<viewpane::TreePane*>(m_Splitter.GetPaneByID(SV_TREE));
-		if (!pane) return;
+		if (!m_TreePane) return;
+		m_TreePane->m_Tree.Refresh();
 
-		pane->m_Tree.Refresh();
-		pane->m_Tree.ItemSelectedCallback = [&](auto hItem) {
-			{
-				auto pane = dynamic_cast<viewpane::TreePane*>(m_Splitter.GetPaneByID(SV_TREE));
-				if (!pane) return;
-				WCHAR szText[255] = {};
-				auto item = TVITEMEXW{};
-				item.mask = TVIF_TEXT;
-				item.pszText = szText;
-				item.cchTextMax = _countof(szText);
-				item.hItem = hItem;
-				WC_B_S(::SendMessage(pane->m_Tree.GetSafeHwnd(), TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+		if (!svp || !svp->hasData()) return;
 
-				SetStringW(szText);
-			}
-		};
+		//m_Tree->m_Tree.ItemSelectedCallback = [&](auto hItem) {
+		//	{
+		//		auto pane = dynamic_cast<viewpane::TreePane*>(m_Splitter.GetPaneByID(SV_TREE));
+		//		if (!pane) return;
+		//		WCHAR szText[255] = {};
+		//		auto item = TVITEMEXW{};
+		//		item.mask = TVIF_TEXT;
+		//		item.pszText = szText;
+		//		item.cchTextMax = _countof(szText);
+		//		item.hItem = hItem;
+		//		WC_B_S(::SendMessage(pane->m_Tree.GetSafeHwnd(), TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
 
-		const auto root = pane->m_Tree.AddChildNode(L"ROOT", nullptr, 0, nullptr);
-		auto child1 = pane->m_Tree.AddChildNode(L"child1", root, 0, nullptr);
-		(void) pane->m_Tree.AddChildNode(L"child2", child1, 0, nullptr);
-		auto child3 = pane->m_Tree.AddChildNode(L"child3", root, 0, nullptr);
-		(void) pane->m_Tree.AddChildNode(L"child4", child3, 0, nullptr);
-		(void) pane->m_Tree.AddChildNode(L"child5", child3, 0, nullptr);
+		//		SetStringW(szText);
+		//	}
+		//};
+
+		AddChildren(nullptr, svp->getBlock());
 	}
 
+	void SmartViewPane::AddChildren(HTREEITEM parent, smartview::block data)
+	{
+		if (!m_TreePane) return;
+		const auto root = m_TreePane->m_Tree.AddChildNode(data.getText(), parent, 0, nullptr);
+		for (const auto& item : data.getChildren())
+		{
+			AddChildren(root, item);
+		}
+	}
 } // namespace viewpane

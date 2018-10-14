@@ -45,6 +45,7 @@ namespace controls
 		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
 		void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 
+		bool m_bSortNodes{false};
 		bool m_bShuttingDown{false};
 
 	private:

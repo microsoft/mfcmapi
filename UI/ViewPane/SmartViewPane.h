@@ -3,6 +3,7 @@
 #include <UI/ViewPane/TextPane.h>
 #include <UI/ViewPane/SplitterPane.h>
 #include <UI/ViewPane/TreePane.h>
+#include <Interpret/SmartView/SmartViewParser.h>
 
 namespace viewpane
 {
@@ -21,7 +22,8 @@ namespace viewpane
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetFixedHeight() override;
 		int GetLines() override;
-		void RefreshTree();
+		void RefreshTree(smartview::LPSMARTVIEWPARSER svp);
+		void AddChildren(HTREEITEM hItem, smartview::block data);
 
 		void SetMargins(
 			int iMargin,
@@ -33,6 +35,7 @@ namespace viewpane
 			int iEditHeight) override; // height of an edit control
 
 		SplitterPane m_Splitter;
+		TreePane* m_TreePane;
 		bool m_bHasData{false};
 		bool m_bDoDropDown{true};
 	};
