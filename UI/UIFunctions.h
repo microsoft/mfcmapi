@@ -128,6 +128,7 @@ namespace ui
 	void DrawListItemGlow(_In_ HWND hWnd, UINT itemID);
 
 	// Tree
+	void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool bHover, int offset = 0);
 	void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_ HTREEITEM hItemCurHover);
 	void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem);
 	void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool bGlow, bool bHover);

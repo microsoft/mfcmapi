@@ -78,6 +78,7 @@ namespace controls
 		OnDisplaySelectedItemCallback = [&]() { return OnDisplaySelectedItem(); };
 		OnLastChildDeletedCallback = [&](auto _1) { return OnLastChildDeleted(_1); };
 		HandleContextMenuCallback = [&](auto _1, auto _2) { return HandleContextMenu(_1, _2); };
+		OnCustomDrawCallback = [&](auto _1, auto _2, auto _3) { return OnCustomDraw(_1, _2, _3); };
 
 		StyleTreeCtrl::Create(pCreateParent, false);
 	}
@@ -954,5 +955,39 @@ namespace controls
 
 		output::DebugPrintEx(DBGGeneric, CLASS, L"FindNode", L"No match found\n");
 		return nullptr;
+	}
+
+	void
+	CHierarchyTableTreeCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM hItemCurHover)
+	{
+		const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
+		if (!lvcd) return;
+
+		switch (lvcd->nmcd.dwDrawStage)
+		{
+		case CDDS_ITEMPOSTPAINT:
+		{
+			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
+			if (hItem)
+			{
+				// If we've advised on this object, add a little icon to let the user know
+				// Paint the advise icon, IDB_ADVISE
+				auto tvi = TVITEM{};
+				tvi.mask = TVIF_PARAM;
+				tvi.hItem = hItem;
+				TreeView_GetItem(lvcd->nmcd.hdr.hwndFrom, &tvi);
+				const auto lpData = reinterpret_cast<sortlistdata::SortListData*>(tvi.lParam);
+				if (lpData && lpData->Node() && lpData->Node()->m_lpAdviseSink)
+				{
+					auto rect = RECT{};
+					TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
+					rect.left = rect.right;
+					rect.right += rect.bottom - rect.top;
+					DrawBitmap(lvcd->nmcd.hdc, rect, ui::cNotify, hItem == hItemCurHover);
+				}
+			}
+			break;
+		}
+		}
 	}
 } // namespace controls
