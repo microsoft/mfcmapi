@@ -51,6 +51,7 @@ namespace controls
 		void OnDisplaySelectedItem();
 		void OnLastChildDeleted(LPARAM /*lpData*/);
 		void HandleContextMenu(int x, int y);
+		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, _In_ HTREEITEM hItemCurHover);
 
 		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
 		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify) const;

@@ -130,6 +130,7 @@ namespace controls
 	void StyleTreeCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
 		ui::CustomDrawTree(pNMHDR, pResult, m_HoverButton, m_hItemCurHover);
+		if (OnCustomDrawCallback) OnCustomDrawCallback(pNMHDR, pResult, m_hItemCurHover);
 	}
 
 	// Removes any existing node data and replaces it with lpData
