@@ -3,8 +3,6 @@
 #include <UI/UIFunctions.h>
 #include <windowsx.h>
 #include <UI/RichEditOleCallback.h>
-#include <UI/Controls/SortList/SortListData.h>
-#include <UI/Controls/SortList/NodeData.h>
 #include <UI/ViewPane/CheckPane.h>
 #include <UI/DoubleBuffer.h>
 
@@ -934,7 +932,7 @@ namespace ui
 	// Replaces cBitmapTransBack (magenta) with the cBackground
 	// Scales from size of bitmap to size of target rectangle
 	void
-	DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, const uiBitmap iBitmap, const bool bHover, const int offset = 0)
+	DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, const uiBitmap iBitmap, const bool bHover, const int offset)
 	{
 		const int iWidth = rcTarget.right - rcTarget.left;
 		const int iHeight = rcTarget.bottom - rcTarget.top;
@@ -1012,12 +1010,12 @@ namespace ui
 				lvcd->clrTextBk = MyGetSysColor(cGlowBackground);
 				*pResult |= CDRF_NEWFONT;
 			}
+
 			break;
 		}
 
 		case CDDS_ITEMPOSTPAINT:
 		{
-			// If we've advised on this object, add a little icon to let the user know
 			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
 
 			if (hItem)
@@ -1029,24 +1027,10 @@ namespace ui
 					hItem,
 					bHover && hItem == hItemCurHover,
 					hItem == hItemCurHover);
-
-				// Paint the advise icon, IDB_ADVISE
-				auto tvi = TVITEM{};
-				tvi.mask = TVIF_PARAM;
-				tvi.hItem = hItem;
-				TreeView_GetItem(lvcd->nmcd.hdr.hwndFrom, &tvi);
-				const auto lpData = reinterpret_cast<controls::sortlistdata::SortListData*>(tvi.lParam);
-				if (lpData && lpData->Node() && lpData->Node()->m_lpAdviseSink)
-				{
-					auto rect = RECT{};
-					TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
-					rect.left = rect.right;
-					rect.right += rect.bottom - rect.top;
-					DrawBitmap(lvcd->nmcd.hdc, rect, cNotify, hItem == hItemCurHover);
-				}
 			}
 			break;
 		}
+
 		default:
 			*pResult = CDRF_DODEFAULT;
 			break;

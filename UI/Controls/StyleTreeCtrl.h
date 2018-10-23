@@ -35,6 +35,7 @@ namespace controls
 		std::function<void()> OnDisplaySelectedItemCallback = nullptr;
 		std::function<void(LPARAM lpData)> OnLastChildDeletedCallback = nullptr;
 		std::function<void(int x, int y)> HandleContextMenuCallback = nullptr;
+		std::function<void(NMHDR*, LRESULT*, HTREEITEM)> OnCustomDrawCallback = nullptr;
 
 	protected:
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
