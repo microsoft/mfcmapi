@@ -38,6 +38,8 @@ namespace viewpane
 		DropDownPane::Initialize(pParent, hdc);
 
 		m_TreePane = TreePane::Create(SV_TREE, 0, true);
+		m_TreePane->m_Tree.ItemSelectedCallback = [&](auto _1) { return ItemSelected(_1); };
+		m_TreePane->m_Tree.FreeNodeDataCallback = [&](auto _1) { return FreeNodeData(_1); };
 		m_Splitter.SetPaneOne(m_TreePane);
 		m_Splitter.SetPaneTwo(TextPane::CreateMultiLinePane(SV_TEXT, 0, true));
 		m_Splitter.Initialize(pParent, hdc);
@@ -191,29 +193,20 @@ namespace viewpane
 
 		if (!svp || !svp->hasData()) return;
 
-		//m_Tree->m_Tree.ItemSelectedCallback = [&](auto hItem) {
-		//	{
-		//		auto pane = dynamic_cast<viewpane::TreePane*>(m_Splitter.GetPaneByID(SV_TREE));
-		//		if (!pane) return;
-		//		WCHAR szText[255] = {};
-		//		auto item = TVITEMEXW{};
-		//		item.mask = TVIF_TEXT;
-		//		item.pszText = szText;
-		//		item.cchTextMax = _countof(szText);
-		//		item.hItem = hItem;
-		//		WC_B_S(::SendMessage(pane->m_Tree.GetSafeHwnd(), TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
-
-		//		SetStringW(szText);
-		//	}
-		//};
-
 		AddChildren(nullptr, svp->getBlock());
 	}
 
 	void SmartViewPane::AddChildren(HTREEITEM parent, const smartview::block& data)
 	{
 		if (!m_TreePane) return;
-		const auto root = m_TreePane->m_Tree.AddChildNode(data.getText(), parent, 0, nullptr);
+		auto nodeData = new (std::nothrow) smartview::block();
+		if (nodeData)
+		{
+			*nodeData = data;
+		}
+
+		const auto root =
+			m_TreePane->m_Tree.AddChildNode(data.getText(), parent, reinterpret_cast<LPARAM>(nodeData), nullptr);
 		for (const auto& item : data.getChildren())
 		{
 			AddChildren(root, item);
@@ -225,4 +218,27 @@ namespace viewpane
 			static_cast<WPARAM>(TVE_EXPAND),
 			reinterpret_cast<LPARAM>(root)));
 	}
+
+	void SmartViewPane::ItemSelected(HTREEITEM hItem)
+	{
+		const auto pane = dynamic_cast<TreePane*>(m_Splitter.GetPaneByID(SV_TREE));
+		if (!pane) return;
+
+		auto tvi = TVITEM{};
+		tvi.mask = TVIF_PARAM;
+		tvi.hItem = hItem;
+		const auto hwnd = pane->m_Tree.GetSafeHwnd();
+		::SendMessage(hwnd, TVM_GETITEM, 0, reinterpret_cast<LPARAM>(&tvi));
+		const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
+		if (lpData)
+		{
+			//auto rect = RECT{};
+			//TreeView_GetItemRect(hwnd, hItem, &rect, 1);
+			//rect.left = rect.right;
+			//rect.right += rect.bottom - rect.top;
+			SetStringW(lpData->ToString());
+		}
+	}
+
+	void SmartViewPane::FreeNodeData(const LPARAM lpData) { delete reinterpret_cast<smartview::block*>(lpData); }
 } // namespace viewpane

@@ -11,6 +11,11 @@ namespace viewpane
 	public:
 		static SmartViewPane* Create(int paneID, UINT uidLabel);
 
+		~SmartViewPane()
+		{
+			if (m_TreePane) m_TreePane->m_Tree.DeleteAllItems();
+		}
+
 		void SetStringW(const std::wstring& szMsg);
 		void DisableDropDown();
 		void SetParser(__ParsingTypeEnum iParser);
@@ -22,7 +27,9 @@ namespace viewpane
 		int GetFixedHeight() override;
 		int GetLines() override;
 		void RefreshTree(smartview::LPSMARTVIEWPARSER svp);
-		void AddChildren(HTREEITEM hItem, const smartview::block& data);
+		void AddChildren(HTREEITEM parent, const smartview::block& data);
+		void ItemSelected(HTREEITEM hItem);
+		static void FreeNodeData(LPARAM lpData);
 
 		void SetMargins(
 			int iMargin,

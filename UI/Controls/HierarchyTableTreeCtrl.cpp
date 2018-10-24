@@ -133,7 +133,7 @@ namespace controls
 			output::DebugPrintEx(
 				DBGHierarchy,
 				CLASS,
-				L"OnDeleteItem",
+				L"FreeNodeData",
 				L"Unadvising %p, ulAdviseConnection = 0x%08X\n",
 				lpNodeData->Node()->m_lpAdviseSink,
 				static_cast<int>(lpNodeData->Node()->m_ulAdviseConnection));
