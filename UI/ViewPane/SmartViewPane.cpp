@@ -194,7 +194,7 @@ namespace viewpane
 		AddChildren(nullptr, treeData);
 	}
 
-	void SmartViewPane::AddChildren(HTREEITEM parent, smartview::block& data)
+	void SmartViewPane::AddChildren(HTREEITEM parent, const smartview::block& data)
 	{
 		if (!m_TreePane) return;
 

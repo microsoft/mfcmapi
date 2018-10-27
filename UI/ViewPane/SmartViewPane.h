@@ -27,7 +27,7 @@ namespace viewpane
 		int GetFixedHeight() override;
 		int GetLines() override;
 		void RefreshTree();
-		void AddChildren(HTREEITEM parent, smartview::block& data);
+		void AddChildren(HTREEITEM parent, const smartview::block& data);
 		void ItemSelected(HTREEITEM hItem);
 
 		void SetMargins(
