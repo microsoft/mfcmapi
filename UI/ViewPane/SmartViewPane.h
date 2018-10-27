@@ -19,7 +19,7 @@ namespace viewpane
 		void SetStringW(const std::wstring& szMsg);
 		void DisableDropDown();
 		void SetParser(__ParsingTypeEnum iParser);
-		void Parse(SBinary myBin);
+		void Parse(const SBinary& myBin);
 
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;

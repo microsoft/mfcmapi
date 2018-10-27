@@ -163,7 +163,7 @@ namespace viewpane
 		}
 	}
 
-	void SmartViewPane::Parse(const SBinary myBin)
+	void SmartViewPane::Parse(const SBinary& myBin)
 	{
 		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
 		auto szSmartView = std::wstring{};
