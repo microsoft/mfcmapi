@@ -11,11 +11,6 @@ namespace viewpane
 	public:
 		static SmartViewPane* Create(int paneID, UINT uidLabel);
 
-		~SmartViewPane()
-		{
-			if (m_TreePane) m_TreePane->m_Tree.DeleteAllItems();
-		}
-
 		void SetStringW(const std::wstring& szMsg);
 		void DisableDropDown();
 		void SetParser(__ParsingTypeEnum iParser);
