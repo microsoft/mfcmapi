@@ -39,7 +39,6 @@ namespace viewpane
 
 		m_TreePane = TreePane::Create(SV_TREE, 0, true);
 		m_TreePane->m_Tree.ItemSelectedCallback = [&](auto _1) { return ItemSelected(_1); };
-		m_TreePane->m_Tree.FreeNodeDataCallback = [&](auto _1) { return FreeNodeData(_1); };
 		m_Splitter.SetPaneOne(m_TreePane);
 		m_Splitter.SetPaneTwo(TextPane::CreateMultiLinePane(SV_TEXT, 0, true));
 		m_Splitter.Initialize(pParent, hdc);
@@ -173,7 +172,8 @@ namespace viewpane
 		{
 			svp->init(myBin.cb, myBin.lpb);
 			szSmartView = svp->ToString();
-			RefreshTree(svp);
+			treeData = svp->getBlock();
+			RefreshTree();
 			delete svp;
 		}
 
@@ -186,28 +186,21 @@ namespace viewpane
 		SetStringW(szSmartView);
 	}
 
-	void SmartViewPane::RefreshTree(const smartview::LPSMARTVIEWPARSER svp)
+	void SmartViewPane::RefreshTree()
 	{
 		if (!m_TreePane) return;
 		m_TreePane->m_Tree.Refresh();
 
-		if (!svp || !svp->hasData()) return;
-
-		AddChildren(nullptr, svp->getBlock());
+		AddChildren(nullptr, treeData);
 	}
 
-	void SmartViewPane::AddChildren(HTREEITEM parent, const smartview::block& data)
+	void SmartViewPane::AddChildren(HTREEITEM parent, smartview::block& data)
 	{
 		if (!m_TreePane) return;
-		auto nodeData = new (std::nothrow) smartview::block();
-		if (nodeData)
-		{
-			*nodeData = data;
-		}
 
 		const auto root =
-			m_TreePane->m_Tree.AddChildNode(data.getText(), parent, reinterpret_cast<LPARAM>(nodeData), nullptr);
-		for (const auto& item : data.getChildren())
+			m_TreePane->m_Tree.AddChildNode(data.getText(), parent, reinterpret_cast<LPARAM>(&data), nullptr);
+		for (auto& item : data.getChildren())
 		{
 			AddChildren(root, item);
 		}
@@ -239,6 +232,4 @@ namespace viewpane
 			SetStringW(lpData->ToString());
 		}
 	}
-
-	void SmartViewPane::FreeNodeData(const LPARAM lpData) { delete reinterpret_cast<smartview::block*>(lpData); }
 } // namespace viewpane

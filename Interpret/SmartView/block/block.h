@@ -8,7 +8,7 @@ namespace smartview
 		block() : offset(0), cb(0), text(L""), header(true) {}
 
 		std::wstring getText() const { return text; }
-		std::vector<block> getChildren() const { return children; }
+		std::vector<block>& getChildren() { return children; }
 
 		virtual std::wstring ToString() const
 		{

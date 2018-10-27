@@ -26,10 +26,9 @@ namespace viewpane
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetFixedHeight() override;
 		int GetLines() override;
-		void RefreshTree(smartview::LPSMARTVIEWPARSER svp);
-		void AddChildren(HTREEITEM parent, const smartview::block& data);
+		void RefreshTree();
+		void AddChildren(HTREEITEM parent, smartview::block& data);
 		void ItemSelected(HTREEITEM hItem);
-		static void FreeNodeData(LPARAM lpData);
 
 		void SetMargins(
 			int iMargin,
@@ -40,6 +39,7 @@ namespace viewpane
 			int iButtonHeight, // Height of buttons below the control
 			int iEditHeight) override; // height of an edit control
 
+		smartview::block treeData;
 		SplitterPane m_Splitter;
 		TreePane* m_TreePane{nullptr};
 		bool m_bHasData{false};
