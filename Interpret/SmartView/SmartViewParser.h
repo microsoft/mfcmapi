@@ -26,7 +26,7 @@ namespace smartview
 		void DisableJunkParsing();
 		size_t GetCurrentOffset() const;
 		void EnsureParsed();
-		block getBlock() const { return data; }
+		const block& getBlock() const { return data; }
 		bool hasData() const { return data.hasData(); }
 
 	protected:
