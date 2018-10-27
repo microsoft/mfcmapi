@@ -200,7 +200,7 @@ namespace viewpane
 
 		const auto root =
 			m_TreePane->m_Tree.AddChildNode(data.getText(), parent, reinterpret_cast<LPARAM>(&data), nullptr);
-		for (auto& item : data.getChildren())
+		for (const auto& item : data.getChildren())
 		{
 			AddChildren(root, item);
 		}
