@@ -3,6 +3,7 @@
 #include <UI/ViewPane/TextPane.h>
 #include <Interpret/String.h>
 #include <Interpret/SmartView/SmartView.h>
+#include <UI/UIFunctions.h>
 
 namespace viewpane
 {
@@ -39,6 +40,8 @@ namespace viewpane
 
 		m_TreePane = TreePane::Create(SV_TREE, 0, true);
 		m_TreePane->m_Tree.ItemSelectedCallback = [&](auto _1) { return ItemSelected(_1); };
+		m_TreePane->m_Tree.OnCustomDrawCallback = [&](auto _1, auto _2, auto _3) { return OnCustomDraw(_1, _2, _3); };
+
 		m_Splitter.SetPaneOne(m_TreePane);
 		m_Splitter.SetPaneTwo(TextPane::CreateMultiLinePane(SV_TEXT, 0, true));
 		m_Splitter.Initialize(pParent, hdc);
@@ -225,11 +228,46 @@ namespace viewpane
 		const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
 		if (lpData)
 		{
-			//auto rect = RECT{};
-			//TreeView_GetItemRect(hwnd, hItem, &rect, 1);
-			//rect.left = rect.right;
-			//rect.right += rect.bottom - rect.top;
 			SetStringW(lpData->ToString());
+		}
+	}
+
+	void SmartViewPane::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM /*hItemCurHover*/)
+	{
+		const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
+		if (!lvcd) return;
+
+		switch (lvcd->nmcd.dwDrawStage)
+		{
+		case CDDS_ITEMPOSTPAINT:
+		{
+			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
+			if (hItem)
+			{
+				auto tvi = TVITEM{};
+				tvi.mask = TVIF_PARAM;
+				tvi.hItem = hItem;
+				TreeView_GetItem(lvcd->nmcd.hdr.hwndFrom, &tvi);
+				const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
+				if (lpData)
+				{
+					auto blockString = strings::format(L"(%d, %d)", lpData->getOffset(), lpData->getSize());
+					const auto size = ui::GetTextExtentPoint32(lvcd->nmcd.hdc, blockString);
+					auto rect = RECT{};
+					TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
+					rect.left = rect.right;
+					rect.right += size.cx;
+					ui::DrawSegoeTextW(
+						lvcd->nmcd.hdc,
+						blockString,
+						ui::MyGetSysColor(ui::cGlow),
+						rect,
+						false,
+						DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+				}
+			}
+			break;
+		}
 		}
 	}
 } // namespace viewpane
