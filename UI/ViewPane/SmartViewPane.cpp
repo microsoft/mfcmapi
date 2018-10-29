@@ -166,14 +166,15 @@ namespace viewpane
 		}
 	}
 
-	void SmartViewPane::Parse(const SBinary& myBin)
+	void SmartViewPane::Parse(const std::vector<BYTE>& myBin)
 	{
+		m_bin = myBin;
 		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
 		auto szSmartView = std::wstring{};
 		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
 		if (svp)
 		{
-			svp->init(myBin.cb, myBin.lpb);
+			svp->init(m_bin.size(), m_bin.data());
 			szSmartView = svp->ToString();
 			treeData = svp->getBlock();
 			RefreshTree();
@@ -182,7 +183,8 @@ namespace viewpane
 
 		if (szSmartView.empty())
 		{
-			szSmartView = smartview::InterpretBinaryAsString(myBin, iStructType, nullptr);
+			szSmartView =
+				smartview::InterpretBinaryAsString(SBinary{ULONG(m_bin.size()), m_bin.data()}, iStructType, nullptr);
 		}
 
 		m_bHasData = !szSmartView.empty();
