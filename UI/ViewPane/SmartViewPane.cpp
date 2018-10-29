@@ -225,8 +225,7 @@ namespace viewpane
 		auto tvi = TVITEM{};
 		tvi.mask = TVIF_PARAM;
 		tvi.hItem = hItem;
-		const auto hwnd = pane->m_Tree.GetSafeHwnd();
-		::SendMessage(hwnd, TVM_GETITEM, 0, reinterpret_cast<LPARAM>(&tvi));
+		::SendMessage(pane->m_Tree.GetSafeHwnd(), TVM_GETITEM, 0, reinterpret_cast<LPARAM>(&tvi));
 		const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
 		if (lpData)
 		{
@@ -234,7 +233,8 @@ namespace viewpane
 		}
 	}
 
-	void SmartViewPane::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM /*hItemCurHover*/)
+	void
+	SmartViewPane::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM /*hItemCurHover*/) const
 	{
 		const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
 		if (!lvcd) return;
@@ -253,7 +253,7 @@ namespace viewpane
 				const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
 				if (lpData)
 				{
-					auto blockString = strings::format(L"(%d, %d)", lpData->getOffset(), lpData->getSize());
+					const auto blockString = strings::format(L"(%d, %d)", lpData->getOffset(), lpData->getSize());
 					const auto size = ui::GetTextExtentPoint32(lvcd->nmcd.hdc, blockString);
 					auto rect = RECT{};
 					TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
@@ -262,7 +262,7 @@ namespace viewpane
 					ui::DrawSegoeTextW(
 						lvcd->nmcd.hdc,
 						blockString,
-						ui::MyGetSysColor(ui::cGlow),
+						MyGetSysColor(ui::cGlow),
 						rect,
 						false,
 						DT_SINGLELINE | DT_VCENTER | DT_CENTER);

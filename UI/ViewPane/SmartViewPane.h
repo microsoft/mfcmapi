@@ -24,7 +24,7 @@ namespace viewpane
 		void RefreshTree();
 		void AddChildren(HTREEITEM parent, const smartview::block& data);
 		void ItemSelected(HTREEITEM hItem);
-		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM hItemCurHover);
+		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM hItemCurHover) const;
 
 		void SetMargins(
 			int iMargin,
