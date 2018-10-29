@@ -625,7 +625,6 @@ namespace dialog
 			}
 
 			output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea cx:%d \n", cx);
-			(void) SelectObject(hdc, hfontOld);
 
 			// Throw all that work out if we have enough buttons
 			cx = max(cx, (int) (m_cButtons * m_iButtonWidth + m_iMargin * (m_cButtons - 1)));
@@ -634,11 +633,12 @@ namespace dialog
 			// cx now contains the width of the widest prompt string or pane
 			// Add a margin around that to frame our panes in the client area:
 			cx += 2 * m_iSideMargin;
-			output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea +m_iSideMargin->%d \n", cx);
+			output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea + m_iSideMargin->%d \n", cx);
 
 			// Check that we're wide enough to handle our caption
 			cx = max(cx, ComputeCaptionWidth(hdc, m_szTitle, m_iMargin));
 			output::DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea caption->%d \n", cx);
+			(void) SelectObject(hdc, hfontOld);
 			::ReleaseDC(m_hWnd, hdc);
 			// Done figuring a good width (cx)
 

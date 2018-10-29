@@ -54,6 +54,7 @@ namespace viewpane
 	{
 		auto cxDropDown = 0;
 		const auto hdc = ::GetDC(m_DropDown.GetSafeHwnd());
+		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
 		for (auto iDropString = 0; iDropString < m_DropDown.GetCount(); iDropString++)
 		{
 			const auto szDropString = ui::GetLBText(m_DropDown.m_hWnd, iDropString);
@@ -61,6 +62,7 @@ namespace viewpane
 			cxDropDown = max(cxDropDown, sizeDrop.cx);
 		}
 
+		(void) SelectObject(hdc, hfontOld);
 		::ReleaseDC(m_DropDown.GetSafeHwnd(), hdc);
 
 		// Add scroll bar and margins for our frame
