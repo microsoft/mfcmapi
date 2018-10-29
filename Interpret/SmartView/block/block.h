@@ -9,6 +9,7 @@ namespace smartview
 
 		const std::wstring& getText() const { return text; }
 		const std::vector<block>& getChildren() const { return children; }
+		const bool& isHeader() const { return header; }
 
 		virtual std::wstring ToString() const
 		{
@@ -24,9 +25,17 @@ namespace smartview
 		}
 
 		size_t getSize() const { return cb; }
-		void setSize(size_t _size) { cb = _size; }
+		void setSize(size_t _size)
+		{
+			cb = _size;
+			header = false;
+		}
 		size_t getOffset() const { return offset; }
-		void setOffset(size_t _offset) { offset = _offset; }
+		void setOffset(size_t _offset)
+		{
+			offset = _offset;
+			header = false;
+		}
 		template <typename... Args> void addHeader(const std::wstring& _text, Args... args)
 		{
 			children.emplace_back(block(strings::formatmessage(_text.c_str(), args...)));
