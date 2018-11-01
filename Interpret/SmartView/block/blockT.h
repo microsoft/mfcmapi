@@ -16,6 +16,7 @@ namespace smartview
 			data = _data.data;
 			cb = _data.getSize();
 			offset = _data.getOffset();
+			header = _data.isHeader();
 			return *this;
 		}
 		T& operator=(const T& _data)

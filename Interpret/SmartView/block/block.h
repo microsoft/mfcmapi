@@ -68,12 +68,12 @@ namespace smartview
 	protected:
 		size_t offset;
 		size_t cb;
+		bool header;
 
 	private:
 		explicit block(std::wstring _text) : offset(0), cb(0), text(std::move(_text)), header(true) {}
 		virtual std::wstring ToStringInternal() const { return text; }
 		std::wstring text;
 		std::vector<block> children;
-		bool header;
 	};
 } // namespace smartview
