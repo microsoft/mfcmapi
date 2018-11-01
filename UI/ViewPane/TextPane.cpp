@@ -180,7 +180,7 @@ namespace viewpane
 		}
 
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
-		EC_B_S(m_EditBox.ShowWindow(cmdShow));
+		WC_B_S(m_EditBox.ShowWindow(cmdShow));
 		// Layout our label
 		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 

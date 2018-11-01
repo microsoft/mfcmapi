@@ -176,7 +176,7 @@ namespace viewpane
 
 		if (m_bCollapsed)
 		{
-			EC_B_S(m_lpSplitter->ShowWindow(SW_HIDE));
+			WC_B_S(m_lpSplitter->ShowWindow(SW_HIDE));
 		}
 		else
 		{
@@ -185,7 +185,7 @@ namespace viewpane
 				curY += labelHeight + m_iSmallHeightMargin;
 			}
 
-			EC_B_S(m_lpSplitter->ShowWindow(SW_SHOW));
+			WC_B_S(m_lpSplitter->ShowWindow(SW_SHOW));
 			::DeferWindowPos(
 				hWinPosInfo, m_lpSplitter->GetSafeHwnd(), nullptr, x, curY, width, height - (curY - y), SWP_NOZORDER);
 			m_lpSplitter->OnSize(NULL, width, height - (curY - y));
