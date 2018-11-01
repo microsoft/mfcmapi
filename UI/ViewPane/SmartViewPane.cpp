@@ -75,8 +75,8 @@ namespace viewpane
 		_In_ const int height)
 	{
 		const auto visibility = !m_bDoDropDown && !m_bHasData ? SW_HIDE : SW_SHOW;
-		EC_B_S(m_CollapseButton.ShowWindow(visibility));
-		EC_B_S(m_Label.ShowWindow(visibility));
+		WC_B_S(m_CollapseButton.ShowWindow(visibility));
+		WC_B_S(m_Label.ShowWindow(visibility));
 
 		auto curY = y;
 		const auto labelHeight = GetLabelHeight();
@@ -103,7 +103,7 @@ namespace viewpane
 			m_TextPane.DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 		}
 
-		EC_B_S(m_DropDown.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
+		WC_B_S(m_DropDown.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
 		m_TextPane.ShowWindow(m_bCollapsed || !m_bHasData ? SW_HIDE : SW_SHOW);
 	}
 

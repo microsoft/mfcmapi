@@ -95,8 +95,8 @@ namespace viewpane
 
 		if (!m_bCollapsed)
 		{
-			EC_B_S(m_Count.ShowWindow(SW_SHOW));
-			EC_B_S(m_EditBox.ShowWindow(SW_SHOW));
+			WC_B_S(m_Count.ShowWindow(SW_SHOW));
+			WC_B_S(m_EditBox.ShowWindow(SW_SHOW));
 
 			// Drop the count on top of the label we drew above
 			EC_B_S(::DeferWindowPos(
@@ -123,8 +123,8 @@ namespace viewpane
 		}
 		else
 		{
-			EC_B_S(m_Count.ShowWindow(SW_HIDE));
-			EC_B_S(m_EditBox.ShowWindow(SW_HIDE));
+			WC_B_S(m_Count.ShowWindow(SW_HIDE));
+			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
 		}
 	}
 
