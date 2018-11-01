@@ -171,7 +171,7 @@ namespace viewpane
 		curY += labelHeight + m_iSmallHeightMargin;
 
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
-		EC_B_S(m_List.ShowWindow(cmdShow));
+		WC_B_S(m_List.ShowWindow(cmdShow));
 		auto listHeight = height - (curY - y);
 		if (!m_bReadOnly) listHeight -= (m_iLargeHeightMargin + m_iButtonHeight);
 		EC_B_S(::DeferWindowPos(hWinPosInfo, m_List.GetSafeHwnd(), nullptr, x, curY, width, listHeight, SWP_NOZORDER));
@@ -186,7 +186,7 @@ namespace viewpane
 
 			for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 			{
-				EC_B_S(m_ButtonArray[iButton].ShowWindow(cmdShow));
+				WC_B_S(m_ButtonArray[iButton].ShowWindow(cmdShow));
 				EC_B_S(::DeferWindowPos(
 					hWinPosInfo,
 					m_ButtonArray[iButton].GetSafeHwnd(),
