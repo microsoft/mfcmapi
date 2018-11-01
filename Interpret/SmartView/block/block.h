@@ -5,11 +5,11 @@ namespace smartview
 	class block
 	{
 	public:
-		block() : offset(0), cb(0), text(L""), header(true) {}
+		block() : offset(0), cb(0), text(L"") {}
 
 		const std::wstring& getText() const { return text; }
 		const std::vector<block>& getChildren() const { return children; }
-		const bool& isHeader() const { return header; }
+		bool isHeader() const { return cb == 0 && offset == 0; }
 
 		virtual std::wstring ToString() const
 		{
@@ -25,17 +25,9 @@ namespace smartview
 		}
 
 		size_t getSize() const { return cb; }
-		void setSize(size_t _size)
-		{
-			cb = _size;
-			header = false;
-		}
+		void setSize(size_t _size) { cb = _size; }
 		size_t getOffset() const { return offset; }
-		void setOffset(size_t _offset)
-		{
-			offset = _offset;
-			header = false;
-		}
+		void setOffset(size_t _offset) { offset = _offset; }
 		template <typename... Args> void addHeader(const std::wstring& _text, Args... args)
 		{
 			children.emplace_back(block(strings::formatmessage(_text.c_str(), args...)));
@@ -68,10 +60,9 @@ namespace smartview
 	protected:
 		size_t offset;
 		size_t cb;
-		bool header;
 
 	private:
-		explicit block(std::wstring _text) : offset(0), cb(0), text(std::move(_text)), header(true) {}
+		explicit block(std::wstring _text) : offset(0), cb(0), text(std::move(_text)) {}
 		virtual std::wstring ToStringInternal() const { return text; }
 		std::wstring text;
 		std::vector<block> children;
