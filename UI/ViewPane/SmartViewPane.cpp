@@ -253,7 +253,10 @@ namespace viewpane
 				const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
 				if (lpData && !lpData->isHeader())
 				{
-					const auto blockString = strings::format(L"(%d, %d)", lpData->getOffset(), lpData->getSize());
+					auto bin = strings::BinToHexString(m_bin.data() + lpData->getOffset(), lpData->getSize(), false);
+
+					const auto blockString =
+						strings::format(L"(%d, %d) %ws", lpData->getOffset(), lpData->getSize(), bin.c_str());
 					const auto size = ui::GetTextExtentPoint32(lvcd->nmcd.hdc, blockString);
 					auto rect = RECT{};
 					TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
