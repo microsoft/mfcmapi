@@ -90,7 +90,7 @@ namespace dialog
 				cchEncodeStr = szEncodeStr.length();
 				SetStringW(HEXED_BASE64, szEncodeStr);
 
-				SetBinary(HEXED_HEX, lpb, cb);
+				SetHex(lpb, cb);
 			}
 			break;
 			case HEXED_UNICODE: // Unicode string changed
@@ -105,7 +105,7 @@ namespace dialog
 				cchEncodeStr = szEncodeStr.length();
 				SetStringW(HEXED_BASE64, szEncodeStr);
 
-				SetBinary(HEXED_HEX, lpb, cb);
+				SetHex(lpb, cb);
 			}
 			break;
 			case HEXED_BASE64: // base64 changed
@@ -130,7 +130,7 @@ namespace dialog
 					SetStringW(HEXED_UNICODE, L"");
 				}
 
-				SetBinary(HEXED_HEX, lpb, cb);
+				SetHex(lpb, cb);
 			}
 			break;
 			case HEXED_HEX: // binary changed
@@ -211,6 +211,7 @@ namespace dialog
 					auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(HEXED_HEX));
 					if (lpPane)
 					{
+						lpPane->ClearHighlight();
 						lpPane->SetBinaryStream(lpStream);
 					}
 
@@ -264,5 +265,16 @@ namespace dialog
 				lpPane->AddHighlight(range);
 			}
 		}
+
+		void CHexEditor::SetHex(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
+		{
+			SetBinary(HEXED_HEX, lpb, cb);
+			auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(HEXED_HEX));
+			if (lpPane)
+			{
+				lpPane->ClearHighlight();
+			}
+		}
+
 	} // namespace editor
 } // namespace dialog
