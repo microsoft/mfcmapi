@@ -230,6 +230,11 @@ namespace viewpane
 		if (lpData)
 		{
 			SetStringW(lpData->ToString());
+
+			if (OnItemSelected)
+			{
+				OnItemSelected(lpData);
+			}
 		}
 	}
 

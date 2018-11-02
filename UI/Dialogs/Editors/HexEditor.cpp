@@ -44,8 +44,11 @@ namespace dialog
 			AddPane(viewpane::CountedTextPane::Create(HEXED_BASE64, IDS_BASE64STRING, false, IDS_CCH));
 
 			AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
-			AddPane(viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW));
+			auto smartViewPane = viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW);
+			AddPane(smartViewPane);
 			DisplayParentedDialog(pParentWnd, 1000);
+
+			smartViewPane->OnItemSelected = [&](auto _1) { return OnSmartViewNodeSelected(_1); };
 		}
 
 		CHexEditor::~CHexEditor()
@@ -249,5 +252,17 @@ namespace dialog
 
 		// Close
 		void CHexEditor::OnEditAction3() { OnOK(); }
+
+		void CHexEditor::OnSmartViewNodeSelected(smartview::block* lpData)
+		{
+			if (!lpData) return;
+			auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(HEXED_HEX));
+			if (lpPane)
+			{
+				lpPane->ClearHighlight();
+				auto range = viewpane::Range{(LONG) lpData->getOffset() * 2, (LONG) lpData->getSize() * 2};
+				lpPane->AddHighlight(range);
+			}
+		}
 	} // namespace editor
 } // namespace dialog

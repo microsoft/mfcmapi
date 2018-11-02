@@ -15,6 +15,7 @@ namespace viewpane
 		void DisableDropDown();
 		void SetParser(__ParsingTypeEnum iParser);
 		void Parse(const std::vector<BYTE>& myBin);
+		std::function<void(smartview::block*)> OnItemSelected = nullptr;
 
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;

@@ -3,6 +3,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/ParentWnd.h>
 #include <MAPI/Cache/MapiObjects.h>
+#include <Interpret/SmartView/block/block.h>
 
 namespace dialog
 {
@@ -23,8 +24,9 @@ namespace dialog
 
 			void OnOK() override;
 			void OnCancel() override;
+			void OnSmartViewNodeSelected(smartview::block* lpData);
 
 			cache::CMapiObjects* m_lpMapiObjects;
 		};
-	}
-}
+	} // namespace editor
+} // namespace dialog
