@@ -229,7 +229,10 @@ namespace viewpane
 		const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
 		if (lpData)
 		{
-			SetStringW(lpData->ToString());
+			if (registry::RegKeys[registry::regkeyHEX_DIALOG_DIAG].ulCurDWORD != 0)
+			{
+				SetStringW(lpData->ToString());
+			}
 
 			if (OnItemSelected)
 			{
@@ -241,6 +244,7 @@ namespace viewpane
 	void
 	SmartViewPane::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM /*hItemCurHover*/) const
 	{
+		if (registry::RegKeys[registry::regkeyHEX_DIALOG_DIAG].ulCurDWORD == 0) return;
 		const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
 		if (!lvcd) return;
 

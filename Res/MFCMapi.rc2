@@ -1001,6 +1001,7 @@ IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION "Terminate on heap corruption (requ
 IDS_REGKEY_LOADADDINS "Load add-ins (requires restart)"
 IDS_REGKEY_FORCEOUTLOOKMAPI "Force the use of Outlook's MAPI files"
 IDS_REGKEY_FORCESYSTEMMAPI "Force the use of the system's MAPI files"
+IDS_REGKEY_HEXDIALOGDIAG "Show hex dialog diagnostics"
 
 // RestrictEditor.cpp
 IDS_RELOP "relop"
