@@ -455,6 +455,7 @@ namespace viewpane
 		charformat.dwEffects = 0;
 		for (const auto range : m_highlights)
 		{
+			if (static_cast<LONG>(range.start) == -1 || static_cast<LONG>(range.end) == -1) continue;
 			auto charrange = CHARRANGE{static_cast<LONG>(range.start), static_cast<LONG>(range.end)};
 			::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&charrange));
 

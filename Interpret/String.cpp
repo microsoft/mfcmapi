@@ -722,7 +722,7 @@ namespace strings
 		// 0->1
 		// 1->3
 		// 2->4
-		if (szString.empty() || offset > szString.length()) return 0;
+		if (szString.empty() || offset > szString.length()) return static_cast<size_t>(-1);
 		auto found = size_t{};
 		auto lastFoundLocation = size_t{};
 		for (auto i = size_t{}; i < szString.length(); i++)
@@ -737,6 +737,6 @@ namespace strings
 		}
 
 		if (found == offset) return lastFoundLocation + 1;
-		return 0;
+		return static_cast<size_t>(-1);
 	}
 } // namespace strings

@@ -351,13 +351,14 @@ namespace stringtest
 			Assert::AreEqual(size_t(1), strings::OffsetToFilteredOffset(L" A B", 0));
 			Assert::AreEqual(size_t(3), strings::OffsetToFilteredOffset(L" A B", 1));
 			Assert::AreEqual(size_t(4), strings::OffsetToFilteredOffset(L" A B", 2));
-			Assert::AreEqual(size_t(0), strings::OffsetToFilteredOffset(L"foo", 9));
+			Assert::AreEqual(static_cast<size_t>(-1), strings::OffsetToFilteredOffset(L"foo", 9));
+			Assert::AreEqual(static_cast<size_t>(-1), strings::OffsetToFilteredOffset(L"", 0));
 			Assert::AreEqual(size_t(0), strings::OffsetToFilteredOffset(L"foo", 0));
 			Assert::AreEqual(size_t(1), strings::OffsetToFilteredOffset(L"foo", 1));
 			Assert::AreEqual(size_t(2), strings::OffsetToFilteredOffset(L"foo", 2));
 			Assert::AreEqual(size_t(3), strings::OffsetToFilteredOffset(L"foo", 3));
 			Assert::AreEqual(size_t(5), strings::OffsetToFilteredOffset(L"    foo", 1));
-			Assert::AreEqual(size_t(0), strings::OffsetToFilteredOffset(L"    foo", 4));
+			Assert::AreEqual(static_cast<size_t>(-1), strings::OffsetToFilteredOffset(L"    foo", 4));
 			Assert::AreEqual(size_t(5), strings::OffsetToFilteredOffset(L"f o  o", 2));
 			Assert::AreEqual(size_t(27), strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 13));
 			Assert::AreEqual(size_t(28), strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 14));
