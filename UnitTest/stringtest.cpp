@@ -345,5 +345,15 @@ namespace stringtest
 				strings::Base64Encode(myStringWvector.size(), myStringWvector.data()));
 			Assert::AreEqual(myStringWvector, strings::Base64Decode(std::wstring(L"bQB5AHMAdAByAGkAbgBnAA==")));
 		}
+
+		TEST_METHOD(Test_offsets)
+		{
+			Assert::AreEqual(size_t(0), strings::OffsetToFilteredOffset(L"foo", 9));
+			Assert::AreEqual(size_t(1), strings::OffsetToFilteredOffset(L"foo", 1));
+			Assert::AreEqual(size_t(5), strings::OffsetToFilteredOffset(L"    foo", 1));
+			Assert::AreEqual(size_t(0), strings::OffsetToFilteredOffset(L"    foo", 4));
+			Assert::AreEqual(size_t(5), strings::OffsetToFilteredOffset(L"f o  o", 2));
+			Assert::AreEqual(size_t(27), strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 13));
+		}
 	};
 } // namespace stringtest

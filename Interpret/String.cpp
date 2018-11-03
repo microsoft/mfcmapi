@@ -477,8 +477,7 @@ namespace strings
 		if (cbTarget % 2 != 0) return std::vector<BYTE>();
 
 		// remove junk
-		std::wstring szJunk = L"\r\n\t -.,\\/'{}`\""; // STRING_OK
-		auto lpsz = strip(input, [szJunk](const WCHAR& chr) { return szJunk.find(chr) != std::wstring::npos; });
+		auto lpsz = strip(input, [](const WCHAR& chr) { return IsFilteredHex(chr); });
 
 		// strip one (and only one) prefix
 		stripPrefix(lpsz, L"0x") || stripPrefix(lpsz, L"0X") || stripPrefix(lpsz, L"x") || stripPrefix(lpsz, L"X");
@@ -707,5 +706,24 @@ namespace strings
 		}
 
 		AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, fileTime.dwLowDateTime, fileTime.dwHighDateTime);
+	}
+
+	bool IsFilteredHex(const WCHAR& chr)
+	{
+		const std::wstring szJunk = L"\r\n\t -.,\\/'{}`\""; // STRING_OK
+		return szJunk.find(chr) != std::wstring::npos;
+	}
+
+	size_t OffsetToFilteredOffset(const std::wstring& szString, size_t offset)
+	{
+		if (szString.empty() || offset > szString.length()) return 0;
+		auto found = size_t{};
+		for (auto i = size_t{}; i < szString.length(); i++)
+		{
+			if (!IsFilteredHex(szString[i])) found++;
+			if (found == offset + 1) return i;
+		}
+
+		return 0;
 	}
 } // namespace strings
