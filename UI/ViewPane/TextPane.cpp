@@ -455,7 +455,7 @@ namespace viewpane
 		charformat.dwEffects = 0;
 		for (const auto range : m_highlights)
 		{
-			auto charrange = CHARRANGE{range.start, range.start + range.length};
+			auto charrange = CHARRANGE{static_cast<LONG>(range.start), static_cast<LONG>(range.end)};
 			::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&charrange));
 
 			charformat.crTextColor = MyGetSysColor(ui::cBackground);

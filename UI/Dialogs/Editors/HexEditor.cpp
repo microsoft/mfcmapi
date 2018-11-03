@@ -261,7 +261,10 @@ namespace dialog
 			if (lpPane)
 			{
 				lpPane->ClearHighlight();
-				auto range = viewpane::Range{(LONG) lpData->getOffset() * 2, (LONG) lpData->getSize() * 2};
+				auto hex = lpPane->GetStringW();
+				auto start = strings::OffsetToFilteredOffset(hex, lpData->getOffset() * 2);
+				auto end = strings::OffsetToFilteredOffset(hex, (lpData->getOffset() + lpData->getSize()) * 2);
+				auto range = viewpane::Range{start, end};
 				lpPane->AddHighlight(range);
 			}
 		}

@@ -5,8 +5,8 @@ namespace viewpane
 {
 	struct Range
 	{
-		LONG start;
-		LONG length;
+		size_t start;
+		size_t end;
 	};
 
 	class TextPane : public ViewPane
