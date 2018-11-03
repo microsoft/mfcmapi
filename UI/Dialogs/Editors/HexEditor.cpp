@@ -135,6 +135,7 @@ namespace dialog
 			break;
 			case HEXED_HEX: // binary changed
 			{
+				ClearHighlight();
 				auto bin = GetBinary(HEXED_HEX);
 				lpb = bin.data();
 				cb = bin.size();
@@ -269,14 +270,19 @@ namespace dialog
 			}
 		}
 
-		void CHexEditor::SetHex(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
+		void CHexEditor::ClearHighlight()
 		{
-			SetBinary(HEXED_HEX, lpb, cb);
 			auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(HEXED_HEX));
 			if (lpPane)
 			{
 				lpPane->ClearHighlight();
 			}
+		}
+
+		void CHexEditor::SetHex(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
+		{
+			SetBinary(HEXED_HEX, lpb, cb);
+			ClearHighlight();
 		}
 
 	} // namespace editor
