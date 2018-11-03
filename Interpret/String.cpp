@@ -716,14 +716,27 @@ namespace strings
 
 	size_t OffsetToFilteredOffset(const std::wstring& szString, size_t offset)
 	{
+		// An offset in a string can range from 0 (before the first character) to length
+		// So for a string such as "AB", valid offsets are 0, 1, 2
+		// Example maps for " A B ->"AB":
+		// 0->1
+		// 1->3
+		// 2->4
 		if (szString.empty() || offset > szString.length()) return 0;
 		auto found = size_t{};
+		auto lastFoundLocation = size_t{};
 		for (auto i = size_t{}; i < szString.length(); i++)
 		{
-			if (!IsFilteredHex(szString[i])) found++;
-			if (found == offset + 1) return i;
+			if (!IsFilteredHex(szString[i]))
+			{
+				found++;
+				lastFoundLocation = i;
+			}
+
+			if (found == offset + 1) return lastFoundLocation;
 		}
 
+		if (found == offset) return lastFoundLocation + 1;
 		return 0;
 	}
 } // namespace strings
