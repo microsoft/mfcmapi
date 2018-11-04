@@ -86,8 +86,8 @@ namespace sid
 			&cchSidDomain,
 			&SidNameUse));
 
-		return SidAccount(
-			std::wstring(sidDomainBuf.begin(), sidDomainBuf.end()), std::wstring(sidNameBuf.begin(), sidNameBuf.end()));
+		return SidAccount{std::wstring(sidDomainBuf.begin(), sidDomainBuf.end()),
+						  std::wstring(sidNameBuf.begin(), sidNameBuf.end())};
 	}
 
 	std::wstring ACEToString(_In_ void* pACE, eAceType acetype)
@@ -189,7 +189,7 @@ namespace sid
 
 		if (CbSecurityDescriptorHeader(lpBuf) > cbBuf || !IsValidSecurityDescriptor(pSecurityDescriptor))
 		{
-			return SecurityDescriptor(strings::formatmessage(IDS_INVALIDSD), strings::emptystring);
+			return SecurityDescriptor{strings::formatmessage(IDS_INVALIDSD), strings::emptystring};
 		}
 
 		const auto sdInfo = interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf));
@@ -215,9 +215,9 @@ namespace sid
 				}
 			}
 
-			return SecurityDescriptor(strings::join(sdString, L"\r\n"), sdInfo);
+			return SecurityDescriptor{strings::join(sdString, L"\r\n"), sdInfo};
 		}
 
-		return SecurityDescriptor(strings::emptystring, sdInfo);
+		return SecurityDescriptor{strings::emptystring, sdInfo};
 	}
 } // namespace sid
