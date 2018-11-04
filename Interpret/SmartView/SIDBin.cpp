@@ -15,8 +15,8 @@ namespace smartview
 			IsValidSid(SidStart))
 		{
 			auto sidAccount = sid::LookupAccountSid(SidStart);
-			m_lpSidDomain = sidAccount.domain;
-			m_lpSidName = sidAccount.name;
+			m_lpSidDomain = sidAccount.getDomain();
+			m_lpSidName = sidAccount.getName();
 			m_lpStringSid = sid::GetTextualSid(SidStart);
 		}
 	}
