@@ -202,11 +202,8 @@ namespace mapi
 					}
 
 					// Dump our SD
-					auto securityDescriptor = SDToString(lpSDBuffer, cbSBBuffer, m_acetype);
-					auto szDACL = securityDescriptor.dacl;
-					auto szInfo = securityDescriptor.info;
-
-					output::DebugPrint(DBGGeneric, L"sdInfo: %ws\nszDACL: %ws\n", szInfo.c_str(), szDACL.c_str());
+					auto sd = SDToString(lpSDBuffer, cbSBBuffer, m_acetype);
+					output::DebugPrint(DBGGeneric, L"sdInfo: %ws\nszDACL: %ws\n", sd.info.c_str(), sd.dacl.c_str());
 				}
 			}
 
@@ -330,5 +327,5 @@ namespace mapi
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::LookupSids\n");
 			return E_NOTIMPL;
 		}
-	}
-}
+	} // namespace mapiui
+} // namespace mapi
