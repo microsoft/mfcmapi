@@ -477,8 +477,7 @@ namespace strings
 		if (cbTarget % 2 != 0) return std::vector<BYTE>();
 
 		// remove junk
-		std::wstring szJunk = L"\r\n\t -.,\\/'{}`\""; // STRING_OK
-		auto lpsz = strip(input, [szJunk](const WCHAR& chr) { return szJunk.find(chr) != std::wstring::npos; });
+		auto lpsz = strip(input, [](const WCHAR& chr) { return IsFilteredHex(chr); });
 
 		// strip one (and only one) prefix
 		stripPrefix(lpsz, L"0x") || stripPrefix(lpsz, L"0X") || stripPrefix(lpsz, L"x") || stripPrefix(lpsz, L"X");
@@ -707,5 +706,37 @@ namespace strings
 		}
 
 		AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, fileTime.dwLowDateTime, fileTime.dwHighDateTime);
+	}
+
+	bool IsFilteredHex(const WCHAR& chr)
+	{
+		const std::wstring szJunk = L"\r\n\t -.,\\/'{}`\""; // STRING_OK
+		return szJunk.find(chr) != std::wstring::npos;
+	}
+
+	size_t OffsetToFilteredOffset(const std::wstring& szString, size_t offset)
+	{
+		// An offset in a string can range from 0 (before the first character) to length
+		// So for a string such as "AB", valid offsets are 0, 1, 2
+		// Example maps for " A B ->"AB":
+		// 0->1
+		// 1->3
+		// 2->4
+		if (szString.empty() || offset > szString.length()) return static_cast<size_t>(-1);
+		auto found = size_t{};
+		auto lastFoundLocation = size_t{};
+		for (auto i = size_t{}; i < szString.length(); i++)
+		{
+			if (!IsFilteredHex(szString[i]))
+			{
+				found++;
+				lastFoundLocation = i;
+			}
+
+			if (found == offset + 1) return lastFoundLocation;
+		}
+
+		if (found == offset) return lastFoundLocation + 1;
+		return static_cast<size_t>(-1);
 	}
 } // namespace strings

@@ -16,17 +16,35 @@ namespace viewpane
 		ViewPane* GetPaneByID(const int id) override
 		{
 			if (m_paneID == id) return this;
-			const auto pane = m_PaneOne->GetPaneByID(id);
-			if (pane) return pane;
-			return m_PaneTwo->GetPaneByID(id);
+			if (m_PaneOne)
+			{
+				const auto pane = m_PaneOne->GetPaneByID(id);
+				if (pane) return pane;
+			}
+
+			if (m_PaneTwo)
+			{
+				return m_PaneTwo->GetPaneByID(id);
+			}
+
+			return nullptr;
 		}
 		// Return a pane with a matching nID.
 		ViewPane* GetPaneByNID(const UINT nID) override
 		{
 			if (m_nID == nID) return this;
-			const auto pane = m_PaneOne->GetPaneByNID(nID);
-			if (pane) return pane;
-			return m_PaneTwo->GetPaneByNID(nID);
+			if (m_PaneOne)
+			{
+				const auto pane = m_PaneOne->GetPaneByNID(nID);
+				if (pane) return pane;
+			}
+
+			if (m_PaneTwo)
+			{
+				return m_PaneTwo->GetPaneByNID(nID);
+			}
+
+			return nullptr;
 		}
 
 	private:

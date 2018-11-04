@@ -13,7 +13,6 @@ namespace sid
 	{
 	public:
 		SidAccount() = default;
-		;
 		SidAccount(const std::wstring& _domain, const std::wstring& _name) : domain(_domain), name(_name){};
 		_Check_return_ std::wstring getDomain() const
 		{
@@ -31,8 +30,6 @@ namespace sid
 
 	struct SecurityDescriptor
 	{
-		SecurityDescriptor() = default;
-		SecurityDescriptor(const std::wstring& _dacl, const std::wstring& _info) : dacl(_dacl), info(_info){};
 		std::wstring dacl;
 		std::wstring info;
 	};
