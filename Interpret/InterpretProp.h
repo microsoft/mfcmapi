@@ -45,4 +45,4 @@ namespace interpretprop
 
 	std::wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue);
 	std::wstring AllFlagsToString(ULONG ulFlagName, bool bHex);
-}
+} // namespace interpretprop
