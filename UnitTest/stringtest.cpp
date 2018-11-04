@@ -28,7 +28,7 @@ namespace stringtest
 			Assert::AreEqual(std::wstring(L""), strings::loadstring(1234));
 
 			// A resource which does exist
-			Assert::AreEqual(std::wstring(L"\r\n\tUnknown Data = "), strings::loadstring(IDS_EXTENDEDFLAGUNKNOWN));
+			Assert::AreEqual(std::wstring(L"Flags: "), strings::loadstring(IDS_FLAGS_PREFIX));
 		}
 
 		TEST_METHOD(Test_format)
@@ -333,15 +333,17 @@ namespace stringtest
 
 		TEST_METHOD(Test_currency)
 		{
-			CURRENCY foo = { 1,2 };
-			Assert::AreEqual(std::wstring(L"0.0000"), strings::CurrencyToString(CURRENCY({ 0, 0 })));
-			Assert::AreEqual(std::wstring(L"858993.4593"), strings::CurrencyToString(CURRENCY({ 1, 2 })));
+			CURRENCY foo = {1, 2};
+			Assert::AreEqual(std::wstring(L"0.0000"), strings::CurrencyToString(CURRENCY({0, 0})));
+			Assert::AreEqual(std::wstring(L"858993.4593"), strings::CurrencyToString(CURRENCY({1, 2})));
 		}
 
 		TEST_METHOD(Test_base64)
 		{
-			Assert::AreEqual(std::wstring(L"bQB5AHMAdAByAGkAbgBnAA=="), strings::Base64Encode(myStringWvector.size(), myStringWvector.data()));
+			Assert::AreEqual(
+				std::wstring(L"bQB5AHMAdAByAGkAbgBnAA=="),
+				strings::Base64Encode(myStringWvector.size(), myStringWvector.data()));
 			Assert::AreEqual(myStringWvector, strings::Base64Decode(std::wstring(L"bQB5AHMAdAByAGkAbgBnAA==")));
 		}
 	};
-}
+} // namespace stringtest

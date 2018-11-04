@@ -14,7 +14,9 @@ namespace smartview
 			cbSid >= sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * static_cast<PISID>(SidStart)->SubAuthorityCount &&
 			IsValidSid(SidStart))
 		{
-			m_lpSidName = sid::LookupAccountSid(SidStart, m_lpSidDomain);
+			auto sidAccount = sid::LookupAccountSid(SidStart);
+			m_lpSidDomain = sidAccount.getDomain();
+			m_lpSidName = sidAccount.getName();
 			m_lpStringSid = sid::GetTextualSid(SidStart);
 		}
 	}

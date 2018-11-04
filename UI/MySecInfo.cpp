@@ -202,8 +202,9 @@ namespace mapi
 					}
 
 					// Dump our SD
-					std::wstring szInfo;
-					auto szDACL = SDToString(lpSDBuffer, cbSBBuffer, m_acetype, szInfo);
+					auto securityDescriptor = SDToString(lpSDBuffer, cbSBBuffer, m_acetype);
+					auto szDACL = securityDescriptor.dacl;
+					auto szInfo = securityDescriptor.info;
 
 					output::DebugPrint(DBGGeneric, L"sdInfo: %ws\nszDACL: %ws\n", szInfo.c_str(), szDACL.c_str());
 				}
