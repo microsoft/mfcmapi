@@ -143,7 +143,7 @@ namespace import
 			{
 				WCHAR szDrive[_MAX_DRIVE] = {0};
 				WCHAR szMAPIPath[MAX_PATH] = {0};
-				auto hRes = WC_W32(_wsplitpath_s(
+				const auto hRes = WC_W32(_wsplitpath_s(
 					szOutlookMAPIPath.c_str(),
 					szDrive,
 					_MAX_DRIVE,
@@ -392,4 +392,4 @@ namespace import
 		*phModule = GetModuleHandleW(lpModuleName);
 		return *phModule != nullptr;
 	}
-}
+} // namespace import
