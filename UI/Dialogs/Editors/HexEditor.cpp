@@ -186,8 +186,7 @@ namespace dialog
 			auto lpPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(HEXED_SMARTVIEW));
 			if (lpPane)
 			{
-				auto bin = GetBinary(HEXED_HEX);
-				lpPane->Parse(SBinary{ULONG(bin.size()), bin.data()});
+				lpPane->Parse(GetBinary(HEXED_HEX));
 			}
 		}
 

@@ -150,10 +150,12 @@ namespace viewpane
 		}
 	}
 
-	void SmartViewPane::Parse(SBinary myBin)
+	void SmartViewPane::Parse(const std::vector<BYTE>& myBin)
 	{
+		m_bin = myBin;
 		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
-		auto szSmartView = smartview::InterpretBinaryAsString(myBin, iStructType, nullptr);
+		auto szSmartView =
+			smartview::InterpretBinaryAsString(SBinary{ULONG(m_bin.size()), m_bin.data()}, iStructType, nullptr);
 
 		m_bHasData = !szSmartView.empty();
 		SetStringW(szSmartView);

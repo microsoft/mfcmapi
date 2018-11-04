@@ -12,7 +12,7 @@ namespace viewpane
 		void SetStringW(const std::wstring& szMsg);
 		void DisableDropDown();
 		void SetParser(__ParsingTypeEnum iParser);
-		void Parse(SBinary myBin);
+		void Parse(const std::vector<BYTE>& myBin);
 
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
@@ -29,6 +29,7 @@ namespace viewpane
 			int iButtonHeight, // Height of buttons below the control
 			int iEditHeight) override; // height of an edit control
 
+		std::vector<BYTE> m_bin;
 		TextPane m_TextPane;
 		bool m_bHasData{false};
 		bool m_bDoDropDown{true};
