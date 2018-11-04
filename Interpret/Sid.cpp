@@ -159,8 +159,8 @@ namespace sid
 
 		aceString.push_back(strings::formatmessage(
 			IDS_SIDACCOUNT,
-			sidAccount.getDomain().c_str(),
-			sidAccount.getName().c_str(),
+			sidAccount.domain.c_str(),
+			sidAccount.name.c_str(),
 			szSID.c_str(),
 			AceType,
 			szAceType.c_str(),
