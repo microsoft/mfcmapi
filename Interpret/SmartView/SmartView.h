@@ -36,4 +36,4 @@ namespace smartview
 	std::wstring InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp);
 	_Check_return_ std::wstring RTimeToString(DWORD rTime);
 	_Check_return_ std::wstring FidMidToSzString(LONGLONG llID, bool bLabel);
-}
+} // namespace smartview

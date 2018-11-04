@@ -468,9 +468,7 @@ namespace dialog
 				auto lpSmartView = dynamic_cast<viewpane::SmartViewPane*>(GetPane(m_iSmartViewBox));
 				if (lpSmartView)
 				{
-					auto bin = GetBinary(m_iBinBox);
-
-					lpSmartView->Parse(SBinary{ULONG(bin.size()), bin.data()});
+					lpSmartView->Parse(GetBinary(m_iBinBox));
 				}
 			}
 

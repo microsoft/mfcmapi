@@ -66,6 +66,7 @@ namespace controls
 		m_lpHostDlg = lpHostDlg;
 		m_ulDisplayFlags = ulDisplayFlags;
 		m_nIDContextMenu = nIDContextMenu;
+		m_bSortNodes = true;
 
 		// Setup callbacks
 		HasChildrenCallback = [&](auto _1) { return HasChildren(_1); };
@@ -132,7 +133,7 @@ namespace controls
 			output::DebugPrintEx(
 				DBGHierarchy,
 				CLASS,
-				L"OnDeleteItem",
+				L"FreeNodeData",
 				L"Unadvising %p, ulAdviseConnection = 0x%08X\n",
 				lpNodeData->Node()->m_lpAdviseSink,
 				static_cast<int>(lpNodeData->Node()->m_ulAdviseConnection));

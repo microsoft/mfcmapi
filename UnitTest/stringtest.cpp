@@ -28,7 +28,7 @@ namespace stringtest
 			Assert::AreEqual(std::wstring(L""), strings::loadstring(1234));
 
 			// A resource which does exist
-			Assert::AreEqual(std::wstring(L"\r\n\tUnknown Data = "), strings::loadstring(IDS_EXTENDEDFLAGUNKNOWN));
+			Assert::AreEqual(std::wstring(L"Flags: "), strings::loadstring(IDS_FLAGS_PREFIX));
 		}
 
 		TEST_METHOD(Test_format)
@@ -333,15 +333,35 @@ namespace stringtest
 
 		TEST_METHOD(Test_currency)
 		{
-			CURRENCY foo = { 1,2 };
-			Assert::AreEqual(std::wstring(L"0.0000"), strings::CurrencyToString(CURRENCY({ 0, 0 })));
-			Assert::AreEqual(std::wstring(L"858993.4593"), strings::CurrencyToString(CURRENCY({ 1, 2 })));
+			CURRENCY foo = {1, 2};
+			Assert::AreEqual(std::wstring(L"0.0000"), strings::CurrencyToString(CURRENCY({0, 0})));
+			Assert::AreEqual(std::wstring(L"858993.4593"), strings::CurrencyToString(CURRENCY({1, 2})));
 		}
 
 		TEST_METHOD(Test_base64)
 		{
-			Assert::AreEqual(std::wstring(L"bQB5AHMAdAByAGkAbgBnAA=="), strings::Base64Encode(myStringWvector.size(), myStringWvector.data()));
+			Assert::AreEqual(
+				std::wstring(L"bQB5AHMAdAByAGkAbgBnAA=="),
+				strings::Base64Encode(myStringWvector.size(), myStringWvector.data()));
 			Assert::AreEqual(myStringWvector, strings::Base64Decode(std::wstring(L"bQB5AHMAdAByAGkAbgBnAA==")));
 		}
+
+		TEST_METHOD(Test_offsets)
+		{
+			Assert::AreEqual(size_t(1), strings::OffsetToFilteredOffset(L" A B", 0));
+			Assert::AreEqual(size_t(3), strings::OffsetToFilteredOffset(L" A B", 1));
+			Assert::AreEqual(size_t(4), strings::OffsetToFilteredOffset(L" A B", 2));
+			Assert::AreEqual(static_cast<size_t>(-1), strings::OffsetToFilteredOffset(L"foo", 9));
+			Assert::AreEqual(static_cast<size_t>(-1), strings::OffsetToFilteredOffset(L"", 0));
+			Assert::AreEqual(size_t(0), strings::OffsetToFilteredOffset(L"foo", 0));
+			Assert::AreEqual(size_t(1), strings::OffsetToFilteredOffset(L"foo", 1));
+			Assert::AreEqual(size_t(2), strings::OffsetToFilteredOffset(L"foo", 2));
+			Assert::AreEqual(size_t(3), strings::OffsetToFilteredOffset(L"foo", 3));
+			Assert::AreEqual(size_t(5), strings::OffsetToFilteredOffset(L"    foo", 1));
+			Assert::AreEqual(static_cast<size_t>(-1), strings::OffsetToFilteredOffset(L"    foo", 4));
+			Assert::AreEqual(size_t(5), strings::OffsetToFilteredOffset(L"f o  o", 2));
+			Assert::AreEqual(size_t(27), strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 13));
+			Assert::AreEqual(size_t(28), strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 14));
+		}
 	};
-}
+} // namespace stringtest

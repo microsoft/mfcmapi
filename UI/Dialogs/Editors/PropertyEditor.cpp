@@ -725,17 +725,17 @@ namespace dialog
 				{
 					bin = GetBinary(0);
 					if (paneID == 0) SetStringA(1, std::string(LPCSTR(bin.data()), bin.size())); // ansi string
-					sProp.Value.bin.lpb = bin.data();
-					sProp.Value.bin.cb = static_cast<ULONG>(bin.size());
 				}
 				else if (paneID == 1)
 				{
 					lpszA = GetStringA(1); // Do not free this
-					sProp.Value.bin.lpb = LPBYTE(lpszA.c_str());
-					sProp.Value.bin.cb = static_cast<ULONG>(sizeof(CHAR) * lpszA.length());
-
+					bin = std::vector<BYTE>{lpszA.c_str(),
+											lpszA.c_str() + static_cast<ULONG>(sizeof(CHAR) * lpszA.length())};
 					SetBinary(0, sProp.Value.bin.lpb, sProp.Value.bin.cb);
 				}
+
+				sProp.Value.bin.lpb = bin.data();
+				sProp.Value.bin.cb = static_cast<ULONG>(bin.size());
 
 				lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
 				if (lpPane) lpPane->SetCount(sProp.Value.bin.cb);
@@ -743,7 +743,7 @@ namespace dialog
 				lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(1));
 				if (lpPane) lpPane->SetCount(sProp.Value.bin.cb);
 
-				if (m_lpSmartView) m_lpSmartView->Parse(sProp.Value.bin);
+				if (m_lpSmartView) m_lpSmartView->Parse(bin);
 				break;
 			case PT_STRING8:
 				if (paneID == 0)

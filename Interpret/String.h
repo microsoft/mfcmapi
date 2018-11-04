@@ -5,9 +5,9 @@
 
 namespace strings
 {
-// Enable this macro to build with parameter checking for format()
-// Do NOT check in with this macro enabled!
-//#define CHECKFORMATPARAMS
+	// Enable this macro to build with parameter checking for format()
+	// Do NOT check in with this macro enabled!
+	//#define CHECKFORMATPARAMS
 
 #ifdef _UNICODE
 	typedef std::wstring tstring;
@@ -43,6 +43,7 @@ namespace strings
 	std::wstring StripCharacter(const std::wstring& szString, const WCHAR& character);
 	std::wstring StripCarriage(const std::wstring& szString);
 	std::wstring StripCRLF(const std::wstring& szString);
+	std::wstring trimWhitespace(const std::wstring& szString);
 	std::wstring trim(const std::wstring& szString);
 	std::wstring replace(const std::wstring& str, const std::function<bool(const WCHAR&)>& func, const WCHAR& chr);
 	std::wstring ScrubStringForXML(const std::wstring& szString);
@@ -75,4 +76,7 @@ namespace strings
 		_In_ const FILETIME& fileTime,
 		_In_ std::wstring& PropString,
 		_In_opt_ std::wstring& AltPropString);
-}
+
+	bool IsFilteredHex(const WCHAR& chr);
+	size_t OffsetToFilteredOffset(const std::wstring& szString, size_t offset);
+} // namespace strings

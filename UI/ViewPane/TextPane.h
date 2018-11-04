@@ -5,8 +5,8 @@ namespace viewpane
 {
 	struct Range
 	{
-		LONG start;
-		LONG length;
+		size_t start;
+		size_t end;
 	};
 
 	class TextPane : public ViewPane
@@ -35,7 +35,7 @@ namespace viewpane
 		void SetBinaryStream(_In_ LPSTREAM lpStreamIn);
 		void GetBinaryStream(_In_ LPSTREAM lpStreamOut) const;
 		void AppendString(_In_ const std::wstring& szMsg);
-		void ShowWindow(int nCmdShow);
+		void ShowWindow(const int nCmdShow) { m_EditBox.ShowWindow(nCmdShow); }
 
 		void SetReadOnly();
 		void SetMultiline();
