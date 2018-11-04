@@ -76,4 +76,7 @@ namespace strings
 		_In_ const FILETIME& fileTime,
 		_In_ std::wstring& PropString,
 		_In_opt_ std::wstring& AltPropString);
+
+	bool IsFilteredHex(const WCHAR& chr);
+	size_t OffsetToFilteredOffset(const std::wstring& szString, size_t offset);
 } // namespace strings
