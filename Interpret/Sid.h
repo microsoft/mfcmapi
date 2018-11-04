@@ -31,8 +31,6 @@ namespace sid
 
 	struct SecurityDescriptor
 	{
-		SecurityDescriptor() = default;
-		SecurityDescriptor(const std::wstring& _dacl, const std::wstring& _info) : dacl(_dacl), info(_info){};
 		std::wstring dacl;
 		std::wstring info;
 	};
