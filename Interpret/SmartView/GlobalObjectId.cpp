@@ -38,7 +38,7 @@ namespace smartview
 
 	void GlobalObjectId::ParseBlocks()
 	{
-		addHeader(L"Global Object ID:\r\n");
+		setRoot(L"Global Object ID:\r\n");
 		addHeader(L"Byte Array ID = ");
 
 		auto id = m_Id.getData();

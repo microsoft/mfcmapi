@@ -173,7 +173,7 @@ namespace smartview
 
 	void PropertyDefinitionStream::ParseBlocks()
 	{
-		addHeader(L"Property Definition Stream\r\n");
+		setRoot(L"Property Definition Stream\r\n");
 		auto szVersion = interpretprop::InterpretFlags(flagPropDefVersion, m_wVersion);
 		addBlock(m_wVersion, L"Version = 0x%1!04X! = %2!ws!\r\n", m_wVersion.getData(), szVersion.c_str());
 		addBlock(m_dwFieldDefinitionCount, L"FieldDefinitionCount = 0x%1!08X!", m_dwFieldDefinitionCount.getData());

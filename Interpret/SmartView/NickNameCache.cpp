@@ -40,7 +40,7 @@ namespace smartview
 
 	void NickNameCache::ParseBlocks()
 	{
-		addHeader(L"Nickname Cache\r\n");
+		setRoot(L"Nickname Cache\r\n");
 		addHeader(L"Metadata1 = ");
 		addBlock(m_Metadata1);
 

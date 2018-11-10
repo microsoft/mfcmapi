@@ -56,7 +56,7 @@ namespace smartview
 
 	_Check_return_ void VerbStream::ParseBlocks()
 	{
-		addHeader(L"Verb Stream\r\n");
+		setRoot(L"Verb Stream\r\n");
 		addBlock(m_Version, L"Version = 0x%1!04X!\r\n", m_Version.getData());
 		addBlock(m_Count, L"Count = 0x%1!08X!", m_Count.getData());
 

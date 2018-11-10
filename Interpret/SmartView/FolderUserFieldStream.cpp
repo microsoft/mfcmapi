@@ -70,7 +70,7 @@ namespace smartview
 
 	void FolderUserFieldStream::ParseBlocks()
 	{
-		addHeader(L"Folder User Field Stream\r\n");
+		setRoot(L"Folder User Field Stream\r\n");
 
 		// Add child nodes to m_FolderUserFieldsAnsiCount before adding it to our output
 		if (m_FolderUserFieldsAnsiCount && !m_FieldDefinitionsA.empty())
