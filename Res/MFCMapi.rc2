@@ -1651,8 +1651,6 @@ IDS_CONVERTCHARSETAPPLYTYPE "Character Set Apply Type"
 
 IDS_FLAGS_PREFIX "Flags: "
 
-IDS_JUNKDATASIZE "\r\nUnparsed data size = 0x%1!08X!\r\n"
-
 IDS_MVROWBIN "Row %1!d!\r\n"
 IDS_MVROWLONG "Row %1!d!: %2!ws!"
 IDS_OPENBODY "Body: Open to view"
