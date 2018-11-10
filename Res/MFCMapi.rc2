@@ -1001,6 +1001,7 @@ IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION "Terminate on heap corruption (requ
 IDS_REGKEY_LOADADDINS "Load add-ins (requires restart)"
 IDS_REGKEY_FORCEOUTLOOKMAPI "Force the use of Outlook's MAPI files"
 IDS_REGKEY_FORCESYSTEMMAPI "Force the use of the system's MAPI files"
+IDS_REGKEY_HEXDIALOGDIAG "Show hex dialog diagnostics"
 
 // RestrictEditor.cpp
 IDS_RELOP "relop"
@@ -1649,8 +1650,6 @@ IDS_CONVERTCHARSETTYPE "Character Set Type"
 IDS_CONVERTCHARSETAPPLYTYPE "Character Set Apply Type"
 
 IDS_FLAGS_PREFIX "Flags: "
-
-IDS_JUNKDATASIZE "\r\nUnparsed data size = 0x%1!08X!\r\n"
 
 IDS_MVROWBIN "Row %1!d!\r\n"
 IDS_MVROWLONG "Row %1!d!: %2!ws!"
