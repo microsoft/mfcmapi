@@ -160,7 +160,7 @@ namespace smartview
 
 	void AppointmentRecurrencePattern::ParseBlocks()
 	{
-		addBlock(m_RecurrencePattern.getBlock());
+		setRoot(m_RecurrencePattern.getBlock());
 
 		addLine();
 		addHeader(L"Appointment Recurrence Pattern: \r\n");
