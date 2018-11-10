@@ -117,7 +117,7 @@ namespace smartview
 
 	void SearchFolderDefinition::ParseBlocks()
 	{
-		addHeader(L"Search Folder Definition:\r\n");
+		setRoot(L"Search Folder Definition:\r\n");
 		addBlock(m_Version, L"Version = 0x%1!08X!\r\n", m_Version.getData());
 		addBlock(
 			m_Flags,

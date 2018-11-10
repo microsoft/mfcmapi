@@ -18,7 +18,7 @@ namespace smartview
 
 	void RestrictionStruct::ParseBlocks()
 	{
-		addHeader(L"Restriction:\r\n");
+		setRoot(L"Restriction:\r\n");
 		ParseRestriction(m_lpRes, 0);
 	}
 

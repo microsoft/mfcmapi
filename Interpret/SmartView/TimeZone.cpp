@@ -30,7 +30,7 @@ namespace smartview
 
 	void TimeZone::ParseBlocks()
 	{
-		addHeader(L"Time Zone: \r\n");
+		setRoot(L"Time Zone: \r\n");
 		addBlock(m_lBias, L"lBias = 0x%1!08X! (%1!d!)\r\n", m_lBias.getData());
 		addBlock(m_lStandardBias, L"lStandardBias = 0x%1!08X! (%1!d!)\r\n", m_lStandardBias.getData());
 		addBlock(m_lDaylightBias, L"lDaylightBias = 0x%1!08X! (%1!d!)\r\n", m_lDaylightBias.getData());

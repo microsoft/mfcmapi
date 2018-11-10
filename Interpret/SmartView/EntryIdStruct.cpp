@@ -262,34 +262,34 @@ namespace smartview
 		switch (m_ObjectType)
 		{
 		case eidtUnknown:
-			addHeader(L"Entry ID:\r\n");
+			setRoot(L"Entry ID:\r\n");
 			break;
 		case eidtEphemeral:
-			addHeader(L"Ephemeral Entry ID:\r\n");
+			setRoot(L"Ephemeral Entry ID:\r\n");
 			break;
 		case eidtShortTerm:
-			addHeader(L"Short Term Entry ID:\r\n");
+			setRoot(L"Short Term Entry ID:\r\n");
 			break;
 		case eidtFolder:
-			addHeader(L"Exchange Folder Entry ID:\r\n");
+			setRoot(L"Exchange Folder Entry ID:\r\n");
 			break;
 		case eidtMessage:
-			addHeader(L"Exchange Message Entry ID:\r\n");
+			setRoot(L"Exchange Message Entry ID:\r\n");
 			break;
 		case eidtMessageDatabase:
-			addHeader(L"MAPI Message Store Entry ID:\r\n");
+			setRoot(L"MAPI Message Store Entry ID:\r\n");
 			break;
 		case eidtOneOff:
-			addHeader(L"MAPI One Off Recipient Entry ID:\r\n");
+			setRoot(L"MAPI One Off Recipient Entry ID:\r\n");
 			break;
 		case eidtAddressBook:
-			addHeader(L"Exchange Address Entry ID:\r\n");
+			setRoot(L"Exchange Address Entry ID:\r\n");
 			break;
 		case eidtContact:
-			addHeader(L"Contact Address Book / PDL Entry ID:\r\n");
+			setRoot(L"Contact Address Book / PDL Entry ID:\r\n");
 			break;
 		case eidtWAB:
-			addHeader(L"Wrapped Entry ID:\r\n");
+			setRoot(L"Wrapped Entry ID:\r\n");
 			break;
 		}
 

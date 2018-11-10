@@ -55,7 +55,7 @@ namespace smartview
 
 	void ReportTag::ParseBlocks()
 	{
-		addHeader(L"Report Tag: \r\n");
+		setRoot(L"Report Tag: \r\n");
 		addHeader(L"Cookie = ");
 		addBlock(m_Cookie);
 

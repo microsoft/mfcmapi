@@ -39,7 +39,7 @@ namespace smartview
 
 	void FlatEntryList::ParseBlocks()
 	{
-		addHeader(L"Flat Entry List\r\n");
+		setRoot(L"Flat Entry List\r\n");
 		addBlock(m_cEntries, L"cEntries = %1!d!\r\n", m_cEntries.getData());
 		addBlock(m_cbEntries, L"cbEntries = 0x%1!08X!", m_cbEntries.getData());
 

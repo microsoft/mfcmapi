@@ -13,7 +13,7 @@ namespace smartview
 
 	void XID::ParseBlocks()
 	{
-		addHeader(L"XID:\r\n");
+		setRoot(L"XID:\r\n");
 		addBlock(m_NamespaceGuid, L"NamespaceGuid = %1!ws!\r\n", guid::GUIDToString(m_NamespaceGuid.getData()).c_str());
 		addBlock(m_LocalID, L"LocalId = %1!ws!", strings::BinToHexString(m_LocalID, true).c_str());
 	}

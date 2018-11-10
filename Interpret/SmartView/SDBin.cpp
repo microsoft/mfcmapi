@@ -41,7 +41,7 @@ namespace smartview
 
 		auto sd = SDToString(m_SDbin.data(), m_SDbin.size(), acetype);
 
-		addHeader(L"Security Descriptor:\r\n");
+		setRoot(L"Security Descriptor:\r\n");
 		addHeader(L"Security Info: ");
 		addBlock(m_SDbin, sd.info);
 

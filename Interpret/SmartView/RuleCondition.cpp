@@ -50,7 +50,7 @@ namespace smartview
 
 	void RuleCondition::ParseBlocks()
 	{
-		addHeader(m_bExtended ? L"Extended Rule Condition" : L"Rule Condition");
+		setRoot(m_bExtended ? L"Extended Rule Condition" : L"Rule Condition");
 
 		addLine();
 		addBlock(

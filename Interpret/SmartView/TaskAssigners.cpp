@@ -30,7 +30,7 @@ namespace smartview
 
 	void TaskAssigners::ParseBlocks()
 	{
-		addHeader(L"Task Assigners: \r\n");
+		setRoot(L"Task Assigners: \r\n");
 		addBlock(m_cAssigners, L"cAssigners = 0x%1!08X! = %1!d!", m_cAssigners.getData());
 
 		for (DWORD i = 0; i < m_lpTaskAssigners.size(); i++)

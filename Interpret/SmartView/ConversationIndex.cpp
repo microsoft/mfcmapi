@@ -97,7 +97,7 @@ namespace smartview
 
 	void ConversationIndex::ParseBlocks()
 	{
-		addHeader(L"Conversation Index: \r\n");
+		setRoot(L"Conversation Index: \r\n");
 
 		std::wstring PropString;
 		std::wstring AltPropString;
