@@ -39,6 +39,16 @@ namespace smartview
 			data.setText(text, args...);
 		}
 
+		void setRoot(const block& _data)
+		{
+			data.setBlock(_data);
+		}
+
+		template <typename... Args> void setRoot(const block& _data, const std::wstring& text, const Args... args)
+		{
+			data.setBlock(_data, text, args...);
+		}
+
 		template <typename... Args> void addHeader(const std::wstring& text, const Args... args)
 		{
 			data.addHeader(text, args...);

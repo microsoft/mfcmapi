@@ -32,7 +32,7 @@ namespace smartview
 
 	void EntryList::ParseBlocks()
 	{
-		addBlock(m_EntryCount, L"EntryCount = 0x%1!08X!\r\n", m_EntryCount.getData());
+		setRoot(m_EntryCount, L"EntryCount = 0x%1!08X!\r\n", m_EntryCount.getData());
 		addBlock(m_Pad, L"Pad = 0x%1!08X!", m_Pad.getData());
 
 		for (DWORD i = 0; i < m_Entry.size(); i++)

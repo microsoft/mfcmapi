@@ -35,7 +35,7 @@ namespace smartview
 
 		template <typename... Args> void setText(const std::wstring& _text, Args... args)
 		{
-			text  = strings::formatmessage(_text.c_str(), args...);
+			text = strings::formatmessage(_text.c_str(), args...);
 		}
 
 		void addBlock(const block& child, const std::wstring& _text)
@@ -52,11 +52,26 @@ namespace smartview
 			children.push_back(block);
 		}
 
+		// Add a block as a child
 		void addBlock(const block& child)
 		{
 			auto block = child;
 			block.text = child.ToStringInternal();
 			children.push_back(block);
+		}
+
+		// Copy a block into this block
+		void setBlock(const block& _data)
+		{
+			text = _data.text;
+			children = _data.children;
+		}
+
+		// Copy a block into this block with text
+		template <typename... Args> void setBlock(const block& _data, const std::wstring& _text, Args... args)
+		{
+			text = strings::formatmessage(_text.c_str(), args...);
+			children = _data.children;
 		}
 
 		void addLine() { addHeader(L"\r\n"); }
