@@ -35,7 +35,7 @@ namespace smartview
 		{
 			if (i != 0)
 			{
-				addLine();
+				addBlankLine();
 			}
 
 			addHeader(L"Property[%1!d!]\r\n", i++);
@@ -44,18 +44,18 @@ namespace smartview
 			auto propTagNames = interpretprop::PropTagToPropName(prop.ulPropTag, false);
 			if (!propTagNames.bestGuess.empty())
 			{
-				addLine();
+				addBlankLine();
 				addBlock(prop.ulPropTag, L"Name: %1!ws!", propTagNames.bestGuess.c_str());
 			}
 
 			if (!propTagNames.otherMatches.empty())
 			{
-				addLine();
+				addBlankLine();
 				addBlock(prop.ulPropTag, L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
 			}
 
 			// TODO: get proper blocks here
-			addLine();
+			addBlankLine();
 			addHeader(L"PropString = %1!ws! ", prop.PropString().c_str());
 			addHeader(L"AltPropString = %1!ws!", prop.AltPropString().c_str());
 
@@ -65,7 +65,7 @@ namespace smartview
 			if (!szSmartView.empty())
 			{
 				// TODO: proper blocks here
-				addLine();
+				addBlankLine();
 				addHeader(L"Smart View: %1!ws!", szSmartView.c_str());
 			}
 		}

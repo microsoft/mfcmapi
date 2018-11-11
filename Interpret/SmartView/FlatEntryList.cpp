@@ -45,21 +45,21 @@ namespace smartview
 
 		for (DWORD iFlatEntryList = 0; iFlatEntryList < m_pEntryIDs.size(); iFlatEntryList++)
 		{
-			addLine();
-			addLine();
+			addBlankLine();
+			addBlankLine();
 			addHeader(L"Entry[%1!d!] ", iFlatEntryList);
 			addBlock(
 				m_pEntryIDs[iFlatEntryList].dwSize, L"Size = 0x%1!08X!", m_pEntryIDs[iFlatEntryList].dwSize.getData());
 
 			if (m_pEntryIDs[iFlatEntryList].lpEntryID.hasData())
 			{
-				addLine();
+				addBlankLine();
 				addBlock(m_pEntryIDs[iFlatEntryList].lpEntryID.getBlock());
 			}
 
 			if (m_pEntryIDs[iFlatEntryList].padding.size())
 			{
-				addLine();
+				addBlankLine();
 				addHeader(L"Entry[%1!d!] Padding:\r\n", iFlatEntryList);
 				addBlock(
 					m_pEntryIDs[iFlatEntryList].padding,

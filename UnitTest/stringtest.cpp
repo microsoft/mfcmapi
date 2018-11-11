@@ -363,5 +363,18 @@ namespace stringtest
 			Assert::AreEqual(size_t(27), strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 13));
 			Assert::AreEqual(size_t(28), strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 14));
 		}
+
+		TEST_METHOD(Test_endsWith)
+		{
+			Assert::AreEqual(true, strings::endsWith(L"1234", L"234"));
+			Assert::AreEqual(true, strings::endsWith(L"Test\r\n", L"\r\n"));
+			Assert::AreEqual(false, strings::endsWith(L"Test", L"\r\n"));
+		}
+
+		TEST_METHOD(Test_ensureCRLF)
+		{
+			Assert::AreEqual(std::wstring(L"Test\r\n"), strings::ensureCRLF(L"Test\r\n"));
+			Assert::AreEqual(std::wstring(L"Test\r\n"), strings::ensureCRLF(L"Test"));
+		}
 	};
 } // namespace stringtest

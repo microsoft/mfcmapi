@@ -35,7 +35,7 @@ namespace smartview
 
 		for (DWORD i = 0; i < m_lpTaskAssigners.size(); i++)
 		{
-			addLine();
+			addBlankLine();
 			addHeader(L"Task Assigner[%1!d!]\r\n", i);
 			addBlock(
 				m_lpTaskAssigners[i].cbEntryID,
@@ -48,12 +48,12 @@ namespace smartview
 				addBlock(m_lpTaskAssigners[i].lpEntryID);
 			}
 
-			addLine();
+			addBlankLine();
 			addBlock(
 				m_lpTaskAssigners[i].szDisplayName,
 				L"\tszDisplayName (ANSI) = %1!hs!",
 				m_lpTaskAssigners[i].szDisplayName.c_str());
-			addLine();
+			addBlankLine();
 			addBlock(
 				m_lpTaskAssigners[i].wzDisplayName,
 				L"\tszDisplayName (Unicode) = %1!ws!",
@@ -61,7 +61,7 @@ namespace smartview
 
 			if (!m_lpTaskAssigners[i].JunkData.empty())
 			{
-				addLine();
+				terminateBlock();
 				addBlock(
 					m_lpTaskAssigners[i].JunkData,
 					L"\tUnparsed Data Size = 0x%1!08X!\r\n",

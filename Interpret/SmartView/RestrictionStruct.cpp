@@ -309,7 +309,7 @@ namespace smartview
 					lpRes.resContent.lpProp.Props()[0].PropString().c_str());
 				addHeader(
 					L"%1!ws!\tAlt: %2!ws!", szTabs.c_str(), lpRes.resContent.lpProp.Props()[0].AltPropString().c_str());
-				addLine();
+				addBlankLine();
 			}
 			break;
 		case RES_PROPERTY:
@@ -369,7 +369,7 @@ namespace smartview
 				addBlock(lpRes.resBitMask.ulMask, L": %1!ws!", szPropNum.c_str());
 			}
 
-			addLine();
+			addBlankLine();
 			addBlock(
 				lpRes.resBitMask.ulPropTag,
 				L"%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!\r\n",

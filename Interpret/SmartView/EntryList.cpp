@@ -37,7 +37,7 @@ namespace smartview
 
 		for (DWORD i = 0; i < m_Entry.size(); i++)
 		{
-			addLine();
+			addBlankLine();
 			addHeader(L"EntryId[%1!d!]:\r\n", i);
 			addBlock(m_Entry[i].EntryLength, L"EntryLength = 0x%1!08X!\r\n", m_Entry[i].EntryLength.getData());
 			addBlock(m_Entry[i].EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", m_Entry[i].EntryLengthPad.getData());

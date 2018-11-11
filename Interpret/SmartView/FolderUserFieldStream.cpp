@@ -133,8 +133,8 @@ namespace smartview
 			L"FolderUserFieldAnsi.FieldDefinitionCount = %1!d!",
 			m_FolderUserFieldsAnsiCount.getData());
 
-		addLine();
-		addLine();
+		addBlankLine();
+		addBlankLine();
 
 		// Add child nodes to m_FolderUserFieldsUnicodeCount before adding it to our output
 		if (m_FolderUserFieldsUnicodeCount && !m_FieldDefinitionsW.empty())

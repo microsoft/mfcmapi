@@ -64,8 +64,8 @@ namespace smartview
 
 		for (WORD i = 0; i < m_lpTZRule.size(); i++)
 		{
-			addLine();
-			addLine();
+			addBlankLine();
+			addBlankLine();
 			addBlock(
 				m_lpTZRule[i].bMajorVersion,
 				L"TZRule[0x%1!X!].bMajorVersion = 0x%2!02X! (%2!d!)\r\n",
@@ -95,7 +95,7 @@ namespace smartview
 			addHeader(L"TZRule[0x%1!X!].X = ", i);
 			addBlock(m_lpTZRule[i].X);
 
-			addLine();
+			addBlankLine();
 			addBlock(
 				m_lpTZRule[i].lBias,
 				L"TZRule[0x%1!X!].lBias = 0x%2!08X! (%2!d!)\r\n",
@@ -111,7 +111,7 @@ namespace smartview
 				L"TZRule[0x%1!X!].lDaylightBias = 0x%2!08X! (%2!d!)\r\n",
 				i,
 				m_lpTZRule[i].lDaylightBias.getData());
-			addLine();
+			addBlankLine();
 			addBlock(
 				m_lpTZRule[i].stStandardDate.wYear,
 				L"TZRule[0x%1!X!].stStandardDate.wYear = 0x%2!X! (%2!d!)\r\n",
@@ -152,7 +152,7 @@ namespace smartview
 				L"TZRule[0x%1!X!].stStandardDate.wMilliseconds = 0x%2!X! (%2!d!)\r\n",
 				i,
 				m_lpTZRule[i].stStandardDate.wMilliseconds.getData());
-			addLine();
+			addBlankLine();
 			addBlock(
 				m_lpTZRule[i].stDaylightDate.wYear,
 				L"TZRule[0x%1!X!].stDaylightDate.wYear = 0x%2!X! (%2!d!)\r\n",

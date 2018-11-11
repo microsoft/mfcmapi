@@ -180,7 +180,7 @@ namespace smartview
 
 		for (DWORD iDef = 0; iDef < m_pfdFieldDefinitions.size(); iDef++)
 		{
-			addLine();
+			addBlankLine();
 			addHeader(L"Definition: %1!d!\r\n", iDef);
 
 			auto szFlags = interpretprop::InterpretFlags(flagPDOFlag, m_pfdFieldDefinitions[iDef].dwFlags);
@@ -231,7 +231,7 @@ namespace smartview
 				}
 			}
 
-			addLine();
+			addBlankLine();
 			addBlock(
 				m_pfdFieldDefinitions[iDef].wNmidNameLength,
 				L"\tNmidNameLength = 0x%1!04X!\r\n",
@@ -261,7 +261,7 @@ namespace smartview
 
 				for (DWORD iSkip = 0; iSkip < m_pfdFieldDefinitions[iDef].psbSkipBlocks.size(); iSkip++)
 				{
-					addLine();
+					addBlankLine();
 					addHeader(L"\tSkipBlock: %1!d!\r\n", iSkip);
 					addBlock(
 						m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize,
@@ -281,7 +281,7 @@ namespace smartview
 						}
 						else
 						{
-							addLine();
+							addBlankLine();
 							addHeader(L"\t\tContent = ");
 							addBlock(m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent);
 						}

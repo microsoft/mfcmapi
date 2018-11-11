@@ -25,7 +25,7 @@ namespace smartview
 		{
 			const auto junkData = m_Parser.GetRemainingData();
 
-			addLine();
+			terminateBlock();
 			addHeader(L"Unparsed data size = 0x%1!08X!\r\n", junkData.size());
 			addBlock(junkData);
 		}

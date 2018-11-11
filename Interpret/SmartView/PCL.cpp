@@ -50,7 +50,7 @@ namespace smartview
 			auto i = 0;
 			for (auto& xid : m_lpXID)
 			{
-				addLine();
+				addBlankLine();
 				addHeader(L"XID[%1!d!]:\r\n", i++);
 				addBlock(xid.XidSize, L"XidSize = 0x%1!08X! = %1!d!\r\n", xid.XidSize.getData());
 				addBlock(
