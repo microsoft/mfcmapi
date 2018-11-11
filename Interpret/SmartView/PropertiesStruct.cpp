@@ -35,29 +35,30 @@ namespace smartview
 		{
 			if (i != 0)
 			{
-				addBlankLine();
+				terminateBlock();
 			}
 
-			addHeader(L"Property[%1!d!]\r\n", i++);
-			addBlock(prop.ulPropTag, L"Property = 0x%1!08X!", prop.ulPropTag.getData());
+			auto propBlock = block();
+			propBlock.setText(L"Property[%1!d!]\r\n", i++);
+			propBlock.addBlock(prop.ulPropTag, L"Property = 0x%1!08X!", prop.ulPropTag.getData());
 
 			auto propTagNames = interpretprop::PropTagToPropName(prop.ulPropTag, false);
 			if (!propTagNames.bestGuess.empty())
 			{
-				terminateBlock();
-				addBlock(prop.ulPropTag, L"Name: %1!ws!", propTagNames.bestGuess.c_str());
+				propBlock.terminateBlock();
+				propBlock.addBlock(prop.ulPropTag, L"Name: %1!ws!", propTagNames.bestGuess.c_str());
 			}
 
 			if (!propTagNames.otherMatches.empty())
 			{
-				terminateBlock();
-				addBlock(prop.ulPropTag, L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
+				propBlock.terminateBlock();
+				propBlock.addBlock(prop.ulPropTag, L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
 			}
 
 			// TODO: get proper blocks here
-			terminateBlock();
-			addHeader(L"PropString = %1!ws! ", prop.PropString().c_str());
-			addHeader(L"AltPropString = %1!ws!", prop.AltPropString().c_str());
+			propBlock.terminateBlock();
+			propBlock.addHeader(L"PropString = %1!ws! ", prop.PropString().c_str());
+			propBlock.addHeader(L"AltPropString = %1!ws!", prop.AltPropString().c_str());
 
 			auto sProp = prop.getData();
 			auto szSmartView = InterpretPropSmartView(&sProp, nullptr, nullptr, nullptr, false, false);
@@ -65,9 +66,11 @@ namespace smartview
 			if (!szSmartView.empty())
 			{
 				// TODO: proper blocks here
-				terminateBlock();
-				addHeader(L"Smart View: %1!ws!", szSmartView.c_str());
+				propBlock.terminateBlock();
+				propBlock.addHeader(L"Smart View: %1!ws!", szSmartView.c_str());
 			}
+
+			addBlock(propBlock);
 		}
 	}
 
