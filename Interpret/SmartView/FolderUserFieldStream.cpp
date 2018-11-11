@@ -78,7 +78,8 @@ namespace smartview
 			auto i = 0;
 			for (auto& fieldDefinition : m_FieldDefinitionsA)
 			{
-				m_FolderUserFieldsAnsiCount.addHeader(L"\r\n\r\n");
+				m_FolderUserFieldsAnsiCount.terminateBlock();
+				m_FolderUserFieldsAnsiCount.addBlankLine();
 				m_FolderUserFieldsAnsiCount.addHeader(L"Field %1!d!\r\n", i++);
 
 				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
@@ -128,12 +129,12 @@ namespace smartview
 			}
 		}
 
+		m_FolderUserFieldsAnsiCount.terminateBlock();
 		addBlock(
 			m_FolderUserFieldsAnsiCount,
-			L"FolderUserFieldAnsi.FieldDefinitionCount = %1!d!",
+			L"FolderUserFieldAnsi.FieldDefinitionCount = %1!d!\r\n",
 			m_FolderUserFieldsAnsiCount.getData());
 
-		addBlankLine();
 		addBlankLine();
 
 		// Add child nodes to m_FolderUserFieldsUnicodeCount before adding it to our output
@@ -142,7 +143,8 @@ namespace smartview
 			auto i = 0;
 			for (auto& fieldDefinition : m_FieldDefinitionsW)
 			{
-				m_FolderUserFieldsUnicodeCount.addHeader(L"\r\n\r\n");
+				m_FolderUserFieldsUnicodeCount.terminateBlock();
+				m_FolderUserFieldsUnicodeCount.addBlankLine();
 				m_FolderUserFieldsUnicodeCount.addHeader(L"Field %1!d!\r\n", i++);
 
 				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
@@ -192,9 +194,10 @@ namespace smartview
 			}
 		}
 
+		m_FolderUserFieldsUnicodeCount.terminateBlock();
 		addBlock(
 			m_FolderUserFieldsUnicodeCount,
-			L"FolderUserFieldUnicode.FieldDefinitionCount = %1!d!",
+			L"FolderUserFieldUnicode.FieldDefinitionCount = %1!d!\r\n",
 			m_FolderUserFieldsUnicodeCount.getData());
 	}
 } // namespace smartview

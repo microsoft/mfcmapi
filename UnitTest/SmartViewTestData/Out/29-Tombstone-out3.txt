@@ -10,7 +10,6 @@ StartTime = 0x00380CD9 = 09:45:00.000 PM 12/26/1607
 Endtime = 0x00040000 = 01:04:00.000 AM 7/2/1601
 GlobalObjectIdSize = 0x00820000
 GlobalObjectId = cb: 0 lpb: NULL
-
 UsernameSize= 0x00E0
 szUsername = t...........$..|!|..............~.c.I.7O..8.2..,..Aaaaaa AaaaahH...H..8...........t...............#................$x8.>M..Y.U.$...Aaaaaa Aaaaa]]...]..Y...........t...........................1...vCal-Uid....49881CC6-F479-4A
 Unparsed data size = 0x000008C0

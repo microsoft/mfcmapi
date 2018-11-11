@@ -45,7 +45,7 @@ namespace smartview
 
 		for (DWORD iFlatEntryList = 0; iFlatEntryList < m_pEntryIDs.size(); iFlatEntryList++)
 		{
-			addBlankLine();
+			terminateBlock();
 			addBlankLine();
 			addHeader(L"Entry[%1!d!] ", iFlatEntryList);
 			addBlock(
@@ -53,13 +53,13 @@ namespace smartview
 
 			if (m_pEntryIDs[iFlatEntryList].lpEntryID.hasData())
 			{
-				addBlankLine();
+				terminateBlock();
 				addBlock(m_pEntryIDs[iFlatEntryList].lpEntryID.getBlock());
 			}
 
 			if (m_pEntryIDs[iFlatEntryList].padding.size())
 			{
-				addBlankLine();
+				terminateBlock();
 				addHeader(L"Entry[%1!d!] Padding:\r\n", iFlatEntryList);
 				addBlock(
 					m_pEntryIDs[iFlatEntryList].padding,

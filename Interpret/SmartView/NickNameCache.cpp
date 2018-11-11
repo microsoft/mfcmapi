@@ -44,7 +44,7 @@ namespace smartview
 		addHeader(L"Metadata1 = ");
 		addBlock(m_Metadata1);
 
-		addBlankLine();
+		terminateBlock();
 		addBlock(m_ulMajorVersion, L"Major Version = %1!d!\r\n", m_ulMajorVersion.getData());
 		addBlock(m_ulMinorVersion, L"Minor Version = %1!d!\r\n", m_ulMinorVersion.getData());
 		addBlock(m_cRowCount, L"Row Count = %1!d!", m_cRowCount.getData());
@@ -62,12 +62,12 @@ namespace smartview
 			}
 		}
 
-		addBlankLine();
+		terminateBlock();
 		addBlankLine();
 		addHeader(L"Extra Info = ");
 		addBlock(m_lpbEI);
 
-		addBlankLine();
+		terminateBlock();
 		addHeader(L"Metadata 2 = ");
 		addBlock(m_Metadata2);
 	}

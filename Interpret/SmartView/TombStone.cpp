@@ -58,13 +58,7 @@ namespace smartview
 
 		for (ULONG i = 0; i < m_lpRecords.size(); i++)
 		{
-			auto szGoid = InterpretBinaryAsString(
-				SBinary{static_cast<ULONG>(m_lpRecords[i].lpGlobalObjectId.size()),
-						const_cast<BYTE*>(m_lpRecords[i].lpGlobalObjectId.data())},
-				IDS_STGLOBALOBJECTID,
-				nullptr);
-
-			addBlankLine();
+			terminateBlock();
 			addHeader(L"Record[%1!d!]\r\n", i);
 			addBlock(
 				m_lpRecords[i].StartTime,
@@ -84,7 +78,17 @@ namespace smartview
 				m_lpRecords[i].lpGlobalObjectId,
 				L"GlobalObjectId = %1!ws!\r\n",
 				strings::BinToHexString(m_lpRecords[i].lpGlobalObjectId, true).c_str());
-			addBlock(m_lpRecords[i].lpGlobalObjectId, L"%1!ws!\r\n", szGoid.c_str());
+
+			auto szGoid = InterpretBinaryAsString(
+				SBinary{static_cast<ULONG>(m_lpRecords[i].lpGlobalObjectId.size()),
+						const_cast<BYTE*>(m_lpRecords[i].lpGlobalObjectId.data())},
+				IDS_STGLOBALOBJECTID,
+				nullptr);
+			if (!szGoid.empty())
+			{
+				addBlock(m_lpRecords[i].lpGlobalObjectId, L"%1!ws!\r\n", szGoid.c_str());
+			}
+
 			addBlock(
 				m_lpRecords[i].UsernameSize, L"UsernameSize= 0x%1!04X!\r\n", m_lpRecords[i].UsernameSize.getData());
 			addBlock(m_lpRecords[i].szUsername, L"szUsername = %1!hs!", m_lpRecords[i].szUsername.c_str());
