@@ -52,15 +52,15 @@ namespace smartview
 	{
 		setRoot(m_bExtended ? L"Extended Rule Condition" : L"Rule Condition");
 
-		addLine();
+		addBlankLine();
 		addBlock(
 			m_NamedPropertyInformation.NoOfNamedProps,
 			L"Number of named props = 0x%1!04X!",
 			m_NamedPropertyInformation.NoOfNamedProps.getData());
-		addLine();
+		addBlankLine();
 		if (!m_NamedPropertyInformation.PropId.empty())
 		{
-			addLine();
+			addBlankLine();
 			addBlock(
 				m_NamedPropertyInformation.NamedPropertiesSize,
 				L"Named prop size = 0x%1!08X!",
@@ -68,7 +68,7 @@ namespace smartview
 
 			for (size_t i = 0; i < m_NamedPropertyInformation.PropId.size(); i++)
 			{
-				addLine();
+				addBlankLine();
 				addHeader(L"Named Prop 0x%1!04X!\r\n", i);
 				addBlock(
 					m_NamedPropertyInformation.PropId[i],
@@ -84,7 +84,7 @@ namespace smartview
 					L"\tGuid = %1!ws!",
 					guid::GUIDToString(m_NamedPropertyInformation.PropertyName[i].Guid).c_str());
 
-				addLine();
+				addBlankLine();
 				if (m_NamedPropertyInformation.PropertyName[i].Kind == MNID_ID)
 				{
 					addBlock(
@@ -98,7 +98,7 @@ namespace smartview
 						m_NamedPropertyInformation.PropertyName[i].NameSize,
 						L"\tNameSize = 0x%1!02X!",
 						m_NamedPropertyInformation.PropertyName[i].NameSize.getData());
-					addLine();
+					addBlankLine();
 					addHeader(L"\tName = ");
 					addBlock(
 						m_NamedPropertyInformation.PropertyName[i].Name,

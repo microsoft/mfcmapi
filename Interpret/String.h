@@ -79,4 +79,7 @@ namespace strings
 
 	bool IsFilteredHex(const WCHAR& chr);
 	size_t OffsetToFilteredOffset(const std::wstring& szString, size_t offset);
+
+	bool endsWith(const std::wstring& str, const std::wstring& ending);
+	std::wstring ensureCRLF(const std::wstring& str);
 } // namespace strings

@@ -49,8 +49,8 @@ namespace smartview
 		addHeader(L"cWebViews = %1!d!", m_cWebViews);
 		for (ULONG i = 0; i < m_lpWebViews.size(); i++)
 		{
-			addLine();
-			addLine();
+			addBlankLine();
+			addBlankLine();
 
 			addHeader(L"Web View %1!d!\r\n", i);
 			addBlock(
@@ -72,10 +72,10 @@ namespace smartview
 
 			addBlock(m_lpWebViews[i].dwUnused);
 
-			addLine();
+			addBlankLine();
 			addBlock(m_lpWebViews[i].cbData, L"cbData = 0x%1!08X!", m_lpWebViews[i].cbData.getData());
 
-			addLine();
+			addBlankLine();
 			switch (m_lpWebViews[i].dwType)
 			{
 			case WEBVIEWURL:

@@ -64,7 +64,7 @@ namespace smartview
 				IDS_STGLOBALOBJECTID,
 				nullptr);
 
-			addLine();
+			addBlankLine();
 			addHeader(L"Record[%1!d!]\r\n", i);
 			addBlock(
 				m_lpRecords[i].StartTime,

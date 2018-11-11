@@ -162,7 +162,7 @@ namespace smartview
 	{
 		setRoot(m_RecurrencePattern.getBlock());
 
-		addLine();
+		addBlankLine();
 		addHeader(L"Appointment Recurrence Pattern: \r\n");
 		addBlock(m_ReaderVersion2, L"ReaderVersion2: 0x%1!08X!\r\n", m_ReaderVersion2.getData());
 		addBlock(m_WriterVersion2, L"WriterVersion2: 0x%1!08X!\r\n", m_WriterVersion2.getData());

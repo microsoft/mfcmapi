@@ -45,7 +45,7 @@ namespace smartview
 		addHeader(L"Security Info: ");
 		addBlock(m_SDbin, sd.info);
 
-		addLine();
+		addBlankLine();
 		auto sdVersion = SECURITY_DESCRIPTOR_VERSION(m_SDbin.data());
 		auto szFlags = interpretprop::InterpretFlags(flagSecurityVersion, sdVersion);
 		addBlock(m_SDbin, L"Security Version: 0x%1!04X! = %2!ws!\r\n", sdVersion, szFlags.c_str());

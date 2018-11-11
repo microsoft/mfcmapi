@@ -15,7 +15,8 @@ namespace smartview
 		{
 			std::vector<std::wstring> items;
 			items.reserve(children.size() + 1);
-			items.push_back(text);
+			items.push_back(blank ? L"\r\n" : text);
+
 			for (const auto& item : children)
 			{
 				items.push_back(item.ToString());
@@ -74,7 +75,25 @@ namespace smartview
 			children = _data.children;
 		}
 
-		void addLine() { addHeader(L"\r\n"); }
+		void terminateBlock()
+		{
+			if (children.size() > 1)
+			{
+				children.back().terminateBlock();
+			}
+			else
+			{
+				text = strings::ensureCRLF(text);
+			}
+		}
+
+		void addBlankLine()
+		{
+			auto child = block();
+			child.blank = true;
+			children.emplace_back(child);
+		}
+
 		bool hasData() const { return !text.empty() || !children.empty(); }
 
 	protected:
@@ -86,5 +105,6 @@ namespace smartview
 		virtual std::wstring ToStringInternal() const { return text; }
 		std::wstring text;
 		std::vector<block> children;
+		bool blank{false};
 	};
 } // namespace smartview

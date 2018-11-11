@@ -142,7 +142,7 @@ namespace smartview
 
 				if (!m_ppdPersistData[iPersistElement].JunkData.empty())
 				{
-					addLine();
+					terminateBlock();
 					addHeader(L"Unparsed data size = 0x%1!08X!\r\n", m_ppdPersistData[iPersistElement].JunkData.size());
 					addBlock(m_ppdPersistData[iPersistElement].JunkData);
 				}

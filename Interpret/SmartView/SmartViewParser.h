@@ -39,10 +39,7 @@ namespace smartview
 			data.setText(text, args...);
 		}
 
-		void setRoot(const block& _data)
-		{
-			data.setBlock(_data);
-		}
+		void setRoot(const block& _data) { data.setBlock(_data); }
 
 		template <typename... Args> void setRoot(const block& _data, const std::wstring& text, const Args... args)
 		{
@@ -60,7 +57,8 @@ namespace smartview
 			data.addBlock(_block, text, args...);
 		}
 		void addBlock(const block& child) { data.addBlock(child); }
-		void addLine() { data.addLine(); }
+		void terminateBlock() { data.terminateBlock(); }
+		void addBlankLine() { data.addBlankLine(); }
 
 	private:
 		virtual void Parse() = 0;

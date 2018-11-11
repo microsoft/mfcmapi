@@ -34,7 +34,7 @@ namespace smartview
 		addBlock(m_lBias, L"lBias = 0x%1!08X! (%1!d!)\r\n", m_lBias.getData());
 		addBlock(m_lStandardBias, L"lStandardBias = 0x%1!08X! (%1!d!)\r\n", m_lStandardBias.getData());
 		addBlock(m_lDaylightBias, L"lDaylightBias = 0x%1!08X! (%1!d!)\r\n", m_lDaylightBias.getData());
-		addLine();
+		addBlankLine();
 		addBlock(m_wStandardYear, L"wStandardYear = 0x%1!04X! (%1!d!)\r\n", m_wStandardYear.getData());
 		addBlock(
 			m_stStandardDate.wYear, L"stStandardDate.wYear = 0x%1!X! (%1!d!)\r\n", m_stStandardDate.wYear.getData());
@@ -59,7 +59,7 @@ namespace smartview
 			m_stStandardDate.wMilliseconds,
 			L"stStandardDate.wMilliseconds = 0x%1!X! (%1!d!)\r\n",
 			m_stStandardDate.wMilliseconds.getData());
-		addLine();
+		addBlankLine();
 		addBlock(m_wDaylightDate, L"wDaylightDate = 0x%1!04X! (%1!d!)\r\n", m_wDaylightDate.getData());
 		addBlock(
 			m_stDaylightDate.wYear, L"stDaylightDate.wYear = 0x%1!X! (%1!d!)\r\n", m_stDaylightDate.wYear.getData());
