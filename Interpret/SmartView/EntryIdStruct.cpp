@@ -11,12 +11,14 @@ namespace smartview
 	void EntryIdStruct::Parse()
 	{
 		m_ObjectType = eidtUnknown;
-		m_abFlags = m_Parser.GetBYTES(4);
-		if (!m_abFlags.getSize()) return;
+		if (m_Parser.RemainingBytes() < 4) return;
+		m_abFlags0 = m_Parser.Get<byte>();
+		m_abFlags1 = m_Parser.Get<byte>();
+		m_abFlags23 = m_Parser.GetBYTES(2);
 		m_ProviderUID = m_Parser.Get<GUID>();
 
 		// Ephemeral entry ID:
-		if (m_abFlags[0] == EPHEMERAL)
+		if (m_abFlags0 == EPHEMERAL)
 		{
 			m_ObjectType = eidtEphemeral;
 		}
@@ -254,7 +256,7 @@ namespace smartview
 		}
 
 		// Check if we have an unidentified short term entry ID:
-		if (eidtUnknown == m_ObjectType && m_abFlags[0] & MAPI_SHORTTERM) m_ObjectType = eidtShortTerm;
+		if (eidtUnknown == m_ObjectType && m_abFlags0 & MAPI_SHORTTERM) m_ObjectType = eidtShortTerm;
 	}
 
 	void EntryIdStruct::ParseBlocks()
@@ -293,33 +295,39 @@ namespace smartview
 			break;
 		}
 
-		if (!m_abFlags.getSize()) return;
-		if (0 == (m_abFlags[0] | m_abFlags[1] | m_abFlags[2] | m_abFlags[3]))
+		if (m_abFlags23.empty()) return;
+		if (0 == (m_abFlags0 | m_abFlags1 | m_abFlags23[0] | m_abFlags23[1]))
 		{
-			addHeader(L"abFlags = 0x00000000\r\n");
+			auto tempBlock = block();
+			tempBlock.setOffset(m_abFlags0.getOffset());
+			tempBlock.setSize(4);
+			addBlock(tempBlock, L"abFlags = 0x00000000\r\n");
 		}
-		else if (0 == (m_abFlags[1] | m_abFlags[2] | m_abFlags[3]))
+		else if (0 == (m_abFlags1 | m_abFlags23[0] | m_abFlags23[1]))
 		{
 			addBlock(
-				m_abFlags,
+				m_abFlags0,
 				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n",
-				m_abFlags[0],
-				interpretprop::InterpretFlags(flagEntryId0, m_abFlags[0]).c_str());
-			addHeader(L"abFlags[1..3] = 0x000000\r\n");
+				m_abFlags0.getData(),
+				interpretprop::InterpretFlags(flagEntryId0, m_abFlags0).c_str());
+			auto tempBlock = block();
+			tempBlock.setOffset(m_abFlags1.getOffset());
+			tempBlock.setSize(3);
+			addBlock(tempBlock, L"abFlags[1..3] = 0x000000\r\n");
 		}
 		else
 		{
 			addBlock(
-				m_abFlags,
-				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n"
-				L"abFlags[1] = 0x%3!02X!= %4!ws!\r\n"
-				L"abFlags[2..3] = 0x%5!02X!%6!02X!\r\n",
-				m_abFlags[0],
-				interpretprop::InterpretFlags(flagEntryId0, m_abFlags[0]).c_str(),
-				m_abFlags[1],
-				interpretprop::InterpretFlags(flagEntryId1, m_abFlags[1]).c_str(),
-				m_abFlags[2],
-				m_abFlags[3]);
+				m_abFlags0,
+				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n",
+				m_abFlags0.getData(),
+				interpretprop::InterpretFlags(flagEntryId0, m_abFlags0).c_str());
+			addBlock(
+				m_abFlags1,
+				L"abFlags[1] = 0x%1!02X!= %2!ws!\r\n",
+				m_abFlags1.getData(),
+				interpretprop::InterpretFlags(flagEntryId1, m_abFlags1).c_str());
+			addBlock(m_abFlags23, L"abFlags[2..3] = 0x%1!02X!%2!02X!\r\n", m_abFlags23[0], m_abFlags23[1]);
 		}
 
 		addBlock(m_ProviderUID, L"Provider GUID = %1!ws!", guid::GUIDToStringAndName(m_ProviderUID).c_str());

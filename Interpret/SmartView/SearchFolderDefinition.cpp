@@ -129,7 +129,7 @@ namespace smartview
 
 		if (m_TextSearchLength)
 		{
-			addBlankLine();
+			terminateBlock();
 			addBlock(
 				m_TextSearchLengthExtended,
 				L"Text Search Length Extended = 0x%1!04X!\r\n",
@@ -141,24 +141,24 @@ namespace smartview
 			}
 		}
 
-		addBlankLine();
+		terminateBlock();
 		addBlock(m_SkipLen1, L"SkipLen1 = 0x%1!08X!", m_SkipLen1.getData());
 
 		if (m_SkipLen1)
 		{
-			addBlankLine();
+			terminateBlock();
 			addHeader(L"SkipBytes1 = ");
 
 			addBlock(m_SkipBytes1);
 		}
 
-		addBlankLine();
+		terminateBlock();
 		addBlock(m_DeepSearch, L"Deep Search = 0x%1!08X!\r\n", m_DeepSearch.getData());
 		addBlock(m_FolderList1Length, L"Folder List 1 Length = 0x%1!02X!", m_FolderList1Length.getData());
 
 		if (m_FolderList1Length)
 		{
-			addBlankLine();
+			terminateBlock();
 			addBlock(
 				m_FolderList1LengthExtended,
 				L"Folder List 1 Length Extended = 0x%1!04X!\r\n",
@@ -171,73 +171,72 @@ namespace smartview
 			}
 		}
 
-		addBlankLine();
+		terminateBlock();
 		addBlock(m_FolderList2Length, L"Folder List 2 Length = 0x%1!08X!", m_FolderList2Length.getData());
 
 		if (m_FolderList2Length)
 		{
-			addBlankLine();
+			terminateBlock();
 			addHeader(L"FolderList2 = \r\n");
 			addBlock(m_FolderList2.getBlock());
 		}
 
 		if (SFST_BINARY & m_Flags)
 		{
-			addBlankLine();
+			terminateBlock();
 			addBlock(m_AddressCount, L"AddressCount = 0x%1!08X!", m_AddressCount.getData());
 
 			for (DWORD i = 0; i < m_Addresses.size(); i++)
 			{
-				addBlankLine();
+				terminateBlock();
 				addBlock(
 					m_Addresses[i].PropertyCount,
 					L"Addresses[%1!d!].PropertyCount = 0x%2!08X!\r\n",
 					i,
 					m_Addresses[i].PropertyCount.getData());
-				addBlock(m_Addresses[i].Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!", i, m_Addresses[i].Pad.getData());
+				addBlock(m_Addresses[i].Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!\r\n", i, m_Addresses[i].Pad.getData());
 
-				addBlankLine();
 				addHeader(L"Properties[%1!d!]:\r\n", i);
 				addBlock(m_Addresses[i].Props.getBlock());
 			}
 		}
 
-		addBlankLine();
+		terminateBlock();
 		addBlock(m_SkipLen2, L"SkipLen2 = 0x%1!08X!", m_SkipLen2.getData());
 
 		if (m_SkipLen2)
 		{
-			addBlankLine();
+			terminateBlock();
 			addHeader(L"SkipBytes2 = ");
 			addBlock(m_SkipBytes2);
 		}
 
 		if (!m_Restriction.empty())
 		{
-			addBlankLine();
+			terminateBlock();
 			// TODO: Use a proper block here
 			addBlock(m_Restriction, m_Restriction.c_str());
 		}
 
 		if (SFST_FILTERSTREAM & m_Flags)
 		{
-			addBlankLine();
+			terminateBlock();
 			addBlock(m_AdvancedSearchBytes, L"AdvancedSearchLen = 0x%1!08X!", m_AdvancedSearchBytes.size());
 
 			if (!m_AdvancedSearchBytes.empty())
 			{
-				addBlankLine();
+				terminateBlock();
 				addHeader(L"AdvancedSearchBytes = ");
 				addBlock(m_AdvancedSearchBytes);
 			}
 		}
 
-		addBlankLine();
+		terminateBlock();
 		addBlock(m_SkipLen3, L"SkipLen3 = 0x%1!08X!", m_SkipLen3.getData());
 
 		if (m_SkipLen3)
 		{
-			addBlankLine();
+			terminateBlock();
 			addHeader(L"SkipBytes3 = ");
 			addBlock(m_SkipBytes3);
 		}

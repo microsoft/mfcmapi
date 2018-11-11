@@ -35,7 +35,7 @@ namespace smartview
 
 		for (DWORD i = 0; i < m_lpTaskAssigners.size(); i++)
 		{
-			addBlankLine();
+			terminateBlock();
 			addHeader(L"Task Assigner[%1!d!]\r\n", i);
 			addBlock(
 				m_lpTaskAssigners[i].cbEntryID,
@@ -48,12 +48,11 @@ namespace smartview
 				addBlock(m_lpTaskAssigners[i].lpEntryID);
 			}
 
-			addBlankLine();
+			terminateBlock();
 			addBlock(
 				m_lpTaskAssigners[i].szDisplayName,
-				L"\tszDisplayName (ANSI) = %1!hs!",
+				L"\tszDisplayName (ANSI) = %1!hs!\r\n",
 				m_lpTaskAssigners[i].szDisplayName.c_str());
-			addBlankLine();
 			addBlock(
 				m_lpTaskAssigners[i].wzDisplayName,
 				L"\tszDisplayName (Unicode) = %1!ws!",

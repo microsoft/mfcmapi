@@ -62,7 +62,7 @@ namespace smartview
 
 		for (ULONG i = 0; i < m_lpVerbData.size(); i++)
 		{
-			addBlankLine();
+			terminateBlock();
 			addBlankLine();
 			addHeader(L"VerbData[%1!d!]\r\n", i);
 			addBlock(m_lpVerbData[i].VerbType, L"VerbType = 0x%1!08X!\r\n", m_lpVerbData[i].VerbType.getData());
@@ -110,13 +110,13 @@ namespace smartview
 			addBlock(m_lpVerbData[i].Internal6, L"Internal6 = 0x%1!08X!", m_lpVerbData[i].Internal6.getData());
 		}
 
-		addBlankLine();
+		terminateBlock();
 		addBlankLine();
 		addBlock(m_Version2, L"Version2 = 0x%1!04X!", m_Version2.getData());
 
 		for (ULONG i = 0; i < m_lpVerbExtraData.size(); i++)
 		{
-			addBlankLine();
+			terminateBlock();
 			addBlankLine();
 			addHeader(L"VerbExtraData[%1!d!]\r\n", i);
 			addBlock(

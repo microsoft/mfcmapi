@@ -64,7 +64,7 @@ namespace smartview
 
 		for (WORD i = 0; i < m_lpTZRule.size(); i++)
 		{
-			addBlankLine();
+			terminateBlock();
 			addBlankLine();
 			addBlock(
 				m_lpTZRule[i].bMajorVersion,
@@ -95,7 +95,7 @@ namespace smartview
 			addHeader(L"TZRule[0x%1!X!].X = ", i);
 			addBlock(m_lpTZRule[i].X);
 
-			addBlankLine();
+			terminateBlock();
 			addBlock(
 				m_lpTZRule[i].lBias,
 				L"TZRule[0x%1!X!].lBias = 0x%2!08X! (%2!d!)\r\n",

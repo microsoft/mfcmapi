@@ -137,7 +137,9 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockBytes m_abFlags; // 4 bytes
+		blockT<byte> m_abFlags0;
+		blockT<byte> m_abFlags1;
+		blockBytes m_abFlags23; // 2 bytes
 		blockT<GUID> m_ProviderUID;
 		EIDStructType m_ObjectType; // My own addition to simplify parsing
 		FolderOrMessage m_FolderOrMessage;
