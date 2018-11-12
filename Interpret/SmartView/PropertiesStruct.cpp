@@ -136,7 +136,7 @@ namespace smartview
 			if (m_RuleCondition)
 			{
 				prop.Value.lpszA.str = m_Parser.GetStringA();
-				prop.Value.lpszA.cb.setData(prop.Value.lpszA.str.length());
+				prop.Value.lpszA.cb.setData(static_cast<DWORD>(prop.Value.lpszA.str.length()));
 			}
 			else
 			{
@@ -176,7 +176,7 @@ namespace smartview
 			if (m_RuleCondition)
 			{
 				prop.Value.lpszW.str = m_Parser.GetStringW();
-				prop.Value.lpszW.cb.setData(prop.Value.lpszW.str.length());
+				prop.Value.lpszW.cb.setData(static_cast<DWORD>(prop.Value.lpszW.str.length()));
 			}
 			else
 			{
