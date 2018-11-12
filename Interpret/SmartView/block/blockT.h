@@ -7,6 +7,7 @@ namespace smartview
 	{
 	public:
 		blockT() { memset(&data, 0, sizeof(data)); }
+		blockT(const block& base) : block(base) { memset(&data, 0, sizeof(data)); }
 		void setData(const T& _data) { data = _data; }
 		T getData() const { return data; }
 		operator T&() { return data; }
@@ -18,10 +19,12 @@ namespace smartview
 			offset = _data.getOffset();
 			return *this;
 		}
-		T& operator=(const T& _data)
+
+		template <class U> operator blockT<U>() const
 		{
-			data = _data;
-			return *this;
+			auto _data = blockT<U>(block(*this));
+			_data.setData(data);
+			return _data;
 		}
 
 	private:

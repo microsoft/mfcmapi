@@ -82,7 +82,7 @@ namespace smartview
 		prop.PropType = m_Parser.Get<WORD>();
 		prop.PropID = m_Parser.Get<WORD>();
 
-		prop.ulPropTag = PROP_TAG(prop.PropType, prop.PropID);
+		prop.ulPropTag.setData(PROP_TAG(prop.PropType, prop.PropID));
 		prop.ulPropTag.setSize(prop.PropType.getSize() + prop.PropID.getSize());
 		prop.ulPropTag.setOffset(prop.PropType.getOffset());
 		prop.dwAlignPad = 0;
@@ -136,7 +136,7 @@ namespace smartview
 			if (m_RuleCondition)
 			{
 				prop.Value.lpszA.str = m_Parser.GetStringA();
-				prop.Value.lpszA.cb = static_cast<ULONG>(prop.Value.lpszA.str.length());
+				prop.Value.lpszA.cb.setData(prop.Value.lpszA.str.length());
 			}
 			else
 			{
@@ -176,7 +176,7 @@ namespace smartview
 			if (m_RuleCondition)
 			{
 				prop.Value.lpszW.str = m_Parser.GetStringW();
-				prop.Value.lpszW.cb = static_cast<ULONG>(prop.Value.lpszW.str.length());
+				prop.Value.lpszW.cb.setData(prop.Value.lpszW.str.length());
 			}
 			else
 			{
