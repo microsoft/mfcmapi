@@ -302,13 +302,16 @@ namespace smartview
 					szTabs.c_str(),
 					interpretprop::TagToString(lpRes.resContent.lpProp.Props()[0].ulPropTag, nullptr, false, true)
 						.c_str());
-				// TODO: use blocks
-				addHeader(
+				addBlock(
+					lpRes.resContent.lpProp.Props()[0].PropBlock(),
 					L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
 					szTabs.c_str(),
-					lpRes.resContent.lpProp.Props()[0].PropString().c_str());
-				addHeader(
-					L"%1!ws!\tAlt: %2!ws!", szTabs.c_str(), lpRes.resContent.lpProp.Props()[0].AltPropString().c_str());
+					lpRes.resContent.lpProp.Props()[0].PropBlock().c_str());
+				addBlock(
+					lpRes.resContent.lpProp.Props()[0].AltPropBlock(),
+					L"%1!ws!\tAlt: %2!ws!",
+					szTabs.c_str(),
+					lpRes.resContent.lpProp.Props()[0].AltPropBlock().c_str());
 				addBlankLine();
 			}
 			break;
@@ -333,15 +336,16 @@ namespace smartview
 					szTabs.c_str(),
 					interpretprop::TagToString(lpRes.resProperty.lpProp.Props()[0].ulPropTag, nullptr, false, true)
 						.c_str());
-				// TODO: use blocks
-				addHeader(
+				addBlock(
+					lpRes.resProperty.lpProp.Props()[0].PropBlock(),
 					L"%1!ws!lpRes->res.resProperty.lpProp->Value = %2!ws!\r\n",
 					szTabs.c_str(),
-					lpRes.resProperty.lpProp.Props()[0].PropString().c_str());
-				addHeader(
+					lpRes.resProperty.lpProp.Props()[0].PropBlock().c_str());
+				addBlock(
+					lpRes.resProperty.lpProp.Props()[0].AltPropBlock(),
 					L"%1!ws!\tAlt: %2!ws!\r\n",
 					szTabs.c_str(),
-					lpRes.resProperty.lpProp.Props()[0].AltPropString().c_str());
+					lpRes.resProperty.lpProp.Props()[0].AltPropBlock().c_str());
 				szPropNum = lpRes.resProperty.lpProp.Props()[0].PropNum();
 				if (!szPropNum.empty())
 				{
@@ -439,13 +443,13 @@ namespace smartview
 					szTabs.c_str(),
 					i,
 					interpretprop::TagToString(prop.ulPropTag, nullptr, false, true).c_str());
-				// TODO: use blocks
-				addHeader(
+				addBlock(
+					prop.PropBlock(),
 					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
-					prop.PropString().c_str());
-				addHeader(L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop.AltPropString().c_str());
+					prop.PropBlock().c_str());
+				addBlock(prop.AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop.AltPropBlock().c_str());
 				i++;
 			}
 
@@ -469,13 +473,13 @@ namespace smartview
 					szTabs.c_str(),
 					i,
 					interpretprop::TagToString(prop.ulPropTag, nullptr, false, true).c_str());
-				// TODO: Use blocks
-				addHeader(
+				addBlock(
+					prop.PropBlock(),
 					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
-					prop.PropString().c_str());
-				addHeader(L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop.AltPropString().c_str());
+					prop.PropBlock().c_str());
+				addBlock(prop.AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop.AltPropBlock().c_str());
 				i++;
 			}
 

@@ -55,19 +55,15 @@ namespace smartview
 				propBlock.addBlock(prop.ulPropTag, L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
 			}
 
-			// TODO: get proper blocks here
 			propBlock.terminateBlock();
-			propBlock.addHeader(L"PropString = %1!ws! ", prop.PropString().c_str());
-			propBlock.addHeader(L"AltPropString = %1!ws!", prop.AltPropString().c_str());
+			propBlock.addBlock(prop.PropBlock(), L"PropString = %1!ws! ", prop.PropBlock().c_str());
+			propBlock.addBlock(prop.AltPropBlock(), L"AltPropString = %1!ws!", prop.AltPropBlock().c_str());
 
-			auto sProp = prop.getData();
-			auto szSmartView = InterpretPropSmartView(&sProp, nullptr, nullptr, nullptr, false, false);
-
+			auto szSmartView = prop.SmartViewBlock();
 			if (!szSmartView.empty())
 			{
-				// TODO: proper blocks here
 				propBlock.terminateBlock();
-				propBlock.addHeader(L"Smart View: %1!ws!", szSmartView.c_str());
+				propBlock.addBlock(szSmartView, L"Smart View: %1!ws!", szSmartView.c_str());
 			}
 
 			addBlock(propBlock);
