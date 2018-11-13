@@ -497,12 +497,10 @@ namespace dialog
 
 		void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ const _SRestriction* lpRes) const
 		{
-			if (!lpRes) return;
-
 			ClearList(ulListNum);
-
 			InsertColumn(ulListNum, 0, IDS_SHARP);
-			controls::sortlistdata::SortListData* lpData = nullptr;
+
+			if (!lpRes) return;
 			switch (lpRes->rt)
 			{
 			case RES_AND:
@@ -510,7 +508,7 @@ namespace dialog
 
 				for (ULONG paneID = 0; paneID < lpRes->res.resAnd.cRes; paneID++)
 				{
-					lpData = InsertListRow(ulListNum, paneID, std::to_wstring(paneID));
+					auto lpData = InsertListRow(ulListNum, paneID, std::to_wstring(paneID));
 					if (lpData)
 					{
 						lpData->InitializeRes(&lpRes->res.resAnd.lpRes[paneID]);
@@ -527,7 +525,7 @@ namespace dialog
 
 				for (ULONG paneID = 0; paneID < lpRes->res.resOr.cRes; paneID++)
 				{
-					lpData = InsertListRow(ulListNum, paneID, std::to_wstring(paneID));
+					auto lpData = InsertListRow(ulListNum, paneID, std::to_wstring(paneID));
 					if (lpData)
 					{
 						lpData->InitializeRes(&lpRes->res.resOr.lpRes[paneID]);
@@ -546,7 +544,13 @@ namespace dialog
 		_Check_return_ bool
 		CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
-			if (!lpData || !lpData->Res()) return false;
+			if (!lpData) return false;
+			if (!lpData->Res())
+			{
+				lpData->InitializeRes(nullptr);
+			}
+
+			if (!lpData->Res()) return false;
 
 			const auto lpSourceRes = lpData->Res()->m_lpNewRes ? lpData->Res()->m_lpNewRes : lpData->Res()->m_lpOldRes;
 
@@ -737,8 +741,14 @@ namespace dialog
 		_Check_return_ bool
 		CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
-			if (!lpData || !lpData->Comment()) return false;
 			if (!m_lpAllocParent) return false;
+			if (!lpData) return false;
+			if (!lpData->Res())
+			{
+				lpData->InitializeComment(nullptr);
+			}
+
+			if (!lpData->Comment()) return false;
 
 			auto lpSourceProp =
 				lpData->Comment()->m_lpNewProp ? lpData->Comment()->m_lpNewProp : lpData->Comment()->m_lpOldProp;
