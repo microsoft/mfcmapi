@@ -11,12 +11,16 @@ namespace smartview
 		blockT<DWORD> dwLowDateTime;
 		blockT<DWORD> dwHighDateTime;
 		operator FILETIME() const { return FILETIME{dwLowDateTime, dwHighDateTime}; }
+		size_t getSize() { return dwLowDateTime.getSize() + dwHighDateTime.getSize(); }
+		size_t getOffset() { return dwLowDateTime.getOffset(); }
 	};
 
 	struct SBinaryBlock
 	{
 		blockT<ULONG> cb;
 		blockBytes lpb;
+		size_t getSize() { return cb.getSize() + lpb.getSize(); }
+		size_t getOffset() { return cb.getOffset() ? cb.getOffset() : lpb.getOffset(); }
 	};
 
 	struct SBinaryArrayBlock
@@ -29,12 +33,16 @@ namespace smartview
 	{
 		blockT<DWORD> cb;
 		blockStringA str;
+		size_t getSize() { return cb.getSize() + str.getSize(); }
+		size_t getOffset() { return cb.getOffset(); }
 	};
 
 	struct CountedStringW
 	{
 		blockT<DWORD> cb;
 		blockStringW str;
+		size_t getSize() { return cb.getSize() + str.getSize(); }
+		size_t getOffset() { return cb.getOffset(); }
 	};
 
 	struct StringArrayA
@@ -75,79 +83,117 @@ namespace smartview
 		blockT<ULONG> ulPropTag;
 		ULONG dwAlignPad{};
 		PVBlock Value;
-		_Check_return_ std::wstring PropString()
+		_Check_return_ blockStringW& PropBlock()
 		{
-			EnsurePropStrings();
-			return propString;
+			EnsurePropBlocks();
+			return propBlock;
 		}
-		_Check_return_ std::wstring AltPropString()
+		_Check_return_ blockStringW& AltPropBlock()
 		{
-			EnsurePropStrings();
-			return altPropString;
+			EnsurePropBlocks();
+			return altPropBlock;
+		}
+		_Check_return_ blockStringW& SmartViewBlock()
+		{
+			EnsurePropBlocks();
+			return smartViewBlock;
 		}
 
 		// TODO: Fill in missing cases with test coverage
-		SPropValue getData()
+		void EnsurePropBlocks()
 		{
+			if (propStringsGenerated) return;
 			auto prop = SPropValue{};
+			auto size = size_t{};
+			auto offset = size_t{};
 			prop.ulPropTag = ulPropTag;
 			prop.dwAlignPad = dwAlignPad;
 			switch (PropType)
 			{
 			case PT_I2:
 				prop.Value.i = Value.i;
+				size = Value.i.getSize();
+				offset = Value.i.getOffset();
 				break;
 			case PT_LONG:
 				prop.Value.l = Value.l;
+				size = Value.l.getSize();
+				offset = Value.l.getOffset();
 				break;
 			case PT_R4:
 				prop.Value.flt = Value.flt;
+				size = Value.flt.getSize();
+				offset = Value.flt.getOffset();
 				break;
 			case PT_DOUBLE:
 				prop.Value.dbl = Value.dbl;
+				size = Value.dbl.getSize();
+				offset = Value.dbl.getOffset();
 				break;
 			case PT_BOOLEAN:
 				prop.Value.b = Value.b;
+				size = Value.b.getSize();
+				offset = Value.b.getOffset();
 				break;
 			case PT_I8:
 				prop.Value.li = Value.li.getData();
+				size = Value.li.getSize();
+				offset = Value.li.getOffset();
 				break;
 			case PT_SYSTIME:
 				prop.Value.ft = Value.ft;
+				size = Value.ft.getSize();
+				offset = Value.ft.getOffset();
 				break;
 			case PT_STRING8:
 				prop.Value.lpszA = const_cast<LPSTR>(Value.lpszA.str.c_str());
+				size = Value.lpszA.getSize();
+				offset = Value.lpszA.getOffset();
 				break;
 			case PT_BINARY:
 				prop.Value.bin.cb = Value.bin.cb;
 				prop.Value.bin.lpb = const_cast<LPBYTE>(Value.bin.lpb.data());
+				size = Value.bin.getSize();
+				offset = Value.bin.getOffset();
 				break;
 			case PT_UNICODE:
 				prop.Value.lpszW = const_cast<LPWSTR>(Value.lpszW.str.c_str());
+				size = Value.lpszW.getSize();
+				offset = Value.lpszW.getOffset();
 				break;
 			case PT_CLSID:
 				guid = Value.lpguid.getData();
 				prop.Value.lpguid = &guid;
+				size = Value.lpguid.getSize();
+				offset = Value.lpguid.getOffset();
 				break;
 			//case PT_MV_STRING8:
 			//case PT_MV_UNICODE:
 			//case PT_MV_BINARY:
 			case PT_ERROR:
 				prop.Value.err = Value.err;
+				size = Value.err.getSize();
+				offset = Value.err.getOffset();
 				break;
 			}
 
-			return prop;
-		}
+			auto propString = std::wstring{};
+			auto altPropString = std::wstring{};
+			interpretprop::InterpretProp(&prop, &propString, &altPropString);
 
-		void EnsurePropStrings()
-		{
-			if (propStringsGenerated) return;
-			auto sProp = getData();
-			interpretprop::InterpretProp(&sProp, &propString, &altPropString);
+			propBlock.setData(strings::RemoveInvalidCharactersW(propString, false));
+			propBlock.setSize(size);
+			propBlock.setOffset(offset);
 
-			propString = strings::RemoveInvalidCharactersW(propString, false);
-			altPropString = strings::RemoveInvalidCharactersW(altPropString, false);
+			altPropBlock.setData(strings::RemoveInvalidCharactersW(altPropString, false));
+			altPropBlock.setSize(size);
+			altPropBlock.setOffset(offset);
+
+			auto smartViewString = InterpretPropSmartView(&prop, nullptr, nullptr, nullptr, false, false);
+			smartViewBlock.setData(smartViewString);
+			smartViewBlock.setSize(size);
+			smartViewBlock.setOffset(offset);
+
 			propStringsGenerated = true;
 		}
 
@@ -169,8 +215,9 @@ namespace smartview
 		// Any data we need to cache for getData can live here
 	private:
 		GUID guid{};
-		std::wstring propString;
-		std::wstring altPropString;
+		blockStringW propBlock;
+		blockStringW altPropBlock;
+		blockStringW smartViewBlock;
 		bool propStringsGenerated{};
 	};
 
