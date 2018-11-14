@@ -91,9 +91,8 @@ namespace smartview
 			res.init(false, true);
 			res.SmartViewParser::init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 			res.DisableJunkParsing();
-			m_Restriction = blockStringW{};
-			// TODO: Make this a proper block
-			m_Restriction.setData(res.ToString());
+			res.EnsureParsed();
+			m_Restriction = res.getBlock();
 			m_Parser.advance(res.GetCurrentOffset());
 		}
 
@@ -211,11 +210,10 @@ namespace smartview
 			addBlock(m_SkipBytes2);
 		}
 
-		if (!m_Restriction.empty())
+		if (m_Restriction.hasData())
 		{
 			terminateBlock();
-			// TODO: Use a proper block here
-			addBlock(m_Restriction, m_Restriction.c_str());
+			addBlock(m_Restriction);
 		}
 
 		if (SFST_FILTERSTREAM & m_Flags)

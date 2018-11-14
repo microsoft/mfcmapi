@@ -36,7 +36,7 @@ namespace smartview
 		std::vector<AddressListEntryStruct> m_Addresses; // SFST_BINARY
 		blockT<DWORD> m_SkipLen2;
 		blockBytes m_SkipBytes2;
-		blockStringW m_Restriction; // SFST_MRES
+		block m_Restriction; // SFST_MRES
 		blockBytes m_AdvancedSearchBytes; // SFST_FILTERSTREAM
 		blockT<DWORD> m_SkipLen3;
 		blockBytes m_SkipBytes3;
