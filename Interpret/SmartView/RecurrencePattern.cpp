@@ -134,14 +134,14 @@ namespace smartview
 			L"FirstDOW: 0x%1!08X! = %2!ws!\r\n",
 			m_FirstDOW.getData(),
 			interpretprop::InterpretFlags(flagFirstDOW, m_FirstDOW).c_str());
-		addBlock(
-			m_DeletedInstanceCount, L"DeletedInstanceCount: 0x%1!08X! = %1!d!\r\n", m_DeletedInstanceCount.getData());
+		auto deletedInstances = m_DeletedInstanceCount;
+		deletedInstances.setText(L"DeletedInstanceCount: 0x%1!08X! = %1!d!\r\n", m_DeletedInstanceCount.getData());
 
 		if (m_DeletedInstanceDates.size())
 		{
 			for (DWORD i = 0; i < m_DeletedInstanceDates.size(); i++)
 			{
-				addBlock(
+				deletedInstances.addBlock(
 					m_DeletedInstanceDates[i],
 					L"DeletedInstanceDates[%1!d!]: 0x%2!08X! = %3!ws!\r\n",
 					i,
@@ -150,6 +150,7 @@ namespace smartview
 			}
 		}
 
+		addBlock(deletedInstances);
 		addBlock(
 			m_ModifiedInstanceCount,
 			L"ModifiedInstanceCount: 0x%1!08X! = %1!d!\r\n",

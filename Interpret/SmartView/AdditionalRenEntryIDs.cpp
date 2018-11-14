@@ -103,13 +103,14 @@ namespace smartview
 			for (WORD iPersistElement = 0; iPersistElement < m_ppdPersistData.size(); iPersistElement++)
 			{
 				addHeader(L"\r\n\r\n");
-				addHeader(L"Persist Element %1!d!:\r\n", iPersistElement);
-				addBlock(
+				auto element = block{};
+				element.setText(L"Persist Element %1!d!:\r\n", iPersistElement);
+				element.addBlock(
 					m_ppdPersistData[iPersistElement].wPersistID,
 					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
 					m_ppdPersistData[iPersistElement].wPersistID.getData(),
 					interpretprop::InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID).c_str());
-				addBlock(
+				element.addBlock(
 					m_ppdPersistData[iPersistElement].wDataElementsSize,
 					L"DataElementsSize = 0x%1!04X!",
 					m_ppdPersistData[iPersistElement].wDataElementsSize.getData());
@@ -119,9 +120,9 @@ namespace smartview
 					for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].ppeDataElement.size();
 						 iDataElement++)
 					{
-						addHeader(L"\r\nDataElement: %1!d!\r\n", iDataElement);
+						element.addHeader(L"\r\nDataElement: %1!d!\r\n", iDataElement);
 
-						addBlock(
+						element.addBlock(
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
 							L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID.getData(),
@@ -130,22 +131,25 @@ namespace smartview
 								m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID)
 								.c_str());
 
-						addBlock(
+						element.addBlock(
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize,
 							L"\tElementDataSize = 0x%1!04X!\r\n",
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize.getData());
 
-						addHeader(L"\tElementData = ");
-						addBlock(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData);
+						element.addHeader(L"\tElementData = ");
+						element.addBlock(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData);
 					}
 				}
 
 				if (!m_ppdPersistData[iPersistElement].JunkData.empty())
 				{
-					terminateBlock();
-					addHeader(L"Unparsed data size = 0x%1!08X!\r\n", m_ppdPersistData[iPersistElement].JunkData.size());
-					addBlock(m_ppdPersistData[iPersistElement].JunkData);
+					element.terminateBlock();
+					element.addHeader(
+						L"Unparsed data size = 0x%1!08X!\r\n", m_ppdPersistData[iPersistElement].JunkData.size());
+					element.addBlock(m_ppdPersistData[iPersistElement].JunkData);
 				}
+
+				addBlock(element);
 			}
 		}
 	}
