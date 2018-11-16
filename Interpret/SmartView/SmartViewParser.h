@@ -19,19 +19,30 @@ namespace smartview
 	public:
 		virtual ~SmartViewParser() = default;
 
-		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { m_Parser.init(cbBin, lpBin, 0); }
+		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { m_Parser = CBinaryParser(cbBin, lpBin); }
 
-		void parse(CBinaryParser& binaryParser, bool bDoJunk)
-		{
-			parse(binaryParser, binaryParser.RemainingBytes(), bDoJunk);
-		}
+		void parse(CBinaryParser& binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
 
 		void parse(CBinaryParser& binaryParser, size_t cbBin, bool bEnableJunk)
 		{
-			init(cbBin, binaryParser.GetCurrentAddress());
-			m_bEnableJunk = bEnableJunk;
-			EnsureParsed();
-			binaryParser.advance(m_Parser.GetCurrentOffset());
+			if (cbBin)
+			{
+				// TODO: This doesn't work if we cap inside a cap - figure out a better model
+				const auto oldCap = binaryParser.getCap();
+				m_Parser = binaryParser;
+				m_Parser.setCap(cbBin);
+				m_bEnableJunk = bEnableJunk;
+				EnsureParsed();
+				binaryParser = m_Parser;
+				binaryParser.setCap(oldCap);
+			}
+			else
+			{
+				m_Parser = binaryParser;
+				m_bEnableJunk = bEnableJunk;
+				EnsureParsed();
+				binaryParser = m_Parser;
+			}
 		}
 
 		_Check_return_ std::wstring ToString();

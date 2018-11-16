@@ -13,11 +13,10 @@ namespace smartview
 	{
 	public:
 		CBinaryParser() = default;
-		CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { init(cbBin, lpBin, 0); }
-		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin, size_t offset)
+		CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 		{
 			m_Bin = lpBin && cbBin ? std::vector<BYTE>(lpBin, lpBin + cbBin) : std::vector<BYTE>{};
-			m_Offset = offset;
+			m_Size = m_Bin.size();
 		}
 
 		bool empty() const { return m_Bin.empty(); }
@@ -25,13 +24,26 @@ namespace smartview
 		void rewind() { m_Offset = 0; }
 		size_t GetCurrentOffset() const { return m_Offset; }
 		const BYTE* GetCurrentAddress() const { return m_Bin.data() + m_Offset; }
-		// Moves the parser to an offset obtained from GetCurrentOffset
 		void SetCurrentOffset(size_t stOffset) { m_Offset = stOffset; }
+		void setCap(size_t cap)
+		{
+			if (cap != 0 && m_Offset + cap < m_Size)
+			{
+				m_Cap = cap;
+				m_Size = m_Offset + m_Cap;
+			}
+			else if (cap == 0)
+			{
+				m_Cap = cap;
+				m_Size = m_Bin.size();
+			}
+		}
+		size_t getCap() const { return m_Cap; }
 
 		// If we're before the end of the buffer, return the count of remaining bytes
 		// If we're at or past the end of the buffer, return 0
 		// If we're before the beginning of the buffer, return 0
-		size_t CBinaryParser::RemainingBytes() const { return m_Offset > m_Bin.size() ? 0 : m_Bin.size() - m_Offset; }
+		size_t CBinaryParser::RemainingBytes() const { return m_Offset > m_Size ? 0 : m_Size - m_Offset; }
 
 		template <typename T> blockT<T> Get()
 		{
@@ -52,8 +64,7 @@ namespace smartview
 			if (cchChar == -1)
 			{
 				cchChar =
-					strnlen_s(reinterpret_cast<LPCSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof CHAR) +
-					1;
+					strnlen_s(reinterpret_cast<LPCSTR>(GetCurrentAddress()), (m_Size - m_Offset) / sizeof CHAR) + 1;
 			}
 
 			if (!cchChar || !CheckRemainingBytes(sizeof CHAR * cchChar)) return {};
@@ -72,9 +83,7 @@ namespace smartview
 			if (cchChar == -1)
 			{
 				cchChar =
-					wcsnlen_s(
-						reinterpret_cast<LPCWSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof WCHAR) +
-					1;
+					wcsnlen_s(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), (m_Size - m_Offset) / sizeof WCHAR) + 1;
 			}
 
 			if (!cchChar || !CheckRemainingBytes(sizeof WCHAR * cchChar)) return {};
@@ -112,5 +121,7 @@ namespace smartview
 		bool CheckRemainingBytes(size_t cbBytes) const { return cbBytes <= RemainingBytes(); }
 		std::vector<BYTE> m_Bin;
 		size_t m_Offset{};
+		size_t m_Cap{};
+		size_t m_Size{}; // When uncapped, this is m_Bin.size(). When capped, this is our artificial capped size.
 	};
 } // namespace smartview
