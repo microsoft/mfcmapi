@@ -17,14 +17,13 @@ namespace smartview
 	class SmartViewParser
 	{
 	public:
-		SmartViewParser();
 		virtual ~SmartViewParser() = default;
 
-		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin);
+		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { m_Parser.init(cbBin, lpBin); }
 		_Check_return_ std::wstring ToString();
 
-		void DisableJunkParsing();
-		size_t GetCurrentOffset() const;
+		void DisableJunkParsing() { m_bEnableJunk = false; }
+		size_t GetCurrentOffset() const { return m_Parser.GetCurrentOffset(); }
 		void EnsureParsed();
 		const block& getBlock() const { return data; }
 		bool hasData() const { return data.hasData(); }
@@ -33,7 +32,6 @@ namespace smartview
 		CBinaryParser m_Parser;
 
 		// Nu style parsing data
-		block data;
 		template <typename... Args> void setRoot(const std::wstring& text, const Args... args)
 		{
 			data.setText(text, args...);
@@ -64,7 +62,8 @@ namespace smartview
 		virtual void Parse() = 0;
 		virtual void ParseBlocks() = 0;
 
-		bool m_bEnableJunk;
-		bool m_bParsed;
+		block data;
+		bool m_bEnableJunk{true};
+		bool m_bParsed{false};
 	};
 } // namespace smartview
