@@ -26,19 +26,16 @@ namespace smartview
 			parse(binaryParser, binaryParser.RemainingBytes(), bDoJunk);
 		}
 
-		void parse(CBinaryParser& binaryParser, size_t cbBin, bool bDoJunk)
+		void parse(CBinaryParser& binaryParser, size_t cbBin, bool bEnableJunk)
 		{
 			init(cbBin, binaryParser.GetCurrentAddress());
-			if (!bDoJunk) DisableJunkParsing();
+			m_bEnableJunk = bEnableJunk;
 			EnsureParsed();
-			binaryParser.advance(GetCurrentOffset());
+			binaryParser.advance(m_Parser.GetCurrentOffset());
 		}
 
 		_Check_return_ std::wstring ToString();
 
-		void DisableJunkParsing() { m_bEnableJunk = false; }
-		size_t GetCurrentOffset() const { return m_Parser.GetCurrentOffset(); }
-		void EnsureParsed();
 		const block& getBlock() const { return data; }
 		bool hasData() const { return data.hasData(); }
 
@@ -73,6 +70,7 @@ namespace smartview
 		void addBlankLine() { data.addBlankLine(); }
 
 	private:
+		void EnsureParsed();
 		virtual void Parse() = 0;
 		virtual void ParseBlocks() = 0;
 
