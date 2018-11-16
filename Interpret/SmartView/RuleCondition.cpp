@@ -42,10 +42,7 @@ namespace smartview
 		}
 
 		m_lpRes.init(true, m_bExtended);
-		m_lpRes.SmartViewParser::init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
-		m_lpRes.DisableJunkParsing();
-		m_lpRes.EnsureParsed();
-		m_Parser.advance(m_lpRes.GetCurrentOffset());
+		m_lpRes.SmartViewParser::parse(m_Parser, false);
 	}
 
 	void RuleCondition::ParseBlocks()

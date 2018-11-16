@@ -23,9 +23,7 @@ namespace smartview
 			for (DWORD i = 0; i < m_EntryCount; i++)
 			{
 				const auto cbRemainingBytes = min(m_Entry[i].EntryLength, m_Parser.RemainingBytes());
-				m_Entry[i].EntryId.init(cbRemainingBytes, m_Parser.GetCurrentAddress());
-				m_Entry[i].EntryId.EnsureParsed();
-				m_Parser.advance(cbRemainingBytes);
+				m_Entry[i].EntryId.parse(m_Parser, cbRemainingBytes, true);
 			}
 		}
 	}

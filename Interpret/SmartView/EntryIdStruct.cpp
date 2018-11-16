@@ -119,10 +119,7 @@ namespace smartview
 				}
 
 				EntryIdStruct entryIdStruct;
-				entryIdStruct.init(cbRemainingBytes, m_Parser.GetCurrentAddress());
-				entryIdStruct.DisableJunkParsing();
-				entryIdStruct.EnsureParsed();
-				m_Parser.advance(entryIdStruct.GetCurrentOffset());
+				entryIdStruct.parse(m_Parser, cbRemainingBytes, false);
 				m_ContactAddressBookObject.lpEntryID.push_back(entryIdStruct);
 			}
 			break;
@@ -133,10 +130,7 @@ namespace smartview
 				m_WAB.Type = m_Parser.Get<BYTE>();
 
 				EntryIdStruct entryIdStruct;
-				entryIdStruct.init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
-				entryIdStruct.DisableJunkParsing();
-				entryIdStruct.EnsureParsed();
-				m_Parser.advance(entryIdStruct.GetCurrentOffset());
+				entryIdStruct.parse(m_Parser, false);
 				m_WAB.lpEntryID.push_back(entryIdStruct);
 			}
 			break;

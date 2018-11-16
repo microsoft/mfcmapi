@@ -13,11 +13,11 @@ namespace smartview
 	{
 	public:
 		CBinaryParser() = default;
-		CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { init(cbBin, lpBin); }
-		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
+		CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { init(cbBin, lpBin, 0); }
+		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin, size_t offset)
 		{
 			m_Bin = lpBin && cbBin ? std::vector<BYTE>(lpBin, lpBin + cbBin) : std::vector<BYTE>{};
-			m_Offset = 0;
+			m_Offset = offset;
 		}
 
 		bool empty() const { return m_Bin.empty(); }

@@ -9,10 +9,7 @@ namespace smartview
 {
 	void AppointmentRecurrencePattern::Parse()
 	{
-		m_RecurrencePattern.init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
-		m_RecurrencePattern.DisableJunkParsing();
-		m_RecurrencePattern.EnsureParsed();
-		m_Parser.advance(m_RecurrencePattern.GetCurrentOffset());
+		m_RecurrencePattern.parse(m_Parser, false);
 
 		m_ReaderVersion2 = m_Parser.Get<DWORD>();
 		m_WriterVersion2 = m_Parser.Get<DWORD>();
@@ -179,7 +176,7 @@ namespace smartview
 			RTimeToString(m_EndTimeOffset).c_str());
 
 		auto exceptions = m_ExceptionCount;
-		exceptions.setText( L"ExceptionCount: 0x%1!04X!\r\n", m_ExceptionCount.getData());
+		exceptions.setText(L"ExceptionCount: 0x%1!04X!\r\n", m_ExceptionCount.getData());
 
 		if (m_ExceptionInfo.size())
 		{

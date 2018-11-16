@@ -51,10 +51,7 @@ namespace smartview
 		{
 			auto cbRemainingBytes = m_Parser.RemainingBytes();
 			cbRemainingBytes = min(m_FolderList2Length, cbRemainingBytes);
-			m_FolderList2.init(cbRemainingBytes, m_Parser.GetCurrentAddress());
-			m_FolderList2.EnsureParsed();
-
-			m_Parser.advance(cbRemainingBytes);
+			m_FolderList2.parse(m_Parser, cbRemainingBytes, true);
 		}
 
 		if (SFST_BINARY & m_Flags)
@@ -70,11 +67,8 @@ namespace smartview
 					addressListEntryStruct.Pad = m_Parser.Get<DWORD>();
 					if (addressListEntryStruct.PropertyCount)
 					{
-						addressListEntryStruct.Props.init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 						addressListEntryStruct.Props.SetMaxEntries(addressListEntryStruct.PropertyCount);
-						addressListEntryStruct.Props.DisableJunkParsing();
-						addressListEntryStruct.Props.EnsureParsed();
-						m_Parser.advance(addressListEntryStruct.Props.GetCurrentOffset());
+						addressListEntryStruct.Props.parse(m_Parser, false);
 					}
 
 					m_Addresses.push_back(addressListEntryStruct);
@@ -89,11 +83,8 @@ namespace smartview
 		{
 			RestrictionStruct res;
 			res.init(false, true);
-			res.SmartViewParser::init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
-			res.DisableJunkParsing();
-			res.EnsureParsed();
+			res.SmartViewParser::parse(m_Parser, false);
 			m_Restriction = res.getBlock();
-			m_Parser.advance(res.GetCurrentOffset());
 		}
 
 		if (SFST_FILTERSTREAM & m_Flags)

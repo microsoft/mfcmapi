@@ -21,12 +21,9 @@ namespace smartview
 
 				if (row.cValues && row.cValues < _MaxEntriesSmall)
 				{
-					row.lpProps.init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
-					row.lpProps.DisableJunkParsing();
 					row.lpProps.EnableNickNameParsing();
 					row.lpProps.SetMaxEntries(row.cValues);
-					row.lpProps.EnsureParsed();
-					m_Parser.advance(row.lpProps.GetCurrentOffset());
+					row.lpProps.parse(m_Parser, false);
 				}
 
 				m_lpRows.push_back(row);

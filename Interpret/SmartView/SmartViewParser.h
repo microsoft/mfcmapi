@@ -19,7 +19,21 @@ namespace smartview
 	public:
 		virtual ~SmartViewParser() = default;
 
-		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { m_Parser.init(cbBin, lpBin); }
+		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { m_Parser.init(cbBin, lpBin, 0); }
+
+		void parse(CBinaryParser& binaryParser, bool bDoJunk)
+		{
+			parse(binaryParser, binaryParser.RemainingBytes(), bDoJunk);
+		}
+
+		void parse(CBinaryParser& binaryParser, size_t cbBin, bool bDoJunk)
+		{
+			init(cbBin, binaryParser.GetCurrentAddress());
+			if (!bDoJunk) DisableJunkParsing();
+			EnsureParsed();
+			binaryParser.advance(GetCurrentOffset());
+		}
+
 		_Check_return_ std::wstring ToString();
 
 		void DisableJunkParsing() { m_bEnableJunk = false; }
