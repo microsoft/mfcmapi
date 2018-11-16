@@ -3,18 +3,6 @@
 
 namespace smartview
 {
-	SmartViewParser::SmartViewParser()
-	{
-		m_bParsed = false;
-		m_bEnableJunk = true;
-	}
-
-	void SmartViewParser::init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { m_Parser.init(cbBin, lpBin); }
-
-	void SmartViewParser::DisableJunkParsing() { m_bEnableJunk = false; }
-
-	size_t SmartViewParser::GetCurrentOffset() const { return m_Parser.GetCurrentOffset(); }
-
 	void SmartViewParser::EnsureParsed()
 	{
 		if (m_bParsed || m_Parser.empty()) return;
