@@ -175,12 +175,9 @@ namespace smartview
 	PropertiesStruct RestrictionStruct::BinToProps(DWORD cValues, bool bRuleCondition)
 	{
 		auto props = PropertiesStruct{};
-		props.init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
-		props.DisableJunkParsing();
 		props.SetMaxEntries(cValues);
 		if (bRuleCondition) props.EnableRuleConditionParsing();
-		props.EnsureParsed();
-		m_Parser.advance(props.GetCurrentOffset());
+		props.parse(m_Parser, false);
 
 		return props;
 	}

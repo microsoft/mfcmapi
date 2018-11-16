@@ -21,11 +21,8 @@ namespace smartview
 
 				if (entry.cValues && entry.cValues < _MaxEntriesSmall)
 				{
-					entry.rgPropVals.init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
-					entry.rgPropVals.DisableJunkParsing();
 					entry.rgPropVals.SetMaxEntries(entry.cValues);
-					entry.rgPropVals.EnsureParsed();
-					m_Parser.advance(entry.rgPropVals.GetCurrentOffset());
+					entry.rgPropVals.parse(m_Parser, false);
 				}
 
 				m_lpAdrEntry.push_back(entry);

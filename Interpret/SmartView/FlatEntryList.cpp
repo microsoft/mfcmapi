@@ -21,10 +21,7 @@ namespace smartview
 				flatEntryID.dwSize = m_Parser.Get<DWORD>();
 				const auto ulSize = min(flatEntryID.dwSize, m_Parser.RemainingBytes());
 
-				flatEntryID.lpEntryID.init(ulSize, m_Parser.GetCurrentAddress());
-				flatEntryID.lpEntryID.EnsureParsed();
-
-				m_Parser.advance(ulSize);
+				flatEntryID.lpEntryID.parse(m_Parser, ulSize, true);
 
 				const auto dwPAD = 3 - (flatEntryID.dwSize + 3) % 4;
 				if (dwPAD > 0)
