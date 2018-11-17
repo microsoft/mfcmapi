@@ -27,14 +27,12 @@ namespace smartview
 		{
 			if (cbBin)
 			{
-				// TODO: This doesn't work if we cap inside a cap - figure out a better model
-				const auto oldCap = binaryParser.getCap();
 				m_Parser = binaryParser;
 				m_Parser.setCap(cbBin);
 				m_bEnableJunk = bEnableJunk;
 				EnsureParsed();
 				binaryParser = m_Parser;
-				binaryParser.setCap(oldCap);
+				binaryParser.clearCap();
 			}
 			else
 			{
