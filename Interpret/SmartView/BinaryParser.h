@@ -29,7 +29,7 @@ namespace smartview
 		void setCap(size_t cap)
 		{
 			m_Sizes.push(m_Size);
-			if (m_Offset + cap < m_Size)
+			if (cap != 0 && m_Offset + cap < m_Size)
 			{
 				m_Size = m_Offset + cap;
 			}

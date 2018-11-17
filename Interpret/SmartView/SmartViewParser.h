@@ -25,22 +25,12 @@ namespace smartview
 
 		void parse(CBinaryParser& binaryParser, size_t cbBin, bool bEnableJunk)
 		{
-			if (cbBin)
-			{
-				m_Parser = binaryParser;
-				m_Parser.setCap(cbBin);
-				m_bEnableJunk = bEnableJunk;
-				EnsureParsed();
-				binaryParser = m_Parser;
-				binaryParser.clearCap();
-			}
-			else
-			{
-				m_Parser = binaryParser;
-				m_bEnableJunk = bEnableJunk;
-				EnsureParsed();
-				binaryParser = m_Parser;
-			}
+			m_Parser = binaryParser;
+			m_Parser.setCap(cbBin);
+			m_bEnableJunk = bEnableJunk;
+			EnsureParsed();
+			binaryParser = m_Parser;
+			binaryParser.clearCap();
 		}
 
 		_Check_return_ std::wstring ToString();
