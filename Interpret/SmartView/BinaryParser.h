@@ -4,6 +4,7 @@
 #include <Interpret/SmartView/block/blockBytes.h>
 #include <Interpret/SmartView/block/blockStringA.h>
 #include <Interpret/SmartView/block/blockStringW.h>
+#include <stack>
 
 namespace smartview
 {
@@ -19,7 +20,7 @@ namespace smartview
 			m_Size = m_Bin.size();
 		}
 
-		bool empty() const { return m_Bin.empty(); }
+		bool empty() const { return m_Offset == m_Size; }
 		void advance(size_t cbAdvance) { m_Offset += cbAdvance; }
 		void rewind() { m_Offset = 0; }
 		size_t GetCurrentOffset() const { return m_Offset; }
@@ -27,18 +28,24 @@ namespace smartview
 		void SetCurrentOffset(size_t stOffset) { m_Offset = stOffset; }
 		void setCap(size_t cap)
 		{
-			if (cap != 0 && m_Offset + cap < m_Size)
+			m_Sizes.push(m_Size);
+			if (m_Offset + cap < m_Size)
 			{
-				m_Cap = cap;
-				m_Size = m_Offset + m_Cap;
-			}
-			else if (cap == 0)
-			{
-				m_Cap = cap;
-				m_Size = m_Bin.size();
+				m_Size = m_Offset + cap;
 			}
 		}
-		size_t getCap() const { return m_Cap; }
+		void clearCap()
+		{
+			if (m_Sizes.empty())
+			{
+				m_Size = m_Bin.size();
+			}
+			else
+			{
+				m_Size = m_Sizes.top();
+				m_Sizes.pop();
+			}
+		}
 
 		// If we're before the end of the buffer, return the count of remaining bytes
 		// If we're at or past the end of the buffer, return 0
@@ -121,7 +128,7 @@ namespace smartview
 		bool CheckRemainingBytes(size_t cbBytes) const { return cbBytes <= RemainingBytes(); }
 		std::vector<BYTE> m_Bin;
 		size_t m_Offset{};
-		size_t m_Cap{};
 		size_t m_Size{}; // When uncapped, this is m_Bin.size(). When capped, this is our artificial capped size.
+		std::stack<size_t> m_Sizes;
 	};
 } // namespace smartview
