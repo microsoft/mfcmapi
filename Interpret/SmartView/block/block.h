@@ -61,13 +61,6 @@ namespace smartview
 			children.push_back(block);
 		}
 
-		// Copy a block into this block
-		void setBlock(const block& _data)
-		{
-			text = _data.text;
-			children = _data.children;
-		}
-
 		// Copy a block into this block with text
 		template <typename... Args> void setBlock(const block& _data, const std::wstring& _text, Args... args)
 		{
