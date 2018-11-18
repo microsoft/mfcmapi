@@ -67,7 +67,7 @@ namespace smartview
 				addHeader(L"Named Prop 0x%1!04X!\r\n", i);
 				addBlock(
 					m_NamedPropertyInformation.PropId[i],
-					L"\tPropID = 0x%2!04X!\r\n",
+					L"\tPropID = 0x%1!04X!\r\n",
 					m_NamedPropertyInformation.PropId[i].getData());
 
 				addBlock(
