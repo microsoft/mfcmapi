@@ -38,7 +38,7 @@ namespace smartview
 				tombstoneRecord.StartTime = m_Parser.Get<DWORD>();
 				tombstoneRecord.EndTime = m_Parser.Get<DWORD>();
 				tombstoneRecord.GlobalObjectIdSize = m_Parser.Get<DWORD>();
-				tombstoneRecord.lpGlobalObjectId = m_Parser.GetBYTES(tombstoneRecord.GlobalObjectIdSize, _MaxBytes);
+				tombstoneRecord.GlobalObjectId.parse(m_Parser, tombstoneRecord.GlobalObjectIdSize, false);
 				tombstoneRecord.UsernameSize = m_Parser.Get<WORD>();
 				tombstoneRecord.szUsername = m_Parser.GetStringA(tombstoneRecord.UsernameSize);
 				m_lpRecords.push_back(tombstoneRecord);
@@ -74,20 +74,8 @@ namespace smartview
 				m_lpRecords[i].GlobalObjectIdSize,
 				L"GlobalObjectIdSize = 0x%1!08X!\r\n",
 				m_lpRecords[i].GlobalObjectIdSize.getData());
-			addBlock(
-				m_lpRecords[i].lpGlobalObjectId,
-				L"GlobalObjectId = %1!ws!\r\n",
-				strings::BinToHexString(m_lpRecords[i].lpGlobalObjectId, true).c_str());
-
-			auto szGoid = InterpretBinaryAsString(
-				SBinary{static_cast<ULONG>(m_lpRecords[i].lpGlobalObjectId.size()),
-						const_cast<BYTE*>(m_lpRecords[i].lpGlobalObjectId.data())},
-				IDS_STGLOBALOBJECTID,
-				nullptr);
-			if (!szGoid.empty())
-			{
-				addBlock(m_lpRecords[i].lpGlobalObjectId, L"%1!ws!\r\n", szGoid.c_str());
-			}
+			addBlock(m_lpRecords[i].GlobalObjectId.getBlock());
+			terminateBlock();
 
 			addBlock(
 				m_lpRecords[i].UsernameSize, L"UsernameSize= 0x%1!04X!\r\n", m_lpRecords[i].UsernameSize.getData());

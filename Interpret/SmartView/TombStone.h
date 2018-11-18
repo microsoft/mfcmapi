@@ -1,5 +1,6 @@
 #pragma once
 #include <Interpret/SmartView/SmartViewParser.h>
+#include <Interpret/SmartView/GlobalObjectId.h>
 
 namespace smartview
 {
@@ -8,8 +9,7 @@ namespace smartview
 		blockT<DWORD> StartTime;
 		blockT<DWORD> EndTime;
 		blockT<DWORD> GlobalObjectIdSize;
-		// TODO: Convert to GlobalObjectId
-		blockBytes lpGlobalObjectId;
+		GlobalObjectId GlobalObjectId;
 		blockT<WORD> UsernameSize;
 		blockStringA szUsername;
 	};
