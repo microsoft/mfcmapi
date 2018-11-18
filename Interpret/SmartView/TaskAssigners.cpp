@@ -15,14 +15,14 @@ namespace smartview
 				TaskAssigner taskAssigner;
 				taskAssigner.cbAssigner = m_Parser.Get<DWORD>();
 				const auto ulSize = min(taskAssigner.cbAssigner, (ULONG) m_Parser.RemainingBytes());
-				CBinaryParser AssignerParser(ulSize, m_Parser.GetCurrentAddress());
-				taskAssigner.cbEntryID = AssignerParser.Get<DWORD>();
-				taskAssigner.lpEntryID = AssignerParser.GetBYTES(taskAssigner.cbEntryID, _MaxEID);
-				taskAssigner.szDisplayName = AssignerParser.GetStringA();
-				taskAssigner.wzDisplayName = AssignerParser.GetStringW();
-				taskAssigner.JunkData = AssignerParser.GetRemainingData();
+				m_Parser.setCap(ulSize);
+				taskAssigner.cbEntryID = m_Parser.Get<DWORD>();
+				taskAssigner.lpEntryID = m_Parser.GetBYTES(taskAssigner.cbEntryID, _MaxEID);
+				taskAssigner.szDisplayName = m_Parser.GetStringA();
+				taskAssigner.wzDisplayName = m_Parser.GetStringW();
+				taskAssigner.JunkData = m_Parser.GetRemainingData();
+				m_Parser.clearCap();
 
-				m_Parser.advance(ulSize);
 				m_lpTaskAssigners.push_back(taskAssigner);
 			}
 		}
