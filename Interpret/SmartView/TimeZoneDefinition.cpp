@@ -88,7 +88,7 @@ namespace smartview
 				m_lpTZRule[i].wTZRuleFlags.getData(),
 				interpretprop::InterpretFlags(flagTZRule, m_lpTZRule[i].wTZRuleFlags).c_str());
 			addBlock(
-				m_lpTZRule[i].wTZRuleFlags,
+				m_lpTZRule[i].wYear,
 				L"TZRule[0x%1!X!].wYear = 0x%2!04X! (%2!d!)\r\n",
 				i,
 				m_lpTZRule[i].wYear.getData());
