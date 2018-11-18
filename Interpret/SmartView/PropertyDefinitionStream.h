@@ -21,6 +21,7 @@ namespace smartview
 	{
 		blockT<DWORD> dwSize;
 		blockBytes lpbContent;
+		PackedUnicodeString lpbContentText;
 	};
 
 	struct FieldDefinition

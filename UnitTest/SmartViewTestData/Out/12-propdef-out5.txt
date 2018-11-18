@@ -1348,79 +1348,83 @@ Definition: 74
 	SkipBlockCount = 2
 	SkipBlock: 0
 		Size = 0x38382370
+		FieldName: Length = 0x0014 Characters = ....................
 	SkipBlock: 1
-		Size = 0x07885314
+		Size = 0x07132800
 Definition: 75
-	Flags = 0x14057580 = 0x14057580
-	VT = 0x0705 = 0x705
-	DispID = 0x87456482
-	NmidNameLength = 0x7075
+	Flags = 0x30215325 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_FT_SWITCH | 0x30215300
+	VT = 0x2583 = 0x2583
+	DispID = 0x15810727
+	NmidNameLength = 0x6314
 	NmidName = 
-	NameAnsi: Length = 0x0080 Characters = adr42.Aw7..p...'X.dvDs%..(..%S!0.%'....c2..R.`.2.7$2..#g....xR..hS..w.5.7.#.V.q.C#r`."E!.rb#psf.h.5Q.@..H68".WC$.EQcE.q'.w3.W..f
-	FormulaANSI: Length = 0x0078 Characters = .4B..f7VvS.5.!6.g'D$c..0...q.F.Tb.V#0fXQ1.`2.v.FufwB.@a@.(df.T.'Xp.$h.CFVF%.pq($&7#.c.o.u.n.t.N.a.m.e.....A............L
-	ValidationRuleANSI: Length = 0x004D Characters = XPSendAccountStamp........)....L.M.X.P.S.e.n.d.A.c.c.o.u.n.t.S.t.a.m.p.....D.
+	NameAnsi: Length = 0x0032 Characters = ..R.`.2.7$2..#g....xR..hS..w.5.7.#.V.q.C#r`."E!.rb
+	FormulaANSI: Length = 0x0023 Characters = psf.h.5Q.@..H68".WC$.EQcE.q'.w3.W..
+	ValidationRuleANSI: Length = 0x0066 Characters = x.4B..f7VvS.5.!6.g'D$c..0...q.F.Tb.V#0fXQ1.`2.v.FufwB.@a@.(df.T.'Xp.$h.CFVF%.pq($&7#.c.o.u.n.t.N.a.m.e
 	ValidationTextANSI: Length = 0x0000
 	ErrorANSI: Length = 0x0000
-	InternalType = 0x0E040008 = 0xE040008
-	SkipBlockCount = 1
+	InternalType = 0x41000000 = 0x41000000
+	SkipBlockCount = 2
 	SkipBlock: 0
+		Size = 0x08000000
+		FieldName: Length = 0x0000
+	SkipBlock: 1
 		Size = 0x00000000
 Definition: 76
-	Flags = 0x71655212 = PDO_REQUIRED | PDO_FT_CONCAT | 0x71655200
-	VT = 0x6975 = 0x6975
-	DispID = 0x20646572
-	NmidNameLength = 0x7441
+	Flags = 0x4C140000 = 0x4C140000
+	VT = 0x584D = 0x584D
+	DispID = 0x6E655350
+	NmidNameLength = 0x4164
 	NmidName = 
-	NameAnsi: Length = 0x0074
-	FormulaANSI: Length = 0x0065
-	ValidationRuleANSI: Length = 0x006E
-	ValidationTextANSI: Length = 0x0064
-	ErrorANSI: Length = 0x0065
-	InternalType = 0x00007365 = 0x7365
+	NameAnsi: Length = 0x0063 Characters = countStamp........)....L.M.X.P.S.e.n.d.A.c.c.o.u.n.t.S.t.a.m.p.....D............Required Attendees.
+	FormulaANSI: Length = 0x0000
+	ValidationRuleANSI: Length = 0x0000
+	ValidationTextANSI: Length = 0x0000
+	ErrorANSI: Length = 0xFFFF
+	InternalType = 0x000025FF = 0x25FF
 	SkipBlockCount = 2
 	SkipBlock: 0
-		Size = 0xFFFF0000
+		Size = 0x00521200
+		FieldName: Length = 0x0065
 	SkipBlock: 1
-		Size = 0x0025FFFF
+		Size = 0x75007100
 Definition: 77
-	Flags = 0x52120000 = 0x52120000
+	Flags = 0x72006900 = 0x72006900
 	VT = 0x6500 = 0x6500
-	DispID = 0x75007100
-	NmidNameLength = 0x6900
+	DispID = 0x20006400
+	NmidNameLength = 0x4100
 	NmidName = 
 	NameAnsi: Length = 0x0000
-	FormulaANSI: Length = 0x0072
+	FormulaANSI: Length = 0x0074
 	ValidationRuleANSI: Length = 0x0000
-	ValidationTextANSI: Length = 0x0065
+	ValidationTextANSI: Length = 0x0074
 	ErrorANSI: Length = 0x0000
-	InternalType = 0x00200064 = 0x200064
+	InternalType = 0x006E0065 = 0x6E0065
 	SkipBlockCount = 2
 	SkipBlock: 0
-		Size = 0x00740041
+		Size = 0x00650064
+		FieldName: Length = 0x0065
 	SkipBlock: 1
-		Size = 0x00650074
+		Size = 0x00007300
 Definition: 78
-	Flags = 0x0064006E = PDO_REQUIRED | PDO_PRINT_SAVEAS | PDO_CALC_AUTO | PDO_FT_SWITCH | PDO_PRINT_SAVEAS_DEF | 0x640000
-	VT = 0x0065 = 0x65
-	DispID = 0x00730065
-	NmidNameLength = 0x0000
+	Flags = 0x00000000 = 0x0
+	VT = 0x0000 = VT_EMPTY
+	DispID = 0x04000800
+	NmidNameLength = 0x000E
 	NmidName = 
 	NameAnsi: Length = 0x0000
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
-	ValidationTextANSI: Length = 0x0000
+	ValidationTextANSI: Length = 0x0002 Characters = To
 	ErrorANSI: Length = 0x0000
-	InternalType = 0x04000800 = 0x4000800
-	SkipBlockCount = 3
+	InternalType = 0xFF000000 = 0xFF000000
+	SkipBlockCount = 2
 	SkipBlock: 0
-		Size = 0x0000000E
+		Size = 0x05FFFFFF
 		FieldName: Length = 0x0000
 	SkipBlock: 1
 		Size = 0x54020000
-	SkipBlock: 2
-		Size = 0x00006F00
 Definition: 79
-	Flags = 0x00000000 = 0x0
+	Flags = 0x00006F00 = 0x6F00
 	VT = 0x0000 = VT_EMPTY
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
@@ -1434,6 +1438,7 @@ Definition: 79
 	SkipBlockCount = 1
 	SkipBlock: 0
 		Size = 0x00000000
+		FieldName: Length = 0x0000
 Definition: 80
 	Flags = 0x00000000 = 0x0
 	VT = 0x0000 = VT_EMPTY
@@ -1449,6 +1454,7 @@ Definition: 80
 	SkipBlockCount = 1
 	SkipBlock: 0
 		Size = 0x00000000
+		FieldName: Length = 0x0000
 Definition: 81
 	Flags = 0x00000000 = 0x0
 	VT = 0x0000 = VT_EMPTY
@@ -1464,6 +1470,7 @@ Definition: 81
 	SkipBlockCount = 1
 	SkipBlock: 0
 		Size = 0x00000000
+		FieldName: Length = 0x0000
 Definition: 82
 	Flags = 0x00000000 = 0x0
 	VT = 0x0000 = VT_EMPTY
@@ -1479,6 +1486,7 @@ Definition: 82
 	SkipBlockCount = 1
 	SkipBlock: 0
 		Size = 0x00000000
+		FieldName: Length = 0x0000
 Definition: 83
 	Flags = 0x00000000 = 0x0
 	VT = 0x0000 = VT_EMPTY
@@ -1494,3 +1502,4 @@ Definition: 83
 	SkipBlockCount = 1
 	SkipBlock: 0
 		Size = 0x00000000
+		FieldName: Length = 0x0000
