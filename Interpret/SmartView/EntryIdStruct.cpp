@@ -617,7 +617,7 @@ namespace smartview
 				m_FolderOrMessage.Type.getData(),
 				szType.c_str());
 			addBlock(
-				m_FolderOrMessage.FolderObject.DatabaseGUID,
+				m_FolderOrMessage.MessageObject.FolderDatabaseGUID,
 				L"Folder Database GUID = %1!ws!\r\n",
 				guid::GUIDToStringAndName(m_FolderOrMessage.MessageObject.FolderDatabaseGUID).c_str());
 			addHeader(L"Folder GlobalCounter = ");
