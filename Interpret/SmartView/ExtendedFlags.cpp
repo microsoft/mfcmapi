@@ -40,6 +40,7 @@ namespace smartview
 				// If the structure says there's more bytes than remaining buffer, we're done parsing.
 				if (m_Parser.RemainingBytes() < extendedFlag.Cb)
 				{
+					m_pefExtendedFlags.push_back(extendedFlag);
 					m_ulNumFlags = i;
 					break;
 				}
@@ -78,6 +79,7 @@ namespace smartview
 				// If we encountered a bad flag, stop parsing
 				if (bBadData)
 				{
+					m_pefExtendedFlags.push_back(extendedFlag);
 					m_ulNumFlags = i;
 					break;
 				}
