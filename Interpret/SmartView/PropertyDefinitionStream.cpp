@@ -5,40 +5,34 @@
 
 namespace smartview
 {
-	PackedAnsiString ReadPackedAnsiString(_In_ CBinaryParser* pParser)
+	PackedAnsiString ReadPackedAnsiString(_In_ CBinaryParser& parser)
 	{
 		PackedAnsiString packedAnsiString;
-		if (pParser)
+		packedAnsiString.cchLength = parser.Get<BYTE>();
+		if (0xFF == packedAnsiString.cchLength)
 		{
-			packedAnsiString.cchLength = pParser->Get<BYTE>();
-			if (0xFF == packedAnsiString.cchLength)
-			{
-				packedAnsiString.cchExtendedLength = pParser->Get<WORD>();
-			}
-
-			packedAnsiString.szCharacters = pParser->GetStringA(
-				packedAnsiString.cchExtendedLength ? packedAnsiString.cchExtendedLength.getData()
-												   : packedAnsiString.cchLength.getData());
+			packedAnsiString.cchExtendedLength = parser.Get<WORD>();
 		}
+
+		packedAnsiString.szCharacters = parser.GetStringA(
+			packedAnsiString.cchExtendedLength ? packedAnsiString.cchExtendedLength.getData()
+											   : packedAnsiString.cchLength.getData());
 
 		return packedAnsiString;
 	}
 
-	PackedUnicodeString ReadPackedUnicodeString(_In_ CBinaryParser* pParser)
+	PackedUnicodeString ReadPackedUnicodeString(_In_ CBinaryParser& parser)
 	{
 		PackedUnicodeString packedUnicodeString;
-		if (pParser)
+		packedUnicodeString.cchLength = parser.Get<BYTE>();
+		if (0xFF == packedUnicodeString.cchLength)
 		{
-			packedUnicodeString.cchLength = pParser->Get<BYTE>();
-			if (0xFF == packedUnicodeString.cchLength)
-			{
-				packedUnicodeString.cchExtendedLength = pParser->Get<WORD>();
-			}
-
-			packedUnicodeString.szCharacters = pParser->GetStringW(
-				packedUnicodeString.cchExtendedLength ? packedUnicodeString.cchExtendedLength.getData()
-													  : packedUnicodeString.cchLength.getData());
+			packedUnicodeString.cchExtendedLength = parser.Get<WORD>();
 		}
+
+		packedUnicodeString.szCharacters = parser.GetStringW(
+			packedUnicodeString.cchExtendedLength ? packedUnicodeString.cchExtendedLength.getData()
+												  : packedUnicodeString.cchLength.getData());
 
 		return packedUnicodeString;
 	}
@@ -58,11 +52,11 @@ namespace smartview
 				fieldDefinition.wNmidNameLength = m_Parser.Get<WORD>();
 				fieldDefinition.szNmidName = m_Parser.GetStringW(fieldDefinition.wNmidNameLength);
 
-				fieldDefinition.pasNameANSI = ReadPackedAnsiString(&m_Parser);
-				fieldDefinition.pasFormulaANSI = ReadPackedAnsiString(&m_Parser);
-				fieldDefinition.pasValidationRuleANSI = ReadPackedAnsiString(&m_Parser);
-				fieldDefinition.pasValidationTextANSI = ReadPackedAnsiString(&m_Parser);
-				fieldDefinition.pasErrorANSI = ReadPackedAnsiString(&m_Parser);
+				fieldDefinition.pasNameANSI = ReadPackedAnsiString(m_Parser);
+				fieldDefinition.pasFormulaANSI = ReadPackedAnsiString(m_Parser);
+				fieldDefinition.pasValidationRuleANSI = ReadPackedAnsiString(m_Parser);
+				fieldDefinition.pasValidationTextANSI = ReadPackedAnsiString(m_Parser);
+				fieldDefinition.pasErrorANSI = ReadPackedAnsiString(m_Parser);
 
 				if (PropDefV2 == m_wVersion)
 				{
@@ -92,7 +86,15 @@ namespace smartview
 						{
 							SkipBlock skipBlock;
 							skipBlock.dwSize = m_Parser.Get<DWORD>();
-							skipBlock.lpbContent = m_Parser.GetBYTES(skipBlock.dwSize, _MaxBytes);
+							if (iSkip == 0)
+							{
+								skipBlock.lpbContentText = ReadPackedUnicodeString(m_Parser);
+							}
+							else
+							{
+								skipBlock.lpbContent = m_Parser.GetBYTES(skipBlock.dwSize, _MaxBytes);
+							}
+
 							fieldDefinition.psbSkipBlocks.push_back(skipBlock);
 						}
 					}
@@ -103,71 +105,50 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ block
-	PackedAnsiStringToBlock(_In_ const std::wstring& szFieldName, _In_ PackedAnsiString* ppasString)
+	_Check_return_ block PackedAnsiStringToBlock(_In_ const std::wstring& szFieldName, _In_ PackedAnsiString& pasString)
 	{
-		if (!ppasString) return {};
+		auto data = pasString.cchLength;
 
-		auto data = block{};
-		data.addHeader(L"\r\n\t");
-
-		if (0xFF == ppasString->cchLength)
+		if (0xFF == pasString.cchLength)
 		{
-			data.addBlock(
-				ppasString->cchLength,
-				L"%1!ws!: Length = 0x%2!04X!",
-				szFieldName.c_str(),
-				ppasString->cchExtendedLength.getData());
+			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pasString.cchExtendedLength.getData());
 		}
 		else
 		{
-			data.addBlock(
-				ppasString->cchLength,
-				L"%1!ws!: Length = 0x%2!04X!",
-				szFieldName.c_str(),
-				ppasString->cchLength.getData());
+			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pasString.cchLength.getData());
 		}
 
-		if (ppasString->szCharacters.length())
+		if (pasString.szCharacters.length())
 		{
 			data.addHeader(L" Characters = ");
-			data.addBlock(ppasString->szCharacters, strings::stringTowstring(ppasString->szCharacters));
+			data.addBlock(pasString.szCharacters, strings::stringTowstring(pasString.szCharacters));
 		}
 
+		data.terminateBlock();
 		return data;
 	}
 
 	_Check_return_ block
-	PackedUnicodeStringToBlock(_In_ const std::wstring& szFieldName, _In_ PackedUnicodeString* ppusString)
+	PackedUnicodeStringToBlock(_In_ const std::wstring& szFieldName, _In_ PackedUnicodeString& pusString)
 	{
-		if (!ppusString) return {};
+		auto data = pusString.cchLength;
 
-		auto data = block{};
-		data.addHeader(L"\r\n\t");
-
-		if (0xFF == ppusString->cchLength)
+		if (0xFF == pusString.cchLength)
 		{
-			data.addBlock(
-				ppusString->cchLength,
-				L"%1!ws!: Length = 0x%2!04X!",
-				szFieldName.c_str(),
-				ppusString->cchExtendedLength.getData());
+			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pusString.cchExtendedLength.getData());
 		}
 		else
 		{
-			data.addBlock(
-				ppusString->cchLength,
-				L"%1!ws!: Length = 0x%2!04X!",
-				szFieldName.c_str(),
-				ppusString->cchLength.getData());
+			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pusString.cchLength.getData());
 		}
 
-		if (ppusString->szCharacters.length())
+		if (pusString.szCharacters.length())
 		{
 			data.addHeader(L" Characters = ");
-			data.addBlock(ppusString->szCharacters, ppusString->szCharacters);
+			data.addBlock(pusString.szCharacters, pusString.szCharacters);
 		}
 
+		data.terminateBlock();
 		return data;
 	}
 
@@ -180,7 +161,7 @@ namespace smartview
 
 		for (DWORD iDef = 0; iDef < m_pfdFieldDefinitions.size(); iDef++)
 		{
-			addBlankLine();
+			terminateBlock();
 			addHeader(L"Definition: %1!d!\r\n", iDef);
 
 			auto szFlags = interpretprop::InterpretFlags(flagPDOFlag, m_pfdFieldDefinitions[iDef].dwFlags);
@@ -231,60 +212,53 @@ namespace smartview
 				}
 			}
 
-			addBlankLine();
+			terminateBlock();
 			addBlock(
 				m_pfdFieldDefinitions[iDef].wNmidNameLength,
 				L"\tNmidNameLength = 0x%1!04X!\r\n",
 				m_pfdFieldDefinitions[iDef].wNmidNameLength.getData());
 			addBlock(
 				m_pfdFieldDefinitions[iDef].szNmidName,
-				L"\tNmidName = %1!ws!",
+				L"\tNmidName = %1!ws!\r\n",
 				m_pfdFieldDefinitions[iDef].szNmidName.c_str());
 
-			addBlock(PackedAnsiStringToBlock(L"NameAnsi", &m_pfdFieldDefinitions[iDef].pasNameANSI));
-			addBlock(PackedAnsiStringToBlock(L"FormulaANSI", &m_pfdFieldDefinitions[iDef].pasFormulaANSI));
-			addBlock(
-				PackedAnsiStringToBlock(L"ValidationRuleANSI", &m_pfdFieldDefinitions[iDef].pasValidationRuleANSI));
-			addBlock(
-				PackedAnsiStringToBlock(L"ValidationTextANSI", &m_pfdFieldDefinitions[iDef].pasValidationTextANSI));
-			addBlock(PackedAnsiStringToBlock(L"ErrorANSI", &m_pfdFieldDefinitions[iDef].pasErrorANSI));
+			addBlock(PackedAnsiStringToBlock(L"NameAnsi", m_pfdFieldDefinitions[iDef].pasNameANSI));
+			addBlock(PackedAnsiStringToBlock(L"FormulaANSI", m_pfdFieldDefinitions[iDef].pasFormulaANSI));
+			addBlock(PackedAnsiStringToBlock(L"ValidationRuleANSI", m_pfdFieldDefinitions[iDef].pasValidationRuleANSI));
+			addBlock(PackedAnsiStringToBlock(L"ValidationTextANSI", m_pfdFieldDefinitions[iDef].pasValidationTextANSI));
+			addBlock(PackedAnsiStringToBlock(L"ErrorANSI", m_pfdFieldDefinitions[iDef].pasErrorANSI));
 
 			if (PropDefV2 == m_wVersion)
 			{
 				szFlags = interpretprop::InterpretFlags(flagInternalType, m_pfdFieldDefinitions[iDef].dwInternalType);
 				addBlock(
 					m_pfdFieldDefinitions[iDef].dwInternalType,
-					L"\r\n\tInternalType = 0x%1!08X! = %2!ws!\r\n",
+					L"\tInternalType = 0x%1!08X! = %2!ws!\r\n",
 					m_pfdFieldDefinitions[iDef].dwInternalType.getData(),
 					szFlags.c_str());
 				addHeader(L"\tSkipBlockCount = %1!d!", m_pfdFieldDefinitions[iDef].dwSkipBlockCount);
 
 				for (DWORD iSkip = 0; iSkip < m_pfdFieldDefinitions[iDef].psbSkipBlocks.size(); iSkip++)
 				{
-					addBlankLine();
+					terminateBlock();
 					addHeader(L"\tSkipBlock: %1!d!\r\n", iSkip);
 					addBlock(
 						m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize,
 						L"\t\tSize = 0x%1!08X!",
 						m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize.getData());
 
-					if (!m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent.empty())
+					if (0 == iSkip)
 					{
-						if (0 == iSkip)
-						{
-							// Parse this on the fly
-							CBinaryParser ParserFirstBlock(
-								m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent.size(),
-								m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent.data());
-							auto pusString = ReadPackedUnicodeString(&ParserFirstBlock);
-							addBlock(PackedUnicodeStringToBlock(L"\tFieldName", &pusString));
-						}
-						else
-						{
-							addBlankLine();
-							addHeader(L"\t\tContent = ");
-							addBlock(m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent);
-						}
+						terminateBlock();
+						addBlock(PackedUnicodeStringToBlock(
+							L"\tFieldName", m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContentText));
+					}
+					else if (!m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent.empty())
+
+					{
+						terminateBlock();
+						addHeader(L"\t\tContent = ");
+						addBlock(m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent);
 					}
 				}
 			}
