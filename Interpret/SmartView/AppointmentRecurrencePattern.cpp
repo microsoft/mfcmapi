@@ -325,12 +325,14 @@ namespace smartview
 
 		arpBlock.addBlock(exceptions);
 		auto reservedBlock1 = m_ReservedBlock1Size;
-		reservedBlock1.setText(L"ReservedBlock1Size: 0x%1!08X!\r\n", m_ReservedBlock1Size.getData());
+		reservedBlock1.setText(L"ReservedBlock1Size: 0x%1!08X!", m_ReservedBlock1Size.getData());
 		if (m_ReservedBlock1Size)
 		{
+			reservedBlock1.terminateBlock();
 			reservedBlock1.addBlock(m_ReservedBlock1);
 		}
 
+		reservedBlock1.terminateBlock();
 		arpBlock.addBlock(reservedBlock1);
 
 		if (m_ExtendedException.size())
@@ -446,9 +448,11 @@ namespace smartview
 		reservedBlock2.setText(L"ReservedBlock2Size: 0x%1!08X!", m_ReservedBlock2Size.getData());
 		if (m_ReservedBlock2Size)
 		{
+			reservedBlock2.terminateBlock();
 			reservedBlock2.addBlock(m_ReservedBlock2);
 		}
 
+		reservedBlock2.terminateBlock();
 		arpBlock.addBlock(reservedBlock2);
 		addBlock(arpBlock);
 	}
