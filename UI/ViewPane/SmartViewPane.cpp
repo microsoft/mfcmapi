@@ -177,10 +177,14 @@ namespace viewpane
 			svp->init(m_bin.size(), m_bin.data());
 			szSmartView = svp->ToString();
 			treeData = svp->getBlock();
-			RefreshTree();
 			delete svp;
 		}
+		else
+		{
+			treeData = smartview::block{};
+		}
 
+		RefreshTree();
 		if (szSmartView.empty())
 		{
 			szSmartView =
