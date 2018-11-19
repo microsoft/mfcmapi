@@ -1,6 +1,8 @@
 #pragma once
 #include <UI/ViewPane/DropDownPane.h>
-#include <UI/ViewPane/TextPane.h>
+#include <UI/ViewPane/SplitterPane.h>
+#include <UI/ViewPane/TreePane.h>
+#include <Interpret/SmartView/SmartViewParser.h>
 
 namespace viewpane
 {
@@ -13,12 +15,17 @@ namespace viewpane
 		void DisableDropDown();
 		void SetParser(__ParsingTypeEnum iParser);
 		void Parse(const std::vector<BYTE>& myBin);
+		std::function<void(smartview::block*)> OnItemSelected = nullptr;
 
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetFixedHeight() override;
 		int GetLines() override;
+		void RefreshTree();
+		void AddChildren(HTREEITEM parent, const smartview::block& data);
+		void ItemSelected(HTREEITEM hItem);
+		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM hItemCurHover) const;
 
 		void SetMargins(
 			int iMargin,
@@ -30,7 +37,9 @@ namespace viewpane
 			int iEditHeight) override; // height of an edit control
 
 		std::vector<BYTE> m_bin;
-		TextPane m_TextPane;
+		smartview::block treeData;
+		SplitterPane m_Splitter;
+		TreePane* m_TreePane{nullptr};
 		bool m_bHasData{false};
 		bool m_bDoDropDown{true};
 	};

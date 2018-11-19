@@ -25,6 +25,8 @@ namespace ui
 		cStatusText,
 		cPaneHeaderBackground,
 		cPaneHeaderText,
+		cTextHighlightBackground,
+		cTextHighlight,
 		cTestPink,
 		cTestLavender,
 		cUIEnd

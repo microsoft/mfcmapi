@@ -75,6 +75,8 @@ namespace ui
 		cWhite, // cStatusText
 		cPaleBlue, // cPaneHeaderBackground,
 		cBlack, // cPaneHeaderText,
+		cMedBlue, // cTextHighlightBackground,
+		cBlack, // cTextHighlight,
 		cPink, // cTestPink,
 		cLavender, // cTestLavender,
 	};
