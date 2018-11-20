@@ -194,7 +194,7 @@ namespace ui
 	void DeleteMenuEntries(_In_ HMENU hMenu)
 	{
 		const UINT nCount = GetMenuItemCount(hMenu);
-		if (nCount == -1) return;
+		if (nCount == static_cast<UINT>(-1)) return;
 
 		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 		{
@@ -219,7 +219,7 @@ namespace ui
 	void ConvertMenuOwnerDraw(_In_ HMENU hMenu, const bool bRoot)
 	{
 		const UINT nCount = GetMenuItemCount(hMenu);
-		if (nCount == -1) return;
+		if (nCount == static_cast<UINT>(-1)) return;
 
 		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 		{
@@ -356,7 +356,7 @@ namespace ui
 	HMENU LocateSubmenu(_In_ HMENU hMenu, const UINT uid)
 	{
 		const UINT nCount = GetMenuItemCount(hMenu);
-		if (nCount == -1) return nullptr;
+		if (nCount == static_cast<UINT>(-1)) return nullptr;
 
 		for (UINT nPosition = 0; nPosition < nCount; nPosition++)
 		{
@@ -858,7 +858,7 @@ namespace ui
 	// Handle highlight glow for list items
 	void DrawListItemGlow(_In_ HWND hWnd, const UINT itemID)
 	{
-		if (itemID == -1) return;
+		if (itemID == static_cast<UINT>(-1)) return;
 
 		// If the item already has the selection glow, we don't need to redraw
 		const auto bSelected = ListView_GetItemState(hWnd, itemID, LVIS_SELECTED) != 0;
@@ -1545,7 +1545,7 @@ namespace ui
 	void DrawComboBox(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	{
 		if (!lpDrawItemStruct) return;
-		if (lpDrawItemStruct->itemID == -1) return;
+		if (lpDrawItemStruct->itemID == static_cast<UINT>(-1)) return;
 
 		// Get and display the text for the list item.
 		const auto szText = GetLBText(lpDrawItemStruct->hwndItem, lpDrawItemStruct->itemID);

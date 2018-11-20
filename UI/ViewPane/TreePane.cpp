@@ -1,12 +1,9 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/TreePane.h>
-#include <UI/UIFunctions.h>
 #include <utility>
 
 namespace viewpane
 {
-	static std::wstring CLASS = L"TreePane";
-
 	TreePane* TreePane::Create(int paneID, UINT uidLabel, bool bReadOnly)
 	{
 		auto pane = new (std::nothrow) TreePane();
