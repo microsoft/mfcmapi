@@ -57,6 +57,9 @@
     <Filter Include="Source Files\MAPI\Cache">
       <UniqueIdentifier>{0c20d465-4fc6-40fb-9f4a-79f52df221a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Interpret\SmartView\block">
+      <UniqueIdentifier>{a146f1bf-8f86-43d7-b48f-bcf20d8b34fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -117,20 +120,34 @@
     </ClInclude>
     <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
-    <ClInclude Include="MAPI\MapiMemory.h" />
     <ClInclude Include="UI\Controls\StyleTreeCtrl.h">
       <Filter>Source Files\UI\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="UI\ViewPane\SplitterPane.h" />
     <ClInclude Include="Interpret\SmartView\PropertiesStruct.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
-    <ClInclude Include="Interpret\SmartView\block\block.h" />
-    <ClInclude Include="Interpret\SmartView\block\blockBytes.h" />
-    <ClInclude Include="Interpret\SmartView\block\blockT.h" />
-    <ClInclude Include="Interpret\SmartView\block\blockStringA.h" />
-    <ClInclude Include="Interpret\SmartView\block\blockStringW.h" />
     <ClInclude Include="UI\ViewPane\TreePane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\SmartView\block\block.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\SmartView\block\blockBytes.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\SmartView\block\blockStringA.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\SmartView\block\blockStringW.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\SmartView\block\blockT.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="MAPI\MapiMemory.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\ViewPane\SplitterPane.h">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClInclude>
   </ItemGroup>
