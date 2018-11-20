@@ -54,7 +54,7 @@ namespace smartview
 				addBlock(m_pEntryIDs[iFlatEntryList].lpEntryID.getBlock());
 			}
 
-			if (m_pEntryIDs[iFlatEntryList].padding.size())
+			if (!m_pEntryIDs[iFlatEntryList].padding.empty())
 			{
 				terminateBlock();
 				addHeader(L"Entry[%1!d!] Padding:\r\n", iFlatEntryList);

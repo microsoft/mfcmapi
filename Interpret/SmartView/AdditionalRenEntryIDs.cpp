@@ -98,7 +98,7 @@ namespace smartview
 		setRoot(L"Additional Ren Entry IDs\r\n");
 		addHeader(L"PersistDataCount = %1!d!", m_ppdPersistData.size());
 
-		if (m_ppdPersistData.size())
+		if (!m_ppdPersistData.empty())
 		{
 			for (WORD iPersistElement = 0; iPersistElement < m_ppdPersistData.size(); iPersistElement++)
 			{
@@ -116,7 +116,7 @@ namespace smartview
 					L"DataElementsSize = 0x%1!04X!",
 					m_ppdPersistData[iPersistElement].wDataElementsSize.getData());
 
-				if (m_ppdPersistData[iPersistElement].ppeDataElement.size())
+				if (!m_ppdPersistData[iPersistElement].ppeDataElement.empty())
 				{
 					for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].ppeDataElement.size();
 						 iDataElement++)

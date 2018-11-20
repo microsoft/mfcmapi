@@ -91,7 +91,7 @@ namespace smartview
 		m_ReservedBlock1 = m_Parser.GetBYTES(m_ReservedBlock1Size, _MaxBytes);
 
 		if (m_ExceptionCount && m_ExceptionCount == m_RecurrencePattern.m_ModifiedInstanceCount &&
-			m_ExceptionCount < _MaxEntriesSmall && m_ExceptionInfo.size())
+			m_ExceptionCount < _MaxEntriesSmall && !m_ExceptionInfo.empty())
 		{
 			for (WORD i = 0; i < m_ExceptionCount; i++)
 			{
@@ -178,7 +178,7 @@ namespace smartview
 		auto exceptions = m_ExceptionCount;
 		exceptions.setText(L"ExceptionCount: 0x%1!04X!\r\n", m_ExceptionCount.getData());
 
-		if (m_ExceptionInfo.size())
+		if (!m_ExceptionInfo.empty())
 		{
 			for (WORD i = 0; i < m_ExceptionInfo.size(); i++)
 			{
@@ -335,7 +335,7 @@ namespace smartview
 		reservedBlock1.terminateBlock();
 		arpBlock.addBlock(reservedBlock1);
 
-		if (m_ExtendedException.size())
+		if (!m_ExtendedException.empty())
 		{
 			for (size_t i = 0; i < m_ExtendedException.size(); i++)
 			{
@@ -371,7 +371,7 @@ namespace smartview
 					L"ExtendedException[%1!d!].ReservedBlockEE1Size: 0x%2!08X!\r\n",
 					i,
 					m_ExtendedException[i].ReservedBlockEE1Size.getData());
-				if (m_ExtendedException[i].ReservedBlockEE1.size())
+				if (!m_ExtendedException[i].ReservedBlockEE1.empty())
 				{
 					exception.addBlock(m_ExtendedException[i].ReservedBlockEE1);
 				}

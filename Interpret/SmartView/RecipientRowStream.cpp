@@ -35,7 +35,7 @@ namespace smartview
 		setRoot(L"Recipient Row Stream\r\n");
 		addBlock(m_cVersion, L"cVersion = %1!d!\r\n", m_cVersion.getData());
 		addBlock(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount.getData());
-		if (m_lpAdrEntry.size() && m_cRowCount)
+		if (!m_lpAdrEntry.empty() && m_cRowCount)
 		{
 			addBlankLine();
 			for (DWORD i = 0; i < m_cRowCount; i++)
