@@ -83,7 +83,7 @@ namespace smartview
 		{
 			RestrictionStruct res;
 			res.init(false, true);
-			res.SmartViewParser::parse(m_Parser, false);
+			res.parse(m_Parser, false);
 			m_Restriction = res.getBlock();
 		}
 

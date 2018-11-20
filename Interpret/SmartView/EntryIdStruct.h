@@ -141,7 +141,7 @@ namespace smartview
 		blockT<byte> m_abFlags1;
 		blockBytes m_abFlags23; // 2 bytes
 		blockT<GUID> m_ProviderUID;
-		EIDStructType m_ObjectType; // My own addition to simplify parsing
+		EIDStructType m_ObjectType = eidtUnknown; // My own addition to simplify parsing
 		FolderOrMessage m_FolderOrMessage;
 		MessageDatabaseObject m_MessageDatabaseObject;
 		EphemeralObject m_EphemeralObject{};

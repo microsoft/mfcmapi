@@ -11,16 +11,16 @@ namespace smartview
 		blockT<DWORD> dwLowDateTime;
 		blockT<DWORD> dwHighDateTime;
 		operator FILETIME() const { return FILETIME{dwLowDateTime, dwHighDateTime}; }
-		size_t getSize() { return dwLowDateTime.getSize() + dwHighDateTime.getSize(); }
-		size_t getOffset() { return dwLowDateTime.getOffset(); }
+		size_t getSize() const { return dwLowDateTime.getSize() + dwHighDateTime.getSize(); }
+		size_t getOffset() const { return dwLowDateTime.getOffset(); }
 	};
 
 	struct SBinaryBlock
 	{
 		blockT<ULONG> cb;
 		blockBytes lpb;
-		size_t getSize() { return cb.getSize() + lpb.getSize(); }
-		size_t getOffset() { return cb.getOffset() ? cb.getOffset() : lpb.getOffset(); }
+		size_t getSize() const { return cb.getSize() + lpb.getSize(); }
+		size_t getOffset() const { return cb.getOffset() ? cb.getOffset() : lpb.getOffset(); }
 	};
 
 	struct SBinaryArrayBlock
@@ -33,16 +33,16 @@ namespace smartview
 	{
 		blockT<DWORD> cb;
 		blockStringA str;
-		size_t getSize() { return cb.getSize() + str.getSize(); }
-		size_t getOffset() { return cb.getOffset(); }
+		size_t getSize() const { return cb.getSize() + str.getSize(); }
+		size_t getOffset() const { return cb.getOffset(); }
 	};
 
 	struct CountedStringW
 	{
 		blockT<DWORD> cb;
 		blockStringW str;
-		size_t getSize() { return cb.getSize() + str.getSize(); }
-		size_t getOffset() { return cb.getOffset(); }
+		size_t getSize() const { return cb.getSize() + str.getSize(); }
+		size_t getOffset() const { return cb.getOffset(); }
 	};
 
 	struct StringArrayA
@@ -189,7 +189,7 @@ namespace smartview
 			altPropBlock.setSize(size);
 			altPropBlock.setOffset(offset);
 
-			auto smartViewString = InterpretPropSmartView(&prop, nullptr, nullptr, nullptr, false, false);
+			const auto smartViewString = InterpretPropSmartView(&prop, nullptr, nullptr, nullptr, false, false);
 			smartViewBlock.setData(smartViewString);
 			smartViewBlock.setSize(size);
 			smartViewBlock.setOffset(offset);

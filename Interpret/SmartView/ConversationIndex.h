@@ -21,7 +21,7 @@ namespace smartview
 		blockT<BYTE> m_UnnamedByte;
 		blockT<FILETIME> m_ftCurrent;
 		blockT<GUID> m_guid;
-		ULONG m_ulResponseLevels;
+		ULONG m_ulResponseLevels = 0;
 		std::vector<ResponseLevel> m_lpResponseLevels;
 	};
 } // namespace smartview

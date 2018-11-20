@@ -190,7 +190,7 @@ namespace smartview
 					switch (m_MessageDatabaseObject.MagicVersion)
 					{
 					case MDB_STORE_EID_V2_MAGIC:
-						if (m_Parser.RemainingBytes() >= m_MessageDatabaseObject.v2.size + sizeof(WCHAR))
+						if (m_Parser.RemainingBytes() >= MDB_STORE_EID_V2::size + sizeof(WCHAR))
 						{
 							m_MessageDatabaseObject.v2.ulMagic = m_Parser.Get<DWORD>();
 							m_MessageDatabaseObject.v2.ulSize = m_Parser.Get<DWORD>();
@@ -211,7 +211,7 @@ namespace smartview
 						}
 						break;
 					case MDB_STORE_EID_V3_MAGIC:
-						if (m_Parser.RemainingBytes() >= m_MessageDatabaseObject.v3.size + sizeof(WCHAR))
+						if (m_Parser.RemainingBytes() >= MDB_STORE_EID_V3::size + sizeof(WCHAR))
 						{
 							m_MessageDatabaseObject.v3.ulMagic = m_Parser.Get<DWORD>();
 							m_MessageDatabaseObject.v3.ulSize = m_Parser.Get<DWORD>();

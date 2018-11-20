@@ -68,7 +68,7 @@ namespace smartview
 
 		blockStringA GetStringA(size_t cchChar = -1)
 		{
-			if (cchChar == -1)
+			if (cchChar == static_cast<size_t>(-1))
 			{
 				cchChar =
 					strnlen_s(reinterpret_cast<LPCSTR>(GetCurrentAddress()), (m_Size - m_Offset) / sizeof CHAR) + 1;
@@ -87,7 +87,7 @@ namespace smartview
 
 		blockStringW GetStringW(size_t cchChar = -1)
 		{
-			if (cchChar == -1)
+			if (cchChar == static_cast<size_t>(-1))
 			{
 				cchChar =
 					wcsnlen_s(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), (m_Size - m_Offset) / sizeof WCHAR) + 1;
@@ -110,7 +110,8 @@ namespace smartview
 			auto ret = blockBytes();
 			ret.setOffset(m_Offset);
 
-			if (cbBytes && CheckRemainingBytes(cbBytes) && (cbMaxBytes == -1 || cbBytes <= cbMaxBytes))
+			if (cbBytes && CheckRemainingBytes(cbBytes) &&
+				(cbMaxBytes == static_cast<size_t>(-1) || cbBytes <= cbMaxBytes))
 			{
 				ret.setData(std::vector<BYTE>{const_cast<LPBYTE>(GetCurrentAddress()),
 											  const_cast<LPBYTE>(GetCurrentAddress() + cbBytes)});

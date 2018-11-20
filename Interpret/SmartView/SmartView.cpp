@@ -330,7 +330,7 @@ namespace smartview
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 		bool bMVRow) // did the row come from a MV prop?
 	{
-		auto smartview = InterpretPropSmartView2(lpProp, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB, bMVRow);
+		const auto smartview = InterpretPropSmartView2(lpProp, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB, bMVRow);
 		return smartview.second;
 	}
 
