@@ -44,8 +44,11 @@ namespace dialog
 			AddPane(viewpane::CountedTextPane::Create(HEXED_BASE64, IDS_BASE64STRING, false, IDS_CCH));
 
 			AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
-			AddPane(viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW));
+			auto smartViewPane = viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW);
+			AddPane(smartViewPane);
 			DisplayParentedDialog(pParentWnd, 1000);
+
+			smartViewPane->OnItemSelected = [&](auto _1) { return OnSmartViewNodeSelected(_1); };
 		}
 
 		CHexEditor::~CHexEditor()
@@ -87,7 +90,7 @@ namespace dialog
 				cchEncodeStr = szEncodeStr.length();
 				SetStringW(HEXED_BASE64, szEncodeStr);
 
-				SetBinary(HEXED_HEX, lpb, cb);
+				SetHex(lpb, cb);
 			}
 			break;
 			case HEXED_UNICODE: // Unicode string changed
@@ -102,7 +105,7 @@ namespace dialog
 				cchEncodeStr = szEncodeStr.length();
 				SetStringW(HEXED_BASE64, szEncodeStr);
 
-				SetBinary(HEXED_HEX, lpb, cb);
+				SetHex(lpb, cb);
 			}
 			break;
 			case HEXED_BASE64: // base64 changed
@@ -127,11 +130,12 @@ namespace dialog
 					SetStringW(HEXED_UNICODE, L"");
 				}
 
-				SetBinary(HEXED_HEX, lpb, cb);
+				SetHex(lpb, cb);
 			}
 			break;
 			case HEXED_HEX: // binary changed
 			{
+				ClearHighlight();
 				auto bin = GetBinary(HEXED_HEX);
 				lpb = bin.data();
 				cb = bin.size();
@@ -208,6 +212,7 @@ namespace dialog
 					auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(HEXED_HEX));
 					if (lpPane)
 					{
+						lpPane->ClearHighlight();
 						lpPane->SetBinaryStream(lpStream);
 					}
 
@@ -249,5 +254,36 @@ namespace dialog
 
 		// Close
 		void CHexEditor::OnEditAction3() { OnOK(); }
+
+		void CHexEditor::OnSmartViewNodeSelected(smartview::block* lpData) const
+		{
+			if (!lpData) return;
+			auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(HEXED_HEX));
+			if (lpPane)
+			{
+				lpPane->ClearHighlight();
+				const auto hex = lpPane->GetStringW();
+				const auto start = strings::OffsetToFilteredOffset(hex, lpData->getOffset() * 2);
+				const auto end = strings::OffsetToFilteredOffset(hex, (lpData->getOffset() + lpData->getSize()) * 2);
+				const auto range = viewpane::Range{start, end};
+				lpPane->AddHighlight(range);
+			}
+		}
+
+		void CHexEditor::ClearHighlight() const
+		{
+			auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(HEXED_HEX));
+			if (lpPane)
+			{
+				lpPane->ClearHighlight();
+			}
+		}
+
+		void CHexEditor::SetHex(_In_opt_count_(cb) LPBYTE lpb, size_t cb) const
+		{
+			SetBinary(HEXED_HEX, lpb, cb);
+			ClearHighlight();
+		}
+
 	} // namespace editor
 } // namespace dialog

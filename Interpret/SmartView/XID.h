@@ -5,15 +5,12 @@ namespace smartview
 {
 	class XID : public SmartViewParser
 	{
-	public:
-		XID();
-
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
-		GUID m_NamespaceGuid;
-		size_t m_cbLocalId;
-		std::vector<BYTE> m_LocalID;
+		blockT<GUID> m_NamespaceGuid;
+		size_t m_cbLocalId{};
+		blockBytes m_LocalID;
 	};
-}
+} // namespace smartview

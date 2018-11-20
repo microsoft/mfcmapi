@@ -1,10 +1,18 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/SmartViewPane.h>
+#include <UI/ViewPane/TextPane.h>
 #include <Interpret/String.h>
 #include <Interpret/SmartView/SmartView.h>
+#include <UI/UIFunctions.h>
 
 namespace viewpane
 {
+	enum __SmartViewFields
+	{
+		SV_TREE,
+		SV_TEXT
+	};
+
 	SmartViewPane* SmartViewPane::Create(const int paneID, const UINT uidLabel)
 	{
 		auto pane = new (std::nothrow) SmartViewPane();
@@ -21,9 +29,6 @@ namespace viewpane
 
 	void SmartViewPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
-		m_TextPane.SetMultiline();
-		m_TextPane.SetLabel(NULL);
-		m_TextPane.ViewPane::SetReadOnly(true);
 		m_bReadOnly = true;
 
 		for (const auto& smartViewParserType : SmartViewParserTypeArray)
@@ -32,8 +37,14 @@ namespace viewpane
 		}
 
 		DropDownPane::Initialize(pParent, hdc);
-		// The control id of this text pane doesn't matter, so leave it at 0
-		m_TextPane.Initialize(pParent, hdc);
+
+		m_TreePane = TreePane::Create(SV_TREE, 0, true);
+		m_TreePane->m_Tree.ItemSelectedCallback = [&](auto _1) { return ItemSelected(_1); };
+		m_TreePane->m_Tree.OnCustomDrawCallback = [&](auto _1, auto _2, auto _3) { return OnCustomDraw(_1, _2, _3); };
+
+		m_Splitter.SetPaneOne(m_TreePane);
+		m_Splitter.SetPaneTwo(TextPane::CreateMultiLinePane(SV_TEXT, 0, true));
+		m_Splitter.Initialize(pParent, hdc);
 
 		m_bInitialized = true;
 	}
@@ -51,7 +62,7 @@ namespace viewpane
 		if (m_bDoDropDown && !m_bCollapsed)
 		{
 			iHeight += m_iEditHeight; // Height of the dropdown
-			iHeight += m_TextPane.GetFixedHeight();
+			iHeight += m_Splitter.GetFixedHeight();
 		}
 
 		return iHeight;
@@ -61,7 +72,7 @@ namespace viewpane
 	{
 		if (!m_bCollapsed && m_bHasData)
 		{
-			return m_TextPane.GetLines();
+			return m_Splitter.GetLines();
 		}
 
 		return 0;
@@ -100,23 +111,23 @@ namespace viewpane
 				curY += m_iEditHeight;
 			}
 
-			m_TextPane.DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+			m_Splitter.DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 		}
 
 		WC_B_S(m_DropDown.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
-		m_TextPane.ShowWindow(m_bCollapsed || !m_bHasData ? SW_HIDE : SW_SHOW);
+		m_Splitter.ShowWindow(m_bCollapsed || !m_bHasData ? SW_HIDE : SW_SHOW);
 	}
 
 	void SmartViewPane::SetMargins(
-		int iMargin,
-		int iSideMargin,
-		int iLabelHeight, // Height of the label
-		int iSmallHeightMargin,
-		int iLargeHeightMargin,
-		int iButtonHeight, // Height of buttons below the control
-		int iEditHeight) // height of an edit control
+		const int iMargin,
+		const int iSideMargin,
+		const int iLabelHeight, // Height of the label
+		const int iSmallHeightMargin,
+		const int iLargeHeightMargin,
+		const int iButtonHeight, // Height of buttons below the control
+		const int iEditHeight) // height of an edit control
 	{
-		m_TextPane.SetMargins(
+		m_Splitter.SetMargins(
 			iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
 		ViewPane::SetMargins(
 			iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
@@ -133,12 +144,17 @@ namespace viewpane
 			m_bHasData = false;
 		}
 
-		m_TextPane.SetStringW(szMsg);
+		auto lpPane = dynamic_cast<TextPane*>(m_Splitter.GetPaneByID(SV_TEXT));
+
+		if (lpPane)
+		{
+			lpPane->SetStringW(szMsg);
+		}
 	}
 
 	void SmartViewPane::DisableDropDown() { m_bDoDropDown = false; }
 
-	void SmartViewPane::SetParser(__ParsingTypeEnum iParser)
+	void SmartViewPane::SetParser(const __ParsingTypeEnum iParser)
 	{
 		for (size_t iDropNum = 0; iDropNum < SmartViewParserTypeArray.size(); iDropNum++)
 		{
@@ -154,10 +170,122 @@ namespace viewpane
 	{
 		m_bin = myBin;
 		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
-		auto szSmartView =
-			smartview::InterpretBinaryAsString(SBinary{ULONG(m_bin.size()), m_bin.data()}, iStructType, nullptr);
+		auto szSmartView = std::wstring{};
+		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
+		if (svp)
+		{
+			svp->init(m_bin.size(), m_bin.data());
+			szSmartView = svp->ToString();
+			treeData = svp->getBlock();
+			delete svp;
+		}
+		else
+		{
+			treeData = smartview::block{};
+		}
+
+		RefreshTree();
+		if (szSmartView.empty())
+		{
+			szSmartView =
+				smartview::InterpretBinaryAsString(SBinary{ULONG(m_bin.size()), m_bin.data()}, iStructType, nullptr);
+		}
 
 		m_bHasData = !szSmartView.empty();
 		SetStringW(szSmartView);
+	}
+
+	void SmartViewPane::RefreshTree()
+	{
+		if (!m_TreePane) return;
+		m_TreePane->m_Tree.Refresh();
+
+		AddChildren(nullptr, treeData);
+	}
+
+	void SmartViewPane::AddChildren(HTREEITEM parent, const smartview::block& data)
+	{
+		if (!m_TreePane) return;
+
+		const auto root =
+			m_TreePane->m_Tree.AddChildNode(data.getText(), parent, reinterpret_cast<LPARAM>(&data), nullptr);
+		for (const auto& item : data.getChildren())
+		{
+			AddChildren(root, item);
+		}
+
+		WC_B_S(::SendMessage(
+			m_TreePane->m_Tree.GetSafeHwnd(),
+			TVM_EXPAND,
+			static_cast<WPARAM>(TVE_EXPAND),
+			reinterpret_cast<LPARAM>(root)));
+	}
+
+	void SmartViewPane::ItemSelected(HTREEITEM hItem)
+	{
+		const auto pane = dynamic_cast<TreePane*>(m_Splitter.GetPaneByID(SV_TREE));
+		if (!pane) return;
+
+		auto tvi = TVITEM{};
+		tvi.mask = TVIF_PARAM;
+		tvi.hItem = hItem;
+		::SendMessage(pane->m_Tree.GetSafeHwnd(), TVM_GETITEM, 0, reinterpret_cast<LPARAM>(&tvi));
+		const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
+		if (lpData)
+		{
+			if (registry::RegKeys[registry::regkeyHEX_DIALOG_DIAG].ulCurDWORD != 0)
+			{
+				SetStringW(lpData->ToString());
+			}
+
+			if (OnItemSelected)
+			{
+				OnItemSelected(lpData);
+			}
+		}
+	}
+
+	void
+	SmartViewPane::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM /*hItemCurHover*/) const
+	{
+		if (registry::RegKeys[registry::regkeyHEX_DIALOG_DIAG].ulCurDWORD == 0) return;
+		const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
+		if (!lvcd) return;
+
+		switch (lvcd->nmcd.dwDrawStage)
+		{
+		case CDDS_ITEMPOSTPAINT:
+		{
+			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
+			if (hItem)
+			{
+				auto tvi = TVITEM{};
+				tvi.mask = TVIF_PARAM;
+				tvi.hItem = hItem;
+				TreeView_GetItem(lvcd->nmcd.hdr.hwndFrom, &tvi);
+				const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
+				if (lpData && !lpData->isHeader())
+				{
+					auto bin = strings::BinToHexString(m_bin.data() + lpData->getOffset(), lpData->getSize(), false);
+
+					const auto blockString =
+						strings::format(L"(%d, %d) %ws", lpData->getOffset(), lpData->getSize(), bin.c_str());
+					const auto size = ui::GetTextExtentPoint32(lvcd->nmcd.hdc, blockString);
+					auto rect = RECT{};
+					TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
+					rect.left = rect.right;
+					rect.right += size.cx;
+					ui::DrawSegoeTextW(
+						lvcd->nmcd.hdc,
+						blockString,
+						MyGetSysColor(ui::cGlow),
+						rect,
+						false,
+						DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+				}
+			}
+			break;
+		}
+		}
 	}
 } // namespace viewpane

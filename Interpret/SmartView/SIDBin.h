@@ -7,10 +7,8 @@ namespace smartview
 	{
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
-		std::wstring m_lpSidName;
-		std::wstring m_lpSidDomain;
-		std::wstring m_lpStringSid;
+		blockBytes m_SIDbin;
 	};
-}
+} // namespace smartview

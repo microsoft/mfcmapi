@@ -6,24 +6,21 @@ namespace smartview
 	// [MS-OXOTASK].pdf
 	struct TaskAssigner
 	{
-		DWORD cbAssigner{};
-		ULONG cbEntryID{};
-		std::vector<BYTE> lpEntryID;
-		std::string szDisplayName;
-		std::wstring wzDisplayName;
-		std::vector<BYTE> JunkData;
+		blockT<DWORD> cbAssigner{};
+		blockT<ULONG> cbEntryID{};
+		blockBytes lpEntryID;
+		blockStringA szDisplayName;
+		blockStringW wzDisplayName;
+		blockBytes JunkData;
 	};
 
 	class TaskAssigners : public SmartViewParser
 	{
-	public:
-		TaskAssigners();
-
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
-		DWORD m_cAssigners;
+		blockT<DWORD> m_cAssigners;
 		std::vector<TaskAssigner> m_lpTaskAssigners;
 	};
-}
+} // namespace smartview

@@ -5,52 +5,50 @@ namespace smartview
 {
 	struct PackedUnicodeString
 	{
-		BYTE cchLength;
-		WORD cchExtendedLength;
-		std::wstring szCharacters;
+		blockT<BYTE> cchLength;
+		blockT<WORD> cchExtendedLength;
+		blockStringW szCharacters;
 	};
 
 	struct PackedAnsiString
 	{
-		BYTE cchLength;
-		WORD cchExtendedLength;
-		std::string szCharacters;
+		blockT<BYTE> cchLength;
+		blockT<WORD> cchExtendedLength;
+		blockStringA szCharacters;
 	};
 
 	struct SkipBlock
 	{
-		DWORD dwSize;
-		std::vector<BYTE> lpbContent;
+		blockT<DWORD> dwSize;
+		blockBytes lpbContent;
+		PackedUnicodeString lpbContentText;
 	};
 
 	struct FieldDefinition
 	{
-		DWORD dwFlags;
-		WORD wVT;
-		DWORD dwDispid;
-		WORD wNmidNameLength;
-		std::wstring szNmidName;
+		blockT<DWORD> dwFlags;
+		blockT<WORD> wVT;
+		blockT<DWORD> dwDispid;
+		blockT<WORD> wNmidNameLength;
+		blockStringW szNmidName;
 		PackedAnsiString pasNameANSI;
 		PackedAnsiString pasFormulaANSI;
 		PackedAnsiString pasValidationRuleANSI;
 		PackedAnsiString pasValidationTextANSI;
 		PackedAnsiString pasErrorANSI;
-		DWORD dwInternalType;
-		DWORD dwSkipBlockCount;
+		blockT<DWORD> dwInternalType;
+		DWORD dwSkipBlockCount{};
 		std::vector<SkipBlock> psbSkipBlocks;
 	};
 
 	class PropertyDefinitionStream : public SmartViewParser
 	{
-	public:
-		PropertyDefinitionStream();
-
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
-		WORD m_wVersion;
-		DWORD m_dwFieldDefinitionCount;
+		blockT<WORD> m_wVersion;
+		blockT<DWORD> m_dwFieldDefinitionCount;
 		std::vector<FieldDefinition> m_pfdFieldDefinitions;
 	};
-}
+} // namespace smartview

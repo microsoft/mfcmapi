@@ -6,26 +6,6 @@
 
 namespace smartview
 {
-	RecurrencePattern::RecurrencePattern()
-	{
-		m_ReaderVersion = 0;
-		m_WriterVersion = 0;
-		m_RecurFrequency = 0;
-		m_PatternType = 0;
-		m_CalendarType = 0;
-		m_FirstDateTime = 0;
-		m_Period = 0;
-		m_SlidingFlag = 0;
-		m_PatternTypeSpecific = {0};
-		m_EndType = 0;
-		m_OccurrenceCount = 0;
-		m_FirstDOW = 0;
-		m_DeletedInstanceCount = 0;
-		m_ModifiedInstanceCount = 0;
-		m_StartDate = 0;
-		m_EndDate = 0;
-	}
-
 	void RecurrencePattern::Parse()
 	{
 		m_ReaderVersion = m_Parser.Get<WORD>();
@@ -64,11 +44,10 @@ namespace smartview
 
 		if (m_DeletedInstanceCount && m_DeletedInstanceCount < _MaxEntriesSmall)
 		{
+			m_DeletedInstanceDates.reserve(m_DeletedInstanceCount);
 			for (DWORD i = 0; i < m_DeletedInstanceCount; i++)
 			{
-				DWORD deletedInstanceDate = 0;
-				deletedInstanceDate = m_Parser.Get<DWORD>();
-				m_DeletedInstanceDates.push_back(deletedInstanceDate);
+				m_DeletedInstanceDates.push_back(m_Parser.Get<DWORD>());
 			}
 		}
 
@@ -77,11 +56,10 @@ namespace smartview
 		if (m_ModifiedInstanceCount && m_ModifiedInstanceCount <= m_DeletedInstanceCount &&
 			m_ModifiedInstanceCount < _MaxEntriesSmall)
 		{
+			m_ModifiedInstanceDates.reserve(m_ModifiedInstanceCount);
 			for (DWORD i = 0; i < m_ModifiedInstanceCount; i++)
 			{
-				DWORD modifiedInstanceDate = 0;
-				modifiedInstanceDate = m_Parser.Get<DWORD>();
-				m_ModifiedInstanceDates.push_back(modifiedInstanceDate);
+				m_ModifiedInstanceDates.push_back(m_Parser.Get<DWORD>());
 			}
 		}
 
@@ -89,96 +67,114 @@ namespace smartview
 		m_EndDate = m_Parser.Get<DWORD>();
 	}
 
-	_Check_return_ std::wstring RecurrencePattern::ToStringInternal()
+	void RecurrencePattern::ParseBlocks()
 	{
+		setRoot(L"Recurrence Pattern: \r\n");
+		addBlock(m_ReaderVersion, L"ReaderVersion: 0x%1!04X!\r\n", m_ReaderVersion.getData());
+		addBlock(m_WriterVersion, L"WriterVersion: 0x%1!04X!\r\n", m_WriterVersion.getData());
 		auto szRecurFrequency = interpretprop::InterpretFlags(flagRecurFrequency, m_RecurFrequency);
-		auto szPatternType = interpretprop::InterpretFlags(flagPatternType, m_PatternType);
-		auto szCalendarType = interpretprop::InterpretFlags(flagCalendarType, m_CalendarType);
-		auto szRP = strings::formatmessage(
-			IDS_RPHEADER,
-			m_ReaderVersion,
-			m_WriterVersion,
+		addBlock(
 			m_RecurFrequency,
-			szRecurFrequency.c_str(),
-			m_PatternType,
-			szPatternType.c_str(),
-			m_CalendarType,
-			szCalendarType.c_str(),
-			m_FirstDateTime,
-			m_Period,
-			m_SlidingFlag);
+			L"RecurFrequency: 0x%1!04X! = %2!ws!\r\n",
+			m_RecurFrequency.getData(),
+			szRecurFrequency.c_str());
+		auto szPatternType = interpretprop::InterpretFlags(flagPatternType, m_PatternType);
+		addBlock(m_PatternType, L"PatternType: 0x%1!04X! = %2!ws!\r\n", m_PatternType.getData(), szPatternType.c_str());
+		auto szCalendarType = interpretprop::InterpretFlags(flagCalendarType, m_CalendarType);
+		addBlock(
+			m_CalendarType, L"CalendarType: 0x%1!04X! = %2!ws!\r\n", m_CalendarType.getData(), szCalendarType.c_str());
+		addBlock(m_FirstDateTime, L"FirstDateTime: 0x%1!08X! = %1!d!\r\n", m_FirstDateTime.getData());
+		addBlock(m_Period, L"Period: 0x%1!08X! = %1!d!\r\n", m_Period.getData());
+		addBlock(m_SlidingFlag, L"SlidingFlag: 0x%1!08X!\r\n", m_SlidingFlag.getData());
 
-		std::wstring szDOW;
-		std::wstring szN;
 		switch (m_PatternType)
 		{
 		case rptMinute:
 			break;
 		case rptWeek:
-			szDOW = interpretprop::InterpretFlags(flagDOW, m_PatternTypeSpecific.WeekRecurrencePattern);
-			szRP +=
-				strings::formatmessage(IDS_RPPATTERNWEEK, m_PatternTypeSpecific.WeekRecurrencePattern, szDOW.c_str());
+			addBlock(
+				m_PatternTypeSpecific.WeekRecurrencePattern,
+				L"PatternTypeSpecific.WeekRecurrencePattern: 0x%1!08X! = %2!ws!\r\n",
+				m_PatternTypeSpecific.WeekRecurrencePattern.getData(),
+				interpretprop::InterpretFlags(flagDOW, m_PatternTypeSpecific.WeekRecurrencePattern).c_str());
 			break;
 		case rptMonth:
 		case rptMonthEnd:
 		case rptHjMonth:
 		case rptHjMonthEnd:
-			szRP += strings::formatmessage(IDS_RPPATTERNMONTH, m_PatternTypeSpecific.MonthRecurrencePattern);
+			addBlock(
+				m_PatternTypeSpecific.MonthRecurrencePattern,
+				L"PatternTypeSpecific.MonthRecurrencePattern: 0x%1!08X! = %1!d!\r\n",
+				m_PatternTypeSpecific.MonthRecurrencePattern.getData());
 			break;
 		case rptMonthNth:
 		case rptHjMonthNth:
-			szDOW = interpretprop::InterpretFlags(flagDOW, m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek);
-			szN = interpretprop::InterpretFlags(flagN, m_PatternTypeSpecific.MonthNthRecurrencePattern.N);
-			szRP += strings::formatmessage(
-				IDS_RPPATTERNMONTHNTH,
+			addBlock(
 				m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek,
-				szDOW.c_str(),
+				L"PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek: 0x%1!08X! = %2!ws!\r\n",
+				m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek.getData(),
+				interpretprop::InterpretFlags(flagDOW, m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek)
+					.c_str());
+			addBlock(
 				m_PatternTypeSpecific.MonthNthRecurrencePattern.N,
-				szN.c_str());
+				L"PatternTypeSpecific.MonthNthRecurrencePattern.N: 0x%1!08X! = %2!ws!\r\n",
+				m_PatternTypeSpecific.MonthNthRecurrencePattern.N.getData(),
+				interpretprop::InterpretFlags(flagN, m_PatternTypeSpecific.MonthNthRecurrencePattern.N).c_str());
 			break;
 		}
 
-		auto szEndType = interpretprop::InterpretFlags(flagEndType, m_EndType);
-		auto szFirstDOW = interpretprop::InterpretFlags(flagFirstDOW, m_FirstDOW);
-
-		szRP += strings::formatmessage(
-			IDS_RPHEADER2,
+		addBlock(
 			m_EndType,
-			szEndType.c_str(),
-			m_OccurrenceCount,
+			L"EndType: 0x%1!08X! = %2!ws!\r\n",
+			m_EndType.getData(),
+			interpretprop::InterpretFlags(flagEndType, m_EndType).c_str());
+		addBlock(m_OccurrenceCount, L"OccurrenceCount: 0x%1!08X! = %1!d!\r\n", m_OccurrenceCount.getData());
+		addBlock(
 			m_FirstDOW,
-			szFirstDOW.c_str(),
-			m_DeletedInstanceCount);
+			L"FirstDOW: 0x%1!08X! = %2!ws!\r\n",
+			m_FirstDOW.getData(),
+			interpretprop::InterpretFlags(flagFirstDOW, m_FirstDOW).c_str());
+		auto deletedInstances = m_DeletedInstanceCount;
+		deletedInstances.setText(L"DeletedInstanceCount: 0x%1!08X! = %1!d!\r\n", m_DeletedInstanceCount.getData());
 
 		if (m_DeletedInstanceDates.size())
 		{
 			for (DWORD i = 0; i < m_DeletedInstanceDates.size(); i++)
 			{
-				szRP += strings::formatmessage(
-					IDS_RPDELETEDINSTANCEDATES,
-					i,
+				deletedInstances.addBlock(
 					m_DeletedInstanceDates[i],
+					L"DeletedInstanceDates[%1!d!]: 0x%2!08X! = %3!ws!\r\n",
+					i,
+					m_DeletedInstanceDates[i].getData(),
 					RTimeToString(m_DeletedInstanceDates[i]).c_str());
 			}
 		}
 
-		szRP += strings::formatmessage(IDS_RPMODIFIEDINSTANCECOUNT, m_ModifiedInstanceCount);
+		addBlock(deletedInstances);
+		addBlock(
+			m_ModifiedInstanceCount,
+			L"ModifiedInstanceCount: 0x%1!08X! = %1!d!\r\n",
+			m_ModifiedInstanceCount.getData());
 
 		if (m_ModifiedInstanceDates.size())
 		{
 			for (DWORD i = 0; i < m_ModifiedInstanceDates.size(); i++)
 			{
-				szRP += strings::formatmessage(
-					IDS_RPMODIFIEDINSTANCEDATES,
-					i,
+				addBlock(
 					m_ModifiedInstanceDates[i],
+					L"ModifiedInstanceDates[%1!d!]: 0x%2!08X! = %3!ws!\r\n",
+					i,
+					m_ModifiedInstanceDates[i].getData(),
 					RTimeToString(m_ModifiedInstanceDates[i]).c_str());
 			}
 		}
 
-		szRP += strings::formatmessage(
-			IDS_RPDATE, m_StartDate, RTimeToString(m_StartDate).c_str(), m_EndDate, RTimeToString(m_EndDate).c_str());
-
-		return szRP;
+		addBlock(
+			m_StartDate,
+			L"StartDate: 0x%1!08X! = %1!d! = %2!ws!\r\n",
+			m_StartDate.getData(),
+			RTimeToString(m_StartDate).c_str());
+		addBlock(
+			m_EndDate, L"EndDate: 0x%1!08X! = %1!d! = %2!ws!", m_EndDate.getData(), RTimeToString(m_EndDate).c_str());
 	}
-}
+} // namespace smartview

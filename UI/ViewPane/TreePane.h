@@ -11,6 +11,8 @@ namespace viewpane
 
 		std::function<void(controls::StyleTreeCtrl& tree)> InitializeCallback = nullptr;
 
+		controls::StyleTreeCtrl m_Tree;
+
 	private:
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
@@ -18,6 +20,5 @@ namespace viewpane
 		int GetFixedHeight() override;
 		int GetLines() override { return m_bCollapsed ? 0 : 4; }
 
-		controls::StyleTreeCtrl m_Tree;
 	};
 } // namespace viewpane

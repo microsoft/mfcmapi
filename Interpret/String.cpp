@@ -739,4 +739,24 @@ namespace strings
 		if (found == offset) return lastFoundLocation + 1;
 		return static_cast<size_t>(-1);
 	}
+
+	bool endsWith(const std::wstring& str, const std::wstring& ending)
+	{
+		if (str.length() >= ending.length())
+		{
+			return 0 == str.compare(str.length() - ending.length(), ending.length(), ending);
+		}
+
+		return false;
+	}
+
+	std::wstring ensureCRLF(const std::wstring& str)
+	{
+		if (endsWith(str, L"\r\n"))
+		{
+			return str;
+		}
+
+		return str + L"\r\n";
+	}
 } // namespace strings

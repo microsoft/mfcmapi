@@ -1,54 +1,56 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/RecipientRowStream.h>
 #include <Interpret/String.h>
-#include <Interpret/SmartView/PropertyStruct.h>
+#include <Interpret/SmartView/PropertiesStruct.h>
 
 namespace smartview
 {
-	RecipientRowStream::RecipientRowStream()
-	{
-		m_cVersion = 0;
-		m_cRowCount = 0;
-		m_lpAdrEntry = nullptr;
-	}
-
 	void RecipientRowStream::Parse()
 	{
 		m_cVersion = m_Parser.Get<DWORD>();
 		m_cRowCount = m_Parser.Get<DWORD>();
 
 		if (m_cRowCount && m_cRowCount < _MaxEntriesSmall)
-			m_lpAdrEntry = reinterpret_cast<ADRENTRY*>(AllocateArray(m_cRowCount, sizeof ADRENTRY));
-
-		if (m_lpAdrEntry)
 		{
+			m_lpAdrEntry.reserve(m_cRowCount);
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
-				m_lpAdrEntry[i].cValues = m_Parser.Get<DWORD>();
-				m_lpAdrEntry[i].ulReserved1 = m_Parser.Get<DWORD>();
+				auto entry = ADRENTRYStruct{};
+				entry.cValues = m_Parser.Get<DWORD>();
+				entry.ulReserved1 = m_Parser.Get<DWORD>();
 
-				if (m_lpAdrEntry[i].cValues && m_lpAdrEntry[i].cValues < _MaxEntriesSmall)
+				if (entry.cValues && entry.cValues < _MaxEntriesSmall)
 				{
-					m_lpAdrEntry[i].rgPropVals = BinToSPropValue(m_lpAdrEntry[i].cValues, false);
+					entry.rgPropVals.SetMaxEntries(entry.cValues);
+					entry.rgPropVals.parse(m_Parser, false);
 				}
+
+				m_lpAdrEntry.push_back(entry);
 			}
 		}
 	}
 
-	_Check_return_ std::wstring RecipientRowStream::ToStringInternal()
+	void RecipientRowStream::ParseBlocks()
 	{
-		auto szRecipientRowStream = strings::formatmessage(IDS_RECIPIENTROWSTREAMHEADER, m_cVersion, m_cRowCount);
-		if (m_lpAdrEntry && m_cRowCount)
+		setRoot(L"Recipient Row Stream\r\n");
+		addBlock(m_cVersion, L"cVersion = %1!d!\r\n", m_cVersion.getData());
+		addBlock(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount.getData());
+		if (!m_lpAdrEntry.empty() && m_cRowCount)
 		{
+			addBlankLine();
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
-				szRecipientRowStream += strings::formatmessage(
-					IDS_RECIPIENTROWSTREAMROW, i, m_lpAdrEntry[i].cValues, m_lpAdrEntry[i].ulReserved1);
+				terminateBlock();
+				addHeader(L"Row %1!d!\r\n", i);
+				addBlock(
+					m_lpAdrEntry[i].cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", m_lpAdrEntry[i].cValues.getData());
+				addBlock(
+					m_lpAdrEntry[i].ulReserved1,
+					L"ulReserved1 = 0x%1!08X! = %1!d!\r\n",
+					m_lpAdrEntry[i].ulReserved1.getData());
 
-				szRecipientRowStream += PropsToString(m_lpAdrEntry[i].cValues, m_lpAdrEntry[i].rgPropVals);
+				addBlock(m_lpAdrEntry[i].rgPropVals.getBlock());
 			}
 		}
-
-		return szRecipientRowStream;
 	}
-}
+} // namespace smartview

@@ -20,16 +20,17 @@ namespace smartview
 			// Must have at least wDataElementSize bytes left to be a valid data element
 			if (m_Parser.RemainingBytes() < wDataElementSize) break;
 
-			m_Parser.Advance(wDataElementSize);
+			m_Parser.advance(wDataElementSize);
 			wPersistDataCount++;
-			if (PERISIST_SENTINEL == wPersistID) break;
+			if (wPersistID == PERISIST_SENTINEL) break;
 		}
 
 		// Now we parse for real
-		m_Parser.Rewind();
+		m_Parser.rewind();
 
 		if (wPersistDataCount && wPersistDataCount < _MaxEntriesSmall)
 		{
+			m_ppdPersistData.reserve(wPersistDataCount);
 			for (WORD iPersistElement = 0; iPersistElement < wPersistDataCount; iPersistElement++)
 			{
 				m_ppdPersistData.push_back(BinToPersistData());
@@ -57,20 +58,21 @@ namespace smartview
 				// Must have at least wElementDataSize bytes left to be a valid element data
 				if (DataElementParser.RemainingBytes() < wElementDataSize) break;
 
-				DataElementParser.Advance(wElementDataSize);
+				DataElementParser.advance(wElementDataSize);
 				wDataElementCount++;
-				if (ELEMENT_SENTINEL == wElementID) break;
+				if (wElementID == ELEMENT_SENTINEL) break;
 			}
 		}
 
 		if (wDataElementCount && wDataElementCount < _MaxEntriesSmall)
 		{
+			persistData.ppeDataElement.reserve(wDataElementCount);
 			for (WORD iDataElement = 0; iDataElement < wDataElementCount; iDataElement++)
 			{
 				PersistElement persistElement;
 				persistElement.wElementID = m_Parser.Get<WORD>();
 				persistElement.wElementDataSize = m_Parser.Get<WORD>();
-				if (ELEMENT_SENTINEL == persistElement.wElementID) break;
+				if (persistElement.wElementID == ELEMENT_SENTINEL) break;
 				// Since this is a word, the size will never be too large
 				persistElement.lpbElementData = m_Parser.GetBYTES(persistElement.wElementDataSize);
 
@@ -91,45 +93,66 @@ namespace smartview
 		return persistData;
 	}
 
-	_Check_return_ std::wstring AdditionalRenEntryIDs::ToStringInternal()
+	void AdditionalRenEntryIDs::ParseBlocks()
 	{
-		auto szAdditionalRenEntryIDs = strings::formatmessage(IDS_AEIDHEADER, m_ppdPersistData.size());
+		setRoot(L"Additional Ren Entry IDs\r\n");
+		addHeader(L"PersistDataCount = %1!d!", m_ppdPersistData.size());
 
-		if (m_ppdPersistData.size())
+		if (!m_ppdPersistData.empty())
 		{
 			for (WORD iPersistElement = 0; iPersistElement < m_ppdPersistData.size(); iPersistElement++)
 			{
-				szAdditionalRenEntryIDs += strings::formatmessage(
-					IDS_AEIDPERSISTELEMENT,
-					iPersistElement,
+				terminateBlock();
+				addBlankLine();
+				auto element = block{};
+				element.setText(L"Persist Element %1!d!:\r\n", iPersistElement);
+				element.addBlock(
 					m_ppdPersistData[iPersistElement].wPersistID,
-					interpretprop::InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID).c_str(),
-					m_ppdPersistData[iPersistElement].wDataElementsSize);
+					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
+					m_ppdPersistData[iPersistElement].wPersistID.getData(),
+					interpretprop::InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID).c_str());
+				element.addBlock(
+					m_ppdPersistData[iPersistElement].wDataElementsSize,
+					L"DataElementsSize = 0x%1!04X!",
+					m_ppdPersistData[iPersistElement].wDataElementsSize.getData());
 
-				if (m_ppdPersistData[iPersistElement].ppeDataElement.size())
+				if (!m_ppdPersistData[iPersistElement].ppeDataElement.empty())
 				{
 					for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].ppeDataElement.size();
 						 iDataElement++)
 					{
-						szAdditionalRenEntryIDs += strings::formatmessage(
-							IDS_AEIDDATAELEMENT,
-							iDataElement,
+						element.terminateBlock();
+						element.addHeader(L"DataElement: %1!d!\r\n", iDataElement);
+
+						element.addBlock(
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
+							L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
+							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID.getData(),
 							interpretprop::InterpretFlags(
 								flagElementID,
 								m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID)
-								.c_str(),
-							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize);
+								.c_str());
 
-						szAdditionalRenEntryIDs += strings::BinToHexString(
-							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData, true);
+						element.addBlock(
+							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize,
+							L"\tElementDataSize = 0x%1!04X!\r\n",
+							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize.getData());
+
+						element.addHeader(L"\tElementData = ");
+						element.addBlock(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData);
 					}
 				}
 
-				szAdditionalRenEntryIDs += JunkDataToString(m_ppdPersistData[iPersistElement].JunkData);
+				if (!m_ppdPersistData[iPersistElement].JunkData.empty())
+				{
+					element.terminateBlock();
+					element.addHeader(
+						L"Unparsed data size = 0x%1!08X!\r\n", m_ppdPersistData[iPersistElement].JunkData.size());
+					element.addBlock(m_ppdPersistData[iPersistElement].JunkData);
+				}
+
+				addBlock(element);
 			}
 		}
-
-		return szAdditionalRenEntryIDs;
 	}
-}
+} // namespace smartview

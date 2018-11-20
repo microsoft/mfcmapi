@@ -6,26 +6,23 @@ namespace smartview
 	// [MS-OXOMSG].pdf
 	class ReportTag : public SmartViewParser
 	{
-	public:
-		ReportTag();
-
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
-		std::vector<BYTE> m_Cookie; // 8 characters + NULL terminator
-		DWORD m_Version;
-		ULONG m_cbStoreEntryID;
-		std::vector<BYTE> m_lpStoreEntryID;
-		ULONG m_cbFolderEntryID;
-		std::vector<BYTE> m_lpFolderEntryID;
-		ULONG m_cbMessageEntryID;
-		std::vector<BYTE> m_lpMessageEntryID;
-		ULONG m_cbSearchFolderEntryID;
-		std::vector<BYTE> m_lpSearchFolderEntryID;
-		ULONG m_cbMessageSearchKey;
-		std::vector<BYTE> m_lpMessageSearchKey;
-		ULONG m_cchAnsiText;
-		std::string m_lpszAnsiText;
+		blockBytes m_Cookie; // 8 characters + NULL terminator
+		blockT<DWORD> m_Version;
+		blockT<ULONG> m_cbStoreEntryID;
+		blockBytes m_lpStoreEntryID;
+		blockT<ULONG> m_cbFolderEntryID;
+		blockBytes m_lpFolderEntryID;
+		blockT<ULONG> m_cbMessageEntryID;
+		blockBytes m_lpMessageEntryID;
+		blockT<ULONG> m_cbSearchFolderEntryID;
+		blockBytes m_lpSearchFolderEntryID;
+		blockT<ULONG> m_cbMessageSearchKey;
+		blockBytes m_lpMessageSearchKey;
+		blockT<ULONG> m_cchAnsiText;
+		blockStringA m_lpszAnsiText;
 	};
-}
+} // namespace smartview

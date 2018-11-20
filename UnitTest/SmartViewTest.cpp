@@ -31,6 +31,7 @@ namespace SmartViewTest
 		static const bool parse_all = true;
 		static const bool assert_on_failure = true;
 		static const bool limit_output = true;
+		static const bool ignore_trailing_whitespace = false;
 
 		// Assert::AreEqual doesn't do full logging, so we roll our own
 		void AreEqualEx(
@@ -39,62 +40,68 @@ namespace SmartViewTest
 			const wchar_t* message = nullptr,
 			const __LineInfo* pLineInfo = nullptr) const
 		{
-			if (expected != actual)
+			if (ignore_trailing_whitespace)
 			{
-				if (message != nullptr)
-				{
-					Logger::WriteMessage(strings::format(L"Test: %ws\n", message).c_str());
-				}
+				if (strings::trimWhitespace(expected) == strings::trimWhitespace(actual)) return;
+			}
+			else
+			{
+				if (expected == actual) return;
+			}
 
-				Logger::WriteMessage(L"Diff:\n");
+			if (message != nullptr)
+			{
+				Logger::WriteMessage(strings::format(L"Test: %ws\n", message).c_str());
+			}
 
-				auto splitExpected = strings::split(expected, L'\n');
-				auto splitActual = strings::split(actual, L'\n');
-				auto errorCount = 0;
-				for (size_t line = 0;
-					 line < splitExpected.size() && line < splitActual.size() && (errorCount < 4 || !limit_output);
-					 line++)
+			Logger::WriteMessage(L"Diff:\n");
+
+			auto splitExpected = strings::split(expected, L'\n');
+			auto splitActual = strings::split(actual, L'\n');
+			auto errorCount = 0;
+			for (size_t line = 0;
+				 line < splitExpected.size() && line < splitActual.size() && (errorCount < 4 || !limit_output);
+				 line++)
+			{
+				if (splitExpected[line] != splitActual[line])
 				{
-					if (splitExpected[line] != splitActual[line])
+					errorCount++;
+					Logger::WriteMessage(strings::format(
+											 L"[%d]\n\"%ws\"\n\"%ws\"\n",
+											 line + 1,
+											 splitExpected[line].c_str(),
+											 splitActual[line].c_str())
+											 .c_str());
+					auto lineErrorCount = 0;
+					for (size_t ch = 0; ch < splitExpected[line].size() && ch < splitActual[line].size() &&
+										(lineErrorCount < 10 || !limit_output);
+						 ch++)
 					{
-						errorCount++;
-						Logger::WriteMessage(strings::format(
-												 L"[%d]\n\"%ws\"\n\"%ws\"\n",
-												 line + 1,
-												 splitExpected[line].c_str(),
-												 splitActual[line].c_str())
-												 .c_str());
-						auto lineErrorCount = 0;
-						for (size_t ch = 0; ch < splitExpected[line].size() && ch < splitActual[line].size() &&
-											(lineErrorCount < 10 || !limit_output);
-							 ch++)
+						const auto expectedChar = splitExpected[line][ch];
+						const auto actualChar = splitActual[line][ch];
+						if (expectedChar != actualChar)
 						{
-							const auto expectedChar = splitExpected[line][ch];
-							const auto actualChar = splitActual[line][ch];
-							if (expectedChar != actualChar)
-							{
-								lineErrorCount++;
-								Logger::WriteMessage(strings::format(
-														 L"[%d]: %X (%wc) != %X (%wc)\n",
-														 ch + 1,
-														 expectedChar,
-														 expectedChar,
-														 actualChar,
-														 actualChar)
-														 .c_str());
-							}
+							lineErrorCount++;
+							Logger::WriteMessage(strings::format(
+													 L"[%d]: %X (%wc) != %X (%wc)\n",
+													 ch + 1,
+													 expectedChar,
+													 expectedChar,
+													 actualChar,
+													 actualChar)
+													 .c_str());
 						}
 					}
 				}
+			}
 
-				Logger::WriteMessage(L"\n");
-				Logger::WriteMessage(strings::format(L"Expected:\n\"%ws\"\n\n", expected.c_str()).c_str());
-				Logger::WriteMessage(strings::format(L"Actual:\n\"%ws\"", actual.c_str()).c_str());
+			Logger::WriteMessage(L"\n");
+			Logger::WriteMessage(strings::format(L"Expected:\n\"%ws\"\n\n", expected.c_str()).c_str());
+			Logger::WriteMessage(strings::format(L"Actual:\n\"%ws\"", actual.c_str()).c_str());
 
-				if (assert_on_failure)
-				{
-					Assert::Fail(ToString(message).c_str(), pLineInfo);
-				}
+			if (assert_on_failure)
+			{
+				Assert::Fail(ToString(message).c_str(), pLineInfo);
 			}
 		}
 
@@ -304,13 +311,13 @@ namespace SmartViewTest
 		TEST_METHOD(Test_STPROPERTY)
 		{
 			test(loadTestData({
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP1IN, IDR_SV11PROP1OUT},
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP2IN, IDR_SV11PROP2OUT},
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP3IN, IDR_SV11PROP3OUT},
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP4IN, IDR_SV11PROP4OUT},
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP5IN, IDR_SV11PROP5OUT},
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP6IN, IDR_SV11PROP6OUT},
-				SmartViewTestResource{IDS_STPROPERTY, parse_all, IDR_SV11PROP7IN, IDR_SV11PROP7OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP1IN, IDR_SV11PROP1OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP2IN, IDR_SV11PROP2OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP3IN, IDR_SV11PROP3OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP4IN, IDR_SV11PROP4OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP5IN, IDR_SV11PROP5OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP6IN, IDR_SV11PROP6OUT},
+				SmartViewTestResource{IDS_STPROPERTIES, parse_all, IDR_SV11PROP7IN, IDR_SV11PROP7OUT},
 			}));
 		}
 
@@ -512,4 +519,4 @@ namespace SmartViewTest
 			}));
 		}
 	};
-}
+} // namespace SmartViewTest

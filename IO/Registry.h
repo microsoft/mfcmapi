@@ -62,6 +62,7 @@ namespace registry
 		regkeyLOADADDINS,
 		regkeyFORCEOUTLOOKMAPI,
 		regkeyFORCESYSTEMMAPI,
+		regkeyHEX_DIALOG_DIAG,
 		regkeyDISPLAY_ABOUT_DIALOG,
 		regkeyPROP_COLUMN_ORDER,
 		NUMRegKeys

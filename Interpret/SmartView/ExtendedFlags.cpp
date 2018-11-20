@@ -6,8 +6,6 @@
 
 namespace smartview
 {
-	ExtendedFlags::ExtendedFlags() { m_ulNumFlags = 0; }
-
 	void ExtendedFlags::Parse()
 	{
 		// Run through the parser once to count the number of flag structs
@@ -20,17 +18,18 @@ namespace smartview
 			// Must have at least cbData bytes left to be a valid flag
 			if (m_Parser.RemainingBytes() < cbData) break;
 
-			m_Parser.Advance(cbData);
+			m_Parser.advance(cbData);
 			m_ulNumFlags++;
 		}
 
 		// Now we parse for real
-		m_Parser.Rewind();
+		m_Parser.rewind();
 
 		if (m_ulNumFlags && m_ulNumFlags < _MaxEntriesSmall)
 		{
 			auto bBadData = false;
 
+			m_pefExtendedFlags.reserve(m_ulNumFlags);
 			for (ULONG i = 0; i < m_ulNumFlags; i++)
 			{
 				ExtendedFlag extendedFlag;
@@ -41,6 +40,7 @@ namespace smartview
 				// If the structure says there's more bytes than remaining buffer, we're done parsing.
 				if (m_Parser.RemainingBytes() < extendedFlag.Cb)
 				{
+					m_pefExtendedFlags.push_back(extendedFlag);
 					m_ulNumFlags = i;
 					break;
 				}
@@ -79,6 +79,7 @@ namespace smartview
 				// If we encountered a bad flag, stop parsing
 				if (bBadData)
 				{
+					m_pefExtendedFlags.push_back(extendedFlag);
 					m_ulNumFlags = i;
 					break;
 				}
@@ -88,47 +89,60 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ std::wstring ExtendedFlags::ToStringInternal()
+	void ExtendedFlags::ParseBlocks()
 	{
-		auto szExtendedFlags = strings::formatmessage(IDS_EXTENDEDFLAGSHEADER, m_ulNumFlags);
+		setRoot(L"Extended Flags:\r\n");
+		addHeader(L"Number of flags = %1!d!", m_ulNumFlags);
 
 		if (m_pefExtendedFlags.size())
 		{
 			for (const auto& extendedFlag : m_pefExtendedFlags)
 			{
+				terminateBlock();
 				auto szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlagType, extendedFlag.Id);
-				szExtendedFlags +=
-					strings::formatmessage(IDS_EXTENDEDFLAGID, extendedFlag.Id, szFlags.c_str(), extendedFlag.Cb);
+				addBlock(extendedFlag.Id, L"Id = 0x%1!02X! = %2!ws!\r\n", extendedFlag.Id.getData(), szFlags.c_str());
+				addBlock(extendedFlag.Cb, L"Cb = 0x%1!02X! = %1!d!\r\n", extendedFlag.Cb.getData());
 
 				switch (extendedFlag.Id)
 				{
 				case EFPB_FLAGS:
-					szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags);
-					szExtendedFlags += strings::formatmessage(
-						IDS_EXTENDEDFLAGDATAFLAG, extendedFlag.Data.ExtendedFlags, szFlags.c_str());
+					terminateBlock();
+					addBlock(
+						extendedFlag.Data.ExtendedFlags,
+						L"\tExtended Flags = 0x%1!08X! = %2!ws!",
+						extendedFlag.Data.ExtendedFlags.getData(),
+						interpretprop::InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags).c_str());
 					break;
 				case EFPB_CLSIDID:
-					szFlags = guid::GUIDToString(&extendedFlag.Data.SearchFolderID);
-					szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATASFID, szFlags.c_str());
+					terminateBlock();
+					addBlock(
+						extendedFlag.Data.SearchFolderID,
+						L"\tSearchFolderID = %1!ws!",
+						guid::GUIDToString(extendedFlag.Data.SearchFolderID).c_str());
 					break;
 				case EFPB_SFTAG:
-					szExtendedFlags +=
-						strings::formatmessage(IDS_EXTENDEDFLAGDATASFTAG, extendedFlag.Data.SearchFolderTag);
+					terminateBlock();
+					addBlock(
+						extendedFlag.Data.SearchFolderTag,
+						L"\tSearchFolderTag = 0x%1!08X!",
+						extendedFlag.Data.SearchFolderTag.getData());
 					break;
 				case EFPB_TODO_VERSION:
-					szExtendedFlags +=
-						strings::formatmessage(IDS_EXTENDEDFLAGDATATODOVERSION, extendedFlag.Data.ToDoFolderVersion);
+					terminateBlock();
+					addBlock(
+						extendedFlag.Data.ToDoFolderVersion,
+						L"\tToDoFolderVersion = 0x%1!08X!",
+						extendedFlag.Data.ToDoFolderVersion.getData());
 					break;
 				}
 
 				if (extendedFlag.lpUnknownData.size())
 				{
-					szExtendedFlags += strings::loadstring(IDS_EXTENDEDFLAGUNKNOWN);
-					szExtendedFlags += strings::BinToHexString(extendedFlag.lpUnknownData, true);
+					terminateBlock();
+					addHeader(L"\tUnknown Data = ");
+					addBlock(extendedFlag.lpUnknownData);
 				}
 			}
 		}
-
-		return szExtendedFlags;
 	}
-}
+} // namespace smartview

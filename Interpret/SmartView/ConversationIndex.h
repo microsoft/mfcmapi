@@ -6,25 +6,22 @@ namespace smartview
 	// [MS-OXOMSG].pdf
 	struct ResponseLevel
 	{
-		bool DeltaCode;
-		DWORD TimeDelta;
-		BYTE Random;
-		BYTE Level;
+		blockT<bool> DeltaCode;
+		blockT<DWORD> TimeDelta;
+		blockT<BYTE> Random;
+		blockT<BYTE> Level;
 	};
 
 	class ConversationIndex : public SmartViewParser
 	{
-	public:
-		ConversationIndex();
-
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
-		BYTE m_UnnamedByte;
-		FILETIME m_ftCurrent{};
-		GUID m_guid{};
-		ULONG m_ulResponseLevels;
+		blockT<BYTE> m_UnnamedByte;
+		blockT<FILETIME> m_ftCurrent;
+		blockT<GUID> m_guid;
+		ULONG m_ulResponseLevels = 0;
 		std::vector<ResponseLevel> m_lpResponseLevels;
 	};
-}
+} // namespace smartview

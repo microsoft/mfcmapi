@@ -3,6 +3,18 @@
 
 namespace smartview
 {
+	struct SYSTEMTIMEBlock
+	{
+		blockT<WORD> wYear;
+		blockT<WORD> wMonth;
+		blockT<WORD> wDayOfWeek;
+		blockT<WORD> wDay;
+		blockT<WORD> wHour;
+		blockT<WORD> wMinute;
+		blockT<WORD> wSecond;
+		blockT<WORD> wMilliseconds;
+	};
+
 	// TimeZone
 	// =====================
 	//   This is an individual description that defines when a daylight
@@ -12,19 +24,16 @@ namespace smartview
 	//   describing the names 'daylight' and 'standard' time are omitted.
 	class TimeZone : public SmartViewParser
 	{
-	public:
-		TimeZone();
-
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
-		DWORD m_lBias; // offset from GMT
-		DWORD m_lStandardBias; // offset from bias during standard time
-		DWORD m_lDaylightBias; // offset from bias during daylight time
-		WORD m_wStandardYear;
-		SYSTEMTIME m_stStandardDate; // time to switch to standard time
-		WORD m_wDaylightDate;
-		SYSTEMTIME m_stDaylightDate; // time to switch to daylight time
+		blockT<DWORD> m_lBias; // offset from GMT
+		blockT<DWORD> m_lStandardBias; // offset from bias during standard time
+		blockT<DWORD> m_lDaylightBias; // offset from bias during daylight time
+		blockT<WORD> m_wStandardYear;
+		SYSTEMTIMEBlock m_stStandardDate; // time to switch to standard time
+		blockT<WORD> m_wDaylightDate;
+		SYSTEMTIMEBlock m_stDaylightDate; // time to switch to daylight time
 	};
-}
+} // namespace smartview

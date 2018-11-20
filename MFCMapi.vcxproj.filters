@@ -57,6 +57,9 @@
     <Filter Include="Source Files\MAPI\Cache">
       <UniqueIdentifier>{0c20d465-4fc6-40fb-9f4a-79f52df221a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Interpret\SmartView\block">
+      <UniqueIdentifier>{a146f1bf-8f86-43d7-b48f-bcf20d8b34fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -117,14 +120,34 @@
     </ClInclude>
     <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
-    <ClInclude Include="MAPI\MapiMemory.h" />
     <ClInclude Include="UI\Controls\StyleTreeCtrl.h">
       <Filter>Source Files\UI\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="UI\ViewPane\SplitterPane.h">
-      <Filter>Source Files\UI\ViewPane</Filter>
+    <ClInclude Include="Interpret\SmartView\PropertiesStruct.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
     <ClInclude Include="UI\ViewPane\TreePane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\SmartView\block\block.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\SmartView\block\blockBytes.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\SmartView\block\blockStringA.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\SmartView\block\blockStringW.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\SmartView\block\blockT.h">
+      <Filter>Source Files\Interpret\SmartView\block</Filter>
+    </ClInclude>
+    <ClInclude Include="MAPI\MapiMemory.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\ViewPane\SplitterPane.h">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClInclude>
   </ItemGroup>
@@ -170,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="UI\ViewPane\TreePane.cpp">
       <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
+    <ClCompile Include="Interpret\SmartView\PropertiesStruct.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
     </ClCompile>
     <ClCompile Include="UI\ViewPane\SplitterPane.cpp">
       <Filter>Source Files\UI\ViewPane</Filter>
@@ -261,9 +287,6 @@
     <ClInclude Include="Interpret\SmartView\AppointmentRecurrencePattern.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
-    <ClCompile Include="Interpret\SmartView\BinaryParser.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
     <ClInclude Include="Interpret\SmartView\BinaryParser.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
@@ -325,12 +348,6 @@
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClCompile>
     <ClInclude Include="Interpret\SmartView\PropertyDefinitionStream.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\PropertyStruct.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\PropertyStruct.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
     <ClCompile Include="Interpret\SmartView\RecipientRowStream.cpp">

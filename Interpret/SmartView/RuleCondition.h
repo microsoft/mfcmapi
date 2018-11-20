@@ -4,49 +4,52 @@
 
 namespace smartview
 {
-	// http://msdn.microsoft.com/en-us/library/ee158295.aspx
-	// http://msdn.microsoft.com/en-us/library/ee179073.aspx
+	// [MS-OXORULE] 2.2.1.3.1.9 PidTagRuleCondition Property
+	// https://msdn.microsoft.com/en-us/library/ee204420(v=exchg.80).aspx
 
-	// [MS-OXCDATA]
-	// PropertyName
-	// =====================
+	// [MS-OXORULE] 2.2.4.1.10 PidTagExtendedRuleMessageCondition Property
+	// https://msdn.microsoft.com/en-us/library/ee200930(v=exchg.80).aspx
+
+	// RuleRestriction
+	// https://msdn.microsoft.com/en-us/library/ee201126(v=exchg.80).aspx
+
+	// [MS-OXCDATA] 2.6.1 PropertyName Structure
+	// http://msdn.microsoft.com/en-us/library/ee158295.aspx
 	//   This structure specifies a Property Name
 	//
 	struct PropertyName
 	{
-		BYTE Kind{};
-		GUID Guid{};
-		DWORD LID{};
-		BYTE NameSize{};
-		std::wstring Name;
+		blockT<BYTE> Kind{};
+		blockT<GUID> Guid{};
+		blockT<DWORD> LID{};
+		blockT<BYTE> NameSize{};
+		blockStringW Name;
 	};
 
-	// [MS-OXORULE]
-	// NamedPropertyInformation
+	// [MS-OXORULE] 2.2.4.2 NamedPropertyInformation Structure
+	// https://msdn.microsoft.com/en-us/library/ee159014(v=exchg.80).aspx
 	// =====================
 	//   This structure specifies named property information for a rule condition
 	//
 	struct NamedPropertyInformation
 	{
-		WORD NoOfNamedProps{};
-		std::vector<WORD> PropId;
-		DWORD NamedPropertiesSize{};
+		blockT<WORD> NoOfNamedProps{};
+		std::vector<blockT<WORD>> PropId;
+		blockT<DWORD> NamedPropertiesSize{};
 		std::vector<PropertyName> PropertyName;
 	};
 
 	class RuleCondition : public SmartViewParser
 	{
 	public:
-		RuleCondition();
-
 		void Init(bool bExtended);
 
 	private:
 		void Parse() override;
-		_Check_return_ std::wstring ToStringInternal() override;
+		void ParseBlocks() override;
 
 		NamedPropertyInformation m_NamedPropertyInformation;
 		RestrictionStruct m_lpRes;
-		bool m_bExtended;
+		bool m_bExtended{};
 	};
-}
+} // namespace smartview
