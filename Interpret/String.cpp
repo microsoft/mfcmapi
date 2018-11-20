@@ -744,12 +744,10 @@ namespace strings
 	{
 		if (str.length() >= ending.length())
 		{
-			return (0 == str.compare(str.length() - ending.length(), ending.length(), ending));
+			return 0 == str.compare(str.length() - ending.length(), ending.length(), ending);
 		}
-		else
-		{
-			return false;
-		}
+
+		return false;
 	}
 
 	std::wstring ensureCRLF(const std::wstring& str)

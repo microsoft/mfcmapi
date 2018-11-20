@@ -37,9 +37,11 @@ namespace smartview
 		addBlock(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount.getData());
 		if (m_lpAdrEntry.size() && m_cRowCount)
 		{
+			addBlankLine();
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
-				addHeader(L"\r\nRow %1!d!\r\n", i);
+				terminateBlock();
+				addHeader(L"Row %1!d!\r\n", i);
 				addBlock(
 					m_lpAdrEntry[i].cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", m_lpAdrEntry[i].cValues.getData());
 				addBlock(

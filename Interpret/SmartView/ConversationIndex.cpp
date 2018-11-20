@@ -111,28 +111,29 @@ namespace smartview
 			PropString.c_str());
 		addBlock(m_guid, L"GUID = %1!ws!", guid::GUIDToString(m_guid).c_str());
 
-		if (m_lpResponseLevels.size())
+		if (!m_lpResponseLevels.empty())
 		{
 			for (ULONG i = 0; i < m_lpResponseLevels.size(); i++)
 			{
+				terminateBlock();
 				addBlock(
 					m_lpResponseLevels[i].DeltaCode,
-					L"\r\nResponseLevel[%1!d!].DeltaCode = %2!d!",
+					L"ResponseLevel[%1!d!].DeltaCode = %2!d!\r\n",
 					i,
 					m_lpResponseLevels[i].DeltaCode.getData());
 				addBlock(
 					m_lpResponseLevels[i].TimeDelta,
-					L"\r\nResponseLevel[%1!d!].TimeDelta = 0x%2!08X! = %2!d!",
+					L"ResponseLevel[%1!d!].TimeDelta = 0x%2!08X! = %2!d!\r\n",
 					i,
 					m_lpResponseLevels[i].TimeDelta.getData());
 				addBlock(
 					m_lpResponseLevels[i].Random,
-					L"\r\nResponseLevel[%1!d!].Random = 0x%2!02X! = %2!d!",
+					L"ResponseLevel[%1!d!].Random = 0x%2!02X! = %2!d!\r\n",
 					i,
 					m_lpResponseLevels[i].Random.getData());
 				addBlock(
 					m_lpResponseLevels[i].Level,
-					L"\r\nResponseLevel[%1!d!].ResponseLevel = 0x%2!02X! = %2!d!",
+					L"ResponseLevel[%1!d!].ResponseLevel = 0x%2!02X! = %2!d!",
 					i,
 					m_lpResponseLevels[i].Level.getData());
 			}

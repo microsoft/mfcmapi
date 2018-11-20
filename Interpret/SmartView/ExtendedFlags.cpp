@@ -91,42 +91,47 @@ namespace smartview
 
 	void ExtendedFlags::ParseBlocks()
 	{
-		setRoot(L"Extended Flags:");
-		addHeader(L"\r\nNumber of flags = %1!d!", m_ulNumFlags);
+		setRoot(L"Extended Flags:\r\n");
+		addHeader(L"Number of flags = %1!d!", m_ulNumFlags);
 
 		if (m_pefExtendedFlags.size())
 		{
 			for (const auto& extendedFlag : m_pefExtendedFlags)
 			{
+				terminateBlock();
 				auto szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlagType, extendedFlag.Id);
-				addBlock(extendedFlag.Id, L"\r\nId = 0x%1!02X! = %2!ws!", extendedFlag.Id.getData(), szFlags.c_str());
-				addBlock(extendedFlag.Cb, L"\r\nCb = 0x%1!02X! = %1!d!", extendedFlag.Cb.getData());
+				addBlock(extendedFlag.Id, L"Id = 0x%1!02X! = %2!ws!\r\n", extendedFlag.Id.getData(), szFlags.c_str());
+				addBlock(extendedFlag.Cb, L"Cb = 0x%1!02X! = %1!d!\r\n", extendedFlag.Cb.getData());
 
 				switch (extendedFlag.Id)
 				{
 				case EFPB_FLAGS:
+					terminateBlock();
 					addBlock(
 						extendedFlag.Data.ExtendedFlags,
-						L"\r\n\tExtended Flags = 0x%1!08X! = %2!ws!",
+						L"\tExtended Flags = 0x%1!08X! = %2!ws!",
 						extendedFlag.Data.ExtendedFlags.getData(),
 						interpretprop::InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags).c_str());
 					break;
 				case EFPB_CLSIDID:
+					terminateBlock();
 					addBlock(
 						extendedFlag.Data.SearchFolderID,
-						L"\r\n\tSearchFolderID = %1!ws!",
+						L"\tSearchFolderID = %1!ws!",
 						guid::GUIDToString(extendedFlag.Data.SearchFolderID).c_str());
 					break;
 				case EFPB_SFTAG:
+					terminateBlock();
 					addBlock(
 						extendedFlag.Data.SearchFolderTag,
-						L"\r\n\tSearchFolderTag = 0x%1!08X!",
+						L"\tSearchFolderTag = 0x%1!08X!",
 						extendedFlag.Data.SearchFolderTag.getData());
 					break;
 				case EFPB_TODO_VERSION:
+					terminateBlock();
 					addBlock(
 						extendedFlag.Data.ToDoFolderVersion,
-						L"\r\n\tToDoFolderVersion = 0x%1!08X!",
+						L"\tToDoFolderVersion = 0x%1!08X!",
 						extendedFlag.Data.ToDoFolderVersion.getData());
 					break;
 				}

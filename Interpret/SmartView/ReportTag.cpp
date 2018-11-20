@@ -65,31 +65,36 @@ namespace smartview
 
 		if (m_cbStoreEntryID)
 		{
-			addHeader(L"\r\nStoreEntryID = ");
+			terminateBlock();
+			addHeader(L"StoreEntryID = ");
 			addBlock(m_lpStoreEntryID);
 		}
 
 		if (m_cbFolderEntryID)
 		{
-			addHeader(L"\r\nFolderEntryID = ");
+			terminateBlock();
+			addHeader(L"FolderEntryID = ");
 			addBlock(m_lpFolderEntryID);
 		}
 
 		if (m_cbMessageEntryID)
 		{
-			addHeader(L"\r\nMessageEntryID = ");
+			terminateBlock();
+			addHeader(L"MessageEntryID = ");
 			addBlock(m_lpMessageEntryID);
 		}
 
 		if (m_cbSearchFolderEntryID)
 		{
-			addHeader(L"\r\nSearchFolderEntryID = ");
+			terminateBlock();
+			addHeader(L"SearchFolderEntryID = ");
 			addBlock(m_lpSearchFolderEntryID);
 		}
 
 		if (m_cbMessageSearchKey)
 		{
-			addHeader(L"\r\nMessageSearchKey = ");
+			terminateBlock();
+			addHeader(L"MessageSearchKey = ");
 			addBlock(m_lpMessageSearchKey);
 		}
 

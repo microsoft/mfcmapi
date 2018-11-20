@@ -102,7 +102,8 @@ namespace smartview
 		{
 			for (WORD iPersistElement = 0; iPersistElement < m_ppdPersistData.size(); iPersistElement++)
 			{
-				addHeader(L"\r\n\r\n");
+				terminateBlock();
+				addBlankLine();
 				auto element = block{};
 				element.setText(L"Persist Element %1!d!:\r\n", iPersistElement);
 				element.addBlock(
@@ -120,7 +121,8 @@ namespace smartview
 					for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].ppeDataElement.size();
 						 iDataElement++)
 					{
-						element.addHeader(L"\r\nDataElement: %1!d!\r\n", iDataElement);
+						element.terminateBlock();
+						element.addHeader(L"DataElement: %1!d!\r\n", iDataElement);
 
 						element.addBlock(
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
