@@ -42,7 +42,7 @@ namespace smartview
 		}
 
 		m_lpRes.init(true, m_bExtended);
-		m_lpRes.SmartViewParser::parse(m_Parser, false);
+		m_lpRes.parse(m_Parser, false);
 	}
 
 	void RuleCondition::ParseBlocks()
@@ -55,7 +55,7 @@ namespace smartview
 			m_NamedPropertyInformation.NoOfNamedProps.getData());
 		if (!m_NamedPropertyInformation.PropId.empty())
 		{
-			addBlankLine();
+			terminateBlock();
 			addBlock(
 				m_NamedPropertyInformation.NamedPropertiesSize,
 				L"Named prop size = 0x%1!08X!",

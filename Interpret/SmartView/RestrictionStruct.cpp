@@ -232,7 +232,7 @@ namespace smartview
 				L"%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!\r\n",
 				szTabs.c_str(),
 				lpRes.resAnd.cRes.getData());
-			for (auto res : lpRes.resAnd.lpRes)
+			for (const auto& res : lpRes.resAnd.lpRes)
 			{
 				addHeader(L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
 				ParseRestriction(res, ulTabLevel + 1);
@@ -244,7 +244,7 @@ namespace smartview
 				L"%1!ws!lpRes->res.resOr.cRes = 0x%2!08X!\r\n",
 				szTabs.c_str(),
 				lpRes.resOr.cRes.getData());
-			for (auto res : lpRes.resOr.lpRes)
+			for (const auto& res : lpRes.resOr.lpRes)
 			{
 				addHeader(L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
 				ParseRestriction(res, ulTabLevel + 1);
@@ -259,7 +259,7 @@ namespace smartview
 			addHeader(L"%1!ws!lpRes->res.resNot.lpRes\r\n", szTabs.c_str());
 
 			// There should only be one sub restriction here
-			if (lpRes.resNot.lpRes.size())
+			if (!lpRes.resNot.lpRes.empty())
 			{
 				ParseRestriction(lpRes.resNot.lpRes[0], ulTabLevel + 1);
 			}
@@ -272,7 +272,7 @@ namespace smartview
 				lpRes.resCount.ulCount.getData());
 			addHeader(L"%1!ws!lpRes->res.resCount.lpRes\r\n", szTabs.c_str());
 
-			if (lpRes.resCount.lpRes.size())
+			if (!lpRes.resCount.lpRes.empty())
 			{
 				ParseRestriction(lpRes.resCount.lpRes[0], ulTabLevel + 1);
 			}
@@ -291,7 +291,7 @@ namespace smartview
 				szTabs.c_str(),
 				interpretprop::TagToString(lpRes.resContent.ulPropTag, nullptr, false, true).c_str());
 
-			if (lpRes.resContent.lpProp.Props().size())
+			if (!lpRes.resContent.lpProp.Props().empty())
 			{
 				addBlock(
 					lpRes.resContent.lpProp.Props()[0].ulPropTag,
@@ -306,10 +306,9 @@ namespace smartview
 					lpRes.resContent.lpProp.Props()[0].PropBlock().c_str());
 				addBlock(
 					lpRes.resContent.lpProp.Props()[0].AltPropBlock(),
-					L"%1!ws!\tAlt: %2!ws!",
+					L"%1!ws!\tAlt: %2!ws!\r\n",
 					szTabs.c_str(),
 					lpRes.resContent.lpProp.Props()[0].AltPropBlock().c_str());
-				addBlankLine();
 			}
 			break;
 		case RES_PROPERTY:
@@ -325,7 +324,7 @@ namespace smartview
 				L"%1!ws!lpRes->res.resProperty.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
 				interpretprop::TagToString(lpRes.resProperty.ulPropTag, nullptr, false, true).c_str());
-			if (lpRes.resProperty.lpProp.Props().size())
+			if (!lpRes.resProperty.lpProp.Props().empty())
 			{
 				addBlock(
 					lpRes.resProperty.lpProp.Props()[0].ulPropTag,
@@ -370,7 +369,7 @@ namespace smartview
 				addBlock(lpRes.resBitMask.ulMask, L": %1!ws!", szPropNum.c_str());
 			}
 
-			addBlankLine();
+			terminateBlock();
 			addBlock(
 				lpRes.resBitMask.ulPropTag,
 				L"%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!\r\n",
@@ -421,7 +420,7 @@ namespace smartview
 				interpretprop::TagToString(lpRes.resSub.ulSubObject, nullptr, false, true).c_str());
 			addHeader(L"%1!ws!lpRes->res.resSub.lpRes\r\n", szTabs.c_str());
 
-			if (lpRes.resSub.lpRes.size())
+			if (!lpRes.resSub.lpRes.empty())
 			{
 				ParseRestriction(lpRes.resSub.lpRes[0], ulTabLevel + 1);
 			}
@@ -451,7 +450,7 @@ namespace smartview
 			}
 
 			addHeader(L"%1!ws!lpRes->res.resComment.lpRes\r\n", szTabs.c_str());
-			if (lpRes.resComment.lpRes.size())
+			if (!lpRes.resComment.lpRes.empty())
 			{
 				ParseRestriction(lpRes.resComment.lpRes[0], ulTabLevel + 1);
 			}
@@ -482,7 +481,7 @@ namespace smartview
 
 			addHeader(L"%1!ws!lpRes->res.resAnnotation.lpRes\r\n", szTabs.c_str());
 
-			if (lpRes.resComment.lpRes.size())
+			if (!lpRes.resComment.lpRes.empty())
 			{
 				ParseRestriction(lpRes.resComment.lpRes[0], ulTabLevel + 1);
 			}

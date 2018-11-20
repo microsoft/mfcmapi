@@ -133,7 +133,7 @@ namespace smartview
 
 				if (extendedFlag.lpUnknownData.size())
 				{
-					addBlankLine();
+					terminateBlock();
 					addHeader(L"\tUnknown Data = ");
 					addBlock(extendedFlag.lpUnknownData);
 				}

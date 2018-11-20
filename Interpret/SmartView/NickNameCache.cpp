@@ -40,18 +40,18 @@ namespace smartview
 		setRoot(L"Nickname Cache\r\n");
 		addHeader(L"Metadata1 = ");
 		addBlock(m_Metadata1);
-
 		terminateBlock();
+
 		addBlock(m_ulMajorVersion, L"Major Version = %1!d!\r\n", m_ulMajorVersion.getData());
 		addBlock(m_ulMinorVersion, L"Minor Version = %1!d!\r\n", m_ulMinorVersion.getData());
 		addBlock(m_cRowCount, L"Row Count = %1!d!", m_cRowCount.getData());
 
-		if (m_cRowCount && m_lpRows.size())
+		if (m_cRowCount && !m_lpRows.empty())
 		{
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
+				terminateBlock();
 				if (i > 0) addBlankLine();
-				addBlankLine();
 				addHeader(L"Row %1!d!\r\n", i);
 				addBlock(m_lpRows[i].cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", m_lpRows[i].cValues.getData());
 
@@ -63,8 +63,8 @@ namespace smartview
 		addBlankLine();
 		addHeader(L"Extra Info = ");
 		addBlock(m_lpbEI);
-
 		terminateBlock();
+
 		addHeader(L"Metadata 2 = ");
 		addBlock(m_Metadata2);
 	}

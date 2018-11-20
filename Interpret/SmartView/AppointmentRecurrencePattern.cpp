@@ -159,7 +159,7 @@ namespace smartview
 	{
 		setRoot(m_RecurrencePattern.getBlock());
 
-		addBlankLine();
+		terminateBlock();
 		auto arpBlock = block{};
 		arpBlock.setText(L"Appointment Recurrence Pattern: \r\n");
 		arpBlock.addBlock(m_ReaderVersion2, L"ReaderVersion2: 0x%1!08X!\r\n", m_ReaderVersion2.getData());

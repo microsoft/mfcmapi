@@ -106,7 +106,7 @@ namespace smartview
 				m_lpVerbData[i].ID,
 				L"ID = 0x%1!08X! = %2!ws!\r\n",
 				m_lpVerbData[i].ID.getData(),
-				smartview::InterpretNumberAsStringProp(m_lpVerbData[i].ID, PR_LAST_VERB_EXECUTED).c_str());
+				InterpretNumberAsStringProp(m_lpVerbData[i].ID, PR_LAST_VERB_EXECUTED).c_str());
 			addBlock(m_lpVerbData[i].Internal6, L"Internal6 = 0x%1!08X!", m_lpVerbData[i].Internal6.getData());
 		}
 
