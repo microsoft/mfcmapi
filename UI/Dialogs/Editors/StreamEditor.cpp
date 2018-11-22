@@ -194,7 +194,7 @@ namespace dialog
 						smartview::InterpretPropSmartView2(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, false);
 
 					lpSmartView->SetParser(smartView.first);
-					lpSmartView->SetStringW(smartView.second);
+					lpSmartView->Parse(bin);
 				}
 			}
 
