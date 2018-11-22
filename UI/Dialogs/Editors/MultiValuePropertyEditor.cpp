@@ -56,18 +56,31 @@ namespace dialog
 			ReadMultiValueStringsFromProperty();
 			ResizeList(0, false);
 
-			const auto smartView =
-				smartview::InterpretPropSmartView2(m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true);
-
-			const auto iStructType = smartView.first;
-			auto szSmartView = smartView.second;
-			if (!szSmartView.empty())
+			// TODO: Can we just call UpdateSmartView here?
+			if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
 			{
-				auto lpPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
-				if (lpPane)
+				auto smartViewPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
+				if (smartViewPane)
 				{
-					lpPane->SetParser(iStructType);
-					lpPane->SetStringW(szSmartView);
+					const auto smartView = smartview::InterpretPropSmartView2(
+						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true);
+
+					smartViewPane->SetParser(smartView.first);
+					if (m_lpsInputValue)
+					{
+						smartViewPane->Parse(std::vector<BYTE>(
+							m_lpsInputValue->Value.bin.lpb,
+							m_lpsInputValue->Value.bin.lpb + m_lpsInputValue->Value.bin.cb));
+					}
+				}
+			}
+			else if (PT_MV_LONG == PROP_TYPE(m_ulPropTag))
+			{
+				auto smartViewPaneText = dynamic_cast<viewpane::TextPane*>(GetPane(1));
+				if (smartViewPaneText)
+				{
+					smartViewPaneText->SetStringW(smartview::InterpretPropSmartView(
+						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true));
 				}
 			}
 
@@ -88,15 +101,14 @@ namespace dialog
 		{
 			AddPane(viewpane::ListPane::Create(0, IDS_PROPVALUES, false, false, ListEditCallBack(this)));
 			SetListID(0);
-			if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag) || PT_MV_LONG == PROP_TYPE(m_ulPropTag))
-			{
-				auto lpPane = viewpane::SmartViewPane::Create(1, IDS_SMARTVIEW);
-				AddPane(lpPane);
 
-				if (lpPane && PT_MV_LONG == PROP_TYPE(m_ulPropTag))
-				{
-					lpPane->DisableDropDown();
-				}
+			if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
+			{
+				AddPane(viewpane::SmartViewPane::Create(1, IDS_SMARTVIEW));
+			}
+			else if (PT_MV_LONG == PROP_TYPE(m_ulPropTag))
+			{
+				AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_SMARTVIEW, strings::emptystring, true));
 			}
 		}
 
@@ -371,34 +383,40 @@ namespace dialog
 
 		void CMultiValuePropertyEditor::UpdateSmartView() const
 		{
-			auto lpPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
-			if (lpPane)
 			{
 				const auto lpsProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 				if (lpsProp)
 				{
 					WriteMultiValueStringsToSPropValue(static_cast<LPVOID>(lpsProp), lpsProp);
 
-					std::wstring szSmartView;
 					switch (PROP_TYPE(m_ulPropTag))
 					{
 					case PT_MV_LONG:
-						szSmartView =
-							smartview::InterpretPropSmartView(lpsProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true);
-						break;
-					case PT_MV_BINARY:
-						const auto iStructType = static_cast<__ParsingTypeEnum>(lpPane->GetDropDownSelectionValue());
-						if (iStructType)
+					{
+						auto smartViewPaneText = dynamic_cast<viewpane::TextPane*>(GetPane(1));
+						if (smartViewPaneText)
 						{
-							szSmartView =
-								smartview::InterpretMVBinaryAsString(lpsProp->Value.MVbin, iStructType, m_lpMAPIProp);
+							smartViewPaneText->SetStringW(smartview::InterpretPropSmartView(
+								lpsProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true));
 						}
-						break;
 					}
 
-					if (!szSmartView.empty())
+					break;
+					case PT_MV_BINARY:
 					{
-						lpPane->SetStringW(szSmartView);
+						// TODO: Smartview pane should accept an MV bin and do the right thing with it
+						// For now, parse to text and throw in a text box.
+						auto smartViewPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
+						const auto iStructType =
+							static_cast<__ParsingTypeEnum>(smartViewPane->GetDropDownSelectionValue());
+						if (iStructType)
+						{
+							smartViewPane->SetStringW(
+								smartview::InterpretMVBinaryAsString(lpsProp->Value.MVbin, iStructType, m_lpMAPIProp));
+						}
+					}
+
+					break;
 					}
 				}
 
