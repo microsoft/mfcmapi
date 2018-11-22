@@ -712,7 +712,7 @@ namespace dialog
 					lpszA = GetStringA(1); // Do not free this
 					bin = std::vector<BYTE>{lpszA.c_str(),
 											lpszA.c_str() + static_cast<ULONG>(sizeof(CHAR) * lpszA.length())};
-					SetBinary(0, sProp.Value.bin.lpb, sProp.Value.bin.cb);
+					SetBinary(0, bin.data(), static_cast<ULONG>(bin.size()));
 				}
 
 				sProp.Value.bin.lpb = bin.data();
