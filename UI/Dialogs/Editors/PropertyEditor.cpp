@@ -123,7 +123,6 @@ namespace dialog
 			if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 			m_ulPropTag = ulPropTag;
 			m_lpsInputValue = lpsPropValue;
-			m_lpSmartView = nullptr;
 
 			// If we didn't have an input value, we are creating a new property
 			// So by definition, we're already dirty
@@ -296,8 +295,8 @@ namespace dialog
 			case PT_I2:
 				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SIGNEDDECIMAL, false));
 				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_HEX, false));
-				m_lpSmartView = viewpane::SmartViewPane::Create(s_smartViewPaneID, IDS_SMARTVIEW);
-				AddPane(m_lpSmartView);
+				auto smartViewPane = viewpane::SmartViewPane::Create(s_smartViewPaneID, IDS_SMARTVIEW);
+				AddPane(smartViewPane);
 				if (m_lpsInputValue)
 				{
 					SetDecimal(0, m_lpsInputValue->Value.i);
@@ -309,9 +308,9 @@ namespace dialog
 					SetHex(1, 0);
 				}
 
-				if (m_lpSmartView)
+				if (smartViewPane)
 				{
-					m_lpSmartView->DisableDropDown();
+					smartViewPane->DisableDropDown();
 					UpdateSmartView(szSmartView);
 				}
 
@@ -320,8 +319,8 @@ namespace dialog
 				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_HIGHPART, false));
 				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_LOWPART, false));
 				AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_DECIMAL, false));
-				m_lpSmartView = viewpane::SmartViewPane::Create(s_smartViewPaneID, IDS_SMARTVIEW);
-				AddPane(m_lpSmartView);
+				auto smartViewPane = viewpane::SmartViewPane::Create(s_smartViewPaneID, IDS_SMARTVIEW);
+				AddPane(smartViewPane);
 
 				if (m_lpsInputValue)
 				{
@@ -336,9 +335,9 @@ namespace dialog
 					SetDecimal(2, 0);
 				}
 
-				if (m_lpSmartView)
+				if (smartViewPane)
 				{
-					m_lpSmartView->DisableDropDown();
+					smartViewPane->DisableDropDown();
 					UpdateSmartView(szSmartView);
 				}
 
@@ -347,8 +346,8 @@ namespace dialog
 				lpPane = viewpane::CountedTextPane::Create(0, IDS_BIN, false, IDS_CB);
 				AddPane(lpPane);
 				AddPane(viewpane::CountedTextPane::Create(1, IDS_TEXT, false, IDS_CCH));
-				m_lpSmartView = viewpane::SmartViewPane::Create(s_smartViewPaneID, IDS_SMARTVIEW);
-				AddPane(m_lpSmartView);
+				smartViewPane = viewpane::SmartViewPane::Create(s_smartViewPaneID, IDS_SMARTVIEW);
+				AddPane(smartViewPane);
 
 				if (m_lpsInputValue)
 				{
@@ -368,9 +367,9 @@ namespace dialog
 					if (lpPane) lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
 				}
 
-				if (m_lpSmartView)
+				if (smartViewPane)
 				{
-					m_lpSmartView->SetParser(iStructType);
+					smartViewPane->SetParser(iStructType);
 					UpdateParser(std::vector<BYTE>(
 						m_lpsInputValue->Value.bin.lpb,
 						m_lpsInputValue->Value.bin.lpb + m_lpsInputValue->Value.bin.cb));
@@ -380,8 +379,8 @@ namespace dialog
 			case PT_LONG:
 				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_UNSIGNEDDECIMAL, false));
 				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_HEX, false));
-				m_lpSmartView = viewpane::SmartViewPane::Create(s_smartViewPaneID, IDS_SMARTVIEW);
-				AddPane(m_lpSmartView);
+				auto smartViewPane = viewpane::SmartViewPane::Create(s_smartViewPaneID, IDS_SMARTVIEW);
+				AddPane(smartViewPane);
 				if (m_lpsInputValue)
 				{
 					SetStringf(0, L"%d", m_lpsInputValue->Value.l); // STRING_OK
@@ -394,9 +393,9 @@ namespace dialog
 					SetHex(2, 0);
 				}
 
-				if (m_lpSmartView)
+				if (smartViewPane)
 				{
-					m_lpSmartView->DisableDropDown();
+					smartViewPane->DisableDropDown();
 					UpdateSmartView(szSmartView);
 				}
 
