@@ -14,7 +14,7 @@ namespace smartview
 		bool bMVRow); // did the row come from a MV prop?
 
 	std::wstring InterpretPropSmartView(
-		_In_opt_ LPSPropValue lpProp, // required property value
+		_In_opt_ const SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups

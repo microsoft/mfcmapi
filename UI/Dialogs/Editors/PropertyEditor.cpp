@@ -156,17 +156,6 @@ namespace dialog
 
 		void CPropertyEditor::InitPropertyControls()
 		{
-			const auto smartView = smartview::InterpretPropSmartView2(
-				m_lpsInputValue,
-				m_lpMAPIProp,
-				nullptr,
-				nullptr,
-				m_bIsAB,
-				m_bMVRow); // Built from lpProp & lpMAPIProp
-
-			const auto iStructType = smartView.first;
-			const auto szSmartView = smartView.second;
-
 			std::wstring szTemp1;
 			std::wstring szTemp2;
 			viewpane::CountedTextPane* lpPane = nullptr;
@@ -293,7 +282,12 @@ namespace dialog
 			case PT_I2:
 				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SIGNEDDECIMAL, false));
 				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_HEX, false));
-				AddPane(viewpane::TextPane::CreateMultiLinePane(2, IDS_SMARTVIEW, szSmartView, true));
+				AddPane(viewpane::TextPane::CreateMultiLinePane(
+					2,
+					IDS_SMARTVIEW,
+					smartview::InterpretPropSmartView(
+						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow),
+					true));
 				if (m_lpsInputValue)
 				{
 					SetDecimal(0, m_lpsInputValue->Value.i);
@@ -310,7 +304,12 @@ namespace dialog
 				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_HIGHPART, false));
 				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_LOWPART, false));
 				AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_DECIMAL, false));
-				AddPane(viewpane::TextPane::CreateMultiLinePane(3, IDS_SMARTVIEW, szSmartView, true));
+				AddPane(viewpane::TextPane::CreateMultiLinePane(
+					3,
+					IDS_SMARTVIEW,
+					smartview::InterpretPropSmartView(
+						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow),
+					true));
 
 				if (m_lpsInputValue)
 				{
@@ -354,7 +353,15 @@ namespace dialog
 
 				if (smartViewPane)
 				{
-					smartViewPane->SetParser(iStructType);
+					const auto smartView = smartview::InterpretPropSmartView2(
+						m_lpsInputValue,
+						m_lpMAPIProp,
+						nullptr,
+						nullptr,
+						m_bIsAB,
+						m_bMVRow); // Built from lpProp & lpMAPIProp
+
+					smartViewPane->SetParser(smartView.first);
 					smartViewPane->Parse(std::vector<BYTE>(
 						m_lpsInputValue->Value.bin.lpb,
 						m_lpsInputValue->Value.bin.lpb + m_lpsInputValue->Value.bin.cb));
@@ -365,7 +372,12 @@ namespace dialog
 			case PT_LONG:
 				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_UNSIGNEDDECIMAL, false));
 				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_HEX, false));
-				AddPane(viewpane::TextPane::CreateMultiLinePane(2, IDS_SMARTVIEW, szSmartView, true));
+				AddPane(viewpane::TextPane::CreateMultiLinePane(
+					2,
+					IDS_SMARTVIEW,
+					smartview::InterpretPropSmartView(
+						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow),
+					true));
 
 				if (m_lpsInputValue)
 				{
