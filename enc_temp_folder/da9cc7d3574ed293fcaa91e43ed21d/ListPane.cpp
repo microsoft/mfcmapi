@@ -150,7 +150,7 @@ namespace viewpane
 			return ViewPane::HandleChange(nID);
 		}
 
-		return GetID();
+		return m_paneID;
 	}
 
 	void ListPane::DeferWindowPos(
