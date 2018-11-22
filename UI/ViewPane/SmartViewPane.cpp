@@ -47,6 +47,7 @@ namespace viewpane
 		m_Splitter.Initialize(pParent, hdc);
 
 		m_bInitialized = true;
+		Parse(m_bin);
 	}
 
 	int SmartViewPane::GetFixedHeight()
@@ -169,6 +170,8 @@ namespace viewpane
 	void SmartViewPane::Parse(const std::vector<BYTE>& myBin)
 	{
 		m_bin = myBin;
+		if (!m_bInitialized) return;
+
 		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
 		auto szSmartView = std::wstring{};
 		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);

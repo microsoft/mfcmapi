@@ -378,7 +378,9 @@ namespace dialog
 				if (m_lpSmartView)
 				{
 					m_lpSmartView->SetParser(iStructType);
-					m_lpSmartView->SetStringW(szSmartView);
+					UpdateParser(std::vector<BYTE>(
+						m_lpsInputValue->Value.bin.lpb,
+						m_lpsInputValue->Value.bin.lpb + m_lpsInputValue->Value.bin.cb));
 				}
 
 				break;
@@ -743,7 +745,7 @@ namespace dialog
 				lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(1));
 				if (lpPane) lpPane->SetCount(sProp.Value.bin.cb);
 
-				if (m_lpSmartView) m_lpSmartView->Parse(bin);
+				UpdateParser(bin);
 				break;
 			case PT_STRING8:
 				if (paneID == 0)
@@ -824,6 +826,15 @@ namespace dialog
 
 			OnRecalcLayout();
 			return paneID;
+		}
+
+		void CPropertyEditor::UpdateParser(const std::vector<BYTE>& bin) const
+		{
+			auto lpPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(s_smartViewPaneID));
+			if (lpPane)
+			{
+				lpPane->Parse(bin);
+			}
 		}
 	} // namespace editor
 } // namespace dialog
