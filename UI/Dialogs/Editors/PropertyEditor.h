@@ -43,8 +43,6 @@ namespace dialog
 			void WriteSPropValueToObject() const;
 			_Check_return_ ULONG HandleChange(UINT nID) override;
 			void OnOK() override;
-			void UpdateParser(const std::vector<BYTE>& bin) const;
-			void UpdateSmartViewText(const std::wstring& str) const;
 
 			// source variables
 			LPMAPIPROP m_lpMAPIProp;
