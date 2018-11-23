@@ -225,44 +225,10 @@ namespace smartview
 	{
 		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp) return IDS_STNOPARSING;
 
+		auto npi = GetNamedPropInfo(lpProp->ulPropTag, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB);
+		auto ulPropNameID = npi.first;
+		auto propNameGUID = npi.second;
 		auto iStructType = IDS_STNOPARSING;
-
-		// Named Props
-		LPMAPINAMEID* lppPropNames = nullptr;
-
-		// If we weren't passed named property information and we need it, look it up
-		// We check bIsAB here - some address book providers return garbage which will crash us
-		if (!lpNameID && lpMAPIProp && // if we have an object
-			!bIsAB &&
-			registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
-			(registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD ||
-			 PROP_ID(lpProp->ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
-		{
-			SPropTagArray tag = {0};
-			auto lpTag = &tag;
-			ULONG ulPropNames = 0;
-			tag.cValues = 1;
-			tag.aulPropTag[0] = lpProp->ulPropTag;
-
-			WC_H_GETPROPS_S(cache::GetNamesFromIDs(
-				lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL, &ulPropNames, &lppPropNames));
-			if (ulPropNames == 1 && lppPropNames && lppPropNames[0])
-			{
-				lpNameID = lppPropNames[0];
-			}
-		}
-
-		ULONG ulPropNameID = NULL;
-		LPGUID lpPropNameGUID = nullptr;
-
-		if (lpNameID)
-		{
-			lpPropNameGUID = lpNameID->lpguid;
-			if (lpNameID->ulKind == MNID_ID)
-			{
-				ulPropNameID = lpNameID->Kind.lID;
-			}
-		}
 
 		switch (PROP_TYPE(lpProp->ulPropTag))
 		{
@@ -271,7 +237,7 @@ namespace smartview
 			auto ulLookupPropTag = lpProp->ulPropTag;
 			if (bMVRow) ulLookupPropTag |= MV_FLAG;
 
-			iStructType = FindSmartViewParserForProp(ulLookupPropTag, ulPropNameID, lpPropNameGUID);
+			iStructType = FindSmartViewParserForProp(ulLookupPropTag, ulPropNameID, &propNameGUID);
 			// We special-case this property
 			if (!iStructType && PR_ROAMING_BINARYSTREAM == ulLookupPropTag && lpMAPIProp)
 			{
@@ -291,11 +257,59 @@ namespace smartview
 
 		break;
 		case PT_MV_BINARY:
-			iStructType = FindSmartViewParserForProp(lpProp->ulPropTag, ulPropNameID, lpPropNameGUID);
+			iStructType = FindSmartViewParserForProp(lpProp->ulPropTag, ulPropNameID, &propNameGUID);
 			break;
 		}
 
 		return iStructType;
+	}
+
+	std::pair<ULONG, GUID> GetNamedPropInfo(
+		_In_opt_ ULONG ulPropTag,
+		_In_opt_ LPMAPIPROP lpMAPIProp,
+		_In_opt_ LPMAPINAMEID lpNameID,
+		_In_opt_ LPSBinary lpMappingSignature,
+		bool bIsAB)
+	{
+		LPMAPINAMEID* lppPropNames = nullptr;
+
+		if (!lpNameID && lpMAPIProp && // if we have an object
+			!bIsAB && // Some address book providers return garbage which will crash us
+			registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
+			(registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD ||
+			 PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
+		{
+			auto tag = SPropTagArray{1, ulPropTag};
+			auto lpTag = &tag;
+			auto ulPropNames = ULONG{};
+
+			WC_H_GETPROPS_S(cache::GetNamesFromIDs(
+				lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL, &ulPropNames, &lppPropNames));
+			if (ulPropNames == 1 && lppPropNames && lppPropNames[0])
+			{
+				lpNameID = lppPropNames[0];
+			}
+		}
+
+		auto ulPropNameID = ULONG{};
+		auto propNameGUID = GUID{};
+
+		if (lpNameID)
+		{
+			if (lpNameID->lpguid)
+			{
+				propNameGUID = *lpNameID->lpguid;
+			}
+
+			if (lpNameID->ulKind == MNID_ID)
+			{
+				ulPropNameID = lpNameID->Kind.lID;
+			}
+		}
+
+		if (lppPropNames) MAPIFreeBuffer(lppPropNames);
+
+		return std::make_pair(ulPropNameID, propNameGUID);
 	}
 
 	std::pair<__ParsingTypeEnum, std::wstring> InterpretPropSmartView2(
@@ -312,44 +326,11 @@ namespace smartview
 		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp)
 			return std::make_pair(IDS_STNOPARSING, L"");
 
+		auto npi = GetNamedPropInfo(lpProp->ulPropTag, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB);
+		auto ulPropNameID = npi.first;
+		auto propNameGUID = npi.second;
+
 		auto iStructType = FindSmartViewParserForProp(lpProp, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB, bMVRow);
-
-		// Named Props
-		LPMAPINAMEID* lppPropNames = nullptr;
-
-		// If we weren't passed named property information and we need it, look it up
-		// We check bIsAB here - some address book providers return garbage which will crash us
-		if (!lpNameID && lpMAPIProp && // if we have an object
-			!bIsAB &&
-			registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
-			(registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD ||
-			 PROP_ID(lpProp->ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
-		{
-			SPropTagArray tag = {0};
-			auto lpTag = &tag;
-			ULONG ulPropNames = 0;
-			tag.cValues = 1;
-			tag.aulPropTag[0] = lpProp->ulPropTag;
-
-			WC_H_GETPROPS_S(cache::GetNamesFromIDs(
-				lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL, &ulPropNames, &lppPropNames));
-			if (ulPropNames == 1 && lppPropNames && lppPropNames[0])
-			{
-				lpNameID = lppPropNames[0];
-			}
-		}
-
-		ULONG ulPropNameID = NULL;
-		LPGUID lpPropNameGUID = nullptr;
-
-		if (lpNameID)
-		{
-			lpPropNameGUID = lpNameID->lpguid;
-			if (lpNameID->ulKind == MNID_ID)
-			{
-				ulPropNameID = lpNameID->Kind.lID;
-			}
-		}
 
 		ULONG ulLookupPropTag = NULL;
 		switch (PROP_TYPE(lpProp->ulPropTag))
@@ -358,10 +339,10 @@ namespace smartview
 		case PT_I2:
 		case PT_I8:
 			lpszSmartView =
-				InterpretNumberAsString(lpProp->Value, lpProp->ulPropTag, ulPropNameID, nullptr, lpPropNameGUID, true);
+				InterpretNumberAsString(lpProp->Value, lpProp->ulPropTag, ulPropNameID, nullptr, &propNameGUID, true);
 			break;
 		case PT_MV_LONG:
-			lpszSmartView = InterpretMVLongAsString(lpProp->Value.MVl, lpProp->ulPropTag, ulPropNameID, lpPropNameGUID);
+			lpszSmartView = InterpretMVLongAsString(lpProp->Value.MVl, lpProp->ulPropTag, ulPropNameID, &propNameGUID);
 			break;
 		case PT_BINARY:
 			ulLookupPropTag = lpProp->ulPropTag;
@@ -381,8 +362,6 @@ namespace smartview
 
 			break;
 		}
-
-		if (lppPropNames) MAPIFreeBuffer(lppPropNames);
 
 		return make_pair(iStructType, lpszSmartView);
 	}
