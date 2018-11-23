@@ -364,6 +364,39 @@ namespace dialog
 			}
 		}
 
+		std::vector<LONG> CMultiValuePropertyEditor::GetLongArray() const
+		{
+			if (PROP_TYPE(m_ulPropTag) != PT_MV_LONG) return {};
+			const auto ulNumVals = GetListCount(0);
+			auto ret = std::vector<LONG>{};
+
+			for (auto i = ULONG{}; i < ulNumVals; i++)
+			{
+				const auto lpData = GetListRowData(0, i);
+				auto mv = lpData->MV();
+				ret.push_back(mv ? mv->m_val.l : LONG{});
+			}
+
+			return ret;
+		}
+
+		std::vector<std::vector<BYTE>> CMultiValuePropertyEditor::GetBinaryArray() const
+		{
+			if (PROP_TYPE(m_ulPropTag) != PT_MV_BINARY) return {};
+			const auto ulNumVals = GetListCount(0);
+			auto ret = std::vector<std::vector<BYTE>>{};
+
+			for (auto i = ULONG{}; i < ulNumVals; i++)
+			{
+				const auto lpData = GetListRowData(0, i);
+				auto mv = lpData->MV();
+				auto bin = mv ? mv->m_val.bin : SBinary{};
+				ret.push_back(std::vector<BYTE>(bin.lpb, bin.lpb + bin.cb));
+			}
+
+			return ret;
+		}
+
 		void CMultiValuePropertyEditor::UpdateSmartView(const SPropValue* lpProp) const
 		{
 			switch (PROP_TYPE(m_ulPropTag))
@@ -373,10 +406,11 @@ namespace dialog
 				auto smartViewPaneText = dynamic_cast<viewpane::TextPane*>(GetPane(1));
 				if (smartViewPaneText)
 				{
+					auto rows = GetLongArray();
 					auto npi = smartview::GetNamedPropInfo(m_ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
 
-					smartViewPaneText->SetStringW(smartview::InterpretMVLongAsString(
-						lpProp->Value.MVl, lpProp->ulPropTag, npi.first, &npi.second));
+					smartViewPaneText->SetStringW(
+						smartview::InterpretMVLongAsString(rows, m_ulPropTag, npi.first, &npi.second));
 				}
 			}
 

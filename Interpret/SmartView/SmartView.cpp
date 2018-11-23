@@ -327,10 +327,16 @@ namespace smartview
 		switch (PROP_TYPE(lpProp->ulPropTag))
 		{
 		case PT_LONG:
+			return InterpretNumberAsString(
+				lpProp->Value.l, lpProp->ulPropTag, ulPropNameID, nullptr, &propNameGUID, true);
+			break;
 		case PT_I2:
+			return InterpretNumberAsString(
+				lpProp->Value.i, lpProp->ulPropTag, ulPropNameID, nullptr, &propNameGUID, true);
+			break;
 		case PT_I8:
 			return InterpretNumberAsString(
-				lpProp->Value, lpProp->ulPropTag, ulPropNameID, nullptr, &propNameGUID, true);
+				lpProp->Value.li.QuadPart, lpProp->ulPropTag, ulPropNameID, nullptr, &propNameGUID, true);
 			break;
 		case PT_MV_LONG:
 			return InterpretMVLongAsString(lpProp->Value.MVl, lpProp->ulPropTag, ulPropNameID, &propNameGUID);
@@ -380,16 +386,12 @@ namespace smartview
 
 	std::wstring InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag)
 	{
-		auto pV = _PV{};
-		pV.ul = ulVal;
-		return InterpretNumberAsString(pV, ulPropTag, NULL, nullptr, nullptr, false);
+		return InterpretNumberAsString(ulVal, ulPropTag, NULL, nullptr, nullptr, false);
 	}
 
 	std::wstring InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp)
 	{
-		auto pV = _PV{};
-		pV.ul = ulVal;
-		return InterpretNumberAsString(pV, PT_LONG, ulPropNameID, nullptr, lpguidNamedProp, false);
+		return InterpretNumberAsString(ulVal, PT_LONG, ulPropNameID, nullptr, lpguidNamedProp, false);
 	}
 
 	// Interprets a LONGLONG and returns a string
@@ -473,36 +475,55 @@ namespace smartview
 	}
 
 	std::wstring InterpretMVLongAsString(
+		std::vector<LONG> rows,
+		ULONG ulPropTag,
+		ULONG ulPropNameID,
+		_In_opt_ LPGUID lpguidNamedProp)
+	{
+		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return strings::emptystring;
+
+		auto szArray = std::vector<std::wstring>{};
+		ULONG ulRow = 0;
+
+		for (auto row : rows)
+		{
+			auto szSmartView = smartview::InterpretNumberAsString(
+				row, CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, nullptr, lpguidNamedProp, true);
+			if (!szSmartView.empty())
+			{
+				szArray.push_back(strings::formatmessage(IDS_MVROWLONG, ulRow++, szSmartView.c_str()));
+			}
+		}
+
+		return strings::join(szArray, L"\r\n");
+	}
+
+	std::wstring InterpretMVLongAsString(
 		SLongArray myLongArray,
 		ULONG ulPropTag,
 		ULONG ulPropNameID,
 		_In_opt_ LPGUID lpguidNamedProp)
 	{
-		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
+		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return strings::emptystring;
 
-		std::wstring szResult;
-		std::wstring szSmartView;
-		auto bHasData = false;
+		auto szArray = std::vector<std::wstring>{};
 
 		for (ULONG ulRow = 0; ulRow < myLongArray.cValues; ulRow++)
 		{
-			auto pV = _PV{};
-			pV.ul = myLongArray.lpl[ulRow];
-			szSmartView = InterpretNumberAsString(
-				pV, CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, nullptr, lpguidNamedProp, true);
+			auto szSmartView = InterpretNumberAsString(
+				myLongArray.lpl[ulRow],
+				CHANGE_PROP_TYPE(ulPropTag, PT_LONG),
+				ulPropNameID,
+				nullptr,
+				lpguidNamedProp,
+				true);
 			if (!szSmartView.empty())
 			{
-				if (bHasData)
-				{
-					szResult += L"\r\n"; // STRING_OK
-				}
-
-				bHasData = true;
-				szResult += strings::formatmessage(IDS_MVROWLONG, ulRow, szSmartView.c_str());
+				szArray.push_back(strings::formatmessage(IDS_MVROWLONG, ulRow, szSmartView.c_str()));
 			}
 		}
 
-		return szResult;
+		return strings::join(szArray, L"\r\n");
 	}
 
 	std::wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
