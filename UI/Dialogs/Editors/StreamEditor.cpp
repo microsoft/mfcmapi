@@ -190,10 +190,8 @@ namespace dialog
 					sProp.Value.bin.cb = ULONG(bin.size());
 
 					// TODO: pass in named prop stuff to make this work
-					const auto smartView =
-						smartview::InterpretPropSmartView2(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, false);
-
-					lpSmartView->SetParser(smartView.first);
+					lpSmartView->SetParser(
+						smartview::FindSmartViewParserForProp(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, false));
 					lpSmartView->Parse(bin);
 				}
 			}

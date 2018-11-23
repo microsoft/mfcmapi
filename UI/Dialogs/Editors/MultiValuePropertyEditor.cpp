@@ -58,14 +58,11 @@ namespace dialog
 
 			if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
 			{
-				// TODO: We need a cheap way to get the parser types.
-				const auto smartView =
-					smartview::InterpretPropSmartView2(m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true);
-
 				auto smartViewPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
 				if (smartViewPane)
 				{
-					smartViewPane->SetParser(smartView.first);
+					smartViewPane->SetParser(smartview::FindSmartViewParserForProp(
+						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true));
 				}
 			}
 

@@ -353,15 +353,8 @@ namespace dialog
 
 				if (smartViewPane)
 				{
-					const auto smartView = smartview::InterpretPropSmartView2(
-						m_lpsInputValue,
-						m_lpMAPIProp,
-						nullptr,
-						nullptr,
-						m_bIsAB,
-						m_bMVRow); // Built from lpProp & lpMAPIProp
-
-					smartViewPane->SetParser(smartView.first);
+					smartViewPane->SetParser(smartview::FindSmartViewParserForProp(
+						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
 					smartViewPane->Parse(std::vector<BYTE>(
 						m_lpsInputValue->Value.bin.lpb,
 						m_lpsInputValue->Value.bin.lpb + m_lpsInputValue->Value.bin.cb));
