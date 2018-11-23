@@ -47,7 +47,7 @@ namespace viewpane
 		m_Splitter.Initialize(pParent, hdc);
 
 		m_bInitialized = true;
-		Parse(m_bin);
+		Parse(m_bins);
 	}
 
 	int SmartViewPane::GetFixedHeight()
@@ -167,37 +167,6 @@ namespace viewpane
 		}
 	}
 
-	void SmartViewPane::Parse(const std::vector<BYTE>& myBin)
-	{
-		m_bin = myBin;
-		if (!m_bInitialized) return;
-
-		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
-		auto szSmartView = std::wstring{};
-		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
-		if (svp)
-		{
-			svp->init(m_bin.size(), m_bin.data());
-			szSmartView = svp->ToString();
-			treeData = svp->getBlock();
-			delete svp;
-		}
-		else
-		{
-			treeData = smartview::block{};
-		}
-
-		RefreshTree();
-		if (szSmartView.empty())
-		{
-			szSmartView =
-				smartview::InterpretBinaryAsString(SBinary{ULONG(m_bin.size()), m_bin.data()}, iStructType, nullptr);
-		}
-
-		m_bHasData = !szSmartView.empty();
-		SetStringW(szSmartView);
-	}
-
 	void SmartViewPane::Parse(const std::vector<std::vector<BYTE>>& myBins)
 	{
 		m_bins = myBins;
@@ -207,26 +176,33 @@ namespace viewpane
 		auto szSmartViewArray = std::vector<std::wstring>{};
 		treeData = smartview::block{};
 		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
-		if (svp)
+		for (auto bin : m_bins)
 		{
-			for (auto bin : m_bins)
+			auto parsedData = std::wstring{};
+			if (svp)
 			{
 				svp->init(bin.size(), bin.data());
-				szSmartViewArray.push_back(svp->ToString());
+				parsedData = svp->ToString();
 				treeData.addBlock(svp->getBlock());
 			}
 
+			if (parsedData.empty())
+			{
+				parsedData =
+					smartview::InterpretBinaryAsString(SBinary{ULONG(bin.size()), bin.data()}, iStructType, nullptr);
+			}
+
+			szSmartViewArray.push_back(parsedData);
+		}
+
+		if (svp)
+		{
 			delete svp;
 		}
 
 		RefreshTree();
-		auto szSmartView = strings::join(szSmartViewArray, L"\r\n");
-		if (szSmartView.empty())
-		{
-			szSmartView =
-				smartview::InterpretBinaryAsString(SBinary{ULONG(m_bin.size()), m_bin.data()}, iStructType, nullptr);
-		}
 
+		auto szSmartView = strings::join(szSmartViewArray, L"\r\n");
 		m_bHasData = !szSmartView.empty();
 		SetStringW(szSmartView);
 	}

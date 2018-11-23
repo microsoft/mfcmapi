@@ -14,7 +14,7 @@ namespace viewpane
 		void SetStringW(const std::wstring& szMsg);
 		void DisableDropDown();
 		void SetParser(__ParsingTypeEnum iParser);
-		void Parse(const std::vector<BYTE>& myBin);
+		void Parse(const std::vector<BYTE>& myBin) { Parse(std::vector<std::vector<BYTE>>{myBin}); }
 		void Parse(const std::vector<std::vector<BYTE>>& myBins);
 		std::function<void(smartview::block*)> OnItemSelected = nullptr;
 
@@ -37,7 +37,6 @@ namespace viewpane
 			int iButtonHeight, // Height of buttons below the control
 			int iEditHeight) override; // height of an edit control
 
-		std::vector<BYTE> m_bin;
 		std::vector<std::vector<BYTE>> m_bins;
 		smartview::block treeData;
 		SplitterPane m_Splitter;

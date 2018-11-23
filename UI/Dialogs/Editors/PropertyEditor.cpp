@@ -355,9 +355,10 @@ namespace dialog
 				{
 					smartViewPane->SetParser(smartview::FindSmartViewParserForProp(
 						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
+
 					smartViewPane->Parse(std::vector<BYTE>(
-						m_lpsInputValue->Value.bin.lpb,
-						m_lpsInputValue->Value.bin.lpb + m_lpsInputValue->Value.bin.cb));
+						m_lpsInputValue ? m_lpsInputValue->Value.bin.lpb : nullptr,
+						m_lpsInputValue ? m_lpsInputValue->Value.bin.lpb + m_lpsInputValue->Value.bin.cb : nullptr));
 				}
 			}
 
