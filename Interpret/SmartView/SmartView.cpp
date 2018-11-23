@@ -39,12 +39,6 @@
 
 namespace smartview
 {
-	std::wstring InterpretMVLongAsString(
-		SLongArray myLongArray,
-		ULONG ulPropTag,
-		ULONG ulPropNameID,
-		_In_opt_ LPGUID lpguidNamedProp);
-
 	// Functions to parse PT_LONG/PT-I2 properties
 	_Check_return_ std::wstring RTimeToSzString(DWORD rTime, bool bLabel);
 	_Check_return_ std::wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);

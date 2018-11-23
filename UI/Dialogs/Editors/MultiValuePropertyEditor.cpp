@@ -373,8 +373,10 @@ namespace dialog
 				auto smartViewPaneText = dynamic_cast<viewpane::TextPane*>(GetPane(1));
 				if (smartViewPaneText)
 				{
-					smartViewPaneText->SetStringW(
-						smartview::InterpretPropSmartView(lpProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true));
+					auto npi = smartview::GetNamedPropInfo(m_ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
+
+					smartViewPaneText->SetStringW(smartview::InterpretMVLongAsString(
+						lpProp->Value.MVl, lpProp->ulPropTag, npi.first, &npi.second));
 				}
 			}
 
