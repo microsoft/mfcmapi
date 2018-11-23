@@ -306,8 +306,8 @@ namespace smartview
 		return std::make_pair(ulPropNameID, propNameGUID);
 	}
 
-	std::pair<__ParsingTypeEnum, std::wstring> InterpretPropSmartView2(
-		_In_opt_ const _SPropValue* lpProp, // required property value
+	std::wstring InterpretPropSmartView(
+		_In_opt_ const SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
@@ -315,10 +315,7 @@ namespace smartview
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 		bool bMVRow) // did the row come from a MV prop?
 	{
-		std::wstring lpszSmartView;
-
-		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp)
-			return std::make_pair(IDS_STNOPARSING, L"");
+		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp) return strings::emptystring;
 
 		auto npi = GetNamedPropInfo(lpProp->ulPropTag, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB);
 		auto ulPropNameID = npi.first;
@@ -332,11 +329,11 @@ namespace smartview
 		case PT_LONG:
 		case PT_I2:
 		case PT_I8:
-			lpszSmartView =
-				InterpretNumberAsString(lpProp->Value, lpProp->ulPropTag, ulPropNameID, nullptr, &propNameGUID, true);
+			return InterpretNumberAsString(
+				lpProp->Value, lpProp->ulPropTag, ulPropNameID, nullptr, &propNameGUID, true);
 			break;
 		case PT_MV_LONG:
-			lpszSmartView = InterpretMVLongAsString(lpProp->Value.MVl, lpProp->ulPropTag, ulPropNameID, &propNameGUID);
+			return InterpretMVLongAsString(lpProp->Value.MVl, lpProp->ulPropTag, ulPropNameID, &propNameGUID);
 			break;
 		case PT_BINARY:
 			ulLookupPropTag = lpProp->ulPropTag;
@@ -344,33 +341,20 @@ namespace smartview
 
 			if (iStructType)
 			{
-				lpszSmartView = InterpretBinaryAsString(lpProp->Value.bin, iStructType, lpMAPIProp);
+				return InterpretBinaryAsString(lpProp->Value.bin, iStructType, lpMAPIProp);
 			}
 
 			break;
 		case PT_MV_BINARY:
 			if (iStructType)
 			{
-				lpszSmartView = InterpretMVBinaryAsString(lpProp->Value.MVbin, iStructType, lpMAPIProp);
+				return InterpretMVBinaryAsString(lpProp->Value.MVbin, iStructType, lpMAPIProp);
 			}
 
 			break;
 		}
 
-		return make_pair(iStructType, lpszSmartView);
-	}
-
-	std::wstring InterpretPropSmartView(
-		_In_opt_ const SPropValue* lpProp, // required property value
-		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-		bool
-			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
-		bool bMVRow) // did the row come from a MV prop?
-	{
-		const auto smartview = InterpretPropSmartView2(lpProp, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB, bMVRow);
-		return smartview.second;
+		return strings::emptystring;
 	}
 
 	std::wstring
