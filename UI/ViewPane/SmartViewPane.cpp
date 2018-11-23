@@ -183,7 +183,14 @@ namespace viewpane
 			{
 				svp->init(bin.size(), bin.data());
 				parsedData = svp->ToString();
-				treeData.addBlock(svp->getBlock());
+				if (m_bins.size() == 1)
+				{
+					treeData = svp->getBlock();
+				}
+				else
+				{
+					treeData.addBlock(svp->getBlock());
+				}
 			}
 
 			if (parsedData.empty())
