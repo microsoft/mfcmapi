@@ -198,6 +198,39 @@ namespace viewpane
 		SetStringW(szSmartView);
 	}
 
+	void SmartViewPane::Parse(const std::vector<std::vector<BYTE>>& myBins)
+	{
+		m_bins = myBins;
+		if (!m_bInitialized) return;
+
+		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
+		auto szSmartViewArray = std::vector<std::wstring>{};
+		treeData = smartview::block{};
+		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
+		if (svp)
+		{
+			for (auto bin : m_bins)
+			{
+				svp->init(bin.size(), bin.data());
+				szSmartViewArray.push_back(svp->ToString());
+				treeData.addBlock(svp->getBlock());
+			}
+
+			delete svp;
+		}
+
+		RefreshTree();
+		auto szSmartView = strings::join(szSmartViewArray, L"\r\n");
+		if (szSmartView.empty())
+		{
+			szSmartView =
+				smartview::InterpretBinaryAsString(SBinary{ULONG(m_bin.size()), m_bin.data()}, iStructType, nullptr);
+		}
+
+		m_bHasData = !szSmartView.empty();
+		SetStringW(szSmartView);
+	}
+
 	void SmartViewPane::RefreshTree()
 	{
 		if (!m_TreePane) return;
@@ -269,22 +302,23 @@ namespace viewpane
 				const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
 				if (lpData && !lpData->isHeader())
 				{
-					auto bin = strings::BinToHexString(m_bin.data() + lpData->getOffset(), lpData->getSize(), false);
+					// TODO: Get this bit working again
+					//auto bin = strings::BinToHexString(m_bin.data() + lpData->getOffset(), lpData->getSize(), false);
 
-					const auto blockString =
-						strings::format(L"(%d, %d) %ws", lpData->getOffset(), lpData->getSize(), bin.c_str());
-					const auto size = ui::GetTextExtentPoint32(lvcd->nmcd.hdc, blockString);
-					auto rect = RECT{};
-					TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
-					rect.left = rect.right;
-					rect.right += size.cx;
-					ui::DrawSegoeTextW(
-						lvcd->nmcd.hdc,
-						blockString,
-						MyGetSysColor(ui::cGlow),
-						rect,
-						false,
-						DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+					//const auto blockString =
+					//	strings::format(L"(%d, %d) %ws", lpData->getOffset(), lpData->getSize(), bin.c_str());
+					//const auto size = ui::GetTextExtentPoint32(lvcd->nmcd.hdc, blockString);
+					//auto rect = RECT{};
+					//TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
+					//rect.left = rect.right;
+					//rect.right += size.cx;
+					//ui::DrawSegoeTextW(
+					//	lvcd->nmcd.hdc,
+					//	blockString,
+					//	MyGetSysColor(ui::cGlow),
+					//	rect,
+					//	false,
+					//	DT_SINGLELINE | DT_VCENTER | DT_CENTER);
 				}
 			}
 			break;

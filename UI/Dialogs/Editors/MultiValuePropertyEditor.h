@@ -34,7 +34,6 @@ namespace dialog
 			void UpdateListRow(_In_ LPSPropValue lpProp, ULONG iMVCount) const;
 			std::vector<LONG> GetLongArray() const;
 			std::vector<std::vector<BYTE>> GetBinaryArray() const;
-			void UpdateSmartView(const SPropValue* lpProp) const;
 			void UpdateSmartView() const;
 			_Check_return_ ULONG HandleChange(UINT nID) override;
 			void OnOK() override;

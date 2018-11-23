@@ -66,7 +66,7 @@ namespace dialog
 				}
 			}
 
-			UpdateSmartView(m_lpsInputValue);
+			UpdateSmartView();
 			UpdateButtons();
 
 			return bRet;
@@ -397,7 +397,7 @@ namespace dialog
 			return ret;
 		}
 
-		void CMultiValuePropertyEditor::UpdateSmartView(const SPropValue* lpProp) const
+		void CMultiValuePropertyEditor::UpdateSmartView() const
 		{
 			switch (PROP_TYPE(m_ulPropTag))
 			{
@@ -417,32 +417,15 @@ namespace dialog
 			break;
 			case PT_MV_BINARY:
 			{
-				// TODO: Smartview pane should accept an MV bin and do the right thing with it
-				// For now, parse to text and throw in a text box.
 				auto smartViewPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
-				const auto iStructType = static_cast<__ParsingTypeEnum>(smartViewPane->GetDropDownSelectionValue());
-				if (iStructType)
+				if (smartViewPane)
 				{
-					smartViewPane->SetStringW(
-						smartview::InterpretMVBinaryAsString(lpProp->Value.MVbin, iStructType, m_lpMAPIProp));
+					smartViewPane->Parse(GetBinaryArray());
 				}
 			}
 
 			break;
 			}
-		}
-
-		void CMultiValuePropertyEditor::UpdateSmartView() const
-		{
-			const auto lpsProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
-			if (lpsProp)
-			{
-
-				WriteMultiValueStringsToSPropValue(static_cast<LPVOID>(lpsProp), lpsProp);
-				UpdateSmartView(lpsProp);
-			}
-
-			MAPIFreeBuffer(lpsProp);
 		}
 
 		_Check_return_ ULONG CMultiValuePropertyEditor::HandleChange(UINT nID)
