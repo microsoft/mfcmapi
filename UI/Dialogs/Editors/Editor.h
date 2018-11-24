@@ -6,6 +6,7 @@
 #include <UI/ViewPane/CheckPane.h>
 #include <UI/ViewPane/DropDownPane.h>
 #include <UI/ViewPane/ListPane.h>
+#include <Interpret/SmartView/SmartView.h>
 
 class CParentWnd;
 
@@ -63,6 +64,28 @@ namespace dialog
 			void SetSize(ULONG id, size_t cb) const
 			{
 				SetStringf(id, L"0x%08X = %u", static_cast<int>(cb), static_cast<UINT>(cb)); // STRING_OK
+			}
+			void ClearHighlight(ULONG id) const
+			{
+				auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
+				if (lpPane)
+				{
+					lpPane->ClearHighlight();
+				}
+			}
+
+			void HighlightHex(ULONG id, smartview::block* lpData) const
+			{
+				auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
+				if (lpPane)
+				{
+					lpPane->ClearHighlight();
+					if (!lpData) return;
+					const auto hex = lpPane->GetStringW();
+					lpPane->AddHighlight(viewpane::Range{
+						strings::OffsetToFilteredOffset(hex, lpData->getOffset() * 2),
+						strings::OffsetToFilteredOffset(hex, (lpData->getOffset() + lpData->getSize()) * 2)});
+				}
 			}
 
 			// Get values after we've done the DisplayDialog

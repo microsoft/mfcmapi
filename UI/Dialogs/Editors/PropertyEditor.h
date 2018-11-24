@@ -52,11 +52,10 @@ namespace dialog
 			LPSPropValue m_lpsOutputValue;
 			bool m_bDirty;
 			bool m_bMVRow; // whether this row came from a multivalued property. Used for smart view parsing.
-			viewpane::SmartViewPane* m_lpSmartView;
 
 			// all calls to MAPIAllocateMore will use m_lpAllocParent
 			// this is not something to be freed
 			LPVOID m_lpAllocParent;
 		};
-	}
-}
+	} // namespace editor
+} // namespace dialog

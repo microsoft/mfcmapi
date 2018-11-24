@@ -146,7 +146,7 @@ namespace dialog
 								if (PT_LONG == PROP_TYPE(lpProps[ulPropNum].ulPropTag))
 								{
 									szTmp = smartview::InterpretNumberAsString(
-										lpProps[ulPropNum].Value,
+										lpProps[ulPropNum].Value.l,
 										lpProps[ulPropNum].ulPropTag,
 										NULL,
 										nullptr,

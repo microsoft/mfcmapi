@@ -1132,11 +1132,13 @@ namespace mapi
 	// Will only return nullptr on allocation failure. Even empty bin will return pointer to 0 so MAPI handles empty strings properly
 	_Check_return_ LPBYTE ByteVectorToMAPI(const std::vector<BYTE>& bin, LPVOID lpParent)
 	{
+		auto binsize = static_cast<ULONG>(bin.size() + sizeof(WCHAR));
 		// We allocate a couple extra bytes (initialized to NULL) in case this buffer is printed.
-		auto lpBin = mapi::allocate<LPBYTE>(static_cast<ULONG>(bin.size()) + sizeof(WCHAR), lpParent);
+		auto lpBin = mapi::allocate<LPBYTE>(binsize, lpParent);
 		if (lpBin)
 		{
-			memcpy(lpBin, &bin[0], bin.size());
+			memset(lpBin, 0, binsize);
+			if (!bin.empty()) memcpy(lpBin, &bin[0], bin.size());
 			return lpBin;
 		}
 

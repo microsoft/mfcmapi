@@ -13,8 +13,6 @@ namespace dialog
 {
 	namespace editor
 	{
-		// ID for our smartview control
-		static const int s_smartViewPaneID = 99;
 		_Check_return_ HRESULT DisplayPropertyEditor(
 			_In_ CWnd* pParentWnd,
 			UINT uidTitle,
@@ -123,7 +121,6 @@ namespace dialog
 			if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 			m_ulPropTag = ulPropTag;
 			m_lpsInputValue = lpsPropValue;
-			m_lpSmartView = nullptr;
 
 			// If we didn't have an input value, we are creating a new property
 			// So by definition, we're already dirty
@@ -159,27 +156,6 @@ namespace dialog
 
 		void CPropertyEditor::InitPropertyControls()
 		{
-			switch (PROP_TYPE(m_ulPropTag))
-			{
-			case PT_I8:
-			case PT_I2:
-			case PT_BINARY:
-			case PT_LONG:
-				// This will be freed by the pane that we pass it to.
-				m_lpSmartView = viewpane::SmartViewPane::Create(s_smartViewPaneID, IDS_SMARTVIEW);
-			}
-
-			const auto smartView = smartview::InterpretPropSmartView2(
-				m_lpsInputValue,
-				m_lpMAPIProp,
-				nullptr,
-				nullptr,
-				m_bIsAB,
-				m_bMVRow); // Built from lpProp & lpMAPIProp
-
-			const auto iStructType = smartView.first;
-			const auto szSmartView = smartView.second;
-
 			std::wstring szTemp1;
 			std::wstring szTemp2;
 			viewpane::CountedTextPane* lpPane = nullptr;
@@ -306,7 +282,12 @@ namespace dialog
 			case PT_I2:
 				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SIGNEDDECIMAL, false));
 				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_HEX, false));
-				AddPane(m_lpSmartView);
+				AddPane(viewpane::TextPane::CreateMultiLinePane(
+					2,
+					IDS_SMARTVIEW,
+					smartview::InterpretPropSmartView(
+						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow),
+					true));
 				if (m_lpsInputValue)
 				{
 					SetDecimal(0, m_lpsInputValue->Value.i);
@@ -318,18 +299,17 @@ namespace dialog
 					SetHex(1, 0);
 				}
 
-				if (m_lpSmartView)
-				{
-					m_lpSmartView->DisableDropDown();
-					m_lpSmartView->SetStringW(szSmartView);
-				}
-
 				break;
 			case PT_I8:
 				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_HIGHPART, false));
 				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_LOWPART, false));
 				AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_DECIMAL, false));
-				AddPane(m_lpSmartView);
+				AddPane(viewpane::TextPane::CreateMultiLinePane(
+					3,
+					IDS_SMARTVIEW,
+					smartview::InterpretPropSmartView(
+						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow),
+					true));
 
 				if (m_lpsInputValue)
 				{
@@ -344,18 +324,14 @@ namespace dialog
 					SetDecimal(2, 0);
 				}
 
-				if (m_lpSmartView)
-				{
-					m_lpSmartView->DisableDropDown();
-					m_lpSmartView->SetStringW(szSmartView);
-				}
-
 				break;
 			case PT_BINARY:
+			{
 				lpPane = viewpane::CountedTextPane::Create(0, IDS_BIN, false, IDS_CB);
 				AddPane(lpPane);
 				AddPane(viewpane::CountedTextPane::Create(1, IDS_TEXT, false, IDS_CCH));
-				AddPane(m_lpSmartView);
+				auto smartViewPane = viewpane::SmartViewPane::Create(2, IDS_SMARTVIEW);
+				AddPane(smartViewPane);
 
 				if (m_lpsInputValue)
 				{
@@ -375,17 +351,30 @@ namespace dialog
 					if (lpPane) lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
 				}
 
-				if (m_lpSmartView)
+				if (smartViewPane)
 				{
-					m_lpSmartView->SetParser(iStructType);
-					m_lpSmartView->SetStringW(szSmartView);
-				}
+					smartViewPane->SetParser(smartview::FindSmartViewParserForProp(
+						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
 
-				break;
+					smartViewPane->Parse(std::vector<BYTE>(
+						m_lpsInputValue ? m_lpsInputValue->Value.bin.lpb : nullptr,
+						m_lpsInputValue ? m_lpsInputValue->Value.bin.lpb + m_lpsInputValue->Value.bin.cb : nullptr));
+
+					smartViewPane->OnItemSelected = [&](auto _1) { return HighlightHex(0, _1); };
+				}
+			}
+
+			break;
 			case PT_LONG:
 				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_UNSIGNEDDECIMAL, false));
 				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_HEX, false));
-				AddPane(m_lpSmartView);
+				AddPane(viewpane::TextPane::CreateMultiLinePane(
+					2,
+					IDS_SMARTVIEW,
+					smartview::InterpretPropSmartView(
+						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow),
+					true));
+
 				if (m_lpsInputValue)
 				{
 					SetStringf(0, L"%d", m_lpsInputValue->Value.l); // STRING_OK
@@ -396,12 +385,6 @@ namespace dialog
 					SetDecimal(0, 0);
 					SetHex(1, 0);
 					SetHex(2, 0);
-				}
-
-				if (m_lpSmartView)
-				{
-					m_lpSmartView->DisableDropDown();
-					m_lpSmartView->SetStringW(szSmartView);
 				}
 
 				break;
@@ -610,7 +593,6 @@ namespace dialog
 			std::wstring szTmpString;
 			std::wstring szTemp1;
 			std::wstring szTemp2;
-			std::wstring szSmartView;
 			auto sProp = SPropValue{};
 
 			//auto Bin = SBinary{};
@@ -640,10 +622,8 @@ namespace dialog
 
 				sProp.ulPropTag = m_ulPropTag;
 
-				szSmartView =
-					smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow);
-
-				if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView);
+				SetStringW(
+					2, smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
 
 				break;
 			case PT_LONG: // unsigned 32 bit
@@ -661,10 +641,8 @@ namespace dialog
 
 				sProp.ulPropTag = m_ulPropTag;
 
-				szSmartView =
-					smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow);
-
-				if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView);
+				SetStringW(
+					2, smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
 
 				break;
 			case PT_CURRENCY:
@@ -705,10 +683,8 @@ namespace dialog
 
 				sProp.ulPropTag = m_ulPropTag;
 
-				szSmartView =
-					smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow);
-
-				if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView);
+				SetStringW(
+					3, smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
 
 				break;
 			case PT_SYSTIME: // components are unsigned hex
@@ -721,8 +697,10 @@ namespace dialog
 				SetStringW(2, szTemp1);
 				break;
 			case PT_BINARY:
-				if (paneID == 0 || paneID == s_smartViewPaneID)
+			{
+				if (paneID == 0 || paneID == 2)
 				{
+					ClearHighlight(0);
 					bin = GetBinary(0);
 					if (paneID == 0) SetStringA(1, std::string(LPCSTR(bin.data()), bin.size())); // ansi string
 				}
@@ -731,7 +709,7 @@ namespace dialog
 					lpszA = GetStringA(1); // Do not free this
 					bin = std::vector<BYTE>{lpszA.c_str(),
 											lpszA.c_str() + static_cast<ULONG>(sizeof(CHAR) * lpszA.length())};
-					SetBinary(0, sProp.Value.bin.lpb, sProp.Value.bin.cb);
+					SetBinary(0, bin.data(), static_cast<ULONG>(bin.size()));
 				}
 
 				sProp.Value.bin.lpb = bin.data();
@@ -743,8 +721,14 @@ namespace dialog
 				lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(1));
 				if (lpPane) lpPane->SetCount(sProp.Value.bin.cb);
 
-				if (m_lpSmartView) m_lpSmartView->Parse(bin);
-				break;
+				auto smartViewPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(2));
+				if (smartViewPane)
+				{
+					smartViewPane->Parse(bin);
+				}
+			}
+
+			break;
 			case PT_STRING8:
 				if (paneID == 0)
 				{

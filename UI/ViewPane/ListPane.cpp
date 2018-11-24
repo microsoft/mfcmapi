@@ -88,8 +88,7 @@ namespace viewpane
 
 	int ListPane::GetMinWidth()
 	{
-		return max(
-			ViewPane::GetMinWidth(), (int) (NUMLISTBUTTONS * m_iButtonWidth + m_iMargin * (NUMLISTBUTTONS - 1)));
+		return max(ViewPane::GetMinWidth(), (int) (NUMLISTBUTTONS * m_iButtonWidth + m_iMargin * (NUMLISTBUTTONS - 1)));
 	}
 
 	int ListPane::GetFixedHeight()
@@ -147,9 +146,11 @@ namespace viewpane
 		case IDD_LISTMOVETOTOP:
 			OnMoveListEntryToTop();
 			break;
+		default:
+			return ViewPane::HandleChange(nID);
 		}
 
-		return ViewPane::HandleChange(nID);
+		return GetID();
 	}
 
 	void ListPane::DeferWindowPos(

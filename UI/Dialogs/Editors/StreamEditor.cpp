@@ -160,7 +160,9 @@ namespace dialog
 			AddPane(viewpane::CountedTextPane::Create(m_iBinBox, IDS_STREAMBIN, false, IDS_CB));
 			if (m_bDoSmartView)
 			{
-				AddPane(viewpane::SmartViewPane::Create(m_iSmartViewBox, IDS_SMARTVIEW));
+				auto smartViewPane = viewpane::SmartViewPane::Create(m_iSmartViewBox, IDS_SMARTVIEW);
+				AddPane(smartViewPane);
+				smartViewPane->OnItemSelected = [&](auto _1) { return HighlightHex(m_iBinBox, _1); };
 			}
 		}
 
@@ -190,11 +192,9 @@ namespace dialog
 					sProp.Value.bin.cb = ULONG(bin.size());
 
 					// TODO: pass in named prop stuff to make this work
-					const auto smartView =
-						smartview::InterpretPropSmartView2(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, false);
-
-					lpSmartView->SetParser(smartView.first);
-					lpSmartView->SetStringW(smartView.second);
+					lpSmartView->SetParser(
+						smartview::FindSmartViewParserForProp(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, false));
+					lpSmartView->Parse(bin);
 				}
 			}
 
@@ -421,6 +421,7 @@ namespace dialog
 			auto lpBinPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(m_iBinBox));
 			if (m_iTextBox == paneID && lpBinPane)
 			{
+				ClearHighlight(m_iBinBox);
 				switch (m_ulEditorType)
 				{
 				case EDITOR_STREAM_ANSI:
@@ -444,6 +445,7 @@ namespace dialog
 			}
 			else if (m_iBinBox == paneID)
 			{
+				ClearHighlight(m_iBinBox);
 				auto bin = GetBinary(m_iBinBox);
 				{
 					switch (m_ulEditorType)

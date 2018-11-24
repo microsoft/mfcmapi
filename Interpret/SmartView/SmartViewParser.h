@@ -19,7 +19,13 @@ namespace smartview
 	public:
 		virtual ~SmartViewParser() = default;
 
-		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin) { m_Parser = CBinaryParser(cbBin, lpBin); }
+		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
+		{
+			m_Parser = CBinaryParser(cbBin, lpBin);
+			m_bParsed = false;
+			data = {};
+			m_bEnableJunk = true;
+		}
 
 		void parse(CBinaryParser& binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
 

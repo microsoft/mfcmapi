@@ -11,10 +11,9 @@ namespace viewpane
 	public:
 		static SmartViewPane* Create(int paneID, UINT uidLabel);
 
-		void SetStringW(const std::wstring& szMsg);
-		void DisableDropDown();
 		void SetParser(__ParsingTypeEnum iParser);
-		void Parse(const std::vector<BYTE>& myBin);
+		void Parse(const std::vector<BYTE>& myBin) { Parse(std::vector<std::vector<BYTE>>{myBin}); }
+		void Parse(const std::vector<std::vector<BYTE>>& myBins);
 		std::function<void(smartview::block*)> OnItemSelected = nullptr;
 
 	private:
@@ -26,6 +25,7 @@ namespace viewpane
 		void AddChildren(HTREEITEM parent, const smartview::block& data);
 		void ItemSelected(HTREEITEM hItem);
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM hItemCurHover) const;
+		void SetStringW(const std::wstring& szMsg);
 
 		void SetMargins(
 			int iMargin,
@@ -36,7 +36,7 @@ namespace viewpane
 			int iButtonHeight, // Height of buttons below the control
 			int iEditHeight) override; // height of an edit control
 
-		std::vector<BYTE> m_bin;
+		std::vector<std::vector<BYTE>> m_bins;
 		smartview::block treeData;
 		SplitterPane m_Splitter;
 		TreePane* m_TreePane{nullptr};

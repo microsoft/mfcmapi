@@ -47,6 +47,7 @@ namespace viewpane
 		m_Splitter.Initialize(pParent, hdc);
 
 		m_bInitialized = true;
+		Parse(m_bins);
 	}
 
 	int SmartViewPane::GetFixedHeight()
@@ -152,8 +153,6 @@ namespace viewpane
 		}
 	}
 
-	void SmartViewPane::DisableDropDown() { m_bDoDropDown = false; }
-
 	void SmartViewPane::SetParser(const __ParsingTypeEnum iParser)
 	{
 		for (size_t iDropNum = 0; iDropNum < SmartViewParserTypeArray.size(); iDropNum++)
@@ -166,31 +165,52 @@ namespace viewpane
 		}
 	}
 
-	void SmartViewPane::Parse(const std::vector<BYTE>& myBin)
+	void SmartViewPane::Parse(const std::vector<std::vector<BYTE>>& myBins)
 	{
-		m_bin = myBin;
+		m_bins = myBins;
+		if (!m_bInitialized) return;
+
 		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
-		auto szSmartView = std::wstring{};
+		auto szSmartViewArray = std::vector<std::wstring>{};
+		treeData = smartview::block{};
 		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
+		auto source = 0;
+		for (auto& bin : m_bins)
+		{
+			auto parsedData = std::wstring{};
+			if (svp)
+			{
+				svp->init(bin.size(), bin.data());
+				parsedData = svp->ToString();
+				auto node = svp->getBlock();
+				node.setSource(source++);
+				if (m_bins.size() == 1)
+				{
+					treeData = node;
+				}
+				else
+				{
+					treeData.addBlock(node);
+				}
+			}
+
+			if (parsedData.empty())
+			{
+				parsedData =
+					smartview::InterpretBinaryAsString(SBinary{ULONG(bin.size()), bin.data()}, iStructType, nullptr);
+			}
+
+			szSmartViewArray.push_back(parsedData);
+		}
+
 		if (svp)
 		{
-			svp->init(m_bin.size(), m_bin.data());
-			szSmartView = svp->ToString();
-			treeData = svp->getBlock();
 			delete svp;
-		}
-		else
-		{
-			treeData = smartview::block{};
 		}
 
 		RefreshTree();
-		if (szSmartView.empty())
-		{
-			szSmartView =
-				smartview::InterpretBinaryAsString(SBinary{ULONG(m_bin.size()), m_bin.data()}, iStructType, nullptr);
-		}
 
+		auto szSmartView = strings::join(szSmartViewArray, L"\r\n");
 		m_bHasData = !szSmartView.empty();
 		SetStringW(szSmartView);
 	}
@@ -207,8 +227,17 @@ namespace viewpane
 	{
 		if (!m_TreePane) return;
 
-		const auto root =
-			m_TreePane->m_Tree.AddChildNode(data.getText(), parent, reinterpret_cast<LPARAM>(&data), nullptr);
+		auto root = HTREEITEM{};
+		// If the node is a header with no text, mrege the children up one level
+		if (data.isHeader() && data.getText().empty())
+		{
+			root = parent;
+		}
+		else
+		{
+			root = m_TreePane->m_Tree.AddChildNode(data.getText(), parent, reinterpret_cast<LPARAM>(&data), nullptr);
+		}
+
 		for (const auto& item : data.getChildren())
 		{
 			AddChildren(root, item);
@@ -248,7 +277,6 @@ namespace viewpane
 	void
 	SmartViewPane::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM /*hItemCurHover*/) const
 	{
-		if (registry::RegKeys[registry::regkeyHEX_DIALOG_DIAG].ulCurDWORD == 0) return;
 		const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
 		if (!lvcd) return;
 
@@ -256,6 +284,7 @@ namespace viewpane
 		{
 		case CDDS_ITEMPOSTPAINT:
 		{
+			if (registry::RegKeys[registry::regkeyHEX_DIALOG_DIAG].ulCurDWORD == 0) return;
 			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
 			if (hItem)
 			{
@@ -266,7 +295,8 @@ namespace viewpane
 				const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
 				if (lpData && !lpData->isHeader())
 				{
-					auto bin = strings::BinToHexString(m_bin.data() + lpData->getOffset(), lpData->getSize(), false);
+					const auto bin = strings::BinToHexString(
+						m_bins[lpData->getSource()].data() + lpData->getOffset(), lpData->getSize(), false);
 
 					const auto blockString =
 						strings::format(L"(%d, %d) %ws", lpData->getOffset(), lpData->getSize(), bin.c_str());

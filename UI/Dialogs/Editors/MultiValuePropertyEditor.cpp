@@ -56,21 +56,17 @@ namespace dialog
 			ReadMultiValueStringsFromProperty();
 			ResizeList(0, false);
 
-			const auto smartView =
-				smartview::InterpretPropSmartView2(m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true);
-
-			const auto iStructType = smartView.first;
-			auto szSmartView = smartView.second;
-			if (!szSmartView.empty())
+			if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
 			{
-				auto lpPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
-				if (lpPane)
+				auto smartViewPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
+				if (smartViewPane)
 				{
-					lpPane->SetParser(iStructType);
-					lpPane->SetStringW(szSmartView);
+					smartViewPane->SetParser(smartview::FindSmartViewParserForProp(
+						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true));
 				}
 			}
 
+			UpdateSmartView();
 			UpdateButtons();
 
 			return bRet;
@@ -88,15 +84,14 @@ namespace dialog
 		{
 			AddPane(viewpane::ListPane::Create(0, IDS_PROPVALUES, false, false, ListEditCallBack(this)));
 			SetListID(0);
-			if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag) || PT_MV_LONG == PROP_TYPE(m_ulPropTag))
-			{
-				auto lpPane = viewpane::SmartViewPane::Create(1, IDS_SMARTVIEW);
-				AddPane(lpPane);
 
-				if (lpPane && PT_MV_LONG == PROP_TYPE(m_ulPropTag))
-				{
-					lpPane->DisableDropDown();
-				}
+			if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
+			{
+				AddPane(viewpane::SmartViewPane::Create(1, IDS_SMARTVIEW));
+			}
+			else if (PT_MV_LONG == PROP_TYPE(m_ulPropTag))
+			{
+				AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_SMARTVIEW, strings::emptystring, true));
 			}
 		}
 
@@ -155,128 +150,121 @@ namespace dialog
 
 			if (m_lpsOutputValue)
 			{
-				WriteMultiValueStringsToSPropValue(static_cast<LPVOID>(m_lpAllocParent), m_lpsOutputValue);
-			}
-		}
+				const auto ulNumVals = GetListCount(0);
 
-		// Given a pointer to an SPropValue structure which has already been allocated, fill out the values
-		void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue(
-			_In_ LPVOID lpParent,
-			_In_ LPSPropValue lpsProp) const
-		{
-			if (!lpParent || !lpsProp) return;
+				m_lpsOutputValue->ulPropTag = m_ulPropTag;
+				m_lpsOutputValue->dwAlignPad = NULL;
 
-			const auto ulNumVals = GetListCount(0);
-
-			lpsProp->ulPropTag = m_ulPropTag;
-			lpsProp->dwAlignPad = NULL;
-
-			switch (PROP_TYPE(lpsProp->ulPropTag))
-			{
-			case PT_MV_I2:
-				lpsProp->Value.MVi.lpi = mapi::allocate<short int*>(sizeof(short int) * ulNumVals, lpParent);
-				lpsProp->Value.MVi.cValues = ulNumVals;
-				break;
-			case PT_MV_LONG:
-				lpsProp->Value.MVl.lpl = mapi::allocate<LONG*>(sizeof(LONG) * ulNumVals, lpParent);
-				lpsProp->Value.MVl.cValues = ulNumVals;
-				break;
-			case PT_MV_DOUBLE:
-				lpsProp->Value.MVdbl.lpdbl = mapi::allocate<double*>(sizeof(double) * ulNumVals, lpParent);
-				lpsProp->Value.MVdbl.cValues = ulNumVals;
-				break;
-			case PT_MV_CURRENCY:
-				lpsProp->Value.MVcur.lpcur = mapi::allocate<CURRENCY*>(sizeof(CURRENCY) * ulNumVals, lpParent);
-				lpsProp->Value.MVcur.cValues = ulNumVals;
-				break;
-			case PT_MV_APPTIME:
-				lpsProp->Value.MVat.lpat = mapi::allocate<double*>(sizeof(double) * ulNumVals, lpParent);
-				lpsProp->Value.MVat.cValues = ulNumVals;
-				break;
-			case PT_MV_SYSTIME:
-				lpsProp->Value.MVft.lpft = mapi::allocate<FILETIME*>(sizeof(FILETIME) * ulNumVals, lpParent);
-				lpsProp->Value.MVft.cValues = ulNumVals;
-				break;
-			case PT_MV_I8:
-				lpsProp->Value.MVli.lpli = mapi::allocate<LARGE_INTEGER*>(sizeof(LARGE_INTEGER) * ulNumVals, lpParent);
-				lpsProp->Value.MVli.cValues = ulNumVals;
-				break;
-			case PT_MV_R4:
-				lpsProp->Value.MVflt.lpflt = mapi::allocate<float*>(sizeof(float) * ulNumVals, lpParent);
-				lpsProp->Value.MVflt.cValues = ulNumVals;
-				break;
-			case PT_MV_STRING8:
-				lpsProp->Value.MVszA.lppszA = mapi::allocate<LPSTR*>(sizeof(LPSTR) * ulNumVals, lpParent);
-				lpsProp->Value.MVszA.cValues = ulNumVals;
-				break;
-			case PT_MV_UNICODE:
-				lpsProp->Value.MVszW.lppszW = mapi::allocate<LPWSTR*>(sizeof(LPWSTR) * ulNumVals, lpParent);
-				lpsProp->Value.MVszW.cValues = ulNumVals;
-				break;
-			case PT_MV_BINARY:
-				lpsProp->Value.MVbin.lpbin = mapi::allocate<SBinary*>(sizeof(SBinary) * ulNumVals, lpParent);
-				lpsProp->Value.MVbin.cValues = ulNumVals;
-				break;
-			case PT_MV_CLSID:
-				lpsProp->Value.MVguid.lpguid = mapi::allocate<GUID*>(sizeof(GUID) * ulNumVals, lpParent);
-				lpsProp->Value.MVguid.cValues = ulNumVals;
-				break;
-			default:
-				break;
-			}
-			// Allocation is now done
-
-			// Now write our data into the space we allocated
-			for (ULONG iMVCount = 0; iMVCount < ulNumVals; iMVCount++)
-			{
-				const auto lpData = GetListRowData(0, iMVCount);
-
-				if (lpData && lpData->MV())
+				switch (PROP_TYPE(m_lpsOutputValue->ulPropTag))
 				{
-					switch (PROP_TYPE(lpsProp->ulPropTag))
-					{
-					case PT_MV_I2:
-						lpsProp->Value.MVi.lpi[iMVCount] = lpData->MV()->m_val.i;
-						break;
-					case PT_MV_LONG:
-						lpsProp->Value.MVl.lpl[iMVCount] = lpData->MV()->m_val.l;
-						break;
-					case PT_MV_DOUBLE:
-						lpsProp->Value.MVdbl.lpdbl[iMVCount] = lpData->MV()->m_val.dbl;
-						break;
-					case PT_MV_CURRENCY:
-						lpsProp->Value.MVcur.lpcur[iMVCount] = lpData->MV()->m_val.cur;
-						break;
-					case PT_MV_APPTIME:
-						lpsProp->Value.MVat.lpat[iMVCount] = lpData->MV()->m_val.at;
-						break;
-					case PT_MV_SYSTIME:
-						lpsProp->Value.MVft.lpft[iMVCount] = lpData->MV()->m_val.ft;
-						break;
-					case PT_MV_I8:
-						lpsProp->Value.MVli.lpli[iMVCount] = lpData->MV()->m_val.li;
-						break;
-					case PT_MV_R4:
-						lpsProp->Value.MVflt.lpflt[iMVCount] = lpData->MV()->m_val.flt;
-						break;
-					case PT_MV_STRING8:
-						lpsProp->Value.MVszA.lppszA[iMVCount] = mapi::CopyStringA(lpData->MV()->m_val.lpszA, lpParent);
-						break;
-					case PT_MV_UNICODE:
-						lpsProp->Value.MVszW.lppszW[iMVCount] = mapi::CopyStringW(lpData->MV()->m_val.lpszW, lpParent);
-						break;
-					case PT_MV_BINARY:
-						lpsProp->Value.MVbin.lpbin[iMVCount] = mapi::CopySBinary(lpData->MV()->m_val.bin, lpParent);
-						break;
-					case PT_MV_CLSID:
-						if (lpData->MV()->m_val.lpguid)
-						{
-							lpsProp->Value.MVguid.lpguid[iMVCount] = *lpData->MV()->m_val.lpguid;
-						}
+				case PT_MV_I2:
+					m_lpsOutputValue->Value.MVi.lpi = mapi::allocate<short int*>(sizeof(short int) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVi.cValues = ulNumVals;
+					break;
+				case PT_MV_LONG:
+					m_lpsOutputValue->Value.MVl.lpl = mapi::allocate<LONG*>(sizeof(LONG) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVl.cValues = ulNumVals;
+					break;
+				case PT_MV_DOUBLE:
+					m_lpsOutputValue->Value.MVdbl.lpdbl = mapi::allocate<double*>(sizeof(double) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVdbl.cValues = ulNumVals;
+					break;
+				case PT_MV_CURRENCY:
+					m_lpsOutputValue->Value.MVcur.lpcur = mapi::allocate<CURRENCY*>(sizeof(CURRENCY) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVcur.cValues = ulNumVals;
+					break;
+				case PT_MV_APPTIME:
+					m_lpsOutputValue->Value.MVat.lpat = mapi::allocate<double*>(sizeof(double) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVat.cValues = ulNumVals;
+					break;
+				case PT_MV_SYSTIME:
+					m_lpsOutputValue->Value.MVft.lpft = mapi::allocate<FILETIME*>(sizeof(FILETIME) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVft.cValues = ulNumVals;
+					break;
+				case PT_MV_I8:
+					m_lpsOutputValue->Value.MVli.lpli =
+						mapi::allocate<LARGE_INTEGER*>(sizeof(LARGE_INTEGER) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVli.cValues = ulNumVals;
+					break;
+				case PT_MV_R4:
+					m_lpsOutputValue->Value.MVflt.lpflt = mapi::allocate<float*>(sizeof(float) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVflt.cValues = ulNumVals;
+					break;
+				case PT_MV_STRING8:
+					m_lpsOutputValue->Value.MVszA.lppszA = mapi::allocate<LPSTR*>(sizeof(LPSTR) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVszA.cValues = ulNumVals;
+					break;
+				case PT_MV_UNICODE:
+					m_lpsOutputValue->Value.MVszW.lppszW = mapi::allocate<LPWSTR*>(sizeof(LPWSTR) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVszW.cValues = ulNumVals;
+					break;
+				case PT_MV_BINARY:
+					m_lpsOutputValue->Value.MVbin.lpbin = mapi::allocate<SBinary*>(sizeof(SBinary) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVbin.cValues = ulNumVals;
+					break;
+				case PT_MV_CLSID:
+					m_lpsOutputValue->Value.MVguid.lpguid = mapi::allocate<GUID*>(sizeof(GUID) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVguid.cValues = ulNumVals;
+					break;
+				default:
+					break;
+				}
+				// Allocation is now done
 
-						break;
-					default:
-						break;
+				// Now write our data into the space we allocated
+				for (ULONG iMVCount = 0; iMVCount < ulNumVals; iMVCount++)
+				{
+					const auto lpData = GetListRowData(0, iMVCount);
+
+					if (lpData && lpData->MV())
+					{
+						switch (PROP_TYPE(m_lpsOutputValue->ulPropTag))
+						{
+						case PT_MV_I2:
+							m_lpsOutputValue->Value.MVi.lpi[iMVCount] = lpData->MV()->m_val.i;
+							break;
+						case PT_MV_LONG:
+							m_lpsOutputValue->Value.MVl.lpl[iMVCount] = lpData->MV()->m_val.l;
+							break;
+						case PT_MV_DOUBLE:
+							m_lpsOutputValue->Value.MVdbl.lpdbl[iMVCount] = lpData->MV()->m_val.dbl;
+							break;
+						case PT_MV_CURRENCY:
+							m_lpsOutputValue->Value.MVcur.lpcur[iMVCount] = lpData->MV()->m_val.cur;
+							break;
+						case PT_MV_APPTIME:
+							m_lpsOutputValue->Value.MVat.lpat[iMVCount] = lpData->MV()->m_val.at;
+							break;
+						case PT_MV_SYSTIME:
+							m_lpsOutputValue->Value.MVft.lpft[iMVCount] = lpData->MV()->m_val.ft;
+							break;
+						case PT_MV_I8:
+							m_lpsOutputValue->Value.MVli.lpli[iMVCount] = lpData->MV()->m_val.li;
+							break;
+						case PT_MV_R4:
+							m_lpsOutputValue->Value.MVflt.lpflt[iMVCount] = lpData->MV()->m_val.flt;
+							break;
+						case PT_MV_STRING8:
+							m_lpsOutputValue->Value.MVszA.lppszA[iMVCount] =
+								mapi::CopyStringA(lpData->MV()->m_val.lpszA, m_lpAllocParent);
+							break;
+						case PT_MV_UNICODE:
+							m_lpsOutputValue->Value.MVszW.lppszW[iMVCount] =
+								mapi::CopyStringW(lpData->MV()->m_val.lpszW, m_lpAllocParent);
+							break;
+						case PT_MV_BINARY:
+							m_lpsOutputValue->Value.MVbin.lpbin[iMVCount] = mapi::CopySBinary(lpData->MV()->m_val.bin, m_lpAllocParent);
+							break;
+						case PT_MV_CLSID:
+							if (lpData->MV()->m_val.lpguid)
+							{
+								m_lpsOutputValue->Value.MVguid.lpguid[iMVCount] = *lpData->MV()->m_val.lpguid;
+							}
+
+							break;
+						default:
+							break;
+						}
 					}
 				}
 			}
@@ -369,40 +357,67 @@ namespace dialog
 			}
 		}
 
+		std::vector<LONG> CMultiValuePropertyEditor::GetLongArray() const
+		{
+			if (PROP_TYPE(m_ulPropTag) != PT_MV_LONG) return {};
+			const auto ulNumVals = GetListCount(0);
+			auto ret = std::vector<LONG>{};
+
+			for (auto i = ULONG{}; i < ulNumVals; i++)
+			{
+				const auto lpData = GetListRowData(0, i);
+				auto mv = lpData->MV();
+				ret.push_back(mv ? mv->m_val.l : LONG{});
+			}
+
+			return ret;
+		}
+
+		std::vector<std::vector<BYTE>> CMultiValuePropertyEditor::GetBinaryArray() const
+		{
+			if (PROP_TYPE(m_ulPropTag) != PT_MV_BINARY) return {};
+			const auto ulNumVals = GetListCount(0);
+			auto ret = std::vector<std::vector<BYTE>>{};
+
+			for (auto i = ULONG{}; i < ulNumVals; i++)
+			{
+				const auto lpData = GetListRowData(0, i);
+				auto mv = lpData->MV();
+				auto bin = mv ? mv->m_val.bin : SBinary{};
+				ret.push_back(std::vector<BYTE>(bin.lpb, bin.lpb + bin.cb));
+			}
+
+			return ret;
+		}
+
 		void CMultiValuePropertyEditor::UpdateSmartView() const
 		{
-			auto lpPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
-			if (lpPane)
+			switch (PROP_TYPE(m_ulPropTag))
 			{
-				const auto lpsProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
-				if (lpsProp)
+			case PT_MV_LONG:
+			{
+				auto smartViewPaneText = dynamic_cast<viewpane::TextPane*>(GetPane(1));
+				if (smartViewPaneText)
 				{
-					WriteMultiValueStringsToSPropValue(static_cast<LPVOID>(lpsProp), lpsProp);
+					auto rows = GetLongArray();
+					auto npi = smartview::GetNamedPropInfo(m_ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
 
-					std::wstring szSmartView;
-					switch (PROP_TYPE(m_ulPropTag))
-					{
-					case PT_MV_LONG:
-						szSmartView =
-							smartview::InterpretPropSmartView(lpsProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true);
-						break;
-					case PT_MV_BINARY:
-						const auto iStructType = static_cast<__ParsingTypeEnum>(lpPane->GetDropDownSelectionValue());
-						if (iStructType)
-						{
-							szSmartView =
-								smartview::InterpretMVBinaryAsString(lpsProp->Value.MVbin, iStructType, m_lpMAPIProp);
-						}
-						break;
-					}
-
-					if (!szSmartView.empty())
-					{
-						lpPane->SetStringW(szSmartView);
-					}
+					smartViewPaneText->SetStringW(
+						smartview::InterpretMVLongAsString(rows, m_ulPropTag, npi.first, &npi.second));
 				}
+			}
 
-				MAPIFreeBuffer(lpsProp);
+			break;
+			case PT_MV_BINARY:
+			{
+				auto smartViewPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
+				if (smartViewPane)
+				{
+					smartViewPane->Parse(GetBinaryArray());
+				}
+			}
+
+			break;
 			}
 		}
 

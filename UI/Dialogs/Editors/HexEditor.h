@@ -24,8 +24,6 @@ namespace dialog
 
 			void OnOK() override;
 			void OnCancel() override;
-			void OnSmartViewNodeSelected(smartview::block* lpData) const;
-			void ClearHighlight() const;
 			void SetHex(_In_opt_count_(cb) LPBYTE lpb, size_t cb) const;
 
 			cache::CMapiObjects* m_lpMapiObjects;
