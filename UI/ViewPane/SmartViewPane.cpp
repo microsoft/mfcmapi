@@ -227,8 +227,17 @@ namespace viewpane
 	{
 		if (!m_TreePane) return;
 
-		const auto root =
-			m_TreePane->m_Tree.AddChildNode(data.getText(), parent, reinterpret_cast<LPARAM>(&data), nullptr);
+		auto root = HTREEITEM{};
+		// If the node is a header with no text, mrege the children up one level
+		if (data.isHeader() && data.getText().empty())
+		{
+			root = parent;
+		}
+		else
+		{
+			root = m_TreePane->m_Tree.AddChildNode(data.getText(), parent, reinterpret_cast<LPARAM>(&data), nullptr);
+		}
+
 		for (const auto& item : data.getChildren())
 		{
 			AddChildren(root, item);

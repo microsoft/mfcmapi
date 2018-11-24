@@ -315,7 +315,7 @@ namespace controls
 
 		OnSelChanged(nullptr, nullptr);
 
-		EC_B_S(DeleteItem(GetRootItem()));
+		EC_B_S(DeleteAllItems());
 		if (OnRefreshCallback) OnRefreshCallback();
 
 		// Turn redraw back on to update our view
