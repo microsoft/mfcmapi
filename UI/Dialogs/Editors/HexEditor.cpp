@@ -48,7 +48,7 @@ namespace dialog
 			AddPane(smartViewPane);
 			DisplayParentedDialog(pParentWnd, 1000);
 
-			smartViewPane->OnItemSelected = [&](auto _1) { return OnSmartViewNodeSelected(_1); };
+			smartViewPane->OnItemSelected = [&](auto _1) { return HighlightHex(HEXED_HEX, _1); };
 		}
 
 		CHexEditor::~CHexEditor()
@@ -254,21 +254,6 @@ namespace dialog
 
 		// Close
 		void CHexEditor::OnEditAction3() { OnOK(); }
-
-		void CHexEditor::OnSmartViewNodeSelected(smartview::block* lpData) const
-		{
-			if (!lpData) return;
-			auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(HEXED_HEX));
-			if (lpPane)
-			{
-				lpPane->ClearHighlight();
-				const auto hex = lpPane->GetStringW();
-				const auto start = strings::OffsetToFilteredOffset(hex, lpData->getOffset() * 2);
-				const auto end = strings::OffsetToFilteredOffset(hex, (lpData->getOffset() + lpData->getSize()) * 2);
-				const auto range = viewpane::Range{start, end};
-				lpPane->AddHighlight(range);
-			}
-		}
 
 		void CHexEditor::ClearHighlight() const
 		{

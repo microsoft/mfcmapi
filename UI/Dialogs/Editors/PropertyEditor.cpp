@@ -360,7 +360,7 @@ namespace dialog
 						m_lpsInputValue ? m_lpsInputValue->Value.bin.lpb : nullptr,
 						m_lpsInputValue ? m_lpsInputValue->Value.bin.lpb + m_lpsInputValue->Value.bin.cb : nullptr));
 
-					smartViewPane->OnItemSelected = [&](auto _1) { return OnSmartViewNodeSelected(_1); };
+					smartViewPane->OnItemSelected = [&](auto _1) { return HighlightHex(0, _1); };
 				}
 			}
 
@@ -807,21 +807,6 @@ namespace dialog
 
 			OnRecalcLayout();
 			return paneID;
-		}
-
-		void CPropertyEditor::OnSmartViewNodeSelected(smartview::block* lpData) const
-		{
-			if (!lpData) return;
-			auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
-			if (lpPane)
-			{
-				lpPane->ClearHighlight();
-				const auto hex = lpPane->GetStringW();
-				const auto start = strings::OffsetToFilteredOffset(hex, lpData->getOffset() * 2);
-				const auto end = strings::OffsetToFilteredOffset(hex, (lpData->getOffset() + lpData->getSize()) * 2);
-				const auto range = viewpane::Range{start, end};
-				lpPane->AddHighlight(range);
-			}
 		}
 	} // namespace editor
 } // namespace dialog
