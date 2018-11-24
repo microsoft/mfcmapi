@@ -246,6 +246,8 @@ namespace smartview
 
 				MAPIFreeBuffer(lpPropSubject);
 			}
+
+			return iStructType;
 		}
 
 		break;
