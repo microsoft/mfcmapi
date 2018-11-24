@@ -24,7 +24,7 @@ namespace smartview
 			m_Parser = CBinaryParser(cbBin, lpBin);
 			m_bParsed = false;
 			data = {};
-			m_bEnableJunk = false;
+			m_bEnableJunk = true;
 		}
 
 		void parse(CBinaryParser& binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
