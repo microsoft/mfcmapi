@@ -11,8 +11,6 @@ namespace viewpane
 	public:
 		static SmartViewPane* Create(int paneID, UINT uidLabel);
 
-		void SetStringW(const std::wstring& szMsg);
-		void DisableDropDown();
 		void SetParser(__ParsingTypeEnum iParser);
 		void Parse(const std::vector<BYTE>& myBin) { Parse(std::vector<std::vector<BYTE>>{myBin}); }
 		void Parse(const std::vector<std::vector<BYTE>>& myBins);
@@ -27,6 +25,7 @@ namespace viewpane
 		void AddChildren(HTREEITEM parent, const smartview::block& data);
 		void ItemSelected(HTREEITEM hItem);
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM hItemCurHover) const;
+		void SetStringW(const std::wstring& szMsg);
 
 		void SetMargins(
 			int iMargin,

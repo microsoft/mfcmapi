@@ -153,8 +153,6 @@ namespace viewpane
 		}
 	}
 
-	void SmartViewPane::DisableDropDown() { m_bDoDropDown = false; }
-
 	void SmartViewPane::SetParser(const __ParsingTypeEnum iParser)
 	{
 		for (size_t iDropNum = 0; iDropNum < SmartViewParserTypeArray.size(); iDropNum++)
@@ -176,6 +174,7 @@ namespace viewpane
 		auto szSmartViewArray = std::vector<std::wstring>{};
 		treeData = smartview::block{};
 		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
+		auto source = 0;
 		for (auto bin : m_bins)
 		{
 			auto parsedData = std::wstring{};
@@ -183,13 +182,15 @@ namespace viewpane
 			{
 				svp->init(bin.size(), bin.data());
 				parsedData = svp->ToString();
+				auto node = svp->getBlock();
+				node.setSource(source++);
 				if (m_bins.size() == 1)
 				{
-					treeData = svp->getBlock();
+					treeData = node;
 				}
 				else
 				{
-					treeData.addBlock(svp->getBlock());
+					treeData.addBlock(node);
 				}
 			}
 
@@ -267,7 +268,6 @@ namespace viewpane
 	void
 	SmartViewPane::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM /*hItemCurHover*/) const
 	{
-		if (registry::RegKeys[registry::regkeyHEX_DIALOG_DIAG].ulCurDWORD == 0) return;
 		const auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
 		if (!lvcd) return;
 
@@ -275,6 +275,7 @@ namespace viewpane
 		{
 		case CDDS_ITEMPOSTPAINT:
 		{
+			if (registry::RegKeys[registry::regkeyHEX_DIALOG_DIAG].ulCurDWORD == 0) return;
 			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
 			if (hItem)
 			{
@@ -285,23 +286,23 @@ namespace viewpane
 				const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
 				if (lpData && !lpData->isHeader())
 				{
-					// TODO: Get this bit working again
-					//auto bin = strings::BinToHexString(m_bin.data() + lpData->getOffset(), lpData->getSize(), false);
+					const auto bin = strings::BinToHexString(
+						m_bins[lpData->getSource()].data() + lpData->getOffset(), lpData->getSize(), false);
 
-					//const auto blockString =
-					//	strings::format(L"(%d, %d) %ws", lpData->getOffset(), lpData->getSize(), bin.c_str());
-					//const auto size = ui::GetTextExtentPoint32(lvcd->nmcd.hdc, blockString);
-					//auto rect = RECT{};
-					//TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
-					//rect.left = rect.right;
-					//rect.right += size.cx;
-					//ui::DrawSegoeTextW(
-					//	lvcd->nmcd.hdc,
-					//	blockString,
-					//	MyGetSysColor(ui::cGlow),
-					//	rect,
-					//	false,
-					//	DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+					const auto blockString =
+						strings::format(L"(%d, %d) %ws", lpData->getOffset(), lpData->getSize(), bin.c_str());
+					const auto size = ui::GetTextExtentPoint32(lvcd->nmcd.hdc, blockString);
+					auto rect = RECT{};
+					TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
+					rect.left = rect.right;
+					rect.right += size.cx;
+					ui::DrawSegoeTextW(
+						lvcd->nmcd.hdc,
+						blockString,
+						MyGetSysColor(ui::cGlow),
+						rect,
+						false,
+						DT_SINGLELINE | DT_VCENTER | DT_CENTER);
 				}
 			}
 			break;
