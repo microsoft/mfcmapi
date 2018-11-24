@@ -65,6 +65,15 @@ namespace dialog
 			{
 				SetStringf(id, L"0x%08X = %u", static_cast<int>(cb), static_cast<UINT>(cb)); // STRING_OK
 			}
+			void ClearHighlight(ULONG id) const
+			{
+				auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
+				if (lpPane)
+				{
+					lpPane->ClearHighlight();
+				}
+			}
+
 			void HighlightHex(ULONG id, smartview::block* lpData) const
 			{
 				auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(id));

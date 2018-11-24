@@ -700,6 +700,7 @@ namespace dialog
 			{
 				if (paneID == 0 || paneID == 2)
 				{
+					ClearHighlight(0);
 					bin = GetBinary(0);
 					if (paneID == 0) SetStringA(1, std::string(LPCSTR(bin.data()), bin.size())); // ansi string
 				}
