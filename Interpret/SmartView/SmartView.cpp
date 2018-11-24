@@ -219,10 +219,9 @@ namespace smartview
 	{
 		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp) return IDS_STNOPARSING;
 
-		auto npi = GetNamedPropInfo(lpProp->ulPropTag, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB);
-		auto ulPropNameID = npi.first;
-		auto propNameGUID = npi.second;
-		auto iStructType = IDS_STNOPARSING;
+		const auto npi = GetNamedPropInfo(lpProp->ulPropTag, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB);
+		const auto ulPropNameID = npi.first;
+		const auto propNameGUID = npi.second;
 
 		switch (PROP_TYPE(lpProp->ulPropTag))
 		{
@@ -231,11 +230,11 @@ namespace smartview
 			auto ulLookupPropTag = lpProp->ulPropTag;
 			if (bMVRow) ulLookupPropTag |= MV_FLAG;
 
-			iStructType = FindSmartViewParserForProp(ulLookupPropTag, ulPropNameID, &propNameGUID);
+			auto iStructType = FindSmartViewParserForProp(ulLookupPropTag, ulPropNameID, &propNameGUID);
 			// We special-case this property
 			if (!iStructType && PR_ROAMING_BINARYSTREAM == ulLookupPropTag && lpMAPIProp)
 			{
-				LPSPropValue lpPropSubject = nullptr;
+				auto lpPropSubject = LPSPropValue{};
 
 				WC_MAPI_S(HrGetOneProp(lpMAPIProp, PR_SUBJECT_W, &lpPropSubject));
 
@@ -251,11 +250,11 @@ namespace smartview
 
 		break;
 		case PT_MV_BINARY:
-			iStructType = FindSmartViewParserForProp(lpProp->ulPropTag, ulPropNameID, &propNameGUID);
+			return FindSmartViewParserForProp(lpProp->ulPropTag, ulPropNameID, &propNameGUID);
 			break;
 		}
 
-		return iStructType;
+		return IDS_STNOPARSING;
 	}
 
 	std::pair<ULONG, GUID> GetNamedPropInfo(
@@ -317,11 +316,12 @@ namespace smartview
 	{
 		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp) return strings::emptystring;
 
-		auto npi = GetNamedPropInfo(lpProp->ulPropTag, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB);
-		auto ulPropNameID = npi.first;
-		auto propNameGUID = npi.second;
+		const auto npi = GetNamedPropInfo(lpProp->ulPropTag, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB);
+		const auto ulPropNameID = npi.first;
+		const auto propNameGUID = npi.second;
 
-		auto iStructType = FindSmartViewParserForProp(lpProp, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB, bMVRow);
+		const auto iStructType =
+			FindSmartViewParserForProp(lpProp, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB, bMVRow);
 
 		ULONG ulLookupPropTag = NULL;
 		switch (PROP_TYPE(lpProp->ulPropTag))
@@ -476,8 +476,8 @@ namespace smartview
 
 	std::wstring InterpretMVLongAsString(
 		std::vector<LONG> rows,
-		ULONG ulPropTag,
-		ULONG ulPropNameID,
+		_In_opt_ ULONG ulPropTag,
+		_In_opt_ ULONG ulPropNameID,
 		_In_opt_ LPGUID lpguidNamedProp)
 	{
 		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return strings::emptystring;
@@ -485,9 +485,9 @@ namespace smartview
 		auto szArray = std::vector<std::wstring>{};
 		ULONG ulRow = 0;
 
-		for (auto row : rows)
+		for (const auto& row : rows)
 		{
-			auto szSmartView = smartview::InterpretNumberAsString(
+			const auto szSmartView = smartview::InterpretNumberAsString(
 				row, CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, nullptr, lpguidNamedProp, true);
 			if (!szSmartView.empty())
 			{
@@ -500,9 +500,9 @@ namespace smartview
 
 	std::wstring InterpretMVLongAsString(
 		SLongArray myLongArray,
-		ULONG ulPropTag,
-		ULONG ulPropNameID,
-		_In_opt_ LPGUID lpguidNamedProp)
+		_In_opt_ ULONG ulPropTag,
+		_In_opt_ ULONG ulPropNameID,
+		_In_opt_ LPCGUID lpguidNamedProp)
 	{
 		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return strings::emptystring;
 
@@ -526,7 +526,8 @@ namespace smartview
 		return strings::join(szArray, L"\r\n");
 	}
 
-	std::wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
+	std::wstring
+	InterpretBinaryAsString(const SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
 		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 		auto szResultString = addin::AddInSmartView(iStructType, myBin.cb, myBin.lpb);

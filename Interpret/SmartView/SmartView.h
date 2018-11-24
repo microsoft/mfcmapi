@@ -3,12 +3,6 @@
 
 namespace smartview
 {
-	std::wstring InterpretMVLongAsString(
-		SLongArray myLongArray,
-		ULONG ulPropTag,
-		ULONG ulPropNameID,
-		_In_opt_ LPGUID lpguidNamedProp);
-
 	LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp);
 	_Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(
 		_In_opt_ const _SPropValue* lpProp, // required property value
@@ -34,12 +28,18 @@ namespace smartview
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 		bool bMVRow); // did the row come from a MV prop?
 
-	std::wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp);
+	std::wstring
+	InterpretBinaryAsString(const SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp);
 	std::wstring InterpretMVLongAsString(
 		std::vector<LONG> rows,
-		ULONG ulPropTag,
-		ULONG ulPropNameID,
+		_In_opt_ ULONG ulPropTag,
+		_In_opt_ ULONG ulPropNameID,
 		_In_opt_ LPGUID lpguidNamedProp);
+	std::wstring InterpretMVLongAsString(
+		SLongArray myLongArray,
+		_In_opt_ ULONG ulPropTag,
+		_In_opt_ ULONG ulPropNameID,
+		_In_opt_ LPCGUID lpguidNamedProp);
 	std::wstring
 	InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp);
 	std::wstring InterpretNumberAsString(

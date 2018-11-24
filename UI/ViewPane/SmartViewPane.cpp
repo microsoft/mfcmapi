@@ -175,7 +175,7 @@ namespace viewpane
 		treeData = smartview::block{};
 		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
 		auto source = 0;
-		for (auto bin : m_bins)
+		for (auto& bin : m_bins)
 		{
 			auto parsedData = std::wstring{};
 			if (svp)
