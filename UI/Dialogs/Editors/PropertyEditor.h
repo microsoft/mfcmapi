@@ -43,6 +43,7 @@ namespace dialog
 			void WriteSPropValueToObject() const;
 			_Check_return_ ULONG HandleChange(UINT nID) override;
 			void OnOK() override;
+			void OnSmartViewNodeSelected(smartview::block* lpData) const;
 
 			// source variables
 			LPMAPIPROP m_lpMAPIProp;
