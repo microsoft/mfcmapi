@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMMapiMime.h>
-#include <MAPI/MAPIMime.h>
+#include <MAPI/MapiMime.h>
 #include <ImportProcs.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
@@ -26,7 +26,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 			if (0 == ProgOpts.ulWrapLines)
 				printf("OFF\n");
 			else
-				printf("%u\n", ProgOpts.ulWrapLines);
+				printf("%lu\n", ProgOpts.ulWrapLines);
 		}
 	}
 	else if (CHECKFLAG(MAPIMIME_TOMAPI))
@@ -38,7 +38,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		}
 		if (CHECKFLAG(MAPIMIME_CHARSET))
 		{
-			printf("   CodePage: %u\n", ProgOpts.ulCodePage);
+			printf("   CodePage: %lu\n", ProgOpts.ulCodePage);
 			printf("   CharSetType: ");
 			switch (ProgOpts.cSetType)
 			{
@@ -70,9 +70,9 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		}
 	}
 
-	if (0 != ProgOpts.ulConvertFlags)
+	if (0 != ProgOpts.convertFlags)
 	{
-		auto szFlags = interpretprop::InterpretFlags(flagCcsf, ProgOpts.ulConvertFlags);
+		auto szFlags = interpretprop::InterpretFlags(flagCcsf, ProgOpts.convertFlags);
 		if (!szFlags.empty())
 		{
 			printf("   Conversion Flags: %ws\n", szFlags.c_str());
@@ -99,7 +99,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 	if (CHECKFLAG(MAPIMIME_ADDRESSBOOK) && ProgOpts.lpMAPISession)
 	{
 		WC_MAPI(ProgOpts.lpMAPISession->OpenAddressBook(NULL, NULL, AB_NO_DIALOG, &lpAdrBook));
-		if (FAILED(hRes)) printf("OpenAddressBook returned an error: 0x%08x\n", hRes);
+		if (FAILED(hRes)) printf("OpenAddressBook returned an error: 0x%08lx\n", hRes);
 	}
 
 	if (CHECKFLAG(MAPIMIME_TOMIME))
@@ -108,7 +108,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		hRes = WC_H(mapi::mapimime::ConvertMSGToEML(
 			ProgOpts.lpszInput.c_str(),
 			ProgOpts.lpszOutput.c_str(),
-			ProgOpts.ulConvertFlags,
+			ProgOpts.convertFlags,
 			CHECKFLAG(MAPIMIME_ENCODING) ? static_cast<ENCODINGTYPE>(ProgOpts.ulEncodingType) : IET_UNKNOWN,
 			CHECKFLAG(MAPIMIME_RFC822) ? SAVE_RFC822 : SAVE_RFC1521,
 			CHECKFLAG(MAPIMIME_WRAP) ? ProgOpts.ulWrapLines : USE_DEFAULT_WRAPPING,
@@ -123,7 +123,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 			hRes = WC_H(import::MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage, ProgOpts.cSetType, &hCharSet));
 			if (FAILED(hRes))
 			{
-				printf("MimeOleGetCodePageCharset returned 0x%08X\n", hRes);
+				printf("MimeOleGetCodePageCharset returned 0x%08lX\n", hRes);
 			}
 		}
 
@@ -132,7 +132,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 			hRes = WC_H(mapi::mapimime::ConvertEMLToMSG(
 				ProgOpts.lpszInput.c_str(),
 				ProgOpts.lpszOutput.c_str(),
-				ProgOpts.ulConvertFlags,
+				ProgOpts.convertFlags,
 				CHECKFLAG(MAPIMIME_CHARSET),
 				hCharSet,
 				ProgOpts.cSetApplyType,
@@ -151,7 +151,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 	}
 	else
 	{
-		printf("Conversion returned an error: 0x%08x\n", hRes);
+		printf("Conversion returned an error: 0x%08lx\n", hRes);
 	}
 	if (lpAdrBook) lpAdrBook->Release();
 }

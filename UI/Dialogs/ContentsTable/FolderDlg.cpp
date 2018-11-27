@@ -177,7 +177,7 @@ namespace dialog
 				while (-1 != iItem)
 				{
 					const auto lpData = m_lpContentsTableListCtrl->GetSortListData(iItem);
-					auto hRes = WC_H((this->*lpFunc)(iItem, lpData));
+					const auto hRes = WC_H((this->*lpFunc)(iItem, lpData));
 					iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
 					if (S_OK != hRes && -1 != iItem)
 					{
@@ -338,7 +338,7 @@ namespace dialog
 			}
 		}
 
-		if (hMenu) ::EnableMenuItem(hMenu, ulMenu, uiEnable);
+		if (hMenu) EnableMenuItem(hMenu, ulMenu, uiEnable);
 	}
 
 	void CFolderDlg::OnAddOneOffAddress()
@@ -546,7 +546,7 @@ namespace dialog
 								if (SUCCEEDED(hRes) &&
 									MyData.GetCheck(0)) // if we moved, save changes on original message
 								{
-									hRes = EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+									EC_MAPI_S(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 								}
 							}
 
@@ -921,12 +921,12 @@ namespace dialog
 	{
 		LPMESSAGE lpMessage = nullptr;
 
-		auto hRes =
+		const auto hRes =
 			EC_MAPI(m_lpFolder->CreateMessage(nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0, &lpMessage));
 
 		if (SUCCEEDED(hRes) && lpMessage)
 		{
-			hRes = EC_MAPI(lpMessage->SaveChanges(NULL));
+			EC_MAPI_S(lpMessage->SaveChanges(NULL));
 			lpMessage->Release();
 		}
 	}
@@ -1406,7 +1406,7 @@ namespace dialog
 						break;
 					case 4:
 					{
-						ULONG ulConvertFlags = CCSF_SMTP;
+						auto ulConvertFlags = CCSF_SMTP;
 						auto et = IET_UNKNOWN;
 						auto mst = USE_DEFAULT_SAVETYPE;
 						ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
@@ -1500,12 +1500,12 @@ namespace dialog
 
 		LPMESSAGE lpNewMessage = nullptr;
 
-		ULONG ulConvertFlags = CCSF_SMTP;
+		auto ulConvertFlags = CCSF_SMTP;
 		auto bDoAdrBook = false;
 		auto bDoApply = false;
 		HCHARSET hCharSet = nullptr;
 		auto cSetApplyType = CSET_APPLY_UNTAGGED;
-		auto hRes = WC_H(mapi::mapimime::GetConversionFromEMLOptions(
+		const auto hRes = WC_H(mapi::mapimime::GetConversionFromEMLOptions(
 			this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, nullptr));
 		if (hRes == S_OK)
 		{
@@ -1708,13 +1708,13 @@ namespace dialog
 			{
 				// Allocate and create our SRestriction
 				// Allocate base memory:
-				auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction));
+				const auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction));
 
 				// Check that all our allocations were good before going on
 				// Root Node
 				lpRes->rt = RES_AND; // We're doing an AND...
 				lpRes->res.resAnd.cRes = 2; // ...of two criteria...
-				auto lpResLevel1 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpRes);
+				const auto lpResLevel1 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpRes);
 				lpRes->res.resAnd.lpRes = lpResLevel1; // ...described here
 
 				if (lpResLevel1)
@@ -1722,7 +1722,7 @@ namespace dialog
 					lpResLevel1[0].rt = RES_PROPERTY;
 					lpResLevel1[0].res.resProperty.relop = RELOP_EQ;
 					lpResLevel1[0].res.resProperty.ulPropTag = PR_SUBJECT;
-					auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
+					const auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
 					lpResLevel1[0].res.resProperty.lpProp = lpspvSubject;
 					if (lpspvSubject)
 					{
@@ -1741,7 +1741,7 @@ namespace dialog
 
 					lpResLevel1[1].rt = RES_OR;
 					lpResLevel1[1].res.resOr.cRes = 2;
-					auto lpResLevel2 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpRes);
+					const auto lpResLevel2 = mapi::allocate<LPSRestriction>(sizeof(SRestriction) * 2, lpRes);
 					lpResLevel1[1].res.resOr.lpRes = lpResLevel2;
 
 					if (lpResLevel2)
@@ -1749,7 +1749,7 @@ namespace dialog
 						lpResLevel2[0].rt = RES_PROPERTY;
 						lpResLevel2[0].res.resProperty.relop = RELOP_EQ;
 						lpResLevel2[0].res.resProperty.ulPropTag = PR_CLIENT_SUBMIT_TIME;
-						auto lpspvSubmitTime = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
+						const auto lpspvSubmitTime = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
 						lpResLevel2[0].res.resProperty.lpProp = lpspvSubmitTime;
 						if (lpspvSubmitTime)
 						{
@@ -1771,7 +1771,7 @@ namespace dialog
 						lpResLevel2[1].rt = RES_PROPERTY;
 						lpResLevel2[1].res.resProperty.relop = RELOP_EQ;
 						lpResLevel2[1].res.resProperty.ulPropTag = PR_MESSAGE_DELIVERY_TIME;
-						auto lpspvDeliveryTime = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
+						const auto lpspvDeliveryTime = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpRes);
 						lpResLevel2[1].res.resProperty.lpProp = lpspvDeliveryTime;
 						if (lpspvDeliveryTime)
 						{
@@ -1820,7 +1820,7 @@ namespace dialog
 
 		if (lpMessageEID)
 		{
-			auto hRes = EC_MAPI(m_lpFolder->GetMessageStatus(
+			const auto hRes = EC_MAPI(m_lpFolder->GetMessageStatus(
 				lpMessageEID->cb, reinterpret_cast<LPENTRYID>(lpMessageEID->lpb), NULL, &ulMessageStatus));
 
 			if (SUCCEEDED(hRes))

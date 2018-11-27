@@ -2,6 +2,7 @@
 // MrMAPI command line
 
 #define ulNoMatch 0xffffffff
+#include "Interpret/ExtraPropTags.h"
 
 enum CmdMode
 {
@@ -74,7 +75,7 @@ struct MYOPTIONS
 	ULONG ulStore;
 	ULONG ulFolder;
 	ULONG ulMAPIMIMEFlags;
-	ULONG ulConvertFlags;
+	CCSFLAGS convertFlags;
 	ULONG ulWrapLines;
 	ULONG ulEncodingType;
 	ULONG ulCodePage;
