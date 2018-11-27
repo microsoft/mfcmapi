@@ -957,16 +957,20 @@ enum SearchPathReorderType
 #define SPAM_FILTERING_TRUSTED_ONLY 0x80000000
 
 // Constants - http://msdn2.microsoft.com/en-us/library/bb905201.aspx
-#define CCSF_SMTP 0x0002 // the converter is being passed an SMTP message
-#define CCSF_NOHEADERS 0x0004 // the converter should ignore the headers on the outside message
-#define CCSF_USE_TNEF 0x0010 // the converter should embed TNEF in the MIME message
-#define CCSF_INCLUDE_BCC 0x0020 // the converter should include Bcc recipients
-#define CCSF_8BITHEADERS 0x0040 // the converter should allow 8 bit headers
-#define CCSF_USE_RTF 0x0080 // the converter should do HTML->RTF conversion
-#define CCSF_PLAIN_TEXT_ONLY 0x1000 // the converter should just send plain text
-#define CCSF_NO_MSGID 0x4000 // don't include Message-Id field in outgoing messages
-#define CCSF_EMBEDDED_MESSAGE 0x8000 // sent/unsent information is persisted in X-Unsent
-#define CCSF_PRESERVE_SOURCE 0x40000 // don't modify the source message
+enum CCSFLAGS
+{
+	CCSF_SMTP = 0x00000002, // the converter is being passed an SMTP message
+	CCSF_NOHEADERS = 0x00000004, // the converter should ignore the headers on the outside message
+	CCSF_USE_TNEF = 0x00000010, // the converter should embed TNEF in the MIME message
+	CCSF_INCLUDE_BCC = 0x00000020, // the converter should include Bcc recipients
+	CCSF_8BITHEADERS = 0x00000040, // the converter should allow 8 bit headers
+	CCSF_USE_RTF = 0x00000080, // the converter should do HTML->RTF conversion
+	CCSF_PLAIN_TEXT_ONLY = 0x00001000, // the converter should just send plain text
+	CCSF_NO_MSGID = 0x00004000, // don't include Message-Id from MAPI message in outgoing messages create a new one
+	CCSF_EMBEDDED_MESSAGE = 0x00008000, // We're translating an embedded message
+	CCSF_PRESERVE_SOURCE =
+		0x00040000, // The convertor should not modify the source message so no conversation index update, no message id, and no header dump.
+};
 
 #define PidTagFolderId PROP_TAG(PT_I8, 0x6748)
 #define PidTagMid PROP_TAG(PT_I8, 0x674A)

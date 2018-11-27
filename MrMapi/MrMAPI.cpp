@@ -645,7 +645,7 @@ MYOPTIONS::MYOPTIONS()
 	ulStore = 0;
 	ulFolder = 0;
 	ulMAPIMIMEFlags = 0;
-	ulConvertFlags = 0;
+	convertFlags = static_cast<CCSFLAGS>(0);
 	ulWrapLines = 0;
 	ulEncodingType = 0;
 	ulCodePage = 0;
@@ -885,7 +885,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char* argv[], _Out_ MYOPTIONS* pR
 				pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_TOMIME;
 				break;
 			case switchCCSFFlags:
-				pRunOpts->ulConvertFlags = strtoul(argv[i + 1], &szEndPtr, 10);
+				pRunOpts->convertFlags = static_cast<CCSFLAGS>(strtoul(argv[i + 1], &szEndPtr, 10));
 				i++;
 				break;
 			case switchRFC822:
