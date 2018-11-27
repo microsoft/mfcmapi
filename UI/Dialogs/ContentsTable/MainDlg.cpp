@@ -149,7 +149,7 @@ namespace dialog
 		{
 			const auto lme = reinterpret_cast<ui::LPMENUENTRY>(subMenu.dwItemData);
 			output::DebugPrint(DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName.c_str());
-			auto hMAPI = EC_D(HMODULE, import::MyLoadLibraryW(lme->m_pName));
+			const auto hMAPI = EC_D(HMODULE, import::MyLoadLibraryW(lme->m_pName));
 			mapistub::SetMAPIHandle(hMAPI);
 		}
 
@@ -260,7 +260,7 @@ namespace dialog
 		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		auto hRes = EC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAddrBook));
+		const auto hRes = EC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAddrBook));
 
 		m_lpMapiObjects->SetAddrBook(lpAddrBook);
 
@@ -471,7 +471,7 @@ namespace dialog
 			{
 				if (MyEID.GetCheck(4))
 				{
-					auto lpUnwrappedMDB = mapi::store::HrUnWrapMDB(lpMDB);
+					const auto lpUnwrappedMDB = mapi::store::HrUnWrapMDB(lpMDB);
 
 					// Ditch the old MDB and substitute the unwrapped one.
 					lpMDB->Release();
@@ -909,7 +909,7 @@ namespace dialog
 		if (MyData.DisplayDialog())
 		{
 			mapistub::UnloadPrivateMAPI();
-			auto hMAPI = EC_D(HMODULE, import::MyLoadLibraryW(MyData.GetStringW(0)));
+			const auto hMAPI = EC_D(HMODULE, import::MyLoadLibraryW(MyData.GetStringW(0)));
 			mapistub::SetMAPIHandle(hMAPI);
 		}
 	}
@@ -1193,7 +1193,7 @@ namespace dialog
 		if (MyData.DisplayDialog())
 		{
 			auto bBlocked = false;
-			auto hRes = EC_H(mapi::IsAttachmentBlocked(lpMAPISession, MyData.GetStringW(0).c_str(), &bBlocked));
+			const auto hRes = EC_H(mapi::IsAttachmentBlocked(lpMAPISession, MyData.GetStringW(0).c_str(), &bBlocked));
 			if (SUCCEEDED(hRes))
 			{
 				editor::CEditor MyResult(this, IDS_ISATTBLOCKED, IDS_RESULTOFCALLPROMPT, CEDITOR_BUTTON_OK);
@@ -1212,10 +1212,10 @@ namespace dialog
 		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
 
 		LPPROFADMIN lpProfAdmin = nullptr;
-		auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));
 		if (!lpProfAdmin) return;
 
-		hRes = EC_MAPI(lpProfAdmin->GetProfileTable(
+		EC_MAPI_S(lpProfAdmin->GetProfileTable(
 			0, // fMapiUnicode is not supported
 			&lpProfTable));
 		if (lpProfTable)
@@ -1321,13 +1321,13 @@ namespace dialog
 		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
 		if (!cache::CGlobalCache::getInstance().bMAPIInitialized()) return;
 
-		ULONG ulConvertFlags = CCSF_SMTP;
+		auto ulConvertFlags = CCSF_SMTP;
 		auto et = IET_UNKNOWN;
 		auto mst = USE_DEFAULT_SAVETYPE;
 		ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
 		auto bDoAdrBook = false;
 
-		auto hRes = WC_H(
+		const auto hRes = WC_H(
 			mapi::mapimime::GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 		if (hRes == S_OK)
 		{
@@ -1364,13 +1364,13 @@ namespace dialog
 		cache::CGlobalCache::getInstance().MAPIInitialize(NULL);
 		if (!cache::CGlobalCache::getInstance().bMAPIInitialized()) return;
 
-		ULONG ulConvertFlags = CCSF_SMTP;
+		auto ulConvertFlags = CCSF_SMTP;
 		auto bDoAdrBook = false;
 		auto bDoApply = false;
 		auto bUnicode = false;
 		HCHARSET hCharSet = nullptr;
 		auto cSetApplyType = CSET_APPLY_UNTAGGED;
-		auto hRes = WC_H(mapi::mapimime::GetConversionFromEMLOptions(
+		const auto hRes = WC_H(mapi::mapimime::GetConversionFromEMLOptions(
 			this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, &bUnicode));
 		if (hRes == S_OK)
 		{
@@ -1513,7 +1513,7 @@ namespace dialog
 				{
 					// For Outlook 2003/2007, HrEmsmdbUIDFromStore may not succeed,
 					// so use pbGlobalProfileSectionGuid instead
-					hRes = WC_MAPI(lpMAPISession->OpenProfileSection(
+					WC_MAPI_S(lpMAPISession->OpenProfileSection(
 						LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &lpProfSect));
 				}
 
@@ -1573,7 +1573,7 @@ namespace dialog
 						// If this is an Exchange store with an OST path, it's an OST, so we get the mapping signature
 						if ((fPrivateExchangeStore || fPublicExchangeStore) && (wzPath || szPath))
 						{
-							hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_MAPPING_SIGNATURE, &lpMappingSig));
+							WC_MAPI_S(HrGetOneProp(lpProfSect, PR_MAPPING_SIGNATURE, &lpMappingSig));
 						}
 					}
 				}

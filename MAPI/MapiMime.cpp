@@ -16,7 +16,7 @@ namespace mapi
 		_Check_return_ HRESULT ImportEMLToIMessage(
 			_In_z_ LPCWSTR lpszEMLFile,
 			_In_ LPMESSAGE lpMsg,
-			ULONG ulConvertFlags,
+			CCSFLAGS convertFlags,
 			bool bApply,
 			HCHARSET hCharSet,
 			CSETAPPLYTYPE cSetApplyType,
@@ -59,7 +59,7 @@ namespace mapi
 							lpEMLStm,
 							lpMsg,
 							nullptr, // Must be nullptr
-							ulConvertFlags));
+							convertFlags));
 						if (SUCCEEDED(hRes))
 						{
 							hRes = EC_MAPI(lpMsg->SaveChanges(NULL));
@@ -78,7 +78,7 @@ namespace mapi
 		_Check_return_ HRESULT ExportIMessageToEML(
 			_In_ LPMESSAGE lpMsg,
 			_In_z_ LPCWSTR lpszEMLFile,
-			ULONG ulConvertFlags,
+			CCSFLAGS convertFlags,
 			ENCODINGTYPE et,
 			MIMESAVETYPE mst,
 			ULONG ulWrapLines,
@@ -127,7 +127,7 @@ namespace mapi
 					{
 						// Per the docs for MAPIToMIMEStm, CCSF_SMTP must always be set
 						// But we're gonna make the user ensure that, so we don't or it in here
-						hRes = EC_MAPI(lpConverter->MAPIToMIMEStm(lpMsg, lpMimeStm, ulConvertFlags));
+						hRes = EC_MAPI(lpConverter->MAPIToMIMEStm(lpMsg, lpMimeStm, convertFlags));
 						if (SUCCEEDED(hRes))
 						{
 							LPSTREAM lpFileStm = nullptr;
@@ -168,7 +168,7 @@ namespace mapi
 		_Check_return_ HRESULT ConvertEMLToMSG(
 			_In_z_ LPCWSTR lpszEMLFile,
 			_In_z_ LPCWSTR lpszMSGFile,
-			ULONG ulConvertFlags,
+			CCSFLAGS convertFlags,
 			bool bApply,
 			HCHARSET hCharSet,
 			CSETAPPLYTYPE cSetApplyType,
@@ -184,7 +184,7 @@ namespace mapi
 			if (SUCCEEDED(hRes) && pMessage && pStorage)
 			{
 				hRes = EC_H(ImportEMLToIMessage(
-					lpszEMLFile, pMessage, ulConvertFlags, bApply, hCharSet, cSetApplyType, lpAdrBook));
+					lpszEMLFile, pMessage, convertFlags, bApply, hCharSet, cSetApplyType, lpAdrBook));
 				if (SUCCEEDED(hRes))
 				{
 					hRes = EC_MAPI(pStorage->Commit(STGC_DEFAULT));
@@ -200,7 +200,7 @@ namespace mapi
 		_Check_return_ HRESULT ConvertMSGToEML(
 			_In_z_ LPCWSTR lpszMSGFile,
 			_In_z_ LPCWSTR lpszEMLFile,
-			ULONG ulConvertFlags,
+			CCSFLAGS convertFlags,
 			ENCODINGTYPE et,
 			MIMESAVETYPE mst,
 			ULONG ulWrapLines,
@@ -212,8 +212,7 @@ namespace mapi
 			auto pMessage = file::LoadMSGToMessage(lpszMSGFile);
 			if (pMessage)
 			{
-				hRes =
-					EC_H(ExportIMessageToEML(pMessage, lpszEMLFile, ulConvertFlags, et, mst, ulWrapLines, lpAdrBook));
+				hRes = EC_H(ExportIMessageToEML(pMessage, lpszEMLFile, convertFlags, et, mst, ulWrapLines, lpAdrBook));
 				pMessage->Release();
 			}
 
@@ -223,13 +222,13 @@ namespace mapi
 #ifndef MRMAPI
 		_Check_return_ HRESULT GetConversionToEMLOptions(
 			_In_ CWnd* pParentWnd,
-			_Out_ ULONG* lpulConvertFlags,
-			_Out_ ENCODINGTYPE* lpet,
+			_Out_ CCSFLAGS* lpConvertFlags,
+			_Out_ const ENCODINGTYPE* lpet,
 			_Out_ MIMESAVETYPE* lpmst,
 			_Out_ ULONG* lpulWrapLines,
 			_Out_ bool* pDoAdrBook)
 		{
-			if (!lpulConvertFlags || !lpet || !lpmst || !lpulWrapLines || !pDoAdrBook) return MAPI_E_INVALID_PARAMETER;
+			if (!lpConvertFlags || !lpet || !lpmst || !lpulWrapLines || !pDoAdrBook) return MAPI_E_INVALID_PARAMETER;
 
 			dialog::editor::CEditor MyData(
 				pParentWnd, IDS_CONVERTTOEML, IDS_CONVERTTOEMLPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -249,7 +248,7 @@ namespace mapi
 
 			if (!MyData.DisplayDialog()) return MAPI_E_USER_CANCEL;
 
-			*lpulConvertFlags = MyData.GetHex(0);
+			*lpConvertFlags = static_cast<CCSFLAGS>(MyData.GetHex(0));
 			*lpulWrapLines = MyData.GetCheck(1) ? static_cast<ENCODINGTYPE>(MyData.GetDecimal(2)) : IET_UNKNOWN;
 			*lpmst = MyData.GetCheck(3) ? static_cast<MIMESAVETYPE>(MyData.GetHex(4)) : USE_DEFAULT_SAVETYPE;
 			*lpulWrapLines = MyData.GetCheck(5) ? MyData.GetDecimal(6) : USE_DEFAULT_WRAPPING;
@@ -260,14 +259,14 @@ namespace mapi
 
 		_Check_return_ HRESULT GetConversionFromEMLOptions(
 			_In_ CWnd* pParentWnd,
-			_Out_ ULONG* lpulConvertFlags,
+			_Out_ CCSFLAGS* lpConvertFlags,
 			_Out_ bool* pDoAdrBook,
 			_Out_ bool* pDoApply,
 			_Out_ HCHARSET* phCharSet,
 			_Out_ CSETAPPLYTYPE* pcSetApplyType,
 			_Out_opt_ bool* pbUnicode)
 		{
-			if (!lpulConvertFlags || !pDoAdrBook || !pDoApply || !phCharSet || !pcSetApplyType)
+			if (!lpConvertFlags || !pDoAdrBook || !pDoApply || !phCharSet || !pcSetApplyType)
 				return MAPI_E_INVALID_PARAMETER;
 			auto hRes = S_OK;
 
@@ -291,7 +290,7 @@ namespace mapi
 
 			if (!MyData.DisplayDialog()) return MAPI_E_USER_CANCEL;
 
-			*lpulConvertFlags = MyData.GetHex(0);
+			*lpConvertFlags = static_cast<CCSFLAGS>(MyData.GetHex(0));
 			if (MyData.GetCheck(1))
 			{
 				if (SUCCEEDED(hRes)) *pDoApply = true;

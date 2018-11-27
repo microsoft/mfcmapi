@@ -1,4 +1,5 @@
 #pragma once
+#include <Interpret/ExtraPropTags.h>
 
 namespace mapi
 {
@@ -43,7 +44,7 @@ namespace mapi
 		_Check_return_ HRESULT ImportEMLToIMessage(
 			_In_z_ LPCWSTR lpszEMLFile,
 			_In_ LPMESSAGE lpMsg,
-			ULONG ulConvertFlags,
+			CCSFLAGS convertFlags,
 			bool bApply,
 			HCHARSET hCharSet,
 			CSETAPPLYTYPE cSetApplyType,
@@ -51,7 +52,7 @@ namespace mapi
 		_Check_return_ HRESULT ExportIMessageToEML(
 			_In_ LPMESSAGE lpMsg,
 			_In_z_ LPCWSTR lpszEMLFile,
-			ULONG ulConvertFlags,
+			CCSFLAGS convertFlags,
 			ENCODINGTYPE et,
 			MIMESAVETYPE mst,
 			ULONG ulWrapLines,
@@ -59,7 +60,7 @@ namespace mapi
 		_Check_return_ HRESULT ConvertEMLToMSG(
 			_In_z_ LPCWSTR lpszEMLFile,
 			_In_z_ LPCWSTR lpszMSGFile,
-			ULONG ulConvertFlags,
+			CCSFLAGS convertFlags,
 			bool bApply,
 			HCHARSET hCharSet,
 			CSETAPPLYTYPE cSetApplyType,
@@ -68,25 +69,25 @@ namespace mapi
 		_Check_return_ HRESULT ConvertMSGToEML(
 			_In_z_ LPCWSTR lpszMSGFile,
 			_In_z_ LPCWSTR lpszEMLFile,
-			ULONG ulConvertFlags,
+			CCSFLAGS convertFlags,
 			ENCODINGTYPE et,
 			MIMESAVETYPE mst,
 			ULONG ulWrapLines,
 			_In_opt_ LPADRBOOK lpAdrBook);
 		_Check_return_ HRESULT GetConversionToEMLOptions(
 			_In_ CWnd* pParentWnd,
-			_Out_ ULONG* lpulConvertFlags,
-			_Out_ ENCODINGTYPE* lpet,
+			_Out_ CCSFLAGS* lpConvertFlags,
+			_Out_ const ENCODINGTYPE* lpet,
 			_Out_ MIMESAVETYPE* lpmst,
 			_Out_ ULONG* lpulWrapLines,
 			_Out_ bool* pDoAdrBook);
 		_Check_return_ HRESULT GetConversionFromEMLOptions(
 			_In_ CWnd* pParentWnd,
-			_Out_ ULONG* lpulConvertFlags,
+			_Out_ CCSFLAGS* lpConvertFlags,
 			_Out_ bool* pDoAdrBook,
 			_Out_ bool* pDoApply,
 			_Out_ HCHARSET* phCharSet,
 			_Out_ CSETAPPLYTYPE* pcSetApplyType,
 			_Out_opt_ bool* pbUnicode);
-	}
-}
+	} // namespace mapimime
+} // namespace mapi
