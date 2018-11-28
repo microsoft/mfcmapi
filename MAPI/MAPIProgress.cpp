@@ -204,5 +204,5 @@ namespace mapi
 				m_ulFlags);
 		}
 #endif
-	}
-}
+	} // namespace mapiui
+} // namespace mapi

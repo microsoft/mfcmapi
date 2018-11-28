@@ -186,8 +186,8 @@ namespace mapi
 
 			// Allocate and create our SRestriction
 			// Allocate base memory:
-			auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpParent);
-			auto lpAllocationParent = lpParent ? lpParent : lpRes;
+			const auto lpRes = mapi::allocate<LPSRestriction>(sizeof(SRestriction), lpParent);
+			const auto lpAllocationParent = lpParent ? lpParent : lpRes;
 
 			if (lpRes)
 			{
@@ -195,7 +195,7 @@ namespace mapi
 				lpRes->rt = RES_PROPERTY;
 				lpRes->res.resProperty.relop = RELOP_EQ;
 				lpRes->res.resProperty.ulPropTag = ulPropTag;
-				auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
+				const auto lpspvSubject = mapi::allocate<LPSPropValue>(sizeof(SPropValue), lpAllocationParent);
 				lpRes->res.resProperty.lpProp = lpspvSubject;
 
 				if (lpspvSubject)
@@ -364,7 +364,7 @@ namespace mapi
 
 								auto pProp = &pProps[abPR_ENTRYID]; // Just a pointer, do not free.
 								pProp->ulPropTag = PR_ENTRYID;
-								pProp->Value.bin = mapi::CopySBinary(lpFoundRow[abPR_ENTRYID].Value.bin, lpAdrList);
+								pProp->Value.bin = CopySBinary(lpFoundRow[abPR_ENTRYID].Value.bin, lpAdrList);
 
 								pProp = &pProps[abPR_RECIPIENT_TYPE];
 								pProp->ulPropTag = PR_RECIPIENT_TYPE;
@@ -372,15 +372,13 @@ namespace mapi
 
 								pProp = &pProps[abPR_DISPLAY_NAME];
 								pProp->ulPropTag = PR_DISPLAY_NAME_W;
-								if (!mapi::CheckStringProp(&lpFoundRow[abPR_DISPLAY_NAME], PT_UNICODE)) continue;
-								pProp->Value.lpszW =
-									mapi::CopyStringW(lpFoundRow[abPR_DISPLAY_NAME].Value.lpszW, lpAdrList);
+								if (!CheckStringProp(&lpFoundRow[abPR_DISPLAY_NAME], PT_UNICODE)) continue;
+								pProp->Value.lpszW = CopyStringW(lpFoundRow[abPR_DISPLAY_NAME].Value.lpszW, lpAdrList);
 
 								pProp = &pProps[abPR_ADDRTYPE];
 								pProp->ulPropTag = PR_ADDRTYPE_W;
-								if (!mapi::CheckStringProp(&lpFoundRow[abPR_ADDRTYPE], PT_UNICODE)) continue;
-								pProp->Value.lpszW =
-									mapi::CopyStringW(lpFoundRow[abPR_ADDRTYPE].Value.lpszW, lpAdrList);
+								if (!CheckStringProp(&lpFoundRow[abPR_ADDRTYPE], PT_UNICODE)) continue;
+								pProp->Value.lpszW = CopyStringW(lpFoundRow[abPR_ADDRTYPE].Value.lpszW, lpAdrList);
 
 								pProp = &pProps[abPR_DISPLAY_TYPE];
 								pProp->ulPropTag = PR_DISPLAY_TYPE;
@@ -484,7 +482,7 @@ namespace mapi
 					// An error at this point is an error with the current entry, so we can continue this for statement
 					// Unless it's an allocation error. Those are bad.
 					if (PropTagToCompare == pRows->aRow->lpProps[abPropTagToCompare].ulPropTag &&
-						mapi::CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_UNICODE))
+						CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_UNICODE))
 					{
 						output::DebugPrint(
 							DBGGeneric,
@@ -528,10 +526,11 @@ namespace mapi
 
 			LPMAILUSER lpMailUser = nullptr;
 			LPADRLIST lpAdrList = nullptr;
-			auto hRes = EC_H_CANCEL(lpAdrBook->Address(reinterpret_cast<ULONG_PTR*>(&hwnd), &AdrParm, &lpAdrList));
+			const auto hRes =
+				EC_H_CANCEL(lpAdrBook->Address(reinterpret_cast<ULONG_PTR*>(&hwnd), &AdrParm, &lpAdrList));
 			if (lpAdrList)
 			{
-				auto lpEntryID =
+				const auto lpEntryID =
 					PpropFindProp(lpAdrList[0].aEntries->rgPropVals, lpAdrList[0].aEntries->cValues, PR_ENTRYID);
 
 				if (lpEntryID)
@@ -568,5 +567,5 @@ namespace mapi
 
 			return lpMailUser;
 		}
-	}
-}
+	} // namespace ab
+} // namespace mapi

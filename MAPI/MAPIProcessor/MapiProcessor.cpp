@@ -3,7 +3,6 @@
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/ColumnTags.h>
-#include <MAPI/MapiMemory.h>
 
 namespace mapiprocessor
 {
@@ -437,7 +436,7 @@ namespace mapiprocessor
 			{
 				if (lpRows) FreeProws(lpRows);
 				lpRows = nullptr;
-				auto hRes = WC_MAPI(lpRecipTable->QueryRows(255, NULL, &lpRows));
+				const auto hRes = WC_MAPI(lpRecipTable->QueryRows(255, NULL, &lpRows));
 				if (FAILED(hRes))
 				{
 					break;
@@ -510,7 +509,6 @@ namespace mapiprocessor
 
 				for (ULONG iRow = 0; iRow < lpRows->cRows; iRow++)
 				{
-					hRes = S_OK;
 					const auto lpAttachNum =
 						PpropFindProp(lpRows->aRow[iRow].lpProps, lpRows->aRow[iRow].cValues, PR_ATTACH_NUM);
 

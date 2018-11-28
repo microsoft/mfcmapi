@@ -39,5 +39,5 @@ namespace mapi
 			_Deref_out_opt_ LPSPropValue* lppPropsFound);
 
 		_Check_return_ LPMAILUSER SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Out_opt_ ULONG* lpulObjType);
-	}
-}
+	} // namespace ab
+} // namespace mapi

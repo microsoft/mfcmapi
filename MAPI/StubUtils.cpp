@@ -422,7 +422,7 @@ namespace mapistub
 		{
 			WCHAR szDrive[_MAX_DRIVE] = {0};
 			WCHAR szOutlookPath[MAX_PATH] = {0};
-			auto hRes = WC_W32(_wsplitpath_s(
+			const auto hRes = WC_W32(_wsplitpath_s(
 				lpszTempPath.c_str(), szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, nullptr, NULL, nullptr, NULL));
 
 			if (SUCCEEDED(hRes))

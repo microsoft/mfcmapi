@@ -250,7 +250,7 @@ namespace mapiprocessor
 		const auto lpMessageClass =
 			PpropFindProp(lpSRow->lpProps, lpSRow->cValues, CHANGE_PROP_TYPE(PR_MESSAGE_CLASS, PT_UNSPECIFIED));
 
-		wprintf(L"\"%ls\"", szSubj.c_str());
+		wprintf(L"\"%ws\"", szSubj.c_str());
 		if (lpMessageClass)
 		{
 			if (PT_STRING8 == PROP_TYPE(lpMessageClass->ulPropTag))
@@ -259,7 +259,7 @@ namespace mapiprocessor
 			}
 			else if (PT_UNICODE == PROP_TYPE(lpMessageClass->ulPropTag))
 			{
-				wprintf(L",\"%ls\"", lpMessageClass->Value.lpszW ? lpMessageClass->Value.lpszW : L"");
+				wprintf(L",\"%ws\"", lpMessageClass->Value.lpszW ? lpMessageClass->Value.lpszW : L"");
 			}
 		}
 
@@ -267,7 +267,7 @@ namespace mapiprocessor
 		if (bOutputMSG) szExt = L".msg"; // STRING_OK
 
 		auto szFileName = file::BuildFileNameAndPath(szExt, szSubj, szFolderPath, lpRecordKey);
-		wprintf(L",\"%ls\"\n", szFileName.c_str());
+		wprintf(L",\"%ws\"\n", szFileName.c_str());
 	}
 
 	bool CDumpStore::DoContentsTablePerRowWork(_In_ const _SRow* lpSRow, ULONG ulCurRow)
@@ -312,7 +312,7 @@ namespace mapiprocessor
 		LPSTREAM lpRTFUncompressed = nullptr;
 		LPSTREAM lpOutputStream = nullptr;
 
-		auto hRes = WC_MAPI(
+		const auto hRes = WC_MAPI(
 			lpMessage->OpenProperty(ulBodyTag, &IID_IStream, STGM_READ, NULL, reinterpret_cast<LPUNKNOWN*>(&lpStream)));
 		// The only error we suppress is MAPI_E_NOT_FOUND, so if a body type isn't in the output, it wasn't on the message
 		if (MAPI_E_NOT_FOUND != hRes)
@@ -399,13 +399,11 @@ namespace mapiprocessor
 		ULONG cValues = 0L;
 
 		// Get all props, asking for UNICODE string properties
-		auto hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, MAPI_UNICODE, &cValues, &lpAllProps));
+		const auto hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, MAPI_UNICODE, &cValues, &lpAllProps));
 		if (hRes == MAPI_E_BAD_CHARWIDTH)
 		{
 			// Didn't like MAPI_UNICODE - fall back
-			hRes = S_OK;
-
-			hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpMessage, NULL, &cValues, &lpAllProps));
+			WC_H_GETPROPS_S(mapi::GetPropsNULL(lpMessage, NULL, &cValues, &lpAllProps));
 		}
 
 		// If we've got a parent message, we're an attachment - use attachment filename logic
@@ -415,14 +413,14 @@ namespace mapiprocessor
 			// Should we append something for attachment number?
 
 			// Copy the source string over
-			lpMsgData->szFilePath = (static_cast<LPMESSAGEDATA>(lpParentMessageData))->szFilePath;
+			lpMsgData->szFilePath = static_cast<LPMESSAGEDATA>(lpParentMessageData)->szFilePath;
 
 			// Remove any extension
 			lpMsgData->szFilePath = lpMsgData->szFilePath.substr(0, lpMsgData->szFilePath.find_last_of(L'.'));
 
 			// Update file name and add extension
 			lpMsgData->szFilePath += strings::format(
-				L"-Attach%u.xml", (static_cast<LPMESSAGEDATA>(lpParentMessageData))->ulCurAttNum); // STRING_OK
+				L"-Attach%u.xml", static_cast<LPMESSAGEDATA>(lpParentMessageData)->ulCurAttNum); // STRING_OK
 
 			output::OutputToFilef(
 				static_cast<LPMESSAGEDATA>(lpParentMessageData)->fMessageProps,
@@ -605,7 +603,7 @@ namespace mapiprocessor
 		if (!lpData) return false;
 		if (m_bOutputMSG) return false; // When outputting message files, no recipient work is needed
 		if (m_bOutputList) return false;
-		output::OutputToFile((static_cast<LPMESSAGEDATA>(lpData))->fMessageProps, L"<recipients>\n");
+		output::OutputToFile(static_cast<LPMESSAGEDATA>(lpData)->fMessageProps, L"<recipients>\n");
 		return true;
 	}
 
@@ -633,7 +631,7 @@ namespace mapiprocessor
 		if (!lpData) return;
 		if (m_bOutputMSG) return; // When outputting message files, no recipient work is needed
 		if (m_bOutputList) return;
-		output::OutputToFile((static_cast<LPMESSAGEDATA>(lpData))->fMessageProps, L"</recipients>\n");
+		output::OutputToFile(static_cast<LPMESSAGEDATA>(lpData)->fMessageProps, L"</recipients>\n");
 	}
 
 	bool CDumpStore::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
@@ -641,7 +639,7 @@ namespace mapiprocessor
 		if (!lpData) return false;
 		if (m_bOutputMSG) return false; // When outputting message files, no attachment work is needed
 		if (m_bOutputList) return false;
-		output::OutputToFile((static_cast<LPMESSAGEDATA>(lpData))->fMessageProps, L"<attachments>\n");
+		output::OutputToFile(static_cast<LPMESSAGEDATA>(lpData)->fMessageProps, L"<attachments>\n");
 		return true;
 	}
 
@@ -707,7 +705,7 @@ namespace mapiprocessor
 		if (!lpData) return;
 		if (m_bOutputMSG) return; // When outputting message files, no attachment work is needed
 		if (m_bOutputList) return;
-		output::OutputToFile((static_cast<LPMESSAGEDATA>(lpData))->fMessageProps, L"</attachments>\n");
+		output::OutputToFile(static_cast<LPMESSAGEDATA>(lpData)->fMessageProps, L"</attachments>\n");
 	}
 
 	void CDumpStore::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
@@ -723,4 +721,4 @@ namespace mapiprocessor
 		}
 		delete lpMsgData;
 	}
-}
+} // namespace mapiprocessor
