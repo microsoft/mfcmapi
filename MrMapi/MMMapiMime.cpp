@@ -6,7 +6,7 @@
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 
-#define CHECKFLAG(__flag) ((ProgOpts.ulMAPIMIMEFlags & (__flag)) == (__flag))
+#define CHECKFLAG(__flag) ((ProgOpts.MAPIMIMEFlags & (__flag)) == (__flag))
 void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 {
 	printf("Message File Converter\n");

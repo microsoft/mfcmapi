@@ -3,6 +3,7 @@
 
 #define ulNoMatch 0xffffffff
 #include "Interpret/ExtraPropTags.h"
+#include "MMMapiMime.h"
 
 enum CmdMode
 {
@@ -74,7 +75,7 @@ struct MYOPTIONS
 	std::wstring lpszProfileSection;
 	ULONG ulStore;
 	ULONG ulFolder;
-	ULONG ulMAPIMIMEFlags;
+	MAPIMIMEFLAGS MAPIMIMEFlags;
 	CCSFLAGS convertFlags;
 	ULONG ulWrapLines;
 	ULONG ulEncodingType;
