@@ -275,7 +275,7 @@ namespace mapiprocessor
 			}
 		}
 	}
-}
+} // namespace mapiprocessor
 
 void DoFidMid(_In_ MYOPTIONS ProgOpts)
 {

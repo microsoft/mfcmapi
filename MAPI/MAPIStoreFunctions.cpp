@@ -5,7 +5,6 @@
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <Interpret/Guids.h>
 #include <Interpret/ExtraPropTags.h>
 #ifndef MRMAPI
 #include <MAPI/MAPIABFunctions.h>
@@ -29,7 +28,7 @@ namespace mapi
 			output::DebugPrint(DBGOpenItemProp, L"CallOpenMsgStore ulFlags = 0x%X\n", ulFlags);
 
 			LPMDB lpMDB = nullptr;
-			auto hRes = WC_MAPI(lpSession->OpenMsgStore(
+			const auto hRes = WC_MAPI(lpSession->OpenMsgStore(
 				ulUIParam,
 				lpEID->cb,
 				reinterpret_cast<LPENTRYID>(lpEID->lpb),
@@ -125,14 +124,13 @@ namespace mapi
 			if (!lpMDB || !StoreSupportsManageStore(lpMDB)) return nullptr;
 
 			LPMAPITABLE lpMailboxTable = nullptr;
-			LPMAPITABLE lpLocalTable = nullptr;
 
 			auto szServerDN = BuildServerDN(szServerName, "");
 			if (!szServerDN.empty())
 			{
 				lpMailboxTable = GetMailboxTable3(lpMDB, szServerDN, ulOffset, fMapiUnicode);
 
-				if (!lpLocalTable && 0 == ulOffset)
+				if (!lpMailboxTable && 0 == ulOffset)
 				{
 					lpMailboxTable = GetMailboxTable1(lpMDB, szServerDN, fMapiUnicode);
 				}
@@ -219,7 +217,7 @@ namespace mapi
 				WC_MAPI_S(HrGetOneProp(pGlobalProfSect, PR_PROFILE_HOME_SERVER, &lpServerName));
 			}
 
-			if (mapi::CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
+			if (CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
 			{
 				serverName = lpServerName->Value.lpszA;
 			}
@@ -558,12 +556,12 @@ namespace mapi
 			auto lpPrivateMDB = OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
 			if (lpPrivateMDB && StoreSupportsManageStore(lpPrivateMDB))
 			{
-				auto lpMailUser = ab::SelectUser(lpAddrBook, ::GetDesktopWindow(), nullptr);
+				auto lpMailUser = ab::SelectUser(lpAddrBook, GetDesktopWindow(), nullptr);
 				if (lpMailUser)
 				{
 					LPSPropValue lpEmailAddress = nullptr;
 					EC_MAPI_S(HrGetOneProp(lpMailUser, PR_EMAIL_ADDRESS_W, &lpEmailAddress));
-					if (mapi::CheckStringProp(lpEmailAddress, PT_UNICODE))
+					if (CheckStringProp(lpEmailAddress, PT_UNICODE))
 					{
 						lpOtherUserMDB = OpenMailboxWithPrompt(
 							lpMAPISession,
@@ -664,7 +662,7 @@ namespace mapi
 				{
 					EC_MAPI_S(HrGetOneProp(
 						lpPublicMDBNonAdmin, CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_STRING8), &lpServerName));
-					if (mapi::CheckStringProp(lpServerName, PT_STRING8))
+					if (CheckStringProp(lpServerName, PT_STRING8))
 					{
 						server = lpServerName->Value.lpszA;
 					}

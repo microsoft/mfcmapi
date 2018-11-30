@@ -106,5 +106,5 @@ namespace mapi
 			m_lpAdviseTarget = lpProp;
 			if (m_lpAdviseTarget) m_lpAdviseTarget->AddRef();
 		}
-	}
-}
+	} // namespace mapiui
+} // namespace mapi

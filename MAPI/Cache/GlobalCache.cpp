@@ -31,7 +31,7 @@ namespace cache
 		if (!m_bMAPIInitialized)
 		{
 			MAPIINIT_0 mapiInit = {MAPI_INIT_VERSION, ulFlags};
-			auto hRes = WC_MAPI(::MAPIInitialize(&mapiInit));
+			const auto hRes = WC_MAPI(::MAPIInitialize(&mapiInit));
 			if (SUCCEEDED(hRes))
 			{
 				m_bMAPIInitialized = true;
@@ -155,4 +155,4 @@ namespace cache
 		if (!m_szProfileToCopy.empty()) ulStatus |= BUFFER_PROFILE;
 		return ulStatus;
 	}
-}
+} // namespace cache

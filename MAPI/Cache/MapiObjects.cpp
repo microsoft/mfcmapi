@@ -122,4 +122,4 @@ namespace cache
 
 		return m_lpAddrBook;
 	}
-}
+} // namespace cache

@@ -47,8 +47,8 @@ namespace cache
 				// lpSrcName is LPWSTR which means it's ALWAYS unicode
 				// But some folks get it wrong and stuff ANSI data in there
 				// So we check the string length both ways to make our best guess
-				auto cchShortLen = strnlen_s(LPCSTR(src.Kind.lpwstrName), RSIZE_MAX);
-				auto cchWideLen = wcsnlen_s(src.Kind.lpwstrName, RSIZE_MAX);
+				const auto cchShortLen = strnlen_s(LPCSTR(src.Kind.lpwstrName), RSIZE_MAX);
+				const auto cchWideLen = wcsnlen_s(src.Kind.lpwstrName, RSIZE_MAX);
 				auto cbName = size_t();
 
 				if (cchShortLen < cchWideLen)
@@ -138,7 +138,7 @@ namespace cache
 				return true;
 			});
 
-		return entry != end(g_lpNamedPropCache) ? &(*entry) : nullptr;
+		return entry != end(g_lpNamedPropCache) ? &*entry : nullptr;
 	}
 
 	// Given a signature, guid, kind, and value, finds the named prop mapping in the cache
@@ -165,7 +165,7 @@ namespace cache
 				return true;
 			});
 
-		return entry != end(g_lpNamedPropCache) ? &(*entry) : nullptr;
+		return entry != end(g_lpNamedPropCache) ? &*entry : nullptr;
 	}
 
 	// Given a tag, guid, kind, and value, finds the named prop mapping in the cache
@@ -185,7 +185,7 @@ namespace cache
 				return true;
 			});
 
-		return entry != end(g_lpNamedPropCache) ? &(*entry) : nullptr;
+		return entry != end(g_lpNamedPropCache) ? &*entry : nullptr;
 	}
 
 	void AddMapping(
@@ -270,7 +270,7 @@ namespace cache
 		auto hRes = S_OK;
 		const auto lpPropTags = *lppPropTags;
 		// First, allocate our results using MAPI
-		auto lppNameIDs = mapi::allocate<LPMAPINAMEID*>(sizeof(MAPINAMEID*) * lpPropTags->cValues);
+		const auto lppNameIDs = mapi::allocate<LPMAPINAMEID*>(sizeof(MAPINAMEID*) * lpPropTags->cValues);
 		if (lppNameIDs)
 		{
 			// Assume we'll miss on everything
@@ -331,7 +331,7 @@ namespace cache
 								// copy the next result into it
 								if (lppUncachedPropNames[ulUncachedTag])
 								{
-									auto lpNameID = mapi::allocate<LPMAPINAMEID>(sizeof(MAPINAMEID), lppNameIDs);
+									const auto lpNameID = mapi::allocate<LPMAPINAMEID>(sizeof(MAPINAMEID), lppNameIDs);
 									if (lpNameID)
 									{
 										CopyCacheData(*lppUncachedPropNames[ulUncachedTag], *lpNameID, lppNameIDs);
@@ -416,7 +416,6 @@ namespace cache
 		}
 		else
 		{
-			hRes = S_OK;
 			hRes = WC_H_GETPROPS(
 				lpMAPIProp->GetNamesFromIDs(lppPropTags, lpPropSetGuid, ulFlags, lpcPropNames, lpppPropNames));
 			// Cache the results
@@ -444,7 +443,7 @@ namespace cache
 		// If we reach the end of the cache and don't have everything, we set up to make a GetIDsFromNames call.
 
 		// First, allocate our results using MAPI
-		auto lpPropTags = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(cPropNames));
+		const auto lpPropTags = mapi::allocate<LPSPropTagArray>(CbNewSPropTagArray(cPropNames));
 		if (lpPropTags)
 		{
 			lpPropTags->cValues = cPropNames;
@@ -562,12 +561,7 @@ namespace cache
 		if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{
 			propTags = CacheGetIDsFromNames(
-				lpMAPIProp,
-				lpProp->Value.bin.cb,
-				lpProp->Value.bin.lpb,
-				cPropNames,
-				lppPropNames,
-				ulFlags);
+				lpMAPIProp, lpProp->Value.bin.cb, lpProp->Value.bin.lpb, cPropNames, lppPropNames, ulFlags);
 		}
 		else
 		{
@@ -665,8 +659,8 @@ namespace cache
 			// lpwstrName is LPWSTR which means it's ALWAYS unicode
 			// But some folks get it wrong and stuff ANSI data in there
 			// So we check the string length both ways to make our best guess
-			auto cchShortLen = strnlen_s(LPCSTR(lpNameID->Kind.lpwstrName), RSIZE_MAX);
-			auto cchWideLen = wcsnlen_s(lpNameID->Kind.lpwstrName, RSIZE_MAX);
+			const auto cchShortLen = strnlen_s(LPCSTR(lpNameID->Kind.lpwstrName), RSIZE_MAX);
+			const auto cchWideLen = wcsnlen_s(lpNameID->Kind.lpwstrName, RSIZE_MAX);
 
 			if (cchShortLen < cchWideLen)
 			{
@@ -740,7 +734,7 @@ namespace cache
 			tag.cValues = 1;
 			tag.aulPropTag[0] = ulPropTag;
 
-			auto hRes = WC_H_GETPROPS(
+			const auto hRes = WC_H_GETPROPS(
 				GetNamesFromIDs(lpMAPIProp, lpMappingSignature, &lpTag, nullptr, NULL, &ulPropNames, &lppPropNames));
 			if (SUCCEEDED(hRes) && ulPropNames == 1 && lppPropNames && lppPropNames[0])
 			{
@@ -758,4 +752,4 @@ namespace cache
 
 		return namePropNames;
 	}
-}
+} // namespace cache

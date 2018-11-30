@@ -35,5 +35,5 @@ namespace mapi
 		};
 
 		_Check_return_ CMAPIProgress* GetMAPIProgress(const std::wstring& lpszContext, _In_ HWND hWnd);
-	}
-}
+	} // namespace mapiui
+} // namespace mapi

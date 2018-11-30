@@ -23,5 +23,5 @@ namespace mapi
 			HTREEITEM m_hTreeParent;
 			LPMAPIPROP m_lpAdviseTarget; // Used only for named prop lookups in debug logging.
 		};
-	}
-}
+	} // namespace mapiui
+} // namespace mapi

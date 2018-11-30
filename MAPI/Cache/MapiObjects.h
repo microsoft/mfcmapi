@@ -28,4 +28,4 @@ namespace cache
 		LPMAPISESSION m_lpMAPISession;
 		LPADRBOOK m_lpAddrBook;
 	};
-}
+} // namespace cache

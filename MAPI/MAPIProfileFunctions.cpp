@@ -31,7 +31,7 @@ namespace mapi
 			output::DebugPrint(DBGGeneric, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
 
 			// Call LaunchWizard to add the service.
-			auto hRes = WC_MAPI(LaunchWizard(hParentWnd, ulFlags, szServices, cchProfName, szProfName));
+			const auto hRes = WC_MAPI(LaunchWizard(hParentWnd, ulFlags, szServices, cchProfName, szProfName));
 			if (hRes == MAPI_E_CALL_FAILED)
 			{
 				CHECKHRESMSG(hRes, IDS_LAUNCHWIZARDFAILED);
@@ -414,7 +414,7 @@ namespace mapi
 			if (lpProviderTable)
 			{
 				LPPROFSECT lpSect = nullptr;
-				hRes = EC_MAPI(lpProviderTable->SetColumns(LPSPropTagArray(&pTagUID), TBL_BATCH));
+				EC_MAPI_S(lpProviderTable->SetColumns(LPSPropTagArray(&pTagUID), TBL_BATCH));
 				for (;;)
 				{
 					hRes = EC_MAPI(lpProviderTable->QueryRows(1, 0, &lpRowSet));
@@ -432,8 +432,8 @@ namespace mapi
 								auto pTagArray = SPropTagArray{1, PR_MARKER};
 								ULONG ulPropVal = 0;
 								LPSPropValue lpsPropVal = nullptr;
-								hRes = EC_H_GETPROPS(lpSect->GetProps(&pTagArray, NULL, &ulPropVal, &lpsPropVal));
-								if (!(mapi::CheckStringProp(lpsPropVal, PROP_TYPE(PR_MARKER)) &&
+								EC_H_GETPROPS_S(lpSect->GetProps(&pTagArray, NULL, &ulPropVal, &lpsPropVal));
+								if (!(CheckStringProp(lpsPropVal, PROP_TYPE(PR_MARKER)) &&
 									  !strcmp(lpsPropVal->Value.lpszA, MARKER_STRING)))
 								{
 									// got an unmarked provider - this is our hit
@@ -535,7 +535,7 @@ namespace mapi
 					if (lpPropVals)
 					{
 						// Look for a provider without our dummy prop
-						auto lpRowSet = HrFindUnmarkedProvider(lpServiceAdmin);
+						const auto lpRowSet = HrFindUnmarkedProvider(lpServiceAdmin);
 						if (lpRowSet) output::DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
 
 						// should only have one unmarked row
@@ -594,7 +594,7 @@ namespace mapi
 			PropVal[0].Value.lpszA = const_cast<LPSTR>(lpszServerName.c_str());
 			PropVal[1].ulPropTag = PR_PROFILE_UNRESOLVED_NAME;
 			PropVal[1].Value.lpszA = const_cast<LPSTR>(lpszMailboxName.c_str());
-			auto hRes = EC_H(HrAddServiceToProfile(
+			const auto hRes = EC_H(HrAddServiceToProfile(
 				"MSEMS", ulUIParam, NULL, NUMEXCHANGEPROPS, PropVal, lpszProfileName)); // STRING_OK
 
 			return hRes;

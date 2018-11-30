@@ -33,7 +33,7 @@ _Check_return_ LPMAPISESSION MrMAPILogonEx(const std::wstring& lpszProfile)
 
 	// TODO: profile parameter should be ansi in ansi builds
 	LPMAPISESSION lpSession = nullptr;
-	auto hRes = WC_MAPI(
+	const auto hRes = WC_MAPI(
 		MAPILogonEx(NULL, LPTSTR((lpszProfile.empty() ? NULL : lpszProfile.c_str())), NULL, ulFlags, &lpSession));
 	if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08lx\n", hRes);
 	return lpSession;
@@ -644,7 +644,7 @@ MYOPTIONS::MYOPTIONS()
 	ulSVParser = 0;
 	ulStore = 0;
 	ulFolder = 0;
-	ulMAPIMIMEFlags = 0;
+	MAPIMIMEFlags = static_cast<MAPIMIMEFLAGS>(0);
 	convertFlags = static_cast<CCSFLAGS>(0);
 	ulWrapLines = 0;
 	ulEncodingType = 0;
@@ -879,26 +879,26 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char* argv[], _Out_ MYOPTIONS* pR
 				break;
 				// MAPIMIME
 			case switchMAPI:
-				pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_TOMAPI;
+				pRunOpts->MAPIMIMEFlags |= MAPIMIME_TOMAPI;
 				break;
 			case switchMIME:
-				pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_TOMIME;
+				pRunOpts->MAPIMIMEFlags |= MAPIMIME_TOMIME;
 				break;
 			case switchCCSFFlags:
 				pRunOpts->convertFlags = static_cast<CCSFLAGS>(strtoul(argv[i + 1], &szEndPtr, 10));
 				i++;
 				break;
 			case switchRFC822:
-				pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_RFC822;
+				pRunOpts->MAPIMIMEFlags |= MAPIMIME_RFC822;
 				break;
 			case switchWrap:
 				pRunOpts->ulWrapLines = strtoul(argv[i + 1], &szEndPtr, 10);
-				pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_WRAP;
+				pRunOpts->MAPIMIMEFlags |= MAPIMIME_WRAP;
 				i++;
 				break;
 			case switchEncoding:
 				pRunOpts->ulEncodingType = strtoul(argv[i + 1], &szEndPtr, 10);
-				pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_ENCODING;
+				pRunOpts->MAPIMIMEFlags |= MAPIMIME_ENCODING;
 				i++;
 				break;
 			case switchCharset:
@@ -915,14 +915,14 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char* argv[], _Out_ MYOPTIONS* pR
 					bHitError = true;
 					break;
 				}
-				pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_CHARSET;
+				pRunOpts->MAPIMIMEFlags |= MAPIMIME_CHARSET;
 				i += 3;
 				break;
 			case switchAddressBook:
-				pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_ADDRESSBOOK;
+				pRunOpts->MAPIMIMEFlags |= MAPIMIME_ADDRESSBOOK;
 				break;
 			case switchUnicode:
-				pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_UNICODE;
+				pRunOpts->MAPIMIMEFlags |= MAPIMIME_UNICODE;
 				break;
 
 			case switchNoSwitch:
@@ -1044,7 +1044,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char* argv[], _Out_ MYOPTIONS* pR
 		if (!(pRunOpts->ulOptions & OPT_DOCONTENTS) && !(pRunOpts->ulOptions & OPT_DOASSOCIATEDCONTENTS)) return false;
 		break;
 	case cmdmodeMAPIMIME:
-#define CHECKFLAG(__flag) ((pRunOpts->ulMAPIMIMEFlags & (__flag)) == (__flag))
+#define CHECKFLAG(__flag) ((pRunOpts->MAPIMIMEFlags & (__flag)) == (__flag))
 		// Can't convert both ways at once
 		if (CHECKFLAG(MAPIMIME_TOMAPI) && CHECKFLAG(MAPIMIME_TOMIME)) return false;
 

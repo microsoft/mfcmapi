@@ -67,5 +67,5 @@ namespace mapi
 
 		_Check_return_ HRESULT
 		HrCopyProfile(_In_ const std::string& lpszOldProfileName, _In_ const std::string& lpszNewProfileName);
-	}
-}
+	} // namespace profile
+} // namespace mapi

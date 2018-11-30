@@ -601,4 +601,4 @@ namespace columns
 		{pcPROPNAMEDNAME, IDS_COLNAMEDPROPNAME},
 		{pcPROPNAMEDIID, IDS_COLNAMEDPROPGUID},
 	};
-}
+} // namespace columns

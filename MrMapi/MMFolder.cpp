@@ -6,7 +6,6 @@
 #include <Interpret/InterpretProp.h>
 #include <MrMapi/MMStore.h>
 #include <Interpret/String.h>
-#include <MAPI/MapiMemory.h>
 
 // Search folder for entry ID of child folder by name.
 LPSBinary MAPIFindFolderW(
@@ -536,7 +535,7 @@ void DumpSearchState(
 		LPENTRYLIST lpEntryList = nullptr;
 		ULONG ulSearchState = 0;
 
-		auto hRes = WC_H(lpFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
+		const auto hRes = WC_H(lpFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
 		if (MAPI_E_NOT_INITIALIZED == hRes)
 		{
 			printf("No search criteria has been set on this folder.\n");

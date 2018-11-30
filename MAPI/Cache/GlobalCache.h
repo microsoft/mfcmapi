@@ -71,4 +71,4 @@ namespace cache
 		LPMAPIPROP m_lpSourcePropObject;
 		bool m_bMAPIInitialized;
 	};
-}
+} // namespace cache
