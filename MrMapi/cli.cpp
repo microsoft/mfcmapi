@@ -551,7 +551,7 @@ struct OptParser
 	CmdMode Mode;
 	int MinArgs;
 	int MaxArgs;
-	ULONG ulOpt;
+	OPTIONFLAGS ulOpt;
 };
 
 OptParser g_Parsers[] = {
@@ -563,26 +563,26 @@ OptParser g_Parsers[] = {
 	{switchSearch, cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH},
 	{switchDecimal, cmdmodeUnknown, 0, 0, OPT_DODECIMAL},
 	{switchFolder, cmdmodeUnknown, 1, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDFOLDER | OPT_INITMFC},
-	{switchInput, cmdmodeUnknown, 1, 1, 0},
-	{switchOutput, cmdmodeUnknown, 1, 1, 0},
+	{switchInput, cmdmodeUnknown, 1, 1, OPT_NOOPT},
+	{switchOutput, cmdmodeUnknown, 1, 1, OPT_NOOPT},
 	{switchProfile, cmdmodeUnknown, 0, 1, OPT_PROFILE},
 	{switchMoreProperties, cmdmodeUnknown, 0, 0, OPT_RETRYSTREAMPROPS},
 	{switchSkip, cmdmodeUnknown, 0, 0, OPT_SKIPATTACHMENTS},
 	{switchDispid, cmdmodePropTag, 0, 0, OPT_DODISPID},
 	{switchType, cmdmodePropTag, 0, 1, OPT_DOTYPE},
-	{switchFlag, cmdmodeUnknown, 1, 1, 0}, // can't know until we parse the argument
-	{switchGuid, cmdmodeGuid, 0, 0, 0},
-	{switchError, cmdmodeErr, 0, 0, 0},
+	{switchFlag, cmdmodeUnknown, 1, 1, OPT_NOOPT}, // can't know until we parse the argument
+	{switchGuid, cmdmodeGuid, 0, 0, OPT_NOOPT},
+	{switchError, cmdmodeErr, 0, 0, OPT_NOOPT},
 	{switchParser, cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE},
 	{switchBinary, cmdmodeSmartView, 0, 0, OPT_BINARYFILE},
 	{switchAcl, cmdmodeAcls, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER},
 	{switchRule, cmdmodeRules, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER},
 	{switchContents, cmdmodeContents, 0, 0, OPT_DOCONTENTS | OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC},
 	{switchAssociatedContents, cmdmodeContents, 0, 0, OPT_DOASSOCIATEDCONTENTS | OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC},
-	{switchSubject, cmdmodeContents, 0, 0, 0},
+	{switchSubject, cmdmodeContents, 0, 0, OPT_NOOPT},
 	{switchMSG, cmdmodeContents, 0, 0, OPT_MSG},
 	{switchList, cmdmodeContents, 0, 0, OPT_LIST},
-	{switchRecent, cmdmodeContents, 1, 1, 0},
+	{switchRecent, cmdmodeContents, 1, 1, OPT_NOOPT},
 	{switchXML, cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE},
 	{switchFid, cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDSTORE},
 	{switchMid, cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_MID},
@@ -590,28 +590,28 @@ OptParser g_Parsers[] = {
 	{switchChildFolders, cmdmodeChildFolders, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER},
 	{switchMAPI, cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE},
 	{switchMIME, cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE},
-	{switchCCSFFlags, cmdmodeMAPIMIME, 1, 1, 0},
-	{switchRFC822, cmdmodeMAPIMIME, 0, 0, 0},
-	{switchWrap, cmdmodeMAPIMIME, 1, 1, 0},
-	{switchEncoding, cmdmodeMAPIMIME, 1, 1, 0},
-	{switchCharset, cmdmodeMAPIMIME, 3, 3, 0},
+	{switchCCSFFlags, cmdmodeMAPIMIME, 1, 1, OPT_NOOPT},
+	{switchRFC822, cmdmodeMAPIMIME, 0, 0, OPT_NOOPT},
+	{switchWrap, cmdmodeMAPIMIME, 1, 1, OPT_NOOPT},
+	{switchEncoding, cmdmodeMAPIMIME, 1, 1, OPT_NOOPT},
+	{switchCharset, cmdmodeMAPIMIME, 3, 3, OPT_NOOPT},
 	{switchAddressBook, cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPILOGON}, // special case which needs a logon
-	{switchUnicode, cmdmodeMAPIMIME, 0, 0, 0},
+	{switchUnicode, cmdmodeMAPIMIME, 0, 0, OPT_NOOPT},
 	{switchSize, cmdmodeFolderSize, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER},
 	{switchPST, cmdmodePST, 0, 0, OPT_NEEDINPUTFILE},
-	{switchVersion, cmdmodeUnknown, 1, 1, 0},
+	{switchVersion, cmdmodeUnknown, 1, 1, OPT_NOOPT},
 	{switchProfileSection, cmdmodeProfile, 1, 1, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC},
 	{switchByteSwapped, cmdmodeProfile, 0, 0, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC},
 	{switchReceiveFolder, cmdmodeReceiveFolder, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDSTORE | OPT_INITMFC},
 	{switchSearchState, cmdmodeSearchState, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER},
-	{switchNoSwitch, cmdmodeUnknown, 0, 0, 0},
+	{switchNoSwitch, cmdmodeUnknown, 0, 0, OPT_NOOPT},
 	// clang-format on
 };
 
 MYOPTIONS::MYOPTIONS()
 {
 	Mode = cmdmodeUnknown;
-	ulOptions = 0;
+	ulOptions = OPT_NOOPT;
 	ulTypeNum = 0;
 	ulSVParser = 0;
 	ulStore = 0;
