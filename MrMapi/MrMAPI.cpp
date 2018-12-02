@@ -126,6 +126,19 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 	return false;
 }
 
+// Converts an argc/argv style command line to a vector
+std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) char* argv[])
+{
+	auto args = std::vector<std::wstring>{};
+
+	for (auto i = 1; i < argc; i++)
+	{
+		args.emplace_back(strings::LPCSTRToWstring(argv[i]));
+	}
+
+	return args;
+}
+
 void main(_In_ int argc, _In_count_(argc) char* argv[])
 {
 	auto hRes = S_OK;
@@ -143,7 +156,8 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	registry::RegKeys[registry::regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
 
 	cli::MYOPTIONS ProgOpts;
-	const auto bGoodCommandLine = ParseArgs(argc, argv, &ProgOpts);
+	auto cl = GetCommandLine(argc, argv);
+	const auto bGoodCommandLine = ParseArgs(cl, &ProgOpts);
 
 	// Must be first after ParseArgs
 	if (ProgOpts.ulOptions & cli::OPT_INITMFC)
