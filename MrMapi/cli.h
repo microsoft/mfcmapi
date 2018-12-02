@@ -6,7 +6,7 @@ namespace cli
 {
 #define ulNoMatch 0xffffffff
 
-// Flags to control conversion
+	// Flags to control conversion
 	enum MAPIMIMEFLAGS
 	{
 		MAPIMIME_TOMAPI = 0x00000001,
@@ -87,12 +87,12 @@ namespace cli
 
 	struct MYOPTIONS
 	{
-		CmdMode Mode;
-		OPTIONFLAGS ulOptions;
+		CmdMode Mode{cmdmodeUnknown};
+		OPTIONFLAGS ulOptions{OPT_NOOPT};
 		std::wstring lpszUnswitchedOption;
 		std::wstring lpszProfile;
-		ULONG ulTypeNum;
-		ULONG ulSVParser;
+		ULONG ulTypeNum{};
+		ULONG ulSVParser{};
 		std::wstring lpszInput;
 		std::wstring lpszOutput;
 		std::wstring lpszSubject;
@@ -103,23 +103,21 @@ namespace cli
 		std::wstring lpszFlagName;
 		std::wstring lpszVersion;
 		std::wstring lpszProfileSection;
-		ULONG ulStore;
-		ULONG ulFolder;
-		MAPIMIMEFLAGS MAPIMIMEFlags;
-		CCSFLAGS convertFlags;
-		ULONG ulWrapLines;
-		ULONG ulEncodingType;
-		ULONG ulCodePage;
-		ULONG ulFlagValue;
-		ULONG ulCount;
-		bool bByteSwapped;
-		CHARSETTYPE cSetType;
-		CSETAPPLYTYPE cSetApplyType;
-		LPMAPISESSION lpMAPISession;
-		LPMDB lpMDB;
-		LPMAPIFOLDER lpFolder;
-
-		MYOPTIONS();
+		ULONG ulStore{};
+		ULONG ulFolder{};
+		MAPIMIMEFLAGS MAPIMIMEFlags{};
+		CCSFLAGS convertFlags{};
+		ULONG ulWrapLines{};
+		ULONG ulEncodingType{};
+		ULONG ulCodePage{};
+		ULONG ulFlagValue{};
+		ULONG ulCount{};
+		bool bByteSwapped{};
+		CHARSETTYPE cSetType{CHARSET_BODY};
+		CSETAPPLYTYPE cSetApplyType{CSET_APPLY_UNTAGGED};
+		LPMAPISESSION lpMAPISession{};
+		LPMDB lpMDB{};
+		LPMAPIFOLDER lpFolder{};
 	};
 
 	void DisplayUsage(BOOL bFull);

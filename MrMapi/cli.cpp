@@ -611,29 +611,6 @@ namespace cli
 		// clang-format on
 	};
 
-	MYOPTIONS::MYOPTIONS()
-	{
-		Mode = cmdmodeUnknown;
-		ulOptions = OPT_NOOPT;
-		ulTypeNum = 0;
-		ulSVParser = 0;
-		ulStore = 0;
-		ulFolder = 0;
-		MAPIMIMEFlags = static_cast<MAPIMIMEFLAGS>(0);
-		convertFlags = static_cast<CCSFLAGS>(0);
-		ulWrapLines = 0;
-		ulEncodingType = 0;
-		ulCodePage = 0;
-		ulFlagValue = 0;
-		ulCount = 0;
-		bByteSwapped = false;
-		cSetType = CHARSET_BODY;
-		cSetApplyType = CSET_APPLY_UNTAGGED;
-		lpMAPISession = nullptr;
-		lpMDB = nullptr;
-		lpFolder = nullptr;
-	}
-
 	OptParser* GetParser(__CommandLineSwitch Switch)
 	{
 		for (auto& g_Parser : g_Parsers)
