@@ -277,12 +277,12 @@ namespace mapiprocessor
 	}
 } // namespace mapiprocessor
 
-void DoFidMid(_In_ MYOPTIONS ProgOpts)
+void DoFidMid(_In_ cli::MYOPTIONS ProgOpts)
 {
 	mapiprocessor::DumpFidMid(
 		ProgOpts.lpszProfile,
 		ProgOpts.lpMDB,
 		ProgOpts.lpszFid,
 		ProgOpts.lpszMid,
-		OPT_MID == (ProgOpts.ulOptions & OPT_MID));
+		cli::OPT_MID == (ProgOpts.ulOptions & cli::OPT_MID));
 }

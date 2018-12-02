@@ -4,7 +4,7 @@
 #include <io.h>
 #include <Interpret/SmartView/SmartView.h>
 
-void DoSmartView(_In_ MYOPTIONS ProgOpts)
+void DoSmartView(_In_ cli::MYOPTIONS ProgOpts)
 {
 	// Ignore the reg key that disables smart view parsing
 	registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD = true;
@@ -39,7 +39,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 				fread(lpbIn, sizeof(BYTE), iLength, fIn);
 				SBinary Bin = {0};
 				std::vector<BYTE> bin;
-				if (ProgOpts.ulOptions & OPT_BINARYFILE)
+				if (ProgOpts.ulOptions & cli::OPT_BINARYFILE)
 				{
 					Bin.cb = iLength;
 					Bin.lpb = lpbIn;

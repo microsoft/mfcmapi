@@ -561,7 +561,7 @@ void DumpSearchState(
 	}
 }
 
-void DoFolderProps(_In_ MYOPTIONS ProgOpts)
+void DoFolderProps(_In_ cli::MYOPTIONS ProgOpts)
 {
 	if (ProgOpts.lpFolder)
 	{
@@ -570,7 +570,7 @@ void DoFolderProps(_In_ MYOPTIONS ProgOpts)
 	}
 }
 
-void DoFolderSize(_In_ MYOPTIONS ProgOpts)
+void DoFolderSize(_In_ cli::MYOPTIONS ProgOpts)
 {
 	const LONGLONG ullSize =
 		ComputeFolderSize(ProgOpts.lpszProfile, ProgOpts.lpFolder, ProgOpts.ulFolder, ProgOpts.lpszFolderPath);
@@ -580,7 +580,7 @@ void DoFolderSize(_In_ MYOPTIONS ProgOpts)
 	printf("MB: %I64d\n", ullSize / (1024 * 1024));
 }
 
-void DoChildFolders(_In_ MYOPTIONS ProgOpts)
+void DoChildFolders(_In_ cli::MYOPTIONS ProgOpts)
 {
 	DumpHierarchyTable(
 		!ProgOpts.lpszProfile.empty() ? ProgOpts.lpszProfile.c_str() : L"",
@@ -590,7 +590,7 @@ void DoChildFolders(_In_ MYOPTIONS ProgOpts)
 		0);
 }
 
-void DoSearchState(_In_ MYOPTIONS ProgOpts)
+void DoSearchState(_In_ cli::MYOPTIONS ProgOpts)
 {
 	DumpSearchState(
 		!ProgOpts.lpszProfile.empty() ? ProgOpts.lpszProfile.c_str() : L"",

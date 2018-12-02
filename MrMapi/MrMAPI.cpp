@@ -142,22 +142,22 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
 	registry::RegKeys[registry::regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
 
-	MYOPTIONS ProgOpts;
+	cli::MYOPTIONS ProgOpts;
 	const auto bGoodCommandLine = ParseArgs(argc, argv, &ProgOpts);
 
 	// Must be first after ParseArgs
-	if (ProgOpts.ulOptions & OPT_INITMFC)
+	if (ProgOpts.ulOptions & cli::OPT_INITMFC)
 	{
 		InitMFC();
 	}
 
-	if (ProgOpts.ulOptions & OPT_VERBOSE)
+	if (ProgOpts.ulOptions & cli::OPT_VERBOSE)
 	{
 		registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD = 0xFFFFFFFF;
 		PrintArgs(ProgOpts);
 	}
 
-	if (!(ProgOpts.ulOptions & OPT_NOADDINS))
+	if (!(ProgOpts.ulOptions & cli::OPT_NOADDINS))
 	{
 		registry::RegKeys[registry::regkeyLOADADDINS].ulCurDWORD = true;
 		addin::LoadAddIns();
@@ -168,20 +168,20 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		if (LoadMAPIVersion(ProgOpts.lpszVersion)) return;
 	}
 
-	if (cmdmodeHelp == ProgOpts.Mode || !bGoodCommandLine)
+	if (cli::cmdmodeHelp == ProgOpts.Mode || !bGoodCommandLine)
 	{
-		DisplayUsage(cmdmodeHelp == ProgOpts.Mode || bGoodCommandLine);
+		cli::DisplayUsage(cli::cmdmodeHelp == ProgOpts.Mode || bGoodCommandLine);
 	}
 	else
 	{
-		if (ProgOpts.ulOptions & OPT_ONLINE)
+		if (ProgOpts.ulOptions & cli::OPT_ONLINE)
 		{
 			registry::RegKeys[registry::regKeyMAPI_NO_CACHE].ulCurDWORD = true;
 			registry::RegKeys[registry::regkeyMDB_ONLINE].ulCurDWORD = true;
 		}
 
 		// Log on to MAPI if needed
-		if (ProgOpts.ulOptions & OPT_NEEDMAPIINIT)
+		if (ProgOpts.ulOptions & cli::OPT_NEEDMAPIINIT)
 		{
 			hRes = WC_MAPI(MAPIInitialize(NULL));
 			if (FAILED(hRes))
@@ -194,13 +194,13 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			}
 		}
 
-		if (bMAPIInit && ProgOpts.ulOptions & OPT_NEEDMAPILOGON)
+		if (bMAPIInit && ProgOpts.ulOptions & cli::OPT_NEEDMAPILOGON)
 		{
 			ProgOpts.lpMAPISession = MrMAPILogonEx(ProgOpts.lpszProfile);
 		}
 
 		// If they need a folder get it and store at the same time from the folder id
-		if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & OPT_NEEDFOLDER)
+		if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & cli::OPT_NEEDFOLDER)
 		{
 			hRes = WC_H(HrMAPIOpenStoreAndFolder(
 				ProgOpts.lpMAPISession,
@@ -210,7 +210,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 				&ProgOpts.lpFolder));
 			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
 		}
-		else if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & OPT_NEEDSTORE)
+		else if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & cli::OPT_NEEDSTORE)
 		{
 			// They asked us for a store, if they passed a store index give them that one
 			if (ProgOpts.ulStore != 0)
@@ -230,66 +230,66 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 		switch (ProgOpts.Mode)
 		{
-		case cmdmodePropTag:
+		case cli::cmdmodePropTag:
 			DoPropTags(ProgOpts);
 			break;
-		case cmdmodeGuid:
+		case cli::cmdmodeGuid:
 			DoGUIDs(ProgOpts);
 			break;
-		case cmdmodeSmartView:
+		case cli::cmdmodeSmartView:
 			DoSmartView(ProgOpts);
 			break;
-		case cmdmodeAcls:
+		case cli::cmdmodeAcls:
 			DoAcls(ProgOpts);
 			break;
-		case cmdmodeRules:
+		case cli::cmdmodeRules:
 			DoRules(ProgOpts);
 			break;
-		case cmdmodeErr:
+		case cli::cmdmodeErr:
 			DoErrorParse(ProgOpts);
 			break;
-		case cmdmodeContents:
+		case cli::cmdmodeContents:
 			DoContents(ProgOpts);
 			break;
-		case cmdmodeXML:
+		case cli::cmdmodeXML:
 			DoMSG(ProgOpts);
 			break;
-		case cmdmodeFidMid:
+		case cli::cmdmodeFidMid:
 			DoFidMid(ProgOpts);
 			break;
-		case cmdmodeStoreProperties:
+		case cli::cmdmodeStoreProperties:
 			DoStore(ProgOpts);
 			break;
-		case cmdmodeMAPIMIME:
+		case cli::cmdmodeMAPIMIME:
 			DoMAPIMIME(ProgOpts);
 			break;
-		case cmdmodeChildFolders:
+		case cli::cmdmodeChildFolders:
 			DoChildFolders(ProgOpts);
 			break;
-		case cmdmodeFlagSearch:
+		case cli::cmdmodeFlagSearch:
 			DoFlagSearch(ProgOpts);
 			break;
-		case cmdmodeFolderProps:
+		case cli::cmdmodeFolderProps:
 			DoFolderProps(ProgOpts);
 			break;
-		case cmdmodeFolderSize:
+		case cli::cmdmodeFolderSize:
 			DoFolderSize(ProgOpts);
 			break;
-		case cmdmodePST:
+		case cli::cmdmodePST:
 			DoPST(ProgOpts);
 			break;
-		case cmdmodeProfile:
+		case cli::cmdmodeProfile:
 			output::DoProfile(ProgOpts);
 			break;
-		case cmdmodeReceiveFolder:
+		case cli::cmdmodeReceiveFolder:
 			DoReceiveFolder(ProgOpts);
 			break;
-		case cmdmodeSearchState:
+		case cli::cmdmodeSearchState:
 			DoSearchState(ProgOpts);
 			break;
-		case cmdmodeUnknown:
+		case cli::cmdmodeUnknown:
 			break;
-		case cmdmodeHelp:
+		case cli::cmdmodeHelp:
 			break;
 		default:
 			break;
@@ -306,7 +306,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		MAPIUninitialize();
 	}
 
-	if (!(ProgOpts.ulOptions & OPT_NOADDINS))
+	if (!(ProgOpts.ulOptions & cli::OPT_NOADDINS))
 	{
 		addin::UnloadAddIns();
 	}

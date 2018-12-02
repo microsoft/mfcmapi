@@ -290,13 +290,13 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 	if (lpStoreTable) lpStoreTable->Release();
 }
 
-void DoStore(_In_ MYOPTIONS ProgOpts)
+void DoStore(_In_ cli::MYOPTIONS ProgOpts)
 {
 	ULONG ulPropTag = NULL;
 
 	// If we have a prop tag, parse it
 	// For now, we don't support dispids
-	if (!ProgOpts.lpszUnswitchedOption.empty() && !(ProgOpts.ulOptions & OPT_DODISPID))
+	if (!ProgOpts.lpszUnswitchedOption.empty() && !(ProgOpts.ulOptions & cli::OPT_DODISPID))
 	{
 		ulPropTag = interpretprop::PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
 	}

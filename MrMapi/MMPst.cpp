@@ -152,7 +152,7 @@ void PrintFileSize(ULONGLONG ullFileSize)
 	printf(" (%I64u bytes)", ullFileSize);
 }
 
-void DoPST(_In_ MYOPTIONS ProgOpts)
+void DoPST(_In_ cli::MYOPTIONS ProgOpts)
 {
 	printf("Analyzing %ws\n", ProgOpts.lpszInput.c_str());
 
