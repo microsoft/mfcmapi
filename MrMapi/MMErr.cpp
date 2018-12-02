@@ -4,6 +4,12 @@
 #include <MrMapi/MMErr.h>
 #include <Shlwapi.h>
 
+namespace error
+{
+	extern ERROR_ARRAY_ENTRY g_ErrorArray[];
+	extern ULONG g_ulErrorArray;
+} // namespace error
+
 void PrintErrFromNum(_In_ ULONG ulError)
 {
 	printf("0x%08lX = %ws\n", ulError, error::ErrorNameFromErrorCode(ulError).c_str());

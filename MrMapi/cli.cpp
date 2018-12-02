@@ -3,7 +3,11 @@
 #include <MrMapi/cli.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/InterpretProp.h>
-#include <MrMapi/MMErr.h>
+
+namespace error
+{
+	extern ULONG g_ulErrorArray;
+} // namespace error
 
 namespace cli
 {
