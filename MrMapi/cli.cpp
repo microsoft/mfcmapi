@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 
 #include <MrMapi/cli.h>
-#include <MrMapi/MrMAPI.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/InterpretProp.h>
 #include <MrMapi/MMErr.h>
