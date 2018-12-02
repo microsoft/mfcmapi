@@ -157,7 +157,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 	cli::MYOPTIONS ProgOpts;
 	auto cl = GetCommandLine(argc, argv);
-	const auto bGoodCommandLine = ParseArgs(cl, &ProgOpts);
+	const auto bGoodCommandLine = ParseArgs(cl, ProgOpts);
 
 	// Must be first after ParseArgs
 	if (ProgOpts.ulOptions & cli::OPT_INITMFC)

@@ -123,6 +123,6 @@ namespace cli
 	void DisplayUsage(BOOL bFull);
 
 	// Parses command line arguments and fills out MYOPTIONS
-	bool ParseArgs(std::vector<std::wstring>& args, _Out_ MYOPTIONS* pRunOpts);
+	bool ParseArgs(std::vector<std::wstring>& args, _Out_ MYOPTIONS& pRunOpts);
 	void PrintArgs(_In_ MYOPTIONS& ProgOpts);
 } // namespace cli

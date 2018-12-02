@@ -654,14 +654,13 @@ namespace cli
 	}
 
 	// Parses command line arguments and fills out MYOPTIONS
-	bool ParseArgs(std::vector<std::wstring>& args, _Out_ MYOPTIONS* pRunOpts)
+	bool ParseArgs(std::vector<std::wstring>& args, _Out_ MYOPTIONS& options)
 	{
 		LPWSTR szEndPtr = nullptr;
 
-		pRunOpts->ulTypeNum = ulNoMatch;
-		pRunOpts->ulFolder = mapi::DEFAULT_INBOX;
+		options.ulTypeNum = ulNoMatch;
+		options.ulFolder = mapi::DEFAULT_INBOX;
 
-		if (!pRunOpts) return false;
 		if (args.empty()) return false;
 
 		auto bHitError = false;
@@ -673,13 +672,13 @@ namespace cli
 
 			if (opt)
 			{
-				pRunOpts->ulOptions |= opt->ulOpt;
-				if (cmdmodeUnknown != opt->Mode && cmdmodeHelp != pRunOpts->Mode)
+				options.ulOptions |= opt->ulOpt;
+				if (cmdmodeUnknown != opt->Mode && cmdmodeHelp != options.Mode)
 				{
-					if (!bSetMode(&pRunOpts->Mode, opt->Mode))
+					if (!bSetMode(&options.Mode, opt->Mode))
 					{
 						// resetting our mode here, switch to help
-						pRunOpts->Mode = cmdmodeHelp;
+						options.Mode = cmdmodeHelp;
 						bHitError = true;
 					}
 				}
@@ -693,7 +692,7 @@ namespace cli
 						if (args.size() <= i + iArg || switchNoSwitch != ParseArgument(args[i + iArg]))
 						{
 							// resetting our mode here, switch to help
-							pRunOpts->Mode = cmdmodeHelp;
+							options.Mode = cmdmodeHelp;
 							bHitError = true;
 						}
 					}
@@ -704,39 +703,39 @@ namespace cli
 				{
 					// Global flags
 				case switchFolder:
-					pRunOpts->ulFolder = strings::wstringToUlong(args[i + 1], 10);
-					if (!pRunOpts->ulFolder)
+					options.ulFolder = strings::wstringToUlong(args[i + 1], 10);
+					if (!options.ulFolder)
 					{
-						pRunOpts->lpszFolderPath = args[i + 1];
-						pRunOpts->ulFolder = mapi::DEFAULT_INBOX;
+						options.lpszFolderPath = args[i + 1];
+						options.ulFolder = mapi::DEFAULT_INBOX;
 					}
 					i++;
 					break;
 				case switchInput:
-					pRunOpts->lpszInput = args[i + 1];
+					options.lpszInput = args[i + 1];
 					i++;
 					break;
 				case switchOutput:
-					pRunOpts->lpszOutput = args[i + 1];
+					options.lpszOutput = args[i + 1];
 					i++;
 					break;
 				case switchProfile:
 					// If we have a next argument and it's not an option, parse it as a profile name
 					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1]))
 					{
-						pRunOpts->lpszProfile = args[i + 1];
+						options.lpszProfile = args[i + 1];
 						i++;
 					}
 					break;
 				case switchProfileSection:
-					pRunOpts->lpszProfileSection = args[i + 1];
+					options.lpszProfileSection = args[i + 1];
 					i++;
 					break;
 				case switchByteSwapped:
-					pRunOpts->bByteSwapped = true;
+					options.bByteSwapped = true;
 					break;
 				case switchVersion:
-					pRunOpts->lpszVersion = args[i + 1];
+					options.lpszVersion = args[i + 1];
 					i++;
 					break;
 					// Proptag parsing
@@ -744,29 +743,29 @@ namespace cli
 					// If we have a next argument and it's not an option, parse it as a type
 					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1]))
 					{
-						pRunOpts->ulTypeNum = interpretprop::PropTypeNameToPropType(args[i + 1]);
+						options.ulTypeNum = interpretprop::PropTypeNameToPropType(args[i + 1]);
 						i++;
 					}
 					break;
 				case switchFlag:
 					// If we have a next argument and it's not an option, parse it as a flag
-					pRunOpts->lpszFlagName = args[i + 1];
-					pRunOpts->ulFlagValue = wcstoul(args[i + 1].c_str(), &szEndPtr, 16);
+					options.lpszFlagName = args[i + 1];
+					options.ulFlagValue = wcstoul(args[i + 1].c_str(), &szEndPtr, 16);
 
 					// Set mode based on whether the flag string was completely parsed as a number
 					if (NULL == szEndPtr[0])
 					{
-						if (!bSetMode(&pRunOpts->Mode, cmdmodePropTag))
+						if (!bSetMode(&options.Mode, cmdmodePropTag))
 						{
 							bHitError = true;
 							break;
 						}
 
-						pRunOpts->ulOptions |= OPT_DOFLAG;
+						options.ulOptions |= OPT_DOFLAG;
 					}
 					else
 					{
-						if (!bSetMode(&pRunOpts->Mode, cmdmodeFlagSearch))
+						if (!bSetMode(&options.Mode, cmdmodeFlagSearch))
 						{
 							bHitError = true;
 							break;
@@ -776,41 +775,41 @@ namespace cli
 					break;
 					// Smart View parsing
 				case switchParser:
-					pRunOpts->ulSVParser = strings::wstringToUlong(args[i + 1], 10);
+					options.ulSVParser = strings::wstringToUlong(args[i + 1], 10);
 					i++;
 					break;
 					// Contents tables
 				case switchSubject:
-					pRunOpts->lpszSubject = args[i + 1];
+					options.lpszSubject = args[i + 1];
 					i++;
 					break;
 				case switchMessageClass:
-					pRunOpts->lpszMessageClass = args[i + 1];
+					options.lpszMessageClass = args[i + 1];
 					i++;
 					break;
 				case switchRecent:
-					pRunOpts->ulCount = strings::wstringToUlong(args[i + 1], 10);
+					options.ulCount = strings::wstringToUlong(args[i + 1], 10);
 					i++;
 					break;
 					// FID / MID
 				case switchFid:
 					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1]))
 					{
-						pRunOpts->lpszFid = args[i + 1];
+						options.lpszFid = args[i + 1];
 						i++;
 					}
 					break;
 				case switchMid:
 					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1]))
 					{
-						pRunOpts->lpszMid = args[i + 1];
+						options.lpszMid = args[i + 1];
 						i++;
 					}
 					else
 					{
 						// We use the blank string to remember the -mid parameter was passed and save having an extra flag
 						// TODO: Check if this works
-						pRunOpts->lpszMid = L"";
+						options.lpszMid = L"";
 					}
 					break;
 					// Store Properties / Receive Folder:
@@ -818,13 +817,13 @@ namespace cli
 				case switchReceiveFolder:
 					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1]))
 					{
-						pRunOpts->ulStore = wcstoul(args[i + 1].c_str(), &szEndPtr, 10);
+						options.ulStore = wcstoul(args[i + 1].c_str(), &szEndPtr, 10);
 
 						// If we parsed completely, this was a store number
 						if (NULL == szEndPtr[0])
 						{
 							// Increment ulStore so we can use to distinguish an unset value
-							pRunOpts->ulStore++;
+							options.ulStore++;
 							i++;
 						}
 						// Else it was a naked option - leave it on the stack
@@ -832,60 +831,60 @@ namespace cli
 					break;
 					// MAPIMIME
 				case switchMAPI:
-					pRunOpts->MAPIMIMEFlags |= MAPIMIME_TOMAPI;
+					options.MAPIMIMEFlags |= MAPIMIME_TOMAPI;
 					break;
 				case switchMIME:
-					pRunOpts->MAPIMIMEFlags |= MAPIMIME_TOMIME;
+					options.MAPIMIMEFlags |= MAPIMIME_TOMIME;
 					break;
 				case switchCCSFFlags:
-					pRunOpts->convertFlags = static_cast<CCSFLAGS>(strings::wstringToUlong(args[i + 1], 10));
+					options.convertFlags = static_cast<CCSFLAGS>(strings::wstringToUlong(args[i + 1], 10));
 					i++;
 					break;
 				case switchRFC822:
-					pRunOpts->MAPIMIMEFlags |= MAPIMIME_RFC822;
+					options.MAPIMIMEFlags |= MAPIMIME_RFC822;
 					break;
 				case switchWrap:
-					pRunOpts->ulWrapLines = strings::wstringToUlong(args[i + 1], 10);
-					pRunOpts->MAPIMIMEFlags |= MAPIMIME_WRAP;
+					options.ulWrapLines = strings::wstringToUlong(args[i + 1], 10);
+					options.MAPIMIMEFlags |= MAPIMIME_WRAP;
 					i++;
 					break;
 				case switchEncoding:
-					pRunOpts->ulEncodingType = strings::wstringToUlong(args[i + 1], 10);
-					pRunOpts->MAPIMIMEFlags |= MAPIMIME_ENCODING;
+					options.ulEncodingType = strings::wstringToUlong(args[i + 1], 10);
+					options.MAPIMIMEFlags |= MAPIMIME_ENCODING;
 					i++;
 					break;
 				case switchCharset:
-					pRunOpts->ulCodePage = strings::wstringToUlong(args[i + 1], 10);
-					pRunOpts->cSetType = static_cast<CHARSETTYPE>(strings::wstringToUlong(args[i + 2], 10));
-					if (pRunOpts->cSetType > CHARSET_WEB)
+					options.ulCodePage = strings::wstringToUlong(args[i + 1], 10);
+					options.cSetType = static_cast<CHARSETTYPE>(strings::wstringToUlong(args[i + 2], 10));
+					if (options.cSetType > CHARSET_WEB)
 					{
 						bHitError = true;
 						break;
 					}
-					pRunOpts->cSetApplyType = static_cast<CSETAPPLYTYPE>(strings::wstringToUlong(args[i + 3], 10));
-					if (pRunOpts->cSetApplyType > CSET_APPLY_TAG_ALL)
+					options.cSetApplyType = static_cast<CSETAPPLYTYPE>(strings::wstringToUlong(args[i + 3], 10));
+					if (options.cSetApplyType > CSET_APPLY_TAG_ALL)
 					{
 						bHitError = true;
 						break;
 					}
-					pRunOpts->MAPIMIMEFlags |= MAPIMIME_CHARSET;
+					options.MAPIMIMEFlags |= MAPIMIME_CHARSET;
 					i += 3;
 					break;
 				case switchAddressBook:
-					pRunOpts->MAPIMIMEFlags |= MAPIMIME_ADDRESSBOOK;
+					options.MAPIMIMEFlags |= MAPIMIME_ADDRESSBOOK;
 					break;
 				case switchUnicode:
-					pRunOpts->MAPIMIMEFlags |= MAPIMIME_UNICODE;
+					options.MAPIMIMEFlags |= MAPIMIME_UNICODE;
 					break;
 
 				case switchNoSwitch:
 					// naked option without a flag - we only allow one of these
-					if (!pRunOpts->lpszUnswitchedOption.empty())
+					if (!options.lpszUnswitchedOption.empty())
 					{
 						bHitError = true;
 						break;
 					} // He's already got one, you see.
-					pRunOpts->lpszUnswitchedOption = args[i];
+					options.lpszUnswitchedOption = args[i];
 					break;
 				case switchUnknown:
 					// display help
@@ -944,7 +943,7 @@ namespace cli
 
 		if (bHitError)
 		{
-			pRunOpts->Mode = cmdmodeHelp;
+			options.Mode = cmdmodeHelp;
 			return false;
 		}
 
@@ -952,54 +951,54 @@ namespace cli
 		// Some modes can be presumed by the switches we did see.
 
 		// If we didn't get a mode set but we saw OPT_NEEDFOLDER, assume we're in folder dumping mode
-		if (cmdmodeUnknown == pRunOpts->Mode && pRunOpts->ulOptions & OPT_NEEDFOLDER)
-			pRunOpts->Mode = cmdmodeFolderProps;
+		if (cmdmodeUnknown == options.Mode && options.ulOptions & OPT_NEEDFOLDER)
+			options.Mode = cmdmodeFolderProps;
 
 		// If we didn't get a mode set, but we saw OPT_PROFILE, assume we're in profile dumping mode
-		if (cmdmodeUnknown == pRunOpts->Mode && pRunOpts->ulOptions & OPT_PROFILE)
+		if (cmdmodeUnknown == options.Mode && options.ulOptions & OPT_PROFILE)
 		{
-			pRunOpts->Mode = cmdmodeProfile;
-			pRunOpts->ulOptions |= OPT_NEEDMAPIINIT | OPT_INITMFC;
+			options.Mode = cmdmodeProfile;
+			options.ulOptions |= OPT_NEEDMAPIINIT | OPT_INITMFC;
 		}
 
 		// If we didn't get a mode set, assume we're in prop tag mode
-		if (cmdmodeUnknown == pRunOpts->Mode) pRunOpts->Mode = cmdmodePropTag;
+		if (cmdmodeUnknown == options.Mode) options.Mode = cmdmodePropTag;
 
 		// If we weren't passed an output file/directory, remember the current directory
-		if (pRunOpts->lpszOutput.empty() && pRunOpts->Mode != cmdmodeSmartView && pRunOpts->Mode != cmdmodeProfile)
+		if (options.lpszOutput.empty() && options.Mode != cmdmodeSmartView && options.Mode != cmdmodeProfile)
 		{
 			char strPath[_MAX_PATH];
 			GetCurrentDirectoryA(_MAX_PATH, strPath);
 
-			pRunOpts->lpszOutput = strings::LPCSTRToWstring(strPath);
+			options.lpszOutput = strings::LPCSTRToWstring(strPath);
 		}
 
 		// Validate that we have bare minimum to run
-		if (pRunOpts->ulOptions & OPT_NEEDINPUTFILE && pRunOpts->lpszInput.empty()) return false;
-		if (pRunOpts->ulOptions & OPT_NEEDOUTPUTFILE && pRunOpts->lpszOutput.empty()) return false;
+		if (options.ulOptions & OPT_NEEDINPUTFILE && options.lpszInput.empty()) return false;
+		if (options.ulOptions & OPT_NEEDOUTPUTFILE && options.lpszOutput.empty()) return false;
 
-		switch (pRunOpts->Mode)
+		switch (options.Mode)
 		{
 		case cmdmodePropTag:
-			if (!(pRunOpts->ulOptions & OPT_DOTYPE) && !(pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) &&
-				pRunOpts->lpszUnswitchedOption.empty())
+			if (!(options.ulOptions & OPT_DOTYPE) && !(options.ulOptions & OPT_DOPARTIALSEARCH) &&
+				options.lpszUnswitchedOption.empty())
 				return false;
-			if (pRunOpts->ulOptions & OPT_DOPARTIALSEARCH && pRunOpts->ulOptions & OPT_DOTYPE &&
-				ulNoMatch == pRunOpts->ulTypeNum)
+			if (options.ulOptions & OPT_DOPARTIALSEARCH && options.ulOptions & OPT_DOTYPE &&
+				ulNoMatch == options.ulTypeNum)
 				return false;
-			if (pRunOpts->ulOptions & OPT_DOFLAG &&
-				(pRunOpts->ulOptions & OPT_DOPARTIALSEARCH || pRunOpts->ulOptions & OPT_DOTYPE))
+			if (options.ulOptions & OPT_DOFLAG &&
+				(options.ulOptions & OPT_DOPARTIALSEARCH || options.ulOptions & OPT_DOTYPE))
 				return false;
 			break;
 		case cmdmodeSmartView:
-			if (!pRunOpts->ulSVParser) return false;
+			if (!options.ulSVParser) return false;
 			break;
 		case cmdmodeContents:
-			if (!(pRunOpts->ulOptions & OPT_DOCONTENTS) && !(pRunOpts->ulOptions & OPT_DOASSOCIATEDCONTENTS))
+			if (!(options.ulOptions & OPT_DOCONTENTS) && !(options.ulOptions & OPT_DOASSOCIATEDCONTENTS))
 				return false;
 			break;
 		case cmdmodeMAPIMIME:
-#define CHECKFLAG(__flag) ((pRunOpts->MAPIMIMEFlags & (__flag)) == (__flag))
+#define CHECKFLAG(__flag) ((options.MAPIMIMEFlags & (__flag)) == (__flag))
 			// Can't convert both ways at once
 			if (CHECKFLAG(MAPIMIME_TOMAPI) && CHECKFLAG(MAPIMIME_TOMIME)) return false;
 
@@ -1013,9 +1012,9 @@ namespace cli
 				return false;
 			break;
 		case cmdmodeProfile:
-			if (!pRunOpts->lpszProfile.empty() && pRunOpts->lpszOutput.empty()) return false;
-			if (pRunOpts->lpszProfile.empty() && !pRunOpts->lpszOutput.empty()) return false;
-			if (!pRunOpts->lpszProfileSection.empty() && pRunOpts->lpszProfile.empty()) return false;
+			if (!options.lpszProfile.empty() && options.lpszOutput.empty()) return false;
+			if (options.lpszProfile.empty() && !options.lpszOutput.empty()) return false;
+			if (!options.lpszProfileSection.empty() && options.lpszProfile.empty()) return false;
 			break;
 		default:
 			break;
