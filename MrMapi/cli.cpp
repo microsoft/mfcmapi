@@ -550,11 +550,11 @@ namespace cli
 
 	struct OptParser
 	{
-		__CommandLineSwitch Switch;
-		CmdMode Mode;
-		int MinArgs;
-		int MaxArgs;
-		OPTIONFLAGS ulOpt;
+		__CommandLineSwitch Switch{};
+		CmdMode Mode{};
+		int MinArgs{};
+		int MaxArgs{};
+		OPTIONFLAGS ulOpt{};
 	};
 
 	OptParser g_Parsers[] = {
@@ -611,14 +611,14 @@ namespace cli
 		// clang-format on
 	};
 
-	OptParser* GetParser(__CommandLineSwitch Switch)
+	OptParser GetParser(__CommandLineSwitch Switch)
 	{
-		for (auto& g_Parser : g_Parsers)
+		for (auto& parser : g_Parsers)
 		{
-			if (Switch == g_Parser.Switch) return &g_Parser;
+			if (Switch == parser.Switch) return parser;
 		}
 
-		return nullptr;
+		return {};
 	}
 
 	// Checks if szArg is an option, and if it is, returns which option it is
@@ -670,31 +670,28 @@ namespace cli
 			const auto iSwitch = ParseArgument(args[i]);
 			const auto opt = GetParser(iSwitch);
 
-			if (opt)
+			options.ulOptions |= opt.ulOpt;
+			if (cmdmodeUnknown != opt.Mode && cmdmodeHelp != options.Mode)
 			{
-				options.ulOptions |= opt->ulOpt;
-				if (cmdmodeUnknown != opt->Mode && cmdmodeHelp != options.Mode)
+				if (!bSetMode(&options.Mode, opt.Mode))
 				{
-					if (!bSetMode(&options.Mode, opt->Mode))
+					// resetting our mode here, switch to help
+					options.Mode = cmdmodeHelp;
+					bHitError = true;
+				}
+			}
+
+			// Make sure we have the minimum number of args
+			// Commands with variable argument counts can special case themselves
+			if (opt.MinArgs > 0)
+			{
+				for (auto iArg = 1; iArg <= opt.MinArgs; iArg++)
+				{
+					if (args.size() <= i + iArg || switchNoSwitch != ParseArgument(args[i + iArg]))
 					{
 						// resetting our mode here, switch to help
 						options.Mode = cmdmodeHelp;
 						bHitError = true;
-					}
-				}
-
-				// Make sure we have the minimum number of args
-				// Commands with variable argument counts can special case themselves
-				if (opt->MinArgs > 0)
-				{
-					for (auto iArg = 1; iArg <= opt->MinArgs; iArg++)
-					{
-						if (args.size() <= i + iArg || switchNoSwitch != ParseArgument(args[i + iArg]))
-						{
-							// resetting our mode here, switch to help
-							options.Mode = cmdmodeHelp;
-							bHitError = true;
-						}
 					}
 				}
 			}
@@ -951,8 +948,7 @@ namespace cli
 		// Some modes can be presumed by the switches we did see.
 
 		// If we didn't get a mode set but we saw OPT_NEEDFOLDER, assume we're in folder dumping mode
-		if (cmdmodeUnknown == options.Mode && options.ulOptions & OPT_NEEDFOLDER)
-			options.Mode = cmdmodeFolderProps;
+		if (cmdmodeUnknown == options.Mode && options.ulOptions & OPT_NEEDFOLDER) options.Mode = cmdmodeFolderProps;
 
 		// If we didn't get a mode set, but we saw OPT_PROFILE, assume we're in profile dumping mode
 		if (cmdmodeUnknown == options.Mode && options.ulOptions & OPT_PROFILE)
@@ -994,8 +990,7 @@ namespace cli
 			if (!options.ulSVParser) return false;
 			break;
 		case cmdmodeContents:
-			if (!(options.ulOptions & OPT_DOCONTENTS) && !(options.ulOptions & OPT_DOASSOCIATEDCONTENTS))
-				return false;
+			if (!(options.ulOptions & OPT_DOCONTENTS) && !(options.ulOptions & OPT_DOASSOCIATEDCONTENTS)) return false;
 			break;
 		case cmdmodeMAPIMIME:
 #define CHECKFLAG(__flag) ((options.MAPIMIMEFlags & (__flag)) == (__flag))
@@ -1024,7 +1019,7 @@ namespace cli
 		return true;
 	}
 
-	void PrintArgs(_In_ MYOPTIONS& ProgOpts)
+	void PrintArgs(_In_ const MYOPTIONS& ProgOpts)
 	{
 		output::DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.Mode);
 		output::DebugPrint(DBGGeneric, L"ulOptions = 0x%08X\n", ProgOpts.ulOptions);
