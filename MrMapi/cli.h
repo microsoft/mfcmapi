@@ -27,6 +27,7 @@ namespace cli
 	{
 		cmdmodeUnknown = 0,
 		cmdmodeHelp,
+		cmdmodeHelpFull,
 		cmdmodePropTag,
 		cmdmodeGuid,
 		cmdmodeSmartView,
@@ -123,6 +124,6 @@ namespace cli
 	void DisplayUsage(BOOL bFull);
 
 	// Parses command line arguments and fills out MYOPTIONS
-	bool ParseArgs(std::vector<std::wstring>& args, _Out_ MYOPTIONS& pRunOpts);
+	void ParseArgs(std::vector<std::wstring>& args, _Out_ MYOPTIONS& pRunOpts);
 	void PrintArgs(_In_ const MYOPTIONS& ProgOpts);
 } // namespace cli

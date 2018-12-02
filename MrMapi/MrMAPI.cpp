@@ -157,7 +157,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 	cli::MYOPTIONS ProgOpts;
 	auto cl = GetCommandLine(argc, argv);
-	const auto bGoodCommandLine = ParseArgs(cl, ProgOpts);
+	ParseArgs(cl, ProgOpts);
 
 	// Must be first after ParseArgs
 	if (ProgOpts.ulOptions & cli::OPT_INITMFC)
@@ -182,9 +182,13 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		if (LoadMAPIVersion(ProgOpts.lpszVersion)) return;
 	}
 
-	if (cli::cmdmodeHelp == ProgOpts.Mode || !bGoodCommandLine)
+	if (ProgOpts.Mode == cli::cmdmodeHelp)
 	{
-		cli::DisplayUsage(cli::cmdmodeHelp == ProgOpts.Mode || bGoodCommandLine);
+		cli::DisplayUsage(false);
+	}
+	else if (ProgOpts.Mode == cli::cmdmodeHelpFull)
+	{
+		cli::DisplayUsage(true);
 	}
 	else
 	{

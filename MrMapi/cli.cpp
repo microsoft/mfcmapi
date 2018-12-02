@@ -559,7 +559,7 @@ namespace cli
 
 	OptParser g_Parsers[] = {
 		// clang-format off
-	{switchHelp, cmdmodeHelp, 0, 0, OPT_INITMFC},
+	{switchHelp, cmdmodeHelpFull, 0, 0, OPT_INITMFC},
 	{switchVerbose, cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC},
 	{switchNoAddins, cmdmodeUnknown, 0, 0, OPT_NOADDINS},
 	{switchOnline, cmdmodeUnknown, 0, 0, OPT_ONLINE},
@@ -654,14 +654,18 @@ namespace cli
 	}
 
 	// Parses command line arguments and fills out MYOPTIONS
-	bool ParseArgs(std::vector<std::wstring>& args, _Out_ MYOPTIONS& options)
+	void ParseArgs(std::vector<std::wstring>& args, _Out_ MYOPTIONS& options)
 	{
 		LPWSTR szEndPtr = nullptr;
 
 		options.ulTypeNum = ulNoMatch;
 		options.ulFolder = mapi::DEFAULT_INBOX;
 
-		if (args.empty()) return false;
+		if (args.empty())
+		{
+			options.Mode = cmdmodeHelp;
+			return;
+		}
 
 		auto bHitError = false;
 
@@ -669,6 +673,11 @@ namespace cli
 		{
 			const auto iSwitch = ParseArgument(args[i]);
 			const auto opt = GetParser(iSwitch);
+			if (opt.Mode == cmdmodeHelpFull)
+			{
+				options.Mode = cmdmodeHelpFull;
+				return;
+			}
 
 			options.ulOptions |= opt.ulOpt;
 			if (cmdmodeUnknown != opt.Mode && cmdmodeHelp != options.Mode)
@@ -938,11 +947,7 @@ namespace cli
 				}
 		}
 
-		if (bHitError)
-		{
-			options.Mode = cmdmodeHelp;
-			return false;
-		}
+		if (bHitError) options.Mode = cmdmodeHelp;
 
 		// Having processed the command line, we may not have determined a mode.
 		// Some modes can be presumed by the switches we did see.
@@ -970,53 +975,62 @@ namespace cli
 		}
 
 		// Validate that we have bare minimum to run
-		if (options.ulOptions & OPT_NEEDINPUTFILE && options.lpszInput.empty()) return false;
-		if (options.ulOptions & OPT_NEEDOUTPUTFILE && options.lpszOutput.empty()) return false;
+		if (options.ulOptions & OPT_NEEDINPUTFILE && options.lpszInput.empty())
+			options.Mode = cmdmodeHelp;
+		else if (options.ulOptions & OPT_NEEDOUTPUTFILE && options.lpszOutput.empty())
+			options.Mode = cmdmodeHelp;
 
 		switch (options.Mode)
 		{
 		case cmdmodePropTag:
 			if (!(options.ulOptions & OPT_DOTYPE) && !(options.ulOptions & OPT_DOPARTIALSEARCH) &&
 				options.lpszUnswitchedOption.empty())
-				return false;
-			if (options.ulOptions & OPT_DOPARTIALSEARCH && options.ulOptions & OPT_DOTYPE &&
+				options.Mode = cmdmodeHelp;
+			else if (
+				options.ulOptions & OPT_DOPARTIALSEARCH && options.ulOptions & OPT_DOTYPE &&
 				ulNoMatch == options.ulTypeNum)
-				return false;
-			if (options.ulOptions & OPT_DOFLAG &&
+				options.Mode = cmdmodeHelp;
+			else if (
+				options.ulOptions & OPT_DOFLAG &&
 				(options.ulOptions & OPT_DOPARTIALSEARCH || options.ulOptions & OPT_DOTYPE))
-				return false;
+				options.Mode = cmdmodeHelp;
+
 			break;
 		case cmdmodeSmartView:
-			if (!options.ulSVParser) return false;
+			if (!options.ulSVParser) options.Mode = cmdmodeHelp;
+
 			break;
 		case cmdmodeContents:
-			if (!(options.ulOptions & OPT_DOCONTENTS) && !(options.ulOptions & OPT_DOASSOCIATEDCONTENTS)) return false;
+			if (!(options.ulOptions & OPT_DOCONTENTS) && !(options.ulOptions & OPT_DOASSOCIATEDCONTENTS))
+				options.Mode = cmdmodeHelp;
+
 			break;
 		case cmdmodeMAPIMIME:
 #define CHECKFLAG(__flag) ((options.MAPIMIMEFlags & (__flag)) == (__flag))
 			// Can't convert both ways at once
-			if (CHECKFLAG(MAPIMIME_TOMAPI) && CHECKFLAG(MAPIMIME_TOMIME)) return false;
-
+			if (CHECKFLAG(MAPIMIME_TOMAPI) && CHECKFLAG(MAPIMIME_TOMIME)) options.Mode = cmdmodeHelp;
 			// Make sure there's no MIME-only options specified in a MIME->MAPI conversion
-			if (CHECKFLAG(MAPIMIME_TOMAPI) &&
+			else if (
+				CHECKFLAG(MAPIMIME_TOMAPI) &&
 				(CHECKFLAG(MAPIMIME_RFC822) || CHECKFLAG(MAPIMIME_ENCODING) || CHECKFLAG(MAPIMIME_WRAP)))
-				return false;
-
+				options.Mode = cmdmodeHelp;
 			// Make sure there's no MAPI-only options specified in a MAPI->MIME conversion
-			if (CHECKFLAG(MAPIMIME_TOMIME) && (CHECKFLAG(MAPIMIME_CHARSET) || CHECKFLAG(MAPIMIME_UNICODE)))
-				return false;
+			else if (CHECKFLAG(MAPIMIME_TOMIME) && (CHECKFLAG(MAPIMIME_CHARSET) || CHECKFLAG(MAPIMIME_UNICODE)))
+				options.Mode = cmdmodeHelp;
+
 			break;
 		case cmdmodeProfile:
-			if (!options.lpszProfile.empty() && options.lpszOutput.empty()) return false;
-			if (options.lpszProfile.empty() && !options.lpszOutput.empty()) return false;
-			if (!options.lpszProfileSection.empty() && options.lpszProfile.empty()) return false;
+			if (!options.lpszProfile.empty() && options.lpszOutput.empty())
+				options.Mode = cmdmodeHelp;
+			else if (options.lpszProfile.empty() && !options.lpszOutput.empty())
+				options.Mode = cmdmodeHelp;
+			else if (!options.lpszProfileSection.empty() && options.lpszProfile.empty())
+				options.Mode = cmdmodeHelp;
+
 			break;
 		default:
 			break;
 		}
-
-		// Didn't fail - return true
-		return true;
 	}
 
 	void PrintArgs(_In_ const MYOPTIONS& ProgOpts)
