@@ -3,26 +3,8 @@
 #include <MrMapi/cli.h>
 #include <MrMapi/MrMAPI.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/String.h>
 #include <Interpret/InterpretProp.h>
-#include <MrMapi/MMAcls.h>
-#include <MrMapi/MMContents.h>
 #include <MrMapi/MMErr.h>
-#include <MrMapi/MMFidMid.h>
-#include <MrMapi/MMFolder.h>
-#include <MrMapi/MMProfile.h>
-#include <MrMapi/MMPropTag.h>
-#include <MrMapi/MMRules.h>
-#include <MrMapi/MMSmartView.h>
-#include <MrMapi/MMStore.h>
-#include <MrMapi/MMMapiMime.h>
-#include <Shlwapi.h>
-#include <ImportProcs.h>
-#include <MAPI/MAPIStoreFunctions.h>
-#include <MrMapi/MMPst.h>
-#include <MrMapi/MMReceiveFolder.h>
-#include <MAPI/Cache/NamedPropCache.h>
-#include <MAPI/StubUtils.h>
 
 namespace cli
 {
