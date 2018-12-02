@@ -124,5 +124,5 @@ namespace cli
 
 	// Parses command line arguments and fills out MYOPTIONS
 	bool ParseArgs(_In_ int argc, _In_count_(argc) char* argv[], _Out_ MYOPTIONS* pRunOpts);
-	void PrintArgs(_In_ MYOPTIONS ProgOpts);
+	void PrintArgs(_In_ MYOPTIONS& ProgOpts);
 } // namespace cli

@@ -1025,7 +1025,7 @@ namespace cli
 		return true;
 	}
 
-	void PrintArgs(_In_ MYOPTIONS ProgOpts)
+	void PrintArgs(_In_ MYOPTIONS& ProgOpts)
 	{
 		output::DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.Mode);
 		output::DebugPrint(DBGGeneric, L"ulOptions = 0x%08X\n", ProgOpts.ulOptions);
