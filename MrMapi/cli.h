@@ -123,6 +123,8 @@ namespace cli
 
 	void DisplayUsage(BOOL bFull);
 
+	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
+
 	// Parses command line arguments and fills out MYOPTIONS
 	MYOPTIONS ParseArgs(std::vector<std::wstring>& args);
 	void PrintArgs(_In_ const MYOPTIONS& ProgOpts);

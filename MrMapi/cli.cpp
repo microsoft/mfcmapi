@@ -621,6 +621,19 @@ namespace cli
 		return {};
 	}
 
+	// Converts an argc/argv style command line to a vector
+	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[])
+	{
+		auto args = std::vector<std::wstring>{};
+
+		for (auto i = 1; i < argc; i++)
+		{
+			args.emplace_back(strings::LPCSTRToWstring(argv[i]));
+		}
+
+		return args;
+	}
+
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so g_Switches should be ordered appropriately
 	__CommandLineSwitch ParseArgument(std::wstring& szArg)
