@@ -155,9 +155,8 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
 	registry::RegKeys[registry::regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
 
-	cli::MYOPTIONS ProgOpts;
 	auto cl = GetCommandLine(argc, argv);
-	ParseArgs(cl, ProgOpts);
+	auto ProgOpts = cli::ParseArgs(cl);
 
 	// Must be first after ParseArgs
 	if (ProgOpts.ulOptions & cli::OPT_INITMFC)

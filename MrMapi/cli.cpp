@@ -654,8 +654,9 @@ namespace cli
 	}
 
 	// Parses command line arguments and fills out MYOPTIONS
-	void ParseArgs(std::vector<std::wstring>& args, _Out_ MYOPTIONS& options)
+	MYOPTIONS ParseArgs(std::vector<std::wstring>& args)
 	{
+		auto options = MYOPTIONS{};
 		LPWSTR szEndPtr = nullptr;
 
 		options.ulTypeNum = ulNoMatch;
@@ -664,7 +665,7 @@ namespace cli
 		if (args.empty())
 		{
 			options.Mode = cmdmodeHelp;
-			return;
+			return options;
 		}
 
 		auto bHitError = false;
@@ -676,7 +677,7 @@ namespace cli
 			if (opt.Mode == cmdmodeHelpFull)
 			{
 				options.Mode = cmdmodeHelpFull;
-				return;
+				return options;
 			}
 
 			options.ulOptions |= opt.ulOpt;
@@ -1031,6 +1032,8 @@ namespace cli
 		default:
 			break;
 		}
+
+		return options;
 	}
 
 	void PrintArgs(_In_ const MYOPTIONS& ProgOpts)
