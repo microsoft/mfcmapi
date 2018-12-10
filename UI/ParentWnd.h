@@ -25,4 +25,4 @@ namespace ui
 		LONG m_cRef;
 		HWINEVENTHOOK m_hwinEventHook; // Hook to trap header reordering
 	};
-}
+} // namespace ui

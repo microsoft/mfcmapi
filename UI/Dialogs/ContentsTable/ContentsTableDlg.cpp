@@ -12,6 +12,7 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <UI/Dialogs/Editors/SearchEditor.h>
 #include <MAPI/MapiMemory.h>
+#include <Interpret/ExtraPropTags.h>
 
 namespace dialog
 {
