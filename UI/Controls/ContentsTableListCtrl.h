@@ -1,6 +1,7 @@
 #pragma once
 #include <UI/Controls/SortList/SortListCtrl.h>
 #include <Enums.h>
+#include <MAPI/ColumnTags.h>
 
 namespace cache
 {
@@ -31,7 +32,7 @@ namespace controls
 				_In_ CWnd* pCreateParent,
 				_In_ cache::CMapiObjects* lpMapiObjects,
 				_In_ LPSPropTagArray sptExtraColumnTags,
-				_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
+				_In_ const std::vector<columns::TagNames>& lpExtraDisplayColumns,
 				UINT nIDContextMenu,
 				bool bIsAB,
 				_In_ dialog::CContentsTableDlg* lpHostDlg);
@@ -100,7 +101,7 @@ namespace controls
 			HANDLE m_LoadThreadHandle;
 			dialog::CContentsTableDlg* m_lpHostDlg;
 			cache::CMapiObjects* m_lpMapiObjects;
-			std::vector<TagNames> m_lpExtraDisplayColumns;
+			std::vector<columns::TagNames> m_lpExtraDisplayColumns;
 			LPSPropTagArray m_sptExtraColumnTags;
 			ULONG m_ulHeaderColumns;
 			ULONG_PTR m_ulAdviseConnection;

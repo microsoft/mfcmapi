@@ -26,7 +26,7 @@ namespace dialog
 		_In_opt_ LPMAPIPROP lpContainer,
 		_In_opt_ LPMAPITABLE lpContentsTable,
 		_In_ LPSPropTagArray sptExtraColumnTags,
-		_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
+		_In_ const std::vector<columns::TagNames>& lpExtraDisplayColumns,
 		ULONG nIDContextMenu,
 		ULONG ulAddInContext)
 		: CBaseDialog(pParentWnd, lpMapiObjects, ulAddInContext)

@@ -72,12 +72,6 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 
 #include <MFCMAPI.h>
 
-struct TagNames
-{
-	ULONG ulMatchingTableColumn;
-	UINT uidName;
-};
-
 // Custom messages - used to ensure actions occur on the right threads.
 
 // Used by CAdviseSink:
