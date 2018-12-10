@@ -35,6 +35,9 @@
     <ClCompile Include="SmartViewTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="guidtest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="UnitTest.rc">
