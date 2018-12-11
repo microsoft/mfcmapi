@@ -21,9 +21,7 @@ namespace guidtest
 	{
 	public:
 		// Without this, clang gets weird
-		// TODO: figure out why and a better solution
 		static const bool dummy_var = true;
-		//LPCGUID GUIDNameToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped);
 
 		TEST_CLASS_INITIALIZE(Initialize_guids)
 		{
