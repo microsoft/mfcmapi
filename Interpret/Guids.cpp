@@ -144,18 +144,16 @@ namespace guid
 		auto bin = strings::HexStringToBin(szGUID, sizeof(GUID));
 		if (bin.size() == sizeof(GUID))
 		{
-			memcpy(&guid, bin.data(), sizeof(GUID));
-
-			// Note that we get the bByteSwapped behavior by default. We have to work to get the 'normal' behavior
-			if (!bByteSwapped)
+			if (bByteSwapped)
 			{
-				const auto lpByte = reinterpret_cast<LPBYTE>(&guid);
-				auto bByte = lpByte[0];
-				lpByte[0] = lpByte[3];
-				lpByte[3] = bByte;
-				bByte = lpByte[1];
-				lpByte[1] = lpByte[2];
-				lpByte[2] = bByte;
+				memcpy(&guid, bin.data(), sizeof(GUID));
+			}
+			else
+			{
+				guid.Data1 = (bin[0] << 24) + (bin[1] << 16) + (bin[2] << 8) + (bin[3] << 0);
+				guid.Data2 = (bin[4] << 8) + (bin[5] << 0);
+				guid.Data3 = (bin[6] << 8) + (bin[7] << 0);
+				memcpy(&guid.Data4, bin.data() + 8, 8);
 			}
 		}
 
