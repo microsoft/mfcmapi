@@ -281,8 +281,10 @@ namespace stringtest
 
 		TEST_METHOD(Test_HexStringToBin)
 		{
-			Assert::AreEqual(std::vector<BYTE>(), strings::HexStringToBin(L"12345"));
-			Assert::AreEqual(std::vector<BYTE>(), strings::HexStringToBin(L"12345", 3));
+			Assert::AreEqual(std::vector<BYTE>{}, strings::HexStringToBin(L"12345"));
+			Assert::AreEqual(std::vector<BYTE>{}, strings::HexStringToBin(L"12345", 3));
+			Assert::AreEqual(std::vector<BYTE>{0x12}, strings::HexStringToBin(L"12345", 1));
+			Assert::AreEqual(std::vector<BYTE>{}, strings::HexStringToBin(L"12WZ"));
 			Assert::AreEqual(vector_abcdW, strings::HexStringToBin(L"6100620063006400"));
 			Assert::AreEqual(vector_abcdW, strings::HexStringToBin(L"0x6100620063006400"));
 			Assert::AreEqual(vector_abcdW, strings::HexStringToBin(L"0X6100620063006400"));

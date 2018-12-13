@@ -474,9 +474,6 @@ namespace strings
 	// If cbTarget != 0, caps the number of bytes converted at cbTarget
 	std::vector<BYTE> HexStringToBin(_In_ const std::wstring& input, size_t cbTarget)
 	{
-		// If our target is odd, we can't convert
-		if (cbTarget % 2 != 0) return std::vector<BYTE>();
-
 		// remove junk
 		auto lpsz = strip(input, [](const WCHAR& chr) { return IsFilteredHex(chr); });
 
@@ -484,6 +481,9 @@ namespace strings
 		stripPrefix(lpsz, L"0x") || stripPrefix(lpsz, L"0X") || stripPrefix(lpsz, L"x") || stripPrefix(lpsz, L"X");
 
 		const auto cchStrLen = lpsz.length();
+		// If our input is odd, we can't convert
+		// Unless we've capped our output at less than the input
+		if (cchStrLen % 2 != 0 && (cbTarget == 0 || cbTarget * 2 > cchStrLen)) return std::vector<BYTE>();
 
 		std::vector<BYTE> lpb;
 		WCHAR szTmp[3] = {0};
@@ -491,7 +491,7 @@ namespace strings
 		size_t cbConverted = 0;
 
 		// convert two characters at a time
-		while (iCur < cchStrLen && (cbTarget == 0 || cbConverted < cbTarget))
+		while (iCur + 1 < cchStrLen && (cbTarget == 0 || cbConverted < cbTarget))
 		{
 			// Check for valid hex characters
 			if (lpsz[iCur] > 255 || lpsz[iCur + 1] > 255 || !isxdigit(lpsz[iCur]) || !isxdigit(lpsz[iCur + 1]))
