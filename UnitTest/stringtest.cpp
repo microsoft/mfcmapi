@@ -350,6 +350,9 @@ namespace stringtest
 				std::wstring(L"bQB5AHMAdAByAGkAbgBnAA=="),
 				strings::Base64Encode(myStringWvector.size(), myStringWvector.data()));
 			Assert::AreEqual(myStringWvector, strings::Base64Decode(std::wstring(L"bQB5AHMAdAByAGkAbgBnAA==")));
+			Assert::AreEqual(std::vector<byte>{}, strings::Base64Decode(std::wstring(L"123")));
+			Assert::AreEqual(std::vector<byte>{}, strings::Base64Decode(std::wstring(L"12345===")));
+			Assert::AreEqual(std::vector<byte>{}, strings::Base64Decode(std::wstring(L"12345!==")));
 		}
 
 		TEST_METHOD(Test_offsets)
