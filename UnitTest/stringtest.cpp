@@ -349,6 +349,8 @@ namespace stringtest
 			Assert::AreEqual(
 				std::wstring(L"bQB5AHMAdAByAGkAbgBnAA=="),
 				strings::Base64Encode(myStringWvector.size(), myStringWvector.data()));
+			auto ab = std::vector<byte>{0x61, 0x62};
+			Assert::AreEqual(std::wstring(L"YWI="), strings::Base64Encode(ab.size(), ab.data()));
 			Assert::AreEqual(myStringWvector, strings::Base64Decode(std::wstring(L"bQB5AHMAdAByAGkAbgBnAA==")));
 			Assert::AreEqual(std::vector<byte>{}, strings::Base64Decode(std::wstring(L"123")));
 			Assert::AreEqual(std::vector<byte>{}, strings::Base64Decode(std::wstring(L"12345===")));
