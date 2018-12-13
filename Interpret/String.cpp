@@ -349,6 +349,7 @@ namespace strings
 
 	std::string RemoveInvalidCharactersA(const std::string& szString, bool bMultiLine)
 	{
+		if (szString.empty()) return szString;
 		auto szBin(szString);
 		const auto nullTerminated = szBin.back() == '\0';
 		std::replace_if(

@@ -36,12 +36,15 @@ namespace stringtest
 			// Since format is a passthrough to formatV, this will also cover formatV
 			Assert::AreEqual(std::wstring(L"Hello"), strings::format(L"Hello"));
 			Assert::AreEqual(std::wstring(L"Hello world"), strings::format(L"Hello %hs", "world"));
+			Assert::AreEqual(std::wstring(L""), strings::format(L"", 1, 2));
 		}
 
 		TEST_METHOD(Test_formatmessage)
 		{
 			// Also tests formatmessageV
 			Assert::AreEqual(std::wstring(L"Hello world"), strings::formatmessage(L"%1!hs! %2", "Hello", L"world"));
+			Assert::AreEqual(std::wstring(L""), strings::formatmessage(L"", 1, 2));
+			Assert::AreEqual(std::wstring(L"test"), strings::formatmessage(IDS_TITLEBARPLAIN, L"test"));
 		}
 
 		TEST_METHOD(Test_stringConverters)
@@ -279,6 +282,7 @@ namespace stringtest
 		TEST_METHOD(Test_HexStringToBin)
 		{
 			Assert::AreEqual(std::vector<BYTE>(), strings::HexStringToBin(L"12345"));
+			Assert::AreEqual(std::vector<BYTE>(), strings::HexStringToBin(L"12345", 3));
 			Assert::AreEqual(vector_abcdW, strings::HexStringToBin(L"6100620063006400"));
 			Assert::AreEqual(vector_abcdW, strings::HexStringToBin(L"0x6100620063006400"));
 			Assert::AreEqual(vector_abcdW, strings::HexStringToBin(L"0X6100620063006400"));
@@ -369,12 +373,50 @@ namespace stringtest
 			Assert::AreEqual(true, strings::endsWith(L"1234", L"234"));
 			Assert::AreEqual(true, strings::endsWith(L"Test\r\n", L"\r\n"));
 			Assert::AreEqual(false, strings::endsWith(L"Test", L"\r\n"));
+			Assert::AreEqual(false, strings::endsWith(L"test", L"longstring"));
 		}
 
 		TEST_METHOD(Test_ensureCRLF)
 		{
 			Assert::AreEqual(std::wstring(L"Test\r\n"), strings::ensureCRLF(L"Test\r\n"));
 			Assert::AreEqual(std::wstring(L"Test\r\n"), strings::ensureCRLF(L"Test"));
+		}
+
+		TEST_METHOD(Test_trimWhitespace)
+		{
+			Assert::AreEqual(std::wstring(L"test"), strings::trimWhitespace(L" test "));
+			Assert::AreEqual(std::wstring(L""), strings::trimWhitespace(L" \t \n \r "));
+		}
+
+		TEST_METHOD(Test_RemoveInvalidCharacters)
+		{
+			Assert::AreEqual(
+				std::wstring(L"a"),
+				strings::RemoveInvalidCharactersW(strings::BinToTextString(std::vector<BYTE>{0x61}, true)));
+			Assert::AreEqual(std::wstring(L""), strings::RemoveInvalidCharactersW(L""));
+			Assert::AreEqual(std::wstring(L".test. !"), strings::RemoveInvalidCharactersW(L"\x80test\x19\x20\x21"));
+			Assert::AreEqual(
+				std::wstring(L".test\r\n. !"), strings::RemoveInvalidCharactersW(L"\x80test\r\n\x19\x20\x21", true));
+
+			Assert::AreEqual(
+				std::string("a"),
+				strings::RemoveInvalidCharactersA(
+					strings::wstringTostring(strings::BinToTextString(std::vector<BYTE>{0x61}, true))));
+			Assert::AreEqual(std::string(""), strings::RemoveInvalidCharactersA(""));
+			Assert::AreEqual(std::string(".test. !"), strings::RemoveInvalidCharactersA("\x80test\x19\x20\x21"));
+		}
+
+		TEST_METHOD(Test_FileTimeToString)
+		{
+			std::wstring prop;
+			std::wstring alt;
+			strings::FileTimeToString(FILETIME{0x085535B0, 0x01D387EC}, prop, alt);
+			Assert::AreEqual(std::wstring(L"07:16:34.571 PM 1/7/2018"), prop);
+			Assert::AreEqual(std::wstring(L"Low: 0x085535B0 High: 0x01D387EC"), alt);
+
+			strings::FileTimeToString(FILETIME{0xFFFFFFFF, 0xFFFFFFFF}, prop, alt);
+			Assert::AreEqual(std::wstring(L"Invalid systime"), prop);
+			Assert::AreEqual(std::wstring(L"Low: 0xFFFFFFFF High: 0xFFFFFFFF"), alt);
 		}
 	};
 } // namespace stringtest
