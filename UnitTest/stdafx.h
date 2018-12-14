@@ -1,5 +1,5 @@
 #pragma once
-#include "..\StdAfx.h"
+#include <..\StdAfx.h>
 #include <UnitTest/targetver.h>
 #include <CppUnitTest.h>
 #include <Interpret/String.h>

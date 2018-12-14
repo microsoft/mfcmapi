@@ -6,6 +6,7 @@ namespace guid
 #define GUID_ENTRY(guid) {&(guid), L#guid},
 	static GUID_ARRAY_ENTRY g_PropGuidArray[] = {
 		// clang-format off
+		GUID_ENTRY(GUID_NULL)
 		GUID_ENTRY(IID_IUnknown)
 		GUID_ENTRY(IID_IMAPITable)
 		GUID_ENTRY(IID_IMAPIAdviseSink)
