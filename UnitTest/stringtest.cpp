@@ -403,6 +403,9 @@ namespace stringtest
 			Assert::AreEqual(std::wstring(L".test. !"), strings::RemoveInvalidCharactersW(L"\x80test\x19\x20\x21"));
 			Assert::AreEqual(
 				std::wstring(L".test\r\n. !"), strings::RemoveInvalidCharactersW(L"\x80test\r\n\x19\x20\x21", true));
+			auto nullTerminatedStringW = std::wstring{L"test"};
+			nullTerminatedStringW.push_back(L'\0');
+			Assert::AreEqual(nullTerminatedStringW, strings::RemoveInvalidCharactersW(nullTerminatedStringW, true));
 
 			Assert::AreEqual(
 				std::string("a"),
@@ -410,6 +413,9 @@ namespace stringtest
 					strings::wstringTostring(strings::BinToTextString(std::vector<BYTE>{0x61}, true))));
 			Assert::AreEqual(std::string(""), strings::RemoveInvalidCharactersA(""));
 			Assert::AreEqual(std::string(".test. !"), strings::RemoveInvalidCharactersA("\x80test\x19\x20\x21"));
+			auto nullTerminatedStringA = std::string{"test"};
+			nullTerminatedStringA.push_back('\0');
+			Assert::AreEqual(nullTerminatedStringA, strings::RemoveInvalidCharactersA(nullTerminatedStringA, true));
 		}
 
 		TEST_METHOD(Test_FileTimeToString)
