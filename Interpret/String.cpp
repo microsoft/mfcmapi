@@ -11,23 +11,25 @@ namespace strings
 
 	std::wstring formatV(LPCWSTR szMsg, va_list argList)
 	{
+		auto szOut = std::wstring{};
 		auto len = _vscwprintf(szMsg, argList);
 		if (0 != len)
 		{
 			len++;
-			const auto buffer = new wchar_t[len];
-			memset(buffer, 0, sizeof(wchar_t) * len);
-			if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg, argList) > 0)
+			const auto buffer = new (std::nothrow) wchar_t[len];
+			if (buffer)
 			{
-				std::wstring szOut(buffer);
-				delete[] buffer;
-				return szOut;
-			}
+				memset(buffer, 0, sizeof(wchar_t) * len);
+				if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg, argList) > 0)
+				{
+					szOut = std::wstring{buffer};
+				}
 
-			delete[] buffer;
+				delete[] buffer;
+			}
 		}
 
-		return L"";
+		return szOut;
 	}
 
 #ifdef CHECKFORMATPARAMS

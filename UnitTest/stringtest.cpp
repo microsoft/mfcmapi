@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <CppUnitTest.h>
-#include "Interpret/String.h"
+#include <Interpret/String.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -339,7 +339,6 @@ namespace stringtest
 
 		TEST_METHOD(Test_currency)
 		{
-			CURRENCY foo = {1, 2};
 			Assert::AreEqual(std::wstring(L"0.0000"), strings::CurrencyToString(CURRENCY({0, 0})));
 			Assert::AreEqual(std::wstring(L"858993.4593"), strings::CurrencyToString(CURRENCY({1, 2})));
 		}
