@@ -521,10 +521,9 @@ namespace strings
 		{
 			memset(lpBin, 0, bin.size());
 			memcpy(lpBin, &bin[0], bin.size());
-			return lpBin;
 		}
 
-		return nullptr;
+		return lpBin;
 	}
 
 	std::vector<std::wstring> split(const std::wstring& str, const wchar_t delim)
