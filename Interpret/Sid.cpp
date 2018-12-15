@@ -6,6 +6,8 @@
 
 namespace sid
 {
+	// [MS-DTYP] 2.4.2.2 SID--Packet Representation
+	// https://msdn.microsoft.com/en-us/library/gg465313.aspx
 	_Check_return_ std::wstring GetTextualSid(_In_ PSID pSid)
 	{
 		// Validate the binary SID.
@@ -26,7 +28,7 @@ namespace sid
 		if (psia->Value[0] != 0 || psia->Value[1] != 0)
 		{
 			TextualSid += strings::format(
-				L"0x%02hx%02hx%02hx%02hx%02hx%02hx", // STRING_OK
+				L"%02hx%02hx%02hx%02hx%02hx%02hx", // STRING_OK
 				static_cast<USHORT>(psia->Value[0]),
 				static_cast<USHORT>(psia->Value[1]),
 				static_cast<USHORT>(psia->Value[2]),
@@ -85,6 +87,9 @@ namespace sid
 			cchSidDomain ? &sidDomainBuf.at(0) : nullptr,
 			&cchSidDomain,
 			&SidNameUse));
+
+		if (cchSidName && sidNameBuf.back() == L'\0') sidNameBuf.pop_back();
+		if (cchSidDomain && sidDomainBuf.back() == L'\0') sidDomainBuf.pop_back();
 
 		return SidAccount{std::wstring(sidDomainBuf.begin(), sidDomainBuf.end()),
 						  std::wstring(sidNameBuf.begin(), sidNameBuf.end())};
