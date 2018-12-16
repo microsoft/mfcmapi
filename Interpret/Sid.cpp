@@ -197,21 +197,19 @@ namespace sid
 			return SecurityDescriptor{strings::formatmessage(IDS_INVALIDSD), strings::emptystring};
 		}
 
-		const auto sdInfo = interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf));
-
-		BOOL bValidDACL = false;
-		PACL pACL = nullptr;
-		BOOL bDACLDefaulted = false;
+		auto bValidDACL = static_cast<BOOL>(false);
+		auto pACL = PACL{};
+		auto bDACLDefaulted = static_cast<BOOL>(false);
+		auto sdString = std::vector<std::wstring>{};
 		EC_B_S(GetSecurityDescriptorDacl(pSecurityDescriptor, &bValidDACL, &pACL, &bDACLDefaulted));
 		if (bValidDACL && pACL)
 		{
-			ACL_SIZE_INFORMATION ACLSizeInfo = {};
+			auto ACLSizeInfo = ACL_SIZE_INFORMATION{};
 			EC_B_S(GetAclInformation(pACL, &ACLSizeInfo, sizeof ACLSizeInfo, AclSizeInformation));
 
-			std::vector<std::wstring> sdString;
 			for (DWORD i = 0; i < ACLSizeInfo.AceCount; i++)
 			{
-				void* pACE = nullptr;
+				auto pACE = LPVOID{};
 
 				WC_B_S(GetAce(pACL, i, &pACE));
 				if (pACE)
@@ -219,10 +217,9 @@ namespace sid
 					sdString.push_back(ACEToString(pACE, acetype));
 				}
 			}
-
-			return SecurityDescriptor{strings::join(sdString, L"\r\n"), sdInfo};
 		}
 
-		return SecurityDescriptor{strings::emptystring, sdInfo};
+		return SecurityDescriptor{strings::join(sdString, L"\r\n"),
+								  interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf))};
 	}
 } // namespace sid

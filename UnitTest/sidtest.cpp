@@ -66,6 +66,11 @@ namespace sidtest
 			Assert::AreEqual(std::wstring{L""}, nullsd.dacl);
 			Assert::AreEqual(std::wstring{L""}, nullsd.info);
 
+			auto invalidBin = strings::HexStringToBin(L"B606B07ABB6079AB2082C760");
+			auto invalid= SDToString(invalidBin.data(), invalidBin.size(), sid::acetypeContainer);
+			Assert::AreEqual(std::wstring{L"This is not a valid security descriptor."}, invalid.dacl);
+			Assert::AreEqual(std::wstring{L""}, invalid.info);
+
 			auto sdBin = strings::HexStringToBin(L"0800030000000000010007801C000000280000000000000014000000020008000000"
 												 L"000001010000000000051200000001020000000000052000000020020000");
 			auto sd = SDToString(sdBin.data(), sdBin.size(), sid::acetypeContainer);
