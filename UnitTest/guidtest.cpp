@@ -1,19 +1,7 @@
 #include <StdAfx.h>
 #include <CppUnitTest.h>
+#include <UnitTest/UnitTest.h>
 #include <Interpret/Guids.h>
-
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
-namespace Microsoft
-{
-	namespace VisualStudio
-	{
-		namespace CppUnitTestFramework
-		{
-			template <> inline std::wstring ToString<GUID>(const GUID& t) { return guid::GUIDToString(t); }
-		} // namespace CppUnitTestFramework
-	} // namespace VisualStudio
-} // namespace Microsoft
 
 namespace guidtest
 {
@@ -24,8 +12,7 @@ namespace guidtest
 		static const bool dummy_var = true;
 
 		TEST_CLASS_INITIALIZE(Initialize_guids)
-		{
-			// Set up our property arrays or nothing works
+		{ // Set up our property arrays or nothing works
 			addin::MergeAddInArrays();
 
 			registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD = 1;
@@ -34,7 +21,7 @@ namespace guidtest
 			registry::RegKeys[registry::regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
 
 			strings::setTestInstance(GetModuleHandleW(L"UnitTest.dll"));
-		}
+		} // namespace guidtest
 
 		TEST_METHOD(Test_StringToGUID)
 		{

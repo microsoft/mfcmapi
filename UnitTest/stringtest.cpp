@@ -1,5 +1,6 @@
 #include <StdAfx.h>
 #include <CppUnitTest.h>
+#include <UnitTest/UnitTest.h>
 #include <Interpret/String.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
