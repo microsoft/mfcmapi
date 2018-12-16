@@ -8,15 +8,14 @@ namespace smartview
 
 	void SIDBin::ParseBlocks()
 	{
-		const auto piSid = reinterpret_cast<PISID>(const_cast<LPBYTE>(m_SIDbin.data()));
+		auto subAuthorityCount = m_SIDbin.size() >= 2 ? m_SIDbin[1] : 0;
 		auto sidAccount = sid::SidAccount{};
 		auto sidString = std::wstring{};
-		if (!m_SIDbin.empty() &&
-			m_SIDbin.size() >= sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * piSid->SubAuthorityCount &&
-			IsValidSid(piSid))
+		if (m_SIDbin.size() >= sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount &&
+			IsValidSid(reinterpret_cast<PISID>(const_cast<LPBYTE>(m_SIDbin.data()))))
 		{
-			sidAccount = sid::LookupAccountSid(piSid);
-			sidString = sid::GetTextualSid(piSid);
+			sidAccount = sid::LookupAccountSid(m_SIDbin);
+			sidString = sid::GetTextualSid(m_SIDbin);
 		}
 
 		setRoot(L"SID: \r\n");

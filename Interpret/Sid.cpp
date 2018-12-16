@@ -58,6 +58,11 @@ namespace sid
 		return TextualSid;
 	}
 
+	_Check_return_ std::wstring GetTextualSid(std::vector<BYTE> buf)
+	{
+		return GetTextualSid(static_cast<PSID>(buf.data()));
+	}
+
 	_Check_return_ SidAccount LookupAccountSid(PSID SidStart)
 	{
 		// TODO: Make use of SidNameUse information
@@ -93,6 +98,11 @@ namespace sid
 
 		return SidAccount{std::wstring(sidDomainBuf.begin(), sidDomainBuf.end()),
 						  std::wstring(sidNameBuf.begin(), sidNameBuf.end())};
+	}
+
+	_Check_return_ SidAccount LookupAccountSid(std::vector<BYTE> buf)
+	{
+		return LookupAccountSid(static_cast<PSID>(buf.data()));
 	}
 
 	std::wstring ACEToString(_In_ void* pACE, eAceType acetype)

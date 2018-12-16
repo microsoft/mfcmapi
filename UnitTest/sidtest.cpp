@@ -26,25 +26,23 @@ namespace sidtest
 
 		TEST_METHOD(Test_GetTextualSid)
 		{
-			Assert::AreEqual(std::wstring{}, sid::GetTextualSid(nullptr));
+			Assert::AreEqual(std::wstring{}, sid::GetTextualSid({}));
+
 			auto simpleSidBin = strings::HexStringToBin(L"010500000000000515000000A065CF7E784B9B5FE77C8770091C0100");
-			auto simpleSid = static_cast<PSID>(simpleSidBin.data());
 			Assert::AreEqual(
-				std::wstring{L"S-1-5-21-2127521184-1604012920-1887927527-72713"}, sid::GetTextualSid(simpleSid));
-			auto simpleSidAccount = sid::LookupAccountSid(simpleSid);
+				std::wstring{L"S-1-5-21-2127521184-1604012920-1887927527-72713"}, sid::GetTextualSid(simpleSidBin));
+			auto simpleSidAccount = sid::LookupAccountSid(simpleSidBin);
 			Assert::AreEqual(std::wstring{L"(no domain)"}, simpleSidAccount.getDomain());
 			Assert::AreEqual(std::wstring{L"(no name)"}, simpleSidAccount.getName());
 
-			auto longerSidBin = strings::HexStringToBin(L"010500010203040515000000A065CF7E784B9B5FE77C8770091C0100");
-			auto longerSid = static_cast<PSID>(longerSidBin.data());
 			Assert::AreEqual(
 				std::wstring{L"S-1-000102030405-21-2127521184-1604012920-1887927527-72713"},
-				sid::GetTextualSid(longerSid));
+				sid::GetTextualSid(
+					strings::HexStringToBin(L"010500010203040515000000A065CF7E784B9B5FE77C8770091C0100")));
 
 			auto authenticatedUsersSidBin = strings::HexStringToBin(L"01 01 000000000005 0B000000");
-			auto authenticatedUsersSid = static_cast<PSID>(authenticatedUsersSidBin.data());
-			Assert::AreEqual(std::wstring{L"S-1-5-11"}, sid::GetTextualSid(authenticatedUsersSid));
-			auto authenticatedUsersSidAccount = sid::LookupAccountSid(authenticatedUsersSid);
+			Assert::AreEqual(std::wstring{L"S-1-5-11"}, sid::GetTextualSid(authenticatedUsersSidBin));
+			auto authenticatedUsersSidAccount = sid::LookupAccountSid(authenticatedUsersSidBin);
 			Assert::AreEqual(std::wstring{L"NT AUTHORITY"}, authenticatedUsersSidAccount.getDomain());
 			Assert::AreEqual(std::wstring{L"Authenticated Users"}, authenticatedUsersSidAccount.getName());
 		}
