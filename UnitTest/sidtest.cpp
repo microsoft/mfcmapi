@@ -27,6 +27,14 @@ namespace sidtest
 		TEST_METHOD(Test_GetTextualSid)
 		{
 			Assert::AreEqual(std::wstring{}, sid::GetTextualSid({}));
+			auto nullAccount = sid::LookupAccountSid({});
+			Assert::AreEqual(std::wstring{L"(no domain)"}, nullAccount.getDomain());
+			Assert::AreEqual(std::wstring{L"(no name)"}, nullAccount.getName());
+
+			Assert::AreEqual(std::wstring{}, sid::GetTextualSid({12}));
+			auto invalidAccount = sid::LookupAccountSid({12});
+			Assert::AreEqual(std::wstring{L"(no domain)"}, invalidAccount.getDomain());
+			Assert::AreEqual(std::wstring{L"(no name)"}, invalidAccount.getName());
 
 			auto simpleSidBin = strings::HexStringToBin(L"010500000000000515000000A065CF7E784B9B5FE77C8770091C0100");
 			Assert::AreEqual(
