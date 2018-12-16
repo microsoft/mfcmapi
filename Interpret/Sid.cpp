@@ -11,7 +11,7 @@ namespace sid
 	_Check_return_ std::wstring GetTextualSid(_In_ PSID pSid)
 	{
 		// Validate the binary SID.
-		if (!IsValidSid(pSid)) return L"";
+		if (!IsValidSid(pSid)) return {};
 
 		// Get the identifier authority value from the SID.
 		const auto psia = GetSidIdentifierAuthority(pSid);
@@ -60,11 +60,16 @@ namespace sid
 
 	_Check_return_ std::wstring GetTextualSid(std::vector<BYTE> buf)
 	{
+		auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
+		if (buf.size() < sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount) return {};
+
 		return GetTextualSid(static_cast<PSID>(buf.data()));
 	}
 
 	_Check_return_ SidAccount LookupAccountSid(PSID SidStart)
 	{
+		if (!IsValidSid(SidStart)) return {};
+
 		// TODO: Make use of SidNameUse information
 		auto cchSidName = DWORD{};
 		auto cchSidDomain = DWORD{};
@@ -102,6 +107,9 @@ namespace sid
 
 	_Check_return_ SidAccount LookupAccountSid(std::vector<BYTE> buf)
 	{
+		auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
+		if (buf.size() < sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount) return {};
+
 		return LookupAccountSid(static_cast<PSID>(buf.data()));
 	}
 
