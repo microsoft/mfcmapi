@@ -155,28 +155,12 @@ namespace sidtest
 
 			auto sd1 = SDToString(
 				strings::HexStringToBin(
-					L"080003000000000001000780F40000000001000000000000140000000200E0000600000000092400A9081200010500000"
-					L"000000515000000271A6C07352F372AAD20FA5B019301000109240016071F00010500000000000515000000271A6C0735"
-					L"2F372AAD20FA5B0193010001092400BF0F1F00010500000000000515000000271A6C07352F372AAD20FA5BAA830B00000"
-					L"22400A9081200010500000000000515000000271A6C07352F372AAD20FA5B019301000102240016C90D00010500000000"
-					L"000515000000271A6C07352F372AAD20FA5B0193010001022400BFC91F00010500000000000515000000271A6C07352F3"
-					L"72AAD20FA5BAA830B0001010000000000051200000001020000000000052000000020020000"),
+					L"08000300000000000100078064000000700000000000000014000000020050000200000001092400BF0F1F00010500000"
+					L"000000515000000271A6C07352F372AAD20FA5BAA830B0001022400BFC91F00010500000000000515000000271A6C0735"
+					L"2F372AAD20FA5BAA830B0001010000000000051200000001020000000000052000000020020000"),
 				sid::acetypeContainer);
 			unittest::AreEqualEx(
 				std::wstring{
-					L"Account: (no domain)\\(no name)\r\n"
-					L"SID: S-1-5-21-124525095-708259637-1543119021-103169\r\n"
-					L"Access Type: 0x00000000 = ACCESS_ALLOWED_ACE_TYPE\r\n"
-					L"Access Flags: 0x00000009 = OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE\r\n"
-					L"Access Mask: 0x001208A9 = fsdrightListContents | fsdrightReadProperty | fsdrightExecute | "
-					L"fsdrightReadAttributes | fsdrightViewItem | fsdrightReadControl | fsdrightSynchronize\r\n"
-					L"Account: (no domain)\\(no name)\r\n"
-					L"SID: S-1-5-21-124525095-708259637-1543119021-103169\r\n"
-					L"Access Type: 0x00000001 = ACCESS_DENIED_ACE_TYPE\r\n"
-					L"Access Flags: 0x00000009 = OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE\r\n"
-					L"Access Mask: 0x001F0716 = fsdrightCreateItem | fsdrightCreateContainer | fsdrightWriteProperty | "
-					L"fsdrightWriteAttributes | fsdrightWriteSD | fsdrightDelete | fsdrightWriteOwner | "
-					L"fsdrightReadControl | fsdrightSynchronize | 0x600\r\n"
 					L"Account: (no domain)\\(no name)\r\n"
 					L"SID: S-1-5-21-124525095-708259637-1543119021-754602\r\n"
 					L"Access Type: 0x00000001 = ACCESS_DENIED_ACE_TYPE\r\n"
@@ -185,19 +169,6 @@ namespace sidtest
 					L"fsdrightReadProperty | fsdrightWriteProperty | fsdrightExecute | fsdrightReadAttributes | "
 					L"fsdrightWriteAttributes | fsdrightViewItem | fsdrightWriteSD | fsdrightDelete | "
 					L"fsdrightWriteOwner | fsdrightReadControl | fsdrightSynchronize | 0x600\r\n"
-					L"Account: (no domain)\\(no name)\r\n"
-					L"SID: S-1-5-21-124525095-708259637-1543119021-103169\r\n"
-					L"Access Type: 0x00000000 = ACCESS_ALLOWED_ACE_TYPE\r\n"
-					L"Access Flags: 0x00000002 = CONTAINER_INHERIT_ACE\r\n"
-					L"Access Mask: 0x001208A9 = fsdrightListContents | fsdrightReadProperty | fsdrightExecute | "
-					L"fsdrightReadAttributes | fsdrightViewItem | fsdrightReadControl | fsdrightSynchronize\r\n"
-					L"Account: (no domain)\\(no name)\r\n"
-					L"SID: S-1-5-21-124525095-708259637-1543119021-103169\r\n"
-					L"Access Type: 0x00000001 = ACCESS_DENIED_ACE_TYPE\r\n"
-					L"Access Flags: 0x00000002 = CONTAINER_INHERIT_ACE\r\n"
-					L"Access Mask: 0x000DC916 = fsdrightCreateItem | fsdrightCreateContainer | fsdrightWriteProperty | "
-					L"fsdrightWriteAttributes | fsdrightViewItem | fsdrightOwner | fsdrightContact | fsdrightWriteSD | "
-					L"fsdrightDelete | fsdrightWriteOwner\r\n"
 					L"Account: (no domain)\\(no name)\r\n"
 					L"SID: S-1-5-21-124525095-708259637-1543119021-754602\r\n"
 					L"Access Type: 0x00000001 = ACCESS_DENIED_ACE_TYPE\r\n"
