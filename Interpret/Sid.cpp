@@ -186,13 +186,13 @@ namespace sid
 		return strings::join(aceString, L"\r\n");
 	}
 
-	_Check_return_ SecurityDescriptor SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype)
+	_Check_return_ SecurityDescriptor SDToString(const std::vector<BYTE> buf, eAceType acetype)
 	{
-		if (!lpBuf) return {};
+		if (buf.empty()) return {};
 
-		const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(lpBuf);
+		const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(buf.data());
 
-		if (CbSecurityDescriptorHeader(lpBuf) > cbBuf || !IsValidSecurityDescriptor(pSecurityDescriptor))
+		if (CbSecurityDescriptorHeader(buf.data()) > buf.size() || !IsValidSecurityDescriptor(pSecurityDescriptor))
 		{
 			return SecurityDescriptor{strings::formatmessage(IDS_INVALIDSD), strings::emptystring};
 		}
@@ -220,6 +220,6 @@ namespace sid
 		}
 
 		return SecurityDescriptor{strings::join(sdString, L"\r\n"),
-								  interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf))};
+								  interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(buf.data()))};
 	}
 } // namespace sid
