@@ -3,6 +3,11 @@
 #include <UnitTest/UnitTest.h>
 #include <Interpret/Sid.h>
 
+namespace sid
+{
+	std::wstring ACEToString(_In_ void* pACE, eAceType acetype);
+}
+
 namespace sidtest
 {
 	TEST_CLASS(sidtest)
@@ -64,6 +69,71 @@ namespace sidtest
 			auto account = sid::SidAccount{L"foo", L"bar"};
 			Assert::AreEqual(std::wstring{L"foo"}, account.getDomain());
 			Assert::AreEqual(std::wstring{L"bar"}, account.getName());
+		}
+
+		TEST_METHOD(Test_ACEToString)
+		{
+			unittest::AreEqualEx(std::wstring{L""}, sid::ACEToString(nullptr, sid::acetypeContainer));
+
+			auto aceAllowBin =
+				strings::HexStringToBin(L"00092400a9081200010500000000000515000000271a6c07352f372aad20fa5b01930100");
+			unittest::AreEqualEx(
+				std::wstring{
+					L"Account: (no domain)\\(no name)\r\n"
+					L"SID: S-1-5-21-124525095-708259637-1543119021-103169\r\n"
+					L"Access Type: 0x00000000 = ACCESS_ALLOWED_ACE_TYPE\r\n"
+					L"Access Flags: 0x00000009 = OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE\r\n"
+					L"Access Mask: 0x001208A9 = fsdrightListContents | fsdrightReadProperty | fsdrightExecute | "
+					L"fsdrightReadAttributes | fsdrightViewItem | fsdrightReadControl | fsdrightSynchronize"},
+				sid::ACEToString(aceAllowBin.data(), sid::acetypeContainer));
+
+			auto aceDenyBin = strings::HexStringToBin(L"01 09 1400 a9081200 01 01 000000000005 0B000000");
+			unittest::AreEqualEx(
+				std::wstring{L"Account: NT AUTHORITY\\Authenticated Users\r\n"
+							 L"SID: S-1-5-11\r\n"
+							 L"Access Type: 0x00000001 = ACCESS_DENIED_ACE_TYPE\r\n"
+							 L"Access Flags: 0x00000009 = OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE\r\n"
+							 L"Access Mask: 0x001208A9 = "},
+				sid::ACEToString(aceDenyBin.data(), static_cast<sid::eAceType>(3)));
+
+			auto aceAllowObjectBin = strings::HexStringToBin(L"05 1f 3800 a9081200 ffffffff"
+															 L"0A0D0200-0000-0000-C000-000000000046"
+															 L"C02EBC53-53D9-CD11-9752-00AA004AE40E"
+															 L"FF 01 000000000005 0B000000");
+			unittest::AreEqualEx(
+				std::wstring{
+					L"Account: (no domain)\\(no name)\r\n"
+					L"SID: (no SID)\r\n"
+					L"Access Type: 0x00000005 = ACCESS_ALLOWED_OBJECT_ACE_TYPE\r\n"
+					L"Access Flags: 0x0000001F = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE | NO_PROPAGATE_INHERIT_ACE "
+					L"| INHERIT_ONLY_ACE | INHERITED_ACE\r\n"
+					L"Access Mask: 0x001208A9 = fsdrightReadBody | fsdrightReadProperty | fsdrightExecute | "
+					L"fsdrightReadAttributes | fsdrightViewItem | fsdrightReadControl | fsdrightSynchronize\r\n"
+					L"ObjectType: \r\n"
+					L"{00020D0A-0000-0000-C000-000000000046} = IID_CAPONE_PROF\r\n"
+					L"InheritedObjectType: \r\n"
+					L"{53BC2EC0-D953-11CD-9752-00AA004AE40E} = GUID_Dilkie\r\n"
+					L"Flags: 0xFFFFFFFF"},
+				sid::ACEToString(aceAllowObjectBin.data(), sid::acetypeMessage));
+
+			auto aceDenyObjectBin = strings::HexStringToBin(L"06 1f 3800 03000000 ffffffff"
+															L"0A0D0200-0000-0000-C000-000000000046"
+															L"C02EBC53-53D9-CD11-9752-00AA004AE40E"
+															L"01 01 000000000005 0B000000");
+			unittest::AreEqualEx(
+				std::wstring{
+					L"Account: NT AUTHORITY\\Authenticated Users\r\n"
+					L"SID: S-1-5-11\r\n"
+					L"Access Type: 0x00000006 = ACCESS_DENIED_OBJECT_ACE_TYPE\r\n"
+					L"Access Flags: 0x0000001F = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE | NO_PROPAGATE_INHERIT_ACE "
+					L"| INHERIT_ONLY_ACE | INHERITED_ACE\r\n"
+					L"Access Mask: 0x00000003 = fsdrightFreeBusySimple | fsdrightFreeBusyDetailed\r\n"
+					L"ObjectType: \r\n"
+					L"{00020D0A-0000-0000-C000-000000000046} = IID_CAPONE_PROF\r\n"
+					L"InheritedObjectType: \r\n"
+					L"{53BC2EC0-D953-11CD-9752-00AA004AE40E} = GUID_Dilkie\r\n"
+					L"Flags: 0xFFFFFFFF"},
+				sid::ACEToString(aceDenyObjectBin.data(), sid::acetypeFreeBusy));
 		}
 
 		TEST_METHOD(Test_SDToString)

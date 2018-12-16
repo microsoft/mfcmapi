@@ -160,7 +160,7 @@ namespace sid
 		auto lpStringSid = GetTextualSid(SidStart);
 		auto szAceType = interpretprop::InterpretFlags(flagACEType, AceType);
 		auto szAceFlags = interpretprop::InterpretFlags(flagACEFlag, AceFlags);
-		std::wstring szAceMask;
+		auto szAceMask = std::wstring{};
 
 		switch (acetype)
 		{
