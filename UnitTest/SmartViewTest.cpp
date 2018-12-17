@@ -76,18 +76,7 @@ namespace SmartViewTest
 		}
 
 	public:
-		TEST_CLASS_INITIALIZE(Initialize_smartview)
-		{
-			// Set up our property arrays or nothing works
-			addin::MergeAddInArrays();
-
-			registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD = 1;
-			registry::RegKeys[registry::regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
-			registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
-			registry::RegKeys[registry::regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
-
-			strings::setTestInstance(GetModuleHandleW(L"UnitTest.dll"));
-		}
+		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
 
 		TEST_METHOD(Test_STADDITIONALRENENTRYIDSEX)
 		{

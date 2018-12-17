@@ -7,6 +7,19 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace unittest
 {
+	void init()
+	{
+		// Set up our property arrays or nothing works
+		addin::MergeAddInArrays();
+
+		registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD = 1;
+		registry::RegKeys[registry::regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
+		registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
+		registry::RegKeys[registry::regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
+
+		strings::setTestInstance(GetModuleHandleW(L"UnitTest.dll"));
+	}
+
 	// Assert::AreEqual doesn't do full logging, so we roll our own
 	void AreEqualEx(
 		const std::wstring& expected,

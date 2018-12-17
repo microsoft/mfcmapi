@@ -349,6 +349,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="guidtest.cpp" />
+    <ClCompile Include="property.cpp" />
     <ClCompile Include="sidtest.cpp" />
     <ClCompile Include="SmartViewTest.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -10,6 +10,8 @@ namespace stringtest
 	TEST_CLASS(stringtest)
 	{
 	public:
+		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
+
 		TEST_METHOD(Test_formatmessagesys)
 		{
 			Assert::AreEqual(
@@ -23,8 +25,6 @@ namespace stringtest
 
 		TEST_METHOD(Test_loadstring)
 		{
-			strings::setTestInstance(GetModuleHandleW(L"UnitTest.dll"));
-
 			// A resource which does not exist
 			Assert::AreEqual(std::wstring(L""), strings::loadstring(1234));
 

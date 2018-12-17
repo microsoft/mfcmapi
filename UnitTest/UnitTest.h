@@ -30,6 +30,8 @@ namespace unittest
 	static const bool limit_output = true;
 	static const bool ignore_trailing_whitespace = false;
 
+	void init();
+
 	void AreEqualEx(
 		const std::wstring& expected,
 		const std::wstring& actual,
