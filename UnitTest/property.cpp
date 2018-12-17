@@ -73,5 +73,41 @@ namespace property
 			unittest::AreEqualEx(parsing2.toXML(IDS_COLVALUE, 0), copy.toXML(IDS_COLVALUE, 0));
 			unittest::AreEqualEx(parsing2.toString(), copy.toString());
 		}
+
+		TEST_METHOD(Test_property)
+		{
+			auto prop = property::Property();
+			unittest::AreEqualEx(std::wstring(L""), prop.toXML(1));
+			unittest::AreEqualEx(std::wstring(L""), prop.toString());
+			unittest::AreEqualEx(std::wstring(L""), prop.toAltString());
+
+			auto parsing = property::Parsing(L"test", true, property::Attributes());
+			auto altparsing = property::Parsing(L"alttest", false, property::Attributes());
+			prop.AddParsing(parsing, altparsing);
+			unittest::AreEqualEx(
+				std::wstring(L"\t<Value>test</Value>\n"
+							 L"\t<AltValue><![CDATA[alttest]]></AltValue>\n"),
+				prop.toXML(1));
+			unittest::AreEqualEx(std::wstring(L"test"), prop.toString());
+			unittest::AreEqualEx(std::wstring(L"alttest"), prop.toAltString());
+
+			prop.AddAttribute(L"mv", L"true");
+			prop.AddAttribute(L"count", L"2");
+			prop.AddMVParsing(prop);
+			unittest::AreEqualEx(
+				std::wstring(L"\t<Value mv=\"true\" count=\"2\" >\n"
+							 L"\t\t<row>\n"
+							 L"\t\t\t<Value>test</Value>\n"
+							 L"\t\t\t<AltValue>test</AltValue>\n"
+							 L"\t\t</row>\n"
+							 L"\t\t<row>\n"
+							 L"\t\t\t<Value>test</Value>\n"
+							 L"\t\t\t<AltValue>test</AltValue>\n"
+							 L"\t\t</row>\n"
+							 L"\t</Value>\n"),
+				prop.toXML(1));
+			unittest::AreEqualEx(std::wstring(L"2: test; test"), prop.toString());
+			unittest::AreEqualEx(std::wstring(L"2: alttest; alttest"), prop.toAltString());
+		}
 	};
 } // namespace property
