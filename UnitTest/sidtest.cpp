@@ -65,11 +65,11 @@ namespace sidtest
 			unittest::AreEqualEx(std::wstring{L""}, sid::ACEToString(nullptr, sid::acetypeContainer));
 
 			auto aceAllowBin =
-				strings::HexStringToBin(L"00092400a9081200010500000000000515000000271a6c07352f372aad20fa5b01930100");
+				strings::HexStringToBin(L"00092400a9081200010500000000000515000000371a6c07352f372aad20fa5b01930100");
 			unittest::AreEqualEx(
 				std::wstring{
 					L"Account: (no domain)\\(no name)\r\n"
-					L"SID: S-1-5-21-124525095-708259637-1543119021-103169\r\n"
+					L"SID: S-1-5-21-124525111-708259637-1543119021-103169\r\n"
 					L"Access Type: 0x00000000 = ACCESS_ALLOWED_ACE_TYPE\r\n"
 					L"Access Flags: 0x00000009 = OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE\r\n"
 					L"Access Mask: 0x001208A9 = fsdrightListContents | fsdrightReadProperty | fsdrightExecute | "
