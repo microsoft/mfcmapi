@@ -262,27 +262,10 @@ namespace dialog
 		return CDialog::WindowProc(message, wParam, lParam);
 	}
 
-	LRESULT filteredDefWindowProcW(_In_ HWND hWnd, _In_ UINT Msg, _In_ WPARAM wParam, _In_ LPARAM lParam)
-	{
-		switch (Msg)
-		{
-		case WM_NCUAHDRAWCAPTION:
-		case WM_NCUAHDRAWFRAME:
-			return 0;
-		}
-
-		return DefWindowProcW(hWnd, Msg, wParam, lParam);
-	}
-
 	void CMyDialog::SetTitle(_In_ const std::wstring& szTitle) const
 	{
-		// Set the title bar
-		auto oldProc = GetWindowLongPtrW(m_hWnd, GWLP_WNDPROC);
-		// Swap in filteredDefWindowProcW so we get native unicode handling of our string
-		// We also filter out the WM_NCUA* messages to avoid Windows drawing the title for us
-		SetWindowLongPtrW(m_hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(filteredDefWindowProcW));
-		::SendMessageW(m_hWnd, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(szTitle.c_str()));
-		SetWindowLongPtrW(m_hWnd, GWLP_WNDPROC, oldProc);
+		// Set the title bar directly using DefWindowProcW to avoid converting Unicode
+		::DefWindowProcW(m_hWnd, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(szTitle.c_str()));
 		ui::DrawWindowFrame(m_hWnd, true, GetStatusHeight());
 	}
 
