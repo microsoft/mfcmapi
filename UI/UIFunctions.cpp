@@ -1927,8 +1927,8 @@ namespace ui
 				FillRect(hdc, &rcBottomGutter, GetSysBrush(cBackground));
 			}
 
-			WCHAR szTitle[256] = {0};
-			GetWindowTextW(hWnd, szTitle, _countof(szTitle));
+			WCHAR szTitle[256] = {};
+			::DefWindowProcW(hWnd, WM_GETTEXT, static_cast<WPARAM>(_countof(szTitle)), reinterpret_cast<LPARAM>(szTitle));
 			DrawSegoeTextW(
 				hdc, szTitle, MyGetSysColor(cText), rcCaptionText, false, DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 

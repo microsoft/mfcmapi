@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <CppUnitTest.h>
-#include "Interpret/String.h"
+#include <UnitTest/UnitTest.h>
+#include <Interpret/String.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -9,6 +10,8 @@ namespace stringtest
 	TEST_CLASS(stringtest)
 	{
 	public:
+		TEST_CLASS_INITIALIZE(initialize) { unittest::init(); }
+
 		TEST_METHOD(Test_formatmessagesys)
 		{
 			Assert::AreEqual(
@@ -22,8 +25,6 @@ namespace stringtest
 
 		TEST_METHOD(Test_loadstring)
 		{
-			strings::setTestInstance(GetModuleHandleW(L"UnitTest.dll"));
-
 			// A resource which does not exist
 			Assert::AreEqual(std::wstring(L""), strings::loadstring(1234));
 
@@ -36,12 +37,15 @@ namespace stringtest
 			// Since format is a passthrough to formatV, this will also cover formatV
 			Assert::AreEqual(std::wstring(L"Hello"), strings::format(L"Hello"));
 			Assert::AreEqual(std::wstring(L"Hello world"), strings::format(L"Hello %hs", "world"));
+			Assert::AreEqual(std::wstring(L""), strings::format(L"", 1, 2));
 		}
 
 		TEST_METHOD(Test_formatmessage)
 		{
 			// Also tests formatmessageV
 			Assert::AreEqual(std::wstring(L"Hello world"), strings::formatmessage(L"%1!hs! %2", "Hello", L"world"));
+			Assert::AreEqual(std::wstring(L""), strings::formatmessage(L"", 1, 2));
+			Assert::AreEqual(std::wstring(L"test"), strings::formatmessage(IDS_TITLEBARPLAIN, L"test"));
 		}
 
 		TEST_METHOD(Test_stringConverters)
@@ -278,7 +282,10 @@ namespace stringtest
 
 		TEST_METHOD(Test_HexStringToBin)
 		{
-			Assert::AreEqual(std::vector<BYTE>(), strings::HexStringToBin(L"12345"));
+			Assert::AreEqual(std::vector<BYTE>{}, strings::HexStringToBin(L"12345"));
+			Assert::AreEqual(std::vector<BYTE>{}, strings::HexStringToBin(L"12345", 3));
+			Assert::AreEqual(std::vector<BYTE>{0x12}, strings::HexStringToBin(L"12345", 1));
+			Assert::AreEqual(std::vector<BYTE>{}, strings::HexStringToBin(L"12WZ"));
 			Assert::AreEqual(vector_abcdW, strings::HexStringToBin(L"6100620063006400"));
 			Assert::AreEqual(vector_abcdW, strings::HexStringToBin(L"0x6100620063006400"));
 			Assert::AreEqual(vector_abcdW, strings::HexStringToBin(L"0X6100620063006400"));
@@ -333,7 +340,6 @@ namespace stringtest
 
 		TEST_METHOD(Test_currency)
 		{
-			CURRENCY foo = {1, 2};
 			Assert::AreEqual(std::wstring(L"0.0000"), strings::CurrencyToString(CURRENCY({0, 0})));
 			Assert::AreEqual(std::wstring(L"858993.4593"), strings::CurrencyToString(CURRENCY({1, 2})));
 		}
@@ -343,7 +349,12 @@ namespace stringtest
 			Assert::AreEqual(
 				std::wstring(L"bQB5AHMAdAByAGkAbgBnAA=="),
 				strings::Base64Encode(myStringWvector.size(), myStringWvector.data()));
+			auto ab = std::vector<byte>{0x61, 0x62};
+			Assert::AreEqual(std::wstring(L"YWI="), strings::Base64Encode(ab.size(), ab.data()));
 			Assert::AreEqual(myStringWvector, strings::Base64Decode(std::wstring(L"bQB5AHMAdAByAGkAbgBnAA==")));
+			Assert::AreEqual(std::vector<byte>{}, strings::Base64Decode(std::wstring(L"123")));
+			Assert::AreEqual(std::vector<byte>{}, strings::Base64Decode(std::wstring(L"12345===")));
+			Assert::AreEqual(std::vector<byte>{}, strings::Base64Decode(std::wstring(L"12345!==")));
 		}
 
 		TEST_METHOD(Test_offsets)
@@ -369,12 +380,56 @@ namespace stringtest
 			Assert::AreEqual(true, strings::endsWith(L"1234", L"234"));
 			Assert::AreEqual(true, strings::endsWith(L"Test\r\n", L"\r\n"));
 			Assert::AreEqual(false, strings::endsWith(L"Test", L"\r\n"));
+			Assert::AreEqual(false, strings::endsWith(L"test", L"longstring"));
 		}
 
 		TEST_METHOD(Test_ensureCRLF)
 		{
 			Assert::AreEqual(std::wstring(L"Test\r\n"), strings::ensureCRLF(L"Test\r\n"));
 			Assert::AreEqual(std::wstring(L"Test\r\n"), strings::ensureCRLF(L"Test"));
+		}
+
+		TEST_METHOD(Test_trimWhitespace)
+		{
+			Assert::AreEqual(std::wstring(L"test"), strings::trimWhitespace(L" test "));
+			Assert::AreEqual(std::wstring(L""), strings::trimWhitespace(L" \t \n \r "));
+		}
+
+		TEST_METHOD(Test_RemoveInvalidCharacters)
+		{
+			Assert::AreEqual(
+				std::wstring(L"a"),
+				strings::RemoveInvalidCharactersW(strings::BinToTextString(std::vector<BYTE>{0x61}, true)));
+			Assert::AreEqual(std::wstring(L""), strings::RemoveInvalidCharactersW(L""));
+			Assert::AreEqual(std::wstring(L".test. !"), strings::RemoveInvalidCharactersW(L"\x80test\x19\x20\x21"));
+			Assert::AreEqual(
+				std::wstring(L".test\r\n. !"), strings::RemoveInvalidCharactersW(L"\x80test\r\n\x19\x20\x21", true));
+			auto nullTerminatedStringW = std::wstring{L"test"};
+			nullTerminatedStringW.push_back(L'\0');
+			Assert::AreEqual(nullTerminatedStringW, strings::RemoveInvalidCharactersW(nullTerminatedStringW, true));
+
+			Assert::AreEqual(
+				std::string("a"),
+				strings::RemoveInvalidCharactersA(
+					strings::wstringTostring(strings::BinToTextString(std::vector<BYTE>{0x61}, true))));
+			Assert::AreEqual(std::string(""), strings::RemoveInvalidCharactersA(""));
+			Assert::AreEqual(std::string(".test. !"), strings::RemoveInvalidCharactersA("\x80test\x19\x20\x21"));
+			auto nullTerminatedStringA = std::string{"test"};
+			nullTerminatedStringA.push_back('\0');
+			Assert::AreEqual(nullTerminatedStringA, strings::RemoveInvalidCharactersA(nullTerminatedStringA, true));
+		}
+
+		TEST_METHOD(Test_FileTimeToString)
+		{
+			std::wstring prop;
+			std::wstring alt;
+			strings::FileTimeToString(FILETIME{0x085535B0, 0x01D387EC}, prop, alt);
+			Assert::AreEqual(std::wstring(L"07:16:34.571 PM 1/7/2018"), prop);
+			Assert::AreEqual(std::wstring(L"Low: 0x085535B0 High: 0x01D387EC"), alt);
+
+			strings::FileTimeToString(FILETIME{0xFFFFFFFF, 0xFFFFFFFF}, prop, alt);
+			Assert::AreEqual(std::wstring(L"Invalid systime"), prop);
+			Assert::AreEqual(std::wstring(L"Low: 0xFFFFFFFF High: 0xFFFFFFFF"), alt);
 		}
 	};
 } // namespace stringtest
