@@ -39,7 +39,7 @@ namespace smartview
 
 		if (m_bFB) acetype = sid::acetypeFreeBusy;
 
-		const auto sd = SDToString(m_SDbin.data(), m_SDbin.size(), acetype);
+		const auto sd = SDToString(m_SDbin, acetype);
 
 		setRoot(L"Security Descriptor:\r\n");
 		addHeader(L"Security Info: ");

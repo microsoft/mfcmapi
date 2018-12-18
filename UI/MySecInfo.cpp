@@ -202,7 +202,7 @@ namespace mapi
 					}
 
 					// Dump our SD
-					auto sd = SDToString(lpSDBuffer, cbSBBuffer, m_acetype);
+					auto sd = SDToString(std::vector<BYTE>(lpSDBuffer, lpSDBuffer + cbSBBuffer), m_acetype);
 					output::DebugPrint(DBGGeneric, L"sdInfo: %ws\nszDACL: %ws\n", sd.info.c_str(), sd.dacl.c_str());
 				}
 			}

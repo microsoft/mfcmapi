@@ -17,6 +17,7 @@ namespace dialog
 		BOOL CheckAutoCenter() override;
 		void SetStatusHeight(int iHeight);
 		int GetStatusHeight() const;
+		void SetTitle(_In_ const std::wstring& szTitle) const;
 
 	private:
 		void Constructor();
@@ -27,4 +28,4 @@ namespace dialog
 		int m_iStatusHeight{};
 		HWND m_hWndPrevious{};
 	};
-}
+} // namespace dialog

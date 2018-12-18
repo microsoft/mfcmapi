@@ -11,23 +11,25 @@ namespace strings
 
 	std::wstring formatV(LPCWSTR szMsg, va_list argList)
 	{
+		auto szOut = std::wstring{};
 		auto len = _vscwprintf(szMsg, argList);
 		if (0 != len)
 		{
 			len++;
-			const auto buffer = new wchar_t[len];
-			memset(buffer, 0, sizeof(wchar_t) * len);
-			if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg, argList) > 0)
+			const auto buffer = new (std::nothrow) wchar_t[len];
+			if (buffer)
 			{
-				std::wstring szOut(buffer);
-				delete[] buffer;
-				return szOut;
-			}
+				memset(buffer, 0, sizeof(wchar_t) * len);
+				if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg, argList) > 0)
+				{
+					szOut = std::wstring{buffer};
+				}
 
-			delete[] buffer;
+				delete[] buffer;
+			}
 		}
 
-		return L"";
+		return szOut;
 	}
 
 #ifdef CHECKFORMATPARAMS
@@ -349,6 +351,7 @@ namespace strings
 
 	std::string RemoveInvalidCharactersA(const std::string& szString, bool bMultiLine)
 	{
+		if (szString.empty()) return szString;
 		auto szBin(szString);
 		const auto nullTerminated = szBin.back() == '\0';
 		std::replace_if(
@@ -473,9 +476,6 @@ namespace strings
 	// If cbTarget != 0, caps the number of bytes converted at cbTarget
 	std::vector<BYTE> HexStringToBin(_In_ const std::wstring& input, size_t cbTarget)
 	{
-		// If our target is odd, we can't convert
-		if (cbTarget % 2 != 0) return std::vector<BYTE>();
-
 		// remove junk
 		auto lpsz = strip(input, [](const WCHAR& chr) { return IsFilteredHex(chr); });
 
@@ -483,6 +483,9 @@ namespace strings
 		stripPrefix(lpsz, L"0x") || stripPrefix(lpsz, L"0X") || stripPrefix(lpsz, L"x") || stripPrefix(lpsz, L"X");
 
 		const auto cchStrLen = lpsz.length();
+		// If our input is odd, we can't convert
+		// Unless we've capped our output at less than the input
+		if (cchStrLen % 2 != 0 && (cbTarget == 0 || cbTarget * 2 > cchStrLen)) return std::vector<BYTE>();
 
 		std::vector<BYTE> lpb;
 		WCHAR szTmp[3] = {0};
@@ -490,7 +493,7 @@ namespace strings
 		size_t cbConverted = 0;
 
 		// convert two characters at a time
-		while (iCur < cchStrLen && (cbTarget == 0 || cbConverted < cbTarget))
+		while (iCur + 1 < cchStrLen && (cbTarget == 0 || cbConverted < cbTarget))
 		{
 			// Check for valid hex characters
 			if (lpsz[iCur] > 255 || lpsz[iCur + 1] > 255 || !isxdigit(lpsz[iCur]) || !isxdigit(lpsz[iCur + 1]))
@@ -518,10 +521,9 @@ namespace strings
 		{
 			memset(lpBin, 0, bin.size());
 			memcpy(lpBin, &bin[0], bin.size());
-			return lpBin;
 		}
 
-		return nullptr;
+		return lpBin;
 	}
 
 	std::vector<std::wstring> split(const std::wstring& str, const wchar_t delim)

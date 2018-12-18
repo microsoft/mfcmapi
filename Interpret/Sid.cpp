@@ -6,10 +6,12 @@
 
 namespace sid
 {
+	// [MS-DTYP] 2.4.2.2 SID--Packet Representation
+	// https://msdn.microsoft.com/en-us/library/gg465313.aspx
 	_Check_return_ std::wstring GetTextualSid(_In_ PSID pSid)
 	{
 		// Validate the binary SID.
-		if (!IsValidSid(pSid)) return L"";
+		if (!IsValidSid(pSid)) return {};
 
 		// Get the identifier authority value from the SID.
 		const auto psia = GetSidIdentifierAuthority(pSid);
@@ -26,7 +28,7 @@ namespace sid
 		if (psia->Value[0] != 0 || psia->Value[1] != 0)
 		{
 			TextualSid += strings::format(
-				L"0x%02hx%02hx%02hx%02hx%02hx%02hx", // STRING_OK
+				L"%02hx%02hx%02hx%02hx%02hx%02hx", // STRING_OK
 				static_cast<USHORT>(psia->Value[0]),
 				static_cast<USHORT>(psia->Value[1]),
 				static_cast<USHORT>(psia->Value[2]),
@@ -56,8 +58,18 @@ namespace sid
 		return TextualSid;
 	}
 
+	_Check_return_ std::wstring GetTextualSid(std::vector<BYTE> buf)
+	{
+		auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
+		if (buf.size() < sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount) return {};
+
+		return GetTextualSid(static_cast<PSID>(buf.data()));
+	}
+
 	_Check_return_ SidAccount LookupAccountSid(PSID SidStart)
 	{
+		if (!IsValidSid(SidStart)) return {};
+
 		// TODO: Make use of SidNameUse information
 		auto cchSidName = DWORD{};
 		auto cchSidDomain = DWORD{};
@@ -86,8 +98,19 @@ namespace sid
 			&cchSidDomain,
 			&SidNameUse));
 
+		if (cchSidName && sidNameBuf.back() == L'\0') sidNameBuf.pop_back();
+		if (cchSidDomain && sidDomainBuf.back() == L'\0') sidDomainBuf.pop_back();
+
 		return SidAccount{std::wstring(sidDomainBuf.begin(), sidDomainBuf.end()),
 						  std::wstring(sidNameBuf.begin(), sidNameBuf.end())};
+	}
+
+	_Check_return_ SidAccount LookupAccountSid(std::vector<BYTE> buf)
+	{
+		auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
+		if (buf.size() < sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount) return {};
+
+		return LookupAccountSid(static_cast<PSID>(buf.data()));
 	}
 
 	std::wstring ACEToString(_In_ void* pACE, eAceType acetype)
@@ -137,7 +160,7 @@ namespace sid
 		auto lpStringSid = GetTextualSid(SidStart);
 		auto szAceType = interpretprop::InterpretFlags(flagACEType, AceType);
 		auto szAceFlags = interpretprop::InterpretFlags(flagACEFlag, AceFlags);
-		std::wstring szAceMask;
+		auto szAceMask = std::wstring{};
 
 		switch (acetype)
 		{
@@ -181,32 +204,30 @@ namespace sid
 		return strings::join(aceString, L"\r\n");
 	}
 
-	_Check_return_ SecurityDescriptor SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype)
+	_Check_return_ SecurityDescriptor SDToString(const std::vector<BYTE> buf, eAceType acetype)
 	{
-		if (!lpBuf) return {};
+		if (buf.empty()) return {};
 
-		const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(lpBuf);
+		const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(buf.data());
 
-		if (CbSecurityDescriptorHeader(lpBuf) > cbBuf || !IsValidSecurityDescriptor(pSecurityDescriptor))
+		if (CbSecurityDescriptorHeader(buf.data()) > buf.size() || !IsValidSecurityDescriptor(pSecurityDescriptor))
 		{
 			return SecurityDescriptor{strings::formatmessage(IDS_INVALIDSD), strings::emptystring};
 		}
 
-		const auto sdInfo = interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf));
-
-		BOOL bValidDACL = false;
-		PACL pACL = nullptr;
-		BOOL bDACLDefaulted = false;
+		auto bValidDACL = static_cast<BOOL>(false);
+		auto pACL = PACL{};
+		auto bDACLDefaulted = static_cast<BOOL>(false);
+		auto sdString = std::vector<std::wstring>{};
 		EC_B_S(GetSecurityDescriptorDacl(pSecurityDescriptor, &bValidDACL, &pACL, &bDACLDefaulted));
 		if (bValidDACL && pACL)
 		{
-			ACL_SIZE_INFORMATION ACLSizeInfo = {};
+			auto ACLSizeInfo = ACL_SIZE_INFORMATION{};
 			EC_B_S(GetAclInformation(pACL, &ACLSizeInfo, sizeof ACLSizeInfo, AclSizeInformation));
 
-			std::vector<std::wstring> sdString;
 			for (DWORD i = 0; i < ACLSizeInfo.AceCount; i++)
 			{
-				void* pACE = nullptr;
+				auto pACE = LPVOID{};
 
 				WC_B_S(GetAce(pACL, i, &pACE));
 				if (pACE)
@@ -214,10 +235,9 @@ namespace sid
 					sdString.push_back(ACEToString(pACE, acetype));
 				}
 			}
-
-			return SecurityDescriptor{strings::join(sdString, L"\r\n"), sdInfo};
 		}
 
-		return SecurityDescriptor{strings::emptystring, sdInfo};
+		return SecurityDescriptor{strings::join(sdString, L"\r\n"),
+								  interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(buf.data()))};
 	}
 } // namespace sid

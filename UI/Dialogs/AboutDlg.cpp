@@ -22,7 +22,7 @@ namespace dialog
 		auto bRet = CMyDialog::OnInitDialog();
 
 		auto szProductName = strings::loadstring(ID_PRODUCTNAME);
-		::SetWindowTextW(m_hWnd, szProductName.c_str());
+		SetTitle(szProductName);
 
 		RECT rcClient = {0};
 		::GetClientRect(m_hWnd, &rcClient);
@@ -173,4 +173,4 @@ namespace dialog
 		else
 			registry::RegKeys[registry::regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD = false;
 	}
-}
+} // namespace dialog
