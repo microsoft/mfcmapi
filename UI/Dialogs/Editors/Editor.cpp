@@ -316,7 +316,7 @@ namespace dialog
 			const auto bRet = CMyDialog::OnInitDialog();
 
 			m_szTitle = szPostfix + m_szAddInTitle;
-			::SetWindowTextW(m_hWnd, m_szTitle.c_str());
+			SetTitle(m_szTitle);
 
 			SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 

@@ -299,14 +299,6 @@ namespace dialog
 		}
 	}
 
-	/**
-	 * \brief 
-	 * \param nChar 
-	 * \param bShift 
-	 * \param bCtrl 
-	 * \param bMenu 
-	 * \return 
-	 */
 	_Check_return_ bool
 	CBaseDialog::HandleKeyDown(const UINT nChar, const bool bShift, const bool bCtrl, const bool bMenu)
 	{
@@ -637,18 +629,12 @@ namespace dialog
 
 	void CBaseDialog::UpdateTitleBarText(_In_ const std::wstring& szMsg) const
 	{
-		auto szTitle = strings::formatmessage(IDS_TITLEBARMESSAGE, m_szTitle.c_str(), szMsg.c_str());
-
-		// set the title bar
-		::SetWindowTextW(m_hWnd, szTitle.c_str());
+		SetTitle(strings::formatmessage(IDS_TITLEBARMESSAGE, m_szTitle.c_str(), szMsg.c_str()));
 	}
 
 	void CBaseDialog::UpdateTitleBarText() const
 	{
-		auto szTitle = strings::formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str());
-
-		// set the title bar
-		::SetWindowTextW(m_hWnd, szTitle.c_str());
+		SetTitle(strings::formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str()));
 	}
 
 	void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum const pane, const std::wstring& status)

@@ -1928,7 +1928,10 @@ namespace ui
 			}
 
 			WCHAR szTitle[256] = {0};
+			auto oldProc = GetWindowLongPtrW(hWnd, GWLP_WNDPROC);
+			SetWindowLongPtrW(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(DefWindowProcW));
 			GetWindowTextW(hWnd, szTitle, _countof(szTitle));
+			SetWindowLongPtrW(hWnd, GWLP_WNDPROC, oldProc);
 			DrawSegoeTextW(
 				hdc, szTitle, MyGetSysColor(cText), rcCaptionText, false, DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 
