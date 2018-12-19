@@ -1928,7 +1928,8 @@ namespace ui
 			}
 
 			WCHAR szTitle[256] = {};
-			::DefWindowProcW(hWnd, WM_GETTEXT, static_cast<WPARAM>(_countof(szTitle)), reinterpret_cast<LPARAM>(szTitle));
+			::DefWindowProcW(
+				hWnd, WM_GETTEXT, static_cast<WPARAM>(_countof(szTitle)), reinterpret_cast<LPARAM>(szTitle));
 			DrawSegoeTextW(
 				hdc, szTitle, MyGetSysColor(cText), rcCaptionText, false, DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 
@@ -2071,5 +2072,30 @@ namespace ui
 	void StyleLabel(_In_ HWND hWnd, uiLabelStyle lsStyle)
 	{
 		EC_B_S(::SetProp(hWnd, LABEL_STYLE, reinterpret_cast<HANDLE>(lsStyle)));
+	}
+
+	// Returns the first visible top level window in the current process
+	_Check_return_ HWND GetMainWindow()
+	{
+		auto hwndRet = HWND{};
+		static ULONG currentPid = GetCurrentProcessId();
+		::EnumWindows(
+			[](auto hwnd, auto lParam) {
+				// Use of BOOL return type forced by WNDENUMPROC signature
+				if (!lParam) return FALSE;
+				auto ret = reinterpret_cast<HWND*>(lParam);
+				auto pid = ULONG{};
+				GetWindowThreadProcessId(hwnd, &pid);
+				if (currentPid == pid && GetWindow(hwnd, GW_OWNER) == static_cast<HWND>(0) && IsWindowVisible(hwnd))
+				{
+					*ret = hwnd;
+					return FALSE;
+				}
+
+				return TRUE;
+			},
+			reinterpret_cast<LPARAM>(&hwndRet));
+
+		return hwndRet;
 	}
 } // namespace ui

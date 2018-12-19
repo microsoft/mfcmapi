@@ -98,15 +98,17 @@ namespace dialog
 			m_hIcon = WC_D(HICON, AfxGetApp()->LoadIcon(IDR_MAINFRAME));
 
 			m_pParentWnd = pParentWnd;
-			if (!m_pParentWnd)
+			if (!m_pParentWnd->GetSafeHwnd())
 			{
 				m_pParentWnd = GetActiveWindow();
 			}
-			if (!m_pParentWnd)
+
+			if (!m_pParentWnd->GetSafeHwnd())
 			{
-				m_pParentWnd = theApp.m_pMainWnd;
+				m_pParentWnd = CWnd::FromHandle(ui::GetMainWindow());
 			}
-			if (!m_pParentWnd)
+
+			if (!m_pParentWnd->GetSafeHwnd())
 			{
 				output::DebugPrint(DBGGeneric, L"Editor created with a NULL parent!\n");
 			}

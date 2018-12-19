@@ -184,4 +184,6 @@ namespace ui
 		_In_ const RECT& rc,
 		bool bBold,
 		_In_ UINT format);
+
+	_Check_return_ HWND GetMainWindow();
 } // namespace ui
