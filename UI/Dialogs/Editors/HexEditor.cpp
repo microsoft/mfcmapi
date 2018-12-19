@@ -45,10 +45,10 @@ namespace dialog
 
 			AddPane(viewpane::CountedTextPane::Create(HEXED_HEX, IDS_HEX, false, IDS_CB));
 			auto smartViewPane = viewpane::SmartViewPane::Create(HEXED_SMARTVIEW, IDS_SMARTVIEW);
-			AddPane(smartViewPane);
-			DisplayParentedDialog(pParentWnd, 1000);
-
 			smartViewPane->OnItemSelected = [&](auto _1) { return HighlightHex(HEXED_HEX, _1); };
+			AddPane(smartViewPane);
+
+			DisplayParentedDialog(pParentWnd, 1000);
 		}
 
 		CHexEditor::~CHexEditor()

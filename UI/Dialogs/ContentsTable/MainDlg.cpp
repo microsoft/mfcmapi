@@ -745,16 +745,12 @@ namespace dialog
 	void CMainDlg::OnLogon()
 	{
 		if (m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading()) return;
-		const ULONG ulFlags = MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI |
-							  MAPI_EXPLICIT_PROFILE; // display a profile picker box
-
 		if (!m_lpMapiObjects) return;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		m_lpMapiObjects->MAPILogonEx(
-			m_hWnd, // handle of current window
-			nullptr, // profile name
-			ulFlags);
+		const ULONG ulFlags = MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI |
+							  MAPI_EXPLICIT_PROFILE; // display a profile picker box
+		m_lpMapiObjects->MAPILogonEx(m_hWnd, nullptr, ulFlags);
 	}
 
 	void CMainDlg::OnLogonWithFlags()
@@ -772,9 +768,7 @@ namespace dialog
 			auto szProfile = MyData.GetStringW(0);
 
 			m_lpMapiObjects->MAPILogonEx(
-				m_hWnd, // handle of current window (from def'n of CWnd)
-				szProfile.empty() ? nullptr : LPTSTR(szProfile.c_str()), // profile name
-				MyData.GetHex(1) | MAPI_UNICODE);
+				m_hWnd, szProfile.empty() ? nullptr : LPTSTR(szProfile.c_str()), MyData.GetHex(1) | MAPI_UNICODE);
 		}
 		else
 		{
