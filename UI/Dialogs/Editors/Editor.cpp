@@ -98,10 +98,10 @@ namespace dialog
 			m_hIcon = WC_D(HICON, AfxGetApp()->LoadIcon(IDR_MAINFRAME));
 
 			m_pParentWnd = pParentWnd;
-			if (!m_pParentWnd->GetSafeHwnd())
-			{
-				m_pParentWnd = GetActiveWindow();
-			}
+			//if (!m_pParentWnd->GetSafeHwnd())
+			//{
+			//	m_pParentWnd = GetActiveWindow();
+			//}
 
 			if (!m_pParentWnd->GetSafeHwnd())
 			{

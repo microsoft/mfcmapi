@@ -2082,11 +2082,13 @@ namespace ui
 		::EnumWindows(
 			[](auto hwnd, auto lParam) {
 				// Use of BOOL return type forced by WNDENUMPROC signature
+				if (!lParam) return FALSE;
+				auto ret = reinterpret_cast<HWND*>(lParam);
 				auto pid = ULONG{};
 				GetWindowThreadProcessId(hwnd, &pid);
 				if (currentPid == pid && GetWindow(hwnd, GW_OWNER) == static_cast<HWND>(0) && IsWindowVisible(hwnd))
 				{
-					lParam = reinterpret_cast<LPARAM>(hwnd);
+					*ret = hwnd;
 					return FALSE;
 				}
 
