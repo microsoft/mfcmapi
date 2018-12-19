@@ -66,7 +66,7 @@ namespace error
 	typedef ERROR_ARRAY_ENTRY* LPERROR_ARRAY_ENTRY;
 
 	inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes; }
-}
+} // namespace error
 
 #define CheckHResFn(hRes, hrIgnore, bDisplayDialog, szFunction, uidErrorMsg, szFile, iLine) \
 	error::LogFunctionCall(hRes, hrIgnore, bDisplayDialog, false, false, uidErrorMsg, szFunction, szFile, iLine)
@@ -280,12 +280,13 @@ namespace error
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
 // Will display dialog on error
-#define EC_H_GETPROPS(fnx) \
+#define EC_H_IGNORE(__ignore, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes == MAPI_W_ERRORS_RETURNED ? S_OK : __hRes; \
+		error::LogFunctionCall(__hRes, __ignore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes == __ignore ? S_OK : __hRes; \
 	}())
+#define EC_H_GETPROPS(fnx) EC_H_IGNORE(MAPI_W_ERRORS_RETURNED, fnx)
 
 // Execute a function, log and swallow the HRESULT
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
@@ -293,11 +294,12 @@ namespace error
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
 // Will display dialog on error
-#define EC_H_GETPROPS_S(fnx) \
+#define EC_H_IGNORE_S(__ignore, fnx) \
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, __ignore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
+#define EC_H_GETPROPS_S(fnx) EC_H_IGNORE_S(MAPI_W_ERRORS_RETURNED, fnx)
 
 // Execute a function, log and return the HRESULT
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
@@ -305,12 +307,13 @@ namespace error
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
 // Will not display an error dialog
-#define WC_H_GETPROPS(fnx) \
+#define WC_H_IGNORE(__ignore, fnx) \
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes == MAPI_W_ERRORS_RETURNED ? S_OK : __hRes; \
+		error::LogFunctionCall(__hRes, __ignore, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		return __hRes == __ignore ? S_OK : __hRes; \
 	}())
+#define WC_H_GETPROPS(fnx) WC_H_IGNORE(MAPI_W_ERRORS_RETURNED, fnx)
 
 // Execute a function, log and swallow the HRESULT
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
@@ -318,11 +321,12 @@ namespace error
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
 // Will not display an error dialog
-#define WC_H_GETPROPS_S(fnx) \
+#define WC_H_IGNORE_S(__ignore, fnx) \
 	[&]() -> void { \
 		const auto __hRes = (fnx); \
-		error::LogFunctionCall(__hRes, MAPI_W_ERRORS_RETURNED, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
+		error::LogFunctionCall(__hRes, __ignore, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
 	}()
+#define WC_H_GETPROPS_S(fnx) WC_H_IGNORE_S(MAPI_W_ERRORS_RETURNED, fnx)
 
 // Execute a function, log and return the HRESULT
 // Logs a MAPI call trace under DBGMAPIFunctions

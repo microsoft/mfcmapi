@@ -28,20 +28,23 @@ namespace mapi
 			output::DebugPrint(DBGOpenItemProp, L"CallOpenMsgStore ulFlags = 0x%X\n", ulFlags);
 
 			LPMDB lpMDB = nullptr;
-			const auto hRes = WC_MAPI(lpSession->OpenMsgStore(
-				ulUIParam,
-				lpEID->cb,
-				reinterpret_cast<LPENTRYID>(lpEID->lpb),
-				nullptr,
-				ulFlags,
-				static_cast<LPMDB*>(&lpMDB)));
+			auto ignore = (ulFlags & MDB_ONLINE) ? MAPI_E_UNKNOWN_FLAGS : S_OK;
+			auto hRes = EC_H_IGNORE(
+				ignore,
+				lpSession->OpenMsgStore(
+					ulUIParam,
+					lpEID->cb,
+					reinterpret_cast<LPENTRYID>(lpEID->lpb),
+					nullptr,
+					ulFlags,
+					static_cast<LPMDB*>(&lpMDB)));
 			if (hRes == MAPI_E_UNKNOWN_FLAGS && ulFlags & MDB_ONLINE)
 			{
 				// Perhaps this store doesn't know the MDB_ONLINE flag - remove and retry
 				ulFlags = ulFlags & ~MDB_ONLINE;
 				output::DebugPrint(DBGOpenItemProp, L"CallOpenMsgStore 2nd attempt ulFlags = 0x%X\n", ulFlags);
 
-				WC_MAPI_S(lpSession->OpenMsgStore(
+				EC_H_S(lpSession->OpenMsgStore(
 					ulUIParam,
 					lpEID->cb,
 					reinterpret_cast<LPENTRYID>(lpEID->lpb),
