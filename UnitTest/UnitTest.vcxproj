@@ -185,6 +185,7 @@
       <UseFullPaths>true</UseFullPaths>
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -207,6 +208,7 @@
       <UseFullPaths>true</UseFullPaths>
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -228,6 +230,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -248,6 +251,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -268,6 +272,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -288,6 +293,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -309,6 +315,7 @@
       <UseFullPaths>true</UseFullPaths>
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -331,6 +338,7 @@
       <UseFullPaths>true</UseFullPaths>
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -343,7 +351,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
-    <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="UnitTest.h" />
   </ItemGroup>
