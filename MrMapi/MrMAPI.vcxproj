@@ -602,20 +602,6 @@
     <ClCompile Include="..\MAPI\MAPIStoreFunctions.cpp" />
     <ClCompile Include="..\IO\MFCOutput.cpp" />
     <ClCompile Include="..\MAPI\Cache\NamedPropCache.cpp" />
-    <ClCompile Include="cli.cpp" />
-    <ClCompile Include="MMAcls.cpp" />
-    <ClCompile Include="MMContents.cpp" />
-    <ClCompile Include="MMErr.cpp" />
-    <ClCompile Include="MMFidMid.cpp" />
-    <ClCompile Include="MMFolder.cpp" />
-    <ClCompile Include="MMMapiMime.cpp" />
-    <ClCompile Include="MMProfile.cpp" />
-    <ClCompile Include="MMPropTag.cpp" />
-    <ClCompile Include="MMPst.cpp" />
-    <ClCompile Include="MMReceiveFolder.cpp" />
-    <ClCompile Include="MMRules.cpp" />
-    <ClCompile Include="MMSmartView.cpp" />
-    <ClCompile Include="MMStore.cpp" />
     <ClCompile Include="MrMAPI.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -653,6 +639,20 @@
     <ClCompile Include="..\Interpret\SmartView\XID.cpp" />
     <ClCompile Include="..\Interpret\String.cpp" />
     <ClCompile Include="..\MAPI\StubUtils.cpp" />
+    <ClCompile Include="cli.cpp" />
+    <ClCompile Include="MMAcls.cpp" />
+    <ClCompile Include="MMContents.cpp" />
+    <ClCompile Include="MMErr.cpp" />
+    <ClCompile Include="MMFidMid.cpp" />
+    <ClCompile Include="MMFolder.cpp" />
+    <ClCompile Include="MMMapiMime.cpp" />
+    <ClCompile Include="MMProfile.cpp" />
+    <ClCompile Include="MMPropTag.cpp" />
+    <ClCompile Include="MMPst.cpp" />
+    <ClCompile Include="MMReceiveFolder.cpp" />
+    <ClCompile Include="MMRules.cpp" />
+    <ClCompile Include="MMSmartView.cpp" />
+    <ClCompile Include="MMStore.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="..\mrmapi.exe.manifest" />
