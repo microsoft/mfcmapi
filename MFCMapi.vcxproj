@@ -221,6 +221,7 @@
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <PostBuildEvent>
       <Message>Copy Release build</Message>
@@ -256,6 +257,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
@@ -285,6 +287,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SwapRunFromNET>true</SwapRunFromNET>
       <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
@@ -314,6 +317,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SwapRunFromNET>true</SwapRunFromNET>
       <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
