@@ -155,6 +155,7 @@
   <PropertyGroup>
     <OutDir>$(SolutionDir)bin\$(Platform)\MrMAPI\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\MrMAPI\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
