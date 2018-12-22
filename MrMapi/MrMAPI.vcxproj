@@ -157,6 +157,7 @@
     <IntDir>$(SolutionDir)obj\$(Platform)\MrMAPI\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -169,6 +170,7 @@
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
@@ -183,6 +185,7 @@
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
