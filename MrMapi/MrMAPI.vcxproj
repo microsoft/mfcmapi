@@ -602,6 +602,9 @@
     <ResourceCompile Include="..\Res\MFCMapi.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\.clang-format" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="..\Interpret\Sid.cpp" />
     <ClCompile Include="..\AddIns.cpp" />
     <ClCompile Include="..\MAPI\AdviseSink.cpp" />
