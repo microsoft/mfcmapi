@@ -363,9 +363,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
     </Link>
-    <Bscmake>
-      <PreserveSbr>true</PreserveSbr>
-    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">
     <ClCompile>
@@ -396,9 +393,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
     </Link>
-    <Bscmake>
-      <PreserveSbr>true</PreserveSbr>
-    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
