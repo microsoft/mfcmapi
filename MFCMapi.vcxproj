@@ -219,7 +219,6 @@
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -258,7 +257,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -292,7 +290,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>mfc42d.lib;mfcs42d.lib;mfco42d.lib;LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -326,7 +323,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>mfc42d.lib;mfcs42d.lib;mfco42d.lib;LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -359,7 +355,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -387,7 +382,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -416,7 +410,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -445,7 +438,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -475,7 +467,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>mfc42d.lib;mfcs42d.lib;mfco42d.lib;LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -505,7 +496,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>mfc42d.lib;mfcs42d.lib;mfco42d.lib;LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
