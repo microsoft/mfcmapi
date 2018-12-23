@@ -293,7 +293,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
@@ -326,7 +325,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
@@ -469,7 +467,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
     </Link>
   </ItemDefinitionGroup>
@@ -498,7 +495,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
     </Link>
   </ItemDefinitionGroup>
