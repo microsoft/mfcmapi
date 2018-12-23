@@ -357,7 +357,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;MRMAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;MRMAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -412,7 +412,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;MRMAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;MRMAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
