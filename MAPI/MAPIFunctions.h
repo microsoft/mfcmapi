@@ -1,6 +1,6 @@
 // Stand alone MAPI functions
 #pragma once
-#include "Interpret/GUIDArray.h"
+#include <Interpret/GUIDArray.h>
 
 namespace mapi
 {
@@ -143,9 +143,7 @@ namespace mapi
 		ULONG ulFlags,
 		_Out_ ULONG* lpcValues,
 		_Deref_out_opt_ LPSPropValue* lppPropArray);
-	_Check_return_ LPSBinary GetSpecialFolderEID(
-		_In_ LPMDB lpMDB,
-		ULONG ulFolderPropTag);
+	_Check_return_ LPSBinary GetSpecialFolderEID(_In_ LPMDB lpMDB, ULONG ulFolderPropTag);
 	_Check_return_ HRESULT
 	IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ bool* pfBlocked);
 	_Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag);
@@ -296,4 +294,4 @@ namespace mapi
 		ULONG ulFlags,
 		_In_ const std::wstring& lpszFileName,
 		_Out_ LPSTREAM* lppStream);
-}
+} // namespace mapi

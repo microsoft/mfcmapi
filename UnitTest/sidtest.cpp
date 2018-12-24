@@ -1,4 +1,4 @@
-#include <StdAfx.h>
+#include <../StdAfx.h>
 #include <CppUnitTest.h>
 #include <UnitTest/UnitTest.h>
 #include <Interpret/Sid.h>

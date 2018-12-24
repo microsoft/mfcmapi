@@ -7,20 +7,20 @@
 #include <Interpret/ExtraPropTags.h>
 
 #define CHECKFLAG(__flag) ((ProgOpts.MAPIMIMEFlags & (__flag)) == (__flag))
-void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
+void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 {
 	printf("Message File Converter\n");
 	printf("Options specified:\n");
 	printf("   Input File: %ws\n", ProgOpts.lpszInput.c_str());
 	printf("   Output File: %ws\n", ProgOpts.lpszOutput.c_str());
 	printf("   Conversion Type: ");
-	if (CHECKFLAG(MAPIMIME_TOMIME))
+	if (CHECKFLAG(cli::MAPIMIME_TOMIME))
 	{
 		printf("MAPI -> MIME\n");
 
-		printf("   Save Format: %s\n", CHECKFLAG(MAPIMIME_RFC822) ? "RFC822" : "RFC1521");
+		printf("   Save Format: %s\n", CHECKFLAG(cli::MAPIMIME_RFC822) ? "RFC822" : "RFC1521");
 
-		if (CHECKFLAG(MAPIMIME_WRAP))
+		if (CHECKFLAG(cli::MAPIMIME_WRAP))
 		{
 			printf("   Line Wrap: ");
 			if (0 == ProgOpts.ulWrapLines)
@@ -29,14 +29,14 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 				printf("%lu\n", ProgOpts.ulWrapLines);
 		}
 	}
-	else if (CHECKFLAG(MAPIMIME_TOMAPI))
+	else if (CHECKFLAG(cli::MAPIMIME_TOMAPI))
 	{
 		printf("MIME -> MAPI\n");
-		if (CHECKFLAG(MAPIMIME_UNICODE))
+		if (CHECKFLAG(cli::MAPIMIME_UNICODE))
 		{
 			printf("   Building Unicode MSG file\n");
 		}
-		if (CHECKFLAG(MAPIMIME_CHARSET))
+		if (CHECKFLAG(cli::MAPIMIME_CHARSET))
 		{
 			printf("   CodePage: %lu\n", ProgOpts.ulCodePage);
 			printf("   CharSetType: ");
@@ -79,7 +79,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		}
 	}
 
-	if (CHECKFLAG(MAPIMIME_ENCODING))
+	if (CHECKFLAG(cli::MAPIMIME_ENCODING))
 	{
 		auto szType = interpretprop::InterpretFlags(flagIet, ProgOpts.ulEncodingType);
 		if (!szType.empty())
@@ -88,7 +88,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		}
 	}
 
-	if (CHECKFLAG(MAPIMIME_ADDRESSBOOK))
+	if (CHECKFLAG(cli::MAPIMIME_ADDRESSBOOK))
 	{
 		printf("   Using Address Book\n");
 	}
@@ -96,29 +96,29 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 	auto hRes = S_OK;
 
 	LPADRBOOK lpAdrBook = nullptr;
-	if (CHECKFLAG(MAPIMIME_ADDRESSBOOK) && ProgOpts.lpMAPISession)
+	if (CHECKFLAG(cli::MAPIMIME_ADDRESSBOOK) && ProgOpts.lpMAPISession)
 	{
 		WC_MAPI(ProgOpts.lpMAPISession->OpenAddressBook(NULL, NULL, AB_NO_DIALOG, &lpAdrBook));
 		if (FAILED(hRes)) printf("OpenAddressBook returned an error: 0x%08lx\n", hRes);
 	}
 
-	if (CHECKFLAG(MAPIMIME_TOMIME))
+	if (CHECKFLAG(cli::MAPIMIME_TOMIME))
 	{
 		// Source file is MSG, target is EML
 		hRes = WC_H(mapi::mapimime::ConvertMSGToEML(
 			ProgOpts.lpszInput.c_str(),
 			ProgOpts.lpszOutput.c_str(),
 			ProgOpts.convertFlags,
-			CHECKFLAG(MAPIMIME_ENCODING) ? static_cast<ENCODINGTYPE>(ProgOpts.ulEncodingType) : IET_UNKNOWN,
-			CHECKFLAG(MAPIMIME_RFC822) ? SAVE_RFC822 : SAVE_RFC1521,
-			CHECKFLAG(MAPIMIME_WRAP) ? ProgOpts.ulWrapLines : USE_DEFAULT_WRAPPING,
+			CHECKFLAG(cli::MAPIMIME_ENCODING) ? static_cast<ENCODINGTYPE>(ProgOpts.ulEncodingType) : IET_UNKNOWN,
+			CHECKFLAG(cli::MAPIMIME_RFC822) ? SAVE_RFC822 : SAVE_RFC1521,
+			CHECKFLAG(cli::MAPIMIME_WRAP) ? ProgOpts.ulWrapLines : USE_DEFAULT_WRAPPING,
 			lpAdrBook));
 	}
-	else if (CHECKFLAG(MAPIMIME_TOMAPI))
+	else if (CHECKFLAG(cli::MAPIMIME_TOMAPI))
 	{
 		// Source file is EML, target is MSG
 		HCHARSET hCharSet = nullptr;
-		if (CHECKFLAG(MAPIMIME_CHARSET))
+		if (CHECKFLAG(cli::MAPIMIME_CHARSET))
 		{
 			hRes = WC_H(import::MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage, ProgOpts.cSetType, &hCharSet));
 			if (FAILED(hRes))
@@ -133,11 +133,11 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 				ProgOpts.lpszInput.c_str(),
 				ProgOpts.lpszOutput.c_str(),
 				ProgOpts.convertFlags,
-				CHECKFLAG(MAPIMIME_CHARSET),
+				CHECKFLAG(cli::MAPIMIME_CHARSET),
 				hCharSet,
 				ProgOpts.cSetApplyType,
 				lpAdrBook,
-				CHECKFLAG(MAPIMIME_UNICODE)));
+				CHECKFLAG(cli::MAPIMIME_UNICODE)));
 		}
 	}
 

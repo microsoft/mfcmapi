@@ -3,6 +3,12 @@
 
 namespace columns
 {
+	struct TagNames
+	{
+		ULONG ulMatchingTableColumn;
+		UINT uidName;
+	};
+
 	// All SizedSPropTagArray arrays in ColumnTags.h must have PR_INSTANCE_KEY and PR_ENTRY_ID
 	// as the first two properties. The code in CContentsTableListCtrl depends on this.
 

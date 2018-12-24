@@ -76,7 +76,7 @@ namespace output
 		lpProfAdmin->Release();
 	}
 
-	void DoProfile(_In_ MYOPTIONS ProgOpts)
+	void DoProfile(_In_ cli::MYOPTIONS ProgOpts)
 	{
 		if (!ProgOpts.lpszProfile.empty() && !ProgOpts.lpszOutput.empty())
 		{
@@ -95,4 +95,4 @@ namespace output
 			ExportProfileList();
 		}
 	}
-}
+} // namespace output

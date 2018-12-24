@@ -3,5 +3,5 @@
 
 namespace output
 {
-	void DoProfile(_In_ MYOPTIONS ProgOpts);
+	void DoProfile(_In_ cli::MYOPTIONS ProgOpts);
 }

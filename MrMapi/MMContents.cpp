@@ -21,14 +21,15 @@ void DumpContentsTable(
 		lpszFolder ? lpszFolder : L"",
 		lpszProfile,
 		lpszDir);
-	if (ulOptions & OPT_DOCONTENTS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Contents\n");
-	if (ulOptions & OPT_DOASSOCIATEDCONTENTS)
+	if (ulOptions & cli::OPT_DOCONTENTS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Contents\n");
+	if (ulOptions & cli::OPT_DOASSOCIATEDCONTENTS)
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Associated Contents\n");
-	if (ulOptions & OPT_MSG) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
-	if (ulOptions & OPT_RETRYSTREAMPROPS)
+	if (ulOptions & cli::OPT_MSG) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
+	if (ulOptions & cli::OPT_RETRYSTREAMPROPS)
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will retry stream properties\n");
-	if (ulOptions & OPT_SKIPATTACHMENTS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
-	if (ulOptions & OPT_LIST) output::DebugPrint(DBGGeneric, L"DumpContentsTable: List only mode\n");
+	if (ulOptions & cli::OPT_SKIPATTACHMENTS)
+		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
+	if (ulOptions & cli::OPT_LIST) output::DebugPrint(DBGGeneric, L"DumpContentsTable: List only mode\n");
 	if (ulCount) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
 
 	if (lpFolder)
@@ -39,8 +40,8 @@ void DumpContentsTable(
 		MyDumpStore.InitFolder(lpFolder);
 		MyDumpStore.InitFolderPathRoot(lpszDir);
 		MyDumpStore.InitFolderContentsRestriction(lpRes);
-		if (ulOptions & OPT_MSG) MyDumpStore.EnableMSG();
-		if (ulOptions & OPT_LIST) MyDumpStore.EnableList();
+		if (ulOptions & cli::OPT_MSG) MyDumpStore.EnableMSG();
+		if (ulOptions & cli::OPT_LIST) MyDumpStore.EnableList();
 		if (ulCount)
 		{
 			MyDumpStore.InitMaxOutput(ulCount);
@@ -52,11 +53,11 @@ void DumpContentsTable(
 			MyDumpStore.InitSortOrder(&SortOrder);
 		}
 
-		if (!(ulOptions & OPT_RETRYSTREAMPROPS)) MyDumpStore.DisableStreamRetry();
-		if (ulOptions & OPT_SKIPATTACHMENTS) MyDumpStore.DisableEmbeddedAttachments();
+		if (!(ulOptions & cli::OPT_RETRYSTREAMPROPS)) MyDumpStore.DisableStreamRetry();
+		if (ulOptions & cli::OPT_SKIPATTACHMENTS) MyDumpStore.DisableEmbeddedAttachments();
 
 		MyDumpStore.ProcessFolders(
-			0 != (ulOptions & OPT_DOCONTENTS), 0 != (ulOptions & OPT_DOASSOCIATEDCONTENTS), false);
+			0 != (ulOptions & cli::OPT_DOCONTENTS), 0 != (ulOptions & cli::OPT_DOASSOCIATEDCONTENTS), false);
 	}
 }
 
@@ -80,7 +81,7 @@ void DumpMSG(
 	}
 }
 
-void DoContents(_In_ MYOPTIONS ProgOpts)
+void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 {
 	SRestriction sResTop = {0};
 	SRestriction sResMiddle[2] = {0};
@@ -148,11 +149,11 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 		lpRes);
 }
 
-void DoMSG(_In_ MYOPTIONS ProgOpts)
+void DoMSG(_In_ cli::MYOPTIONS ProgOpts)
 {
 	DumpMSG(
 		ProgOpts.lpszInput.c_str(),
 		!ProgOpts.lpszOutput.empty() ? ProgOpts.lpszOutput.c_str() : L".",
-		0 != (ProgOpts.ulOptions & OPT_RETRYSTREAMPROPS),
-		0 == (ProgOpts.ulOptions & OPT_SKIPATTACHMENTS));
+		0 != (ProgOpts.ulOptions & cli::OPT_RETRYSTREAMPROPS),
+		0 == (ProgOpts.ulOptions & cli::OPT_SKIPATTACHMENTS));
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <UI/Dialogs/BaseDialog.h>
+#include <MAPI/ColumnTags.h>
 
 namespace controls
 {
@@ -22,7 +23,7 @@ namespace dialog
 			_In_opt_ LPMAPIPROP lpContainer,
 			_In_opt_ LPMAPITABLE lpContentsTable,
 			_In_ LPSPropTagArray sptExtraColumnTags,
-			_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
+			_In_ const std::vector<columns::TagNames>& lpExtraDisplayColumns,
 			ULONG nIDContextMenu,
 			ULONG ulAddInContext);
 		virtual ~CContentsTableDlg();
@@ -74,7 +75,7 @@ namespace dialog
 		_Check_return_ LRESULT msgOnResetColumns(WPARAM wParam, LPARAM lParam);
 
 		// Values held only for use in InitDialog to create our CContentsTableListCtrl
-		std::vector<TagNames> m_lpExtraDisplayColumns;
+		std::vector<columns::TagNames> m_lpExtraDisplayColumns;
 		LPSPropTagArray m_sptExtraColumnTags;
 		UINT m_nIDContextMenu;
 

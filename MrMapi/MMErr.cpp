@@ -4,6 +4,12 @@
 #include <MrMapi/MMErr.h>
 #include <Shlwapi.h>
 
+namespace error
+{
+	extern ERROR_ARRAY_ENTRY g_ErrorArray[];
+	extern ULONG g_ulErrorArray;
+} // namespace error
+
 void PrintErrFromNum(_In_ ULONG ulError)
 {
 	printf("0x%08lX = %ws\n", ulError, error::ErrorNameFromErrorCode(ulError).c_str());
@@ -43,10 +49,10 @@ void PrintErrFromPartialName(_In_ const std::wstring& lpszError)
 	printf("Found %lu matches.\n", ulNumMatches);
 }
 
-void DoErrorParse(_In_ MYOPTIONS ProgOpts)
+void DoErrorParse(_In_ cli::MYOPTIONS ProgOpts)
 {
 	auto lpszErr = ProgOpts.lpszUnswitchedOption;
-	const auto ulErrNum = strings::wstringToUlong(lpszErr, ProgOpts.ulOptions & OPT_DODECIMAL ? 10 : 16);
+	const auto ulErrNum = strings::wstringToUlong(lpszErr, ProgOpts.ulOptions & cli::OPT_DODECIMAL ? 10 : 16);
 
 	if (ulErrNum)
 	{
@@ -54,7 +60,7 @@ void DoErrorParse(_In_ MYOPTIONS ProgOpts)
 	}
 	else
 	{
-		if (ProgOpts.ulOptions & OPT_DOPARTIALSEARCH || lpszErr.empty())
+		if (ProgOpts.ulOptions & cli::OPT_DOPARTIALSEARCH || lpszErr.empty())
 		{
 			PrintErrFromPartialName(lpszErr);
 		}

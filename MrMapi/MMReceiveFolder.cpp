@@ -54,7 +54,7 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 	}
 } // PrintReceiveFolderTable
 
-void DoReceiveFolder(_In_ MYOPTIONS ProgOpts)
+void DoReceiveFolder(_In_ cli::MYOPTIONS ProgOpts)
 {
 	if (ProgOpts.lpMDB)
 	{
