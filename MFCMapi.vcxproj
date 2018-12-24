@@ -604,6 +604,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Controls\HierarchyTableTreeCtrl.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MailboxTableDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MainDlg.h" />
+    <ClInclude Include="UI\profile.h" />
     <ClInclude Include="UI\ViewPane\TreePane.h" />
     <ClInclude Include="UI\MAPIFormFunctions.h" />
     <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h" />
@@ -704,6 +705,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="MAPI\MAPIStoreFunctions.cpp" />
     <ClCompile Include="IO\MFCOutput.cpp" />
     <ClCompile Include="MAPI\Cache\NamedPropCache.cpp" />
+    <ClCompile Include="UI\profile.cpp" />
     <ClCompile Include="UI\ParentWnd.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

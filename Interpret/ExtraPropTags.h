@@ -1182,3 +1182,5 @@ struct INDEX_SEARCH_PUSHER_PROCESS
 {
 	DWORD dwPID; // PID for process pushing
 };
+
+#define MAPI_FORCE_ACCESS 0x00080000

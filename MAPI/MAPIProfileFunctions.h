@@ -5,9 +5,6 @@ namespace mapi
 {
 	namespace profile
 	{
-		std::wstring
-		LaunchProfileWizard(_In_ HWND hParentWnd, ULONG ulFlags, _In_ const std::string& szServiceNameToAdd);
-
 		_Check_return_ HRESULT
 		HrMAPIProfileExists(_In_ LPPROFADMIN lpProfAdmin, _In_ const std::string& lpszProfileName);
 
@@ -43,11 +40,6 @@ namespace mapi
 
 		_Check_return_ LPPROFSECT
 		OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ LPSBinary lpProviderUID);
-
-		void AddServicesToMapiSvcInf();
-		void RemoveServicesFromMapiSvcInf();
-		std::wstring GetMAPISVCPath();
-		void DisplayMAPISVCPath(_In_ CWnd* pParentWnd);
 
 		// http://msdn2.microsoft.com/en-us/library/bb820969.aspx
 		struct EXCHANGE_STORE_VERSION_NUM

@@ -5,7 +5,7 @@
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
-#include <MAPI/MAPIProfileFunctions.h>
+#include <UI/profile.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
@@ -1236,16 +1236,16 @@ namespace dialog
 
 		if (MyData.DisplayDialog())
 		{
-			auto szProfName = mapi::profile::LaunchProfileWizard(
+			auto szProfName = ui::profile::LaunchProfileWizard(
 				m_hWnd, MyData.GetHex(0), strings::wstringTostring(MyData.GetStringW(1)));
 		}
 	}
 
-	void CMainDlg::OnGetMAPISVC() { mapi::profile::DisplayMAPISVCPath(this); }
+	void CMainDlg::OnGetMAPISVC() { ui::profile::DisplayMAPISVCPath(this); }
 
-	void CMainDlg::OnAddServicesToMAPISVC() { mapi::profile::AddServicesToMapiSvcInf(); }
+	void CMainDlg::OnAddServicesToMAPISVC() { ui::profile::AddServicesToMapiSvcInf(); }
 
-	void CMainDlg::OnRemoveServicesFromMAPISVC() { mapi::profile::RemoveServicesFromMapiSvcInf(); }
+	void CMainDlg::OnRemoveServicesFromMAPISVC() { ui::profile::RemoveServicesFromMapiSvcInf(); }
 
 	void CMainDlg::OnStatusTable()
 	{
