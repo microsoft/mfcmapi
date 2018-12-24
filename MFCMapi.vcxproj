@@ -53,60 +53,70 @@
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -143,113 +153,78 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
-    <RunCodeAnalysis>false</RunCodeAnalysis>
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <RunCodeAnalysis>false</RunCodeAnalysis>
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
-    <LibraryWPath />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">
-    <RunCodeAnalysis>false</RunCodeAnalysis>
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <RunCodeAnalysis>false</RunCodeAnalysis>
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
-    <LibraryWPath />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <RunCodeAnalysis>false</RunCodeAnalysis>
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
-    <RunCodeAnalysis>false</RunCodeAnalysis>
     <IncludePath>$(VC_IncludePath);$(WindowsSdk_IncludePath);$(SolutionDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <EnablePREfast>false</EnablePREfast>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <SDLCheck>true</SDLCheck>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/debugtype:cv,fixup /safeseh %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
       <Message>Copy Release build</Message>
@@ -262,188 +237,177 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <EnablePREfast>false</EnablePREfast>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <SDLCheck>true</SDLCheck>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/debugtype:cv,fixup %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;NDEBUG;_WINDOWS;UNICODE;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <EnablePREfast>false</EnablePREfast>
+      <SDLCheck>true</SDLCheck>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/debugtype:cv,fixup /safeseh %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>mfc42d.lib;mfcs42d.lib;mfco42d.lib;LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;NDEBUG;_WINDOWS;UNICODE;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <EnablePREfast>false</EnablePREfast>
+      <SDLCheck>true</SDLCheck>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/debugtype:cv,fixup %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>mfc42d.lib;mfcs42d.lib;mfco42d.lib;LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <EnablePREfast>false</EnablePREfast>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/debugtype:cv,fixup /safeseh %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
     </Link>
-    <Bscmake>
-      <PreserveSbr>true</PreserveSbr>
-    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
       <EnablePREfast>true</EnablePREfast>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/debugtype:cv,fixup /safeseh %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
     </Link>
-    <Bscmake>
-      <PreserveSbr>true</PreserveSbr>
-    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <EnablePREfast>false</EnablePREfast>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/debugtype:cv,fixup %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -453,28 +417,24 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <EnablePREfast>false</EnablePREfast>
+      <EnablePREfast>true</EnablePREfast>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/debugtype:cv,fixup %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -484,64 +444,57 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;_DEBUG;_WINDOWS;UNICODE;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <EnablePREfast>false</EnablePREfast>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/debugtype:cv,fixup /safeseh %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>mfc42d.lib;mfcs42d.lib;mfco42d.lib;LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NO_WARN_MBCS_MFC_DEPRECATION;_DEBUG;_WINDOWS;UNICODE;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <EnablePREfast>false</EnablePREfast>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/debugtype:cv,fixup %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>mfc42d.lib;mfcs42d.lib;mfco42d.lib;LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
-      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
       <SetChecksum>true</SetChecksum>
     </Link>
   </ItemDefinitionGroup>
@@ -552,54 +505,23 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="Interpret\SmartView\block\blockT.h" />
     <ClInclude Include="Interpret\SmartView\block\block.h" />
     <ClInclude Include="Interpret\SmartView\block\blockBytes.h" />
-    <ClInclude Include="MAPI\MapiMemory.h" />
-    <ClInclude Include="MAPI\StubUtils.h" />
-    <ClInclude Include="MAPI\Version.h" />
-    <ClInclude Include="UI\Controls\StyleTreeCtrl.h" />
-    <ClInclude Include="UI\Dialogs\HierarchyTable\ABContDlg.h" />
-    <ClInclude Include="UI\Dialogs\ContentsTable\ABDlg.h" />
-    <ClInclude Include="UI\Dialogs\AboutDlg.h" />
-    <ClInclude Include="UI\Dialogs\ContentsTable\AclDlg.h" />
     <ClInclude Include="MAPI\AdviseSink.h" />
-    <ClInclude Include="UI\Dialogs\Editors\MultiValuePropertyEditor.h" />
-    <ClInclude Include="UI\Dialogs\Editors\PropertySelector.h" />
-    <ClInclude Include="UI\Dialogs\Editors\SearchEditor.h" />
     <ClInclude Include="Property\Attributes.h" />
-    <ClInclude Include="UI\Dialogs\ContentsTable\AttachmentsDlg.h" />
-    <ClInclude Include="UI\Dialogs\BaseDialog.h" />
-    <ClInclude Include="UI\DoubleBuffer.h" />
     <ClInclude Include="MAPI\Cache\GlobalCache.h" />
     <ClInclude Include="MAPI\ColumnTags.h" />
-    <ClInclude Include="UI\Dialogs\ContentsTable\ContentsTableDlg.h" />
-    <ClInclude Include="UI\Controls\ContentsTableListCtrl.h" />
-    <ClInclude Include="UI\Dialogs\Editors\DbgView.h" />
-    <ClInclude Include="UI\Dialogs\Dialog.h" />
     <ClInclude Include="MAPI\MAPIProcessor\DumpStore.h" />
-    <ClInclude Include="UI\Dialogs\Editors\Editor.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="IO\Error.h" />
     <ClInclude Include="Interpret\ErrorArray.h" />
     <ClInclude Include="Interpret\ExtraPropTags.h" />
-    <ClInclude Include="UI\FakeSplitter.h" />
     <ClInclude Include="IO\File.h" />
-    <ClInclude Include="UI\FileDialogEx.h" />
     <ClInclude Include="Interpret\Flags.h" />
-    <ClInclude Include="UI\Dialogs\ContentsTable\FolderDlg.h" />
-    <ClInclude Include="UI\Dialogs\ContentsTable\FormContainerDlg.h" />
     <ClInclude Include="Interpret\GenTagArray.h" />
     <ClInclude Include="Interpret\GUIDArray.h" />
     <ClInclude Include="Interpret\Guids.h" />
-    <ClInclude Include="UI\Dialogs\Editors\HexEditor.h" />
-    <ClInclude Include="UI\Dialogs\HierarchyTable\HierarchyTableDlg.h" />
-    <ClInclude Include="UI\Controls\HierarchyTableTreeCtrl.h" />
     <ClInclude Include="ImportProcs.h" />
     <ClInclude Include="Interpret\InterpretProp.h" />
-    <ClInclude Include="UI\Dialogs\ContentsTable\MailboxTableDlg.h" />
-    <ClInclude Include="UI\Dialogs\ContentsTable\MainDlg.h" />
     <ClInclude Include="MAPI\MAPIABFunctions.h" />
-    <ClInclude Include="UI\callbacks.h" />
-    <ClInclude Include="UI\ViewPane\TreePane.h" />
-    <ClInclude Include="UI\MAPIFormFunctions.h" />
     <ClInclude Include="MAPI\MAPIFunctions.h" />
     <ClInclude Include="MAPI\MapiMime.h" />
     <ClInclude Include="MAPI\Cache\MapiObjects.h" />
@@ -613,10 +535,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="MAPI\MAPIStoreFunctions.h" />
     <ClInclude Include="MFCMAPI.h" />
     <ClInclude Include="IO\MFCOutput.h" />
-    <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h" />
-    <ClInclude Include="UI\Dialogs\Editors\QSSpecialFolders.h" />
-    <ClInclude Include="UI\RichEditOleCallback.h" />
-    <ClInclude Include="UI\Dialogs\SingleRecipientDialog.h" />
     <ClInclude Include="Interpret\SmartView\AdditionalRenEntryIDs.h" />
     <ClInclude Include="Interpret\SmartView\AppointmentRecurrencePattern.h" />
     <ClInclude Include="Interpret\SmartView\BinaryParser.h" />
@@ -647,6 +565,51 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="Interpret\SmartView\VerbStream.h" />
     <ClInclude Include="Interpret\SmartView\WebViewPersistStream.h" />
     <ClInclude Include="Interpret\SmartView\XID.h" />
+    <ClInclude Include="Interpret\String.h" />
+    <ClInclude Include="MAPI\Cache\NamedPropCache.h" />
+    <ClInclude Include="Interpret\NameIDArray.h" />
+    <ClInclude Include="PropertyBag\PropertyBag.h" />
+    <ClInclude Include="Interpret\PropTypeArray.h" />
+    <ClInclude Include="IO\Registry.h" />
+    <ClInclude Include="Res\Resource.h" />
+    <ClInclude Include="PropertyBag\RowPropertyBag.h" />
+    <ClInclude Include="Interpret\SmartView\SmartView.h" />
+    <ClInclude Include="Interpret\SmartView\SmartViewParsers.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="MAPI\MapiMemory.h" />
+    <ClInclude Include="MAPI\StubUtils.h" />
+    <ClInclude Include="MAPI\Version.h" />
+    <ClInclude Include="UI\Controls\StyleTreeCtrl.h" />
+    <ClInclude Include="UI\Dialogs\HierarchyTable\ABContDlg.h" />
+    <ClInclude Include="UI\Dialogs\ContentsTable\ABDlg.h" />
+    <ClInclude Include="UI\Dialogs\AboutDlg.h" />
+    <ClInclude Include="UI\Dialogs\ContentsTable\AclDlg.h" />
+    <ClInclude Include="UI\Dialogs\Editors\MultiValuePropertyEditor.h" />
+    <ClInclude Include="UI\Dialogs\Editors\PropertySelector.h" />
+    <ClInclude Include="UI\Dialogs\Editors\SearchEditor.h" />
+    <ClInclude Include="UI\Dialogs\ContentsTable\AttachmentsDlg.h" />
+    <ClInclude Include="UI\Dialogs\BaseDialog.h" />
+    <ClInclude Include="UI\DoubleBuffer.h" />
+    <ClInclude Include="UI\Dialogs\ContentsTable\ContentsTableDlg.h" />
+    <ClInclude Include="UI\Controls\ContentsTableListCtrl.h" />
+    <ClInclude Include="UI\Dialogs\Editors\DbgView.h" />
+    <ClInclude Include="UI\Dialogs\Dialog.h" />
+    <ClInclude Include="UI\Dialogs\Editors\Editor.h" />
+    <ClInclude Include="UI\FakeSplitter.h" />
+    <ClInclude Include="UI\FileDialogEx.h" />
+    <ClInclude Include="UI\Dialogs\ContentsTable\FolderDlg.h" />
+    <ClInclude Include="UI\Dialogs\ContentsTable\FormContainerDlg.h" />
+    <ClInclude Include="UI\Dialogs\Editors\HexEditor.h" />
+    <ClInclude Include="UI\Dialogs\HierarchyTable\HierarchyTableDlg.h" />
+    <ClInclude Include="UI\Controls\HierarchyTableTreeCtrl.h" />
+    <ClInclude Include="UI\Dialogs\ContentsTable\MailboxTableDlg.h" />
+    <ClInclude Include="UI\Dialogs\ContentsTable\MainDlg.h" />
+    <ClInclude Include="UI\ViewPane\TreePane.h" />
+    <ClInclude Include="UI\MAPIFormFunctions.h" />
+    <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h" />
+    <ClInclude Include="UI\Dialogs\Editors\QSSpecialFolders.h" />
+    <ClInclude Include="UI\RichEditOleCallback.h" />
+    <ClInclude Include="UI\Dialogs\SingleRecipientDialog.h" />
     <ClInclude Include="UI\Controls\SortList\BinaryData.h" />
     <ClInclude Include="UI\Controls\SortList\CommentData.h" />
     <ClInclude Include="UI\Controls\SortList\ContentsData.h" />
@@ -656,7 +619,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Controls\SortList\PropListData.h" />
     <ClInclude Include="UI\Controls\SortList\ResData.h" />
     <ClInclude Include="UI\Controls\SortList\SortListData.h" />
-    <ClInclude Include="Interpret\String.h" />
     <ClInclude Include="UI\ViewPane\CheckPane.h" />
     <ClInclude Include="UI\ViewPane\CountedTextPane.h" />
     <ClInclude Include="UI\ViewPane\DropDownPane.h" />
@@ -670,34 +632,25 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\MyMAPIFormViewer.h" />
     <ClInclude Include="UI\MySecInfo.h" />
     <ClInclude Include="UI\MyWinApp.h" />
-    <ClInclude Include="MAPI\Cache\NamedPropCache.h" />
-    <ClInclude Include="Interpret\NameIDArray.h" />
     <ClInclude Include="UI\Dialogs\Editors\Options.h" />
     <ClInclude Include="UI\ParentWnd.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\ProfileListDlg.h" />
-    <ClInclude Include="PropertyBag\PropertyBag.h" />
     <ClInclude Include="UI\Dialogs\Editors\PropertyEditor.h" />
     <ClInclude Include="UI\Dialogs\Editors\PropertyTagEditor.h" />
-    <ClInclude Include="Interpret\PropTypeArray.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\ProviderTableDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\PublicFolderTableDlg.h" />
     <ClInclude Include="UI\QuickStart.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\RecipientsDlg.h" />
-    <ClInclude Include="IO\Registry.h" />
-    <ClInclude Include="Res\Resource.h" />
     <ClInclude Include="UI\Dialogs\Editors\RestrictEditor.h" />
-    <ClInclude Include="PropertyBag\RowPropertyBag.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\RulesDlg.h" />
     <ClInclude Include="UI\Dialogs\SingleMessageDialog.h" />
     <ClInclude Include="UI\Controls\SingleMAPIPropListCtrl.h" />
-    <ClInclude Include="Interpret\SmartView\SmartView.h" />
-    <ClInclude Include="Interpret\SmartView\SmartViewParsers.h" />
     <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
     <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
-    <ClInclude Include="StdAfx.h" />
     <ClInclude Include="UI\Dialogs\Editors\StreamEditor.h" />
     <ClInclude Include="UI\Dialogs\Editors\TagArrayEditor.h" />
     <ClInclude Include="UI\UIFunctions.h" />
+    <ClInclude Include="UI\callbacks.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -726,46 +679,17 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Interpret\Sid.cpp" />
-    <ClCompile Include="MAPI\Version.cpp" />
-    <ClCompile Include="UI\Controls\StyleTreeCtrl.cpp" />
-    <ClCompile Include="UI\Dialogs\HierarchyTable\ABContDlg.cpp" />
-    <ClCompile Include="UI\Dialogs\ContentsTable\AbDlg.cpp" />
-    <ClCompile Include="UI\Dialogs\AboutDlg.cpp" />
-    <ClCompile Include="UI\Dialogs\ContentsTable\AclDlg.cpp" />
     <ClCompile Include="AddIns.cpp" />
     <ClCompile Include="MAPI\AdviseSink.cpp" />
-    <ClCompile Include="UI\Dialogs\ContentsTable\AttachmentsDlg.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\MultiValuePropertyEditor.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\PropertySelector.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\SearchEditor.cpp" />
     <ClCompile Include="Property\Attributes.cpp" />
-    <ClCompile Include="UI\Dialogs\BaseDialog.cpp" />
-    <ClCompile Include="UI\DoubleBuffer.cpp" />
     <ClCompile Include="MAPI\Cache\GlobalCache.cpp" />
-    <ClCompile Include="UI\Dialogs\ContentsTable\ContentsTableDlg.cpp" />
-    <ClCompile Include="UI\Controls\ContentsTableListCtrl.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\DbgView.cpp" />
-    <ClCompile Include="UI\Dialogs\Dialog.cpp" />
     <ClCompile Include="MAPI\MAPIProcessor\DumpStore.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\Editor.cpp" />
     <ClCompile Include="IO\Error.cpp" />
-    <ClCompile Include="UI\FakeSplitter.cpp" />
     <ClCompile Include="IO\File.cpp" />
-    <ClCompile Include="UI\FileDialogEx.cpp" />
-    <ClCompile Include="UI\Dialogs\ContentsTable\FolderDlg.cpp" />
-    <ClCompile Include="UI\Dialogs\ContentsTable\FormContainerDlg.cpp" />
     <ClCompile Include="Interpret\Guids.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\HexEditor.cpp" />
-    <ClCompile Include="UI\Dialogs\HierarchyTable\HierarchyTableDlg.cpp" />
-    <ClCompile Include="UI\Controls\HierarchyTableTreeCtrl.cpp" />
     <ClCompile Include="ImportProcs.cpp" />
     <ClCompile Include="Interpret\InterpretProp.cpp" />
-    <ClCompile Include="UI\Dialogs\ContentsTable\MailboxTableDlg.cpp" />
-    <ClCompile Include="UI\Dialogs\ContentsTable\MainDlg.cpp" />
     <ClCompile Include="MAPI\MAPIABFunctions.cpp" />
-    <ClCompile Include="UI\callbacks.cpp" />
-    <ClCompile Include="UI\ViewPane\TreePane.cpp" />
-    <ClCompile Include="UI\MAPIFormFunctions.cpp" />
     <ClCompile Include="MAPI\MAPIFunctions.cpp" />
     <ClCompile Include="MAPI\MapiMime.cpp" />
     <ClCompile Include="MAPI\Cache\MapiObjects.cpp" />
@@ -779,33 +703,12 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="MAPI\MapiStubLibrary.cpp" />
     <ClCompile Include="MAPI\MAPIStoreFunctions.cpp" />
     <ClCompile Include="IO\MFCOutput.cpp" />
-    <ClCompile Include="UI\Dialogs\MFCUtilityFunctions.cpp" />
-    <ClCompile Include="UI\Dialogs\ContentsTable\MsgServiceTableDlg.cpp" />
-    <ClCompile Include="UI\Dialogs\HierarchyTable\MsgStoreDlg.cpp" />
-    <ClCompile Include="UI\MyMAPIFormViewer.cpp" />
-    <ClCompile Include="UI\MySecInfo.cpp" />
-    <ClCompile Include="UI\MyWinApp.cpp" />
     <ClCompile Include="MAPI\Cache\NamedPropCache.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\Options.cpp" />
     <ClCompile Include="UI\ParentWnd.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\ProfileListDlg.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\PropertyEditor.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\PropertyTagEditor.cpp" />
-    <ClCompile Include="UI\Dialogs\ContentsTable\ProviderTableDlg.cpp" />
-    <ClCompile Include="UI\Dialogs\ContentsTable\PublicFolderTableDlg.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\QSSpecialFolders.cpp" />
-    <ClCompile Include="UI\QuickStart.cpp" />
-    <ClCompile Include="UI\Dialogs\ContentsTable\RecipientsDlg.cpp" />
     <ClCompile Include="IO\Registry.cpp" />
-    <ClCompile Include="UI\Dialogs\Editors\RestrictEditor.cpp" />
     <ClCompile Include="PropertyBag\RowPropertyBag.cpp" />
-    <ClCompile Include="UI\RichEditOleCallback.cpp" />
-    <ClCompile Include="UI\Dialogs\ContentsTable\RulesDlg.cpp" />
-    <ClCompile Include="UI\Controls\SingleMAPIPropListCtrl.cpp" />
-    <ClCompile Include="UI\Dialogs\SingleMessageDialog.cpp" />
-    <ClCompile Include="UI\Dialogs\SingleRecipientDialog.cpp" />
     <ClCompile Include="Interpret\SmartView\AdditionalRenEntryIDs.cpp" />
     <ClCompile Include="Interpret\SmartView\AppointmentRecurrencePattern.cpp" />
     <ClCompile Include="Interpret\SmartView\ConversationIndex.cpp" />
@@ -836,6 +739,57 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="Interpret\SmartView\VerbStream.cpp" />
     <ClCompile Include="Interpret\SmartView\WebViewPersistStream.cpp" />
     <ClCompile Include="Interpret\SmartView\XID.cpp" />
+    <ClCompile Include="Interpret\String.cpp" />
+    <ClCompile Include="MAPI\StubUtils.cpp" />
+    <ClCompile Include="MAPI\Version.cpp" />
+    <ClCompile Include="UI\ViewPane\TreePane.cpp" />
+    <ClCompile Include="UI\MAPIFormFunctions.cpp" />
+    <ClCompile Include="UI\Controls\StyleTreeCtrl.cpp" />
+    <ClCompile Include="UI\Dialogs\HierarchyTable\ABContDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\AbDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\AboutDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\AclDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\AttachmentsDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\MultiValuePropertyEditor.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\PropertySelector.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\SearchEditor.cpp" />
+    <ClCompile Include="UI\Dialogs\BaseDialog.cpp" />
+    <ClCompile Include="UI\DoubleBuffer.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\ContentsTableDlg.cpp" />
+    <ClCompile Include="UI\Controls\ContentsTableListCtrl.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\DbgView.cpp" />
+    <ClCompile Include="UI\Dialogs\Dialog.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\Editor.cpp" />
+    <ClCompile Include="UI\FakeSplitter.cpp" />
+    <ClCompile Include="UI\FileDialogEx.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\FolderDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\FormContainerDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\HexEditor.cpp" />
+    <ClCompile Include="UI\Dialogs\HierarchyTable\HierarchyTableDlg.cpp" />
+    <ClCompile Include="UI\Controls\HierarchyTableTreeCtrl.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\MailboxTableDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\MainDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\MFCUtilityFunctions.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\MsgServiceTableDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\HierarchyTable\MsgStoreDlg.cpp" />
+    <ClCompile Include="UI\MyMAPIFormViewer.cpp" />
+    <ClCompile Include="UI\MySecInfo.cpp" />
+    <ClCompile Include="UI\MyWinApp.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\Options.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\ProfileListDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\PropertyEditor.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\PropertyTagEditor.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\ProviderTableDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\PublicFolderTableDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\QSSpecialFolders.cpp" />
+    <ClCompile Include="UI\QuickStart.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\RecipientsDlg.cpp" />
+    <ClCompile Include="UI\Dialogs\Editors\RestrictEditor.cpp" />
+    <ClCompile Include="UI\RichEditOleCallback.cpp" />
+    <ClCompile Include="UI\Dialogs\ContentsTable\RulesDlg.cpp" />
+    <ClCompile Include="UI\Controls\SingleMAPIPropListCtrl.cpp" />
+    <ClCompile Include="UI\Dialogs\SingleMessageDialog.cpp" />
+    <ClCompile Include="UI\Dialogs\SingleRecipientDialog.cpp" />
     <ClCompile Include="UI\Controls\SortList\BinaryData.cpp" />
     <ClCompile Include="UI\Controls\SortList\CommentData.cpp" />
     <ClCompile Include="UI\Controls\SortList\ContentsData.cpp" />
@@ -847,8 +801,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortListData.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\StreamEditor.cpp" />
-    <ClCompile Include="Interpret\String.cpp" />
-    <ClCompile Include="MAPI\StubUtils.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\TagArrayEditor.cpp" />
     <ClCompile Include="UI\UIFunctions.cpp" />
     <ClCompile Include="UI\ViewPane\CheckPane.cpp" />
@@ -859,6 +811,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\ViewPane\SplitterPane.cpp" />
     <ClCompile Include="UI\ViewPane\TextPane.cpp" />
     <ClCompile Include="UI\ViewPane\ViewPane.cpp" />
+    <ClCompile Include="UI\callbacks.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="mfcmapi.exe.manifest" />

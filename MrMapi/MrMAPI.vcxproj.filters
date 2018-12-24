@@ -70,6 +70,9 @@
     <ClInclude Include="..\Interpret\SmartView\block\blockT.h">
       <Filter>Source Files\Interpret\SmartView\block</Filter>
     </ClInclude>
+    <ClInclude Include="cli.h">
+      <Filter>Source Files\MrMAPI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AddIns.cpp">
@@ -98,6 +101,9 @@
     </ClCompile>
     <ClCompile Include="..\MAPI\Cache\NamedPropCache.cpp">
       <Filter>Source Files\MAPI\Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="cli.cpp">
+      <Filter>Source Files\MrMAPI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

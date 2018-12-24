@@ -1,10 +1,10 @@
 #pragma once
 // Folder related utilities for MrMAPI
 
-void DoChildFolders(_In_ MYOPTIONS ProgOpts);
-void DoFolderProps(_In_ MYOPTIONS ProgOpts);
-void DoFolderSize(_In_ MYOPTIONS ProgOpts);
-void DoSearchState(_In_ MYOPTIONS ProgOpts);
+void DoChildFolders(_In_ cli::MYOPTIONS ProgOpts);
+void DoFolderProps(_In_ cli::MYOPTIONS ProgOpts);
+void DoFolderSize(_In_ cli::MYOPTIONS ProgOpts);
+void DoSearchState(_In_ cli::MYOPTIONS ProgOpts);
 
 LPMAPIFOLDER MAPIOpenFolderExW(
 	_In_ LPMDB lpMdb, // Open message store

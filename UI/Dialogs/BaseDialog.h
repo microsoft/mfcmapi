@@ -25,6 +25,12 @@ namespace mapi
 	}
 }
 
+// Macros to assist in OnInitMenu
+#define CHECK(state) ((state) ? MF_CHECKED : MF_UNCHECKED)
+#define DIM(state) ((state) ? MF_ENABLED : MF_GRAYED)
+#define DIMMSOK(iNumSelected) ((iNumSelected >= 1) ? MF_ENABLED : MF_GRAYED)
+#define DIMMSNOK(iNumSelected) ((iNumSelected == 1) ? MF_ENABLED : MF_GRAYED)
+
 namespace dialog
 {
 	class CBaseDialog : public CMyDialog

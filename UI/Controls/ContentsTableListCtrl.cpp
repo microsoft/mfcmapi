@@ -29,7 +29,7 @@ namespace controls
 			_In_ CWnd* pCreateParent,
 			_In_ cache::CMapiObjects* lpMapiObjects,
 			_In_ LPSPropTagArray sptExtraColumnTags,
-			_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
+			_In_ const std::vector<columns::TagNames>& lpExtraDisplayColumns,
 			UINT nIDContextMenu,
 			bool bIsAB,
 			_In_ dialog::CContentsTableDlg* lpHostDlg)
