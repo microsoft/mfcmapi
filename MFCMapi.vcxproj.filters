@@ -150,6 +150,7 @@
     <ClInclude Include="UI\ViewPane\SplitterPane.h">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClInclude>
+    <ClInclude Include="UI\callbacks.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -199,6 +200,9 @@
     </ClCompile>
     <ClCompile Include="UI\ViewPane\SplitterPane.cpp">
       <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\callbacks.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -23,6 +23,7 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/Cache/GlobalCache.h>
 #include <MAPI/MapiMemory.h>
+#include <UI/callbacks.h>
 
 namespace dialog
 {
@@ -489,7 +490,8 @@ namespace dialog
 																	PR_RTF_SYNC_PREFIX_COUNT,
 																	PR_RTF_SYNC_TRAILING_COUNT}};
 
-				const auto lpTagsToExclude = mapi::GetExcludedTags(LPSPropTagArray(&excludeTags), m_lpFolder, m_bIsAB);
+				const auto lpTagsToExclude =
+					ui::callbacks::GetExcludedTags(LPSPropTagArray(&excludeTags), m_lpFolder, m_bIsAB);
 				if (lpTagsToExclude)
 				{
 					for (ULONG i = 0; i < lpEIDs->cValues; i++)
