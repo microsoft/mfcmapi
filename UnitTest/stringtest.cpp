@@ -1,4 +1,4 @@
-#include <../StdAfx.h>
+﻿#include <../StdAfx.h>
 #include <CppUnitTest.h>
 #include <UnitTest/UnitTest.h>
 #include <Interpret/String.h>
@@ -407,6 +407,7 @@ namespace stringtest
 			auto nullTerminatedStringW = std::wstring{L"test"};
 			nullTerminatedStringW.push_back(L'\0');
 			Assert::AreEqual(nullTerminatedStringW, strings::RemoveInvalidCharactersW(nullTerminatedStringW, true));
+			Assert::AreEqual(std::wstring(L"アメリカ"), strings::RemoveInvalidCharactersW(L"アメリカ"));
 
 			Assert::AreEqual(
 				std::string("a"),

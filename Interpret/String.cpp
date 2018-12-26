@@ -327,13 +327,13 @@ namespace strings
 
 	std::wstring indent(int iIndent) { return std::wstring(iIndent, L'\t'); }
 
-	// Find valid UTF-8 characters
+	// Find valid printable Unicode characters
 	bool InvalidCharacter(ULONG chr, bool bMultiLine)
 	{
-		// Remove high range of unprintable characters
-		if (chr >= 0x80) return true;
-		// Any printable extended ASCII character gets mapped directly
-		if (chr >= 0x20 && chr <= 0xFE)
+		// Remove range of control characters
+		if (chr >= 0x80 && chr <= 0x9F) return true;
+		// Any printable Unicode character gets mapped directly
+		if (chr >= 0x20)
 		{
 			return false;
 		}
@@ -357,7 +357,7 @@ namespace strings
 		std::replace_if(
 			szBin.begin(),
 			szBin.end(),
-			[bMultiLine](const char& chr) { return InvalidCharacter(chr, bMultiLine); },
+			[bMultiLine](const char& chr) { return InvalidCharacter(0xFF & chr, bMultiLine); },
 			'.');
 
 		if (nullTerminated) szBin.back() = '\0';
