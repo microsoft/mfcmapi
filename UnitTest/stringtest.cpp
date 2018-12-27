@@ -432,5 +432,13 @@ namespace stringtest
 			Assert::AreEqual(std::wstring(L"Invalid systime"), prop);
 			Assert::AreEqual(std::wstring(L"Low: 0xFFFFFFFF High: 0xFFFFFFFF"), alt);
 		}
+
+		TEST_METHOD(Test_loadfile)
+		{
+			static auto handle = GetModuleHandleW(L"UnitTest.dll");
+
+			Assert::AreEqual(std::wstring(L"アメリカ"), unittest::loadfile(handle, IDR_LOADTESTJAPANESE));
+			Assert::AreEqual(std::wstring(L"abc\r\n123"), unittest::loadfile(handle, IDR_LOADTESTENGLISH));
+		}
 	};
 } // namespace stringtest
