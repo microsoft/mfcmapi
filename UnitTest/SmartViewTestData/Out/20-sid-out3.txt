@@ -1,3 +1,0 @@
-SID: 
-User: NT AUTHORITY\SYSTEM
-Textual SID: S-1-5-18

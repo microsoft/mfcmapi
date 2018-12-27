@@ -1,0 +1,119 @@
+Recurrence Pattern: 
+ReaderVersion: 0x3004
+WriterVersion: 0x3004
+RecurFrequency: 0x200B = IDC_RCEV_PAT_ORB_WEEKLY
+PatternType: 0x0001 = rptWeek
+CalendarType: 0x0000 = CAL_DEFAULT
+FirstDateTime: 0x000021C0 = 8640
+Period: 0x00000002 = 2
+SlidingFlag: 0x00000000
+PatternTypeSpecific.WeekRecurrencePattern: 0x00000010 = rdfThu
+EndType: 0x00002021 = IDC_RCEV_PAT_ERB_END
+OccurrenceCount: 0x0000000A = 10
+FirstDOW: 0x00000000 = Sunday
+DeletedInstanceCount: 0x0000000A = 10
+DeletedInstanceDates[0]: 0x0CD45740 = 12:00:00.000 AM 4/1/2010
+DeletedInstanceDates[1]: 0x0CD4A600 = 12:00:00.000 AM 4/15/2010
+DeletedInstanceDates[2]: 0x0CD4F4C0 = 12:00:00.000 AM 4/29/2010
+DeletedInstanceDates[3]: 0x0CD54380 = 12:00:00.000 AM 5/13/2010
+DeletedInstanceDates[4]: 0x0CD59240 = 12:00:00.000 AM 5/27/2010
+DeletedInstanceDates[5]: 0x0CD5E100 = 12:00:00.000 AM 6/10/2010
+DeletedInstanceDates[6]: 0x0CD62FC0 = 12:00:00.000 AM 6/24/2010
+DeletedInstanceDates[7]: 0x0CD67E80 = 12:00:00.000 AM 7/8/2010
+DeletedInstanceDates[8]: 0x0CD6CD40 = 12:00:00.000 AM 7/22/2010
+DeletedInstanceDates[9]: 0x0CD71C00 = 12:00:00.000 AM 8/5/2010
+ModifiedInstanceCount: 0x00000005 = 5
+ModifiedInstanceDates[0]: 0x0CD45740 = 12:00:00.000 AM 4/1/2010
+ModifiedInstanceDates[1]: 0x0CD4A600 = 12:00:00.000 AM 4/15/2010
+ModifiedInstanceDates[2]: 0x0CD58CA0 = 12:00:00.000 AM 5/26/2010
+ModifiedInstanceDates[3]: 0x0CD5E100 = 12:00:00.000 AM 6/10/2010
+ModifiedInstanceDates[4]: 0x0CD71C00 = 12:00:00.000 AM 8/5/2010
+StartDate: 0x0CD45740 = 215242560 = 12:00:00.000 AM 4/1/2010
+EndDate: 0x0CD71C00 = 215424000 = 12:00:00.000 AM 8/5/2010
+Appointment Recurrence Pattern: 
+ReaderVersion2: 0x00003006
+WriterVersion2: 0x00003009
+StartTimeOffset: 0x00000384 = 900 = 03:00:00.000 PM 1/1/1601
+EndTimeOffset: 0x000003C0 = 960 = 04:00:00.000 PM 1/1/1601
+ExceptionCount: 0x0005
+ExceptionInfo[0].StartDateTime: 0x0CD45AC4 = 03:00:00.000 PM 4/1/2010
+ExceptionInfo[0].EndDateTime: 0x0CD45B00 = 04:00:00.000 PM 4/1/2010
+ExceptionInfo[0].OriginalStartDate: 0x0CD45AC4 = 03:00:00.000 PM 4/1/2010
+ExceptionInfo[0].OverrideFlags: 0x0213 = ARO_SUBJECT | ARO_MEETINGTYPE | ARO_LOCATION | ARO_EXCEPTIONAL_BODY
+ExceptionInfo[0].SubjectLength: 0x0031 = 49
+ExceptionInfo[0].SubjectLength2: 0x0030 = 48
+ExceptionInfo[0].Subject: "Bi-weekly Team Meeting (YADKIN for this meeting)"
+ExceptionInfo[0].MeetingType: 0x00000001 = asfMeeting
+ExceptionInfo[0].LocationLength: 0x0007 = 7
+ExceptionInfo[0].LocationLength2: 0x0006 = 6
+ExceptionInfo[0].Location: "Yadkin"
+ExceptionInfo[1].StartDateTime: 0x0CD4A984 = 03:00:00.000 PM 4/15/2010
+ExceptionInfo[1].EndDateTime: 0x0CD4A9C0 = 04:00:00.000 PM 4/15/2010
+ExceptionInfo[1].OriginalStartDate: 0x0CD4A984 = 03:00:00.000 PM 4/15/2010
+ExceptionInfo[1].OverrideFlags: 0x0213 = ARO_SUBJECT | ARO_MEETINGTYPE | ARO_LOCATION | ARO_EXCEPTIONAL_BODY
+ExceptionInfo[1].SubjectLength: 0x0041 = 65
+ExceptionInfo[1].SubjectLength2: 0x0040 = 64
+ExceptionInfo[1].Subject: "(Use to meet with Chris/Matt/Rick)   -    Bi-weekly Team Meeting"
+ExceptionInfo[1].MeetingType: 0x00000001 = asfMeeting
+ExceptionInfo[1].LocationLength: 0x0027 = 39
+ExceptionInfo[1].LocationLength2: 0x0026 = 38
+ExceptionInfo[1].Location: "Conf Room CLT 1/2381 (24) AV Cape Fear"
+ExceptionInfo[2].StartDateTime: 0x0CD59024 = 03:00:00.000 PM 5/26/2010
+ExceptionInfo[2].EndDateTime: 0x0CD59060 = 04:00:00.000 PM 5/26/2010
+ExceptionInfo[2].OriginalStartDate: 0x0CD595C4 = 03:00:00.000 PM 5/27/2010
+ExceptionInfo[2].OverrideFlags: 0x021A = ARO_MEETINGTYPE | ARO_REMINDER | ARO_LOCATION | ARO_EXCEPTIONAL_BODY
+ExceptionInfo[2].MeetingType: 0x00000001 = asfMeeting
+ExceptionInfo[2].ReminderSet: 0x00000000
+ExceptionInfo[2].LocationLength: 0x0001 = 1
+ExceptionInfo[2].LocationLength2: 0x0000 = 0
+ExceptionInfo[2].Location: ""
+ExceptionInfo[3].StartDateTime: 0x0CD5E484 = 03:00:00.000 PM 6/10/2010
+ExceptionInfo[3].EndDateTime: 0x0CD5E4C0 = 04:00:00.000 PM 6/10/2010
+ExceptionInfo[3].OriginalStartDate: 0x0CD5E484 = 03:00:00.000 PM 6/10/2010
+ExceptionInfo[3].OverrideFlags: 0x0200 = ARO_EXCEPTIONAL_BODY
+ExceptionInfo[4].StartDateTime: 0x0CD71F84 = 03:00:00.000 PM 8/5/2010
+ExceptionInfo[4].EndDateTime: 0x0CD71FC0 = 04:00:00.000 PM 8/5/2010
+ExceptionInfo[4].OriginalStartDate: 0x0CD71F84 = 03:00:00.000 PM 8/5/2010
+ExceptionInfo[4].OverrideFlags: 0x0002 = ARO_MEETINGTYPE
+ExceptionInfo[4].MeetingType: 0x00000001 = asfMeeting
+ReservedBlock1Size: 0x00000000
+ExtendedException[0].ChangeHighlight.ChangeHighlightSize: 0x00000004
+ExtendedException[0].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+ExtendedException[0].ReservedBlockEE1Size: 0x00000000
+ExtendedException[0].StartDateTime: 0x0CD45AC4 = 03:00:00.000 PM 4/1/2010
+ExtendedException[0].EndDateTime: 0x0CD45B00 = 04:00:00.000 PM 4/1/2010
+ExtendedException[0].OriginalStartDate: 0x0CD45AC4 = 03:00:00.000 PM 4/1/2010
+ExtendedException[0].WideCharSubjectLength: 0x00000030 = 48
+ExtendedException[0].WideCharSubject: "Bi-weekly Team Meeting (YADKIN for this meeting)"
+ExtendedException[0].WideCharLocationLength: 0x00000006 = 6
+ExtendedException[0].WideCharLocation: "Yadkin"
+ExtendedException[0].ReservedBlockEE2Size: 0x00000000
+ExtendedException[1].ChangeHighlight.ChangeHighlightSize: 0x00000004
+ExtendedException[1].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+ExtendedException[1].ReservedBlockEE1Size: 0x00000000
+ExtendedException[1].StartDateTime: 0x0CD4A984 = 03:00:00.000 PM 4/15/2010
+ExtendedException[1].EndDateTime: 0x0CD4A9C0 = 04:00:00.000 PM 4/15/2010
+ExtendedException[1].OriginalStartDate: 0x0CD4A984 = 03:00:00.000 PM 4/15/2010
+ExtendedException[1].WideCharSubjectLength: 0x00000040 = 64
+ExtendedException[1].WideCharSubject: "(Use to meet with Chris/Matt/Rick)   -    Bi-weekly Team Meeting"
+ExtendedException[1].WideCharLocationLength: 0x00000026 = 38
+ExtendedException[1].WideCharLocation: "Conf Room CLT 1/2381 (24) AV Cape Fear"
+ExtendedException[1].ReservedBlockEE2Size: 0x00000000
+ExtendedException[2].ChangeHighlight.ChangeHighlightSize: 0x00000004
+ExtendedException[2].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+ExtendedException[2].ReservedBlockEE1Size: 0x00000000
+ExtendedException[2].StartDateTime: 0x0CD59024 = 03:00:00.000 PM 5/26/2010
+ExtendedException[2].EndDateTime: 0x0CD59060 = 04:00:00.000 PM 5/26/2010
+ExtendedException[2].OriginalStartDate: 0x0CD595C4 = 03:00:00.000 PM 5/27/2010
+ExtendedException[2].WideCharLocationLength: 0x00000000 = 0
+ExtendedException[2].WideCharLocation: ""
+ExtendedException[2].ReservedBlockEE2Size: 0x00000000
+ExtendedException[3].ChangeHighlight.ChangeHighlightSize: 0x00000004
+ExtendedException[3].ChangeHighlight.ChangeHighlightValue: 0x00000080 = BIT_CH_BODY
+ExtendedException[3].ReservedBlockEE1Size: 0x00000000
+ExtendedException[3].ReservedBlockEE2Size: 0x00000000
+ExtendedException[4].ChangeHighlight.ChangeHighlightSize: 0x00000004
+ExtendedException[4].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
+ExtendedException[4].ReservedBlockEE1Size: 0x00000000
+ExtendedException[4].ReservedBlockEE2Size: 0x00000000
+ReservedBlock2Size: 0x00000000

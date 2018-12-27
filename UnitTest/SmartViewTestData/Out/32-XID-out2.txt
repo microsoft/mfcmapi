@@ -1,3 +1,0 @@
-XID:
-NamespaceGuid = {67375814-34B6-416D-A95E-06FFF0D886A8}
-LocalId = cb: 6 lpb: 000000032256
