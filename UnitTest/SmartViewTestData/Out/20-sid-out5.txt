@@ -1,3 +1,0 @@
-SID: 
-User: (no domain)\(no name)
-Textual SID: (no SID)

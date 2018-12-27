@@ -1,6 +1,0 @@
-Property[0]
-Property = 0x0FFE0003
-Name: PR_OBJECT_TYPE
-Other Matches: PidTagObjectType, ptagObjectType
-PropString = 6 AltPropString = 0x6
-Smart View: Flags: MAPI_MAILUSER

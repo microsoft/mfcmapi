@@ -1,7 +1,0 @@
-MAPI One Off Recipient Entry ID:
-abFlags = 0x00000000
-Provider GUID = {A41F2B81-A3BE-1910-9D6E-00DD010F5402} = muidOOP
-dwBitmask: 0x10010000 = MAPI_SEND_NO_RICH_INFO | OOP_DONT_LOOKUP
-szDisplayName = 'admin@example.com'
-szAddressType = SMTP
-szEmailAddress = admin@example.com
