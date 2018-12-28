@@ -1,4 +1,4 @@
-#include <../StdAfx.h>
+﻿#include <../StdAfx.h>
 #include <CppUnitTest.h>
 #include <UnitTest/UnitTest.h>
 #include <Interpret/String.h>
@@ -407,6 +407,7 @@ namespace stringtest
 			auto nullTerminatedStringW = std::wstring{L"test"};
 			nullTerminatedStringW.push_back(L'\0');
 			Assert::AreEqual(nullTerminatedStringW, strings::RemoveInvalidCharactersW(nullTerminatedStringW, true));
+			Assert::AreEqual(std::wstring(L"アメリカ"), strings::RemoveInvalidCharactersW(L"アメリカ"));
 
 			Assert::AreEqual(
 				std::string("a"),
@@ -430,6 +431,14 @@ namespace stringtest
 			strings::FileTimeToString(FILETIME{0xFFFFFFFF, 0xFFFFFFFF}, prop, alt);
 			Assert::AreEqual(std::wstring(L"Invalid systime"), prop);
 			Assert::AreEqual(std::wstring(L"Low: 0xFFFFFFFF High: 0xFFFFFFFF"), alt);
+		}
+
+		TEST_METHOD(Test_loadfile)
+		{
+			static auto handle = GetModuleHandleW(L"UnitTest.dll");
+
+			Assert::AreEqual(std::wstring(L"アメリカ"), unittest::loadfile(handle, IDR_LOADTESTJAPANESE));
+			Assert::AreEqual(std::wstring(L"abc\r\n123"), unittest::loadfile(handle, IDR_LOADTESTENGLISH));
 		}
 	};
 } // namespace stringtest

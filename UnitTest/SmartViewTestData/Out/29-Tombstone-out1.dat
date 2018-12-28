@@ -1,0 +1,142 @@
+Tombstone:
+Identifier = 0xBEDEAFCD
+HeaderSize = 0x00000014
+Version = 0x00000003
+RecordsCount = 0x00000001
+ActualRecordsCount (computed) = 0x00000009
+RecordsSize = 0x00000014
+Record[0]
+StartTime = 0x0CE58060 = 12:00:00.000 AM 5/21/2012
+Endtime = 0x0CE59C80 = 12:00:00.000 AM 5/26/2012
+GlobalObjectIdSize = 0x00000038
+Global Object ID:
+Byte Array ID = cb: 16 lpb: 040000008200E00074C5B7101A82E008 = s_rgbSPlus
+Year: 0x0000 = 0
+Month: 0x00 = 0 = 0x0
+Day: 0x00 = 0
+Creation Time = 0x01CD1CBD:0x0B83B4F0 = 05:10:53.119 PM 4/17/2012
+X: 0x00000000:0x00000000
+Size: 0x10 = 16
+Data = cb: 16 lpb: 7BACC3A0BFEED8428646C15C94AE08F1
+UsernameSize= 0x000F
+szUsername = Aaaaaaa Aaaaaaa
+Record[1]
+StartTime = 0x0CE29CEC = 01:00:00.000 PM 1/10/2012
+Endtime = 0x0CE29D28 = 02:00:00.000 PM 1/10/2012
+GlobalObjectIdSize = 0x00000038
+Global Object ID:
+Byte Array ID = cb: 16 lpb: 040000008200E00074C5B7101A82E008 = s_rgbSPlus
+Year: 0x0000 = 0
+Month: 0x00 = 0 = 0x0
+Day: 0x00 = 0
+Creation Time = 0x01CCCEB9:0xA2536DF0 = 10:29:57.455 AM 1/9/2012
+X: 0x00000000:0x00000000
+Size: 0x10 = 16
+Data = cb: 16 lpb: AAFE001FB806904D9E0882DBA6C0B07A
+UsernameSize= 0x000F
+szUsername = Aaaaaaa Aaaaaaa
+Record[2]
+StartTime = 0x0CE0F220 = 04:00:00.000 PM 10/26/2011
+Endtime = 0x0CE0F25C = 05:00:00.000 PM 10/26/2011
+GlobalObjectIdSize = 0x00000038
+Global Object ID:
+Byte Array ID = cb: 16 lpb: 040000008200E00074C5B7101A82E008 = s_rgbSPlus
+Year: 0x0000 = 0
+Month: 0x00 = 0 = 0x0
+Day: 0x00 = 0
+Creation Time = 0x01CC08CF:0x7A6566A0 = 01:47:29.162 PM 5/2/2011
+X: 0x00000000:0x00000000
+Size: 0x10 = 16
+Data = cb: 16 lpb: 651A164824448C4DADD9877ADA3CF4B0
+UsernameSize= 0x000F
+szUsername = Aaaaaaa Aaaaaaa
+Record[3]
+StartTime = 0x0CE0E320 = 12:00:00.000 AM 10/24/2011
+Endtime = 0x0CE0FF40 = 12:00:00.000 AM 10/29/2011
+GlobalObjectIdSize = 0x00000038
+Global Object ID:
+Byte Array ID = cb: 16 lpb: 040000008200E00074C5B7101A82E008 = s_rgbSPlus
+Year: 0x0000 = 0
+Month: 0x00 = 0 = 0x0
+Day: 0x00 = 0
+Creation Time = 0x01CC91A8:0xFB39E370 = 05:27:04.231 PM 10/23/2011
+X: 0x00000000:0x00000000
+Size: 0x10 = 16
+Data = cb: 16 lpb: FC929ECEBA3B1F4AB40DF3F487067F84
+UsernameSize= 0x000F
+szUsername = Aaaaaaa Aaaaaaa
+Record[4]
+StartTime = 0x0CE0F6D0 = 12:00:00.000 PM 10/27/2011
+Endtime = 0x0CE0F748 = 02:00:00.000 PM 10/27/2011
+GlobalObjectIdSize = 0x00000038
+Global Object ID:
+Byte Array ID = cb: 16 lpb: 040000008200E00074C5B7101A82E008 = s_rgbSPlus
+Year: 0x0000 = 0
+Month: 0x00 = 0 = 0x0
+Day: 0x00 = 0
+Creation Time = 0x01CC77DA:0x42C19320 = 09:14:19.346 PM 9/20/2011
+X: 0x00000000:0x00000000
+Size: 0x10 = 16
+Data = cb: 16 lpb: 0B26EEC95274FA40AD816AA65F57E62A
+UsernameSize= 0x000F
+szUsername = Aaaaaaa Aaaaaaa
+Record[5]
+StartTime = 0x0CDFEA65 = 06:45:00.000 PM 9/9/2011
+Endtime = 0x0CDFEAB0 = 08:00:00.000 PM 9/9/2011
+GlobalObjectIdSize = 0x00000038
+Global Object ID:
+Byte Array ID = cb: 16 lpb: 040000008200E00074C5B7101A82E008 = s_rgbSPlus
+Year: 0x0000 = 0
+Month: 0x00 = 0 = 0x0
+Day: 0x00 = 0
+Creation Time = 0x01CC5238:0xCAB1ADF0 = 11:55:15.919 PM 8/3/2011
+X: 0x00000000:0x00000000
+Size: 0x10 = 16
+Data = cb: 16 lpb: 2F3AB5ECBCBC9D4C9E3454ACCDBE929B
+UsernameSize= 0x000F
+szUsername = Aaaaaaa Aaaaaaa
+Record[6]
+StartTime = 0x0CDFF51E = 04:30:00.000 PM 9/11/2011
+Endtime = 0x0CDFF569 = 05:45:00.000 PM 9/11/2011
+GlobalObjectIdSize = 0x00000038
+Global Object ID:
+Byte Array ID = cb: 16 lpb: 040000008200E00074C5B7101A82E008 = s_rgbSPlus
+Year: 0x0000 = 0
+Month: 0x00 = 0 = 0x0
+Day: 0x00 = 0
+Creation Time = 0x01CC5238:0xEB383F80 = 11:56:10.488 PM 8/3/2011
+X: 0x00000000:0x00000000
+Size: 0x10 = 16
+Data = cb: 16 lpb: 748C9E7AAE3FF44EBE3C0E0B86DEBA83
+UsernameSize= 0x000F
+szUsername = Aaaaaaa Aaaaaaa
+Record[7]
+StartTime = 0x0CE054A0 = 04:00:00.000 PM 9/28/2011
+Endtime = 0x0CE054DC = 05:00:00.000 PM 9/28/2011
+GlobalObjectIdSize = 0x00000038
+Global Object ID:
+Byte Array ID = cb: 16 lpb: 040000008200E00074C5B7101A82E008 = s_rgbSPlus
+Year: 0x07DB = 2011
+Month: 0x09 = 9 = September
+Day: 0x15 = 21
+Creation Time = 0x01CC08CF:0x7A6566A0 = 01:47:29.162 PM 5/2/2011
+X: 0x00000000:0x00000000
+Size: 0x10 = 16
+Data = cb: 16 lpb: 651A164824448C4DADD9877ADA3CF4B0
+UsernameSize= 0x000F
+szUsername = Aaaaaaa Aaaaaaa
+Record[8]
+StartTime = 0x0CE04E4C = 01:00:00.000 PM 9/27/2011
+Endtime = 0x0CE04E88 = 02:00:00.000 PM 9/27/2011
+GlobalObjectIdSize = 0x00000038
+Global Object ID:
+Byte Array ID = cb: 16 lpb: 040000008200E00074C5B7101A82E008 = s_rgbSPlus
+Year: 0x0000 = 0
+Month: 0x00 = 0 = 0x0
+Day: 0x00 = 0
+Creation Time = 0x01CC747B:0x42F47C20 = 02:16:44.002 PM 9/16/2011
+X: 0x00000000:0x00000000
+Size: 0x10 = 16
+Data = cb: 16 lpb: 66F68C0BB9A10745817C8975B9B52D61
+UsernameSize= 0x000F
+szUsername = Aaaaaaa Aaaaaaa

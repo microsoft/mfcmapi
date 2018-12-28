@@ -100,6 +100,8 @@ namespace unittest
 		const auto cb = SizeofResource(handle, rc);
 		const auto bytes = LockResource(rcData);
 		const auto data = static_cast<const BYTE*>(bytes);
+
+		// UTF 16 LE
 		if (cb >= 2 && data[0] == 0xff && data[1] == 0xfe)
 		{
 			// Skip the byte order mark

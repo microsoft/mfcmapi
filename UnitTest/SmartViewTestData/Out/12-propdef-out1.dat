@@ -1,0 +1,75 @@
+Property Definition Stream
+Version = 0x0103 = PropDefV2
+FieldDefinitionCount = 0x00000004
+Definition: 0
+	Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
+	VT = 0x0008 = VT_BSTR
+	DispID = 0x00000000
+	NmidNameLength = 0x0003
+	NmidName = foo
+	NameAnsi: Length = 0x0003 Characters = foo
+	FormulaANSI: Length = 0x0000
+	ValidationRuleANSI: Length = 0x0000
+	ValidationTextANSI: Length = 0x0000
+	ErrorANSI: Length = 0x0000
+	InternalType = 0x00000000 = iTypeString
+	SkipBlockCount = 2
+	SkipBlock: 0
+		Size = 0x00000007
+		FieldName: Length = 0x0003 Characters = foo
+	SkipBlock: 1
+		Size = 0x00000000
+Definition: 1
+	Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
+	VT = 0x0008 = VT_BSTR
+	DispID = 0x00000000
+	NmidNameLength = 0x000D
+	NmidName = MyMFCMAPIProp
+	NameAnsi: Length = 0x000D Characters = MyMFCMAPIProp
+	FormulaANSI: Length = 0x0000
+	ValidationRuleANSI: Length = 0x0000
+	ValidationTextANSI: Length = 0x0000
+	ErrorANSI: Length = 0x0000
+	InternalType = 0x00000000 = iTypeString
+	SkipBlockCount = 2
+	SkipBlock: 0
+		Size = 0x0000001B
+		FieldName: Length = 0x000D Characters = MyMFCMAPIProp
+	SkipBlock: 1
+		Size = 0x00000000
+Definition: 2
+	Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
+	VT = 0x0008 = VT_BSTR
+	DispID = 0x00000000
+	NmidNameLength = 0x000B
+	NmidName = MyUserProp1
+	NameAnsi: Length = 0x000B Characters = MyUserProp1
+	FormulaANSI: Length = 0x0000
+	ValidationRuleANSI: Length = 0x0000
+	ValidationTextANSI: Length = 0x0000
+	ErrorANSI: Length = 0x0000
+	InternalType = 0x00000000 = iTypeString
+	SkipBlockCount = 2
+	SkipBlock: 0
+		Size = 0x00000017
+		FieldName: Length = 0x000B Characters = MyUserProp1
+	SkipBlock: 1
+		Size = 0x00000000
+Definition: 3
+	Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
+	VT = 0x0008 = VT_BSTR
+	DispID = 0x00000000
+	NmidNameLength = 0x0005
+	NmidName = Texty
+	NameAnsi: Length = 0x0005 Characters = Texty
+	FormulaANSI: Length = 0x0000
+	ValidationRuleANSI: Length = 0x0000
+	ValidationTextANSI: Length = 0x0000
+	ErrorANSI: Length = 0x0000
+	InternalType = 0x00000000 = iTypeString
+	SkipBlockCount = 2
+	SkipBlock: 0
+		Size = 0x0000000B
+		FieldName: Length = 0x0005 Characters = Texty
+	SkipBlock: 1
+		Size = 0x00000000
