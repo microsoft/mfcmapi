@@ -63,27 +63,27 @@ namespace output
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
 #define Outputf(ulDbgLvl, fFile, bPrintThreadTime, szMsg, ...) \
-	(wprintf(szMsg, __VA_ARGS__), Outputf(ulDbgLvl, fFile, bPrintThreadTime, szMsg, __VA_ARGS__))
+	Outputf((wprintf(szMsg, __VA_ARGS__), ulDbgLvl), fFile, bPrintThreadTime, szMsg, __VA_ARGS__)
 #endif
 
 #define OutputToFile(fFile, szMsg) Output((DBGNoDebug), (fFile), true, (szMsg))
 	void __cdecl OutputToFilef(_In_opt_ FILE* fFile, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef OutputToFilef
-#define OutputToFilef(fFile, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), OutputToFilef(fFile, szMsg, __VA_ARGS__))
+#define OutputToFilef(fFile, szMsg, ...) OutputToFilef((wprintf(szMsg, __VA_ARGS__), fFile), szMsg, __VA_ARGS__)
 #endif
 
 	void __cdecl DebugPrint(ULONG ulDbgLvl, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef DebugPrint
-#define DebugPrint(ulDbgLvl, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), DebugPrint(ulDbgLvl, szMsg, __VA_ARGS__))
+#define DebugPrint(ulDbgLvl, szMsg, ...) DebugPrint((wprintf(szMsg, __VA_ARGS__), ulDbgLvl), szMsg, __VA_ARGS__)
 #endif
 
 	void __cdecl DebugPrintEx(ULONG ulDbgLvl, std::wstring& szClass, const std::wstring& szFunc, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef DebugPrintEx
 #define DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, ...) \
-	(wprintf(szMsg, __VA_ARGS__), DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, __VA_ARGS__))
+	DebugPrintEx((wprintf(szMsg, __VA_ARGS__), ulDbgLvl), szClass, szFunc, szMsg, __VA_ARGS__)
 #endif
 
 	// Template for the Output functions
@@ -183,4 +183,4 @@ namespace output
 
 #define OutputXMLValueToFile(fFile, uidTag, szValue, bWrapCData, iIndent) \
 	OutputXMLValue(DBGNoDebug, fFile, uidTag, szValue, bWrapCData, iIndent)
-}
+} // namespace output
