@@ -2920,7 +2920,7 @@ namespace mapi
 
 	_Check_return_ LPSPropTagArray makeUnicodeTagArray(_In_ const SPropTagArray* inTags)
 	{
-		const auto cbtag = CbNewSPropTagArray(inTags->cValues);
+		const auto cbtag = static_cast<size_t>(CbNewSPropTagArray(inTags->cValues));
 		auto outTags = mapi::allocate<LPSPropTagArray>(cbtag);
 		if (outTags)
 		{
