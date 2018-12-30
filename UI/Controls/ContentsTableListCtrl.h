@@ -19,7 +19,7 @@ namespace mapi
 	{
 		class CAdviseSink;
 	}
-}
+} // namespace mapi
 
 namespace controls
 {
@@ -103,6 +103,8 @@ namespace controls
 			cache::CMapiObjects* m_lpMapiObjects;
 			std::vector<columns::TagNames> m_lpDefaultDisplayColumns;
 			LPSPropTagArray m_sptDefaultDisplayColumnTags;
+			LPSPropTagArray
+				m_sptDefaultDisplayColumnTagsW{}; // Allocated on the fly for ansi builds when unicode is prefered
 			ULONG m_ulHeaderColumns;
 			ULONG_PTR m_ulAdviseConnection;
 			ULONG m_ulDisplayNameColumn;
@@ -118,5 +120,5 @@ namespace controls
 
 			DECLARE_MESSAGE_MAP()
 		};
-	}
-}
+	} // namespace sortlistctrl
+} // namespace controls

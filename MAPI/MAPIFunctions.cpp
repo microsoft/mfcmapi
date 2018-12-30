@@ -2917,4 +2917,23 @@ namespace mapi
 
 		return hRes;
 	}
+
+	_Check_return_ LPSPropTagArray makeUnicodeTagArray(_In_ const SPropTagArray* inTags)
+	{
+		const auto cbtag = CbNewSPropTagArray(inTags->cValues);
+		auto outTags = mapi::allocate<LPSPropTagArray>(cbtag);
+		if (outTags)
+		{
+			memcpy(outTags, inTags, cbtag);
+			for (auto i = ULONG{}; i < outTags->cValues; i++)
+			{
+				if (PROP_TYPE(outTags->aulPropTag[i]) == PT_STRING8)
+				{
+					outTags->aulPropTag[i] = CHANGE_PROP_TYPE(outTags->aulPropTag[i], PT_UNICODE);
+				}
+			}
+		}
+
+		return outTags;
+	}
 } // namespace mapi

@@ -73,6 +73,7 @@ namespace controls
 
 			NotificationOff();
 
+			if (m_sptDefaultDisplayColumnTagsW) MAPIFreeBuffer(m_sptDefaultDisplayColumnTagsW);
 			if (m_lpRes) MAPIFreeBuffer(const_cast<LPSRestriction>(m_lpRes));
 			if (m_lpContentsTable) m_lpContentsTable->Release();
 			if (m_lpMapiObjects) m_lpMapiObjects->Release();
@@ -285,9 +286,20 @@ namespace controls
 
 			if (bAddExtras)
 			{
-				// build an array with the source set and m_sptExtraColumnTags combined
+				auto defaultTags = m_sptDefaultDisplayColumnTags;
+				if (registry::RegKeys[registry::regkeyPREFER_UNICODE_PROPS].ulCurDWORD && fMapiUnicode != MAPI_UNICODE)
+				{
+					if (m_sptDefaultDisplayColumnTags && !m_sptDefaultDisplayColumnTagsW)
+					{
+						m_sptDefaultDisplayColumnTagsW = mapi::makeUnicodeTagArray(m_sptDefaultDisplayColumnTags);
+					}
+
+					defaultTags = m_sptDefaultDisplayColumnTagsW;
+				}
+
+				// build an array with the source set and m_sptDefaultDisplayColumnTags combined
 				lpConcatTagArray = mapi::ConcatSPropTagArrays(
-					m_sptDefaultDisplayColumnTags,
+					defaultTags,
 					lpFinalTagArray); // build on the final array we've computed thus far
 				lpFinalTagArray = lpConcatTagArray;
 			}
