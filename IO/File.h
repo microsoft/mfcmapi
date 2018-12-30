@@ -54,15 +54,19 @@ namespace file
 	SaveToMSG(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szFileName, bool bUnicode, HWND hWnd, bool bAllowUI);
 	_Check_return_ HRESULT
 	SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdrBook, _In_ const std::wstring& szFileName);
-	void ExportMessages(_In_ LPMAPIFOLDER lpFolder, HWND hWnd);
 
+	_Check_return_ HRESULT IterateAttachments(
+		_In_ LPMESSAGE lpMessage,
+		_In_ LPSPropTagArray lpSPropTagArray,
+		const std::function<HRESULT(LPSPropValue)>& operation,
+		const std::function<bool(HRESULT)>& shouldCancel);
 	_Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ const std::wstring& szAttName, HWND hWnd);
-	_Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWnd);
-	_Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd);
 	_Check_return_ HRESULT
 	WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_ const std::wstring& szFileName, bool bUnicode, HWND hWnd);
+	_Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_ const std::wstring& szFileName);
+	_Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_ const std::wstring& szFileName);
 
 	std::wstring GetModuleFileName(_In_opt_ HMODULE hModule);
 	std::wstring GetSystemDirectory();
 	std::map<std::wstring, std::wstring> GetFileVersionInfo(_In_opt_ HMODULE hModule);
-}
+} // namespace file

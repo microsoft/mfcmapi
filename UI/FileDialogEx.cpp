@@ -57,7 +57,7 @@ namespace file
 		return std::wstring();
 	}
 
-		// Make sure OPENFILENAMEEX is the same size regardless of how _WIN32_WINNT is defined
+	// Make sure OPENFILENAMEEX is the same size regardless of how _WIN32_WINNT is defined
 #if (_WIN32_WINNT >= 0x0500)
 	struct OPENFILENAMEEXW : public OPENFILENAMEW
 	{
@@ -195,4 +195,4 @@ namespace file
 	}
 
 	std::vector<std::wstring> CFileDialogExW::GetFileNames() const { return m_paths; }
-}
+} // namespace file

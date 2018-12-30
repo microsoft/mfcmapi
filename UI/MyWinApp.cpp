@@ -6,7 +6,7 @@
 #include <MAPI/Cache/MapiObjects.h>
 #include <ImportProcs.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
-#include <UI/callbacks.h>
+#include <UI/mapiui.h>
 
 // The one and only CMyWinApp object
 ui::CMyWinApp theApp;
@@ -45,7 +45,7 @@ namespace ui
 			import::MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 		}
 
-		ui::callbacks::init();
+		ui::mapiui::initCallbacks();
 	}
 
 	// CMyWinApp initialization

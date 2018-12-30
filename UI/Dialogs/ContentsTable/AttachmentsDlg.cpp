@@ -13,6 +13,7 @@
 #include <MAPI/Cache/GlobalCache.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
+#include <UI/mapiui.h>
 
 namespace dialog
 {
@@ -373,7 +374,7 @@ namespace dialog
 
 				if (lpAttach)
 				{
-					hRes = WC_H(file::WriteAttachmentToFile(lpAttach, m_hWnd));
+					hRes = WC_H(ui::mapiui::WriteAttachmentToFile(lpAttach, m_hWnd));
 
 					lpAttach->Release();
 					lpAttach = nullptr;
@@ -486,4 +487,4 @@ namespace dialog
 			lpParams->lpAttach = nullptr;
 		}
 	}
-}
+} // namespace dialog

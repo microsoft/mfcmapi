@@ -14,6 +14,7 @@
 #include <MAPI/Cache/GlobalCache.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
+#include <UI/mapiui.h>
 
 namespace dialog
 {
@@ -864,7 +865,7 @@ namespace dialog
 
 		if (lpFolder)
 		{
-			file::ExportMessages(lpFolder, m_hWnd);
+			ui::mapiui::ExportMessages(lpFolder, m_hWnd);
 
 			lpFolder->Release();
 		}

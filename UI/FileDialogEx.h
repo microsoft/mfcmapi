@@ -42,4 +42,4 @@ namespace file
 	private:
 		std::vector<std::wstring> m_paths;
 	};
-}
+} // namespace file
