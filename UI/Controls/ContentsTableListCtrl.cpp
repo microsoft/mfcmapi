@@ -28,8 +28,8 @@ namespace controls
 		CContentsTableListCtrl::CContentsTableListCtrl(
 			_In_ CWnd* pCreateParent,
 			_In_ cache::CMapiObjects* lpMapiObjects,
-			_In_ LPSPropTagArray sptExtraColumnTags,
-			_In_ const std::vector<columns::TagNames>& lpExtraDisplayColumns,
+			_In_ LPSPropTagArray sptDefaultDisplayColumnTags,
+			_In_ const std::vector<columns::TagNames>& lpDefaultDisplayColumns,
 			UINT nIDContextMenu,
 			bool bIsAB,
 			_In_ dialog::CContentsTableDlg* lpHostDlg)
@@ -49,8 +49,8 @@ namespace controls
 			m_lpHostDlg = lpHostDlg;
 			if (m_lpHostDlg) m_lpHostDlg->AddRef();
 
-			m_sptExtraColumnTags = sptExtraColumnTags;
-			m_lpExtraDisplayColumns = lpExtraDisplayColumns;
+			m_sptDefaultDisplayColumnTags = sptDefaultDisplayColumnTags;
+			m_lpDefaultDisplayColumns = lpDefaultDisplayColumns;
 			m_ulDisplayFlags = dfNormal;
 			m_ulDisplayNameColumn = NODISPLAYNAME;
 
@@ -287,7 +287,7 @@ namespace controls
 			{
 				// build an array with the source set and m_sptExtraColumnTags combined
 				lpConcatTagArray = mapi::ConcatSPropTagArrays(
-					m_sptExtraColumnTags,
+					m_sptDefaultDisplayColumnTags,
 					lpFinalTagArray); // build on the final array we've computed thus far
 				lpFinalTagArray = lpConcatTagArray;
 			}
@@ -413,17 +413,17 @@ namespace controls
 				output::DebugPrintEx(DBGGeneric, CLASS, L"AddColumns", L"Adding named columns\n");
 				// If we have named columns, put them up front
 
-				// Walk through the list of named/extra columns and add them to our header list
-				for (const auto& extraCol : m_lpExtraDisplayColumns)
+				// Walk through the list of default display columns and add them to our header list
+				for (const auto& displayCol : m_lpDefaultDisplayColumns)
 				{
-					const auto ulExtraColRowNum = extraCol.ulMatchingTableColumn;
-					const auto ulExtraColTag = m_sptExtraColumnTags->aulPropTag[ulExtraColRowNum];
-
 					ULONG ulCurTagArrayRow = 0;
-					if (mapi::FindPropInPropTagArray(lpCurColTagArray, ulExtraColTag, &ulCurTagArrayRow))
+					if (mapi::FindPropInPropTagArray(
+							lpCurColTagArray,
+							m_sptDefaultDisplayColumnTags->aulPropTag[displayCol.ulMatchingTableColumn],
+							&ulCurTagArrayRow))
 					{
 						AddColumn(
-							extraCol.uidName,
+							displayCol.uidName,
 							ulCurHeaderCol,
 							ulCurTagArrayRow,
 							lpCurColTagArray->aulPropTag[ulCurTagArrayRow]);
