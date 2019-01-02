@@ -294,6 +294,4 @@ namespace mapi
 		ULONG ulFlags,
 		_In_ const std::wstring& lpszFileName,
 		_Out_ LPSTREAM* lppStream);
-
-	_Check_return_ LPSPropTagArray makeUnicodeTagArray(_In_ const SPropTagArray* inTags);
 } // namespace mapi

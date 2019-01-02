@@ -73,7 +73,6 @@ namespace controls
 
 			NotificationOff();
 
-			if (m_sptDefaultDisplayColumnTagsW) MAPIFreeBuffer(m_sptDefaultDisplayColumnTagsW);
 			if (m_lpRes) MAPIFreeBuffer(const_cast<LPSRestriction>(m_lpRes));
 			if (m_lpContentsTable) m_lpContentsTable->Release();
 			if (m_lpMapiObjects) m_lpMapiObjects->Release();
@@ -189,7 +188,7 @@ namespace controls
 			ULONG ulTableStatus = NULL;
 			ULONG ulTableType = NULL;
 
-			auto hRes = EC_MAPI(m_lpContentsTable->GetStatus(&ulTableStatus, &ulTableType));
+			const auto hRes = EC_MAPI(m_lpContentsTable->GetStatus(&ulTableStatus, &ulTableType));
 
 			if (SUCCEEDED(hRes))
 			{
@@ -286,20 +285,9 @@ namespace controls
 
 			if (bAddExtras)
 			{
-				auto defaultTags = m_sptDefaultDisplayColumnTags;
-				if (registry::RegKeys[registry::regkeyPREFER_UNICODE_PROPS].ulCurDWORD && fMapiUnicode != MAPI_UNICODE)
-				{
-					if (m_sptDefaultDisplayColumnTags && !m_sptDefaultDisplayColumnTagsW)
-					{
-						m_sptDefaultDisplayColumnTagsW = mapi::makeUnicodeTagArray(m_sptDefaultDisplayColumnTags);
-					}
-
-					defaultTags = m_sptDefaultDisplayColumnTagsW;
-				}
-
 				// build an array with the source set and m_sptDefaultDisplayColumnTags combined
 				lpConcatTagArray = mapi::ConcatSPropTagArrays(
-					defaultTags,
+					m_sptDefaultDisplayColumnTags,
 					lpFinalTagArray); // build on the final array we've computed thus far
 				lpFinalTagArray = lpConcatTagArray;
 			}
@@ -736,11 +724,11 @@ namespace controls
 
 				output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Creating load thread.\n");
 
-				auto hThread = EC_D(
+				const auto hThread = EC_D(
 					HANDLE,
 					reinterpret_cast<HANDLE>(
 						_beginthreadex(nullptr, 0, ThreadFuncLoadTable, lpThreadInfo, 0, nullptr)));
-				if (hThread == 0 || hThread == reinterpret_cast<HANDLE>(-1))
+				if (hThread == nullptr || hThread == reinterpret_cast<HANDLE>(-1))
 				{
 					output::DebugPrintEx(
 						DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Load thread creation failed.\n");
@@ -1015,10 +1003,10 @@ namespace controls
 		{
 			const auto iNumItems = GetSelectedCount();
 
-			if (!iNumItems) return S_OK;
+			if (!iNumItems) return nullptr;
 			if (iNumItems > ULONG_MAX / sizeof(SBinary)) return nullptr;
 
-			auto lpTempList = mapi::allocate<LPENTRYLIST>(sizeof(ENTRYLIST));
+			const auto lpTempList = mapi::allocate<LPENTRYLIST>(sizeof(ENTRYLIST));
 			if (lpTempList)
 			{
 				lpTempList->cValues = iNumItems;
@@ -1150,7 +1138,7 @@ namespace controls
 		_Check_return_ LPMAPIPROP
 		CContentsTableListCtrl::DefaultOpenItemProp(int iItem, __mfcmapiModifyEnum bModify) const
 		{
-			if (!m_lpMapiObjects || -1 == iItem) return S_OK;
+			if (!m_lpMapiObjects || -1 == iItem) return nullptr;
 
 			output::DebugPrintEx(
 				DBGGeneric,
@@ -1162,10 +1150,10 @@ namespace controls
 				m_ulContainerType);
 
 			const auto lpListData = GetSortListData(iItem);
-			if (!lpListData || !lpListData->Contents()) return S_OK;
+			if (!lpListData || !lpListData->Contents()) return nullptr;
 
 			const auto lpEID = lpListData->Contents()->m_lpEntryID;
-			if (!lpEID || lpEID->cb == 0) return S_OK;
+			if (!lpEID || lpEID->cb == 0) return nullptr;
 
 			output::DebugPrint(DBGGeneric, L"Item being opened:\n");
 			output::DebugPrintBinary(DBGGeneric, *lpEID);
@@ -1331,14 +1319,13 @@ namespace controls
 
 			if (m_lpAdviseSink)
 			{
-				auto hRes = WC_MAPI(m_lpContentsTable->Advise(
+				const auto hRes = WC_MAPI(m_lpContentsTable->Advise(
 					fnevTableModified, static_cast<IMAPIAdviseSink*>(m_lpAdviseSink), &m_ulAdviseConnection));
 				if (hRes == MAPI_E_NO_SUPPORT) // Some tables don't support this!
 				{
 					if (m_lpAdviseSink) m_lpAdviseSink->Release();
 					m_lpAdviseSink = nullptr;
 					output::DebugPrint(DBGGeneric, L"This table doesn't support notifications\n");
-					hRes = S_OK; // mask the error
 				}
 				else if (hRes == S_OK)
 				{
@@ -1568,7 +1555,7 @@ namespace controls
 			SRow NewRow = {0};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-			auto hRes = EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
+			const auto hRes = EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"msgOnAddItem", L"Received message to add row to row %d\n", iNewRow);
@@ -1591,7 +1578,7 @@ namespace controls
 
 			if (iItem == -1) return S_OK;
 
-			auto hRes = EC_B(DeleteItem(iItem));
+			const auto hRes = EC_B(DeleteItem(iItem));
 
 			if (S_OK != hRes || !m_lpHostDlg) return hRes;
 
