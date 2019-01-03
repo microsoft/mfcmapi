@@ -416,7 +416,7 @@ namespace file
 					hRes = EC_MAPI(lpFolderContents->QueryRows(1, NULL, &pRows));
 					if (FAILED(hRes) || !pRows || pRows && !pRows->cRows) break;
 
-					hRes = WC_H(SaveToMSG(
+					WC_H_S(SaveToMSG(
 						lpFolder,
 						szPathName,
 						pRows->aRow->lpProps[fldPR_ENTRYID],

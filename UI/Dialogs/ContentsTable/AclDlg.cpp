@@ -29,7 +29,7 @@ namespace dialog
 			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  nullptr,
-			  LPSPropTagArray(&columns::sptACLCols),
+			  &columns::sptACLCols.tags,
 			  columns::ACLColumns,
 			  IDR_MENU_ACL_POPUP,
 			  MENU_CONTEXT_ACL_TABLE)
@@ -144,7 +144,7 @@ namespace dialog
 				lpNewItem->aEntries[0].rgPropVals[1].ulPropTag = PR_MEMBER_RIGHTS;
 				lpNewItem->aEntries[0].rgPropVals[1].Value.ul = MyData.GetHex(1);
 
-				auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpNewItem));
+				const auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpNewItem));
 				MAPIFreeBuffer(lpNewItem);
 				if (hRes == S_OK) OnRefreshView();
 
@@ -179,7 +179,7 @@ namespace dialog
 
 		if (lpSelectedItems)
 		{
-			auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpSelectedItems));
+			const auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (hRes == S_OK) OnRefreshView();
 		}

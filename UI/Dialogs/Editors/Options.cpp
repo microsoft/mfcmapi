@@ -19,7 +19,7 @@ namespace dialog
 
 			void OnOK() override;
 
-			bool m_bNeedPropRefresh;
+			bool m_bNeedPropRefresh{};
 		};
 
 		static std::wstring CLASS = L"COptions";
@@ -29,8 +29,6 @@ namespace dialog
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 			EnableScroll();
-
-			m_bNeedPropRefresh = false;
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"COptions(", L"Building option sheet - adding fields\n");
 

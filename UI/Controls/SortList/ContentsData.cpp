@@ -91,7 +91,7 @@ namespace controls
 			lpProp = PpropFindProp(
 				lpsRowData->lpProps,
 				lpsRowData->cValues,
-				PR_DISPLAY_NAME_A); // We pull this properties for profiles, which do not support Unicode
+				PR_DISPLAY_NAME_A); // We pull this property for profiles, which do not support Unicode
 			if (mapi::CheckStringProp(lpProp, PT_STRING8))
 			{
 				m_szProfileDisplayName = lpProp->Value.lpszA;
@@ -115,5 +115,5 @@ namespace controls
 			MAPIFreeBuffer(m_lpServiceUID);
 			MAPIFreeBuffer(m_lpProviderUID);
 		}
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls

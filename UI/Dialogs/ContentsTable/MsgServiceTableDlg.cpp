@@ -26,7 +26,7 @@ namespace dialog
 			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  nullptr,
-			  LPSPropTagArray(&columns::sptSERVICECols),
+			  &columns::sptSERVICECols.tags,
 			  columns::SERVICEColumns,
 			  IDR_MENU_MSGSERVICE_POPUP,
 			  MENU_CONTEXT_PROFILE_SERVICES)
@@ -90,11 +90,11 @@ namespace dialog
 		m_lpServiceAdmin = nullptr;
 
 		LPPROFADMIN lpProfAdmin = nullptr;
-		auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));
 
 		if (lpProfAdmin)
 		{
-			hRes = EC_MAPI(lpProfAdmin->AdminServices(
+			EC_MAPI_S(lpProfAdmin->AdminServices(
 				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(m_szProfileName.c_str())),
 				reinterpret_cast<LPTSTR>(""),
 				NULL,
@@ -104,7 +104,7 @@ namespace dialog
 			{
 				LPMAPITABLE lpServiceTable = nullptr;
 
-				hRes = EC_MAPI(m_lpServiceAdmin->GetMsgServiceTable(
+				EC_MAPI_S(m_lpServiceAdmin->GetMsgServiceTable(
 					0, // fMapiUnicode is not supported
 					&lpServiceTable));
 
@@ -136,14 +136,14 @@ namespace dialog
 				const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 				if (lpServiceUID)
 				{
-					auto hRes = EC_MAPI(m_lpServiceAdmin->AdminProviders(
+					EC_MAPI_S(m_lpServiceAdmin->AdminProviders(
 						reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
 						0, // fMapiUnicode is not supported
 						&lpProviderAdmin));
 
 					if (lpProviderAdmin)
 					{
-						hRes = EC_MAPI(lpProviderAdmin->GetProviderTable(
+						EC_MAPI_S(lpProviderAdmin->GetProviderTable(
 							0, // fMapiUnicode is not supported
 							&lpProviderTable));
 

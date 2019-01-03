@@ -14,7 +14,7 @@ namespace ui
 		void initCallbacks()
 		{
 			mapi::GetCopyDetails = [](auto _1, auto _2, auto _3, auto _4, auto _5) -> mapi::CopyDetails {
-				return ui::mapiui::GetCopyDetails(_1, _2, _3, _4, _5);
+				return GetCopyDetails(_1, _2, _3, _4, _5);
 			};
 		}
 
@@ -49,7 +49,7 @@ namespace ui
 
 			if (!MyData.DisplayDialog()) return {};
 
-			auto progress = hWnd ? mapi::mapiui::GetMAPIProgress(L"CopyTo", hWnd) : LPMAPIPROGRESS{};
+			const auto progress = hWnd ? mapi::mapiui::GetMAPIProgress(L"CopyTo", hWnd) : LPMAPIPROGRESS{};
 
 			return {true,
 					MyData.GetHex(1) | (progress ? MAPI_DIALOG : 0),
@@ -65,7 +65,7 @@ namespace ui
 			dialog::editor::CEditor MyData(
 				nullptr, IDS_EXPORTTITLE, IDS_EXPORTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(IDS_EXPORTSEARCHTERM, 0, false));
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_EXPORTSEARCHTERM, false));
 
 			if (!MyData.DisplayDialog()) return;
 

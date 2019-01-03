@@ -158,11 +158,11 @@ namespace dialog
 			LPENTRYLIST lpEntryList = nullptr;
 			ULONG ulSearchState = 0;
 
-			auto hRes = WC_MAPI(lpMAPIFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
+			const auto hRes =
+				WC_MAPI(lpMAPIFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
 			if (hRes == MAPI_E_NOT_INITIALIZED)
 			{
 				output::DebugPrint(DBGGeneric, L"No search criteria has been set on this folder.\n");
-				hRes = S_OK;
 			}
 			else
 				CHECKHRESMSG(hRes, IDS_GETSEARCHCRITERIAFAILED);

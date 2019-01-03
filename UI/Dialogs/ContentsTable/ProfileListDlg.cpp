@@ -29,7 +29,7 @@ namespace dialog
 			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
-			  LPSPropTagArray(&columns::sptPROFLISTCols),
+			  &columns::sptPROFLISTCols.tags,
 			  columns::PROFLISTColumns,
 			  IDR_MENU_PROFILE_POPUP,
 			  MENU_CONTEXT_PROFILE_LIST)
@@ -101,10 +101,10 @@ namespace dialog
 		m_lpContentsTableListCtrl->SetContentsTable(NULL, dfNormal, NULL);
 
 		LPPROFADMIN lpProfAdmin = nullptr;
-		auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));
 		if (!lpProfAdmin) return;
 
-		hRes = EC_MAPI(lpProfAdmin->GetProfileTable(
+		EC_MAPI_S(lpProfAdmin->GetProfileTable(
 			0, // fMapiUnicode is not supported
 			&lpProfTable));
 

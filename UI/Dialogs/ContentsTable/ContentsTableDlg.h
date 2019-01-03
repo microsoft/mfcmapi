@@ -22,8 +22,8 @@ namespace dialog
 			__mfcmapiCreateDialogEnum bCreateDialog,
 			_In_opt_ LPMAPIPROP lpContainer,
 			_In_opt_ LPMAPITABLE lpContentsTable,
-			_In_ LPSPropTagArray sptExtraColumnTags,
-			_In_ const std::vector<columns::TagNames>& lpExtraDisplayColumns,
+			_In_ LPSPropTagArray sptDefaultDisplayColumnTags,
+			_In_ const std::vector<columns::TagNames>& lpDefaultDisplayColumns,
 			ULONG nIDContextMenu,
 			ULONG ulAddInContext);
 		virtual ~CContentsTableDlg();
@@ -75,8 +75,8 @@ namespace dialog
 		_Check_return_ LRESULT msgOnResetColumns(WPARAM wParam, LPARAM lParam);
 
 		// Values held only for use in InitDialog to create our CContentsTableListCtrl
-		std::vector<columns::TagNames> m_lpExtraDisplayColumns;
-		LPSPropTagArray m_sptExtraColumnTags;
+		std::vector<columns::TagNames> m_lpDefaultDisplayColumns;
+		LPSPropTagArray m_sptDefaultDisplayColumnTags;
 		UINT m_nIDContextMenu;
 
 		LPMAPICONTAINER m_lpContainer;
