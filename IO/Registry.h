@@ -86,4 +86,4 @@ namespace registry
 		_In_ const std::wstring& szDefault = strings::emptystring);
 
 	void WriteStringToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue);
-}
+} // namespace registry
