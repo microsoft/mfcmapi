@@ -260,7 +260,7 @@ namespace dialog
 				auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 				if (lpMessage)
 				{
-					lpMessage->GetAttachmentTable(NULL, &lpTable);
+					lpMessage->GetAttachmentTable(unicodeFlag, &lpTable);
 					lpMessage->Release();
 				}
 				break;
@@ -270,7 +270,7 @@ namespace dialog
 				auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 				if (lpMessage)
 				{
-					lpMessage->GetRecipientTable(NULL, &lpTable);
+					lpMessage->GetRecipientTable(unicodeFlag, &lpTable);
 					lpMessage->Release();
 				}
 				break;
