@@ -26,7 +26,7 @@ namespace dialog
 			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
-			  LPSPropTagArray(&columns::sptDEFCols),
+			  &columns::sptDEFCols.tags,
 			  columns::DEFColumns,
 			  IDR_MENU_RECIPIENTS_POPUP,
 			  MENU_CONTEXT_RECIPIENT_TABLE)
@@ -113,7 +113,7 @@ namespace dialog
 
 				for (auto iSelection = 0; iSelection < iNumSelected; iSelection++)
 				{
-					auto lpProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
+					const auto lpProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 					if (lpProp)
 					{
 						lpAdrList->aEntries[iSelection].ulReserved1 = 0;

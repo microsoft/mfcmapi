@@ -18,7 +18,7 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 
 	if (lpReceiveFolderTable)
 	{
-		WC_MAPI(lpReceiveFolderTable->SetColumns(LPSPropTagArray(&columns::sptRECEIVECols), TBL_ASYNC));
+		WC_MAPI(lpReceiveFolderTable->SetColumns(&columns::sptRECEIVECols.tags, TBL_ASYNC));
 	}
 
 	if (SUCCEEDED(hRes))

@@ -38,7 +38,7 @@ namespace dialog
 			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  nullptr,
-			  LPSPropTagArray(&columns::sptSTORECols),
+			  &columns::sptSTORECols.tags,
 			  columns::STOREColumns,
 			  IDR_MENU_MAIN_POPUP,
 			  MENU_CONTEXT_MAIN)
