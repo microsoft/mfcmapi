@@ -62,7 +62,10 @@ namespace propertybag
 
 		if (!registry::RegKeys[registry::regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD)
 		{
-			hRes = mapi::GetPropsNULL(m_lpProp, fMapiUnicode, lpcValues, lppPropArray);
+			auto unicodeFlag =
+				registry::RegKeys[registry::regkeyPREFER_UNICODE_PROPS].ulCurDWORD ? MAPI_UNICODE : fMapiUnicode;
+
+			hRes = mapi::GetPropsNULL(m_lpProp, unicodeFlag, lpcValues, lppPropArray);
 			if (SUCCEEDED(hRes))
 			{
 				m_bGetPropsSucceeded = true;
@@ -167,4 +170,4 @@ namespace propertybag
 
 		return hRes;
 	};
-}
+} // namespace propertybag

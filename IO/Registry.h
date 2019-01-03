@@ -48,6 +48,7 @@ namespace registry
 		regkeyONLY_ADDITIONAL_PROPERTIES,
 		regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST,
 		regkeyUSE_GETPROPLIST,
+		regkeyPREFER_UNICODE_PROPS,
 		regkeyCACHE_NAME_DPROPS,
 		regkeyALLOW_DUPE_COLUMNS,
 		regkeyDO_COLUMN_NAMES,
@@ -85,4 +86,4 @@ namespace registry
 		_In_ const std::wstring& szDefault = strings::emptystring);
 
 	void WriteStringToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue);
-}
+} // namespace registry

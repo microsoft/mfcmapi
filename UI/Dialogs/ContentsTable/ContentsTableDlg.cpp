@@ -25,8 +25,8 @@ namespace dialog
 		__mfcmapiCreateDialogEnum bCreateDialog,
 		_In_opt_ LPMAPIPROP lpContainer,
 		_In_opt_ LPMAPITABLE lpContentsTable,
-		_In_ LPSPropTagArray sptExtraColumnTags,
-		_In_ const std::vector<columns::TagNames>& lpExtraDisplayColumns,
+		_In_ LPSPropTagArray sptDefaultDisplayColumnTags,
+		_In_ const std::vector<columns::TagNames>& lpDefaultDisplayColumns,
 		ULONG nIDContextMenu,
 		ULONG ulAddInContext)
 		: CBaseDialog(pParentWnd, lpMapiObjects, ulAddInContext)
@@ -50,8 +50,8 @@ namespace dialog
 		m_lpContentsTable = lpContentsTable;
 		if (m_lpContentsTable) m_lpContentsTable->AddRef();
 
-		m_sptExtraColumnTags = sptExtraColumnTags;
-		m_lpExtraDisplayColumns = lpExtraDisplayColumns;
+		m_sptDefaultDisplayColumnTags = sptDefaultDisplayColumnTags;
+		m_lpDefaultDisplayColumns = lpDefaultDisplayColumns;
 
 		if (mfcmapiCALL_CREATE_DIALOG == bCreateDialog)
 		{
@@ -93,8 +93,8 @@ namespace dialog
 		m_lpContentsTableListCtrl = new controls::sortlistctrl::CContentsTableListCtrl(
 			m_lpFakeSplitter,
 			m_lpMapiObjects,
-			m_sptExtraColumnTags,
-			m_lpExtraDisplayColumns,
+			m_sptDefaultDisplayColumnTags,
+			m_lpDefaultDisplayColumns,
 			m_nIDContextMenu,
 			m_bIsAB,
 			this);
@@ -119,8 +119,11 @@ namespace dialog
 			if (m_lpContentsTable) m_lpContentsTable->Release();
 			m_lpContentsTable = nullptr;
 
+			auto unicodeFlag =
+				registry::RegKeys[registry::regkeyPREFER_UNICODE_PROPS].ulCurDWORD ? MAPI_UNICODE : fMapiUnicode;
+
 			const auto ulFlags = (m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL) |
-								 (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | fMapiUnicode;
+								 (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | unicodeFlag;
 
 			// Get the table of contents of the IMAPIContainer!!!
 			EC_MAPI_S(m_lpContainer->GetContentsTable(ulFlags, &m_lpContentsTable));

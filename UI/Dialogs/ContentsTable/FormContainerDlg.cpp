@@ -27,7 +27,7 @@ namespace dialog
 			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  nullptr,
-			  LPSPropTagArray(&columns::sptDEFCols),
+			  &columns::sptDEFCols.tags,
 			  columns::DEFColumns,
 			  IDR_MENU_FORM_CONTAINER_POPUP,
 			  MENU_CONTEXT_FORM_CONTAINER)
@@ -157,7 +157,7 @@ namespace dialog
 				PR_MESSAGE_CLASS_A); // ResolveMessageClass requires an ANSI string
 			if (mapi::CheckStringProp(lpProp, PT_STRING8))
 			{
-				auto hRes = EC_MAPI(
+				const auto hRes = EC_MAPI(
 					m_lpFormContainer->ResolveMessageClass(lpProp->Value.lpszA, MAPIFORM_EXACTMATCH, &lpFormInfoProp));
 				if (FAILED(hRes))
 				{

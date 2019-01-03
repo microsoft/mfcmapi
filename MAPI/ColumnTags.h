@@ -3,6 +3,16 @@
 
 namespace columns
 {
+#define SizedSPropTagArray2(_ctag, _name) \
+	union { \
+		struct _SPropTagArray_##_name \
+		{ \
+			ULONG cValues; \
+			ULONG aulPropTag[_ctag]; \
+		} __initMember; /* Do not use */ \
+		SPropTagArray tags; \
+	} _name
+
 	struct TagNames
 	{
 		ULONG ulMatchingTableColumn;
@@ -30,12 +40,12 @@ namespace columns
 	};
 
 	// These tags represent the default information we would like to pick up
-	static const SizedSPropTagArray(DEFTAGS_NUM_COLS, sptDEFCols) = {
+	static SizedSPropTagArray2(DEFTAGS_NUM_COLS, sptDEFCols) = {
 		DEFTAGS_NUM_COLS,
 		{PR_INSTANCE_KEY,
 		 PR_ENTRYID,
 		 PR_ROW_TYPE,
-		 PR_DISPLAY_NAME,
+		 PR_DISPLAY_NAME_W,
 		 PR_CONTENT_COUNT,
 		 PR_CONTENT_UNREAD,
 		 PR_DEPTH,
@@ -66,13 +76,13 @@ namespace columns
 	};
 
 	// These tags represent the message store information we would like to pick up
-	static const SizedSPropTagArray(STORETAGS_NUM_COLS, sptSTORECols) = {
+	static SizedSPropTagArray2(STORETAGS_NUM_COLS, sptSTORECols) = {
 		STORETAGS_NUM_COLS,
 		{PR_INSTANCE_KEY,
-		 PR_DISPLAY_NAME,
+		 PR_DISPLAY_NAME_W,
 		 PR_ENTRYID,
 		 PR_OBJECT_TYPE,
-		 PR_PROVIDER_DISPLAY,
+		 PR_PROVIDER_DISPLAY_W,
 		 PR_RESOURCE_FLAGS,
 		 PR_DEFAULT_STORE,
 		 PR_MDB_PROVIDER,
@@ -120,23 +130,23 @@ namespace columns
 	};
 
 	// These tags represent the message information we would like to pick up
-	static const SizedSPropTagArray(MSGTAGS_NUM_COLS, sptMSGCols) = {
+	static SizedSPropTagArray2(MSGTAGS_NUM_COLS, sptMSGCols) = {
 		MSGTAGS_NUM_COLS,
 		{PR_INSTANCE_KEY,
 		 PR_ENTRYID,
 		 PR_LONGTERM_ENTRYID_FROM_TABLE,
-		 PR_SENT_REPRESENTING_NAME,
-		 PR_SUBJECT,
+		 PR_SENT_REPRESENTING_NAME_W,
+		 PR_SUBJECT_W,
 		 PR_CONVERSATION_ID,
-		 PR_MESSAGE_CLASS,
+		 PR_MESSAGE_CLASS_W,
 		 PR_MESSAGE_DELIVERY_TIME,
 		 PR_CLIENT_SUBMIT_TIME,
 		 PR_HASATTACH,
-		 PR_DISPLAY_TO,
+		 PR_DISPLAY_TO_W,
 		 PR_MESSAGE_SIZE,
 		 PR_MESSAGE_FLAGS,
 		 PR_LAST_MODIFICATION_TIME,
-		 PR_LAST_MODIFIER_NAME,
+		 CHANGE_PROP_TYPE(PR_LAST_MODIFIER_NAME, PT_UNICODE),
 		 PR_ROW_TYPE,
 		 PR_CONTENT_COUNT,
 		 PR_CONTENT_UNREAD,
@@ -178,15 +188,15 @@ namespace columns
 	};
 
 	// These tags represent the address book information we would like to pick up
-	static const SizedSPropTagArray(ABTAGS_NUM_COLS, sptABCols) = {
+	static SizedSPropTagArray2(ABTAGS_NUM_COLS, sptABCols) = {
 		ABTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
 		PR_ENTRYID,
-		PR_DISPLAY_NAME,
-		PR_EMAIL_ADDRESS,
+		PR_DISPLAY_NAME_W,
+		PR_EMAIL_ADDRESS_W,
 		PR_DISPLAY_TYPE,
 		PR_OBJECT_TYPE,
-		PR_ADDRTYPE,
+		PR_ADDRTYPE_W,
 	};
 
 	static std::vector<TagNames> ABColumns = {
@@ -211,13 +221,13 @@ namespace columns
 	};
 
 	// These tags represent the attachment information we would like to pick up
-	static const SizedSPropTagArray(ATTACHTAGS_NUM_COLS, sptATTACHCols) = {
+	static SizedSPropTagArray2(ATTACHTAGS_NUM_COLS, sptATTACHCols) = {
 		ATTACHTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
 		PR_ATTACH_NUM,
 		PR_ATTACH_METHOD,
-		PR_ATTACH_LONG_FILENAME,
-		PR_ATTACH_FILENAME,
+		PR_ATTACH_LONG_FILENAME_W,
+		PR_ATTACH_FILENAME_W,
 		PR_OBJECT_TYPE,
 	};
 
@@ -256,11 +266,11 @@ namespace columns
 	};
 
 	// These tags represent the mailbox information we would like to pick up
-	static const SizedSPropTagArray(MBXTAGS_NUM_COLS, sptMBXCols) = {
+	static SizedSPropTagArray2(MBXTAGS_NUM_COLS, sptMBXCols) = {
 		MBXTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
-		PR_DISPLAY_NAME,
-		PR_EMAIL_ADDRESS,
+		PR_DISPLAY_NAME_W,
+		PR_EMAIL_ADDRESS_W,
 		PR_LOCALE_ID,
 		PR_MESSAGE_SIZE,
 		PR_MESSAGE_SIZE_EXTENDED,
@@ -345,10 +355,10 @@ namespace columns
 	};
 
 	// These tags represent the PF information we would like to pick up
-	static const SizedSPropTagArray(PFTAGS_NUM_COLS, sptPFCols) = {
+	static SizedSPropTagArray2(PFTAGS_NUM_COLS, sptPFCols) = {
 		PFTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
-		PR_DISPLAY_NAME,
+		PR_DISPLAY_NAME_W,
 		PR_ASSOC_CONTENT_COUNT,
 		PR_ASSOC_MESSAGE_SIZE,
 		PR_ASSOC_MESSAGE_SIZE_EXTENDED,
@@ -360,9 +370,9 @@ namespace columns
 		PR_CONTACT_COUNT,
 		PR_CONTENT_COUNT,
 		PR_CREATION_TIME,
-		PR_EMAIL_ADDRESS,
+		PR_EMAIL_ADDRESS_W,
 		PR_FOLDER_FLAGS,
-		PR_FOLDER_PATHNAME,
+		CHANGE_PROP_TYPE(PR_FOLDER_PATHNAME, PT_UNICODE),
 		PR_LAST_ACCESS_TIME,
 		PR_LAST_MODIFICATION_TIME,
 		PR_MESSAGE_SIZE,
@@ -406,11 +416,11 @@ namespace columns
 	};
 
 	// These tags represent the status information we would like to pick up
-	static const SizedSPropTagArray(STATUSTAGS_NUM_COLS, sptSTATUSCols) = {
+	static SizedSPropTagArray2(STATUSTAGS_NUM_COLS, sptSTATUSCols) = {
 		STATUSTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
 		PR_ENTRYID,
-		PR_DISPLAY_NAME_A, // Since the MAPI status table does not support unicode, we have to ask for ANSI
+		PR_DISPLAY_NAME_A, // Since the MAPI status table does not support Unicode, we have to ask for ANSI
 		PR_STATUS_CODE,
 		PR_RESOURCE_METHODS,
 		PR_PROVIDER_DLL_NAME_A,
@@ -443,11 +453,11 @@ namespace columns
 	};
 
 	// These tags represent the receive table information we would like to pick up
-	static const SizedSPropTagArray(RECEIVETAGS_NUM_COLS, sptRECEIVECols) = {
+	static SizedSPropTagArray2(RECEIVETAGS_NUM_COLS, sptRECEIVECols) = {
 		RECEIVETAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
 		PR_ENTRYID,
-		PR_MESSAGE_CLASS,
+		PR_MESSAGE_CLASS_W,
 		PR_OBJECT_TYPE,
 	};
 
@@ -467,9 +477,9 @@ namespace columns
 	};
 
 	// These tags represent the hierarchy information we would like to pick up
-	static const SizedSPropTagArray(HIERARCHYTAGS_NUM_COLS, sptHIERARCHYCols) = {
+	static SizedSPropTagArray2(HIERARCHYTAGS_NUM_COLS, sptHIERARCHYCols) = {
 		HIERARCHYTAGS_NUM_COLS,
-		PR_DISPLAY_NAME,
+		PR_DISPLAY_NAME_W,
 		PR_INSTANCE_KEY,
 		PR_DEPTH,
 		PR_OBJECT_TYPE,
@@ -494,7 +504,7 @@ namespace columns
 	};
 
 	// These tags represent the profile information we would like to pick up
-	static const SizedSPropTagArray(PROFLISTTAGS_NUM_COLS, sptPROFLISTCols) = {
+	static SizedSPropTagArray2(PROFLISTTAGS_NUM_COLS, sptPROFLISTCols) = {
 		PROFLISTTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
 		PR_DISPLAY_NAME_A,
@@ -512,10 +522,10 @@ namespace columns
 	};
 
 	// These tags represent the service information we would like to pick up
-	static const SizedSPropTagArray(SERVICETAGS_NUM_COLS, sptSERVICECols) = {
+	static SizedSPropTagArray2(SERVICETAGS_NUM_COLS, sptSERVICECols) = {
 		SERVICETAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
-		PR_DISPLAY_NAME,
+		PR_DISPLAY_NAME_W,
 	};
 
 	static std::vector<TagNames> SERVICEColumns = {{servicetagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
@@ -530,10 +540,10 @@ namespace columns
 	};
 
 	// These tags represent the provider information we would like to pick up
-	static const SizedSPropTagArray(PROVIDERTAGS_NUM_COLS, sptPROVIDERCols) = {
+	static SizedSPropTagArray2(PROVIDERTAGS_NUM_COLS, sptPROVIDERCols) = {
 		PROVIDERTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
-		PR_DISPLAY_NAME,
+		PR_DISPLAY_NAME_A,
 	};
 
 	static std::vector<TagNames> PROVIDERColumns = {{providertagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
@@ -548,9 +558,7 @@ namespace columns
 	};
 
 	// These tags represent the rules information we would like to pick up
-	static const SizedSPropTagArray(RULETAGS_NUM_COLS, sptRULECols) = {RULETAGS_NUM_COLS,
-																	   PR_INSTANCE_KEY,
-																	   PR_RULE_NAME};
+	static SizedSPropTagArray2(RULETAGS_NUM_COLS, sptRULECols) = {RULETAGS_NUM_COLS, PR_INSTANCE_KEY, PR_RULE_NAME};
 
 	static std::vector<TagNames> RULEColumns = {{ruletagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY},
 												{ruletagPR_RULE_NAME, IDS_COLRULENAME}};
@@ -564,7 +572,7 @@ namespace columns
 	};
 
 	// These tags represent the ACL information we would like to pick up
-	static const SizedSPropTagArray(ACLTAGS_NUM_COLS, sptACLCols) = {ACLTAGS_NUM_COLS, PR_MEMBER_ID, PR_MEMBER_RIGHTS};
+	static SizedSPropTagArray2(ACLTAGS_NUM_COLS, sptACLCols) = {ACLTAGS_NUM_COLS, PR_MEMBER_ID, PR_MEMBER_RIGHTS};
 
 	static std::vector<TagNames> ACLColumns = {{acltagPR_MEMBER_ID, IDS_COLMEMBERID},
 											   {acltagPR_MEMBER_RIGHTS, IDS_COLMEMBERRIGHTS}};

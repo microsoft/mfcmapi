@@ -26,7 +26,7 @@ namespace dialog
 			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
-			  LPSPropTagArray(&columns::sptPROVIDERCols),
+			  &columns::sptPROVIDERCols.tags,
 			  columns::PROVIDERColumns,
 			  NULL,
 			  MENU_CONTEXT_PROFILE_PROVIDERS)

@@ -28,8 +28,8 @@ namespace controls
 		CContentsTableListCtrl::CContentsTableListCtrl(
 			_In_ CWnd* pCreateParent,
 			_In_ cache::CMapiObjects* lpMapiObjects,
-			_In_ LPSPropTagArray sptExtraColumnTags,
-			_In_ const std::vector<columns::TagNames>& lpExtraDisplayColumns,
+			_In_ LPSPropTagArray sptDefaultDisplayColumnTags,
+			_In_ const std::vector<columns::TagNames>& lpDefaultDisplayColumns,
 			UINT nIDContextMenu,
 			bool bIsAB,
 			_In_ dialog::CContentsTableDlg* lpHostDlg)
@@ -49,8 +49,8 @@ namespace controls
 			m_lpHostDlg = lpHostDlg;
 			if (m_lpHostDlg) m_lpHostDlg->AddRef();
 
-			m_sptExtraColumnTags = sptExtraColumnTags;
-			m_lpExtraDisplayColumns = lpExtraDisplayColumns;
+			m_sptDefaultDisplayColumnTags = sptDefaultDisplayColumnTags;
+			m_lpDefaultDisplayColumns = lpDefaultDisplayColumns;
 			m_ulDisplayFlags = dfNormal;
 			m_ulDisplayNameColumn = NODISPLAYNAME;
 
@@ -188,19 +188,19 @@ namespace controls
 			ULONG ulTableStatus = NULL;
 			ULONG ulTableType = NULL;
 
-			auto hRes = EC_MAPI(m_lpContentsTable->GetStatus(&ulTableStatus, &ulTableType));
+			const auto hRes = EC_MAPI(m_lpContentsTable->GetStatus(&ulTableStatus, &ulTableType));
 
 			if (SUCCEEDED(hRes))
 			{
 				dialog::editor::CEditor MyData(this, IDS_GETSTATUS, IDS_GETSTATUSPROMPT, CEDITOR_BUTTON_OK);
-				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, 0, true));
+				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_ULTABLESTATUS, true));
 				MyData.SetHex(0, ulTableStatus);
 				auto szFlags = interpretprop::InterpretFlags(flagTableStatus, ulTableStatus);
-				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLESTATUS, 1, szFlags, true));
-				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLETYPE, 2, true));
+				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_ULTABLESTATUS, szFlags, true));
+				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULTABLETYPE, true));
 				MyData.SetHex(2, ulTableType);
 				szFlags = interpretprop::InterpretFlags(flagTableType, ulTableType);
-				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLETYPE, 3, szFlags, true));
+				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(3, IDS_ULTABLETYPE, szFlags, true));
 
 				(void) MyData.DisplayDialog();
 			}
@@ -285,9 +285,9 @@ namespace controls
 
 			if (bAddExtras)
 			{
-				// build an array with the source set and m_sptExtraColumnTags combined
+				// build an array with the source set and m_sptDefaultDisplayColumnTags combined
 				lpConcatTagArray = mapi::ConcatSPropTagArrays(
-					m_sptExtraColumnTags,
+					m_sptDefaultDisplayColumnTags,
 					lpFinalTagArray); // build on the final array we've computed thus far
 				lpFinalTagArray = lpConcatTagArray;
 			}
@@ -413,17 +413,17 @@ namespace controls
 				output::DebugPrintEx(DBGGeneric, CLASS, L"AddColumns", L"Adding named columns\n");
 				// If we have named columns, put them up front
 
-				// Walk through the list of named/extra columns and add them to our header list
-				for (const auto& extraCol : m_lpExtraDisplayColumns)
+				// Walk through the list of default display columns and add them to our header list
+				for (const auto& displayCol : m_lpDefaultDisplayColumns)
 				{
-					const auto ulExtraColRowNum = extraCol.ulMatchingTableColumn;
-					const auto ulExtraColTag = m_sptExtraColumnTags->aulPropTag[ulExtraColRowNum];
-
 					ULONG ulCurTagArrayRow = 0;
-					if (mapi::FindPropInPropTagArray(lpCurColTagArray, ulExtraColTag, &ulCurTagArrayRow))
+					if (mapi::FindPropInPropTagArray(
+							lpCurColTagArray,
+							m_sptDefaultDisplayColumnTags->aulPropTag[displayCol.ulMatchingTableColumn],
+							&ulCurTagArrayRow))
 					{
 						AddColumn(
-							extraCol.uidName,
+							displayCol.uidName,
 							ulCurHeaderCol,
 							ulCurTagArrayRow,
 							lpCurColTagArray->aulPropTag[ulCurTagArrayRow]);
@@ -724,11 +724,11 @@ namespace controls
 
 				output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Creating load thread.\n");
 
-				auto hThread = EC_D(
+				const auto hThread = EC_D(
 					HANDLE,
 					reinterpret_cast<HANDLE>(
 						_beginthreadex(nullptr, 0, ThreadFuncLoadTable, lpThreadInfo, 0, nullptr)));
-				if (hThread == 0 || hThread == reinterpret_cast<HANDLE>(-1))
+				if (hThread == nullptr || hThread == reinterpret_cast<HANDLE>(-1))
 				{
 					output::DebugPrintEx(
 						DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Load thread creation failed.\n");
@@ -1003,10 +1003,10 @@ namespace controls
 		{
 			const auto iNumItems = GetSelectedCount();
 
-			if (!iNumItems) return S_OK;
+			if (!iNumItems) return nullptr;
 			if (iNumItems > ULONG_MAX / sizeof(SBinary)) return nullptr;
 
-			auto lpTempList = mapi::allocate<LPENTRYLIST>(sizeof(ENTRYLIST));
+			const auto lpTempList = mapi::allocate<LPENTRYLIST>(sizeof(ENTRYLIST));
 			if (lpTempList)
 			{
 				lpTempList->cValues = iNumItems;
@@ -1138,7 +1138,7 @@ namespace controls
 		_Check_return_ LPMAPIPROP
 		CContentsTableListCtrl::DefaultOpenItemProp(int iItem, __mfcmapiModifyEnum bModify) const
 		{
-			if (!m_lpMapiObjects || -1 == iItem) return S_OK;
+			if (!m_lpMapiObjects || -1 == iItem) return nullptr;
 
 			output::DebugPrintEx(
 				DBGGeneric,
@@ -1150,10 +1150,10 @@ namespace controls
 				m_ulContainerType);
 
 			const auto lpListData = GetSortListData(iItem);
-			if (!lpListData || !lpListData->Contents()) return S_OK;
+			if (!lpListData || !lpListData->Contents()) return nullptr;
 
 			const auto lpEID = lpListData->Contents()->m_lpEntryID;
-			if (!lpEID || lpEID->cb == 0) return S_OK;
+			if (!lpEID || lpEID->cb == 0) return nullptr;
 
 			output::DebugPrint(DBGGeneric, L"Item being opened:\n");
 			output::DebugPrintBinary(DBGGeneric, *lpEID);
@@ -1319,14 +1319,13 @@ namespace controls
 
 			if (m_lpAdviseSink)
 			{
-				auto hRes = WC_MAPI(m_lpContentsTable->Advise(
+				const auto hRes = WC_MAPI(m_lpContentsTable->Advise(
 					fnevTableModified, static_cast<IMAPIAdviseSink*>(m_lpAdviseSink), &m_ulAdviseConnection));
 				if (hRes == MAPI_E_NO_SUPPORT) // Some tables don't support this!
 				{
 					if (m_lpAdviseSink) m_lpAdviseSink->Release();
 					m_lpAdviseSink = nullptr;
 					output::DebugPrint(DBGGeneric, L"This table doesn't support notifications\n");
-					hRes = S_OK; // mask the error
 				}
 				else if (hRes == S_OK)
 				{
@@ -1556,7 +1555,8 @@ namespace controls
 			SRow NewRow = {0};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-			auto hRes = EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
+			const auto hRes =
+				EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"msgOnAddItem", L"Received message to add row to row %d\n", iNewRow);
@@ -1579,7 +1579,7 @@ namespace controls
 
 			if (iItem == -1) return S_OK;
 
-			auto hRes = EC_B(DeleteItem(iItem));
+			const auto hRes = EC_B(DeleteItem(iItem));
 
 			if (S_OK != hRes || !m_lpHostDlg) return hRes;
 

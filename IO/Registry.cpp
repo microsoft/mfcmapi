@@ -22,6 +22,7 @@ namespace registry
 		{ L"OnlyAdditionalProperties",	regDWORD,regoptCheck,		false		,0,L"",L"",true,	IDS_REGKEY_ONLYADDITIONALPROPERTIES }, // STRING_OK
 		{ L"UseRowDataForSinglePropList",	regDWORD,regoptCheck,	false		,0,L"",L"",true,	IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST }, // STRING_OK
 		{ L"UseGetPropList",			regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_USE_GETPROPLIST }, // STRING_OK
+		{ L"PreferUnicodeProps",		regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_PREFER_UNICODE_PROPS }, // STRING_OK
 		{ L"CacheNamedProps",			regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_CACHE_NAMED_PROPS }, // STRING_OK
 		{ L"AllowDupeColumns",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_ALLOW_DUPE_COLUMNS }, // STRING_OK
 		{ L"DoColumnNames",				regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_DO_COLUMN_NAMES }, // STRING_OK
@@ -108,7 +109,7 @@ namespace registry
 		DWORD* lpValue = nullptr;
 		auto ret = dwDefaultVal;
 
-		auto hRes = WC_H(HrGetRegistryValue(hKey, szValue, &dwKeyType, reinterpret_cast<LPVOID*>(&lpValue)));
+		const auto hRes = WC_H(HrGetRegistryValue(hKey, szValue, &dwKeyType, reinterpret_cast<LPVOID*>(&lpValue)));
 		if (hRes == S_OK && REG_DWORD == dwKeyType && lpValue)
 		{
 			ret = *lpValue;
@@ -233,7 +234,7 @@ namespace registry
 		HKEY hkSub = nullptr;
 
 		// Try to open the root key before we do the work to create it
-		auto hRes = WC_W32(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ | KEY_WRITE, &hkSub));
+		const auto hRes = WC_W32(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ | KEY_WRITE, &hkSub));
 		if (SUCCEEDED(hRes) && hkSub) return hkSub;
 
 		WC_W32_S(RegCreateKeyExW(
@@ -261,4 +262,4 @@ namespace registry
 
 		if (hRootKey) EC_W32_S(RegCloseKey(hRootKey));
 	}
-}
+} // namespace registry

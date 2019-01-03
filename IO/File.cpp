@@ -420,7 +420,7 @@ namespace file
 					hRes = EC_MAPI(lpFolderContents->QueryRows(1, NULL, &pRows));
 					if (FAILED(hRes) || !pRows || pRows && !pRows->cRows) break;
 
-					hRes = WC_H(SaveToMSG(
+					WC_H_S(SaveToMSG(
 						lpFolder,
 						szPathName,
 						pRows->aRow->lpProps[fldPR_ENTRYID],
@@ -444,7 +444,7 @@ namespace file
 		dialog::editor::CEditor MyData(
 			nullptr, IDS_EXPORTTITLE, IDS_EXPORTPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(IDS_EXPORTSEARCHTERM, 0, false));
+		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_EXPORTSEARCHTERM, false));
 
 		if (!MyData.DisplayDialog()) return;
 

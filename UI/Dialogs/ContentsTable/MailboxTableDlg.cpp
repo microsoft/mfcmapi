@@ -28,7 +28,7 @@ namespace dialog
 			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
-			  LPSPropTagArray(&columns::sptMBXCols),
+			  &columns::sptMBXCols.tags,
 			  columns::MBXColumns,
 			  IDR_MENU_MAILBOX_TABLE_POPUP,
 			  MENU_CONTEXT_MAILBOX_TABLE)
@@ -152,7 +152,7 @@ namespace dialog
 
 		const auto szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
-		auto lpRes = mapi::CreatePropertyStringRestriction(
+		const auto lpRes = mapi::CreatePropertyStringRestriction(
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, MyData.GetHex(1), NULL);
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 

@@ -85,7 +85,7 @@ namespace mapiprocessor
 					lpPrimaryMDB, strings::wstringTostring(szExchangeServerName), ulOffset);
 				if (lpMailBoxTable)
 				{
-					auto hRes = WC_MAPI(lpMailBoxTable->SetColumns(LPSPropTagArray(&columns::sptMBXCols), NULL));
+					auto hRes = WC_MAPI(lpMailBoxTable->SetColumns(&columns::sptMBXCols.tags, NULL));
 
 					// go to the first row
 					if (SUCCEEDED(hRes))
@@ -223,7 +223,7 @@ namespace mapiprocessor
 					FLAGS,
 					NUMCOLS
 				};
-				static const SizedSPropTagArray(NUMCOLS, sptHierarchyCols) = {
+				static SizedSPropTagArray2(NUMCOLS, sptHierarchyCols) = {
 					NUMCOLS,
 					{PR_DISPLAY_NAME, PR_ENTRYID, PR_SUBFOLDERS, PR_CONTAINER_FLAGS},
 				};
@@ -231,7 +231,7 @@ namespace mapiprocessor
 				LPSRowSet lpRows = nullptr;
 				// If I don't do this, the MSPST provider can blow chunks (MAPI_E_EXTENDED_ERROR) for some folders when I get a row
 				// For some reason, this fixes it.
-				auto hRes = WC_MAPI(lpHierarchyTable->SetColumns(LPSPropTagArray(&sptHierarchyCols), TBL_BATCH));
+				auto hRes = WC_MAPI(lpHierarchyTable->SetColumns(&sptHierarchyCols.tags, TBL_BATCH));
 
 				if (SUCCEEDED(hRes))
 				{ // go to the first row
@@ -602,7 +602,7 @@ namespace mapiprocessor
 	// Clean up the list
 	void CMAPIProcessor::FreeFolderList() const
 	{
-		for (auto node : m_List)
+		for (auto& node : m_List)
 		{
 			MAPIFreeBuffer(node.lpFolderEID);
 		}
@@ -687,4 +687,4 @@ namespace mapiprocessor
 	void CMAPIProcessor::EndAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ LPVOID /*lpData*/) {}
 
 	void CMAPIProcessor::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ LPVOID /*lpData*/) {}
-}
+} // namespace mapiprocessor

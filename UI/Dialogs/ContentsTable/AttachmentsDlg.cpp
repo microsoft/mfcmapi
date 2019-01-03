@@ -30,7 +30,7 @@ namespace dialog
 			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  lpMAPITable,
-			  LPSPropTagArray(&columns::sptATTACHCols),
+			  &columns::sptATTACHCols.tags,
 			  columns::ATTACHColumns,
 			  IDR_MENU_ATTACHMENTS_POPUP,
 			  MENU_CONTEXT_ATTACHMENT_TABLE)
@@ -111,7 +111,7 @@ namespace dialog
 	{
 		LPATTACH lpAttach = nullptr;
 
-		auto hRes = WC_MAPI(m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_MODIFY, &lpAttach));
+		const auto hRes = WC_MAPI(m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_MODIFY, &lpAttach));
 		if (hRes == MAPI_E_NO_ACCESS)
 		{
 			WC_MAPI_S(m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_BEST_ACCESS, &lpAttach));
@@ -226,7 +226,6 @@ namespace dialog
 		if (!m_lpContentsTableListCtrl || !m_lpMessage) return false;
 		output::DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 
-		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
@@ -245,19 +244,19 @@ namespace dialog
 				LPSPropProblemArray lpProblems = nullptr;
 
 				// Open the attachment source
-				hRes = EC_MAPI(lpSourceMessage->OpenAttach(ulAtt, NULL, MAPI_DEFERRED_ERRORS, &lpAttSrc));
+				EC_MAPI_S(lpSourceMessage->OpenAttach(ulAtt, NULL, MAPI_DEFERRED_ERRORS, &lpAttSrc));
 				if (lpAttSrc)
 				{
 					ULONG ulAttNum = NULL;
 					// Create the attachment destination
-					hRes = EC_MAPI(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
+					EC_MAPI_S(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
 					if (lpAttDst)
 					{
 						LPMAPIPROGRESS lpProgress =
 							mapi::mapiui::GetMAPIProgress(L"IAttach::CopyTo", m_hWnd); // STRING_OK
 
 						// Copy from source to destination
-						hRes = EC_MAPI(lpAttSrc->CopyTo(
+						EC_MAPI_S(lpAttSrc->CopyTo(
 							0,
 							NULL,
 							nullptr,
@@ -280,16 +279,15 @@ namespace dialog
 
 				if (lpAttDst)
 				{
-					hRes = EC_MAPI(lpAttDst->SaveChanges(KEEP_OPEN_READWRITE));
+					EC_MAPI_S(lpAttDst->SaveChanges(KEEP_OPEN_READWRITE));
 					lpAttDst->Release();
 					lpAttDst = nullptr;
 				}
 
 				// If we failed on one pass, try the rest
-				hRes = S_OK;
 			}
 
-			hRes = EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+			EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
 
@@ -450,7 +448,7 @@ namespace dialog
 
 							if (SUCCEEDED(hRes))
 							{
-								hRes = EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+								EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 							}
 						}
 
@@ -486,4 +484,4 @@ namespace dialog
 			lpParams->lpAttach = nullptr;
 		}
 	}
-}
+} // namespace dialog

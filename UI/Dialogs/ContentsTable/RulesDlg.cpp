@@ -26,7 +26,7 @@ namespace dialog
 			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			  nullptr,
 			  nullptr,
-			  LPSPropTagArray(&columns::sptRULECols),
+			  &columns::sptRULECols.tags,
 			  columns::RULEColumns,
 			  IDR_MENU_RULES_POPUP,
 			  MENU_CONTEXT_RULES_TABLE)
@@ -100,7 +100,7 @@ namespace dialog
 		EC_H_S(GetSelectedItems(RULE_INCLUDE_ID, ROW_REMOVE, &lpSelectedItems));
 		if (lpSelectedItems)
 		{
-			auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
+			const auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (hRes == S_OK) OnRefreshView();
 		}
@@ -115,7 +115,7 @@ namespace dialog
 		EC_H_S(GetSelectedItems(RULE_INCLUDE_ID | RULE_INCLUDE_OTHER, ROW_MODIFY, &lpSelectedItems));
 		if (lpSelectedItems)
 		{
-			auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
+			const auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(0, lpSelectedItems));
 			MAPIFreeBuffer(lpSelectedItems);
 			if (hRes == S_OK) OnRefreshView();
 		}

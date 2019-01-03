@@ -25,7 +25,7 @@ namespace dialog
 			  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 			  lpAbCont,
 			  nullptr,
-			  LPSPropTagArray(&columns::sptABCols),
+			  &columns::sptABCols.tags,
 			  columns::ABColumns,
 			  IDR_MENU_AB_VIEW_POPUP,
 			  MENU_CONTEXT_AB_CONTENTS)
@@ -99,7 +99,7 @@ namespace dialog
 
 					// Have to pass DIALOG_MODAL according to
 					// http://support.microsoft.com/kb/171637
-					auto hRes = EC_H_CANCEL(lpAddrBook->Details(
+					const auto hRes = EC_H_CANCEL(lpAddrBook->Details(
 						&ulUIParam,
 						NULL,
 						NULL,
@@ -133,7 +133,7 @@ namespace dialog
 			if (mapi::UnwrapContactEntryID(lpEntryList->lpbin[0].cb, lpEntryList->lpbin[0].lpb, &cb, &lpb))
 			{
 				auto lpProp = mapi::CallOpenEntry<LPMAPIPROP>(
-					NULL, NULL, NULL, lpSession, cb, reinterpret_cast<LPENTRYID>(lpb), NULL, NULL, NULL);
+					nullptr, nullptr, nullptr, lpSession, cb, reinterpret_cast<LPENTRYID>(lpb), nullptr, NULL, nullptr);
 				if (lpProp)
 				{
 					EC_H_S(DisplayObject(lpProp, NULL, otDefault, this));
@@ -270,7 +270,7 @@ namespace dialog
 		if (!MyData.DisplayDialog()) return;
 
 		// Allocate and create our SRestriction
-		auto lpRes = mapi::ab::CreateANRRestriction(PR_ANR_W, MyData.GetStringW(0), NULL);
+		const auto lpRes = mapi::ab::CreateANRRestriction(PR_ANR_W, MyData.GetStringW(0), nullptr);
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
 		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
