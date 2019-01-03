@@ -109,7 +109,7 @@ namespace registry
 		DWORD* lpValue = nullptr;
 		auto ret = dwDefaultVal;
 
-		auto hRes = WC_H(HrGetRegistryValue(hKey, szValue, &dwKeyType, reinterpret_cast<LPVOID*>(&lpValue)));
+		const auto hRes = WC_H(HrGetRegistryValue(hKey, szValue, &dwKeyType, reinterpret_cast<LPVOID*>(&lpValue)));
 		if (hRes == S_OK && REG_DWORD == dwKeyType && lpValue)
 		{
 			ret = *lpValue;
@@ -234,7 +234,7 @@ namespace registry
 		HKEY hkSub = nullptr;
 
 		// Try to open the root key before we do the work to create it
-		auto hRes = WC_W32(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ | KEY_WRITE, &hkSub));
+		const auto hRes = WC_W32(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ | KEY_WRITE, &hkSub));
 		if (SUCCEEDED(hRes) && hkSub) return hkSub;
 
 		WC_W32_S(RegCreateKeyExW(
