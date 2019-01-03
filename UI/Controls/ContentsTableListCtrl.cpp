@@ -193,14 +193,14 @@ namespace controls
 			if (SUCCEEDED(hRes))
 			{
 				dialog::editor::CEditor MyData(this, IDS_GETSTATUS, IDS_GETSTATUSPROMPT, CEDITOR_BUTTON_OK);
-				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, 0, true));
+				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_ULTABLESTATUS, true));
 				MyData.SetHex(0, ulTableStatus);
 				auto szFlags = interpretprop::InterpretFlags(flagTableStatus, ulTableStatus);
-				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLESTATUS, 1, szFlags, true));
-				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(IDS_ULTABLETYPE, 2, true));
+				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_ULTABLESTATUS, szFlags, true));
+				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULTABLETYPE, true));
 				MyData.SetHex(2, ulTableType);
 				szFlags = interpretprop::InterpretFlags(flagTableType, ulTableType);
-				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(IDS_ULTABLETYPE, 3, szFlags, true));
+				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(3, IDS_ULTABLETYPE, szFlags, true));
 
 				(void) MyData.DisplayDialog();
 			}
@@ -1555,7 +1555,8 @@ namespace controls
 			SRow NewRow = {0};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-			const auto hRes = EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
+			const auto hRes =
+				EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"msgOnAddItem", L"Received message to add row to row %d\n", iNewRow);
