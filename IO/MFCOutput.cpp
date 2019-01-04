@@ -34,7 +34,7 @@ namespace output
 		// only open the file if we really need to
 		if (registry::debugToFile)
 		{
-			g_fDebugFile = MyOpenFile(registry::RegKeys[registry::regkeyDEBUG_FILE_NAME].szCurSTRING, false);
+			g_fDebugFile = MyOpenFile(registry::debugFileName, false);
 		}
 	}
 

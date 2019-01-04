@@ -67,8 +67,7 @@ namespace dialog
 		void COptions::OnOK()
 		{
 			// need to grab this FIRST
-			registry::RegKeys[registry::regkeyDEBUG_FILE_NAME].szCurSTRING =
-				GetStringW(registry::regkeyDEBUG_FILE_NAME);
+			registry::debugFileName = GetStringW(registry::regkeyDEBUG_FILE_NAME);
 
 			if (GetHex(registry::regkeyDEBUG_TAG) != registry::debugTag)
 			{

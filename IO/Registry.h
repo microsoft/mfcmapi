@@ -123,10 +123,30 @@ namespace registry
 		}
 	};
 
+	class wstringReg
+	{
+		std::wstring& _val;
+
+	public:
+		wstringReg(__RegKeys& val) : _val(val.szCurSTRING) {}
+		operator std::wstring&() { return _val; }
+
+		std::wstring& operator=(std::wstring val)
+		{
+			_val = val;
+			return _val;
+		}
+		_NODISCARD std::wstring::size_type length() const noexcept { return _val.length(); }
+		_NODISCARD bool empty() const noexcept { return _val.empty(); }
+		void clear() noexcept { _val.clear(); }
+		void push_back(const wchar_t _Ch) { _val.push_back(_Ch); }
+		_NODISCARD std::wstring::reference operator[](const std::wstring::size_type _Off) { return _val[_Off]; }
+	};
+
 	// Registry setting accessors
 	static dwordReg debugTag = RegKeys[regkeyDEBUG_TAG];
 	static boolReg debugToFile = RegKeys[regkeyDEBUG_TO_FILE];
-	//regkeyDEBUG_FILE_NAME,
+	static wstringReg debugFileName = RegKeys[regkeyDEBUG_FILE_NAME];
 	static boolReg parseNamedProps = RegKeys[regkeyPARSED_NAMED_PROPS];
 	static boolReg getPropsNamesOnAllProps = RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS];
 	static dwordReg throttleLevel = RegKeys[regkeyTHROTTLE_LEVEL];
@@ -147,11 +167,11 @@ namespace registry
 	static boolReg useIMAPIProgress = RegKeys[regkeyUSE_IMAPIPROGRESS];
 	static boolReg useMessageRaw = RegKeys[regkeyUSE_MESSAGERAW];
 	static boolReg suppressNotFound = RegKeys[regkeySUPPRESS_NOT_FOUND];
-	static boolReg heapEnableTerminationOnCorruption = RegKeys[regkeyHEAPENABLETERMINATIONONCORRUPTION];
+	//static boolReg heapEnableTerminationOnCorruption = RegKeys[regkeyHEAPENABLETERMINATIONONCORRUPTION];
 	static boolReg loadAddIns = RegKeys[regkeyLOADADDINS];
 	static boolReg forceOutlookMAPI = RegKeys[regkeyFORCEOUTLOOKMAPI];
 	static boolReg forceSystemMAPI = RegKeys[regkeyFORCESYSTEMMAPI];
 	static boolReg hexDialogDiag = RegKeys[regkeyHEX_DIALOG_DIAG];
 	static boolReg displayAboutDialog = RegKeys[regkeyDISPLAY_ABOUT_DIALOG];
-	//regkeyPROP_COLUMN_ORDER,
+	static wstringReg propertyColumnOrder = RegKeys[regkeyPROP_COLUMN_ORDER];
 } // namespace registry

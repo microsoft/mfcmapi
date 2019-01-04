@@ -65,11 +65,11 @@ namespace controls
 
 			// Column orders are stored as lowercase letters
 			// bacdefghi would mean the first two columns are swapped
-			if (lpMyHeader && !registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.empty())
+			if (lpMyHeader && !registry::propertyColumnOrder.empty())
 			{
 				auto bSetCols = false;
 				const auto nColumnCount = lpMyHeader->GetItemCount();
-				const auto cchOrder = registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.length();
+				const auto cchOrder = registry::propertyColumnOrder.length();
 				if (nColumnCount == static_cast<int>(cchOrder))
 				{
 					const auto pnOrder = new (std::nothrow) int[nColumnCount];
@@ -78,7 +78,7 @@ namespace controls
 					{
 						for (auto i = 0; i < nColumnCount; i++)
 						{
-							pnOrder[i] = registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING[i] - L'a';
+							pnOrder[i] = registry::propertyColumnOrder[i] - L'a';
 						}
 
 						if (SetColumnOrderArray(nColumnCount, pnOrder))
@@ -91,7 +91,7 @@ namespace controls
 				}
 
 				// If we didn't like the reg key, clear it so we don't see it again
-				if (!bSetCols) registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.clear();
+				if (!bSetCols) registry::propertyColumnOrder.clear();
 			}
 
 			AutoSizeColumns(false);
@@ -156,12 +156,11 @@ namespace controls
 
 					if (pnOrder)
 					{
-						registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.clear();
+						registry::propertyColumnOrder.clear();
 						EC_B_S(GetColumnOrderArray(pnOrder, nColumnCount));
 						for (ULONG i = 0; i < nColumnCount; i++)
 						{
-							registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.push_back(
-								static_cast<wchar_t>(L'a' + pnOrder[i]));
+							registry::propertyColumnOrder.push_back(static_cast<wchar_t>(L'a' + pnOrder[i]));
 						}
 					}
 
