@@ -64,8 +64,8 @@ namespace ui
 		m_hwinEventHook = SetWinEventHook(
 			EVENT_OBJECT_REORDER, EVENT_OBJECT_REORDER, nullptr, &MyWinEventProc, GetCurrentProcessId(), NULL, NULL);
 
-		mapistub::ForceOutlookMAPI(0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
-		mapistub::ForceSystemMAPI(0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD);
+		mapistub::ForceOutlookMAPI(registry::forceOutlookMAPI);
+		mapistub::ForceSystemMAPI(registry::forceSystemMAPI);
 
 		addin::LoadAddIns();
 
@@ -117,4 +117,4 @@ namespace ui
 		if (!lCount) delete this;
 		return lCount;
 	}
-}
+} // namespace ui

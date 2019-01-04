@@ -65,4 +65,4 @@ namespace ui
 
 		return true;
 	}
-}
+} // namespace ui

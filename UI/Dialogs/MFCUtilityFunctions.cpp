@@ -243,8 +243,7 @@ namespace dialog
 		if (!lpHostDlg || !lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 		if (PT_OBJECT != PROP_TYPE(ulPropTag)) return MAPI_E_INVALID_TYPE;
 
-		auto unicodeFlag =
-			registry::RegKeys[registry::regkeyPREFER_UNICODE_PROPS].ulCurDWORD ? MAPI_UNICODE : fMapiUnicode;
+		auto unicodeFlag = registry::preferUnicodeProps ? MAPI_UNICODE : fMapiUnicode;
 		auto hRes = WC_MAPI(lpMAPIProp->OpenProperty(
 			ulPropTag, &IID_IMAPITable, unicodeFlag, 0, reinterpret_cast<LPUNKNOWN*>(&lpTable)));
 		if (hRes == MAPI_E_INTERFACE_NOT_SUPPORTED)

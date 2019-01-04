@@ -116,8 +116,8 @@ namespace dialog
 			COptions MyOptions(lpParentWnd);
 			MyOptions.DoModal();
 
-			mapistub::ForceOutlookMAPI(0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
-			mapistub::ForceSystemMAPI(0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD);
+			mapistub::ForceOutlookMAPI(registry::forceOutlookMAPI);
+			mapistub::ForceSystemMAPI(registry::forceSystemMAPI);
 			return MyOptions.NeedPropRefresh();
 		}
 	} // namespace editor

@@ -104,6 +104,34 @@ namespace registry
 	};
 
 	// Registry setting accessors
-	static boolReg parseNamedProps = registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS];
-	static boolReg getPropsNamesOnAllProps = registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS];
+	//regkeyDEBUG_TAG,
+	static boolReg debugToFile = RegKeys[regkeyDEBUG_TO_FILE];
+	//regkeyDEBUG_FILE_NAME,
+	static boolReg parseNamedProps = RegKeys[regkeyPARSED_NAMED_PROPS];
+	static boolReg getPropsNamesOnAllProps = RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS];
+	//regkeyTHROTTLE_LEVEL,
+	static boolReg hierExpandNotifications = RegKeys[regkeyHIER_EXPAND_NOTIFS];
+	static boolReg hierRootNotifs = RegKeys[regkeyHIER_ROOT_NOTIFS];
+	static boolReg doSmartView = RegKeys[regkeyDO_SMART_VIEW];
+	static boolReg onlyAdditionalProperties = RegKeys[regkeyONLY_ADDITIONAL_PROPERTIES];
+	static boolReg useRowDataForSinglePropList = RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST];
+	static boolReg useGetPropList = RegKeys[regkeyUSE_GETPROPLIST];
+	static boolReg preferUnicodeProps = RegKeys[regkeyPREFER_UNICODE_PROPS];
+	static boolReg cacheNamedProps = RegKeys[regkeyCACHE_NAME_DPROPS];
+	static boolReg allowDupeColumns = RegKeys[regkeyALLOW_DUPE_COLUMNS];
+	static boolReg doColumnNames = RegKeys[regkeyDO_COLUMN_NAMES];
+	static boolReg editColumnsOnLoad = RegKeys[regkeyEDIT_COLUMNS_ON_LOAD];
+	static boolReg forceMDBOnline = RegKeys[regkeyMDB_ONLINE];
+	static boolReg forceMapiNoCache = RegKeys[regKeyMAPI_NO_CACHE];
+	static boolReg allowPersistCache = RegKeys[regkeyALLOW_PERSIST_CACHE];
+	static boolReg useIMAPIProgress = RegKeys[regkeyUSE_IMAPIPROGRESS];
+	static boolReg useMessageRaw = RegKeys[regkeyUSE_MESSAGERAW];
+	static boolReg suppressNotFound = RegKeys[regkeySUPPRESS_NOT_FOUND];
+	static boolReg heapEnableTerminationOnCorruption = RegKeys[regkeyHEAPENABLETERMINATIONONCORRUPTION];
+	static boolReg loadAddIns = RegKeys[regkeyLOADADDINS];
+	static boolReg forceOutlookMAPI = RegKeys[regkeyFORCEOUTLOOKMAPI];
+	static boolReg forceSystemMAPI = RegKeys[regkeyFORCESYSTEMMAPI];
+	static boolReg hexDialogDiag = RegKeys[regkeyHEX_DIALOG_DIAG];
+	static boolReg displayAboutDialog = RegKeys[regkeyDISPLAY_ABOUT_DIALOG];
+	//regkeyPROP_COLUMN_ORDER,
 } // namespace registry

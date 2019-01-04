@@ -144,7 +144,7 @@ namespace controls
 
 	void CHierarchyTableTreeCtrl::OnItemAdded(HTREEITEM hItem) const
 	{
-		if (registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || hItem != TVI_ROOT)
+		if (registry::hierRootNotifs || hItem != TVI_ROOT)
 		{
 			(void) GetHierarchyTable(hItem, nullptr, true);
 		}
@@ -243,7 +243,7 @@ namespace controls
 	{
 		// Set up our advise sink
 		if (lpData->Node()->m_lpHierarchyTable && !lpData->Node()->m_lpAdviseSink &&
-			(registry::RegKeys[registry::regkeyHIER_ROOT_NOTIFS].ulCurDWORD || GetRootItem() != hItem))
+			(registry::hierRootNotifs || GetRootItem() != hItem))
 		{
 			output::DebugPrintEx(
 				DBGNotify,
@@ -344,8 +344,7 @@ namespace controls
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 		auto pRows = LPSRowSet{};
-		auto lpHierarchyTable =
-			GetHierarchyTable(hParent, nullptr, 0 != registry::RegKeys[registry::regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
+		auto lpHierarchyTable = GetHierarchyTable(hParent, nullptr, registry::hierExpandNotifications);
 		if (lpHierarchyTable)
 		{
 			// Go to the first row
@@ -422,8 +421,7 @@ namespace controls
 		auto lpMAPIContainer = GetContainer(hItem, mfcmapiREQUEST_MODIFY);
 
 		// Make sure we've gotten the hierarchy table for this node
-		(void) GetHierarchyTable(
-			hItem, lpMAPIContainer, 0 != registry::RegKeys[registry::regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
+		(void) GetHierarchyTable(hItem, lpMAPIContainer, registry::hierExpandNotifications);
 
 		UINT uiMsg = IDS_STATUSTEXTNOFOLDER;
 		std::wstring szParam1;

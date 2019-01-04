@@ -217,7 +217,7 @@ namespace smartview
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 		bool bMVRow) // did the row come from a MV prop?
 	{
-		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp) return IDS_STNOPARSING;
+		if (!registry::doSmartView || !lpProp) return IDS_STNOPARSING;
 
 		const auto npi = GetNamedPropInfo(lpProp->ulPropTag, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB);
 		const auto ulPropNameID = npi.first;
@@ -316,7 +316,7 @@ namespace smartview
 			bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 		bool bMVRow) // did the row come from a MV prop?
 	{
-		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp) return strings::emptystring;
+		if (!registry::doSmartView || !lpProp) return strings::emptystring;
 
 		const auto npi = GetNamedPropInfo(lpProp->ulPropTag, lpMAPIProp, lpNameID, lpMappingSignature, bIsAB);
 		const auto ulPropNameID = npi.first;
@@ -368,7 +368,7 @@ namespace smartview
 	std::wstring
 	InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
-		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
+		if (!registry::doSmartView) return L"";
 
 		std::wstring szResult;
 
@@ -482,7 +482,7 @@ namespace smartview
 		_In_opt_ ULONG ulPropNameID,
 		_In_opt_ LPGUID lpguidNamedProp)
 	{
-		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return strings::emptystring;
+		if (!registry::doSmartView) return strings::emptystring;
 
 		auto szArray = std::vector<std::wstring>{};
 		ULONG ulRow = 0;
@@ -506,7 +506,7 @@ namespace smartview
 		_In_opt_ ULONG ulPropNameID,
 		_In_opt_ LPCGUID lpguidNamedProp)
 	{
-		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return strings::emptystring;
+		if (!registry::doSmartView) return strings::emptystring;
 
 		auto szArray = std::vector<std::wstring>{};
 
@@ -531,7 +531,7 @@ namespace smartview
 	std::wstring
 	InterpretBinaryAsString(const SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
-		if (!registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
+		if (!registry::doSmartView) return L"";
 		auto szResultString = addin::AddInSmartView(iStructType, myBin.cb, myBin.lpb);
 		if (!szResultString.empty())
 		{

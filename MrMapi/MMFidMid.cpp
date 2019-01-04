@@ -242,8 +242,8 @@ namespace mapiprocessor
 		bool bMid)
 	{
 		// FID/MID lookups only succeed online, so go ahead and force it
-		registry::RegKeys[registry::regKeyMAPI_NO_CACHE].ulCurDWORD = true;
-		registry::RegKeys[registry::regkeyMDB_ONLINE].ulCurDWORD = true;
+		registry::forceMapiNoCache = true;
+		registry::forceMDBOnline = true;
 
 		output::DebugPrint(
 			DBGGeneric,

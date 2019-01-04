@@ -348,7 +348,7 @@ namespace controls
 
 			if (!m_lpPropBag) return MAPI_E_INVALID_PARAMETER;
 
-			if (!registry::RegKeys[registry::regkeyONLY_ADDITIONAL_PROPERTIES].ulCurDWORD)
+			if (!registry::onlyAdditionalProperties)
 			{
 				hRes = WC_H(m_lpPropBag->GetAllProps(&ulProps, &lpPropsToAdd));
 

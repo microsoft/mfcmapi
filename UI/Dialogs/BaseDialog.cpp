@@ -408,13 +408,11 @@ namespace dialog
 
 	void CBaseDialog::OnOptions()
 	{
-		const auto ulNiceNamesBefore = registry::RegKeys[registry::regkeyDO_COLUMN_NAMES].ulCurDWORD;
-		const auto ulSuppressNotFoundBefore = registry::RegKeys[registry::regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
+		const auto ulNiceNamesBefore = registry::doColumnNames;
+		const auto ulSuppressNotFoundBefore = registry::suppressNotFound;
 		const auto bNeedPropRefresh = editor::DisplayOptionsDlg(this);
-		const auto bNiceNamesChanged =
-			ulNiceNamesBefore != registry::RegKeys[registry::regkeyDO_COLUMN_NAMES].ulCurDWORD;
-		const auto bSuppressNotFoundChanged =
-			ulSuppressNotFoundBefore != registry::RegKeys[registry::regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
+		const auto bNiceNamesChanged = ulNiceNamesBefore != registry::doColumnNames;
+		const auto bSuppressNotFoundChanged = ulSuppressNotFoundBefore != registry::suppressNotFound;
 		auto bResetColumns = false;
 
 		if (bNiceNamesChanged || bSuppressNotFoundChanged)

@@ -137,10 +137,10 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	// Set up our property arrays or nothing works
 	addin::MergeAddInArrays();
 
-	registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD = 1;
-	registry::RegKeys[registry::regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
-	registry::parseNamedProps = 1;
-	registry::RegKeys[registry::regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
+	registry::doSmartView = true;
+	registry::useGetPropList = true;
+	registry::parseNamedProps = true;
+	registry::cacheNamedProps = true;
 
 	auto cl = cli::GetCommandLine(argc, argv);
 	auto ProgOpts = cli::ParseArgs(cl);
@@ -159,7 +159,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 	if (!(ProgOpts.ulOptions & cli::OPT_NOADDINS))
 	{
-		registry::RegKeys[registry::regkeyLOADADDINS].ulCurDWORD = true;
+		registry::loadAddIns = true;
 		addin::LoadAddIns();
 	}
 
@@ -180,8 +180,8 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	{
 		if (ProgOpts.ulOptions & cli::OPT_ONLINE)
 		{
-			registry::RegKeys[registry::regKeyMAPI_NO_CACHE].ulCurDWORD = true;
-			registry::RegKeys[registry::regkeyMDB_ONLINE].ulCurDWORD = true;
+			registry::forceMapiNoCache = true;
+			registry::forceMDBOnline = true;
 		}
 
 		// Log on to MAPI if needed
