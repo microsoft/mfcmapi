@@ -380,7 +380,7 @@ namespace controls
 					ULONG ulPropNames = 0;
 					LPMAPINAMEID* lppPropNames = nullptr;
 					ULONG ulCurTag = 0;
-					if (!m_bIsAB && registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD)
+					if (!m_bIsAB && registry::parseNamedProps)
 					{
 						// If we don't pass named property information to AddPropToListBox, it will look it up for us
 						// But this costs a GetNamesFromIDs call for each property we add
@@ -391,7 +391,7 @@ namespace controls
 							ULONG ulNamedProps = 0;
 
 							// First, count how many props to look up
-							if (registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD)
+							if (registry::getPropsNamesOnAllProps)
 							{
 								ulNamedProps = ulProps;
 							}
@@ -411,7 +411,7 @@ namespace controls
 								{
 									// Populate the array
 									lpTag->cValues = ulNamedProps;
-									if (registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD)
+									if (registry::getPropsNamesOnAllProps)
 									{
 										for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
 										{
@@ -460,7 +460,7 @@ namespace controls
 						// We shouldn't need to check ulCurTag < ulPropNames, but I fear bad GetNamesFromIDs implementations
 						if (lppPropNames && ulCurTag < ulPropNames)
 						{
-							if (registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD ||
+							if (registry::getPropsNamesOnAllProps ||
 								PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
 							{
 								lpNameIDInfo = lppPropNames[ulCurTag];

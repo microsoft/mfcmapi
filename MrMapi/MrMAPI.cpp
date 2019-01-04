@@ -139,7 +139,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 	registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD = 1;
 	registry::RegKeys[registry::regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
-	registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
+	registry::parseNamedProps = 1;
 	registry::RegKeys[registry::regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
 
 	auto cl = cli::GetCommandLine(argc, argv);

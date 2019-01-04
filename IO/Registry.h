@@ -86,4 +86,24 @@ namespace registry
 		_In_ const std::wstring& szDefault = strings::emptystring);
 
 	void WriteStringToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue);
+
+	class boolReg
+	{
+		DWORD& _val;
+
+	public:
+		boolReg(DWORD& val) : _val(val) {}
+		boolReg(__RegKeys& val) : _val(val.ulCurDWORD) {}
+		operator bool() const { return _val != 0; }
+
+		bool operator=(DWORD val)
+		{
+			_val = val;
+			return _val;
+		}
+	};
+
+	// Registry setting accessors
+	static boolReg parseNamedProps = registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS];
+	static boolReg getPropsNamesOnAllProps = registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS];
 } // namespace registry
