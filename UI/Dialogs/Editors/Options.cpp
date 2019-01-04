@@ -70,7 +70,7 @@ namespace dialog
 			registry::RegKeys[registry::regkeyDEBUG_FILE_NAME].szCurSTRING =
 				GetStringW(registry::regkeyDEBUG_FILE_NAME);
 
-			if (GetHex(registry::regkeyDEBUG_TAG) != registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD)
+			if (GetHex(registry::regkeyDEBUG_TAG) != registry::debugTag)
 			{
 				output::SetDebugLevel(GetHex(registry::regkeyDEBUG_TAG));
 				output::DebugPrintVersion(DBGVersionBanner);

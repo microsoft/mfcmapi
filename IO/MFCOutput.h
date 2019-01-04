@@ -13,11 +13,11 @@ namespace output
 	void SetDebugOutputToFile(bool bDoOutput);
 
 	// New system for debug output: When outputting debug output, a tag is included - if that tag is
-	// set in RegKeys[regkeyDEBUG_TAG].ulCurDWORD, then we do the output. Otherwise, we ditch it.
+	// set in registry::debugTag, then we do the output. Otherwise, we ditch it.
 	// DBGNoDebug never gets output - special case
 
 	// The global debug level - combination of flags from below
-	// RegKeys[regkeyDEBUG_TAG].ulCurDWORD
+	// registry::debugTag
 
 #define DBGNoDebug ((ULONG) 0x00000000)
 #define DBGGeneric ((ULONG) 0x00000001)
@@ -51,8 +51,8 @@ namespace output
 #define DBGAll ((ULONG) 0x0000ffff)
 #define DBGSuperVerbose ((ULONG) 0xffffffff)
 
-#define fIsSet(ulTag) (registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD & (ulTag))
-#define fIsSetv(ulTag) (((ulTag) != DBGNoDebug) && (registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
+#define fIsSet(ulTag) (registry::debugTag & (ulTag))
+#define fIsSetv(ulTag) (((ulTag) != DBGNoDebug) && (registry::debugTag & (ulTag)))
 
 	_Check_return_ FILE* MyOpenFile(const std::wstring& szFileName, bool bNewFile);
 	_Check_return_ FILE* MyOpenFileMode(const std::wstring& szFileName, const wchar_t* mode);

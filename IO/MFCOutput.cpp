@@ -44,9 +44,9 @@ namespace output
 		g_fDebugFile = nullptr;
 	}
 
-	_Check_return_ ULONG GetDebugLevel() { return registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD; }
+	_Check_return_ ULONG GetDebugLevel() { return registry::debugTag; }
 
-	void SetDebugLevel(ULONG ulDbgLvl) { registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD = ulDbgLvl; }
+	void SetDebugLevel(ULONG ulDbgLvl) { registry::debugTag = ulDbgLvl; }
 
 	// We've got our 'new' value here and also a debug output file name
 	// gonna set the new value

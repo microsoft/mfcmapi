@@ -92,7 +92,6 @@ namespace registry
 		DWORD& _val;
 
 	public:
-		boolReg(DWORD& val) : _val(val) {}
 		boolReg(__RegKeys& val) : _val(val.ulCurDWORD) {}
 		operator bool() const { return _val != 0; }
 
@@ -103,13 +102,34 @@ namespace registry
 		}
 	};
 
+	class dwordReg
+	{
+		DWORD& _val;
+
+	public:
+		dwordReg(__RegKeys& val) : _val(val.ulCurDWORD) {}
+		operator DWORD() const { return _val; }
+
+		DWORD operator=(DWORD val)
+		{
+			_val = val;
+			return _val;
+		}
+
+		DWORD operator|=(DWORD val)
+		{
+			_val |= val;
+			return _val;
+		}
+	};
+
 	// Registry setting accessors
-	//regkeyDEBUG_TAG,
+	static dwordReg debugTag = RegKeys[regkeyDEBUG_TAG];
 	static boolReg debugToFile = RegKeys[regkeyDEBUG_TO_FILE];
 	//regkeyDEBUG_FILE_NAME,
 	static boolReg parseNamedProps = RegKeys[regkeyPARSED_NAMED_PROPS];
 	static boolReg getPropsNamesOnAllProps = RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS];
-	//regkeyTHROTTLE_LEVEL,
+	static dwordReg throttleLevel = RegKeys[regkeyTHROTTLE_LEVEL];
 	static boolReg hierExpandNotifications = RegKeys[regkeyHIER_EXPAND_NOTIFS];
 	static boolReg hierRootNotifs = RegKeys[regkeyHIER_ROOT_NOTIFS];
 	static boolReg doSmartView = RegKeys[regkeyDO_SMART_VIEW];

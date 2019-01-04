@@ -563,7 +563,7 @@ namespace controls
 
 				output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"ulTotal = 0x%X\n", ulTotal);
 
-				ulThrottleLevel = registry::RegKeys[registry::regkeyTHROTTLE_LEVEL].ulCurDWORD;
+				ulThrottleLevel = registry::throttleLevel;
 
 				if (ulTotal)
 				{

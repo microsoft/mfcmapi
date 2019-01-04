@@ -181,7 +181,7 @@ namespace registry
 			EC_W32_S(RegCloseKey(hRootKey));
 		}
 
-		output::SetDebugLevel(RegKeys[regkeyDEBUG_TAG].ulCurDWORD);
+		output::SetDebugLevel(debugTag);
 		output::DebugPrintVersion(DBGVersionBanner);
 	}
 

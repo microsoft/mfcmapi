@@ -153,7 +153,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 	if (ProgOpts.ulOptions & cli::OPT_VERBOSE)
 	{
-		registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD = 0xFFFFFFFF;
+		registry::debugTag = 0xFFFFFFFF;
 		PrintArgs(ProgOpts);
 	}
 
