@@ -20,8 +20,9 @@ namespace registry
 		regoptStringDec
 	};
 
-	struct __RegKeys
+	class __RegKeys
 	{
+	public:
 		std::wstring szKeyName;
 		ULONG ulRegKeyType;
 		ULONG ulRegOptType;
@@ -31,6 +32,26 @@ namespace registry
 		std::wstring szCurSTRING;
 		bool bRefresh;
 		UINT uiOptionsPrompt;
+	};
+
+	class boolRegKey : public __RegKeys
+	{
+	public:
+		boolRegKey(const std::wstring& _szKeyName, __REGOPTIONTYPE _ulRegOptType, int _uiOptionsPrompt)
+		{
+			szKeyName = _szKeyName;
+			ulRegKeyType = regDWORD;
+			ulRegOptType = _ulRegOptType;
+			uiOptionsPrompt = _uiOptionsPrompt;
+		}
+
+		operator bool() const { return ulCurDWORD != 0; }
+
+		boolRegKey& operator=(DWORD val)
+		{
+			ulCurDWORD = val;
+			return *this;
+		}
 	};
 
 	// Registry key Names
@@ -145,7 +166,7 @@ namespace registry
 
 	// Registry setting accessors
 	static dwordReg debugTag = RegKeys[regkeyDEBUG_TAG];
-	static boolReg debugToFile = RegKeys[regkeyDEBUG_TO_FILE];
+	static boolRegKey debugToFile = boolRegKey{L"DebugToFile", regoptCheck, IDS_REGKEY_DEBUG_TO_FILE};
 	static wstringReg debugFileName = RegKeys[regkeyDEBUG_FILE_NAME];
 	static boolReg parseNamedProps = RegKeys[regkeyPARSED_NAMED_PROPS];
 	static boolReg getPropsNamesOnAllProps = RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS];

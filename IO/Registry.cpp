@@ -11,7 +11,7 @@ namespace registry
 	#else
 		{ L"DebugTag",					regDWORD,regoptStringHex,	DBGNoDebug	,0,L"",L"",false,	IDS_REGKEY_DEBUG_TAG }, // STRING_OK
 	#endif
-		{ L"DebugToFile",				regDWORD,regoptCheck,		0			,0,L"",L"",false,	IDS_REGKEY_DEBUG_TO_FILE }, // STRING_OK
+		debugToFile,
 		{ L"DebugFileName",				regSTRING,regoptString,		0			,0,L"c:\\mfcmapi.log",L"",false,	IDS_REGKEY_DEBUG_FILE_NAME }, // STRING_OK
 		{ L"ParseNamedProps",			regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_PARSED_NAMED_PROPS }, // STRING_OK
 		{ L"GetPropNamesOnAllProps",	regDWORD,regoptCheck,		false		,0,L"",L"",true,	IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS }, // STRING_OK
