@@ -32,12 +32,18 @@ namespace registry
 		std::wstring szCurSTRING;
 		bool bRefresh;
 		UINT uiOptionsPrompt;
+
+		__RegKey(const __RegKey&) = delete;
+		__RegKey& operator=(__RegKey const&) = delete;
+		__RegKey(__RegKey&&) = delete;
+		__RegKey& operator=(__RegKey&&) = delete;
+		~__RegKey() = default;
 	};
 
 	class boolRegKey : public __RegKey
 	{
 	public:
-		boolRegKey(const std::wstring& _szKeyName, bool _default, bool _refresh, int _uiOptionsPrompt)
+		boolRegKey(const std::wstring& _szKeyName, bool _default, bool _refresh, int _uiOptionsPrompt) : __RegKey{}
 		{
 			szKeyName = _szKeyName;
 			ulRegKeyType = regDWORD;
@@ -65,6 +71,7 @@ namespace registry
 			DWORD _default,
 			bool _refresh,
 			int _uiOptionsPrompt)
+			: __RegKey{}
 		{
 			szKeyName = _szKeyName;
 			ulRegKeyType = regDWORD;
@@ -93,6 +100,7 @@ namespace registry
 	{
 	public:
 		wstringRegKey(const std::wstring& _szKeyName, const std::wstring& _default, bool _refresh, int _uiOptionsPrompt)
+			: __RegKey{}
 		{
 			szKeyName = _szKeyName;
 			ulRegKeyType = regSTRING;
@@ -155,7 +163,7 @@ namespace registry
 
 #define NumRegOptionKeys (registry::NUMRegKeys - 2)
 
-	extern __RegKey RegKeys[NUMRegKeys];
+	extern __RegKey* RegKeys[NUMRegKeys];
 
 	void SetDefaults();
 	void WriteToRegistry();
@@ -171,44 +179,34 @@ namespace registry
 
 	void WriteStringToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue);
 
-	// Registry settings
-#ifdef _DEBUG
-	static auto debugTag = dwordRegKey{L"DebugTag", regoptStringHex, DBGAll, false, IDS_REGKEY_DEBUG_TAG};
-#else
-	static auto debugTag = dwordRegKey{L"DebugTag", regoptStringHex, DBGNoDebug, 0, false, IDS_REGKEY_DEBUG_TAG};
-#endif
-	static auto debugToFile = boolRegKey{L"DebugToFile", false, false, IDS_REGKEY_DEBUG_TO_FILE};
-	static auto debugFileName = wstringRegKey{L"DebugFileName", L"c:\\mfcmapi.log", false, IDS_REGKEY_DEBUG_FILE_NAME};
-	static auto getPropNamesOnAllProps =
-		boolRegKey{L"GetPropNamesOnAllProps", false, true, IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS};
-	static auto parseNamedProps = boolRegKey{L"ParseNamedProps", false, true, IDS_REGKEY_PARSED_NAMED_PROPS};
-	static auto throttleLevel = dwordRegKey{L"ThrottleLevel", regoptStringDec, 0, false, IDS_REGKEY_THROTTLE_LEVEL};
-	static auto hierExpandNotifications =
-		boolRegKey{L"HierExpandNotifications", true, false, IDS_REGKEY_HIER_EXPAND_NOTIFS};
-	static auto hierRootNotifs = boolRegKey{L"HierRootNotifs", false, false, IDS_REGKEY_HIER_ROOT_NOTIFS};
-	static auto doSmartView = boolRegKey{L"DoSmartView", true, true, IDS_REGKEY_DO_SMART_VIEW};
-	static auto onlyAdditionalProperties =
-		boolRegKey{L"OnlyAdditionalProperties", false, true, IDS_REGKEY_ONLYADDITIONALPROPERTIES};
-	static auto useRowDataForSinglePropList =
-		boolRegKey{L"UseRowDataForSinglePropList", false, true, IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST};
-	static auto useGetPropList = boolRegKey{L"UseGetPropList", true, true, IDS_REGKEY_USE_GETPROPLIST};
-	static auto preferUnicodeProps = boolRegKey{L"PreferUnicodeProps", true, true, IDS_REGKEY_PREFER_UNICODE_PROPS};
-	static auto cacheNamedProps = boolRegKey{L"CacheNamedProps", true, false, IDS_REGKEY_CACHE_NAMED_PROPS};
-	static auto allowDupeColumns = boolRegKey{L"AllowDupeColumns", false, false, IDS_REGKEY_ALLOW_DUPE_COLUMNS};
-	static auto doColumnNames = boolRegKey{L"DoColumnNames", true, false, IDS_REGKEY_DO_COLUMN_NAMES};
-	static auto editColumnsOnLoad = boolRegKey{L"EditColumnsOnLoad", false, false, IDS_REGKEY_EDIT_COLUMNS_ON_LOAD};
-	static auto forceMDBOnline = boolRegKey{L"ForceMDBOnline", false, false, IDS_REGKEY_MDB_ONLINE};
-	static auto forceMapiNoCache = boolRegKey{L"ForceMapiNoCache", false, false, IDS_REGKEY_MAPI_NO_CACHE};
-	static auto allowPersistCache = boolRegKey{L"AllowPersistCache", false, false, IDS_REGKEY_ALLOW_PERSIST_CACHE};
-	static auto useIMAPIProgress = boolRegKey{L"UseIMAPIProgress", false, false, IDS_REGKEY_USE_IMAPIPROGRESS};
-	static auto useMessageRaw = boolRegKey{L"UseMessageRaw", false, false, IDS_REGKEY_USE_MESSAGERAW};
-	static auto suppressNotFound = boolRegKey{L"SuppressNotFound", true, false, IDS_REGKEY_SUPPRESS_NOTFOUND};
-	static auto heapEnableTerminationOnCorruption =
-		boolRegKey{L"HeapEnableTerminationOnCorruption", true, false, IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION};
-	static auto loadAddIns = boolRegKey{L"LoadAddIns", true, false, IDS_REGKEY_LOADADDINS};
-	static auto forceOutlookMAPI = boolRegKey{L"ForceOutlookMAPI", false, false, IDS_REGKEY_FORCEOUTLOOKMAPI};
-	static auto forceSystemMAPI = boolRegKey{L"ForceSystemMAPI", false, false, IDS_REGKEY_FORCESYSTEMMAPI};
-	static auto hexDialogDiag = boolRegKey{L"HexDialogDiag", false, false, IDS_REGKEY_HEXDIALOGDIAG};
-	static auto displayAboutDialog = boolRegKey{L"DisplayAboutDialog", true, false, NULL};
-	static auto propertyColumnOrder = wstringRegKey{L"PropertyColumnOrder", L"", false, NULL};
+	extern dwordRegKey debugTag;
+	extern boolRegKey debugToFile;
+	extern wstringRegKey debugFileName;
+	extern boolRegKey getPropNamesOnAllProps;
+	extern boolRegKey parseNamedProps;
+	extern dwordRegKey throttleLevel;
+	extern boolRegKey hierExpandNotifications;
+	extern boolRegKey hierRootNotifs;
+	extern boolRegKey doSmartView;
+	extern boolRegKey onlyAdditionalProperties;
+	extern boolRegKey useRowDataForSinglePropList;
+	extern boolRegKey useGetPropList;
+	extern boolRegKey preferUnicodeProps;
+	extern boolRegKey cacheNamedProps;
+	extern boolRegKey allowDupeColumns;
+	extern boolRegKey doColumnNames;
+	extern boolRegKey editColumnsOnLoad;
+	extern boolRegKey forceMDBOnline;
+	extern boolRegKey forceMapiNoCache;
+	extern boolRegKey allowPersistCache;
+	extern boolRegKey useIMAPIProgress;
+	extern boolRegKey useMessageRaw;
+	extern boolRegKey suppressNotFound;
+	extern boolRegKey heapEnableTerminationOnCorruption;
+	extern boolRegKey loadAddIns;
+	extern boolRegKey forceOutlookMAPI;
+	extern boolRegKey forceSystemMAPI;
+	extern boolRegKey hexDialogDiag;
+	extern boolRegKey displayAboutDialog;
+	extern wstringRegKey propertyColumnOrder;
 } // namespace registry

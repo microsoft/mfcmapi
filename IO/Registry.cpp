@@ -3,38 +3,81 @@
 
 namespace registry
 {
+	// Registry settings
+#ifdef _DEBUG
+	dwordRegKey debugTag{L"DebugTag", regoptStringHex, DBGAll, false, IDS_REGKEY_DEBUG_TAG};
+#else
+	dwordRegKey debugTag{L"DebugTag", regoptStringHex, DBGNoDebug, 0, false, IDS_REGKEY_DEBUG_TAG};
+#endif
+	boolRegKey debugToFile{L"DebugToFile", false, false, IDS_REGKEY_DEBUG_TO_FILE};
+	wstringRegKey debugFileName{L"DebugFileName", L"c:\\mfcmapi.log", false, IDS_REGKEY_DEBUG_FILE_NAME};
+	boolRegKey getPropNamesOnAllProps{L"GetPropNamesOnAllProps", false, true, IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS};
+	boolRegKey parseNamedProps{L"ParseNamedProps", false, true, IDS_REGKEY_PARSED_NAMED_PROPS};
+	dwordRegKey throttleLevel{L"ThrottleLevel", regoptStringDec, 0, false, IDS_REGKEY_THROTTLE_LEVEL};
+	boolRegKey hierExpandNotifications{L"HierExpandNotifications", true, false, IDS_REGKEY_HIER_EXPAND_NOTIFS};
+	boolRegKey hierRootNotifs{L"HierRootNotifs", false, false, IDS_REGKEY_HIER_ROOT_NOTIFS};
+	boolRegKey doSmartView{L"DoSmartView", true, true, IDS_REGKEY_DO_SMART_VIEW};
+	boolRegKey onlyAdditionalProperties{L"OnlyAdditionalProperties", false, true, IDS_REGKEY_ONLYADDITIONALPROPERTIES};
+	boolRegKey useRowDataForSinglePropList{L"UseRowDataForSinglePropList",
+										   false,
+										   true,
+										   IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST};
+	boolRegKey useGetPropList{L"UseGetPropList", true, true, IDS_REGKEY_USE_GETPROPLIST};
+	boolRegKey preferUnicodeProps{L"PreferUnicodeProps", true, true, IDS_REGKEY_PREFER_UNICODE_PROPS};
+	boolRegKey cacheNamedProps{L"CacheNamedProps", true, false, IDS_REGKEY_CACHE_NAMED_PROPS};
+	boolRegKey allowDupeColumns{L"AllowDupeColumns", false, false, IDS_REGKEY_ALLOW_DUPE_COLUMNS};
+	boolRegKey doColumnNames{L"DoColumnNames", true, false, IDS_REGKEY_DO_COLUMN_NAMES};
+	boolRegKey editColumnsOnLoad{L"EditColumnsOnLoad", false, false, IDS_REGKEY_EDIT_COLUMNS_ON_LOAD};
+	boolRegKey forceMDBOnline{L"ForceMDBOnline", false, false, IDS_REGKEY_MDB_ONLINE};
+	boolRegKey forceMapiNoCache{L"ForceMapiNoCache", false, false, IDS_REGKEY_MAPI_NO_CACHE};
+	boolRegKey allowPersistCache{L"AllowPersistCache", false, false, IDS_REGKEY_ALLOW_PERSIST_CACHE};
+	boolRegKey useIMAPIProgress{L"UseIMAPIProgress", false, false, IDS_REGKEY_USE_IMAPIPROGRESS};
+	boolRegKey useMessageRaw{L"UseMessageRaw", false, false, IDS_REGKEY_USE_MESSAGERAW};
+	boolRegKey suppressNotFound{L"SuppressNotFound", true, false, IDS_REGKEY_SUPPRESS_NOTFOUND};
+	boolRegKey heapEnableTerminationOnCorruption{L"HeapEnableTerminationOnCorruption",
+												 true,
+												 false,
+												 IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION};
+	boolRegKey loadAddIns{L"LoadAddIns", true, false, IDS_REGKEY_LOADADDINS};
+	boolRegKey forceOutlookMAPI{L"ForceOutlookMAPI", false, false, IDS_REGKEY_FORCEOUTLOOKMAPI};
+	boolRegKey forceSystemMAPI{L"ForceSystemMAPI", false, false, IDS_REGKEY_FORCESYSTEMMAPI};
+	boolRegKey hexDialogDiag{L"HexDialogDiag", false, false, IDS_REGKEY_HEXDIALOGDIAG};
+	boolRegKey displayAboutDialog{L"DisplayAboutDialog", true, false, NULL};
+	wstringRegKey propertyColumnOrder{L"PropertyColumnOrder", L"", false, NULL};
+
+	// TODO: Can/should this be a vector?
 	// Keep this in sync with REGKEYNAMES
-	__RegKey RegKeys[] = {
-		debugTag,
-		debugToFile,
-		debugFileName,
-		getPropNamesOnAllProps,
-		parseNamedProps,
-		throttleLevel,
-		hierExpandNotifications,
-		hierRootNotifs,
-		doSmartView,
-		onlyAdditionalProperties,
-		useRowDataForSinglePropList,
-		useGetPropList,
-		preferUnicodeProps,
-		cacheNamedProps,
-		allowDupeColumns,
-		doColumnNames,
-		editColumnsOnLoad,
-		forceMDBOnline,
-		forceMapiNoCache,
-		allowPersistCache,
-		useIMAPIProgress,
-		useMessageRaw,
-		suppressNotFound,
-		heapEnableTerminationOnCorruption,
-		loadAddIns,
-		forceOutlookMAPI,
-		forceSystemMAPI,
-		hexDialogDiag,
-		displayAboutDialog,
-		propertyColumnOrder,
+	__RegKey* RegKeys[] = {
+		&debugTag,
+		&debugToFile,
+		&debugFileName,
+		&getPropNamesOnAllProps,
+		&parseNamedProps,
+		&throttleLevel,
+		&hierExpandNotifications,
+		&hierRootNotifs,
+		&doSmartView,
+		&onlyAdditionalProperties,
+		&useRowDataForSinglePropList,
+		&useGetPropList,
+		&preferUnicodeProps,
+		&cacheNamedProps,
+		&allowDupeColumns,
+		&doColumnNames,
+		&editColumnsOnLoad,
+		&forceMDBOnline,
+		&forceMapiNoCache,
+		&allowPersistCache,
+		&useIMAPIProgress,
+		&useMessageRaw,
+		&suppressNotFound,
+		&heapEnableTerminationOnCorruption,
+		&loadAddIns,
+		&forceOutlookMAPI,
+		&forceSystemMAPI,
+		&hexDialogDiag,
+		&displayAboutDialog,
+		&propertyColumnOrder,
 	};
 
 	void SetDefaults()
@@ -42,13 +85,15 @@ namespace registry
 		// Set some defaults to begin with:
 		for (auto& regKey : RegKeys)
 		{
-			if (regKey.ulRegKeyType == regDWORD)
+			if (!regKey) continue;
+
+			if (regKey->ulRegKeyType == regDWORD)
 			{
-				regKey.ulCurDWORD = regKey.ulDefDWORD;
+				regKey->ulCurDWORD = regKey->ulDefDWORD;
 			}
-			else if (regKey.ulRegKeyType == regSTRING)
+			else if (regKey->ulRegKeyType == regSTRING)
 			{
-				regKey.szCurSTRING = regKey.szDefSTRING;
+				regKey->szCurSTRING = regKey->szDefSTRING;
 			}
 		}
 	}
@@ -162,13 +207,15 @@ namespace registry
 		{
 			for (auto& regKey : RegKeys)
 			{
-				if (regKey.ulRegKeyType == regDWORD)
+				if (!regKey) continue;
+
+				if (regKey->ulRegKeyType == regDWORD)
 				{
-					regKey.ulCurDWORD = ReadDWORDFromRegistry(hRootKey, regKey.szKeyName, regKey.ulCurDWORD);
+					regKey->ulCurDWORD = ReadDWORDFromRegistry(hRootKey, regKey->szKeyName, regKey->ulCurDWORD);
 				}
-				else if (regKey.ulRegKeyType == regSTRING)
+				else if (regKey->ulRegKeyType == regSTRING)
 				{
-					regKey.szCurSTRING = ReadStringFromRegistry(hRootKey, regKey.szKeyName, regKey.szCurSTRING);
+					regKey->szCurSTRING = ReadStringFromRegistry(hRootKey, regKey->szKeyName, regKey->szCurSTRING);
 				}
 			}
 
@@ -244,13 +291,15 @@ namespace registry
 		// Now that we have a root key, go set our values
 		for (auto& regKey : RegKeys)
 		{
-			if (regKey.ulRegKeyType == regDWORD)
+			if (!regKey) continue;
+
+			if (regKey->ulRegKeyType == regDWORD)
 			{
-				CommitDWORDIfNeeded(hRootKey, regKey.szKeyName, regKey.ulCurDWORD, regKey.ulDefDWORD);
+				CommitDWORDIfNeeded(hRootKey, regKey->szKeyName, regKey->ulCurDWORD, regKey->ulDefDWORD);
 			}
-			else if (regKey.ulRegKeyType == regSTRING)
+			else if (regKey->ulRegKeyType == regSTRING)
 			{
-				CommitStringIfNeeded(hRootKey, regKey.szKeyName, regKey.szCurSTRING, regKey.szDefSTRING);
+				CommitStringIfNeeded(hRootKey, regKey->szKeyName, regKey->szCurSTRING, regKey->szDefSTRING);
 			}
 		}
 

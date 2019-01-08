@@ -55,7 +55,7 @@ namespace output
 	void SetDebugOutputToFile(bool bDoOutput)
 	{
 		// save our old value
-		const auto bOldDoOutput = registry::debugToFile;
+		const bool bOldDoOutput = registry::debugToFile;
 
 		// set the new value
 		registry::debugToFile = bDoOutput;
@@ -500,7 +500,7 @@ namespace output
 		{
 			FreeProws(lpRows);
 			lpRows = nullptr;
-			auto hRes = EC_MAPI(lpMAPITable->QueryRows(20, NULL, &lpRows));
+			const auto hRes = EC_MAPI(lpMAPITable->QueryRows(20, NULL, &lpRows));
 			if (FAILED(hRes) || !lpRows || !lpRows->cRows) break;
 
 			for (ULONG iCurRow = 0; iCurRow < lpRows->cRows; iCurRow++)
@@ -881,7 +881,7 @@ namespace output
 		// Copy the list before we sort it or else we affect the caller
 		// Don't worry about linked memory - we just need to sort the index
 		const auto cbProps = cProps * sizeof(SPropValue);
-		auto lpSortedProps = mapi::allocate<LPSPropValue>(static_cast<ULONG>(cbProps));
+		const auto lpSortedProps = mapi::allocate<LPSPropValue>(static_cast<ULONG>(cbProps));
 
 		if (lpSortedProps)
 		{
@@ -981,8 +981,8 @@ namespace output
 			return;
 		}
 
-		const LARGE_INTEGER li = {0};
-		auto hRes = WC_H_MSG(IDS_STREAMSEEKFAILED, lpStream->Seek(li, STREAM_SEEK_SET, nullptr));
+		const auto li = LARGE_INTEGER{};
+		const auto hRes = WC_H_MSG(IDS_STREAMSEEKFAILED, lpStream->Seek(li, STREAM_SEEK_SET, nullptr));
 
 		BYTE bBuf[MAXBYTES + 2]; // Allocate some extra for NULL terminators - 2 for Unicode
 		ULONG ulNumBytes = 0;

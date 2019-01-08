@@ -34,30 +34,35 @@ namespace dialog
 
 			for (ULONG ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
 			{
-				if (registry::regoptCheck == registry::RegKeys[ulReg].ulRegOptType)
+				if (!registry::RegKeys[ulReg]) continue;
+
+				if (registry::regoptCheck == registry::RegKeys[ulReg]->ulRegOptType)
 				{
 					AddPane(viewpane::CheckPane::Create(
 						ulReg,
-						registry::RegKeys[ulReg].uiOptionsPrompt,
-						0 != registry::RegKeys[ulReg].ulCurDWORD,
+						registry::RegKeys[ulReg]->uiOptionsPrompt,
+						0 != registry::RegKeys[ulReg]->ulCurDWORD,
 						false));
 				}
-				else if (registry::regoptString == registry::RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptString == registry::RegKeys[ulReg]->ulRegOptType)
 				{
 					AddPane(viewpane::TextPane::CreateSingleLinePane(
-						ulReg, registry::RegKeys[ulReg].uiOptionsPrompt, registry::RegKeys[ulReg].szCurSTRING, false));
+						ulReg,
+						registry::RegKeys[ulReg]->uiOptionsPrompt,
+						registry::RegKeys[ulReg]->szCurSTRING,
+						false));
 				}
-				else if (registry::regoptStringHex == registry::RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptStringHex == registry::RegKeys[ulReg]->ulRegOptType)
 				{
 					AddPane(viewpane::TextPane::CreateSingleLinePane(
-						ulReg, registry::RegKeys[ulReg].uiOptionsPrompt, false));
-					SetHex(ulReg, registry::RegKeys[ulReg].ulCurDWORD);
+						ulReg, registry::RegKeys[ulReg]->uiOptionsPrompt, false));
+					SetHex(ulReg, registry::RegKeys[ulReg]->ulCurDWORD);
 				}
-				else if (registry::regoptStringDec == registry::RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptStringDec == registry::RegKeys[ulReg]->ulRegOptType)
 				{
 					AddPane(viewpane::TextPane::CreateSingleLinePane(
-						ulReg, registry::RegKeys[ulReg].uiOptionsPrompt, false));
-					SetDecimal(ulReg, registry::RegKeys[ulReg].ulCurDWORD);
+						ulReg, registry::RegKeys[ulReg]->uiOptionsPrompt, false));
+					SetDecimal(ulReg, registry::RegKeys[ulReg]->ulCurDWORD);
 				}
 			}
 		}
@@ -80,23 +85,25 @@ namespace dialog
 			// Remaining options require no special handling - loop through them
 			for (ULONG ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
 			{
-				if (registry::regoptCheck == registry::RegKeys[ulReg].ulRegOptType)
+				if (!registry::RegKeys[ulReg]) continue;
+
+				if (registry::regoptCheck == registry::RegKeys[ulReg]->ulRegOptType)
 				{
-					if (registry::RegKeys[ulReg].bRefresh &&
-						registry::RegKeys[ulReg].ulCurDWORD != static_cast<ULONG>(GetCheck(ulReg)))
+					if (registry::RegKeys[ulReg]->bRefresh &&
+						registry::RegKeys[ulReg]->ulCurDWORD != static_cast<ULONG>(GetCheck(ulReg)))
 					{
 						m_bNeedPropRefresh = true;
 					}
 
-					registry::RegKeys[ulReg].ulCurDWORD = GetCheck(ulReg);
+					registry::RegKeys[ulReg]->ulCurDWORD = GetCheck(ulReg);
 				}
-				else if (registry::regoptStringHex == registry::RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptStringHex == registry::RegKeys[ulReg]->ulRegOptType)
 				{
-					registry::RegKeys[ulReg].ulCurDWORD = GetHex(ulReg);
+					registry::RegKeys[ulReg]->ulCurDWORD = GetHex(ulReg);
 				}
-				else if (registry::regoptStringDec == registry::RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptStringDec == registry::RegKeys[ulReg]->ulRegOptType)
 				{
-					registry::RegKeys[ulReg].ulCurDWORD = GetDecimal(ulReg);
+					registry::RegKeys[ulReg]->ulCurDWORD = GetDecimal(ulReg);
 				}
 			}
 
