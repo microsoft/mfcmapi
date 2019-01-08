@@ -4,7 +4,7 @@
 namespace registry
 {
 	// Keep this in sync with REGKEYNAMES
-	__RegKeys RegKeys[] = {
+	__RegKey RegKeys[] = {
 		debugTag,
 		debugToFile,
 		debugFileName,

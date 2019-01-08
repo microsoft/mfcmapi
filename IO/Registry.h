@@ -20,7 +20,7 @@ namespace registry
 		regoptStringDec
 	};
 
-	class __RegKeys
+	class __RegKey
 	{
 	public:
 		std::wstring szKeyName;
@@ -34,7 +34,7 @@ namespace registry
 		UINT uiOptionsPrompt;
 	};
 
-	class boolRegKey : public __RegKeys
+	class boolRegKey : public __RegKey
 	{
 	public:
 		boolRegKey(const std::wstring& _szKeyName, bool _default, bool _refresh, int _uiOptionsPrompt)
@@ -56,7 +56,7 @@ namespace registry
 		}
 	};
 
-	class dwordRegKey : public __RegKeys
+	class dwordRegKey : public __RegKey
 	{
 	public:
 		dwordRegKey(
@@ -89,7 +89,7 @@ namespace registry
 		}
 	};
 
-	class wstringRegKey : public __RegKeys
+	class wstringRegKey : public __RegKey
 	{
 	public:
 		wstringRegKey(const std::wstring& _szKeyName, const std::wstring& _default, bool _refresh, int _uiOptionsPrompt)
@@ -155,7 +155,7 @@ namespace registry
 
 #define NumRegOptionKeys (registry::NUMRegKeys - 2)
 
-	extern __RegKeys RegKeys[NUMRegKeys];
+	extern __RegKey RegKeys[NUMRegKeys];
 
 	void SetDefaults();
 	void WriteToRegistry();
