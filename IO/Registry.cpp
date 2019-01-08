@@ -111,6 +111,7 @@ namespace registry
 		delete[] lpValue;
 		return ret;
 	}
+
 	// If the value is not set in the registry, return the default value
 	std::wstring
 	ReadStringFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::wstring& szDefault)
