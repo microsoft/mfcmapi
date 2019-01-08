@@ -7,7 +7,7 @@ namespace registry
 	__RegKeys RegKeys[] = {
 		debugTag,
 		debugToFile,
-		{L"DebugFileName", regSTRING, regoptString, 0, 0, L"c:\\mfcmapi.log", L"", false, IDS_REGKEY_DEBUG_FILE_NAME},
+		debugFileName,
 		getPropNamesOnAllProps,
 		parseNamedProps,
 		throttleLevel,
@@ -34,7 +34,7 @@ namespace registry
 		forceSystemMAPI,
 		hexDialogDiag,
 		displayAboutDialog,
-		{L"PropertyColumnOrder", regSTRING, regoptCheck, 0, 0, L"", L"", false, NULL},
+		propertyColumnOrder,
 	};
 
 	void SetDefaults()
