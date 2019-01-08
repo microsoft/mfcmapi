@@ -110,21 +110,6 @@ namespace registry
 
 	void WriteStringToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue);
 
-	class boolReg
-	{
-		DWORD& _val;
-
-	public:
-		boolReg(__RegKeys& val) : _val(val.ulCurDWORD) {}
-		operator bool() const { return _val != 0; }
-
-		bool operator=(DWORD val)
-		{
-			_val = val;
-			return _val;
-		}
-	};
-
 	class dwordReg
 	{
 		DWORD& _val;
