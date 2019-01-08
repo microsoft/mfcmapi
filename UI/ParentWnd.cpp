@@ -10,8 +10,6 @@ extern ui::CMyWinApp theApp;
 
 namespace ui
 {
-	static std::wstring CLASS = L"CParentWnd";
-
 	// This appears to be the only way to catch a column drag event
 	// Since we end up catching for EVERY event, we have to be clever to ensure only
 	// the CSingleMAPIPropListCtrl that generated it catches it.
@@ -42,7 +40,6 @@ namespace ui
 	{
 		// OutputDebugStringOutput only at first
 		// Get any settings from the registry
-		registry::SetDefaults();
 		registry::ReadFromRegistry();
 		// After this call we may output to the debug file
 		output::OpenDebugFile();
@@ -57,7 +54,7 @@ namespace ui
 		import::ImportProcs();
 
 		// Initialize objects for theming
-		ui::InitializeGDI();
+		InitializeGDI();
 
 		m_cRef = 1;
 
@@ -78,7 +75,7 @@ namespace ui
 		// Since we didn't create a window, we can't call DestroyWindow to let MFC know we're done.
 		// We call AfxPostQuitMessage instead
 		TRACE_DESTRUCTOR(CLASS);
-		ui::UninitializeGDI();
+		UninitializeGDI();
 		addin::UnloadAddIns();
 		if (m_hwinEventHook) UnhookWinEvent(m_hwinEventHook);
 		cache::UninitializeNamedPropCache();

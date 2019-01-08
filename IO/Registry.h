@@ -1,6 +1,7 @@
 // Header file for the MFCMAPI application registry functions
 
 #pragma once
+#include <utility>
 
 namespace registry
 {
@@ -49,6 +50,7 @@ namespace registry
 			ulRegKeyType = regDWORD;
 			ulRegOptType = regoptCheck;
 			ulDefDWORD = _default;
+			ulCurDWORD = _default;
 			bRefresh = _refresh;
 			uiOptionsPrompt = _uiOptionsPrompt;
 		}
@@ -77,6 +79,7 @@ namespace registry
 			ulRegKeyType = regDWORD;
 			ulRegOptType = _ulRegOptType;
 			ulDefDWORD = _default;
+			ulCurDWORD = _default;
 			bRefresh = _refresh;
 			uiOptionsPrompt = _uiOptionsPrompt;
 		}
@@ -105,6 +108,7 @@ namespace registry
 			szKeyName = _szKeyName;
 			ulRegKeyType = regSTRING;
 			ulRegOptType = regoptString;
+			szDefSTRING = _default;
 			szCurSTRING = _default;
 			bRefresh = _refresh;
 			uiOptionsPrompt = _uiOptionsPrompt;
@@ -114,7 +118,7 @@ namespace registry
 
 		wstringRegKey& operator=(std::wstring val)
 		{
-			szCurSTRING = val;
+			szCurSTRING = std::move(val);
 			return *this;
 		}
 
@@ -165,7 +169,6 @@ namespace registry
 
 	extern __RegKey* RegKeys[NUMRegKeys];
 
-	void SetDefaults();
 	void WriteToRegistry();
 	void ReadFromRegistry();
 

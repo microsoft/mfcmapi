@@ -80,24 +80,6 @@ namespace registry
 		&propertyColumnOrder,
 	};
 
-	void SetDefaults()
-	{
-		// Set some defaults to begin with:
-		for (auto& regKey : RegKeys)
-		{
-			if (!regKey) continue;
-
-			if (regKey->ulRegKeyType == regDWORD)
-			{
-				regKey->ulCurDWORD = regKey->ulDefDWORD;
-			}
-			else if (regKey->ulRegKeyType == regSTRING)
-			{
-				regKey->szCurSTRING = regKey->szDefSTRING;
-			}
-		}
-	}
-
 	// $--HrGetRegistryValue---------------------------------------------------------
 	// Get a registry value - allocating memory using new to hold it.
 	// -----------------------------------------------------------------------------
