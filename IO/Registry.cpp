@@ -7,7 +7,7 @@ namespace registry
 #ifdef _DEBUG
 	dwordRegKey debugTag{L"DebugTag", regoptStringHex, DBGAll, false, IDS_REGKEY_DEBUG_TAG};
 #else
-	dwordRegKey debugTag{L"DebugTag", regoptStringHex, DBGNoDebug, 0, false, IDS_REGKEY_DEBUG_TAG};
+	dwordRegKey debugTag{L"DebugTag", regoptStringHex, DBGNoDebug, false, IDS_REGKEY_DEBUG_TAG};
 #endif
 	boolRegKey debugToFile{L"DebugToFile", false, false, IDS_REGKEY_DEBUG_TO_FILE};
 	wstringRegKey debugFileName{L"DebugFileName", L"c:\\mfcmapi.log", false, IDS_REGKEY_DEBUG_FILE_NAME};
