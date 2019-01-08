@@ -56,6 +56,39 @@ namespace registry
 		}
 	};
 
+	class dwordRegKey : public __RegKeys
+	{
+	public:
+		dwordRegKey(
+			const std::wstring& _szKeyName,
+			__REGOPTIONTYPE _ulRegOptType,
+			DWORD _default,
+			bool _refresh,
+			int _uiOptionsPrompt)
+		{
+			szKeyName = _szKeyName;
+			ulRegKeyType = regDWORD;
+			ulRegOptType = _ulRegOptType;
+			ulDefDWORD = _default;
+			bRefresh = _refresh;
+			uiOptionsPrompt = _uiOptionsPrompt;
+		}
+
+		operator DWORD() const { return ulCurDWORD; }
+
+		dwordRegKey& operator=(DWORD val)
+		{
+			ulCurDWORD = val;
+			return *this;
+		}
+
+		dwordRegKey& operator|=(DWORD val)
+		{
+			ulCurDWORD |= val;
+			return *this;
+		}
+	};
+
 	// Registry key Names
 	enum REGKEYNAMES
 	{
@@ -110,27 +143,6 @@ namespace registry
 
 	void WriteStringToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue);
 
-	class dwordReg
-	{
-		DWORD& _val;
-
-	public:
-		dwordReg(__RegKeys& val) : _val(val.ulCurDWORD) {}
-		operator DWORD() const { return _val; }
-
-		DWORD operator=(DWORD val)
-		{
-			_val = val;
-			return _val;
-		}
-
-		DWORD operator|=(DWORD val)
-		{
-			_val |= val;
-			return _val;
-		}
-	};
-
 	class wstringReg
 	{
 		std::wstring& _val;
@@ -152,12 +164,16 @@ namespace registry
 	};
 
 	// Registry setting accessors
-	static dwordReg debugTag = RegKeys[regkeyDEBUG_TAG];
-	static boolRegKey debugToFile = boolRegKey{L"DebugToFile", false, false, IDS_REGKEY_DEBUG_TO_FILE};
+#ifdef _DEBUG
+	static auto debugTag = dwordRegKey{L"DebugTag", regoptStringHex, DBGAll, false, IDS_REGKEY_DEBUG_TAG};
+#else
+	static auto debugTag = dwordRegKey{L"DebugTag", regoptStringHex, DBGNoDebug, 0, false, IDS_REGKEY_DEBUG_TAG};
+#endif
+	static auto debugToFile = boolRegKey{L"DebugToFile", false, false, IDS_REGKEY_DEBUG_TO_FILE};
 	static wstringReg debugFileName = RegKeys[regkeyDEBUG_FILE_NAME];
 	static auto getPropNamesOnAllProps = boolRegKey{L"GetPropNamesOnAllProps", false, true, IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS};
 	static auto parseNamedProps = boolRegKey{L"ParseNamedProps", false, true, IDS_REGKEY_PARSED_NAMED_PROPS};
-	static dwordReg throttleLevel = RegKeys[regkeyTHROTTLE_LEVEL];
+	static auto throttleLevel = dwordRegKey{L"ThrottleLevel", regoptStringDec, 0, false, IDS_REGKEY_THROTTLE_LEVEL};
 	static auto hierExpandNotifications = boolRegKey{L"HierExpandNotifications", true, false, IDS_REGKEY_HIER_EXPAND_NOTIFS};
 	static auto hierRootNotifs = boolRegKey{L"HierRootNotifs", false, false, IDS_REGKEY_HIER_ROOT_NOTIFS};
 	static auto doSmartView = boolRegKey{L"DoSmartView", true, true, IDS_REGKEY_DO_SMART_VIEW};
@@ -175,8 +191,7 @@ namespace registry
 	static auto useIMAPIProgress = boolRegKey{L"UseIMAPIProgress", false, false, IDS_REGKEY_USE_IMAPIPROGRESS};
 	static auto useMessageRaw = boolRegKey{L"UseMessageRaw", false, false, IDS_REGKEY_USE_MESSAGERAW};
 	static auto suppressNotFound = boolRegKey{L"SuppressNotFound", true, false, IDS_REGKEY_SUPPRESS_NOTFOUND};
-	static auto heapEnableTerminationOnCorruption =
-		boolRegKey{L"HeapEnableTerminationOnCorruption", true, false, IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION};
+	static auto heapEnableTerminationOnCorruption = boolRegKey{L"HeapEnableTerminationOnCorruption", true, false, IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION};
 	static auto loadAddIns = boolRegKey{L"LoadAddIns", true, false, IDS_REGKEY_LOADADDINS};
 	static auto forceOutlookMAPI = boolRegKey{L"ForceOutlookMAPI", false, false, IDS_REGKEY_FORCEOUTLOOKMAPI};
 	static auto forceSystemMAPI = boolRegKey{L"ForceSystemMAPI", false, false, IDS_REGKEY_FORCESYSTEMMAPI};

@@ -5,16 +5,12 @@ namespace registry
 {
 	// Keep this in sync with REGKEYNAMES
 	__RegKeys RegKeys[] = {
-#ifdef _DEBUG
-		{L"DebugTag", regDWORD, regoptStringHex, DBGAll, 0, L"", L"", false, IDS_REGKEY_DEBUG_TAG},
-#else
-		{L"DebugTag", regDWORD, regoptStringHex, DBGNoDebug, 0, L"", L"", false, IDS_REGKEY_DEBUG_TAG},
-#endif
+		debugTag,
 		debugToFile,
 		{L"DebugFileName", regSTRING, regoptString, 0, 0, L"c:\\mfcmapi.log", L"", false, IDS_REGKEY_DEBUG_FILE_NAME},
 		getPropNamesOnAllProps,
 		parseNamedProps,
-		{L"ThrottleLevel", regDWORD, regoptStringDec, 0, 0, L"", L"", false, IDS_REGKEY_THROTTLE_LEVEL},
+		throttleLevel,
 		hierExpandNotifications,
 		hierRootNotifs,
 		doSmartView,
