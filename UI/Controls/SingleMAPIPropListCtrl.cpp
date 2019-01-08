@@ -390,7 +390,7 @@ namespace controls
 							ULONG ulNamedProps = 0;
 
 							// First, count how many props to look up
-							if (registry::getPropsNamesOnAllProps)
+							if (registry::getPropNamesOnAllProps)
 							{
 								ulNamedProps = ulProps;
 							}
@@ -410,7 +410,7 @@ namespace controls
 								{
 									// Populate the array
 									lpTag->cValues = ulNamedProps;
-									if (registry::getPropsNamesOnAllProps)
+									if (registry::getPropNamesOnAllProps)
 									{
 										for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
 										{
@@ -459,7 +459,7 @@ namespace controls
 						// We shouldn't need to check ulCurTag < ulPropNames, but I fear bad GetNamesFromIDs implementations
 						if (lppPropNames && ulCurTag < ulPropNames)
 						{
-							if (registry::getPropsNamesOnAllProps ||
+							if (registry::getPropNamesOnAllProps ||
 								PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
 							{
 								lpNameIDInfo = lppPropNames[ulCurTag];

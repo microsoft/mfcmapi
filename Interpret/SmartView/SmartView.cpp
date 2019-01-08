@@ -271,7 +271,7 @@ namespace smartview
 		if (!lpNameID && lpMAPIProp && // if we have an object
 			!bIsAB && // Some address book providers return garbage which will crash us
 			registry::parseNamedProps && // and we're parsing named props
-			(registry::getPropsNamesOnAllProps ||
+			(registry::getPropNamesOnAllProps ||
 			 PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 		{
 			auto tag = SPropTagArray{1, ulPropTag};

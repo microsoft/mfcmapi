@@ -4,45 +4,42 @@
 namespace registry
 {
 	// Keep this in sync with REGKEYNAMES
-	// clang-format off
 	__RegKeys RegKeys[] = {
-	#ifdef _DEBUG
-		{ L"DebugTag",					regDWORD,regoptStringHex,	DBGAll		,0,L"",L"",false,	IDS_REGKEY_DEBUG_TAG }, // STRING_OK
-	#else
-		{ L"DebugTag",					regDWORD,regoptStringHex,	DBGNoDebug	,0,L"",L"",false,	IDS_REGKEY_DEBUG_TAG }, // STRING_OK
-	#endif
+#ifdef _DEBUG
+		{L"DebugTag", regDWORD, regoptStringHex, DBGAll, 0, L"", L"", false, IDS_REGKEY_DEBUG_TAG},
+#else
+		{L"DebugTag", regDWORD, regoptStringHex, DBGNoDebug, 0, L"", L"", false, IDS_REGKEY_DEBUG_TAG},
+#endif
 		debugToFile,
-		{ L"DebugFileName",				regSTRING,regoptString,		0			,0,L"c:\\mfcmapi.log",L"",false,	IDS_REGKEY_DEBUG_FILE_NAME }, // STRING_OK
-		{ L"ParseNamedProps",			regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_PARSED_NAMED_PROPS }, // STRING_OK
-		{ L"GetPropNamesOnAllProps",	regDWORD,regoptCheck,		false		,0,L"",L"",true,	IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS }, // STRING_OK
-		{ L"ThrottleLevel",				regDWORD,regoptStringDec,	0			,0,L"",L"",false,	IDS_REGKEY_THROTTLE_LEVEL }, // STRING_OK
-		{ L"HierExpandNotifications",	regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_HIER_EXPAND_NOTIFS }, // STRING_OK
-		{ L"HierRootNotifs",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_HIER_ROOT_NOTIFS }, // STRING_OK
-		{ L"DoSmartView",				regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_DO_SMART_VIEW }, // STRING_OK
-		{ L"OnlyAdditionalProperties",	regDWORD,regoptCheck,		false		,0,L"",L"",true,	IDS_REGKEY_ONLYADDITIONALPROPERTIES }, // STRING_OK
-		{ L"UseRowDataForSinglePropList",	regDWORD,regoptCheck,	false		,0,L"",L"",true,	IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST }, // STRING_OK
-		{ L"UseGetPropList",			regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_USE_GETPROPLIST }, // STRING_OK
-		{ L"PreferUnicodeProps",		regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_PREFER_UNICODE_PROPS }, // STRING_OK
-		{ L"CacheNamedProps",			regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_CACHE_NAMED_PROPS }, // STRING_OK
-		{ L"AllowDupeColumns",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_ALLOW_DUPE_COLUMNS }, // STRING_OK
-		{ L"DoColumnNames",				regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_DO_COLUMN_NAMES }, // STRING_OK
-		{ L"EditColumnsOnLoad",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_EDIT_COLUMNS_ON_LOAD }, // STRING_OK
-		{ L"ForceMDBOnline",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_MDB_ONLINE }, // STRING_OK
-		{ L"ForceMapiNoCache",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_MAPI_NO_CACHE }, // STRING_OK
-		{ L"AllowPersistCache",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_ALLOW_PERSIST_CACHE }, // STRING_OK
-		{ L"UseIMAPIProgress",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_USE_IMAPIPROGRESS }, // STRING_OK
-		{ L"UseMessageRaw",				regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_USE_MESSAGERAW }, // STRING_OK
-		{ L"SuppressNotFound",			regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_SUPPRESS_NOTFOUND }, // STRING_OK
-		{ L"HeapEnableTerminationOnCorruption",regDWORD,regoptCheck,true		,0,L"",L"",false,	IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION }, // STRING_OK
-		{ L"LoadAddIns",				regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_LOADADDINS }, // STRING_OK
-		{ L"ForceOutlookMAPI",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_FORCEOUTLOOKMAPI }, // STRING_OK
-		{ L"ForceSystemMAPI",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_FORCESYSTEMMAPI }, // STRING_OK
-		{ L"HexDialogDiag",				regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_HEXDIALOGDIAG }, // STRING_OK
-		{ L"DisplayAboutDialog",		regDWORD,regoptCheck,		true		,0,L"",L"",false,	NULL }, // STRING_OK
-		{ L"PropertyColumnOrder",		regSTRING,regoptCheck,		0			,0,L"",L"",false,	NULL }, // STRING_OK
-		// {KeyName,					keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
+		{L"DebugFileName", regSTRING, regoptString, 0, 0, L"c:\\mfcmapi.log", L"", false, IDS_REGKEY_DEBUG_FILE_NAME},
+		getPropNamesOnAllProps,
+		parseNamedProps,
+		{L"ThrottleLevel", regDWORD, regoptStringDec, 0, 0, L"", L"", false, IDS_REGKEY_THROTTLE_LEVEL},
+		hierExpandNotifications,
+		hierRootNotifs,
+		doSmartView,
+		onlyAdditionalProperties,
+		useRowDataForSinglePropList,
+		useGetPropList,
+		preferUnicodeProps,
+		cacheNamedProps,
+		allowDupeColumns,
+		doColumnNames,
+		editColumnsOnLoad,
+		forceMDBOnline,
+		forceMapiNoCache,
+		allowPersistCache,
+		useIMAPIProgress,
+		useMessageRaw,
+		suppressNotFound,
+		heapEnableTerminationOnCorruption,
+		loadAddIns,
+		forceOutlookMAPI,
+		forceSystemMAPI,
+		hexDialogDiag,
+		displayAboutDialog,
+		{L"PropertyColumnOrder", regSTRING, regoptCheck, 0, 0, L"", L"", false, NULL},
 	};
-	// clang-format on
 
 	void SetDefaults()
 	{
