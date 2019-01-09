@@ -4,6 +4,7 @@
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/Cache/MapiObjects.h>
+#include <UI/mapiui.h>
 
 namespace dialog
 {
@@ -28,8 +29,8 @@ namespace dialog
 			if (lpAddrBook)
 			{
 				// Open root address book (container).
-				auto container =
-					mapi::CallOpenEntry<LPUNKNOWN>(NULL, lpAddrBook, NULL, NULL, nullptr, NULL, MAPI_BEST_ACCESS, NULL);
+				const auto container = mapi::CallOpenEntry<LPUNKNOWN>(
+					nullptr, lpAddrBook, nullptr, nullptr, nullptr, nullptr, MAPI_BEST_ACCESS, nullptr);
 				SetRootContainer(container);
 			}
 		}
@@ -90,7 +91,7 @@ namespace dialog
 			lpParams->lpAbCont = mapi::safe_cast<LPABCONT>(lpContainer);
 		}
 
-		addin::InvokeAddInMenu(lpParams);
+		ui::mapiui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpAbCont)
 		{
@@ -98,4 +99,4 @@ namespace dialog
 			lpParams->lpAbCont = nullptr;
 		}
 	}
-}
+} // namespace dialog

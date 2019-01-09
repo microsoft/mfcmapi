@@ -477,7 +477,7 @@ namespace dialog
 			lpParams->lpAttach = mapi::safe_cast<LPATTACH>(lpMAPIProp);
 		}
 
-		addin::InvokeAddInMenu(lpParams);
+		ui::mapiui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpAttach)
 		{

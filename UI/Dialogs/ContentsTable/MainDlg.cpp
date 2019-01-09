@@ -1624,7 +1624,7 @@ namespace dialog
 			lpParams->lpMDB = mapi::safe_cast<LPMDB>(lpMAPIProp);
 		}
 
-		addin::InvokeAddInMenu(lpParams);
+		ui::mapiui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpMDB)
 		{

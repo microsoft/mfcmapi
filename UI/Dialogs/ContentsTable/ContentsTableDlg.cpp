@@ -13,6 +13,7 @@
 #include <UI/Dialogs/Editors/SearchEditor.h>
 #include <MAPI/MapiMemory.h>
 #include <Interpret/ExtraPropTags.h>
+#include <UI/mapiui.h>
 
 namespace dialog
 {
@@ -119,7 +120,7 @@ namespace dialog
 			if (m_lpContentsTable) m_lpContentsTable->Release();
 			m_lpContentsTable = nullptr;
 
-			auto unicodeFlag = registry::preferUnicodeProps ? MAPI_UNICODE : fMapiUnicode;
+			const auto unicodeFlag = registry::preferUnicodeProps ? MAPI_UNICODE : fMapiUnicode;
 
 			const auto ulFlags = (m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL) |
 								 (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | unicodeFlag;
@@ -200,7 +201,7 @@ namespace dialog
 
 			for (ULONG ulMenu = ID_ADDINMENU; ulMenu < ID_ADDINMENU + m_ulAddInMenuItems; ulMenu++)
 			{
-				const auto lpAddInMenu = addin::GetAddinMenuItem(m_hWnd, ulMenu);
+				const auto lpAddInMenu = ui::mapiui::GetAddinMenuItem(m_hWnd, ulMenu);
 				if (!lpAddInMenu) continue;
 
 				const auto ulFlags = lpAddInMenu->ulFlags;
@@ -327,7 +328,7 @@ namespace dialog
 
 		const auto szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
-		auto lpRes = mapi::CreateRangeRestriction(
+		const auto lpRes = mapi::CreateRangeRestriction(
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, nullptr);
 
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
@@ -520,7 +521,7 @@ namespace dialog
 		LPMAPIPROP lpMAPIProp = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		const auto lpAddInMenu = addin::GetAddinMenuItem(m_hWnd, wMenuSelect);
+		const auto lpAddInMenu = ui::mapiui::GetAddinMenuItem(m_hWnd, wMenuSelect);
 		if (!lpAddInMenu) return false;
 
 		const auto ulFlags = lpAddInMenu->ulFlags;
@@ -603,7 +604,7 @@ namespace dialog
 			}
 		}
 
-		addin::InvokeAddInMenu(lpParams);
+		ui::mapiui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpFolder)
 		{

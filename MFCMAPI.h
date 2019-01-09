@@ -553,9 +553,6 @@ namespace addin
 
 	void LoadAddIns();
 	void UnloadAddIns();
-	_Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext);
-	_Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg);
-	void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams);
 	void MergeAddInArrays();
 	std::wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	std::wstring AddInStructTypeToString(__ParsingTypeEnum iStructType);

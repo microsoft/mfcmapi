@@ -1984,7 +1984,7 @@ namespace dialog
 			if (m_ulDisplayFlags & dfDeleted) lpParams->ulCurrentFlags |= MENU_FLAGS_DELETED;
 		}
 
-		addin::InvokeAddInMenu(lpParams);
+		ui::mapiui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpMessage)
 		{
