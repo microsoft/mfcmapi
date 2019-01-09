@@ -9,6 +9,7 @@
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MapiMemory.h>
+#include <UI/mapiui.h>
 
 namespace dialog
 {
@@ -255,6 +256,6 @@ namespace dialog
 			lpParams->lpExchTbl = m_lpExchTbl;
 		}
 
-		addin::InvokeAddInMenu(lpParams);
+		ui::mapiui::InvokeAddInMenu(lpParams);
 	}
 } // namespace dialog

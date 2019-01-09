@@ -5,6 +5,7 @@
 #include <UI/RichEditOleCallback.h>
 #include <UI/ViewPane/CheckPane.h>
 #include <UI/DoubleBuffer.h>
+#include <UI/mapiui.h>
 
 namespace ui
 {
@@ -341,7 +342,7 @@ namespace ui
 
 			if (IDR_MENU_PROPERTY_POPUP == uiClassMenu)
 			{
-				(void) addin::ExtendAddInMenu(hRealPopup, MENU_CONTEXT_PROPERTY);
+				(void) mapiui::ExtendAddInMenu(hRealPopup, MENU_CONTEXT_PROPERTY);
 			}
 
 			ConvertMenuOwnerDraw(hRealPopup, false);
@@ -1928,7 +1929,7 @@ namespace ui
 			}
 
 			WCHAR szTitle[256] = {};
-			::DefWindowProcW(
+			DefWindowProcW(
 				hWnd, WM_GETTEXT, static_cast<WPARAM>(_countof(szTitle)), reinterpret_cast<LPARAM>(szTitle));
 			DrawSegoeTextW(
 				hdc, szTitle, MyGetSysColor(cText), rcCaptionText, false, DT_LEFT | DT_SINGLELINE | DT_VCENTER);
@@ -2078,8 +2079,8 @@ namespace ui
 	_Check_return_ HWND GetMainWindow()
 	{
 		auto hwndRet = HWND{};
-		static ULONG currentPid = GetCurrentProcessId();
-		::EnumWindows(
+		static auto currentPid = GetCurrentProcessId();
+		EnumWindows(
 			[](auto hwnd, auto lParam) {
 				// Use of BOOL return type forced by WNDENUMPROC signature
 				if (!lParam) return FALSE;
