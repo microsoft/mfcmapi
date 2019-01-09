@@ -20,7 +20,7 @@ namespace mapi
 		{
 			if (!lpSession || !lpEID) return nullptr;
 
-			if (registry::RegKeys[registry::regkeyMDB_ONLINE].ulCurDWORD)
+			if (registry::forceMDBOnline)
 			{
 				ulFlags |= MDB_ONLINE;
 			}

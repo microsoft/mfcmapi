@@ -723,9 +723,8 @@ namespace cache
 		// If we weren't passed named property information and we need it, look it up
 		// We check bIsAB here - some address book providers return garbage which will crash us
 		if (!lpNameID && lpMAPIProp && // if we have an object
-			!bIsAB &&
-			registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
-			(registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD ||
+			!bIsAB && registry::parseNamedProps && // and we're parsing named props
+			(registry::getPropNamesOnAllProps ||
 			 PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 		{
 			SPropTagArray tag = {0};

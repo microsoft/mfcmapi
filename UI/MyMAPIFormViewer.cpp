@@ -437,7 +437,7 @@ namespace mapi
 			const auto bComposing = lpPropArray && lpPropArray->Value.l & MSGFLAG_UNSENT;
 			MAPIFreeBuffer(lpPropArray);
 
-			if (bComposing && !registry::RegKeys[registry::regkeyALLOW_PERSIST_CACHE].ulCurDWORD)
+			if (bComposing && !registry::allowPersistCache)
 			{
 				// Message is in compose mode - caching the IPersistMessage might hose Outlook
 				// However, if we don't cache the IPersistMessage, we can't support SaveMessage or SubmitMessage
@@ -732,5 +732,5 @@ namespace mapi
 
 			return hRes;
 		}
-	}
-}
+	} // namespace mapiui
+} // namespace mapi

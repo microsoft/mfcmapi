@@ -60,10 +60,9 @@ namespace propertybag
 		auto hRes = S_OK;
 		m_bGetPropsSucceeded = false;
 
-		if (!registry::RegKeys[registry::regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD)
+		if (!registry::useRowDataForSinglePropList)
 		{
-			auto unicodeFlag =
-				registry::RegKeys[registry::regkeyPREFER_UNICODE_PROPS].ulCurDWORD ? MAPI_UNICODE : fMapiUnicode;
+			auto unicodeFlag = registry::preferUnicodeProps ? MAPI_UNICODE : fMapiUnicode;
 
 			hRes = mapi::GetPropsNULL(m_lpProp, unicodeFlag, lpcValues, lppPropArray);
 			if (SUCCEEDED(hRes))

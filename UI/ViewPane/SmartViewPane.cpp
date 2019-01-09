@@ -262,7 +262,7 @@ namespace viewpane
 		const auto lpData = reinterpret_cast<smartview::block*>(tvi.lParam);
 		if (lpData)
 		{
-			if (registry::RegKeys[registry::regkeyHEX_DIALOG_DIAG].ulCurDWORD != 0)
+			if (registry::hexDialogDiag)
 			{
 				SetStringW(lpData->ToString());
 			}
@@ -284,7 +284,7 @@ namespace viewpane
 		{
 		case CDDS_ITEMPOSTPAINT:
 		{
-			if (registry::RegKeys[registry::regkeyHEX_DIALOG_DIAG].ulCurDWORD == 0) return;
+			if (!registry::hexDialogDiag) return;
 			const auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
 			if (hItem)
 			{

@@ -50,7 +50,7 @@ namespace mapi
 									  msgrightsGenericExecute,
 									  msgrightsGenericAll};
 
-		CMySecInfo::CMySecInfo(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
+		CMySecInfo::CMySecInfo(_In_ const LPMAPIPROP lpMAPIProp, const ULONG ulPropTag)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 			m_cRef = 1;
@@ -63,7 +63,7 @@ namespace mapi
 			if (m_lpMAPIProp)
 			{
 				m_lpMAPIProp->AddRef();
-				const auto m_ulObjType = mapi::GetMAPIObjectType(m_lpMAPIProp);
+				const auto m_ulObjType = GetMAPIObjectType(m_lpMAPIProp);
 				switch (m_ulObjType)
 				{
 				case MAPI_STORE:
@@ -122,12 +122,12 @@ namespace mapi
 			return lCount;
 		}
 
-		STDMETHODIMP CMySecInfo::GetObjectInformation(PSI_OBJECT_INFO pObjectInfo)
+		STDMETHODIMP CMySecInfo::GetObjectInformation(const PSI_OBJECT_INFO pObjectInfo)
 		{
 			output::DebugPrint(DBGGeneric, L"CMySecInfo::GetObjectInformation\n");
 
 			HKEY hRootKey = nullptr;
-			WC_W32_S(RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey));
+			WC_W32_S(RegOpenKeyExW(HKEY_CURRENT_USER, registry::RKEY_ROOT, NULL, KEY_READ, &hRootKey));
 
 			auto bAllowEdits = false;
 			if (hRootKey)
@@ -164,7 +164,7 @@ namespace mapi
 
 			*ppSecurityDescriptor = nullptr;
 
-			auto lpsProp = mapi::GetLargeBinaryProp(m_lpMAPIProp, m_ulPropTag);
+			const auto lpsProp = GetLargeBinaryProp(m_lpMAPIProp, m_ulPropTag);
 			if (lpsProp && PROP_TYPE(lpsProp->ulPropTag) == PT_BINARY && lpsProp->Value.bin.lpb)
 			{
 				const auto lpSDBuffer = lpsProp->Value.bin.lpb;
@@ -309,7 +309,7 @@ namespace mapi
 			return E_NOTIMPL;
 		}
 
-		STDMETHODIMP CMySecInfo::PropertySheetPageCallback(HWND /*hwnd*/, UINT uMsg, SI_PAGE_TYPE uPage)
+		STDMETHODIMP CMySecInfo::PropertySheetPageCallback(HWND /*hwnd*/, const UINT uMsg, const SI_PAGE_TYPE uPage)
 		{
 			output::DebugPrint(
 				DBGGeneric, L"CMySecInfo::PropertySheetPageCallback, uMsg = 0x%X, uPage = 0x%X\n", uMsg, uPage);
