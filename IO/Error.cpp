@@ -5,6 +5,8 @@
 
 namespace error
 {
+	std::function<void(const std::wstring& errString)> displayError;
+
 	void LogFunctionCall(
 		HRESULT hRes,
 		HRESULT hrIgnore,
@@ -26,11 +28,7 @@ namespace error
 
 		// Check if we have no work to do
 		if (hRes == S_OK || hRes == hrIgnore) return;
-#ifdef MRMAPI
 		if (!fIsSet(DBGHRes)) return;
-#else
-		if (!fIsSet(DBGHRes) && !bShowDialog) return;
-#endif
 
 		// Get our error message if we have one
 		auto szErrorMsg =
@@ -48,13 +46,9 @@ namespace error
 		output::Output(DBGHRes, nullptr, true, strings::StripCarriage(szErrString));
 		output::Output(DBGHRes, nullptr, false, L"\n");
 
-		if (bShowDialog)
+		if (bShowDialog && displayError)
 		{
-#ifndef MRMAPI
-			dialog::editor::CEditor Err(nullptr, ID_PRODUCTNAME, NULL, CEDITOR_BUTTON_OK);
-			Err.SetPromptPostFix(szErrString);
-			(void) Err.DisplayDialog();
-#endif
+			displayError(szErrString);
 		}
 	}
 
@@ -82,11 +76,10 @@ namespace error
 		output::Output(DBGHRes, nullptr, true, szCombo);
 		output::Output(DBGHRes, nullptr, false, L"\n");
 
-#ifndef MRMAPI
-		dialog::editor::CEditor Err(nullptr, ID_PRODUCTNAME, NULL, CEDITOR_BUTTON_OK);
-		Err.SetPromptPostFix(szCombo);
-		(void) Err.DisplayDialog();
-#endif
+		if (displayError)
+		{
+			displayError(szCombo);
+		}
 	}
 
 #define RETURN_ERR_CASE(err) \
@@ -103,4 +96,4 @@ namespace error
 
 		return strings::format(L"0x%08X", hrErr); // STRING_OK
 	}
-}
+} // namespace error

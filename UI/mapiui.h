@@ -27,5 +27,7 @@ namespace ui
 			_Out_ HCHARSET* phCharSet,
 			_Out_ CSETAPPLYTYPE* pcSetApplyType,
 			_Out_opt_ bool* pbUnicode);
+
+		void displayError(const std::wstring& errString);
 	} // namespace mapiui
 } // namespace ui

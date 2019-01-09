@@ -20,6 +20,7 @@ namespace ui
 			mapi::GetCopyDetails = [](auto _1, auto _2, auto _3, auto _4, auto _5) -> mapi::CopyDetails {
 				return GetCopyDetails(_1, _2, _3, _4, _5);
 			};
+			error::displayError = [](auto _1) { displayError(_1); };
 		}
 
 		// Takes a tag array (and optional MAPIProp) and displays UI prompting to build an exclusion array
@@ -440,6 +441,13 @@ namespace ui
 			}
 
 			return nullptr;
+		}
+
+		void displayError(const std::wstring& errString)
+		{
+			dialog::editor::CEditor Err(nullptr, ID_PRODUCTNAME, NULL, CEDITOR_BUTTON_OK);
+			Err.SetPromptPostFix(errString);
+			(void) Err.DisplayDialog();
 		}
 	} // namespace mapiui
 } // namespace ui
