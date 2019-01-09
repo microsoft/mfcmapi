@@ -25,6 +25,7 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/Cache/GlobalCache.h>
 #include <MAPI/StubUtils.h>
+#include <UI/mapiui.h>
 
 namespace dialog
 {
@@ -1319,8 +1320,8 @@ namespace dialog
 		ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
 		auto bDoAdrBook = false;
 
-		const auto hRes = WC_H(
-			mapi::mapimime::GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
+		const auto hRes =
+			WC_H(ui::mapiui::GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 		if (hRes == S_OK)
 		{
 			LPADRBOOK lpAdrBook = nullptr;
@@ -1362,7 +1363,7 @@ namespace dialog
 		auto bUnicode = false;
 		HCHARSET hCharSet = nullptr;
 		auto cSetApplyType = CSET_APPLY_UNTAGGED;
-		const auto hRes = WC_H(mapi::mapimime::GetConversionFromEMLOptions(
+		const auto hRes = WC_H(ui::mapiui::GetConversionFromEMLOptions(
 			this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, &bUnicode));
 		if (hRes == S_OK)
 		{

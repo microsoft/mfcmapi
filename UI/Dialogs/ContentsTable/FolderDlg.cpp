@@ -1435,7 +1435,7 @@ namespace dialog
 						ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
 						auto bDoAdrBook = false;
 
-						hRes = EC_H(mapi::mapimime::GetConversionToEMLOptions(
+						hRes = EC_H(ui::mapiui::GetConversionToEMLOptions(
 							this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 						if (hRes == S_OK)
 						{
@@ -1528,7 +1528,7 @@ namespace dialog
 		auto bDoApply = false;
 		HCHARSET hCharSet = nullptr;
 		auto cSetApplyType = CSET_APPLY_UNTAGGED;
-		const auto hRes = WC_H(mapi::mapimime::GetConversionFromEMLOptions(
+		const auto hRes = WC_H(ui::mapiui::GetConversionFromEMLOptions(
 			this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, nullptr));
 		if (hRes == S_OK)
 		{
@@ -1996,7 +1996,7 @@ namespace dialog
 	LPMESSAGE CFolderDlg::OpenMessage(int iSelectedItem, __mfcmapiModifyEnum bModify)
 	{
 		auto lpMapiProp = OpenItemProp(iSelectedItem, bModify);
-		auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMapiProp);
+		const auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMapiProp);
 		if (lpMapiProp) lpMapiProp->Release();
 		return lpMessage;
 	}
