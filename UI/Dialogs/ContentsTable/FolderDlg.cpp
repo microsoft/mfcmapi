@@ -24,6 +24,7 @@
 #include <MAPI/Cache/GlobalCache.h>
 #include <MAPI/MapiMemory.h>
 #include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -1984,7 +1985,7 @@ namespace dialog
 			if (m_ulDisplayFlags & dfDeleted) lpParams->ulCurrentFlags |= MENU_FLAGS_DELETED;
 		}
 
-		ui::mapiui::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpMessage)
 		{

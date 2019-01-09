@@ -26,7 +26,7 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/MapiMemory.h>
-#include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace controls
 {
@@ -215,7 +215,7 @@ namespace controls
 				{
 					for (ULONG ulMenu = ID_ADDINPROPERTYMENU;; ulMenu++)
 					{
-						const auto lpAddInMenu = ui::mapiui::GetAddinMenuItem(m_lpHostDlg->m_hWnd, ulMenu);
+						const auto lpAddInMenu = ui::addinui::GetAddinMenuItem(m_lpHostDlg->m_hWnd, ulMenu);
 						if (!lpAddInMenu) break;
 
 						pMenu->EnableMenuItem(ulMenu, DIM(bPropSelected));
@@ -1811,7 +1811,7 @@ namespace controls
 			if (wMenuSelect < ID_ADDINPROPERTYMENU) return false;
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-			const auto lpAddInMenu = ui::mapiui::GetAddinMenuItem(m_lpHostDlg->m_hWnd, wMenuSelect);
+			const auto lpAddInMenu = ui::addinui::GetAddinMenuItem(m_lpHostDlg->m_hWnd, wMenuSelect);
 			if (!lpAddInMenu) return false;
 
 			_AddInMenuParams MyAddInMenuParams = {nullptr};
@@ -1836,7 +1836,7 @@ namespace controls
 
 			GetSelectedPropTag(&MyAddInMenuParams.ulPropTag);
 
-			ui::mapiui::InvokeAddInMenu(&MyAddInMenuParams);
+			ui::addinui::InvokeAddInMenu(&MyAddInMenuParams);
 			return true;
 		}
 	} // namespace sortlistctrl

@@ -152,6 +152,7 @@
     </ClInclude>
     <ClInclude Include="UI\profile.h" />
     <ClInclude Include="UI\mapiui.h" />
+    <ClInclude Include="UI\addinui.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -206,6 +207,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UI\mapiui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\addinui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

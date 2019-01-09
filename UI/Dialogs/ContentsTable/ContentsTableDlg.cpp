@@ -13,7 +13,7 @@
 #include <UI/Dialogs/Editors/SearchEditor.h>
 #include <MAPI/MapiMemory.h>
 #include <Interpret/ExtraPropTags.h>
-#include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -201,7 +201,7 @@ namespace dialog
 
 			for (ULONG ulMenu = ID_ADDINMENU; ulMenu < ID_ADDINMENU + m_ulAddInMenuItems; ulMenu++)
 			{
-				const auto lpAddInMenu = ui::mapiui::GetAddinMenuItem(m_hWnd, ulMenu);
+				const auto lpAddInMenu = ui::addinui::GetAddinMenuItem(m_hWnd, ulMenu);
 				if (!lpAddInMenu) continue;
 
 				const auto ulFlags = lpAddInMenu->ulFlags;
@@ -521,7 +521,7 @@ namespace dialog
 		LPMAPIPROP lpMAPIProp = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		const auto lpAddInMenu = ui::mapiui::GetAddinMenuItem(m_hWnd, wMenuSelect);
+		const auto lpAddInMenu = ui::addinui::GetAddinMenuItem(m_hWnd, wMenuSelect);
 		if (!lpAddInMenu) return false;
 
 		const auto ulFlags = lpAddInMenu->ulFlags;
@@ -604,7 +604,7 @@ namespace dialog
 			}
 		}
 
-		ui::mapiui::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpFolder)
 		{

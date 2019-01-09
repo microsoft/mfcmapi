@@ -23,7 +23,7 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <MAPI/Version.h>
-#include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -192,7 +192,7 @@ namespace dialog
 
 		AddMenu(hMenu, uiClassMenuResource, uidClassMenuTitle, static_cast<unsigned>(-1));
 
-		m_ulAddInMenuItems = ui::mapiui::ExtendAddInMenu(hMenu, m_ulAddInContext);
+		m_ulAddInMenuItems = ui::addinui::ExtendAddInMenu(hMenu, m_ulAddInContext);
 
 		AddMenu(hMenu, IDR_MENU_TOOLS, IDS_TOOLSMENU, static_cast<unsigned>(-1));
 
@@ -486,7 +486,7 @@ namespace dialog
 				hMenuBar, uiPos, MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(hMenuToAdd), szTitle.c_str());
 			if (IDR_MENU_PROPERTY == uiResource)
 			{
-				(void) ui::mapiui::ExtendAddInMenu(hMenuToAdd, MENU_CONTEXT_PROPERTY);
+				(void) ui::addinui::ExtendAddInMenu(hMenuToAdd, MENU_CONTEXT_PROPERTY);
 			}
 		}
 	}
@@ -612,7 +612,7 @@ namespace dialog
 		}
 		else
 		{
-			const auto lpAddInMenu = ui::mapiui::GetAddinMenuItem(m_hWnd, uidMsg);
+			const auto lpAddInMenu = ui::addinui::GetAddinMenuItem(m_hWnd, uidMsg);
 			if (lpAddInMenu && lpAddInMenu->szHelp)
 			{
 				szStatBarString = lpAddInMenu->szHelp;

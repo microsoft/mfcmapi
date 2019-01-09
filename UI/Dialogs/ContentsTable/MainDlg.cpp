@@ -26,6 +26,7 @@
 #include <MAPI/Cache/GlobalCache.h>
 #include <MAPI/StubUtils.h>
 #include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -1624,7 +1625,7 @@ namespace dialog
 			lpParams->lpMDB = mapi::safe_cast<LPMDB>(lpMAPIProp);
 		}
 
-		ui::mapiui::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpMDB)
 		{

@@ -12,7 +12,7 @@
 #include <MAPI/MAPIProgress.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/Cache/GlobalCache.h>
-#include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -288,7 +288,7 @@ namespace dialog
 			lpParams->lpMailUser = mapi::safe_cast<LPMAILUSER>(lpMAPIProp);
 		}
 
-		ui::mapiui::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpMailUser)
 		{

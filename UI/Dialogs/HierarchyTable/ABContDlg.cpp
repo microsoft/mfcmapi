@@ -4,7 +4,7 @@
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/Cache/MapiObjects.h>
-#include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -91,7 +91,7 @@ namespace dialog
 			lpParams->lpAbCont = mapi::safe_cast<LPABCONT>(lpContainer);
 		}
 
-		ui::mapiui::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpAbCont)
 		{

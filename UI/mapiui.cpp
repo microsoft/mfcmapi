@@ -441,32 +441,5 @@ namespace ui
 
 			return nullptr;
 		}
-
-		template <typename T> T GetFunction(HMODULE hMod, LPCSTR szFuncName)
-		{
-			return WC_D(T, reinterpret_cast<T>(GetProcAddress(hMod, szFuncName)));
-		}
-
-		void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
-		{
-			if (!lpParams) return;
-			if (!lpParams->lpAddInMenu) return;
-			if (!lpParams->lpAddInMenu->lpAddIn) return;
-
-			if (!lpParams->lpAddInMenu->lpAddIn->pfnCallMenu)
-			{
-				if (!lpParams->lpAddInMenu->lpAddIn->hMod) return;
-				lpParams->lpAddInMenu->lpAddIn->pfnCallMenu =
-					GetFunction<LPCALLMENU>(lpParams->lpAddInMenu->lpAddIn->hMod, szCallMenu);
-			}
-
-			if (!lpParams->lpAddInMenu->lpAddIn->pfnCallMenu)
-			{
-				output::DebugPrint(DBGAddInPlumbing, L"InvokeAddInMenu: CallMenu not found\n");
-				return;
-			}
-
-			WC_H_S(lpParams->lpAddInMenu->lpAddIn->pfnCallMenu(lpParams));
-		}
 	} // namespace mapiui
 } // namespace ui

@@ -15,6 +15,7 @@
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -1073,7 +1074,7 @@ namespace dialog
 			lpParams->lpFolder = mapi::safe_cast<LPMAPIFOLDER>(lpContainer);
 		}
 
-		ui::mapiui::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpAbCont)
 		{

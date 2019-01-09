@@ -5,7 +5,7 @@
 #include <UI/RichEditOleCallback.h>
 #include <UI/ViewPane/CheckPane.h>
 #include <UI/DoubleBuffer.h>
-#include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace ui
 {
@@ -342,7 +342,7 @@ namespace ui
 
 			if (IDR_MENU_PROPERTY_POPUP == uiClassMenu)
 			{
-				(void) mapiui::ExtendAddInMenu(hRealPopup, MENU_CONTEXT_PROPERTY);
+				(void) addinui::ExtendAddInMenu(hRealPopup, MENU_CONTEXT_PROPERTY);
 			}
 
 			ConvertMenuOwnerDraw(hRealPopup, false);

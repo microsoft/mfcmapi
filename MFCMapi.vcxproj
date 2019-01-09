@@ -579,6 +579,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="MAPI\MapiMemory.h" />
     <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
+    <ClInclude Include="UI\addinui.h" />
     <ClInclude Include="UI\Controls\StyleTreeCtrl.h" />
     <ClInclude Include="UI\Dialogs\HierarchyTable\ABContDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\ABDlg.h" />
@@ -705,6 +706,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="MAPI\MAPIStoreFunctions.cpp" />
     <ClCompile Include="IO\MFCOutput.cpp" />
     <ClCompile Include="MAPI\Cache\NamedPropCache.cpp" />
+    <ClCompile Include="UI\addinui.cpp" />
     <ClCompile Include="UI\profile.cpp" />
     <ClCompile Include="UI\ParentWnd.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

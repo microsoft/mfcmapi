@@ -14,6 +14,7 @@
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -477,7 +478,7 @@ namespace dialog
 			lpParams->lpAttach = mapi::safe_cast<LPATTACH>(lpMAPIProp);
 		}
 
-		ui::mapiui::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpAttach)
 		{

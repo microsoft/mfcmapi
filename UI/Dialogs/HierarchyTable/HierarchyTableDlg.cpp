@@ -8,7 +8,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
 #include <MAPI/MAPIFunctions.h>
-#include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -64,7 +64,7 @@ namespace dialog
 				pMenu->EnableMenuItem(ID_EDITSEARCHCRITERIA, DIM(bItemSelected));
 				for (ULONG ulMenu = ID_ADDINMENU; ulMenu < ID_ADDINMENU + m_ulAddInMenuItems; ulMenu++)
 				{
-					const auto lpAddInMenu = ui::mapiui::GetAddinMenuItem(m_hWnd, ulMenu);
+					const auto lpAddInMenu = ui::addinui::GetAddinMenuItem(m_hWnd, ulMenu);
 					if (!lpAddInMenu) continue;
 
 					const auto ulFlags = lpAddInMenu->ulFlags;
@@ -238,7 +238,7 @@ namespace dialog
 		LPMAPICONTAINER lpContainer = nullptr;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		const auto lpAddInMenu = ui::mapiui::GetAddinMenuItem(m_hWnd, wMenuSelect);
+		const auto lpAddInMenu = ui::addinui::GetAddinMenuItem(m_hWnd, wMenuSelect);
 		if (!lpAddInMenu) return false;
 
 		const auto ulFlags = lpAddInMenu->ulFlags;
@@ -298,6 +298,6 @@ namespace dialog
 		_In_opt_ LPMAPIPROP /*lpMAPIProp*/,
 		_In_opt_ LPMAPICONTAINER /*lpContainer*/)
 	{
-		ui::mapiui::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 	}
 } // namespace dialog
