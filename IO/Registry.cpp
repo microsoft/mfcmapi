@@ -84,9 +84,7 @@ namespace registry
 		&propertyColumnOrder,
 	};
 
-	// $--HrGetRegistryValue---------------------------------------------------------
 	// Get a registry value - allocating memory using new to hold it.
-	// -----------------------------------------------------------------------------
 	_Check_return_ HRESULT HrGetRegistryValue(
 		_In_ HKEY hKey, // the key.
 		_In_ const std::wstring& lpszValue, // value name in key.
