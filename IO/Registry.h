@@ -5,7 +5,7 @@
 
 namespace registry
 {
-#define RKEY_ROOT L"SOFTWARE\\Microsoft\\MFCMAPI" // STRING_OK
+	static const wchar_t* RKEY_ROOT = L"SOFTWARE\\Microsoft\\MFCMAPI";
 
 	enum __REGKEYTYPES
 	{

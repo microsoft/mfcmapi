@@ -18,7 +18,7 @@ namespace ui
 		auto bTerminateOnCorruption = true;
 
 		HKEY hRootKey = nullptr;
-		auto lStatus = RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey);
+		auto lStatus = RegOpenKeyExW(HKEY_CURRENT_USER, registry::RKEY_ROOT, NULL, KEY_READ, &hRootKey);
 		if (lStatus == ERROR_SUCCESS)
 		{
 			DWORD dwRegVal = 0;
