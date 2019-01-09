@@ -4,6 +4,7 @@
 namespace registry
 {
 	// Registry settings
+	// All settings which have an options prompt must use a unique prompt value
 #ifdef _DEBUG
 	dwordRegKey debugTag{L"DebugTag", regoptStringHex, DBGAll, false, IDS_REGKEY_DEBUG_TAG};
 #else

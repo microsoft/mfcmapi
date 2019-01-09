@@ -32,7 +32,6 @@ namespace dialog
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"COptions(", L"Building option sheet - adding fields\n");
 
-			ULONG ulReg = 0;
 			for (auto& regKey : registry::RegKeys)
 			{
 				if (regKey && regKey->uiOptionsPrompt)
@@ -40,26 +39,26 @@ namespace dialog
 					if (registry::regoptCheck == regKey->ulRegOptType)
 					{
 						AddPane(viewpane::CheckPane::Create(
-							ulReg, regKey->uiOptionsPrompt, 0 != regKey->ulCurDWORD, false));
+							regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, 0 != regKey->ulCurDWORD, false));
 					}
 					else if (registry::regoptString == regKey->ulRegOptType)
 					{
 						AddPane(viewpane::TextPane::CreateSingleLinePane(
-							ulReg, regKey->uiOptionsPrompt, regKey->szCurSTRING, false));
+							regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, regKey->szCurSTRING, false));
 					}
 					else if (registry::regoptStringHex == regKey->ulRegOptType)
 					{
-						AddPane(viewpane::TextPane::CreateSingleLinePane(ulReg, regKey->uiOptionsPrompt, false));
-						SetHex(ulReg, regKey->ulCurDWORD);
+						AddPane(viewpane::TextPane::CreateSingleLinePane(
+							regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
+						SetHex(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
 					}
 					else if (registry::regoptStringDec == regKey->ulRegOptType)
 					{
-						AddPane(viewpane::TextPane::CreateSingleLinePane(ulReg, regKey->uiOptionsPrompt, false));
-						SetDecimal(ulReg, regKey->ulCurDWORD);
+						AddPane(viewpane::TextPane::CreateSingleLinePane(
+							regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
+						SetDecimal(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
 					}
 				}
-
-				ulReg++;
 			}
 		}
 
@@ -68,42 +67,40 @@ namespace dialog
 		void COptions::OnOK()
 		{
 			// need to grab this FIRST
-			registry::debugFileName = GetStringW(registry::regkeyDEBUG_FILE_NAME);
+			registry::debugFileName = GetStringW(registry::debugFileName.uiOptionsPrompt);
 
-			if (GetHex(registry::regkeyDEBUG_TAG) != registry::debugTag)
+			if (GetHex(registry::debugTag.uiOptionsPrompt) != registry::debugTag)
 			{
-				output::SetDebugLevel(GetHex(registry::regkeyDEBUG_TAG));
+				output::SetDebugLevel(GetHex(registry::debugTag.uiOptionsPrompt));
 				output::DebugPrintVersion(DBGVersionBanner);
 			}
 
-			output::SetDebugOutputToFile(GetCheck(registry::regkeyDEBUG_TO_FILE));
+			output::SetDebugOutputToFile(GetCheck(registry::debugToFile.uiOptionsPrompt));
 
 			// Remaining options require no special handling - loop through them
-			ULONG ulReg = 0;
 			for (auto& regKey : registry::RegKeys)
 			{
 				if (regKey && regKey->uiOptionsPrompt)
 				{
 					if (registry::regoptCheck == regKey->ulRegOptType)
 					{
-						if (regKey->bRefresh && regKey->ulCurDWORD != static_cast<ULONG>(GetCheck(ulReg)))
+						if (regKey->bRefresh &&
+							regKey->ulCurDWORD != static_cast<ULONG>(GetCheck(regKey->uiOptionsPrompt)))
 						{
 							m_bNeedPropRefresh = true;
 						}
 
-						regKey->ulCurDWORD = GetCheck(ulReg);
+						regKey->ulCurDWORD = GetCheck(regKey->uiOptionsPrompt);
 					}
 					else if (registry::regoptStringHex == regKey->ulRegOptType)
 					{
-						regKey->ulCurDWORD = GetHex(ulReg);
+						regKey->ulCurDWORD = GetHex(regKey->uiOptionsPrompt);
 					}
 					else if (registry::regoptStringDec == regKey->ulRegOptType)
 					{
-						regKey->ulCurDWORD = GetDecimal(ulReg);
+						regKey->ulCurDWORD = GetDecimal(regKey->uiOptionsPrompt);
 					}
 				}
-
-				ulReg++;
 			}
 
 			// Commit our values to the registry
