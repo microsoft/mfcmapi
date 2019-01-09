@@ -542,13 +542,6 @@ struct _AddIn
 
 namespace addin
 {
-	EXTERN_C __declspec(
-		dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...);
-	EXTERN_C _Check_return_ __declspec(dllexport) HRESULT
-		__cdecl SimpleDialog(_In_z_ LPWSTR szTitle, _Printf_format_string_ LPWSTR szMsg, ...);
-	EXTERN_C _Check_return_ __declspec(dllexport) HRESULT
-		__cdecl ComplexDialog(_In_ LPADDINDIALOG lpDialog, _Out_ LPADDINDIALOGRESULT* lppDialogResult);
-	EXTERN_C __declspec(dllexport) void __cdecl FreeDialogResult(_In_ LPADDINDIALOGRESULT lpDialogResult);
 	EXTERN_C __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool bForce);
 
 	void LoadAddIns();
