@@ -178,7 +178,7 @@ namespace controls
 			if (m_lpContentsTable) m_lpContentsTable->AddRef();
 
 			// Set up the columns on the new contents table and refresh!
-			DoSetColumns(true, 0 != registry::RegKeys[registry::regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD);
+			DoSetColumns(true, registry::editColumnsOnLoad);
 		}
 
 		void CContentsTableListCtrl::GetStatus()
@@ -408,7 +408,7 @@ namespace controls
 			m_ulHeaderColumns = lpCurColTagArray->cValues;
 
 			ULONG ulCurHeaderCol = 0;
-			if (registry::RegKeys[registry::regkeyDO_COLUMN_NAMES].ulCurDWORD)
+			if (registry::doColumnNames)
 			{
 				output::DebugPrintEx(DBGGeneric, CLASS, L"AddColumns", L"Adding named columns\n");
 				// If we have named columns, put them up front
@@ -563,7 +563,7 @@ namespace controls
 
 				output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"ulTotal = 0x%X\n", ulTotal);
 
-				ulThrottleLevel = registry::RegKeys[registry::regkeyTHROTTLE_LEVEL].ulCurDWORD;
+				ulThrottleLevel = registry::throttleLevel;
 
 				if (ulTotal)
 				{
@@ -817,8 +817,8 @@ namespace controls
 						const auto pProp = &lpsRowData->lpProps[ulCol];
 
 						// If we've got a MAPI_E_NOT_FOUND error, just don't display it.
-						if (registry::RegKeys[registry::regkeySUPPRESS_NOT_FOUND].ulCurDWORD && pProp &&
-							PROP_TYPE(pProp->ulPropTag) == PT_ERROR && pProp->Value.err == MAPI_E_NOT_FOUND)
+						if (registry::suppressNotFound && pProp && PROP_TYPE(pProp->ulPropTag) == PT_ERROR &&
+							pProp->Value.err == MAPI_E_NOT_FOUND)
 						{
 							if (0 == iColumn)
 							{
@@ -1182,7 +1182,7 @@ namespace controls
 				const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 				LPCIID lpInterface = nullptr;
 
-				if (registry::RegKeys[registry::regkeyUSE_MESSAGERAW].ulCurDWORD)
+				if (registry::useMessageRaw)
 				{
 					lpInterface = &IID_IMessageRaw;
 				}

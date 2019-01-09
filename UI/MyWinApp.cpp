@@ -19,7 +19,7 @@ namespace ui
 		auto bTerminateOnCorruption = true;
 
 		HKEY hRootKey = nullptr;
-		auto lStatus = RegOpenKeyExW(HKEY_CURRENT_USER, RKEY_ROOT, NULL, KEY_READ, &hRootKey);
+		auto lStatus = RegOpenKeyExW(HKEY_CURRENT_USER, registry::RKEY_ROOT, NULL, KEY_READ, &hRootKey);
 		if (lStatus == ERROR_SUCCESS)
 		{
 			DWORD dwRegVal = 0;
@@ -27,7 +27,7 @@ namespace ui
 			ULONG cb = sizeof dwRegVal;
 			lStatus = RegQueryValueExW(
 				hRootKey,
-				registry::RegKeys[registry::regkeyHEAPENABLETERMINATIONONCORRUPTION].szKeyName.c_str(),
+				registry::heapEnableTerminationOnCorruption.szKeyName.c_str(),
 				nullptr,
 				&dwType,
 				reinterpret_cast<LPBYTE>(&dwRegVal),

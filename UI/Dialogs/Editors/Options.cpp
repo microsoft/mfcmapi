@@ -32,32 +32,31 @@ namespace dialog
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"COptions(", L"Building option sheet - adding fields\n");
 
-			for (ULONG ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
+			for (auto& regKey : registry::RegKeys)
 			{
-				if (registry::regoptCheck == registry::RegKeys[ulReg].ulRegOptType)
+				if (!regKey || !regKey->uiOptionsPrompt) continue;
+
+				if (registry::regoptCheck == regKey->ulRegOptType)
 				{
 					AddPane(viewpane::CheckPane::Create(
-						ulReg,
-						registry::RegKeys[ulReg].uiOptionsPrompt,
-						0 != registry::RegKeys[ulReg].ulCurDWORD,
-						false));
+						regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, 0 != regKey->ulCurDWORD, false));
 				}
-				else if (registry::regoptString == registry::RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptString == regKey->ulRegOptType)
 				{
 					AddPane(viewpane::TextPane::CreateSingleLinePane(
-						ulReg, registry::RegKeys[ulReg].uiOptionsPrompt, registry::RegKeys[ulReg].szCurSTRING, false));
+						regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, regKey->szCurSTRING, false));
 				}
-				else if (registry::regoptStringHex == registry::RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptStringHex == regKey->ulRegOptType)
 				{
 					AddPane(viewpane::TextPane::CreateSingleLinePane(
-						ulReg, registry::RegKeys[ulReg].uiOptionsPrompt, false));
-					SetHex(ulReg, registry::RegKeys[ulReg].ulCurDWORD);
+						regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
+					SetHex(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
 				}
-				else if (registry::regoptStringDec == registry::RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptStringDec == regKey->ulRegOptType)
 				{
 					AddPane(viewpane::TextPane::CreateSingleLinePane(
-						ulReg, registry::RegKeys[ulReg].uiOptionsPrompt, false));
-					SetDecimal(ulReg, registry::RegKeys[ulReg].ulCurDWORD);
+						regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
+					SetDecimal(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
 				}
 			}
 		}
@@ -67,37 +66,37 @@ namespace dialog
 		void COptions::OnOK()
 		{
 			// need to grab this FIRST
-			registry::RegKeys[registry::regkeyDEBUG_FILE_NAME].szCurSTRING =
-				GetStringW(registry::regkeyDEBUG_FILE_NAME);
+			registry::debugFileName = GetStringW(registry::debugFileName.uiOptionsPrompt);
 
-			if (GetHex(registry::regkeyDEBUG_TAG) != registry::RegKeys[registry::regkeyDEBUG_TAG].ulCurDWORD)
+			if (GetHex(registry::debugTag.uiOptionsPrompt) != registry::debugTag)
 			{
-				output::SetDebugLevel(GetHex(registry::regkeyDEBUG_TAG));
+				output::SetDebugLevel(GetHex(registry::debugTag.uiOptionsPrompt));
 				output::DebugPrintVersion(DBGVersionBanner);
 			}
 
-			output::SetDebugOutputToFile(GetCheck(registry::regkeyDEBUG_TO_FILE));
+			output::SetDebugOutputToFile(GetCheck(registry::debugToFile.uiOptionsPrompt));
 
 			// Remaining options require no special handling - loop through them
-			for (ULONG ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
+			for (auto& regKey : registry::RegKeys)
 			{
-				if (registry::regoptCheck == registry::RegKeys[ulReg].ulRegOptType)
+				if (!regKey || !regKey->uiOptionsPrompt) continue;
+
+				if (registry::regoptCheck == regKey->ulRegOptType)
 				{
-					if (registry::RegKeys[ulReg].bRefresh &&
-						registry::RegKeys[ulReg].ulCurDWORD != static_cast<ULONG>(GetCheck(ulReg)))
+					if (regKey->bRefresh && regKey->ulCurDWORD != static_cast<ULONG>(GetCheck(regKey->uiOptionsPrompt)))
 					{
 						m_bNeedPropRefresh = true;
 					}
 
-					registry::RegKeys[ulReg].ulCurDWORD = GetCheck(ulReg);
+					regKey->ulCurDWORD = GetCheck(regKey->uiOptionsPrompt);
 				}
-				else if (registry::regoptStringHex == registry::RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptStringHex == regKey->ulRegOptType)
 				{
-					registry::RegKeys[ulReg].ulCurDWORD = GetHex(ulReg);
+					regKey->ulCurDWORD = GetHex(regKey->uiOptionsPrompt);
 				}
-				else if (registry::regoptStringDec == registry::RegKeys[ulReg].ulRegOptType)
+				else if (registry::regoptStringDec == regKey->ulRegOptType)
 				{
-					registry::RegKeys[ulReg].ulCurDWORD = GetDecimal(ulReg);
+					regKey->ulCurDWORD = GetDecimal(regKey->uiOptionsPrompt);
 				}
 			}
 
@@ -107,7 +106,7 @@ namespace dialog
 			CEditor::OnOK();
 		}
 
-		_Check_return_ ULONG COptions::HandleChange(UINT nID) { return CEditor::HandleChange(nID); }
+		_Check_return_ ULONG COptions::HandleChange(const UINT nID) { return CEditor::HandleChange(nID); }
 
 		bool COptions::NeedPropRefresh() const { return m_bNeedPropRefresh; }
 
@@ -116,8 +115,8 @@ namespace dialog
 			COptions MyOptions(lpParentWnd);
 			MyOptions.DoModal();
 
-			mapistub::ForceOutlookMAPI(0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
-			mapistub::ForceSystemMAPI(0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD);
+			mapistub::ForceOutlookMAPI(registry::forceOutlookMAPI);
+			mapistub::ForceSystemMAPI(registry::forceSystemMAPI);
 			return MyOptions.NeedPropRefresh();
 		}
 	} // namespace editor

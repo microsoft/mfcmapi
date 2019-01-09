@@ -119,8 +119,7 @@ namespace dialog
 			if (m_lpContentsTable) m_lpContentsTable->Release();
 			m_lpContentsTable = nullptr;
 
-			auto unicodeFlag =
-				registry::RegKeys[registry::regkeyPREFER_UNICODE_PROPS].ulCurDWORD ? MAPI_UNICODE : fMapiUnicode;
+			auto unicodeFlag = registry::preferUnicodeProps ? MAPI_UNICODE : fMapiUnicode;
 
 			const auto ulFlags = (m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL) |
 								 (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) | unicodeFlag;

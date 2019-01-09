@@ -3,121 +3,123 @@
 
 namespace registry
 {
-	// Keep this in sync with REGKEYNAMES
-	// clang-format off
-	__RegKeys RegKeys[] = {
-	#ifdef _DEBUG
-		{ L"DebugTag",					regDWORD,regoptStringHex,	DBGAll		,0,L"",L"",false,	IDS_REGKEY_DEBUG_TAG }, // STRING_OK
-	#else
-		{ L"DebugTag",					regDWORD,regoptStringHex,	DBGNoDebug	,0,L"",L"",false,	IDS_REGKEY_DEBUG_TAG }, // STRING_OK
-	#endif
-		{ L"DebugToFile",				regDWORD,regoptCheck,		0			,0,L"",L"",false,	IDS_REGKEY_DEBUG_TO_FILE }, // STRING_OK
-		{ L"DebugFileName",				regSTRING,regoptString,		0			,0,L"c:\\mfcmapi.log",L"",false,	IDS_REGKEY_DEBUG_FILE_NAME }, // STRING_OK
-		{ L"ParseNamedProps",			regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_PARSED_NAMED_PROPS }, // STRING_OK
-		{ L"GetPropNamesOnAllProps",	regDWORD,regoptCheck,		false		,0,L"",L"",true,	IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS }, // STRING_OK
-		{ L"ThrottleLevel",				regDWORD,regoptStringDec,	0			,0,L"",L"",false,	IDS_REGKEY_THROTTLE_LEVEL }, // STRING_OK
-		{ L"HierExpandNotifications",	regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_HIER_EXPAND_NOTIFS }, // STRING_OK
-		{ L"HierRootNotifs",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_HIER_ROOT_NOTIFS }, // STRING_OK
-		{ L"DoSmartView",				regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_DO_SMART_VIEW }, // STRING_OK
-		{ L"OnlyAdditionalProperties",	regDWORD,regoptCheck,		false		,0,L"",L"",true,	IDS_REGKEY_ONLYADDITIONALPROPERTIES }, // STRING_OK
-		{ L"UseRowDataForSinglePropList",	regDWORD,regoptCheck,	false		,0,L"",L"",true,	IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST }, // STRING_OK
-		{ L"UseGetPropList",			regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_USE_GETPROPLIST }, // STRING_OK
-		{ L"PreferUnicodeProps",		regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_PREFER_UNICODE_PROPS }, // STRING_OK
-		{ L"CacheNamedProps",			regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_CACHE_NAMED_PROPS }, // STRING_OK
-		{ L"AllowDupeColumns",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_ALLOW_DUPE_COLUMNS }, // STRING_OK
-		{ L"DoColumnNames",				regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_DO_COLUMN_NAMES }, // STRING_OK
-		{ L"EditColumnsOnLoad",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_EDIT_COLUMNS_ON_LOAD }, // STRING_OK
-		{ L"ForceMDBOnline",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_MDB_ONLINE }, // STRING_OK
-		{ L"ForceMapiNoCache",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_MAPI_NO_CACHE }, // STRING_OK
-		{ L"AllowPersistCache",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_ALLOW_PERSIST_CACHE }, // STRING_OK
-		{ L"UseIMAPIProgress",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_USE_IMAPIPROGRESS }, // STRING_OK
-		{ L"UseMessageRaw",				regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_USE_MESSAGERAW }, // STRING_OK
-		{ L"SuppressNotFound",			regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_SUPPRESS_NOTFOUND }, // STRING_OK
-		{ L"HeapEnableTerminationOnCorruption",regDWORD,regoptCheck,true		,0,L"",L"",false,	IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION }, // STRING_OK
-		{ L"LoadAddIns",				regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_LOADADDINS }, // STRING_OK
-		{ L"ForceOutlookMAPI",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_FORCEOUTLOOKMAPI }, // STRING_OK
-		{ L"ForceSystemMAPI",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_FORCESYSTEMMAPI }, // STRING_OK
-		{ L"HexDialogDiag",				regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_HEXDIALOGDIAG }, // STRING_OK
-		{ L"DisplayAboutDialog",		regDWORD,regoptCheck,		true		,0,L"",L"",false,	NULL }, // STRING_OK
-		{ L"PropertyColumnOrder",		regSTRING,regoptCheck,		0			,0,L"",L"",false,	NULL }, // STRING_OK
-		// {KeyName,					keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
+	// Registry settings
+	// Creating a new reg key:
+	// 1 - Define an accessor object using boolRegKey, wstringRegKey or dwordRegKey
+	// 2 - Add pointer to the object to RegKeys vector
+	// 3 - Add an extern for the object to registry.h
+	// 4 - If the setting should show in options, ensure it has a unique options prompt value
+	// Note: Accessor objects can be used in code as their underlying type, though some care may be needed with casting
+#ifdef _DEBUG
+	dwordRegKey debugTag{L"DebugTag", regoptStringHex, DBGAll, false, IDS_REGKEY_DEBUG_TAG};
+#else
+	dwordRegKey debugTag{L"DebugTag", regoptStringHex, DBGNoDebug, false, IDS_REGKEY_DEBUG_TAG};
+#endif
+	boolRegKey debugToFile{L"DebugToFile", false, false, IDS_REGKEY_DEBUG_TO_FILE};
+	wstringRegKey debugFileName{L"DebugFileName", L"c:\\mfcmapi.log", false, IDS_REGKEY_DEBUG_FILE_NAME};
+	boolRegKey getPropNamesOnAllProps{L"GetPropNamesOnAllProps", false, true, IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS};
+	boolRegKey parseNamedProps{L"ParseNamedProps", false, true, IDS_REGKEY_PARSED_NAMED_PROPS};
+	dwordRegKey throttleLevel{L"ThrottleLevel", regoptStringDec, 0, false, IDS_REGKEY_THROTTLE_LEVEL};
+	boolRegKey hierExpandNotifications{L"HierExpandNotifications", true, false, IDS_REGKEY_HIER_EXPAND_NOTIFS};
+	boolRegKey hierRootNotifs{L"HierRootNotifs", false, false, IDS_REGKEY_HIER_ROOT_NOTIFS};
+	boolRegKey doSmartView{L"DoSmartView", true, true, IDS_REGKEY_DO_SMART_VIEW};
+	boolRegKey onlyAdditionalProperties{L"OnlyAdditionalProperties", false, true, IDS_REGKEY_ONLYADDITIONALPROPERTIES};
+	boolRegKey useRowDataForSinglePropList{L"UseRowDataForSinglePropList",
+										   false,
+										   true,
+										   IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST};
+	boolRegKey useGetPropList{L"UseGetPropList", true, true, IDS_REGKEY_USE_GETPROPLIST};
+	boolRegKey preferUnicodeProps{L"PreferUnicodeProps", true, true, IDS_REGKEY_PREFER_UNICODE_PROPS};
+	boolRegKey cacheNamedProps{L"CacheNamedProps", true, false, IDS_REGKEY_CACHE_NAMED_PROPS};
+	boolRegKey allowDupeColumns{L"AllowDupeColumns", false, false, IDS_REGKEY_ALLOW_DUPE_COLUMNS};
+	boolRegKey doColumnNames{L"DoColumnNames", true, false, IDS_REGKEY_DO_COLUMN_NAMES};
+	boolRegKey editColumnsOnLoad{L"EditColumnsOnLoad", false, false, IDS_REGKEY_EDIT_COLUMNS_ON_LOAD};
+	boolRegKey forceMDBOnline{L"ForceMDBOnline", false, false, IDS_REGKEY_MDB_ONLINE};
+	boolRegKey forceMapiNoCache{L"ForceMapiNoCache", false, false, IDS_REGKEY_MAPI_NO_CACHE};
+	boolRegKey allowPersistCache{L"AllowPersistCache", false, false, IDS_REGKEY_ALLOW_PERSIST_CACHE};
+	boolRegKey useIMAPIProgress{L"UseIMAPIProgress", false, false, IDS_REGKEY_USE_IMAPIPROGRESS};
+	boolRegKey useMessageRaw{L"UseMessageRaw", false, false, IDS_REGKEY_USE_MESSAGERAW};
+	boolRegKey suppressNotFound{L"SuppressNotFound", true, false, IDS_REGKEY_SUPPRESS_NOTFOUND};
+	boolRegKey heapEnableTerminationOnCorruption{L"HeapEnableTerminationOnCorruption",
+												 true,
+												 false,
+												 IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION};
+	boolRegKey loadAddIns{L"LoadAddIns", true, false, IDS_REGKEY_LOADADDINS};
+	boolRegKey forceOutlookMAPI{L"ForceOutlookMAPI", false, false, IDS_REGKEY_FORCEOUTLOOKMAPI};
+	boolRegKey forceSystemMAPI{L"ForceSystemMAPI", false, false, IDS_REGKEY_FORCESYSTEMMAPI};
+	boolRegKey hexDialogDiag{L"HexDialogDiag", false, false, IDS_REGKEY_HEXDIALOGDIAG};
+	boolRegKey displayAboutDialog{L"DisplayAboutDialog", true, false, NULL};
+	wstringRegKey propertyColumnOrder{L"PropertyColumnOrder", L"", false, NULL};
+
+	std::vector<__RegKey*> RegKeys = {
+		&debugTag,
+		&debugToFile,
+		&debugFileName,
+		&getPropNamesOnAllProps,
+		&parseNamedProps,
+		&throttleLevel,
+		&hierExpandNotifications,
+		&hierRootNotifs,
+		&doSmartView,
+		&onlyAdditionalProperties,
+		&useRowDataForSinglePropList,
+		&useGetPropList,
+		&preferUnicodeProps,
+		&cacheNamedProps,
+		&allowDupeColumns,
+		&doColumnNames,
+		&editColumnsOnLoad,
+		&forceMDBOnline,
+		&forceMapiNoCache,
+		&allowPersistCache,
+		&useIMAPIProgress,
+		&useMessageRaw,
+		&suppressNotFound,
+		&heapEnableTerminationOnCorruption,
+		&loadAddIns,
+		&forceOutlookMAPI,
+		&forceSystemMAPI,
+		&hexDialogDiag,
+		&displayAboutDialog,
+		&propertyColumnOrder,
 	};
-	// clang-format on
 
-	void SetDefaults()
+	// If the value is not set in the registry, return the default value
+	DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const DWORD dwDefaultVal)
 	{
-		// Set some defaults to begin with:
-		for (auto& regKey : RegKeys)
-		{
-			if (regKey.ulRegKeyType == regDWORD)
-			{
-				regKey.ulCurDWORD = regKey.ulDefDWORD;
-			}
-			else if (regKey.ulRegKeyType == regSTRING)
-			{
-				regKey.szCurSTRING = regKey.szDefSTRING;
-			}
-		}
-	}
-
-	// $--HrGetRegistryValue---------------------------------------------------------
-	// Get a registry value - allocating memory using new to hold it.
-	// -----------------------------------------------------------------------------
-	_Check_return_ HRESULT HrGetRegistryValue(
-		_In_ HKEY hKey, // the key.
-		_In_ const std::wstring& lpszValue, // value name in key.
-		_Out_ DWORD* lpType, // where to put type info.
-		_Out_ LPVOID* lppData) // where to put the data.
-	{
-		output::DebugPrint(DBGGeneric, L"HrGetRegistryValue(%ws)\n", lpszValue.c_str());
-
-		*lppData = nullptr;
-		DWORD cb = NULL;
+		if (szValue.empty()) return dwDefaultVal;
+		output::DebugPrint(DBGGeneric, L"ReadDWORDFromRegistry(%ws)\n", szValue.c_str());
 
 		// Get its size
-		auto hRes = WC_W32(RegQueryValueExW(hKey, lpszValue.c_str(), nullptr, lpType, nullptr, &cb));
+		DWORD cb = NULL;
+		DWORD dwKeyType{};
+		auto hRes = WC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, nullptr, &cb));
 
-		// only handle types we know about - all others are bad
-		if (hRes == S_OK && cb && (REG_SZ == *lpType || REG_DWORD == *lpType || REG_MULTI_SZ == *lpType))
+		LPBYTE szBuf{};
+		if (hRes == S_OK && cb && dwKeyType == REG_DWORD)
 		{
-			*lppData = new BYTE[cb];
-
-			if (*lppData)
+			szBuf = new (std::nothrow) BYTE[cb];
+			if (szBuf)
 			{
 				// Get the current value
-				hRes = EC_W32(RegQueryValueExW(
-					hKey, lpszValue.c_str(), nullptr, lpType, static_cast<unsigned char*>(*lppData), &cb));
-
-				if (FAILED(hRes))
-				{
-					delete[] * lppData;
-					*lppData = nullptr;
-				}
+				hRes = EC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, szBuf, &cb));
 			}
 		}
 		else
-			hRes = MAPI_E_INVALID_PARAMETER;
-
-		return hRes;
-	}
-
-	// If the value is not set in the registry, return the default value
-	DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ DWORD dwDefaultVal)
-	{
-		if (szValue.empty()) return dwDefaultVal;
-		DWORD dwKeyType = NULL;
-		DWORD* lpValue = nullptr;
-		auto ret = dwDefaultVal;
-
-		const auto hRes = WC_H(HrGetRegistryValue(hKey, szValue, &dwKeyType, reinterpret_cast<LPVOID*>(&lpValue)));
-		if (hRes == S_OK && REG_DWORD == dwKeyType && lpValue)
 		{
-			ret = *lpValue;
+			hRes = MAPI_E_INVALID_PARAMETER;
 		}
 
-		delete[] lpValue;
+		auto ret = dwDefaultVal;
+		if (hRes == S_OK && dwKeyType == REG_DWORD && szBuf)
+		{
+			ret = *szBuf;
+		}
+
+		delete[] szBuf;
 		return ret;
-	}
+	} // namespace registry
+
 	// If the value is not set in the registry, return the default value
 	std::wstring
 	ReadStringFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::wstring& szDefault)
@@ -125,31 +127,28 @@ namespace registry
 		if (szValue.empty()) return szDefault;
 		output::DebugPrint(DBGGeneric, L"ReadStringFromRegistry(%ws)\n", szValue.c_str());
 
-		DWORD dwKeyType = NULL;
-		LPBYTE szBuf = nullptr;
-		DWORD cb = NULL;
-
 		// Get its size
+		DWORD cb{};
+		DWORD dwKeyType{};
 		auto hRes = WC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, nullptr, &cb));
 
-		if (hRes == S_OK && cb && !(cb % 2) && REG_SZ == dwKeyType)
+		LPBYTE szBuf{};
+		if (hRes == S_OK && cb && !(cb % 2) && dwKeyType == REG_SZ)
 		{
 			szBuf = new (std::nothrow) BYTE[cb];
 			if (szBuf)
 			{
 				// Get the current value
 				hRes = EC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, szBuf, &cb));
-
-				if (FAILED(hRes))
-				{
-					delete[] szBuf;
-					szBuf = nullptr;
-				}
 			}
+		}
+		else
+		{
+			hRes = MAPI_E_INVALID_PARAMETER;
 		}
 
 		auto ret = szDefault;
-		if (hRes == S_OK && cb && !(cb % 2) && REG_SZ == dwKeyType && szBuf)
+		if (hRes == S_OK && cb && !(cb % 2) && dwKeyType == REG_SZ && szBuf)
 		{
 			ret = std::wstring(LPWSTR(szBuf), cb / sizeof WCHAR);
 		}
@@ -168,20 +167,22 @@ namespace registry
 		{
 			for (auto& regKey : RegKeys)
 			{
-				if (regKey.ulRegKeyType == regDWORD)
+				if (!regKey) continue;
+
+				if (regKey->ulRegKeyType == regDWORD)
 				{
-					regKey.ulCurDWORD = ReadDWORDFromRegistry(hRootKey, regKey.szKeyName, regKey.ulCurDWORD);
+					regKey->ulCurDWORD = ReadDWORDFromRegistry(hRootKey, regKey->szKeyName, regKey->ulCurDWORD);
 				}
-				else if (regKey.ulRegKeyType == regSTRING)
+				else if (regKey->ulRegKeyType == regSTRING)
 				{
-					regKey.szCurSTRING = ReadStringFromRegistry(hRootKey, regKey.szKeyName, regKey.szCurSTRING);
+					regKey->szCurSTRING = ReadStringFromRegistry(hRootKey, regKey->szKeyName, regKey->szCurSTRING);
 				}
 			}
 
 			EC_W32_S(RegCloseKey(hRootKey));
 		}
 
-		output::SetDebugLevel(RegKeys[regkeyDEBUG_TAG].ulCurDWORD);
+		output::SetDebugLevel(debugTag);
 		output::DebugPrintVersion(DBGVersionBanner);
 	}
 
@@ -191,7 +192,11 @@ namespace registry
 			hKey, szValueName.c_str(), NULL, REG_DWORD, reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD)));
 	}
 
-	void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_ const std::wstring& szValueName, DWORD dwValue, DWORD dwDefaultValue)
+	void CommitDWORDIfNeeded(
+		_In_ HKEY hKey,
+		_In_ const std::wstring& szValueName,
+		const DWORD dwValue,
+		const DWORD dwDefaultValue)
 	{
 		if (dwValue != dwDefaultValue)
 		{
@@ -250,13 +255,15 @@ namespace registry
 		// Now that we have a root key, go set our values
 		for (auto& regKey : RegKeys)
 		{
-			if (regKey.ulRegKeyType == regDWORD)
+			if (!regKey) continue;
+
+			if (regKey->ulRegKeyType == regDWORD)
 			{
-				CommitDWORDIfNeeded(hRootKey, regKey.szKeyName, regKey.ulCurDWORD, regKey.ulDefDWORD);
+				CommitDWORDIfNeeded(hRootKey, regKey->szKeyName, regKey->ulCurDWORD, regKey->ulDefDWORD);
 			}
-			else if (regKey.ulRegKeyType == regSTRING)
+			else if (regKey->ulRegKeyType == regSTRING)
 			{
-				CommitStringIfNeeded(hRootKey, regKey.szKeyName, regKey.szCurSTRING, regKey.szDefSTRING);
+				CommitStringIfNeeded(hRootKey, regKey->szKeyName, regKey->szCurSTRING, regKey->szDefSTRING);
 			}
 		}
 

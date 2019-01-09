@@ -95,8 +95,7 @@ namespace dialog
 			rcCheck,
 			this,
 			IDD_DISPLAYABOUT));
-		m_DisplayAboutCheck.SetCheck(
-			registry::RegKeys[registry::regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD ? BST_CHECKED : BST_UNCHECKED);
+		m_DisplayAboutCheck.SetCheck(registry::displayAboutDialog ? BST_CHECKED : BST_UNCHECKED);
 		auto szDisplayAboutCheck = strings::loadstring(IDS_DISPLAYABOUTCHECK);
 		::SetWindowTextW(m_DisplayAboutCheck.m_hWnd, szDisplayAboutCheck.c_str());
 
@@ -168,9 +167,6 @@ namespace dialog
 		CMyDialog::OnOK();
 		const auto iCheckState = m_DisplayAboutCheck.GetCheck();
 
-		if (BST_CHECKED == iCheckState)
-			registry::RegKeys[registry::regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD = true;
-		else
-			registry::RegKeys[registry::regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD = false;
+		registry::displayAboutDialog = (BST_CHECKED == iCheckState);
 	}
 } // namespace dialog

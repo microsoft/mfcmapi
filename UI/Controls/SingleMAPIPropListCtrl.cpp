@@ -65,11 +65,11 @@ namespace controls
 
 			// Column orders are stored as lowercase letters
 			// bacdefghi would mean the first two columns are swapped
-			if (lpMyHeader && !registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.empty())
+			if (lpMyHeader && !registry::propertyColumnOrder.empty())
 			{
 				auto bSetCols = false;
 				const auto nColumnCount = lpMyHeader->GetItemCount();
-				const auto cchOrder = registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.length();
+				const auto cchOrder = registry::propertyColumnOrder.length();
 				if (nColumnCount == static_cast<int>(cchOrder))
 				{
 					const auto pnOrder = new (std::nothrow) int[nColumnCount];
@@ -78,7 +78,7 @@ namespace controls
 					{
 						for (auto i = 0; i < nColumnCount; i++)
 						{
-							pnOrder[i] = registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING[i] - L'a';
+							pnOrder[i] = registry::propertyColumnOrder[i] - L'a';
 						}
 
 						if (SetColumnOrderArray(nColumnCount, pnOrder))
@@ -91,7 +91,7 @@ namespace controls
 				}
 
 				// If we didn't like the reg key, clear it so we don't see it again
-				if (!bSetCols) registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.clear();
+				if (!bSetCols) registry::propertyColumnOrder.clear();
 			}
 
 			AutoSizeColumns(false);
@@ -156,12 +156,11 @@ namespace controls
 
 					if (pnOrder)
 					{
-						registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.clear();
+						registry::propertyColumnOrder.clear();
 						EC_B_S(GetColumnOrderArray(pnOrder, nColumnCount));
 						for (ULONG i = 0; i < nColumnCount; i++)
 						{
-							registry::RegKeys[registry::regkeyPROP_COLUMN_ORDER].szCurSTRING.push_back(
-								static_cast<wchar_t>(L'a' + pnOrder[i]));
+							registry::propertyColumnOrder.push_back(static_cast<wchar_t>(L'a' + pnOrder[i]));
 						}
 					}
 
@@ -348,7 +347,7 @@ namespace controls
 
 			if (!m_lpPropBag) return MAPI_E_INVALID_PARAMETER;
 
-			if (!registry::RegKeys[registry::regkeyONLY_ADDITIONAL_PROPERTIES].ulCurDWORD)
+			if (!registry::onlyAdditionalProperties)
 			{
 				hRes = WC_H(m_lpPropBag->GetAllProps(&ulProps, &lpPropsToAdd));
 
@@ -380,7 +379,7 @@ namespace controls
 					ULONG ulPropNames = 0;
 					LPMAPINAMEID* lppPropNames = nullptr;
 					ULONG ulCurTag = 0;
-					if (!m_bIsAB && registry::RegKeys[registry::regkeyPARSED_NAMED_PROPS].ulCurDWORD)
+					if (!m_bIsAB && registry::parseNamedProps)
 					{
 						// If we don't pass named property information to AddPropToListBox, it will look it up for us
 						// But this costs a GetNamesFromIDs call for each property we add
@@ -391,7 +390,7 @@ namespace controls
 							ULONG ulNamedProps = 0;
 
 							// First, count how many props to look up
-							if (registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD)
+							if (registry::getPropNamesOnAllProps)
 							{
 								ulNamedProps = ulProps;
 							}
@@ -411,7 +410,7 @@ namespace controls
 								{
 									// Populate the array
 									lpTag->cValues = ulNamedProps;
-									if (registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD)
+									if (registry::getPropNamesOnAllProps)
 									{
 										for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
 										{
@@ -460,7 +459,7 @@ namespace controls
 						// We shouldn't need to check ulCurTag < ulPropNames, but I fear bad GetNamesFromIDs implementations
 						if (lppPropNames && ulCurTag < ulPropNames)
 						{
-							if (registry::RegKeys[registry::regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD ||
+							if (registry::getPropNamesOnAllProps ||
 								PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
 							{
 								lpNameIDInfo = lppPropNames[ulCurTag];

@@ -42,7 +42,6 @@ namespace ui
 	{
 		// OutputDebugStringOutput only at first
 		// Get any settings from the registry
-		registry::SetDefaults();
 		registry::ReadFromRegistry();
 		// After this call we may output to the debug file
 		output::OpenDebugFile();
@@ -57,15 +56,15 @@ namespace ui
 		import::ImportProcs();
 
 		// Initialize objects for theming
-		ui::InitializeGDI();
+		InitializeGDI();
 
 		m_cRef = 1;
 
 		m_hwinEventHook = SetWinEventHook(
 			EVENT_OBJECT_REORDER, EVENT_OBJECT_REORDER, nullptr, &MyWinEventProc, GetCurrentProcessId(), NULL, NULL);
 
-		mapistub::ForceOutlookMAPI(0 != registry::RegKeys[registry::regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
-		mapistub::ForceSystemMAPI(0 != registry::RegKeys[registry::regkeyFORCESYSTEMMAPI].ulCurDWORD);
+		mapistub::ForceOutlookMAPI(registry::forceOutlookMAPI);
+		mapistub::ForceSystemMAPI(registry::forceSystemMAPI);
 
 		addin::LoadAddIns();
 
@@ -78,7 +77,7 @@ namespace ui
 		// Since we didn't create a window, we can't call DestroyWindow to let MFC know we're done.
 		// We call AfxPostQuitMessage instead
 		TRACE_DESTRUCTOR(CLASS);
-		ui::UninitializeGDI();
+		UninitializeGDI();
 		addin::UnloadAddIns();
 		if (m_hwinEventHook) UnhookWinEvent(m_hwinEventHook);
 		cache::UninitializeNamedPropCache();
@@ -117,4 +116,4 @@ namespace ui
 		if (!lCount) delete this;
 		return lCount;
 	}
-}
+} // namespace ui

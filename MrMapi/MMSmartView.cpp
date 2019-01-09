@@ -7,7 +7,7 @@
 void DoSmartView(_In_ cli::MYOPTIONS ProgOpts)
 {
 	// Ignore the reg key that disables smart view parsing
-	registry::RegKeys[registry::regkeyDO_SMART_VIEW].ulCurDWORD = true;
+	registry::doSmartView = true;
 
 	auto ulStructType = IDS_STNOPARSING;
 
