@@ -34,30 +34,29 @@ namespace dialog
 
 			for (auto& regKey : registry::RegKeys)
 			{
-				if (regKey && regKey->uiOptionsPrompt)
+				if (!regKey || !regKey->uiOptionsPrompt) continue;
+
+				if (registry::regoptCheck == regKey->ulRegOptType)
 				{
-					if (registry::regoptCheck == regKey->ulRegOptType)
-					{
-						AddPane(viewpane::CheckPane::Create(
-							regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, 0 != regKey->ulCurDWORD, false));
-					}
-					else if (registry::regoptString == regKey->ulRegOptType)
-					{
-						AddPane(viewpane::TextPane::CreateSingleLinePane(
-							regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, regKey->szCurSTRING, false));
-					}
-					else if (registry::regoptStringHex == regKey->ulRegOptType)
-					{
-						AddPane(viewpane::TextPane::CreateSingleLinePane(
-							regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
-						SetHex(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
-					}
-					else if (registry::regoptStringDec == regKey->ulRegOptType)
-					{
-						AddPane(viewpane::TextPane::CreateSingleLinePane(
-							regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
-						SetDecimal(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
-					}
+					AddPane(viewpane::CheckPane::Create(
+						regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, 0 != regKey->ulCurDWORD, false));
+				}
+				else if (registry::regoptString == regKey->ulRegOptType)
+				{
+					AddPane(viewpane::TextPane::CreateSingleLinePane(
+						regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, regKey->szCurSTRING, false));
+				}
+				else if (registry::regoptStringHex == regKey->ulRegOptType)
+				{
+					AddPane(viewpane::TextPane::CreateSingleLinePane(
+						regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
+					SetHex(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
+				}
+				else if (registry::regoptStringDec == regKey->ulRegOptType)
+				{
+					AddPane(viewpane::TextPane::CreateSingleLinePane(
+						regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
+					SetDecimal(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
 				}
 			}
 		}
@@ -80,26 +79,24 @@ namespace dialog
 			// Remaining options require no special handling - loop through them
 			for (auto& regKey : registry::RegKeys)
 			{
-				if (regKey && regKey->uiOptionsPrompt)
-				{
-					if (registry::regoptCheck == regKey->ulRegOptType)
-					{
-						if (regKey->bRefresh &&
-							regKey->ulCurDWORD != static_cast<ULONG>(GetCheck(regKey->uiOptionsPrompt)))
-						{
-							m_bNeedPropRefresh = true;
-						}
+				if (!regKey || !regKey->uiOptionsPrompt) continue;
 
-						regKey->ulCurDWORD = GetCheck(regKey->uiOptionsPrompt);
-					}
-					else if (registry::regoptStringHex == regKey->ulRegOptType)
+				if (registry::regoptCheck == regKey->ulRegOptType)
+				{
+					if (regKey->bRefresh && regKey->ulCurDWORD != static_cast<ULONG>(GetCheck(regKey->uiOptionsPrompt)))
 					{
-						regKey->ulCurDWORD = GetHex(regKey->uiOptionsPrompt);
+						m_bNeedPropRefresh = true;
 					}
-					else if (registry::regoptStringDec == regKey->ulRegOptType)
-					{
-						regKey->ulCurDWORD = GetDecimal(regKey->uiOptionsPrompt);
-					}
+
+					regKey->ulCurDWORD = GetCheck(regKey->uiOptionsPrompt);
+				}
+				else if (registry::regoptStringHex == regKey->ulRegOptType)
+				{
+					regKey->ulCurDWORD = GetHex(regKey->uiOptionsPrompt);
+				}
+				else if (registry::regoptStringDec == regKey->ulRegOptType)
+				{
+					regKey->ulCurDWORD = GetDecimal(regKey->uiOptionsPrompt);
 				}
 			}
 
