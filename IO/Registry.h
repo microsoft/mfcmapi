@@ -58,7 +58,7 @@ namespace registry
 
 		operator bool() const { return ulCurDWORD != 0; }
 
-		boolRegKey& operator=(const DWORD val)
+		boolRegKey& operator=(const bool val)
 		{
 			ulCurDWORD = val;
 			return *this;
