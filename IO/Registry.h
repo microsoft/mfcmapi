@@ -170,8 +170,6 @@ namespace registry
 		NUMRegKeys
 	};
 
-#define NumRegOptionKeys (registry::NUMRegKeys - 2)
-
 	extern __RegKey* RegKeys[NUMRegKeys];
 
 	void WriteToRegistry();

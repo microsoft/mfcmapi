@@ -32,38 +32,34 @@ namespace dialog
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"COptions(", L"Building option sheet - adding fields\n");
 
-			for (ULONG ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
+			ULONG ulReg = 0;
+			for (auto& regKey : registry::RegKeys)
 			{
-				if (!registry::RegKeys[ulReg]) continue;
+				if (regKey && regKey->uiOptionsPrompt)
+				{
+					if (registry::regoptCheck == regKey->ulRegOptType)
+					{
+						AddPane(viewpane::CheckPane::Create(
+							ulReg, regKey->uiOptionsPrompt, 0 != regKey->ulCurDWORD, false));
+					}
+					else if (registry::regoptString == regKey->ulRegOptType)
+					{
+						AddPane(viewpane::TextPane::CreateSingleLinePane(
+							ulReg, regKey->uiOptionsPrompt, regKey->szCurSTRING, false));
+					}
+					else if (registry::regoptStringHex == regKey->ulRegOptType)
+					{
+						AddPane(viewpane::TextPane::CreateSingleLinePane(ulReg, regKey->uiOptionsPrompt, false));
+						SetHex(ulReg, regKey->ulCurDWORD);
+					}
+					else if (registry::regoptStringDec == regKey->ulRegOptType)
+					{
+						AddPane(viewpane::TextPane::CreateSingleLinePane(ulReg, regKey->uiOptionsPrompt, false));
+						SetDecimal(ulReg, regKey->ulCurDWORD);
+					}
+				}
 
-				if (registry::regoptCheck == registry::RegKeys[ulReg]->ulRegOptType)
-				{
-					AddPane(viewpane::CheckPane::Create(
-						ulReg,
-						registry::RegKeys[ulReg]->uiOptionsPrompt,
-						0 != registry::RegKeys[ulReg]->ulCurDWORD,
-						false));
-				}
-				else if (registry::regoptString == registry::RegKeys[ulReg]->ulRegOptType)
-				{
-					AddPane(viewpane::TextPane::CreateSingleLinePane(
-						ulReg,
-						registry::RegKeys[ulReg]->uiOptionsPrompt,
-						registry::RegKeys[ulReg]->szCurSTRING,
-						false));
-				}
-				else if (registry::regoptStringHex == registry::RegKeys[ulReg]->ulRegOptType)
-				{
-					AddPane(viewpane::TextPane::CreateSingleLinePane(
-						ulReg, registry::RegKeys[ulReg]->uiOptionsPrompt, false));
-					SetHex(ulReg, registry::RegKeys[ulReg]->ulCurDWORD);
-				}
-				else if (registry::regoptStringDec == registry::RegKeys[ulReg]->ulRegOptType)
-				{
-					AddPane(viewpane::TextPane::CreateSingleLinePane(
-						ulReg, registry::RegKeys[ulReg]->uiOptionsPrompt, false));
-					SetDecimal(ulReg, registry::RegKeys[ulReg]->ulCurDWORD);
-				}
+				ulReg++;
 			}
 		}
 
@@ -83,28 +79,31 @@ namespace dialog
 			output::SetDebugOutputToFile(GetCheck(registry::regkeyDEBUG_TO_FILE));
 
 			// Remaining options require no special handling - loop through them
-			for (ULONG ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
+			ULONG ulReg = 0;
+			for (auto& regKey : registry::RegKeys)
 			{
-				if (!registry::RegKeys[ulReg]) continue;
-
-				if (registry::regoptCheck == registry::RegKeys[ulReg]->ulRegOptType)
+				if (regKey && regKey->uiOptionsPrompt)
 				{
-					if (registry::RegKeys[ulReg]->bRefresh &&
-						registry::RegKeys[ulReg]->ulCurDWORD != static_cast<ULONG>(GetCheck(ulReg)))
+					if (registry::regoptCheck == regKey->ulRegOptType)
 					{
-						m_bNeedPropRefresh = true;
-					}
+						if (regKey->bRefresh && regKey->ulCurDWORD != static_cast<ULONG>(GetCheck(ulReg)))
+						{
+							m_bNeedPropRefresh = true;
+						}
 
-					registry::RegKeys[ulReg]->ulCurDWORD = GetCheck(ulReg);
+						regKey->ulCurDWORD = GetCheck(ulReg);
+					}
+					else if (registry::regoptStringHex == regKey->ulRegOptType)
+					{
+						regKey->ulCurDWORD = GetHex(ulReg);
+					}
+					else if (registry::regoptStringDec == regKey->ulRegOptType)
+					{
+						regKey->ulCurDWORD = GetDecimal(ulReg);
+					}
 				}
-				else if (registry::regoptStringHex == registry::RegKeys[ulReg]->ulRegOptType)
-				{
-					registry::RegKeys[ulReg]->ulCurDWORD = GetHex(ulReg);
-				}
-				else if (registry::regoptStringDec == registry::RegKeys[ulReg]->ulRegOptType)
-				{
-					registry::RegKeys[ulReg]->ulCurDWORD = GetDecimal(ulReg);
-				}
+
+				ulReg++;
 			}
 
 			// Commit our values to the registry
@@ -113,7 +112,7 @@ namespace dialog
 			CEditor::OnOK();
 		}
 
-		_Check_return_ ULONG COptions::HandleChange(UINT nID) { return CEditor::HandleChange(nID); }
+		_Check_return_ ULONG COptions::HandleChange(const UINT nID) { return CEditor::HandleChange(nID); }
 
 		bool COptions::NeedPropRefresh() const { return m_bNeedPropRefresh; }
 
