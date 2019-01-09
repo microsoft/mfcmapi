@@ -134,43 +134,7 @@ namespace registry
 		_NODISCARD std::wstring::reference operator[](const std::wstring::size_type _Off) { return szCurSTRING[_Off]; }
 	};
 
-	// Registry key Names
-	enum REGKEYNAMES
-	{
-		regkeyDEBUG_TAG,
-		regkeyDEBUG_TO_FILE,
-		regkeyDEBUG_FILE_NAME,
-		regkeyPARSED_NAMED_PROPS,
-		regkeyGETPROPNAMES_ON_ALL_PROPS,
-		regkeyTHROTTLE_LEVEL,
-		regkeyHIER_EXPAND_NOTIFS,
-		regkeyHIER_ROOT_NOTIFS,
-		regkeyDO_SMART_VIEW,
-		regkeyONLY_ADDITIONAL_PROPERTIES,
-		regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST,
-		regkeyUSE_GETPROPLIST,
-		regkeyPREFER_UNICODE_PROPS,
-		regkeyCACHE_NAME_DPROPS,
-		regkeyALLOW_DUPE_COLUMNS,
-		regkeyDO_COLUMN_NAMES,
-		regkeyEDIT_COLUMNS_ON_LOAD,
-		regkeyMDB_ONLINE,
-		regKeyMAPI_NO_CACHE,
-		regkeyALLOW_PERSIST_CACHE,
-		regkeyUSE_IMAPIPROGRESS,
-		regkeyUSE_MESSAGERAW,
-		regkeySUPPRESS_NOT_FOUND,
-		regkeyHEAPENABLETERMINATIONONCORRUPTION,
-		regkeyLOADADDINS,
-		regkeyFORCEOUTLOOKMAPI,
-		regkeyFORCESYSTEMMAPI,
-		regkeyHEX_DIALOG_DIAG,
-		regkeyDISPLAY_ABOUT_DIALOG,
-		regkeyPROP_COLUMN_ORDER,
-		NUMRegKeys
-	};
-
-	extern __RegKey* RegKeys[NUMRegKeys];
+	extern std::vector<__RegKey*> RegKeys;
 
 	void WriteToRegistry();
 	void ReadFromRegistry();

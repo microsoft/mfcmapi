@@ -4,7 +4,12 @@
 namespace registry
 {
 	// Registry settings
-	// All settings which have an options prompt must use a unique prompt value
+	// Creating a new reg key:
+	// 1 - Define an accessor object using boolRegKey, wstringRegKey or dwordRegKey
+	// 2 - Add pointer to the object to RegKeys vector
+	// 3 - Add an extern for the object to registry.h
+	// 4 - If the setting should show in options, ensure it has a unique options prompt value
+	// Note: Accessor objects can be used in code as their underlying type, though some care may be needed with casting
 #ifdef _DEBUG
 	dwordRegKey debugTag{L"DebugTag", regoptStringHex, DBGAll, false, IDS_REGKEY_DEBUG_TAG};
 #else
@@ -46,9 +51,7 @@ namespace registry
 	boolRegKey displayAboutDialog{L"DisplayAboutDialog", true, false, NULL};
 	wstringRegKey propertyColumnOrder{L"PropertyColumnOrder", L"", false, NULL};
 
-	// TODO: Can/should this be a vector?
-	// Keep this in sync with REGKEYNAMES
-	__RegKey* RegKeys[] = {
+	std::vector<__RegKey*> RegKeys = {
 		&debugTag,
 		&debugToFile,
 		&debugFileName,
@@ -215,7 +218,11 @@ namespace registry
 			hKey, szValueName.c_str(), NULL, REG_DWORD, reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD)));
 	}
 
-	void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_ const std::wstring& szValueName, const DWORD dwValue, const DWORD dwDefaultValue)
+	void CommitDWORDIfNeeded(
+		_In_ HKEY hKey,
+		_In_ const std::wstring& szValueName,
+		const DWORD dwValue,
+		const DWORD dwDefaultValue)
 	{
 		if (dwValue != dwDefaultValue)
 		{
