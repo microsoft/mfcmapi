@@ -84,62 +84,41 @@ namespace registry
 		&propertyColumnOrder,
 	};
 
-	// Get a registry value - allocating memory using new to hold it.
-	_Check_return_ HRESULT HrGetRegistryValue(
-		_In_ HKEY hKey, // the key.
-		_In_ const std::wstring& lpszValue, // value name in key.
-		_Out_ DWORD* lpType, // where to put type info.
-		_Out_ LPVOID* lppData) // where to put the data.
-	{
-		output::DebugPrint(DBGGeneric, L"HrGetRegistryValue(%ws)\n", lpszValue.c_str());
-
-		*lppData = nullptr;
-		DWORD cb = NULL;
-
-		// Get its size
-		auto hRes = WC_W32(RegQueryValueExW(hKey, lpszValue.c_str(), nullptr, lpType, nullptr, &cb));
-
-		// only handle types we know about - all others are bad
-		if (hRes == S_OK && cb && (REG_SZ == *lpType || REG_DWORD == *lpType || REG_MULTI_SZ == *lpType))
-		{
-			*lppData = new BYTE[cb];
-
-			if (*lppData)
-			{
-				// Get the current value
-				hRes = EC_W32(RegQueryValueExW(
-					hKey, lpszValue.c_str(), nullptr, lpType, static_cast<unsigned char*>(*lppData), &cb));
-
-				if (FAILED(hRes))
-				{
-					delete[] * lppData;
-					*lppData = nullptr;
-				}
-			}
-		}
-		else
-			hRes = MAPI_E_INVALID_PARAMETER;
-
-		return hRes;
-	}
-
 	// If the value is not set in the registry, return the default value
 	DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const DWORD dwDefaultVal)
 	{
 		if (szValue.empty()) return dwDefaultVal;
-		DWORD dwKeyType = NULL;
-		DWORD* lpValue = nullptr;
-		auto ret = dwDefaultVal;
+		output::DebugPrint(DBGGeneric, L"ReadDWORDFromRegistry(%ws)\n", szValue.c_str());
 
-		const auto hRes = WC_H(HrGetRegistryValue(hKey, szValue, &dwKeyType, reinterpret_cast<LPVOID*>(&lpValue)));
-		if (hRes == S_OK && REG_DWORD == dwKeyType && lpValue)
+		// Get its size
+		DWORD cb = NULL;
+		DWORD dwKeyType{};
+		auto hRes = WC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, nullptr, &cb));
+
+		LPBYTE szBuf{};
+		if (hRes == S_OK && cb && dwKeyType == REG_DWORD)
 		{
-			ret = *lpValue;
+			szBuf = new (std::nothrow) BYTE[cb];
+			if (szBuf)
+			{
+				// Get the current value
+				hRes = EC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, szBuf, &cb));
+			}
+		}
+		else
+		{
+			hRes = MAPI_E_INVALID_PARAMETER;
 		}
 
-		delete[] lpValue;
+		auto ret = dwDefaultVal;
+		if (hRes == S_OK && dwKeyType == REG_DWORD && szBuf)
+		{
+			ret = *szBuf;
+		}
+
+		delete[] szBuf;
 		return ret;
-	}
+	} // namespace registry
 
 	// If the value is not set in the registry, return the default value
 	std::wstring
@@ -148,31 +127,28 @@ namespace registry
 		if (szValue.empty()) return szDefault;
 		output::DebugPrint(DBGGeneric, L"ReadStringFromRegistry(%ws)\n", szValue.c_str());
 
-		DWORD dwKeyType = NULL;
-		LPBYTE szBuf = nullptr;
-		DWORD cb = NULL;
-
 		// Get its size
+		DWORD cb{};
+		DWORD dwKeyType{};
 		auto hRes = WC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, nullptr, &cb));
 
-		if (hRes == S_OK && cb && !(cb % 2) && REG_SZ == dwKeyType)
+		LPBYTE szBuf{};
+		if (hRes == S_OK && cb && !(cb % 2) && dwKeyType == REG_SZ)
 		{
 			szBuf = new (std::nothrow) BYTE[cb];
 			if (szBuf)
 			{
 				// Get the current value
 				hRes = EC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, szBuf, &cb));
-
-				if (FAILED(hRes))
-				{
-					delete[] szBuf;
-					szBuf = nullptr;
-				}
 			}
+		}
+		else
+		{
+			hRes = MAPI_E_INVALID_PARAMETER;
 		}
 
 		auto ret = szDefault;
-		if (hRes == S_OK && cb && !(cb % 2) && REG_SZ == dwKeyType && szBuf)
+		if (hRes == S_OK && cb && !(cb % 2) && dwKeyType == REG_SZ && szBuf)
 		{
 			ret = std::wstring(LPWSTR(szBuf), cb / sizeof WCHAR);
 		}
