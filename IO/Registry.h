@@ -44,7 +44,8 @@ namespace registry
 	class boolRegKey : public __RegKey
 	{
 	public:
-		boolRegKey(const std::wstring& _szKeyName, bool _default, bool _refresh, int _uiOptionsPrompt) : __RegKey{}
+		boolRegKey(const std::wstring& _szKeyName, const bool _default, const bool _refresh, const int _uiOptionsPrompt)
+			: __RegKey{}
 		{
 			szKeyName = _szKeyName;
 			ulRegKeyType = regDWORD;
@@ -57,7 +58,7 @@ namespace registry
 
 		operator bool() const { return ulCurDWORD != 0; }
 
-		boolRegKey& operator=(DWORD val)
+		boolRegKey& operator=(const DWORD val)
 		{
 			ulCurDWORD = val;
 			return *this;
@@ -69,10 +70,10 @@ namespace registry
 	public:
 		dwordRegKey(
 			const std::wstring& _szKeyName,
-			__REGOPTIONTYPE _ulRegOptType,
-			DWORD _default,
-			bool _refresh,
-			int _uiOptionsPrompt)
+			const __REGOPTIONTYPE _ulRegOptType,
+			const DWORD _default,
+			const bool _refresh,
+			const int _uiOptionsPrompt)
 			: __RegKey{}
 		{
 			szKeyName = _szKeyName;
@@ -86,13 +87,13 @@ namespace registry
 
 		operator DWORD() const { return ulCurDWORD; }
 
-		dwordRegKey& operator=(DWORD val)
+		dwordRegKey& operator=(const DWORD val)
 		{
 			ulCurDWORD = val;
 			return *this;
 		}
 
-		dwordRegKey& operator|=(DWORD val)
+		dwordRegKey& operator|=(const DWORD val)
 		{
 			ulCurDWORD |= val;
 			return *this;
@@ -102,7 +103,11 @@ namespace registry
 	class wstringRegKey : public __RegKey
 	{
 	public:
-		wstringRegKey(const std::wstring& _szKeyName, const std::wstring& _default, bool _refresh, int _uiOptionsPrompt)
+		wstringRegKey(
+			const std::wstring& _szKeyName,
+			const std::wstring& _default,
+			const bool _refresh,
+			const int _uiOptionsPrompt)
 			: __RegKey{}
 		{
 			szKeyName = _szKeyName;

@@ -122,7 +122,7 @@ namespace registry
 	}
 
 	// If the value is not set in the registry, return the default value
-	DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ DWORD dwDefaultVal)
+	DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const DWORD dwDefaultVal)
 	{
 		if (szValue.empty()) return dwDefaultVal;
 		DWORD dwKeyType = NULL;
@@ -214,7 +214,7 @@ namespace registry
 			hKey, szValueName.c_str(), NULL, REG_DWORD, reinterpret_cast<LPBYTE>(&dwValue), sizeof(DWORD)));
 	}
 
-	void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_ const std::wstring& szValueName, DWORD dwValue, DWORD dwDefaultValue)
+	void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_ const std::wstring& szValueName, const DWORD dwValue, const DWORD dwDefaultValue)
 	{
 		if (dwValue != dwDefaultValue)
 		{
