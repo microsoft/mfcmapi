@@ -39,5 +39,7 @@ namespace ui
 			const std::wstring& szMailboxDN,
 			ULONG ulFlags); // desired flags for CreateStoreEntryID
 		_Check_return_ LPMDB OpenOtherUsersMailboxFromGal(_In_ LPMAPISESSION lpMAPISession, _In_ LPADRBOOK lpAddrBook);
+
+		std::string PromptServerName();
 	} // namespace mapiui
 } // namespace ui

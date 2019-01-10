@@ -11,6 +11,8 @@ namespace mapi
 {
 	namespace store
 	{
+		std::function<std::string()> promptServerName;
+
 		_Check_return_ LPMDB
 		CallOpenMsgStore(_In_ LPMAPISESSION lpSession, _In_ ULONG_PTR ulUIParam, _In_ LPSBinary lpEID, ULONG ulFlags)
 		{
@@ -192,7 +194,7 @@ namespace mapi
 
 			return lpPFTable;
 		}
-
+	
 		// Get server name from the profile
 		std::string GetServerName(_In_ LPMAPISESSION lpSession)
 		{
@@ -220,20 +222,11 @@ namespace mapi
 			{
 				serverName = lpServerName->Value.lpszA;
 			}
-#ifndef MRMAPI
-			else
+			else if (promptServerName)
 			{
-				// prompt the user to enter a server name
-				dialog::editor::CEditor MyData(
-					nullptr, IDS_SERVERNAME, IDS_SERVERNAMEMISSINGPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SERVERNAME, false));
-
-				if (MyData.DisplayDialog())
-				{
-					serverName = strings::wstringTostring(MyData.GetStringW(0));
-				}
+				serverName = promptServerName();
 			}
-#endif
+
 			MAPIFreeBuffer(lpServerName);
 			if (pGlobalProfSect) pGlobalProfSect->Release();
 			if (pSvcAdmin) pSvcAdmin->Release();

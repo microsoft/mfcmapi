@@ -5,6 +5,8 @@ namespace mapi
 {
 	namespace store
 	{
+		extern std::function<std::string()> promptServerName;
+
 		_Check_return_ LPMDB
 		CallOpenMsgStore(_In_ LPMAPISESSION lpSession, _In_ ULONG_PTR ulUIParam, _In_ LPSBinary lpEID, ULONG ulFlags);
 		std::string BuildServerDN(const std::string& szServerName, const std::string& szPost);

@@ -30,6 +30,7 @@ namespace ui
 				return ui::GetMAPIProgress(_1, _2);
 			};
 			output::outputToDbgView = [](auto _1) { OutputToDbgView(_1); };
+			mapi::store::promptServerName = []() { return PromptServerName(); };
 		}
 
 		// Takes a tag array (and optional MAPIProp) and displays UI prompting to build an exclusion array
@@ -528,5 +529,21 @@ namespace ui
 			if (lpPrivateMDB) lpPrivateMDB->Release();
 			return lpOtherUserMDB;
 		}
+
+		std::string PromptServerName()
+		{
+			// prompt the user to enter a server name
+			dialog::editor::CEditor MyData(
+				nullptr, IDS_SERVERNAME, IDS_SERVERNAMEMISSINGPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SERVERNAME, false));
+
+			if (MyData.DisplayDialog())
+			{
+				return strings::wstringTostring(MyData.GetStringW(0));
+			}
+
+			return std::string{};
+		};
+
 	} // namespace mapiui
 } // namespace ui
