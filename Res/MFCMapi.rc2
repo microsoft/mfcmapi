@@ -41,7 +41,7 @@ CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "mfcmapi.exe.manifest"
 #endif
 
 #define RC_VERSION_FILE_DESCRIPTION    RC_PRODUCT_NAME RC_VERSION_WIDTH RC_VERSION_DEBUG RC_VERSION_BITNESS "\0"
-#include "bldver.rc"
+#include <Res/bldver.rc>
 
 // Keep in sync with definition of IDD_ABOUTVERLAST
 IDD_ABOUT DIALOGEX DISCARDABLE  0, 0, 400, 200
