@@ -80,9 +80,6 @@ IDS_VER_FIRST + 5         "FileDescription"
 IDS_VER_FIRST + 6         "FileVersion"
 IDS_VER_FIRST + 7         "ProductVersion"
 IDS_VER_FIRST + 8         "LegalTrademarks"
-#ifdef PRIVATE_BUILD
-IDS_VER_FIRST + 9         "PrivateBuild"
-#endif
 END
 
 #ifdef MRMAPI
