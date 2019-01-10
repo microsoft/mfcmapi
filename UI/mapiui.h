@@ -1,5 +1,6 @@
 #pragma once
 #include <Interpret/ExtraPropTags.h>
+#include "Dialogs/Editors/DbgView.h"
 
 namespace ui
 {
@@ -29,6 +30,7 @@ namespace ui
 			_Out_opt_ bool* pbUnicode);
 
 		void displayError(const std::wstring& errString);
+		void OutputToDbgView(const std::wstring& szMsg);
 
 		_Check_return_ LPMDB OpenMailboxWithPrompt(
 			_In_ LPMAPISESSION lpMAPISession,

@@ -14,6 +14,7 @@
 #include <MAPI/MAPIStoreFunctions.h>
 #include <Interpret/SmartView/PropertiesStruct.h>
 #include <UI/CMAPIProgress.h>
+#include "Dialogs/Editors/DbgView.h"
 
 namespace ui
 {
@@ -28,6 +29,7 @@ namespace ui
 			mapi::mapiui::getMAPIProgress = [](auto _1, auto _2) -> LPMAPIPROGRESS {
 				return ui::GetMAPIProgress(_1, _2);
 			};
+			output::outputToDbgView = [](auto _1) { OutputToDbgView(_1); };
 		}
 
 		// Takes a tag array (and optional MAPIProp) and displays UI prompting to build an exclusion array
@@ -456,6 +458,8 @@ namespace ui
 			Err.SetPromptPostFix(errString);
 			(void) Err.DisplayDialog();
 		}
+
+		void OutputToDbgView(const std::wstring& szMsg) { dialog::editor::OutputToDbgView(szMsg); }
 
 		_Check_return_ LPMDB OpenMailboxWithPrompt(
 			_In_ LPMAPISESSION lpMAPISession,
