@@ -11,11 +11,11 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #ifdef MRMAPI
-#define RC_PRODUCT_NAME               "Mr MAPI"
+#define RC_PRODUCT_NAME               "MrMAPI"
 #define RC_VERSION_INTERNAL_NAME       RC_PRODUCT_NAME "\0"
 #define RC_VERSION_ORIGINAL_FILE_NAME  "MrMAPI.EXE\0"
 #else
-#define RC_PRODUCT_NAME               "Microsoft Exchange Server MAPI Editor"
+#define RC_PRODUCT_NAME               "MFCMAPI"
 #define RC_VERSION_INTERNAL_NAME       RC_PRODUCT_NAME "\0"
 #define RC_VERSION_ORIGINAL_FILE_NAME  "MFCMapi.EXE\0"
 #endif

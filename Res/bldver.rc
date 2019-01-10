@@ -15,14 +15,6 @@
 
 /* Define file version and project version */
 
-// Ensure we're called MFCMAPI
-#undef RC_PRODUCT_NAME
-#ifdef MRMAPI
-#define RC_PRODUCT_NAME               "MrMAPI"
-#else
-#define RC_PRODUCT_NAME               "MFCMAPI"
-#endif
-
 #define RC_VERSION_COMPANY_NAME     "Microsoft Corporation\0"
 #define VER_LEGALCOPYRIGHT_YEARS    "1999-2019"
 #define RC_VERSION_PRODUCT_NAME     RC_PRODUCT_NAME "\0"
