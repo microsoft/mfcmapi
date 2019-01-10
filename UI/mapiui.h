@@ -29,5 +29,13 @@ namespace ui
 			_Out_opt_ bool* pbUnicode);
 
 		void displayError(const std::wstring& errString);
+
+		_Check_return_ LPMDB OpenMailboxWithPrompt(
+			_In_ LPMAPISESSION lpMAPISession,
+			_In_ LPMDB lpMDB,
+			const std::string& szServerName,
+			const std::wstring& szMailboxDN,
+			ULONG ulFlags); // desired flags for CreateStoreEntryID
+		_Check_return_ LPMDB OpenOtherUsersMailboxFromGal(_In_ LPMAPISESSION lpMAPISession, _In_ LPADRBOOK lpAddrBook);
 	} // namespace mapiui
 } // namespace ui

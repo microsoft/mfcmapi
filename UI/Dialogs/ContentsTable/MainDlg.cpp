@@ -559,7 +559,7 @@ namespace dialog
 
 		if (mapi::store::StoreSupportsManageStore(lpMDB))
 		{
-			auto lpOtherMDB = mapi::store::OpenMailboxWithPrompt(
+			auto lpOtherMDB = ui::mapiui::OpenMailboxWithPrompt(
 				lpMAPISession,
 				lpMDB,
 				szServerName,
@@ -607,7 +607,7 @@ namespace dialog
 		const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 		if (lpAddrBook)
 		{
-			auto lpMailboxMDB = mapi::store::OpenOtherUsersMailboxFromGal(lpMAPISession, lpAddrBook);
+			auto lpMailboxMDB = ui::mapiui::OpenOtherUsersMailboxFromGal(lpMAPISession, lpAddrBook);
 			if (lpMailboxMDB)
 			{
 				EC_H_S(DisplayObject(lpMailboxMDB, NULL, otStore, this));

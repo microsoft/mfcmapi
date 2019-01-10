@@ -10,6 +10,9 @@
 #include <MAPI/MapiMime.h>
 #include <ImportProcs.h>
 #include <UI/UIFunctions.h>
+#include <MAPI/MAPIABFunctions.h>
+#include <MAPI/MAPIStoreFunctions.h>
+#include <Interpret/SmartView/PropertiesStruct.h>
 
 namespace ui
 {
@@ -448,6 +451,74 @@ namespace ui
 			dialog::editor::CEditor Err(nullptr, ID_PRODUCTNAME, NULL, CEDITOR_BUTTON_OK);
 			Err.SetPromptPostFix(errString);
 			(void) Err.DisplayDialog();
+		}
+
+		_Check_return_ LPMDB OpenMailboxWithPrompt(
+			_In_ LPMAPISESSION lpMAPISession,
+			_In_ LPMDB lpMDB,
+			const std::string& szServerName,
+			const std::wstring& szMailboxDN,
+			ULONG ulFlags) // desired flags for CreateStoreEntryID
+		{
+			if (!lpMAPISession) return nullptr;
+
+			dialog::editor::CEditor MyPrompt(
+				nullptr, IDS_OPENOTHERUSER, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
+			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(
+				0, IDS_SERVERNAME, strings::stringTowstring(szServerName), false));
+			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_USERDN, szMailboxDN, false));
+			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_USER_SMTP_ADDRESS, false));
+			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(3, IDS_CREATESTORENTRYIDFLAGS, false));
+			MyPrompt.SetHex(3, ulFlags);
+			MyPrompt.AddPane(viewpane::CheckPane::Create(4, IDS_FORCESERVER, false, false));
+			if (!MyPrompt.DisplayDialog()) return nullptr;
+
+			return mapi::store::OpenOtherUsersMailbox(
+				lpMAPISession,
+				lpMDB,
+				strings::wstringTostring(MyPrompt.GetStringW(0)),
+				strings::wstringTostring(MyPrompt.GetStringW(1)),
+				MyPrompt.GetStringW(2),
+				MyPrompt.GetHex(3),
+				MyPrompt.GetCheck(4));
+		}
+
+		// Display a UI to select a mailbox, then call OpenOtherUsersMailbox with the mailboxDN
+		// May return MAPI_E_CANCEL
+		_Check_return_ LPMDB OpenOtherUsersMailboxFromGal(_In_ LPMAPISESSION lpMAPISession, _In_ LPADRBOOK lpAddrBook)
+		{
+			if (!lpMAPISession || !lpAddrBook) return nullptr;
+
+			LPMDB lpOtherUserMDB = nullptr;
+
+			const auto szServerName = mapi::store::GetServerName(lpMAPISession);
+
+			auto lpPrivateMDB = mapi::store::OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid);
+			if (lpPrivateMDB && mapi::store::StoreSupportsManageStore(lpPrivateMDB))
+			{
+				auto lpMailUser = mapi::ab::SelectUser(lpAddrBook, GetDesktopWindow(), nullptr);
+				if (lpMailUser)
+				{
+					LPSPropValue lpEmailAddress = nullptr;
+					EC_MAPI_S(HrGetOneProp(lpMailUser, PR_EMAIL_ADDRESS_W, &lpEmailAddress));
+					if (mapi::CheckStringProp(lpEmailAddress, PT_UNICODE))
+					{
+						lpOtherUserMDB = OpenMailboxWithPrompt(
+							lpMAPISession,
+							lpPrivateMDB,
+							szServerName,
+							lpEmailAddress->Value.lpszW,
+							OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
+					}
+
+					MAPIFreeBuffer(lpEmailAddress);
+					lpMailUser->Release();
+				}
+			}
+
+			if (lpPrivateMDB) lpPrivateMDB->Release();
+			return lpOtherUserMDB;
 		}
 	} // namespace mapiui
 } // namespace ui
