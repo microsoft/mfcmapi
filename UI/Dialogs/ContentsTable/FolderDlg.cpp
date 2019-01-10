@@ -461,7 +461,7 @@ namespace dialog
 		{
 			if (0 == MyData.GetDropDown(1))
 			{ // CopyMessages
-				LPMAPIPROGRESS lpProgress =
+				auto lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
 
 				if (lpProgress) ulMoveMessage |= MESSAGE_DIALOG;
@@ -517,7 +517,7 @@ namespace dialog
 								LPSPropProblemArray lpProblems = nullptr;
 
 								// copy message properties to IMessage object opened on top of IStorage.
-								LPMAPIPROGRESS lpProgress =
+								auto lpProgress =
 									mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyTo", m_hWnd); // STRING_OK
 
 								if (lpProgress) ulMoveMessage |= MAPI_DIALOG;
@@ -664,7 +664,7 @@ namespace dialog
 			}
 			else
 			{
-				LPMAPIPROGRESS lpProgress =
+				auto lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteMessages", m_hWnd); // STRING_OK
 
 				if (lpProgress) ulFlag |= MESSAGE_DIALOG;
@@ -1646,7 +1646,7 @@ namespace dialog
 		{
 			const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 
-			LPMAPIPROGRESS lpProgress =
+			auto lpProgress =
 				mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::SetReadFlags", m_hWnd); // STRING_OK
 
 			auto ulFlags = MyFlags.GetHex(0);

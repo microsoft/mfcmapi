@@ -153,6 +153,9 @@
     <ClInclude Include="UI\profile.h" />
     <ClInclude Include="UI\mapiui.h" />
     <ClInclude Include="UI\addinui.h" />
+    <ClInclude Include="UI\CMAPIProgress.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -211,6 +214,9 @@
     </ClCompile>
     <ClCompile Include="UI\addinui.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\CMAPIProgress.cpp">
+      <Filter>Source Files\MAPI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
