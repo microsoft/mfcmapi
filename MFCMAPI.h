@@ -542,6 +542,8 @@ struct _AddIn
 
 namespace addin
 {
+	EXTERN_C __declspec(
+		dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...);
 	EXTERN_C __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool bForce);
 
 	void LoadAddIns();
