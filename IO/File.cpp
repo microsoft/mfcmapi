@@ -161,7 +161,7 @@ namespace file
 		{
 			LPSPropProblemArray lpProblems = nullptr;
 
-			LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyTo", hWnd); // STRING_OK
+			auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyTo", hWnd); // STRING_OK
 
 			hRes = EC_MAPI(pIMsg->CopyTo(
 				0,
@@ -838,7 +838,7 @@ namespace file
 		static SizedSPropTagArray(NUM_COLS, sptAttachTableCols) = {NUM_COLS,
 																   {PR_ATTACH_NUM, PR_ATTACH_LONG_FILENAME_W}};
 
-		bool bDirty = false;
+		auto bDirty = false;
 		auto hRes = IterateAttachments(
 			lpMessage,
 			reinterpret_cast<LPSPropTagArray>(&sptAttachTableCols),
@@ -854,7 +854,7 @@ namespace file
 				}
 
 				// Delete the attachment
-				LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", hWnd); // STRING_OK
+				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", hWnd); // STRING_OK
 
 				const auto hRes = EC_MAPI(lpMessage->DeleteAttach(
 					props[ATTACHNUM].Value.l,

@@ -304,7 +304,7 @@ namespace mapi
 		if (!lpSrcContents) return;
 
 		auto sbaEID = GetEntryIDs(lpSrcContents);
-		LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
+		auto lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
 		auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
 
 		if (lpProgress) ulCopyFlags |= MESSAGE_DIALOG;
@@ -335,7 +335,7 @@ namespace mapi
 
 		auto sbaEID = SBinaryArray{1, const_cast<LPSBinary>(&bin)};
 
-		LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
+		auto lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
 
 		auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
 		if (lpProgress) ulCopyFlags |= MESSAGE_DIALOG;
@@ -810,7 +810,7 @@ namespace mapi
 		auto lpWasteFolder = OpenDefaultFolder(DEFAULT_DELETEDITEMS, lpMDB);
 		if (lpWasteFolder)
 		{
-			LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
+			auto lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
 
 			auto ulCopyFlags = MESSAGE_MOVE;
 
@@ -1471,7 +1471,7 @@ namespace mapi
 
 						output::DebugPrint(DBGGeneric, L"Copying recipients and attachments to new message.\n");
 
-						LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
+						auto lpProgress = mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
 
 						hRes = EC_MAPI(lpAttachMsg->CopyProps(
 							LPSPropTagArray(&atObjs),
@@ -1779,7 +1779,7 @@ namespace mapi
 			if (bDoMove) ulFlags |= MAPI_MOVE;
 			if (bDoNoReplace) ulFlags |= MAPI_NOREPLACE;
 
-			LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
+			auto lpProgress = mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
 
 			if (lpProgress) ulFlags |= MAPI_DIALOG;
 

@@ -10,6 +10,7 @@
 #include <MAPI/MapiMime.h>
 #include <ImportProcs.h>
 #include <UI/UIFunctions.h>
+#include <UI/CMAPIProgress.h>
 
 namespace ui
 {
@@ -21,6 +22,9 @@ namespace ui
 				return GetCopyDetails(_1, _2, _3, _4, _5);
 			};
 			error::displayError = [](auto _1) { displayError(_1); };
+			mapi::mapiui::getMAPIProgress = [](auto _1, auto _2) -> LPMAPIPROGRESS {
+				return ui::GetMAPIProgress(_1, _2);
+			};
 		}
 
 		// Takes a tag array (and optional MAPIProp) and displays UI prompting to build an exclusion array
