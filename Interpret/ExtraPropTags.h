@@ -970,6 +970,7 @@ enum CCSFLAGS
 	CCSF_EMBEDDED_MESSAGE = 0x00008000, // We're translating an embedded message
 	CCSF_PRESERVE_SOURCE =
 		0x00040000, // The convertor should not modify the source message so no conversation index update, no message id, and no header dump.
+	CCSF_GLOBAL_MESSAGE = 0x00200000, // The converter should build an international message (EAI/RFC6530)
 };
 
 #define PidTagFolderId PROP_TAG(PT_I8, 0x6748)

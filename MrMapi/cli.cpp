@@ -385,13 +385,14 @@ namespace cli
 			printf("                CCSF_INCLUDE_BCC: 0x20\n");
 			printf("                CCSF_USE_RTF:     0x80\n");
 			printf("              MAPI -> MIME:\n");
-			printf("                CCSF_NOHEADERS:        0x00004\n");
-			printf("                CCSF_USE_TNEF:         0x00010\n");
-			printf("                CCSF_8BITHEADERS:      0x00040\n");
-			printf("                CCSF_PLAIN_TEXT_ONLY:  0x01000\n");
-			printf("                CCSF_NO_MSGID:         0x04000\n");
-			printf("                CCSF_EMBEDDED_MESSAGE: 0x08000\n");
-			printf("                CCSF_PRESERVE_SOURCE:  0x40000\n");
+			printf("                CCSF_NOHEADERS:        0x000004\n");
+			printf("                CCSF_USE_TNEF:         0x000010\n");
+			printf("                CCSF_8BITHEADERS:      0x000040\n");
+			printf("                CCSF_PLAIN_TEXT_ONLY:  0x001000\n");
+			printf("                CCSF_NO_MSGID:         0x004000\n");
+			printf("                CCSF_EMBEDDED_MESSAGE: 0x008000\n");
+			printf("                CCSF_PRESERVE_SOURCE:  0x040000\n");
+			printf("                CCSF_GLOBAL_MESSAGE:   0x200000\n");
 			printf(
 				"   -Rf  (or -%ws) (MAPI->MIME only) Indicates the EML should be generated in RFC822 format.\n",
 				g_Switches[switchRFC822].szSwitch);
