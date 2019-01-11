@@ -26,6 +26,7 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/MapiMemory.h>
+#include <UI/addinui.h>
 
 namespace controls
 {
@@ -214,7 +215,7 @@ namespace controls
 				{
 					for (ULONG ulMenu = ID_ADDINPROPERTYMENU;; ulMenu++)
 					{
-						const auto lpAddInMenu = addin::GetAddinMenuItem(m_lpHostDlg->m_hWnd, ulMenu);
+						const auto lpAddInMenu = ui::addinui::GetAddinMenuItem(m_lpHostDlg->m_hWnd, ulMenu);
 						if (!lpAddInMenu) break;
 
 						pMenu->EnableMenuItem(ulMenu, DIM(bPropSelected));
@@ -596,7 +597,7 @@ namespace controls
 		{
 			output::DebugPrintEx(DBGGeneric, CLASS, L"AddPropsToExtraProps", L"adding prop array %p\n", lpPropsToAdd);
 
-			auto lpNewExtraProps = mapi::ConcatSPropTagArrays(m_sptExtraProps, lpPropsToAdd);
+			const auto lpNewExtraProps = mapi::ConcatSPropTagArrays(m_sptExtraProps, lpPropsToAdd);
 
 			MAPIFreeBuffer(m_sptExtraProps);
 			m_sptExtraProps = lpNewExtraProps;
@@ -609,37 +610,37 @@ namespace controls
 
 #define NUMPROPTYPES 31
 		static ULONG _PropTypeIcons[NUMPROPTYPES][2] = {
-			{PT_UNSPECIFIED, sortlistctrl::slIconUNSPECIFIED},
-			{PT_NULL, sortlistctrl::slIconNULL},
-			{PT_I2, sortlistctrl::slIconI2},
-			{PT_LONG, sortlistctrl::slIconLONG},
-			{PT_R4, sortlistctrl::slIconR4},
-			{PT_DOUBLE, sortlistctrl::slIconDOUBLE},
-			{PT_CURRENCY, sortlistctrl::slIconCURRENCY},
-			{PT_APPTIME, sortlistctrl::slIconAPPTIME},
-			{PT_ERROR, sortlistctrl::slIconERROR},
-			{PT_BOOLEAN, sortlistctrl::slIconBOOLEAN},
-			{PT_OBJECT, sortlistctrl::slIconOBJECT},
-			{PT_I8, sortlistctrl::slIconI8},
-			{PT_STRING8, sortlistctrl::slIconSTRING8},
-			{PT_UNICODE, sortlistctrl::slIconUNICODE},
-			{PT_SYSTIME, sortlistctrl::slIconSYSTIME},
-			{PT_CLSID, sortlistctrl::slIconCLSID},
-			{PT_BINARY, sortlistctrl::slIconBINARY},
-			{PT_MV_I2, sortlistctrl::slIconMV_I2},
-			{PT_MV_LONG, sortlistctrl::slIconMV_LONG},
-			{PT_MV_R4, sortlistctrl::slIconMV_R4},
-			{PT_MV_DOUBLE, sortlistctrl::slIconMV_DOUBLE},
-			{PT_MV_CURRENCY, sortlistctrl::slIconMV_CURRENCY},
-			{PT_MV_APPTIME, sortlistctrl::slIconMV_APPTIME},
-			{PT_MV_SYSTIME, sortlistctrl::slIconMV_SYSTIME},
-			{PT_MV_STRING8, sortlistctrl::slIconMV_STRING8},
-			{PT_MV_BINARY, sortlistctrl::slIconMV_BINARY},
-			{PT_MV_UNICODE, sortlistctrl::slIconMV_UNICODE},
-			{PT_MV_CLSID, sortlistctrl::slIconMV_CLSID},
-			{PT_MV_I8, sortlistctrl::slIconMV_I8},
-			{PT_SRESTRICTION, sortlistctrl::slIconSRESTRICTION},
-			{PT_ACTIONS, sortlistctrl::slIconACTIONS},
+			{PT_UNSPECIFIED, slIconUNSPECIFIED},
+			{PT_NULL, slIconNULL},
+			{PT_I2, slIconI2},
+			{PT_LONG, slIconLONG},
+			{PT_R4, slIconR4},
+			{PT_DOUBLE, slIconDOUBLE},
+			{PT_CURRENCY, slIconCURRENCY},
+			{PT_APPTIME, slIconAPPTIME},
+			{PT_ERROR, slIconERROR},
+			{PT_BOOLEAN, slIconBOOLEAN},
+			{PT_OBJECT, slIconOBJECT},
+			{PT_I8, slIconI8},
+			{PT_STRING8, slIconSTRING8},
+			{PT_UNICODE, slIconUNICODE},
+			{PT_SYSTIME, slIconSYSTIME},
+			{PT_CLSID, slIconCLSID},
+			{PT_BINARY, slIconBINARY},
+			{PT_MV_I2, slIconMV_I2},
+			{PT_MV_LONG, slIconMV_LONG},
+			{PT_MV_R4, slIconMV_R4},
+			{PT_MV_DOUBLE, slIconMV_DOUBLE},
+			{PT_MV_CURRENCY, slIconMV_CURRENCY},
+			{PT_MV_APPTIME, slIconMV_APPTIME},
+			{PT_MV_SYSTIME, slIconMV_SYSTIME},
+			{PT_MV_STRING8, slIconMV_STRING8},
+			{PT_MV_BINARY, slIconMV_BINARY},
+			{PT_MV_UNICODE, slIconMV_UNICODE},
+			{PT_MV_CLSID, slIconMV_CLSID},
+			{PT_MV_I8, slIconMV_I8},
+			{PT_SRESTRICTION, slIconSRESTRICTION},
+			{PT_ACTIONS, slIconACTIONS},
 		};
 
 		// Crack open the given SPropValue and render it to the given row in the list.
@@ -650,7 +651,7 @@ namespace controls
 			_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 			_In_ LPSPropValue lpsPropToAdd)
 		{
-			ULONG ulImage = sortlistctrl::slIconDefault;
+			ULONG ulImage = slIconDefault;
 			if (lpsPropToAdd)
 			{
 				for (auto& _PropTypeIcon : _PropTypeIcons)
@@ -772,7 +773,7 @@ namespace controls
 			// Turn off redraw while we work on the window
 			MySetRedraw(false);
 
-			auto hRes = WC_H(RefreshMAPIPropList());
+			const auto hRes = WC_H(RefreshMAPIPropList());
 
 			// Reset our header widths if weren't showing anything before and are now
 			if (hRes == S_OK && !m_bHaveEverDisplayedSomething && m_lpPropBag && GetItemCount())
@@ -976,7 +977,7 @@ namespace controls
 			auto hRes = S_OK;
 			// Exchange can return MAPI_E_NOT_ENOUGH_MEMORY when I call this - give it a try - PSTs support it
 			output::DebugPrintEx(DBGNamedProp, CLASS, L"FindAllNamedProps", L"Calling GetIDsFromNames with a NULL\n");
-			auto lptag = cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), NULL, NULL, NULL);
+			auto lptag = cache::GetIDsFromNames(m_lpPropBag->GetMAPIProp(), NULL, nullptr, NULL);
 			if (lptag && lptag->cValues)
 			{
 				// Now we have an array of tags - add them in:
@@ -1039,7 +1040,6 @@ namespace controls
 						{
 							LPMAPINAMEID* lppPropNames = nullptr;
 							ULONG ulPropNames = 0;
-							hRes = S_OK;
 							tag.aulPropTag[0] = PROP_TAG(NULL, iTag);
 
 							hRes = WC_H(cache::GetNamesFromIDs(
@@ -1189,7 +1189,7 @@ namespace controls
 			{
 				output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteProperty", L"deleting property 0x%08X\n", ulPropTag);
 
-				auto hRes = EC_H(m_lpPropBag->DeleteProp(ulPropTag));
+				const auto hRes = EC_H(m_lpPropBag->DeleteProp(ulPropTag));
 				if (SUCCEEDED(hRes))
 				{
 					// Refresh the display
@@ -1539,7 +1539,7 @@ namespace controls
 				if (!MyCopyData.DisplayDialog()) return;
 
 				auto MyGUID = guid::StringToGUID(MyCopyData.GetStringW(0));
-				LPMAPIPROGRESS lpProgress =
+				auto lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", m_lpHostDlg->m_hWnd); // STRING_OK
 				auto ulCopyFlags = MyCopyData.GetHex(1);
 
@@ -1585,7 +1585,7 @@ namespace controls
 				if (SUCCEEDED(hRes))
 				{
 					// refresh
-					hRes = WC_H(RefreshMAPIPropList());
+					WC_H_S(RefreshMAPIPropList());
 				}
 			}
 
@@ -1600,14 +1600,14 @@ namespace controls
 			auto lpSourcePropObj = cache::CGlobalCache::getInstance().GetSourcePropObject();
 			if (!lpSourcePropObj) return;
 
-			auto hRes = EC_H(mapi::CopyTo(
+			const auto hRes = EC_H(mapi::CopyTo(
 				m_lpHostDlg->m_hWnd, lpSourcePropObj, m_lpPropBag->GetMAPIProp(), &IID_IMAPIProp, NULL, m_bIsAB, true));
 			if (SUCCEEDED(hRes))
 			{
-				hRes = EC_H(m_lpPropBag->Commit());
+				EC_H_S(m_lpPropBag->Commit());
 
 				// refresh
-				hRes = WC_H(RefreshMAPIPropList());
+				WC_H_S(RefreshMAPIPropList());
 			}
 
 			lpSourcePropObj->Release();
@@ -1634,8 +1634,7 @@ namespace controls
 			{
 				if (m_lpPropBag && PT_OBJECT == PROP_TYPE(lpProp->ulPropTag))
 				{
-					hRes = EC_H(
-						DisplayTable(m_lpPropBag->GetMAPIProp(), lpProp->ulPropTag, dialog::otDefault, m_lpHostDlg));
+					EC_H_S(DisplayTable(m_lpPropBag->GetMAPIProp(), lpProp->ulPropTag, dialog::otDefault, m_lpHostDlg));
 				}
 				else if (PT_BINARY == PROP_TYPE(lpProp->ulPropTag) || PT_MV_BINARY == PROP_TYPE(lpProp->ulPropTag))
 				{
@@ -1775,12 +1774,12 @@ namespace controls
 				auto propSetGUID = guid::StringToGUID(MyData.GetStringW(0));
 
 				auto lpSource = mapi::CallOpenEntry<LPMAPIPROP>(
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
 					cache::CGlobalCache::getInstance().GetSourceParentFolder(),
-					NULL,
+					nullptr,
 					lpSourceMsgEID->lpbin,
-					NULL,
+					nullptr,
 					MAPI_BEST_ACCESS,
 					&ulObjType);
 				if (ulObjType == MAPI_MESSAGE && lpSource)
@@ -1812,7 +1811,7 @@ namespace controls
 			if (wMenuSelect < ID_ADDINPROPERTYMENU) return false;
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-			const auto lpAddInMenu = addin::GetAddinMenuItem(m_lpHostDlg->m_hWnd, wMenuSelect);
+			const auto lpAddInMenu = ui::addinui::GetAddinMenuItem(m_lpHostDlg->m_hWnd, wMenuSelect);
 			if (!lpAddInMenu) return false;
 
 			_AddInMenuParams MyAddInMenuParams = {nullptr};
@@ -1837,7 +1836,7 @@ namespace controls
 
 			GetSelectedPropTag(&MyAddInMenuParams.ulPropTag);
 
-			addin::InvokeAddInMenu(&MyAddInMenuParams);
+			ui::addinui::InvokeAddInMenu(&MyAddInMenuParams);
 			return true;
 		}
 	} // namespace sortlistctrl

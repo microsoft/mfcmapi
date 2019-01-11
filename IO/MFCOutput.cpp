@@ -10,9 +10,6 @@
 #include <MAPI/Cache/NamedPropCache.h>
 #include <IO/File.h>
 #include <MAPI/MapiMemory.h>
-#ifndef MRMAPI
-#include <UI/Dialogs/Editors/DbgView.h>
-#endif
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
@@ -24,6 +21,7 @@
 namespace output
 {
 	std::wstring g_szXMLHeader = L"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
+	std::function<void(const std::wstring& errString)> outputToDbgView;
 	FILE* g_fDebugFile = nullptr;
 
 	void OpenDebugFile()
@@ -163,9 +161,10 @@ namespace output
 			stLocalTime.wYear,
 			ulDbgLvl);
 		OutputDebugStringW(szThreadTime.c_str());
-#ifndef MRMAPI
-		dialog::editor::OutputToDbgView(szThreadTime);
-#endif
+		if (outputToDbgView)
+		{
+			outputToDbgView(szThreadTime);
+		}
 
 		// print to to our debug output log file
 		if (registry::debugToFile && g_fDebugFile)
@@ -190,11 +189,15 @@ namespace output
 			}
 
 			OutputDebugStringW(szMsg.c_str());
-#ifdef MRMAPI
-			wprintf(L"%ws", szMsg.c_str());
-#else
-			dialog::editor::OutputToDbgView(szMsg);
-#endif
+
+			if (outputToDbgView)
+			{
+				outputToDbgView(szMsg);
+			}
+			else
+			{
+				wprintf(L"%ws", szMsg.c_str());
+			}
 
 			// print to to our debug output log file
 			if (registry::debugToFile && g_fDebugFile)

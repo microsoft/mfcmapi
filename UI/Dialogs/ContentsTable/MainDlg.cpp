@@ -5,7 +5,7 @@
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
-#include <MAPI/MAPIProfileFunctions.h>
+#include <UI/profile.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
@@ -25,6 +25,8 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/Cache/GlobalCache.h>
 #include <MAPI/StubUtils.h>
+#include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -557,7 +559,7 @@ namespace dialog
 
 		if (mapi::store::StoreSupportsManageStore(lpMDB))
 		{
-			auto lpOtherMDB = mapi::store::OpenMailboxWithPrompt(
+			auto lpOtherMDB = ui::mapiui::OpenMailboxWithPrompt(
 				lpMAPISession,
 				lpMDB,
 				szServerName,
@@ -605,7 +607,7 @@ namespace dialog
 		const auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 		if (lpAddrBook)
 		{
-			auto lpMailboxMDB = mapi::store::OpenOtherUsersMailboxFromGal(lpMAPISession, lpAddrBook);
+			auto lpMailboxMDB = ui::mapiui::OpenOtherUsersMailboxFromGal(lpMAPISession, lpAddrBook);
 			if (lpMailboxMDB)
 			{
 				EC_H_S(DisplayObject(lpMailboxMDB, NULL, otStore, this));
@@ -1234,16 +1236,16 @@ namespace dialog
 
 		if (MyData.DisplayDialog())
 		{
-			auto szProfName = mapi::profile::LaunchProfileWizard(
+			auto szProfName = ui::profile::LaunchProfileWizard(
 				m_hWnd, MyData.GetHex(0), strings::wstringTostring(MyData.GetStringW(1)));
 		}
 	}
 
-	void CMainDlg::OnGetMAPISVC() { mapi::profile::DisplayMAPISVCPath(this); }
+	void CMainDlg::OnGetMAPISVC() { ui::profile::DisplayMAPISVCPath(this); }
 
-	void CMainDlg::OnAddServicesToMAPISVC() { mapi::profile::AddServicesToMapiSvcInf(); }
+	void CMainDlg::OnAddServicesToMAPISVC() { ui::profile::AddServicesToMapiSvcInf(); }
 
-	void CMainDlg::OnRemoveServicesFromMAPISVC() { mapi::profile::RemoveServicesFromMapiSvcInf(); }
+	void CMainDlg::OnRemoveServicesFromMAPISVC() { ui::profile::RemoveServicesFromMapiSvcInf(); }
 
 	void CMainDlg::OnStatusTable()
 	{
@@ -1319,8 +1321,8 @@ namespace dialog
 		ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
 		auto bDoAdrBook = false;
 
-		const auto hRes = WC_H(
-			mapi::mapimime::GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
+		const auto hRes =
+			WC_H(ui::mapiui::GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 		if (hRes == S_OK)
 		{
 			LPADRBOOK lpAdrBook = nullptr;
@@ -1362,7 +1364,7 @@ namespace dialog
 		auto bUnicode = false;
 		HCHARSET hCharSet = nullptr;
 		auto cSetApplyType = CSET_APPLY_UNTAGGED;
-		const auto hRes = WC_H(mapi::mapimime::GetConversionFromEMLOptions(
+		const auto hRes = WC_H(ui::mapiui::GetConversionFromEMLOptions(
 			this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, &bUnicode));
 		if (hRes == S_OK)
 		{
@@ -1623,7 +1625,7 @@ namespace dialog
 			lpParams->lpMDB = mapi::safe_cast<LPMDB>(lpMAPIProp);
 		}
 
-		addin::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpMDB)
 		{

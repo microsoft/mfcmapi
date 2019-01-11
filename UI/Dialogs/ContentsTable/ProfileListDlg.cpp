@@ -5,6 +5,7 @@
 #include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
 #include <MAPI/MAPIProfileFunctions.h>
+#include <UI/profile.h>
 #include <UI/FileDialogEx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/ContentsTable/MsgServiceTableDlg.h>
@@ -145,16 +146,16 @@ namespace dialog
 
 		if (!MyData.DisplayDialog()) return;
 
-		auto szProfName = mapi::profile::LaunchProfileWizard(
-			m_hWnd, MyData.GetHex(0), strings::wstringTostring(MyData.GetStringW(1)));
+		auto szProfName =
+			ui::profile::LaunchProfileWizard(m_hWnd, MyData.GetHex(0), strings::wstringTostring(MyData.GetStringW(1)));
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
 
-	void CProfileListDlg::OnGetMAPISVC() { mapi::profile::DisplayMAPISVCPath(this); }
+	void CProfileListDlg::OnGetMAPISVC() { ui::profile::DisplayMAPISVCPath(this); }
 
-	void CProfileListDlg::OnAddServicesToMAPISVC() { mapi::profile::AddServicesToMapiSvcInf(); }
+	void CProfileListDlg::OnAddServicesToMAPISVC() { ui::profile::AddServicesToMapiSvcInf(); }
 
-	void CProfileListDlg::OnRemoveServicesFromMAPISVC() { mapi::profile::RemoveServicesFromMapiSvcInf(); }
+	void CProfileListDlg::OnRemoveServicesFromMAPISVC() { ui::profile::RemoveServicesFromMapiSvcInf(); }
 
 	void CProfileListDlg::OnAddExchangeToProfile()
 	{

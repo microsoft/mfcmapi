@@ -5,6 +5,8 @@ namespace mapi
 {
 	namespace store
 	{
+		extern std::function<std::string()> promptServerName;
+
 		_Check_return_ LPMDB
 		CallOpenMsgStore(_In_ LPMAPISESSION lpSession, _In_ ULONG_PTR ulUIParam, _In_ LPSBinary lpEID, ULONG ulFlags);
 		std::string BuildServerDN(const std::string& szServerName, const std::string& szPost);
@@ -47,13 +49,6 @@ namespace mapi
 			const std::wstring& smtpAddress,
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
 			bool bForceServer); // Use CreateStoreEntryID2
-		_Check_return_ LPMDB OpenMailboxWithPrompt(
-			_In_ LPMAPISESSION lpMAPISession,
-			_In_ LPMDB lpMDB,
-			const std::string& szServerName,
-			const std::wstring& szMailboxDN,
-			ULONG ulFlags); // desired flags for CreateStoreEntryID
-		_Check_return_ LPMDB OpenOtherUsersMailboxFromGal(_In_ LPMAPISESSION lpMAPISession, _In_ LPADRBOOK lpAddrBook);
 		_Check_return_ LPMDB OpenMessageStoreGUID(
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_z_ LPCSTR lpGUID); // Do not migrate this to wstring/std::string

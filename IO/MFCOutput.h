@@ -5,6 +5,7 @@
 namespace output
 {
 	extern std::wstring g_szXMLHeader;
+	extern std::function<void(const std::wstring& errString)> outputToDbgView;
 
 	void OpenDebugFile();
 	void CloseDebugFile();

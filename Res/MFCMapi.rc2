@@ -11,11 +11,11 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #ifdef MRMAPI
-#define RC_PRODUCT_NAME               "Mr MAPI"
+#define RC_PRODUCT_NAME               "MrMAPI"
 #define RC_VERSION_INTERNAL_NAME       RC_PRODUCT_NAME "\0"
 #define RC_VERSION_ORIGINAL_FILE_NAME  "MrMAPI.EXE\0"
 #else
-#define RC_PRODUCT_NAME               "Microsoft Exchange Server MAPI Editor"
+#define RC_PRODUCT_NAME               "MFCMAPI"
 #define RC_VERSION_INTERNAL_NAME       RC_PRODUCT_NAME "\0"
 #define RC_VERSION_ORIGINAL_FILE_NAME  "MFCMapi.EXE\0"
 #endif
@@ -39,7 +39,7 @@
 #endif
 
 #define RC_VERSION_FILE_DESCRIPTION    RC_PRODUCT_NAME RC_VERSION_WIDTH RC_VERSION_DEBUG RC_VERSION_BITNESS "\0"
-#include "bldver.rc"
+#include <Res/bldver.rc>
 
 // Keep in sync with definition of IDD_ABOUTVERLAST
 IDD_ABOUT DIALOGEX DISCARDABLE  0, 0, 400, 200
@@ -80,16 +80,7 @@ IDS_VER_FIRST + 5         "FileDescription"
 IDS_VER_FIRST + 6         "FileVersion"
 IDS_VER_FIRST + 7         "ProductVersion"
 IDS_VER_FIRST + 8         "LegalTrademarks"
-#ifdef PRIVATE_BUILD
-IDS_VER_FIRST + 9         "PrivateBuild"
-#endif
 END
-
-#ifdef MRMAPI
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "mrmapi.exe.manifest"
-#else
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "mfcmapi.exe.manifest"
-#endif
 
 // Help strings for menu items
 STRINGTABLE DISCARDABLE

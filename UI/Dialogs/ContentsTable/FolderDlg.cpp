@@ -23,6 +23,8 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/Cache/GlobalCache.h>
 #include <MAPI/MapiMemory.h>
+#include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -459,7 +461,7 @@ namespace dialog
 		{
 			if (0 == MyData.GetDropDown(1))
 			{ // CopyMessages
-				LPMAPIPROGRESS lpProgress =
+				auto lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
 
 				if (lpProgress) ulMoveMessage |= MESSAGE_DIALOG;
@@ -489,7 +491,8 @@ namespace dialog
 																	PR_RTF_SYNC_PREFIX_COUNT,
 																	PR_RTF_SYNC_TRAILING_COUNT}};
 
-				const auto lpTagsToExclude = mapi::GetExcludedTags(LPSPropTagArray(&excludeTags), m_lpFolder, m_bIsAB);
+				const auto lpTagsToExclude =
+					ui::mapiui::GetExcludedTags(LPSPropTagArray(&excludeTags), m_lpFolder, m_bIsAB);
 				if (lpTagsToExclude)
 				{
 					for (ULONG i = 0; i < lpEIDs->cValues; i++)
@@ -514,7 +517,7 @@ namespace dialog
 								LPSPropProblemArray lpProblems = nullptr;
 
 								// copy message properties to IMessage object opened on top of IStorage.
-								LPMAPIPROGRESS lpProgress =
+								auto lpProgress =
 									mapi::mapiui::GetMAPIProgress(L"IMAPIProp::CopyTo", m_hWnd); // STRING_OK
 
 								if (lpProgress) ulMoveMessage |= MAPI_DIALOG;
@@ -576,23 +579,19 @@ namespace dialog
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		auto szAttName = MyData.GetStringW(0);
-		if (!szAttName.empty())
+		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
+
+		while (-1 != iItem)
 		{
-			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
-
-			while (-1 != iItem)
+			auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+			if (lpMessage)
 			{
-				auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
-				if (lpMessage)
-				{
-					EC_H_S(file::DeleteAttachments(lpMessage, szAttName, m_hWnd));
+				EC_H_S(file::DeleteAttachments(lpMessage, MyData.GetStringW(0), m_hWnd));
 
-					lpMessage->Release();
-				}
-
-				iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
+				lpMessage->Release();
 			}
+
+			iItem = m_lpContentsTableListCtrl->GetNextItem(iItem, LVNI_SELECTED);
 		}
 	}
 
@@ -665,7 +664,7 @@ namespace dialog
 			}
 			else
 			{
-				LPMAPIPROGRESS lpProgress =
+				auto lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteMessages", m_hWnd); // STRING_OK
 
 				if (lpProgress) ulFlag |= MESSAGE_DIALOG;
@@ -1268,7 +1267,32 @@ namespace dialog
 		auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
 		if (lpMessage)
 		{
-			hRes = EC_H(file::WriteAttachmentsToFile(lpMessage, m_hWnd));
+			enum
+			{
+				ATTACHNUM,
+				NUM_COLS
+			};
+			static SizedSPropTagArray(NUM_COLS, sptAttachTableCols) = {NUM_COLS, {PR_ATTACH_NUM}};
+
+			hRes = file::IterateAttachments(
+				lpMessage,
+				reinterpret_cast<LPSPropTagArray>(&sptAttachTableCols),
+				[&](auto props) {
+					if (PR_ATTACH_NUM != props[ATTACHNUM].ulPropTag) return S_OK;
+					LPATTACH lpAttach = nullptr;
+					// Open the attachment
+					auto hRes =
+						EC_MAPI(lpMessage->OpenAttach(props[ATTACHNUM].Value.l, nullptr, MAPI_BEST_ACCESS, &lpAttach));
+
+					if (lpAttach)
+					{
+						hRes = WC_H(ui::mapiui::WriteAttachmentToFile(lpAttach, m_hWnd));
+						lpAttach->Release();
+					}
+
+					return hRes;
+				},
+				[](auto hRes) { return dialog::bShouldCancel(nullptr, hRes); });
 
 			lpMessage->Release();
 		}
@@ -1295,7 +1319,7 @@ namespace dialog
 
 		if (lpFolder)
 		{
-			file::ExportMessages(lpFolder, m_hWnd);
+			ui::mapiui::ExportMessages(lpFolder, m_hWnd);
 		}
 	}
 
@@ -1412,7 +1436,7 @@ namespace dialog
 						ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
 						auto bDoAdrBook = false;
 
-						hRes = EC_H(mapi::mapimime::GetConversionToEMLOptions(
+						hRes = EC_H(ui::mapiui::GetConversionToEMLOptions(
 							this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 						if (hRes == S_OK)
 						{
@@ -1505,7 +1529,7 @@ namespace dialog
 		auto bDoApply = false;
 		HCHARSET hCharSet = nullptr;
 		auto cSetApplyType = CSET_APPLY_UNTAGGED;
-		const auto hRes = WC_H(mapi::mapimime::GetConversionFromEMLOptions(
+		const auto hRes = WC_H(ui::mapiui::GetConversionFromEMLOptions(
 			this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, nullptr));
 		if (hRes == S_OK)
 		{
@@ -1622,7 +1646,7 @@ namespace dialog
 		{
 			const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 
-			LPMAPIPROGRESS lpProgress =
+			auto lpProgress =
 				mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::SetReadFlags", m_hWnd); // STRING_OK
 
 			auto ulFlags = MyFlags.GetHex(0);
@@ -1961,7 +1985,7 @@ namespace dialog
 			if (m_ulDisplayFlags & dfDeleted) lpParams->ulCurrentFlags |= MENU_FLAGS_DELETED;
 		}
 
-		addin::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpMessage)
 		{
@@ -1973,7 +1997,7 @@ namespace dialog
 	LPMESSAGE CFolderDlg::OpenMessage(int iSelectedItem, __mfcmapiModifyEnum bModify)
 	{
 		auto lpMapiProp = OpenItemProp(iSelectedItem, bModify);
-		auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMapiProp);
+		const auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMapiProp);
 		if (lpMapiProp) lpMapiProp->Release();
 		return lpMessage;
 	}

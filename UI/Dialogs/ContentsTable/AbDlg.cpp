@@ -12,6 +12,7 @@
 #include <MAPI/MAPIProgress.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/Cache/GlobalCache.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -243,7 +244,7 @@ namespace dialog
 
 			if (MyData.DisplayDialog())
 			{
-				LPMAPIPROGRESS lpProgress =
+				auto lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IABContainer::CopyEntries", m_hWnd); // STRING_OK
 
 				EC_MAPI_S(m_lpAbCont->CopyEntries(
@@ -287,7 +288,7 @@ namespace dialog
 			lpParams->lpMailUser = mapi::safe_cast<LPMAILUSER>(lpMAPIProp);
 		}
 
-		addin::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpMailUser)
 		{

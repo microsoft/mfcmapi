@@ -304,7 +304,7 @@ namespace mapi
 		if (!lpSrcContents) return;
 
 		auto sbaEID = GetEntryIDs(lpSrcContents);
-		LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
+		auto lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
 		auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
 
 		if (lpProgress) ulCopyFlags |= MESSAGE_DIALOG;
@@ -335,7 +335,7 @@ namespace mapi
 
 		auto sbaEID = SBinaryArray{1, const_cast<LPSBinary>(&bin)};
 
-		LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
+		auto lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
 
 		auto ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
 		if (lpProgress) ulCopyFlags |= MESSAGE_DIALOG;
@@ -810,7 +810,7 @@ namespace mapi
 		auto lpWasteFolder = OpenDefaultFolder(DEFAULT_DELETEDITEMS, lpMDB);
 		if (lpWasteFolder)
 		{
-			LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
+			auto lpProgress = mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
 
 			auto ulCopyFlags = MESSAGE_MOVE;
 
@@ -1471,7 +1471,7 @@ namespace mapi
 
 						output::DebugPrint(DBGGeneric, L"Copying recipients and attachments to new message.\n");
 
-						LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
+						auto lpProgress = mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
 
 						hRes = EC_MAPI(lpAttachMsg->CopyProps(
 							LPSPropTagArray(&atObjs),
@@ -1779,7 +1779,7 @@ namespace mapi
 			if (bDoMove) ulFlags |= MAPI_MOVE;
 			if (bDoNoReplace) ulFlags |= MAPI_NOREPLACE;
 
-			LPMAPIPROGRESS lpProgress = mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
+			auto lpProgress = mapiui::GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
 
 			if (lpProgress) ulFlags |= MAPI_DIALOG;
 
@@ -2269,21 +2269,13 @@ namespace mapi
 		return false;
 	}
 
-#ifndef MRMAPI
-	// Takes a tag array (and optional MAPIProp) and displays UI prompting to build an exclusion array
-	// Must be freed with MAPIFreeBuffer
-	LPSPropTagArray GetExcludedTags(_In_opt_ LPSPropTagArray lpTagArray, _In_opt_ LPMAPIPROP lpProp, bool bIsAB)
-	{
-		dialog::editor::CTagArrayEditor TagEditor(
-			nullptr, IDS_TAGSTOEXCLUDE, IDS_TAGSTOEXCLUDEPROMPT, nullptr, lpTagArray, bIsAB, lpProp);
-		if (TagEditor.DisplayDialog())
-		{
-			return TagEditor.DetachModifiedTagArray();
-		}
-
-		return nullptr;
-	}
-#endif
+	std::function<CopyDetails(
+		HWND hWnd,
+		_In_ LPMAPIPROP lpSource,
+		LPCGUID lpGUID,
+		_In_opt_ LPSPropTagArray lpTagArray,
+		bool bIsAB)>
+		GetCopyDetails;
 
 	// Performs CopyTo operation from source to destination, optionally prompting for exclusions
 	// Does not save changes - caller should do this.
@@ -2298,68 +2290,33 @@ namespace mapi
 	{
 		if (!lpSource || !lpDest) return MAPI_E_INVALID_PARAMETER;
 
-		LPSPropProblemArray lpProblems = nullptr;
-		auto lpExcludedTags = lpTagArray;
-		LPSPropTagArray lpUITags = nullptr;
-		LPMAPIPROGRESS lpProgress = nullptr;
-		auto lpGUIDLocal = lpGUID;
-		ULONG ulCopyFlags = 0;
-
-#ifdef MRMAPI
-		bAllowUI, bIsAB; // Unused parameters in MRMAPI
-#endif
-
-#ifndef MRMAPI
-		if (bAllowUI)
+		auto copyDetails = (GetCopyDetails && bAllowUI)
+							   ? GetCopyDetails(hWnd, lpSource, lpGUID, lpTagArray, bIsAB)
+							   : CopyDetails{true, 0, *lpGUID, nullptr, NULL, lpTagArray, false};
+		if (copyDetails.valid)
 		{
-			dialog::editor::CEditor MyData(
-				nullptr, IDS_COPYTO, IDS_COPYPASTEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-
-			MyData.AddPane(
-				viewpane::TextPane::CreateSingleLinePane(0, IDS_INTERFACE, guid::GUIDToStringAndName(lpGUID), false));
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_FLAGS, false));
-			MyData.SetHex(1, MAPI_DIALOG);
-
-			if (!MyData.DisplayDialog()) return MAPI_E_USER_CANCEL;
-
-			auto MyGUID = guid::StringToGUID(MyData.GetStringW(0));
-			lpGUIDLocal = &MyGUID;
-			ulCopyFlags = MyData.GetHex(1);
-			if (hWnd)
+			auto lpProblems = LPSPropProblemArray{};
+			const auto hRes = WC_MAPI(lpSource->CopyTo(
+				0,
+				nullptr,
+				copyDetails.excludedTags,
+				copyDetails.uiParam,
+				copyDetails.progress,
+				&copyDetails.guid,
+				lpDest,
+				copyDetails.flags,
+				&lpProblems));
+			if (lpProblems)
 			{
-				lpProgress = mapiui::GetMAPIProgress(L"CopyTo", hWnd); // STRING_OK
-				if (lpProgress) ulCopyFlags |= MAPI_DIALOG;
+				WC_PROBLEMARRAY(lpProblems);
+				MAPIFreeBuffer(lpProblems);
 			}
 
-			lpUITags = GetExcludedTags(lpTagArray, lpSource, bIsAB);
-			if (lpUITags)
-			{
-				lpExcludedTags = lpUITags;
-			}
-		}
-#endif
-
-		const auto hRes = WC_MAPI(lpSource->CopyTo(
-			0,
-			nullptr,
-			lpExcludedTags,
-			lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL, // UI param
-			lpProgress, // progress
-			lpGUIDLocal,
-			lpDest,
-			ulCopyFlags, // flags
-			&lpProblems));
-
-		MAPIFreeBuffer(lpUITags);
-		if (lpProgress) lpProgress->Release();
-
-		if (lpProblems)
-		{
-			WC_PROBLEMARRAY(lpProblems);
-			MAPIFreeBuffer(lpProblems);
+			copyDetails.clean();
+			return hRes;
 		}
 
-		return hRes;
+		return MAPI_E_USER_CANCEL;
 	}
 
 	// Augemented version of HrGetOneProp which allows passing flags to underlying GetProps

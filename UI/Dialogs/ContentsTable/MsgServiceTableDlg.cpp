@@ -10,6 +10,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/MAPIFunctions.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -275,7 +276,7 @@ namespace dialog
 			lpParams->lpProfSect = mapi::safe_cast<LPPROFSECT>(lpMAPIProp);
 		}
 
-		addin::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpProfSect)
 		{

@@ -13,6 +13,8 @@
 #include <MAPI/Cache/GlobalCache.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
+#include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -252,7 +254,7 @@ namespace dialog
 					EC_MAPI_S(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
 					if (lpAttDst)
 					{
-						LPMAPIPROGRESS lpProgress =
+						auto lpProgress =
 							mapi::mapiui::GetMAPIProgress(L"IAttach::CopyTo", m_hWnd); // STRING_OK
 
 						// Copy from source to destination
@@ -314,7 +316,7 @@ namespace dialog
 		{
 			output::DebugPrintEx(
 				DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting attachment 0x%08X\n", attachnum);
-			LPMAPIPROGRESS lpProgress = mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", m_hWnd); // STRING_OK
+			auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", m_hWnd); // STRING_OK
 			EC_MAPI_S(m_lpMessage->DeleteAttach(
 				attachnum,
 				lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
@@ -371,7 +373,7 @@ namespace dialog
 
 				if (lpAttach)
 				{
-					hRes = WC_H(file::WriteAttachmentToFile(lpAttach, m_hWnd));
+					hRes = WC_H(ui::mapiui::WriteAttachmentToFile(lpAttach, m_hWnd));
 
 					lpAttach->Release();
 					lpAttach = nullptr;
@@ -476,7 +478,7 @@ namespace dialog
 			lpParams->lpAttach = mapi::safe_cast<LPATTACH>(lpMAPIProp);
 		}
 
-		addin::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpAttach)
 		{

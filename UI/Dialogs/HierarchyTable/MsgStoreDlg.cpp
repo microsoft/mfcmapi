@@ -14,6 +14,8 @@
 #include <MAPI/Cache/GlobalCache.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
+#include <UI/mapiui.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -49,13 +51,13 @@ namespace dialog
 					// Open root container.
 					auto container = mapi::CallOpenEntry<LPUNKNOWN>(
 						m_lpMDB,
-						NULL,
-						NULL,
-						NULL,
-						NULL, // open root container
-						NULL,
+						nullptr,
+						nullptr,
+						nullptr,
+						nullptr, // open root container
+						nullptr,
 						MAPI_BEST_ACCESS,
-						NULL);
+						nullptr);
 
 					SetRootContainer(container);
 					container->Release();
@@ -153,7 +155,7 @@ namespace dialog
 		auto container = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(bModify);
 		if (!container) return nullptr;
 
-		auto ret = mapi::safe_cast<LPMAPIFOLDER>(container);
+		const auto ret = mapi::safe_cast<LPMAPIFOLDER>(container);
 		container->Release();
 		return ret;
 	}
@@ -275,11 +277,11 @@ namespace dialog
 
 		if (lpMAPIFolder)
 		{
-			auto hRes = EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
+			EC_MAPI_S(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 
 			if (lpMAPIFormMgr)
 			{
-				hRes = EC_MAPI(lpMAPIFormMgr->OpenFormContainer(HFRMREG_FOLDER, lpMAPIFolder, &lpMAPIFormContainer));
+				EC_MAPI_S(lpMAPIFormMgr->OpenFormContainer(HFRMREG_FOLDER, lpMAPIFolder, &lpMAPIFormContainer));
 
 				if (lpMAPIFormContainer)
 				{
@@ -374,7 +376,7 @@ namespace dialog
 			{
 				auto ulMoveMessage = MyData.GetCheck(0) ? MESSAGE_MOVE : 0;
 
-				LPMAPIPROGRESS lpProgress =
+				auto lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
 
 				if (lpProgress) ulMoveMessage |= MESSAGE_DIALOG;
@@ -449,7 +451,7 @@ namespace dialog
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				LPMAPIPROGRESS lpProgress =
+				auto lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
 
 				auto ulCopyFlags = MAPI_UNICODE;
@@ -632,14 +634,14 @@ namespace dialog
 			{
 				auto lpMAPIFolder = mapi::CallOpenEntry<LPMAPIFOLDER>(
 					m_lpMDB,
-					NULL,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
+					nullptr,
 					lpItemEID->cb,
 					reinterpret_cast<LPENTRYID>(lpItemEID->lpb),
-					NULL,
+					nullptr,
 					MAPI_BEST_ACCESS | SHOW_SOFT_DELETES | MAPI_NO_CACHE,
-					NULL);
+					nullptr);
 				if (lpMAPIFolder)
 				{
 					// call the dialog
@@ -697,7 +699,7 @@ namespace dialog
 				{
 					auto ulFlags = MyData.GetCheck(0) ? DEL_ASSOCIATED : 0;
 					ulFlags |= MyData.GetCheck(1) ? DELETE_HARD_DELETE : 0;
-					LPMAPIPROGRESS lpProgress =
+					auto lpProgress =
 						mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::EmptyFolder", m_hWnd); // STRING_OK
 
 					if (lpProgress) ulFlags |= FOLDER_DIALOG;
@@ -775,7 +777,7 @@ namespace dialog
 						ulFlags);
 					output::DebugPrintBinary(DBGGeneric, *lpItemEID);
 
-					LPMAPIPROGRESS lpProgress =
+					auto lpProgress =
 						mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteFolder", m_hWnd); // STRING_OK
 
 					if (lpProgress) ulFlags |= FOLDER_DIALOG;
@@ -864,7 +866,7 @@ namespace dialog
 
 		if (lpFolder)
 		{
-			file::ExportMessages(lpFolder, m_hWnd);
+			ui::mapiui::ExportMessages(lpFolder, m_hWnd);
 
 			lpFolder->Release();
 		}
@@ -987,14 +989,14 @@ namespace dialog
 
 				if (!lpSrcParentFolder) lpSrcParentFolder = mapi::safe_cast<LPMAPIFOLDER>(GetRootContainer());
 
-				LPMAPIPROGRESS lpProgress =
+				auto lpProgress =
 					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
 
 				auto ulCopyFlags = MAPI_UNICODE | (MyData.GetCheck(1) ? COPY_SUBFOLDERS : 0);
 
 				if (lpProgress) ulCopyFlags |= FOLDER_DIALOG;
 
-				auto hRes = WC_MAPI(lpSrcParentFolder->CopyFolder(
+				const auto hRes = WC_MAPI(lpSrcParentFolder->CopyFolder(
 					lpProps[EID].Value.bin.cb,
 					reinterpret_cast<LPENTRYID>(lpProps[EID].Value.bin.lpb),
 					&IID_IMAPIFolder,
@@ -1072,7 +1074,7 @@ namespace dialog
 			lpParams->lpFolder = mapi::safe_cast<LPMAPIFOLDER>(lpContainer);
 		}
 
-		addin::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpAbCont)
 		{

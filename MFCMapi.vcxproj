@@ -156,7 +156,7 @@
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <GenerateManifest>false</GenerateManifest>
+    <GenerateManifest>true</GenerateManifest>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -232,6 +232,9 @@
 copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       </Command>
     </PostBuildEvent>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -264,6 +267,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
     <ClCompile>
@@ -297,6 +303,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
     <ClCompile>
@@ -329,6 +338,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -358,6 +370,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">
     <ClCompile>
@@ -385,6 +400,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -413,6 +431,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">
     <ClCompile>
@@ -440,6 +461,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
     <ClCompile>
@@ -469,6 +493,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">
     <ClCompile>
@@ -497,6 +524,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Interpret\Sid.h" />
@@ -528,6 +558,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="MAPI\MAPIProcessor\MapiProcessor.h" />
     <ClInclude Include="MAPI\MAPIProfileFunctions.h" />
     <ClInclude Include="MAPI\MAPIProgress.h" />
+    <ClInclude Include="UI\CMAPIProgress.h" />
     <ClInclude Include="IO\ExportProfile.h" />
     <ClInclude Include="Property\Property.h" />
     <ClInclude Include="Property\ParseProperty.h" />
@@ -579,6 +610,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="MAPI\MapiMemory.h" />
     <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
+    <ClInclude Include="UI\addinui.h" />
     <ClInclude Include="UI\Controls\StyleTreeCtrl.h" />
     <ClInclude Include="UI\Dialogs\HierarchyTable\ABContDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\ABDlg.h" />
@@ -604,6 +636,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Controls\HierarchyTableTreeCtrl.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MailboxTableDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MainDlg.h" />
+    <ClInclude Include="UI\profile.h" />
     <ClInclude Include="UI\ViewPane\TreePane.h" />
     <ClInclude Include="UI\MAPIFormFunctions.h" />
     <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h" />
@@ -650,20 +683,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\Editors\StreamEditor.h" />
     <ClInclude Include="UI\Dialogs\Editors\TagArrayEditor.h" />
     <ClInclude Include="UI\UIFunctions.h" />
+    <ClInclude Include="UI\mapiui.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Res\bldver.rc">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ResourceCompile>
     <ResourceCompile Include="Res\MFCMapi.rc" />
   </ItemGroup>
   <ItemGroup>
@@ -695,6 +717,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="MAPI\MAPIProcessor\MapiProcessor.cpp" />
     <ClCompile Include="MAPI\MAPIProfileFunctions.cpp" />
     <ClCompile Include="MAPI\MAPIProgress.cpp" />
+    <ClCompile Include="UI\CMAPIProgress.cpp" />
     <ClCompile Include="IO\ExportProfile.cpp" />
     <ClCompile Include="Property\Property.cpp" />
     <ClCompile Include="Property\ParseProperty.cpp" />
@@ -703,6 +726,8 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="MAPI\MAPIStoreFunctions.cpp" />
     <ClCompile Include="IO\MFCOutput.cpp" />
     <ClCompile Include="MAPI\Cache\NamedPropCache.cpp" />
+    <ClCompile Include="UI\addinui.cpp" />
+    <ClCompile Include="UI\profile.cpp" />
     <ClCompile Include="UI\ParentWnd.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -810,6 +835,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\ViewPane\SplitterPane.cpp" />
     <ClCompile Include="UI\ViewPane\TextPane.cpp" />
     <ClCompile Include="UI\ViewPane\ViewPane.cpp" />
+    <ClCompile Include="UI\mapiui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="mfcmapi.exe.manifest" />

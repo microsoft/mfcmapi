@@ -2,12 +2,8 @@
 #include <MAPI/MapiMime.h>
 #include <IO/File.h>
 #include <Interpret/Guids.h>
-#include <ImportProcs.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIFunctions.h>
-#ifndef MRMAPI
-#include <Interpret/ExtraPropTags.h>
-#endif
 
 namespace mapi
 {
@@ -218,98 +214,5 @@ namespace mapi
 
 			return hRes;
 		}
-
-#ifndef MRMAPI
-		_Check_return_ HRESULT GetConversionToEMLOptions(
-			_In_ CWnd* pParentWnd,
-			_Out_ CCSFLAGS* lpConvertFlags,
-			_Out_ const ENCODINGTYPE* lpet,
-			_Out_ MIMESAVETYPE* lpmst,
-			_Out_ ULONG* lpulWrapLines,
-			_Out_ bool* pDoAdrBook)
-		{
-			if (!lpConvertFlags || !lpet || !lpmst || !lpulWrapLines || !pDoAdrBook) return MAPI_E_INVALID_PARAMETER;
-
-			dialog::editor::CEditor MyData(
-				pParentWnd, IDS_CONVERTTOEML, IDS_CONVERTTOEMLPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CONVERTFLAGS, false));
-			MyData.SetHex(0, CCSF_SMTP);
-			MyData.AddPane(viewpane::CheckPane::Create(1, IDS_CONVERTDOENCODINGTYPE, false, false));
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_CONVERTENCODINGTYPE, false));
-			MyData.SetHex(2, IET_7BIT);
-			MyData.AddPane(viewpane::CheckPane::Create(3, IDS_CONVERTDOMIMESAVETYPE, false, false));
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(4, IDS_CONVERTMIMESAVETYPE, false));
-			MyData.SetHex(4, SAVE_RFC822);
-			MyData.AddPane(viewpane::CheckPane::Create(5, IDS_CONVERTDOWRAPLINES, false, false));
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(6, IDS_CONVERTWRAPLINECOUNT, false));
-			MyData.SetDecimal(6, 74);
-			MyData.AddPane(viewpane::CheckPane::Create(7, IDS_CONVERTDOADRBOOK, false, false));
-
-			if (!MyData.DisplayDialog()) return MAPI_E_USER_CANCEL;
-
-			*lpConvertFlags = static_cast<CCSFLAGS>(MyData.GetHex(0));
-			*lpulWrapLines = MyData.GetCheck(1) ? static_cast<ENCODINGTYPE>(MyData.GetDecimal(2)) : IET_UNKNOWN;
-			*lpmst = MyData.GetCheck(3) ? static_cast<MIMESAVETYPE>(MyData.GetHex(4)) : USE_DEFAULT_SAVETYPE;
-			*lpulWrapLines = MyData.GetCheck(5) ? MyData.GetDecimal(6) : USE_DEFAULT_WRAPPING;
-			*pDoAdrBook = MyData.GetCheck(7);
-
-			return S_OK;
-		}
-
-		_Check_return_ HRESULT GetConversionFromEMLOptions(
-			_In_ CWnd* pParentWnd,
-			_Out_ CCSFLAGS* lpConvertFlags,
-			_Out_ bool* pDoAdrBook,
-			_Out_ bool* pDoApply,
-			_Out_ HCHARSET* phCharSet,
-			_Out_ CSETAPPLYTYPE* pcSetApplyType,
-			_Out_opt_ bool* pbUnicode)
-		{
-			if (!lpConvertFlags || !pDoAdrBook || !pDoApply || !phCharSet || !pcSetApplyType)
-				return MAPI_E_INVALID_PARAMETER;
-			auto hRes = S_OK;
-
-			dialog::editor::CEditor MyData(
-				pParentWnd, IDS_CONVERTFROMEML, IDS_CONVERTFROMEMLPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CONVERTFLAGS, false));
-			MyData.SetHex(0, CCSF_SMTP);
-			MyData.AddPane(viewpane::CheckPane::Create(1, IDS_CONVERTCODEPAGE, false, false));
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_CONVERTCODEPAGE, false));
-			MyData.SetDecimal(2, CP_USASCII);
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(3, IDS_CONVERTCHARSETTYPE, false));
-			MyData.SetDecimal(3, CHARSET_BODY);
-			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(4, IDS_CONVERTCHARSETAPPLYTYPE, false));
-			MyData.SetDecimal(4, CSET_APPLY_UNTAGGED);
-			MyData.AddPane(viewpane::CheckPane::Create(5, IDS_CONVERTDOADRBOOK, false, false));
-			if (pbUnicode)
-			{
-				MyData.AddPane(viewpane::CheckPane::Create(6, IDS_SAVEUNICODE, false, false));
-			}
-
-			if (!MyData.DisplayDialog()) return MAPI_E_USER_CANCEL;
-
-			*lpConvertFlags = static_cast<CCSFLAGS>(MyData.GetHex(0));
-			if (MyData.GetCheck(1))
-			{
-				if (SUCCEEDED(hRes)) *pDoApply = true;
-				*pcSetApplyType = static_cast<CSETAPPLYTYPE>(MyData.GetDecimal(4));
-				if (*pcSetApplyType > CSET_APPLY_TAG_ALL) return MAPI_E_INVALID_PARAMETER;
-				const auto ulCodePage = MyData.GetDecimal(2);
-				const auto cCharSetType = static_cast<CHARSETTYPE>(MyData.GetDecimal(3));
-				if (cCharSetType > CHARSET_WEB) return MAPI_E_INVALID_PARAMETER;
-				hRes = EC_H(import::MyMimeOleGetCodePageCharset(ulCodePage, cCharSetType, phCharSet));
-			}
-
-			*pDoAdrBook = MyData.GetCheck(5);
-			if (pbUnicode)
-			{
-				*pbUnicode = MyData.GetCheck(6);
-			}
-
-			return hRes;
-		}
-#endif
 	} // namespace mapimime
 } // namespace mapi

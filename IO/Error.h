@@ -38,6 +38,8 @@
 
 namespace error
 {
+	extern std::function<void(const std::wstring& errString)> displayError;
+
 	void LogFunctionCall(
 		HRESULT hRes,
 		HRESULT hrIgnore,

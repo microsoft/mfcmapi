@@ -46,6 +46,30 @@ namespace mapi
 		return ret;
 	}
 
+	struct CopyDetails
+	{
+		bool valid{};
+		ULONG flags{};
+		GUID guid{};
+		LPMAPIPROGRESS progress{};
+		ULONG_PTR uiParam{};
+		LPSPropTagArray excludedTags{};
+		bool allocated{};
+		void clean()
+		{
+			if (progress) progress->Release();
+			if (allocated) MAPIFreeBuffer(excludedTags);
+		}
+	};
+
+	extern std::function<CopyDetails(
+		HWND hWnd,
+		_In_ LPMAPIPROP lpSource,
+		LPCGUID lpGUID,
+		_In_opt_ LPSPropTagArray lpTagArray,
+		bool bIsAB)>
+		GetCopyDetails;
+
 	LPUNKNOWN CallOpenEntry(
 		_In_opt_ LPMDB lpMDB,
 		_In_opt_ LPADRBOOK lpAB,

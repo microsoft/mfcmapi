@@ -11,6 +11,7 @@
 #include <UI/FileDialogEx.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MapiMemory.h>
+#include <UI/addinui.h>
 
 namespace dialog
 {
@@ -446,7 +447,7 @@ namespace dialog
 			lpParams->lpFormInfoProp = mapi::safe_cast<LPMAPIFORMINFO>(lpMAPIProp);
 		}
 
-		addin::InvokeAddInMenu(lpParams);
+		ui::addinui::InvokeAddInMenu(lpParams);
 
 		if (lpParams && lpParams->lpFormInfoProp)
 		{
