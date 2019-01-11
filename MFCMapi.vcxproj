@@ -218,7 +218,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -259,7 +259,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -295,7 +295,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -330,7 +330,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -364,7 +364,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -394,7 +394,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -425,7 +425,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -455,7 +455,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -487,7 +487,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -518,7 +518,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>

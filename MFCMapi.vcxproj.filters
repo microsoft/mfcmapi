@@ -62,9 +62,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Res\bldver.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
     <ResourceCompile Include="Res\MFCMapi.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
