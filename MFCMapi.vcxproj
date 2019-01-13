@@ -596,7 +596,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="Interpret\SmartView\VerbStream.h" />
     <ClInclude Include="Interpret\SmartView\WebViewPersistStream.h" />
     <ClInclude Include="Interpret\SmartView\XID.h" />
-    <ClInclude Include="Interpret\String.h" />
     <ClInclude Include="MAPI\Cache\NamedPropCache.h" />
     <ClInclude Include="Interpret\NameIDArray.h" />
     <ClInclude Include="PropertyBag\PropertyBag.h" />
@@ -763,7 +762,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="Interpret\SmartView\VerbStream.cpp" />
     <ClCompile Include="Interpret\SmartView\WebViewPersistStream.cpp" />
     <ClCompile Include="Interpret\SmartView\XID.cpp" />
-    <ClCompile Include="Interpret\String.cpp" />
     <ClCompile Include="MAPI\StubUtils.cpp" />
     <ClCompile Include="MAPI\Version.cpp" />
     <ClCompile Include="UI\ViewPane\TreePane.cpp" />

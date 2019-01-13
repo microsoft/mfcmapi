@@ -7,7 +7,7 @@
 
 namespace strings
 {
-	std::wstring emptystring = L"";
+	std::wstring emptystring;
 
 	std::wstring formatV(LPCWSTR szMsg, va_list argList)
 	{
@@ -685,29 +685,31 @@ namespace strings
 	void
 	FileTimeToString(_In_ const FILETIME& fileTime, _In_ std::wstring& PropString, _In_opt_ std::wstring& AltPropString)
 	{
-		SYSTEMTIME SysTime = {0};
+		PropString = std::wstring{};
+		AltPropString = std::wstring{};
+		auto SysTime = SYSTEMTIME{};
 
-		const auto hRes = WC_B(FileTimeToSystemTime(&fileTime, &SysTime));
-
-		if (hRes == S_OK)
+		if (FileTimeToSystemTime(&fileTime, &SysTime) != 0)
 		{
 			wchar_t szTimeStr[MAX_PATH] = {0};
 			wchar_t szDateStr[MAX_PATH] = {0};
 
 			// shove millisecond info into our format string since GetTimeFormat doesn't use it
-			auto szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
+			auto szFormatStr = formatmessage(L"hh':'mm':'ss'.%1!03d!' tt", SysTime.wMilliseconds);
 
-			WC_D_S(GetTimeFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, szFormatStr.c_str(), szTimeStr, MAX_PATH));
-			WC_D_S(GetDateFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, nullptr, szDateStr, MAX_PATH));
+			GetTimeFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, szFormatStr.c_str(), szTimeStr, MAX_PATH);
+			GetDateFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, nullptr, szDateStr, MAX_PATH);
 
 			PropString = format(L"%ws %ws", szTimeStr, szDateStr); // STRING_OK
 		}
-		else
+
+		if (PropString.empty())
 		{
-			PropString = loadstring(IDS_INVALIDSYSTIME);
+			PropString = L"Invalid systime";
 		}
 
-		AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, fileTime.dwLowDateTime, fileTime.dwHighDateTime);
+		AltPropString =
+			formatmessage(L"Low: 0x%1!08X! High: 0x%2!08X!", fileTime.dwLowDateTime, fileTime.dwHighDateTime);
 	}
 
 	bool IsFilteredHex(const WCHAR& chr)
