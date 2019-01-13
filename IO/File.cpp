@@ -4,11 +4,9 @@
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/String.h>
 #include <MAPI/MAPIProgress.h>
-#include <Interpret/Guids.h>
 #include <ImportProcs.h>
 #include <ShlObj.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
-#include <UI/Dialogs/Editors/Editor.h>
 
 namespace file
 {
