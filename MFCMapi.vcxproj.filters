@@ -115,8 +115,6 @@
     <ClInclude Include="IO\Registry.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
-    <ClInclude Include="MAPI\StubUtils.h" />
-    <ClInclude Include="MAPI\Version.h" />
     <ClInclude Include="UI\Controls\StyleTreeCtrl.h">
       <Filter>Source Files\UI\Controls</Filter>
     </ClInclude>
@@ -147,10 +145,22 @@
     <ClInclude Include="UI\ViewPane\SplitterPane.h">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClInclude>
-    <ClInclude Include="UI\profile.h" />
-    <ClInclude Include="UI\mapiui.h" />
-    <ClInclude Include="UI\addinui.h" />
     <ClInclude Include="UI\CMAPIProgress.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\mapiui.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\addinui.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\profile.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="MAPI\StubUtils.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="MAPI\Version.h">
       <Filter>Source Files\MAPI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -188,9 +198,6 @@
     <ClCompile Include="UI\Dialogs\MFCUtilityFunctions.cpp">
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="MAPI\Version.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="UI\Controls\StyleTreeCtrl.cpp">
       <Filter>Source Files\UI\Controls</Filter>
     </ClCompile>
@@ -203,16 +210,19 @@
     <ClCompile Include="UI\ViewPane\SplitterPane.cpp">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClCompile>
-    <ClCompile Include="UI\profile.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="UI\CMAPIProgress.cpp">
+      <Filter>Source Files\MAPI</Filter>
     </ClCompile>
     <ClCompile Include="UI\mapiui.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="UI\addinui.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
-    <ClCompile Include="UI\CMAPIProgress.cpp">
+    <ClCompile Include="UI\profile.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="MAPI\Version.cpp">
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>
   </ItemGroup>

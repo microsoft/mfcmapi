@@ -44,8 +44,6 @@
     <ClInclude Include="..\Res\Resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\IO\ExportProfile.h" />
-    <ClInclude Include="..\IO\Registry.h" />
     <ClInclude Include="..\MAPI\Cache\GlobalCache.h">
       <Filter>Source Files\MAPI\Cache</Filter>
     </ClInclude>
@@ -72,6 +70,12 @@
     </ClInclude>
     <ClInclude Include="cli.h">
       <Filter>Source Files\MrMAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IO\ExportProfile.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IO\Registry.h">
+      <Filter>Source Files\IO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
