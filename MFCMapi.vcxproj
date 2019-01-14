@@ -219,7 +219,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -263,7 +263,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -302,7 +302,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -340,7 +340,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -377,7 +377,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -411,7 +411,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -445,7 +445,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -479,7 +479,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -514,7 +514,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -548,7 +548,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\core.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
@@ -858,6 +858,11 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="mfcmapi.exe.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="core\core.vcxproj">
+      <Project>{d2390aba-e7b0-476d-bb38-089feab5357d}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
