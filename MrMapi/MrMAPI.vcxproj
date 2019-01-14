@@ -616,9 +616,6 @@
     <ClInclude Include="MrMAPI.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\Res\MFCMapi.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\.clang-format" />
   </ItemGroup>
   <ItemGroup>

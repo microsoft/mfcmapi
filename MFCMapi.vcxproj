@@ -685,15 +685,11 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\mapiui.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Res\MFCMapi.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include=".clang-format" />
     <None Include="Res\MFCMAPI64x64_logo.bmp" />
     <None Include="Res\advise.bmp" />
     <None Include="Res\MFCMapi.ico" />
     <None Include="Res\icons.bmp" />
-    <None Include="res\MFCMapi.rc2" />
     <None Include="res\splith.cur" />
     <None Include="res\splitv.cur" />
   </ItemGroup>
