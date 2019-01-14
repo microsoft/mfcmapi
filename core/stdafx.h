@@ -63,3 +63,5 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 #undef CHARFORMAT
 #define CHARFORMAT CHARFORMATW
 #endif
+
+#include <Res/Resource.h> // main symbols

@@ -1433,6 +1433,10 @@ IDS_ACTIONSMEMBERS "lpActions->ulVersion = 0x%1!08X! = %2!ws!\r\n\
 lpActions->cActions = 0x%3!08X!\r\n"
 IDS_ACTIONSACTION "lpActions->lpAction[0x%1!08X!]:\r\n"
 
+IDS_FILETIMEFORMAT "hh':'mm':'ss'.%1!03d!' tt"
+IDS_INVALIDSYSTIME "Invalid systime"
+IDS_FILETIMEALTFORMAT "Low: 0x%1!08X! High: 0x%2!08X!"
+
 IDS_TRUE "True"
 IDS_FALSE "False"
 IDS_NAMEWASANSI "(Name was found as ANSI)"

@@ -695,7 +695,7 @@ namespace strings
 			wchar_t szDateStr[MAX_PATH] = {0};
 
 			// shove millisecond info into our format string since GetTimeFormat doesn't use it
-			auto szFormatStr = formatmessage(L"hh':'mm':'ss'.%1!03d!' tt", SysTime.wMilliseconds);
+			auto szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
 
 			GetTimeFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, szFormatStr.c_str(), szTimeStr, MAX_PATH);
 			GetDateFormatW(LOCALE_USER_DEFAULT, NULL, &SysTime, nullptr, szDateStr, MAX_PATH);
@@ -705,11 +705,10 @@ namespace strings
 
 		if (PropString.empty())
 		{
-			PropString = L"Invalid systime";
+			PropString = loadstring(IDS_INVALIDSYSTIME);
 		}
 
-		AltPropString =
-			formatmessage(L"Low: 0x%1!08X! High: 0x%2!08X!", fileTime.dwLowDateTime, fileTime.dwHighDateTime);
+		AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, fileTime.dwLowDateTime, fileTime.dwHighDateTime);
 	}
 
 	bool IsFilteredHex(const WCHAR& chr)
