@@ -211,6 +211,7 @@
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -225,6 +226,7 @@
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
       <Message>Copy Release build</Message>
@@ -253,6 +255,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -266,6 +269,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -288,6 +292,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -302,6 +307,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -324,6 +330,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -337,6 +344,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -357,6 +365,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -369,6 +378,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -388,6 +398,8 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -399,6 +411,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -419,6 +432,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -430,6 +444,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -449,6 +464,8 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -460,6 +477,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -480,6 +498,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -492,6 +511,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -512,6 +532,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -523,6 +544,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>

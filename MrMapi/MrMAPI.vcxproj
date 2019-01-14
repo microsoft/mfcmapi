@@ -211,6 +211,7 @@
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;MRMAPI;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -225,6 +226,7 @@
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -247,6 +249,7 @@
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;MRMAPI;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -260,6 +263,7 @@
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -282,6 +286,7 @@
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;MRMAPI;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -296,6 +301,7 @@
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -318,6 +324,7 @@
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;MRMAPI;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -331,6 +338,7 @@
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -351,6 +359,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;MRMAPI;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -363,6 +372,7 @@
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -382,6 +392,8 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;MRMAPI;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -393,6 +405,7 @@
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -413,6 +426,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;MRMAPI;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -424,6 +438,7 @@
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -443,6 +458,8 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;MRMAPI;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -454,6 +471,7 @@
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -474,6 +492,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;MRMAPI;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -486,6 +505,7 @@
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
@@ -506,6 +526,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;MRMAPI;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -517,6 +538,7 @@
       <SubSystem>Console</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mrmapi.exe.manifest</AdditionalManifestFiles>
