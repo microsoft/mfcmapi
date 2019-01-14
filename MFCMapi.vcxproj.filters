@@ -62,30 +62,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Res\icons.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\splitv.cur">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\splith.cur">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Res\advise.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Res\MFCMAPI64x64_logo.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Res\MFCMapi.ico">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include=".clang-format" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Res\Resource.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="UI\FakeSplitter.h">
       <Filter>Source Files\UI\Controls</Filter>
     </ClInclude>

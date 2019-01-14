@@ -41,9 +41,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Res\Resource.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\MAPI\Cache\GlobalCache.h">
       <Filter>Source Files\MAPI\Cache</Filter>
     </ClInclude>
