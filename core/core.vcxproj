@@ -502,14 +502,8 @@
     <None Include="res\MFCMapi.rc2" />
     <None Include="res\splith.cur" />
     <None Include="res\splitv.cur" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="res\bldver.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="res\MFCMapi.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="res\advise.bmp" />
     <Image Include="res\icons.bmp" />
     <Image Include="res\MFCMapi.ico" />

@@ -58,8 +58,6 @@
     <None Include="res\splitv.cur">
       <Filter>Resource Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="res\MFCMapi.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
@@ -75,8 +73,8 @@
     <Image Include="res\restore.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <ResourceCompile Include="res\bldver.rc">
+    <Image Include="res\bldver.rc">
       <Filter>Resource Files</Filter>
-    </ResourceCompile>
+    </Image>
   </ItemGroup>
 </Project>
