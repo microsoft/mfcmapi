@@ -505,7 +505,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\bldver.rc" />
-    <Image Include="res\bldver.ps1" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\MFCMapi.rc" />

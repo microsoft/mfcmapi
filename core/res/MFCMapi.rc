@@ -1,6 +1,6 @@
 // Microsoft Developer Studio generated resource script.
 //
-#include "Res/Resource.h"
+#include "core/res/Resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 1 TEXTINCLUDE DISCARDABLE
 BEGIN
-"Res/Resource.h\0"
+"core/res/Resource.h\0"
 END
 
 2 TEXTINCLUDE DISCARDABLE
@@ -48,7 +48,7 @@ BEGIN
 "LANGUAGE 9, 1\r\n"
 "#pragma code_page(1252)\r\n"
 "#endif // _WIN32\r\n"
-"#include ""res\\MFCMapi.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+"#include ""core\\res\\MFCMapi.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
 "#endif\r\n"
 "\0"
 END
@@ -63,7 +63,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "Res/MFCMapi.ico"
+IDR_MAINFRAME           ICON    DISCARDABLE     "core/res/MFCMapi.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -890,15 +890,15 @@ END
 // Bitmap
 //
 
-IDB_ICONS               BITMAP  DISCARDABLE     "res\\icons.bmp"
-IDC_SPLITV              CURSOR  DISCARDABLE     "res\\splitv.cur"
-IDC_SPLITH              CURSOR  DISCARDABLE     "res\\splith.cur"
-IDB_MFCMAPILOGO         BITMAP  DISCARDABLE     "res\\MFCMAPI64x64_Logo.bmp"
-IDB_ADVISE              BITMAP  DISCARDABLE     "res\\advise.bmp"
-IDB_CLOSE               BITMAP  DISCARDABLE     "res\\close.bmp"
-IDB_MAXIMIZE            BITMAP  DISCARDABLE     "res\\maximize.bmp"
-IDB_MINIMIZE            BITMAP  DISCARDABLE     "res\\minimize.bmp"
-IDB_RESTORE             BITMAP  DISCARDABLE     "res\\restore.bmp"
+IDB_ICONS               BITMAP  DISCARDABLE     "core\\res\\icons.bmp"
+IDC_SPLITV              CURSOR  DISCARDABLE     "core\\res\\splitv.cur"
+IDC_SPLITH              CURSOR  DISCARDABLE     "core\\res\\splith.cur"
+IDB_MFCMAPILOGO         BITMAP  DISCARDABLE     "core\\res\\MFCMAPI64x64_Logo.bmp"
+IDB_ADVISE              BITMAP  DISCARDABLE     "core\\res\\advise.bmp"
+IDB_CLOSE               BITMAP  DISCARDABLE     "core\\res\\close.bmp"
+IDB_MAXIMIZE            BITMAP  DISCARDABLE     "core\\res\\maximize.bmp"
+IDB_MINIMIZE            BITMAP  DISCARDABLE     "core\\res\\minimize.bmp"
+IDB_RESTORE             BITMAP  DISCARDABLE     "core\\res\\restore.bmp"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -915,7 +915,7 @@ IDB_RESTORE             BITMAP  DISCARDABLE     "res\\restore.bmp"
 LANGUAGE 9, 1
 #pragma code_page(1252)
 #endif // _WIN32
-#include "res\MFCMapi.rc2" // non-Microsoft Visual C++ edited resources
+#include "core\res\MFCMapi.rc2" // non-Microsoft Visual C++ edited resources
 #endif
 
 /////////////////////////////////////////////////////////////////////////////

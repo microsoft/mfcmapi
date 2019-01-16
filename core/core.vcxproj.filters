@@ -75,9 +75,6 @@
     <Image Include="res\restore.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <None Include="res\bldver.ps1">
-      <Filter>Resource Files</Filter>
-    </None>
     <ResourceCompile Include="res\bldver.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
