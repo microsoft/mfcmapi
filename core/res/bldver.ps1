@@ -1,6 +1,6 @@
 $Env:BUILD_BUILDNUMBER -match "(\d+)\.(\d+)\.(\d+)\.(\d+)"
 $m = $matches
-$file = gci "$Env:BUILD_SOURCESDIRECTORY\res\bldver.rc"
+$file = gci "$Env:BUILD_SOURCESDIRECTORY\core\res\bldver.rc"
 if($file)
 {
  attrib $file -r

@@ -30,6 +30,7 @@ namespace stringtest
 
 			// A resource which does exist
 			Assert::AreEqual(std::wstring(L"Flags: "), strings::loadstring(IDS_FLAGS_PREFIX));
+			Assert::AreEqual(std::wstring(L"hh':'mm':'ss'.%1!03d!' tt"), strings::loadstring(IDS_FILETIMEFORMAT));
 		}
 
 		TEST_METHOD(Test_format)

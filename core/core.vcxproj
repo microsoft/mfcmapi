@@ -478,7 +478,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Res\Resource.h" />
+    <ClInclude Include="res\Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="utility\strings.h" />
@@ -499,24 +499,26 @@
     <ClCompile Include="utility\strings.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\res\MFCMapi.rc2" />
-    <None Include="..\res\splith.cur" />
-    <None Include="..\res\splitv.cur" />
+    <None Include="res\MFCMapi.rc2" />
+    <None Include="res\splith.cur" />
+    <None Include="res\splitv.cur" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\Res\MFCMapi.rc" />
+    <Image Include="res\bldver.rc" />
+    <Image Include="res\bldver.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Res\advise.bmp" />
+    <ResourceCompile Include="res\MFCMapi.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Res\icons.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Res\MFCMapi.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Res\MFCMAPI64x64_logo.bmp" />
+    <Image Include="res\advise.bmp" />
+    <Image Include="res\icons.bmp" />
+    <Image Include="res\MFCMapi.ico" />
+    <Image Include="res\MFCMAPI64x64_logo.bmp" />
+    <Image Include="res\close.bmp" />
+    <Image Include="res\maximize.bmp" />
+    <Image Include="res\minimize.bmp" />
+    <Image Include="res\restore.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

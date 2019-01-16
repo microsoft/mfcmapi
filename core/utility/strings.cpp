@@ -411,7 +411,7 @@ namespace strings
 
 		for (ULONG i = 0; i < lpBin->cb; i++)
 		{
-			szBin += std::to_wstring(InvalidCharacter(lpBin->lpb[i], bMultiLine) ? L'.' : lpBin->lpb[i]);
+			szBin += InvalidCharacter(lpBin->lpb[i], bMultiLine) ? L'.' : lpBin->lpb[i];
 		}
 
 		return szBin;
@@ -691,8 +691,8 @@ namespace strings
 
 		if (FileTimeToSystemTime(&fileTime, &SysTime) != 0)
 		{
-			wchar_t szTimeStr[MAX_PATH] = {0};
-			wchar_t szDateStr[MAX_PATH] = {0};
+			wchar_t szTimeStr[MAX_PATH] = {};
+			wchar_t szDateStr[MAX_PATH] = {};
 
 			// shove millisecond info into our format string since GetTimeFormat doesn't use it
 			auto szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
