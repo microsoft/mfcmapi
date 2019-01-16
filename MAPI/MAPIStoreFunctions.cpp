@@ -3,7 +3,7 @@
 #include <StdAfx.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <Interpret/ExtraPropTags.h>
 

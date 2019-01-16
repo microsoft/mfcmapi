@@ -15,7 +15,7 @@
 #include <PropertyBag/PropertyBag.h>
 #include <PropertyBag/MAPIPropPropertyBag.h>
 #include <PropertyBag/RowPropertyBag.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <UI/Controls/SortList/PropListData.h>
 #include <MAPI/Cache/GlobalCache.h>
 #include <UI/Dialogs/Editors/Editor.h>

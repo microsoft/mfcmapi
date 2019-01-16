@@ -2,7 +2,7 @@
 #include <IO/File.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <MAPI/MAPIProgress.h>
 #include <ImportProcs.h>
 #include <ShlObj.h>

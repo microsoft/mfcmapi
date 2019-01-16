@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/SearchEditor.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/Cache/NamedPropCache.h>

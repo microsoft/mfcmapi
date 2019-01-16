@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <IO/MFCOutput.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <MAPI/ColumnTags.h>

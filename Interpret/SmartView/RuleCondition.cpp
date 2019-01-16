@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/RuleCondition.h>
 #include <Interpret/SmartView/RestrictionStruct.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <Interpret/Guids.h>
 
 namespace smartview

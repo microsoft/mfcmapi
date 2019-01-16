@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/TombStone.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <Interpret/SmartView/SmartView.h>
 
 namespace smartview

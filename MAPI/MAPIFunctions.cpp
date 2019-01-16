@@ -1,7 +1,7 @@
 // Collection of useful MAPI functions
 #include <StdAfx.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <MAPI/MAPIABFunctions.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>

@@ -6,7 +6,7 @@
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 
 LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex)
 {

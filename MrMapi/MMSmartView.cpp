@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <MrMapi/MrMAPI.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <io.h>
 #include <Interpret/SmartView/SmartView.h>
 

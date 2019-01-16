@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/SortListCtrl.h>
 #include <UI/Controls/SortList/SortHeader.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <UI/UIFunctions.h>
 
 namespace controls

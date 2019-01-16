@@ -3,7 +3,7 @@
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <Interpret/Guids.h>
 #include <MAPI/Cache/NamedPropCache.h>
 
@@ -250,10 +250,8 @@ namespace smartview
 			return iStructType;
 		}
 
-		break;
 		case PT_MV_BINARY:
 			return FindSmartViewParserForProp(lpProp->ulPropTag, ulPropNameID, &propNameGUID);
-			break;
 		}
 
 		return IDS_STNOPARSING;
@@ -274,7 +272,7 @@ namespace smartview
 			(registry::getPropNamesOnAllProps ||
 			 PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 		{
-			auto tag = SPropTagArray{1, ulPropTag};
+			auto tag = SPropTagArray{1, {ulPropTag}};
 			auto lpTag = &tag;
 			auto ulPropNames = ULONG{};
 
@@ -331,19 +329,16 @@ namespace smartview
 		case PT_LONG:
 			return InterpretNumberAsString(
 				lpProp->Value.l, lpProp->ulPropTag, ulPropNameID, nullptr, &propNameGUID, true);
-			break;
 		case PT_I2:
 			return InterpretNumberAsString(
 				lpProp->Value.i, lpProp->ulPropTag, ulPropNameID, nullptr, &propNameGUID, true);
-			break;
 		case PT_I8:
 			return InterpretNumberAsString(
 				lpProp->Value.li.QuadPart, lpProp->ulPropTag, ulPropNameID, nullptr, &propNameGUID, true);
-			break;
 		case PT_MV_LONG:
 			return InterpretMVLongAsString(lpProp->Value.MVl, lpProp->ulPropTag, ulPropNameID, &propNameGUID);
-			break;
 		case PT_BINARY:
+			// TODO: Find a way to use ulLookupPropTag here
 			ulLookupPropTag = lpProp->ulPropTag;
 			if (bMVRow) ulLookupPropTag |= MV_FLAG;
 
@@ -489,7 +484,7 @@ namespace smartview
 
 		for (const auto& row : rows)
 		{
-			const auto szSmartView = smartview::InterpretNumberAsString(
+			const auto szSmartView = InterpretNumberAsString(
 				row, CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, nullptr, lpguidNamedProp, true);
 			if (!szSmartView.empty())
 			{
@@ -565,8 +560,8 @@ namespace smartview
 	{
 		std::wstring rTimeString;
 		std::wstring rTimeAltString;
-		FILETIME fTime = {0};
-		LARGE_INTEGER liNumSec = {};
+		auto fTime = FILETIME{};
+		auto liNumSec = LARGE_INTEGER{};
 		liNumSec.LowPart = rTime;
 		// Resolution of RTime is in minutes, FILETIME is in 100 nanosecond intervals
 		// Scale between the two is 10000000*60

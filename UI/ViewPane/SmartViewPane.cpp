@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/SmartViewPane.h>
 #include <UI/ViewPane/TextPane.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <UI/UIFunctions.h>
 

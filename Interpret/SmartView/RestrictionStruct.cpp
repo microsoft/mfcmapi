@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/RestrictionStruct.h>
 #include <Interpret/SmartView/PropertiesStruct.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>

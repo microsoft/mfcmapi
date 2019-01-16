@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/RecipientRowStream.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <Interpret/SmartView/PropertiesStruct.h>
 
 namespace smartview

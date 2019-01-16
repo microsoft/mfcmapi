@@ -6,7 +6,7 @@
 // Included for MFCMAPI tracing
 #include <IO/MFCOutput.h>
 #include <ImportProcs.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 
 namespace mapistub
 {

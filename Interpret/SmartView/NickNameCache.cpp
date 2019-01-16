@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/NickNameCache.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 
 namespace smartview
 {

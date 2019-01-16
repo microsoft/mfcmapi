@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/DropDownPane.h>
 #include <Interpret/Guids.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <UI/UIFunctions.h>
 
 namespace viewpane

@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/PropertySelector.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <UI/Controls/SortList/PropListData.h>
 #include <Interpret/InterpretProp.h>
 

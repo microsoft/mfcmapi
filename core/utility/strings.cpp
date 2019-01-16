@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <locale>
 #include <sstream>
 #include <iterator>
@@ -411,7 +411,7 @@ namespace strings
 
 		for (ULONG i = 0; i < lpBin->cb; i++)
 		{
-			szBin += InvalidCharacter(lpBin->lpb[i], bMultiLine) ? L'.' : lpBin->lpb[i];
+			szBin += std::to_wstring(InvalidCharacter(lpBin->lpb[i], bMultiLine) ? L'.' : lpBin->lpb[i]);
 		}
 
 		return szBin;

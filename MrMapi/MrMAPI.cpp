@@ -2,8 +2,7 @@
 
 #include <MrMapi/cli.h>
 #include <MrMapi/MrMAPI.h>
-#include <MAPI/MAPIFunctions.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <Interpret/InterpretProp.h>
 #include <MrMapi/MMAcls.h>
 #include <MrMapi/MMContents.h>
@@ -16,7 +15,6 @@
 #include <MrMapi/MMSmartView.h>
 #include <MrMapi/MMStore.h>
 #include <MrMapi/MMMapiMime.h>
-#include <Shlwapi.h>
 #include <ImportProcs.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MrMapi/MMPst.h>

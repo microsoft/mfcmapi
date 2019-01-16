@@ -4,7 +4,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/ViewPane/SmartViewPane.h>
 

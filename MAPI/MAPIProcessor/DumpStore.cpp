@@ -5,7 +5,7 @@
 #include <StdAfx.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <IO/File.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/ExtraPropTags.h>

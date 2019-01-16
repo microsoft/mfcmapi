@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <ImportProcs.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <MAPI/StubUtils.h>
 #include <IO/File.h>
 

@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <MFCMAPI.h>
 #include <ImportProcs.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <IO/File.h>
 

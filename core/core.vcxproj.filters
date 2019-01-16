@@ -21,18 +21,18 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Interpret\String.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Res\Resource.h">
       <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utility\strings.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Interpret\String.cpp">
+    <ClCompile Include="utility\strings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

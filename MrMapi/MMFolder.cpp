@@ -5,7 +5,7 @@
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/InterpretProp.h>
 #include <MrMapi/MMStore.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 
 // Search folder for entry ID of child folder by name.
 LPSBinary MAPIFindFolderW(

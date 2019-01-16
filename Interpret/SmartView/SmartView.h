@@ -29,7 +29,7 @@ namespace smartview
 		bool bMVRow); // did the row come from a MV prop?
 
 	std::wstring
-	InterpretBinaryAsString(const SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp);
+	InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp);
 	std::wstring InterpretMVLongAsString(
 		std::vector<LONG> rows,
 		_In_opt_ ULONG ulPropTag,

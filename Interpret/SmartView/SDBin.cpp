@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/SDBin.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <UI/MySecInfo.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/ExtraPropTags.h>

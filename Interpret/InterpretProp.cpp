@@ -5,7 +5,7 @@
 #include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Property/ParseProperty.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <unordered_map>
 
 namespace interpretprop

@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/UIFunctions.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/MyWinApp.h>
 #include <UI/Dialogs/AboutDlg.h>

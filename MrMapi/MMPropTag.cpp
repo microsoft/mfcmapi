@@ -4,7 +4,7 @@
 #include <Interpret/Guids.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 
 // Searches a NAMEID_ARRAY_ENTRY array for a target dispid.
 // Exact matches are those that match

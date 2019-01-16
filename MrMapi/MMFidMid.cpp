@@ -5,7 +5,7 @@
 #include <MAPI/MAPIProcessor/MapiProcessor.h>
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 
 namespace mapiprocessor
 {
