@@ -1,9 +1,5 @@
-#include <StdAfx.h>
+#include <stdafx.h>
 #include <core/utility/strings.h>
-#include <locale>
-#include <sstream>
-#include <iterator>
-#include <functional>
 
 namespace strings
 {
