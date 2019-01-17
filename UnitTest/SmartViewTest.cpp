@@ -4,6 +4,7 @@
 #include <Interpret/SmartView/SmartView.h>
 #include <MFCMAPI.h>
 #include <UnitTest/resource.h>
+#include <AddIns.h>
 
 namespace SmartViewTest
 {

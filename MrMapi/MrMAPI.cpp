@@ -3,7 +3,6 @@
 #include <MrMapi/cli.h>
 #include <MrMapi/MrMAPI.h>
 #include <core/utility/strings.h>
-#include <Interpret/InterpretProp.h>
 #include <MrMapi/MMAcls.h>
 #include <MrMapi/MMContents.h>
 #include <MrMapi/MMErr.h>
@@ -21,6 +20,7 @@
 #include <MrMapi/MMReceiveFolder.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #include <MAPI/StubUtils.h>
+#include <AddIns.h>
 
 // Initialize MFC for LoadString support later on
 void InitMFC() { AfxWinInit(::GetModuleHandle(nullptr), nullptr, ::GetCommandLine(), 0); }

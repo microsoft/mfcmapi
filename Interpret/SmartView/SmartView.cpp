@@ -6,6 +6,7 @@
 #include <core/utility/strings.h>
 #include <Interpret/Guids.h>
 #include <MAPI/Cache/NamedPropCache.h>
+#include <Addins.h>
 
 #include <Interpret/SmartView/SmartViewParser.h>
 #include <Interpret/SmartView/PCL.h>

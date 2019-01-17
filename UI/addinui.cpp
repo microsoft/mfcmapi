@@ -3,6 +3,7 @@
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <IO/File.h>
 #include <UI/UIFunctions.h>
+#include <Addins.h>
 
 namespace ui
 {

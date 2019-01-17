@@ -2,6 +2,7 @@
 #include <CppUnitTest.h>
 #include <UnitTest/UnitTest.h>
 #include <UnitTest/resource.h>
+#include <AddIns.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

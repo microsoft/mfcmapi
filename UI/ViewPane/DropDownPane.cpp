@@ -3,6 +3,7 @@
 #include <Interpret/Guids.h>
 #include <core/utility/strings.h>
 #include <UI/UIFunctions.h>
+#include <AddIns.h>
 
 namespace viewpane
 {

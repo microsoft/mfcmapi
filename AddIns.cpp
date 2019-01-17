@@ -1,4 +1,5 @@
 #include <StdAfx.h>
+#include <AddIns.h>
 #include <MFCMAPI.h>
 #include <ImportProcs.h>
 #include <core/utility/strings.h>

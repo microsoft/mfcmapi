@@ -3,6 +3,7 @@
 #include <MrMapi/cli.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/InterpretProp.h>
+#include <AddIns.h>
 
 namespace error
 {

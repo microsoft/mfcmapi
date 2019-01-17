@@ -1,4 +1,5 @@
 #include <StdAfx.h>
+#include <Addins.h>
 
 #pragma region "USES_IID definitions"
 #define INITGUID

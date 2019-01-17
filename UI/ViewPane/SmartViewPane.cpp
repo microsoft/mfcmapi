@@ -4,6 +4,7 @@
 #include <core/utility/strings.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <UI/UIFunctions.h>
+#include <Addins.h>
 
 namespace viewpane
 {

@@ -5,6 +5,7 @@
 #include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/Guids.h>
 #include <UI/Dialogs/Editors/PropertySelector.h>
+#include <Addins.h>
 
 namespace dialog
 {

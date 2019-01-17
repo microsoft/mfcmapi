@@ -14,7 +14,8 @@
 #include <MAPI/MAPIStoreFunctions.h>
 #include <Interpret/SmartView/PropertiesStruct.h>
 #include <UI/CMAPIProgress.h>
-#include "Dialogs/Editors/DbgView.h"
+#include <UI/Dialogs/Editors/DbgView.h>
+#include <Addins.h>
 
 namespace ui
 {

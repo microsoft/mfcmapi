@@ -3,6 +3,7 @@
 #include <core/utility/strings.h>
 #include <UI/Controls/SortList/PropListData.h>
 #include <Interpret/InterpretProp.h>
+#include <AddIns.h>
 
 namespace dialog
 {

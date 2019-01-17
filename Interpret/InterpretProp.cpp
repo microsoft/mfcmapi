@@ -7,6 +7,7 @@
 #include <Property/ParseProperty.h>
 #include <core/utility/strings.h>
 #include <unordered_map>
+#include <Addins.h>
 
 namespace interpretprop
 {

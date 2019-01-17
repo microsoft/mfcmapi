@@ -5,6 +5,7 @@
 #include <MAPI/Cache/NamedPropCache.h>
 #include <UI/UIFunctions.h>
 #include <MAPI/StubUtils.h>
+#include <AddIns.h>
 
 extern ui::CMyWinApp theApp;
 

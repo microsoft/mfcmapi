@@ -3,6 +3,7 @@
 #include <io.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <MrMapi/cli.h>
+#include <AddIns.h>
 
 void DoSmartView(_In_ cli::MYOPTIONS ProgOpts)
 {
