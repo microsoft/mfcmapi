@@ -2,6 +2,7 @@
 #include <UI/Dialogs/AboutDlg.h>
 #include <UI/UIFunctions.h>
 #include <IO/File.h>
+#include <IO/Registry.h>
 
 namespace dialog
 {

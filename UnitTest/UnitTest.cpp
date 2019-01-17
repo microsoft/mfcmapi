@@ -3,6 +3,7 @@
 #include <UnitTest/UnitTest.h>
 #include <UnitTest/resource.h>
 #include <AddIns.h>
+#include <IO/Registry.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

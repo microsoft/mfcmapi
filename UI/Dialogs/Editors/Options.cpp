@@ -2,6 +2,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/Options.h>
 #include <MAPI/StubUtils.h>
+#include <IO/Registry.h>
 
 namespace dialog
 {

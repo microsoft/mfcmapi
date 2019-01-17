@@ -6,6 +6,7 @@
 #include <core/utility/strings.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <core/mapi/extraPropTags.h>
+#include <IO/Registry.h>
 
 namespace mapi
 {

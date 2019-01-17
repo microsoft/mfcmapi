@@ -14,6 +14,7 @@
 #include <MAPI/MapiMemory.h>
 #include <core/mapi/extraPropTags.h>
 #include <UI/addinui.h>
+#include <IO/Registry.h>
 
 namespace dialog
 {

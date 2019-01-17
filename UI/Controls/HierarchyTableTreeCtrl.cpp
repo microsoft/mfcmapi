@@ -7,6 +7,7 @@
 #include <UI/UIFunctions.h>
 #include <MAPI/AdviseSink.h>
 #include <UI/Controls/SortList/NodeData.h>
+#include <IO/Registry.h>
 
 namespace controls
 {

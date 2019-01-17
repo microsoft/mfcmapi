@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <IO/Error.h>
 #include <core/interpret/errorArray.h>
+#include <IO/Registry.h>
 
 namespace error
 {

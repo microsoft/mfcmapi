@@ -21,6 +21,7 @@
 #include <UI/Dialogs/ContentsTable/AclDlg.h>
 #include <UI/Dialogs/ContentsTable/MailboxTableDlg.h>
 #include <UI/Dialogs/ContentsTable/PublicFolderTableDlg.h>
+#include <IO/Registry.h>
 
 namespace dialog
 {

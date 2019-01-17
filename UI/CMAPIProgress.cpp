@@ -2,6 +2,7 @@
 #include <UI/CMAPIProgress.h>
 #include <Enums.h>
 #include <UI/Dialogs/BaseDialog.h>
+#include <IO/Registry.h>
 
 namespace ui
 {

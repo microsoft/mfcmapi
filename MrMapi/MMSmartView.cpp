@@ -4,6 +4,7 @@
 #include <Interpret/SmartView/SmartView.h>
 #include <MrMapi/cli.h>
 #include <AddIns.h>
+#include <IO/Registry.h>
 
 void DoSmartView(_In_ cli::MYOPTIONS ProgOpts)
 {

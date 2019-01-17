@@ -7,6 +7,7 @@
 #include <ImportProcs.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/mapiui.h>
+#include <IO/Registry.h>
 
 // The one and only CMyWinApp object
 ui::CMyWinApp theApp;

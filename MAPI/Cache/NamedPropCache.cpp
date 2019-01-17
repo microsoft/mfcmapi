@@ -4,6 +4,7 @@
 #include <Interpret/guids.h>
 #include <core/interpret/guid.h>
 #include <MAPI/MapiMemory.h>
+#include <IO/Registry.h>
 
 namespace cache
 {
@@ -578,6 +579,8 @@ namespace cache
 
 		return propTags;
 	}
+
+	bool fCacheNamedProps() { return registry::cacheNamedProps; }
 
 	// TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
 	// We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those

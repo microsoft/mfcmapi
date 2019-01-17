@@ -62,7 +62,7 @@ namespace cache
 		_In_opt_count_(cPropNames) LPMAPINAMEID* lppPropNames,
 		ULONG ulFlags);
 
-	_Check_return_ inline bool fCacheNamedProps() { return registry::cacheNamedProps; }
+	_Check_return_ inline bool fCacheNamedProps();
 
 	NamePropNames NameIDToStrings(
 		ULONG ulPropTag, // optional 'original' prop tag

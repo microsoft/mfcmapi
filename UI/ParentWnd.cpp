@@ -6,6 +6,7 @@
 #include <UI/UIFunctions.h>
 #include <MAPI/StubUtils.h>
 #include <AddIns.h>
+#include <IO/Registry.h>
 
 extern ui::CMyWinApp theApp;
 

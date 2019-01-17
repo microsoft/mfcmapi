@@ -27,6 +27,7 @@
 #include <MAPI/StubUtils.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
+#include <IO/Registry.h>
 
 namespace dialog
 {

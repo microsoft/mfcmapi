@@ -4,6 +4,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <MAPI/MapiMemory.h>
+#include <IO/Registry.h>
 
 namespace mapi
 {

@@ -6,6 +6,7 @@
 #include <Interpret/SmartView/SmartView.h>
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
+#include <IO/Registry.h>
 
 namespace mapiprocessor
 {

@@ -3,6 +3,7 @@
 #include <core/utility/strings.h>
 #include <MAPI/StubUtils.h>
 #include <IO/File.h>
+#include <IO/Registry.h>
 
 namespace import
 {

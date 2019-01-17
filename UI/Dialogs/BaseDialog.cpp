@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <MAPI/Version.h>
 #include <UI/addinui.h>
+#include <IO/Registry.h>
 
 namespace dialog
 {

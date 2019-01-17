@@ -3,6 +3,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/SortListData.h>
+#include <IO/Registry.h>
 
 namespace propertybag
 {

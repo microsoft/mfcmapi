@@ -10,6 +10,7 @@
 #include <UI/MyWinApp.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <Interpret/InterpretProp.h>
+#include <IO/Registry.h>
 
 extern ui::CMyWinApp theApp;
 
