@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <MAPI/AdviseSink.h>
 #include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 namespace mapi
 {

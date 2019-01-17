@@ -6,7 +6,7 @@
 #include <core/utility/strings.h>
 #include <core/mapi/extraPropTags.h>
 #include <IO/Registry.h>
-#include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 namespace mapi
 {

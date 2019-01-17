@@ -3,8 +3,8 @@
 #include <UI/UIFunctions.h>
 #include <ImportProcs.h>
 #include <propkey.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
+#include <IO/output.h>
 
 namespace dialog
 {

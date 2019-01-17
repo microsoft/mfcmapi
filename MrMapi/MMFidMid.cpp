@@ -7,7 +7,7 @@
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
 #include <IO/Registry.h>
-#include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 namespace mapiprocessor
 {

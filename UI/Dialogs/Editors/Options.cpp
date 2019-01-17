@@ -3,8 +3,8 @@
 #include <UI/Dialogs/Editors/Options.h>
 #include <MAPI/StubUtils.h>
 #include <IO/Registry.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
+#include <IO/output.h>
 
 namespace dialog
 {

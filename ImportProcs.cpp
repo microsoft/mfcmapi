@@ -5,6 +5,7 @@
 #include <IO/File.h>
 #include <IO/Registry.h>
 #include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 namespace import
 {

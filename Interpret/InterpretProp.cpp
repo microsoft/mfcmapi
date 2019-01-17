@@ -10,6 +10,7 @@
 #include <Addins.h>
 #include <IO/MFCOutput.h>
 #include <IO/Registry.h>
+#include <IO/output.h>
 
 namespace interpretprop
 {

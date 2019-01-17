@@ -9,6 +9,7 @@
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <core/interpret/guid.h>
 #include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 namespace file
 {

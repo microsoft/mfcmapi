@@ -76,6 +76,9 @@
     <ClInclude Include="..\Interpret\guids.h">
       <Filter>Source Files\Interpret</Filter>
     </ClInclude>
+    <ClInclude Include="..\IO\output.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AddIns.cpp">
@@ -107,6 +110,9 @@
     </ClCompile>
     <ClCompile Include="..\Interpret\guids.cpp">
       <Filter>Source Files\Interpret</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IO\output.cpp">
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

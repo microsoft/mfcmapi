@@ -19,6 +19,7 @@
 #include <IO/MFCOutput.h>
 #include <IO/Registry.h>
 #include <core/utility/strings.h>
+#include <IO/output.h>
 
 namespace controls
 {

@@ -7,6 +7,7 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <Interpret/InterpretProp.h>
 #include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 namespace dialog
 {

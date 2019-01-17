@@ -23,6 +23,7 @@
 #include <AddIns.h>
 #include <IO/Registry.h>
 #include <IO/MFCOutput.h>
+#include "IO/output.h"
 
 // Initialize MFC for LoadString support later on
 void InitMFC() { AfxWinInit(::GetModuleHandle(nullptr), nullptr, ::GetCommandLine(), 0); }

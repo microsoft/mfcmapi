@@ -15,8 +15,8 @@
 #include <core/mapi/extraPropTags.h>
 #include <UI/addinui.h>
 #include <IO/Registry.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
+#include <IO/output.h>
 
 namespace dialog
 {

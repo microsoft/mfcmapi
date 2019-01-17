@@ -11,8 +11,8 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <Interpret/InterpretProp.h>
 #include <IO/Registry.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
+#include <IO/output.h>
 
 extern ui::CMyWinApp theApp;
 

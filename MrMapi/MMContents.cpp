@@ -3,6 +3,7 @@
 #include <IO/File.h>
 #include <MrMapi/cli.h>
 #include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 void DumpContentsTable(
 	_In_z_ LPCWSTR lpszProfile,

@@ -5,7 +5,7 @@
 #include <core/utility/strings.h>
 #include <IO/File.h>
 #include <IO/Registry.h>
-#include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 // Our built in arrays, which get merged into the arrays declared in mfcmapi.h
 #include <core/interpret/genTagArray.h>

@@ -2,8 +2,7 @@
 #pragma once
 #include <core/interpret/guid.h>
 #include <Interpret/guids.h>
-#include <IO/MFCOutput.h>
-
+#include <IO/output.h>
 
 namespace mapi
 {

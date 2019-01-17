@@ -4,7 +4,7 @@
 #include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <IO/Registry.h>
-#include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 namespace propertybag
 {

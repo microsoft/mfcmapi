@@ -132,6 +132,7 @@
     </ClInclude>
     <ClInclude Include="AddIns.h" />
     <ClInclude Include="Interpret\guids.h" />
+    <ClInclude Include="IO\output.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -192,6 +193,9 @@
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>
     <ClCompile Include="Interpret\guids.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\output.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

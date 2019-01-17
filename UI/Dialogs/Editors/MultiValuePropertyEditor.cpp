@@ -6,9 +6,9 @@
 #include <UI/Dialogs/Editors/PropertyEditor.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MapiMemory.h>
-#include <IO/MFCOutput.h>
 #include <IO/Registry.h>
 #include <core/utility/strings.h>
+#include <IO/output.h>
 
 namespace dialog
 {

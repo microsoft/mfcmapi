@@ -11,8 +11,8 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
+#include <IO/output.h>
 
 namespace dialog
 {

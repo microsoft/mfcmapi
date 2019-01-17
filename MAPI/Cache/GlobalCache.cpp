@@ -1,6 +1,6 @@
 ﻿#include <StdAfx.h>
 #include <MAPI/Cache/GlobalCache.h>
-#include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 namespace cache
 {

@@ -9,6 +9,7 @@
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
 #include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex)
 {

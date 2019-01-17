@@ -5,7 +5,7 @@
 #include <MrMapi/cli.h>
 #include <AddIns.h>
 #include <IO/Registry.h>
-#include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 void DoSmartView(_In_ cli::MYOPTIONS ProgOpts)
 {

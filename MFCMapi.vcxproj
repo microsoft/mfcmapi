@@ -569,6 +569,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="Interpret\SmartView\block\blockT.h" />
     <ClInclude Include="Interpret\SmartView\block\block.h" />
     <ClInclude Include="Interpret\SmartView\block\blockBytes.h" />
+    <ClInclude Include="IO\output.h" />
     <ClInclude Include="MAPI\AdviseSink.h" />
     <ClInclude Include="Property\Attributes.h" />
     <ClInclude Include="MAPI\Cache\GlobalCache.h" />
@@ -715,6 +716,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="Interpret\guids.cpp" />
     <ClCompile Include="Interpret\Sid.cpp" />
     <ClCompile Include="AddIns.cpp" />
+    <ClCompile Include="IO\output.cpp" />
     <ClCompile Include="MAPI\AdviseSink.cpp" />
     <ClCompile Include="Property\Attributes.cpp" />
     <ClCompile Include="MAPI\Cache\GlobalCache.cpp" />

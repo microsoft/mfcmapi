@@ -4,8 +4,8 @@
 #include <UI/MAPIFormFunctions.h>
 #include <UI/MyMAPIFormViewer.h>
 #include <MAPI/MAPIFunctions.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
+#include <IO/output.h>
 
 namespace mapi
 {

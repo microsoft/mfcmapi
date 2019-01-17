@@ -4,6 +4,7 @@
 #include <MrMapi/cli.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
+#include <IO/output.h>
 
 void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 {

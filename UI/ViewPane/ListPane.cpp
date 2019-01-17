@@ -4,6 +4,7 @@
 #include <utility>
 #include <core/utility/strings.h>
 #include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 namespace viewpane
 {

@@ -5,8 +5,8 @@
 #include <core/interpret/guid.h>
 #include <MAPI/MapiMemory.h>
 #include <IO/Registry.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
+#include <IO/output.h>
 
 namespace cache
 {

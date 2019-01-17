@@ -2,7 +2,7 @@
 #include <UI/ViewPane/TextPane.h>
 #include <core/utility/strings.h>
 #include <UI/UIFunctions.h>
-#include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 namespace viewpane
 {

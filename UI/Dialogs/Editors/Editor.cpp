@@ -7,6 +7,7 @@
 #include <UI/Dialogs/AboutDlg.h>
 #include <IO/MFCOutput.h>
 #include <IO/Registry.h>
+#include <IO/output.h>
 
 extern ui::CMyWinApp theApp;
 

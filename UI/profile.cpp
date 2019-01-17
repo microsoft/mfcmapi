@@ -6,7 +6,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <IO/File.h>
 #include <core/utility/strings.h>
-#include <IO/MFCOutput.h>
+#include <IO/output.h>
 
 namespace ui
 {
