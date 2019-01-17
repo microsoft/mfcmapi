@@ -561,6 +561,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AddIns.h" />
     <ClInclude Include="Interpret\Sid.h" />
     <ClInclude Include="Interpret\SmartView\block\blockStringW.h" />
     <ClInclude Include="Interpret\SmartView\block\blockStringA.h" />
@@ -595,7 +596,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="Property\ParseProperty.h" />
     <ClInclude Include="PropertyBag\MAPIPropPropertyBag.h" />
     <ClInclude Include="MAPI\MAPIStoreFunctions.h" />
-    <ClInclude Include="MFCMAPI.h" />
     <ClInclude Include="IO\MFCOutput.h" />
     <ClInclude Include="Interpret\SmartView\AdditionalRenEntryIDs.h" />
     <ClInclude Include="Interpret\SmartView\AppointmentRecurrencePattern.h" />

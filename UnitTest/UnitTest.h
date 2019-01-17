@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <CppUnitTest.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <MFCMAPI.h>
+#include <core/mfcmapi.h>
 #include <UnitTest/resource.h>
 #include <Interpret/Guids.h>
 

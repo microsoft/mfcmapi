@@ -70,7 +70,7 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 #include <IO/Registry.h>
 #include <IO/Error.h>
 
-#include <MFCMAPI.h>
+#include <core/mfcmapi.h>
 
 // Custom messages - used to ensure actions occur on the right threads.
 

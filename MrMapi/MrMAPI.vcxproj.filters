@@ -70,6 +70,9 @@
     <ClInclude Include="..\IO\Registry.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
+    <ClInclude Include="..\AddIns.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AddIns.cpp">
@@ -82,9 +85,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Enums.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\MFCMAPI.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\StdAfx.h">

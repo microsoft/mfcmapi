@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <AddIns.h>
-#include <MFCMAPI.h>
+#include <core/mfcmapi.h>
 #include <ImportProcs.h>
 #include <core/utility/strings.h>
 #include <UI/Dialogs/Editors/Editor.h>

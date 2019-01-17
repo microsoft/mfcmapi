@@ -30,6 +30,9 @@
     <ClInclude Include="mapi\extraPropTags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mfcmapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

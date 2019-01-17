@@ -2,7 +2,7 @@
 #include <CppUnitTest.h>
 #include <UnitTest/UnitTest.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <MFCMAPI.h>
+#include <core/mfcmapi.h>
 #include <UnitTest/resource.h>
 #include <AddIns.h>
 
