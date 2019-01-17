@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/ExtendedFlags.h>
-#include <Interpret/Guids.h>
+#include <Interpret/guids.h>
 #include <Interpret/InterpretProp.h>
 #include <core/mapi/extraPropTags.h>
 

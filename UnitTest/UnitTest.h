@@ -1,9 +1,8 @@
+#pragma once
 #include <StdAfx.h>
 #include <CppUnitTest.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <core/mfcmapi.h>
-#include <UnitTest/resource.h>
-#include <Interpret/Guids.h>
+#include <MAPI/MAPIFunctions.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -38,5 +37,5 @@ namespace unittest
 		const wchar_t* message = nullptr,
 		const __LineInfo* pLineInfo = nullptr);
 
-	std::wstring loadfile(const HMODULE handle, const int name);
+	std::wstring loadfile(HMODULE handle, int name);
 } // namespace unittest

@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <MAPI/MapiMime.h>
 #include <IO/File.h>
-#include <Interpret/Guids.h>
+#include <core/interpret/guid.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIFunctions.h>
 

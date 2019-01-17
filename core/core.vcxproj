@@ -481,9 +481,12 @@
     <ClInclude Include="interpret\errorArray.h" />
     <ClInclude Include="interpret\flags.h" />
     <ClInclude Include="interpret\genTagArray.h" />
+    <ClInclude Include="interpret\guidArray.h" />
+    <ClInclude Include="interpret\guid.h" />
     <ClInclude Include="interpret\nameIDArray.h" />
     <ClInclude Include="interpret\propTypeArray.h" />
     <ClInclude Include="mapi\extraPropTags.h" />
+    <ClInclude Include="mapi\interfaces.h" />
     <ClInclude Include="mfcmapi.h" />
     <ClInclude Include="res\Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -491,6 +494,7 @@
     <ClInclude Include="utility\strings.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="interpret\guid.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Create</PrecompiledHeader>

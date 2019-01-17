@@ -1,6 +1,8 @@
 // Stand alone MAPI functions
 #pragma once
-#include <Interpret/GUIDArray.h>
+#include <core/interpret/guid.h>
+#include <Interpret/guids.h>
+
 
 namespace mapi
 {

@@ -48,12 +48,24 @@
     <ClInclude Include="interpret\flags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="interpret\guid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\guidArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\interfaces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utility\strings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="interpret\guid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

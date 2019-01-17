@@ -2,7 +2,7 @@
 #include <Interpret/Sid.h>
 #include <Interpret/InterpretProp.h>
 #include <core/mapi/extraPropTags.h>
-#include <Interpret/GUIDArray.h>
+#include <Interpret/guids.h>
 
 namespace sid
 {

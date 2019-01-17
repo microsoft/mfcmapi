@@ -6,7 +6,7 @@
 #include <Interpret/SmartView/SmartView.h>
 #include <MAPI/ColumnTags.h>
 #include <Property/ParseProperty.h>
-#include <Interpret/Guids.h>
+#include <Interpret/guids.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #include <IO/File.h>
 #include <MAPI/MapiMemory.h>

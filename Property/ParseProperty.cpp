@@ -4,7 +4,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/Guids.h>
+#include <Interpret/guids.h>
 
 namespace property
 {

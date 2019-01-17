@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/mapiui.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
-#include <Interpret/Guids.h>
+#include <Interpret/guids.h>
 #include <MAPI/MAPIProgress.h>
 #include <MAPI/MAPIFunctions.h>
 #include <IO/File.h>

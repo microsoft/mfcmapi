@@ -2,7 +2,7 @@
 #include <Interpret/SmartView/RuleCondition.h>
 #include <Interpret/SmartView/RestrictionStruct.h>
 #include <core/utility/strings.h>
-#include <Interpret/Guids.h>
+#include <Interpret/guids.h>
 
 namespace smartview
 {

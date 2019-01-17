@@ -73,6 +73,9 @@
     <ClInclude Include="..\AddIns.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Interpret\guids.h">
+      <Filter>Source Files\Interpret</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AddIns.cpp">
@@ -101,6 +104,9 @@
     </ClCompile>
     <ClCompile Include="cli.cpp">
       <Filter>Source Files\MrMAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Interpret\guids.cpp">
+      <Filter>Source Files\Interpret</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -216,15 +222,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Interpret\GUIDArray.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-    <ClCompile Include="..\Interpret\Guids.cpp">
-      <Filter>Source Files\Interpret</Filter>
-    </ClCompile>
-    <ClInclude Include="..\Interpret\Guids.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
     <ClCompile Include="..\Interpret\InterpretProp.cpp">
       <Filter>Source Files\Interpret</Filter>
     </ClCompile>

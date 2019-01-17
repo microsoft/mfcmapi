@@ -4,7 +4,7 @@
 #include <core/mapi/extraPropTags.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
-#include <Interpret/Guids.h>
+#include <core/interpret/guid.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #include <Addins.h>
 

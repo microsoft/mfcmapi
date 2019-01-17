@@ -3,7 +3,7 @@
 #include <StdAfx.h>
 #include <MAPI/MAPIProfileFunctions.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/GUIDArray.h>
+#include <Interpret/guids.h>
 
 namespace output
 {
@@ -17,7 +17,7 @@ namespace output
 		auto hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpSect, fMapiUnicode, &cValues, &lpAllProps));
 		if (FAILED(hRes))
 		{
-			output::OutputToFilef(fProfile, L"<properties error=\"0x%08X\" />\n", hRes);
+			OutputToFilef(fProfile, L"<properties error=\"0x%08X\" />\n", hRes);
 		}
 		else if (lpAllProps)
 		{
@@ -27,7 +27,7 @@ namespace output
 				szBin = strings::BinToHexString(lpSectBin, false);
 			}
 
-			output::OutputToFilef(
+			OutputToFilef(
 				fProfile, L"<properties listtype=\"profilesection\" profilesection=\"%ws\">\n", szBin.c_str());
 
 			output::OutputPropertiesToFile(fProfile, cValues, lpAllProps, nullptr, false);
@@ -42,7 +42,7 @@ namespace output
 	{
 		if (!fProfile || !lpRow) return;
 
-		output::Outputf(DBGNoDebug, fProfile, true, L"<provider index = \"0x%08X\">\n", iRow);
+		Outputf(DBGNoDebug, fProfile, true, L"<provider index = \"0x%08X\">\n", iRow);
 
 		output::OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
 		output::OutputSRowToFile(fProfile, lpRow, nullptr);
@@ -67,7 +67,7 @@ namespace output
 	{
 		if (!fProfile || !lpRow) return;
 
-		output::Outputf(DBGNoDebug, fProfile, true, L"<service index = \"0x%08X\">\n", iRow);
+		Outputf(DBGNoDebug, fProfile, true, L"<service index = \"0x%08X\">\n", iRow);
 
 		output::OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
 		output::OutputSRowToFile(fProfile, lpRow, nullptr);
@@ -131,11 +131,11 @@ namespace output
 	{
 		if (szProfile.empty()) return;
 
-		output::DebugPrint(
+		DebugPrint(
 			DBGGeneric, L"ExportProfile: Saving profile \"%hs\" to \"%ws\"\n", szProfile.c_str(), szFileName.c_str());
 		if (!szProfileSection.empty())
 		{
-			output::DebugPrint(DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection.c_str());
+			DebugPrint(DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection.c_str());
 		}
 
 		LPPROFADMIN lpProfAdmin = nullptr;
@@ -143,11 +143,11 @@ namespace output
 
 		if (!szFileName.empty())
 		{
-			fProfile = output::MyOpenFile(szFileName, true);
+			fProfile = MyOpenFile(szFileName, true);
 		}
 
 		output::OutputToFile(fProfile, output::g_szXMLHeader);
-		output::Outputf(DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile.c_str());
+		Outputf(DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile.c_str());
 
 		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));
 		if (lpProfAdmin)
@@ -207,7 +207,7 @@ namespace output
 
 		if (fProfile)
 		{
-			output::CloseFile(fProfile);
+			CloseFile(fProfile);
 		}
 	}
 }

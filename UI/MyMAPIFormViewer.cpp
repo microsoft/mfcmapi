@@ -6,7 +6,7 @@
 #include <UI/MAPIFormFunctions.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <Interpret/Guids.h>
+#include <Interpret/guids.h>
 #include <UI/MyWinApp.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <Interpret/InterpretProp.h>

@@ -3,9 +3,10 @@
 #include <Interpret/InterpretProp.h>
 #include <core/utility/strings.h>
 #include <MAPI/Cache/NamedPropCache.h>
-#include <Interpret/Guids.h>
+#include <Interpret/guids.h>
+#include <core/interpret/guid.h>
 #include <UI/Dialogs/Editors/PropertySelector.h>
-#include <Addins.h>
+#include <AddIns.h>
 
 namespace dialog
 {

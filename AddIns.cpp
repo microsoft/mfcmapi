@@ -8,7 +8,7 @@
 // Our built in arrays, which get merged into the arrays declared in mfcmapi.h
 #include <core/interpret/genTagArray.h>
 #include <core/interpret/flags.h>
-#include <Interpret/GUIDArray.h>
+#include <core/interpret/guidArray.h>
 #include <core/interpret/nameIDArray.h>
 #include <core/interpret/propTypeArray.h>
 #include <Interpret/SmartView/SmartViewParsers.h>

@@ -7,6 +7,7 @@
 #include <ImportProcs.h>
 #include <ShlObj.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
+#include <core/interpret/guid.h>
 
 namespace file
 {

@@ -9,7 +9,7 @@
 #include <MAPI/Cache/MapiObjects.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <Interpret/Guids.h>
+#include <Interpret/guids.h>
 #include <UI/Dialogs/HierarchyTable/MsgStoreDlg.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/Dialogs/SingleMessageDialog.h>

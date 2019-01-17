@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/ConversationIndex.h>
-#include <Interpret/Guids.h>
+#include <Interpret/guids.h>
 
 namespace smartview
 {

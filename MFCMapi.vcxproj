@@ -562,6 +562,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AddIns.h" />
+    <ClInclude Include="Interpret\guids.h" />
     <ClInclude Include="Interpret\Sid.h" />
     <ClInclude Include="Interpret\SmartView\block\blockStringW.h" />
     <ClInclude Include="Interpret\SmartView\block\blockStringA.h" />
@@ -576,8 +577,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="Enums.h" />
     <ClInclude Include="IO\Error.h" />
     <ClInclude Include="IO\File.h" />
-    <ClInclude Include="Interpret\GUIDArray.h" />
-    <ClInclude Include="Interpret\Guids.h" />
     <ClInclude Include="ImportProcs.h" />
     <ClInclude Include="Interpret\InterpretProp.h" />
     <ClInclude Include="MAPI\MAPIABFunctions.h" />
@@ -713,6 +712,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <None Include=".clang-format" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Interpret\guids.cpp" />
     <ClCompile Include="Interpret\Sid.cpp" />
     <ClCompile Include="AddIns.cpp" />
     <ClCompile Include="MAPI\AdviseSink.cpp" />
@@ -721,7 +721,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="MAPI\MAPIProcessor\DumpStore.cpp" />
     <ClCompile Include="IO\Error.cpp" />
     <ClCompile Include="IO\File.cpp" />
-    <ClCompile Include="Interpret\Guids.cpp" />
     <ClCompile Include="ImportProcs.cpp" />
     <ClCompile Include="Interpret\InterpretProp.cpp" />
     <ClCompile Include="MAPI\MAPIABFunctions.cpp" />

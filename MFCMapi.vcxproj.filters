@@ -131,6 +131,7 @@
       <Filter>Source Files\MAPI</Filter>
     </ClInclude>
     <ClInclude Include="AddIns.h" />
+    <ClInclude Include="Interpret\guids.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -190,6 +191,9 @@
     <ClCompile Include="MAPI\Version.cpp">
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>
+    <ClCompile Include="Interpret\guids.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IO\Error.cpp">
@@ -218,15 +222,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Interpret\GUIDArray.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\Guids.cpp">
-      <Filter>Source Files\Interpret</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\Guids.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
     <ClCompile Include="Interpret\InterpretProp.cpp">
       <Filter>Source Files\Interpret</Filter>
     </ClCompile>

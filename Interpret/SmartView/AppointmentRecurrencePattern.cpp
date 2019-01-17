@@ -3,7 +3,7 @@
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/InterpretProp.h>
 #include <core/mapi/extraPropTags.h>
-#include <Interpret/Guids.h>
+#include <core/interpret/guid.h>
 
 namespace smartview
 {

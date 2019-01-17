@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Shlwapi.h>
-#include <Interpret/Guids.h>
+#include <core/interpret/guid.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/InterpretProp.h>
 #include <core/utility/strings.h>
