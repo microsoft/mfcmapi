@@ -1,11 +1,11 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMFidMid.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIProcessor/MapiProcessor.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <core/utility/strings.h>
+#include <MrMapi/cli.h>
 
 namespace mapiprocessor
 {

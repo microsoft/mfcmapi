@@ -6,7 +6,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <IO/File.h>
 #include <UI/FileDialogEx.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 #include <MAPI/MapiMime.h>
 #include <ImportProcs.h>
 #include <UI/UIFunctions.h>

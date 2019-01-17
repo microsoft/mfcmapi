@@ -2,7 +2,7 @@
 
 // Where our flag parsing array is defined
 
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 
 // when listing flagVALUE entries, NULL values need to come first
 static FLAG_ARRAY_ENTRY g_FlagArray[] = {

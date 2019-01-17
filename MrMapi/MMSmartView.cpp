@@ -1,8 +1,8 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
 #include <core/utility/strings.h>
 #include <io.h>
 #include <Interpret/SmartView/SmartView.h>
+#include <MrMapi/cli.h>
 
 void DoSmartView(_In_ cli::MYOPTIONS ProgOpts)
 {

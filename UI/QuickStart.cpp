@@ -3,7 +3,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIABFunctions.h>
@@ -14,7 +14,7 @@
 
 namespace dialog
 {
-	LPMAPISESSION OpenSessionForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
+	LPMAPISESSION OpenSessionForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
 		auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return nullptr;
@@ -30,7 +30,7 @@ namespace dialog
 		return nullptr;
 	}
 
-	LPMDB OpenStoreForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
+	LPMDB OpenStoreForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
 
 		auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
@@ -47,7 +47,7 @@ namespace dialog
 		return lpMDB;
 	}
 
-	_Check_return_ LPADRBOOK OpenABForQuickStart(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
+	_Check_return_ LPADRBOOK OpenABForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
 		auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return nullptr;
@@ -64,7 +64,7 @@ namespace dialog
 		return lpAdrBook;
 	}
 
-	void OnQSDisplayFolder(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder)
+	void OnQSDisplayFolder(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder)
 	{
 		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
@@ -82,11 +82,11 @@ namespace dialog
 	}
 
 	void OnQSDisplayTable(
-		_In_ dialog::CMainDlg* lpHostDlg,
+		_In_ CMainDlg* lpHostDlg,
 		_In_ HWND hwnd,
 		_In_ ULONG ulFolder,
 		_In_ ULONG ulProp,
-		_In_ dialog::ObjectType tType)
+		_In_ ObjectType tType)
 	{
 		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
@@ -102,7 +102,7 @@ namespace dialog
 		}
 	}
 
-	void OnQSDisplayDefaultDir(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
+	void OnQSDisplayDefaultDir(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
 		auto lpAdrBook = OpenABForQuickStart(lpHostDlg, hwnd);
 		if (lpAdrBook)
@@ -112,7 +112,7 @@ namespace dialog
 			ULONG ulObjType = NULL;
 			LPABCONT lpDefaultDir = nullptr;
 
-			auto hRes = WC_MAPI(lpAdrBook->GetDefaultDir(&cbEID, &lpEID));
+			const auto hRes = WC_MAPI(lpAdrBook->GetDefaultDir(&cbEID, &lpEID));
 			if (SUCCEEDED(hRes))
 			{
 				lpDefaultDir = mapi::CallOpenEntry<LPABCONT>(
@@ -131,7 +131,7 @@ namespace dialog
 		}
 	}
 
-	void OnQSDisplayAB(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
+	void OnQSDisplayAB(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
 		const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return;
@@ -143,12 +143,12 @@ namespace dialog
 		if (lpAdrBook)
 		{
 			// call the dialog
-			new dialog::CAbContDlg(lpParentWnd, lpMapiObjects);
+			new CAbContDlg(lpParentWnd, lpMapiObjects);
 			lpAdrBook->Release();
 		}
 	}
 
-	void OnQSDisplayNicknameCache(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
+	void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
 		std::wstring szNicknames;
 		LPSPropValue lpsProp = nullptr;
@@ -159,15 +159,15 @@ namespace dialog
 		auto lpMDB = OpenStoreForQuickStart(lpHostDlg, hwnd);
 		if (lpMDB)
 		{
-			auto lpFolder = mapi::OpenDefaultFolder(mapi::DEFAULT_INBOX, lpMDB);
+			auto lpFolder = OpenDefaultFolder(mapi::DEFAULT_INBOX, lpMDB);
 			if (lpFolder)
 			{
 				LPMAPITABLE lpTable = nullptr;
 				WC_MAPI_S(lpFolder->GetContentsTable(MAPI_ASSOCIATED, &lpTable));
 				if (lpTable)
 				{
-					SRestriction sRes = {0};
-					SPropValue sPV = {0};
+					SRestriction sRes = {};
+					SPropValue sPV = {};
 					sRes.rt = RES_PROPERTY;
 					sRes.res.resProperty.ulPropTag = PR_MESSAGE_CLASS;
 					sRes.res.resProperty.relop = RELOP_EQ;
@@ -234,7 +234,7 @@ namespace dialog
 			// Display our dialog
 			if (!szNicknames.empty() && lpsProp)
 			{
-				dialog::editor::CEditor MyResults(lpHostDlg, IDS_NICKNAME, NULL, CEDITOR_BUTTON_OK);
+				editor::CEditor MyResults(lpHostDlg, IDS_NICKNAME, NULL, CEDITOR_BUTTON_OK);
 				MyResults.AddPane(viewpane::TextPane::CreateCollapsibleTextPane(0, NULL, true));
 				MyResults.AddPane(viewpane::CountedTextPane::Create(1, IDS_HEX, true, IDS_CB));
 
@@ -298,7 +298,7 @@ namespace dialog
 
 #define AddFormattedQuota(__TAG) szQuotaString += FormatQuota(&lpProps[q##__TAG], __TAG, L#__TAG);
 
-	void OnQSDisplayQuota(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
+	void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
 		std::wstring szQuotaString;
 
@@ -363,7 +363,7 @@ namespace dialog
 			lpMDB->Release();
 
 			// Display our dialog
-			dialog::editor::CEditor MyResults(lpHostDlg, IDS_QUOTA, NULL, CEDITOR_BUTTON_OK);
+			editor::CEditor MyResults(lpHostDlg, IDS_QUOTA, NULL, CEDITOR_BUTTON_OK);
 			MyResults.AddPane(viewpane::TextPane::CreateMultiLinePane(0, NULL, true));
 			MyResults.SetStringW(0, szQuotaString);
 
@@ -373,7 +373,7 @@ namespace dialog
 		lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
 	}
 
-	void OnQSOpenUser(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
+	void OnQSOpenUser(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
 		const auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 		if (!lpMapiObjects) return;
@@ -397,7 +397,7 @@ namespace dialog
 		}
 	}
 
-	void OnQSLookupThumbail(_In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
+	void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
 		LPSPropValue lpThumbnail = nullptr;
 
@@ -420,7 +420,7 @@ namespace dialog
 			lpAdrBook->Release();
 		}
 
-		dialog::editor::CEditor MyResults(lpHostDlg, IDS_QSTHUMBNAIL, NULL, CEDITOR_BUTTON_OK);
+		editor::CEditor MyResults(lpHostDlg, IDS_QSTHUMBNAIL, NULL, CEDITOR_BUTTON_OK);
 
 		if (lpThumbnail)
 		{
@@ -444,7 +444,7 @@ namespace dialog
 		if (lpAdrBook) lpAdrBook->Release();
 	}
 
-	bool HandleQuickStart(_In_ WORD wMenuSelect, _In_ dialog::CMainDlg* lpHostDlg, _In_ HWND hwnd)
+	bool HandleQuickStart(_In_ WORD wMenuSelect, _In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
 		switch (wMenuSelect)
 		{
@@ -506,7 +506,7 @@ namespace dialog
 			OnQSDisplayFolder(lpHostDlg, hwnd, mapi::DEFAULT_JUNKMAIL);
 			return true;
 		case ID_QSRULES:
-			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_INBOX, PR_RULES_TABLE, dialog::otRules);
+			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_INBOX, PR_RULES_TABLE, otRules);
 			return true;
 		case ID_QSDEFAULTDIR:
 			OnQSDisplayDefaultDir(lpHostDlg, hwnd);
@@ -515,7 +515,7 @@ namespace dialog
 			OnQSDisplayAB(lpHostDlg, hwnd);
 			return true;
 		case ID_QSCALPERM:
-			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR, PR_ACL_TABLE, dialog::otACL);
+			OnQSDisplayTable(lpHostDlg, hwnd, mapi::DEFAULT_CALENDAR, PR_ACL_TABLE, otACL);
 			return true;
 		case ID_QSNICKNAME:
 			OnQSDisplayNicknameCache(lpHostDlg, hwnd);
@@ -524,7 +524,7 @@ namespace dialog
 			OnQSDisplayQuota(lpHostDlg, hwnd);
 			return true;
 		case ID_QSCHECKSPECIALFOLDERS:
-			dialog::editor::OnQSCheckSpecialFolders(lpHostDlg, hwnd);
+			editor::OnQSCheckSpecialFolders(lpHostDlg, hwnd);
 			return true;
 		case ID_QSTHUMBNAIL:
 			OnQSLookupThumbail(lpHostDlg, hwnd);

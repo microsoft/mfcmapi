@@ -5,7 +5,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 
 namespace mapi
 {

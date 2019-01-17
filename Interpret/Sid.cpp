@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/Sid.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 #include <Interpret/GUIDArray.h>
 
 namespace sid
@@ -60,7 +60,7 @@ namespace sid
 
 	_Check_return_ std::wstring GetTextualSid(std::vector<BYTE> buf)
 	{
-		auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
+		const auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
 		if (buf.size() < sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount) return {};
 
 		return GetTextualSid(static_cast<PSID>(buf.data()));
@@ -107,7 +107,7 @@ namespace sid
 
 	_Check_return_ SidAccount LookupAccountSid(std::vector<BYTE> buf)
 	{
-		auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
+		const auto subAuthorityCount = buf.size() >= 2 ? buf[1] : 0;
 		if (buf.size() < sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * subAuthorityCount) return {};
 
 		return LookupAccountSid(static_cast<PSID>(buf.data()));
@@ -118,8 +118,8 @@ namespace sid
 		std::vector<std::wstring> aceString;
 		ACCESS_MASK Mask = 0;
 		DWORD Flags = 0;
-		GUID ObjectType = {0};
-		GUID InheritedObjectType = {0};
+		GUID ObjectType = {};
+		GUID InheritedObjectType = {};
 		SID* SidStart = nullptr;
 		auto bObjectFound = false;
 
@@ -204,7 +204,7 @@ namespace sid
 		return strings::join(aceString, L"\r\n");
 	}
 
-	_Check_return_ SecurityDescriptor SDToString(const std::vector<BYTE> buf, eAceType acetype)
+	_Check_return_ SecurityDescriptor SDToString(const std::vector<BYTE>& buf, eAceType acetype)
 	{
 		if (buf.empty()) return {};
 

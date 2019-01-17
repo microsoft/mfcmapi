@@ -2,7 +2,7 @@
 #include <Interpret/SmartView/RecurrencePattern.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 
 namespace smartview
 {

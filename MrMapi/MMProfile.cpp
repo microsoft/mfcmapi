@@ -1,9 +1,9 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMProfile.h>
 #include <IO/ExportProfile.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
+#include <MrMapi/cli.h>
 
 namespace output
 {

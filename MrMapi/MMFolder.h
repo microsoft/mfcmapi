@@ -1,6 +1,10 @@
 #pragma once
 // Folder related utilities for MrMAPI
 
+namespace cli {
+	struct MYOPTIONS;
+}
+
 void DoChildFolders(_In_ cli::MYOPTIONS ProgOpts);
 void DoFolderProps(_In_ cli::MYOPTIONS ProgOpts);
 void DoFolderSize(_In_ cli::MYOPTIONS ProgOpts);

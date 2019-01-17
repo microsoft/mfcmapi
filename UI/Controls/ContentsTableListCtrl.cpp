@@ -8,7 +8,7 @@
 #include <Interpret/InterpretProp.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <process.h>
 #include <UI/Controls/SortList/ContentsData.h>
@@ -133,7 +133,7 @@ namespace controls
 		{
 			if (pWnd && -1 == pos.x && -1 == pos.y)
 			{
-				POINT point = {0};
+				POINT point = {};
 				const auto iItem = GetNextItem(-1, LVNI_SELECTED);
 				GetItemPosition(iItem, &point);
 				::ClientToScreen(pWnd->m_hWnd, &point);
@@ -347,7 +347,7 @@ namespace controls
 			ULONG ulCurTagArrayRow,
 			ULONG ulPropTag)
 		{
-			HDITEM hdItem = {0};
+			HDITEM hdItem = {};
 			auto lpMyHeader = GetHeaderCtrl();
 			std::wstring szHeaderString;
 			LPMDB lpMDB = nullptr;
@@ -803,7 +803,7 @@ namespace controls
 
 			for (ULONG iColumn = 0; iColumn < m_ulHeaderColumns; iColumn++)
 			{
-				HDITEM hdItem = {0};
+				HDITEM hdItem = {};
 				hdItem.mask = HDI_LPARAM;
 				EC_B_S(lpMyHeader->GetItem(iColumn, &hdItem));
 
@@ -1408,7 +1408,7 @@ namespace controls
 				return S_FALSE;
 
 			auto bDidWork = false;
-			LVITEM lvItem = {0};
+			LVITEM lvItem = {};
 			lvItem.iItem = iItem;
 			lvItem.iSubItem = 0;
 			lvItem.mask = LVIF_IMAGE;
@@ -1490,7 +1490,7 @@ namespace controls
 					lpProp->Value.l = lpData->Contents()->m_ulRowType;
 				}
 
-				SRow sRowData = {0};
+				SRow sRowData = {};
 				sRowData.cValues = lpData->cSourceProps;
 				sRowData.lpProps = lpData->lpSourceProps;
 				SetRowStrings(iItem, &sRowData);
@@ -1552,7 +1552,7 @@ namespace controls
 
 			// We make this copy here and pass it in to AddItemToListBox, where it is grabbed by SortListData::InitializeContents to be part of the item data
 			// The mem will be freed when the item data is cleaned up - do not free here
-			SRow NewRow = {0};
+			SRow NewRow = {};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 			const auto hRes =
@@ -1615,7 +1615,7 @@ namespace controls
 
 				// We make this copy here and pass it in to RefreshItem, where it is grabbed by SortListData::InitializeContents to be part of the item data
 				// The mem will be freed when the item data is cleaned up - do not free here
-				SRow NewRow = {0};
+				SRow NewRow = {};
 				NewRow.cValues = tab->row.cValues;
 				NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 				hRes = EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));

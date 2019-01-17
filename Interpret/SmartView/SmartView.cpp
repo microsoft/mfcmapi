@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <Interpret/Guids.h>

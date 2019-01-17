@@ -3,7 +3,7 @@
 #include <core/utility/strings.h>
 #include <UI/MySecInfo.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/Sid.h>
 

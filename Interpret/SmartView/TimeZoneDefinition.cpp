@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/TimeZoneDefinition.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 
 namespace smartview
 {

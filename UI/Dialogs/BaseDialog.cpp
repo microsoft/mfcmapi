@@ -12,7 +12,7 @@
 #include <Interpret/InterpretProp.h>
 #include <UI/Dialogs/AboutDlg.h>
 #include <MAPI/AdviseSink.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 #include <Msi.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <MAPI/Cache/GlobalCache.h>

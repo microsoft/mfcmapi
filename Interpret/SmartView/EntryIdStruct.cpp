@@ -4,7 +4,7 @@
 #include <core/utility/strings.h>
 #include <Interpret/Guids.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 
 namespace smartview
 {

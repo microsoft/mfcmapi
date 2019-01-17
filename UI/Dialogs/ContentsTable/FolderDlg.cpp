@@ -16,7 +16,7 @@
 #include <UI/MAPIFormFunctions.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/FileDialogEx.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <MAPI/MAPIProgress.h>
 #include <MAPI/MapiMime.h>
@@ -461,8 +461,7 @@ namespace dialog
 		{
 			if (0 == MyData.GetDropDown(1))
 			{ // CopyMessages
-				auto lpProgress =
-					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
+				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
 
 				if (lpProgress) ulMoveMessage |= MESSAGE_DIALOG;
 
@@ -664,8 +663,7 @@ namespace dialog
 			}
 			else
 			{
-				auto lpProgress =
-					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteMessages", m_hWnd); // STRING_OK
+				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteMessages", m_hWnd); // STRING_OK
 
 				if (lpProgress) ulFlag |= MESSAGE_DIALOG;
 
@@ -1646,8 +1644,7 @@ namespace dialog
 		{
 			const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 
-			auto lpProgress =
-				mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::SetReadFlags", m_hWnd); // STRING_OK
+			auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::SetReadFlags", m_hWnd); // STRING_OK
 
 			auto ulFlags = MyFlags.GetHex(0);
 

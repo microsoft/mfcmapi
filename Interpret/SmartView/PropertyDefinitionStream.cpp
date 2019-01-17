@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/PropertyDefinitionStream.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 
 namespace smartview
 {
@@ -200,7 +200,7 @@ namespace smartview
 				else
 				{
 					std::wstring szDispidName;
-					MAPINAMEID mnid = {nullptr};
+					MAPINAMEID mnid = {};
 					mnid.lpguid = nullptr;
 					mnid.ulKind = MNID_ID;
 					mnid.Kind.lID = m_pfdFieldDefinitions[iDef].dwDispid;

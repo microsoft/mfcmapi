@@ -2,7 +2,7 @@
 #include <Property/ParseProperty.h>
 #include <Property/Property.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/Guids.h>
 
@@ -37,7 +37,7 @@ namespace property
 		if (!lpProp || ulMVRow > lpProp->Value.MVi.cValues) return Property();
 
 		// We'll let ParseProperty do all the work
-		SPropValue sProp = {0};
+		SPropValue sProp = {};
 		sProp.ulPropTag = CHANGE_PROP_TYPE(lpProp->ulPropTag, PROP_TYPE(lpProp->ulPropTag) & ~MV_FLAG);
 
 		// Only attempt to dereference our array if it's non-NULL
@@ -176,7 +176,7 @@ namespace property
 					szTmp = strings::LPCSTRToWstring(lpProp->Value.lpszA);
 					bPropXMLSafe = false;
 
-					SBinary sBin = {0};
+					SBinary sBin = {};
 					sBin.cb = static_cast<ULONG>(szTmp.length());
 					sBin.lpb = reinterpret_cast<LPBYTE>(lpProp->Value.lpszA);
 					szAltTmp = strings::BinToHexString(&sBin, false);
@@ -190,7 +190,7 @@ namespace property
 					szTmp = lpProp->Value.lpszW;
 					bPropXMLSafe = false;
 
-					SBinary sBin = {0};
+					SBinary sBin = {};
 					sBin.cb = static_cast<ULONG>(szTmp.length()) * sizeof(WCHAR);
 					sBin.lpb = reinterpret_cast<LPBYTE>(lpProp->Value.lpszW);
 					szAltTmp = strings::BinToHexString(&sBin, false);
@@ -242,4 +242,4 @@ namespace property
 
 		return properties;
 	}
-}
+} // namespace property

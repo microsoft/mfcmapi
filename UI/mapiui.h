@@ -1,6 +1,5 @@
 #pragma once
-#include <Interpret/ExtraPropTags.h>
-#include "Dialogs/Editors/DbgView.h"
+#include <core/mapi/extraPropTags.h>
 
 namespace ui
 {

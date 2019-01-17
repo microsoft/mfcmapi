@@ -219,9 +219,6 @@
     <ClInclude Include="..\Interpret\ErrorArray.h">
       <Filter>Source Files\Interpret</Filter>
     </ClInclude>
-    <ClInclude Include="..\Interpret\ExtraPropTags.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
     <ClInclude Include="..\Interpret\Flags.h">
       <Filter>Source Files\Interpret</Filter>
     </ClInclude>

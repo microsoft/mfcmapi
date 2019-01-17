@@ -2,7 +2,7 @@
 #include <UI/MySecInfo.h>
 #include <Interpret/Sid.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 #include <MAPI/MapiMemory.h>
 
 namespace mapi

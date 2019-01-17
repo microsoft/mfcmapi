@@ -1,6 +1,5 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
-#include <MrMapi/MMPST.h>
+#include <MrMapi/cli.h>
 
 #define NDB_CRYPT_NONE 0
 #define NDB_CRYPT_PERMUTE 1

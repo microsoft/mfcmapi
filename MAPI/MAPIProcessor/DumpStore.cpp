@@ -8,7 +8,7 @@
 #include <core/utility/strings.h>
 #include <IO/File.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 
 namespace mapiprocessor
 {

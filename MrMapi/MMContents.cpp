@@ -1,7 +1,7 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <IO/File.h>
+#include <MrMapi/cli.h>
 
 void DumpContentsTable(
 	_In_z_ LPCWSTR lpszProfile,

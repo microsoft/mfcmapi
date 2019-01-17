@@ -1,6 +1,11 @@
 #pragma once
 // Store Properties for MrMAPI
 
+namespace cli
+{
+	struct MYOPTIONS;
+}
+
 HRESULT HrMAPIOpenStoreAndFolder(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ ULONG ulFolder,

@@ -5,7 +5,7 @@
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/StreamEditor.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 
 namespace dialog
 {
@@ -104,7 +104,7 @@ namespace dialog
 
 				if (SUCCEEDED(hRes))
 				{
-					hRes = EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+					EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 				}
 
 				(void) m_lpPropDisplay->RefreshMAPIPropList();

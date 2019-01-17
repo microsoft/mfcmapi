@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/VerbStream.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 
 namespace smartview
 {

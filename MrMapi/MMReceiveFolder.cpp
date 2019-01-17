@@ -1,7 +1,7 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
 #include <MAPI/ColumnTags.h>
 #include <MrMapi/MMReceiveFolder.h>
+#include <MrMapi/cli.h>
 
 void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 {
