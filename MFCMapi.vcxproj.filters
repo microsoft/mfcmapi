@@ -218,16 +218,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Interpret\ErrorArray.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\Flags.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
     <ClInclude Include="Interpret\GUIDArray.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\GenTagArray.h">
       <Filter>Source Files\Interpret</Filter>
     </ClInclude>
     <ClCompile Include="Interpret\Guids.cpp">
@@ -240,12 +231,6 @@
       <Filter>Source Files\Interpret</Filter>
     </ClCompile>
     <ClInclude Include="Interpret\InterpretProp.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\NameIDArray.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\PropTypeArray.h">
       <Filter>Source Files\Interpret</Filter>
     </ClInclude>
     <ClCompile Include="Interpret\Sid.cpp">

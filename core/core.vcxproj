@@ -478,6 +478,11 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="interpret\errorArray.h" />
+    <ClInclude Include="interpret\flags.h" />
+    <ClInclude Include="interpret\genTagArray.h" />
+    <ClInclude Include="interpret\nameIDArray.h" />
+    <ClInclude Include="interpret\propTypeArray.h" />
     <ClInclude Include="mapi\extraPropTags.h" />
     <ClInclude Include="mfcmapi.h" />
     <ClInclude Include="res\Resource.h" />

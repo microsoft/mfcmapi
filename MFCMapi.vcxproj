@@ -575,10 +575,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="MAPI\MAPIProcessor\DumpStore.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="IO\Error.h" />
-    <ClInclude Include="Interpret\ErrorArray.h" />
     <ClInclude Include="IO\File.h" />
-    <ClInclude Include="Interpret\Flags.h" />
-    <ClInclude Include="Interpret\GenTagArray.h" />
     <ClInclude Include="Interpret\GUIDArray.h" />
     <ClInclude Include="Interpret\Guids.h" />
     <ClInclude Include="ImportProcs.h" />
@@ -628,9 +625,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="Interpret\SmartView\WebViewPersistStream.h" />
     <ClInclude Include="Interpret\SmartView\XID.h" />
     <ClInclude Include="MAPI\Cache\NamedPropCache.h" />
-    <ClInclude Include="Interpret\NameIDArray.h" />
     <ClInclude Include="PropertyBag\PropertyBag.h" />
-    <ClInclude Include="Interpret\PropTypeArray.h" />
     <ClInclude Include="IO\Registry.h" />
     <ClInclude Include="PropertyBag\RowPropertyBag.h" />
     <ClInclude Include="Interpret\SmartView\SmartView.h" />

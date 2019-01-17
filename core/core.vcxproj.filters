@@ -33,6 +33,21 @@
     <ClInclude Include="mfcmapi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="interpret\errorArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\genTagArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\nameIDArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\propTypeArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\flags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

@@ -3,15 +3,14 @@
 #include <core/mfcmapi.h>
 #include <ImportProcs.h>
 #include <core/utility/strings.h>
-#include <UI/Dialogs/Editors/Editor.h>
 #include <IO/File.h>
 
 // Our built in arrays, which get merged into the arrays declared in mfcmapi.h
-#include <Interpret/GenTagArray.h>
-#include <Interpret/Flags.h>
+#include <core/interpret/genTagArray.h>
+#include <core/interpret/flags.h>
 #include <Interpret/GUIDArray.h>
-#include <Interpret/NameIDArray.h>
-#include <Interpret/PropTypeArray.h>
+#include <core/interpret/nameIDArray.h>
+#include <core/interpret/propTypeArray.h>
 #include <Interpret/SmartView/SmartViewParsers.h>
 #include <MAPI/StubUtils.h>
 
