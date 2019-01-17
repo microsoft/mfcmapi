@@ -4,8 +4,9 @@
 #include <UI/profile.h>
 #include <ImportProcs.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <MAPI/MAPIProfileFunctions.h>
 #include <IO/File.h>
+#include <core/utility/strings.h>
+#include <IO/MFCOutput.h>
 
 namespace ui
 {

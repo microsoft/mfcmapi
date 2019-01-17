@@ -5,6 +5,7 @@
 #include <core/mapi/extraPropTags.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/guids.h>
+#include <core/utility/strings.h>
 
 namespace property
 {

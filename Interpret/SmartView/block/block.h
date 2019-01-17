@@ -1,4 +1,5 @@
 #pragma once
+#include <core/utility/strings.h>
 
 namespace smartview
 {
@@ -104,7 +105,7 @@ namespace smartview
 		ULONG source{};
 
 	private:
-		explicit block(std::wstring _text) : offset(0), cb(0), text(std::move(_text)) {}
+		explicit block(std::wstring _text) : text(std::move(_text)) {}
 		virtual std::wstring ToStringInternal() const { return text; }
 		std::wstring text;
 		std::vector<block> children;

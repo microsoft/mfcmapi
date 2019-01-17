@@ -8,6 +8,7 @@
 #include <ShlObj.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <core/interpret/guid.h>
+#include <IO/MFCOutput.h>
 
 namespace file
 {

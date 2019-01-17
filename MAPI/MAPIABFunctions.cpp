@@ -4,6 +4,8 @@
 #include <MAPI/MAPIABFunctions.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MapiMemory.h>
+#include <core/utility/strings.h>
+#include <IO/MFCOutput.h>
 
 namespace mapi
 {

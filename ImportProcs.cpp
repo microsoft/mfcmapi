@@ -4,6 +4,7 @@
 #include <MAPI/StubUtils.h>
 #include <IO/File.h>
 #include <IO/Registry.h>
+#include <IO/MFCOutput.h>
 
 namespace import
 {

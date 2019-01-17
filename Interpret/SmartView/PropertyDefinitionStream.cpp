@@ -2,6 +2,7 @@
 #include <Interpret/SmartView/PropertyDefinitionStream.h>
 #include <Interpret/InterpretProp.h>
 #include <core/mapi/extraPropTags.h>
+#include <core/utility/strings.h>
 
 namespace smartview
 {

@@ -1,5 +1,7 @@
 #include <StdAfx.h>
 #include <UI/FileDialogEx.h>
+#include <IO/Registry.h>
+#include <core/utility/strings.h>
 
 namespace file
 {
@@ -11,7 +13,7 @@ namespace file
 		_In_opt_ CWnd* pParentWnd)
 	{
 		CFileDialogExW dlgFilePicker;
-		auto iDlgRet =
+		const auto iDlgRet =
 			EC_D_DIALOG(dlgFilePicker.DisplayDialog(true, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd));
 		if (iDlgRet == IDOK)
 		{
@@ -29,7 +31,7 @@ namespace file
 		_In_opt_ CWnd* pParentWnd)
 	{
 		CFileDialogExW dlgFilePicker;
-		auto iDlgRet = EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+		const auto iDlgRet = EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			true, lpszDefExt, lpszFileName, dwFlags | OFN_ALLOWMULTISELECT, lpszFilter, pParentWnd));
 		if (iDlgRet == IDOK)
 		{
@@ -47,7 +49,7 @@ namespace file
 		_In_opt_ CWnd* pParentWnd)
 	{
 		CFileDialogExW dlgFilePicker;
-		auto iDlgRet =
+		const auto iDlgRet =
 			EC_D_DIALOG(dlgFilePicker.DisplayDialog(false, lpszDefExt, lpszFileName, dwFlags, lpszFilter, pParentWnd));
 		if (iDlgRet == IDOK)
 		{

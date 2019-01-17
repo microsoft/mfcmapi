@@ -16,6 +16,8 @@
 #include <UI/CMAPIProgress.h>
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <Addins.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 namespace ui
 {

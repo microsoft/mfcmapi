@@ -2,6 +2,8 @@
 #include <UI/ViewPane/ListPane.h>
 #include <UI/UIFunctions.h>
 #include <utility>
+#include <core/utility/strings.h>
+#include <IO/MFCOutput.h>
 
 namespace viewpane
 {
@@ -174,7 +176,7 @@ namespace viewpane
 		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
 		WC_B_S(m_List.ShowWindow(cmdShow));
 		auto listHeight = height - (curY - y);
-		if (!m_bReadOnly) listHeight -= (m_iLargeHeightMargin + m_iButtonHeight);
+		if (!m_bReadOnly) listHeight -= m_iLargeHeightMargin + m_iButtonHeight;
 		EC_B_S(::DeferWindowPos(hWinPosInfo, m_List.GetSafeHwnd(), nullptr, x, curY, width, listHeight, SWP_NOZORDER));
 
 		if (!m_bReadOnly)

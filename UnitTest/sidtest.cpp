@@ -2,6 +2,7 @@
 #include <CppUnitTest.h>
 #include <UnitTest/UnitTest.h>
 #include <Interpret/Sid.h>
+#include <core/utility/strings.h>
 
 namespace sid
 {
@@ -62,7 +63,7 @@ namespace sidtest
 
 		TEST_METHOD(Test_ACEToString)
 		{
-			unittest::AreEqualEx(std::wstring{L""}, sid::ACEToString(nullptr, sid::acetypeContainer));
+			unittest::AreEqualEx(std::wstring{L""}, ACEToString(nullptr, sid::acetypeContainer));
 
 			auto aceAllowBin =
 				strings::HexStringToBin(L"00092400a9081200010500000000000515000000371a6c07352f372aad20fa5b01930100");
@@ -74,7 +75,7 @@ namespace sidtest
 					L"Access Flags: 0x00000009 = OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE\r\n"
 					L"Access Mask: 0x001208A9 = fsdrightListContents | fsdrightReadProperty | fsdrightExecute | "
 					L"fsdrightReadAttributes | fsdrightViewItem | fsdrightReadControl | fsdrightSynchronize"},
-				sid::ACEToString(aceAllowBin.data(), sid::acetypeContainer));
+				ACEToString(aceAllowBin.data(), sid::acetypeContainer));
 
 			auto aceDenyBin = strings::HexStringToBin(L"01 09 1400 a9081200 01 01 000000000005 0B000000");
 			unittest::AreEqualEx(
@@ -83,7 +84,7 @@ namespace sidtest
 							 L"Access Type: 0x00000001 = ACCESS_DENIED_ACE_TYPE\r\n"
 							 L"Access Flags: 0x00000009 = OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE\r\n"
 							 L"Access Mask: 0x001208A9 = "},
-				sid::ACEToString(aceDenyBin.data(), static_cast<sid::eAceType>(3)));
+				ACEToString(aceDenyBin.data(), static_cast<sid::eAceType>(3)));
 
 			auto aceAllowObjectBin = strings::HexStringToBin(L"05 1f 3800 a9081200 ffffffff"
 															 L"0A0D0200-0000-0000-C000-000000000046"
@@ -103,7 +104,7 @@ namespace sidtest
 					L"InheritedObjectType: \r\n"
 					L"{53BC2EC0-D953-11CD-9752-00AA004AE40E} = GUID_Dilkie\r\n"
 					L"Flags: 0xFFFFFFFF"},
-				sid::ACEToString(aceAllowObjectBin.data(), sid::acetypeMessage));
+				ACEToString(aceAllowObjectBin.data(), sid::acetypeMessage));
 
 			auto aceDenyObjectBin = strings::HexStringToBin(L"06 1f 3800 03000000 ffffffff"
 															L"0A0D0200-0000-0000-C000-000000000046"
@@ -122,27 +123,28 @@ namespace sidtest
 					L"InheritedObjectType: \r\n"
 					L"{53BC2EC0-D953-11CD-9752-00AA004AE40E} = GUID_Dilkie\r\n"
 					L"Flags: 0xFFFFFFFF"},
-				sid::ACEToString(aceDenyObjectBin.data(), sid::acetypeFreeBusy));
+				ACEToString(aceDenyObjectBin.data(), sid::acetypeFreeBusy));
 		}
 
 		TEST_METHOD(Test_SDToString)
 		{
-			auto nullsd = SDToString({}, sid::acetypeContainer);
+			const auto nullsd = SDToString({}, sid::acetypeContainer);
 			Assert::AreEqual(std::wstring{L""}, nullsd.dacl);
 			Assert::AreEqual(std::wstring{L""}, nullsd.info);
 
-			auto invalid = SDToString(strings::HexStringToBin(L"B606B07ABB6079AB2082C760"), sid::acetypeContainer);
+			const auto invalid =
+				SDToString(strings::HexStringToBin(L"B606B07ABB6079AB2082C760"), sid::acetypeContainer);
 			Assert::AreEqual(std::wstring{L"This is not a valid security descriptor."}, invalid.dacl);
 			Assert::AreEqual(std::wstring{L""}, invalid.info);
 
-			auto sd = SDToString(
+			const auto sd = SDToString(
 				strings::HexStringToBin(L"0800030000000000010007801C000000280000000000000014000000020008000000000001010"
 										L"000000000051200000001020000000000052000000020020000"),
 				sid::acetypeContainer);
 			Assert::AreEqual(std::wstring{L""}, sd.dacl);
 			Assert::AreEqual(std::wstring{L"0x0"}, sd.info);
 
-			auto sd1 = SDToString(
+			const auto sd1 = SDToString(
 				strings::HexStringToBin(
 					L"08000300000000000100078064000000700000000000000014000000020050000200000001092400BF0F1F00010500000"
 					L"000000515000000271A6C07352F372AAD20FA5BAA830B0001022400BFC91F00010500000000000515000000271A6C0735"

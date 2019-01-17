@@ -16,6 +16,9 @@
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #include <MAPI/MapiMemory.h>
+#include <IO/MFCOutput.h>
+#include <IO/Registry.h>
+#include <core/utility/strings.h>
 
 namespace controls
 {

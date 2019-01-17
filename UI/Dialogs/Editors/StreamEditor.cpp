@@ -7,6 +7,7 @@
 #include <core/utility/strings.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/ViewPane/SmartViewPane.h>
+#include <IO/MFCOutput.h>
 
 namespace dialog
 {

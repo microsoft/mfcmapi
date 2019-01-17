@@ -5,6 +5,8 @@
 #include <Interpret/InterpretProp.h>
 #include <UI/MyWinApp.h>
 #include <UI/Dialogs/AboutDlg.h>
+#include <IO/MFCOutput.h>
+#include <IO/Registry.h>
 
 extern ui::CMyWinApp theApp;
 
@@ -105,7 +107,7 @@ namespace dialog
 
 			if (!m_pParentWnd->GetSafeHwnd())
 			{
-				m_pParentWnd = CWnd::FromHandle(ui::GetMainWindow());
+				m_pParentWnd = FromHandle(ui::GetMainWindow());
 			}
 
 			if (!m_pParentWnd->GetSafeHwnd())
@@ -341,7 +343,7 @@ namespace dialog
 					CRect(0, 0, 0, 0),
 					this,
 					IDC_PROMPT));
-				::SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
+				SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
 
 				ui::SubclassLabel(m_Prompt.m_hWnd);
 			}

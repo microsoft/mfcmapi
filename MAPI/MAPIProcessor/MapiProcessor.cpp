@@ -3,6 +3,8 @@
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/ColumnTags.h>
+#include <core/utility/strings.h>
+#include <IO/MFCOutput.h>
 
 namespace mapiprocessor
 {

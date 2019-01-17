@@ -3,6 +3,8 @@
 #include <Enums.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <IO/Registry.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 namespace ui
 {

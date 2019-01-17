@@ -6,6 +6,9 @@
 #include <UI/Dialogs/Editors/PropertyEditor.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MapiMemory.h>
+#include <IO/MFCOutput.h>
+#include <IO/Registry.h>
+#include <core/utility/strings.h>
 
 namespace dialog
 {
@@ -366,7 +369,7 @@ namespace dialog
 			for (auto i = ULONG{}; i < ulNumVals; i++)
 			{
 				const auto lpData = GetListRowData(0, i);
-				auto mv = lpData->MV();
+				const auto mv = lpData->MV();
 				ret.push_back(mv ? mv->m_val.l : LONG{});
 			}
 
@@ -382,8 +385,8 @@ namespace dialog
 			for (auto i = ULONG{}; i < ulNumVals; i++)
 			{
 				const auto lpData = GetListRowData(0, i);
-				auto mv = lpData->MV();
-				auto bin = mv ? mv->m_val.bin : SBinary{};
+				const auto mv = lpData->MV();
+				const auto bin = mv ? mv->m_val.bin : SBinary{};
 				ret.push_back(std::vector<BYTE>(bin.lpb, bin.lpb + bin.cb));
 			}
 
@@ -399,7 +402,7 @@ namespace dialog
 				auto smartViewPaneText = dynamic_cast<viewpane::TextPane*>(GetPane(1));
 				if (smartViewPaneText)
 				{
-					auto rows = GetLongArray();
+					const auto rows = GetLongArray();
 					auto npi = smartview::GetNamedPropInfo(m_ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
 
 					smartViewPaneText->SetStringW(

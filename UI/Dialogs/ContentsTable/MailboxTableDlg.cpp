@@ -11,6 +11,8 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/ContentsData.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 namespace dialog
 {
@@ -153,7 +155,7 @@ namespace dialog
 		const auto szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
 		const auto lpRes = mapi::CreatePropertyStringRestriction(
-			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, MyData.GetHex(1), NULL);
+			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, MyData.GetHex(1), nullptr);
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
 		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);

@@ -1,7 +1,8 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/MapiMemory.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 namespace controls
 {

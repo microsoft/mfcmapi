@@ -4,6 +4,8 @@
 #include <MAPI/StubUtils.h>
 #include <appmodel.h>
 #include <AppxPackaging.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 namespace version
 {

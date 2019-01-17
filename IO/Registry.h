@@ -145,7 +145,7 @@ namespace registry
 	std::wstring ReadStringFromRegistry(
 		_In_ HKEY hKey,
 		_In_ const std::wstring& szValue,
-		_In_ const std::wstring& szDefault = strings::emptystring);
+		_In_ const std::wstring& szDefault = L"");
 
 	void WriteStringToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, _In_ const std::wstring& szValue);
 

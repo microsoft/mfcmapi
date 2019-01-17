@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <UI/RichEditOleCallback.h>
 #include <UI/UIFunctions.h>
+#include <IO/MFCOutput.h>
 
 namespace ui
 {

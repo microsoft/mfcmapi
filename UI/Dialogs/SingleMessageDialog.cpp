@@ -6,6 +6,8 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/StreamEditor.h>
 #include <core/mapi/extraPropTags.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 namespace dialog
 {

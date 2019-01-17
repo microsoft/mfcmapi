@@ -11,6 +11,8 @@
 
 #include <list>
 #include <algorithm>
+#include <functional>
+#include <vector>
 
 // Speed up our string conversions for output
 #ifdef MRMAPI
@@ -66,7 +68,6 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 
 #include <core/res/Resource.h> // main symbols
 
-#include <IO/MFCOutput.h>
 #include <IO/Error.h>
 
 #include <core/mfcmapi.h>

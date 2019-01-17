@@ -4,6 +4,7 @@
 #include <UnitTest/resource.h>
 #include <AddIns.h>
 #include <IO/Registry.h>
+#include <core/utility/strings.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

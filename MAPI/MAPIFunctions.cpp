@@ -10,8 +10,9 @@
 #include <core/interpret/guid.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <MAPI/MapiMemory.h>
+#include <IO/Registry.h>
+#include <IO/MFCOutput.h>
 
 namespace mapi
 {

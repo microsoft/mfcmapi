@@ -2,6 +2,7 @@
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <IO/File.h>
 #include <MrMapi/cli.h>
+#include <IO/MFCOutput.h>
 
 void DumpContentsTable(
 	_In_z_ LPCWSTR lpszProfile,

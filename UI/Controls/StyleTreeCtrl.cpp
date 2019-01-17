@@ -1,6 +1,8 @@
 #include <StdAfx.h>
 #include <UI/Controls/StyleTreeCtrl.h>
 #include <UI/UIFunctions.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 namespace controls
 {

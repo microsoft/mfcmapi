@@ -2,6 +2,7 @@
 #include <Property/Property.h>
 #include <MAPI/ColumnTags.h>
 #include <sstream>
+#include <core/utility/strings.h>
 
 namespace property
 {

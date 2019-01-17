@@ -16,6 +16,9 @@
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
+#include <IO/MFCOutput.h>
+#include <IO/Registry.h>
+#include <core/utility/strings.h>
 
 namespace dialog
 {

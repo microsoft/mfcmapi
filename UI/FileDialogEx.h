@@ -10,21 +10,21 @@ namespace file
 			_In_ const std::wstring& lpszDefExt,
 			_In_ const std::wstring& lpszFileName,
 			DWORD dwFlags = 0,
-			_In_ const std::wstring& lpszFilter = strings::emptystring,
+			_In_ const std::wstring& lpszFilter = L"",
 			_In_opt_ CWnd* pParentWnd = nullptr);
 
 		static std::vector<std::wstring> OpenFiles(
 			_In_ const std::wstring& lpszDefExt,
 			_In_ const std::wstring& lpszFileName,
 			DWORD dwFlags = 0,
-			_In_ const std::wstring& lpszFilter = strings::emptystring,
+			_In_ const std::wstring& lpszFilter = L"",
 			_In_opt_ CWnd* pParentWnd = nullptr);
 
 		static std::wstring SaveAs(
 			_In_ const std::wstring& lpszDefExt,
 			_In_ const std::wstring& lpszFileName,
 			DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-			_In_ const std::wstring& lpszFilter = strings::emptystring,
+			_In_ const std::wstring& lpszFilter = L"",
 			_In_opt_ CWnd* pParentWnd = nullptr);
 
 	private:
@@ -33,7 +33,7 @@ namespace file
 			_In_ const std::wstring& lpszDefExt,
 			_In_ const std::wstring& lpszFileName,
 			DWORD dwFlags,
-			_In_ const std::wstring& lpszFilter = strings::emptystring,
+			_In_ const std::wstring& lpszFilter = L"",
 			_In_opt_ CWnd* pParentWnd = nullptr);
 
 		std::wstring GetFileName() const;

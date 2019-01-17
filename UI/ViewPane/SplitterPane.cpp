@@ -1,5 +1,6 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/SplitterPane.h>
+#include <IO/MFCOutput.h>
 
 namespace viewpane
 {

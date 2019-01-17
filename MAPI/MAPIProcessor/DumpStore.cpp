@@ -9,6 +9,7 @@
 #include <IO/File.h>
 #include <Interpret/InterpretProp.h>
 #include <core/mapi/extraPropTags.h>
+#include <IO/MFCOutput.h>
 
 namespace mapiprocessor
 {

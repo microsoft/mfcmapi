@@ -4,6 +4,8 @@
 #include <MAPI/MAPIProfileFunctions.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/guids.h>
+#include <core/utility/strings.h>
+#include <IO/MFCOutput.h>
 
 namespace output
 {

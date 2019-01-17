@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/XID.h>
 #include <Interpret/guids.h>
+#include <core/utility/strings.h>
 
 namespace smartview
 {

@@ -3,6 +3,8 @@
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 namespace dialog
 {

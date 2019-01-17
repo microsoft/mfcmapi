@@ -10,6 +10,7 @@
 #include <MAPI/Cache/NamedPropCache.h>
 #include <IO/File.h>
 #include <MAPI/MapiMemory.h>
+#include <IO/Registry.h>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf

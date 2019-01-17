@@ -5,6 +5,7 @@
 #include <core/mfcmapi.h>
 #include <UnitTest/resource.h>
 #include <AddIns.h>
+#include <core/utility/strings.h>
 
 namespace SmartViewTest
 {

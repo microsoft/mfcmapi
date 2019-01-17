@@ -7,6 +7,8 @@
 #include <core/interpret/guid.h>
 #include <UI/Dialogs/Editors/PropertySelector.h>
 #include <AddIns.h>
+#include <IO/MFCOutput.h>
+#include <IO/Registry.h>
 
 namespace dialog
 {

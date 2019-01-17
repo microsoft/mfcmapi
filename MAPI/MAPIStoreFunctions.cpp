@@ -4,9 +4,9 @@
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
-#include <UI/Dialogs/Editors/Editor.h>
 #include <core/mapi/extraPropTags.h>
 #include <IO/Registry.h>
+#include <IO/MFCOutput.h>
 
 namespace mapi
 {

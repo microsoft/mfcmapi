@@ -9,6 +9,8 @@
 #include <UI/Dialogs/Editors/RestrictEditor.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/addinui.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 namespace dialog
 {

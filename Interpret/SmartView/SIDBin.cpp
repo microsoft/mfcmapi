@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/SIDBin.h>
 #include <UI/MySecInfo.h>
+#include <core/utility/strings.h>
 
 namespace smartview
 {

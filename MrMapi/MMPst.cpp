@@ -1,6 +1,8 @@
 #include <StdAfx.h>
 #include <MrMapi/cli.h>
 #include <IO/Registry.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 #define NDB_CRYPT_NONE 0
 #define NDB_CRYPT_PERMUTE 1

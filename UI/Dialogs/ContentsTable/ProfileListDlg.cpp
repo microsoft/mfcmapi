@@ -13,6 +13,9 @@
 #include <IO/ExportProfile.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/SortList/ContentsData.h>
+#include <IO/MFCOutput.h>
+#include <IO/Registry.h>
+#include <core/utility/strings.h>
 
 namespace dialog
 {
@@ -98,7 +101,7 @@ namespace dialog
 
 		// Wipe out current references to the profile table so the refresh will work
 		// If we don't do this, we get the old table back again.
-		m_lpContentsTableListCtrl->SetContentsTable(NULL, dfNormal, NULL);
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, NULL);
 
 		LPPROFADMIN lpProfAdmin = nullptr;
 		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));

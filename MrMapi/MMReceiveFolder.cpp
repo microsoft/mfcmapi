@@ -2,6 +2,8 @@
 #include <MAPI/ColumnTags.h>
 #include <MrMapi/MMReceiveFolder.h>
 #include <MrMapi/cli.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 {

@@ -8,6 +8,8 @@
 #include <core/utility/strings.h>
 #include <unordered_map>
 #include <Addins.h>
+#include <IO/MFCOutput.h>
+#include <IO/Registry.h>
 
 namespace interpretprop
 {

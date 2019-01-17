@@ -4,6 +4,8 @@
 #include <IO/File.h>
 #include <UI/UIFunctions.h>
 #include <Addins.h>
+#include <core/utility/strings.h>
+#include <IO/MFCOutput.h>
 
 namespace ui
 {

@@ -6,6 +6,7 @@
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
 #include <AddIns.h>
+#include <IO/MFCOutput.h>
 
 // Searches a NAMEID_ARRAY_ENTRY array for a target dispid.
 // Exact matches are those that match

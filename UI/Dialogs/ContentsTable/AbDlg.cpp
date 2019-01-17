@@ -13,6 +13,8 @@
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/Cache/GlobalCache.h>
 #include <UI/addinui.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 namespace dialog
 {

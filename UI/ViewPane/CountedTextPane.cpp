@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/UIFunctions.h>
+#include <core/utility/strings.h>
 
 namespace viewpane
 {
@@ -43,11 +44,11 @@ namespace viewpane
 			static_cast<UINT>(m_iCount)); // STRING_OK
 		SetWindowTextW(m_Count.m_hWnd, szCount.c_str());
 
-		const auto hdc = ::GetDC(m_Count.GetSafeHwnd());
+		const auto hdc = GetDC(m_Count.GetSafeHwnd());
 		const auto hfontOld = SelectObject(hdc, ui::GetSegoeFont());
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, szCount);
 		(void) SelectObject(hdc, hfontOld);
-		::ReleaseDC(m_Count.GetSafeHwnd(), hdc);
+		ReleaseDC(m_Count.GetSafeHwnd(), hdc);
 		m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
 
 		// Button, margin, label, margin, count label

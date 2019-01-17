@@ -4,6 +4,8 @@
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/InterpretProp.h>
 #include <AddIns.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 namespace error
 {

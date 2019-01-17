@@ -2,6 +2,7 @@
 #pragma once
 #include <core/interpret/guid.h>
 #include <Interpret/guids.h>
+#include <IO/MFCOutput.h>
 
 
 namespace mapi
@@ -57,8 +58,7 @@ namespace mapi
 		ULONG_PTR uiParam{};
 		LPSPropTagArray excludedTags{};
 		bool allocated{};
-		void clean()
-		{
+		void clean() const {
 			if (progress) progress->Release();
 			if (allocated) MAPIFreeBuffer(excludedTags);
 		}

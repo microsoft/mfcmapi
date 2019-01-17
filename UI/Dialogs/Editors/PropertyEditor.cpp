@@ -8,6 +8,8 @@
 #include <UI/Dialogs/Editors/MultiValuePropertyEditor.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MapiMemory.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 namespace dialog
 {

@@ -1,5 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/FlatEntryList.h>
+#include <core/utility/strings.h>
 
 namespace smartview
 {

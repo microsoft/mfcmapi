@@ -1,4 +1,5 @@
 #pragma once
+#include <core/utility/strings.h>
 
 namespace sid
 {

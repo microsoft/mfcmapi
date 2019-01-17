@@ -6,6 +6,8 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <Interpret/InterpretProp.h>
+#include <IO/MFCOutput.h>
+#include <core/utility/strings.h>
 
 namespace dialog
 {

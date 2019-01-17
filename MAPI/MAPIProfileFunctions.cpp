@@ -4,6 +4,7 @@
 #include <MAPI/MAPIProfileFunctions.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
+#include <IO/MFCOutput.h>
 
 namespace mapi
 {

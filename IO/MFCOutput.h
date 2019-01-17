@@ -1,6 +1,5 @@
 #pragma once
 // Output (to File/Debug) functions
-#include <core/utility/strings.h>
 
 namespace output
 {
