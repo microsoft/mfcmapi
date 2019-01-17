@@ -1618,10 +1618,11 @@ IDS_CONVERTDOWRAPLINES "Set Text Wrapping (Default is 74)"
 IDS_CONVERTWRAPLINECOUNT "Number of characters to wrap at"
 IDS_CONVERTFROMEML "Convert Message From EML"
 IDS_CONVERTFROMEMLPROMPT "Conversion Flags (May be combined):\r\n\
-0x0002 CCSF_SMTP (Must be set)\r\n\
-0x0020 CCSF_INCLUDE_BCC\r\n\
-0x0080 CCSF_USE_RTF\r\n\
-0x8000 CCSF_EMBEDDED_MESSAGE\r\n\
+0x000002 CCSF_SMTP (Must be set)\r\n\
+0x000020 CCSF_INCLUDE_BCC\r\n\
+0x000080 CCSF_USE_RTF\r\n\
+0x008000 CCSF_EMBEDDED_MESSAGE\r\n\
+0x200000 CCSF_GLOBAL_MESSAGE\r\n\
 Common code pages (others supported)\r\n\
 1252  - CP_USASCII      - Indicates the USASCII character set, Windows code page 1252\r\n\
 1200  - CP_UNICODE      - Indicates the Unicode character set, Windows code page 1200\r\n\
