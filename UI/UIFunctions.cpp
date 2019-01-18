@@ -120,9 +120,9 @@ namespace ui
 	HPEN g_Pens[cPenEnd] = {nullptr};
 	HBITMAP g_Bitmaps[cBitmapEnd] = {nullptr};
 
-	void InitializeGDI() {}
+	void InitializeGDI() noexcept {}
 
-	void UninitializeGDI()
+	void UninitializeGDI() noexcept
 	{
 		if (g_hFontSegoe) DeleteObject(g_hFontSegoe);
 		g_hFontSegoe = nullptr;
@@ -1642,7 +1642,7 @@ namespace ui
 		RECT* lprcCloseIcon,
 		RECT* lprcMaxIcon,
 		RECT* lprcMinIcon,
-		RECT* lprcCaptionText)
+		RECT* lprcCaptionText) noexcept
 	{
 		auto rcFullCaption = RECT{};
 		auto rcIcon = RECT{};
@@ -1660,10 +1660,10 @@ namespace ui
 		// At this point, we have rectangles for our window and client area
 		// rcWindow is the outer rectangle for our NC frame
 
-		auto cxFixedFrame = GetSystemMetrics(SM_CXFIXEDFRAME);
-		auto cyFixedFrame = GetSystemMetrics(SM_CYFIXEDFRAME);
-		auto cxSizeFrame = GetSystemMetrics(SM_CXSIZEFRAME);
-		auto cySizeFrame = GetSystemMetrics(SM_CYSIZEFRAME);
+		const auto cxFixedFrame = GetSystemMetrics(SM_CXFIXEDFRAME);
+		const auto cyFixedFrame = GetSystemMetrics(SM_CYFIXEDFRAME);
+		const auto cxSizeFrame = GetSystemMetrics(SM_CXSIZEFRAME);
+		const auto cySizeFrame = GetSystemMetrics(SM_CYSIZEFRAME);
 
 		auto cxFrame = bThickFrame ? cxSizeFrame : cxFixedFrame;
 		auto cyFrame = bThickFrame ? cySizeFrame : cyFixedFrame;
@@ -1769,10 +1769,10 @@ namespace ui
 	void DrawWindowFrame(_In_ HWND hWnd, const bool bActive, int iStatusHeight)
 	{
 		const auto cxPaddedBorder = GetSystemMetrics(SM_CXPADDEDBORDER);
-		auto cxFixedFrame = GetSystemMetrics(SM_CXFIXEDFRAME);
-		auto cyFixedFrame = GetSystemMetrics(SM_CYFIXEDFRAME);
-		auto cxSizeFrame = GetSystemMetrics(SM_CXSIZEFRAME);
-		auto cySizeFrame = GetSystemMetrics(SM_CYSIZEFRAME);
+		const auto cxFixedFrame = GetSystemMetrics(SM_CXFIXEDFRAME);
+		const auto cyFixedFrame = GetSystemMetrics(SM_CYFIXEDFRAME);
+		const auto cxSizeFrame = GetSystemMetrics(SM_CXSIZEFRAME);
+		const auto cySizeFrame = GetSystemMetrics(SM_CYSIZEFRAME);
 
 		const auto dwWinStyle = GetWindowStyle(hWnd);
 		const auto bModal = DS_MODALFRAME == (dwWinStyle & DS_MODALFRAME);
@@ -1930,9 +1930,8 @@ namespace ui
 				FillRect(hdc, &rcBottomGutter, GetSysBrush(cBackground));
 			}
 
-			WCHAR szTitle[256] = {};
-			DefWindowProcW(
-				hWnd, WM_GETTEXT, static_cast<WPARAM>(_countof(szTitle)), reinterpret_cast<LPARAM>(szTitle));
+			const WCHAR szTitle[256] = {};
+			DefWindowProcW(hWnd, WM_GETTEXT, static_cast<WPARAM>(_countof(szTitle)), reinterpret_cast<LPARAM>(szTitle));
 			DrawSegoeTextW(
 				hdc, szTitle, MyGetSysColor(cText), rcCaptionText, false, DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 
@@ -2044,7 +2043,7 @@ namespace ui
 		const WPARAM wParam,
 		const LPARAM lParam,
 		const UINT_PTR uIdSubclass,
-		DWORD_PTR /*dwRefData*/)
+		DWORD_PTR /*dwRefData*/) noexcept
 	{
 		switch (uMsg)
 		{
@@ -2082,22 +2081,22 @@ namespace ui
 	{
 		auto hwndRet = HWND{};
 		static auto currentPid = GetCurrentProcessId();
-		EnumWindows(
-			[](auto hwnd, auto lParam) {
-				// Use of BOOL return type forced by WNDENUMPROC signature
-				if (!lParam) return FALSE;
-				auto ret = reinterpret_cast<HWND*>(lParam);
-				auto pid = ULONG{};
-				GetWindowThreadProcessId(hwnd, &pid);
-				if (currentPid == pid && GetWindow(hwnd, GW_OWNER) == static_cast<HWND>(0) && IsWindowVisible(hwnd))
-				{
-					*ret = hwnd;
-					return FALSE;
-				}
+		auto enumProc = [](auto hwnd, auto lParam) {
+			// Use of BOOL return type forced by WNDENUMPROC signature
+			if (!lParam) return FALSE;
+			const auto ret = reinterpret_cast<HWND*>(lParam);
+			auto pid = ULONG{};
+			GetWindowThreadProcessId(hwnd, &pid);
+			if (currentPid == pid && GetWindow(hwnd, GW_OWNER) == nullptr && IsWindowVisible(hwnd))
+			{
+				*ret = hwnd;
+				return FALSE;
+			}
 
-				return TRUE;
-			},
-			reinterpret_cast<LPARAM>(&hwndRet));
+			return TRUE;
+		};
+
+		EnumWindows(enumProc, reinterpret_cast<LPARAM>(&hwndRet));
 
 		return hwndRet;
 	}

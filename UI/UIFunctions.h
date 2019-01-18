@@ -64,8 +64,8 @@ namespace ui
 		lsPaneHeaderText,
 	};
 
-	void InitializeGDI();
-	void UninitializeGDI();
+	void InitializeGDI() noexcept;
+	void UninitializeGDI() noexcept;
 
 	void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString);
 
@@ -162,7 +162,7 @@ namespace ui
 		RECT* lprcCloseIcon,
 		RECT* lprcMaxIcon,
 		RECT* lprcMinIcon,
-		RECT* lprcCaptionText);
+		RECT* lprcCaptionText) noexcept;
 	void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, LONG_PTR iHitTest, bool bHover);
 	void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight);
 
