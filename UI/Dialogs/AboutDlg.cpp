@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/AboutDlg.h>
 #include <UI/UIFunctions.h>
-#include <IO/File.h>
+#include <IO/file.h>
 #include <IO/Registry.h>
 #include <core/utility/strings.h>
 #include <IO/output.h>

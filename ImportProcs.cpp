@@ -2,7 +2,7 @@
 #include <ImportProcs.h>
 #include <core/utility/strings.h>
 #include <MAPI/StubUtils.h>
-#include <IO/File.h>
+#include <IO/file.h>
 #include <IO/Registry.h>
 #include <IO/MFCOutput.h>
 #include <IO/output.h>

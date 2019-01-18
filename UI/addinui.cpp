@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/addinui.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
-#include <IO/File.h>
+#include <IO/file.h>
 #include <UI/UIFunctions.h>
 #include <Addins.h>
 #include <core/utility/strings.h>

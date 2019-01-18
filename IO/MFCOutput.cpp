@@ -8,7 +8,7 @@
 #include <MAPI/ColumnTags.h>
 #include <Property/ParseProperty.h>
 #include <MAPI/Cache/NamedPropCache.h>
-#include <IO/File.h>
+#include <IO/file.h>
 #include <MAPI/MapiMemory.h>
 #include <IO/Registry.h>
 

@@ -563,6 +563,7 @@
     <ClInclude Include="..\Interpret\SmartView\block\blockT.h" />
     <ClInclude Include="..\Interpret\SmartView\block\block.h" />
     <ClInclude Include="..\Interpret\SmartView\block\blockBytes.h" />
+    <ClInclude Include="..\IO\mapiFile.h" />
     <ClInclude Include="..\IO\output.h" />
     <ClInclude Include="..\MAPI\AdviseSink.h" />
     <ClInclude Include="..\Property\Attributes.h" />
@@ -571,7 +572,7 @@
     <ClInclude Include="..\MAPI\MAPIProcessor\DumpStore.h" />
     <ClInclude Include="..\Enums.h" />
     <ClInclude Include="..\IO\Error.h" />
-    <ClInclude Include="..\IO\File.h" />
+    <ClInclude Include="..\IO\file.h" />
     <ClInclude Include="..\ImportProcs.h" />
     <ClInclude Include="..\Interpret\InterpretProp.h" />
     <ClInclude Include="..\MAPI\MAPIABFunctions.h" />
@@ -647,13 +648,14 @@
     <ClCompile Include="..\Interpret\guids.cpp" />
     <ClCompile Include="..\Interpret\Sid.cpp" />
     <ClCompile Include="..\AddIns.cpp" />
+    <ClCompile Include="..\IO\mapiFile.cpp" />
     <ClCompile Include="..\IO\output.cpp" />
     <ClCompile Include="..\MAPI\AdviseSink.cpp" />
     <ClCompile Include="..\Property\Attributes.cpp" />
     <ClCompile Include="..\MAPI\Cache\GlobalCache.cpp" />
     <ClCompile Include="..\MAPI\MAPIProcessor\DumpStore.cpp" />
     <ClCompile Include="..\IO\Error.cpp" />
-    <ClCompile Include="..\IO\File.cpp" />
+    <ClCompile Include="..\IO\file.cpp" />
     <ClCompile Include="..\ImportProcs.cpp" />
     <ClCompile Include="..\Interpret\InterpretProp.cpp" />
     <ClCompile Include="..\MAPI\MAPIABFunctions.cpp" />

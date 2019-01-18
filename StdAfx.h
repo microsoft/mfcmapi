@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <functional>
 #include <vector>
+#include <map>
 
 // Speed up our string conversions for output
 #ifdef MRMAPI

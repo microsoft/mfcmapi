@@ -6,11 +6,12 @@
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
-#include <IO/File.h>
+#include <IO/file.h>
 #include <Interpret/InterpretProp.h>
 #include <core/mapi/extraPropTags.h>
 #include <IO/MFCOutput.h>
 #include <IO/output.h>
+#include <IO/mapiFile.h>
 
 namespace mapiprocessor
 {

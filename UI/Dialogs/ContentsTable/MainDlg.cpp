@@ -11,7 +11,7 @@
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
-#include <IO/File.h>
+#include <IO/file.h>
 #include <UI/Dialogs/ContentsTable/ProfileListDlg.h>
 #include <ImportProcs.h>
 #include <UI/Dialogs/AboutDlg.h>
@@ -31,6 +31,7 @@
 #include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
 #include <IO/output.h>
+#include <IO/mapiFile.h>
 
 namespace dialog
 {

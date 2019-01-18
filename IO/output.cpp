@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <IO/output.h>
 #include <core/utility/strings.h>
-#include <IO/File.h>
+#include <IO/file.h>
 #include <IO/Registry.h>
 
 #ifdef CHECKFORMATPARAMS

@@ -4,7 +4,7 @@
 #include <UI/profile.h>
 #include <ImportProcs.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <IO/File.h>
+#include <IO/file.h>
 #include <core/utility/strings.h>
 #include <IO/output.h>
 

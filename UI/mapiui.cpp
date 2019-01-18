@@ -4,7 +4,7 @@
 #include <Interpret/guids.h>
 #include <MAPI/MAPIProgress.h>
 #include <MAPI/MAPIFunctions.h>
-#include <IO/File.h>
+#include <IO/file.h>
 #include <UI/FileDialogEx.h>
 #include <core/mapi/extraPropTags.h>
 #include <MAPI/MapiMime.h>
@@ -18,6 +18,7 @@
 #include <Addins.h>
 #include <core/utility/strings.h>
 #include <IO/output.h>
+#include <IO/mapiFile.h>
 
 namespace ui
 {

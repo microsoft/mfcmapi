@@ -3,7 +3,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <IO/File.h>
+#include <IO/file.h>
 #include <UI/FileDialogEx.h>
 #include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/ColumnTags.h>

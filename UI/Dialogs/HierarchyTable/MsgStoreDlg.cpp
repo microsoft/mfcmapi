@@ -8,7 +8,7 @@
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <Interpret/InterpretProp.h>
-#include <IO/File.h>
+#include <IO/file.h>
 #include <MAPI/MAPIProgress.h>
 #include <UI/Controls/SortList/NodeData.h>
 #include <MAPI/Cache/GlobalCache.h>
@@ -20,6 +20,7 @@
 #include <IO/Registry.h>
 #include <core/utility/strings.h>
 #include <IO/output.h>
+#include <IO/mapiFile.h>
 
 namespace dialog
 {
@@ -380,8 +381,7 @@ namespace dialog
 			{
 				auto ulMoveMessage = MyData.GetCheck(0) ? MESSAGE_MOVE : 0;
 
-				auto lpProgress =
-					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
+				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
 
 				if (lpProgress) ulMoveMessage |= MESSAGE_DIALOG;
 
@@ -455,8 +455,7 @@ namespace dialog
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				auto lpProgress =
-					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
+				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
 
 				auto ulCopyFlags = MAPI_UNICODE;
 				if (MyData.GetCheck(1)) ulCopyFlags |= COPY_SUBFOLDERS;
@@ -703,8 +702,7 @@ namespace dialog
 				{
 					auto ulFlags = MyData.GetCheck(0) ? DEL_ASSOCIATED : 0;
 					ulFlags |= MyData.GetCheck(1) ? DELETE_HARD_DELETE : 0;
-					auto lpProgress =
-						mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::EmptyFolder", m_hWnd); // STRING_OK
+					auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::EmptyFolder", m_hWnd); // STRING_OK
 
 					if (lpProgress) ulFlags |= FOLDER_DIALOG;
 
@@ -781,8 +779,7 @@ namespace dialog
 						ulFlags);
 					output::DebugPrintBinary(DBGGeneric, *lpItemEID);
 
-					auto lpProgress =
-						mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteFolder", m_hWnd); // STRING_OK
+					auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteFolder", m_hWnd); // STRING_OK
 
 					if (lpProgress) ulFlags |= FOLDER_DIALOG;
 
@@ -993,8 +990,7 @@ namespace dialog
 
 				if (!lpSrcParentFolder) lpSrcParentFolder = mapi::safe_cast<LPMAPIFOLDER>(GetRootContainer());
 
-				auto lpProgress =
-					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
+				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
 
 				auto ulCopyFlags = MAPI_UNICODE | (MyData.GetCheck(1) ? COPY_SUBFOLDERS : 0);
 

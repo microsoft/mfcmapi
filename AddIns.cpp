@@ -3,7 +3,7 @@
 #include <core/mfcmapi.h>
 #include <ImportProcs.h>
 #include <core/utility/strings.h>
-#include <IO/File.h>
+#include <IO/file.h>
 #include <IO/Registry.h>
 #include <IO/output.h>
 

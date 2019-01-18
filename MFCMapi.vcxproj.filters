@@ -133,6 +133,10 @@
     <ClInclude Include="AddIns.h" />
     <ClInclude Include="Interpret\guids.h" />
     <ClInclude Include="IO\output.h" />
+    <ClInclude Include="IO\mapiFile.h" />
+    <ClInclude Include="IO\file.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -198,6 +202,12 @@
     <ClCompile Include="IO\output.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IO\mapiFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\file.cpp">
+      <Filter>Source Files\IO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IO\Error.cpp">
@@ -209,12 +219,6 @@
     <ClCompile Include="IO\ExportProfile.cpp">
       <Filter>Source Files\IO</Filter>
     </ClCompile>
-    <ClCompile Include="IO\File.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
-    <ClInclude Include="IO\File.h">
-      <Filter>Source Files\IO</Filter>
-    </ClInclude>
     <ClCompile Include="IO\MFCOutput.cpp">
       <Filter>Source Files\IO</Filter>
     </ClCompile>
