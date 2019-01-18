@@ -4,7 +4,7 @@
 #include <UI/MyWinApp.h>
 #include <UI/ParentWnd.h>
 #include <MAPI/Cache/MapiObjects.h>
-#include <ImportProcs.h>
+#include <core/utility/importProcs.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/mapiui.h>
 #include <core/utility/registry.h>

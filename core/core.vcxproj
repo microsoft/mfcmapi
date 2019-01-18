@@ -497,18 +497,22 @@
     <ClInclude Include="interpret\propTypeArray.h" />
     <ClInclude Include="mapi\extraPropTags.h" />
     <ClInclude Include="mapi\interfaces.h" />
+    <ClInclude Include="mapi\stubutils.h" />
     <ClInclude Include="mfcmapi.h" />
     <ClInclude Include="res\Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="utility\error.h" />
     <ClInclude Include="utility\file.h" />
+    <ClInclude Include="utility\importProcs.h" />
     <ClInclude Include="utility\output.h" />
     <ClInclude Include="utility\registry.h" />
     <ClInclude Include="utility\strings.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="interpret\guid.cpp" />
+    <ClCompile Include="mapi\mapiStubLibrary.cpp" />
+    <ClCompile Include="mapi\stubutils.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Create</PrecompiledHeader>
@@ -523,6 +527,7 @@
     </ClCompile>
     <ClCompile Include="utility\error.cpp" />
     <ClCompile Include="utility\file.cpp" />
+    <ClCompile Include="utility\importProcs.cpp" />
     <ClCompile Include="utility\output.cpp" />
     <ClCompile Include="utility\registry.cpp" />
     <ClCompile Include="utility\strings.cpp" />

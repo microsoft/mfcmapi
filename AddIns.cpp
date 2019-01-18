@@ -1,7 +1,8 @@
 #include <StdAfx.h>
 #include <AddIns.h>
 #include <core/mfcmapi.h>
-#include <ImportProcs.h>
+#include <core/utility/importProcs.h>
+#include <core/mapi/stubutils.h>
 #include <core/utility/strings.h>
 #include <core/utility/file.h>
 #include <core/utility/registry.h>
@@ -14,7 +15,6 @@
 #include <core/interpret/nameIDArray.h>
 #include <core/interpret/propTypeArray.h>
 #include <Interpret/SmartView/SmartViewParsers.h>
-#include <MAPI/StubUtils.h>
 
 std::vector<NAME_ARRAY_ENTRY_V2> PropTagArray;
 std::vector<NAME_ARRAY_ENTRY> PropTypeArray;

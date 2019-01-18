@@ -570,7 +570,6 @@
     <ClInclude Include="..\MAPI\ColumnTags.h" />
     <ClInclude Include="..\MAPI\MAPIProcessor\DumpStore.h" />
     <ClInclude Include="..\Enums.h" />
-    <ClInclude Include="..\ImportProcs.h" />
     <ClInclude Include="..\Interpret\InterpretProp.h" />
     <ClInclude Include="..\MAPI\MAPIABFunctions.h" />
     <ClInclude Include="..\MAPI\MAPIFunctions.h" />
@@ -649,7 +648,6 @@
     <ClCompile Include="..\Property\Attributes.cpp" />
     <ClCompile Include="..\MAPI\Cache\GlobalCache.cpp" />
     <ClCompile Include="..\MAPI\MAPIProcessor\DumpStore.cpp" />
-    <ClCompile Include="..\ImportProcs.cpp" />
     <ClCompile Include="..\Interpret\InterpretProp.cpp" />
     <ClCompile Include="..\MAPI\MAPIABFunctions.cpp" />
     <ClCompile Include="..\MAPI\MAPIFunctions.cpp" />
@@ -662,7 +660,6 @@
     <ClCompile Include="..\Property\Property.cpp" />
     <ClCompile Include="..\Property\ParseProperty.cpp" />
     <ClCompile Include="..\PropertyBag\MAPIPropPropertyBag.cpp" />
-    <ClCompile Include="..\MAPI\MapiStubLibrary.cpp" />
     <ClCompile Include="..\MAPI\MAPIStoreFunctions.cpp" />
     <ClCompile Include="..\IO\MFCOutput.cpp" />
     <ClCompile Include="..\MAPI\Cache\NamedPropCache.cpp" />
@@ -700,7 +697,6 @@
     <ClCompile Include="..\Interpret\SmartView\VerbStream.cpp" />
     <ClCompile Include="..\Interpret\SmartView\WebViewPersistStream.cpp" />
     <ClCompile Include="..\Interpret\SmartView\XID.cpp" />
-    <ClCompile Include="..\MAPI\StubUtils.cpp" />
     <ClCompile Include="cli.cpp" />
     <ClCompile Include="MMAcls.cpp" />
     <ClCompile Include="MMContents.cpp" />

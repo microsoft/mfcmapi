@@ -1,10 +1,10 @@
 #include <StdAfx.h>
 #include <UI/ParentWnd.h>
-#include <ImportProcs.h>
+#include <core/utility/importProcs.h>
 #include <UI/MyWinApp.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #include <UI/UIFunctions.h>
-#include <MAPI/StubUtils.h>
+#include <core/mapi/stubutils.h>
 #include <AddIns.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>

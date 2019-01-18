@@ -576,7 +576,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="MAPI\ColumnTags.h" />
     <ClInclude Include="MAPI\MAPIProcessor\DumpStore.h" />
     <ClInclude Include="Enums.h" />
-    <ClInclude Include="ImportProcs.h" />
     <ClInclude Include="Interpret\InterpretProp.h" />
     <ClInclude Include="MAPI\MAPIABFunctions.h" />
     <ClInclude Include="MAPI\MAPIFunctions.h" />
@@ -629,7 +628,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="Interpret\SmartView\SmartViewParsers.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="MAPI\MapiMemory.h" />
-    <ClInclude Include="MAPI\StubUtils.h" />
     <ClInclude Include="MAPI\Version.h" />
     <ClInclude Include="UI\addinui.h" />
     <ClInclude Include="UI\Controls\StyleTreeCtrl.h" />
@@ -718,7 +716,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="Property\Attributes.cpp" />
     <ClCompile Include="MAPI\Cache\GlobalCache.cpp" />
     <ClCompile Include="MAPI\MAPIProcessor\DumpStore.cpp" />
-    <ClCompile Include="ImportProcs.cpp" />
     <ClCompile Include="Interpret\InterpretProp.cpp" />
     <ClCompile Include="MAPI\MAPIABFunctions.cpp" />
     <ClCompile Include="MAPI\MAPIFunctions.cpp" />
@@ -732,7 +729,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="Property\Property.cpp" />
     <ClCompile Include="Property\ParseProperty.cpp" />
     <ClCompile Include="PropertyBag\MAPIPropPropertyBag.cpp" />
-    <ClCompile Include="MAPI\MapiStubLibrary.cpp" />
     <ClCompile Include="MAPI\MAPIStoreFunctions.cpp" />
     <ClCompile Include="IO\MFCOutput.cpp" />
     <ClCompile Include="MAPI\Cache\NamedPropCache.cpp" />
@@ -772,7 +768,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="Interpret\SmartView\VerbStream.cpp" />
     <ClCompile Include="Interpret\SmartView\WebViewPersistStream.cpp" />
     <ClCompile Include="Interpret\SmartView\XID.cpp" />
-    <ClCompile Include="MAPI\StubUtils.cpp" />
     <ClCompile Include="MAPI\Version.cpp" />
     <ClCompile Include="UI\ViewPane\TreePane.cpp" />
     <ClCompile Include="UI\MAPIFormFunctions.cpp" />

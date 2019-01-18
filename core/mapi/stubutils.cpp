@@ -1,12 +1,13 @@
-#include <StdAfx.h>
+#include <core/stdafx.h>
 #include <Windows.h>
 #include <Msi.h>
 #include <winreg.h>
 
 // Included for MFCMAPI tracing
-#include <ImportProcs.h>
+#include <core/utility/importProcs.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/utility/error.h>
 
 namespace mapistub
 {

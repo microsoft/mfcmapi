@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <MAPI/Version.h>
-#include <ImportProcs.h>
-#include <MAPI/StubUtils.h>
+#include <core/utility/importProcs.h>
+#include <core/mapi/stubutils.h>
 #include <appmodel.h>
 #include <AppxPackaging.h>
 #include <core/utility/strings.h>

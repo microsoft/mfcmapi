@@ -5,7 +5,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <MAPI/MAPIProgress.h>
-#include <ImportProcs.h>
+#include <core/utility/importProcs.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <IO/MFCOutput.h>
 

@@ -2,6 +2,7 @@
 
 #define VC_EXTRALEAN // Exclude rarely-used stuff from Windows headers
 
+#define _WINSOCKAPI_ // stops windows.h including winsock.h
 #include <Windows.h>
 
 // Common CRT headers
@@ -30,5 +31,19 @@
 #include <EdkGuid.h>
 #include <TNEF.h>
 #include <MAPIAux.h>
+
+// For import procs
+#include <aclui.h>
+#include <uxtheme.h>
+
+// there's an odd conflict with mimeole.h and richedit.h - this should fix it
+#ifdef UNICODE
+#undef CHARFORMAT
+#endif
+#include <mimeole.h>
+#ifdef UNICODE
+#undef CHARFORMAT
+#define CHARFORMAT CHARFORMATW
+#endif
 
 #include <core/res/Resource.h> // main symbols

@@ -1,4 +1,4 @@
-#include <StdAfx.h>
+#include <core/stdafx.h>
 #include <Windows.h>
 
 #include <MAPI.h>

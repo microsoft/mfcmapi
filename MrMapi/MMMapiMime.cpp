@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <MrMapi/MMMapiMime.h>
 #include <MAPI/MapiMime.h>
-#include <ImportProcs.h>
+#include <core/utility/importProcs.h>
 #include <Interpret/InterpretProp.h>
 #include <core/mapi/extraPropTags.h>
 #include <MrMapi/cli.h>

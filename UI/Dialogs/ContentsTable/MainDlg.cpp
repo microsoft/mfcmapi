@@ -13,7 +13,7 @@
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <core/utility/file.h>
 #include <UI/Dialogs/ContentsTable/ProfileListDlg.h>
-#include <ImportProcs.h>
+#include <core/utility/importProcs.h>
 #include <UI/Dialogs/AboutDlg.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/FileDialogEx.h>
@@ -24,7 +24,7 @@
 #include <UI/UIFunctions.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/Cache/GlobalCache.h>
-#include <MAPI/StubUtils.h>
+#include <core/mapi/stubutils.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
 #include <core/utility/registry.h>

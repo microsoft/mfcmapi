@@ -8,7 +8,7 @@
 #include <Interpret/guids.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/FileDialogEx.h>
-#include <ImportProcs.h>
+#include <core/utility/importProcs.h>
 #include <MAPI/MAPIProgress.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>

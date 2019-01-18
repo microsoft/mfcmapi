@@ -14,12 +14,12 @@
 #include <MrMapi/MMSmartView.h>
 #include <MrMapi/MMStore.h>
 #include <MrMapi/MMMapiMime.h>
-#include <ImportProcs.h>
+#include <core/utility/importProcs.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MrMapi/MMPst.h>
 #include <MrMapi/MMReceiveFolder.h>
 #include <MAPI/Cache/NamedPropCache.h>
-#include <MAPI/StubUtils.h>
+#include <core/mapi/stubutils.h>
 #include <AddIns.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
