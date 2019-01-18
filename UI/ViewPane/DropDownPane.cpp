@@ -3,7 +3,8 @@
 #include <Interpret/guids.h>
 #include <core/utility/strings.h>
 #include <UI/UIFunctions.h>
-#include <AddIns.h>
+#include <core/addin/addin.h>
+#include <core/addin/mfcmapi.h>
 
 namespace viewpane
 {

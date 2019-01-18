@@ -67,9 +67,6 @@
     <ClInclude Include="..\IO\ExportProfile.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
-    <ClInclude Include="..\AddIns.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Interpret\guids.h">
       <Filter>Source Files\Interpret</Filter>
     </ClInclude>
@@ -78,9 +75,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AddIns.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClInclude Include="..\Enums.h">
       <Filter>Source Files</Filter>
     </ClInclude>

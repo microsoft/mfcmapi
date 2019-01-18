@@ -1,5 +1,5 @@
 #pragma once
-#include <core/mfcmapi.h>
+#include <core/addin/mfcmapi.h>
 
 namespace interpretprop
 {

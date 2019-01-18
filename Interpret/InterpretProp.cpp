@@ -7,7 +7,7 @@
 #include <Property/ParseProperty.h>
 #include <core/utility/strings.h>
 #include <unordered_map>
-#include <Addins.h>
+#include <core/addin/addin.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 

@@ -1,5 +1,15 @@
 #pragma once
 
+// Forward declarations
+enum __ParsingTypeEnum;
+struct NAME_ARRAY_ENTRY_V2;
+struct NAME_ARRAY_ENTRY;
+struct GUID_ARRAY_ENTRY;
+struct NAMEID_ARRAY_ENTRY;
+struct FLAG_ARRAY_ENTRY;
+struct SMARTVIEW_PARSER_ARRAY_ENTRY;
+struct _AddIn;
+
 namespace addin
 {
 	EXTERN_C __declspec(

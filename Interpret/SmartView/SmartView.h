@@ -1,6 +1,9 @@
 #pragma once
 #include <Interpret/SmartView/SmartViewParser.h>
 
+// Forward declarations
+enum __ParsingTypeEnum;
+
 namespace smartview
 {
 	LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp);

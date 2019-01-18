@@ -1,6 +1,7 @@
 #pragma once
 #include <UI/Dialogs/BaseDialog.h>
 #include <MAPI/ColumnTags.h>
+#include <core/addin/mfcmapi.h>
 
 namespace controls
 {

@@ -5,7 +5,7 @@
 #include <Interpret/InterpretProp.h>
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
-#include <AddIns.h>
+#include <core/addin/addin.h>
 #include <core/utility/output.h>
 
 // Searches a NAMEID_ARRAY_ENTRY array for a target dispid.

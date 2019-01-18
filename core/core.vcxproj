@@ -488,6 +488,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="addin\addin.h" />
     <ClInclude Include="interpret\errorArray.h" />
     <ClInclude Include="interpret\flags.h" />
     <ClInclude Include="interpret\genTagArray.h" />
@@ -499,7 +500,7 @@
     <ClInclude Include="mapi\extraPropTags.h" />
     <ClInclude Include="mapi\interfaces.h" />
     <ClInclude Include="mapi\stubutils.h" />
-    <ClInclude Include="mfcmapi.h" />
+    <ClInclude Include="addin\mfcmapi.h" />
     <ClInclude Include="res\Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="utility\error.h" />
@@ -510,6 +511,7 @@
     <ClInclude Include="utility\strings.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="addin\addin.cpp" />
     <ClCompile Include="interpret\guid.cpp" />
     <ClCompile Include="mapi\mapiStubLibrary.cpp" />
     <ClCompile Include="mapi\stubutils.cpp" />

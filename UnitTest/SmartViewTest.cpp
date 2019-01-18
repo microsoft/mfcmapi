@@ -2,9 +2,9 @@
 #include <CppUnitTest.h>
 #include <UnitTest/UnitTest.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <core/mfcmapi.h>
+#include <core/addin/mfcmapi.h>
 #include <UnitTest/resource.h>
-#include <AddIns.h>
+#include <core/addin/addin.h>
 #include <core/utility/strings.h>
 
 namespace SmartViewTest

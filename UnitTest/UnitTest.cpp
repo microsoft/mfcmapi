@@ -2,7 +2,7 @@
 #include <CppUnitTest.h>
 #include <UnitTest/UnitTest.h>
 #include <UnitTest/resource.h>
-#include <AddIns.h>
+#include <core/addin/addin.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
 

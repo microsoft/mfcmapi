@@ -5,6 +5,7 @@
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/addin/mfcmapi.h>
 
 namespace dialog
 {

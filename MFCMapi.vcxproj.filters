@@ -124,14 +124,10 @@
     <ClInclude Include="MAPI\Version.h">
       <Filter>Source Files\MAPI</Filter>
     </ClInclude>
-    <ClInclude Include="AddIns.h" />
     <ClInclude Include="Interpret\guids.h" />
     <ClInclude Include="IO\mapiFile.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AddIns.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClInclude Include="Enums.h">
       <Filter>Source Files</Filter>
     </ClInclude>

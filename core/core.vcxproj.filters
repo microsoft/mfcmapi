@@ -24,9 +24,6 @@
     <ClInclude Include="mapi\extraPropTags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mfcmapi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="interpret\errorArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -75,6 +72,12 @@
     <ClInclude Include="utility\import.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="addin\mfcmapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="addin\addin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -105,6 +108,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utility\import.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="addin\addin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

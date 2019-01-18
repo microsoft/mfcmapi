@@ -15,10 +15,10 @@ namespace dialog
 	namespace editor
 	{
 		// Buttons for CEditor
-		//#define CEDITOR_BUTTON_OK 0x00000001 // Duplicated from MFCMAPI.h - do not modify
+//#define CEDITOR_BUTTON_OK 0x00000001 // Duplicated from mfcmapi.h - do not modify
 #define CEDITOR_BUTTON_ACTION1 0x00000002
 #define CEDITOR_BUTTON_ACTION2 0x00000004
-//#define CEDITOR_BUTTON_CANCEL 0x00000008 // Duplicated from MFCMAPI.h - do not modify
+//#define CEDITOR_BUTTON_CANCEL 0x00000008 // Duplicated from mfcmapi.h - do not modify
 #define CEDITOR_BUTTON_ACTION3 0x00000010
 
 #define NOLIST 0XFFFFFFFF

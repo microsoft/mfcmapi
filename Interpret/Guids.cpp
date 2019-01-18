@@ -1,8 +1,9 @@
 #include <StdAfx.h>
-#include <AddIns.h>
+#include <core/addin/addin.h>
 
 #include <Interpret/guids.h>
 #include <core/utility/strings.h>
+#include <core/addin/mfcmapi.h>
 
 namespace guid
 {

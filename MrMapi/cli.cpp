@@ -3,7 +3,7 @@
 #include <MrMapi/cli.h>
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/InterpretProp.h>
-#include <AddIns.h>
+#include <core/addin/addin.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 

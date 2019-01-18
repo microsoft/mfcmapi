@@ -71,8 +71,6 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 
 #include <core/utility/error.h>
 
-#include <core/mfcmapi.h>
-
 // Custom messages - used to ensure actions occur on the right threads.
 
 // Used by CAdviseSink:

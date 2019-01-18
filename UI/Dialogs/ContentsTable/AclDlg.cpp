@@ -11,6 +11,7 @@
 #include <MAPI/MapiMemory.h>
 #include <UI/addinui.h>
 #include <core/utility/output.h>
+#include <core/addin/mfcmapi.h>
 
 namespace dialog
 {

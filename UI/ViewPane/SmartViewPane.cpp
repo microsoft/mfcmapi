@@ -4,8 +4,9 @@
 #include <core/utility/strings.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <UI/UIFunctions.h>
-#include <Addins.h>
+#include <core/addin/addin.h>
 #include <core/utility/registry.h>
+#include <core/addin/mfcmapi.h>
 
 namespace viewpane
 {

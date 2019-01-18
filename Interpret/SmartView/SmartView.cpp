@@ -6,7 +6,7 @@
 #include <core/utility/strings.h>
 #include <core/interpret/guid.h>
 #include <MAPI/Cache/NamedPropCache.h>
-#include <Addins.h>
+#include <core/addin/addin.h>
 #include <core/utility/registry.h>
 
 #include <Interpret/SmartView/SmartViewParser.h>

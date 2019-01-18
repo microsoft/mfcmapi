@@ -15,7 +15,7 @@
 #include <Interpret/SmartView/PropertiesStruct.h>
 #include <UI/CMAPIProgress.h>
 #include <UI/Dialogs/Editors/DbgView.h>
-#include <Addins.h>
+#include <core/addin/addin.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <IO/mapiFile.h>

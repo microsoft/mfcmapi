@@ -561,7 +561,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AddIns.h" />
     <ClInclude Include="Interpret\guids.h" />
     <ClInclude Include="Interpret\Sid.h" />
     <ClInclude Include="Interpret\SmartView\block\blockStringW.h" />
@@ -709,7 +708,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   <ItemGroup>
     <ClCompile Include="Interpret\guids.cpp" />
     <ClCompile Include="Interpret\Sid.cpp" />
-    <ClCompile Include="AddIns.cpp" />
     <ClCompile Include="IO\mapiFile.cpp" />
     <ClCompile Include="MAPI\AdviseSink.cpp" />
     <ClCompile Include="Property\Attributes.cpp" />

@@ -4,6 +4,8 @@
 #include <UI/ViewPane/TreePane.h>
 #include <Interpret/SmartView/SmartViewParser.h>
 
+enum __ParsingTypeEnum;
+
 namespace viewpane
 {
 	class SmartViewPane : public DropDownPane

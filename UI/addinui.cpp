@@ -2,9 +2,10 @@
 #include <UI/addinui.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <UI/UIFunctions.h>
-#include <Addins.h>
+#include <core/addin/addin.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/addin/mfcmapi.h>
 
 namespace ui
 {

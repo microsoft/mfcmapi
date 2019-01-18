@@ -20,7 +20,7 @@
 #include <MrMapi/MMReceiveFolder.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #include <core/mapi/stubutils.h>
-#include <AddIns.h>
+#include <core/addin/addin.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 

@@ -6,7 +6,7 @@
 #include <Interpret/guids.h>
 #include <core/interpret/guid.h>
 #include <UI/Dialogs/Editors/PropertySelector.h>
-#include <AddIns.h>
+#include <core/addin/addin.h>
 #include <core/utility/output.h>
 
 namespace dialog
