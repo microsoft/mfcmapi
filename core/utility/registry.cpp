@@ -121,7 +121,7 @@ namespace registry
 
 		delete[] szBuf;
 		return ret;
-	} // namespace registry
+	}
 
 	// If the value is not set in the registry, return the default value
 	std::wstring
