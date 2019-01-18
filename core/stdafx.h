@@ -11,6 +11,9 @@
 #include <sstream>
 #include <iterator>
 #include <functional>
+#include <map>
+#include <utility>
+#include <vector>
 
 // All the MAPI headers
 #include <MAPIX.h>

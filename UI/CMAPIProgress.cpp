@@ -2,9 +2,9 @@
 #include <UI/CMAPIProgress.h>
 #include <Enums.h>
 #include <UI/Dialogs/BaseDialog.h>
-#include <IO/Registry.h>
+#include <core/utility/registry.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace ui
 {

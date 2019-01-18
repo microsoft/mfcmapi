@@ -10,7 +10,7 @@
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MapiMemory.h>
 #include <UI/addinui.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

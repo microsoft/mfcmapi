@@ -17,9 +17,9 @@
 #include <MAPI/Cache/NamedPropCache.h>
 #include <MAPI/MapiMemory.h>
 #include <IO/MFCOutput.h>
-#include <IO/Registry.h>
+#include <core/utility/registry.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace controls
 {

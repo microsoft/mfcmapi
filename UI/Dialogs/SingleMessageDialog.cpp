@@ -7,7 +7,7 @@
 #include <UI/Dialogs/Editors/StreamEditor.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

@@ -3,7 +3,7 @@
 #include <StdAfx.h>
 #include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/Cache/GlobalCache.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace cache
 {

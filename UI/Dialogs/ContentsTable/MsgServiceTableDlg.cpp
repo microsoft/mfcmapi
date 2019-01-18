@@ -11,9 +11,8 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/addinui.h>
-#include <IO/Registry.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

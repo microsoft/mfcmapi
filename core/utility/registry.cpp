@@ -1,7 +1,8 @@
-#include <StdAfx.h>
-#include <IO/Registry.h>
+#include <stdafx.h>
+#include <core/utility/registry.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
+#include <core/utility/error.h>
 
 namespace registry
 {

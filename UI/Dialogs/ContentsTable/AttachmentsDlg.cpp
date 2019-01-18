@@ -3,7 +3,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <IO/file.h>
 #include <UI/FileDialogEx.h>
 #include <MAPI/Cache/MapiObjects.h>
 #include <MAPI/ColumnTags.h>
@@ -16,7 +15,7 @@
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

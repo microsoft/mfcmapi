@@ -5,9 +5,7 @@
 #include <Interpret/InterpretProp.h>
 #include <UI/MyWinApp.h>
 #include <UI/Dialogs/AboutDlg.h>
-#include <IO/MFCOutput.h>
-#include <IO/Registry.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 extern ui::CMyWinApp theApp;
 

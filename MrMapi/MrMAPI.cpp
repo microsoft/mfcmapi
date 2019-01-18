@@ -21,9 +21,8 @@
 #include <MAPI/Cache/NamedPropCache.h>
 #include <MAPI/StubUtils.h>
 #include <AddIns.h>
-#include <IO/Registry.h>
-#include <IO/MFCOutput.h>
-#include "IO/output.h"
+#include <core/utility/registry.h>
+#include <core/utility/output.h>
 
 // Initialize MFC for LoadString support later on
 void InitMFC() { AfxWinInit(::GetModuleHandle(nullptr), nullptr, ::GetCommandLine(), 0); }

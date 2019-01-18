@@ -5,7 +5,7 @@
 #include <Interpret/InterpretProp.h>
 #include <AddIns.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace error
 {

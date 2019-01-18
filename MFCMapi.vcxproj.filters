@@ -79,9 +79,6 @@
     <ClInclude Include="IO\ExportProfile.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
-    <ClInclude Include="IO\Registry.h">
-      <Filter>Source Files\IO</Filter>
-    </ClInclude>
     <ClInclude Include="UI\Controls\StyleTreeCtrl.h">
       <Filter>Source Files\UI\Controls</Filter>
     </ClInclude>
@@ -132,11 +129,7 @@
     </ClInclude>
     <ClInclude Include="AddIns.h" />
     <ClInclude Include="Interpret\guids.h" />
-    <ClInclude Include="IO\output.h" />
     <ClInclude Include="IO\mapiFile.h" />
-    <ClInclude Include="IO\file.h">
-      <Filter>Source Files\IO</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddIns.cpp">
@@ -199,23 +192,11 @@
     <ClCompile Include="Interpret\guids.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IO\output.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IO\mapiFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IO\file.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="IO\Error.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
-    <ClInclude Include="IO\Error.h">
-      <Filter>Source Files\IO</Filter>
-    </ClInclude>
     <ClCompile Include="IO\ExportProfile.cpp">
       <Filter>Source Files\IO</Filter>
     </ClCompile>
@@ -225,9 +206,6 @@
     <ClInclude Include="IO\MFCOutput.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
-    <ClCompile Include="IO\Registry.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Interpret\InterpretProp.cpp">

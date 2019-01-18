@@ -5,8 +5,8 @@
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <core/mapi/extraPropTags.h>
-#include <IO/Registry.h>
-#include <IO/output.h>
+#include <core/utility/registry.h>
+#include <core/utility/output.h>
 
 namespace mapi
 {

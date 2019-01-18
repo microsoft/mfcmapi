@@ -69,7 +69,7 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 
 #include <core/res/Resource.h> // main symbols
 
-#include <IO/Error.h>
+#include <core/utility/error.h>
 
 #include <core/mfcmapi.h>
 

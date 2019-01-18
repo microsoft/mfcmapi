@@ -2,9 +2,9 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/Options.h>
 #include <MAPI/StubUtils.h>
-#include <IO/Registry.h>
+#include <core/utility/registry.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

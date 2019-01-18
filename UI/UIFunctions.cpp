@@ -6,9 +6,8 @@
 #include <UI/ViewPane/CheckPane.h>
 #include <UI/DoubleBuffer.h>
 #include <UI/addinui.h>
-#include <IO/Registry.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace ui
 {

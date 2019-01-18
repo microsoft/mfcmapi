@@ -1,7 +1,9 @@
-#include <StdAfx.h>
-#include <IO/file.h>
+#include <stdafx.h>
+#include <core/utility/file.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
+#include <core/utility/error.h>
+#include <ShlObj.h>
 
 namespace file
 {

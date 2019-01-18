@@ -8,7 +8,7 @@
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <Interpret/InterpretProp.h>
-#include <IO/file.h>
+#include <core/utility/file.h>
 #include <MAPI/MAPIProgress.h>
 #include <UI/Controls/SortList/NodeData.h>
 #include <MAPI/Cache/GlobalCache.h>
@@ -17,9 +17,8 @@
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
 #include <IO/MFCOutput.h>
-#include <IO/Registry.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 #include <IO/mapiFile.h>
 
 namespace dialog

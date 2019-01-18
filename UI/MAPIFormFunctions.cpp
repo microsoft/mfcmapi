@@ -5,7 +5,7 @@
 #include <UI/MyMAPIFormViewer.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace mapi
 {

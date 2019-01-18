@@ -6,9 +6,8 @@
 #include <UI/ViewPane/SplitterPane.h>
 #include <MAPI/Cache/GlobalCache.h>
 #include <MAPI/MAPIFunctions.h>
-#include <IO/Registry.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

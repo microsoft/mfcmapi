@@ -1,8 +1,10 @@
-#include <StdAfx.h>
-#include <IO/output.h>
+#include <stdafx.h>
+#include <core/utility/output.h>
 #include <core/utility/strings.h>
-#include <IO/file.h>
-#include <IO/Registry.h>
+#include <core/utility/file.h>
+#include <core/utility/registry.h>
+#include <core/utility/error.h>
+#include <cassert>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
@@ -57,15 +59,8 @@ namespace output
 		// output text if we just toggled on
 		if (bDoOutput && !bOldDoOutput)
 		{
-			const auto lpApp = AfxGetApp();
-
-			if (lpApp)
-			{
-				DebugPrint(
-					DBGGeneric,
-					L"%ws: Debug printing to file enabled.\n",
-					strings::LPCTSTRToWstring(lpApp->m_pszAppName).c_str());
-			}
+			auto appName = file::GetModuleFileName(nullptr);
+			DebugPrint(DBGGeneric, L"%ws: Debug printing to file enabled.\n", appName.c_str());
 
 			DebugPrintVersion(DBGVersionBanner);
 		}

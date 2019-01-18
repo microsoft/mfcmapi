@@ -11,7 +11,7 @@
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
-#include <IO/file.h>
+#include <core/utility/file.h>
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/MAPIFormFunctions.h>
 #include <Interpret/InterpretProp.h>
@@ -27,7 +27,7 @@
 #include <UI/addinui.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 #include <IO/mapiFile.h>
 
 namespace dialog

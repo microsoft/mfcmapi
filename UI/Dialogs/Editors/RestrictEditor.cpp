@@ -8,9 +8,8 @@
 #include <UI/Controls/SortList/CommentData.h>
 #include <UI/Controls/SortList/BinaryData.h>
 #include <MAPI/MapiMemory.h>
-#include <IO/Registry.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

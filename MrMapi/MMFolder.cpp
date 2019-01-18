@@ -7,7 +7,7 @@
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
 #include <IO/MFCOutput.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 // Search folder for entry ID of child folder by name.
 LPSBinary MAPIFindFolderW(

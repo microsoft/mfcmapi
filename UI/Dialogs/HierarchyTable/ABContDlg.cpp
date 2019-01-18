@@ -6,7 +6,7 @@
 #include <MAPI/Cache/MapiObjects.h>
 #include <UI/addinui.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

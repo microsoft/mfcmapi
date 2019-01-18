@@ -2,7 +2,7 @@
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <MrMapi/cli.h>
 #include <IO/MFCOutput.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 #include <IO/mapiFile.h>
 
 void DumpContentsTable(

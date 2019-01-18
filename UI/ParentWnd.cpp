@@ -6,8 +6,8 @@
 #include <UI/UIFunctions.h>
 #include <MAPI/StubUtils.h>
 #include <AddIns.h>
-#include <IO/Registry.h>
-#include <IO/output.h>
+#include <core/utility/registry.h>
+#include <core/utility/output.h>
 
 extern ui::CMyWinApp theApp;
 

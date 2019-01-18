@@ -6,8 +6,8 @@
 #include <Interpret/SmartView/SmartView.h>
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
-#include <IO/Registry.h>
-#include <IO/output.h>
+#include <core/utility/registry.h>
+#include <core/utility/output.h>
 
 namespace mapiprocessor
 {

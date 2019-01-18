@@ -4,9 +4,9 @@
 #include <UI/profile.h>
 #include <ImportProcs.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <IO/file.h>
+#include <core/utility/file.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace ui
 {

@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <IO/mapiFile.h>
-#include <IO/file.h>
+#include <core/utility/file.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>

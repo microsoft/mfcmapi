@@ -1,9 +1,9 @@
 #include <StdAfx.h>
 #include <MrMapi/MMAcls.h>
 #include <MrMapi/cli.h>
-#include <IO/Registry.h>
+#include <core/utility/registry.h>
 #include <IO/MFCOutput.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
 {

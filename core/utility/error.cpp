@@ -1,9 +1,9 @@
-#include <StdAfx.h>
-#include <IO/Error.h>
+#include <stdafx.h>
+#include <core/utility/error.h>
 #include <core/interpret/errorArray.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
-#include <IO/Registry.h>
+#include <core/utility/output.h>
+#include <core/utility/registry.h>
 
 namespace error
 {

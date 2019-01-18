@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <UI/FileDialogEx.h>
-#include <IO/Registry.h>
 #include <core/utility/strings.h>
 
 namespace file

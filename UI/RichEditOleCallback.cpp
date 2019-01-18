@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/RichEditOleCallback.h>
 #include <UI/UIFunctions.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace ui
 {

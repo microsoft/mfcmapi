@@ -1,7 +1,6 @@
 // Header file for the MFCMAPI application registry functions
 
 #pragma once
-#include <utility>
 
 namespace registry
 {

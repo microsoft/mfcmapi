@@ -54,7 +54,7 @@ namespace output
 #define fIsSet(ulTag) (registry::debugTag & (ulTag))
 #define fIsSetv(ulTag) (((ulTag) != DBGNoDebug) && (registry::debugTag & (ulTag)))
 
-#define CHKPARAM ASSERT(DBGNoDebug != ulDbgLvl || fFile)
+#define CHKPARAM assert(DBGNoDebug != ulDbgLvl || fFile)
 
 	// quick check to see if we have anything to print - so we can avoid executing the call
 #define EARLYABORT \

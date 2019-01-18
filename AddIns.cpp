@@ -3,9 +3,9 @@
 #include <core/mfcmapi.h>
 #include <ImportProcs.h>
 #include <core/utility/strings.h>
-#include <IO/file.h>
-#include <IO/Registry.h>
-#include <IO/output.h>
+#include <core/utility/file.h>
+#include <core/utility/registry.h>
+#include <core/utility/output.h>
 
 // Our built in arrays, which get merged into the arrays declared in mfcmapi.h
 #include <core/interpret/genTagArray.h>

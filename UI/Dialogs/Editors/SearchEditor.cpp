@@ -5,7 +5,7 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/Cache/NamedPropCache.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

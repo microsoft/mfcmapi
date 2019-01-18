@@ -5,7 +5,7 @@
 #include <appmodel.h>
 #include <AppxPackaging.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace version
 {

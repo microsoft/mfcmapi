@@ -1,10 +1,10 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/AboutDlg.h>
 #include <UI/UIFunctions.h>
-#include <IO/file.h>
-#include <IO/Registry.h>
+#include <core/utility/file.h>
+#include <core/utility/registry.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

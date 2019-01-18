@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <IO/MFCOutput.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <Interpret/InterpretProp.h>
@@ -8,9 +8,9 @@
 #include <MAPI/ColumnTags.h>
 #include <Property/ParseProperty.h>
 #include <MAPI/Cache/NamedPropCache.h>
-#include <IO/file.h>
 #include <MAPI/MapiMemory.h>
-#include <IO/Registry.h>
+#include <core/utility/registry.h>
+#include <cassert>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf

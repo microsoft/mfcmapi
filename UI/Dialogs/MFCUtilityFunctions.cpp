@@ -21,10 +21,10 @@
 #include <UI/Dialogs/ContentsTable/AclDlg.h>
 #include <UI/Dialogs/ContentsTable/MailboxTableDlg.h>
 #include <UI/Dialogs/ContentsTable/PublicFolderTableDlg.h>
-#include <IO/Registry.h>
+#include <core/utility/registry.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

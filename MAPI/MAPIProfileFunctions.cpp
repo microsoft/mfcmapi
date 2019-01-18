@@ -5,7 +5,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <IO/MFCOutput.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace mapi
 {

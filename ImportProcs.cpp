@@ -2,10 +2,9 @@
 #include <ImportProcs.h>
 #include <core/utility/strings.h>
 #include <MAPI/StubUtils.h>
-#include <IO/file.h>
-#include <IO/Registry.h>
-#include <IO/MFCOutput.h>
-#include <IO/output.h>
+#include <core/utility/file.h>
+#include <core/utility/registry.h>
+#include <core/utility/output.h>
 
 namespace import
 {

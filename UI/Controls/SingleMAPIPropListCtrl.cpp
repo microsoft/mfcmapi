@@ -28,7 +28,7 @@
 #include <MAPI/MapiMemory.h>
 #include <UI/addinui.h>
 #include <IO/MFCOutput.h>
-#include <IO/Registry.h>
+#include <core/utility/registry.h>
 
 namespace controls
 {

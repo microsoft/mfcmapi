@@ -4,7 +4,7 @@
 #include <UI/Controls/SortList/PropListData.h>
 #include <Interpret/InterpretProp.h>
 #include <AddIns.h>
-#include <IO/output.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

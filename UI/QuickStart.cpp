@@ -11,7 +11,6 @@
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Dialogs/Editors/QSSpecialFolders.h>
 #include <MAPI/Cache/MapiObjects.h>
-#include <IO/Registry.h>
 #include <core/utility/strings.h>
 
 namespace dialog
