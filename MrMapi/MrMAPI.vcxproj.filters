@@ -359,9 +359,6 @@
     <ClInclude Include="..\Interpret\SmartView\SmartViewParser.h">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
-    <ClInclude Include="..\Interpret\SmartView\SmartViewParsers.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
     <ClCompile Include="..\Interpret\SmartView\TaskAssigners.cpp">
       <Filter>Source Files\Interpret\SmartView</Filter>
     </ClCompile>

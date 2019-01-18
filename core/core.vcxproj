@@ -495,6 +495,7 @@
     <ClInclude Include="interpret\guid.h" />
     <ClInclude Include="interpret\nameIDArray.h" />
     <ClInclude Include="interpret\propTypeArray.h" />
+    <ClInclude Include="interpret\smartViewParsers.h" />
     <ClInclude Include="mapi\extraPropTags.h" />
     <ClInclude Include="mapi\interfaces.h" />
     <ClInclude Include="mapi\stubutils.h" />

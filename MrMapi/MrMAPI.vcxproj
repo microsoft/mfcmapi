@@ -618,7 +618,6 @@
     <ClInclude Include="..\PropertyBag\PropertyBag.h" />
     <ClInclude Include="..\PropertyBag\RowPropertyBag.h" />
     <ClInclude Include="..\Interpret\SmartView\SmartView.h" />
-    <ClInclude Include="..\Interpret\SmartView\SmartViewParsers.h" />
     <ClInclude Include="..\StdAfx.h" />
     <ClInclude Include="cli.h" />
     <ClInclude Include="MMAcls.h" />
