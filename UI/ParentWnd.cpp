@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/ParentWnd.h>
-#include <core/utility/importProcs.h>
+#include <core/utility/import.h>
 #include <UI/MyWinApp.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #include <UI/UIFunctions.h>

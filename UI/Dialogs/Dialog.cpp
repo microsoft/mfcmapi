@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Dialog.h>
 #include <UI/UIFunctions.h>
-#include <core/utility/importProcs.h>
+#include <core/utility/import.h>
 #include <propkey.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

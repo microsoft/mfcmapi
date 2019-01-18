@@ -13,7 +13,7 @@
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <core/utility/file.h>
 #include <UI/Dialogs/ContentsTable/ProfileListDlg.h>
-#include <core/utility/importProcs.h>
+#include <core/utility/import.h>
 #include <UI/Dialogs/AboutDlg.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/FileDialogEx.h>

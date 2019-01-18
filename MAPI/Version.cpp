@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <MAPI/Version.h>
-#include <core/utility/importProcs.h>
+#include <core/utility/import.h>
 #include <core/mapi/stubutils.h>
 #include <appmodel.h>
 #include <AppxPackaging.h>

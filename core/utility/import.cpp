@@ -1,5 +1,5 @@
 #include <core/stdafx.h>
-#include <core/utility/importProcs.h>
+#include <core/utility/import.h>
 #include <core/mapi/stubutils.h>
 #include <core/utility/strings.h>
 #include <core/utility/file.h>

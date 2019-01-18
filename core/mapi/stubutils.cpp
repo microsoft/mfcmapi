@@ -4,7 +4,7 @@
 #include <winreg.h>
 
 // Included for MFCMAPI tracing
-#include <core/utility/importProcs.h>
+#include <core/utility/import.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>

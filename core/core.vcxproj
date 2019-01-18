@@ -504,7 +504,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="utility\error.h" />
     <ClInclude Include="utility\file.h" />
-    <ClInclude Include="utility\importProcs.h" />
+    <ClInclude Include="utility\import.h" />
     <ClInclude Include="utility\output.h" />
     <ClInclude Include="utility\registry.h" />
     <ClInclude Include="utility\strings.h" />
@@ -527,7 +527,7 @@
     </ClCompile>
     <ClCompile Include="utility\error.cpp" />
     <ClCompile Include="utility\file.cpp" />
-    <ClCompile Include="utility\importProcs.cpp" />
+    <ClCompile Include="utility\import.cpp" />
     <ClCompile Include="utility\output.cpp" />
     <ClCompile Include="utility\registry.cpp" />
     <ClCompile Include="utility\strings.cpp" />

@@ -14,7 +14,7 @@
 #include <MrMapi/MMSmartView.h>
 #include <MrMapi/MMStore.h>
 #include <MrMapi/MMMapiMime.h>
-#include <core/utility/importProcs.h>
+#include <core/utility/import.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MrMapi/MMPst.h>
 #include <MrMapi/MMReceiveFolder.h>

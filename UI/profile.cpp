@@ -2,7 +2,7 @@
 
 #include <StdAfx.h>
 #include <UI/profile.h>
-#include <core/utility/importProcs.h>
+#include <core/utility/import.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <core/utility/file.h>
 #include <core/utility/strings.h>
