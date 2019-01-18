@@ -1,4 +1,4 @@
-#include <stdafx.h>
+#include <core/stdafx.h>
 #include <core/utility/error.h>
 #include <core/interpret/errorArray.h>
 #include <core/utility/strings.h>

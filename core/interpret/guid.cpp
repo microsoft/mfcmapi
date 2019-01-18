@@ -1,4 +1,4 @@
-#include <stdafx.h>
+#include <core/stdafx.h>
 
 #pragma region "USES_IID definitions"
 #define INITGUID

@@ -1,4 +1,4 @@
-#include <stdafx.h>
+#include <core/stdafx.h>
 #include <core/utility/output.h>
 #include <core/utility/strings.h>
 #include <core/utility/file.h>
