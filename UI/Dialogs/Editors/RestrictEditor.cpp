@@ -7,7 +7,7 @@
 #include <UI/Controls/SortList/ResData.h>
 #include <UI/Controls/SortList/CommentData.h>
 #include <UI/Controls/SortList/BinaryData.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 

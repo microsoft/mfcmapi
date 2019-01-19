@@ -10,7 +10,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <UI/FileDialogEx.h>
 #include <Interpret/InterpretProp.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/strings.h>

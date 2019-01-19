@@ -78,6 +78,9 @@
     <ClInclude Include="addin\addin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\mapiMemory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">

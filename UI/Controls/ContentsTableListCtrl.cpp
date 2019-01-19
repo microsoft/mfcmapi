@@ -15,7 +15,7 @@
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 #include <MAPI/Cache/NamedPropCache.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiMemory.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>

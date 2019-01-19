@@ -7,7 +7,7 @@
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/Dialogs/Editors/MultiValuePropertyEditor.h>
 #include <Interpret/InterpretProp.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 

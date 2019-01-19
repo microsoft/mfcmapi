@@ -6,7 +6,7 @@
 #include <MAPI/ColumnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/strings.h>

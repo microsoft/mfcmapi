@@ -3,7 +3,7 @@
 #include <Interpret/Sid.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiMemory.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

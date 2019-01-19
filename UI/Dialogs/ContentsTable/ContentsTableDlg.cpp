@@ -11,7 +11,7 @@
 #include <UI/Dialogs/Editors/RestrictEditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <UI/Dialogs/Editors/SearchEditor.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiMemory.h>
 #include <core/mapi/extraPropTags.h>
 #include <UI/addinui.h>
 #include <core/utility/registry.h>

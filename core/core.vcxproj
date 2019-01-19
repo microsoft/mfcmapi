@@ -499,6 +499,7 @@
     <ClInclude Include="interpret\smartViewParsers.h" />
     <ClInclude Include="mapi\extraPropTags.h" />
     <ClInclude Include="mapi\interfaces.h" />
+    <ClInclude Include="mapi\mapiMemory.h" />
     <ClInclude Include="mapi\stubutils.h" />
     <ClInclude Include="addin\mfcmapi.h" />
     <ClInclude Include="res\Resource.h" />

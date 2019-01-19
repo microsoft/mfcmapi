@@ -2,7 +2,7 @@
 #include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/InterpretProp.h>
 #include <core/interpret/guid.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiMemory.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

@@ -25,7 +25,7 @@
 #include <UI/Dialogs/Editors/PropertyEditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/registry.h>

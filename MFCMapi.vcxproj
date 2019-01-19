@@ -624,7 +624,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="PropertyBag\RowPropertyBag.h" />
     <ClInclude Include="Interpret\SmartView\SmartView.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="MAPI\MapiMemory.h" />
     <ClInclude Include="MAPI\Version.h" />
     <ClInclude Include="UI\addinui.h" />
     <ClInclude Include="UI\Controls\StyleTreeCtrl.h" />

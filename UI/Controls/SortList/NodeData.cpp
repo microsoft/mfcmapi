@@ -2,7 +2,7 @@
 #include <UI/Controls/SortList/NodeData.h>
 #include <MAPI/AdviseSink.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiMemory.h>
 
 namespace controls
 {

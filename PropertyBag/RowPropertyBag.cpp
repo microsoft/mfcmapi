@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <PropertyBag/RowPropertyBag.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiMemory.h>
 
 namespace propertybag
 {
