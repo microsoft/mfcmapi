@@ -18,7 +18,6 @@
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/FileDialogEx.h>
 #include <MAPI/MapiMime.h>
-#include <Interpret/guids.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/QuickStart.h>
 #include <UI/UIFunctions.h>
@@ -32,6 +31,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <IO/mapiFile.h>
+#include <core/interpret/guid.h>
 
 namespace dialog
 {

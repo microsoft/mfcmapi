@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 #include <MAPI/Cache/NamedPropCache.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/guids.h>
 #include <core/interpret/guid.h>
 #include <MAPI/MapiMemory.h>
 #include <core/utility/registry.h>

@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/PCL.h>
-#include <Interpret/guids.h>
+#include <core/interpret/guid.h>
 
 namespace smartview
 {

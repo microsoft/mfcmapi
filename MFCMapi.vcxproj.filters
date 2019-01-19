@@ -124,7 +124,6 @@
     <ClInclude Include="MAPI\Version.h">
       <Filter>Source Files\MAPI</Filter>
     </ClInclude>
-    <ClInclude Include="Interpret\guids.h" />
     <ClInclude Include="IO\mapiFile.h" />
   </ItemGroup>
   <ItemGroup>
@@ -175,9 +174,6 @@
     </ClCompile>
     <ClCompile Include="MAPI\Version.cpp">
       <Filter>Source Files\MAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\guids.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IO\mapiFile.cpp">
       <Filter>Source Files</Filter>

@@ -555,7 +555,6 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Interpret\guids.h" />
     <ClInclude Include="..\Interpret\Sid.h" />
     <ClInclude Include="..\Interpret\SmartView\block\blockStringW.h" />
     <ClInclude Include="..\Interpret\SmartView\block\blockStringA.h" />
@@ -638,7 +637,6 @@
     <None Include="..\.clang-format" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Interpret\guids.cpp" />
     <ClCompile Include="..\Interpret\Sid.cpp" />
     <ClCompile Include="..\IO\mapiFile.cpp" />
     <ClCompile Include="..\MAPI\AdviseSink.cpp" />

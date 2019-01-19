@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/DropDownPane.h>
-#include <Interpret/guids.h>
+#include <core/interpret/guid.h>
 #include <core/utility/strings.h>
 #include <UI/UIFunctions.h>
 #include <core/addin/addin.h>

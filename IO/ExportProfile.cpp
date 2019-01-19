@@ -3,7 +3,7 @@
 #include <StdAfx.h>
 #include <MAPI/MAPIProfileFunctions.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/guids.h>
+#include <core/interpret/guid.h>
 #include <core/utility/strings.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>

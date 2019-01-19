@@ -1,7 +1,6 @@
 #include <../StdAfx.h>
 #include <CppUnitTest.h>
 #include <UnitTest/UnitTest.h>
-#include <Interpret/guids.h>
 #include <core/interpret/guid.h>
 
 namespace guidtest

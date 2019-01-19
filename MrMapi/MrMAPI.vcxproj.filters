@@ -67,9 +67,6 @@
     <ClInclude Include="..\IO\ExportProfile.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
-    <ClInclude Include="..\Interpret\guids.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
     <ClInclude Include="..\IO\mapiFile.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
@@ -92,9 +89,6 @@
     </ClCompile>
     <ClCompile Include="cli.cpp">
       <Filter>Source Files\MrMAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Interpret\guids.cpp">
-      <Filter>Source Files\Interpret</Filter>
     </ClCompile>
     <ClCompile Include="..\IO\mapiFile.cpp">
       <Filter>Source Files\IO</Filter>
