@@ -1,7 +1,7 @@
 // Implementation of the CMapiObjects class.
 
 #include <core/stdafx.h>
-#include <core/mapi/cache/mapiobjects.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/cache/globalCache.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>
