@@ -9,11 +9,16 @@
 #include <cwchar>
 #pragma warning(pop)
 
+// Common CRT headers
 #include <list>
 #include <algorithm>
+#include <locale>
+#include <sstream>
+#include <iterator>
 #include <functional>
-#include <vector>
 #include <map>
+#include <utility>
+#include <vector>
 
 // Speed up our string conversions for output
 #ifdef MRMAPI
