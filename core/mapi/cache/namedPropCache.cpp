@@ -555,7 +555,7 @@ namespace cache
 			// Should we cache results?
 			!cPropNames || !lppPropNames || !*lppPropNames)
 		{
-			WC_H_GETPROPS(lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, &propTags));
+			WC_H_GETPROPS_S(lpMAPIProp->GetIDsFromNames(cPropNames, lppPropNames, ulFlags, &propTags));
 			return propTags;
 		}
 
