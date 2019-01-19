@@ -1,6 +1,4 @@
 #pragma once
-#include <MAPIDefS.h>
-#include <EdkMdb.h>
 
 #pragma pack()
 
