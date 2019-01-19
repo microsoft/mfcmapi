@@ -8,6 +8,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>
+#include <stdlib.h>
 
 namespace mapistub
 {
@@ -222,8 +223,8 @@ namespace mapistub
 		DWORD dwType = 0;
 		std::wstring szPath;
 
-		DWORD dwSizeComponentID = sizeof rgchMSIComponentID;
-		DWORD dwSizeLCID = sizeof rgchMSIApplicationLCID;
+		DWORD dwSizeComponentID = _countof(rgchMSIComponentID);
+		DWORD dwSizeLCID = _countof(rgchMSIApplicationLCID);
 
 		if (ERROR_SUCCESS == RegQueryValueExW(
 								 hkeyMapiClient,
@@ -587,4 +588,4 @@ namespace mapistub
 		output::DebugPrint(DBGLoadMAPI, L"Exit GetPrivateMAPI, hinstPrivateMAPI = %p\n", hinstPrivateMAPI);
 		return hinstPrivateMAPI;
 	}
-}
+} // namespace mapistub
