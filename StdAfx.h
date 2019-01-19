@@ -53,14 +53,14 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 
 #include <EdkMdb.h>
 #include <ExchForm.h>
-#include <EMSAbTag.h>
+#include <EMSABTAG.H>
 #include <IMessage.h>
-#include <edkguid.h>
-#include <tnef.h>
-#include <mapiaux.h>
+#include <EdkGuid.h>
+#include <TNEF.h>
+#include <MAPIAux.h>
 
-#include <aclui.h>
-#include <uxtheme.h>
+#include <AclUI.h>
+#include <Uxtheme.h>
 
 // there's an odd conflict with mimeole.h and richedit.h - this should fix it
 #ifdef UNICODE
