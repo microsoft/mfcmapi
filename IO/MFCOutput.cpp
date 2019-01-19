@@ -7,7 +7,7 @@
 #include <Interpret/SmartView/SmartView.h>
 #include <MAPI/ColumnTags.h>
 #include <Property/ParseProperty.h>
-#include <MAPI/Cache/NamedPropCache.h>
+#include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/registry.h>
 #include <cassert>

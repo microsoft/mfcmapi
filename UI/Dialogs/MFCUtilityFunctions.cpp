@@ -6,7 +6,7 @@
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/Dialogs/BaseDialog.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiobjects.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <core/interpret/guid.h>

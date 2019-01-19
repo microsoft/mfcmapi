@@ -3,7 +3,7 @@
 #include <StdAfx.h>
 #include <UI/MyWinApp.h>
 #include <UI/ParentWnd.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiobjects.h>
 #include <core/utility/import.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/mapiui.h>

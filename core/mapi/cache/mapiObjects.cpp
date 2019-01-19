@@ -1,9 +1,10 @@
 // Implementation of the CMapiObjects class.
 
-#include <StdAfx.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/Cache/GlobalCache.h>
+#include <core/stdafx.h>
+#include <core/mapi/cache/mapiobjects.h>
+#include <core/mapi/cache/globalCache.h>
 #include <core/utility/output.h>
+#include <core/utility/error.h>
 
 namespace cache
 {

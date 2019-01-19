@@ -2,7 +2,7 @@
 #include <UI/ParentWnd.h>
 #include <core/utility/import.h>
 #include <UI/MyWinApp.h>
-#include <MAPI/Cache/NamedPropCache.h>
+#include <core/mapi/cache/namedPropCache.h>
 #include <UI/UIFunctions.h>
 #include <core/mapi/stubutils.h>
 #include <core/addin/addin.h>

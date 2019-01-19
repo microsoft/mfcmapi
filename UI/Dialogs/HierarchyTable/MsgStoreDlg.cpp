@@ -2,7 +2,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/HierarchyTable/MsgStoreDlg.h>
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiobjects.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
@@ -11,7 +11,7 @@
 #include <core/utility/file.h>
 #include <MAPI/MAPIProgress.h>
 #include <UI/Controls/SortList/NodeData.h>
-#include <MAPI/Cache/GlobalCache.h>
+#include <core/mapi/cache/globalCache.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/mapiui.h>

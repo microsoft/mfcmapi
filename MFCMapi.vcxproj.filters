@@ -64,15 +64,6 @@
     <ClInclude Include="UI\FakeSplitter.h">
       <Filter>Source Files\UI\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="MAPI\Cache\GlobalCache.h">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\Cache\MapiObjects.h">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\Cache\NamedPropCache.h">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClInclude>
     <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h">
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClInclude>
@@ -132,15 +123,6 @@
     </ClInclude>
     <ClCompile Include="UI\FakeSplitter.cpp">
       <Filter>Source Files\UI\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\Cache\GlobalCache.cpp">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\Cache\MapiObjects.cpp">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\Cache\NamedPropCache.cpp">
-      <Filter>Source Files\MAPI\Cache</Filter>
     </ClCompile>
     <ClCompile Include="UI\Dialogs\MFCUtilityFunctions.cpp">
       <Filter>Source Files\UI\Dialogs</Filter>

@@ -3,6 +3,7 @@
 #include <Interpret/InterpretProp.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
+#include <core/mapi/cache/namedPropCache.h>
 
 namespace smartview
 {
@@ -205,7 +206,7 @@ namespace smartview
 					mnid.lpguid = nullptr;
 					mnid.ulKind = MNID_ID;
 					mnid.Kind.lID = m_pfdFieldDefinitions[iDef].dwDispid;
-					szDispidName = strings::join(interpretprop::NameIDToPropNames(&mnid), L", ");
+					szDispidName = strings::join(cache::NameIDToPropNames(&mnid), L", ");
 					if (!szDispidName.empty())
 					{
 						addBlock(m_pfdFieldDefinitions[iDef].dwDispid, L" = %1!ws!", szDispidName.c_str());

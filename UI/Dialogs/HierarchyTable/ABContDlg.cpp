@@ -3,7 +3,7 @@
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiobjects.h>
 #include <UI/addinui.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

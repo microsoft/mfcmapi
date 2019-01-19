@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiobjects.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
@@ -22,7 +22,7 @@
 #include <UI/QuickStart.h>
 #include <UI/UIFunctions.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/Cache/GlobalCache.h>
+#include <core/mapi/cache/globalCache.h>
 #include <core/mapi/stubutils.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>

@@ -2,7 +2,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ProviderTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiobjects.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <MAPI/MAPIProfileFunctions.h>

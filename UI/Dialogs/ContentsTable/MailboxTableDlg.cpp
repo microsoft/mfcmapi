@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/MailboxTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiobjects.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/ColumnTags.h>

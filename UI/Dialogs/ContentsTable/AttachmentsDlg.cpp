@@ -4,12 +4,12 @@
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/FileDialogEx.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiobjects.h>
 #include <MAPI/ColumnTags.h>
 #include <MAPI/MAPIProgress.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/Cache/GlobalCache.h>
+#include <core/mapi/cache/globalCache.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/mapiui.h>

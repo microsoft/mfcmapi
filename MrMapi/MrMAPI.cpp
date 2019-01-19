@@ -18,7 +18,7 @@
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MrMapi/MMPst.h>
 #include <MrMapi/MMReceiveFolder.h>
-#include <MAPI/Cache/NamedPropCache.h>
+#include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/stubutils.h>
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>

@@ -4,7 +4,7 @@
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/ViewPane/SmartViewPane.h>
 #include <UI/ViewPane/SplitterPane.h>
-#include <MAPI/Cache/GlobalCache.h>
+#include <core/mapi/cache/globalCache.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

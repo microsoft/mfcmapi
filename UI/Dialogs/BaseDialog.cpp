@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/FakeSplitter.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiobjects.h>
 #include <UI/ParentWnd.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
@@ -15,7 +15,7 @@
 #include <core/mapi/extraPropTags.h>
 #include <Msi.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <MAPI/Cache/GlobalCache.h>
+#include <core/mapi/cache/globalCache.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <UI/Dialogs/Editors/Options.h>

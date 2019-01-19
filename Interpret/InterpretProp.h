@@ -41,8 +41,6 @@ namespace interpretprop
 	_Check_return_ ULONG PropNameToPropTag(_In_ const std::wstring& lpszPropName);
 	_Check_return_ ULONG PropTypeNameToPropType(_In_ const std::wstring& lpszPropType);
 
-	std::vector<std::wstring> NameIDToPropNames(_In_ const MAPINAMEID* lpNameID);
-
 	std::wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue);
 	std::wstring AllFlagsToString(ULONG ulFlagName, bool bHex);
 } // namespace interpretprop

@@ -497,6 +497,9 @@
     <ClInclude Include="interpret\nameIDArray.h" />
     <ClInclude Include="interpret\propTypeArray.h" />
     <ClInclude Include="interpret\smartViewParsers.h" />
+    <ClInclude Include="mapi\cache\globalCache.h" />
+    <ClInclude Include="mapi\cache\mapiObjects.h" />
+    <ClInclude Include="mapi\cache\namedPropCache.h" />
     <ClInclude Include="mapi\extraPropTags.h" />
     <ClInclude Include="mapi\interfaces.h" />
     <ClInclude Include="mapi\mapiMemory.h" />
@@ -514,6 +517,9 @@
   <ItemGroup>
     <ClCompile Include="addin\addin.cpp" />
     <ClCompile Include="interpret\guid.cpp" />
+    <ClCompile Include="mapi\cache\globalCache.cpp" />
+    <ClCompile Include="mapi\cache\mapiObjects.cpp" />
+    <ClCompile Include="mapi\cache\namedPropCache.cpp" />
     <ClCompile Include="mapi\mapiStubLibrary.cpp" />
     <ClCompile Include="mapi\stubutils.cpp" />
     <ClCompile Include="stdafx.cpp">

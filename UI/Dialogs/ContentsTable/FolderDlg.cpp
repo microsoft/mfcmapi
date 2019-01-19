@@ -2,7 +2,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiobjects.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
 #include <MAPI/MAPIABFunctions.h>
@@ -21,7 +21,7 @@
 #include <MAPI/MAPIProgress.h>
 #include <MAPI/MapiMime.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/Cache/GlobalCache.h>
+#include <core/mapi/cache/globalCache.h>
 #include <core/mapi/mapiMemory.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>

@@ -29,23 +29,11 @@
     <Filter Include="Source Files\MAPI\MAPIProcessor">
       <UniqueIdentifier>{4c12041e-a0f1-48dc-a272-85c0bef0bcc0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\MAPI\Cache">
-      <UniqueIdentifier>{dff14349-20ea-46e6-b97e-3352c668cc42}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Interpret\SmartView\block">
       <UniqueIdentifier>{9cacf240-42fc-4538-9f1f-6965287c2b27}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\MAPI\Cache\GlobalCache.h">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClInclude>
-    <ClInclude Include="..\MAPI\Cache\MapiObjects.h">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClInclude>
-    <ClInclude Include="..\MAPI\Cache\NamedPropCache.h">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClInclude>
     <ClInclude Include="..\Interpret\SmartView\block\block.h">
       <Filter>Source Files\Interpret\SmartView\block</Filter>
     </ClInclude>
@@ -78,15 +66,6 @@
     <ClInclude Include="..\StdAfx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClCompile Include="..\MAPI\Cache\GlobalCache.cpp">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClCompile>
-    <ClCompile Include="..\MAPI\Cache\MapiObjects.cpp">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClCompile>
-    <ClCompile Include="..\MAPI\Cache\NamedPropCache.cpp">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClCompile>
     <ClCompile Include="cli.cpp">
       <Filter>Source Files\MrMAPI</Filter>
     </ClCompile>

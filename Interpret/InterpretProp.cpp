@@ -2,7 +2,7 @@
 #include <core/interpret/guid.h>
 #include <Interpret/InterpretProp.h>
 #include <core/mapi/extraPropTags.h>
-#include <MAPI/Cache/NamedPropCache.h>
+#include <core/mapi/cache/namedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Property/ParseProperty.h>
 #include <core/utility/strings.h>
@@ -795,42 +795,6 @@ namespace interpretprop
 		}
 
 		return ulPropType;
-	}
-
-	// Returns string built from NameIDArray
-	std::vector<std::wstring> NameIDToPropNames(_In_ const MAPINAMEID* lpNameID)
-	{
-		std::vector<std::wstring> results;
-		if (!lpNameID) return {};
-		if (lpNameID->ulKind != MNID_ID) return {};
-		ULONG ulMatch = ulNoMatch;
-
-		if (NameIDArray.empty()) return {};
-
-		for (ULONG ulCur = 0; ulCur < NameIDArray.size(); ulCur++)
-		{
-			if (NameIDArray[ulCur].lValue == lpNameID->Kind.lID)
-			{
-				ulMatch = ulCur;
-				break;
-			}
-		}
-
-		if (ulNoMatch != ulMatch)
-		{
-			for (auto ulCur = ulMatch; ulCur < NameIDArray.size(); ulCur++)
-			{
-				if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID) break;
-				// We don't acknowledge array entries without guids
-				if (!NameIDArray[ulCur].lpGuid) continue;
-				// But if we weren't asked about a guid, we don't check one
-				if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid, *NameIDArray[ulCur].lpGuid)) continue;
-
-				results.push_back(NameIDArray[ulCur].lpszName);
-			}
-		}
-
-		return results;
 	}
 
 	// Interprets a flag value according to a flag name and returns a string

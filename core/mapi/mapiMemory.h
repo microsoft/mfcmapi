@@ -1,4 +1,5 @@
 #pragma once
+#include <core/utility/error.h>
 
 namespace mapi
 {
@@ -25,4 +26,4 @@ namespace mapi
 
 		return static_cast<T>(obj);
 	}
-}
+} // namespace mapi

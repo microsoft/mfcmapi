@@ -1,11 +1,13 @@
-#include <StdAfx.h>
-#include <MAPI/Cache/NamedPropCache.h>
-#include <Interpret/InterpretProp.h>
+#include <core/stdafx.h>
+#include <core/mapi/cache/namedPropCache.h>
 #include <core/interpret/guid.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/addin/mfcmapi.h>
+#include <core/addin/addin.h>
+#include <core/utility/error.h>
 
 namespace cache
 {
@@ -207,7 +209,7 @@ namespace cache
 			{
 				if (fIsSet(DBGNamedPropCacheMisses) && lppPropNames[ulSource]->ulKind == MNID_ID)
 				{
-					auto names = interpretprop::NameIDToPropNames(lppPropNames[ulSource]);
+					auto names = NameIDToPropNames(lppPropNames[ulSource]);
 					if (names.empty())
 					{
 						output::DebugPrint(
@@ -625,7 +627,7 @@ namespace cache
 		{
 			output::DebugPrint(
 				DBGNamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
-			auto pidlids = interpretprop::NameIDToPropNames(lpNameID);
+			auto pidlids = NameIDToPropNames(lpNameID);
 
 			if (!pidlids.empty())
 			{
@@ -755,5 +757,42 @@ namespace cache
 		if (lppPropNames) MAPIFreeBuffer(lppPropNames);
 
 		return namePropNames;
+	}
+
+#define ulNoMatch 0xffffffff
+	// Returns string built from NameIDArray
+	std::vector<std::wstring> NameIDToPropNames(_In_ const MAPINAMEID* lpNameID)
+	{
+		std::vector<std::wstring> results;
+		if (!lpNameID) return {};
+		if (lpNameID->ulKind != MNID_ID) return {};
+		ULONG ulMatch = ulNoMatch;
+
+		if (NameIDArray.empty()) return {};
+
+		for (ULONG ulCur = 0; ulCur < NameIDArray.size(); ulCur++)
+		{
+			if (NameIDArray[ulCur].lValue == lpNameID->Kind.lID)
+			{
+				ulMatch = ulCur;
+				break;
+			}
+		}
+
+		if (ulNoMatch != ulMatch)
+		{
+			for (auto ulCur = ulMatch; ulCur < NameIDArray.size(); ulCur++)
+			{
+				if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID) break;
+				// We don't acknowledge array entries without guids
+				if (!NameIDArray[ulCur].lpGuid) continue;
+				// But if we weren't asked about a guid, we don't check one
+				if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid, *NameIDArray[ulCur].lpGuid)) continue;
+
+				results.push_back(NameIDArray[ulCur].lpszName);
+			}
+		}
+
+		return results;
 	}
 } // namespace cache

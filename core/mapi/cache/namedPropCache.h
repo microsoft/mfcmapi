@@ -72,4 +72,6 @@ namespace cache
 			lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		bool
 			bIsAB); // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+
+		std::vector<std::wstring> NameIDToPropNames(_In_ const MAPINAMEID* lpNameID);
 } // namespace cache

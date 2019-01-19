@@ -7,7 +7,7 @@
 #include <core/mapi/extraPropTags.h>
 #include <MAPI/MAPIProgress.h>
 #include <core/interpret/guid.h>
-#include <MAPI/Cache/NamedPropCache.h>
+#include <core/mapi/cache/namedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/registry.h>

@@ -3,7 +3,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ABDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiobjects.h>
 #include <MAPI/ColumnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
@@ -11,7 +11,7 @@
 #include <MAPI/MAPIABFunctions.h>
 #include <MAPI/MAPIProgress.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/Cache/GlobalCache.h>
+#include <core/mapi/cache/globalCache.h>
 #include <UI/addinui.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

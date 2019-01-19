@@ -81,6 +81,15 @@
     <ClInclude Include="mapi\mapiMemory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\cache\GlobalCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\cache\MapiObjects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\cache\NamedPropCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -114,6 +123,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="addin\addin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\cache\GlobalCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\cache\MapiObjects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\cache\NamedPropCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -2,7 +2,7 @@
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/HierarchyTable/HierarchyTableDlg.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiobjects.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/UIFunctions.h>
 #include <MAPI/AdviseSink.h>

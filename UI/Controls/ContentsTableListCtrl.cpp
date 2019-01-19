@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiobjects.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/UIFunctions.h>
 #include <MAPI/AdviseSink.h>
@@ -14,7 +14,7 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
-#include <MAPI/Cache/NamedPropCache.h>
+#include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/mapiMemory.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/registry.h>

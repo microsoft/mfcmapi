@@ -5,7 +5,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <core/interpret/guid.h>
-#include <MAPI/Cache/NamedPropCache.h>
+#include <core/mapi/cache/namedPropCache.h>
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>
 
