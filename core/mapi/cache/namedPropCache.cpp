@@ -274,6 +274,7 @@ namespace cache
 
 		auto hRes = S_OK;
 		const auto lpPropTags = *lppPropTags;
+		*lpcPropNames = 0;
 		// First, allocate our results using MAPI
 		const auto lppNameIDs = mapi::allocate<LPMAPINAMEID*>(sizeof(MAPINAMEID*) * lpPropTags->cValues);
 		if (lppNameIDs)
@@ -390,6 +391,7 @@ namespace cache
 	{
 		if (!lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
+		*lpcPropNames = 0;
 		// Check if we're bypassing the cache:
 		if (!fCacheNamedProps() ||
 			// Assume an array was passed - none of my calling code passes a NULL tag array
@@ -583,7 +585,7 @@ namespace cache
 		return propTags;
 	}
 
-	bool fCacheNamedProps() { return registry::cacheNamedProps; }
+	_Check_return_ inline bool fCacheNamedProps() { return registry::cacheNamedProps; }
 
 	// TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
 	// We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
