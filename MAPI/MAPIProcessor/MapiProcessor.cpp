@@ -2,7 +2,7 @@
 #include <MAPI/MAPIProcessor/MapiProcessor.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/columnTags.h>
 #include <core/utility/strings.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>

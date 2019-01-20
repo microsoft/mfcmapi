@@ -2,7 +2,7 @@
 #include <UI/Dialogs/ContentsTable/PublicFolderTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/columnTags.h>
 #include <UI/UIFunctions.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <Interpret/InterpretProp.h>

@@ -4,9 +4,9 @@
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Dialogs/BaseDialog.h>
-#include <core/mapi/cache/mapiobjects.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <core/interpret/guid.h>

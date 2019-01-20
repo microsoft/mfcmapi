@@ -4,8 +4,8 @@
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/FileDialogEx.h>
-#include <core/mapi/cache/mapiobjects.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/mapi/columnTags.h>
 #include <MAPI/MAPIProgress.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Controls/SortList/ContentsData.h>

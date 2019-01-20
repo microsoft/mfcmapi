@@ -2,8 +2,8 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/MsgServiceTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <core/mapi/cache/mapiobjects.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/ContentsTable/ProviderTableDlg.h>
 #include <MAPI/MAPIProfileFunctions.h>
@@ -11,7 +11,6 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/addinui.h>
-#include <core/utility/strings.h>
 #include <core/utility/output.h>
 
 namespace dialog

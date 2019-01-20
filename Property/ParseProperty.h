@@ -1,5 +1,5 @@
 #pragma once
-#include <Property/Property.h>
+#include <core/property/property.h>
 
 namespace property
 {

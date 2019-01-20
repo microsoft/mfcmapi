@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
 #include <UI/MySecInfo.h>
@@ -24,7 +24,7 @@
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <UI/Dialogs/Editors/PropertyEditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <core/mapi/cache/mapiobjects.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
 #include <IO/MFCOutput.h>

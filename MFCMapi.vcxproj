@@ -569,8 +569,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="Interpret\SmartView\block\blockBytes.h" />
     <ClInclude Include="IO\mapiFile.h" />
     <ClInclude Include="MAPI\AdviseSink.h" />
-    <ClInclude Include="Property\Attributes.h" />
-    <ClInclude Include="MAPI\ColumnTags.h" />
     <ClInclude Include="MAPI\MAPIProcessor\DumpStore.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Interpret\InterpretProp.h" />
@@ -582,7 +580,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="MAPI\MAPIProgress.h" />
     <ClInclude Include="UI\CMAPIProgress.h" />
     <ClInclude Include="IO\ExportProfile.h" />
-    <ClInclude Include="Property\Property.h" />
     <ClInclude Include="Property\ParseProperty.h" />
     <ClInclude Include="PropertyBag\MAPIPropPropertyBag.h" />
     <ClInclude Include="MAPI\MAPIStoreFunctions.h" />
@@ -704,7 +701,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="Interpret\Sid.cpp" />
     <ClCompile Include="IO\mapiFile.cpp" />
     <ClCompile Include="MAPI\AdviseSink.cpp" />
-    <ClCompile Include="Property\Attributes.cpp" />
     <ClCompile Include="MAPI\MAPIProcessor\DumpStore.cpp" />
     <ClCompile Include="Interpret\InterpretProp.cpp" />
     <ClCompile Include="MAPI\MAPIABFunctions.cpp" />
@@ -715,7 +711,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="MAPI\MAPIProgress.cpp" />
     <ClCompile Include="UI\CMAPIProgress.cpp" />
     <ClCompile Include="IO\ExportProfile.cpp" />
-    <ClCompile Include="Property\Property.cpp" />
     <ClCompile Include="Property\ParseProperty.cpp" />
     <ClCompile Include="PropertyBag\MAPIPropPropertyBag.cpp" />
     <ClCompile Include="MAPI\MAPIStoreFunctions.cpp" />

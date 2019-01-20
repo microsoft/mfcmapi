@@ -10,7 +10,7 @@
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Dialogs/Editors/QSSpecialFolders.h>
-#include <core/mapi/cache/mapiobjects.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <core/utility/strings.h>
 
 namespace dialog

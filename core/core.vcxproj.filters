@@ -90,6 +90,15 @@
     <ClInclude Include="mapi\cache\NamedPropCache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="property\attributes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="property\property.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\columnTags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -132,6 +141,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mapi\cache\NamedPropCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="property\attributes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="property\property.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

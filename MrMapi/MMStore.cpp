@@ -2,7 +2,7 @@
 #include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMStore.h>
 #include <MrMapi/MMFolder.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/columnTags.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>

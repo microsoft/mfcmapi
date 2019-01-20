@@ -4,8 +4,8 @@
 #include <UI/Dialogs/ContentsTable/AclDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <core/mapi/cache/mapiobjects.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <Interpret/InterpretProp.h>
 #include <core/mapi/mapiMemory.h>

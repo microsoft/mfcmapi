@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Property/ParseProperty.h>
-#include <Property/Property.h>
+#include <core/property/Property.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <Interpret/InterpretProp.h>

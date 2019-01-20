@@ -3,7 +3,7 @@
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <UI/FakeSplitter.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <core/mapi/cache/mapiobjects.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>

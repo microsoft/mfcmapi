@@ -506,11 +506,14 @@
     <ClInclude Include="mapi\cache\globalCache.h" />
     <ClInclude Include="mapi\cache\mapiObjects.h" />
     <ClInclude Include="mapi\cache\namedPropCache.h" />
+    <ClInclude Include="mapi\columnTags.h" />
     <ClInclude Include="mapi\extraPropTags.h" />
     <ClInclude Include="mapi\interfaces.h" />
     <ClInclude Include="mapi\mapiMemory.h" />
     <ClInclude Include="mapi\stubutils.h" />
     <ClInclude Include="addin\mfcmapi.h" />
+    <ClInclude Include="property\attributes.h" />
+    <ClInclude Include="property\property.h" />
     <ClInclude Include="res\Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="utility\error.h" />
@@ -528,6 +531,8 @@
     <ClCompile Include="mapi\cache\namedPropCache.cpp" />
     <ClCompile Include="mapi\mapiStubLibrary.cpp" />
     <ClCompile Include="mapi\stubutils.cpp" />
+    <ClCompile Include="property\attributes.cpp" />
+    <ClCompile Include="property\property.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Create</PrecompiledHeader>

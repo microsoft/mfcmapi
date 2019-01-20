@@ -1,7 +1,7 @@
 #pragma once
 #include <UI/Controls/SortList/SortListCtrl.h>
 #include <Enums.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/columnTags.h>
 
 namespace cache
 {

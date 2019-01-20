@@ -2,8 +2,8 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ProfileListDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <core/mapi/cache/mapiobjects.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/mapi/columnTags.h>
 #include <MAPI/MAPIProfileFunctions.h>
 #include <UI/profile.h>
 #include <UI/FileDialogEx.h>
@@ -13,7 +13,6 @@
 #include <IO/ExportProfile.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <core/utility/registry.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 

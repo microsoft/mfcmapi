@@ -369,9 +369,6 @@
     <ClInclude Include="MAPI\AdviseSink.h">
       <Filter>Source Files\MAPI</Filter>
     </ClInclude>
-    <ClInclude Include="MAPI\ColumnTags.h">
-      <Filter>Source Files\MAPI</Filter>
-    </ClInclude>
     <ClCompile Include="MAPI\MAPIABFunctions.cpp">
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>
@@ -424,22 +421,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Property\Attributes.cpp">
-      <Filter>Source Files\Property</Filter>
-    </ClCompile>
-    <ClInclude Include="Property\Attributes.h">
-      <Filter>Source Files\Property</Filter>
-    </ClInclude>
     <ClCompile Include="Property\ParseProperty.cpp">
       <Filter>Source Files\Property</Filter>
     </ClCompile>
     <ClInclude Include="Property\ParseProperty.h">
-      <Filter>Source Files\Property</Filter>
-    </ClInclude>
-    <ClCompile Include="Property\Property.cpp">
-      <Filter>Source Files\Property</Filter>
-    </ClCompile>
-    <ClInclude Include="Property\Property.h">
       <Filter>Source Files\Property</Filter>
     </ClInclude>
   </ItemGroup>

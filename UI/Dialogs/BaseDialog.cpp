@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/FakeSplitter.h>
-#include <core/mapi/cache/mapiobjects.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <UI/ParentWnd.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>

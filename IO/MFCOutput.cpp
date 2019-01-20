@@ -5,7 +5,7 @@
 #include <core/utility/strings.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/columnTags.h>
 #include <Property/ParseProperty.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/mapiMemory.h>
@@ -271,7 +271,7 @@ namespace output
 
 			Output(ulDbgLvl, fFile, false, L"\n");
 
-			SBinary sbin = {0};
+			SBinary sbin = {};
 			switch (lpNotifications[i].ulEventType)
 			{
 			case fnevCriticalError:

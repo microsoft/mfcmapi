@@ -1,16 +1,14 @@
 #include <StdAfx.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/columnTags.h>
 #include <MrMapi/MMReceiveFolder.h>
 #include <MrMapi/cli.h>
 #include <IO/MFCOutput.h>
-#include <core/utility/strings.h>
 #include <core/utility/output.h>
 
 void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 {
-	auto hRes = S_OK;
 	LPMAPITABLE lpReceiveFolderTable = nullptr;
-	WC_MAPI(lpMDB->GetReceiveFolderTable(0, &lpReceiveFolderTable));
+	auto hRes = WC_MAPI(lpMDB->GetReceiveFolderTable(0, &lpReceiveFolderTable));
 	if (FAILED(hRes))
 	{
 		printf("<receivefoldertable error=0x%lx />\n", hRes);
@@ -21,7 +19,7 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 
 	if (lpReceiveFolderTable)
 	{
-		WC_MAPI(lpReceiveFolderTable->SetColumns(&columns::sptRECEIVECols.tags, TBL_ASYNC));
+		hRes = WC_MAPI(lpReceiveFolderTable->SetColumns(&columns::sptRECEIVECols.tags, TBL_ASYNC));
 	}
 
 	if (SUCCEEDED(hRes))
@@ -31,10 +29,9 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 
 		for (;;)
 		{
-			hRes = S_OK;
 			if (lpRows) FreeProws(lpRows);
 			lpRows = nullptr;
-			WC_MAPI(lpReceiveFolderTable->QueryRows(10, NULL, &lpRows));
+			hRes = WC_MAPI(lpReceiveFolderTable->QueryRows(10, NULL, &lpRows));
 			if (FAILED(hRes) || !lpRows || !lpRows->cRows) break;
 
 			for (ULONG i = 0; i < lpRows->cRows; i++)
@@ -55,7 +52,7 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 	{
 		lpReceiveFolderTable->Release();
 	}
-} // PrintReceiveFolderTable
+}
 
 void DoReceiveFolder(_In_ cli::MYOPTIONS ProgOpts)
 {
