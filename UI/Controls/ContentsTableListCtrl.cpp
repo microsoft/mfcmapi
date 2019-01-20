@@ -20,6 +20,7 @@
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/interpret/flags.h>
 
 namespace controls
 {
@@ -199,11 +200,11 @@ namespace controls
 				dialog::editor::CEditor MyData(this, IDS_GETSTATUS, IDS_GETSTATUSPROMPT, CEDITOR_BUTTON_OK);
 				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_ULTABLESTATUS, true));
 				MyData.SetHex(0, ulTableStatus);
-				auto szFlags = interpretprop::InterpretFlags(flagTableStatus, ulTableStatus);
+				auto szFlags = flags::InterpretFlags(flagTableStatus, ulTableStatus);
 				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_ULTABLESTATUS, szFlags, true));
 				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULTABLETYPE, true));
 				MyData.SetHex(2, ulTableType);
-				szFlags = interpretprop::InterpretFlags(flagTableType, ulTableType);
+				szFlags = flags::InterpretFlags(flagTableType, ulTableType);
 				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(3, IDS_ULTABLETYPE, szFlags, true));
 
 				(void) MyData.DisplayDialog();

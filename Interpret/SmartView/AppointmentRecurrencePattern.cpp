@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/AppointmentRecurrencePattern.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/interpret/guid.h>
 
@@ -202,7 +202,7 @@ namespace smartview
 					m_ExceptionInfo[i].OriginalStartDate.getData(),
 					RTimeToString(m_ExceptionInfo[i].OriginalStartDate).c_str());
 				auto szOverrideFlags =
-					interpretprop::InterpretFlags(flagOverrideFlags, m_ExceptionInfo[i].OverrideFlags);
+					flags::InterpretFlags(flagOverrideFlags, m_ExceptionInfo[i].OverrideFlags);
 				exception.addBlock(
 					m_ExceptionInfo[i].OverrideFlags,
 					L"ExceptionInfo[%1!d!].OverrideFlags: 0x%2!04X! = %3!ws!\r\n",

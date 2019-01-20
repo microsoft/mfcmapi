@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/TimeZoneDefinition.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 
 namespace smartview
@@ -86,7 +86,7 @@ namespace smartview
 				L"TZRule[0x%1!X!].wTZRuleFlags = 0x%2!04X! = %3!ws!\r\n",
 				i,
 				m_lpTZRule[i].wTZRuleFlags.getData(),
-				interpretprop::InterpretFlags(flagTZRule, m_lpTZRule[i].wTZRuleFlags).c_str());
+				flags::InterpretFlags(flagTZRule, m_lpTZRule[i].wTZRuleFlags).c_str());
 			addBlock(
 				m_lpTZRule[i].wYear,
 				L"TZRule[0x%1!X!].wYear = 0x%2!04X! (%2!d!)\r\n",

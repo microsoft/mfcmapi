@@ -27,6 +27,7 @@
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/interpret/flags.h>
 
 namespace dialog
 {
@@ -900,7 +901,7 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_NOTIFICATIONS, IDS_NOTIFICATIONSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagNotifEventType, true));
+		MyData.SetPromptPostFix(flags::AllFlagsToString(flagNotifEventType, true));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_EID, false));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_ULEVENTMASK, false));
 		MyData.SetHex(1, fnevNewMail);

@@ -10,6 +10,7 @@
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
+#include <core/interpret/flags.h>
 
 namespace interpretprop
 {
@@ -171,13 +172,13 @@ namespace interpretprop
 		}
 
 		std::wstring szPropNum;
-		auto szFlags = InterpretFlags(flagRestrictionType, lpRes->rt);
+		auto szFlags = flags::InterpretFlags(flagRestrictionType, lpRes->rt);
 		resString.push_back(strings::formatmessage(IDS_RESTYPE, szTabs.c_str(), lpRes->rt, szFlags.c_str()));
 
 		switch (lpRes->rt)
 		{
 		case RES_COMPAREPROPS:
-			szFlags = InterpretFlags(flagRelop, lpRes->res.resCompareProps.relop);
+			szFlags = flags::InterpretFlags(flagRelop, lpRes->res.resCompareProps.relop);
 			resString.push_back(strings::formatmessage(
 				IDS_RESCOMPARE,
 				szTabs.c_str(),
@@ -218,7 +219,7 @@ namespace interpretprop
 			resString.push_back(RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1));
 			break;
 		case RES_CONTENT:
-			szFlags = InterpretFlags(flagFuzzyLevel, lpRes->res.resContent.ulFuzzyLevel);
+			szFlags = flags::InterpretFlags(flagFuzzyLevel, lpRes->res.resContent.ulFuzzyLevel);
 			resString.push_back(strings::formatmessage(
 				IDS_RESCONTENT,
 				szTabs.c_str(),
@@ -237,7 +238,7 @@ namespace interpretprop
 			}
 			break;
 		case RES_PROPERTY:
-			szFlags = InterpretFlags(flagRelop, lpRes->res.resProperty.relop);
+			szFlags = flags::InterpretFlags(flagRelop, lpRes->res.resProperty.relop);
 			resString.push_back(strings::formatmessage(
 				IDS_RESPROP,
 				szTabs.c_str(),
@@ -268,7 +269,7 @@ namespace interpretprop
 			}
 			break;
 		case RES_BITMASK:
-			szFlags = InterpretFlags(flagBitmask, lpRes->res.resBitMask.relBMR);
+			szFlags = flags::InterpretFlags(flagBitmask, lpRes->res.resBitMask.relBMR);
 			resString.push_back(strings::formatmessage(
 				IDS_RESBITMASK,
 				szTabs.c_str(),
@@ -288,7 +289,7 @@ namespace interpretprop
 				TagToString(lpRes->res.resBitMask.ulPropTag, lpObj, false, true).c_str()));
 			break;
 		case RES_SIZE:
-			szFlags = InterpretFlags(flagRelop, lpRes->res.resSize.relop);
+			szFlags = flags::InterpretFlags(flagRelop, lpRes->res.resSize.relop);
 			resString.push_back(strings::formatmessage(
 				IDS_RESSIZE,
 				szTabs.c_str(),
@@ -391,8 +392,8 @@ namespace interpretprop
 	{
 		std::wstring szProp;
 		std::wstring szAltProp;
-		auto szFlags = InterpretFlags(flagAccountType, action.acttype);
-		auto szFlags2 = InterpretFlags(flagRuleFlag, action.ulFlags);
+		auto szFlags = flags::InterpretFlags(flagAccountType, action.acttype);
+		auto szFlags2 = flags::InterpretFlags(flagRuleFlag, action.ulFlags);
 		auto actstring = strings::formatmessage(
 			IDS_ACTION,
 			action.acttype,
@@ -445,7 +446,7 @@ namespace interpretprop
 		}
 		case OP_BOUNCE:
 		{
-			szFlags = InterpretFlags(flagBounceCode, action.scBounceCode);
+			szFlags = flags::InterpretFlags(flagBounceCode, action.scBounceCode);
 			actstring += strings::formatmessage(IDS_ACTIONOPBOUNCE, action.scBounceCode, szFlags.c_str());
 			break;
 		}
@@ -483,12 +484,12 @@ namespace interpretprop
 		{
 		case OP_REPLY:
 		{
-			szFlags = InterpretFlags(flagOPReply, action.ulActionFlavor);
+			szFlags = flags::InterpretFlags(flagOPReply, action.ulActionFlavor);
 			break;
 		}
 		case OP_FORWARD:
 		{
-			szFlags = InterpretFlags(flagOpForward, action.ulActionFlavor);
+			szFlags = flags::InterpretFlags(flagOpForward, action.ulActionFlavor);
 			break;
 		}
 		default:
@@ -518,7 +519,7 @@ namespace interpretprop
 
 	std::wstring ActionsToString(_In_ const ACTIONS& actions)
 	{
-		auto szFlags = InterpretFlags(flagRulesVersion, actions.ulVersion);
+		auto szFlags = flags::InterpretFlags(flagRulesVersion, actions.ulVersion);
 		auto actstring =
 			strings::formatmessage(IDS_ACTIONSMEMBERS, actions.ulVersion, szFlags.c_str(), actions.cActions);
 
@@ -795,200 +796,5 @@ namespace interpretprop
 		}
 
 		return ulPropType;
-	}
-
-	// Interprets a flag value according to a flag name and returns a string
-	// Will not return a string if the flag name is not recognized
-	std::wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue)
-	{
-		ULONG ulCurEntry = 0;
-
-		if (FlagArray.empty()) return L"";
-
-		while (ulCurEntry < FlagArray.size() && FlagArray[ulCurEntry].ulFlagName != ulFlagName)
-		{
-			ulCurEntry++;
-		}
-
-		// Don't run off the end of the array
-		if (FlagArray.size() == ulCurEntry) return L"";
-		if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return L"";
-
-		// We've matched our flag name to the array - we SHOULD return a string at this point
-		auto bNeedSeparator = false;
-
-		auto lTempValue = lFlagValue;
-		std::wstring szTempString;
-		for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
-		{
-			if (flagFLAG == FlagArray[ulCurEntry].ulFlagType)
-			{
-				if (FlagArray[ulCurEntry].lFlagValue & lTempValue)
-				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += FlagArray[ulCurEntry].lpszName;
-					lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
-					bNeedSeparator = true;
-				}
-			}
-			else if (flagVALUE == FlagArray[ulCurEntry].ulFlagType)
-			{
-				if (FlagArray[ulCurEntry].lFlagValue == lTempValue)
-				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += FlagArray[ulCurEntry].lpszName;
-					lTempValue = 0;
-					bNeedSeparator = true;
-				}
-			}
-			else if (flagVALUEHIGHBYTES == FlagArray[ulCurEntry].ulFlagType)
-			{
-				if (FlagArray[ulCurEntry].lFlagValue == (lTempValue >> 16 & 0xFFFF))
-				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += FlagArray[ulCurEntry].lpszName;
-					lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 16);
-					bNeedSeparator = true;
-				}
-			}
-			else if (flagVALUE3RDBYTE == FlagArray[ulCurEntry].ulFlagType)
-			{
-				if (FlagArray[ulCurEntry].lFlagValue == (lTempValue >> 8 & 0xFF))
-				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += FlagArray[ulCurEntry].lpszName;
-					lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 8);
-					bNeedSeparator = true;
-				}
-			}
-			else if (flagVALUE4THBYTE == FlagArray[ulCurEntry].ulFlagType)
-			{
-				if (FlagArray[ulCurEntry].lFlagValue == (lTempValue & 0xFF))
-				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += FlagArray[ulCurEntry].lpszName;
-					lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
-					bNeedSeparator = true;
-				}
-			}
-			else if (flagVALUELOWERNIBBLE == FlagArray[ulCurEntry].ulFlagType)
-			{
-				if (FlagArray[ulCurEntry].lFlagValue == (lTempValue & 0x0F))
-				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += FlagArray[ulCurEntry].lpszName;
-					lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
-					bNeedSeparator = true;
-				}
-			}
-			else if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
-			{
-				// find any bits we need to clear
-				const auto lClearedBits = FlagArray[ulCurEntry].lFlagValue & lTempValue;
-				// report what we found
-				if (0 != lClearedBits)
-				{
-					if (bNeedSeparator)
-					{
-						szTempString += L" | "; // STRING_OK
-					}
-
-					szTempString += strings::format(L"0x%X", lClearedBits); // STRING_OK
-						// clear the bits out
-					lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
-					bNeedSeparator = true;
-				}
-			}
-		}
-
-		// We know if we've found anything already because bNeedSeparator will be true
-		// If bNeedSeparator isn't true, we found nothing and need to tack on
-		// Otherwise, it's true, and we only tack if lTempValue still has something in it
-		if (!bNeedSeparator || lTempValue)
-		{
-			if (bNeedSeparator)
-			{
-				szTempString += L" | "; // STRING_OK
-			}
-
-			szTempString += strings::format(L"0x%X", lTempValue); // STRING_OK
-		}
-
-		return szTempString;
-	}
-
-	// Returns a list of all known flags/values for a flag name.
-	// For instance, for flagFuzzyLevel, would return:
-	// \r\n0x00000000 FL_FULLSTRING\r\n\
-	 // 0x00000001 FL_SUBSTRING\r\n\
-	 // 0x00000002 FL_PREFIX\r\n\
-	 // 0x00010000 FL_IGNORECASE\r\n\
-	 // 0x00020000 FL_IGNORENONSPACE\r\n\
-	 // 0x00040000 FL_LOOSE
-	//
-	// Since the string is always appended to a prompt we include \r\n at the start
-	std::wstring AllFlagsToString(ULONG ulFlagName, bool bHex)
-	{
-		std::wstring szFlagString;
-		if (!ulFlagName) return szFlagString;
-		if (FlagArray.empty()) return szFlagString;
-
-		ULONG ulCurEntry = 0;
-		std::wstring szTempString;
-
-		while (ulCurEntry < FlagArray.size() && FlagArray[ulCurEntry].ulFlagName != ulFlagName)
-		{
-			ulCurEntry++;
-		}
-
-		if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return szFlagString;
-
-		// We've matched our flag name to the array - we SHOULD return a string at this point
-		for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
-		{
-			if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
-			{
-				// keep going
-			}
-			else
-			{
-				if (bHex)
-				{
-					szFlagString += strings::formatmessage(
-						IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
-				}
-				else
-				{
-					szFlagString += strings::formatmessage(
-						IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
-				}
-			}
-		}
-
-		return szFlagString;
 	}
 } // namespace interpretprop

@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/GlobalObjectId.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
 
@@ -27,7 +27,7 @@ namespace smartview
 		m_Year.setSize(b1.getSize() + b2.getSize());
 
 		m_Month = m_Parser.Get<BYTE>();
-		const auto szFlags = interpretprop::InterpretFlags(flagGlobalObjectIdMonth, m_Month);
+		const auto szFlags = flags::InterpretFlags(flagGlobalObjectIdMonth, m_Month);
 
 		m_Day = m_Parser.Get<BYTE>();
 
@@ -60,7 +60,7 @@ namespace smartview
 			m_Month,
 			L"Month: 0x%1!02X! = %1!d! = %2!ws!\r\n",
 			m_Month.getData(),
-			interpretprop::InterpretFlags(flagGlobalObjectIdMonth, m_Month).c_str());
+			flags::InterpretFlags(flagGlobalObjectIdMonth, m_Month).c_str());
 
 		addBlock(m_Day, L"Day: 0x%1!02X! = %1!d!\r\n", m_Day.getData());
 

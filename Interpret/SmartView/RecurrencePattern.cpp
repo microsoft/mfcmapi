@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/RecurrencePattern.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 
 namespace smartview
@@ -72,15 +72,15 @@ namespace smartview
 		setRoot(L"Recurrence Pattern: \r\n");
 		addBlock(m_ReaderVersion, L"ReaderVersion: 0x%1!04X!\r\n", m_ReaderVersion.getData());
 		addBlock(m_WriterVersion, L"WriterVersion: 0x%1!04X!\r\n", m_WriterVersion.getData());
-		auto szRecurFrequency = interpretprop::InterpretFlags(flagRecurFrequency, m_RecurFrequency);
+		auto szRecurFrequency = flags::InterpretFlags(flagRecurFrequency, m_RecurFrequency);
 		addBlock(
 			m_RecurFrequency,
 			L"RecurFrequency: 0x%1!04X! = %2!ws!\r\n",
 			m_RecurFrequency.getData(),
 			szRecurFrequency.c_str());
-		auto szPatternType = interpretprop::InterpretFlags(flagPatternType, m_PatternType);
+		auto szPatternType = flags::InterpretFlags(flagPatternType, m_PatternType);
 		addBlock(m_PatternType, L"PatternType: 0x%1!04X! = %2!ws!\r\n", m_PatternType.getData(), szPatternType.c_str());
-		auto szCalendarType = interpretprop::InterpretFlags(flagCalendarType, m_CalendarType);
+		auto szCalendarType = flags::InterpretFlags(flagCalendarType, m_CalendarType);
 		addBlock(
 			m_CalendarType, L"CalendarType: 0x%1!04X! = %2!ws!\r\n", m_CalendarType.getData(), szCalendarType.c_str());
 		addBlock(m_FirstDateTime, L"FirstDateTime: 0x%1!08X! = %1!d!\r\n", m_FirstDateTime.getData());
@@ -96,7 +96,7 @@ namespace smartview
 				m_PatternTypeSpecific.WeekRecurrencePattern,
 				L"PatternTypeSpecific.WeekRecurrencePattern: 0x%1!08X! = %2!ws!\r\n",
 				m_PatternTypeSpecific.WeekRecurrencePattern.getData(),
-				interpretprop::InterpretFlags(flagDOW, m_PatternTypeSpecific.WeekRecurrencePattern).c_str());
+				flags::InterpretFlags(flagDOW, m_PatternTypeSpecific.WeekRecurrencePattern).c_str());
 			break;
 		case rptMonth:
 		case rptMonthEnd:
@@ -113,13 +113,13 @@ namespace smartview
 				m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek,
 				L"PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek: 0x%1!08X! = %2!ws!\r\n",
 				m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek.getData(),
-				interpretprop::InterpretFlags(flagDOW, m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek)
+				flags::InterpretFlags(flagDOW, m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek)
 					.c_str());
 			addBlock(
 				m_PatternTypeSpecific.MonthNthRecurrencePattern.N,
 				L"PatternTypeSpecific.MonthNthRecurrencePattern.N: 0x%1!08X! = %2!ws!\r\n",
 				m_PatternTypeSpecific.MonthNthRecurrencePattern.N.getData(),
-				interpretprop::InterpretFlags(flagN, m_PatternTypeSpecific.MonthNthRecurrencePattern.N).c_str());
+				flags::InterpretFlags(flagN, m_PatternTypeSpecific.MonthNthRecurrencePattern.N).c_str());
 			break;
 		}
 
@@ -127,13 +127,13 @@ namespace smartview
 			m_EndType,
 			L"EndType: 0x%1!08X! = %2!ws!\r\n",
 			m_EndType.getData(),
-			interpretprop::InterpretFlags(flagEndType, m_EndType).c_str());
+			flags::InterpretFlags(flagEndType, m_EndType).c_str());
 		addBlock(m_OccurrenceCount, L"OccurrenceCount: 0x%1!08X! = %1!d!\r\n", m_OccurrenceCount.getData());
 		addBlock(
 			m_FirstDOW,
 			L"FirstDOW: 0x%1!08X! = %2!ws!\r\n",
 			m_FirstDOW.getData(),
-			interpretprop::InterpretFlags(flagFirstDOW, m_FirstDOW).c_str());
+			flags::InterpretFlags(flagFirstDOW, m_FirstDOW).c_str());
 		auto deletedInstances = m_DeletedInstanceCount;
 		deletedInstances.setText(L"DeletedInstanceCount: 0x%1!08X! = %1!d!\r\n", m_DeletedInstanceCount.getData());
 

@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/WebViewPersistStream.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
 
@@ -58,17 +58,17 @@ namespace smartview
 				m_lpWebViews[i].dwVersion,
 				L"dwVersion = 0x%1!08X! = %2!ws!\r\n",
 				m_lpWebViews[i].dwVersion.getData(),
-				interpretprop::InterpretFlags(flagWebViewVersion, m_lpWebViews[i].dwVersion).c_str());
+				flags::InterpretFlags(flagWebViewVersion, m_lpWebViews[i].dwVersion).c_str());
 			addBlock(
 				m_lpWebViews[i].dwType,
 				L"dwType = 0x%1!08X! = %2!ws!\r\n",
 				m_lpWebViews[i].dwType.getData(),
-				interpretprop::InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType).c_str());
+				flags::InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType).c_str());
 			addBlock(
 				m_lpWebViews[i].dwFlags,
 				L"dwFlags = 0x%1!08X! = %2!ws!\r\n",
 				m_lpWebViews[i].dwFlags.getData(),
-				interpretprop::InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags).c_str());
+				flags::InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags).c_str());
 			addHeader(L"dwUnused = ");
 
 			addBlock(m_lpWebViews[i].dwUnused);

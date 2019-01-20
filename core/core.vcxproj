@@ -496,6 +496,7 @@
   <ItemGroup>
     <ClInclude Include="addin\addin.h" />
     <ClInclude Include="interpret\errorArray.h" />
+    <ClInclude Include="interpret\flagArray.h" />
     <ClInclude Include="interpret\flags.h" />
     <ClInclude Include="interpret\genTagArray.h" />
     <ClInclude Include="interpret\guidArray.h" />
@@ -525,6 +526,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="addin\addin.cpp" />
+    <ClCompile Include="interpret\flags.cpp" />
     <ClCompile Include="interpret\guid.cpp" />
     <ClCompile Include="mapi\cache\globalCache.cpp" />
     <ClCompile Include="mapi\cache\mapiObjects.cpp" />

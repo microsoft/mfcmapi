@@ -7,7 +7,7 @@
 #include <core/utility/strings.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/ViewPane/SmartViewPane.h>
-#include <IO/MFCOutput.h>
+#include <core/interpret/flags.h>
 
 namespace dialog
 {
@@ -477,7 +477,7 @@ namespace dialog
 
 			if (m_bUseWrapEx)
 			{
-				auto szFlags = interpretprop::InterpretFlags(flagStreamFlag, m_ulStreamFlags);
+				auto szFlags = flags::InterpretFlags(flagStreamFlag, m_ulStreamFlags);
 				SetStringf(m_iFlagBox, L"0x%08X = %ws", m_ulStreamFlags, szFlags.c_str()); // STRING_OK
 				SetStringW(m_iCodePageBox, strings::formatmessage(IDS_CODEPAGES, m_ulInCodePage, m_ulOutCodePage));
 			}

@@ -8,6 +8,7 @@
 #include <MrMapi/cli.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
+#include <core/interpret/flags.h>
 
 // Search folder for entry ID of child folder by name.
 LPSBinary MAPIFindFolderW(
@@ -548,7 +549,7 @@ void DumpSearchState(
 		}
 		else if (SUCCEEDED(hRes))
 		{
-			auto szFlags = interpretprop::InterpretFlags(flagSearchState, ulSearchState);
+			auto szFlags = flags::InterpretFlags(flagSearchState, ulSearchState);
 			printf("Search state %ws == 0x%08X\n", szFlags.c_str(), ulSearchState);
 			printf("\n");
 			printf("Search Scope:\n");

@@ -19,6 +19,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <IO/mapiFile.h>
+#include <core/interpret/flags.h>
 
 namespace ui
 {
@@ -477,7 +478,7 @@ namespace ui
 
 			dialog::editor::CEditor MyPrompt(
 				nullptr, IDS_OPENOTHERUSER, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
+			MyPrompt.SetPromptPostFix(flags::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(
 				0, IDS_SERVERNAME, strings::stringTowstring(szServerName), false));
 			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_USERDN, szMailboxDN, false));

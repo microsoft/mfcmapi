@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/PropertiesStruct.h>
-#include <Interpret/InterpretProp.h>
 #include <Interpret/SmartView/SmartView.h>
 
 namespace smartview

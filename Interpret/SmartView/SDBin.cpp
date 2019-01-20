@@ -1,10 +1,9 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/SDBin.h>
-#include <core/utility/strings.h>
 #include <UI/MySecInfo.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <Interpret/Sid.h>
 
 namespace smartview
@@ -47,7 +46,7 @@ namespace smartview
 
 		terminateBlock();
 		const auto sdVersion = SECURITY_DESCRIPTOR_VERSION(m_SDbin.data());
-		auto szFlags = interpretprop::InterpretFlags(flagSecurityVersion, sdVersion);
+		auto szFlags = flags::InterpretFlags(flagSecurityVersion, sdVersion);
 		addBlock(m_SDbin, L"Security Version: 0x%1!04X! = %2!ws!\r\n", sdVersion, szFlags.c_str());
 		addHeader(L"Descriptor:\r\n");
 		addBlock(m_SDbin, sd.dacl);

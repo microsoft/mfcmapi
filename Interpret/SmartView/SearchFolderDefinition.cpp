@@ -2,7 +2,6 @@
 #include <Interpret/SmartView/SearchFolderDefinition.h>
 #include <Interpret/SmartView/RestrictionStruct.h>
 #include <Interpret/SmartView/PropertiesStruct.h>
-#include <core/utility/strings.h>
 #include <core/mapi/extraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
 

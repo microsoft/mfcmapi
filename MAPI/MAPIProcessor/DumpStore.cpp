@@ -7,7 +7,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <core/utility/file.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
@@ -344,7 +344,7 @@ namespace mapiprocessor
 							CP_ACP, // requesting ANSI code page - check if this will be valid in UNICODE builds
 							&lpRTFUncompressed,
 							&ulStreamFlags));
-						auto szFlags = interpretprop::InterpretFlags(flagStreamFlag, ulStreamFlags);
+						auto szFlags = flags::InterpretFlags(flagStreamFlag, ulStreamFlags);
 						output::OutputToFilef(
 							fMessageProps,
 							L" ulStreamFlags = \"0x%08X\" szStreamFlags= \"%ws\"",

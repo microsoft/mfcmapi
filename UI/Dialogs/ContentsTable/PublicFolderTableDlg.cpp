@@ -7,6 +7,7 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <Interpret/InterpretProp.h>
 #include <core/utility/output.h>
+#include <core/interpret/flags.h>
 
 namespace dialog
 {
@@ -66,7 +67,7 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_SEARCHCRITERIA, IDS_PFSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
+		MyData.SetPromptPostFix(flags::AllFlagsToString(flagFuzzyLevel, true));
 
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_NAME, false));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_ULFUZZYLEVEL, false));

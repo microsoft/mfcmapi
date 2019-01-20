@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/ExtendedFlags.h>
 #include <core/interpret/guid.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 
 namespace smartview
@@ -99,7 +99,7 @@ namespace smartview
 			for (const auto& extendedFlag : m_pefExtendedFlags)
 			{
 				terminateBlock();
-				auto szFlags = interpretprop::InterpretFlags(flagExtendedFolderFlagType, extendedFlag.Id);
+				auto szFlags = flags::InterpretFlags(flagExtendedFolderFlagType, extendedFlag.Id);
 				addBlock(extendedFlag.Id, L"Id = 0x%1!02X! = %2!ws!\r\n", extendedFlag.Id.getData(), szFlags.c_str());
 				addBlock(extendedFlag.Cb, L"Cb = 0x%1!02X! = %1!d!\r\n", extendedFlag.Cb.getData());
 
@@ -111,7 +111,7 @@ namespace smartview
 						extendedFlag.Data.ExtendedFlags,
 						L"\tExtended Flags = 0x%1!08X! = %2!ws!",
 						extendedFlag.Data.ExtendedFlags.getData(),
-						interpretprop::InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags).c_str());
+						flags::InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags).c_str());
 					break;
 				case EFPB_CLSIDID:
 					terminateBlock();

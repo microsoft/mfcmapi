@@ -40,7 +40,4 @@ namespace interpretprop
 	_Check_return_ ULONG LookupPropName(_In_ const std::wstring& lpszPropName);
 	_Check_return_ ULONG PropNameToPropTag(_In_ const std::wstring& lpszPropName);
 	_Check_return_ ULONG PropTypeNameToPropType(_In_ const std::wstring& lpszPropType);
-
-	std::wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue);
-	std::wstring AllFlagsToString(ULONG ulFlagName, bool bHex);
 } // namespace interpretprop

@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/PropertyDefinitionStream.h>
 #include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
 #include <core/mapi/cache/namedPropCache.h>
@@ -157,7 +158,7 @@ namespace smartview
 	void PropertyDefinitionStream::ParseBlocks()
 	{
 		setRoot(L"Property Definition Stream\r\n");
-		auto szVersion = interpretprop::InterpretFlags(flagPropDefVersion, m_wVersion);
+		auto szVersion = flags::InterpretFlags(flagPropDefVersion, m_wVersion);
 		addBlock(m_wVersion, L"Version = 0x%1!04X! = %2!ws!\r\n", m_wVersion.getData(), szVersion.c_str());
 		addBlock(m_dwFieldDefinitionCount, L"FieldDefinitionCount = 0x%1!08X!", m_dwFieldDefinitionCount.getData());
 
@@ -166,13 +167,13 @@ namespace smartview
 			terminateBlock();
 			addHeader(L"Definition: %1!d!\r\n", iDef);
 
-			auto szFlags = interpretprop::InterpretFlags(flagPDOFlag, m_pfdFieldDefinitions[iDef].dwFlags);
+			auto szFlags = flags::InterpretFlags(flagPDOFlag, m_pfdFieldDefinitions[iDef].dwFlags);
 			addBlock(
 				m_pfdFieldDefinitions[iDef].dwFlags,
 				L"\tFlags = 0x%1!08X! = %2!ws!\r\n",
 				m_pfdFieldDefinitions[iDef].dwFlags.getData(),
 				szFlags.c_str());
-			auto szVarEnum = interpretprop::InterpretFlags(flagVarEnum, m_pfdFieldDefinitions[iDef].wVT);
+			auto szVarEnum = flags::InterpretFlags(flagVarEnum, m_pfdFieldDefinitions[iDef].wVT);
 			addBlock(
 				m_pfdFieldDefinitions[iDef].wVT,
 				L"\tVT = 0x%1!04X! = %2!ws!\r\n",
@@ -232,7 +233,7 @@ namespace smartview
 
 			if (PropDefV2 == m_wVersion)
 			{
-				szFlags = interpretprop::InterpretFlags(flagInternalType, m_pfdFieldDefinitions[iDef].dwInternalType);
+				szFlags = flags::InterpretFlags(flagInternalType, m_pfdFieldDefinitions[iDef].dwInternalType);
 				addBlock(
 					m_pfdFieldDefinitions[iDef].dwInternalType,
 					L"\tInternalType = 0x%1!08X! = %2!ws!\r\n",

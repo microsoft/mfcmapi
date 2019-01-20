@@ -99,6 +99,9 @@
     <ClInclude Include="mapi\columnTags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="interpret\flagArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -147,6 +150,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="property\property.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="interpret\flags.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

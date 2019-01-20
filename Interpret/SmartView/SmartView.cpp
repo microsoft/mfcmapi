@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <Interpret/InterpretProp.h>
 #include <core/mapi/extraPropTags.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
@@ -8,6 +7,7 @@
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>
+#include <core/interpret/flags.h>
 
 #include <Interpret/SmartView/SmartViewParser.h>
 #include <Interpret/SmartView/PCL.h>
@@ -434,7 +434,7 @@ namespace smartview
 			ulPropID = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp);
 			if (ulPropID)
 			{
-				lpszResultString += interpretprop::InterpretFlags(ulPropID, static_cast<LONG>(val));
+				lpszResultString += flags::InterpretFlags(ulPropID, static_cast<LONG>(val));
 
 				if (bLabel && !lpszResultString.empty())
 				{

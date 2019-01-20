@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/FolderUserFieldStream.h>
 #include <core/interpret/guid.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 
 namespace smartview
@@ -82,7 +82,7 @@ namespace smartview
 				m_FolderUserFieldsAnsiCount.addBlankLine();
 				m_FolderUserFieldsAnsiCount.addHeader(L"Field %1!d!\r\n", i++);
 
-				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
+				auto szFieldType = flags::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
 				m_FolderUserFieldsAnsiCount.addBlock(
 					fieldDefinition.FieldType,
 					L"FieldType = 0x%1!08X! = %2!ws!\r\n",
@@ -98,7 +98,7 @@ namespace smartview
 				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid);
 				m_FolderUserFieldsAnsiCount.addBlock(
 					fieldDefinition.Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());
-				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
+				auto szFieldcap = flags::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
 				m_FolderUserFieldsAnsiCount.addBlock(
 					fieldDefinition.Common.fcapm,
 					L"fcapm = 0x%1!08X! = %2!ws!\r\n",
@@ -147,7 +147,7 @@ namespace smartview
 				m_FolderUserFieldsUnicodeCount.addBlankLine();
 				m_FolderUserFieldsUnicodeCount.addHeader(L"Field %1!d!\r\n", i++);
 
-				auto szFieldType = interpretprop::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
+				auto szFieldType = flags::InterpretFlags(flagFolderType, fieldDefinition.FieldType);
 				m_FolderUserFieldsUnicodeCount.addBlock(
 					fieldDefinition.FieldType,
 					L"FieldType = 0x%1!08X! = %2!ws!\r\n",
@@ -163,7 +163,7 @@ namespace smartview
 				auto szGUID = guid::GUIDToString(fieldDefinition.Common.PropSetGuid);
 				m_FolderUserFieldsUnicodeCount.addBlock(
 					fieldDefinition.Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());
-				auto szFieldcap = interpretprop::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
+				auto szFieldcap = flags::InterpretFlags(flagFieldCap, fieldDefinition.Common.fcapm);
 				m_FolderUserFieldsUnicodeCount.addBlock(
 					fieldDefinition.Common.fcapm,
 					L"fcapm = 0x%1!08X! = %2!ws!\r\n",

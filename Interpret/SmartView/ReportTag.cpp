@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/ReportTag.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 
 namespace smartview
@@ -60,7 +60,7 @@ namespace smartview
 		addBlock(m_Cookie);
 
 		terminateBlock();
-		auto szFlags = interpretprop::InterpretFlags(flagReportTagVersion, m_Version);
+		auto szFlags = flags::InterpretFlags(flagReportTagVersion, m_Version);
 		addBlock(m_Version, L"Version = 0x%1!08X! = %2!ws!", m_Version.getData(), szFlags.c_str());
 
 		if (m_cbStoreEntryID)

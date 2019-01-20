@@ -11,6 +11,7 @@
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/registry.h>
 #include <cassert>
+#include <core/interpret/flags.h>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
@@ -263,7 +264,7 @@ namespace output
 		{
 			Outputf(
 				ulDbgLvl, fFile, true, L"lpNotifications[%u].ulEventType = 0x%08X", i, lpNotifications[i].ulEventType);
-			szFlags = interpretprop::InterpretFlags(flagNotifEventType, lpNotifications[i].ulEventType);
+			szFlags = flags::InterpretFlags(flagNotifEventType, lpNotifications[i].ulEventType);
 			if (!szFlags.empty())
 			{
 				Outputf(ulDbgLvl, fFile, false, L" = %ws", szFlags.c_str());
@@ -382,7 +383,7 @@ namespace output
 					L"lpNotifications[%u].info.tab.ulTableEvent = 0x%08X",
 					i,
 					lpNotifications[i].info.tab.ulTableEvent);
-				szFlags = interpretprop::InterpretFlags(flagTableEventType, lpNotifications[i].info.tab.ulTableEvent);
+				szFlags = flags::InterpretFlags(flagTableEventType, lpNotifications[i].info.tab.ulTableEvent);
 				if (!szFlags.empty())
 				{
 					Outputf(ulDbgLvl, fFile, false, L" = %ws", szFlags.c_str());

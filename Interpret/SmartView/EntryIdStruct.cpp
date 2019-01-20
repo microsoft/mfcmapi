@@ -1,9 +1,8 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/EntryIdStruct.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <core/utility/strings.h>
 #include <core/interpret/guid.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 
 namespace smartview
@@ -303,7 +302,7 @@ namespace smartview
 				m_abFlags0,
 				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n",
 				m_abFlags0.getData(),
-				interpretprop::InterpretFlags(flagEntryId0, m_abFlags0).c_str());
+				flags::InterpretFlags(flagEntryId0, m_abFlags0).c_str());
 			auto tempBlock = block();
 			tempBlock.setOffset(m_abFlags1.getOffset());
 			tempBlock.setSize(3);
@@ -315,12 +314,12 @@ namespace smartview
 				m_abFlags0,
 				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n",
 				m_abFlags0.getData(),
-				interpretprop::InterpretFlags(flagEntryId0, m_abFlags0).c_str());
+				flags::InterpretFlags(flagEntryId0, m_abFlags0).c_str());
 			addBlock(
 				m_abFlags1,
 				L"abFlags[1] = 0x%1!02X!= %2!ws!\r\n",
 				m_abFlags1.getData(),
-				interpretprop::InterpretFlags(flagEntryId1, m_abFlags1).c_str());
+				flags::InterpretFlags(flagEntryId1, m_abFlags1).c_str());
 			addBlock(m_abFlags23, L"abFlags[2..3] = 0x%1!02X!%2!02X!\r\n", m_abFlags23[0], m_abFlags23[1]);
 		}
 
@@ -330,7 +329,7 @@ namespace smartview
 		{
 			terminateBlock();
 
-			auto szVersion = interpretprop::InterpretFlags(flagExchangeABVersion, m_EphemeralObject.Version);
+			auto szVersion = flags::InterpretFlags(flagExchangeABVersion, m_EphemeralObject.Version);
 			addBlock(
 				m_EphemeralObject.Version,
 				L"Version = 0x%1!08X! = %2!ws!\r\n",
@@ -343,7 +342,7 @@ namespace smartview
 		}
 		else if (eidtOneOff == m_ObjectType)
 		{
-			auto szFlags = interpretprop::InterpretFlags(flagOneOffEntryId, m_OneOffRecipientObject.Bitmask);
+			auto szFlags = flags::InterpretFlags(flagOneOffEntryId, m_OneOffRecipientObject.Bitmask);
 			if (MAPI_UNICODE & m_OneOffRecipientObject.Bitmask)
 			{
 				terminateBlock();
@@ -390,7 +389,7 @@ namespace smartview
 		else if (eidtAddressBook == m_ObjectType)
 		{
 			terminateBlock();
-			auto szVersion = interpretprop::InterpretFlags(flagExchangeABVersion, m_AddressBookObject.Version);
+			auto szVersion = flags::InterpretFlags(flagExchangeABVersion, m_AddressBookObject.Version);
 			addBlock(
 				m_AddressBookObject.Version,
 				L"Version = 0x%1!08X! = %2!ws!\r\n",
@@ -408,14 +407,14 @@ namespace smartview
 		else if (eidtContact == m_ObjectType)
 		{
 			terminateBlock();
-			auto szVersion = interpretprop::InterpretFlags(flagContabVersion, m_ContactAddressBookObject.Version);
+			auto szVersion = flags::InterpretFlags(flagContabVersion, m_ContactAddressBookObject.Version);
 			addBlock(
 				m_ContactAddressBookObject.Version,
 				L"Version = 0x%1!08X! = %2!ws!\r\n",
 				m_ContactAddressBookObject.Version.getData(),
 				szVersion.c_str());
 
-			auto szType = interpretprop::InterpretFlags(flagContabType, m_ContactAddressBookObject.Type);
+			auto szType = flags::InterpretFlags(flagContabType, m_ContactAddressBookObject.Type);
 			addBlock(
 				m_ContactAddressBookObject.Type,
 				L"Type = 0x%1!08X! = %2!ws!\r\n",
@@ -430,7 +429,7 @@ namespace smartview
 					m_ContactAddressBookObject.Index,
 					L"Index = 0x%1!08X! = %2!ws!\r\n",
 					m_ContactAddressBookObject.Index.getData(),
-					interpretprop::InterpretFlags(flagContabIndex, m_ContactAddressBookObject.Index).c_str());
+					flags::InterpretFlags(flagContabIndex, m_ContactAddressBookObject.Index).c_str());
 				addBlock(
 					m_ContactAddressBookObject.EntryIDCount,
 					L"EntryIDCount = 0x%1!08X!\r\n",
@@ -460,7 +459,7 @@ namespace smartview
 				m_WAB.Type,
 				L"Wrapped Entry Type = 0x%1!02X! = %2!ws!\r\n",
 				m_WAB.Type.getData(),
-				interpretprop::InterpretFlags(flagWABEntryIDType, m_WAB.Type).c_str());
+				flags::InterpretFlags(flagWABEntryIDType, m_WAB.Type).c_str());
 
 			for (auto& entry : m_WAB.lpEntryID)
 			{
@@ -470,14 +469,14 @@ namespace smartview
 		else if (eidtMessageDatabase == m_ObjectType)
 		{
 			terminateBlock();
-			auto szVersion = interpretprop::InterpretFlags(flagMDBVersion, m_MessageDatabaseObject.Version);
+			auto szVersion = flags::InterpretFlags(flagMDBVersion, m_MessageDatabaseObject.Version);
 			addBlock(
 				m_MessageDatabaseObject.Version,
 				L"Version = 0x%1!02X! = %2!ws!\r\n",
 				m_MessageDatabaseObject.Version.getData(),
 				szVersion.c_str());
 
-			auto szFlag = interpretprop::InterpretFlags(flagMDBFlag, m_MessageDatabaseObject.Flag);
+			auto szFlag = flags::InterpretFlags(flagMDBFlag, m_MessageDatabaseObject.Flag);
 			addBlock(
 				m_MessageDatabaseObject.Flag,
 				L"Flag = 0x%1!02X! = %2!ws!\r\n",
@@ -522,7 +521,7 @@ namespace smartview
 			case MDB_STORE_EID_V2_MAGIC:
 			{
 				terminateBlock();
-				auto szV2Magic = interpretprop::InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v2.ulMagic);
+				auto szV2Magic = flags::InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v2.ulMagic);
 				addBlock(
 					m_MessageDatabaseObject.v2.ulMagic,
 					L"Magic = 0x%1!08X! = %2!ws!\r",
@@ -532,7 +531,7 @@ namespace smartview
 					m_MessageDatabaseObject.v2.ulSize,
 					L"Size = 0x%1!08X! = %1!d!\r\n",
 					m_MessageDatabaseObject.v2.ulSize.getData());
-				auto szV2Version = interpretprop::InterpretFlags(flagEidVersion, m_MessageDatabaseObject.v2.ulVersion);
+				auto szV2Version = flags::InterpretFlags(flagEidVersion, m_MessageDatabaseObject.v2.ulVersion);
 				addBlock(
 					m_MessageDatabaseObject.v2.ulVersion,
 					L"Version = 0x%1!08X! = %2!ws!\r\n",
@@ -556,7 +555,7 @@ namespace smartview
 			case MDB_STORE_EID_V3_MAGIC:
 			{
 				terminateBlock();
-				auto szV3Magic = interpretprop::InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v3.ulMagic);
+				auto szV3Magic = flags::InterpretFlags(flagEidMagic, m_MessageDatabaseObject.v3.ulMagic);
 				addBlock(
 					m_MessageDatabaseObject.v3.ulMagic,
 					L"Magic = 0x%1!08X! = %2!ws!\r\n",
@@ -566,7 +565,7 @@ namespace smartview
 					m_MessageDatabaseObject.v3.ulSize,
 					L"Size = 0x%1!08X! = %1!d!\r\n",
 					m_MessageDatabaseObject.v3.ulSize.getData());
-				auto szV3Version = interpretprop::InterpretFlags(flagEidVersion, m_MessageDatabaseObject.v3.ulVersion);
+				auto szV3Version = flags::InterpretFlags(flagEidVersion, m_MessageDatabaseObject.v3.ulVersion);
 				addBlock(
 					m_MessageDatabaseObject.v3.ulVersion,
 					L"Version = 0x%1!08X! = %2!ws!\r\n",
@@ -590,7 +589,7 @@ namespace smartview
 		else if (eidtFolder == m_ObjectType)
 		{
 			terminateBlock();
-			auto szType = interpretprop::InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
+			auto szType = flags::InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
 			addBlock(
 				m_FolderOrMessage.Type,
 				L"Folder Type = 0x%1!04X! = %2!ws!\r\n",
@@ -610,7 +609,7 @@ namespace smartview
 		else if (eidtMessage == m_ObjectType)
 		{
 			terminateBlock();
-			auto szType = interpretprop::InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
+			auto szType = flags::InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
 			addBlock(
 				m_FolderOrMessage.Type,
 				L"Message Type = 0x%1!04X! = %2!ws!\r\n",

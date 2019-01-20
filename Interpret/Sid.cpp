@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/Sid.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/interpret/guid.h>
 #include <core/utility/strings.h>
@@ -159,20 +159,20 @@ namespace sid
 		}
 
 		auto lpStringSid = GetTextualSid(SidStart);
-		auto szAceType = interpretprop::InterpretFlags(flagACEType, AceType);
-		auto szAceFlags = interpretprop::InterpretFlags(flagACEFlag, AceFlags);
+		auto szAceType = flags::InterpretFlags(flagACEType, AceType);
+		auto szAceFlags = flags::InterpretFlags(flagACEFlag, AceFlags);
 		auto szAceMask = std::wstring{};
 
 		switch (acetype)
 		{
 		case acetypeContainer:
-			szAceMask = interpretprop::InterpretFlags(flagACEMaskContainer, Mask);
+			szAceMask = flags::InterpretFlags(flagACEMaskContainer, Mask);
 			break;
 		case acetypeMessage:
-			szAceMask = interpretprop::InterpretFlags(flagACEMaskNonContainer, Mask);
+			szAceMask = flags::InterpretFlags(flagACEMaskNonContainer, Mask);
 			break;
 		case acetypeFreeBusy:
-			szAceMask = interpretprop::InterpretFlags(flagACEMaskFreeBusy, Mask);
+			szAceMask = flags::InterpretFlags(flagACEMaskFreeBusy, Mask);
 			break;
 		};
 
@@ -239,6 +239,6 @@ namespace sid
 		}
 
 		return SecurityDescriptor{strings::join(sdString, L"\r\n"),
-								  interpretprop::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(buf.data()))};
+								  flags::InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(buf.data()))};
 	}
 } // namespace sid

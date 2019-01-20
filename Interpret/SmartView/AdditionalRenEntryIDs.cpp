@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/AdditionalRenEntryIDs.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 
 namespace smartview
@@ -110,7 +110,7 @@ namespace smartview
 					m_ppdPersistData[iPersistElement].wPersistID,
 					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
 					m_ppdPersistData[iPersistElement].wPersistID.getData(),
-					interpretprop::InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID).c_str());
+					flags::InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID).c_str());
 				element.addBlock(
 					m_ppdPersistData[iPersistElement].wDataElementsSize,
 					L"DataElementsSize = 0x%1!04X!",
@@ -128,7 +128,7 @@ namespace smartview
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
 							L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
 							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID.getData(),
-							interpretprop::InterpretFlags(
+							flags::InterpretFlags(
 								flagElementID,
 								m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID)
 								.c_str());

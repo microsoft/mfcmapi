@@ -10,6 +10,7 @@
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/interpret/flags.h>
 
 namespace dialog
 {
@@ -30,10 +31,10 @@ namespace dialog
 		{
 			TRACE_CONSTRUCTOR(COMPCLASS);
 
-			SetPromptPostFix(interpretprop::AllFlagsToString(flagRelop, false));
+			SetPromptPostFix(flags::AllFlagsToString(flagRelop, false));
 			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_RELOP, false));
 			SetHex(0, ulRelop);
-			const auto szFlags = interpretprop::InterpretFlags(flagRelop, ulRelop);
+			const auto szFlags = flags::InterpretFlags(flagRelop, ulRelop);
 			AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_RELOP, szFlags, true));
 			AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULPROPTAG1, false));
 			SetHex(2, ulPropTag1);
@@ -52,7 +53,7 @@ namespace dialog
 
 			if (paneID == 0)
 			{
-				SetStringW(1, interpretprop::InterpretFlags(flagRelop, GetHex(0)));
+				SetStringW(1, flags::InterpretFlags(flagRelop, GetHex(0)));
 			}
 			else if (paneID == 2)
 			{
@@ -121,19 +122,19 @@ namespace dialog
 
 			if (RES_CONTENT == m_ulResType)
 			{
-				SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
+				SetPromptPostFix(flags::AllFlagsToString(flagFuzzyLevel, true));
 
 				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_ULFUZZYLEVEL, false));
 				SetHex(0, ulCompare);
-				szFlags = interpretprop::InterpretFlags(flagFuzzyLevel, ulCompare);
+				szFlags = flags::InterpretFlags(flagFuzzyLevel, ulCompare);
 				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_ULFUZZYLEVEL, szFlags, true));
 			}
 			else if (RES_PROPERTY == m_ulResType)
 			{
-				SetPromptPostFix(interpretprop::AllFlagsToString(flagRelop, false));
+				SetPromptPostFix(flags::AllFlagsToString(flagRelop, false));
 				AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_RELOP, false));
 				SetHex(0, ulCompare);
-				szFlags = interpretprop::InterpretFlags(flagRelop, ulCompare);
+				szFlags = flags::InterpretFlags(flagRelop, ulCompare);
 				AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_RELOP, szFlags, true));
 			}
 
@@ -166,11 +167,11 @@ namespace dialog
 			{
 				if (RES_CONTENT == m_ulResType)
 				{
-					SetStringW(1, interpretprop::InterpretFlags(flagFuzzyLevel, GetHex(0)));
+					SetStringW(1, flags::InterpretFlags(flagFuzzyLevel, GetHex(0)));
 				}
 				else if (RES_PROPERTY == m_ulResType)
 				{
-					SetStringW(1, interpretprop::InterpretFlags(flagRelop, GetHex(0)));
+					SetStringW(1, flags::InterpretFlags(flagRelop, GetHex(0)));
 				}
 			}
 			else if (paneID == 2)
@@ -244,10 +245,10 @@ namespace dialog
 		{
 			TRACE_CONSTRUCTOR(BITMASKCLASS);
 
-			SetPromptPostFix(interpretprop::AllFlagsToString(flagBitmask, false));
+			SetPromptPostFix(flags::AllFlagsToString(flagBitmask, false));
 			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_RELBMR, false));
 			SetHex(0, relBMR);
-			const auto szFlags = interpretprop::InterpretFlags(flagBitmask, relBMR);
+			const auto szFlags = flags::InterpretFlags(flagBitmask, relBMR);
 			AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_RELBMR, szFlags, true));
 			AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULPROPTAG, false));
 			SetHex(2, ulPropTag);
@@ -264,7 +265,7 @@ namespace dialog
 
 			if (paneID == 0)
 			{
-				SetStringW(1, interpretprop::InterpretFlags(flagBitmask, GetHex(0)));
+				SetStringW(1, flags::InterpretFlags(flagBitmask, GetHex(0)));
 			}
 			else if (paneID == 2)
 			{
@@ -289,10 +290,10 @@ namespace dialog
 		{
 			TRACE_CONSTRUCTOR(SIZECLASS);
 
-			SetPromptPostFix(interpretprop::AllFlagsToString(flagRelop, false));
+			SetPromptPostFix(flags::AllFlagsToString(flagRelop, false));
 			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_RELOP, false));
 			SetHex(0, relop);
-			const auto szFlags = interpretprop::InterpretFlags(flagRelop, relop);
+			const auto szFlags = flags::InterpretFlags(flagRelop, relop);
 			AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_RELOP, szFlags, true));
 
 			AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULPROPTAG, false));
@@ -310,7 +311,7 @@ namespace dialog
 
 			if (paneID == 0)
 			{
-				SetStringW(1, interpretprop::InterpretFlags(flagRelop, GetHex(0)));
+				SetStringW(1, flags::InterpretFlags(flagRelop, GetHex(0)));
 			}
 			else if (paneID == 2)
 			{
@@ -888,7 +889,7 @@ namespace dialog
 				if (m_lpRes) m_lpOutputRes->rt = m_lpRes->rt;
 			}
 
-			SetPromptPostFix(interpretprop::AllFlagsToString(flagRestrictionType, true));
+			SetPromptPostFix(flags::AllFlagsToString(flagRestrictionType, true));
 			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_RESTRICTIONTYPE, false)); // type as a number
 			AddPane(viewpane::TextPane::CreateSingleLinePane(
 				1, IDS_RESTRICTIONTYPE, true)); // type as a string (flagRestrictionType)
@@ -916,7 +917,7 @@ namespace dialog
 			if (lpSourceRes)
 			{
 				SetHex(0, lpSourceRes->rt);
-				SetStringW(1, interpretprop::InterpretFlags(flagRestrictionType, lpSourceRes->rt));
+				SetStringW(1, flags::InterpretFlags(flagRestrictionType, lpSourceRes->rt));
 			}
 
 			return bRet;
@@ -957,7 +958,7 @@ namespace dialog
 
 				if (ulOldResType == ulNewResType) return paneID;
 
-				SetStringW(1, interpretprop::InterpretFlags(flagRestrictionType, ulNewResType));
+				SetStringW(1, flags::InterpretFlags(flagRestrictionType, ulNewResType));
 
 				m_bModified = true;
 				if ((ulOldResType == RES_AND || ulOldResType == RES_OR) &&
@@ -1259,10 +1260,10 @@ namespace dialog
 
 			m_ulNewSearchFlags = NULL;
 
-			SetPromptPostFix(interpretprop::AllFlagsToString(flagSearchFlag, true));
+			SetPromptPostFix(flags::AllFlagsToString(flagSearchFlag, true));
 			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SEARCHSTATE, true));
 			SetHex(0, ulSearchState);
-			const auto szFlags = interpretprop::InterpretFlags(flagSearchState, ulSearchState);
+			const auto szFlags = flags::InterpretFlags(flagSearchState, ulSearchState);
 			AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_SEARCHSTATE, szFlags, true));
 			AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_SEARCHFLAGS, false));
 			SetHex(2, 0);
@@ -1305,7 +1306,7 @@ namespace dialog
 
 			if (paneID == 2)
 			{
-				SetStringW(3, interpretprop::InterpretFlags(flagSearchFlag, GetHex(paneID)));
+				SetStringW(3, flags::InterpretFlags(flagSearchFlag, GetHex(paneID)));
 			}
 
 			return paneID;

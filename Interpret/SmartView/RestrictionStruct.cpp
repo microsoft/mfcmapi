@@ -1,8 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/RestrictionStruct.h>
 #include <Interpret/SmartView/PropertiesStruct.h>
-#include <core/utility/strings.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
 
@@ -200,7 +199,7 @@ namespace smartview
 		}
 
 		std::wstring szPropNum;
-		auto szFlags = interpretprop::InterpretFlags(flagRestrictionType, lpRes.rt);
+		auto szFlags = flags::InterpretFlags(flagRestrictionType, lpRes.rt);
 		addBlock(
 			lpRes.rt, L"%1!ws!lpRes->rt = 0x%2!X! = %3!ws!\r\n", szTabs.c_str(), lpRes.rt.getData(), szFlags.c_str());
 
@@ -208,7 +207,7 @@ namespace smartview
 		switch (lpRes.rt)
 		{
 		case RES_COMPAREPROPS:
-			szFlags = interpretprop::InterpretFlags(flagRelop, lpRes.resCompareProps.relop);
+			szFlags = flags::InterpretFlags(flagRelop, lpRes.resCompareProps.relop);
 			addBlock(
 				lpRes.resCompareProps.relop,
 				L"%1!ws!lpRes->res.resCompareProps.relop = %2!ws! = 0x%3!08X!\r\n",
@@ -278,7 +277,7 @@ namespace smartview
 			}
 			break;
 		case RES_CONTENT:
-			szFlags = interpretprop::InterpretFlags(flagFuzzyLevel, lpRes.resContent.ulFuzzyLevel);
+			szFlags = flags::InterpretFlags(flagFuzzyLevel, lpRes.resContent.ulFuzzyLevel);
 			addBlock(
 				lpRes.resContent.ulFuzzyLevel,
 				L"%1!ws!lpRes->res.resContent.ulFuzzyLevel = %2!ws! = 0x%3!08X!\r\n",
@@ -312,7 +311,7 @@ namespace smartview
 			}
 			break;
 		case RES_PROPERTY:
-			szFlags = interpretprop::InterpretFlags(flagRelop, lpRes.resProperty.relop);
+			szFlags = flags::InterpretFlags(flagRelop, lpRes.resProperty.relop);
 			addBlock(
 				lpRes.resProperty.relop,
 				L"%1!ws!lpRes->res.resProperty.relop = %2!ws! = 0x%3!08X!\r\n",
@@ -351,7 +350,7 @@ namespace smartview
 			}
 			break;
 		case RES_BITMASK:
-			szFlags = interpretprop::InterpretFlags(flagBitmask, lpRes.resBitMask.relBMR);
+			szFlags = flags::InterpretFlags(flagBitmask, lpRes.resBitMask.relBMR);
 			addBlock(
 				lpRes.resBitMask.relBMR,
 				L"%1!ws!lpRes->res.resBitMask.relBMR = %2!ws! = 0x%3!08X!\r\n",
@@ -377,7 +376,7 @@ namespace smartview
 				interpretprop::TagToString(lpRes.resBitMask.ulPropTag, nullptr, false, true).c_str());
 			break;
 		case RES_SIZE:
-			szFlags = interpretprop::InterpretFlags(flagRelop, lpRes.resSize.relop);
+			szFlags = flags::InterpretFlags(flagRelop, lpRes.resSize.relop);
 			addBlock(
 				lpRes.resSize.relop,
 				L"%1!ws!lpRes->res.resSize.relop = %2!ws! = 0x%3!08X!\r\n",

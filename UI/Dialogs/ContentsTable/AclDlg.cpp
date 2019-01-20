@@ -7,7 +7,7 @@
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/flags.h>
 #include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
 #include <core/utility/output.h>
@@ -115,7 +115,7 @@ namespace dialog
 	void CAclDlg::OnAddItem()
 	{
 		editor::CEditor MyData(this, IDS_ACLADDITEM, IDS_ACLADDITEMPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_MEMBER_RIGHTS), true));
+		MyData.SetPromptPostFix(flags::AllFlagsToString(PROP_ID(PR_MEMBER_RIGHTS), true));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_USEREID, false));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_MASKINHEX, false));
 		MyData.SetHex(1, 0);

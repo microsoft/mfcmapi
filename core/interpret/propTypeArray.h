@@ -1,5 +1,6 @@
 #pragma once
 #define PTYPE_ENTRY(num) {(num), L#num},
+#include <core/mapi/extraPropTags.h>
 
 static NAME_ARRAY_ENTRY g_PropTypeArray[] = {
 	// clang-format off

@@ -20,6 +20,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <IO/mapiFile.h>
+#include <core/interpret/flags.h>
 
 namespace dialog
 {
@@ -565,7 +566,7 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_ADDSUBFOLDER, IDS_ADDSUBFOLDERPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_FOLDER_TYPE), true));
+		MyData.SetPromptPostFix(flags::AllFlagsToString(PROP_ID(PR_FOLDER_TYPE), true));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePaneID(0, IDS_FOLDERNAME, IDS_FOLDERNAMEVALUE, false));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_FOLDERTYPE, false));
 		MyData.SetHex(1, FOLDER_GENERIC);

@@ -13,6 +13,7 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/interpret/flags.h>
 
 namespace dialog
 {
@@ -121,7 +122,7 @@ namespace dialog
 	{
 		editor::CEditor MyPrompt(
 			this, IDS_OPENWITHFLAGS, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
+		MyPrompt.SetPromptPostFix(flags::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 		MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CREATESTORENTRYIDFLAGS, false));
 		MyPrompt.SetHex(0, OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 		if (MyPrompt.DisplayDialog())
@@ -144,7 +145,7 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_SEARCHCRITERIA, IDS_MBSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
+		MyData.SetPromptPostFix(flags::AllFlagsToString(flagFuzzyLevel, true));
 
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_NAME, false));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_ULFUZZYLEVEL, false));
