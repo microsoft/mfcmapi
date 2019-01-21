@@ -2794,39 +2794,4 @@ namespace mapi
 
 		return hRes;
 	}
-
-	// Declaration missing from MAPI headers
-	_Check_return_ STDAPI OpenStreamOnFileW(
-		_In_ LPALLOCATEBUFFER lpAllocateBuffer,
-		_In_ LPFREEBUFFER lpFreeBuffer,
-		ULONG ulFlags,
-		_In_z_ LPCWSTR lpszFileName,
-		_In_opt_z_ LPCWSTR lpszPrefix,
-		_Out_ LPSTREAM FAR* lppStream);
-
-	// Since I never use lpszPrefix, I don't convert it
-	// To make certain of that, I pass NULL for it
-	// If I ever do need this param, I'll have to fix this
-	_Check_return_ STDMETHODIMP MyOpenStreamOnFile(
-		_In_ LPALLOCATEBUFFER lpAllocateBuffer,
-		_In_ LPFREEBUFFER lpFreeBuffer,
-		ULONG ulFlags,
-		_In_ const std::wstring& lpszFileName,
-		_Out_ LPSTREAM FAR* lppStream)
-	{
-		auto hRes =
-			OpenStreamOnFileW(lpAllocateBuffer, lpFreeBuffer, ulFlags, lpszFileName.c_str(), nullptr, lppStream);
-		if (hRes == MAPI_E_CALL_FAILED)
-		{
-			hRes = OpenStreamOnFile(
-				lpAllocateBuffer,
-				lpFreeBuffer,
-				ulFlags,
-				strings::wstringTotstring(lpszFileName).c_str(),
-				nullptr,
-				lppStream);
-		}
-
-		return hRes;
-	}
 } // namespace mapi

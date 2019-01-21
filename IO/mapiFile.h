@@ -51,4 +51,11 @@ namespace file
 	WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_ const std::wstring& szFileName, bool bUnicode, HWND hWnd);
 	_Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_ const std::wstring& szFileName);
 	_Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_ const std::wstring& szFileName);
+
+	_Check_return_ STDMETHODIMP MyOpenStreamOnFile(
+		_In_ LPALLOCATEBUFFER lpAllocateBuffer,
+		_In_ LPFREEBUFFER lpFreeBuffer,
+		ULONG ulFlags,
+		_In_ const std::wstring& lpszFileName,
+		_Out_ LPSTREAM* lppStream);
 } // namespace file

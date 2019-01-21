@@ -5,9 +5,9 @@
 #include <UI/ViewPane/SmartViewPane.h>
 #include <UI/ViewPane/SplitterPane.h>
 #include <core/mapi/cache/globalCache.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <IO/mapiFile.h>
 
 namespace dialog
 {
@@ -207,7 +207,7 @@ namespace dialog
 				LPSTREAM lpStream = nullptr;
 
 				// Get a Stream interface on the input file
-				EC_H_S(mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, file, &lpStream));
+				EC_H_S(file::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, file, &lpStream));
 
 				if (lpStream)
 				{
@@ -238,7 +238,7 @@ namespace dialog
 				LPSTREAM lpStream = nullptr;
 
 				// Get a Stream interface on the output file
-				EC_H_S(mapi::MyOpenStreamOnFile(
+				EC_H_S(file::MyOpenStreamOnFile(
 					MAPIAllocateBuffer, MAPIFreeBuffer, STGM_CREATE | STGM_READWRITE, file, &lpStream));
 
 				if (lpStream)

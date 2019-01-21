@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 #include <MAPI/MapiMime.h>
 #include <core/interpret/guid.h>
-#include <MAPI/MAPIFunctions.h>
 #include <IO/mapiFile.h>
 
 namespace mapi
@@ -34,7 +33,7 @@ namespace mapi
 				LPSTREAM lpEMLStm = nullptr;
 
 				hRes = EC_H(
-					mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, lpszEMLFile, &lpEMLStm));
+					file::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, lpszEMLFile, &lpEMLStm));
 				if (SUCCEEDED(hRes) && lpEMLStm)
 				{
 					if (lpAdrBook)
@@ -127,7 +126,7 @@ namespace mapi
 						{
 							LPSTREAM lpFileStm = nullptr;
 
-							hRes = EC_H(mapi::MyOpenStreamOnFile(
+							hRes = EC_H(file::MyOpenStreamOnFile(
 								MAPIAllocateBuffer,
 								MAPIFreeBuffer,
 								STGM_CREATE | STGM_READWRITE,
@@ -135,7 +134,7 @@ namespace mapi
 								&lpFileStm));
 							if (SUCCEEDED(hRes) && lpFileStm)
 							{
-								const LARGE_INTEGER dwBegin = {0};
+								const LARGE_INTEGER dwBegin = {};
 								hRes = EC_MAPI(lpMimeStm->Seek(dwBegin, STREAM_SEEK_SET, nullptr));
 								if (SUCCEEDED(hRes))
 								{

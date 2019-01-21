@@ -141,7 +141,7 @@ namespace file
 		LPSTREAM lpStream = nullptr;
 		// Get a Stream interface on the input TNEF file
 		auto hRes =
-			EC_H(mapi::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, szMessageFile, &lpStream));
+			EC_H(file::MyOpenStreamOnFile(MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, szMessageFile, &lpStream));
 
 		if (lpStream)
 		{
@@ -312,7 +312,7 @@ namespace file
 		// Open an IStream interface and create the file at the
 		// same time. This code will create the file in the
 		// current directory.
-		auto hRes = EC_H(mapi::MyOpenStreamOnFile(
+		auto hRes = EC_H(file::MyOpenStreamOnFile(
 			MAPIAllocateBuffer, MAPIFreeBuffer, STGM_CREATE | STGM_READWRITE, szFileName, &pStrmDest));
 
 		if (pStrmDest)
@@ -592,7 +592,7 @@ namespace file
 		static auto dwKey = static_cast<WORD>(GetTickCount());
 
 		// Get a Stream interface on the input TNEF file
-		auto hRes = EC_H(mapi::MyOpenStreamOnFile(
+		auto hRes = EC_H(file::MyOpenStreamOnFile(
 			MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READWRITE | STGM_CREATE, szFileName, &lpStream));
 
 		if (lpStream)
@@ -858,6 +858,41 @@ namespace file
 
 				lpStorageSrc->Release();
 			}
+		}
+
+		return hRes;
+	}
+
+	// Declaration missing from MAPI headers
+	_Check_return_ STDAPI OpenStreamOnFileW(
+		_In_ LPALLOCATEBUFFER lpAllocateBuffer,
+		_In_ LPFREEBUFFER lpFreeBuffer,
+		ULONG ulFlags,
+		_In_z_ LPCWSTR lpszFileName,
+		_In_opt_z_ LPCWSTR lpszPrefix,
+		_Out_ LPSTREAM FAR* lppStream);
+
+	// Since I never use lpszPrefix, I don't convert it
+	// To make certain of that, I pass NULL for it
+	// If I ever do need this param, I'll have to fix this
+	_Check_return_ STDMETHODIMP MyOpenStreamOnFile(
+		_In_ LPALLOCATEBUFFER lpAllocateBuffer,
+		_In_ LPFREEBUFFER lpFreeBuffer,
+		ULONG ulFlags,
+		_In_ const std::wstring& lpszFileName,
+		_Out_ LPSTREAM FAR* lppStream)
+	{
+		auto hRes =
+			OpenStreamOnFileW(lpAllocateBuffer, lpFreeBuffer, ulFlags, lpszFileName.c_str(), nullptr, lppStream);
+		if (hRes == MAPI_E_CALL_FAILED)
+		{
+			hRes = OpenStreamOnFile(
+				lpAllocateBuffer,
+				lpFreeBuffer,
+				ulFlags,
+				strings::wstringTotstring(lpszFileName).c_str(),
+				nullptr,
+				lppStream);
 		}
 
 		return hRes;

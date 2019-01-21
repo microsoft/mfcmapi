@@ -310,11 +310,4 @@ namespace mapi
 		_In_ const _SPropValue* lpSPropValueSrc,
 		_In_ ALLOCATEMORE* lpfAllocMore,
 		_In_ LPVOID lpvObject);
-
-	_Check_return_ STDMETHODIMP MyOpenStreamOnFile(
-		_In_ LPALLOCATEBUFFER lpAllocateBuffer,
-		_In_ LPFREEBUFFER lpFreeBuffer,
-		ULONG ulFlags,
-		_In_ const std::wstring& lpszFileName,
-		_Out_ LPSTREAM* lppStream);
 } // namespace mapi

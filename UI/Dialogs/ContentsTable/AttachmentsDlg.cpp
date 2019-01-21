@@ -16,6 +16,7 @@
 #include <UI/addinui.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <IO/mapiFile.h>
 
 namespace dialog
 {
@@ -417,7 +418,7 @@ namespace dialog
 				{
 					LPSTREAM pStreamFile = nullptr;
 
-					hRes = EC_MAPI(mapi::MyOpenStreamOnFile(
+					hRes = EC_MAPI(file::MyOpenStreamOnFile(
 						MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, szAttachName, &pStreamFile));
 					if (SUCCEEDED(hRes) && pStreamFile)
 					{
