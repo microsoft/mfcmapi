@@ -6,7 +6,7 @@
 #include <core/mapi/extraPropTags.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
-#include <UI/ViewPane/CheckPane.h>
+#include <core/utility/strings.h>
 
 namespace mapi
 {
