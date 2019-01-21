@@ -186,15 +186,15 @@ namespace ui
 				auto szName = L"Unknown"; // STRING_OK
 
 				// Get a file name to use
-				if (mapi::CheckStringProp(&lpProps[ATTACH_LONG_FILENAME_W], PT_UNICODE))
+				if (strings::CheckStringProp(&lpProps[ATTACH_LONG_FILENAME_W], PT_UNICODE))
 				{
 					szName = lpProps[ATTACH_LONG_FILENAME_W].Value.lpszW;
 				}
-				else if (mapi::CheckStringProp(&lpProps[ATTACH_FILENAME_W], PT_UNICODE))
+				else if (strings::CheckStringProp(&lpProps[ATTACH_FILENAME_W], PT_UNICODE))
 				{
 					szName = lpProps[ATTACH_FILENAME_W].Value.lpszW;
 				}
-				else if (mapi::CheckStringProp(&lpProps[DISPLAY_NAME_W], PT_UNICODE))
+				else if (strings::CheckStringProp(&lpProps[DISPLAY_NAME_W], PT_UNICODE))
 				{
 					szName = lpProps[DISPLAY_NAME_W].Value.lpszW;
 				}
@@ -516,7 +516,7 @@ namespace ui
 				{
 					LPSPropValue lpEmailAddress = nullptr;
 					EC_MAPI_S(HrGetOneProp(lpMailUser, PR_EMAIL_ADDRESS_W, &lpEmailAddress));
-					if (mapi::CheckStringProp(lpEmailAddress, PT_UNICODE))
+					if (strings::CheckStringProp(lpEmailAddress, PT_UNICODE))
 					{
 						lpOtherUserMDB = OpenMailboxWithPrompt(
 							lpMAPISession,

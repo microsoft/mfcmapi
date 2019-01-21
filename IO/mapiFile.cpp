@@ -204,7 +204,7 @@ namespace file
 		if (lpProps)
 		{
 			std::wstring subj;
-			if (mapi::CheckStringProp(&lpProps[ePR_SUBJECT_W], PT_UNICODE))
+			if (strings::CheckStringProp(&lpProps[ePR_SUBJECT_W], PT_UNICODE))
 			{
 				subj = lpProps[ePR_SUBJECT_W].Value.lpszW;
 			}
@@ -498,7 +498,7 @@ namespace file
 		if (lpMessage != nullptr)
 		{
 			const auto szSubj =
-				mapi::CheckStringProp(lpSubject, PT_UNICODE) ? lpSubject->Value.lpszW : L"UnknownSubject";
+				strings::CheckStringProp(lpSubject, PT_UNICODE) ? lpSubject->Value.lpszW : L"UnknownSubject";
 			const auto recordKey =
 				lpRecordKey && lpRecordKey->ulPropTag == PR_RECORD_KEY ? &lpRecordKey->Value.bin : nullptr;
 

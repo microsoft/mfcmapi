@@ -80,4 +80,6 @@ namespace strings
 
 	bool endsWith(const std::wstring& str, const std::wstring& ending);
 	std::wstring ensureCRLF(const std::wstring& str);
+
+	_Check_return_ bool CheckStringProp(_In_opt_ const _SPropValue* lpProp, ULONG ulPropType);
 } // namespace strings

@@ -1,5 +1,6 @@
 #include <core/stdafx.h>
 #include <core/utility/strings.h>
+#include <core/utility/output.h>
 
 namespace strings
 {
@@ -758,4 +759,53 @@ namespace strings
 
 		return str + L"\r\n";
 	}
+
+	// Check that an _SPropValue really contains a string which matches the given ulPropType
+	_Check_return_ bool CheckStringProp(_In_opt_ const _SPropValue* lpProp, ULONG ulPropType)
+	{
+		if (ulPropType != PT_STRING8 && ulPropType != PT_UNICODE)
+		{
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: Called with invalid ulPropType of 0x%X\n", ulPropType);
+			return false;
+		}
+
+		if (!lpProp)
+		{
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp is NULL\n");
+			return false;
+		}
+
+		if (PROP_TYPE(lpProp->ulPropTag) == PT_ERROR)
+		{
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is of type PT_ERROR\n");
+			return false;
+		}
+
+		if (ulPropType != PROP_TYPE(lpProp->ulPropTag))
+		{
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is not of type 0x%X\n", ulPropType);
+			return false;
+		}
+
+		if (lpProp->Value.LPSZ==nullptr )
+		{
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.LPSZ is NULL\n");
+			return false;
+		}
+
+		if (ulPropType == PT_STRING8 && lpProp->Value.lpszA[0] == NULL)
+		{
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.lpszA[0] is NULL\n");
+			return false;
+		}
+
+		if (ulPropType == PT_UNICODE && lpProp->Value.lpszW[0] == NULL)
+		{
+			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.lpszW[0] is NULL\n");
+			return false;
+		}
+
+		return true;
+	}
+
 } // namespace strings

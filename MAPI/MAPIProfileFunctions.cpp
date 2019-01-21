@@ -6,6 +6,7 @@
 #include <core/mapi/extraPropTags.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
+#include <UI/ViewPane/CheckPane.h>
 
 namespace mapi
 {
@@ -105,7 +106,7 @@ namespace mapi
 								ULONG ulPropVal = 0;
 								LPSPropValue lpsPropVal = nullptr;
 								EC_H_GETPROPS_S(lpSect->GetProps(&pTagArray, NULL, &ulPropVal, &lpsPropVal));
-								if (!(CheckStringProp(lpsPropVal, PROP_TYPE(PR_MARKER)) &&
+								if (!(strings::CheckStringProp(lpsPropVal, PROP_TYPE(PR_MARKER)) &&
 									  !strcmp(lpsPropVal->Value.lpszA, MARKER_STRING)))
 								{
 									// got an unmarked provider - this is our hit

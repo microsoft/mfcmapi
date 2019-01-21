@@ -442,5 +442,29 @@ namespace stringtest
 			Assert::AreEqual(std::wstring(L"アメリカ"), unittest::loadfile(handle, IDR_LOADTESTJAPANESE));
 			Assert::AreEqual(std::wstring(L"abc\r\n123"), unittest::loadfile(handle, IDR_LOADTESTENGLISH));
 		}
+
+		TEST_METHOD(Test_CheckStringProp)
+		{
+			Assert::AreEqual(false, strings::CheckStringProp(nullptr, PT_STRING8));
+			auto err = _SPropValue{PT_ERROR, static_cast<ULONG>(MAPI_E_CALL_FAILED)};
+			Assert::AreEqual(false, strings::CheckStringProp(&err, PT_STRING8));
+			Assert::AreEqual(false, strings::CheckStringProp(&err, PT_LONG));
+
+			auto str = _SPropValue{};
+			str.ulPropTag = PT_UNICODE;
+			Assert::AreEqual(false, strings::CheckStringProp(&str, PT_UNICODE));
+			str.Value.lpszW = L"";
+			Assert::AreEqual(false, strings::CheckStringProp(&str, PT_UNICODE));
+			str.Value.lpszW = L"test";
+			Assert::AreEqual(false, strings::CheckStringProp(&str, PT_STRING8));
+			Assert::AreEqual(true, strings::CheckStringProp(&str, PT_UNICODE));
+
+			auto str2 = _SPropValue{};
+			str2.ulPropTag = PT_STRING8;
+			str2.Value.lpszA = "";
+			Assert::AreEqual(false, strings::CheckStringProp(&str2, PT_STRING8));
+			str2.Value.lpszA = "test";
+			Assert::AreEqual(true, strings::CheckStringProp(&str2, PT_STRING8));
+		}
 	};
 } // namespace stringtest

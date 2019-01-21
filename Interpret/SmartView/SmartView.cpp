@@ -241,7 +241,7 @@ namespace smartview
 
 				WC_MAPI_S(HrGetOneProp(lpMAPIProp, PR_SUBJECT_W, &lpPropSubject));
 
-				if (mapi::CheckStringProp(lpPropSubject, PT_UNICODE) &&
+				if (strings::CheckStringProp(lpPropSubject, PT_UNICODE) &&
 					0 == wcscmp(lpPropSubject->Value.lpszW, L"IPM.Configuration.Autocomplete"))
 				{
 					iStructType = IDS_STNICKNAMECACHE;

@@ -1285,11 +1285,11 @@ namespace controls
 					// try to use our rowset first
 					if (NODISPLAYNAME != m_ulDisplayNameColumn && lpProps && m_ulDisplayNameColumn < cValues)
 					{
-						if (mapi::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_STRING8))
+						if (strings::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_STRING8))
 						{
 							szTitle = strings::stringTowstring(lpProps[m_ulDisplayNameColumn].Value.lpszA);
 						}
-						else if (mapi::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_UNICODE))
+						else if (strings::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_UNICODE))
 						{
 							szTitle = lpProps[m_ulDisplayNameColumn].Value.lpszW;
 						}

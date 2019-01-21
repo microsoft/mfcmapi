@@ -214,7 +214,7 @@ namespace dialog
 			case PT_STRING8:
 				AddPane(viewpane::CountedTextPane::Create(0, IDS_ANSISTRING, false, IDS_CCH));
 				AddPane(viewpane::CountedTextPane::Create(1, IDS_BIN, false, IDS_CB));
-				if (m_lpsInputValue && mapi::CheckStringProp(m_lpsInputValue, PT_STRING8))
+				if (m_lpsInputValue && strings::CheckStringProp(m_lpsInputValue, PT_STRING8))
 				{
 					auto lpszA = std::string(m_lpsInputValue->Value.lpszA);
 					SetStringA(0, lpszA);
@@ -236,7 +236,7 @@ namespace dialog
 			case PT_UNICODE:
 				AddPane(viewpane::CountedTextPane::Create(0, IDS_UNISTRING, false, IDS_CCH));
 				AddPane(viewpane::CountedTextPane::Create(1, IDS_BIN, false, IDS_CB));
-				if (m_lpsInputValue && mapi::CheckStringProp(m_lpsInputValue, PT_UNICODE))
+				if (m_lpsInputValue && strings::CheckStringProp(m_lpsInputValue, PT_UNICODE))
 				{
 					auto lpszW = std::wstring(m_lpsInputValue->Value.lpszW);
 					SetStringW(0, lpszW);

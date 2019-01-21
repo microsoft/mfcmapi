@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 #include <Property/ParseProperty.h>
-#include <core/property/Property.h>
-#include <MAPI/MAPIFunctions.h>
+#include <core/property/property.h>
 #include <core/mapi/extraPropTags.h>
 #include <Interpret/InterpretProp.h>
 #include <core/interpret/guid.h>
@@ -172,7 +171,7 @@ namespace property
 				szAltTmp = strings::format(L"%I64d", lpProp->Value.li.QuadPart); // STRING_OK
 				break;
 			case PT_STRING8:
-				if (mapi::CheckStringProp(lpProp, PT_STRING8))
+				if (strings::CheckStringProp(lpProp, PT_STRING8))
 				{
 					szTmp = strings::LPCSTRToWstring(lpProp->Value.lpszA);
 					bPropXMLSafe = false;
@@ -186,7 +185,7 @@ namespace property
 				}
 				break;
 			case PT_UNICODE:
-				if (mapi::CheckStringProp(lpProp, PT_UNICODE))
+				if (strings::CheckStringProp(lpProp, PT_UNICODE))
 				{
 					szTmp = lpProp->Value.lpszW;
 					bPropXMLSafe = false;

@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 #include <MrMapi/MMProfile.h>
 #include <IO/ExportProfile.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
 
@@ -54,7 +53,7 @@ namespace output
 							printf("        ");
 						}
 
-						if (mapi::CheckStringProp(&lpRows->aRow[i].lpProps[1], PT_STRING8))
+						if (strings::CheckStringProp(&lpRows->aRow[i].lpProps[1], PT_STRING8))
 						{
 							printf("%hs\n", lpRows->aRow[i].lpProps[1].Value.lpszA);
 						}

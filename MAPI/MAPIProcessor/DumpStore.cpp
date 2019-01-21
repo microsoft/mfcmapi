@@ -90,12 +90,12 @@ namespace mapiprocessor
 		const auto lpDisplayName = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_DISPLAY_NAME);
 
 		output::OutputToFile(m_fMailboxTable, L"<mailbox prdisplayname=\"");
-		if (mapi::CheckStringProp(lpDisplayName, PT_TSTRING))
+		if (strings::CheckStringProp(lpDisplayName, PT_TSTRING))
 		{
 			output::OutputToFile(m_fMailboxTable, strings::LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
 		}
 		output::OutputToFile(m_fMailboxTable, L"\" premailaddress=\"");
-		if (!mapi::CheckStringProp(lpEmailAddress, PT_TSTRING))
+		if (!strings::CheckStringProp(lpEmailAddress, PT_TSTRING))
 		{
 			output::OutputToFile(m_fMailboxTable, strings::LPCTSTRToWstring(lpEmailAddress->Value.LPSZ));
 		}
@@ -104,7 +104,7 @@ namespace mapiprocessor
 		output::OutputSRowToFile(m_fMailboxTable, lpSRow, lpMDB);
 
 		// build a path for our store's folder output:
-		if (mapi::CheckStringProp(lpEmailAddress, PT_TSTRING) && mapi::CheckStringProp(lpDisplayName, PT_TSTRING))
+		if (strings::CheckStringProp(lpEmailAddress, PT_TSTRING) && strings::CheckStringProp(lpDisplayName, PT_TSTRING))
 		{
 			const auto szTemp = strings::SanitizeFileName(strings::LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
 
@@ -230,14 +230,14 @@ namespace mapiprocessor
 		// Get required properties from the message
 		auto lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT_W);
 		std::wstring szSubj;
-		if (lpTemp && mapi::CheckStringProp(lpTemp, PT_UNICODE))
+		if (lpTemp && strings::CheckStringProp(lpTemp, PT_UNICODE))
 		{
 			szSubj = lpTemp->Value.lpszW;
 		}
 		else
 		{
 			lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT_A);
-			if (lpTemp && mapi::CheckStringProp(lpTemp, PT_STRING8))
+			if (lpTemp && strings::CheckStringProp(lpTemp, PT_STRING8))
 			{
 				szSubj = strings::stringTowstring(lpTemp->Value.lpszA);
 			}
@@ -440,14 +440,14 @@ namespace mapiprocessor
 			LPSBinary lpRecordKey = nullptr;
 
 			auto lpTemp = PpropFindProp(lpAllProps, cValues, PR_SUBJECT_W);
-			if (lpTemp && mapi::CheckStringProp(lpTemp, PT_UNICODE))
+			if (lpTemp && strings::CheckStringProp(lpTemp, PT_UNICODE))
 			{
 				szSubj = lpTemp->Value.lpszW;
 			}
 			else
 			{
 				lpTemp = PpropFindProp(lpAllProps, cValues, PR_SUBJECT_A);
-				if (lpTemp && mapi::CheckStringProp(lpTemp, PT_STRING8))
+				if (lpTemp && strings::CheckStringProp(lpTemp, PT_STRING8))
 				{
 					szSubj = strings::stringTowstring(lpTemp->Value.lpszA);
 				}
@@ -562,7 +562,7 @@ namespace mapiprocessor
 		EC_H_GETPROPS_S(lpMessage->GetProps(LPSPropTagArray(&msgProps), fMapiUnicode, &cProps, &lpsProps));
 		if (cProps == 2 && lpsProps)
 		{
-			if (mapi::CheckStringProp(&lpsProps[msgPR_SUBJECT_W], PT_UNICODE))
+			if (strings::CheckStringProp(&lpsProps[msgPR_SUBJECT_W], PT_UNICODE))
 			{
 				szSubj = lpsProps[msgPR_SUBJECT_W].Value.lpszW;
 			}
@@ -665,12 +665,12 @@ namespace mapiprocessor
 
 		auto lpAttachName = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_ATTACH_FILENAME);
 
-		if (!lpAttachName || !mapi::CheckStringProp(lpAttachName, PT_TSTRING))
+		if (!lpAttachName || !strings::CheckStringProp(lpAttachName, PT_TSTRING))
 		{
 			lpAttachName = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_DISPLAY_NAME);
 		}
 
-		if (lpAttachName && mapi::CheckStringProp(lpAttachName, PT_TSTRING))
+		if (lpAttachName && strings::CheckStringProp(lpAttachName, PT_TSTRING))
 			output::OutputToFile(lpMsgData->fMessageProps, strings::LPCTSTRToWstring(lpAttachName->Value.LPSZ));
 		else
 			output::OutputToFile(lpMsgData->fMessageProps, L"PR_ATTACH_FILENAME not found");

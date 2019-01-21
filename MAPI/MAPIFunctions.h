@@ -203,7 +203,6 @@ namespace mapi
 		_In_ LPMAPIPROP lpTarget,
 		_In_ HWND hWnd);
 
-	_Check_return_ bool CheckStringProp(_In_opt_ const _SPropValue* lpProp, ULONG ulPropType);
 	_Check_return_ DWORD ComputeStoreHash(
 		ULONG cbStoreEID,
 		_In_count_(cbStoreEID) LPBYTE pbStoreEID,

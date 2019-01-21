@@ -219,7 +219,7 @@ namespace mapi
 				WC_MAPI_S(HrGetOneProp(pGlobalProfSect, PR_PROFILE_HOME_SERVER, &lpServerName));
 			}
 
-			if (CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
+			if (strings::CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
 			{
 				serverName = lpServerName->Value.lpszA;
 			}
@@ -585,7 +585,7 @@ namespace mapi
 				{
 					EC_MAPI_S(HrGetOneProp(
 						lpPublicMDBNonAdmin, CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_STRING8), &lpServerName));
-					if (CheckStringProp(lpServerName, PT_STRING8))
+					if (strings::CheckStringProp(lpServerName, PT_STRING8))
 					{
 						server = lpServerName->Value.lpszA;
 					}

@@ -375,12 +375,12 @@ namespace mapi
 
 								pProp = &pProps[abPR_DISPLAY_NAME];
 								pProp->ulPropTag = PR_DISPLAY_NAME_W;
-								if (!CheckStringProp(&lpFoundRow[abPR_DISPLAY_NAME], PT_UNICODE)) continue;
+								if (!strings::CheckStringProp(&lpFoundRow[abPR_DISPLAY_NAME], PT_UNICODE)) continue;
 								pProp->Value.lpszW = CopyStringW(lpFoundRow[abPR_DISPLAY_NAME].Value.lpszW, lpAdrList);
 
 								pProp = &pProps[abPR_ADDRTYPE];
 								pProp->ulPropTag = PR_ADDRTYPE_W;
-								if (!CheckStringProp(&lpFoundRow[abPR_ADDRTYPE], PT_UNICODE)) continue;
+								if (!strings::CheckStringProp(&lpFoundRow[abPR_ADDRTYPE], PT_UNICODE)) continue;
 								pProp->Value.lpszW = CopyStringW(lpFoundRow[abPR_ADDRTYPE].Value.lpszW, lpAdrList);
 
 								pProp = &pProps[abPR_DISPLAY_TYPE];
@@ -485,7 +485,7 @@ namespace mapi
 					// An error at this point is an error with the current entry, so we can continue this for statement
 					// Unless it's an allocation error. Those are bad.
 					if (PropTagToCompare == pRows->aRow->lpProps[abPropTagToCompare].ulPropTag &&
-						CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_UNICODE))
+						strings::CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_UNICODE))
 					{
 						output::DebugPrint(
 							DBGGeneric,

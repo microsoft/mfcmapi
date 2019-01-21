@@ -992,7 +992,7 @@ namespace dialog
 					{
 						LPSPropValue lpProp = nullptr;
 						hRes = EC_MAPI(HrGetOneProp(lpMAPIFormInfo, PR_MESSAGE_CLASS_W, &lpProp));
-						if (mapi::CheckStringProp(lpProp, PT_UNICODE))
+						if (strings::CheckStringProp(lpProp, PT_UNICODE))
 						{
 							szClass = lpProp->Value.lpszW;
 						}
@@ -1755,7 +1755,7 @@ namespace dialog
 						// Allocate and fill out properties:
 						lpspvSubject->ulPropTag = PR_SUBJECT;
 
-						if (mapi::CheckStringProp(&lpProps[frPR_SUBJECT], PT_TSTRING))
+						if (strings::CheckStringProp(&lpProps[frPR_SUBJECT], PT_TSTRING))
 						{
 							lpspvSubject->Value.LPSZ = mapi::CopyString(lpProps[frPR_SUBJECT].Value.LPSZ, lpRes);
 						}

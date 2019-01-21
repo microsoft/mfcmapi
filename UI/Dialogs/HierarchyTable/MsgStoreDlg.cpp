@@ -441,7 +441,7 @@ namespace dialog
 
 			if (lpProps)
 			{
-				if (mapi::CheckStringProp(&lpProps[NAME], PT_UNICODE))
+				if (strings::CheckStringProp(&lpProps[NAME], PT_UNICODE))
 				{
 					output::DebugPrint(DBGGeneric, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
 					MyData.SetStringW(0, lpProps[NAME].Value.lpszW);
@@ -974,7 +974,7 @@ namespace dialog
 
 			if (lpProps)
 			{
-				if (mapi::CheckStringProp(&lpProps[NAME], PT_UNICODE))
+				if (strings::CheckStringProp(&lpProps[NAME], PT_UNICODE))
 				{
 					output::DebugPrint(DBGGeneric, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
 					MyData.SetStringW(0, lpProps[NAME].Value.lpszW);

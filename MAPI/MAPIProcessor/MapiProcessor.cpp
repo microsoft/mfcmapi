@@ -113,7 +113,7 @@ namespace mapiprocessor
 							const auto lpEmailAddress =
 								PpropFindProp(lpRows->aRow->lpProps, lpRows->aRow->cValues, PR_EMAIL_ADDRESS);
 
-							if (!mapi::CheckStringProp(lpEmailAddress, PT_TSTRING)) continue;
+							if (!strings::CheckStringProp(lpEmailAddress, PT_TSTRING)) continue;
 
 							if (m_lpMDB)
 							{
@@ -265,7 +265,7 @@ namespace mapiprocessor
 								const auto lpFolderDisplayName = PpropFindProp(
 									lpRows->aRow[ulRow].lpProps, lpRows->aRow[ulRow].cValues, PR_DISPLAY_NAME);
 
-								if (mapi::CheckStringProp(lpFolderDisplayName, PT_TSTRING))
+								if (strings::CheckStringProp(lpFolderDisplayName, PT_TSTRING))
 								{
 									// Clean up the folder name before appending it to the offset
 									szSubFolderOffset = m_szFolderOffset +

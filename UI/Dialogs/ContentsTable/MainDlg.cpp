@@ -426,7 +426,7 @@ namespace dialog
 				{
 					EC_MAPI_S(HrGetOneProp(lpIdentity, PR_EMAIL_ADDRESS_A, &lpMailboxName));
 
-					if (mapi::CheckStringProp(lpMailboxName, PT_STRING8))
+					if (strings::CheckStringProp(lpMailboxName, PT_STRING8))
 					{
 						auto lpAdminMDB = mapi::store::OpenOtherUsersMailbox(
 							lpMAPISession, lpMDB, "", lpMailboxName->Value.lpszA, strings::emptystring, ulFlags, false);

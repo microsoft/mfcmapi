@@ -186,7 +186,7 @@ namespace controls
 		std::wstring szName;
 
 		// Shouldn't have to check lpRootName for non-NULL since CheckString does it, but prefast is complaining
-		if (lpRootName && mapi::CheckStringProp(lpRootName, PT_UNICODE))
+		if (lpRootName && strings::CheckStringProp(lpRootName, PT_UNICODE))
 		{
 			szName = lpRootName->Value.lpszW;
 		}
@@ -222,7 +222,7 @@ namespace controls
 
 		std::wstring szName;
 		const auto lpName = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_DISPLAY_NAME_W);
-		if (mapi::CheckStringProp(lpName, PT_UNICODE))
+		if (strings::CheckStringProp(lpName, PT_UNICODE))
 		{
 			szName = lpName->Value.lpszW;
 		}
@@ -829,7 +829,7 @@ namespace controls
 			const auto lpName = PpropFindProp(tab->row.lpProps, tab->row.cValues, PR_DISPLAY_NAME_W);
 
 			std::wstring szText;
-			if (mapi::CheckStringProp(lpName, PT_UNICODE))
+			if (strings::CheckStringProp(lpName, PT_UNICODE))
 			{
 				szText = lpName->Value.lpszW;
 			}

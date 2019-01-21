@@ -59,6 +59,10 @@ namespace sidtest
 			auto account = sid::SidAccount{L"foo", L"bar"};
 			Assert::AreEqual(std::wstring{L"foo"}, account.getDomain());
 			Assert::AreEqual(std::wstring{L"bar"}, account.getName());
+
+			auto account2 = sid::SidAccount{std::wstring{L"foo"}, std::wstring{L"bar"}};
+			Assert::AreEqual(std::wstring{L"foo"}, account2.getDomain());
+			Assert::AreEqual(std::wstring{L"bar"}, account2.getName());
 		}
 
 		TEST_METHOD(Test_ACEToString)

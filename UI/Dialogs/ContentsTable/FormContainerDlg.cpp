@@ -159,7 +159,7 @@ namespace dialog
 				lpListData->lpSourceProps,
 				lpListData->cSourceProps,
 				PR_MESSAGE_CLASS_A); // ResolveMessageClass requires an ANSI string
-			if (mapi::CheckStringProp(lpProp, PT_STRING8))
+			if (strings::CheckStringProp(lpProp, PT_STRING8))
 			{
 				const auto hRes = EC_MAPI(
 					m_lpFormContainer->ResolveMessageClass(lpProp->Value.lpszA, MAPIFORM_EXACTMATCH, &lpFormInfoProp));
@@ -188,7 +188,7 @@ namespace dialog
 				lpListData->lpSourceProps,
 				lpListData->cSourceProps,
 				PR_MESSAGE_CLASS_A); // RemoveForm requires an ANSI string
-			if (mapi::CheckStringProp(lpProp, PT_STRING8))
+			if (strings::CheckStringProp(lpProp, PT_STRING8))
 			{
 				output::DebugPrintEx(
 					DBGDeleteSelectedItem,

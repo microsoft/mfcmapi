@@ -1417,7 +1417,7 @@ namespace mapi
 
 						output::DebugPrint(DBGGeneric, L"Message opened.\n");
 
-						if (CheckStringProp(&pRows->aRow->lpProps[atPR_DISPLAY_NAME], PT_UNICODE))
+						if (strings::CheckStringProp(&pRows->aRow->lpProps[atPR_DISPLAY_NAME], PT_UNICODE))
 						{
 							output::DebugPrint(
 								DBGGeneric,
@@ -1856,53 +1856,6 @@ namespace mapi
 		return lpFilteredProps;
 	}
 
-	_Check_return_ bool CheckStringProp(_In_opt_ const _SPropValue* lpProp, ULONG ulPropType)
-	{
-		if (PT_STRING8 != ulPropType && PT_UNICODE != ulPropType)
-		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: Called with invalid ulPropType of 0x%X\n", ulPropType);
-			return false;
-		}
-
-		if (!lpProp)
-		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp is NULL\n");
-			return false;
-		}
-
-		if (PT_ERROR == PROP_TYPE(lpProp->ulPropTag))
-		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is of type PT_ERROR\n");
-			return false;
-		}
-
-		if (ulPropType != PROP_TYPE(lpProp->ulPropTag))
-		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is not of type 0x%X\n", ulPropType);
-			return false;
-		}
-
-		if (nullptr == lpProp->Value.LPSZ)
-		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.LPSZ is NULL\n");
-			return false;
-		}
-
-		if (PT_STRING8 == ulPropType && NULL == lpProp->Value.lpszA[0])
-		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.lpszA[0] is NULL\n");
-			return false;
-		}
-
-		if (PT_UNICODE == ulPropType && NULL == lpProp->Value.lpszW[0])
-		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.lpszW[0] is NULL\n");
-			return false;
-		}
-
-		return true;
-	}
-
 	_Check_return_ DWORD ComputeStoreHash(
 		ULONG cbStoreEID,
 		_In_count_(cbStoreEID) LPBYTE pbStoreEID,
@@ -2221,7 +2174,7 @@ namespace mapi
 
 			if (lpProp)
 			{
-				if (CheckStringProp(lpProp, PT_UNICODE))
+				if (strings::CheckStringProp(lpProp, PT_UNICODE))
 				{
 					szTitle = lpProp->Value.lpszW;
 					bFoundName = true;

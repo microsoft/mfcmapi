@@ -13,7 +13,8 @@ namespace sid
 	{
 	public:
 		SidAccount() = default;
-		SidAccount(std::wstring _domain, std::wstring _name) : domain(std::move(_domain)), name(std::move(_name)){};
+		SidAccount(std::wstring _domain, std::wstring _name) noexcept
+			: domain(std::move(_domain)), name(std::move(_name)){};
 		_Check_return_ std::wstring getDomain() const;
 		_Check_return_ std::wstring getName() const;
 
