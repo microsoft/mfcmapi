@@ -15,6 +15,27 @@
 
 namespace mapiprocessor
 {
+	void SaveFolderContentsToTXT(
+		_In_ LPMDB lpMDB,
+		_In_ LPMAPIFOLDER lpFolder,
+		bool bRegular,
+		bool bAssoc,
+		bool bDescend,
+		HWND hWnd)
+	{
+		auto szDir = file::GetDirectoryPath(hWnd);
+
+		if (!szDir.empty())
+		{
+			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+			CDumpStore MyDumpStore;
+			MyDumpStore.InitMDB(lpMDB);
+			MyDumpStore.InitFolder(lpFolder);
+			MyDumpStore.InitFolderPathRoot(szDir);
+			MyDumpStore.ProcessFolders(bRegular, bAssoc, bDescend);
+		}
+	}
+
 	CDumpStore::CDumpStore()
 	{
 		m_fFolderProps = nullptr;

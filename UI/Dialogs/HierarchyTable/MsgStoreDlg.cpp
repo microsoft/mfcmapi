@@ -21,6 +21,7 @@
 #include <core/utility/output.h>
 #include <IO/mapiFile.h>
 #include <core/interpret/flags.h>
+#include <MAPI/MAPIProcessor/DumpStore.h>
 
 namespace dialog
 {
@@ -851,7 +852,7 @@ namespace dialog
 
 			if (MyData.DisplayDialog())
 			{
-				file::SaveFolderContentsToTXT(
+				mapiprocessor::SaveFolderContentsToTXT(
 					m_lpMDB, lpFolder, MyData.GetCheck(1), MyData.GetCheck(2), MyData.GetCheck(0), m_hWnd);
 			}
 

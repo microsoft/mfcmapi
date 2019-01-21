@@ -6,8 +6,10 @@
 #include <core/utility/strings.h>
 #include <core/mapi/mapiProgress.h>
 #include <core/utility/import.h>
-#include <MAPI/MAPIProcessor/DumpStore.h>
 #include <IO/MFCOutput.h>
+#include <core/utility/output.h>
+#include <core/interpret/guid.h>
+#include <core/utility/error.h>
 
 namespace file
 {
@@ -220,27 +222,6 @@ namespace file
 
 		MAPIFreeBuffer(lpProps);
 		return szFileOut;
-	}
-
-	void SaveFolderContentsToTXT(
-		_In_ LPMDB lpMDB,
-		_In_ LPMAPIFOLDER lpFolder,
-		bool bRegular,
-		bool bAssoc,
-		bool bDescend,
-		HWND hWnd)
-	{
-		auto szDir = GetDirectoryPath(hWnd);
-
-		if (!szDir.empty())
-		{
-			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-			mapiprocessor::CDumpStore MyDumpStore;
-			MyDumpStore.InitMDB(lpMDB);
-			MyDumpStore.InitFolder(lpFolder);
-			MyDumpStore.InitFolderPathRoot(szDir);
-			MyDumpStore.ProcessFolders(bRegular, bAssoc, bDescend);
-		}
 	}
 
 	_Check_return_ HRESULT SaveFolderContentsToMSG(

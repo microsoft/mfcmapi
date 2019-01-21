@@ -1312,7 +1312,7 @@ namespace dialog
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		file::SaveFolderContentsToTXT(
+		mapiprocessor::SaveFolderContentsToTXT(
 			lpMDB, m_lpFolder, (m_ulDisplayFlags & dfAssoc) == 0, (m_ulDisplayFlags & dfAssoc) != 0, false, m_hWnd);
 	}
 

@@ -4,6 +4,14 @@
 
 namespace mapiprocessor
 {
+	void SaveFolderContentsToTXT(
+		_In_ LPMDB lpMDB,
+		_In_ LPMAPIFOLDER lpFolder,
+		bool bRegular,
+		bool bAssoc,
+		bool bDescend,
+		HWND hWnd);
+
 	struct MessageData
 	{
 		std::wstring szFilePath; // Holds file name prepended with path
@@ -76,4 +84,4 @@ namespace mapiprocessor
 		bool m_bRetryStreamProps;
 		bool m_bOutputAttachments;
 	};
-}
+} // namespace mapiprocessor

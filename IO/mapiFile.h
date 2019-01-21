@@ -9,13 +9,6 @@ namespace file
 	_Check_return_ HRESULT
 	LoadFromTNEF(_In_ const std::wstring& szMessageFile, _In_ LPADRBOOK lpAdrBook, _In_ LPMESSAGE lpMessage);
 
-	void SaveFolderContentsToTXT(
-		_In_ LPMDB lpMDB,
-		_In_ LPMAPIFOLDER lpFolder,
-		bool bRegular,
-		bool bAssoc,
-		bool bDescend,
-		HWND hWnd);
 	_Check_return_ HRESULT SaveFolderContentsToMSG(
 		_In_ LPMAPIFOLDER lpFolder,
 		_In_ const std::wstring& szPathName,
