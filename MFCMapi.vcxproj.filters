@@ -109,9 +109,6 @@
     <ClInclude Include="UI\profile.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="MAPI\Version.h">
-      <Filter>Source Files\MAPI</Filter>
-    </ClInclude>
     <ClInclude Include="IO\mapiFile.h" />
   </ItemGroup>
   <ItemGroup>
@@ -150,9 +147,6 @@
     </ClCompile>
     <ClCompile Include="UI\profile.cpp">
       <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\Version.cpp">
-      <Filter>Source Files\MAPI</Filter>
     </ClCompile>
     <ClCompile Include="IO\mapiFile.cpp">
       <Filter>Source Files</Filter>
@@ -385,12 +379,6 @@
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>
     <ClInclude Include="MAPI\MAPIProfileFunctions.h">
-      <Filter>Source Files\MAPI</Filter>
-    </ClInclude>
-    <ClCompile Include="MAPI\MAPIProgress.cpp">
-      <Filter>Source Files\MAPI</Filter>
-    </ClCompile>
-    <ClInclude Include="MAPI\MAPIProgress.h">
       <Filter>Source Files\MAPI</Filter>
     </ClInclude>
     <ClCompile Include="MAPI\MAPIStoreFunctions.cpp">

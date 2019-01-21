@@ -9,7 +9,7 @@
 #include <UI/UIFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIABFunctions.h>
-#include <MAPI/MAPIProgress.h>
+#include <core/mapi/mapiProgress.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/cache/globalCache.h>
 #include <UI/addinui.h>

@@ -9,7 +9,6 @@
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/Dialogs/AboutDlg.h>
 #include <MAPI/AdviseSink.h>
 #include <core/mapi/extraPropTags.h>
@@ -21,8 +20,7 @@
 #include <UI/Dialogs/Editors/Options.h>
 #include <Windows.h>
 #include <malloc.h>
-#include <stdio.h>
-#include <MAPI/Version.h>
+#include <core/mapi/version.h>
 #include <UI/addinui.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>

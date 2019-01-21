@@ -4,7 +4,7 @@
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
-#include <MAPI/MAPIProgress.h>
+#include <core/mapi/mapiProgress.h>
 #include <core/utility/import.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <IO/MFCOutput.h>

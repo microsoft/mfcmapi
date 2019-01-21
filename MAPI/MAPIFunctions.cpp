@@ -5,7 +5,7 @@
 #include <MAPI/MAPIABFunctions.h>
 #include <Interpret/InterpretProp.h>
 #include <core/mapi/extraPropTags.h>
-#include <MAPI/MAPIProgress.h>
+#include <core/mapi/mapiProgress.h>
 #include <core/interpret/guid.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>

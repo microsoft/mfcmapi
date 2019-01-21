@@ -2,7 +2,7 @@
 #include <UI/mapiui.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <core/interpret/guid.h>
-#include <MAPI/MAPIProgress.h>
+#include <core/mapi/mapiProgress.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/file.h>
 #include <UI/FileDialogEx.h>

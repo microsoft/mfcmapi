@@ -9,7 +9,7 @@
 #include <Interpret/InterpretProp.h>
 #include <UI/FileDialogEx.h>
 #include <core/utility/import.h>
-#include <MAPI/MAPIProgress.h>
+#include <core/mapi/mapiProgress.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <PropertyBag/PropertyBag.h>

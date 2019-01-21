@@ -1,11 +1,12 @@
-#include <StdAfx.h>
-#include <MAPI/Version.h>
+#include <core/stdafx.h>
+#include <core/mapi/version.h>
 #include <core/utility/import.h>
 #include <core/mapi/stubutils.h>
-#include <appmodel.h>
-#include <AppxPackaging.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/utility/error.h>
+#include <appmodel.h>
+#include <AppxPackaging.h>
 
 namespace version
 {
@@ -27,7 +28,7 @@ namespace version
 				if (lpszTempVer && lpszTempLang)
 				{
 					DWORD dwValueBuf = MAX_PATH;
-					auto hRes = WC_W32(import::pfnMsiGetFileVersion(
+					const auto hRes = WC_W32(import::pfnMsiGetFileVersion(
 						lpszTempPath.c_str(), lpszTempVer, &dwValueBuf, lpszTempLang, &dwValueBuf));
 					if (SUCCEEDED(hRes))
 					{
@@ -193,4 +194,4 @@ namespace version
 
 		return szVersionString;
 	}
-}
+} // namespace version

@@ -9,7 +9,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <Interpret/InterpretProp.h>
 #include <core/utility/file.h>
-#include <MAPI/MAPIProgress.h>
+#include <core/mapi/mapiProgress.h>
 #include <UI/Controls/SortList/NodeData.h>
 #include <core/mapi/cache/globalCache.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>

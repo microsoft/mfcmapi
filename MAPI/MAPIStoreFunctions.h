@@ -32,7 +32,7 @@ namespace mapi
 			_In_opt_ LPGUID lpGuidMDB);
 		std::string GetServerName(_In_ LPMAPISESSION lpSession);
 		_Check_return_ LPMDB MailboxLogon(
-			_In_ LPMAPISESSION lplhSession, // ptr to MAPI session handle
+			_In_ LPMAPISESSION lpMAPISession, // ptr to MAPI session handle
 			_In_ LPMDB lpMDB, // ptr to message store
 			const std::string& lpszMsgStoreDN, // message store DN
 			const std::string& lpszMailboxDN, // mailbox DN

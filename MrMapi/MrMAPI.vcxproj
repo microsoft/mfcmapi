@@ -571,7 +571,6 @@
     <ClInclude Include="..\MAPI\MapiMime.h" />
     <ClInclude Include="..\MAPI\MAPIProcessor\MapiProcessor.h" />
     <ClInclude Include="..\MAPI\MAPIProfileFunctions.h" />
-    <ClInclude Include="..\MAPI\MAPIProgress.h" />
     <ClInclude Include="..\IO\ExportProfile.h" />
     <ClInclude Include="..\Property\ParseProperty.h" />
     <ClInclude Include="..\PropertyBag\MAPIPropPropertyBag.h" />
@@ -640,7 +639,6 @@
     <ClCompile Include="..\MAPI\MapiMime.cpp" />
     <ClCompile Include="..\MAPI\MAPIProcessor\MapiProcessor.cpp" />
     <ClCompile Include="..\MAPI\MAPIProfileFunctions.cpp" />
-    <ClCompile Include="..\MAPI\MAPIProgress.cpp" />
     <ClCompile Include="..\IO\ExportProfile.cpp" />
     <ClCompile Include="..\Property\ParseProperty.cpp" />
     <ClCompile Include="..\PropertyBag\MAPIPropPropertyBag.cpp" />

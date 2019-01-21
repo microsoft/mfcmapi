@@ -6,7 +6,7 @@
 #include <UI/FileDialogEx.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>
-#include <MAPI/MAPIProgress.h>
+#include <core/mapi/mapiProgress.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <core/mapi/cache/globalCache.h>

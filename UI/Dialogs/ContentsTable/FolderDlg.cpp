@@ -18,7 +18,7 @@
 #include <UI/FileDialogEx.h>
 #include <core/mapi/extraPropTags.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <MAPI/MAPIProgress.h>
+#include <core/mapi/mapiProgress.h>
 #include <MAPI/MapiMime.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <core/mapi/cache/globalCache.h>

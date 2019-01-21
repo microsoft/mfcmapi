@@ -1,5 +1,5 @@
-#include <StdAfx.h>
-#include <MAPI/MAPIProgress.h>
+#include <core/stdafx.h>
+#include <core/mapi/mapiProgress.h>
 
 namespace mapi
 {

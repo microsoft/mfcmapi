@@ -576,7 +576,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="MAPI\MapiMime.h" />
     <ClInclude Include="MAPI\MAPIProcessor\MapiProcessor.h" />
     <ClInclude Include="MAPI\MAPIProfileFunctions.h" />
-    <ClInclude Include="MAPI\MAPIProgress.h" />
     <ClInclude Include="UI\CMAPIProgress.h" />
     <ClInclude Include="IO\ExportProfile.h" />
     <ClInclude Include="Property\ParseProperty.h" />
@@ -617,7 +616,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="PropertyBag\RowPropertyBag.h" />
     <ClInclude Include="Interpret\SmartView\SmartView.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="MAPI\Version.h" />
     <ClInclude Include="UI\addinui.h" />
     <ClInclude Include="UI\Controls\StyleTreeCtrl.h" />
     <ClInclude Include="UI\Dialogs\HierarchyTable\ABContDlg.h" />
@@ -706,7 +704,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="MAPI\MapiMime.cpp" />
     <ClCompile Include="MAPI\MAPIProcessor\MapiProcessor.cpp" />
     <ClCompile Include="MAPI\MAPIProfileFunctions.cpp" />
-    <ClCompile Include="MAPI\MAPIProgress.cpp" />
     <ClCompile Include="UI\CMAPIProgress.cpp" />
     <ClCompile Include="IO\ExportProfile.cpp" />
     <ClCompile Include="Property\ParseProperty.cpp" />
@@ -749,7 +746,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="Interpret\SmartView\VerbStream.cpp" />
     <ClCompile Include="Interpret\SmartView\WebViewPersistStream.cpp" />
     <ClCompile Include="Interpret\SmartView\XID.cpp" />
-    <ClCompile Include="MAPI\Version.cpp" />
     <ClCompile Include="UI\ViewPane\TreePane.cpp" />
     <ClCompile Include="UI\MAPIFormFunctions.cpp" />
     <ClCompile Include="UI\Controls\StyleTreeCtrl.cpp" />

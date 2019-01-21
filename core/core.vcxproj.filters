@@ -111,6 +111,12 @@
     <ClInclude Include="interpret\sid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\mapiProgress.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -171,6 +177,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="interpret\sid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\mapiProgress.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\version.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
