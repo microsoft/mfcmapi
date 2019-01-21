@@ -12,6 +12,8 @@
 #include <core/utility/registry.h>
 #include <cassert>
 #include <core/interpret/flags.h>
+#include <core/interpret/proptags.h>
+#include <core/interpret/proptype.h>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
@@ -136,7 +138,7 @@ namespace output
 					true,
 					L"\t\tProperty Name: %ws\n\t\tProperty Type: %ws\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n", // STRING_OK
 					LPWSTR(lpMAPIFormPropArray->aFormProp[i].pszDisplayName),
-					interpretprop::TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
+					proptype::TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
 					lpMAPIFormPropArray->aFormProp[i].nSpecialType,
 					lpMAPIFormPropArray->aFormProp[i].u.s1.cfpevAvailable);
 			}
@@ -148,7 +150,7 @@ namespace output
 					true,
 					L"\t\tProperty Name: %hs\n\t\tProperty Type: %ws\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n", // STRING_OK
 					LPSTR(lpMAPIFormPropArray->aFormProp[i].pszDisplayName),
-					interpretprop::TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
+					proptype::TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
 					lpMAPIFormPropArray->aFormProp[i].nSpecialType,
 					lpMAPIFormPropArray->aFormProp[i].u.s1.cfpevAvailable);
 			}
@@ -204,7 +206,7 @@ namespace output
 				true,
 				L"\t\tProp: %u = %ws\n", // STRING_OK
 				uCurProp,
-				interpretprop::TagToString(lpTagsToDump->aulPropTag[uCurProp], nullptr, false, true).c_str());
+				proptags::TagToString(lpTagsToDump->aulPropTag[uCurProp], nullptr, false, true).c_str());
 		}
 
 		Output(ulDbgLvl, fFile, true, L"\tEnd Prop Tag List\n");
@@ -535,9 +537,9 @@ namespace output
 			false,
 			L"\t<property tag = \"0x%08X\" type = \"%ws\" >\n",
 			lpProp->ulPropTag,
-			interpretprop::TypeToString(lpProp->ulPropTag).c_str());
+			proptype::TypeToString(lpProp->ulPropTag).c_str());
 
-		auto propTagNames = interpretprop::PropTagToPropName(lpProp->ulPropTag, false);
+		auto propTagNames = proptags::PropTagToPropName(lpProp->ulPropTag, false);
 		if (!propTagNames.bestGuess.empty())
 			OutputXMLValue(
 				ulDbgLvl,

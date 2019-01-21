@@ -29,6 +29,8 @@
 #include <UI/addinui.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/registry.h>
+#include <core/interpret/proptags.h>
+#include <core/interpret/proptype.h>
 
 namespace controls
 {
@@ -680,7 +682,7 @@ namespace controls
 			auto namePropNames =
 				cache::NameIDToStrings(ulPropTag, m_lpPropBag->GetMAPIProp(), lpNameID, lpMappingSignature, m_bIsAB);
 
-			auto propTagNames = interpretprop::PropTagToPropName(ulPropTag, m_bIsAB);
+			auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
 
 			if (!propTagNames.bestGuess.empty())
 			{
@@ -702,7 +704,7 @@ namespace controls
 			SetItemText(iRow, columns::pcPROPOTHERNAMES, propTagNames.otherMatches);
 
 			SetItemText(iRow, columns::pcPROPTAG, PropTag);
-			SetItemText(iRow, columns::pcPROPTYPE, interpretprop::TypeToString(ulPropTag));
+			SetItemText(iRow, columns::pcPROPTYPE, proptype::TypeToString(ulPropTag));
 
 			interpretprop::InterpretProp(lpsPropToAdd, &PropString, &AltPropString);
 			SetItemText(iRow, columns::pcPROPVAL, PropString);
@@ -1304,7 +1306,7 @@ namespace controls
 					L"OnEditGivenProp",
 					L"editing property 0x%X (= %ws)\n",
 					ulPropTag,
-					interpretprop::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str());
+					proptags::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str());
 			}
 
 			ulPropTag = PT_ERROR == PROP_TYPE(ulPropTag) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
@@ -1410,7 +1412,7 @@ namespace controls
 					L"OnEditPropAsStream",
 					L"editing property 0x%X (= %ws) as stream, ulType = 0x%08X, bEditAsRTF = 0x%X\n",
 					ulPropTag,
-					interpretprop::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str(),
+					proptags::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str(),
 					ulType,
 					bEditAsRTF);
 			}

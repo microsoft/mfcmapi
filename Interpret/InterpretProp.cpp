@@ -2,104 +2,16 @@
 #include <core/interpret/guid.h>
 #include <Interpret/InterpretProp.h>
 #include <core/mapi/extraPropTags.h>
-#include <core/mapi/cache/namedPropCache.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Property/ParseProperty.h>
 #include <core/utility/strings.h>
-#include <unordered_map>
 #include <core/addin/addin.h>
-#include <core/utility/registry.h>
-#include <core/utility/output.h>
+#include <core/addin/mfcmapi.h>
 #include <core/interpret/flags.h>
+#include <core/interpret/proptags.h>
 
 namespace interpretprop
 {
-#define ulNoMatch 0xffffffff
-	static WCHAR szPropSeparator[] = L", "; // STRING_OK
-
-	std::wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine)
-	{
-		std::wstring szTemp;
-
-		auto namePropNames = cache::NameIDToStrings(ulPropTag, lpObj, nullptr, nullptr, bIsAB);
-
-		auto propTagNames = PropTagToPropName(ulPropTag, bIsAB);
-
-		std::wstring szFormatString;
-		if (bSingleLine)
-		{
-			szFormatString = L"0x%1!08X! (%2)"; // STRING_OK
-			if (!propTagNames.bestGuess.empty()) szFormatString += L": %3!ws!"; // STRING_OK
-			if (!propTagNames.otherMatches.empty()) szFormatString += L": (%4!ws!)"; // STRING_OK
-			if (!namePropNames.name.empty())
-			{
-				szFormatString += strings::loadstring(IDS_NAMEDPROPSINGLELINE);
-			}
-
-			if (!namePropNames.guid.empty())
-			{
-				szFormatString += strings::loadstring(IDS_GUIDSINGLELINE);
-			}
-		}
-		else
-		{
-			szFormatString = strings::loadstring(IDS_TAGMULTILINE);
-			if (!propTagNames.bestGuess.empty())
-			{
-				szFormatString += strings::loadstring(IDS_PROPNAMEMULTILINE);
-			}
-
-			if (!propTagNames.otherMatches.empty())
-			{
-				szFormatString += strings::loadstring(IDS_OTHERNAMESMULTILINE);
-			}
-
-			if (PROP_ID(ulPropTag) < 0x8000)
-			{
-				szFormatString += strings::loadstring(IDS_DASLPROPTAG);
-			}
-			else if (!namePropNames.dasl.empty())
-			{
-				szFormatString += strings::loadstring(IDS_DASLNAMED);
-			}
-
-			if (!namePropNames.name.empty())
-			{
-				szFormatString += strings::loadstring(IDS_NAMEPROPNAMEMULTILINE);
-			}
-
-			if (!namePropNames.guid.empty())
-			{
-				szFormatString += strings::loadstring(IDS_NAMEPROPGUIDMULTILINE);
-			}
-		}
-
-		auto szRet = strings::formatmessage(
-			szFormatString.c_str(),
-			ulPropTag,
-			TypeToString(ulPropTag).c_str(),
-			propTagNames.bestGuess.c_str(),
-			propTagNames.otherMatches.c_str(),
-			namePropNames.name.c_str(),
-			namePropNames.guid.c_str(),
-			namePropNames.dasl.c_str());
-
-		if (fIsSet(DBGTest))
-		{
-			static size_t cchMaxBuff = 0;
-			auto cchBuff = szRet.length();
-			cchMaxBuff = max(cchBuff, cchMaxBuff);
-			output::DebugPrint(
-				DBGTest,
-				L"TagToString parsing 0x%08X returned %u chars - max %u\n",
-				ulPropTag,
-				static_cast<UINT>(cchBuff),
-				static_cast<UINT>(cchMaxBuff));
-		}
-
-		return szRet;
-	}
-
 	std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems)
 	{
 		std::wstring szOut;
@@ -108,7 +20,7 @@ namespace interpretprop
 			szOut += strings::formatmessage(
 				IDS_PROBLEMARRAY,
 				problems.aProblem[i].ulIndex,
-				TagToString(problems.aProblem[i].ulPropTag, nullptr, false, false).c_str(),
+				proptags::TagToString(problems.aProblem[i].ulPropTag, nullptr, false, false).c_str(),
 				problems.aProblem[i].scode,
 				error::ErrorNameFromErrorCode(problems.aProblem[i].scode).c_str());
 		}
@@ -139,7 +51,7 @@ namespace interpretprop
 				IDS_TNEFPROBARRAY,
 				error.aProblem[iError].ulComponent,
 				error.aProblem[iError].ulAttribute,
-				TagToString(error.aProblem[iError].ulPropTag, nullptr, false, false).c_str(),
+				proptags::TagToString(error.aProblem[iError].ulPropTag, nullptr, false, false).c_str(),
 				error.aProblem[iError].scode,
 				error::ErrorNameFromErrorCode(error.aProblem[iError].scode).c_str());
 		}
@@ -184,8 +96,8 @@ namespace interpretprop
 				szTabs.c_str(),
 				szFlags.c_str(),
 				lpRes->res.resCompareProps.relop,
-				TagToString(lpRes->res.resCompareProps.ulPropTag1, lpObj, false, true).c_str(),
-				TagToString(lpRes->res.resCompareProps.ulPropTag2, lpObj, false, true).c_str()));
+				proptags::TagToString(lpRes->res.resCompareProps.ulPropTag1, lpObj, false, true).c_str(),
+				proptags::TagToString(lpRes->res.resCompareProps.ulPropTag2, lpObj, false, true).c_str()));
 			break;
 		case RES_AND:
 			resString.push_back(strings::formatmessage(IDS_RESANDCOUNT, szTabs.c_str(), lpRes->res.resAnd.cRes));
@@ -225,14 +137,14 @@ namespace interpretprop
 				szTabs.c_str(),
 				szFlags.c_str(),
 				lpRes->res.resContent.ulFuzzyLevel,
-				TagToString(lpRes->res.resContent.ulPropTag, lpObj, false, true).c_str()));
+				proptags::TagToString(lpRes->res.resContent.ulPropTag, lpObj, false, true).c_str()));
 			if (lpRes->res.resContent.lpProp)
 			{
 				InterpretProp(lpRes->res.resContent.lpProp, &szProp, &szAltProp);
 				resString.push_back(strings::formatmessage(
 					IDS_RESCONTENTPROP,
 					szTabs.c_str(),
-					TagToString(lpRes->res.resContent.lpProp->ulPropTag, lpObj, false, true).c_str(),
+					proptags::TagToString(lpRes->res.resContent.lpProp->ulPropTag, lpObj, false, true).c_str(),
 					szProp.c_str(),
 					szAltProp.c_str()));
 			}
@@ -244,14 +156,14 @@ namespace interpretprop
 				szTabs.c_str(),
 				szFlags.c_str(),
 				lpRes->res.resProperty.relop,
-				TagToString(lpRes->res.resProperty.ulPropTag, lpObj, false, true).c_str()));
+				proptags::TagToString(lpRes->res.resProperty.ulPropTag, lpObj, false, true).c_str()));
 			if (lpRes->res.resProperty.lpProp)
 			{
 				InterpretProp(lpRes->res.resProperty.lpProp, &szProp, &szAltProp);
 				resString.push_back(strings::formatmessage(
 					IDS_RESPROPPROP,
 					szTabs.c_str(),
-					TagToString(lpRes->res.resProperty.lpProp->ulPropTag, lpObj, false, true).c_str(),
+					proptags::TagToString(lpRes->res.resProperty.lpProp->ulPropTag, lpObj, false, true).c_str(),
 					szProp.c_str(),
 					szAltProp.c_str()));
 				szPropNum = smartview::InterpretNumberAsString(
@@ -286,7 +198,7 @@ namespace interpretprop
 			resString.push_back(strings::formatmessage(
 				IDS_RESBITMASKTAG,
 				szTabs.c_str(),
-				TagToString(lpRes->res.resBitMask.ulPropTag, lpObj, false, true).c_str()));
+				proptags::TagToString(lpRes->res.resBitMask.ulPropTag, lpObj, false, true).c_str()));
 			break;
 		case RES_SIZE:
 			szFlags = flags::InterpretFlags(flagRelop, lpRes->res.resSize.relop);
@@ -296,19 +208,21 @@ namespace interpretprop
 				szFlags.c_str(),
 				lpRes->res.resSize.relop,
 				lpRes->res.resSize.cb,
-				TagToString(lpRes->res.resSize.ulPropTag, lpObj, false, true).c_str()));
+				proptags::TagToString(lpRes->res.resSize.ulPropTag, lpObj, false, true).c_str()));
 			break;
 		case RES_EXIST:
 			resString.push_back(strings::formatmessage(
 				IDS_RESEXIST,
 				szTabs.c_str(),
-				TagToString(lpRes->res.resExist.ulPropTag, lpObj, false, true).c_str(),
+				proptags::TagToString(lpRes->res.resExist.ulPropTag, lpObj, false, true).c_str(),
 				lpRes->res.resExist.ulReserved1,
 				lpRes->res.resExist.ulReserved2));
 			break;
 		case RES_SUBRESTRICTION:
 			resString.push_back(strings::formatmessage(
-				IDS_RESSUBRES, szTabs.c_str(), TagToString(lpRes->res.resSub.ulSubObject, lpObj, false, true).c_str()));
+				IDS_RESSUBRES,
+				szTabs.c_str(),
+				proptags::TagToString(lpRes->res.resSub.ulSubObject, lpObj, false, true).c_str()));
 			resString.push_back(RestrictionToString(lpRes->res.resSub.lpRes, lpObj, ulTabLevel + 1));
 			break;
 		case RES_COMMENT:
@@ -322,7 +236,7 @@ namespace interpretprop
 						IDS_RESCOMMENTPROPS,
 						szTabs.c_str(),
 						i,
-						TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true).c_str(),
+						proptags::TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true).c_str(),
 						szProp.c_str(),
 						szAltProp.c_str()));
 				}
@@ -343,7 +257,7 @@ namespace interpretprop
 						IDS_RESANNOTATIONPROPS,
 						szTabs.c_str(),
 						i,
-						TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true).c_str(),
+						proptags::TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true).c_str(),
 						szProp.c_str(),
 						szAltProp.c_str()));
 				}
@@ -379,7 +293,7 @@ namespace interpretprop
 					IDS_ADRLISTENTRY,
 					i,
 					j,
-					TagToString(adrList.aEntries[i].rgPropVals[j].ulPropTag, nullptr, false, false).c_str(),
+					proptags::TagToString(adrList.aEntries[i].rgPropVals[j].ulPropTag, nullptr, false, false).c_str(),
 					szProp.c_str(),
 					szAltProp.c_str());
 			}
@@ -471,7 +385,7 @@ namespace interpretprop
 			InterpretProp(const_cast<LPSPropValue>(&action.propTag), &szProp, &szAltProp);
 			actstring += strings::formatmessage(
 				IDS_ACTIONOPTAG,
-				TagToString(action.propTag.ulPropTag, nullptr, false, true).c_str(),
+				proptags::TagToString(action.propTag.ulPropTag, nullptr, false, true).c_str(),
 				szProp.c_str(),
 				szAltProp.c_str());
 			break;
@@ -510,7 +424,7 @@ namespace interpretprop
 				actstring += strings::formatmessage(
 					IDS_ACTIONTAGARRAYTAG,
 					i,
-					TagToString(action.lpPropTagArray->aulPropTag[i], nullptr, false, false).c_str());
+					proptags::TagToString(action.lpPropTagArray->aulPropTag[i], nullptr, false, false).c_str());
 			}
 		}
 
@@ -554,195 +468,6 @@ namespace interpretprop
 
 		if (PropString) *PropString = parsedProperty.toString();
 		if (AltPropString) *AltPropString = parsedProperty.toAltString();
-	}
-
-	std::wstring TypeToString(ULONG ulPropTag)
-	{
-		std::wstring tmpPropType;
-
-		auto bNeedInstance = false;
-		if (ulPropTag & MV_INSTANCE)
-		{
-			ulPropTag &= ~MV_INSTANCE;
-			bNeedInstance = true;
-		}
-
-		auto bTypeFound = false;
-
-		for (const auto& propType : PropTypeArray)
-		{
-			if (propType.ulValue == PROP_TYPE(ulPropTag))
-			{
-				tmpPropType = propType.lpszName;
-				bTypeFound = true;
-				break;
-			}
-		}
-
-		if (!bTypeFound) tmpPropType = strings::format(L"0x%04x", PROP_TYPE(ulPropTag)); // STRING_OK
-
-		if (bNeedInstance) tmpPropType += L" | MV_INSTANCE"; // STRING_OK
-		return tmpPropType;
-	}
-
-	// Compare tag sort order.
-	bool CompareTagsSortOrder(int a1, int a2)
-	{
-		const auto lpTag1 = &PropTagArray[a1];
-		const auto lpTag2 = &PropTagArray[a2];
-
-		if (lpTag1->ulSortOrder < lpTag2->ulSortOrder) return false;
-		if (lpTag1->ulSortOrder == lpTag2->ulSortOrder)
-		{
-			return wcscmp(lpTag1->lpszName, lpTag2->lpszName) <= 0;
-		}
-		return true;
-	}
-
-	// Searches an array for a target number.
-	// Search is done with a mask
-	// Partial matches are those that match with the mask applied
-	// Exact matches are those that match without the mask applied
-	// lpUlNumPartials will exclude count of exact matches
-	// if it wants just the true partial matches.
-	// If no hits, then ulNoMatch should be returned for lpulFirstExact and/or lpulFirstPartial
-	void FindTagArrayMatches(
-		_In_ ULONG ulTarget,
-		bool bIsAB,
-		const std::vector<NAME_ARRAY_ENTRY_V2>& MyArray,
-		std::vector<ULONG>& ulExacts,
-		std::vector<ULONG>& ulPartials)
-	{
-		if (!(ulTarget & PROP_TAG_MASK)) // not dealing with a full prop tag
-		{
-			ulTarget = PROP_TAG(PT_UNSPECIFIED, ulTarget);
-		}
-
-		ULONG ulLowerBound = 0;
-		auto ulUpperBound = static_cast<ULONG>(MyArray.size() - 1); // size-1 is the last entry
-		auto ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
-		ULONG ulFirstMatch = ulNoMatch;
-		const auto ulMaskedTarget = ulTarget & PROP_TAG_MASK;
-
-		// Short circuit property IDs with the high bit set if bIsAB wasn't passed
-		if (!bIsAB && ulTarget & 0x80000000) return;
-
-		// Find A partial match
-		while (ulUpperBound - ulLowerBound > 1)
-		{
-			if (ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulMidPoint].ulValue))
-			{
-				ulFirstMatch = ulMidPoint;
-				break;
-			}
-
-			if (ulMaskedTarget < (PROP_TAG_MASK & MyArray[ulMidPoint].ulValue))
-			{
-				ulUpperBound = ulMidPoint;
-			}
-			else if (ulMaskedTarget > (PROP_TAG_MASK & MyArray[ulMidPoint].ulValue))
-			{
-				ulLowerBound = ulMidPoint;
-			}
-
-			ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
-		}
-
-		// When we get down to two points, we may have only checked one of them
-		// Make sure we've checked the other
-		if (ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulUpperBound].ulValue))
-		{
-			ulFirstMatch = ulUpperBound;
-		}
-		else if (ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulLowerBound].ulValue))
-		{
-			ulFirstMatch = ulLowerBound;
-		}
-
-		// Check that we got a match
-		if (ulNoMatch != ulFirstMatch)
-		{
-			// Scan backwards to find the first partial match
-			while (ulFirstMatch > 0 && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulFirstMatch - 1].ulValue))
-			{
-				ulFirstMatch = ulFirstMatch - 1;
-			}
-
-			for (auto ulCur = ulFirstMatch;
-				 ulCur < MyArray.size() && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulCur].ulValue);
-				 ulCur++)
-			{
-				if (ulTarget == MyArray[ulCur].ulValue)
-				{
-					ulExacts.push_back(ulCur);
-				}
-				else
-				{
-					ulPartials.push_back(ulCur);
-				}
-			}
-
-			if (ulExacts.size()) sort(ulExacts.begin(), ulExacts.end(), CompareTagsSortOrder);
-			if (ulPartials.size()) sort(ulPartials.begin(), ulPartials.end(), CompareTagsSortOrder);
-		}
-	}
-
-	std::unordered_map<ULONG64, PropTagNames> g_PropNames;
-
-	PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB)
-	{
-		auto ulKey = (bIsAB ? static_cast<ULONG64>(1) << 32 : 0) | ulPropTag;
-
-		const auto match = g_PropNames.find(ulKey);
-		if (match != g_PropNames.end())
-		{
-			return match->second;
-		}
-
-		std::vector<ULONG> ulExacts;
-		std::vector<ULONG> ulPartials;
-		FindTagArrayMatches(ulPropTag, bIsAB, PropTagArray, ulExacts, ulPartials);
-
-		PropTagNames entry;
-
-		if (ulExacts.size())
-		{
-			entry.bestGuess = PropTagArray[ulExacts.front()].lpszName;
-			ulExacts.erase(ulExacts.begin());
-
-			for (const auto& ulMatch : ulExacts)
-			{
-				if (!entry.otherMatches.empty())
-				{
-					entry.otherMatches += szPropSeparator;
-				}
-
-				entry.otherMatches += PropTagArray[ulMatch].lpszName;
-			}
-		}
-
-		if (ulPartials.size())
-		{
-			if (entry.bestGuess.empty())
-			{
-				entry.bestGuess = PropTagArray[ulPartials.front()].lpszName;
-				ulPartials.erase(ulPartials.begin());
-			}
-
-			for (const auto& ulMatch : ulPartials)
-			{
-				if (!entry.otherMatches.empty())
-				{
-					entry.otherMatches += szPropSeparator;
-				}
-
-				entry.otherMatches += PropTagArray[ulMatch].lpszName;
-			}
-		}
-
-		g_PropNames.insert({ulKey, entry});
-
-		return entry;
 	}
 
 	// Strictly does a lookup in the array. Does not convert otherwise

@@ -9,7 +9,6 @@
 #include <UI/UIFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

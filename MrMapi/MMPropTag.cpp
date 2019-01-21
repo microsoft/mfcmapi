@@ -2,11 +2,12 @@
 #include <Shlwapi.h>
 #include <core/interpret/guid.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <Interpret/InterpretProp.h>
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
 #include <core/addin/addin.h>
+#include <core/addin/mfcmapi.h>
 #include <core/utility/output.h>
+#include <core/interpret/proptags.h>
 
 // Searches a NAMEID_ARRAY_ENTRY array for a target dispid.
 // Exact matches are those that match
@@ -176,7 +177,7 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 
 	std::vector<ULONG> ulExacts;
 	std::vector<ULONG> ulPartials;
-	interpretprop::FindTagArrayMatches(ulPropTag, true, PropTagArray, ulExacts, ulPartials);
+	proptags::FindTagArrayMatches(ulPropTag, true, PropTagArray, ulExacts, ulPartials);
 
 	if (!ulExacts.empty())
 	{
@@ -226,8 +227,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 
 			std::vector<ULONG> ulExacts;
 			std::vector<ULONG> ulPartials;
-			interpretprop::FindTagArrayMatches(
-				PropTagArray[ulExactMatch].ulValue, true, PropTagArray, ulExacts, ulPartials);
+			proptags::FindTagArrayMatches(PropTagArray[ulExactMatch].ulValue, true, PropTagArray, ulExacts, ulPartials);
 
 			// We're gonna skip at least one, so only print if we have more than one
 			if (ulExacts.size() > 1)

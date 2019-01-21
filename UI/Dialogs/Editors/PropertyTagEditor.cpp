@@ -6,7 +6,10 @@
 #include <core/interpret/guid.h>
 #include <UI/Dialogs/Editors/PropertySelector.h>
 #include <core/addin/addin.h>
+#include <core/addin/mfcmapi.h>
 #include <core/utility/output.h>
+#include <core/interpret/proptype.h>
+#include <core/interpret/proptags.h>
 
 namespace dialog
 {
@@ -194,7 +197,8 @@ namespace dialog
 			if (NamedID.lpguid && (MNID_ID == NamedID.ulKind && NamedID.Kind.lID ||
 								   MNID_STRING == NamedID.ulKind && NamedID.Kind.lpwstrName))
 			{
-				const auto lpNamedPropTags = cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0);
+				const auto lpNamedPropTags =
+					cache::GetIDsFromNames(m_lpMAPIProp, 1, &lpNamedID, bCreate ? MAPI_CREATE : 0);
 				if (lpNamedPropTags)
 				{
 					m_ulPropTag = CHANGE_PROP_TYPE(lpNamedPropTags->aulPropTag[0], ulPropType);
@@ -268,11 +272,10 @@ namespace dialog
 
 			if (PROPTAG_TAG != ulSkipField) SetHex(PROPTAG_TAG, m_ulPropTag);
 			if (PROPTAG_ID != ulSkipField) SetStringf(PROPTAG_ID, L"0x%04X", PROP_ID(m_ulPropTag)); // STRING_OK
-			if (PROPTAG_TYPE != ulSkipField)
-				SetDropDownSelection(PROPTAG_TYPE, interpretprop::TypeToString(m_ulPropTag));
+			if (PROPTAG_TYPE != ulSkipField) SetDropDownSelection(PROPTAG_TYPE, proptype::TypeToString(m_ulPropTag));
 			if (PROPTAG_NAME != ulSkipField)
 			{
-				auto propTagNames = interpretprop::PropTagToPropName(m_ulPropTag, m_bIsAB);
+				auto propTagNames = proptags::PropTagToPropName(m_ulPropTag, m_bIsAB);
 
 				if (PROP_ID(m_ulPropTag) && !propTagNames.bestGuess.empty())
 					SetStringf(
@@ -286,8 +289,7 @@ namespace dialog
 					LoadString(PROPTAG_NAME, IDS_UNKNOWNPROPERTY);
 			}
 
-			if (PROPTAG_TYPESTRING != ulSkipField)
-				SetStringW(PROPTAG_TYPESTRING, interpretprop::TypeToString(m_ulPropTag));
+			if (PROPTAG_TYPESTRING != ulSkipField) SetStringW(PROPTAG_TYPESTRING, proptype::TypeToString(m_ulPropTag));
 
 			// Do a named property lookup and fill out fields
 			// But only if PROPTAG_TAG or PROPTAG_ID is what the user changed

@@ -10,6 +10,8 @@
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/interpret/proptags.h>
+#include <core/addin/mfcmapi.h>
 
 namespace dialog
 {
@@ -131,7 +133,7 @@ namespace dialog
 			const auto szPromptPostFix = strings::format(
 				L"%ws%ws",
 				uidPrompt ? L"\r\n" : L"",
-				interpretprop::TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false)
+				proptags::TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false)
 					.c_str()); // STRING_OK
 			SetPromptPostFix(szPromptPostFix);
 

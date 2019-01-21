@@ -11,6 +11,8 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
+#include <core/interpret/proptags.h>
+#include <core/addin/mfcmapi.h>
 
 namespace dialog
 {
@@ -39,12 +41,12 @@ namespace dialog
 			AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULPROPTAG1, false));
 			SetHex(2, ulPropTag1);
 			AddPane(viewpane::TextPane::CreateSingleLinePane(
-				3, IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag1, nullptr, false, true), true));
+				3, IDS_ULPROPTAG1, proptags::TagToString(ulPropTag1, nullptr, false, true), true));
 
 			AddPane(viewpane::TextPane::CreateSingleLinePane(4, IDS_ULPROPTAG2, false));
 			SetHex(4, ulPropTag2);
 			AddPane(viewpane::TextPane::CreateSingleLinePane(
-				5, IDS_ULPROPTAG1, interpretprop::TagToString(ulPropTag2, nullptr, false, true), true));
+				5, IDS_ULPROPTAG1, proptags::TagToString(ulPropTag2, nullptr, false, true), true));
 		}
 
 		_Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
@@ -57,11 +59,11 @@ namespace dialog
 			}
 			else if (paneID == 2)
 			{
-				SetStringW(3, interpretprop::TagToString(GetPropTag(2), nullptr, false, true));
+				SetStringW(3, proptags::TagToString(GetPropTag(2), nullptr, false, true));
 			}
 			else if (paneID == 4)
 			{
-				SetStringW(5, interpretprop::TagToString(GetPropTag(4), nullptr, false, true));
+				SetStringW(5, proptags::TagToString(GetPropTag(4), nullptr, false, true));
 			}
 
 			return paneID;
@@ -141,14 +143,14 @@ namespace dialog
 			AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULPROPTAG, false));
 			SetHex(2, ulPropTag);
 			AddPane(viewpane::TextPane::CreateSingleLinePane(
-				3, IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+				3, IDS_ULPROPTAG, proptags::TagToString(ulPropTag, nullptr, false, true), true));
 
 			AddPane(viewpane::TextPane::CreateSingleLinePane(4, IDS_LPPROPULPROPTAG, false));
 			if (lpProp) SetHex(4, lpProp->ulPropTag);
 			AddPane(viewpane::TextPane::CreateSingleLinePane(
 				5,
 				IDS_LPPROPULPROPTAG,
-				lpProp ? interpretprop::TagToString(lpProp->ulPropTag, nullptr, false, true) : strings::emptystring,
+				lpProp ? proptags::TagToString(lpProp->ulPropTag, nullptr, false, true) : strings::emptystring,
 				true));
 
 			std::wstring szProp;
@@ -176,11 +178,11 @@ namespace dialog
 			}
 			else if (paneID == 2)
 			{
-				SetStringW(3, interpretprop::TagToString(GetPropTag(2), nullptr, false, true));
+				SetStringW(3, proptags::TagToString(GetPropTag(2), nullptr, false, true));
 			}
 			else if (paneID == 4)
 			{
-				SetStringW(5, interpretprop::TagToString(GetPropTag(4), nullptr, false, true));
+				SetStringW(5, proptags::TagToString(GetPropTag(4), nullptr, false, true));
 				m_lpOldProp = nullptr;
 				m_lpNewProp = nullptr;
 				SetStringW(6, L"");
@@ -253,7 +255,7 @@ namespace dialog
 			AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULPROPTAG, false));
 			SetHex(2, ulPropTag);
 			AddPane(viewpane::TextPane::CreateSingleLinePane(
-				3, IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+				3, IDS_ULPROPTAG, proptags::TagToString(ulPropTag, nullptr, false, true), true));
 
 			AddPane(viewpane::TextPane::CreateSingleLinePane(4, IDS_MASK, false));
 			SetHex(4, ulMask);
@@ -269,7 +271,7 @@ namespace dialog
 			}
 			else if (paneID == 2)
 			{
-				SetStringW(3, interpretprop::TagToString(GetPropTag(2), nullptr, false, true));
+				SetStringW(3, proptags::TagToString(GetPropTag(2), nullptr, false, true));
 			}
 
 			return paneID;
@@ -299,7 +301,7 @@ namespace dialog
 			AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULPROPTAG, false));
 			SetHex(2, ulPropTag);
 			AddPane(viewpane::TextPane::CreateSingleLinePane(
-				3, IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+				3, IDS_ULPROPTAG, proptags::TagToString(ulPropTag, nullptr, false, true), true));
 
 			AddPane(viewpane::TextPane::CreateSingleLinePane(4, IDS_CB, false));
 			SetHex(4, cb);
@@ -315,7 +317,7 @@ namespace dialog
 			}
 			else if (paneID == 2)
 			{
-				SetStringW(3, interpretprop::TagToString(GetPropTag(2), nullptr, false, true));
+				SetStringW(3, proptags::TagToString(GetPropTag(2), nullptr, false, true));
 			}
 
 			return paneID;
@@ -339,7 +341,7 @@ namespace dialog
 			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_ULPROPTAG, false));
 			SetHex(0, ulPropTag);
 			AddPane(viewpane::TextPane::CreateSingleLinePane(
-				1, IDS_ULPROPTAG, interpretprop::TagToString(ulPropTag, nullptr, false, true), true));
+				1, IDS_ULPROPTAG, proptags::TagToString(ulPropTag, nullptr, false, true), true));
 		}
 
 		_Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
@@ -348,7 +350,7 @@ namespace dialog
 
 			if (paneID == 0)
 			{
-				SetStringW(1, interpretprop::TagToString(GetPropTag(0), nullptr, false, true));
+				SetStringW(1, proptags::TagToString(GetPropTag(0), nullptr, false, true));
 			}
 
 			return paneID;
@@ -400,7 +402,7 @@ namespace dialog
 			AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_ULSUBOBJECT, false));
 			SetHex(0, ulSubObject);
 			AddPane(viewpane::TextPane::CreateSingleLinePane(
-				1, IDS_ULSUBOBJECT, interpretprop::TagToString(ulSubObject, nullptr, false, true), true));
+				1, IDS_ULSUBOBJECT, proptags::TagToString(ulSubObject, nullptr, false, true), true));
 
 			AddPane(viewpane::TextPane::CreateMultiLinePane(
 				2, IDS_LPRES, interpretprop::RestrictionToString(lpRes, nullptr), true));
@@ -412,7 +414,7 @@ namespace dialog
 
 			if (paneID == 0)
 			{
-				SetStringW(1, interpretprop::TagToString(GetPropTag(0), nullptr, false, true));
+				SetStringW(1, proptags::TagToString(GetPropTag(0), nullptr, false, true));
 			}
 
 			return paneID;
@@ -715,10 +717,7 @@ namespace dialog
 				{
 					lpData->InitializeComment(&lpProps[paneID]);
 					SetListString(
-						ulListNum,
-						paneID,
-						1,
-						interpretprop::TagToString(lpProps[paneID].ulPropTag, nullptr, false, true));
+						ulListNum, paneID, 1, proptags::TagToString(lpProps[paneID].ulPropTag, nullptr, false, true));
 					interpretprop::InterpretProp(&lpProps[paneID], &szProp, &szAltProp);
 					SetListString(ulListNum, paneID, 2, szProp);
 					SetListString(ulListNum, paneID, 3, szAltProp);
@@ -790,7 +789,7 @@ namespace dialog
 					ulListNum,
 					iItem,
 					1,
-					interpretprop::TagToString(lpData->Comment()->m_lpNewProp->ulPropTag, nullptr, false, true));
+					proptags::TagToString(lpData->Comment()->m_lpNewProp->ulPropTag, nullptr, false, true));
 				interpretprop::InterpretProp(lpData->Comment()->m_lpNewProp, &szTmp, &szAltTmp);
 				SetListString(ulListNum, iItem, 2, szTmp);
 				SetListString(ulListNum, iItem, 3, szAltTmp);

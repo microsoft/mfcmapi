@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/PropertiesStruct.h>
 #include <Interpret/SmartView/SmartView.h>
+#include <core/interpret/proptags.h>
 
 namespace smartview
 {
@@ -41,7 +42,7 @@ namespace smartview
 			propBlock.setText(L"Property[%1!d!]\r\n", i++);
 			propBlock.addBlock(prop.ulPropTag, L"Property = 0x%1!08X!", prop.ulPropTag.getData());
 
-			auto propTagNames = interpretprop::PropTagToPropName(prop.ulPropTag, false);
+			auto propTagNames = proptags::PropTagToPropName(prop.ulPropTag, false);
 			if (!propTagNames.bestGuess.empty())
 			{
 				propBlock.terminateBlock();

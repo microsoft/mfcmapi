@@ -102,6 +102,12 @@
     <ClInclude Include="interpret\flagArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="interpret\proptags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\proptype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -153,6 +159,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="interpret\flags.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="interpret\proptags.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="interpret\proptype.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -12,10 +12,10 @@
 #include <UI/UIFunctions.h>
 #include <MAPI/MAPIABFunctions.h>
 #include <MAPI/MAPIStoreFunctions.h>
-#include <Interpret/SmartView/PropertiesStruct.h>
 #include <UI/CMAPIProgress.h>
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <core/addin/addin.h>
+#include <core/addin/mfcmapi.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <IO/mapiFile.h>

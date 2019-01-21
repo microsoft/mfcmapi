@@ -4,6 +4,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <Interpret/InterpretProp.h>
 #include <core/addin/addin.h>
+#include <core/addin/mfcmapi.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 

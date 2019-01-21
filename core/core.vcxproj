@@ -502,6 +502,8 @@
     <ClInclude Include="interpret\guidArray.h" />
     <ClInclude Include="interpret\guid.h" />
     <ClInclude Include="interpret\nameIDArray.h" />
+    <ClInclude Include="interpret\proptags.h" />
+    <ClInclude Include="interpret\proptype.h" />
     <ClInclude Include="interpret\propTypeArray.h" />
     <ClInclude Include="interpret\smartViewParsers.h" />
     <ClInclude Include="mapi\cache\globalCache.h" />
@@ -528,6 +530,8 @@
     <ClCompile Include="addin\addin.cpp" />
     <ClCompile Include="interpret\flags.cpp" />
     <ClCompile Include="interpret\guid.cpp" />
+    <ClCompile Include="interpret\proptags.cpp" />
+    <ClCompile Include="interpret\proptype.cpp" />
     <ClCompile Include="mapi\cache\globalCache.cpp" />
     <ClCompile Include="mapi\cache\mapiObjects.cpp" />
     <ClCompile Include="mapi\cache\namedPropCache.cpp" />

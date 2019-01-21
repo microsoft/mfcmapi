@@ -6,6 +6,7 @@
 #include <core/interpret/guid.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/addin/addin.h>
+#include <core/addin/mfcmapi.h>
 #include <core/utility/registry.h>
 #include <core/interpret/flags.h>
 

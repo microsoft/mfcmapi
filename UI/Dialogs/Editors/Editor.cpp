@@ -6,6 +6,8 @@
 #include <UI/MyWinApp.h>
 #include <UI/Dialogs/AboutDlg.h>
 #include <core/utility/output.h>
+#include <core/addin/mfcmapi.h>
+#include <core/interpret/proptags.h>
 
 extern ui::CMyWinApp theApp;
 

@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/StreamEditor.h>
-#include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
@@ -8,6 +7,8 @@
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/ViewPane/SmartViewPane.h>
 #include <core/interpret/flags.h>
+#include <core/addin/mfcmapi.h>
+#include <core/interpret/proptags.h>
 
 namespace dialog
 {
@@ -146,7 +147,7 @@ namespace dialog
 			}
 
 			const auto szPromptPostFix = strings::format(
-				L"\r\n%ws", interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+				L"\r\n%ws", proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 			SetPromptPostFix(szPromptPostFix);
 
 			// Let's crack our property open and see what kind of controls we'll need for it
@@ -226,7 +227,7 @@ namespace dialog
 				L"OpenPropertyStream",
 				L"opening property 0x%X (= %ws) from %p, bWrite = 0x%X\n",
 				m_ulPropTag,
-				interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(),
+				proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(),
 				m_lpMAPIProp,
 				bWrite);
 
@@ -281,7 +282,7 @@ namespace dialog
 							L"OpenPropertyStream",
 							L"Retrying as 0x%X (= %ws)\n",
 							m_ulPropTag,
-							interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str());
+							proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str());
 						hRes = WC_MAPI(m_lpMAPIProp->OpenProperty(
 							ulPropTag, &IID_IStream, ulStgFlags, ulFlags, reinterpret_cast<LPUNKNOWN*>(&lpTmpStream)));
 						if (SUCCEEDED(hRes))
@@ -341,7 +342,7 @@ namespace dialog
 				L"ReadTextStreamFromProperty",
 				L"opening property 0x%X (= %ws) from %p\n",
 				m_ulPropTag,
-				interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(),
+				proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(),
 				m_lpMAPIProp);
 
 			// If we don't have a stream to display, put up an error instead

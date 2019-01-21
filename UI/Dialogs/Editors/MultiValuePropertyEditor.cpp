@@ -8,6 +8,8 @@
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/interpret/proptags.h>
+#include <core/addin/mfcmapi.h>
 
 namespace dialog
 {
@@ -39,7 +41,7 @@ namespace dialog
 			m_lpsInputValue = lpsPropValue;
 
 			const auto szPromptPostFix = strings::format(
-				L"\r\n%ws", interpretprop::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+				L"\r\n%ws", proptags::TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 			SetPromptPostFix(szPromptPostFix);
 
 			InitPropertyControls();

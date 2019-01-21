@@ -1,10 +1,10 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/PropertyDefinitionStream.h>
-#include <Interpret/InterpretProp.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/strings.h>
 #include <core/mapi/cache/namedPropCache.h>
+#include <core/interpret/proptags.h>
 
 namespace smartview
 {
@@ -188,7 +188,7 @@ namespace smartview
 			{
 				if (m_pfdFieldDefinitions[iDef].dwDispid < 0x8000)
 				{
-					auto propTagNames = interpretprop::PropTagToPropName(m_pfdFieldDefinitions[iDef].dwDispid, false);
+					auto propTagNames = proptags::PropTagToPropName(m_pfdFieldDefinitions[iDef].dwDispid, false);
 					if (!propTagNames.bestGuess.empty())
 					{
 						addBlock(m_pfdFieldDefinitions[iDef].dwDispid, L" = %1!ws!", propTagNames.bestGuess.c_str());

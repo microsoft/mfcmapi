@@ -33,6 +33,7 @@
 #include <IO/mapiFile.h>
 #include <core/interpret/guid.h>
 #include <core/interpret/flags.h>
+#include <core/interpret/proptags.h>
 
 namespace dialog
 {
@@ -1037,7 +1038,7 @@ namespace dialog
 				szPropString += strings::formatmessage(
 					IDS_OPTIONSSTRUCTURE,
 					i,
-					interpretprop::TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
+					proptags::TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
 					szProp.c_str(),
 					szAltProp.c_str());
 			}
@@ -1091,7 +1092,7 @@ namespace dialog
 				szPropString += strings::formatmessage(
 					IDS_OPTIONSSTRUCTURE,
 					i,
-					interpretprop::TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
+					proptags::TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
 					szProp.c_str(),
 					szAltProp.c_str());
 			}

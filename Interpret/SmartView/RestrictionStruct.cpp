@@ -4,6 +4,7 @@
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
+#include <core/interpret/proptags.h>
 
 namespace smartview
 {
@@ -218,12 +219,12 @@ namespace smartview
 				lpRes.resCompareProps.ulPropTag1,
 				L"%1!ws!lpRes->res.resCompareProps.ulPropTag1 = %2!ws!\r\n",
 				szTabs.c_str(),
-				interpretprop::TagToString(lpRes.resCompareProps.ulPropTag1, nullptr, false, true).c_str());
+				proptags::TagToString(lpRes.resCompareProps.ulPropTag1, nullptr, false, true).c_str());
 			addBlock(
 				lpRes.resCompareProps.ulPropTag2,
 				L"%1!ws!lpRes->res.resCompareProps.ulPropTag2 = %2!ws!\r\n",
 				szTabs.c_str(),
-				interpretprop::TagToString(lpRes.resCompareProps.ulPropTag2, nullptr, false, true).c_str());
+				proptags::TagToString(lpRes.resCompareProps.ulPropTag2, nullptr, false, true).c_str());
 			break;
 		case RES_AND:
 			addBlock(
@@ -288,7 +289,7 @@ namespace smartview
 				lpRes.resContent.ulPropTag,
 				L"%1!ws!lpRes->res.resContent.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
-				interpretprop::TagToString(lpRes.resContent.ulPropTag, nullptr, false, true).c_str());
+				proptags::TagToString(lpRes.resContent.ulPropTag, nullptr, false, true).c_str());
 
 			if (!lpRes.resContent.lpProp.Props().empty())
 			{
@@ -296,7 +297,7 @@ namespace smartview
 					lpRes.resContent.lpProp.Props()[0].ulPropTag,
 					L"%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
-					interpretprop::TagToString(lpRes.resContent.lpProp.Props()[0].ulPropTag, nullptr, false, true)
+					proptags::TagToString(lpRes.resContent.lpProp.Props()[0].ulPropTag, nullptr, false, true)
 						.c_str());
 				addBlock(
 					lpRes.resContent.lpProp.Props()[0].PropBlock(),
@@ -322,14 +323,14 @@ namespace smartview
 				lpRes.resProperty.ulPropTag,
 				L"%1!ws!lpRes->res.resProperty.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
-				interpretprop::TagToString(lpRes.resProperty.ulPropTag, nullptr, false, true).c_str());
+				proptags::TagToString(lpRes.resProperty.ulPropTag, nullptr, false, true).c_str());
 			if (!lpRes.resProperty.lpProp.Props().empty())
 			{
 				addBlock(
 					lpRes.resProperty.lpProp.Props()[0].ulPropTag,
 					L"%1!ws!lpRes->res.resProperty.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
-					interpretprop::TagToString(lpRes.resProperty.lpProp.Props()[0].ulPropTag, nullptr, false, true)
+					proptags::TagToString(lpRes.resProperty.lpProp.Props()[0].ulPropTag, nullptr, false, true)
 						.c_str());
 				addBlock(
 					lpRes.resProperty.lpProp.Props()[0].PropBlock(),
@@ -373,7 +374,7 @@ namespace smartview
 				lpRes.resBitMask.ulPropTag,
 				L"%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
-				interpretprop::TagToString(lpRes.resBitMask.ulPropTag, nullptr, false, true).c_str());
+				proptags::TagToString(lpRes.resBitMask.ulPropTag, nullptr, false, true).c_str());
 			break;
 		case RES_SIZE:
 			szFlags = flags::InterpretFlags(flagRelop, lpRes.resSize.relop);
@@ -392,14 +393,14 @@ namespace smartview
 				lpRes.resSize.ulPropTag,
 				L"%1!ws!lpRes->res.resSize.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
-				interpretprop::TagToString(lpRes.resSize.ulPropTag, nullptr, false, true).c_str());
+				proptags::TagToString(lpRes.resSize.ulPropTag, nullptr, false, true).c_str());
 			break;
 		case RES_EXIST:
 			addBlock(
 				lpRes.resExist.ulPropTag,
 				L"%1!ws!lpRes->res.resExist.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
-				interpretprop::TagToString(lpRes.resExist.ulPropTag, nullptr, false, true).c_str());
+				proptags::TagToString(lpRes.resExist.ulPropTag, nullptr, false, true).c_str());
 			addBlock(
 				lpRes.resExist.ulReserved1,
 				L"%1!ws!lpRes->res.resExist.ulReserved1 = 0x%2!08X!\r\n",
@@ -416,7 +417,7 @@ namespace smartview
 				lpRes.resSub.ulSubObject,
 				L"%1!ws!lpRes->res.resSub.ulSubObject = %2!ws!\r\n",
 				szTabs.c_str(),
-				interpretprop::TagToString(lpRes.resSub.ulSubObject, nullptr, false, true).c_str());
+				proptags::TagToString(lpRes.resSub.ulSubObject, nullptr, false, true).c_str());
 			addHeader(L"%1!ws!lpRes->res.resSub.lpRes\r\n", szTabs.c_str());
 
 			if (!lpRes.resSub.lpRes.empty())
@@ -437,7 +438,7 @@ namespace smartview
 					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
-					interpretprop::TagToString(prop.ulPropTag, nullptr, false, true).c_str());
+					proptags::TagToString(prop.ulPropTag, nullptr, false, true).c_str());
 				addBlock(
 					prop.PropBlock(),
 					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
@@ -467,7 +468,7 @@ namespace smartview
 					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
-					interpretprop::TagToString(prop.ulPropTag, nullptr, false, true).c_str());
+					proptags::TagToString(prop.ulPropTag, nullptr, false, true).c_str());
 				addBlock(
 					prop.PropBlock(),
 					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %3!ws!\r\n",

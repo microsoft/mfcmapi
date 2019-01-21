@@ -1,12 +1,14 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <UI/Controls/SortList/PropListData.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/interpret/proptags.h>
+#include <core/interpret/proptype.h>
+#include <core/addin/mfcmapi.h>
 
 namespace dialog
 {
@@ -107,12 +109,12 @@ namespace dialog
 				const auto namePropNames =
 					cache::NameIDToStrings(ulNewPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
 
-				const auto propTagNames = interpretprop::PropTagToPropName(ulNewPropTag, m_bIsAB);
+				const auto propTagNames = proptags::PropTagToPropName(ulNewPropTag, m_bIsAB);
 
 				SetListString(ulListNum, iItem, 1, strings::format(L"0x%08X", ulNewPropTag));
 				SetListString(ulListNum, iItem, 2, propTagNames.bestGuess);
 				SetListString(ulListNum, iItem, 3, propTagNames.otherMatches);
-				SetListString(ulListNum, iItem, 4, interpretprop::TypeToString(ulNewPropTag));
+				SetListString(ulListNum, iItem, 4, proptype::TypeToString(ulNewPropTag));
 				SetListString(ulListNum, iItem, 5, namePropNames.name);
 				SetListString(ulListNum, iItem, 6, namePropNames.guid);
 
@@ -150,12 +152,12 @@ namespace dialog
 					const auto namePropNames =
 						cache::NameIDToStrings(ulPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
 
-					const auto propTagNames = interpretprop::PropTagToPropName(ulPropTag, m_bIsAB);
+					const auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
 
 					SetListString(ulListNum, iTagCount, 1, strings::format(L"0x%08X", ulPropTag));
 					SetListString(ulListNum, iTagCount, 2, propTagNames.bestGuess);
 					SetListString(ulListNum, iTagCount, 3, propTagNames.otherMatches);
-					SetListString(ulListNum, iTagCount, 4, interpretprop::TypeToString(ulPropTag));
+					SetListString(ulListNum, iTagCount, 4, proptype::TypeToString(ulPropTag));
 					SetListString(ulListNum, iTagCount, 5, namePropNames.name);
 					SetListString(ulListNum, iTagCount, 6, namePropNames.guid);
 				}

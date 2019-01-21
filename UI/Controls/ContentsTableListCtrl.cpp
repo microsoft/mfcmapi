@@ -21,6 +21,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
+#include <core/interpret/proptags.h>
 
 namespace controls
 {
@@ -364,7 +365,7 @@ namespace controls
 			}
 			else
 			{
-				const auto propTagNames = interpretprop::PropTagToPropName(ulPropTag, m_bIsAB);
+				const auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
 				szHeaderString = propTagNames.bestGuess;
 				if (szHeaderString.empty())
 				{
@@ -396,7 +397,7 @@ namespace controls
 					lpHeaderData->ulTagArrayRow = ulCurTagArrayRow;
 					lpHeaderData->ulPropTag = ulPropTag;
 					lpHeaderData->bIsAB = m_bIsAB;
-					lpHeaderData->szTipString = interpretprop::TagToString(ulPropTag, lpMDB, m_bIsAB, false);
+					lpHeaderData->szTipString = proptags::TagToString(ulPropTag, lpMDB, m_bIsAB, false);
 
 					hdItem.lParam = reinterpret_cast<LPARAM>(lpHeaderData);
 					EC_B_S(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));

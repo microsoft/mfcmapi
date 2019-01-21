@@ -1,6 +1,5 @@
 #pragma once
 #include <Interpret/SmartView/SmartViewParser.h>
-#include <MAPIDefS.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/SmartView/SmartView.h>
 
