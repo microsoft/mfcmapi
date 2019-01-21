@@ -108,6 +108,9 @@
     <ClInclude Include="interpret\proptype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="interpret\sid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -165,6 +168,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="interpret\proptype.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="interpret\sid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

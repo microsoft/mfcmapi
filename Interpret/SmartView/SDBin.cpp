@@ -4,7 +4,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/interpret/flags.h>
-#include <Interpret/Sid.h>
+#include <core/interpret/sid.h>
 
 namespace smartview
 {

@@ -1,15 +1,23 @@
-#include <StdAfx.h>
-#include <Interpret/Sid.h>
+#include <core/stdafx.h>
+#include <core/interpret/sid.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/interpret/guid.h>
 #include <core/utility/strings.h>
+#include <core/utility/error.h>
 
 namespace sid
 {
+	_Check_return_ std::wstring SidAccount::getDomain() const
+	{
+		return !domain.empty() ? domain : strings::formatmessage(IDS_NODOMAIN);
+	}
+
+	std::wstring SidAccount::getName() const { return !name.empty() ? name : strings::formatmessage(IDS_NONAME); }
+
 	// [MS-DTYP] 2.4.2.2 SID--Packet Representation
 	// https://msdn.microsoft.com/en-us/library/gg465313.aspx
-	_Check_return_ std::wstring GetTextualSid(_In_ PSID pSid)
+	std::wstring GetTextualSid(_In_ PSID pSid)
 	{
 		// Validate the binary SID.
 		if (!IsValidSid(pSid)) return {};

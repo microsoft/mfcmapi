@@ -1,5 +1,4 @@
 #pragma once
-#include <core/utility/strings.h>
 
 namespace sid
 {
@@ -14,15 +13,9 @@ namespace sid
 	{
 	public:
 		SidAccount() = default;
-		SidAccount(const std::wstring& _domain, const std::wstring& _name) : domain(_domain), name(_name){};
-		_Check_return_ std::wstring getDomain() const
-		{
-			return !domain.empty() ? domain : strings::formatmessage(IDS_NODOMAIN);
-		}
-		_Check_return_ std::wstring getName() const
-		{
-			return !name.empty() ? name : strings::formatmessage(IDS_NONAME);
-		}
+		SidAccount(std::wstring _domain, std::wstring _name) : domain(std::move(_domain)), name(std::move(_name)){};
+		_Check_return_ std::wstring getDomain() const;
+		_Check_return_ std::wstring getName() const;
 
 	private:
 		std::wstring domain;

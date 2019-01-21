@@ -1,6 +1,6 @@
 #pragma once
 #include <AclUI.h>
-#include <Interpret/Sid.h>
+#include <core/interpret/sid.h>
 
 namespace mapi
 {

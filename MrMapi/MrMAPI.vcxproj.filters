@@ -177,12 +177,6 @@
     <ClInclude Include="..\Interpret\InterpretProp.h">
       <Filter>Source Files\Interpret</Filter>
     </ClInclude>
-    <ClCompile Include="..\Interpret\Sid.cpp">
-      <Filter>Source Files\Interpret</Filter>
-    </ClCompile>
-    <ClInclude Include="..\Interpret\Sid.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Interpret\SmartView\AdditionalRenEntryIDs.cpp">

@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/MySecInfo.h>
-#include <Interpret/Sid.h>
+#include <core/interpret/sid.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/mapi/mapiMemory.h>
