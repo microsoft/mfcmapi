@@ -1,10 +1,10 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/SDBin.h>
 #include <UI/MySecInfo.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/interpret/flags.h>
 #include <core/interpret/sid.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace smartview
 {

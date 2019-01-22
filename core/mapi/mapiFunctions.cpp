@@ -73,4 +73,21 @@ namespace mapi
 	template LPMAPICLIENTSHUTDOWN safe_cast<LPMAPICLIENTSHUTDOWN>(IUnknown* src);
 	template LPPROFSECT safe_cast<LPPROFSECT>(IUnknown* src);
 	template LPATTACH safe_cast<LPATTACH>(IUnknown* src);
+
+		// See list of types (like MAPI_FOLDER) in mapidefs.h
+	_Check_return_ ULONG GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp)
+	{
+		ULONG ulObjType = 0;
+		LPSPropValue lpProp = nullptr;
+
+		if (!lpMAPIProp) return 0; // 0's not a valid Object type
+
+		WC_MAPI_S(HrGetOneProp(lpMAPIProp, PR_OBJECT_TYPE, &lpProp));
+
+		if (lpProp) ulObjType = lpProp->Value.ul;
+
+		MAPIFreeBuffer(lpProp);
+		return ulObjType;
+	}
+
 } // namespace mapi

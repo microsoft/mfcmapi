@@ -851,22 +851,6 @@ namespace mapi
 		return false;
 	}
 
-	// See list of types (like MAPI_FOLDER) in mapidefs.h
-	_Check_return_ ULONG GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp)
-	{
-		ULONG ulObjType = 0;
-		LPSPropValue lpProp = nullptr;
-
-		if (!lpMAPIProp) return 0; // 0's not a valid Object type
-
-		WC_MAPI_S(HrGetOneProp(lpMAPIProp, PR_OBJECT_TYPE, &lpProp));
-
-		if (lpProp) ulObjType = lpProp->Value.ul;
-
-		MAPIFreeBuffer(lpProp);
-		return ulObjType;
-	}
-
 	_Check_return_ LPSBinary GetInboxEntryId(_In_ LPMDB lpMDB)
 	{
 		output::DebugPrint(DBGGeneric, L"GetInboxEntryId: getting Inbox\n");
