@@ -2,6 +2,7 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
+#include <core/utility/output.h>
 
 namespace controls
 {

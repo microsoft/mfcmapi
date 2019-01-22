@@ -8,6 +8,7 @@
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

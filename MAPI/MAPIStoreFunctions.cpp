@@ -2,11 +2,12 @@
 
 #include <StdAfx.h>
 #include <MAPI/MAPIStoreFunctions.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/mapi/interfaces.h>
 
 namespace mapi
 {
@@ -195,7 +196,7 @@ namespace mapi
 
 			return lpPFTable;
 		}
-	
+
 		// Get server name from the profile
 		std::string GetServerName(_In_ LPMAPISESSION lpSession)
 		{
@@ -299,7 +300,7 @@ namespace mapi
 					lpszMailboxDN.c_str(),
 					smtpAddress.c_str(),
 					ulFlags);
-				SPropValue sProps[4] = {0};
+				SPropValue sProps[4] = {};
 				sProps[0].ulPropTag = PR_PROFILE_MAILBOX;
 				sProps[0].Value.lpszA = LPSTR(lpszMailboxDN.c_str());
 

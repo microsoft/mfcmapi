@@ -7,9 +7,9 @@
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {

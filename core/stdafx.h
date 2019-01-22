@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <cassert>
 
 // All the MAPI headers
 #include <MAPIX.h>

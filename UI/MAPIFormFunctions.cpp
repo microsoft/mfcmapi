@@ -3,9 +3,9 @@
 #include <StdAfx.h>
 #include <UI/MAPIFormFunctions.h>
 #include <UI/MyMAPIFormViewer.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace mapi
 {

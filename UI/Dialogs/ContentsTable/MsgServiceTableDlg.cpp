@@ -9,9 +9,9 @@
 #include <MAPI/MAPIProfileFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/MAPIFunctions.h>
 #include <UI/addinui.h>
 #include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {

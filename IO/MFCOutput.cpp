@@ -14,6 +14,8 @@
 #include <core/interpret/flags.h>
 #include <core/interpret/proptags.h>
 #include <core/interpret/proptype.h>
+#include <core/interpret/guid.h>
+#include <core/utility/error.h>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf

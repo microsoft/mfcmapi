@@ -1,52 +1,9 @@
 // Stand alone MAPI functions
 #pragma once
-#include <core/interpret/guid.h>
-#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace mapi
 {
-	// Safely cast across MAPI interfaces. Result is addrefed and must be released.
-	template <class T> T safe_cast(IUnknown* src)
-	{
-		if (!src) return nullptr;
-
-		auto iid = IID();
-		// clang-format off
-		if (std::is_same_v<T, LPUNKNOWN>) iid = IID_IUnknown;
-		else if (std::is_same_v<T, LPMAPIFOLDER>) iid = IID_IMAPIFolder;
-		else if (std::is_same_v<T, LPMAPICONTAINER>) iid = IID_IMAPIContainer;
-		else if (std::is_same_v<T, LPMAILUSER>) iid = IID_IMailUser;
-		else if (std::is_same_v<T, LPABCONT>) iid = IID_IABContainer;
-		else if (std::is_same_v<T, LPMESSAGE>) iid = IID_IMessage;
-		else if (std::is_same_v<T, LPMDB>) iid = IID_IMsgStore;
-		else if (std::is_same_v<T, LPMAPIFORMINFO>) iid = IID_IMAPIFormInfo;
-		else if (std::is_same_v<T, LPMAPIPROP>) iid = IID_IMAPIProp;
-		else if (std::is_same_v<T, LPMAPIFORM>) iid = IID_IMAPIForm;
-		else if (std::is_same_v<T, LPPERSISTMESSAGE>) iid = IID_IPersistMessage;
-		else if (std::is_same_v<T, IAttachmentSecurity*>) iid = guid::IID_IAttachmentSecurity;
-		else if (std::is_same_v<T, LPSERVICEADMIN2>) iid = IID_IMsgServiceAdmin2;
-		else if (std::is_same_v<T, LPEXCHANGEMANAGESTORE>) iid = IID_IExchangeManageStore;
-		else if (std::is_same_v<T, LPEXCHANGEMANAGESTORE3>) iid = IID_IExchangeManageStore3;
-		else if (std::is_same_v<T, LPEXCHANGEMANAGESTORE4>) iid = IID_IExchangeManageStore4;
-		else if (std::is_same_v<T, LPEXCHANGEMANAGESTORE5>) iid = guid::IID_IExchangeManageStore5;
-		else if (std::is_same_v<T, LPEXCHANGEMANAGESTOREEX>) iid = guid::IID_IExchangeManageStoreEx;
-		else if (std::is_same_v<T, IProxyStoreObject*>) iid = guid::IID_IProxyStoreObject;
-		else if (std::is_same_v<T, LPMAPICLIENTSHUTDOWN>) iid = IID_IMAPIClientShutdown;
-		else ASSERT(false);
-		// clang-format on
-
-		T ret = nullptr;
-		WC_H_S(src->QueryInterface(iid, reinterpret_cast<LPVOID*>(&ret)));
-		output::DebugPrint(
-			DBGGeneric,
-			L"safe_cast: iid =%ws, src = %p, ret = %p\n",
-			guid::GUIDToStringAndName(&iid).c_str(),
-			src,
-			ret);
-
-		return ret;
-	}
-
 	struct CopyDetails
 	{
 		bool valid{};

@@ -19,6 +19,7 @@
 #include <map>
 #include <utility>
 #include <vector>
+#include <cassert>
 
 // Speed up our string conversions for output
 #ifdef MRMAPI

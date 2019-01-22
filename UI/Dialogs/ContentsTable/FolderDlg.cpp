@@ -30,6 +30,7 @@
 #include <core/utility/output.h>
 #include <IO/mapiFile.h>
 #include <core/interpret/flags.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {

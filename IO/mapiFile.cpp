@@ -10,6 +10,7 @@
 #include <core/utility/output.h>
 #include <core/interpret/guid.h>
 #include <core/utility/error.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace file
 {

@@ -4,7 +4,6 @@
 #include <core/utility/file.h>
 #include <core/utility/registry.h>
 #include <core/utility/error.h>
-#include <cassert>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf

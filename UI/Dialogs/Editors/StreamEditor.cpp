@@ -9,6 +9,7 @@
 #include <core/interpret/flags.h>
 #include <core/addin/mfcmapi.h>
 #include <core/interpret/proptags.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

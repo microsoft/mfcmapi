@@ -25,6 +25,7 @@
 #include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {

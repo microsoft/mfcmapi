@@ -22,6 +22,7 @@
 #include <IO/mapiFile.h>
 #include <core/interpret/flags.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {

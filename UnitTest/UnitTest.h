@@ -2,7 +2,7 @@
 #include <StdAfx.h>
 #include <CppUnitTest.h>
 #include <Interpret/SmartView/SmartView.h>
-#include <MAPI/MAPIFunctions.h>
+#include <core/interpret/guid.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

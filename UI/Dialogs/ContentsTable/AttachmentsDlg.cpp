@@ -11,12 +11,12 @@
 #include <UI/Controls/SortList/ContentsData.h>
 #include <core/mapi/cache/globalCache.h>
 #include <Interpret/InterpretProp.h>
-#include <MAPI/MAPIFunctions.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <IO/mapiFile.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {

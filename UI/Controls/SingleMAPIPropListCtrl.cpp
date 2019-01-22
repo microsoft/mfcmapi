@@ -31,6 +31,7 @@
 #include <core/utility/registry.h>
 #include <core/interpret/proptags.h>
 #include <core/interpret/proptype.h>
+#include <core/utility/output.h>
 
 namespace controls
 {

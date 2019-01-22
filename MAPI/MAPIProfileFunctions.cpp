@@ -2,11 +2,13 @@
 
 #include <StdAfx.h>
 #include <MAPI/MAPIProfileFunctions.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
 #include <core/utility/strings.h>
+#include <core/utility/error.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/mapi/interfaces.h>
 
 namespace mapi
 {

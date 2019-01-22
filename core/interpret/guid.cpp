@@ -34,6 +34,7 @@
 #define USES_IID_IMAPIProviderShutdown
 #define USES_IID_IMsgServiceAdmin2
 #define USES_IID_IMessageRaw
+#define USES_IID_IProfSect
 #pragma endregion
 
 #include <initguid.h>
