@@ -1,6 +1,6 @@
 // Stand alone MAPI functions
 #pragma once
-//#include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace mapi
 {
