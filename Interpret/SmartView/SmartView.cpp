@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <core/mapi/extraPropTags.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <core/interpret/guid.h>
 #include <core/mapi/cache/namedPropCache.h>
@@ -9,6 +8,7 @@
 #include <core/addin/mfcmapi.h>
 #include <core/utility/registry.h>
 #include <core/interpret/flags.h>
+#include <core/mapi/mapiFunctions.h>
 
 #include <Interpret/SmartView/SmartViewParser.h>
 #include <Interpret/SmartView/PCL.h>

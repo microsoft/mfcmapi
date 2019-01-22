@@ -165,8 +165,6 @@ namespace mapi
 		_In_opt_z_ LPCSTR pszFileName,
 		_In_opt_z_ LPCWSTR pwzFileName,
 		bool bPublicStore);
-	_Check_return_ std::wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID);
-	_Check_return_ std::wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer);
 
 	HRESULT
 	HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess, _In_ const MAPIUID* puidService, _Out_opt_ MAPIUID* pEmsmdbUID);

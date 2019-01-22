@@ -1907,46 +1907,6 @@ namespace mapi
 		return dwHash;
 	}
 
-	const WORD kwBaseOffset = 0xAC00; // Hangul char range (AC00-D7AF)
-	// Allocates with new, free with delete[]
-	_Check_return_ std::wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
-	{
-		auto pbSrc = reinterpret_cast<LPBYTE>(rgbID);
-		std::wstring wzIDEncoded;
-
-		// rgbID is the item Entry ID or the attachment ID
-		// cbID is the size in bytes of rgbID
-		for (ULONG i = 0; i < cbEID; i++, pbSrc++)
-		{
-			wzIDEncoded += static_cast<WCHAR>(*pbSrc + kwBaseOffset);
-		}
-
-		// pwzIDEncoded now contains the entry ID encoded.
-		return wzIDEncoded;
-	}
-
-	_Check_return_ std::wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer)
-	{
-		if (cbBuffer % 2) return strings::emptystring;
-
-		const auto cbDecodedBuffer = cbBuffer / 2;
-		// Allocate memory for lpDecoded
-		const auto lpDecoded = new BYTE[cbDecodedBuffer];
-		if (!lpDecoded) return strings::emptystring;
-
-		// Subtract kwBaseOffset from every character and place result in lpDecoded
-		auto lpwzSrc = reinterpret_cast<LPWSTR>(lpbBuffer);
-		auto lpDst = lpDecoded;
-		for (ULONG i = 0; i < cbDecodedBuffer; i++, lpwzSrc++, lpDst++)
-		{
-			*lpDst = static_cast<BYTE>(*lpwzSrc - kwBaseOffset);
-		}
-
-		auto szBin = strings::BinToHexString(lpDecoded, cbDecodedBuffer, true);
-		delete[] lpDecoded;
-		return szBin;
-	}
-
 	HRESULT
 	HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess, _In_ const MAPIUID* puidService, _Out_opt_ MAPIUID* pEmsmdbUID)
 	{

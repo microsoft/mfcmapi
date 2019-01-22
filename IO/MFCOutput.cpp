@@ -10,7 +10,6 @@
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/registry.h>
-#include <cassert>
 #include <core/interpret/flags.h>
 #include <core/interpret/proptags.h>
 #include <core/interpret/proptype.h>
