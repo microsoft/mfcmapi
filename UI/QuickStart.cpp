@@ -12,6 +12,7 @@
 #include <UI/Dialogs/Editors/QSSpecialFolders.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/utility/strings.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {

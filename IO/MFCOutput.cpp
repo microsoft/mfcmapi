@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <Interpret/InterpretProp.h>
 #include <Interpret/SmartView/SmartView.h>
@@ -15,6 +14,7 @@
 #include <core/interpret/proptype.h>
 #include <core/interpret/guid.h>
 #include <core/utility/error.h>
+#include <core/mapi/mapiFunctions.h>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf

@@ -5,6 +5,7 @@
 #include <UI/Controls/SortList/SortListData.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace propertybag
 {

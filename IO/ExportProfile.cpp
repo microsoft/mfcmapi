@@ -2,11 +2,11 @@
 
 #include <StdAfx.h>
 #include <MAPI/MAPIProfileFunctions.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/interpret/guid.h>
 #include <core/utility/strings.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace output
 {
@@ -17,7 +17,7 @@ namespace output
 		LPSPropValue lpAllProps = nullptr;
 		ULONG cValues = 0L;
 
-		auto hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpSect, fMapiUnicode, &cValues, &lpAllProps));
+		const auto hRes = WC_H_GETPROPS(mapi::GetPropsNULL(lpSect, fMapiUnicode, &cValues, &lpAllProps));
 		if (FAILED(hRes))
 		{
 			OutputToFilef(fProfile, L"<properties error=\"0x%08X\" />\n", hRes);

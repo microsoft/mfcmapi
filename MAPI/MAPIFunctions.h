@@ -1,6 +1,6 @@
 // Stand alone MAPI functions
 #pragma once
-#include <core/mapi/mapiFunctions.h>
+//#include <core/mapi/mapiFunctions.h>
 
 namespace mapi
 {
@@ -13,7 +13,8 @@ namespace mapi
 		ULONG_PTR uiParam{};
 		LPSPropTagArray excludedTags{};
 		bool allocated{};
-		void clean() const {
+		void clean() const
+		{
 			if (progress) progress->Release();
 			if (allocated) MAPIFreeBuffer(excludedTags);
 		}
@@ -118,11 +119,6 @@ namespace mapi
 	_Check_return_ bool
 	FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound);
 	_Check_return_ LPMAPIFOLDER GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB);
-	_Check_return_ HRESULT GetPropsNULL(
-		_In_ LPMAPIPROP lpMAPIProp,
-		ULONG ulFlags,
-		_Out_ ULONG* lpcValues,
-		_Deref_out_opt_ LPSPropValue* lppPropArray);
 	_Check_return_ LPSBinary GetSpecialFolderEID(_In_ LPMDB lpMDB, ULONG ulFolderPropTag);
 	_Check_return_ HRESULT
 	IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ bool* pfBlocked);
@@ -242,9 +238,6 @@ namespace mapi
 	HrGetOnePropEx(_In_ LPMAPIPROP lpMAPIProp, _In_ ULONG ulPropTag, _In_ ULONG ulFlags, _Out_ LPSPropValue* lppProp);
 
 	void ForceRop(_In_ LPMDB lpMDB);
-
-	_Check_return_ LPSPropValue GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
-	_Check_return_ LPSPropValue GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
 
 	_Check_return_ STDAPI HrCopyRestriction(
 		_In_ const _SRestriction* lpResSrc, // source restriction ptr
