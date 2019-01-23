@@ -254,4 +254,34 @@ namespace proptags
 			if (!ulPartials.empty()) sort(ulPartials.begin(), ulPartials.end(), CompareTagsSortOrder);
 		}
 	}
+
+		// Strictly does a lookup in the array. Does not convert otherwise
+	_Check_return_ ULONG LookupPropName(_In_ const std::wstring& lpszPropName)
+	{
+		auto trimName = strings::trim(lpszPropName);
+		if (trimName.empty()) return 0;
+
+		for (auto& tag : PropTagArray)
+		{
+			if (0 == lstrcmpiW(trimName.c_str(), tag.lpszName))
+			{
+				return tag.ulValue;
+			}
+		}
+
+		return 0;
+	}
+
+	_Check_return_ ULONG PropNameToPropTag(_In_ const std::wstring& lpszPropName)
+	{
+		if (lpszPropName.empty()) return 0;
+
+		const auto ulTag = strings::wstringToUlong(lpszPropName, 16);
+		if (ulTag != NULL)
+		{
+			return ulTag;
+		}
+
+		return LookupPropName(lpszPropName);
+	}
 } // namespace proptags

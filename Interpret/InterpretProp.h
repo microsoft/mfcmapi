@@ -15,9 +15,4 @@ namespace interpretprop
 		_In_ const _SPropValue* lpProp,
 		_In_opt_ std::wstring* PropString,
 		_In_opt_ std::wstring* AltPropString);
-
-	// Strictly does a lookup in the array. Does not convert otherwise
-	_Check_return_ ULONG LookupPropName(_In_ const std::wstring& lpszPropName);
-	_Check_return_ ULONG PropNameToPropTag(_In_ const std::wstring& lpszPropName);
-	_Check_return_ ULONG PropTypeNameToPropType(_In_ const std::wstring& lpszPropType);
 } // namespace interpretprop

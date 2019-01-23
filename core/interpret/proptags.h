@@ -23,4 +23,8 @@ namespace proptags
 		const std::vector<NAME_ARRAY_ENTRY_V2>& MyArray,
 		std::vector<ULONG>& ulExacts,
 		std::vector<ULONG>& ulPartials);
-} // namespace propTags
+
+	// Strictly does a lookup in the array. Does not convert otherwise
+	_Check_return_ ULONG LookupPropName(_In_ const std::wstring& lpszPropName);
+	_Check_return_ ULONG PropNameToPropTag(_In_ const std::wstring& lpszPropName);
+} // namespace proptags

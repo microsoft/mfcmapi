@@ -2,7 +2,6 @@
 #include <MrMapi/MMFolder.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
-#include <Interpret/InterpretProp.h>
 #include <MrMapi/MMStore.h>
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
@@ -10,6 +9,7 @@
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/mapiOutput.h>
+#include <core/interpret/proptags.h>
 
 // Search folder for entry ID of child folder by name.
 LPSBinary MAPIFindFolderW(
@@ -151,7 +151,7 @@ static LPSBinary LookupRootFolderW(
 	}
 
 	auto eid = LPSBinary{};
-	auto ulPropTag = interpretprop::LookupPropName(lpszRootFolder);
+	auto ulPropTag = proptags::LookupPropName(lpszRootFolder);
 	if (!ulPropTag)
 	{
 		// Maybe one of our folder constants was passed.
@@ -570,7 +570,7 @@ void DoFolderProps(_In_ cli::MYOPTIONS ProgOpts)
 	if (ProgOpts.lpFolder)
 	{
 		PrintObjectProperties(
-			L"folderprops", ProgOpts.lpFolder, interpretprop::PropNameToPropTag(ProgOpts.lpszUnswitchedOption));
+			L"folderprops", ProgOpts.lpFolder, proptags::PropNameToPropTag(ProgOpts.lpszUnswitchedOption));
 	}
 }
 

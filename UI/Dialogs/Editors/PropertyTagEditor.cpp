@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <Interpret/InterpretProp.h>
 #include <core/utility/strings.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/interpret/guid.h>
@@ -220,7 +219,7 @@ namespace dialog
 				szType = GetDropStringUseControl(PROPTAG_TYPE);
 			}
 
-			return interpretprop::PropTypeNameToPropType(szType);
+			return proptype::PropTypeNameToPropType(szType);
 		}
 
 		_Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)

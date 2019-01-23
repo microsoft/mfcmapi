@@ -2,11 +2,11 @@
 
 #include <MrMapi/cli.h>
 #include <MAPI/MAPIFunctions.h>
-#include <Interpret/InterpretProp.h>
 #include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
+#include <core/interpret/proptype.h>
 
 namespace error
 {
@@ -768,7 +768,7 @@ namespace cli
 					// If we have a next argument and it's not an option, parse it as a type
 					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1]))
 					{
-						options.ulTypeNum = interpretprop::PropTypeNameToPropType(args[i + 1]);
+						options.ulTypeNum = proptype::PropTypeNameToPropType(args[i + 1]);
 						i++;
 					}
 					break;

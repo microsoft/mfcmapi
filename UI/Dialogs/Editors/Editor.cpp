@@ -2,7 +2,6 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/UIFunctions.h>
 #include <core/utility/strings.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/MyWinApp.h>
 #include <UI/Dialogs/AboutDlg.h>
 #include <core/utility/output.h>
@@ -1197,7 +1196,7 @@ namespace dialog
 			if (pane)
 			{
 
-				const auto ulTag = interpretprop::PropNameToPropTag(pane->GetStringW());
+				const auto ulTag = proptags::PropNameToPropTag(pane->GetStringW());
 
 				// Figure if this is a full tag or just an ID
 				if (ulTag & PROP_TAG_MASK) // Full prop tag

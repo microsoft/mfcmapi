@@ -3,7 +3,6 @@
 #include <MrMapi/MMStore.h>
 #include <MrMapi/MMFolder.h>
 #include <core/mapi/columnTags.h>
-#include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/mapiStoreFunctions.h>
 #include <core/utility/strings.h>
@@ -11,6 +10,7 @@
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/interpret/proptags.h>
 
 LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex)
 {
@@ -302,7 +302,7 @@ void DoStore(_In_ cli::MYOPTIONS ProgOpts)
 	// For now, we don't support dispids
 	if (!ProgOpts.lpszUnswitchedOption.empty() && !(ProgOpts.ulOptions & cli::OPT_DODISPID))
 	{
-		ulPropTag = interpretprop::PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
+		ulPropTag = proptags::PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
 	}
 
 	if (ProgOpts.lpMAPISession)
