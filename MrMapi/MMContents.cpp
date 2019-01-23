@@ -3,7 +3,7 @@
 #include <MrMapi/cli.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
-#include <IO/mapiFile.h>
+#include <core/mapi/mapiFile.h>
 
 void DumpContentsTable(
 	_In_z_ LPCWSTR lpszProfile,

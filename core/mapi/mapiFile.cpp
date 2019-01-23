@@ -1,5 +1,5 @@
-#include <StdAfx.h>
-#include <IO/mapiFile.h>
+#include <core/stdafx.h>
+#include <core/mapi/mapiFile.h>
 #include <core/utility/file.h>
 #include <core/utility/strings.h>
 #include <core/mapi/mapiProgress.h>
@@ -705,16 +705,16 @@ namespace file
 				// Delete the attachment
 				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", hWnd); // STRING_OK
 
-				const auto hRes = EC_MAPI(lpMessage->DeleteAttach(
+				const auto hResRet = EC_MAPI(lpMessage->DeleteAttach(
 					props[ATTACHNUM].Value.l,
 					lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
 					lpProgress,
 					lpProgress ? ATTACH_DIALOG : 0));
 
-				if (SUCCEEDED(hRes)) bDirty = true;
+				if (SUCCEEDED(hResRet)) bDirty = true;
 
 				if (lpProgress) lpProgress->Release();
-				return hRes;
+				return hResRet;
 			},
 			[](auto) { return false; });
 

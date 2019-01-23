@@ -11,7 +11,7 @@
 #include <core/mapi/extraPropTags.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
-#include <IO/mapiFile.h>
+#include <core/mapi/mapiFile.h>
 #include <core/mapi/mapiFunctions.h>
 
 namespace mapiprocessor

@@ -560,7 +560,6 @@
     <ClInclude Include="..\Interpret\SmartView\block\blockT.h" />
     <ClInclude Include="..\Interpret\SmartView\block\block.h" />
     <ClInclude Include="..\Interpret\SmartView\block\blockBytes.h" />
-    <ClInclude Include="..\IO\mapiFile.h" />
     <ClInclude Include="..\MAPI\AdviseSink.h" />
     <ClInclude Include="..\MAPI\ColumnTags.h" />
     <ClInclude Include="..\MAPI\MAPIProcessor\DumpStore.h" />
@@ -629,7 +628,6 @@
     <None Include="..\.clang-format" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\IO\mapiFile.cpp" />
     <ClCompile Include="..\MAPI\AdviseSink.cpp" />
     <ClCompile Include="..\MAPI\MAPIProcessor\DumpStore.cpp" />
     <ClCompile Include="..\Interpret\InterpretProp.cpp" />

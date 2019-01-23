@@ -55,9 +55,6 @@
     <ClInclude Include="..\IO\ExportProfile.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
-    <ClInclude Include="..\IO\mapiFile.h">
-      <Filter>Source Files\IO</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Enums.h">
@@ -68,9 +65,6 @@
     </ClInclude>
     <ClCompile Include="cli.cpp">
       <Filter>Source Files\MrMAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\IO\mapiFile.cpp">
-      <Filter>Source Files\IO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

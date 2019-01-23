@@ -7,7 +7,7 @@
 #include <core/mapi/cache/globalCache.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
-#include <IO/mapiFile.h>
+#include <core/mapi/mapiFile.h>
 
 namespace dialog
 {

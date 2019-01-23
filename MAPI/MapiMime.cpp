@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <MAPI/MapiMime.h>
 #include <core/interpret/guid.h>
-#include <IO/mapiFile.h>
+#include <core/mapi/mapiFile.h>
 
 namespace mapi
 {

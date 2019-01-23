@@ -30,7 +30,7 @@
 #include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
-#include <IO/mapiFile.h>
+#include <core/mapi/mapiFile.h>
 #include <core/interpret/guid.h>
 #include <core/interpret/flags.h>
 #include <core/interpret/proptags.h>
