@@ -14,7 +14,6 @@
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiOutput.h>
-#include <core/interpret/flags.h>
 
 namespace mapi
 {

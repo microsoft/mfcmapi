@@ -50,9 +50,6 @@
     <Filter Include="Source Files\UI\Dialogs\HierarchyTable">
       <UniqueIdentifier>{79d3d5f7-6568-44ea-92cc-8bf5d15e2b83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\MAPI\Cache">
-      <UniqueIdentifier>{0c20d465-4fc6-40fb-9f4a-79f52df221a7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Interpret\SmartView\block">
       <UniqueIdentifier>{a146f1bf-8f86-43d7-b48f-bcf20d8b34fd}</UniqueIdentifier>
     </Filter>

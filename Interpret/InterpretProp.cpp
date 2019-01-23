@@ -1,6 +1,6 @@
 #include <StdAfx.h>
-#include <core/interpret/guid.h>
 #include <Interpret/InterpretProp.h>
+#include <core/interpret/guid.h>
 #include <core/mapi/extraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
 #include <Property/ParseProperty.h>
