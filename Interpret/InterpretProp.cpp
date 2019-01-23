@@ -5,8 +5,6 @@
 #include <Interpret/SmartView/SmartView.h>
 #include <Property/ParseProperty.h>
 #include <core/utility/strings.h>
-#include <core/addin/addin.h>
-#include <core/addin/mfcmapi.h>
 #include <core/interpret/flags.h>
 #include <core/interpret/proptags.h>
 
