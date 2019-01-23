@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <Interpret/SmartView/SDBin.h>
-#include <UI/MySecInfo.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/interpret/flags.h>
 #include <core/interpret/sid.h>
