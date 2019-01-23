@@ -11,7 +11,7 @@
 #include <core/utility/import.h>
 #include <UI/UIFunctions.h>
 #include <MAPI/MAPIABFunctions.h>
-#include <MAPI/MAPIStoreFunctions.h>
+#include <core/mapi/mapiStoreFunctions.h>
 #include <UI/CMAPIProgress.h>
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <core/addin/addin.h>

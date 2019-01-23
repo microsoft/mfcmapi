@@ -1,11 +1,12 @@
 // Collection of useful MAPI Store functions
 
-#include <StdAfx.h>
-#include <MAPI/MAPIStoreFunctions.h>
+#include <core/stdafx.h>
+#include <core/mapi/mapiStoreFunctions.h>
 #include <core/utility/strings.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
+#include <core/utility/error.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/interfaces.h>
 

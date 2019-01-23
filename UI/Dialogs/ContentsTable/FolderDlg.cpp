@@ -4,7 +4,7 @@
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/MAPIStoreFunctions.h>
+#include <core/mapi/mapiStoreFunctions.h>
 #include <MAPI/MAPIABFunctions.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <core/mapi/columnTags.h>

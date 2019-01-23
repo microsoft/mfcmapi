@@ -15,7 +15,7 @@
 #include <MrMapi/MMStore.h>
 #include <MrMapi/MMMapiMime.h>
 #include <core/utility/import.h>
-#include <MAPI/MAPIStoreFunctions.h>
+#include <core/mapi/mapiStoreFunctions.h>
 #include <MrMapi/MMPst.h>
 #include <MrMapi/MMReceiveFolder.h>
 #include <core/mapi/cache/namedPropCache.h>

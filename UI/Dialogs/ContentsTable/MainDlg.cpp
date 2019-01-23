@@ -4,7 +4,7 @@
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/MAPIStoreFunctions.h>
+#include <core/mapi/mapiStoreFunctions.h>
 #include <UI/profile.h>
 #include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>

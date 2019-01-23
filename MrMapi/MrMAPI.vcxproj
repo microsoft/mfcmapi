@@ -574,7 +574,6 @@
     <ClInclude Include="..\IO\ExportProfile.h" />
     <ClInclude Include="..\Property\ParseProperty.h" />
     <ClInclude Include="..\PropertyBag\MAPIPropPropertyBag.h" />
-    <ClInclude Include="..\MAPI\MAPIStoreFunctions.h" />
     <ClInclude Include="..\IO\MFCOutput.h" />
     <ClInclude Include="..\Interpret\SmartView\AdditionalRenEntryIDs.h" />
     <ClInclude Include="..\Interpret\SmartView\AppointmentRecurrencePattern.h" />
@@ -642,7 +641,6 @@
     <ClCompile Include="..\IO\ExportProfile.cpp" />
     <ClCompile Include="..\Property\ParseProperty.cpp" />
     <ClCompile Include="..\PropertyBag\MAPIPropPropertyBag.cpp" />
-    <ClCompile Include="..\MAPI\MAPIStoreFunctions.cpp" />
     <ClCompile Include="..\IO\MFCOutput.cpp" />
     <ClCompile Include="MrMAPI.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

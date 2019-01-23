@@ -2,7 +2,7 @@
 
 #include <StdAfx.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
-#include <MAPI/MAPIStoreFunctions.h>
+#include <core/mapi/mapiStoreFunctions.h>
 #include <core/mapi/columnTags.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <core/mapi/cache/mapiObjects.h>

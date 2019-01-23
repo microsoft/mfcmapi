@@ -5,7 +5,7 @@
 #include <core/mapi/columnTags.h>
 #include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/MAPIStoreFunctions.h>
+#include <core/mapi/mapiStoreFunctions.h>
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
 #include <IO/MFCOutput.h>

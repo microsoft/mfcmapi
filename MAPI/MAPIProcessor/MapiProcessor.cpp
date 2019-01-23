@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <MAPI/MAPIProcessor/MapiProcessor.h>
 #include <MAPI/MAPIFunctions.h>
-#include <MAPI/MAPIStoreFunctions.h>
+#include <core/mapi/mapiStoreFunctions.h>
 #include <core/mapi/columnTags.h>
 #include <core/utility/strings.h>
 #include <IO/MFCOutput.h>
