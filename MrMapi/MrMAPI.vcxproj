@@ -567,7 +567,6 @@
     <ClInclude Include="..\Interpret\InterpretProp.h" />
     <ClInclude Include="..\MAPI\MAPIABFunctions.h" />
     <ClInclude Include="..\MAPI\MAPIFunctions.h" />
-    <ClInclude Include="..\MAPI\MapiMime.h" />
     <ClInclude Include="..\MAPI\MAPIProcessor\MapiProcessor.h" />
     <ClInclude Include="..\MAPI\MAPIProfileFunctions.h" />
     <ClInclude Include="..\IO\ExportProfile.h" />
@@ -633,7 +632,6 @@
     <ClCompile Include="..\Interpret\InterpretProp.cpp" />
     <ClCompile Include="..\MAPI\MAPIABFunctions.cpp" />
     <ClCompile Include="..\MAPI\MAPIFunctions.cpp" />
-    <ClCompile Include="..\MAPI\MapiMime.cpp" />
     <ClCompile Include="..\MAPI\MAPIProcessor\MapiProcessor.cpp" />
     <ClCompile Include="..\MAPI\MAPIProfileFunctions.cpp" />
     <ClCompile Include="..\IO\ExportProfile.cpp" />

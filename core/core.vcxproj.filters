@@ -129,6 +129,9 @@
     <ClInclude Include="mapi\mapiFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\mapiMime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -207,6 +210,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mapi\mapiFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\mapiMime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

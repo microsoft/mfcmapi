@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <MrMapi/MMMapiMime.h>
-#include <MAPI/MapiMime.h>
+#include <core/mapi/mapiMime.h>
 #include <core/utility/import.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>

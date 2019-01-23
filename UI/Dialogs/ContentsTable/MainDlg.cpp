@@ -17,7 +17,7 @@
 #include <UI/Dialogs/AboutDlg.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/FileDialogEx.h>
-#include <MAPI/MapiMime.h>
+#include <core/mapi/mapiMime.h>
 #include <Interpret/InterpretProp.h>
 #include <UI/QuickStart.h>
 #include <UI/UIFunctions.h>

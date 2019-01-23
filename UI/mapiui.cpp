@@ -7,7 +7,7 @@
 #include <core/utility/file.h>
 #include <UI/FileDialogEx.h>
 #include <core/mapi/extraPropTags.h>
-#include <MAPI/MapiMime.h>
+#include <core/mapi/mapiMime.h>
 #include <core/utility/import.h>
 #include <UI/UIFunctions.h>
 #include <MAPI/MAPIABFunctions.h>
