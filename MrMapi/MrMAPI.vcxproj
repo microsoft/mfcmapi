@@ -561,7 +561,6 @@
     <ClInclude Include="..\Interpret\SmartView\block\block.h" />
     <ClInclude Include="..\Interpret\SmartView\block\blockBytes.h" />
     <ClInclude Include="..\MAPI\AdviseSink.h" />
-    <ClInclude Include="..\MAPI\ColumnTags.h" />
     <ClInclude Include="..\MAPI\MAPIProcessor\DumpStore.h" />
     <ClInclude Include="..\Enums.h" />
     <ClInclude Include="..\Interpret\InterpretProp.h" />

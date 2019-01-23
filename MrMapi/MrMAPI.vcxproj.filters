@@ -364,9 +364,6 @@
     <ClInclude Include="..\MAPI\AdviseSink.h">
       <Filter>Source Files\MAPI</Filter>
     </ClInclude>
-    <ClInclude Include="..\MAPI\ColumnTags.h">
-      <Filter>Source Files\MAPI</Filter>
-    </ClInclude>
     <ClCompile Include="..\MAPI\MAPIABFunctions.cpp">
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>
