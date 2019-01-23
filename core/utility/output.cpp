@@ -61,7 +61,7 @@ namespace output
 			auto appName = file::GetModuleFileName(nullptr);
 			DebugPrint(DBGGeneric, L"%ws: Debug printing to file enabled.\n", appName.c_str());
 
-			DebugPrintVersion(DBGVersionBanner);
+			outputVersion(DBGVersionBanner, nullptr);
 		}
 	}
 
@@ -268,7 +268,7 @@ namespace output
 	}
 
 #define MAXBYTES 4096
-	void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
+	void outputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 	{
 		CHKPARAM;
 		EARLYABORT;
@@ -303,7 +303,7 @@ namespace output
 			} while (ulNumBytes > 0);
 	}
 
-	void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
+	void outputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 	{
 		CHKPARAM;
 		EARLYABORT;

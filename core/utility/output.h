@@ -113,10 +113,8 @@ namespace output
 #define TRACE_RELEASE(__class, __count)
 #endif
 
-	void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
-	void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream);
-#define DebugPrintVersion(ulDbgLvl) _OutputVersion((ulDbgLvl), nullptr)
-#define DebugPrintStream(ulDbgLvl, lpStream) _OutputStream((ulDbgLvl), nullptr, lpStream)
+	void outputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
+	void outputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream);
 
 	void OutputXMLValue(
 		ULONG ulDbgLvl,

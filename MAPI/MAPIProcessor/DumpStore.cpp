@@ -393,7 +393,7 @@ namespace mapiprocessor
 				if (lpOutputStream)
 				{
 					output::OutputCDataOpen(DBGNoDebug, fMessageProps);
-					output::OutputStreamToFile(fMessageProps, lpOutputStream);
+					output::outputStream(DBGNoDebug, fMessageProps, lpOutputStream);
 					output::OutputCDataClose(DBGNoDebug, fMessageProps);
 				}
 			}

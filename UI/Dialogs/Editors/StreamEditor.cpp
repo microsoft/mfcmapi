@@ -412,7 +412,7 @@ namespace dialog
 			}
 
 			output::DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"Wrote out this stream:\n");
-			output::DebugPrintStream(DBGStream, m_lpStream);
+			output::outputStream(DBGStream, nullptr, m_lpStream);
 		}
 
 		_Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)

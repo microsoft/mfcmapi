@@ -186,7 +186,7 @@ namespace registry
 		}
 
 		output::SetDebugLevel(debugTag);
-		output::DebugPrintVersion(DBGVersionBanner);
+		output::outputVersion(DBGVersionBanner, nullptr);
 	}
 
 	void WriteDWORDToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, DWORD dwValue)

@@ -49,7 +49,6 @@ namespace output
 	_OutputNotifications((ulDbgLvl), nullptr, (cNotify), (lpNotifications), (lpObj))
 #define DebugPrintSRowSet(ulDbgLvl, lpRowSet, lpObj) _OutputSRowSet((ulDbgLvl), nullptr, (lpRowSet), (lpObj))
 
-#define OutputStreamToFile(fFile, lpStream) _OutputStream(DBGNoDebug, (fFile), (lpStream))
 #define OutputTableToFile(fFile, lpMAPITable) _OutputTable(DBGNoDebug, (fFile), (lpMAPITable))
 #define OutputSRowToFile(fFile, lpSRow, lpObj) _OutputSRow(DBGNoDebug, fFile, lpSRow, lpObj)
 #define OutputPropertiesToFile(fFile, cProps, lpProps, lpObj, bRetry) \
