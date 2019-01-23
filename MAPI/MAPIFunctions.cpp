@@ -8,13 +8,13 @@
 #include <core/mapi/mapiProgress.h>
 #include <core/interpret/guid.h>
 #include <core/mapi/cache/namedPropCache.h>
-#include <Interpret/SmartView/SmartView.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/registry.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiOutput.h>
+#include <core/interpret/flags.h>
 
 namespace mapi
 {
@@ -175,7 +175,7 @@ namespace mapi
 
 		if (lpUnk)
 		{
-			auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
+			auto szFlags = flags::InterpretFlags(PROP_ID(PR_OBJECT_TYPE), static_cast<LONG>(ulObjType));
 			output::DebugPrint(
 				DBGGeneric, L"OnOpenEntryID: Got object of type 0x%08X = %ws\n", ulObjType, szFlags.c_str());
 		}
