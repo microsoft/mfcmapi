@@ -9,6 +9,7 @@
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
+#include <core/mapi/mapiOutput.h>
 
 // Search folder for entry ID of child folder by name.
 LPSBinary MAPIFindFolderW(
@@ -553,7 +554,7 @@ void DumpSearchState(
 			printf("Search state %ws == 0x%08X\n", szFlags.c_str(), ulSearchState);
 			printf("\n");
 			printf("Search Scope:\n");
-			output::_OutputEntryList(DBGNoDebug, stdout, lpEntryList);
+			output::outputEntryList(DBGNoDebug, stdout, lpEntryList);
 			printf("\n");
 			printf("Search Criteria:\n");
 			output::_OutputRestriction(DBGNoDebug, stdout, lpRes, nullptr);

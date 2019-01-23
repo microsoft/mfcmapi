@@ -22,6 +22,7 @@
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
 #include <core/interpret/proptags.h>
+#include <core/mapi/mapiOutput.h>
 
 namespace controls
 {
@@ -1162,7 +1163,7 @@ namespace controls
 			if (!lpEID || lpEID->cb == 0) return nullptr;
 
 			output::DebugPrint(DBGGeneric, L"Item being opened:\n");
-			output::DebugPrintBinary(DBGGeneric, *lpEID);
+			output::outputBinary(DBGGeneric, nullptr, *lpEID);
 
 			// Find the highlighted item EID
 			LPMAPIPROP lpMAPIProp = nullptr;

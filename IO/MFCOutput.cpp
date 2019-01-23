@@ -12,9 +12,9 @@
 #include <core/interpret/flags.h>
 #include <core/interpret/proptags.h>
 #include <core/interpret/proptype.h>
-#include <core/interpret/guid.h>
 #include <core/utility/error.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiOutput.h>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
@@ -25,36 +25,6 @@
 
 namespace output
 {
-	void _OutputNamedPropID(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPINAMEID lpName)
-	{
-		CHKPARAM;
-		EARLYABORT;
-
-		if (!lpName) return;
-
-		if (lpName->ulKind == MNID_ID)
-		{
-			Outputf(
-				ulDbgLvl,
-				fFile,
-				true,
-				L"\t\t: nmid ID: 0x%X\n", // STRING_OK
-				lpName->Kind.lID);
-		}
-		else
-		{
-			Outputf(
-				ulDbgLvl,
-				fFile,
-				true,
-				L"\t\t: nmid Name: %ws\n", // STRING_OK
-				lpName->Kind.lpwstrName);
-		}
-
-		Output(ulDbgLvl, fFile, false, guid::GUIDToStringAndName(lpName->lpguid));
-		Output(ulDbgLvl, fFile, false, L"\n");
-	}
-
 	void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO lpMAPIFormInfo)
 	{
 		CHKPARAM;
@@ -119,98 +89,9 @@ namespace output
 		EC_MAPI_S(lpMAPIFormInfo->CalcFormPropSet(NULL, &lpMAPIFormPropArray)); // API doesn't support Unicode
 		if (lpMAPIFormPropArray)
 		{
-			_OutputFormPropArray(ulDbgLvl, fFile, lpMAPIFormPropArray);
+			outputFormPropArray(ulDbgLvl, fFile, lpMAPIFormPropArray);
 			MAPIFreeBuffer(lpMAPIFormPropArray);
 		}
-	}
-
-	void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray)
-	{
-		Outputf(ulDbgLvl, fFile, true, L"\t0x%X Properties:\n", lpMAPIFormPropArray->cProps);
-		for (ULONG i = 0; i < lpMAPIFormPropArray->cProps; i++)
-		{
-			Outputf(ulDbgLvl, fFile, true, L"\t\tProperty 0x%X\n", i);
-
-			if (lpMAPIFormPropArray->aFormProp[i].ulFlags == MAPI_UNICODE)
-			{
-				Outputf(
-					ulDbgLvl,
-					fFile,
-					true,
-					L"\t\tProperty Name: %ws\n\t\tProperty Type: %ws\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n", // STRING_OK
-					LPWSTR(lpMAPIFormPropArray->aFormProp[i].pszDisplayName),
-					proptype::TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
-					lpMAPIFormPropArray->aFormProp[i].nSpecialType,
-					lpMAPIFormPropArray->aFormProp[i].u.s1.cfpevAvailable);
-			}
-			else
-			{
-				Outputf(
-					ulDbgLvl,
-					fFile,
-					true,
-					L"\t\tProperty Name: %hs\n\t\tProperty Type: %ws\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n", // STRING_OK
-					LPSTR(lpMAPIFormPropArray->aFormProp[i].pszDisplayName),
-					proptype::TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
-					lpMAPIFormPropArray->aFormProp[i].nSpecialType,
-					lpMAPIFormPropArray->aFormProp[i].u.s1.cfpevAvailable);
-			}
-
-			_OutputNamedPropID(ulDbgLvl, fFile, &lpMAPIFormPropArray->aFormProp[i].u.s1.nmidIdx);
-			for (ULONG j = 0; j < lpMAPIFormPropArray->aFormProp[i].u.s1.cfpevAvailable; j++)
-			{
-				if (lpMAPIFormPropArray->aFormProp[i].ulFlags == MAPI_UNICODE)
-				{
-					Outputf(
-						ulDbgLvl,
-						fFile,
-						true,
-						L"\t\t\tEnum 0x%X\nEnumVal Name: %ws\t\t\t\nEnumVal enumeration: 0x%X\n", // STRING_OK
-						j,
-						LPWSTR(lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].pszDisplayName),
-						lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].nVal);
-				}
-				else
-				{
-					Outputf(
-						ulDbgLvl,
-						fFile,
-						true,
-						L"\t\t\tEnum 0x%X\nEnumVal Name: %hs\t\t\t\nEnumVal enumeration: 0x%X\n", // STRING_OK
-						j,
-						LPSTR(lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].pszDisplayName),
-						lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].nVal);
-				}
-			}
-
-			_OutputNamedPropID(ulDbgLvl, fFile, &lpMAPIFormPropArray->aFormProp[i].nmid);
-		}
-	}
-
-	void _OutputPropTagArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagArray lpTagsToDump)
-	{
-		CHKPARAM;
-		EARLYABORT;
-		if (!lpTagsToDump) return;
-
-		Outputf(
-			ulDbgLvl,
-			fFile,
-			true,
-			L"\tProp tag list, %u props\n", // STRING_OK
-			lpTagsToDump->cValues);
-		for (ULONG uCurProp = 0; uCurProp < lpTagsToDump->cValues; uCurProp++)
-		{
-			Outputf(
-				ulDbgLvl,
-				fFile,
-				true,
-				L"\t\tProp: %u = %ws\n", // STRING_OK
-				uCurProp,
-				proptags::TagToString(lpTagsToDump->aulPropTag[uCurProp], nullptr, false, true).c_str());
-		}
-
-		Output(ulDbgLvl, fFile, true, L"\tEnd Prop Tag List\n");
 	}
 
 	void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPITable)
@@ -296,7 +177,7 @@ namespace output
 				sbin.cb = lpNotifications[i].info.err.cbEntryID;
 				sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.err.lpEntryID);
 				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.err.lpEntryID = ", i);
-				_OutputBinary(ulDbgLvl, fFile, sbin);
+				outputBinary(ulDbgLvl, fFile, sbin);
 				if (lpNotifications[i].info.err.lpMAPIError)
 				{
 					Outputf(
@@ -322,7 +203,7 @@ namespace output
 				sbin.cb = lpNotifications[i].info.ext.cb;
 				sbin.lpb = lpNotifications[i].info.ext.pbEventParameters;
 				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.ext.pbEventParameters = \n", i);
-				_OutputBinary(ulDbgLvl, fFile, sbin);
+				outputBinary(ulDbgLvl, fFile, sbin);
 				break;
 			case fnevNewMail:
 				Outputf(
@@ -335,11 +216,11 @@ namespace output
 				sbin.cb = lpNotifications[i].info.newmail.cbEntryID;
 				sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.newmail.lpEntryID);
 				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.newmail.lpEntryID = \n", i);
-				_OutputBinary(ulDbgLvl, fFile, sbin);
+				outputBinary(ulDbgLvl, fFile, sbin);
 				sbin.cb = lpNotifications[i].info.newmail.cbParentID;
 				sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.newmail.lpParentID);
 				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.newmail.lpParentID = \n", i);
-				_OutputBinary(ulDbgLvl, fFile, sbin);
+				outputBinary(ulDbgLvl, fFile, sbin);
 
 				if (lpNotifications[i].info.newmail.ulFlags & MAPI_UNICODE)
 				{
@@ -417,19 +298,19 @@ namespace output
 				sbin.cb = lpNotifications[i].info.obj.cbOldID;
 				sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.obj.lpOldID);
 				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpOldID = \n", i);
-				_OutputBinary(ulDbgLvl, fFile, sbin);
+				outputBinary(ulDbgLvl, fFile, sbin);
 				sbin.cb = lpNotifications[i].info.obj.cbOldParentID;
 				sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.obj.lpOldParentID);
 				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpOldParentID = \n", i);
-				_OutputBinary(ulDbgLvl, fFile, sbin);
+				outputBinary(ulDbgLvl, fFile, sbin);
 				sbin.cb = lpNotifications[i].info.obj.cbEntryID;
 				sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.obj.lpEntryID);
 				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpEntryID = \n", i);
-				_OutputBinary(ulDbgLvl, fFile, sbin);
+				outputBinary(ulDbgLvl, fFile, sbin);
 				sbin.cb = lpNotifications[i].info.obj.cbParentID;
 				sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.obj.lpParentID);
 				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpParentID = \n", i);
-				_OutputBinary(ulDbgLvl, fFile, sbin);
+				outputBinary(ulDbgLvl, fFile, sbin);
 				Outputf(
 					ulDbgLvl,
 					fFile,
@@ -447,7 +328,7 @@ namespace output
 
 				Outputf(ulDbgLvl, fFile, false, L"\n");
 				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpPropTagArray = \n", i);
-				_OutputPropTagArray(ulDbgLvl, fFile, lpNotifications[i].info.obj.lpPropTagArray);
+				outputPropTagArray(ulDbgLvl, fFile, lpNotifications[i].info.obj.lpPropTagArray);
 				break;
 			case fnevIndexing:
 				Outputf(
@@ -460,7 +341,7 @@ namespace output
 				sbin.cb = lpNotifications[i].info.ext.cb;
 				sbin.lpb = lpNotifications[i].info.ext.pbEventParameters;
 				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.ext.pbEventParameters = \n", i);
-				_OutputBinary(ulDbgLvl, fFile, sbin);
+				outputBinary(ulDbgLvl, fFile, sbin);
 				if (INDEXING_SEARCH_OWNER == lpNotifications[i].info.ext.ulEvent &&
 					sizeof(INDEX_SEARCH_PUSHER_PROCESS) == lpNotifications[i].info.ext.cb)
 				{
@@ -479,26 +360,6 @@ namespace output
 			}
 		}
 		Outputf(ulDbgLvl, fFile, true, L"End dumping notifications.\n");
-	}
-
-	void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList)
-	{
-		CHKPARAM;
-		EARLYABORT;
-		if (!lpEntryList) return;
-
-		Outputf(ulDbgLvl, fFile, true, L"Dumping %u entry IDs.\n", lpEntryList->cValues);
-
-		std::wstring szFlags;
-		std::wstring szPropNum;
-
-		for (ULONG i = 0; i < lpEntryList->cValues; i++)
-		{
-			Outputf(ulDbgLvl, fFile, true, L"lpEntryList->lpbin[%u]\n\t", i);
-			_OutputBinary(ulDbgLvl, fFile, lpEntryList->lpbin[i]);
-		}
-
-		Outputf(ulDbgLvl, fFile, true, L"End dumping entry list.\n");
 	}
 
 	void _OutputProperty(

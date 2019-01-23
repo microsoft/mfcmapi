@@ -12,7 +12,6 @@ namespace output
 
 	// We'll use macros to make these calls so the code will read right
 
-	void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin);
 	void _OutputProperty(
 		ULONG ulDbgLvl,
 		_In_opt_ FILE* fFile,
@@ -34,8 +33,6 @@ namespace output
 		_In_opt_ const _SRestriction* lpRes,
 		_In_opt_ LPMAPIPROP lpObj);
 	void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO lpMAPIFormInfo);
-	void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray);
-	void _OutputPropTagArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagArray lpTagsToDump);
 	void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPITable);
 	void _OutputNotifications(
 		ULONG ulDbgLvl,
@@ -43,20 +40,14 @@ namespace output
 		ULONG cNotify,
 		_In_count_(cNotify) LPNOTIFICATION lpNotifications,
 		_In_opt_ LPMAPIPROP lpObj);
-	void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList);
 
-#define DebugPrintBinary(ulDbgLvl, bin) _OutputBinary((ulDbgLvl), nullptr, (bin))
 #define DebugPrintProperties(ulDbgLvl, cProps, lpProps, lpObj) \
 	_OutputProperties((ulDbgLvl), nullptr, (cProps), (lpProps), (lpObj), false)
 #define DebugPrintRestriction(ulDbgLvl, lpRes, lpObj) _OutputRestriction((ulDbgLvl), nullptr, (lpRes), (lpObj))
 #define DebugPrintFormInfo(ulDbgLvl, lpMAPIFormInfo) _OutputFormInfo((ulDbgLvl), nullptr, (lpMAPIFormInfo))
-#define DebugPrintFormPropArray(ulDbgLvl, lpMAPIFormPropArray) \
-	_OutputFormPropArray((ulDbgLvl), nullptr, (lpMAPIFormPropArray))
-#define DebugPrintPropTagArray(ulDbgLvl, lpTagsToDump) _OutputPropTagArray((ulDbgLvl), nullptr, (lpTagsToDump))
 #define DebugPrintNotifications(ulDbgLvl, cNotify, lpNotifications, lpObj) \
 	_OutputNotifications((ulDbgLvl), nullptr, (cNotify), (lpNotifications), (lpObj))
 #define DebugPrintSRowSet(ulDbgLvl, lpRowSet, lpObj) _OutputSRowSet((ulDbgLvl), nullptr, (lpRowSet), (lpObj))
-#define DebugPrintEntryList(ulDbgLvl, lpEntryList) _OutputEntryList((ulDbgLvl), nullptr, (lpEntryList))
 
 #define OutputStreamToFile(fFile, lpStream) _OutputStream(DBGNoDebug, (fFile), (lpStream))
 #define OutputTableToFile(fFile, lpMAPITable) _OutputTable(DBGNoDebug, (fFile), (lpMAPITable))

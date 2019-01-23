@@ -267,16 +267,6 @@ namespace output
 			Output(ulDbgLvl, fFile, false, L"\t");
 	}
 
-	void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin)
-	{
-		CHKPARAM;
-		EARLYABORT;
-
-		Output(ulDbgLvl, fFile, false, strings::BinToHexString(&bin, true));
-
-		Output(ulDbgLvl, fFile, false, L"\n");
-	}
-
 #define MAXBYTES 4096
 	void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 	{

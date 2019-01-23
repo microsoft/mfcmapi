@@ -515,6 +515,7 @@
     <ClInclude Include="mapi\interfaces.h" />
     <ClInclude Include="mapi\mapiFunctions.h" />
     <ClInclude Include="mapi\mapiMemory.h" />
+    <ClInclude Include="mapi\mapiOutput.h" />
     <ClInclude Include="mapi\mapiProgress.h" />
     <ClInclude Include="mapi\stubutils.h" />
     <ClInclude Include="addin\mfcmapi.h" />
@@ -541,6 +542,7 @@
     <ClCompile Include="mapi\cache\mapiObjects.cpp" />
     <ClCompile Include="mapi\cache\namedPropCache.cpp" />
     <ClCompile Include="mapi\mapiFunctions.cpp" />
+    <ClCompile Include="mapi\mapiOutput.cpp" />
     <ClCompile Include="mapi\mapiProgress.cpp" />
     <ClCompile Include="mapi\mapiStubLibrary.cpp" />
     <ClCompile Include="mapi\stubutils.cpp" />

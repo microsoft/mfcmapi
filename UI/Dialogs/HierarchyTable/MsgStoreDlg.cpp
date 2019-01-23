@@ -23,6 +23,7 @@
 #include <core/interpret/flags.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiOutput.h>
 
 namespace dialog
 {
@@ -779,7 +780,7 @@ namespace dialog
 						L"OnDeleteSelectedItem",
 						L"Calling DeleteFolder on folder. ulFlags = 0x%08X.\n",
 						ulFlags);
-					output::DebugPrintBinary(DBGGeneric, *lpItemEID);
+					output::outputBinary(DBGGeneric, nullptr, *lpItemEID);
 
 					auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteFolder", m_hWnd); // STRING_OK
 

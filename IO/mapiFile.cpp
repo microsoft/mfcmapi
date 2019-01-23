@@ -6,11 +6,11 @@
 #include <core/utility/strings.h>
 #include <core/mapi/mapiProgress.h>
 #include <core/utility/import.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/output.h>
 #include <core/interpret/guid.h>
 #include <core/utility/error.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiOutput.h>
 
 namespace file
 {
@@ -467,7 +467,7 @@ namespace file
 		output::DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szPathName.c_str());
 
 		output::DebugPrint(DBGGeneric, L"Source Message =\n");
-		output::DebugPrintBinary(DBGGeneric, entryID.Value.bin);
+		output::outputBinary(DBGGeneric, nullptr, entryID.Value.bin);
 
 		auto lpMapiContainer = mapi::safe_cast<LPMAPICONTAINER>(lpFolder);
 		if (lpMapiContainer)

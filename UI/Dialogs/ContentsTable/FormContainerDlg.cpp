@@ -16,6 +16,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiOutput.h>
 
 namespace dialog
 {
@@ -415,7 +416,7 @@ namespace dialog
 		EC_MAPI_S(m_lpFormContainer->CalcFormPropSet(ulFlags, &lpFormPropArray));
 		if (lpFormPropArray)
 		{
-			output::DebugPrintFormPropArray(DBGForms, lpFormPropArray);
+			output::outputFormPropArray(DBGForms, nullptr, lpFormPropArray);
 			MAPIFreeBuffer(lpFormPropArray);
 		}
 	}

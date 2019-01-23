@@ -9,6 +9,7 @@
 #include <core/utility/error.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/interfaces.h>
+#include <core/mapi/mapiOutput.h>
 
 namespace mapi
 {
@@ -508,7 +509,7 @@ namespace mapi
 						sizeof(EXCHANGE_STORE_VERSION_NUM) == lpServerFullVersion->Value.bin.cb)
 					{
 						output::DebugPrint(DBGGeneric, L"PR_PROFILE_SERVER_FULL_VERSION = ");
-						output::DebugPrintBinary(DBGGeneric, lpServerFullVersion->Value.bin);
+						output::outputBinary(DBGGeneric, nullptr, lpServerFullVersion->Value.bin);
 						output::DebugPrint(DBGGeneric, L"\n");
 
 						memcpy(lpStoreVersion, lpServerFullVersion->Value.bin.lpb, sizeof(EXCHANGE_STORE_VERSION_NUM));
@@ -561,7 +562,7 @@ namespace mapi
 			if (!lpServiceUID || !lpServiceAdmin) return nullptr;
 
 			output::DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
-			output::DebugPrintBinary(DBGOpenItemProp, *lpServiceUID);
+			output::outputBinary(DBGOpenItemProp, nullptr, *lpServiceUID);
 			output::DebugPrint(DBGOpenItemProp, L"\n");
 
 			LPPROFSECT lpProfSect = nullptr;
@@ -608,7 +609,7 @@ namespace mapi
 			if (!lpProviderUID || !lpProviderAdmin) return nullptr;
 
 			output::DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
-			output::DebugPrintBinary(DBGOpenItemProp, *lpProviderUID);
+			output::outputBinary(DBGOpenItemProp, nullptr, *lpProviderUID);
 			output::DebugPrint(DBGOpenItemProp, L"\n");
 
 			LPPROFSECT lpProfSect = nullptr;

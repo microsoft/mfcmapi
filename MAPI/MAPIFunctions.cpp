@@ -14,6 +14,7 @@
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiOutput.h>
 
 namespace mapi
 {
@@ -334,7 +335,7 @@ namespace mapi
 	{
 		if (!bin.lpb || !lpSrcFolder || !lpDestFolder) return MAPI_E_INVALID_PARAMETER;
 		output::DebugPrint(DBGGeneric, L"Source Message =\n");
-		output::DebugPrintBinary(DBGGeneric, bin);
+		output::outputBinary(DBGGeneric, nullptr, bin);
 
 		auto sbaEID = SBinaryArray{1, const_cast<LPSBinary>(&bin)};
 
@@ -1126,7 +1127,7 @@ namespace mapi
 			LPSPropProblemArray lpProbArray = nullptr;
 
 			output::DebugPrint(DBGNamedProp, L"RemoveOneOff - identified the following properties.\n");
-			output::DebugPrintPropTagArray(DBGNamedProp, lpTags);
+			output::outputPropTagArray(DBGNamedProp, nullptr, lpTags);
 
 			// The last prop is the flag value we'll be updating, don't count it
 			lpTags->cValues = ulNumOneOffIDs - 1;

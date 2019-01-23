@@ -7,6 +7,7 @@
 #include <core/utility/strings.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
+#include <core/mapi/mapiOutput.h>
 
 namespace mapi
 {
@@ -311,7 +312,7 @@ namespace mapi
 						if (PR_ENTRYID == lpABRow->aRow->lpProps[abcPR_ENTRYID].ulPropTag)
 						{
 							output::DebugPrint(DBGGeneric, L"ManualResolve: Searching this container\n");
-							output::DebugPrintBinary(DBGGeneric, lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin);
+							output::outputBinary(DBGGeneric, nullptr, lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin);
 
 							if (lpABContainer) lpABContainer->Release();
 							lpABContainer = mapi::CallOpenEntry<LPABCONT>(
