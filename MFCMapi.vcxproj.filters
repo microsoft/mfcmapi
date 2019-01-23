@@ -106,7 +106,9 @@
     <ClInclude Include="UI\profile.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="IO\mapiFile.h" />
+    <ClInclude Include="IO\mapiFile.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Enums.h">
@@ -145,9 +147,6 @@
     <ClCompile Include="UI\profile.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
-    <ClCompile Include="IO\mapiFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IO\ExportProfile.cpp">
@@ -159,6 +158,9 @@
     <ClInclude Include="IO\MFCOutput.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
+    <ClCompile Include="IO\mapiFile.cpp">
+      <Filter>Source Files\IO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Interpret\InterpretProp.cpp">
