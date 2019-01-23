@@ -3,30 +3,6 @@
 
 namespace mapi
 {
-	struct CopyDetails
-	{
-		bool valid{};
-		ULONG flags{};
-		GUID guid{};
-		LPMAPIPROGRESS progress{};
-		ULONG_PTR uiParam{};
-		LPSPropTagArray excludedTags{};
-		bool allocated{};
-		void clean() const
-		{
-			if (progress) progress->Release();
-			if (allocated) MAPIFreeBuffer(excludedTags);
-		}
-	};
-
-	extern std::function<CopyDetails(
-		HWND hWnd,
-		_In_ LPMAPIPROP lpSource,
-		LPCGUID lpGUID,
-		_In_opt_ LPSPropTagArray lpTagArray,
-		bool bIsAB)>
-		GetCopyDetails;
-
 	_Check_return_ LPSPropTagArray
 	ConcatSPropTagArrays(_In_ LPSPropTagArray lpArray1, _In_opt_ LPSPropTagArray lpArray2);
 	_Check_return_ HRESULT CopyPropertyAsStream(
@@ -45,8 +21,8 @@ namespace mapi
 	CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, bool bReplace);
 	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ LPVOID parent = nullptr);
 	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* src);
-	_Check_return_ LPSTR CopyStringA(_In_z_ LPCSTR szSource, _In_opt_ LPVOID pParent);
-	_Check_return_ LPWSTR CopyStringW(_In_z_ LPCWSTR szSource, _In_opt_ LPVOID pParent);
+	_Check_return_ LPSTR CopyStringA(_In_z_ LPCSTR src, _In_opt_ LPVOID pParent);
+	_Check_return_ LPWSTR CopyStringW(_In_z_ LPCWSTR src, _In_opt_ LPVOID pParent);
 #ifdef UNICODE
 #define CopyString CopyStringW
 #else
@@ -169,14 +145,6 @@ namespace mapi
 	bool UnwrapContactEntryID(_In_ ULONG cbIn, _In_ LPBYTE lpbIn, _Out_ ULONG* lpcbOut, _Out_ LPBYTE* lppbOut);
 
 	LPSPropTagArray GetExcludedTags(_In_opt_ LPSPropTagArray lpTagArray, _In_opt_ LPMAPIPROP lpProp, bool bIsAB);
-	HRESULT CopyTo(
-		HWND hWnd,
-		_In_ LPMAPIPROP lpSource,
-		_In_ LPMAPIPROP lpDest,
-		LPCGUID lpGUID,
-		_In_opt_ LPSPropTagArray lpTagArray,
-		bool bIsAB,
-		bool bAllowUI);
 
 	// Augemented version of HrGetOneProp which allows passing flags to underlying GetProps
 	// Useful for passing fMapiUnicode for unspecified string/stream types

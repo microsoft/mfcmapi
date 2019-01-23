@@ -1982,56 +1982,6 @@ namespace mapi
 		return false;
 	}
 
-	std::function<CopyDetails(
-		HWND hWnd,
-		_In_ LPMAPIPROP lpSource,
-		LPCGUID lpGUID,
-		_In_opt_ LPSPropTagArray lpTagArray,
-		bool bIsAB)>
-		GetCopyDetails;
-
-	// Performs CopyTo operation from source to destination, optionally prompting for exclusions
-	// Does not save changes - caller should do this.
-	HRESULT CopyTo(
-		HWND hWnd,
-		_In_ LPMAPIPROP lpSource,
-		_In_ LPMAPIPROP lpDest,
-		LPCGUID lpGUID,
-		_In_opt_ LPSPropTagArray lpTagArray,
-		bool bIsAB,
-		bool bAllowUI)
-	{
-		if (!lpSource || !lpDest) return MAPI_E_INVALID_PARAMETER;
-
-		auto copyDetails = (GetCopyDetails && bAllowUI)
-							   ? GetCopyDetails(hWnd, lpSource, lpGUID, lpTagArray, bIsAB)
-							   : CopyDetails{true, 0, *lpGUID, nullptr, NULL, lpTagArray, false};
-		if (copyDetails.valid)
-		{
-			auto lpProblems = LPSPropProblemArray{};
-			const auto hRes = WC_MAPI(lpSource->CopyTo(
-				0,
-				nullptr,
-				copyDetails.excludedTags,
-				copyDetails.uiParam,
-				copyDetails.progress,
-				&copyDetails.guid,
-				lpDest,
-				copyDetails.flags,
-				&lpProblems));
-			if (lpProblems)
-			{
-				WC_PROBLEMARRAY(lpProblems);
-				MAPIFreeBuffer(lpProblems);
-			}
-
-			copyDetails.clean();
-			return hRes;
-		}
-
-		return MAPI_E_USER_CANCEL;
-	}
-
 	// Augemented version of HrGetOneProp which allows passing flags to underlying GetProps
 	// Useful for passing fMapiUnicode for unspecified string/stream types
 	HRESULT

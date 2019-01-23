@@ -3,6 +3,30 @@
 
 namespace mapi
 {
+	struct CopyDetails
+	{
+		bool valid{};
+		ULONG flags{};
+		GUID guid{};
+		LPMAPIPROGRESS progress{};
+		ULONG_PTR uiParam{};
+		LPSPropTagArray excludedTags{};
+		bool allocated{};
+		void clean() const
+		{
+			if (progress) progress->Release();
+			if (allocated) MAPIFreeBuffer(excludedTags);
+		}
+	};
+
+	extern std::function<CopyDetails(
+		HWND hWnd,
+		_In_ LPMAPIPROP lpSource,
+		LPCGUID lpGUID,
+		_In_opt_ LPSPropTagArray lpTagArray,
+		bool bIsAB)>
+		GetCopyDetails;
+
 	// Safely cast across MAPI interfaces. Result is addrefed and must be released.
 	template <class T> T safe_cast(IUnknown* src);
 
@@ -72,4 +96,13 @@ namespace mapi
 
 	_Check_return_ LPSPropValue GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
 	_Check_return_ LPSPropValue GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
+
+	HRESULT CopyTo(
+		HWND hWnd,
+		_In_ LPMAPIPROP lpSource,
+		_In_ LPMAPIPROP lpDest,
+		LPCGUID lpGUID,
+		_In_opt_ LPSPropTagArray lpTagArray,
+		bool bIsAB,
+		bool bAllowUI);
 } // namespace mapi
