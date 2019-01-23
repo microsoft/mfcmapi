@@ -100,7 +100,7 @@ namespace error
 		return strings::format(L"0x%08X", hrErr); // STRING_OK
 	}
 
-		std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems)
+	std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems)
 	{
 		std::wstring szOut;
 		for (ULONG i = 0; i < problems.cProblem; i++)
@@ -126,6 +126,23 @@ namespace error
 			err.ulLowLevelError,
 			ErrorNameFromErrorCode(err.ulLowLevelError).c_str(),
 			err.ulContext);
+
+		return szOut;
+	}
+
+	std::wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error)
+	{
+		std::wstring szOut;
+		for (ULONG iError = 0; iError < error.cProblem; iError++)
+		{
+			szOut += strings::formatmessage(
+				IDS_TNEFPROBARRAY,
+				error.aProblem[iError].ulComponent,
+				error.aProblem[iError].ulAttribute,
+				proptags::TagToString(error.aProblem[iError].ulPropTag, nullptr, false, false).c_str(),
+				error.aProblem[iError].scode,
+				ErrorNameFromErrorCode(error.aProblem[iError].scode).c_str());
+		}
 
 		return szOut;
 	}

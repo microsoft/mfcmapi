@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 #include <IO/mapiFile.h>
 #include <core/utility/file.h>
-#include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <core/mapi/mapiProgress.h>

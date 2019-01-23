@@ -10,23 +10,6 @@
 
 namespace interpretprop
 {
-	std::wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error)
-	{
-		std::wstring szOut;
-		for (ULONG iError = 0; iError < error.cProblem; iError++)
-		{
-			szOut += strings::formatmessage(
-				IDS_TNEFPROBARRAY,
-				error.aProblem[iError].ulComponent,
-				error.aProblem[iError].ulAttribute,
-				proptags::TagToString(error.aProblem[iError].ulPropTag, nullptr, false, false).c_str(),
-				error.aProblem[iError].scode,
-				error::ErrorNameFromErrorCode(error.aProblem[iError].scode).c_str());
-		}
-
-		return szOut;
-	}
-
 	// There may be restrictions with over 100 nested levels, but we're not going to try to parse them
 #define _MaxRestrictionNesting 100
 

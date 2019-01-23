@@ -71,6 +71,7 @@ namespace error
 
 	std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems);
 	std::wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err);
+	std::wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error);
 } // namespace error
 
 #define CheckHResFn(hRes, hrIgnore, bDisplayDialog, szFunction, uidErrorMsg, szFile, iLine) \
@@ -416,7 +417,7 @@ namespace error
 	{ \
 		if (problemarray) \
 		{ \
-			const std::wstring szProbArray = interpretprop::TnefProblemArrayToString(*(problemarray)); \
+			const std::wstring szProbArray = error::TnefProblemArrayToString(*(problemarray)); \
 			error::ErrDialog(__FILE__, __LINE__, IDS_EDTNEFPROBLEMARRAY, szProbArray.c_str()); \
 			output::DebugPrint(DBGGeneric, L"TNEF Problem array:\n%ws\n", szProbArray.c_str()); \
 		} \

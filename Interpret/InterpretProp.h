@@ -2,8 +2,6 @@
 
 namespace interpretprop
 {
-	std::wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error);
-
 	std::wstring RestrictionToString(_In_ const _SRestriction* lpRes, _In_opt_ LPMAPIPROP lpObj);
 	std::wstring ActionsToString(_In_ const ACTIONS& actions);
 
