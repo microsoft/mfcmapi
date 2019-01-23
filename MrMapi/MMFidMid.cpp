@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <MrMapi/MMFidMid.h>
-#include <MAPI/MAPIFunctions.h>
 #include <MAPI/MAPIProcessor/MapiProcessor.h>
 #include <core/mapi/extraPropTags.h>
 #include <Interpret/SmartView/SmartView.h>
@@ -8,6 +7,7 @@
 #include <MrMapi/cli.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace mapiprocessor
 {

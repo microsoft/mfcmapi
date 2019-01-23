@@ -6,6 +6,59 @@ namespace mapi
 	// Safely cast across MAPI interfaces. Result is addrefed and must be released.
 	template <class T> T safe_cast(IUnknown* src);
 
+	LPUNKNOWN CallOpenEntry(
+		_In_opt_ LPMDB lpMDB,
+		_In_opt_ LPADRBOOK lpAB,
+		_In_opt_ LPMAPICONTAINER lpContainer,
+		_In_opt_ LPMAPISESSION lpMAPISession,
+		ULONG cbEntryID,
+		_In_opt_ LPENTRYID lpEntryID,
+		_In_opt_ LPCIID lpInterface,
+		ULONG ulFlags,
+		_Out_opt_ ULONG* ulObjTypeRet); // optional - can be NULL
+
+	template <class T>
+	T CallOpenEntry(
+		_In_opt_ LPMDB lpMDB,
+		_In_opt_ LPADRBOOK lpAB,
+		_In_opt_ LPMAPICONTAINER lpContainer,
+		_In_opt_ LPMAPISESSION lpMAPISession,
+		ULONG cbEntryID,
+		_In_opt_ LPENTRYID lpEntryID,
+		_In_opt_ LPCIID lpInterface,
+		ULONG ulFlags,
+		_Out_opt_ ULONG* ulObjTypeRet) // optional - can be NULL
+	{
+		auto lpUnk = CallOpenEntry(
+			lpMDB, lpAB, lpContainer, lpMAPISession, cbEntryID, lpEntryID, lpInterface, ulFlags, ulObjTypeRet);
+		auto retVal = mapi::safe_cast<T>(lpUnk);
+		if (lpUnk) lpUnk->Release();
+		return retVal;
+	}
+
+	template <class T>
+	T CallOpenEntry(
+		_In_opt_ LPMDB lpMDB,
+		_In_opt_ LPADRBOOK lpAB,
+		_In_opt_ LPMAPICONTAINER lpContainer,
+		_In_opt_ LPMAPISESSION lpMAPISession,
+		_In_opt_ const SBinary* lpSBinary,
+		_In_opt_ LPCIID lpInterface,
+		ULONG ulFlags,
+		_Out_opt_ ULONG* ulObjTypeRet) // optional - can be NULL
+	{
+		return CallOpenEntry<T>(
+			lpMDB,
+			lpAB,
+			lpContainer,
+			lpMAPISession,
+			lpSBinary ? lpSBinary->cb : 0,
+			reinterpret_cast<LPENTRYID>(lpSBinary ? lpSBinary->lpb : nullptr),
+			lpInterface,
+			ulFlags,
+			ulObjTypeRet);
+	}
+
 	_Check_return_ ULONG GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp);
 
 	_Check_return_ std::wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID);

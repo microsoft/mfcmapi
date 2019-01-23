@@ -6,6 +6,7 @@
 #include <core/utility/strings.h>
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace mapiprocessor
 {

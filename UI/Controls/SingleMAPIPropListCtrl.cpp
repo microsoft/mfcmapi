@@ -32,6 +32,7 @@
 #include <core/interpret/proptags.h>
 #include <core/interpret/proptype.h>
 #include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace controls
 {

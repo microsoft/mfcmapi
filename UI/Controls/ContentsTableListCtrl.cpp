@@ -23,6 +23,7 @@
 #include <core/interpret/flags.h>
 #include <core/interpret/proptags.h>
 #include <core/mapi/mapiOutput.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace controls
 {
