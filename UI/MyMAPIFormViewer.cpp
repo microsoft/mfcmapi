@@ -2,14 +2,12 @@
 
 #include <StdAfx.h>
 #include <UI/MyMAPIFormViewer.h>
-#include <MAPI/MAPIFunctions.h>
 #include <UI/MAPIFormFunctions.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <core/interpret/guid.h>
 #include <UI/MyWinApp.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <Interpret/InterpretProp.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>

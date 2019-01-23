@@ -3,7 +3,6 @@
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <MAPI/MAPIABFunctions.h>
-#include <Interpret/InterpretProp.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/mapi/mapiProgress.h>
 #include <core/interpret/guid.h>
@@ -996,7 +995,7 @@ namespace mapi
 					output::DebugPrint(
 						DBGNamedProp,
 						L"RemoveOneOff - DeleteProps problem array:\n%ws\n",
-						interpretprop::ProblemArrayToString(*lpProbArray).c_str());
+						error::ProblemArrayToString(*lpProbArray).c_str());
 				}
 
 				ULONG cProp = 0;
@@ -1022,7 +1021,7 @@ namespace mapi
 						output::DebugPrint(
 							DBGNamedProp,
 							L"RemoveOneOff - SetProps problem array:\n%ws\n",
-							interpretprop::ProblemArrayToString(*lpProbArray2).c_str());
+							error::ProblemArrayToString(*lpProbArray2).c_str());
 					}
 
 					MAPIFreeBuffer(lpProbArray2);

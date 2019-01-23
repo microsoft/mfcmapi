@@ -68,6 +68,9 @@ namespace error
 	typedef ERROR_ARRAY_ENTRY* LPERROR_ARRAY_ENTRY;
 
 	inline _Check_return_ HRESULT CheckMe(const HRESULT hRes) noexcept { return hRes; }
+
+	std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems);
+	std::wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err);
 } // namespace error
 
 #define CheckHResFn(hRes, hrIgnore, bDisplayDialog, szFunction, uidErrorMsg, szFile, iLine) \
@@ -286,7 +289,7 @@ namespace error
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, __ignore, true, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes == __ignore ? S_OK : __hRes; \
+		return __hRes == (__ignore) ? S_OK : __hRes; \
 	}())
 #define EC_H_GETPROPS(fnx) EC_H_IGNORE(MAPI_W_ERRORS_RETURNED, fnx)
 
@@ -313,7 +316,7 @@ namespace error
 	error::CheckMe([&]() -> HRESULT { \
 		const auto __hRes = (fnx); \
 		error::LogFunctionCall(__hRes, __ignore, false, true, false, NULL, #fnx, __FILE__, __LINE__); \
-		return __hRes == __ignore ? S_OK : __hRes; \
+		return __hRes == (__ignore) ? S_OK : __hRes; \
 	}())
 #define WC_H_GETPROPS(fnx) WC_H_IGNORE(MAPI_W_ERRORS_RETURNED, fnx)
 
@@ -384,7 +387,7 @@ namespace error
 	{ \
 		if (problemarray) \
 		{ \
-			const std::wstring szProbArray = interpretprop::ProblemArrayToString(*(problemarray)); \
+			const std::wstring szProbArray = error::ProblemArrayToString(*(problemarray)); \
 			error::ErrDialog(__FILE__, __LINE__, IDS_EDPROBLEMARRAY, szProbArray.c_str()); \
 			output::DebugPrint(DBGGeneric, L"Problem array:\n%ws\n", szProbArray.c_str()); \
 		} \
@@ -394,7 +397,7 @@ namespace error
 	{ \
 		if (problemarray) \
 		{ \
-			const std::wstring szProbArray = interpretprop::ProblemArrayToString(*(problemarray)); \
+			const std::wstring szProbArray = error::ProblemArrayToString(*(problemarray)); \
 			output::DebugPrint(DBGGeneric, L"Problem array:\n%ws\n", szProbArray.c_str()); \
 		} \
 	}
@@ -403,7 +406,7 @@ namespace error
 	{ \
 		if (__lperr) \
 		{ \
-			const std::wstring szErr = interpretprop::MAPIErrToString((__ulflags), *(__lperr)); \
+			const std::wstring szErr = error::MAPIErrToString((__ulflags), *(__lperr)); \
 			error::ErrDialog(__FILE__, __LINE__, IDS_EDMAPIERROR, szErr.c_str()); \
 			output::DebugPrint(DBGGeneric, L"LPMAPIERROR:\n%ws\n", szErr.c_str()); \
 		} \

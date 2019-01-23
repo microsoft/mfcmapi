@@ -10,7 +10,6 @@
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <core/mapi/cache/globalCache.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
 #include <core/utility/strings.h>

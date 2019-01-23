@@ -186,7 +186,7 @@ namespace output
 						true,
 						L"lpNotifications[%u].info.err.lpMAPIError = %s\n",
 						i,
-						interpretprop::MAPIErrToString(
+						error::MAPIErrToString(
 							lpNotifications[i].info.err.ulFlags, *lpNotifications[i].info.err.lpMAPIError)
 							.c_str());
 				}

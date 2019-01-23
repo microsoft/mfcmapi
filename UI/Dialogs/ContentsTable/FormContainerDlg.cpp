@@ -9,7 +9,6 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/FileDialogEx.h>
-#include <Interpret/InterpretProp.h>
 #include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
 #include <IO/MFCOutput.h>

@@ -5,7 +5,6 @@
 #include <core/mapi/columnTags.h>
 #include <UI/UIFunctions.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <Interpret/InterpretProp.h>
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
 

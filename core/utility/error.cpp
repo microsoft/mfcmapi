@@ -4,6 +4,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/utility/registry.h>
+#include <core/interpret/proptags.h>
 
 namespace error
 {
@@ -97,5 +98,35 @@ namespace error
 		}
 
 		return strings::format(L"0x%08X", hrErr); // STRING_OK
+	}
+
+		std::wstring ProblemArrayToString(_In_ const SPropProblemArray& problems)
+	{
+		std::wstring szOut;
+		for (ULONG i = 0; i < problems.cProblem; i++)
+		{
+			szOut += strings::formatmessage(
+				IDS_PROBLEMARRAY,
+				problems.aProblem[i].ulIndex,
+				proptags::TagToString(problems.aProblem[i].ulPropTag, nullptr, false, false).c_str(),
+				problems.aProblem[i].scode,
+				ErrorNameFromErrorCode(problems.aProblem[i].scode).c_str());
+		}
+
+		return szOut;
+	}
+
+	std::wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err)
+	{
+		auto szOut = strings::formatmessage(
+			ulFlags & MAPI_UNICODE ? IDS_MAPIERRUNICODE : IDS_MAPIERRANSI,
+			err.ulVersion,
+			err.lpszError,
+			err.lpszComponent,
+			err.ulLowLevelError,
+			ErrorNameFromErrorCode(err.ulLowLevelError).c_str(),
+			err.ulContext);
+
+		return szOut;
 	}
 } // namespace error

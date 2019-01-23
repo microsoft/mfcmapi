@@ -7,7 +7,6 @@
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <Interpret/InterpretProp.h>
 #include <core/utility/file.h>
 #include <core/mapi/mapiProgress.h>
 #include <UI/Controls/SortList/NodeData.h>

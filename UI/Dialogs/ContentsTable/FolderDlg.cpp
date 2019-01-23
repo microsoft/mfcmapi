@@ -14,7 +14,6 @@
 #include <core/utility/file.h>
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/MAPIFormFunctions.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/FileDialogEx.h>
 #include <core/mapi/extraPropTags.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
