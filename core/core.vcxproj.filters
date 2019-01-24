@@ -240,6 +240,9 @@
     <ClInclude Include="property\parseProperty.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\mapiOutput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">

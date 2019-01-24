@@ -517,6 +517,7 @@
     <ClInclude Include="mapi\mapiFunctions.h" />
     <ClInclude Include="mapi\mapiMemory.h" />
     <ClInclude Include="mapi\mapiMime.h" />
+    <ClInclude Include="mapi\mapiOutput.h" />
     <ClInclude Include="mapi\mapiProgress.h" />
     <ClInclude Include="mapi\mapiStoreFunctions.h" />
     <ClInclude Include="mapi\stubutils.h" />
