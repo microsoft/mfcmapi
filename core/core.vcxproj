@@ -521,6 +521,7 @@
     <ClInclude Include="mapi\mapiProfileFunctions.h" />
     <ClInclude Include="mapi\mapiProgress.h" />
     <ClInclude Include="mapi\mapiStoreFunctions.h" />
+    <ClInclude Include="mapi\processor\mapiProcessor.h" />
     <ClInclude Include="mapi\stubutils.h" />
     <ClInclude Include="addin\mfcmapi.h" />
     <ClInclude Include="mapi\version.h" />
@@ -590,6 +591,7 @@
     <ClCompile Include="mapi\mapiProgress.cpp" />
     <ClCompile Include="mapi\mapiStoreFunctions.cpp" />
     <ClCompile Include="mapi\mapiStubLibrary.cpp" />
+    <ClCompile Include="mapi\processor\mapiProcessor.cpp" />
     <ClCompile Include="mapi\stubutils.cpp" />
     <ClCompile Include="mapi\version.cpp" />
     <ClCompile Include="property\attributes.cpp" />

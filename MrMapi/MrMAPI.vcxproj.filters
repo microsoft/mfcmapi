@@ -158,12 +158,6 @@
     <ClInclude Include="..\MAPI\MAPIProcessor\DumpStore.h">
       <Filter>Source Files\MAPI\MAPIProcessor</Filter>
     </ClInclude>
-    <ClCompile Include="..\MAPI\MAPIProcessor\MapiProcessor.cpp">
-      <Filter>Source Files\MAPI\MAPIProcessor</Filter>
-    </ClCompile>
-    <ClInclude Include="..\MAPI\MAPIProcessor\MapiProcessor.h">
-      <Filter>Source Files\MAPI\MAPIProcessor</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\PropertyBag\MAPIPropPropertyBag.cpp">

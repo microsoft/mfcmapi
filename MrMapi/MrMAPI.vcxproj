@@ -560,7 +560,6 @@
     <ClInclude Include="..\Enums.h" />
     <ClInclude Include="..\MAPI\MAPIABFunctions.h" />
     <ClInclude Include="..\MAPI\MAPIFunctions.h" />
-    <ClInclude Include="..\MAPI\MAPIProcessor\MapiProcessor.h" />
     <ClInclude Include="..\IO\ExportProfile.h" />
     <ClInclude Include="..\PropertyBag\MAPIPropPropertyBag.h" />
     <ClInclude Include="..\PropertyBag\PropertyBag.h" />
@@ -590,7 +589,6 @@
     <ClCompile Include="..\MAPI\MAPIProcessor\DumpStore.cpp" />
     <ClCompile Include="..\MAPI\MAPIABFunctions.cpp" />
     <ClCompile Include="..\MAPI\MAPIFunctions.cpp" />
-    <ClCompile Include="..\MAPI\MAPIProcessor\MapiProcessor.cpp" />
     <ClCompile Include="..\IO\ExportProfile.cpp" />
     <ClCompile Include="..\PropertyBag\MAPIPropPropertyBag.cpp" />
     <ClCompile Include="MrMAPI.cpp">

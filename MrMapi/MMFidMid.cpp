@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <MrMapi/MMFidMid.h>
-#include <MAPI/MAPIProcessor/MapiProcessor.h>
+#include <core/mapi/processor/mapiProcessor.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/smartview/SmartView.h>
 #include <core/utility/strings.h>
@@ -26,7 +26,7 @@ namespace mapiprocessor
 			L" %-15ws %wc %ws (%ws)\n", szMid.c_str(), fAssociated ? L'A' : L'R', szSubject.c_str(), szClass.c_str());
 	}
 
-	class CFindFidMid : public CMAPIProcessor
+	class CFindFidMid : public mapi::processor::mapiProcessor
 	{
 	public:
 		CFindFidMid();
