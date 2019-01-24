@@ -105,4 +105,7 @@ namespace mapi
 		_In_opt_ LPSPropTagArray lpTagArray,
 		bool bIsAB,
 		bool bAllowUI);
+
+	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ LPVOID parent = nullptr);
+	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* src);
 } // namespace mapi

@@ -1,8 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/NodeData.h>
 #include <MAPI/AdviseSink.h>
-#include <MAPI/MAPIFunctions.h>
-#include <core/mapi/mapiMemory.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace controls
 {

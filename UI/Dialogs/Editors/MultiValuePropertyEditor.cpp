@@ -10,6 +10,7 @@
 #include <core/utility/output.h>
 #include <core/interpret/proptags.h>
 #include <core/addin/mfcmapi.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {

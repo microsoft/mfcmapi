@@ -459,25 +459,6 @@ namespace mapi
 		return hRes;
 	}
 
-	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ LPVOID parent)
-	{
-		const auto dst = SBinary{src.cb, mapi::allocate<LPBYTE>(src.cb, parent)};
-		if (src.cb) CopyMemory(dst.lpb, src.lpb, src.cb);
-		return dst;
-	}
-
-	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* src)
-	{
-		if (!src) return nullptr;
-		const auto dst = mapi::allocate<LPSBinary>(static_cast<ULONG>(sizeof(SBinary)));
-		if (dst)
-		{
-			*dst = CopySBinary(*src, dst);
-		}
-
-		return dst;
-	}
-
 	///////////////////////////////////////////////////////////////////////////////
 	// CopyString()
 	//
