@@ -2,7 +2,7 @@
 #include <StdAfx.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
-#include <MAPI/MAPIABFunctions.h>
+#include <core/mapi/mapiABFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/mapi/mapiProgress.h>
 #include <core/interpret/guid.h>

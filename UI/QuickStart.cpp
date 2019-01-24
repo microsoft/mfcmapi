@@ -7,7 +7,7 @@
 #include <core/mapi/extraPropTags.h>
 #include <core/smartview/SmartView.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <MAPI/MAPIABFunctions.h>
+#include <core/mapi/mapiABFunctions.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Dialogs/Editors/QSSpecialFolders.h>

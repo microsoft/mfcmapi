@@ -8,7 +8,7 @@
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <MAPI/MAPIABFunctions.h>
+#include <core/mapi/mapiABFunctions.h>
 #include <core/mapi/mapiProgress.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/cache/globalCache.h>

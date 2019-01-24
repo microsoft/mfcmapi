@@ -1,12 +1,13 @@
 // Collection of useful MAPI Address Book functions
 
-#include <StdAfx.h>
-#include <MAPI/MAPIABFunctions.h>
+#include <core/stdafx.h>
+#include <core/mapi/mapiABFunctions.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiOutput.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/utility/error.h>
 
 namespace mapi
 {

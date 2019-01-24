@@ -10,7 +10,7 @@
 #include <core/mapi/mapiMime.h>
 #include <core/utility/import.h>
 #include <UI/UIFunctions.h>
-#include <MAPI/MAPIABFunctions.h>
+#include <core/mapi/mapiABFunctions.h>
 #include <core/mapi/mapiStoreFunctions.h>
 #include <UI/CMAPIProgress.h>
 #include <UI/Dialogs/Editors/DbgView.h>
