@@ -6,7 +6,7 @@
 #include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/ContentsTable/ProviderTableDlg.h>
-#include <MAPI/MAPIProfileFunctions.h>
+#include <core/mapi/mapiProfileFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <UI/addinui.h>

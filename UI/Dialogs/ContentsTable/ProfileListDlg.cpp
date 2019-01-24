@@ -4,7 +4,7 @@
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>
-#include <MAPI/MAPIProfileFunctions.h>
+#include <core/mapi/mapiProfileFunctions.h>
 #include <UI/profile.h>
 #include <UI/FileDialogEx.h>
 #include <UI/Dialogs/Editors/Editor.h>

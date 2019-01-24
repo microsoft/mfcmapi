@@ -150,12 +150,6 @@
     <ClInclude Include="..\MAPI\MAPIFunctions.h">
       <Filter>Source Files\MAPI</Filter>
     </ClInclude>
-    <ClCompile Include="..\MAPI\MAPIProfileFunctions.cpp">
-      <Filter>Source Files\MAPI</Filter>
-    </ClCompile>
-    <ClInclude Include="..\MAPI\MAPIProfileFunctions.h">
-      <Filter>Source Files\MAPI</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\MAPI\MAPIProcessor\DumpStore.cpp">

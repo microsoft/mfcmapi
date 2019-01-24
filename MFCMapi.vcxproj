@@ -567,7 +567,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="MAPI\MAPIABFunctions.h" />
     <ClInclude Include="MAPI\MAPIFunctions.h" />
     <ClInclude Include="MAPI\MAPIProcessor\MapiProcessor.h" />
-    <ClInclude Include="MAPI\MAPIProfileFunctions.h" />
     <ClInclude Include="UI\CMAPIProgress.h" />
     <ClInclude Include="IO\ExportProfile.h" />
     <ClInclude Include="PropertyBag\MAPIPropPropertyBag.h" />
@@ -658,7 +657,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="MAPI\MAPIABFunctions.cpp" />
     <ClCompile Include="MAPI\MAPIFunctions.cpp" />
     <ClCompile Include="MAPI\MAPIProcessor\MapiProcessor.cpp" />
-    <ClCompile Include="MAPI\MAPIProfileFunctions.cpp" />
     <ClCompile Include="UI\CMAPIProgress.cpp" />
     <ClCompile Include="IO\ExportProfile.cpp" />
     <ClCompile Include="PropertyBag\MAPIPropPropertyBag.cpp" />

@@ -1,7 +1,5 @@
-// Collection of useful MAPI functions
-
-#include <StdAfx.h>
-#include <MAPI/MAPIProfileFunctions.h>
+#include <core/stdafx.h>
+#include <core/mapi/mapiProfileFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/output.h>
 #include <core/utility/strings.h>
@@ -82,7 +80,7 @@ namespace mapi
 			if (!lpServiceAdmin) return nullptr;
 
 			LPSRowSet lpRowSet = nullptr;
-			static const SizedSPropTagArray(1, pTagUID) = {1, PR_SERVICE_UID};
+			static const SizedSPropTagArray(1, pTagUID) = {1, {PR_SERVICE_UID}};
 
 			LPMAPITABLE lpProviderTable = nullptr;
 			auto hRes = EC_MAPI(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
@@ -104,7 +102,7 @@ namespace mapi
 							lpSect = OpenProfileSection(lpServiceAdmin, &lpServiceUID->Value.bin);
 							if (lpSect)
 							{
-								auto pTagArray = SPropTagArray{1, PR_MARKER};
+								auto pTagArray = SPropTagArray{1, {PR_MARKER}};
 								ULONG ulPropVal = 0;
 								LPSPropValue lpsPropVal = nullptr;
 								EC_H_GETPROPS_S(lpSect->GetProps(&pTagArray, NULL, &ulPropVal, &lpsPropVal));
