@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/NodeData.h>
-#include <MAPI/AdviseSink.h>
+#include <UI/AdviseSink.h>
 #include <core/mapi/mapiFunctions.h>
 
 namespace controls

@@ -555,7 +555,6 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\MAPI\AdviseSink.h" />
     <ClInclude Include="..\MAPI\MAPIProcessor\DumpStore.h" />
     <ClInclude Include="..\Enums.h" />
     <ClInclude Include="..\MAPI\MAPIABFunctions.h" />
@@ -585,7 +584,6 @@
     <None Include="..\.clang-format" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\MAPI\AdviseSink.cpp" />
     <ClCompile Include="..\MAPI\MAPIProcessor\DumpStore.cpp" />
     <ClCompile Include="..\MAPI\MAPIABFunctions.cpp" />
     <ClCompile Include="..\MAPI\MAPIFunctions.cpp" />

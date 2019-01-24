@@ -4,7 +4,7 @@
 #include <core/mapi/cache/mapiObjects.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/UIFunctions.h>
-#include <MAPI/AdviseSink.h>
+#include <UI/AdviseSink.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <core/mapi/extraPropTags.h>

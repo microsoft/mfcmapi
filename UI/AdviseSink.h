@@ -1,5 +1,6 @@
 #pragma once
 
+// TODO: Consider rewriting this with callbacks and avoid the windows message passing
 namespace mapi
 {
 	namespace mapiui

@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <MAPI/AdviseSink.h>
+#include <UI/AdviseSink.h>
 #include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
 

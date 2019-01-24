@@ -91,6 +91,9 @@
     <ClInclude Include="UI\enums.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="UI\AdviseSink.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -128,14 +131,11 @@
     <ClCompile Include="IO\ExportProfile.cpp">
       <Filter>Source Files\IO</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="MAPI\AdviseSink.cpp">
+    <ClCompile Include="UI\AdviseSink.cpp">
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>
-    <ClInclude Include="MAPI\AdviseSink.h">
-      <Filter>Source Files\MAPI</Filter>
-    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="MAPI\MAPIABFunctions.cpp">
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>
