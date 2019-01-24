@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <MrMapi/MMProfile.h>
-#include <IO/ExportProfile.h>
+#include <core/mapi/exportProfile.h>
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
 

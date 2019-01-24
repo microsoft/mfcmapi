@@ -10,7 +10,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/ContentsTable/MsgServiceTableDlg.h>
 #include <core/mapi/cache/globalCache.h>
-#include <IO/ExportProfile.h>
+#include <core/mapi/exportProfile.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <core/utility/strings.h>

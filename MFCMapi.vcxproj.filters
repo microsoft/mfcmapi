@@ -64,9 +64,6 @@
     <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h">
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClInclude>
-    <ClInclude Include="IO\ExportProfile.h">
-      <Filter>Source Files\IO</Filter>
-    </ClInclude>
     <ClInclude Include="UI\Controls\StyleTreeCtrl.h">
       <Filter>Source Files\UI\Controls</Filter>
     </ClInclude>
@@ -128,9 +125,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="IO\ExportProfile.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
     <ClCompile Include="UI\AdviseSink.cpp">
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>

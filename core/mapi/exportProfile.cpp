@@ -1,13 +1,14 @@
 // Export profile to file
 
-#include <StdAfx.h>
-#include <IO/ExportProfile.h>
+#include <core/stdafx.h>
+#include <core/mapi/exportProfile.h>
 #include <core/mapi/mapiProfileFunctions.h>
 #include <core/interpret/guid.h>
 #include <core/utility/strings.h>
 #include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/utility/error.h>
 
 namespace output
 {

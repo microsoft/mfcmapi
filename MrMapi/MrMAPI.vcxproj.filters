@@ -5,9 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source Files\IO">
-      <UniqueIdentifier>{75d77011-9b6f-4f37-8290-afbdf335dce3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\MrMAPI">
       <UniqueIdentifier>{cb752376-37c8-4fc4-b77d-e7c9d220cd32}</UniqueIdentifier>
     </Filter>
@@ -24,9 +21,6 @@
   <ItemGroup>
     <ClInclude Include="cli.h">
       <Filter>Source Files\MrMAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\IO\ExportProfile.h">
-      <Filter>Source Files\IO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -125,11 +119,6 @@
     <ClInclude Include="MrMAPI.h">
       <Filter>Source Files\MrMAPI</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\IO\ExportProfile.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\MAPI\MAPIFunctions.cpp">
