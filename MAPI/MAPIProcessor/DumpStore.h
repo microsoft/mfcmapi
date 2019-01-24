@@ -1,6 +1,6 @@
 #pragma once
 // Processes a store/folder to dump to disk
-#include <MAPI/MAPIProcessor/MAPIProcessor.h>
+#include <core/mapi/processor/mapiProcessor.h>
 
 namespace mapiprocessor
 {
@@ -20,7 +20,7 @@ namespace mapiprocessor
 	};
 	typedef MessageData* LPMESSAGEDATA;
 
-	class CDumpStore : public CMAPIProcessor
+	class CDumpStore : public mapi::processor::mapiProcessor
 	{
 	public:
 		CDumpStore();
