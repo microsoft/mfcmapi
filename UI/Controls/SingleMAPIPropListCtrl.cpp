@@ -6,7 +6,6 @@
 #include <UI/UIFunctions.h>
 #include <UI/MySecInfo.h>
 #include <core/interpret/guid.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/FileDialogEx.h>
 #include <core/utility/import.h>
 #include <core/mapi/mapiProgress.h>
@@ -33,6 +32,7 @@
 #include <core/interpret/proptype.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/property/parseProperty.h>
 
 namespace controls
 {
@@ -708,11 +708,11 @@ namespace controls
 			SetItemText(iRow, columns::pcPROPTAG, PropTag);
 			SetItemText(iRow, columns::pcPROPTYPE, proptype::TypeToString(ulPropTag));
 
-			interpretprop::InterpretProp(lpsPropToAdd, &PropString, &AltPropString);
+			property::parseProperty(lpsPropToAdd, &PropString, &AltPropString);
 			SetItemText(iRow, columns::pcPROPVAL, PropString);
 			SetItemText(iRow, columns::pcPROPVALALT, AltPropString);
 
-			auto szSmartView = smartview::InterpretPropSmartView(
+			auto szSmartView = smartview::parsePropertySmartView(
 				lpsPropToAdd,
 				m_lpPropBag->GetMAPIProp(),
 				lpNameID,

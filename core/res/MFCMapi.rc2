@@ -1309,7 +1309,7 @@ IDS_ROOTCONTAINER "Root Container"
 IDS_UNKNOWNNAME "Unknown name"
 IDS_UNKNOWNPROPERTY "Unknown Property"
 
-// InterpretProp.cpp stuff
+// parseProperty.cpp stuff
 IDS_TAGMULTILINE "Tag: 0x%1!08X!\r\nType: %2!ws!"
 // Yes, these six look like a mistake, but they are intentional - see TagToString
 IDS_NAMEDPROPSINGLELINE ": Named Prop Name: %5!ws!"

@@ -524,6 +524,7 @@
     <ClInclude Include="addin\mfcmapi.h" />
     <ClInclude Include="mapi\version.h" />
     <ClInclude Include="property\attributes.h" />
+    <ClInclude Include="property\parseProperty.h" />
     <ClInclude Include="property\property.h" />
     <ClInclude Include="res\Resource.h" />
     <ClInclude Include="smartview\AdditionalRenEntryIDs.h" />
@@ -590,6 +591,7 @@
     <ClCompile Include="mapi\stubutils.cpp" />
     <ClCompile Include="mapi\version.cpp" />
     <ClCompile Include="property\attributes.cpp" />
+    <ClCompile Include="property\parseProperty.cpp" />
     <ClCompile Include="property\property.cpp" />
     <ClCompile Include="smartview\AdditionalRenEntryIDs.cpp" />
     <ClCompile Include="smartview\AppointmentRecurrencePattern.cpp" />

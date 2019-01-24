@@ -3,13 +3,13 @@
 #include <core/smartview/SmartView.h>
 #include <UI/Controls/SortList/MVPropData.h>
 #include <UI/Dialogs/Editors/PropertyEditor.h>
-#include <Interpret/InterpretProp.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/interpret/proptags.h>
 #include <core/addin/mfcmapi.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/property/parseProperty.h>
 
 namespace dialog
 {
@@ -162,7 +162,8 @@ namespace dialog
 				switch (PROP_TYPE(m_lpsOutputValue->ulPropTag))
 				{
 				case PT_MV_I2:
-					m_lpsOutputValue->Value.MVi.lpi = mapi::allocate<short int*>(sizeof(short int) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVi.lpi =
+						mapi::allocate<short int*>(sizeof(short int) * ulNumVals, m_lpAllocParent);
 					m_lpsOutputValue->Value.MVi.cValues = ulNumVals;
 					break;
 				case PT_MV_LONG:
@@ -170,19 +171,23 @@ namespace dialog
 					m_lpsOutputValue->Value.MVl.cValues = ulNumVals;
 					break;
 				case PT_MV_DOUBLE:
-					m_lpsOutputValue->Value.MVdbl.lpdbl = mapi::allocate<double*>(sizeof(double) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVdbl.lpdbl =
+						mapi::allocate<double*>(sizeof(double) * ulNumVals, m_lpAllocParent);
 					m_lpsOutputValue->Value.MVdbl.cValues = ulNumVals;
 					break;
 				case PT_MV_CURRENCY:
-					m_lpsOutputValue->Value.MVcur.lpcur = mapi::allocate<CURRENCY*>(sizeof(CURRENCY) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVcur.lpcur =
+						mapi::allocate<CURRENCY*>(sizeof(CURRENCY) * ulNumVals, m_lpAllocParent);
 					m_lpsOutputValue->Value.MVcur.cValues = ulNumVals;
 					break;
 				case PT_MV_APPTIME:
-					m_lpsOutputValue->Value.MVat.lpat = mapi::allocate<double*>(sizeof(double) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVat.lpat =
+						mapi::allocate<double*>(sizeof(double) * ulNumVals, m_lpAllocParent);
 					m_lpsOutputValue->Value.MVat.cValues = ulNumVals;
 					break;
 				case PT_MV_SYSTIME:
-					m_lpsOutputValue->Value.MVft.lpft = mapi::allocate<FILETIME*>(sizeof(FILETIME) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVft.lpft =
+						mapi::allocate<FILETIME*>(sizeof(FILETIME) * ulNumVals, m_lpAllocParent);
 					m_lpsOutputValue->Value.MVft.cValues = ulNumVals;
 					break;
 				case PT_MV_I8:
@@ -191,23 +196,28 @@ namespace dialog
 					m_lpsOutputValue->Value.MVli.cValues = ulNumVals;
 					break;
 				case PT_MV_R4:
-					m_lpsOutputValue->Value.MVflt.lpflt = mapi::allocate<float*>(sizeof(float) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVflt.lpflt =
+						mapi::allocate<float*>(sizeof(float) * ulNumVals, m_lpAllocParent);
 					m_lpsOutputValue->Value.MVflt.cValues = ulNumVals;
 					break;
 				case PT_MV_STRING8:
-					m_lpsOutputValue->Value.MVszA.lppszA = mapi::allocate<LPSTR*>(sizeof(LPSTR) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVszA.lppszA =
+						mapi::allocate<LPSTR*>(sizeof(LPSTR) * ulNumVals, m_lpAllocParent);
 					m_lpsOutputValue->Value.MVszA.cValues = ulNumVals;
 					break;
 				case PT_MV_UNICODE:
-					m_lpsOutputValue->Value.MVszW.lppszW = mapi::allocate<LPWSTR*>(sizeof(LPWSTR) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVszW.lppszW =
+						mapi::allocate<LPWSTR*>(sizeof(LPWSTR) * ulNumVals, m_lpAllocParent);
 					m_lpsOutputValue->Value.MVszW.cValues = ulNumVals;
 					break;
 				case PT_MV_BINARY:
-					m_lpsOutputValue->Value.MVbin.lpbin = mapi::allocate<SBinary*>(sizeof(SBinary) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVbin.lpbin =
+						mapi::allocate<SBinary*>(sizeof(SBinary) * ulNumVals, m_lpAllocParent);
 					m_lpsOutputValue->Value.MVbin.cValues = ulNumVals;
 					break;
 				case PT_MV_CLSID:
-					m_lpsOutputValue->Value.MVguid.lpguid = mapi::allocate<GUID*>(sizeof(GUID) * ulNumVals, m_lpAllocParent);
+					m_lpsOutputValue->Value.MVguid.lpguid =
+						mapi::allocate<GUID*>(sizeof(GUID) * ulNumVals, m_lpAllocParent);
 					m_lpsOutputValue->Value.MVguid.cValues = ulNumVals;
 					break;
 				default:
@@ -257,7 +267,8 @@ namespace dialog
 								mapi::CopyStringW(lpData->MV()->m_val.lpszW, m_lpAllocParent);
 							break;
 						case PT_MV_BINARY:
-							m_lpsOutputValue->Value.MVbin.lpbin[iMVCount] = mapi::CopySBinary(lpData->MV()->m_val.bin, m_lpAllocParent);
+							m_lpsOutputValue->Value.MVbin.lpbin[iMVCount] =
+								mapi::CopySBinary(lpData->MV()->m_val.bin, m_lpAllocParent);
 							break;
 						case PT_MV_CLSID:
 							if (lpData->MV()->m_val.lpguid)
@@ -348,14 +359,14 @@ namespace dialog
 			std::wstring szTmp;
 			std::wstring szAltTmp;
 
-			interpretprop::InterpretProp(lpProp, &szTmp, &szAltTmp);
+			property::parseProperty(lpProp, &szTmp, &szAltTmp);
 			SetListString(0, iMVCount, 1, szTmp);
 			SetListString(0, iMVCount, 2, szAltTmp);
 
 			if (PT_MV_LONG == PROP_TYPE(m_ulPropTag) || PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
 			{
 				auto szSmartView =
-					smartview::InterpretPropSmartView(lpProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true);
+					smartview::parsePropertySmartView(lpProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true);
 
 				if (!szSmartView.empty()) SetListString(0, iMVCount, 3, szSmartView);
 			}

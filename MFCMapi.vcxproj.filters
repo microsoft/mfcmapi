@@ -136,14 +136,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Interpret\InterpretProp.cpp">
-      <Filter>Source Files\Interpret</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\InterpretProp.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="MAPI\AdviseSink.cpp">
       <Filter>Source Files\MAPI</Filter>
     </ClCompile>
@@ -181,14 +173,6 @@
     </ClCompile>
     <ClInclude Include="MAPI\MAPIProcessor\MapiProcessor.h">
       <Filter>Source Files\MAPI\MAPIProcessor</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Property\ParseProperty.cpp">
-      <Filter>Source Files\Property</Filter>
-    </ClCompile>
-    <ClInclude Include="Property\ParseProperty.h">
-      <Filter>Source Files\Property</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

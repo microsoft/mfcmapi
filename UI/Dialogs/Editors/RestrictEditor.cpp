@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
 #include <UI/Dialogs/Editors/PropertyEditor.h>
-#include <Interpret/InterpretProp.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <UI/Controls/SortList/ResData.h>
@@ -13,6 +12,7 @@
 #include <core/interpret/flags.h>
 #include <core/interpret/proptags.h>
 #include <core/addin/mfcmapi.h>
+#include <core/property/parseProperty.h>
 
 namespace dialog
 {
@@ -155,7 +155,7 @@ namespace dialog
 
 			std::wstring szProp;
 			std::wstring szAltProp;
-			if (lpProp) interpretprop::InterpretProp(lpProp, &szProp, &szAltProp);
+			if (lpProp) property::parseProperty(lpProp, &szProp, &szAltProp);
 			AddPane(viewpane::TextPane::CreateMultiLinePane(6, IDS_LPPROP, szProp, true));
 			AddPane(viewpane::TextPane::CreateMultiLinePane(7, IDS_LPPROPALTVIEW, szAltProp, true));
 		}
@@ -226,7 +226,7 @@ namespace dialog
 				std::wstring szProp;
 				std::wstring szAltProp;
 
-				interpretprop::InterpretProp(m_lpNewProp, &szProp, &szAltProp);
+				property::parseProperty(m_lpNewProp, &szProp, &szAltProp);
 				SetStringW(6, szProp);
 				SetStringW(7, szAltProp);
 			}
@@ -405,7 +405,7 @@ namespace dialog
 				1, IDS_ULSUBOBJECT, proptags::TagToString(ulSubObject, nullptr, false, true), true));
 
 			AddPane(viewpane::TextPane::CreateMultiLinePane(
-				2, IDS_LPRES, interpretprop::RestrictionToString(lpRes, nullptr), true));
+				2, IDS_LPRES, property::RestrictionToString(lpRes, nullptr), true));
 		}
 
 		_Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
@@ -436,7 +436,7 @@ namespace dialog
 			// Since m_lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 			m_lpNewRes = ResEdit.DetachModifiedSRestriction();
 
-			SetStringW(2, interpretprop::RestrictionToString(m_lpNewRes, nullptr));
+			SetStringW(2, property::RestrictionToString(m_lpNewRes, nullptr));
 		}
 
 		// This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
@@ -521,7 +521,7 @@ namespace dialog
 							ulListNum,
 							paneID,
 							1,
-							interpretprop::RestrictionToString(&lpRes->res.resAnd.lpRes[paneID], nullptr));
+							property::RestrictionToString(&lpRes->res.resAnd.lpRes[paneID], nullptr));
 					}
 				}
 				break;
@@ -538,7 +538,7 @@ namespace dialog
 							ulListNum,
 							paneID,
 							1,
-							interpretprop::RestrictionToString(&lpRes->res.resOr.lpRes[paneID], nullptr));
+							property::RestrictionToString(&lpRes->res.resOr.lpRes[paneID], nullptr));
 					}
 				}
 				break;
@@ -564,7 +564,7 @@ namespace dialog
 			if (!MyResEditor.DisplayDialog()) return false;
 			// Since lpData->data.Res.lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 			lpData->Res()->m_lpNewRes = MyResEditor.DetachModifiedSRestriction();
-			SetListString(ulListNum, iItem, 1, interpretprop::RestrictionToString(lpData->Res()->m_lpNewRes, nullptr));
+			SetListString(ulListNum, iItem, 1, property::RestrictionToString(lpData->Res()->m_lpNewRes, nullptr));
 			return true;
 		}
 
@@ -657,7 +657,7 @@ namespace dialog
 			AddPane(viewpane::TextPane::CreateMultiLinePane(
 				1,
 				IDS_RESTRICTIONTEXT,
-				interpretprop::RestrictionToString(m_lpSourceRes->res.resComment.lpRes, nullptr),
+				property::RestrictionToString(m_lpSourceRes->res.resComment.lpRes, nullptr),
 				true));
 		}
 
@@ -718,7 +718,7 @@ namespace dialog
 					lpData->InitializeComment(&lpProps[paneID]);
 					SetListString(
 						ulListNum, paneID, 1, proptags::TagToString(lpProps[paneID].ulPropTag, nullptr, false, true));
-					interpretprop::InterpretProp(&lpProps[paneID], &szProp, &szAltProp);
+					property::parseProperty(&lpProps[paneID], &szProp, &szAltProp);
 					SetListString(ulListNum, paneID, 2, szProp);
 					SetListString(ulListNum, paneID, 3, szAltProp);
 				}
@@ -737,7 +737,7 @@ namespace dialog
 
 			// Since m_lpNewCommentRes was owned by an m_lpAllocParent, we don't free it directly
 			m_lpNewCommentRes = MyResEditor.DetachModifiedSRestriction();
-			SetStringW(1, interpretprop::RestrictionToString(m_lpNewCommentRes, nullptr));
+			SetStringW(1, property::RestrictionToString(m_lpNewCommentRes, nullptr));
 		}
 
 		_Check_return_ bool
@@ -790,7 +790,7 @@ namespace dialog
 					iItem,
 					1,
 					proptags::TagToString(lpData->Comment()->m_lpNewProp->ulPropTag, nullptr, false, true));
-				interpretprop::InterpretProp(lpData->Comment()->m_lpNewProp, &szTmp, &szAltTmp);
+				property::parseProperty(lpData->Comment()->m_lpNewProp, &szTmp, &szAltTmp);
 				SetListString(ulListNum, iItem, 2, szTmp);
 				SetListString(ulListNum, iItem, 3, szAltTmp);
 				return true;
@@ -893,7 +893,7 @@ namespace dialog
 			AddPane(viewpane::TextPane::CreateSingleLinePane(
 				1, IDS_RESTRICTIONTYPE, true)); // type as a string (flagRestrictionType)
 			AddPane(viewpane::TextPane::CreateMultiLinePane(
-				2, IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(GetSourceRes(), nullptr), true));
+				2, IDS_RESTRICTIONTEXT, property::RestrictionToString(GetSourceRes(), nullptr), true));
 		}
 
 		CRestrictEditor::~CRestrictEditor()
@@ -985,7 +985,7 @@ namespace dialog
 					m_lpOutputRes->rt = ulNewResType;
 				}
 
-				SetStringW(2, interpretprop::RestrictionToString(m_lpOutputRes, nullptr));
+				SetStringW(2, property::RestrictionToString(m_lpOutputRes, nullptr));
 			}
 			return paneID;
 		}
@@ -1038,7 +1038,7 @@ namespace dialog
 			if (hRes == S_OK)
 			{
 				m_bModified = true;
-				SetStringW(2, interpretprop::RestrictionToString(m_lpOutputRes, nullptr));
+				SetStringW(2, property::RestrictionToString(m_lpOutputRes, nullptr));
 			}
 		}
 
@@ -1271,7 +1271,7 @@ namespace dialog
 				viewpane::ListPane::CreateCollapsibleListPane(4, IDS_EIDLIST, false, false, ListEditCallBack(this)));
 			SetListID(4);
 			AddPane(viewpane::TextPane::CreateMultiLinePane(
-				5, IDS_RESTRICTIONTEXT, interpretprop::RestrictionToString(m_lpSourceRes, nullptr), true));
+				5, IDS_RESTRICTIONTEXT, property::RestrictionToString(m_lpSourceRes, nullptr), true));
 		}
 
 		CCriteriaEditor::~CCriteriaEditor()
@@ -1372,7 +1372,7 @@ namespace dialog
 					// We didn't pass an alloc parent to CRestrictEditor, so we must free what came back
 					MAPIFreeBuffer(m_lpNewRes);
 					m_lpNewRes = lpModRes;
-					SetStringW(5, interpretprop::RestrictionToString(m_lpNewRes, nullptr));
+					SetStringW(5, property::RestrictionToString(m_lpNewRes, nullptr));
 				}
 			}
 		}

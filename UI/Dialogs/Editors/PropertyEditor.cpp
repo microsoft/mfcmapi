@@ -6,12 +6,12 @@
 #include <UI/Controls/SortList/MVPropData.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/Dialogs/Editors/MultiValuePropertyEditor.h>
-#include <Interpret/InterpretProp.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/interpret/proptags.h>
 #include <core/addin/mfcmapi.h>
+#include <core/property/parseProperty.h>
 
 namespace dialog
 {
@@ -289,7 +289,7 @@ namespace dialog
 				AddPane(viewpane::TextPane::CreateMultiLinePane(
 					2,
 					IDS_SMARTVIEW,
-					smartview::InterpretPropSmartView(
+					smartview::parsePropertySmartView(
 						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow),
 					true));
 				if (m_lpsInputValue)
@@ -311,7 +311,7 @@ namespace dialog
 				AddPane(viewpane::TextPane::CreateMultiLinePane(
 					3,
 					IDS_SMARTVIEW,
-					smartview::InterpretPropSmartView(
+					smartview::parsePropertySmartView(
 						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow),
 					true));
 
@@ -375,7 +375,7 @@ namespace dialog
 				AddPane(viewpane::TextPane::CreateMultiLinePane(
 					2,
 					IDS_SMARTVIEW,
-					smartview::InterpretPropSmartView(
+					smartview::parsePropertySmartView(
 						m_lpsInputValue, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow),
 					true));
 
@@ -425,16 +425,16 @@ namespace dialog
 				break;
 			case PT_SRESTRICTION:
 				AddPane(viewpane::TextPane::CreateCollapsibleTextPane(0, IDS_RESTRICTION, true));
-				interpretprop::InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
+				property::parseProperty(m_lpsInputValue, &szTemp1, nullptr);
 				SetStringW(0, szTemp1);
 				break;
 			case PT_ACTIONS:
 				AddPane(viewpane::TextPane::CreateCollapsibleTextPane(0, IDS_ACTIONS, true));
-				interpretprop::InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
+				property::parseProperty(m_lpsInputValue, &szTemp1, nullptr);
 				SetStringW(0, szTemp1);
 				break;
 			default:
-				interpretprop::InterpretProp(m_lpsInputValue, &szTemp1, &szTemp2);
+				property::parseProperty(m_lpsInputValue, &szTemp1, &szTemp2);
 				AddPane(viewpane::TextPane::CreateCollapsibleTextPane(0, IDS_VALUE, true));
 				AddPane(viewpane::TextPane::CreateCollapsibleTextPane(1, IDS_ALTERNATEVIEW, true));
 				SetStringW(IDS_VALUE, szTemp1);
@@ -627,7 +627,7 @@ namespace dialog
 				sProp.ulPropTag = m_ulPropTag;
 
 				SetStringW(
-					2, smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
+					2, smartview::parsePropertySmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
 
 				break;
 			case PT_LONG: // unsigned 32 bit
@@ -646,7 +646,7 @@ namespace dialog
 				sProp.ulPropTag = m_ulPropTag;
 
 				SetStringW(
-					2, smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
+					2, smartview::parsePropertySmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
 
 				break;
 			case PT_CURRENCY:
@@ -688,7 +688,7 @@ namespace dialog
 				sProp.ulPropTag = m_ulPropTag;
 
 				SetStringW(
-					3, smartview::InterpretPropSmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
+					3, smartview::parsePropertySmartView(&sProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, m_bMVRow));
 
 				break;
 			case PT_SYSTIME: // components are unsigned hex

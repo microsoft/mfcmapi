@@ -5,10 +5,10 @@
 #include <core/smartview/SmartView.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
-#include <Interpret/InterpretProp.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/property/parseProperty.h>
 
 namespace dialog
 {
@@ -130,7 +130,7 @@ namespace dialog
 						SPropValue eid = {};
 						eid.ulPropTag = PR_ENTRYID;
 						eid.Value.bin = *defaultEid;
-						interpretprop::InterpretProp(&eid, &szProp, nullptr);
+						property::parseProperty(&eid, &szProp, nullptr);
 						SetListString(ulListNum, iRow, iCol, szProp);
 						iCol++;
 
@@ -159,7 +159,7 @@ namespace dialog
 
 								if (szTmp.empty() && PT_ERROR != PROP_TYPE(lpProps[ulPropNum].ulPropTag))
 								{
-									interpretprop::InterpretProp(&lpProps[ulPropNum], &szProp, nullptr);
+									property::parseProperty(&lpProps[ulPropNum], &szProp, nullptr);
 									SetListString(ulListNum, iRow, iCol, szProp);
 								}
 								else

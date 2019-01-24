@@ -5,7 +5,6 @@
 #include <MAPI/MAPIFunctions.h>
 #include <UI/UIFunctions.h>
 #include <MAPI/AdviseSink.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <core/mapi/extraPropTags.h>
@@ -24,6 +23,7 @@
 #include <core/interpret/proptags.h>
 #include <core/mapi/mapiOutput.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/property/parseProperty.h>
 
 namespace controls
 {
@@ -836,7 +836,7 @@ namespace controls
 							continue;
 						}
 
-						interpretprop::InterpretProp(pProp, &PropString, nullptr);
+						property::parseProperty(pProp, &PropString, nullptr);
 
 						auto szFlags = smartview::InterpretNumberAsString(
 							pProp->Value, pProp->ulPropTag, NULL, nullptr, nullptr, false);

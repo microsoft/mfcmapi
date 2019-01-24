@@ -5,11 +5,11 @@
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/property/parseProperty.h>
 
 namespace dialog
 {
@@ -241,7 +241,7 @@ namespace dialog
 					adrList.aEntries[0].cValues = adrEntry.cValues;
 					adrList.aEntries[0].rgPropVals = adrEntry.rgPropVals;
 
-					const auto szAdrList = interpretprop::AdrListToString(adrList);
+					const auto szAdrList = property::AdrListToString(adrList);
 
 					output::DebugPrintEx(
 						DBGGeneric, CLASS, L"OnRecipOptions", L"RecipOptions returned the following ADRLIST:\n");
@@ -264,4 +264,4 @@ namespace dialog
 			EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 		}
 	}
-}
+} // namespace dialog

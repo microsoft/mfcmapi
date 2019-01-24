@@ -558,13 +558,11 @@
     <ClInclude Include="..\MAPI\AdviseSink.h" />
     <ClInclude Include="..\MAPI\MAPIProcessor\DumpStore.h" />
     <ClInclude Include="..\Enums.h" />
-    <ClInclude Include="..\Interpret\InterpretProp.h" />
     <ClInclude Include="..\MAPI\MAPIABFunctions.h" />
     <ClInclude Include="..\MAPI\MAPIFunctions.h" />
     <ClInclude Include="..\MAPI\MAPIProcessor\MapiProcessor.h" />
     <ClInclude Include="..\MAPI\MAPIProfileFunctions.h" />
     <ClInclude Include="..\IO\ExportProfile.h" />
-    <ClInclude Include="..\Property\ParseProperty.h" />
     <ClInclude Include="..\PropertyBag\MAPIPropPropertyBag.h" />
     <ClInclude Include="..\IO\MFCOutput.h" />
     <ClInclude Include="..\PropertyBag\PropertyBag.h" />
@@ -592,13 +590,11 @@
   <ItemGroup>
     <ClCompile Include="..\MAPI\AdviseSink.cpp" />
     <ClCompile Include="..\MAPI\MAPIProcessor\DumpStore.cpp" />
-    <ClCompile Include="..\Interpret\InterpretProp.cpp" />
     <ClCompile Include="..\MAPI\MAPIABFunctions.cpp" />
     <ClCompile Include="..\MAPI\MAPIFunctions.cpp" />
     <ClCompile Include="..\MAPI\MAPIProcessor\MapiProcessor.cpp" />
     <ClCompile Include="..\MAPI\MAPIProfileFunctions.cpp" />
     <ClCompile Include="..\IO\ExportProfile.cpp" />
-    <ClCompile Include="..\Property\ParseProperty.cpp" />
     <ClCompile Include="..\PropertyBag\MAPIPropPropertyBag.cpp" />
     <ClCompile Include="..\IO\MFCOutput.cpp" />
     <ClCompile Include="MrMAPI.cpp">

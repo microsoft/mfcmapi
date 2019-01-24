@@ -22,7 +22,7 @@ namespace smartview
 		_In_opt_ LPSBinary lpMappingSignature,
 		bool bIsAB);
 
-	std::wstring InterpretPropSmartView(
+	std::wstring parsePropertySmartView(
 		_In_opt_ const SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 		_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call

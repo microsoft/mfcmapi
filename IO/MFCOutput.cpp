@@ -2,10 +2,8 @@
 #include <IO/MFCOutput.h>
 #include <core/utility/output.h>
 #include <core/utility/strings.h>
-#include <Interpret/InterpretProp.h>
 #include <core/smartview/SmartView.h>
 #include <core/mapi/columnTags.h>
-#include <Property/ParseProperty.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/registry.h>
@@ -15,6 +13,7 @@
 #include <core/utility/error.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiOutput.h>
+#include <core/property/parseProperty.h>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
@@ -437,10 +436,10 @@ namespace output
 				false,
 				iIndent);
 
-		auto prop = property::ParseProperty(lpProp);
+		auto prop = property::parseProperty(lpProp);
 		Output(ulDbgLvl, fFile, false, strings::StripCarriage(prop.toXML(iIndent)));
 
-		auto szSmartView = smartview::InterpretPropSmartView(lpProp, lpObj, nullptr, nullptr, false, false);
+		auto szSmartView = smartview::parsePropertySmartView(lpProp, lpObj, nullptr, nullptr, false, false);
 		if (!szSmartView.empty())
 		{
 			OutputXMLValue(
@@ -557,6 +556,6 @@ namespace output
 			return;
 		}
 
-		Output(ulDbgLvl, fFile, true, strings::StripCarriage(interpretprop::RestrictionToString(lpRes, lpObj)));
+		Output(ulDbgLvl, fFile, true, strings::StripCarriage(property::RestrictionToString(lpRes, lpObj)));
 	}
 } // namespace output

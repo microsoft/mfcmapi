@@ -18,7 +18,6 @@
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/FileDialogEx.h>
 #include <core/mapi/mapiMime.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/QuickStart.h>
 #include <UI/UIFunctions.h>
 #include <UI/Controls/SortList/ContentsData.h>
@@ -35,6 +34,7 @@
 #include <core/interpret/flags.h>
 #include <core/interpret/proptags.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/property/parseProperty.h>
 
 namespace dialog
 {
@@ -1035,7 +1035,7 @@ namespace dialog
 			std::wstring szAltProp;
 			for (ULONG i = 0; i < cValues; i++)
 			{
-				interpretprop::InterpretProp(&lpOptions[i], &szProp, &szAltProp);
+				property::parseProperty(&lpOptions[i], &szProp, &szAltProp);
 				szPropString += strings::formatmessage(
 					IDS_OPTIONSSTRUCTURE,
 					i,
@@ -1089,7 +1089,7 @@ namespace dialog
 			std::wstring szAltProp;
 			for (ULONG i = 0; i < cValues; i++)
 			{
-				interpretprop::InterpretProp(&lpOptions[i], &szProp, &szAltProp);
+				property::parseProperty(&lpOptions[i], &szProp, &szAltProp);
 				szPropString += strings::formatmessage(
 					IDS_OPTIONSSTRUCTURE,
 					i,

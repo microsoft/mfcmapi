@@ -1,7 +1,7 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
-#include <Interpret/InterpretProp.h>
 #include <core/smartview/SmartView.h>
+#include <core/property/parseProperty.h>
 
 namespace smartview
 {
@@ -178,7 +178,7 @@ namespace smartview
 
 			auto propString = std::wstring{};
 			auto altPropString = std::wstring{};
-			interpretprop::InterpretProp(&prop, &propString, &altPropString);
+			property::parseProperty(&prop, &propString, &altPropString);
 
 			propBlock.setData(strings::RemoveInvalidCharactersW(propString, false));
 			propBlock.setSize(size);
@@ -188,7 +188,7 @@ namespace smartview
 			altPropBlock.setSize(size);
 			altPropBlock.setOffset(offset);
 
-			const auto smartViewString = InterpretPropSmartView(&prop, nullptr, nullptr, nullptr, false, false);
+			const auto smartViewString = parsePropertySmartView(&prop, nullptr, nullptr, nullptr, false, false);
 			smartViewBlock.setData(smartViewString);
 			smartViewBlock.setSize(size);
 			smartViewBlock.setOffset(offset);
