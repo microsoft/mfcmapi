@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/BinaryParser.h>
+#include <core/smartview/binaryParser.h>
 
 #define _MaxBytes 0xFFFF
 #define _MaxDepth 25
@@ -21,15 +21,15 @@ namespace smartview
 
 		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 		{
-			m_Parser = CBinaryParser(cbBin, lpBin);
+			m_Parser = binaryParser(cbBin, lpBin);
 			m_bParsed = false;
 			data = {};
 			m_bEnableJunk = true;
 		}
 
-		void parse(CBinaryParser& binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
+		void parse(binaryParser& binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
 
-		void parse(CBinaryParser& binaryParser, size_t cbBin, bool bEnableJunk)
+		void parse(binaryParser& binaryParser, size_t cbBin, bool bEnableJunk)
 		{
 			m_Parser = binaryParser;
 			m_Parser.setCap(cbBin);
@@ -45,7 +45,7 @@ namespace smartview
 		bool hasData() const { return data.hasData(); }
 
 	protected:
-		CBinaryParser m_Parser;
+		binaryParser m_Parser;
 
 		// Nu style parsing data
 		template <typename... Args> void setRoot(const std::wstring& text, const Args... args)

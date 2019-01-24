@@ -141,9 +141,6 @@
     <ClInclude Include="smartview\AppointmentRecurrencePattern.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="smartview\BinaryParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="smartview\ConversationIndex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -238,6 +235,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mapi\mapiStoreFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\binaryParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

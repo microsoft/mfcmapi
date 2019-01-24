@@ -49,7 +49,7 @@ namespace smartview
 		{
 			// Build a new m_Parser to preread and count our elements
 			// This new m_Parser will only contain as much space as suggested in wDataElementsSize
-			CBinaryParser DataElementParser(persistData.wDataElementsSize, m_Parser.GetCurrentAddress());
+			binaryParser DataElementParser(persistData.wDataElementsSize, m_Parser.GetCurrentAddress());
 			for (;;)
 			{
 				if (DataElementParser.RemainingBytes() < 2 * sizeof(WORD)) break;

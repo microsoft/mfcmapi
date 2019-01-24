@@ -528,7 +528,7 @@
     <ClInclude Include="res\Resource.h" />
     <ClInclude Include="smartview\AdditionalRenEntryIDs.h" />
     <ClInclude Include="smartview\AppointmentRecurrencePattern.h" />
-    <ClInclude Include="smartview\BinaryParser.h" />
+    <ClInclude Include="smartview\binaryParser.h" />
     <ClInclude Include="smartview\block\block.h" />
     <ClInclude Include="smartview\block\blockBytes.h" />
     <ClInclude Include="smartview\block\blockStringA.h" />

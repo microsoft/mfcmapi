@@ -8,13 +8,13 @@
 
 namespace smartview
 {
-	// CBinaryParser - helper class for parsing binary data without
+	// binaryParser - helper class for parsing binary data without
 	// worrying about whether you've run off the end of your buffer.
-	class CBinaryParser
+	class binaryParser
 	{
 	public:
-		CBinaryParser() = default;
-		CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
+		binaryParser() = default;
+		binaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 		{
 			m_Bin = lpBin && cbBin ? std::vector<BYTE>(lpBin, lpBin + cbBin) : std::vector<BYTE>{};
 			m_Size = m_Bin.size();
@@ -50,7 +50,7 @@ namespace smartview
 		// If we're before the end of the buffer, return the count of remaining bytes
 		// If we're at or past the end of the buffer, return 0
 		// If we're before the beginning of the buffer, return 0
-		size_t CBinaryParser::RemainingBytes() const { return m_Offset > m_Size ? 0 : m_Size - m_Offset; }
+		size_t RemainingBytes() const { return m_Offset > m_Size ? 0 : m_Size - m_Offset; }
 
 		template <typename T> blockT<T> Get()
 		{

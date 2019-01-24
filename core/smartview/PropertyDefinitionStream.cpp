@@ -8,7 +8,7 @@
 
 namespace smartview
 {
-	PackedAnsiString ReadPackedAnsiString(_In_ CBinaryParser& parser)
+	PackedAnsiString ReadPackedAnsiString(_In_ binaryParser& parser)
 	{
 		PackedAnsiString packedAnsiString;
 		packedAnsiString.cchLength = parser.Get<BYTE>();
@@ -24,7 +24,7 @@ namespace smartview
 		return packedAnsiString;
 	}
 
-	PackedUnicodeString ReadPackedUnicodeString(_In_ CBinaryParser& parser)
+	PackedUnicodeString ReadPackedUnicodeString(_In_ binaryParser& parser)
 	{
 		PackedUnicodeString packedUnicodeString;
 		packedUnicodeString.cchLength = parser.Get<BYTE>();
