@@ -459,46 +459,6 @@ namespace mapi
 		return hRes;
 	}
 
-	///////////////////////////////////////////////////////////////////////////////
-	// CopyString()
-	//
-	// Parameters
-	// lpszDestination - Address of pointer to destination string
-	// szSource - Pointer to source string
-	// lpParent - Pointer to parent object (not, however, pointer to pointer!)
-	//
-	// Purpose
-	// Uses MAPI to allocate a new string (szDestination) and copy szSource into it
-	// Uses lpParent as the parent for MAPIAllocateMore if possible
-	_Check_return_ LPSTR CopyStringA(_In_z_ LPCSTR src, _In_opt_ LPVOID pParent)
-	{
-		if (!src) return nullptr;
-		auto cb = strnlen_s(src, RSIZE_MAX) + 1;
-		auto dst = mapi::allocate<LPSTR>(static_cast<ULONG>(cb), pParent);
-
-		if (dst)
-		{
-			EC_W32_S(strcpy_s(dst, cb, src));
-		}
-
-		return dst;
-	}
-
-	_Check_return_ LPWSTR CopyStringW(_In_z_ LPCWSTR src, _In_opt_ LPVOID pParent)
-	{
-		if (!src) return nullptr;
-		auto cch = wcsnlen_s(src, RSIZE_MAX) + 1;
-		const auto cb = cch * sizeof(WCHAR);
-		auto dst = mapi::allocate<LPWSTR>(static_cast<ULONG>(cb), pParent);
-
-		if (dst)
-		{
-			EC_W32_S(wcscpy_s(dst, cch, src));
-		}
-
-		return dst;
-	}
-
 	// Allocates and creates a restriction that looks for existence of
 	// a particular property that matches the given string
 	// If lpParent is passed in, it is used as the allocation parent.

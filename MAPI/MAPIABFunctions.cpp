@@ -2,7 +2,6 @@
 
 #include <StdAfx.h>
 #include <MAPI/MAPIABFunctions.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <IO/MFCOutput.h>

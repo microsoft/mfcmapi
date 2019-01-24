@@ -108,4 +108,12 @@ namespace mapi
 
 	_Check_return_ SBinary CopySBinary(_In_ const _SBinary& src, _In_ LPVOID parent = nullptr);
 	_Check_return_ LPSBinary CopySBinary(_In_ const _SBinary* src);
+
+	_Check_return_ LPSTR CopyStringA(_In_z_ LPCSTR src, _In_opt_ LPVOID pParent);
+	_Check_return_ LPWSTR CopyStringW(_In_z_ LPCWSTR src, _In_opt_ LPVOID pParent);
+#ifdef UNICODE
+#define CopyString CopyStringW
+#else
+#define CopyString CopyStringA
+#endif
 } // namespace mapi
