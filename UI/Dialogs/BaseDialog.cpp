@@ -10,7 +10,7 @@
 #include <UI/UIFunctions.h>
 #include <MAPI/MAPIFunctions.h>
 #include <UI/Dialogs/AboutDlg.h>
-#include <MAPI/AdviseSink.h>
+#include <UI/AdviseSink.h>
 #include <core/mapi/extraPropTags.h>
 #include <Msi.h>
 #include <core/smartview/SmartView.h>
