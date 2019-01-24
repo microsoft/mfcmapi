@@ -88,11 +88,11 @@
     <ClInclude Include="UI\profile.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Enums.h">
+    <ClInclude Include="UI\enums.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="StdAfx.h">
       <Filter>Source Files</Filter>
     </ClInclude>

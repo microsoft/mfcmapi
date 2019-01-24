@@ -563,7 +563,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   <ItemGroup>
     <ClInclude Include="MAPI\AdviseSink.h" />
     <ClInclude Include="MAPI\MAPIProcessor\DumpStore.h" />
-    <ClInclude Include="Enums.h" />
+    <ClInclude Include="UI\enums.h" />
     <ClInclude Include="Interpret\InterpretProp.h" />
     <ClInclude Include="MAPI\MAPIABFunctions.h" />
     <ClInclude Include="MAPI\MAPIFunctions.h" />

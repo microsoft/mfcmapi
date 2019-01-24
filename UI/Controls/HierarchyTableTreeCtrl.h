@@ -1,5 +1,5 @@
 #pragma once
-#include <Enums.h>
+#include <UI/enums.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/StyleTreeCtrl.h>
 
