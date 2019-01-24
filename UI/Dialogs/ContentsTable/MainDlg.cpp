@@ -26,7 +26,7 @@
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
 #include <core/utility/registry.h>
-#include <IO/MFCOutput.h>
+#include <core/mapi/mapiOutput.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFile.h>
@@ -1024,7 +1024,7 @@ namespace dialog
 			&lpOptions));
 		if (lpOptions)
 		{
-			output::DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
+			output::outputProperties(DBGGeneric, nullptr, cValues, lpOptions, nullptr, false);
 
 			editor::CEditor MyResult(this, IDS_QUERYDEFMSGOPT, IDS_RESULTOFCALLPROMPT, CEDITOR_BUTTON_OK);
 			MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_COUNTOPTIONS, true));
@@ -1078,7 +1078,7 @@ namespace dialog
 
 		if (lpOptions)
 		{
-			output::DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
+			output::outputProperties(DBGGeneric, nullptr, cValues, lpOptions, nullptr, false);
 
 			editor::CEditor MyResult(this, IDS_QUERYDEFRECIPOPT, IDS_RESULTOFCALLPROMPT, CEDITOR_BUTTON_OK);
 			MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_COUNTOPTIONS, true));

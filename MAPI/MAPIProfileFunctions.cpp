@@ -3,7 +3,6 @@
 #include <StdAfx.h>
 #include <MAPI/MAPIProfileFunctions.h>
 #include <core/mapi/extraPropTags.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/output.h>
 #include <core/utility/strings.h>
 #include <core/utility/error.h>
@@ -35,7 +34,7 @@ namespace mapi
 				hRes =
 					EC_MAPI(HrQueryAllRows(lpProviderTable, LPSPropTagArray(&pTagUID), nullptr, nullptr, 0, &lpRowSet));
 
-				if (lpRowSet) output::DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
+				if (lpRowSet) output::outputSRowSet(DBGGeneric, nullptr, lpRowSet, nullptr);
 
 				if (lpRowSet && lpRowSet->cRows >= 1)
 				{
@@ -212,7 +211,7 @@ namespace mapi
 					{
 						// Look for a provider without our dummy prop
 						const auto lpRowSet = HrFindUnmarkedProvider(lpServiceAdmin);
-						if (lpRowSet) output::DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
+						if (lpRowSet) output::outputSRowSet(DBGGeneric, nullptr, lpRowSet, nullptr);
 
 						// should only have one unmarked row
 						if (lpRowSet && lpRowSet->cRows == 1)

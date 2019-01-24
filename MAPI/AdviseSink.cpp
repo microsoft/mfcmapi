@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <MAPI/AdviseSink.h>
-#include <IO/MFCOutput.h>
+#include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
 
 namespace mapi
@@ -54,7 +54,7 @@ namespace mapi
 
 		STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify, LPNOTIFICATION lpNotifications)
 		{
-			output::DebugPrintNotifications(DBGNotify, cNotify, lpNotifications, m_lpAdviseTarget);
+			output::outputNotifications(DBGNotify, nullptr, cNotify, lpNotifications, m_lpAdviseTarget);
 
 			if (!m_hWndParent) return 0;
 

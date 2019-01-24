@@ -5,7 +5,6 @@
 #include <MrMapi/MMStore.h>
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/mapiOutput.h>
@@ -558,7 +557,7 @@ void DumpSearchState(
 			output::outputEntryList(DBGNoDebug, stdout, lpEntryList);
 			printf("\n");
 			printf("Search Criteria:\n");
-			output::_OutputRestriction(DBGNoDebug, stdout, lpRes, nullptr);
+			output::outputRestriction(DBGNoDebug, stdout, lpRes, nullptr);
 		}
 
 		MAPIFreeBuffer(lpRes);

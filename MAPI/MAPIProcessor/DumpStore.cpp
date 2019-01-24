@@ -9,7 +9,7 @@
 #include <core/utility/file.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
-#include <IO/MFCOutput.h>
+#include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFile.h>
 #include <core/mapi/mapiFunctions.h>
@@ -123,7 +123,7 @@ namespace mapiprocessor
 		}
 		output::OutputToFile(m_fMailboxTable, L"\">\n");
 
-		output::OutputSRowToFile(m_fMailboxTable, lpSRow, lpMDB);
+		output::outputSRow(DBGNoDebug, m_fMailboxTable, lpSRow, lpMDB);
 
 		// build a path for our store's folder output:
 		if (strings::CheckStringProp(lpEmailAddress, PT_TSTRING) && strings::CheckStringProp(lpDisplayName, PT_TSTRING))
@@ -186,7 +186,7 @@ namespace mapiprocessor
 		{
 			output::OutputToFile(m_fFolderProps, L"<properties listtype=\"summary\">\n");
 
-			output::OutputPropertiesToFile(m_fFolderProps, cValues, lpAllProps, m_lpFolder, m_bRetryStreamProps);
+			output::outputProperties(DBGNoDebug, m_fFolderProps, cValues, lpAllProps, m_lpFolder, m_bRetryStreamProps);
 
 			output::OutputToFile(m_fFolderProps, L"</properties>\n");
 
@@ -201,7 +201,7 @@ namespace mapiprocessor
 		if (m_bOutputList) return;
 		if (!m_fFolderProps || !lpSRow) return;
 		output::OutputToFile(m_fFolderProps, L"<row>\n");
-		output::OutputSRowToFile(m_fFolderProps, lpSRow, m_lpMDB);
+		output::outputSRow(DBGNoDebug, m_fFolderProps, lpSRow, m_lpMDB);
 		output::OutputToFile(m_fFolderProps, L"</row>\n");
 	}
 
@@ -306,7 +306,7 @@ namespace mapiprocessor
 
 		output::OutputToFilef(m_fFolderContents, L"<message num=\"0x%08X\">\n", ulCurRow);
 
-		output::OutputSRowToFile(m_fFolderContents, lpSRow, m_lpFolder);
+		output::outputSRow(DBGNoDebug, m_fFolderContents, lpSRow, m_lpFolder);
 
 		output::OutputToFile(m_fFolderContents, L"</message>\n");
 		return true;
@@ -516,8 +516,8 @@ namespace mapiprocessor
 						const auto lpTemp = PpropFindProp(lpAllProps, cValues, column);
 						if (lpTemp)
 						{
-							output::OutputPropertyToFile(
-								lpMsgData->fMessageProps, lpTemp, lpMessage, bRetryStreamProps);
+							output::outputProperty(
+								DBGNoDebug, lpMsgData->fMessageProps, lpTemp, lpMessage, bRetryStreamProps);
 						}
 					}
 
@@ -548,8 +548,8 @@ namespace mapiprocessor
 				{
 					output::OutputToFile(lpMsgData->fMessageProps, L"<properties listtype=\"FullPropList\">\n");
 
-					output::OutputPropertiesToFile(
-						lpMsgData->fMessageProps, cValues, lpAllProps, lpMessage, bRetryStreamProps);
+					output::outputProperties(
+						DBGNoDebug, lpMsgData->fMessageProps, cValues, lpAllProps, lpMessage, bRetryStreamProps);
 
 					output::OutputToFile(lpMsgData->fMessageProps, L"</properties>\n");
 				}
@@ -646,7 +646,7 @@ namespace mapiprocessor
 
 		output::OutputToFilef(lpMsgData->fMessageProps, L"<recipient num=\"0x%08X\">\n", ulCurRow);
 
-		output::OutputSRowToFile(lpMsgData->fMessageProps, lpSRow, lpMessage);
+		output::outputSRow(DBGNoDebug, lpMsgData->fMessageProps, lpSRow, lpMessage);
 
 		output::OutputToFile(lpMsgData->fMessageProps, L"</recipient>\n");
 	}
@@ -700,7 +700,7 @@ namespace mapiprocessor
 		output::OutputToFile(lpMsgData->fMessageProps, L"\">\n");
 
 		output::OutputToFile(lpMsgData->fMessageProps, L"\t<tableprops>\n");
-		output::OutputSRowToFile(lpMsgData->fMessageProps, lpSRow, lpMessage);
+		output::outputSRow(DBGNoDebug, lpMsgData->fMessageProps, lpSRow, lpMessage);
 
 		output::OutputToFile(lpMsgData->fMessageProps, L"\t</tableprops>\n");
 
@@ -713,8 +713,8 @@ namespace mapiprocessor
 			if (lpAllProps)
 			{
 				output::OutputToFile(lpMsgData->fMessageProps, L"\t<getprops>\n");
-				output::OutputPropertiesToFile(
-					lpMsgData->fMessageProps, ulAllProps, lpAllProps, lpAttach, m_bRetryStreamProps);
+				output::outputProperties(
+					DBGNoDebug, lpMsgData->fMessageProps, ulAllProps, lpAllProps, lpAttach, m_bRetryStreamProps);
 				output::OutputToFile(lpMsgData->fMessageProps, L"\t</getprops>\n");
 			}
 

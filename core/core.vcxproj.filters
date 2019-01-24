@@ -231,9 +231,6 @@
     <ClInclude Include="mapi\mapiMime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mapi\mapiOutput.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mapi\mapiStoreFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>

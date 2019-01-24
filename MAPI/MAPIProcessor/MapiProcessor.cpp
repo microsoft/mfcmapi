@@ -3,7 +3,7 @@
 #include <core/mapi/mapiStoreFunctions.h>
 #include <core/mapi/columnTags.h>
 #include <core/utility/strings.h>
-#include <IO/MFCOutput.h>
+#include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 
@@ -330,7 +330,7 @@ namespace mapiprocessor
 
 		if (SUCCEEDED(hRes) && lpContentsTable && m_lpResFolderContents)
 		{
-			output::DebugPrintRestriction(DBGGeneric, m_lpResFolderContents, nullptr);
+			output::outputRestriction(DBGGeneric, nullptr, m_lpResFolderContents, nullptr);
 			WC_MAPI_S(lpContentsTable->Restrict(m_lpResFolderContents, TBL_BATCH));
 		}
 

@@ -128,12 +128,6 @@
     <ClCompile Include="IO\ExportProfile.cpp">
       <Filter>Source Files\IO</Filter>
     </ClCompile>
-    <ClCompile Include="IO\MFCOutput.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
-    <ClInclude Include="IO\MFCOutput.h">
-      <Filter>Source Files\IO</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MAPI\AdviseSink.cpp">

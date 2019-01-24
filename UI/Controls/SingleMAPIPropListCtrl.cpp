@@ -26,7 +26,7 @@
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
-#include <IO/MFCOutput.h>
+#include <core/mapi/mapiOutput.h>
 #include <core/utility/registry.h>
 #include <core/interpret/proptags.h>
 #include <core/interpret/proptype.h>
@@ -1257,7 +1257,7 @@ namespace controls
 			}
 
 			output::DebugPrint(DBGGeneric, L"Source restriction before editing:\n");
-			output::DebugPrintRestriction(DBGGeneric, lpResIn, m_lpPropBag->GetMAPIProp());
+			output::outputRestriction(DBGGeneric, nullptr, lpResIn, m_lpPropBag->GetMAPIProp());
 			dialog::editor::CRestrictEditor MyResEditor(
 				this,
 				nullptr, // No alloc parent - we must MAPIFreeBuffer the result
@@ -1268,7 +1268,7 @@ namespace controls
 				if (lpModRes)
 				{
 					output::DebugPrint(DBGGeneric, L"Modified restriction:\n");
-					output::DebugPrintRestriction(DBGGeneric, lpModRes, m_lpPropBag->GetMAPIProp());
+					output::outputRestriction(DBGGeneric, nullptr, lpModRes, m_lpPropBag->GetMAPIProp());
 
 					// need to merge the data we got back from the CRestrictEditor with our current prop set
 					// so that we can free lpModRes

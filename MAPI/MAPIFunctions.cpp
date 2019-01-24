@@ -9,7 +9,6 @@
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/registry.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiOutput.h>
@@ -503,7 +502,7 @@ namespace mapi
 				}
 
 				output::DebugPrint(DBGGeneric, L"CreatePropertyStringRestriction built restriction:\n");
-				output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
+				output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
 			}
 		}
 
@@ -552,7 +551,7 @@ namespace mapi
 			}
 
 			output::DebugPrint(DBGGeneric, L"CreateRangeRestriction built restriction:\n");
-			output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
+			output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
 		}
 
 		return lpRes;

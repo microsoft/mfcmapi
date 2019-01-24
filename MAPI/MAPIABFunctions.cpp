@@ -4,7 +4,6 @@
 #include <MAPI/MAPIABFunctions.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiOutput.h>
 #include <core/mapi/mapiFunctions.h>
@@ -214,7 +213,7 @@ namespace mapi
 				}
 
 				output::DebugPrint(DBGGeneric, L"CreateANRRestriction built restriction:\n");
-				output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
+				output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
 			}
 
 			return lpRes;

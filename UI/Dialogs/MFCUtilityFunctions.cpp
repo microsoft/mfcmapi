@@ -21,7 +21,7 @@
 #include <UI/Dialogs/ContentsTable/MailboxTableDlg.h>
 #include <UI/Dialogs/ContentsTable/PublicFolderTableDlg.h>
 #include <core/utility/registry.h>
-#include <IO/MFCOutput.h>
+#include <core/mapi/mapiOutput.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
@@ -667,7 +667,7 @@ namespace dialog
 						strings::wstringTostring(szClass).c_str(), ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
 					if (lpMAPIFormInfo)
 					{
-						output::DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
+						output::outputFormInfo(DBGForms, nullptr, lpMAPIFormInfo);
 						*lppMAPIFormInfo = lpMAPIFormInfo;
 					}
 				}
@@ -708,7 +708,7 @@ namespace dialog
 
 			if (lpMAPIFormInfo)
 			{
-				output::DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
+				output::outputFormInfo(DBGForms, nullptr, lpMAPIFormInfo);
 				*lppMAPIFormInfo = lpMAPIFormInfo;
 			}
 

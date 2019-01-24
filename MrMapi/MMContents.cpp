@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
 #include <MrMapi/cli.h>
-#include <IO/MFCOutput.h>
+#include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFile.h>
 
@@ -136,7 +136,7 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 		sResTop.res.resAnd.cRes = i;
 		sResTop.res.resAnd.lpRes = &sResMiddle[0];
 		lpRes = &sResTop;
-		output::DebugPrintRestriction(DBGGeneric, lpRes, NULL);
+		output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
 	}
 
 	DumpContentsTable(

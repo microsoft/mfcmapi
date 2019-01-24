@@ -2,7 +2,7 @@
 #include <core/mapi/columnTags.h>
 #include <MrMapi/MMReceiveFolder.h>
 #include <MrMapi/cli.h>
-#include <IO/MFCOutput.h>
+#include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
 
 void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
@@ -37,7 +37,7 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 			for (ULONG i = 0; i < lpRows->cRows; i++)
 			{
 				printf("<properties index=\"%lu\">\n", iRow);
-				output::_OutputProperties(
+				output::outputProperties(
 					DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
 				printf("</properties>\n");
 				iRow++;

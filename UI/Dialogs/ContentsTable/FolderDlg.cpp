@@ -24,7 +24,7 @@
 #include <core/mapi/mapiMemory.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
-#include <IO/MFCOutput.h>
+#include <core/mapi/mapiOutput.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFile.h>
@@ -1819,7 +1819,7 @@ namespace dialog
 				}
 
 				output::DebugPrintEx(DBGGeneric, CLASS, L"OnCreateMessageRestriction", L"built restriction:\n");
-				output::DebugPrintRestriction(DBGGeneric, lpRes, lpMAPIProp);
+				output::outputRestriction(DBGGeneric, nullptr, lpRes, lpMAPIProp);
 
 				m_lpContentsTableListCtrl->SetRestriction(lpRes);
 

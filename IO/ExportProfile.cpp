@@ -4,7 +4,7 @@
 #include <MAPI/MAPIProfileFunctions.h>
 #include <core/interpret/guid.h>
 #include <core/utility/strings.h>
-#include <IO/MFCOutput.h>
+#include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 
@@ -33,7 +33,7 @@ namespace output
 			OutputToFilef(
 				fProfile, L"<properties listtype=\"profilesection\" profilesection=\"%ws\">\n", szBin.c_str());
 
-			output::OutputPropertiesToFile(fProfile, cValues, lpAllProps, nullptr, false);
+			output::outputProperties(DBGNoDebug, fProfile, cValues, lpAllProps, nullptr, false);
 
 			output::OutputToFile(fProfile, L"</properties>\n");
 
@@ -48,7 +48,7 @@ namespace output
 		Outputf(DBGNoDebug, fProfile, true, L"<provider index = \"0x%08X\">\n", iRow);
 
 		output::OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
-		output::OutputSRowToFile(fProfile, lpRow, nullptr);
+		output::outputSRow(DBGNoDebug, fProfile, lpRow, nullptr);
 		output::OutputToFile(fProfile, L"</properties>\n");
 
 		auto lpProviderUID = PpropFindProp(lpRow->lpProps, lpRow->cValues, PR_PROVIDER_UID);
@@ -73,7 +73,7 @@ namespace output
 		Outputf(DBGNoDebug, fProfile, true, L"<service index = \"0x%08X\">\n", iRow);
 
 		output::OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
-		output::OutputSRowToFile(fProfile, lpRow, nullptr);
+		output::outputSRow(DBGNoDebug, fProfile, lpRow, nullptr);
 		output::OutputToFile(fProfile, L"</properties>\n");
 
 		auto lpServiceUID = PpropFindProp(lpRow->lpProps, lpRow->cValues, PR_SERVICE_UID);
@@ -213,4 +213,4 @@ namespace output
 			CloseFile(fProfile);
 		}
 	}
-}
+} // namespace output

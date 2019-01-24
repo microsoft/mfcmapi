@@ -7,11 +7,9 @@
 #include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <MAPI/MAPIFunctions.h>
 #include <UI/FileDialogEx.h>
 #include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
@@ -306,7 +304,7 @@ namespace dialog
 			if (lpMAPIFormInfo)
 			{
 				OnUpdateSingleMAPIPropListCtrl(lpMAPIFormInfo, nullptr);
-				output::DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
+				output::outputFormInfo(DBGForms, nullptr, lpMAPIFormInfo);
 				lpMAPIFormInfo->Release();
 			}
 		}
@@ -383,7 +381,7 @@ namespace dialog
 				{
 					if (lpMAPIFormInfoArray->aFormInfo[i])
 					{
-						output::DebugPrintFormInfo(DBGForms, lpMAPIFormInfoArray->aFormInfo[i]);
+						output::outputFormInfo(DBGForms, nullptr, lpMAPIFormInfoArray->aFormInfo[i]);
 						lpMAPIFormInfoArray->aFormInfo[i]->Release();
 					}
 				}

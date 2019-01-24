@@ -564,7 +564,6 @@
     <ClInclude Include="..\MAPI\MAPIProfileFunctions.h" />
     <ClInclude Include="..\IO\ExportProfile.h" />
     <ClInclude Include="..\PropertyBag\MAPIPropPropertyBag.h" />
-    <ClInclude Include="..\IO\MFCOutput.h" />
     <ClInclude Include="..\PropertyBag\PropertyBag.h" />
     <ClInclude Include="..\PropertyBag\RowPropertyBag.h" />
     <ClInclude Include="..\StdAfx.h" />
@@ -596,7 +595,6 @@
     <ClCompile Include="..\MAPI\MAPIProfileFunctions.cpp" />
     <ClCompile Include="..\IO\ExportProfile.cpp" />
     <ClCompile Include="..\PropertyBag\MAPIPropPropertyBag.cpp" />
-    <ClCompile Include="..\IO\MFCOutput.cpp" />
     <ClCompile Include="MrMAPI.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

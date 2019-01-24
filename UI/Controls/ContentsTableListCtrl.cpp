@@ -15,7 +15,6 @@
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/mapiMemory.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
@@ -501,7 +500,7 @@ namespace controls
 				if (m_lpMapiObjects)
 				{
 					const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-					output::DebugPrintRestriction(DBGGeneric, m_lpRes, lpMDB);
+					output::outputRestriction(DBGGeneric, nullptr, m_lpRes, lpMDB);
 				}
 
 				hRes = EC_MAPI(m_lpContentsTable->Restrict(const_cast<LPSRestriction>(m_lpRes), TBL_BATCH));
@@ -594,7 +593,7 @@ namespace controls
 					if (mfcmapiFINDROW_RESTRICTION == lpListCtrl->GetRestrictionType() && lpRes)
 					{
 						output::DebugPrintEx(DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
-						output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
+						output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
 
 						CHECKABORT(
 							hRes = WC_MAPI(
@@ -1513,7 +1512,7 @@ namespace controls
 			const auto fTable = output::MyOpenFile(szFileName, true);
 			if (fTable)
 			{
-				output::OutputTableToFile(fTable, m_lpContentsTable);
+				output::outputTable(DBGNoDebug, fTable, m_lpContentsTable);
 				output::CloseFile(fTable);
 			}
 		}

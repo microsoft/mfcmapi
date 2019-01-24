@@ -15,7 +15,6 @@
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
-#include <IO/MFCOutput.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFile.h>
@@ -1059,7 +1058,7 @@ namespace dialog
 					L"OnValidateIPMSubtree",
 					L"HrValidateIPMSubtree returned 0x%08X properties:\n",
 					ulValues);
-				output::DebugPrintProperties(DBGGeneric, ulValues, lpProps, m_lpMDB);
+				output::outputProperties(DBGGeneric, nullptr, ulValues, lpProps, m_lpMDB, false);
 			}
 
 			MAPIFreeBuffer(lpProps);
