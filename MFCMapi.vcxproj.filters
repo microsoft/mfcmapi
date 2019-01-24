@@ -70,26 +70,8 @@
     <ClInclude Include="UI\Controls\StyleTreeCtrl.h">
       <Filter>Source Files\UI\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="Interpret\SmartView\PropertiesStruct.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
     <ClInclude Include="UI\ViewPane\TreePane.h">
       <Filter>Source Files\UI\ViewPane</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\block\block.h">
-      <Filter>Source Files\Interpret\SmartView\block</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\block\blockBytes.h">
-      <Filter>Source Files\Interpret\SmartView\block</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\block\blockStringA.h">
-      <Filter>Source Files\Interpret\SmartView\block</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\block\blockStringW.h">
-      <Filter>Source Files\Interpret\SmartView\block</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\block\blockT.h">
-      <Filter>Source Files\Interpret\SmartView\block</Filter>
     </ClInclude>
     <ClInclude Include="UI\ViewPane\SplitterPane.h">
       <Filter>Source Files\UI\ViewPane</Filter>
@@ -126,9 +108,6 @@
     <ClCompile Include="UI\ViewPane\TreePane.cpp">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClCompile>
-    <ClCompile Include="Interpret\SmartView\PropertiesStruct.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
     <ClCompile Include="UI\ViewPane\SplitterPane.cpp">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClCompile>
@@ -162,185 +141,6 @@
     </ClCompile>
     <ClInclude Include="Interpret\InterpretProp.h">
       <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Interpret\SmartView\AdditionalRenEntryIDs.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\AdditionalRenEntryIDs.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\AppointmentRecurrencePattern.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\AppointmentRecurrencePattern.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\BinaryParser.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\ConversationIndex.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\ConversationIndex.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\EntryIdStruct.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\EntryIdStruct.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\EntryList.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\EntryList.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\ExtendedFlags.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\ExtendedFlags.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\FlatEntryList.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\FlatEntryList.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\FolderUserFieldStream.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\FolderUserFieldStream.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\GlobalObjectId.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\GlobalObjectId.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\NickNameCache.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\NickNameCache.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\PCL.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\PCL.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\PropertyDefinitionStream.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\PropertyDefinitionStream.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\RecipientRowStream.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\RecipientRowStream.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\RecurrencePattern.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\RecurrencePattern.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\ReportTag.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\ReportTag.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\RestrictionStruct.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\RestrictionStruct.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\RuleCondition.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\RuleCondition.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\SDBin.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\SDBin.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\SIDBin.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\SIDBin.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\SearchFolderDefinition.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\SearchFolderDefinition.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\SmartView.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\SmartView.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\SmartViewParser.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\SmartViewParser.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\TaskAssigners.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\TaskAssigners.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\TimeZone.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\TimeZone.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\TimeZoneDefinition.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\TimeZoneDefinition.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\TombStone.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\TombStone.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\VerbStream.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\VerbStream.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\WebViewPersistStream.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\WebViewPersistStream.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClInclude>
-    <ClCompile Include="Interpret\SmartView\XID.cpp">
-      <Filter>Source Files\Interpret\SmartView</Filter>
-    </ClCompile>
-    <ClInclude Include="Interpret\SmartView\XID.h">
-      <Filter>Source Files\Interpret\SmartView</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

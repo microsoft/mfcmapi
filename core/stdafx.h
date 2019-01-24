@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 #include <cassert>
+#include <stack>
 
 // All the MAPI headers
 #include <MAPIX.h>

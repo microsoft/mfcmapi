@@ -3,7 +3,7 @@
 #include <core/utility/output.h>
 #include <core/utility/strings.h>
 #include <Interpret/InterpretProp.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/smartview/SmartView.h>
 #include <core/mapi/columnTags.h>
 #include <Property/ParseProperty.h>
 #include <core/mapi/cache/namedPropCache.h>

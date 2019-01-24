@@ -2,7 +2,7 @@
 #include <MrMapi/MMFidMid.h>
 #include <MAPI/MAPIProcessor/MapiProcessor.h>
 #include <core/mapi/extraPropTags.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/smartview/SmartView.h>
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
 #include <core/utility/registry.h>

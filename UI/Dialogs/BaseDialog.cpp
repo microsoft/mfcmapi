@@ -13,7 +13,7 @@
 #include <MAPI/AdviseSink.h>
 #include <core/mapi/extraPropTags.h>
 #include <Msi.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/smartview/SmartView.h>
 #include <core/mapi/cache/globalCache.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Dialogs/Editors/DbgView.h>

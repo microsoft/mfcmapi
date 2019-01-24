@@ -6,7 +6,7 @@
 #include <UI/ViewPane/CheckPane.h>
 #include <UI/ViewPane/DropDownPane.h>
 #include <UI/ViewPane/ListPane.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/smartview/SmartView.h>
 
 class CParentWnd;
 

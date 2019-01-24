@@ -1,7 +1,7 @@
 #pragma once
 #include <StdAfx.h>
 #include <CppUnitTest.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/smartview/SmartView.h>
 #include <core/interpret/guid.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

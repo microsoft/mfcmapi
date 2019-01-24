@@ -7,7 +7,7 @@
 #include <UI/Dialogs/BaseDialog.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/smartview/SmartView.h>
 #include <core/interpret/guid.h>
 #include <UI/Dialogs/HierarchyTable/MsgStoreDlg.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>

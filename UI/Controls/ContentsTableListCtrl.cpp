@@ -9,7 +9,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <core/mapi/extraPropTags.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/smartview/SmartView.h>
 #include <process.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <UI/Dialogs/BaseDialog.h>

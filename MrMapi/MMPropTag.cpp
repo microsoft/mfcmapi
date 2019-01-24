@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <Shlwapi.h>
 #include <core/interpret/guid.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/smartview/SmartView.h>
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>
 #include <core/addin/addin.h>

@@ -5,7 +5,7 @@
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <core/mapi/extraPropTags.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/smartview/SmartView.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <MAPI/MAPIABFunctions.h>
 #include <UI/ViewPane/CountedTextPane.h>

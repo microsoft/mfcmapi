@@ -2,7 +2,7 @@
 #include <UI/Dialogs/Editors/StreamEditor.h>
 #include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/smartview/SmartView.h>
 #include <core/utility/strings.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/ViewPane/SmartViewPane.h>

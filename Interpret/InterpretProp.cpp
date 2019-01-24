@@ -2,7 +2,7 @@
 #include <Interpret/InterpretProp.h>
 #include <core/interpret/guid.h>
 #include <core/mapi/extraPropTags.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/smartview/SmartView.h>
 #include <Property/ParseProperty.h>
 #include <core/utility/strings.h>
 #include <core/interpret/flags.h>

@@ -11,7 +11,7 @@
 #include <core/utility/import.h>
 #include <core/mapi/mapiProgress.h>
 #include <core/mapi/cache/namedPropCache.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/smartview/SmartView.h>
 #include <PropertyBag/PropertyBag.h>
 #include <PropertyBag/MAPIPropPropertyBag.h>
 #include <PropertyBag/RowPropertyBag.h>

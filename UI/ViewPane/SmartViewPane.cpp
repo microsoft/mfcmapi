@@ -2,7 +2,7 @@
 #include <UI/ViewPane/SmartViewPane.h>
 #include <UI/ViewPane/TextPane.h>
 #include <core/utility/strings.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/smartview/SmartView.h>
 #include <UI/UIFunctions.h>
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>
