@@ -1,5 +1,3 @@
-#include <../StdAfx.h>
-#include <CppUnitTest.h>
 #include <UnitTest/UnitTest.h>
 #include <core/smartview/SmartView.h>
 #include <core/addin/mfcmapi.h>

@@ -1,5 +1,3 @@
-#include <../StdAfx.h>
-#include <CppUnitTest.h>
 #include <UnitTest/UnitTest.h>
 #include <core/interpret/sid.h>
 #include <core/utility/strings.h>

@@ -1,5 +1,3 @@
-#include <../StdAfx.h>
-#include <CppUnitTest.h>
 #include <UnitTest/UnitTest.h>
 #include <UnitTest/resource.h>
 #include <core/addin/addin.h>
