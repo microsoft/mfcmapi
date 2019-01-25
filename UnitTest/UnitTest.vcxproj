@@ -467,16 +467,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="targetver.h" />
+    <ClInclude Include="res\resource.h" />
     <ClInclude Include="UnitTest.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="guidtest.cpp" />
-    <ClCompile Include="property.cpp" />
-    <ClCompile Include="sidtest.cpp" />
-    <ClCompile Include="SmartViewTest.cpp" />
-    <ClCompile Include="stringtest.cpp" />
+    <ClCompile Include="tests\guidtest.cpp" />
+    <ClCompile Include="tests\property.cpp" />
+    <ClCompile Include="tests\sidtest.cpp" />
+    <ClCompile Include="tests\smartViewTest.cpp" />
+    <ClCompile Include="tests\stringtest.cpp" />
     <ClCompile Include="UnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -485,7 +484,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="UnitTest.rc" />
+    <ResourceCompile Include="res\UnitTest.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -50,6 +50,8 @@
 #endif
 
 #include <core/res/Resource.h> // main symbols
+#include <UnitTest/res/resource.h> // unittest symbols
+
 #include <CppUnitTest.h>
 #include <core/interpret/guid.h>
 

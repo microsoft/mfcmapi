@@ -1,7 +1,5 @@
 ﻿#include <UnitTest/UnitTest.h>
 #include <core/utility/strings.h>
-#include <UnitTest/resource.h>
-#include <core/res/Resource.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

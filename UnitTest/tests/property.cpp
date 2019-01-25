@@ -1,7 +1,6 @@
 #include <UnitTest/UnitTest.h>
 #include <core/property/property.h>
 #include <core/property/attributes.h>
-#include <core/res/Resource.h>
 
 namespace property
 {
