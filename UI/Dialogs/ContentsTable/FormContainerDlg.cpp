@@ -14,6 +14,7 @@
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiOutput.h>
+#include <MAPI/MAPIFunctions.h>
 
 namespace dialog
 {
@@ -124,7 +125,7 @@ namespace dialog
 							lpMAPIFormInfoArray->aFormInfo[i], fMapiUnicode, &ulPropVals, &lpPropVals));
 						if (lpPropVals)
 						{
-							SRow sRow = {0};
+							SRow sRow = {};
 							sRow.cValues = ulPropVals;
 							sRow.lpProps = lpPropVals;
 							(void) ::SendMessage(

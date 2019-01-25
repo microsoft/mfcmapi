@@ -848,7 +848,7 @@ namespace mapi
 						if (pRows->aRow[iCurPropRow].lpProps &&
 							PR_ENTRYID == pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].ulPropTag)
 						{
-							ENTRYLIST eid = {0};
+							ENTRYLIST eid = {};
 							eid.cValues = 1;
 							eid.lpbin = &pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin;
 							hRes = WC_MAPI(
@@ -1076,7 +1076,7 @@ namespace mapi
 		LPMESSAGE lpNewMessage = nullptr;
 		LPSPropTagArray lpsMessageTags = nullptr;
 		LPSPropProblemArray lpsPropProbs = nullptr;
-		SPropValue sProp = {0};
+		SPropValue sProp = {};
 
 		enum
 		{
@@ -1240,7 +1240,7 @@ namespace mapi
 						hRes = EC_MAPI(HrSetOneProp(lpNewMessage, &sProp));
 						if (FAILED(hRes)) continue;
 
-						SPropTagArray sPropTagArray = {0};
+						SPropTagArray sPropTagArray = {};
 
 						sPropTagArray.cValues = 1;
 						sPropTagArray.aulPropTag[0] = PR_SENTMAIL_ENTRYID;
@@ -1456,38 +1456,6 @@ namespace mapi
 		return hRes;
 	}
 
-	// Definitions for WrapCompressedRTFStreamEx in param for WrapCompressedRTFStreamEX
-	// http://msdn2.microsoft.com/en-us/library/bb905293.aspx
-	struct RTF_WCSINFO
-	{
-		ULONG size; // Size of the structure
-		ULONG ulFlags;
-		/****** MAPI_MODIFY ((ULONG) 0x00000001) above */
-		/****** STORE_UNCOMPRESSED_RTF ((ULONG) 0x00008000) above */
-		/****** MAPI_NATIVE_BODY ((ULONG) 0x00010000) mapidefs.h Only used for reading*/
-		ULONG ulInCodePage; // Codepage of the message, used when passing MAPI_NATIVE_BODY, ignored otherwise
-		ULONG ulOutCodePage; // Codepage of the Returned Stream, used when passing MAPI_NATIVE_BODY, ignored otherwise
-	};
-
-	// out param type information for WrapCompressedRTFStreamEX
-	// http://msdn2.microsoft.com/en-us/library/bb905294.aspx
-	struct RTF_WCSRETINFO
-	{
-		ULONG size; // Size of the structure
-		ULONG ulStreamFlags;
-		/****** MAPI_NATIVE_BODY_TYPE_RTF ((ULONG) 0x00000001) mapidefs.h */
-		/****** MAPI_NATIVE_BODY_TYPE_HTML ((ULONG) 0x00000002) mapidefs.h */
-		/****** MAPI_NATIVE_BODY_TYPE_PLAINTEXT ((ULONG) 0x00000004) mapidefs.h */
-	};
-
-	// Declaration missing from headers
-	STDAPI_(HRESULT)
-	WrapCompressedRTFStreamEx(
-		LPSTREAM pCompressedRTFStream,
-		const RTF_WCSINFO* pWCSInfo,
-		LPSTREAM* ppUncompressedRTFStream,
-		RTF_WCSRETINFO* pRetInfo);
-
 	_Check_return_ HRESULT WrapStreamForRTF(
 		_In_ LPSTREAM lpCompressedRTFStream,
 		bool bUseWrapEx,
@@ -1506,8 +1474,8 @@ namespace mapi
 		}
 		else
 		{
-			RTF_WCSINFO wcsinfo = {0};
-			RTF_WCSRETINFO retinfo = {0};
+			RTF_WCSINFO wcsinfo = {};
+			RTF_WCSRETINFO retinfo = {};
 
 			retinfo.size = sizeof(RTF_WCSRETINFO);
 
@@ -1689,8 +1657,8 @@ namespace mapi
 	{
 		if (!puidService) return MAPI_E_INVALID_PARAMETER;
 
-		SRestriction mres = {0};
-		SPropValue mval = {0};
+		SRestriction mres = {};
+		SPropValue mval = {};
 		SRowSet* pRows = nullptr;
 		LPSERVICEADMIN spSvcAdmin = nullptr;
 		LPMAPITABLE spmtab = nullptr;
@@ -2143,8 +2111,6 @@ namespace mapi
 
 		return hRes;
 	}
-
-	typedef ACTIONS* LPACTIONS;
 
 	// swiped from EDK rules sample
 	_Check_return_ STDAPI HrCopyActions(

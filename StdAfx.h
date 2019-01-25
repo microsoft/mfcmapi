@@ -96,36 +96,3 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 
 // Used by CContentsTableDlg
 #define WM_MFCMAPI_RESETCOLUMNS (WM_APP + 12)
-
-// http://msdn.microsoft.com/en-us/library/office/dn433223.aspx
-#pragma pack(4)
-struct CONTAB_ENTRYID
-{
-	BYTE abFlags[4];
-	MAPIUID muid;
-	ULONG ulVersion;
-	ULONG ulType;
-	ULONG ulIndex;
-	ULONG cbeid;
-	BYTE abeid[1];
-};
-typedef CONTAB_ENTRYID* LPCONTAB_ENTRYID;
-#pragma pack()
-
-// http://msdn.microsoft.com/en-us/library/office/dn433221.aspx
-#pragma pack(4)
-struct DIR_ENTRYID
-{
-	BYTE abFlags[4];
-	MAPIUID muid;
-	ULONG ulVersion;
-	ULONG ulType;
-	MAPIUID muidID;
-};
-typedef DIR_ENTRYID* LPDIR_ENTRYID;
-#pragma pack()
-
-#define CbNewROWLIST(_centries) (offsetof(ROWLIST, aEntries) + (_centries) * sizeof(ROWENTRY))
-#define MAXNewROWLIST ((ULONG_MAX - offsetof(ROWLIST, aEntries)) / sizeof(ROWENTRY))
-#define MAXMessageClassArray ((ULONG_MAX - offsetof(SMessageClassArray, aMessageClass)) / sizeof(LPCSTR))
-#define MAXNewADRLIST ((ULONG_MAX - offsetof(ADRLIST, aEntries)) / sizeof(ADRENTRY))

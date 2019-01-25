@@ -10,6 +10,7 @@
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/property/parseProperty.h>
+#include <MAPI/MAPIFunctions.h>
 
 namespace dialog
 {
@@ -103,7 +104,7 @@ namespace dialog
 
 		if (!m_lpMessage || !m_lpContentsTableListCtrl) return;
 
-		const int iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
+		const auto iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 
 		if (iNumSelected && iNumSelected < MAXNewADRLIST)
 		{
@@ -112,7 +113,7 @@ namespace dialog
 			{
 				lpAdrList->cEntries = iNumSelected;
 
-				for (auto iSelection = 0; iSelection < iNumSelected; iSelection++)
+				for (auto iSelection = UINT{}; iSelection < iNumSelected; iSelection++)
 				{
 					const auto lpProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 					if (lpProp)
@@ -165,7 +166,7 @@ namespace dialog
 		EC_H_S(m_lpPropDisplay->GetDisplayedProps(&cProps, &lpProps));
 		if (lpProps)
 		{
-			ADRLIST adrList = {0};
+			ADRLIST adrList = {};
 			adrList.cEntries = 1;
 			adrList.aEntries[0].ulReserved1 = 0;
 			adrList.aEntries[0].cValues = cProps;
@@ -213,7 +214,7 @@ namespace dialog
 			auto lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
 			if (lpAB)
 			{
-				ADRENTRY adrEntry = {0};
+				ADRENTRY adrEntry = {};
 				adrEntry.ulReserved1 = 0;
 				adrEntry.cValues = cProps;
 				adrEntry.rgPropVals = lpProps;
@@ -235,7 +236,7 @@ namespace dialog
 				}
 				else if (SUCCEEDED(hRes))
 				{
-					ADRLIST adrList = {0};
+					ADRLIST adrList = {};
 					adrList.cEntries = 1;
 					adrList.aEntries[0].ulReserved1 = 0;
 					adrList.aEntries[0].cValues = adrEntry.cValues;
