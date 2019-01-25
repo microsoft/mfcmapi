@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 
-#include <MrMapi/cli.h>
+#include <core/utility/cli.h>
 #include <MrMapi/MrMAPI.h>
 #include <core/utility/strings.h>
 #include <MrMapi/MMAcls.h>
@@ -141,6 +141,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	registry::useGetPropList = true;
 	registry::parseNamedProps = true;
 	registry::cacheNamedProps = true;
+	registry::debugTag = 0;
 
 	auto cl = cli::GetCommandLine(argc, argv);
 	auto ProgOpts = cli::ParseArgs(cl);

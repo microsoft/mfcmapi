@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <MrMapi/MMContents.h>
 #include <core/mapi/processor/dumpStore.h>
-#include <MrMapi/cli.h>
+#include <core/utility/cli.h>
 #include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFile.h>

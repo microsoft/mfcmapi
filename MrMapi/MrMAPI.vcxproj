@@ -556,7 +556,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\StdAfx.h" />
-    <ClInclude Include="cli.h" />
     <ClInclude Include="MMAcls.h" />
     <ClInclude Include="MMContents.h" />
     <ClInclude Include="MMErr.h" />
@@ -579,7 +578,6 @@
     <ClCompile Include="MrMAPI.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="cli.cpp" />
     <ClCompile Include="MMAcls.cpp" />
     <ClCompile Include="MMContents.cpp" />
     <ClCompile Include="MMErr.cpp" />

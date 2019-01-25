@@ -3,7 +3,7 @@
 #include <core/interpret/guid.h>
 #include <core/smartview/SmartView.h>
 #include <core/utility/strings.h>
-#include <MrMapi/cli.h>
+#include <core/utility/cli.h>
 #include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
 #include <core/utility/output.h>

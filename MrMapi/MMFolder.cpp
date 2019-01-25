@@ -3,7 +3,7 @@
 #include <core/mapi/extraPropTags.h>
 #include <MrMapi/MMStore.h>
 #include <core/utility/strings.h>
-#include <MrMapi/cli.h>
+#include <core/utility/cli.h>
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/mapiOutput.h>

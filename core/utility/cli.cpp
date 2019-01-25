@@ -1,6 +1,6 @@
-#include <StdAfx.h>
+#include <core/stdafx.h>
 
-#include <MrMapi/cli.h>
+#include <core/utility/cli.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
@@ -645,7 +645,7 @@ namespace cli
 	{
 		if (szArg.empty()) return switchNoSwitch;
 
-		LPCWSTR szSwitch = nullptr;
+		auto szSwitch = std::wstring{};
 
 		// Check if this is a switch at all
 		switch (szArg[0])
@@ -653,7 +653,7 @@ namespace cli
 		case L'-':
 		case L'/':
 		case L'\\':
-			if (szArg[1] != 0) szSwitch = &szArg[1];
+			if (szArg[1] != 0) szSwitch = strings::wstringToLower(&szArg[1]);
 			break;
 		default:
 			return switchNoSwitch;
@@ -662,7 +662,13 @@ namespace cli
 		for (ULONG i = 0; i < g_ulSwitches; i++)
 		{
 			// If we have a match
-			if (StrStrIW(g_Switches[i].szSwitch, szSwitch) == g_Switches[i].szSwitch)
+			// TODO: Move this to a better tested "prefix" function in strings
+			auto arraySwitch = strings::wstringToLower(g_Switches[i].szSwitch);
+			if (arraySwitch.empty()) continue;
+			if (szSwitch.length() > arraySwitch.length()) continue;
+			auto res = std::mismatch(szSwitch.begin(), szSwitch.end(), arraySwitch.begin());
+
+			if (res.first == szSwitch.end())
 			{
 				return g_Switches[i].iSwitch;
 			}

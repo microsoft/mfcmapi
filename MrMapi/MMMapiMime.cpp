@@ -4,7 +4,7 @@
 #include <core/utility/import.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
-#include <MrMapi/cli.h>
+#include <core/utility/cli.h>
 
 #define CHECKFLAG(__flag) ((ProgOpts.MAPIMIMEFlags & (__flag)) == (__flag))
 void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
