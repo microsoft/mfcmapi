@@ -1,3 +1,4 @@
+#include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 
 namespace guidtest

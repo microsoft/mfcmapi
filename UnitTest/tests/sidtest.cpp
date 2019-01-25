@@ -1,3 +1,4 @@
+#include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <core/interpret/sid.h>
 #include <core/utility/strings.h>

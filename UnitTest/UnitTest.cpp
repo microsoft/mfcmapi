@@ -1,3 +1,4 @@
+#include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>

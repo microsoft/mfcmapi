@@ -1,4 +1,5 @@
-﻿#include <UnitTest/UnitTest.h>
+﻿#include <UnitTest/stdafx.h>
+#include <UnitTest/UnitTest.h>
 #include <core/utility/strings.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

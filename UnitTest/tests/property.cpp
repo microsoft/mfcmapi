@@ -1,3 +1,4 @@
+#include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <core/property/property.h>
 #include <core/property/attributes.h>

@@ -1,3 +1,4 @@
+#include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
 #include <core/smartview/SmartView.h>
 #include <core/addin/mfcmapi.h>
