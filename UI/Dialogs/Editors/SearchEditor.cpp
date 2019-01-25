@@ -2,7 +2,7 @@
 #include <UI/Dialogs/Editors/SearchEditor.h>
 #include <core/utility/strings.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <MAPI/MAPIFunctions.h>
+#include <core/mapi/mapiFunctions.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/utility/output.h>
 #include <core/interpret/proptags.h>

@@ -10,7 +10,6 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <core/mapi/mapiABFunctions.h>
 #include <core/mapi/mapiProgress.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/mapi/cache/globalCache.h>
 #include <UI/addinui.h>
 #include <core/utility/output.h>

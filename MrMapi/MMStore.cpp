@@ -3,7 +3,6 @@
 #include <MrMapi/MMStore.h>
 #include <MrMapi/MMFolder.h>
 #include <core/mapi/columnTags.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/mapi/mapiStoreFunctions.h>
 #include <core/utility/strings.h>
 #include <MrMapi/cli.h>

@@ -4,6 +4,7 @@
 
 #define _WINSOCKAPI_ // stops windows.h including winsock.h
 #include <Windows.h>
+#include <tchar.h>
 
 // Common CRT headers
 #include <list>
@@ -36,8 +37,8 @@
 #include <MAPIAux.h>
 
 // For import procs
-#include <aclui.h>
-#include <uxtheme.h>
+#include <AclUI.h>
+#include <Uxtheme.h>
 
 // there's an odd conflict with mimeole.h and richedit.h - this should fix it
 #ifdef UNICODE

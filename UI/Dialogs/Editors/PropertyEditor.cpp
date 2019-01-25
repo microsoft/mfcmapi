@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/PropertyEditor.h>
 #include <core/interpret/guid.h>
-#include <MAPI/MAPIFunctions.h>
+#include <core/mapi/mapiFunctions.h>
 #include <core/smartview/SmartView.h>
 #include <UI/Controls/SortList/MVPropData.h>
 #include <UI/ViewPane/CountedTextPane.h>

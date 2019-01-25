@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <MrMapi/MMFolder.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <MrMapi/MMStore.h>
 #include <core/utility/strings.h>

@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/StreamEditor.h>
-#include <MAPI/MAPIFunctions.h>
+#include <core/mapi/mapiFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/smartview/SmartView.h>
 #include <core/utility/strings.h>

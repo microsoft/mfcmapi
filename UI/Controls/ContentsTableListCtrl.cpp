@@ -2,7 +2,6 @@
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
-#include <MAPI/MAPIFunctions.h>
 #include <UI/UIFunctions.h>
 #include <UI/AdviseSink.h>
 #include <UI/Dialogs/Editors/Editor.h>

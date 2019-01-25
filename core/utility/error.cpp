@@ -85,10 +85,6 @@ namespace error
 		}
 	}
 
-#define RETURN_ERR_CASE(err) \
-	case (err): \
-		return (_T(#err))
-
 	// Function to convert error codes to their names
 	std::wstring ErrorNameFromErrorCode(ULONG hrErr)
 	{

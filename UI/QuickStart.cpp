@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 #include <UI/QuickStart.h>
 #include <core/mapi/mapiStoreFunctions.h>
-#include <MAPI/MAPIFunctions.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <core/mapi/extraPropTags.h>

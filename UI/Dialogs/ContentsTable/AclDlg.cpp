@@ -12,7 +12,7 @@
 #include <UI/addinui.h>
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
-#include <MAPI/MAPIFunctions.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {

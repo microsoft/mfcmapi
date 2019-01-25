@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 
 #include <MrMapi/cli.h>
-#include <MAPI/MAPIFunctions.h>
+#include <core/mapi/mapiFunctions.h>
 #include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
 #include <core/utility/strings.h>

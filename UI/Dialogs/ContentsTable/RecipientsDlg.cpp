@@ -10,7 +10,6 @@
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/property/parseProperty.h>
-#include <MAPI/MAPIFunctions.h>
 
 namespace dialog
 {

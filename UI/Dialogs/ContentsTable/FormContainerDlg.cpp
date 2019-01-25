@@ -14,7 +14,6 @@
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiOutput.h>
-#include <MAPI/MAPIFunctions.h>
 
 namespace dialog
 {

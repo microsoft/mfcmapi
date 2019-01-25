@@ -3,7 +3,6 @@
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <core/interpret/guid.h>
 #include <core/mapi/mapiProgress.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/utility/file.h>
 #include <UI/FileDialogEx.h>
 #include <core/mapi/extraPropTags.h>

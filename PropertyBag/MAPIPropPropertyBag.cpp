@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <PropertyBag/MAPIPropPropertyBag.h>
-#include <MAPI/MAPIFunctions.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>

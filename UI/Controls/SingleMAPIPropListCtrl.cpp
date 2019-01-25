@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>

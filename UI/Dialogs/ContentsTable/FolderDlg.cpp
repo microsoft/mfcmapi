@@ -3,7 +3,6 @@
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/mapi/mapiStoreFunctions.h>
 #include <core/mapi/mapiABFunctions.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
@@ -1284,16 +1283,16 @@ namespace dialog
 					if (PR_ATTACH_NUM != props[ATTACHNUM].ulPropTag) return S_OK;
 					LPATTACH lpAttach = nullptr;
 					// Open the attachment
-					auto hRes =
+					auto hResRet =
 						EC_MAPI(lpMessage->OpenAttach(props[ATTACHNUM].Value.l, nullptr, MAPI_BEST_ACCESS, &lpAttach));
 
 					if (lpAttach)
 					{
-						hRes = WC_H(ui::mapiui::WriteAttachmentToFile(lpAttach, m_hWnd));
+						hResRet = WC_H(ui::mapiui::WriteAttachmentToFile(lpAttach, m_hWnd));
 						lpAttach->Release();
 					}
 
-					return hRes;
+					return hResRet;
 				},
 				[](auto hRes) { return dialog::bShouldCancel(nullptr, hRes); });
 

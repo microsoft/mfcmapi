@@ -3,7 +3,6 @@
 #include <UI/Dialogs/HierarchyTable/MsgStoreDlg.h>
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
-#include <MAPI/MAPIFunctions.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
@@ -697,6 +696,7 @@ namespace dialog
 			{
 				if (MyData.GetCheck(2))
 				{
+					CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 					EC_H_S(mapi::ManuallyEmptyFolder(lpMAPIFolderToEmpty, MyData.GetCheck(0), MyData.GetCheck(1)));
 				}
 				else

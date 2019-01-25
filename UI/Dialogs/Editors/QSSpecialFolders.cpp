@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/QSSpecialFolders.h>
 #include <UI/QuickStart.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/smartview/SmartView.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>

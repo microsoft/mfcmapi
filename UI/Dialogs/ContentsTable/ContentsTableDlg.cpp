@@ -4,7 +4,6 @@
 #include <UI/FakeSplitter.h>
 #include <UI/FileDialogEx.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>

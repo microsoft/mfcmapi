@@ -4,7 +4,6 @@
 
 #include <StdAfx.h>
 #include <MAPI/MAPIProcessor/DumpStore.h>
-#include <MAPI/MAPIFunctions.h>
 #include <core/utility/strings.h>
 #include <core/utility/file.h>
 #include <core/interpret/flags.h>
