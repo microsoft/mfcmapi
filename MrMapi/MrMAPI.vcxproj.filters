@@ -8,9 +8,6 @@
     <Filter Include="Source Files\MrMAPI">
       <UniqueIdentifier>{cb752376-37c8-4fc4-b77d-e7c9d220cd32}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\PropertyBag">
-      <UniqueIdentifier>{86a3152b-89a1-48b3-8d14-47d2c201832d}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli.h">
@@ -18,9 +15,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Enums.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\StdAfx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -112,23 +106,6 @@
     </ClCompile>
     <ClInclude Include="MrMAPI.h">
       <Filter>Source Files\MrMAPI</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\PropertyBag\MAPIPropPropertyBag.cpp">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClCompile>
-    <ClInclude Include="..\PropertyBag\MAPIPropPropertyBag.h">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PropertyBag\PropertyBag.h">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClInclude>
-    <ClCompile Include="..\PropertyBag\RowPropertyBag.cpp">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClCompile>
-    <ClInclude Include="..\PropertyBag\RowPropertyBag.h">
-      <Filter>Source Files\PropertyBag</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
