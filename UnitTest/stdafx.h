@@ -35,19 +35,5 @@
 #include <TNEF.h>
 #include <MAPIAux.h>
 
-// For import procs
-#include <AclUI.h>
-#include <Uxtheme.h>
-
-// there's an odd conflict with mimeole.h and richedit.h - this should fix it
-#ifdef UNICODE
-#undef CHARFORMAT
-#endif
-#include <mimeole.h>
-#ifdef UNICODE
-#undef CHARFORMAT
-#define CHARFORMAT CHARFORMATW
-#endif
-
 #include <core/res/Resource.h> // main symbols
 #include <UnitTest/res/resource.h> // unittest symbols
