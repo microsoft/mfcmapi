@@ -231,28 +231,28 @@
     <ClInclude Include="mapi\mapiMime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\mapiOutput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="mapi\mapiStoreFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="smartview\binaryParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="property\parseProperty.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mapi\mapiOutput.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mapi\mapiProfileFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mapi\processor\mapiProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\exportProfile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mapi\mapiABFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mapi\exportProfile.h">
+    <ClInclude Include="mapi\mapiProfileFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="property\parseProperty.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -428,19 +428,19 @@
     <ClCompile Include="mapi\mapiStoreFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="property\parseProperty.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mapi\mapiProfileFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mapi\processor\mapiProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\exportProfile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mapi\mapiABFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mapi\exportProfile.cpp">
+    <ClCompile Include="mapi\mapiProfileFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="property\parseProperty.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
