@@ -130,14 +130,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MAPI\MAPIProcessor\DumpStore.cpp">
-      <Filter>Source Files\MAPI\MAPIProcessor</Filter>
-    </ClCompile>
-    <ClInclude Include="MAPI\MAPIProcessor\DumpStore.h">
-      <Filter>Source Files\MAPI\MAPIProcessor</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="PropertyBag\MAPIPropPropertyBag.cpp">
       <Filter>Source Files\PropertyBag</Filter>
     </ClCompile>

@@ -11,12 +11,6 @@
     <Filter Include="Source Files\PropertyBag">
       <UniqueIdentifier>{86a3152b-89a1-48b3-8d14-47d2c201832d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\MAPI">
-      <UniqueIdentifier>{3a6d1a42-ecbc-4f70-bdab-7e445a4bb323}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\MAPI\MAPIProcessor">
-      <UniqueIdentifier>{4c12041e-a0f1-48dc-a272-85c0bef0bcc0}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli.h">
@@ -118,14 +112,6 @@
     </ClCompile>
     <ClInclude Include="MrMAPI.h">
       <Filter>Source Files\MrMAPI</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\MAPI\MAPIProcessor\DumpStore.cpp">
-      <Filter>Source Files\MAPI\MAPIProcessor</Filter>
-    </ClCompile>
-    <ClInclude Include="..\MAPI\MAPIProcessor\DumpStore.h">
-      <Filter>Source Files\MAPI\MAPIProcessor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

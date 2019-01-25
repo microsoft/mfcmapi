@@ -18,7 +18,7 @@
 #include <core/utility/output.h>
 #include <core/mapi/mapiFile.h>
 #include <core/interpret/flags.h>
-#include <MAPI/MAPIProcessor/DumpStore.h>
+#include <core/mapi/processor/dumpStore.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiOutput.h>
 
@@ -852,7 +852,8 @@ namespace dialog
 
 			if (MyData.DisplayDialog())
 			{
-				mapiprocessor::SaveFolderContentsToTXT(
+				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+				mapi::processor::SaveFolderContentsToTXT(
 					m_lpMDB, lpFolder, MyData.GetCheck(1), MyData.GetCheck(2), MyData.GetCheck(0), m_hWnd);
 			}
 

@@ -9,7 +9,7 @@
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <MAPI/MAPIProcessor/DumpStore.h>
+#include <core/mapi/processor/dumpStore.h>
 #include <core/utility/file.h>
 #include <UI/Dialogs/ContentsTable/ProfileListDlg.h>
 #include <core/utility/import.h>
@@ -34,6 +34,7 @@
 #include <core/interpret/proptags.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/property/parseProperty.h>
+#include <core/mapi/processor/dumpStore.h>
 
 namespace dialog
 {
@@ -679,7 +680,7 @@ namespace dialog
 						{
 							CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-							mapiprocessor::CDumpStore MyDumpStore;
+							mapi::processor::dumpStore MyDumpStore;
 							MyDumpStore.InitFolderPathRoot(szDir);
 							MyDumpStore.InitMDB(lpMDB);
 							MyDumpStore.ProcessStore();
@@ -712,7 +713,7 @@ namespace dialog
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-			mapiprocessor::CDumpStore MyDumpStore;
+			mapi::processor::dumpStore MyDumpStore;
 			MyDumpStore.InitMailboxTablePathRoot(szDir);
 			MyDumpStore.InitSession(lpMAPISession);
 			MyDumpStore.ProcessMailboxTable(MyData.GetStringW(0));
@@ -1436,7 +1437,7 @@ namespace dialog
 				auto lpMessage = file::LoadMSGToMessage(msgfile);
 				if (lpMessage)
 				{
-					mapiprocessor::CDumpStore MyDumpStore;
+					mapi::processor::dumpStore MyDumpStore;
 					MyDumpStore.InitMessagePath(xmlfile);
 					// Just assume this message might have attachments
 					MyDumpStore.ProcessMessage(lpMessage, true, nullptr);

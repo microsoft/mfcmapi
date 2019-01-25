@@ -9,7 +9,7 @@
 #include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <MAPI/MAPIProcessor/DumpStore.h>
+#include <core/mapi/processor/dumpStore.h>
 #include <core/utility/file.h>
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/MAPIFormFunctions.h>
@@ -1311,7 +1311,7 @@ namespace dialog
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		mapiprocessor::SaveFolderContentsToTXT(
+		mapi::processor::SaveFolderContentsToTXT(
 			lpMDB, m_lpFolder, (m_ulDisplayFlags & dfAssoc) == 0, (m_ulDisplayFlags & dfAssoc) != 0, false, m_hWnd);
 	}
 
@@ -1414,7 +1414,7 @@ namespace dialog
 					case 0:
 						// Idea is to capture anything that may be important about this message to disk so it can be analyzed.
 						{
-							mapiprocessor::CDumpStore MyDumpStore;
+							mapi::processor::dumpStore MyDumpStore;
 							MyDumpStore.InitMessagePath(filename);
 							// Just assume this message might have attachments
 							MyDumpStore.ProcessMessage(lpMessage, true, nullptr);

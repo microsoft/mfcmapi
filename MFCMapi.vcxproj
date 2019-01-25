@@ -562,7 +562,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="UI\AdviseSink.h" />
-    <ClInclude Include="MAPI\MAPIProcessor\DumpStore.h" />
     <ClInclude Include="UI\enums.h" />
     <ClInclude Include="UI\CMAPIProgress.h" />
     <ClInclude Include="PropertyBag\MAPIPropPropertyBag.h" />
@@ -649,7 +648,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UI\AdviseSink.cpp" />
-    <ClCompile Include="MAPI\MAPIProcessor\DumpStore.cpp" />
     <ClCompile Include="UI\CMAPIProgress.cpp" />
     <ClCompile Include="PropertyBag\MAPIPropPropertyBag.cpp" />
     <ClCompile Include="UI\addinui.cpp" />

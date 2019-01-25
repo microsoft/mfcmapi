@@ -255,6 +255,9 @@
     <ClInclude Include="property\parseProperty.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\processor\dumpStore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -441,6 +444,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="property\parseProperty.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\processor\dumpStore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

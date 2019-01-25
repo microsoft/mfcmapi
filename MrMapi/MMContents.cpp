@@ -1,5 +1,6 @@
 #include <StdAfx.h>
-#include <MAPI/MAPIProcessor/DumpStore.h>
+#include <MrMapi/MMContents.h>
+#include <core/mapi/processor/dumpStore.h>
 #include <MrMapi/cli.h>
 #include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
@@ -36,7 +37,7 @@ void DumpContentsTable(
 
 	if (lpFolder)
 	{
-		mapiprocessor::CDumpStore MyDumpStore;
+		mapi::processor::dumpStore MyDumpStore;
 		SSortOrderSet SortOrder = {0};
 		MyDumpStore.InitMDB(lpMDB);
 		MyDumpStore.InitFolder(lpFolder);
@@ -72,7 +73,7 @@ void DumpMSG(
 	auto lpMessage = file::LoadMSGToMessage(lpszMSGFile);
 	if (lpMessage)
 	{
-		mapiprocessor::CDumpStore MyDumpStore;
+		mapi::processor::dumpStore MyDumpStore;
 		MyDumpStore.InitMessagePath(lpszXMLFile);
 		if (!bRetryStreamProps) MyDumpStore.DisableStreamRetry();
 		if (!bOutputAttachments) MyDumpStore.DisableEmbeddedAttachments();
