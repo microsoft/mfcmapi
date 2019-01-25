@@ -5,26 +5,8 @@
       <UniqueIdentifier>{2b3c935c-0f37-418a-9fb7-5fea0dff0c7e}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source Files\IO">
-      <UniqueIdentifier>{a1ac36fd-dbe7-4624-b877-091b6a9a68ef}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Property">
-      <UniqueIdentifier>{eae2548d-13de-4d9b-a225-ccc72aa4ab5e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\PropertyBag">
       <UniqueIdentifier>{2c5ab9e0-50d2-4325-acd6-2e6c967ba7ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Interpret">
-      <UniqueIdentifier>{821f30bd-089b-43f4-9824-0dec9cc273b0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Interpret\SmartView">
-      <UniqueIdentifier>{0ffbdd2b-c267-4bfa-b755-c0c3ebc72d5c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\MAPI">
-      <UniqueIdentifier>{a76fbfee-cb46-44c1-a554-f6082c4ce571}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\MAPI\MAPIProcessor">
-      <UniqueIdentifier>{fe54a615-ee34-4c82-808c-d9212f7e8b53}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\UI">
       <UniqueIdentifier>{26979dfe-c4a7-434b-8635-acbd45f82c20}</UniqueIdentifier>
@@ -50,9 +32,6 @@
     <Filter Include="Source Files\UI\Dialogs\HierarchyTable">
       <UniqueIdentifier>{79d3d5f7-6568-44ea-92cc-8bf5d15e2b83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Interpret\SmartView\block">
-      <UniqueIdentifier>{a146f1bf-8f86-43d7-b48f-bcf20d8b34fd}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
@@ -73,9 +52,6 @@
     <ClInclude Include="UI\ViewPane\SplitterPane.h">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClInclude>
-    <ClInclude Include="UI\CMAPIProgress.h">
-      <Filter>Source Files\MAPI</Filter>
-    </ClInclude>
     <ClInclude Include="UI\mapiui.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
@@ -86,10 +62,13 @@
       <Filter>Source Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="UI\enums.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="UI\AdviseSink.h">
-      <Filter>Source Files\MAPI</Filter>
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\CMAPIProgress.h">
+      <Filter>Source Files\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -111,9 +90,6 @@
     <ClCompile Include="UI\ViewPane\SplitterPane.cpp">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClCompile>
-    <ClCompile Include="UI\CMAPIProgress.cpp">
-      <Filter>Source Files\MAPI</Filter>
-    </ClCompile>
     <ClCompile Include="UI\mapiui.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
@@ -122,11 +98,6 @@
     </ClCompile>
     <ClCompile Include="UI\profile.cpp">
       <Filter>Source Files\UI</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="UI\AdviseSink.cpp">
-      <Filter>Source Files\MAPI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +116,12 @@
     <ClInclude Include="PropertyBag\RowPropertyBag.h">
       <Filter>Source Files\PropertyBag</Filter>
     </ClInclude>
+    <ClCompile Include="UI\AdviseSink.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\CMAPIProgress.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UI\DoubleBuffer.cpp">
