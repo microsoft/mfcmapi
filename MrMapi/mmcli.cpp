@@ -13,7 +13,7 @@ namespace error
 	extern ULONG g_ulErrorArray;
 } // namespace error
 
-namespace cliGetCommandLine
+namespace cli
 {
 	enum __CommandLineSwitch
 	{
