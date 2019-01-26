@@ -10,12 +10,12 @@ namespace Microsoft
 	{
 		namespace CppUnitTestFramework
 		{
-			template <> inline std::wstring ToString<__int64>(const __int64& t) { RETURN_WIDE_STRING(t); }
-			template <> inline std::wstring ToString<std::vector<BYTE>>(const std::vector<BYTE>& t)
+			template <> inline std::wstring ToString<__int64>(const __int64& q) { RETURN_WIDE_STRING(q); }
+			template <> inline std::wstring ToString<std::vector<BYTE>>(const std::vector<BYTE>& q)
 			{
-				RETURN_WIDE_STRING(t.data());
+				RETURN_WIDE_STRING(q.data());
 			}
-			template <> inline std::wstring ToString<GUID>(const GUID& t) { return guid::GUIDToString(t); }
+			template <> inline std::wstring ToString<GUID>(const GUID& q) { return guid::GUIDToString(q); }
 		} // namespace CppUnitTestFramework
 	} // namespace VisualStudio
 } // namespace Microsoft
