@@ -2,17 +2,19 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ProfileListDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/ColumnTags.h>
-#include <MAPI/MAPIProfileFunctions.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/mapi/columnTags.h>
+#include <core/mapi/mapiProfileFunctions.h>
 #include <UI/profile.h>
 #include <UI/FileDialogEx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/ContentsTable/MsgServiceTableDlg.h>
-#include <MAPI/Cache/GlobalCache.h>
-#include <IO/ExportProfile.h>
+#include <core/mapi/cache/globalCache.h>
+#include <core/mapi/exportProfile.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/SortList/ContentsData.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {
@@ -98,7 +100,7 @@ namespace dialog
 
 		// Wipe out current references to the profile table so the refresh will work
 		// If we don't do this, we get the old table back again.
-		m_lpContentsTableListCtrl->SetContentsTable(NULL, dfNormal, NULL);
+		m_lpContentsTableListCtrl->SetContentsTable(nullptr, dfNormal, NULL);
 
 		LPPROFADMIN lpProfAdmin = nullptr;
 		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));

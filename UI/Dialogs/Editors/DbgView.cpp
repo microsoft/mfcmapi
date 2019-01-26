@@ -2,7 +2,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <UI/ParentWnd.h>
-#include <IO/MFCOutput.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

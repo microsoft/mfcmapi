@@ -3,18 +3,19 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <IO/File.h>
 #include <UI/FileDialogEx.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/ColumnTags.h>
-#include <MAPI/MAPIProgress.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/mapi/columnTags.h>
+#include <core/mapi/mapiProgress.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/Cache/GlobalCache.h>
-#include <Interpret/InterpretProp.h>
-#include <MAPI/MAPIFunctions.h>
+#include <core/mapi/cache/globalCache.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFile.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {
@@ -416,7 +417,7 @@ namespace dialog
 				{
 					LPSTREAM pStreamFile = nullptr;
 
-					hRes = EC_MAPI(mapi::MyOpenStreamOnFile(
+					hRes = EC_MAPI(file::MyOpenStreamOnFile(
 						MAPIAllocateBuffer, MAPIFreeBuffer, STGM_READ, szAttachName, &pStreamFile));
 					if (SUCCEEDED(hRes) && pStreamFile)
 					{

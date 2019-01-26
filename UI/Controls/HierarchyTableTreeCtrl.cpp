@@ -2,11 +2,14 @@
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/HierarchyTable/HierarchyTableDlg.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/MAPIFunctions.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <UI/UIFunctions.h>
-#include <MAPI/AdviseSink.h>
+#include <UI/AdviseSink.h>
 #include <UI/Controls/SortList/NodeData.h>
+#include <core/utility/registry.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace controls
 {
@@ -183,7 +186,7 @@ namespace controls
 		std::wstring szName;
 
 		// Shouldn't have to check lpRootName for non-NULL since CheckString does it, but prefast is complaining
-		if (lpRootName && mapi::CheckStringProp(lpRootName, PT_UNICODE))
+		if (lpRootName && strings::CheckStringProp(lpRootName, PT_UNICODE))
 		{
 			szName = lpRootName->Value.lpszW;
 		}
@@ -219,7 +222,7 @@ namespace controls
 
 		std::wstring szName;
 		const auto lpName = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_DISPLAY_NAME_W);
-		if (mapi::CheckStringProp(lpName, PT_UNICODE))
+		if (strings::CheckStringProp(lpName, PT_UNICODE))
 		{
 			szName = lpName->Value.lpszW;
 		}
@@ -826,7 +829,7 @@ namespace controls
 			const auto lpName = PpropFindProp(tab->row.lpProps, tab->row.cValues, PR_DISPLAY_NAME_W);
 
 			std::wstring szText;
-			if (mapi::CheckStringProp(lpName, PT_UNICODE))
+			if (strings::CheckStringProp(lpName, PT_UNICODE))
 			{
 				szText = lpName->Value.lpszW;
 			}

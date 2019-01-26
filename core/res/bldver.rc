@@ -1,0 +1,61 @@
+#ifdef APSTUDIO_INVOKED
+	#error this file is not editable by Microsoft Visual C++
+#endif // APSTUDIO_INVOKED
+
+#define MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)    #_rmaj "." #_rmin "." #_bmaj "." #_bmin "\0"
+#define MAKEFILEVERSIONSTR(_rmaj, _rmin, _bmaj, _bmin) MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)
+
+#define rmj 16
+#define rmm 0
+#define rup 0
+#define rmn 1044
+
+#define INET_VER                    rmj, rmm, rup, rmn
+#define INET_VERSION                MAKEFILEVERSIONSTR(rmj, rmm, rup, rmn)
+
+/* Define file version and project version */
+
+#define RC_VERSION_COMPANY_NAME     "Microsoft Corporation\0"
+#define VER_LEGALCOPYRIGHT_YEARS    "1999-2019"
+#define RC_VERSION_PRODUCT_NAME     RC_PRODUCT_NAME "\0"
+#define RC_VERSION_LEGAL_COPYRIGHT  "Copyright \251 " VER_LEGALCOPYRIGHT_YEARS " Microsoft Corporation. All rights reserved.\0"
+#define RC_VERSION_LEGAL_TRADEMARKS "Microsoft\256 is a registered trademark of Microsoft Corporation.\0"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION INET_VER
+ PRODUCTVERSION INET_VER
+ FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+#ifdef _DEBUG
+ FILEFLAGS VS_FF_SPECIALBUILD | VS_FF_DEBUG
+#else
+ FILEFLAGS VS_FF_SPECIALBUILD
+#endif
+ FILEOS VOS__WINDOWS32
+ FILETYPE VFT_APP
+ FILESUBTYPE VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", RC_VERSION_COMPANY_NAME
+            VALUE "FileDescription", RC_VERSION_FILE_DESCRIPTION
+            VALUE "InternalName", RC_VERSION_INTERNAL_NAME
+            VALUE "LegalCopyright", RC_VERSION_LEGAL_COPYRIGHT
+            VALUE "LegalTrademarks", RC_VERSION_LEGAL_TRADEMARKS
+            VALUE "OriginalFilename", RC_VERSION_ORIGINAL_FILE_NAME
+            VALUE "ProductName", RC_VERSION_PRODUCT_NAME
+            VALUE "FileVersion", INET_VERSION
+            VALUE "ProductVersion", INET_VERSION
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

@@ -1,0 +1,500 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="res\Resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utility\strings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\extraPropTags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\errorArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\genTagArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\nameIDArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\propTypeArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\flags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\guid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\guidArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\interfaces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utility\file.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utility\output.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utility\registry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utility\error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\stubutils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\smartViewParsers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utility\import.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="addin\mfcmapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="addin\addin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\mapiMemory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\cache\GlobalCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\cache\MapiObjects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\cache\NamedPropCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="property\attributes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="property\property.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\columnTags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\flagArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\proptags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\proptype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpret\sid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\mapiProgress.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\mapiFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\block\block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\block\blockBytes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\block\blockStringA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\block\blockStringW.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\block\blockT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\AdditionalRenEntryIDs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\AppointmentRecurrencePattern.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\ConversationIndex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\EntryIdStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\EntryList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\ExtendedFlags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\FlatEntryList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\FolderUserFieldStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\GlobalObjectId.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\NickNameCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\PCL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\PropertiesStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\PropertyDefinitionStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\RecipientRowStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\RecurrencePattern.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\ReportTag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\RestrictionStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\RuleCondition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\SDBin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\SearchFolderDefinition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\SIDBin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\SmartView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\SmartViewParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\TaskAssigners.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\TimeZone.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\TimeZoneDefinition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\TombStone.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\VerbStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\WebViewPersistStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\XID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\mapiFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\mapiMime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\mapiOutput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\mapiStoreFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\binaryParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\processor\mapiProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\exportProfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\mapiABFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\mapiProfileFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="property\parseProperty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\processor\dumpStore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utility\cli.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="utility\strings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="interpret\guid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\file.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\output.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\registry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\mapiStubLibrary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\stubutils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\import.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="addin\addin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\cache\GlobalCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\cache\MapiObjects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\cache\NamedPropCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="property\attributes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="property\property.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="interpret\flags.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="interpret\proptags.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="interpret\proptype.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="interpret\sid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\mapiProgress.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\version.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\mapiFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\AdditionalRenEntryIDs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\AppointmentRecurrencePattern.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\ConversationIndex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\EntryIdStruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\EntryList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\ExtendedFlags.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\FlatEntryList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\FolderUserFieldStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\GlobalObjectId.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\NickNameCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\PCL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\PropertiesStruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\PropertyDefinitionStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\RecipientRowStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\RecurrencePattern.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\ReportTag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\RestrictionStruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\RuleCondition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\SDBin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\SearchFolderDefinition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\SIDBin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\SmartView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\SmartViewParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\TaskAssigners.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\TimeZone.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\TimeZoneDefinition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\TombStone.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\VerbStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\WebViewPersistStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\XID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\mapiFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\mapiMime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\mapiOutput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\mapiStoreFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\processor\mapiProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\exportProfile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\mapiABFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\mapiProfileFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="property\parseProperty.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\processor\dumpStore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utility\cli.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\MFCMapi.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+    <Image Include="res\advise.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icons.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\MFCMapi.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\MFCMAPI64x64_logo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <None Include="res\splith.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\splitv.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <ResourceCompile Include="res\MFCMapi.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <Image Include="res\close.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\maximize.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\minimize.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\restore.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bldver.rc">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

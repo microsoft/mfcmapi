@@ -2,12 +2,13 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/RulesDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {

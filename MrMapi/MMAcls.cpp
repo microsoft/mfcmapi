@@ -1,6 +1,9 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMAcls.h>
+#include <core/utility/cli.h>
+#include <core/utility/registry.h>
+#include <core/mapi/mapiOutput.h>
+#include <core/utility/output.h>
 
 void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
 {
@@ -23,7 +26,7 @@ void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
 		if (lpTbl)
 		{
 			registry::debugTag |= DBGGeneric;
-			output::_OutputTable(DBGGeneric, nullptr, lpTbl);
+			output::outputTable(DBGGeneric, nullptr, lpTbl);
 		}
 	}
 

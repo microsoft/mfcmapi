@@ -2,6 +2,7 @@
 #include <UI/FakeSplitter.h>
 #include <UI/UIFunctions.h>
 #include <UI/DoubleBuffer.h>
+#include <core/utility/output.h>
 
 namespace controls
 {

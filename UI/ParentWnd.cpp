@@ -1,10 +1,13 @@
 #include <StdAfx.h>
 #include <UI/ParentWnd.h>
-#include <ImportProcs.h>
+#include <core/utility/import.h>
 #include <UI/MyWinApp.h>
-#include <MAPI/Cache/NamedPropCache.h>
+#include <core/mapi/cache/namedPropCache.h>
 #include <UI/UIFunctions.h>
-#include <MAPI/StubUtils.h>
+#include <core/mapi/stubutils.h>
+#include <core/addin/addin.h>
+#include <core/utility/registry.h>
+#include <core/utility/output.h>
 
 extern ui::CMyWinApp theApp;
 
@@ -45,7 +48,7 @@ namespace ui
 		registry::ReadFromRegistry();
 		// After this call we may output to the debug file
 		output::OpenDebugFile();
-		output::DebugPrintVersion(DBGVersionBanner);
+		output::outputVersion(DBGVersionBanner, nullptr);
 		// Force the system riched20 so we don't load office's version.
 		(void) import::LoadFromSystemDir(L"riched20.dll"); // STRING_OK
 		// Second part is to load rundll32.exe

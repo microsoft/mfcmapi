@@ -1,9 +1,12 @@
 #include <StdAfx.h>
 #include <UI/MySecInfo.h>
-#include <Interpret/Sid.h>
-#include <MAPI/MAPIFunctions.h>
-#include <Interpret/ExtraPropTags.h>
-#include <MAPI/MapiMemory.h>
+#include <core/interpret/sid.h>
+#include <core/mapi/extraPropTags.h>
+#include <core/mapi/mapiMemory.h>
+#include <core/utility/registry.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace mapi
 {

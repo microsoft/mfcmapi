@@ -1,8 +1,9 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/SortListCtrl.h>
 #include <UI/Controls/SortList/SortHeader.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <UI/UIFunctions.h>
+#include <core/utility/output.h>
 
 namespace controls
 {
@@ -87,8 +88,8 @@ namespace controls
 				// Our bitmap is 32*32, which is already 2x scaled up
 				// So double the denominator to compensate before scaling the bitmap
 				scale.denominator *= 2;
-				const auto hBitmapScaled = ui::ScaleBitmap(hBitmap, scale);
-				m_ImageList.Add(CBitmap::FromHandle(hBitmapScaled), ui::MyGetSysColor(ui::cBitmapTransBack));
+				const auto hBitmapScaled = ScaleBitmap(hBitmap, scale);
+				m_ImageList.Add(CBitmap::FromHandle(hBitmapScaled), MyGetSysColor(ui::cBitmapTransBack));
 
 				SetImageList(&m_ImageList, LVSIL_SMALL);
 				if (hBitmapScaled) DeleteObject(hBitmapScaled);
@@ -612,7 +613,7 @@ namespace controls
 					for (auto iCol = iColCount - 1; iCol >= 0; iCol--)
 					{
 						hdItem.mask = HDI_LPARAM;
-						auto hRes = EC_B(lpMyHeader->GetItem(iCol, &hdItem));
+						const auto hRes = EC_B(lpMyHeader->GetItem(iCol, &hdItem));
 
 						// This will be a HeaderData, created in CContentsTableListCtrl::AddColumn
 						if (SUCCEEDED(hRes)) delete reinterpret_cast<HeaderData*>(hdItem.lParam);

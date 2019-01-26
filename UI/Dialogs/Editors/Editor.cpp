@@ -1,10 +1,12 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/UIFunctions.h>
-#include <Interpret/String.h>
-#include <Interpret/InterpretProp.h>
+#include <core/utility/strings.h>
 #include <UI/MyWinApp.h>
 #include <UI/Dialogs/AboutDlg.h>
+#include <core/utility/output.h>
+#include <core/addin/mfcmapi.h>
+#include <core/interpret/proptags.h>
 
 extern ui::CMyWinApp theApp;
 
@@ -105,7 +107,7 @@ namespace dialog
 
 			if (!m_pParentWnd->GetSafeHwnd())
 			{
-				m_pParentWnd = CWnd::FromHandle(ui::GetMainWindow());
+				m_pParentWnd = FromHandle(ui::GetMainWindow());
 			}
 
 			if (!m_pParentWnd->GetSafeHwnd())
@@ -341,7 +343,7 @@ namespace dialog
 					CRect(0, 0, 0, 0),
 					this,
 					IDC_PROMPT));
-				::SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
+				SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
 
 				ui::SubclassLabel(m_Prompt.m_hWnd);
 			}
@@ -1194,7 +1196,7 @@ namespace dialog
 			if (pane)
 			{
 
-				const auto ulTag = interpretprop::PropNameToPropTag(pane->GetStringW());
+				const auto ulTag = proptags::PropNameToPropTag(pane->GetStringW());
 
 				// Figure if this is a full tag or just an ID
 				if (ulTag & PROP_TAG_MASK) // Full prop tag

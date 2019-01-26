@@ -1,10 +1,12 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/SearchEditor.h>
-#include <Interpret/InterpretProp.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/Cache/NamedPropCache.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/mapi/cache/namedPropCache.h>
+#include <core/utility/output.h>
+#include <core/interpret/proptags.h>
+#include <core/addin/mfcmapi.h>
 
 namespace dialog
 {
@@ -114,7 +116,7 @@ namespace dialog
 		{
 			if (PROPNAME != ulSkipField)
 			{
-				auto propTagNames = interpretprop::PropTagToPropName(m_ulPropTag, false);
+				auto propTagNames = proptags::PropTagToPropName(m_ulPropTag, false);
 
 				if (PROP_ID(m_ulPropTag) && !propTagNames.bestGuess.empty())
 				{

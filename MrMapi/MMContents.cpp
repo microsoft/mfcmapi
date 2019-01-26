@@ -1,7 +1,10 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
-#include <MAPI/MAPIProcessor/DumpStore.h>
-#include <IO/File.h>
+#include <MrMapi/MMContents.h>
+#include <core/mapi/processor/dumpStore.h>
+#include <core/utility/cli.h>
+#include <core/mapi/mapiOutput.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFile.h>
 
 void DumpContentsTable(
 	_In_z_ LPCWSTR lpszProfile,
@@ -34,7 +37,7 @@ void DumpContentsTable(
 
 	if (lpFolder)
 	{
-		mapiprocessor::CDumpStore MyDumpStore;
+		mapi::processor::dumpStore MyDumpStore;
 		SSortOrderSet SortOrder = {0};
 		MyDumpStore.InitMDB(lpMDB);
 		MyDumpStore.InitFolder(lpFolder);
@@ -70,7 +73,7 @@ void DumpMSG(
 	auto lpMessage = file::LoadMSGToMessage(lpszMSGFile);
 	if (lpMessage)
 	{
-		mapiprocessor::CDumpStore MyDumpStore;
+		mapi::processor::dumpStore MyDumpStore;
 		MyDumpStore.InitMessagePath(lpszXMLFile);
 		if (!bRetryStreamProps) MyDumpStore.DisableStreamRetry();
 		if (!bOutputAttachments) MyDumpStore.DisableEmbeddedAttachments();
@@ -134,7 +137,7 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 		sResTop.res.resAnd.cRes = i;
 		sResTop.res.resAnd.lpRes = &sResMiddle[0];
 		lpRes = &sResTop;
-		output::DebugPrintRestriction(DBGGeneric, lpRes, NULL);
+		output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
 	}
 
 	DumpContentsTable(

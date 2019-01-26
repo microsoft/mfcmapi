@@ -2,8 +2,7 @@
 
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/ParentWnd.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <Interpret/SmartView/block/block.h>
+#include <core/mapi/cache/mapiObjects.h>
 
 namespace dialog
 {

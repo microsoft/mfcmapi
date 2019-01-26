@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/TreePane.h>
 #include <utility>
+#include <core/utility/output.h>
 
 namespace viewpane
 {

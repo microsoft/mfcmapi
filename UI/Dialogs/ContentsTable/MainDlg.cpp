@@ -1,32 +1,40 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/MAPIStoreFunctions.h>
+#include <core/mapi/mapiStoreFunctions.h>
 #include <UI/profile.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <MAPI/MAPIProcessor/DumpStore.h>
-#include <IO/File.h>
+#include <core/mapi/processor/dumpStore.h>
+#include <core/utility/file.h>
 #include <UI/Dialogs/ContentsTable/ProfileListDlg.h>
-#include <ImportProcs.h>
+#include <core/utility/import.h>
 #include <UI/Dialogs/AboutDlg.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/FileDialogEx.h>
-#include <MAPI/MapiMime.h>
-#include <Interpret/Guids.h>
-#include <Interpret/InterpretProp.h>
+#include <core/mapi/mapiMime.h>
 #include <UI/QuickStart.h>
 #include <UI/UIFunctions.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/Cache/GlobalCache.h>
-#include <MAPI/StubUtils.h>
+#include <core/mapi/cache/globalCache.h>
+#include <core/mapi/stubutils.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
+#include <core/utility/registry.h>
+#include <core/mapi/mapiOutput.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFile.h>
+#include <core/interpret/guid.h>
+#include <core/interpret/flags.h>
+#include <core/interpret/proptags.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/property/parseProperty.h>
+#include <core/mapi/processor/dumpStore.h>
 
 namespace dialog
 {
@@ -395,7 +403,7 @@ namespace dialog
 		{
 			editor::CEditor MyPrompt(
 				this, IDS_OPENDEFMSGSTORE, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
+			MyPrompt.SetPromptPostFix(flags::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CREATESTORENTRYIDFLAGS, false));
 			MyPrompt.SetHex(0, NULL);
 			if (MyPrompt.DisplayDialog())
@@ -419,7 +427,7 @@ namespace dialog
 				{
 					EC_MAPI_S(HrGetOneProp(lpIdentity, PR_EMAIL_ADDRESS_A, &lpMailboxName));
 
-					if (mapi::CheckStringProp(lpMailboxName, PT_STRING8))
+					if (strings::CheckStringProp(lpMailboxName, PT_STRING8))
 					{
 						auto lpAdminMDB = mapi::store::OpenOtherUsersMailbox(
 							lpMAPISession, lpMDB, "", lpMailboxName->Value.lpszA, strings::emptystring, ulFlags, false);
@@ -506,7 +514,7 @@ namespace dialog
 
 		editor::CEditor MyPrompt(
 			this, IDS_OPENPUBSTORE, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
+		MyPrompt.SetPromptPostFix(flags::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 		MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_CREATESTORENTRYIDFLAGS, false));
 		MyPrompt.SetHex(0, NULL);
 		if (!MyPrompt.DisplayDialog()) return;
@@ -529,7 +537,7 @@ namespace dialog
 
 		editor::CEditor MyPrompt(
 			this, IDS_OPENPUBSTORE, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
+		MyPrompt.SetPromptPostFix(flags::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 		MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SERVERNAME, false));
 		MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_CREATESTORENTRYIDFLAGS, false));
 		MyPrompt.SetHex(1, OPENSTORE_PUBLIC);
@@ -672,7 +680,7 @@ namespace dialog
 						{
 							CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-							mapiprocessor::CDumpStore MyDumpStore;
+							mapi::processor::dumpStore MyDumpStore;
 							MyDumpStore.InitFolderPathRoot(szDir);
 							MyDumpStore.InitMDB(lpMDB);
 							MyDumpStore.ProcessStore();
@@ -705,7 +713,7 @@ namespace dialog
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-			mapiprocessor::CDumpStore MyDumpStore;
+			mapi::processor::dumpStore MyDumpStore;
 			MyDumpStore.InitMailboxTablePathRoot(szDir);
 			MyDumpStore.InitSession(lpMAPISession);
 			MyDumpStore.ProcessMailboxTable(MyData.GetStringW(0));
@@ -1016,7 +1024,7 @@ namespace dialog
 			&lpOptions));
 		if (lpOptions)
 		{
-			output::DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
+			output::outputProperties(DBGGeneric, nullptr, cValues, lpOptions, nullptr, false);
 
 			editor::CEditor MyResult(this, IDS_QUERYDEFMSGOPT, IDS_RESULTOFCALLPROMPT, CEDITOR_BUTTON_OK);
 			MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_COUNTOPTIONS, true));
@@ -1027,11 +1035,11 @@ namespace dialog
 			std::wstring szAltProp;
 			for (ULONG i = 0; i < cValues; i++)
 			{
-				interpretprop::InterpretProp(&lpOptions[i], &szProp, &szAltProp);
+				property::parseProperty(&lpOptions[i], &szProp, &szAltProp);
 				szPropString += strings::formatmessage(
 					IDS_OPTIONSSTRUCTURE,
 					i,
-					interpretprop::TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
+					proptags::TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
 					szProp.c_str(),
 					szAltProp.c_str());
 			}
@@ -1070,7 +1078,7 @@ namespace dialog
 
 		if (lpOptions)
 		{
-			output::DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
+			output::outputProperties(DBGGeneric, nullptr, cValues, lpOptions, nullptr, false);
 
 			editor::CEditor MyResult(this, IDS_QUERYDEFRECIPOPT, IDS_RESULTOFCALLPROMPT, CEDITOR_BUTTON_OK);
 			MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_COUNTOPTIONS, true));
@@ -1081,11 +1089,11 @@ namespace dialog
 			std::wstring szAltProp;
 			for (ULONG i = 0; i < cValues; i++)
 			{
-				interpretprop::InterpretProp(&lpOptions[i], &szProp, &szAltProp);
+				property::parseProperty(&lpOptions[i], &szProp, &szAltProp);
 				szPropString += strings::formatmessage(
 					IDS_OPTIONSSTRUCTURE,
 					i,
-					interpretprop::TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
+					proptags::TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
 					szProp.c_str(),
 					szAltProp.c_str());
 			}
@@ -1429,7 +1437,7 @@ namespace dialog
 				auto lpMessage = file::LoadMSGToMessage(msgfile);
 				if (lpMessage)
 				{
-					mapiprocessor::CDumpStore MyDumpStore;
+					mapi::processor::dumpStore MyDumpStore;
 					MyDumpStore.InitMessagePath(xmlfile);
 					// Just assume this message might have attachments
 					MyDumpStore.ProcessMessage(lpMessage, true, nullptr);

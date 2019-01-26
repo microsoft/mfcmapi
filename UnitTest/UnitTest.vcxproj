@@ -13,6 +13,14 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Prefast|Win32">
+      <Configuration>Prefast</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Prefast|x64">
+      <Configuration>Prefast</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release Unicode|Win32">
       <Configuration>Release Unicode</Configuration>
       <Platform>Win32</Platform>
@@ -65,6 +73,14 @@
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -95,6 +111,14 @@
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -117,6 +141,9 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -129,6 +156,9 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -137,41 +167,65 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\UnitTest\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\UnitTest\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\UnitTest\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\UnitTest\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\UnitTest\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\UnitTest\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\UnitTest\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\UnitTest\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\UnitTest\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\UnitTest\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(Platform)\UnitTest\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Platform)\UnitTest\$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\UnitTest\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\UnitTest\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\UnitTest\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\UnitTest\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(Platform)\UnitTest\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Platform)\UnitTest\$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\UnitTest\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Platform)\UnitTest\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -185,16 +239,49 @@
       <UseFullPaths>true</UseFullPaths>
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>UnitTest\stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)obj\$(Platform)\$(Configuration);$(WindowsSdkDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>version.lib;ABContDlg.obj;AbDlg.obj;AboutDlg.obj;AclDlg.obj;addinui.obj;AddIns.obj;AdditionalRenEntryIDs.obj;AdviseSink.obj;AppointmentRecurrencePattern.obj;AttachmentsDlg.obj;Attributes.obj;BaseDialog.obj;BinaryData.obj;CheckPane.obj;CMAPIProgress.obj;CommentData.obj;ContentsData.obj;ContentsTableDlg.obj;ContentsTableListCtrl.obj;ConversationIndex.obj;CountedTextPane.obj;DbgView.obj;Dialog.obj;DoubleBuffer.obj;DropDownPane.obj;DumpStore.obj;Editor.obj;EntryIdStruct.obj;EntryList.obj;Error.obj;ExportProfile.obj;ExtendedFlags.obj;FakeSplitter.obj;File.obj;FileDialogEx.obj;FlatEntryList.obj;FolderDlg.obj;FolderUserFieldStream.obj;FormContainerDlg.obj;GlobalCache.obj;GlobalObjectId.obj;Guids.obj;HexEditor.obj;HierarchyTableDlg.obj;HierarchyTableTreeCtrl.obj;ImportProcs.obj;InterpretProp.obj;ListPane.obj;MailboxTableDlg.obj;MainDlg.obj;MAPIABFunctions.obj;MAPIFormFunctions.obj;MAPIFunctions.obj;MapiMime.obj;MapiObjects.obj;MapiProcessor.obj;MAPIProfileFunctions.obj;MAPIProgress.obj;MAPIPropPropertyBag.obj;MAPIStoreFunctions.obj;MapiStubLibrary.obj;mapiui.obj;MFCOutput.obj;MFCUtilityFunctions.obj;MsgServiceTableDlg.obj;MsgStoreDlg.obj;MultiValuePropertyEditor.obj;MVPropData.obj;MyMAPIFormViewer.obj;MySecInfo.obj;MyWinApp.obj;NamedPropCache.obj;NickNameCache.obj;NodeData.obj;Options.obj;ParentWnd.obj;ParseProperty.obj;PCL.obj;profile.obj;ProfileListDlg.obj;PropertiesStruct.obj;Property.obj;PropertyDefinitionStream.obj;PropertyEditor.obj;PropertySelector.obj;PropertyTagEditor.obj;PropListData.obj;ProviderTableDlg.obj;PublicFolderTableDlg.obj;QSSpecialFolders.obj;QuickStart.obj;RecipientRowStream.obj;RecipientsDlg.obj;RecurrencePattern.obj;Registry.obj;ReportTag.obj;ResData.obj;RestrictEditor.obj;RestrictionStruct.obj;RichEditOleCallback.obj;RowPropertyBag.obj;RuleCondition.obj;RulesDlg.obj;SDBin.obj;SearchEditor.obj;SearchFolderDefinition.obj;Sid.obj;SIDBin.obj;SingleMAPIPropListCtrl.obj;SingleMessageDialog.obj;SingleRecipientDialog.obj;SmartView.obj;SmartViewPane.obj;SmartViewParser.obj;SortHeader.obj;SortListCtrl.obj;SortListData.obj;SplitterPane.obj;StreamEditor.obj;String.obj;StubUtils.obj;StyleTreeCtrl.obj;TagArrayEditor.obj;TaskAssigners.obj;TextPane.obj;TimeZone.obj;TimeZoneDefinition.obj;TombStone.obj;TreePane.obj;UIFunctions.obj;VerbStream.obj;Version.obj;ViewPane.obj;WebViewPersistStream.obj;XID.obj;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(WindowsSdkDir)\lib;$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;shell32.lib;advapi32.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <Profile>true</Profile>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>Disabled</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\include;$(VCInstallDir)UnitTest\include;$(WindowsSdkDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;NO_WARN_MBCS_MFC_DEPRECATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <UseFullPaths>true</UseFullPaths>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeaderFile>UnitTest\stdafx.h</PrecompiledHeaderFile>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnablePREfast>true</EnablePREfast>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(WindowsSdkDir)\lib;$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;shell32.lib;advapi32.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <Profile>true</Profile>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
     <ClCompile>
@@ -208,16 +295,19 @@
       <UseFullPaths>true</UseFullPaths>
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>UnitTest\stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)obj\$(Platform)\$(Configuration);$(WindowsSdkDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>version.lib;ABContDlg.obj;AbDlg.obj;AboutDlg.obj;AclDlg.obj;addinui.obj;AddIns.obj;AdditionalRenEntryIDs.obj;AdviseSink.obj;AppointmentRecurrencePattern.obj;AttachmentsDlg.obj;Attributes.obj;BaseDialog.obj;BinaryData.obj;CheckPane.obj;CMAPIProgress.obj;CommentData.obj;ContentsData.obj;ContentsTableDlg.obj;ContentsTableListCtrl.obj;ConversationIndex.obj;CountedTextPane.obj;DbgView.obj;Dialog.obj;DoubleBuffer.obj;DropDownPane.obj;DumpStore.obj;Editor.obj;EntryIdStruct.obj;EntryList.obj;Error.obj;ExportProfile.obj;ExtendedFlags.obj;FakeSplitter.obj;File.obj;FileDialogEx.obj;FlatEntryList.obj;FolderDlg.obj;FolderUserFieldStream.obj;FormContainerDlg.obj;GlobalCache.obj;GlobalObjectId.obj;Guids.obj;HexEditor.obj;HierarchyTableDlg.obj;HierarchyTableTreeCtrl.obj;ImportProcs.obj;InterpretProp.obj;ListPane.obj;MailboxTableDlg.obj;MainDlg.obj;MAPIABFunctions.obj;MAPIFormFunctions.obj;MAPIFunctions.obj;MapiMime.obj;MapiObjects.obj;MapiProcessor.obj;MAPIProfileFunctions.obj;MAPIProgress.obj;MAPIPropPropertyBag.obj;MAPIStoreFunctions.obj;MapiStubLibrary.obj;mapiui.obj;MFCOutput.obj;MFCUtilityFunctions.obj;MsgServiceTableDlg.obj;MsgStoreDlg.obj;MultiValuePropertyEditor.obj;MVPropData.obj;MyMAPIFormViewer.obj;MySecInfo.obj;MyWinApp.obj;NamedPropCache.obj;NickNameCache.obj;NodeData.obj;Options.obj;ParentWnd.obj;ParseProperty.obj;PCL.obj;profile.obj;ProfileListDlg.obj;PropertiesStruct.obj;Property.obj;PropertyDefinitionStream.obj;PropertyEditor.obj;PropertySelector.obj;PropertyTagEditor.obj;PropListData.obj;ProviderTableDlg.obj;PublicFolderTableDlg.obj;QSSpecialFolders.obj;QuickStart.obj;RecipientRowStream.obj;RecipientsDlg.obj;RecurrencePattern.obj;Registry.obj;ReportTag.obj;ResData.obj;RestrictEditor.obj;RestrictionStruct.obj;RichEditOleCallback.obj;RowPropertyBag.obj;RuleCondition.obj;RulesDlg.obj;SDBin.obj;SearchEditor.obj;SearchFolderDefinition.obj;Sid.obj;SIDBin.obj;SingleMAPIPropListCtrl.obj;SingleMessageDialog.obj;SingleRecipientDialog.obj;SmartView.obj;SmartViewPane.obj;SmartViewParser.obj;SortHeader.obj;SortListCtrl.obj;SortListData.obj;SplitterPane.obj;StreamEditor.obj;String.obj;StubUtils.obj;StyleTreeCtrl.obj;TagArrayEditor.obj;TaskAssigners.obj;TextPane.obj;TimeZone.obj;TimeZoneDefinition.obj;TombStone.obj;TreePane.obj;UIFunctions.obj;VerbStream.obj;Version.obj;ViewPane.obj;WebViewPersistStream.obj;XID.obj;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(WindowsSdkDir)\lib;$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;shell32.lib;advapi32.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <Profile>true</Profile>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -230,15 +320,20 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>UnitTest\stdafx.h</PrecompiledHeaderFile>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)obj\$(Platform)\$(Configuration);$(WindowsSdkDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>version.lib;ABContDlg.obj;AbDlg.obj;AboutDlg.obj;AclDlg.obj;addinui.obj;AddIns.obj;AdditionalRenEntryIDs.obj;AdviseSink.obj;AppointmentRecurrencePattern.obj;AttachmentsDlg.obj;Attributes.obj;BaseDialog.obj;BinaryData.obj;CheckPane.obj;CMAPIProgress.obj;CommentData.obj;ContentsData.obj;ContentsTableDlg.obj;ContentsTableListCtrl.obj;ConversationIndex.obj;CountedTextPane.obj;DbgView.obj;Dialog.obj;DoubleBuffer.obj;DropDownPane.obj;DumpStore.obj;Editor.obj;EntryIdStruct.obj;EntryList.obj;Error.obj;ExportProfile.obj;ExtendedFlags.obj;FakeSplitter.obj;File.obj;FileDialogEx.obj;FlatEntryList.obj;FolderDlg.obj;FolderUserFieldStream.obj;FormContainerDlg.obj;GlobalCache.obj;GlobalObjectId.obj;Guids.obj;HexEditor.obj;HierarchyTableDlg.obj;HierarchyTableTreeCtrl.obj;ImportProcs.obj;InterpretProp.obj;ListPane.obj;MailboxTableDlg.obj;MainDlg.obj;MAPIABFunctions.obj;MAPIFormFunctions.obj;MAPIFunctions.obj;MapiMime.obj;MapiObjects.obj;MapiProcessor.obj;MAPIProfileFunctions.obj;MAPIProgress.obj;MAPIPropPropertyBag.obj;MAPIStoreFunctions.obj;MapiStubLibrary.obj;mapiui.obj;MFCOutput.obj;MFCUtilityFunctions.obj;MsgServiceTableDlg.obj;MsgStoreDlg.obj;MultiValuePropertyEditor.obj;MVPropData.obj;MyMAPIFormViewer.obj;MySecInfo.obj;MyWinApp.obj;NamedPropCache.obj;NickNameCache.obj;NodeData.obj;Options.obj;ParentWnd.obj;ParseProperty.obj;PCL.obj;profile.obj;ProfileListDlg.obj;PropertiesStruct.obj;Property.obj;PropertyDefinitionStream.obj;PropertyEditor.obj;PropertySelector.obj;PropertyTagEditor.obj;PropListData.obj;ProviderTableDlg.obj;PublicFolderTableDlg.obj;QSSpecialFolders.obj;QuickStart.obj;RecipientRowStream.obj;RecipientsDlg.obj;RecurrencePattern.obj;Registry.obj;ReportTag.obj;ResData.obj;RestrictEditor.obj;RestrictionStruct.obj;RichEditOleCallback.obj;RowPropertyBag.obj;RuleCondition.obj;RulesDlg.obj;SDBin.obj;SearchEditor.obj;SearchFolderDefinition.obj;Sid.obj;SIDBin.obj;SingleMAPIPropListCtrl.obj;SingleMessageDialog.obj;SingleRecipientDialog.obj;SmartView.obj;SmartViewPane.obj;SmartViewParser.obj;SortHeader.obj;SortListCtrl.obj;SortListData.obj;SplitterPane.obj;StreamEditor.obj;String.obj;StubUtils.obj;StyleTreeCtrl.obj;TagArrayEditor.obj;TaskAssigners.obj;TextPane.obj;TimeZone.obj;TimeZoneDefinition.obj;TombStone.obj;TreePane.obj;UIFunctions.obj;VerbStream.obj;Version.obj;ViewPane.obj;WebViewPersistStream.obj;XID.obj;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(WindowsSdkDir)\lib;$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;shell32.lib;advapi32.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <Profile>true</Profile>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
     <ClCompile>
@@ -251,15 +346,20 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>UnitTest\stdafx.h</PrecompiledHeaderFile>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)obj\$(Platform)\$(Configuration);$(WindowsSdkDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>version.lib;ABContDlg.obj;AbDlg.obj;AboutDlg.obj;AclDlg.obj;addinui.obj;AddIns.obj;AdditionalRenEntryIDs.obj;AdviseSink.obj;AppointmentRecurrencePattern.obj;AttachmentsDlg.obj;Attributes.obj;BaseDialog.obj;BinaryData.obj;CheckPane.obj;CMAPIProgress.obj;CommentData.obj;ContentsData.obj;ContentsTableDlg.obj;ContentsTableListCtrl.obj;ConversationIndex.obj;CountedTextPane.obj;DbgView.obj;Dialog.obj;DoubleBuffer.obj;DropDownPane.obj;DumpStore.obj;Editor.obj;EntryIdStruct.obj;EntryList.obj;Error.obj;ExportProfile.obj;ExtendedFlags.obj;FakeSplitter.obj;File.obj;FileDialogEx.obj;FlatEntryList.obj;FolderDlg.obj;FolderUserFieldStream.obj;FormContainerDlg.obj;GlobalCache.obj;GlobalObjectId.obj;Guids.obj;HexEditor.obj;HierarchyTableDlg.obj;HierarchyTableTreeCtrl.obj;ImportProcs.obj;InterpretProp.obj;ListPane.obj;MailboxTableDlg.obj;MainDlg.obj;MAPIABFunctions.obj;MAPIFormFunctions.obj;MAPIFunctions.obj;MapiMime.obj;MapiObjects.obj;MapiProcessor.obj;MAPIProfileFunctions.obj;MAPIProgress.obj;MAPIPropPropertyBag.obj;MAPIStoreFunctions.obj;MapiStubLibrary.obj;mapiui.obj;MFCOutput.obj;MFCUtilityFunctions.obj;MsgServiceTableDlg.obj;MsgStoreDlg.obj;MultiValuePropertyEditor.obj;MVPropData.obj;MyMAPIFormViewer.obj;MySecInfo.obj;MyWinApp.obj;NamedPropCache.obj;NickNameCache.obj;NodeData.obj;Options.obj;ParentWnd.obj;ParseProperty.obj;PCL.obj;profile.obj;ProfileListDlg.obj;PropertiesStruct.obj;Property.obj;PropertyDefinitionStream.obj;PropertyEditor.obj;PropertySelector.obj;PropertyTagEditor.obj;PropListData.obj;ProviderTableDlg.obj;PublicFolderTableDlg.obj;QSSpecialFolders.obj;QuickStart.obj;RecipientRowStream.obj;RecipientsDlg.obj;RecurrencePattern.obj;Registry.obj;ReportTag.obj;ResData.obj;RestrictEditor.obj;RestrictionStruct.obj;RichEditOleCallback.obj;RowPropertyBag.obj;RuleCondition.obj;RulesDlg.obj;SDBin.obj;SearchEditor.obj;SearchFolderDefinition.obj;Sid.obj;SIDBin.obj;SingleMAPIPropListCtrl.obj;SingleMessageDialog.obj;SingleRecipientDialog.obj;SmartView.obj;SmartViewPane.obj;SmartViewParser.obj;SortHeader.obj;SortListCtrl.obj;SortListData.obj;SplitterPane.obj;StreamEditor.obj;String.obj;StubUtils.obj;StyleTreeCtrl.obj;TagArrayEditor.obj;TaskAssigners.obj;TextPane.obj;TimeZone.obj;TimeZoneDefinition.obj;TombStone.obj;TreePane.obj;UIFunctions.obj;VerbStream.obj;Version.obj;ViewPane.obj;WebViewPersistStream.obj;XID.obj;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(WindowsSdkDir)\lib;$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;shell32.lib;advapi32.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <Profile>true</Profile>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -272,15 +372,20 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>UnitTest\stdafx.h</PrecompiledHeaderFile>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)obj\$(Platform)\$(Configuration);$(WindowsSdkDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>version.lib;ABContDlg.obj;AbDlg.obj;AboutDlg.obj;AclDlg.obj;addinui.obj;AddIns.obj;AdditionalRenEntryIDs.obj;AdviseSink.obj;AppointmentRecurrencePattern.obj;AttachmentsDlg.obj;Attributes.obj;BaseDialog.obj;BinaryData.obj;CheckPane.obj;CMAPIProgress.obj;CommentData.obj;ContentsData.obj;ContentsTableDlg.obj;ContentsTableListCtrl.obj;ConversationIndex.obj;CountedTextPane.obj;DbgView.obj;Dialog.obj;DoubleBuffer.obj;DropDownPane.obj;DumpStore.obj;Editor.obj;EntryIdStruct.obj;EntryList.obj;Error.obj;ExportProfile.obj;ExtendedFlags.obj;FakeSplitter.obj;File.obj;FileDialogEx.obj;FlatEntryList.obj;FolderDlg.obj;FolderUserFieldStream.obj;FormContainerDlg.obj;GlobalCache.obj;GlobalObjectId.obj;Guids.obj;HexEditor.obj;HierarchyTableDlg.obj;HierarchyTableTreeCtrl.obj;ImportProcs.obj;InterpretProp.obj;ListPane.obj;MailboxTableDlg.obj;MainDlg.obj;MAPIABFunctions.obj;MAPIFormFunctions.obj;MAPIFunctions.obj;MapiMime.obj;MapiObjects.obj;MapiProcessor.obj;MAPIProfileFunctions.obj;MAPIProgress.obj;MAPIPropPropertyBag.obj;MAPIStoreFunctions.obj;MapiStubLibrary.obj;mapiui.obj;MFCOutput.obj;MFCUtilityFunctions.obj;MsgServiceTableDlg.obj;MsgStoreDlg.obj;MultiValuePropertyEditor.obj;MVPropData.obj;MyMAPIFormViewer.obj;MySecInfo.obj;MyWinApp.obj;NamedPropCache.obj;NickNameCache.obj;NodeData.obj;Options.obj;ParentWnd.obj;ParseProperty.obj;PCL.obj;profile.obj;ProfileListDlg.obj;PropertiesStruct.obj;Property.obj;PropertyDefinitionStream.obj;PropertyEditor.obj;PropertySelector.obj;PropertyTagEditor.obj;PropListData.obj;ProviderTableDlg.obj;PublicFolderTableDlg.obj;QSSpecialFolders.obj;QuickStart.obj;RecipientRowStream.obj;RecipientsDlg.obj;RecurrencePattern.obj;Registry.obj;ReportTag.obj;ResData.obj;RestrictEditor.obj;RestrictionStruct.obj;RichEditOleCallback.obj;RowPropertyBag.obj;RuleCondition.obj;RulesDlg.obj;SDBin.obj;SearchEditor.obj;SearchFolderDefinition.obj;Sid.obj;SIDBin.obj;SingleMAPIPropListCtrl.obj;SingleMessageDialog.obj;SingleRecipientDialog.obj;SmartView.obj;SmartViewPane.obj;SmartViewParser.obj;SortHeader.obj;SortListCtrl.obj;SortListData.obj;SplitterPane.obj;StreamEditor.obj;String.obj;StubUtils.obj;StyleTreeCtrl.obj;TagArrayEditor.obj;TaskAssigners.obj;TextPane.obj;TimeZone.obj;TimeZoneDefinition.obj;TombStone.obj;TreePane.obj;UIFunctions.obj;VerbStream.obj;Version.obj;ViewPane.obj;WebViewPersistStream.obj;XID.obj;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(WindowsSdkDir)\lib;$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;shell32.lib;advapi32.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <Profile>true</Profile>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">
     <ClCompile>
@@ -293,15 +398,20 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>UnitTest\stdafx.h</PrecompiledHeaderFile>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)obj\$(Platform)\$(Configuration);$(WindowsSdkDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>version.lib;ABContDlg.obj;AbDlg.obj;AboutDlg.obj;AclDlg.obj;addinui.obj;AddIns.obj;AdditionalRenEntryIDs.obj;AdviseSink.obj;AppointmentRecurrencePattern.obj;AttachmentsDlg.obj;Attributes.obj;BaseDialog.obj;BinaryData.obj;CheckPane.obj;CMAPIProgress.obj;CommentData.obj;ContentsData.obj;ContentsTableDlg.obj;ContentsTableListCtrl.obj;ConversationIndex.obj;CountedTextPane.obj;DbgView.obj;Dialog.obj;DoubleBuffer.obj;DropDownPane.obj;DumpStore.obj;Editor.obj;EntryIdStruct.obj;EntryList.obj;Error.obj;ExportProfile.obj;ExtendedFlags.obj;FakeSplitter.obj;File.obj;FileDialogEx.obj;FlatEntryList.obj;FolderDlg.obj;FolderUserFieldStream.obj;FormContainerDlg.obj;GlobalCache.obj;GlobalObjectId.obj;Guids.obj;HexEditor.obj;HierarchyTableDlg.obj;HierarchyTableTreeCtrl.obj;ImportProcs.obj;InterpretProp.obj;ListPane.obj;MailboxTableDlg.obj;MainDlg.obj;MAPIABFunctions.obj;MAPIFormFunctions.obj;MAPIFunctions.obj;MapiMime.obj;MapiObjects.obj;MapiProcessor.obj;MAPIProfileFunctions.obj;MAPIProgress.obj;MAPIPropPropertyBag.obj;MAPIStoreFunctions.obj;MapiStubLibrary.obj;mapiui.obj;MFCOutput.obj;MFCUtilityFunctions.obj;MsgServiceTableDlg.obj;MsgStoreDlg.obj;MultiValuePropertyEditor.obj;MVPropData.obj;MyMAPIFormViewer.obj;MySecInfo.obj;MyWinApp.obj;NamedPropCache.obj;NickNameCache.obj;NodeData.obj;Options.obj;ParentWnd.obj;ParseProperty.obj;PCL.obj;profile.obj;ProfileListDlg.obj;PropertiesStruct.obj;Property.obj;PropertyDefinitionStream.obj;PropertyEditor.obj;PropertySelector.obj;PropertyTagEditor.obj;PropListData.obj;ProviderTableDlg.obj;PublicFolderTableDlg.obj;QSSpecialFolders.obj;QuickStart.obj;RecipientRowStream.obj;RecipientsDlg.obj;RecurrencePattern.obj;Registry.obj;ReportTag.obj;ResData.obj;RestrictEditor.obj;RestrictionStruct.obj;RichEditOleCallback.obj;RowPropertyBag.obj;RuleCondition.obj;RulesDlg.obj;SDBin.obj;SearchEditor.obj;SearchFolderDefinition.obj;Sid.obj;SIDBin.obj;SingleMAPIPropListCtrl.obj;SingleMessageDialog.obj;SingleRecipientDialog.obj;SmartView.obj;SmartViewPane.obj;SmartViewParser.obj;SortHeader.obj;SortListCtrl.obj;SortListData.obj;SplitterPane.obj;StreamEditor.obj;String.obj;StubUtils.obj;StyleTreeCtrl.obj;TagArrayEditor.obj;TaskAssigners.obj;TextPane.obj;TimeZone.obj;TimeZoneDefinition.obj;TombStone.obj;TreePane.obj;UIFunctions.obj;VerbStream.obj;Version.obj;ViewPane.obj;WebViewPersistStream.obj;XID.obj;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(WindowsSdkDir)\lib;$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;shell32.lib;advapi32.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <Profile>true</Profile>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -315,16 +425,50 @@
       <UseFullPaths>true</UseFullPaths>
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>UnitTest\stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)obj\$(Platform)\$(Configuration);$(WindowsSdkDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>version.lib;ABContDlg.obj;AbDlg.obj;AboutDlg.obj;AclDlg.obj;addinui.obj;AddIns.obj;AdditionalRenEntryIDs.obj;AdviseSink.obj;AppointmentRecurrencePattern.obj;AttachmentsDlg.obj;Attributes.obj;BaseDialog.obj;BinaryData.obj;CheckPane.obj;CMAPIProgress.obj;CommentData.obj;ContentsData.obj;ContentsTableDlg.obj;ContentsTableListCtrl.obj;ConversationIndex.obj;CountedTextPane.obj;DbgView.obj;Dialog.obj;DoubleBuffer.obj;DropDownPane.obj;DumpStore.obj;Editor.obj;EntryIdStruct.obj;EntryList.obj;Error.obj;ExportProfile.obj;ExtendedFlags.obj;FakeSplitter.obj;File.obj;FileDialogEx.obj;FlatEntryList.obj;FolderDlg.obj;FolderUserFieldStream.obj;FormContainerDlg.obj;GlobalCache.obj;GlobalObjectId.obj;Guids.obj;HexEditor.obj;HierarchyTableDlg.obj;HierarchyTableTreeCtrl.obj;ImportProcs.obj;InterpretProp.obj;ListPane.obj;MailboxTableDlg.obj;MainDlg.obj;MAPIABFunctions.obj;MAPIFormFunctions.obj;MAPIFunctions.obj;MapiMime.obj;MapiObjects.obj;MapiProcessor.obj;MAPIProfileFunctions.obj;MAPIProgress.obj;MAPIPropPropertyBag.obj;MAPIStoreFunctions.obj;MapiStubLibrary.obj;mapiui.obj;MFCOutput.obj;MFCUtilityFunctions.obj;MsgServiceTableDlg.obj;MsgStoreDlg.obj;MultiValuePropertyEditor.obj;MVPropData.obj;MyMAPIFormViewer.obj;MySecInfo.obj;MyWinApp.obj;NamedPropCache.obj;NickNameCache.obj;NodeData.obj;Options.obj;ParentWnd.obj;ParseProperty.obj;PCL.obj;profile.obj;ProfileListDlg.obj;PropertiesStruct.obj;Property.obj;PropertyDefinitionStream.obj;PropertyEditor.obj;PropertySelector.obj;PropertyTagEditor.obj;PropListData.obj;ProviderTableDlg.obj;PublicFolderTableDlg.obj;QSSpecialFolders.obj;QuickStart.obj;RecipientRowStream.obj;RecipientsDlg.obj;RecurrencePattern.obj;Registry.obj;ReportTag.obj;ResData.obj;RestrictEditor.obj;RestrictionStruct.obj;RichEditOleCallback.obj;RowPropertyBag.obj;RuleCondition.obj;RulesDlg.obj;SDBin.obj;SearchEditor.obj;SearchFolderDefinition.obj;Sid.obj;SIDBin.obj;SingleMAPIPropListCtrl.obj;SingleMessageDialog.obj;SingleRecipientDialog.obj;SmartView.obj;SmartViewPane.obj;SmartViewParser.obj;SortHeader.obj;SortListCtrl.obj;SortListData.obj;SplitterPane.obj;StreamEditor.obj;String.obj;StubUtils.obj;StyleTreeCtrl.obj;TagArrayEditor.obj;TaskAssigners.obj;TextPane.obj;TimeZone.obj;TimeZoneDefinition.obj;TombStone.obj;TreePane.obj;UIFunctions.obj;VerbStream.obj;Version.obj;ViewPane.obj;WebViewPersistStream.obj;XID.obj;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(WindowsSdkDir)\lib;$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;shell32.lib;advapi32.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <Profile>true</Profile>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>Disabled</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\include;$(VCInstallDir)UnitTest\include;$(WindowsSdkDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;NO_WARN_MBCS_MFC_DEPRECATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <UseFullPaths>true</UseFullPaths>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeaderFile>UnitTest\stdafx.h</PrecompiledHeaderFile>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnablePREfast>true</EnablePREfast>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <OptimizeReferences>false</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(WindowsSdkDir)\lib;$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;shell32.lib;advapi32.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <Profile>true</Profile>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
     <ClCompile>
@@ -338,50 +482,52 @@
       <UseFullPaths>true</UseFullPaths>
       <TreatWarningAsError>true</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>UnitTest\stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)obj\$(Platform)\$(Configuration);$(WindowsSdkDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>version.lib;ABContDlg.obj;AbDlg.obj;AboutDlg.obj;AclDlg.obj;addinui.obj;AddIns.obj;AdditionalRenEntryIDs.obj;AdviseSink.obj;AppointmentRecurrencePattern.obj;AttachmentsDlg.obj;Attributes.obj;BaseDialog.obj;BinaryData.obj;CheckPane.obj;CMAPIProgress.obj;CommentData.obj;ContentsData.obj;ContentsTableDlg.obj;ContentsTableListCtrl.obj;ConversationIndex.obj;CountedTextPane.obj;DbgView.obj;Dialog.obj;DoubleBuffer.obj;DropDownPane.obj;DumpStore.obj;Editor.obj;EntryIdStruct.obj;EntryList.obj;Error.obj;ExportProfile.obj;ExtendedFlags.obj;FakeSplitter.obj;File.obj;FileDialogEx.obj;FlatEntryList.obj;FolderDlg.obj;FolderUserFieldStream.obj;FormContainerDlg.obj;GlobalCache.obj;GlobalObjectId.obj;Guids.obj;HexEditor.obj;HierarchyTableDlg.obj;HierarchyTableTreeCtrl.obj;ImportProcs.obj;InterpretProp.obj;ListPane.obj;MailboxTableDlg.obj;MainDlg.obj;MAPIABFunctions.obj;MAPIFormFunctions.obj;MAPIFunctions.obj;MapiMime.obj;MapiObjects.obj;MapiProcessor.obj;MAPIProfileFunctions.obj;MAPIProgress.obj;MAPIPropPropertyBag.obj;MAPIStoreFunctions.obj;MapiStubLibrary.obj;mapiui.obj;MFCOutput.obj;MFCUtilityFunctions.obj;MsgServiceTableDlg.obj;MsgStoreDlg.obj;MultiValuePropertyEditor.obj;MVPropData.obj;MyMAPIFormViewer.obj;MySecInfo.obj;MyWinApp.obj;NamedPropCache.obj;NickNameCache.obj;NodeData.obj;Options.obj;ParentWnd.obj;ParseProperty.obj;PCL.obj;profile.obj;ProfileListDlg.obj;PropertiesStruct.obj;Property.obj;PropertyDefinitionStream.obj;PropertyEditor.obj;PropertySelector.obj;PropertyTagEditor.obj;PropListData.obj;ProviderTableDlg.obj;PublicFolderTableDlg.obj;QSSpecialFolders.obj;QuickStart.obj;RecipientRowStream.obj;RecipientsDlg.obj;RecurrencePattern.obj;Registry.obj;ReportTag.obj;ResData.obj;RestrictEditor.obj;RestrictionStruct.obj;RichEditOleCallback.obj;RowPropertyBag.obj;RuleCondition.obj;RulesDlg.obj;SDBin.obj;SearchEditor.obj;SearchFolderDefinition.obj;Sid.obj;SIDBin.obj;SingleMAPIPropListCtrl.obj;SingleMessageDialog.obj;SingleRecipientDialog.obj;SmartView.obj;SmartViewPane.obj;SmartViewParser.obj;SortHeader.obj;SortListCtrl.obj;SortListData.obj;SplitterPane.obj;StreamEditor.obj;String.obj;StubUtils.obj;StyleTreeCtrl.obj;TagArrayEditor.obj;TaskAssigners.obj;TextPane.obj;TimeZone.obj;TimeZoneDefinition.obj;TombStone.obj;TreePane.obj;UIFunctions.obj;VerbStream.obj;Version.obj;ViewPane.obj;WebViewPersistStream.obj;XID.obj;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(WindowsSdkDir)\lib;$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;shell32.lib;advapi32.lib;version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <Profile>true</Profile>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="targetver.h" />
+    <ClInclude Include="res\resource.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="UnitTest.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="guidtest.cpp" />
-    <ClCompile Include="property.cpp" />
-    <ClCompile Include="sidtest.cpp" />
-    <ClCompile Include="SmartViewTest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="stringtest.cpp" />
+    <ClCompile Include="tests\guidtest.cpp" />
+    <ClCompile Include="tests\property.cpp" />
+    <ClCompile Include="tests\sidtest.cpp" />
+    <ClCompile Include="tests\smartViewTest.cpp" />
+    <ClCompile Include="tests\stringtest.cpp" />
     <ClCompile Include="UnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MFCMapi.vcxproj">
-      <Project>{466117d5-278c-46e6-bc2e-4fa7b25c0b3f}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\MrMapi\MrMAPI.vcxproj">
-      <Project>{7afe5655-71d0-4390-a4e0-ba915dfc18c4}</Project>
+    <ProjectReference Include="..\core\core.vcxproj">
+      <Project>{d2390aba-e7b0-476d-bb38-089feab5357d}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="UnitTest.rc" />
+    <ResourceCompile Include="res\UnitTest.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,14 +2,13 @@
 
 #include <StdAfx.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/MAPIStoreFunctions.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/mapiStoreFunctions.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Dialogs/BaseDialog.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <Interpret/SmartView/SmartView.h>
-#include <Interpret/Guids.h>
+#include <core/smartview/SmartView.h>
+#include <core/interpret/guid.h>
 #include <UI/Dialogs/HierarchyTable/MsgStoreDlg.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/Dialogs/SingleMessageDialog.h>
@@ -21,6 +20,11 @@
 #include <UI/Dialogs/ContentsTable/AclDlg.h>
 #include <UI/Dialogs/ContentsTable/MailboxTableDlg.h>
 #include <UI/Dialogs/ContentsTable/PublicFolderTableDlg.h>
+#include <core/utility/registry.h>
+#include <core/mapi/mapiOutput.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {
@@ -663,7 +667,7 @@ namespace dialog
 						strings::wstringTostring(szClass).c_str(), ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
 					if (lpMAPIFormInfo)
 					{
-						output::DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
+						output::outputFormInfo(DBGForms, nullptr, lpMAPIFormInfo);
 						*lppMAPIFormInfo = lpMAPIFormInfo;
 					}
 				}
@@ -704,7 +708,7 @@ namespace dialog
 
 			if (lpMAPIFormInfo)
 			{
-				output::DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
+				output::outputFormInfo(DBGForms, nullptr, lpMAPIFormInfo);
 				*lppMAPIFormInfo = lpMAPIFormInfo;
 			}
 

@@ -1,10 +1,10 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMMapiMime.h>
-#include <MAPI/MapiMime.h>
-#include <ImportProcs.h>
-#include <Interpret/InterpretProp.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/mapiMime.h>
+#include <core/utility/import.h>
+#include <core/interpret/flags.h>
+#include <core/mapi/extraPropTags.h>
+#include <core/utility/cli.h>
 
 #define CHECKFLAG(__flag) ((ProgOpts.MAPIMIMEFlags & (__flag)) == (__flag))
 void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
@@ -72,7 +72,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 
 	if (0 != ProgOpts.convertFlags)
 	{
-		auto szFlags = interpretprop::InterpretFlags(flagCcsf, ProgOpts.convertFlags);
+		auto szFlags = flags::InterpretFlags(flagCcsf, ProgOpts.convertFlags);
 		if (!szFlags.empty())
 		{
 			printf("   Conversion Flags: %ws\n", szFlags.c_str());
@@ -81,7 +81,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 
 	if (CHECKFLAG(cli::MAPIMIME_ENCODING))
 	{
-		auto szType = interpretprop::InterpretFlags(flagIet, ProgOpts.ulEncodingType);
+		auto szType = flags::InterpretFlags(flagIet, ProgOpts.ulEncodingType);
 		if (!szType.empty())
 		{
 			printf("   Encoding Type: %ws\n", szType.c_str());

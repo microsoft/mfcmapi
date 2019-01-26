@@ -1,7 +1,8 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/ViewPane.h>
 #include <UI/UIFunctions.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
 
 namespace viewpane
 {

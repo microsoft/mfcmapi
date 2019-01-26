@@ -1,20 +1,25 @@
 #include <StdAfx.h>
 #include <UI/mapiui.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
-#include <Interpret/Guids.h>
-#include <MAPI/MAPIProgress.h>
-#include <MAPI/MAPIFunctions.h>
-#include <IO/File.h>
+#include <core/interpret/guid.h>
+#include <core/mapi/mapiProgress.h>
+#include <core/utility/file.h>
 #include <UI/FileDialogEx.h>
-#include <Interpret/ExtraPropTags.h>
-#include <MAPI/MapiMime.h>
-#include <ImportProcs.h>
+#include <core/mapi/extraPropTags.h>
+#include <core/mapi/mapiMime.h>
+#include <core/utility/import.h>
 #include <UI/UIFunctions.h>
-#include <MAPI/MAPIABFunctions.h>
-#include <MAPI/MAPIStoreFunctions.h>
-#include <Interpret/SmartView/PropertiesStruct.h>
+#include <core/mapi/mapiABFunctions.h>
+#include <core/mapi/mapiStoreFunctions.h>
 #include <UI/CMAPIProgress.h>
-#include "Dialogs/Editors/DbgView.h"
+#include <UI/Dialogs/Editors/DbgView.h>
+#include <core/addin/addin.h>
+#include <core/addin/mfcmapi.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFile.h>
+#include <core/interpret/flags.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace ui
 {
@@ -181,15 +186,15 @@ namespace ui
 				auto szName = L"Unknown"; // STRING_OK
 
 				// Get a file name to use
-				if (mapi::CheckStringProp(&lpProps[ATTACH_LONG_FILENAME_W], PT_UNICODE))
+				if (strings::CheckStringProp(&lpProps[ATTACH_LONG_FILENAME_W], PT_UNICODE))
 				{
 					szName = lpProps[ATTACH_LONG_FILENAME_W].Value.lpszW;
 				}
-				else if (mapi::CheckStringProp(&lpProps[ATTACH_FILENAME_W], PT_UNICODE))
+				else if (strings::CheckStringProp(&lpProps[ATTACH_FILENAME_W], PT_UNICODE))
 				{
 					szName = lpProps[ATTACH_FILENAME_W].Value.lpszW;
 				}
-				else if (mapi::CheckStringProp(&lpProps[DISPLAY_NAME_W], PT_UNICODE))
+				else if (strings::CheckStringProp(&lpProps[DISPLAY_NAME_W], PT_UNICODE))
 				{
 					szName = lpProps[DISPLAY_NAME_W].Value.lpszW;
 				}
@@ -473,7 +478,7 @@ namespace ui
 
 			dialog::editor::CEditor MyPrompt(
 				nullptr, IDS_OPENOTHERUSER, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyPrompt.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
+			MyPrompt.SetPromptPostFix(flags::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(
 				0, IDS_SERVERNAME, strings::stringTowstring(szServerName), false));
 			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_USERDN, szMailboxDN, false));
@@ -511,7 +516,7 @@ namespace ui
 				{
 					LPSPropValue lpEmailAddress = nullptr;
 					EC_MAPI_S(HrGetOneProp(lpMailUser, PR_EMAIL_ADDRESS_W, &lpEmailAddress));
-					if (mapi::CheckStringProp(lpEmailAddress, PT_UNICODE))
+					if (strings::CheckStringProp(lpEmailAddress, PT_UNICODE))
 					{
 						lpOtherUserMDB = OpenMailboxWithPrompt(
 							lpMAPISession,

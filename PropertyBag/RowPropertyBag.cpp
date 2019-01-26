@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <PropertyBag/RowPropertyBag.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiMemory.h>
 
 namespace propertybag
 {
@@ -208,7 +208,7 @@ namespace propertybag
 		ULONG ulNewArray = NULL;
 		LPSPropValue lpNewArray = nullptr;
 
-		auto hRes = EC_H(ConcatLPSPropValue(1, lpProp, m_cValues, m_lpProps, &ulNewArray, &lpNewArray));
+		const auto hRes = EC_H(ConcatLPSPropValue(1, lpProp, m_cValues, m_lpProps, &ulNewArray, &lpNewArray));
 		if (SUCCEEDED(hRes))
 		{
 			MAPIFreeBuffer(m_lpListData->lpSourceProps);
@@ -224,4 +224,4 @@ namespace propertybag
 
 	//TODO: Not supported yet
 	_Check_return_ HRESULT RowPropertyBag::DeleteProp(ULONG /*ulPropTag*/) { return E_NOTIMPL; };
-}
+} // namespace propertybag

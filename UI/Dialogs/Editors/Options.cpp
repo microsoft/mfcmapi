@@ -1,7 +1,11 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/Options.h>
-#include <MAPI/StubUtils.h>
+#include <core/mapi/stubutils.h>
+#include <core/utility/registry.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/addin/mfcmapi.h>
 
 namespace dialog
 {
@@ -71,7 +75,7 @@ namespace dialog
 			if (GetHex(registry::debugTag.uiOptionsPrompt) != registry::debugTag)
 			{
 				output::SetDebugLevel(GetHex(registry::debugTag.uiOptionsPrompt));
-				output::DebugPrintVersion(DBGVersionBanner);
+				output::outputVersion(DBGVersionBanner, nullptr);
 			}
 
 			output::SetDebugOutputToFile(GetCheck(registry::debugToFile.uiOptionsPrompt));

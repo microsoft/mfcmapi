@@ -1,4 +1,5 @@
 #pragma once
+#include <core/addin/mfcmapi.h>
 
 namespace ui
 {

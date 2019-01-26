@@ -3,16 +3,17 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ABDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <MAPI/MAPIABFunctions.h>
-#include <MAPI/MAPIProgress.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/Cache/GlobalCache.h>
+#include <core/mapi/mapiABFunctions.h>
+#include <core/mapi/mapiProgress.h>
+#include <core/mapi/cache/globalCache.h>
 #include <UI/addinui.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {

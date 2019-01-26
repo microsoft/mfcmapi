@@ -1,9 +1,8 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMProfile.h>
-#include <IO/ExportProfile.h>
-#include <MAPI/MAPIFunctions.h>
-#include <Interpret/String.h>
+#include <core/mapi/exportProfile.h>
+#include <core/utility/strings.h>
+#include <core/utility/cli.h>
 
 namespace output
 {
@@ -11,7 +10,6 @@ namespace output
 	{
 		printf("Profile List\n");
 		printf(" # Default Name\n");
-		auto hRes = S_OK;
 		LPMAPITABLE lpProfTable = nullptr;
 		LPPROFADMIN lpProfAdmin = nullptr;
 
@@ -42,29 +40,28 @@ namespace output
 				}
 				else
 				{
-					if (!FAILED(hRes))
-						for (ULONG i = 0; i < lpRows->cRows; i++)
+					for (ULONG i = 0; i < lpRows->cRows; i++)
+					{
+						printf("%2d ", i);
+						if (PR_DEFAULT_PROFILE == lpRows->aRow[i].lpProps[0].ulPropTag &&
+							lpRows->aRow[i].lpProps[0].Value.b)
 						{
-							printf("%2d ", i);
-							if (PR_DEFAULT_PROFILE == lpRows->aRow[i].lpProps[0].ulPropTag &&
-								lpRows->aRow[i].lpProps[0].Value.b)
-							{
-								printf("*       ");
-							}
-							else
-							{
-								printf("        ");
-							}
-
-							if (mapi::CheckStringProp(&lpRows->aRow[i].lpProps[1], PT_STRING8))
-							{
-								printf("%hs\n", lpRows->aRow[i].lpProps[1].Value.lpszA);
-							}
-							else
-							{
-								printf("UNKNOWN\n");
-							}
+							printf("*       ");
 						}
+						else
+						{
+							printf("        ");
+						}
+
+						if (strings::CheckStringProp(&lpRows->aRow[i].lpProps[1], PT_STRING8))
+						{
+							printf("%hs\n", lpRows->aRow[i].lpProps[1].Value.lpszA);
+						}
+						else
+						{
+							printf("UNKNOWN\n");
+						}
+					}
 				}
 
 				FreeProws(lpRows);

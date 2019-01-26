@@ -1,10 +1,8 @@
 #include <StdAfx.h>
 
-#include <MrMapi/cli.h>
+#include <core/utility/cli.h>
 #include <MrMapi/MrMAPI.h>
-#include <MAPI/MAPIFunctions.h>
-#include <Interpret/String.h>
-#include <Interpret/InterpretProp.h>
+#include <core/utility/strings.h>
 #include <MrMapi/MMAcls.h>
 #include <MrMapi/MMContents.h>
 #include <MrMapi/MMErr.h>
@@ -16,13 +14,15 @@
 #include <MrMapi/MMSmartView.h>
 #include <MrMapi/MMStore.h>
 #include <MrMapi/MMMapiMime.h>
-#include <Shlwapi.h>
-#include <ImportProcs.h>
-#include <MAPI/MAPIStoreFunctions.h>
+#include <core/utility/import.h>
+#include <core/mapi/mapiStoreFunctions.h>
 #include <MrMapi/MMPst.h>
 #include <MrMapi/MMReceiveFolder.h>
-#include <MAPI/Cache/NamedPropCache.h>
-#include <MAPI/StubUtils.h>
+#include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/stubutils.h>
+#include <core/addin/addin.h>
+#include <core/utility/registry.h>
+#include <core/utility/output.h>
 
 // Initialize MFC for LoadString support later on
 void InitMFC() { AfxWinInit(::GetModuleHandle(nullptr), nullptr, ::GetCommandLine(), 0); }
@@ -141,6 +141,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	registry::useGetPropList = true;
 	registry::parseNamedProps = true;
 	registry::cacheNamedProps = true;
+	registry::debugTag = 0;
 
 	auto cl = cli::GetCommandLine(argc, argv);
 	auto ProgOpts = cli::ParseArgs(cl);

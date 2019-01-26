@@ -2,14 +2,15 @@
 
 #include <StdAfx.h>
 #include <UI/MyMAPIFormViewer.h>
-#include <MAPI/MAPIFunctions.h>
 #include <UI/MAPIFormFunctions.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <Interpret/Guids.h>
+#include <core/interpret/guid.h>
 #include <UI/MyWinApp.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <Interpret/InterpretProp.h>
+#include <core/utility/registry.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 extern ui::CMyWinApp theApp;
 
@@ -203,7 +204,7 @@ namespace mapi
 		STDMETHODIMP CMyMAPIFormViewer::GetFormManager(LPMAPIFORMMGR* ppFormMgr)
 		{
 			output::DebugPrintEx(DBGFormViewer, CLASS, L"GetFormManager", L"\n");
-			auto hRes = EC_MAPI(MAPIOpenFormMgr(m_lpMAPISession, ppFormMgr));
+			const auto hRes = EC_MAPI(MAPIOpenFormMgr(m_lpMAPISession, ppFormMgr));
 			return hRes;
 		}
 
@@ -342,7 +343,7 @@ namespace mapi
 
 				if (SUCCEEDED(hRes))
 				{
-					hRes = EC_MAPI(m_lpMessage->SubmitMessage(NULL));
+					EC_MAPI_S(m_lpMessage->SubmitMessage(NULL));
 				}
 			}
 
@@ -433,7 +434,7 @@ namespace mapi
 			ULONG cValues = 0L;
 			LPSPropValue lpPropArray = nullptr;
 
-			auto hRes = EC_MAPI(m_lpMessage->GetProps(LPSPropTagArray(&sptaFlags), 0, &cValues, &lpPropArray));
+			const auto hRes = EC_MAPI(m_lpMessage->GetProps(LPSPropTagArray(&sptaFlags), 0, &cValues, &lpPropArray));
 			const auto bComposing = lpPropArray && lpPropArray->Value.l & MSGFLAG_UNSENT;
 			MAPIFreeBuffer(lpPropArray);
 
@@ -530,7 +531,6 @@ namespace mapi
 			auto iNewItem = -1;
 			LPMESSAGE lpNewMessage = nullptr;
 			ULONG ulMessageStatus = NULL;
-			const auto bUsedCurrentSite = false;
 
 			auto hRes = WC_H(GetNextMessage(ulDir, &iNewItem, &ulMessageStatus, &lpNewMessage));
 			if (lpNewMessage)
@@ -538,7 +538,7 @@ namespace mapi
 				ULONG cValuesShow = 0;
 				LPSPropValue lpspvaShow = nullptr;
 
-				hRes = EC_H_GETPROPS(lpNewMessage->GetProps(
+				EC_H_GETPROPS_S(lpNewMessage->GetProps(
 					LPSPropTagArray(&sptaShowForm), // property tag array
 					fMapiUnicode, // flags
 					&cValuesShow, // Count of values returned
@@ -574,7 +574,7 @@ namespace mapi
 							output::DebugPrintEx(
 								DBGFormViewer, CLASS, L"ActivateNext", L"Got new persist from OnActivateNext\n");
 
-							hRes = EC_H(OpenMessageNonModal(
+							EC_H_S(OpenMessageNonModal(
 								m_hwndParent,
 								m_lpMDB,
 								m_lpMAPISession,
@@ -598,7 +598,7 @@ namespace mapi
 						// we're going to return S_FALSE, which will shut us down, so we can spin a whole new site
 						// we don't need to clean up this site since the shutdown will do it for us
 						// BTW - it might be more efficient to in-line this code and eliminate a GetProps call
-						hRes = EC_H(OpenMessageNonModal(
+						EC_H_S(OpenMessageNonModal(
 							m_hwndParent,
 							m_lpMDB,
 							m_lpMAPISession,
@@ -619,8 +619,7 @@ namespace mapi
 				lpNewMessage->Release();
 			}
 
-			if (!bUsedCurrentSite) return S_FALSE;
-			return hRes;
+			return S_FALSE;
 		}
 
 		STDMETHODIMP CMyMAPIFormViewer::GetPrintSetup(ULONG ulFlags, LPFORMPRINTSETUP* /*lppFormPrintSetup*/)

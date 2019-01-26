@@ -1,21 +1,27 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/SortListData.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/MAPIFunctions.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <UI/UIFunctions.h>
-#include <MAPI/AdviseSink.h>
-#include <Interpret/InterpretProp.h>
+#include <UI/AdviseSink.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
-#include <Interpret/ExtraPropTags.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/mapi/extraPropTags.h>
+#include <core/smartview/SmartView.h>
 #include <process.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
-#include <MAPI/Cache/NamedPropCache.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/mapiMemory.h>
+#include <core/utility/registry.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/interpret/flags.h>
+#include <core/interpret/proptags.h>
+#include <core/mapi/mapiOutput.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/property/parseProperty.h>
 
 namespace controls
 {
@@ -133,7 +139,7 @@ namespace controls
 		{
 			if (pWnd && -1 == pos.x && -1 == pos.y)
 			{
-				POINT point = {0};
+				POINT point = {};
 				const auto iItem = GetNextItem(-1, LVNI_SELECTED);
 				GetItemPosition(iItem, &point);
 				::ClientToScreen(pWnd->m_hWnd, &point);
@@ -195,11 +201,11 @@ namespace controls
 				dialog::editor::CEditor MyData(this, IDS_GETSTATUS, IDS_GETSTATUSPROMPT, CEDITOR_BUTTON_OK);
 				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_ULTABLESTATUS, true));
 				MyData.SetHex(0, ulTableStatus);
-				auto szFlags = interpretprop::InterpretFlags(flagTableStatus, ulTableStatus);
+				auto szFlags = flags::InterpretFlags(flagTableStatus, ulTableStatus);
 				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(1, IDS_ULTABLESTATUS, szFlags, true));
 				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_ULTABLETYPE, true));
 				MyData.SetHex(2, ulTableType);
-				szFlags = interpretprop::InterpretFlags(flagTableType, ulTableType);
+				szFlags = flags::InterpretFlags(flagTableType, ulTableType);
 				MyData.AddPane(viewpane::TextPane::CreateMultiLinePane(3, IDS_ULTABLETYPE, szFlags, true));
 
 				(void) MyData.DisplayDialog();
@@ -347,7 +353,7 @@ namespace controls
 			ULONG ulCurTagArrayRow,
 			ULONG ulPropTag)
 		{
-			HDITEM hdItem = {0};
+			HDITEM hdItem = {};
 			auto lpMyHeader = GetHeaderCtrl();
 			std::wstring szHeaderString;
 			LPMDB lpMDB = nullptr;
@@ -359,7 +365,7 @@ namespace controls
 			}
 			else
 			{
-				const auto propTagNames = interpretprop::PropTagToPropName(ulPropTag, m_bIsAB);
+				const auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
 				szHeaderString = propTagNames.bestGuess;
 				if (szHeaderString.empty())
 				{
@@ -391,7 +397,7 @@ namespace controls
 					lpHeaderData->ulTagArrayRow = ulCurTagArrayRow;
 					lpHeaderData->ulPropTag = ulPropTag;
 					lpHeaderData->bIsAB = m_bIsAB;
-					lpHeaderData->szTipString = interpretprop::TagToString(ulPropTag, lpMDB, m_bIsAB, false);
+					lpHeaderData->szTipString = proptags::TagToString(ulPropTag, lpMDB, m_bIsAB, false);
 
 					hdItem.lParam = reinterpret_cast<LPARAM>(lpHeaderData);
 					EC_B_S(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
@@ -493,7 +499,7 @@ namespace controls
 				if (m_lpMapiObjects)
 				{
 					const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-					output::DebugPrintRestriction(DBGGeneric, m_lpRes, lpMDB);
+					output::outputRestriction(DBGGeneric, nullptr, m_lpRes, lpMDB);
 				}
 
 				hRes = EC_MAPI(m_lpContentsTable->Restrict(const_cast<LPSRestriction>(m_lpRes), TBL_BATCH));
@@ -586,7 +592,7 @@ namespace controls
 					if (mfcmapiFINDROW_RESTRICTION == lpListCtrl->GetRestrictionType() && lpRes)
 					{
 						output::DebugPrintEx(DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
-						output::DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
+						output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
 
 						CHECKABORT(
 							hRes = WC_MAPI(
@@ -803,7 +809,7 @@ namespace controls
 
 			for (ULONG iColumn = 0; iColumn < m_ulHeaderColumns; iColumn++)
 			{
-				HDITEM hdItem = {0};
+				HDITEM hdItem = {};
 				hdItem.mask = HDI_LPARAM;
 				EC_B_S(lpMyHeader->GetItem(iColumn, &hdItem));
 
@@ -828,7 +834,7 @@ namespace controls
 							continue;
 						}
 
-						interpretprop::InterpretProp(pProp, &PropString, nullptr);
+						property::parseProperty(pProp, &PropString, nullptr);
 
 						auto szFlags = smartview::InterpretNumberAsString(
 							pProp->Value, pProp->ulPropTag, NULL, nullptr, nullptr, false);
@@ -1156,7 +1162,7 @@ namespace controls
 			if (!lpEID || lpEID->cb == 0) return nullptr;
 
 			output::DebugPrint(DBGGeneric, L"Item being opened:\n");
-			output::DebugPrintBinary(DBGGeneric, *lpEID);
+			output::outputBinary(DBGGeneric, nullptr, *lpEID);
 
 			// Find the highlighted item EID
 			LPMAPIPROP lpMAPIProp = nullptr;
@@ -1279,11 +1285,11 @@ namespace controls
 					// try to use our rowset first
 					if (NODISPLAYNAME != m_ulDisplayNameColumn && lpProps && m_ulDisplayNameColumn < cValues)
 					{
-						if (mapi::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_STRING8))
+						if (strings::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_STRING8))
 						{
 							szTitle = strings::stringTowstring(lpProps[m_ulDisplayNameColumn].Value.lpszA);
 						}
-						else if (mapi::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_UNICODE))
+						else if (strings::CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_UNICODE))
 						{
 							szTitle = lpProps[m_ulDisplayNameColumn].Value.lpszW;
 						}
@@ -1408,7 +1414,7 @@ namespace controls
 				return S_FALSE;
 
 			auto bDidWork = false;
-			LVITEM lvItem = {0};
+			LVITEM lvItem = {};
 			lvItem.iItem = iItem;
 			lvItem.iSubItem = 0;
 			lvItem.mask = LVIF_IMAGE;
@@ -1490,7 +1496,7 @@ namespace controls
 					lpProp->Value.l = lpData->Contents()->m_ulRowType;
 				}
 
-				SRow sRowData = {0};
+				SRow sRowData = {};
 				sRowData.cValues = lpData->cSourceProps;
 				sRowData.lpProps = lpData->lpSourceProps;
 				SetRowStrings(iItem, &sRowData);
@@ -1505,7 +1511,7 @@ namespace controls
 			const auto fTable = output::MyOpenFile(szFileName, true);
 			if (fTable)
 			{
-				output::OutputTableToFile(fTable, m_lpContentsTable);
+				output::outputTable(DBGNoDebug, fTable, m_lpContentsTable);
 				output::CloseFile(fTable);
 			}
 		}
@@ -1552,7 +1558,7 @@ namespace controls
 
 			// We make this copy here and pass it in to AddItemToListBox, where it is grabbed by SortListData::InitializeContents to be part of the item data
 			// The mem will be freed when the item data is cleaned up - do not free here
-			SRow NewRow = {0};
+			SRow NewRow = {};
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 			const auto hRes =
@@ -1615,7 +1621,7 @@ namespace controls
 
 				// We make this copy here and pass it in to RefreshItem, where it is grabbed by SortListData::InitializeContents to be part of the item data
 				// The mem will be freed when the item data is cleaned up - do not free here
-				SRow NewRow = {0};
+				SRow NewRow = {};
 				NewRow.cValues = tab->row.cValues;
 				NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 				hRes = EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));

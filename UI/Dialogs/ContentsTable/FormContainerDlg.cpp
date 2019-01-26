@@ -2,16 +2,18 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <MAPI/MAPIFunctions.h>
 #include <UI/FileDialogEx.h>
-#include <Interpret/InterpretProp.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiOutput.h>
 
 namespace dialog
 {
@@ -122,7 +124,7 @@ namespace dialog
 							lpMAPIFormInfoArray->aFormInfo[i], fMapiUnicode, &ulPropVals, &lpPropVals));
 						if (lpPropVals)
 						{
-							SRow sRow = {0};
+							SRow sRow = {};
 							sRow.cValues = ulPropVals;
 							sRow.lpProps = lpPropVals;
 							(void) ::SendMessage(
@@ -156,7 +158,7 @@ namespace dialog
 				lpListData->lpSourceProps,
 				lpListData->cSourceProps,
 				PR_MESSAGE_CLASS_A); // ResolveMessageClass requires an ANSI string
-			if (mapi::CheckStringProp(lpProp, PT_STRING8))
+			if (strings::CheckStringProp(lpProp, PT_STRING8))
 			{
 				const auto hRes = EC_MAPI(
 					m_lpFormContainer->ResolveMessageClass(lpProp->Value.lpszA, MAPIFORM_EXACTMATCH, &lpFormInfoProp));
@@ -185,7 +187,7 @@ namespace dialog
 				lpListData->lpSourceProps,
 				lpListData->cSourceProps,
 				PR_MESSAGE_CLASS_A); // RemoveForm requires an ANSI string
-			if (mapi::CheckStringProp(lpProp, PT_STRING8))
+			if (strings::CheckStringProp(lpProp, PT_STRING8))
 			{
 				output::DebugPrintEx(
 					DBGDeleteSelectedItem,
@@ -302,7 +304,7 @@ namespace dialog
 			if (lpMAPIFormInfo)
 			{
 				OnUpdateSingleMAPIPropListCtrl(lpMAPIFormInfo, nullptr);
-				output::DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
+				output::outputFormInfo(DBGForms, nullptr, lpMAPIFormInfo);
 				lpMAPIFormInfo->Release();
 			}
 		}
@@ -379,7 +381,7 @@ namespace dialog
 				{
 					if (lpMAPIFormInfoArray->aFormInfo[i])
 					{
-						output::DebugPrintFormInfo(DBGForms, lpMAPIFormInfoArray->aFormInfo[i]);
+						output::outputFormInfo(DBGForms, nullptr, lpMAPIFormInfoArray->aFormInfo[i]);
 						lpMAPIFormInfoArray->aFormInfo[i]->Release();
 					}
 				}
@@ -411,7 +413,7 @@ namespace dialog
 		EC_MAPI_S(m_lpFormContainer->CalcFormPropSet(ulFlags, &lpFormPropArray));
 		if (lpFormPropArray)
 		{
-			output::DebugPrintFormPropArray(DBGForms, lpFormPropArray);
+			output::outputFormPropArray(DBGForms, nullptr, lpFormPropArray);
 			MAPIFreeBuffer(lpFormPropArray);
 		}
 	}

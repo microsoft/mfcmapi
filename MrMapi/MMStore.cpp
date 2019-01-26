@@ -2,11 +2,14 @@
 #include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMStore.h>
 #include <MrMapi/MMFolder.h>
-#include <MAPI/ColumnTags.h>
-#include <Interpret/InterpretProp.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/MAPIStoreFunctions.h>
-#include <Interpret/String.h>
+#include <core/mapi/columnTags.h>
+#include <core/mapi/mapiStoreFunctions.h>
+#include <core/utility/strings.h>
+#include <core/utility/cli.h>
+#include <core/mapi/mapiOutput.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/interpret/proptags.h>
 
 LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex)
 {
@@ -161,7 +164,7 @@ void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 
 	WC_H_GETPROPS(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
 
-	output::_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
+	output::outputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
 	MAPIFreeBuffer(lpAllProps);
 }
@@ -198,7 +201,7 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 	{
 		wprintf(L"<properties>\n");
 
-		output::_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
+		output::outputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
 		wprintf(L"</properties>\n");
 
@@ -273,7 +276,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 						}
 						else
 						{
-							output::_OutputProperties(
+							output::outputProperties(
 								DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
 						}
 
@@ -298,7 +301,7 @@ void DoStore(_In_ cli::MYOPTIONS ProgOpts)
 	// For now, we don't support dispids
 	if (!ProgOpts.lpszUnswitchedOption.empty() && !(ProgOpts.ulOptions & cli::OPT_DODISPID))
 	{
-		ulPropTag = interpretprop::PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
+		ulPropTag = proptags::PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
 	}
 
 	if (ProgOpts.lpMAPISession)

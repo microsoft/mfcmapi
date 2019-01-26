@@ -1,11 +1,14 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMFolder.h>
-#include <MAPI/MAPIFunctions.h>
-#include <Interpret/ExtraPropTags.h>
-#include <Interpret/InterpretProp.h>
+#include <core/mapi/extraPropTags.h>
 #include <MrMapi/MMStore.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
+#include <core/utility/cli.h>
+#include <core/utility/output.h>
+#include <core/interpret/flags.h>
+#include <core/mapi/mapiOutput.h>
+#include <core/interpret/proptags.h>
+#include <core/mapi/mapiFunctions.h>
 
 // Search folder for entry ID of child folder by name.
 LPSBinary MAPIFindFolderW(
@@ -147,7 +150,7 @@ static LPSBinary LookupRootFolderW(
 	}
 
 	auto eid = LPSBinary{};
-	auto ulPropTag = interpretprop::LookupPropName(lpszRootFolder);
+	auto ulPropTag = proptags::LookupPropName(lpszRootFolder);
 	if (!ulPropTag)
 	{
 		// Maybe one of our folder constants was passed.
@@ -546,14 +549,14 @@ void DumpSearchState(
 		}
 		else if (SUCCEEDED(hRes))
 		{
-			auto szFlags = interpretprop::InterpretFlags(flagSearchState, ulSearchState);
+			auto szFlags = flags::InterpretFlags(flagSearchState, ulSearchState);
 			printf("Search state %ws == 0x%08X\n", szFlags.c_str(), ulSearchState);
 			printf("\n");
 			printf("Search Scope:\n");
-			output::_OutputEntryList(DBGNoDebug, stdout, lpEntryList);
+			output::outputEntryList(DBGNoDebug, stdout, lpEntryList);
 			printf("\n");
 			printf("Search Criteria:\n");
-			output::_OutputRestriction(DBGNoDebug, stdout, lpRes, nullptr);
+			output::outputRestriction(DBGNoDebug, stdout, lpRes, nullptr);
 		}
 
 		MAPIFreeBuffer(lpRes);
@@ -566,7 +569,7 @@ void DoFolderProps(_In_ cli::MYOPTIONS ProgOpts)
 	if (ProgOpts.lpFolder)
 	{
 		PrintObjectProperties(
-			L"folderprops", ProgOpts.lpFolder, interpretprop::PropNameToPropTag(ProgOpts.lpszUnswitchedOption));
+			L"folderprops", ProgOpts.lpFolder, proptags::PropNameToPropTag(ProgOpts.lpszUnswitchedOption));
 	}
 }
 
