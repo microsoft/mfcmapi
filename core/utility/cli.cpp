@@ -662,13 +662,7 @@ namespace cli
 		for (ULONG i = 0; i < g_ulSwitches; i++)
 		{
 			// If we have a match
-			// TODO: Move this to a better tested "prefix" function in strings
-			auto arraySwitch = strings::wstringToLower(g_Switches[i].szSwitch);
-			if (arraySwitch.empty()) continue;
-			if (szSwitch.length() > arraySwitch.length()) continue;
-			auto res = std::mismatch(szSwitch.begin(), szSwitch.end(), arraySwitch.begin());
-
-			if (res.first == szSwitch.end())
+			if (strings::beginsWith(g_Switches[i].szSwitch, szSwitch))
 			{
 				return g_Switches[i].iSwitch;
 			}

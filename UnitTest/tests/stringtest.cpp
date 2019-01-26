@@ -375,6 +375,17 @@ namespace stringtest
 			Assert::AreEqual(size_t(28), strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 14));
 		}
 
+		TEST_METHOD(Test_beginsWith)
+		{
+			Assert::AreEqual(false, strings::beginsWith(L"", L"guid"));
+			Assert::AreEqual(false, strings::beginsWith(L"guid", L""));
+			Assert::AreEqual(true, strings::beginsWith(L"guid", L"g"));
+			Assert::AreEqual(true, strings::beginsWith(L"Guid", L"gU"));
+			Assert::AreEqual(false, strings::beginsWith(L"guid", L"guids"));
+			Assert::AreEqual(false, strings::beginsWith(L"guid", L"foo"));
+			Assert::AreEqual(false, strings::beginsWith(L"guid", L"foobar"));
+		}
+
 		TEST_METHOD(Test_endsWith)
 		{
 			Assert::AreEqual(true, strings::endsWith(L"1234", L"234"));

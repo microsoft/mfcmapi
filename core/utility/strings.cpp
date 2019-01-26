@@ -740,6 +740,20 @@ namespace strings
 		return static_cast<size_t>(-1);
 	}
 
+	// Returns true if str begins with prefix
+	bool beginsWith(const std::wstring& str, const std::wstring& prefix)
+	{
+		if (str.empty()) return false;
+		if (prefix.empty()) return false;
+		if (prefix.length() > str.length()) return false;
+
+		const auto strLower = wstringToLower(str);
+		const auto prefixLower = wstringToLower(prefix);
+		const auto res = std::mismatch(prefixLower.begin(), prefixLower.end(), strLower.begin());
+
+		return res.first == prefixLower.end();
+	}
+
 	bool endsWith(const std::wstring& str, const std::wstring& ending)
 	{
 		if (str.length() >= ending.length())
@@ -787,7 +801,7 @@ namespace strings
 			return false;
 		}
 
-		if (lpProp->Value.LPSZ==nullptr )
+		if (lpProp->Value.LPSZ == nullptr)
 		{
 			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.LPSZ is NULL\n");
 			return false;
