@@ -1,9 +1,9 @@
 #include <StdAfx.h>
-#include <Shlwapi.h>
+#include <MrMapi/MMPropTag.h>
+#include <MrMapi/mmcli.h>
 #include <core/interpret/guid.h>
 #include <core/smartview/SmartView.h>
 #include <core/utility/strings.h>
-#include <core/utility/cli.h>
 #include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
 #include <core/utility/output.h>

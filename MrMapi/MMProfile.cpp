@@ -1,8 +1,8 @@
 #include <StdAfx.h>
 #include <MrMapi/MMProfile.h>
+#include <MrMapi/mmcli.h>
 #include <core/mapi/exportProfile.h>
 #include <core/utility/strings.h>
-#include <core/utility/cli.h>
 
 namespace output
 {

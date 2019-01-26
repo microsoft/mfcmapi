@@ -1,10 +1,10 @@
 #include <StdAfx.h>
 #include <MrMapi/MMFidMid.h>
+#include <MrMapi/mmcli.h>
 #include <core/mapi/processor/mapiProcessor.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/smartview/SmartView.h>
 #include <core/utility/strings.h>
-#include <core/utility/cli.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>

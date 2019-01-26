@@ -1,7 +1,6 @@
 #include <StdAfx.h>
 #include <MrMapi/MMErr.h>
-#include <Shlwapi.h>
-#include <core/utility/cli.h>
+#include <MrMapi/mmcli.h>
 #include <core/utility/strings.h>
 
 namespace error

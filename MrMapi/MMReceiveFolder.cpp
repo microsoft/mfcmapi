@@ -1,7 +1,7 @@
 #include <StdAfx.h>
-#include <core/mapi/columnTags.h>
 #include <MrMapi/MMReceiveFolder.h>
-#include <core/utility/cli.h>
+#include <MrMapi/mmcli.h>
+#include <core/mapi/columnTags.h>
 #include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
 

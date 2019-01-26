@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <MrMapi/MMAcls.h>
-#include <core/utility/cli.h>
+#include <MrMapi/mmcli.h>
 #include <core/utility/registry.h>
 #include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>

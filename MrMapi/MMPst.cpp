@@ -1,7 +1,7 @@
 #include <StdAfx.h>
-#include <core/utility/cli.h>
+#include <MrMapi/MMPst.h>
+#include <MrMapi/mmcli.h>
 #include <core/utility/registry.h>
-#include <core/utility/strings.h>
 #include <core/utility/output.h>
 
 #define NDB_CRYPT_NONE 0

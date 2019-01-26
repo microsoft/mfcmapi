@@ -1,8 +1,8 @@
 #include <StdAfx.h>
 #include <core/utility/strings.h>
+#include <MrMapi/mmcli.h>
 #include <io.h>
 #include <core/smartview/SmartView.h>
-#include <core/utility/cli.h>
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
