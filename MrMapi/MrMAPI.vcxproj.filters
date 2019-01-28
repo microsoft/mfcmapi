@@ -13,7 +13,9 @@
     <ClInclude Include="..\StdAfx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="mmcli.h" />
+    <ClInclude Include="mmcli.h">
+      <Filter>Source Files\MrMAPI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MMAcls.cpp">
@@ -101,7 +103,7 @@
       <Filter>Source Files\MrMAPI</Filter>
     </ClInclude>
     <ClCompile Include="mmcli.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\MrMAPI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
