@@ -70,15 +70,9 @@ namespace cli
 		switchSearchState, // '-searchstate'
 	};
 
-	struct COMMANDLINE_SWITCH
-	{
-		__CommandLineSwitch iSwitch;
-		LPCWSTR szSwitch;
-	};
-
 	// All entries before the aliases must be in the
 	// same order as the __CommandLineSwitch enum.
-	COMMANDLINE_SWITCH g_Switches[] = {
+	COMMANDLINE_SWITCH<__CommandLineSwitch> g_Switches[] = {
 		{switchNoSwitch, L""},
 		{switchUnknown, L""},
 		{switchHelp, L"?"},
@@ -133,7 +127,6 @@ namespace cli
 		// If we want to add aliases for any switches, add them here
 		{switchHelp, L"Help"},
 	};
-	ULONG g_ulSwitches = _countof(g_Switches);
 
 	void DisplayUsage(BOOL bFull)
 	{
@@ -553,16 +546,7 @@ namespace cli
 		return false;
 	}
 
-	struct OptParser
-	{
-		__CommandLineSwitch Switch{};
-		CmdMode Mode{};
-		int MinArgs{};
-		int MaxArgs{};
-		OPTIONFLAGS ulOpt{};
-	};
-
-	OptParser g_Parsers[] = {
+	OptParser<__CommandLineSwitch, CmdMode, OPTIONFLAGS> g_Parsers[] = {
 		// clang-format off
 	{switchHelp, cmdmodeHelpFull, 0, 0, OPT_INITMFC},
 	{switchVerbose, cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC},
@@ -616,7 +600,7 @@ namespace cli
 		// clang-format on
 	};
 
-	OptParser GetParser(__CommandLineSwitch Switch)
+	OptParser<__CommandLineSwitch, CmdMode, OPTIONFLAGS> GetParser(__CommandLineSwitch Switch)
 	{
 		for (auto& parser : g_Parsers)
 		{
@@ -646,12 +630,12 @@ namespace cli
 			return switchNoSwitch;
 		}
 
-		for (ULONG i = 0; i < g_ulSwitches; i++)
+		for (auto& s : g_Switches)
 		{
 			// If we have a match
-			if (strings::beginsWith(g_Switches[i].szSwitch, szSwitch))
+			if (strings::beginsWith(s.szSwitch, szSwitch))
 			{
-				return g_Switches[i].iSwitch;
+				return s.iSwitch;
 			}
 		}
 
