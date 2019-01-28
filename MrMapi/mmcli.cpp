@@ -546,7 +546,7 @@ namespace cli
 		return false;
 	}
 
-	OptParser<__CommandLineSwitch, CmdMode, OPTIONFLAGS> g_Parsers[] = {
+	std::vector<OptParser<__CommandLineSwitch, CmdMode, OPTIONFLAGS>> g_Parsers = {
 		// clang-format off
 	{switchHelp, cmdmodeHelpFull, 0, 0, OPT_INITMFC},
 	{switchVerbose, cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC},
