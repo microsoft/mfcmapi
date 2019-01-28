@@ -20,5 +20,16 @@ namespace cli
 		O ulOpt{};
 	};
 
+	template <typename S, typename M, typename O>
+	OptParser<S, M, O> GetParser(S Switch, const std::vector<OptParser<S, M, O>>& parsers)
+	{
+		for (auto& parser : parsers)
+		{
+			if (Switch == parser.Switch) return parser;
+		}
+
+		return {};
+	}
+
 	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
 } // namespace cli

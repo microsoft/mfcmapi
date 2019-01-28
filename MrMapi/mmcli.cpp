@@ -600,16 +600,6 @@ namespace cli
 		// clang-format on
 	};
 
-	OptParser<__CommandLineSwitch, CmdMode, OPTIONFLAGS> GetParser(__CommandLineSwitch Switch)
-	{
-		for (auto& parser : g_Parsers)
-		{
-			if (Switch == parser.Switch) return parser;
-		}
-
-		return {};
-	}
-
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so g_Switches should be ordered appropriately
 	__CommandLineSwitch ParseArgument(std::wstring& szArg)
@@ -662,7 +652,7 @@ namespace cli
 		for (auto i = size_t{}; i < args.size(); i++)
 		{
 			const auto iSwitch = ParseArgument(args[i]);
-			const auto opt = GetParser(iSwitch);
+			const auto opt = GetParser<__CommandLineSwitch, CmdMode, OPTIONFLAGS>(iSwitch, g_Parsers);
 			if (opt.Mode == cmdmodeHelpFull)
 			{
 				options.Mode = cmdmodeHelpFull;
