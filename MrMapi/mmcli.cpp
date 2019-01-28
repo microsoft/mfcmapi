@@ -72,7 +72,7 @@ namespace cli
 
 	// All entries before the aliases must be in the
 	// same order as the __CommandLineSwitch enum.
-	COMMANDLINE_SWITCH<__CommandLineSwitch> g_Switches[] = {
+	std::vector<COMMANDLINE_SWITCH<__CommandLineSwitch>> g_Switches = {
 		{switchNoSwitch, L""},
 		{switchUnknown, L""},
 		{switchHelp, L"?"},
@@ -600,38 +600,6 @@ namespace cli
 		// clang-format on
 	};
 
-	// Checks if szArg is an option, and if it is, returns which option it is
-	// We return the first match, so g_Switches should be ordered appropriately
-	__CommandLineSwitch ParseArgument(std::wstring& szArg)
-	{
-		if (szArg.empty()) return switchNoSwitch;
-
-		auto szSwitch = std::wstring{};
-
-		// Check if this is a switch at all
-		switch (szArg[0])
-		{
-		case L'-':
-		case L'/':
-		case L'\\':
-			if (szArg[1] != 0) szSwitch = strings::wstringToLower(&szArg[1]);
-			break;
-		default:
-			return switchNoSwitch;
-		}
-
-		for (auto& s : g_Switches)
-		{
-			// If we have a match
-			if (strings::beginsWith(s.szSwitch, szSwitch))
-			{
-				return s.iSwitch;
-			}
-		}
-
-		return switchUnknown;
-	}
-
 	// Parses command line arguments and fills out MYOPTIONS
 	MYOPTIONS ParseArgs(std::vector<std::wstring>& args)
 	{
@@ -651,7 +619,7 @@ namespace cli
 
 		for (auto i = size_t{}; i < args.size(); i++)
 		{
-			const auto iSwitch = ParseArgument(args[i]);
+			const auto iSwitch = ParseArgument<__CommandLineSwitch>(args[i], g_Switches);
 			const auto opt = GetParser<__CommandLineSwitch, CmdMode, OPTIONFLAGS>(iSwitch, g_Parsers);
 			if (opt.Mode == cmdmodeHelpFull)
 			{
@@ -676,7 +644,8 @@ namespace cli
 			{
 				for (auto iArg = 1; iArg <= opt.MinArgs; iArg++)
 				{
-					if (args.size() <= i + iArg || switchNoSwitch != ParseArgument(args[i + iArg]))
+					if (args.size() <= i + iArg ||
+						switchNoSwitch != ParseArgument<__CommandLineSwitch>(args[i + iArg], g_Switches))
 					{
 						// resetting our mode here, switch to help
 						options.Mode = cmdmodeHelp;
@@ -707,7 +676,8 @@ namespace cli
 					break;
 				case switchProfile:
 					// If we have a next argument and it's not an option, parse it as a profile name
-					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1]))
+					if (i + 1 < args.size() &&
+						switchNoSwitch == ParseArgument<__CommandLineSwitch>(args[i + 1], g_Switches))
 					{
 						options.lpszProfile = args[i + 1];
 						i++;
@@ -727,7 +697,8 @@ namespace cli
 					// Proptag parsing
 				case switchType:
 					// If we have a next argument and it's not an option, parse it as a type
-					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1]))
+					if (i + 1 < args.size() &&
+						switchNoSwitch == ParseArgument<__CommandLineSwitch>(args[i + 1], g_Switches))
 					{
 						options.ulTypeNum = proptype::PropTypeNameToPropType(args[i + 1]);
 						i++;
@@ -779,14 +750,16 @@ namespace cli
 					break;
 					// FID / MID
 				case switchFid:
-					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1]))
+					if (i + 1 < args.size() &&
+						switchNoSwitch == ParseArgument<__CommandLineSwitch>(args[i + 1], g_Switches))
 					{
 						options.lpszFid = args[i + 1];
 						i++;
 					}
 					break;
 				case switchMid:
-					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1]))
+					if (i + 1 < args.size() &&
+						switchNoSwitch == ParseArgument<__CommandLineSwitch>(args[i + 1], g_Switches))
 					{
 						options.lpszMid = args[i + 1];
 						i++;
@@ -801,7 +774,8 @@ namespace cli
 					// Store Properties / Receive Folder:
 				case switchStore:
 				case switchReceiveFolder:
-					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1]))
+					if (i + 1 < args.size() &&
+						switchNoSwitch == ParseArgument<__CommandLineSwitch>(args[i + 1], g_Switches))
 					{
 						options.ulStore = wcstoul(args[i + 1].c_str(), &szEndPtr, 10);
 
