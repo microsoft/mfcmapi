@@ -4,8 +4,6 @@
 // MrMAPI command line
 namespace cli
 {
-#define ulNoMatch 0xffffffff
-
 	template <typename T> struct COMMANDLINE_SWITCH
 	{
 		T iSwitch;
@@ -37,7 +35,7 @@ namespace cli
 	// The first switch should be our "no match" switch
 	template <typename S> S ParseArgument(std::wstring& szArg, const std::vector<COMMANDLINE_SWITCH<S>>& switches)
 	{
-		if (szArg.empty()) return S{0};
+		if (szArg.empty()) return S(0);
 
 		auto szSwitch = std::wstring{};
 
@@ -50,7 +48,7 @@ namespace cli
 			if (szArg[1] != 0) szSwitch = strings::wstringToLower(&szArg[1]);
 			break;
 		default:
-			return S{0};
+			return S(0);
 		}
 
 		for (auto& s : switches)
@@ -62,7 +60,7 @@ namespace cli
 			}
 		}
 
-		return S{0};
+		return S(0);
 	}
 
 	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
