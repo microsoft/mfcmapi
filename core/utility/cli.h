@@ -33,7 +33,7 @@ namespace cli
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
 	// The first switch should be our "no match" switch
-	template <typename S> S ParseArgument(std::wstring& szArg, const std::vector<COMMANDLINE_SWITCH<S>>& switches)
+	template <typename S> S ParseArgument(const std::wstring& szArg, const std::vector<COMMANDLINE_SWITCH<S>>& switches)
 	{
 		if (szArg.empty()) return S(0);
 

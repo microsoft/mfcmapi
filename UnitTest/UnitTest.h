@@ -1,6 +1,7 @@
 #pragma once
 #include <CppUnitTest.h>
 #include <core/interpret/guid.h>
+#include <core/utility/strings.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -16,6 +17,10 @@ namespace Microsoft
 				RETURN_WIDE_STRING(q.data());
 			}
 			template <> inline std::wstring ToString<GUID>(const GUID& q) { return guid::GUIDToString(q); }
+			template <> inline std::wstring ToString<std::vector<std::wstring>>(const std::vector<std::wstring>& q)
+			{
+				return strings::join(q, L",");
+			}
 		} // namespace CppUnitTestFramework
 	} // namespace VisualStudio
 } // namespace Microsoft
