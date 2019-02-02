@@ -18,7 +18,7 @@ namespace cli
 		MAPIMIME_UNICODE = 0x00000040,
 		MAPIMIME_CHARSET = 0x00000080,
 	};
-	inline MAPIMIMEFLAGS& operator|=(MAPIMIMEFLAGS& a, MAPIMIMEFLAGS b)
+	inline MAPIMIMEFLAGS& operator|=(MAPIMIMEFLAGS& a, MAPIMIMEFLAGS b) noexcept
 	{
 		return reinterpret_cast<MAPIMIMEFLAGS&>(reinterpret_cast<int&>(a) |= static_cast<int>(b));
 	}
@@ -77,11 +77,11 @@ namespace cli
 		OPT_SKIPATTACHMENTS = 0x400000,
 		OPT_MID = 0x800000,
 	};
-	inline OPTIONFLAGS& operator|=(OPTIONFLAGS& a, OPTIONFLAGS b)
+	inline OPTIONFLAGS& operator|=(OPTIONFLAGS& a, OPTIONFLAGS b) noexcept
 	{
 		return reinterpret_cast<OPTIONFLAGS&>(reinterpret_cast<int&>(a) |= static_cast<int>(b));
 	}
-	inline OPTIONFLAGS operator|(OPTIONFLAGS a, OPTIONFLAGS b)
+	inline OPTIONFLAGS operator|(OPTIONFLAGS a, OPTIONFLAGS b) noexcept
 	{
 		return static_cast<OPTIONFLAGS>(static_cast<int>(a) | static_cast<int>(b));
 	}
