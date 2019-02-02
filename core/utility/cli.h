@@ -63,5 +63,16 @@ namespace cli
 		return S(0);
 	}
 
+	template <typename M> bool bSetMode(_In_ M* pMode, _In_ M targetMode)
+	{
+		if (pMode && (0 == *pMode || targetMode == *pMode))
+		{
+			*pMode = targetMode;
+			return true;
+		}
+
+		return false;
+	}
+
 	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
 } // namespace cli

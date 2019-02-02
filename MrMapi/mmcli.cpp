@@ -536,16 +536,6 @@ namespace cli
 		}
 	}
 
-	bool bSetMode(_In_ CmdMode* pMode, _In_ CmdMode TargetMode)
-	{
-		if (pMode && (cmdmodeUnknown == *pMode || TargetMode == *pMode))
-		{
-			*pMode = TargetMode;
-			return true;
-		}
-		return false;
-	}
-
 	std::vector<OptParser<__CommandLineSwitch, CmdMode, OPTIONFLAGS>> g_Parsers = {
 		// clang-format off
 		{switchHelp, cmdmodeHelpFull, 0, 0, OPT_INITMFC},
