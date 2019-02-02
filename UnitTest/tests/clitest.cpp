@@ -30,7 +30,10 @@ flagsEnum operator|(flagsEnum a, flagsEnum b)
 enum modeEnum
 {
 	cmdmodeUnknown = 0,
+	cmdmodeHelp,
 	cmdmodeHelpFull,
+	cmdmodePropTag,
+	cmdmodeGuid,
 };
 
 namespace Microsoft
@@ -39,12 +42,7 @@ namespace Microsoft
 	{
 		namespace CppUnitTestFramework
 		{
-			//template <>
-			//inline std::wstring ToString<cli::OptParser<switchEnum, modeEnum, flagsEnum>>(
-			//	const cli::OptParser<switchEnum, modeEnum, flagsEnum>& q)
-			//{
-			//	return strings::format(L"%d-%d-%d-%d-%d", q.Switch, q.Mode, q.minArgs, q.maxArgs, q.ulOpt);
-			//}
+			template <> inline std::wstring ToString<modeEnum>(const modeEnum& q) { RETURN_WIDE_STRING(q); }
 
 			void AreEqual(
 				const cli::OptParser<switchEnum, modeEnum, flagsEnum>& expected,
@@ -134,6 +132,13 @@ namespace clitest
 			AreEqual(parsers[0], cli::GetParser<switchEnum, modeEnum, flagsEnum>(switchHelp, parsers));
 			AreEqual(parsers[1], cli::GetParser<switchEnum, modeEnum, flagsEnum>(switchVerbose, parsers));
 			AreEqual({}, cli::GetParser<switchEnum, modeEnum, flagsEnum>(switchNoSwitch, parsers));
+
+			auto mode = modeEnum{};
+			Assert::AreEqual(true, cli::bSetMode(&mode, cmdmodeHelpFull));
+			Assert::AreEqual(true, cli::bSetMode(&mode, cmdmodeHelpFull));
+			Assert::AreEqual(cmdmodeHelpFull, mode);
+			Assert::AreEqual(false, cli::bSetMode(&mode, cmdmodePropTag));
+			Assert::AreEqual(cmdmodeHelpFull, mode);
 		}
 	};
 } // namespace clitest

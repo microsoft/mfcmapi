@@ -63,6 +63,9 @@ namespace cli
 		return S(0);
 	}
 
+	// If the mode isn't set (is 0), then we can set it to any mode
+	// If the mode IS set (non 0), then we can only set it to the same mode
+	// IE trying to change the mode from anything but unset will fail
 	template <typename M> bool bSetMode(_In_ M* pMode, _In_ M targetMode)
 	{
 		if (pMode && (0 == *pMode || targetMode == *pMode))
