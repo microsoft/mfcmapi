@@ -43,7 +43,7 @@ void DoSmartView(_In_ cli::MYOPTIONS ProgOpts)
 				fread(lpbIn, sizeof(BYTE), iLength, fIn);
 				SBinary Bin = {0};
 				std::vector<BYTE> bin;
-				if (ProgOpts.ulOptions & cli::OPT_BINARYFILE)
+				if (ProgOpts.options & cli::OPT_BINARYFILE)
 				{
 					Bin.cb = iLength;
 					Bin.lpb = lpbIn;

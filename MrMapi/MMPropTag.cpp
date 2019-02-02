@@ -540,18 +540,18 @@ void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
 {
 	const auto lpszPropName = ProgOpts.lpszUnswitchedOption.empty() ? nullptr : ProgOpts.lpszUnswitchedOption.c_str();
 	const auto ulPropNum =
-		strings::wstringToUlong(ProgOpts.lpszUnswitchedOption, ProgOpts.ulOptions & cli::OPT_DODECIMAL ? 10 : 16);
+		strings::wstringToUlong(ProgOpts.lpszUnswitchedOption, ProgOpts.options & cli::OPT_DODECIMAL ? 10 : 16);
 	if (lpszPropName) output::DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
 	output::DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
 
 	// Handle dispid cases
-	if (ProgOpts.ulOptions & cli::OPT_DODISPID)
+	if (ProgOpts.options & cli::OPT_DODISPID)
 	{
-		if (ProgOpts.ulOptions & cli::OPT_DOFLAG)
+		if (ProgOpts.options & cli::OPT_DOFLAG)
 		{
 			PrintFlag(ulPropNum, lpszPropName, true, ProgOpts.ulFlagValue);
 		}
-		else if (ProgOpts.ulOptions & cli::OPT_DOPARTIALSEARCH)
+		else if (ProgOpts.options & cli::OPT_DOPARTIALSEARCH)
 		{
 			PrintDispIDFromPartialName(lpszPropName, ProgOpts.ulTypeNum);
 		}
@@ -568,11 +568,11 @@ void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
 	}
 
 	// Handle prop tag cases
-	if (ProgOpts.ulOptions & cli::OPT_DOFLAG)
+	if (ProgOpts.options & cli::OPT_DOFLAG)
 	{
 		PrintFlag(ulPropNum, lpszPropName, false, ProgOpts.ulFlagValue);
 	}
-	else if (ProgOpts.ulOptions & cli::OPT_DOPARTIALSEARCH)
+	else if (ProgOpts.options & cli::OPT_DOPARTIALSEARCH)
 	{
 		PrintTagFromPartialName(lpszPropName, ProgOpts.ulTypeNum);
 	}
@@ -581,7 +581,7 @@ void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
 		PrintTagFromName(lpszPropName, ProgOpts.ulTypeNum);
 	}
 	// If we weren't asked about a property, maybe we were asked about types
-	else if (ProgOpts.ulOptions & cli::OPT_DOTYPE)
+	else if (ProgOpts.options & cli::OPT_DOTYPE)
 	{
 		if (ulNoMatch != ProgOpts.ulTypeNum)
 		{

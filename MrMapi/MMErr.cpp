@@ -51,7 +51,7 @@ void PrintErrFromPartialName(_In_ const std::wstring& lpszError)
 void DoErrorParse(_In_ cli::MYOPTIONS ProgOpts)
 {
 	auto lpszErr = ProgOpts.lpszUnswitchedOption;
-	const auto ulErrNum = strings::wstringToUlong(lpszErr, ProgOpts.ulOptions & cli::OPT_DODECIMAL ? 10 : 16);
+	const auto ulErrNum = strings::wstringToUlong(lpszErr, ProgOpts.options & cli::OPT_DODECIMAL ? 10 : 16);
 
 	if (ulErrNum)
 	{
@@ -59,7 +59,7 @@ void DoErrorParse(_In_ cli::MYOPTIONS ProgOpts)
 	}
 	else
 	{
-		if (ProgOpts.ulOptions & cli::OPT_DOPARTIALSEARCH || lpszErr.empty())
+		if (ProgOpts.options & cli::OPT_DOPARTIALSEARCH || lpszErr.empty())
 		{
 			PrintErrFromPartialName(lpszErr);
 		}

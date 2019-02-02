@@ -145,7 +145,7 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 		ProgOpts.lpMDB,
 		ProgOpts.lpFolder,
 		!ProgOpts.lpszOutput.empty() ? ProgOpts.lpszOutput.c_str() : L".",
-		ProgOpts.ulOptions,
+		ProgOpts.options,
 		ProgOpts.ulFolder,
 		ProgOpts.lpszFolderPath.c_str(),
 		ProgOpts.ulCount,
@@ -157,6 +157,6 @@ void DoMSG(_In_ cli::MYOPTIONS ProgOpts)
 	DumpMSG(
 		ProgOpts.lpszInput.c_str(),
 		!ProgOpts.lpszOutput.empty() ? ProgOpts.lpszOutput.c_str() : L".",
-		0 != (ProgOpts.ulOptions & cli::OPT_RETRYSTREAMPROPS),
-		0 == (ProgOpts.ulOptions & cli::OPT_SKIPATTACHMENTS));
+		0 != (ProgOpts.options & cli::OPT_RETRYSTREAMPROPS),
+		0 == (ProgOpts.options & cli::OPT_SKIPATTACHMENTS));
 }

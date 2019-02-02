@@ -147,18 +147,18 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	auto ProgOpts = cli::ParseArgs(cl);
 
 	// Must be first after ParseArgs
-	if (ProgOpts.ulOptions & cli::OPT_INITMFC)
+	if (ProgOpts.options & cli::OPT_INITMFC)
 	{
 		InitMFC();
 	}
 
-	if (ProgOpts.ulOptions & cli::OPT_VERBOSE)
+	if (ProgOpts.options & cli::OPT_VERBOSE)
 	{
 		registry::debugTag = 0xFFFFFFFF;
 		PrintArgs(ProgOpts);
 	}
 
-	if (!(ProgOpts.ulOptions & cli::OPT_NOADDINS))
+	if (!(ProgOpts.options & cli::OPT_NOADDINS))
 	{
 		registry::loadAddIns = true;
 		addin::LoadAddIns();
@@ -169,24 +169,24 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		if (LoadMAPIVersion(ProgOpts.lpszVersion)) return;
 	}
 
-	if (ProgOpts.Mode == cli::cmdmodeHelp)
+	if (ProgOpts.mode == cli::cmdmodeHelp)
 	{
 		cli::DisplayUsage(false);
 	}
-	else if (ProgOpts.Mode == cli::cmdmodeHelpFull)
+	else if (ProgOpts.mode == cli::cmdmodeHelpFull)
 	{
 		cli::DisplayUsage(true);
 	}
 	else
 	{
-		if (ProgOpts.ulOptions & cli::OPT_ONLINE)
+		if (ProgOpts.options & cli::OPT_ONLINE)
 		{
 			registry::forceMapiNoCache = true;
 			registry::forceMDBOnline = true;
 		}
 
 		// Log on to MAPI if needed
-		if (ProgOpts.ulOptions & cli::OPT_NEEDMAPIINIT)
+		if (ProgOpts.options & cli::OPT_NEEDMAPIINIT)
 		{
 			hRes = WC_MAPI(MAPIInitialize(NULL));
 			if (FAILED(hRes))
@@ -199,13 +199,13 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			}
 		}
 
-		if (bMAPIInit && ProgOpts.ulOptions & cli::OPT_NEEDMAPILOGON)
+		if (bMAPIInit && ProgOpts.options & cli::OPT_NEEDMAPILOGON)
 		{
 			ProgOpts.lpMAPISession = MrMAPILogonEx(ProgOpts.lpszProfile);
 		}
 
 		// If they need a folder get it and store at the same time from the folder id
-		if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & cli::OPT_NEEDFOLDER)
+		if (ProgOpts.lpMAPISession && ProgOpts.options & cli::OPT_NEEDFOLDER)
 		{
 			hRes = WC_H(HrMAPIOpenStoreAndFolder(
 				ProgOpts.lpMAPISession,
@@ -215,7 +215,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 				&ProgOpts.lpFolder));
 			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
 		}
-		else if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & cli::OPT_NEEDSTORE)
+		else if (ProgOpts.lpMAPISession && ProgOpts.options & cli::OPT_NEEDSTORE)
 		{
 			// They asked us for a store, if they passed a store index give them that one
 			if (ProgOpts.ulStore != 0)
@@ -233,7 +233,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			}
 		}
 
-		switch (ProgOpts.Mode)
+		switch (ProgOpts.mode)
 		{
 		case cli::cmdmodePropTag:
 			DoPropTags(ProgOpts);
@@ -311,7 +311,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		MAPIUninitialize();
 	}
 
-	if (!(ProgOpts.ulOptions & cli::OPT_NOADDINS))
+	if (!(ProgOpts.options & cli::OPT_NOADDINS))
 	{
 		addin::UnloadAddIns();
 	}

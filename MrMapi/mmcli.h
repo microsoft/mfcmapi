@@ -88,8 +88,8 @@ namespace cli
 
 	struct MYOPTIONS
 	{
-		CmdMode Mode{cmdmodeUnknown};
-		OPTIONFLAGS ulOptions{OPT_NOOPT};
+		CmdMode mode{cmdmodeUnknown};
+		OPTIONFLAGS options{OPT_NOOPT};
 		std::wstring lpszUnswitchedOption;
 		std::wstring lpszProfile;
 		ULONG ulTypeNum{};

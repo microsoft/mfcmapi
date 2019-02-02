@@ -286,5 +286,5 @@ void DoFidMid(_In_ cli::MYOPTIONS ProgOpts)
 		ProgOpts.lpMDB,
 		ProgOpts.lpszFid,
 		ProgOpts.lpszMid,
-		cli::OPT_MID == (ProgOpts.ulOptions & cli::OPT_MID));
+		cli::OPT_MID == (ProgOpts.options & cli::OPT_MID));
 }
