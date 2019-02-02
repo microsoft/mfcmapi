@@ -621,16 +621,16 @@ namespace cli
 		{
 			const auto iSwitch = ParseArgument<__CommandLineSwitch>(args[i], g_Switches);
 			const auto opt = GetParser<__CommandLineSwitch, CmdMode, OPTIONFLAGS>(iSwitch, g_Parsers);
-			if (opt.Mode == cmdmodeHelpFull)
+			if (opt.mode == cmdmodeHelpFull)
 			{
 				options.Mode = cmdmodeHelpFull;
 				return options;
 			}
 
-			options.ulOptions |= opt.ulOpt;
-			if (cmdmodeUnknown != opt.Mode && cmdmodeHelp != options.Mode)
+			options.ulOptions |= opt.options;
+			if (cmdmodeUnknown != opt.mode && cmdmodeHelp != options.Mode)
 			{
-				if (!bSetMode(&options.Mode, opt.Mode))
+				if (!bSetMode(&options.Mode, opt.mode))
 				{
 					// resetting our mode here, switch to help
 					options.Mode = cmdmodeHelp;
@@ -640,9 +640,9 @@ namespace cli
 
 			// Make sure we have the minimum number of args
 			// Commands with variable argument counts can special case themselves
-			if (opt.MinArgs > 0)
+			if (opt.minArgs > 0)
 			{
-				for (auto iArg = 1; iArg <= opt.MinArgs; iArg++)
+				for (auto iArg = 1; iArg <= opt.minArgs; iArg++)
 				{
 					if (args.size() <= i + iArg ||
 						switchNoSwitch != ParseArgument<__CommandLineSwitch>(args[i + iArg], g_Switches))

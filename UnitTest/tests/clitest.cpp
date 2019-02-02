@@ -43,7 +43,7 @@ namespace Microsoft
 			//inline std::wstring ToString<cli::OptParser<switchEnum, modeEnum, flagsEnum>>(
 			//	const cli::OptParser<switchEnum, modeEnum, flagsEnum>& q)
 			//{
-			//	return strings::format(L"%d-%d-%d-%d-%d", q.Switch, q.Mode, q.MinArgs, q.MaxArgs, q.ulOpt);
+			//	return strings::format(L"%d-%d-%d-%d-%d", q.Switch, q.Mode, q.minArgs, q.maxArgs, q.ulOpt);
 			//}
 
 			void AreEqual(
@@ -53,22 +53,23 @@ namespace Microsoft
 				const __LineInfo* pLineInfo = nullptr)
 			{
 				auto eq = true;
-				if (expected.Switch != actual.Switch || expected.Mode != actual.Mode ||
-					expected.MinArgs != actual.MinArgs || expected.MaxArgs != actual.MaxArgs ||
-					expected.ulOpt != actual.ulOpt)
+				if (expected.clSwitch != actual.clSwitch || expected.mode != actual.mode ||
+					expected.minArgs != actual.minArgs || expected.maxArgs != actual.maxArgs ||
+					expected.options != actual.options)
 				{
 					eq = false;
 				}
 
 				if (!eq)
 				{
-					Logger::WriteMessage(strings::format(L"Switch: %d:%d\n", expected.Switch, actual.Switch).c_str());
-					Logger::WriteMessage(strings::format(L"Mode: %d:%d\n", expected.Mode, actual.Mode).c_str());
 					Logger::WriteMessage(
-						strings::format(L"MinArgs: %d:%d\n", expected.MinArgs, actual.MinArgs).c_str());
+						strings::format(L"Switch: %d:%d\n", expected.clSwitch, actual.clSwitch).c_str());
+					Logger::WriteMessage(strings::format(L"Mode: %d:%d\n", expected.mode, actual.mode).c_str());
 					Logger::WriteMessage(
-						strings::format(L"MaxArgs: %d:%d\n", expected.MaxArgs, actual.MaxArgs).c_str());
-					Logger::WriteMessage(strings::format(L"ulOpt: %d:%d\n", expected.ulOpt, actual.ulOpt).c_str());
+						strings::format(L"minArgs: %d:%d\n", expected.minArgs, actual.minArgs).c_str());
+					Logger::WriteMessage(
+						strings::format(L"maxArgs: %d:%d\n", expected.maxArgs, actual.maxArgs).c_str());
+					Logger::WriteMessage(strings::format(L"ulOpt: %d:%d\n", expected.options, actual.options).c_str());
 					Assert::Fail(ToString(message).c_str(), pLineInfo);
 				}
 			}

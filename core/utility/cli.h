@@ -12,19 +12,19 @@ namespace cli
 
 	template <typename S, typename M, typename O> struct OptParser
 	{
-		S Switch{};
-		M Mode{};
-		int MinArgs{};
-		int MaxArgs{};
-		O ulOpt{};
+		S clSwitch{};
+		M mode{};
+		int minArgs{};
+		int maxArgs{};
+		O options{};
 	};
 
 	template <typename S, typename M, typename O>
-	OptParser<S, M, O> GetParser(S Switch, const std::vector<OptParser<S, M, O>>& parsers)
+	OptParser<S, M, O> GetParser(S clSwitch, const std::vector<OptParser<S, M, O>>& parsers)
 	{
 		for (const auto& parser : parsers)
 		{
-			if (Switch == parser.Switch) return parser;
+			if (clSwitch == parser.clSwitch) return parser;
 		}
 
 		return {};
