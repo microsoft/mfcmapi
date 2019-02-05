@@ -1,76 +1,38 @@
 #pragma once
-#include <core/utility/strings.h>
 
 // MrMAPI command line
 namespace cli
 {
-	template <typename T> struct COMMANDLINE_SWITCH
+	struct COMMANDLINE_SWITCH
 	{
-		T iSwitch;
+		int iSwitch;
 		LPCWSTR szSwitch;
 	};
 
-	template <typename S, typename M, typename O> struct OptParser
+	struct OptParser
 	{
-		S clSwitch{};
-		M mode{};
+		int clSwitch{};
+		int mode{};
 		int minArgs{};
 		int maxArgs{};
-		O options{};
+		int options{};
 	};
 
-	template <typename S, typename M, typename O>
-	OptParser<S, M, O> GetParser(S clSwitch, const std::vector<OptParser<S, M, O>>& parsers)
-	{
-		for (const auto& parser : parsers)
-		{
-			if (clSwitch == parser.clSwitch) return parser;
-		}
-
-		return {};
-	}
+	OptParser GetParser(int clSwitch, const std::vector<OptParser>& parsers);
 
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
 	// The first switch should be our "no match" switch
-	template <typename S> S ParseArgument(const std::wstring& szArg, const std::vector<COMMANDLINE_SWITCH<S>>& switches)
-	{
-		if (szArg.empty()) return S(0);
-
-		auto szSwitch = std::wstring{};
-
-		// Check if this is a switch at all
-		switch (szArg[0])
-		{
-		case L'-':
-		case L'/':
-		case L'\\':
-			if (szArg[1] != 0) szSwitch = strings::wstringToLower(&szArg[1]);
-			break;
-		default:
-			return S(0);
-		}
-
-		for (const auto& s : switches)
-		{
-			// If we have a match
-			if (strings::beginsWith(s.szSwitch, szSwitch))
-			{
-				return s.iSwitch;
-			}
-		}
-
-		return S(0);
-	}
+	int ParseArgument(const std::wstring& szArg, const std::vector<COMMANDLINE_SWITCH>& switches);
 
 	// If the mode isn't set (is 0), then we can set it to any mode
 	// If the mode IS set (non 0), then we can only set it to the same mode
 	// IE trying to change the mode from anything but unset will fail
-	template <typename M> bool bSetMode(_In_ M* pMode, _In_ M targetMode)
+	template <typename M> bool bSetMode(_In_ M& pMode, _In_ M targetMode)
 	{
-		if (pMode && (0 == *pMode || targetMode == *pMode))
+		if (0 == pMode || targetMode == pMode)
 		{
-			*pMode = targetMode;
+			pMode = targetMode;
 			return true;
 		}
 

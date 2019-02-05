@@ -36,6 +36,21 @@ enum modeEnum
 	cmdmodeGuid,
 };
 
+const std::vector<cli::COMMANDLINE_SWITCH> switches = {
+	{switchNoSwitch, L""},
+	{switchUnknown, L""},
+	{switchHelp, L"?"},
+	{switchVerbose, L"Verbose"},
+	{switchSearch, L"Search"},
+};
+
+const std::vector<cli::OptParser> parsers = {
+	{switchHelp, cmdmodeHelpFull, 0, 0, OPT_INITMFC},
+	{switchVerbose, cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC},
+	{switchSearch, cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH},
+	{switchNoSwitch, cmdmodeUnknown, 0, 0, OPT_NOOPT},
+};
+
 namespace Microsoft
 {
 	namespace VisualStudio
@@ -45,8 +60,8 @@ namespace Microsoft
 			template <> inline std::wstring ToString<modeEnum>(const modeEnum& q) { RETURN_WIDE_STRING(q); }
 
 			void AreEqual(
-				const cli::OptParser<switchEnum, modeEnum, flagsEnum>& expected,
-				const cli::OptParser<switchEnum, modeEnum, flagsEnum>& actual,
+				const cli::OptParser& expected,
+				const cli::OptParser& actual,
 				const wchar_t* message = nullptr,
 				const __LineInfo* pLineInfo = nullptr)
 			{
@@ -98,47 +113,35 @@ namespace clitest
 
 		TEST_METHOD(Test_ParseArgument)
 		{
-			const std::vector<cli::COMMANDLINE_SWITCH<switchEnum>> switches = {
-				{switchNoSwitch, L""},
-				{switchUnknown, L""},
-				{switchHelp, L"?"},
-				{switchVerbose, L"Verbose"},
-				{switchSearch, L"Search"},
-			};
+			Assert::AreEqual(int(switchHelp), int(ParseArgument(std::wstring{L"-?"}, switches)));
+			Assert::AreEqual(int(switchVerbose), int(ParseArgument(std::wstring{L"-v"}, switches)));
+			Assert::AreEqual(int(switchVerbose), int(ParseArgument(std::wstring{L"/v"}, switches)));
+			Assert::AreEqual(int(switchVerbose), int(ParseArgument(std::wstring{L"\\v"}, switches)));
+			Assert::AreEqual(int(switchVerbose), int(ParseArgument(std::wstring{L"-verbose"}, switches)));
+			Assert::AreEqual(int(switchNoSwitch), int(ParseArgument(std::wstring{L"-verbosey"}, switches)));
+			Assert::AreEqual(int(switchNoSwitch), int(ParseArgument(std::wstring{L"-va"}, switches)));
+			Assert::AreEqual(int(switchNoSwitch), int(ParseArgument(std::wstring{L"-test"}, switches)));
+			Assert::AreEqual(int(switchSearch), int(ParseArgument(std::wstring{L"/s"}, switches)));
+			Assert::AreEqual(int(switchNoSwitch), int(ParseArgument(std::wstring{L""}, switches)));
+			Assert::AreEqual(int(switchNoSwitch), int(ParseArgument(std::wstring{L"+v"}, switches)));
+			Assert::AreEqual(int(switchNoSwitch), int(ParseArgument(std::wstring{L"-"}, switches)));
+		}
 
-			const std::vector<cli::OptParser<switchEnum, modeEnum, flagsEnum>> parsers = {
-				{switchHelp, cmdmodeHelpFull, 0, 0, OPT_INITMFC},
-				{switchVerbose, cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC},
-				{switchSearch, cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH},
-				{switchNoSwitch, cmdmodeUnknown, 0, 0, OPT_NOOPT},
-			};
+		TEST_METHOD(Test_GetParser)
+		{
+			AreEqual(parsers[0], GetParser(switchHelp, parsers));
+			AreEqual(parsers[1], GetParser(switchVerbose, parsers));
+			AreEqual({}, GetParser(switchNoSwitch, parsers));
+		}
 
-			Assert::AreEqual(int(switchHelp), int(cli::ParseArgument<switchEnum>(std::wstring{L"-?"}, switches)));
-			Assert::AreEqual(int(switchVerbose), int(cli::ParseArgument<switchEnum>(std::wstring{L"-v"}, switches)));
-			Assert::AreEqual(int(switchVerbose), int(cli::ParseArgument<switchEnum>(std::wstring{L"/v"}, switches)));
-			Assert::AreEqual(int(switchVerbose), int(cli::ParseArgument<switchEnum>(std::wstring{L"\\v"}, switches)));
-			Assert::AreEqual(
-				int(switchVerbose), int(cli::ParseArgument<switchEnum>(std::wstring{L"-verbose"}, switches)));
-			Assert::AreEqual(
-				int(switchNoSwitch), int(cli::ParseArgument<switchEnum>(std::wstring{L"-verbosey"}, switches)));
-			Assert::AreEqual(int(switchNoSwitch), int(cli::ParseArgument<switchEnum>(std::wstring{L"-va"}, switches)));
-			Assert::AreEqual(
-				int(switchNoSwitch), int(cli::ParseArgument<switchEnum>(std::wstring{L"-test"}, switches)));
-			Assert::AreEqual(int(switchSearch), int(cli::ParseArgument<switchEnum>(std::wstring{L"/s"}, switches)));
-			Assert::AreEqual(int(switchNoSwitch), int(cli::ParseArgument<switchEnum>(std::wstring{L""}, switches)));
-			Assert::AreEqual(int(switchNoSwitch), int(cli::ParseArgument<switchEnum>(std::wstring{L"+v"}, switches)));
-			Assert::AreEqual(int(switchNoSwitch), int(cli::ParseArgument<switchEnum>(std::wstring{L"-"}, switches)));
-
-			AreEqual(parsers[0], cli::GetParser<switchEnum, modeEnum, flagsEnum>(switchHelp, parsers));
-			AreEqual(parsers[1], cli::GetParser<switchEnum, modeEnum, flagsEnum>(switchVerbose, parsers));
-			AreEqual({}, cli::GetParser<switchEnum, modeEnum, flagsEnum>(switchNoSwitch, parsers));
-
+		TEST_METHOD(Test_bSetMode)
+		{
 			auto mode = modeEnum{};
-			Assert::AreEqual(true, cli::bSetMode(&mode, cmdmodeHelpFull));
-			Assert::AreEqual(true, cli::bSetMode(&mode, cmdmodeHelpFull));
+			Assert::AreEqual(true, cli::bSetMode(mode, cmdmodeHelpFull));
+			Assert::AreEqual(true, cli::bSetMode(mode, cmdmodeHelpFull));
 			Assert::AreEqual(cmdmodeHelpFull, mode);
-			Assert::AreEqual(false, cli::bSetMode(&mode, cmdmodePropTag));
+			Assert::AreEqual(false, cli::bSetMode(mode, cmdmodePropTag));
 			Assert::AreEqual(cmdmodeHelpFull, mode);
 		}
-	};
+	}; // namespace clitest
 } // namespace clitest
