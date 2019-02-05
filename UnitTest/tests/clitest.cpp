@@ -136,12 +136,12 @@ namespace clitest
 
 		TEST_METHOD(Test_bSetMode)
 		{
-			auto mode = modeEnum{};
+			auto mode = int{};
 			Assert::AreEqual(true, cli::bSetMode(mode, cmdmodeHelpFull));
 			Assert::AreEqual(true, cli::bSetMode(mode, cmdmodeHelpFull));
-			Assert::AreEqual(cmdmodeHelpFull, mode);
+			Assert::AreEqual(cmdmodeHelpFull, modeEnum(mode));
 			Assert::AreEqual(false, cli::bSetMode(mode, cmdmodePropTag));
-			Assert::AreEqual(cmdmodeHelpFull, mode);
+			Assert::AreEqual(cmdmodeHelpFull, modeEnum(mode));
 		}
 	}; // namespace clitest
 } // namespace clitest

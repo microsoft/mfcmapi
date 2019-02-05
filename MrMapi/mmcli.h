@@ -1,5 +1,6 @@
 #pragma once
 #include <core/mapi/extraPropTags.h>
+#include "core/utility/cli.h"
 
 // MrMAPI command line
 namespace cli
@@ -86,11 +87,8 @@ namespace cli
 		return static_cast<OPTIONFLAGS>(static_cast<int>(a) | static_cast<int>(b));
 	}
 
-	struct MYOPTIONS
+	struct MYOPTIONS : OPTIONS
 	{
-		CmdMode mode{cmdmodeUnknown};
-		OPTIONFLAGS options{OPT_NOOPT};
-		std::wstring lpszUnswitchedOption;
 		std::wstring lpszProfile;
 		ULONG ulTypeNum{};
 		ULONG ulSVParser{};

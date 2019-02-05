@@ -18,6 +18,13 @@ namespace cli
 		int options{};
 	};
 
+	struct OPTIONS
+	{
+		int mode{0};
+		int options{0};
+		std::wstring lpszUnswitchedOption;
+	};
+
 	OptParser GetParser(int clSwitch, const std::vector<OptParser>& parsers);
 
 	// Checks if szArg is an option, and if it is, returns which option it is
@@ -28,16 +35,7 @@ namespace cli
 	// If the mode isn't set (is 0), then we can set it to any mode
 	// If the mode IS set (non 0), then we can only set it to the same mode
 	// IE trying to change the mode from anything but unset will fail
-	template <typename M> bool bSetMode(_In_ M& pMode, _In_ M targetMode)
-	{
-		if (0 == pMode || targetMode == pMode)
-		{
-			pMode = targetMode;
-			return true;
-		}
-
-		return false;
-	}
+	bool bSetMode(_In_ int& pMode, _In_ int targetMode);
 
 	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
 } // namespace cli

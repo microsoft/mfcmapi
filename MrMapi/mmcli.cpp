@@ -620,7 +620,7 @@ namespace cli
 			options.options |= OPTIONFLAGS(opt.options);
 			if (cmdmodeUnknown != opt.mode && cmdmodeHelp != options.mode)
 			{
-				if (!bSetMode<CmdMode>(options.mode, CmdMode(opt.mode)))
+				if (!bSetMode(options.mode, CmdMode(opt.mode)))
 				{
 					// resetting our mode here, switch to help
 					options.mode = cmdmodeHelp;

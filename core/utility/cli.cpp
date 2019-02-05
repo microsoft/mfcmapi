@@ -47,6 +47,20 @@ namespace cli
 		return 0;
 	}
 
+	// If the mode isn't set (is 0), then we can set it to any mode
+	// If the mode IS set (non 0), then we can only set it to the same mode
+	// IE trying to change the mode from anything but unset will fail
+	bool bSetMode(_In_ int& pMode, _In_ int targetMode)
+	{
+		if (0 == pMode || targetMode == pMode)
+		{
+			pMode = targetMode;
+			return true;
+		}
+
+		return false;
+	}
+
 	// Converts an argc/argv style command line to a vector
 	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[])
 	{
