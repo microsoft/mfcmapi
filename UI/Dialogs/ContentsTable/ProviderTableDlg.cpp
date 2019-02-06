@@ -56,7 +56,7 @@ namespace dialog
 
 	_Check_return_ LPMAPIPROP CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
 	{
-		if (m_lpContentsTableListCtrl || !m_lpProviderAdmin) return nullptr;
+		if (!m_lpContentsTableListCtrl || !m_lpProviderAdmin) return nullptr;
 		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		LPPROFSECT lpProfSect = nullptr;
