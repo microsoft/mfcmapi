@@ -38,4 +38,9 @@ namespace cli
 	bool bSetMode(_In_ int& pMode, _In_ int targetMode);
 
 	std::deque<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
+
+	_Check_return_ bool CheckMinArgs(
+		cli::OptParser opt,
+		const std::deque<std::wstring> args,
+		const std::vector<COMMANDLINE_SWITCH>& switches);
 } // namespace cli

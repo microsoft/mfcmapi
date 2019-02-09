@@ -590,9 +590,9 @@ namespace cli
 		// clang-format on
 	};
 
-	// Return true if we succesfully pealed off a switch.
+	// Return true if we succesfully peeled off a switch.
 	// Return false on an error.
-	bool DoSwitch(MYOPTIONS& options, int iSwitch, std::deque<std::wstring>& args)
+	_Check_return_ bool DoSwitch(MYOPTIONS& options, int iSwitch, std::deque<std::wstring>& args)
 	{
 		LPWSTR szEndPtr = nullptr;
 		const auto arg0 = args.front();
@@ -885,18 +885,11 @@ namespace cli
 
 			// Make sure we have the minimum number of args
 			// Commands with variable argument counts can special case themselves
-			if (opt.minArgs > 0)
+			if (!CheckMinArgs(opt, args, g_Switches))
 			{
-				// TODO: Rebuild this without array access
-				for (auto iArg = UINT{1}; iArg <= opt.minArgs; iArg++)
-				{
-					if (args.size() <= iArg || switchNoSwitch != ParseArgument(args[iArg], g_Switches))
-					{
-						// resetting our mode here, switch to help
-						options.mode = cmdmodeHelp;
-						return options;
-					}
-				}
+				// resetting our mode here, switch to help
+				options.mode = cmdmodeHelp;
+				return options;
 			}
 
 			if (!DoSwitch(options, iSwitch, args))

@@ -74,4 +74,25 @@ namespace cli
 
 		return args;
 	}
+
+	// Assumes that our no switch case is 0
+	_Check_return_ bool CheckMinArgs(
+		cli::OptParser opt,
+		const std::deque<std::wstring> args,
+		const std::vector<COMMANDLINE_SWITCH>& switches)
+	{
+		if (opt.minArgs > 0)
+		{
+			// TODO: Rebuild this without array access
+			for (auto iArg = UINT{1}; iArg <= opt.minArgs; iArg++)
+			{
+				if (args.size() <= iArg || 0 != ParseArgument(args[iArg], switches))
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
 } // namespace cli

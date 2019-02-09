@@ -44,12 +44,12 @@ const std::vector<cli::COMMANDLINE_SWITCH> switches = {
 	{switchSearch, L"Search"},
 };
 
-const std::vector<cli::OptParser> parsers = {
-	{switchHelp, cmdmodeHelpFull, 0, 0, OPT_INITMFC},
-	{switchVerbose, cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC},
-	{switchSearch, cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH},
-	{switchNoSwitch, cmdmodeUnknown, 0, 0, OPT_NOOPT},
-};
+cli::OptParser noSwitchParser = {switchNoSwitch, cmdmodeUnknown, 0, 0, OPT_NOOPT};
+cli::OptParser helpParser = {switchHelp, cmdmodeHelpFull, 0, 0, OPT_INITMFC};
+cli::OptParser verboseParser = {switchVerbose, cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
+cli::OptParser searchParser = {switchSearch, cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH};
+
+const std::vector<cli::OptParser> parsers = {noSwitchParser, helpParser, verboseParser, searchParser};
 
 namespace Microsoft
 {
@@ -105,10 +105,9 @@ namespace clitest
 		{
 			//	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
 			auto noarg = std::vector<LPCSTR>{"app.exe"};
-			Assert::AreEqual(std::deque<std::wstring>{}, cli::GetCommandLine(int(noarg.size()), noarg.data()));
+			Assert::AreEqual({}, cli::GetCommandLine(int(noarg.size()), noarg.data()));
 			auto argv = std::vector<LPCSTR>{"app.exe", "-arg1", "-arg2"};
-			Assert::AreEqual(
-				std::deque<std::wstring>{L"-arg1", L"-arg2"}, cli::GetCommandLine(int(argv.size()), argv.data()));
+			Assert::AreEqual({L"-arg1", L"-arg2"}, cli::GetCommandLine(int(argv.size()), argv.data()));
 		}
 
 		TEST_METHOD(Test_ParseArgument)
@@ -129,8 +128,8 @@ namespace clitest
 
 		TEST_METHOD(Test_GetParser)
 		{
-			AreEqual(parsers[0], GetParser(switchHelp, parsers));
-			AreEqual(parsers[1], GetParser(switchVerbose, parsers));
+			AreEqual(helpParser, GetParser(switchHelp, parsers));
+			AreEqual(verboseParser, GetParser(switchVerbose, parsers));
 			AreEqual({}, GetParser(switchNoSwitch, parsers));
 		}
 
@@ -142,6 +141,36 @@ namespace clitest
 			Assert::AreEqual(cmdmodeHelpFull, modeEnum(mode));
 			Assert::AreEqual(false, cli::bSetMode(mode, cmdmodePropTag));
 			Assert::AreEqual(cmdmodeHelpFull, modeEnum(mode));
+		}
+
+		TEST_METHOD(Test_CheckMinArgs)
+		{
+			// min/max-0/0
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 0, 0}, {L"-v"}, switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 0, 0}, {L"-v", L"-v"}, switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 0, 0}, {L"-v", L"1"}, switches));
+
+			// min/max-1/1
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"1"}, switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"1", L"2"}, switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"1", L"-v"}, switches));
+			// Not enough non switch args
+			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"-v"}, switches));
+			// Not enough args at all
+			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v"}, switches));
+
+			// min/max-0/1
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 1, 0}, {L"-v", L"-v"}, switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 1, 0}, {L"-v", L"1", L"-v"}, switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 1, 0}, {L"-v"}, switches));
+
+			// min/max-2/3
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"2"}, switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"2", L"-v"}, switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"2", L"3"}, switches));
+			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v"}, switches));
+			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1"}, switches));
+			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"-v"}, switches));
 		}
 	}; // namespace clitest
 } // namespace clitest
