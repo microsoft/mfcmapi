@@ -122,6 +122,6 @@ namespace cli
 	void DisplayUsage(BOOL bFull);
 
 	// Parses command line arguments and fills out MYOPTIONS
-	MYOPTIONS ParseArgs(std::vector<std::wstring>& args);
+	MYOPTIONS ParseArgs(std::deque<std::wstring>& args);
 	void PrintArgs(_In_ const MYOPTIONS& ProgOpts);
 } // namespace cli

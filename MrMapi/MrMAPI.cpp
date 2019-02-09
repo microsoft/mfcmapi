@@ -131,17 +131,17 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	auto hRes = S_OK;
 	auto bMAPIInit = false;
 
-	SetDllDirectory(_T(""));
-	import::MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
-
-	// Set up our property arrays or nothing works
-	addin::MergeAddInArrays();
-
 	registry::doSmartView = true;
 	registry::useGetPropList = true;
 	registry::parseNamedProps = true;
 	registry::cacheNamedProps = true;
 	registry::debugTag = 0;
+
+	SetDllDirectory(_T(""));
+	import::MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
+
+	// Set up our property arrays or nothing works
+	addin::MergeAddInArrays();
 
 	auto cl = cli::GetCommandLine(argc, argv);
 	auto ProgOpts = cli::ParseArgs(cl);

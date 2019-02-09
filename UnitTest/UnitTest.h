@@ -17,9 +17,9 @@ namespace Microsoft
 				RETURN_WIDE_STRING(q.data());
 			}
 			template <> inline std::wstring ToString<GUID>(const GUID& q) { return guid::GUIDToString(q); }
-			template <> inline std::wstring ToString<std::vector<std::wstring>>(const std::vector<std::wstring>& q)
+			template <> inline std::wstring ToString<std::deque<std::wstring>>(const std::deque<std::wstring>& q)
 			{
-				return strings::join(q, L",");
+				return strings::join({q.begin(), q.end()}, L",");
 			}
 		} // namespace CppUnitTestFramework
 	} // namespace VisualStudio

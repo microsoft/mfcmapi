@@ -1,6 +1,7 @@
 #include <core/stdafx.h>
 #include <core/utility/cli.h>
 #include <core/utility/strings.h>
+#include <queue>
 
 namespace cli
 {
@@ -62,9 +63,9 @@ namespace cli
 	}
 
 	// Converts an argc/argv style command line to a vector
-	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[])
+	std::deque<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[])
 	{
-		auto args = std::vector<std::wstring>{};
+		auto args = std::deque<std::wstring>{};
 
 		for (auto i = 1; i < argc; i++)
 		{

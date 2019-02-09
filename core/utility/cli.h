@@ -13,8 +13,8 @@ namespace cli
 	{
 		int clSwitch{};
 		int mode{};
-		int minArgs{};
-		int maxArgs{};
+		UINT minArgs{};
+		UINT maxArgs{};
 		int options{};
 	};
 
@@ -37,5 +37,5 @@ namespace cli
 	// IE trying to change the mode from anything but unset will fail
 	bool bSetMode(_In_ int& pMode, _In_ int targetMode);
 
-	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
+	std::deque<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
 } // namespace cli

@@ -20,6 +20,8 @@
 #include <utility>
 #include <vector>
 #include <cassert>
+#include <stack>
+#include <deque>
 
 // Speed up our string conversions for output
 #ifdef MRMAPI

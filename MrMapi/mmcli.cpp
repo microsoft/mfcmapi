@@ -590,11 +590,267 @@ namespace cli
 		// clang-format on
 	};
 
+	// Return true if we succesfully pealed off a switch.
+	// Return false on an error.
+	bool DoSwitch(MYOPTIONS& options, int iSwitch, std::deque<std::wstring>& args)
+	{
+		LPWSTR szEndPtr = nullptr;
+		const auto arg0 = args.front();
+		args.pop_front();
+
+		switch (iSwitch)
+		{
+			// Global flags
+		case switchFolder:
+			options.ulFolder = strings::wstringToUlong(args.front(), 10);
+			if (!options.ulFolder)
+			{
+				options.lpszFolderPath = args.front();
+				options.ulFolder = mapi::DEFAULT_INBOX;
+			}
+
+			args.pop_front();
+			break;
+		case switchInput:
+			options.lpszInput = args.front();
+			args.pop_front();
+			break;
+		case switchOutput:
+			options.lpszOutput = args.front();
+			args.pop_front();
+			break;
+		case switchProfile:
+			// If we have a next argument and it's not an option, parse it as a profile name
+			if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Switches))
+			{
+				options.lpszProfile = args.front();
+				args.pop_front();
+			}
+
+			break;
+		case switchProfileSection:
+			options.lpszProfileSection = args.front();
+			args.pop_front();
+			break;
+		case switchByteSwapped:
+			options.bByteSwapped = true;
+			break;
+		case switchVersion:
+			options.lpszVersion = args.front();
+			args.pop_front();
+			break;
+			// Proptag parsing
+		case switchType:
+			// If we have a next argument and it's not an option, parse it as a type
+			if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Switches))
+			{
+				options.ulTypeNum = proptype::PropTypeNameToPropType(args.front());
+				args.pop_front();
+			}
+			break;
+		case switchFlag:
+			// We must have a next argument, but it could be a string or a number
+			options.lpszFlagName = args.front();
+			options.ulFlagValue = wcstoul(args.front().c_str(), &szEndPtr, 16);
+
+			// Set mode based on whether the flag string was completely parsed as a number
+			if (NULL == szEndPtr[0])
+			{
+				if (!bSetMode(options.mode, cmdmodePropTag))
+				{
+					return false;
+				}
+
+				options.options |= OPT_DOFLAG;
+			}
+			else
+			{
+				if (!bSetMode(options.mode, cmdmodeFlagSearch))
+				{
+					return false;
+				}
+			}
+
+			args.pop_front();
+			break;
+			// Smart View parsing
+		case switchParser:
+			options.ulSVParser = strings::wstringToUlong(args.front(), 10);
+			args.pop_front();
+			break;
+			// Contents tables
+		case switchSubject:
+			options.lpszSubject = args.front();
+			args.pop_front();
+			break;
+		case switchMessageClass:
+			options.lpszMessageClass = args.front();
+			args.pop_front();
+			break;
+		case switchRecent:
+			options.ulCount = strings::wstringToUlong(args.front(), 10);
+			args.pop_front();
+			break;
+			// FID / MID
+		case switchFid:
+			if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Switches))
+			{
+				options.lpszFid = args.front();
+				args.pop_front();
+			}
+
+			break;
+		case switchMid:
+			if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Switches))
+			{
+				options.lpszMid = args.front();
+				args.pop_front();
+			}
+			else
+			{
+				// We use the blank string to remember the -mid parameter was passed and save having an extra flag
+				// TODO: Check if this works
+				options.lpszMid = L"";
+			}
+
+			break;
+			// Store Properties / Receive Folder:
+		case switchStore:
+		case switchReceiveFolder:
+			if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Switches))
+			{
+				options.ulStore = wcstoul(args.front().c_str(), &szEndPtr, 10);
+
+				// If we parsed completely, this was a store number
+				if (NULL == szEndPtr[0])
+				{
+					// Increment ulStore so we can use to distinguish an unset value
+					options.ulStore++;
+					args.pop_front();
+				}
+				// Else it was a naked option - leave it on the stack
+			}
+
+			break;
+			// MAPIMIME
+		case switchMAPI:
+			options.MAPIMIMEFlags |= MAPIMIME_TOMAPI;
+			break;
+		case switchMIME:
+			options.MAPIMIMEFlags |= MAPIMIME_TOMIME;
+			break;
+		case switchCCSFFlags:
+			options.convertFlags = static_cast<CCSFLAGS>(strings::wstringToUlong(args.front(), 10));
+			args.pop_front();
+			break;
+		case switchRFC822:
+			options.MAPIMIMEFlags |= MAPIMIME_RFC822;
+			break;
+		case switchWrap:
+			options.ulWrapLines = strings::wstringToUlong(args.front(), 10);
+			options.MAPIMIMEFlags |= MAPIMIME_WRAP;
+			args.pop_front();
+			break;
+		case switchEncoding:
+			options.ulEncodingType = strings::wstringToUlong(args.front(), 10);
+			options.MAPIMIMEFlags |= MAPIMIME_ENCODING;
+			args.pop_front();
+			break;
+		case switchCharset:
+			options.ulCodePage = strings::wstringToUlong(args.front(), 10);
+			args.pop_front();
+			options.cSetType = static_cast<CHARSETTYPE>(strings::wstringToUlong(args.front(), 10));
+			args.pop_front();
+			if (options.cSetType > CHARSET_WEB)
+			{
+				return false;
+			}
+
+			options.cSetApplyType = static_cast<CSETAPPLYTYPE>(strings::wstringToUlong(args.front(), 10));
+			args.pop_front();
+			if (options.cSetApplyType > CSET_APPLY_TAG_ALL)
+			{
+				return false;
+			}
+
+			options.MAPIMIMEFlags |= MAPIMIME_CHARSET;
+			break;
+		case switchAddressBook:
+			options.MAPIMIMEFlags |= MAPIMIME_ADDRESSBOOK;
+			break;
+		case switchUnicode:
+			options.MAPIMIMEFlags |= MAPIMIME_UNICODE;
+			break;
+
+		case switchNoSwitch:
+			// naked option without a flag - we only allow one of these
+			if (!options.lpszUnswitchedOption.empty())
+			{
+				return false;
+			} // He's already got one, you see.
+
+			options.lpszUnswitchedOption = arg0;
+			break;
+		case switchUnknown:
+			// display help
+			return false;
+		case switchHelp:
+			break;
+		case switchVerbose:
+			break;
+		case switchSearch:
+			break;
+		case switchDecimal:
+			break;
+		case switchDispid:
+			break;
+		case switchGuid:
+			break;
+		case switchError:
+			break;
+		case switchBinary:
+			break;
+		case switchAcl:
+			break;
+		case switchRule:
+			break;
+		case switchContents:
+			break;
+		case switchAssociatedContents:
+			break;
+		case switchMoreProperties:
+			break;
+		case switchNoAddins:
+			break;
+		case switchOnline:
+			break;
+		case switchXML:
+			break;
+		case switchMSG:
+			break;
+		case switchList:
+			break;
+		case switchChildFolders:
+			break;
+		case switchSize:
+			break;
+		case switchPST:
+			break;
+		case switchSkip:
+			break;
+		case switchSearchState:
+			break;
+		default:
+			break;
+		}
+
+		return true;
+	}
+
 	// Parses command line arguments and fills out MYOPTIONS
-	MYOPTIONS ParseArgs(std::vector<std::wstring>& args)
+	MYOPTIONS ParseArgs(std::deque<std::wstring>& args)
 	{
 		auto options = MYOPTIONS{};
-		LPWSTR szEndPtr = nullptr;
 
 		options.ulTypeNum = ulNoMatch;
 		options.ulFolder = mapi::DEFAULT_INBOX;
@@ -605,11 +861,10 @@ namespace cli
 			return options;
 		}
 
-		auto bHitError = false;
-
-		for (auto i = size_t{}; i < args.size(); i++)
+		// DoSwitch will either consume part of args or return an error, so this while is OK.
+		while (!args.empty())
 		{
-			const auto iSwitch = ParseArgument(args[i], g_Switches);
+			const auto iSwitch = ParseArgument(args.front(), g_Switches);
 			const auto opt = GetParser(iSwitch, g_Parsers);
 			if (opt.mode == cmdmodeHelpFull)
 			{
@@ -624,7 +879,7 @@ namespace cli
 				{
 					// resetting our mode here, switch to help
 					options.mode = cmdmodeHelp;
-					bHitError = true;
+					return options;
 				}
 			}
 
@@ -632,260 +887,24 @@ namespace cli
 			// Commands with variable argument counts can special case themselves
 			if (opt.minArgs > 0)
 			{
-				for (auto iArg = 1; iArg <= opt.minArgs; iArg++)
+				// TODO: Rebuild this without array access
+				for (auto iArg = UINT{1}; iArg <= opt.minArgs; iArg++)
 				{
-					if (args.size() <= i + iArg || switchNoSwitch != ParseArgument(args[i + iArg], g_Switches))
+					if (args.size() <= iArg || switchNoSwitch != ParseArgument(args[iArg], g_Switches))
 					{
 						// resetting our mode here, switch to help
 						options.mode = cmdmodeHelp;
-						bHitError = true;
+						return options;
 					}
 				}
 			}
 
-			if (!bHitError) switch (iSwitch)
-				{
-					// Global flags
-				case switchFolder:
-					options.ulFolder = strings::wstringToUlong(args[i + 1], 10);
-					if (!options.ulFolder)
-					{
-						options.lpszFolderPath = args[i + 1];
-						options.ulFolder = mapi::DEFAULT_INBOX;
-					}
-					i++;
-					break;
-				case switchInput:
-					options.lpszInput = args[i + 1];
-					i++;
-					break;
-				case switchOutput:
-					options.lpszOutput = args[i + 1];
-					i++;
-					break;
-				case switchProfile:
-					// If we have a next argument and it's not an option, parse it as a profile name
-					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1], g_Switches))
-					{
-						options.lpszProfile = args[i + 1];
-						i++;
-					}
-					break;
-				case switchProfileSection:
-					options.lpszProfileSection = args[i + 1];
-					i++;
-					break;
-				case switchByteSwapped:
-					options.bByteSwapped = true;
-					break;
-				case switchVersion:
-					options.lpszVersion = args[i + 1];
-					i++;
-					break;
-					// Proptag parsing
-				case switchType:
-					// If we have a next argument and it's not an option, parse it as a type
-					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1], g_Switches))
-					{
-						options.ulTypeNum = proptype::PropTypeNameToPropType(args[i + 1]);
-						i++;
-					}
-					break;
-				case switchFlag:
-					// If we have a next argument and it's not an option, parse it as a flag
-					options.lpszFlagName = args[i + 1];
-					options.ulFlagValue = wcstoul(args[i + 1].c_str(), &szEndPtr, 16);
-
-					// Set mode based on whether the flag string was completely parsed as a number
-					if (NULL == szEndPtr[0])
-					{
-						if (!bSetMode(options.mode, cmdmodePropTag))
-						{
-							bHitError = true;
-							break;
-						}
-
-						options.options |= OPT_DOFLAG;
-					}
-					else
-					{
-						if (!bSetMode(options.mode, cmdmodeFlagSearch))
-						{
-							bHitError = true;
-							break;
-						}
-					}
-					i++;
-					break;
-					// Smart View parsing
-				case switchParser:
-					options.ulSVParser = strings::wstringToUlong(args[i + 1], 10);
-					i++;
-					break;
-					// Contents tables
-				case switchSubject:
-					options.lpszSubject = args[i + 1];
-					i++;
-					break;
-				case switchMessageClass:
-					options.lpszMessageClass = args[i + 1];
-					i++;
-					break;
-				case switchRecent:
-					options.ulCount = strings::wstringToUlong(args[i + 1], 10);
-					i++;
-					break;
-					// FID / MID
-				case switchFid:
-					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1], g_Switches))
-					{
-						options.lpszFid = args[i + 1];
-						i++;
-					}
-					break;
-				case switchMid:
-					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1], g_Switches))
-					{
-						options.lpszMid = args[i + 1];
-						i++;
-					}
-					else
-					{
-						// We use the blank string to remember the -mid parameter was passed and save having an extra flag
-						// TODO: Check if this works
-						options.lpszMid = L"";
-					}
-					break;
-					// Store Properties / Receive Folder:
-				case switchStore:
-				case switchReceiveFolder:
-					if (i + 1 < args.size() && switchNoSwitch == ParseArgument(args[i + 1], g_Switches))
-					{
-						options.ulStore = wcstoul(args[i + 1].c_str(), &szEndPtr, 10);
-
-						// If we parsed completely, this was a store number
-						if (NULL == szEndPtr[0])
-						{
-							// Increment ulStore so we can use to distinguish an unset value
-							options.ulStore++;
-							i++;
-						}
-						// Else it was a naked option - leave it on the stack
-					}
-					break;
-					// MAPIMIME
-				case switchMAPI:
-					options.MAPIMIMEFlags |= MAPIMIME_TOMAPI;
-					break;
-				case switchMIME:
-					options.MAPIMIMEFlags |= MAPIMIME_TOMIME;
-					break;
-				case switchCCSFFlags:
-					options.convertFlags = static_cast<CCSFLAGS>(strings::wstringToUlong(args[i + 1], 10));
-					i++;
-					break;
-				case switchRFC822:
-					options.MAPIMIMEFlags |= MAPIMIME_RFC822;
-					break;
-				case switchWrap:
-					options.ulWrapLines = strings::wstringToUlong(args[i + 1], 10);
-					options.MAPIMIMEFlags |= MAPIMIME_WRAP;
-					i++;
-					break;
-				case switchEncoding:
-					options.ulEncodingType = strings::wstringToUlong(args[i + 1], 10);
-					options.MAPIMIMEFlags |= MAPIMIME_ENCODING;
-					i++;
-					break;
-				case switchCharset:
-					options.ulCodePage = strings::wstringToUlong(args[i + 1], 10);
-					options.cSetType = static_cast<CHARSETTYPE>(strings::wstringToUlong(args[i + 2], 10));
-					if (options.cSetType > CHARSET_WEB)
-					{
-						bHitError = true;
-						break;
-					}
-					options.cSetApplyType = static_cast<CSETAPPLYTYPE>(strings::wstringToUlong(args[i + 3], 10));
-					if (options.cSetApplyType > CSET_APPLY_TAG_ALL)
-					{
-						bHitError = true;
-						break;
-					}
-					options.MAPIMIMEFlags |= MAPIMIME_CHARSET;
-					i += 3;
-					break;
-				case switchAddressBook:
-					options.MAPIMIMEFlags |= MAPIMIME_ADDRESSBOOK;
-					break;
-				case switchUnicode:
-					options.MAPIMIMEFlags |= MAPIMIME_UNICODE;
-					break;
-
-				case switchNoSwitch:
-					// naked option without a flag - we only allow one of these
-					if (!options.lpszUnswitchedOption.empty())
-					{
-						bHitError = true;
-						break;
-					} // He's already got one, you see.
-					options.lpszUnswitchedOption = args[i];
-					break;
-				case switchUnknown:
-					// display help
-					bHitError = true;
-					break;
-				case switchHelp:
-					break;
-				case switchVerbose:
-					break;
-				case switchSearch:
-					break;
-				case switchDecimal:
-					break;
-				case switchDispid:
-					break;
-				case switchGuid:
-					break;
-				case switchError:
-					break;
-				case switchBinary:
-					break;
-				case switchAcl:
-					break;
-				case switchRule:
-					break;
-				case switchContents:
-					break;
-				case switchAssociatedContents:
-					break;
-				case switchMoreProperties:
-					break;
-				case switchNoAddins:
-					break;
-				case switchOnline:
-					break;
-				case switchXML:
-					break;
-				case switchMSG:
-					break;
-				case switchList:
-					break;
-				case switchChildFolders:
-					break;
-				case switchSize:
-					break;
-				case switchPST:
-					break;
-				case switchSkip:
-					break;
-				case switchSearchState:
-					break;
-				default:
-					break;
-				}
+			if (!DoSwitch(options, iSwitch, args))
+			{
+				options.mode = cmdmodeHelp;
+				return options;
+			}
 		}
-
-		if (bHitError) options.mode = cmdmodeHelp;
 
 		// Having processed the command line, we may not have determined a mode.
 		// Some modes can be presumed by the switches we did see.
