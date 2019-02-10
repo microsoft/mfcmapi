@@ -81,15 +81,15 @@ namespace cli
 		const std::deque<std::wstring> args,
 		const std::vector<COMMANDLINE_SWITCH>& switches)
 	{
-		if (opt.minArgs > 0)
+		if (opt.minArgs == 0) return true;
+		if (args.size() <= opt.minArgs) return false;
+
+		// TODO: Rebuild this without array access
+		for (auto iArg = UINT{1}; iArg <= opt.minArgs; iArg++)
 		{
-			// TODO: Rebuild this without array access
-			for (auto iArg = UINT{1}; iArg <= opt.minArgs; iArg++)
+			if (0 != ParseArgument(args[iArg], switches))
 			{
-				if (args.size() <= iArg || 0 != ParseArgument(args[iArg], switches))
-				{
-					return false;
-				}
+				return false;
 			}
 		}
 
