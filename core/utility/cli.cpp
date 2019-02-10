@@ -84,10 +84,10 @@ namespace cli
 		if (opt.minArgs == 0) return true;
 		if (args.size() <= opt.minArgs) return false;
 
-		// TODO: Rebuild this without array access
-		for (auto iArg = UINT{1}; iArg <= opt.minArgs; iArg++)
+		auto c = UINT{0};
+		for (auto it = args.cbegin() + 1; it != args.cend() && c < opt.minArgs; it++, c++)
 		{
-			if (0 != ParseArgument(args[iArg], switches))
+			if (ParseArgument(*it, switches) != 0)
 			{
 				return false;
 			}
