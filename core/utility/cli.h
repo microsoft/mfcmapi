@@ -25,6 +25,38 @@ namespace cli
 		std::wstring lpszUnswitchedOption;
 	};
 
+	enum switchEnum
+	{
+		switchNoSwitch = 0, // not a switch
+		switchUnknown, // unknown switch
+		switchHelp, // '-h'
+		switchVerbose, // '-v'
+		switchFirstSwitch, // When extending switches, use this as the value of the first switch
+	};
+
+	extern std::vector<COMMANDLINE_SWITCH> switches;
+
+	enum modeEnum
+	{
+		cmdmodeUnknown = 0,
+		cmdmodeHelp,
+		cmdmodeHelpFull,
+		cmdmodeFirstMode, // When extending modes, use this as the value of the first mode
+	};
+
+	enum flagsEnum
+	{
+		OPT_NOOPT = 0x00000,
+		OPT_VERBOSE = 0x00001,
+		OPT_INITMFC = 0x00002,
+	};
+
+	extern const OptParser helpParser;
+	extern const OptParser verboseParser;
+	extern const OptParser noSwitchParser;
+
+	extern const std::vector<OptParser> parsers;
+
 	OptParser GetParser(int clSwitch, const std::vector<OptParser>& parsers);
 
 	// Checks if szArg is an option, and if it is, returns which option it is

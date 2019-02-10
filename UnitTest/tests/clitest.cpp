@@ -2,62 +2,13 @@
 #include <UnitTest/UnitTest.h>
 #include <core/utility/cli.h>
 
-enum switchEnum
-{
-	switchNoSwitch = 0, // not a switch
-	switchUnknown, // unknown switch
-	switchHelp, // '-h'
-	switchVerbose, // '-v'
-	switchSearch, // '-s'
-};
-
-enum flagsEnum
-{
-	OPT_NOOPT = 0x00000,
-	OPT_DOPARTIALSEARCH = 0x00001,
-	OPT_VERBOSE = 0x00200,
-	OPT_INITMFC = 0x10000,
-};
-flagsEnum& operator|=(flagsEnum& a, flagsEnum b)
-{
-	return reinterpret_cast<flagsEnum&>(reinterpret_cast<int&>(a) |= static_cast<int>(b));
-}
-flagsEnum operator|(flagsEnum a, flagsEnum b)
-{
-	return static_cast<flagsEnum>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-enum modeEnum
-{
-	cmdmodeUnknown = 0,
-	cmdmodeHelp,
-	cmdmodeHelpFull,
-	cmdmodePropTag,
-	cmdmodeGuid,
-};
-
-const std::vector<cli::COMMANDLINE_SWITCH> switches = {
-	{switchNoSwitch, L""},
-	{switchUnknown, L""},
-	{switchHelp, L"?"},
-	{switchVerbose, L"Verbose"},
-	{switchSearch, L"Search"},
-};
-
-cli::OptParser noSwitchParser = {switchNoSwitch, cmdmodeUnknown, 0, 0, OPT_NOOPT};
-cli::OptParser helpParser = {switchHelp, cmdmodeHelpFull, 0, 0, OPT_INITMFC};
-cli::OptParser verboseParser = {switchVerbose, cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
-cli::OptParser searchParser = {switchSearch, cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH};
-
-const std::vector<cli::OptParser> parsers = {noSwitchParser, helpParser, verboseParser, searchParser};
-
 namespace Microsoft
 {
 	namespace VisualStudio
 	{
 		namespace CppUnitTestFramework
 		{
-			template <> inline std::wstring ToString<modeEnum>(const modeEnum& q) { RETURN_WIDE_STRING(q); }
+			template <> inline std::wstring ToString<cli::modeEnum>(const cli::modeEnum& q) { RETURN_WIDE_STRING(q); }
 
 			void AreEqual(
 				const cli::OptParser& expected,
@@ -112,65 +63,75 @@ namespace clitest
 
 		TEST_METHOD(Test_ParseArgument)
 		{
-			Assert::AreEqual(int(switchHelp), int(ParseArgument(std::wstring{L"-?"}, switches)));
-			Assert::AreEqual(int(switchVerbose), int(ParseArgument(std::wstring{L"-v"}, switches)));
-			Assert::AreEqual(int(switchVerbose), int(ParseArgument(std::wstring{L"/v"}, switches)));
-			Assert::AreEqual(int(switchVerbose), int(ParseArgument(std::wstring{L"\\v"}, switches)));
-			Assert::AreEqual(int(switchVerbose), int(ParseArgument(std::wstring{L"-verbose"}, switches)));
-			Assert::AreEqual(int(switchNoSwitch), int(ParseArgument(std::wstring{L"-verbosey"}, switches)));
-			Assert::AreEqual(int(switchNoSwitch), int(ParseArgument(std::wstring{L"-va"}, switches)));
-			Assert::AreEqual(int(switchNoSwitch), int(ParseArgument(std::wstring{L"-test"}, switches)));
-			Assert::AreEqual(int(switchSearch), int(ParseArgument(std::wstring{L"/s"}, switches)));
-			Assert::AreEqual(int(switchNoSwitch), int(ParseArgument(std::wstring{L""}, switches)));
-			Assert::AreEqual(int(switchNoSwitch), int(ParseArgument(std::wstring{L"+v"}, switches)));
-			Assert::AreEqual(int(switchNoSwitch), int(ParseArgument(std::wstring{L"-"}, switches)));
+			Assert::AreEqual(int(cli::switchEnum::switchHelp), int(ParseArgument(std::wstring{L"-?"}, cli::switches)));
+			Assert::AreEqual(
+				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"-v"}, cli::switches)));
+			Assert::AreEqual(
+				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"/v"}, cli::switches)));
+			Assert::AreEqual(
+				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"\\v"}, cli::switches)));
+			Assert::AreEqual(
+				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"-verbose"}, cli::switches)));
+			Assert::AreEqual(
+				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-verbosey"}, cli::switches)));
+			Assert::AreEqual(
+				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-va"}, cli::switches)));
+			Assert::AreEqual(
+				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-test"}, cli::switches)));
+			Assert::AreEqual(
+				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L""}, cli::switches)));
+			Assert::AreEqual(
+				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"+v"}, cli::switches)));
+			Assert::AreEqual(
+				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-"}, cli::switches)));
 		}
 
 		TEST_METHOD(Test_GetParser)
 		{
-			AreEqual(helpParser, GetParser(switchHelp, parsers));
-			AreEqual(verboseParser, GetParser(switchVerbose, parsers));
-			AreEqual({}, GetParser(switchNoSwitch, parsers));
+			AreEqual(cli::helpParser, GetParser(cli::switchEnum::switchHelp, cli::parsers));
+			AreEqual(cli::verboseParser, GetParser(cli::switchEnum::switchVerbose, cli::parsers));
+			AreEqual(cli::noSwitchParser, GetParser(cli::switchEnum::switchNoSwitch, cli::parsers));
+			AreEqual({}, GetParser(cli::switchEnum::switchNoSwitch, cli::parsers));
 		}
 
 		TEST_METHOD(Test_bSetMode)
 		{
 			auto mode = int{};
-			Assert::AreEqual(true, cli::bSetMode(mode, cmdmodeHelpFull));
-			Assert::AreEqual(true, cli::bSetMode(mode, cmdmodeHelpFull));
-			Assert::AreEqual(cmdmodeHelpFull, modeEnum(mode));
-			Assert::AreEqual(false, cli::bSetMode(mode, cmdmodePropTag));
-			Assert::AreEqual(cmdmodeHelpFull, modeEnum(mode));
+			Assert::AreEqual(true, cli::bSetMode(mode, cli::cmdmodeHelpFull));
+			Assert::AreEqual(true, cli::bSetMode(mode, cli::cmdmodeHelpFull));
+			Assert::AreEqual(cli::cmdmodeHelpFull, cli::modeEnum(mode));
+			Assert::AreEqual(false, cli::bSetMode(mode, cli::cmdmodeHelp));
+			Assert::AreEqual(cli::cmdmodeHelpFull, cli::modeEnum(mode));
 		}
 
 		TEST_METHOD(Test_CheckMinArgs)
 		{
 			// min/max-0/0
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 0, 0}, {L"-v"}, switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 0, 0}, {L"-v", L"-v"}, switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 0, 0}, {L"-v", L"1"}, switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 0, 0}, {L"-v"}, cli::switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 0, 0}, {L"-v", L"-v"}, cli::switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 0, 0}, {L"-v", L"1"}, cli::switches));
 
 			// min/max-1/1
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"1"}, switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"1", L"2"}, switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"1", L"-v"}, switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"1"}, cli::switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"1", L"2"}, cli::switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"1", L"-v"}, cli::switches));
 			// Not enough non switch args
-			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"-v"}, switches));
+			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"-v"}, cli::switches));
 			// Not enough args at all
-			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v"}, switches));
+			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v"}, cli::switches));
 
 			// min/max-0/1
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 1, 0}, {L"-v", L"-v"}, switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 1, 0}, {L"-v", L"1", L"-v"}, switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 1, 0}, {L"-v"}, switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 1, 0}, {L"-v", L"-v"}, cli::switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 1, 0}, {L"-v", L"1", L"-v"}, cli::switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 1, 0}, {L"-v"}, cli::switches));
 
 			// min/max-2/3
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"2"}, switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"2", L"-v"}, switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"2", L"3"}, switches));
-			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v"}, switches));
-			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1"}, switches));
-			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"-v"}, switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"2"}, cli::switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"2", L"-v"}, cli::switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"2", L"3"}, cli::switches));
+			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v"}, cli::switches));
+			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1"}, cli::switches));
+			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"-v"}, cli::switches));
 		}
 	}; // namespace clitest
 } // namespace clitest

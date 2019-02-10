@@ -5,6 +5,18 @@
 
 namespace cli
 {
+	std::vector<COMMANDLINE_SWITCH> switches = {
+		{switchNoSwitch, L""},
+		{switchUnknown, L""},
+		{switchHelp, L"?"},
+		{switchVerbose, L"Verbose"},
+	};
+
+	const OptParser helpParser = {switchHelp, cmdmodeHelpFull, 0, 0, OPT_INITMFC};
+	const OptParser verboseParser = {switchVerbose, cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
+	const OptParser noSwitchParser = {switchNoSwitch, cmdmodeUnknown, 0, 0, OPT_NOOPT};
+	const std::vector<OptParser> parsers = {helpParser, verboseParser, noSwitchParser};
+
 	OptParser GetParser(int clSwitch, const std::vector<OptParser>& parsers)
 	{
 		for (const auto& parser : parsers)
@@ -17,10 +29,9 @@ namespace cli
 
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
-	// The first switch should be our "no match" switch
 	int ParseArgument(const std::wstring& szArg, const std::vector<COMMANDLINE_SWITCH>& switches)
 	{
-		if (szArg.empty()) return 0;
+		if (szArg.empty()) return switchEnum::switchNoSwitch;
 
 		auto szSwitch = std::wstring{};
 
@@ -33,7 +44,7 @@ namespace cli
 			if (szArg[1] != 0) szSwitch = strings::wstringToLower(&szArg[1]);
 			break;
 		default:
-			return 0;
+			return switchEnum::switchNoSwitch;
 		}
 
 		for (const auto& s : switches)
@@ -45,15 +56,15 @@ namespace cli
 			}
 		}
 
-		return 0;
+		return switchEnum::switchNoSwitch;
 	}
 
-	// If the mode isn't set (is 0), then we can set it to any mode
-	// If the mode IS set (non 0), then we can only set it to the same mode
+	// If the mode isn't set (is cmdmodeUnknown/0), then we can set it to any mode
+	// If the mode IS set (non cmdmodeUnknown/0), then we can only set it to the same mode
 	// IE trying to change the mode from anything but unset will fail
 	bool bSetMode(_In_ int& pMode, _In_ int targetMode)
 	{
-		if (0 == pMode || targetMode == pMode)
+		if (cmdmodeUnknown == pMode || targetMode == pMode)
 		{
 			pMode = targetMode;
 			return true;
@@ -75,7 +86,6 @@ namespace cli
 		return args;
 	}
 
-	// Assumes that our no switch case is 0
 	_Check_return_ bool CheckMinArgs(
 		const cli::OptParser& opt,
 		const std::deque<std::wstring>& args,
@@ -87,7 +97,7 @@ namespace cli
 		auto c = UINT{0};
 		for (auto it = args.cbegin() + 1; it != args.cend() && c < opt.minArgs; it++, c++)
 		{
-			if (ParseArgument(*it, switches) != 0)
+			if (ParseArgument(*it, switches) != switchNoSwitch)
 			{
 				return false;
 			}

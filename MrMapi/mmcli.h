@@ -1,6 +1,6 @@
 #pragma once
 #include <core/mapi/extraPropTags.h>
-#include "core/utility/cli.h"
+#include <core/utility/cli.h>
 
 // MrMAPI command line
 namespace cli
@@ -26,10 +26,7 @@ namespace cli
 
 	enum CmdMode
 	{
-		cmdmodeUnknown = 0,
-		cmdmodeHelp,
-		cmdmodeHelpFull,
-		cmdmodePropTag,
+		cmdmodePropTag = cmdmodeFirstMode,
 		cmdmodeGuid,
 		cmdmodeSmartView,
 		cmdmodeAcls,
@@ -52,24 +49,25 @@ namespace cli
 
 	enum OPTIONFLAGS
 	{
-		OPT_NOOPT = 0x00000,
-		OPT_DOPARTIALSEARCH = 0x00001,
-		OPT_DOTYPE = 0x00002,
-		OPT_DODISPID = 0x00004,
-		OPT_DODECIMAL = 0x00008,
-		OPT_DOFLAG = 0x00010,
-		OPT_BINARYFILE = 0x00020,
-		OPT_DOCONTENTS = 0x00040,
-		OPT_DOASSOCIATEDCONTENTS = 0x00080,
-		OPT_RETRYSTREAMPROPS = 0x00100,
-		OPT_VERBOSE = 0x00200,
-		OPT_NOADDINS = 0x00400,
-		OPT_ONLINE = 0x00800,
-		OPT_MSG = 0x01000,
-		OPT_LIST = 0x02000,
-		OPT_NEEDMAPIINIT = 0x04000,
-		OPT_NEEDMAPILOGON = 0x08000,
-		OPT_INITMFC = 0x10000,
+		// Declared in flagsEnum
+		//OPT_NOOPT = 0x00000,
+		//OPT_VERBOSE = 0x00001,
+		//OPT_INITMFC = 0x00002,
+		OPT_DOPARTIALSEARCH = 0x00004,
+		OPT_DOTYPE = 0x00008,
+		OPT_DODISPID = 0x00010,
+		OPT_DODECIMAL = 0x00020,
+		OPT_DOFLAG = 0x00040,
+		OPT_BINARYFILE = 0x00080,
+		OPT_DOCONTENTS = 0x00100,
+		OPT_DOASSOCIATEDCONTENTS = 0x00200,
+		OPT_RETRYSTREAMPROPS = 0x00400,
+		OPT_NOADDINS = 0x00800,
+		OPT_ONLINE = 0x01000,
+		OPT_MSG = 0x02000,
+		OPT_LIST = 0x04000,
+		OPT_NEEDMAPIINIT = 0x08000,
+		OPT_NEEDMAPILOGON = 0x10000,
 		OPT_NEEDFOLDER = 0x20000,
 		OPT_NEEDINPUTFILE = 0x40000,
 		OPT_NEEDOUTPUTFILE = 0x80000,
