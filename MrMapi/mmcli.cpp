@@ -69,10 +69,10 @@ namespace cli
 	// All entries before the aliases must be in the
 	// same order as the __CommandLineSwitch enum.
 	std::vector<COMMANDLINE_SWITCH> g_Switches = {
-		{switchNoSwitch, L""},
-		{switchUnknown, L""},
-		{switchHelp, L"?"},
-		{switchVerbose, L"Verbose"},
+		noSwitchSwitch,
+		unknownSwitch,
+		helpSwitch,
+		verboseSwitch,
 		{switchSearch, L"Search"},
 		{switchDecimal, L"Number"},
 		{switchFolder, L"Folder"},

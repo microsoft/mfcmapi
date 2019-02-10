@@ -34,6 +34,10 @@ namespace cli
 		switchFirstSwitch, // When extending switches, use this as the value of the first switch
 	};
 
+	extern const COMMANDLINE_SWITCH noSwitchSwitch;
+	extern const COMMANDLINE_SWITCH unknownSwitch;
+	extern const COMMANDLINE_SWITCH helpSwitch;
+	extern const COMMANDLINE_SWITCH verboseSwitch;
 	extern std::vector<COMMANDLINE_SWITCH> switches;
 
 	enum modeEnum

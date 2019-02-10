@@ -5,11 +5,15 @@
 
 namespace cli
 {
+	const COMMANDLINE_SWITCH noSwitchSwitch = {switchNoSwitch, L""};
+	const COMMANDLINE_SWITCH unknownSwitch = {switchUnknown, L""};
+	const COMMANDLINE_SWITCH helpSwitch = {switchHelp, L"?"};
+	const COMMANDLINE_SWITCH verboseSwitch = {switchVerbose, L"Verbose"};
 	std::vector<COMMANDLINE_SWITCH> switches = {
-		{switchNoSwitch, L""},
-		{switchUnknown, L""},
-		{switchHelp, L"?"},
-		{switchVerbose, L"Verbose"},
+		noSwitchSwitch,
+		unknownSwitch,
+		helpSwitch,
+		verboseSwitch,
 	};
 
 	const OptParser helpParser = {switchHelp, cmdmodeHelpFull, 0, 0, OPT_INITMFC};
