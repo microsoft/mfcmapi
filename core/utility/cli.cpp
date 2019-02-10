@@ -77,8 +77,8 @@ namespace cli
 
 	// Assumes that our no switch case is 0
 	_Check_return_ bool CheckMinArgs(
-		cli::OptParser opt,
-		const std::deque<std::wstring> args,
+		const cli::OptParser& opt,
+		const std::deque<std::wstring>& args,
 		const std::vector<COMMANDLINE_SWITCH>& switches)
 	{
 		if (opt.minArgs == 0) return true;
