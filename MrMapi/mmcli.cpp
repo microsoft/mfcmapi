@@ -66,8 +66,8 @@ namespace cli
 		switchSearchState, // '-searchstate'
 	};
 
-		std::vector<OptParser> g_Parsers = {
-			// clang-format off
+	std::vector<OptParser> g_Parsers = {
+		// clang-format off
 		noSwitchParser ,
 		helpParser,
 		verboseParser,
@@ -121,7 +121,7 @@ namespace cli
 
 		// If we want to add aliases for any switches, add them here
 		{switchHelp, L"Help", cmdmodeHelpFull, 0, 0, OPT_INITMFC},
-			 // clang-format on
+		// clang-format on
 	};
 
 	void DisplayUsage(BOOL bFull)
