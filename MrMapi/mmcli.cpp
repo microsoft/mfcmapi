@@ -66,6 +66,9 @@ namespace cli
 		switchSearchState, // '-searchstate'
 	};
 
+	// For some reason, placing this in the lambda causes a compiler error. So we'll make it an inline function
+	inline MYOPTIONS* GetMyOptions(OPTIONS* _options) { return dynamic_cast<MYOPTIONS*>(_options); }
+
 	std::vector<OptParser> g_Parsers = {
 		// clang-format off
 		{switchNoSwitch, L"", cmdmodeUnknown, 0, 0, OPT_NOOPT},
@@ -74,7 +77,7 @@ namespace cli
 		{switchSearch, L"Search", cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH},
 		{switchDecimal, L"Number", cmdmodeUnknown, 0, 0, OPT_DODECIMAL},
 		{switchFolder, L"Folder", cmdmodeUnknown, 1, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDFOLDER | OPT_INITMFC, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->ulFolder = strings::wstringToUlong(args.front(), 10);
 			if (options->ulFolder)
 			{
@@ -86,7 +89,7 @@ namespace cli
 			return true;
 		}},
 		{switchOutput, L"Output", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->lpszOutput = args.front();
 			args.pop_front();
 			return true;
@@ -96,7 +99,7 @@ namespace cli
 			// If we have a next argument and it's not an option, parse it as a type
 			if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Parsers))
 			{
-				auto options = (MYOPTIONS*) _options;
+				auto options = GetMyOptions(_options);
 				options->ulTypeNum = proptype::PropTypeNameToPropType(args.front());
 				args.pop_front();
 			}
@@ -106,13 +109,13 @@ namespace cli
 		{switchGuid, L"Guids", cmdmodeGuid, 0, 0, OPT_NOOPT},
 		{switchError, L"Error", cmdmodeErr, 0, 0, OPT_NOOPT},
 		{switchParser, L"ParserType", cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->ulSVParser = strings::wstringToUlong(args.front(), 10);
 			args.pop_front();
 			return true;
 		}},
 		{switchInput, L"Input", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->lpszInput = args.front();
 			args.pop_front();
 			return true;
@@ -126,41 +129,42 @@ namespace cli
 		{switchNoAddins, L"NoAddins", cmdmodeUnknown, 0, 0, OPT_NOADDINS},
 		{switchOnline, L"Online", cmdmodeUnknown, 0, 0, OPT_ONLINE},
 		{switchMAPI, L"MAPI", cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->MAPIMIMEFlags |= MAPIMIME_TOMAPI;
 			return true;
 		}},
 		{switchMIME, L"MIME", cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->MAPIMIMEFlags |= MAPIMIME_TOMIME;
 			return true;
 		}},
 		{switchCCSFFlags, L"CCSFFlags", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->convertFlags = static_cast<CCSFLAGS>(strings::wstringToUlong(args.front(), 10));
 			args.pop_front();
 			return true;
 		}},
 		{switchRFC822, L"RFC822", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->MAPIMIMEFlags |= MAPIMIME_RFC822;
 			return true;
 		}},
 		{switchWrap, L"Wrap", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->ulWrapLines = strings::wstringToUlong(args.front(), 10);
 			options->MAPIMIMEFlags |= MAPIMIME_WRAP;
 			args.pop_front();
 			return true;
 		}},
 		{switchEncoding, L"Encoding", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->ulEncodingType = strings::wstringToUlong(args.front(), 10);
 			options->MAPIMIMEFlags |= MAPIMIME_ENCODING;
-			args.pop_front();			return true;
+			args.pop_front();
+			return true;
 		}},
 		{switchCharset, L"Charset", cmdmodeMAPIMIME, 3, 3, OPT_NOOPT, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->ulCodePage = strings::wstringToUlong(args.front(), 10);
 			args.pop_front();
 			options->cSetType = static_cast<CHARSETTYPE>(strings::wstringToUlong(args.front(), 10));
@@ -181,17 +185,17 @@ namespace cli
 			return true;
 		}},
 		{switchAddressBook, L"AddressBook", cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPILOGON, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->MAPIMIMEFlags |= MAPIMIME_ADDRESSBOOK;
 			return true;
 		}}, // special case which needs a logon
 		{switchUnicode, L"Unicode", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->MAPIMIMEFlags |= MAPIMIME_UNICODE;
 			return true;
 		}},
 		{switchProfile, L"Profile", cmdmodeUnknown, 0, 1, OPT_PROFILE, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			// If we have a next argument and it's not an option, parse it as a profile name
 			if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Parsers))
 			{
@@ -203,13 +207,13 @@ namespace cli
 		}},
 		{switchXML, L"XML", cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE},
 		{switchSubject, L"Subject", cmdmodeContents, 1, 1, OPT_NOOPT, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->lpszSubject = args.front();
 			args.pop_front();
 			return true;
 		}},
 		{switchMessageClass, L"MessageClass", cmdmodeContents, 1, 1, OPT_NOOPT, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->lpszMessageClass = args.front();
 			args.pop_front();
 			return true;
@@ -218,7 +222,7 @@ namespace cli
 		{switchList, L"List", cmdmodeContents, 0, 0, OPT_LIST},
 		{switchChildFolders, L"ChildFolders", cmdmodeChildFolders, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER},
 		{switchFid, L"FID", cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDSTORE, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Parsers))
 			{
 				options->lpszFid = args.front();
@@ -228,7 +232,7 @@ namespace cli
 			return true;
 		}},
 		{switchMid, L"MID", cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_MID, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Parsers))
 			{
 				options->lpszMid = args.front();
@@ -244,7 +248,7 @@ namespace cli
 			return true;
 		}},
 		{switchFlag, L"Flag", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			LPWSTR szEndPtr = nullptr;
 			// We must have a next argument, but it could be a string or a number
 			options->lpszFlagName = args.front();
@@ -272,13 +276,13 @@ namespace cli
 			return true;
 		}}, // can't know until we parse the argument
 		{switchRecent, L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->ulCount = strings::wstringToUlong(args.front(), 10);
 			args.pop_front();
 			return true;
 		}},
 		{switchStore, L"Store", cmdmodeStoreProperties, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Parsers))
 			{
 				LPWSTR szEndPtr = nullptr;
@@ -297,7 +301,7 @@ namespace cli
 			return true;
 		}},
 		{switchVersion, L"Version", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->lpszVersion = args.front();
 			args.pop_front();
 			return true;
@@ -305,18 +309,18 @@ namespace cli
 		{switchSize, L"Size", cmdmodeFolderSize, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER},
 		{switchPST, L"PST", cmdmodePST, 0, 0, OPT_NEEDINPUTFILE},
 		{switchProfileSection, L"ProfileSection", cmdmodeProfile, 1, 1, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->lpszProfileSection = args.front();
 			args.pop_front();
 			return true;
 		}},
 		{switchByteSwapped, L"ByteSwapped", cmdmodeProfile, 0, 0, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			options->bByteSwapped = true;
 			return true;
 		}},
 		{switchReceiveFolder, L"ReceiveFolder", cmdmodeReceiveFolder, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDSTORE | OPT_INITMFC, [](auto _options, auto args) {
-			auto options = (MYOPTIONS*) _options;
+			auto options = GetMyOptions(_options);
 			if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Parsers))
 			{
 				LPWSTR szEndPtr = nullptr;
@@ -752,7 +756,7 @@ namespace cli
 
 	void PostParseCheck(OPTIONS* _options)
 	{
-		MYOPTIONS* options = (MYOPTIONS*) _options;
+		auto options = dynamic_cast<MYOPTIONS*>(_options);
 		// Having processed the command line, we may not have determined a mode.
 		// Some modes can be presumed by the switches we did see.
 

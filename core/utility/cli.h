@@ -8,8 +8,11 @@ namespace cli
 		int mode{0};
 		int options{0};
 		std::wstring lpszUnswitchedOption;
+		// dummy function to force a vtable so we can use dynamic_cast
+		virtual void __dummy() noexcept {};
 	};
 
+	// TODO: Would this be better as a class?
 	struct OptParser
 	{
 		int clSwitch{};
