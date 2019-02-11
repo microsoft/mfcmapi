@@ -104,7 +104,7 @@ namespace cli
 		OPTIONS& options,
 		std::deque<std::wstring>& args,
 		const std::vector<OptParser>& _parsers,
-		std::function<bool(OPTIONS* _options, int iSwitch, std::deque<std::wstring>& args)> doSwitch,
+		std::function<bool(OPTIONS* _options, const cli::OptParser& opt, std::deque<std::wstring>& args)> doSwitch,
 		std::function<void(OPTIONS* _options)> postParseCheck)
 	{
 		if (args.empty())
@@ -140,7 +140,7 @@ namespace cli
 				options.mode = cmdmodeHelp;
 			}
 
-			if (!doSwitch(&options, iSwitch, args))
+			if (!doSwitch(&options, opt, args))
 			{
 				options.mode = cmdmodeHelp;
 			}

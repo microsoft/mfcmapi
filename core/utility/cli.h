@@ -3,6 +3,13 @@
 // MrMAPI command line
 namespace cli
 {
+	struct OPTIONS
+	{
+		int mode{0};
+		int options{0};
+		std::wstring lpszUnswitchedOption;
+	};
+
 	struct OptParser
 	{
 		int clSwitch{};
@@ -11,13 +18,7 @@ namespace cli
 		UINT minArgs{};
 		UINT maxArgs{};
 		int options{};
-	};
-
-	struct OPTIONS
-	{
-		int mode{0};
-		int options{0};
-		std::wstring lpszUnswitchedOption;
+		std::function<bool(OPTIONS* _options, std::deque<std::wstring>& args)> parseArgs = 0;
 	};
 
 	enum switchEnum
@@ -74,7 +75,7 @@ namespace cli
 		OPTIONS& options,
 		std::deque<std::wstring>& args,
 		const std::vector<OptParser>& parsers,
-		std::function<bool(OPTIONS* _options, int iSwitch, std::deque<std::wstring>& args)> doSwitch,
+		std::function<bool(OPTIONS* _options, const cli::OptParser& opt, std::deque<std::wstring>& args)> doSwitch,
 		std::function<void(OPTIONS* _options)> postParseCheck);
 
 } // namespace cli

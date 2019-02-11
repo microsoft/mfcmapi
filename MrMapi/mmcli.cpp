@@ -68,15 +68,25 @@ namespace cli
 
 	std::vector<OptParser> g_Parsers = {
 		// clang-format off
-		noSwitchParser ,
-		helpParser,
-		verboseParser,
+		{switchNoSwitch, L"", cmdmodeUnknown, 0, 0, OPT_NOOPT},
+		{switchHelp, L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC},
+		{switchVerbose, L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC},
 		{switchSearch, L"Search", cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH},
 		{switchDecimal, L"Number", cmdmodeUnknown, 0, 0, OPT_DODECIMAL},
 		{switchFolder, L"Folder", cmdmodeUnknown, 1, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDFOLDER | OPT_INITMFC},
 		{switchOutput, L"Output", cmdmodeUnknown, 1, 1, OPT_NOOPT},
 		{switchDispid, L"Dispids", cmdmodePropTag, 0, 0, OPT_DODISPID},
-		{switchType, L"Type", cmdmodePropTag, 0, 1, OPT_DOTYPE},
+		{switchType, L"Type", cmdmodePropTag, 0, 1, OPT_DOTYPE,[](auto _options, auto args) {
+			// If we have a next argument and it's not an option, parse it as a type
+			if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Parsers))
+			{
+				auto options = (MYOPTIONS*) _options;
+				options->ulTypeNum = proptype::PropTypeNameToPropType(args.front());
+				args.pop_front();
+			}
+
+			return true;
+		}},
 		{switchGuid, L"Guids", cmdmodeGuid, 0, 0, OPT_NOOPT},
 		{switchError, L"Error", cmdmodeErr, 0, 0, OPT_NOOPT},
 		{switchParser, L"ParserType", cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE},
@@ -534,14 +544,16 @@ namespace cli
 
 	// Return true if we succesfully peeled off a switch.
 	// Return false on an error.
-	_Check_return_ bool DoSwitch(OPTIONS* _options, int iSwitch, std::deque<std::wstring>& args)
+	_Check_return_ bool DoSwitch(OPTIONS* _options, const cli::OptParser& opt, std::deque<std::wstring>& args)
 	{
 		MYOPTIONS* options = (MYOPTIONS*) _options;
 		LPWSTR szEndPtr = nullptr;
 		const auto arg0 = args.front();
 		args.pop_front();
 
-		switch (iSwitch)
+		if (opt.parseArgs) return opt.parseArgs(_options, args);
+
+		switch (opt.clSwitch)
 		{
 			// Global flags
 		case switchFolder:
@@ -581,15 +593,6 @@ namespace cli
 		case switchVersion:
 			options->lpszVersion = args.front();
 			args.pop_front();
-			break;
-			// Proptag parsing
-		case switchType:
-			// If we have a next argument and it's not an option, parse it as a type
-			if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Parsers))
-			{
-				options->ulTypeNum = proptype::PropTypeNameToPropType(args.front());
-				args.pop_front();
-			}
 			break;
 		case switchFlag:
 			// We must have a next argument, but it could be a string or a number
