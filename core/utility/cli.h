@@ -75,7 +75,7 @@ namespace cli
 		OPTIONS& options,
 		std::deque<std::wstring>& args,
 		const std::vector<OptParser>& parsers,
-		std::function<bool(OPTIONS* _options, const cli::OptParser& opt, std::deque<std::wstring>& args)> doSwitch,
 		std::function<void(OPTIONS* _options)> postParseCheck);
 
+	_Check_return_ bool DoSwitch(OPTIONS* _options, const cli::OptParser& opt, std::deque<std::wstring>& args);
 } // namespace cli

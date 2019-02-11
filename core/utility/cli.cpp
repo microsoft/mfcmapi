@@ -104,7 +104,6 @@ namespace cli
 		OPTIONS& options,
 		std::deque<std::wstring>& args,
 		const std::vector<OptParser>& _parsers,
-		std::function<bool(OPTIONS* _options, const cli::OptParser& opt, std::deque<std::wstring>& args)> doSwitch,
 		std::function<void(OPTIONS* _options)> postParseCheck)
 	{
 		if (args.empty())
@@ -140,7 +139,7 @@ namespace cli
 				options.mode = cmdmodeHelp;
 			}
 
-			if (!doSwitch(&options, opt, args))
+			if (!DoSwitch(&options, opt, args))
 			{
 				options.mode = cmdmodeHelp;
 			}
@@ -148,4 +147,33 @@ namespace cli
 
 		postParseCheck(&options);
 	}
+
+		// Return true if we succesfully peeled off a switch.
+	// Return false on an error.
+	_Check_return_ bool DoSwitch(OPTIONS* options, const cli::OptParser& opt, std::deque<std::wstring>& args)
+	{
+		const auto arg0 = args.front();
+		args.pop_front();
+
+		if (opt.parseArgs) return opt.parseArgs(options, args);
+
+		switch (opt.clSwitch)
+		{
+		case switchNoSwitch:
+			// naked option without a flag - we only allow one of these
+			if (!options->lpszUnswitchedOption.empty())
+			{
+				return false;
+			} // He's already got one, you see.
+
+			options->lpszUnswitchedOption = arg0;
+			break;
+		case switchUnknown:
+			// display help
+			return false;
+		}
+
+		return true;
+	}
+
 } // namespace cli

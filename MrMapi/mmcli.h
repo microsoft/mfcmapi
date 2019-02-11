@@ -120,7 +120,6 @@ namespace cli
 	};
 
 	void DisplayUsage(BOOL bFull);
-	_Check_return_ bool DoSwitch(OPTIONS* _options, const cli::OptParser& opt, std::deque<std::wstring>& args);
 	void PostParseCheck(OPTIONS* _options);
 
 	void PrintArgs(_In_ const MYOPTIONS& ProgOpts);

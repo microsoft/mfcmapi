@@ -750,34 +750,6 @@ namespace cli
 		}
 	}
 
-	// Return true if we succesfully peeled off a switch.
-	// Return false on an error.
-	_Check_return_ bool DoSwitch(OPTIONS* options, const cli::OptParser& opt, std::deque<std::wstring>& args)
-	{
-		const auto arg0 = args.front();
-		args.pop_front();
-
-		if (opt.parseArgs) return opt.parseArgs(options, args);
-
-		switch (opt.clSwitch)
-		{
-		case switchNoSwitch:
-			// naked option without a flag - we only allow one of these
-			if (!options->lpszUnswitchedOption.empty())
-			{
-				return false;
-			} // He's already got one, you see.
-
-			options->lpszUnswitchedOption = arg0;
-			break;
-		case switchUnknown:
-			// display help
-			return false;
-		}
-
-		return true;
-	}
-
 	void PostParseCheck(OPTIONS* _options)
 	{
 		MYOPTIONS* options = (MYOPTIONS*) _options;
