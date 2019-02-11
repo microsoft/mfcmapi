@@ -109,4 +109,55 @@ namespace cli
 
 		return true;
 	}
+
+	// Parses command line arguments and fills out OPTIONS
+	void ParseArgs(
+		OPTIONS& options,
+		std::deque<std::wstring>& args,
+		const std::vector<COMMANDLINE_SWITCH>& _switches,
+		const std::vector<OptParser>& _parsers,
+		std::function<bool(OPTIONS* _options, int iSwitch, std::deque<std::wstring>& args)> doSwitch,
+		std::function<void(OPTIONS* _options)> postParseCheck)
+	{
+		if (args.empty())
+		{
+			options.mode = cmdmodeHelp;
+		}
+
+		// DoSwitch will either consume part of args or return an error, so this while is OK.
+		while (!args.empty())
+		{
+			const auto iSwitch = ParseArgument(args.front(), _switches);
+			const auto opt = GetParser(iSwitch, _parsers);
+			if (opt.mode == cmdmodeHelpFull)
+			{
+				options.mode = cmdmodeHelpFull;
+			}
+
+			options.options |= opt.options;
+			if (cmdmodeUnknown != opt.mode && cmdmodeHelp != options.mode)
+			{
+				if (!bSetMode(options.mode, opt.mode))
+				{
+					// resetting our mode here, switch to help
+					options.mode = cmdmodeHelp;
+				}
+			}
+
+			// Make sure we have the minimum number of args
+			// Commands with variable argument counts can special case themselves
+			if (!CheckMinArgs(opt, args, _switches))
+			{
+				// resetting our mode here, switch to help
+				options.mode = cmdmodeHelp;
+			}
+
+			if (!doSwitch(&options, iSwitch, args))
+			{
+				options.mode = cmdmodeHelp;
+			}
+		}
+
+		postParseCheck(&options);
+	}
 } // namespace cli

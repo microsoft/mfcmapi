@@ -145,7 +145,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 	auto ProgOpts = cli::MYOPTIONS{};
 	auto cl = cli::GetCommandLine(argc, argv);
-	cli::ParseArgs(ProgOpts, cl);
+	cli::ParseArgs(ProgOpts, cl, cli::g_Switches, cli::g_Parsers, cli::DoSwitch, cli::PostParseCheck);
 
 	// Must be first after ParseArgs
 	if (ProgOpts.options & cli::OPT_INITMFC)

@@ -79,4 +79,14 @@ namespace cli
 		const cli::OptParser& opt,
 		const std::deque<std::wstring>& args,
 		const std::vector<COMMANDLINE_SWITCH>& switches);
+
+	// Parses command line arguments and fills out OPTIONS
+	void ParseArgs(
+		OPTIONS& options,
+		std::deque<std::wstring>& args,
+		const std::vector<COMMANDLINE_SWITCH>& switches,
+		const std::vector<OptParser>& parsers,
+		std::function<bool(OPTIONS* _options, int iSwitch, std::deque<std::wstring>& args)> doSwitch,
+		std::function<void(OPTIONS* _options)> postParseCheck);
+
 } // namespace cli

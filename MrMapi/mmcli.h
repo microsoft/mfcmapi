@@ -6,6 +6,8 @@
 // MrMAPI command line
 namespace cli
 {
+	extern std::vector<COMMANDLINE_SWITCH> g_Switches;
+	extern std::vector<OptParser> g_Parsers;
 #define ulNoMatch 0xffffffff
 
 	// Flags to control conversion
@@ -119,8 +121,8 @@ namespace cli
 	};
 
 	void DisplayUsage(BOOL bFull);
+	_Check_return_ bool DoSwitch(OPTIONS* _options, int iSwitch, std::deque<std::wstring>& args);
+	void PostParseCheck(OPTIONS* _options);
 
-	// Parses command line arguments and fills out MYOPTIONS
-	void ParseArgs(OPTIONS& options, std::deque<std::wstring>& args);
 	void PrintArgs(_In_ const MYOPTIONS& ProgOpts);
 } // namespace cli

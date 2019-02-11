@@ -931,51 +931,6 @@ namespace cli
 		}
 	}
 
-	// Parses command line arguments and fills out MYOPTIONS
-	void ParseArgs(OPTIONS& options, std::deque<std::wstring>& args)
-	{
-		if (args.empty())
-		{
-			options.mode = cmdmodeHelp;
-		}
-
-		// DoSwitch will either consume part of args or return an error, so this while is OK.
-		while (!args.empty())
-		{
-			const auto iSwitch = ParseArgument(args.front(), g_Switches);
-			const auto opt = GetParser(iSwitch, g_Parsers);
-			if (opt.mode == cmdmodeHelpFull)
-			{
-				options.mode = cmdmodeHelpFull;
-			}
-
-			options.options |= OPTIONFLAGS(opt.options);
-			if (cmdmodeUnknown != opt.mode && cmdmodeHelp != options.mode)
-			{
-				if (!bSetMode(options.mode, CmdMode(opt.mode)))
-				{
-					// resetting our mode here, switch to help
-					options.mode = cmdmodeHelp;
-				}
-			}
-
-			// Make sure we have the minimum number of args
-			// Commands with variable argument counts can special case themselves
-			if (!CheckMinArgs(opt, args, g_Switches))
-			{
-				// resetting our mode here, switch to help
-				options.mode = cmdmodeHelp;
-			}
-
-			if (!DoSwitch(&options, iSwitch, args))
-			{
-				options.mode = cmdmodeHelp;
-			}
-		}
-
-		PostParseCheck(&options);
-	}
-
 	void PrintArgs(_In_ const MYOPTIONS& ProgOpts)
 	{
 		output::DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.mode);
