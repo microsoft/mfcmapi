@@ -1,6 +1,7 @@
 #pragma once
 #include <core/mapi/extraPropTags.h>
 #include <core/utility/cli.h>
+#include <core/mapi/mapiFunctions.h>
 
 // MrMAPI command line
 namespace cli
@@ -88,7 +89,7 @@ namespace cli
 	struct MYOPTIONS : OPTIONS
 	{
 		std::wstring lpszProfile;
-		ULONG ulTypeNum{};
+		ULONG ulTypeNum{ulNoMatch};
 		ULONG ulSVParser{};
 		std::wstring lpszInput;
 		std::wstring lpszOutput;
@@ -101,7 +102,7 @@ namespace cli
 		std::wstring lpszVersion;
 		std::wstring lpszProfileSection;
 		ULONG ulStore{};
-		ULONG ulFolder{};
+		ULONG ulFolder{mapi::DEFAULT_INBOX};
 		MAPIMIMEFLAGS MAPIMIMEFlags{};
 		CCSFLAGS convertFlags{};
 		ULONG ulWrapLines{};
@@ -120,6 +121,6 @@ namespace cli
 	void DisplayUsage(BOOL bFull);
 
 	// Parses command line arguments and fills out MYOPTIONS
-	void ParseArgs(MYOPTIONS& options, std::deque<std::wstring>& args);
+	void ParseArgs(OPTIONS& options, std::deque<std::wstring>& args);
 	void PrintArgs(_In_ const MYOPTIONS& ProgOpts);
 } // namespace cli
