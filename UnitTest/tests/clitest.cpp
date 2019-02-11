@@ -63,27 +63,26 @@ namespace clitest
 
 		TEST_METHOD(Test_ParseArgument)
 		{
-			Assert::AreEqual(int(cli::switchEnum::switchHelp), int(ParseArgument(std::wstring{L"-?"}, cli::switches)));
+			Assert::AreEqual(int(cli::switchEnum::switchHelp), int(ParseArgument(std::wstring{L"-?"}, cli::parsers)));
 			Assert::AreEqual(
-				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"-v"}, cli::switches)));
+				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"-v"}, cli::parsers)));
 			Assert::AreEqual(
-				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"/v"}, cli::switches)));
+				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"/v"}, cli::parsers)));
 			Assert::AreEqual(
-				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"\\v"}, cli::switches)));
+				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"\\v"}, cli::parsers)));
 			Assert::AreEqual(
-				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"-verbose"}, cli::switches)));
+				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"-verbose"}, cli::parsers)));
 			Assert::AreEqual(
-				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-verbosey"}, cli::switches)));
+				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-verbosey"}, cli::parsers)));
 			Assert::AreEqual(
-				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-va"}, cli::switches)));
+				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-va"}, cli::parsers)));
 			Assert::AreEqual(
-				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-test"}, cli::switches)));
+				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-test"}, cli::parsers)));
+			Assert::AreEqual(int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L""}, cli::parsers)));
 			Assert::AreEqual(
-				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L""}, cli::switches)));
+				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"+v"}, cli::parsers)));
 			Assert::AreEqual(
-				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"+v"}, cli::switches)));
-			Assert::AreEqual(
-				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-"}, cli::switches)));
+				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-"}, cli::parsers)));
 		}
 
 		TEST_METHOD(Test_GetParser)
@@ -107,31 +106,31 @@ namespace clitest
 		TEST_METHOD(Test_CheckMinArgs)
 		{
 			// min/max-0/0
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 0, 0}, {L"-v"}, cli::switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 0, 0}, {L"-v", L"-v"}, cli::switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 0, 0}, {L"-v", L"1"}, cli::switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 0, 0, 0}, {L"-v"}, cli::parsers));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 0, 0, 0}, {L"-v", L"-v"}, cli::parsers));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 0, 0, 0}, {L"-v", L"1"}, cli::parsers));
 
 			// min/max-1/1
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"1"}, cli::switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"1", L"2"}, cli::switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"1", L"-v"}, cli::switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 1, 1, 0}, {L"-v", L"1"}, cli::parsers));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 1, 1, 0}, {L"-v", L"1", L"2"}, cli::parsers));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 1, 1, 0}, {L"-v", L"1", L"-v"}, cli::parsers));
 			// Not enough non switch args
-			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v", L"-v"}, cli::switches));
+			Assert::AreEqual(false, cli::CheckMinArgs({0, L"", 0, 1, 1, 0}, {L"-v", L"-v"}, cli::parsers));
 			// Not enough args at all
-			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 1, 1, 0}, {L"-v"}, cli::switches));
+			Assert::AreEqual(false, cli::CheckMinArgs({0, L"", 0, 1, 1, 0}, {L"-v"}, cli::parsers));
 
 			// min/max-0/1
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 1, 0}, {L"-v", L"-v"}, cli::switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 1, 0}, {L"-v", L"1", L"-v"}, cli::switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 0, 1, 0}, {L"-v"}, cli::switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 0, 1, 0}, {L"-v", L"-v"}, cli::parsers));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 0, 1, 0}, {L"-v", L"1", L"-v"}, cli::parsers));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 0, 1, 0}, {L"-v"}, cli::parsers));
 
 			// min/max-2/3
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"2"}, cli::switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"2", L"-v"}, cli::switches));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"2", L"3"}, cli::switches));
-			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v"}, cli::switches));
-			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1"}, cli::switches));
-			Assert::AreEqual(false, cli::CheckMinArgs({0, 0, 2, 3, 0}, {L"-v", L"1", L"-v"}, cli::switches));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 2, 3, 0}, {L"-v", L"1", L"2"}, cli::parsers));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 2, 3, 0}, {L"-v", L"1", L"2", L"-v"}, cli::parsers));
+			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 2, 3, 0}, {L"-v", L"1", L"2", L"3"}, cli::parsers));
+			Assert::AreEqual(false, cli::CheckMinArgs({0, L"", 0, 2, 3, 0}, {L"-v"}, cli::parsers));
+			Assert::AreEqual(false, cli::CheckMinArgs({0, L"", 0, 2, 3, 0}, {L"-v", L"1"}, cli::parsers));
+			Assert::AreEqual(false, cli::CheckMinArgs({0, L"", 0, 2, 3, 0}, {L"-v", L"1", L"-v"}, cli::parsers));
 		}
 	}; // namespace clitest
 } // namespace clitest

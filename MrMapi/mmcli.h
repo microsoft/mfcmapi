@@ -6,7 +6,6 @@
 // MrMAPI command line
 namespace cli
 {
-	extern std::vector<COMMANDLINE_SWITCH> g_Switches;
 	extern std::vector<OptParser> g_Parsers;
 #define ulNoMatch 0xffffffff
 

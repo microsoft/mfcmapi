@@ -3,15 +3,10 @@
 // MrMAPI command line
 namespace cli
 {
-	struct COMMANDLINE_SWITCH
-	{
-		int iSwitch;
-		LPCWSTR szSwitch;
-	};
-
 	struct OptParser
 	{
 		int clSwitch{};
+		LPCWSTR szSwitch;
 		int mode{};
 		UINT minArgs{};
 		UINT maxArgs{};
@@ -33,12 +28,6 @@ namespace cli
 		switchVerbose, // '-v'
 		switchFirstSwitch, // When extending switches, use this as the value of the first switch
 	};
-
-	extern const COMMANDLINE_SWITCH noSwitchSwitch;
-	extern const COMMANDLINE_SWITCH unknownSwitch;
-	extern const COMMANDLINE_SWITCH helpSwitch;
-	extern const COMMANDLINE_SWITCH verboseSwitch;
-	extern std::vector<COMMANDLINE_SWITCH> switches;
 
 	enum modeEnum
 	{
@@ -66,7 +55,7 @@ namespace cli
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
 	// The first switch should be our "no match" switch
-	int ParseArgument(const std::wstring& szArg, const std::vector<COMMANDLINE_SWITCH>& switches);
+	int ParseArgument(const std::wstring& szArg, const std::vector<OptParser>& _parsers);
 
 	// If the mode isn't set (is 0), then we can set it to any mode
 	// If the mode IS set (non 0), then we can only set it to the same mode
@@ -78,13 +67,12 @@ namespace cli
 	_Check_return_ bool CheckMinArgs(
 		const cli::OptParser& opt,
 		const std::deque<std::wstring>& args,
-		const std::vector<COMMANDLINE_SWITCH>& switches);
+		const std::vector<OptParser>& switches);
 
 	// Parses command line arguments and fills out OPTIONS
 	void ParseArgs(
 		OPTIONS& options,
 		std::deque<std::wstring>& args,
-		const std::vector<COMMANDLINE_SWITCH>& switches,
 		const std::vector<OptParser>& parsers,
 		std::function<bool(OPTIONS* _options, int iSwitch, std::deque<std::wstring>& args)> doSwitch,
 		std::function<void(OPTIONS* _options)> postParseCheck);

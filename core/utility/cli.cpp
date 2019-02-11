@@ -5,25 +5,14 @@
 
 namespace cli
 {
-	const COMMANDLINE_SWITCH noSwitchSwitch = {switchNoSwitch, L""};
-	const COMMANDLINE_SWITCH unknownSwitch = {switchUnknown, L""};
-	const COMMANDLINE_SWITCH helpSwitch = {switchHelp, L"?"};
-	const COMMANDLINE_SWITCH verboseSwitch = {switchVerbose, L"Verbose"};
-	std::vector<COMMANDLINE_SWITCH> switches = {
-		noSwitchSwitch,
-		unknownSwitch,
-		helpSwitch,
-		verboseSwitch,
-	};
-
-	const OptParser helpParser = {switchHelp, cmdmodeHelpFull, 0, 0, OPT_INITMFC};
-	const OptParser verboseParser = {switchVerbose, cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
-	const OptParser noSwitchParser = {switchNoSwitch, cmdmodeUnknown, 0, 0, OPT_NOOPT};
+	const OptParser helpParser = {switchHelp, L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
+	const OptParser verboseParser = {switchVerbose, L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
+	const OptParser noSwitchParser = {switchNoSwitch, L"", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	const std::vector<OptParser> parsers = {helpParser, verboseParser, noSwitchParser};
 
-	OptParser GetParser(int clSwitch, const std::vector<OptParser>& parsers)
+	OptParser GetParser(int clSwitch, const std::vector<OptParser>& _parsers)
 	{
-		for (const auto& parser : parsers)
+		for (const auto& parser : _parsers)
 		{
 			if (clSwitch == parser.clSwitch) return parser;
 		}
@@ -33,7 +22,7 @@ namespace cli
 
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
-	int ParseArgument(const std::wstring& szArg, const std::vector<COMMANDLINE_SWITCH>& switches)
+	int ParseArgument(const std::wstring& szArg, const std::vector<OptParser>& _parsers)
 	{
 		if (szArg.empty()) return switchEnum::switchNoSwitch;
 
@@ -51,12 +40,12 @@ namespace cli
 			return switchEnum::switchNoSwitch;
 		}
 
-		for (const auto& s : switches)
+		for (const auto& s : _parsers)
 		{
 			// If we have a match
 			if (strings::beginsWith(s.szSwitch, szSwitch))
 			{
-				return s.iSwitch;
+				return s.clSwitch;
 			}
 		}
 
@@ -93,7 +82,7 @@ namespace cli
 	_Check_return_ bool CheckMinArgs(
 		const cli::OptParser& opt,
 		const std::deque<std::wstring>& args,
-		const std::vector<COMMANDLINE_SWITCH>& switches)
+		const std::vector<OptParser>& _parsers)
 	{
 		if (opt.minArgs == 0) return true;
 		if (args.size() <= opt.minArgs) return false;
@@ -101,7 +90,7 @@ namespace cli
 		auto c = UINT{0};
 		for (auto it = args.cbegin() + 1; it != args.cend() && c < opt.minArgs; it++, c++)
 		{
-			if (ParseArgument(*it, switches) != switchNoSwitch)
+			if (ParseArgument(*it, _parsers) != switchNoSwitch)
 			{
 				return false;
 			}
@@ -114,7 +103,6 @@ namespace cli
 	void ParseArgs(
 		OPTIONS& options,
 		std::deque<std::wstring>& args,
-		const std::vector<COMMANDLINE_SWITCH>& _switches,
 		const std::vector<OptParser>& _parsers,
 		std::function<bool(OPTIONS* _options, int iSwitch, std::deque<std::wstring>& args)> doSwitch,
 		std::function<void(OPTIONS* _options)> postParseCheck)
@@ -127,7 +115,7 @@ namespace cli
 		// DoSwitch will either consume part of args or return an error, so this while is OK.
 		while (!args.empty())
 		{
-			const auto iSwitch = ParseArgument(args.front(), _switches);
+			const auto iSwitch = ParseArgument(args.front(), _parsers);
 			const auto opt = GetParser(iSwitch, _parsers);
 			if (opt.mode == cmdmodeHelpFull)
 			{
@@ -146,7 +134,7 @@ namespace cli
 
 			// Make sure we have the minimum number of args
 			// Commands with variable argument counts can special case themselves
-			if (!CheckMinArgs(opt, args, _switches))
+			if (!CheckMinArgs(opt, args, _parsers))
 			{
 				// resetting our mode here, switch to help
 				options.mode = cmdmodeHelp;
