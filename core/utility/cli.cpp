@@ -1,7 +1,6 @@
 #include <core/stdafx.h>
 #include <core/utility/cli.h>
 #include <core/utility/strings.h>
-#include <queue>
 
 namespace cli
 {
@@ -148,7 +147,7 @@ namespace cli
 		postParseCheck(&options);
 	}
 
-		// Return true if we succesfully peeled off a switch.
+	// Return true if we succesfully peeled off a switch.
 	// Return false on an error.
 	_Check_return_ bool DoSwitch(OPTIONS* options, const cli::OptParser& opt, std::deque<std::wstring>& args)
 	{

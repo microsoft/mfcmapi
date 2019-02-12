@@ -12,16 +12,36 @@ namespace cli
 		virtual void __dummy() noexcept {};
 	};
 
-	// TODO: Would this be better as a class?
-	struct OptParser
+	class OptParser
 	{
+	public:
 		int clSwitch{};
-		LPCWSTR szSwitch;
+		LPCWSTR szSwitch{};
 		int mode{};
 		UINT minArgs{};
 		UINT maxArgs{};
 		int options{};
 		std::function<bool(OPTIONS* _options, std::deque<std::wstring>& args)> parseArgs = 0;
+
+		OptParser() = default;
+
+		OptParser(
+			int _clSwitch,
+			LPCWSTR _szSwitch,
+			int _mode,
+			UINT _minArgs,
+			UINT _maxArgs,
+			int _options,
+			std::function<bool(OPTIONS* _options, std::deque<std::wstring>& args)> _parseArgs = 0)
+		{
+			clSwitch = _clSwitch;
+			szSwitch = _szSwitch;
+			mode = _mode;
+			minArgs = _minArgs;
+			maxArgs = _maxArgs;
+			options = _options;
+			parseArgs = _parseArgs;
+		}
 	};
 
 	enum switchEnum
