@@ -50,7 +50,7 @@ namespace cli
 		operator bool() const { return seen; }
 
 		_Check_return_ bool
-		CheckMinArgs(const std::deque<std::wstring>& args, const std::vector<OptParser>& _parsers) const;
+		CheckMinArgs(const std::deque<std::wstring>& args, const std::vector<OptParser*>& _parsers) const;
 	};
 
 	enum switchEnum
@@ -77,18 +77,18 @@ namespace cli
 		OPT_INITMFC = 0x00002,
 	};
 
-	extern const OptParser helpParser;
-	extern const OptParser verboseParser;
-	extern const OptParser noSwitchParser;
+	extern OptParser switchNoSwitchParser;
+	extern OptParser switchHelpParser;
+	extern OptParser switchVerboseParser;
 
-	extern const std::vector<OptParser> parsers;
+	extern const std::vector<OptParser*> parsers;
 
-	OptParser GetParser(int clSwitch, const std::vector<OptParser>& parsers);
+	OptParser* GetParser(int clSwitch, const std::vector<OptParser*>& parsers);
 
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
 	// The first switch should be our "no match" switch
-	int ParseArgument(const std::wstring& szArg, const std::vector<OptParser>& _parsers);
+	int ParseArgument(const std::wstring& szArg, const std::vector<OptParser*>& _parsers);
 
 	// If the mode isn't set (is 0), then we can set it to any mode
 	// If the mode IS set (non 0), then we can only set it to the same mode
@@ -101,8 +101,8 @@ namespace cli
 	void ParseArgs(
 		OPTIONS& options,
 		std::deque<std::wstring>& args,
-		const std::vector<OptParser>& parsers,
+		const std::vector<OptParser*>& parsers,
 		std::function<void(OPTIONS* _options)> postParseCheck);
 
-	_Check_return_ bool DoSwitch(OPTIONS* _options, const cli::OptParser& opt, std::deque<std::wstring>& args);
+	_Check_return_ bool DoSwitch(OPTIONS* _options, cli::OptParser* opt, std::deque<std::wstring>& args);
 } // namespace cli

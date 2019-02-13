@@ -4,24 +4,24 @@
 
 namespace cli
 {
-	const OptParser noSwitchParser = {switchNoSwitch, L"", cmdmodeUnknown, 0, 0, OPT_NOOPT};
-	const OptParser helpParser = {switchHelp, L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
-	const OptParser verboseParser = {switchVerbose, L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
-	const std::vector<OptParser> parsers = {noSwitchParser, helpParser, verboseParser};
+	OptParser switchNoSwitchParser = {switchNoSwitch, L"", cmdmodeUnknown, 0, 0, OPT_NOOPT};
+	OptParser switchHelpParser = {switchHelp, L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
+	OptParser switchVerboseParser = {switchVerbose, L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
+	const std::vector<OptParser*> parsers = {&switchNoSwitchParser, &switchHelpParser, &switchVerboseParser};
 
-	OptParser GetParser(int clSwitch, const std::vector<OptParser>& _parsers)
+	OptParser* GetParser(int clSwitch, const std::vector<OptParser*>& _parsers)
 	{
 		for (const auto& parser : _parsers)
 		{
-			if (clSwitch == parser.clSwitch) return parser;
+			if (parser && clSwitch == parser->clSwitch) return parser;
 		}
 
-		return {};
+		return nullptr;
 	}
 
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
-	int ParseArgument(const std::wstring& szArg, const std::vector<OptParser>& _parsers)
+	int ParseArgument(const std::wstring& szArg, const std::vector<OptParser*>& _parsers)
 	{
 		if (szArg.empty()) return switchEnum::switchNoSwitch;
 
@@ -39,12 +39,12 @@ namespace cli
 			return switchEnum::switchNoSwitch;
 		}
 
-		for (const auto& s : _parsers)
+		for (const auto parser : _parsers)
 		{
 			// If we have a match
-			if (strings::beginsWith(s.szSwitch, szSwitch))
+			if (parser && strings::beginsWith(parser->szSwitch, szSwitch))
 			{
-				return s.clSwitch;
+				return parser->clSwitch;
 			}
 		}
 
@@ -82,7 +82,7 @@ namespace cli
 	void ParseArgs(
 		OPTIONS& options,
 		std::deque<std::wstring>& args,
-		const std::vector<OptParser>& _parsers,
+		const std::vector<OptParser*>& _parsers,
 		std::function<void(OPTIONS* _options)> postParseCheck)
 	{
 		if (args.empty())
@@ -95,16 +95,22 @@ namespace cli
 		{
 			const auto iSwitch = ParseArgument(args.front(), _parsers);
 			auto opt = GetParser(iSwitch, _parsers);
-			opt.SetSeen(true);
-			if (opt.mode == cmdmodeHelpFull)
+			if (!opt)
+			{
+				options.mode = cmdmodeHelp;
+				continue;
+			}
+
+			opt->SetSeen(true);
+			if (opt->mode == cmdmodeHelpFull)
 			{
 				options.mode = cmdmodeHelpFull;
 			}
 
-			options.options |= opt.options;
-			if (cmdmodeUnknown != opt.mode && cmdmodeHelp != options.mode)
+			options.options |= opt->options;
+			if (cmdmodeUnknown != opt->mode && cmdmodeHelp != options.mode)
 			{
-				if (!bSetMode(options.mode, opt.mode))
+				if (!bSetMode(options.mode, opt->mode))
 				{
 					// resetting our mode here, switch to help
 					options.mode = cmdmodeHelp;
@@ -113,7 +119,7 @@ namespace cli
 
 			// Make sure we have the minimum number of args
 			// Commands with variable argument counts can special case themselves
-			if (!opt.CheckMinArgs(args, _parsers))
+			if (!opt->CheckMinArgs(args, _parsers))
 			{
 				// resetting our mode here, switch to help
 				options.mode = cmdmodeHelp;
@@ -130,14 +136,15 @@ namespace cli
 
 	// Return true if we succesfully peeled off a switch.
 	// Return false on an error.
-	_Check_return_ bool DoSwitch(OPTIONS* options, const cli::OptParser& opt, std::deque<std::wstring>& args)
+	_Check_return_ bool DoSwitch(OPTIONS* options, cli::OptParser* opt, std::deque<std::wstring>& args)
 	{
 		const auto arg0 = args.front();
 		args.pop_front();
+		if (!opt) return false;
 
-		if (opt.parseArgs) return opt.parseArgs(options, args);
+		if (opt->parseArgs) return opt->parseArgs(options, args);
 
-		switch (opt.clSwitch)
+		switch (opt->clSwitch)
 		{
 		case switchNoSwitch:
 			// naked option without a flag - we only allow one of these
@@ -157,7 +164,7 @@ namespace cli
 	}
 
 	_Check_return_ bool
-	OptParser::CheckMinArgs(const std::deque<std::wstring>& args, const std::vector<OptParser>& _parsers) const
+	OptParser::CheckMinArgs(const std::deque<std::wstring>& args, const std::vector<OptParser*>& _parsers) const
 	{
 		if (minArgs == 0) return true;
 		if (args.size() <= minArgs) return false;

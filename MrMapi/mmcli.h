@@ -6,7 +6,7 @@
 // MrMAPI command line
 namespace cli
 {
-	extern std::vector<OptParser> g_Parsers;
+	extern std::vector<OptParser*> g_Parsers;
 #define ulNoMatch 0xffffffff
 
 	// Flags to control conversion

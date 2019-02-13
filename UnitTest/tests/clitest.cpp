@@ -11,15 +11,22 @@ namespace Microsoft
 			template <> inline std::wstring ToString<cli::modeEnum>(const cli::modeEnum& q) { RETURN_WIDE_STRING(q); }
 
 			void AreEqual(
-				const cli::OptParser& expected,
-				const cli::OptParser& actual,
+				const cli::OptParser* expected,
+				const cli::OptParser* actual,
 				const wchar_t* message = nullptr,
 				const __LineInfo* pLineInfo = nullptr)
 			{
+				if (expected == nullptr && actual == nullptr) return;
+				if (expected == nullptr || actual == nullptr)
+				{
+					Logger::WriteMessage(strings::format(L"expected: %p\n", expected).c_str());
+					Logger::WriteMessage(strings::format(L"actual: %p\n", actual).c_str());
+				}
+
 				auto eq = true;
-				if (expected.clSwitch != actual.clSwitch || expected.mode != actual.mode ||
-					expected.minArgs != actual.minArgs || expected.maxArgs != actual.maxArgs ||
-					expected.options != actual.options)
+				if (expected->clSwitch != actual->clSwitch || expected->mode != actual->mode ||
+					expected->minArgs != actual->minArgs || expected->maxArgs != actual->maxArgs ||
+					expected->options != actual->options)
 				{
 					eq = false;
 				}
@@ -27,13 +34,13 @@ namespace Microsoft
 				if (!eq)
 				{
 					Logger::WriteMessage(
-						strings::format(L"Switch: %d:%d\n", expected.clSwitch, actual.clSwitch).c_str());
-					Logger::WriteMessage(strings::format(L"Mode: %d:%d\n", expected.mode, actual.mode).c_str());
+						strings::format(L"Switch: %d:%d\n", expected->clSwitch, actual->clSwitch).c_str());
+					Logger::WriteMessage(strings::format(L"Mode: %d:%d\n", expected->mode, actual->mode).c_str());
 					Logger::WriteMessage(
-						strings::format(L"minArgs: %d:%d\n", expected.minArgs, actual.minArgs).c_str());
+						strings::format(L"minArgs: %d:%d\n", expected->minArgs, actual->minArgs).c_str());
 					Logger::WriteMessage(
-						strings::format(L"maxArgs: %d:%d\n", expected.maxArgs, actual.maxArgs).c_str());
-					Logger::WriteMessage(strings::format(L"ulOpt: %d:%d\n", expected.options, actual.options).c_str());
+						strings::format(L"maxArgs: %d:%d\n", expected->maxArgs, actual->maxArgs).c_str());
+					Logger::WriteMessage(strings::format(L"ulOpt: %d:%d\n", expected->options, actual->options).c_str());
 					Assert::Fail(ToString(message).c_str(), pLineInfo);
 				}
 			}
@@ -87,10 +94,10 @@ namespace clitest
 
 		TEST_METHOD(Test_GetParser)
 		{
-			AreEqual(cli::helpParser, GetParser(cli::switchEnum::switchHelp, cli::parsers));
-			AreEqual(cli::verboseParser, GetParser(cli::switchEnum::switchVerbose, cli::parsers));
-			AreEqual(cli::noSwitchParser, GetParser(cli::switchEnum::switchNoSwitch, cli::parsers));
-			AreEqual({}, GetParser(cli::switchEnum::switchNoSwitch, cli::parsers));
+			AreEqual(&cli::switchHelpParser, GetParser(cli::switchEnum::switchHelp, cli::parsers));
+			AreEqual(&cli::switchVerboseParser, GetParser(cli::switchEnum::switchVerbose, cli::parsers));
+			AreEqual(&cli::switchNoSwitchParser, GetParser(cli::switchEnum::switchNoSwitch, cli::parsers));
+			AreEqual(nullptr, GetParser(99, cli::parsers));
 		}
 
 		TEST_METHOD(Test_bSetMode)
