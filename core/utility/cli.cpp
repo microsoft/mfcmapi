@@ -78,26 +78,6 @@ namespace cli
 		return args;
 	}
 
-	_Check_return_ bool CheckMinArgs(
-		const cli::OptParser& opt,
-		const std::deque<std::wstring>& args,
-		const std::vector<OptParser>& _parsers)
-	{
-		if (opt.minArgs == 0) return true;
-		if (args.size() <= opt.minArgs) return false;
-
-		auto c = UINT{0};
-		for (auto it = args.cbegin() + 1; it != args.cend() && c < opt.minArgs; it++, c++)
-		{
-			if (ParseArgument(*it, _parsers) != switchNoSwitch)
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	// Parses command line arguments and fills out OPTIONS
 	void ParseArgs(
 		OPTIONS& options,
@@ -132,7 +112,7 @@ namespace cli
 
 			// Make sure we have the minimum number of args
 			// Commands with variable argument counts can special case themselves
-			if (!CheckMinArgs(opt, args, _parsers))
+			if (!opt.CheckMinArgs(args, _parsers))
 			{
 				// resetting our mode here, switch to help
 				options.mode = cmdmodeHelp;
@@ -175,4 +155,21 @@ namespace cli
 		return true;
 	}
 
+	_Check_return_ bool
+	OptParser::CheckMinArgs(const std::deque<std::wstring>& args, const std::vector<OptParser>& _parsers) const
+	{
+		if (minArgs == 0) return true;
+		if (args.size() <= minArgs) return false;
+
+		auto c = UINT{0};
+		for (auto it = args.cbegin() + 1; it != args.cend() && c < minArgs; it++, c++)
+		{
+			if (ParseArgument(*it, _parsers) != switchNoSwitch)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
 } // namespace cli

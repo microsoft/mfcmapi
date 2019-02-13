@@ -42,6 +42,9 @@ namespace cli
 			options = _options;
 			parseArgs = _parseArgs;
 		}
+
+		_Check_return_ bool
+		CheckMinArgs(const std::deque<std::wstring>& args, const std::vector<OptParser>& _parsers) const;
 	};
 
 	enum switchEnum
@@ -87,11 +90,6 @@ namespace cli
 	bool bSetMode(_In_ int& pMode, _In_ int targetMode);
 
 	std::deque<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
-
-	_Check_return_ bool CheckMinArgs(
-		const cli::OptParser& opt,
-		const std::deque<std::wstring>& args,
-		const std::vector<OptParser>& switches);
 
 	// Parses command line arguments and fills out OPTIONS
 	void ParseArgs(

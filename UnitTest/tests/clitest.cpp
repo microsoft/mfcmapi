@@ -106,31 +106,35 @@ namespace clitest
 		TEST_METHOD(Test_CheckMinArgs)
 		{
 			// min/max-0/0
-			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 0, 0, 0}, {L"-v"}, cli::parsers));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 0, 0, 0}, {L"-v", L"-v"}, cli::parsers));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 0, 0, 0}, {L"-v", L"1"}, cli::parsers));
+			auto p0_0 = cli::OptParser{0, L"", 0, 0, 0, 0};
+			Assert::AreEqual(true, p0_0.CheckMinArgs({L"-v"}, cli::parsers));
+			Assert::AreEqual(true, p0_0.CheckMinArgs({L"-v", L"-v"}, cli::parsers));
+			Assert::AreEqual(true, p0_0.CheckMinArgs({L"-v", L"1"}, cli::parsers));
 
 			// min/max-1/1
-			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 1, 1, 0}, {L"-v", L"1"}, cli::parsers));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 1, 1, 0}, {L"-v", L"1", L"2"}, cli::parsers));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 1, 1, 0}, {L"-v", L"1", L"-v"}, cli::parsers));
+			auto p1_1 = cli::OptParser{0, L"", 0, 1, 1, 0};
+			Assert::AreEqual(true, p1_1.CheckMinArgs({L"-v", L"1"}, cli::parsers));
+			Assert::AreEqual(true, p1_1.CheckMinArgs({L"-v", L"1", L"2"}, cli::parsers));
+			Assert::AreEqual(true, p1_1.CheckMinArgs({L"-v", L"1", L"-v"}, cli::parsers));
 			// Not enough non switch args
-			Assert::AreEqual(false, cli::CheckMinArgs({0, L"", 0, 1, 1, 0}, {L"-v", L"-v"}, cli::parsers));
+			Assert::AreEqual(false, p1_1.CheckMinArgs({L"-v", L"-v"}, cli::parsers));
 			// Not enough args at all
-			Assert::AreEqual(false, cli::CheckMinArgs({0, L"", 0, 1, 1, 0}, {L"-v"}, cli::parsers));
+			Assert::AreEqual(false, p1_1.CheckMinArgs({L"-v"}, cli::parsers));
 
 			// min/max-0/1
-			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 0, 1, 0}, {L"-v", L"-v"}, cli::parsers));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 0, 1, 0}, {L"-v", L"1", L"-v"}, cli::parsers));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 0, 1, 0}, {L"-v"}, cli::parsers));
+			auto p0_1 = cli::OptParser{0, L"", 0, 0, 1, 0};
+			Assert::AreEqual(true, p0_1.CheckMinArgs({L"-v", L"-v"}, cli::parsers));
+			Assert::AreEqual(true, p0_1.CheckMinArgs({L"-v", L"1", L"-v"}, cli::parsers));
+			Assert::AreEqual(true, p0_1.CheckMinArgs({L"-v"}, cli::parsers));
 
 			// min/max-2/3
-			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 2, 3, 0}, {L"-v", L"1", L"2"}, cli::parsers));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 2, 3, 0}, {L"-v", L"1", L"2", L"-v"}, cli::parsers));
-			Assert::AreEqual(true, cli::CheckMinArgs({0, L"", 0, 2, 3, 0}, {L"-v", L"1", L"2", L"3"}, cli::parsers));
-			Assert::AreEqual(false, cli::CheckMinArgs({0, L"", 0, 2, 3, 0}, {L"-v"}, cli::parsers));
-			Assert::AreEqual(false, cli::CheckMinArgs({0, L"", 0, 2, 3, 0}, {L"-v", L"1"}, cli::parsers));
-			Assert::AreEqual(false, cli::CheckMinArgs({0, L"", 0, 2, 3, 0}, {L"-v", L"1", L"-v"}, cli::parsers));
+			auto p2_3 = cli::OptParser{0, L"", 0, 2, 3, 0};
+			Assert::AreEqual(true, p2_3.CheckMinArgs({L"-v", L"1", L"2"}, cli::parsers));
+			Assert::AreEqual(true, p2_3.CheckMinArgs({L"-v", L"1", L"2", L"-v"}, cli::parsers));
+			Assert::AreEqual(true, p2_3.CheckMinArgs({L"-v", L"1", L"2", L"3"}, cli::parsers));
+			Assert::AreEqual(false, p2_3.CheckMinArgs({L"-v"}, cli::parsers));
+			Assert::AreEqual(false, p2_3.CheckMinArgs({L"-v", L"1"}, cli::parsers));
+			Assert::AreEqual(false, p2_3.CheckMinArgs({L"-v", L"1", L"-v"}, cli::parsers));
 		}
 	}; // namespace clitest
 } // namespace clitest
