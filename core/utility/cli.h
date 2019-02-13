@@ -14,6 +14,9 @@ namespace cli
 
 	class OptParser
 	{
+	private:
+		bool seen{false};
+
 	public:
 		int clSwitch{};
 		LPCWSTR szSwitch{};
@@ -42,6 +45,9 @@ namespace cli
 			options = _options;
 			parseArgs = _parseArgs;
 		}
+
+		void SetSeen(bool _seen) { seen = _seen; }
+		operator bool() const { return seen; }
 
 		_Check_return_ bool
 		CheckMinArgs(const std::deque<std::wstring>& args, const std::vector<OptParser>& _parsers) const;

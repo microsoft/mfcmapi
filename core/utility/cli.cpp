@@ -94,7 +94,8 @@ namespace cli
 		while (!args.empty())
 		{
 			const auto iSwitch = ParseArgument(args.front(), _parsers);
-			const auto opt = GetParser(iSwitch, _parsers);
+			auto opt = GetParser(iSwitch, _parsers);
+			opt.SetSeen(true);
 			if (opt.mode == cmdmodeHelpFull)
 			{
 				options.mode = cmdmodeHelpFull;
