@@ -4,10 +4,10 @@
 
 namespace cli
 {
+	const OptParser noSwitchParser = {switchNoSwitch, L"", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	const OptParser helpParser = {switchHelp, L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
 	const OptParser verboseParser = {switchVerbose, L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
-	const OptParser noSwitchParser = {switchNoSwitch, L"", cmdmodeUnknown, 0, 0, OPT_NOOPT};
-	const std::vector<OptParser> parsers = {helpParser, verboseParser, noSwitchParser};
+	const std::vector<OptParser> parsers = {noSwitchParser, helpParser, verboseParser};
 
 	OptParser GetParser(int clSwitch, const std::vector<OptParser>& _parsers)
 	{
