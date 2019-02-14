@@ -6,7 +6,55 @@
 // MrMAPI command line
 namespace cli
 {
+	extern OptParser switchSearchParser;
+	extern OptParser switchDecimalParser;
+	extern OptParser switchFolderParser;
+	extern OptParser switchOutputParser;
+	extern OptParser switchDispidParser;
+	extern OptParser switchTypeParser;
+	extern OptParser switchGuidParser;
+	extern OptParser switchErrorParser;
+	extern OptParser switchParserParser;
+	extern OptParser switchInputParser;
+	extern OptParser switchBinaryParser;
+	extern OptParser switchAclParser;
+	extern OptParser switchRuleParser;
+	extern OptParser switchContentsParser;
+	extern OptParser switchAssociatedContentsParser;
+	extern OptParser switchMorePropertiesParser;
+	extern OptParser switchNoAddinsParser;
+	extern OptParser switchOnlineParser;
+	extern OptParser switchMAPIParser;
+	extern OptParser switchMIMEParser;
+	extern OptParser switchCCSFFlagsParser;
+	extern OptParser switchRFC822Parser;
+	extern OptParser switchWrapParser;
+	extern OptParser switchEncodingParser;
+	extern OptParser switchCharsetParser;
+	extern OptParser switchAddressBookParser;
+	extern OptParser switchUnicodeParser;
+	extern OptParser switchProfileParser;
+	extern OptParser switchXMLParser;
+	extern OptParser switchSubjectParser;
+	extern OptParser switchMessageClassParser;
+	extern OptParser switchMSGParser;
+	extern OptParser switchListParser;
+	extern OptParser switchChildFoldersParser;
+	extern OptParser switchFidParser;
+	extern OptParser switchMidParser;
+	extern OptParser switchFlagParser;
+	extern OptParser switchRecentParser;
+	extern OptParser switchStoreParser;
+	extern OptParser switchVersionParser;
+	extern OptParser switchSizeParser;
+	extern OptParser switchPSTParser;
+	extern OptParser switchProfileSectionParser;
+	extern OptParser switchByteSwappedParser;
+	extern OptParser switchReceiveFolderParser;
+	extern OptParser switchSkipParser;
+	extern OptParser switchSearchStateParser;
 	extern std::vector<OptParser*> g_Parsers;
+
 #define ulNoMatch 0xffffffff
 
 	// Flags to control conversion
