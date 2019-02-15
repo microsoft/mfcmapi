@@ -4,8 +4,8 @@
 
 namespace cli
 {
-	OptParser switchHelpParser = {switchHelp, L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
-	OptParser switchVerboseParser = {switchVerbose, L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
+	OptParser switchHelpParser = {L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
+	OptParser switchVerboseParser = {L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
 	const std::vector<OptParser*> parsers = {&switchHelpParser, &switchVerboseParser};
 
 	// Checks if szArg is an option, and if it is, returns which option it is
@@ -141,13 +141,6 @@ namespace cli
 		if (!opt) return false;
 
 		if (opt->parseArgs) return opt->parseArgs(options, args);
-
-		switch (opt->clSwitch)
-		{
-		case switchUnknown:
-			// display help
-			return false;
-		}
 
 		return true;
 	}

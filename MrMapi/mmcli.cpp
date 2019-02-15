@@ -15,64 +15,12 @@ namespace error
 
 namespace cli
 {
-	enum __CommandLineSwitch
-	{
-		switchSearch = switchFirstSwitch, // '-s'
-		switchDecimal, // '-n'
-		switchFolder, // '-f'
-		switchOutput, // '-o'
-		switchDispid, // '-d'
-		switchType, // '-t'
-		switchGuid, // '-g'
-		switchError, // '-e'
-		switchParser, // '-p'
-		switchInput, // '-i'
-		switchBinary, // '-b'
-		switchAcl, // '-a'
-		switchRule, // '-r'
-		switchContents, // '-c'
-		switchAssociatedContents, // '-h'
-		switchMoreProperties, // '-m'
-		switchNoAddins, // '-no'
-		switchOnline, // '-on'
-		switchMAPI, // '-ma'
-		switchMIME, // '-mi'
-		switchCCSFFlags, // '-cc'
-		switchRFC822, // '-rf'
-		switchWrap, // '-w'
-		switchEncoding, // '-en'
-		switchCharset, // '-ch'
-		switchAddressBook, // '-ad'
-		switchUnicode, // '-u'
-		switchProfile, // '-pr'
-		switchXML, // '-x'
-		switchSubject, // '-su'
-		switchMessageClass, // '-me'
-		switchMSG, // '-ms'
-		switchList, // '-l'
-		switchChildFolders, // '-chi'
-		switchFid, // '-fi'
-		switchMid, // '-mid'
-		switchFlag, // '-fl'
-		switchRecent, // '-re'
-		switchStore, // '-st'
-		switchVersion, // '-vers'
-		switchSize, // '-si'
-		switchPST, // '-pst'
-		switchProfileSection, // '-profiles'
-		switchByteSwapped, // '-b'
-		switchReceiveFolder, // '-receivefolder'
-		switchSkip, // '-sk'
-		switchSearchState, // '-searchstate'
-	};
-
 	// For some reason, placing this in the lambda causes a compiler error. So we'll make it an inline function
 	inline MYOPTIONS* GetMyOptions(OPTIONS* _options) { return dynamic_cast<MYOPTIONS*>(_options); }
 
-	OptParser switchSearchParser{switchSearch, L"Search", cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH};
-	OptParser switchDecimalParser{switchDecimal, L"Number", cmdmodeUnknown, 0, 0, OPT_DODECIMAL};
-	OptParser switchFolderParser{switchFolder,
-								 L"Folder",
+	OptParser switchSearchParser{L"Search", cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH};
+	OptParser switchDecimalParser{L"Number", cmdmodeUnknown, 0, 0, OPT_DODECIMAL};
+	OptParser switchFolderParser{L"Folder",
 								 cmdmodeUnknown,
 								 1,
 								 1,
@@ -89,15 +37,14 @@ namespace cli
 									 args.pop_front();
 									 return true;
 								 }};
-	OptParser
-		switchOutputParser{switchOutput, L"Output", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
-							   auto options = GetMyOptions(_options);
-							   options->lpszOutput = args.front();
-							   args.pop_front();
-							   return true;
-						   }};
-	OptParser switchDispidParser{switchDispid, L"Dispids", cmdmodePropTag, 0, 0, OPT_DODISPID};
-	OptParser switchTypeParser{switchType, L"Type", cmdmodePropTag, 0, 1, OPT_DOTYPE, [](auto _options, auto& args) {
+	OptParser switchOutputParser{L"Output", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
+									 auto options = GetMyOptions(_options);
+									 options->lpszOutput = args.front();
+									 args.pop_front();
+									 return true;
+								 }};
+	OptParser switchDispidParser{L"Dispids", cmdmodePropTag, 0, 0, OPT_DODISPID};
+	OptParser switchTypeParser{L"Type", cmdmodePropTag, 0, 1, OPT_DOTYPE, [](auto _options, auto& args) {
 								   // If we have a next argument and it's not an option, parse it as a type
 								   if (!args.empty() && !GetParser(args.front(), g_Parsers))
 								   {
@@ -108,10 +55,9 @@ namespace cli
 
 								   return true;
 							   }};
-	OptParser switchGuidParser{switchGuid, L"Guids", cmdmodeGuid, 0, 0, OPT_NOOPT};
-	OptParser switchErrorParser{switchError, L"Error", cmdmodeErr, 0, 0, OPT_NOOPT};
-	OptParser switchParserParser{switchParser,
-								 L"ParserType",
+	OptParser switchGuidParser{L"Guids", cmdmodeGuid, 0, 0, OPT_NOOPT};
+	OptParser switchErrorParser{L"Error", cmdmodeErr, 0, 0, OPT_NOOPT};
+	OptParser switchParserParser{L"ParserType",
 								 cmdmodeSmartView,
 								 1,
 								 1,
@@ -122,48 +68,38 @@ namespace cli
 									 args.pop_front();
 									 return true;
 								 }};
-	OptParser switchInputParser{switchInput, L"Input", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
+	OptParser switchInputParser{L"Input", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
 									auto options = GetMyOptions(_options);
 									options->lpszInput = args.front();
 									args.pop_front();
 									return true;
 								}};
-	OptParser switchBinaryParser{switchBinary, L"Binary", cmdmodeSmartView, 0, 0, OPT_BINARYFILE};
-	OptParser switchAclParser{switchAcl,
-							  L"Acl",
+	OptParser switchBinaryParser{L"Binary", cmdmodeSmartView, 0, 0, OPT_BINARYFILE};
+	OptParser switchAclParser{L"Acl",
 							  cmdmodeAcls,
 							  0,
 							  0,
 							  OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
-	OptParser switchRuleParser{switchRule,
-							   L"Rules",
+	OptParser switchRuleParser{L"Rules",
 							   cmdmodeRules,
 							   0,
 							   0,
 							   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
-	OptParser switchContentsParser{switchContents,
-								   L"Contents",
+	OptParser switchContentsParser{L"Contents",
 								   cmdmodeContents,
 								   0,
 								   0,
 								   OPT_DOCONTENTS | OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
-	OptParser switchAssociatedContentsParser{switchAssociatedContents,
-											 L"HiddenContents",
+	OptParser switchAssociatedContentsParser{L"HiddenContents",
 											 cmdmodeContents,
 											 0,
 											 0,
 											 OPT_DOASSOCIATEDCONTENTS | OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON |
 												 OPT_INITMFC};
-	OptParser switchMorePropertiesParser{switchMoreProperties,
-										 L"MoreProperties",
-										 cmdmodeUnknown,
-										 0,
-										 0,
-										 OPT_RETRYSTREAMPROPS};
-	OptParser switchNoAddinsParser{switchNoAddins, L"NoAddins", cmdmodeUnknown, 0, 0, OPT_NOADDINS};
-	OptParser switchOnlineParser{switchOnline, L"Online", cmdmodeUnknown, 0, 0, OPT_ONLINE};
-	OptParser switchMAPIParser{switchMAPI,
-							   L"MAPI",
+	OptParser switchMorePropertiesParser{L"MoreProperties", cmdmodeUnknown, 0, 0, OPT_RETRYSTREAMPROPS};
+	OptParser switchNoAddinsParser{L"NoAddins", cmdmodeUnknown, 0, 0, OPT_NOADDINS};
+	OptParser switchOnlineParser{L"Online", cmdmodeUnknown, 0, 0, OPT_ONLINE};
+	OptParser switchMAPIParser{L"MAPI",
 							   cmdmodeMAPIMIME,
 							   0,
 							   0,
@@ -173,8 +109,7 @@ namespace cli
 								   options->MAPIMIMEFlags |= MAPIMIME_TOMAPI;
 								   return true;
 							   }};
-	OptParser switchMIMEParser{switchMIME,
-							   L"MIME",
+	OptParser switchMIMEParser{L"MIME",
 							   cmdmodeMAPIMIME,
 							   0,
 							   0,
@@ -184,70 +119,56 @@ namespace cli
 								   options->MAPIMIMEFlags |= MAPIMIME_TOMIME;
 								   return true;
 							   }};
-	OptParser switchCCSFFlagsParser{switchCCSFFlags,
-									L"CCSFFlags",
-									cmdmodeMAPIMIME,
-									1,
-									1,
-									OPT_NOOPT,
-									[](auto _options, auto& args) {
+	OptParser switchCCSFFlagsParser{L"CCSFFlags", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
 										auto options = GetMyOptions(_options);
 										options->convertFlags =
 											static_cast<CCSFLAGS>(strings::wstringToUlong(args.front(), 10));
 										args.pop_front();
 										return true;
 									}};
-	OptParser
-		switchRFC822Parser{switchRFC822, L"RFC822", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT, [](auto _options, auto args) {
-							   auto options = GetMyOptions(_options);
-							   options->MAPIMIMEFlags |= MAPIMIME_RFC822;
-							   return true;
-						   }};
-	OptParser switchWrapParser{switchWrap, L"Wrap", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
+	OptParser switchRFC822Parser{L"RFC822", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT, [](auto _options, auto args) {
+									 auto options = GetMyOptions(_options);
+									 options->MAPIMIMEFlags |= MAPIMIME_RFC822;
+									 return true;
+								 }};
+	OptParser switchWrapParser{L"Wrap", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
 								   auto options = GetMyOptions(_options);
 								   options->ulWrapLines = strings::wstringToUlong(args.front(), 10);
 								   options->MAPIMIMEFlags |= MAPIMIME_WRAP;
 								   args.pop_front();
 								   return true;
 							   }};
-	OptParser switchEncodingParser{switchEncoding,
-								   L"Encoding",
-								   cmdmodeMAPIMIME,
-								   1,
-								   1,
-								   OPT_NOOPT,
-								   [](auto _options, auto& args) {
+	OptParser switchEncodingParser{L"Encoding", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
 									   auto options = GetMyOptions(_options);
 									   options->ulEncodingType = strings::wstringToUlong(args.front(), 10);
 									   options->MAPIMIMEFlags |= MAPIMIME_ENCODING;
 									   args.pop_front();
 									   return true;
 								   }};
-	OptParser
-		switchCharsetParser{switchCharset, L"Charset", cmdmodeMAPIMIME, 3, 3, OPT_NOOPT, [](auto _options, auto& args) {
-								auto options = GetMyOptions(_options);
-								options->ulCodePage = strings::wstringToUlong(args.front(), 10);
-								args.pop_front();
-								options->cSetType = static_cast<CHARSETTYPE>(strings::wstringToUlong(args.front(), 10));
-								args.pop_front();
-								if (options->cSetType > CHARSET_WEB)
-								{
-									return false;
-								}
+	OptParser switchCharsetParser{L"Charset", cmdmodeMAPIMIME, 3, 3, OPT_NOOPT, [](auto _options, auto& args) {
+									  auto options = GetMyOptions(_options);
+									  options->ulCodePage = strings::wstringToUlong(args.front(), 10);
+									  args.pop_front();
+									  options->cSetType =
+										  static_cast<CHARSETTYPE>(strings::wstringToUlong(args.front(), 10));
+									  args.pop_front();
+									  if (options->cSetType > CHARSET_WEB)
+									  {
+										  return false;
+									  }
 
-								options->cSetApplyType =
-									static_cast<CSETAPPLYTYPE>(strings::wstringToUlong(args.front(), 10));
-								args.pop_front();
-								if (options->cSetApplyType > CSET_APPLY_TAG_ALL)
-								{
-									return false;
-								}
+									  options->cSetApplyType =
+										  static_cast<CSETAPPLYTYPE>(strings::wstringToUlong(args.front(), 10));
+									  args.pop_front();
+									  if (options->cSetApplyType > CSET_APPLY_TAG_ALL)
+									  {
+										  return false;
+									  }
 
-								options->MAPIMIMEFlags |= MAPIMIME_CHARSET;
-								return true;
-							}};
-	OptParser switchAddressBookParser{switchAddressBook,
-									  L"AddressBook",
+									  options->MAPIMIMEFlags |= MAPIMIME_CHARSET;
+									  return true;
+								  }};
+	OptParser switchAddressBookParser{L"AddressBook",
 									  cmdmodeMAPIMIME,
 									  0,
 									  0,
@@ -257,19 +178,12 @@ namespace cli
 										  options->MAPIMIMEFlags |= MAPIMIME_ADDRESSBOOK;
 										  return true;
 									  }}; // special case which needs a logon
-	OptParser
-		switchUnicodeParser{switchUnicode, L"Unicode", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT, [](auto _options, auto args) {
-								auto options = GetMyOptions(_options);
-								options->MAPIMIMEFlags |= MAPIMIME_UNICODE;
-								return true;
-							}};
-	OptParser switchProfileParser{switchProfile,
-								  L"Profile",
-								  cmdmodeUnknown,
-								  0,
-								  1,
-								  OPT_PROFILE,
-								  [](auto _options, auto& args) {
+	OptParser switchUnicodeParser{L"Unicode", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT, [](auto _options, auto args) {
+									  auto options = GetMyOptions(_options);
+									  options->MAPIMIMEFlags |= MAPIMIME_UNICODE;
+									  return true;
+								  }};
+	OptParser switchProfileParser{L"Profile", cmdmodeUnknown, 0, 1, OPT_PROFILE, [](auto _options, auto& args) {
 									  auto options = GetMyOptions(_options);
 									  // If we have a next argument and it's not an option, parse it as a profile name
 									  if (!args.empty() && !GetParser(args.front(), g_Parsers))
@@ -280,16 +194,14 @@ namespace cli
 
 									  return true;
 								  }};
-	OptParser switchXMLParser{switchXML, L"XML", cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE};
-	OptParser
-		switchSubjectParser{switchSubject, L"Subject", cmdmodeContents, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
-								auto options = GetMyOptions(_options);
-								options->lpszSubject = args.front();
-								args.pop_front();
-								return true;
-							}};
-	OptParser switchMessageClassParser{switchMessageClass,
-									   L"MessageClass",
+	OptParser switchXMLParser{L"XML", cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE};
+	OptParser switchSubjectParser{L"Subject", cmdmodeContents, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
+									  auto options = GetMyOptions(_options);
+									  options->lpszSubject = args.front();
+									  args.pop_front();
+									  return true;
+								  }};
+	OptParser switchMessageClassParser{L"MessageClass",
 									   cmdmodeContents,
 									   1,
 									   1,
@@ -300,16 +212,14 @@ namespace cli
 										   args.pop_front();
 										   return true;
 									   }};
-	OptParser switchMSGParser{switchMSG, L"MSG", cmdmodeContents, 0, 0, OPT_MSG};
-	OptParser switchListParser{switchList, L"List", cmdmodeContents, 0, 0, OPT_LIST};
-	OptParser switchChildFoldersParser{switchChildFolders,
-									   L"ChildFolders",
+	OptParser switchMSGParser{L"MSG", cmdmodeContents, 0, 0, OPT_MSG};
+	OptParser switchListParser{L"List", cmdmodeContents, 0, 0, OPT_LIST};
+	OptParser switchChildFoldersParser{L"ChildFolders",
 									   cmdmodeChildFolders,
 									   0,
 									   1,
 									   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
-	OptParser switchFidParser{switchFid,
-							  L"FID",
+	OptParser switchFidParser{L"FID",
 							  cmdmodeFidMid,
 							  0,
 							  1,
@@ -324,8 +234,7 @@ namespace cli
 
 								  return true;
 							  }};
-	OptParser switchMidParser{switchMid,
-							  L"MID",
+	OptParser switchMidParser{L"MID",
 							  cmdmodeFidMid,
 							  0,
 							  1,
@@ -346,7 +255,7 @@ namespace cli
 
 								  return true;
 							  }};
-	OptParser switchFlagParser{switchFlag, L"Flag", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
+	OptParser switchFlagParser{L"Flag", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
 								   auto options = GetMyOptions(_options);
 								   LPWSTR szEndPtr = nullptr;
 								   // We must have a next argument, but it could be a string or a number
@@ -374,15 +283,13 @@ namespace cli
 								   args.pop_front();
 								   return true;
 							   }}; // can't know until we parse the argument
-	OptParser
-		switchRecentParser{switchRecent, L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
-							   auto options = GetMyOptions(_options);
-							   options->ulCount = strings::wstringToUlong(args.front(), 10);
-							   args.pop_front();
-							   return true;
-						   }};
-	OptParser switchStoreParser{switchStore,
-								L"Store",
+	OptParser switchRecentParser{L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
+									 auto options = GetMyOptions(_options);
+									 options->ulCount = strings::wstringToUlong(args.front(), 10);
+									 args.pop_front();
+									 return true;
+								 }};
+	OptParser switchStoreParser{L"Store",
 								cmdmodeStoreProperties,
 								0,
 								1,
@@ -406,22 +313,19 @@ namespace cli
 
 									return true;
 								}};
-	OptParser
-		switchVersionParser{switchVersion, L"Version", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
-								auto options = GetMyOptions(_options);
-								options->lpszVersion = args.front();
-								args.pop_front();
-								return true;
-							}};
-	OptParser switchSizeParser{switchSize,
-							   L"Size",
+	OptParser switchVersionParser{L"Version", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options, auto& args) {
+									  auto options = GetMyOptions(_options);
+									  options->lpszVersion = args.front();
+									  args.pop_front();
+									  return true;
+								  }};
+	OptParser switchSizeParser{L"Size",
 							   cmdmodeFolderSize,
 							   0,
 							   0,
 							   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
-	OptParser switchPSTParser{switchPST, L"PST", cmdmodePST, 0, 0, OPT_NEEDINPUTFILE};
-	OptParser switchProfileSectionParser{switchProfileSection,
-										 L"ProfileSection",
+	OptParser switchPSTParser{L"PST", cmdmodePST, 0, 0, OPT_NEEDINPUTFILE};
+	OptParser switchProfileSectionParser{L"ProfileSection",
 										 cmdmodeProfile,
 										 1,
 										 1,
@@ -432,8 +336,7 @@ namespace cli
 											 args.pop_front();
 											 return true;
 										 }};
-	OptParser switchByteSwappedParser{switchByteSwapped,
-									  L"ByteSwapped",
+	OptParser switchByteSwappedParser{L"ByteSwapped",
 									  cmdmodeProfile,
 									  0,
 									  0,
@@ -443,8 +346,7 @@ namespace cli
 										  options->bByteSwapped = true;
 										  return true;
 									  }};
-	OptParser switchReceiveFolderParser{switchReceiveFolder,
-										L"ReceiveFolder",
+	OptParser switchReceiveFolderParser{L"ReceiveFolder",
 										cmdmodeReceiveFolder,
 										0,
 										1,
@@ -468,16 +370,15 @@ namespace cli
 
 											return true;
 										}};
-	OptParser switchSkipParser{switchSkip, L"Skip", cmdmodeUnknown, 0, 0, OPT_SKIPATTACHMENTS};
-	OptParser switchSearchStateParser{switchSearchState,
-									  L"SearchState",
+	OptParser switchSkipParser{L"Skip", cmdmodeUnknown, 0, 0, OPT_SKIPATTACHMENTS};
+	OptParser switchSearchStateParser{L"SearchState",
 									  cmdmodeSearchState,
 									  0,
 									  1,
 									  OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
 
 	// If we want to add aliases for any switches, add them here
-	OptParser switchHelpParserAlias{switchHelp, L"Help", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
+	OptParser switchHelpParserAlias{L"Help", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
 
 	std::vector<OptParser*> g_Parsers = {
 		&switchHelpParser,

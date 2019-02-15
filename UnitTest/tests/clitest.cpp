@@ -24,9 +24,9 @@ namespace Microsoft
 				}
 
 				auto eq = true;
-				if (expected->clSwitch != actual->clSwitch || expected->mode != actual->mode ||
-					expected->minArgs != actual->minArgs || expected->maxArgs != actual->maxArgs ||
-					expected->options != actual->options)
+				if (std::wstring{expected->szSwitch} != std::wstring{actual->szSwitch} ||
+					expected->mode != actual->mode || expected->minArgs != actual->minArgs ||
+					expected->maxArgs != actual->maxArgs || expected->options != actual->options)
 				{
 					eq = false;
 				}
@@ -34,7 +34,7 @@ namespace Microsoft
 				if (!eq)
 				{
 					Logger::WriteMessage(
-						strings::format(L"Switch: %d:%d\n", expected->clSwitch, actual->clSwitch).c_str());
+						strings::format(L"Switch: %ws:%ws\n", expected->szSwitch, actual->szSwitch).c_str());
 					Logger::WriteMessage(strings::format(L"Mode: %d:%d\n", expected->mode, actual->mode).c_str());
 					Logger::WriteMessage(
 						strings::format(L"minArgs: %d:%d\n", expected->minArgs, actual->minArgs).c_str());
@@ -102,13 +102,13 @@ namespace clitest
 		TEST_METHOD(Test_CheckMinArgs)
 		{
 			// min/max-0/0
-			auto p0_0 = cli::OptParser{0, L"", 0, 0, 0, 0};
+			auto p0_0 = cli::OptParser{L"", 0, 0, 0, 0};
 			Assert::AreEqual(true, p0_0.CheckMinArgs({L"-v"}, cli::parsers));
 			Assert::AreEqual(true, p0_0.CheckMinArgs({L"-v", L"-v"}, cli::parsers));
 			Assert::AreEqual(true, p0_0.CheckMinArgs({L"-v", L"1"}, cli::parsers));
 
 			// min/max-1/1
-			auto p1_1 = cli::OptParser{0, L"", 0, 1, 1, 0};
+			auto p1_1 = cli::OptParser{L"", 0, 1, 1, 0};
 			Assert::AreEqual(true, p1_1.CheckMinArgs({L"-v", L"1"}, cli::parsers));
 			Assert::AreEqual(true, p1_1.CheckMinArgs({L"-v", L"1", L"2"}, cli::parsers));
 			Assert::AreEqual(true, p1_1.CheckMinArgs({L"-v", L"1", L"-v"}, cli::parsers));
@@ -118,13 +118,13 @@ namespace clitest
 			Assert::AreEqual(false, p1_1.CheckMinArgs({L"-v"}, cli::parsers));
 
 			// min/max-0/1
-			auto p0_1 = cli::OptParser{0, L"", 0, 0, 1, 0};
+			auto p0_1 = cli::OptParser{L"", 0, 0, 1, 0};
 			Assert::AreEqual(true, p0_1.CheckMinArgs({L"-v", L"-v"}, cli::parsers));
 			Assert::AreEqual(true, p0_1.CheckMinArgs({L"-v", L"1", L"-v"}, cli::parsers));
 			Assert::AreEqual(true, p0_1.CheckMinArgs({L"-v"}, cli::parsers));
 
 			// min/max-2/3
-			auto p2_3 = cli::OptParser{0, L"", 0, 2, 3, 0};
+			auto p2_3 = cli::OptParser{L"", 0, 2, 3, 0};
 			Assert::AreEqual(true, p2_3.CheckMinArgs({L"-v", L"1", L"2"}, cli::parsers));
 			Assert::AreEqual(true, p2_3.CheckMinArgs({L"-v", L"1", L"2", L"-v"}, cli::parsers));
 			Assert::AreEqual(true, p2_3.CheckMinArgs({L"-v", L"1", L"2", L"3"}, cli::parsers));

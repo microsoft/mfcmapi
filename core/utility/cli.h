@@ -18,7 +18,6 @@ namespace cli
 		bool seen{false};
 
 	public:
-		int clSwitch{};
 		LPCWSTR szSwitch{};
 		int mode{};
 		UINT minArgs{};
@@ -29,7 +28,6 @@ namespace cli
 		OptParser() = default;
 
 		OptParser(
-			int _clSwitch,
 			LPCWSTR _szSwitch,
 			int _mode,
 			UINT _minArgs,
@@ -37,7 +35,6 @@ namespace cli
 			int _options,
 			std::function<bool(OPTIONS* _options, std::deque<std::wstring>& args)> _parseArgs = 0)
 		{
-			clSwitch = _clSwitch;
 			szSwitch = _szSwitch;
 			mode = _mode;
 			minArgs = _minArgs;
@@ -51,15 +48,6 @@ namespace cli
 
 		_Check_return_ bool
 		CheckMinArgs(const std::deque<std::wstring>& args, const std::vector<OptParser*>& _parsers) const;
-	};
-
-	enum switchEnum
-	{
-		switchNoSwitch = 0, // not a switch
-		switchUnknown, // unknown switch
-		switchHelp, // '-h'
-		switchVerbose, // '-v'
-		switchFirstSwitch, // When extending switches, use this as the value of the first switch
 	};
 
 	enum modeEnum
