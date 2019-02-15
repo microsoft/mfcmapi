@@ -76,17 +76,17 @@ namespace clitest
 			AreEqual(&cli::switchVerboseParser, GetParser(std::wstring{L"/v"}, cli::parsers));
 			AreEqual(&cli::switchVerboseParser, GetParser(std::wstring{L"\\v"}, cli::parsers));
 			AreEqual(&cli::switchVerboseParser, GetParser(std::wstring{L"-verbose"}, cli::parsers));
-			AreEqual(&cli::switchNoSwitchParser, GetParser(std::wstring{L"-verbosey"}, cli::parsers));
-			AreEqual(&cli::switchNoSwitchParser, GetParser(std::wstring{L"-va"}, cli::parsers));
-			AreEqual(&cli::switchNoSwitchParser, GetParser(std::wstring{L"-test"}, cli::parsers));
-			AreEqual(&cli::switchNoSwitchParser, GetParser(std::wstring{L""}, cli::parsers));
-			AreEqual(&cli::switchNoSwitchParser, GetParser(std::wstring{L"+v"}, cli::parsers));
-			AreEqual(&cli::switchNoSwitchParser, GetParser(std::wstring{L"-"}, cli::parsers));
+			AreEqual(nullptr, GetParser(std::wstring{L"-verbosey"}, cli::parsers));
+			AreEqual(nullptr, GetParser(std::wstring{L"-va"}, cli::parsers));
+			AreEqual(nullptr, GetParser(std::wstring{L"-test"}, cli::parsers));
+			AreEqual(nullptr, GetParser(std::wstring{L""}, cli::parsers));
+			AreEqual(nullptr, GetParser(std::wstring{L"+v"}, cli::parsers));
+			AreEqual(nullptr, GetParser(std::wstring{L"-"}, cli::parsers));
 
 			AreEqual(&cli::switchHelpParser, GetParser(L"-?", cli::parsers));
 			AreEqual(&cli::switchVerboseParser, GetParser(L"-v", cli::parsers));
-			AreEqual(&cli::switchNoSwitchParser, GetParser(L"No switch", cli::parsers));
-			AreEqual(&cli::switchNoSwitchParser, GetParser(L"-notaswitch", cli::parsers));
+			AreEqual(nullptr, GetParser(L"No switch", cli::parsers));
+			AreEqual(nullptr, GetParser(L"-notaswitch", cli::parsers));
 		}
 
 		TEST_METHOD(Test_bSetMode)

@@ -77,7 +77,6 @@ namespace cli
 		OPT_INITMFC = 0x00002,
 	};
 
-	extern OptParser switchNoSwitchParser;
 	extern OptParser switchHelpParser;
 	extern OptParser switchVerboseParser;
 

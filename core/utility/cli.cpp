@@ -4,16 +4,15 @@
 
 namespace cli
 {
-	OptParser switchNoSwitchParser = {switchNoSwitch, L"", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	OptParser switchHelpParser = {switchHelp, L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
 	OptParser switchVerboseParser = {switchVerbose, L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
-	const std::vector<OptParser*> parsers = {&switchNoSwitchParser, &switchHelpParser, &switchVerboseParser};
+	const std::vector<OptParser*> parsers = {&switchHelpParser, &switchVerboseParser};
 
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
 	OptParser* GetParser(const std::wstring& szArg, const std::vector<OptParser*>& _parsers)
 	{
-		if (szArg.empty()) return &switchNoSwitchParser;
+		if (szArg.empty()) return nullptr;
 
 		auto szSwitch = std::wstring{};
 
@@ -26,7 +25,7 @@ namespace cli
 			if (szArg[1] != 0) szSwitch = strings::wstringToLower(&szArg[1]);
 			break;
 		default:
-			return &switchNoSwitchParser;
+			return nullptr;
 		}
 
 		for (const auto parser : _parsers)
@@ -38,7 +37,7 @@ namespace cli
 			}
 		}
 
-		return &switchNoSwitchParser;
+		return nullptr;
 	}
 
 	// If the mode isn't set (is cmdmodeUnknown/0), then we can set it to any mode
@@ -86,7 +85,18 @@ namespace cli
 			auto opt = GetParser(args.front(), _parsers);
 			if (!opt)
 			{
-				options.mode = cmdmodeHelp;
+				// If we didn't get a parser, treat this as an unswitched option.
+				// We only allow one of these
+				if (!options.lpszUnswitchedOption.empty())
+				{
+					options.mode = cmdmodeHelp;
+				} // He's already got one, you see.
+				else
+				{
+					options.lpszUnswitchedOption = args.front();
+					args.pop_front();
+				}
+
 				continue;
 			}
 
@@ -127,7 +137,6 @@ namespace cli
 	// Return false on an error.
 	_Check_return_ bool DoSwitch(OPTIONS* options, cli::OptParser* opt, std::deque<std::wstring>& args)
 	{
-		const auto arg0 = args.front();
 		args.pop_front();
 		if (!opt) return false;
 
@@ -135,15 +144,6 @@ namespace cli
 
 		switch (opt->clSwitch)
 		{
-		case switchNoSwitch:
-			// naked option without a flag - we only allow one of these
-			if (!options->lpszUnswitchedOption.empty())
-			{
-				return false;
-			} // He's already got one, you see.
-
-			options->lpszUnswitchedOption = arg0;
-			break;
 		case switchUnknown:
 			// display help
 			return false;
@@ -161,7 +161,8 @@ namespace cli
 		auto c = UINT{0};
 		for (auto it = args.cbegin() + 1; it != args.cend() && c < minArgs; it++, c++)
 		{
-			if (GetParser(*it, _parsers) != &switchNoSwitchParser)
+			// If we *do* get a parser while looking for our minargs, then we've failed
+			if (GetParser(*it, _parsers))
 			{
 				return false;
 			}
