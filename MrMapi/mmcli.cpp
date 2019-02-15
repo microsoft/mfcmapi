@@ -99,7 +99,7 @@ namespace cli
 	OptParser switchDispidParser{switchDispid, L"Dispids", cmdmodePropTag, 0, 0, OPT_DODISPID};
 	OptParser switchTypeParser{switchType, L"Type", cmdmodePropTag, 0, 1, OPT_DOTYPE, [](auto _options, auto& args) {
 								   // If we have a next argument and it's not an option, parse it as a type
-								   if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Parsers))
+								   if (!args.empty() && &switchNoSwitchParser == GetParser(args.front(), g_Parsers))
 								   {
 									   auto options = GetMyOptions(_options);
 									   options->ulTypeNum = proptype::PropTypeNameToPropType(args.front());
@@ -272,7 +272,7 @@ namespace cli
 								  [](auto _options, auto& args) {
 									  auto options = GetMyOptions(_options);
 									  // If we have a next argument and it's not an option, parse it as a profile name
-									  if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Parsers))
+									  if (!args.empty() && &switchNoSwitchParser == GetParser(args.front(), g_Parsers))
 									  {
 										  options->lpszProfile = args.front();
 										  args.pop_front();
@@ -316,7 +316,7 @@ namespace cli
 							  OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDSTORE,
 							  [](auto _options, auto& args) {
 								  auto options = GetMyOptions(_options);
-								  if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Parsers))
+								  if (!args.empty() && &switchNoSwitchParser == GetParser(args.front(), g_Parsers))
 								  {
 									  options->lpszFid = args.front();
 									  args.pop_front();
@@ -332,7 +332,7 @@ namespace cli
 							  OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_MID,
 							  [](auto _options, auto& args) {
 								  auto options = GetMyOptions(_options);
-								  if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Parsers))
+								  if (!args.empty() && &switchNoSwitchParser == GetParser(args.front(), g_Parsers))
 								  {
 									  options->lpszMid = args.front();
 									  args.pop_front();
@@ -389,7 +389,7 @@ namespace cli
 								OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC,
 								[](auto _options, auto& args) {
 									auto options = GetMyOptions(_options);
-									if (!args.empty() && switchNoSwitch == ParseArgument(args.front(), g_Parsers))
+									if (!args.empty() && &switchNoSwitchParser == GetParser(args.front(), g_Parsers))
 									{
 										LPWSTR szEndPtr = nullptr;
 										options->ulStore = wcstoul(args.front().c_str(), &szEndPtr, 10);
@@ -452,7 +452,7 @@ namespace cli
 										[](auto _options, auto& args) {
 											auto options = GetMyOptions(_options);
 											if (!args.empty() &&
-												switchNoSwitch == ParseArgument(args.front(), g_Parsers))
+												&switchNoSwitchParser == GetParser(args.front(), g_Parsers))
 											{
 												LPWSTR szEndPtr = nullptr;
 												options->ulStore = wcstoul(args.front().c_str(), &szEndPtr, 10);

@@ -9,22 +9,11 @@ namespace cli
 	OptParser switchVerboseParser = {switchVerbose, L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
 	const std::vector<OptParser*> parsers = {&switchNoSwitchParser, &switchHelpParser, &switchVerboseParser};
 
-	OptParser* GetParser(const std::wstring& szArg, const std::vector<OptParser*>& _parsers)
-	{
-		auto clSwitch = ParseArgument(szArg, _parsers);
-		for (const auto& parser : _parsers)
-		{
-			if (parser && clSwitch == parser->clSwitch) return parser;
-		}
-
-		return nullptr;
-	}
-
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
-	int ParseArgument(const std::wstring& szArg, const std::vector<OptParser*>& _parsers)
+	OptParser* GetParser(const std::wstring& szArg, const std::vector<OptParser*>& _parsers)
 	{
-		if (szArg.empty()) return switchEnum::switchNoSwitch;
+		if (szArg.empty()) return &switchNoSwitchParser;
 
 		auto szSwitch = std::wstring{};
 
@@ -37,7 +26,7 @@ namespace cli
 			if (szArg[1] != 0) szSwitch = strings::wstringToLower(&szArg[1]);
 			break;
 		default:
-			return switchEnum::switchNoSwitch;
+			return &switchNoSwitchParser;
 		}
 
 		for (const auto parser : _parsers)
@@ -45,11 +34,11 @@ namespace cli
 			// If we have a match
 			if (parser && strings::beginsWith(parser->szSwitch, szSwitch))
 			{
-				return parser->clSwitch;
+				return parser;
 			}
 		}
 
-		return switchEnum::switchNoSwitch;
+		return &switchNoSwitchParser;
 	}
 
 	// If the mode isn't set (is cmdmodeUnknown/0), then we can set it to any mode
@@ -172,7 +161,7 @@ namespace cli
 		auto c = UINT{0};
 		for (auto it = args.cbegin() + 1; it != args.cend() && c < minArgs; it++, c++)
 		{
-			if (ParseArgument(*it, _parsers) != switchNoSwitch)
+			if (GetParser(*it, _parsers) != &switchNoSwitchParser)
 			{
 				return false;
 			}

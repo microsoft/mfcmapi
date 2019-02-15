@@ -40,7 +40,8 @@ namespace Microsoft
 						strings::format(L"minArgs: %d:%d\n", expected->minArgs, actual->minArgs).c_str());
 					Logger::WriteMessage(
 						strings::format(L"maxArgs: %d:%d\n", expected->maxArgs, actual->maxArgs).c_str());
-					Logger::WriteMessage(strings::format(L"ulOpt: %d:%d\n", expected->options, actual->options).c_str());
+					Logger::WriteMessage(
+						strings::format(L"ulOpt: %d:%d\n", expected->options, actual->options).c_str());
 					Assert::Fail(ToString(message).c_str(), pLineInfo);
 				}
 			}
@@ -68,32 +69,20 @@ namespace clitest
 			Assert::AreEqual({L"-arg1", L"-arg2"}, cli::GetCommandLine(int(argv.size()), argv.data()));
 		}
 
-		TEST_METHOD(Test_ParseArgument)
-		{
-			Assert::AreEqual(int(cli::switchEnum::switchHelp), int(ParseArgument(std::wstring{L"-?"}, cli::parsers)));
-			Assert::AreEqual(
-				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"-v"}, cli::parsers)));
-			Assert::AreEqual(
-				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"/v"}, cli::parsers)));
-			Assert::AreEqual(
-				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"\\v"}, cli::parsers)));
-			Assert::AreEqual(
-				int(cli::switchEnum::switchVerbose), int(ParseArgument(std::wstring{L"-verbose"}, cli::parsers)));
-			Assert::AreEqual(
-				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-verbosey"}, cli::parsers)));
-			Assert::AreEqual(
-				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-va"}, cli::parsers)));
-			Assert::AreEqual(
-				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-test"}, cli::parsers)));
-			Assert::AreEqual(int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L""}, cli::parsers)));
-			Assert::AreEqual(
-				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"+v"}, cli::parsers)));
-			Assert::AreEqual(
-				int(cli::switchEnum::switchNoSwitch), int(ParseArgument(std::wstring{L"-"}, cli::parsers)));
-		}
-
 		TEST_METHOD(Test_GetParser)
 		{
+			AreEqual(&cli::switchHelpParser, GetParser(std::wstring{L"-?"}, cli::parsers));
+			AreEqual(&cli::switchVerboseParser, GetParser(std::wstring{L"-v"}, cli::parsers));
+			AreEqual(&cli::switchVerboseParser, GetParser(std::wstring{L"/v"}, cli::parsers));
+			AreEqual(&cli::switchVerboseParser, GetParser(std::wstring{L"\\v"}, cli::parsers));
+			AreEqual(&cli::switchVerboseParser, GetParser(std::wstring{L"-verbose"}, cli::parsers));
+			AreEqual(&cli::switchNoSwitchParser, GetParser(std::wstring{L"-verbosey"}, cli::parsers));
+			AreEqual(&cli::switchNoSwitchParser, GetParser(std::wstring{L"-va"}, cli::parsers));
+			AreEqual(&cli::switchNoSwitchParser, GetParser(std::wstring{L"-test"}, cli::parsers));
+			AreEqual(&cli::switchNoSwitchParser, GetParser(std::wstring{L""}, cli::parsers));
+			AreEqual(&cli::switchNoSwitchParser, GetParser(std::wstring{L"+v"}, cli::parsers));
+			AreEqual(&cli::switchNoSwitchParser, GetParser(std::wstring{L"-"}, cli::parsers));
+
 			AreEqual(&cli::switchHelpParser, GetParser(L"-?", cli::parsers));
 			AreEqual(&cli::switchVerboseParser, GetParser(L"-v", cli::parsers));
 			AreEqual(&cli::switchNoSwitchParser, GetParser(L"No switch", cli::parsers));
