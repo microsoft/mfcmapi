@@ -9,8 +9,9 @@ namespace cli
 	OptParser switchVerboseParser = {switchVerbose, L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
 	const std::vector<OptParser*> parsers = {&switchNoSwitchParser, &switchHelpParser, &switchVerboseParser};
 
-	OptParser* GetParser(int clSwitch, const std::vector<OptParser*>& _parsers)
+	OptParser* GetParser(const std::wstring& szArg, const std::vector<OptParser*>& _parsers)
 	{
+		auto clSwitch = ParseArgument(szArg, _parsers);
 		for (const auto& parser : _parsers)
 		{
 			if (parser && clSwitch == parser->clSwitch) return parser;
@@ -93,8 +94,7 @@ namespace cli
 		// DoSwitch will either consume part of args or return an error, so this while is OK.
 		while (!args.empty())
 		{
-			const auto iSwitch = ParseArgument(args.front(), _parsers);
-			auto opt = GetParser(iSwitch, _parsers);
+			auto opt = GetParser(args.front(), _parsers);
 			if (!opt)
 			{
 				options.mode = cmdmodeHelp;

@@ -83,7 +83,7 @@ namespace cli
 
 	extern const std::vector<OptParser*> parsers;
 
-	OptParser* GetParser(int clSwitch, const std::vector<OptParser*>& parsers);
+	OptParser* GetParser(const std::wstring& szArg, const std::vector<OptParser*>& _parsers);
 
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately

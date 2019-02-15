@@ -94,10 +94,10 @@ namespace clitest
 
 		TEST_METHOD(Test_GetParser)
 		{
-			AreEqual(&cli::switchHelpParser, GetParser(cli::switchEnum::switchHelp, cli::parsers));
-			AreEqual(&cli::switchVerboseParser, GetParser(cli::switchEnum::switchVerbose, cli::parsers));
-			AreEqual(&cli::switchNoSwitchParser, GetParser(cli::switchEnum::switchNoSwitch, cli::parsers));
-			AreEqual(nullptr, GetParser(99, cli::parsers));
+			AreEqual(&cli::switchHelpParser, GetParser(L"-?", cli::parsers));
+			AreEqual(&cli::switchVerboseParser, GetParser(L"-v", cli::parsers));
+			AreEqual(&cli::switchNoSwitchParser, GetParser(L"No switch", cli::parsers));
+			AreEqual(&cli::switchNoSwitchParser, GetParser(L"-notaswitch", cli::parsers));
 		}
 
 		TEST_METHOD(Test_bSetMode)
