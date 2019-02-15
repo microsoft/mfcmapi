@@ -4,6 +4,7 @@
 
 namespace cli
 {
+	OptParser switchInvalidParser = {L"", cmdmodeHelpFull, 0, 0, 0};
 	OptParser switchHelpParser = {L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
 	OptParser switchVerboseParser = {L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
 	const std::vector<OptParser*> parsers = {&switchHelpParser, &switchVerboseParser};
@@ -37,7 +38,7 @@ namespace cli
 			}
 		}
 
-		return nullptr;
+		return &switchInvalidParser;
 	}
 
 	// If the mode isn't set (is cmdmodeUnknown/0), then we can set it to any mode
@@ -79,10 +80,13 @@ namespace cli
 			options.mode = cmdmodeHelp;
 		}
 
-		// DoSwitch will either consume part of args or return an error, so this while is OK.
+		// We pop at least one arg each iteration, so this while is OK.
 		while (!args.empty())
 		{
-			auto opt = GetParser(args.front(), _parsers);
+			auto arg0 = args.front();
+			auto opt = GetParser(arg0, _parsers);
+			args.pop_front();
+
 			if (!opt)
 			{
 				// If we didn't get a parser, treat this as an unswitched option.
@@ -93,10 +97,15 @@ namespace cli
 				} // He's already got one, you see.
 				else
 				{
-					options.lpszUnswitchedOption = args.front();
-					args.pop_front();
+					options.lpszUnswitchedOption = arg0;
 				}
 
+				continue;
+			}
+
+			if (opt == &switchInvalidParser)
+			{
+				options.mode = cmdmodeHelp;
 				continue;
 			}
 
@@ -137,7 +146,6 @@ namespace cli
 	// Return false on an error.
 	_Check_return_ bool DoSwitch(OPTIONS* options, cli::OptParser* opt, std::deque<std::wstring>& args)
 	{
-		args.pop_front();
 		if (!opt) return false;
 
 		if (opt->parseArgs) return opt->parseArgs(options, args);
