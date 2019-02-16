@@ -145,8 +145,6 @@ namespace cli
 	// Return false on an error.
 	_Check_return_ bool DoSwitch(OPTIONS* options, cli::OptParser* opt, std::deque<std::wstring>& args)
 	{
-		if (!opt) return false;
-
 		if (opt->parseArgs) return opt->parseArgs(options, args);
 
 		return true;
