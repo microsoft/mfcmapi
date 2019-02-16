@@ -124,9 +124,9 @@ namespace cli
 				}
 			}
 
-			// Make sure we have the minimum number of args
+			// Make sure we have the right number of args
 			// Commands with variable argument counts can special case themselves
-			if (!opt->CheckMinArgs(args, _parsers))
+			if (!opt->scanArgs(args, _parsers))
 			{
 				// resetting our mode here, switch to help
 				options.mode = cmdmodeHelp;
@@ -153,7 +153,7 @@ namespace cli
 	}
 
 	_Check_return_ bool
-	OptParser::CheckMinArgs(const std::deque<std::wstring>& _args, const std::vector<OptParser*>& _parsers)
+	OptParser::scanArgs(const std::deque<std::wstring>& _args, const std::vector<OptParser*>& _parsers)
 	{
 		seen = false; // We're not "seen" until we get past this check
 		args.clear();

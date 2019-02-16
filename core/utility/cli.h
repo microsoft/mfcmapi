@@ -46,8 +46,7 @@ namespace cli
 
 		operator bool() const { return seen; }
 
-		_Check_return_ bool
-		CheckMinArgs(const std::deque<std::wstring>& args, const std::vector<OptParser*>& _parsers);
+		_Check_return_ bool scanArgs(const std::deque<std::wstring>& args, const std::vector<OptParser*>& _parsers);
 	};
 
 	enum modeEnum
