@@ -155,10 +155,10 @@ namespace cli
 	{
 		seen = false; // We're not "seen" until we get past this check
 		args.clear();
-		if (_args.size() <= minArgs) return false;
+		if (_args.size() < minArgs) return false;
 
 		auto c = UINT{0};
-		for (auto it = _args.cbegin() + 1; it != _args.cend() && c < maxArgs; it++, c++)
+		for (auto it = _args.cbegin(); it != _args.cend() && c < maxArgs; it++, c++)
 		{
 			// If we *do* get a parser while looking for our minargs, then we've failed
 			if (GetParser(*it, _parsers))

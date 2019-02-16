@@ -101,34 +101,34 @@ namespace clitest
 		{
 			// min/max-0/0
 			auto p0_0 = cli::OptParser{L"", 0, 0, 0, 0};
+			Assert::AreEqual(true, p0_0.scanArgs({}, cli::parsers));
 			Assert::AreEqual(true, p0_0.scanArgs({L"-v"}, cli::parsers));
-			Assert::AreEqual(true, p0_0.scanArgs({L"-v", L"-v"}, cli::parsers));
-			Assert::AreEqual(true, p0_0.scanArgs({L"-v", L"1"}, cli::parsers));
+			Assert::AreEqual(true, p0_0.scanArgs({L"1"}, cli::parsers));
 
 			// min/max-1/1
 			auto p1_1 = cli::OptParser{L"", 0, 1, 1, 0};
-			Assert::AreEqual(true, p1_1.scanArgs({L"-v", L"1"}, cli::parsers));
-			Assert::AreEqual(true, p1_1.scanArgs({L"-v", L"2", L"3"}, cli::parsers));
-			Assert::AreEqual(true, p1_1.scanArgs({L"-v", L"4", L"-v"}, cli::parsers));
+			Assert::AreEqual(true, p1_1.scanArgs({L"1"}, cli::parsers));
+			Assert::AreEqual(true, p1_1.scanArgs({L"2", L"3"}, cli::parsers));
+			Assert::AreEqual(true, p1_1.scanArgs({L"4", L"-v"}, cli::parsers));
 			// Not enough non switch args
-			Assert::AreEqual(false, p1_1.scanArgs({L"-v", L"-v"}, cli::parsers));
-			// Not enough args at all
 			Assert::AreEqual(false, p1_1.scanArgs({L"-v"}, cli::parsers));
+			// Not enough args at all
+			Assert::AreEqual(false, p1_1.scanArgs({}, cli::parsers));
 
 			// min/max-0/1
 			auto p0_1 = cli::OptParser{L"", 0, 0, 1, 0};
-			Assert::AreEqual(true, p0_1.scanArgs({L"-v", L"-v"}, cli::parsers));
-			Assert::AreEqual(true, p0_1.scanArgs({L"-v", L"1", L"-v"}, cli::parsers));
 			Assert::AreEqual(true, p0_1.scanArgs({L"-v"}, cli::parsers));
+			Assert::AreEqual(true, p0_1.scanArgs({L"1", L"-v"}, cli::parsers));
+			Assert::AreEqual(true, p0_1.scanArgs({}, cli::parsers));
 
 			// min/max-2/3
 			auto p2_3 = cli::OptParser{L"", 0, 2, 3, 0};
-			Assert::AreEqual(true, p2_3.scanArgs({L"-v", L"1", L"2"}, cli::parsers));
-			Assert::AreEqual(true, p2_3.scanArgs({L"-v", L"3", L"4", L"-v"}, cli::parsers));
-			Assert::AreEqual(true, p2_3.scanArgs({L"-v", L"5", L"6", L"7"}, cli::parsers));
-			Assert::AreEqual(false, p2_3.scanArgs({L"-v"}, cli::parsers));
-			Assert::AreEqual(false, p2_3.scanArgs({L"-v", L"1"}, cli::parsers));
-			Assert::AreEqual(false, p2_3.scanArgs({L"-v", L"1", L"-v"}, cli::parsers));
+			Assert::AreEqual(true, p2_3.scanArgs({L"1", L"2"}, cli::parsers));
+			Assert::AreEqual(true, p2_3.scanArgs({L"3", L"4", L"-v"}, cli::parsers));
+			Assert::AreEqual(true, p2_3.scanArgs({L"5", L"6", L"7"}, cli::parsers));
+			Assert::AreEqual(false, p2_3.scanArgs({}, cli::parsers));
+			Assert::AreEqual(false, p2_3.scanArgs({L"1"}, cli::parsers));
+			Assert::AreEqual(false, p2_3.scanArgs({L"1", L"-v"}, cli::parsers));
 		}
 	}; // namespace clitest
 } // namespace clitest
