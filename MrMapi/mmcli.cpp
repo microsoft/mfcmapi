@@ -849,10 +849,10 @@ namespace cli
 		// If we weren't passed an output file/directory, remember the current directory
 		if (options->lpszOutput.empty() && options->mode != cmdmodeSmartView && options->mode != cmdmodeProfile)
 		{
-			char strPath[_MAX_PATH];
-			GetCurrentDirectoryA(_MAX_PATH, strPath);
+			WCHAR strPath[_MAX_PATH];
+			GetCurrentDirectoryW(_MAX_PATH, strPath);
 
-			options->lpszOutput = strings::LPCSTRToWstring(strPath);
+			options->lpszOutput = strPath;
 		}
 
 		// Validate that we have bare minimum to run
