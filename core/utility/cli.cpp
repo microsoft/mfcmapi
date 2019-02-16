@@ -109,7 +109,6 @@ namespace cli
 				continue;
 			}
 
-			opt->SetSeen(true);
 			if (opt->mode == cmdmodeHelpFull)
 			{
 				options.mode = cmdmodeHelpFull;
@@ -154,21 +153,28 @@ namespace cli
 	}
 
 	_Check_return_ bool
-	OptParser::CheckMinArgs(const std::deque<std::wstring>& args, const std::vector<OptParser*>& _parsers) const
+	OptParser::CheckMinArgs(const std::deque<std::wstring>& _args, const std::vector<OptParser*>& _parsers)
 	{
+		seen = false; // We're not "seen" until we get past this check
+		args.clear();
 		if (minArgs == 0) return true;
-		if (args.size() <= minArgs) return false;
+		if (_args.size() <= minArgs) return false;
 
 		auto c = UINT{0};
-		for (auto it = args.cbegin() + 1; it != args.cend() && c < minArgs; it++, c++)
+		for (auto it = _args.cbegin() + 1; it != _args.cend() && c < maxArgs; it++, c++)
 		{
 			// If we *do* get a parser while looking for our minargs, then we've failed
 			if (GetParser(*it, _parsers))
 			{
+				// If we've already gotten our minArgs, we're done
+				if (c >= minArgs) break;
 				return false;
 			}
+
+			args.push_back(*it);
 		}
 
+		seen = true;
 		return true;
 	}
 } // namespace cli

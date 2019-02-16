@@ -23,6 +23,7 @@ namespace cli
 		UINT minArgs{};
 		UINT maxArgs{};
 		int options{};
+		std::vector<std::wstring> args;
 		std::function<bool(OPTIONS* _options, std::deque<std::wstring>& args)> parseArgs = 0;
 
 		OptParser() = default;
@@ -43,11 +44,10 @@ namespace cli
 			parseArgs = _parseArgs;
 		}
 
-		void SetSeen(bool _seen) { seen = _seen; }
 		operator bool() const { return seen; }
 
 		_Check_return_ bool
-		CheckMinArgs(const std::deque<std::wstring>& args, const std::vector<OptParser*>& _parsers) const;
+		CheckMinArgs(const std::deque<std::wstring>& args, const std::vector<OptParser*>& _parsers);
 	};
 
 	enum modeEnum
