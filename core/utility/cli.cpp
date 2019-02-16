@@ -155,7 +155,6 @@ namespace cli
 	{
 		seen = false; // We're not "seen" until we get past this check
 		args.clear();
-		if (minArgs == 0) return true;
 		if (_args.size() <= minArgs) return false;
 
 		auto c = UINT{0};
