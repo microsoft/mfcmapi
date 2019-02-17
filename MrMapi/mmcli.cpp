@@ -179,36 +179,8 @@ namespace cli
 						cmdmodeFidMid,
 						0,
 						1,
-						OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDSTORE,
-						[](auto _options) {
-							auto options = GetMyOptions(_options);
-							if (!switchFid.args.empty())
-							{
-								options->lpszFid = switchFid.args.front();
-							}
-
-							return true;
-						}};
-	OptParser switchMid{L"MID",
-						cmdmodeFidMid,
-						0,
-						1,
-						OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_MID,
-						[](auto _options) {
-							auto options = GetMyOptions(_options);
-							if (!switchMid.args.empty())
-							{
-								options->lpszMid = switchMid.args.front();
-							}
-							else
-							{
-								// We use the blank string to remember the -mid parameter was passed and save having an extra flag
-								// TODO: Just check switchMid for seen instead
-								options->lpszMid = L"";
-							}
-
-							return true;
-						}};
+						OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDSTORE};
+	OptParser switchMid{L"MID", cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
 	OptParser switchFlag{L"Flag", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options) {
 							 auto options = GetMyOptions(_options);
 							 LPWSTR szEndPtr = nullptr;

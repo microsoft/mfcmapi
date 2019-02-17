@@ -124,7 +124,6 @@ namespace cli
 		OPT_PROFILE = 0x100000,
 		OPT_NEEDSTORE = 0x200000,
 		OPT_SKIPATTACHMENTS = 0x400000,
-		OPT_MID = 0x800000,
 	};
 	inline OPTIONFLAGS& operator|=(OPTIONFLAGS& a, OPTIONFLAGS b) noexcept
 	{
@@ -144,8 +143,6 @@ namespace cli
 		std::wstring lpszSubject;
 		std::wstring lpszMessageClass;
 		std::wstring lpszFolderPath;
-		std::wstring lpszFid;
-		std::wstring lpszMid;
 		std::wstring lpszFlagName;
 		std::wstring lpszVersion;
 		std::wstring lpszProfileSection;
