@@ -158,16 +158,8 @@ namespace cli
 								return true;
 							}};
 	OptParser switchXML{L"XML", cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE};
-	OptParser switchSubject{L"Subject", cmdmodeContents, 1, 1, OPT_NOOPT, [](auto _options) {
-								auto options = GetMyOptions(_options);
-								options->lpszSubject = switchSubject.args.front();
-								return true;
-							}};
-	OptParser switchMessageClass{L"MessageClass", cmdmodeContents, 1, 1, OPT_NOOPT, [](auto _options) {
-									 auto options = GetMyOptions(_options);
-									 options->lpszMessageClass = switchMessageClass.args.front();
-									 return true;
-								 }};
+	OptParser switchSubject{L"Subject", cmdmodeContents, 1, 1, OPT_NOOPT};
+	OptParser switchMessageClass{L"MessageClass", cmdmodeContents, 1, 1, OPT_NOOPT};
 	OptParser switchMSG{L"MSG", cmdmodeContents, 0, 0, OPT_MSG};
 	OptParser switchList{L"List", cmdmodeContents, 0, 0, OPT_LIST};
 	OptParser switchChildFolders{L"ChildFolders",

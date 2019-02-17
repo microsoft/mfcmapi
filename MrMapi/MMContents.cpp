@@ -86,13 +86,13 @@ void DumpMSG(
 
 void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 {
-	SRestriction sResTop = {0};
-	SRestriction sResMiddle[2] = {0};
-	SRestriction sResSubject[2] = {0};
-	SRestriction sResMessageClass[2] = {0};
-	SPropValue sPropValue[2] = {0};
+	SRestriction sResTop = {};
+	SRestriction sResMiddle[2] = {};
+	SRestriction sResSubject[2] = {};
+	SRestriction sResMessageClass[2] = {};
+	SPropValue sPropValue[2] = {};
 	LPSRestriction lpRes = nullptr;
-	if (!ProgOpts.lpszSubject.empty() || !ProgOpts.lpszMessageClass.empty())
+	if (!cli::switchSubject.getArg(0).empty() || !cli::switchMessageClass.getArg(0).empty())
 	{
 		// RES_AND
 		//   RES_AND (optional)
@@ -102,7 +102,8 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 		//     RES_EXIST - PR_MESSAGE_CLASS_W
 		//     RES_CONTENT - lpszMessageClass
 		auto i = 0;
-		if (!ProgOpts.lpszSubject.empty())
+		const auto szSubject = cli::switchSubject.getArg(0);
+		if (!szSubject.empty())
 		{
 			sResMiddle[i].rt = RES_AND;
 			sResMiddle[i].res.resAnd.cRes = 2;
@@ -114,11 +115,12 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 			sResSubject[1].res.resContent.ulFuzzyLevel = FL_FULLSTRING | FL_IGNORECASE;
 			sResSubject[1].res.resContent.lpProp = &sPropValue[0];
 			sPropValue[0].ulPropTag = PR_SUBJECT_W;
-			sPropValue[0].Value.lpszW = const_cast<LPWSTR>(ProgOpts.lpszSubject.c_str());
+			sPropValue[0].Value.lpszW = const_cast<LPWSTR>(szSubject.c_str());
 			i++;
 		}
 
-		if (!ProgOpts.lpszMessageClass.empty())
+		const auto szMessageClass = cli::switchMessageClass.getArg(0);
+		if (!szMessageClass.empty())
 		{
 			sResMiddle[i].rt = RES_AND;
 			sResMiddle[i].res.resAnd.cRes = 2;
@@ -130,9 +132,10 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 			sResMessageClass[1].res.resContent.ulFuzzyLevel = FL_FULLSTRING | FL_IGNORECASE;
 			sResMessageClass[1].res.resContent.lpProp = &sPropValue[1];
 			sPropValue[1].ulPropTag = PR_MESSAGE_CLASS_W;
-			sPropValue[1].Value.lpszW = const_cast<LPWSTR>(ProgOpts.lpszMessageClass.c_str());
+			sPropValue[1].Value.lpszW = const_cast<LPWSTR>(szMessageClass.c_str());
 			i++;
 		}
+
 		sResTop.rt = RES_AND;
 		sResTop.res.resAnd.cRes = i;
 		sResTop.res.resAnd.lpRes = &sResMiddle[0];

@@ -140,8 +140,6 @@ namespace cli
 		ULONG ulSVParser{};
 		std::wstring lpszInput;
 		std::wstring lpszOutput;
-		std::wstring lpszSubject;
-		std::wstring lpszMessageClass;
 		std::wstring lpszFolderPath;
 		std::wstring lpszFlagName;
 		std::wstring lpszVersion;
