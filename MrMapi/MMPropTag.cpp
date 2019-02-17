@@ -8,6 +8,7 @@
 #include <core/addin/mfcmapi.h>
 #include <core/utility/output.h>
 #include <core/interpret/proptags.h>
+#include <core/interpret/proptype.h>
 
 // Searches a NAMEID_ARRAY_ENTRY array for a target dispid.
 // Exact matches are those that match
@@ -543,6 +544,8 @@ void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
 		strings::wstringToUlong(ProgOpts.lpszUnswitchedOption, ProgOpts.options & cli::OPT_DODECIMAL ? 10 : 16);
 	if (lpszPropName) output::DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
 	output::DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
+	const auto ulTypeNum =
+		cli::switchType.args.empty() ? ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType.args.front());
 
 	// Handle dispid cases
 	if (ProgOpts.options & cli::OPT_DODISPID)
@@ -553,7 +556,7 @@ void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
 		}
 		else if (ProgOpts.options & cli::OPT_DOPARTIALSEARCH)
 		{
-			PrintDispIDFromPartialName(lpszPropName, ProgOpts.ulTypeNum);
+			PrintDispIDFromPartialName(lpszPropName, ulTypeNum);
 		}
 		else if (ulPropNum)
 		{
@@ -574,19 +577,19 @@ void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
 	}
 	else if (ProgOpts.options & cli::OPT_DOPARTIALSEARCH)
 	{
-		PrintTagFromPartialName(lpszPropName, ProgOpts.ulTypeNum);
+		PrintTagFromPartialName(lpszPropName, ulTypeNum);
 	}
 	else if (lpszPropName && !ulPropNum)
 	{
-		PrintTagFromName(lpszPropName, ProgOpts.ulTypeNum);
+		PrintTagFromName(lpszPropName, ulTypeNum);
 	}
 	// If we weren't asked about a property, maybe we were asked about types
 	else if (ProgOpts.options & cli::OPT_DOTYPE)
 	{
-		if (ulNoMatch != ProgOpts.ulTypeNum)
+		if (ulNoMatch != ulTypeNum)
 		{
-			PrintType(PROP_TAG(ProgOpts.ulTypeNum, 0));
-			printf(" = 0x%04lX = %lu", ProgOpts.ulTypeNum, ProgOpts.ulTypeNum);
+			PrintType(PROP_TAG(ulTypeNum, 0));
+			printf(" = 0x%04lX = %lu", ulTypeNum, ulTypeNum);
 			printf("\n");
 		}
 		else

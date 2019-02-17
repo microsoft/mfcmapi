@@ -42,15 +42,7 @@ namespace cli
 							   return true;
 						   }};
 	OptParser switchDispid{L"Dispids", cmdmodePropTag, 0, 0, OPT_DODISPID};
-	OptParser switchType{L"Type", cmdmodePropTag, 0, 1, OPT_DOTYPE, [](auto _options) {
-							 if (!switchType.args.empty())
-							 {
-								 auto options = GetMyOptions(_options);
-								 options->ulTypeNum = proptype::PropTypeNameToPropType(switchType.args.front());
-							 }
-
-							 return true;
-						 }};
+	OptParser switchType{L"Type", cmdmodePropTag, 0, 1, OPT_DOTYPE};
 	OptParser switchGuid{L"Guids", cmdmodeGuid, 0, 0, OPT_NOOPT};
 	OptParser switchError{L"Error", cmdmodeErr, 0, 0, OPT_NOOPT};
 	OptParser switchParser{L"Type", cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE, [](auto _options) {
@@ -813,8 +805,7 @@ namespace cli
 				options->lpszUnswitchedOption.empty())
 				options->mode = cmdmodeHelp;
 			else if (
-				options->options & OPT_DOPARTIALSEARCH && options->options & OPT_DOTYPE &&
-				ulNoMatch == options->ulTypeNum)
+				options->options & OPT_DOPARTIALSEARCH && options->options & OPT_DOTYPE && !switchType.args.empty())
 				options->mode = cmdmodeHelp;
 			else if (
 				options->options & OPT_DOFLAG &&
@@ -863,7 +854,15 @@ namespace cli
 	{
 		output::DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.mode);
 		output::DebugPrint(DBGGeneric, L"options = 0x%08X\n", ProgOpts.options);
-		output::DebugPrint(DBGGeneric, L"ulTypeNum = 0x%08X\n", ProgOpts.ulTypeNum);
+		if (switchType.args.size() == 1)
+		{
+			output::DebugPrint(
+				DBGGeneric,
+				L"ulTypeNum = %ws = 0x%08X\n",
+				switchType.args[0].c_str(),
+				proptype::PropTypeNameToPropType(switchType.args[0]));
+		}
+
 		if (!ProgOpts.lpszUnswitchedOption.empty())
 			output::DebugPrint(DBGGeneric, L"lpszUnswitchedOption = %ws\n", ProgOpts.lpszUnswitchedOption.c_str());
 		if (!ProgOpts.lpszFlagName.empty())
