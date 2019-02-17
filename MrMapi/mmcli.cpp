@@ -850,39 +850,25 @@ namespace cli
 		}
 	}
 
-	void PrintArgs(_In_ const MYOPTIONS& ProgOpts)
+	void PrintArgs(_In_ const OPTIONS& ProgOpts)
 	{
 		output::DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.mode);
 		output::DebugPrint(DBGGeneric, L"options = 0x%08X\n", ProgOpts.options);
-		if (switchType.args.size() == 1)
-		{
-			output::DebugPrint(
-				DBGGeneric,
-				L"ulTypeNum = %ws = 0x%08X\n",
-				switchType.args[0].c_str(),
-				proptype::PropTypeNameToPropType(switchType.args[0]));
-		}
-
 		if (!ProgOpts.lpszUnswitchedOption.empty())
 			output::DebugPrint(DBGGeneric, L"lpszUnswitchedOption = %ws\n", ProgOpts.lpszUnswitchedOption.c_str());
-		if (!ProgOpts.lpszFlagName.empty())
-			output::DebugPrint(DBGGeneric, L"lpszFlagName = %ws\n", ProgOpts.lpszFlagName.c_str());
-		if (!ProgOpts.lpszFolderPath.empty())
-			output::DebugPrint(DBGGeneric, L"lpszFolderPath = %ws\n", ProgOpts.lpszFolderPath.c_str());
-		if (!ProgOpts.lpszInput.empty())
-			output::DebugPrint(DBGGeneric, L"lpszInput = %ws\n", ProgOpts.lpszInput.c_str());
-		if (!ProgOpts.lpszMessageClass.empty())
-			output::DebugPrint(DBGGeneric, L"lpszMessageClass = %ws\n", ProgOpts.lpszMessageClass.c_str());
-		if (!ProgOpts.lpszMid.empty()) output::DebugPrint(DBGGeneric, L"lpszMid = %ws\n", ProgOpts.lpszMid.c_str());
-		if (!ProgOpts.lpszOutput.empty())
-			output::DebugPrint(DBGGeneric, L"lpszOutput = %ws\n", ProgOpts.lpszOutput.c_str());
-		if (!ProgOpts.lpszProfile.empty())
-			output::DebugPrint(DBGGeneric, L"lpszProfile = %ws\n", ProgOpts.lpszProfile.c_str());
-		if (!ProgOpts.lpszProfileSection.empty())
-			output::DebugPrint(DBGGeneric, L"lpszProfileSection = %ws\n", ProgOpts.lpszProfileSection.c_str());
-		if (!ProgOpts.lpszSubject.empty())
-			output::DebugPrint(DBGGeneric, L"lpszSubject = %ws\n", ProgOpts.lpszSubject.c_str());
-		if (!ProgOpts.lpszVersion.empty())
-			output::DebugPrint(DBGGeneric, L"lpszVersion = %ws\n", ProgOpts.lpszVersion.c_str());
+
+		for (const auto& parser : g_Parsers)
+		{
+			// Was this parser seen?
+			if (*parser)
+			{
+				output::DebugPrint(DBGGeneric, L"Switch: %ws\n", parser->szSwitch);
+				auto i = 0;
+				for (const auto& arg : parser->args)
+				{
+					output::DebugPrint(DBGGeneric, L"  arg[%d] = %ws\n", i++, arg.c_str());
+				}
+			}
+		}
 	}
 } // namespace cli
