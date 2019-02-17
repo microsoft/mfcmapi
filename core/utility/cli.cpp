@@ -132,7 +132,7 @@ namespace cli
 				options.mode = cmdmodeHelp;
 			}
 
-			if (!DoSwitch(&options, opt, args))
+			if (!DoSwitch(&options, opt))
 			{
 				options.mode = cmdmodeHelp;
 			}
@@ -143,21 +143,22 @@ namespace cli
 
 	// Return true if we succesfully peeled off a switch.
 	// Return false on an error.
-	_Check_return_ bool DoSwitch(OPTIONS* options, cli::OptParser* opt, std::deque<std::wstring>& args)
+	_Check_return_ bool DoSwitch(OPTIONS* options, cli::OptParser* opt)
 	{
-		if (opt->parseArgs) return opt->parseArgs(options, args);
+		if (opt->parseArgs) return opt->parseArgs(options);
 
 		return true;
 	}
 
-	_Check_return_ bool
-	OptParser::scanArgs(const std::deque<std::wstring>& _args, const std::vector<OptParser*>& _parsers)
+	// Consume min/max args and store them in the option
+	_Check_return_ bool OptParser::scanArgs(std::deque<std::wstring>& _args, const std::vector<OptParser*>& _parsers)
 	{
 		seen = false; // We're not "seen" until we get past this check
 		args.clear();
 		if (_args.size() < minArgs) return false;
 
 		auto c = UINT{0};
+		auto foundArgs = std::vector<std::wstring>{};
 		for (auto it = _args.cbegin(); it != _args.cend() && c < maxArgs; it++, c++)
 		{
 			// If we *do* get a parser while looking for our minargs, then we've failed
@@ -168,9 +169,14 @@ namespace cli
 				return false;
 			}
 
-			args.push_back(*it);
+			foundArgs.push_back(*it);
 		}
 
+		// remove all our found arguments
+		_args.erase(_args.begin(), _args.begin() + foundArgs.size());
+
+		// and save them locally
+		args = foundArgs;
 		seen = true;
 		return true;
 	}

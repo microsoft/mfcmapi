@@ -97,38 +97,81 @@ namespace clitest
 			Assert::AreEqual(cli::cmdmodeHelpFull, cli::modeEnum(mode));
 		}
 
+		void test_scanArgs(bool targetResult, const cli::OptParser& _parser, const std::deque<std::wstring>& _args)
+		{
+			// Make a local non-const copy of the inputs
+			auto parser = _parser;
+			auto args = _args;
+
+			auto result = parser.scanArgs(args, cli::parsers);
+
+			if (targetResult == result)
+			{
+				if (!result) return;
+
+				// If we claim to have matched, some further checks
+				if (parser.args.size() >= parser.minArgs && parser.args.size() <= parser.maxArgs)
+				{
+					return;
+				}
+			}
+
+			Logger::WriteMessage(strings::format(L"scanArgs test failed\n").c_str());
+
+			Logger::WriteMessage(strings::format(L"Switch: %ws\n", parser.szSwitch).c_str());
+			Logger::WriteMessage(strings::format(L"Mode: %d\n", parser.mode).c_str());
+			Logger::WriteMessage(strings::format(L"minArgs: %d\n", parser.minArgs).c_str());
+			Logger::WriteMessage(strings::format(L"maxArgs: %d\n", parser.maxArgs).c_str());
+			Logger::WriteMessage(strings::format(L"ulOpt: %d\n", parser.options).c_str());
+
+			Logger::WriteMessage(strings::format(L"Tested args\n").c_str());
+			for (auto& arg : args)
+			{
+				Logger::WriteMessage(strings::format(L"  %ws\n", arg.c_str()).c_str());
+			}
+
+			Logger::WriteMessage(strings::format(L"Parsed args\n").c_str());
+			for (auto& arg : parser.args)
+			{
+				Logger::WriteMessage(strings::format(L"  %ws\n", arg.c_str()).c_str());
+			}
+
+			Assert::Fail();
+		}
+
 		TEST_METHOD(Test_scanArgs)
 		{
 			// min/max-0/0
 			auto p0_0 = cli::OptParser{L"", 0, 0, 0, 0};
-			Assert::AreEqual(true, p0_0.scanArgs({}, cli::parsers));
-			Assert::AreEqual(true, p0_0.scanArgs({L"-v"}, cli::parsers));
-			Assert::AreEqual(true, p0_0.scanArgs({L"1"}, cli::parsers));
+			test_scanArgs(true, p0_0, {});
+			test_scanArgs(true, p0_0, {});
+			test_scanArgs(true, p0_0, {L"-v"});
+			test_scanArgs(true, p0_0, {L"1"});
 
-			// min/max-1/1
+			//// min/max-1/1
 			auto p1_1 = cli::OptParser{L"", 0, 1, 1, 0};
-			Assert::AreEqual(true, p1_1.scanArgs({L"1"}, cli::parsers));
-			Assert::AreEqual(true, p1_1.scanArgs({L"2", L"3"}, cli::parsers));
-			Assert::AreEqual(true, p1_1.scanArgs({L"4", L"-v"}, cli::parsers));
+			test_scanArgs(true, p1_1, {L"1"});
+			test_scanArgs(true, p1_1, {L"2", L"3"});
+			test_scanArgs(true, p1_1, {L"4", L"-v"});
 			// Not enough non switch args
-			Assert::AreEqual(false, p1_1.scanArgs({L"-v"}, cli::parsers));
+			test_scanArgs(false, p1_1, {L"-v"});
 			// Not enough args at all
-			Assert::AreEqual(false, p1_1.scanArgs({}, cli::parsers));
+			test_scanArgs(false, p1_1, {});
 
 			// min/max-0/1
 			auto p0_1 = cli::OptParser{L"", 0, 0, 1, 0};
-			Assert::AreEqual(true, p0_1.scanArgs({L"-v"}, cli::parsers));
-			Assert::AreEqual(true, p0_1.scanArgs({L"1", L"-v"}, cli::parsers));
-			Assert::AreEqual(true, p0_1.scanArgs({}, cli::parsers));
+			test_scanArgs(true, p0_1, {L"-v"});
+			test_scanArgs(true, p0_1, {L"1", L"-v"});
+			test_scanArgs(true, p0_1, {});
 
 			// min/max-2/3
 			auto p2_3 = cli::OptParser{L"", 0, 2, 3, 0};
-			Assert::AreEqual(true, p2_3.scanArgs({L"1", L"2"}, cli::parsers));
-			Assert::AreEqual(true, p2_3.scanArgs({L"3", L"4", L"-v"}, cli::parsers));
-			Assert::AreEqual(true, p2_3.scanArgs({L"5", L"6", L"7"}, cli::parsers));
-			Assert::AreEqual(false, p2_3.scanArgs({}, cli::parsers));
-			Assert::AreEqual(false, p2_3.scanArgs({L"1"}, cli::parsers));
-			Assert::AreEqual(false, p2_3.scanArgs({L"1", L"-v"}, cli::parsers));
+			test_scanArgs(true, p2_3, {L"1", L"2"});
+			test_scanArgs(true, p2_3, {L"3", L"4", L"-v"});
+			test_scanArgs(true, p2_3, {L"5", L"6", L"7"});
+			test_scanArgs(false, p2_3, {});
+			test_scanArgs(false, p2_3, {L"1"});
+			test_scanArgs(false, p2_3, {L"1", L"-v"});
 		}
 	}; // namespace clitest
 } // namespace clitest

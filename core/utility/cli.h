@@ -24,7 +24,7 @@ namespace cli
 		UINT maxArgs{};
 		int options{};
 		std::vector<std::wstring> args;
-		std::function<bool(OPTIONS* _options, std::deque<std::wstring>& args)> parseArgs = 0;
+		std::function<bool(OPTIONS* _options)> parseArgs = 0;
 
 		OptParser() = default;
 
@@ -34,7 +34,7 @@ namespace cli
 			UINT _minArgs,
 			UINT _maxArgs,
 			int _options,
-			std::function<bool(OPTIONS* _options, std::deque<std::wstring>& args)> _parseArgs = 0)
+			std::function<bool(OPTIONS* _options)> _parseArgs = 0)
 		{
 			szSwitch = _szSwitch;
 			mode = _mode;
@@ -46,7 +46,7 @@ namespace cli
 
 		operator bool() const { return seen; }
 
-		_Check_return_ bool scanArgs(const std::deque<std::wstring>& args, const std::vector<OptParser*>& _parsers);
+		_Check_return_ bool scanArgs(std::deque<std::wstring>& args, const std::vector<OptParser*>& _parsers);
 	};
 
 	enum modeEnum
@@ -89,5 +89,5 @@ namespace cli
 		const std::vector<OptParser*>& parsers,
 		std::function<void(OPTIONS* _options)> postParseCheck);
 
-	_Check_return_ bool DoSwitch(OPTIONS* _options, cli::OptParser* opt, std::deque<std::wstring>& args);
+	_Check_return_ bool DoSwitch(OPTIONS* _options, cli::OptParser* opt);
 } // namespace cli
