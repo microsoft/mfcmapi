@@ -849,26 +849,4 @@ namespace cli
 			break;
 		}
 	}
-
-	void PrintArgs(_In_ const OPTIONS& ProgOpts)
-	{
-		output::DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.mode);
-		output::DebugPrint(DBGGeneric, L"options = 0x%08X\n", ProgOpts.options);
-		if (!ProgOpts.lpszUnswitchedOption.empty())
-			output::DebugPrint(DBGGeneric, L"lpszUnswitchedOption = %ws\n", ProgOpts.lpszUnswitchedOption.c_str());
-
-		for (const auto& parser : g_Parsers)
-		{
-			// Was this parser seen?
-			if (*parser)
-			{
-				output::DebugPrint(DBGGeneric, L"Switch: %ws\n", parser->szSwitch);
-				auto i = 0;
-				for (const auto& arg : parser->args)
-				{
-					output::DebugPrint(DBGGeneric, L"  arg[%d] = %ws\n", i++, arg.c_str());
-				}
-			}
-		}
-	}
 } // namespace cli

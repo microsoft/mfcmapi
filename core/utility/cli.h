@@ -90,4 +90,6 @@ namespace cli
 		std::function<void(OPTIONS* _options)> postParseCheck);
 
 	_Check_return_ bool DoSwitch(OPTIONS* _options, cli::OptParser* opt);
+
+	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<OptParser*>& _parsers);
 } // namespace cli

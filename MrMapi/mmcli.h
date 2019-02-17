@@ -168,6 +168,4 @@ namespace cli
 
 	void DisplayUsage(BOOL bFull);
 	void PostParseCheck(OPTIONS* _options);
-
-	void PrintArgs(_In_ const OPTIONS& ProgOpts);
 } // namespace cli

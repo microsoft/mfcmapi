@@ -156,7 +156,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	if (ProgOpts.options & cli::OPT_VERBOSE)
 	{
 		registry::debugTag = 0xFFFFFFFF;
-		PrintArgs(ProgOpts);
+		cli::PrintArgs(ProgOpts, cli::g_Parsers);
 	}
 
 	if (!(ProgOpts.options & cli::OPT_NOADDINS))
