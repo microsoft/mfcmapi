@@ -4,10 +4,10 @@
 
 namespace cli
 {
-	OptParser switchInvalidParser = {L"", cmdmodeHelpFull, 0, 0, 0};
-	OptParser switchHelpParser = {L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
-	OptParser switchVerboseParser = {L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
-	const std::vector<OptParser*> parsers = {&switchHelpParser, &switchVerboseParser};
+	OptParser switchInvalid = {L"", cmdmodeHelpFull, 0, 0, 0};
+	OptParser switchHelp = {L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
+	OptParser switchVerbose = {L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
+	const std::vector<OptParser*> parsers = {&switchHelp, &switchVerbose};
 
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
@@ -38,7 +38,7 @@ namespace cli
 			}
 		}
 
-		return &switchInvalidParser;
+		return &switchInvalid;
 	}
 
 	// If the mode isn't set (is cmdmodeUnknown/0), then we can set it to any mode
@@ -103,7 +103,7 @@ namespace cli
 				continue;
 			}
 
-			if (opt == &switchInvalidParser)
+			if (opt == &switchInvalid)
 			{
 				options.mode = cmdmodeHelp;
 				continue;

@@ -64,9 +64,9 @@ namespace cli
 		OPT_INITMFC = 0x00002,
 	};
 
-	extern OptParser switchInvalidParser;
-	extern OptParser switchHelpParser;
-	extern OptParser switchVerboseParser;
+	extern OptParser switchInvalid;
+	extern OptParser switchHelp;
+	extern OptParser switchVerbose;
 
 	extern const std::vector<OptParser*> parsers;
 
