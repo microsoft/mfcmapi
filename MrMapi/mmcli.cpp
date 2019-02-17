@@ -228,11 +228,7 @@ namespace cli
 
 							  return true;
 						  }};
-	OptParser switchVersion{L"Version", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options) {
-								auto options = GetMyOptions(_options);
-								options->lpszVersion = switchVersion.args.front();
-								return true;
-							}};
+	OptParser switchVersion{L"Version", cmdmodeUnknown, 1, 1, OPT_NOOPT};
 	OptParser switchSize{L"Size",
 						 cmdmodeFolderSize,
 						 0,

@@ -142,7 +142,6 @@ namespace cli
 		std::wstring lpszOutput;
 		std::wstring lpszFolderPath;
 		std::wstring lpszFlagName;
-		std::wstring lpszVersion;
 		std::wstring lpszProfileSection;
 		ULONG ulStore{};
 		ULONG ulFolder{mapi::DEFAULT_INBOX};

@@ -165,9 +165,9 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		addin::LoadAddIns();
 	}
 
-	if (!ProgOpts.lpszVersion.empty())
+	if (cli::switchVersion)
 	{
-		if (LoadMAPIVersion(ProgOpts.lpszVersion)) return;
+		if (LoadMAPIVersion(cli::switchVersion.getArg(0))) return;
 	}
 
 	if (ProgOpts.mode == cli::cmdmodeHelp)
