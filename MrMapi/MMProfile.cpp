@@ -83,7 +83,7 @@ namespace output
 			printf("   Output File: %ws\n", ProgOpts.lpszOutput.c_str());
 			ExportProfile(
 				strings::wstringTostring(ProgOpts.lpszProfile),
-				ProgOpts.lpszProfileSection,
+				cli::switchProfileSection.getArg(1),
 				ProgOpts.bByteSwapped,
 				ProgOpts.lpszOutput);
 		}

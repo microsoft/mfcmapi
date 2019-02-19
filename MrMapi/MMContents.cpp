@@ -92,7 +92,7 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 	SRestriction sResMessageClass[2] = {};
 	SPropValue sPropValue[2] = {};
 	LPSRestriction lpRes = nullptr;
-	if (!cli::switchSubject.getArg(0).empty() || !cli::switchMessageClass.getArg(0).empty())
+	if (cli::switchSubject.hasArgs() || cli::switchMessageClass.hasArgs())
 	{
 		// RES_AND
 		//   RES_AND (optional)

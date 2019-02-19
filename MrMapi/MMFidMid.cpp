@@ -282,5 +282,5 @@ namespace mapiprocessor
 void DoFidMid(_In_ cli::MYOPTIONS ProgOpts)
 {
 	mapiprocessor::DumpFidMid(
-		ProgOpts.lpszProfile, ProgOpts.lpMDB, cli::switchFid.getArg(0), cli::switchMid.getArg(0), cli::switchMid);
+		ProgOpts.lpszProfile, ProgOpts.lpMDB, cli::switchFid.getArg(0), cli::switchMid.getArg(0), cli::switchMid.isSet());
 }

@@ -191,8 +191,7 @@ namespace cli
 
 		for (const auto& parser : _parsers)
 		{
-			// Was this parser seen?
-			if (*parser)
+			if (parser->isSet())
 			{
 				output::DebugPrint(DBGGeneric, L"Switch: %ws\n", parser->szSwitch);
 				auto i = 0;

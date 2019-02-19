@@ -44,8 +44,9 @@ namespace cli
 			parseArgs = _parseArgs;
 		}
 
-		operator bool() const noexcept { return seen; }
-
+		bool isSet() const noexcept { return seen; }
+		bool hasArgs() const noexcept { return !args.empty(); }
+		bool hasArg(size_t i) const noexcept { return args.size() > i; }
 		std::wstring getArg(size_t i) const { return args.size() > i ? args[i] : std::wstring{}; }
 
 		_Check_return_ bool scanArgs(std::deque<std::wstring>& args, const std::vector<OptParser*>& _parsers);

@@ -239,12 +239,7 @@ namespace cli
 								   cmdmodeProfile,
 								   1,
 								   1,
-								   OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC,
-								   [](auto _options) {
-									   auto options = GetMyOptions(_options);
-									   options->lpszProfileSection = switchProfileSection.args.front();
-									   return true;
-								   }};
+								   OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
 	OptParser switchByteSwapped{L"ByteSwapped",
 								cmdmodeProfile,
 								0,
@@ -801,7 +796,7 @@ namespace cli
 				options->mode = cmdmodeHelp;
 			else if (options->lpszProfile.empty() && !options->lpszOutput.empty())
 				options->mode = cmdmodeHelp;
-			else if (!options->lpszProfileSection.empty() && options->lpszProfile.empty())
+			else if (!switchProfileSection.hasArgs() && options->lpszProfile.empty())
 				options->mode = cmdmodeHelp;
 
 			break;

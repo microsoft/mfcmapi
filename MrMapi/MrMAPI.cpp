@@ -165,7 +165,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		addin::LoadAddIns();
 	}
 
-	if (cli::switchVersion)
+	if (cli::switchVersion.isSet())
 	{
 		if (LoadMAPIVersion(cli::switchVersion.getArg(0))) return;
 	}
