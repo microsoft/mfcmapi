@@ -45,7 +45,7 @@ namespace cli
 	OptParser switchType{L"Type", cmdmodePropTag, 0, 1, OPT_DOTYPE};
 	OptParser switchGuid{L"Guids", cmdmodeGuid, 0, 0, OPT_NOOPT};
 	OptParser switchError{L"Error", cmdmodeErr, 0, 0, OPT_NOOPT};
-	OptParser switchParser{L"Type", cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE, [](auto _options) {
+	OptParser switchParser{L"ParserType", cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE, [](auto _options) {
 							   auto options = GetMyOptions(_options);
 							   options->ulSVParser = strings::wstringToUlong(switchParser.args.front(), 10);
 							   return true;
