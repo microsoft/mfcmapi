@@ -83,16 +83,11 @@ namespace cli
 						 OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE};
 	OptParser switchCCSFFlags{L"CCSFFlags", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options) {
 								  auto options = GetMyOptions(_options);
-								  options->convertFlags =
-									  static_cast<CCSFLAGS>(switchCCSFFlags.getArgAsULONG(0));
+								  options->convertFlags = static_cast<CCSFLAGS>(switchCCSFFlags.getArgAsULONG(0));
 								  return true;
 							  }};
 	OptParser switchRFC822{L"RFC822", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT};
-	OptParser switchWrap{L"Wrap", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options) {
-							 auto options = GetMyOptions(_options);
-							 options->ulWrapLines = switchWrap.getArgAsULONG(0);
-							 return true;
-						 }};
+	OptParser switchWrap{L"Wrap", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT};
 	OptParser switchEncoding{L"Encoding", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options) {
 								 auto options = GetMyOptions(_options);
 								 options->ulEncodingType = switchEncoding.getArgAsULONG(0);

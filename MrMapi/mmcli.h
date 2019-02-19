@@ -126,7 +126,6 @@ namespace cli
 		ULONG ulStore{};
 		ULONG ulFolder{mapi::DEFAULT_INBOX};
 		CCSFLAGS convertFlags{};
-		ULONG ulWrapLines{};
 		ULONG ulEncodingType{};
 		ULONG ulCodePage{};
 		ULONG ulFlagValue{};

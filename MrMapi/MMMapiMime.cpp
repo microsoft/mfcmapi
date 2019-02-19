@@ -9,6 +9,7 @@
 void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 {
 	const auto input = cli::switchInput.getArg(0);
+	const auto ulWrapLines = cli::switchWrap.getArgAsULONG(0);
 	printf("Message File Converter\n");
 	printf("Options specified:\n");
 	printf("   Input File: %ws\n", input.c_str());
@@ -23,10 +24,10 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 		if (cli::switchWrap.isSet())
 		{
 			printf("   Line Wrap: ");
-			if (0 == ProgOpts.ulWrapLines)
+			if (ulWrapLines == 0)
 				printf("OFF\n");
 			else
-				printf("%lu\n", ProgOpts.ulWrapLines);
+				printf("%lu\n", ulWrapLines);
 		}
 	}
 	else if (cli::switchMAPI.isSet())
@@ -111,7 +112,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 			ProgOpts.convertFlags,
 			cli::switchEncoding.isSet() ? static_cast<ENCODINGTYPE>(ProgOpts.ulEncodingType) : IET_UNKNOWN,
 			cli::switchRFC822.isSet() ? SAVE_RFC822 : SAVE_RFC1521,
-			cli::switchWrap.isSet() ? ProgOpts.ulWrapLines : USE_DEFAULT_WRAPPING,
+			cli::switchWrap.isSet() ? ulWrapLines : USE_DEFAULT_WRAPPING,
 			lpAdrBook));
 	}
 	else if (cli::switchMAPI.isSet())
