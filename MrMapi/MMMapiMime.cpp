@@ -10,6 +10,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 {
 	const auto input = cli::switchInput.getArg(0);
 	const auto ulWrapLines = cli::switchWrap.getArgAsULONG(0);
+	const auto ulEncodingType = cli::switchEncoding.getArgAsULONG(0);
 	printf("Message File Converter\n");
 	printf("Options specified:\n");
 	printf("   Input File: %ws\n", input.c_str());
@@ -82,7 +83,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 
 	if (cli::switchEncoding.isSet())
 	{
-		auto szType = flags::InterpretFlags(flagIet, ProgOpts.ulEncodingType);
+		auto szType = flags::InterpretFlags(flagIet, ulEncodingType);
 		if (!szType.empty())
 		{
 			printf("   Encoding Type: %ws\n", szType.c_str());
@@ -110,7 +111,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 			input.c_str(),
 			ProgOpts.lpszOutput.c_str(),
 			ProgOpts.convertFlags,
-			cli::switchEncoding.isSet() ? static_cast<ENCODINGTYPE>(ProgOpts.ulEncodingType) : IET_UNKNOWN,
+			cli::switchEncoding.isSet() ? static_cast<ENCODINGTYPE>(ulEncodingType) : IET_UNKNOWN,
 			cli::switchRFC822.isSet() ? SAVE_RFC822 : SAVE_RFC1521,
 			cli::switchWrap.isSet() ? ulWrapLines : USE_DEFAULT_WRAPPING,
 			lpAdrBook));
