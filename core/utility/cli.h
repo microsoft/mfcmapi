@@ -1,4 +1,5 @@
 #pragma once
+#include <core/utility/strings.h>
 
 // MrMAPI command line
 namespace cli
@@ -48,6 +49,7 @@ namespace cli
 		bool hasArgs() const noexcept { return !args.empty(); }
 		bool hasArg(size_t i) const noexcept { return args.size() > i; }
 		std::wstring getArg(size_t i) const { return args.size() > i ? args[i] : std::wstring{}; }
+		ULONG getArgAsULONG(size_t i) const { return args.size() > i ? strings::wstringToUlong(args[i], 10) : 0; }
 
 		_Check_return_ bool scanArgs(std::deque<std::wstring>& args, const std::vector<OptParser*>& _parsers);
 	};

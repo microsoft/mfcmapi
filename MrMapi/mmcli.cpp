@@ -27,7 +27,7 @@ namespace cli
 						   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDFOLDER | OPT_INITMFC,
 						   [](auto _options) {
 							   auto options = GetMyOptions(_options);
-							   options->ulFolder = strings::wstringToUlong(switchFolder.args.front(), 10);
+							   options->ulFolder = switchFolder.getArgAsULONG(0);
 							   if (options->ulFolder)
 							   {
 								   options->lpszFolderPath = switchFolder.args.front();
@@ -47,7 +47,7 @@ namespace cli
 	OptParser switchError{L"Error", cmdmodeErr, 0, 0, OPT_NOOPT};
 	OptParser switchParser{L"ParserType", cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE, [](auto _options) {
 							   auto options = GetMyOptions(_options);
-							   options->ulSVParser = strings::wstringToUlong(switchParser.args.front(), 10);
+							   options->ulSVParser = switchParser.getArgAsULONG(0);
 							   return true;
 						   }};
 	OptParser switchInput{L"Input", cmdmodeUnknown, 1, 1, OPT_NOOPT};
@@ -84,32 +84,30 @@ namespace cli
 	OptParser switchCCSFFlags{L"CCSFFlags", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options) {
 								  auto options = GetMyOptions(_options);
 								  options->convertFlags =
-									  static_cast<CCSFLAGS>(strings::wstringToUlong(switchCCSFFlags.args.front(), 10));
+									  static_cast<CCSFLAGS>(switchCCSFFlags.getArgAsULONG(0));
 								  return true;
 							  }};
 	OptParser switchRFC822{L"RFC822", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT};
 	OptParser switchWrap{L"Wrap", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options) {
 							 auto options = GetMyOptions(_options);
-							 options->ulWrapLines = strings::wstringToUlong(switchWrap.args.front(), 10);
+							 options->ulWrapLines = switchWrap.getArgAsULONG(0);
 							 return true;
 						 }};
 	OptParser switchEncoding{L"Encoding", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options) {
 								 auto options = GetMyOptions(_options);
-								 options->ulEncodingType = strings::wstringToUlong(switchEncoding.args.front(), 10);
+								 options->ulEncodingType = switchEncoding.getArgAsULONG(0);
 								 return true;
 							 }};
 	OptParser switchCharset{L"Charset", cmdmodeMAPIMIME, 3, 3, OPT_NOOPT, [](auto _options) {
 								auto options = GetMyOptions(_options);
-								options->ulCodePage = strings::wstringToUlong(switchCharset.args[0], 10);
-								options->cSetType =
-									static_cast<CHARSETTYPE>(strings::wstringToUlong(switchCharset.args[1], 10));
+								options->ulCodePage = switchCharset.getArgAsULONG(0);
+								options->cSetType = static_cast<CHARSETTYPE>(switchCharset.getArgAsULONG(1));
 								if (options->cSetType > CHARSET_WEB)
 								{
 									return false;
 								}
 
-								options->cSetApplyType =
-									static_cast<CSETAPPLYTYPE>(strings::wstringToUlong(switchCharset.args[2], 10));
+								options->cSetApplyType = static_cast<CSETAPPLYTYPE>(switchCharset.getArgAsULONG(2));
 								if (options->cSetApplyType > CSET_APPLY_TAG_ALL)
 								{
 									return false;
@@ -165,7 +163,7 @@ namespace cli
 						 }}; // can't know until we parse the argument
 	OptParser switchRecent{L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT, [](auto _options) {
 							   auto options = GetMyOptions(_options);
-							   options->ulCount = strings::wstringToUlong(switchRecent.args.front(), 10);
+							   options->ulCount = switchRecent.getArgAsULONG(0);
 							   return true;
 						   }};
 	OptParser switchStore{L"Store",
