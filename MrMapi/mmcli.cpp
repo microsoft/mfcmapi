@@ -50,11 +50,7 @@ namespace cli
 							   options->ulSVParser = strings::wstringToUlong(switchParser.args.front(), 10);
 							   return true;
 						   }};
-	OptParser switchInput{L"Input", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options) {
-							  auto options = GetMyOptions(_options);
-							  options->lpszInput = switchInput.args.front();
-							  return true;
-						  }};
+	OptParser switchInput{L"Input", cmdmodeUnknown, 1, 1, OPT_NOOPT};
 	OptParser switchBinary{L"Binary", cmdmodeSmartView, 0, 0, OPT_BINARYFILE};
 	OptParser switchAcl{L"Acl", cmdmodeAcls, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
 	OptParser switchRule{L"Rules",
@@ -740,7 +736,7 @@ namespace cli
 		}
 
 		// Validate that we have bare minimum to run
-		if (options->options & OPT_NEEDINPUTFILE && options->lpszInput.empty())
+		if (options->options & OPT_NEEDINPUTFILE && !switchInput.hasArgs())
 			options->mode = cmdmodeHelp;
 		else if (options->options & OPT_NEEDOUTPUTFILE && options->lpszOutput.empty())
 			options->mode = cmdmodeHelp;

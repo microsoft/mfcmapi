@@ -23,8 +23,9 @@ void DoSmartView(_In_ cli::MYOPTIONS ProgOpts)
 	if (ulStructType)
 	{
 		FILE* fOut = nullptr;
-		const auto fIn = output::MyOpenFileMode(ProgOpts.lpszInput, L"rb");
-		if (!fIn) printf("Cannot open input file %ws\n", ProgOpts.lpszInput.c_str());
+		const auto input = cli::switchInput.getArg(0);
+		const auto fIn = output::MyOpenFileMode(input, L"rb");
+		if (!fIn) printf("Cannot open input file %ws\n", input.c_str());
 		if (!ProgOpts.lpszOutput.empty())
 		{
 			fOut = output::MyOpenFileMode(ProgOpts.lpszOutput, L"wb");

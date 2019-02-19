@@ -156,12 +156,13 @@ void PrintFileSize(ULONGLONG ullFileSize)
 
 void DoPST(_In_ cli::MYOPTIONS ProgOpts)
 {
-	printf("Analyzing %ws\n", ProgOpts.lpszInput.c_str());
+	const auto input = cli::switchInput.getArg(0);
+	printf("Analyzing %ws\n", input.c_str());
 
 	struct _stat64 stats = {0};
-	_wstati64(ProgOpts.lpszInput.c_str(), &stats);
+	_wstati64(input.c_str(), &stats);
 
-	const auto fIn = output::MyOpenFileMode(ProgOpts.lpszInput, L"rb");
+	const auto fIn = output::MyOpenFileMode(input, L"rb");
 	if (fIn)
 	{
 		PSTHEADER pstHeader = {0};
@@ -236,13 +237,13 @@ void DoPST(_In_ cli::MYOPTIONS ProgOpts)
 		}
 		else
 		{
-			printf("Could not read from %ws. File may be locked or empty.\n", ProgOpts.lpszInput.c_str());
+			printf("Could not read from %ws. File may be locked or empty.\n", input.c_str());
 		}
 
 		fclose(fIn);
 	}
 	else
 	{
-		printf("Cannot open input file %ws\n", ProgOpts.lpszInput.c_str());
+		printf("Cannot open input file %ws\n", input.c_str());
 	}
 }

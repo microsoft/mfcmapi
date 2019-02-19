@@ -158,7 +158,7 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 void DoMSG(_In_ cli::MYOPTIONS ProgOpts)
 {
 	DumpMSG(
-		ProgOpts.lpszInput.c_str(),
+		cli::switchInput.getArg(0).c_str(),
 		!ProgOpts.lpszOutput.empty() ? ProgOpts.lpszOutput.c_str() : L".",
 		0 != (ProgOpts.options & cli::OPT_RETRYSTREAMPROPS),
 		0 == (ProgOpts.options & cli::OPT_SKIPATTACHMENTS));

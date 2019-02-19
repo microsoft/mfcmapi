@@ -77,8 +77,8 @@ namespace output
 	{
 		if (cli::switchProfile.hasArg(0) && !ProgOpts.lpszOutput.empty())
 		{
-			auto szProfile = cli::switchProfile.getArg(0);
-			auto szProfileSection = cli::switchProfileSection.getArg(0);
+			const auto szProfile = cli::switchProfile.getArg(0);
+			const auto szProfileSection = cli::switchProfileSection.getArg(0);
 			printf("Profile Export\n");
 			printf("Options specified:\n");
 			printf("   Profile: %ws\n", szProfile.c_str());
