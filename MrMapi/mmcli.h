@@ -57,23 +57,6 @@ namespace cli
 
 #define ulNoMatch 0xffffffff
 
-	// Flags to control conversion
-	enum MAPIMIMEFLAGS
-	{
-		MAPIMIME_TOMAPI = 0x00000001,
-		MAPIMIME_TOMIME = 0x00000002,
-		MAPIMIME_RFC822 = 0x00000004,
-		MAPIMIME_WRAP = 0x00000008,
-		MAPIMIME_ENCODING = 0x00000010,
-		MAPIMIME_ADDRESSBOOK = 0x00000020,
-		MAPIMIME_UNICODE = 0x00000040,
-		MAPIMIME_CHARSET = 0x00000080,
-	};
-	inline MAPIMIMEFLAGS& operator|=(MAPIMIMEFLAGS& a, MAPIMIMEFLAGS b) noexcept
-	{
-		return reinterpret_cast<MAPIMIMEFLAGS&>(reinterpret_cast<int&>(a) |= static_cast<int>(b));
-	}
-
 	enum CmdMode
 	{
 		cmdmodePropTag = cmdmodeFirstMode,
@@ -142,7 +125,6 @@ namespace cli
 		std::wstring lpszFlagName;
 		ULONG ulStore{};
 		ULONG ulFolder{mapi::DEFAULT_INBOX};
-		MAPIMIMEFLAGS MAPIMIMEFlags{};
 		CCSFLAGS convertFlags{};
 		ULONG ulWrapLines{};
 		ULONG ulEncodingType{};

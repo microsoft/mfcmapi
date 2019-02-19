@@ -75,43 +75,27 @@ namespace cli
 						 cmdmodeMAPIMIME,
 						 0,
 						 0,
-						 OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE,
-						 [](auto _options) {
-							 auto options = GetMyOptions(_options);
-							 options->MAPIMIMEFlags |= MAPIMIME_TOMAPI;
-							 return true;
-						 }};
+						 OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE};
 	OptParser switchMIME{L"MIME",
 						 cmdmodeMAPIMIME,
 						 0,
 						 0,
-						 OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE,
-						 [](auto _options) {
-							 auto options = GetMyOptions(_options);
-							 options->MAPIMIMEFlags |= MAPIMIME_TOMIME;
-							 return true;
-						 }};
+						 OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE};
 	OptParser switchCCSFFlags{L"CCSFFlags", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options) {
 								  auto options = GetMyOptions(_options);
 								  options->convertFlags =
 									  static_cast<CCSFLAGS>(strings::wstringToUlong(switchCCSFFlags.args.front(), 10));
 								  return true;
 							  }};
-	OptParser switchRFC822{L"RFC822", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT, [](auto _options) {
-							   auto options = GetMyOptions(_options);
-							   options->MAPIMIMEFlags |= MAPIMIME_RFC822;
-							   return true;
-						   }};
+	OptParser switchRFC822{L"RFC822", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT};
 	OptParser switchWrap{L"Wrap", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options) {
 							 auto options = GetMyOptions(_options);
 							 options->ulWrapLines = strings::wstringToUlong(switchWrap.args.front(), 10);
-							 options->MAPIMIMEFlags |= MAPIMIME_WRAP;
 							 return true;
 						 }};
 	OptParser switchEncoding{L"Encoding", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT, [](auto _options) {
 								 auto options = GetMyOptions(_options);
 								 options->ulEncodingType = strings::wstringToUlong(switchEncoding.args.front(), 10);
-								 options->MAPIMIMEFlags |= MAPIMIME_ENCODING;
 								 return true;
 							 }};
 	OptParser switchCharset{L"Charset", cmdmodeMAPIMIME, 3, 3, OPT_NOOPT, [](auto _options) {
@@ -131,19 +115,10 @@ namespace cli
 									return false;
 								}
 
-								options->MAPIMIMEFlags |= MAPIMIME_CHARSET;
 								return true;
 							}};
-	OptParser switchAddressBook{L"AddressBook", cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPILOGON, [](auto _options) {
-									auto options = GetMyOptions(_options);
-									options->MAPIMIMEFlags |= MAPIMIME_ADDRESSBOOK;
-									return true;
-								}}; // special case which needs a logon
-	OptParser switchUnicode{L"Unicode", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT, [](auto _options) {
-								auto options = GetMyOptions(_options);
-								options->MAPIMIMEFlags |= MAPIMIME_UNICODE;
-								return true;
-							}};
+	OptParser switchAddressBook{L"AddressBook", cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPILOGON};
+	OptParser switchUnicode{L"Unicode", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT};
 	OptParser switchProfile{L"Profile", cmdmodeUnknown, 0, 1, OPT_PROFILE};
 	OptParser switchXML{L"XML", cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE};
 	OptParser switchSubject{L"Subject", cmdmodeContents, 1, 1, OPT_NOOPT};
@@ -766,16 +741,13 @@ namespace cli
 
 			break;
 		case cmdmodeMAPIMIME:
-#define CHECKFLAG(__flag) ((options->MAPIMIMEFlags & (__flag)) == (__flag))
 			// Can't convert both ways at once
-			if (CHECKFLAG(MAPIMIME_TOMAPI) && CHECKFLAG(MAPIMIME_TOMIME)) options->mode = cmdmodeHelp;
+			if (switchMAPI.isSet() && switchMIME.isSet()) options->mode = cmdmodeHelp;
 			// Make sure there's no MIME-only options specified in a MIME->MAPI conversion
-			else if (
-				CHECKFLAG(MAPIMIME_TOMAPI) &&
-				(CHECKFLAG(MAPIMIME_RFC822) || CHECKFLAG(MAPIMIME_ENCODING) || CHECKFLAG(MAPIMIME_WRAP)))
+			else if (switchMAPI.isSet() && (switchRFC822.isSet() || switchEncoding.isSet() || switchWrap.isSet()))
 				options->mode = cmdmodeHelp;
 			// Make sure there's no MAPI-only options specified in a MAPI->MIME conversion
-			else if (CHECKFLAG(MAPIMIME_TOMIME) && (CHECKFLAG(MAPIMIME_CHARSET) || CHECKFLAG(MAPIMIME_UNICODE)))
+			else if (switchMIME.isSet() && (switchCharset.isSet() || switchUnicode.isSet()))
 				options->mode = cmdmodeHelp;
 
 			break;

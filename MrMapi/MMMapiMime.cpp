@@ -6,7 +6,6 @@
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 
-#define CHECKFLAG(__flag) ((ProgOpts.MAPIMIMEFlags & (__flag)) == (__flag))
 void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 {
 	const auto input = cli::switchInput.getArg(0);
@@ -15,13 +14,13 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 	printf("   Input File: %ws\n", input.c_str());
 	printf("   Output File: %ws\n", ProgOpts.lpszOutput.c_str());
 	printf("   Conversion Type: ");
-	if (CHECKFLAG(cli::MAPIMIME_TOMIME))
+	if (cli::switchMAPI.isSet())
 	{
 		printf("MAPI -> MIME\n");
 
-		printf("   Save Format: %s\n", CHECKFLAG(cli::MAPIMIME_RFC822) ? "RFC822" : "RFC1521");
+		printf("   Save Format: %s\n", cli::switchRFC822.isSet() ? "RFC822" : "RFC1521");
 
-		if (CHECKFLAG(cli::MAPIMIME_WRAP))
+		if (cli::switchWrap.isSet())
 		{
 			printf("   Line Wrap: ");
 			if (0 == ProgOpts.ulWrapLines)
@@ -30,14 +29,14 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 				printf("%lu\n", ProgOpts.ulWrapLines);
 		}
 	}
-	else if (CHECKFLAG(cli::MAPIMIME_TOMAPI))
+	else if (cli::switchMAPI.isSet())
 	{
 		printf("MIME -> MAPI\n");
-		if (CHECKFLAG(cli::MAPIMIME_UNICODE))
+		if (cli::switchUnicode.isSet())
 		{
 			printf("   Building Unicode MSG file\n");
 		}
-		if (CHECKFLAG(cli::MAPIMIME_CHARSET))
+		if (cli::switchCharset.isSet())
 		{
 			printf("   CodePage: %lu\n", ProgOpts.ulCodePage);
 			printf("   CharSetType: ");
@@ -80,7 +79,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 		}
 	}
 
-	if (CHECKFLAG(cli::MAPIMIME_ENCODING))
+	if (cli::switchEncoding.isSet())
 	{
 		auto szType = flags::InterpretFlags(flagIet, ProgOpts.ulEncodingType);
 		if (!szType.empty())
@@ -89,7 +88,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 		}
 	}
 
-	if (CHECKFLAG(cli::MAPIMIME_ADDRESSBOOK))
+	if (cli::switchAddressBook.isSet())
 	{
 		printf("   Using Address Book\n");
 	}
@@ -97,29 +96,29 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 	auto hRes = S_OK;
 
 	LPADRBOOK lpAdrBook = nullptr;
-	if (CHECKFLAG(cli::MAPIMIME_ADDRESSBOOK) && ProgOpts.lpMAPISession)
+	if (cli::switchAddressBook.isSet() && ProgOpts.lpMAPISession)
 	{
-		WC_MAPI(ProgOpts.lpMAPISession->OpenAddressBook(NULL, NULL, AB_NO_DIALOG, &lpAdrBook));
+		WC_MAPI(ProgOpts.lpMAPISession->OpenAddressBook(NULL, nullptr, AB_NO_DIALOG, &lpAdrBook));
 		if (FAILED(hRes)) printf("OpenAddressBook returned an error: 0x%08lx\n", hRes);
 	}
 
-	if (CHECKFLAG(cli::MAPIMIME_TOMIME))
+	if (cli::switchMIME.isSet())
 	{
 		// Source file is MSG, target is EML
 		hRes = WC_H(mapi::mapimime::ConvertMSGToEML(
 			input.c_str(),
 			ProgOpts.lpszOutput.c_str(),
 			ProgOpts.convertFlags,
-			CHECKFLAG(cli::MAPIMIME_ENCODING) ? static_cast<ENCODINGTYPE>(ProgOpts.ulEncodingType) : IET_UNKNOWN,
-			CHECKFLAG(cli::MAPIMIME_RFC822) ? SAVE_RFC822 : SAVE_RFC1521,
-			CHECKFLAG(cli::MAPIMIME_WRAP) ? ProgOpts.ulWrapLines : USE_DEFAULT_WRAPPING,
+			cli::switchEncoding.isSet() ? static_cast<ENCODINGTYPE>(ProgOpts.ulEncodingType) : IET_UNKNOWN,
+			cli::switchRFC822.isSet() ? SAVE_RFC822 : SAVE_RFC1521,
+			cli::switchWrap.isSet() ? ProgOpts.ulWrapLines : USE_DEFAULT_WRAPPING,
 			lpAdrBook));
 	}
-	else if (CHECKFLAG(cli::MAPIMIME_TOMAPI))
+	else if (cli::switchMAPI.isSet())
 	{
 		// Source file is EML, target is MSG
 		HCHARSET hCharSet = nullptr;
-		if (CHECKFLAG(cli::MAPIMIME_CHARSET))
+		if (cli::switchCharset.isSet())
 		{
 			hRes = WC_H(import::MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage, ProgOpts.cSetType, &hCharSet));
 			if (FAILED(hRes))
@@ -134,11 +133,11 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 				input.c_str(),
 				ProgOpts.lpszOutput.c_str(),
 				ProgOpts.convertFlags,
-				CHECKFLAG(cli::MAPIMIME_CHARSET),
+				cli::switchCharset.isSet(),
 				hCharSet,
 				ProgOpts.cSetApplyType,
 				lpAdrBook,
-				CHECKFLAG(cli::MAPIMIME_UNICODE)));
+				cli::switchUnicode.isSet()));
 		}
 	}
 
@@ -154,5 +153,6 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 	{
 		printf("Conversion returned an error: 0x%08lx\n", hRes);
 	}
+
 	if (lpAdrBook) lpAdrBook->Release();
 }
