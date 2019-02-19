@@ -576,7 +576,7 @@ void DoFolderProps(_In_ cli::MYOPTIONS ProgOpts)
 void DoFolderSize(_In_ cli::MYOPTIONS ProgOpts)
 {
 	const LONGLONG ullSize =
-		ComputeFolderSize(ProgOpts.lpszProfile, ProgOpts.lpFolder, ProgOpts.ulFolder, ProgOpts.lpszFolderPath);
+		ComputeFolderSize(cli::switchProfile.getArg(0), ProgOpts.lpFolder, ProgOpts.ulFolder, ProgOpts.lpszFolderPath);
 	printf("Folder size (including subfolders)\n");
 	printf("Bytes: %I64d\n", ullSize);
 	printf("KB: %I64d\n", ullSize / 1024);
@@ -586,7 +586,7 @@ void DoFolderSize(_In_ cli::MYOPTIONS ProgOpts)
 void DoChildFolders(_In_ cli::MYOPTIONS ProgOpts)
 {
 	DumpHierarchyTable(
-		!ProgOpts.lpszProfile.empty() ? ProgOpts.lpszProfile.c_str() : L"",
+		cli::switchProfile.getArg(0),
 		ProgOpts.lpFolder,
 		ProgOpts.ulFolder,
 		!ProgOpts.lpszFolderPath.empty() ? ProgOpts.lpszFolderPath.c_str() : L"",
@@ -596,7 +596,7 @@ void DoChildFolders(_In_ cli::MYOPTIONS ProgOpts)
 void DoSearchState(_In_ cli::MYOPTIONS ProgOpts)
 {
 	DumpSearchState(
-		!ProgOpts.lpszProfile.empty() ? ProgOpts.lpszProfile.c_str() : L"",
+		cli::switchProfile.getArg(0),
 		ProgOpts.lpFolder,
 		ProgOpts.ulFolder,
 		!ProgOpts.lpszFolderPath.empty() ? ProgOpts.lpszFolderPath.c_str() : L"");

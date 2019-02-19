@@ -144,7 +144,7 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 	}
 
 	DumpContentsTable(
-		ProgOpts.lpszProfile.c_str(),
+		cli::switchProfile.getArg(0).c_str(),
 		ProgOpts.lpMDB,
 		ProgOpts.lpFolder,
 		!ProgOpts.lpszOutput.empty() ? ProgOpts.lpszOutput.c_str() : L".",

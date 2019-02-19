@@ -136,7 +136,6 @@ namespace cli
 
 	struct MYOPTIONS : OPTIONS
 	{
-		std::wstring lpszProfile;
 		ULONG ulSVParser{};
 		std::wstring lpszInput;
 		std::wstring lpszOutput;

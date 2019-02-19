@@ -75,17 +75,17 @@ namespace output
 
 	void DoProfile(_In_ cli::MYOPTIONS ProgOpts)
 	{
-		if (!ProgOpts.lpszProfile.empty() && !ProgOpts.lpszOutput.empty())
+		if (cli::switchProfile.hasArg(0) && !ProgOpts.lpszOutput.empty())
 		{
+			auto szProfile = cli::switchProfile.getArg(0);
+			auto szProfileSection = cli::switchProfileSection.getArg(0);
 			printf("Profile Export\n");
 			printf("Options specified:\n");
-			printf("   Profile: %ws\n", ProgOpts.lpszProfile.c_str());
+			printf("   Profile: %ws\n", szProfile.c_str());
+			printf("   Profile section: %ws\n", szProfileSection.c_str());
 			printf("   Output File: %ws\n", ProgOpts.lpszOutput.c_str());
 			ExportProfile(
-				strings::wstringTostring(ProgOpts.lpszProfile),
-				cli::switchProfileSection.getArg(1),
-				ProgOpts.bByteSwapped,
-				ProgOpts.lpszOutput);
+				strings::wstringTostring(szProfile), szProfileSection, ProgOpts.bByteSwapped, ProgOpts.lpszOutput);
 		}
 		else
 		{

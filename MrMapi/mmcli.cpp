@@ -148,15 +148,7 @@ namespace cli
 								options->MAPIMIMEFlags |= MAPIMIME_UNICODE;
 								return true;
 							}};
-	OptParser switchProfile{L"Profile", cmdmodeUnknown, 0, 1, OPT_PROFILE, [](auto _options) {
-								auto options = GetMyOptions(_options);
-								if (!switchProfile.args.empty())
-								{
-									options->lpszProfile = switchProfile.args.front();
-								}
-
-								return true;
-							}};
+	OptParser switchProfile{L"Profile", cmdmodeUnknown, 0, 1, OPT_PROFILE};
 	OptParser switchXML{L"XML", cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE};
 	OptParser switchSubject{L"Subject", cmdmodeContents, 1, 1, OPT_NOOPT};
 	OptParser switchMessageClass{L"MessageClass", cmdmodeContents, 1, 1, OPT_NOOPT};
@@ -792,11 +784,11 @@ namespace cli
 
 			break;
 		case cmdmodeProfile:
-			if (!options->lpszProfile.empty() && options->lpszOutput.empty())
+			if (switchProfile.hasArgs() && options->lpszOutput.empty())
 				options->mode = cmdmodeHelp;
-			else if (options->lpszProfile.empty() && !options->lpszOutput.empty())
+			else if (!switchProfile.hasArgs() && !options->lpszOutput.empty())
 				options->mode = cmdmodeHelp;
-			else if (!switchProfileSection.hasArgs() && options->lpszProfile.empty())
+			else if (!switchProfileSection.hasArgs() && !switchProfile.hasArgs())
 				options->mode = cmdmodeHelp;
 
 			break;

@@ -202,7 +202,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 		if (bMAPIInit && ProgOpts.options & cli::OPT_NEEDMAPILOGON)
 		{
-			ProgOpts.lpMAPISession = MrMAPILogonEx(ProgOpts.lpszProfile);
+			ProgOpts.lpMAPISession = MrMAPILogonEx(cli::switchProfile.getArg(0));
 		}
 
 		// If they need a folder get it and store at the same time from the folder id
