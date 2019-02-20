@@ -48,7 +48,6 @@ LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex)
 
 HRESULT HrMAPIOpenStoreAndFolder(
 	_In_ LPMAPISESSION lpMAPISession,
-	_In_ ULONG ulFolder,
 	_In_ std::wstring lpszFolderPath,
 	_Out_opt_ LPMDB* lppMDB,
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder)
@@ -56,6 +55,17 @@ HRESULT HrMAPIOpenStoreAndFolder(
 	auto hRes = S_OK;
 	LPMDB lpMDB = nullptr;
 	LPMAPIFOLDER lpFolder = nullptr;
+
+	// Maybe we were given a folder number
+	auto ulFolder = strings::wstringToUlong(lpszFolderPath, 10);
+	if (ulFolder == mapi::DEFAULT_UNSPECIFIED)
+	{
+		ulFolder = mapi::DEFAULT_INBOX;
+	}
+	else
+	{
+		lpszFolderPath.clear();
+	}
 
 	auto paths = strings::split(lpszFolderPath, L'\\');
 

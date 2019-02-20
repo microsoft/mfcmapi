@@ -12,16 +12,14 @@ void DumpContentsTable(
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_z_ LPWSTR lpszDir,
 	_In_ ULONG ulOptions,
-	_In_ ULONG ulFolder,
 	_In_z_ LPCWSTR lpszFolder,
 	_In_ ULONG ulCount,
 	_In_opt_ LPSRestriction lpRes)
 {
 	output::DebugPrint(
 		DBGGeneric,
-		L"DumpContentsTable: Outputting folder %u / %ws from profile %ws to %ws\n",
-		ulFolder,
-		lpszFolder ? lpszFolder : L"",
+		L"DumpContentsTable: Outputting folder %ws from profile %ws to %ws\n",
+		lpszFolder,
 		lpszProfile,
 		lpszDir);
 	if (ulOptions & cli::OPT_DOCONTENTS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Contents\n");
@@ -149,8 +147,7 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 		ProgOpts.lpFolder,
 		!ProgOpts.lpszOutput.empty() ? ProgOpts.lpszOutput.c_str() : L".",
 		ProgOpts.options,
-		ProgOpts.ulFolder,
-		ProgOpts.lpszFolderPath.c_str(),
+		cli::switchFolder.getArg(0).c_str(),
 		ProgOpts.ulCount,
 		lpRes);
 }

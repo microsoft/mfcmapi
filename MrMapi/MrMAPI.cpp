@@ -209,11 +209,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		if (ProgOpts.lpMAPISession && ProgOpts.options & cli::OPT_NEEDFOLDER)
 		{
 			hRes = WC_H(HrMAPIOpenStoreAndFolder(
-				ProgOpts.lpMAPISession,
-				ProgOpts.ulFolder,
-				ProgOpts.lpszFolderPath,
-				&ProgOpts.lpMDB,
-				&ProgOpts.lpFolder));
+				ProgOpts.lpMAPISession, cli::switchFolder.getArg(0), &ProgOpts.lpMDB, &ProgOpts.lpFolder));
 			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
 		}
 		else if (ProgOpts.lpMAPISession && ProgOpts.options & cli::OPT_NEEDSTORE)

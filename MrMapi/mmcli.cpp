@@ -24,18 +24,7 @@ namespace cli
 						   cmdmodeUnknown,
 						   1,
 						   1,
-						   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDFOLDER | OPT_INITMFC,
-						   [](auto _options) {
-							   auto options = GetMyOptions(_options);
-							   options->ulFolder = switchFolder.getArgAsULONG(0);
-							   if (options->ulFolder)
-							   {
-								   options->lpszFolderPath = switchFolder.args.front();
-								   options->ulFolder = mapi::DEFAULT_INBOX;
-							   }
-
-							   return true;
-						   }};
+						   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDFOLDER | OPT_INITMFC};
 	OptParser switchOutput{L"Output", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options) {
 							   auto options = GetMyOptions(_options);
 							   options->lpszOutput = switchOutput.args.front();

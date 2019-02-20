@@ -280,7 +280,6 @@ LPMAPIFOLDER MAPIOpenFolderExW(
 void DumpHierarchyTable(
 	_In_ const std::wstring& lpszProfile,
 	_In_ LPMAPIFOLDER lpFolder,
-	_In_ ULONG ulFolder,
 	_In_ const std::wstring& lpszFolder,
 	_In_ ULONG ulDepth)
 {
@@ -288,8 +287,7 @@ void DumpHierarchyTable(
 	{
 		output::DebugPrint(
 			DBGGeneric,
-			L"DumpHierarchyTable: Outputting hierarchy table for folder %u / %ws from profile %ws \n",
-			ulFolder,
+			L"DumpHierarchyTable: Outputting hierarchy table for folder %ws from profile %ws \n",
 			lpszFolder.c_str(),
 			lpszProfile.c_str());
 	}
@@ -353,7 +351,7 @@ void DumpHierarchyTable(
 
 						if (lpSubfolder)
 						{
-							DumpHierarchyTable(lpszProfile, lpSubfolder, 0, L"", ulDepth + 1);
+							DumpHierarchyTable(lpszProfile, lpSubfolder, L"", ulDepth + 1);
 						}
 
 						if (lpSubfolder) lpSubfolder->Release();
@@ -422,16 +420,12 @@ ULONGLONG ComputeSingleFolderSize(_In_ LPMAPIFOLDER lpFolder)
 	return ullThisFolderSize;
 }
 
-ULONGLONG ComputeFolderSize(
-	_In_ const std::wstring& lpszProfile,
-	_In_ LPMAPIFOLDER lpFolder,
-	_In_ ULONG ulFolder,
-	_In_ const std::wstring& lpszFolder)
+ULONGLONG
+ComputeFolderSize(_In_ const std::wstring& lpszProfile, _In_ LPMAPIFOLDER lpFolder, _In_ const std::wstring& lpszFolder)
 {
 	output::DebugPrint(
 		DBGGeneric,
-		L"ComputeFolderSize: Calculating size (including subfolders) for folder %u / %ws from profile %ws \n",
-		ulFolder,
+		L"ComputeFolderSize: Calculating size (including subfolders) for folder %ws from profile %ws \n",
 		lpszFolder.c_str(),
 		lpszProfile.c_str());
 	if (lpFolder)
@@ -500,7 +494,7 @@ ULONGLONG ComputeFolderSize(
 								szDisplayName = lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW;
 							}
 
-							ullSize += ComputeFolderSize(lpszProfile, lpSubfolder, 0, szDisplayName);
+							ullSize += ComputeFolderSize(lpszProfile, lpSubfolder, szDisplayName);
 
 							lpSubfolder->Release();
 						}
@@ -522,13 +516,11 @@ ULONGLONG ComputeFolderSize(
 void DumpSearchState(
 	_In_ const std::wstring& lpszProfile,
 	_In_ LPMAPIFOLDER lpFolder,
-	_In_ ULONG ulFolder,
 	_In_ const std::wstring& lpszFolder)
 {
 	output::DebugPrint(
 		DBGGeneric,
-		L"DumpSearchState: Outputting search state for folder %u / %ws from profile %ws \n",
-		ulFolder,
+		L"DumpSearchState: Outputting search state for folder %ws from profile %ws \n",
 		lpszFolder.c_str(),
 		lpszProfile.c_str());
 
@@ -576,7 +568,7 @@ void DoFolderProps(_In_ cli::MYOPTIONS ProgOpts)
 void DoFolderSize(_In_ cli::MYOPTIONS ProgOpts)
 {
 	const LONGLONG ullSize =
-		ComputeFolderSize(cli::switchProfile.getArg(0), ProgOpts.lpFolder, ProgOpts.ulFolder, ProgOpts.lpszFolderPath);
+		ComputeFolderSize(cli::switchProfile.getArg(0), ProgOpts.lpFolder, cli::switchFolder.getArg(0));
 	printf("Folder size (including subfolders)\n");
 	printf("Bytes: %I64d\n", ullSize);
 	printf("KB: %I64d\n", ullSize / 1024);
@@ -585,19 +577,10 @@ void DoFolderSize(_In_ cli::MYOPTIONS ProgOpts)
 
 void DoChildFolders(_In_ cli::MYOPTIONS ProgOpts)
 {
-	DumpHierarchyTable(
-		cli::switchProfile.getArg(0),
-		ProgOpts.lpFolder,
-		ProgOpts.ulFolder,
-		!ProgOpts.lpszFolderPath.empty() ? ProgOpts.lpszFolderPath.c_str() : L"",
-		0);
+	DumpHierarchyTable(cli::switchProfile.getArg(0), ProgOpts.lpFolder, cli::switchFolder.getArg(0), 0);
 }
 
 void DoSearchState(_In_ cli::MYOPTIONS ProgOpts)
 {
-	DumpSearchState(
-		cli::switchProfile.getArg(0),
-		ProgOpts.lpFolder,
-		ProgOpts.ulFolder,
-		!ProgOpts.lpszFolderPath.empty() ? ProgOpts.lpszFolderPath.c_str() : L"");
+	DumpSearchState(cli::switchProfile.getArg(0), ProgOpts.lpFolder, cli::switchFolder.getArg(0));
 }

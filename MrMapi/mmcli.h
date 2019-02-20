@@ -1,7 +1,5 @@
 #pragma once
-#include <core/mapi/extraPropTags.h>
 #include <core/utility/cli.h>
-#include <core/mapi/mapiFunctions.h>
 
 // MrMAPI command line
 namespace cli
@@ -120,10 +118,8 @@ namespace cli
 	struct MYOPTIONS : OPTIONS
 	{
 		std::wstring lpszOutput;
-		std::wstring lpszFolderPath;
 		std::wstring lpszFlagName;
 		ULONG ulStore{};
-		ULONG ulFolder{mapi::DEFAULT_INBOX};
 		ULONG ulFlagValue{};
 		ULONG ulCount{};
 		LPMAPISESSION lpMAPISession{};
