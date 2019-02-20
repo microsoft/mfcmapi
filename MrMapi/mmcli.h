@@ -125,7 +125,6 @@ namespace cli
 		std::wstring lpszFlagName;
 		ULONG ulStore{};
 		ULONG ulFolder{mapi::DEFAULT_INBOX};
-		CCSFLAGS convertFlags{};
 		ULONG ulCodePage{};
 		ULONG ulFlagValue{};
 		ULONG ulCount{};

@@ -11,6 +11,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 	const auto input = cli::switchInput.getArg(0);
 	const auto ulWrapLines = cli::switchWrap.getArgAsULONG(0);
 	const auto ulEncodingType = cli::switchEncoding.getArgAsULONG(0);
+	const auto convertFlags = static_cast<CCSFLAGS>(cli::switchCCSFFlags.getArgAsULONG(0));
 	printf("Message File Converter\n");
 	printf("Options specified:\n");
 	printf("   Input File: %ws\n", input.c_str());
@@ -72,9 +73,9 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 		}
 	}
 
-	if (0 != ProgOpts.convertFlags)
+	if (cli::switchCCSFFlags.hasArgs())
 	{
-		auto szFlags = flags::InterpretFlags(flagCcsf, ProgOpts.convertFlags);
+		auto szFlags = flags::InterpretFlags(flagCcsf, convertFlags);
 		if (!szFlags.empty())
 		{
 			printf("   Conversion Flags: %ws\n", szFlags.c_str());
@@ -110,7 +111,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 		hRes = WC_H(mapi::mapimime::ConvertMSGToEML(
 			input.c_str(),
 			ProgOpts.lpszOutput.c_str(),
-			ProgOpts.convertFlags,
+			convertFlags,
 			cli::switchEncoding.isSet() ? static_cast<ENCODINGTYPE>(ulEncodingType) : IET_UNKNOWN,
 			cli::switchRFC822.isSet() ? SAVE_RFC822 : SAVE_RFC1521,
 			cli::switchWrap.isSet() ? ulWrapLines : USE_DEFAULT_WRAPPING,
@@ -134,7 +135,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 			hRes = WC_H(mapi::mapimime::ConvertEMLToMSG(
 				input.c_str(),
 				ProgOpts.lpszOutput.c_str(),
-				ProgOpts.convertFlags,
+				convertFlags,
 				cli::switchCharset.isSet(),
 				hCharSet,
 				ProgOpts.cSetApplyType,
