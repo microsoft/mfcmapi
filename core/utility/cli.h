@@ -86,7 +86,7 @@ namespace cli
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
 	// The first switch should be our "no match" switch
-	option* GetOption(const std::wstring& szArg, const std::vector<option*>& _options);
+	option* GetOption(const std::wstring& szArg, const std::vector<option*>& optionsArray);
 
 	// If the mode isn't set (is 0), then we can set it to any mode
 	// If the mode IS set (non 0), then we can only set it to the same mode

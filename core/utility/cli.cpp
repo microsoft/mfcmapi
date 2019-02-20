@@ -11,7 +11,7 @@ namespace cli
 
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
-	option* GetOption(const std::wstring& szArg, const std::vector<option*>& _options)
+	option* GetOption(const std::wstring& szArg, const std::vector<option*>& optionsArray)
 	{
 		if (szArg.empty()) return nullptr;
 
@@ -29,7 +29,7 @@ namespace cli
 			return nullptr;
 		}
 
-		for (const auto parser : _options)
+		for (const auto parser : optionsArray)
 		{
 			// If we have a match
 			if (parser && strings::beginsWith(parser->szSwitch, szSwitch))
