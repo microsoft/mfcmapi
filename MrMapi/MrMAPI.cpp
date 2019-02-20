@@ -256,7 +256,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			DoErrorParse(ProgOpts);
 			break;
 		case cli::cmdmodeContents:
-			DoContents(ProgOpts, lpMDB, lpFolder);
+			DoContents(lpMDB, lpFolder);
 			break;
 		case cli::cmdmodeXML:
 			DoMSG(ProgOpts);

@@ -11,7 +11,6 @@ void DumpContentsTable(
 	_In_ LPMDB lpMDB,
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_z_ LPWSTR lpszDir,
-	_In_ ULONG ulOptions,
 	_In_z_ LPCWSTR lpszFolder,
 	_In_ ULONG ulCount,
 	_In_opt_ LPSRestriction lpRes)
@@ -25,7 +24,7 @@ void DumpContentsTable(
 	if (cli::switchContents.isSet()) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Contents\n");
 	if (cli::switchAssociatedContents.isSet())
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Associated Contents\n");
-	if (ulOptions & cli::OPT_MSG) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
+	if (cli::switchMSG.isSet()) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
 	if (cli::switchMoreProperties.isSet())
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will retry stream properties\n");
 	if (cli::switchSkip.isSet()) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
@@ -40,7 +39,7 @@ void DumpContentsTable(
 		MyDumpStore.InitFolder(lpFolder);
 		MyDumpStore.InitFolderPathRoot(lpszDir);
 		MyDumpStore.InitFolderContentsRestriction(lpRes);
-		if (ulOptions & cli::OPT_MSG) MyDumpStore.EnableMSG();
+		if (cli::switchMSG.isSet()) MyDumpStore.EnableMSG();
 		if (cli::switchList.isSet()) MyDumpStore.EnableList();
 		if (ulCount)
 		{
@@ -80,7 +79,7 @@ void DumpMSG(
 	}
 }
 
-void DoContents(_In_ cli::OPTIONS ProgOpts, LPMDB lpMDB, LPMAPIFOLDER lpFolder)
+void DoContents(LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 {
 	SRestriction sResTop = {};
 	SRestriction sResMiddle[2] = {};
@@ -144,7 +143,6 @@ void DoContents(_In_ cli::OPTIONS ProgOpts, LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 		lpMDB,
 		lpFolder,
 		cli::switchOutput.hasArgs() ? cli::switchOutput.getArg(0).c_str() : L".",
-		ProgOpts.optionFlags,
 		cli::switchFolder.getArg(0).c_str(),
 		cli::switchRecent.getArgAsULONG(0),
 		lpRes);

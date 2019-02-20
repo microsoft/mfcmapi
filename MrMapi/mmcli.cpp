@@ -66,7 +66,7 @@ namespace cli
 	option switchXML{L"XML", cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE};
 	option switchSubject{L"Subject", cmdmodeContents, 1, 1, OPT_NOOPT};
 	option switchMessageClass{L"MessageClass", cmdmodeContents, 1, 1, OPT_NOOPT};
-	option switchMSG{L"MSG", cmdmodeContents, 0, 0, OPT_MSG};
+	option switchMSG{L"MSG", cmdmodeContents, 0, 0, OPT_NOOPT};
 	option switchList{L"List", cmdmodeContents, 0, 0, OPT_NOOPT};
 	option switchChildFolders{L"ChildFolders",
 							  cmdmodeChildFolders,
