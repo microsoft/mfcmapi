@@ -238,7 +238,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			DoPropTags(ProgOpts);
 			break;
 		case cli::cmdmodeGuid:
-			DoGUIDs(ProgOpts);
+			DoGUIDs();
 			break;
 		case cli::cmdmodeSmartView:
 			DoSmartView(ProgOpts);
@@ -271,7 +271,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			DoChildFolders(lpFolder);
 			break;
 		case cli::cmdmodeFlagSearch:
-			DoFlagSearch(ProgOpts);
+			DoFlagSearch();
 			break;
 		case cli::cmdmodeFolderProps:
 			DoFolderProps(ProgOpts, lpFolder);

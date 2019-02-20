@@ -88,7 +88,6 @@ namespace cli
 		OPT_DOTYPE = 0x00008,
 		OPT_DODISPID = 0x00010,
 		OPT_DODECIMAL = 0x00020,
-		OPT_DOFLAG = 0x00040,
 		OPT_BINARYFILE = 0x00080,
 		OPT_DOCONTENTS = 0x00100,
 		OPT_DOASSOCIATEDCONTENTS = 0x00200,
@@ -117,9 +116,7 @@ namespace cli
 
 	struct MYOPTIONS : OPTIONS
 	{
-		std::wstring lpszFlagName;
 		ULONG ulStore{};
-		ULONG ulFlagValue{};
 	};
 
 	void DisplayUsage(BOOL bFull);

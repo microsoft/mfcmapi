@@ -550,9 +550,9 @@ void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
 	// Handle dispid cases
 	if (ProgOpts.options & cli::OPT_DODISPID)
 	{
-		if (ProgOpts.options & cli::OPT_DOFLAG)
+		if (cli::switchFlag.hasArgAsULONG(0))
 		{
-			PrintFlag(ulPropNum, lpszPropName, true, ProgOpts.ulFlagValue);
+			PrintFlag(ulPropNum, lpszPropName, true, cli::switchFlag.getArgAsULONG(0));
 		}
 		else if (ProgOpts.options & cli::OPT_DOPARTIALSEARCH)
 		{
@@ -571,9 +571,9 @@ void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
 	}
 
 	// Handle prop tag cases
-	if (ProgOpts.options & cli::OPT_DOFLAG)
+	if (cli::switchFlag.hasArgAsULONG(0))
 	{
-		PrintFlag(ulPropNum, lpszPropName, false, ProgOpts.ulFlagValue);
+		PrintFlag(ulPropNum, lpszPropName, false, cli::switchFlag.getArgAsULONG(0));
 	}
 	else if (ProgOpts.options & cli::OPT_DOPARTIALSEARCH)
 	{
@@ -603,13 +603,14 @@ void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
 	}
 }
 
-void DoGUIDs(_In_ const cli::MYOPTIONS& /*ProgOpts*/) { PrintGUIDs(); }
+void DoGUIDs() { PrintGUIDs(); }
 
-void DoFlagSearch(_In_ const cli::MYOPTIONS& ProgOpts)
+void DoFlagSearch()
 {
+	const auto lpszFlagName = cli::switchFlag.getArg(0);
 	for (const auto& flag : FlagArray)
 	{
-		if (!_wcsicmp(flag.lpszName, ProgOpts.lpszFlagName.c_str()))
+		if (!_wcsicmp(flag.lpszName, lpszFlagName.c_str()))
 		{
 			printf("%ws = 0x%08lX\n", flag.lpszName, flag.lFlagValue);
 			break;

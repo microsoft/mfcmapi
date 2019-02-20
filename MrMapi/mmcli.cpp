@@ -83,31 +83,11 @@ namespace cli
 	option switchFid{L"FID", cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDSTORE};
 	option switchMid{L"MID", cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
 	option switchFlag{L"Flag", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options) {
-						  auto myoptions = GetMyOptions(_options);
 						  // We must have a next argument, but it could be a string or a number
-						  myoptions->lpszFlagName = switchFlag.getArg(0);
-						  myoptions->ulFlagValue = switchFlag.getArgAsULONG(0);
-
 						  // Set mode based on whether the flag string was completely parsed as a number
-						  if (switchFlag.hasArgAsULONG(0, 16))
-						  {
-							  if (!bSetMode(myoptions->mode, cmdmodePropTag))
-							  {
-								  return false;
-							  }
-
-							  myoptions->options |= OPT_DOFLAG;
-						  }
-						  else
-						  {
-							  if (!bSetMode(myoptions->mode, cmdmodeFlagSearch))
-							  {
-								  return false;
-							  }
-						  }
-
-						  return true;
-					  }}; // can't know until we parse the argument
+						  return bSetMode(
+							  _options->mode, switchFlag.hasArgAsULONG(0, 16) ? cmdmodePropTag : cmdmodeFlagSearch);
+					  }};
 	option switchRecent{L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT};
 	option switchStore{L"Store",
 					   cmdmodeStoreProperties,
@@ -652,7 +632,7 @@ namespace cli
 				myoptions->options & OPT_DOPARTIALSEARCH && myoptions->options & OPT_DOTYPE && !switchType.args.empty())
 				myoptions->mode = cmdmodeHelp;
 			else if (
-				myoptions->options & OPT_DOFLAG &&
+				cli::switchFlag.hasArgAsULONG(0) &&
 				(myoptions->options & OPT_DOPARTIALSEARCH || myoptions->options & OPT_DOTYPE))
 				myoptions->mode = cmdmodeHelp;
 
