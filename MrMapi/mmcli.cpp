@@ -18,173 +18,165 @@ namespace cli
 	// For some reason, placing this in the lambda causes a compiler error. So we'll make it an inline function
 	inline MYOPTIONS* GetMyOptions(OPTIONS* _options) { return dynamic_cast<MYOPTIONS*>(_options); }
 
-	OptParser switchSearch{L"Search", cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH};
-	OptParser switchDecimal{L"Number", cmdmodeUnknown, 0, 0, OPT_DODECIMAL};
-	OptParser switchFolder{L"Folder",
-						   cmdmodeUnknown,
-						   1,
-						   1,
-						   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDFOLDER | OPT_INITMFC};
-	OptParser switchOutput{L"Output", cmdmodeUnknown, 1, 1, OPT_NOOPT};
-	OptParser switchDispid{L"Dispids", cmdmodePropTag, 0, 0, OPT_DODISPID};
-	OptParser switchType{L"Type", cmdmodePropTag, 0, 1, OPT_DOTYPE};
-	OptParser switchGuid{L"Guids", cmdmodeGuid, 0, 0, OPT_NOOPT};
-	OptParser switchError{L"Error", cmdmodeErr, 0, 0, OPT_NOOPT};
-	OptParser switchParser{L"ParserType", cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE};
-	OptParser switchInput{L"Input", cmdmodeUnknown, 1, 1, OPT_NOOPT};
-	OptParser switchBinary{L"Binary", cmdmodeSmartView, 0, 0, OPT_BINARYFILE};
-	OptParser switchAcl{L"Acl", cmdmodeAcls, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
-	OptParser switchRule{L"Rules",
-						 cmdmodeRules,
-						 0,
-						 0,
-						 OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
-	OptParser switchContents{L"Contents",
-							 cmdmodeContents,
-							 0,
-							 0,
-							 OPT_DOCONTENTS | OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
-	OptParser switchAssociatedContents{L"HiddenContents",
-									   cmdmodeContents,
-									   0,
-									   0,
-									   OPT_DOASSOCIATEDCONTENTS | OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
-	OptParser switchMoreProperties{L"MoreProperties", cmdmodeUnknown, 0, 0, OPT_RETRYSTREAMPROPS};
-	OptParser switchNoAddins{L"NoAddins", cmdmodeUnknown, 0, 0, OPT_NOADDINS};
-	OptParser switchOnline{L"Online", cmdmodeUnknown, 0, 0, OPT_ONLINE};
-	OptParser switchMAPI{L"MAPI",
-						 cmdmodeMAPIMIME,
-						 0,
-						 0,
-						 OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE};
-	OptParser switchMIME{L"MIME",
-						 cmdmodeMAPIMIME,
-						 0,
-						 0,
-						 OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE};
-	OptParser switchCCSFFlags{L"CCSFFlags", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT};
-	OptParser switchRFC822{L"RFC822", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT};
-	OptParser switchWrap{L"Wrap", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT};
-	OptParser switchEncoding{L"Encoding", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT};
-	OptParser switchCharset{L"Charset", cmdmodeMAPIMIME, 3, 3, OPT_NOOPT};
-	OptParser switchAddressBook{L"AddressBook", cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPILOGON};
-	OptParser switchUnicode{L"Unicode", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT};
-	OptParser switchProfile{L"Profile", cmdmodeUnknown, 0, 1, OPT_PROFILE};
-	OptParser switchXML{L"XML", cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE};
-	OptParser switchSubject{L"Subject", cmdmodeContents, 1, 1, OPT_NOOPT};
-	OptParser switchMessageClass{L"MessageClass", cmdmodeContents, 1, 1, OPT_NOOPT};
-	OptParser switchMSG{L"MSG", cmdmodeContents, 0, 0, OPT_MSG};
-	OptParser switchList{L"List", cmdmodeContents, 0, 0, OPT_LIST};
-	OptParser switchChildFolders{L"ChildFolders",
-								 cmdmodeChildFolders,
-								 0,
-								 0,
-								 OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
-	OptParser switchFid{L"FID",
-						cmdmodeFidMid,
-						0,
+	option switchSearch{L"Search", cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH};
+	option switchDecimal{L"Number", cmdmodeUnknown, 0, 0, OPT_DODECIMAL};
+	option switchFolder{L"Folder",
+						cmdmodeUnknown,
 						1,
-						OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDSTORE};
-	OptParser switchMid{L"MID", cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
-	OptParser switchFlag{L"Flag", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options) {
-							 auto options = GetMyOptions(_options);
-							 LPWSTR szEndPtr = nullptr;
-							 // We must have a next argument, but it could be a string or a number
-							 options->lpszFlagName = switchFlag.args.front();
-							 options->ulFlagValue = wcstoul(switchFlag.args.front().c_str(), &szEndPtr, 16);
-
-							 // Set mode based on whether the flag string was completely parsed as a number
-							 if (NULL == szEndPtr[0])
-							 {
-								 if (!bSetMode(options->mode, cmdmodePropTag))
-								 {
-									 return false;
-								 }
-
-								 options->options |= OPT_DOFLAG;
-							 }
-							 else
-							 {
-								 if (!bSetMode(options->mode, cmdmodeFlagSearch))
-								 {
-									 return false;
-								 }
-							 }
-
-							 return true;
-						 }}; // can't know until we parse the argument
-	OptParser switchRecent{L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT};
-	OptParser switchStore{L"Store",
-						  cmdmodeStoreProperties,
+						1,
+						OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDFOLDER | OPT_INITMFC};
+	option switchOutput{L"Output", cmdmodeUnknown, 1, 1, OPT_NOOPT};
+	option switchDispid{L"Dispids", cmdmodePropTag, 0, 0, OPT_DODISPID};
+	option switchType{L"Type", cmdmodePropTag, 0, 1, OPT_DOTYPE};
+	option switchGuid{L"Guids", cmdmodeGuid, 0, 0, OPT_NOOPT};
+	option switchError{L"Error", cmdmodeErr, 0, 0, OPT_NOOPT};
+	option switchParser{L"ParserType", cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE};
+	option switchInput{L"Input", cmdmodeUnknown, 1, 1, OPT_NOOPT};
+	option switchBinary{L"Binary", cmdmodeSmartView, 0, 0, OPT_BINARYFILE};
+	option switchAcl{L"Acl", cmdmodeAcls, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
+	option switchRule{L"Rules",
+					  cmdmodeRules,
+					  0,
+					  0,
+					  OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
+	option switchContents{L"Contents",
+						  cmdmodeContents,
 						  0,
-						  1,
-						  OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC,
-						  [](auto _options) {
-							  auto options = GetMyOptions(_options);
-							  if (!switchStore.args.empty())
-							  {
-								  LPWSTR szEndPtr = nullptr;
-								  options->ulStore = wcstoul(switchStore.args.front().c_str(), &szEndPtr, 10);
+						  0,
+						  OPT_DOCONTENTS | OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
+	option switchAssociatedContents{L"HiddenContents",
+									cmdmodeContents,
+									0,
+									0,
+									OPT_DOASSOCIATEDCONTENTS | OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
+	option switchMoreProperties{L"MoreProperties", cmdmodeUnknown, 0, 0, OPT_RETRYSTREAMPROPS};
+	option switchNoAddins{L"NoAddins", cmdmodeUnknown, 0, 0, OPT_NOADDINS};
+	option switchOnline{L"Online", cmdmodeUnknown, 0, 0, OPT_ONLINE};
+	option switchMAPI{L"MAPI",
+					  cmdmodeMAPIMIME,
+					  0,
+					  0,
+					  OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE};
+	option switchMIME{L"MIME",
+					  cmdmodeMAPIMIME,
+					  0,
+					  0,
+					  OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE};
+	option switchCCSFFlags{L"CCSFFlags", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT};
+	option switchRFC822{L"RFC822", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT};
+	option switchWrap{L"Wrap", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT};
+	option switchEncoding{L"Encoding", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT};
+	option switchCharset{L"Charset", cmdmodeMAPIMIME, 3, 3, OPT_NOOPT};
+	option switchAddressBook{L"AddressBook", cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPILOGON};
+	option switchUnicode{L"Unicode", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT};
+	option switchProfile{L"Profile", cmdmodeUnknown, 0, 1, OPT_PROFILE};
+	option switchXML{L"XML", cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE};
+	option switchSubject{L"Subject", cmdmodeContents, 1, 1, OPT_NOOPT};
+	option switchMessageClass{L"MessageClass", cmdmodeContents, 1, 1, OPT_NOOPT};
+	option switchMSG{L"MSG", cmdmodeContents, 0, 0, OPT_MSG};
+	option switchList{L"List", cmdmodeContents, 0, 0, OPT_LIST};
+	option switchChildFolders{L"ChildFolders",
+							  cmdmodeChildFolders,
+							  0,
+							  0,
+							  OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
+	option switchFid{L"FID", cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDSTORE};
+	option switchMid{L"MID", cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
+	option switchFlag{L"Flag", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options) {
+						  auto myoptions = GetMyOptions(_options);
+						  LPWSTR szEndPtr = nullptr;
+						  // We must have a next argument, but it could be a string or a number
+						  myoptions->lpszFlagName = switchFlag.args.front();
+						  myoptions->ulFlagValue = wcstoul(switchFlag.args.front().c_str(), &szEndPtr, 16);
 
-								  // If we parsed completely, this was a store number
-								  if (NULL == szEndPtr[0])
-								  {
-									  // Increment ulStore so we can use to distinguish an unset value
-									  options->ulStore++;
-								  }
-								  // Else it was a naked option - leave it on the stack
+						  // Set mode based on whether the flag string was completely parsed as a number
+						  if (NULL == szEndPtr[0])
+						  {
+							  if (!bSetMode(myoptions->mode, cmdmodePropTag))
+							  {
+								  return false;
 							  }
 
-							  return true;
-						  }};
-	OptParser switchVersion{L"Version", cmdmodeUnknown, 1, 1, OPT_NOOPT};
-	OptParser switchSize{L"Size",
-						 cmdmodeFolderSize,
-						 0,
-						 0,
-						 OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
-	OptParser switchPST{L"PST", cmdmodePST, 0, 0, OPT_NEEDINPUTFILE};
-	OptParser switchProfileSection{L"ProfileSection",
-								   cmdmodeProfile,
-								   1,
-								   1,
-								   OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
-	OptParser switchByteSwapped{L"ByteSwapped", cmdmodeProfile, 0, 0, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
-	OptParser switchReceiveFolder{L"ReceiveFolder",
-								  cmdmodeReceiveFolder,
-								  0,
-								  1,
-								  OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDSTORE | OPT_INITMFC,
-								  [](auto _options) {
-									  auto options = GetMyOptions(_options);
-									  if (!switchReceiveFolder.args.empty())
-									  {
-										  LPWSTR szEndPtr = nullptr;
-										  options->ulStore =
-											  wcstoul(switchReceiveFolder.args.front().c_str(), &szEndPtr, 10);
+							  myoptions->options |= OPT_DOFLAG;
+						  }
+						  else
+						  {
+							  if (!bSetMode(myoptions->mode, cmdmodeFlagSearch))
+							  {
+								  return false;
+							  }
+						  }
 
-										  // If we parsed completely, this was a store number
-										  if (NULL == szEndPtr[0])
-										  {
-											  // Increment ulStore so we can use to distinguish an unset value
-											  options->ulStore++;
-										  }
-										  // Else it was a naked option - leave it on the stack
-									  }
+						  return true;
+					  }}; // can't know until we parse the argument
+	option switchRecent{L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT};
+	option switchStore{L"Store",
+					   cmdmodeStoreProperties,
+					   0,
+					   1,
+					   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC,
+					   [](auto _options) {
+						   auto myoptions = GetMyOptions(_options);
+						   if (!switchStore.args.empty())
+						   {
+							   LPWSTR szEndPtr = nullptr;
+							   myoptions->ulStore = wcstoul(switchStore.args.front().c_str(), &szEndPtr, 10);
 
-									  return true;
-								  }};
-	OptParser switchSkip{L"Skip", cmdmodeUnknown, 0, 0, OPT_SKIPATTACHMENTS};
-	OptParser switchSearchState{L"SearchState",
-								cmdmodeSearchState,
-								0,
-								1,
-								OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
+							   // If we parsed completely, this was a store number
+							   if (NULL == szEndPtr[0])
+							   {
+								   // Increment ulStore so we can use to distinguish an unset value
+								   myoptions->ulStore++;
+							   }
+							   // Else it was a naked option - leave it on the stack
+						   }
+
+						   return true;
+					   }};
+	option switchVersion{L"Version", cmdmodeUnknown, 1, 1, OPT_NOOPT};
+	option switchSize{L"Size",
+					  cmdmodeFolderSize,
+					  0,
+					  0,
+					  OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
+	option switchPST{L"PST", cmdmodePST, 0, 0, OPT_NEEDINPUTFILE};
+	option switchProfileSection{L"ProfileSection", cmdmodeProfile, 1, 1, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
+	option switchByteSwapped{L"ByteSwapped", cmdmodeProfile, 0, 0, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
+	option switchReceiveFolder{L"ReceiveFolder",
+							   cmdmodeReceiveFolder,
+							   0,
+							   1,
+							   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDSTORE | OPT_INITMFC,
+							   [](auto _options) {
+								   auto myoptions = GetMyOptions(_options);
+								   if (!switchReceiveFolder.args.empty())
+								   {
+									   LPWSTR szEndPtr = nullptr;
+									   myoptions->ulStore =
+										   wcstoul(switchReceiveFolder.args.front().c_str(), &szEndPtr, 10);
+
+									   // If we parsed completely, this was a store number
+									   if (NULL == szEndPtr[0])
+									   {
+										   // Increment ulStore so we can use to distinguish an unset value
+										   myoptions->ulStore++;
+									   }
+									   // Else it was a naked option - leave it on the stack
+								   }
+
+								   return true;
+							   }};
+	option switchSkip{L"Skip", cmdmodeUnknown, 0, 0, OPT_SKIPATTACHMENTS};
+	option switchSearchState{L"SearchState",
+							 cmdmodeSearchState,
+							 0,
+							 1,
+							 OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
 
 	// If we want to add aliases for any switches, add them here
-	OptParser switchHelpAlias{L"Help", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
+	option switchHelpAlias{L"Help", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
 
-	std::vector<OptParser*> g_Parsers = {
+	std::vector<option*> g_options = {
 		&switchHelp,
 		&switchVerbose,
 		&switchSearch,
@@ -621,25 +613,26 @@ namespace cli
 
 	void PostParseCheck(OPTIONS* _options)
 	{
-		auto options = dynamic_cast<MYOPTIONS*>(_options);
+		auto myoptions = dynamic_cast<MYOPTIONS*>(_options);
 		// Having processed the command line, we may not have determined a mode.
 		// Some modes can be presumed by the switches we did see.
 
 		// If we didn't get a mode set but we saw OPT_NEEDFOLDER, assume we're in folder dumping mode
-		if (cmdmodeUnknown == options->mode && options->options & OPT_NEEDFOLDER) options->mode = cmdmodeFolderProps;
+		if (cmdmodeUnknown == myoptions->mode && myoptions->options & OPT_NEEDFOLDER)
+			myoptions->mode = cmdmodeFolderProps;
 
 		// If we didn't get a mode set, but we saw OPT_PROFILE, assume we're in profile dumping mode
-		if (cmdmodeUnknown == options->mode && options->options & OPT_PROFILE)
+		if (cmdmodeUnknown == myoptions->mode && myoptions->options & OPT_PROFILE)
 		{
-			options->mode = cmdmodeProfile;
-			options->options |= OPT_NEEDMAPIINIT | OPT_INITMFC;
+			myoptions->mode = cmdmodeProfile;
+			myoptions->options |= OPT_NEEDMAPIINIT | OPT_INITMFC;
 		}
 
 		// If we didn't get a mode set, assume we're in prop tag mode
-		if (cmdmodeUnknown == options->mode) options->mode = cmdmodePropTag;
+		if (cmdmodeUnknown == myoptions->mode) myoptions->mode = cmdmodePropTag;
 
 		// If we weren't passed an output file/directory, remember the current directory
-		if (!switchOutput.hasArgs() && options->mode != cmdmodeSmartView && options->mode != cmdmodeProfile)
+		if (!switchOutput.hasArgs() && myoptions->mode != cmdmodeSmartView && myoptions->mode != cmdmodeProfile)
 		{
 			WCHAR strPath[_MAX_PATH];
 			GetCurrentDirectoryW(_MAX_PATH, strPath);
@@ -648,53 +641,53 @@ namespace cli
 		}
 
 		// Validate that we have bare minimum to run
-		if (options->options & OPT_NEEDINPUTFILE && !switchInput.hasArgs())
-			options->mode = cmdmodeHelp;
-		else if (options->options & OPT_NEEDOUTPUTFILE && !switchOutput.hasArgs())
-			options->mode = cmdmodeHelp;
+		if (myoptions->options & OPT_NEEDINPUTFILE && !switchInput.hasArgs())
+			myoptions->mode = cmdmodeHelp;
+		else if (myoptions->options & OPT_NEEDOUTPUTFILE && !switchOutput.hasArgs())
+			myoptions->mode = cmdmodeHelp;
 
-		switch (options->mode)
+		switch (myoptions->mode)
 		{
 		case cmdmodePropTag:
-			if (!(options->options & OPT_DOTYPE) && !(options->options & OPT_DOPARTIALSEARCH) &&
-				options->lpszUnswitchedOption.empty())
-				options->mode = cmdmodeHelp;
+			if (!(myoptions->options & OPT_DOTYPE) && !(myoptions->options & OPT_DOPARTIALSEARCH) &&
+				myoptions->lpszUnswitchedOption.empty())
+				myoptions->mode = cmdmodeHelp;
 			else if (
-				options->options & OPT_DOPARTIALSEARCH && options->options & OPT_DOTYPE && !switchType.args.empty())
-				options->mode = cmdmodeHelp;
+				myoptions->options & OPT_DOPARTIALSEARCH && myoptions->options & OPT_DOTYPE && !switchType.args.empty())
+				myoptions->mode = cmdmodeHelp;
 			else if (
-				options->options & OPT_DOFLAG &&
-				(options->options & OPT_DOPARTIALSEARCH || options->options & OPT_DOTYPE))
-				options->mode = cmdmodeHelp;
+				myoptions->options & OPT_DOFLAG &&
+				(myoptions->options & OPT_DOPARTIALSEARCH || myoptions->options & OPT_DOTYPE))
+				myoptions->mode = cmdmodeHelp;
 
 			break;
 		case cmdmodeSmartView:
-			if (switchParser.getArgAsULONG(0) == 0) options->mode = cmdmodeHelp;
+			if (switchParser.getArgAsULONG(0) == 0) myoptions->mode = cmdmodeHelp;
 
 			break;
 		case cmdmodeContents:
-			if (!(options->options & OPT_DOCONTENTS) && !(options->options & OPT_DOASSOCIATEDCONTENTS))
-				options->mode = cmdmodeHelp;
+			if (!(myoptions->options & OPT_DOCONTENTS) && !(myoptions->options & OPT_DOASSOCIATEDCONTENTS))
+				myoptions->mode = cmdmodeHelp;
 
 			break;
 		case cmdmodeMAPIMIME:
 			// Can't convert both ways at once
-			if (switchMAPI.isSet() && switchMIME.isSet()) options->mode = cmdmodeHelp;
+			if (switchMAPI.isSet() && switchMIME.isSet()) myoptions->mode = cmdmodeHelp;
 			// Make sure there's no MIME-only options specified in a MIME->MAPI conversion
 			else if (switchMAPI.isSet() && (switchRFC822.isSet() || switchEncoding.isSet() || switchWrap.isSet()))
-				options->mode = cmdmodeHelp;
+				myoptions->mode = cmdmodeHelp;
 			// Make sure there's no MAPI-only options specified in a MAPI->MIME conversion
 			else if (switchMIME.isSet() && (switchCharset.isSet() || switchUnicode.isSet()))
-				options->mode = cmdmodeHelp;
+				myoptions->mode = cmdmodeHelp;
 
 			break;
 		case cmdmodeProfile:
 			if (switchProfile.hasArgs() && !switchOutput.hasArgs())
-				options->mode = cmdmodeHelp;
+				myoptions->mode = cmdmodeHelp;
 			else if (!switchProfile.hasArgs() && switchOutput.hasArgs())
-				options->mode = cmdmodeHelp;
+				myoptions->mode = cmdmodeHelp;
 			else if (!switchProfileSection.hasArgs() && !switchProfile.hasArgs())
-				options->mode = cmdmodeHelp;
+				myoptions->mode = cmdmodeHelp;
 
 			break;
 		default:

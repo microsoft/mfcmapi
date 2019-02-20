@@ -2,6 +2,9 @@
 #include <UnitTest/UnitTest.h>
 #include <core/utility/cli.h>
 
+// Our set of options for testing
+const std::vector<cli::option*> options = {&cli::switchHelp, &cli::switchVerbose};
+
 namespace Microsoft
 {
 	namespace VisualStudio
@@ -11,8 +14,8 @@ namespace Microsoft
 			template <> inline std::wstring ToString<cli::modeEnum>(const cli::modeEnum& q) { RETURN_WIDE_STRING(q); }
 
 			void AreEqual(
-				const cli::OptParser* expected,
-				const cli::OptParser* actual,
+				const cli::option* expected,
+				const cli::option* actual,
 				const wchar_t* message = nullptr,
 				const __LineInfo* pLineInfo = nullptr)
 			{
@@ -69,22 +72,22 @@ namespace clitest
 			Assert::AreEqual({L"-arg1", L"-arg2"}, cli::GetCommandLine(int(argv.size()), argv.data()));
 		}
 
-		TEST_METHOD(Test_GetParser)
+		TEST_METHOD(Test_GetOption)
 		{
-			AreEqual(&cli::switchHelp, GetParser(std::wstring{L"-?"}, cli::parsers));
-			AreEqual(&cli::switchVerbose, GetParser(std::wstring{L"-v"}, cli::parsers));
-			AreEqual(&cli::switchVerbose, GetParser(std::wstring{L"/v"}, cli::parsers));
-			AreEqual(&cli::switchVerbose, GetParser(std::wstring{L"\\v"}, cli::parsers));
-			AreEqual(&cli::switchVerbose, GetParser(std::wstring{L"-verbose"}, cli::parsers));
-			AreEqual(&cli::switchInvalid, GetParser(std::wstring{L"-verbosey"}, cli::parsers));
-			AreEqual(&cli::switchInvalid, GetParser(std::wstring{L"-va"}, cli::parsers));
-			AreEqual(&cli::switchInvalid, GetParser(std::wstring{L"-test"}, cli::parsers));
-			AreEqual(nullptr, GetParser(std::wstring{L""}, cli::parsers));
-			AreEqual(nullptr, GetParser(std::wstring{L"+v"}, cli::parsers));
-			AreEqual(&cli::switchInvalid, GetParser(std::wstring{L"-"}, cli::parsers));
+			AreEqual(&cli::switchHelp, GetOption(std::wstring{L"-?"}, options));
+			AreEqual(&cli::switchVerbose, GetOption(std::wstring{L"-v"}, options));
+			AreEqual(&cli::switchVerbose, GetOption(std::wstring{L"/v"}, options));
+			AreEqual(&cli::switchVerbose, GetOption(std::wstring{L"\\v"}, options));
+			AreEqual(&cli::switchVerbose, GetOption(std::wstring{L"-verbose"}, options));
+			AreEqual(&cli::switchInvalid, GetOption(std::wstring{L"-verbosey"}, options));
+			AreEqual(&cli::switchInvalid, GetOption(std::wstring{L"-va"}, options));
+			AreEqual(&cli::switchInvalid, GetOption(std::wstring{L"-test"}, options));
+			AreEqual(nullptr, GetOption(std::wstring{L""}, options));
+			AreEqual(nullptr, GetOption(std::wstring{L"+v"}, options));
+			AreEqual(&cli::switchInvalid, GetOption(std::wstring{L"-"}, options));
 
-			AreEqual(nullptr, GetParser(L"No switch", cli::parsers));
-			AreEqual(&cli::switchInvalid, GetParser(L"-notaswitch", cli::parsers));
+			AreEqual(nullptr, GetOption(L"No switch", options));
+			AreEqual(&cli::switchInvalid, GetOption(L"-notaswitch", options));
 		}
 
 		TEST_METHOD(Test_bSetMode)
@@ -97,20 +100,20 @@ namespace clitest
 			Assert::AreEqual(cli::cmdmodeHelpFull, cli::modeEnum(mode));
 		}
 
-		void test_scanArgs(bool targetResult, const cli::OptParser& _parser, const std::deque<std::wstring>& _args)
+		void test_scanArgs(bool targetResult, const cli::option& _option, const std::deque<std::wstring>& _args)
 		{
 			// Make a local non-const copy of the inputs
-			auto parser = _parser;
+			auto option = _option;
 			auto args = _args;
 
-			auto result = parser.scanArgs(args, cli::parsers);
+			auto result = option.scanArgs(args, options);
 
 			if (targetResult == result)
 			{
 				if (!result) return;
 
 				// If we claim to have matched, some further checks
-				if (parser.args.size() >= parser.minArgs && parser.args.size() <= parser.maxArgs)
+				if (option.args.size() >= option.minArgs && option.args.size() <= option.maxArgs)
 				{
 					return;
 				}
@@ -118,11 +121,11 @@ namespace clitest
 
 			Logger::WriteMessage(strings::format(L"scanArgs test failed\n").c_str());
 
-			Logger::WriteMessage(strings::format(L"Switch: %ws\n", parser.szSwitch).c_str());
-			Logger::WriteMessage(strings::format(L"Mode: %d\n", parser.mode).c_str());
-			Logger::WriteMessage(strings::format(L"minArgs: %d\n", parser.minArgs).c_str());
-			Logger::WriteMessage(strings::format(L"maxArgs: %d\n", parser.maxArgs).c_str());
-			Logger::WriteMessage(strings::format(L"ulOpt: %d\n", parser.options).c_str());
+			Logger::WriteMessage(strings::format(L"Switch: %ws\n", option.szSwitch).c_str());
+			Logger::WriteMessage(strings::format(L"Mode: %d\n", option.mode).c_str());
+			Logger::WriteMessage(strings::format(L"minArgs: %d\n", option.minArgs).c_str());
+			Logger::WriteMessage(strings::format(L"maxArgs: %d\n", option.maxArgs).c_str());
+			Logger::WriteMessage(strings::format(L"ulOpt: %d\n", option.options).c_str());
 
 			Logger::WriteMessage(strings::format(L"Tested args\n").c_str());
 			for (auto& arg : args)
@@ -131,7 +134,7 @@ namespace clitest
 			}
 
 			Logger::WriteMessage(strings::format(L"Parsed args\n").c_str());
-			for (auto& arg : parser.args)
+			for (auto& arg : option.args)
 			{
 				Logger::WriteMessage(strings::format(L"  %ws\n", arg.c_str()).c_str());
 			}
@@ -142,14 +145,14 @@ namespace clitest
 		TEST_METHOD(Test_scanArgs)
 		{
 			// min/max-0/0
-			auto p0_0 = cli::OptParser{L"", 0, 0, 0, 0};
+			auto p0_0 = cli::option{L"", 0, 0, 0, 0};
 			test_scanArgs(true, p0_0, {});
 			test_scanArgs(true, p0_0, {});
 			test_scanArgs(true, p0_0, {L"-v"});
 			test_scanArgs(true, p0_0, {L"1"});
 
 			//// min/max-1/1
-			auto p1_1 = cli::OptParser{L"", 0, 1, 1, 0};
+			auto p1_1 = cli::option{L"", 0, 1, 1, 0};
 			test_scanArgs(true, p1_1, {L"1"});
 			test_scanArgs(true, p1_1, {L"2", L"3"});
 			test_scanArgs(true, p1_1, {L"4", L"-v"});
@@ -159,13 +162,13 @@ namespace clitest
 			test_scanArgs(false, p1_1, {});
 
 			// min/max-0/1
-			auto p0_1 = cli::OptParser{L"", 0, 0, 1, 0};
+			auto p0_1 = cli::option{L"", 0, 0, 1, 0};
 			test_scanArgs(true, p0_1, {L"-v"});
 			test_scanArgs(true, p0_1, {L"1", L"-v"});
 			test_scanArgs(true, p0_1, {});
 
 			// min/max-2/3
-			auto p2_3 = cli::OptParser{L"", 0, 2, 3, 0};
+			auto p2_3 = cli::option{L"", 0, 2, 3, 0};
 			test_scanArgs(true, p2_3, {L"1", L"2"});
 			test_scanArgs(true, p2_3, {L"3", L"4", L"-v"});
 			test_scanArgs(true, p2_3, {L"5", L"6", L"7"});

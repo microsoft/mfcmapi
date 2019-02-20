@@ -5,14 +5,13 @@
 
 namespace cli
 {
-	OptParser switchInvalid = {L"", cmdmodeHelpFull, 0, 0, 0};
-	OptParser switchHelp = {L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
-	OptParser switchVerbose = {L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
-	const std::vector<OptParser*> parsers = {&switchHelp, &switchVerbose};
+	option switchInvalid = {L"", cmdmodeHelpFull, 0, 0, 0};
+	option switchHelp = {L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
+	option switchVerbose = {L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
 
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
-	OptParser* GetParser(const std::wstring& szArg, const std::vector<OptParser*>& _parsers)
+	option* GetOption(const std::wstring& szArg, const std::vector<option*>& _options)
 	{
 		if (szArg.empty()) return nullptr;
 
@@ -30,7 +29,7 @@ namespace cli
 			return nullptr;
 		}
 
-		for (const auto parser : _parsers)
+		for (const auto parser : _options)
 		{
 			// If we have a match
 			if (parser && strings::beginsWith(parser->szSwitch, szSwitch))
@@ -73,7 +72,7 @@ namespace cli
 	void ParseArgs(
 		OPTIONS& options,
 		std::deque<std::wstring>& args,
-		const std::vector<OptParser*>& _parsers,
+		const std::vector<option*>& _options,
 		std::function<void(OPTIONS* _options)> postParseCheck)
 	{
 		if (args.empty())
@@ -85,7 +84,7 @@ namespace cli
 		while (!args.empty())
 		{
 			auto arg0 = args.front();
-			auto opt = GetParser(arg0, _parsers);
+			auto opt = GetOption(arg0, _options);
 			args.pop_front();
 
 			if (!opt)
@@ -127,7 +126,7 @@ namespace cli
 
 			// Make sure we have the right number of args
 			// Commands with variable argument counts can special case themselves
-			if (!opt->scanArgs(args, _parsers))
+			if (!opt->scanArgs(args, _options))
 			{
 				// resetting our mode here, switch to help
 				options.mode = cmdmodeHelp;
@@ -144,7 +143,7 @@ namespace cli
 
 	// Return true if we succesfully peeled off a switch.
 	// Return false on an error.
-	_Check_return_ bool DoSwitch(OPTIONS* options, cli::OptParser* opt)
+	_Check_return_ bool DoSwitch(OPTIONS* options, cli::option* opt)
 	{
 		if (opt->parseArgs) return opt->parseArgs(options);
 
@@ -152,7 +151,7 @@ namespace cli
 	}
 
 	// Consume min/max args and store them in the option
-	_Check_return_ bool OptParser::scanArgs(std::deque<std::wstring>& _args, const std::vector<OptParser*>& _parsers)
+	_Check_return_ bool option::scanArgs(std::deque<std::wstring>& _args, const std::vector<option*>& _options)
 	{
 		seen = false; // We're not "seen" until we get past this check
 		args.clear();
@@ -163,7 +162,7 @@ namespace cli
 		for (auto it = _args.cbegin(); it != _args.cend() && c < maxArgs; it++, c++)
 		{
 			// If we *do* get a parser while looking for our minargs, then we've failed
-			if (GetParser(*it, _parsers))
+			if (GetOption(*it, _options))
 			{
 				// If we've already gotten our minArgs, we're done
 				if (c >= minArgs) break;
@@ -182,14 +181,14 @@ namespace cli
 		return true;
 	}
 
-	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<OptParser*>& _parsers)
+	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<option*>& _options)
 	{
 		output::DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.mode);
 		output::DebugPrint(DBGGeneric, L"options = 0x%08X\n", ProgOpts.options);
 		if (!ProgOpts.lpszUnswitchedOption.empty())
 			output::DebugPrint(DBGGeneric, L"lpszUnswitchedOption = %ws\n", ProgOpts.lpszUnswitchedOption.c_str());
 
-		for (const auto& parser : _parsers)
+		for (const auto& parser : _options)
 		{
 			if (parser->isSet())
 			{

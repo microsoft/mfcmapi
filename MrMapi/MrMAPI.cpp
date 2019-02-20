@@ -145,7 +145,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 	auto ProgOpts = cli::MYOPTIONS{};
 	auto cl = cli::GetCommandLine(argc, argv);
-	cli::ParseArgs(ProgOpts, cl, cli::g_Parsers, cli::PostParseCheck);
+	cli::ParseArgs(ProgOpts, cl, cli::g_options, cli::PostParseCheck);
 
 	// Must be first after ParseArgs
 	if (ProgOpts.options & cli::OPT_INITMFC)
@@ -156,7 +156,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	if (ProgOpts.options & cli::OPT_VERBOSE)
 	{
 		registry::debugTag = 0xFFFFFFFF;
-		cli::PrintArgs(ProgOpts, cli::g_Parsers);
+		cli::PrintArgs(ProgOpts, cli::g_options);
 	}
 
 	if (!(ProgOpts.options & cli::OPT_NOADDINS))

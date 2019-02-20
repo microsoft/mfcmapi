@@ -13,7 +13,7 @@ namespace cli
 		virtual void __dummy() noexcept {};
 	};
 
-	class OptParser
+	class option
 	{
 	private:
 		bool seen{false};
@@ -27,9 +27,9 @@ namespace cli
 		std::vector<std::wstring> args;
 		std::function<bool(OPTIONS* _options)> parseArgs = 0;
 
-		OptParser() = default;
+		option() = default;
 
-		OptParser(
+		option(
 			LPCWSTR _szSwitch,
 			int _mode,
 			UINT _minArgs,
@@ -51,7 +51,7 @@ namespace cli
 		std::wstring getArg(size_t i) const { return args.size() > i ? args[i] : std::wstring{}; }
 		ULONG getArgAsULONG(size_t i) const { return args.size() > i ? strings::wstringToUlong(args[i], 10) : 0; }
 
-		_Check_return_ bool scanArgs(std::deque<std::wstring>& args, const std::vector<OptParser*>& _parsers);
+		_Check_return_ bool scanArgs(std::deque<std::wstring>& args, const std::vector<option*>& _options);
 	};
 
 	enum modeEnum
@@ -69,16 +69,14 @@ namespace cli
 		OPT_INITMFC = 0x00002,
 	};
 
-	extern OptParser switchInvalid;
-	extern OptParser switchHelp;
-	extern OptParser switchVerbose;
-
-	extern const std::vector<OptParser*> parsers;
+	extern option switchInvalid;
+	extern option switchHelp;
+	extern option switchVerbose;
 
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
 	// The first switch should be our "no match" switch
-	OptParser* GetParser(const std::wstring& szArg, const std::vector<OptParser*>& _parsers);
+	option* GetOption(const std::wstring& szArg, const std::vector<option*>& _options);
 
 	// If the mode isn't set (is 0), then we can set it to any mode
 	// If the mode IS set (non 0), then we can only set it to the same mode
@@ -91,10 +89,10 @@ namespace cli
 	void ParseArgs(
 		OPTIONS& options,
 		std::deque<std::wstring>& args,
-		const std::vector<OptParser*>& parsers,
+		const std::vector<option*>& _options,
 		std::function<void(OPTIONS* _options)> postParseCheck);
 
-	_Check_return_ bool DoSwitch(OPTIONS* _options, cli::OptParser* opt);
+	_Check_return_ bool DoSwitch(OPTIONS* _options, cli::option* opt);
 
-	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<OptParser*>& _parsers);
+	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<option*>& _options);
 } // namespace cli
