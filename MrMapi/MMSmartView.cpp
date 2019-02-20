@@ -24,15 +24,16 @@ void DoSmartView(_In_ cli::MYOPTIONS ProgOpts)
 	{
 		FILE* fOut = nullptr;
 		const auto input = cli::switchInput.getArg(0);
+		const auto output = cli::switchOutput.getArg(0);
 		const auto fIn = output::MyOpenFileMode(input, L"rb");
 		if (!fIn) printf("Cannot open input file %ws\n", input.c_str());
-		if (!ProgOpts.lpszOutput.empty())
+		if (!output.empty())
 		{
-			fOut = output::MyOpenFileMode(ProgOpts.lpszOutput, L"wb");
-			if (!fOut) printf("Cannot open output file %ws\n", ProgOpts.lpszOutput.c_str());
+			fOut = output::MyOpenFileMode(output, L"wb");
+			if (!fOut) printf("Cannot open output file %ws\n", output.c_str());
 		}
 
-		if (fIn && (ProgOpts.lpszOutput.empty() || fOut))
+		if (fIn && (output.empty() || fOut))
 		{
 			const auto iDesc = _fileno(fIn);
 			const auto iLength = _filelength(iDesc);

@@ -25,11 +25,7 @@ namespace cli
 						   1,
 						   1,
 						   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDFOLDER | OPT_INITMFC};
-	OptParser switchOutput{L"Output", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options) {
-							   auto options = GetMyOptions(_options);
-							   options->lpszOutput = switchOutput.args.front();
-							   return true;
-						   }};
+	OptParser switchOutput{L"Output", cmdmodeUnknown, 1, 1, OPT_NOOPT};
 	OptParser switchDispid{L"Dispids", cmdmodePropTag, 0, 0, OPT_DODISPID};
 	OptParser switchType{L"Type", cmdmodePropTag, 0, 1, OPT_DOTYPE};
 	OptParser switchGuid{L"Guids", cmdmodeGuid, 0, 0, OPT_NOOPT};
@@ -643,18 +639,18 @@ namespace cli
 		if (cmdmodeUnknown == options->mode) options->mode = cmdmodePropTag;
 
 		// If we weren't passed an output file/directory, remember the current directory
-		if (options->lpszOutput.empty() && options->mode != cmdmodeSmartView && options->mode != cmdmodeProfile)
+		if (!switchOutput.hasArgs() && options->mode != cmdmodeSmartView && options->mode != cmdmodeProfile)
 		{
 			WCHAR strPath[_MAX_PATH];
 			GetCurrentDirectoryW(_MAX_PATH, strPath);
 
-			options->lpszOutput = strPath;
+			switchOutput.args.push_back(strPath);
 		}
 
 		// Validate that we have bare minimum to run
 		if (options->options & OPT_NEEDINPUTFILE && !switchInput.hasArgs())
 			options->mode = cmdmodeHelp;
-		else if (options->options & OPT_NEEDOUTPUTFILE && options->lpszOutput.empty())
+		else if (options->options & OPT_NEEDOUTPUTFILE && !switchOutput.hasArgs())
 			options->mode = cmdmodeHelp;
 
 		switch (options->mode)
@@ -693,9 +689,9 @@ namespace cli
 
 			break;
 		case cmdmodeProfile:
-			if (switchProfile.hasArgs() && options->lpszOutput.empty())
+			if (switchProfile.hasArgs() && !switchOutput.hasArgs())
 				options->mode = cmdmodeHelp;
-			else if (!switchProfile.hasArgs() && !options->lpszOutput.empty())
+			else if (!switchProfile.hasArgs() && switchOutput.hasArgs())
 				options->mode = cmdmodeHelp;
 			else if (!switchProfileSection.hasArgs() && !switchProfile.hasArgs())
 				options->mode = cmdmodeHelp;

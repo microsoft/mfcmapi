@@ -9,6 +9,7 @@
 void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 {
 	const auto input = cli::switchInput.getArg(0);
+	const auto output = cli::switchOutput.getArg(0);
 	const auto ulWrapLines = cli::switchWrap.getArgAsULONG(0);
 	const auto ulEncodingType = cli::switchEncoding.getArgAsULONG(0);
 	const auto convertFlags = static_cast<CCSFLAGS>(cli::switchCCSFFlags.getArgAsULONG(0));
@@ -20,7 +21,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 	printf("Message File Converter\n");
 	printf("Options specified:\n");
 	printf("   Input File: %ws\n", input.c_str());
-	printf("   Output File: %ws\n", ProgOpts.lpszOutput.c_str());
+	printf("   Output File: %ws\n", output.c_str());
 	printf("   Conversion Type: ");
 	if (cli::switchMAPI.isSet())
 	{
@@ -118,7 +119,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 		// Source file is MSG, target is EML
 		hRes = WC_H(mapi::mapimime::ConvertMSGToEML(
 			input.c_str(),
-			ProgOpts.lpszOutput.c_str(),
+			output.c_str(),
 			convertFlags,
 			cli::switchEncoding.isSet() ? static_cast<ENCODINGTYPE>(ulEncodingType) : IET_UNKNOWN,
 			cli::switchRFC822.isSet() ? SAVE_RFC822 : SAVE_RFC1521,
@@ -142,7 +143,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 		{
 			hRes = WC_H(mapi::mapimime::ConvertEMLToMSG(
 				input.c_str(),
-				ProgOpts.lpszOutput.c_str(),
+				output.c_str(),
 				convertFlags,
 				cli::switchCharset.isSet(),
 				hCharSet,

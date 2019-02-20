@@ -117,7 +117,6 @@ namespace cli
 
 	struct MYOPTIONS : OPTIONS
 	{
-		std::wstring lpszOutput;
 		std::wstring lpszFlagName;
 		ULONG ulStore{};
 		ULONG ulFlagValue{};

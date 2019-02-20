@@ -194,11 +194,16 @@ namespace cli
 			if (parser->isSet())
 			{
 				output::DebugPrint(DBGGeneric, L"Switch: %ws\n", parser->szSwitch);
-				auto i = 0;
-				for (const auto& arg : parser->args)
-				{
-					output::DebugPrint(DBGGeneric, L"  arg[%d] = %ws\n", i++, arg.c_str());
-				}
+			}
+			else if (parser->hasArgs())
+			{
+				output::DebugPrint(DBGGeneric, L"Switch: %ws (not set but has args)\n", parser->szSwitch);
+			}
+
+			auto i = 0;
+			for (const auto& arg : parser->args)
+			{
+				output::DebugPrint(DBGGeneric, L"  arg[%d] = %ws\n", i++, arg.c_str());
 			}
 		}
 	}
