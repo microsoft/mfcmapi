@@ -15,9 +15,6 @@ namespace error
 
 namespace cli
 {
-	// For some reason, placing this in the lambda causes a compiler error. So we'll make it an inline function
-	inline MYOPTIONS* GetMyOptions(OPTIONS* _options) { return dynamic_cast<MYOPTIONS*>(_options); }
-
 	option switchSearch{L"Search", cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH};
 	option switchDecimal{L"Number", cmdmodeUnknown, 0, 0, OPT_DODECIMAL};
 	option switchFolder{L"Folder",
@@ -575,7 +572,7 @@ namespace cli
 
 	void PostParseCheck(OPTIONS* _options)
 	{
-		auto myoptions = dynamic_cast<MYOPTIONS*>(_options);
+		auto myoptions = dynamic_cast<OPTIONS*>(_options);
 		// Having processed the command line, we may not have determined a mode.
 		// Some modes can be presumed by the switches we did see.
 

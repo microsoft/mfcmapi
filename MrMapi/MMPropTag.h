@@ -3,9 +3,9 @@
 
 namespace cli
 {
-	struct MYOPTIONS;
+	struct OPTIONS;
 }
 
-void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts);
+void DoPropTags(_In_ const cli::OPTIONS& ProgOpts);
 void DoGUIDs();
 void DoFlagSearch();

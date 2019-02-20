@@ -154,7 +154,7 @@ void PrintFileSize(ULONGLONG ullFileSize)
 	printf(" (%I64u bytes)", ullFileSize);
 }
 
-void DoPST(_In_ cli::MYOPTIONS ProgOpts)
+void DoPST(_In_ cli::OPTIONS ProgOpts)
 {
 	const auto input = cli::switchInput.getArg(0);
 	printf("Analyzing %ws\n", input.c_str());

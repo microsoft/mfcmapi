@@ -8,7 +8,7 @@
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
 
-void DoSmartView(_In_ cli::MYOPTIONS ProgOpts)
+void DoSmartView(_In_ cli::OPTIONS ProgOpts)
 {
 	// Ignore the reg key that disables smart view parsing
 	registry::doSmartView = true;

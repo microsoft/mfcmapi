@@ -1,12 +1,13 @@
 #pragma once
 // Folder related utilities for MrMAPI
 
-namespace cli {
-	struct MYOPTIONS;
+namespace cli
+{
+	struct OPTIONS;
 }
 
 void DoChildFolders(_In_ LPMAPIFOLDER lpFolder);
-void DoFolderProps(_In_ cli::MYOPTIONS ProgOpts, LPMAPIFOLDER lpFolder);
+void DoFolderProps(_In_ cli::OPTIONS ProgOpts, LPMAPIFOLDER lpFolder);
 void DoFolderSize(_In_ LPMAPIFOLDER lpFolder);
 void DoSearchState(_In_ LPMAPIFOLDER lpFolder);
 

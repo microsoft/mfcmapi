@@ -556,7 +556,7 @@ void DumpSearchState(
 	}
 }
 
-void DoFolderProps(_In_ cli::MYOPTIONS ProgOpts, LPMAPIFOLDER lpFolder)
+void DoFolderProps(_In_ cli::OPTIONS ProgOpts, LPMAPIFOLDER lpFolder)
 {
 	if (lpFolder)
 	{

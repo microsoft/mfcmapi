@@ -303,7 +303,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 	if (lpStoreTable) lpStoreTable->Release();
 }
 
-void DoStore(_In_ cli::MYOPTIONS ProgOpts, LPMAPISESSION lpMAPISession, LPMDB lpMDB)
+void DoStore(_In_ cli::OPTIONS ProgOpts, LPMAPISESSION lpMAPISession, LPMDB lpMDB)
 {
 	ULONG ulPropTag = NULL;
 

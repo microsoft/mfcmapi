@@ -146,7 +146,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	// Set up our property arrays or nothing works
 	addin::MergeAddInArrays();
 
-	auto ProgOpts = cli::MYOPTIONS{};
+	auto ProgOpts = cli::OPTIONS{};
 	auto cl = cli::GetCommandLine(argc, argv);
 	cli::ParseArgs(ProgOpts, cl, cli::g_options, cli::PostParseCheck);
 

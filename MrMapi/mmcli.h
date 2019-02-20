@@ -114,10 +114,6 @@ namespace cli
 		return static_cast<OPTIONFLAGS>(static_cast<int>(a) | static_cast<int>(b));
 	}
 
-	struct MYOPTIONS : OPTIONS
-	{
-	};
-
 	void DisplayUsage(BOOL bFull);
 	void PostParseCheck(OPTIONS* _options);
 } // namespace cli

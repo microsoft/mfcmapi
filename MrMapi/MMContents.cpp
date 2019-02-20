@@ -82,7 +82,7 @@ void DumpMSG(
 	}
 }
 
-void DoContents(_In_ cli::MYOPTIONS ProgOpts, LPMDB lpMDB, LPMAPIFOLDER lpFolder)
+void DoContents(_In_ cli::OPTIONS ProgOpts, LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 {
 	SRestriction sResTop = {};
 	SRestriction sResMiddle[2] = {};
@@ -152,7 +152,7 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts, LPMDB lpMDB, LPMAPIFOLDER lpFolder
 		lpRes);
 }
 
-void DoMSG(_In_ cli::MYOPTIONS ProgOpts)
+void DoMSG(_In_ cli::OPTIONS ProgOpts)
 {
 	DumpMSG(
 		cli::switchInput.getArg(0).c_str(),

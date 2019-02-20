@@ -3,10 +3,10 @@
 
 namespace cli
 {
-	struct MYOPTIONS;
+	struct OPTIONS;
 }
 
 namespace output
 {
-	void DoProfile(_In_ cli::MYOPTIONS ProgOpts);
+	void DoProfile(_In_ cli::OPTIONS ProgOpts);
 }

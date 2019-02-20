@@ -1,8 +1,9 @@
 #pragma once
 // Error code parsing for MrMAPI
 
-namespace cli {
-	struct MYOPTIONS;
+namespace cli
+{
+	struct OPTIONS;
 }
 
-void DoErrorParse(_In_ cli::MYOPTIONS ProgOpts);
+void DoErrorParse(_In_ cli::OPTIONS ProgOpts);

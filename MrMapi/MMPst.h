@@ -3,7 +3,7 @@
 
 namespace cli
 {
-	struct MYOPTIONS;
+	struct OPTIONS;
 }
 
-void DoPST(_In_ cli::MYOPTIONS ProgOpts);
+void DoPST(_In_ cli::OPTIONS ProgOpts);
