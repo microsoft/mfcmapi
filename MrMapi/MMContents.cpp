@@ -148,7 +148,7 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 		!ProgOpts.lpszOutput.empty() ? ProgOpts.lpszOutput.c_str() : L".",
 		ProgOpts.options,
 		cli::switchFolder.getArg(0).c_str(),
-		ProgOpts.ulCount,
+		cli::switchRecent.getArgAsULONG(0),
 		lpRes);
 }
 

@@ -117,11 +117,7 @@ namespace cli
 
 							 return true;
 						 }}; // can't know until we parse the argument
-	OptParser switchRecent{L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT, [](auto _options) {
-							   auto options = GetMyOptions(_options);
-							   options->ulCount = switchRecent.getArgAsULONG(0);
-							   return true;
-						   }};
+	OptParser switchRecent{L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT};
 	OptParser switchStore{L"Store",
 						  cmdmodeStoreProperties,
 						  0,
