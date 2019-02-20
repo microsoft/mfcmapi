@@ -43,8 +43,8 @@ namespace cli
 									0,
 									OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
 	option switchMoreProperties{L"MoreProperties", cmdmodeUnknown, 0, 0, OPT_NOOPT};
-	option switchNoAddins{L"NoAddins", cmdmodeUnknown, 0, 0, OPT_NOADDINS};
-	option switchOnline{L"Online", cmdmodeUnknown, 0, 0, OPT_ONLINE};
+	option switchNoAddins{L"NoAddins", cmdmodeUnknown, 0, 0, OPT_NOOPT};
+	option switchOnline{L"Online", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchMAPI{L"MAPI",
 					  cmdmodeMAPIMIME,
 					  0,

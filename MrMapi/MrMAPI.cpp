@@ -163,7 +163,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		cli::PrintArgs(ProgOpts, cli::g_options);
 	}
 
-	if (!(ProgOpts.optionFlags & cli::OPT_NOADDINS))
+	if (!(cli::switchNoAddins.isSet()))
 	{
 		registry::loadAddIns = true;
 		addin::LoadAddIns();
@@ -184,7 +184,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	}
 	else
 	{
-		if (ProgOpts.optionFlags & cli::OPT_ONLINE)
+		if (cli::switchOnline.isSet())
 		{
 			registry::forceMapiNoCache = true;
 			registry::forceMDBOnline = true;
@@ -313,7 +313,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		MAPIUninitialize();
 	}
 
-	if (!(ProgOpts.optionFlags & cli::OPT_NOADDINS))
+	if (!(cli::switchNoAddins.isSet()))
 	{
 		addin::UnloadAddIns();
 	}
