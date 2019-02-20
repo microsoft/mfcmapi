@@ -6,8 +6,8 @@ namespace cli
 {
 	struct OPTIONS
 	{
-		int mode{0};
-		int options{0};
+		int mode{};
+		int optionFlags{};
 		std::wstring lpszUnswitchedOption;
 		// dummy function to force a vtable so we can use dynamic_cast
 		virtual void __dummy() noexcept {};
@@ -23,9 +23,9 @@ namespace cli
 		int mode{};
 		UINT minArgs{};
 		UINT maxArgs{};
-		int options{};
+		int optionFlags{};
 		std::vector<std::wstring> args;
-		std::function<bool(OPTIONS* _options)> parseArgs = 0;
+		std::function<bool(OPTIONS& _options)> testArgs = 0;
 
 		option() = default;
 
@@ -34,15 +34,15 @@ namespace cli
 			int _mode,
 			UINT _minArgs,
 			UINT _maxArgs,
-			int _options,
-			std::function<bool(OPTIONS* _options)> _parseArgs = 0)
+			int _optionFlags,
+			std::function<bool(OPTIONS& _options)> _testArgs = 0)
 		{
 			szSwitch = _szSwitch;
 			mode = _mode;
 			minArgs = _minArgs;
 			maxArgs = _maxArgs;
-			options = _options;
-			parseArgs = _parseArgs;
+			optionFlags = _optionFlags;
+			testArgs = _testArgs;
 		}
 
 		bool isSet() const noexcept { return seen; }
@@ -60,7 +60,8 @@ namespace cli
 			return args.size() > i ? strings::wstringToUlong(args[i], radix) : 0;
 		}
 
-		_Check_return_ bool scanArgs(std::deque<std::wstring>& args, const std::vector<option*>& _options);
+		_Check_return_ bool
+		scanArgs(std::deque<std::wstring>& args, OPTIONS& options, const std::vector<option*>& optionsArray);
 	};
 
 	enum modeEnum
@@ -98,10 +99,8 @@ namespace cli
 	void ParseArgs(
 		OPTIONS& options,
 		std::deque<std::wstring>& args,
-		const std::vector<option*>& _options,
-		std::function<void(OPTIONS* _options)> postParseCheck);
+		const std::vector<option*>& optionsArray,
+		std::function<void(OPTIONS& _options)> postParseCheck);
 
-	_Check_return_ bool DoSwitch(OPTIONS* _options, cli::option* opt);
-
-	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<option*>& _options);
+	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<option*>& optionsArray);
 } // namespace cli

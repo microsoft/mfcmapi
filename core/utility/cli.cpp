@@ -72,8 +72,8 @@ namespace cli
 	void ParseArgs(
 		OPTIONS& options,
 		std::deque<std::wstring>& args,
-		const std::vector<option*>& _options,
-		std::function<void(OPTIONS* _options)> postParseCheck)
+		const std::vector<option*>& optionsArray,
+		std::function<void(OPTIONS& _options)> postParseCheck)
 	{
 		if (args.empty())
 		{
@@ -84,7 +84,7 @@ namespace cli
 		while (!args.empty())
 		{
 			auto arg0 = args.front();
-			auto opt = GetOption(arg0, _options);
+			auto opt = GetOption(arg0, optionsArray);
 			args.pop_front();
 
 			if (!opt)
@@ -109,60 +109,48 @@ namespace cli
 				continue;
 			}
 
+			// TODO: Can we cut this?
 			if (opt->mode == cmdmodeHelpFull)
 			{
 				options.mode = cmdmodeHelpFull;
 			}
 
-			options.options |= opt->options;
-			if (cmdmodeUnknown != opt->mode && cmdmodeHelp != options.mode)
-			{
-				if (!bSetMode(options.mode, opt->mode))
-				{
-					// resetting our mode here, switch to help
-					options.mode = cmdmodeHelp;
-				}
-			}
-
-			// Make sure we have the right number of args
+			// Make sure we have the right number of args and set flags and mode
 			// Commands with variable argument counts can special case themselves
-			if (!opt->scanArgs(args, _options))
+			if (!opt->scanArgs(args, options, optionsArray))
 			{
 				// resetting our mode here, switch to help
 				options.mode = cmdmodeHelp;
 			}
-
-			if (!DoSwitch(&options, opt))
-			{
-				options.mode = cmdmodeHelp;
-			}
 		}
 
-		postParseCheck(&options);
-	}
-
-	// Return true if we succesfully peeled off a switch.
-	// Return false on an error.
-	_Check_return_ bool DoSwitch(OPTIONS* options, cli::option* opt)
-	{
-		if (opt->parseArgs) return opt->parseArgs(options);
-
-		return true;
+		postParseCheck(options);
 	}
 
 	// Consume min/max args and store them in the option
-	_Check_return_ bool option::scanArgs(std::deque<std::wstring>& _args, const std::vector<option*>& _options)
+	_Check_return_ bool
+	option::scanArgs(std::deque<std::wstring>& _args, OPTIONS& options, const std::vector<option*>& optionsArray)
 	{
 		seen = false; // We're not "seen" until we get past this check
 		args.clear();
 		if (_args.size() < minArgs) return false;
 
-		auto c = UINT{0};
+		// Add our flags and set mode
+		options.optionFlags |= optionFlags;
+		if (cmdmodeUnknown != mode && cmdmodeHelp != options.mode)
+		{
+			if (!bSetMode(options.mode, mode))
+			{
+				return false;
+			}
+		}
+
+		UINT c{};
 		auto foundArgs = std::vector<std::wstring>{};
 		for (auto it = _args.cbegin(); it != _args.cend() && c < maxArgs; it++, c++)
 		{
 			// If we *do* get a parser while looking for our minargs, then we've failed
-			if (GetOption(*it, _options))
+			if (GetOption(*it, optionsArray))
 			{
 				// If we've already gotten our minArgs, we're done
 				if (c >= minArgs) break;
@@ -172,23 +160,36 @@ namespace cli
 			foundArgs.push_back(*it);
 		}
 
-		// remove all our found arguments
-		_args.erase(_args.begin(), _args.begin() + foundArgs.size());
-
 		// and save them locally
 		args = foundArgs;
 		seen = true;
+
+		// Now that we've peeled off arguments, check if the option will accept them:
+		if (testArgs)
+		{
+			if (!testArgs(options))
+			{
+				// If we *didn't* like our args, don't keep them, don't peel them off
+				// This is not an error if minArgs is 0
+				args.clear();
+				return minArgs == 0;
+			}
+		}
+
+		// remove all our found arguments
+		_args.erase(_args.begin(), _args.begin() + foundArgs.size());
+
 		return true;
 	}
 
-	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<option*>& _options)
+	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<option*>& optionsArray)
 	{
 		output::DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.mode);
-		output::DebugPrint(DBGGeneric, L"options = 0x%08X\n", ProgOpts.options);
+		output::DebugPrint(DBGGeneric, L"options = 0x%08X\n", ProgOpts.optionFlags);
 		if (!ProgOpts.lpszUnswitchedOption.empty())
 			output::DebugPrint(DBGGeneric, L"lpszUnswitchedOption = %ws\n", ProgOpts.lpszUnswitchedOption.c_str());
 
-		for (const auto& parser : _options)
+		for (const auto& parser : optionsArray)
 		{
 			if (parser->isSet())
 			{

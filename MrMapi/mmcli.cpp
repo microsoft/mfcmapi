@@ -83,7 +83,7 @@ namespace cli
 						  // We must have a next argument, but it could be a string or a number
 						  // Set mode based on whether the flag string was completely parsed as a number
 						  return bSetMode(
-							  _options->mode, switchFlag.hasArgAsULONG(0, 16) ? cmdmodePropTag : cmdmodeFlagSearch);
+							  _options.mode, switchFlag.hasArgAsULONG(0, 16) ? cmdmodePropTag : cmdmodeFlagSearch);
 					  }};
 	option switchRecent{L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT};
 	option switchStore{L"Store",
@@ -570,28 +570,27 @@ namespace cli
 		}
 	}
 
-	void PostParseCheck(OPTIONS* _options)
+	void PostParseCheck(OPTIONS& options)
 	{
-		auto myoptions = dynamic_cast<OPTIONS*>(_options);
 		// Having processed the command line, we may not have determined a mode.
 		// Some modes can be presumed by the switches we did see.
 
 		// If we didn't get a mode set but we saw OPT_NEEDFOLDER, assume we're in folder dumping mode
-		if (cmdmodeUnknown == myoptions->mode && myoptions->options & OPT_NEEDFOLDER)
-			myoptions->mode = cmdmodeFolderProps;
+		if (cmdmodeUnknown == options.mode && options.optionFlags & OPT_NEEDFOLDER)
+			options.mode = cmdmodeFolderProps;
 
 		// If we didn't get a mode set, but we saw OPT_PROFILE, assume we're in profile dumping mode
-		if (cmdmodeUnknown == myoptions->mode && myoptions->options & OPT_PROFILE)
+		if (cmdmodeUnknown == options.mode && options.optionFlags & OPT_PROFILE)
 		{
-			myoptions->mode = cmdmodeProfile;
-			myoptions->options |= OPT_NEEDMAPIINIT | OPT_INITMFC;
+			options.mode = cmdmodeProfile;
+			options.optionFlags |= OPT_NEEDMAPIINIT | OPT_INITMFC;
 		}
 
 		// If we didn't get a mode set, assume we're in prop tag mode
-		if (cmdmodeUnknown == myoptions->mode) myoptions->mode = cmdmodePropTag;
+		if (cmdmodeUnknown == options.mode) options.mode = cmdmodePropTag;
 
 		// If we weren't passed an output file/directory, remember the current directory
-		if (!switchOutput.hasArgs() && myoptions->mode != cmdmodeSmartView && myoptions->mode != cmdmodeProfile)
+		if (!switchOutput.hasArgs() && options.mode != cmdmodeSmartView && options.mode != cmdmodeProfile)
 		{
 			WCHAR strPath[_MAX_PATH];
 			GetCurrentDirectoryW(_MAX_PATH, strPath);
@@ -600,53 +599,54 @@ namespace cli
 		}
 
 		// Validate that we have bare minimum to run
-		if (myoptions->options & OPT_NEEDINPUTFILE && !switchInput.hasArgs())
-			myoptions->mode = cmdmodeHelp;
-		else if (myoptions->options & OPT_NEEDOUTPUTFILE && !switchOutput.hasArgs())
-			myoptions->mode = cmdmodeHelp;
+		if (options.optionFlags & OPT_NEEDINPUTFILE && !switchInput.hasArgs())
+			options.mode = cmdmodeHelp;
+		else if (options.optionFlags & OPT_NEEDOUTPUTFILE && !switchOutput.hasArgs())
+			options.mode = cmdmodeHelp;
 
-		switch (myoptions->mode)
+		switch (options.mode)
 		{
 		case cmdmodePropTag:
-			if (!(myoptions->options & OPT_DOTYPE) && !(myoptions->options & OPT_DOPARTIALSEARCH) &&
-				myoptions->lpszUnswitchedOption.empty())
-				myoptions->mode = cmdmodeHelp;
+			if (!(options.optionFlags & OPT_DOTYPE) && !(options.optionFlags & OPT_DOPARTIALSEARCH) &&
+				options.lpszUnswitchedOption.empty())
+				options.mode = cmdmodeHelp;
 			else if (
-				myoptions->options & OPT_DOPARTIALSEARCH && myoptions->options & OPT_DOTYPE && !switchType.args.empty())
-				myoptions->mode = cmdmodeHelp;
+				options.optionFlags & OPT_DOPARTIALSEARCH && options.optionFlags & OPT_DOTYPE &&
+				!switchType.args.empty())
+				options.mode = cmdmodeHelp;
 			else if (
 				cli::switchFlag.hasArgAsULONG(0) &&
-				(myoptions->options & OPT_DOPARTIALSEARCH || myoptions->options & OPT_DOTYPE))
-				myoptions->mode = cmdmodeHelp;
+				(options.optionFlags & OPT_DOPARTIALSEARCH || options.optionFlags & OPT_DOTYPE))
+				options.mode = cmdmodeHelp;
 
 			break;
 		case cmdmodeSmartView:
-			if (switchParser.getArgAsULONG(0) == 0) myoptions->mode = cmdmodeHelp;
+			if (switchParser.getArgAsULONG(0) == 0) options.mode = cmdmodeHelp;
 
 			break;
 		case cmdmodeContents:
-			if (!(myoptions->options & OPT_DOCONTENTS) && !(myoptions->options & OPT_DOASSOCIATEDCONTENTS))
-				myoptions->mode = cmdmodeHelp;
+			if (!(options.optionFlags & OPT_DOCONTENTS) && !(options.optionFlags & OPT_DOASSOCIATEDCONTENTS))
+				options.mode = cmdmodeHelp;
 
 			break;
 		case cmdmodeMAPIMIME:
 			// Can't convert both ways at once
-			if (switchMAPI.isSet() && switchMIME.isSet()) myoptions->mode = cmdmodeHelp;
+			if (switchMAPI.isSet() && switchMIME.isSet()) options.mode = cmdmodeHelp;
 			// Make sure there's no MIME-only options specified in a MIME->MAPI conversion
 			else if (switchMAPI.isSet() && (switchRFC822.isSet() || switchEncoding.isSet() || switchWrap.isSet()))
-				myoptions->mode = cmdmodeHelp;
+				options.mode = cmdmodeHelp;
 			// Make sure there's no MAPI-only options specified in a MAPI->MIME conversion
 			else if (switchMIME.isSet() && (switchCharset.isSet() || switchUnicode.isSet()))
-				myoptions->mode = cmdmodeHelp;
+				options.mode = cmdmodeHelp;
 
 			break;
 		case cmdmodeProfile:
 			if (switchProfile.hasArgs() && !switchOutput.hasArgs())
-				myoptions->mode = cmdmodeHelp;
+				options.mode = cmdmodeHelp;
 			else if (!switchProfile.hasArgs() && switchOutput.hasArgs())
-				myoptions->mode = cmdmodeHelp;
+				options.mode = cmdmodeHelp;
 			else if (!switchProfileSection.hasArgs() && !switchProfile.hasArgs())
-				myoptions->mode = cmdmodeHelp;
+				options.mode = cmdmodeHelp;
 
 			break;
 		default:

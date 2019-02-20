@@ -146,7 +146,7 @@ void DoContents(_In_ cli::OPTIONS ProgOpts, LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 		lpMDB,
 		lpFolder,
 		cli::switchOutput.hasArgs() ? cli::switchOutput.getArg(0).c_str() : L".",
-		ProgOpts.options,
+		ProgOpts.optionFlags,
 		cli::switchFolder.getArg(0).c_str(),
 		cli::switchRecent.getArgAsULONG(0),
 		lpRes);
@@ -157,6 +157,6 @@ void DoMSG(_In_ cli::OPTIONS ProgOpts)
 	DumpMSG(
 		cli::switchInput.getArg(0).c_str(),
 		cli::switchOutput.hasArgs() ? cli::switchOutput.getArg(0).c_str() : L".",
-		0 != (ProgOpts.options & cli::OPT_RETRYSTREAMPROPS),
-		0 == (ProgOpts.options & cli::OPT_SKIPATTACHMENTS));
+		0 != (ProgOpts.optionFlags & cli::OPT_RETRYSTREAMPROPS),
+		0 == (ProgOpts.optionFlags & cli::OPT_SKIPATTACHMENTS));
 }

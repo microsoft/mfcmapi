@@ -151,18 +151,18 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	cli::ParseArgs(ProgOpts, cl, cli::g_options, cli::PostParseCheck);
 
 	// Must be first after ParseArgs
-	if (ProgOpts.options & cli::OPT_INITMFC)
+	if (ProgOpts.optionFlags & cli::OPT_INITMFC)
 	{
 		InitMFC();
 	}
 
-	if (ProgOpts.options & cli::OPT_VERBOSE)
+	if (ProgOpts.optionFlags & cli::OPT_VERBOSE)
 	{
 		registry::debugTag = 0xFFFFFFFF;
 		cli::PrintArgs(ProgOpts, cli::g_options);
 	}
 
-	if (!(ProgOpts.options & cli::OPT_NOADDINS))
+	if (!(ProgOpts.optionFlags & cli::OPT_NOADDINS))
 	{
 		registry::loadAddIns = true;
 		addin::LoadAddIns();
@@ -183,14 +183,14 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	}
 	else
 	{
-		if (ProgOpts.options & cli::OPT_ONLINE)
+		if (ProgOpts.optionFlags & cli::OPT_ONLINE)
 		{
 			registry::forceMapiNoCache = true;
 			registry::forceMDBOnline = true;
 		}
 
 		// Log on to MAPI if needed
-		if (ProgOpts.options & cli::OPT_NEEDMAPIINIT)
+		if (ProgOpts.optionFlags & cli::OPT_NEEDMAPIINIT)
 		{
 			hRes = WC_MAPI(MAPIInitialize(NULL));
 			if (FAILED(hRes))
@@ -203,13 +203,13 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			}
 		}
 
-		if (bMAPIInit && ProgOpts.options & cli::OPT_NEEDMAPILOGON)
+		if (bMAPIInit && ProgOpts.optionFlags & cli::OPT_NEEDMAPILOGON)
 		{
 			lpMAPISession = MrMAPILogonEx(cli::switchProfile.getArg(0));
 		}
 
 		// If they need a folder get it and store at the same time from the folder id
-		if (lpMAPISession && ProgOpts.options & cli::OPT_NEEDFOLDER)
+		if (lpMAPISession && ProgOpts.optionFlags & cli::OPT_NEEDFOLDER)
 		{
 			hRes = WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, cli::switchFolder.getArg(0), &lpMDB, &lpFolder));
 			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
@@ -227,7 +227,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			if (!lpMDB) printf("OpenStore failed\n");
 		}
 
-		if (lpMAPISession && ProgOpts.options & cli::OPT_NEEDSTORE && !lpMDB)
+		if (lpMAPISession && ProgOpts.optionFlags & cli::OPT_NEEDSTORE && !lpMDB)
 		{
 			// If they needed a store but didn't specify, get the default one
 			lpMDB = OpenExchangeOrDefaultMessageStore(lpMAPISession);
@@ -312,7 +312,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		MAPIUninitialize();
 	}
 
-	if (!(ProgOpts.options & cli::OPT_NOADDINS))
+	if (!(ProgOpts.optionFlags & cli::OPT_NOADDINS))
 	{
 		addin::UnloadAddIns();
 	}

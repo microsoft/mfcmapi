@@ -309,7 +309,7 @@ void DoStore(_In_ cli::OPTIONS ProgOpts, LPMAPISESSION lpMAPISession, LPMDB lpMD
 
 	// If we have a prop tag, parse it
 	// For now, we don't support dispids
-	if (!ProgOpts.lpszUnswitchedOption.empty() && !(ProgOpts.options & cli::OPT_DODISPID))
+	if (!ProgOpts.lpszUnswitchedOption.empty() && !(ProgOpts.optionFlags & cli::OPT_DODISPID))
 	{
 		ulPropTag = proptags::PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
 	}

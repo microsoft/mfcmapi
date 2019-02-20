@@ -3,7 +3,7 @@
 #include <core/utility/cli.h>
 
 // Our set of options for testing
-const std::vector<cli::option*> options = {&cli::switchHelp, &cli::switchVerbose};
+const std::vector<cli::option*> g_options = {&cli::switchHelp, &cli::switchVerbose};
 
 namespace Microsoft
 {
@@ -29,7 +29,7 @@ namespace Microsoft
 				auto eq = true;
 				if (std::wstring{expected->szSwitch} != std::wstring{actual->szSwitch} ||
 					expected->mode != actual->mode || expected->minArgs != actual->minArgs ||
-					expected->maxArgs != actual->maxArgs || expected->options != actual->options)
+					expected->maxArgs != actual->maxArgs || expected->optionFlags != actual->optionFlags)
 				{
 					eq = false;
 				}
@@ -44,7 +44,7 @@ namespace Microsoft
 					Logger::WriteMessage(
 						strings::format(L"maxArgs: %d:%d\n", expected->maxArgs, actual->maxArgs).c_str());
 					Logger::WriteMessage(
-						strings::format(L"ulOpt: %d:%d\n", expected->options, actual->options).c_str());
+						strings::format(L"ulOpt: %d:%d\n", expected->optionFlags, actual->optionFlags).c_str());
 					Assert::Fail(ToString(message).c_str(), pLineInfo);
 				}
 			}
@@ -74,20 +74,20 @@ namespace clitest
 
 		TEST_METHOD(Test_GetOption)
 		{
-			AreEqual(&cli::switchHelp, GetOption(std::wstring{L"-?"}, options));
-			AreEqual(&cli::switchVerbose, GetOption(std::wstring{L"-v"}, options));
-			AreEqual(&cli::switchVerbose, GetOption(std::wstring{L"/v"}, options));
-			AreEqual(&cli::switchVerbose, GetOption(std::wstring{L"\\v"}, options));
-			AreEqual(&cli::switchVerbose, GetOption(std::wstring{L"-verbose"}, options));
-			AreEqual(&cli::switchInvalid, GetOption(std::wstring{L"-verbosey"}, options));
-			AreEqual(&cli::switchInvalid, GetOption(std::wstring{L"-va"}, options));
-			AreEqual(&cli::switchInvalid, GetOption(std::wstring{L"-test"}, options));
-			AreEqual(nullptr, GetOption(std::wstring{L""}, options));
-			AreEqual(nullptr, GetOption(std::wstring{L"+v"}, options));
-			AreEqual(&cli::switchInvalid, GetOption(std::wstring{L"-"}, options));
+			AreEqual(&cli::switchHelp, GetOption(std::wstring{L"-?"}, g_options));
+			AreEqual(&cli::switchVerbose, GetOption(std::wstring{L"-v"}, g_options));
+			AreEqual(&cli::switchVerbose, GetOption(std::wstring{L"/v"}, g_options));
+			AreEqual(&cli::switchVerbose, GetOption(std::wstring{L"\\v"}, g_options));
+			AreEqual(&cli::switchVerbose, GetOption(std::wstring{L"-verbose"}, g_options));
+			AreEqual(&cli::switchInvalid, GetOption(std::wstring{L"-verbosey"}, g_options));
+			AreEqual(&cli::switchInvalid, GetOption(std::wstring{L"-va"}, g_options));
+			AreEqual(&cli::switchInvalid, GetOption(std::wstring{L"-test"}, g_options));
+			AreEqual(nullptr, GetOption(std::wstring{L""}, g_options));
+			AreEqual(nullptr, GetOption(std::wstring{L"+v"}, g_options));
+			AreEqual(&cli::switchInvalid, GetOption(std::wstring{L"-"}, g_options));
 
-			AreEqual(nullptr, GetOption(L"No switch", options));
-			AreEqual(&cli::switchInvalid, GetOption(L"-notaswitch", options));
+			AreEqual(nullptr, GetOption(L"No switch", g_options));
+			AreEqual(&cli::switchInvalid, GetOption(L"-notaswitch", g_options));
 		}
 
 		TEST_METHOD(Test_bSetMode)
@@ -105,8 +105,9 @@ namespace clitest
 			// Make a local non-const copy of the inputs
 			auto option = _option;
 			auto args = _args;
+			cli::OPTIONS options{};
 
-			auto result = option.scanArgs(args, options);
+			auto result = option.scanArgs(args, options, g_options);
 
 			if (targetResult == result)
 			{
@@ -125,7 +126,7 @@ namespace clitest
 			Logger::WriteMessage(strings::format(L"Mode: %d\n", option.mode).c_str());
 			Logger::WriteMessage(strings::format(L"minArgs: %d\n", option.minArgs).c_str());
 			Logger::WriteMessage(strings::format(L"maxArgs: %d\n", option.maxArgs).c_str());
-			Logger::WriteMessage(strings::format(L"ulOpt: %d\n", option.options).c_str());
+			Logger::WriteMessage(strings::format(L"ulOpt: %d\n", option.optionFlags).c_str());
 
 			Logger::WriteMessage(strings::format(L"Tested args\n").c_str());
 			for (auto& arg : args)

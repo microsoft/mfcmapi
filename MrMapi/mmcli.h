@@ -115,5 +115,5 @@ namespace cli
 	}
 
 	void DisplayUsage(BOOL bFull);
-	void PostParseCheck(OPTIONS* _options);
+	void PostParseCheck(OPTIONS& _options);
 } // namespace cli
