@@ -14,10 +14,10 @@ void DoSmartView(_In_ cli::MYOPTIONS ProgOpts)
 	registry::doSmartView = true;
 
 	auto ulStructType = IDS_STNOPARSING;
-
-	if (ProgOpts.ulSVParser && ProgOpts.ulSVParser < SmartViewParserTypeArray.size())
+	const auto ulSVParser = cli::switchParser.getArgAsULONG(0);
+	if (ulSVParser && ulSVParser < SmartViewParserTypeArray.size())
 	{
-		ulStructType = static_cast<__ParsingTypeEnum>(SmartViewParserTypeArray[ProgOpts.ulSVParser].ulValue);
+		ulStructType = static_cast<__ParsingTypeEnum>(SmartViewParserTypeArray[ulSVParser].ulValue);
 	}
 
 	if (ulStructType)

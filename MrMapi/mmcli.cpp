@@ -45,11 +45,7 @@ namespace cli
 	OptParser switchType{L"Type", cmdmodePropTag, 0, 1, OPT_DOTYPE};
 	OptParser switchGuid{L"Guids", cmdmodeGuid, 0, 0, OPT_NOOPT};
 	OptParser switchError{L"Error", cmdmodeErr, 0, 0, OPT_NOOPT};
-	OptParser switchParser{L"ParserType", cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE, [](auto _options) {
-							   auto options = GetMyOptions(_options);
-							   options->ulSVParser = switchParser.getArgAsULONG(0);
-							   return true;
-						   }};
+	OptParser switchParser{L"ParserType", cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE};
 	OptParser switchInput{L"Input", cmdmodeUnknown, 1, 1, OPT_NOOPT};
 	OptParser switchBinary{L"Binary", cmdmodeSmartView, 0, 0, OPT_BINARYFILE};
 	OptParser switchAcl{L"Acl", cmdmodeAcls, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
@@ -708,7 +704,7 @@ namespace cli
 
 			break;
 		case cmdmodeSmartView:
-			if (!options->ulSVParser) options->mode = cmdmodeHelp;
+			if (switchParser.getArgAsULONG(0) == 0) options->mode = cmdmodeHelp;
 
 			break;
 		case cmdmodeContents:
