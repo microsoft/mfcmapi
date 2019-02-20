@@ -26,7 +26,7 @@ void DumpContentsTable(
 	if (ulOptions & cli::OPT_DOASSOCIATEDCONTENTS)
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Associated Contents\n");
 	if (ulOptions & cli::OPT_MSG) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
-	if (ulOptions & cli::OPT_RETRYSTREAMPROPS)
+	if (cli::switchMoreProperties.isSet())
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will retry stream properties\n");
 	if (cli::switchSkip.isSet())
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
@@ -54,7 +54,7 @@ void DumpContentsTable(
 			MyDumpStore.InitSortOrder(&SortOrder);
 		}
 
-		if (!(ulOptions & cli::OPT_RETRYSTREAMPROPS)) MyDumpStore.DisableStreamRetry();
+		if (!(cli::switchMoreProperties.isSet())) MyDumpStore.DisableStreamRetry();
 		if (cli::switchSkip.isSet()) MyDumpStore.DisableEmbeddedAttachments();
 
 		MyDumpStore.ProcessFolders(
@@ -157,6 +157,6 @@ void DoMSG(_In_ cli::OPTIONS ProgOpts)
 	DumpMSG(
 		cli::switchInput.getArg(0).c_str(),
 		cli::switchOutput.hasArgs() ? cli::switchOutput.getArg(0).c_str() : L".",
-		0 != (ProgOpts.optionFlags & cli::OPT_RETRYSTREAMPROPS),
+		cli::switchMoreProperties.isSet(),
 		!cli::switchSkip.isSet());
 }

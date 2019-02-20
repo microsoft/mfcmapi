@@ -554,7 +554,7 @@ void DoPropTags(_In_ const cli::OPTIONS& ProgOpts)
 		{
 			PrintFlag(ulPropNum, lpszPropName, true, cli::switchFlag.getArgAsULONG(0, 16));
 		}
-		else if (ProgOpts.optionFlags & cli::OPT_DOPARTIALSEARCH)
+		else if (cli::switchSearch.isSet())
 		{
 			PrintDispIDFromPartialName(lpszPropName, ulTypeNum);
 		}
@@ -575,7 +575,7 @@ void DoPropTags(_In_ const cli::OPTIONS& ProgOpts)
 	{
 		PrintFlag(ulPropNum, lpszPropName, false, cli::switchFlag.getArgAsULONG(0, 16));
 	}
-	else if (ProgOpts.optionFlags & cli::OPT_DOPARTIALSEARCH)
+	else if (cli::switchSearch.isSet())
 	{
 		PrintTagFromPartialName(lpszPropName, ulTypeNum);
 	}

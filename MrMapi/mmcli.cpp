@@ -15,7 +15,7 @@ namespace error
 
 namespace cli
 {
-	option switchSearch{L"Search", cmdmodeUnknown, 0, 0, OPT_DOPARTIALSEARCH};
+	option switchSearch{L"Search", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchDecimal{L"Number", cmdmodeUnknown, 0, 0, OPT_DODECIMAL};
 	option switchFolder{L"Folder",
 						cmdmodeUnknown,
@@ -46,7 +46,7 @@ namespace cli
 									0,
 									0,
 									OPT_DOASSOCIATEDCONTENTS | OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
-	option switchMoreProperties{L"MoreProperties", cmdmodeUnknown, 0, 0, OPT_RETRYSTREAMPROPS};
+	option switchMoreProperties{L"MoreProperties", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchNoAddins{L"NoAddins", cmdmodeUnknown, 0, 0, OPT_NOADDINS};
 	option switchOnline{L"Online", cmdmodeUnknown, 0, 0, OPT_ONLINE};
 	option switchMAPI{L"MAPI",
@@ -576,8 +576,7 @@ namespace cli
 		// Some modes can be presumed by the switches we did see.
 
 		// If we didn't get a mode set but we saw OPT_NEEDFOLDER, assume we're in folder dumping mode
-		if (cmdmodeUnknown == options.mode && options.optionFlags & OPT_NEEDFOLDER)
-			options.mode = cmdmodeFolderProps;
+		if (cmdmodeUnknown == options.mode && options.optionFlags & OPT_NEEDFOLDER) options.mode = cmdmodeFolderProps;
 
 		// If we didn't get a mode set, but we saw OPT_PROFILE, assume we're in profile dumping mode
 		if (cmdmodeUnknown == options.mode && options.optionFlags & OPT_PROFILE)
@@ -607,16 +606,15 @@ namespace cli
 		switch (options.mode)
 		{
 		case cmdmodePropTag:
-			if (!(options.optionFlags & OPT_DOTYPE) && !(options.optionFlags & OPT_DOPARTIALSEARCH) &&
+			if (!(options.optionFlags & OPT_DOTYPE) && !(cli::switchSearch.isSet()) &&
 				options.lpszUnswitchedOption.empty())
 				options.mode = cmdmodeHelp;
 			else if (
-				options.optionFlags & OPT_DOPARTIALSEARCH && options.optionFlags & OPT_DOTYPE &&
+				cli::switchSearch.isSet() && options.optionFlags & OPT_DOTYPE &&
 				proptype::PropTypeNameToPropType(cli::switchType.getArg(0)) == PT_UNSPECIFIED)
 				options.mode = cmdmodeHelp;
 			else if (
-				cli::switchFlag.hasArgAsULONG(0) &&
-				(options.optionFlags & OPT_DOPARTIALSEARCH || options.optionFlags & OPT_DOTYPE))
+				cli::switchFlag.hasArgAsULONG(0) && (cli::switchSearch.isSet() || options.optionFlags & OPT_DOTYPE))
 				options.mode = cmdmodeHelp;
 
 			break;

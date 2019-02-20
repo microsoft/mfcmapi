@@ -59,7 +59,7 @@ void DoErrorParse(_In_ cli::OPTIONS ProgOpts)
 	}
 	else
 	{
-		if (ProgOpts.optionFlags & cli::OPT_DOPARTIALSEARCH || lpszErr.empty())
+		if (cli::switchSearch.isSet() || lpszErr.empty())
 		{
 			PrintErrFromPartialName(lpszErr);
 		}
