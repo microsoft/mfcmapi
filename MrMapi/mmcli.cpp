@@ -84,13 +84,12 @@ namespace cli
 	option switchMid{L"MID", cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
 	option switchFlag{L"Flag", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options) {
 						  auto myoptions = GetMyOptions(_options);
-						  LPWSTR szEndPtr = nullptr;
 						  // We must have a next argument, but it could be a string or a number
-						  myoptions->lpszFlagName = switchFlag.args.front();
-						  myoptions->ulFlagValue = wcstoul(switchFlag.args.front().c_str(), &szEndPtr, 16);
+						  myoptions->lpszFlagName = switchFlag.getArg(0);
+						  myoptions->ulFlagValue = switchFlag.getArgAsULONG(0);
 
 						  // Set mode based on whether the flag string was completely parsed as a number
-						  if (NULL == szEndPtr[0])
+						  if (switchFlag.hasArgAsULONG(0, 16))
 						  {
 							  if (!bSetMode(myoptions->mode, cmdmodePropTag))
 							  {
@@ -119,16 +118,15 @@ namespace cli
 						   auto myoptions = GetMyOptions(_options);
 						   if (!switchStore.args.empty())
 						   {
-							   LPWSTR szEndPtr = nullptr;
-							   myoptions->ulStore = wcstoul(switchStore.args.front().c_str(), &szEndPtr, 10);
-
 							   // If we parsed completely, this was a store number
-							   if (NULL == szEndPtr[0])
+							   if (strings::tryWstringToUlong(myoptions->ulStore, switchStore.getArg(0), 10))
 							   {
 								   // Increment ulStore so we can use to distinguish an unset value
 								   myoptions->ulStore++;
 							   }
+
 							   // Else it was a naked option - leave it on the stack
+							   return false;
 						   }
 
 						   return true;
@@ -142,30 +140,28 @@ namespace cli
 	option switchPST{L"PST", cmdmodePST, 0, 0, OPT_NEEDINPUTFILE};
 	option switchProfileSection{L"ProfileSection", cmdmodeProfile, 1, 1, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
 	option switchByteSwapped{L"ByteSwapped", cmdmodeProfile, 0, 0, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
-	option switchReceiveFolder{L"ReceiveFolder",
-							   cmdmodeReceiveFolder,
-							   0,
-							   1,
-							   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDSTORE | OPT_INITMFC,
-							   [](auto _options) {
-								   auto myoptions = GetMyOptions(_options);
-								   if (!switchReceiveFolder.args.empty())
-								   {
-									   LPWSTR szEndPtr = nullptr;
-									   myoptions->ulStore =
-										   wcstoul(switchReceiveFolder.args.front().c_str(), &szEndPtr, 10);
+	option switchReceiveFolder{
+		L"ReceiveFolder",
+		cmdmodeReceiveFolder,
+		0,
+		1,
+		OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDSTORE | OPT_INITMFC,
+		[](auto _options) {
+			auto myoptions = GetMyOptions(_options);
+			if (!switchReceiveFolder.args.empty())
+			{
+				// If we parsed completely, this was a store number
+				if (strings::tryWstringToUlong(myoptions->ulStore, switchReceiveFolder.getArg(0), 10))
+				{
+					// Increment ulStore so we can use to distinguish an unset value
+					myoptions->ulStore++;
+				}
+				// Else it was a naked option - leave it on the stack
+				return false;
+			}
 
-									   // If we parsed completely, this was a store number
-									   if (NULL == szEndPtr[0])
-									   {
-										   // Increment ulStore so we can use to distinguish an unset value
-										   myoptions->ulStore++;
-									   }
-									   // Else it was a naked option - leave it on the stack
-								   }
-
-								   return true;
-							   }};
+			return true;
+		}};
 	option switchSkip{L"Skip", cmdmodeUnknown, 0, 0, OPT_SKIPATTACHMENTS};
 	option switchSearchState{L"SearchState",
 							 cmdmodeSearchState,

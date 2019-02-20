@@ -91,6 +91,19 @@ namespace stringtest
 			Assert::AreEqual(ULONG_MAX - 1, strings::wstringToUlong(L"4294967294", 10));
 			Assert::AreEqual(ULONG_MAX, strings::wstringToUlong(L"4294967295", 10));
 			Assert::AreEqual(ULONG_MAX, strings::wstringToUlong(L"4294967296", 10));
+
+			ULONG num{};
+			Assert::AreEqual(true, strings::tryWstringToUlong(num, L"1", 10, false));
+			Assert::AreEqual(true, strings::tryWstringToUlong(num, L"1", 10, true));
+
+			Assert::AreEqual(true, strings::tryWstringToUlong(num, L"blah", 10, false));
+			Assert::AreEqual(false, strings::tryWstringToUlong(num, L"blah", 10, true));
+
+			Assert::AreEqual(true, strings::tryWstringToUlong(num, L"123blah", 10, false));
+			Assert::AreEqual(false, strings::tryWstringToUlong(num, L"123blah", 10, true));
+
+			Assert::AreEqual(false, strings::tryWstringToUlong(num, L"", 10, false));
+			Assert::AreEqual(false, strings::tryWstringToUlong(num, L"", 10, true));
 		}
 
 		TEST_METHOD(Test_wstringToLong)
