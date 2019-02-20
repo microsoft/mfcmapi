@@ -612,7 +612,7 @@ namespace cli
 				options.mode = cmdmodeHelp;
 			else if (
 				options.optionFlags & OPT_DOPARTIALSEARCH && options.optionFlags & OPT_DOTYPE &&
-				switchType.args.empty())
+				proptype::PropTypeNameToPropType(cli::switchType.getArg(0)) == PT_UNSPECIFIED)
 				options.mode = cmdmodeHelp;
 			else if (
 				cli::switchFlag.hasArgAsULONG(0) &&

@@ -35,7 +35,7 @@ namespace proptype
 		return tmpPropType;
 	}
 
-		_Check_return_ ULONG PropTypeNameToPropType(_In_ const std::wstring& lpszPropType)
+	_Check_return_ ULONG PropTypeNameToPropType(_In_ const std::wstring& lpszPropType)
 	{
 		if (lpszPropType.empty() || PropTypeArray.empty()) return PT_UNSPECIFIED;
 
