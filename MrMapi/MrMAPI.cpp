@@ -193,7 +193,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		// Log on to MAPI if needed
 		if (ProgOpts.optionFlags & cli::OPT_NEEDMAPIINIT)
 		{
-			hRes = WC_MAPI(MAPIInitialize(NULL));
+			hRes = WC_MAPI(MAPIInitialize(nullptr));
 			if (FAILED(hRes))
 			{
 				printf("Error initializing MAPI: 0x%08lx\n", hRes);
@@ -222,7 +222,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		if (!gotStoreIndex)
 			gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchReceiveFolder.getArg(0), 10);
 
-		if (gotStoreIndex && !lpMDB)
+		if (lpMAPISession && gotStoreIndex && !lpMDB)
 		{
 			lpMDB = OpenStore(lpMAPISession, ulStoreIndex);
 			if (!lpMDB) printf("OpenStore failed\n");
