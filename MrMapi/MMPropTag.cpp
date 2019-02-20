@@ -547,7 +547,7 @@ void DoPropTags(_In_ const cli::OPTIONS& ProgOpts)
 		cli::switchType.args.empty() ? ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType.getArg(0));
 
 	// Handle dispid cases
-	if (ProgOpts.optionFlags & cli::OPT_DODISPID)
+	if (cli::switchDispid.isSet())
 	{
 		if (cli::switchFlag.hasArgAsULONG(0, 16))
 		{

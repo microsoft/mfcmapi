@@ -23,7 +23,7 @@ namespace cli
 						1,
 						OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDFOLDER | OPT_INITMFC};
 	option switchOutput{L"Output", cmdmodeUnknown, 1, 1, OPT_NOOPT};
-	option switchDispid{L"Dispids", cmdmodePropTag, 0, 0, OPT_DODISPID};
+	option switchDispid{L"Dispids", cmdmodePropTag, 0, 0, OPT_NOOPT};
 	option switchType{L"Type", cmdmodePropTag, 0, 1, OPT_NOOPT};
 	option switchGuid{L"Guids", cmdmodeGuid, 0, 0, OPT_NOOPT};
 	option switchError{L"Error", cmdmodeErr, 0, 0, OPT_NOOPT};

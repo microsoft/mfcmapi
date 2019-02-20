@@ -72,9 +72,9 @@ namespace cli
 
 	enum flagsEnum
 	{
-		OPT_NOOPT = 0x00000,
-		OPT_VERBOSE = 0x00001,
-		OPT_INITMFC = 0x00002,
+		OPT_NOOPT = 0x0000,
+		OPT_VERBOSE = 0x0001,
+		OPT_INITMFC = 0x0002,
 	};
 
 	extern option switchInvalid;
