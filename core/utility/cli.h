@@ -94,11 +94,7 @@ namespace cli
 	std::deque<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
 
 	// Parses command line arguments and fills out OPTIONS
-	void ParseArgs(
-		OPTIONS& options,
-		std::deque<std::wstring>& args,
-		const std::vector<option*>& optionsArray,
-		std::function<void(OPTIONS& _options)> postParseCheck);
+	void ParseArgs(OPTIONS& options, std::deque<std::wstring>& args, const std::vector<option*>& optionsArray);
 
 	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<option*>& optionsArray);
 } // namespace cli

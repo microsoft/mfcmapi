@@ -72,8 +72,7 @@ namespace cli
 	void ParseArgs(
 		OPTIONS& options,
 		std::deque<std::wstring>& args,
-		const std::vector<option*>& optionsArray,
-		std::function<void(OPTIONS& _options)> postParseCheck)
+		const std::vector<option*>& optionsArray)
 	{
 		if (args.empty())
 		{
@@ -117,8 +116,6 @@ namespace cli
 				options.mode = cmdmodeHelp;
 			}
 		}
-
-		postParseCheck(options);
 	}
 
 	// Consume min/max args and store them in the option

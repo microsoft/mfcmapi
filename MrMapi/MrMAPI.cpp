@@ -148,9 +148,10 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 	auto ProgOpts = cli::OPTIONS{};
 	auto cl = cli::GetCommandLine(argc, argv);
-	cli::ParseArgs(ProgOpts, cl, cli::g_options, cli::PostParseCheck);
+	cli::ParseArgs(ProgOpts, cl, cli::g_options);
+	PostParseCheck(ProgOpts);
 
-	// Must be first after ParseArgs
+	// Must be first after ParseArgs and PostParseCheck
 	if (ProgOpts.optionFlags & cli::OPT_INITMFC)
 	{
 		InitMFC();
