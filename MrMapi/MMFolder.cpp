@@ -556,31 +556,29 @@ void DumpSearchState(
 	}
 }
 
-void DoFolderProps(_In_ cli::MYOPTIONS ProgOpts)
+void DoFolderProps(_In_ cli::MYOPTIONS ProgOpts, LPMAPIFOLDER lpFolder)
 {
-	if (ProgOpts.lpFolder)
+	if (lpFolder)
 	{
-		PrintObjectProperties(
-			L"folderprops", ProgOpts.lpFolder, proptags::PropNameToPropTag(ProgOpts.lpszUnswitchedOption));
+		PrintObjectProperties(L"folderprops", lpFolder, proptags::PropNameToPropTag(ProgOpts.lpszUnswitchedOption));
 	}
 }
 
-void DoFolderSize(_In_ cli::MYOPTIONS ProgOpts)
+void DoFolderSize(_In_ LPMAPIFOLDER lpFolder)
 {
-	const LONGLONG ullSize =
-		ComputeFolderSize(cli::switchProfile.getArg(0), ProgOpts.lpFolder, cli::switchFolder.getArg(0));
+	const LONGLONG ullSize = ComputeFolderSize(cli::switchProfile.getArg(0), lpFolder, cli::switchFolder.getArg(0));
 	printf("Folder size (including subfolders)\n");
 	printf("Bytes: %I64d\n", ullSize);
 	printf("KB: %I64d\n", ullSize / 1024);
 	printf("MB: %I64d\n", ullSize / (1024 * 1024));
 }
 
-void DoChildFolders(_In_ cli::MYOPTIONS ProgOpts)
+void DoChildFolders(_In_ LPMAPIFOLDER lpFolder)
 {
-	DumpHierarchyTable(cli::switchProfile.getArg(0), ProgOpts.lpFolder, cli::switchFolder.getArg(0), 0);
+	DumpHierarchyTable(cli::switchProfile.getArg(0), lpFolder, cli::switchFolder.getArg(0), 0);
 }
 
-void DoSearchState(_In_ cli::MYOPTIONS ProgOpts)
+void DoSearchState(_In_ LPMAPIFOLDER lpFolder)
 {
-	DumpSearchState(cli::switchProfile.getArg(0), ProgOpts.lpFolder, cli::switchFolder.getArg(0));
+	DumpSearchState(cli::switchProfile.getArg(0), lpFolder, cli::switchFolder.getArg(0));
 }

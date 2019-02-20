@@ -279,11 +279,11 @@ namespace mapiprocessor
 	}
 } // namespace mapiprocessor
 
-void DoFidMid(_In_ cli::MYOPTIONS ProgOpts)
+void DoFidMid(_In_ LPMDB lpMDB)
 {
 	mapiprocessor::DumpFidMid(
 		cli::switchProfile.getArg(0),
-		ProgOpts.lpMDB,
+		lpMDB,
 		cli::switchFid.getArg(0),
 		cli::switchMid.getArg(0),
 		cli::switchMid.isSet());

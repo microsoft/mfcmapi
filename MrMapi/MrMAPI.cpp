@@ -130,6 +130,9 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 {
 	auto hRes = S_OK;
 	auto bMAPIInit = false;
+	LPMAPISESSION lpMAPISession{};
+	LPMDB lpMDB{};
+	LPMAPIFOLDER lpFolder{};
 
 	registry::doSmartView = true;
 	registry::useGetPropList = true;
@@ -202,31 +205,30 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 		if (bMAPIInit && ProgOpts.options & cli::OPT_NEEDMAPILOGON)
 		{
-			ProgOpts.lpMAPISession = MrMAPILogonEx(cli::switchProfile.getArg(0));
+			lpMAPISession = MrMAPILogonEx(cli::switchProfile.getArg(0));
 		}
 
 		// If they need a folder get it and store at the same time from the folder id
-		if (ProgOpts.lpMAPISession && ProgOpts.options & cli::OPT_NEEDFOLDER)
+		if (lpMAPISession && ProgOpts.options & cli::OPT_NEEDFOLDER)
 		{
-			hRes = WC_H(HrMAPIOpenStoreAndFolder(
-				ProgOpts.lpMAPISession, cli::switchFolder.getArg(0), &ProgOpts.lpMDB, &ProgOpts.lpFolder));
+			hRes = WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, cli::switchFolder.getArg(0), &lpMDB, &lpFolder));
 			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
 		}
-		else if (ProgOpts.lpMAPISession && ProgOpts.options & cli::OPT_NEEDSTORE)
+		else if (lpMAPISession && ProgOpts.options & cli::OPT_NEEDSTORE)
 		{
 			// They asked us for a store, if they passed a store index give them that one
 			if (ProgOpts.ulStore != 0)
 			{
 				// Decrement by one here on the index since we incremented during parameter parsing
 				// This is so zero indicate they did not specify a store
-				ProgOpts.lpMDB = OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1);
-				if (!ProgOpts.lpMDB) printf("OpenStore failed\n");
+				lpMDB = OpenStore(lpMAPISession, ProgOpts.ulStore - 1);
+				if (!lpMDB) printf("OpenStore failed\n");
 			}
 			else
 			{
 				// If they needed a store but didn't specify, get the default one
-				ProgOpts.lpMDB = OpenExchangeOrDefaultMessageStore(ProgOpts.lpMAPISession);
-				if (!ProgOpts.lpMDB) printf("OpenExchangeOrDefaultMessageStore failed.\n");
+				lpMDB = OpenExchangeOrDefaultMessageStore(lpMAPISession);
+				if (!lpMDB) printf("OpenExchangeOrDefaultMessageStore failed.\n");
 			}
 		}
 
@@ -242,40 +244,40 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			DoSmartView(ProgOpts);
 			break;
 		case cli::cmdmodeAcls:
-			DoAcls(ProgOpts);
+			DoAcls(lpFolder);
 			break;
 		case cli::cmdmodeRules:
-			DoRules(ProgOpts);
+			DoRules(lpFolder);
 			break;
 		case cli::cmdmodeErr:
 			DoErrorParse(ProgOpts);
 			break;
 		case cli::cmdmodeContents:
-			DoContents(ProgOpts);
+			DoContents(ProgOpts, lpMDB, lpFolder);
 			break;
 		case cli::cmdmodeXML:
 			DoMSG(ProgOpts);
 			break;
 		case cli::cmdmodeFidMid:
-			DoFidMid(ProgOpts);
+			DoFidMid(lpMDB);
 			break;
 		case cli::cmdmodeStoreProperties:
-			DoStore(ProgOpts);
+			DoStore(ProgOpts, lpMAPISession);
 			break;
 		case cli::cmdmodeMAPIMIME:
-			DoMAPIMIME(ProgOpts);
+			DoMAPIMIME(lpMAPISession);
 			break;
 		case cli::cmdmodeChildFolders:
-			DoChildFolders(ProgOpts);
+			DoChildFolders(lpFolder);
 			break;
 		case cli::cmdmodeFlagSearch:
 			DoFlagSearch(ProgOpts);
 			break;
 		case cli::cmdmodeFolderProps:
-			DoFolderProps(ProgOpts);
+			DoFolderProps(ProgOpts, lpFolder);
 			break;
 		case cli::cmdmodeFolderSize:
-			DoFolderSize(ProgOpts);
+			DoFolderSize(lpFolder);
 			break;
 		case cli::cmdmodePST:
 			DoPST(ProgOpts);
@@ -284,10 +286,10 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			output::DoProfile(ProgOpts);
 			break;
 		case cli::cmdmodeReceiveFolder:
-			DoReceiveFolder(ProgOpts);
+			DoReceiveFolder(lpMDB);
 			break;
 		case cli::cmdmodeSearchState:
-			DoSearchState(ProgOpts);
+			DoSearchState(lpFolder);
 			break;
 		case cli::cmdmodeUnknown:
 			break;
@@ -302,9 +304,9 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 	if (bMAPIInit)
 	{
-		if (ProgOpts.lpFolder) ProgOpts.lpFolder->Release();
-		if (ProgOpts.lpMDB) ProgOpts.lpMDB->Release();
-		if (ProgOpts.lpMAPISession) ProgOpts.lpMAPISession->Release();
+		if (lpFolder) lpFolder->Release();
+		if (lpMDB) lpMDB->Release();
+		if (lpMAPISession) lpMAPISession->Release();
 		MAPIUninitialize();
 	}
 

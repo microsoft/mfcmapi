@@ -120,9 +120,6 @@ namespace cli
 		std::wstring lpszFlagName;
 		ULONG ulStore{};
 		ULONG ulFlagValue{};
-		LPMAPISESSION lpMAPISession{};
-		LPMDB lpMDB{};
-		LPMAPIFOLDER lpFolder{};
 	};
 
 	void DisplayUsage(BOOL bFull);

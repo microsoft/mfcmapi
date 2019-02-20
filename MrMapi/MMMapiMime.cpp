@@ -6,7 +6,7 @@
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 
-void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
+void DoMAPIMIME(_In_ LPMAPISESSION lpMAPISession)
 {
 	const auto input = cli::switchInput.getArg(0);
 	const auto output = cli::switchOutput.getArg(0);
@@ -108,9 +108,9 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 	auto hRes = S_OK;
 
 	LPADRBOOK lpAdrBook = nullptr;
-	if (cli::switchAddressBook.isSet() && ProgOpts.lpMAPISession)
+	if (cli::switchAddressBook.isSet() && lpMAPISession)
 	{
-		WC_MAPI(ProgOpts.lpMAPISession->OpenAddressBook(NULL, nullptr, AB_NO_DIALOG, &lpAdrBook));
+		WC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, AB_NO_DIALOG, &lpAdrBook));
 		if (FAILED(hRes)) printf("OpenAddressBook returned an error: 0x%08lx\n", hRes);
 	}
 

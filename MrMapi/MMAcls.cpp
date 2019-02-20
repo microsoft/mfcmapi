@@ -34,4 +34,4 @@ void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
 	if (lpExchTbl) lpExchTbl->Release();
 }
 
-void DoAcls(_In_ cli::MYOPTIONS ProgOpts) { DumpExchangeTable(PR_ACL_TABLE, ProgOpts.lpFolder); }
+void DoAcls(_In_ LPMAPIFOLDER lpFolder) { DumpExchangeTable(PR_ACL_TABLE, lpFolder); }

@@ -303,7 +303,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 	if (lpStoreTable) lpStoreTable->Release();
 }
 
-void DoStore(_In_ cli::MYOPTIONS ProgOpts)
+void DoStore(_In_ cli::MYOPTIONS ProgOpts, LPMAPISESSION lpMAPISession)
 {
 	ULONG ulPropTag = NULL;
 
@@ -314,16 +314,16 @@ void DoStore(_In_ cli::MYOPTIONS ProgOpts)
 		ulPropTag = proptags::PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
 	}
 
-	if (ProgOpts.lpMAPISession)
+	if (lpMAPISession)
 	{
 		if (0 == ProgOpts.ulStore)
 		{
-			PrintStoreTable(ProgOpts.lpMAPISession, ulPropTag);
+			PrintStoreTable(lpMAPISession, ulPropTag);
 		}
 		else
 		{
 			// ulStore was incremented by 1 before, so drop it back now
-			auto lpMDB = OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1);
+			auto lpMDB = OpenStore(lpMAPISession, ProgOpts.ulStore - 1);
 			if (lpMDB)
 			{
 				PrintStoreProperties(lpMDB, ulPropTag);

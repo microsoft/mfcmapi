@@ -5,10 +5,10 @@ namespace cli {
 	struct MYOPTIONS;
 }
 
-void DoChildFolders(_In_ cli::MYOPTIONS ProgOpts);
-void DoFolderProps(_In_ cli::MYOPTIONS ProgOpts);
-void DoFolderSize(_In_ cli::MYOPTIONS ProgOpts);
-void DoSearchState(_In_ cli::MYOPTIONS ProgOpts);
+void DoChildFolders(_In_ LPMAPIFOLDER lpFolder);
+void DoFolderProps(_In_ cli::MYOPTIONS ProgOpts, LPMAPIFOLDER lpFolder);
+void DoFolderSize(_In_ LPMAPIFOLDER lpFolder);
+void DoSearchState(_In_ LPMAPIFOLDER lpFolder);
 
 LPMAPIFOLDER MAPIOpenFolderExW(
 	_In_ LPMDB lpMdb, // Open message store

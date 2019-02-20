@@ -82,7 +82,7 @@ void DumpMSG(
 	}
 }
 
-void DoContents(_In_ cli::MYOPTIONS ProgOpts)
+void DoContents(_In_ cli::MYOPTIONS ProgOpts, LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 {
 	SRestriction sResTop = {};
 	SRestriction sResMiddle[2] = {};
@@ -143,8 +143,8 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 
 	DumpContentsTable(
 		cli::switchProfile.getArg(0).c_str(),
-		ProgOpts.lpMDB,
-		ProgOpts.lpFolder,
+		lpMDB,
+		lpFolder,
 		cli::switchOutput.hasArgs() ? cli::switchOutput.getArg(0).c_str() : L".",
 		ProgOpts.options,
 		cli::switchFolder.getArg(0).c_str(),
