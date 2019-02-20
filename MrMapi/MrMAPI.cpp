@@ -222,7 +222,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		if (!gotStoreIndex)
 			gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchReceiveFolder.getArg(0), 10);
 
-		if (gotStoreIndex)
+		if (gotStoreIndex && !lpMDB)
 		{
 			lpMDB = OpenStore(lpMAPISession, ulStoreIndex);
 			if (!lpMDB) printf("OpenStore failed\n");
