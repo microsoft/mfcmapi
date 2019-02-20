@@ -29,7 +29,7 @@ namespace cli
 	option switchError{L"Error", cmdmodeErr, 0, 0, OPT_NOOPT};
 	option switchParser{L"ParserType", cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE};
 	option switchInput{L"Input", cmdmodeUnknown, 1, 1, OPT_NOOPT};
-	option switchBinary{L"Binary", cmdmodeSmartView, 0, 0, OPT_BINARYFILE};
+	option switchBinary{L"Binary", cmdmodeSmartView, 0, 0, OPT_NOOPT};
 	option switchAcl{L"Acl", cmdmodeAcls, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
 	option switchRule{L"Rules",
 					  cmdmodeRules,
