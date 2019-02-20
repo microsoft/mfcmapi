@@ -50,7 +50,7 @@ namespace cli
 		bool hasArgAsULONG(size_t i, int radix = 10) const
 		{
 			ULONG num{};
-			return strings::tryWstringToUlong(num, args[i], radix, true);
+			return i < args.size() && strings::tryWstringToUlong(num, args[i], radix, true);
 		}
 
 		ULONG getArgAsULONG(size_t i, int radix = 10) const
