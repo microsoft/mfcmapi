@@ -16,7 +16,7 @@ namespace error
 namespace cli
 {
 	option switchSearch{L"Search", cmdmodeUnknown, 0, 0, OPT_NOOPT};
-	option switchDecimal{L"Number", cmdmodeUnknown, 0, 0, OPT_DODECIMAL};
+	option switchDecimal{L"Number", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchFolder{L"Folder",
 						cmdmodeUnknown,
 						1,
@@ -67,7 +67,7 @@ namespace cli
 	option switchSubject{L"Subject", cmdmodeContents, 1, 1, OPT_NOOPT};
 	option switchMessageClass{L"MessageClass", cmdmodeContents, 1, 1, OPT_NOOPT};
 	option switchMSG{L"MSG", cmdmodeContents, 0, 0, OPT_MSG};
-	option switchList{L"List", cmdmodeContents, 0, 0, OPT_LIST};
+	option switchList{L"List", cmdmodeContents, 0, 0, OPT_NOOPT};
 	option switchChildFolders{L"ChildFolders",
 							  cmdmodeChildFolders,
 							  0,

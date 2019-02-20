@@ -29,7 +29,7 @@ void DumpContentsTable(
 	if (cli::switchMoreProperties.isSet())
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will retry stream properties\n");
 	if (cli::switchSkip.isSet()) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
-	if (ulOptions & cli::OPT_LIST) output::DebugPrint(DBGGeneric, L"DumpContentsTable: List only mode\n");
+	if (cli::switchList.isSet()) output::DebugPrint(DBGGeneric, L"DumpContentsTable: List only mode\n");
 	if (ulCount) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
 
 	if (lpFolder)
@@ -41,7 +41,7 @@ void DumpContentsTable(
 		MyDumpStore.InitFolderPathRoot(lpszDir);
 		MyDumpStore.InitFolderContentsRestriction(lpRes);
 		if (ulOptions & cli::OPT_MSG) MyDumpStore.EnableMSG();
-		if (ulOptions & cli::OPT_LIST) MyDumpStore.EnableList();
+		if (cli::switchList.isSet()) MyDumpStore.EnableList();
 		if (ulCount)
 		{
 			MyDumpStore.InitMaxOutput(ulCount);

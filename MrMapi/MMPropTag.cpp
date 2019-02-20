@@ -540,8 +540,7 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 void DoPropTags(_In_ const cli::OPTIONS& ProgOpts)
 {
 	const auto lpszPropName = ProgOpts.lpszUnswitchedOption.empty() ? nullptr : ProgOpts.lpszUnswitchedOption.c_str();
-	const auto ulPropNum =
-		strings::wstringToUlong(ProgOpts.lpszUnswitchedOption, ProgOpts.optionFlags & cli::OPT_DODECIMAL ? 10 : 16);
+	const auto ulPropNum = strings::wstringToUlong(ProgOpts.lpszUnswitchedOption, cli::switchDecimal.isSet() ? 10 : 16);
 	if (lpszPropName) output::DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
 	output::DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
 	const auto ulTypeNum =
