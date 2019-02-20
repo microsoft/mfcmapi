@@ -22,14 +22,13 @@ void DumpContentsTable(
 		lpszFolder,
 		lpszProfile,
 		lpszDir);
-	if (ulOptions & cli::OPT_DOCONTENTS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Contents\n");
-	if (ulOptions & cli::OPT_DOASSOCIATEDCONTENTS)
+	if (cli::switchContents.isSet()) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Contents\n");
+	if (cli::switchAssociatedContents.isSet())
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Associated Contents\n");
 	if (ulOptions & cli::OPT_MSG) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
 	if (cli::switchMoreProperties.isSet())
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will retry stream properties\n");
-	if (cli::switchSkip.isSet())
-		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
+	if (cli::switchSkip.isSet()) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
 	if (ulOptions & cli::OPT_LIST) output::DebugPrint(DBGGeneric, L"DumpContentsTable: List only mode\n");
 	if (ulCount) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
 
@@ -57,8 +56,7 @@ void DumpContentsTable(
 		if (!(cli::switchMoreProperties.isSet())) MyDumpStore.DisableStreamRetry();
 		if (cli::switchSkip.isSet()) MyDumpStore.DisableEmbeddedAttachments();
 
-		MyDumpStore.ProcessFolders(
-			0 != (ulOptions & cli::OPT_DOCONTENTS), 0 != (ulOptions & cli::OPT_DOASSOCIATEDCONTENTS), false);
+		MyDumpStore.ProcessFolders(cli::switchContents.isSet(), cli::switchAssociatedContents.isSet(), false);
 	}
 }
 

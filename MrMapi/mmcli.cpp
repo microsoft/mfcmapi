@@ -36,16 +36,12 @@ namespace cli
 					  0,
 					  0,
 					  OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
-	option switchContents{L"Contents",
-						  cmdmodeContents,
-						  0,
-						  0,
-						  OPT_DOCONTENTS | OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
+	option switchContents{L"Contents", cmdmodeContents, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
 	option switchAssociatedContents{L"HiddenContents",
 									cmdmodeContents,
 									0,
 									0,
-									OPT_DOASSOCIATEDCONTENTS | OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
+									OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
 	option switchMoreProperties{L"MoreProperties", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchNoAddins{L"NoAddins", cmdmodeUnknown, 0, 0, OPT_NOADDINS};
 	option switchOnline{L"Online", cmdmodeUnknown, 0, 0, OPT_ONLINE};
@@ -606,15 +602,13 @@ namespace cli
 		switch (options.mode)
 		{
 		case cmdmodePropTag:
-			if (!(options.optionFlags & OPT_DOTYPE) && !(cli::switchSearch.isSet()) &&
-				options.lpszUnswitchedOption.empty())
+			if (!(options.optionFlags & OPT_DOTYPE) && !(switchSearch.isSet()) && options.lpszUnswitchedOption.empty())
 				options.mode = cmdmodeHelp;
 			else if (
-				cli::switchSearch.isSet() && options.optionFlags & OPT_DOTYPE &&
-				proptype::PropTypeNameToPropType(cli::switchType.getArg(0)) == PT_UNSPECIFIED)
+				switchSearch.isSet() && options.optionFlags & OPT_DOTYPE &&
+				proptype::PropTypeNameToPropType(switchType.getArg(0)) == PT_UNSPECIFIED)
 				options.mode = cmdmodeHelp;
-			else if (
-				cli::switchFlag.hasArgAsULONG(0) && (cli::switchSearch.isSet() || options.optionFlags & OPT_DOTYPE))
+			else if (switchFlag.hasArgAsULONG(0) && (switchSearch.isSet() || options.optionFlags & OPT_DOTYPE))
 				options.mode = cmdmodeHelp;
 
 			break;
@@ -623,8 +617,7 @@ namespace cli
 
 			break;
 		case cmdmodeContents:
-			if (!(options.optionFlags & OPT_DOCONTENTS) && !(options.optionFlags & OPT_DOASSOCIATEDCONTENTS))
-				options.mode = cmdmodeHelp;
+			if (!(switchContents.isSet()) && !(switchAssociatedContents.isSet())) options.mode = cmdmodeHelp;
 
 			break;
 		case cmdmodeMAPIMIME:
