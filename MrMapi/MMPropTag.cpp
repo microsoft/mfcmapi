@@ -550,9 +550,9 @@ void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
 	// Handle dispid cases
 	if (ProgOpts.options & cli::OPT_DODISPID)
 	{
-		if (cli::switchFlag.hasArgAsULONG(0))
+		if (cli::switchFlag.hasArgAsULONG(0, 16))
 		{
-			PrintFlag(ulPropNum, lpszPropName, true, cli::switchFlag.getArgAsULONG(0));
+			PrintFlag(ulPropNum, lpszPropName, true, cli::switchFlag.getArgAsULONG(0, 16));
 		}
 		else if (ProgOpts.options & cli::OPT_DOPARTIALSEARCH)
 		{
@@ -571,9 +571,9 @@ void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
 	}
 
 	// Handle prop tag cases
-	if (cli::switchFlag.hasArgAsULONG(0))
+	if (cli::switchFlag.hasArgAsULONG(0, 16))
 	{
-		PrintFlag(ulPropNum, lpszPropName, false, cli::switchFlag.getArgAsULONG(0));
+		PrintFlag(ulPropNum, lpszPropName, false, cli::switchFlag.getArgAsULONG(0, 16));
 	}
 	else if (ProgOpts.options & cli::OPT_DOPARTIALSEARCH)
 	{

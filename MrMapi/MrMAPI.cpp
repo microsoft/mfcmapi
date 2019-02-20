@@ -214,22 +214,24 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			hRes = WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, cli::switchFolder.getArg(0), &lpMDB, &lpFolder));
 			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
 		}
-		else if (lpMAPISession && ProgOpts.options & cli::OPT_NEEDSTORE)
+
+		// If they passed a store index then open it
+		ULONG ulStoreIndex{};
+		auto gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchStore.getArg(0), 10);
+		if (!gotStoreIndex)
+			gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchReceiveFolder.getArg(0), 10);
+
+		if (gotStoreIndex)
 		{
-			// They asked us for a store, if they passed a store index give them that one
-			if (ProgOpts.ulStore != 0)
-			{
-				// Decrement by one here on the index since we incremented during parameter parsing
-				// This is so zero indicate they did not specify a store
-				lpMDB = OpenStore(lpMAPISession, ProgOpts.ulStore - 1);
-				if (!lpMDB) printf("OpenStore failed\n");
-			}
-			else
-			{
-				// If they needed a store but didn't specify, get the default one
-				lpMDB = OpenExchangeOrDefaultMessageStore(lpMAPISession);
-				if (!lpMDB) printf("OpenExchangeOrDefaultMessageStore failed.\n");
-			}
+			lpMDB = OpenStore(lpMAPISession, ulStoreIndex);
+			if (!lpMDB) printf("OpenStore failed\n");
+		}
+
+		if (lpMAPISession && ProgOpts.options & cli::OPT_NEEDSTORE && !lpMDB)
+		{
+			// If they needed a store but didn't specify, get the default one
+			lpMDB = OpenExchangeOrDefaultMessageStore(lpMAPISession);
+			if (!lpMDB) printf("OpenExchangeOrDefaultMessageStore failed.\n");
 		}
 
 		switch (ProgOpts.mode)
@@ -262,7 +264,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			DoFidMid(lpMDB);
 			break;
 		case cli::cmdmodeStoreProperties:
-			DoStore(ProgOpts, lpMAPISession);
+			DoStore(ProgOpts, lpMAPISession, lpMDB);
 			break;
 		case cli::cmdmodeMAPIMIME:
 			DoMAPIMIME(lpMAPISession);

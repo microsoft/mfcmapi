@@ -303,7 +303,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 	if (lpStoreTable) lpStoreTable->Release();
 }
 
-void DoStore(_In_ cli::MYOPTIONS ProgOpts, LPMAPISESSION lpMAPISession)
+void DoStore(_In_ cli::MYOPTIONS ProgOpts, LPMAPISESSION lpMAPISession, LPMDB lpMDB)
 {
 	ULONG ulPropTag = NULL;
 
@@ -316,19 +316,13 @@ void DoStore(_In_ cli::MYOPTIONS ProgOpts, LPMAPISESSION lpMAPISession)
 
 	if (lpMAPISession)
 	{
-		if (0 == ProgOpts.ulStore)
+		if (lpMDB)
 		{
-			PrintStoreTable(lpMAPISession, ulPropTag);
+			PrintStoreProperties(lpMDB, ulPropTag);
 		}
 		else
 		{
-			// ulStore was incremented by 1 before, so drop it back now
-			auto lpMDB = OpenStore(lpMAPISession, ProgOpts.ulStore - 1);
-			if (lpMDB)
-			{
-				PrintStoreProperties(lpMDB, ulPropTag);
-				lpMDB->Release();
-			}
+			PrintStoreTable(lpMAPISession, ulPropTag);
 		}
 	}
 }

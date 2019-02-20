@@ -116,7 +116,6 @@ namespace cli
 
 	struct MYOPTIONS : OPTIONS
 	{
-		ULONG ulStore{};
 	};
 
 	void DisplayUsage(BOOL bFull);

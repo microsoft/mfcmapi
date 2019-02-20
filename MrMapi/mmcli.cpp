@@ -94,19 +94,12 @@ namespace cli
 					   0,
 					   1,
 					   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC,
-					   [](auto _options) {
-						   auto myoptions = GetMyOptions(_options);
+					   [](auto) {
 						   if (!switchStore.args.empty())
 						   {
 							   // If we parsed completely, this was a store number
-							   if (strings::tryWstringToUlong(myoptions->ulStore, switchStore.getArg(0), 10))
-							   {
-								   // Increment ulStore so we can use to distinguish an unset value
-								   myoptions->ulStore++;
-							   }
-
 							   // Else it was a naked option - leave it on the stack
-							   return false;
+							   return switchStore.hasArgAsULONG(0, 10);
 						   }
 
 						   return true;
@@ -120,28 +113,21 @@ namespace cli
 	option switchPST{L"PST", cmdmodePST, 0, 0, OPT_NEEDINPUTFILE};
 	option switchProfileSection{L"ProfileSection", cmdmodeProfile, 1, 1, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
 	option switchByteSwapped{L"ByteSwapped", cmdmodeProfile, 0, 0, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
-	option switchReceiveFolder{
-		L"ReceiveFolder",
-		cmdmodeReceiveFolder,
-		0,
-		1,
-		OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDSTORE | OPT_INITMFC,
-		[](auto _options) {
-			auto myoptions = GetMyOptions(_options);
-			if (!switchReceiveFolder.args.empty())
-			{
-				// If we parsed completely, this was a store number
-				if (strings::tryWstringToUlong(myoptions->ulStore, switchReceiveFolder.getArg(0), 10))
-				{
-					// Increment ulStore so we can use to distinguish an unset value
-					myoptions->ulStore++;
-				}
-				// Else it was a naked option - leave it on the stack
-				return false;
-			}
+	option switchReceiveFolder{L"ReceiveFolder",
+							   cmdmodeReceiveFolder,
+							   0,
+							   1,
+							   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDSTORE | OPT_INITMFC,
+							   [](auto) {
+								   if (!switchReceiveFolder.args.empty())
+								   {
+									   // If we parsed completely, this was a store number
+									   // Else it was a naked option - leave it on the stack
+									   return switchReceiveFolder.hasArgAsULONG(0, 10);
+								   }
 
-			return true;
-		}};
+								   return true;
+							   }};
 	option switchSkip{L"Skip", cmdmodeUnknown, 0, 0, OPT_SKIPATTACHMENTS};
 	option switchSearchState{L"SearchState",
 							 cmdmodeSearchState,

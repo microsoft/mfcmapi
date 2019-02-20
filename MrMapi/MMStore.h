@@ -14,6 +14,6 @@ HRESULT HrMAPIOpenStoreAndFolder(
 
 void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
 
-void DoStore(_In_ cli::MYOPTIONS ProgOpts, LPMAPISESSION lpMAPISession);
+void DoStore(_In_ cli::MYOPTIONS ProgOpts, LPMAPISESSION lpMAPISession, LPMDB lpMDB);
 
 LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex);
