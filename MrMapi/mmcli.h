@@ -128,7 +128,6 @@ namespace cli
 		ULONG ulCodePage{};
 		ULONG ulFlagValue{};
 		ULONG ulCount{};
-		bool bByteSwapped{};
 		CHARSETTYPE cSetType{CHARSET_BODY};
 		CSETAPPLYTYPE cSetApplyType{CSET_APPLY_UNTAGGED};
 		LPMAPISESSION lpMAPISession{};

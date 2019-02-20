@@ -188,16 +188,7 @@ namespace cli
 								   1,
 								   1,
 								   OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
-	OptParser switchByteSwapped{L"ByteSwapped",
-								cmdmodeProfile,
-								0,
-								0,
-								OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC,
-								[](auto _options) {
-									auto options = GetMyOptions(_options);
-									options->bByteSwapped = true;
-									return true;
-								}};
+	OptParser switchByteSwapped{L"ByteSwapped", cmdmodeProfile, 0, 0, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
 	OptParser switchReceiveFolder{L"ReceiveFolder",
 								  cmdmodeReceiveFolder,
 								  0,

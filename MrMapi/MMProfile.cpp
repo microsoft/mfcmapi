@@ -85,7 +85,10 @@ namespace output
 			printf("   Profile section: %ws\n", szProfileSection.c_str());
 			printf("   Output File: %ws\n", ProgOpts.lpszOutput.c_str());
 			ExportProfile(
-				strings::wstringTostring(szProfile), szProfileSection, ProgOpts.bByteSwapped, ProgOpts.lpszOutput);
+				strings::wstringTostring(szProfile),
+				szProfileSection,
+				cli::switchByteSwapped.isSet(),
+				ProgOpts.lpszOutput);
 		}
 		else
 		{
