@@ -105,14 +105,6 @@ namespace cli
 		OPT_NEEDSTORE = 0x200000,
 		OPT_SKIPATTACHMENTS = 0x400000,
 	};
-	inline OPTIONFLAGS& operator|=(OPTIONFLAGS& a, OPTIONFLAGS b) noexcept
-	{
-		return reinterpret_cast<OPTIONFLAGS&>(reinterpret_cast<int&>(a) |= static_cast<int>(b));
-	}
-	inline OPTIONFLAGS operator|(OPTIONFLAGS a, OPTIONFLAGS b) noexcept
-	{
-		return static_cast<OPTIONFLAGS>(static_cast<int>(a) | static_cast<int>(b));
-	}
 
 	void DisplayUsage(BOOL bFull);
 	void PostParseCheck(OPTIONS& _options);
