@@ -103,7 +103,6 @@ namespace cli
 		OPT_NEEDOUTPUTFILE = 0x80000,
 		OPT_PROFILE = 0x100000,
 		OPT_NEEDSTORE = 0x200000,
-		OPT_SKIPATTACHMENTS = 0x400000,
 	};
 
 	void DisplayUsage(BOOL bFull);

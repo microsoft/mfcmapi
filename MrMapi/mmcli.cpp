@@ -125,7 +125,7 @@ namespace cli
 
 								   return true;
 							   }};
-	option switchSkip{L"Skip", cmdmodeUnknown, 0, 0, OPT_SKIPATTACHMENTS};
+	option switchSkip{L"Skip", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchSearchState{L"SearchState",
 							 cmdmodeSearchState,
 							 0,

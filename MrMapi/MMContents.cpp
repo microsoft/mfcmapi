@@ -28,7 +28,7 @@ void DumpContentsTable(
 	if (ulOptions & cli::OPT_MSG) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
 	if (ulOptions & cli::OPT_RETRYSTREAMPROPS)
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will retry stream properties\n");
-	if (ulOptions & cli::OPT_SKIPATTACHMENTS)
+	if (cli::switchSkip.isSet())
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
 	if (ulOptions & cli::OPT_LIST) output::DebugPrint(DBGGeneric, L"DumpContentsTable: List only mode\n");
 	if (ulCount) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
@@ -55,7 +55,7 @@ void DumpContentsTable(
 		}
 
 		if (!(ulOptions & cli::OPT_RETRYSTREAMPROPS)) MyDumpStore.DisableStreamRetry();
-		if (ulOptions & cli::OPT_SKIPATTACHMENTS) MyDumpStore.DisableEmbeddedAttachments();
+		if (cli::switchSkip.isSet()) MyDumpStore.DisableEmbeddedAttachments();
 
 		MyDumpStore.ProcessFolders(
 			0 != (ulOptions & cli::OPT_DOCONTENTS), 0 != (ulOptions & cli::OPT_DOASSOCIATEDCONTENTS), false);
@@ -158,5 +158,5 @@ void DoMSG(_In_ cli::OPTIONS ProgOpts)
 		cli::switchInput.getArg(0).c_str(),
 		cli::switchOutput.hasArgs() ? cli::switchOutput.getArg(0).c_str() : L".",
 		0 != (ProgOpts.optionFlags & cli::OPT_RETRYSTREAMPROPS),
-		0 == (ProgOpts.optionFlags & cli::OPT_SKIPATTACHMENTS));
+		!cli::switchSkip.isSet());
 }
