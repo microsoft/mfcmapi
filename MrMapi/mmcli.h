@@ -124,11 +124,8 @@ namespace cli
 		std::wstring lpszFlagName;
 		ULONG ulStore{};
 		ULONG ulFolder{mapi::DEFAULT_INBOX};
-		ULONG ulCodePage{};
 		ULONG ulFlagValue{};
 		ULONG ulCount{};
-		CHARSETTYPE cSetType{CHARSET_BODY};
-		CSETAPPLYTYPE cSetApplyType{CSET_APPLY_UNTAGGED};
 		LPMAPISESSION lpMAPISession{};
 		LPMDB lpMDB{};
 		LPMAPIFOLDER lpFolder{};

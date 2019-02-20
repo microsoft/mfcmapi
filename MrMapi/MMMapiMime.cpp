@@ -12,6 +12,11 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 	const auto ulWrapLines = cli::switchWrap.getArgAsULONG(0);
 	const auto ulEncodingType = cli::switchEncoding.getArgAsULONG(0);
 	const auto convertFlags = static_cast<CCSFLAGS>(cli::switchCCSFFlags.getArgAsULONG(0));
+
+	const auto ulCodePage = cli::switchCharset.getArgAsULONG(0);
+	const auto cSetType = static_cast<CHARSETTYPE>(cli::switchCharset.getArgAsULONG(1));
+	const auto cSetApplyType = static_cast<CSETAPPLYTYPE>(cli::switchCharset.getArgAsULONG(2));
+
 	printf("Message File Converter\n");
 	printf("Options specified:\n");
 	printf("   Input File: %ws\n", input.c_str());
@@ -39,11 +44,12 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 		{
 			printf("   Building Unicode MSG file\n");
 		}
+
 		if (cli::switchCharset.isSet())
 		{
-			printf("   CodePage: %lu\n", ProgOpts.ulCodePage);
+			printf("   CodePage: %lu\n", ulCodePage);
 			printf("   CharSetType: ");
-			switch (ProgOpts.cSetType)
+			switch (cSetType)
 			{
 			case CHARSET_BODY:
 				printf("CHARSET_BODY");
@@ -55,9 +61,10 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 				printf("CHARSET_WEB");
 				break;
 			}
+
 			printf("\n");
 			printf("   CharSetApplyType: ");
-			switch (ProgOpts.cSetApplyType)
+			switch (cSetApplyType)
 			{
 			case CSET_APPLY_UNTAGGED:
 				printf("CSET_APPLY_UNTAGGED");
@@ -69,6 +76,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 				printf("CSET_APPLY_TAG_ALL");
 				break;
 			}
+
 			printf("\n");
 		}
 	}
@@ -123,7 +131,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 		HCHARSET hCharSet = nullptr;
 		if (cli::switchCharset.isSet())
 		{
-			hRes = WC_H(import::MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage, ProgOpts.cSetType, &hCharSet));
+			hRes = WC_H(import::MyMimeOleGetCodePageCharset(ulCodePage, cSetType, &hCharSet));
 			if (FAILED(hRes))
 			{
 				printf("MimeOleGetCodePageCharset returned 0x%08lX\n", hRes);
@@ -138,7 +146,7 @@ void DoMAPIMIME(_In_ cli::MYOPTIONS ProgOpts)
 				convertFlags,
 				cli::switchCharset.isSet(),
 				hCharSet,
-				ProgOpts.cSetApplyType,
+				cSetApplyType,
 				lpAdrBook,
 				cli::switchUnicode.isSet()));
 		}

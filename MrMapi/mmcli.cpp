@@ -81,23 +81,7 @@ namespace cli
 	OptParser switchRFC822{L"RFC822", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT};
 	OptParser switchWrap{L"Wrap", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT};
 	OptParser switchEncoding{L"Encoding", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT};
-	OptParser switchCharset{L"Charset", cmdmodeMAPIMIME, 3, 3, OPT_NOOPT, [](auto _options) {
-								auto options = GetMyOptions(_options);
-								options->ulCodePage = switchCharset.getArgAsULONG(0);
-								options->cSetType = static_cast<CHARSETTYPE>(switchCharset.getArgAsULONG(1));
-								if (options->cSetType > CHARSET_WEB)
-								{
-									return false;
-								}
-
-								options->cSetApplyType = static_cast<CSETAPPLYTYPE>(switchCharset.getArgAsULONG(2));
-								if (options->cSetApplyType > CSET_APPLY_TAG_ALL)
-								{
-									return false;
-								}
-
-								return true;
-							}};
+	OptParser switchCharset{L"Charset", cmdmodeMAPIMIME, 3, 3, OPT_NOOPT};
 	OptParser switchAddressBook{L"AddressBook", cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPILOGON};
 	OptParser switchUnicode{L"Unicode", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT};
 	OptParser switchProfile{L"Profile", cmdmodeUnknown, 0, 1, OPT_PROFILE};
