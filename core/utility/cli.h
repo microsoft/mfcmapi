@@ -9,8 +9,6 @@ namespace cli
 		int mode{};
 		int optionFlags{};
 		std::wstring lpszUnswitchedOption;
-		// dummy function to force a vtable so we can use dynamic_cast
-		virtual void __dummy() noexcept {};
 	};
 
 	class option
