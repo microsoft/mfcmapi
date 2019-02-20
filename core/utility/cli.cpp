@@ -109,12 +109,6 @@ namespace cli
 				continue;
 			}
 
-			// TODO: Can we cut this?
-			if (opt->mode == cmdmodeHelpFull)
-			{
-				options.mode = cmdmodeHelpFull;
-			}
-
 			// Make sure we have the right number of args and set flags and mode
 			// Commands with variable argument counts can special case themselves
 			if (!opt->scanArgs(args, options, optionsArray))
