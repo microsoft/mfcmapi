@@ -583,7 +583,7 @@ void DoPropTags(_In_ const cli::OPTIONS& ProgOpts)
 		PrintTagFromName(lpszPropName, ulTypeNum);
 	}
 	// If we weren't asked about a property, maybe we were asked about types
-	else if (ProgOpts.optionFlags & cli::OPT_DOTYPE)
+	else if (cli::switchType.isSet())
 	{
 		if (ulNoMatch != ulTypeNum)
 		{

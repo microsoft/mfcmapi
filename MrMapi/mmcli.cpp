@@ -24,7 +24,7 @@ namespace cli
 						OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDFOLDER | OPT_INITMFC};
 	option switchOutput{L"Output", cmdmodeUnknown, 1, 1, OPT_NOOPT};
 	option switchDispid{L"Dispids", cmdmodePropTag, 0, 0, OPT_DODISPID};
-	option switchType{L"Type", cmdmodePropTag, 0, 1, OPT_DOTYPE};
+	option switchType{L"Type", cmdmodePropTag, 0, 1, OPT_NOOPT};
 	option switchGuid{L"Guids", cmdmodeGuid, 0, 0, OPT_NOOPT};
 	option switchError{L"Error", cmdmodeErr, 0, 0, OPT_NOOPT};
 	option switchParser{L"ParserType", cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE};
@@ -602,13 +602,13 @@ namespace cli
 		switch (options.mode)
 		{
 		case cmdmodePropTag:
-			if (!(options.optionFlags & OPT_DOTYPE) && !(switchSearch.isSet()) && options.lpszUnswitchedOption.empty())
+			if (!(switchType.isSet()) && !(switchSearch.isSet()) && options.lpszUnswitchedOption.empty())
 				options.mode = cmdmodeHelp;
 			else if (
-				switchSearch.isSet() && options.optionFlags & OPT_DOTYPE &&
+				switchSearch.isSet() && switchType.isSet() &&
 				proptype::PropTypeNameToPropType(switchType.getArg(0)) == PT_UNSPECIFIED)
 				options.mode = cmdmodeHelp;
-			else if (switchFlag.hasArgAsULONG(0) && (switchSearch.isSet() || options.optionFlags & OPT_DOTYPE))
+			else if (switchFlag.hasArgAsULONG(0) && (switchSearch.isSet() || switchType.isSet()))
 				options.mode = cmdmodeHelp;
 
 			break;
