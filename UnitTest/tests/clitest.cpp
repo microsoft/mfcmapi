@@ -2,8 +2,29 @@
 #include <UnitTest/UnitTest.h>
 #include <core/utility/cli.h>
 
+enum OPTIONFLAGS
+{
+	// Declared in flagsEnum
+	//OPT_NOOPT = 0x0000,
+	//OPT_INITMFC = 0x0001,
+	//OPT_NEEDNUM = 0x0002, // Any arguments must be decimal numbers. No strings.
+	OPT_10 = 0x0010,
+	OPT_20 = 0x0020,
+};
+
 // Our set of options for testing
-const std::vector<cli::option*> g_options = {&cli::switchHelp, &cli::switchVerbose};
+enum CmdMode
+{
+	cmdmode1 = cli::cmdmodeFirstMode,
+	cmdmode2,
+};
+
+cli::option switchHelp = {L"?", cli::cmdmodeHelpFull, 0, 0, cli::OPT_INITMFC};
+cli::option switchVerbose = {L"Verbose", cli::cmdmodeUnknown, 0, 0, cli::OPT_INITMFC};
+cli::option switchMode1{L"mode1", cmdmode1, 0, 1, cli::OPT_NEEDNUM | OPT_10};
+cli::option switchMode2{L"mode2", cmdmode2, 2, 2, OPT_20};
+
+const std::vector<cli::option*> g_options = {&switchHelp, &switchVerbose, &switchMode1};
 
 namespace Microsoft
 {
@@ -43,8 +64,7 @@ namespace Microsoft
 						strings::format(L"minArgs: %d:%d\n", expected->minArgs, actual->minArgs).c_str());
 					Logger::WriteMessage(
 						strings::format(L"maxArgs: %d:%d\n", expected->maxArgs, actual->maxArgs).c_str());
-					Logger::WriteMessage(
-						strings::format(L"ulOpt: %d:%d\n", expected->flags, actual->flags).c_str());
+					Logger::WriteMessage(strings::format(L"ulOpt: %d:%d\n", expected->flags, actual->flags).c_str());
 					Assert::Fail(ToString(message).c_str(), pLineInfo);
 				}
 			}
