@@ -13,15 +13,12 @@ namespace error
 	extern ULONG g_ulErrorArray;
 } // namespace error
 
+#define OPT_INITALL (OPT_INITMFC | OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON)
 namespace cli
 {
 	option switchSearch{L"Search", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchDecimal{L"Number", cmdmodeUnknown, 0, 0, OPT_NOOPT};
-	option switchFolder{L"Folder",
-						cmdmodeUnknown,
-						1,
-						1,
-						OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDFOLDER | OPT_INITMFC};
+	option switchFolder{L"Folder", cmdmodeUnknown, 1, 1, OPT_INITALL | OPT_NEEDFOLDER};
 	option switchOutput{L"Output", cmdmodeUnknown, 1, 1, OPT_NOOPT};
 	option switchDispid{L"Dispids", cmdmodePropTag, 0, 0, OPT_NOOPT};
 	option switchType{L"Type", cmdmodePropTag, 0, 1, OPT_NOOPT};
@@ -30,18 +27,10 @@ namespace cli
 	option switchParser{L"ParserType", cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE};
 	option switchInput{L"Input", cmdmodeUnknown, 1, 1, OPT_NOOPT};
 	option switchBinary{L"Binary", cmdmodeSmartView, 0, 0, OPT_NOOPT};
-	option switchAcl{L"Acl", cmdmodeAcls, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
-	option switchRule{L"Rules",
-					  cmdmodeRules,
-					  0,
-					  0,
-					  OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
-	option switchContents{L"Contents", cmdmodeContents, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
-	option switchAssociatedContents{L"HiddenContents",
-									cmdmodeContents,
-									0,
-									0,
-									OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
+	option switchAcl{L"Acl", cmdmodeAcls, 0, 0, OPT_INITALL | OPT_NEEDFOLDER};
+	option switchRule{L"Rules", cmdmodeRules, 0, 0, OPT_INITALL | OPT_NEEDFOLDER};
+	option switchContents{L"Contents", cmdmodeContents, 0, 0, OPT_INITALL};
+	option switchAssociatedContents{L"HiddenContents", cmdmodeContents, 0, 0, OPT_INITALL};
 	option switchMoreProperties{L"MoreProperties", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchNoAddins{L"NoAddins", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchOnline{L"Online", cmdmodeUnknown, 0, 0, OPT_NOOPT};
@@ -68,13 +57,9 @@ namespace cli
 	option switchMessageClass{L"MessageClass", cmdmodeContents, 1, 1, OPT_NOOPT};
 	option switchMSG{L"MSG", cmdmodeContents, 0, 0, OPT_NOOPT};
 	option switchList{L"List", cmdmodeContents, 0, 0, OPT_NOOPT};
-	option switchChildFolders{L"ChildFolders",
-							  cmdmodeChildFolders,
-							  0,
-							  0,
-							  OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
-	option switchFid{L"FID", cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDSTORE};
-	option switchMid{L"MID", cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC};
+	option switchChildFolders{L"ChildFolders", cmdmodeChildFolders, 0, 0, OPT_INITALL | OPT_NEEDFOLDER};
+	option switchFid{L"FID", cmdmodeFidMid, 0, 1, OPT_INITALL | OPT_NEEDSTORE};
+	option switchMid{L"MID", cmdmodeFidMid, 0, 1, OPT_INITALL};
 	option switchFlag{L"Flag", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options) {
 						  // We must have a next argument, but it could be a string or a number
 						  // Set mode based on whether the flag string was completely parsed as a number
@@ -82,12 +67,7 @@ namespace cli
 							  _options.mode, switchFlag.hasArgAsULONG(0, 16) ? cmdmodePropTag : cmdmodeFlagSearch);
 					  }};
 	option switchRecent{L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT};
-	option switchStore{L"Store",
-					   cmdmodeStoreProperties,
-					   0,
-					   1,
-					   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC,
-					   [](auto) {
+	option switchStore{L"Store", cmdmodeStoreProperties, 0, 1, OPT_INITALL, [](auto) {
 						   if (!switchStore.args.empty())
 						   {
 							   // If we parsed completely, this was a store number
@@ -98,20 +78,11 @@ namespace cli
 						   return true;
 					   }};
 	option switchVersion{L"Version", cmdmodeUnknown, 1, 1, OPT_NOOPT};
-	option switchSize{L"Size",
-					  cmdmodeFolderSize,
-					  0,
-					  0,
-					  OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
+	option switchSize{L"Size", cmdmodeFolderSize, 0, 0, OPT_INITALL | OPT_NEEDFOLDER};
 	option switchPST{L"PST", cmdmodePST, 0, 0, OPT_NEEDINPUTFILE};
 	option switchProfileSection{L"ProfileSection", cmdmodeProfile, 1, 1, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
 	option switchByteSwapped{L"ByteSwapped", cmdmodeProfile, 0, 0, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
-	option switchReceiveFolder{L"ReceiveFolder",
-							   cmdmodeReceiveFolder,
-							   0,
-							   1,
-							   OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDSTORE | OPT_INITMFC,
-							   [](auto) {
+	option switchReceiveFolder{L"ReceiveFolder", cmdmodeReceiveFolder, 0, 1, OPT_INITALL | OPT_NEEDSTORE, [](auto) {
 								   if (!switchReceiveFolder.args.empty())
 								   {
 									   // If we parsed completely, this was a store number
@@ -122,11 +93,7 @@ namespace cli
 								   return true;
 							   }};
 	option switchSkip{L"Skip", cmdmodeUnknown, 0, 0, OPT_NOOPT};
-	option switchSearchState{L"SearchState",
-							 cmdmodeSearchState,
-							 0,
-							 1,
-							 OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER};
+	option switchSearchState{L"SearchState", cmdmodeSearchState, 0, 1, OPT_INITALL | OPT_NEEDFOLDER};
 
 	// If we want to add aliases for any switches, add them here
 	option switchHelpAlias{L"Help", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
