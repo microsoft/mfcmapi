@@ -55,31 +55,13 @@ namespace cli
 	option switchMid{L"MID", cmdmodeFidMid, 0, 1, OPT_INITALL};
 	option switchFlag{L"Flag", cmdmodeUnknown, 1, 1, OPT_NOOPT};
 	option switchRecent{L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT};
-	option switchStore{L"Store", cmdmodeStoreProperties, 0, 1, OPT_INITALL, [] {
-						   if (!switchStore.args.empty())
-						   {
-							   // If we parsed completely, this was a store number
-							   // Else it was a naked option - leave it on the stack
-							   return switchStore.hasArgAsULONG(0, 10);
-						   }
-
-						   return true;
-					   }};
+	option switchStore{L"Store", cmdmodeStoreProperties, 0, 1, OPT_INITALL | OPT_NEEDNUM};
 	option switchVersion{L"Version", cmdmodeUnknown, 1, 1, OPT_NOOPT};
 	option switchSize{L"Size", cmdmodeFolderSize, 0, 0, OPT_INITALL | OPT_NEEDFOLDER};
 	option switchPST{L"PST", cmdmodePST, 0, 0, OPT_NEEDINPUTFILE};
 	option switchProfileSection{L"ProfileSection", cmdmodeProfile, 1, 1, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
 	option switchByteSwapped{L"ByteSwapped", cmdmodeProfile, 0, 0, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
-	option switchReceiveFolder{L"ReceiveFolder", cmdmodeReceiveFolder, 0, 1, OPT_INITALL | OPT_NEEDSTORE, [] {
-								   if (!switchReceiveFolder.args.empty())
-								   {
-									   // If we parsed completely, this was a store number
-									   // Else it was a naked option - leave it on the stack
-									   return switchReceiveFolder.hasArgAsULONG(0, 10);
-								   }
-
-								   return true;
-							   }};
+	option switchReceiveFolder{L"ReceiveFolder", cmdmodeReceiveFolder, 0, 1, OPT_INITALL | OPT_NEEDSTORE | OPT_NEEDNUM};
 	option switchSkip{L"Skip", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchSearchState{L"SearchState", cmdmodeSearchState, 0, 1, OPT_INITALL | OPT_NEEDFOLDER};
 

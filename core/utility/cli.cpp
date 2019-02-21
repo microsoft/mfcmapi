@@ -69,10 +69,7 @@ namespace cli
 	}
 
 	// Parses command line arguments and fills out OPTIONS
-	void ParseArgs(
-		OPTIONS& options,
-		std::deque<std::wstring>& args,
-		const std::vector<option*>& optionsArray)
+	void ParseArgs(OPTIONS& options, std::deque<std::wstring>& args, const std::vector<option*>& optionsArray)
 	{
 		if (args.empty())
 		{
@@ -151,21 +148,28 @@ namespace cli
 			foundArgs.push_back(*it);
 		}
 
-		// and save them locally
-		args = foundArgs;
 		seen = true;
 
 		// Now that we've peeled off arguments, check if the option will accept them:
-		if (testArgs)
+		if (flags & OPT_NEEDNUM && !foundArgs.empty())
 		{
-			if (!testArgs())
+			auto fail = false;
+			for (const auto& arg : foundArgs)
+			{
+				ULONG num{};
+				fail = fail || !strings::tryWstringToUlong(num, arg, 10, true);
+			}
+
+			if (fail)
 			{
 				// If we *didn't* like our args, don't keep them, don't peel them off
 				// This is not an error if minArgs is 0
-				args.clear();
 				return minArgs == 0;
 			}
 		}
+
+		// and save them locally
+		args = foundArgs;
 
 		// remove all our found arguments
 		_args.erase(_args.begin(), _args.begin() + foundArgs.size());

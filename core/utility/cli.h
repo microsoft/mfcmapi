@@ -23,19 +23,11 @@ namespace cli
 		UINT maxArgs{};
 		int flags{};
 		std::vector<std::wstring> args;
-		std::function<bool()> testArgs = 0;
 
 		option() = default;
 
-		option(
-			LPCWSTR _szSwitch,
-			int _mode,
-			UINT _minArgs,
-			UINT _maxArgs,
-			int _optionFlags,
-			std::function<bool()> _testArgs = 0)
-			: szSwitch{_szSwitch}, mode{_mode}, minArgs{_minArgs}, maxArgs{_maxArgs},
-			  flags{_optionFlags}, testArgs{_testArgs}
+		option(LPCWSTR _szSwitch, int _mode, UINT _minArgs, UINT _maxArgs, int _optionFlags)
+			: szSwitch{_szSwitch}, mode{_mode}, minArgs{_minArgs}, maxArgs{_maxArgs}, flags{_optionFlags}
 		{
 		}
 
@@ -70,6 +62,7 @@ namespace cli
 	{
 		OPT_NOOPT = 0x0000,
 		OPT_INITMFC = 0x0001,
+		OPT_NEEDNUM = 0x0002, // Any arguments must be decimal numbers. No strings.
 	};
 
 	extern option switchInvalid;
