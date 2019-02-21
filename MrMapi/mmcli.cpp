@@ -60,12 +60,7 @@ namespace cli
 	option switchChildFolders{L"ChildFolders", cmdmodeChildFolders, 0, 0, OPT_INITALL | OPT_NEEDFOLDER};
 	option switchFid{L"FID", cmdmodeFidMid, 0, 1, OPT_INITALL | OPT_NEEDSTORE};
 	option switchMid{L"MID", cmdmodeFidMid, 0, 1, OPT_INITALL};
-	option switchFlag{L"Flag", cmdmodeUnknown, 1, 1, OPT_NOOPT, [](auto _options) {
-						  // We must have a next argument, but it could be a string or a number
-						  // Set mode based on whether the flag string was completely parsed as a number
-						  return bSetMode(
-							  _options.mode, switchFlag.hasArgAsULONG(0, 16) ? cmdmodePropTag : cmdmodeFlagSearch);
-					  }};
+	option switchFlag{L"Flag", cmdmodeUnknown, 1, 1, OPT_NOOPT};
 	option switchRecent{L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT};
 	option switchStore{L"Store", cmdmodeStoreProperties, 0, 1, OPT_INITALL, [](auto) {
 						   if (!switchStore.args.empty())
@@ -537,6 +532,14 @@ namespace cli
 	{
 		// Having processed the command line, we may not have determined a mode.
 		// Some modes can be presumed by the switches we did see.
+
+		if (switchFlag.isSet())
+		{
+			if (!bSetMode(options.mode, switchFlag.hasArgAsULONG(0, 16) ? cmdmodePropTag : cmdmodeFlagSearch))
+			{
+				options.mode = cmdmodeHelp;
+			}
+		}
 
 		// If we didn't get a mode set but we saw OPT_NEEDFOLDER, assume we're in folder dumping mode
 		if (cmdmodeUnknown == options.mode && options.optionFlags & OPT_NEEDFOLDER) options.mode = cmdmodeFolderProps;
