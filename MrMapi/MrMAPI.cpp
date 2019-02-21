@@ -152,7 +152,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	PostParseCheck(ProgOpts);
 
 	// Must be first after ParseArgs and PostParseCheck
-	if (ProgOpts.optionFlags & cli::OPT_INITMFC)
+	if (ProgOpts.flags & cli::OPT_INITMFC)
 	{
 		InitMFC();
 	}
@@ -191,7 +191,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		}
 
 		// Log on to MAPI if needed
-		if (ProgOpts.optionFlags & cli::OPT_NEEDMAPIINIT)
+		if (ProgOpts.flags & cli::OPT_NEEDMAPIINIT)
 		{
 			hRes = WC_MAPI(MAPIInitialize(nullptr));
 			if (FAILED(hRes))
@@ -204,13 +204,13 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			}
 		}
 
-		if (bMAPIInit && ProgOpts.optionFlags & cli::OPT_NEEDMAPILOGON)
+		if (bMAPIInit && ProgOpts.flags & cli::OPT_NEEDMAPILOGON)
 		{
 			lpMAPISession = MrMAPILogonEx(cli::switchProfile.getArg(0));
 		}
 
 		// If they need a folder get it and store at the same time from the folder id
-		if (lpMAPISession && ProgOpts.optionFlags & cli::OPT_NEEDFOLDER)
+		if (lpMAPISession && ProgOpts.flags & cli::OPT_NEEDFOLDER)
 		{
 			hRes = WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, cli::switchFolder.getArg(0), &lpMDB, &lpFolder));
 			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
@@ -228,7 +228,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			if (!lpMDB) printf("OpenStore failed\n");
 		}
 
-		if (lpMAPISession && ProgOpts.optionFlags & cli::OPT_NEEDSTORE && !lpMDB)
+		if (lpMAPISession && ProgOpts.flags & cli::OPT_NEEDSTORE && !lpMDB)
 		{
 			// If they needed a store but didn't specify, get the default one
 			lpMDB = OpenExchangeOrDefaultMessageStore(lpMAPISession);

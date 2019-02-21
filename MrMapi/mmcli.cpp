@@ -535,13 +535,13 @@ namespace cli
 		}
 
 		// If we didn't get a mode set but we saw OPT_NEEDFOLDER, assume we're in folder dumping mode
-		if (cmdmodeUnknown == options.mode && options.optionFlags & OPT_NEEDFOLDER) options.mode = cmdmodeFolderProps;
+		if (cmdmodeUnknown == options.mode && options.flags & OPT_NEEDFOLDER) options.mode = cmdmodeFolderProps;
 
 		// If we didn't get a mode set, but we saw OPT_PROFILE, assume we're in profile dumping mode
-		if (cmdmodeUnknown == options.mode && options.optionFlags & OPT_PROFILE)
+		if (cmdmodeUnknown == options.mode && options.flags & OPT_PROFILE)
 		{
 			options.mode = cmdmodeProfile;
-			options.optionFlags |= OPT_NEEDMAPIINIT | OPT_INITMFC;
+			options.flags |= OPT_NEEDMAPIINIT | OPT_INITMFC;
 		}
 
 		// If we didn't get a mode set, assume we're in prop tag mode
@@ -557,9 +557,9 @@ namespace cli
 		}
 
 		// Validate that we have bare minimum to run
-		if (options.optionFlags & OPT_NEEDINPUTFILE && !switchInput.hasArgs())
+		if (options.flags & OPT_NEEDINPUTFILE && !switchInput.hasArgs())
 			options.mode = cmdmodeHelp;
-		else if (options.optionFlags & OPT_NEEDOUTPUTFILE && !switchOutput.hasArgs())
+		else if (options.flags & OPT_NEEDOUTPUTFILE && !switchOutput.hasArgs())
 			options.mode = cmdmodeHelp;
 
 		switch (options.mode)

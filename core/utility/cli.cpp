@@ -127,7 +127,7 @@ namespace cli
 		if (_args.size() < minArgs) return false;
 
 		// Add our flags and set mode
-		options.optionFlags |= optionFlags;
+		options.flags |= flags;
 		if (cmdmodeUnknown != mode && cmdmodeHelp != options.mode)
 		{
 			if (!bSetMode(options.mode, mode))
@@ -176,7 +176,7 @@ namespace cli
 	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<option*>& optionsArray)
 	{
 		output::DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.mode);
-		output::DebugPrint(DBGGeneric, L"options = 0x%08X\n", ProgOpts.optionFlags);
+		output::DebugPrint(DBGGeneric, L"options = 0x%08X\n", ProgOpts.flags);
 		if (!ProgOpts.lpszUnswitchedOption.empty())
 			output::DebugPrint(DBGGeneric, L"lpszUnswitchedOption = %ws\n", ProgOpts.lpszUnswitchedOption.c_str());
 

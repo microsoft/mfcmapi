@@ -29,7 +29,7 @@ namespace Microsoft
 				auto eq = true;
 				if (std::wstring{expected->szSwitch} != std::wstring{actual->szSwitch} ||
 					expected->mode != actual->mode || expected->minArgs != actual->minArgs ||
-					expected->maxArgs != actual->maxArgs || expected->optionFlags != actual->optionFlags)
+					expected->maxArgs != actual->maxArgs || expected->flags != actual->flags)
 				{
 					eq = false;
 				}
@@ -44,7 +44,7 @@ namespace Microsoft
 					Logger::WriteMessage(
 						strings::format(L"maxArgs: %d:%d\n", expected->maxArgs, actual->maxArgs).c_str());
 					Logger::WriteMessage(
-						strings::format(L"ulOpt: %d:%d\n", expected->optionFlags, actual->optionFlags).c_str());
+						strings::format(L"ulOpt: %d:%d\n", expected->flags, actual->flags).c_str());
 					Assert::Fail(ToString(message).c_str(), pLineInfo);
 				}
 			}
@@ -126,7 +126,7 @@ namespace clitest
 			Logger::WriteMessage(strings::format(L"Mode: %d\n", option.mode).c_str());
 			Logger::WriteMessage(strings::format(L"minArgs: %d\n", option.minArgs).c_str());
 			Logger::WriteMessage(strings::format(L"maxArgs: %d\n", option.maxArgs).c_str());
-			Logger::WriteMessage(strings::format(L"ulOpt: %d\n", option.optionFlags).c_str());
+			Logger::WriteMessage(strings::format(L"ulOpt: %d\n", option.flags).c_str());
 
 			Logger::WriteMessage(strings::format(L"Tested args\n").c_str());
 			for (auto& arg : args)

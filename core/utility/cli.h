@@ -7,7 +7,7 @@ namespace cli
 	struct OPTIONS
 	{
 		int mode{};
-		int optionFlags{};
+		int flags{};
 		std::wstring lpszUnswitchedOption;
 	};
 
@@ -21,7 +21,7 @@ namespace cli
 		int mode{};
 		UINT minArgs{};
 		UINT maxArgs{};
-		int optionFlags{};
+		int flags{};
 		std::vector<std::wstring> args;
 		std::function<bool(OPTIONS& _options)> testArgs = 0;
 
@@ -35,7 +35,7 @@ namespace cli
 			int _optionFlags,
 			std::function<bool(OPTIONS& _options)> _testArgs = 0)
 			: szSwitch{_szSwitch}, mode{_mode}, minArgs{_minArgs}, maxArgs{_maxArgs},
-			  optionFlags{_optionFlags}, testArgs{_testArgs}
+			  flags{_optionFlags}, testArgs{_testArgs}
 		{
 		}
 
