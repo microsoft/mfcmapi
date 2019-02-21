@@ -14,6 +14,7 @@ namespace error
 } // namespace error
 
 #define OPT_INITALL (OPT_INITMFC | OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON)
+#define OPT_INOUT (OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE)
 namespace cli
 {
 	option switchSearch{L"Search", cmdmodeUnknown, 0, 0, OPT_NOOPT};
@@ -34,16 +35,8 @@ namespace cli
 	option switchMoreProperties{L"MoreProperties", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchNoAddins{L"NoAddins", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchOnline{L"Online", cmdmodeUnknown, 0, 0, OPT_NOOPT};
-	option switchMAPI{L"MAPI",
-					  cmdmodeMAPIMIME,
-					  0,
-					  0,
-					  OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE};
-	option switchMIME{L"MIME",
-					  cmdmodeMAPIMIME,
-					  0,
-					  0,
-					  OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE};
+	option switchMAPI{L"MAPI", cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_INOUT};
+	option switchMIME{L"MIME", cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_INOUT};
 	option switchCCSFFlags{L"CCSFFlags", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT};
 	option switchRFC822{L"RFC822", cmdmodeMAPIMIME, 0, 0, OPT_NOOPT};
 	option switchWrap{L"Wrap", cmdmodeMAPIMIME, 1, 1, OPT_NOOPT};
