@@ -158,7 +158,7 @@ namespace cli
 		// Now that we've peeled off arguments, check if the option will accept them:
 		if (testArgs)
 		{
-			if (!testArgs(options))
+			if (!testArgs())
 			{
 				// If we *didn't* like our args, don't keep them, don't peel them off
 				// This is not an error if minArgs is 0

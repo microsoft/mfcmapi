@@ -23,7 +23,7 @@ namespace cli
 		UINT maxArgs{};
 		int flags{};
 		std::vector<std::wstring> args;
-		std::function<bool(OPTIONS& _options)> testArgs = 0;
+		std::function<bool()> testArgs = 0;
 
 		option() = default;
 
@@ -33,7 +33,7 @@ namespace cli
 			UINT _minArgs,
 			UINT _maxArgs,
 			int _optionFlags,
-			std::function<bool(OPTIONS& _options)> _testArgs = 0)
+			std::function<bool()> _testArgs = 0)
 			: szSwitch{_szSwitch}, mode{_mode}, minArgs{_minArgs}, maxArgs{_maxArgs},
 			  flags{_optionFlags}, testArgs{_testArgs}
 		{

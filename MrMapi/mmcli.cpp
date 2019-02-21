@@ -55,7 +55,7 @@ namespace cli
 	option switchMid{L"MID", cmdmodeFidMid, 0, 1, OPT_INITALL};
 	option switchFlag{L"Flag", cmdmodeUnknown, 1, 1, OPT_NOOPT};
 	option switchRecent{L"Recent", cmdmodeContents, 1, 1, OPT_NOOPT};
-	option switchStore{L"Store", cmdmodeStoreProperties, 0, 1, OPT_INITALL, [](auto) {
+	option switchStore{L"Store", cmdmodeStoreProperties, 0, 1, OPT_INITALL, [] {
 						   if (!switchStore.args.empty())
 						   {
 							   // If we parsed completely, this was a store number
@@ -70,7 +70,7 @@ namespace cli
 	option switchPST{L"PST", cmdmodePST, 0, 0, OPT_NEEDINPUTFILE};
 	option switchProfileSection{L"ProfileSection", cmdmodeProfile, 1, 1, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
 	option switchByteSwapped{L"ByteSwapped", cmdmodeProfile, 0, 0, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC};
-	option switchReceiveFolder{L"ReceiveFolder", cmdmodeReceiveFolder, 0, 1, OPT_INITALL | OPT_NEEDSTORE, [](auto) {
+	option switchReceiveFolder{L"ReceiveFolder", cmdmodeReceiveFolder, 0, 1, OPT_INITALL | OPT_NEEDSTORE, [] {
 								   if (!switchReceiveFolder.args.empty())
 								   {
 									   // If we parsed completely, this was a store number
