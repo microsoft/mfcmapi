@@ -7,7 +7,7 @@ namespace cli
 {
 	option switchInvalid = {L"", cmdmodeHelpFull, 0, 0, 0};
 	option switchHelp = {L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
-	option switchVerbose = {L"Verbose", cmdmodeUnknown, 0, 0, OPT_VERBOSE | OPT_INITMFC};
+	option switchVerbose = {L"Verbose", cmdmodeUnknown, 0, 0, OPT_INITMFC};
 
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately

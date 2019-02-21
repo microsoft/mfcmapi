@@ -157,7 +157,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		InitMFC();
 	}
 
-	if (ProgOpts.optionFlags & cli::OPT_VERBOSE)
+	if (cli::switchVerbose.isSet())
 	{
 		registry::debugTag = 0xFFFFFFFF;
 		cli::PrintArgs(ProgOpts, cli::g_options);
