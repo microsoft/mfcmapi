@@ -34,13 +34,9 @@ namespace cli
 			UINT _maxArgs,
 			int _optionFlags,
 			std::function<bool(OPTIONS& _options)> _testArgs = 0)
+			: szSwitch{_szSwitch}, mode{_mode}, minArgs{_minArgs}, maxArgs{_maxArgs},
+			  optionFlags{_optionFlags}, testArgs{_testArgs}
 		{
-			szSwitch = _szSwitch;
-			mode = _mode;
-			minArgs = _minArgs;
-			maxArgs = _maxArgs;
-			optionFlags = _optionFlags;
-			testArgs = _testArgs;
 		}
 
 		bool isSet() const noexcept { return seen; }
