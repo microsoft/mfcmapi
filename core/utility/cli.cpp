@@ -191,7 +191,7 @@ namespace cli
 			{
 				output::DebugPrint(DBGGeneric, L"Switch: %ws\n", option->szSwitch);
 			}
-			else if (option->hasArgs())
+			else if (!option->empty())
 			{
 				output::DebugPrint(DBGGeneric, L"Switch: %ws (not set but has args)\n", option->szSwitch);
 			}

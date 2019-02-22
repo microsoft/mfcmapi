@@ -82,7 +82,7 @@ void DoMAPIMIME(_In_ LPMAPISESSION lpMAPISession)
 		}
 	}
 
-	if (cli::switchCCSFFlags.hasArgs())
+	if (!cli::switchCCSFFlags.empty())
 	{
 		auto szFlags = flags::InterpretFlags(flagCcsf, convertFlags);
 		if (!szFlags.empty())

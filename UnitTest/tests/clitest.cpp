@@ -139,16 +139,16 @@ namespace clitest
 			}
 
 			// In our failure case, we shouldn't have peeled off any args
-			if (!option.isSet() && option.hasArgs()) return false;
+			if (!option.isSet() && !option.empty()) return false;
 
 			// After checking our args, if the option isn't set, we don't care about the rest
 			if (!option.isSet()) return true;
 
-			if (option.minArgs != 0 && !option.hasArgs()) return false;
+			if (option.minArgs != 0 && option.empty()) return false;
 			if (option.size() < option.minArgs) return false;
 			if (option.size() > option.maxArgs) return false;
 
-			if (option.flags & cli::OPT_NEEDNUM && option.hasArgs())
+			if (option.flags & cli::OPT_NEEDNUM && !option.empty())
 			{
 				for (UINT i = 0; i < option.maxArgs; i++)
 				{

@@ -530,7 +530,7 @@ namespace cli
 		if (cmdmodeUnknown == options.mode) options.mode = cmdmodePropTag;
 
 		// If we weren't passed an output file/directory, remember the current directory
-		if (!switchOutput.hasArgs() && options.mode != cmdmodeSmartView && options.mode != cmdmodeProfile)
+		if (switchOutput.empty() && options.mode != cmdmodeSmartView && options.mode != cmdmodeProfile)
 		{
 			WCHAR strPath[_MAX_PATH];
 			GetCurrentDirectoryW(_MAX_PATH, strPath);
@@ -541,9 +541,9 @@ namespace cli
 		}
 
 		// Validate that we have bare minimum to run
-		if (options.flags & OPT_NEEDINPUTFILE && !switchInput.hasArgs())
+		if (options.flags & OPT_NEEDINPUTFILE && switchInput.empty())
 			options.mode = cmdmodeHelp;
-		else if (options.flags & OPT_NEEDOUTPUTFILE && !switchOutput.hasArgs())
+		else if (options.flags & OPT_NEEDOUTPUTFILE && switchOutput.empty())
 			options.mode = cmdmodeHelp;
 
 		switch (options.mode)
@@ -579,11 +579,11 @@ namespace cli
 
 			break;
 		case cmdmodeProfile:
-			if (switchProfile.hasArgs() && !switchOutput.hasArgs())
+			if (!switchProfile.empty() && switchOutput.empty())
 				options.mode = cmdmodeHelp;
-			else if (!switchProfile.hasArgs() && switchOutput.hasArgs())
+			else if (switchProfile.empty() && !switchOutput.empty())
 				options.mode = cmdmodeHelp;
-			else if (!switchProfileSection.hasArgs() && !switchProfile.hasArgs())
+			else if (switchProfileSection.empty() && switchProfile.empty())
 				options.mode = cmdmodeHelp;
 
 			break;

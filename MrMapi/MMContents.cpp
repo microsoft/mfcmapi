@@ -87,7 +87,7 @@ void DoContents(LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 	SRestriction sResMessageClass[2] = {};
 	SPropValue sPropValue[2] = {};
 	LPSRestriction lpRes = nullptr;
-	if (cli::switchSubject.hasArgs() || cli::switchMessageClass.hasArgs())
+	if (!cli::switchSubject.empty() || !cli::switchMessageClass.empty())
 	{
 		// RES_AND
 		//   RES_AND (optional)
@@ -142,7 +142,7 @@ void DoContents(LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 		cli::switchProfile.getArg(0).c_str(),
 		lpMDB,
 		lpFolder,
-		cli::switchOutput.hasArgs() ? cli::switchOutput.getArg(0).c_str() : L".",
+		cli::switchOutput.empty() ? L"." : cli::switchOutput.getArg(0).c_str(),
 		cli::switchFolder.getArg(0).c_str(),
 		cli::switchRecent.getArgAsULONG(0),
 		lpRes);
@@ -152,7 +152,7 @@ void DoMSG(_In_ cli::OPTIONS ProgOpts)
 {
 	DumpMSG(
 		cli::switchInput.getArg(0).c_str(),
-		cli::switchOutput.hasArgs() ? cli::switchOutput.getArg(0).c_str() : L".",
+		cli::switchOutput.empty() ? L"." : cli::switchOutput.getArg(0).c_str(),
 		cli::switchMoreProperties.isSet(),
 		!cli::switchSkip.isSet());
 }
