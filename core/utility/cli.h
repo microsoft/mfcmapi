@@ -18,13 +18,11 @@ namespace cli
 
 	public:
 		LPCWSTR szSwitch{};
-		int mode{};
-		UINT minArgs{};
-		UINT maxArgs{};
-		int flags{};
+		const int mode{};
+		const UINT minArgs{};
+		const UINT maxArgs{};
+		const int flags{};
 		std::vector<std::wstring> args;
-
-		option() = default;
 
 		option(LPCWSTR _szSwitch, int _mode, UINT _minArgs, UINT _maxArgs, int _optionFlags)
 			: szSwitch{_szSwitch}, mode{_mode}, minArgs{_minArgs}, maxArgs{_maxArgs}, flags{_optionFlags}
