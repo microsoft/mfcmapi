@@ -40,7 +40,7 @@ namespace cli
 		}
 
 		std::wstring at(const size_t _Pos) const noexcept { return size() > _Pos ? args[_Pos] : std::wstring{}; }
-		std::wstring operator[](const size_t _Pos) const noexcept { at(_Pos); }
+		std::wstring operator[](const size_t _Pos) const noexcept { return at(_Pos); }
 
 		ULONG atULONG(const size_t _Pos, const int radix = 10) const noexcept
 		{
