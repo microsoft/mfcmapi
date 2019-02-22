@@ -8,8 +8,8 @@
 
 void DoMAPIMIME(_In_ LPMAPISESSION lpMAPISession)
 {
-	const auto input = cli::switchInput.at(0);
-	const auto output = cli::switchOutput.at(0);
+	const auto input = cli::switchInput[0];
+	const auto output = cli::switchOutput[0];
 	const auto ulWrapLines = cli::switchWrap.atULONG(0);
 	const auto ulEncodingType = cli::switchEncoding.atULONG(0);
 	const auto convertFlags = static_cast<CCSFLAGS>(cli::switchCCSFFlags.atULONG(0));

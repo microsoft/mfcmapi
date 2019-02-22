@@ -553,7 +553,7 @@ namespace cli
 				options.mode = cmdmodeHelp;
 			else if (
 				switchSearch.isSet() && switchType.isSet() &&
-				proptype::PropTypeNameToPropType(switchType.at(0)) == PT_UNSPECIFIED)
+				proptype::PropTypeNameToPropType(switchType[0]) == PT_UNSPECIFIED)
 				options.mode = cmdmodeHelp;
 			else if (switchFlag.hasULONG(0) && (switchSearch.isSet() || switchType.isSet()))
 				options.mode = cmdmodeHelp;

@@ -171,7 +171,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 	if (cli::switchVersion.isSet())
 	{
-		if (LoadMAPIVersion(cli::switchVersion.at(0))) return;
+		if (LoadMAPIVersion(cli::switchVersion[0])) return;
 	}
 
 	if (ProgOpts.mode == cli::cmdmodeHelp)
@@ -206,21 +206,21 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 		if (bMAPIInit && ProgOpts.flags & cli::OPT_NEEDMAPILOGON)
 		{
-			lpMAPISession = MrMAPILogonEx(cli::switchProfile.at(0));
+			lpMAPISession = MrMAPILogonEx(cli::switchProfile[0]);
 		}
 
 		// If they need a folder get it and store at the same time from the folder id
 		if (lpMAPISession && ProgOpts.flags & cli::OPT_NEEDFOLDER)
 		{
-			hRes = WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, cli::switchFolder.at(0), &lpMDB, &lpFolder));
+			hRes = WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, cli::switchFolder[0], &lpMDB, &lpFolder));
 			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
 		}
 
 		// If they passed a store index then open it
 		ULONG ulStoreIndex{};
-		auto gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchStore.at(0), 10);
+		auto gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchStore[0], 10);
 		if (!gotStoreIndex)
-			gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchReceiveFolder.at(0), 10);
+			gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchReceiveFolder[0], 10);
 
 		if (lpMAPISession && gotStoreIndex && !lpMDB)
 		{

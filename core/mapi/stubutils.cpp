@@ -262,7 +262,7 @@ namespace mapistub
 		do
 		{
 			buf.resize(buf.size() + MAX_PATH);
-			copied = EC_D(DWORD, ::GetSystemDirectoryW(&buf.at(0), static_cast<DWORD>(buf.size())));
+			copied = EC_D(DWORD, ::GetSystemDirectoryW(&buf[0], static_cast<DWORD>(buf.size())));
 		} while (copied >= buf.size());
 
 		buf.resize(copied);

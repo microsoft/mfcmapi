@@ -23,8 +23,8 @@ void DoSmartView(_In_ cli::OPTIONS ProgOpts)
 	if (ulStructType)
 	{
 		FILE* fOut = nullptr;
-		const auto input = cli::switchInput.at(0);
-		const auto output = cli::switchOutput.at(0);
+		const auto input = cli::switchInput[0];
+		const auto output = cli::switchOutput[0];
 		const auto fIn = output::MyOpenFileMode(input, L"rb");
 		if (!fIn) printf("Cannot open input file %ws\n", input.c_str());
 		if (!output.empty())

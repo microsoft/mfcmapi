@@ -129,7 +129,7 @@ namespace clitest
 			if (option.size() != expectedArgs.size()) return false;
 			for (UINT i = 0; i < option.size(); i++)
 			{
-				if (option.at(i) != expectedArgs[i]) return false;
+				if (option[i] != expectedArgs[i]) return false;
 			}
 
 			if (argsRemainder.size() != expectedRemainder.size()) return false;
@@ -200,7 +200,7 @@ namespace clitest
 			Logger::WriteMessage(strings::format(L"Parsed args\n").c_str());
 			for (UINT i = 0; i < option.size(); i++)
 			{
-				Logger::WriteMessage(strings::format(L"  %ws\n", option.at(i).c_str()).c_str());
+				Logger::WriteMessage(strings::format(L"  %ws\n", option[i].c_str()).c_str());
 			}
 
 			Logger::WriteMessage(strings::format(L"Expected args\n").c_str());

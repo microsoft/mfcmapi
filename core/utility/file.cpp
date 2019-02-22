@@ -144,7 +144,7 @@ namespace file
 		do
 		{
 			buf.resize(buf.size() + MAX_PATH);
-			copied = EC_D(DWORD, ::GetModuleFileNameW(hModule, &buf.at(0), static_cast<DWORD>(buf.size())));
+			copied = EC_D(DWORD, ::GetModuleFileNameW(hModule, &buf[0], static_cast<DWORD>(buf.size())));
 		} while (copied >= buf.size());
 
 		buf.resize(copied);
@@ -161,7 +161,7 @@ namespace file
 		do
 		{
 			buf.resize(buf.size() + MAX_PATH);
-			copied = EC_D(DWORD, ::GetSystemDirectoryW(&buf.at(0), static_cast<UINT>(buf.size())));
+			copied = EC_D(DWORD, ::GetSystemDirectoryW(&buf[0], static_cast<UINT>(buf.size())));
 		} while (copied >= buf.size());
 
 		buf.resize(copied);

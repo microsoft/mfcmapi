@@ -282,9 +282,9 @@ namespace mapiprocessor
 void DoFidMid(_In_ LPMDB lpMDB)
 {
 	mapiprocessor::DumpFidMid(
-		cli::switchProfile.at(0),
+		cli::switchProfile[0],
 		lpMDB,
-		cli::switchFid.at(0),
-		cli::switchMid.at(0),
+		cli::switchFid[0],
+		cli::switchMid[0],
 		cli::switchMid.isSet());
 }
