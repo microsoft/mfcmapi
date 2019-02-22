@@ -226,7 +226,7 @@ namespace clitest
 			test_scanArgs(true, p0_0, {L"-v"}, {}, {L"-v"});
 			test_scanArgs(true, p0_0, {L"1"}, {}, {L"1"});
 
-			//// min/max-1/1
+			// min/max-1/1
 			auto p1_1 = cli::option{L"1_1", 0, 1, 1, 0};
 			test_scanArgs(true, p1_1, {L"1"}, {L"1"}, {});
 			test_scanArgs(true, p1_1, {L"2", L"3"}, {L"2"}, {L"3"});
