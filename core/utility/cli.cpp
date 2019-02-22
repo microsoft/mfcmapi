@@ -196,7 +196,7 @@ namespace cli
 				output::DebugPrint(DBGGeneric, L"Switch: %ws (not set but has args)\n", option->szSwitch);
 			}
 
-			for (UINT i = 0; i < option->getArgCount(); i++)
+			for (UINT i = 0; i < option->size(); i++)
 			{
 				output::DebugPrint(DBGGeneric, L"  arg[%d] = %ws\n", i++, option->getArg(i).c_str());
 			}

@@ -30,7 +30,7 @@ namespace cli
 		}
 
 		bool isSet() const noexcept { return seen; }
-		size_t getArgCount() const noexcept { return args.size(); }
+		size_t size() const noexcept { return args.size(); }
 		bool hasArgs() const noexcept { return !args.empty(); }
 		bool hasArg(size_t i) const noexcept { return args.size() > i; }
 		std::wstring getArg(size_t i) const { return args.size() > i ? args[i] : std::wstring{}; }
