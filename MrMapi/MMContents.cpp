@@ -97,7 +97,7 @@ void DoContents(LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 		//     RES_EXIST - PR_MESSAGE_CLASS_W
 		//     RES_CONTENT - lpszMessageClass
 		auto i = 0;
-		const auto szSubject = cli::switchSubject.getArg(0);
+		const auto szSubject = cli::switchSubject.at(0);
 		if (!szSubject.empty())
 		{
 			sResMiddle[i].rt = RES_AND;
@@ -114,7 +114,7 @@ void DoContents(LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 			i++;
 		}
 
-		const auto szMessageClass = cli::switchMessageClass.getArg(0);
+		const auto szMessageClass = cli::switchMessageClass.at(0);
 		if (!szMessageClass.empty())
 		{
 			sResMiddle[i].rt = RES_AND;
@@ -139,20 +139,20 @@ void DoContents(LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 	}
 
 	DumpContentsTable(
-		cli::switchProfile.getArg(0).c_str(),
+		cli::switchProfile.at(0).c_str(),
 		lpMDB,
 		lpFolder,
-		cli::switchOutput.empty() ? L"." : cli::switchOutput.getArg(0).c_str(),
-		cli::switchFolder.getArg(0).c_str(),
-		cli::switchRecent.getArgAsULONG(0),
+		cli::switchOutput.empty() ? L"." : cli::switchOutput.at(0).c_str(),
+		cli::switchFolder.at(0).c_str(),
+		cli::switchRecent.atULONG(0),
 		lpRes);
 }
 
 void DoMSG(_In_ cli::OPTIONS ProgOpts)
 {
 	DumpMSG(
-		cli::switchInput.getArg(0).c_str(),
-		cli::switchOutput.empty() ? L"." : cli::switchOutput.getArg(0).c_str(),
+		cli::switchInput.at(0).c_str(),
+		cli::switchOutput.empty() ? L"." : cli::switchOutput.at(0).c_str(),
 		cli::switchMoreProperties.isSet(),
 		!cli::switchSkip.isSet());
 }

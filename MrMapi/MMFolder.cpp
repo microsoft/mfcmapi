@@ -566,7 +566,7 @@ void DoFolderProps(_In_ cli::OPTIONS ProgOpts, LPMAPIFOLDER lpFolder)
 
 void DoFolderSize(_In_ LPMAPIFOLDER lpFolder)
 {
-	const LONGLONG ullSize = ComputeFolderSize(cli::switchProfile.getArg(0), lpFolder, cli::switchFolder.getArg(0));
+	const LONGLONG ullSize = ComputeFolderSize(cli::switchProfile.at(0), lpFolder, cli::switchFolder.at(0));
 	printf("Folder size (including subfolders)\n");
 	printf("Bytes: %I64d\n", ullSize);
 	printf("KB: %I64d\n", ullSize / 1024);
@@ -575,10 +575,10 @@ void DoFolderSize(_In_ LPMAPIFOLDER lpFolder)
 
 void DoChildFolders(_In_ LPMAPIFOLDER lpFolder)
 {
-	DumpHierarchyTable(cli::switchProfile.getArg(0), lpFolder, cli::switchFolder.getArg(0), 0);
+	DumpHierarchyTable(cli::switchProfile.at(0), lpFolder, cli::switchFolder.at(0), 0);
 }
 
 void DoSearchState(_In_ LPMAPIFOLDER lpFolder)
 {
-	DumpSearchState(cli::switchProfile.getArg(0), lpFolder, cli::switchFolder.getArg(0));
+	DumpSearchState(cli::switchProfile.at(0), lpFolder, cli::switchFolder.at(0));
 }

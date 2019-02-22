@@ -8,15 +8,15 @@
 
 void DoMAPIMIME(_In_ LPMAPISESSION lpMAPISession)
 {
-	const auto input = cli::switchInput.getArg(0);
-	const auto output = cli::switchOutput.getArg(0);
-	const auto ulWrapLines = cli::switchWrap.getArgAsULONG(0);
-	const auto ulEncodingType = cli::switchEncoding.getArgAsULONG(0);
-	const auto convertFlags = static_cast<CCSFLAGS>(cli::switchCCSFFlags.getArgAsULONG(0));
+	const auto input = cli::switchInput.at(0);
+	const auto output = cli::switchOutput.at(0);
+	const auto ulWrapLines = cli::switchWrap.atULONG(0);
+	const auto ulEncodingType = cli::switchEncoding.atULONG(0);
+	const auto convertFlags = static_cast<CCSFLAGS>(cli::switchCCSFFlags.atULONG(0));
 
-	const auto ulCodePage = cli::switchCharset.getArgAsULONG(0);
-	const auto cSetType = static_cast<CHARSETTYPE>(cli::switchCharset.getArgAsULONG(1));
-	const auto cSetApplyType = static_cast<CSETAPPLYTYPE>(cli::switchCharset.getArgAsULONG(2));
+	const auto ulCodePage = cli::switchCharset.atULONG(0);
+	const auto cSetType = static_cast<CHARSETTYPE>(cli::switchCharset.atULONG(1));
+	const auto cSetApplyType = static_cast<CSETAPPLYTYPE>(cli::switchCharset.atULONG(2));
 
 	printf("Message File Converter\n");
 	printf("Options specified:\n");

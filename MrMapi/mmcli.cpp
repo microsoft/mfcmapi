@@ -510,7 +510,7 @@ namespace cli
 
 		if (switchFlag.isSet())
 		{
-			if (!bSetMode(options.mode, switchFlag.hasArgAsULONG(0, 16) ? cmdmodePropTag : cmdmodeFlagSearch))
+			if (!bSetMode(options.mode, switchFlag.hasULONG(0, 16) ? cmdmodePropTag : cmdmodeFlagSearch))
 			{
 				options.mode = cmdmodeHelp;
 			}
@@ -553,14 +553,14 @@ namespace cli
 				options.mode = cmdmodeHelp;
 			else if (
 				switchSearch.isSet() && switchType.isSet() &&
-				proptype::PropTypeNameToPropType(switchType.getArg(0)) == PT_UNSPECIFIED)
+				proptype::PropTypeNameToPropType(switchType.at(0)) == PT_UNSPECIFIED)
 				options.mode = cmdmodeHelp;
-			else if (switchFlag.hasArgAsULONG(0) && (switchSearch.isSet() || switchType.isSet()))
+			else if (switchFlag.hasULONG(0) && (switchSearch.isSet() || switchType.isSet()))
 				options.mode = cmdmodeHelp;
 
 			break;
 		case cmdmodeSmartView:
-			if (switchParser.getArgAsULONG(0) == 0) options.mode = cmdmodeHelp;
+			if (switchParser.atULONG(0) == 0) options.mode = cmdmodeHelp;
 
 			break;
 		case cmdmodeContents:

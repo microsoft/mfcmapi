@@ -156,7 +156,7 @@ void PrintFileSize(ULONGLONG ullFileSize)
 
 void DoPST(_In_ cli::OPTIONS ProgOpts)
 {
-	const auto input = cli::switchInput.getArg(0);
+	const auto input = cli::switchInput.at(0);
 	printf("Analyzing %ws\n", input.c_str());
 
 	struct _stat64 stats = {0};

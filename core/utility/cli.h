@@ -32,17 +32,17 @@ namespace cli
 		bool isSet() const noexcept { return seen; }
 		size_t size() const noexcept { return args.size(); }
 		bool empty() const noexcept { return args.empty(); }
-		bool hasArg(size_t i) const noexcept { return args.size() > i; }
-		bool hasArgAsULONG(size_t i, int radix = 10) const
+		bool has(const size_t _Pos) const noexcept { return size() > _Pos; }
+		bool hasULONG(size_t _Pos, int radix = 10) const noexcept
 		{
 			ULONG num{};
-			return i < args.size() && strings::tryWstringToUlong(num, args[i], radix, true);
+			return _Pos < size() && strings::tryWstringToUlong(num, args[_Pos], radix, true);
 		}
 
-		std::wstring getArg(size_t i) const { return args.size() > i ? args[i] : std::wstring{}; }
-		ULONG getArgAsULONG(size_t i, int radix = 10) const
+		std::wstring at(const size_t _Pos) const noexcept { return size() > _Pos ? args[_Pos] : std::wstring{}; }
+		ULONG atULONG(const size_t _Pos, const int radix = 10) const noexcept
 		{
-			return args.size() > i ? strings::wstringToUlong(args[i], radix) : 0;
+			return size() > _Pos ? strings::wstringToUlong(args[_Pos], radix) : 0;
 		}
 
 		_Check_return_ bool

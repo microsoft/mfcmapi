@@ -544,14 +544,14 @@ void DoPropTags(_In_ const cli::OPTIONS& ProgOpts)
 	if (lpszPropName) output::DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
 	output::DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
 	const auto ulTypeNum =
-		cli::switchType.empty() ? ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType.getArg(0));
+		cli::switchType.empty() ? ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType.at(0));
 
 	// Handle dispid cases
 	if (cli::switchDispid.isSet())
 	{
-		if (cli::switchFlag.hasArgAsULONG(0, 16))
+		if (cli::switchFlag.hasULONG(0, 16))
 		{
-			PrintFlag(ulPropNum, lpszPropName, true, cli::switchFlag.getArgAsULONG(0, 16));
+			PrintFlag(ulPropNum, lpszPropName, true, cli::switchFlag.atULONG(0, 16));
 		}
 		else if (cli::switchSearch.isSet())
 		{
@@ -570,9 +570,9 @@ void DoPropTags(_In_ const cli::OPTIONS& ProgOpts)
 	}
 
 	// Handle prop tag cases
-	if (cli::switchFlag.hasArgAsULONG(0, 16))
+	if (cli::switchFlag.hasULONG(0, 16))
 	{
-		PrintFlag(ulPropNum, lpszPropName, false, cli::switchFlag.getArgAsULONG(0, 16));
+		PrintFlag(ulPropNum, lpszPropName, false, cli::switchFlag.atULONG(0, 16));
 	}
 	else if (cli::switchSearch.isSet())
 	{
@@ -606,7 +606,7 @@ void DoGUIDs() { PrintGUIDs(); }
 
 void DoFlagSearch()
 {
-	const auto lpszFlagName = cli::switchFlag.getArg(0);
+	const auto lpszFlagName = cli::switchFlag.at(0);
 	for (const auto& flag : FlagArray)
 	{
 		if (!_wcsicmp(flag.lpszName, lpszFlagName.c_str()))
