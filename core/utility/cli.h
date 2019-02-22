@@ -33,13 +33,13 @@ namespace cli
 		size_t size() const noexcept { return args.size(); }
 		bool empty() const noexcept { return args.empty(); }
 		bool hasArg(size_t i) const noexcept { return args.size() > i; }
-		std::wstring getArg(size_t i) const { return args.size() > i ? args[i] : std::wstring{}; }
 		bool hasArgAsULONG(size_t i, int radix = 10) const
 		{
 			ULONG num{};
 			return i < args.size() && strings::tryWstringToUlong(num, args[i], radix, true);
 		}
 
+		std::wstring getArg(size_t i) const { return args.size() > i ? args[i] : std::wstring{}; }
 		ULONG getArgAsULONG(size_t i, int radix = 10) const
 		{
 			return args.size() > i ? strings::wstringToUlong(args[i], radix) : 0;
