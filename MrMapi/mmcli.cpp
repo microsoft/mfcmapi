@@ -535,7 +535,9 @@ namespace cli
 			WCHAR strPath[_MAX_PATH];
 			GetCurrentDirectoryW(_MAX_PATH, strPath);
 
-			switchOutput.args.push_back(strPath);
+			// Trick switchOutput into scanning this path as an argument.
+			auto args = std::deque<std::wstring>{strPath};
+			switchOutput.scanArgs(args, options, g_options);
 		}
 
 		// Validate that we have bare minimum to run

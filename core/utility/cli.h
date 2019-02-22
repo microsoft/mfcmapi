@@ -15,6 +15,7 @@ namespace cli
 	{
 	private:
 		bool seen{false};
+		std::vector<std::wstring> args;
 
 	public:
 		LPCWSTR szSwitch{};
@@ -22,7 +23,6 @@ namespace cli
 		const size_t minArgs{};
 		const size_t maxArgs{};
 		const int flags{};
-		std::vector<std::wstring> args;
 
 		option(LPCWSTR _szSwitch, int _mode, UINT _minArgs, UINT _maxArgs, int _optionFlags)
 			: szSwitch{_szSwitch}, mode{_mode}, minArgs{_minArgs}, maxArgs{_maxArgs}, flags{_optionFlags}
