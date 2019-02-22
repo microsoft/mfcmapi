@@ -122,7 +122,7 @@ namespace clitest
 
 		bool vetOption(
 			const cli::option& option,
-			const std::deque<std::wstring>& args,
+			const std::deque<std::wstring>& argsRemainder,
 			const std::vector<std::wstring>& expectedArgs,
 			const std::vector<std::wstring>& expectedRemainder)
 		{
@@ -132,10 +132,10 @@ namespace clitest
 				if (option.getArg(i) != expectedArgs[i]) return false;
 			}
 
-			if (args.size() != expectedRemainder.size()) return false;
-			for (UINT i = 0; i < args.size(); i++)
+			if (argsRemainder.size() != expectedRemainder.size()) return false;
+			for (UINT i = 0; i < argsRemainder.size(); i++)
 			{
-				if (args[i] != expectedRemainder[i]) return false;
+				if (argsRemainder[i] != expectedRemainder[i]) return false;
 			}
 
 			// In our failure case, we shouldn't have peeled off any args
