@@ -120,7 +120,51 @@ namespace clitest
 			Assert::AreEqual(cli::cmdmodeHelpFull, cli::modeEnum(mode));
 		}
 
-		void test_scanArgs(bool targetResult, const cli::option& _option, const std::deque<std::wstring>& _args)
+		bool vetOption(
+			const cli::option& option,
+			const std::deque<std::wstring>& args,
+			const std::vector<std::wstring>& expectedArgs,
+			const std::vector<std::wstring>& expectedRemainder)
+		{
+			if (option.args.size() != expectedArgs.size()) return false;
+			for (UINT i = 0; i < option.args.size(); i++)
+			{
+				if (option.getArg(i) != expectedArgs[i]) return false;
+			}
+
+			if (args.size() != expectedRemainder.size()) return false;
+			for (UINT i = 0; i < args.size(); i++)
+			{
+				if (args[i] != expectedRemainder[i]) return false;
+			}
+
+			// In our failure case, we shouldn't have peeled off any args
+			if (!option.isSet() && option.hasArgs()) return false;
+
+			// After checking our args, if the option isn't set, we don't care about the rest
+			if (!option.isSet()) return true;
+
+			if (option.minArgs != 0 && !option.hasArgs()) return false;
+			if (option.args.size() < option.minArgs) return false;
+			if (option.args.size() > option.maxArgs) return false;
+
+			if (option.flags & cli::OPT_NEEDNUM && option.hasArgs())
+			{
+				for (UINT i = 0; i < option.maxArgs; i++)
+				{
+					if (!option.hasArgAsULONG(i, 10)) return false;
+				}
+			}
+
+			return true;
+		}
+
+		void test_scanArgs(
+			bool targetResult,
+			const cli::option& _option,
+			const std::deque<std::wstring>& _args,
+			const std::vector<std::wstring>& expectedArgs,
+			const std::vector<std::wstring>& expectedRemainder)
 		{
 			// Make a local non-const copy of the inputs
 			auto option = _option;
@@ -131,10 +175,8 @@ namespace clitest
 
 			if (targetResult == result)
 			{
-				if (!result) return;
-
-				// If we claim to have matched, some further checks
-				if (option.args.size() >= option.minArgs && option.args.size() <= option.maxArgs)
+				// If we claim to have matched, vet our options
+				if (vetOption(option, args, expectedArgs, expectedRemainder))
 				{
 					return;
 				}
@@ -142,11 +184,12 @@ namespace clitest
 
 			Logger::WriteMessage(strings::format(L"scanArgs test failed\n").c_str());
 
-			Logger::WriteMessage(strings::format(L"Switch: %ws\n", option.szSwitch).c_str());
-			Logger::WriteMessage(strings::format(L"Mode: %d\n", option.mode).c_str());
+			Logger::WriteMessage(strings::format(L"szSwitch: %ws\n", option.szSwitch).c_str());
+			Logger::WriteMessage(strings::format(L"mode: %d\n", option.mode).c_str());
 			Logger::WriteMessage(strings::format(L"minArgs: %d\n", option.minArgs).c_str());
 			Logger::WriteMessage(strings::format(L"maxArgs: %d\n", option.maxArgs).c_str());
 			Logger::WriteMessage(strings::format(L"ulOpt: %d\n", option.flags).c_str());
+			Logger::WriteMessage(strings::format(L"seen: %d\n", option.isSet()).c_str());
 
 			Logger::WriteMessage(strings::format(L"Tested args\n").c_str());
 			for (auto& arg : args)
@@ -160,42 +203,58 @@ namespace clitest
 				Logger::WriteMessage(strings::format(L"  %ws\n", arg.c_str()).c_str());
 			}
 
+			Logger::WriteMessage(strings::format(L"Expected args\n").c_str());
+			for (auto& arg : expectedArgs)
+			{
+				Logger::WriteMessage(strings::format(L"  %ws\n", arg.c_str()).c_str());
+			}
+
+			Logger::WriteMessage(strings::format(L"Expected remainder\n").c_str());
+			for (auto& arg : expectedRemainder)
+			{
+				Logger::WriteMessage(strings::format(L"  %ws\n", arg.c_str()).c_str());
+			}
+
 			Assert::Fail();
 		}
 
 		TEST_METHOD(Test_scanArgs)
 		{
 			// min/max-0/0
-			auto p0_0 = cli::option{L"", 0, 0, 0, 0};
-			test_scanArgs(true, p0_0, {});
-			test_scanArgs(true, p0_0, {});
-			test_scanArgs(true, p0_0, {L"-v"});
-			test_scanArgs(true, p0_0, {L"1"});
+			auto p0_0 = cli::option{L"0_0", 0, 0, 0, 0};
+			test_scanArgs(true, p0_0, {}, {}, {});
+			test_scanArgs(true, p0_0, {L"-v"}, {}, {L"-v"});
+			test_scanArgs(true, p0_0, {L"1"}, {}, {L"1"});
 
 			//// min/max-1/1
-			auto p1_1 = cli::option{L"", 0, 1, 1, 0};
-			test_scanArgs(true, p1_1, {L"1"});
-			test_scanArgs(true, p1_1, {L"2", L"3"});
-			test_scanArgs(true, p1_1, {L"4", L"-v"});
+			auto p1_1 = cli::option{L"1_1", 0, 1, 1, 0};
+			test_scanArgs(true, p1_1, {L"1"}, {L"1"}, {});
+			test_scanArgs(true, p1_1, {L"2", L"3"}, {L"2"}, {L"3"});
+			test_scanArgs(true, p1_1, {L"4", L"-v"}, {L"4"}, {L"-v"});
 			// Not enough non switch args
-			test_scanArgs(false, p1_1, {L"-v"});
+			test_scanArgs(false, p1_1, {L"-v"}, {}, {L"-v"});
 			// Not enough args at all
-			test_scanArgs(false, p1_1, {});
+			test_scanArgs(false, p1_1, {}, {}, {});
 
 			// min/max-0/1
-			auto p0_1 = cli::option{L"", 0, 0, 1, 0};
-			test_scanArgs(true, p0_1, {L"-v"});
-			test_scanArgs(true, p0_1, {L"1", L"-v"});
-			test_scanArgs(true, p0_1, {});
+			auto p0_1 = cli::option{L"0_1", 0, 0, 1, 0};
+			test_scanArgs(true, p0_1, {L"-v"}, {}, {L"-v"});
+			test_scanArgs(true, p0_1, {L"1", L"-v"}, {L"1"}, {L"-v"});
+			test_scanArgs(true, p0_1, {}, {}, {});
 
 			// min/max-2/3
-			auto p2_3 = cli::option{L"", 0, 2, 3, 0};
-			test_scanArgs(true, p2_3, {L"1", L"2"});
-			test_scanArgs(true, p2_3, {L"3", L"4", L"-v"});
-			test_scanArgs(true, p2_3, {L"5", L"6", L"7"});
-			test_scanArgs(false, p2_3, {});
-			test_scanArgs(false, p2_3, {L"1"});
-			test_scanArgs(false, p2_3, {L"1", L"-v"});
+			auto p2_3 = cli::option{L"2_3", 0, 2, 3, 0};
+			test_scanArgs(true, p2_3, {L"1", L"2"}, {L"1", L"2"}, {});
+			test_scanArgs(true, p2_3, {L"3", L"4", L"-v"}, {L"3", L"4"}, {L"-v"});
+			test_scanArgs(true, p2_3, {L"5", L"6", L"7"}, {L"5", L"6", L"7"}, {});
+			test_scanArgs(false, p2_3, {}, {}, {});
+			test_scanArgs(false, p2_3, {L"1"}, {}, {L"1"});
+			test_scanArgs(false, p2_3, {L"1", L"-v"}, {}, {L"1", L"-v"});
+
+			auto p0_1_NUM = cli::option{L"0_1_NUM", 0, 0, 1, cli::OPT_NEEDNUM};
+			test_scanArgs(true, p0_1_NUM, {L"1", L"2"}, {L"1"}, {L"2"});
+			test_scanArgs(true, p0_1_NUM, {L"text", L"2"}, {}, {L"text", L"2"});
+			test_scanArgs(true, p0_1_NUM, {}, {}, {});
 		}
 	}; // namespace clitest
 } // namespace clitest

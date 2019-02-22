@@ -164,7 +164,8 @@ namespace cli
 			{
 				// If we *didn't* like our args, don't keep them, don't peel them off
 				// This is not an error if minArgs is 0
-				return minArgs == 0;
+				seen = minArgs == 0;
+				return seen;
 			}
 		}
 
@@ -174,7 +175,7 @@ namespace cli
 		// remove all our found arguments
 		_args.erase(_args.begin(), _args.begin() + foundArgs.size());
 
-		return true;
+		return seen;
 	}
 
 	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<option*>& optionsArray)
