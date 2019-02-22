@@ -185,21 +185,20 @@ namespace cli
 		if (!ProgOpts.lpszUnswitchedOption.empty())
 			output::DebugPrint(DBGGeneric, L"lpszUnswitchedOption = %ws\n", ProgOpts.lpszUnswitchedOption.c_str());
 
-		for (const auto& parser : optionsArray)
+		for (const auto& option : optionsArray)
 		{
-			if (parser->isSet())
+			if (option->isSet())
 			{
-				output::DebugPrint(DBGGeneric, L"Switch: %ws\n", parser->szSwitch);
+				output::DebugPrint(DBGGeneric, L"Switch: %ws\n", option->szSwitch);
 			}
-			else if (parser->hasArgs())
+			else if (option->hasArgs())
 			{
-				output::DebugPrint(DBGGeneric, L"Switch: %ws (not set but has args)\n", parser->szSwitch);
+				output::DebugPrint(DBGGeneric, L"Switch: %ws (not set but has args)\n", option->szSwitch);
 			}
 
-			auto i = 0;
-			for (const auto& arg : parser->args)
+			for (UINT i = 0; i < option->getArgCount(); i++)
 			{
-				output::DebugPrint(DBGGeneric, L"  arg[%d] = %ws\n", i++, arg.c_str());
+				output::DebugPrint(DBGGeneric, L"  arg[%d] = %ws\n", i++, option->getArg(i).c_str());
 			}
 		}
 	}

@@ -19,8 +19,8 @@ namespace cli
 	public:
 		LPCWSTR szSwitch{};
 		const int mode{};
-		const UINT minArgs{};
-		const UINT maxArgs{};
+		const size_t minArgs{};
+		const size_t maxArgs{};
 		const int flags{};
 		std::vector<std::wstring> args;
 
@@ -30,6 +30,7 @@ namespace cli
 		}
 
 		bool isSet() const noexcept { return seen; }
+		size_t getArgCount() const noexcept { return args.size(); }
 		bool hasArgs() const noexcept { return !args.empty(); }
 		bool hasArg(size_t i) const noexcept { return args.size() > i; }
 		std::wstring getArg(size_t i) const { return args.size() > i ? args[i] : std::wstring{}; }

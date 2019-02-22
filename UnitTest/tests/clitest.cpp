@@ -126,8 +126,8 @@ namespace clitest
 			const std::vector<std::wstring>& expectedArgs,
 			const std::vector<std::wstring>& expectedRemainder)
 		{
-			if (option.args.size() != expectedArgs.size()) return false;
-			for (UINT i = 0; i < option.args.size(); i++)
+			if (option.getArgCount() != expectedArgs.size()) return false;
+			for (UINT i = 0; i < option.getArgCount(); i++)
 			{
 				if (option.getArg(i) != expectedArgs[i]) return false;
 			}
@@ -145,8 +145,8 @@ namespace clitest
 			if (!option.isSet()) return true;
 
 			if (option.minArgs != 0 && !option.hasArgs()) return false;
-			if (option.args.size() < option.minArgs) return false;
-			if (option.args.size() > option.maxArgs) return false;
+			if (option.getArgCount() < option.minArgs) return false;
+			if (option.getArgCount() > option.maxArgs) return false;
 
 			if (option.flags & cli::OPT_NEEDNUM && option.hasArgs())
 			{
@@ -198,9 +198,9 @@ namespace clitest
 			}
 
 			Logger::WriteMessage(strings::format(L"Parsed args\n").c_str());
-			for (auto& arg : option.args)
+			for (UINT i = 0; i < option.getArgCount(); i++)
 			{
-				Logger::WriteMessage(strings::format(L"  %ws\n", arg.c_str()).c_str());
+				Logger::WriteMessage(strings::format(L"  %ws\n", option.getArg(i).c_str()).c_str());
 			}
 
 			Logger::WriteMessage(strings::format(L"Expected args\n").c_str());
