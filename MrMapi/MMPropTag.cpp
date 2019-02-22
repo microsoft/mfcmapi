@@ -544,7 +544,7 @@ void DoPropTags(_In_ const cli::OPTIONS& ProgOpts)
 	if (lpszPropName) output::DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
 	output::DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
 	const auto ulTypeNum =
-		cli::switchType.args.empty() ? ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType.getArg(0));
+		!cli::switchType.hasArgs() ? ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType.getArg(0));
 
 	// Handle dispid cases
 	if (cli::switchDispid.isSet())
