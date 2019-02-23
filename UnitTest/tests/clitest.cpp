@@ -48,9 +48,9 @@ namespace Microsoft
 				}
 
 				auto eq = true;
-				if (std::wstring{expected->szSwitch} != std::wstring{actual->szSwitch} ||
-					expected->mode != actual->mode || expected->minArgs != actual->minArgs ||
-					expected->maxArgs != actual->maxArgs || expected->flags != actual->flags)
+				if (std::wstring{expected->name()} != std::wstring{actual->name()} || expected->mode != actual->mode ||
+					expected->minArgs != actual->minArgs || expected->maxArgs != actual->maxArgs ||
+					expected->flags != actual->flags)
 				{
 					eq = false;
 				}
@@ -58,7 +58,7 @@ namespace Microsoft
 				if (!eq)
 				{
 					Logger::WriteMessage(
-						strings::format(L"Switch: %ws:%ws\n", expected->szSwitch, actual->szSwitch).c_str());
+						strings::format(L"Switch: %ws:%ws\n", expected->name(), actual->name()).c_str());
 					Logger::WriteMessage(strings::format(L"Mode: %d:%d\n", expected->mode, actual->mode).c_str());
 					Logger::WriteMessage(
 						strings::format(L"minArgs: %d:%d\n", expected->minArgs, actual->minArgs).c_str());
@@ -184,7 +184,7 @@ namespace clitest
 
 			Logger::WriteMessage(strings::format(L"scanArgs test failed\n").c_str());
 
-			Logger::WriteMessage(strings::format(L"szSwitch: %ws\n", option.szSwitch).c_str());
+			Logger::WriteMessage(strings::format(L"szSwitch: %ws\n", option.name()).c_str());
 			Logger::WriteMessage(strings::format(L"mode: %d\n", option.mode).c_str());
 			Logger::WriteMessage(strings::format(L"minArgs: %d\n", option.minArgs).c_str());
 			Logger::WriteMessage(strings::format(L"maxArgs: %d\n", option.maxArgs).c_str());

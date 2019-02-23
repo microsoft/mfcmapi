@@ -148,205 +148,204 @@ namespace cli
 		}
 
 		printf("Usage:\n");
-		printf("   MrMAPI -%ws\n", switchHelp.szSwitch);
+		printf("   MrMAPI -%ws\n", switchHelp.name());
 		printf(
 			"   MrMAPI [-%ws] [-%ws] [-%ws] [-%ws <type>] <property number>|<property name>\n",
-			switchSearch.szSwitch,
-			switchDispid.szSwitch,
-			switchDecimal.szSwitch,
-			switchType.szSwitch);
-		printf("   MrMAPI -%ws\n", switchGuid.szSwitch);
-		printf("   MrMAPI -%ws <error>\n", switchError.szSwitch);
+			switchSearch.name(),
+			switchDispid.name(),
+			switchDecimal.name(),
+			switchType.name());
+		printf("   MrMAPI -%ws\n", switchGuid.name());
+		printf("   MrMAPI -%ws <error>\n", switchError.name());
 		printf(
 			"   MrMAPI -%ws <type> -%ws <input file> [-%ws] [-%ws <output file>]\n",
-			switchParser.szSwitch,
-			switchInput.szSwitch,
-			switchBinary.szSwitch,
-			switchOutput.szSwitch);
+			switchParser.name(),
+			switchInput.name(),
+			switchBinary.name(),
+			switchOutput.name());
 		printf(
 			"   MrMAPI -%ws <flag value> [-%ws] [-%ws] <property number>|<property name>\n",
-			switchFlag.szSwitch,
-			switchDispid.szSwitch,
-			switchDecimal.szSwitch);
-		printf("   MrMAPI -%ws <flag name>\n", switchFlag.szSwitch);
+			switchFlag.name(),
+			switchDispid.name(),
+			switchDecimal.name());
+		printf("   MrMAPI -%ws <flag name>\n", switchFlag.name());
 		printf(
 			"   MrMAPI -%ws [-%ws <profile>] [-%ws <folder>]\n",
-			switchRule.szSwitch,
-			switchProfile.szSwitch,
-			switchFolder.szSwitch);
+			switchRule.name(),
+			switchProfile.name(),
+			switchFolder.name());
 		printf(
 			"   MrMAPI -%ws [-%ws <profile>] [-%ws <folder>]\n",
-			switchAcl.szSwitch,
-			switchProfile.szSwitch,
-			switchFolder.szSwitch);
+			switchAcl.name(),
+			switchProfile.name(),
+			switchFolder.name());
 		printf(
 			"   MrMAPI -%ws | -%ws [-%ws <profile>] [-%ws <folder>] [-%ws <output directory>]\n",
-			switchContents.szSwitch,
-			switchAssociatedContents.szSwitch,
-			switchProfile.szSwitch,
-			switchFolder.szSwitch,
-			switchOutput.szSwitch);
+			switchContents.name(),
+			switchAssociatedContents.name(),
+			switchProfile.name(),
+			switchFolder.name(),
+			switchOutput.name());
 		printf(
 			"          [-%ws <subject>] [-%ws <message class>] [-%ws] [-%ws] [-%ws <count>] [-%ws]\n",
-			switchSubject.szSwitch,
-			switchMessageClass.szSwitch,
-			switchMSG.szSwitch,
-			switchList.szSwitch,
-			switchRecent.szSwitch,
-			switchSkip.szSwitch);
+			switchSubject.name(),
+			switchMessageClass.name(),
+			switchMSG.name(),
+			switchList.name(),
+			switchRecent.name(),
+			switchSkip.name());
 		printf(
 			"   MrMAPI -%ws [-%ws <profile>] [-%ws <folder>]\n",
-			switchChildFolders.szSwitch,
-			switchProfile.szSwitch,
-			switchFolder.szSwitch);
+			switchChildFolders.name(),
+			switchProfile.name(),
+			switchFolder.name());
 		printf(
 			"   MrMAPI -%ws -%ws <path to input file> -%ws <path to output file> [-%ws]\n",
-			switchXML.szSwitch,
-			switchInput.szSwitch,
-			switchOutput.szSwitch,
-			switchSkip.szSwitch);
+			switchXML.name(),
+			switchInput.name(),
+			switchOutput.name(),
+			switchSkip.name());
 		printf(
 			"   MrMAPI -%ws [fid] [-%ws [mid]] [-%ws <profile>]\n",
-			switchFid.szSwitch,
-			switchMid.szSwitch,
-			switchProfile.szSwitch);
+			switchFid.name(),
+			switchMid.name(),
+			switchProfile.name());
 		printf(
 			"   MrMAPI [<property number>|<property name>] -%ws [<store num>] [-%ws <profile>]\n",
-			switchStore.szSwitch,
-			switchProfile.szSwitch);
+			switchStore.name(),
+			switchProfile.name());
 		printf(
 			"   MrMAPI [<property number>|<property name>] -%ws <folder> [-%ws <profile>]\n",
-			switchFolder.szSwitch,
-			switchProfile.szSwitch);
+			switchFolder.name(),
+			switchProfile.name());
 		printf(
 			"   MrMAPI -%ws -%ws <folder> [-%ws <profile>]\n",
-			switchSize.szSwitch,
-			switchFolder.szSwitch,
-			switchProfile.szSwitch);
+			switchSize.name(),
+			switchFolder.name(),
+			switchProfile.name());
 		printf(
 			"   MrMAPI -%ws | -%ws -%ws <path to input file> -%ws <path to output file> [-%ws <conversion flags>]\n",
-			switchMAPI.szSwitch,
-			switchMIME.szSwitch,
-			switchInput.szSwitch,
-			switchOutput.szSwitch,
-			switchCCSFFlags.szSwitch);
+			switchMAPI.name(),
+			switchMIME.name(),
+			switchInput.name(),
+			switchOutput.name(),
+			switchCCSFFlags.name());
 		printf(
 			"          [-%ws] [-%ws <Decimal number of characters>] [-%ws <Decimal number indicating encoding>]\n",
-			switchRFC822.szSwitch,
-			switchWrap.szSwitch,
-			switchEncoding.szSwitch);
+			switchRFC822.name(),
+			switchWrap.name(),
+			switchEncoding.name());
 		printf(
 			"          [-%ws] [-%ws] [-%ws CodePage CharSetType CharSetApplyType]\n",
-			switchAddressBook.szSwitch,
-			switchUnicode.szSwitch,
-			switchCharset.szSwitch);
-		printf("   MrMAPI -%ws -%ws <path to input file>\n", switchPST.szSwitch, switchInput.szSwitch);
+			switchAddressBook.name(),
+			switchUnicode.name(),
+			switchCharset.name());
+		printf("   MrMAPI -%ws -%ws <path to input file>\n", switchPST.name(), switchInput.name());
 		printf(
 			"   MrMAPI -%ws [<profile> [-%ws <profilesection> [-%ws]] -%ws <output file>]\n",
-			switchProfile.szSwitch,
-			switchProfileSection.szSwitch,
-			switchByteSwapped.szSwitch,
-			switchOutput.szSwitch);
-		printf("   MrMAPI -%ws [<store num>] [-%ws <profile>]\n", switchReceiveFolder.szSwitch, switchProfile.szSwitch);
+			switchProfile.name(),
+			switchProfileSection.name(),
+			switchByteSwapped.name(),
+			switchOutput.name());
+		printf("   MrMAPI -%ws [<store num>] [-%ws <profile>]\n", switchReceiveFolder.name(), switchProfile.name());
 		printf(
 			"   MrMAPI -%ws -%ws <folder> [-%ws <profile>]\n",
-			switchSearchState.szSwitch,
-			switchFolder.szSwitch,
-			switchProfile.szSwitch);
+			switchSearchState.name(),
+			switchFolder.name(),
+			switchProfile.name());
 
 		if (bFull)
 		{
 			printf("\n");
 			printf("All switches may be shortened if the intended switch is unambiguous.\n");
-			printf("For example, -T may be used instead of -%ws.\n", switchType.szSwitch);
+			printf("For example, -T may be used instead of -%ws.\n", switchType.name());
 		}
 		printf("\n");
 		printf("   Help:\n");
-		printf("   -%ws   Display expanded help.\n", switchHelp.szSwitch);
+		printf("   -%ws   Display expanded help.\n", switchHelp.name());
 		if (bFull)
 		{
 			printf("\n");
 			printf("   Property Tag Lookup:\n");
-			printf("   -S   (or -%ws) Perform substring search.\n", switchSearch.szSwitch);
+			printf("   -S   (or -%ws) Perform substring search.\n", switchSearch.name());
 			printf("           With no parameters prints all known properties.\n");
-			printf("   -D   (or -%ws) Search dispids.\n", switchDispid.szSwitch);
-			printf("   -N   (or -%ws) Number is in decimal. Ignored for non-numbers.\n", switchDecimal.szSwitch);
-			printf("   -T   (or -%ws) Print information on specified type.\n", switchType.szSwitch);
+			printf("   -D   (or -%ws) Search dispids.\n", switchDispid.name());
+			printf("   -N   (or -%ws) Number is in decimal. Ignored for non-numbers.\n", switchDecimal.name());
+			printf("   -T   (or -%ws) Print information on specified type.\n", switchType.name());
 			printf("           With no parameters prints list of known types.\n");
 			printf("           When combined with -S, restrict output to given type.\n");
-			printf("   -G   (or -%ws) Display list of known guids.\n", switchGuid.szSwitch);
+			printf("   -G   (or -%ws) Display list of known guids.\n", switchGuid.name());
 			printf("\n");
 			printf("   Flag Lookup:\n");
-			printf("   -Fl  (or -%ws) Look up flags for specified property.\n", switchFlag.szSwitch);
+			printf("   -Fl  (or -%ws) Look up flags for specified property.\n", switchFlag.name());
 			printf("           May be combined with -D and -N switches, but all flag values must be in hex.\n");
-			printf("   -Fl  (or -%ws) Look up flag name and output its value.\n", switchFlag.szSwitch);
+			printf("   -Fl  (or -%ws) Look up flag name and output its value.\n", switchFlag.name());
 			printf("\n");
 			printf("   Error Parsing:\n");
-			printf("   -E   (or -%ws) Map an error code to its name and vice versa.\n", switchError.szSwitch);
+			printf("   -E   (or -%ws) Map an error code to its name and vice versa.\n", switchError.name());
 			printf("           May be combined with -S and -N switches.\n");
 			printf("\n");
 			printf("   Smart View Parsing:\n");
 			printf(
-				"   -P   (or -%ws) Parser type (number). See list below for supported parsers.\n",
-				switchParser.szSwitch);
-			printf("   -B   (or -%ws) Input file is binary. Default is hex encoded text.\n", switchBinary.szSwitch);
+				"   -P   (or -%ws) Parser type (number). See list below for supported parsers.\n", switchParser.name());
+			printf("   -B   (or -%ws) Input file is binary. Default is hex encoded text.\n", switchBinary.name());
 			printf("\n");
 			printf("   Rules Table:\n");
-			printf("   -R   (or -%ws) Output rules table. Profile optional.\n", switchRule.szSwitch);
+			printf("   -R   (or -%ws) Output rules table. Profile optional.\n", switchRule.name());
 			printf("\n");
 			printf("   ACL Table:\n");
-			printf("   -A   (or -%ws) Output ACL table. Profile optional.\n", switchAcl.szSwitch);
+			printf("   -A   (or -%ws) Output ACL table. Profile optional.\n", switchAcl.name());
 			printf("\n");
 			printf("   Contents Table:\n");
 			printf(
 				"   -C   (or -%ws) Output contents table. May be combined with -H. Profile optional.\n",
-				switchContents.szSwitch);
+				switchContents.name());
 			printf(
 				"   -H   (or -%ws) Output associated contents table. May be combined with -C. Profile optional\n",
-				switchAssociatedContents.szSwitch);
-			printf("   -Su  (or -%ws) Subject of messages to output.\n", switchSubject.szSwitch);
-			printf("   -Me  (or -%ws) Message class of messages to output.\n", switchMessageClass.szSwitch);
-			printf("   -Ms  (or -%ws) Output as .MSG instead of XML.\n", switchMSG.szSwitch);
-			printf("   -L   (or -%ws) List details to screen and do not output files.\n", switchList.szSwitch);
-			printf("   -Re  (or -%ws) Restrict output to the 'count' most recent messages.\n", switchRecent.szSwitch);
+				switchAssociatedContents.name());
+			printf("   -Su  (or -%ws) Subject of messages to output.\n", switchSubject.name());
+			printf("   -Me  (or -%ws) Message class of messages to output.\n", switchMessageClass.name());
+			printf("   -Ms  (or -%ws) Output as .MSG instead of XML.\n", switchMSG.name());
+			printf("   -L   (or -%ws) List details to screen and do not output files.\n", switchList.name());
+			printf("   -Re  (or -%ws) Restrict output to the 'count' most recent messages.\n", switchRecent.name());
 			printf("\n");
 			printf("   Child Folders:\n");
-			printf("   -Chi (or -%ws) Display child folders of selected folder.\n", switchChildFolders.szSwitch);
+			printf("   -Chi (or -%ws) Display child folders of selected folder.\n", switchChildFolders.name());
 			printf("\n");
 			printf("   MSG File Properties\n");
-			printf("   -X   (or -%ws) Output properties of an MSG file as XML.\n", switchXML.szSwitch);
+			printf("   -X   (or -%ws) Output properties of an MSG file as XML.\n", switchXML.name());
 			printf("\n");
 			printf("   MID/FID Lookup\n");
-			printf("   -Fi  (or -%ws) Folder ID (FID) to search for.\n", switchFid.szSwitch);
-			printf("           If -%ws is specified without a FID, search/display all folders\n", switchFid.szSwitch);
-			printf("   -Mid (or -%ws) Message ID (MID) to search for.\n", switchMid.szSwitch);
+			printf("   -Fi  (or -%ws) Folder ID (FID) to search for.\n", switchFid.name());
+			printf("           If -%ws is specified without a FID, search/display all folders\n", switchFid.name());
+			printf("   -Mid (or -%ws) Message ID (MID) to search for.\n", switchMid.name());
 			printf(
 				"           If -%ws is specified without a MID, display all messages in folders specified by the FID "
 				"parameter.\n",
-				switchMid.szSwitch);
+				switchMid.name());
 			printf("\n");
 			printf("   Store Properties\n");
-			printf("   -St  (or -%ws) Output properties of stores as XML.\n", switchStore.szSwitch);
+			printf("   -St  (or -%ws) Output properties of stores as XML.\n", switchStore.name());
 			printf("           If store number is specified, outputs properties of a single store.\n");
 			printf("           If a property is specified, outputs only that property.\n");
 			printf("\n");
 			printf("   Folder Properties\n");
-			printf("   -F   (or -%ws) Output properties of a folder as XML.\n", switchFolder.szSwitch);
+			printf("   -F   (or -%ws) Output properties of a folder as XML.\n", switchFolder.name());
 			printf("           If a property is specified, outputs only that property.\n");
 			printf("   -Size         Output size of a folder and all subfolders.\n");
-			printf("           Use -%ws to specify which folder to scan.\n", switchFolder.szSwitch);
+			printf("           Use -%ws to specify which folder to scan.\n", switchFolder.name());
 			printf("   -SearchState  Output search folder state.\n");
-			printf("           Use -%ws to specify which folder to scan.\n", switchFolder.szSwitch);
+			printf("           Use -%ws to specify which folder to scan.\n", switchFolder.name());
 			printf("\n");
 			printf("   MAPI <-> MIME Conversion:\n");
-			printf("   -Ma  (or -%ws) Convert an EML file to MAPI format (MSG file).\n", switchMAPI.szSwitch);
-			printf("   -Mi  (or -%ws) Convert an MSG file to MIME format (EML file).\n", switchMIME.szSwitch);
+			printf("   -Ma  (or -%ws) Convert an EML file to MAPI format (MSG file).\n", switchMAPI.name());
+			printf("   -Mi  (or -%ws) Convert an MSG file to MIME format (EML file).\n", switchMIME.name());
 			printf(
 				"   -I   (or -%ws) Indicates the input file for conversion, either a MIME-formatted EML file or an MSG "
 				"file.\n",
-				switchInput.szSwitch);
-			printf("   -O   (or -%ws) Indicates the output file for the conversion.\n", switchOutput.szSwitch);
-			printf("   -Cc  (or -%ws) Indicates specific flags to pass to the converter.\n", switchCCSFFlags.szSwitch);
+				switchInput.name());
+			printf("   -O   (or -%ws) Indicates the output file for the conversion.\n", switchOutput.name());
+			printf("   -Cc  (or -%ws) Indicates specific flags to pass to the converter.\n", switchCCSFFlags.name());
 			printf("           Available values (these may be OR'ed together):\n");
 			printf("              MIME -> MAPI:\n");
 			printf("                CCSF_SMTP:        0x02\n");
@@ -363,15 +362,15 @@ namespace cli
 			printf("                CCSF_GLOBAL_MESSAGE:   0x200000\n");
 			printf(
 				"   -Rf  (or -%ws) (MAPI->MIME only) Indicates the EML should be generated in RFC822 format.\n",
-				switchRFC822.szSwitch);
+				switchRFC822.name());
 			printf("           If not present, RFC1521 is used instead.\n");
 			printf(
 				"   -W   (or -%ws) (MAPI->MIME only) Indicates the maximum number of characters in each line in the\n",
-				switchWrap.szSwitch);
+				switchWrap.name());
 			printf("           generated EML. Default value is 74. A value of 0 indicates no wrapping.\n");
 			printf(
 				"   -En  (or -%ws) (MAPI->MIME only) Indicates the encoding type to use. Supported values are:\n",
-				switchEncoding.szSwitch);
+				switchEncoding.name());
 			printf("              1 - Base64\n");
 			printf("              2 - UUENCODE\n");
 			printf("              3 - Quoted-Printable\n");
@@ -379,13 +378,13 @@ namespace cli
 			printf("              5 - 8bit\n");
 			printf(
 				"   -Ad  (or -%ws) Pass MAPI Address Book into converter. Profile optional.\n",
-				switchAddressBook.szSwitch);
+				switchAddressBook.name());
 			printf(
 				"   -U   (or -%ws) (MIME->MAPI only) The resulting MSG file should be unicode.\n",
-				switchUnicode.szSwitch);
+				switchUnicode.name());
 			printf(
 				"   -Ch  (or -%ws) (MIME->MAPI only) Character set - three required parameters:\n",
-				switchCharset.szSwitch);
+				switchCharset.name());
 			printf("           CodePage - common values (others supported)\n");
 			printf("              1252  - CP_USASCII      - Indicates the USASCII character set, Windows code page "
 				   "1252\n");
@@ -407,26 +406,25 @@ namespace cli
 			printf("   PST Analysis\n");
 			printf("   -PST Output statistics of a PST file.\n");
 			printf("           If a property is specified, outputs only that property.\n");
-			printf("   -I   (or -%ws) PST file to be analyzed.\n", switchInput.szSwitch);
+			printf("   -I   (or -%ws) PST file to be analyzed.\n", switchInput.name());
 			printf("\n");
 			printf("   Profiles\n");
-			printf("   -Pr  (or -%ws) Output list of profiles\n", switchProfile.szSwitch);
+			printf("   -Pr  (or -%ws) Output list of profiles\n", switchProfile.name());
 			printf("           If a profile is specified, exports that profile.\n");
 			printf("   -ProfileSection If specified, output specific profile section.\n");
-			printf(
-				"   -B   (or -%ws) If specified, profile section guid is byte swapped.\n", switchByteSwapped.szSwitch);
-			printf("   -O   (or -%ws) Indicates the output file for profile export.\n", switchOutput.szSwitch);
+			printf("   -B   (or -%ws) If specified, profile section guid is byte swapped.\n", switchByteSwapped.name());
+			printf("   -O   (or -%ws) Indicates the output file for profile export.\n", switchOutput.name());
 			printf("           Required if a profile is specified.\n");
 			printf("\n");
 			printf("   Receive Folder Table\n");
-			printf("   -%ws Displays Receive Folder Table for the specified store\n", switchReceiveFolder.szSwitch);
+			printf("   -%ws Displays Receive Folder Table for the specified store\n", switchReceiveFolder.name());
 			printf("\n");
 			printf("   Universal Options:\n");
-			printf("   -I   (or -%ws) Input file.\n", switchInput.szSwitch);
-			printf("   -O   (or -%ws) Output file or directory.\n", switchOutput.szSwitch);
+			printf("   -I   (or -%ws) Input file.\n", switchInput.name());
+			printf("   -O   (or -%ws) Output file or directory.\n", switchOutput.name());
 			printf(
 				"   -F   (or -%ws) Folder to scan. Default is Inbox. See list below for supported folders.\n",
-				switchFolder.szSwitch);
+				switchFolder.name());
 			printf("           Folders may also be specified by path:\n");
 			printf("              \"Top of Information Store\\Calendar\"\n");
 			printf("           Path may be preceeded by entry IDs for special folders using @ notation:\n");
@@ -439,17 +437,17 @@ namespace cli
 			printf("           MrMAPI's special folder constants may also be used:\n");
 			printf("              \"@12\\Calendar\"\n");
 			printf("              \"@1\"\n");
-			printf("   -Pr  (or -%ws) Profile for MAPILogonEx.\n", switchProfile.szSwitch);
+			printf("   -Pr  (or -%ws) Profile for MAPILogonEx.\n", switchProfile.name());
 			printf(
 				"   -M   (or -%ws) More properties. Tries harder to get stream properties. May take longer.\n",
-				switchMoreProperties.szSwitch);
-			printf("   -Sk  (or -%ws) Skip embedded message attachments on export.\n", switchSkip.szSwitch);
-			printf("   -No  (or -%ws) No Addins. Don't load any add-ins.\n", switchNoAddins.szSwitch);
-			printf("   -On  (or -%ws) Online mode. Bypass cached mode.\n", switchOnline.szSwitch);
-			printf("   -V   (or -%ws) Verbose. Turn on all debug output.\n", switchVerbose.szSwitch);
+				switchMoreProperties.name());
+			printf("   -Sk  (or -%ws) Skip embedded message attachments on export.\n", switchSkip.name());
+			printf("   -No  (or -%ws) No Addins. Don't load any add-ins.\n", switchNoAddins.name());
+			printf("   -On  (or -%ws) Online mode. Bypass cached mode.\n", switchOnline.name());
+			printf("   -V   (or -%ws) Verbose. Turn on all debug output.\n", switchVerbose.name());
 			printf("\n");
 			printf("   MAPI Implementation Options:\n");
-			printf("   -%ws MAPI Version to load - supported values\n", switchVersion.szSwitch);
+			printf("   -%ws MAPI Version to load - supported values\n", switchVersion.name());
 			printf("           Supported values\n");
 			printf("              0  - List all available MAPI binaries\n");
 			printf("              1  - System MAPI\n");

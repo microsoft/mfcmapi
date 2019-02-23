@@ -16,9 +16,9 @@ namespace cli
 	private:
 		bool seen{false};
 		std::vector<std::wstring> args;
+		LPCWSTR szSwitch{};
 
 	public:
-		LPCWSTR szSwitch{};
 		const int mode{};
 		const size_t minArgs{};
 		const size_t maxArgs{};
@@ -29,6 +29,7 @@ namespace cli
 		{
 		}
 
+		LPCWSTR name() const noexcept { return szSwitch; }
 		bool isSet() const noexcept { return seen; }
 		size_t size() const noexcept { return args.size(); }
 		bool empty() const noexcept { return args.empty(); }

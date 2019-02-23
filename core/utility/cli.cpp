@@ -95,7 +95,7 @@ namespace cli
 		for (const auto parser : optionsArray)
 		{
 			// If we have a match
-			if (parser && strings::beginsWith(parser->szSwitch, szSwitch))
+			if (parser && strings::beginsWith(parser->name(), szSwitch))
 			{
 				return parser;
 			}
@@ -189,11 +189,11 @@ namespace cli
 		{
 			if (option->isSet())
 			{
-				output::DebugPrint(DBGGeneric, L"Switch: %ws\n", option->szSwitch);
+				output::DebugPrint(DBGGeneric, L"Switch: %ws\n", option->name());
 			}
 			else if (!option->empty())
 			{
-				output::DebugPrint(DBGGeneric, L"Switch: %ws (not set but has args)\n", option->szSwitch);
+				output::DebugPrint(DBGGeneric, L"Switch: %ws (not set but has args)\n", option->name());
 			}
 
 			for (UINT i = 0; i < option->size(); i++)
