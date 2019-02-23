@@ -233,5 +233,41 @@ namespace clitest
 			test_scanArgs(true, p0_1_NUM, {L"text", L"2"}, {}, {L"text", L"2"});
 			test_scanArgs(true, p0_1_NUM, {}, {}, {});
 		}
+
+		TEST_METHOD(Test_option)
+		{
+			cli::option switch1{L"switch1", cli::cmdmodeHelpFull, 2, 2, 0};
+			const std::vector<cli::option*> optionArray = {&switch1};
+			cli::OPTIONS options{};
+
+			Assert::AreEqual(L"switch1", switch1.name());
+			Assert::AreEqual(std::wstring{L""}, switch1.at(1));
+			Assert::AreEqual(false, switch1.isSet());
+			Assert::AreEqual(true, switch1.empty());
+			Assert::AreEqual(std::wstring{L""}, switch1.at(0));
+			Assert::AreEqual(std::wstring{L""}, switch1[0]);
+			Assert::AreEqual(false, switch1.has(0));
+			Assert::AreEqual(false, switch1.hasULONG(0));
+			Assert::AreEqual(false, switch1.hasULONG(1));
+			Assert::AreEqual(ULONG{0}, switch1.atULONG(0));
+			Assert::AreEqual(ULONG{0}, switch1.atULONG(1));
+			Assert::AreEqual(size_t{0}, switch1.size());
+
+			auto args = std::deque<std::wstring>{L"3"};
+			Assert::AreEqual(false, switch1.scanArgs(args, options, optionArray));
+			Assert::AreEqual(size_t{0}, switch1.size());
+			args.push_back({L"text"});
+			Assert::AreEqual(true, switch1.scanArgs(args, options, optionArray));
+			Assert::AreEqual(size_t{2}, switch1.size());
+			Assert::AreEqual(true, switch1.isSet());
+			Assert::AreEqual(false, switch1.empty());
+			Assert::AreEqual(std::wstring{L"3"}, switch1.at(0));
+			Assert::AreEqual(std::wstring{L"3"}, switch1[0]);
+			Assert::AreEqual(true, switch1.has(0));
+			Assert::AreEqual(true, switch1.hasULONG(0));
+			Assert::AreEqual(false, switch1.hasULONG(1));
+			Assert::AreEqual(ULONG{3}, switch1.atULONG(0));
+			Assert::AreEqual(ULONG{0}, switch1.atULONG(1));
+		}
 	}; // namespace clitest
 } // namespace clitest
