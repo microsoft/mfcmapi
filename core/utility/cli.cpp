@@ -9,6 +9,69 @@ namespace cli
 	option switchHelp = {L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
 	option switchVerbose = {L"Verbose", cmdmodeUnknown, 0, 0, OPT_INITMFC};
 
+	// Consume min/max args and store them in the option
+	_Check_return_ bool
+	option::scanArgs(std::deque<std::wstring>& _args, OPTIONS& options, const std::vector<option*>& optionsArray)
+	{
+		seen = false; // We're not "seen" until we get past this check
+		args.clear();
+		if (_args.size() < minArgs) return false;
+
+		// Add our flags and set mode
+		options.flags |= flags;
+		if (cmdmodeUnknown != mode && cmdmodeHelp != options.mode)
+		{
+			if (!bSetMode(options.mode, mode))
+			{
+				return false;
+			}
+		}
+
+		UINT c{};
+		auto foundArgs = std::vector<std::wstring>{};
+		for (auto it = _args.cbegin(); it != _args.cend() && c < maxArgs; it++, c++)
+		{
+			// If we *do* get a parser while looking for our minargs, then we've failed
+			if (GetOption(*it, optionsArray))
+			{
+				// If we've already gotten our minArgs, we're done
+				if (c >= minArgs) break;
+				return false;
+			}
+
+			foundArgs.push_back(*it);
+		}
+
+		seen = true;
+
+		// Now that we've peeled off arguments, check if the option will accept them:
+		if (flags & OPT_NEEDNUM && !foundArgs.empty())
+		{
+			auto fail = false;
+			for (const auto& arg : foundArgs)
+			{
+				ULONG num{};
+				fail = fail || !strings::tryWstringToUlong(num, arg, 10, true);
+			}
+
+			if (fail)
+			{
+				// If we *didn't* like our args, don't keep them, don't peel them off
+				// This is not an error if minArgs is 0
+				seen = minArgs == 0;
+				return seen;
+			}
+		}
+
+		// and save them locally
+		args = foundArgs;
+
+		// remove all our found arguments
+		_args.erase(_args.begin(), _args.begin() + foundArgs.size());
+
+		return seen;
+	}
+
 	// Checks if szArg is an option, and if it is, returns which option it is
 	// We return the first match, so switches should be ordered appropriately
 	option* GetOption(const std::wstring& szArg, const std::vector<option*>& optionsArray)
@@ -113,69 +176,6 @@ namespace cli
 				options.mode = cmdmodeHelp;
 			}
 		}
-	}
-
-	// Consume min/max args and store them in the option
-	_Check_return_ bool
-	option::scanArgs(std::deque<std::wstring>& _args, OPTIONS& options, const std::vector<option*>& optionsArray)
-	{
-		seen = false; // We're not "seen" until we get past this check
-		args.clear();
-		if (_args.size() < minArgs) return false;
-
-		// Add our flags and set mode
-		options.flags |= flags;
-		if (cmdmodeUnknown != mode && cmdmodeHelp != options.mode)
-		{
-			if (!bSetMode(options.mode, mode))
-			{
-				return false;
-			}
-		}
-
-		UINT c{};
-		auto foundArgs = std::vector<std::wstring>{};
-		for (auto it = _args.cbegin(); it != _args.cend() && c < maxArgs; it++, c++)
-		{
-			// If we *do* get a parser while looking for our minargs, then we've failed
-			if (GetOption(*it, optionsArray))
-			{
-				// If we've already gotten our minArgs, we're done
-				if (c >= minArgs) break;
-				return false;
-			}
-
-			foundArgs.push_back(*it);
-		}
-
-		seen = true;
-
-		// Now that we've peeled off arguments, check if the option will accept them:
-		if (flags & OPT_NEEDNUM && !foundArgs.empty())
-		{
-			auto fail = false;
-			for (const auto& arg : foundArgs)
-			{
-				ULONG num{};
-				fail = fail || !strings::tryWstringToUlong(num, arg, 10, true);
-			}
-
-			if (fail)
-			{
-				// If we *didn't* like our args, don't keep them, don't peel them off
-				// This is not an error if minArgs is 0
-				seen = minArgs == 0;
-				return seen;
-			}
-		}
-
-		// and save them locally
-		args = foundArgs;
-
-		// remove all our found arguments
-		_args.erase(_args.begin(), _args.begin() + foundArgs.size());
-
-		return seen;
 	}
 
 	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<option*>& optionsArray)
