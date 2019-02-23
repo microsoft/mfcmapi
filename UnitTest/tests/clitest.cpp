@@ -17,6 +17,8 @@ enum CmdMode
 {
 	cmdmode1 = cli::cmdmodeFirstMode,
 	cmdmode2,
+	cmdmode3,
+	cmdmode4,
 };
 
 cli::option switchMode1{L"mode1", cmdmode1, 0, 1, cli::OPT_NEEDNUM | OPT_10};
@@ -237,7 +239,7 @@ namespace clitest
 		TEST_METHOD(Test_option)
 		{
 			cli::option switch1{L"switch1", cli::cmdmodeHelpFull, 2, 2, 0};
-			const std::vector<cli::option*> optionArray = {&switch1};
+			const std::vector<cli::option*> optionsArray = {&switch1};
 			cli::OPTIONS options{};
 
 			Assert::AreEqual(L"switch1", switch1.name());
@@ -254,10 +256,10 @@ namespace clitest
 			Assert::AreEqual(size_t{0}, switch1.size());
 
 			auto args = std::deque<std::wstring>{L"3"};
-			Assert::AreEqual(false, switch1.scanArgs(args, options, optionArray));
+			Assert::AreEqual(false, switch1.scanArgs(args, options, optionsArray));
 			Assert::AreEqual(size_t{0}, switch1.size());
 			args.push_back({L"text"});
-			Assert::AreEqual(true, switch1.scanArgs(args, options, optionArray));
+			Assert::AreEqual(true, switch1.scanArgs(args, options, optionsArray));
 			Assert::AreEqual(size_t{2}, switch1.size());
 			Assert::AreEqual(true, switch1.isSet());
 			Assert::AreEqual(false, switch1.empty());
@@ -268,6 +270,43 @@ namespace clitest
 			Assert::AreEqual(false, switch1.hasULONG(1));
 			Assert::AreEqual(ULONG{3}, switch1.atULONG(0));
 			Assert::AreEqual(ULONG{0}, switch1.atULONG(1));
+		}
+
+		void test_ParseArgs(
+			const cli::OPTIONS& _options,
+			const std::deque<std::wstring>& _args,
+			const std::vector<cli::option*>& optionsArray,
+			const int mode,
+			const std::vector<cli::option*>& setOptions)
+		{
+			auto options = _options;
+			auto args = _args;
+			cli::ParseArgs(options, args, optionsArray);
+			auto eq = true;
+
+			if (options.mode != mode) eq = false;
+			size_t i{};
+			for (i = 0; i < setOptions.size(); i++)
+			{
+				if (!setOptions[i]->isSet()) eq = false;
+			}
+
+			if (!eq)
+			{
+				Logger::WriteMessage(strings::format(L"\n").c_str());
+
+				Assert::Fail();
+			}
+		}
+
+		TEST_METHOD(Test_ParseArgs)
+		{
+			cli::option switch1{L"switch1", cmdmode1, 2, 2, 0};
+			cli::option switch2{L"switch2", cmdmode2, 0, 0, 0};
+			const std::vector<cli::option*> optionsArray = {&switch1, &switch2};
+			cli::OPTIONS options{};
+			auto args = std::deque<std::wstring>{L"-switch1", L"3", L"4"};
+			test_ParseArgs(options, args, optionsArray, cmdmode1, std::vector<cli::option*>{&switch1});
 		}
 	}; // namespace clitest
 } // namespace clitest
