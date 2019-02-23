@@ -19,12 +19,10 @@ enum CmdMode
 	cmdmode2,
 };
 
-cli::option switchHelp = {L"?", cli::cmdmodeHelpFull, 0, 0, cli::OPT_INITMFC};
-cli::option switchVerbose = {L"Verbose", cli::cmdmodeUnknown, 0, 0, cli::OPT_INITMFC};
 cli::option switchMode1{L"mode1", cmdmode1, 0, 1, cli::OPT_NEEDNUM | OPT_10};
 cli::option switchMode2{L"mode2", cmdmode2, 2, 2, OPT_20};
 
-const std::vector<cli::option*> g_options = {&switchHelp, &switchVerbose, &switchMode1};
+const std::vector<cli::option*> g_options = {&cli::switchHelp, &cli::switchVerbose, &switchMode1, &switchMode2};
 
 namespace Microsoft
 {
@@ -40,35 +38,14 @@ namespace Microsoft
 				const wchar_t* message = nullptr,
 				const __LineInfo* pLineInfo = nullptr)
 			{
-				if (expected == nullptr && actual == nullptr) return;
-				if (expected == nullptr || actual == nullptr)
-				{
-					Logger::WriteMessage(strings::format(L"expected: %p\n", expected).c_str());
-					Logger::WriteMessage(strings::format(L"actual: %p\n", actual).c_str());
-				}
+				if (expected == actual) return;
 
-				auto eq = true;
-				if (std::wstring{expected->name()} != std::wstring{actual->name()} || expected->mode != actual->mode ||
-					expected->minArgs != actual->minArgs || expected->maxArgs != actual->maxArgs ||
-					expected->flags != actual->flags)
-				{
-					eq = false;
-				}
+				Logger::WriteMessage(strings::format(L"Switch:\n").c_str());
+				if (expected) Logger::WriteMessage(strings::format(L"Expected: %ws\n", expected->name()).c_str());
+				if (actual) Logger::WriteMessage(strings::format(L"Actual: %ws\n", actual->name()).c_str());
 
-				if (!eq)
-				{
-					Logger::WriteMessage(
-						strings::format(L"Switch: %ws:%ws\n", expected->name(), actual->name()).c_str());
-					Logger::WriteMessage(strings::format(L"Mode: %d:%d\n", expected->mode, actual->mode).c_str());
-					Logger::WriteMessage(
-						strings::format(L"minArgs: %d:%d\n", expected->minArgs, actual->minArgs).c_str());
-					Logger::WriteMessage(
-						strings::format(L"maxArgs: %d:%d\n", expected->maxArgs, actual->maxArgs).c_str());
-					Logger::WriteMessage(strings::format(L"ulOpt: %d:%d\n", expected->flags, actual->flags).c_str());
-					Assert::Fail(ToString(message).c_str(), pLineInfo);
-				}
+				Assert::Fail(ToString(message).c_str(), pLineInfo);
 			}
-
 		} // namespace CppUnitTestFramework
 	} // namespace VisualStudio
 } // namespace Microsoft

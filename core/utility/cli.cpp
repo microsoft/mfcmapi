@@ -5,9 +5,9 @@
 
 namespace cli
 {
-	option switchInvalid = {L"", cmdmodeHelpFull, 0, 0, 0};
-	option switchHelp = {L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
-	option switchVerbose = {L"Verbose", cmdmodeUnknown, 0, 0, OPT_INITMFC};
+	option switchInvalid{L"", cmdmodeHelpFull, 0, 0, 0};
+	option switchHelp{L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
+	option switchVerbose{L"Verbose", cmdmodeUnknown, 0, 0, OPT_INITMFC};
 
 	// Consume min/max args and store them in the option
 	_Check_return_ bool
