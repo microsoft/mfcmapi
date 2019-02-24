@@ -273,13 +273,13 @@ namespace clitest
 		}
 
 		void test_ParseArgs(
-			const cli::OPTIONS& _options,
 			const std::deque<std::wstring>& _args,
 			const std::vector<cli::option*>& optionsArray,
 			const int mode,
-			const std::vector<cli::option*>& setOptions)
+			const std::vector<cli::option*>& setOptions,
+			const std::wstring& unswitchedArg)
 		{
-			auto options = _options;
+			cli::OPTIONS options{};
 			auto args = _args;
 			cli::ParseArgs(options, args, optionsArray);
 			auto eq = true;
@@ -293,7 +293,20 @@ namespace clitest
 
 			if (!eq)
 			{
-				Logger::WriteMessage(strings::format(L"\n").c_str());
+				Logger::WriteMessage(strings::format(L"Expected mode: %i\n", mode).c_str());
+				Logger::WriteMessage(strings::format(L"Actual mode: %i\n", options.mode).c_str());
+				Logger::WriteMessage(
+					strings::format(L"Expected unswitched option: %ws\n", unswitchedArg.c_str()).c_str());
+				Logger::WriteMessage(
+					strings::format(L"Actual unswitched option: %ws\n", options.lpszUnswitchedOption.c_str()).c_str());
+
+				Logger::WriteMessage(strings::format(L"Set option count: %i\n", setOptions.size()).c_str());
+				for (i = 0; i < setOptions.size(); i++)
+				{
+					Logger::WriteMessage(
+						strings::format(L"[%i] = %ws = %i\n", i, setOptions[i]->name(), setOptions[i]->isSet())
+							.c_str());
+				}
 
 				Assert::Fail();
 			}
@@ -303,10 +316,13 @@ namespace clitest
 		{
 			cli::option switch1{L"switch1", cmdmode1, 2, 2, 0};
 			cli::option switch2{L"switch2", cmdmode2, 0, 0, 0};
-			const std::vector<cli::option*> optionsArray = {&switch1, &switch2};
-			cli::OPTIONS options{};
-			auto args = std::deque<std::wstring>{L"-switch1", L"3", L"4"};
-			test_ParseArgs(options, args, optionsArray, cmdmode1, std::vector<cli::option*>{&switch1});
+			test_ParseArgs({}, {&switch1, &switch2}, cli::cmdmodeHelp, {}, {});
+			test_ParseArgs({L"-switch1", L"3", L"4"}, {&switch1, &switch2}, cmdmode1, {&switch1}, {});
+			test_ParseArgs(
+				{L"-switch1", L"3", L"4", L"-switch2"}, {&switch1, &switch2}, cli::cmdmodeHelp, {&switch1}, {});
+			test_ParseArgs({L"-notaswitch", L"3", L"4"}, {&switch1, &switch2}, cli::cmdmodeHelp, {}, {});
+			test_ParseArgs({L"unswitch", L"-switch2"}, {&switch1, &switch2}, cmdmode2, {&switch2}, L"unswitch");
+			test_ParseArgs({L"unswitch1", L"unswitch2"}, {&switch1, &switch2}, cli::cmdmodeHelp, {}, {});
 		}
 	}; // namespace clitest
 } // namespace clitest
