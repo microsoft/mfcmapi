@@ -298,7 +298,7 @@ namespace clitest
 				Logger::WriteMessage(
 					strings::format(L"Expected unswitched option: %ws\n", unswitchedArg.c_str()).c_str());
 				Logger::WriteMessage(
-					strings::format(L"Actual unswitched option: %ws\n", options.lpszUnswitchedOption.c_str()).c_str());
+					strings::format(L"Actual unswitched option: %ws\n", cli::switchUnswitched[0].c_str()).c_str());
 
 				Logger::WriteMessage(strings::format(L"Set option count: %i\n", setOptions.size()).c_str());
 				for (i = 0; i < setOptions.size(); i++)

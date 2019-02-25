@@ -547,7 +547,7 @@ namespace cli
 		switch (options.mode)
 		{
 		case cmdmodePropTag:
-			if (!(switchType.isSet()) && !(switchSearch.isSet()) && options.lpszUnswitchedOption.empty())
+			if (!(switchType.isSet()) && !(switchSearch.isSet()) && cli::switchUnswitched.empty())
 				options.mode = cmdmodeHelp;
 			else if (
 				switchSearch.isSet() && switchType.isSet() &&

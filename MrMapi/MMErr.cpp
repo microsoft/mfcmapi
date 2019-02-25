@@ -48,9 +48,9 @@ void PrintErrFromPartialName(_In_ const std::wstring& lpszError)
 	printf("Found %lu matches.\n", ulNumMatches);
 }
 
-void DoErrorParse(_In_ cli::OPTIONS ProgOpts)
+void DoErrorParse()
 {
-	auto lpszErr = ProgOpts.lpszUnswitchedOption;
+	auto lpszErr = cli::switchUnswitched[0];
 	const auto ulErrNum = strings::wstringToUlong(lpszErr, cli::switchDecimal.isSet() ? 10 : 16);
 
 	if (ulErrNum)

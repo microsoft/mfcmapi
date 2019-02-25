@@ -148,7 +148,7 @@ void DoContents(LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 		lpRes);
 }
 
-void DoMSG(_In_ cli::OPTIONS ProgOpts)
+void DoMSG()
 {
 	DumpMSG(
 		cli::switchInput[0].c_str(),

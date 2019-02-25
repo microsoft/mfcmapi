@@ -303,15 +303,15 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 	if (lpStoreTable) lpStoreTable->Release();
 }
 
-void DoStore(_In_ cli::OPTIONS ProgOpts, LPMAPISESSION lpMAPISession, LPMDB lpMDB)
+void DoStore(LPMAPISESSION lpMAPISession, LPMDB lpMDB)
 {
 	ULONG ulPropTag = NULL;
 
 	// If we have a prop tag, parse it
 	// For now, we don't support dispids
-	if (!ProgOpts.lpszUnswitchedOption.empty() && !(cli::switchDispid.isSet()))
+	if (!cli::switchUnswitched.empty() && !(cli::switchDispid.isSet()))
 	{
-		ulPropTag = proptags::PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
+		ulPropTag = proptags::PropNameToPropTag(cli::switchUnswitched[0]);
 	}
 
 	if (lpMAPISession)

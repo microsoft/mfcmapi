@@ -73,7 +73,7 @@ namespace output
 		lpProfAdmin->Release();
 	}
 
-	void DoProfile(_In_ cli::OPTIONS ProgOpts)
+	void DoProfile()
 	{
 		const auto output = cli::switchOutput[0];
 		if (cli::switchProfile.has(0) && !output.empty())

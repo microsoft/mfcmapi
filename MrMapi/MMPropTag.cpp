@@ -537,14 +537,13 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 	}
 }
 
-void DoPropTags(_In_ const cli::OPTIONS& ProgOpts)
+void DoPropTags()
 {
-	const auto lpszPropName = ProgOpts.lpszUnswitchedOption.empty() ? nullptr : ProgOpts.lpszUnswitchedOption.c_str();
-	const auto ulPropNum = strings::wstringToUlong(ProgOpts.lpszUnswitchedOption, cli::switchDecimal.isSet() ? 10 : 16);
+	const auto lpszPropName = cli::switchUnswitched.empty() ? nullptr : cli::switchUnswitched[0].c_str();
+	const auto ulPropNum = strings::wstringToUlong(cli::switchUnswitched[0], cli::switchDecimal.isSet() ? 10 : 16);
 	if (lpszPropName) output::DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
 	output::DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
-	const auto ulTypeNum =
-		cli::switchType.empty() ? ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType[0]);
+	const auto ulTypeNum = cli::switchType.empty() ? ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType[0]);
 
 	// Handle dispid cases
 	if (cli::switchDispid.isSet())

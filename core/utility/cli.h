@@ -8,7 +8,6 @@ namespace cli
 	{
 		int mode{};
 		int flags{};
-		std::wstring lpszUnswitchedOption;
 	};
 
 	class option
@@ -67,6 +66,7 @@ namespace cli
 		OPT_NEEDNUM = 0x0002, // Any arguments must be decimal numbers. No strings.
 	};
 
+	extern option switchUnswitched;
 	extern option switchInvalid;
 	extern option switchHelp;
 	extern option switchVerbose;

@@ -556,11 +556,11 @@ void DumpSearchState(
 	}
 }
 
-void DoFolderProps(_In_ cli::OPTIONS ProgOpts, LPMAPIFOLDER lpFolder)
+void DoFolderProps(LPMAPIFOLDER lpFolder)
 {
 	if (lpFolder)
 	{
-		PrintObjectProperties(L"folderprops", lpFolder, proptags::PropNameToPropTag(ProgOpts.lpszUnswitchedOption));
+		PrintObjectProperties(L"folderprops", lpFolder, proptags::PropNameToPropTag(cli::switchUnswitched[0]));
 	}
 }
 

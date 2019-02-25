@@ -5,7 +5,8 @@
 
 namespace cli
 {
-	option switchInvalid{L"", cmdmodeHelpFull, 0, 0, 0};
+	option switchUnswitched{L"", cmdmodeUnknown, 0, 0, OPT_NOOPT};
+	option switchInvalid{L"", cmdmodeHelpFull, 0, 0, OPT_NOOPT};
 	option switchHelp{L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
 	option switchVerbose{L"Verbose", cmdmodeUnknown, 0, 0, OPT_INITMFC};
 
@@ -150,13 +151,15 @@ namespace cli
 			{
 				// If we didn't get a parser, treat this as an unswitched option.
 				// We only allow one of these
-				if (!options.lpszUnswitchedOption.empty())
+				if (!switchUnswitched.empty())
 				{
 					options.mode = cmdmodeHelp;
 				} // He's already got one, you see.
 				else
 				{
-					options.lpszUnswitchedOption = arg0;
+					// Trick switchUnswitched into scanning this path as an argument.
+					auto args = std::deque<std::wstring>{arg0};
+					switchUnswitched.scanArgs(args, options, optionsArray);
 				}
 
 				continue;
@@ -182,8 +185,8 @@ namespace cli
 	{
 		output::DebugPrint(DBGGeneric, L"Mode = %d\n", ProgOpts.mode);
 		output::DebugPrint(DBGGeneric, L"options = 0x%08X\n", ProgOpts.flags);
-		if (!ProgOpts.lpszUnswitchedOption.empty())
-			output::DebugPrint(DBGGeneric, L"lpszUnswitchedOption = %ws\n", ProgOpts.lpszUnswitchedOption.c_str());
+		if (!cli::switchUnswitched.empty())
+			output::DebugPrint(DBGGeneric, L"lpszUnswitchedOption = %ws\n", cli::switchUnswitched[0].c_str());
 
 		for (const auto& option : optionsArray)
 		{

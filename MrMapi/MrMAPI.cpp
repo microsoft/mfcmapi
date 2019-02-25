@@ -219,8 +219,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		// If they passed a store index then open it
 		ULONG ulStoreIndex{};
 		auto gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchStore[0], 10);
-		if (!gotStoreIndex)
-			gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchReceiveFolder[0], 10);
+		if (!gotStoreIndex) gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchReceiveFolder[0], 10);
 
 		if (lpMAPISession && gotStoreIndex && !lpMDB)
 		{
@@ -238,13 +237,13 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		switch (ProgOpts.mode)
 		{
 		case cli::cmdmodePropTag:
-			DoPropTags(ProgOpts);
+			DoPropTags();
 			break;
 		case cli::cmdmodeGuid:
 			DoGUIDs();
 			break;
 		case cli::cmdmodeSmartView:
-			DoSmartView(ProgOpts);
+			DoSmartView();
 			break;
 		case cli::cmdmodeAcls:
 			DoAcls(lpFolder);
@@ -253,19 +252,19 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			DoRules(lpFolder);
 			break;
 		case cli::cmdmodeErr:
-			DoErrorParse(ProgOpts);
+			DoErrorParse();
 			break;
 		case cli::cmdmodeContents:
 			DoContents(lpMDB, lpFolder);
 			break;
 		case cli::cmdmodeXML:
-			DoMSG(ProgOpts);
+			DoMSG();
 			break;
 		case cli::cmdmodeFidMid:
 			DoFidMid(lpMDB);
 			break;
 		case cli::cmdmodeStoreProperties:
-			DoStore(ProgOpts, lpMAPISession, lpMDB);
+			DoStore(lpMAPISession, lpMDB);
 			break;
 		case cli::cmdmodeMAPIMIME:
 			DoMAPIMIME(lpMAPISession);
@@ -277,16 +276,16 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			DoFlagSearch();
 			break;
 		case cli::cmdmodeFolderProps:
-			DoFolderProps(ProgOpts, lpFolder);
+			DoFolderProps(lpFolder);
 			break;
 		case cli::cmdmodeFolderSize:
 			DoFolderSize(lpFolder);
 			break;
 		case cli::cmdmodePST:
-			DoPST(ProgOpts);
+			DoPST();
 			break;
 		case cli::cmdmodeProfile:
-			output::DoProfile(ProgOpts);
+			output::DoProfile();
 			break;
 		case cli::cmdmodeReceiveFolder:
 			DoReceiveFolder(lpMDB);
