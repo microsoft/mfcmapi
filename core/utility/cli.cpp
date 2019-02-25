@@ -5,7 +5,7 @@
 
 namespace cli
 {
-	option switchUnswitched{L"", cmdmodeUnknown, 0, 0, OPT_NOOPT};
+	option switchUnswitched{L"", cmdmodeUnknown, 1, 1, OPT_NOOPT};
 	option switchInvalid{L"", cmdmodeHelpFull, 0, 0, OPT_NOOPT};
 	option switchHelp{L"?", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
 	option switchVerbose{L"Verbose", cmdmodeUnknown, 0, 0, OPT_INITMFC};
@@ -14,8 +14,7 @@ namespace cli
 	_Check_return_ bool
 	option::scanArgs(std::deque<std::wstring>& _args, OPTIONS& options, const std::vector<option*>& optionsArray)
 	{
-		seen = false; // We're not "seen" until we get past this check
-		args.clear();
+		clear(); // We're not "seen" until we get past this check
 		if (_args.size() < minArgs) return false;
 
 		// Add our flags and set mode
@@ -135,6 +134,8 @@ namespace cli
 	// Parses command line arguments and fills out OPTIONS
 	void ParseArgs(OPTIONS& options, std::deque<std::wstring>& args, const std::vector<option*>& optionsArray)
 	{
+		switchUnswitched.clear();
+
 		if (args.empty())
 		{
 			options.mode = cmdmodeHelp;

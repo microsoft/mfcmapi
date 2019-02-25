@@ -39,6 +39,11 @@ namespace cli
 			return _Pos < size() && strings::tryWstringToUlong(num, args[_Pos], radix, true);
 		}
 
+		void clear()
+		{
+			seen = false;
+			args.clear();
+		}
 		std::wstring at(const size_t _Pos) const noexcept { return size() > _Pos ? args[_Pos] : std::wstring{}; }
 		std::wstring operator[](const size_t _Pos) const noexcept { return at(_Pos); }
 
