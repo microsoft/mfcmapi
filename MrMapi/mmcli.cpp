@@ -535,7 +535,15 @@ namespace cli
 
 			// Trick switchOutput into scanning this path as an argument.
 			auto args = std::deque<std::wstring>{strPath};
-			switchOutput.scanArgs(args, options, g_options);
+			(void) switchOutput.scanArgs(args, options, g_options);
+		}
+
+		if (switchFolder.empty())
+		{
+			// Trick switchFolder into scanning this path as an argument.
+			OPTIONS fakeOptions{};
+			auto args = std::deque<std::wstring>{L"13"};
+			(void) switchFolder.scanArgs(args, fakeOptions, g_options);
 		}
 
 		// Validate that we have bare minimum to run
