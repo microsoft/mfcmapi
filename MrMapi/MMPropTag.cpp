@@ -475,6 +475,8 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 				{
 					break;
 				}
+
+				ulCur++;
 			}
 		}
 		else if (lpszPropName)
@@ -485,6 +487,8 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 				{
 					break;
 				}
+
+				ulCur++;
 			}
 		}
 
