@@ -225,8 +225,7 @@ namespace smartview
 				prop.Value.MVszW.cValues = m_Parser.Get<WORD>();
 			}
 
-			if (prop.Value.MVszW.cValues)
-			//if (prop.Value.MVszW.cValues && prop.Value.MVszW.cValues < _MaxEntriesLarge)
+			if (prop.Value.MVszW.cValues && prop.Value.MVszW.cValues < _MaxEntriesLarge)
 			{
 				prop.Value.MVszW.lppszW.reserve(prop.Value.MVszW.cValues);
 				for (ULONG j = 0; j < prop.Value.MVszW.cValues; j++)
