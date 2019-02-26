@@ -543,9 +543,10 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 
 void DoPropTags()
 {
-	const auto lpszPropName = cli::switchUnswitched[0];
-	const auto ulPropNum = strings::wstringToUlong(lpszPropName, cli::switchDecimal.isSet() ? 10 : 16);
-	if (!lpszPropName.empty()) output::DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName.c_str());
+	auto propName = cli::switchUnswitched[0];
+	const auto lpszPropName = propName.empty() ? nullptr : propName.c_str();
+	const auto ulPropNum = strings::wstringToUlong(propName, cli::switchDecimal.isSet() ? 10 : 16);
+	if (lpszPropName) output::DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
 	output::DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
 	const auto ulTypeNum = cli::switchType.empty() ? ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType[0]);
 
@@ -554,11 +555,11 @@ void DoPropTags()
 	{
 		if (cli::switchFlag.hasULONG(0, 16))
 		{
-			PrintFlag(ulPropNum, lpszPropName.c_str(), true, cli::switchFlag.atULONG(0, 16));
+			PrintFlag(ulPropNum, lpszPropName, true, cli::switchFlag.atULONG(0, 16));
 		}
 		else if (cli::switchSearch.isSet())
 		{
-			PrintDispIDFromPartialName(lpszPropName.c_str(), ulTypeNum);
+			PrintDispIDFromPartialName(lpszPropName, ulTypeNum);
 		}
 		else if (ulPropNum)
 		{
@@ -566,7 +567,7 @@ void DoPropTags()
 		}
 		else
 		{
-			PrintDispIDFromName(lpszPropName.c_str());
+			PrintDispIDFromName(lpszPropName);
 		}
 
 		return;
@@ -575,15 +576,15 @@ void DoPropTags()
 	// Handle prop tag cases
 	if (cli::switchFlag.hasULONG(0, 16))
 	{
-		PrintFlag(ulPropNum, lpszPropName.c_str(), false, cli::switchFlag.atULONG(0, 16));
+		PrintFlag(ulPropNum, lpszPropName, false, cli::switchFlag.atULONG(0, 16));
 	}
 	else if (cli::switchSearch.isSet())
 	{
-		PrintTagFromPartialName(lpszPropName.c_str(), ulTypeNum);
+		PrintTagFromPartialName(lpszPropName, ulTypeNum);
 	}
-	else if (!lpszPropName.empty() && !ulPropNum)
+	else if (lpszPropName && !ulPropNum)
 	{
-		PrintTagFromName(lpszPropName.c_str(), ulTypeNum);
+		PrintTagFromName(lpszPropName, ulTypeNum);
 	}
 	// If we weren't asked about a property, maybe we were asked about types
 	else if (cli::switchType.isSet())
