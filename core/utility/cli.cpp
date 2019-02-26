@@ -195,7 +195,7 @@ namespace cli
 
 			for (UINT i = 0; i < option->size(); i++)
 			{
-				output::DebugPrint(DBGGeneric, L"  arg[%d] = %ws\n", i++, option->at(i).c_str());
+				output::DebugPrint(DBGGeneric, L"  arg[%d] = %ws\n", i, option->at(i).c_str());
 			}
 		}
 	}
