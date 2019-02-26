@@ -39,29 +39,22 @@ namespace cli
 				return false;
 			}
 
+			// Check that our arguments are numbers if needed
+			if (flags & OPT_NEEDNUM)
+			{
+				ULONG num{};
+				if (!strings::tryWstringToUlong(num, *it, 10, true))
+				{
+					// If we've already gotten our minArgs, we're done
+					if (c >= minArgs) break;
+					return false;
+				}
+			}
+
 			foundArgs.push_back(*it);
 		}
 
 		seen = true;
-
-		// Now that we've peeled off arguments, check if the option will accept them:
-		if (flags & OPT_NEEDNUM && !foundArgs.empty())
-		{
-			auto fail = false;
-			for (const auto& arg : foundArgs)
-			{
-				ULONG num{};
-				fail = fail || !strings::tryWstringToUlong(num, arg, 10, true);
-			}
-
-			if (fail)
-			{
-				// If we *didn't* like our args, don't keep them, don't peel them off
-				// This is not an error if minArgs is 0
-				seen = minArgs == 0;
-				return seen;
-			}
-		}
 
 		// and save them locally
 		args = foundArgs;

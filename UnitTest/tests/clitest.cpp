@@ -129,7 +129,7 @@ namespace clitest
 
 			if (option.flags & cli::OPT_NEEDNUM && !option.empty())
 			{
-				for (UINT i = 0; i < option.maxArgs; i++)
+				for (UINT i = 0; i < option.size(); i++)
 				{
 					if (!option.hasULONG(i, 10)) return false;
 				}
@@ -171,7 +171,7 @@ namespace clitest
 			Logger::WriteMessage(strings::format(L"seen: %d\n", option.isSet()).c_str());
 
 			Logger::WriteMessage(strings::format(L"Tested args\n").c_str());
-			for (auto& arg : args)
+			for (auto& arg : _args)
 			{
 				Logger::WriteMessage(strings::format(L"  %ws\n", arg.c_str()).c_str());
 			}
@@ -234,6 +234,13 @@ namespace clitest
 			test_scanArgs(true, p0_1_NUM, {L"1", L"2"}, {L"1"}, {L"2"});
 			test_scanArgs(true, p0_1_NUM, {L"text", L"2"}, {}, {L"text", L"2"});
 			test_scanArgs(true, p0_1_NUM, {}, {}, {});
+
+			auto p1_2_NUM = cli::option{L"1_2_NUM", 0, 1, 2, cli::OPT_NEEDNUM};
+			test_scanArgs(true, p1_2_NUM, {L"1", L"2", L"3"}, {L"1", L"2"}, {L"3"});
+			test_scanArgs(true, p1_2_NUM, {L"1", L"text", L"3"}, {L"1"}, {L"text", L"3"});
+			test_scanArgs(false, p1_2_NUM, {L"text", L"2", L"3"}, {}, {L"text", L"2", L"3"});
+			test_scanArgs(false, p1_2_NUM, {L"text", L"2"}, {}, {L"text", L"2"});
+			test_scanArgs(false, p1_2_NUM, {}, {}, {});
 		}
 
 		TEST_METHOD(Test_option)
@@ -289,6 +296,8 @@ namespace clitest
 			for (i = 0; i < setOptions.size(); i++)
 			{
 				if (!setOptions[i]->isSet()) eq = false;
+				if (setOptions[i]->size() < setOptions[i]->minArgs) eq = false;
+				if (setOptions[i]->size() > setOptions[i]->maxArgs) eq = false;
 			}
 
 			if (!eq)
