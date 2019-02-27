@@ -52,7 +52,7 @@ void DumpContentsTable(
 			MyDumpStore.InitSortOrder(&SortOrder);
 		}
 
-		if (!(cli::switchMoreProperties.isSet())) MyDumpStore.DisableStreamRetry();
+		if (!cli::switchMoreProperties.isSet()) MyDumpStore.DisableStreamRetry();
 		if (cli::switchSkip.isSet()) MyDumpStore.DisableEmbeddedAttachments();
 
 		MyDumpStore.ProcessFolders(cli::switchContents.isSet(), cli::switchAssociatedContents.isSet(), false);
