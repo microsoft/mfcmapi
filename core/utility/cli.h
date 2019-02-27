@@ -1,131 +1,95 @@
 #pragma once
-#include <core/mapi/extraPropTags.h>
+#include <core/utility/strings.h>
 
 // MrMAPI command line
 namespace cli
 {
-#define ulNoMatch 0xffffffff
-
-	// Flags to control conversion
-	enum MAPIMIMEFLAGS
+	struct OPTIONS
 	{
-		MAPIMIME_TOMAPI = 0x00000001,
-		MAPIMIME_TOMIME = 0x00000002,
-		MAPIMIME_RFC822 = 0x00000004,
-		MAPIMIME_WRAP = 0x00000008,
-		MAPIMIME_ENCODING = 0x00000010,
-		MAPIMIME_ADDRESSBOOK = 0x00000020,
-		MAPIMIME_UNICODE = 0x00000040,
-		MAPIMIME_CHARSET = 0x00000080,
+		int mode{};
+		int flags{};
 	};
-	inline MAPIMIMEFLAGS& operator|=(MAPIMIMEFLAGS& a, MAPIMIMEFLAGS b)
-	{
-		return reinterpret_cast<MAPIMIMEFLAGS&>(reinterpret_cast<int&>(a) |= static_cast<int>(b));
-	}
 
-	enum CmdMode
+	class option
+	{
+	private:
+		bool seen{false};
+		std::vector<std::wstring> args;
+		LPCWSTR szSwitch{};
+
+	public:
+		const int mode{};
+		const size_t minArgs{};
+		const size_t maxArgs{};
+		const int flags{};
+
+		option(LPCWSTR _szSwitch, int _mode, UINT _minArgs, UINT _maxArgs, int _optionFlags)
+			: szSwitch{_szSwitch}, mode{_mode}, minArgs{_minArgs}, maxArgs{_maxArgs}, flags{_optionFlags}
+		{
+		}
+
+		LPCWSTR name() const noexcept { return szSwitch; }
+		bool isSet() const noexcept { return seen; }
+		size_t size() const noexcept { return args.size(); }
+		bool empty() const noexcept { return args.empty(); }
+		bool has(const size_t _Pos) const noexcept { return size() > _Pos; }
+		bool hasULONG(size_t _Pos, int radix = 10) const noexcept
+		{
+			ULONG num{};
+			return _Pos < size() && strings::tryWstringToUlong(num, args[_Pos], radix, true);
+		}
+
+		void clear()
+		{
+			seen = false;
+			args.clear();
+		}
+		std::wstring at(const size_t _Pos) const noexcept { return size() > _Pos ? args[_Pos] : std::wstring{}; }
+		std::wstring operator[](const size_t _Pos) const noexcept { return at(_Pos); }
+
+		ULONG atULONG(const size_t _Pos, const int radix = 10) const noexcept
+		{
+			return size() > _Pos ? strings::wstringToUlong(args[_Pos], radix) : 0;
+		}
+
+		_Check_return_ bool
+		scanArgs(std::deque<std::wstring>& args, OPTIONS& options, const std::vector<option*>& optionsArray);
+	};
+
+	enum modeEnum
 	{
 		cmdmodeUnknown = 0,
 		cmdmodeHelp,
 		cmdmodeHelpFull,
-		cmdmodePropTag,
-		cmdmodeGuid,
-		cmdmodeSmartView,
-		cmdmodeAcls,
-		cmdmodeRules,
-		cmdmodeErr,
-		cmdmodeContents,
-		cmdmodeMAPIMIME,
-		cmdmodeXML,
-		cmdmodeChildFolders,
-		cmdmodeFidMid,
-		cmdmodeStoreProperties,
-		cmdmodeFlagSearch,
-		cmdmodeFolderProps,
-		cmdmodeFolderSize,
-		cmdmodePST,
-		cmdmodeProfile,
-		cmdmodeReceiveFolder,
-		cmdmodeSearchState,
+		cmdmodeFirstMode, // When extending modes, use this as the value of the first mode
 	};
 
-	enum OPTIONFLAGS
+	enum flagsEnum
 	{
-		OPT_NOOPT = 0x00000,
-		OPT_DOPARTIALSEARCH = 0x00001,
-		OPT_DOTYPE = 0x00002,
-		OPT_DODISPID = 0x00004,
-		OPT_DODECIMAL = 0x00008,
-		OPT_DOFLAG = 0x00010,
-		OPT_BINARYFILE = 0x00020,
-		OPT_DOCONTENTS = 0x00040,
-		OPT_DOASSOCIATEDCONTENTS = 0x00080,
-		OPT_RETRYSTREAMPROPS = 0x00100,
-		OPT_VERBOSE = 0x00200,
-		OPT_NOADDINS = 0x00400,
-		OPT_ONLINE = 0x00800,
-		OPT_MSG = 0x01000,
-		OPT_LIST = 0x02000,
-		OPT_NEEDMAPIINIT = 0x04000,
-		OPT_NEEDMAPILOGON = 0x08000,
-		OPT_INITMFC = 0x10000,
-		OPT_NEEDFOLDER = 0x20000,
-		OPT_NEEDINPUTFILE = 0x40000,
-		OPT_NEEDOUTPUTFILE = 0x80000,
-		OPT_PROFILE = 0x100000,
-		OPT_NEEDSTORE = 0x200000,
-		OPT_SKIPATTACHMENTS = 0x400000,
-		OPT_MID = 0x800000,
-	};
-	inline OPTIONFLAGS& operator|=(OPTIONFLAGS& a, OPTIONFLAGS b)
-	{
-		return reinterpret_cast<OPTIONFLAGS&>(reinterpret_cast<int&>(a) |= static_cast<int>(b));
-	}
-	inline OPTIONFLAGS operator|(OPTIONFLAGS a, OPTIONFLAGS b)
-	{
-		return static_cast<OPTIONFLAGS>(static_cast<int>(a) | static_cast<int>(b));
-	}
-
-	struct MYOPTIONS
-	{
-		CmdMode Mode{cmdmodeUnknown};
-		OPTIONFLAGS ulOptions{OPT_NOOPT};
-		std::wstring lpszUnswitchedOption;
-		std::wstring lpszProfile;
-		ULONG ulTypeNum{};
-		ULONG ulSVParser{};
-		std::wstring lpszInput;
-		std::wstring lpszOutput;
-		std::wstring lpszSubject;
-		std::wstring lpszMessageClass;
-		std::wstring lpszFolderPath;
-		std::wstring lpszFid;
-		std::wstring lpszMid;
-		std::wstring lpszFlagName;
-		std::wstring lpszVersion;
-		std::wstring lpszProfileSection;
-		ULONG ulStore{};
-		ULONG ulFolder{};
-		MAPIMIMEFLAGS MAPIMIMEFlags{};
-		CCSFLAGS convertFlags{};
-		ULONG ulWrapLines{};
-		ULONG ulEncodingType{};
-		ULONG ulCodePage{};
-		ULONG ulFlagValue{};
-		ULONG ulCount{};
-		bool bByteSwapped{};
-		CHARSETTYPE cSetType{CHARSET_BODY};
-		CSETAPPLYTYPE cSetApplyType{CSET_APPLY_UNTAGGED};
-		LPMAPISESSION lpMAPISession{};
-		LPMDB lpMDB{};
-		LPMAPIFOLDER lpFolder{};
+		OPT_NOOPT = 0x0000,
+		OPT_INITMFC = 0x0001,
+		OPT_NEEDNUM = 0x0002, // Any arguments must be decimal numbers. No strings.
 	};
 
-	void DisplayUsage(BOOL bFull);
+	extern option switchUnswitched;
+	extern option switchInvalid;
+	extern option switchHelp;
+	extern option switchVerbose;
 
-	std::vector<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
+	// Checks if szArg is an option, and if it is, returns which option it is
+	// We return the first match, so switches should be ordered appropriately
+	// The first switch should be our "no match" switch
+	option* GetOption(const std::wstring& szArg, const std::vector<option*>& optionsArray);
 
-	// Parses command line arguments and fills out MYOPTIONS
-	MYOPTIONS ParseArgs(std::vector<std::wstring>& args);
-	void PrintArgs(_In_ const MYOPTIONS& ProgOpts);
+	// If the mode isn't set (is 0), then we can set it to any mode
+	// If the mode IS set (non 0), then we can only set it to the same mode
+	// IE trying to change the mode from anything but unset will fail
+	bool bSetMode(_In_ int& pMode, _In_ int targetMode);
+
+	std::deque<std::wstring> GetCommandLine(_In_ int argc, _In_count_(argc) const char* const argv[]);
+
+	// Parses command line arguments and fills out OPTIONS
+	void ParseArgs(OPTIONS& options, std::deque<std::wstring>& args, const std::vector<option*>& optionsArray);
+
+	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<option*>& optionsArray);
 } // namespace cli

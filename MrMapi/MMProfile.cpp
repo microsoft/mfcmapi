@@ -1,8 +1,8 @@
 #include <StdAfx.h>
 #include <MrMapi/MMProfile.h>
+#include <MrMapi/mmcli.h>
 #include <core/mapi/exportProfile.h>
 #include <core/utility/strings.h>
-#include <core/utility/cli.h>
 
 namespace output
 {
@@ -73,19 +73,20 @@ namespace output
 		lpProfAdmin->Release();
 	}
 
-	void DoProfile(_In_ cli::MYOPTIONS ProgOpts)
+	void DoProfile()
 	{
-		if (!ProgOpts.lpszProfile.empty() && !ProgOpts.lpszOutput.empty())
+		const auto output = cli::switchOutput[0];
+		if (cli::switchProfile.has(0) && !output.empty())
 		{
+			const auto szProfile = cli::switchProfile[0];
+			const auto szProfileSection = cli::switchProfileSection[0];
 			printf("Profile Export\n");
 			printf("Options specified:\n");
-			printf("   Profile: %ws\n", ProgOpts.lpszProfile.c_str());
-			printf("   Output File: %ws\n", ProgOpts.lpszOutput.c_str());
+			printf("   Profile: %ws\n", szProfile.c_str());
+			printf("   Profile section: %ws\n", szProfileSection.c_str());
+			printf("   Output File: %ws\n", output.c_str());
 			ExportProfile(
-				strings::wstringTostring(ProgOpts.lpszProfile),
-				ProgOpts.lpszProfileSection,
-				ProgOpts.bByteSwapped,
-				ProgOpts.lpszOutput);
+				strings::wstringTostring(szProfile), szProfileSection, cli::switchByteSwapped.isSet(), output);
 		}
 		else
 		{

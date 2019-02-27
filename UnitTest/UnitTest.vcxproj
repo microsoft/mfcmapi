@@ -514,6 +514,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="tests\clitest.cpp" />
     <ClCompile Include="tests\guidtest.cpp" />
     <ClCompile Include="tests\property.cpp" />
     <ClCompile Include="tests\sidtest.cpp" />

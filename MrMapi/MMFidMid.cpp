@@ -1,10 +1,10 @@
 #include <StdAfx.h>
 #include <MrMapi/MMFidMid.h>
+#include <MrMapi/mmcli.h>
 #include <core/mapi/processor/mapiProcessor.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/smartview/SmartView.h>
 #include <core/utility/strings.h>
-#include <core/utility/cli.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
@@ -279,12 +279,12 @@ namespace mapiprocessor
 	}
 } // namespace mapiprocessor
 
-void DoFidMid(_In_ cli::MYOPTIONS ProgOpts)
+void DoFidMid(_In_ LPMDB lpMDB)
 {
 	mapiprocessor::DumpFidMid(
-		ProgOpts.lpszProfile,
-		ProgOpts.lpMDB,
-		ProgOpts.lpszFid,
-		ProgOpts.lpszMid,
-		cli::OPT_MID == (ProgOpts.ulOptions & cli::OPT_MID));
+		cli::switchProfile[0],
+		lpMDB,
+		cli::switchFid[0],
+		cli::switchMid[0],
+		cli::switchMid.isSet());
 }

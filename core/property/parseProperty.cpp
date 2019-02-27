@@ -390,25 +390,30 @@ namespace property
 			}
 			break;
 		case RES_BITMASK:
+		{
 			szFlags = flags::InterpretFlags(flagBitmask, lpRes->res.resBitMask.relBMR);
-			resString.push_back(strings::formatmessage(
+			auto mask = strings::formatmessage(
 				IDS_RESBITMASK,
 				szTabs.c_str(),
 				szFlags.c_str(),
 				lpRes->res.resBitMask.relBMR,
-				lpRes->res.resBitMask.ulMask));
+				lpRes->res.resBitMask.ulMask);
 			szPropNum =
 				smartview::InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag);
 			if (!szPropNum.empty())
 			{
-				resString.push_back(strings::formatmessage(IDS_RESBITMASKFLAGS, szPropNum.c_str()));
+				mask += strings::formatmessage(IDS_RESBITMASKFLAGS, szPropNum.c_str());
 			}
+
+			resString.push_back(mask);
 
 			resString.push_back(strings::formatmessage(
 				IDS_RESBITMASKTAG,
 				szTabs.c_str(),
 				proptags::TagToString(lpRes->res.resBitMask.ulPropTag, lpObj, false, true).c_str()));
-			break;
+		}
+
+		break;
 		case RES_SIZE:
 			szFlags = flags::InterpretFlags(flagRelop, lpRes->res.resSize.relop);
 			resString.push_back(strings::formatmessage(

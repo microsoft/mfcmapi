@@ -91,6 +91,19 @@ namespace stringtest
 			Assert::AreEqual(ULONG_MAX - 1, strings::wstringToUlong(L"4294967294", 10));
 			Assert::AreEqual(ULONG_MAX, strings::wstringToUlong(L"4294967295", 10));
 			Assert::AreEqual(ULONG_MAX, strings::wstringToUlong(L"4294967296", 10));
+
+			ULONG num{};
+			Assert::AreEqual(true, strings::tryWstringToUlong(num, L"1", 10, false));
+			Assert::AreEqual(true, strings::tryWstringToUlong(num, L"1", 10, true));
+
+			Assert::AreEqual(true, strings::tryWstringToUlong(num, L"blah", 10, false));
+			Assert::AreEqual(false, strings::tryWstringToUlong(num, L"blah", 10, true));
+
+			Assert::AreEqual(true, strings::tryWstringToUlong(num, L"123blah", 10, false));
+			Assert::AreEqual(false, strings::tryWstringToUlong(num, L"123blah", 10, true));
+
+			Assert::AreEqual(false, strings::tryWstringToUlong(num, L"", 10, false));
+			Assert::AreEqual(false, strings::tryWstringToUlong(num, L"", 10, true));
 		}
 
 		TEST_METHOD(Test_wstringToLong)
@@ -373,6 +386,17 @@ namespace stringtest
 			Assert::AreEqual(size_t(5), strings::OffsetToFilteredOffset(L"f o  o", 2));
 			Assert::AreEqual(size_t(27), strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 13));
 			Assert::AreEqual(size_t(28), strings::OffsetToFilteredOffset(L"\r1\n2\t3 4-5.6,7\\8/9'a{b}c`d\"e", 14));
+		}
+
+		TEST_METHOD(Test_beginsWith)
+		{
+			Assert::AreEqual(false, strings::beginsWith(L"", L"guid"));
+			Assert::AreEqual(false, strings::beginsWith(L"guid", L""));
+			Assert::AreEqual(true, strings::beginsWith(L"guid", L"g"));
+			Assert::AreEqual(true, strings::beginsWith(L"Guid", L"gU"));
+			Assert::AreEqual(false, strings::beginsWith(L"guid", L"guids"));
+			Assert::AreEqual(false, strings::beginsWith(L"guid", L"foo"));
+			Assert::AreEqual(false, strings::beginsWith(L"guid", L"foobar"));
 		}
 
 		TEST_METHOD(Test_endsWith)
