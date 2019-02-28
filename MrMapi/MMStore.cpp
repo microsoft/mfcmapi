@@ -1,11 +1,11 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMStore.h>
+#include <MrMapi/mmcli.h>
+#include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMFolder.h>
 #include <core/mapi/columnTags.h>
 #include <core/mapi/mapiStoreFunctions.h>
 #include <core/utility/strings.h>
-#include <core/utility/cli.h>
 #include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
@@ -48,7 +48,6 @@ LPMDB OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex)
 
 HRESULT HrMAPIOpenStoreAndFolder(
 	_In_ LPMAPISESSION lpMAPISession,
-	_In_ ULONG ulFolder,
 	_In_ std::wstring lpszFolderPath,
 	_Out_opt_ LPMDB* lppMDB,
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder)
@@ -56,6 +55,17 @@ HRESULT HrMAPIOpenStoreAndFolder(
 	auto hRes = S_OK;
 	LPMDB lpMDB = nullptr;
 	LPMAPIFOLDER lpFolder = nullptr;
+
+	// Maybe we were given a folder number
+	auto ulFolder = strings::wstringToUlong(lpszFolderPath, 10);
+	if (ulFolder == mapi::DEFAULT_UNSPECIFIED)
+	{
+		ulFolder = mapi::DEFAULT_INBOX;
+	}
+	else
+	{
+		lpszFolderPath.clear();
+	}
 
 	auto paths = strings::split(lpszFolderPath, L'\\');
 
@@ -293,32 +303,26 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 	if (lpStoreTable) lpStoreTable->Release();
 }
 
-void DoStore(_In_ cli::MYOPTIONS ProgOpts)
+void DoStore(LPMAPISESSION lpMAPISession, LPMDB lpMDB)
 {
 	ULONG ulPropTag = NULL;
 
 	// If we have a prop tag, parse it
 	// For now, we don't support dispids
-	if (!ProgOpts.lpszUnswitchedOption.empty() && !(ProgOpts.ulOptions & cli::OPT_DODISPID))
+	if (!cli::switchUnswitched.empty() && !(cli::switchDispid.isSet()))
 	{
-		ulPropTag = proptags::PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
+		ulPropTag = proptags::PropNameToPropTag(cli::switchUnswitched[0]);
 	}
 
-	if (ProgOpts.lpMAPISession)
+	if (lpMAPISession)
 	{
-		if (0 == ProgOpts.ulStore)
+		if (lpMDB)
 		{
-			PrintStoreTable(ProgOpts.lpMAPISession, ulPropTag);
+			PrintStoreProperties(lpMDB, ulPropTag);
 		}
 		else
 		{
-			// ulStore was incremented by 1 before, so drop it back now
-			auto lpMDB = OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1);
-			if (lpMDB)
-			{
-				PrintStoreProperties(lpMDB, ulPropTag);
-				lpMDB->Release();
-			}
+			PrintStoreTable(lpMAPISession, ulPropTag);
 		}
 	}
 }

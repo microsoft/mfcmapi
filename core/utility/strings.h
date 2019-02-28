@@ -33,6 +33,7 @@ namespace strings
 	std::wstring LPCSTRToWstring(LPCSTR src);
 	LPCWSTR wstringToLPCWSTR(const std::wstring& src);
 	std::wstring wstringToLower(const std::wstring& src);
+	bool tryWstringToUlong(ULONG& out, const std::wstring& src, int radix, bool rejectInvalidCharacters = true);
 	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters = true);
 	long wstringToLong(const std::wstring& src, int radix);
 	double wstringToDouble(const std::wstring& src);
@@ -78,6 +79,7 @@ namespace strings
 	bool IsFilteredHex(const WCHAR& chr);
 	size_t OffsetToFilteredOffset(const std::wstring& szString, size_t offset);
 
+	bool beginsWith(const std::wstring& str, const std::wstring& prefix);
 	bool endsWith(const std::wstring& str, const std::wstring& ending);
 	std::wstring ensureCRLF(const std::wstring& str);
 

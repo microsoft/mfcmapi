@@ -190,24 +190,38 @@ namespace strings
 		return dst;
 	}
 
-	// Converts a std::wstring to a ulong. Will return 0 if string is empty or contains non-numeric data.
-	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters)
+	bool tryWstringToUlong(ULONG& out, const std::wstring& src, int radix, bool rejectInvalidCharacters)
 	{
-		if (src.empty()) return 0;
+		// Default our out to 0 for failures
+		out = 0;
+		if (src.empty()) return false;
 
 		LPWSTR szEndPtr = nullptr;
-		auto ulArg = wcstoul(src.c_str(), &szEndPtr, radix);
+		out = wcstoul(src.c_str(), &szEndPtr, radix);
 
 		if (rejectInvalidCharacters)
 		{
-			// if szEndPtr is pointing to something other than NULL, this must be a string
+			// if szEndPtr is pointing to something other than NULL, this must be a string, so our conversion failed
 			if (!szEndPtr || *szEndPtr)
 			{
-				ulArg = NULL;
+				out = 0;
+				return false;
 			}
 		}
 
-		return ulArg;
+		return true;
+	}
+
+	// Converts a std::wstring to a ulong. Will return 0 if string is empty or contains non-numeric data.
+	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters)
+	{
+		ULONG ulArg{};
+		if (tryWstringToUlong(ulArg, src, radix, rejectInvalidCharacters))
+		{
+			return ulArg;
+		}
+
+		return 0;
 	}
 
 	// Converts a std::wstring to a long. Will return 0 if string is empty or contains non-numeric data.
@@ -740,6 +754,20 @@ namespace strings
 		return static_cast<size_t>(-1);
 	}
 
+	// Returns true if str begins with prefix
+	bool beginsWith(const std::wstring& str, const std::wstring& prefix)
+	{
+		if (str.empty()) return false;
+		if (prefix.empty()) return false;
+		if (prefix.length() > str.length()) return false;
+
+		const auto strLower = wstringToLower(str);
+		const auto prefixLower = wstringToLower(prefix);
+		const auto res = std::mismatch(prefixLower.begin(), prefixLower.end(), strLower.begin());
+
+		return res.first == prefixLower.end();
+	}
+
 	bool endsWith(const std::wstring& str, const std::wstring& ending)
 	{
 		if (str.length() >= ending.length())
@@ -787,7 +815,7 @@ namespace strings
 			return false;
 		}
 
-		if (lpProp->Value.LPSZ==nullptr )
+		if (lpProp->Value.LPSZ == nullptr)
 		{
 			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.LPSZ is NULL\n");
 			return false;

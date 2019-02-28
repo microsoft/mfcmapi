@@ -1,7 +1,7 @@
 #include <StdAfx.h>
-#include <core/mapi/columnTags.h>
 #include <MrMapi/MMReceiveFolder.h>
-#include <core/utility/cli.h>
+#include <MrMapi/mmcli.h>
+#include <core/mapi/columnTags.h>
 #include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
 
@@ -54,10 +54,10 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 	}
 }
 
-void DoReceiveFolder(_In_ cli::MYOPTIONS ProgOpts)
+void DoReceiveFolder(_In_ LPMDB lpMDB)
 {
-	if (ProgOpts.lpMDB)
+	if (lpMDB)
 	{
-		PrintReceiveFolderTable(ProgOpts.lpMDB);
+		PrintReceiveFolderTable(lpMDB);
 	}
 }

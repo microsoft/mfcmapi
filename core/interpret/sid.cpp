@@ -101,9 +101,9 @@ namespace sid
 		WC_B_S(LookupAccountSidW(
 			nullptr,
 			SidStart,
-			cchSidName ? &sidNameBuf.at(0) : nullptr,
+			cchSidName ? &sidNameBuf[0] : nullptr,
 			&cchSidName,
-			cchSidDomain ? &sidDomainBuf.at(0) : nullptr,
+			cchSidDomain ? &sidDomainBuf[0] : nullptr,
 			&cchSidDomain,
 			&SidNameUse));
 

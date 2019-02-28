@@ -1,6 +1,5 @@
 #include <StdAfx.h>
 #include <MrMapi/MMAcls.h>
-#include <core/utility/cli.h>
 #include <core/utility/registry.h>
 #include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
@@ -34,4 +33,4 @@ void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
 	if (lpExchTbl) lpExchTbl->Release();
 }
 
-void DoAcls(_In_ cli::MYOPTIONS ProgOpts) { DumpExchangeTable(PR_ACL_TABLE, ProgOpts.lpFolder); }
+void DoAcls(_In_ LPMAPIFOLDER lpFolder) { DumpExchangeTable(PR_ACL_TABLE, lpFolder); }
