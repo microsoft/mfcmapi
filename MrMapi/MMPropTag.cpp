@@ -1,10 +1,14 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
-#include <Shlwapi.h>
-#include <Interpret/Guids.h>
-#include <Interpret/SmartView/SmartView.h>
-#include <Interpret/InterpretProp.h>
-#include <Interpret/String.h>
+#include <MrMapi/MMPropTag.h>
+#include <MrMapi/mmcli.h>
+#include <core/interpret/guid.h>
+#include <core/smartview/SmartView.h>
+#include <core/utility/strings.h>
+#include <core/addin/addin.h>
+#include <core/addin/mfcmapi.h>
+#include <core/utility/output.h>
+#include <core/interpret/proptags.h>
+#include <core/interpret/proptype.h>
 
 // Searches a NAMEID_ARRAY_ENTRY array for a target dispid.
 // Exact matches are those that match
@@ -174,7 +178,7 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 
 	std::vector<ULONG> ulExacts;
 	std::vector<ULONG> ulPartials;
-	interpretprop::FindTagArrayMatches(ulPropTag, true, PropTagArray, ulExacts, ulPartials);
+	proptags::FindTagArrayMatches(ulPropTag, true, PropTagArray, ulExacts, ulPartials);
 
 	if (!ulExacts.empty())
 	{
@@ -224,8 +228,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 
 			std::vector<ULONG> ulExacts;
 			std::vector<ULONG> ulPartials;
-			interpretprop::FindTagArrayMatches(
-				PropTagArray[ulExactMatch].ulValue, true, PropTagArray, ulExacts, ulPartials);
+			proptags::FindTagArrayMatches(PropTagArray[ulExactMatch].ulValue, true, PropTagArray, ulExacts, ulPartials);
 
 			// We're gonna skip at least one, so only print if we have more than one
 			if (ulExacts.size() > 1)
@@ -472,6 +475,8 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 				{
 					break;
 				}
+
+				ulCur++;
 			}
 		}
 		else if (lpszPropName)
@@ -482,6 +487,8 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 				{
 					break;
 				}
+
+				ulCur++;
 			}
 		}
 
@@ -534,24 +541,25 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 	}
 }
 
-void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
+void DoPropTags()
 {
-	const auto lpszPropName = ProgOpts.lpszUnswitchedOption.empty() ? nullptr : ProgOpts.lpszUnswitchedOption.c_str();
-	const auto ulPropNum =
-		strings::wstringToUlong(ProgOpts.lpszUnswitchedOption, ProgOpts.ulOptions & cli::OPT_DODECIMAL ? 10 : 16);
+	auto propName = cli::switchUnswitched[0];
+	const auto lpszPropName = propName.empty() ? nullptr : propName.c_str();
+	const auto ulPropNum = strings::wstringToUlong(propName, cli::switchDecimal.isSet() ? 10 : 16);
 	if (lpszPropName) output::DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
 	output::DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
+	const auto ulTypeNum = cli::switchType.empty() ? ulNoMatch : proptype::PropTypeNameToPropType(cli::switchType[0]);
 
 	// Handle dispid cases
-	if (ProgOpts.ulOptions & cli::OPT_DODISPID)
+	if (cli::switchDispid.isSet())
 	{
-		if (ProgOpts.ulOptions & cli::OPT_DOFLAG)
+		if (cli::switchFlag.hasULONG(0, 16))
 		{
-			PrintFlag(ulPropNum, lpszPropName, true, ProgOpts.ulFlagValue);
+			PrintFlag(ulPropNum, lpszPropName, true, cli::switchFlag.atULONG(0, 16));
 		}
-		else if (ProgOpts.ulOptions & cli::OPT_DOPARTIALSEARCH)
+		else if (cli::switchSearch.isSet())
 		{
-			PrintDispIDFromPartialName(lpszPropName, ProgOpts.ulTypeNum);
+			PrintDispIDFromPartialName(lpszPropName, ulTypeNum);
 		}
 		else if (ulPropNum)
 		{
@@ -566,25 +574,25 @@ void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
 	}
 
 	// Handle prop tag cases
-	if (ProgOpts.ulOptions & cli::OPT_DOFLAG)
+	if (cli::switchFlag.hasULONG(0, 16))
 	{
-		PrintFlag(ulPropNum, lpszPropName, false, ProgOpts.ulFlagValue);
+		PrintFlag(ulPropNum, lpszPropName, false, cli::switchFlag.atULONG(0, 16));
 	}
-	else if (ProgOpts.ulOptions & cli::OPT_DOPARTIALSEARCH)
+	else if (cli::switchSearch.isSet())
 	{
-		PrintTagFromPartialName(lpszPropName, ProgOpts.ulTypeNum);
+		PrintTagFromPartialName(lpszPropName, ulTypeNum);
 	}
 	else if (lpszPropName && !ulPropNum)
 	{
-		PrintTagFromName(lpszPropName, ProgOpts.ulTypeNum);
+		PrintTagFromName(lpszPropName, ulTypeNum);
 	}
 	// If we weren't asked about a property, maybe we were asked about types
-	else if (ProgOpts.ulOptions & cli::OPT_DOTYPE)
+	else if (cli::switchType.isSet())
 	{
-		if (ulNoMatch != ProgOpts.ulTypeNum)
+		if (ulNoMatch != ulTypeNum)
 		{
-			PrintType(PROP_TAG(ProgOpts.ulTypeNum, 0));
-			printf(" = 0x%04lX = %lu", ProgOpts.ulTypeNum, ProgOpts.ulTypeNum);
+			PrintType(PROP_TAG(ulTypeNum, 0));
+			printf(" = 0x%04lX = %lu", ulTypeNum, ulTypeNum);
 			printf("\n");
 		}
 		else
@@ -598,13 +606,14 @@ void DoPropTags(_In_ const cli::MYOPTIONS& ProgOpts)
 	}
 }
 
-void DoGUIDs(_In_ const cli::MYOPTIONS& /*ProgOpts*/) { PrintGUIDs(); }
+void DoGUIDs() { PrintGUIDs(); }
 
-void DoFlagSearch(_In_ const cli::MYOPTIONS& ProgOpts)
+void DoFlagSearch()
 {
+	const auto lpszFlagName = cli::switchFlag[0];
 	for (const auto& flag : FlagArray)
 	{
-		if (!_wcsicmp(flag.lpszName, ProgOpts.lpszFlagName.c_str()))
+		if (!_wcsicmp(flag.lpszName, lpszFlagName.c_str()))
 		{
 			printf("%ws = 0x%08lX\n", flag.lpszName, flag.lFlagValue);
 			break;

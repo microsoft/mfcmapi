@@ -1,7 +1,8 @@
-#include <../StdAfx.h>
-#include <CppUnitTest.h>
+#include <UnitTest/stdafx.h>
 #include <UnitTest/UnitTest.h>
-#include <UnitTest/resource.h>
+#include <core/addin/addin.h>
+#include <core/utility/registry.h>
+#include <core/utility/strings.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

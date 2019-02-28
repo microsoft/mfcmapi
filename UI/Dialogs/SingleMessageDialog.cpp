@@ -1,11 +1,13 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/SingleMessageDialog.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <MAPI/MAPIFunctions.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/StreamEditor.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {
@@ -104,7 +106,7 @@ namespace dialog
 
 				if (SUCCEEDED(hRes))
 				{
-					hRes = EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+					EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 				}
 
 				(void) m_lpPropDisplay->RefreshMAPIPropList();

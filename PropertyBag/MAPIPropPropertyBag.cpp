@@ -1,8 +1,9 @@
 #include <StdAfx.h>
 #include <PropertyBag/MAPIPropPropertyBag.h>
-#include <MAPI/MAPIFunctions.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/SortListData.h>
+#include <core/utility/registry.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace propertybag
 {
@@ -62,7 +63,7 @@ namespace propertybag
 
 		if (!registry::useRowDataForSinglePropList)
 		{
-			auto unicodeFlag = registry::preferUnicodeProps ? MAPI_UNICODE : fMapiUnicode;
+			const auto unicodeFlag = registry::preferUnicodeProps ? MAPI_UNICODE : fMapiUnicode;
 
 			hRes = mapi::GetPropsNULL(m_lpProp, unicodeFlag, lpcValues, lppPropArray);
 			if (SUCCEEDED(hRes))
@@ -139,7 +140,7 @@ namespace propertybag
 		if (nullptr == m_lpProp) return S_OK;
 
 		LPSPropProblemArray lpProblems = nullptr;
-		auto hRes = WC_H(m_lpProp->SetProps(cValues, lpPropArray, &lpProblems));
+		const auto hRes = WC_H(m_lpProp->SetProps(cValues, lpPropArray, &lpProblems));
 		EC_PROBLEMARRAY(lpProblems);
 		MAPIFreeBuffer(lpProblems);
 		return hRes;

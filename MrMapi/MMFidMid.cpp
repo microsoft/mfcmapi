@@ -1,11 +1,13 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMFidMid.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/MAPIProcessor/MapiProcessor.h>
-#include <Interpret/ExtraPropTags.h>
-#include <Interpret/SmartView/SmartView.h>
-#include <Interpret/String.h>
+#include <MrMapi/mmcli.h>
+#include <core/mapi/processor/mapiProcessor.h>
+#include <core/mapi/extraPropTags.h>
+#include <core/smartview/SmartView.h>
+#include <core/utility/strings.h>
+#include <core/utility/registry.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace mapiprocessor
 {
@@ -24,7 +26,7 @@ namespace mapiprocessor
 			L" %-15ws %wc %ws (%ws)\n", szMid.c_str(), fAssociated ? L'A' : L'R', szSubject.c_str(), szClass.c_str());
 	}
 
-	class CFindFidMid : public CMAPIProcessor
+	class CFindFidMid : public mapi::processor::mapiProcessor
 	{
 	public:
 		CFindFidMid();
@@ -277,12 +279,12 @@ namespace mapiprocessor
 	}
 } // namespace mapiprocessor
 
-void DoFidMid(_In_ cli::MYOPTIONS ProgOpts)
+void DoFidMid(_In_ LPMDB lpMDB)
 {
 	mapiprocessor::DumpFidMid(
-		ProgOpts.lpszProfile,
-		ProgOpts.lpMDB,
-		ProgOpts.lpszFid,
-		ProgOpts.lpszMid,
-		cli::OPT_MID == (ProgOpts.ulOptions & cli::OPT_MID));
+		cli::switchProfile[0],
+		lpMDB,
+		cli::switchFid[0],
+		cli::switchMid[0],
+		cli::switchMid.isSet());
 }

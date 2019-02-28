@@ -4,16 +4,19 @@
 #include <UI/FakeSplitter.h>
 #include <UI/FileDialogEx.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <UI/Dialogs/Editors/SearchEditor.h>
-#include <MAPI/MapiMemory.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/mapiMemory.h>
+#include <core/mapi/extraPropTags.h>
 #include <UI/addinui.h>
+#include <core/utility/registry.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {

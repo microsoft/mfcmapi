@@ -1,29 +1,31 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/FakeSplitter.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <UI/ParentWnd.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/HexEditor.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
-#include <MAPI/MAPIFunctions.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/Dialogs/AboutDlg.h>
-#include <MAPI/AdviseSink.h>
-#include <Interpret/ExtraPropTags.h>
+#include <UI/AdviseSink.h>
+#include <core/mapi/extraPropTags.h>
 #include <Msi.h>
-#include <Interpret/SmartView/SmartView.h>
-#include <MAPI/Cache/GlobalCache.h>
+#include <core/smartview/SmartView.h>
+#include <core/mapi/cache/globalCache.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <UI/Dialogs/Editors/Options.h>
 #include <Windows.h>
 #include <malloc.h>
-#include <stdio.h>
-#include <MAPI/Version.h>
+#include <core/mapi/version.h>
 #include <UI/addinui.h>
+#include <core/utility/registry.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/interpret/flags.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {
@@ -897,7 +899,7 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_NOTIFICATIONS, IDS_NOTIFICATIONSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagNotifEventType, true));
+		MyData.SetPromptPostFix(flags::AllFlagsToString(flagNotifEventType, true));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_EID, false));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_ULEVENTMASK, false));
 		MyData.SetHex(1, fnevNewMail);

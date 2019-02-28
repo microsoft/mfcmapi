@@ -1,0 +1,1739 @@
+//
+// MFCMAPI.RC2 - resources Microsoft Visual C++ does not edit directly
+//
+
+#ifdef APSTUDIO_INVOKED
+#error this file is not editable by Microsoft Visual C++
+#endif // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+// Add manually edited resources here...
+/////////////////////////////////////////////////////////////////////////////
+
+#ifdef MRMAPI
+#define RC_PRODUCT_NAME               "MrMAPI"
+#define RC_VERSION_INTERNAL_NAME       RC_PRODUCT_NAME "\0"
+#define RC_VERSION_ORIGINAL_FILE_NAME  "MrMAPI.EXE\0"
+#else
+#define RC_PRODUCT_NAME               "MFCMAPI"
+#define RC_VERSION_INTERNAL_NAME       RC_PRODUCT_NAME "\0"
+#define RC_VERSION_ORIGINAL_FILE_NAME  "MFCMapi.EXE\0"
+#endif
+
+#ifdef UNICODE
+#define RC_VERSION_WIDTH               " Unicode"
+#else
+#define RC_VERSION_WIDTH               ""
+#endif
+
+#ifdef _WIN64
+#define RC_VERSION_BITNESS             " x64"
+#else
+#define RC_VERSION_BITNESS             " x86"
+#endif
+
+#ifdef _DEBUG
+#define RC_VERSION_DEBUG               " Debug"
+#else
+#define RC_VERSION_DEBUG               ""
+#endif
+
+#define RC_VERSION_FILE_DESCRIPTION    RC_PRODUCT_NAME RC_VERSION_WIDTH RC_VERSION_DEBUG RC_VERSION_BITNESS "\0"
+#include <Res/bldver.rc>
+
+// Keep in sync with definition of IDD_ABOUTVERLAST
+IDD_ABOUT DIALOGEX DISCARDABLE  0, 0, 400, 200
+STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU | DS_SHELLFONT
+CAPTION "" // About MFCMAPI
+FONT 8, "Segoe UI"
+BEGIN
+DEFPUSHBUTTON   "OK", IDOK, 327, 15, 54, 14, WS_GROUP
+CONTROL         IDB_MFCMAPILOGO, IDC_STATIC, "Static", SS_BITMAP, 1, 2, 64, 64
+LTEXT           "ProductName", IDD_ABOUTVERFIRST, 50, 0, 263, 0
+LTEXT           "FileDescription", IDD_ABOUTVERFIRST + 1, 50, 0, 263, 0
+LTEXT           "FileVersion", IDD_ABOUTVERFIRST + 2, 50, 0, 263, 0
+LTEXT           "LegalCopyright", IDD_ABOUTVERFIRST + 3, 50, 0, 350, 0
+END
+
+IDD_BLANK_DIALOG DIALOGEX 0, 0, 456, 294
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU |
+WS_THICKFRAME | WS_CLIPCHILDREN | DS_SHELLFONT
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "Segoe UI"
+BEGIN
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+ID_PRODUCTNAME          RC_VERSION_FILE_DESCRIPTION
+END
+
+// Keep in sync with definition of IDS_VER_LAST
+STRINGTABLE DISCARDABLE
+BEGIN
+IDS_VER_FIRST           "ProductName"
+IDS_VER_FIRST + 1         "InternalName"
+IDS_VER_FIRST + 2         "OriginalFilename"
+IDS_VER_FIRST + 3         "LegalCopyright"
+IDS_VER_FIRST + 4         "CompanyName"
+IDS_VER_FIRST + 5         "FileDescription"
+IDS_VER_FIRST + 6         "FileVersion"
+IDS_VER_FIRST + 7         "ProductVersion"
+IDS_VER_FIRST + 8         "LegalTrademarks"
+END
+
+// Help strings for menu items
+STRINGTABLE DISCARDABLE
+BEGIN
+IDCANCEL										"Close window."
+ID_ABORTSUBMIT									"Call AbortSubmit on selected messages"
+ID_ADDEXCHANGETOPROFILE							"Add an Exchange mailbox to the selected profile"
+ID_ADDPSTTOPROFILE								"Add a personal store (PST) to the selected profile"
+ID_ADDUNICODEPSTTOPROFILE						"Add a Unicode personal store (PST) to the selected profile"
+ID_ADDSERVICESTOMAPISVCINF						"Add services to MAPISVC.INF"
+ID_ADDSERVICETOPROFILE							"Add a service to the selected profile"
+ID_ADDTESTADDRESS								"Add a one-off recipient to the TO line of the selected message"
+ID_APPLYFINDROW									"Apply a restriction using FindRow"
+ID_APPLYRESTRICTION								"Apply a restriction by calling Restrict on the contents table"
+ID_ATTACHMENTPROPERTIES							"Display the attachment table of the message"
+ID_CALCFORMPOPSET								"Calculate form propset"
+ID_CANCELTABLELOAD								"Cancel load of table"
+ID_CLEARRESTRICTION								"Remove the FindRow or Restrict restriction from the contents table"
+ID_CLOSEADDRESSBOOK								"Close the global reference to the address book"
+ID_COMPAREENTRYIDS								"Display dialog to enter Entry IDs to call CompareEntryIDs with"
+ID_COMPUTEGIVENSTOREHASH						"Compute a MAPI Protocol Host URL store hash for the selected store"
+ID_COMPUTESTOREHASH								"Compute a store hash for a MAPI Protocol Host URL"
+ID_CONFIGUREMSGSERVICE							"Call ConfigureMsgService on selected provider"
+ID_CONTENTS										"Open contents table for this folder"
+ID_CONVERTMSGTOEML								"Convert an MSG file to an EML file using IConverterSession"
+ID_CONVERTEMLTOMSG								"Convert an EML file to an MSG file using IConverterSession"
+ID_CONVERTMSGTOXML								"Convert an MSG file to an XML property dump"
+ID_COPY											"Copy selected item(s)"
+ID_COPY_PROPERTY								"Copy property"
+ID_COUNTNAMEDPROPS								"Determine the number of named property mappings by locating the highest currently mapped named property"
+ID_CREATEMESSAGERESTRICTION						"Create a restriction based on the selected message using the subject and submit and delivery times"
+ID_CREATEPROFILE								"Create an empty profile"
+ID_CREATEPROPERTYSTRINGRESTRICTION				"Create a content restriction using a given string and property"
+ID_CREATERANGERESTRICTION						"Create a restriction using a range"
+ID_CREATESUBFOLDER								"Create a subfolder under the selected folder"
+ID_DBGVIEW										"Open Debug Viewer"
+ID_DELETEATTACHMENTS							"Delete attachments from selected items"
+ID_DELETEPROPERTY								"Delete selected property from the selected item"
+ID_DELETESELECTEDITEM							"Delete selected item (to the Deleted Items folder for messages)"
+ID_DISPATCHNOTIFICATIONS						"Call HrDispatchNotifications to force notification processing"
+ID_DISPLAYACLTABLE								"Display PR_ACL_TABLE as a table"
+ID_DISPLAYASSOCIATEDCONTENTS					"Display the associated contents table of the selected folder"
+ID_DISPLAYCALENDAR								"Display the default Calendar folder for the store"
+ID_DISPLAYCONTACTS								"Display the default Contacts folder for the store"
+ID_DISPLAYDELETEDCONTENTS						"Display soft deleted items for the selected folder"
+ID_DISPLAYDELETEDSUBFOLDERS						"Display soft deleted subfolders for the selected folder"
+ID_DISPLAYDETAILS								"Display details dialog for selected address book entry"
+ID_DISPLAYHIERARCHYTABLE						"Display hierarchy table of selected folder in table form"
+ID_DISPLAYINBOX									"Display the default Inbox for the store"
+ID_DISPLAYMAILBOXTABLE							"Display mailbox table of server (default to server associated with primary Exchange mailbox)"
+ID_DISPLAYMAPIPATH								"Display path MAPI has been loaded from"
+ID_DISPLAYOUTGOINGQUEUE							"Display the outgoing queue table. Uses GetOutgoingQueue"
+ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET "Use property sheet to display selected property as a security descriptor. Use on PR_NT_SECURITY_DESCRIPTOR."
+ID_DISPLAYPUBLICFOLDERTABLE						"Display table of public folders replicated to server (default to server associated with primary Exchange mailbox)"
+ID_DISPLAYRECEIVEFOLDERTABLE					"Display the receive folder table for the selected store. Uses GetReceiveFolderTable."
+ID_DISPLAYRULESTABLE							"Display PR_RULES_TABLE as a table"
+ID_DISPLAYSELECTEDITEM							"Attempt to open and display the selected item"
+ID_DISPLAYTASKS									"Display the default Tasks folder for the store"
+ID_DUMPSERVERCONTENTSTOTEXT						"Export contents of a server to text files. This will be VERY SLOW."
+ID_DUMPSTORECONTENTS							"Export contents of the selected message store to text files. This will be SLOW."
+ID_EDITGIVENPROPERTY							"Prompt for a property number, then display an edit dialog."
+ID_EDITPROPERTY									"Display dialog for editing and copying selected property"
+ID_EDITPROPASBINARYSTREAM						"Interpret property as a PT_BINARY and read using stream interface. Display read only view of the stream."
+ID_EDITPROPERTYASPRRTFCOMPRESSEDSTREAM			"Interpret property as an RTF compressed stream for editing. Use with PR_RTF_COMPRESSED."
+ID_EDITPROPERTYASASCIISTREAM					"Interpret property as an ASCII stream for editing. Use with PR_BODY and most other PT_TSTRING properties."
+ID_EDITPROPERTYASUNICODESTREAM					"Interpret property as a Unicode stream for editing. Use with PR_BODY and most other PT_TSTRING properties."
+ID_EDITRESTRICTION								"Edit current restriction or create a new one"
+ID_EDITSEARCHCRITERIA							"Edit search criteria using GetSearchCriteria and SetSearchCriteria"
+ID_EMPTYFOLDER									"Call IMAPFolder::EmptyFolder"
+ID_EXECUTEVERBONFORM							"Execute a verb on selected forms"
+ID_EXPORTMESSAGES								"Export messages by search term"
+ID_FASTSHUTDOWN									"Check for Fast Shutdown support and attempt a Fast Shutdown."
+ID_FINDALLNAMEDPROPS							"Find all current named property mappings and add them to the current property view as 'extra' properties."
+ID_GETDISPLAY									"Get display"
+ID_GETMAPISVCINF								"Use FGetComponentPath to locate MAPISVC.INF"
+ID_GETPROFILESERVERVERSION						"Get Exchange server version of selected profile"
+ID_GETPROPSUSINGLONGTERMEID						"Open item with PR_LONGTERM_ENTRYID_FROM_TABLE and display properties."
+ID_GETSTATUS									"Call IMAPITable::GetStatus"
+ID_MYHELP										"Display Help/Splash Screen"
+ID_HIDDENCONTENTS								"Open hidden/associated contents table for this folder"
+ID_HIERARCHY									"Display hierarchy for this folder"
+ID_HEXEDITOR									"Open Hex Editor"
+ID_INSTALLFORM									"Install form"
+ID_ISATTACHMENTBLOCKED							"Determine if a particular filename would be blocked"
+ID_LAUNCHPROFILEWIZARD							"Use the LAUNCHWIZARD entrypoint in mapi32.dll to configure profiles"
+ID_LOADFROMEML									"Load a message from a .EML file using IConverterSession"
+ID_LOADFROMMSG									"Load a message from a .MSG file"
+ID_LOADFROMTNEF									"Load a message from a TNEF encoded file, such as Winmail.dat"
+ID_LOADMAPI										"Manually load MAPI DLL"
+ID_LOGOFF										"Log out of MAPI."
+ID_LOGOFFWITHFLAGS								"Log out of MAPI. Prompt for flags for Logoff"
+ID_LOGON										"Call MAPILogonEx. Do not open message store table."
+ID_LOGONANDDISPLAYSTORES						"Log on to MAPI and display message store table"
+ID_LOGONWITHFLAGS								"Prompt for flags to use for MAPILogonEx."
+ID_MAPIINITIALIZE								"Call MAPIInitialize with flags"
+ID_MAPIOPENLOCALFORMCONTAINER					"Call MAPIOpenLocalFormContainer"
+ID_MAPIUNINITIALIZE								"Call MAPIUninitialize"
+ID_MANUALRESOLVE								"Use manual name resolution to add an address to a message"
+ID_MODIFYEXTRAPROPS								"Modify the list of additional properties in the property view"
+ID_MODIFYRECIPIENT								"Commit changes to selected recipient using ModifyRecipients"
+ID_MODIFYSELECTEDITEM							"Save changes to selected rows/items"
+ID_NEW_APPOINTMENT								"Create and display new IPM.APPOINTMENT in Calendar folder"
+ID_NEW_CONTACT									"Create and display new IPM.CONTACT in Contacts folder"
+ID_NEW_CUSTOMFORM								"Create and display new message user entered or selected message class"
+ID_NEW_IPMNOTE									"Create new IPM.NOTE in current folder"
+ID_NEW_IPMPOST									"Create new IPM.POST in current folder"
+ID_NEW_MESSAGE									"Create new message (without displaying) in current folder."
+ID_NEW_STICKYNOTE								"Create and display new IPM.STICKYNOTE in Notes folder"
+ID_NEW_TASK										"Create and display new IPM.TASK in Tasks folder"
+ID_NOTIFICATIONSOFF								"Call Unadvise"
+ID_NOTIFICATIONSON								"Call Advise on store, session, or address book"
+ID_OPEN_PROPERTY								"Open PT_BINARY, PT_MV_BINARY or PT_OBJECT property and attempt to display referenced object or table"
+ID_OPENADDRESSBOOK								"Open global reference to address book"
+ID_OPENCONTACT									"Open contact item underlying selected entry"
+ID_OPENDEFAULTMESSAGESTORE						"Display default message store"
+ID_OPENENTRYID									"Display dialog to enter Entry ID to call OpenEntry with"
+ID_OPENFORMCONTAINER							"Call OpenFormContainer"
+ID_OPENMAINWINDOW								"Open main window"
+ID_OPENMAILBOXWITHDN							"Call OpenOtherUsersMailbox, passing a given DN"
+ID_OPENMANAGER									"Render PR_EMS_AB_MANAGER as a MAPI table"
+ID_OPENMESSAGESTOREEID							"Call OpenMsgStore with an Entry ID"
+ID_OPENMESSAGESTORETABLE						"Display message store table"
+ID_OPENMODAL									"Display modal message using PrepareForm\ShowForm"
+ID_OPENNONMODAL									"Display nonmodal message using custom MAPI Form Viewer"
+ID_OPENOTHERUSERSMAILBOXFROMGAL					"Display mailbox selected from the Global Address List"
+ID_OPENOWNER									"Render PR_EMS_AB_OWNER as a MAPI table"
+ID_OPENDEFAULTDIR								"Call IAddrBook::GetDefaultDir to open the default directory"
+ID_OPENPAB										"Call IAddrBook::GetPAB to open the Personal Address Book"
+ID_OPENPROFILESECTION							"Display dialog to enter UID to call OpenProfileSection with"
+ID_OPENPROPERTYASTABLE							"Display as table using IMAPITable interface"
+ID_OPENPUBLICFOLDERS							"Display Public message store"
+ID_OPENSELECTEDSTOREDELETEDFOLDERS				"Display deleted folders for selected store"
+ID_OPENWITHFLAGS								"Allow entry of flags for CreateStoreEntryID"
+ID_OPTIONS										"Set options"
+ID_OUTLOOKVERSION								"Get version of Outlook"
+ID_OUTPUTTABLE									"Output table to file"
+ID_PASTE										"Paste copied item(s)"
+ID_PASTE_NAMEDPROPS								"Paste named properties from source to target"
+ID_PASTE_PROPERTY								"Paste copied property from source to target"
+ID_PASTE_RULES									"Paste rules from source folder"
+ID_QSINBOX										"Open the Inbox folder"
+ID_QSCALENDAR									"Open the Calendar folder"
+ID_QSCONTACTS									"Open the Contacts folder"
+ID_QSJOURNAL									"Open the Journal folder"
+ID_QSNOTES										"Open the Notes folder"
+ID_QSTASKS										"Open the Tasks folder"
+ID_QSREMINDERS									"Open the Reminders folder"
+ID_QSDRAFTS										"Open the Drafts folder"
+ID_QSSENTITEMS									"Open the Sent Items folder"
+ID_QSOUTBOX										"Open the Outbox folder"
+ID_QSDELETEDITEMS								"Open the Deleted Items folder"
+ID_QSFINDER										"Open the Finder folder"
+ID_QSIPM_SUBTREE								"Open the IPM_SUBTREE folder"
+ID_QSLOCALFREEBUSY								"Open the Local Freebusy folder"
+ID_QSCONFLICTS									"Open the Conflicts folder"
+ID_QSSYNCISSUES									"Open the Sync Issues folder"
+ID_QSLOCALFAILURES								"Open the Local Failures folder"
+ID_QSSERVERFAILURES								"Open the Server Failures folder"
+ID_QSJUNKMAIL									"Open the Junkmail folder"
+ID_QSRULES										"Open the Inbox rules"
+ID_QSDEFAULTDIR									"Open the default address book"
+ID_QSAB											"Open the Outlook Address Book hierarchy"
+ID_QSCALPERM									"Opens the calendar and shows the ACL table"
+ID_QSNICKNAME									"Displays the contents of the Nickname Cache"
+ID_QSQUOTA										"Looks up and displays various delivery store quotas"
+ID_QSCHECKSPECIALFOLDERS						"Report on special folders"
+ID_QSTHUMBNAIL									"Look up user thumbnail"
+ID_QSOPENUSER									"Look up user"
+ID_QUERYDEFAULTMESSAGEOPT						"Call QueryDefaultMessageOpt"
+ID_QUERYDEFAULTRECIPOPT							"Call QueryDefaultRecipOpt"
+ID_QUERYIDENTITY								"Display properties of the currently logged on user using QueryIdentity"
+ID_RECIPIENTPROPERTIES							"Display Recipients table (PR_MESSAGE_RECIPIENTS)"
+ID_RECIPOPTIONS									"Display recipient options dialog"
+ID_REFRESHVIEW									"Refresh view of current pane"
+ID_REMOVEFORM									"Remove form"
+ID_REMOVEONEOFF									"Remove Outlook One Off properties"
+ID_REMOVESERVICESFROMMAPISVCINF					"Remove services from MAPISVC.INF"
+ID_RESENDALLMESSAGES							"Resend all messages attached to (embedded in) messages in the selected folder. Used to resend NDR messages."
+ID_RESENDMESSAGE								"Resend all messages attached to (embedded in) the current message. Used to resend NDR messages."
+ID_RESETPERMISSIONSONITEMS						"Attempt to delete PR_NT_SECURITY_DESCRIPTOR on all messages in current folder."
+ID_RESOLVEMESSAGECLASS							"Resolve message class"
+ID_RESOLVEMULTIPLEMESSAGECLASSES				"Resolve multiple message classs"
+ID_RESTOREDELETEDFOLDER							"Attempt to restore folder from deleted storage back to original parent folder. May fail."
+ID_RTFSYNC										"Call RTFSync"
+ID_SAVEATTACHMENTS								"Save all attachments to files."
+ID_SAVECHANGES									"Call SaveChanges on Message"
+ID_SAVEFOLDERCONTENTSASMSG						"Save all messages in folder as .MSG files"
+ID_SAVEFOLDERCONTENTSASTEXTFILES				"Save properties of folder and messages in folder into text files"
+ID_SAVEMESSAGETOFILE							"Save message to a file"
+ID_SAVEPROPERTIES								"Save all properties displayed in current view to XML file."
+ID_SAVETOFILE									"Save attachment to file."
+ID_SELECTFORM									"Display Select Form dialog"
+ID_SELECTFORMCONTAINER							"Display Select Form Container dialog"
+ID_SENDBULKMAIL									"Send messages with custom subject and recipient"
+ID_SETCOLUMNS									"Display current column set (QueryColumns) and allow editing (SetColumns)"
+ID_SETDEFAULTDIR								"Call IAddrBook::SetDefaultDir to mark as the default address book container"
+ID_SETDEFAULTPROFILE							"Set the selected profile as the default profile. Uses SetDefaultProfile."
+ID_SETDEFAULTSTORE								"Set the selected store as the default store. Uses SetDefaultStore."
+ID_SETPAB										"Call IAddrBook::SetPAB to mark as the Personal Address Book"
+ID_SETREADFLAG									"Call SetReadFlag/SetReadFlags on selected messages"
+ID_SETRECEIVEFOLDER								"Call SetReceiveFolder on selected folder"
+ID_SORTTABLE									"Use SortTable to set a sort order on current contents table"
+ID_GETMESSAGEOPTIONS							"Call MessageOptions on selected messages"
+ID_GETMESSAGESTATUS								"Call GetMessageStatus on selected messages"
+ID_SETMESSAGESTATUS								"Call SetMessageStatus on selected messages"
+ID_SHOWPROFILES									"Display profile table"
+ID_SUBMITMESSAGE								"Call SubmitMessage on message"
+ID_TABLENOTIFICATIONOFF							"Disable content table notification - useful when rapid updates are occuring"
+ID_TABLENOTIFICATIONON							"Enable content table notification"
+ID_UNLOADMAPI									"Manually unload MAPI DLL"
+ID_VALIDATEIPMSUBTREE							"Call HrValidateIPMSubtree on current store"
+ID_VIEWABHIERARCHY								"Display Address Book Hierarchy - Global reference must be opened first"
+ID_VIEWEMBEDDEDMESSAGEPROPERTIES				"Interpret all attachments as embedded messages and display properties"
+ID_VIEWMSGPROPERTIES							"View properties of an MSG file"
+ID_VIEWSTATUSTABLE								"Display the status table. Uses GetStatusTable."
+ID_VIEWRECIPIENTABENTRY							"View recipient's address book entry."
+END
+
+// Stringtable definitions for GUI
+// Try to keep strings in sections by use, but do reuse strings when possible
+STRINGTABLE DISCARDABLE
+BEGIN
+// abdlg.cpp
+IDS_DELETEABENTRY                "Delete Address book entry"
+IDS_DELETEABENTRYPROMPT          "This will permanently delete the selected Address Book entries."
+IDS_CALLCOPYENTRIES              "Call CopyEntries"
+IDS_CALLCOPYENTRIESPROMPT        "Enter flags to pass\r\n\
+0x00000001 CREATE_CHECK_DUP_STRICT\r\n\
+0x00000002 CREATE_CHECK_DUP_LOOSE\r\n\
+0x00000004 CREATE_REPLACE"
+IDS_SEARCHCRITERIA               "Search Criteria"
+IDS_ABSEARCHCRITERIAPROMPT       "Type portion of name to find"
+
+// acldlg.cpp
+IDS_ACLADDITEM                   "New User"
+IDS_ACLADDITEMPROMPT             "Add which user?\r\n\
+\r\n\
+Specify PR_MEMBER_RIGHTS mask"
+
+// basedialog.cpp
+IDS_SETOPTS                      "Options"
+IDS_OPENEID                      "Open Entry ID"
+IDS_OPENEIDPROMPT                "This function will attempt to interpret a hex encoded binary string as an Entry ID.\r\n\
+The Entry ID will be passed to each selected interface in turn, until the object\r\n\
+is successfully opened or all selected interfaces have been attempted.\r\n\
+The object will then be displayed in a new window.\r\n\
+The properties of the object will be displayed in the property viewer."
+IDS_COMPAREEIDS                  "Compare Entry IDs"
+IDS_COMPAREEIDSPROMPTS           "This function will attempt to interpret hex encoded binary strings as an Entry ID.\r\n\
+The Entry IDs will be passed to the selected interface's implementation of CompareEntryIDs."
+IDS_COMPAREEIDSRESULT            "CompareEntryIDs result"
+IDS_NOTIFICATIONS                "Notifications"
+IDS_NOTIFICATIONSPROMPT          "Enter Entry ID (leave blank to get store wide notifications)\r\n\
+Set ulEventMask"
+IDS_COMPUTESTOREHASH             "Compute Store Hash"
+IDS_COMPUTESTOREHASHPROMPT       "Enter store entry ID and file name"
+IDS_OUTLOOKVERSIONTITLE          "Outlook Version"
+IDS_OUTLOOKVERSIONPROMPT         "Outlook path, version and language obtained through MsiProvideQualifiedComponent and MsiGetFileVersion:"
+IDS_OUTLOOKVERSIONSTRING         "Path: %1!ws!\nVersion: %2!ws!\nLang: %3!ws!\n64 bit: "
+IDS_NOOUTLOOK                    "Outlook does not appear to be installed on this machine."
+
+IDS_TITLEBARMESSAGE              "%1!ws!: %2!ws!"
+IDS_TITLEBARPLAIN                "%1!ws!"
+IDS_HIDDEN                       "%1!ws! (Hidden Contents)"
+IDS_COMPAREEIDBOOL               "0x%1!08X! = %2!ws!"
+IDS_STOREHASHVAL                 "Store Hash = 0x%1!08X!"
+IDS_STOREHASHDOUBLEVAL           "EntryID Hash = 0x%1!08X!\r\nMapping Signature Hash = 0x%2!08X!"
+IDS_LOADMAPISTATUS               "Load MAPI from %1!ws!"
+
+// contentstabledlg.cpp
+IDS_CREATEPROPRES                "Create Property String Restriction"
+IDS_CREATERANGERES               "Create Range Restriction"
+IDS_RANGESEARCHCRITERIAPROMPT    "Type substring that subjects should be greater than"
+IDS_COLUMNSET                    "Column set"
+IDS_COLUMNSETPROMPT              "Edit the column set for the view"
+IDS_GETSTATUS                    "Get Status"
+IDS_GETSTATUSPROMPT              "GetStatus results"
+IDS_SORTTABLE                    "Sort Table"
+IDS_SORTTABLEPROMPT1             "Type number of properties to sort on.\r\n\
+Pass 0 to clear current sort order\r\n\
+Note that cSort >= cCategories >= cExpanded\r\n\
+Not all table implementations support categories\r\n\
+If categories are specified, sorting by clicking on column headers may produce unexpected results"
+IDS_SORTORDER                    "Sort Order"
+IDS_SORTORDERPROMPT              "Select sort order"
+
+// contentstablelistctrl.cpp
+IDS_DBGVIEW                      "Debug Viewer"
+
+// folderdlg.cpp
+IDS_ADDONEOFF                    "Add One Off Recipient"
+IDS_COPYMESSAGE                  "Copy Message"
+IDS_COPYMESSAGEPROMPT            "Check box to move message instead"
+IDS_TAGSTOEXCLUDE                "Tags To Exclude"
+IDS_TAGSTOEXCLUDEPROMPT          "Specify tags to exclude in CopyTo operation"
+IDS_DELETEATTACHMENTS            "Delete Attachments"
+IDS_DELETEATTACHMENTSPROMPT      "Enter file name to delete (leave blank to delete ALL attachments)\r\n\
+NOTE: Comparison will be case insensitive"
+IDS_DELETEITEM                   "Delete Item"
+IDS_DELETEITEMPROMPT             "Select deletion style"
+IDS_LOADMSG                      "Load MSG"
+IDS_LOADMSGPROMPT                "Select load style"
+IDS_MANUALRESOLVE                "Manual Resolve"
+IDS_MANUALRESOLVEPROMPT          "Type exact value to resolve"
+IDS_NEWCUSTOMFORM                "New Custom Form"
+IDS_NEWCUSTOMFORMPROMPT1         "Select form location"
+IDS_NEWCUSTOMFORMPROMPT2         "Enter type of custom form"
+IDS_EXECUTEVERB                  "Execute Verb On Form"
+IDS_EXECUTEVERBPROMPT            "Enter verb to execute:"
+IDS_REMOVEONEOFF                 "Remove one-off properties"
+IDS_REMOVEONEOFFPROMPT           "Check box to remove property definition stream"
+IDS_CALLRTFSYNC                  "Call RTFSync"
+IDS_CALLRTFSYNCPROMPT            "Enter flags to pass\r\n\
+0x00000001 RTF_SYNC_RTF_CHANGED\r\n\
+0x00000002 RTF_SYNC_BODY_CHANGED\r\n\
+0x00000004 RTF_SYNC_HTML_CHANGED"
+IDS_SAVEMESSAGETOFILE            "Save Message To File"
+IDS_SAVEMESSAGETOFILEPROMPT      "Select format for saving message."
+IDS_SENDBULKMAIL                 "Send Bulk Mail"
+IDS_SENDBULKMAILPROMPT           "Fill out message properties"
+IDS_SETREADFLAG                  "Flags For SetReadFlag"
+IDS_SETREADFLAGPROMPT            "Type flags to pass into SetReadFlag:\r\n\
+\r\n\
+0x00000001 SUPPRESS_RECEIPT      Don't Send a receipt at all - overrides other settings\r\n\
+0x00000004 CLEAR_READ_FLAG       Clear MSGFLAG_READ and send a receipt\r\n\
+0x00000008 MAPI_DEFERRED_ERRORS  Allow early return\r\n\
+0x00000010 GENERATE_RECEIPT_ONLY Generate a receipt if one is pending\r\n\
+0x00000020 CLEAR_RN_PENDING      Clear MSGFLAG_RN_PENDING and do not send a read report\r\n\
+0x00000040 CLEAR_NRN_PENDING     Clear MSGFLAG_NRN_PENDING and do not send a non-read report\r\n\
+Pass 0x0 to mark read, 0x4 to mark unread."
+IDS_MESSAGEOPTIONS               "MessageOptions"
+IDS_ADDRESSTYPEPROMPT            "Enter address type"
+IDS_MESSAGESTATUS                "Message Status"
+IDS_SETMSGSTATUS                 "SetMessageStatus"
+IDS_SETMSGSTATUSPROMPT           "Type status and mask to pass into SetMessageStatus:\r\n\
+\r\n\
+0x00000001 MSGSTATUS_HIGHLIGHTED     The message is to be displayed as highlighted.\r\n\
+0x00000002 MSGSTATUS_TAGGED          The message has been tagged for a client-defined purpose.\r\n\
+0x00000004 MSGSTATUS_HIDDEN          The message is not to be displayed.\r\n\
+0x00000008 MSGSTATUS_DELMARKED       The message has been marked for deletion.\r\n\
+0x00000100 MSGSTATUS_DRAFT           The message is a draft\r\n\
+0x00000200 MSGSTATUS_ANSWERED\r\n\
+0x00000800 MSGSTATUS_IN_CONFLICT     The message is in conflict\r\n\
+0x00001000 MSGSTATUS_REMOTE_DOWNLOAD Mark message for downloading to the local client.\r\n\
+0x00002000 MSGSTATUS_REMOTE_DELETE   Mark message for deletion without downloading to the local client.\r\n\
+0x00004000 MSGSTATUS_MDNSENT         IMAP4 MDNSent flag"
+IDS_EXPORTPROMPTLOCATION         "Prompt for location of each file"
+
+// formcontainerdlg.cpp
+IDS_INSTALLFORM                  "Install Form"
+IDS_INSTALLFORMPROMPT            "Enter flags\r\n\
+0x0008 MAPIFORM_INSTALL_DIALOG\r\n\
+0x0010 MAPIFORM_INSTALL_OVERWRITEONCONFLICT"
+IDS_REMOVEFORM                   "Remove Form"
+IDS_REMOVEFORMPROMPT             "Enter class"
+IDS_RESOLVECLASS                 "Resolve Message Class"
+IDS_RESOLVECLASSPROMPT           "Enter class and flags\r\n\
+0x0020 MAPIFORM_EXACTMATCH"
+IDS_RESOLVECLASSES               "Resolve Message Classes"
+IDS_RESOLVECLASSESPROMPT         "Enter number of classes (in decimal) and flags\r\n\
+Enter 0 for number to get all forms and flags\r\n\
+0x0020 MAPIFORM_EXACTMATCH\r\n\
+\r\n\
+Note: this will output data to the debug stream, not the UI."
+IDS_ENTERMSGCLASS                "Message class"
+IDS_ENTERMSGCLASSPROMPT          "Enter message class"
+IDS_CALCFORMPROPSET              "Calc Form Propset"
+IDS_CALCFORMPROPSETPROMPT        "Enter flags\r\n\
+0x0000 FORMPROPSET_UNION\r\n\
+0x0001 FORMPROPSET_INTERSECTION\r\n\
+Note: this will output data to the debug stream, not the UI."
+IDS_GETDISPLAY                   "GetDisplay"
+IDS_GETDISPLAYPROMPT             "Result of GetDisplay call"
+
+// hexeditor.cpp
+IDS_HEXEDITOR                    "Hex Editor"
+
+// hierarchytabledlg.cpp
+IDS_DISPLAYHIEARCHYTABLE         "Display Hierarchy Table"
+IDS_DISPLAYHIEARCHYTABLEPROMPT   "Check box to pass CONVENIENT_DEPTH."
+IDS_CALLSETSEARCHCRITERIA        "Call SetSearchCriteria?"
+IDS_CALLSETSEARCHCRITERIAPROMPT  "Hit OK to call SetSearchCriteria with these values, otherwise hit cancel"
+
+// mailboxtabledlg.cpp
+IDS_PROPRES                      "Property String Restriction"
+IDS_MBSEARCHCRITERIAPROMPT       "Type portion of name to find\r\n\
+ulFuzzyLevel Flags:"
+
+// maindlg.cpp
+IDS_OPENDEFMSGSTORE              "Open Default Message Store"
+IDS_OPENSTOREEID                 "Open Message Store With EID"
+IDS_OPENSTOREEIDPROMPT           "This function will attempt to interpret binary string as an Entry ID.\r\n\
+The Entry ID will be passed OpenMsgStore\r\n\
+\r\n\
+0x00000001 MDB_NO_DIALOG        Display logon UI\r\n\
+0x00000004 MDB_WRITE            Request read/write access\r\n\
+0x00000008 MAPI_DEFERRED_ERRORS Defer errors\r\n\
+0x00000010 MAPI_BEST_ACCESS     Request best access\r\n\
+0x00000020 MDB_TEMPORARY        Do not add store to table\r\n\
+0x00000080 MDB_NO_MAIL          Store will not be used to send/receive mail\r\n\
+0x00000100 MDB_ONLINE           Bypass local cache and open store on server\r\n\
+\r\n\
+Enter Entry ID as a binary string"
+IDS_OPENPUBSTORE                 "Open Public Message Store"
+IDS_DUMPSERVERPRIVATESTORE       "Dump Server Private Store Contents"
+IDS_SERVERNAMEPROMPT             "Type name of server"
+IDS_PROFFORMAPILOGON             "Profile For MAPILogonEx"
+IDS_PROFFORMAPILOGONPROMPT       "Type profile name and flags:\r\n\
+\r\n\
+0x00000001 MAPI_LOGON_UI\t\tDisplay logon UI\r\n\
+0x00000002 MAPI_NEW_SESSION\tDon't use shared session\r\n\
+0x00000008 MAPI_ALLOW_OTHERS\tMake this a shared session\r\n\
+0x00000010 MAPI_EXPLICIT_PROFILE\tDon't use default profile\r\n\
+0x00000020 MAPI_EXTENDED\t\tExtended MAPI Logon\r\n\
+0x00000040 MAPI_USE_DEFAULT\tUse the default profile\r\n\
+0x00001000 MAPI_FORCE_DOWNLOAD\tGet new mail before return\r\n\
+0x00002000 MAPI_SERVICE_UI_ALWAYS\tDo logon UI in all providers\r\n\
+0x00008000 MAPI_NO_MAIL\t\tDo not activate transports\r\n\
+0x00010000 MAPI_NT_SERVICE\t\tAllow logon from an NT service\r\n\
+0x00020000 MAPI_PASSWORD_UI\tDisplay password UI only\r\n\
+0x00100000 MAPI_TIMEOUT_SHORT\tMinimal wait for logon resources\r\n\
+0x00200000 MAPI_BG_SESSION\t\tClient intends to operate on a background thread\r\n\
+\r\n\
+Examples:\r\n\
+Default: MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI | MAPI_EXPLICIT_PROFILE == 0x3B\r\n\
+Shared Profile: MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_LOGON_UI | MAPI_NO_MAIL == 0x8039"
+IDS_LOGOFF                       "Logoff flags"
+IDS_LOGOFFPROMPT                 "Enter flags for IMAPISession->Logoff\r\n\
+\r\n\
+0x00000001 MAPI_LOGOFF_SHARED Close all shared sessions\r\n\
+0x00000002 MAPI_LOGOFF_UI     It's OK to present UI"
+IDS_SELECTFORM                   "Select Form"
+IDS_SELECTFORMPROMPT             "Enter flags\r\n\
+0x00 MAPIFORM_SELECT_ALL_REGISTRIES\r\n\
+0x01 MAPIFORM_SELECT_FOLDER_REGISTRY_ONLY\r\n\
+0x02 MAPIFORM_SELECT_NON_FOLDER_REGISTRY_ONLY"
+IDS_OPENFORMCONTAINER            "Open Form Container"
+IDS_OPENFORMCONTAINERPROMPT      "Enter form container\r\n\
+0x0 HFRMREG_DEFAULT\r\n\
+0x1 HFRMREG_LOCAL\r\n\
+0x2 HFRMREG_PERSONAL\r\n\
+0x3 HFRMREG_FOLDER"
+IDS_LOADMAPI                     "Load MAPI"
+IDS_LOADMAPIPROMPT               "Provide path from which to load MAPI.\r\n\
+WARNING - Making this call incorrectly could cause MFCMAPI to crash.\r\n\
+\r\n\
+Examples:\r\n\
+C:\\Windows\\System32\\mapi32.dll\r\n\
+C:\\Windows\\System32\\mapi32x.dll\r\n\
+C:\\Windows\\System32\\mapistub.dll\r\n\
+C:\\Program Files\\Common Files\\System\\MSMAPI\\1033\\mapi32.dll\r\n\
+C:\\Program Files\\Exchsrvr\\bin\\mapi32.dll"
+IDS_UNLOADMAPI                   "Unload MAPI"
+IDS_MAPICRASHWARNING             "WARNING - Making this call incorrectly could cause MFCMAPI to crash.\r\n\
+Use caution and only proceed if you know what you are doing."
+IDS_MAPIINIT                     "MAPIInitialize"
+IDS_MAPIINITPROMPT               "WARNING - Making this call incorrectly could cause MFCMAPI to crash.\r\n\
+Use caution and only proceed if you know what you are doing.\r\n\
+\r\n\
+Select flags:\r\n\
+0x00000001 MAPI_MULTITHREAD_NOTIFICATIONS Multithreaded notification support\r\n\
+0x00000004 MAPI_TEMPORARY_PROFILES        Use temporary profiles\r\n\
+0x00000008 MAPI_NO_COINIT                 MAPI should not call CoInitialize\r\n\
+0x00010000 MAPI_NT_SERVICE                The caller is running as a Windows NT service"
+IDS_MAPIUNINIT                   "MAPIUninitialize"
+IDS_QUERYDEFMSGOPT               "QueryDefaultMessageOpt"
+IDS_RESULTOFCALLPROMPT           "Result of call"
+IDS_QUERYDEFRECIPOPT             "QueryDefaultRecipOpt"
+IDS_QUERYID                      "Query Identity"
+IDS_QUERYIDPROMPT                "Check box display Details dialog instead of getting properties"
+IDS_SETDEFSTORE                  "Set Default Store"
+IDS_SETDEFSTOREPROMPT            "Enter flags for SetDefaultStore (flags are mutually exclusive):\r\n\
+\r\n\
+0x00000001 MAPI_DEFAULT_STORE          For incoming messages\r\n\
+0x00000002 MAPI_SIMPLE_STORE_TEMPORARY For simple MAPI and CMC\r\n\
+0x00000004 MAPI_SIMPLE_STORE_PERMANENT For simple MAPI and CMC\r\n\
+0x00000008 MAPI_PRIMARY_STORE          Used by some clients\r\n\
+0x00000010 MAPI_SECONDARY_STORE        Used by some clients"
+IDS_LAUNCHPROFWIZ                "Launch Profile Wizard"
+IDS_LAUNCHPROFWIZPROMPT          "Flags for LaunchWizard:\r\n\
+0x00000001 MAPI_PW_FIRST_PROFILE\r\n\
+0x00000002 MAPI_PW_LAUNCHED_BY_CONFIG\r\n\
+0x00000004 MAPI_PW_ADD_SERVICE_ONLY\r\n\
+0x00000008 MAPI_PW_PROVIDER_UI_ONLY\r\n\
+0x00000010 MAPI_PW_HIDE_SERVICES_LIST"
+
+// mapiprofilefunctions.cpp
+IDS_ADDSERVICESTOINF             "Add Services To MAPISvc.inf"
+IDS_ADDSERVICESTOINFPROMPT       "Check which services to add:"
+IDS_REMOVEFROMINF                "Remove Services From MAPISvc.inf"
+IDS_REMOVEFROMINFPROMPT          "Check which services to remove:"
+
+// mapistorefunctions.cpp
+IDS_SERVERNAME                   "Server Name"
+IDS_SERVERNAMEMISSINGPROMPT      "Couldn't get server name from profile. Please enter server name"
+IDS_OPENOTHERUSER                "Open Other User's Message Store"
+
+// mfcutilityfunctions.cpp
+IDS_ACLTABLE                     "Display ACL Table"
+IDS_ACLTABLEPROMPT               "Check box to include Free Busy Rights (not supported in Outlook 2003/Exchange 2003 or before)"
+IDS_CANCELPROMPT                 "Hit OK to continue, Cancel to cancel remaining items"
+IDS_DISPLAYMAILBOXTABLE          "Display Server Mailbox Table"
+IDS_DISPLAYPFTABLE               "Display Public Folder Table"
+IDS_DISPLAYPFTABLEPROMPT         "Type Server name (only Public Folders with replicas on this server will be returned)\r\n\
+Type flags for call to GetPublicFolderTable\r\n\
+0x10 MDB_NON_IPM\r\n\
+0x20 MDB_IPM"
+IDS_MAILBOXGUID                  "Mailbox store GUID:"
+IDS_PUBLICFOLDERGUID             "Public Folder store GUID:"
+IDS_GETMBXINTERFACE              "Use interface:"
+IDS_GETMBXINTERFACE1             "IID_IExchangeManageStore - GetMailboxTable"
+IDS_GETMBXINTERFACE3             "IID_IExchangeManageStore3 - GetMailboxTableOffset"
+IDS_GETMBXINTERFACE5             "IID_IExchangeManageStore5 - GetMailboxTableEx"
+IDS_GETPFINTERFACE1              "IID_IExchangeManageStore - GetPublicFolderTable"
+IDS_GETPFINTERFACE4              "IID_IExchangeManageStore4 - GetPublicFolderTableOffset"
+IDS_GETPFINTERFACE5              "IID_IExchangeManageStore5 - GetPublicFolderTableEx"
+
+// msgservicetabledlg.cpp
+IDS_OPENPROFSECT                 "OpenProfileSection"
+IDS_OPENPROFSECTPROMPT           "Enter or select a MAPIUID to open.\r\n\
+A MAPIUID looks like a GUID.\r\n\
+Example: {00020D0A-0000-0000-C000-000000000046}"
+
+// msgstoredlg.cpp
+IDS_PASTEFOLDER                  "Paste Folder"
+IDS_PASTEFOLDERPROMPT            "Default is to paste as subfolder (including data).\r\n\
+Check box to paste contents only."
+IDS_PASTEFOLDERNEWNAMEPROMPT     "Type new folder name. Check box to also copy subfolders."
+IDS_COPYFOLDERCONTENTS           "Copy Folder Contents"
+IDS_PICKOPTIONSPROMPT            "Pick options."
+IDS_COPYFOLDERRULES              "Copy Folder Rules"
+IDS_COPYFOLDERRULESPROMPT        "Check box to replace rules on target folder. Default is to add."
+IDS_ADDSUBFOLDER                 "Add SubFolder"
+IDS_ADDSUBFOLDERPROMPT           "Type new subfolder name\r\n\
+Set flags"
+IDS_DELETEITEMSANDSUB            "Delete Items and Subfolders"
+IDS_DELETEITEMSANDSUBPROMPT      "Check options to delete associated items or perform hard (permanent) deletion."
+IDS_DELETEFOLDER                 "Delete Selected Folder"
+IDS_DELETEFOLDERPROMPT           "Check box to perform hard (permanent/unrecoverable) deletion."
+IDS_SAVEFOLDERASMSG              "Save Folder Contents To MSG"
+IDS_SAVEFOLDERASMSGPROMPT        "Check box to save associated (hidden) items\r\n\
+instead of regular contents."
+IDS_SAVEFOLDERASPROPFILES        "Save Folder Contents As Prop Files"
+IDS_SETRECFOLDER                 "SetReceiveFolder"
+IDS_SETRECFOLDERPROMPT           "Type message class to set folder as receive folder.\r\n\
+Check box to delete entry for this class."
+IDS_RESTOREDELFOLD               "Restore Deleted Folder"
+IDS_RESTOREDELFOLDPROMPT         "Type new name for restored folder. Check box to also restore subfolders."
+IDS_VALIDATEIPMSUB               "HrValidateIPMSubtree"
+
+// profilelistdlg.cpp
+IDS_NEWEXPROF                    "New Exchange Profile"
+IDS_NEWEXPROFPROMPT              "Type name of server and mailbox for profile"
+IDS_NEWSERVICE                   "New Service"
+IDS_NEWSERVICEPROMPT             "Type new service name (e.g. MSEMS, CONTAB, MSPST MS, etc...)"
+IDS_NEWPROF                      "New Profile"
+IDS_NEWPROFPROMPT                "Type new profile name"
+IDS_PSTPATH                      "PST Path"
+IDS_PSTPATHPROMPT                "Confirm or edit the PST path, and set password if desired"
+IDS_PSTDOPW                      "Set a password on the PST"
+IDS_PSTPW                        "PST Password"
+IDS_OPENPROFILE                  "Open Profile"
+IDS_OPENPROFILEPROMPT            "Profile name"
+IDS_COPYPROFILE                  "Copy Profile"
+IDS_COPYPROFILEPROMPT            "New profile name"
+
+// propertyeditor.cpp
+IDS_EDITROW                      "Edit Row"
+
+// propertytageditor.cpp
+IDS_PROPTAGEDITOR                "Property Tag Editor"
+IDS_PROPSELECTOR                 "Property Selector"
+
+// publicfoldertabledlg.cpp
+IDS_PFSEARCHCRITERIAPROMPT       "Type portion of name to find\r\n\
+ulFuzzyLevel Flags:"
+
+// QuickStart.cpp
+IDS_QUOTADISPLAYNAME              "Display Name = %1!ws!"
+IDS_QUOTASIZE                     "\r\nPR_MESSAGE_SIZE_EXTENDED = %1!I64d! bytes = %2!I64d! kilobytes"
+IDS_QUOTAPROP                     "\r\n%1!ws! = 0x%2!08X! = %2!d! kilobytes"
+IDS_QUOTAMASK                     "\r\n\r\nStore Support Mask = 0x%1!08X! = %2!ws!"
+IDS_QUOTAPROVIDER                 "\r\nMDB Provider = %1!ws!"
+IDS_QSSPECIALFOLDERS              "Special folders"
+IDS_QSSPECIALFOLDER               "Special folder"
+IDS_QSSFFOLDERNAME                "Folder name"
+IDS_QSSFSTENTRYID                 "Entry id"
+IDS_QSSFLOCALNAME                 "Local name"
+IDS_QSSFCONTAINERCLASS            "Container class"
+IDS_QSSFCOMMENT                   "Comment"
+IDS_QSSFCONTENTCOUNT              "Content count"
+IDS_QSSFHIDDENCONTENTCOUNT        "Hidden content count"
+IDS_QSSFUNREAD                    "Unread"
+IDS_QSSFCHILDCOUNT                "Child count"
+IDS_QSSFFOLDERTYPE                "Folder type"
+IDS_QSSFCREATIONTIME              "Creation time"
+IDS_QSSFLASTMODIFICATIONTIME      "Last modification time"
+IDS_QSSFRIGHTS                    "Rights"
+IDS_QSSFLTENTRYID                 "Long term entry id"
+IDS_QSSFCANNOTOPEN                "Cannot open folder"
+IDS_QSSFCANNOTLOCATE              "Cannot locate entry id"
+
+// restricteditor.cpp
+IDS_RESED                        "Restriction Editor"
+IDS_RESEDCOMPPROMPT              "Edit Compare Property restriction"
+IDS_RESEDCONTPROMPT              "Edit Content restriction"
+IDS_RESEDPROPPROMPT              "Edit Property restriction"
+IDS_PROPEDITOR                   "Property Editor"
+IDS_RESEDBITPROMPT               "Edit Bitmask restriction"
+IDS_RESEDSIZEPROMPT              "Edit Size restriction"
+IDS_RESEDEXISTPROMPT             "Edit Exist Restriction"
+IDS_SUBRESED                     "Sub Restriction Editor"
+IDS_RESEDSUBPROMPT               "Edit Sub restriction\r\n\
+Values for ulSubObject:\r\n\
+0x0E12000D PR_MESSAGE_RECIPIENTS\r\n\
+0x0E13000D PR_MESSAGE_ATTACHMENTS"
+IDS_RESEDANDORPROMPT             "Edit And/Or restrictions"
+IDS_COMMENTRESED                 "Comment Restriction Editor"
+IDS_RESEDCOMMENTPROMPT           "Edit Comment restriction"
+IDS_TAG                          "Tag"
+IDS_TAGPROMPT                    "Enter Tag"
+IDS_RESEDPROMPT                  "Edit Restriction\r\n\
+Values for restriction type:"
+IDS_CRITERIAEDITOR               "Criteria Editor"
+IDS_CRITERIAEDITORPROMPT         "Edit Criteria\r\n\
+Values for search flags - search will not start until RESTART_SEARCH is set:"
+IDS_EIDEDITOR                    "Entry ID Editor"
+IDS_EIDEDITORPROMPT              "Edit Entry ID"
+
+// singlemapiproplistctrl.cpp
+IDS_FINDNAMEPROPSLIMIT           "Find All Named Props Range Limit"
+IDS_FINDNAMEPROPSLIMITPROMPT     "This function will search through all properties in the given range.\r\n\
+Bounds must be between 0x8000 and 0xFFFF"
+IDS_DELETEPROPERTY               "Delete Property"
+IDS_DELETEPROPERTYPROMPT         "This will permanently delete this property from the item."
+IDS_USEWRAPEX                    "Use WrapCompressedRTFStreamEx"
+IDS_USEWRAPEXPROMPT              "Check box to use the WrapCompressedRTFStreamEx interface\r\n"
+IDS_WRAPEXFLAGS                  "WrapCompressedRTFStreamEx Flags"
+IDS_WRAPEXFLAGSPROMPT            "0x00000001 MAPI_MODIFY\r\n\
+0x00008000 STORE_UNCOMPRESSED_RTF\r\n\
+0x00010000 MAPI_NATIVE_BODY"
+IDS_STREAMEDITORPROMPT           "Property stream"
+IDS_PASTEPROP                    "Paste Property"
+IDS_PASTEPROPPROMPT              "Select method for copying property"
+IDS_COPYPASTEPROMPT              "Enter interface for destination and set flags\r\n\
+Flags:\r\n\
+0x00000001 MAPI_MOVE\r\n\
+0x00000002 MAPI_NOREPLACE\r\n\
+0x00000004 MAPI_DECLINE_OK\r\n\
+0x00000008 MAPI_DIALOG\r\n\
+Interfaces (abbreviated list)\r\n\
+{00020303-0000-0000-C000-000000000046} IID_IMAPIProp\r\n\
+{00020307-0000-0000-C000-000000000046} IID_IMessage\r\n\
+{0002030B-0000-0000-C000-000000000046} IID_IMAPIContainer\r\n\
+{0002030C-0000-0000-C000-000000000046} IID_IMAPIFolder"
+IDS_COPYTO                       "CopyTo"
+IDS_EXTRAPROPS                   "Additional Properties"
+IDS_EDITGIVENPROP                "Edit Given Property"
+IDS_OPENPROPASTABLE              "Open Property As Table"
+IDS_OPENPROPASTABLEPROMPT        "Check box to use IExchangeModifyTable interface"
+IDS_PASTENAMEDPROPS              "Paste Named Props"
+IDS_PASTENAMEDPROPSPROMPT        "Enter the property set GUID you wish to copy.\r\n\
+PS_PUBLIC_STRINGS is specified by default (braces ({/}) are required)."
+IDS_MAPIPATHTITLE                "MAPI Path"
+IDS_MAPISVCTITLE                 "MAPISVC.INF path"
+IDS_MAPISVCTEXT
+"This is the path which MAPI will use to read MAPISVC.INF,\r\n\
+and which MFCMAPI will use in updating this file. Note that\r\n\
+if MFCMAPI is 32 bit and running on a 64 bit operating system,\r\n\
+this path may be virtualized."
+IDS_FILEPATH                     "File path:"
+IDS_PROFILESERVERVERSIONTITLE    "Profile Server Version"
+IDS_PROFILESERVERVERSIONPROMPT   "Server Version is extracted from PR_PROFILE_SERVER_VERSION\r\n\
+Major and minor version and build are extracted from PR_SERVER_FULL_VERSION\r\n\
+\r\n\
+If a value is <not found> then the property was not found.\r\n\
+This is normal and expected if an Exchange mailbox is not present in the profile\r\n\
+or if this profile has never succesfully connected to the server."
+IDS_PROFILESERVERVERSION         "Server Version"
+IDS_PROFILESERVERVERSIONMAJOR    "Major Version"
+IDS_PROFILESERVERVERSIONMINOR    "Minor Version"
+IDS_PROFILESERVERVERSIONBUILD    "Major Build"
+IDS_PROFILESERVERVERSIONMINORBUILD "Minor Build"
+IDS_NOTFOUND                     "<not found>"
+IDS_SMARTVIEW                    "Smart View"
+IDS_COUNTNAMEDPROPS              "Count Named Props"
+IDS_COUNTNAMEDPROPSPROMPT        "Count of how many named property mappings exist and the highest \r\n\
+named property found in the selected store. Both are found using\r\n\
+a binary search of the named property range (0x8000-0xFFFF).\r\n\
+\r\n\
+The Edit Given Property menu item may be used to further examine\r\n\
+existing named property mappings.\r\n"
+IDS_QUOTA                        "Quota"
+IDS_NICKNAME                     "Nickname Cache"
+IDS_QSTHUMBNAIL                  "Thumbnail photo"
+IDS_QSTHUMBNAILNOTFOUND          "PR_EMS_AB_THUMBNAIL_PHOTO was not present on this user."
+IDS_EXPORTTITLE                  "Export Messages"
+IDS_EXPORTPROMPT                 "Export messages by subject"
+IDS_EXPORTSEARCHTERM             "Subject:"
+
+// AbDlg.cpp
+IDS_FLAGS "Flags"
+IDS_NAME "Name:"
+
+// AclDlg.cpp
+IDS_USEREID "User EntryID:"
+IDS_MASKINHEX "Mask (in hex):"
+
+// BaseDialog.cpp
+IDS_EID "Entry ID:"
+IDS_USEMDB "Use MDB"
+IDS_USEAB "Use AB"
+IDS_SESSION "Use Session"
+IDS_PASSMAPIMODIFY "Pass MAPI_MODIFY (default is to use MAPI_BEST_ACCESS)"
+IDS_PASSMAPINOCACHE "Pass MAPI_NO_CACHE"
+IDS_PASSMAPICACHEONLY "Pass MAPI_CACHE_ONLY"
+IDS_EIDBASE64ENCODED "EntryID is Base64 encoded (useful for IDs obtained through WebDAV)"
+IDS_ATTEMPTIADDRBOOKDETAILSCALL "Attempt IAddrBook::Details call"
+IDS_EIDISCONTAB "EntryID is CONTAB_ENTRYID"
+IDS_EID1 "Entry ID 1:"
+IDS_EID2 "Entry ID 2:"
+IDS_OBJECTFORCOMPAREEID "Object to call CompareEntryIDs on"
+IDS_ULEVENTMASK "ulEventMask:"
+IDS_OBJECTFORADVISE "Object to call Advise on"
+IDS_STOREEID "Store Entry ID"
+IDS_STOREHASH "Store Hash"
+IDS_PUBLICFOLDERSTORE "Store is a Public Folder Store"
+
+// ContentsTableDlg.cpp
+IDS_PROPVALUE "Property Value:"
+IDS_ULFUZZYLEVEL "ulFuzzyLevel:"
+IDS_APPLYUSINGFINDROW "Apply restriction using FindRow"
+IDS_SUBSTRING "Sub-string:"
+IDS_QUERYCOLUMNFLAGS "QueryColumn Flags:"
+IDS_SETCOLUMNFLAGS "SetColumn Flags:"
+IDS_ULTABLESTATUS "ulTableStatus:"
+IDS_ULTABLETYPE "ulTableType:"
+IDS_CSORTS "cSorts, total number of sort orders"
+IDS_CCATS "cCategories, number of sort orders which are categories"
+IDS_CEXPANDED "cExpanded, number of categories which are expanded"
+IDS_TBLASYNC "TBL_ASYNC"
+IDS_TBLBATCH "TBL_BATCH"
+IDS_REFRESHAFTERSORT "Refresh table after applying sort"
+
+// FolderDlg.cpp
+IDS_DISPLAYNAME "Display Name"
+IDS_ADDRESSTYPE "Address Type"
+IDS_ADDRESS "Address"
+IDS_RECIPTYPE "Recipient Type"
+IDS_RECIPCOUNT "Recipient Count"
+IDS_MESSAGEMOVE "Move message instead of copy"
+IDS_COPYINTERFACE "Copy interface"
+IDS_FILENAME "File Name"
+IDS_DELSTYLE "Deletion style"
+IDS_LOADSTYLE "Load style"
+IDS_LOCATIONOFFORM "Location of form"
+IDS_FORMTYPE "Form type:"
+IDS_VERB "Verb"
+IDS_REMOVEPROPDEFSTREAM "Remove property definition stream"
+IDS_FORMATTOSAVEMESSAGE "Format to save message"
+IDS_NUMMESSAGES "Number of messages:"
+IDS_RECIPNAME "Recipient Name:"
+IDS_SUBJECT "Subject:"
+IDS_BODY "Body:"
+IDS_FLAGSINHEX "Flags (in hex):"
+IDS_STATUSINHEX "Status (in hex):"
+
+// FormContainerDlg.cpp
+IDS_CLASS "Class:"
+IDS_NUMBER "Number:"
+
+// HexEditor.cpp
+IDS_TEXTANSIUNICODE "Text (Ansi/Unicode)"
+IDS_ANSISTRING "Ansi"
+IDS_UNISTRING "Unicode"
+IDS_CCH "Count of characters"
+IDS_BASE64STRING "Base 64"
+IDS_CB "Count of bytes"
+IDS_HEX "Hex"
+
+// HierarchyTableDlg.cpp
+IDS_CONVENIENTDEPTH "Deep traversal"
+
+// MainDlg.cpp
+IDS_DISPLAYPROPS "Just display props - do not open message store in new window"
+IDS_UNWRAPSTORE "Unwrap store using IProxyStoreObject"
+IDS_USERDN "User DN"
+IDS_PROFILE "Profile:"
+IDS_HFRMREG "HFRMREG:"
+IDS_PATH "Path:"
+IDS_COUNTOPTIONS "Count of Options"
+IDS_OPTIONS "Options"
+IDS_DISPLAYDETAILSDLG "Display Details dialog"
+IDS_SERVICE "Service:"
+IDS_CREATESTORENTRYIDFLAGS "CreateStoreEntryID flags"
+IDS_FORCESERVER "Ignore home server (use server DN)"
+IDS_USER_SMTP_ADDRESS "SMTP Address (Optional)"
+
+// MailboxTableDlg.cpp
+IDS_OPENWITHFLAGS "Open with flags"
+IDS_OPENWITHFLAGSPROMPT "Flags for CreateStoreEntryID\r\n\
+Examples:\r\n\
+OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP = 0x9\r\n\
+OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP | OPENSTORE_PUBLIC = 0xB\r\n\
+OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP | OPENSTORE_RESTORE_DATABASE | \r\n\
+OPENSTORE_OVERRIDE_HOME_MDB  | OPENSTORE_HOME_LOGON = 0x10001D\r\n"
+
+// MAPIProfileFunctions.cpp
+IDS_EXCHANGE "Exchange"
+IDS_PST "PST"
+
+// MFCUtilityFunctions.cpp
+IDS_FBRIGHTSVISIBLE "Free Busy Rights Visible"
+IDS_ERROR "Error"
+IDS_OFFSET "Offset (in hex):"
+
+// MsgServiceTableDlg.cpp
+IDS_MAPIUID "MAPI UID:"
+IDS_MAPIUIDBYTESWAPPED "Byte swapped (useful for a UID read from the registry or memory)"
+
+// MsgStoreDlg.cpp
+IDS_PASTEFOLDERCONTENTS "Paste folder contents only"
+IDS_FOLDERNAME "Folder Name:"
+IDS_COPYSUBFOLDERS "Copy subfolders"
+IDS_FOLDERMOVE "Move folder instead of copy"
+IDS_COPYASSOCIATEDITEMS "Copy associated items"
+IDS_MOVEMESSAGES "Move messages"
+IDS_SINGLECALLCOPY "Use single call to CopyMessages to do copy"
+IDS_REPLACERULES "Replace existing rules"
+IDS_FOLDERTYPE "Folder Type:"
+IDS_FOLDERCOMMENT "Folder Comment:"
+IDS_PASSOPENIFEXISTS "Pass OPEN_IF_EXISTS"
+IDS_DELASSOCIATED "Delete associated (hidden) items"
+IDS_HARDDELETION "Hard Deletion"
+IDS_MANUALLYEMPTYFOLDER "Delete items manually"
+IDS_SAVEUNICODE "Save as Unicode MSG"
+IDS_RECURSESUBFOLDERS "Recurse into subfolders"
+IDS_SAVEREGULARCONTENTS "Save regular items"
+IDS_SAVEASSOCIATEDCONTENTS "Save associated items"
+IDS_DELETEASSOCIATION "Delete association"
+IDS_MAPIFORCECREATE "Force IPM folder creation"
+IDS_MAPIFULLIPMTREE "Create full IPM subtree"
+
+// ProfileListDlg.cpp
+IDS_MAILBOXNAME "Mailbox Name:"
+IDS_DISPLAYSERVICEUI "Display service UI:"
+
+// PropertyEditor.cpp
+IDS_PROPVALUES "Property Values"
+IDS_UNSIGNEDDECIMAL "Unsigned Decimal"
+IDS_BOOLEAN "Boolean"
+IDS_DOUBLE "Double"
+IDS_OBJECT "Object"
+IDS_FLOAT "Float"
+IDS_BIN "Binary"
+IDS_HI "Hi (decimal)"
+IDS_LO "Lo (decimal)"
+IDS_CURRENCY "Currency"
+IDS_ERRORCODEHEX "Error Code (Hex)"
+IDS_ERRORNAME "Error Name"
+IDS_SIGNEDDECIMAL "Signed Decimal"
+IDS_HIGHPART "HighPart"
+IDS_LOWPART "LowPart"
+IDS_DECIMAL "Decimal"
+IDS_TEXT "Text"
+IDS_LOWDATETIME "LowDateTime"
+IDS_HIGHDATETIME "HighDateTime"
+IDS_DATE "Date"
+IDS_GUID "GUID"
+IDS_RESTRICTION "Restriction"
+IDS_ACTIONS "Actions"
+IDS_VALUE "Value"
+IDS_ALTERNATEVIEW "Alternate View"
+
+// PropertyTagEditor.cpp
+IDS_PROPTAG "Property Tag"
+IDS_PROPID "Property ID"
+IDS_PROPTYPE "Property Type"
+IDS_PROPNAME "Property Name"
+IDS_NAMEPROPKIND "Named Property Kind"
+IDS_NAMEPROPNAME "Named Property Name (MNID_ID names in hex)"
+IDS_NAMEPROPGUID "Named Property GUID"
+IDS_KNOWNPROPTAGS "Known Property Tags"
+
+// Registry.cpp
+IDS_REGKEY_DEBUG_TAG "Debug flags (0 = None, ffff = Verbose. See help.):"
+IDS_REGKEY_DEBUG_TO_FILE "Enable debug output to file"
+IDS_REGKEY_DEBUG_FILE_NAME "Debug output file:"
+IDS_REGKEY_PARSED_NAMED_PROPS "Parse named properties"
+IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS "Parse named properties for all props (including those below 0x8000)"
+IDS_REGKEY_THROTTLE_LEVEL "Limit displayed table rows:"
+IDS_REGKEY_HIER_EXPAND_NOTIFS "Register for notifications when you navigate to a folder"
+IDS_REGKEY_HIER_ROOT_NOTIFS "Allow notifications on root container (may cause infinite loop in address book)"
+IDS_REGKEY_DO_SMART_VIEW "Enable Smart View"
+IDS_REGKEY_ONLYADDITIONALPROPERTIES "Only display additional properties in property pane"
+IDS_REGKEY_USE_GETPROPLIST "Use GetPropList for GetProps call (otherwise use NULL tag list)"
+IDS_REGKEY_PREFER_UNICODE_PROPS "Prefer Unicode properties"
+IDS_REGKEY_CACHE_NAMED_PROPS "Cache named property mappings"
+IDS_REGKEY_ALLOW_DUPE_COLUMNS "Allow duplicate columns of different types"
+IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST "Use row data for properties instead of GetProps"
+IDS_REGKEY_DO_COLUMN_NAMES "Use 'nice' column names"
+IDS_REGKEY_EDIT_COLUMNS_ON_LOAD "When loading tables, display the SetColumns edit dialog"
+IDS_REGKEY_MDB_ONLINE "Use the MDB_ONLINE flag when calling OpenMsgStore"
+IDS_REGKEY_MAPI_NO_CACHE "Use the MAPI_NO_CACHE flag when calling OpenEntry"
+IDS_REGKEY_ALLOW_PERSIST_CACHE "Cache IPersistMessage when opening forms in compose mode"
+IDS_REGKEY_USE_IMAPIPROGRESS "Enable IMAPIProgress tracing"
+IDS_REGKEY_USE_MESSAGERAW "Use IID_IMessageRaw when opening messages"
+IDS_REGKEY_SUPPRESS_NOTFOUND "Suppress MAPI_E_NOT_FOUND in contents table views"
+IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION "Terminate on heap corruption (requires restart)"
+IDS_REGKEY_LOADADDINS "Load add-ins (requires restart)"
+IDS_REGKEY_FORCEOUTLOOKMAPI "Force the use of Outlook's MAPI files"
+IDS_REGKEY_FORCESYSTEMMAPI "Force the use of the system's MAPI files"
+IDS_REGKEY_HEXDIALOGDIAG "Show hex dialog diagnostics"
+
+// RestrictEditor.cpp
+IDS_RELOP "relop"
+IDS_ULPROPTAG1 "ulPropTag1"
+IDS_ULPROPTAG2 "ulPropTag2"
+IDS_ULPROPTAG "ulPropTag"
+IDS_LPPROPULPROPTAG "lpProp->ulPropTag"
+IDS_LPPROP "lpProp"
+IDS_LPPROPALTVIEW "lpProp - alternate view"
+IDS_RELBMR "relBMR"
+IDS_MASK "ulMask"
+IDS_ULSUBOBJECT "ulSubObject"
+IDS_LPRES "lpRes"
+IDS_SUBRESTRICTIONS "Subrestrictions"
+IDS_SUBRESTRICTION "Subrestriction"
+IDS_RESTRICTIONTEXT "Restriction Text"
+IDS_RESTRICTIONTYPE "Restriction Type"
+IDS_SEARCHSTATE "Search State"
+IDS_SEARCHFLAGS "Search Flags"
+IDS_EIDLIST "Entry ID List"
+
+// SearchEditor.cpp
+IDS_SEARCHTYPE "Search Type"
+IDS_SEARCHSUBSTRING "Substring"
+IDS_SEARCHPREFIX "Prefix"
+IDS_SEARCHFULLSTRING "Full string"
+
+// SingleMAPIPropListCtrl.cpp
+IDS_LOWERBOUND "Lower Bound (in hex):"
+IDS_UPPERBOUND "Upper Bound (in hex):"
+IDS_ULINCODEPAGE "ulInCodePage (in Decimal)"
+IDS_ULOUTCODEPAGE "ulOutCodePage (in Decimal)"
+IDS_COPYSTYLE "Copy style"
+IDS_SOURCEPROP "Source Prop"
+IDS_TARGETPROP "Target Prop"
+IDS_INTERFACE "Interface"
+IDS_OPENASEXTABLE "Open as Exchange Table"
+IDS_MAPIMOVE "MAPI_MOVE (move instead of copy)"
+IDS_MAPINOREPLACE "MAPI_NOREPLACE (do not replace existing properties)"
+IDS_HIGHESTNAMEDPROPNOTFOUND "No named properties were found"
+IDS_HIGHESTNAMEDPROPNUM "Highest named property found:"
+IDS_HIGHESTNAMEDPROPNAME "MAPI Property ID: 0x%1!04X!\r\n\
+Named property Name = %2!ws!\r\n\
+Named property GUID = %3!ws!"
+IDS_HIGHESTNAMEDPROPTOTAL "Total number of named properties (out of 32767):"
+
+// StreamEditor.cpp
+IDS_STREAMTEXT "Stream (Text)"
+IDS_STREAMFLAGS "Stream Flags"
+IDS_CODEPAGE "Code Page"
+IDS_STREAMBIN "Stream (Binary)"
+
+// TagArrayEditor.cpp
+IDS_PROPTAGARRAY "Property Tag Array"
+IDS_SETCOLUMNS                   "Set Columns"
+IDS_SETCOLUMNSPROMPT             "SetColumns flags:\r\n\
+0x00000001 TBL_NOWAIT\r\n\
+0x00000002 TBL_BATCH"
+IDS_QUERYCOLUMNS                   "Query Columns"
+IDS_QUERYCOLUMNSPROMPT             "Calling QueryColumns to get current column set\r\n\
+QueryColumns flags:\r\n\
+0x00000001 TBL_ALL_COLUMNS\r\n\
+WARNING - Setting a large number of columns can have a performance penalty on Exchange message folder tables.\r\n\
+Do NOT pass TBL_ALL_COLUMNS if viewing the SMTP temp tables!"
+
+// More titles
+IDS_ABCONT "AB Cont"
+IDS_FOLDERTREE "Folder Tree"
+IDS_TABLEASHIERARCHY "IMAPITable as Hierarchy Table"
+
+IDS_AB "Ab"
+IDS_ACLFBTABLE "ACL (w/FB) Table"
+IDS_ATTACHMENTS "Attachments"
+IDS_FOLDER "Folder"
+IDS_FORMCONTAINER "Form Container"
+IDS_MAILBOXTABLE "Mailbox Table"
+IDS_STATUSTABLE "Status Table"
+IDS_RECEIVEFOLDERTABLE "Receive Folder Table"
+IDS_HIERARCHYTABLE "Hierarchy Table"
+IDS_CONTENTSTABLE "Contents Table (Display Table)"
+IDS_SERVICES "Services"
+IDS_PROFILES "Profiles"
+IDS_PROVIDERS "Providers"
+IDS_PUBLICFOLDERTABLE "Public Folder Table"
+IDS_RECIPIENTS "Recipients"
+IDS_RULESTABLE "Rules Table"
+IDS_TABLEASCONTENTS "IMAPITable as Contents Table"
+IDS_BASEDIALOG "BaseDialog"
+IDS_MESSAGE "Message"
+IDS_ADDRESS_BOOK_ENTRY "Address Book Entry"
+
+IDS_HELPTEXTSTARTHERE "Click Session/Logon to begin."
+IDS_HELPTEXTNOPROPS "Select an item to display properties."
+
+IDS_HELPTEXT "%1 Usage notes\n\
+\n\
+Visit https://github.com/stephenegriffin/mfcmapi for more information, bug reports, and the latest builds.\n\
+For the latest blog entries, visit http://blogs.msdn.com/b/stephen_griffin/archive/tags/mfcmapi.\n\
+\n\
+Become a fan on Facebook! http://www.facebook.com/MFCMAPI.\n\
+\n\
+Getting Started: Select Session\\Logon to open a profile\n\
+\n\
+Keyboard Shortcuts:\n\
+All Panes\n\
+\tF1\t\t: Display this help screen\n\
+\tCtrl+D\t\t: Display Debug Viewer\n\
+\tCtrl+H\t\t: Display Hex Editor\n\
+\tCtrl+O\t\t: Display Options\n\
+\n\
+Table View Pane\n\
+\tF5\t\t\t: Refresh/reload table\n\
+\tEsc\t\t\t: Cancel (stop) loading current table\n\
+\tEnter\t\t\t: Open and display selected item\n\
+\tCtrl+C\t\t\t: Copy selected item\n\
+\tCtrl+V\t\t\t: Paste selected item\n\
+\tDel, Ctrl+X\t\t: Delete selected item \n\
+\tShift+Del, Ctrl+Shift+X\t: Delete selected item permanently \n\
+\t\t(messages only, same as DELETE_HARD_DELETE)\n\
+\tCtrl+S\t\t\t: Save currently displayed properties to a file\n\
+\tCtrl+A\t\t\t: Select all items\n\
+\n\
+Hierarchy/Tree View Pane\n\
+\tF5\t\t: Refresh/reload tree\n\
+\tEnter\t\t: Open and display selected node\n\
+\tCtrl+Enter\t: Open and display associated contents\n\
+\tDel, Ctrl+X\t: Delete selected node\n\
+\tCtrl+S\t\t: Save currently displayed properties to a file\n\
+\n\
+Property View Pane\n\
+\tF5\t\t: Refresh/reload property list\n\
+\tCtrl+E, Enter\t: Edit selected property\n\
+\tCtrl+Enter\t: Open property as EntryID or Object\n\
+\tCtrl+C\t\t: Copy selected property\n\
+\tCtrl+V\t\t: Paste selected property\n\
+\tDel\t\t: Delete selected property\n\
+\tCtrl+X\t\t: Delete selected property\n\
+\tCtrl+S\t\t: Save properties to a file\n\
+\n\
+Bold In Tree View: The currently selected item will be bolded.\n\
+\n\
+Options Dialog: Please review Tools\\Options for various options.\n\
+\n\
+Debug Output supports various tags. All output includes the tag number used to print it.\n\
+The output can be excluded by removing the tag from the options page.\n\
+Supported tags:\n\
+0x00000000 DBGNoDebug\n\
+0x00000001 DBGGeneric\n\
+0x00000002 DBGVersionBanner\n\
+0x00000004 DBGFatalError\n\
+0x00000008 DBGRefCount\n\
+0x00000010 DBGConDes\n\
+0x00000020 DBGNotify\n\
+0x00000040 DBGHRes\n\
+0x00000080 DBGCreateDialog\n\
+0x00000100 DBGOpenItemProp\n\
+0x00000200 DBGDeleteSelectedItem\n\
+0x00000400 DBGTest\n\
+0x00000800 DBGFormViewer\n\
+0x00001000 DBGNamedProp\n\
+0x00002000 DBGLoadLibrary\n\
+0x00004000 DBGForms\n\
+0x00008000 DBGAddInPlumbing\n\
+0x00010000 DBGAddIn\n\
+0x00020000 DBGStream\n\
+0x00040000 DBGSmartView\n\
+0x00080000 DBGLoadMAPI\n\
+0x00100000 DBGHierarchy\n\
+0x00200000 DBGNamedPropCacheMisses\n\
+0x10000000 DBGDraw\n\
+0x20000000 DBGUI\n\
+0x40000000 DBGMAPIFunctions\n\
+0x80000000 DBGMenu"
+
+IDS_DISPLAYABOUTCHECK "Display at startup"
+
+IDS_ABRESMENU "Search For Address Book Entry Using Restriction"
+IDS_MBRESMENU "Search For Mailbox Name Using Restriction"
+IDS_PFRESMENU "Search For Public Folder Using Restriction"
+IDS_PROPERTYMENU "&Property"
+IDS_TOOLSMENU "Tools"
+IDS_TABLEMENU "&Table"
+IDS_ADDINSMENU "&AddIns"
+IDS_EXIT "E&xit"
+IDS_PROPSFROMROW "Properties retrieved from row"
+IDS_PROPSFROMGETPROPS "Properties retrieved from item"
+
+// Dropdowns
+IDS_DDMESSAGESTORE "Message Store"
+IDS_DDSESSION "Session"
+IDS_DDADDRESSBOOK "Address Book"
+IDS_DDTABLESORTASCEND "TABLE_SORT_ASCEND"
+IDS_DDTABLESORTDESCEND "TABLE_SORT_DESCEND"
+IDS_DDTABLESORTCOMBINE "TABLE_SORT_COMBINE"
+IDS_DDTABLESORTCATEGMAX "TABLE_SORT_CATEG_MAX"
+IDS_DDTABLESORTCATEGMIN "TABLE_SORT_CATEG_MIN"
+IDS_DDCOPYMESSAGES "CopyMessages"
+IDS_DDCOPYTO "CopyTo"
+IDS_DDDELETETODELETED "Delete to deleted items"
+IDS_DDDELETETORETENTION "Permanent deletion (deletes to deleted item retention if supported)"
+IDS_DDDELETEHARDDELETE "Permanent delete passing DELETE_HARD_DELETE (unrecoverable)"
+IDS_DDLOADTOFOLDER "Load message into current folder"
+IDS_DDDISPLAYPROPSONLY "Only display properties from MSG file"
+IDS_DDENTERFORMCLASS "Manually enter form class"
+IDS_DDFOLDERFORMLIBRARY "Folder Form library"
+IDS_DDORGFORMLIBRARY "Organization Forms and Application Forms libraries"
+IDS_DDTEXTFILE "Text file (saves all properties of message to a text file)"
+IDS_DDMSGFILEANSI "MSG file (ANSI)"
+IDS_DDMSGFILEUNICODE "MSG file (UNICODE)"
+IDS_DDEMLFILE "EML file (using PR_INTERNET_CONTENT)"
+IDS_DDEMLFILEUSINGICONVERTERSESSION "EML file (using IConverterSession)"
+IDS_DDTNEFFILE "TNEF file (same format as winmail.dat)"
+IDS_DDCOPYPROPS "IMAPIProp::CopyProps"
+IDS_DDGETSETPROPS "GetProps/SetProps"
+IDS_DDCOPYSTREAM "Copy as stream (IStream::CopyTo)"
+
+// Editor buttons
+IDD_LISTMOVEDOWN "Move Down"
+IDD_LISTMOVETOBOTTOM "Move To Bottom"
+IDD_LISTADD "Add"
+IDD_LISTEDIT "Edit"
+IDD_LISTDELETE "Delete"
+IDD_LISTMOVETOTOP "Move To Top"
+IDD_LISTMOVEUP "Move Up"
+IDD_COLLAPSE "+"
+
+IDS_OK "OK"
+IDS_CANCEL "Cancel"
+
+// Error messages
+IDS_ERRFORMATSTRING    "Error: %1!ws!\r\nCode: %2!ws! == 0x%3!08X!\r\nFunction %4!hs!\r\nFile %5!hs!\r\nLine %6!d!"
+IDS_WARNFORMATSTRING "Warning: %1!ws!\r\nCode: %2!ws! == 0x%3!08X!\r\nFunction %4!hs!\r\nFile %5!hs!\r\nLine %6!d!"
+IDS_FUNCTION "Function call: %1!hs!@%2!d!: %3!hs!"
+IDS_ATTNOTEMBEDDEDMSG "Attachment is not an embedded message!"
+IDS_USERCANCELLED "User cancelled!"
+IDS_EXPANDCOLLAPSEFAILED "DoExpandCollapse failed"
+IDS_TABLENOSUPPORTRES "Table didn't support restrictions!"
+IDS_COLOUTOFRANGE "ulCol out of range"
+IDS_OPENMSGFAILED "Failed to open message."
+IDS_ERRORSENDINGMSGS "Encountered error sending test messages. Not sending any more."
+IDS_NOITEMSELECTED "No item selected."
+IDS_GETSEARCHCRITERIAFAILED "GetSearchCriteria failed."
+IDS_HIERARCHNOTFOUND "Maybe we aren't logged in?"
+IDS_REFRESHHIERARCHYFAILED "RefreshHierarchyTable failed"
+IDS_NODELACKSCONTENTCOUNT "Couldn't get content count. If this is an AB container, this is benign."
+IDS_NODELACKSASSOCCONTENTCOUNT "Couldn't get associated content count. If this is an AB or PST container, this is benign."
+IDS_NODELACKSDELETEDMESSAGECOUNT "Couldn't get deleted message count"
+IDS_NODELACKSDELETEDASSOCMESSAGECOUNT "Couldn't get deleted associated message count"
+IDS_NODELACKSDELETEDSUBFOLDERCOUNT "Couldn't get deleted subfolder count."
+IDS_UNKNOWNCONTAINERTYPE "Possibly an unknown container type."
+IDS_NOCONTAINER "No Container!"
+IDS_NOFORMMANAGER "Couldn't open the MAPI Form Manager"
+IDS_NOCLASSHANDLER "Could not find handler for message class"
+IDS_NOPROPLIST "Couldn't get property list from object"
+IDS_GETSPECIALFOLDERINBOXMISSINGPROP "GetSpecialFolderEID: Failed to get property from Inbox"
+IDS_GETSPECIALFOLDERROOTMISSINGPROP "GetSpecialFolderEID: Failed to get property from Root Folder"
+IDS_LAUNCHWIZARDFAILED "Failed to configure profile, perhaps because MAPI is requiring the use of mlcfg.cpl from system32, and it doesn't exist. Use Profile Action menu to create profiles and add Exchange services instead."
+IDS_CREATEMSGSERVICEFAILED "Could not add service to profile. Perhaps service is not in MAPISVC.INF?"
+IDS_DUPLICATEPROFILE "Failed to create profile, most likely because profile with this name already exists"
+IDS_STREAMSEEKFAILED "This might be expected with PR_RTF_COMPRESSED"
+IDS_COPYFOLDERFAILED "CopyFolder failed."
+IDS_ONACTIVENEXTFAILED "OnActivateNext failed."
+IDS_GETPROPSNULLFAILED "GetProps(NULL) failed"
+IDS_CANNOTOPENSTREAM "Could not open stream interface.\r\nError Code: %1!ws! == 0x%2!08X!"
+IDS_DISPLAYNAMENOTFOUND "Display Name Not Found"
+IDS_NOCONVERTERSESSION "IConverterSession not found. This interface is only supported by Outlook 2003 and higher."
+
+// Filespecs
+IDS_TEXTFILES "Text Files (*.txt)|*.txt|All Files (*.*)|*.*||"
+IDS_ALLFILES "All Files (*.*)|*.*||"
+IDS_MSGFILES "Message Files (*.msg;*.oft;*.fdm)|*.msg; *.oft; *.fdm|All Files (*.*)|*.*||"
+IDS_TNEFFILES "TNEF Files(*.tnef;*.tnf;*.dat)|*.tnef; *.tnf; *.dat|All Files (*.*)|*.*||"
+IDS_CFGFILES "CFG Files(*.cfg)|*.cfg|All Files (*.*)|*.*||"
+IDS_PSTFILES "PST Files (*.pst)|*.pst|All Files (*.*)|*.*||"
+IDS_XMLFILES "XML Files (*.xml)|*.xml|All Files (*.*)|*.*||"
+IDS_EMLFILES "EML Files (*.eml)|*.eml|All Files (*.*)|*.*||"
+
+IDS_INFILEONLINE "\r\nIn file %1!hs!\r\nOn line %2!d!"
+
+// Status bar text
+IDS_LOADINGITEMS "Loading items: %1!d! out of %2!d!"
+IDS_ESCSTOPLOADING "Hit Esc to stop loading contents table."
+IDS_TABLELOADCANCELLED "Contents table load cancelled"
+IDS_TABLELOADED "Contents table loaded"
+IDS_PERCENTLOADED "%1!ws!: %2!d!%% done."
+
+// Action strings
+IDS_ACTION1 "Action1"
+IDS_ACTION2 "Action2"
+IDS_ACTION3 "Action3"
+IDS_ACTIONSELECTPTAG "Select Property Tag"
+IDS_ACTIONCREATENAMEDPROP "Create Named Property"
+IDS_ACTIONEDITPROP "Edit Prop Value"
+IDS_ACTIONEDITRES "Edit Restriction"
+IDS_CLEAR "Clear"
+IDS_CLOSE "Close"
+IDS_PAUSE "Pause"
+IDS_IMPORT "Import"
+IDS_EXPORT "Export"
+
+IDS_DIRPROMPT "Choose directory to save to"
+
+IDS_DISPLAYNAMEVALUE "<Display Name>"
+IDS_ADDRESSVALUE "Mr Display Name [EX:/O=FIRST ORGANIZATION/OU=FIRST ADMINISTRATIVE GROUP/CN=RECIPIENTS/CN=ADMINISTRATOR]"
+IDS_FOLDERNAMEVALUE "New Folder"
+IDS_FOLDERCOMMENTVALUE "Folder Created with %1!ws!"
+IDS_OBJECTVALUE "Object"
+
+IDS_PREVIOUSCALL "Previous call returned %1!ws! == 0x%2!08X!"
+
+IDS_TESTSUBJECT "%1!ws!: %2!d!"
+IDS_ROOTCONTAINER "Root Container"
+IDS_UNKNOWNNAME "Unknown name"
+IDS_UNKNOWNPROPERTY "Unknown Property"
+
+// parseProperty.cpp stuff
+IDS_TAGMULTILINE "Tag: 0x%1!08X!\r\nType: %2!ws!"
+// Yes, these six look like a mistake, but they are intentional - see TagToString
+IDS_NAMEDPROPSINGLELINE ": Named Prop Name: %5!ws!"
+IDS_GUIDSINGLELINE ": Guid: %6!ws!"
+IDS_PROPNAMEMULTILINE "\r\nProperty Name: %3!ws!"
+IDS_OTHERNAMESMULTILINE "\r\nOther Names: %4!ws!"
+IDS_NAMEPROPNAMEMULTILINE "\r\nNamed Prop Name: %5!ws!"
+IDS_NAMEPROPGUIDMULTILINE "\r\nNamed Prop Guid: %6!ws!"
+IDS_DASLPROPTAG "\r\nDASL: http://schemas.microsoft.com/mapi/proptag/0x%1!08X!"
+IDS_DASLNAMED "\r\nDASL: http://schemas.microsoft.com/mapi/%7!ws!"
+
+IDS_PROBLEMARRAY "Index: 0x%1!08X!, ulPropTag: %2!ws!, scode: 0x%3!08X! = %4!ws!\r\n"
+IDS_MAPIERRUNICODE "ulVersion = 0x%1!X!\r\nlpszError = %2!ws!\r\nlpszComponent = %3!ws!\r\nulLowLevelError = 0x%4!X! = %5!ws!\r\nulContext = 0x%6!X!"
+IDS_MAPIERRANSI    "ulVersion = 0x%1!X!\r\nlpszError = %2!hs!\r\nlpszComponent = %3!hs!\r\nulLowLevelError = 0x%4!X! = %5!ws!\r\nulContext = 0x%6!X!"
+IDS_TNEFPROBARRAY "Component: 0x%1!08X!\r\nAttribute: 0x%2!08X!\r\n%3!ws!\r\nError: 0x%4!08X! = %5!ws!\r\n"
+IDS_NULLRES "lpRes was NULL"
+IDS_RESDEPTHEXCEEDED "Restriction nested too many (100) levels."
+IDS_RESTYPE "%1!ws!lpRes->rt = 0x%2!X! = %3!ws!"
+
+IDS_RESCOMPARE "%1!ws!lpRes->res.resCompareProps.relop = %2!ws! = 0x%3!08X!\r\n\
+%1!ws!lpRes->res.resCompareProps.ulPropTag1 = %4!ws!\r\n\
+%1!ws!lpRes->res.resCompareProps.ulPropTag2 = %5!ws!"
+
+IDS_RESANDCOUNT "%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!"
+IDS_RESANDPOINTER "%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]"
+
+IDS_RESORCOUNT "%1!ws!lpRes->res.resOr.cRes = 0x%2!08X!"
+IDS_RESORPOINTER "%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]"
+
+IDS_RESNOT "%1!ws!lpRes->res.resNot.ulReserved = 0x%2!08X!\r\n\
+%1!ws!lpRes->res.resNot.lpRes"
+
+IDS_RESCOUNT "%1!ws!lpRes->res.resCount.ulCount = 0x%2!08X!\r\n\
+%1!ws!lpRes->res.resCount.lpRes"
+
+IDS_RESCONTENT "%1!ws!lpRes->res.resContent.ulFuzzyLevel = %2!ws! = 0x%3!08X!\r\n\
+%1!ws!lpRes->res.resContent.ulPropTag = %4!ws!"
+IDS_RESCONTENTPROP "%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n\
+%1!ws!lpRes->res.resContent.lpProp->Value = %3!ws!\r\n\
+%1!ws!\tAlt: %4!ws!"
+
+IDS_RESPROP "%1!ws!lpRes->res.resProperty.relop = %2!ws! = 0x%3!08X!\r\n\
+%1!ws!lpRes->res.resProperty.ulPropTag = %4!ws!"
+IDS_RESPROPPROP "%1!ws!lpRes->res.resProperty.lpProp->ulPropTag = %2!ws!\r\n\
+%1!ws!lpRes->res.resProperty.lpProp->Value = %3!ws!\r\n\
+%1!ws!\tAlt: %4!ws!"
+IDS_RESPROPPROPFLAGS "%1!ws!\tFlags: %2!ws!"
+
+IDS_RESBITMASK "%1!ws!lpRes->res.resBitMask.relBMR = %2!ws! = 0x%3!08X!\r\n\
+%1!ws!lpRes->res.resBitMask.ulMask = 0x%4!08X!"
+IDS_RESBITMASKFLAGS ": %1!ws!"
+IDS_RESBITMASKTAG "%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!"
+
+IDS_RESSIZE "%1!ws!lpRes->res.resSize.relop = %2!ws! = 0x%3!08X!\r\n\
+%1!ws!lpRes->res.resSize.cb = 0x%4!08X!\r\n\
+%1!ws!lpRes->res.resSize.ulPropTag = %5!ws!"
+
+IDS_RESEXIST "%1!ws!lpRes->res.resExist.ulPropTag = %2!ws!\r\n\
+%1!ws!lpRes->res.resExist.ulReserved1 = 0x%3!08X!\r\n\
+%1!ws!lpRes->res.resExist.ulReserved2 = 0x%4!08X!"
+
+IDS_RESSUBRES "%1!ws!lpRes->res.resSub.ulSubObject = %2!ws!\r\n\
+%1!ws!lpRes->res.resSub.lpRes"
+
+IDS_RESCOMMENT "%1!ws!lpRes->res.resComment.cValues = 0x%2!08X!"
+IDS_RESCOMMENTPROPS "%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n\
+%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %4!ws!\r\n\
+%1!ws!\tAlt: %5!ws!"
+IDS_RESCOMMENTRES "%1!ws!lpRes->res.resComment.lpRes"
+
+IDS_RESANNOTATION "%1!ws!lpRes->res.resAnnotation.cValues = 0x%2!08X!"
+IDS_RESANNOTATIONPROPS "%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n\
+%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %4!ws!\r\n\
+%1!ws!\tAlt: %5!ws!"
+IDS_RESANNOTATIONRES "%1!ws!lpRes->res.resAnnotation.lpRes"
+
+IDS_ADRLISTNULL "lpAdrList was NULL\r\n"
+IDS_ADRLISTCOUNT "lpAdrList->cEntries = 0x%1!08X!\r\n"
+IDS_ADRLISTENTRIESCOUNT "lpAdrList->aEntries[0x%1!08X!].cValues = 0x%2!08X!\r\n"
+IDS_ADRLISTENTRY "lpAdrList->aEntries[0x%1!08X!].rgPropVals[0x%2!08X!].ulPropTag = %3!ws!\r\n\
+lpAdrList->aEntries[0x%1!08X!].rgPropVals[0x%2!08X!].Value = %4!ws!\r\n\
+\tAlt: %5!ws!\r\n"
+
+IDS_ACTION "lpAction->acttype = 0x%1!08X! = %2!ws!\r\n\
+lpAction->lpRes: \r\n%3!ws!\
+lpAction->ulFlags = 0x%4!08X! = %5!ws!\r\n"
+
+IDS_ACTIONOPMOVECOPY "lpAction->actMoveCopy.lpStoreEntryId:\r\n\
+%1!ws!\r\n\
+Alt: %2!ws!\r\n\
+lpAction->actMoveCopy.lpFldEntryId:\r\n\
+%3!ws!\r\n\
+Alt: %4!ws!\r\n"
+
+IDS_ACTIONOPREPLY "lpAction->actReply.lpEntryId:\r\n\
+%1!ws!\r\n\
+Alt: %2!ws!\r\n\
+actReply.guidReplyTemplate = %3!ws!\r\n"
+
+IDS_ACTIONOPDEFER "lpAction->actDeferAction.pbData:\r\n\
+%1!ws!\r\n\
+Alt: %2!ws!\r\n"
+
+IDS_ACTIONOPBOUNCE "lpAction->scBounceCode = 0x%1!08X! = %2!ws!\r\n"
+
+IDS_ACTIONOPFORWARDDEL "lpAction->lpadrlist:\r\n"
+
+IDS_ACTIONOPTAG "lpAction->propTag:\r\n\
+lpAction->propTag.ulPropTag = %1!ws!\
+Value: %2!ws!\r\n\
+Alt: %3!ws!\r\n"
+
+IDS_ACTIONFLAVOR "lpAction->ulActionFlavor = 0x%1!08X! = %2!ws!\r\n"
+
+IDS_ACTIONTAGARRAYNULL "lpAction->lpPropTagArray = NULL\r\n"
+IDS_ACTIONTAGARRAYCOUNT "lpAction->lpPropTagArray->cValues = 0x%1!08X!\r\n"
+IDS_ACTIONTAGARRAYTAG "lpAction->lpPropTagArray->aulPropTag[0x%1!08X!] = %2!ws!\r\n"
+
+IDS_ACTIONSNULL "lpActions was NULL\r\n"
+IDS_ACTIONSMEMBERS "lpActions->ulVersion = 0x%1!08X! = %2!ws!\r\n\
+lpActions->cActions = 0x%3!08X!\r\n"
+IDS_ACTIONSACTION "lpActions->lpAction[0x%1!08X!]:\r\n"
+
+IDS_FILETIMEFORMAT "hh':'mm':'ss'.%1!03d!' tt"
+IDS_INVALIDSYSTIME "Invalid systime"
+IDS_FILETIMEALTFORMAT "Low: 0x%1!08X! High: 0x%2!08X!"
+
+IDS_TRUE "True"
+IDS_FALSE "False"
+IDS_NAMEWASANSI "(Name was found as ANSI)"
+IDS_UNKNOWNGUID "Unknown GUID"
+
+IDS_OPTIONSSTRUCTURE "lpOptions[0x%1!08X!].ulPropTag = %2!ws!\r\n\
+lpOptions[0x%1!08X!].Value = %3!ws!\r\n\
+\tAlt: %4!ws!\r\n"
+
+IDS_NOCONTEXT "No Context"
+
+IDS_ACCESSREADANY "Read any"
+IDS_ACCESSREADONLY "Read only"
+IDS_ACCESSCREATE "Create"
+IDS_ACCESSEDITOWN "Edit own"
+IDS_ACCESSDELETEOWN "Delete own"
+IDS_ACCESSEDITANY "Edit any"
+IDS_ACCESSREADWRITE "Read write"
+IDS_ACCESSDELETEANY "Delete any"
+IDS_ACCESSCREATESUBFOLDER "Create subfolder"
+IDS_ACCESSOWNER "Owner"
+IDS_ACCESSVISIBLE "Visible"
+IDS_ACCESSCONTACT "Contact"
+IDS_ACCESSDELETE "Delete"
+IDS_ACCESSREADPROPERTY "Read Property"
+IDS_ACCESSWRITEPROPERTY "Write Property"
+IDS_ACCESSCREATEMESSAGE "Create Message"
+IDS_ACCESSSAVEMESSAGE "Save Message"
+IDS_ACCESSOPENMESSAGE "Open Message"
+IDS_ACCESSWRITESD "Write SD"
+IDS_ACCESSWRITEOWNER "Write Owner"
+IDS_ACCESSREADCONTROL "Read Control"
+IDS_ACCESSSIMPLEFREEBUSY "Simple FreeBusy"
+IDS_ACCESSDETAILEDFREEBUSY "Detailed FreeBusy"
+
+IDS_SIDACCOUNT "Account: %1!ws!\\%2!ws!\r\n\
+SID: %3!ws!\r\n\
+Access Type: 0x%4!08X! = %5!ws!\r\n\
+Access Flags: 0x%6!08X! = %7!ws!\r\n\
+Access Mask: 0x%8!08X! = %9!ws!"
+IDS_SIDOBJECTYPE "ObjectType: "
+IDS_SIDINHERITEDOBJECTYPE "InheritedObjectType: "
+IDS_SIDFLAGS "Flags: 0x%1!08X!"
+
+IDS_INVALIDSD "This is not a valid security descriptor."
+
+IDS_FLAGTOSTRINGHEX "\r\n0x%1!08X! %2!ws!"
+IDS_FLAGTOSTRINGDEC "\r\n%1!5d! %2!ws!"
+
+IDS_PTI8FORMATLABEL "I8: %1!X!-%2!08X!"
+IDS_PTI8FORMAT "%1!X!-%2!08X!"
+IDS_FIDMIDFORMATLABEL "Fid/Mid: %1!X!-%2!I64X!"
+IDS_FIDMIDFORMAT "%1!X!-%2!I64X!"
+
+// For InsertColumn
+IDS_ENTRY "Entry"
+IDS_TYPE "Type"
+IDS_SHARP "#"
+IDS_PROPERTY "Property"
+IDS_BINARY "Binary"
+IDS_TEXTVIEW "Text View"
+IDS_PROPERTYNAME "Name"
+IDS_PROPERTYNAMES "Property Name(s)"
+IDS_OTHERNAMES "Other Names"
+IDS_NAMEDPROPNAME "Named Prop Name"
+IDS_NAMEDPROPGUID "Named Prop GUID"
+
+IDS_CODEPAGES "ulInCodePage = %1!d!, ulOutCodePage = %2!d!"
+
+IDS_NODOMAIN "(no domain)"
+IDS_NONAME "(no name)"
+IDS_NOSID "(no SID)"
+
+IDS_SELECTFORMCREATE "Select form to display properties"
+IDS_SELECTFORMPROPS "Select form to display properties"
+IDS_SELECTMAILBOX "Select a Mailbox"
+
+// Column Headers
+IDS_COLADDRTYPE "Addr Type"
+IDS_COLALTVALUE "AltValue"
+IDS_COLASSOCCONTENTCOUNT "Assoc Content Count"
+IDS_COLATT "Att?"
+IDS_COLBESTGUESS "Name"
+IDS_COLCONTENTSCL "Content Filter SCL"
+IDS_COLCONTENTCOUNT "Content Count"
+IDS_COLCONTENTUNREAD "Content Unread"
+IDS_COLDEFAULTSTORE "Default Store"
+IDS_COLDEPTH "Depth"
+IDS_COLDISPLAYNAME "Display Name"
+IDS_COLDISPLAYTYPE "Display Type"
+IDS_COLEMAIL "E-Mail"
+IDS_COLEMAILADDRESS "E-mail Address"
+IDS_COLEID "EID"
+IDS_COLOTHER_NAMES "Other Names"
+IDS_COLOTHERNAMES "OtherNames"
+IDS_COLFILENAME "File Name"
+IDS_COLSMARTVIEW "SmartView"
+IDS_COLFROM "From"
+IDS_COLIDENTITY "Identity"
+IDS_COLINSTANCEKEY "Instance Key"
+IDS_COLINTERNETMDNS "Internet MDNS"
+IDS_COLLASTLOGOFF "Last Logoff"
+IDS_COLLASTLOGON "Last Logon"
+IDS_COLLIMITINFO "Limit Info"
+IDS_COLLOCALE "Locale"
+IDS_COLLONGTERMEID "Longterm EID"
+IDS_COLMEMBERID "Member ID"
+IDS_COLMEMBERRIGHTS "Member Rights"
+IDS_COLMESSAGECLASS "Message Class"
+IDS_COLMESSAGESIZE "Message Size"
+IDS_COLMSGFLAGS "Message Flags"
+IDS_COLMETHOD "Method"
+IDS_COLNAMED_PROP_GUID "Named prop GUID"
+IDS_COLNAMED_PROP_NAME "Named prop name"
+IDS_COLNAMEDPROPGUID "NamedPropGUID"
+IDS_COLNAMEDPROPNAME "NamedPropName"
+IDS_COLNTUSER "NT User"
+IDS_COLNUM "Num"
+IDS_COLOBJECTTYPE "Object Type"
+IDS_COLPROVIDERDISPLAY "Provider"
+IDS_COLPROVIDERDLL "Provider DLL"
+IDS_COLQUOTARECEIVE "Quota Receive"
+IDS_COLQUOTASEND "Quota Send"
+IDS_COLQUOTAWARNING "Quota Warning"
+IDS_COLRECEIVED "Received"
+IDS_COLRESOURCEFLAGS "Resource Flags"
+IDS_COLRESOURCEMETHODS "Resource Methods"
+IDS_COLRESOURCETYPE "Resource Type"
+IDS_COLROWTYPE "Row Type"
+IDS_COLRULENAME "Rule Name"
+IDS_COLSIZE "Size"
+IDS_COLSIZEEX "Size Ex"
+IDS_COLSTATUSCODE "Status Code"
+IDS_COLSUBJECT "Subject"
+IDS_COLSUBMITTED "Submitted"
+IDS_COLTAG "Tag"
+IDS_COLTO "To"
+IDS_COLTYPE "Type"
+IDS_COLVALUE "Value"
+IDS_COLVALUEALTERNATEVIEW "Value (alternate view)"
+IDS_COLDELSIZEEX "Deleted Size"
+IDS_COLDELNORMALSIZEEX "Deleted Normal Size"
+IDS_COLDELASSOCSIZEEX "Deleted Assoc Size"
+IDS_COLDELCONTENTCOUNT "Deleted Content Count"
+IDS_COLDELASSOCCONTENTCOUNT "Deleted Assoc Content Count"
+IDS_COLCONVERSATIONID "Conversation ID"
+IDS_COLSORTPOSITION "Sort Position"
+IDS_COLSORTPARENTID "Sort Parent"
+IDS_ISATTBLOCKED "IsAttachmentBlocked"
+IDS_ENTERFILENAME "Enter file name"
+IDS_RESULT "Result:"
+IDS_CONVERTTOEML "Convert Message To EML"
+IDS_CONVERTTOEMLPROMPT "Select Options\r\n\
+Conversion Flags (May be combined):\r\n\
+0x000002 CCSF_SMTP (Must be set)\r\n\
+0x000004 CCSF_NOHEADERS\r\n\
+0x000010 CCSF_USE_TNEF\r\n\
+0x000040 CCSF_8BITHEADERS\r\n\
+0x001000 CCSF_PLAIN_TEXT_ONLY\r\n\
+0x004000 CCSF_NO_MSGID\r\n\
+0x008000 CCSF_EMBEDDED_MESSAGE\r\n\
+0x040000 CCSF_PRESERVE_SOURCE\r\n\
+0x200000 CCSF_GLOBAL_MESSAGE\r\n\
+Encoding Type (pick one):\r\n\
+0x1 IET_BASE64\r\n\
+0x2 IET_UUENCODE\r\n\
+0x3 IET_QP\r\n\
+0x4 IET_7BIT (Default if SetEncoding is not called)\r\n\
+0x5 IET_8BIT\r\n\
+MIME Save Type (pick one):\r\n\
+0x0 SAVE_RFC822\r\n\
+0x1 SAVE_RFC1521"
+IDS_CONVERTFLAGS "Conversion Flags"
+IDS_CONVERTDOENCODINGTYPE "Set Encoding Type"
+IDS_CONVERTENCODINGTYPE "Encoding Type"
+IDS_CONVERTDOMIMESAVETYPE "Set MIME Save Type"
+IDS_CONVERTMIMESAVETYPE "MIME Save Type"
+IDS_CONVERTDOWRAPLINES "Set Text Wrapping (Default is 74)"
+IDS_CONVERTWRAPLINECOUNT "Number of characters to wrap at"
+IDS_CONVERTFROMEML "Convert Message From EML"
+IDS_CONVERTFROMEMLPROMPT "Conversion Flags (May be combined):\r\n\
+0x000002 CCSF_SMTP (Must be set)\r\n\
+0x000020 CCSF_INCLUDE_BCC\r\n\
+0x000080 CCSF_USE_RTF\r\n\
+0x008000 CCSF_EMBEDDED_MESSAGE\r\n\
+0x200000 CCSF_GLOBAL_MESSAGE\r\n\
+Common code pages (others supported)\r\n\
+1252  - CP_USASCII      - Indicates the USASCII character set, Windows code page 1252\r\n\
+1200  - CP_UNICODE      - Indicates the Unicode character set, Windows code page 1200\r\n\
+50932 - CP_JAUTODETECT  - Indicates Japanese auto-detect (50932)\r\n\
+50949 - CP_KAUTODETECT  - Indicates Korean auto-detect (50949)\r\n\
+50221 - CP_ISO2022JPESC - Indicates the Internet character set ISO-2022-JP-ESC\r\n\
+50222 - CP_ISO2022JPSIO - Indicates the Internet character set ISO-2022-JP-SIO\r\n\
+Character Set Type (pick one):\r\n\
+0 - CHARSET_BODY\r\n\
+1 - CHARSET_HEADER\r\n\
+2 - CHARSET_WEB\r\n\
+Character Set Apply Type (pick one):\r\n\
+0 - CSET_APPLY_UNTAGGED\r\n\
+1 - CSET_APPLY_ALL\r\n\
+2 - CSET_APPLY_TAG_ALL"
+IDS_CONVERTDOADRBOOK "Pass Address Book To Converter"
+IDS_CONVERTCODEPAGE "Code Page For Conversion"
+IDS_CONVERTCHARSETTYPE "Character Set Type"
+IDS_CONVERTCHARSETAPPLYTYPE "Character Set Apply Type"
+
+IDS_FLAGS_PREFIX "Flags: "
+
+IDS_MVROWBIN "Row %1!d!\r\n"
+IDS_MVROWLONG "Row %1!d!: %2!ws!"
+IDS_OPENBODY "Body: Open to view"
+IDS_OPENSTREAM "Stream: Open to view"
+IDS_ROW "row"
+
+// All strings above this point use FormatMessage style formatting
+
+// ErrDialog errors - use printf style formatting
+IDS_EDCOMMONDLG "Error in common dialog function %s, CommDlgExtendedError returned 0x%X"
+IDS_EDCOMPAREEID "Object selected to call CompareEntryIDs on is not available"
+IDS_EDADVISE "Object selected to advise on is not available"
+IDS_EDBADSORTS "Must have cSorts(%d) >= cCategories(%d) >= cExpanded(%d)"
+IDS_EDCOLUMNHEADERFAILED "Failed to insert a column header. Column headers might not be valid."
+IDS_EDTOOMANYCOLUMNS "We allocated too many columns in CContentsTableListCtrl::AddColumns."
+IDS_EDMESSAGERAWNOTSUPPORTED "IID_IMessageRaw not supported by this store."
+IDS_EDPROBLEMARRAY "Problem array:\r\n%ws"
+IDS_EDMAPIERROR "LPMAPIERROR:\r\n%ws"
+IDS_EDTNEFPROBLEMARRAY "TNEF Problem array:\r\n%s"
+IDS_EDUNKNOWNATTMETHOD "Unknown attachment method"
+IDS_EDGETMAILBOXTABLEFAILED "%s failed.\r\n\
+Here are some known causes for this.\r\n\
+MAPI_E_NO_ACCESS: The user does not have permissions. Try again with an administrative account.\r\n\
+\tSee http://support.microsoft.com/kb/262054\r\n\
+MAPI_E_NETWORK_ERROR: The client machine is not in the same domain as the server\r\n\
+\t%s does not work over domain boundaries.\r\n\
+\tTry again from a machine in the same domain as the server."
+IDS_EDDISPLAYTABLE "DisplayTable couldn't handle unknown object type 0x%X"
+IDS_EDDUPEFOLDER "A folder of that name already exists under the parent folder."
+IDS_EDRESTOREFAILED "OnRestoreDeletedFolder did not complete because CopyFolder failed.\r\n\
+There are a few known causes for this.\r\n\
+1 - The user does not have permissions. Try again with an administrative account.\r\n\
+\tSee http://support.microsoft.com/kb/262054\r\n\
+2 - Public folders were not opened with administrative permissions. \r\n\
+Use 'Open Public Folder Store...' on the MDB menu and check 'Use Admin Privileges' to open the Public Folder store.\r\n\
+3 - There may be corruption or invalid permissions on the deleted folders.\r\n\
+Display the ACL Table for the folder.  Look for DNs that don't resolve.  If so, consider temporarily recreating objects that match the DNs exactly.\r\n\
+4 - The folder being restored is in a Public Folder store and the virus scanner was updated after the folder was deleted.\r\n
+Either use OWA to restore the folder or disable virus scanning to allow the folder to be restored"
+IDS_EDFORMVIEWERNULLPARENT "Form Viewer created with a NULL parent!"
+IDS_EDACTIVATENEXT "ActivateNext returned S_OK but no persist!"
+IDS_EDLOWERBOUNDTOOLOW "Lower bound of 0x%X is below 0x%X"
+IDS_EDUPPERBOUNDTOOHIGH "Upper bound of 0x%X is over 0x%X"
+IDS_EDLOWEROVERUPPER "Lower bound of 0x%X is over upper bound of 0x%X"
+IDS_EDOFFSETWITHWRONGINTERFACE "You specified an offset but requested the IID_IExchangeManageStore\r\n\
+interface. This interface does not support passing an offset.\r\n"
+IDS_EDINVALIDGUID "The GUID you entered was invalid."
+IDS_EDQUERYFASTSHUTDOWNFAILED "QueryFastShutdown returned an error.\r\n\
+Usually this means at least one provider does not support Fast Shutdown."
+IDS_EDNOTIFYPROCESSSHUTDOWNFAILED "NotifyProcessShutdown failed."
+IDS_EDDOFASTSHUTDOWNFAILED "DoFastShutdown failed."
+IDS_EDDOFASTSHUTDOWNSUCCEEDED "DoFastShutdown succeeded. Most MAPI operations should now fail.\r\n\
+Please close MFCMAPI now."
+#ifdef _WIN64
+IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %ws.\r\n\
+\r\n\
+Here are some known causes for this.\r\n\
+1 - A 64 bit version of Outlook is not installed. The 64 bit version of MFCMAPI only works with a 64 bit version of Outlook.\r\n\
+\tSee https://github.com/stephenegriffin/mfcmapifor the latest 32 bit bit build of MFCMAPI.\r\n\
+2 - Windows Mail is registered as the Default Mail Client.\r\n\
+\tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
+#else
+IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %ws.\r\n\
+\r\n\
+Here are some known causes for this.\r\n\
+1 - No version of Extended MAPI is installed. Outlook must be installed.\r\n\
+2 - A 64 bit version of Outlook is installed. A 64 bit version of Outlook requires the 64 bit build of MFCMAPI.\r\n\
+\tSee https://github.com/stephenegriffin/mfcmapi for the latest 64 bit build of MFCMAPI.\r\n\
+3 - Windows Mail is registered as the Default Mail Client.\r\n\
+\tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
+IDS_EDPATHTOOLONG "Chosen path is too long (%d).\r\n\
+Try selecting a shorter path ( < %d)."
+#endif
+
+// UpdateStatusBarText - use FormatMessage style formatting
+IDS_STATUSTEXTNUMITEMS "Items: %1!ws!"
+IDS_STATUSTEXTNUMPROPS "Properties: %1!ws!"
+IDS_STATUSTEXTNOFOLDER "Could not open folder or get properties"
+IDS_STATUSTEXTCONTENTCOUNTS "Contents: %1!ws! Assoc. Contents: %2!ws!"
+IDS_STATUSTEXTDELETEDCOUNTS "Deleted Items: %1!ws! Deleted Assoc. Items: %2!ws! Deleted Subfolders: %3!ws!"
+IDS_STATUSTEXTLOADINGNICKNAME "Loading nickname cache..."
+IDS_STATUSTEXTLOADINGQUOTA "Loading quota properties..."
+IDS_STATUSTEXTCHECKINGSPECIALFOLDERS "Checking special folders..."
+
+SC_CLOSE "Close window."
+SC_RESTORE "Restore window."
+SC_MOVE "Move window."
+SC_SIZE "Size window."
+SC_MINIMIZE "Minimize window."
+SC_MAXIMIZE "Maximize window."
+
+END

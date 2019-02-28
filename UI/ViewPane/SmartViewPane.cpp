@@ -1,9 +1,12 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/SmartViewPane.h>
 #include <UI/ViewPane/TextPane.h>
-#include <Interpret/String.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/utility/strings.h>
+#include <core/smartview/SmartView.h>
 #include <UI/UIFunctions.h>
+#include <core/addin/addin.h>
+#include <core/utility/registry.h>
+#include <core/addin/mfcmapi.h>
 
 namespace viewpane
 {

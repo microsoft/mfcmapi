@@ -2,20 +2,25 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/HierarchyTable/MsgStoreDlg.h>
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/MAPIFunctions.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <Interpret/InterpretProp.h>
-#include <IO/File.h>
-#include <MAPI/MAPIProgress.h>
+#include <core/utility/file.h>
+#include <core/mapi/mapiProgress.h>
 #include <UI/Controls/SortList/NodeData.h>
-#include <MAPI/Cache/GlobalCache.h>
+#include <core/mapi/cache/globalCache.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFile.h>
+#include <core/interpret/flags.h>
+#include <core/mapi/processor/dumpStore.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/mapi/mapiOutput.h>
 
 namespace dialog
 {
@@ -376,8 +381,7 @@ namespace dialog
 			{
 				auto ulMoveMessage = MyData.GetCheck(0) ? MESSAGE_MOVE : 0;
 
-				auto lpProgress =
-					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
+				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
 
 				if (lpProgress) ulMoveMessage |= MESSAGE_DIALOG;
 
@@ -437,7 +441,7 @@ namespace dialog
 
 			if (lpProps)
 			{
-				if (mapi::CheckStringProp(&lpProps[NAME], PT_UNICODE))
+				if (strings::CheckStringProp(&lpProps[NAME], PT_UNICODE))
 				{
 					output::DebugPrint(DBGGeneric, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
 					MyData.SetStringW(0, lpProps[NAME].Value.lpszW);
@@ -451,8 +455,7 @@ namespace dialog
 			{
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				auto lpProgress =
-					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
+				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
 
 				auto ulCopyFlags = MAPI_UNICODE;
 				if (MyData.GetCheck(1)) ulCopyFlags |= COPY_SUBFOLDERS;
@@ -563,7 +566,7 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_ADDSUBFOLDER, IDS_ADDSUBFOLDERPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_FOLDER_TYPE), true));
+		MyData.SetPromptPostFix(flags::AllFlagsToString(PROP_ID(PR_FOLDER_TYPE), true));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePaneID(0, IDS_FOLDERNAME, IDS_FOLDERNAMEVALUE, false));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_FOLDERTYPE, false));
 		MyData.SetHex(1, FOLDER_GENERIC);
@@ -693,14 +696,14 @@ namespace dialog
 			{
 				if (MyData.GetCheck(2))
 				{
+					CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 					EC_H_S(mapi::ManuallyEmptyFolder(lpMAPIFolderToEmpty, MyData.GetCheck(0), MyData.GetCheck(1)));
 				}
 				else
 				{
 					auto ulFlags = MyData.GetCheck(0) ? DEL_ASSOCIATED : 0;
 					ulFlags |= MyData.GetCheck(1) ? DELETE_HARD_DELETE : 0;
-					auto lpProgress =
-						mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::EmptyFolder", m_hWnd); // STRING_OK
+					auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::EmptyFolder", m_hWnd); // STRING_OK
 
 					if (lpProgress) ulFlags |= FOLDER_DIALOG;
 
@@ -775,10 +778,9 @@ namespace dialog
 						L"OnDeleteSelectedItem",
 						L"Calling DeleteFolder on folder. ulFlags = 0x%08X.\n",
 						ulFlags);
-					output::DebugPrintBinary(DBGGeneric, *lpItemEID);
+					output::outputBinary(DBGGeneric, nullptr, *lpItemEID);
 
-					auto lpProgress =
-						mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteFolder", m_hWnd); // STRING_OK
+					auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteFolder", m_hWnd); // STRING_OK
 
 					if (lpProgress) ulFlags |= FOLDER_DIALOG;
 
@@ -850,7 +852,8 @@ namespace dialog
 
 			if (MyData.DisplayDialog())
 			{
-				file::SaveFolderContentsToTXT(
+				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+				mapi::processor::SaveFolderContentsToTXT(
 					m_lpMDB, lpFolder, MyData.GetCheck(1), MyData.GetCheck(2), MyData.GetCheck(0), m_hWnd);
 			}
 
@@ -973,7 +976,7 @@ namespace dialog
 
 			if (lpProps)
 			{
-				if (mapi::CheckStringProp(&lpProps[NAME], PT_UNICODE))
+				if (strings::CheckStringProp(&lpProps[NAME], PT_UNICODE))
 				{
 					output::DebugPrint(DBGGeneric, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
 					MyData.SetStringW(0, lpProps[NAME].Value.lpszW);
@@ -989,8 +992,7 @@ namespace dialog
 
 				if (!lpSrcParentFolder) lpSrcParentFolder = mapi::safe_cast<LPMAPIFOLDER>(GetRootContainer());
 
-				auto lpProgress =
-					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
+				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
 
 				auto ulCopyFlags = MAPI_UNICODE | (MyData.GetCheck(1) ? COPY_SUBFOLDERS : 0);
 
@@ -1057,7 +1059,7 @@ namespace dialog
 					L"OnValidateIPMSubtree",
 					L"HrValidateIPMSubtree returned 0x%08X properties:\n",
 					ulValues);
-				output::DebugPrintProperties(DBGGeneric, ulValues, lpProps, m_lpMDB);
+				output::outputProperties(DBGGeneric, nullptr, ulValues, lpProps, m_lpMDB, false);
 			}
 
 			MAPIFreeBuffer(lpProps);

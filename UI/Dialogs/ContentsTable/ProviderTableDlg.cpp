@@ -2,14 +2,15 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ProviderTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
-#include <MAPI/MAPIProfileFunctions.h>
+#include <core/mapi/mapiProfileFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/MAPIFunctions.h>
 #include <UI/addinui.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {
@@ -55,7 +56,7 @@ namespace dialog
 
 	_Check_return_ LPMAPIPROP CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
 	{
-		if (m_lpContentsTableListCtrl || !m_lpProviderAdmin) return nullptr;
+		if (!m_lpContentsTableListCtrl || !m_lpProviderAdmin) return nullptr;
 		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		LPPROFSECT lpProfSect = nullptr;

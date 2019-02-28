@@ -211,6 +211,7 @@
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -218,13 +219,15 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Message>Copy Release build</Message>
@@ -253,19 +256,22 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -288,6 +294,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -295,13 +302,15 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -324,19 +333,22 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <SDLCheck>true</SDLCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -357,6 +369,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -364,11 +377,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -388,17 +403,21 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -419,17 +438,20 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -449,17 +471,21 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -480,6 +506,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -487,11 +514,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/safeseh %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
@@ -512,104 +541,33 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <SwapRunFromNET>true</SwapRunFromNET>
       <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\core\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\mfcmapi.exe.manifest</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Interpret\Sid.h" />
-    <ClInclude Include="Interpret\SmartView\block\blockStringW.h" />
-    <ClInclude Include="Interpret\SmartView\block\blockStringA.h" />
-    <ClInclude Include="Interpret\SmartView\block\blockT.h" />
-    <ClInclude Include="Interpret\SmartView\block\block.h" />
-    <ClInclude Include="Interpret\SmartView\block\blockBytes.h" />
-    <ClInclude Include="MAPI\AdviseSink.h" />
-    <ClInclude Include="Property\Attributes.h" />
-    <ClInclude Include="MAPI\Cache\GlobalCache.h" />
-    <ClInclude Include="MAPI\ColumnTags.h" />
-    <ClInclude Include="MAPI\MAPIProcessor\DumpStore.h" />
-    <ClInclude Include="Enums.h" />
-    <ClInclude Include="IO\Error.h" />
-    <ClInclude Include="Interpret\ErrorArray.h" />
-    <ClInclude Include="Interpret\ExtraPropTags.h" />
-    <ClInclude Include="IO\File.h" />
-    <ClInclude Include="Interpret\Flags.h" />
-    <ClInclude Include="Interpret\GenTagArray.h" />
-    <ClInclude Include="Interpret\GUIDArray.h" />
-    <ClInclude Include="Interpret\Guids.h" />
-    <ClInclude Include="ImportProcs.h" />
-    <ClInclude Include="Interpret\InterpretProp.h" />
-    <ClInclude Include="MAPI\MAPIABFunctions.h" />
-    <ClInclude Include="MAPI\MAPIFunctions.h" />
-    <ClInclude Include="MAPI\MapiMime.h" />
-    <ClInclude Include="MAPI\Cache\MapiObjects.h" />
-    <ClInclude Include="MAPI\MAPIProcessor\MapiProcessor.h" />
-    <ClInclude Include="MAPI\MAPIProfileFunctions.h" />
-    <ClInclude Include="MAPI\MAPIProgress.h" />
+    <ClInclude Include="UI\AdviseSink.h" />
+    <ClInclude Include="UI\enums.h" />
     <ClInclude Include="UI\CMAPIProgress.h" />
-    <ClInclude Include="IO\ExportProfile.h" />
-    <ClInclude Include="Property\Property.h" />
-    <ClInclude Include="Property\ParseProperty.h" />
     <ClInclude Include="PropertyBag\MAPIPropPropertyBag.h" />
-    <ClInclude Include="MAPI\MAPIStoreFunctions.h" />
-    <ClInclude Include="MFCMAPI.h" />
-    <ClInclude Include="IO\MFCOutput.h" />
-    <ClInclude Include="Interpret\SmartView\AdditionalRenEntryIDs.h" />
-    <ClInclude Include="Interpret\SmartView\AppointmentRecurrencePattern.h" />
-    <ClInclude Include="Interpret\SmartView\BinaryParser.h" />
-    <ClInclude Include="Interpret\SmartView\ConversationIndex.h" />
-    <ClInclude Include="Interpret\SmartView\EntryIdStruct.h" />
-    <ClInclude Include="Interpret\SmartView\EntryList.h" />
-    <ClInclude Include="Interpret\SmartView\ExtendedFlags.h" />
-    <ClInclude Include="Interpret\SmartView\FlatEntryList.h" />
-    <ClInclude Include="Interpret\SmartView\FolderUserFieldStream.h" />
-    <ClInclude Include="Interpret\SmartView\GlobalObjectId.h" />
-    <ClInclude Include="Interpret\SmartView\NickNameCache.h" />
-    <ClInclude Include="Interpret\SmartView\PCL.h" />
-    <ClInclude Include="Interpret\SmartView\PropertyDefinitionStream.h" />
-    <ClInclude Include="Interpret\SmartView\PropertiesStruct.h" />
-    <ClInclude Include="Interpret\SmartView\RecipientRowStream.h" />
-    <ClInclude Include="Interpret\SmartView\RecurrencePattern.h" />
-    <ClInclude Include="Interpret\SmartView\ReportTag.h" />
-    <ClInclude Include="Interpret\SmartView\RestrictionStruct.h" />
-    <ClInclude Include="Interpret\SmartView\RuleCondition.h" />
-    <ClInclude Include="Interpret\SmartView\SDBin.h" />
-    <ClInclude Include="Interpret\SmartView\SearchFolderDefinition.h" />
-    <ClInclude Include="Interpret\SmartView\SIDBin.h" />
-    <ClInclude Include="Interpret\SmartView\SmartViewParser.h" />
-    <ClInclude Include="Interpret\SmartView\TaskAssigners.h" />
-    <ClInclude Include="Interpret\SmartView\TimeZone.h" />
-    <ClInclude Include="Interpret\SmartView\TimeZoneDefinition.h" />
-    <ClInclude Include="Interpret\SmartView\TombStone.h" />
-    <ClInclude Include="Interpret\SmartView\VerbStream.h" />
-    <ClInclude Include="Interpret\SmartView\WebViewPersistStream.h" />
-    <ClInclude Include="Interpret\SmartView\XID.h" />
-    <ClInclude Include="Interpret\String.h" />
-    <ClInclude Include="MAPI\Cache\NamedPropCache.h" />
-    <ClInclude Include="Interpret\NameIDArray.h" />
     <ClInclude Include="PropertyBag\PropertyBag.h" />
-    <ClInclude Include="Interpret\PropTypeArray.h" />
-    <ClInclude Include="IO\Registry.h" />
-    <ClInclude Include="Res\Resource.h" />
     <ClInclude Include="PropertyBag\RowPropertyBag.h" />
-    <ClInclude Include="Interpret\SmartView\SmartView.h" />
-    <ClInclude Include="Interpret\SmartView\SmartViewParsers.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="MAPI\MapiMemory.h" />
-    <ClInclude Include="MAPI\StubUtils.h" />
-    <ClInclude Include="MAPI\Version.h" />
     <ClInclude Include="UI\addinui.h" />
     <ClInclude Include="UI\Controls\StyleTreeCtrl.h" />
     <ClInclude Include="UI\Dialogs\HierarchyTable\ABContDlg.h" />
@@ -686,86 +644,18 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\mapiui.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Res\MFCMapi.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include=".clang-format" />
-    <None Include="Res\MFCMAPI64x64_logo.bmp" />
-    <None Include="Res\advise.bmp" />
-    <None Include="Res\MFCMapi.ico" />
-    <None Include="Res\icons.bmp" />
-    <None Include="res\MFCMapi.rc2" />
-    <None Include="res\splith.cur" />
-    <None Include="res\splitv.cur" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Interpret\Sid.cpp" />
-    <ClCompile Include="AddIns.cpp" />
-    <ClCompile Include="MAPI\AdviseSink.cpp" />
-    <ClCompile Include="Property\Attributes.cpp" />
-    <ClCompile Include="MAPI\Cache\GlobalCache.cpp" />
-    <ClCompile Include="MAPI\MAPIProcessor\DumpStore.cpp" />
-    <ClCompile Include="IO\Error.cpp" />
-    <ClCompile Include="IO\File.cpp" />
-    <ClCompile Include="Interpret\Guids.cpp" />
-    <ClCompile Include="ImportProcs.cpp" />
-    <ClCompile Include="Interpret\InterpretProp.cpp" />
-    <ClCompile Include="MAPI\MAPIABFunctions.cpp" />
-    <ClCompile Include="MAPI\MAPIFunctions.cpp" />
-    <ClCompile Include="MAPI\MapiMime.cpp" />
-    <ClCompile Include="MAPI\Cache\MapiObjects.cpp" />
-    <ClCompile Include="MAPI\MAPIProcessor\MapiProcessor.cpp" />
-    <ClCompile Include="MAPI\MAPIProfileFunctions.cpp" />
-    <ClCompile Include="MAPI\MAPIProgress.cpp" />
+    <ClCompile Include="UI\AdviseSink.cpp" />
     <ClCompile Include="UI\CMAPIProgress.cpp" />
-    <ClCompile Include="IO\ExportProfile.cpp" />
-    <ClCompile Include="Property\Property.cpp" />
-    <ClCompile Include="Property\ParseProperty.cpp" />
     <ClCompile Include="PropertyBag\MAPIPropPropertyBag.cpp" />
-    <ClCompile Include="MAPI\MapiStubLibrary.cpp" />
-    <ClCompile Include="MAPI\MAPIStoreFunctions.cpp" />
-    <ClCompile Include="IO\MFCOutput.cpp" />
-    <ClCompile Include="MAPI\Cache\NamedPropCache.cpp" />
     <ClCompile Include="UI\addinui.cpp" />
     <ClCompile Include="UI\profile.cpp" />
     <ClCompile Include="UI\ParentWnd.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="IO\Registry.cpp" />
     <ClCompile Include="PropertyBag\RowPropertyBag.cpp" />
-    <ClCompile Include="Interpret\SmartView\AdditionalRenEntryIDs.cpp" />
-    <ClCompile Include="Interpret\SmartView\AppointmentRecurrencePattern.cpp" />
-    <ClCompile Include="Interpret\SmartView\ConversationIndex.cpp" />
-    <ClCompile Include="Interpret\SmartView\EntryIdStruct.cpp" />
-    <ClCompile Include="Interpret\SmartView\EntryList.cpp" />
-    <ClCompile Include="Interpret\SmartView\ExtendedFlags.cpp" />
-    <ClCompile Include="Interpret\SmartView\FlatEntryList.cpp" />
-    <ClCompile Include="Interpret\SmartView\FolderUserFieldStream.cpp" />
-    <ClCompile Include="Interpret\SmartView\GlobalObjectId.cpp" />
-    <ClCompile Include="Interpret\SmartView\NickNameCache.cpp" />
-    <ClCompile Include="Interpret\SmartView\PCL.cpp" />
-    <ClCompile Include="Interpret\SmartView\PropertyDefinitionStream.cpp" />
-    <ClCompile Include="Interpret\SmartView\PropertiesStruct.cpp" />
-    <ClCompile Include="Interpret\SmartView\RecipientRowStream.cpp" />
-    <ClCompile Include="Interpret\SmartView\RecurrencePattern.cpp" />
-    <ClCompile Include="Interpret\SmartView\ReportTag.cpp" />
-    <ClCompile Include="Interpret\SmartView\RestrictionStruct.cpp" />
-    <ClCompile Include="Interpret\SmartView\RuleCondition.cpp" />
-    <ClCompile Include="Interpret\SmartView\SDBin.cpp" />
-    <ClCompile Include="Interpret\SmartView\SearchFolderDefinition.cpp" />
-    <ClCompile Include="Interpret\SmartView\SIDBin.cpp" />
-    <ClCompile Include="Interpret\SmartView\SmartView.cpp" />
-    <ClCompile Include="Interpret\SmartView\SmartViewParser.cpp" />
-    <ClCompile Include="Interpret\SmartView\TaskAssigners.cpp" />
-    <ClCompile Include="Interpret\SmartView\TimeZone.cpp" />
-    <ClCompile Include="Interpret\SmartView\TimeZoneDefinition.cpp" />
-    <ClCompile Include="Interpret\SmartView\TombStone.cpp" />
-    <ClCompile Include="Interpret\SmartView\VerbStream.cpp" />
-    <ClCompile Include="Interpret\SmartView\WebViewPersistStream.cpp" />
-    <ClCompile Include="Interpret\SmartView\XID.cpp" />
-    <ClCompile Include="Interpret\String.cpp" />
-    <ClCompile Include="MAPI\StubUtils.cpp" />
-    <ClCompile Include="MAPI\Version.cpp" />
     <ClCompile Include="UI\ViewPane\TreePane.cpp" />
     <ClCompile Include="UI\MAPIFormFunctions.cpp" />
     <ClCompile Include="UI\Controls\StyleTreeCtrl.cpp" />
@@ -839,6 +729,11 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="mfcmapi.exe.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="core\core.vcxproj">
+      <Project>{d2390aba-e7b0-476d-bb38-089feab5357d}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

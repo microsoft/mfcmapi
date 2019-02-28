@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <UI/ViewPane/CheckPane.h>
 #include <UI/UIFunctions.h>
+#include <core/utility/output.h>
 
 namespace viewpane
 {

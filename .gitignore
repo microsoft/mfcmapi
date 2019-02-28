@@ -20,3 +20,5 @@
 /MrMapi/MrTag.dll
 /.vs
 /TestResults/*
+*.aps
+/mfcmapitest

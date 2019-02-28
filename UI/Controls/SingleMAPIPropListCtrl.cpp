@@ -1,32 +1,37 @@
 #include <StdAfx.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
 #include <UI/MySecInfo.h>
-#include <Interpret/Guids.h>
-#include <Interpret/InterpretProp.h>
+#include <core/interpret/guid.h>
 #include <UI/FileDialogEx.h>
-#include <ImportProcs.h>
-#include <MAPI/MAPIProgress.h>
-#include <MAPI/Cache/NamedPropCache.h>
-#include <Interpret/SmartView/SmartView.h>
+#include <core/utility/import.h>
+#include <core/mapi/mapiProgress.h>
+#include <core/mapi/cache/namedPropCache.h>
+#include <core/smartview/SmartView.h>
 #include <PropertyBag/PropertyBag.h>
 #include <PropertyBag/MAPIPropPropertyBag.h>
 #include <PropertyBag/RowPropertyBag.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <UI/Controls/SortList/PropListData.h>
-#include <MAPI/Cache/GlobalCache.h>
+#include <core/mapi/cache/globalCache.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/RestrictEditor.h>
 #include <UI/Dialogs/Editors/StreamEditor.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <UI/Dialogs/Editors/PropertyEditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
+#include <core/mapi/mapiOutput.h>
+#include <core/utility/registry.h>
+#include <core/interpret/proptags.h>
+#include <core/interpret/proptype.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/property/parseProperty.h>
 
 namespace controls
 {
@@ -678,7 +683,7 @@ namespace controls
 			auto namePropNames =
 				cache::NameIDToStrings(ulPropTag, m_lpPropBag->GetMAPIProp(), lpNameID, lpMappingSignature, m_bIsAB);
 
-			auto propTagNames = interpretprop::PropTagToPropName(ulPropTag, m_bIsAB);
+			auto propTagNames = proptags::PropTagToPropName(ulPropTag, m_bIsAB);
 
 			if (!propTagNames.bestGuess.empty())
 			{
@@ -700,13 +705,13 @@ namespace controls
 			SetItemText(iRow, columns::pcPROPOTHERNAMES, propTagNames.otherMatches);
 
 			SetItemText(iRow, columns::pcPROPTAG, PropTag);
-			SetItemText(iRow, columns::pcPROPTYPE, interpretprop::TypeToString(ulPropTag));
+			SetItemText(iRow, columns::pcPROPTYPE, proptype::TypeToString(ulPropTag));
 
-			interpretprop::InterpretProp(lpsPropToAdd, &PropString, &AltPropString);
+			property::parseProperty(lpsPropToAdd, &PropString, &AltPropString);
 			SetItemText(iRow, columns::pcPROPVAL, PropString);
 			SetItemText(iRow, columns::pcPROPVALALT, AltPropString);
 
-			auto szSmartView = smartview::InterpretPropSmartView(
+			auto szSmartView = smartview::parsePropertySmartView(
 				lpsPropToAdd,
 				m_lpPropBag->GetMAPIProp(),
 				lpNameID,
@@ -1251,7 +1256,7 @@ namespace controls
 			}
 
 			output::DebugPrint(DBGGeneric, L"Source restriction before editing:\n");
-			output::DebugPrintRestriction(DBGGeneric, lpResIn, m_lpPropBag->GetMAPIProp());
+			output::outputRestriction(DBGGeneric, nullptr, lpResIn, m_lpPropBag->GetMAPIProp());
 			dialog::editor::CRestrictEditor MyResEditor(
 				this,
 				nullptr, // No alloc parent - we must MAPIFreeBuffer the result
@@ -1262,7 +1267,7 @@ namespace controls
 				if (lpModRes)
 				{
 					output::DebugPrint(DBGGeneric, L"Modified restriction:\n");
-					output::DebugPrintRestriction(DBGGeneric, lpModRes, m_lpPropBag->GetMAPIProp());
+					output::outputRestriction(DBGGeneric, nullptr, lpModRes, m_lpPropBag->GetMAPIProp());
 
 					// need to merge the data we got back from the CRestrictEditor with our current prop set
 					// so that we can free lpModRes
@@ -1302,7 +1307,7 @@ namespace controls
 					L"OnEditGivenProp",
 					L"editing property 0x%X (= %ws)\n",
 					ulPropTag,
-					interpretprop::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str());
+					proptags::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str());
 			}
 
 			ulPropTag = PT_ERROR == PROP_TYPE(ulPropTag) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
@@ -1408,7 +1413,7 @@ namespace controls
 					L"OnEditPropAsStream",
 					L"editing property 0x%X (= %ws) as stream, ulType = 0x%08X, bEditAsRTF = 0x%X\n",
 					ulPropTag,
-					interpretprop::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str(),
+					proptags::TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str(),
 					ulType,
 					bEditAsRTF);
 			}

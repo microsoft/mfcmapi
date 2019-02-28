@@ -1,9 +1,7 @@
-#include <StdAfx.h>
+#pragma once
 #include <CppUnitTest.h>
-#include <Interpret/SmartView/SmartView.h>
-#include <MFCMAPI.h>
-#include <UnitTest/resource.h>
-#include <Interpret/Guids.h>
+#include <core/interpret/guid.h>
+#include <core/utility/strings.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -13,12 +11,16 @@ namespace Microsoft
 	{
 		namespace CppUnitTestFramework
 		{
-			template <> inline std::wstring ToString<__int64>(const __int64& t) { RETURN_WIDE_STRING(t); }
-			template <> inline std::wstring ToString<std::vector<BYTE>>(const std::vector<BYTE>& t)
+			template <> inline std::wstring ToString<__int64>(const __int64& q) { RETURN_WIDE_STRING(q); }
+			template <> inline std::wstring ToString<std::vector<BYTE>>(const std::vector<BYTE>& q)
 			{
-				RETURN_WIDE_STRING(t.data());
+				RETURN_WIDE_STRING(q.data());
 			}
-			template <> inline std::wstring ToString<GUID>(const GUID& t) { return guid::GUIDToString(t); }
+			template <> inline std::wstring ToString<GUID>(const GUID& q) { return guid::GUIDToString(q); }
+			template <> inline std::wstring ToString<std::deque<std::wstring>>(const std::deque<std::wstring>& q)
+			{
+				return strings::join({q.begin(), q.end()}, L",");
+			}
 		} // namespace CppUnitTestFramework
 	} // namespace VisualStudio
 } // namespace Microsoft
@@ -38,5 +40,5 @@ namespace unittest
 		const wchar_t* message = nullptr,
 		const __LineInfo* pLineInfo = nullptr);
 
-	std::wstring loadfile(const HMODULE handle, const int name);
+	std::wstring loadfile(HMODULE handle, int name);
 } // namespace unittest

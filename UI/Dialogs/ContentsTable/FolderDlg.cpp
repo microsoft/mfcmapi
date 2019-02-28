@@ -2,29 +2,33 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/MAPIStoreFunctions.h>
-#include <MAPI/MAPIABFunctions.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/mapi/mapiStoreFunctions.h>
+#include <core/mapi/mapiABFunctions.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <MAPI/MAPIProcessor/DumpStore.h>
-#include <IO/File.h>
+#include <core/mapi/processor/dumpStore.h>
+#include <core/utility/file.h>
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
 #include <UI/MAPIFormFunctions.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/FileDialogEx.h>
-#include <Interpret/ExtraPropTags.h>
+#include <core/mapi/extraPropTags.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <MAPI/MAPIProgress.h>
-#include <MAPI/MapiMime.h>
+#include <core/mapi/mapiProgress.h>
+#include <core/mapi/mapiMime.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/Cache/GlobalCache.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/cache/globalCache.h>
+#include <core/mapi/mapiMemory.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
+#include <core/mapi/mapiOutput.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFile.h>
+#include <core/interpret/flags.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {
@@ -461,8 +465,7 @@ namespace dialog
 		{
 			if (0 == MyData.GetDropDown(1))
 			{ // CopyMessages
-				auto lpProgress =
-					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
+				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
 
 				if (lpProgress) ulMoveMessage |= MESSAGE_DIALOG;
 
@@ -664,8 +667,7 @@ namespace dialog
 			}
 			else
 			{
-				auto lpProgress =
-					mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteMessages", m_hWnd); // STRING_OK
+				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteMessages", m_hWnd); // STRING_OK
 
 				if (lpProgress) ulFlag |= MESSAGE_DIALOG;
 
@@ -989,7 +991,7 @@ namespace dialog
 					{
 						LPSPropValue lpProp = nullptr;
 						hRes = EC_MAPI(HrGetOneProp(lpMAPIFormInfo, PR_MESSAGE_CLASS_W, &lpProp));
-						if (mapi::CheckStringProp(lpProp, PT_UNICODE))
+						if (strings::CheckStringProp(lpProp, PT_UNICODE))
 						{
 							szClass = lpProp->Value.lpszW;
 						}
@@ -1107,7 +1109,7 @@ namespace dialog
 		{
 			editor::CEditor MyData(
 				this, IDS_EXECUTEVERB, IDS_EXECUTEVERBPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyData.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_LAST_VERB_EXECUTED), false));
+			MyData.SetPromptPostFix(flags::AllFlagsToString(PROP_ID(PR_LAST_VERB_EXECUTED), false));
 
 			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_VERB, false));
 			MyData.SetDecimal(0, EXCHIVERB_OPEN);
@@ -1281,16 +1283,16 @@ namespace dialog
 					if (PR_ATTACH_NUM != props[ATTACHNUM].ulPropTag) return S_OK;
 					LPATTACH lpAttach = nullptr;
 					// Open the attachment
-					auto hRes =
+					auto hResRet =
 						EC_MAPI(lpMessage->OpenAttach(props[ATTACHNUM].Value.l, nullptr, MAPI_BEST_ACCESS, &lpAttach));
 
 					if (lpAttach)
 					{
-						hRes = WC_H(ui::mapiui::WriteAttachmentToFile(lpAttach, m_hWnd));
+						hResRet = WC_H(ui::mapiui::WriteAttachmentToFile(lpAttach, m_hWnd));
 						lpAttach->Release();
 					}
 
-					return hRes;
+					return hResRet;
 				},
 				[](auto hRes) { return dialog::bShouldCancel(nullptr, hRes); });
 
@@ -1309,7 +1311,7 @@ namespace dialog
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		file::SaveFolderContentsToTXT(
+		mapi::processor::SaveFolderContentsToTXT(
 			lpMDB, m_lpFolder, (m_ulDisplayFlags & dfAssoc) == 0, (m_ulDisplayFlags & dfAssoc) != 0, false, m_hWnd);
 	}
 
@@ -1412,7 +1414,7 @@ namespace dialog
 					case 0:
 						// Idea is to capture anything that may be important about this message to disk so it can be analyzed.
 						{
-							mapiprocessor::CDumpStore MyDumpStore;
+							mapi::processor::dumpStore MyDumpStore;
 							MyDumpStore.InitMessagePath(filename);
 							// Just assume this message might have attachments
 							MyDumpStore.ProcessMessage(lpMessage, true, nullptr);
@@ -1646,8 +1648,7 @@ namespace dialog
 		{
 			const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 
-			auto lpProgress =
-				mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::SetReadFlags", m_hWnd); // STRING_OK
+			auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::SetReadFlags", m_hWnd); // STRING_OK
 
 			auto ulFlags = MyFlags.GetHex(0);
 
@@ -1753,7 +1754,7 @@ namespace dialog
 						// Allocate and fill out properties:
 						lpspvSubject->ulPropTag = PR_SUBJECT;
 
-						if (mapi::CheckStringProp(&lpProps[frPR_SUBJECT], PT_TSTRING))
+						if (strings::CheckStringProp(&lpProps[frPR_SUBJECT], PT_TSTRING))
 						{
 							lpspvSubject->Value.LPSZ = mapi::CopyString(lpProps[frPR_SUBJECT].Value.LPSZ, lpRes);
 						}
@@ -1817,7 +1818,7 @@ namespace dialog
 				}
 
 				output::DebugPrintEx(DBGGeneric, CLASS, L"OnCreateMessageRestriction", L"built restriction:\n");
-				output::DebugPrintRestriction(DBGGeneric, lpRes, lpMAPIProp);
+				output::outputRestriction(DBGGeneric, nullptr, lpRes, lpMAPIProp);
 
 				m_lpContentsTableListCtrl->SetRestriction(lpRes);
 

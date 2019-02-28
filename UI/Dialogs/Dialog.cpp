@@ -1,8 +1,10 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Dialog.h>
 #include <UI/UIFunctions.h>
-#include <ImportProcs.h>
+#include <core/utility/import.h>
 #include <propkey.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
 
 namespace dialog
 {
@@ -265,7 +267,7 @@ namespace dialog
 	void CMyDialog::SetTitle(_In_ const std::wstring& szTitle) const
 	{
 		// Set the title bar directly using DefWindowProcW to avoid converting Unicode
-		::DefWindowProcW(m_hWnd, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(szTitle.c_str()));
+		DefWindowProcW(m_hWnd, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(szTitle.c_str()));
 		ui::DrawWindowFrame(m_hWnd, true, GetStatusHeight());
 	}
 

@@ -1,7 +1,8 @@
 #pragma once
 #include <UI/Dialogs/Dialog.h>
-#include <Enums.h>
+#include <UI/enums.h>
 #include <UI/Controls/SortList/SortListData.h>
+#include <core/addin/mfcmapi.h>
 
 namespace controls
 {

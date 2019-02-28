@@ -1,8 +1,7 @@
 #include <StdAfx.h>
-
-#include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMErr.h>
-#include <Shlwapi.h>
+#include <MrMapi/mmcli.h>
+#include <core/utility/strings.h>
 
 namespace error
 {
@@ -49,10 +48,10 @@ void PrintErrFromPartialName(_In_ const std::wstring& lpszError)
 	printf("Found %lu matches.\n", ulNumMatches);
 }
 
-void DoErrorParse(_In_ cli::MYOPTIONS ProgOpts)
+void DoErrorParse()
 {
-	auto lpszErr = ProgOpts.lpszUnswitchedOption;
-	const auto ulErrNum = strings::wstringToUlong(lpszErr, ProgOpts.ulOptions & cli::OPT_DODECIMAL ? 10 : 16);
+	auto lpszErr = cli::switchUnswitched[0];
+	const auto ulErrNum = strings::wstringToUlong(lpszErr, cli::switchDecimal.isSet() ? 10 : 16);
 
 	if (ulErrNum)
 	{
@@ -60,7 +59,7 @@ void DoErrorParse(_In_ cli::MYOPTIONS ProgOpts)
 	}
 	else
 	{
-		if (ProgOpts.ulOptions & cli::OPT_DOPARTIALSEARCH || lpszErr.empty())
+		if (cli::switchSearch.isSet() || lpszErr.empty())
 		{
 			PrintErrFromPartialName(lpszErr);
 		}

@@ -1,43 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source Files\IO">
-      <UniqueIdentifier>{75d77011-9b6f-4f37-8290-afbdf335dce3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\MrMAPI">
       <UniqueIdentifier>{cb752376-37c8-4fc4-b77d-e7c9d220cd32}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Property">
-      <UniqueIdentifier>{04961185-85b2-4c89-8415-74f4a62bb684}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\PropertyBag">
-      <UniqueIdentifier>{86a3152b-89a1-48b3-8d14-47d2c201832d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Interpret">
-      <UniqueIdentifier>{84788600-fb9a-45ce-996e-b7dcb2ff095b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Interpret\SmartView">
-      <UniqueIdentifier>{a5ecca1d-5499-416d-8cb3-c2bd21e612d0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\MAPI">
-      <UniqueIdentifier>{3a6d1a42-ecbc-4f70-bdab-7e445a4bb323}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\MAPI\MAPIProcessor">
-      <UniqueIdentifier>{4c12041e-a0f1-48dc-a272-85c0bef0bcc0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\MAPI\Cache">
-      <UniqueIdentifier>{dff14349-20ea-46e6-b97e-3352c668cc42}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Interpret\SmartView\block">
-      <UniqueIdentifier>{9cacf240-42fc-4538-9f1f-6965287c2b27}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -97,18 +66,9 @@
     <ClInclude Include="..\StdAfx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClCompile Include="..\MAPI\Cache\GlobalCache.cpp">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClCompile>
-    <ClCompile Include="..\MAPI\Cache\MapiObjects.cpp">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClCompile>
-    <ClCompile Include="..\MAPI\Cache\NamedPropCache.cpp">
-      <Filter>Source Files\MAPI\Cache</Filter>
-    </ClCompile>
-    <ClCompile Include="cli.cpp">
+    <ClInclude Include="mmcli.h">
       <Filter>Source Files\MrMAPI</Filter>
-    </ClCompile>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MMAcls.cpp">
@@ -195,57 +155,8 @@
     <ClInclude Include="MrMAPI.h">
       <Filter>Source Files\MrMAPI</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\IO\Error.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
-    <ClInclude Include="..\IO\Error.h">
-      <Filter>Source Files\IO</Filter>
-    </ClInclude>
-    <ClCompile Include="..\IO\ExportProfile.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
-    <ClCompile Include="..\IO\File.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
-    <ClInclude Include="..\IO\File.h">
-      <Filter>Source Files\IO</Filter>
-    </ClInclude>
-    <ClCompile Include="..\IO\MFCOutput.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
-    <ClInclude Include="..\IO\MFCOutput.h">
-      <Filter>Source Files\IO</Filter>
-    </ClInclude>
-    <ClCompile Include="..\IO\Registry.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Interpret\ErrorArray.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Interpret\ExtraPropTags.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Interpret\Flags.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Interpret\GUIDArray.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Interpret\GenTagArray.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-    <ClCompile Include="..\Interpret\Guids.cpp">
-      <Filter>Source Files\Interpret</Filter>
-    </ClCompile>
-    <ClInclude Include="..\Interpret\Guids.h">
-      <Filter>Source Files\Interpret</Filter>
-    </ClInclude>
-    <ClCompile Include="..\Interpret\InterpretProp.cpp">
-      <Filter>Source Files\Interpret</Filter>
+    <ClCompile Include="mmcli.cpp">
+      <Filter>Source Files\MrMAPI</Filter>
     </ClCompile>
     <ClInclude Include="..\Interpret\InterpretProp.h">
       <Filter>Source Files\Interpret</Filter>

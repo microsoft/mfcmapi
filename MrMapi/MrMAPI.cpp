@@ -1,10 +1,6 @@
 #include <StdAfx.h>
-
-#include <MrMapi/cli.h>
 #include <MrMapi/MrMAPI.h>
-#include <MAPI/MAPIFunctions.h>
-#include <Interpret/String.h>
-#include <Interpret/InterpretProp.h>
+#include <MrMapi/mmcli.h>
 #include <MrMapi/MMAcls.h>
 #include <MrMapi/MMContents.h>
 #include <MrMapi/MMErr.h>
@@ -16,13 +12,17 @@
 #include <MrMapi/MMSmartView.h>
 #include <MrMapi/MMStore.h>
 #include <MrMapi/MMMapiMime.h>
-#include <Shlwapi.h>
-#include <ImportProcs.h>
-#include <MAPI/MAPIStoreFunctions.h>
 #include <MrMapi/MMPst.h>
 #include <MrMapi/MMReceiveFolder.h>
-#include <MAPI/Cache/NamedPropCache.h>
-#include <MAPI/StubUtils.h>
+#include <core/utility/strings.h>
+#include <core/utility/import.h>
+#include <core/mapi/mapiStoreFunctions.h>
+#include <core/mapi/cache/namedPropCache.h>
+#include <core/mapi/stubutils.h>
+#include <core/addin/addin.h>
+#include <core/utility/registry.h>
+#include <core/utility/output.h>
+#include <core/utility/cli.h>
 
 // Initialize MFC for LoadString support later on
 void InitMFC() { AfxWinInit(::GetModuleHandle(nullptr), nullptr, ::GetCommandLine(), 0); }
@@ -130,6 +130,15 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 {
 	auto hRes = S_OK;
 	auto bMAPIInit = false;
+	LPMAPISESSION lpMAPISession{};
+	LPMDB lpMDB{};
+	LPMAPIFOLDER lpFolder{};
+
+	registry::doSmartView = true;
+	registry::useGetPropList = true;
+	registry::parseNamedProps = true;
+	registry::cacheNamedProps = true;
+	registry::debugTag = 0;
 
 	SetDllDirectory(_T(""));
 	import::MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
@@ -137,57 +146,54 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	// Set up our property arrays or nothing works
 	addin::MergeAddInArrays();
 
-	registry::doSmartView = true;
-	registry::useGetPropList = true;
-	registry::parseNamedProps = true;
-	registry::cacheNamedProps = true;
-
+	auto ProgOpts = cli::OPTIONS{};
 	auto cl = cli::GetCommandLine(argc, argv);
-	auto ProgOpts = cli::ParseArgs(cl);
+	cli::ParseArgs(ProgOpts, cl, cli::g_options);
+	PostParseCheck(ProgOpts);
 
-	// Must be first after ParseArgs
-	if (ProgOpts.ulOptions & cli::OPT_INITMFC)
+	// Must be first after ParseArgs and PostParseCheck
+	if (ProgOpts.flags & cli::OPT_INITMFC)
 	{
 		InitMFC();
 	}
 
-	if (ProgOpts.ulOptions & cli::OPT_VERBOSE)
+	if (cli::switchVerbose.isSet())
 	{
 		registry::debugTag = 0xFFFFFFFF;
-		PrintArgs(ProgOpts);
+		cli::PrintArgs(ProgOpts, cli::g_options);
 	}
 
-	if (!(ProgOpts.ulOptions & cli::OPT_NOADDINS))
+	if (!(cli::switchNoAddins.isSet()))
 	{
 		registry::loadAddIns = true;
 		addin::LoadAddIns();
 	}
 
-	if (!ProgOpts.lpszVersion.empty())
+	if (cli::switchVersion.isSet())
 	{
-		if (LoadMAPIVersion(ProgOpts.lpszVersion)) return;
+		if (LoadMAPIVersion(cli::switchVersion[0])) return;
 	}
 
-	if (ProgOpts.Mode == cli::cmdmodeHelp)
+	if (ProgOpts.mode == cli::cmdmodeHelp)
 	{
 		cli::DisplayUsage(false);
 	}
-	else if (ProgOpts.Mode == cli::cmdmodeHelpFull)
+	else if (ProgOpts.mode == cli::cmdmodeHelpFull)
 	{
 		cli::DisplayUsage(true);
 	}
 	else
 	{
-		if (ProgOpts.ulOptions & cli::OPT_ONLINE)
+		if (cli::switchOnline.isSet())
 		{
 			registry::forceMapiNoCache = true;
 			registry::forceMDBOnline = true;
 		}
 
 		// Log on to MAPI if needed
-		if (ProgOpts.ulOptions & cli::OPT_NEEDMAPIINIT)
+		if (ProgOpts.flags & cli::OPT_NEEDMAPIINIT)
 		{
-			hRes = WC_MAPI(MAPIInitialize(NULL));
+			hRes = WC_MAPI(MAPIInitialize(nullptr));
 			if (FAILED(hRes))
 			{
 				printf("Error initializing MAPI: 0x%08lx\n", hRes);
@@ -198,98 +204,94 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 			}
 		}
 
-		if (bMAPIInit && ProgOpts.ulOptions & cli::OPT_NEEDMAPILOGON)
+		if (bMAPIInit && ProgOpts.flags & cli::OPT_NEEDMAPILOGON)
 		{
-			ProgOpts.lpMAPISession = MrMAPILogonEx(ProgOpts.lpszProfile);
+			lpMAPISession = MrMAPILogonEx(cli::switchProfile[0]);
 		}
 
 		// If they need a folder get it and store at the same time from the folder id
-		if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & cli::OPT_NEEDFOLDER)
+		if (lpMAPISession && ProgOpts.flags & cli::OPT_NEEDFOLDER)
 		{
-			hRes = WC_H(HrMAPIOpenStoreAndFolder(
-				ProgOpts.lpMAPISession,
-				ProgOpts.ulFolder,
-				ProgOpts.lpszFolderPath,
-				&ProgOpts.lpMDB,
-				&ProgOpts.lpFolder));
+			hRes = WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, cli::switchFolder[0], &lpMDB, &lpFolder));
 			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08lx\n", hRes);
 		}
-		else if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & cli::OPT_NEEDSTORE)
+
+		// If they passed a store index then open it
+		ULONG ulStoreIndex{};
+		auto gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchStore[0], 10);
+		if (!gotStoreIndex) gotStoreIndex = strings::tryWstringToUlong(ulStoreIndex, cli::switchReceiveFolder[0], 10);
+
+		if (lpMAPISession && gotStoreIndex && !lpMDB)
 		{
-			// They asked us for a store, if they passed a store index give them that one
-			if (ProgOpts.ulStore != 0)
-			{
-				// Decrement by one here on the index since we incremented during parameter parsing
-				// This is so zero indicate they did not specify a store
-				ProgOpts.lpMDB = OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1);
-				if (!ProgOpts.lpMDB) printf("OpenStore failed\n");
-			}
-			else
-			{
-				// If they needed a store but didn't specify, get the default one
-				ProgOpts.lpMDB = OpenExchangeOrDefaultMessageStore(ProgOpts.lpMAPISession);
-				if (!ProgOpts.lpMDB) printf("OpenExchangeOrDefaultMessageStore failed.\n");
-			}
+			lpMDB = OpenStore(lpMAPISession, ulStoreIndex);
+			if (!lpMDB) printf("OpenStore failed\n");
 		}
 
-		switch (ProgOpts.Mode)
+		if (lpMAPISession && ProgOpts.flags & cli::OPT_NEEDSTORE && !lpMDB)
+		{
+			// If they needed a store but didn't specify, get the default one
+			lpMDB = OpenExchangeOrDefaultMessageStore(lpMAPISession);
+			if (!lpMDB) printf("OpenExchangeOrDefaultMessageStore failed.\n");
+		}
+
+		switch (ProgOpts.mode)
 		{
 		case cli::cmdmodePropTag:
-			DoPropTags(ProgOpts);
+			DoPropTags();
 			break;
 		case cli::cmdmodeGuid:
-			DoGUIDs(ProgOpts);
+			DoGUIDs();
 			break;
 		case cli::cmdmodeSmartView:
-			DoSmartView(ProgOpts);
+			DoSmartView();
 			break;
 		case cli::cmdmodeAcls:
-			DoAcls(ProgOpts);
+			DoAcls(lpFolder);
 			break;
 		case cli::cmdmodeRules:
-			DoRules(ProgOpts);
+			DoRules(lpFolder);
 			break;
 		case cli::cmdmodeErr:
-			DoErrorParse(ProgOpts);
+			DoErrorParse();
 			break;
 		case cli::cmdmodeContents:
-			DoContents(ProgOpts);
+			DoContents(lpMDB, lpFolder);
 			break;
 		case cli::cmdmodeXML:
-			DoMSG(ProgOpts);
+			DoMSG();
 			break;
 		case cli::cmdmodeFidMid:
-			DoFidMid(ProgOpts);
+			DoFidMid(lpMDB);
 			break;
 		case cli::cmdmodeStoreProperties:
-			DoStore(ProgOpts);
+			DoStore(lpMAPISession, lpMDB);
 			break;
 		case cli::cmdmodeMAPIMIME:
-			DoMAPIMIME(ProgOpts);
+			DoMAPIMIME(lpMAPISession);
 			break;
 		case cli::cmdmodeChildFolders:
-			DoChildFolders(ProgOpts);
+			DoChildFolders(lpFolder);
 			break;
 		case cli::cmdmodeFlagSearch:
-			DoFlagSearch(ProgOpts);
+			DoFlagSearch();
 			break;
 		case cli::cmdmodeFolderProps:
-			DoFolderProps(ProgOpts);
+			DoFolderProps(lpFolder);
 			break;
 		case cli::cmdmodeFolderSize:
-			DoFolderSize(ProgOpts);
+			DoFolderSize(lpFolder);
 			break;
 		case cli::cmdmodePST:
-			DoPST(ProgOpts);
+			DoPST();
 			break;
 		case cli::cmdmodeProfile:
-			output::DoProfile(ProgOpts);
+			output::DoProfile();
 			break;
 		case cli::cmdmodeReceiveFolder:
-			DoReceiveFolder(ProgOpts);
+			DoReceiveFolder(lpMDB);
 			break;
 		case cli::cmdmodeSearchState:
-			DoSearchState(ProgOpts);
+			DoSearchState(lpFolder);
 			break;
 		case cli::cmdmodeUnknown:
 			break;
@@ -304,13 +306,13 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 
 	if (bMAPIInit)
 	{
-		if (ProgOpts.lpFolder) ProgOpts.lpFolder->Release();
-		if (ProgOpts.lpMDB) ProgOpts.lpMDB->Release();
-		if (ProgOpts.lpMAPISession) ProgOpts.lpMAPISession->Release();
+		if (lpFolder) lpFolder->Release();
+		if (lpMDB) lpMDB->Release();
+		if (lpMAPISession) lpMAPISession->Release();
 		MAPIUninitialize();
 	}
 
-	if (!(ProgOpts.ulOptions & cli::OPT_NOADDINS))
+	if (!(cli::switchNoAddins.isSet()))
 	{
 		addin::UnloadAddIns();
 	}

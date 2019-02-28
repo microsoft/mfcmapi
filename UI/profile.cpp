@@ -2,10 +2,12 @@
 
 #include <StdAfx.h>
 #include <UI/profile.h>
-#include <ImportProcs.h>
+#include <core/utility/import.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <MAPI/MAPIProfileFunctions.h>
-#include <IO/File.h>
+#include <core/utility/file.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/addin/mfcmapi.h>
 
 namespace ui
 {

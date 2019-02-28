@@ -38,7 +38,7 @@ before_build:
 
     $m = $matches
 
-    $file = gci "$Env:APPVEYOR_BUILD_FOLDER\res\bldver.rc"
+    $file = gci "$Env:APPVEYOR_BUILD_FOLDER\core\res\bldver.rc"
 
     if($file)
 

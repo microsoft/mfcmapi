@@ -1,47 +1,46 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
-#include <MAPI/MAPIProcessor/DumpStore.h>
-#include <IO/File.h>
+#include <MrMapi/MMContents.h>
+#include <core/mapi/processor/dumpStore.h>
+#include <MrMapi/mmcli.h>
+#include <core/mapi/mapiOutput.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFile.h>
 
 void DumpContentsTable(
 	_In_z_ LPCWSTR lpszProfile,
 	_In_ LPMDB lpMDB,
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_z_ LPWSTR lpszDir,
-	_In_ ULONG ulOptions,
-	_In_ ULONG ulFolder,
 	_In_z_ LPCWSTR lpszFolder,
 	_In_ ULONG ulCount,
 	_In_opt_ LPSRestriction lpRes)
 {
 	output::DebugPrint(
 		DBGGeneric,
-		L"DumpContentsTable: Outputting folder %u / %ws from profile %ws to %ws\n",
-		ulFolder,
-		lpszFolder ? lpszFolder : L"",
+		L"DumpContentsTable: Outputting folder %ws from profile %ws to %ws\n",
+		lpszFolder,
 		lpszProfile,
 		lpszDir);
-	if (ulOptions & cli::OPT_DOCONTENTS) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Contents\n");
-	if (ulOptions & cli::OPT_DOASSOCIATEDCONTENTS)
+	if (cli::switchContents.isSet()) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Contents\n");
+	if (cli::switchAssociatedContents.isSet())
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Associated Contents\n");
-	if (ulOptions & cli::OPT_MSG) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
-	if (ulOptions & cli::OPT_RETRYSTREAMPROPS)
+	if (cli::switchMSG.isSet()) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
+	if (cli::switchMoreProperties.isSet())
 		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will retry stream properties\n");
-	if (ulOptions & cli::OPT_SKIPATTACHMENTS)
-		output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
-	if (ulOptions & cli::OPT_LIST) output::DebugPrint(DBGGeneric, L"DumpContentsTable: List only mode\n");
+	if (cli::switchSkip.isSet()) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
+	if (cli::switchList.isSet()) output::DebugPrint(DBGGeneric, L"DumpContentsTable: List only mode\n");
 	if (ulCount) output::DebugPrint(DBGGeneric, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
 
 	if (lpFolder)
 	{
-		mapiprocessor::CDumpStore MyDumpStore;
+		mapi::processor::dumpStore MyDumpStore;
 		SSortOrderSet SortOrder = {0};
 		MyDumpStore.InitMDB(lpMDB);
 		MyDumpStore.InitFolder(lpFolder);
 		MyDumpStore.InitFolderPathRoot(lpszDir);
 		MyDumpStore.InitFolderContentsRestriction(lpRes);
-		if (ulOptions & cli::OPT_MSG) MyDumpStore.EnableMSG();
-		if (ulOptions & cli::OPT_LIST) MyDumpStore.EnableList();
+		if (cli::switchMSG.isSet()) MyDumpStore.EnableMSG();
+		if (cli::switchList.isSet()) MyDumpStore.EnableList();
 		if (ulCount)
 		{
 			MyDumpStore.InitMaxOutput(ulCount);
@@ -53,11 +52,10 @@ void DumpContentsTable(
 			MyDumpStore.InitSortOrder(&SortOrder);
 		}
 
-		if (!(ulOptions & cli::OPT_RETRYSTREAMPROPS)) MyDumpStore.DisableStreamRetry();
-		if (ulOptions & cli::OPT_SKIPATTACHMENTS) MyDumpStore.DisableEmbeddedAttachments();
+		if (!cli::switchMoreProperties.isSet()) MyDumpStore.DisableStreamRetry();
+		if (cli::switchSkip.isSet()) MyDumpStore.DisableEmbeddedAttachments();
 
-		MyDumpStore.ProcessFolders(
-			0 != (ulOptions & cli::OPT_DOCONTENTS), 0 != (ulOptions & cli::OPT_DOASSOCIATEDCONTENTS), false);
+		MyDumpStore.ProcessFolders(cli::switchContents.isSet(), cli::switchAssociatedContents.isSet(), false);
 	}
 }
 
@@ -70,7 +68,7 @@ void DumpMSG(
 	auto lpMessage = file::LoadMSGToMessage(lpszMSGFile);
 	if (lpMessage)
 	{
-		mapiprocessor::CDumpStore MyDumpStore;
+		mapi::processor::dumpStore MyDumpStore;
 		MyDumpStore.InitMessagePath(lpszXMLFile);
 		if (!bRetryStreamProps) MyDumpStore.DisableStreamRetry();
 		if (!bOutputAttachments) MyDumpStore.DisableEmbeddedAttachments();
@@ -81,15 +79,15 @@ void DumpMSG(
 	}
 }
 
-void DoContents(_In_ cli::MYOPTIONS ProgOpts)
+void DoContents(LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 {
-	SRestriction sResTop = {0};
-	SRestriction sResMiddle[2] = {0};
-	SRestriction sResSubject[2] = {0};
-	SRestriction sResMessageClass[2] = {0};
-	SPropValue sPropValue[2] = {0};
+	SRestriction sResTop = {};
+	SRestriction sResMiddle[2] = {};
+	SRestriction sResSubject[2] = {};
+	SRestriction sResMessageClass[2] = {};
+	SPropValue sPropValue[2] = {};
 	LPSRestriction lpRes = nullptr;
-	if (!ProgOpts.lpszSubject.empty() || !ProgOpts.lpszMessageClass.empty())
+	if (!cli::switchSubject.empty() || !cli::switchMessageClass.empty())
 	{
 		// RES_AND
 		//   RES_AND (optional)
@@ -99,7 +97,8 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 		//     RES_EXIST - PR_MESSAGE_CLASS_W
 		//     RES_CONTENT - lpszMessageClass
 		auto i = 0;
-		if (!ProgOpts.lpszSubject.empty())
+		const auto szSubject = cli::switchSubject[0];
+		if (!szSubject.empty())
 		{
 			sResMiddle[i].rt = RES_AND;
 			sResMiddle[i].res.resAnd.cRes = 2;
@@ -111,11 +110,12 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 			sResSubject[1].res.resContent.ulFuzzyLevel = FL_FULLSTRING | FL_IGNORECASE;
 			sResSubject[1].res.resContent.lpProp = &sPropValue[0];
 			sPropValue[0].ulPropTag = PR_SUBJECT_W;
-			sPropValue[0].Value.lpszW = const_cast<LPWSTR>(ProgOpts.lpszSubject.c_str());
+			sPropValue[0].Value.lpszW = const_cast<LPWSTR>(szSubject.c_str());
 			i++;
 		}
 
-		if (!ProgOpts.lpszMessageClass.empty())
+		const auto szMessageClass = cli::switchMessageClass[0];
+		if (!szMessageClass.empty())
 		{
 			sResMiddle[i].rt = RES_AND;
 			sResMiddle[i].res.resAnd.cRes = 2;
@@ -127,33 +127,32 @@ void DoContents(_In_ cli::MYOPTIONS ProgOpts)
 			sResMessageClass[1].res.resContent.ulFuzzyLevel = FL_FULLSTRING | FL_IGNORECASE;
 			sResMessageClass[1].res.resContent.lpProp = &sPropValue[1];
 			sPropValue[1].ulPropTag = PR_MESSAGE_CLASS_W;
-			sPropValue[1].Value.lpszW = const_cast<LPWSTR>(ProgOpts.lpszMessageClass.c_str());
+			sPropValue[1].Value.lpszW = const_cast<LPWSTR>(szMessageClass.c_str());
 			i++;
 		}
+
 		sResTop.rt = RES_AND;
 		sResTop.res.resAnd.cRes = i;
 		sResTop.res.resAnd.lpRes = &sResMiddle[0];
 		lpRes = &sResTop;
-		output::DebugPrintRestriction(DBGGeneric, lpRes, NULL);
+		output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
 	}
 
 	DumpContentsTable(
-		ProgOpts.lpszProfile.c_str(),
-		ProgOpts.lpMDB,
-		ProgOpts.lpFolder,
-		!ProgOpts.lpszOutput.empty() ? ProgOpts.lpszOutput.c_str() : L".",
-		ProgOpts.ulOptions,
-		ProgOpts.ulFolder,
-		ProgOpts.lpszFolderPath.c_str(),
-		ProgOpts.ulCount,
+		cli::switchProfile[0].c_str(),
+		lpMDB,
+		lpFolder,
+		cli::switchOutput.empty() ? L"." : cli::switchOutput[0].c_str(),
+		cli::switchFolder[0].c_str(),
+		cli::switchRecent.atULONG(0),
 		lpRes);
 }
 
-void DoMSG(_In_ cli::MYOPTIONS ProgOpts)
+void DoMSG()
 {
 	DumpMSG(
-		ProgOpts.lpszInput.c_str(),
-		!ProgOpts.lpszOutput.empty() ? ProgOpts.lpszOutput.c_str() : L".",
-		0 != (ProgOpts.ulOptions & cli::OPT_RETRYSTREAMPROPS),
-		0 == (ProgOpts.ulOptions & cli::OPT_SKIPATTACHMENTS));
+		cli::switchInput[0].c_str(),
+		cli::switchOutput.empty() ? L"." : cli::switchOutput[0].c_str(),
+		cli::switchMoreProperties.isSet(),
+		!cli::switchSkip.isSet());
 }

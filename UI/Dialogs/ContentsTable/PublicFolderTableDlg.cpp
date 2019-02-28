@@ -1,11 +1,12 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/PublicFolderTableDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/mapi/columnTags.h>
 #include <UI/UIFunctions.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <Interpret/InterpretProp.h>
+#include <core/utility/output.h>
+#include <core/interpret/flags.h>
 
 namespace dialog
 {
@@ -65,7 +66,7 @@ namespace dialog
 
 		editor::CEditor MyData(
 			this, IDS_SEARCHCRITERIA, IDS_PFSEARCHCRITERIAPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(flagFuzzyLevel, true));
+		MyData.SetPromptPostFix(flags::AllFlagsToString(flagFuzzyLevel, true));
 
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_NAME, false));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_ULFUZZYLEVEL, false));
@@ -76,7 +77,7 @@ namespace dialog
 		const auto szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
 		const auto lpRes = mapi::CreatePropertyStringRestriction(
-			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, MyData.GetHex(1), NULL);
+			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE), szString, MyData.GetHex(1), nullptr);
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
 		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);

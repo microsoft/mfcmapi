@@ -1,8 +1,11 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/PropertySelector.h>
-#include <Interpret/String.h>
+#include <core/utility/strings.h>
 #include <UI/Controls/SortList/PropListData.h>
-#include <Interpret/InterpretProp.h>
+#include <core/addin/addin.h>
+#include <core/addin/mfcmapi.h>
+#include <core/utility/output.h>
+#include <core/interpret/proptype.h>
 
 namespace dialog
 {
@@ -52,7 +55,7 @@ namespace dialog
 				}
 
 				SetListString(0, ulCurRow, 1, strings::format(L"0x%08X", PropTagArray[i].ulValue)); // STRING_OK
-				SetListString(0, ulCurRow, 2, interpretprop::TypeToString(PropTagArray[i].ulValue));
+				SetListString(0, ulCurRow, 2, proptype::TypeToString(PropTagArray[i].ulValue));
 				ulCurRow++;
 			}
 

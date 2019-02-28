@@ -3,10 +3,11 @@
 #include <StdAfx.h>
 #include <UI/MyWinApp.h>
 #include <UI/ParentWnd.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <ImportProcs.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/utility/import.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
 #include <UI/mapiui.h>
+#include <core/utility/registry.h>
 
 // The one and only CMyWinApp object
 ui::CMyWinApp theApp;
@@ -44,13 +45,13 @@ namespace ui
 		{
 			import::MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 		}
-
-		ui::mapiui::initCallbacks();
 	}
 
 	// CMyWinApp initialization
 	BOOL CMyWinApp::InitInstance()
 	{
+		mapiui::initCallbacks();
+
 		// Create a parent window that all objects get a pointer to, ensuring we don't
 		// quit this thread until all objects have freed themselves.
 		auto pWnd = new CParentWnd();

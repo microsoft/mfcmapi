@@ -2,9 +2,10 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
 #include <UI/Controls/HierarchyTableTreeCtrl.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/Cache/MapiObjects.h>
+#include <core/mapi/cache/mapiObjects.h>
 #include <UI/addinui.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {

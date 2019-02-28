@@ -4,12 +4,15 @@
 #include <UI/Dialogs/ContentsTable/AclDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <Interpret/InterpretProp.h>
-#include <MAPI/MapiMemory.h>
+#include <core/interpret/flags.h>
+#include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>
+#include <core/utility/output.h>
+#include <core/addin/mfcmapi.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace dialog
 {
@@ -113,7 +116,7 @@ namespace dialog
 	void CAclDlg::OnAddItem()
 	{
 		editor::CEditor MyData(this, IDS_ACLADDITEM, IDS_ACLADDITEMPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(interpretprop::AllFlagsToString(PROP_ID(PR_MEMBER_RIGHTS), true));
+		MyData.SetPromptPostFix(flags::AllFlagsToString(PROP_ID(PR_MEMBER_RIGHTS), true));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_USEREID, false));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_MASKINHEX, false));
 		MyData.SetHex(1, 0);

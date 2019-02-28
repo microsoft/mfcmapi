@@ -1,9 +1,8 @@
 #include <StdAfx.h>
-#include <MrMapi/MrMAPI.h>
 #include <MrMapi/MMProfile.h>
-#include <IO/ExportProfile.h>
-#include <MAPI/MAPIFunctions.h>
-#include <Interpret/String.h>
+#include <MrMapi/mmcli.h>
+#include <core/mapi/exportProfile.h>
+#include <core/utility/strings.h>
 
 namespace output
 {
@@ -11,7 +10,6 @@ namespace output
 	{
 		printf("Profile List\n");
 		printf(" # Default Name\n");
-		auto hRes = S_OK;
 		LPMAPITABLE lpProfTable = nullptr;
 		LPPROFADMIN lpProfAdmin = nullptr;
 
@@ -42,29 +40,28 @@ namespace output
 				}
 				else
 				{
-					if (!FAILED(hRes))
-						for (ULONG i = 0; i < lpRows->cRows; i++)
+					for (ULONG i = 0; i < lpRows->cRows; i++)
+					{
+						printf("%2d ", i);
+						if (PR_DEFAULT_PROFILE == lpRows->aRow[i].lpProps[0].ulPropTag &&
+							lpRows->aRow[i].lpProps[0].Value.b)
 						{
-							printf("%2d ", i);
-							if (PR_DEFAULT_PROFILE == lpRows->aRow[i].lpProps[0].ulPropTag &&
-								lpRows->aRow[i].lpProps[0].Value.b)
-							{
-								printf("*       ");
-							}
-							else
-							{
-								printf("        ");
-							}
-
-							if (mapi::CheckStringProp(&lpRows->aRow[i].lpProps[1], PT_STRING8))
-							{
-								printf("%hs\n", lpRows->aRow[i].lpProps[1].Value.lpszA);
-							}
-							else
-							{
-								printf("UNKNOWN\n");
-							}
+							printf("*       ");
 						}
+						else
+						{
+							printf("        ");
+						}
+
+						if (strings::CheckStringProp(&lpRows->aRow[i].lpProps[1], PT_STRING8))
+						{
+							printf("%hs\n", lpRows->aRow[i].lpProps[1].Value.lpszA);
+						}
+						else
+						{
+							printf("UNKNOWN\n");
+						}
+					}
 				}
 
 				FreeProws(lpRows);
@@ -76,19 +73,20 @@ namespace output
 		lpProfAdmin->Release();
 	}
 
-	void DoProfile(_In_ cli::MYOPTIONS ProgOpts)
+	void DoProfile()
 	{
-		if (!ProgOpts.lpszProfile.empty() && !ProgOpts.lpszOutput.empty())
+		const auto output = cli::switchOutput[0];
+		if (cli::switchProfile.has(0) && !output.empty())
 		{
+			const auto szProfile = cli::switchProfile[0];
+			const auto szProfileSection = cli::switchProfileSection[0];
 			printf("Profile Export\n");
 			printf("Options specified:\n");
-			printf("   Profile: %ws\n", ProgOpts.lpszProfile.c_str());
-			printf("   Output File: %ws\n", ProgOpts.lpszOutput.c_str());
+			printf("   Profile: %ws\n", szProfile.c_str());
+			printf("   Profile section: %ws\n", szProfileSection.c_str());
+			printf("   Output File: %ws\n", output.c_str());
 			ExportProfile(
-				strings::wstringTostring(ProgOpts.lpszProfile),
-				ProgOpts.lpszProfileSection,
-				ProgOpts.bByteSwapped,
-				ProgOpts.lpszOutput);
+				strings::wstringTostring(szProfile), szProfileSection, cli::switchByteSwapped.isSet(), output);
 		}
 		else
 		{

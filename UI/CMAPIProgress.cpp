@@ -1,7 +1,10 @@
 #include <StdAfx.h>
 #include <UI/CMAPIProgress.h>
-#include <Enums.h>
+#include <UI/enums.h>
 #include <UI/Dialogs/BaseDialog.h>
+#include <core/utility/registry.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
 
 namespace ui
 {

@@ -2,13 +2,14 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/RecipientsDlg.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
-#include <MAPI/Cache/MapiObjects.h>
-#include <MAPI/ColumnTags.h>
+#include <core/mapi/cache/mapiObjects.h>
+#include <core/mapi/columnTags.h>
 #include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <Interpret/InterpretProp.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/MapiMemory.h>
+#include <core/mapi/mapiMemory.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
+#include <core/property/parseProperty.h>
 
 namespace dialog
 {
@@ -102,7 +103,7 @@ namespace dialog
 
 		if (!m_lpMessage || !m_lpContentsTableListCtrl) return;
 
-		const int iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
+		const auto iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 
 		if (iNumSelected && iNumSelected < MAXNewADRLIST)
 		{
@@ -111,7 +112,7 @@ namespace dialog
 			{
 				lpAdrList->cEntries = iNumSelected;
 
-				for (auto iSelection = 0; iSelection < iNumSelected; iSelection++)
+				for (auto iSelection = UINT{}; iSelection < iNumSelected; iSelection++)
 				{
 					const auto lpProp = mapi::allocate<LPSPropValue>(sizeof(SPropValue));
 					if (lpProp)
@@ -164,7 +165,7 @@ namespace dialog
 		EC_H_S(m_lpPropDisplay->GetDisplayedProps(&cProps, &lpProps));
 		if (lpProps)
 		{
-			ADRLIST adrList = {0};
+			ADRLIST adrList = {};
 			adrList.cEntries = 1;
 			adrList.aEntries[0].ulReserved1 = 0;
 			adrList.aEntries[0].cValues = cProps;
@@ -212,7 +213,7 @@ namespace dialog
 			auto lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
 			if (lpAB)
 			{
-				ADRENTRY adrEntry = {0};
+				ADRENTRY adrEntry = {};
 				adrEntry.ulReserved1 = 0;
 				adrEntry.cValues = cProps;
 				adrEntry.rgPropVals = lpProps;
@@ -234,13 +235,13 @@ namespace dialog
 				}
 				else if (SUCCEEDED(hRes))
 				{
-					ADRLIST adrList = {0};
+					ADRLIST adrList = {};
 					adrList.cEntries = 1;
 					adrList.aEntries[0].ulReserved1 = 0;
 					adrList.aEntries[0].cValues = adrEntry.cValues;
 					adrList.aEntries[0].rgPropVals = adrEntry.rgPropVals;
 
-					const auto szAdrList = interpretprop::AdrListToString(adrList);
+					const auto szAdrList = property::AdrListToString(adrList);
 
 					output::DebugPrintEx(
 						DBGGeneric, CLASS, L"OnRecipOptions", L"RecipOptions returned the following ADRLIST:\n");
@@ -263,4 +264,4 @@ namespace dialog
 			EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 		}
 	}
-}
+} // namespace dialog

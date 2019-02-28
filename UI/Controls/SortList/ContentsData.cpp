@@ -1,7 +1,8 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/ContentsData.h>
-#include <MAPI/MAPIFunctions.h>
-#include <MAPI/MapiMemory.h>
+#include <core/utility/strings.h>
+#include <core/utility/output.h>
+#include <core/mapi/mapiFunctions.h>
 
 namespace controls
 {
@@ -92,7 +93,7 @@ namespace controls
 				lpsRowData->lpProps,
 				lpsRowData->cValues,
 				PR_DISPLAY_NAME_A); // We pull this property for profiles, which do not support Unicode
-			if (mapi::CheckStringProp(lpProp, PT_STRING8))
+			if (strings::CheckStringProp(lpProp, PT_STRING8))
 			{
 				m_szProfileDisplayName = lpProp->Value.lpszA;
 				output::DebugPrint(DBGGeneric, L"\tPR_DISPLAY_NAME_A = %hs\n", m_szProfileDisplayName.c_str());
@@ -100,7 +101,7 @@ namespace controls
 
 			// Save the e-mail address (if it exists on the object) into lpData
 			lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_EMAIL_ADDRESS);
-			if (mapi::CheckStringProp(lpProp, PT_TSTRING))
+			if (strings::CheckStringProp(lpProp, PT_TSTRING))
 			{
 				m_szDN = strings::LPCTSTRToWstring(lpProp->Value.LPSZ);
 				output::DebugPrint(DBGGeneric, L"\tPR_EMAIL_ADDRESS = %ws\n", m_szDN.c_str());
