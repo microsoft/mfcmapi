@@ -12,16 +12,16 @@ namespace SmartViewTest
 	private:
 		struct SmartViewTestResource
 		{
-			__ParsingTypeEnum structType;
-			bool parseAll;
-			DWORD hex;
-			DWORD expected;
+			__ParsingTypeEnum structType{};
+			bool parseAll{};
+			DWORD hex{};
+			DWORD expected{};
 		};
 
 		struct SmartViewTestData
 		{
-			__ParsingTypeEnum structType;
-			bool parseAll;
+			__ParsingTypeEnum structType{};
+			bool parseAll{};
 			std::wstring testName;
 			std::vector<BYTE> hex;
 			std::wstring expected;
@@ -29,7 +29,7 @@ namespace SmartViewTest
 
 		void test(std::vector<SmartViewTestData> testData) const
 		{
-			for (auto data : testData)
+			for (auto& data : testData)
 			{
 				auto actual = smartview::InterpretBinaryAsString(
 					{static_cast<ULONG>(data.hex.size()), data.hex.data()}, data.structType, nullptr);
@@ -59,11 +59,12 @@ namespace SmartViewTest
 			}
 		}
 
-		static std::vector<SmartViewTestData> loadTestData(std::initializer_list<SmartViewTestResource> resources)
+		static std::vector<SmartViewTestData> loadTestData(
+			const std::initializer_list<SmartViewTestResource>& resources)
 		{
 			static auto handle = GetModuleHandleW(L"UnitTest.dll");
 			std::vector<SmartViewTestData> testData;
-			for (auto resource : resources)
+			for (const auto& resource : resources)
 			{
 				testData.push_back(SmartViewTestData{resource.structType,
 													 resource.parseAll,
