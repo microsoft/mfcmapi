@@ -7,6 +7,7 @@
 #include <UI/Controls/SortList/ResData.h>
 #include <UI/Controls/SortList/CommentData.h>
 #include <UI/Controls/SortList/BinaryData.h>
+#include <core/utility/strings.h>
 
 namespace controls
 {
@@ -45,6 +46,11 @@ namespace controls
 		CommentData* SortListData::Comment() const { return reinterpret_cast<CommentData*>(m_lpData); }
 
 		BinaryData* SortListData::Binary() const { return reinterpret_cast<BinaryData*>(m_lpData); }
+
+		void SortListData::setSortText(const std::wstring& _sortText)
+		{
+			sortText = strings::wstringToLower(_sortText);
+		}
 
 		// Sets data from the LPSRow into the SortListData structure
 		// Assumes the structure is either an existing structure or a new one which has been memset to 0

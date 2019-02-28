@@ -43,7 +43,7 @@ namespace controls
 			BinaryData* Binary() const;
 
 			const std::wstring& getSortText() const noexcept { return sortText; }
-			void setSortText(const std::wstring& _sortText) { sortText = _sortText; }
+			void setSortText(const std::wstring& _sortText);
 			const ULARGE_INTEGER& getSortValue() const noexcept { return sortValue; }
 			void setSortValue(const ULARGE_INTEGER _sortValue) noexcept { sortValue = _sortValue; }
 			void clearSortValues() noexcept
