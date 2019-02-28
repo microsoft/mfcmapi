@@ -15,7 +15,6 @@ namespace controls
 		SortListData::SortListData()
 			: cSourceProps(0), lpSourceProps(nullptr), bItemFullyLoaded(false), m_lpData(nullptr)
 		{
-			ulSortValue.QuadPart = NULL;
 		}
 
 		SortListData::~SortListData() { Clean(); }
@@ -30,9 +29,7 @@ namespace controls
 			cSourceProps = 0;
 
 			bItemFullyLoaded = false;
-			szSortText.clear();
-
-			ulSortValue.QuadPart = NULL;
+			clearSortValues();
 		}
 
 		ContentsData* SortListData::Contents() const { return reinterpret_cast<ContentsData*>(m_lpData); }
@@ -142,5 +139,5 @@ namespace controls
 			Clean();
 			m_lpData = new BinaryData(lpOldBin);
 		}
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls
