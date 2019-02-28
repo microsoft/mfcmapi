@@ -7,6 +7,7 @@
 #include <UI/Controls/SortList/ResData.h>
 #include <UI/Controls/SortList/CommentData.h>
 #include <UI/Controls/SortList/BinaryData.h>
+#include <core/utility/strings.h>
 
 namespace controls
 {
@@ -15,7 +16,6 @@ namespace controls
 		SortListData::SortListData()
 			: cSourceProps(0), lpSourceProps(nullptr), bItemFullyLoaded(false), m_lpData(nullptr)
 		{
-			ulSortValue.QuadPart = NULL;
 		}
 
 		SortListData::~SortListData() { Clean(); }
@@ -30,9 +30,7 @@ namespace controls
 			cSourceProps = 0;
 
 			bItemFullyLoaded = false;
-			szSortText.clear();
-
-			ulSortValue.QuadPart = NULL;
+			clearSortValues();
 		}
 
 		ContentsData* SortListData::Contents() const { return reinterpret_cast<ContentsData*>(m_lpData); }
@@ -48,6 +46,11 @@ namespace controls
 		CommentData* SortListData::Comment() const { return reinterpret_cast<CommentData*>(m_lpData); }
 
 		BinaryData* SortListData::Binary() const { return reinterpret_cast<BinaryData*>(m_lpData); }
+
+		void SortListData::setSortText(const std::wstring& _sortText)
+		{
+			sortText = strings::wstringToLower(_sortText);
+		}
 
 		// Sets data from the LPSRow into the SortListData structure
 		// Assumes the structure is either an existing structure or a new one which has been memset to 0
@@ -142,5 +145,5 @@ namespace controls
 			Clean();
 			m_lpData = new BinaryData(lpOldBin);
 		}
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls
