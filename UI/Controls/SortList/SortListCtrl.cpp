@@ -349,29 +349,29 @@ namespace controls
 			{
 			case SORTSTYLE_STRING:
 				// Empty strings should always sort after non-empty strings
-				if (lpData1->szSortText.empty()) return sort2First;
-				if (lpData2->szSortText.empty()) return sort1First;
-				iRet = lpData1->szSortText.compare(lpData2->szSortText);
+				if (lpData1->getSortText().empty()) return sort2First;
+				if (lpData2->getSortText().empty()) return sort1First;
+				iRet = lpData1->getSortText().compare(lpData2->getSortText());
 
 				return lpSortInfo->bSortUp ? -iRet : iRet;
 			case SORTSTYLE_HEX:
 				// Empty strings should always sort after non-empty strings
-				if (lpData1->szSortText.empty()) return sort2First;
-				if (lpData2->szSortText.empty()) return sort1First;
+				if (lpData1->getSortText().empty()) return sort2First;
+				if (lpData2->getSortText().empty()) return sort1First;
 
-				if (lpData1->ulSortValue.LowPart == lpData2->ulSortValue.LowPart)
+				if (lpData1->getSortValue().LowPart == lpData2->getSortValue().LowPart)
 				{
-					iRet = lpData1->szSortText.compare(lpData2->szSortText);
+					iRet = lpData1->getSortText().compare(lpData2->getSortText());
 				}
 				else
 				{
-					const int lCheck = max(lpData1->ulSortValue.LowPart, lpData2->ulSortValue.LowPart);
+					const int lCheck = max(lpData1->getSortValue().LowPart, lpData2->getSortValue().LowPart);
 
 					for (auto i = 0; i < lCheck; i++)
 					{
-						if (lpData1->szSortText[i] != lpData2->szSortText[i])
+						if (lpData1->getSortText()[i] != lpData2->getSortText()[i])
 						{
-							iRet = lpData1->szSortText[i] < lpData2->szSortText[i] ? -1 : 1;
+							iRet = lpData1->getSortText()[i] < lpData2->getSortText()[i] ? -1 : 1;
 							break;
 						}
 					}
@@ -380,8 +380,8 @@ namespace controls
 				return lpSortInfo->bSortUp ? -iRet : iRet;
 			case SORTSTYLE_NUMERIC:
 			{
-				const auto ul1 = lpData1->ulSortValue;
-				const auto ul2 = lpData2->ulSortValue;
+				const auto ul1 = lpData1->getSortValue();
+				const auto ul2 = lpData2->getSortValue();
 				return lpSortInfo->bSortUp ? ul2.QuadPart > ul1.QuadPart : ul1.QuadPart >= ul2.QuadPart;
 			}
 			default:
@@ -461,8 +461,8 @@ namespace controls
 					auto lpData = reinterpret_cast<sortlistdata::SortListData*>(lvi.lParam);
 					if (lpData)
 					{
-						lpData->szSortText.clear();
-						lpData->ulSortValue.QuadPart = strings::wstringToUlong(szText, 10, false);
+						lpData->clearSortValues();
+						lpData->setSortValue({strings::wstringToUlong(szText, 10, false), 0});
 					}
 				}
 				break;
@@ -480,13 +480,12 @@ namespace controls
 					auto lpData = reinterpret_cast<sortlistdata::SortListData*>(GetItemData(i));
 					if (lpData)
 					{
-						lpData->szSortText.clear();
-						lpData->ulSortValue.QuadPart = 0;
+						lpData->clearSortValues();
 						if (ulSourceCol < lpData->cSourceProps &&
 							PROP_TYPE(lpData->lpSourceProps[ulSourceCol].ulPropTag) == PT_SYSTIME)
 						{
-							lpData->ulSortValue.LowPart = lpData->lpSourceProps[ulSourceCol].Value.ft.dwLowDateTime;
-							lpData->ulSortValue.HighPart = lpData->lpSourceProps[ulSourceCol].Value.ft.dwHighDateTime;
+							lpData->setSortValue({lpData->lpSourceProps[ulSourceCol].Value.ft.dwLowDateTime,
+												  lpData->lpSourceProps[ulSourceCol].Value.ft.dwHighDateTime});
 						}
 					}
 				}
@@ -504,14 +503,15 @@ namespace controls
 					if (lpData)
 					{
 						// Remove the lpb prefix
-						lpData->szSortText = std::wstring(szText);
-						const auto pos = lpData->szSortText.find(L"lpb: "); // STRING_OK
+						auto szSortText = std::wstring(szText);
+						const auto pos = szSortText.find(L"lpb: "); // STRING_OK
 						if (pos != std::string::npos)
 						{
-							lpData->szSortText = lpData->szSortText.substr(pos);
+							szSortText = szSortText.substr(pos);
 						}
 
-						lpData->ulSortValue.LowPart = static_cast<DWORD>(lpData->szSortText.length());
+						lpData->setSortText(szSortText);
+						lpData->setSortValue({static_cast<DWORD>(szSortText.length()), 0});
 					}
 				}
 				break;
@@ -526,8 +526,8 @@ namespace controls
 					auto lpData = reinterpret_cast<sortlistdata::SortListData*>(lvi.lParam);
 					if (lpData)
 					{
-						lpData->szSortText = szText;
-						lpData->ulSortValue.QuadPart = NULL;
+						lpData->clearSortValues();
+						lpData->setSortText(szText);
 					}
 				}
 				break;
@@ -697,5 +697,5 @@ namespace controls
 
 			return static_cast<int>(::SendMessage(m_hWnd, LVM_INSERTCOLUMNW, nCol, (LPARAM) &column));
 		}
-	}
-}
+	} // namespace sortlistctrl
+} // namespace controls
