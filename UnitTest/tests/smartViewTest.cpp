@@ -345,6 +345,7 @@ namespace SmartViewTest
 			test(loadTestData({
 				SmartViewTestResource{IDS_STTIMEZONEDEFINITION, unittest::parse_all, IDR_SV23TZD1IN, IDR_SV23TZD1OUT},
 				SmartViewTestResource{IDS_STTIMEZONEDEFINITION, unittest::parse_all, IDR_SV23TZD2IN, IDR_SV23TZD2OUT},
+				SmartViewTestResource{IDS_STTIMEZONEDEFINITION, unittest::parse_all, IDR_SV23TZD3IN, IDR_SV23TZD3OUT},
 			}));
 		}
 
