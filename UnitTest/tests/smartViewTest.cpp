@@ -154,6 +154,7 @@ namespace SmartViewTest
 				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID37IN, IDR_SV4EID37OUT},
 				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID38IN, IDR_SV4EID38OUT},
 				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID39IN, IDR_SV4EID39OUT},
+				SmartViewTestResource{IDS_STENTRYID, unittest::parse_all, IDR_SV4EID40IN, IDR_SV4EID40OUT},
 			}));
 		}
 

@@ -1,0 +1,7 @@
+MAPI One Off Recipient Entry ID:
+abFlags = 0x00000000
+Provider GUID = {A41F2B81-A3BE-1910-9D6E-00DD010F5402} = muidOOP
+dwBitmask: 0x80010000 = MAPI_UNICODE | MAPI_SEND_NO_RICH_INFO
+szDisplayName = nobody_@microsoft.com
+szAddressType = SMTP
+szEmailAddress = nobody_@microsoft.com
