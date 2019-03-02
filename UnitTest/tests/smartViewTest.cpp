@@ -369,6 +369,8 @@ namespace SmartViewTest
 					IDS_STWEBVIEWPERSISTSTREAM, unittest::parse_all, IDR_SV24WEBVIEW5IN, IDR_SV24WEBVIEW5OUT},
 				SmartViewTestResource{
 					IDS_STWEBVIEWPERSISTSTREAM, unittest::parse_all, IDR_SV24WEBVIEW6IN, IDR_SV24WEBVIEW6OUT},
+				SmartViewTestResource{
+					IDS_STWEBVIEWPERSISTSTREAM, unittest::parse_all, IDR_SV24WEBVIEW7IN, IDR_SV24WEBVIEW7OUT},
 			}));
 		}
 
