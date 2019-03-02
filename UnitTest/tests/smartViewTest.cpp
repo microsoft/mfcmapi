@@ -379,6 +379,10 @@ namespace SmartViewTest
 			test(loadTestData({
 				SmartViewTestResource{
 					IDS_STNICKNAMECACHE, unittest::parse_all, IDR_SV25NICKNAME2IN, IDR_SV25NICKNAME2OUT},
+				SmartViewTestResource{
+					IDS_STNICKNAMECACHE, unittest::parse_all, IDR_SV25NICKNAME3IN, IDR_SV25NICKNAME3OUT},
+				SmartViewTestResource{
+					IDS_STNICKNAMECACHE, unittest::parse_all, IDR_SV25NICKNAME4IN, IDR_SV25NICKNAME4OUT},
 			}));
 		}
 
