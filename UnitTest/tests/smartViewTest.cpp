@@ -406,6 +406,8 @@ namespace SmartViewTest
 					IDS_STVERBSTREAM, unittest::parse_all, IDR_SV28VERBSTREAM5IN, IDR_SV28VERBSTREAM5OUT},
 				SmartViewTestResource{
 					IDS_STVERBSTREAM, unittest::parse_all, IDR_SV28VERBSTREAM6IN, IDR_SV28VERBSTREAM6OUT},
+				SmartViewTestResource{
+					IDS_STVERBSTREAM, unittest::parse_all, IDR_SV28VERBSTREAM7IN, IDR_SV28VERBSTREAM7OUT},
 			}));
 		}
 
