@@ -109,6 +109,7 @@ namespace SmartViewTest
 				SmartViewTestResource{IDS_STCONVERSATIONINDEX, unittest::parse_all, IDR_SV3CI1IN, IDR_SV3CI1OUT},
 				SmartViewTestResource{IDS_STCONVERSATIONINDEX, unittest::parse_all, IDR_SV3CI2IN, IDR_SV3CI2OUT},
 				SmartViewTestResource{IDS_STCONVERSATIONINDEX, unittest::parse_all, IDR_SV3CI3IN, IDR_SV3CI3OUT},
+				SmartViewTestResource{IDS_STCONVERSATIONINDEX, unittest::parse_all, IDR_SV3CI4IN, IDR_SV3CI4OUT},
 			}));
 		}
 
