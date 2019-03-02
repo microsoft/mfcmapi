@@ -203,6 +203,9 @@ namespace SmartViewTest
 			test(loadTestData({
 				SmartViewTestResource{IDS_STFOLDERUSERFIELDS, unittest::parse_all, IDR_SV9FUF1IN, IDR_SV9FUF1OUT},
 				SmartViewTestResource{IDS_STFOLDERUSERFIELDS, unittest::parse_all, IDR_SV9FUF2IN, IDR_SV9FUF2OUT},
+				SmartViewTestResource{IDS_STFOLDERUSERFIELDS, unittest::parse_all, IDR_SV9FUF3IN, IDR_SV9FUF3OUT},
+				SmartViewTestResource{IDS_STFOLDERUSERFIELDS, unittest::parse_all, IDR_SV9FUF4IN, IDR_SV9FUF4OUT},
+				SmartViewTestResource{IDS_STFOLDERUSERFIELDS, unittest::parse_all, IDR_SV9FUF5IN, IDR_SV9FUF5OUT},
 			}));
 		}
 
