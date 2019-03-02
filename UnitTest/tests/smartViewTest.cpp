@@ -193,6 +193,7 @@ namespace SmartViewTest
 			test(loadTestData({
 				SmartViewTestResource{IDS_STFLATENTRYLIST, unittest::parse_all, IDR_SV8FE1IN, IDR_SV8FE1OUT},
 				SmartViewTestResource{IDS_STFLATENTRYLIST, unittest::parse_all, IDR_SV8FE2IN, IDR_SV8FE2OUT},
+				SmartViewTestResource{IDS_STFLATENTRYLIST, unittest::parse_all, IDR_SV8FE3IN, IDR_SV8FE3OUT},
 			}));
 		}
 
