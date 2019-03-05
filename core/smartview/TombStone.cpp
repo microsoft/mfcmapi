@@ -6,27 +6,27 @@ namespace smartview
 {
 	void TombStone::Parse()
 	{
-		m_Identifier = m_Parser.Get<DWORD>();
-		m_HeaderSize = m_Parser.Get<DWORD>();
-		m_Version = m_Parser.Get<DWORD>();
-		m_RecordsCount = m_Parser.Get<DWORD>();
-		m_RecordsSize = m_Parser.Get<DWORD>();
+		m_Identifier = m_Parser->Get<DWORD>();
+		m_HeaderSize = m_Parser->Get<DWORD>();
+		m_Version = m_Parser->Get<DWORD>();
+		m_RecordsCount = m_Parser->Get<DWORD>();
+		m_RecordsSize = m_Parser->Get<DWORD>();
 
 		// Run through the parser once to count the number of flag structs
-		const auto ulFlagOffset = m_Parser.GetCurrentOffset();
+		const auto ulFlagOffset = m_Parser->GetCurrentOffset();
 		for (;;)
 		{
 			// Must have at least 2 bytes left to have another flag
-			if (m_Parser.RemainingBytes() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
-			(void) m_Parser.Get<DWORD>();
-			(void) m_Parser.Get<DWORD>();
-			m_Parser.advance(m_Parser.Get<DWORD>());
-			m_Parser.advance(m_Parser.Get<WORD>());
+			if (m_Parser->RemainingBytes() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
+			(void) m_Parser->Get<DWORD>();
+			(void) m_Parser->Get<DWORD>();
+			m_Parser->advance(m_Parser->Get<DWORD>());
+			m_Parser->advance(m_Parser->Get<WORD>());
 			m_ActualRecordsCount++;
 		}
 
 		// Now we parse for real
-		m_Parser.SetCurrentOffset(ulFlagOffset);
+		m_Parser->SetCurrentOffset(ulFlagOffset);
 
 		if (m_ActualRecordsCount && m_ActualRecordsCount < _MaxEntriesSmall)
 		{
@@ -34,12 +34,12 @@ namespace smartview
 			for (ULONG i = 0; i < m_ActualRecordsCount; i++)
 			{
 				TombstoneRecord tombstoneRecord;
-				tombstoneRecord.StartTime = m_Parser.Get<DWORD>();
-				tombstoneRecord.EndTime = m_Parser.Get<DWORD>();
-				tombstoneRecord.GlobalObjectIdSize = m_Parser.Get<DWORD>();
+				tombstoneRecord.StartTime = m_Parser->Get<DWORD>();
+				tombstoneRecord.EndTime = m_Parser->Get<DWORD>();
+				tombstoneRecord.GlobalObjectIdSize = m_Parser->Get<DWORD>();
 				tombstoneRecord.GlobalObjectId.parse(m_Parser, tombstoneRecord.GlobalObjectIdSize, false);
-				tombstoneRecord.UsernameSize = m_Parser.Get<WORD>();
-				tombstoneRecord.szUsername = m_Parser.GetStringA(tombstoneRecord.UsernameSize);
+				tombstoneRecord.UsernameSize = m_Parser->Get<WORD>();
+				tombstoneRecord.szUsername = m_Parser->GetStringA(tombstoneRecord.UsernameSize);
 				m_lpRecords.push_back(tombstoneRecord);
 			}
 		}

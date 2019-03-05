@@ -37,11 +37,11 @@ namespace smartview
 
 		if (bRuleCondition)
 		{
-			srRestriction.rt = m_Parser.Get<BYTE>();
+			srRestriction.rt = m_Parser->Get<BYTE>();
 		}
 		else
 		{
-			srRestriction.rt = m_Parser.Get<DWORD>();
+			srRestriction.rt = m_Parser->Get<DWORD>();
 		}
 
 		switch (srRestriction.rt)
@@ -49,11 +49,11 @@ namespace smartview
 		case RES_AND:
 			if (!bRuleCondition || bExtendedCount)
 			{
-				srRestriction.resAnd.cRes = m_Parser.Get<DWORD>();
+				srRestriction.resAnd.cRes = m_Parser->Get<DWORD>();
 			}
 			else
 			{
-				srRestriction.resAnd.cRes = m_Parser.Get<WORD>();
+				srRestriction.resAnd.cRes = m_Parser->Get<WORD>();
 			}
 
 			if (srRestriction.resAnd.cRes && srRestriction.resAnd.cRes < _MaxEntriesExtraLarge && ulDepth < _MaxDepth)
@@ -61,7 +61,7 @@ namespace smartview
 				srRestriction.resAnd.lpRes.reserve(srRestriction.resAnd.cRes);
 				for (ULONG i = 0; i < srRestriction.resAnd.cRes; i++)
 				{
-					if (!m_Parser.RemainingBytes()) break;
+					if (!m_Parser->RemainingBytes()) break;
 					srRestriction.resAnd.lpRes.push_back(BinToRestriction(ulDepth + 1, bRuleCondition, bExtendedCount));
 				}
 
@@ -72,11 +72,11 @@ namespace smartview
 		case RES_OR:
 			if (!bRuleCondition || bExtendedCount)
 			{
-				srRestriction.resOr.cRes = m_Parser.Get<DWORD>();
+				srRestriction.resOr.cRes = m_Parser->Get<DWORD>();
 			}
 			else
 			{
-				srRestriction.resOr.cRes = m_Parser.Get<WORD>();
+				srRestriction.resOr.cRes = m_Parser->Get<WORD>();
 			}
 
 			if (srRestriction.resOr.cRes && srRestriction.resOr.cRes < _MaxEntriesExtraLarge && ulDepth < _MaxDepth)
@@ -84,85 +84,85 @@ namespace smartview
 				srRestriction.resOr.lpRes.reserve(srRestriction.resOr.cRes);
 				for (ULONG i = 0; i < srRestriction.resOr.cRes; i++)
 				{
-					if (!m_Parser.RemainingBytes()) break;
+					if (!m_Parser->RemainingBytes()) break;
 					srRestriction.resOr.lpRes.push_back(BinToRestriction(ulDepth + 1, bRuleCondition, bExtendedCount));
 				}
 			}
 			break;
 		case RES_NOT:
-			if (ulDepth < _MaxDepth && m_Parser.RemainingBytes())
+			if (ulDepth < _MaxDepth && m_Parser->RemainingBytes())
 			{
 				srRestriction.resNot.lpRes.push_back(BinToRestriction(ulDepth + 1, bRuleCondition, bExtendedCount));
 			}
 			break;
 		case RES_CONTENT:
-			srRestriction.resContent.ulFuzzyLevel = m_Parser.Get<DWORD>();
-			srRestriction.resContent.ulPropTag = m_Parser.Get<DWORD>();
+			srRestriction.resContent.ulFuzzyLevel = m_Parser->Get<DWORD>();
+			srRestriction.resContent.ulPropTag = m_Parser->Get<DWORD>();
 			srRestriction.resContent.lpProp = BinToProps(1, bRuleCondition);
 			break;
 		case RES_PROPERTY:
 			if (bRuleCondition)
-				srRestriction.resProperty.relop = m_Parser.Get<BYTE>();
+				srRestriction.resProperty.relop = m_Parser->Get<BYTE>();
 			else
-				srRestriction.resProperty.relop = m_Parser.Get<DWORD>();
+				srRestriction.resProperty.relop = m_Parser->Get<DWORD>();
 
-			srRestriction.resProperty.ulPropTag = m_Parser.Get<DWORD>();
+			srRestriction.resProperty.ulPropTag = m_Parser->Get<DWORD>();
 			srRestriction.resProperty.lpProp = BinToProps(1, bRuleCondition);
 			break;
 		case RES_COMPAREPROPS:
 			if (bRuleCondition)
-				srRestriction.resCompareProps.relop = m_Parser.Get<BYTE>();
+				srRestriction.resCompareProps.relop = m_Parser->Get<BYTE>();
 			else
-				srRestriction.resCompareProps.relop = m_Parser.Get<DWORD>();
+				srRestriction.resCompareProps.relop = m_Parser->Get<DWORD>();
 
-			srRestriction.resCompareProps.ulPropTag1 = m_Parser.Get<DWORD>();
-			srRestriction.resCompareProps.ulPropTag2 = m_Parser.Get<DWORD>();
+			srRestriction.resCompareProps.ulPropTag1 = m_Parser->Get<DWORD>();
+			srRestriction.resCompareProps.ulPropTag2 = m_Parser->Get<DWORD>();
 			break;
 		case RES_BITMASK:
 			if (bRuleCondition)
-				srRestriction.resBitMask.relBMR = m_Parser.Get<BYTE>();
+				srRestriction.resBitMask.relBMR = m_Parser->Get<BYTE>();
 			else
-				srRestriction.resBitMask.relBMR = m_Parser.Get<DWORD>();
+				srRestriction.resBitMask.relBMR = m_Parser->Get<DWORD>();
 
-			srRestriction.resBitMask.ulPropTag = m_Parser.Get<DWORD>();
-			srRestriction.resBitMask.ulMask = m_Parser.Get<DWORD>();
+			srRestriction.resBitMask.ulPropTag = m_Parser->Get<DWORD>();
+			srRestriction.resBitMask.ulMask = m_Parser->Get<DWORD>();
 			break;
 		case RES_SIZE:
 			if (bRuleCondition)
-				srRestriction.resSize.relop = m_Parser.Get<BYTE>();
+				srRestriction.resSize.relop = m_Parser->Get<BYTE>();
 			else
-				srRestriction.resSize.relop = m_Parser.Get<DWORD>();
+				srRestriction.resSize.relop = m_Parser->Get<DWORD>();
 
-			srRestriction.resSize.ulPropTag = m_Parser.Get<DWORD>();
-			srRestriction.resSize.cb = m_Parser.Get<DWORD>();
+			srRestriction.resSize.ulPropTag = m_Parser->Get<DWORD>();
+			srRestriction.resSize.cb = m_Parser->Get<DWORD>();
 			break;
 		case RES_EXIST:
-			srRestriction.resExist.ulPropTag = m_Parser.Get<DWORD>();
+			srRestriction.resExist.ulPropTag = m_Parser->Get<DWORD>();
 			break;
 		case RES_SUBRESTRICTION:
-			srRestriction.resSub.ulSubObject = m_Parser.Get<DWORD>();
-			if (ulDepth < _MaxDepth && m_Parser.RemainingBytes())
+			srRestriction.resSub.ulSubObject = m_Parser->Get<DWORD>();
+			if (ulDepth < _MaxDepth && m_Parser->RemainingBytes())
 			{
 				srRestriction.resSub.lpRes.push_back(BinToRestriction(ulDepth + 1, bRuleCondition, bExtendedCount));
 			}
 			break;
 		case RES_COMMENT:
 			if (bRuleCondition)
-				srRestriction.resComment.cValues = m_Parser.Get<BYTE>();
+				srRestriction.resComment.cValues = m_Parser->Get<BYTE>();
 			else
-				srRestriction.resComment.cValues = m_Parser.Get<DWORD>();
+				srRestriction.resComment.cValues = m_Parser->Get<DWORD>();
 
 			srRestriction.resComment.lpProp = BinToProps(srRestriction.resComment.cValues, bRuleCondition);
 
 			// Check if a restriction is present
-			if (m_Parser.Get<BYTE>() && ulDepth < _MaxDepth && m_Parser.RemainingBytes())
+			if (m_Parser->Get<BYTE>() && ulDepth < _MaxDepth && m_Parser->RemainingBytes())
 			{
 				srRestriction.resComment.lpRes.push_back(BinToRestriction(ulDepth + 1, bRuleCondition, bExtendedCount));
 			}
 			break;
 		case RES_COUNT:
-			srRestriction.resCount.ulCount = m_Parser.Get<DWORD>();
-			if (ulDepth < _MaxDepth && m_Parser.RemainingBytes())
+			srRestriction.resCount.ulCount = m_Parser->Get<DWORD>();
+			if (ulDepth < _MaxDepth && m_Parser->RemainingBytes())
 			{
 				srRestriction.resCount.lpRes.push_back(BinToRestriction(ulDepth + 1, bRuleCondition, bExtendedCount));
 			}

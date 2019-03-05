@@ -14,19 +14,19 @@ namespace smartview
 		// Run through the parser once to count the number of PersistData structs
 		for (;;)
 		{
-			if (m_Parser.RemainingBytes() < 2 * sizeof(WORD)) break;
-			const auto wPersistID = m_Parser.Get<WORD>();
-			const auto wDataElementSize = m_Parser.Get<WORD>();
+			if (m_Parser->RemainingBytes() < 2 * sizeof(WORD)) break;
+			const auto wPersistID = m_Parser->Get<WORD>();
+			const auto wDataElementSize = m_Parser->Get<WORD>();
 			// Must have at least wDataElementSize bytes left to be a valid data element
-			if (m_Parser.RemainingBytes() < wDataElementSize) break;
+			if (m_Parser->RemainingBytes() < wDataElementSize) break;
 
-			m_Parser.advance(wDataElementSize);
+			m_Parser->advance(wDataElementSize);
 			wPersistDataCount++;
 			if (wPersistID == PERISIST_SENTINEL) break;
 		}
 
 		// Now we parse for real
-		m_Parser.rewind();
+		m_Parser->rewind();
 
 		if (wPersistDataCount && wPersistDataCount < _MaxEntriesSmall)
 		{
@@ -42,14 +42,14 @@ namespace smartview
 	{
 		PersistData persistData;
 		WORD wDataElementCount = 0;
-		persistData.wPersistID = m_Parser.Get<WORD>();
-		persistData.wDataElementsSize = m_Parser.Get<WORD>();
+		persistData.wPersistID = m_Parser->Get<WORD>();
+		persistData.wDataElementsSize = m_Parser->Get<WORD>();
 
-		if (persistData.wPersistID != PERISIST_SENTINEL && m_Parser.RemainingBytes() >= persistData.wDataElementsSize)
+		if (persistData.wPersistID != PERISIST_SENTINEL && m_Parser->RemainingBytes() >= persistData.wDataElementsSize)
 		{
 			// Build a new m_Parser to preread and count our elements
 			// This new m_Parser will only contain as much space as suggested in wDataElementsSize
-			binaryParser DataElementParser(persistData.wDataElementsSize, m_Parser.GetCurrentAddress());
+			binaryParser DataElementParser(persistData.wDataElementsSize, m_Parser->GetCurrentAddress());
 			for (;;)
 			{
 				if (DataElementParser.RemainingBytes() < 2 * sizeof(WORD)) break;
@@ -70,11 +70,11 @@ namespace smartview
 			for (WORD iDataElement = 0; iDataElement < wDataElementCount; iDataElement++)
 			{
 				PersistElement persistElement;
-				persistElement.wElementID = m_Parser.Get<WORD>();
-				persistElement.wElementDataSize = m_Parser.Get<WORD>();
+				persistElement.wElementID = m_Parser->Get<WORD>();
+				persistElement.wElementDataSize = m_Parser->Get<WORD>();
 				if (persistElement.wElementID == ELEMENT_SENTINEL) break;
 				// Since this is a word, the size will never be too large
-				persistElement.lpbElementData = m_Parser.GetBYTES(persistElement.wElementDataSize);
+				persistElement.lpbElementData = m_Parser->GetBYTES(persistElement.wElementDataSize);
 
 				persistData.ppeDataElement.push_back(persistElement);
 			}
@@ -85,9 +85,9 @@ namespace smartview
 		const auto cbRecordSize = persistData.wDataElementsSize + sizeof(WORD) * 2;
 
 		// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
-		if (m_Parser.GetCurrentOffset() < cbRecordSize)
+		if (m_Parser->GetCurrentOffset() < cbRecordSize)
 		{
-			persistData.JunkData = m_Parser.GetBYTES(cbRecordSize - m_Parser.GetCurrentOffset());
+			persistData.JunkData = m_Parser->GetBYTES(cbRecordSize - m_Parser->GetCurrentOffset());
 		}
 
 		return persistData;

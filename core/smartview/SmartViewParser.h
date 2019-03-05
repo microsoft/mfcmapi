@@ -21,22 +21,21 @@ namespace smartview
 
 		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 		{
-			m_Parser = binaryParser(cbBin, lpBin);
+			m_Parser = std::make_shared<binaryParser>(cbBin, lpBin);
 			m_bParsed = false;
 			data = {};
 			m_bEnableJunk = true;
 		}
 
-		void parse(binaryParser& binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
+		void parse(std::shared_ptr<binaryParser> binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
 
-		void parse(binaryParser& binaryParser, size_t cbBin, bool bEnableJunk)
+		void parse(std::shared_ptr<binaryParser> binaryParser, size_t cbBin, bool bEnableJunk)
 		{
 			m_Parser = binaryParser;
-			m_Parser.setCap(cbBin);
+			m_Parser->setCap(cbBin);
 			m_bEnableJunk = bEnableJunk;
 			EnsureParsed();
-			binaryParser = m_Parser;
-			binaryParser.clearCap();
+			m_Parser->clearCap();
 		}
 
 		_Check_return_ std::wstring ToString();
@@ -45,7 +44,7 @@ namespace smartview
 		bool hasData() const { return data.hasData(); }
 
 	protected:
-		binaryParser m_Parser;
+		std::shared_ptr<binaryParser> m_Parser;
 
 		// Nu style parsing data
 		template <typename... Args> void setRoot(const std::wstring& text, const Args... args)

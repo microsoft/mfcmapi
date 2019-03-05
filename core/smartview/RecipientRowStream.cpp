@@ -6,8 +6,8 @@ namespace smartview
 {
 	void RecipientRowStream::Parse()
 	{
-		m_cVersion = m_Parser.Get<DWORD>();
-		m_cRowCount = m_Parser.Get<DWORD>();
+		m_cVersion = m_Parser->Get<DWORD>();
+		m_cRowCount = m_Parser->Get<DWORD>();
 
 		if (m_cRowCount && m_cRowCount < _MaxEntriesSmall)
 		{
@@ -15,8 +15,8 @@ namespace smartview
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
 				auto entry = ADRENTRYStruct{};
-				entry.cValues = m_Parser.Get<DWORD>();
-				entry.ulReserved1 = m_Parser.Get<DWORD>();
+				entry.cValues = m_Parser->Get<DWORD>();
+				entry.ulReserved1 = m_Parser->Get<DWORD>();
 
 				if (entry.cValues && entry.cValues < _MaxEntriesSmall)
 				{

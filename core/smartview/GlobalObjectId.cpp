@@ -18,23 +18,23 @@ namespace smartview
 
 	void GlobalObjectId::Parse()
 	{
-		m_Id = m_Parser.GetBYTES(16);
+		m_Id = m_Parser->GetBYTES(16);
 
-		const auto b1 = m_Parser.Get<BYTE>();
-		const auto b2 = m_Parser.Get<BYTE>();
+		const auto b1 = m_Parser->Get<BYTE>();
+		const auto b2 = m_Parser->Get<BYTE>();
 		m_Year.setData(static_cast<WORD>(b1 << 8 | b2));
 		m_Year.setOffset(b1.getOffset());
 		m_Year.setSize(b1.getSize() + b2.getSize());
 
-		m_Month = m_Parser.Get<BYTE>();
+		m_Month = m_Parser->Get<BYTE>();
 		const auto szFlags = flags::InterpretFlags(flagGlobalObjectIdMonth, m_Month);
 
-		m_Day = m_Parser.Get<BYTE>();
+		m_Day = m_Parser->Get<BYTE>();
 
-		m_CreationTime = m_Parser.Get<FILETIME>();
-		m_X = m_Parser.Get<LARGE_INTEGER>();
-		m_dwSize = m_Parser.Get<DWORD>();
-		m_lpData = m_Parser.GetBYTES(m_dwSize, _MaxBytes);
+		m_CreationTime = m_Parser->Get<FILETIME>();
+		m_X = m_Parser->Get<LARGE_INTEGER>();
+		m_dwSize = m_Parser->Get<DWORD>();
+		m_lpData = m_Parser->GetBYTES(m_dwSize, _MaxBytes);
 	}
 
 	void GlobalObjectId::ParseBlocks()
