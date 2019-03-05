@@ -14,7 +14,7 @@ namespace smartview
 		m_bExtended = bExtended;
 	}
 
-	void RestrictionStruct::Parse() { m_lpRes = BinToRestriction(0, m_bRuleCondition, m_bExtended); }
+	void RestrictionStruct::Parse() { m_lpRes.init(m_Parser, 0, m_bRuleCondition, m_bExtended); }
 
 	void RestrictionStruct::ParseBlocks()
 	{
@@ -31,38 +31,40 @@ namespace smartview
 	//   https://msdn.microsoft.com/en-us/library/ee217813(v=exchg.80).aspx
 	// Never fails, but will not parse restrictions above _MaxDepth
 	// [MS-OXCDATA] 2.11.4 TaggedPropertyValue Structure
-	SRestrictionStruct RestrictionStruct::BinToRestriction(ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
+	void SRestrictionStruct::init(
+		std::shared_ptr<binaryParser> parser,
+		ULONG ulDepth,
+		bool bRuleCondition,
+		bool bExtendedCount)
 	{
-		auto srRestriction = SRestrictionStruct{};
-
 		if (bRuleCondition)
 		{
-			srRestriction.rt = m_Parser->Get<BYTE>();
+			rt = parser->Get<BYTE>();
 		}
 		else
 		{
-			srRestriction.rt = m_Parser->Get<DWORD>();
+			rt = parser->Get<DWORD>();
 		}
 
-		switch (srRestriction.rt)
+		switch (rt)
 		{
 		case RES_AND:
 			if (!bRuleCondition || bExtendedCount)
 			{
-				srRestriction.resAnd.cRes = m_Parser->Get<DWORD>();
+				resAnd.cRes = parser->Get<DWORD>();
 			}
 			else
 			{
-				srRestriction.resAnd.cRes = m_Parser->Get<WORD>();
+				resAnd.cRes = parser->Get<WORD>();
 			}
 
-			if (srRestriction.resAnd.cRes && srRestriction.resAnd.cRes < _MaxEntriesExtraLarge && ulDepth < _MaxDepth)
+			if (resAnd.cRes && resAnd.cRes < _MaxEntriesExtraLarge && ulDepth < _MaxDepth)
 			{
-				srRestriction.resAnd.lpRes.reserve(srRestriction.resAnd.cRes);
-				for (ULONG i = 0; i < srRestriction.resAnd.cRes; i++)
+				resAnd.lpRes.reserve(resAnd.cRes);
+				for (ULONG i = 0; i < resAnd.cRes; i++)
 				{
-					if (!m_Parser->RemainingBytes()) break;
-					srRestriction.resAnd.lpRes.push_back(BinToRestriction(ulDepth + 1, bRuleCondition, bExtendedCount));
+					if (!parser->RemainingBytes()) break;
+					resAnd.lpRes.emplace_back(parser, ulDepth + 1, bRuleCondition, bExtendedCount);
 				}
 
 				// TODO: Should we do this?
@@ -72,114 +74,102 @@ namespace smartview
 		case RES_OR:
 			if (!bRuleCondition || bExtendedCount)
 			{
-				srRestriction.resOr.cRes = m_Parser->Get<DWORD>();
+				resOr.cRes = parser->Get<DWORD>();
 			}
 			else
 			{
-				srRestriction.resOr.cRes = m_Parser->Get<WORD>();
+				resOr.cRes = parser->Get<WORD>();
 			}
 
-			if (srRestriction.resOr.cRes && srRestriction.resOr.cRes < _MaxEntriesExtraLarge && ulDepth < _MaxDepth)
+			if (resOr.cRes && resOr.cRes < _MaxEntriesExtraLarge && ulDepth < _MaxDepth)
 			{
-				srRestriction.resOr.lpRes.reserve(srRestriction.resOr.cRes);
-				for (ULONG i = 0; i < srRestriction.resOr.cRes; i++)
+				resOr.lpRes.reserve(resOr.cRes);
+				for (ULONG i = 0; i < resOr.cRes; i++)
 				{
-					if (!m_Parser->RemainingBytes()) break;
-					srRestriction.resOr.lpRes.push_back(BinToRestriction(ulDepth + 1, bRuleCondition, bExtendedCount));
+					if (!parser->RemainingBytes()) break;
+					resOr.lpRes.emplace_back(parser, ulDepth + 1, bRuleCondition, bExtendedCount);
 				}
 			}
 			break;
 		case RES_NOT:
-			if (ulDepth < _MaxDepth && m_Parser->RemainingBytes())
+			if (ulDepth < _MaxDepth && parser->RemainingBytes())
 			{
-				srRestriction.resNot.lpRes.push_back(BinToRestriction(ulDepth + 1, bRuleCondition, bExtendedCount));
+				resNot.lpRes.emplace_back(parser, ulDepth + 1, bRuleCondition, bExtendedCount);
 			}
 			break;
 		case RES_CONTENT:
-			srRestriction.resContent.ulFuzzyLevel = m_Parser->Get<DWORD>();
-			srRestriction.resContent.ulPropTag = m_Parser->Get<DWORD>();
-			srRestriction.resContent.lpProp = BinToProps(1, bRuleCondition);
+			resContent.ulFuzzyLevel = parser->Get<DWORD>();
+			resContent.ulPropTag = parser->Get<DWORD>();
+			resContent.lpProp.init(parser, 1, bRuleCondition);
 			break;
 		case RES_PROPERTY:
 			if (bRuleCondition)
-				srRestriction.resProperty.relop = m_Parser->Get<BYTE>();
+				resProperty.relop = parser->Get<BYTE>();
 			else
-				srRestriction.resProperty.relop = m_Parser->Get<DWORD>();
+				resProperty.relop = parser->Get<DWORD>();
 
-			srRestriction.resProperty.ulPropTag = m_Parser->Get<DWORD>();
-			srRestriction.resProperty.lpProp = BinToProps(1, bRuleCondition);
+			resProperty.ulPropTag = parser->Get<DWORD>();
+			resProperty.lpProp.init(parser, 1, bRuleCondition);
 			break;
 		case RES_COMPAREPROPS:
 			if (bRuleCondition)
-				srRestriction.resCompareProps.relop = m_Parser->Get<BYTE>();
+				resCompareProps.relop = parser->Get<BYTE>();
 			else
-				srRestriction.resCompareProps.relop = m_Parser->Get<DWORD>();
+				resCompareProps.relop = parser->Get<DWORD>();
 
-			srRestriction.resCompareProps.ulPropTag1 = m_Parser->Get<DWORD>();
-			srRestriction.resCompareProps.ulPropTag2 = m_Parser->Get<DWORD>();
+			resCompareProps.ulPropTag1 = parser->Get<DWORD>();
+			resCompareProps.ulPropTag2 = parser->Get<DWORD>();
 			break;
 		case RES_BITMASK:
 			if (bRuleCondition)
-				srRestriction.resBitMask.relBMR = m_Parser->Get<BYTE>();
+				resBitMask.relBMR = parser->Get<BYTE>();
 			else
-				srRestriction.resBitMask.relBMR = m_Parser->Get<DWORD>();
+				resBitMask.relBMR = parser->Get<DWORD>();
 
-			srRestriction.resBitMask.ulPropTag = m_Parser->Get<DWORD>();
-			srRestriction.resBitMask.ulMask = m_Parser->Get<DWORD>();
+			resBitMask.ulPropTag = parser->Get<DWORD>();
+			resBitMask.ulMask = parser->Get<DWORD>();
 			break;
 		case RES_SIZE:
 			if (bRuleCondition)
-				srRestriction.resSize.relop = m_Parser->Get<BYTE>();
+				resSize.relop = parser->Get<BYTE>();
 			else
-				srRestriction.resSize.relop = m_Parser->Get<DWORD>();
+				resSize.relop = parser->Get<DWORD>();
 
-			srRestriction.resSize.ulPropTag = m_Parser->Get<DWORD>();
-			srRestriction.resSize.cb = m_Parser->Get<DWORD>();
+			resSize.ulPropTag = parser->Get<DWORD>();
+			resSize.cb = parser->Get<DWORD>();
 			break;
 		case RES_EXIST:
-			srRestriction.resExist.ulPropTag = m_Parser->Get<DWORD>();
+			resExist.ulPropTag = parser->Get<DWORD>();
 			break;
 		case RES_SUBRESTRICTION:
-			srRestriction.resSub.ulSubObject = m_Parser->Get<DWORD>();
-			if (ulDepth < _MaxDepth && m_Parser->RemainingBytes())
+			resSub.ulSubObject = parser->Get<DWORD>();
+			if (ulDepth < _MaxDepth && parser->RemainingBytes())
 			{
-				srRestriction.resSub.lpRes.push_back(BinToRestriction(ulDepth + 1, bRuleCondition, bExtendedCount));
+				resSub.lpRes.emplace_back(parser, ulDepth + 1, bRuleCondition, bExtendedCount);
 			}
 			break;
 		case RES_COMMENT:
 			if (bRuleCondition)
-				srRestriction.resComment.cValues = m_Parser->Get<BYTE>();
+				resComment.cValues = parser->Get<BYTE>();
 			else
-				srRestriction.resComment.cValues = m_Parser->Get<DWORD>();
+				resComment.cValues = parser->Get<DWORD>();
 
-			srRestriction.resComment.lpProp = BinToProps(srRestriction.resComment.cValues, bRuleCondition);
+			resComment.lpProp.init(parser, resComment.cValues, bRuleCondition);
 
 			// Check if a restriction is present
-			if (m_Parser->Get<BYTE>() && ulDepth < _MaxDepth && m_Parser->RemainingBytes())
+			if (parser->Get<BYTE>() && ulDepth < _MaxDepth && parser->RemainingBytes())
 			{
-				srRestriction.resComment.lpRes.push_back(BinToRestriction(ulDepth + 1, bRuleCondition, bExtendedCount));
+				resComment.lpRes.emplace_back(parser, ulDepth + 1, bRuleCondition, bExtendedCount);
 			}
 			break;
 		case RES_COUNT:
-			srRestriction.resCount.ulCount = m_Parser->Get<DWORD>();
-			if (ulDepth < _MaxDepth && m_Parser->RemainingBytes())
+			resCount.ulCount = parser->Get<DWORD>();
+			if (ulDepth < _MaxDepth && parser->RemainingBytes())
 			{
-				srRestriction.resCount.lpRes.push_back(BinToRestriction(ulDepth + 1, bRuleCondition, bExtendedCount));
+				resCount.lpRes.emplace_back(parser, ulDepth + 1, bRuleCondition, bExtendedCount);
 			}
 			break;
 		}
-
-		return srRestriction;
-	}
-
-	PropertiesStruct RestrictionStruct::BinToProps(DWORD cValues, bool bRuleCondition)
-	{
-		auto props = PropertiesStruct{};
-		props.SetMaxEntries(cValues);
-		if (bRuleCondition) props.EnableRuleConditionParsing();
-		props.parse(m_Parser, false);
-
-		return props;
 	}
 
 	// There may be restrictions with over 100 nested levels, but we're not going to try to parse them
@@ -297,8 +287,7 @@ namespace smartview
 					lpRes.resContent.lpProp.Props()[0].ulPropTag,
 					L"%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
-					proptags::TagToString(lpRes.resContent.lpProp.Props()[0].ulPropTag, nullptr, false, true)
-						.c_str());
+					proptags::TagToString(lpRes.resContent.lpProp.Props()[0].ulPropTag, nullptr, false, true).c_str());
 				addBlock(
 					lpRes.resContent.lpProp.Props()[0].PropBlock(),
 					L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
@@ -330,8 +319,7 @@ namespace smartview
 					lpRes.resProperty.lpProp.Props()[0].ulPropTag,
 					L"%1!ws!lpRes->res.resProperty.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
-					proptags::TagToString(lpRes.resProperty.lpProp.Props()[0].ulPropTag, nullptr, false, true)
-						.c_str());
+					proptags::TagToString(lpRes.resProperty.lpProp.Props()[0].ulPropTag, nullptr, false, true).c_str());
 				addBlock(
 					lpRes.resProperty.lpProp.Props()[0].PropBlock(),
 					L"%1!ws!lpRes->res.resProperty.lpProp->Value = %2!ws!\r\n",

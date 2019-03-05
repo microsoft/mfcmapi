@@ -108,6 +108,18 @@ namespace smartview
 		SCommentRestrictionStruct resComment;
 		SAnnotationRestrictionStruct resAnnotation;
 		SCountRestrictionStruct resCount;
+
+		SRestrictionStruct() = default;
+		SRestrictionStruct(
+			std::shared_ptr<binaryParser> parser,
+			ULONG ulDepth,
+			bool bRuleCondition,
+			bool bExtendedCount)
+		{
+			init(parser, ulDepth, bRuleCondition, bExtendedCount);
+		}
+
+		void init(std::shared_ptr<binaryParser> parser, ULONG ulDepth, bool bRuleCondition, bool bExtendedCount);
 	};
 
 	class RestrictionStruct : public SmartViewParser
@@ -118,9 +130,6 @@ namespace smartview
 	private:
 		void Parse() override;
 		void ParseBlocks() override;
-
-		SRestrictionStruct BinToRestriction(ULONG ulDepth, bool bRuleCondition, bool bExtendedCount);
-		PropertiesStruct BinToProps(DWORD cValues, bool bRuleCondition);
 
 		void ParseRestriction(_In_ const SRestrictionStruct& lpRes, ULONG ulTabLevel);
 
