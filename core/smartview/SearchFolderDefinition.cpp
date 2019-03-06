@@ -82,10 +82,8 @@ namespace smartview
 
 		if (SFST_MRES & m_Flags)
 		{
-			RestrictionStruct res;
-			res.init(false, true);
-			res.parse(m_Parser, false);
-			m_Restriction = res.getBlock();
+			m_Restriction = std::make_shared<RestrictionStruct>(false, true);
+			m_Restriction->SmartViewParser::parse(m_Parser, false);
 		}
 
 		if (SFST_FILTERSTREAM & m_Flags)
@@ -204,10 +202,10 @@ namespace smartview
 			addBlock(m_SkipBytes2);
 		}
 
-		if (m_Restriction.hasData())
+		if (m_Restriction && m_Restriction->hasData())
 		{
 			terminateBlock();
-			addBlock(m_Restriction);
+			addBlock(m_Restriction->getBlock());
 		}
 
 		if (SFST_FILTERSTREAM & m_Flags)

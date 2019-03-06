@@ -2,6 +2,7 @@
 #include <core/smartview/SmartViewParser.h>
 #include <core/smartview/EntryList.h>
 #include <core/smartview/PropertiesStruct.h>
+#include <core/smartview/RestrictionStruct.h>
 
 namespace smartview
 {
@@ -38,7 +39,7 @@ namespace smartview
 		std::vector<std::shared_ptr<AddressListEntryStruct>> m_Addresses; // SFST_BINARY
 		blockT<DWORD> m_SkipLen2;
 		blockBytes m_SkipBytes2;
-		block m_Restriction; // SFST_MRES
+		std::shared_ptr<RestrictionStruct> m_Restriction; // SFST_MRES
 		blockBytes m_AdvancedSearchBytes; // SFST_FILTERSTREAM
 		blockT<DWORD> m_SkipLen3;
 		blockBytes m_SkipBytes3;

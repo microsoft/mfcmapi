@@ -40,8 +40,8 @@ namespace smartview
 			}
 		}
 
-		m_lpRes.init(true, m_bExtended);
-		m_lpRes.parse(m_Parser, false);
+		m_lpRes = std::make_shared<RestrictionStruct>(true, m_bExtended);
+		m_lpRes->SmartViewParser::parse(m_Parser, false);
 	}
 
 	void RuleCondition::ParseBlocks()
@@ -99,6 +99,9 @@ namespace smartview
 			}
 		}
 
-		addBlock(m_lpRes.getBlock());
+		if (m_lpRes && m_lpRes->hasData())
+		{
+			addBlock(m_lpRes->getBlock());
+		}
 	}
 } // namespace smartview

@@ -4,24 +4,24 @@
 
 namespace smartview
 {
-	struct SRestrictionStruct;
+	class RestrictionStruct;
 
 	struct SAndRestrictionStruct
 	{
 		blockT<DWORD> cRes;
-		std::vector<SRestrictionStruct> lpRes;
+		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
 	};
 
 	struct SOrRestrictionStruct
 	{
 		blockT<DWORD> cRes;
-		std::vector<SRestrictionStruct> lpRes;
+		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
 	};
 
 	struct SNotRestrictionStruct
 	{
 		blockT<DWORD> ulReserved;
-		std::vector<SRestrictionStruct> lpRes;
+		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
 	struct SContentRestrictionStruct
@@ -69,31 +69,54 @@ namespace smartview
 	struct SSubRestrictionStruct
 	{
 		blockT<DWORD> ulSubObject;
-		std::vector<SRestrictionStruct> lpRes;
+		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
 	struct SCommentRestrictionStruct
 	{
 		blockT<DWORD> cValues; /* # of properties in lpProp */
-		std::vector<SRestrictionStruct> lpRes;
+		std::shared_ptr<RestrictionStruct> lpRes;
 		PropertiesStruct lpProp;
 	};
 
 	struct SAnnotationRestrictionStruct
 	{
 		blockT<DWORD> cValues; /* # of properties in lpProp */
-		std::vector<SRestrictionStruct> lpRes;
+		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
 		PropertiesStruct lpProp;
 	};
 
 	struct SCountRestrictionStruct
 	{
 		blockT<DWORD> ulCount;
-		std::vector<SRestrictionStruct> lpRes;
+		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
-	struct SRestrictionStruct
+	class RestrictionStruct : public SmartViewParser
 	{
+	public:
+		RestrictionStruct(bool bRuleCondition, bool bExtendedCount)
+			: m_bRuleCondition(bRuleCondition), m_bExtendedCount(bExtendedCount)
+		{
+		}
+		RestrictionStruct(std::shared_ptr<binaryParser> parser, ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
+			: m_bRuleCondition(bRuleCondition), m_bExtendedCount(bExtendedCount)
+		{
+			m_Parser = parser;
+			parse(ulDepth);
+		}
+
+	private:
+
+		void Parse() override { parse(0); }
+		void parse(ULONG ulDepth);
+		void ParseBlocks() override
+		{
+			setRoot(L"Restriction:\r\n");
+			parseBlocks(0);
+		};
+		void parseBlocks(ULONG ulTabLevel);
+
 		blockT<DWORD> rt; /* Restriction type */
 		SComparePropsRestrictionStruct resCompareProps;
 		SAndRestrictionStruct resAnd;
@@ -109,32 +132,7 @@ namespace smartview
 		SAnnotationRestrictionStruct resAnnotation;
 		SCountRestrictionStruct resCount;
 
-		SRestrictionStruct() = default;
-		SRestrictionStruct(
-			std::shared_ptr<binaryParser> parser,
-			ULONG ulDepth,
-			bool bRuleCondition,
-			bool bExtendedCount)
-		{
-			init(parser, ulDepth, bRuleCondition, bExtendedCount);
-		}
-
-		void init(std::shared_ptr<binaryParser> parser, ULONG ulDepth, bool bRuleCondition, bool bExtendedCount);
-	};
-
-	class RestrictionStruct : public SmartViewParser
-	{
-	public:
-		void init(bool bRuleCondition, bool bExtended);
-
-	private:
-		void Parse() override;
-		void ParseBlocks() override;
-
-		void ParseRestriction(_In_ const SRestrictionStruct& lpRes, ULONG ulTabLevel);
-
 		bool m_bRuleCondition{};
-		bool m_bExtended{};
-		SRestrictionStruct m_lpRes;
+		bool m_bExtendedCount{};
 	};
 } // namespace smartview

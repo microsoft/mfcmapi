@@ -92,9 +92,7 @@ namespace smartview
 		}
 		case IDS_STRESTRICTION:
 		{
-			auto parser = new (std::nothrow) RestrictionStruct();
-			if (parser) parser->init(false, true);
-			return parser;
+			return new (std::nothrow) RestrictionStruct(false, true);
 		}
 		case IDS_STPROPERTIES:
 			return new PropertiesStruct();

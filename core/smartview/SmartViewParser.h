@@ -17,7 +17,10 @@ namespace smartview
 	class SmartViewParser
 	{
 	public:
+		SmartViewParser() = default;
 		virtual ~SmartViewParser() = default;
+		SmartViewParser(const SmartViewParser&) = delete;
+		SmartViewParser& operator=(const SmartViewParser&) = delete;
 
 		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 		{
