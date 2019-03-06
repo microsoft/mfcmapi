@@ -7,6 +7,17 @@
 
 namespace smartview
 {
+	AddressListEntryStruct::AddressListEntryStruct(std::shared_ptr<binaryParser> parser)
+	{
+		PropertyCount = parser->Get<DWORD>();
+		Pad = parser->Get<DWORD>();
+		if (PropertyCount)
+		{
+			Props.SetMaxEntries(PropertyCount);
+			Props.parse(parser, false);
+		}
+	}
+
 	void SearchFolderDefinition::Parse()
 	{
 		m_Version = m_Parser->Get<DWORD>();
@@ -61,16 +72,7 @@ namespace smartview
 				m_Addresses.reserve(m_AddressCount);
 				for (DWORD i = 0; i < m_AddressCount; i++)
 				{
-					AddressListEntryStruct addressListEntryStruct{};
-					addressListEntryStruct.PropertyCount = m_Parser->Get<DWORD>();
-					addressListEntryStruct.Pad = m_Parser->Get<DWORD>();
-					if (addressListEntryStruct.PropertyCount)
-					{
-						addressListEntryStruct.Props.SetMaxEntries(addressListEntryStruct.PropertyCount);
-						addressListEntryStruct.Props.parse(m_Parser, false);
-					}
-
-					m_Addresses.push_back(addressListEntryStruct);
+					m_Addresses.emplace_back(std::make_shared<AddressListEntryStruct>(m_Parser));
 				}
 			}
 		}
@@ -175,18 +177,20 @@ namespace smartview
 			terminateBlock();
 			addBlock(m_AddressCount, L"AddressCount = 0x%1!08X!", m_AddressCount.getData());
 
-			for (DWORD i = 0; i < m_Addresses.size(); i++)
+			auto i = DWORD{};
+			for (const auto& address : m_Addresses)
 			{
 				terminateBlock();
 				addBlock(
-					m_Addresses[i].PropertyCount,
+					address->PropertyCount,
 					L"Addresses[%1!d!].PropertyCount = 0x%2!08X!\r\n",
 					i,
-					m_Addresses[i].PropertyCount.getData());
-				addBlock(m_Addresses[i].Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!\r\n", i, m_Addresses[i].Pad.getData());
+					address->PropertyCount.getData());
+				addBlock(address->Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!\r\n", i, address->Pad.getData());
 
 				addHeader(L"Properties[%1!d!]:\r\n", i);
-				addBlock(m_Addresses[i].Props.getBlock());
+				addBlock(address->Props.getBlock());
+				i++;
 			}
 		}
 

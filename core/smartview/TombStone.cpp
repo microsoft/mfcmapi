@@ -4,6 +4,16 @@
 
 namespace smartview
 {
+	TombstoneRecord::TombstoneRecord(std::shared_ptr<binaryParser> parser)
+	{
+		StartTime = parser->Get<DWORD>();
+		EndTime = parser->Get<DWORD>();
+		GlobalObjectIdSize = parser->Get<DWORD>();
+		GlobalObjectId.parse(parser, GlobalObjectIdSize, false);
+		UsernameSize = parser->Get<WORD>();
+		szUsername = parser->GetStringA(UsernameSize);
+	}
+
 	void TombStone::Parse()
 	{
 		m_Identifier = m_Parser->Get<DWORD>();
@@ -33,14 +43,7 @@ namespace smartview
 			m_lpRecords.reserve(m_ActualRecordsCount);
 			for (ULONG i = 0; i < m_ActualRecordsCount; i++)
 			{
-				TombstoneRecord tombstoneRecord;
-				tombstoneRecord.StartTime = m_Parser->Get<DWORD>();
-				tombstoneRecord.EndTime = m_Parser->Get<DWORD>();
-				tombstoneRecord.GlobalObjectIdSize = m_Parser->Get<DWORD>();
-				tombstoneRecord.GlobalObjectId.parse(m_Parser, tombstoneRecord.GlobalObjectIdSize, false);
-				tombstoneRecord.UsernameSize = m_Parser->Get<WORD>();
-				tombstoneRecord.szUsername = m_Parser->GetStringA(tombstoneRecord.UsernameSize);
-				m_lpRecords.push_back(tombstoneRecord);
+				m_lpRecords.emplace_back(std::make_shared<TombstoneRecord>(m_Parser));
 			}
 		}
 	}
@@ -55,30 +58,30 @@ namespace smartview
 		addHeader(L"ActualRecordsCount (computed) = 0x%1!08X!\r\n", m_ActualRecordsCount);
 		addBlock(m_RecordsSize, L"RecordsSize = 0x%1!08X!", m_RecordsSize.getData());
 
-		for (ULONG i = 0; i < m_lpRecords.size(); i++)
+		auto i = ULONG{};
+		for (const auto& record : m_lpRecords)
 		{
 			terminateBlock();
-			addHeader(L"Record[%1!d!]\r\n", i);
+			addHeader(L"Record[%1!d!]\r\n", i++);
 			addBlock(
-				m_lpRecords[i].StartTime,
+				record->StartTime,
 				L"StartTime = 0x%1!08X! = %2!ws!\r\n",
-				m_lpRecords[i].StartTime.getData(),
-				RTimeToString(m_lpRecords[i].StartTime).c_str());
+				record->StartTime.getData(),
+				RTimeToString(record->StartTime).c_str());
 			addBlock(
-				m_lpRecords[i].EndTime,
+				record->EndTime,
 				L"Endtime = 0x%1!08X! = %2!ws!\r\n",
-				m_lpRecords[i].EndTime.getData(),
-				RTimeToString(m_lpRecords[i].EndTime).c_str());
+				record->EndTime.getData(),
+				RTimeToString(record->EndTime).c_str());
 			addBlock(
-				m_lpRecords[i].GlobalObjectIdSize,
+				record->GlobalObjectIdSize,
 				L"GlobalObjectIdSize = 0x%1!08X!\r\n",
-				m_lpRecords[i].GlobalObjectIdSize.getData());
-			addBlock(m_lpRecords[i].GlobalObjectId.getBlock());
+				record->GlobalObjectIdSize.getData());
+			addBlock(record->GlobalObjectId.getBlock());
 			terminateBlock();
 
-			addBlock(
-				m_lpRecords[i].UsernameSize, L"UsernameSize= 0x%1!04X!\r\n", m_lpRecords[i].UsernameSize.getData());
-			addBlock(m_lpRecords[i].szUsername, L"szUsername = %1!hs!", m_lpRecords[i].szUsername.c_str());
+			addBlock(record->UsernameSize, L"UsernameSize= 0x%1!04X!\r\n", record->UsernameSize.getData());
+			addBlock(record->szUsername, L"szUsername = %1!hs!", record->szUsername.c_str());
 		}
 	}
 } // namespace smartview
