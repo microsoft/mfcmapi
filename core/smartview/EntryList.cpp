@@ -3,6 +3,12 @@
 
 namespace smartview
 {
+	EntryListEntryStruct::EntryListEntryStruct(std::shared_ptr<binaryParser> parser)
+	{
+		EntryLength = parser->Get<DWORD>();
+		EntryLengthPad = parser->Get<DWORD>();
+	}
+
 	void EntryList::Parse()
 	{
 		m_EntryCount = m_Parser->Get<DWORD>();
@@ -13,10 +19,7 @@ namespace smartview
 			m_Entry.reserve(m_EntryCount);
 			for (DWORD i = 0; i < m_EntryCount; i++)
 			{
-				EntryListEntryStruct entryListEntryStruct;
-				entryListEntryStruct.EntryLength = m_Parser->Get<DWORD>();
-				entryListEntryStruct.EntryLengthPad = m_Parser->Get<DWORD>();
-				m_Entry.push_back(entryListEntryStruct);
+				m_Entry.emplace_back(m_Parser);
 			}
 
 			for (DWORD i = 0; i < m_EntryCount; i++)
@@ -32,14 +35,15 @@ namespace smartview
 		setRoot(m_EntryCount, L"EntryCount = 0x%1!08X!\r\n", m_EntryCount.getData());
 		addBlock(m_Pad, L"Pad = 0x%1!08X!", m_Pad.getData());
 
-		for (DWORD i = 0; i < m_Entry.size(); i++)
+		auto i = DWORD{};
+		for (const auto& entry : m_Entry)
 		{
 			terminateBlock();
-			addHeader(L"EntryId[%1!d!]:\r\n", i);
-			addBlock(m_Entry[i].EntryLength, L"EntryLength = 0x%1!08X!\r\n", m_Entry[i].EntryLength.getData());
-			addBlock(m_Entry[i].EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", m_Entry[i].EntryLengthPad.getData());
+			addHeader(L"EntryId[%1!d!]:\r\n", i++);
+			addBlock(entry.EntryLength, L"EntryLength = 0x%1!08X!\r\n", entry.EntryLength.getData());
+			addBlock(entry.EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", entry.EntryLengthPad.getData());
 			addHeader(L"Entry Id = ");
-			addBlock(m_Entry[i].EntryId.getBlock());
+			addBlock(entry.EntryId.getBlock());
 		}
 	}
 } // namespace smartview

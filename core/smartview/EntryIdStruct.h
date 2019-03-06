@@ -122,17 +122,28 @@ namespace smartview
 		blockT<DWORD> Index; // CONTAB_USER, CONTAB_DISTLIST only
 		blockT<DWORD> EntryIDCount; // CONTAB_USER, CONTAB_DISTLIST only
 		blockT<GUID> muidID; // CONTAB_CONTAINER only
-		std::vector<EntryIdStruct> lpEntryID;
+		std::shared_ptr<EntryIdStruct> lpEntryID;
 	};
 
 	struct WAB
 	{
 		blockT<BYTE> Type;
-		std::vector<EntryIdStruct> lpEntryID;
+		std::shared_ptr<EntryIdStruct> lpEntryID;
 	};
 
 	class EntryIdStruct : public SmartViewParser
 	{
+	public:
+		EntryIdStruct() = default;
+		EntryIdStruct(std::shared_ptr<binaryParser> binaryParser, bool bEnableJunk)
+		{
+			parse(binaryParser, 0, bEnableJunk);
+		}
+		EntryIdStruct(std::shared_ptr<binaryParser> binaryParser, size_t cbBin, bool bEnableJunk)
+		{
+			parse(binaryParser, cbBin, bEnableJunk);
+		}
+
 	private:
 		void Parse() override;
 		void ParseBlocks() override;

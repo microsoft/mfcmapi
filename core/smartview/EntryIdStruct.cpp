@@ -117,9 +117,8 @@ namespace smartview
 					cbRemainingBytes = m_ContactAddressBookObject.EntryIDCount;
 				}
 
-				EntryIdStruct entryIdStruct;
-				entryIdStruct.parse(m_Parser, cbRemainingBytes, false);
-				m_ContactAddressBookObject.lpEntryID.push_back(entryIdStruct);
+				m_ContactAddressBookObject.lpEntryID =
+					std::make_shared<EntryIdStruct>(m_Parser, cbRemainingBytes, false);
 			}
 			break;
 			case eidtWAB:
@@ -127,10 +126,7 @@ namespace smartview
 				m_ObjectType = eidtWAB;
 
 				m_WAB.Type = m_Parser->Get<BYTE>();
-
-				EntryIdStruct entryIdStruct;
-				entryIdStruct.parse(m_Parser, false);
-				m_WAB.lpEntryID.push_back(entryIdStruct);
+				m_WAB.lpEntryID = std::make_shared<EntryIdStruct>(m_Parser, false);
 			}
 			break;
 			// message store objects
@@ -447,10 +443,7 @@ namespace smartview
 				break;
 			}
 
-			for (const auto& entry : m_ContactAddressBookObject.lpEntryID)
-			{
-				addBlock(entry.getBlock());
-			}
+			addBlock(m_ContactAddressBookObject.lpEntryID->getBlock());
 		}
 		else if (eidtWAB == m_ObjectType)
 		{
@@ -461,10 +454,7 @@ namespace smartview
 				m_WAB.Type.getData(),
 				flags::InterpretFlags(flagWABEntryIDType, m_WAB.Type).c_str());
 
-			for (auto& entry : m_WAB.lpEntryID)
-			{
-				addBlock(entry.getBlock());
-			}
+			addBlock(m_WAB.lpEntryID->getBlock());
 		}
 		else if (eidtMessageDatabase == m_ObjectType)
 		{

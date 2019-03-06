@@ -10,6 +10,8 @@ namespace smartview
 		EntryIdStruct lpEntryID;
 
 		blockBytes padding;
+
+		FlatEntryID(std::shared_ptr<binaryParser> parser);
 	};
 
 	class FlatEntryList : public SmartViewParser
