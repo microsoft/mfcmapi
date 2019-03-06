@@ -8,6 +8,8 @@ namespace smartview
 	{
 		blockT<DWORD> cValues;
 		PropertiesStruct lpProps;
+
+		SRowStruct(std::shared_ptr<binaryParser> parser);
 	};
 
 	class NickNameCache : public SmartViewParser

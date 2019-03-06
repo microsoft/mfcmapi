@@ -9,6 +9,8 @@ namespace smartview
 		blockT<DWORD> ulReserved1;
 		blockT<DWORD> cValues;
 		PropertiesStruct rgPropVals;
+
+		ADRENTRYStruct(std::shared_ptr<binaryParser> parser);
 	};
 
 	class RecipientRowStream : public SmartViewParser
