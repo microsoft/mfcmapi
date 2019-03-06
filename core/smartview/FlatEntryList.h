@@ -10,6 +10,8 @@ namespace smartview
 		EntryIdStruct lpEntryID;
 
 		blockBytes padding;
+
+		FlatEntryID(std::shared_ptr<binaryParser> parser);
 	};
 
 	class FlatEntryList : public SmartViewParser
@@ -20,6 +22,6 @@ namespace smartview
 
 		blockT<DWORD> m_cEntries;
 		blockT<DWORD> m_cbEntries;
-		std::vector<FlatEntryID> m_pEntryIDs;
+		std::vector<std::shared_ptr<FlatEntryID>> m_pEntryIDs;
 	};
 } // namespace smartview

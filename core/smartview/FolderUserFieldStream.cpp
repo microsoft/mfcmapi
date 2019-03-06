@@ -8,7 +8,7 @@ namespace smartview
 {
 	void FolderUserFieldStream::Parse()
 	{
-		m_FolderUserFieldsAnsiCount = m_Parser.Get<DWORD>();
+		m_FolderUserFieldsAnsiCount = m_Parser->Get<DWORD>();
 		if (m_FolderUserFieldsAnsiCount && m_FolderUserFieldsAnsiCount < _MaxEntriesSmall)
 		{
 			m_FieldDefinitionsA.reserve(m_FolderUserFieldsAnsiCount);
@@ -16,12 +16,12 @@ namespace smartview
 			{
 				if (m_Parser.empty()) continue;
 				FolderFieldDefinitionA folderFieldDefinitionA;
-				folderFieldDefinitionA.FieldType = m_Parser.Get<DWORD>();
-				folderFieldDefinitionA.FieldNameLength = m_Parser.Get<WORD>();
+				folderFieldDefinitionA.FieldType = m_Parser->Get<DWORD>();
+				folderFieldDefinitionA.FieldNameLength = m_Parser->Get<WORD>();
 
 				if (folderFieldDefinitionA.FieldNameLength && folderFieldDefinitionA.FieldNameLength < _MaxEntriesSmall)
 				{
-					folderFieldDefinitionA.FieldName = m_Parser.GetStringA(folderFieldDefinitionA.FieldNameLength);
+					folderFieldDefinitionA.FieldName = m_Parser->GetStringA(folderFieldDefinitionA.FieldNameLength);
 				}
 
 				folderFieldDefinitionA.Common = BinToFolderFieldDefinitionCommon();
@@ -29,7 +29,7 @@ namespace smartview
 			}
 		}
 
-		m_FolderUserFieldsUnicodeCount = m_Parser.Get<DWORD>();
+		m_FolderUserFieldsUnicodeCount = m_Parser->Get<DWORD>();
 		if (m_FolderUserFieldsUnicodeCount && m_FolderUserFieldsUnicodeCount < _MaxEntriesSmall)
 		{
 			m_FieldDefinitionsW.reserve(m_FolderUserFieldsUnicodeCount);
@@ -37,12 +37,12 @@ namespace smartview
 			{
 				if (m_Parser.empty()) continue;
 				FolderFieldDefinitionW folderFieldDefinitionW;
-				folderFieldDefinitionW.FieldType = m_Parser.Get<DWORD>();
-				folderFieldDefinitionW.FieldNameLength = m_Parser.Get<WORD>();
+				folderFieldDefinitionW.FieldType = m_Parser->Get<DWORD>();
+				folderFieldDefinitionW.FieldNameLength = m_Parser->Get<WORD>();
 
 				if (folderFieldDefinitionW.FieldNameLength && folderFieldDefinitionW.FieldNameLength < _MaxEntriesSmall)
 				{
-					folderFieldDefinitionW.FieldName = m_Parser.GetStringW(folderFieldDefinitionW.FieldNameLength);
+					folderFieldDefinitionW.FieldName = m_Parser->GetStringW(folderFieldDefinitionW.FieldNameLength);
 				}
 
 				folderFieldDefinitionW.Common = BinToFolderFieldDefinitionCommon();
@@ -55,16 +55,16 @@ namespace smartview
 	{
 		FolderFieldDefinitionCommon common;
 
-		common.PropSetGuid = m_Parser.Get<GUID>();
-		common.fcapm = m_Parser.Get<DWORD>();
-		common.dwString = m_Parser.Get<DWORD>();
-		common.dwBitmap = m_Parser.Get<DWORD>();
-		common.dwDisplay = m_Parser.Get<DWORD>();
-		common.iFmt = m_Parser.Get<DWORD>();
-		common.wszFormulaLength = m_Parser.Get<WORD>();
+		common.PropSetGuid = m_Parser->Get<GUID>();
+		common.fcapm = m_Parser->Get<DWORD>();
+		common.dwString = m_Parser->Get<DWORD>();
+		common.dwBitmap = m_Parser->Get<DWORD>();
+		common.dwDisplay = m_Parser->Get<DWORD>();
+		common.iFmt = m_Parser->Get<DWORD>();
+		common.wszFormulaLength = m_Parser->Get<WORD>();
 		if (common.wszFormulaLength && common.wszFormulaLength < _MaxEntriesLarge)
 		{
-			common.wszFormula = m_Parser.GetStringW(common.wszFormulaLength);
+			common.wszFormula = m_Parser->GetStringW(common.wszFormulaLength);
 		}
 
 		return common;

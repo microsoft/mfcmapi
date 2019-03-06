@@ -20,7 +20,7 @@ namespace smartview
 
 			for (const auto& item : children)
 			{
-				items.push_back(item.ToString());
+				items.emplace_back(item.ToString());
 			}
 
 			return strings::join(items, strings::emptystring);

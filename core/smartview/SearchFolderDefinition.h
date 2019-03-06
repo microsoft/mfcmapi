@@ -2,6 +2,7 @@
 #include <core/smartview/SmartViewParser.h>
 #include <core/smartview/EntryList.h>
 #include <core/smartview/PropertiesStruct.h>
+#include <core/smartview/RestrictionStruct.h>
 
 namespace smartview
 {
@@ -10,6 +11,8 @@ namespace smartview
 		blockT<DWORD> PropertyCount;
 		blockT<DWORD> Pad;
 		PropertiesStruct Props;
+
+		AddressListEntryStruct(std::shared_ptr<binaryParser> parser);
 	};
 
 	class SearchFolderDefinition : public SmartViewParser
@@ -33,10 +36,10 @@ namespace smartview
 		blockT<DWORD> m_FolderList2Length;
 		EntryList m_FolderList2;
 		blockT<DWORD> m_AddressCount; // SFST_BINARY
-		std::vector<AddressListEntryStruct> m_Addresses; // SFST_BINARY
+		std::vector<std::shared_ptr<AddressListEntryStruct>> m_Addresses; // SFST_BINARY
 		blockT<DWORD> m_SkipLen2;
 		blockBytes m_SkipBytes2;
-		block m_Restriction; // SFST_MRES
+		std::shared_ptr<RestrictionStruct> m_Restriction; // SFST_MRES
 		blockBytes m_AdvancedSearchBytes; // SFST_FILTERSTREAM
 		blockT<DWORD> m_SkipLen3;
 		blockBytes m_SkipBytes3;

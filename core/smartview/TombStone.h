@@ -12,6 +12,8 @@ namespace smartview
 		GlobalObjectId GlobalObjectId;
 		blockT<WORD> UsernameSize;
 		blockStringA szUsername;
+
+		TombstoneRecord(std::shared_ptr<binaryParser> parser);
 	};
 
 	class TombStone : public SmartViewParser
@@ -26,6 +28,6 @@ namespace smartview
 		blockT<DWORD> m_RecordsCount;
 		DWORD m_ActualRecordsCount{}; // computed based on state, not read value
 		blockT<DWORD> m_RecordsSize;
-		std::vector<TombstoneRecord> m_lpRecords;
+		std::vector<std::shared_ptr<TombstoneRecord>> m_lpRecords;
 	};
 } // namespace smartview
