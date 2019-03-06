@@ -14,7 +14,7 @@ namespace smartview
 			m_FieldDefinitionsA.reserve(m_FolderUserFieldsAnsiCount);
 			for (DWORD i = 0; i < m_FolderUserFieldsAnsiCount; i++)
 			{
-				if (m_Parser.empty()) continue;
+				if (m_Parser->empty()) continue;
 				FolderFieldDefinitionA folderFieldDefinitionA;
 				folderFieldDefinitionA.FieldType = m_Parser->Get<DWORD>();
 				folderFieldDefinitionA.FieldNameLength = m_Parser->Get<WORD>();
@@ -35,7 +35,7 @@ namespace smartview
 			m_FieldDefinitionsW.reserve(m_FolderUserFieldsUnicodeCount);
 			for (DWORD i = 0; i < m_FolderUserFieldsUnicodeCount; i++)
 			{
-				if (m_Parser.empty()) continue;
+				if (m_Parser->empty()) continue;
 				FolderFieldDefinitionW folderFieldDefinitionW;
 				folderFieldDefinitionW.FieldType = m_Parser->Get<DWORD>();
 				folderFieldDefinitionW.FieldNameLength = m_Parser->Get<WORD>();

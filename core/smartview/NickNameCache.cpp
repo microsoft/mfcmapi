@@ -22,7 +22,7 @@ namespace smartview
 		m_ulMinorVersion = m_Parser->Get<DWORD>();
 		m_cRowCount = m_Parser->Get<DWORD>();
 
-		if (m_cRowCount)
+		if (m_cRowCount && m_cRowCount < _MaxEntriesEnormous)
 		{
 			m_lpRows.reserve(m_cRowCount);
 			for (DWORD i = 0; i < m_cRowCount; i++)
