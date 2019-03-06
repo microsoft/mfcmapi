@@ -223,6 +223,7 @@ namespace smartview
 	class PropertiesStruct : public SmartViewParser
 	{
 	public:
+		void init(std::shared_ptr<binaryParser> parser, DWORD cValues, bool bRuleCondition);
 		void SetMaxEntries(DWORD maxEntries) { m_MaxEntries = maxEntries; }
 		void EnableNickNameParsing() { m_NickName = true; }
 		void EnableRuleConditionParsing() { m_RuleCondition = true; }

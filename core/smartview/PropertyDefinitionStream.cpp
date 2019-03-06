@@ -8,32 +8,32 @@
 
 namespace smartview
 {
-	PackedAnsiString ReadPackedAnsiString(_In_ binaryParser& parser)
+	PackedAnsiString ReadPackedAnsiString(std::shared_ptr<binaryParser> parser)
 	{
 		PackedAnsiString packedAnsiString;
-		packedAnsiString.cchLength = parser.Get<BYTE>();
+		packedAnsiString.cchLength = parser->Get<BYTE>();
 		if (0xFF == packedAnsiString.cchLength)
 		{
-			packedAnsiString.cchExtendedLength = parser.Get<WORD>();
+			packedAnsiString.cchExtendedLength = parser->Get<WORD>();
 		}
 
-		packedAnsiString.szCharacters = parser.GetStringA(
+		packedAnsiString.szCharacters = parser->GetStringA(
 			packedAnsiString.cchExtendedLength ? packedAnsiString.cchExtendedLength.getData()
 											   : packedAnsiString.cchLength.getData());
 
 		return packedAnsiString;
 	}
 
-	PackedUnicodeString ReadPackedUnicodeString(_In_ binaryParser& parser)
+	PackedUnicodeString ReadPackedUnicodeString(std::shared_ptr<binaryParser> parser)
 	{
 		PackedUnicodeString packedUnicodeString;
-		packedUnicodeString.cchLength = parser.Get<BYTE>();
+		packedUnicodeString.cchLength = parser->Get<BYTE>();
 		if (0xFF == packedUnicodeString.cchLength)
 		{
-			packedUnicodeString.cchExtendedLength = parser.Get<WORD>();
+			packedUnicodeString.cchExtendedLength = parser->Get<WORD>();
 		}
 
-		packedUnicodeString.szCharacters = parser.GetStringW(
+		packedUnicodeString.szCharacters = parser->GetStringW(
 			packedUnicodeString.cchExtendedLength ? packedUnicodeString.cchExtendedLength.getData()
 												  : packedUnicodeString.cchLength.getData());
 
@@ -42,18 +42,18 @@ namespace smartview
 
 	void PropertyDefinitionStream::Parse()
 	{
-		m_wVersion = m_Parser.Get<WORD>();
-		m_dwFieldDefinitionCount = m_Parser.Get<DWORD>();
+		m_wVersion = m_Parser->Get<WORD>();
+		m_dwFieldDefinitionCount = m_Parser->Get<DWORD>();
 		if (m_dwFieldDefinitionCount && m_dwFieldDefinitionCount < _MaxEntriesLarge)
 		{
 			for (DWORD iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
 			{
 				FieldDefinition fieldDefinition;
-				fieldDefinition.dwFlags = m_Parser.Get<DWORD>();
-				fieldDefinition.wVT = m_Parser.Get<WORD>();
-				fieldDefinition.dwDispid = m_Parser.Get<DWORD>();
-				fieldDefinition.wNmidNameLength = m_Parser.Get<WORD>();
-				fieldDefinition.szNmidName = m_Parser.GetStringW(fieldDefinition.wNmidNameLength);
+				fieldDefinition.dwFlags = m_Parser->Get<DWORD>();
+				fieldDefinition.wVT = m_Parser->Get<WORD>();
+				fieldDefinition.dwDispid = m_Parser->Get<DWORD>();
+				fieldDefinition.wNmidNameLength = m_Parser->Get<WORD>();
+				fieldDefinition.szNmidName = m_Parser->GetStringW(fieldDefinition.wNmidNameLength);
 
 				fieldDefinition.pasNameANSI = ReadPackedAnsiString(m_Parser);
 				fieldDefinition.pasFormulaANSI = ReadPackedAnsiString(m_Parser);
@@ -63,23 +63,23 @@ namespace smartview
 
 				if (PropDefV2 == m_wVersion)
 				{
-					fieldDefinition.dwInternalType = m_Parser.Get<DWORD>();
+					fieldDefinition.dwInternalType = m_Parser->Get<DWORD>();
 
 					// Have to count how many skip blocks are here.
 					// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
-					const auto stBookmark = m_Parser.GetCurrentOffset();
+					const auto stBookmark = m_Parser->GetCurrentOffset();
 
 					DWORD dwSkipBlockCount = 0;
 
 					for (;;)
 					{
 						dwSkipBlockCount++;
-						const auto dwBlock = m_Parser.Get<DWORD>();
+						const auto dwBlock = m_Parser->Get<DWORD>();
 						if (!dwBlock) break; // we hit the last, zero byte block, or the end of the buffer
-						m_Parser.advance(dwBlock);
+						m_Parser->advance(dwBlock);
 					}
 
-					m_Parser.SetCurrentOffset(stBookmark); // We're done with our first pass, restore the bookmark
+					m_Parser->SetCurrentOffset(stBookmark); // We're done with our first pass, restore the bookmark
 
 					fieldDefinition.dwSkipBlockCount = dwSkipBlockCount;
 					if (fieldDefinition.dwSkipBlockCount && fieldDefinition.dwSkipBlockCount < _MaxEntriesSmall)
@@ -88,14 +88,14 @@ namespace smartview
 						for (DWORD iSkip = 0; iSkip < fieldDefinition.dwSkipBlockCount; iSkip++)
 						{
 							SkipBlock skipBlock;
-							skipBlock.dwSize = m_Parser.Get<DWORD>();
+							skipBlock.dwSize = m_Parser->Get<DWORD>();
 							if (iSkip == 0)
 							{
 								skipBlock.lpbContentText = ReadPackedUnicodeString(m_Parser);
 							}
 							else
 							{
-								skipBlock.lpbContent = m_Parser.GetBYTES(skipBlock.dwSize, _MaxBytes);
+								skipBlock.lpbContent = m_Parser->GetBYTES(skipBlock.dwSize, _MaxBytes);
 							}
 
 							fieldDefinition.psbSkipBlocks.push_back(skipBlock);

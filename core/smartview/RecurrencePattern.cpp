@@ -8,50 +8,50 @@ namespace smartview
 {
 	void RecurrencePattern::Parse()
 	{
-		m_ReaderVersion = m_Parser.Get<WORD>();
-		m_WriterVersion = m_Parser.Get<WORD>();
-		m_RecurFrequency = m_Parser.Get<WORD>();
-		m_PatternType = m_Parser.Get<WORD>();
-		m_CalendarType = m_Parser.Get<WORD>();
-		m_FirstDateTime = m_Parser.Get<DWORD>();
-		m_Period = m_Parser.Get<DWORD>();
-		m_SlidingFlag = m_Parser.Get<DWORD>();
+		m_ReaderVersion = m_Parser->Get<WORD>();
+		m_WriterVersion = m_Parser->Get<WORD>();
+		m_RecurFrequency = m_Parser->Get<WORD>();
+		m_PatternType = m_Parser->Get<WORD>();
+		m_CalendarType = m_Parser->Get<WORD>();
+		m_FirstDateTime = m_Parser->Get<DWORD>();
+		m_Period = m_Parser->Get<DWORD>();
+		m_SlidingFlag = m_Parser->Get<DWORD>();
 
 		switch (m_PatternType)
 		{
 		case rptMinute:
 			break;
 		case rptWeek:
-			m_PatternTypeSpecific.WeekRecurrencePattern = m_Parser.Get<DWORD>();
+			m_PatternTypeSpecific.WeekRecurrencePattern = m_Parser->Get<DWORD>();
 			break;
 		case rptMonth:
 		case rptMonthEnd:
 		case rptHjMonth:
 		case rptHjMonthEnd:
-			m_PatternTypeSpecific.MonthRecurrencePattern = m_Parser.Get<DWORD>();
+			m_PatternTypeSpecific.MonthRecurrencePattern = m_Parser->Get<DWORD>();
 			break;
 		case rptMonthNth:
 		case rptHjMonthNth:
-			m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek = m_Parser.Get<DWORD>();
-			m_PatternTypeSpecific.MonthNthRecurrencePattern.N = m_Parser.Get<DWORD>();
+			m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek = m_Parser->Get<DWORD>();
+			m_PatternTypeSpecific.MonthNthRecurrencePattern.N = m_Parser->Get<DWORD>();
 			break;
 		}
 
-		m_EndType = m_Parser.Get<DWORD>();
-		m_OccurrenceCount = m_Parser.Get<DWORD>();
-		m_FirstDOW = m_Parser.Get<DWORD>();
-		m_DeletedInstanceCount = m_Parser.Get<DWORD>();
+		m_EndType = m_Parser->Get<DWORD>();
+		m_OccurrenceCount = m_Parser->Get<DWORD>();
+		m_FirstDOW = m_Parser->Get<DWORD>();
+		m_DeletedInstanceCount = m_Parser->Get<DWORD>();
 
 		if (m_DeletedInstanceCount && m_DeletedInstanceCount < _MaxEntriesSmall)
 		{
 			m_DeletedInstanceDates.reserve(m_DeletedInstanceCount);
 			for (DWORD i = 0; i < m_DeletedInstanceCount; i++)
 			{
-				m_DeletedInstanceDates.push_back(m_Parser.Get<DWORD>());
+				m_DeletedInstanceDates.push_back(m_Parser->Get<DWORD>());
 			}
 		}
 
-		m_ModifiedInstanceCount = m_Parser.Get<DWORD>();
+		m_ModifiedInstanceCount = m_Parser->Get<DWORD>();
 
 		if (m_ModifiedInstanceCount && m_ModifiedInstanceCount <= m_DeletedInstanceCount &&
 			m_ModifiedInstanceCount < _MaxEntriesSmall)
@@ -59,12 +59,12 @@ namespace smartview
 			m_ModifiedInstanceDates.reserve(m_ModifiedInstanceCount);
 			for (DWORD i = 0; i < m_ModifiedInstanceCount; i++)
 			{
-				m_ModifiedInstanceDates.push_back(m_Parser.Get<DWORD>());
+				m_ModifiedInstanceDates.push_back(m_Parser->Get<DWORD>());
 			}
 		}
 
-		m_StartDate = m_Parser.Get<DWORD>();
-		m_EndDate = m_Parser.Get<DWORD>();
+		m_StartDate = m_Parser->Get<DWORD>();
+		m_EndDate = m_Parser->Get<DWORD>();
 	}
 
 	void RecurrencePattern::ParseBlocks()

@@ -9,39 +9,39 @@ namespace smartview
 
 	void RuleCondition::Parse()
 	{
-		m_NamedPropertyInformation.NoOfNamedProps = m_Parser.Get<WORD>();
+		m_NamedPropertyInformation.NoOfNamedProps = m_Parser->Get<WORD>();
 		if (m_NamedPropertyInformation.NoOfNamedProps && m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
 		{
 			m_NamedPropertyInformation.PropId.reserve(m_NamedPropertyInformation.NoOfNamedProps);
 			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
-				m_NamedPropertyInformation.PropId.push_back(m_Parser.Get<WORD>());
+				m_NamedPropertyInformation.PropId.push_back(m_Parser->Get<WORD>());
 			}
 
-			m_NamedPropertyInformation.NamedPropertiesSize = m_Parser.Get<DWORD>();
+			m_NamedPropertyInformation.NamedPropertiesSize = m_Parser->Get<DWORD>();
 
 			m_NamedPropertyInformation.PropertyName.reserve(m_NamedPropertyInformation.NoOfNamedProps);
 			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
 				PropertyName propertyName;
-				propertyName.Kind = m_Parser.Get<BYTE>();
-				propertyName.Guid = m_Parser.Get<GUID>();
+				propertyName.Kind = m_Parser->Get<BYTE>();
+				propertyName.Guid = m_Parser->Get<GUID>();
 				if (propertyName.Kind == MNID_ID)
 				{
-					propertyName.LID = m_Parser.Get<DWORD>();
+					propertyName.LID = m_Parser->Get<DWORD>();
 				}
 				else if (propertyName.Kind == MNID_STRING)
 				{
-					propertyName.NameSize = m_Parser.Get<BYTE>();
-					propertyName.Name = m_Parser.GetStringW(propertyName.NameSize / sizeof(WCHAR));
+					propertyName.NameSize = m_Parser->Get<BYTE>();
+					propertyName.Name = m_Parser->GetStringW(propertyName.NameSize / sizeof(WCHAR));
 				}
 
 				m_NamedPropertyInformation.PropertyName.push_back(propertyName);
 			}
 		}
 
-		m_lpRes.init(true, m_bExtended);
-		m_lpRes.parse(m_Parser, false);
+		m_lpRes = std::make_shared<RestrictionStruct>(true, m_bExtended);
+		m_lpRes->SmartViewParser::parse(m_Parser, false);
 	}
 
 	void RuleCondition::ParseBlocks()
@@ -99,6 +99,9 @@ namespace smartview
 			}
 		}
 
-		addBlock(m_lpRes.getBlock());
+		if (m_lpRes && m_lpRes->hasData())
+		{
+			addBlock(m_lpRes->getBlock());
+		}
 	}
 } // namespace smartview

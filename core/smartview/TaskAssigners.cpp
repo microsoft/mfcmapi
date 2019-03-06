@@ -5,7 +5,7 @@ namespace smartview
 {
 	void TaskAssigners::Parse()
 	{
-		m_cAssigners = m_Parser.Get<DWORD>();
+		m_cAssigners = m_Parser->Get<DWORD>();
 
 		if (m_cAssigners && m_cAssigners < _MaxEntriesSmall)
 		{
@@ -13,15 +13,15 @@ namespace smartview
 			for (DWORD i = 0; i < m_cAssigners; i++)
 			{
 				TaskAssigner taskAssigner;
-				taskAssigner.cbAssigner = m_Parser.Get<DWORD>();
-				const auto ulSize = min(taskAssigner.cbAssigner, (ULONG) m_Parser.RemainingBytes());
-				m_Parser.setCap(ulSize);
-				taskAssigner.cbEntryID = m_Parser.Get<DWORD>();
-				taskAssigner.lpEntryID = m_Parser.GetBYTES(taskAssigner.cbEntryID, _MaxEID);
-				taskAssigner.szDisplayName = m_Parser.GetStringA();
-				taskAssigner.wzDisplayName = m_Parser.GetStringW();
-				taskAssigner.JunkData = m_Parser.GetRemainingData();
-				m_Parser.clearCap();
+				taskAssigner.cbAssigner = m_Parser->Get<DWORD>();
+				const auto ulSize = min(taskAssigner.cbAssigner, (ULONG) m_Parser->RemainingBytes());
+				m_Parser->setCap(ulSize);
+				taskAssigner.cbEntryID = m_Parser->Get<DWORD>();
+				taskAssigner.lpEntryID = m_Parser->GetBYTES(taskAssigner.cbEntryID, _MaxEID);
+				taskAssigner.szDisplayName = m_Parser->GetStringA();
+				taskAssigner.wzDisplayName = m_Parser->GetStringW();
+				taskAssigner.JunkData = m_Parser->GetRemainingData();
+				m_Parser->clearCap();
 
 				m_lpTaskAssigners.push_back(taskAssigner);
 			}

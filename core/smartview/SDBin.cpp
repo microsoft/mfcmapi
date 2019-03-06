@@ -20,7 +20,7 @@ namespace smartview
 		m_bFB = bFB;
 	}
 
-	void SDBin::Parse() { m_SDbin = m_Parser.GetBYTES(m_Parser.RemainingBytes()); }
+	void SDBin::Parse() { m_SDbin = m_Parser->GetBYTES(m_Parser->RemainingBytes()); }
 
 	void SDBin::ParseBlocks()
 	{

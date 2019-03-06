@@ -7,9 +7,9 @@ namespace smartview
 {
 	void XID::Parse()
 	{
-		m_NamespaceGuid = m_Parser.Get<GUID>();
-		m_cbLocalId = m_Parser.RemainingBytes();
-		m_LocalID = m_Parser.GetBYTES(m_cbLocalId, m_cbLocalId);
+		m_NamespaceGuid = m_Parser->Get<GUID>();
+		m_cbLocalId = m_Parser->RemainingBytes();
+		m_LocalID = m_Parser->GetBYTES(m_cbLocalId, m_cbLocalId);
 	}
 
 	void XID::ParseBlocks()

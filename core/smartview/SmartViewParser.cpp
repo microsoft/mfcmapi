@@ -6,13 +6,13 @@ namespace smartview
 {
 	void SmartViewParser::EnsureParsed()
 	{
-		if (m_bParsed || m_Parser.empty()) return;
+		if (m_bParsed || m_Parser->empty()) return;
 		Parse();
 		ParseBlocks();
 
-		if (this->hasData() && m_bEnableJunk && m_Parser.RemainingBytes())
+		if (this->hasData() && m_bEnableJunk && m_Parser->RemainingBytes())
 		{
-			const auto junkData = m_Parser.GetRemainingData();
+			const auto junkData = m_Parser->GetRemainingData();
 
 			terminateBlock();
 			addHeader(L"Unparsed data size = 0x%1!08X!\r\n", junkData.size());
@@ -24,7 +24,7 @@ namespace smartview
 
 	_Check_return_ std::wstring SmartViewParser::ToString()
 	{
-		if (m_Parser.empty()) return L"";
+		if (m_Parser->empty()) return L"";
 		EnsureParsed();
 
 		auto szParsedString = strings::trimWhitespace(data.ToString());

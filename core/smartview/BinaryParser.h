@@ -4,7 +4,6 @@
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockStringW.h>
-#include <stack>
 
 namespace smartview
 {
@@ -19,6 +18,8 @@ namespace smartview
 			m_Bin = lpBin && cbBin ? std::vector<BYTE>(lpBin, lpBin + cbBin) : std::vector<BYTE>{};
 			m_Size = m_Bin.size();
 		}
+		binaryParser(const binaryParser&) = delete;
+		binaryParser& operator=(const binaryParser&) = delete;
 
 		bool empty() const { return m_Offset == m_Size; }
 		void advance(size_t cbAdvance) { m_Offset += cbAdvance; }

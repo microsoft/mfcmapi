@@ -49,7 +49,7 @@ namespace smartview
 		void ParseBlocks() override;
 
 		NamedPropertyInformation m_NamedPropertyInformation;
-		RestrictionStruct m_lpRes;
+		std::shared_ptr<RestrictionStruct> m_lpRes;
 		bool m_bExtended{};
 	};
 } // namespace smartview
