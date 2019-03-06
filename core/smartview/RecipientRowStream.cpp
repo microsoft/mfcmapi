@@ -26,7 +26,7 @@ namespace smartview
 			m_lpAdrEntry.reserve(m_cRowCount);
 			for (DWORD i = 0; i < m_cRowCount; i++)
 			{
-				m_lpAdrEntry.emplace_back(m_Parser);
+				m_lpAdrEntry.emplace_back(std::make_shared<ADRENTRYStruct>(m_Parser));
 			}
 		}
 	}
@@ -44,9 +44,9 @@ namespace smartview
 			{
 				terminateBlock();
 				addHeader(L"Row %1!d!\r\n", i++);
-				addBlock(entry.cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", entry.cValues.getData());
-				addBlock(entry.ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!\r\n", entry.ulReserved1.getData());
-				addBlock(entry.rgPropVals.getBlock());
+				addBlock(entry->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", entry->cValues.getData());
+				addBlock(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!\r\n", entry->ulReserved1.getData());
+				addBlock(entry->rgPropVals.getBlock());
 			}
 		}
 	}

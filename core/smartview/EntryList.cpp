@@ -19,13 +19,13 @@ namespace smartview
 			m_Entry.reserve(m_EntryCount);
 			for (DWORD i = 0; i < m_EntryCount; i++)
 			{
-				m_Entry.emplace_back(m_Parser);
+				m_Entry.emplace_back(std::make_shared<EntryListEntryStruct>(m_Parser));
 			}
 
 			for (DWORD i = 0; i < m_EntryCount; i++)
 			{
-				const auto cbRemainingBytes = min(m_Entry[i].EntryLength, m_Parser->RemainingBytes());
-				m_Entry[i].EntryId.parse(m_Parser, cbRemainingBytes, true);
+				const auto cbRemainingBytes = min(m_Entry[i]->EntryLength, m_Parser->RemainingBytes());
+				m_Entry[i]->EntryId.parse(m_Parser, cbRemainingBytes, true);
 			}
 		}
 	}
@@ -40,10 +40,10 @@ namespace smartview
 		{
 			terminateBlock();
 			addHeader(L"EntryId[%1!d!]:\r\n", i++);
-			addBlock(entry.EntryLength, L"EntryLength = 0x%1!08X!\r\n", entry.EntryLength.getData());
-			addBlock(entry.EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", entry.EntryLengthPad.getData());
+			addBlock(entry->EntryLength, L"EntryLength = 0x%1!08X!\r\n", entry->EntryLength.getData());
+			addBlock(entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", entry->EntryLengthPad.getData());
 			addHeader(L"Entry Id = ");
-			addBlock(entry.EntryId.getBlock());
+			addBlock(entry->EntryId.getBlock());
 		}
 	}
 } // namespace smartview

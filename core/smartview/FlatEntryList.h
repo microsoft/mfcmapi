@@ -22,6 +22,6 @@ namespace smartview
 
 		blockT<DWORD> m_cEntries;
 		blockT<DWORD> m_cbEntries;
-		std::vector<FlatEntryID> m_pEntryIDs;
+		std::vector<std::shared_ptr<FlatEntryID>> m_pEntryIDs;
 	};
 } // namespace smartview

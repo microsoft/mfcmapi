@@ -22,7 +22,7 @@ namespace smartview
 		blockT<DWORD> m_ulMajorVersion;
 		blockT<DWORD> m_ulMinorVersion;
 		blockT<DWORD> m_cRowCount;
-		std::vector<SRowStruct> m_lpRows;
+		std::vector<std::shared_ptr<SRowStruct>> m_lpRows;
 		blockT<DWORD> m_cbEI;
 		blockBytes m_lpbEI;
 		blockBytes m_Metadata2; // 8 bytes

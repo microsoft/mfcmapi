@@ -32,7 +32,7 @@ namespace smartview
 			m_pEntryIDs.reserve(m_cEntries);
 			for (DWORD iFlatEntryList = 0; iFlatEntryList < m_cEntries; iFlatEntryList++)
 			{
-				m_pEntryIDs.emplace_back(m_Parser);
+				m_pEntryIDs.emplace_back(std::make_shared<FlatEntryID>(m_Parser));
 			}
 		}
 	}
@@ -43,28 +43,28 @@ namespace smartview
 		addBlock(m_cEntries, L"cEntries = %1!d!\r\n", m_cEntries.getData());
 		addBlock(m_cbEntries, L"cbEntries = 0x%1!08X!", m_cbEntries.getData());
 
-		for (DWORD iFlatEntryList = 0; iFlatEntryList < m_pEntryIDs.size(); iFlatEntryList++)
+		auto iFlatEntryList = DWORD{};
+		for (const auto& entry : m_pEntryIDs)
 		{
 			terminateBlock();
 			addBlankLine();
 			addHeader(L"Entry[%1!d!] ", iFlatEntryList);
-			addBlock(
-				m_pEntryIDs[iFlatEntryList].dwSize, L"Size = 0x%1!08X!", m_pEntryIDs[iFlatEntryList].dwSize.getData());
+			addBlock(entry->dwSize, L"Size = 0x%1!08X!", entry->dwSize.getData());
 
-			if (m_pEntryIDs[iFlatEntryList].lpEntryID.hasData())
+			if (entry->lpEntryID.hasData())
 			{
 				terminateBlock();
-				addBlock(m_pEntryIDs[iFlatEntryList].lpEntryID.getBlock());
+				addBlock(entry->lpEntryID.getBlock());
 			}
 
-			if (!m_pEntryIDs[iFlatEntryList].padding.empty())
+			if (!entry->padding.empty())
 			{
 				terminateBlock();
 				addHeader(L"Entry[%1!d!] Padding:\r\n", iFlatEntryList);
-				addBlock(
-					m_pEntryIDs[iFlatEntryList].padding,
-					strings::BinToHexString(m_pEntryIDs[iFlatEntryList].padding, true));
+				addBlock(entry->padding, strings::BinToHexString(entry->padding, true));
 			}
+
+			iFlatEntryList++;
 		}
 	}
 } // namespace smartview
