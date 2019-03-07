@@ -9,10 +9,13 @@ namespace smartview
 		cValues = parser->Get<DWORD>();
 		ulReserved1 = parser->Get<DWORD>();
 
-		if (cValues && cValues < _MaxEntriesSmall)
+		if (cValues)
 		{
-			rgPropVals.SetMaxEntries(cValues);
-			rgPropVals.parse(parser, false);
+			if (cValues < _MaxEntriesSmall)
+			{
+				rgPropVals.SetMaxEntries(cValues);
+				rgPropVals.parse(parser, false);
+			}
 		}
 	}
 
