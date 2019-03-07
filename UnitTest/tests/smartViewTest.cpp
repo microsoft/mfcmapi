@@ -86,6 +86,10 @@ namespace SmartViewTest
 					IDS_STADDITIONALRENENTRYIDSEX, unittest::parse_all, IDR_SV1AEI1IN, IDR_SV1AEI1OUT},
 				SmartViewTestResource{
 					IDS_STADDITIONALRENENTRYIDSEX, unittest::parse_all, IDR_SV1AEI2IN, IDR_SV1AEI2OUT},
+				SmartViewTestResource{
+					IDS_STADDITIONALRENENTRYIDSEX, unittest::parse_all, IDR_SV1AEI3IN, IDR_SV1AEI3OUT},
+				SmartViewTestResource{
+					IDS_STADDITIONALRENENTRYIDSEX, unittest::parse_all, IDR_SV1AEI4IN, IDR_SV1AEI4OUT},
 			}));
 		}
 

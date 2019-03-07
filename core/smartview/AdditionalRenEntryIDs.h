@@ -27,5 +27,7 @@ namespace smartview
 		void ParseBlocks() override;
 
 		std::vector<PersistData> m_ppdPersistData;
+		const WORD PERISIST_SENTINEL = 0;
+		const WORD ELEMENT_SENTINEL = 0;
 	};
 } // namespace smartview
