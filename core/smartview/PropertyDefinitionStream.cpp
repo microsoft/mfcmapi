@@ -44,66 +44,69 @@ namespace smartview
 	{
 		m_wVersion = m_Parser->Get<WORD>();
 		m_dwFieldDefinitionCount = m_Parser->Get<DWORD>();
-		if (m_dwFieldDefinitionCount && m_dwFieldDefinitionCount < _MaxEntriesLarge)
+		if (m_dwFieldDefinitionCount)
 		{
-			for (DWORD iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
+			if (m_dwFieldDefinitionCount < _MaxEntriesLarge)
 			{
-				FieldDefinition fieldDefinition;
-				fieldDefinition.dwFlags = m_Parser->Get<DWORD>();
-				fieldDefinition.wVT = m_Parser->Get<WORD>();
-				fieldDefinition.dwDispid = m_Parser->Get<DWORD>();
-				fieldDefinition.wNmidNameLength = m_Parser->Get<WORD>();
-				fieldDefinition.szNmidName = m_Parser->GetStringW(fieldDefinition.wNmidNameLength);
-
-				fieldDefinition.pasNameANSI = ReadPackedAnsiString(m_Parser);
-				fieldDefinition.pasFormulaANSI = ReadPackedAnsiString(m_Parser);
-				fieldDefinition.pasValidationRuleANSI = ReadPackedAnsiString(m_Parser);
-				fieldDefinition.pasValidationTextANSI = ReadPackedAnsiString(m_Parser);
-				fieldDefinition.pasErrorANSI = ReadPackedAnsiString(m_Parser);
-
-				if (PropDefV2 == m_wVersion)
+				for (DWORD iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
 				{
-					fieldDefinition.dwInternalType = m_Parser->Get<DWORD>();
+					FieldDefinition fieldDefinition;
+					fieldDefinition.dwFlags = m_Parser->Get<DWORD>();
+					fieldDefinition.wVT = m_Parser->Get<WORD>();
+					fieldDefinition.dwDispid = m_Parser->Get<DWORD>();
+					fieldDefinition.wNmidNameLength = m_Parser->Get<WORD>();
+					fieldDefinition.szNmidName = m_Parser->GetStringW(fieldDefinition.wNmidNameLength);
 
-					// Have to count how many skip blocks are here.
-					// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
-					const auto stBookmark = m_Parser->GetCurrentOffset();
+					fieldDefinition.pasNameANSI = ReadPackedAnsiString(m_Parser);
+					fieldDefinition.pasFormulaANSI = ReadPackedAnsiString(m_Parser);
+					fieldDefinition.pasValidationRuleANSI = ReadPackedAnsiString(m_Parser);
+					fieldDefinition.pasValidationTextANSI = ReadPackedAnsiString(m_Parser);
+					fieldDefinition.pasErrorANSI = ReadPackedAnsiString(m_Parser);
 
-					DWORD dwSkipBlockCount = 0;
-
-					for (;;)
+					if (PropDefV2 == m_wVersion)
 					{
-						dwSkipBlockCount++;
-						const auto dwBlock = m_Parser->Get<DWORD>();
-						if (!dwBlock) break; // we hit the last, zero byte block, or the end of the buffer
-						m_Parser->advance(dwBlock);
-					}
+						fieldDefinition.dwInternalType = m_Parser->Get<DWORD>();
 
-					m_Parser->SetCurrentOffset(stBookmark); // We're done with our first pass, restore the bookmark
+						// Have to count how many skip blocks are here.
+						// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
+						const auto stBookmark = m_Parser->GetCurrentOffset();
 
-					fieldDefinition.dwSkipBlockCount = dwSkipBlockCount;
-					if (fieldDefinition.dwSkipBlockCount && fieldDefinition.dwSkipBlockCount < _MaxEntriesSmall)
-					{
-						fieldDefinition.psbSkipBlocks.reserve(fieldDefinition.dwSkipBlockCount);
-						for (DWORD iSkip = 0; iSkip < fieldDefinition.dwSkipBlockCount; iSkip++)
+						DWORD dwSkipBlockCount = 0;
+
+						for (;;)
 						{
-							SkipBlock skipBlock;
-							skipBlock.dwSize = m_Parser->Get<DWORD>();
-							if (iSkip == 0)
-							{
-								skipBlock.lpbContentText = ReadPackedUnicodeString(m_Parser);
-							}
-							else
-							{
-								skipBlock.lpbContent = m_Parser->GetBYTES(skipBlock.dwSize, _MaxBytes);
-							}
+							dwSkipBlockCount++;
+							const auto dwBlock = m_Parser->Get<DWORD>();
+							if (!dwBlock) break; // we hit the last, zero byte block, or the end of the buffer
+							m_Parser->advance(dwBlock);
+						}
 
-							fieldDefinition.psbSkipBlocks.push_back(skipBlock);
+						m_Parser->SetCurrentOffset(stBookmark); // We're done with our first pass, restore the bookmark
+
+						fieldDefinition.dwSkipBlockCount = dwSkipBlockCount;
+						if (fieldDefinition.dwSkipBlockCount && fieldDefinition.dwSkipBlockCount < _MaxEntriesSmall)
+						{
+							fieldDefinition.psbSkipBlocks.reserve(fieldDefinition.dwSkipBlockCount);
+							for (DWORD iSkip = 0; iSkip < fieldDefinition.dwSkipBlockCount; iSkip++)
+							{
+								SkipBlock skipBlock;
+								skipBlock.dwSize = m_Parser->Get<DWORD>();
+								if (iSkip == 0)
+								{
+									skipBlock.lpbContentText = ReadPackedUnicodeString(m_Parser);
+								}
+								else
+								{
+									skipBlock.lpbContent = m_Parser->GetBYTES(skipBlock.dwSize, _MaxBytes);
+								}
+
+								fieldDefinition.psbSkipBlocks.push_back(skipBlock);
+							}
 						}
 					}
-				}
 
-				m_pfdFieldDefinitions.push_back(fieldDefinition);
+					m_pfdFieldDefinitions.push_back(fieldDefinition);
+				}
 			}
 		}
 	}

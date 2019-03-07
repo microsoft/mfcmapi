@@ -1,0 +1,42 @@
+Property Definition Stream
+Version = 0x0103 = PropDefV2
+FieldDefinitionCount = 0x00000002
+Definition: 0
+	Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
+	VT = 0x0008 = VT_BSTR
+	DispID = 0x00000000
+	NmidNameLength = 0x000F
+	NmidName = crmTestProperty
+	NameAnsi: Length = 0x000F Characters = crmTestProperty
+	FormulaANSI: Length = 0x0000
+	ValidationRuleANSI: Length = 0x0000
+	ValidationTextANSI: Length = 0x0000
+	ErrorANSI: Length = 0x0000
+	InternalType = 0x00000000 = iTypeString
+	SkipBlockCount = 2
+	SkipBlock: 0
+		Size = 0x00000021
+		FieldName: Length = 0x000F Characters = crmTestProperty
+	SkipBlock: 1
+		Size = 0x00000000
+Definition: 1
+	Flags = 0x00000045 = PDO_IS_CUSTOM | PDO_PRINT_SAVEAS | PDO_PRINT_SAVEAS_DEF
+	VT = 0x0008 = VT_BSTR
+	DispID = 0x00000000
+	NmidNameLength = 0x000F
+	NmidName = crmTestProperty
+	NameAnsi: Length = 0x000F Characters = crmTestProperty
+	FormulaANSI: Length = 0x0000
+	ValidationRuleANSI: Length = 0x0000
+	ValidationTextANSI: Length = 0x0000
+	ErrorANSI: Length = 0x0000
+	InternalType = 0x00000000 = iTypeString
+	SkipBlockCount = 3
+	SkipBlock: 0
+		Size = 0x0000001F
+		FieldName: Length = 0x000F Characters = crmTestProperty
+	SkipBlock: 1
+		Size = 0x0000001F
+		Content = cb: 31 lpb: 0F630072006D005400650073007400500072006F0070006500720074007900
+	SkipBlock: 2
+		Size = 0x00000000
