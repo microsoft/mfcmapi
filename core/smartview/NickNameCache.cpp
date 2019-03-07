@@ -7,13 +7,16 @@ namespace smartview
 	{
 		cValues = parser->Get<DWORD>();
 
-		if (cValues && cValues < _MaxEntriesSmall)
+		if (cValues)
 		{
-			lpProps.EnableNickNameParsing();
-			lpProps.SetMaxEntries(cValues);
-			lpProps.parse(parser, false);
+			if (cValues < _MaxEntriesSmall)
+			{
+				lpProps.EnableNickNameParsing();
+				lpProps.SetMaxEntries(cValues);
+				lpProps.parse(parser, false);
+			}
 		}
-	}
+	} // namespace smartview
 
 	void NickNameCache::Parse()
 	{
@@ -22,12 +25,15 @@ namespace smartview
 		m_ulMinorVersion = m_Parser->Get<DWORD>();
 		m_cRowCount = m_Parser->Get<DWORD>();
 
-		if (m_cRowCount && m_cRowCount < _MaxEntriesEnormous)
+		if (m_cRowCount)
 		{
-			m_lpRows.reserve(m_cRowCount);
-			for (DWORD i = 0; i < m_cRowCount; i++)
+			if (m_cRowCount < _MaxEntriesEnormous)
 			{
-				m_lpRows.emplace_back(std::make_shared<SRowStruct>(m_Parser));
+				m_lpRows.reserve(m_cRowCount);
+				for (DWORD i = 0; i < m_cRowCount; i++)
+				{
+					m_lpRows.emplace_back(std::make_shared<SRowStruct>(m_Parser));
+				}
 			}
 		}
 
