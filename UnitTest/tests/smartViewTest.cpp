@@ -315,6 +315,7 @@ namespace SmartViewTest
 				SmartViewTestResource{IDS_STSEARCHFOLDERDEFINITION, unittest::parse_all, IDR_SV18SF4IN, IDR_SV18SF4OUT},
 				SmartViewTestResource{IDS_STSEARCHFOLDERDEFINITION, unittest::parse_all, IDR_SV18SF5IN, IDR_SV18SF5OUT},
 				SmartViewTestResource{IDS_STSEARCHFOLDERDEFINITION, unittest::parse_all, IDR_SV18SF6IN, IDR_SV18SF6OUT},
+				SmartViewTestResource{IDS_STSEARCHFOLDERDEFINITION, unittest::parse_all, IDR_SV18SF7IN, IDR_SV18SF7OUT},
 			}));
 		}
 

@@ -60,19 +60,21 @@ namespace smartview
 		if (m_FolderList2Length)
 		{
 			auto cbRemainingBytes = m_Parser->RemainingBytes();
-			cbRemainingBytes = min(m_FolderList2Length, cbRemainingBytes);
-			m_FolderList2.parse(m_Parser, cbRemainingBytes, true);
+			m_FolderList2.parse(m_Parser, m_FolderList2Length, true);
 		}
 
 		if (SFST_BINARY & m_Flags)
 		{
 			m_AddressCount = m_Parser->Get<DWORD>();
-			if (m_AddressCount && m_AddressCount < _MaxEntriesSmall)
+			if (m_AddressCount)
 			{
-				m_Addresses.reserve(m_AddressCount);
-				for (DWORD i = 0; i < m_AddressCount; i++)
+				if (m_AddressCount < _MaxEntriesSmall)
 				{
-					m_Addresses.emplace_back(std::make_shared<AddressListEntryStruct>(m_Parser));
+					m_Addresses.reserve(m_AddressCount);
+					for (DWORD i = 0; i < m_AddressCount; i++)
+					{
+						m_Addresses.emplace_back(std::make_shared<AddressListEntryStruct>(m_Parser));
+					}
 				}
 			}
 		}
