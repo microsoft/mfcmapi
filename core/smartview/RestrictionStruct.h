@@ -82,7 +82,7 @@ namespace smartview
 	struct SAnnotationRestrictionStruct
 	{
 		blockT<DWORD> cValues; /* # of properties in lpProp */
-		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
+		std::shared_ptr<RestrictionStruct> lpRes;
 		PropertiesStruct lpProp;
 	};
 

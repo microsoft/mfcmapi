@@ -44,77 +44,82 @@ namespace smartview
 	{
 		m_wVersion = m_Parser->Get<WORD>();
 		m_dwFieldDefinitionCount = m_Parser->Get<DWORD>();
-		if (m_dwFieldDefinitionCount && m_dwFieldDefinitionCount < _MaxEntriesLarge)
+		if (m_dwFieldDefinitionCount)
 		{
-			for (DWORD iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
+			if (m_dwFieldDefinitionCount < _MaxEntriesLarge)
 			{
-				FieldDefinition fieldDefinition;
-				fieldDefinition.dwFlags = m_Parser->Get<DWORD>();
-				fieldDefinition.wVT = m_Parser->Get<WORD>();
-				fieldDefinition.dwDispid = m_Parser->Get<DWORD>();
-				fieldDefinition.wNmidNameLength = m_Parser->Get<WORD>();
-				fieldDefinition.szNmidName = m_Parser->GetStringW(fieldDefinition.wNmidNameLength);
-
-				fieldDefinition.pasNameANSI = ReadPackedAnsiString(m_Parser);
-				fieldDefinition.pasFormulaANSI = ReadPackedAnsiString(m_Parser);
-				fieldDefinition.pasValidationRuleANSI = ReadPackedAnsiString(m_Parser);
-				fieldDefinition.pasValidationTextANSI = ReadPackedAnsiString(m_Parser);
-				fieldDefinition.pasErrorANSI = ReadPackedAnsiString(m_Parser);
-
-				if (PropDefV2 == m_wVersion)
+				for (DWORD iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
 				{
-					fieldDefinition.dwInternalType = m_Parser->Get<DWORD>();
+					FieldDefinition fieldDefinition;
+					fieldDefinition.dwFlags = m_Parser->Get<DWORD>();
+					fieldDefinition.wVT = m_Parser->Get<WORD>();
+					fieldDefinition.dwDispid = m_Parser->Get<DWORD>();
+					fieldDefinition.wNmidNameLength = m_Parser->Get<WORD>();
+					fieldDefinition.szNmidName = m_Parser->GetStringW(fieldDefinition.wNmidNameLength);
 
-					// Have to count how many skip blocks are here.
-					// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
-					const auto stBookmark = m_Parser->GetCurrentOffset();
+					fieldDefinition.pasNameANSI = ReadPackedAnsiString(m_Parser);
+					fieldDefinition.pasFormulaANSI = ReadPackedAnsiString(m_Parser);
+					fieldDefinition.pasValidationRuleANSI = ReadPackedAnsiString(m_Parser);
+					fieldDefinition.pasValidationTextANSI = ReadPackedAnsiString(m_Parser);
+					fieldDefinition.pasErrorANSI = ReadPackedAnsiString(m_Parser);
 
-					DWORD dwSkipBlockCount = 0;
-
-					for (;;)
+					if (PropDefV2 == m_wVersion)
 					{
-						dwSkipBlockCount++;
-						const auto dwBlock = m_Parser->Get<DWORD>();
-						if (!dwBlock) break; // we hit the last, zero byte block, or the end of the buffer
-						m_Parser->advance(dwBlock);
-					}
+						fieldDefinition.dwInternalType = m_Parser->Get<DWORD>();
 
-					m_Parser->SetCurrentOffset(stBookmark); // We're done with our first pass, restore the bookmark
+						// Have to count how many skip blocks are here.
+						// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
+						const auto stBookmark = m_Parser->GetCurrentOffset();
 
-					fieldDefinition.dwSkipBlockCount = dwSkipBlockCount;
-					if (fieldDefinition.dwSkipBlockCount && fieldDefinition.dwSkipBlockCount < _MaxEntriesSmall)
-					{
-						fieldDefinition.psbSkipBlocks.reserve(fieldDefinition.dwSkipBlockCount);
-						for (DWORD iSkip = 0; iSkip < fieldDefinition.dwSkipBlockCount; iSkip++)
+						DWORD dwSkipBlockCount = 0;
+
+						for (;;)
 						{
-							SkipBlock skipBlock;
-							skipBlock.dwSize = m_Parser->Get<DWORD>();
-							if (iSkip == 0)
-							{
-								skipBlock.lpbContentText = ReadPackedUnicodeString(m_Parser);
-							}
-							else
-							{
-								skipBlock.lpbContent = m_Parser->GetBYTES(skipBlock.dwSize, _MaxBytes);
-							}
+							dwSkipBlockCount++;
+							const auto dwBlock = m_Parser->Get<DWORD>();
+							if (!dwBlock) break; // we hit the last, zero byte block, or the end of the buffer
+							m_Parser->advance(dwBlock);
+						}
 
-							fieldDefinition.psbSkipBlocks.push_back(skipBlock);
+						m_Parser->SetCurrentOffset(stBookmark); // We're done with our first pass, restore the bookmark
+
+						fieldDefinition.dwSkipBlockCount = dwSkipBlockCount;
+						if (fieldDefinition.dwSkipBlockCount && fieldDefinition.dwSkipBlockCount < _MaxEntriesSmall)
+						{
+							fieldDefinition.psbSkipBlocks.reserve(fieldDefinition.dwSkipBlockCount);
+							for (DWORD iSkip = 0; iSkip < fieldDefinition.dwSkipBlockCount; iSkip++)
+							{
+								SkipBlock skipBlock;
+								skipBlock.dwSize = m_Parser->Get<DWORD>();
+								if (iSkip == 0)
+								{
+									skipBlock.lpbContentText = ReadPackedUnicodeString(m_Parser);
+								}
+								else
+								{
+									skipBlock.lpbContent = m_Parser->GetBYTES(skipBlock.dwSize, _MaxBytes);
+								}
+
+								fieldDefinition.psbSkipBlocks.push_back(skipBlock);
+							}
 						}
 					}
-				}
 
-				m_pfdFieldDefinitions.push_back(fieldDefinition);
+					m_pfdFieldDefinitions.push_back(fieldDefinition);
+				}
 			}
 		}
 	}
 
-	_Check_return_ block PackedAnsiStringToBlock(_In_ const std::wstring& szFieldName, _In_ PackedAnsiString& pasString)
+	_Check_return_ block
+	PackedAnsiStringToBlock(_In_ const std::wstring& szFieldName, _In_ const PackedAnsiString& pasString)
 	{
 		auto data = pasString.cchLength;
 
 		if (0xFF == pasString.cchLength)
 		{
 			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pasString.cchExtendedLength.getData());
+			data.setSize(pasString.cchLength.getSize() + pasString.cchExtendedLength.getSize());
 		}
 		else
 		{
@@ -132,13 +137,14 @@ namespace smartview
 	}
 
 	_Check_return_ block
-	PackedUnicodeStringToBlock(_In_ const std::wstring& szFieldName, _In_ PackedUnicodeString& pusString)
+	PackedUnicodeStringToBlock(_In_ const std::wstring& szFieldName, _In_ const PackedUnicodeString& pusString)
 	{
 		auto data = pusString.cchLength;
 
 		if (0xFF == pusString.cchLength)
 		{
 			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pusString.cchExtendedLength.getData());
+			data.setSize(pusString.cchLength.getSize() + pusString.cchExtendedLength.getSize());
 		}
 		else
 		{
@@ -162,42 +168,32 @@ namespace smartview
 		addBlock(m_wVersion, L"Version = 0x%1!04X! = %2!ws!\r\n", m_wVersion.getData(), szVersion.c_str());
 		addBlock(m_dwFieldDefinitionCount, L"FieldDefinitionCount = 0x%1!08X!", m_dwFieldDefinitionCount.getData());
 
-		for (DWORD iDef = 0; iDef < m_pfdFieldDefinitions.size(); iDef++)
+		auto iDef = DWORD{};
+		for (const auto& def : m_pfdFieldDefinitions)
 		{
 			terminateBlock();
-			addHeader(L"Definition: %1!d!\r\n", iDef);
+			auto fieldDef = block{};
+			fieldDef.setText(L"Definition: %1!d!\r\n", iDef);
 
-			auto szFlags = flags::InterpretFlags(flagPDOFlag, m_pfdFieldDefinitions[iDef].dwFlags);
-			addBlock(
-				m_pfdFieldDefinitions[iDef].dwFlags,
-				L"\tFlags = 0x%1!08X! = %2!ws!\r\n",
-				m_pfdFieldDefinitions[iDef].dwFlags.getData(),
-				szFlags.c_str());
-			auto szVarEnum = flags::InterpretFlags(flagVarEnum, m_pfdFieldDefinitions[iDef].wVT);
-			addBlock(
-				m_pfdFieldDefinitions[iDef].wVT,
-				L"\tVT = 0x%1!04X! = %2!ws!\r\n",
-				m_pfdFieldDefinitions[iDef].wVT.getData(),
-				szVarEnum.c_str());
-			addBlock(
-				m_pfdFieldDefinitions[iDef].dwDispid,
-				L"\tDispID = 0x%1!08X!",
-				m_pfdFieldDefinitions[iDef].dwDispid.getData());
+			auto szFlags = flags::InterpretFlags(flagPDOFlag, def.dwFlags);
+			fieldDef.addBlock(def.dwFlags, L"\tFlags = 0x%1!08X! = %2!ws!\r\n", def.dwFlags.getData(), szFlags.c_str());
+			auto szVarEnum = flags::InterpretFlags(flagVarEnum, def.wVT);
+			fieldDef.addBlock(def.wVT, L"\tVT = 0x%1!04X! = %2!ws!\r\n", def.wVT.getData(), szVarEnum.c_str());
+			fieldDef.addBlock(def.dwDispid, L"\tDispID = 0x%1!08X!", def.dwDispid.getData());
 
-			if (m_pfdFieldDefinitions[iDef].dwDispid)
+			if (def.dwDispid)
 			{
-				if (m_pfdFieldDefinitions[iDef].dwDispid < 0x8000)
+				if (def.dwDispid < 0x8000)
 				{
-					auto propTagNames = proptags::PropTagToPropName(m_pfdFieldDefinitions[iDef].dwDispid, false);
+					auto propTagNames = proptags::PropTagToPropName(def.dwDispid, false);
 					if (!propTagNames.bestGuess.empty())
 					{
-						addBlock(m_pfdFieldDefinitions[iDef].dwDispid, L" = %1!ws!", propTagNames.bestGuess.c_str());
+						fieldDef.addBlock(def.dwDispid, L" = %1!ws!", propTagNames.bestGuess.c_str());
 					}
 
 					if (!propTagNames.otherMatches.empty())
 					{
-						addBlock(
-							m_pfdFieldDefinitions[iDef].dwDispid, L": (%1!ws!)", propTagNames.otherMatches.c_str());
+						fieldDef.addBlock(def.dwDispid, L": (%1!ws!)", propTagNames.otherMatches.c_str());
 					}
 				}
 				else
@@ -206,65 +202,62 @@ namespace smartview
 					MAPINAMEID mnid = {};
 					mnid.lpguid = nullptr;
 					mnid.ulKind = MNID_ID;
-					mnid.Kind.lID = m_pfdFieldDefinitions[iDef].dwDispid;
+					mnid.Kind.lID = def.dwDispid;
 					szDispidName = strings::join(cache::NameIDToPropNames(&mnid), L", ");
 					if (!szDispidName.empty())
 					{
-						addBlock(m_pfdFieldDefinitions[iDef].dwDispid, L" = %1!ws!", szDispidName.c_str());
+						fieldDef.addBlock(def.dwDispid, L" = %1!ws!", szDispidName.c_str());
 					}
 				}
 			}
 
-			terminateBlock();
-			addBlock(
-				m_pfdFieldDefinitions[iDef].wNmidNameLength,
-				L"\tNmidNameLength = 0x%1!04X!\r\n",
-				m_pfdFieldDefinitions[iDef].wNmidNameLength.getData());
-			addBlock(
-				m_pfdFieldDefinitions[iDef].szNmidName,
-				L"\tNmidName = %1!ws!\r\n",
-				m_pfdFieldDefinitions[iDef].szNmidName.c_str());
+			fieldDef.terminateBlock();
+			fieldDef.addBlock(def.wNmidNameLength, L"\tNmidNameLength = 0x%1!04X!\r\n", def.wNmidNameLength.getData());
+			fieldDef.addBlock(def.szNmidName, L"\tNmidName = %1!ws!\r\n", def.szNmidName.c_str());
 
-			addBlock(PackedAnsiStringToBlock(L"NameAnsi", m_pfdFieldDefinitions[iDef].pasNameANSI));
-			addBlock(PackedAnsiStringToBlock(L"FormulaANSI", m_pfdFieldDefinitions[iDef].pasFormulaANSI));
-			addBlock(PackedAnsiStringToBlock(L"ValidationRuleANSI", m_pfdFieldDefinitions[iDef].pasValidationRuleANSI));
-			addBlock(PackedAnsiStringToBlock(L"ValidationTextANSI", m_pfdFieldDefinitions[iDef].pasValidationTextANSI));
-			addBlock(PackedAnsiStringToBlock(L"ErrorANSI", m_pfdFieldDefinitions[iDef].pasErrorANSI));
+			fieldDef.addBlock(PackedAnsiStringToBlock(L"NameAnsi", def.pasNameANSI));
+			fieldDef.addBlock(PackedAnsiStringToBlock(L"FormulaANSI", def.pasFormulaANSI));
+			fieldDef.addBlock(PackedAnsiStringToBlock(L"ValidationRuleANSI", def.pasValidationRuleANSI));
+			fieldDef.addBlock(PackedAnsiStringToBlock(L"ValidationTextANSI", def.pasValidationTextANSI));
+			fieldDef.addBlock(PackedAnsiStringToBlock(L"ErrorANSI", def.pasErrorANSI));
 
 			if (PropDefV2 == m_wVersion)
 			{
-				szFlags = flags::InterpretFlags(flagInternalType, m_pfdFieldDefinitions[iDef].dwInternalType);
-				addBlock(
-					m_pfdFieldDefinitions[iDef].dwInternalType,
+				szFlags = flags::InterpretFlags(flagInternalType, def.dwInternalType);
+				fieldDef.addBlock(
+					def.dwInternalType,
 					L"\tInternalType = 0x%1!08X! = %2!ws!\r\n",
-					m_pfdFieldDefinitions[iDef].dwInternalType.getData(),
+					def.dwInternalType.getData(),
 					szFlags.c_str());
-				addHeader(L"\tSkipBlockCount = %1!d!", m_pfdFieldDefinitions[iDef].dwSkipBlockCount);
+				fieldDef.addHeader(L"\tSkipBlockCount = %1!d!", def.dwSkipBlockCount);
 
-				for (DWORD iSkip = 0; iSkip < m_pfdFieldDefinitions[iDef].psbSkipBlocks.size(); iSkip++)
+				auto iSkip = DWORD{};
+				for (const auto& sb : def.psbSkipBlocks)
 				{
-					terminateBlock();
-					addHeader(L"\tSkipBlock: %1!d!\r\n", iSkip);
-					addBlock(
-						m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize,
-						L"\t\tSize = 0x%1!08X!",
-						m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize.getData());
+					fieldDef.terminateBlock();
+					auto skipBlock = block{};
+					skipBlock.setText(L"\tSkipBlock: %1!d!\r\n", iSkip);
+					skipBlock.addBlock(sb.dwSize, L"\t\tSize = 0x%1!08X!", sb.dwSize.getData());
 
 					if (0 == iSkip)
 					{
-						terminateBlock();
-						addBlock(PackedUnicodeStringToBlock(
-							L"\tFieldName", m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContentText));
+						skipBlock.terminateBlock();
+						skipBlock.addBlock(PackedUnicodeStringToBlock(L"\tFieldName", sb.lpbContentText));
 					}
-					else if (!m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent.empty())
-
+					else if (!sb.lpbContent.empty())
 					{
-						terminateBlock();
-						addHeader(L"\t\tContent = ");
-						addBlock(m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent);
+						skipBlock.terminateBlock();
+						skipBlock.addHeader(L"\t\tContent = ");
+						skipBlock.addBlock(sb.lpbContent);
 					}
+
+					fieldDef.addBlock(skipBlock);
+					iSkip++;
 				}
 			}
+
+			addBlock(fieldDef);
+			iDef++;
 		}
 	}
 } // namespace smartview

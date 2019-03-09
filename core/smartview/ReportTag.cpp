@@ -17,39 +17,31 @@ namespace smartview
 		m_Version.setData(hiWord << 16 | loWord);
 
 		m_cbStoreEntryID = m_Parser->Get<DWORD>();
-		if (m_cbStoreEntryID)
-		{
-			m_lpStoreEntryID = m_Parser->GetBYTES(m_cbStoreEntryID, _MaxEID);
-		}
+		m_lpStoreEntryID = m_Parser->GetBYTES(m_cbStoreEntryID, _MaxEID);
 
 		m_cbFolderEntryID = m_Parser->Get<DWORD>();
-		if (m_cbFolderEntryID)
-		{
-			m_lpFolderEntryID = m_Parser->GetBYTES(m_cbFolderEntryID, _MaxEID);
-		}
+		m_lpFolderEntryID = m_Parser->GetBYTES(m_cbFolderEntryID, _MaxEID);
 
 		m_cbMessageEntryID = m_Parser->Get<DWORD>();
-		if (m_cbMessageEntryID)
-		{
-			m_lpMessageEntryID = m_Parser->GetBYTES(m_cbMessageEntryID, _MaxEID);
-		}
+		m_lpMessageEntryID = m_Parser->GetBYTES(m_cbMessageEntryID, _MaxEID);
 
 		m_cbSearchFolderEntryID = m_Parser->Get<DWORD>();
-		if (m_cbSearchFolderEntryID)
-		{
-			m_lpSearchFolderEntryID = m_Parser->GetBYTES(m_cbSearchFolderEntryID, _MaxEID);
-		}
+		m_lpSearchFolderEntryID = m_Parser->GetBYTES(m_cbSearchFolderEntryID, _MaxEID);
 
 		m_cbMessageSearchKey = m_Parser->Get<DWORD>();
-		if (m_cbMessageSearchKey)
-		{
-			m_lpMessageSearchKey = m_Parser->GetBYTES(m_cbMessageSearchKey, _MaxEID);
-		}
+		m_lpMessageSearchKey = m_Parser->GetBYTES(m_cbMessageSearchKey, _MaxEID);
 
 		m_cchAnsiText = m_Parser->Get<DWORD>();
-		if (m_cchAnsiText)
+		m_lpszAnsiText = m_Parser->GetStringA(m_cchAnsiText);
+	}
+
+	void ReportTag::addEID(const std::wstring& label, const blockT<ULONG>& cb, const blockBytes& eid)
+	{
+		if (cb)
 		{
-			m_lpszAnsiText = m_Parser->GetStringA(m_cchAnsiText);
+			terminateBlock();
+			addHeader(label);
+			addBlock(eid);
 		}
 	}
 
@@ -63,40 +55,11 @@ namespace smartview
 		auto szFlags = flags::InterpretFlags(flagReportTagVersion, m_Version);
 		addBlock(m_Version, L"Version = 0x%1!08X! = %2!ws!", m_Version.getData(), szFlags.c_str());
 
-		if (m_cbStoreEntryID)
-		{
-			terminateBlock();
-			addHeader(L"StoreEntryID = ");
-			addBlock(m_lpStoreEntryID);
-		}
-
-		if (m_cbFolderEntryID)
-		{
-			terminateBlock();
-			addHeader(L"FolderEntryID = ");
-			addBlock(m_lpFolderEntryID);
-		}
-
-		if (m_cbMessageEntryID)
-		{
-			terminateBlock();
-			addHeader(L"MessageEntryID = ");
-			addBlock(m_lpMessageEntryID);
-		}
-
-		if (m_cbSearchFolderEntryID)
-		{
-			terminateBlock();
-			addHeader(L"SearchFolderEntryID = ");
-			addBlock(m_lpSearchFolderEntryID);
-		}
-
-		if (m_cbMessageSearchKey)
-		{
-			terminateBlock();
-			addHeader(L"MessageSearchKey = ");
-			addBlock(m_lpMessageSearchKey);
-		}
+		addEID(L"StoreEntryID = ", m_cbStoreEntryID, m_lpStoreEntryID);
+		addEID(L"FolderEntryID = ", m_cbFolderEntryID, m_lpFolderEntryID);
+		addEID(L"MessageEntryID = ", m_cbMessageEntryID, m_lpMessageEntryID);
+		addEID(L"SearchFolderEntryID = ", m_cbSearchFolderEntryID, m_lpSearchFolderEntryID);
+		addEID(L"MessageSearchKey = ", m_cbMessageSearchKey, m_lpMessageSearchKey);
 
 		if (m_cchAnsiText)
 		{

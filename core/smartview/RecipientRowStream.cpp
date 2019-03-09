@@ -9,10 +9,13 @@ namespace smartview
 		cValues = parser->Get<DWORD>();
 		ulReserved1 = parser->Get<DWORD>();
 
-		if (cValues && cValues < _MaxEntriesSmall)
+		if (cValues)
 		{
-			rgPropVals.SetMaxEntries(cValues);
-			rgPropVals.parse(parser, false);
+			if (cValues < _MaxEntriesSmall)
+			{
+				rgPropVals.SetMaxEntries(cValues);
+				rgPropVals.parse(parser, false);
+			}
 		}
 	}
 
@@ -21,12 +24,15 @@ namespace smartview
 		m_cVersion = m_Parser->Get<DWORD>();
 		m_cRowCount = m_Parser->Get<DWORD>();
 
-		if (m_cRowCount && m_cRowCount < _MaxEntriesSmall)
+		if (m_cRowCount)
 		{
-			m_lpAdrEntry.reserve(m_cRowCount);
-			for (DWORD i = 0; i < m_cRowCount; i++)
+			if (m_cRowCount < _MaxEntriesSmall)
 			{
-				m_lpAdrEntry.emplace_back(std::make_shared<ADRENTRYStruct>(m_Parser));
+				m_lpAdrEntry.reserve(m_cRowCount);
+				for (DWORD i = 0; i < m_cRowCount; i++)
+				{
+					m_lpAdrEntry.emplace_back(std::make_shared<ADRENTRYStruct>(m_Parser));
+				}
 			}
 		}
 	}
@@ -36,7 +42,7 @@ namespace smartview
 		setRoot(L"Recipient Row Stream\r\n");
 		addBlock(m_cVersion, L"cVersion = %1!d!\r\n", m_cVersion.getData());
 		addBlock(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount.getData());
-		if (!m_lpAdrEntry.empty() && m_cRowCount)
+		if (!m_lpAdrEntry.empty())
 		{
 			addBlankLine();
 			auto i = DWORD{};

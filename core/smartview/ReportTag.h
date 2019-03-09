@@ -9,6 +9,7 @@ namespace smartview
 	private:
 		void Parse() override;
 		void ParseBlocks() override;
+		void addEID(const std::wstring& label, const blockT<ULONG>& cb, const blockBytes& eid);
 
 		blockBytes m_Cookie; // 8 characters + NULL terminator
 		blockT<DWORD> m_Version;

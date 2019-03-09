@@ -5,16 +5,12 @@
 
 namespace smartview
 {
-#define PERISIST_SENTINEL 0
-#define ELEMENT_SENTINEL 0
-
 	void AdditionalRenEntryIDs::Parse()
 	{
 		WORD wPersistDataCount = 0;
 		// Run through the parser once to count the number of PersistData structs
-		for (;;)
+		while (m_Parser->RemainingBytes() >= 2 * sizeof(WORD))
 		{
-			if (m_Parser->RemainingBytes() < 2 * sizeof(WORD)) break;
 			const auto wPersistID = m_Parser->Get<WORD>();
 			const auto wDataElementSize = m_Parser->Get<WORD>();
 			// Must have at least wDataElementSize bytes left to be a valid data element
@@ -100,58 +96,55 @@ namespace smartview
 
 		if (!m_ppdPersistData.empty())
 		{
-			for (WORD iPersistElement = 0; iPersistElement < m_ppdPersistData.size(); iPersistElement++)
+			auto iPersistElement = WORD{};
+			for (const auto& data : m_ppdPersistData)
 			{
 				terminateBlock();
 				addBlankLine();
 				auto element = block{};
 				element.setText(L"Persist Element %1!d!:\r\n", iPersistElement);
 				element.addBlock(
-					m_ppdPersistData[iPersistElement].wPersistID,
+					data.wPersistID,
 					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
-					m_ppdPersistData[iPersistElement].wPersistID.getData(),
-					flags::InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID).c_str());
+					data.wPersistID.getData(),
+					flags::InterpretFlags(flagPersistID, data.wPersistID).c_str());
 				element.addBlock(
-					m_ppdPersistData[iPersistElement].wDataElementsSize,
-					L"DataElementsSize = 0x%1!04X!",
-					m_ppdPersistData[iPersistElement].wDataElementsSize.getData());
+					data.wDataElementsSize, L"DataElementsSize = 0x%1!04X!", data.wDataElementsSize.getData());
 
-				if (!m_ppdPersistData[iPersistElement].ppeDataElement.empty())
+				if (!data.ppeDataElement.empty())
 				{
-					for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].ppeDataElement.size();
-						 iDataElement++)
+					auto iDataElement = WORD{};
+					for (auto& dataElement : data.ppeDataElement)
 					{
 						element.terminateBlock();
 						element.addHeader(L"DataElement: %1!d!\r\n", iDataElement);
 
 						element.addBlock(
-							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
+							dataElement.wElementID,
 							L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
-							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID.getData(),
-							flags::InterpretFlags(
-								flagElementID,
-								m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID)
-								.c_str());
+							dataElement.wElementID.getData(),
+							flags::InterpretFlags(flagElementID, dataElement.wElementID).c_str());
 
 						element.addBlock(
-							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize,
+							dataElement.wElementDataSize,
 							L"\tElementDataSize = 0x%1!04X!\r\n",
-							m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize.getData());
+							dataElement.wElementDataSize.getData());
 
 						element.addHeader(L"\tElementData = ");
-						element.addBlock(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData);
+						element.addBlock(dataElement.lpbElementData);
+						iDataElement++;
 					}
 				}
 
-				if (!m_ppdPersistData[iPersistElement].JunkData.empty())
+				if (!data.JunkData.empty())
 				{
 					element.terminateBlock();
-					element.addHeader(
-						L"Unparsed data size = 0x%1!08X!\r\n", m_ppdPersistData[iPersistElement].JunkData.size());
-					element.addBlock(m_ppdPersistData[iPersistElement].JunkData);
+					element.addHeader(L"Unparsed data size = 0x%1!08X!\r\n", data.JunkData.size());
+					element.addBlock(data.JunkData);
 				}
 
 				addBlock(element);
+				iPersistElement++;
 			}
 		}
 	}

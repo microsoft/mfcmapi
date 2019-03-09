@@ -14,18 +14,20 @@ namespace smartview
 		m_EntryCount = m_Parser->Get<DWORD>();
 		m_Pad = m_Parser->Get<DWORD>();
 
-		if (m_EntryCount && m_EntryCount < _MaxEntriesLarge)
+		if (m_EntryCount)
 		{
-			m_Entry.reserve(m_EntryCount);
-			for (DWORD i = 0; i < m_EntryCount; i++)
+			if (m_EntryCount < _MaxEntriesLarge)
 			{
-				m_Entry.emplace_back(std::make_shared<EntryListEntryStruct>(m_Parser));
-			}
+				m_Entry.reserve(m_EntryCount);
+				for (DWORD i = 0; i < m_EntryCount; i++)
+				{
+					m_Entry.emplace_back(std::make_shared<EntryListEntryStruct>(m_Parser));
+				}
 
-			for (DWORD i = 0; i < m_EntryCount; i++)
-			{
-				const auto cbRemainingBytes = min(m_Entry[i]->EntryLength, m_Parser->RemainingBytes());
-				m_Entry[i]->EntryId.parse(m_Parser, cbRemainingBytes, true);
+				for (DWORD i = 0; i < m_EntryCount; i++)
+				{
+					m_Entry[i]->EntryId.parse(m_Parser, m_Entry[i]->EntryLength, true);
+				}
 			}
 		}
 	}

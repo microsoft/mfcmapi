@@ -7,11 +7,9 @@ namespace smartview
 	void PCL::Parse()
 	{
 		// Run through the parser once to count the number of flag structs
-		for (;;)
+		// Must have at least 1 byte left to have another XID
+		while (m_Parser->RemainingBytes() > sizeof(BYTE))
 		{
-			// Must have at least 1 byte left to have another XID
-			if (m_Parser->RemainingBytes() <= sizeof(BYTE)) break;
-
 			const auto XidSize = m_Parser->Get<BYTE>();
 			if (m_Parser->RemainingBytes() >= XidSize)
 			{
@@ -33,13 +31,11 @@ namespace smartview
 				sizedXID.XidSize = m_Parser->Get<BYTE>();
 				sizedXID.NamespaceGuid = m_Parser->Get<GUID>();
 				sizedXID.cbLocalId = sizedXID.XidSize - sizeof(GUID);
-				if (m_Parser->RemainingBytes() < sizedXID.cbLocalId)
+				if (m_Parser->RemainingBytes() >= sizedXID.cbLocalId)
 				{
-					m_lpXID.push_back(sizedXID);
-					break;
+					sizedXID.LocalID = m_Parser->GetBYTES(sizedXID.cbLocalId);
 				}
 
-				sizedXID.LocalID = m_Parser->GetBYTES(sizedXID.cbLocalId);
 				m_lpXID.push_back(sizedXID);
 			}
 		}
@@ -53,7 +49,7 @@ namespace smartview
 		if (!m_lpXID.empty())
 		{
 			auto i = 0;
-			for (auto& xid : m_lpXID)
+			for (const auto& xid : m_lpXID)
 			{
 				terminateBlock();
 				addHeader(L"XID[%1!d!]:\r\n", i++);
