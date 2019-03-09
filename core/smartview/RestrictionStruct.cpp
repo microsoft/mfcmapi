@@ -149,6 +149,22 @@ namespace smartview
 			}
 
 			break;
+		case RES_ANNOTATION:
+			if (m_bRuleCondition)
+				resAnnotation.cValues = m_Parser->Get<BYTE>();
+			else
+				resAnnotation.cValues = m_Parser->Get<DWORD>();
+
+			resAnnotation.lpProp.init(m_Parser, resAnnotation.cValues, m_bRuleCondition);
+
+			// Check if a restriction is present
+			if (m_Parser->Get<BYTE>() && ulDepth < _MaxDepth && m_Parser->RemainingBytes())
+			{
+				resAnnotation.lpRes =
+					std::make_shared<RestrictionStruct>(m_Parser, ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
+			}
+
+			break;
 		case RES_COUNT:
 			resCount.ulCount = m_Parser->Get<DWORD>();
 			if (ulDepth < _MaxDepth && m_Parser->RemainingBytes())
@@ -179,87 +195,106 @@ namespace smartview
 		}
 
 		std::wstring szPropNum;
-		auto szFlags = flags::InterpretFlags(flagRestrictionType, rt);
-		addBlock(rt, L"%1!ws!lpRes->rt = 0x%2!X! = %3!ws!\r\n", szTabs.c_str(), rt.getData(), szFlags.c_str());
 
 		auto i = 0;
 		switch (rt)
 		{
 		case RES_COMPAREPROPS:
-			szFlags = flags::InterpretFlags(flagRelop, resCompareProps.relop);
-			addBlock(
+			rt.addBlock(
 				resCompareProps.relop,
 				L"%1!ws!lpRes->res.resCompareProps.relop = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
-				szFlags.c_str(),
+				flags::InterpretFlags(flagRelop, resCompareProps.relop).c_str(),
 				resCompareProps.relop.getData());
-			addBlock(
+			rt.addBlock(
 				resCompareProps.ulPropTag1,
 				L"%1!ws!lpRes->res.resCompareProps.ulPropTag1 = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(resCompareProps.ulPropTag1, nullptr, false, true).c_str());
-			addBlock(
+			rt.addBlock(
 				resCompareProps.ulPropTag2,
 				L"%1!ws!lpRes->res.resCompareProps.ulPropTag2 = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(resCompareProps.ulPropTag2, nullptr, false, true).c_str());
 			break;
 		case RES_AND:
-			addBlock(
-				resAnd.cRes, L"%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!\r\n", szTabs.c_str(), resAnd.cRes.getData());
 			for (const auto& res : resAnd.lpRes)
 			{
-				addHeader(L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
+				auto resBlock = block{};
+				resBlock.setText(L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
 				res->parseBlocks(ulTabLevel + 1);
-				addBlock(res->getBlock());
+				resBlock.addBlock(res->getBlock());
+				resAnd.cRes.addBlock(resBlock);
 			}
+
+			rt.addBlock(
+				resAnd.cRes, L"%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!\r\n", szTabs.c_str(), resAnd.cRes.getData());
 			break;
 		case RES_OR:
-			addBlock(resOr.cRes, L"%1!ws!lpRes->res.resOr.cRes = 0x%2!08X!\r\n", szTabs.c_str(), resOr.cRes.getData());
 			for (const auto& res : resOr.lpRes)
 			{
-				addHeader(L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
+				auto resBlock = block{};
+				resBlock.setText(L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
 				res->parseBlocks(ulTabLevel + 1);
-				addBlock(res->getBlock());
+				resBlock.addBlock(res->getBlock());
+				resOr.cRes.addBlock(resBlock);
 			}
+
+			rt.addBlock(
+				resOr.cRes, L"%1!ws!lpRes->res.resOr.cRes = 0x%2!08X!\r\n", szTabs.c_str(), resOr.cRes.getData());
 			break;
 		case RES_NOT:
-			addBlock(
+		{
+			rt.addBlock(
 				resNot.ulReserved,
 				L"%1!ws!lpRes->res.resNot.ulReserved = 0x%2!08X!\r\n",
 				szTabs.c_str(),
 				resNot.ulReserved.getData());
-			addHeader(L"%1!ws!lpRes->res.resNot.lpRes\r\n", szTabs.c_str());
+
+			auto notRoot = block{};
+			notRoot.setText(L"%1!ws!lpRes->res.resNot.lpRes\r\n", szTabs.c_str());
 
 			if (resNot.lpRes)
 			{
 				resNot.lpRes->parseBlocks(ulTabLevel + 1);
-				addBlock(resNot.lpRes->getBlock());
+				notRoot.addBlock(resNot.lpRes->getBlock());
 			}
-			break;
+
+			rt.addBlock(notRoot);
+		}
+
+		break;
 		case RES_COUNT:
-			addBlock(
+		{
+			rt.addBlock(
 				resCount.ulCount,
 				L"%1!ws!lpRes->res.resCount.ulCount = 0x%2!08X!\r\n",
 				szTabs.c_str(),
 				resCount.ulCount.getData());
-			addHeader(L"%1!ws!lpRes->res.resCount.lpRes\r\n", szTabs.c_str());
+
+			auto countRoot = block{};
+			countRoot.setText(L"%1!ws!lpRes->res.resCount.lpRes\r\n", szTabs.c_str());
 
 			if (resCount.lpRes)
 			{
 				resCount.lpRes->parseBlocks(ulTabLevel + 1);
-				addBlock(resCount.lpRes->getBlock());
+				countRoot.addBlock(resCount.lpRes->getBlock());
 			}
-			break;
+
+			rt.addBlock(countRoot);
+		}
+
+		break;
 		case RES_CONTENT:
-			szFlags = flags::InterpretFlags(flagFuzzyLevel, resContent.ulFuzzyLevel);
-			addBlock(
+		{
+			rt.addBlock(
 				resContent.ulFuzzyLevel,
 				L"%1!ws!lpRes->res.resContent.ulFuzzyLevel = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
-				szFlags.c_str(),
+				flags::InterpretFlags(flagFuzzyLevel, resContent.ulFuzzyLevel).c_str(),
 				resContent.ulFuzzyLevel.getData());
-			addBlock(
+
+			rt.addBlock(
 				resContent.ulPropTag,
 				L"%1!ws!lpRes->res.resContent.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
@@ -267,49 +302,47 @@ namespace smartview
 
 			if (!resContent.lpProp.Props().empty())
 			{
-				addBlock(
+				auto propBlock = block{};
+				propBlock.addBlock(
 					resContent.lpProp.Props()[0].ulPropTag,
 					L"%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
 					proptags::TagToString(resContent.lpProp.Props()[0].ulPropTag, nullptr, false, true).c_str());
-				addBlock(
+				propBlock.addBlock(
 					resContent.lpProp.Props()[0].PropBlock(),
 					L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
 					szTabs.c_str(),
 					resContent.lpProp.Props()[0].PropBlock().c_str());
-				addBlock(
+				propBlock.addBlock(
 					resContent.lpProp.Props()[0].AltPropBlock(),
 					L"%1!ws!\tAlt: %2!ws!\r\n",
 					szTabs.c_str(),
 					resContent.lpProp.Props()[0].AltPropBlock().c_str());
+				rt.addBlock(propBlock);
 			}
-			break;
+		}
+		break;
 		case RES_PROPERTY:
-			szFlags = flags::InterpretFlags(flagRelop, resProperty.relop);
-			addBlock(
+		{
+			rt.addBlock(
 				resProperty.relop,
 				L"%1!ws!lpRes->res.resProperty.relop = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
-				szFlags.c_str(),
+				flags::InterpretFlags(flagRelop, resProperty.relop).c_str(),
 				resProperty.relop.getData());
-			addBlock(
-				resProperty.ulPropTag,
-				L"%1!ws!lpRes->res.resProperty.ulPropTag = %2!ws!\r\n",
-				szTabs.c_str(),
-				proptags::TagToString(resProperty.ulPropTag, nullptr, false, true).c_str());
 			if (!resProperty.lpProp.Props().empty())
 			{
-				addBlock(
+				resProperty.ulPropTag.addBlock(
 					resProperty.lpProp.Props()[0].ulPropTag,
 					L"%1!ws!lpRes->res.resProperty.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
 					proptags::TagToString(resProperty.lpProp.Props()[0].ulPropTag, nullptr, false, true).c_str());
-				addBlock(
+				resProperty.ulPropTag.addBlock(
 					resProperty.lpProp.Props()[0].PropBlock(),
 					L"%1!ws!lpRes->res.resProperty.lpProp->Value = %2!ws!\r\n",
 					szTabs.c_str(),
 					resProperty.lpProp.Props()[0].PropBlock().c_str());
-				addBlock(
+				resProperty.ulPropTag.addBlock(
 					resProperty.lpProp.Props()[0].AltPropBlock(),
 					L"%1!ws!\tAlt: %2!ws!\r\n",
 					szTabs.c_str(),
@@ -318,19 +351,26 @@ namespace smartview
 				if (!szPropNum.empty())
 				{
 					// TODO: use block
-					addHeader(L"%1!ws!\tFlags: %2!ws!", szTabs.c_str(), szPropNum.c_str());
+					resProperty.ulPropTag.addHeader(L"%1!ws!\tFlags: %2!ws!", szTabs.c_str(), szPropNum.c_str());
 				}
 			}
-			break;
+
+			rt.addBlock(
+				resProperty.ulPropTag,
+				L"%1!ws!lpRes->res.resProperty.ulPropTag = %2!ws!\r\n",
+				szTabs.c_str(),
+				proptags::TagToString(resProperty.ulPropTag, nullptr, false, true).c_str());
+		}
+
+		break;
 		case RES_BITMASK:
-			szFlags = flags::InterpretFlags(flagBitmask, resBitMask.relBMR);
-			addBlock(
+			rt.addBlock(
 				resBitMask.relBMR,
 				L"%1!ws!lpRes->res.resBitMask.relBMR = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
-				szFlags.c_str(),
+				flags::InterpretFlags(flagBitmask, resBitMask.relBMR).c_str(),
 				resBitMask.relBMR.getData());
-			addBlock(
+			rt.addBlock(
 				resBitMask.ulMask,
 				L"%1!ws!lpRes->res.resBitMask.ulMask = 0x%2!08X!",
 				szTabs.c_str(),
@@ -338,126 +378,145 @@ namespace smartview
 			szPropNum = InterpretNumberAsStringProp(resBitMask.ulMask, resBitMask.ulPropTag);
 			if (!szPropNum.empty())
 			{
-				addBlock(resBitMask.ulMask, L": %1!ws!", szPropNum.c_str());
+				rt.addBlock(resBitMask.ulMask, L": %1!ws!", szPropNum.c_str());
 			}
 
-			terminateBlock();
-			addBlock(
+			rt.terminateBlock();
+			rt.addBlock(
 				resBitMask.ulPropTag,
 				L"%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(resBitMask.ulPropTag, nullptr, false, true).c_str());
 			break;
 		case RES_SIZE:
-			szFlags = flags::InterpretFlags(flagRelop, resSize.relop);
-			addBlock(
+			rt.addBlock(
 				resSize.relop,
 				L"%1!ws!lpRes->res.resSize.relop = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
-				szFlags.c_str(),
+				flags::InterpretFlags(flagRelop, resSize.relop).c_str(),
 				resSize.relop.getData());
-			addBlock(resSize.cb, L"%1!ws!lpRes->res.resSize.cb = 0x%2!08X!\r\n", szTabs.c_str(), resSize.cb.getData());
-			addBlock(
+			rt.addBlock(
+				resSize.cb, L"%1!ws!lpRes->res.resSize.cb = 0x%2!08X!\r\n", szTabs.c_str(), resSize.cb.getData());
+			rt.addBlock(
 				resSize.ulPropTag,
 				L"%1!ws!lpRes->res.resSize.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(resSize.ulPropTag, nullptr, false, true).c_str());
 			break;
 		case RES_EXIST:
-			addBlock(
+			rt.addBlock(
 				resExist.ulPropTag,
 				L"%1!ws!lpRes->res.resExist.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(resExist.ulPropTag, nullptr, false, true).c_str());
-			addBlock(
+			rt.addBlock(
 				resExist.ulReserved1,
 				L"%1!ws!lpRes->res.resExist.ulReserved1 = 0x%2!08X!\r\n",
 				szTabs.c_str(),
 				resExist.ulReserved1.getData());
-			addBlock(
+			rt.addBlock(
 				resExist.ulReserved2,
 				L"%1!ws!lpRes->res.resExist.ulReserved2 = 0x%2!08X!\r\n",
 				szTabs.c_str(),
 				resExist.ulReserved2.getData());
 			break;
 		case RES_SUBRESTRICTION:
-			addBlock(
-				resSub.ulSubObject,
-				L"%1!ws!lpRes->res.resSub.ulSubObject = %2!ws!\r\n",
-				szTabs.c_str(),
-				proptags::TagToString(resSub.ulSubObject, nullptr, false, true).c_str());
-			addHeader(L"%1!ws!lpRes->res.resSub.lpRes\r\n", szTabs.c_str());
+		{
+			resSub.ulSubObject.addHeader(L"%1!ws!lpRes->res.resSub.lpRes\r\n", szTabs.c_str());
 
 			if (resSub.lpRes)
 			{
 				resSub.lpRes->parseBlocks(ulTabLevel + 1);
-				addBlock(resSub.lpRes->getBlock());
+				resSub.ulSubObject.addBlock(resSub.lpRes->getBlock());
 			}
-			break;
-		case RES_COMMENT:
-			addBlock(
-				resComment.cValues,
-				L"%1!ws!lpRes->res.resComment.cValues = 0x%2!08X!\r\n",
+
+			rt.addBlock(
+				resSub.ulSubObject,
+				L"%1!ws!lpRes->res.resSub.ulSubObject = %2!ws!\r\n",
 				szTabs.c_str(),
-				resComment.cValues.getData());
-			for (auto prop : resComment.lpProp.Props())
+				proptags::TagToString(resSub.ulSubObject, nullptr, false, true).c_str());
+		}
+
+		break;
+		case RES_COMMENT:
+		{
+			for (auto& prop : resComment.lpProp.Props())
 			{
-				addBlock(
-					prop.ulPropTag,
+				prop.ulPropTag.setText(
 					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
 					proptags::TagToString(prop.ulPropTag, nullptr, false, true).c_str());
-				addBlock(
+				prop.ulPropTag.addBlock(
 					prop.PropBlock(),
 					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
 					prop.PropBlock().c_str());
-				addBlock(prop.AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop.AltPropBlock().c_str());
+				prop.ulPropTag.addBlock(
+					prop.AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop.AltPropBlock().c_str());
+
+				resComment.cValues.addBlock(prop.ulPropTag);
 				i++;
 			}
 
-			addHeader(L"%1!ws!lpRes->res.resComment.lpRes\r\n", szTabs.c_str());
+			rt.addBlock(
+				resComment.cValues,
+				L"%1!ws!lpRes->res.resComment.cValues = 0x%2!08X!\r\n",
+				szTabs.c_str(),
+				resComment.cValues.getData());
+
+			rt.addHeader(L"%1!ws!lpRes->res.resComment.lpRes\r\n", szTabs.c_str());
 			if (resComment.lpRes)
 			{
 				resComment.lpRes->parseBlocks(ulTabLevel + 1);
-				addBlock(resComment.lpRes->getBlock());
+				rt.addBlock(resComment.lpRes->getBlock());
 			}
-			break;
+		}
+
+		break;
 		case RES_ANNOTATION:
-			addBlock(
-				resComment.cValues,
-				L"%1!ws!lpRes->res.resAnnotation.cValues = 0x%2!08X!\r\n",
-				szTabs.c_str(),
-				resComment.cValues.getData());
-			for (auto prop : resComment.lpProp.Props())
+			for (auto& prop : resAnnotation.lpProp.Props())
 			{
-				addBlock(
-					prop.ulPropTag,
+				prop.ulPropTag.setText(
 					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
 					proptags::TagToString(prop.ulPropTag, nullptr, false, true).c_str());
-				addBlock(
+				prop.ulPropTag.addBlock(
 					prop.PropBlock(),
 					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
 					prop.PropBlock().c_str());
-				addBlock(prop.AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop.AltPropBlock().c_str());
+				prop.ulPropTag.addBlock(
+					prop.AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop.AltPropBlock().c_str());
+
+				resAnnotation.cValues.addBlock(prop.ulPropTag);
 				i++;
 			}
 
-			addHeader(L"%1!ws!lpRes->res.resAnnotation.lpRes\r\n", szTabs.c_str());
+			rt.addBlock(
+				resAnnotation.cValues,
+				L"%1!ws!lpRes->res.resAnnotation.cValues = 0x%2!08X!\r\n",
+				szTabs.c_str(),
+				resAnnotation.cValues.getData());
 
-			if (resComment.lpRes)
+			rt.addHeader(L"%1!ws!lpRes->res.resAnnotation.lpRes\r\n", szTabs.c_str());
+			if (resAnnotation.lpRes)
 			{
-				resComment.lpRes->parseBlocks(ulTabLevel + 1);
-				addBlock(resComment.lpRes->getBlock());
+				resAnnotation.lpRes->parseBlocks(ulTabLevel + 1);
+				rt.addBlock(resAnnotation.lpRes->getBlock());
 			}
 
 			break;
 		}
-	}
+
+		addBlock(
+			rt,
+			L"%1!ws!lpRes->rt = 0x%2!X! = %3!ws!\r\n",
+			szTabs.c_str(),
+			rt.getData(),
+			flags::InterpretFlags(flagRestrictionType, rt).c_str());
+	} // namespace smartview
 } // namespace smartview

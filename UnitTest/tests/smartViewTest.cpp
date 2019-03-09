@@ -287,6 +287,7 @@ namespace SmartViewTest
 		{
 			test(loadTestData({
 				SmartViewTestResource{IDS_STRESTRICTION, unittest::parse_all, IDR_SV16RES1IN, IDR_SV16RES1OUT},
+				SmartViewTestResource{IDS_STRESTRICTION, unittest::parse_all, IDR_SV16RES2IN, IDR_SV16RES2OUT},
 			}));
 		}
 
