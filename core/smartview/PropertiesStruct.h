@@ -4,6 +4,7 @@
 #include <core/property/parseProperty.h>
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockStringW.h>
+#include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {
@@ -22,12 +23,15 @@ namespace smartview
 		blockBytes lpb;
 		size_t getSize() const { return cb.getSize() + lpb.getSize(); }
 		size_t getOffset() const { return cb.getOffset() ? cb.getOffset() : lpb.getOffset(); }
+
+		SBinaryBlock(std::shared_ptr<binaryParser> parser);
+		SBinaryBlock(){};
 	};
 
 	struct SBinaryArrayBlock
 	{
 		blockT<ULONG> cValues;
-		std::vector<SBinaryBlock> lpbin;
+		std::vector<std::shared_ptr<SBinaryBlock>> lpbin;
 	};
 
 	struct CountedStringA

@@ -16,7 +16,7 @@ namespace smartview
 		const auto dwPAD = 3 - (dwSize + 3) % 4;
 		if (dwPAD > 0)
 		{
-			padding = parser->GetBYTES(dwPAD);
+			padding.parse(parser, dwPAD);
 		}
 	}
 

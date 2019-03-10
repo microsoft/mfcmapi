@@ -1,5 +1,6 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
+#include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {
@@ -11,6 +12,8 @@ namespace smartview
 		blockBytes dwUnused; // 7 DWORDs
 		blockT<DWORD> cbData;
 		blockBytes lpData;
+
+		WebViewPersist(std::shared_ptr<binaryParser>& parser);
 	};
 
 	class WebViewPersistStream : public SmartViewParser
@@ -20,6 +23,6 @@ namespace smartview
 		void ParseBlocks() override;
 
 		DWORD m_cWebViews{};
-		std::vector<WebViewPersist> m_lpWebViews;
+		std::vector<std::shared_ptr<WebViewPersist>> m_lpWebViews;
 	};
 } // namespace smartview

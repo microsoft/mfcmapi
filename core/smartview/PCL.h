@@ -1,6 +1,6 @@
 #pragma once
-#include <winnt.h>
 #include <core/smartview/SmartViewParser.h>
+#include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {
@@ -10,6 +10,8 @@ namespace smartview
 		blockT<GUID> NamespaceGuid;
 		DWORD cbLocalId{};
 		blockBytes LocalID;
+
+		SizedXID(std::shared_ptr<binaryParser>& parser);
 	};
 
 	class PCL : public SmartViewParser
@@ -19,6 +21,6 @@ namespace smartview
 		void ParseBlocks() override;
 
 		DWORD m_cXID{};
-		std::vector<SizedXID> m_lpXID;
+		std::vector<std::shared_ptr<SizedXID>> m_lpXID;
 	};
 } // namespace smartview

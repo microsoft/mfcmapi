@@ -1,6 +1,7 @@
 #include <core/stdafx.h>
 #include <core/smartview/SmartViewParser.h>
 #include <core/utility/strings.h>
+#include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {
@@ -12,7 +13,8 @@ namespace smartview
 
 		if (this->hasData() && m_bEnableJunk && m_Parser->RemainingBytes())
 		{
-			const auto junkData = m_Parser->GetRemainingData();
+			blockBytes junkData{};
+			junkData.parseRemainingData(m_Parser);
 
 			terminateBlock();
 			addHeader(L"Unparsed data size = 0x%1!08X!\r\n", junkData.size());

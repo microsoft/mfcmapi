@@ -13,7 +13,7 @@ namespace smartview
 		if (m_Parser->RemainingBytes() < 4) return;
 		m_abFlags0 = m_Parser->Get<byte>();
 		m_abFlags1 = m_Parser->Get<byte>();
-		m_abFlags23 = m_Parser->GetBYTES(2);
+		m_abFlags23.parse(m_Parser, 2);
 		m_ProviderUID = m_Parser->Get<GUID>();
 
 		// Ephemeral entry ID:
@@ -202,7 +202,7 @@ namespace smartview
 								m_MessageDatabaseObject.v2FQDN.parse(m_Parser);
 							}
 
-							m_MessageDatabaseObject.v2Reserved = m_Parser->GetBYTES(2);
+							m_MessageDatabaseObject.v2Reserved.parse(m_Parser, 2);
 						}
 						break;
 					case MDB_STORE_EID_V3_MAGIC:
@@ -217,7 +217,7 @@ namespace smartview
 								m_MessageDatabaseObject.v3SmtpAddress.parse(m_Parser);
 							}
 
-							m_MessageDatabaseObject.v2Reserved = m_Parser->GetBYTES(2);
+							m_MessageDatabaseObject.v2Reserved.parse(m_Parser, 2);
 						}
 						break;
 					}
@@ -227,19 +227,19 @@ namespace smartview
 			case eidtFolder:
 				m_FolderOrMessage.Type = m_Parser->Get<WORD>();
 				m_FolderOrMessage.FolderObject.DatabaseGUID = m_Parser->Get<GUID>();
-				m_FolderOrMessage.FolderObject.GlobalCounter = m_Parser->GetBYTES(6);
-				m_FolderOrMessage.FolderObject.Pad = m_Parser->GetBYTES(2);
+				m_FolderOrMessage.FolderObject.GlobalCounter.parse(m_Parser, 6);
+				m_FolderOrMessage.FolderObject.Pad.parse(m_Parser, 2);
 				break;
 				// Exchange message store message
 			case eidtMessage:
 				m_FolderOrMessage.Type = m_Parser->Get<WORD>();
 				m_FolderOrMessage.MessageObject.FolderDatabaseGUID = m_Parser->Get<GUID>();
-				m_FolderOrMessage.MessageObject.FolderGlobalCounter = m_Parser->GetBYTES(6);
-				m_FolderOrMessage.MessageObject.Pad1 = m_Parser->GetBYTES(2);
+				m_FolderOrMessage.MessageObject.FolderGlobalCounter.parse(m_Parser, 6);
+				m_FolderOrMessage.MessageObject.Pad1.parse(m_Parser, 2);
 
 				m_FolderOrMessage.MessageObject.MessageDatabaseGUID = m_Parser->Get<GUID>();
-				m_FolderOrMessage.MessageObject.MessageGlobalCounter = m_Parser->GetBYTES(6);
-				m_FolderOrMessage.MessageObject.Pad2 = m_Parser->GetBYTES(2);
+				m_FolderOrMessage.MessageObject.MessageGlobalCounter.parse(m_Parser, 6);
+				m_FolderOrMessage.MessageObject.Pad2.parse(m_Parser, 2);
 				break;
 			}
 		}

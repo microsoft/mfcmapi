@@ -2,6 +2,7 @@
 #include <core/smartview/XID.h>
 #include <core/interpret/guid.h>
 #include <core/utility/strings.h>
+#include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {
@@ -9,7 +10,7 @@ namespace smartview
 	{
 		m_NamespaceGuid = m_Parser->Get<GUID>();
 		m_cbLocalId = m_Parser->RemainingBytes();
-		m_LocalID = m_Parser->GetBYTES(m_cbLocalId, m_cbLocalId);
+		m_LocalID.parse(m_Parser, m_cbLocalId, m_cbLocalId);
 	}
 
 	void XID::ParseBlocks()

@@ -4,6 +4,7 @@
 #include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/RestrictionStruct.h>
 #include <core/smartview/block/blockStringW.h>
+#include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {

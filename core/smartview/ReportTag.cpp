@@ -7,7 +7,7 @@ namespace smartview
 {
 	void ReportTag::Parse()
 	{
-		m_Cookie = m_Parser->GetBYTES(9);
+		m_Cookie.parse(m_Parser, 9);
 
 		// Version is big endian, so we have to read individual bytes
 		const auto hiWord = m_Parser->Get<WORD>();
@@ -17,19 +17,19 @@ namespace smartview
 		m_Version.setData(hiWord << 16 | loWord);
 
 		m_cbStoreEntryID = m_Parser->Get<DWORD>();
-		m_lpStoreEntryID = m_Parser->GetBYTES(m_cbStoreEntryID, _MaxEID);
+		m_lpStoreEntryID.parse(m_Parser, m_cbStoreEntryID, _MaxEID);
 
 		m_cbFolderEntryID = m_Parser->Get<DWORD>();
-		m_lpFolderEntryID = m_Parser->GetBYTES(m_cbFolderEntryID, _MaxEID);
+		m_lpFolderEntryID.parse(m_Parser, m_cbFolderEntryID, _MaxEID);
 
 		m_cbMessageEntryID = m_Parser->Get<DWORD>();
-		m_lpMessageEntryID = m_Parser->GetBYTES(m_cbMessageEntryID, _MaxEID);
+		m_lpMessageEntryID.parse(m_Parser, m_cbMessageEntryID, _MaxEID);
 
 		m_cbSearchFolderEntryID = m_Parser->Get<DWORD>();
-		m_lpSearchFolderEntryID = m_Parser->GetBYTES(m_cbSearchFolderEntryID, _MaxEID);
+		m_lpSearchFolderEntryID.parse(m_Parser, m_cbSearchFolderEntryID, _MaxEID);
 
 		m_cbMessageSearchKey = m_Parser->Get<DWORD>();
-		m_lpMessageSearchKey = m_Parser->GetBYTES(m_cbMessageSearchKey, _MaxEID);
+		m_lpMessageSearchKey.parse(m_Parser, m_cbMessageSearchKey, _MaxEID);
 
 		m_cchAnsiText = m_Parser->Get<DWORD>();
 		m_lpszAnsiText.parse(m_Parser, m_cchAnsiText);

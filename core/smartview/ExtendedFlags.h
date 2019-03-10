@@ -1,5 +1,6 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
+#include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {
@@ -15,6 +16,9 @@ namespace smartview
 			blockT<DWORD> ToDoFolderVersion;
 		} Data;
 		blockBytes lpUnknownData;
+		bool bBadData{};
+
+		ExtendedFlag(std::shared_ptr<binaryParser> parser);
 	};
 
 	class ExtendedFlags : public SmartViewParser
@@ -23,7 +27,6 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		ULONG m_ulNumFlags{};
-		std::vector<ExtendedFlag> m_pefExtendedFlags;
+		std::vector<std::shared_ptr<ExtendedFlag>> m_pefExtendedFlags;
 	};
 } // namespace smartview

@@ -39,7 +39,7 @@ namespace smartview
 		}
 		else
 		{
-			lpbContent = parser->GetBYTES(dwSize, _MaxBytes);
+			lpbContent.parse(parser, dwSize, _MaxBytes);
 		}
 	}
 

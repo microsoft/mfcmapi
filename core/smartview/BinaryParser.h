@@ -1,7 +1,6 @@
 #pragma once
 #include <core/smartview/block/block.h>
 #include <core/smartview/block/blockT.h>
-#include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {
@@ -65,27 +64,6 @@ namespace smartview
 			m_Offset += sizeof T;
 			return ret;
 		}
-
-		blockBytes GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1)
-		{
-			// TODO: Should we track when the returned byte length is less than requested?
-			auto ret = blockBytes();
-			ret.setOffset(m_Offset);
-
-			if (cbBytes && CheckRemainingBytes(cbBytes) &&
-				(cbMaxBytes == static_cast<size_t>(-1) || cbBytes <= cbMaxBytes))
-			{
-				ret.setData(std::vector<BYTE>{const_cast<LPBYTE>(GetCurrentAddress()),
-											  const_cast<LPBYTE>(GetCurrentAddress() + cbBytes)});
-				m_Offset += cbBytes;
-			}
-
-			// Important that we set our size after getting data, because we may not have gotten the requested byte length
-			ret.setSize(ret.size() * sizeof(BYTE));
-			return ret;
-		}
-
-		blockBytes GetRemainingData() { return GetBYTES(RemainingBytes()); }
 
 	private:
 		std::vector<BYTE> m_Bin;

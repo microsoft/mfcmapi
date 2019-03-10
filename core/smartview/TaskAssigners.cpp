@@ -9,10 +9,10 @@ namespace smartview
 		const auto ulSize = min(cbAssigner, (ULONG) parser->RemainingBytes());
 		parser->setCap(ulSize);
 		cbEntryID = parser->Get<DWORD>();
-		lpEntryID = parser->GetBYTES(cbEntryID, _MaxEID);
+		lpEntryID.parse(parser, cbEntryID, _MaxEID);
 		szDisplayName.parse(parser);
 		wzDisplayName.parse(parser);
-		JunkData = parser->GetRemainingData();
+		JunkData.parseRemainingData(parser);
 		parser->clearCap();
 	}
 

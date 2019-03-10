@@ -18,7 +18,7 @@ namespace smartview
 
 	void GlobalObjectId::Parse()
 	{
-		m_Id = m_Parser->GetBYTES(16);
+		m_Id.parse(m_Parser, 16);
 
 		const auto b1 = m_Parser->Get<BYTE>();
 		const auto b2 = m_Parser->Get<BYTE>();
@@ -34,7 +34,7 @@ namespace smartview
 		m_CreationTime = m_Parser->Get<FILETIME>();
 		m_X = m_Parser->Get<LARGE_INTEGER>();
 		m_dwSize = m_Parser->Get<DWORD>();
-		m_lpData = m_Parser->GetBYTES(m_dwSize, _MaxBytes);
+		m_lpData.parse(m_Parser, m_dwSize, _MaxBytes);
 	}
 
 	void GlobalObjectId::ParseBlocks()

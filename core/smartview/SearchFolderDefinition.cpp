@@ -38,7 +38,7 @@ namespace smartview
 		}
 
 		m_SkipLen1 = m_Parser->Get<DWORD>();
-		m_SkipBytes1 = m_Parser->GetBYTES(m_SkipLen1, _MaxBytes);
+		m_SkipBytes1.parse(m_Parser, m_SkipLen1, _MaxBytes);
 
 		m_DeepSearch = m_Parser->Get<DWORD>();
 
@@ -79,7 +79,7 @@ namespace smartview
 		}
 
 		m_SkipLen2 = m_Parser->Get<DWORD>();
-		m_SkipBytes2 = m_Parser->GetBYTES(m_SkipLen2, _MaxBytes);
+		m_SkipBytes2.parse(m_Parser, m_SkipLen2, _MaxBytes);
 
 		if (SFST_MRES & m_Flags)
 		{
@@ -94,14 +94,14 @@ namespace smartview
 			// is part of this bucket. We leave DWORD space for the final skip block, which should be empty
 			if (cbRemainingBytes > sizeof DWORD)
 			{
-				m_AdvancedSearchBytes = m_Parser->GetBYTES(cbRemainingBytes - sizeof DWORD);
+				m_AdvancedSearchBytes.parse(m_Parser, cbRemainingBytes - sizeof DWORD);
 			}
 		}
 
 		m_SkipLen3 = m_Parser->Get<DWORD>();
 		if (m_SkipLen3)
 		{
-			m_SkipBytes3 = m_Parser->GetBYTES(m_SkipLen3, _MaxBytes);
+			m_SkipBytes3.parse(m_Parser, m_SkipLen3, _MaxBytes);
 		}
 	}
 

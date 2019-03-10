@@ -1,6 +1,7 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
 #include <core/smartview/EntryIdStruct.h>
+#include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {

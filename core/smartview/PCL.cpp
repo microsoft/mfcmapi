@@ -4,6 +4,17 @@
 
 namespace smartview
 {
+	SizedXID::SizedXID(std::shared_ptr<binaryParser>& parser)
+	{
+		XidSize = parser->Get<BYTE>();
+		NamespaceGuid = parser->Get<GUID>();
+		cbLocalId = XidSize - sizeof(GUID);
+		if (parser->RemainingBytes() >= cbLocalId)
+		{
+			LocalID.parse(parser, cbLocalId);
+		}
+	}
+
 	void PCL::Parse()
 	{
 		// Run through the parser once to count the number of flag structs
@@ -27,16 +38,7 @@ namespace smartview
 			m_lpXID.reserve(m_cXID);
 			for (DWORD i = 0; i < m_cXID; i++)
 			{
-				SizedXID sizedXID;
-				sizedXID.XidSize = m_Parser->Get<BYTE>();
-				sizedXID.NamespaceGuid = m_Parser->Get<GUID>();
-				sizedXID.cbLocalId = sizedXID.XidSize - sizeof(GUID);
-				if (m_Parser->RemainingBytes() >= sizedXID.cbLocalId)
-				{
-					sizedXID.LocalID = m_Parser->GetBYTES(sizedXID.cbLocalId);
-				}
-
-				m_lpXID.push_back(sizedXID);
+				m_lpXID.emplace_back(std::make_shared<SizedXID>(m_Parser));
 			}
 		}
 	}
@@ -53,13 +55,13 @@ namespace smartview
 			{
 				terminateBlock();
 				addHeader(L"XID[%1!d!]:\r\n", i++);
-				addBlock(xid.XidSize, L"XidSize = 0x%1!08X! = %1!d!\r\n", xid.XidSize.getData());
+				addBlock(xid->XidSize, L"XidSize = 0x%1!08X! = %1!d!\r\n", xid->XidSize.getData());
 				addBlock(
-					xid.NamespaceGuid,
+					xid->NamespaceGuid,
 					L"NamespaceGuid = %1!ws!\r\n",
-					guid::GUIDToString(xid.NamespaceGuid.getData()).c_str());
+					guid::GUIDToString(xid->NamespaceGuid.getData()).c_str());
 				addHeader(L"LocalId = ");
-				addBlock(xid.LocalID);
+				addBlock(xid->LocalID);
 			}
 		}
 	}

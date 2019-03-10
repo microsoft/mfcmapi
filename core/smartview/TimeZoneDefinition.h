@@ -2,6 +2,7 @@
 #include <core/smartview/SmartViewParser.h>
 #include <core/smartview/TimeZone.h>
 #include <core/smartview/block/blockStringW.h>
+#include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {
@@ -24,6 +25,8 @@ namespace smartview
 		blockT<DWORD> lDaylightBias; // offset from bias during daylight time
 		SYSTEMTIMEBlock stStandardDate; // time to switch to standard time
 		SYSTEMTIMEBlock stDaylightDate; // time to switch to daylight time
+
+		TZRule(std::shared_ptr<binaryParser>& parser);
 	};
 
 	// TimeZoneDefinition
@@ -43,6 +46,6 @@ namespace smartview
 		blockT<WORD> m_cchKeyName;
 		blockStringW m_szKeyName;
 		blockT<WORD> m_cRules;
-		std::vector<TZRule> m_lpTZRule;
+		std::vector<std::shared_ptr<TZRule>> m_lpTZRule;
 	};
 } // namespace smartview

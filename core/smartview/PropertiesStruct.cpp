@@ -5,6 +5,13 @@
 
 namespace smartview
 {
+	SBinaryBlock::SBinaryBlock(std::shared_ptr<binaryParser> parser)
+	{
+		cb = parser->Get<DWORD>();
+		// Note that we're not placing a restriction on how large a multivalued binary property we can parse. May need to revisit this.
+		lpb.parse(parser, cb);
+	}
+
 	void PropertiesStruct::init(std::shared_ptr<binaryParser> parser, DWORD cValues, bool bRuleCondition)
 	{
 		SetMaxEntries(cValues);
@@ -172,7 +179,7 @@ namespace smartview
 			}
 
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
-			Value.bin.lpb = parser->GetBYTES(Value.bin.cb);
+			Value.bin.lpb.parse(parser, Value.bin.cb);
 			break;
 		case PT_UNICODE:
 			if (doRuleProcessing)
@@ -255,11 +262,7 @@ namespace smartview
 			{
 				for (ULONG j = 0; j < Value.MVbin.cValues; j++)
 				{
-					auto bin = SBinaryBlock{};
-					bin.cb = parser->Get<DWORD>();
-					// Note that we're not placing a restriction on how large a multivalued binary property we can parse. May need to revisit this.
-					bin.lpb = parser->GetBYTES(bin.cb);
-					Value.MVbin.lpbin.push_back(bin);
+					Value.MVbin.lpbin.emplace_back(std::make_shared<SBinaryBlock>(parser));
 				}
 			}
 			break;
