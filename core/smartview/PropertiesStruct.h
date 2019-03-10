@@ -2,6 +2,7 @@
 #include <core/smartview/SmartViewParser.h>
 #include <core/smartview/SmartView.h>
 #include <core/property/parseProperty.h>
+#include <core/smartview/block/blockStringA.h>
 
 namespace smartview
 {
@@ -47,7 +48,7 @@ namespace smartview
 	struct StringArrayA
 	{
 		blockT<ULONG> cValues;
-		std::vector<blockStringA> lppszA;
+		std::vector<std::shared_ptr<blockStringA>> lppszA;
 	};
 
 	struct StringArrayW
@@ -211,6 +212,8 @@ namespace smartview
 			return strings::emptystring;
 		}
 
+		SPropValueStruct(std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing);
+
 		// Any data we need to cache for getData can live here
 	private:
 		GUID guid{};
@@ -227,7 +230,7 @@ namespace smartview
 		void SetMaxEntries(DWORD maxEntries) { m_MaxEntries = maxEntries; }
 		void EnableNickNameParsing() { m_NickName = true; }
 		void EnableRuleConditionParsing() { m_RuleCondition = true; }
-		_Check_return_ std::vector<SPropValueStruct>& Props() { return m_Props; }
+		_Check_return_ std::vector<std::shared_ptr<SPropValueStruct>>& Props() { return m_Props; }
 
 	private:
 		void Parse() override;
@@ -236,8 +239,6 @@ namespace smartview
 		bool m_NickName{};
 		bool m_RuleCondition{};
 		DWORD m_MaxEntries{_MaxEntriesSmall};
-		std::vector<SPropValueStruct> m_Props;
-
-		_Check_return_ SPropValueStruct BinToSPropValueStruct();
+		std::vector<std::shared_ptr<SPropValueStruct>> m_Props;
 	};
 } // namespace smartview

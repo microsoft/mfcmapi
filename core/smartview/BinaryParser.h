@@ -2,7 +2,6 @@
 #include <core/smartview/block/block.h>
 #include <core/smartview/block/blockT.h>
 #include <core/smartview/block/blockBytes.h>
-#include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockStringW.h>
 
 namespace smartview
@@ -52,6 +51,7 @@ namespace smartview
 		// If we're at or past the end of the buffer, return 0
 		// If we're before the beginning of the buffer, return 0
 		size_t RemainingBytes() const { return m_Offset > m_Size ? 0 : m_Size - m_Offset; }
+		bool CheckRemainingBytes(size_t cbBytes) const { return cbBytes <= RemainingBytes(); }
 
 		template <typename T> blockT<T> Get()
 		{
@@ -67,25 +67,6 @@ namespace smartview
 			return ret;
 		}
 
-		blockStringA GetStringA(size_t cchChar = -1)
-		{
-			if (cchChar == static_cast<size_t>(-1))
-			{
-				cchChar =
-					strnlen_s(reinterpret_cast<LPCSTR>(GetCurrentAddress()), (m_Size - m_Offset) / sizeof CHAR) + 1;
-			}
-
-			if (!cchChar || !CheckRemainingBytes(sizeof CHAR * cchChar)) return {};
-
-			auto ret = blockStringA();
-			ret.setOffset(m_Offset);
-			ret.setData(
-				strings::RemoveInvalidCharactersA(std::string(reinterpret_cast<LPCSTR>(GetCurrentAddress()), cchChar)));
-			ret.setSize(sizeof CHAR * cchChar);
-			m_Offset += sizeof CHAR * cchChar;
-			return ret;
-		}
-
 		blockStringW GetStringW(size_t cchChar = -1)
 		{
 			if (cchChar == static_cast<size_t>(-1))
@@ -94,14 +75,16 @@ namespace smartview
 					wcsnlen_s(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), (m_Size - m_Offset) / sizeof WCHAR) + 1;
 			}
 
-			if (!cchChar || !CheckRemainingBytes(sizeof WCHAR * cchChar)) return {};
-
 			auto ret = blockStringW();
-			ret.setOffset(m_Offset);
-			ret.setData(strings::RemoveInvalidCharactersW(
-				std::wstring(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), cchChar)));
-			ret.setSize(sizeof WCHAR * cchChar);
-			m_Offset += sizeof WCHAR * cchChar;
+			if (cchChar && CheckRemainingBytes(sizeof WCHAR * cchChar))
+			{
+				ret.setOffset(m_Offset);
+				ret.setData(strings::RemoveInvalidCharactersW(
+					std::wstring(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), cchChar)));
+				ret.setSize(sizeof WCHAR * cchChar);
+				m_Offset += sizeof WCHAR * cchChar;
+			}
+
 			return ret;
 		}
 
@@ -127,7 +110,6 @@ namespace smartview
 		blockBytes GetRemainingData() { return GetBYTES(RemainingBytes()); }
 
 	private:
-		bool CheckRemainingBytes(size_t cbBytes) const { return cbBytes <= RemainingBytes(); }
 		std::vector<BYTE> m_Bin;
 		size_t m_Offset{};
 		size_t m_Size{}; // When uncapped, this is m_Bin.size(). When capped, this is our artificial capped size.

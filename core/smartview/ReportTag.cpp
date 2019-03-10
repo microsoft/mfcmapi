@@ -32,7 +32,7 @@ namespace smartview
 		m_lpMessageSearchKey = m_Parser->GetBYTES(m_cbMessageSearchKey, _MaxEID);
 
 		m_cchAnsiText = m_Parser->Get<DWORD>();
-		m_lpszAnsiText = m_Parser->GetStringA(m_cchAnsiText);
+		m_lpszAnsiText.init(m_Parser, m_cchAnsiText);
 	}
 
 	void ReportTag::addEID(const std::wstring& label, const blockT<ULONG>& cb, const blockBytes& eid)

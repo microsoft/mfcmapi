@@ -304,20 +304,20 @@ namespace smartview
 			{
 				auto propBlock = block{};
 				propBlock.addBlock(
-					resContent.lpProp.Props()[0].ulPropTag,
+					resContent.lpProp.Props()[0]->ulPropTag,
 					L"%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
-					proptags::TagToString(resContent.lpProp.Props()[0].ulPropTag, nullptr, false, true).c_str());
+					proptags::TagToString(resContent.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
 				propBlock.addBlock(
-					resContent.lpProp.Props()[0].PropBlock(),
+					resContent.lpProp.Props()[0]->PropBlock(),
 					L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
 					szTabs.c_str(),
-					resContent.lpProp.Props()[0].PropBlock().c_str());
+					resContent.lpProp.Props()[0]->PropBlock().c_str());
 				propBlock.addBlock(
-					resContent.lpProp.Props()[0].AltPropBlock(),
+					resContent.lpProp.Props()[0]->AltPropBlock(),
 					L"%1!ws!\tAlt: %2!ws!\r\n",
 					szTabs.c_str(),
-					resContent.lpProp.Props()[0].AltPropBlock().c_str());
+					resContent.lpProp.Props()[0]->AltPropBlock().c_str());
 				rt.addBlock(propBlock);
 			}
 		}
@@ -333,21 +333,21 @@ namespace smartview
 			if (!resProperty.lpProp.Props().empty())
 			{
 				resProperty.ulPropTag.addBlock(
-					resProperty.lpProp.Props()[0].ulPropTag,
+					resProperty.lpProp.Props()[0]->ulPropTag,
 					L"%1!ws!lpRes->res.resProperty.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
-					proptags::TagToString(resProperty.lpProp.Props()[0].ulPropTag, nullptr, false, true).c_str());
+					proptags::TagToString(resProperty.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
 				resProperty.ulPropTag.addBlock(
-					resProperty.lpProp.Props()[0].PropBlock(),
+					resProperty.lpProp.Props()[0]->PropBlock(),
 					L"%1!ws!lpRes->res.resProperty.lpProp->Value = %2!ws!\r\n",
 					szTabs.c_str(),
-					resProperty.lpProp.Props()[0].PropBlock().c_str());
+					resProperty.lpProp.Props()[0]->PropBlock().c_str());
 				resProperty.ulPropTag.addBlock(
-					resProperty.lpProp.Props()[0].AltPropBlock(),
+					resProperty.lpProp.Props()[0]->AltPropBlock(),
 					L"%1!ws!\tAlt: %2!ws!\r\n",
 					szTabs.c_str(),
-					resProperty.lpProp.Props()[0].AltPropBlock().c_str());
-				szPropNum = resProperty.lpProp.Props()[0].PropNum();
+					resProperty.lpProp.Props()[0]->AltPropBlock().c_str());
+				szPropNum = resProperty.lpProp.Props()[0]->PropNum();
 				if (!szPropNum.empty())
 				{
 					// TODO: use block
@@ -442,21 +442,21 @@ namespace smartview
 		{
 			for (auto& prop : resComment.lpProp.Props())
 			{
-				prop.ulPropTag.setText(
+				prop->ulPropTag.setText(
 					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
-					proptags::TagToString(prop.ulPropTag, nullptr, false, true).c_str());
-				prop.ulPropTag.addBlock(
-					prop.PropBlock(),
+					proptags::TagToString(prop->ulPropTag, nullptr, false, true).c_str());
+				prop->ulPropTag.addBlock(
+					prop->PropBlock(),
 					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
-					prop.PropBlock().c_str());
-				prop.ulPropTag.addBlock(
-					prop.AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop.AltPropBlock().c_str());
+					prop->PropBlock().c_str());
+				prop->ulPropTag.addBlock(
+					prop->AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop->AltPropBlock().c_str());
 
-				resComment.cValues.addBlock(prop.ulPropTag);
+				resComment.cValues.addBlock(prop->ulPropTag);
 				i++;
 			}
 
@@ -478,21 +478,21 @@ namespace smartview
 		case RES_ANNOTATION:
 			for (auto& prop : resAnnotation.lpProp.Props())
 			{
-				prop.ulPropTag.setText(
+				prop->ulPropTag.setText(
 					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
-					proptags::TagToString(prop.ulPropTag, nullptr, false, true).c_str());
-				prop.ulPropTag.addBlock(
-					prop.PropBlock(),
+					proptags::TagToString(prop->ulPropTag, nullptr, false, true).c_str());
+				prop->ulPropTag.addBlock(
+					prop->PropBlock(),
 					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
-					prop.PropBlock().c_str());
-				prop.ulPropTag.addBlock(
-					prop.AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop.AltPropBlock().c_str());
+					prop->PropBlock().c_str());
+				prop->ulPropTag.addBlock(
+					prop->AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop->AltPropBlock().c_str());
 
-				resAnnotation.cValues.addBlock(prop.ulPropTag);
+				resAnnotation.cValues.addBlock(prop->ulPropTag);
 				i++;
 			}
 

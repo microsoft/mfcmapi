@@ -59,7 +59,6 @@ namespace smartview
 
 		if (m_FolderList2Length)
 		{
-			auto cbRemainingBytes = m_Parser->RemainingBytes();
 			m_FolderList2.parse(m_Parser, m_FolderList2Length, true);
 		}
 

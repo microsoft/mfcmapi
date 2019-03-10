@@ -1,6 +1,7 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
 #include <core/smartview/RecurrencePattern.h>
+#include <core/smartview/block/blockStringA.h>
 
 namespace smartview
 {
@@ -26,6 +27,8 @@ namespace smartview
 		blockT<DWORD> Attachment;
 		blockT<DWORD> SubType;
 		blockT<DWORD> AppointmentColor;
+
+		ExceptionInfo(std::shared_ptr<binaryParser>& parser);
 	};
 
 	struct ChangeHighlight
@@ -70,7 +73,7 @@ namespace smartview
 		blockT<DWORD> m_StartTimeOffset;
 		blockT<DWORD> m_EndTimeOffset;
 		blockT<WORD> m_ExceptionCount;
-		std::vector<ExceptionInfo> m_ExceptionInfo;
+		std::vector<std::shared_ptr<ExceptionInfo>> m_ExceptionInfo;
 		blockT<DWORD> m_ReservedBlock1Size;
 		blockBytes m_ReservedBlock1;
 		std::vector<ExtendedException> m_ExtendedException;

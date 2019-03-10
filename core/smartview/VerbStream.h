@@ -1,5 +1,6 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
+#include <core/smartview/block/blockStringA.h>
 
 namespace smartview
 {
@@ -22,6 +23,8 @@ namespace smartview
 		blockT<DWORD> Internal5;
 		blockT<DWORD> ID;
 		blockT<DWORD> Internal6;
+
+		VerbData(std::shared_ptr<binaryParser>& parser);
 	};
 
 	struct VerbExtraData
@@ -40,7 +43,7 @@ namespace smartview
 
 		blockT<WORD> m_Version;
 		blockT<DWORD> m_Count;
-		std::vector<VerbData> m_lpVerbData;
+		std::vector<std::shared_ptr<VerbData>> m_lpVerbData;
 		blockT<WORD> m_Version2;
 		std::vector<VerbExtraData> m_lpVerbExtraData;
 	};

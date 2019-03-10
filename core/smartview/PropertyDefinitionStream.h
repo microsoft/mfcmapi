@@ -1,5 +1,6 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
+#include <core/smartview/block/blockStringA.h>
 
 namespace smartview
 {
@@ -8,6 +9,8 @@ namespace smartview
 		blockT<BYTE> cchLength;
 		blockT<WORD> cchExtendedLength;
 		blockStringW szCharacters;
+
+		void parse(std::shared_ptr<binaryParser>& parser);
 	};
 
 	struct PackedAnsiString
@@ -15,6 +18,8 @@ namespace smartview
 		blockT<BYTE> cchLength;
 		blockT<WORD> cchExtendedLength;
 		blockStringA szCharacters;
+
+		void parse(std::shared_ptr<binaryParser>& parser);
 	};
 
 	struct SkipBlock
@@ -39,6 +44,8 @@ namespace smartview
 		blockT<DWORD> dwInternalType;
 		DWORD dwSkipBlockCount{};
 		std::vector<SkipBlock> psbSkipBlocks;
+
+		FieldDefinition(std::shared_ptr<binaryParser>& parser, WORD version);
 	};
 
 	class PropertyDefinitionStream : public SmartViewParser
@@ -49,6 +56,6 @@ namespace smartview
 
 		blockT<WORD> m_wVersion;
 		blockT<DWORD> m_dwFieldDefinitionCount;
-		std::vector<FieldDefinition> m_pfdFieldDefinitions;
+		std::vector<std::shared_ptr<FieldDefinition>> m_pfdFieldDefinitions;
 	};
 } // namespace smartview

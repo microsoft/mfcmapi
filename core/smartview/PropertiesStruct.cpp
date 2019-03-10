@@ -29,7 +29,7 @@ namespace smartview
 		for (;;)
 		{
 			if (dwPropCount >= m_MaxEntries) break;
-			m_Props.push_back(BinToSPropValueStruct());
+			m_Props.emplace_back(std::make_shared<SPropValueStruct>(m_Parser, m_NickName, m_RuleCondition));
 			if (!m_Parser->RemainingBytes()) break;
 			dwPropCount++;
 		}
@@ -38,7 +38,7 @@ namespace smartview
 	void PropertiesStruct::ParseBlocks()
 	{
 		auto i = 0;
-		for (auto prop : m_Props)
+		for (auto& prop : m_Props)
 		{
 			if (i != 0)
 			{
@@ -47,26 +47,26 @@ namespace smartview
 
 			auto propBlock = block();
 			propBlock.setText(L"Property[%1!d!]\r\n", i++);
-			propBlock.addBlock(prop.ulPropTag, L"Property = 0x%1!08X!", prop.ulPropTag.getData());
+			propBlock.addBlock(prop->ulPropTag, L"Property = 0x%1!08X!", prop->ulPropTag.getData());
 
-			auto propTagNames = proptags::PropTagToPropName(prop.ulPropTag, false);
+			auto propTagNames = proptags::PropTagToPropName(prop->ulPropTag, false);
 			if (!propTagNames.bestGuess.empty())
 			{
 				propBlock.terminateBlock();
-				propBlock.addBlock(prop.ulPropTag, L"Name: %1!ws!", propTagNames.bestGuess.c_str());
+				propBlock.addBlock(prop->ulPropTag, L"Name: %1!ws!", propTagNames.bestGuess.c_str());
 			}
 
 			if (!propTagNames.otherMatches.empty())
 			{
 				propBlock.terminateBlock();
-				propBlock.addBlock(prop.ulPropTag, L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
+				propBlock.addBlock(prop->ulPropTag, L"Other Matches: %1!ws!", propTagNames.otherMatches.c_str());
 			}
 
 			propBlock.terminateBlock();
-			propBlock.addBlock(prop.PropBlock(), L"PropString = %1!ws! ", prop.PropBlock().c_str());
-			propBlock.addBlock(prop.AltPropBlock(), L"AltPropString = %1!ws!", prop.AltPropBlock().c_str());
+			propBlock.addBlock(prop->PropBlock(), L"PropString = %1!ws! ", prop->PropBlock().c_str());
+			propBlock.addBlock(prop->AltPropBlock(), L"AltPropString = %1!ws!", prop->AltPropBlock().c_str());
 
-			auto szSmartView = prop.SmartViewBlock();
+			auto szSmartView = prop->SmartViewBlock();
 			if (!szSmartView.empty())
 			{
 				propBlock.terminateBlock();
@@ -77,203 +77,194 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ SPropValueStruct PropertiesStruct::BinToSPropValueStruct()
+	SPropValueStruct::SPropValueStruct(std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
 	{
-		const auto ulCurrOffset = m_Parser->GetCurrentOffset();
+		const auto ulCurrOffset = parser->GetCurrentOffset();
 
-		auto prop = SPropValueStruct{};
-		prop.PropType = m_Parser->Get<WORD>();
-		prop.PropID = m_Parser->Get<WORD>();
+		PropType = parser->Get<WORD>();
+		PropID = parser->Get<WORD>();
 
-		prop.ulPropTag.setData(PROP_TAG(prop.PropType, prop.PropID));
-		prop.ulPropTag.setSize(prop.PropType.getSize() + prop.PropID.getSize());
-		prop.ulPropTag.setOffset(prop.PropType.getOffset());
-		prop.dwAlignPad = 0;
+		ulPropTag.setData(PROP_TAG(PropType, PropID));
+		ulPropTag.setSize(PropType.getSize() + PropID.getSize());
+		ulPropTag.setOffset(PropType.getOffset());
+		dwAlignPad = 0;
 
-		if (m_NickName) (void) m_Parser->Get<DWORD>(); // reserved
+		if (doNickname) (void) parser->Get<DWORD>(); // reserved
 
-		switch (prop.PropType)
+		switch (PropType)
 		{
 		case PT_I2:
 			// TODO: Insert proper property struct parsing here
-			if (m_NickName) prop.Value.i = m_Parser->Get<WORD>();
-			if (m_NickName) m_Parser->Get<WORD>();
-			if (m_NickName) m_Parser->Get<DWORD>();
+			if (doNickname) Value.i = parser->Get<WORD>();
+			if (doNickname) parser->Get<WORD>();
+			if (doNickname) parser->Get<DWORD>();
 			break;
 		case PT_LONG:
-			prop.Value.l = m_Parser->Get<DWORD>();
-			if (m_NickName) m_Parser->Get<DWORD>();
+			Value.l = parser->Get<DWORD>();
+			if (doNickname) parser->Get<DWORD>();
 			break;
 		case PT_ERROR:
-			prop.Value.err = m_Parser->Get<DWORD>();
-			if (m_NickName) m_Parser->Get<DWORD>();
+			Value.err = parser->Get<DWORD>();
+			if (doNickname) parser->Get<DWORD>();
 			break;
 		case PT_R4:
-			prop.Value.flt = m_Parser->Get<float>();
-			if (m_NickName) m_Parser->Get<DWORD>();
+			Value.flt = parser->Get<float>();
+			if (doNickname) parser->Get<DWORD>();
 			break;
 		case PT_DOUBLE:
-			prop.Value.dbl = m_Parser->Get<double>();
+			Value.dbl = parser->Get<double>();
 			break;
 		case PT_BOOLEAN:
-			if (m_RuleCondition)
+			if (doRuleProcessing)
 			{
-				prop.Value.b = m_Parser->Get<BYTE>();
+				Value.b = parser->Get<BYTE>();
 			}
 			else
 			{
-				prop.Value.b = m_Parser->Get<WORD>();
+				Value.b = parser->Get<WORD>();
 			}
 
-			if (m_NickName) m_Parser->Get<WORD>();
-			if (m_NickName) m_Parser->Get<DWORD>();
+			if (doNickname) parser->Get<WORD>();
+			if (doNickname) parser->Get<DWORD>();
 			break;
 		case PT_I8:
-			prop.Value.li = m_Parser->Get<LARGE_INTEGER>();
+			Value.li = parser->Get<LARGE_INTEGER>();
 			break;
 		case PT_SYSTIME:
-			prop.Value.ft.dwHighDateTime = m_Parser->Get<DWORD>();
-			prop.Value.ft.dwLowDateTime = m_Parser->Get<DWORD>();
+			Value.ft.dwHighDateTime = parser->Get<DWORD>();
+			Value.ft.dwLowDateTime = parser->Get<DWORD>();
 			break;
 		case PT_STRING8:
-			if (m_RuleCondition)
+			if (doRuleProcessing)
 			{
-				prop.Value.lpszA.str = m_Parser->GetStringA();
-				prop.Value.lpszA.cb.setData(static_cast<DWORD>(prop.Value.lpszA.str.length()));
+				Value.lpszA.str.init(parser);
+				Value.lpszA.cb.setData(static_cast<DWORD>(Value.lpszA.str.length()));
 			}
 			else
 			{
-				if (m_NickName)
+				if (doNickname)
 				{
-					(void) m_Parser->Get<LARGE_INTEGER>(); // union
-					prop.Value.lpszA.cb = m_Parser->Get<DWORD>();
+					(void) parser->Get<LARGE_INTEGER>(); // union
+					Value.lpszA.cb = parser->Get<DWORD>();
 				}
 				else
 				{
-					prop.Value.lpszA.cb = m_Parser->Get<WORD>();
+					Value.lpszA.cb = parser->Get<WORD>();
 				}
 
-				prop.Value.lpszA.str = m_Parser->GetStringA(prop.Value.lpszA.cb);
+				Value.lpszA.str.init(parser, Value.lpszA.cb);
 			}
 
 			break;
 		case PT_BINARY:
-			if (m_NickName)
+			if (doNickname)
 			{
-				(void) m_Parser->Get<LARGE_INTEGER>(); // union
+				(void) parser->Get<LARGE_INTEGER>(); // union
 			}
 
-			if (m_RuleCondition || m_NickName)
+			if (doRuleProcessing || doNickname)
 			{
-				prop.Value.bin.cb = m_Parser->Get<DWORD>();
+				Value.bin.cb = parser->Get<DWORD>();
 			}
 			else
 			{
-				prop.Value.bin.cb = m_Parser->Get<WORD>();
+				Value.bin.cb = parser->Get<WORD>();
 			}
 
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
-			prop.Value.bin.lpb = m_Parser->GetBYTES(prop.Value.bin.cb);
+			Value.bin.lpb = parser->GetBYTES(Value.bin.cb);
 			break;
 		case PT_UNICODE:
-			if (m_RuleCondition)
+			if (doRuleProcessing)
 			{
-				prop.Value.lpszW.str = m_Parser->GetStringW();
-				prop.Value.lpszW.cb.setData(static_cast<DWORD>(prop.Value.lpszW.str.length()));
+				Value.lpszW.str = parser->GetStringW();
+				Value.lpszW.cb.setData(static_cast<DWORD>(Value.lpszW.str.length()));
 			}
 			else
 			{
-				if (m_NickName)
+				if (doNickname)
 				{
-					(void) m_Parser->Get<LARGE_INTEGER>(); // union
-					prop.Value.lpszW.cb = m_Parser->Get<DWORD>();
+					(void) parser->Get<LARGE_INTEGER>(); // union
+					Value.lpszW.cb = parser->Get<DWORD>();
 				}
 				else
 				{
-					prop.Value.lpszW.cb = m_Parser->Get<WORD>();
+					Value.lpszW.cb = parser->Get<WORD>();
 				}
 
-				prop.Value.lpszW.str = m_Parser->GetStringW(prop.Value.lpszW.cb / sizeof(WCHAR));
+				Value.lpszW.str = parser->GetStringW(Value.lpszW.cb / sizeof(WCHAR));
 			}
 			break;
 		case PT_CLSID:
-			if (m_NickName) (void) m_Parser->Get<LARGE_INTEGER>(); // union
-			prop.Value.lpguid = m_Parser->Get<GUID>();
+			if (doNickname) (void) parser->Get<LARGE_INTEGER>(); // union
+			Value.lpguid = parser->Get<GUID>();
 			break;
 		case PT_MV_STRING8:
-			if (m_NickName)
+			if (doNickname)
 			{
-				(void) m_Parser->Get<LARGE_INTEGER>(); // union
-				prop.Value.MVszA.cValues = m_Parser->Get<DWORD>();
+				(void) parser->Get<LARGE_INTEGER>(); // union
+				Value.MVszA.cValues = parser->Get<DWORD>();
 			}
 			else
 			{
-				prop.Value.MVszA.cValues = m_Parser->Get<WORD>();
+				Value.MVszA.cValues = parser->Get<WORD>();
 			}
 
-			if (prop.Value.MVszA.cValues)
-			//if (prop.Value.MVszA.cValues && prop.Value.MVszA.cValues < _MaxEntriesLarge)
+			if (Value.MVszA.cValues)
+			//if (Value.MVszA.cValues && Value.MVszA.cValues < _MaxEntriesLarge)
 			{
-				prop.Value.MVszA.lppszA.reserve(prop.Value.MVszA.cValues);
-				for (ULONG j = 0; j < prop.Value.MVszA.cValues; j++)
+				Value.MVszA.lppszA.reserve(Value.MVszA.cValues);
+				for (ULONG j = 0; j < Value.MVszA.cValues; j++)
 				{
-					prop.Value.MVszA.lppszA.push_back(m_Parser->GetStringA());
+					Value.MVszA.lppszA.emplace_back(std::make_shared<blockStringA>(parser));
 				}
 			}
 			break;
 		case PT_MV_UNICODE:
-			if (m_NickName)
+			if (doNickname)
 			{
-				(void) m_Parser->Get<LARGE_INTEGER>(); // union
-				prop.Value.MVszW.cValues = m_Parser->Get<DWORD>();
+				(void) parser->Get<LARGE_INTEGER>(); // union
+				Value.MVszW.cValues = parser->Get<DWORD>();
 			}
 			else
 			{
-				prop.Value.MVszW.cValues = m_Parser->Get<WORD>();
+				Value.MVszW.cValues = parser->Get<WORD>();
 			}
 
-			if (prop.Value.MVszW.cValues && prop.Value.MVszW.cValues < _MaxEntriesLarge)
+			if (Value.MVszW.cValues && Value.MVszW.cValues < _MaxEntriesLarge)
 			{
-				prop.Value.MVszW.lppszW.reserve(prop.Value.MVszW.cValues);
-				for (ULONG j = 0; j < prop.Value.MVszW.cValues; j++)
+				Value.MVszW.lppszW.reserve(Value.MVszW.cValues);
+				for (ULONG j = 0; j < Value.MVszW.cValues; j++)
 				{
-					prop.Value.MVszW.lppszW.emplace_back(m_Parser->GetStringW());
+					Value.MVszW.lppszW.emplace_back(parser->GetStringW());
 				}
 			}
 			break;
 		case PT_MV_BINARY:
-			if (m_NickName)
+			if (doNickname)
 			{
-				(void) m_Parser->Get<LARGE_INTEGER>(); // union
-				prop.Value.MVbin.cValues = m_Parser->Get<DWORD>();
+				(void) parser->Get<LARGE_INTEGER>(); // union
+				Value.MVbin.cValues = parser->Get<DWORD>();
 			}
 			else
 			{
-				prop.Value.MVbin.cValues = m_Parser->Get<WORD>();
+				Value.MVbin.cValues = parser->Get<WORD>();
 			}
 
-			if (prop.Value.MVbin.cValues && prop.Value.MVbin.cValues < _MaxEntriesLarge)
+			if (Value.MVbin.cValues && Value.MVbin.cValues < _MaxEntriesLarge)
 			{
-				for (ULONG j = 0; j < prop.Value.MVbin.cValues; j++)
+				for (ULONG j = 0; j < Value.MVbin.cValues; j++)
 				{
 					auto bin = SBinaryBlock{};
-					bin.cb = m_Parser->Get<DWORD>();
+					bin.cb = parser->Get<DWORD>();
 					// Note that we're not placing a restriction on how large a multivalued binary property we can parse. May need to revisit this.
-					bin.lpb = m_Parser->GetBYTES(bin.cb);
-					prop.Value.MVbin.lpbin.push_back(bin);
+					bin.lpb = parser->GetBYTES(bin.cb);
+					Value.MVbin.lpbin.push_back(bin);
 				}
 			}
 			break;
 		default:
 			break;
 		}
-
-		if (ulCurrOffset == m_Parser->GetCurrentOffset())
-		{
-			// We didn't advance at all - we should return nothing.
-			return {};
-		}
-
-		return prop;
 	}
 } // namespace smartview

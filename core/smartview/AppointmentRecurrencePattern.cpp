@@ -7,6 +7,67 @@
 
 namespace smartview
 {
+	ExceptionInfo::ExceptionInfo(std::shared_ptr<binaryParser>& parser)
+	{
+		StartDateTime = parser->Get<DWORD>();
+		EndDateTime = parser->Get<DWORD>();
+		OriginalStartDate = parser->Get<DWORD>();
+		OverrideFlags = parser->Get<WORD>();
+		if (OverrideFlags & ARO_SUBJECT)
+		{
+			SubjectLength = parser->Get<WORD>();
+			SubjectLength2 = parser->Get<WORD>();
+			if (SubjectLength2 && SubjectLength2 + 1 == SubjectLength)
+			{
+				Subject.init(parser, SubjectLength2);
+			}
+		}
+
+		if (OverrideFlags & ARO_MEETINGTYPE)
+		{
+			MeetingType = parser->Get<DWORD>();
+		}
+
+		if (OverrideFlags & ARO_REMINDERDELTA)
+		{
+			ReminderDelta = parser->Get<DWORD>();
+		}
+		if (OverrideFlags & ARO_REMINDER)
+		{
+			ReminderSet = parser->Get<DWORD>();
+		}
+
+		if (OverrideFlags & ARO_LOCATION)
+		{
+			LocationLength = parser->Get<WORD>();
+			LocationLength2 = parser->Get<WORD>();
+			if (LocationLength2 && LocationLength2 + 1 == LocationLength)
+			{
+				Location.init(parser, LocationLength2);
+			}
+		}
+
+		if (OverrideFlags & ARO_BUSYSTATUS)
+		{
+			BusyStatus = parser->Get<DWORD>();
+		}
+
+		if (OverrideFlags & ARO_ATTACHMENT)
+		{
+			Attachment = parser->Get<DWORD>();
+		}
+
+		if (OverrideFlags & ARO_SUBTYPE)
+		{
+			SubType = parser->Get<DWORD>();
+		}
+
+		if (OverrideFlags & ARO_APPTCOLOR)
+		{
+			AppointmentColor = parser->Get<DWORD>();
+		}
+	}
+
 	void AppointmentRecurrencePattern::Parse()
 	{
 		m_RecurrencePattern.parse(m_Parser, false);
@@ -23,67 +84,7 @@ namespace smartview
 			m_ExceptionInfo.reserve(m_ExceptionCount);
 			for (WORD i = 0; i < m_ExceptionCount; i++)
 			{
-				ExceptionInfo exceptionInfo;
-				exceptionInfo.StartDateTime = m_Parser->Get<DWORD>();
-				exceptionInfo.EndDateTime = m_Parser->Get<DWORD>();
-				exceptionInfo.OriginalStartDate = m_Parser->Get<DWORD>();
-				exceptionInfo.OverrideFlags = m_Parser->Get<WORD>();
-				if (exceptionInfo.OverrideFlags & ARO_SUBJECT)
-				{
-					exceptionInfo.SubjectLength = m_Parser->Get<WORD>();
-					exceptionInfo.SubjectLength2 = m_Parser->Get<WORD>();
-					if (exceptionInfo.SubjectLength2 && exceptionInfo.SubjectLength2 + 1 == exceptionInfo.SubjectLength)
-					{
-						exceptionInfo.Subject = m_Parser->GetStringA(exceptionInfo.SubjectLength2);
-					}
-				}
-
-				if (exceptionInfo.OverrideFlags & ARO_MEETINGTYPE)
-				{
-					exceptionInfo.MeetingType = m_Parser->Get<DWORD>();
-				}
-
-				if (exceptionInfo.OverrideFlags & ARO_REMINDERDELTA)
-				{
-					exceptionInfo.ReminderDelta = m_Parser->Get<DWORD>();
-				}
-				if (exceptionInfo.OverrideFlags & ARO_REMINDER)
-				{
-					exceptionInfo.ReminderSet = m_Parser->Get<DWORD>();
-				}
-
-				if (exceptionInfo.OverrideFlags & ARO_LOCATION)
-				{
-					exceptionInfo.LocationLength = m_Parser->Get<WORD>();
-					exceptionInfo.LocationLength2 = m_Parser->Get<WORD>();
-					if (exceptionInfo.LocationLength2 &&
-						exceptionInfo.LocationLength2 + 1 == exceptionInfo.LocationLength)
-					{
-						exceptionInfo.Location = m_Parser->GetStringA(exceptionInfo.LocationLength2);
-					}
-				}
-
-				if (exceptionInfo.OverrideFlags & ARO_BUSYSTATUS)
-				{
-					exceptionInfo.BusyStatus = m_Parser->Get<DWORD>();
-				}
-
-				if (exceptionInfo.OverrideFlags & ARO_ATTACHMENT)
-				{
-					exceptionInfo.Attachment = m_Parser->Get<DWORD>();
-				}
-
-				if (exceptionInfo.OverrideFlags & ARO_SUBTYPE)
-				{
-					exceptionInfo.SubType = m_Parser->Get<DWORD>();
-				}
-
-				if (exceptionInfo.OverrideFlags & ARO_APPTCOLOR)
-				{
-					exceptionInfo.AppointmentColor = m_Parser->Get<DWORD>();
-				}
-
-				m_ExceptionInfo.push_back(exceptionInfo);
+				m_ExceptionInfo.emplace_back(std::make_shared<ExceptionInfo>(m_Parser));
 			}
 		}
 
@@ -113,14 +114,14 @@ namespace smartview
 				extendedException.ReservedBlockEE1 =
 					m_Parser->GetBYTES(extendedException.ReservedBlockEE1Size, _MaxBytes);
 
-				if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT || m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
+				if (m_ExceptionInfo[i]->OverrideFlags & ARO_SUBJECT || m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
 				{
 					extendedException.StartDateTime = m_Parser->Get<DWORD>();
 					extendedException.EndDateTime = m_Parser->Get<DWORD>();
 					extendedException.OriginalStartDate = m_Parser->Get<DWORD>();
 				}
 
-				if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT)
+				if (m_ExceptionInfo[i]->OverrideFlags & ARO_SUBJECT)
 				{
 					extendedException.WideCharSubjectLength = m_Parser->Get<WORD>();
 					if (extendedException.WideCharSubjectLength)
@@ -130,7 +131,7 @@ namespace smartview
 					}
 				}
 
-				if (m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
+				if (m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
 				{
 					extendedException.WideCharLocationLength = m_Parser->Get<WORD>();
 					if (extendedException.WideCharLocationLength)
@@ -140,7 +141,7 @@ namespace smartview
 					}
 				}
 
-				if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT || m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
+				if (m_ExceptionInfo[i]->OverrideFlags & ARO_SUBJECT || m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
 				{
 					extendedException.ReservedBlockEE2Size = m_Parser->Get<DWORD>();
 					extendedException.ReservedBlockEE2 =
@@ -184,139 +185,140 @@ namespace smartview
 			{
 				auto exception = block{};
 				exception.addBlock(
-					m_ExceptionInfo[i].StartDateTime,
+					m_ExceptionInfo[i]->StartDateTime,
 					L"ExceptionInfo[%1!d!].StartDateTime: 0x%2!08X! = %3!ws!\r\n",
 					i,
-					m_ExceptionInfo[i].StartDateTime.getData(),
-					RTimeToString(m_ExceptionInfo[i].StartDateTime).c_str());
+					m_ExceptionInfo[i]->StartDateTime.getData(),
+					RTimeToString(m_ExceptionInfo[i]->StartDateTime).c_str());
 				exception.addBlock(
-					m_ExceptionInfo[i].EndDateTime,
+					m_ExceptionInfo[i]->EndDateTime,
 					L"ExceptionInfo[%1!d!].EndDateTime: 0x%2!08X! = %3!ws!\r\n",
 					i,
-					m_ExceptionInfo[i].EndDateTime.getData(),
-					RTimeToString(m_ExceptionInfo[i].EndDateTime).c_str());
+					m_ExceptionInfo[i]->EndDateTime.getData(),
+					RTimeToString(m_ExceptionInfo[i]->EndDateTime).c_str());
 				exception.addBlock(
-					m_ExceptionInfo[i].OriginalStartDate,
+					m_ExceptionInfo[i]->OriginalStartDate,
 					L"ExceptionInfo[%1!d!].OriginalStartDate: 0x%2!08X! = %3!ws!\r\n",
 					i,
-					m_ExceptionInfo[i].OriginalStartDate.getData(),
-					RTimeToString(m_ExceptionInfo[i].OriginalStartDate).c_str());
-				auto szOverrideFlags =
-					flags::InterpretFlags(flagOverrideFlags, m_ExceptionInfo[i].OverrideFlags);
+					m_ExceptionInfo[i]->OriginalStartDate.getData(),
+					RTimeToString(m_ExceptionInfo[i]->OriginalStartDate).c_str());
+				auto szOverrideFlags = flags::InterpretFlags(flagOverrideFlags, m_ExceptionInfo[i]->OverrideFlags);
 				exception.addBlock(
-					m_ExceptionInfo[i].OverrideFlags,
+					m_ExceptionInfo[i]->OverrideFlags,
 					L"ExceptionInfo[%1!d!].OverrideFlags: 0x%2!04X! = %3!ws!\r\n",
 					i,
-					m_ExceptionInfo[i].OverrideFlags.getData(),
+					m_ExceptionInfo[i]->OverrideFlags.getData(),
 					szOverrideFlags.c_str());
 
-				if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT)
+				if (m_ExceptionInfo[i]->OverrideFlags & ARO_SUBJECT)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i].SubjectLength,
+						m_ExceptionInfo[i]->SubjectLength,
 						L"ExceptionInfo[%1!d!].SubjectLength: 0x%2!04X! = %2!d!\r\n",
 						i,
-						m_ExceptionInfo[i].SubjectLength.getData());
+						m_ExceptionInfo[i]->SubjectLength.getData());
 					exception.addBlock(
-						m_ExceptionInfo[i].SubjectLength2,
+						m_ExceptionInfo[i]->SubjectLength2,
 						L"ExceptionInfo[%1!d!].SubjectLength2: 0x%2!04X! = %2!d!\r\n",
 						i,
-						m_ExceptionInfo[i].SubjectLength2.getData());
+						m_ExceptionInfo[i]->SubjectLength2.getData());
 
 					exception.addBlock(
-						m_ExceptionInfo[i].Subject,
+						m_ExceptionInfo[i]->Subject,
 						L"ExceptionInfo[%1!d!].Subject: \"%2!hs!\"\r\n",
 						i,
-						m_ExceptionInfo[i].Subject.c_str());
+						m_ExceptionInfo[i]->Subject.c_str());
 				}
 
-				if (m_ExceptionInfo[i].OverrideFlags & ARO_MEETINGTYPE)
+				if (m_ExceptionInfo[i]->OverrideFlags & ARO_MEETINGTYPE)
 				{
 					auto szFlags = InterpretNumberAsStringNamedProp(
-						m_ExceptionInfo[i].MeetingType,
+						m_ExceptionInfo[i]->MeetingType,
 						dispidApptStateFlags,
 						const_cast<LPGUID>(&guid::PSETID_Appointment));
 					exception.addBlock(
-						m_ExceptionInfo[i].MeetingType,
+						m_ExceptionInfo[i]->MeetingType,
 						L"ExceptionInfo[%1!d!].MeetingType: 0x%2!08X! = %3!ws!\r\n",
 						i,
-						m_ExceptionInfo[i].MeetingType.getData(),
+						m_ExceptionInfo[i]->MeetingType.getData(),
 						szFlags.c_str());
 				}
 
-				if (m_ExceptionInfo[i].OverrideFlags & ARO_REMINDERDELTA)
+				if (m_ExceptionInfo[i]->OverrideFlags & ARO_REMINDERDELTA)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i].ReminderDelta,
+						m_ExceptionInfo[i]->ReminderDelta,
 						L"ExceptionInfo[%1!d!].ReminderDelta: 0x%2!08X!\r\n",
 						i,
-						m_ExceptionInfo[i].ReminderDelta.getData());
+						m_ExceptionInfo[i]->ReminderDelta.getData());
 				}
 
-				if (m_ExceptionInfo[i].OverrideFlags & ARO_REMINDER)
+				if (m_ExceptionInfo[i]->OverrideFlags & ARO_REMINDER)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i].ReminderSet,
+						m_ExceptionInfo[i]->ReminderSet,
 						L"ExceptionInfo[%1!d!].ReminderSet: 0x%2!08X!\r\n",
 						i,
-						m_ExceptionInfo[i].ReminderSet.getData());
+						m_ExceptionInfo[i]->ReminderSet.getData());
 				}
 
-				if (m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
+				if (m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i].LocationLength,
+						m_ExceptionInfo[i]->LocationLength,
 						L"ExceptionInfo[%1!d!].LocationLength: 0x%2!04X! = %2!d!\r\n",
 						i,
-						m_ExceptionInfo[i].LocationLength.getData());
+						m_ExceptionInfo[i]->LocationLength.getData());
 					exception.addBlock(
-						m_ExceptionInfo[i].LocationLength2,
+						m_ExceptionInfo[i]->LocationLength2,
 						L"ExceptionInfo[%1!d!].LocationLength2: 0x%2!04X! = %2!d!\r\n",
 						i,
-						m_ExceptionInfo[i].LocationLength2.getData());
+						m_ExceptionInfo[i]->LocationLength2.getData());
 					exception.addBlock(
-						m_ExceptionInfo[i].Location,
+						m_ExceptionInfo[i]->Location,
 						L"ExceptionInfo[%1!d!].Location: \"%2!hs!\"\r\n",
 						i,
-						m_ExceptionInfo[i].Location.c_str());
+						m_ExceptionInfo[i]->Location.c_str());
 				}
 
-				if (m_ExceptionInfo[i].OverrideFlags & ARO_BUSYSTATUS)
+				if (m_ExceptionInfo[i]->OverrideFlags & ARO_BUSYSTATUS)
 				{
 					auto szFlags = InterpretNumberAsStringNamedProp(
-						m_ExceptionInfo[i].BusyStatus, dispidBusyStatus, const_cast<LPGUID>(&guid::PSETID_Appointment));
+						m_ExceptionInfo[i]->BusyStatus,
+						dispidBusyStatus,
+						const_cast<LPGUID>(&guid::PSETID_Appointment));
 					exception.addBlock(
-						m_ExceptionInfo[i].BusyStatus,
+						m_ExceptionInfo[i]->BusyStatus,
 						L"ExceptionInfo[%1!d!].BusyStatus: 0x%2!08X! = %3!ws!\r\n",
 						i,
-						m_ExceptionInfo[i].BusyStatus.getData(),
+						m_ExceptionInfo[i]->BusyStatus.getData(),
 						szFlags.c_str());
 				}
 
-				if (m_ExceptionInfo[i].OverrideFlags & ARO_ATTACHMENT)
+				if (m_ExceptionInfo[i]->OverrideFlags & ARO_ATTACHMENT)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i].Attachment,
+						m_ExceptionInfo[i]->Attachment,
 						L"ExceptionInfo[%1!d!].Attachment: 0x%2!08X!\r\n",
 						i,
-						m_ExceptionInfo[i].Attachment.getData());
+						m_ExceptionInfo[i]->Attachment.getData());
 				}
 
-				if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBTYPE)
+				if (m_ExceptionInfo[i]->OverrideFlags & ARO_SUBTYPE)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i].SubType,
+						m_ExceptionInfo[i]->SubType,
 						L"ExceptionInfo[%1!d!].SubType: 0x%2!08X!\r\n",
 						i,
-						m_ExceptionInfo[i].SubType.getData());
+						m_ExceptionInfo[i]->SubType.getData());
 				}
-				if (m_ExceptionInfo[i].OverrideFlags & ARO_APPTCOLOR)
+				if (m_ExceptionInfo[i]->OverrideFlags & ARO_APPTCOLOR)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i].AppointmentColor,
+						m_ExceptionInfo[i]->AppointmentColor,
 						L"ExceptionInfo[%1!d!].AppointmentColor: 0x%2!08X!\r\n",
 						i,
-						m_ExceptionInfo[i].AppointmentColor.getData());
+						m_ExceptionInfo[i]->AppointmentColor.getData());
 				}
 
 				exceptions.addBlock(exception);
@@ -378,8 +380,8 @@ namespace smartview
 
 				if (i < m_ExceptionInfo.size())
 				{
-					if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT ||
-						m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
+					if (m_ExceptionInfo[i]->OverrideFlags & ARO_SUBJECT ||
+						m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
 					{
 						exception.addBlock(
 							m_ExtendedException[i].StartDateTime,
@@ -401,7 +403,7 @@ namespace smartview
 							RTimeToString(m_ExtendedException[i].OriginalStartDate).c_str());
 					}
 
-					if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT)
+					if (m_ExceptionInfo[i]->OverrideFlags & ARO_SUBJECT)
 					{
 						exception.addBlock(
 							m_ExtendedException[i].WideCharSubjectLength,
@@ -415,7 +417,7 @@ namespace smartview
 							m_ExtendedException[i].WideCharSubject.c_str());
 					}
 
-					if (m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
+					if (m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
 					{
 						exception.addBlock(
 							m_ExtendedException[i].WideCharLocationLength,

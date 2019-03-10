@@ -1,5 +1,6 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
+#include <core/smartview/block/blockStringA.h>
 
 namespace smartview
 {
@@ -12,6 +13,8 @@ namespace smartview
 		blockStringA szDisplayName;
 		blockStringW wzDisplayName;
 		blockBytes JunkData;
+
+		TaskAssigner(std::shared_ptr<binaryParser>& parser);
 	};
 
 	class TaskAssigners : public SmartViewParser
@@ -21,6 +24,6 @@ namespace smartview
 		void ParseBlocks() override;
 
 		blockT<DWORD> m_cAssigners;
-		std::vector<TaskAssigner> m_lpTaskAssigners;
+		std::vector<std::shared_ptr<TaskAssigner>> m_lpTaskAssigners;
 	};
 } // namespace smartview

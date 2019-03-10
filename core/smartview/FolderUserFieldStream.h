@@ -1,5 +1,6 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
+#include <core/smartview/block/blockStringA.h>
 
 namespace smartview
 {
@@ -13,6 +14,8 @@ namespace smartview
 		blockT<DWORD> iFmt;
 		blockT<WORD> wszFormulaLength;
 		blockStringW wszFormula;
+
+		void parse(std::shared_ptr<binaryParser>& parser);
 	};
 
 	struct FolderFieldDefinitionA
@@ -21,6 +24,8 @@ namespace smartview
 		blockT<WORD> FieldNameLength;
 		blockStringA FieldName;
 		FolderFieldDefinitionCommon Common;
+
+		FolderFieldDefinitionA(std::shared_ptr<binaryParser>& parser);
 	};
 
 	struct FolderFieldDefinitionW
@@ -29,6 +34,8 @@ namespace smartview
 		blockT<WORD> FieldNameLength;
 		blockStringW FieldName;
 		FolderFieldDefinitionCommon Common;
+
+		FolderFieldDefinitionW(std::shared_ptr<binaryParser>& parser);
 	};
 
 	class FolderUserFieldStream : public SmartViewParser
@@ -37,11 +44,9 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		FolderFieldDefinitionCommon BinToFolderFieldDefinitionCommon();
-
 		blockT<DWORD> m_FolderUserFieldsAnsiCount;
-		std::vector<FolderFieldDefinitionA> m_FieldDefinitionsA;
+		std::vector<std::shared_ptr<FolderFieldDefinitionA>> m_FieldDefinitionsA;
 		blockT<DWORD> m_FolderUserFieldsUnicodeCount;
-		std::vector<FolderFieldDefinitionW> m_FieldDefinitionsW;
+		std::vector<std::shared_ptr<FolderFieldDefinitionW>> m_FieldDefinitionsW;
 	};
 } // namespace smartview
