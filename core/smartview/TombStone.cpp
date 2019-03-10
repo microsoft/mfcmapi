@@ -11,7 +11,7 @@ namespace smartview
 		GlobalObjectIdSize = parser->Get<DWORD>();
 		GlobalObjectId.parse(parser, GlobalObjectIdSize, false);
 		UsernameSize = parser->Get<WORD>();
-		szUsername.init(parser, UsernameSize);
+		szUsername.parse(parser, UsernameSize);
 	}
 
 	void TombStone::Parse()

@@ -3,6 +3,7 @@
 #include <core/smartview/SmartView.h>
 #include <core/property/parseProperty.h>
 #include <core/smartview/block/blockStringA.h>
+#include <core/smartview/block/blockStringW.h>
 
 namespace smartview
 {
@@ -54,7 +55,7 @@ namespace smartview
 	struct StringArrayW
 	{
 		blockT<ULONG> cValues;
-		std::vector<blockStringW> lppszW;
+		std::vector<std::shared_ptr<blockStringW>> lppszW;
 	};
 
 	struct PVBlock

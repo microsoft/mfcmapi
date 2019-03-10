@@ -10,8 +10,8 @@ namespace smartview
 		parser->setCap(ulSize);
 		cbEntryID = parser->Get<DWORD>();
 		lpEntryID = parser->GetBYTES(cbEntryID, _MaxEID);
-		szDisplayName.init(parser);
-		wzDisplayName = parser->GetStringW();
+		szDisplayName.parse(parser);
+		wzDisplayName.parse(parser);
 		JunkData = parser->GetRemainingData();
 		parser->clearCap();
 	}

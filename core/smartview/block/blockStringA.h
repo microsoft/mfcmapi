@@ -1,6 +1,5 @@
 #pragma once
 #include <core/smartview/block/block.h>
-#include <core/smartview/binaryParser.h>
 
 namespace smartview
 {
@@ -16,8 +15,8 @@ namespace smartview
 		_NODISCARD std::string::size_type length() const noexcept { return data.length(); }
 		_NODISCARD bool empty() const noexcept { return data.empty(); }
 
-		blockStringA(std::shared_ptr<binaryParser> parser, size_t cchChar = -1) { init(parser, cchChar); }
-		void blockStringA::init(std::shared_ptr<binaryParser> parser, size_t cchChar = -1)
+		blockStringA(std::shared_ptr<binaryParser> parser, size_t cchChar = -1) { parse(parser, cchChar); }
+		void blockStringA::parse(std::shared_ptr<binaryParser> parser, size_t cchChar = -1)
 		{
 			if (cchChar == static_cast<size_t>(-1))
 			{

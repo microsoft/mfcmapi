@@ -5,6 +5,21 @@
 
 namespace smartview
 {
+	PropertyName::PropertyName(std::shared_ptr<binaryParser>& parser)
+	{
+		Kind = parser->Get<BYTE>();
+		Guid = parser->Get<GUID>();
+		if (Kind == MNID_ID)
+		{
+			LID = parser->Get<DWORD>();
+		}
+		else if (Kind == MNID_STRING)
+		{
+			NameSize = parser->Get<BYTE>();
+			Name.parse(parser, NameSize / sizeof(WCHAR));
+		}
+	}
+
 	void RuleCondition::Init(bool bExtended) { m_bExtended = bExtended; }
 
 	void RuleCondition::Parse()
@@ -23,20 +38,7 @@ namespace smartview
 			m_NamedPropertyInformation.PropertyName.reserve(m_NamedPropertyInformation.NoOfNamedProps);
 			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
-				PropertyName propertyName;
-				propertyName.Kind = m_Parser->Get<BYTE>();
-				propertyName.Guid = m_Parser->Get<GUID>();
-				if (propertyName.Kind == MNID_ID)
-				{
-					propertyName.LID = m_Parser->Get<DWORD>();
-				}
-				else if (propertyName.Kind == MNID_STRING)
-				{
-					propertyName.NameSize = m_Parser->Get<BYTE>();
-					propertyName.Name = m_Parser->GetStringW(propertyName.NameSize / sizeof(WCHAR));
-				}
-
-				m_NamedPropertyInformation.PropertyName.push_back(propertyName);
+				m_NamedPropertyInformation.PropertyName.emplace_back(std::make_shared<PropertyName>(m_Parser));
 			}
 		}
 
@@ -70,31 +72,31 @@ namespace smartview
 					m_NamedPropertyInformation.PropId[i].getData());
 
 				addBlock(
-					m_NamedPropertyInformation.PropertyName[i].Kind,
+					m_NamedPropertyInformation.PropertyName[i]->Kind,
 					L"\tKind = 0x%1!02X!\r\n",
-					m_NamedPropertyInformation.PropertyName[i].Kind.getData());
+					m_NamedPropertyInformation.PropertyName[i]->Kind.getData());
 				addBlock(
-					m_NamedPropertyInformation.PropertyName[i].Guid,
+					m_NamedPropertyInformation.PropertyName[i]->Guid,
 					L"\tGuid = %1!ws!\r\n",
-					guid::GUIDToString(m_NamedPropertyInformation.PropertyName[i].Guid).c_str());
+					guid::GUIDToString(m_NamedPropertyInformation.PropertyName[i]->Guid).c_str());
 
-				if (m_NamedPropertyInformation.PropertyName[i].Kind == MNID_ID)
+				if (m_NamedPropertyInformation.PropertyName[i]->Kind == MNID_ID)
 				{
 					addBlock(
-						m_NamedPropertyInformation.PropertyName[i].LID,
+						m_NamedPropertyInformation.PropertyName[i]->LID,
 						L"\tLID = 0x%1!08X!",
-						m_NamedPropertyInformation.PropertyName[i].LID.getData());
+						m_NamedPropertyInformation.PropertyName[i]->LID.getData());
 				}
-				else if (m_NamedPropertyInformation.PropertyName[i].Kind == MNID_STRING)
+				else if (m_NamedPropertyInformation.PropertyName[i]->Kind == MNID_STRING)
 				{
 					addBlock(
-						m_NamedPropertyInformation.PropertyName[i].NameSize,
+						m_NamedPropertyInformation.PropertyName[i]->NameSize,
 						L"\tNameSize = 0x%1!02X!\r\n",
-						m_NamedPropertyInformation.PropertyName[i].NameSize.getData());
+						m_NamedPropertyInformation.PropertyName[i]->NameSize.getData());
 					addHeader(L"\tName = ");
 					addBlock(
-						m_NamedPropertyInformation.PropertyName[i].Name,
-						m_NamedPropertyInformation.PropertyName[i].Name.c_str());
+						m_NamedPropertyInformation.PropertyName[i]->Name,
+						m_NamedPropertyInformation.PropertyName[i]->Name.c_str());
 				}
 			}
 		}

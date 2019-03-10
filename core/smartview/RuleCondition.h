@@ -1,6 +1,7 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
 #include <core/smartview/RestrictionStruct.h>
+#include <core/smartview/block/blockStringW.h>
 
 namespace smartview
 {
@@ -24,6 +25,8 @@ namespace smartview
 		blockT<DWORD> LID{};
 		blockT<BYTE> NameSize{};
 		blockStringW Name;
+
+		PropertyName(std::shared_ptr<binaryParser>& parser);
 	};
 
 	// [MS-OXORULE] 2.2.4.2 NamedPropertyInformation Structure
@@ -36,7 +39,7 @@ namespace smartview
 		blockT<WORD> NoOfNamedProps{};
 		std::vector<blockT<WORD>> PropId;
 		blockT<DWORD> NamedPropertiesSize{};
-		std::vector<PropertyName> PropertyName;
+		std::vector<std::shared_ptr<PropertyName>> PropertyName;
 	};
 
 	class RuleCondition : public SmartViewParser

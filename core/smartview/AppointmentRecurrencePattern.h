@@ -2,6 +2,7 @@
 #include <core/smartview/SmartViewParser.h>
 #include <core/smartview/RecurrencePattern.h>
 #include <core/smartview/block/blockStringA.h>
+#include <core/smartview/block/blockStringW.h>
 
 namespace smartview
 {
@@ -55,6 +56,8 @@ namespace smartview
 		blockStringW WideCharLocation;
 		blockT<DWORD> ReservedBlockEE2Size;
 		blockBytes ReservedBlockEE2;
+
+		ExtendedException(std::shared_ptr<binaryParser>& parser, DWORD writerVersion2, WORD flags);
 	};
 
 	// AppointmentRecurrencePattern
@@ -76,7 +79,7 @@ namespace smartview
 		std::vector<std::shared_ptr<ExceptionInfo>> m_ExceptionInfo;
 		blockT<DWORD> m_ReservedBlock1Size;
 		blockBytes m_ReservedBlock1;
-		std::vector<ExtendedException> m_ExtendedException;
+		std::vector<std::shared_ptr<ExtendedException>> m_ExtendedException;
 		blockT<DWORD> m_ReservedBlock2Size;
 		blockBytes m_ReservedBlock2;
 	};

@@ -1,6 +1,7 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
 #include <core/smartview/block/blockStringA.h>
+#include <core/smartview/block/blockStringW.h>
 
 namespace smartview
 {
@@ -33,6 +34,8 @@ namespace smartview
 		blockStringW DisplayName;
 		blockT<BYTE> DisplayNameCountRepeat;
 		blockStringW DisplayNameRepeat;
+
+		VerbExtraData(std::shared_ptr<binaryParser>& parser);
 	};
 
 	class VerbStream : public SmartViewParser
@@ -45,6 +48,6 @@ namespace smartview
 		blockT<DWORD> m_Count;
 		std::vector<std::shared_ptr<VerbData>> m_lpVerbData;
 		blockT<WORD> m_Version2;
-		std::vector<VerbExtraData> m_lpVerbExtraData;
+		std::vector<std::shared_ptr<VerbExtraData>> m_lpVerbExtraData;
 	};
 } // namespace smartview

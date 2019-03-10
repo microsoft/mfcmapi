@@ -13,7 +13,7 @@ namespace smartview
 
 		if (FieldNameLength && FieldNameLength < _MaxEntriesSmall)
 		{
-			FieldName.init(parser, FieldNameLength);
+			FieldName.parse(parser, FieldNameLength);
 		}
 
 		Common.parse(parser);
@@ -26,7 +26,7 @@ namespace smartview
 
 		if (FieldNameLength && FieldNameLength < _MaxEntriesSmall)
 		{
-			FieldName = parser->GetStringW(FieldNameLength);
+			FieldName.parse(parser, FieldNameLength);
 		}
 
 		Common.parse(parser);
@@ -68,7 +68,7 @@ namespace smartview
 		wszFormulaLength = parser->Get<WORD>();
 		if (wszFormulaLength && wszFormulaLength < _MaxEntriesLarge)
 		{
-			wszFormula = parser->GetStringW(wszFormulaLength);
+			wszFormula.parse(parser, wszFormulaLength);
 		}
 	}
 

@@ -74,22 +74,22 @@ namespace smartview
 				m_OneOffRecipientObject.Bitmask = m_Parser->Get<DWORD>();
 				if (MAPI_UNICODE & m_OneOffRecipientObject.Bitmask)
 				{
-					m_OneOffRecipientObject.Unicode.DisplayName = m_Parser->GetStringW();
-					m_OneOffRecipientObject.Unicode.AddressType = m_Parser->GetStringW();
-					m_OneOffRecipientObject.Unicode.EmailAddress = m_Parser->GetStringW();
+					m_OneOffRecipientObject.Unicode.DisplayName.parse(m_Parser);
+					m_OneOffRecipientObject.Unicode.AddressType.parse(m_Parser);
+					m_OneOffRecipientObject.Unicode.EmailAddress.parse(m_Parser);
 				}
 				else
 				{
-					m_OneOffRecipientObject.ANSI.DisplayName.init(m_Parser);
-					m_OneOffRecipientObject.ANSI.AddressType.init(m_Parser);
-					m_OneOffRecipientObject.ANSI.EmailAddress.init(m_Parser);
+					m_OneOffRecipientObject.ANSI.DisplayName.parse(m_Parser);
+					m_OneOffRecipientObject.ANSI.AddressType.parse(m_Parser);
+					m_OneOffRecipientObject.ANSI.EmailAddress.parse(m_Parser);
 				}
 				break;
 				// Address Book Recipient
 			case eidtAddressBook:
 				m_AddressBookObject.Version = m_Parser->Get<DWORD>();
 				m_AddressBookObject.Type = m_Parser->Get<DWORD>();
-				m_AddressBookObject.X500DN.init(m_Parser);
+				m_AddressBookObject.X500DN.parse(m_Parser);
 				break;
 				// Contact Address Book / Personal Distribution List (PDL)
 			case eidtContact:
@@ -133,7 +133,7 @@ namespace smartview
 			case eidtMessageDatabase:
 				m_MessageDatabaseObject.Version = m_Parser->Get<BYTE>();
 				m_MessageDatabaseObject.Flag = m_Parser->Get<BYTE>();
-				m_MessageDatabaseObject.DLLFileName.init(m_Parser);
+				m_MessageDatabaseObject.DLLFileName.parse(m_Parser);
 				m_MessageDatabaseObject.bIsExchange = false;
 
 				// We only know how to parse emsmdb.dll's wrapped entry IDs
@@ -153,7 +153,7 @@ namespace smartview
 					m_MessageDatabaseObject.WrappedFlags = m_Parser->Get<DWORD>();
 					m_MessageDatabaseObject.WrappedProviderUID = m_Parser->Get<GUID>();
 					m_MessageDatabaseObject.WrappedType = m_Parser->Get<DWORD>();
-					m_MessageDatabaseObject.ServerShortname.init(m_Parser);
+					m_MessageDatabaseObject.ServerShortname.parse(m_Parser);
 
 					// Test if we have a magic value. Some PF EIDs also have a mailbox DN and we need to accomodate them
 					if (m_MessageDatabaseObject.WrappedType & OPENSTORE_PUBLIC)
@@ -174,7 +174,7 @@ namespace smartview
 						m_MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V2_MAGIC &&
 							m_MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V3_MAGIC)
 					{
-						m_MessageDatabaseObject.MailboxDN.init(m_Parser);
+						m_MessageDatabaseObject.MailboxDN.parse(m_Parser);
 					}
 
 					// Check again for a magic value
@@ -194,12 +194,12 @@ namespace smartview
 							m_MessageDatabaseObject.v2.ulOffsetFQDN = m_Parser->Get<DWORD>();
 							if (m_MessageDatabaseObject.v2.ulOffsetDN)
 							{
-								m_MessageDatabaseObject.v2DN.init(m_Parser);
+								m_MessageDatabaseObject.v2DN.parse(m_Parser);
 							}
 
 							if (m_MessageDatabaseObject.v2.ulOffsetFQDN)
 							{
-								m_MessageDatabaseObject.v2FQDN = m_Parser->GetStringW();
+								m_MessageDatabaseObject.v2FQDN.parse(m_Parser);
 							}
 
 							m_MessageDatabaseObject.v2Reserved = m_Parser->GetBYTES(2);
@@ -214,7 +214,7 @@ namespace smartview
 							m_MessageDatabaseObject.v3.ulOffsetSmtpAddress = m_Parser->Get<DWORD>();
 							if (m_MessageDatabaseObject.v3.ulOffsetSmtpAddress)
 							{
-								m_MessageDatabaseObject.v3SmtpAddress = m_Parser->GetStringW();
+								m_MessageDatabaseObject.v3SmtpAddress.parse(m_Parser);
 							}
 
 							m_MessageDatabaseObject.v2Reserved = m_Parser->GetBYTES(2);

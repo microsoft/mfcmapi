@@ -66,7 +66,7 @@ namespace smartview
 			propBlock.addBlock(prop->PropBlock(), L"PropString = %1!ws! ", prop->PropBlock().c_str());
 			propBlock.addBlock(prop->AltPropBlock(), L"AltPropString = %1!ws!", prop->AltPropBlock().c_str());
 
-			auto szSmartView = prop->SmartViewBlock();
+			auto& szSmartView = prop->SmartViewBlock();
 			if (!szSmartView.empty())
 			{
 				propBlock.terminateBlock();
@@ -137,7 +137,7 @@ namespace smartview
 		case PT_STRING8:
 			if (doRuleProcessing)
 			{
-				Value.lpszA.str.init(parser);
+				Value.lpszA.str.parse(parser);
 				Value.lpszA.cb.setData(static_cast<DWORD>(Value.lpszA.str.length()));
 			}
 			else
@@ -152,7 +152,7 @@ namespace smartview
 					Value.lpszA.cb = parser->Get<WORD>();
 				}
 
-				Value.lpszA.str.init(parser, Value.lpszA.cb);
+				Value.lpszA.str.parse(parser, Value.lpszA.cb);
 			}
 
 			break;
@@ -177,7 +177,7 @@ namespace smartview
 		case PT_UNICODE:
 			if (doRuleProcessing)
 			{
-				Value.lpszW.str = parser->GetStringW();
+				Value.lpszW.str.parse(parser);
 				Value.lpszW.cb.setData(static_cast<DWORD>(Value.lpszW.str.length()));
 			}
 			else
@@ -192,7 +192,7 @@ namespace smartview
 					Value.lpszW.cb = parser->Get<WORD>();
 				}
 
-				Value.lpszW.str = parser->GetStringW(Value.lpszW.cb / sizeof(WCHAR));
+				Value.lpszW.str.parse(parser, Value.lpszW.cb / sizeof(WCHAR));
 			}
 			break;
 		case PT_CLSID:
@@ -236,7 +236,7 @@ namespace smartview
 				Value.MVszW.lppszW.reserve(Value.MVszW.cValues);
 				for (ULONG j = 0; j < Value.MVszW.cValues; j++)
 				{
-					Value.MVszW.lppszW.emplace_back(parser->GetStringW());
+					Value.MVszW.lppszW.emplace_back(std::make_shared<blockStringW>(parser));
 				}
 			}
 			break;

@@ -16,7 +16,7 @@ namespace smartview
 			cchExtendedLength = parser->Get<WORD>();
 		}
 
-		szCharacters.init(parser, cchExtendedLength ? cchExtendedLength.getData() : cchLength.getData());
+		szCharacters.parse(parser, cchExtendedLength ? cchExtendedLength.getData() : cchLength.getData());
 	}
 
 	void PackedUnicodeString::parse(std::shared_ptr<binaryParser>& parser)
@@ -27,7 +27,20 @@ namespace smartview
 			cchExtendedLength = parser->Get<WORD>();
 		}
 
-		szCharacters = parser->GetStringW(cchExtendedLength ? cchExtendedLength.getData() : cchLength.getData());
+		szCharacters.parse(parser, cchExtendedLength ? cchExtendedLength.getData() : cchLength.getData());
+	}
+
+	SkipBlock::SkipBlock(std::shared_ptr<binaryParser>& parser, DWORD iSkip)
+	{
+		dwSize = parser->Get<DWORD>();
+		if (iSkip == 0)
+		{
+			lpbContentText.parse(parser);
+		}
+		else
+		{
+			lpbContent = parser->GetBYTES(dwSize, _MaxBytes);
+		}
 	}
 
 	FieldDefinition::FieldDefinition(std::shared_ptr<binaryParser>& parser, WORD version)
@@ -36,7 +49,7 @@ namespace smartview
 		wVT = parser->Get<WORD>();
 		dwDispid = parser->Get<DWORD>();
 		wNmidNameLength = parser->Get<WORD>();
-		szNmidName = parser->GetStringW(wNmidNameLength);
+		szNmidName.parse(parser, wNmidNameLength);
 
 		pasNameANSI.parse(parser);
 		pasFormulaANSI.parse(parser);
@@ -70,18 +83,7 @@ namespace smartview
 				psbSkipBlocks.reserve(dwSkipBlockCount);
 				for (DWORD iSkip = 0; iSkip < dwSkipBlockCount; iSkip++)
 				{
-					SkipBlock skipBlock;
-					skipBlock.dwSize = parser->Get<DWORD>();
-					if (iSkip == 0)
-					{
-						skipBlock.lpbContentText.parse(parser);
-					}
-					else
-					{
-						skipBlock.lpbContent = parser->GetBYTES(skipBlock.dwSize, _MaxBytes);
-					}
-
-					psbSkipBlocks.push_back(skipBlock);
+					psbSkipBlocks.emplace_back(std::make_shared<SkipBlock>(parser, iSkip));
 				}
 			}
 		}
@@ -231,18 +233,18 @@ namespace smartview
 					fieldDef.terminateBlock();
 					auto skipBlock = block{};
 					skipBlock.setText(L"\tSkipBlock: %1!d!\r\n", iSkip);
-					skipBlock.addBlock(sb.dwSize, L"\t\tSize = 0x%1!08X!", sb.dwSize.getData());
+					skipBlock.addBlock(sb->dwSize, L"\t\tSize = 0x%1!08X!", sb->dwSize.getData());
 
 					if (0 == iSkip)
 					{
 						skipBlock.terminateBlock();
-						skipBlock.addBlock(PackedUnicodeStringToBlock(L"\tFieldName", sb.lpbContentText));
+						skipBlock.addBlock(PackedUnicodeStringToBlock(L"\tFieldName", sb->lpbContentText));
 					}
-					else if (!sb.lpbContent.empty())
+					else if (!sb->lpbContent.empty())
 					{
 						skipBlock.terminateBlock();
 						skipBlock.addHeader(L"\t\tContent = ");
-						skipBlock.addBlock(sb.lpbContent);
+						skipBlock.addBlock(sb->lpbContent);
 					}
 
 					fieldDef.addBlock(skipBlock);

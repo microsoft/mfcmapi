@@ -1,6 +1,7 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
 #include <core/smartview/block/blockStringA.h>
+#include <core/smartview/block/blockStringW.h>
 
 namespace smartview
 {
@@ -27,6 +28,8 @@ namespace smartview
 		blockT<DWORD> dwSize;
 		blockBytes lpbContent;
 		PackedUnicodeString lpbContentText;
+
+		SkipBlock(std::shared_ptr<binaryParser>& parser, DWORD iSkip);
 	};
 
 	struct FieldDefinition
@@ -43,7 +46,7 @@ namespace smartview
 		PackedAnsiString pasErrorANSI;
 		blockT<DWORD> dwInternalType;
 		DWORD dwSkipBlockCount{};
-		std::vector<SkipBlock> psbSkipBlocks;
+		std::vector<std::shared_ptr<SkipBlock>> psbSkipBlocks;
 
 		FieldDefinition(std::shared_ptr<binaryParser>& parser, WORD version);
 	};

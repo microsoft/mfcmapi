@@ -2,7 +2,6 @@
 #include <core/smartview/block/block.h>
 #include <core/smartview/block/blockT.h>
 #include <core/smartview/block/blockBytes.h>
-#include <core/smartview/block/blockStringW.h>
 
 namespace smartview
 {
@@ -64,27 +63,6 @@ namespace smartview
 			ret.setData(*reinterpret_cast<const T*>(GetCurrentAddress()));
 			ret.setSize(sizeof T);
 			m_Offset += sizeof T;
-			return ret;
-		}
-
-		blockStringW GetStringW(size_t cchChar = -1)
-		{
-			if (cchChar == static_cast<size_t>(-1))
-			{
-				cchChar =
-					wcsnlen_s(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), (m_Size - m_Offset) / sizeof WCHAR) + 1;
-			}
-
-			auto ret = blockStringW();
-			if (cchChar && CheckRemainingBytes(sizeof WCHAR * cchChar))
-			{
-				ret.setOffset(m_Offset);
-				ret.setData(strings::RemoveInvalidCharactersW(
-					std::wstring(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), cchChar)));
-				ret.setSize(sizeof WCHAR * cchChar);
-				m_Offset += sizeof WCHAR * cchChar;
-			}
-
 			return ret;
 		}
 

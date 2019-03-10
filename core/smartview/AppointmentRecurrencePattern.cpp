@@ -19,7 +19,7 @@ namespace smartview
 			SubjectLength2 = parser->Get<WORD>();
 			if (SubjectLength2 && SubjectLength2 + 1 == SubjectLength)
 			{
-				Subject.init(parser, SubjectLength2);
+				Subject.parse(parser, SubjectLength2);
 			}
 		}
 
@@ -43,7 +43,7 @@ namespace smartview
 			LocationLength2 = parser->Get<WORD>();
 			if (LocationLength2 && LocationLength2 + 1 == LocationLength)
 			{
-				Location.init(parser, LocationLength2);
+				Location.parse(parser, LocationLength2);
 			}
 		}
 
@@ -65,6 +65,54 @@ namespace smartview
 		if (OverrideFlags & ARO_APPTCOLOR)
 		{
 			AppointmentColor = parser->Get<DWORD>();
+		}
+	}
+
+	ExtendedException::ExtendedException(std::shared_ptr<binaryParser>& parser, DWORD writerVersion2, WORD flags)
+	{
+		if (writerVersion2 >= 0x0003009)
+		{
+			ChangeHighlight.ChangeHighlightSize = parser->Get<DWORD>();
+			ChangeHighlight.ChangeHighlightValue = parser->Get<DWORD>();
+			if (ChangeHighlight.ChangeHighlightSize > sizeof(DWORD))
+			{
+				ChangeHighlight.Reserved =
+					parser->GetBYTES(ChangeHighlight.ChangeHighlightSize - sizeof(DWORD), _MaxBytes);
+			}
+		}
+
+		ReservedBlockEE1Size = parser->Get<DWORD>();
+		ReservedBlockEE1 = parser->GetBYTES(ReservedBlockEE1Size, _MaxBytes);
+
+		if (flags & ARO_SUBJECT || flags & ARO_LOCATION)
+		{
+			StartDateTime = parser->Get<DWORD>();
+			EndDateTime = parser->Get<DWORD>();
+			OriginalStartDate = parser->Get<DWORD>();
+		}
+
+		if (flags & ARO_SUBJECT)
+		{
+			WideCharSubjectLength = parser->Get<WORD>();
+			if (WideCharSubjectLength)
+			{
+				WideCharSubject.parse(parser, WideCharSubjectLength);
+			}
+		}
+
+		if (flags & ARO_LOCATION)
+		{
+			WideCharLocationLength = parser->Get<WORD>();
+			if (WideCharLocationLength)
+			{
+				WideCharLocation.parse(parser, WideCharLocationLength);
+			}
+		}
+
+		if (flags & ARO_SUBJECT || flags & ARO_LOCATION)
+		{
+			ReservedBlockEE2Size = parser->Get<DWORD>();
+			ReservedBlockEE2 = parser->GetBYTES(ReservedBlockEE2Size, _MaxBytes);
 		}
 	}
 
@@ -96,59 +144,8 @@ namespace smartview
 		{
 			for (WORD i = 0; i < m_ExceptionCount; i++)
 			{
-				ExtendedException extendedException;
-
-				std::vector<BYTE> ReservedBlockEE2;
-				if (m_WriterVersion2 >= 0x0003009)
-				{
-					extendedException.ChangeHighlight.ChangeHighlightSize = m_Parser->Get<DWORD>();
-					extendedException.ChangeHighlight.ChangeHighlightValue = m_Parser->Get<DWORD>();
-					if (extendedException.ChangeHighlight.ChangeHighlightSize > sizeof(DWORD))
-					{
-						extendedException.ChangeHighlight.Reserved = m_Parser->GetBYTES(
-							extendedException.ChangeHighlight.ChangeHighlightSize - sizeof(DWORD), _MaxBytes);
-					}
-				}
-
-				extendedException.ReservedBlockEE1Size = m_Parser->Get<DWORD>();
-				extendedException.ReservedBlockEE1 =
-					m_Parser->GetBYTES(extendedException.ReservedBlockEE1Size, _MaxBytes);
-
-				if (m_ExceptionInfo[i]->OverrideFlags & ARO_SUBJECT || m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
-				{
-					extendedException.StartDateTime = m_Parser->Get<DWORD>();
-					extendedException.EndDateTime = m_Parser->Get<DWORD>();
-					extendedException.OriginalStartDate = m_Parser->Get<DWORD>();
-				}
-
-				if (m_ExceptionInfo[i]->OverrideFlags & ARO_SUBJECT)
-				{
-					extendedException.WideCharSubjectLength = m_Parser->Get<WORD>();
-					if (extendedException.WideCharSubjectLength)
-					{
-						extendedException.WideCharSubject =
-							m_Parser->GetStringW(extendedException.WideCharSubjectLength);
-					}
-				}
-
-				if (m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
-				{
-					extendedException.WideCharLocationLength = m_Parser->Get<WORD>();
-					if (extendedException.WideCharLocationLength)
-					{
-						extendedException.WideCharLocation =
-							m_Parser->GetStringW(extendedException.WideCharLocationLength);
-					}
-				}
-
-				if (m_ExceptionInfo[i]->OverrideFlags & ARO_SUBJECT || m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
-				{
-					extendedException.ReservedBlockEE2Size = m_Parser->Get<DWORD>();
-					extendedException.ReservedBlockEE2 =
-						m_Parser->GetBYTES(extendedException.ReservedBlockEE2Size, _MaxBytes);
-				}
-
-				m_ExtendedException.push_back(extendedException);
+				m_ExtendedException.emplace_back(
+					std::make_shared<ExtendedException>(m_Parser, m_WriterVersion2, m_ExceptionInfo[i]->OverrideFlags));
 			}
 		}
 
@@ -339,43 +336,44 @@ namespace smartview
 
 		if (!m_ExtendedException.empty())
 		{
-			for (size_t i = 0; i < m_ExtendedException.size(); i++)
+			auto i = 0;
+			for (const auto& ee : m_ExtendedException)
 			{
 				auto exception = block{};
 				if (m_WriterVersion2 >= 0x00003009)
 				{
 					auto szFlags = InterpretNumberAsStringNamedProp(
-						m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue,
+						ee->ChangeHighlight.ChangeHighlightValue,
 						dispidChangeHighlight,
 						const_cast<LPGUID>(&guid::PSETID_Appointment));
 					exception.addBlock(
-						m_ExtendedException[i].ChangeHighlight.ChangeHighlightSize,
+						ee->ChangeHighlight.ChangeHighlightSize,
 						L"ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightSize: 0x%2!08X!\r\n",
 						i,
-						m_ExtendedException[i].ChangeHighlight.ChangeHighlightSize.getData());
+						ee->ChangeHighlight.ChangeHighlightSize.getData());
 					exception.addBlock(
-						m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue,
+						ee->ChangeHighlight.ChangeHighlightValue,
 						L"ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightValue: 0x%2!08X! = %3!ws!\r\n",
 						i,
-						m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue.getData(),
+						ee->ChangeHighlight.ChangeHighlightValue.getData(),
 						szFlags.c_str());
 
-					if (m_ExtendedException[i].ChangeHighlight.ChangeHighlightSize > sizeof(DWORD))
+					if (ee->ChangeHighlight.ChangeHighlightSize > sizeof(DWORD))
 					{
 						exception.addHeader(L"ExtendedException[%1!d!].ChangeHighlight.Reserved:", i);
 
-						exception.addBlock(m_ExtendedException[i].ChangeHighlight.Reserved);
+						exception.addBlock(ee->ChangeHighlight.Reserved);
 					}
 				}
 
 				exception.addBlock(
-					m_ExtendedException[i].ReservedBlockEE1Size,
+					ee->ReservedBlockEE1Size,
 					L"ExtendedException[%1!d!].ReservedBlockEE1Size: 0x%2!08X!\r\n",
 					i,
-					m_ExtendedException[i].ReservedBlockEE1Size.getData());
-				if (!m_ExtendedException[i].ReservedBlockEE1.empty())
+					ee->ReservedBlockEE1Size.getData());
+				if (!ee->ReservedBlockEE1.empty())
 				{
-					exception.addBlock(m_ExtendedException[i].ReservedBlockEE1);
+					exception.addBlock(ee->ReservedBlockEE1);
 				}
 
 				if (i < m_ExceptionInfo.size())
@@ -384,65 +382,66 @@ namespace smartview
 						m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
 					{
 						exception.addBlock(
-							m_ExtendedException[i].StartDateTime,
+							ee->StartDateTime,
 							L"ExtendedException[%1!d!].StartDateTime: 0x%2!08X! = %3\r\n",
 							i,
-							m_ExtendedException[i].StartDateTime.getData(),
-							RTimeToString(m_ExtendedException[i].StartDateTime).c_str());
+							ee->StartDateTime.getData(),
+							RTimeToString(ee->StartDateTime).c_str());
 						exception.addBlock(
-							m_ExtendedException[i].EndDateTime,
+							ee->EndDateTime,
 							L"ExtendedException[%1!d!].EndDateTime: 0x%2!08X! = %3!ws!\r\n",
 							i,
-							m_ExtendedException[i].EndDateTime.getData(),
-							RTimeToString(m_ExtendedException[i].EndDateTime).c_str());
+							ee->EndDateTime.getData(),
+							RTimeToString(ee->EndDateTime).c_str());
 						exception.addBlock(
-							m_ExtendedException[i].OriginalStartDate,
+							ee->OriginalStartDate,
 							L"ExtendedException[%1!d!].OriginalStartDate: 0x%2!08X! = %3!ws!\r\n",
 							i,
-							m_ExtendedException[i].OriginalStartDate.getData(),
-							RTimeToString(m_ExtendedException[i].OriginalStartDate).c_str());
+							ee->OriginalStartDate.getData(),
+							RTimeToString(ee->OriginalStartDate).c_str());
 					}
 
 					if (m_ExceptionInfo[i]->OverrideFlags & ARO_SUBJECT)
 					{
 						exception.addBlock(
-							m_ExtendedException[i].WideCharSubjectLength,
+							ee->WideCharSubjectLength,
 							L"ExtendedException[%1!d!].WideCharSubjectLength: 0x%2!08X! = %2!d!\r\n",
 							i,
-							m_ExtendedException[i].WideCharSubjectLength.getData());
+							ee->WideCharSubjectLength.getData());
 						exception.addBlock(
-							m_ExtendedException[i].WideCharSubject,
+							ee->WideCharSubject,
 							L"ExtendedException[%1!d!].WideCharSubject: \"%2!ws!\"\r\n",
 							i,
-							m_ExtendedException[i].WideCharSubject.c_str());
+							ee->WideCharSubject.c_str());
 					}
 
 					if (m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
 					{
 						exception.addBlock(
-							m_ExtendedException[i].WideCharLocationLength,
+							ee->WideCharLocationLength,
 							L"ExtendedException[%1!d!].WideCharLocationLength: 0x%2!08X! = %2!d!\r\n",
 							i,
-							m_ExtendedException[i].WideCharLocationLength.getData());
+							ee->WideCharLocationLength.getData());
 						exception.addBlock(
-							m_ExtendedException[i].WideCharLocation,
+							ee->WideCharLocation,
 							L"ExtendedException[%1!d!].WideCharLocation: \"%2!ws!\"\r\n",
 							i,
-							m_ExtendedException[i].WideCharLocation.c_str());
+							ee->WideCharLocation.c_str());
 					}
 				}
 
 				exception.addBlock(
-					m_ExtendedException[i].ReservedBlockEE2Size,
+					ee->ReservedBlockEE2Size,
 					L"ExtendedException[%1!d!].ReservedBlockEE2Size: 0x%2!08X!\r\n",
 					i,
-					m_ExtendedException[i].ReservedBlockEE2Size.getData());
-				if (m_ExtendedException[i].ReservedBlockEE2Size)
+					ee->ReservedBlockEE2Size.getData());
+				if (ee->ReservedBlockEE2Size)
 				{
-					exception.addBlock(m_ExtendedException[i].ReservedBlockEE2);
+					exception.addBlock(ee->ReservedBlockEE2);
 				}
 
 				arpBlock.addBlock(exception);
+				i++;
 			}
 		}
 

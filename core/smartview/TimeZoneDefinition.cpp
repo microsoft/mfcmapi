@@ -12,7 +12,7 @@ namespace smartview
 		m_cbHeader = m_Parser->Get<WORD>();
 		m_wReserved = m_Parser->Get<WORD>();
 		m_cchKeyName = m_Parser->Get<WORD>();
-		m_szKeyName = m_Parser->GetStringW(m_cchKeyName);
+		m_szKeyName.parse(m_Parser, m_cchKeyName);
 		m_cRules = m_Parser->Get<WORD>();
 
 		if (m_cRules && m_cRules < _MaxEntriesSmall)

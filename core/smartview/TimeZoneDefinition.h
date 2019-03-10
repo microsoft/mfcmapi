@@ -1,6 +1,7 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
 #include <core/smartview/TimeZone.h>
+#include <core/smartview/block/blockStringW.h>
 
 namespace smartview
 {

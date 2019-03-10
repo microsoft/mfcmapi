@@ -34,7 +34,7 @@ namespace smartview
 
 		if (cchTextSearch)
 		{
-			m_TextSearch = m_Parser->GetStringW(cchTextSearch);
+			m_TextSearch.parse(m_Parser, cchTextSearch);
 		}
 
 		m_SkipLen1 = m_Parser->Get<DWORD>();
@@ -52,7 +52,7 @@ namespace smartview
 
 		if (cchFolderList1)
 		{
-			m_FolderList1 = m_Parser->GetStringW(cchFolderList1);
+			m_FolderList1.parse(m_Parser, cchFolderList1);
 		}
 
 		m_FolderList2Length = m_Parser->Get<DWORD>();
