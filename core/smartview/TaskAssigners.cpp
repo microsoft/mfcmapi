@@ -12,7 +12,7 @@ namespace smartview
 		lpEntryID.parse(parser, cbEntryID, _MaxEID);
 		szDisplayName.parse(parser);
 		wzDisplayName.parse(parser);
-		JunkData.parseRemainingData(parser);
+		JunkData.parse(parser);
 		parser->clearCap();
 	}
 

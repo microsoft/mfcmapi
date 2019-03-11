@@ -19,7 +19,7 @@ namespace smartview
 		BYTE operator[](const size_t _Pos) { return _data[_Pos]; }
 
 		blockBytes(std::shared_ptr<binaryParser>& parser, size_t cbMaxBytes = -1) { parse(parser, cbMaxBytes); }
-		void parseRemainingData(std::shared_ptr<binaryParser>& parser) { parse(parser, parser->RemainingBytes()); }
+		void parse(std::shared_ptr<binaryParser>& parser) { parse(parser, parser->RemainingBytes()); }
 		void parse(std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
 		{
 			// TODO: Should we track when the returned byte length is less than requested?

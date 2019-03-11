@@ -14,7 +14,7 @@ namespace smartview
 		if (this->hasData() && m_bEnableJunk && m_Parser->RemainingBytes())
 		{
 			blockBytes junkData{};
-			junkData.parseRemainingData(m_Parser);
+			junkData.parse(m_Parser);
 
 			terminateBlock();
 			addHeader(L"Unparsed data size = 0x%1!08X!\r\n", junkData.size());
