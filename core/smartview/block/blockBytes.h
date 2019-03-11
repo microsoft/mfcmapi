@@ -18,7 +18,7 @@ namespace smartview
 		const BYTE* data() const noexcept { return _data.data(); }
 		BYTE operator[](const size_t _Pos) { return _data[_Pos]; }
 
-		blockBytes(std::shared_ptr<binaryParser>& parser, size_t cbMaxBytes = -1) { parse(parser, cbMaxBytes); }
+		blockBytes(std::shared_ptr<binaryParser>& parser) { parse(parser); }
 		void parse(std::shared_ptr<binaryParser>& parser) { parse(parser, parser->RemainingBytes()); }
 		void parse(std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
 		{
