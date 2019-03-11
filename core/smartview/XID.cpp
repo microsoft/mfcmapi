@@ -8,7 +8,7 @@ namespace smartview
 {
 	void XID::Parse()
 	{
-		m_NamespaceGuid = m_Parser->Get<GUID>();
+		m_NamespaceGuid.parse<GUID>(m_Parser);
 		m_cbLocalId = m_Parser->RemainingBytes();
 		m_LocalID.parse(m_Parser, m_cbLocalId, m_cbLocalId);
 	}

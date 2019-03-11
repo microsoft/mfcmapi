@@ -5,10 +5,10 @@ namespace smartview
 {
 	TaskAssigner::TaskAssigner(std::shared_ptr<binaryParser>& parser)
 	{
-		cbAssigner = parser->Get<DWORD>();
+		cbAssigner.parse<DWORD>(parser);
 		const auto ulSize = min(cbAssigner, (ULONG) parser->RemainingBytes());
 		parser->setCap(ulSize);
-		cbEntryID = parser->Get<DWORD>();
+		cbEntryID.parse<DWORD>(parser);
 		lpEntryID.parse(parser, cbEntryID, _MaxEID);
 		szDisplayName.parse(parser);
 		wzDisplayName.parse(parser);
@@ -18,7 +18,7 @@ namespace smartview
 
 	void TaskAssigners::Parse()
 	{
-		m_cAssigners = m_Parser->Get<DWORD>();
+		m_cAssigners.parse<DWORD>(m_Parser);
 
 		if (m_cAssigners && m_cAssigners < _MaxEntriesSmall)
 		{

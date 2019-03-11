@@ -8,8 +8,8 @@ namespace smartview
 {
 	FolderFieldDefinitionA ::FolderFieldDefinitionA(std::shared_ptr<binaryParser>& parser)
 	{
-		FieldType = parser->Get<DWORD>();
-		FieldNameLength = parser->Get<WORD>();
+		FieldType.parse<DWORD>(parser);
+		FieldNameLength.parse<WORD>(parser);
 
 		if (FieldNameLength && FieldNameLength < _MaxEntriesSmall)
 		{
@@ -21,8 +21,8 @@ namespace smartview
 
 	FolderFieldDefinitionW ::FolderFieldDefinitionW(std::shared_ptr<binaryParser>& parser)
 	{
-		FieldType = parser->Get<DWORD>();
-		FieldNameLength = parser->Get<WORD>();
+		FieldType.parse<DWORD>(parser);
+		FieldNameLength.parse<WORD>(parser);
 
 		if (FieldNameLength && FieldNameLength < _MaxEntriesSmall)
 		{
@@ -34,7 +34,7 @@ namespace smartview
 
 	void FolderUserFieldStream::Parse()
 	{
-		m_FolderUserFieldsAnsiCount = m_Parser->Get<DWORD>();
+		m_FolderUserFieldsAnsiCount.parse<DWORD>(m_Parser);
 		if (m_FolderUserFieldsAnsiCount && m_FolderUserFieldsAnsiCount < _MaxEntriesSmall)
 		{
 			m_FieldDefinitionsA.reserve(m_FolderUserFieldsAnsiCount);
@@ -45,7 +45,7 @@ namespace smartview
 			}
 		}
 
-		m_FolderUserFieldsUnicodeCount = m_Parser->Get<DWORD>();
+		m_FolderUserFieldsUnicodeCount.parse<DWORD>(m_Parser);
 		if (m_FolderUserFieldsUnicodeCount && m_FolderUserFieldsUnicodeCount < _MaxEntriesSmall)
 		{
 			m_FieldDefinitionsW.reserve(m_FolderUserFieldsUnicodeCount);
@@ -59,13 +59,13 @@ namespace smartview
 
 	void FolderFieldDefinitionCommon::parse(std::shared_ptr<binaryParser>& parser)
 	{
-		PropSetGuid = parser->Get<GUID>();
-		fcapm = parser->Get<DWORD>();
-		dwString = parser->Get<DWORD>();
-		dwBitmap = parser->Get<DWORD>();
-		dwDisplay = parser->Get<DWORD>();
-		iFmt = parser->Get<DWORD>();
-		wszFormulaLength = parser->Get<WORD>();
+		PropSetGuid.parse<GUID>(parser);
+		fcapm.parse<DWORD>(parser);
+		dwString.parse<DWORD>(parser);
+		dwBitmap.parse<DWORD>(parser);
+		dwDisplay.parse<DWORD>(parser);
+		iFmt.parse<DWORD>(parser);
+		wszFormulaLength.parse<WORD>(parser);
 		if (wszFormulaLength && wszFormulaLength < _MaxEntriesLarge)
 		{
 			wszFormula.parse(parser, wszFormulaLength);

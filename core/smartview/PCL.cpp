@@ -6,8 +6,8 @@ namespace smartview
 {
 	SizedXID::SizedXID(std::shared_ptr<binaryParser>& parser)
 	{
-		XidSize = parser->Get<BYTE>();
-		NamespaceGuid = parser->Get<GUID>();
+		XidSize.parse<BYTE>(parser);
+		NamespaceGuid.parse<GUID>(parser);
 		cbLocalId = XidSize - sizeof(GUID);
 		if (parser->RemainingBytes() >= cbLocalId)
 		{
@@ -21,7 +21,7 @@ namespace smartview
 		// Must have at least 1 byte left to have another XID
 		while (m_Parser->RemainingBytes() > sizeof(BYTE))
 		{
-			const auto XidSize = m_Parser->Get<BYTE>();
+			const auto& XidSize = blockT<BYTE>(m_Parser);
 			if (m_Parser->RemainingBytes() >= XidSize)
 			{
 				m_Parser->advance(XidSize);

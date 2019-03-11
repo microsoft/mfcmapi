@@ -6,8 +6,8 @@ namespace smartview
 {
 	ADRENTRYStruct::ADRENTRYStruct(std::shared_ptr<binaryParser> parser)
 	{
-		cValues = parser->Get<DWORD>();
-		ulReserved1 = parser->Get<DWORD>();
+		cValues.parse<DWORD>(parser);
+		ulReserved1.parse<DWORD>(parser);
 
 		if (cValues)
 		{
@@ -21,8 +21,8 @@ namespace smartview
 
 	void RecipientRowStream::Parse()
 	{
-		m_cVersion = m_Parser->Get<DWORD>();
-		m_cRowCount = m_Parser->Get<DWORD>();
+		m_cVersion.parse<DWORD>(m_Parser);
+		m_cRowCount.parse<DWORD>(m_Parser);
 
 		if (m_cRowCount)
 		{

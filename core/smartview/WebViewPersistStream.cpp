@@ -8,11 +8,11 @@ namespace smartview
 {
 	WebViewPersist::WebViewPersist(std::shared_ptr<binaryParser>& parser)
 	{
-		dwVersion = parser->Get<DWORD>();
-		dwType = parser->Get<DWORD>();
-		dwFlags = parser->Get<DWORD>();
+		dwVersion.parse<DWORD>(parser);
+		dwType.parse<DWORD>(parser);
+		dwFlags.parse<DWORD>(parser);
 		dwUnused.parse(parser, 7 * sizeof(DWORD));
-		cbData = parser->Get<DWORD>();
+		cbData.parse<DWORD>(parser);
 		lpData.parse(parser, cbData, _MaxBytes);
 	}
 
@@ -24,7 +24,7 @@ namespace smartview
 			// Must have at least 2 bytes left to have another struct
 			if (m_Parser->RemainingBytes() < sizeof(DWORD) * 11) break;
 			m_Parser->advance(sizeof(DWORD) * 10);
-			const auto cbData = m_Parser->Get<DWORD>();
+			const auto& cbData = blockT<DWORD>(m_Parser);
 
 			// Must have at least cbData bytes left to be a valid flag
 			if (m_Parser->RemainingBytes() < cbData) break;

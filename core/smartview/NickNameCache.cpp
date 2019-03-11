@@ -5,7 +5,7 @@ namespace smartview
 {
 	SRowStruct::SRowStruct(std::shared_ptr<binaryParser> parser)
 	{
-		cValues = parser->Get<DWORD>();
+		cValues.parse<DWORD>(parser);
 
 		if (cValues)
 		{
@@ -21,9 +21,9 @@ namespace smartview
 	void NickNameCache::Parse()
 	{
 		m_Metadata1.parse(m_Parser, 4);
-		m_ulMajorVersion = m_Parser->Get<DWORD>();
-		m_ulMinorVersion = m_Parser->Get<DWORD>();
-		m_cRowCount = m_Parser->Get<DWORD>();
+		m_ulMajorVersion.parse<DWORD>(m_Parser);
+		m_ulMinorVersion.parse<DWORD>(m_Parser);
+		m_cRowCount.parse<DWORD>(m_Parser);
 
 		if (m_cRowCount)
 		{
@@ -37,7 +37,7 @@ namespace smartview
 			}
 		}
 
-		m_cbEI = m_Parser->Get<DWORD>();
+		m_cbEI.parse<DWORD>(m_Parser);
 		m_lpbEI.parse(m_Parser, m_cbEI, _MaxBytes);
 		m_Metadata2.parse(m_Parser, 8);
 	}

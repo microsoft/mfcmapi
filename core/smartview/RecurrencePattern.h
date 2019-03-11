@@ -1,5 +1,6 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
@@ -41,8 +42,8 @@ namespace smartview
 		blockT<DWORD> m_OccurrenceCount;
 		blockT<DWORD> m_FirstDOW;
 		blockT<DWORD> m_DeletedInstanceCount;
-		std::vector<blockT<DWORD>> m_DeletedInstanceDates;
-		std::vector<blockT<DWORD>> m_ModifiedInstanceDates;
+		std::vector<std::shared_ptr<blockT<DWORD>>> m_DeletedInstanceDates;
+		std::vector<std::shared_ptr<blockT<DWORD>>> m_ModifiedInstanceDates;
 		blockT<DWORD> m_StartDate;
 		blockT<DWORD> m_EndDate;
 	};

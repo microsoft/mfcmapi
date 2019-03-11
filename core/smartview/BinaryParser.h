@@ -1,6 +1,4 @@
 #pragma once
-#include <core/smartview/block/block.h>
-#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
@@ -50,20 +48,6 @@ namespace smartview
 		// If we're before the beginning of the buffer, return 0
 		size_t RemainingBytes() const { return m_Offset > m_Size ? 0 : m_Size - m_Offset; }
 		bool CheckRemainingBytes(size_t cbBytes) const { return cbBytes <= RemainingBytes(); }
-
-		template <typename T> blockT<T> Get()
-		{
-			// TODO: Consider what a failure block really looks like
-			if (!CheckRemainingBytes(sizeof T)) return {};
-
-			auto ret = blockT<T>();
-			ret.setOffset(m_Offset);
-			// TODO: Can we remove this cast?
-			ret.setData(*reinterpret_cast<const T*>(GetCurrentAddress()));
-			ret.setSize(sizeof T);
-			m_Offset += sizeof T;
-			return ret;
-		}
 
 	private:
 		std::vector<BYTE> m_Bin;

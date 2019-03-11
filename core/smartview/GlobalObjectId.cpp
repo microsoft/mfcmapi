@@ -20,20 +20,20 @@ namespace smartview
 	{
 		m_Id.parse(m_Parser, 16);
 
-		const auto b1 = m_Parser->Get<BYTE>();
-		const auto b2 = m_Parser->Get<BYTE>();
+		const auto& b1 = blockT<BYTE>(m_Parser);
+		const auto& b2 = blockT<BYTE>(m_Parser);
 		m_Year.setData(static_cast<WORD>(b1 << 8 | b2));
 		m_Year.setOffset(b1.getOffset());
 		m_Year.setSize(b1.getSize() + b2.getSize());
 
-		m_Month = m_Parser->Get<BYTE>();
+		m_Month.parse<BYTE>(m_Parser);
 		const auto szFlags = flags::InterpretFlags(flagGlobalObjectIdMonth, m_Month);
 
-		m_Day = m_Parser->Get<BYTE>();
+		m_Day.parse<BYTE>(m_Parser);
 
-		m_CreationTime = m_Parser->Get<FILETIME>();
-		m_X = m_Parser->Get<LARGE_INTEGER>();
-		m_dwSize = m_Parser->Get<DWORD>();
+		m_CreationTime.parse<FILETIME>(m_Parser);
+		m_X.parse<LARGE_INTEGER>(m_Parser);
+		m_dwSize.parse<DWORD>(m_Parser);
 		m_lpData.parse(m_Parser, m_dwSize, _MaxBytes);
 	}
 

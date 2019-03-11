@@ -7,7 +7,7 @@ namespace smartview
 {
 	SBinaryBlock::SBinaryBlock(std::shared_ptr<binaryParser> parser)
 	{
-		cb = parser->Get<DWORD>();
+		cb.parse<DWORD>(parser);
 		// Note that we're not placing a restriction on how large a multivalued binary property we can parse. May need to revisit this.
 		lpb.parse(parser, cb);
 	}
@@ -88,58 +88,58 @@ namespace smartview
 	{
 		const auto ulCurrOffset = parser->GetCurrentOffset();
 
-		PropType = parser->Get<WORD>();
-		PropID = parser->Get<WORD>();
+		PropType.parse<WORD>(parser);
+		PropID.parse<WORD>(parser);
 
 		ulPropTag.setData(PROP_TAG(PropType, PropID));
 		ulPropTag.setSize(PropType.getSize() + PropID.getSize());
 		ulPropTag.setOffset(PropType.getOffset());
 		dwAlignPad = 0;
 
-		if (doNickname) (void) parser->Get<DWORD>(); // reserved
+		if (doNickname) (void) parser->advance(sizeof DWORD); // reserved
 
 		switch (PropType)
 		{
 		case PT_I2:
 			// TODO: Insert proper property struct parsing here
-			if (doNickname) Value.i = parser->Get<WORD>();
-			if (doNickname) parser->Get<WORD>();
-			if (doNickname) parser->Get<DWORD>();
+			if (doNickname) Value.i.parse<WORD>(parser);
+			if (doNickname) parser->advance(sizeof WORD);
+			if (doNickname) parser->advance(sizeof DWORD);
 			break;
 		case PT_LONG:
-			Value.l = parser->Get<DWORD>();
-			if (doNickname) parser->Get<DWORD>();
+			Value.l.parse<DWORD>(parser);
+			if (doNickname) parser->advance(sizeof DWORD);
 			break;
 		case PT_ERROR:
-			Value.err = parser->Get<DWORD>();
-			if (doNickname) parser->Get<DWORD>();
+			Value.err.parse<DWORD>(parser);
+			if (doNickname) parser->advance(sizeof DWORD);
 			break;
 		case PT_R4:
-			Value.flt = parser->Get<float>();
-			if (doNickname) parser->Get<DWORD>();
+			Value.flt.parse<DWORD>(parser);
+			if (doNickname) parser->advance(sizeof DWORD);
 			break;
 		case PT_DOUBLE:
-			Value.dbl = parser->Get<double>();
+			Value.dbl.parse<double>(parser);
 			break;
 		case PT_BOOLEAN:
 			if (doRuleProcessing)
 			{
-				Value.b = parser->Get<BYTE>();
+				Value.b.parse<BYTE>(parser);
 			}
 			else
 			{
-				Value.b = parser->Get<WORD>();
+				Value.b.parse<WORD>(parser);
 			}
 
-			if (doNickname) parser->Get<WORD>();
-			if (doNickname) parser->Get<DWORD>();
+			if (doNickname) parser->advance(sizeof WORD);
+			if (doNickname) parser->advance(sizeof DWORD);
 			break;
 		case PT_I8:
-			Value.li = parser->Get<LARGE_INTEGER>();
+			Value.li.parse<LARGE_INTEGER>(parser);
 			break;
 		case PT_SYSTIME:
-			Value.ft.dwHighDateTime = parser->Get<DWORD>();
-			Value.ft.dwLowDateTime = parser->Get<DWORD>();
+			Value.ft.dwHighDateTime.parse<DWORD>(parser);
+			Value.ft.dwLowDateTime.parse<DWORD>(parser);
 			break;
 		case PT_STRING8:
 			if (doRuleProcessing)
@@ -151,12 +151,12 @@ namespace smartview
 			{
 				if (doNickname)
 				{
-					(void) parser->Get<LARGE_INTEGER>(); // union
-					Value.lpszA.cb = parser->Get<DWORD>();
+					(void) parser->advance(sizeof LARGE_INTEGER); // union
+					Value.lpszA.cb.parse<DWORD>(parser);
 				}
 				else
 				{
-					Value.lpszA.cb = parser->Get<WORD>();
+					Value.lpszA.cb.parse<WORD>(parser);
 				}
 
 				Value.lpszA.str.parse(parser, Value.lpszA.cb);
@@ -166,16 +166,16 @@ namespace smartview
 		case PT_BINARY:
 			if (doNickname)
 			{
-				(void) parser->Get<LARGE_INTEGER>(); // union
+				(void) parser->advance(sizeof LARGE_INTEGER); // union
 			}
 
 			if (doRuleProcessing || doNickname)
 			{
-				Value.bin.cb = parser->Get<DWORD>();
+				Value.bin.cb.parse<DWORD>(parser);
 			}
 			else
 			{
-				Value.bin.cb = parser->Get<WORD>();
+				Value.bin.cb.parse<WORD>(parser);
 			}
 
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
@@ -191,30 +191,30 @@ namespace smartview
 			{
 				if (doNickname)
 				{
-					(void) parser->Get<LARGE_INTEGER>(); // union
-					Value.lpszW.cb = parser->Get<DWORD>();
+					(void) parser->advance(sizeof LARGE_INTEGER); // union
+					Value.lpszW.cb.parse<DWORD>(parser);
 				}
 				else
 				{
-					Value.lpszW.cb = parser->Get<WORD>();
+					Value.lpszW.cb.parse<WORD>(parser);
 				}
 
 				Value.lpszW.str.parse(parser, Value.lpszW.cb / sizeof(WCHAR));
 			}
 			break;
 		case PT_CLSID:
-			if (doNickname) (void) parser->Get<LARGE_INTEGER>(); // union
-			Value.lpguid = parser->Get<GUID>();
+			if (doNickname) (void) parser->advance(sizeof LARGE_INTEGER); // union
+			Value.lpguid.parse<GUID>(parser);
 			break;
 		case PT_MV_STRING8:
 			if (doNickname)
 			{
-				(void) parser->Get<LARGE_INTEGER>(); // union
-				Value.MVszA.cValues = parser->Get<DWORD>();
+				(void) parser->advance(sizeof LARGE_INTEGER); // union
+				Value.MVszA.cValues.parse<DWORD>(parser);
 			}
 			else
 			{
-				Value.MVszA.cValues = parser->Get<WORD>();
+				Value.MVszA.cValues.parse<WORD>(parser);
 			}
 
 			if (Value.MVszA.cValues)
@@ -230,12 +230,12 @@ namespace smartview
 		case PT_MV_UNICODE:
 			if (doNickname)
 			{
-				(void) parser->Get<LARGE_INTEGER>(); // union
-				Value.MVszW.cValues = parser->Get<DWORD>();
+				(void) parser->advance(sizeof LARGE_INTEGER); // union
+				Value.MVszW.cValues.parse<DWORD>(parser);
 			}
 			else
 			{
-				Value.MVszW.cValues = parser->Get<WORD>();
+				Value.MVszW.cValues.parse<WORD>(parser);
 			}
 
 			if (Value.MVszW.cValues && Value.MVszW.cValues < _MaxEntriesLarge)
@@ -250,12 +250,12 @@ namespace smartview
 		case PT_MV_BINARY:
 			if (doNickname)
 			{
-				(void) parser->Get<LARGE_INTEGER>(); // union
-				Value.MVbin.cValues = parser->Get<DWORD>();
+				(void) parser->advance(sizeof LARGE_INTEGER); // union
+				Value.MVbin.cValues.parse<DWORD>(parser);
 			}
 			else
 			{
-				Value.MVbin.cValues = parser->Get<WORD>();
+				Value.MVbin.cValues.parse<WORD>(parser);
 			}
 
 			if (Value.MVbin.cValues && Value.MVbin.cValues < _MaxEntriesLarge)

@@ -7,42 +7,42 @@ namespace smartview
 {
 	TZRule::TZRule(std::shared_ptr<binaryParser>& parser)
 	{
-		bMajorVersion = parser->Get<BYTE>();
-		bMinorVersion = parser->Get<BYTE>();
-		wReserved = parser->Get<WORD>();
-		wTZRuleFlags = parser->Get<WORD>();
-		wYear = parser->Get<WORD>();
+		bMajorVersion.parse<BYTE>(parser);
+		bMinorVersion.parse<BYTE>(parser);
+		wReserved.parse<WORD>(parser);
+		wTZRuleFlags.parse<WORD>(parser);
+		wYear.parse<WORD>(parser);
 		X.parse(parser, 14);
-		lBias = parser->Get<DWORD>();
-		lStandardBias = parser->Get<DWORD>();
-		lDaylightBias = parser->Get<DWORD>();
-		stStandardDate.wYear = parser->Get<WORD>();
-		stStandardDate.wMonth = parser->Get<WORD>();
-		stStandardDate.wDayOfWeek = parser->Get<WORD>();
-		stStandardDate.wDay = parser->Get<WORD>();
-		stStandardDate.wHour = parser->Get<WORD>();
-		stStandardDate.wMinute = parser->Get<WORD>();
-		stStandardDate.wSecond = parser->Get<WORD>();
-		stStandardDate.wMilliseconds = parser->Get<WORD>();
-		stDaylightDate.wYear = parser->Get<WORD>();
-		stDaylightDate.wMonth = parser->Get<WORD>();
-		stDaylightDate.wDayOfWeek = parser->Get<WORD>();
-		stDaylightDate.wDay = parser->Get<WORD>();
-		stDaylightDate.wHour = parser->Get<WORD>();
-		stDaylightDate.wMinute = parser->Get<WORD>();
-		stDaylightDate.wSecond = parser->Get<WORD>();
-		stDaylightDate.wMilliseconds = parser->Get<WORD>();
+		lBias.parse<DWORD>(parser);
+		lStandardBias.parse<DWORD>(parser);
+		lDaylightBias.parse<DWORD>(parser);
+		stStandardDate.wYear.parse<WORD>(parser);
+		stStandardDate.wMonth.parse<WORD>(parser);
+		stStandardDate.wDayOfWeek.parse<WORD>(parser);
+		stStandardDate.wDay.parse<WORD>(parser);
+		stStandardDate.wHour.parse<WORD>(parser);
+		stStandardDate.wMinute.parse<WORD>(parser);
+		stStandardDate.wSecond.parse<WORD>(parser);
+		stStandardDate.wMilliseconds.parse<WORD>(parser);
+		stDaylightDate.wYear.parse<WORD>(parser);
+		stDaylightDate.wMonth.parse<WORD>(parser);
+		stDaylightDate.wDayOfWeek.parse<WORD>(parser);
+		stDaylightDate.wDay.parse<WORD>(parser);
+		stDaylightDate.wHour.parse<WORD>(parser);
+		stDaylightDate.wMinute.parse<WORD>(parser);
+		stDaylightDate.wSecond.parse<WORD>(parser);
+		stDaylightDate.wMilliseconds.parse<WORD>(parser);
 	}
 
 	void TimeZoneDefinition::Parse()
 	{
-		m_bMajorVersion = m_Parser->Get<BYTE>();
-		m_bMinorVersion = m_Parser->Get<BYTE>();
-		m_cbHeader = m_Parser->Get<WORD>();
-		m_wReserved = m_Parser->Get<WORD>();
-		m_cchKeyName = m_Parser->Get<WORD>();
+		m_bMajorVersion.parse<BYTE>(m_Parser);
+		m_bMinorVersion.parse<BYTE>(m_Parser);
+		m_cbHeader.parse<WORD>(m_Parser);
+		m_wReserved.parse<WORD>(m_Parser);
+		m_cchKeyName.parse<WORD>(m_Parser);
 		m_szKeyName.parse(m_Parser, m_cchKeyName);
-		m_cRules = m_Parser->Get<WORD>();
+		m_cRules.parse<WORD>(m_Parser);
 
 		if (m_cRules && m_cRules < _MaxEntriesSmall)
 		{

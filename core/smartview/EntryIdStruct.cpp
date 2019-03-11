@@ -11,10 +11,10 @@ namespace smartview
 	{
 		m_ObjectType = eidtUnknown;
 		if (m_Parser->RemainingBytes() < 4) return;
-		m_abFlags0 = m_Parser->Get<byte>();
-		m_abFlags1 = m_Parser->Get<byte>();
+		m_abFlags0.parse<byte>(m_Parser);
+		m_abFlags1.parse<byte>(m_Parser);
 		m_abFlags23.parse(m_Parser, 2);
-		m_ProviderUID = m_Parser->Get<GUID>();
+		m_ProviderUID.parse<GUID>(m_Parser);
 
 		// Ephemeral entry ID:
 		if (m_abFlags0 == EPHEMERAL)
@@ -66,12 +66,12 @@ namespace smartview
 			{
 				// Ephemeral Recipient
 			case eidtEphemeral:
-				m_EphemeralObject.Version = m_Parser->Get<DWORD>();
-				m_EphemeralObject.Type = m_Parser->Get<DWORD>();
+				m_EphemeralObject.Version.parse<DWORD>(m_Parser);
+				m_EphemeralObject.Type.parse<DWORD>(m_Parser);
 				break;
 				// One Off Recipient
 			case eidtOneOff:
-				m_OneOffRecipientObject.Bitmask = m_Parser->Get<DWORD>();
+				m_OneOffRecipientObject.Bitmask.parse<DWORD>(m_Parser);
 				if (MAPI_UNICODE & m_OneOffRecipientObject.Bitmask)
 				{
 					m_OneOffRecipientObject.Unicode.DisplayName.parse(m_Parser);
@@ -87,24 +87,24 @@ namespace smartview
 				break;
 				// Address Book Recipient
 			case eidtAddressBook:
-				m_AddressBookObject.Version = m_Parser->Get<DWORD>();
-				m_AddressBookObject.Type = m_Parser->Get<DWORD>();
+				m_AddressBookObject.Version.parse<DWORD>(m_Parser);
+				m_AddressBookObject.Type.parse<DWORD>(m_Parser);
 				m_AddressBookObject.X500DN.parse(m_Parser);
 				break;
 				// Contact Address Book / Personal Distribution List (PDL)
 			case eidtContact:
 			{
-				m_ContactAddressBookObject.Version = m_Parser->Get<DWORD>();
-				m_ContactAddressBookObject.Type = m_Parser->Get<DWORD>();
+				m_ContactAddressBookObject.Version.parse<DWORD>(m_Parser);
+				m_ContactAddressBookObject.Type.parse<DWORD>(m_Parser);
 
 				if (CONTAB_CONTAINER == m_ContactAddressBookObject.Type)
 				{
-					m_ContactAddressBookObject.muidID = m_Parser->Get<GUID>();
+					m_ContactAddressBookObject.muidID.parse<GUID>(m_Parser);
 				}
 				else // Assume we've got some variation on the user/distlist format
 				{
-					m_ContactAddressBookObject.Index = m_Parser->Get<DWORD>();
-					m_ContactAddressBookObject.EntryIDCount = m_Parser->Get<DWORD>();
+					m_ContactAddressBookObject.Index.parse<DWORD>(m_Parser);
+					m_ContactAddressBookObject.EntryIDCount.parse<DWORD>(m_Parser);
 				}
 
 				// Read the wrapped entry ID from the remaining data
@@ -125,14 +125,14 @@ namespace smartview
 			{
 				m_ObjectType = eidtWAB;
 
-				m_WAB.Type = m_Parser->Get<BYTE>();
+				m_WAB.Type.parse<BYTE>(m_Parser);
 				m_WAB.lpEntryID = std::make_shared<EntryIdStruct>(m_Parser, false);
 			}
 			break;
 			// message store objects
 			case eidtMessageDatabase:
-				m_MessageDatabaseObject.Version = m_Parser->Get<BYTE>();
-				m_MessageDatabaseObject.Flag = m_Parser->Get<BYTE>();
+				m_MessageDatabaseObject.Version.parse<BYTE>(m_Parser);
+				m_MessageDatabaseObject.Flag.parse<BYTE>(m_Parser);
 				m_MessageDatabaseObject.DLLFileName.parse(m_Parser);
 				m_MessageDatabaseObject.bIsExchange = false;
 
@@ -150,16 +150,16 @@ namespace smartview
 					auto cbRead = m_Parser->GetCurrentOffset();
 					// Advance to the next multiple of 4
 					m_Parser->advance(3 - (cbRead + 3) % 4);
-					m_MessageDatabaseObject.WrappedFlags = m_Parser->Get<DWORD>();
-					m_MessageDatabaseObject.WrappedProviderUID = m_Parser->Get<GUID>();
-					m_MessageDatabaseObject.WrappedType = m_Parser->Get<DWORD>();
+					m_MessageDatabaseObject.WrappedFlags.parse<DWORD>(m_Parser);
+					m_MessageDatabaseObject.WrappedProviderUID.parse<GUID>(m_Parser);
+					m_MessageDatabaseObject.WrappedType.parse<DWORD>(m_Parser);
 					m_MessageDatabaseObject.ServerShortname.parse(m_Parser);
 
 					// Test if we have a magic value. Some PF EIDs also have a mailbox DN and we need to accomodate them
 					if (m_MessageDatabaseObject.WrappedType & OPENSTORE_PUBLIC)
 					{
 						cbRead = m_Parser->GetCurrentOffset();
-						m_MessageDatabaseObject.MagicVersion = m_Parser->Get<DWORD>();
+						m_MessageDatabaseObject.MagicVersion.parse<DWORD>(m_Parser);
 						m_Parser->SetCurrentOffset(cbRead);
 					}
 					else
@@ -179,7 +179,7 @@ namespace smartview
 
 					// Check again for a magic value
 					cbRead = m_Parser->GetCurrentOffset();
-					m_MessageDatabaseObject.MagicVersion = m_Parser->Get<DWORD>();
+					m_MessageDatabaseObject.MagicVersion.parse<DWORD>(m_Parser);
 					m_Parser->SetCurrentOffset(cbRead);
 
 					switch (m_MessageDatabaseObject.MagicVersion)
@@ -187,11 +187,11 @@ namespace smartview
 					case MDB_STORE_EID_V2_MAGIC:
 						if (m_Parser->RemainingBytes() >= MDB_STORE_EID_V2::size + sizeof(WCHAR))
 						{
-							m_MessageDatabaseObject.v2.ulMagic = m_Parser->Get<DWORD>();
-							m_MessageDatabaseObject.v2.ulSize = m_Parser->Get<DWORD>();
-							m_MessageDatabaseObject.v2.ulVersion = m_Parser->Get<DWORD>();
-							m_MessageDatabaseObject.v2.ulOffsetDN = m_Parser->Get<DWORD>();
-							m_MessageDatabaseObject.v2.ulOffsetFQDN = m_Parser->Get<DWORD>();
+							m_MessageDatabaseObject.v2.ulMagic.parse<DWORD>(m_Parser);
+							m_MessageDatabaseObject.v2.ulSize.parse<DWORD>(m_Parser);
+							m_MessageDatabaseObject.v2.ulVersion.parse<DWORD>(m_Parser);
+							m_MessageDatabaseObject.v2.ulOffsetDN.parse<DWORD>(m_Parser);
+							m_MessageDatabaseObject.v2.ulOffsetFQDN.parse<DWORD>(m_Parser);
 							if (m_MessageDatabaseObject.v2.ulOffsetDN)
 							{
 								m_MessageDatabaseObject.v2DN.parse(m_Parser);
@@ -208,10 +208,10 @@ namespace smartview
 					case MDB_STORE_EID_V3_MAGIC:
 						if (m_Parser->RemainingBytes() >= MDB_STORE_EID_V3::size + sizeof(WCHAR))
 						{
-							m_MessageDatabaseObject.v3.ulMagic = m_Parser->Get<DWORD>();
-							m_MessageDatabaseObject.v3.ulSize = m_Parser->Get<DWORD>();
-							m_MessageDatabaseObject.v3.ulVersion = m_Parser->Get<DWORD>();
-							m_MessageDatabaseObject.v3.ulOffsetSmtpAddress = m_Parser->Get<DWORD>();
+							m_MessageDatabaseObject.v3.ulMagic.parse<DWORD>(m_Parser);
+							m_MessageDatabaseObject.v3.ulSize.parse<DWORD>(m_Parser);
+							m_MessageDatabaseObject.v3.ulVersion.parse<DWORD>(m_Parser);
+							m_MessageDatabaseObject.v3.ulOffsetSmtpAddress.parse<DWORD>(m_Parser);
 							if (m_MessageDatabaseObject.v3.ulOffsetSmtpAddress)
 							{
 								m_MessageDatabaseObject.v3SmtpAddress.parse(m_Parser);
@@ -225,19 +225,19 @@ namespace smartview
 				break;
 				// Exchange message store folder
 			case eidtFolder:
-				m_FolderOrMessage.Type = m_Parser->Get<WORD>();
-				m_FolderOrMessage.FolderObject.DatabaseGUID = m_Parser->Get<GUID>();
+				m_FolderOrMessage.Type.parse<WORD>(m_Parser);
+				m_FolderOrMessage.FolderObject.DatabaseGUID.parse<GUID>(m_Parser);
 				m_FolderOrMessage.FolderObject.GlobalCounter.parse(m_Parser, 6);
 				m_FolderOrMessage.FolderObject.Pad.parse(m_Parser, 2);
 				break;
 				// Exchange message store message
 			case eidtMessage:
-				m_FolderOrMessage.Type = m_Parser->Get<WORD>();
-				m_FolderOrMessage.MessageObject.FolderDatabaseGUID = m_Parser->Get<GUID>();
+				m_FolderOrMessage.Type.parse<WORD>(m_Parser);
+				m_FolderOrMessage.MessageObject.FolderDatabaseGUID.parse<GUID>(m_Parser);
 				m_FolderOrMessage.MessageObject.FolderGlobalCounter.parse(m_Parser, 6);
 				m_FolderOrMessage.MessageObject.Pad1.parse(m_Parser, 2);
 
-				m_FolderOrMessage.MessageObject.MessageDatabaseGUID = m_Parser->Get<GUID>();
+				m_FolderOrMessage.MessageObject.MessageDatabaseGUID.parse<GUID>(m_Parser);
 				m_FolderOrMessage.MessageObject.MessageGlobalCounter.parse(m_Parser, 6);
 				m_FolderOrMessage.MessageObject.Pad2.parse(m_Parser, 2);
 				break;

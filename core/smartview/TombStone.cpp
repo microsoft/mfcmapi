@@ -6,21 +6,21 @@ namespace smartview
 {
 	TombstoneRecord::TombstoneRecord(std::shared_ptr<binaryParser> parser)
 	{
-		StartTime = parser->Get<DWORD>();
-		EndTime = parser->Get<DWORD>();
-		GlobalObjectIdSize = parser->Get<DWORD>();
+		StartTime.parse<DWORD>(parser);
+		EndTime.parse<DWORD>(parser);
+		GlobalObjectIdSize.parse<DWORD>(parser);
 		GlobalObjectId.parse(parser, GlobalObjectIdSize, false);
-		UsernameSize = parser->Get<WORD>();
+		UsernameSize.parse<WORD>(parser);
 		szUsername.parse(parser, UsernameSize);
 	}
 
 	void TombStone::Parse()
 	{
-		m_Identifier = m_Parser->Get<DWORD>();
-		m_HeaderSize = m_Parser->Get<DWORD>();
-		m_Version = m_Parser->Get<DWORD>();
-		m_RecordsCount = m_Parser->Get<DWORD>();
-		m_RecordsSize = m_Parser->Get<DWORD>();
+		m_Identifier.parse<DWORD>(m_Parser);
+		m_HeaderSize.parse<DWORD>(m_Parser);
+		m_Version.parse<DWORD>(m_Parser);
+		m_RecordsCount.parse<DWORD>(m_Parser);
+		m_RecordsSize.parse<DWORD>(m_Parser);
 
 		// Run through the parser once to count the number of flag structs
 		const auto ulFlagOffset = m_Parser->GetCurrentOffset();
@@ -28,10 +28,12 @@ namespace smartview
 		{
 			// Must have at least 2 bytes left to have another flag
 			if (m_Parser->RemainingBytes() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
-			(void) m_Parser->Get<DWORD>();
-			(void) m_Parser->Get<DWORD>();
-			m_Parser->advance(m_Parser->Get<DWORD>());
-			m_Parser->advance(m_Parser->Get<WORD>());
+			(void) m_Parser->advance(sizeof DWORD);
+			(void) m_Parser->advance(sizeof DWORD);
+			const auto& len1 = blockT<DWORD>(m_Parser);
+			m_Parser->advance(len1);
+			const auto& len2= blockT<WORD>(m_Parser);
+			m_Parser->advance(len2);
 			m_ActualRecordsCount++;
 		}
 

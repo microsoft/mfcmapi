@@ -7,8 +7,8 @@ namespace smartview
 {
 	PersistElement::PersistElement(std::shared_ptr<binaryParser> parser)
 	{
-		wElementID = parser->Get<WORD>();
-		wElementDataSize = parser->Get<WORD>();
+		wElementID.parse<WORD>(parser);
+		wElementDataSize.parse<WORD>(parser);
 		if (wElementID != PersistElement::ELEMENT_SENTINEL)
 		{
 			// Since this is a word, the size will never be too large
@@ -22,8 +22,8 @@ namespace smartview
 		// Run through the parser once to count the number of PersistData structs
 		while (m_Parser->RemainingBytes() >= 2 * sizeof(WORD))
 		{
-			const auto wPersistID = m_Parser->Get<WORD>();
-			const auto wDataElementSize = m_Parser->Get<WORD>();
+			const auto& wPersistID = blockT<WORD>(m_Parser);
+			const auto& wDataElementSize = blockT<WORD>(m_Parser);
 			// Must have at least wDataElementSize bytes left to be a valid data element
 			if (m_Parser->RemainingBytes() < wDataElementSize) break;
 
@@ -48,23 +48,23 @@ namespace smartview
 	PersistData::PersistData(std::shared_ptr<binaryParser> parser)
 	{
 		WORD wDataElementCount = 0;
-		wPersistID = parser->Get<WORD>();
-		wDataElementsSize = parser->Get<WORD>();
+		wPersistID.parse<WORD>(parser);
+		wDataElementsSize.parse<WORD>(parser);
 
 		if (wPersistID != PERISIST_SENTINEL && parser->RemainingBytes() >= wDataElementsSize)
 		{
 			// Build a new parser to preread and count our elements
 			// This new parser will only contain as much space as suggested in wDataElementsSize
-			binaryParser DataElementParser(wDataElementsSize, parser->GetCurrentAddress());
+			auto DataElementParser = std::make_shared<binaryParser>(wDataElementsSize, parser->GetCurrentAddress());
 			for (;;)
 			{
-				if (DataElementParser.RemainingBytes() < 2 * sizeof(WORD)) break;
-				const auto wElementID = DataElementParser.Get<WORD>();
-				const auto wElementDataSize = DataElementParser.Get<WORD>();
+				if (DataElementParser->RemainingBytes() < 2 * sizeof(WORD)) break;
+				const auto& wElementID = blockT<WORD>(DataElementParser);
+				const auto& wElementDataSize = blockT<WORD>(DataElementParser);
 				// Must have at least wElementDataSize bytes left to be a valid element data
-				if (DataElementParser.RemainingBytes() < wElementDataSize) break;
+				if (DataElementParser->RemainingBytes() < wElementDataSize) break;
 
-				DataElementParser.advance(wElementDataSize);
+				DataElementParser->advance(wElementDataSize);
 				wDataElementCount++;
 				if (wElementID == PersistElement::ELEMENT_SENTINEL) break;
 			}

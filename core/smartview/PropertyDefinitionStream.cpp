@@ -10,10 +10,10 @@ namespace smartview
 {
 	void PackedAnsiString::parse(std::shared_ptr<binaryParser>& parser)
 	{
-		cchLength = parser->Get<BYTE>();
+		cchLength.parse<BYTE>(parser);
 		if (0xFF == cchLength)
 		{
-			cchExtendedLength = parser->Get<WORD>();
+			cchExtendedLength.parse<WORD>(parser);
 		}
 
 		szCharacters.parse(parser, cchExtendedLength ? cchExtendedLength.getData() : cchLength.getData());
@@ -21,10 +21,10 @@ namespace smartview
 
 	void PackedUnicodeString::parse(std::shared_ptr<binaryParser>& parser)
 	{
-		cchLength = parser->Get<BYTE>();
+		cchLength.parse<BYTE>(parser);
 		if (0xFF == cchLength)
 		{
-			cchExtendedLength = parser->Get<WORD>();
+			cchExtendedLength.parse<WORD>(parser);
 		}
 
 		szCharacters.parse(parser, cchExtendedLength ? cchExtendedLength.getData() : cchLength.getData());
@@ -32,7 +32,7 @@ namespace smartview
 
 	SkipBlock::SkipBlock(std::shared_ptr<binaryParser>& parser, DWORD iSkip)
 	{
-		dwSize = parser->Get<DWORD>();
+		dwSize.parse<DWORD>(parser);
 		if (iSkip == 0)
 		{
 			lpbContentText.parse(parser);
@@ -45,10 +45,10 @@ namespace smartview
 
 	FieldDefinition::FieldDefinition(std::shared_ptr<binaryParser>& parser, WORD version)
 	{
-		dwFlags = parser->Get<DWORD>();
-		wVT = parser->Get<WORD>();
-		dwDispid = parser->Get<DWORD>();
-		wNmidNameLength = parser->Get<WORD>();
+		dwFlags.parse<DWORD>(parser);
+		wVT.parse<WORD>(parser);
+		dwDispid.parse<DWORD>(parser);
+		wNmidNameLength.parse<WORD>(parser);
 		szNmidName.parse(parser, wNmidNameLength);
 
 		pasNameANSI.parse(parser);
@@ -59,7 +59,7 @@ namespace smartview
 
 		if (version == PropDefV2)
 		{
-			dwInternalType = parser->Get<DWORD>();
+			dwInternalType.parse<DWORD>(parser);
 
 			// Have to count how many skip blocks are here.
 			// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
@@ -70,8 +70,8 @@ namespace smartview
 			for (;;)
 			{
 				skipBlockCount++;
-				const auto dwBlock = parser->Get<DWORD>();
-				if (!dwBlock) break; // we hit the last, zero byte block, or the end of the buffer
+				const auto& dwBlock = blockT<DWORD>(parser);
+				if (dwBlock == 0) break; // we hit the last, zero byte block, or the end of the buffer
 				parser->advance(dwBlock);
 			}
 
@@ -91,8 +91,8 @@ namespace smartview
 
 	void PropertyDefinitionStream::Parse()
 	{
-		m_wVersion = m_Parser->Get<WORD>();
-		m_dwFieldDefinitionCount = m_Parser->Get<DWORD>();
+		m_wVersion.parse<WORD>(m_Parser);
+		m_dwFieldDefinitionCount.parse<DWORD>(m_Parser);
 		if (m_dwFieldDefinitionCount)
 		{
 			if (m_dwFieldDefinitionCount < _MaxEntriesLarge)
@@ -105,50 +105,48 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ block
-	PackedAnsiStringToBlock(_In_ const std::wstring& szFieldName, _In_ const PackedAnsiString& pasString)
+	_Check_return_ block PackedAnsiString::toBlock(_In_ const std::wstring& szFieldName)
 	{
-		auto data = pasString.cchLength;
+		auto& data = cchLength;
 
-		if (0xFF == pasString.cchLength)
+		if (0xFF == cchLength)
 		{
-			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pasString.cchExtendedLength.getData());
-			data.setSize(pasString.cchLength.getSize() + pasString.cchExtendedLength.getSize());
+			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength.getData());
+			data.setSize(cchLength.getSize() + cchExtendedLength.getSize());
 		}
 		else
 		{
-			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pasString.cchLength.getData());
+			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength.getData());
 		}
 
-		if (pasString.szCharacters.length())
+		if (szCharacters.length())
 		{
 			data.addHeader(L" Characters = ");
-			data.addBlock(pasString.szCharacters, strings::stringTowstring(pasString.szCharacters));
+			data.addBlock(szCharacters, strings::stringTowstring(szCharacters));
 		}
 
 		data.terminateBlock();
 		return data;
 	}
 
-	_Check_return_ block
-	PackedUnicodeStringToBlock(_In_ const std::wstring& szFieldName, _In_ const PackedUnicodeString& pusString)
+	_Check_return_ block PackedUnicodeString::toBlock(_In_ const std::wstring& szFieldName)
 	{
-		auto data = pusString.cchLength;
+		auto& data = cchLength;
 
-		if (0xFF == pusString.cchLength)
+		if (0xFF == cchLength)
 		{
-			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pusString.cchExtendedLength.getData());
-			data.setSize(pusString.cchLength.getSize() + pusString.cchExtendedLength.getSize());
+			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength.getData());
+			data.setSize(cchLength.getSize() + cchExtendedLength.getSize());
 		}
 		else
 		{
-			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pusString.cchLength.getData());
+			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength.getData());
 		}
 
-		if (pusString.szCharacters.length())
+		if (szCharacters.length())
 		{
 			data.addHeader(L" Characters = ");
-			data.addBlock(pusString.szCharacters, pusString.szCharacters);
+			data.addBlock(szCharacters, szCharacters);
 		}
 
 		data.terminateBlock();
@@ -211,11 +209,11 @@ namespace smartview
 				def->wNmidNameLength, L"\tNmidNameLength = 0x%1!04X!\r\n", def->wNmidNameLength.getData());
 			fieldDef.addBlock(def->szNmidName, L"\tNmidName = %1!ws!\r\n", def->szNmidName.c_str());
 
-			fieldDef.addBlock(PackedAnsiStringToBlock(L"NameAnsi", def->pasNameANSI));
-			fieldDef.addBlock(PackedAnsiStringToBlock(L"FormulaANSI", def->pasFormulaANSI));
-			fieldDef.addBlock(PackedAnsiStringToBlock(L"ValidationRuleANSI", def->pasValidationRuleANSI));
-			fieldDef.addBlock(PackedAnsiStringToBlock(L"ValidationTextANSI", def->pasValidationTextANSI));
-			fieldDef.addBlock(PackedAnsiStringToBlock(L"ErrorANSI", def->pasErrorANSI));
+			fieldDef.addBlock(def->pasNameANSI.toBlock(L"NameAnsi"));
+			fieldDef.addBlock(def->pasFormulaANSI.toBlock(L"FormulaANSI"));
+			fieldDef.addBlock(def->pasValidationRuleANSI.toBlock(L"ValidationRuleANSI"));
+			fieldDef.addBlock(def->pasValidationTextANSI.toBlock(L"ValidationTextANSI"));
+			fieldDef.addBlock(def->pasErrorANSI.toBlock(L"ErrorANSI"));
 
 			if (m_wVersion == PropDefV2)
 			{
@@ -238,7 +236,7 @@ namespace smartview
 					if (0 == iSkip)
 					{
 						skipBlock.terminateBlock();
-						skipBlock.addBlock(PackedUnicodeStringToBlock(L"\tFieldName", sb->lpbContentText));
+						skipBlock.addBlock(sb->lpbContentText.toBlock(L"\tFieldName"));
 					}
 					else if (!sb->lpbContent.empty())
 					{

@@ -9,14 +9,14 @@ namespace smartview
 {
 	ExceptionInfo::ExceptionInfo(std::shared_ptr<binaryParser>& parser)
 	{
-		StartDateTime = parser->Get<DWORD>();
-		EndDateTime = parser->Get<DWORD>();
-		OriginalStartDate = parser->Get<DWORD>();
-		OverrideFlags = parser->Get<WORD>();
+		StartDateTime.parse<DWORD>(parser);
+		EndDateTime.parse<DWORD>(parser);
+		OriginalStartDate.parse<DWORD>(parser);
+		OverrideFlags.parse<WORD>(parser);
 		if (OverrideFlags & ARO_SUBJECT)
 		{
-			SubjectLength = parser->Get<WORD>();
-			SubjectLength2 = parser->Get<WORD>();
+			SubjectLength.parse<WORD>(parser);
+			SubjectLength2.parse<WORD>(parser);
 			if (SubjectLength2 && SubjectLength2 + 1 == SubjectLength)
 			{
 				Subject.parse(parser, SubjectLength2);
@@ -25,22 +25,22 @@ namespace smartview
 
 		if (OverrideFlags & ARO_MEETINGTYPE)
 		{
-			MeetingType = parser->Get<DWORD>();
+			MeetingType.parse<DWORD>(parser);
 		}
 
 		if (OverrideFlags & ARO_REMINDERDELTA)
 		{
-			ReminderDelta = parser->Get<DWORD>();
+			ReminderDelta.parse<DWORD>(parser);
 		}
 		if (OverrideFlags & ARO_REMINDER)
 		{
-			ReminderSet = parser->Get<DWORD>();
+			ReminderSet.parse<DWORD>(parser);
 		}
 
 		if (OverrideFlags & ARO_LOCATION)
 		{
-			LocationLength = parser->Get<WORD>();
-			LocationLength2 = parser->Get<WORD>();
+			LocationLength.parse<WORD>(parser);
+			LocationLength2.parse<WORD>(parser);
 			if (LocationLength2 && LocationLength2 + 1 == LocationLength)
 			{
 				Location.parse(parser, LocationLength2);
@@ -49,22 +49,22 @@ namespace smartview
 
 		if (OverrideFlags & ARO_BUSYSTATUS)
 		{
-			BusyStatus = parser->Get<DWORD>();
+			BusyStatus.parse<DWORD>(parser);
 		}
 
 		if (OverrideFlags & ARO_ATTACHMENT)
 		{
-			Attachment = parser->Get<DWORD>();
+			Attachment.parse<DWORD>(parser);
 		}
 
 		if (OverrideFlags & ARO_SUBTYPE)
 		{
-			SubType = parser->Get<DWORD>();
+			SubType.parse<DWORD>(parser);
 		}
 
 		if (OverrideFlags & ARO_APPTCOLOR)
 		{
-			AppointmentColor = parser->Get<DWORD>();
+			AppointmentColor.parse<DWORD>(parser);
 		}
 	}
 
@@ -72,27 +72,27 @@ namespace smartview
 	{
 		if (writerVersion2 >= 0x0003009)
 		{
-			ChangeHighlight.ChangeHighlightSize = parser->Get<DWORD>();
-			ChangeHighlight.ChangeHighlightValue = parser->Get<DWORD>();
+			ChangeHighlight.ChangeHighlightSize.parse<DWORD>(parser);
+			ChangeHighlight.ChangeHighlightValue.parse<DWORD>(parser);
 			if (ChangeHighlight.ChangeHighlightSize > sizeof(DWORD))
 			{
 				ChangeHighlight.Reserved.parse(parser, ChangeHighlight.ChangeHighlightSize - sizeof(DWORD), _MaxBytes);
 			}
 		}
 
-		ReservedBlockEE1Size = parser->Get<DWORD>();
+		ReservedBlockEE1Size.parse<DWORD>(parser);
 		ReservedBlockEE1.parse(parser, ReservedBlockEE1Size, _MaxBytes);
 
 		if (flags & ARO_SUBJECT || flags & ARO_LOCATION)
 		{
-			StartDateTime = parser->Get<DWORD>();
-			EndDateTime = parser->Get<DWORD>();
-			OriginalStartDate = parser->Get<DWORD>();
+			StartDateTime.parse<DWORD>(parser);
+			EndDateTime.parse<DWORD>(parser);
+			OriginalStartDate.parse<DWORD>(parser);
 		}
 
 		if (flags & ARO_SUBJECT)
 		{
-			WideCharSubjectLength = parser->Get<WORD>();
+			WideCharSubjectLength.parse<WORD>(parser);
 			if (WideCharSubjectLength)
 			{
 				WideCharSubject.parse(parser, WideCharSubjectLength);
@@ -101,7 +101,7 @@ namespace smartview
 
 		if (flags & ARO_LOCATION)
 		{
-			WideCharLocationLength = parser->Get<WORD>();
+			WideCharLocationLength.parse<WORD>(parser);
 			if (WideCharLocationLength)
 			{
 				WideCharLocation.parse(parser, WideCharLocationLength);
@@ -110,7 +110,7 @@ namespace smartview
 
 		if (flags & ARO_SUBJECT || flags & ARO_LOCATION)
 		{
-			ReservedBlockEE2Size = parser->Get<DWORD>();
+			ReservedBlockEE2Size.parse<DWORD>(parser);
 			ReservedBlockEE2.parse(parser, ReservedBlockEE2Size, _MaxBytes);
 		}
 	}
@@ -119,11 +119,11 @@ namespace smartview
 	{
 		m_RecurrencePattern.parse(m_Parser, false);
 
-		m_ReaderVersion2 = m_Parser->Get<DWORD>();
-		m_WriterVersion2 = m_Parser->Get<DWORD>();
-		m_StartTimeOffset = m_Parser->Get<DWORD>();
-		m_EndTimeOffset = m_Parser->Get<DWORD>();
-		m_ExceptionCount = m_Parser->Get<WORD>();
+		m_ReaderVersion2.parse<DWORD>(m_Parser);
+		m_WriterVersion2.parse<DWORD>(m_Parser);
+		m_StartTimeOffset.parse<DWORD>(m_Parser);
+		m_EndTimeOffset.parse<DWORD>(m_Parser);
+		m_ExceptionCount.parse<WORD>(m_Parser);
 
 		if (m_ExceptionCount && m_ExceptionCount == m_RecurrencePattern.m_ModifiedInstanceCount &&
 			m_ExceptionCount < _MaxEntriesSmall)
@@ -135,7 +135,7 @@ namespace smartview
 			}
 		}
 
-		m_ReservedBlock1Size = m_Parser->Get<DWORD>();
+		m_ReservedBlock1Size.parse<DWORD>(m_Parser);
 		m_ReservedBlock1.parse(m_Parser, m_ReservedBlock1Size, _MaxBytes);
 
 		if (m_ExceptionCount && m_ExceptionCount == m_RecurrencePattern.m_ModifiedInstanceCount &&
@@ -148,7 +148,7 @@ namespace smartview
 			}
 		}
 
-		m_ReservedBlock2Size = m_Parser->Get<DWORD>();
+		m_ReservedBlock2Size.parse<DWORD>(m_Parser);
 		m_ReservedBlock2.parse(m_Parser, m_ReservedBlock2Size, _MaxBytes);
 	}
 
@@ -172,7 +172,7 @@ namespace smartview
 			m_EndTimeOffset.getData(),
 			RTimeToString(m_EndTimeOffset).c_str());
 
-		auto exceptions = m_ExceptionCount;
+		auto& exceptions = m_ExceptionCount;
 		exceptions.setText(L"ExceptionCount: 0x%1!04X!\r\n", m_ExceptionCount.getData());
 
 		if (!m_ExceptionInfo.empty())
@@ -322,7 +322,7 @@ namespace smartview
 		}
 
 		arpBlock.addBlock(exceptions);
-		auto reservedBlock1 = m_ReservedBlock1Size;
+		auto& reservedBlock1 = m_ReservedBlock1Size;
 		reservedBlock1.setText(L"ReservedBlock1Size: 0x%1!08X!", m_ReservedBlock1Size.getData());
 		if (m_ReservedBlock1Size)
 		{
@@ -444,7 +444,7 @@ namespace smartview
 			}
 		}
 
-		auto reservedBlock2 = m_ReservedBlock2Size;
+		auto& reservedBlock2 = m_ReservedBlock2Size;
 		reservedBlock2.setText(L"ReservedBlock2Size: 0x%1!08X!", m_ReservedBlock2Size.getData());
 		if (m_ReservedBlock2Size)
 		{

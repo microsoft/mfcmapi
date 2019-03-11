@@ -5,6 +5,7 @@
 #include <core/smartview/RestrictionStruct.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockBytes.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {

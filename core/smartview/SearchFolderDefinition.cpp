@@ -9,8 +9,8 @@ namespace smartview
 {
 	AddressListEntryStruct::AddressListEntryStruct(std::shared_ptr<binaryParser> parser)
 	{
-		PropertyCount = parser->Get<DWORD>();
-		Pad = parser->Get<DWORD>();
+		PropertyCount.parse<DWORD>(parser);
+		Pad.parse<DWORD>(parser);
 		if (PropertyCount)
 		{
 			Props.SetMaxEntries(PropertyCount);
@@ -20,15 +20,15 @@ namespace smartview
 
 	void SearchFolderDefinition::Parse()
 	{
-		m_Version = m_Parser->Get<DWORD>();
-		m_Flags = m_Parser->Get<DWORD>();
-		m_NumericSearch = m_Parser->Get<DWORD>();
+		m_Version.parse<DWORD>(m_Parser);
+		m_Flags.parse<DWORD>(m_Parser);
+		m_NumericSearch.parse<DWORD>(m_Parser);
 
-		m_TextSearchLength = m_Parser->Get<BYTE>();
+		m_TextSearchLength.parse<BYTE>(m_Parser);
 		size_t cchTextSearch = m_TextSearchLength;
 		if (255 == m_TextSearchLength)
 		{
-			m_TextSearchLengthExtended = m_Parser->Get<WORD>();
+			m_TextSearchLengthExtended.parse<WORD>(m_Parser);
 			cchTextSearch = m_TextSearchLengthExtended;
 		}
 
@@ -37,16 +37,16 @@ namespace smartview
 			m_TextSearch.parse(m_Parser, cchTextSearch);
 		}
 
-		m_SkipLen1 = m_Parser->Get<DWORD>();
+		m_SkipLen1.parse<DWORD>(m_Parser);
 		m_SkipBytes1.parse(m_Parser, m_SkipLen1, _MaxBytes);
 
-		m_DeepSearch = m_Parser->Get<DWORD>();
+		m_DeepSearch.parse<DWORD>(m_Parser);
 
-		m_FolderList1Length = m_Parser->Get<BYTE>();
+		m_FolderList1Length.parse<BYTE>(m_Parser);
 		size_t cchFolderList1 = m_FolderList1Length;
 		if (255 == m_FolderList1Length)
 		{
-			m_FolderList1LengthExtended = m_Parser->Get<WORD>();
+			m_FolderList1LengthExtended.parse<WORD>(m_Parser);
 			cchFolderList1 = m_FolderList1LengthExtended;
 		}
 
@@ -55,7 +55,7 @@ namespace smartview
 			m_FolderList1.parse(m_Parser, cchFolderList1);
 		}
 
-		m_FolderList2Length = m_Parser->Get<DWORD>();
+		m_FolderList2Length.parse<DWORD>(m_Parser);
 
 		if (m_FolderList2Length)
 		{
@@ -64,7 +64,7 @@ namespace smartview
 
 		if (SFST_BINARY & m_Flags)
 		{
-			m_AddressCount = m_Parser->Get<DWORD>();
+			m_AddressCount.parse<DWORD>(m_Parser);
 			if (m_AddressCount)
 			{
 				if (m_AddressCount < _MaxEntriesSmall)
@@ -78,7 +78,7 @@ namespace smartview
 			}
 		}
 
-		m_SkipLen2 = m_Parser->Get<DWORD>();
+		m_SkipLen2.parse<DWORD>(m_Parser);
 		m_SkipBytes2.parse(m_Parser, m_SkipLen2, _MaxBytes);
 
 		if (SFST_MRES & m_Flags)
@@ -98,7 +98,7 @@ namespace smartview
 			}
 		}
 
-		m_SkipLen3 = m_Parser->Get<DWORD>();
+		m_SkipLen3.parse<DWORD>(m_Parser);
 		if (m_SkipLen3)
 		{
 			m_SkipBytes3.parse(m_Parser, m_SkipLen3, _MaxBytes);

@@ -2,6 +2,7 @@
 #include <core/smartview/SmartViewParser.h>
 #include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/block/blockBytes.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {

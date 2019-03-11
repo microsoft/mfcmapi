@@ -5,14 +5,14 @@ namespace smartview
 {
 	EntryListEntryStruct::EntryListEntryStruct(std::shared_ptr<binaryParser> parser)
 	{
-		EntryLength = parser->Get<DWORD>();
-		EntryLengthPad = parser->Get<DWORD>();
+		EntryLength.parse<DWORD>(parser);
+		EntryLengthPad.parse<DWORD>(parser);
 	}
 
 	void EntryList::Parse()
 	{
-		m_EntryCount = m_Parser->Get<DWORD>();
-		m_Pad = m_Parser->Get<DWORD>();
+		m_EntryCount.parse<DWORD>(m_Parser);
+		m_Pad.parse<DWORD>(m_Parser);
 
 		if (m_EntryCount)
 		{

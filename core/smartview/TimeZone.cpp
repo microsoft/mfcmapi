@@ -5,27 +5,27 @@ namespace smartview
 {
 	void TimeZone::Parse()
 	{
-		m_lBias = m_Parser->Get<DWORD>();
-		m_lStandardBias = m_Parser->Get<DWORD>();
-		m_lDaylightBias = m_Parser->Get<DWORD>();
-		m_wStandardYear = m_Parser->Get<WORD>();
-		m_stStandardDate.wYear = m_Parser->Get<WORD>();
-		m_stStandardDate.wMonth = m_Parser->Get<WORD>();
-		m_stStandardDate.wDayOfWeek = m_Parser->Get<WORD>();
-		m_stStandardDate.wDay = m_Parser->Get<WORD>();
-		m_stStandardDate.wHour = m_Parser->Get<WORD>();
-		m_stStandardDate.wMinute = m_Parser->Get<WORD>();
-		m_stStandardDate.wSecond = m_Parser->Get<WORD>();
-		m_stStandardDate.wMilliseconds = m_Parser->Get<WORD>();
-		m_wDaylightDate = m_Parser->Get<WORD>();
-		m_stDaylightDate.wYear = m_Parser->Get<WORD>();
-		m_stDaylightDate.wMonth = m_Parser->Get<WORD>();
-		m_stDaylightDate.wDayOfWeek = m_Parser->Get<WORD>();
-		m_stDaylightDate.wDay = m_Parser->Get<WORD>();
-		m_stDaylightDate.wHour = m_Parser->Get<WORD>();
-		m_stDaylightDate.wMinute = m_Parser->Get<WORD>();
-		m_stDaylightDate.wSecond = m_Parser->Get<WORD>();
-		m_stDaylightDate.wMilliseconds = m_Parser->Get<WORD>();
+		m_lBias.parse<DWORD>(m_Parser);
+		m_lStandardBias.parse<DWORD>(m_Parser);
+		m_lDaylightBias.parse<DWORD>(m_Parser);
+		m_wStandardYear.parse<WORD>(m_Parser);
+		m_stStandardDate.wYear.parse<WORD>(m_Parser);
+		m_stStandardDate.wMonth.parse<WORD>(m_Parser);
+		m_stStandardDate.wDayOfWeek.parse<WORD>(m_Parser);
+		m_stStandardDate.wDay.parse<WORD>(m_Parser);
+		m_stStandardDate.wHour.parse<WORD>(m_Parser);
+		m_stStandardDate.wMinute.parse<WORD>(m_Parser);
+		m_stStandardDate.wSecond.parse<WORD>(m_Parser);
+		m_stStandardDate.wMilliseconds.parse<WORD>(m_Parser);
+		m_wDaylightDate.parse<WORD>(m_Parser);
+		m_stDaylightDate.wYear.parse<WORD>(m_Parser);
+		m_stDaylightDate.wMonth.parse<WORD>(m_Parser);
+		m_stDaylightDate.wDayOfWeek.parse<WORD>(m_Parser);
+		m_stDaylightDate.wDay.parse<WORD>(m_Parser);
+		m_stDaylightDate.wHour.parse<WORD>(m_Parser);
+		m_stDaylightDate.wMinute.parse<WORD>(m_Parser);
+		m_stDaylightDate.wSecond.parse<WORD>(m_Parser);
+		m_stDaylightDate.wMilliseconds.parse<WORD>(m_Parser);
 	}
 
 	void TimeZone::ParseBlocks()

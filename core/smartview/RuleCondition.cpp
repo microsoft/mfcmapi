@@ -7,15 +7,15 @@ namespace smartview
 {
 	PropertyName::PropertyName(std::shared_ptr<binaryParser>& parser)
 	{
-		Kind = parser->Get<BYTE>();
-		Guid = parser->Get<GUID>();
+		Kind.parse<BYTE>(parser);
+		Guid.parse<GUID>(parser);
 		if (Kind == MNID_ID)
 		{
-			LID = parser->Get<DWORD>();
+			LID.parse<DWORD>(parser);
 		}
 		else if (Kind == MNID_STRING)
 		{
-			NameSize = parser->Get<BYTE>();
+			NameSize.parse<BYTE>(parser);
 			Name.parse(parser, NameSize / sizeof(WCHAR));
 		}
 	}
@@ -24,16 +24,16 @@ namespace smartview
 
 	void RuleCondition::Parse()
 	{
-		m_NamedPropertyInformation.NoOfNamedProps = m_Parser->Get<WORD>();
+		m_NamedPropertyInformation.NoOfNamedProps.parse<WORD>(m_Parser);
 		if (m_NamedPropertyInformation.NoOfNamedProps && m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
 		{
 			m_NamedPropertyInformation.PropId.reserve(m_NamedPropertyInformation.NoOfNamedProps);
 			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
-				m_NamedPropertyInformation.PropId.push_back(m_Parser->Get<WORD>());
+				m_NamedPropertyInformation.PropId.push_back(std::make_shared<blockT<WORD>>(m_Parser));
 			}
 
-			m_NamedPropertyInformation.NamedPropertiesSize = m_Parser->Get<DWORD>();
+			m_NamedPropertyInformation.NamedPropertiesSize.parse<DWORD>(m_Parser);
 
 			m_NamedPropertyInformation.PropertyName.reserve(m_NamedPropertyInformation.NoOfNamedProps);
 			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
@@ -66,10 +66,8 @@ namespace smartview
 			{
 				terminateBlock();
 				addHeader(L"Named Prop 0x%1!04X!\r\n", i);
-				addBlock(
-					m_NamedPropertyInformation.PropId[i],
-					L"\tPropID = 0x%1!04X!\r\n",
-					m_NamedPropertyInformation.PropId[i].getData());
+				const auto& id = m_NamedPropertyInformation.PropId[i];
+				addBlock(*id, L"\tPropID = 0x%1!04X!\r\n", id->getData());
 
 				addBlock(
 					m_NamedPropertyInformation.PropertyName[i]->Kind,

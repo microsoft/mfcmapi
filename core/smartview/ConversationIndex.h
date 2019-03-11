@@ -1,5 +1,6 @@
 #pragma once
 #include <core/smartview/SmartViewParser.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
@@ -10,6 +11,8 @@ namespace smartview
 		blockT<DWORD> TimeDelta;
 		blockT<BYTE> Random;
 		blockT<BYTE> Level;
+
+		ResponseLevel(std::shared_ptr<binaryParser> parser);
 	};
 
 	class ConversationIndex : public SmartViewParser
@@ -22,6 +25,6 @@ namespace smartview
 		blockT<FILETIME> m_ftCurrent;
 		blockT<GUID> m_guid;
 		ULONG m_ulResponseLevels = 0;
-		std::vector<ResponseLevel> m_lpResponseLevels;
+		std::vector<std::shared_ptr<ResponseLevel>> m_lpResponseLevels;
 	};
 } // namespace smartview

@@ -8,50 +8,50 @@ namespace smartview
 {
 	void RecurrencePattern::Parse()
 	{
-		m_ReaderVersion = m_Parser->Get<WORD>();
-		m_WriterVersion = m_Parser->Get<WORD>();
-		m_RecurFrequency = m_Parser->Get<WORD>();
-		m_PatternType = m_Parser->Get<WORD>();
-		m_CalendarType = m_Parser->Get<WORD>();
-		m_FirstDateTime = m_Parser->Get<DWORD>();
-		m_Period = m_Parser->Get<DWORD>();
-		m_SlidingFlag = m_Parser->Get<DWORD>();
+		m_ReaderVersion.parse<WORD>(m_Parser);
+		m_WriterVersion.parse<WORD>(m_Parser);
+		m_RecurFrequency.parse<WORD>(m_Parser);
+		m_PatternType.parse<WORD>(m_Parser);
+		m_CalendarType.parse<WORD>(m_Parser);
+		m_FirstDateTime.parse<DWORD>(m_Parser);
+		m_Period.parse<DWORD>(m_Parser);
+		m_SlidingFlag.parse<DWORD>(m_Parser);
 
 		switch (m_PatternType)
 		{
 		case rptMinute:
 			break;
 		case rptWeek:
-			m_PatternTypeSpecific.WeekRecurrencePattern = m_Parser->Get<DWORD>();
+			m_PatternTypeSpecific.WeekRecurrencePattern.parse<DWORD>(m_Parser);
 			break;
 		case rptMonth:
 		case rptMonthEnd:
 		case rptHjMonth:
 		case rptHjMonthEnd:
-			m_PatternTypeSpecific.MonthRecurrencePattern = m_Parser->Get<DWORD>();
+			m_PatternTypeSpecific.MonthRecurrencePattern.parse<DWORD>(m_Parser);
 			break;
 		case rptMonthNth:
 		case rptHjMonthNth:
-			m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek = m_Parser->Get<DWORD>();
-			m_PatternTypeSpecific.MonthNthRecurrencePattern.N = m_Parser->Get<DWORD>();
+			m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek.parse<DWORD>(m_Parser);
+			m_PatternTypeSpecific.MonthNthRecurrencePattern.N.parse<DWORD>(m_Parser);
 			break;
 		}
 
-		m_EndType = m_Parser->Get<DWORD>();
-		m_OccurrenceCount = m_Parser->Get<DWORD>();
-		m_FirstDOW = m_Parser->Get<DWORD>();
-		m_DeletedInstanceCount = m_Parser->Get<DWORD>();
+		m_EndType.parse<DWORD>(m_Parser);
+		m_OccurrenceCount.parse<DWORD>(m_Parser);
+		m_FirstDOW.parse<DWORD>(m_Parser);
+		m_DeletedInstanceCount.parse<DWORD>(m_Parser);
 
 		if (m_DeletedInstanceCount && m_DeletedInstanceCount < _MaxEntriesSmall)
 		{
 			m_DeletedInstanceDates.reserve(m_DeletedInstanceCount);
 			for (DWORD i = 0; i < m_DeletedInstanceCount; i++)
 			{
-				m_DeletedInstanceDates.push_back(m_Parser->Get<DWORD>());
+				m_DeletedInstanceDates.emplace_back(std::make_shared<blockT<DWORD>>(m_Parser));
 			}
 		}
 
-		m_ModifiedInstanceCount = m_Parser->Get<DWORD>();
+		m_ModifiedInstanceCount.parse<DWORD>(m_Parser);
 
 		if (m_ModifiedInstanceCount && m_ModifiedInstanceCount <= m_DeletedInstanceCount &&
 			m_ModifiedInstanceCount < _MaxEntriesSmall)
@@ -59,12 +59,12 @@ namespace smartview
 			m_ModifiedInstanceDates.reserve(m_ModifiedInstanceCount);
 			for (DWORD i = 0; i < m_ModifiedInstanceCount; i++)
 			{
-				m_ModifiedInstanceDates.push_back(m_Parser->Get<DWORD>());
+				m_ModifiedInstanceDates.emplace_back(std::make_shared<blockT<DWORD>>(m_Parser));
 			}
 		}
 
-		m_StartDate = m_Parser->Get<DWORD>();
-		m_EndDate = m_Parser->Get<DWORD>();
+		m_StartDate.parse<DWORD>(m_Parser);
+		m_EndDate.parse<DWORD>(m_Parser);
 	}
 
 	void RecurrencePattern::ParseBlocks()
@@ -113,8 +113,7 @@ namespace smartview
 				m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek,
 				L"PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek: 0x%1!08X! = %2!ws!\r\n",
 				m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek.getData(),
-				flags::InterpretFlags(flagDOW, m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek)
-					.c_str());
+				flags::InterpretFlags(flagDOW, m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek).c_str());
 			addBlock(
 				m_PatternTypeSpecific.MonthNthRecurrencePattern.N,
 				L"PatternTypeSpecific.MonthNthRecurrencePattern.N: 0x%1!08X! = %2!ws!\r\n",
@@ -134,19 +133,21 @@ namespace smartview
 			L"FirstDOW: 0x%1!08X! = %2!ws!\r\n",
 			m_FirstDOW.getData(),
 			flags::InterpretFlags(flagFirstDOW, m_FirstDOW).c_str());
-		auto deletedInstances = m_DeletedInstanceCount;
+		auto& deletedInstances = m_DeletedInstanceCount;
 		deletedInstances.setText(L"DeletedInstanceCount: 0x%1!08X! = %1!d!\r\n", m_DeletedInstanceCount.getData());
 
 		if (m_DeletedInstanceDates.size())
 		{
-			for (DWORD i = 0; i < m_DeletedInstanceDates.size(); i++)
+			auto i = 0;
+			for (const auto& date : m_DeletedInstanceDates)
 			{
 				deletedInstances.addBlock(
-					m_DeletedInstanceDates[i],
+					*date,
 					L"DeletedInstanceDates[%1!d!]: 0x%2!08X! = %3!ws!\r\n",
 					i,
-					m_DeletedInstanceDates[i].getData(),
-					RTimeToString(m_DeletedInstanceDates[i]).c_str());
+					date->getData(),
+					RTimeToString(*date).c_str());
+				i++;
 			}
 		}
 
@@ -158,14 +159,16 @@ namespace smartview
 
 		if (m_ModifiedInstanceDates.size())
 		{
-			for (DWORD i = 0; i < m_ModifiedInstanceDates.size(); i++)
+			auto i = 0;
+			for (const auto& date : m_ModifiedInstanceDates)
 			{
 				addBlock(
-					m_ModifiedInstanceDates[i],
+					*date,
 					L"ModifiedInstanceDates[%1!d!]: 0x%2!08X! = %3!ws!\r\n",
 					i,
-					m_ModifiedInstanceDates[i].getData(),
-					RTimeToString(m_ModifiedInstanceDates[i]).c_str());
+					date->getData(),
+					RTimeToString(*date).c_str());
+				i++;
 			}
 		}
 

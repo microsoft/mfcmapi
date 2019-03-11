@@ -7,37 +7,37 @@ namespace smartview
 {
 	VerbData::VerbData(std::shared_ptr<binaryParser>& parser)
 	{
-		VerbType = parser->Get<DWORD>();
-		DisplayNameCount = parser->Get<BYTE>();
+		VerbType.parse<DWORD>(parser);
+		DisplayNameCount.parse<BYTE>(parser);
 		DisplayName.parse(parser, DisplayNameCount);
-		MsgClsNameCount = parser->Get<BYTE>();
+		MsgClsNameCount.parse<BYTE>(parser);
 		MsgClsName.parse(parser, MsgClsNameCount);
-		Internal1StringCount = parser->Get<BYTE>();
+		Internal1StringCount.parse<BYTE>(parser);
 		Internal1String.parse(parser, Internal1StringCount);
-		DisplayNameCountRepeat = parser->Get<BYTE>();
+		DisplayNameCountRepeat.parse<BYTE>(parser);
 		DisplayNameRepeat.parse(parser, DisplayNameCountRepeat);
-		Internal2 = parser->Get<DWORD>();
-		Internal3 = parser->Get<BYTE>();
-		fUseUSHeaders = parser->Get<DWORD>();
-		Internal4 = parser->Get<DWORD>();
-		SendBehavior = parser->Get<DWORD>();
-		Internal5 = parser->Get<DWORD>();
-		ID = parser->Get<DWORD>();
-		Internal6 = parser->Get<DWORD>();
+		Internal2.parse<DWORD>(parser);
+		Internal3.parse<BYTE>(parser);
+		fUseUSHeaders.parse<DWORD>(parser);
+		Internal4.parse<DWORD>(parser);
+		SendBehavior.parse<DWORD>(parser);
+		Internal5.parse<DWORD>(parser);
+		ID.parse<DWORD>(parser);
+		Internal6.parse<DWORD>(parser);
 	}
 
 	VerbExtraData::VerbExtraData(std::shared_ptr<binaryParser>& parser)
 	{
-		DisplayNameCount = parser->Get<BYTE>();
+		DisplayNameCount.parse<BYTE>(parser);
 		DisplayName.parse(parser, DisplayNameCount);
-		DisplayNameCountRepeat = parser->Get<BYTE>();
+		DisplayNameCountRepeat.parse<BYTE>(parser);
 		DisplayNameRepeat.parse(parser, DisplayNameCountRepeat);
 	}
 
 	void VerbStream::Parse()
 	{
-		m_Version = m_Parser->Get<WORD>();
-		m_Count = m_Parser->Get<DWORD>();
+		m_Version.parse<WORD>(m_Parser);
+		m_Count.parse<DWORD>(m_Parser);
 
 		if (m_Count && m_Count < _MaxEntriesSmall)
 		{
@@ -48,7 +48,7 @@ namespace smartview
 			}
 		}
 
-		m_Version2 = m_Parser->Get<WORD>();
+		m_Version2.parse<WORD>(m_Parser);
 
 		if (m_Count && m_Count < _MaxEntriesSmall)
 		{

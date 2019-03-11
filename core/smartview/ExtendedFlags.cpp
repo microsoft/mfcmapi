@@ -8,8 +8,8 @@ namespace smartview
 {
 	ExtendedFlag::ExtendedFlag(std::shared_ptr<binaryParser> parser)
 	{
-		Id = parser->Get<BYTE>();
-		Cb = parser->Get<BYTE>();
+		Id.parse<BYTE>(parser);
+		Cb.parse<BYTE>(parser);
 
 		// If the structure says there's more bytes than remaining buffer, we're done parsing.
 		if (parser->RemainingBytes() < Cb)
@@ -22,25 +22,25 @@ namespace smartview
 		{
 		case EFPB_FLAGS:
 			if (Cb == sizeof(DWORD))
-				Data.ExtendedFlags = parser->Get<DWORD>();
+				Data.ExtendedFlags.parse<DWORD>(parser);
 			else
 				bBadData = true;
 			break;
 		case EFPB_CLSIDID:
 			if (Cb == sizeof(GUID))
-				Data.SearchFolderID = parser->Get<GUID>();
+				Data.SearchFolderID.parse<GUID>(parser);
 			else
 				bBadData = true;
 			break;
 		case EFPB_SFTAG:
 			if (Cb == sizeof(DWORD))
-				Data.SearchFolderTag = parser->Get<DWORD>();
+				Data.SearchFolderTag.parse<DWORD>(parser);
 			else
 				bBadData = true;
 			break;
 		case EFPB_TODO_VERSION:
 			if (Cb == sizeof(DWORD))
-				Data.ToDoFolderVersion = parser->Get<DWORD>();
+				Data.ToDoFolderVersion.parse<DWORD>(parser);
 			else
 				bBadData = true;
 			break;
@@ -58,8 +58,8 @@ namespace smartview
 		{
 			// Must have at least 2 bytes left to have another flag
 			if (m_Parser->RemainingBytes() < 2) break;
-			(void) m_Parser->Get<BYTE>();
-			const auto cbData = m_Parser->Get<BYTE>();
+			m_Parser->advance(sizeof BYTE);
+			const auto& cbData = blockT<BYTE>(m_Parser);
 			// Must have at least cbData bytes left to be a valid flag
 			if (m_Parser->RemainingBytes() < cbData) break;
 

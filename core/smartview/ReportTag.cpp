@@ -10,28 +10,28 @@ namespace smartview
 		m_Cookie.parse(m_Parser, 9);
 
 		// Version is big endian, so we have to read individual bytes
-		const auto hiWord = m_Parser->Get<WORD>();
-		const auto loWord = m_Parser->Get<WORD>();
+		const auto& hiWord = blockT<WORD>(m_Parser);
+		const auto& loWord = blockT<WORD>(m_Parser);
 		m_Version.setOffset(hiWord.getOffset());
 		m_Version.setSize(hiWord.getSize() + loWord.getSize());
 		m_Version.setData(hiWord << 16 | loWord);
 
-		m_cbStoreEntryID = m_Parser->Get<DWORD>();
+		m_cbStoreEntryID.parse<DWORD>(m_Parser);
 		m_lpStoreEntryID.parse(m_Parser, m_cbStoreEntryID, _MaxEID);
 
-		m_cbFolderEntryID = m_Parser->Get<DWORD>();
+		m_cbFolderEntryID.parse<DWORD>(m_Parser);
 		m_lpFolderEntryID.parse(m_Parser, m_cbFolderEntryID, _MaxEID);
 
-		m_cbMessageEntryID = m_Parser->Get<DWORD>();
+		m_cbMessageEntryID.parse<DWORD>(m_Parser);
 		m_lpMessageEntryID.parse(m_Parser, m_cbMessageEntryID, _MaxEID);
 
-		m_cbSearchFolderEntryID = m_Parser->Get<DWORD>();
+		m_cbSearchFolderEntryID.parse<DWORD>(m_Parser);
 		m_lpSearchFolderEntryID.parse(m_Parser, m_cbSearchFolderEntryID, _MaxEID);
 
-		m_cbMessageSearchKey = m_Parser->Get<DWORD>();
+		m_cbMessageSearchKey.parse<DWORD>(m_Parser);
 		m_lpMessageSearchKey.parse(m_Parser, m_cbMessageSearchKey, _MaxEID);
 
-		m_cchAnsiText = m_Parser->Get<DWORD>();
+		m_cchAnsiText.parse<DWORD>(m_Parser);
 		m_lpszAnsiText.parse(m_Parser, m_cchAnsiText);
 	}
 

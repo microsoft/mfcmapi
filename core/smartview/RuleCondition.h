@@ -2,6 +2,7 @@
 #include <core/smartview/SmartViewParser.h>
 #include <core/smartview/RestrictionStruct.h>
 #include <core/smartview/block/blockStringW.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
@@ -37,7 +38,7 @@ namespace smartview
 	struct NamedPropertyInformation
 	{
 		blockT<WORD> NoOfNamedProps{};
-		std::vector<blockT<WORD>> PropId;
+		std::vector<std::shared_ptr<blockT<WORD>>> PropId;
 		blockT<DWORD> NamedPropertiesSize{};
 		std::vector<std::shared_ptr<PropertyName>> PropertyName;
 	};

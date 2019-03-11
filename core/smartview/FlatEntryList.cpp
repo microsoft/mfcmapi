@@ -8,7 +8,7 @@ namespace smartview
 	{
 		// Size here will be the length of the serialized entry ID
 		// We'll have to round it up to a multiple of 4 to read off padding
-		dwSize = parser->Get<DWORD>();
+		dwSize.parse<DWORD>(parser);
 		const auto ulSize = min(dwSize, parser->RemainingBytes());
 
 		lpEntryID.parse(parser, ulSize, true);
@@ -22,10 +22,10 @@ namespace smartview
 
 	void FlatEntryList::Parse()
 	{
-		m_cEntries = m_Parser->Get<DWORD>();
+		m_cEntries.parse<DWORD>(m_Parser);
 
 		// We read and report this, but ultimately, it's not used.
-		m_cbEntries = m_Parser->Get<DWORD>();
+		m_cbEntries.parse<DWORD>(m_Parser);
 
 		if (m_cEntries && m_cEntries < _MaxEntriesLarge)
 		{

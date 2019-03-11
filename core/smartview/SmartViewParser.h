@@ -1,5 +1,6 @@
 #pragma once
 #include <core/smartview/binaryParser.h>
+#include <core/smartview/block/block.h>
 
 #define _MaxBytes 0xFFFF
 #define _MaxDepth 25
