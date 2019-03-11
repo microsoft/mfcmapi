@@ -115,7 +115,7 @@ namespace smartview
 			if (doNickname) parser->advance(sizeof DWORD);
 			break;
 		case PT_R4:
-			Value.flt.parse<DWORD>(parser);
+			Value.flt.parse<float>(parser);
 			if (doNickname) parser->advance(sizeof DWORD);
 			break;
 		case PT_DOUBLE:
