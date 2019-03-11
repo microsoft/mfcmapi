@@ -8,7 +8,6 @@ namespace smartview
 	{
 	public:
 		blockT() = default;
-		blockT(const block& base) : block(base) {}
 		blockT(const blockT&) = delete;
 		blockT& operator=(const blockT&) = delete;
 		blockT(std::shared_ptr<binaryParser>& parser) { parse<T>(parser); }
