@@ -98,24 +98,24 @@ namespace smartview
 		if (!m_ppdPersistData.empty())
 		{
 			auto iPersistElement = 0;
-			for (const auto& data : m_ppdPersistData)
+			for (const auto& persistData : m_ppdPersistData)
 			{
 				terminateBlock();
 				addBlankLine();
 				auto element = block{};
 				element.setText(L"Persist Element %1!d!:\r\n", iPersistElement);
 				element.addBlock(
-					data->wPersistID,
+					persistData->wPersistID,
 					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
-					data->wPersistID.getData(),
-					flags::InterpretFlags(flagPersistID, data->wPersistID).c_str());
+					persistData->wPersistID.getData(),
+					flags::InterpretFlags(flagPersistID, persistData->wPersistID).c_str());
 				element.addBlock(
-					data->wDataElementsSize, L"DataElementsSize = 0x%1!04X!", data->wDataElementsSize.getData());
+					persistData->wDataElementsSize, L"DataElementsSize = 0x%1!04X!", persistData->wDataElementsSize.getData());
 
-				if (!data->ppeDataElement.empty())
+				if (!persistData->ppeDataElement.empty())
 				{
 					auto iDataElement = 0;
-					for (auto& dataElement : data->ppeDataElement)
+					for (const auto& dataElement : persistData->ppeDataElement)
 					{
 						element.terminateBlock();
 						element.addHeader(L"DataElement: %1!d!\r\n", iDataElement);
@@ -137,11 +137,11 @@ namespace smartview
 					}
 				}
 
-				if (!data->JunkData.empty())
+				if (!persistData->JunkData.empty())
 				{
 					element.terminateBlock();
-					element.addHeader(L"Unparsed data size = 0x%1!08X!\r\n", data->JunkData.size());
-					element.addBlock(data->JunkData);
+					element.addHeader(L"Unparsed data size = 0x%1!08X!\r\n", persistData->JunkData.size());
+					element.addBlock(persistData->JunkData);
 				}
 
 				addBlock(element);

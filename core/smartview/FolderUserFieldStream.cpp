@@ -147,7 +147,7 @@ namespace smartview
 		if (m_FolderUserFieldsUnicodeCount && !m_FieldDefinitionsW.empty())
 		{
 			auto i = 0;
-			for (auto& fieldDefinition : m_FieldDefinitionsW)
+			for (const auto& fieldDefinition : m_FieldDefinitionsW)
 			{
 				auto fieldBlock = block{};
 				fieldBlock.setText(L"Field %1!d!\r\n", i++);

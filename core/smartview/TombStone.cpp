@@ -60,7 +60,7 @@ namespace smartview
 		addHeader(L"ActualRecordsCount (computed) = 0x%1!08X!\r\n", m_ActualRecordsCount);
 		addBlock(m_RecordsSize, L"RecordsSize = 0x%1!08X!", m_RecordsSize.getData());
 
-		auto i = ULONG{};
+		auto i = 0;
 		for (const auto& record : m_lpRecords)
 		{
 			terminateBlock();

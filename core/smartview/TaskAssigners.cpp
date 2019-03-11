@@ -35,40 +35,31 @@ namespace smartview
 		setRoot(L"Task Assigners: \r\n");
 		addBlock(m_cAssigners, L"cAssigners = 0x%1!08X! = %1!d!", m_cAssigners.getData());
 
-		for (DWORD i = 0; i < m_lpTaskAssigners.size(); i++)
+		auto i = 0;
+		for (const auto& ta : m_lpTaskAssigners)
 		{
 			terminateBlock();
 			addHeader(L"Task Assigner[%1!d!]\r\n", i);
-			addBlock(
-				m_lpTaskAssigners[i]->cbEntryID,
-				L"\tcbEntryID = 0x%1!08X! = %1!d!\r\n",
-				m_lpTaskAssigners[i]->cbEntryID.getData());
+			addBlock(ta->cbEntryID, L"\tcbEntryID = 0x%1!08X! = %1!d!\r\n", ta->cbEntryID.getData());
 			addHeader(L"\tlpEntryID = ");
 
-			if (!m_lpTaskAssigners[i]->lpEntryID.empty())
+			if (!ta->lpEntryID.empty())
 			{
-				addBlock(m_lpTaskAssigners[i]->lpEntryID);
+				addBlock(ta->lpEntryID);
 			}
 
 			terminateBlock();
-			addBlock(
-				m_lpTaskAssigners[i]->szDisplayName,
-				L"\tszDisplayName (ANSI) = %1!hs!\r\n",
-				m_lpTaskAssigners[i]->szDisplayName.c_str());
-			addBlock(
-				m_lpTaskAssigners[i]->wzDisplayName,
-				L"\tszDisplayName (Unicode) = %1!ws!",
-				m_lpTaskAssigners[i]->wzDisplayName.c_str());
+			addBlock(ta->szDisplayName, L"\tszDisplayName (ANSI) = %1!hs!\r\n", ta->szDisplayName.c_str());
+			addBlock(ta->wzDisplayName, L"\tszDisplayName (Unicode) = %1!ws!", ta->wzDisplayName.c_str());
 
-			if (!m_lpTaskAssigners[i]->JunkData.empty())
+			if (!ta->JunkData.empty())
 			{
 				terminateBlock();
-				addBlock(
-					m_lpTaskAssigners[i]->JunkData,
-					L"\tUnparsed Data Size = 0x%1!08X!\r\n",
-					m_lpTaskAssigners[i]->JunkData.size());
-				addBlock(m_lpTaskAssigners[i]->JunkData);
+				addBlock(ta->JunkData, L"\tUnparsed Data Size = 0x%1!08X!\r\n", ta->JunkData.size());
+				addBlock(ta->JunkData);
 			}
+
+			i++;
 		}
 	}
 } // namespace smartview

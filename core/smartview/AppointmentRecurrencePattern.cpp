@@ -177,147 +177,136 @@ namespace smartview
 
 		if (!m_ExceptionInfo.empty())
 		{
-			for (WORD i = 0; i < m_ExceptionInfo.size(); i++)
+			auto i = 0;
+			for (const auto& info : m_ExceptionInfo)
 			{
 				auto exception = block{};
 				exception.addBlock(
-					m_ExceptionInfo[i]->StartDateTime,
+					info->StartDateTime,
 					L"ExceptionInfo[%1!d!].StartDateTime: 0x%2!08X! = %3!ws!\r\n",
 					i,
-					m_ExceptionInfo[i]->StartDateTime.getData(),
-					RTimeToString(m_ExceptionInfo[i]->StartDateTime).c_str());
+					info->StartDateTime.getData(),
+					RTimeToString(info->StartDateTime).c_str());
 				exception.addBlock(
-					m_ExceptionInfo[i]->EndDateTime,
+					info->EndDateTime,
 					L"ExceptionInfo[%1!d!].EndDateTime: 0x%2!08X! = %3!ws!\r\n",
 					i,
-					m_ExceptionInfo[i]->EndDateTime.getData(),
-					RTimeToString(m_ExceptionInfo[i]->EndDateTime).c_str());
+					info->EndDateTime.getData(),
+					RTimeToString(info->EndDateTime).c_str());
 				exception.addBlock(
-					m_ExceptionInfo[i]->OriginalStartDate,
+					info->OriginalStartDate,
 					L"ExceptionInfo[%1!d!].OriginalStartDate: 0x%2!08X! = %3!ws!\r\n",
 					i,
-					m_ExceptionInfo[i]->OriginalStartDate.getData(),
-					RTimeToString(m_ExceptionInfo[i]->OriginalStartDate).c_str());
-				auto szOverrideFlags = flags::InterpretFlags(flagOverrideFlags, m_ExceptionInfo[i]->OverrideFlags);
+					info->OriginalStartDate.getData(),
+					RTimeToString(info->OriginalStartDate).c_str());
+				auto szOverrideFlags = flags::InterpretFlags(flagOverrideFlags, info->OverrideFlags);
 				exception.addBlock(
-					m_ExceptionInfo[i]->OverrideFlags,
+					info->OverrideFlags,
 					L"ExceptionInfo[%1!d!].OverrideFlags: 0x%2!04X! = %3!ws!\r\n",
 					i,
-					m_ExceptionInfo[i]->OverrideFlags.getData(),
+					info->OverrideFlags.getData(),
 					szOverrideFlags.c_str());
 
-				if (m_ExceptionInfo[i]->OverrideFlags & ARO_SUBJECT)
+				if (info->OverrideFlags & ARO_SUBJECT)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i]->SubjectLength,
+						info->SubjectLength,
 						L"ExceptionInfo[%1!d!].SubjectLength: 0x%2!04X! = %2!d!\r\n",
 						i,
-						m_ExceptionInfo[i]->SubjectLength.getData());
+						info->SubjectLength.getData());
 					exception.addBlock(
-						m_ExceptionInfo[i]->SubjectLength2,
+						info->SubjectLength2,
 						L"ExceptionInfo[%1!d!].SubjectLength2: 0x%2!04X! = %2!d!\r\n",
 						i,
-						m_ExceptionInfo[i]->SubjectLength2.getData());
+						info->SubjectLength2.getData());
 
 					exception.addBlock(
-						m_ExceptionInfo[i]->Subject,
-						L"ExceptionInfo[%1!d!].Subject: \"%2!hs!\"\r\n",
-						i,
-						m_ExceptionInfo[i]->Subject.c_str());
+						info->Subject, L"ExceptionInfo[%1!d!].Subject: \"%2!hs!\"\r\n", i, info->Subject.c_str());
 				}
 
-				if (m_ExceptionInfo[i]->OverrideFlags & ARO_MEETINGTYPE)
+				if (info->OverrideFlags & ARO_MEETINGTYPE)
 				{
 					auto szFlags = InterpretNumberAsStringNamedProp(
-						m_ExceptionInfo[i]->MeetingType,
-						dispidApptStateFlags,
-						const_cast<LPGUID>(&guid::PSETID_Appointment));
+						info->MeetingType, dispidApptStateFlags, const_cast<LPGUID>(&guid::PSETID_Appointment));
 					exception.addBlock(
-						m_ExceptionInfo[i]->MeetingType,
+						info->MeetingType,
 						L"ExceptionInfo[%1!d!].MeetingType: 0x%2!08X! = %3!ws!\r\n",
 						i,
-						m_ExceptionInfo[i]->MeetingType.getData(),
+						info->MeetingType.getData(),
 						szFlags.c_str());
 				}
 
-				if (m_ExceptionInfo[i]->OverrideFlags & ARO_REMINDERDELTA)
+				if (info->OverrideFlags & ARO_REMINDERDELTA)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i]->ReminderDelta,
+						info->ReminderDelta,
 						L"ExceptionInfo[%1!d!].ReminderDelta: 0x%2!08X!\r\n",
 						i,
-						m_ExceptionInfo[i]->ReminderDelta.getData());
+						info->ReminderDelta.getData());
 				}
 
-				if (m_ExceptionInfo[i]->OverrideFlags & ARO_REMINDER)
+				if (info->OverrideFlags & ARO_REMINDER)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i]->ReminderSet,
+						info->ReminderSet,
 						L"ExceptionInfo[%1!d!].ReminderSet: 0x%2!08X!\r\n",
 						i,
-						m_ExceptionInfo[i]->ReminderSet.getData());
+						info->ReminderSet.getData());
 				}
 
-				if (m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
+				if (info->OverrideFlags & ARO_LOCATION)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i]->LocationLength,
+						info->LocationLength,
 						L"ExceptionInfo[%1!d!].LocationLength: 0x%2!04X! = %2!d!\r\n",
 						i,
-						m_ExceptionInfo[i]->LocationLength.getData());
+						info->LocationLength.getData());
 					exception.addBlock(
-						m_ExceptionInfo[i]->LocationLength2,
+						info->LocationLength2,
 						L"ExceptionInfo[%1!d!].LocationLength2: 0x%2!04X! = %2!d!\r\n",
 						i,
-						m_ExceptionInfo[i]->LocationLength2.getData());
+						info->LocationLength2.getData());
 					exception.addBlock(
-						m_ExceptionInfo[i]->Location,
-						L"ExceptionInfo[%1!d!].Location: \"%2!hs!\"\r\n",
-						i,
-						m_ExceptionInfo[i]->Location.c_str());
+						info->Location, L"ExceptionInfo[%1!d!].Location: \"%2!hs!\"\r\n", i, info->Location.c_str());
 				}
 
-				if (m_ExceptionInfo[i]->OverrideFlags & ARO_BUSYSTATUS)
+				if (info->OverrideFlags & ARO_BUSYSTATUS)
 				{
 					auto szFlags = InterpretNumberAsStringNamedProp(
-						m_ExceptionInfo[i]->BusyStatus,
-						dispidBusyStatus,
-						const_cast<LPGUID>(&guid::PSETID_Appointment));
+						info->BusyStatus, dispidBusyStatus, const_cast<LPGUID>(&guid::PSETID_Appointment));
 					exception.addBlock(
-						m_ExceptionInfo[i]->BusyStatus,
+						info->BusyStatus,
 						L"ExceptionInfo[%1!d!].BusyStatus: 0x%2!08X! = %3!ws!\r\n",
 						i,
-						m_ExceptionInfo[i]->BusyStatus.getData(),
+						info->BusyStatus.getData(),
 						szFlags.c_str());
 				}
 
-				if (m_ExceptionInfo[i]->OverrideFlags & ARO_ATTACHMENT)
+				if (info->OverrideFlags & ARO_ATTACHMENT)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i]->Attachment,
+						info->Attachment,
 						L"ExceptionInfo[%1!d!].Attachment: 0x%2!08X!\r\n",
 						i,
-						m_ExceptionInfo[i]->Attachment.getData());
+						info->Attachment.getData());
 				}
 
-				if (m_ExceptionInfo[i]->OverrideFlags & ARO_SUBTYPE)
+				if (info->OverrideFlags & ARO_SUBTYPE)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i]->SubType,
-						L"ExceptionInfo[%1!d!].SubType: 0x%2!08X!\r\n",
-						i,
-						m_ExceptionInfo[i]->SubType.getData());
+						info->SubType, L"ExceptionInfo[%1!d!].SubType: 0x%2!08X!\r\n", i, info->SubType.getData());
 				}
-				if (m_ExceptionInfo[i]->OverrideFlags & ARO_APPTCOLOR)
+				if (info->OverrideFlags & ARO_APPTCOLOR)
 				{
 					exception.addBlock(
-						m_ExceptionInfo[i]->AppointmentColor,
+						info->AppointmentColor,
 						L"ExceptionInfo[%1!d!].AppointmentColor: 0x%2!08X!\r\n",
 						i,
-						m_ExceptionInfo[i]->AppointmentColor.getData());
+						info->AppointmentColor.getData());
 				}
 
 				exceptions.addBlock(exception);
+				i++;
 			}
 		}
 
@@ -335,7 +324,7 @@ namespace smartview
 
 		if (!m_ExtendedException.empty())
 		{
-			auto i = 0;
+			auto i = UINT{};
 			for (const auto& ee : m_ExtendedException)
 			{
 				auto exception = block{};

@@ -446,7 +446,7 @@ namespace smartview
 		break;
 		case RES_COMMENT:
 		{
-			for (auto& prop : resComment.lpProp.Props())
+			for (const auto& prop : resComment.lpProp.Props())
 			{
 				prop->ulPropTag.setText(
 					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",
@@ -482,7 +482,7 @@ namespace smartview
 
 		break;
 		case RES_ANNOTATION:
-			for (auto& prop : resAnnotation.lpProp.Props())
+			for (const auto& prop : resAnnotation.lpProp.Props())
 			{
 				prop->ulPropTag.setText(
 					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",

@@ -45,7 +45,7 @@ namespace smartview
 	void PropertiesStruct::ParseBlocks()
 	{
 		auto i = 0;
-		for (auto& prop : m_Props)
+		for (const auto& prop : m_Props)
 		{
 			if (i != 0)
 			{

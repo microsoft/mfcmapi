@@ -37,7 +37,7 @@ namespace smartview
 		setRoot(m_EntryCount, L"EntryCount = 0x%1!08X!\r\n", m_EntryCount.getData());
 		addBlock(m_Pad, L"Pad = 0x%1!08X!", m_Pad.getData());
 
-		auto i = DWORD{};
+		auto i = 0;
 		for (const auto& entry : m_Entry)
 		{
 			terminateBlock();
