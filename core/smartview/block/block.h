@@ -9,7 +9,8 @@ namespace smartview
 		block() = default;
 
 		const std::wstring& getText() const { return text; }
-		const std::vector<block>& getChildren() const { return children; }
+		const std::vector<std::shared_ptr<block>>& getChildren() const { return children; }
+		explicit block(std::wstring _text) : text(std::move(_text)) {}
 		bool isHeader() const { return cb == 0 && offset == 0; }
 
 		virtual std::wstring ToString() const
@@ -20,7 +21,7 @@ namespace smartview
 
 			for (const auto& item : children)
 			{
-				items.emplace_back(item.ToString());
+				items.emplace_back(item->ToString());
 			}
 
 			return strings::join(items, strings::emptystring);
@@ -36,12 +37,12 @@ namespace smartview
 			source = _source;
 			for (auto& child : children)
 			{
-				child.setSource(_source);
+				child->setSource(_source);
 			}
 		}
 		template <typename... Args> void addHeader(const std::wstring& _text, Args... args)
 		{
-			children.emplace_back(block(strings::formatmessage(_text.c_str(), args...)));
+			children.emplace_back(std::make_shared<block>(strings::formatmessage(_text.c_str(), args...)));
 		}
 
 		template <typename... Args> void setText(const std::wstring& _text, Args... args)
@@ -51,24 +52,24 @@ namespace smartview
 
 		void addBlock(const block& child, const std::wstring& _text)
 		{
-			auto block = child;
-			block.text = _text;
-			children.push_back(block);
+			auto _block = child;
+			_block.text = _text;
+			children.push_back(std::make_shared<block>(_block));
 		}
 
 		template <typename... Args> void addBlock(const block& child, const std::wstring& _text, Args... args)
 		{
-			auto block = child;
-			block.text = strings::formatmessage(_text.c_str(), args...);
-			children.push_back(block);
+			auto _block = child;
+			_block.text = strings::formatmessage(_text.c_str(), args...);
+			children.push_back(std::make_shared<block>(_block));
 		}
 
 		// Add a block as a child
 		void addBlock(const block& child)
 		{
-			auto block = child;
-			block.text = child.ToStringInternal();
-			children.push_back(block);
+			auto _block = child;
+			_block.text = child.ToStringInternal();
+			children.push_back(std::make_shared<block>(_block));
 		}
 
 		// Copy a block into this block with text
@@ -82,7 +83,7 @@ namespace smartview
 		{
 			if (children.size() >= 1)
 			{
-				children.back().terminateBlock();
+				children.back()->terminateBlock();
 			}
 			else
 			{
@@ -94,7 +95,7 @@ namespace smartview
 		{
 			auto child = block();
 			child.blank = true;
-			children.emplace_back(child);
+			children.push_back(std::make_shared<block>(child));
 		}
 
 		bool hasData() const { return !text.empty() || !children.empty(); }
@@ -105,10 +106,9 @@ namespace smartview
 		ULONG source{};
 
 	private:
-		explicit block(std::wstring _text) : text(std::move(_text)) {}
 		virtual std::wstring ToStringInternal() const { return text; }
 		std::wstring text;
-		std::vector<block> children;
+		std::vector<std::shared_ptr<block>> children;
 		bool blank{false};
 	};
 } // namespace smartview

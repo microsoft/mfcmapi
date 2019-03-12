@@ -243,7 +243,7 @@ namespace viewpane
 
 		for (const auto& item : data.getChildren())
 		{
-			AddChildren(root, item);
+			AddChildren(root, *item);
 		}
 
 		WC_B_S(::SendMessage(
