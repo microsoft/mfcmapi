@@ -44,7 +44,7 @@ namespace smartview
 
 		_Check_return_ std::wstring ToString();
 
-		const block& getBlock() const { return data; }
+		block& getBlock() { return data; }
 		bool hasData() const { return data.hasData(); }
 
 	protected:
@@ -74,7 +74,7 @@ namespace smartview
 		{
 			data.addBlock(_block, text, args...);
 		}
-		void addBlock(const block& child) { data.addBlock(child); }
+		void addBlock(block& child) { data.addBlock(child); }
 		void terminateBlock() { data.terminateBlock(); }
 		void addBlankLine() { data.addBlankLine(); }
 

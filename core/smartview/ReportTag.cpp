@@ -35,7 +35,7 @@ namespace smartview
 		m_lpszAnsiText.parse(m_Parser, m_cchAnsiText);
 	}
 
-	void ReportTag::addEID(const std::wstring& label, const blockT<ULONG>& cb, const blockBytes& eid)
+	void ReportTag::addEID(const std::wstring& label, const blockT<ULONG>& cb, blockBytes& eid)
 	{
 		if (cb)
 		{

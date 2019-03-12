@@ -65,11 +65,10 @@ namespace smartview
 		}
 
 		// Add a block as a child
-		void addBlock(const block& child)
+		void addBlock(block& child)
 		{
-			auto _block = child;
-			_block.text = child.ToStringInternal();
-			children.push_back(std::make_shared<block>(_block));
+			child.text = child.ToStringInternal();
+			children.emplace_back(std::make_shared<block>(child));
 		}
 
 		// Copy a block into this block with text
