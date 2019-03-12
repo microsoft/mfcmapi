@@ -50,11 +50,10 @@ namespace smartview
 			text = strings::formatmessage(_text.c_str(), args...);
 		}
 
-		void addBlock(const block& child, const std::wstring& _text)
+		void addBlock(block& child, const std::wstring& _text)
 		{
-			auto _block = child;
-			_block.text = _text;
-			children.push_back(std::make_shared<block>(_block));
+			child.text = _text;
+			children.push_back(std::make_shared<block>(child));
 		}
 
 		template <typename... Args> void addBlock(const block& child, const std::wstring& _text, Args... args)
