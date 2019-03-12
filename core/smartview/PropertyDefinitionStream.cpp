@@ -105,7 +105,7 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ block PackedAnsiString::toBlock(_In_ const std::wstring& szFieldName)
+	_Check_return_ block& PackedAnsiString::toBlock(_In_ const std::wstring& szFieldName)
 	{
 		auto& data = cchLength;
 
@@ -129,7 +129,7 @@ namespace smartview
 		return data;
 	}
 
-	_Check_return_ block PackedUnicodeString::toBlock(_In_ const std::wstring& szFieldName)
+	_Check_return_ block& PackedUnicodeString::toBlock(_In_ const std::wstring& szFieldName)
 	{
 		auto& data = cchLength;
 

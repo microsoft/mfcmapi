@@ -14,7 +14,7 @@ namespace smartview
 		blockStringW szCharacters;
 
 		void parse(std::shared_ptr<binaryParser>& parser);
-		_Check_return_ block toBlock(_In_ const std::wstring& szFieldName);
+		_Check_return_ block& toBlock(_In_ const std::wstring& szFieldName);
 	};
 
 	struct PackedAnsiString
@@ -24,7 +24,7 @@ namespace smartview
 		blockStringA szCharacters;
 
 		void parse(std::shared_ptr<binaryParser>& parser);
-		_Check_return_ block toBlock(_In_ const std::wstring& szFieldName);
+		_Check_return_ block& toBlock(_In_ const std::wstring& szFieldName);
 	};
 
 	struct SkipBlock
