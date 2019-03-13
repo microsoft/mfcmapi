@@ -239,10 +239,10 @@ namespace smartview
 		case RES_OR:
 			for (const auto& res : resOr.lpRes)
 			{
-				auto resBlock = block{};
-				resBlock.setText(L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
+				auto resBlock = std::make_shared<block>();
+				resBlock->setText(L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
 				res->parseBlocks(ulTabLevel + 1);
-				resBlock.addBlock(res->getBlock());
+				resBlock->addBlock(res->getBlock());
 				resOr.cRes.addBlock(resBlock);
 			}
 
@@ -257,13 +257,13 @@ namespace smartview
 				szTabs.c_str(),
 				resNot.ulReserved.getData());
 
-			auto notRoot = block{};
-			notRoot.setText(L"%1!ws!lpRes->res.resNot.lpRes\r\n", szTabs.c_str());
+			auto notRoot = std::make_shared<block>();
+			notRoot->setText(L"%1!ws!lpRes->res.resNot.lpRes\r\n", szTabs.c_str());
 
 			if (resNot.lpRes)
 			{
 				resNot.lpRes->parseBlocks(ulTabLevel + 1);
-				notRoot.addBlock(resNot.lpRes->getBlock());
+				notRoot->addBlock(resNot.lpRes->getBlock());
 			}
 
 			rt.addBlock(notRoot);
@@ -278,13 +278,13 @@ namespace smartview
 				szTabs.c_str(),
 				resCount.ulCount.getData());
 
-			auto countRoot = block{};
-			countRoot.setText(L"%1!ws!lpRes->res.resCount.lpRes\r\n", szTabs.c_str());
+			auto countRoot = std::make_shared<block>();
+			countRoot->setText(L"%1!ws!lpRes->res.resCount.lpRes\r\n", szTabs.c_str());
 
 			if (resCount.lpRes)
 			{
 				resCount.lpRes->parseBlocks(ulTabLevel + 1);
-				countRoot.addBlock(resCount.lpRes->getBlock());
+				countRoot->addBlock(resCount.lpRes->getBlock());
 			}
 
 			rt.addBlock(countRoot);
@@ -308,18 +308,18 @@ namespace smartview
 
 			if (!resContent.lpProp.Props().empty())
 			{
-				auto propBlock = block{};
-				propBlock.addBlock(
+				auto propBlock = std::make_shared<block>();
+				propBlock->addBlock(
 					resContent.lpProp.Props()[0]->ulPropTag,
 					L"%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
 					proptags::TagToString(resContent.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
-				propBlock.addBlock(
+				propBlock->addBlock(
 					resContent.lpProp.Props()[0]->PropBlock(),
 					L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
 					szTabs.c_str(),
 					resContent.lpProp.Props()[0]->PropBlock().c_str());
-				propBlock.addBlock(
+				propBlock->addBlock(
 					resContent.lpProp.Props()[0]->AltPropBlock(),
 					L"%1!ws!\tAlt: %2!ws!\r\n",
 					szTabs.c_str(),

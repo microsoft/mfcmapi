@@ -229,20 +229,20 @@ namespace smartview
 				for (const auto& sb : def->psbSkipBlocks)
 				{
 					fieldDef->terminateBlock();
-					auto skipBlock = block{};
-					skipBlock.setText(L"\tSkipBlock: %1!d!\r\n", iSkip);
-					skipBlock.addBlock(sb->dwSize, L"\t\tSize = 0x%1!08X!", sb->dwSize.getData());
+					auto skipBlock = std::make_shared<block>();
+					skipBlock->setText(L"\tSkipBlock: %1!d!\r\n", iSkip);
+					skipBlock->addBlock(sb->dwSize, L"\t\tSize = 0x%1!08X!", sb->dwSize.getData());
 
 					if (0 == iSkip)
 					{
-						skipBlock.terminateBlock();
-						skipBlock.addBlock(sb->lpbContentText.toBlock(L"\tFieldName"));
+						skipBlock->terminateBlock();
+						skipBlock->addBlock(sb->lpbContentText.toBlock(L"\tFieldName"));
 					}
 					else if (!sb->lpbContent.empty())
 					{
-						skipBlock.terminateBlock();
-						skipBlock.addHeader(L"\t\tContent = ");
-						skipBlock.addBlock(sb->lpbContent);
+						skipBlock->terminateBlock();
+						skipBlock->addHeader(L"\t\tContent = ");
+						skipBlock->addBlock(sb->lpbContent);
 					}
 
 					fieldDef->addBlock(skipBlock);

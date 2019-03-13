@@ -299,9 +299,9 @@ namespace smartview
 				L"abFlags[0] = 0x%1!02X!= %2!ws!\r\n",
 				m_abFlags0.getData(),
 				flags::InterpretFlags(flagEntryId0, m_abFlags0).c_str());
-			auto tempBlock = block();
-			tempBlock.setOffset(m_abFlags1.getOffset());
-			tempBlock.setSize(3);
+			auto tempBlock = std::make_shared<block>();
+			tempBlock->setOffset(m_abFlags1.getOffset());
+			tempBlock->setSize(3);
 			addBlock(tempBlock, L"abFlags[1..3] = 0x000000\r\n");
 		}
 		else
