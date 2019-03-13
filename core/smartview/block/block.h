@@ -12,6 +12,16 @@ namespace smartview
 		const std::vector<std::shared_ptr<block>>& getChildren() const { return children; }
 		explicit block(std::wstring _text) : text(std::move(_text)) {}
 		bool isHeader() const { return cb == 0 && offset == 0; }
+		void clear()
+		{
+			offset = 0;
+			cb = 0;
+			source = 0;
+
+			text.clear();
+			children.clear();
+			blank = false;
+		}
 
 		virtual std::wstring ToString() const
 		{

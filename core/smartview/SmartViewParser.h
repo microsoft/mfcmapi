@@ -27,7 +27,7 @@ namespace smartview
 		{
 			m_Parser = std::make_shared<binaryParser>(cbBin, lpBin);
 			m_bParsed = false;
-			data = {};
+			data.clear();
 			m_bEnableJunk = true;
 		}
 
