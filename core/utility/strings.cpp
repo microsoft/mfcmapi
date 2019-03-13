@@ -290,9 +290,10 @@ namespace strings
 
 	std::wstring trimWhitespace(const std::wstring& szString)
 	{
-		const auto first = szString.find_first_not_of(L" \r\n\t");
+		static const auto whitespace = {L'\0', L' ', L'\r', L'\n', L'\t'};
+		const auto first = szString.find_first_not_of(whitespace);
 		if (first == std::string::npos) return emptystring;
-		const auto last = szString.find_last_not_of(L" \r\n\t");
+		const auto last = szString.find_last_not_of(whitespace);
 		return szString.substr(first, last - first + 1);
 	}
 

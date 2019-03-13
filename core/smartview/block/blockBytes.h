@@ -37,6 +37,11 @@ namespace smartview
 			setSize(size() * sizeof(BYTE));
 		}
 
+		std::wstring toTextString(bool bMultiLine) const
+		{
+			return strings::StripCharacter(strings::BinToTextStringW(_data, bMultiLine), L'\0');
+		}
+
 	private:
 		std::wstring ToStringInternal() const override { return strings::BinToHexString(_data, true); }
 		std::vector<BYTE> _data;

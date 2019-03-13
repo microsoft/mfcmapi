@@ -56,11 +56,10 @@ namespace smartview
 			children.push_back(std::make_shared<block>(child));
 		}
 
-		template <typename... Args> void addBlock(const block& child, const std::wstring& _text, Args... args)
+		template <typename... Args> void addBlock(block& child, const std::wstring& _text, Args... args)
 		{
-			auto _block = child;
-			_block.text = strings::formatmessage(_text.c_str(), args...);
-			children.push_back(std::make_shared<block>(_block));
+			child.text = strings::formatmessage(_text.c_str(), args...);
+			children.push_back(std::make_shared<block>(child));
 		}
 
 		// Add a block as a child
@@ -71,7 +70,7 @@ namespace smartview
 		}
 
 		// Copy a block into this block with text
-		template <typename... Args> void setBlock(const block& _data, const std::wstring& _text, Args... args)
+		template <typename... Args> void setBlock(block& _data, const std::wstring& _text, Args... args)
 		{
 			text = strings::formatmessage(_text.c_str(), args...);
 			children = _data.children;
