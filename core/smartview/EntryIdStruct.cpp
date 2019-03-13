@@ -287,9 +287,9 @@ namespace smartview
 		if (m_abFlags23.empty()) return;
 		if (0 == (m_abFlags0 | m_abFlags1 | m_abFlags23[0] | m_abFlags23[1]))
 		{
-			auto tempBlock = block();
-			tempBlock.setOffset(m_abFlags0.getOffset());
-			tempBlock.setSize(4);
+			auto tempBlock = std::make_shared<block>();
+			tempBlock->setOffset(m_abFlags0.getOffset());
+			tempBlock->setSize(4);
 			addBlock(tempBlock, L"abFlags = 0x00000000\r\n");
 		}
 		else if (0 == (m_abFlags1 | m_abFlags23[0] | m_abFlags23[1]))

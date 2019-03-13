@@ -226,10 +226,10 @@ namespace smartview
 		case RES_AND:
 			for (const auto& res : resAnd.lpRes)
 			{
-				auto resBlock = block{};
-				resBlock.setText(L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
+				auto resBlock = std::make_shared<block>();
+				resBlock->setText(L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
 				res->parseBlocks(ulTabLevel + 1);
-				resBlock.addBlock(res->getBlock());
+				resBlock->addBlock(res->getBlock());
 				resAnd.cRes.addBlock(resBlock);
 			}
 

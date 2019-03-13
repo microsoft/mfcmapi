@@ -157,16 +157,16 @@ namespace smartview
 		setRoot(m_RecurrencePattern.getBlock());
 
 		terminateBlock();
-		auto arpBlock = block{};
-		arpBlock.setText(L"Appointment Recurrence Pattern: \r\n");
-		arpBlock.addBlock(m_ReaderVersion2, L"ReaderVersion2: 0x%1!08X!\r\n", m_ReaderVersion2.getData());
-		arpBlock.addBlock(m_WriterVersion2, L"WriterVersion2: 0x%1!08X!\r\n", m_WriterVersion2.getData());
-		arpBlock.addBlock(
+		auto arpBlock = std::make_shared<block>();
+		arpBlock->setText(L"Appointment Recurrence Pattern: \r\n");
+		arpBlock->addBlock(m_ReaderVersion2, L"ReaderVersion2: 0x%1!08X!\r\n", m_ReaderVersion2.getData());
+		arpBlock->addBlock(m_WriterVersion2, L"WriterVersion2: 0x%1!08X!\r\n", m_WriterVersion2.getData());
+		arpBlock->addBlock(
 			m_StartTimeOffset,
 			L"StartTimeOffset: 0x%1!08X! = %1!d! = %2!ws!\r\n",
 			m_StartTimeOffset.getData(),
 			RTimeToString(m_StartTimeOffset).c_str());
-		arpBlock.addBlock(
+		arpBlock->addBlock(
 			m_EndTimeOffset,
 			L"EndTimeOffset: 0x%1!08X! = %1!d! = %2!ws!\r\n",
 			m_EndTimeOffset.getData(),
@@ -310,7 +310,7 @@ namespace smartview
 			}
 		}
 
-		arpBlock.addBlock(exceptions);
+		arpBlock->addBlock(exceptions);
 		auto& reservedBlock1 = m_ReservedBlock1Size;
 		reservedBlock1.setText(L"ReservedBlock1Size: 0x%1!08X!", m_ReservedBlock1Size.getData());
 		if (m_ReservedBlock1Size)
@@ -320,7 +320,7 @@ namespace smartview
 		}
 
 		reservedBlock1.terminateBlock();
-		arpBlock.addBlock(reservedBlock1);
+		arpBlock->addBlock(reservedBlock1);
 
 		if (!m_ExtendedException.empty())
 		{
@@ -428,7 +428,7 @@ namespace smartview
 					exception.addBlock(ee->ReservedBlockEE2);
 				}
 
-				arpBlock.addBlock(exception);
+				arpBlock->addBlock(exception);
 				i++;
 			}
 		}
@@ -442,7 +442,7 @@ namespace smartview
 		}
 
 		reservedBlock2.terminateBlock();
-		arpBlock.addBlock(reservedBlock2);
+		arpBlock->addBlock(reservedBlock2);
 		addBlock(arpBlock);
 	}
 } // namespace smartview

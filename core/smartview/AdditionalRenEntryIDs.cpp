@@ -102,46 +102,48 @@ namespace smartview
 			{
 				terminateBlock();
 				addBlankLine();
-				auto element = block{};
-				element.setText(L"Persist Element %1!d!:\r\n", iPersistElement);
-				element.addBlock(
+				auto element = std::make_shared<block>();
+				element->setText(L"Persist Element %1!d!:\r\n", iPersistElement);
+				element->addBlock(
 					persistData->wPersistID,
 					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
 					persistData->wPersistID.getData(),
 					flags::InterpretFlags(flagPersistID, persistData->wPersistID).c_str());
-				element.addBlock(
-					persistData->wDataElementsSize, L"DataElementsSize = 0x%1!04X!", persistData->wDataElementsSize.getData());
+				element->addBlock(
+					persistData->wDataElementsSize,
+					L"DataElementsSize = 0x%1!04X!",
+					persistData->wDataElementsSize.getData());
 
 				if (!persistData->ppeDataElement.empty())
 				{
 					auto iDataElement = 0;
 					for (const auto& dataElement : persistData->ppeDataElement)
 					{
-						element.terminateBlock();
-						element.addHeader(L"DataElement: %1!d!\r\n", iDataElement);
+						element->terminateBlock();
+						element->addHeader(L"DataElement: %1!d!\r\n", iDataElement);
 
-						element.addBlock(
+						element->addBlock(
 							dataElement->wElementID,
 							L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
 							dataElement->wElementID.getData(),
 							flags::InterpretFlags(flagElementID, dataElement->wElementID).c_str());
 
-						element.addBlock(
+						element->addBlock(
 							dataElement->wElementDataSize,
 							L"\tElementDataSize = 0x%1!04X!\r\n",
 							dataElement->wElementDataSize.getData());
 
-						element.addHeader(L"\tElementData = ");
-						element.addBlock(dataElement->lpbElementData);
+						element->addHeader(L"\tElementData = ");
+						element->addBlock(dataElement->lpbElementData);
 						iDataElement++;
 					}
 				}
 
 				if (!persistData->JunkData.empty())
 				{
-					element.terminateBlock();
-					element.addHeader(L"Unparsed data size = 0x%1!08X!\r\n", persistData->JunkData.size());
-					element.addBlock(persistData->JunkData);
+					element->terminateBlock();
+					element->addHeader(L"Unparsed data size = 0x%1!08X!\r\n", persistData->JunkData.size());
+					element->addBlock(persistData->JunkData);
 				}
 
 				addBlock(element);

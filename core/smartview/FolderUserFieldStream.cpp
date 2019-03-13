@@ -82,49 +82,49 @@ namespace smartview
 			auto i = 0;
 			for (auto& fieldDefinition : m_FieldDefinitionsA)
 			{
-				auto fieldBlock = block{};
-				fieldBlock.setText(L"Field %1!d!\r\n", i++);
+				auto fieldBlock = std::make_shared<block>();
+				fieldBlock->setText(L"Field %1!d!\r\n", i++);
 
 				auto szFieldType = flags::InterpretFlags(flagFolderType, fieldDefinition->FieldType);
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->FieldType,
 					L"FieldType = 0x%1!08X! = %2!ws!\r\n",
 					fieldDefinition->FieldType.getData(),
 					szFieldType.c_str());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->FieldNameLength,
 					L"FieldNameLength = 0x%1!08X! = %1!d!\r\n",
 					fieldDefinition->FieldNameLength.getData());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->FieldName, L"FieldName = %1!hs!\r\n", fieldDefinition->FieldName.c_str());
 
 				auto szGUID = guid::GUIDToString(fieldDefinition->Common.PropSetGuid);
-				fieldBlock.addBlock(fieldDefinition->Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());
+				fieldBlock->addBlock(fieldDefinition->Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());
 				auto szFieldcap = flags::InterpretFlags(flagFieldCap, fieldDefinition->Common.fcapm);
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.fcapm,
 					L"fcapm = 0x%1!08X! = %2!ws!\r\n",
 					fieldDefinition->Common.fcapm.getData(),
 					szFieldcap.c_str());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.dwString,
 					L"dwString = 0x%1!08X!\r\n",
 					fieldDefinition->Common.dwString.getData());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.dwBitmap,
 					L"dwBitmap = 0x%1!08X!\r\n",
 					fieldDefinition->Common.dwBitmap.getData());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.dwDisplay,
 					L"dwDisplay = 0x%1!08X!\r\n",
 					fieldDefinition->Common.dwDisplay.getData());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.iFmt, L"iFmt = 0x%1!08X!\r\n", fieldDefinition->Common.iFmt.getData());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.wszFormulaLength,
 					L"wszFormulaLength = 0x%1!04X! = %1!d!\r\n",
 					fieldDefinition->Common.wszFormulaLength.getData());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.wszFormula,
 					L"wszFormula = %1!ws!",
 					fieldDefinition->Common.wszFormula.c_str());
@@ -149,49 +149,49 @@ namespace smartview
 			auto i = 0;
 			for (const auto& fieldDefinition : m_FieldDefinitionsW)
 			{
-				auto fieldBlock = block{};
-				fieldBlock.setText(L"Field %1!d!\r\n", i++);
+				auto fieldBlock = std::make_shared<block>();
+				fieldBlock->setText(L"Field %1!d!\r\n", i++);
 
 				auto szFieldType = flags::InterpretFlags(flagFolderType, fieldDefinition->FieldType);
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->FieldType,
 					L"FieldType = 0x%1!08X! = %2!ws!\r\n",
 					fieldDefinition->FieldType.getData(),
 					szFieldType.c_str());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->FieldNameLength,
 					L"FieldNameLength = 0x%1!08X! = %1!d!\r\n",
 					fieldDefinition->FieldNameLength.getData());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->FieldName, L"FieldName = %1!ws!\r\n", fieldDefinition->FieldName.c_str());
 
 				auto szGUID = guid::GUIDToString(fieldDefinition->Common.PropSetGuid);
-				fieldBlock.addBlock(fieldDefinition->Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());
+				fieldBlock->addBlock(fieldDefinition->Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());
 				auto szFieldcap = flags::InterpretFlags(flagFieldCap, fieldDefinition->Common.fcapm);
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.fcapm,
 					L"fcapm = 0x%1!08X! = %2!ws!\r\n",
 					fieldDefinition->Common.fcapm.getData(),
 					szFieldcap.c_str());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.dwString,
 					L"dwString = 0x%1!08X!\r\n",
 					fieldDefinition->Common.dwString.getData());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.dwBitmap,
 					L"dwBitmap = 0x%1!08X!\r\n",
 					fieldDefinition->Common.dwBitmap.getData());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.dwDisplay,
 					L"dwDisplay = 0x%1!08X!\r\n",
 					fieldDefinition->Common.dwDisplay.getData());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.iFmt, L"iFmt = 0x%1!08X!\r\n", fieldDefinition->Common.iFmt.getData());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.wszFormulaLength,
 					L"wszFormulaLength = 0x%1!04X! = %1!d!\r\n",
 					fieldDefinition->Common.wszFormulaLength.getData());
-				fieldBlock.addBlock(
+				fieldBlock->addBlock(
 					fieldDefinition->Common.wszFormula,
 					L"wszFormula = %1!ws!",
 					fieldDefinition->Common.wszFormula.c_str());
