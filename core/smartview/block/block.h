@@ -7,6 +7,7 @@ namespace smartview
 	{
 	public:
 		block() = default;
+		block& operator=(const block&) = delete;
 
 		const std::wstring& getText() const { return text; }
 		const std::vector<std::shared_ptr<block>>& getChildren() const { return children; }
@@ -68,7 +69,7 @@ namespace smartview
 			children.push_back(std::make_shared<block>(child));
 		}
 
-		void addBlock(std::shared_ptr<block>& child)
+		void addBlock(std::shared_ptr<block> child)
 		{
 			child->text = child->ToStringInternal();
 			children.emplace_back(child);
