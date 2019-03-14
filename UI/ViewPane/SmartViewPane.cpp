@@ -184,7 +184,7 @@ namespace viewpane
 			if (svp)
 			{
 				svp->init(bin.size(), bin.data());
-				parsedData = svp->ToString();
+				parsedData = svp->toString();
 				auto node = svp->getBlock();
 				node->setSource(source++);
 				if (m_bins.size() == 1)
@@ -267,7 +267,7 @@ namespace viewpane
 		{
 			if (registry::hexDialogDiag)
 			{
-				SetStringW(lpData->ToString());
+				SetStringW(lpData->toString());
 			}
 
 			if (OnItemSelected)

@@ -14,7 +14,7 @@ namespace smartview
 		explicit block(std::wstring _text) : text(std::move(_text)) {}
 		bool isHeader() const { return cb == 0 && offset == 0; }
 
-		virtual std::wstring ToString() const
+		virtual std::wstring toString() const
 		{
 			std::vector<std::wstring> items;
 			items.reserve(children.size() + 1);
@@ -22,7 +22,7 @@ namespace smartview
 
 			for (const auto& item : children)
 			{
-				items.emplace_back(item->ToString());
+				items.emplace_back(item->toString());
 			}
 
 			return strings::join(items, strings::emptystring);

@@ -42,7 +42,7 @@ namespace smartview
 			m_Parser->clearCap();
 		}
 
-		_Check_return_ std::wstring ToString();
+		_Check_return_ std::wstring toString();
 
 		std::shared_ptr<block> getBlock() { return data; }
 		bool hasData() const { return data->hasData(); }

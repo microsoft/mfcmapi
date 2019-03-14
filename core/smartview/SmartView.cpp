@@ -539,7 +539,7 @@ namespace smartview
 		if (svp)
 		{
 			svp->init(myBin.cb, myBin.lpb);
-			szResultString = svp->ToString();
+			szResultString = svp->toString();
 			delete svp;
 			return szResultString;
 		}
