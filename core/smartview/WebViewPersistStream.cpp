@@ -58,39 +58,39 @@ namespace smartview
 			addBlankLine();
 
 			addHeader(L"Web View %1!d!\r\n", i);
-			addBlock(
+			addChild(
 				view->dwVersion,
 				L"dwVersion = 0x%1!08X! = %2!ws!\r\n",
 				view->dwVersion.getData(),
 				flags::InterpretFlags(flagWebViewVersion, view->dwVersion).c_str());
-			addBlock(
+			addChild(
 				view->dwType,
 				L"dwType = 0x%1!08X! = %2!ws!\r\n",
 				view->dwType.getData(),
 				flags::InterpretFlags(flagWebViewType, view->dwType).c_str());
-			addBlock(
+			addChild(
 				view->dwFlags,
 				L"dwFlags = 0x%1!08X! = %2!ws!\r\n",
 				view->dwFlags.getData(),
 				flags::InterpretFlags(flagWebViewFlags, view->dwFlags).c_str());
 			addHeader(L"dwUnused = ");
 
-			addBlock(view->dwUnused);
+			addChild(view->dwUnused);
 
 			terminateBlock();
-			addBlock(view->cbData, L"cbData = 0x%1!08X!\r\n", view->cbData.getData());
+			addChild(view->cbData, L"cbData = 0x%1!08X!\r\n", view->cbData.getData());
 
 			switch (view->dwType)
 			{
 			case WEBVIEWURL:
 			{
 				addHeader(L"wzURL = ");
-				addBlock(view->lpData, view->lpData.toTextString(false));
+				addChild(view->lpData, view->lpData.toTextString(false));
 				break;
 			}
 			default:
 				addHeader(L"lpData = ");
-				addBlock(view->lpData);
+				addChild(view->lpData);
 				break;
 			}
 

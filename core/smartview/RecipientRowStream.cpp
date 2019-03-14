@@ -40,8 +40,8 @@ namespace smartview
 	void RecipientRowStream::ParseBlocks()
 	{
 		setRoot(L"Recipient Row Stream\r\n");
-		addBlock(m_cVersion, L"cVersion = %1!d!\r\n", m_cVersion.getData());
-		addBlock(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount.getData());
+		addChild(m_cVersion, L"cVersion = %1!d!\r\n", m_cVersion.getData());
+		addChild(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount.getData());
 		if (!m_lpAdrEntry.empty())
 		{
 			addBlankLine();
@@ -50,9 +50,9 @@ namespace smartview
 			{
 				terminateBlock();
 				addHeader(L"Row %1!d!\r\n", i++);
-				addBlock(entry->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", entry->cValues.getData());
-				addBlock(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!\r\n", entry->ulReserved1.getData());
-				addBlock(entry->rgPropVals.getBlock());
+				addChild(entry->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", entry->cValues.getData());
+				addChild(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!\r\n", entry->ulReserved1.getData());
+				addChild(entry->rgPropVals.getBlock());
 			}
 		}
 	}

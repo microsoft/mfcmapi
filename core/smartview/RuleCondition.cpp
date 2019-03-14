@@ -50,14 +50,14 @@ namespace smartview
 	{
 		setRoot(m_bExtended ? L"Extended Rule Condition\r\n" : L"Rule Condition\r\n");
 
-		addBlock(
+		addChild(
 			m_NamedPropertyInformation.NoOfNamedProps,
 			L"Number of named props = 0x%1!04X!\r\n",
 			m_NamedPropertyInformation.NoOfNamedProps.getData());
 		if (!m_NamedPropertyInformation.PropId.empty())
 		{
 			terminateBlock();
-			addBlock(
+			addChild(
 				m_NamedPropertyInformation.NamedPropertiesSize,
 				L"Named prop size = 0x%1!08X!",
 				m_NamedPropertyInformation.NamedPropertiesSize.getData());
@@ -67,32 +67,32 @@ namespace smartview
 				terminateBlock();
 				addHeader(L"Named Prop 0x%1!04X!\r\n", i);
 				const auto& id = m_NamedPropertyInformation.PropId[i];
-				addBlock(*id, L"\tPropID = 0x%1!04X!\r\n", id->getData());
+				addChild(*id, L"\tPropID = 0x%1!04X!\r\n", id->getData());
 
-				addBlock(
+				addChild(
 					m_NamedPropertyInformation.PropertyName[i]->Kind,
 					L"\tKind = 0x%1!02X!\r\n",
 					m_NamedPropertyInformation.PropertyName[i]->Kind.getData());
-				addBlock(
+				addChild(
 					m_NamedPropertyInformation.PropertyName[i]->Guid,
 					L"\tGuid = %1!ws!\r\n",
 					guid::GUIDToString(m_NamedPropertyInformation.PropertyName[i]->Guid).c_str());
 
 				if (m_NamedPropertyInformation.PropertyName[i]->Kind == MNID_ID)
 				{
-					addBlock(
+					addChild(
 						m_NamedPropertyInformation.PropertyName[i]->LID,
 						L"\tLID = 0x%1!08X!",
 						m_NamedPropertyInformation.PropertyName[i]->LID.getData());
 				}
 				else if (m_NamedPropertyInformation.PropertyName[i]->Kind == MNID_STRING)
 				{
-					addBlock(
+					addChild(
 						m_NamedPropertyInformation.PropertyName[i]->NameSize,
 						L"\tNameSize = 0x%1!02X!\r\n",
 						m_NamedPropertyInformation.PropertyName[i]->NameSize.getData());
 					addHeader(L"\tName = ");
-					addBlock(
+					addChild(
 						m_NamedPropertyInformation.PropertyName[i]->Name,
 						m_NamedPropertyInformation.PropertyName[i]->Name.c_str());
 				}
@@ -101,7 +101,7 @@ namespace smartview
 
 		if (m_lpRes && m_lpRes->hasData())
 		{
-			addBlock(m_lpRes->getBlock());
+			addChild(m_lpRes->getBlock());
 		}
 	}
 } // namespace smartview

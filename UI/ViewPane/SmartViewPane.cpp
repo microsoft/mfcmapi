@@ -193,7 +193,7 @@ namespace viewpane
 				}
 				else
 				{
-					treeData->addBlock(node);
+					treeData->addChild(node);
 				}
 			}
 

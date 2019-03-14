@@ -31,56 +31,56 @@ namespace smartview
 	void TimeZone::ParseBlocks()
 	{
 		setRoot(L"Time Zone: \r\n");
-		addBlock(m_lBias, L"lBias = 0x%1!08X! (%1!d!)\r\n", m_lBias.getData());
-		addBlock(m_lStandardBias, L"lStandardBias = 0x%1!08X! (%1!d!)\r\n", m_lStandardBias.getData());
-		addBlock(m_lDaylightBias, L"lDaylightBias = 0x%1!08X! (%1!d!)\r\n", m_lDaylightBias.getData());
+		addChild(m_lBias, L"lBias = 0x%1!08X! (%1!d!)\r\n", m_lBias.getData());
+		addChild(m_lStandardBias, L"lStandardBias = 0x%1!08X! (%1!d!)\r\n", m_lStandardBias.getData());
+		addChild(m_lDaylightBias, L"lDaylightBias = 0x%1!08X! (%1!d!)\r\n", m_lDaylightBias.getData());
 		addBlankLine();
-		addBlock(m_wStandardYear, L"wStandardYear = 0x%1!04X! (%1!d!)\r\n", m_wStandardYear.getData());
-		addBlock(
+		addChild(m_wStandardYear, L"wStandardYear = 0x%1!04X! (%1!d!)\r\n", m_wStandardYear.getData());
+		addChild(
 			m_stStandardDate.wYear, L"stStandardDate.wYear = 0x%1!X! (%1!d!)\r\n", m_stStandardDate.wYear.getData());
-		addBlock(
+		addChild(
 			m_stStandardDate.wMonth, L"stStandardDate.wMonth = 0x%1!X! (%1!d!)\r\n", m_stStandardDate.wMonth.getData());
-		addBlock(
+		addChild(
 			m_stStandardDate.wDayOfWeek,
 			L"stStandardDate.wDayOfWeek = 0x%1!X! (%1!d!)\r\n",
 			m_stStandardDate.wDayOfWeek.getData());
-		addBlock(m_stStandardDate.wDay, L"stStandardDate.wDay = 0x%1!X! (%1!d!)\r\n", m_stStandardDate.wDay.getData());
-		addBlock(
+		addChild(m_stStandardDate.wDay, L"stStandardDate.wDay = 0x%1!X! (%1!d!)\r\n", m_stStandardDate.wDay.getData());
+		addChild(
 			m_stStandardDate.wHour, L"stStandardDate.wHour = 0x%1!X! (%1!d!)\r\n", m_stStandardDate.wHour.getData());
-		addBlock(
+		addChild(
 			m_stStandardDate.wMinute,
 			L"stStandardDate.wMinute = 0x%1!X! (%1!d!)\r\n",
 			m_stStandardDate.wMinute.getData());
-		addBlock(
+		addChild(
 			m_stStandardDate.wSecond,
 			L"stStandardDate.wSecond = 0x%1!X! (%1!d!)\r\n",
 			m_stStandardDate.wSecond.getData());
-		addBlock(
+		addChild(
 			m_stStandardDate.wMilliseconds,
 			L"stStandardDate.wMilliseconds = 0x%1!X! (%1!d!)\r\n",
 			m_stStandardDate.wMilliseconds.getData());
 		addBlankLine();
-		addBlock(m_wDaylightDate, L"wDaylightDate = 0x%1!04X! (%1!d!)\r\n", m_wDaylightDate.getData());
-		addBlock(
+		addChild(m_wDaylightDate, L"wDaylightDate = 0x%1!04X! (%1!d!)\r\n", m_wDaylightDate.getData());
+		addChild(
 			m_stDaylightDate.wYear, L"stDaylightDate.wYear = 0x%1!X! (%1!d!)\r\n", m_stDaylightDate.wYear.getData());
-		addBlock(
+		addChild(
 			m_stDaylightDate.wMonth, L"stDaylightDate.wMonth = 0x%1!X! (%1!d!)\r\n", m_stDaylightDate.wMonth.getData());
-		addBlock(
+		addChild(
 			m_stDaylightDate.wDayOfWeek,
 			L"stDaylightDate.wDayOfWeek = 0x%1!X! (%1!d!)\r\n",
 			m_stDaylightDate.wDayOfWeek.getData());
-		addBlock(m_stDaylightDate.wDay, L"stDaylightDate.wDay = 0x%1!X! (%1!d!)\r\n", m_stDaylightDate.wDay.getData());
-		addBlock(
+		addChild(m_stDaylightDate.wDay, L"stDaylightDate.wDay = 0x%1!X! (%1!d!)\r\n", m_stDaylightDate.wDay.getData());
+		addChild(
 			m_stDaylightDate.wHour, L"stDaylightDate.wHour = 0x%1!X! (%1!d!)\r\n", m_stDaylightDate.wHour.getData());
-		addBlock(
+		addChild(
 			m_stDaylightDate.wMinute,
 			L"stDaylightDate.wMinute = 0x%1!X! (%1!d!)\r\n",
 			m_stDaylightDate.wMinute.getData());
-		addBlock(
+		addChild(
 			m_stDaylightDate.wSecond,
 			L"stDaylightDate.wSecond = 0x%1!X! (%1!d!)\r\n",
 			m_stDaylightDate.wSecond.getData());
-		addBlock(
+		addChild(
 			m_stDaylightDate.wMilliseconds,
 			L"stDaylightDate.wMilliseconds = 0x%1!X! (%1!d!)",
 			m_stDaylightDate.wMilliseconds.getData());

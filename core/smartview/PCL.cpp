@@ -55,13 +55,13 @@ namespace smartview
 			{
 				terminateBlock();
 				addHeader(L"XID[%1!d!]:\r\n", i++);
-				addBlock(xid->XidSize, L"XidSize = 0x%1!08X! = %1!d!\r\n", xid->XidSize.getData());
-				addBlock(
+				addChild(xid->XidSize, L"XidSize = 0x%1!08X! = %1!d!\r\n", xid->XidSize.getData());
+				addChild(
 					xid->NamespaceGuid,
 					L"NamespaceGuid = %1!ws!\r\n",
 					guid::GUIDToString(xid->NamespaceGuid.getData()).c_str());
 				addHeader(L"LocalId = ");
-				addBlock(xid->LocalID);
+				addChild(xid->LocalID);
 			}
 		}
 	}

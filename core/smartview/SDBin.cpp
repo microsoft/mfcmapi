@@ -41,13 +41,13 @@ namespace smartview
 
 		setRoot(L"Security Descriptor:\r\n");
 		addHeader(L"Security Info: ");
-		addBlock(m_SDbin, sd.info);
+		addChild(m_SDbin, sd.info);
 
 		terminateBlock();
 		const auto sdVersion = SECURITY_DESCRIPTOR_VERSION(m_SDbin.data());
 		auto szFlags = flags::InterpretFlags(flagSecurityVersion, sdVersion);
-		addBlock(m_SDbin, L"Security Version: 0x%1!04X! = %2!ws!\r\n", sdVersion, szFlags.c_str());
+		addChild(m_SDbin, L"Security Version: 0x%1!04X! = %2!ws!\r\n", sdVersion, szFlags.c_str());
 		addHeader(L"Descriptor:\r\n");
-		addBlock(m_SDbin, sd.dacl);
+		addChild(m_SDbin, sd.dacl);
 	}
 } // namespace smartview

@@ -104,12 +104,12 @@ namespace smartview
 				addBlankLine();
 				auto element = std::make_shared<block>();
 				element->setText(L"Persist Element %1!d!:\r\n", iPersistElement);
-				element->addBlock(
+				element->addChild(
 					persistData->wPersistID,
 					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
 					persistData->wPersistID.getData(),
 					flags::InterpretFlags(flagPersistID, persistData->wPersistID).c_str());
-				element->addBlock(
+				element->addChild(
 					persistData->wDataElementsSize,
 					L"DataElementsSize = 0x%1!04X!",
 					persistData->wDataElementsSize.getData());
@@ -122,19 +122,19 @@ namespace smartview
 						element->terminateBlock();
 						element->addHeader(L"DataElement: %1!d!\r\n", iDataElement);
 
-						element->addBlock(
+						element->addChild(
 							dataElement->wElementID,
 							L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
 							dataElement->wElementID.getData(),
 							flags::InterpretFlags(flagElementID, dataElement->wElementID).c_str());
 
-						element->addBlock(
+						element->addChild(
 							dataElement->wElementDataSize,
 							L"\tElementDataSize = 0x%1!04X!\r\n",
 							dataElement->wElementDataSize.getData());
 
 						element->addHeader(L"\tElementData = ");
-						element->addBlock(dataElement->lpbElementData);
+						element->addChild(dataElement->lpbElementData);
 						iDataElement++;
 					}
 				}
@@ -143,10 +143,10 @@ namespace smartview
 				{
 					element->terminateBlock();
 					element->addHeader(L"Unparsed data size = 0x%1!08X!\r\n", persistData->JunkData.size());
-					element->addBlock(persistData->JunkData);
+					element->addChild(persistData->JunkData);
 				}
 
-				addBlock(element);
+				addChild(element);
 				iPersistElement++;
 			}
 		}

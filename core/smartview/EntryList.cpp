@@ -35,17 +35,17 @@ namespace smartview
 	void EntryList::ParseBlocks()
 	{
 		setRoot(std::make_shared<block>(m_EntryCount), L"EntryCount = 0x%1!08X!\r\n", m_EntryCount.getData());
-		addBlock(m_Pad, L"Pad = 0x%1!08X!", m_Pad.getData());
+		addChild(m_Pad, L"Pad = 0x%1!08X!", m_Pad.getData());
 
 		auto i = 0;
 		for (const auto& entry : m_Entry)
 		{
 			terminateBlock();
 			addHeader(L"EntryId[%1!d!]:\r\n", i++);
-			addBlock(entry->EntryLength, L"EntryLength = 0x%1!08X!\r\n", entry->EntryLength.getData());
-			addBlock(entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", entry->EntryLengthPad.getData());
+			addChild(entry->EntryLength, L"EntryLength = 0x%1!08X!\r\n", entry->EntryLength.getData());
+			addChild(entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", entry->EntryLengthPad.getData());
 			addHeader(L"Entry Id = ");
-			addBlock(entry->EntryId.getBlock());
+			addChild(entry->EntryId.getBlock());
 		}
 	}
 } // namespace smartview

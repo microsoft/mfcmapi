@@ -206,18 +206,18 @@ namespace smartview
 		switch (rt)
 		{
 		case RES_COMPAREPROPS:
-			rt.addBlock(
+			rt.addChild(
 				resCompareProps.relop,
 				L"%1!ws!lpRes->res.resCompareProps.relop = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
 				flags::InterpretFlags(flagRelop, resCompareProps.relop).c_str(),
 				resCompareProps.relop.getData());
-			rt.addBlock(
+			rt.addChild(
 				resCompareProps.ulPropTag1,
 				L"%1!ws!lpRes->res.resCompareProps.ulPropTag1 = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(resCompareProps.ulPropTag1, nullptr, false, true).c_str());
-			rt.addBlock(
+			rt.addChild(
 				resCompareProps.ulPropTag2,
 				L"%1!ws!lpRes->res.resCompareProps.ulPropTag2 = %2!ws!\r\n",
 				szTabs.c_str(),
@@ -229,11 +229,11 @@ namespace smartview
 				auto resBlock = std::make_shared<block>();
 				resBlock->setText(L"%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
 				res->parseBlocks(ulTabLevel + 1);
-				resBlock->addBlock(res->getBlock());
-				resAnd.cRes.addBlock(resBlock);
+				resBlock->addChild(res->getBlock());
+				resAnd.cRes.addChild(resBlock);
 			}
 
-			rt.addBlock(
+			rt.addChild(
 				resAnd.cRes, L"%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!\r\n", szTabs.c_str(), resAnd.cRes.getData());
 			break;
 		case RES_OR:
@@ -242,16 +242,16 @@ namespace smartview
 				auto resBlock = std::make_shared<block>();
 				resBlock->setText(L"%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n", szTabs.c_str(), i++);
 				res->parseBlocks(ulTabLevel + 1);
-				resBlock->addBlock(res->getBlock());
-				resOr.cRes.addBlock(resBlock);
+				resBlock->addChild(res->getBlock());
+				resOr.cRes.addChild(resBlock);
 			}
 
-			rt.addBlock(
+			rt.addChild(
 				resOr.cRes, L"%1!ws!lpRes->res.resOr.cRes = 0x%2!08X!\r\n", szTabs.c_str(), resOr.cRes.getData());
 			break;
 		case RES_NOT:
 		{
-			rt.addBlock(
+			rt.addChild(
 				resNot.ulReserved,
 				L"%1!ws!lpRes->res.resNot.ulReserved = 0x%2!08X!\r\n",
 				szTabs.c_str(),
@@ -263,16 +263,16 @@ namespace smartview
 			if (resNot.lpRes)
 			{
 				resNot.lpRes->parseBlocks(ulTabLevel + 1);
-				notRoot->addBlock(resNot.lpRes->getBlock());
+				notRoot->addChild(resNot.lpRes->getBlock());
 			}
 
-			rt.addBlock(notRoot);
+			rt.addChild(notRoot);
 		}
 
 		break;
 		case RES_COUNT:
 		{
-			rt.addBlock(
+			rt.addChild(
 				resCount.ulCount,
 				L"%1!ws!lpRes->res.resCount.ulCount = 0x%2!08X!\r\n",
 				szTabs.c_str(),
@@ -284,23 +284,23 @@ namespace smartview
 			if (resCount.lpRes)
 			{
 				resCount.lpRes->parseBlocks(ulTabLevel + 1);
-				countRoot->addBlock(resCount.lpRes->getBlock());
+				countRoot->addChild(resCount.lpRes->getBlock());
 			}
 
-			rt.addBlock(countRoot);
+			rt.addChild(countRoot);
 		}
 
 		break;
 		case RES_CONTENT:
 		{
-			rt.addBlock(
+			rt.addChild(
 				resContent.ulFuzzyLevel,
 				L"%1!ws!lpRes->res.resContent.ulFuzzyLevel = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
 				flags::InterpretFlags(flagFuzzyLevel, resContent.ulFuzzyLevel).c_str(),
 				resContent.ulFuzzyLevel.getData());
 
-			rt.addBlock(
+			rt.addChild(
 				resContent.ulPropTag,
 				L"%1!ws!lpRes->res.resContent.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
@@ -309,28 +309,28 @@ namespace smartview
 			if (!resContent.lpProp.Props().empty())
 			{
 				auto propBlock = std::make_shared<block>();
-				propBlock->addBlock(
+				propBlock->addChild(
 					resContent.lpProp.Props()[0]->ulPropTag,
 					L"%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
 					proptags::TagToString(resContent.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
-				propBlock->addBlock(
+				propBlock->addChild(
 					resContent.lpProp.Props()[0]->PropBlock(),
 					L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
 					szTabs.c_str(),
 					resContent.lpProp.Props()[0]->PropBlock().c_str());
-				propBlock->addBlock(
+				propBlock->addChild(
 					resContent.lpProp.Props()[0]->AltPropBlock(),
 					L"%1!ws!\tAlt: %2!ws!\r\n",
 					szTabs.c_str(),
 					resContent.lpProp.Props()[0]->AltPropBlock().c_str());
-				rt.addBlock(propBlock);
+				rt.addChild(propBlock);
 			}
 		}
 		break;
 		case RES_PROPERTY:
 		{
-			rt.addBlock(
+			rt.addChild(
 				resProperty.relop,
 				L"%1!ws!lpRes->res.resProperty.relop = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
@@ -338,17 +338,17 @@ namespace smartview
 				resProperty.relop.getData());
 			if (!resProperty.lpProp.Props().empty())
 			{
-				resProperty.ulPropTag.addBlock(
+				resProperty.ulPropTag.addChild(
 					resProperty.lpProp.Props()[0]->ulPropTag,
 					L"%1!ws!lpRes->res.resProperty.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
 					proptags::TagToString(resProperty.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
-				resProperty.ulPropTag.addBlock(
+				resProperty.ulPropTag.addChild(
 					resProperty.lpProp.Props()[0]->PropBlock(),
 					L"%1!ws!lpRes->res.resProperty.lpProp->Value = %2!ws!\r\n",
 					szTabs.c_str(),
 					resProperty.lpProp.Props()[0]->PropBlock().c_str());
-				resProperty.ulPropTag.addBlock(
+				resProperty.ulPropTag.addChild(
 					resProperty.lpProp.Props()[0]->AltPropBlock(),
 					L"%1!ws!\tAlt: %2!ws!\r\n",
 					szTabs.c_str(),
@@ -361,7 +361,7 @@ namespace smartview
 				}
 			}
 
-			rt.addBlock(
+			rt.addChild(
 				resProperty.ulPropTag,
 				L"%1!ws!lpRes->res.resProperty.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
@@ -370,13 +370,13 @@ namespace smartview
 
 		break;
 		case RES_BITMASK:
-			rt.addBlock(
+			rt.addChild(
 				resBitMask.relBMR,
 				L"%1!ws!lpRes->res.resBitMask.relBMR = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
 				flags::InterpretFlags(flagBitmask, resBitMask.relBMR).c_str(),
 				resBitMask.relBMR.getData());
-			rt.addBlock(
+			rt.addChild(
 				resBitMask.ulMask,
 				L"%1!ws!lpRes->res.resBitMask.ulMask = 0x%2!08X!",
 				szTabs.c_str(),
@@ -384,43 +384,43 @@ namespace smartview
 			szPropNum = InterpretNumberAsStringProp(resBitMask.ulMask, resBitMask.ulPropTag);
 			if (!szPropNum.empty())
 			{
-				rt.addBlock(resBitMask.ulMask, L": %1!ws!", szPropNum.c_str());
+				rt.addChild(resBitMask.ulMask, L": %1!ws!", szPropNum.c_str());
 			}
 
 			rt.terminateBlock();
-			rt.addBlock(
+			rt.addChild(
 				resBitMask.ulPropTag,
 				L"%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(resBitMask.ulPropTag, nullptr, false, true).c_str());
 			break;
 		case RES_SIZE:
-			rt.addBlock(
+			rt.addChild(
 				resSize.relop,
 				L"%1!ws!lpRes->res.resSize.relop = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
 				flags::InterpretFlags(flagRelop, resSize.relop).c_str(),
 				resSize.relop.getData());
-			rt.addBlock(
+			rt.addChild(
 				resSize.cb, L"%1!ws!lpRes->res.resSize.cb = 0x%2!08X!\r\n", szTabs.c_str(), resSize.cb.getData());
-			rt.addBlock(
+			rt.addChild(
 				resSize.ulPropTag,
 				L"%1!ws!lpRes->res.resSize.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(resSize.ulPropTag, nullptr, false, true).c_str());
 			break;
 		case RES_EXIST:
-			rt.addBlock(
+			rt.addChild(
 				resExist.ulPropTag,
 				L"%1!ws!lpRes->res.resExist.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(resExist.ulPropTag, nullptr, false, true).c_str());
-			rt.addBlock(
+			rt.addChild(
 				resExist.ulReserved1,
 				L"%1!ws!lpRes->res.resExist.ulReserved1 = 0x%2!08X!\r\n",
 				szTabs.c_str(),
 				resExist.ulReserved1.getData());
-			rt.addBlock(
+			rt.addChild(
 				resExist.ulReserved2,
 				L"%1!ws!lpRes->res.resExist.ulReserved2 = 0x%2!08X!\r\n",
 				szTabs.c_str(),
@@ -433,10 +433,10 @@ namespace smartview
 			if (resSub.lpRes)
 			{
 				resSub.lpRes->parseBlocks(ulTabLevel + 1);
-				resSub.ulSubObject.addBlock(resSub.lpRes->getBlock());
+				resSub.ulSubObject.addChild(resSub.lpRes->getBlock());
 			}
 
-			rt.addBlock(
+			rt.addChild(
 				resSub.ulSubObject,
 				L"%1!ws!lpRes->res.resSub.ulSubObject = %2!ws!\r\n",
 				szTabs.c_str(),
@@ -453,20 +453,20 @@ namespace smartview
 					szTabs.c_str(),
 					i,
 					proptags::TagToString(prop->ulPropTag, nullptr, false, true).c_str());
-				prop->ulPropTag.addBlock(
+				prop->ulPropTag.addChild(
 					prop->PropBlock(),
 					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
 					prop->PropBlock().c_str());
-				prop->ulPropTag.addBlock(
+				prop->ulPropTag.addChild(
 					prop->AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop->AltPropBlock().c_str());
 
-				resComment.cValues.addBlock(prop->ulPropTag);
+				resComment.cValues.addChild(prop->ulPropTag);
 				i++;
 			}
 
-			rt.addBlock(
+			rt.addChild(
 				resComment.cValues,
 				L"%1!ws!lpRes->res.resComment.cValues = 0x%2!08X!\r\n",
 				szTabs.c_str(),
@@ -476,7 +476,7 @@ namespace smartview
 			if (resComment.lpRes)
 			{
 				resComment.lpRes->parseBlocks(ulTabLevel + 1);
-				rt.addBlock(resComment.lpRes->getBlock());
+				rt.addChild(resComment.lpRes->getBlock());
 			}
 		}
 
@@ -489,20 +489,20 @@ namespace smartview
 					szTabs.c_str(),
 					i,
 					proptags::TagToString(prop->ulPropTag, nullptr, false, true).c_str());
-				prop->ulPropTag.addBlock(
+				prop->ulPropTag.addChild(
 					prop->PropBlock(),
 					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
 					prop->PropBlock().c_str());
-				prop->ulPropTag.addBlock(
+				prop->ulPropTag.addChild(
 					prop->AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop->AltPropBlock().c_str());
 
-				resAnnotation.cValues.addBlock(prop->ulPropTag);
+				resAnnotation.cValues.addChild(prop->ulPropTag);
 				i++;
 			}
 
-			rt.addBlock(
+			rt.addChild(
 				resAnnotation.cValues,
 				L"%1!ws!lpRes->res.resAnnotation.cValues = 0x%2!08X!\r\n",
 				szTabs.c_str(),
@@ -512,13 +512,13 @@ namespace smartview
 			if (resAnnotation.lpRes)
 			{
 				resAnnotation.lpRes->parseBlocks(ulTabLevel + 1);
-				rt.addBlock(resAnnotation.lpRes->getBlock());
+				rt.addChild(resAnnotation.lpRes->getBlock());
 			}
 
 			break;
 		}
 
-		addBlock(
+		addChild(
 			rt,
 			L"%1!ws!lpRes->rt = 0x%2!X! = %3!ws!\r\n",
 			szTabs.c_str(),

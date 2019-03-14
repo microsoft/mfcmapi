@@ -108,48 +108,48 @@ namespace smartview
 	void SearchFolderDefinition::ParseBlocks()
 	{
 		setRoot(L"Search Folder Definition:\r\n");
-		addBlock(m_Version, L"Version = 0x%1!08X!\r\n", m_Version.getData());
-		addBlock(
+		addChild(m_Version, L"Version = 0x%1!08X!\r\n", m_Version.getData());
+		addChild(
 			m_Flags,
 			L"Flags = 0x%1!08X! = %2!ws!\r\n",
 			m_Flags.getData(),
 			InterpretNumberAsStringProp(m_Flags, PR_WB_SF_STORAGE_TYPE).c_str());
-		addBlock(m_NumericSearch, L"Numeric Search = 0x%1!08X!\r\n", m_NumericSearch.getData());
-		addBlock(m_TextSearchLength, L"Text Search Length = 0x%1!02X!", m_TextSearchLength.getData());
+		addChild(m_NumericSearch, L"Numeric Search = 0x%1!08X!\r\n", m_NumericSearch.getData());
+		addChild(m_TextSearchLength, L"Text Search Length = 0x%1!02X!", m_TextSearchLength.getData());
 
 		if (m_TextSearchLength)
 		{
 			terminateBlock();
-			addBlock(
+			addChild(
 				m_TextSearchLengthExtended,
 				L"Text Search Length Extended = 0x%1!04X!\r\n",
 				m_TextSearchLengthExtended.getData());
 			addHeader(L"Text Search = ");
 			if (!m_TextSearch.empty())
 			{
-				addBlock(m_TextSearch, m_TextSearch.c_str());
+				addChild(m_TextSearch, m_TextSearch.c_str());
 			}
 		}
 
 		terminateBlock();
-		addBlock(m_SkipLen1, L"SkipLen1 = 0x%1!08X!", m_SkipLen1.getData());
+		addChild(m_SkipLen1, L"SkipLen1 = 0x%1!08X!", m_SkipLen1.getData());
 
 		if (m_SkipLen1)
 		{
 			terminateBlock();
 			addHeader(L"SkipBytes1 = ");
 
-			addBlock(m_SkipBytes1);
+			addChild(m_SkipBytes1);
 		}
 
 		terminateBlock();
-		addBlock(m_DeepSearch, L"Deep Search = 0x%1!08X!\r\n", m_DeepSearch.getData());
-		addBlock(m_FolderList1Length, L"Folder List 1 Length = 0x%1!02X!", m_FolderList1Length.getData());
+		addChild(m_DeepSearch, L"Deep Search = 0x%1!08X!\r\n", m_DeepSearch.getData());
+		addChild(m_FolderList1Length, L"Folder List 1 Length = 0x%1!02X!", m_FolderList1Length.getData());
 
 		if (m_FolderList1Length)
 		{
 			terminateBlock();
-			addBlock(
+			addChild(
 				m_FolderList1LengthExtended,
 				L"Folder List 1 Length Extended = 0x%1!04X!\r\n",
 				m_FolderList1LengthExtended.getData());
@@ -157,79 +157,79 @@ namespace smartview
 
 			if (!m_FolderList1.empty())
 			{
-				addBlock(m_FolderList1, m_FolderList1.c_str());
+				addChild(m_FolderList1, m_FolderList1.c_str());
 			}
 		}
 
 		terminateBlock();
-		addBlock(m_FolderList2Length, L"Folder List 2 Length = 0x%1!08X!", m_FolderList2Length.getData());
+		addChild(m_FolderList2Length, L"Folder List 2 Length = 0x%1!08X!", m_FolderList2Length.getData());
 
 		if (m_FolderList2Length)
 		{
 			terminateBlock();
 			addHeader(L"FolderList2 = \r\n");
-			addBlock(m_FolderList2.getBlock());
+			addChild(m_FolderList2.getBlock());
 		}
 
 		if (SFST_BINARY & m_Flags)
 		{
 			terminateBlock();
-			addBlock(m_AddressCount, L"AddressCount = 0x%1!08X!", m_AddressCount.getData());
+			addChild(m_AddressCount, L"AddressCount = 0x%1!08X!", m_AddressCount.getData());
 
 			auto i = DWORD{};
 			for (const auto& address : m_Addresses)
 			{
 				terminateBlock();
-				addBlock(
+				addChild(
 					address->PropertyCount,
 					L"Addresses[%1!d!].PropertyCount = 0x%2!08X!\r\n",
 					i,
 					address->PropertyCount.getData());
-				addBlock(address->Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!\r\n", i, address->Pad.getData());
+				addChild(address->Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!\r\n", i, address->Pad.getData());
 
 				addHeader(L"Properties[%1!d!]:\r\n", i);
-				addBlock(address->Props.getBlock());
+				addChild(address->Props.getBlock());
 				i++;
 			}
 		}
 
 		terminateBlock();
-		addBlock(m_SkipLen2, L"SkipLen2 = 0x%1!08X!", m_SkipLen2.getData());
+		addChild(m_SkipLen2, L"SkipLen2 = 0x%1!08X!", m_SkipLen2.getData());
 
 		if (m_SkipLen2)
 		{
 			terminateBlock();
 			addHeader(L"SkipBytes2 = ");
-			addBlock(m_SkipBytes2);
+			addChild(m_SkipBytes2);
 		}
 
 		if (m_Restriction && m_Restriction->hasData())
 		{
 			terminateBlock();
-			addBlock(m_Restriction->getBlock());
+			addChild(m_Restriction->getBlock());
 		}
 
 		if (SFST_FILTERSTREAM & m_Flags)
 		{
 			terminateBlock();
-			addBlock(m_AdvancedSearchBytes, L"AdvancedSearchLen = 0x%1!08X!", m_AdvancedSearchBytes.size());
+			addChild(m_AdvancedSearchBytes, L"AdvancedSearchLen = 0x%1!08X!", m_AdvancedSearchBytes.size());
 
 			if (!m_AdvancedSearchBytes.empty())
 			{
 				terminateBlock();
 				addHeader(L"AdvancedSearchBytes = ");
-				addBlock(m_AdvancedSearchBytes);
+				addChild(m_AdvancedSearchBytes);
 			}
 		}
 
 		terminateBlock();
-		addBlock(m_SkipLen3, L"SkipLen3 = 0x%1!08X!", m_SkipLen3.getData());
+		addChild(m_SkipLen3, L"SkipLen3 = 0x%1!08X!", m_SkipLen3.getData());
 
 		if (m_SkipLen3)
 		{
 			terminateBlock();
 			addHeader(L"SkipBytes3 = ");
-			addBlock(m_SkipBytes3);
+			addChild(m_SkipBytes3);
 		}
 	}
 } // namespace smartview

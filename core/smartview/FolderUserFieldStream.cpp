@@ -86,57 +86,57 @@ namespace smartview
 				fieldBlock->setText(L"Field %1!d!\r\n", i++);
 
 				auto szFieldType = flags::InterpretFlags(flagFolderType, fieldDefinition->FieldType);
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->FieldType,
 					L"FieldType = 0x%1!08X! = %2!ws!\r\n",
 					fieldDefinition->FieldType.getData(),
 					szFieldType.c_str());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->FieldNameLength,
 					L"FieldNameLength = 0x%1!08X! = %1!d!\r\n",
 					fieldDefinition->FieldNameLength.getData());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->FieldName, L"FieldName = %1!hs!\r\n", fieldDefinition->FieldName.c_str());
 
 				auto szGUID = guid::GUIDToString(fieldDefinition->Common.PropSetGuid);
-				fieldBlock->addBlock(fieldDefinition->Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());
+				fieldBlock->addChild(fieldDefinition->Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());
 				auto szFieldcap = flags::InterpretFlags(flagFieldCap, fieldDefinition->Common.fcapm);
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.fcapm,
 					L"fcapm = 0x%1!08X! = %2!ws!\r\n",
 					fieldDefinition->Common.fcapm.getData(),
 					szFieldcap.c_str());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.dwString,
 					L"dwString = 0x%1!08X!\r\n",
 					fieldDefinition->Common.dwString.getData());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.dwBitmap,
 					L"dwBitmap = 0x%1!08X!\r\n",
 					fieldDefinition->Common.dwBitmap.getData());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.dwDisplay,
 					L"dwDisplay = 0x%1!08X!\r\n",
 					fieldDefinition->Common.dwDisplay.getData());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.iFmt, L"iFmt = 0x%1!08X!\r\n", fieldDefinition->Common.iFmt.getData());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.wszFormulaLength,
 					L"wszFormulaLength = 0x%1!04X! = %1!d!\r\n",
 					fieldDefinition->Common.wszFormulaLength.getData());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.wszFormula,
 					L"wszFormula = %1!ws!",
 					fieldDefinition->Common.wszFormula.c_str());
 
 				m_FolderUserFieldsAnsiCount.terminateBlock();
 				m_FolderUserFieldsAnsiCount.addBlankLine();
-				m_FolderUserFieldsAnsiCount.addBlock(fieldBlock);
+				m_FolderUserFieldsAnsiCount.addChild(fieldBlock);
 			}
 		}
 
 		m_FolderUserFieldsAnsiCount.terminateBlock();
-		addBlock(
+		addChild(
 			m_FolderUserFieldsAnsiCount,
 			L"FolderUserFieldAnsi.FieldDefinitionCount = %1!d!\r\n",
 			m_FolderUserFieldsAnsiCount.getData());
@@ -153,57 +153,57 @@ namespace smartview
 				fieldBlock->setText(L"Field %1!d!\r\n", i++);
 
 				auto szFieldType = flags::InterpretFlags(flagFolderType, fieldDefinition->FieldType);
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->FieldType,
 					L"FieldType = 0x%1!08X! = %2!ws!\r\n",
 					fieldDefinition->FieldType.getData(),
 					szFieldType.c_str());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->FieldNameLength,
 					L"FieldNameLength = 0x%1!08X! = %1!d!\r\n",
 					fieldDefinition->FieldNameLength.getData());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->FieldName, L"FieldName = %1!ws!\r\n", fieldDefinition->FieldName.c_str());
 
 				auto szGUID = guid::GUIDToString(fieldDefinition->Common.PropSetGuid);
-				fieldBlock->addBlock(fieldDefinition->Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());
+				fieldBlock->addChild(fieldDefinition->Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());
 				auto szFieldcap = flags::InterpretFlags(flagFieldCap, fieldDefinition->Common.fcapm);
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.fcapm,
 					L"fcapm = 0x%1!08X! = %2!ws!\r\n",
 					fieldDefinition->Common.fcapm.getData(),
 					szFieldcap.c_str());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.dwString,
 					L"dwString = 0x%1!08X!\r\n",
 					fieldDefinition->Common.dwString.getData());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.dwBitmap,
 					L"dwBitmap = 0x%1!08X!\r\n",
 					fieldDefinition->Common.dwBitmap.getData());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.dwDisplay,
 					L"dwDisplay = 0x%1!08X!\r\n",
 					fieldDefinition->Common.dwDisplay.getData());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.iFmt, L"iFmt = 0x%1!08X!\r\n", fieldDefinition->Common.iFmt.getData());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.wszFormulaLength,
 					L"wszFormulaLength = 0x%1!04X! = %1!d!\r\n",
 					fieldDefinition->Common.wszFormulaLength.getData());
-				fieldBlock->addBlock(
+				fieldBlock->addChild(
 					fieldDefinition->Common.wszFormula,
 					L"wszFormula = %1!ws!",
 					fieldDefinition->Common.wszFormula.c_str());
 
 				m_FolderUserFieldsUnicodeCount.terminateBlock();
 				m_FolderUserFieldsUnicodeCount.addBlankLine();
-				m_FolderUserFieldsUnicodeCount.addBlock(fieldBlock);
+				m_FolderUserFieldsUnicodeCount.addChild(fieldBlock);
 			}
 		}
 
 		m_FolderUserFieldsUnicodeCount.terminateBlock();
-		addBlock(
+		addChild(
 			m_FolderUserFieldsUnicodeCount,
 			L"FolderUserFieldUnicode.FieldDefinitionCount = %1!d!\r\n",
 			m_FolderUserFieldsUnicodeCount.getData());

@@ -53,37 +53,37 @@ namespace smartview
 	void TombStone::ParseBlocks()
 	{
 		setRoot(L"Tombstone:\r\n");
-		addBlock(m_Identifier, L"Identifier = 0x%1!08X!\r\n", m_Identifier.getData());
-		addBlock(m_HeaderSize, L"HeaderSize = 0x%1!08X!\r\n", m_HeaderSize.getData());
-		addBlock(m_Version, L"Version = 0x%1!08X!\r\n", m_Version.getData());
-		addBlock(m_RecordsCount, L"RecordsCount = 0x%1!08X!\r\n", m_RecordsCount.getData());
+		addChild(m_Identifier, L"Identifier = 0x%1!08X!\r\n", m_Identifier.getData());
+		addChild(m_HeaderSize, L"HeaderSize = 0x%1!08X!\r\n", m_HeaderSize.getData());
+		addChild(m_Version, L"Version = 0x%1!08X!\r\n", m_Version.getData());
+		addChild(m_RecordsCount, L"RecordsCount = 0x%1!08X!\r\n", m_RecordsCount.getData());
 		addHeader(L"ActualRecordsCount (computed) = 0x%1!08X!\r\n", m_ActualRecordsCount);
-		addBlock(m_RecordsSize, L"RecordsSize = 0x%1!08X!", m_RecordsSize.getData());
+		addChild(m_RecordsSize, L"RecordsSize = 0x%1!08X!", m_RecordsSize.getData());
 
 		auto i = 0;
 		for (const auto& record : m_lpRecords)
 		{
 			terminateBlock();
 			addHeader(L"Record[%1!d!]\r\n", i++);
-			addBlock(
+			addChild(
 				record->StartTime,
 				L"StartTime = 0x%1!08X! = %2!ws!\r\n",
 				record->StartTime.getData(),
 				RTimeToString(record->StartTime).c_str());
-			addBlock(
+			addChild(
 				record->EndTime,
 				L"Endtime = 0x%1!08X! = %2!ws!\r\n",
 				record->EndTime.getData(),
 				RTimeToString(record->EndTime).c_str());
-			addBlock(
+			addChild(
 				record->GlobalObjectIdSize,
 				L"GlobalObjectIdSize = 0x%1!08X!\r\n",
 				record->GlobalObjectIdSize.getData());
-			addBlock(record->GlobalObjectId.getBlock());
+			addChild(record->GlobalObjectId.getBlock());
 			terminateBlock();
 
-			addBlock(record->UsernameSize, L"UsernameSize= 0x%1!04X!\r\n", record->UsernameSize.getData());
-			addBlock(record->szUsername, L"szUsername = %1!hs!", record->szUsername.c_str());
+			addChild(record->UsernameSize, L"UsernameSize= 0x%1!04X!\r\n", record->UsernameSize.getData());
+			addChild(record->szUsername, L"szUsername = %1!hs!", record->szUsername.c_str());
 		}
 	}
 } // namespace smartview

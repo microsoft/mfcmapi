@@ -105,14 +105,14 @@ namespace smartview
 		std::wstring PropString;
 		std::wstring AltPropString;
 		strings::FileTimeToString(m_ftCurrent, PropString, AltPropString);
-		addBlock(m_UnnamedByte, L"Unnamed byte = 0x%1!02X! = %1!d!\r\n", m_UnnamedByte.getData());
-		addBlock(
+		addChild(m_UnnamedByte, L"Unnamed byte = 0x%1!02X! = %1!d!\r\n", m_UnnamedByte.getData());
+		addChild(
 			m_ftCurrent,
 			L"Current FILETIME: (Low = 0x%1!08X!, High = 0x%2!08X!) = %3!ws!\r\n",
 			m_ftCurrent.getData().dwLowDateTime,
 			m_ftCurrent.getData().dwHighDateTime,
 			PropString.c_str());
-		addBlock(m_guid, L"GUID = %1!ws!", guid::GUIDToString(m_guid).c_str());
+		addChild(m_guid, L"GUID = %1!ws!", guid::GUIDToString(m_guid).c_str());
 
 		if (!m_lpResponseLevels.empty())
 		{
@@ -120,22 +120,22 @@ namespace smartview
 			for (const auto& responseLevel : m_lpResponseLevels)
 			{
 				terminateBlock();
-				addBlock(
+				addChild(
 					responseLevel->DeltaCode,
 					L"ResponseLevel[%1!d!].DeltaCode = %2!d!\r\n",
 					i,
 					responseLevel->DeltaCode.getData());
-				addBlock(
+				addChild(
 					responseLevel->TimeDelta,
 					L"ResponseLevel[%1!d!].TimeDelta = 0x%2!08X! = %2!d!\r\n",
 					i,
 					responseLevel->TimeDelta.getData());
-				addBlock(
+				addChild(
 					responseLevel->Random,
 					L"ResponseLevel[%1!d!].Random = 0x%2!02X! = %2!d!\r\n",
 					i,
 					responseLevel->Random.getData());
-				addBlock(
+				addChild(
 					responseLevel->Level,
 					L"ResponseLevel[%1!d!].ResponseLevel = 0x%2!02X! = %2!d!",
 					i,

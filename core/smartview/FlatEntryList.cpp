@@ -40,8 +40,8 @@ namespace smartview
 	void FlatEntryList::ParseBlocks()
 	{
 		setRoot(L"Flat Entry List\r\n");
-		addBlock(m_cEntries, L"cEntries = %1!d!\r\n", m_cEntries.getData());
-		addBlock(m_cbEntries, L"cbEntries = 0x%1!08X!", m_cbEntries.getData());
+		addChild(m_cEntries, L"cEntries = %1!d!\r\n", m_cEntries.getData());
+		addChild(m_cbEntries, L"cbEntries = 0x%1!08X!", m_cbEntries.getData());
 
 		auto iFlatEntryList = DWORD{};
 		for (const auto& entry : m_pEntryIDs)
@@ -49,19 +49,19 @@ namespace smartview
 			terminateBlock();
 			addBlankLine();
 			addHeader(L"Entry[%1!d!] ", iFlatEntryList);
-			addBlock(entry->dwSize, L"Size = 0x%1!08X!", entry->dwSize.getData());
+			addChild(entry->dwSize, L"Size = 0x%1!08X!", entry->dwSize.getData());
 
 			if (entry->lpEntryID.hasData())
 			{
 				terminateBlock();
-				addBlock(entry->lpEntryID.getBlock());
+				addChild(entry->lpEntryID.getBlock());
 			}
 
 			if (!entry->padding.empty())
 			{
 				terminateBlock();
 				addHeader(L"Entry[%1!d!] Padding:\r\n", iFlatEntryList);
-				addBlock(entry->padding, strings::BinToHexString(entry->padding, true));
+				addChild(entry->padding, strings::BinToHexString(entry->padding, true));
 			}
 
 			iFlatEntryList++;

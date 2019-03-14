@@ -41,7 +41,7 @@ namespace smartview
 		{
 			terminateBlock();
 			addHeader(label);
-			addBlock(eid);
+			addChild(eid);
 		}
 	}
 
@@ -49,11 +49,11 @@ namespace smartview
 	{
 		setRoot(L"Report Tag: \r\n");
 		addHeader(L"Cookie = ");
-		addBlock(m_Cookie);
+		addChild(m_Cookie);
 
 		terminateBlock();
 		auto szFlags = flags::InterpretFlags(flagReportTagVersion, m_Version);
-		addBlock(m_Version, L"Version = 0x%1!08X! = %2!ws!", m_Version.getData(), szFlags.c_str());
+		addChild(m_Version, L"Version = 0x%1!08X! = %2!ws!", m_Version.getData(), szFlags.c_str());
 
 		addEID(L"StoreEntryID = ", m_cbStoreEntryID, m_lpStoreEntryID);
 		addEID(L"FolderEntryID = ", m_cbFolderEntryID, m_lpFolderEntryID);
@@ -64,8 +64,8 @@ namespace smartview
 		if (m_cchAnsiText)
 		{
 			terminateBlock();
-			addBlock(m_cchAnsiText, L"cchAnsiText = 0x%1!08X!\r\n", m_cchAnsiText.getData());
-			addBlock(m_lpszAnsiText, L"AnsiText = %1!hs!", m_lpszAnsiText.c_str());
+			addChild(m_cchAnsiText, L"cchAnsiText = 0x%1!08X!\r\n", m_cchAnsiText.getData());
+			addChild(m_lpszAnsiText, L"AnsiText = %1!hs!", m_lpszAnsiText.c_str());
 		}
 	}
 } // namespace smartview

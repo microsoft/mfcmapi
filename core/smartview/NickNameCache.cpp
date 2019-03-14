@@ -46,12 +46,12 @@ namespace smartview
 	{
 		setRoot(L"Nickname Cache\r\n");
 		addHeader(L"Metadata1 = ");
-		addBlock(m_Metadata1);
+		addChild(m_Metadata1);
 		terminateBlock();
 
-		addBlock(m_ulMajorVersion, L"Major Version = %1!d!\r\n", m_ulMajorVersion.getData());
-		addBlock(m_ulMinorVersion, L"Minor Version = %1!d!\r\n", m_ulMinorVersion.getData());
-		addBlock(m_cRowCount, L"Row Count = %1!d!", m_cRowCount.getData());
+		addChild(m_ulMajorVersion, L"Major Version = %1!d!\r\n", m_ulMajorVersion.getData());
+		addChild(m_ulMinorVersion, L"Minor Version = %1!d!\r\n", m_ulMinorVersion.getData());
+		addChild(m_cRowCount, L"Row Count = %1!d!", m_cRowCount.getData());
 
 		if (!m_lpRows.empty())
 		{
@@ -61,19 +61,19 @@ namespace smartview
 				terminateBlock();
 				if (i > 0) addBlankLine();
 				addHeader(L"Row %1!d!\r\n", i++);
-				addBlock(row->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", row->cValues.getData());
+				addChild(row->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", row->cValues.getData());
 
-				addBlock(row->lpProps.getBlock());
+				addChild(row->lpProps.getBlock());
 			}
 		}
 
 		terminateBlock();
 		addBlankLine();
 		addHeader(L"Extra Info = ");
-		addBlock(m_lpbEI);
+		addChild(m_lpbEI);
 		terminateBlock();
 
 		addHeader(L"Metadata 2 = ");
-		addBlock(m_Metadata2);
+		addChild(m_Metadata2);
 	}
 } // namespace smartview
