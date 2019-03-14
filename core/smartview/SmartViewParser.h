@@ -77,7 +77,7 @@ namespace smartview
 			data->addBlock(_block, text, args...);
 		}
 		void addBlock(block& child) { data->addBlock(child); }
-		void addBlock(std::shared_ptr<block>& child) { data->addBlock(child); }
+		void addBlock(std::shared_ptr<block> child) { data->addBlock(child); }
 		void terminateBlock() { data->terminateBlock(); }
 		void addBlankLine() { data->addBlankLine(); }
 
