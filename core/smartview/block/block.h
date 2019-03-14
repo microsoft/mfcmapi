@@ -70,13 +70,13 @@ namespace smartview
 
 		void addChild(std::shared_ptr<block> child)
 		{
-			addChild(child, child->ToStringInternal());
+			addChild(child, child->toStringInternal());
 		}
 
 		// Add a block as a child
 		void addChild(block& child)
 		{
-			addChild(child, child.ToStringInternal());
+			addChild(child, child.toStringInternal());
 		}
 
 		// Copy a block into this block with text
@@ -113,7 +113,7 @@ namespace smartview
 		ULONG source{};
 
 	private:
-		virtual std::wstring ToStringInternal() const { return text; }
+		virtual std::wstring toStringInternal() const { return text; }
 		std::wstring text;
 		std::vector<std::shared_ptr<block>> children;
 		bool blank{false};

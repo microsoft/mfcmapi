@@ -43,7 +43,7 @@ namespace smartview
 		}
 
 	private:
-		std::wstring ToStringInternal() const override { return strings::BinToHexString(_data, true); }
+		std::wstring toStringInternal() const override { return strings::BinToHexString(_data, true); }
 		std::vector<BYTE> _data;
 	};
 } // namespace smartview
