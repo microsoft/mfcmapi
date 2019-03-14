@@ -22,7 +22,7 @@ namespace smartview
 		m_bParsed = true;
 	}
 
-	_Check_return_ std::wstring SmartViewParser::toString()
+	std::wstring SmartViewParser::toString()
 	{
 		if (m_Parser->empty()) return L"";
 		EnsureParsed();
