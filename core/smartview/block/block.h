@@ -65,21 +65,18 @@ namespace smartview
 
 		template <typename... Args> void addChild(block& child, const std::wstring& _text, Args... args)
 		{
-			child.text = strings::formatmessage(_text.c_str(), args...);
-			children.push_back(std::make_shared<block>(child));
+			addChild(child, strings::formatmessage(_text.c_str(), args...));
 		}
 
 		void addChild(std::shared_ptr<block> child)
 		{
-			child->text = child->ToStringInternal();
-			children.emplace_back(child);
+			addChild(child, child->ToStringInternal());
 		}
 
 		// Add a block as a child
 		void addChild(block& child)
 		{
-			child.text = child.ToStringInternal();
-			children.emplace_back(std::make_shared<block>(child));
+			addChild(child, child.ToStringInternal());
 		}
 
 		// Copy a block into this block with text
