@@ -27,7 +27,7 @@ namespace smartview
 		if (m_Parser->empty()) return L"";
 		EnsureParsed();
 
-		auto szParsedString = strings::trimWhitespace(data.ToString());
+		auto szParsedString = strings::trimWhitespace(data->ToString());
 
 		// If we built a string with embedded nulls in it, replace them with dots.
 		std::replace_if(

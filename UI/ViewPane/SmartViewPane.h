@@ -24,7 +24,7 @@ namespace viewpane
 		int GetFixedHeight() override;
 		int GetLines() override;
 		void RefreshTree();
-		void AddChildren(HTREEITEM parent, const smartview::block& data);
+		void AddChildren(HTREEITEM parent, const std::shared_ptr<smartview::block>& data);
 		void ItemSelected(HTREEITEM hItem);
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM hItemCurHover) const;
 		void SetStringW(const std::wstring& szMsg);
@@ -39,7 +39,7 @@ namespace viewpane
 			int iEditHeight) override; // height of an edit control
 
 		std::vector<std::vector<BYTE>> m_bins;
-		smartview::block treeData;
+		std::shared_ptr<smartview::block> treeData = std::make_shared<smartview::block>();
 		SplitterPane m_Splitter;
 		TreePane* m_TreePane{nullptr};
 		bool m_bHasData{false};

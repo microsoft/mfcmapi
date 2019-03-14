@@ -175,7 +175,7 @@ namespace viewpane
 
 		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
 		auto szSmartViewArray = std::vector<std::wstring>{};
-		treeData.clear();
+		treeData = std::make_shared<smartview::block>();
 		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
 		auto source = 0;
 		for (auto& bin : m_bins)
@@ -186,14 +186,14 @@ namespace viewpane
 				svp->init(bin.size(), bin.data());
 				parsedData = svp->ToString();
 				auto node = svp->getBlock();
-				node.setSource(source++);
+				node->setSource(source++);
 				if (m_bins.size() == 1)
 				{
 					treeData = node;
 				}
 				else
 				{
-					treeData.addBlock(node);
+					treeData->addBlock(node);
 				}
 			}
 
@@ -226,24 +226,24 @@ namespace viewpane
 		AddChildren(nullptr, treeData);
 	}
 
-	void SmartViewPane::AddChildren(HTREEITEM parent, const smartview::block& data)
+	void SmartViewPane::AddChildren(HTREEITEM parent, const std::shared_ptr<smartview::block>& data)
 	{
 		if (!m_TreePane) return;
 
 		auto root = HTREEITEM{};
 		// If the node is a header with no text, mrege the children up one level
-		if (data.isHeader() && data.getText().empty())
+		if (data->isHeader() && data->getText().empty())
 		{
 			root = parent;
 		}
 		else
 		{
-			root = m_TreePane->m_Tree.AddChildNode(data.getText(), parent, reinterpret_cast<LPARAM>(&data), nullptr);
+			root = m_TreePane->m_Tree.AddChildNode(data->getText(), parent, reinterpret_cast<LPARAM>(data.get()), nullptr);
 		}
 
-		for (const auto& item : data.getChildren())
+		for (const auto& item : data->getChildren())
 		{
-			AddChildren(root, *item);
+			AddChildren(root, item);
 		}
 
 		WC_B_S(::SendMessage(
