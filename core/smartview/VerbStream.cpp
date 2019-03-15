@@ -29,9 +29,9 @@ namespace smartview
 	VerbExtraData::VerbExtraData(std::shared_ptr<binaryParser>& parser)
 	{
 		DisplayNameCount.parse<BYTE>(parser);
-		DisplayName.parse(parser, DisplayNameCount);
+		DisplayName = blockStringW::parse(parser, DisplayNameCount);
 		DisplayNameCountRepeat.parse<BYTE>(parser);
-		DisplayNameRepeat.parse(parser, DisplayNameCountRepeat);
+		DisplayNameRepeat = blockStringW::parse(parser, DisplayNameCountRepeat);
 	}
 
 	void VerbStream::Parse()
@@ -118,12 +118,12 @@ namespace smartview
 			addBlankLine();
 			addHeader(L"VerbExtraData[%1!d!]\r\n", i);
 			addChild(ved->DisplayNameCount, L"DisplayNameCount = 0x%1!02X!\r\n", ved->DisplayNameCount.getData());
-			addChild(ved->DisplayName, L"DisplayName = \"%1!ws!\"\r\n", ved->DisplayName.c_str());
+			addChild(ved->DisplayName, L"DisplayName = \"%1!ws!\"\r\n", ved->DisplayName->c_str());
 			addChild(
 				ved->DisplayNameCountRepeat,
 				L"DisplayNameCountRepeat = 0x%1!02X!\r\n",
 				ved->DisplayNameCountRepeat.getData());
-			addChild(ved->DisplayNameRepeat, L"DisplayNameRepeat = \"%1!ws!\"", ved->DisplayNameRepeat.c_str());
+			addChild(ved->DisplayNameRepeat, L"DisplayNameRepeat = \"%1!ws!\"", ved->DisplayNameRepeat->c_str());
 			i++;
 		}
 	}

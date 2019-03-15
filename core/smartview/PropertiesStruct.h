@@ -46,8 +46,8 @@ namespace smartview
 	struct CountedStringW
 	{
 		blockT<DWORD> cb;
-		blockStringW str;
-		size_t getSize() const { return cb.getSize() + str.getSize(); }
+		std::shared_ptr<blockStringW> str;
+		size_t getSize() const { return cb.getSize() + str->getSize(); }
 		size_t getOffset() const { return cb.getOffset(); }
 	};
 
@@ -89,17 +89,17 @@ namespace smartview
 		blockT<ULONG> ulPropTag;
 		ULONG dwAlignPad{};
 		PVBlock Value;
-		_Check_return_ blockStringW& PropBlock()
+		_Check_return_ std::shared_ptr<blockStringW> PropBlock()
 		{
 			EnsurePropBlocks();
 			return propBlock;
 		}
-		_Check_return_ blockStringW& AltPropBlock()
+		_Check_return_ std::shared_ptr<blockStringW> AltPropBlock()
 		{
 			EnsurePropBlocks();
 			return altPropBlock;
 		}
-		_Check_return_ blockStringW& SmartViewBlock()
+		_Check_return_ std::shared_ptr<blockStringW> SmartViewBlock()
 		{
 			EnsurePropBlocks();
 			return smartViewBlock;
@@ -163,7 +163,7 @@ namespace smartview
 				offset = Value.bin.getOffset();
 				break;
 			case PT_UNICODE:
-				prop.Value.lpszW = const_cast<LPWSTR>(Value.lpszW.str.c_str());
+				prop.Value.lpszW = const_cast<LPWSTR>(Value.lpszW.str->c_str());
 				size = Value.lpszW.getSize();
 				offset = Value.lpszW.getOffset();
 				break;
@@ -187,18 +187,21 @@ namespace smartview
 			auto altPropString = std::wstring{};
 			property::parseProperty(&prop, &propString, &altPropString);
 
-			propBlock.setData(strings::RemoveInvalidCharactersW(propString, false));
-			propBlock.setSize(size);
-			propBlock.setOffset(offset);
+			propBlock = std::make_shared<blockStringW>();
+			propBlock->setData(strings::RemoveInvalidCharactersW(propString, false));
+			propBlock->setSize(size);
+			propBlock->setOffset(offset);
 
-			altPropBlock.setData(strings::RemoveInvalidCharactersW(altPropString, false));
-			altPropBlock.setSize(size);
-			altPropBlock.setOffset(offset);
+			altPropBlock = std::make_shared<blockStringW>();
+			altPropBlock->setData(strings::RemoveInvalidCharactersW(altPropString, false));
+			altPropBlock->setSize(size);
+			altPropBlock->setOffset(offset);
 
 			const auto smartViewString = parsePropertySmartView(&prop, nullptr, nullptr, nullptr, false, false);
-			smartViewBlock.setData(smartViewString);
-			smartViewBlock.setSize(size);
-			smartViewBlock.setOffset(offset);
+			smartViewBlock = std::make_shared<blockStringW>();
+			smartViewBlock->setData(smartViewString);
+			smartViewBlock->setSize(size);
+			smartViewBlock->setOffset(offset);
 
 			propStringsGenerated = true;
 		}
@@ -223,9 +226,9 @@ namespace smartview
 		// Any data we need to cache for getData can live here
 	private:
 		GUID guid{};
-		blockStringW propBlock;
-		blockStringW altPropBlock;
-		blockStringW smartViewBlock;
+		std::shared_ptr<blockStringW> propBlock;
+		std::shared_ptr<blockStringW> altPropBlock;
+		std::shared_ptr<blockStringW> smartViewBlock;
 		bool propStringsGenerated{};
 	};
 

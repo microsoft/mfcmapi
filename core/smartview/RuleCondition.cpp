@@ -16,7 +16,7 @@ namespace smartview
 		else if (Kind == MNID_STRING)
 		{
 			NameSize.parse<BYTE>(parser);
-			Name.parse(parser, NameSize / sizeof(WCHAR));
+			Name = blockStringW::parse(parser, NameSize / sizeof(WCHAR));
 		}
 	}
 
@@ -94,7 +94,7 @@ namespace smartview
 					addHeader(L"\tName = ");
 					addChild(
 						m_NamedPropertyInformation.PropertyName[i]->Name,
-						m_NamedPropertyInformation.PropertyName[i]->Name.c_str());
+						m_NamedPropertyInformation.PropertyName[i]->Name->c_str());
 				}
 			}
 		}

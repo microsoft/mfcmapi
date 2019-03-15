@@ -74,9 +74,9 @@ namespace smartview
 				m_OneOffRecipientObject.Bitmask.parse<DWORD>(m_Parser);
 				if (MAPI_UNICODE & m_OneOffRecipientObject.Bitmask)
 				{
-					m_OneOffRecipientObject.Unicode.DisplayName.parse(m_Parser);
-					m_OneOffRecipientObject.Unicode.AddressType.parse(m_Parser);
-					m_OneOffRecipientObject.Unicode.EmailAddress.parse(m_Parser);
+					m_OneOffRecipientObject.Unicode.DisplayName = blockStringW::parse(m_Parser);
+					m_OneOffRecipientObject.Unicode.AddressType = blockStringW::parse(m_Parser);
+					m_OneOffRecipientObject.Unicode.EmailAddress = blockStringW::parse(m_Parser);
 				}
 				else
 				{
@@ -199,7 +199,7 @@ namespace smartview
 
 							if (m_MessageDatabaseObject.v2.ulOffsetFQDN)
 							{
-								m_MessageDatabaseObject.v2FQDN.parse(m_Parser);
+								m_MessageDatabaseObject.v2FQDN = blockStringW::parse(m_Parser);
 							}
 
 							m_MessageDatabaseObject.v2Reserved.parse(m_Parser, 2);
@@ -214,7 +214,7 @@ namespace smartview
 							m_MessageDatabaseObject.v3.ulOffsetSmtpAddress.parse<DWORD>(m_Parser);
 							if (m_MessageDatabaseObject.v3.ulOffsetSmtpAddress)
 							{
-								m_MessageDatabaseObject.v3SmtpAddress.parse(m_Parser);
+								m_MessageDatabaseObject.v3SmtpAddress = blockStringW::parse(m_Parser);
 							}
 
 							m_MessageDatabaseObject.v2Reserved.parse(m_Parser, 2);
@@ -350,15 +350,15 @@ namespace smartview
 				addChild(
 					m_OneOffRecipientObject.Unicode.DisplayName,
 					L"szDisplayName = %1!ws!\r\n",
-					m_OneOffRecipientObject.Unicode.DisplayName.c_str());
+					m_OneOffRecipientObject.Unicode.DisplayName->c_str());
 				addChild(
 					m_OneOffRecipientObject.Unicode.AddressType,
 					L"szAddressType = %1!ws!\r\n",
-					m_OneOffRecipientObject.Unicode.AddressType.c_str());
+					m_OneOffRecipientObject.Unicode.AddressType->c_str());
 				addChild(
 					m_OneOffRecipientObject.Unicode.EmailAddress,
 					L"szEmailAddress = %1!ws!",
-					m_OneOffRecipientObject.Unicode.EmailAddress.c_str());
+					m_OneOffRecipientObject.Unicode.EmailAddress->c_str());
 			}
 			else
 			{
@@ -536,7 +536,7 @@ namespace smartview
 					L"OffsetFQDN = 0x%1!08X!\r\n",
 					m_MessageDatabaseObject.v2.ulOffsetFQDN.getData());
 				addChild(m_MessageDatabaseObject.v2DN, L"DN = %1!hs!\r\n", m_MessageDatabaseObject.v2DN.c_str());
-				addChild(m_MessageDatabaseObject.v2FQDN, L"FQDN = %1!ws!\r\n", m_MessageDatabaseObject.v2FQDN.c_str());
+				addChild(m_MessageDatabaseObject.v2FQDN, L"FQDN = %1!ws!\r\n", m_MessageDatabaseObject.v2FQDN->c_str());
 
 				addHeader(L"Reserved Bytes = ");
 				addChild(m_MessageDatabaseObject.v2Reserved);
@@ -568,7 +568,7 @@ namespace smartview
 				addChild(
 					m_MessageDatabaseObject.v3SmtpAddress,
 					L"SmtpAddress = %1!ws!\r\n",
-					m_MessageDatabaseObject.v3SmtpAddress.c_str());
+					m_MessageDatabaseObject.v3SmtpAddress->c_str());
 				addHeader(L"Reserved Bytes = ");
 
 				addChild(m_MessageDatabaseObject.v2Reserved);

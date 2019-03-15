@@ -318,12 +318,12 @@ namespace smartview
 					resContent.lpProp.Props()[0]->PropBlock(),
 					L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
 					szTabs.c_str(),
-					resContent.lpProp.Props()[0]->PropBlock().c_str());
+					resContent.lpProp.Props()[0]->PropBlock()->c_str());
 				propBlock->addChild(
 					resContent.lpProp.Props()[0]->AltPropBlock(),
 					L"%1!ws!\tAlt: %2!ws!\r\n",
 					szTabs.c_str(),
-					resContent.lpProp.Props()[0]->AltPropBlock().c_str());
+					resContent.lpProp.Props()[0]->AltPropBlock()->c_str());
 				rt.addChild(propBlock);
 			}
 		}
@@ -347,12 +347,12 @@ namespace smartview
 					resProperty.lpProp.Props()[0]->PropBlock(),
 					L"%1!ws!lpRes->res.resProperty.lpProp->Value = %2!ws!\r\n",
 					szTabs.c_str(),
-					resProperty.lpProp.Props()[0]->PropBlock().c_str());
+					resProperty.lpProp.Props()[0]->PropBlock()->c_str());
 				resProperty.ulPropTag.addChild(
 					resProperty.lpProp.Props()[0]->AltPropBlock(),
 					L"%1!ws!\tAlt: %2!ws!\r\n",
 					szTabs.c_str(),
-					resProperty.lpProp.Props()[0]->AltPropBlock().c_str());
+					resProperty.lpProp.Props()[0]->AltPropBlock()->c_str());
 				szPropNum = resProperty.lpProp.Props()[0]->PropNum();
 				if (!szPropNum.empty())
 				{
@@ -458,9 +458,9 @@ namespace smartview
 					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
-					prop->PropBlock().c_str());
+					prop->PropBlock()->c_str());
 				prop->ulPropTag.addChild(
-					prop->AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop->AltPropBlock().c_str());
+					prop->AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop->AltPropBlock()->c_str());
 
 				resComment.cValues.addChild(prop->ulPropTag);
 				i++;
@@ -494,9 +494,9 @@ namespace smartview
 					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
-					prop->PropBlock().c_str());
+					prop->PropBlock()->c_str());
 				prop->ulPropTag.addChild(
-					prop->AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop->AltPropBlock().c_str());
+					prop->AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop->AltPropBlock()->c_str());
 
 				resAnnotation.cValues.addChild(prop->ulPropTag);
 				i++;

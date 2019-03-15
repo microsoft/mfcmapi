@@ -34,7 +34,7 @@ namespace smartview
 
 		if (cchTextSearch)
 		{
-			m_TextSearch.parse(m_Parser, cchTextSearch);
+			m_TextSearch = blockStringW::parse(m_Parser, cchTextSearch);
 		}
 
 		m_SkipLen1.parse<DWORD>(m_Parser);
@@ -52,7 +52,7 @@ namespace smartview
 
 		if (cchFolderList1)
 		{
-			m_FolderList1.parse(m_Parser, cchFolderList1);
+			m_FolderList1 = blockStringW::parse(m_Parser, cchFolderList1);
 		}
 
 		m_FolderList2Length.parse<DWORD>(m_Parser);
@@ -125,9 +125,9 @@ namespace smartview
 				L"Text Search Length Extended = 0x%1!04X!\r\n",
 				m_TextSearchLengthExtended.getData());
 			addHeader(L"Text Search = ");
-			if (!m_TextSearch.empty())
+			if (!m_TextSearch->empty())
 			{
-				addChild(m_TextSearch, m_TextSearch.c_str());
+				addChild(m_TextSearch, m_TextSearch->c_str());
 			}
 		}
 
@@ -155,9 +155,9 @@ namespace smartview
 				m_FolderList1LengthExtended.getData());
 			addHeader(L"Folder List 1 = ");
 
-			if (!m_FolderList1.empty())
+			if (!m_FolderList1->empty())
 			{
-				addChild(m_FolderList1, m_FolderList1.c_str());
+				addChild(m_FolderList1, m_FolderList1->c_str());
 			}
 		}
 

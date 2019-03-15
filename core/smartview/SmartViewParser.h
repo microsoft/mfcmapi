@@ -70,8 +70,13 @@ namespace smartview
 			data->addHeader(text, args...);
 		}
 
-		void addChild(std::shared_ptr<block>& _block, const std::wstring& text) { data->addChild(_block, text); }
+		void addChild(std::shared_ptr<block> _block, const std::wstring& text) { data->addChild(_block, text); }
 		template <typename... Args> void addChild(block& _block, const std::wstring& text, const Args... args)
+		{
+			data->addChild(_block, text, args...);
+		}
+		template <typename... Args>
+		void addChild(std::shared_ptr<block> _block, const std::wstring& text, const Args... args)
 		{
 			data->addChild(_block, text, args...);
 		}

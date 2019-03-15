@@ -106,7 +106,6 @@ ExtendedException[2].StartDateTime: 0x0CD59024 = 03:00:00.000 PM 5/26/2010
 ExtendedException[2].EndDateTime: 0x0CD59060 = 04:00:00.000 PM 5/26/2010
 ExtendedException[2].OriginalStartDate: 0x0CD595C4 = 03:00:00.000 PM 5/27/2010
 ExtendedException[2].WideCharLocationLength: 0x00000000 = 0
-ExtendedException[2].WideCharLocation: ""
 ExtendedException[2].ReservedBlockEE2Size: 0x00000000
 ExtendedException[3].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[3].ChangeHighlight.ChangeHighlightValue: 0x00000080 = BIT_CH_BODY

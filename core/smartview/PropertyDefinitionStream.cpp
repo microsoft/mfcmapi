@@ -27,7 +27,8 @@ namespace smartview
 			cchExtendedLength.parse<WORD>(parser);
 		}
 
-		szCharacters.parse(parser, cchExtendedLength ? cchExtendedLength.getData() : cchLength.getData());
+		szCharacters =
+			blockStringW::parse(parser, cchExtendedLength ? cchExtendedLength.getData() : cchLength.getData());
 	}
 
 	SkipBlock::SkipBlock(std::shared_ptr<binaryParser>& parser, DWORD iSkip)
@@ -49,7 +50,7 @@ namespace smartview
 		wVT.parse<WORD>(parser);
 		dwDispid.parse<DWORD>(parser);
 		wNmidNameLength.parse<WORD>(parser);
-		szNmidName.parse(parser, wNmidNameLength);
+		szNmidName = blockStringW::parse(parser, wNmidNameLength);
 
 		pasNameANSI.parse(parser);
 		pasFormulaANSI.parse(parser);
@@ -143,10 +144,10 @@ namespace smartview
 			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength.getData());
 		}
 
-		if (szCharacters.length())
+		if (szCharacters->length())
 		{
 			data.addHeader(L" Characters = ");
-			data.addChild(szCharacters, szCharacters);
+			data.addChild(szCharacters, szCharacters->c_str());
 		}
 
 		data.terminateBlock();
@@ -207,7 +208,7 @@ namespace smartview
 			fieldDef->terminateBlock();
 			fieldDef->addChild(
 				def->wNmidNameLength, L"\tNmidNameLength = 0x%1!04X!\r\n", def->wNmidNameLength.getData());
-			fieldDef->addChild(def->szNmidName, L"\tNmidName = %1!ws!\r\n", def->szNmidName.c_str());
+			fieldDef->addChild(def->szNmidName, L"\tNmidName = %1!ws!\r\n", def->szNmidName->c_str());
 
 			fieldDef->addChild(def->pasNameANSI.toBlock(L"NameAnsi"));
 			fieldDef->addChild(def->pasFormulaANSI.toBlock(L"FormulaANSI"));

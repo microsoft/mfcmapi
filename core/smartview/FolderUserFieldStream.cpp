@@ -26,7 +26,7 @@ namespace smartview
 
 		if (FieldNameLength && FieldNameLength < _MaxEntriesSmall)
 		{
-			FieldName.parse(parser, FieldNameLength);
+			FieldName = blockStringW::parse(parser, FieldNameLength);
 		}
 
 		Common.parse(parser);
@@ -68,7 +68,7 @@ namespace smartview
 		wszFormulaLength.parse<WORD>(parser);
 		if (wszFormulaLength && wszFormulaLength < _MaxEntriesLarge)
 		{
-			wszFormula.parse(parser, wszFormulaLength);
+			wszFormula = blockStringW::parse(parser, wszFormulaLength);
 		}
 	}
 
@@ -127,7 +127,7 @@ namespace smartview
 				fieldBlock->addChild(
 					fieldDefinition->Common.wszFormula,
 					L"wszFormula = %1!ws!",
-					fieldDefinition->Common.wszFormula.c_str());
+					fieldDefinition->Common.wszFormula->c_str());
 
 				m_FolderUserFieldsAnsiCount.terminateBlock();
 				m_FolderUserFieldsAnsiCount.addBlankLine();
@@ -163,7 +163,7 @@ namespace smartview
 					L"FieldNameLength = 0x%1!08X! = %1!d!\r\n",
 					fieldDefinition->FieldNameLength.getData());
 				fieldBlock->addChild(
-					fieldDefinition->FieldName, L"FieldName = %1!ws!\r\n", fieldDefinition->FieldName.c_str());
+					fieldDefinition->FieldName, L"FieldName = %1!ws!\r\n", fieldDefinition->FieldName->c_str());
 
 				auto szGUID = guid::GUIDToString(fieldDefinition->Common.PropSetGuid);
 				fieldBlock->addChild(fieldDefinition->Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());
@@ -194,7 +194,7 @@ namespace smartview
 				fieldBlock->addChild(
 					fieldDefinition->Common.wszFormula,
 					L"wszFormula = %1!ws!",
-					fieldDefinition->Common.wszFormula.c_str());
+					fieldDefinition->Common.wszFormula->c_str());
 
 				m_FolderUserFieldsUnicodeCount.terminateBlock();
 				m_FolderUserFieldsUnicodeCount.addBlankLine();

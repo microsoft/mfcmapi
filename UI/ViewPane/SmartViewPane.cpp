@@ -228,7 +228,7 @@ namespace viewpane
 
 	void SmartViewPane::AddChildren(HTREEITEM parent, const std::shared_ptr<smartview::block>& data)
 	{
-		if (!m_TreePane) return;
+		if (!m_TreePane || !data) return;
 
 		auto root = HTREEITEM{};
 		// If the node is a header with no text, mrege the children up one level

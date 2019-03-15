@@ -11,7 +11,7 @@ namespace smartview
 		cbEntryID.parse<DWORD>(parser);
 		lpEntryID.parse(parser, cbEntryID, _MaxEID);
 		szDisplayName.parse(parser);
-		wzDisplayName.parse(parser);
+		wzDisplayName = blockStringW::parse(parser);
 		JunkData.parse(parser);
 		parser->clearCap();
 	}
@@ -50,7 +50,7 @@ namespace smartview
 
 			terminateBlock();
 			addChild(ta->szDisplayName, L"\tszDisplayName (ANSI) = %1!hs!\r\n", ta->szDisplayName.c_str());
-			addChild(ta->wzDisplayName, L"\tszDisplayName (Unicode) = %1!ws!", ta->wzDisplayName.c_str());
+			addChild(ta->wzDisplayName, L"\tszDisplayName (Unicode) = %1!ws!", ta->wzDisplayName->c_str());
 
 			if (!ta->JunkData.empty())
 			{

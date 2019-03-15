@@ -12,7 +12,6 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000000
 iFmt = 0x00000000
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 1
 FieldType = 0x00000000 = ftNull
@@ -25,7 +24,6 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000000
 iFmt = 0x00000000
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 FolderUserFieldUnicode.FieldDefinitionCount = 2
 
@@ -40,12 +38,10 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000000
 iFmt = 0x00000000
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 1
 FieldType = 0x00000000 = ftNull
 FieldNameLength = 0x00000000 = 0
-FieldName = 
 PropSetGuid = {00000000-0000-0000-0000-000000000000}
 fcapm = 0x00000000 = 0x0
 dwString = 0x00000000
@@ -53,4 +49,3 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000000
 iFmt = 0x00000000
 wszFormulaLength = 0x0000 = 0
-wszFormula =

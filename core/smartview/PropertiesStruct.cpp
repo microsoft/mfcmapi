@@ -70,14 +70,14 @@ namespace smartview
 			}
 
 			propBlock->terminateBlock();
-			propBlock->addChild(prop->PropBlock(), L"PropString = %1!ws! ", prop->PropBlock().c_str());
-			propBlock->addChild(prop->AltPropBlock(), L"AltPropString = %1!ws!", prop->AltPropBlock().c_str());
+			propBlock->addChild(prop->PropBlock(), L"PropString = %1!ws! ", prop->PropBlock()->c_str());
+			propBlock->addChild(prop->AltPropBlock(), L"AltPropString = %1!ws!", prop->AltPropBlock()->c_str());
 
-			auto& szSmartView = prop->SmartViewBlock();
-			if (!szSmartView.empty())
+			auto szSmartView = prop->SmartViewBlock();
+			if (!szSmartView->empty())
 			{
 				propBlock->terminateBlock();
-				propBlock->addChild(szSmartView, L"Smart View: %1!ws!", szSmartView.c_str());
+				propBlock->addChild(szSmartView, L"Smart View: %1!ws!", szSmartView->c_str());
 			}
 
 			addChild(propBlock);
@@ -184,8 +184,8 @@ namespace smartview
 		case PT_UNICODE:
 			if (doRuleProcessing)
 			{
-				Value.lpszW.str.parse(parser);
-				Value.lpszW.cb.setData(static_cast<DWORD>(Value.lpszW.str.length()));
+				Value.lpszW.str = blockStringW::parse(parser);
+				Value.lpszW.cb.setData(static_cast<DWORD>(Value.lpszW.str->length()));
 			}
 			else
 			{
@@ -199,7 +199,7 @@ namespace smartview
 					Value.lpszW.cb.parse<WORD>(parser);
 				}
 
-				Value.lpszW.str.parse(parser, Value.lpszW.cb / sizeof(WCHAR));
+				Value.lpszW.str = blockStringW::parse(parser, Value.lpszW.cb / sizeof(WCHAR));
 			}
 			break;
 		case PT_CLSID:

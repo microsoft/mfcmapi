@@ -82,8 +82,8 @@ namespace smartview
 		MDB_STORE_EID_V2 v2;
 		MDB_STORE_EID_V3 v3;
 		blockStringA v2DN;
-		blockStringW v2FQDN;
-		blockStringW v3SmtpAddress;
+		std::shared_ptr<blockStringW> v2FQDN;
+		std::shared_ptr<blockStringW> v3SmtpAddress;
 		blockBytes v2Reserved; // 2 bytes
 	};
 
@@ -98,9 +98,9 @@ namespace smartview
 		blockT<DWORD> Bitmask;
 		struct Unicode
 		{
-			blockStringW DisplayName;
-			blockStringW AddressType;
-			blockStringW EmailAddress;
+			std::shared_ptr<blockStringW> DisplayName;
+			std::shared_ptr<blockStringW> AddressType;
+			std::shared_ptr<blockStringW> EmailAddress;
 		} Unicode;
 		struct ANSI
 		{

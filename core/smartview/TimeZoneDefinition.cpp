@@ -41,7 +41,7 @@ namespace smartview
 		m_cbHeader.parse<WORD>(m_Parser);
 		m_wReserved.parse<WORD>(m_Parser);
 		m_cchKeyName.parse<WORD>(m_Parser);
-		m_szKeyName.parse(m_Parser, m_cchKeyName);
+		m_szKeyName = blockStringW::parse(m_Parser, m_cchKeyName);
 		m_cRules.parse<WORD>(m_Parser);
 
 		if (m_cRules && m_cRules < _MaxEntriesSmall)
@@ -62,7 +62,7 @@ namespace smartview
 		addChild(m_cbHeader, L"cbHeader = 0x%1!04X! (%1!d!)\r\n", m_cbHeader.getData());
 		addChild(m_wReserved, L"wReserved = 0x%1!04X! (%1!d!)\r\n", m_wReserved.getData());
 		addChild(m_cchKeyName, L"cchKeyName = 0x%1!04X! (%1!d!)\r\n", m_cchKeyName.getData());
-		addChild(m_szKeyName, L"szKeyName = %1!ws!\r\n", m_szKeyName.c_str());
+		addChild(m_szKeyName, L"szKeyName = %1!ws!\r\n", m_szKeyName->c_str());
 		addChild(m_cRules, L"cRules = 0x%1!04X! (%1!d!)", m_cRules.getData());
 
 		auto i = 0;

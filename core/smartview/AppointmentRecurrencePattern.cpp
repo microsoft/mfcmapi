@@ -95,7 +95,7 @@ namespace smartview
 			WideCharSubjectLength.parse<WORD>(parser);
 			if (WideCharSubjectLength)
 			{
-				WideCharSubject.parse(parser, WideCharSubjectLength);
+				WideCharSubject = blockStringW::parse(parser, WideCharSubjectLength);
 			}
 		}
 
@@ -104,7 +104,7 @@ namespace smartview
 			WideCharLocationLength.parse<WORD>(parser);
 			if (WideCharLocationLength)
 			{
-				WideCharLocation.parse(parser, WideCharLocationLength);
+				WideCharLocation = blockStringW::parse(parser, WideCharLocationLength);
 			}
 		}
 
@@ -400,7 +400,7 @@ namespace smartview
 							ee->WideCharSubject,
 							L"ExtendedException[%1!d!].WideCharSubject: \"%2!ws!\"\r\n",
 							i,
-							ee->WideCharSubject.c_str());
+							ee->WideCharSubject->c_str());
 					}
 
 					if (m_ExceptionInfo[i]->OverrideFlags & ARO_LOCATION)
@@ -414,7 +414,7 @@ namespace smartview
 							ee->WideCharLocation,
 							L"ExtendedException[%1!d!].WideCharLocation: \"%2!ws!\"\r\n",
 							i,
-							ee->WideCharLocation.c_str());
+							ee->WideCharLocation->c_str());
 					}
 				}
 
