@@ -9,17 +9,17 @@ namespace smartview
 		blockStringW() = default;
 		blockStringW(const blockStringW&) = delete;
 		blockStringW& operator=(const blockStringW&) = delete;
-		void setData(const std::wstring& _data)
-		{
-			if (this) data = _data;
-		}
-		operator const std::wstring&() const { return this ? data : strings::emptystring; }
-		_NODISCARD _Ret_z_ const wchar_t* c_str() const noexcept { return this ? data.c_str() : L""; }
-		_NODISCARD std::wstring::size_type length() const noexcept { return this ? data.length() : 0; }
-		_NODISCARD bool empty() const noexcept { return this ? data.empty() : true; }
+
+		virtual bool set() const { return !unset; }
+		void setData(const std::wstring& _data) { data = _data; }
+		operator const std::wstring&() const { return data; }
+		_NODISCARD _Ret_z_ const wchar_t* c_str() const noexcept { return data.c_str(); }
+		_NODISCARD std::wstring::size_type length() const noexcept { return data.length(); }
+		_NODISCARD bool empty() const noexcept { return data.empty(); }
 
 		blockStringW(std::shared_ptr<binaryParser> parser, size_t cchChar = -1)
 		{
+			unset = false;
 			if (cchChar == static_cast<size_t>(-1))
 			{
 				cchChar = wcsnlen_s(
@@ -38,6 +38,14 @@ namespace smartview
 			}
 		}
 
+		blockStringW(const std::wstring& _data, size_t _offset, size_t _size)
+		{
+			unset = false;
+			setData(_data);
+			setOffset(_offset);
+			setSize(_size);
+		}
+
 		static std::shared_ptr<blockStringW> parse(std::shared_ptr<binaryParser> parser, size_t cchChar = -1)
 		{
 			return std::make_shared<blockStringW>(parser, cchChar);
@@ -45,5 +53,6 @@ namespace smartview
 
 	private:
 		std::wstring data;
+		bool unset{true};
 	};
 } // namespace smartview

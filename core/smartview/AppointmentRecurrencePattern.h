@@ -53,9 +53,9 @@ namespace smartview
 		blockT<DWORD> EndDateTime;
 		blockT<DWORD> OriginalStartDate;
 		blockT<WORD> WideCharSubjectLength;
-		std::shared_ptr<blockStringW> WideCharSubject;
+		std::shared_ptr<blockStringW> WideCharSubject = empty<blockStringW>();
 		blockT<WORD> WideCharLocationLength;
-		std::shared_ptr<blockStringW> WideCharLocation;
+		std::shared_ptr<blockStringW> WideCharLocation = empty<blockStringW>();
 		blockT<DWORD> ReservedBlockEE2Size;
 		blockBytes ReservedBlockEE2;
 

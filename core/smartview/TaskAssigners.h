@@ -14,7 +14,7 @@ namespace smartview
 		blockT<ULONG> cbEntryID{};
 		blockBytes lpEntryID;
 		blockStringA szDisplayName;
-		std::shared_ptr<blockStringW> wzDisplayName;
+		std::shared_ptr<blockStringW> wzDisplayName = empty<blockStringW>();
 		blockBytes JunkData;
 
 		TaskAssigner(std::shared_ptr<binaryParser>& parser);

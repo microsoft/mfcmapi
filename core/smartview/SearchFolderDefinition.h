@@ -29,13 +29,13 @@ namespace smartview
 		blockT<DWORD> m_NumericSearch;
 		blockT<BYTE> m_TextSearchLength;
 		blockT<WORD> m_TextSearchLengthExtended;
-		std::shared_ptr<blockStringW> m_TextSearch;
+		std::shared_ptr<blockStringW> m_TextSearch = empty<blockStringW>();
 		blockT<DWORD> m_SkipLen1;
 		blockBytes m_SkipBytes1;
 		blockT<DWORD> m_DeepSearch;
 		blockT<BYTE> m_FolderList1Length;
 		blockT<WORD> m_FolderList1LengthExtended;
-		std::shared_ptr<blockStringW> m_FolderList1;
+		std::shared_ptr<blockStringW> m_FolderList1 = empty<blockStringW>();
 		blockT<DWORD> m_FolderList2Length;
 		EntryList m_FolderList2;
 		blockT<DWORD> m_AddressCount; // SFST_BINARY

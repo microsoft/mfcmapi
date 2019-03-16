@@ -25,7 +25,7 @@ namespace smartview
 		blockT<GUID> Guid{};
 		blockT<DWORD> LID{};
 		blockT<BYTE> NameSize{};
-		std::shared_ptr<blockStringW> Name;
+		std::shared_ptr<blockStringW> Name = empty<blockStringW>();
 
 		PropertyName(std::shared_ptr<binaryParser>& parser);
 	};
