@@ -46,7 +46,7 @@ namespace smartview
 	struct CountedStringW
 	{
 		blockT<DWORD> cb;
-		std::shared_ptr<blockStringW> str = empty<blockStringW>();
+		std::shared_ptr<blockStringW> str = emptySW();
 		size_t getSize() const { return cb.getSize() + str->getSize(); }
 		size_t getOffset() const { return cb.getOffset(); }
 	};
@@ -219,9 +219,9 @@ namespace smartview
 		// Any data we need to cache for getData can live here
 	private:
 		GUID guid{};
-		std::shared_ptr<blockStringW> propBlock = empty<blockStringW>();
-		std::shared_ptr<blockStringW> altPropBlock = empty<blockStringW>();
-		std::shared_ptr<blockStringW> smartViewBlock = empty<blockStringW>();
+		std::shared_ptr<blockStringW> propBlock = emptySW();
+		std::shared_ptr<blockStringW> altPropBlock = emptySW();
+		std::shared_ptr<blockStringW> smartViewBlock = emptySW();
 		bool propStringsGenerated{};
 	};
 

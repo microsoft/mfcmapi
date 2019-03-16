@@ -11,7 +11,7 @@ namespace smartview
 	{
 		blockT<BYTE> cchLength;
 		blockT<WORD> cchExtendedLength;
-		std::shared_ptr<blockStringW> szCharacters = empty<blockStringW>();
+		std::shared_ptr<blockStringW> szCharacters = emptySW();
 
 		void parse(std::shared_ptr<binaryParser>& parser);
 		_Check_return_ block& toBlock(_In_ const std::wstring& szFieldName);
@@ -42,7 +42,7 @@ namespace smartview
 		blockT<WORD> wVT;
 		blockT<DWORD> dwDispid;
 		blockT<WORD> wNmidNameLength;
-		std::shared_ptr<blockStringW> szNmidName = empty<blockStringW>();
+		std::shared_ptr<blockStringW> szNmidName = emptySW();
 		PackedAnsiString pasNameANSI;
 		PackedAnsiString pasFormulaANSI;
 		PackedAnsiString pasValidationRuleANSI;

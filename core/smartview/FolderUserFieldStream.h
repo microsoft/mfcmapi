@@ -15,7 +15,7 @@ namespace smartview
 		blockT<DWORD> dwDisplay;
 		blockT<DWORD> iFmt;
 		blockT<WORD> wszFormulaLength;
-		std::shared_ptr<blockStringW> wszFormula = empty<blockStringW>();
+		std::shared_ptr<blockStringW> wszFormula = emptySW();
 
 		void parse(std::shared_ptr<binaryParser>& parser);
 	};
@@ -34,7 +34,7 @@ namespace smartview
 	{
 		blockT<DWORD> FieldType;
 		blockT<WORD> FieldNameLength;
-		std::shared_ptr<blockStringW> FieldName = empty<blockStringW>();
+		std::shared_ptr<blockStringW> FieldName = emptySW();
 		FolderFieldDefinitionCommon Common;
 
 		FolderFieldDefinitionW(std::shared_ptr<binaryParser>& parser);

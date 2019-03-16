@@ -45,7 +45,7 @@ namespace smartview
 		blockT<WORD> m_cbHeader;
 		blockT<WORD> m_wReserved;
 		blockT<WORD> m_cchKeyName;
-		std::shared_ptr<blockStringW> m_szKeyName = empty<blockStringW>();
+		std::shared_ptr<blockStringW> m_szKeyName = emptySW();
 		blockT<WORD> m_cRules;
 		std::vector<std::shared_ptr<TZRule>> m_lpTZRule;
 	};

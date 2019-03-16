@@ -32,9 +32,9 @@ namespace smartview
 	struct VerbExtraData
 	{
 		blockT<BYTE> DisplayNameCount;
-		std::shared_ptr<blockStringW> DisplayName = empty<blockStringW>();
+		std::shared_ptr<blockStringW> DisplayName = emptySW();
 		blockT<BYTE> DisplayNameCountRepeat;
-		std::shared_ptr<blockStringW> DisplayNameRepeat = empty<blockStringW>();
+		std::shared_ptr<blockStringW> DisplayNameRepeat = emptySW();
 
 		VerbExtraData(std::shared_ptr<binaryParser>& parser);
 	};
