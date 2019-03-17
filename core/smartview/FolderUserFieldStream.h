@@ -24,7 +24,7 @@ namespace smartview
 	{
 		blockT<DWORD> FieldType;
 		blockT<WORD> FieldNameLength;
-		blockStringA FieldName;
+		std::shared_ptr<blockStringA> FieldName = emptySA();
 		FolderFieldDefinitionCommon Common;
 
 		FolderFieldDefinitionA(std::shared_ptr<binaryParser>& parser);

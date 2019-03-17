@@ -9,13 +9,13 @@ namespace smartview
 	{
 		VerbType.parse<DWORD>(parser);
 		DisplayNameCount.parse<BYTE>(parser);
-		DisplayName.parse(parser, DisplayNameCount);
+		DisplayName = blockStringA::parse(parser, DisplayNameCount);
 		MsgClsNameCount.parse<BYTE>(parser);
-		MsgClsName.parse(parser, MsgClsNameCount);
+		MsgClsName = blockStringA::parse(parser, MsgClsNameCount);
 		Internal1StringCount.parse<BYTE>(parser);
-		Internal1String.parse(parser, Internal1StringCount);
+		Internal1String = blockStringA::parse(parser, Internal1StringCount);
 		DisplayNameCountRepeat.parse<BYTE>(parser);
-		DisplayNameRepeat.parse(parser, DisplayNameCountRepeat);
+		DisplayNameRepeat = blockStringA::parse(parser, DisplayNameCountRepeat);
 		Internal2.parse<DWORD>(parser);
 		Internal3.parse<BYTE>(parser);
 		fUseUSHeaders.parse<DWORD>(parser);
@@ -75,15 +75,16 @@ namespace smartview
 			addChild(verbData->VerbType, L"VerbType = 0x%1!08X!\r\n", verbData->VerbType.getData());
 			addChild(
 				verbData->DisplayNameCount, L"DisplayNameCount = 0x%1!02X!\r\n", verbData->DisplayNameCount.getData());
-			addChild(verbData->DisplayName, L"DisplayName = \"%1!hs!\"\r\n", verbData->DisplayName.c_str());
+			addChild(verbData->DisplayName, L"DisplayName = \"%1!hs!\"\r\n", verbData->DisplayName->c_str());
 			addChild(
 				verbData->MsgClsNameCount, L"MsgClsNameCount = 0x%1!02X!\r\n", verbData->MsgClsNameCount.getData());
-			addChild(verbData->MsgClsName, L"MsgClsName = \"%1!hs!\"\r\n", verbData->MsgClsName.c_str());
+			addChild(verbData->MsgClsName, L"MsgClsName = \"%1!hs!\"\r\n", verbData->MsgClsName->c_str());
 			addChild(
 				verbData->Internal1StringCount,
 				L"Internal1StringCount = 0x%1!02X!\r\n",
 				verbData->Internal1StringCount.getData());
-			addChild(verbData->Internal1String, L"Internal1String = \"%1!hs!\"\r\n", verbData->Internal1String.c_str());
+			addChild(
+				verbData->Internal1String, L"Internal1String = \"%1!hs!\"\r\n", verbData->Internal1String->c_str());
 			addChild(
 				verbData->DisplayNameCountRepeat,
 				L"DisplayNameCountRepeat = 0x%1!02X!\r\n",
@@ -91,7 +92,7 @@ namespace smartview
 			addChild(
 				verbData->DisplayNameRepeat,
 				L"DisplayNameRepeat = \"%1!hs!\"\r\n",
-				verbData->DisplayNameRepeat.c_str());
+				verbData->DisplayNameRepeat->c_str());
 			addChild(verbData->Internal2, L"Internal2 = 0x%1!08X!\r\n", verbData->Internal2.getData());
 			addChild(verbData->Internal3, L"Internal3 = 0x%1!08X!\r\n", verbData->Internal3.getData());
 			addChild(verbData->fUseUSHeaders, L"fUseUSHeaders = 0x%1!02X!\r\n", verbData->fUseUSHeaders.getData());

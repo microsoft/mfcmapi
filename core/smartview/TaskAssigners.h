@@ -13,7 +13,7 @@ namespace smartview
 		blockT<DWORD> cbAssigner{};
 		blockT<ULONG> cbEntryID{};
 		blockBytes lpEntryID;
-		blockStringA szDisplayName;
+		std::shared_ptr<blockStringA> szDisplayName = emptySA();
 		std::shared_ptr<blockStringW> wzDisplayName = emptySW();
 		blockBytes JunkData;
 

@@ -19,7 +19,7 @@ namespace smartview
 			SubjectLength2.parse<WORD>(parser);
 			if (SubjectLength2 && SubjectLength2 + 1 == SubjectLength)
 			{
-				Subject.parse(parser, SubjectLength2);
+				Subject = blockStringA::parse(parser, SubjectLength2);
 			}
 		}
 
@@ -43,7 +43,7 @@ namespace smartview
 			LocationLength2.parse<WORD>(parser);
 			if (LocationLength2 && LocationLength2 + 1 == LocationLength)
 			{
-				Location.parse(parser, LocationLength2);
+				Location = blockStringA::parse(parser, LocationLength2);
 			}
 		}
 
@@ -221,7 +221,7 @@ namespace smartview
 						info->SubjectLength2.getData());
 
 					exception->addChild(
-						info->Subject, L"ExceptionInfo[%1!d!].Subject: \"%2!hs!\"\r\n", i, info->Subject.c_str());
+						info->Subject, L"ExceptionInfo[%1!d!].Subject: \"%2!hs!\"\r\n", i, info->Subject->c_str());
 				}
 
 				if (info->OverrideFlags & ARO_MEETINGTYPE)
@@ -267,7 +267,7 @@ namespace smartview
 						i,
 						info->LocationLength2.getData());
 					exception->addChild(
-						info->Location, L"ExceptionInfo[%1!d!].Location: \"%2!hs!\"\r\n", i, info->Location.c_str());
+						info->Location, L"ExceptionInfo[%1!d!].Location: \"%2!hs!\"\r\n", i, info->Location->c_str());
 				}
 
 				if (info->OverrideFlags & ARO_BUSYSTATUS)

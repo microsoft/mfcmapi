@@ -71,17 +71,17 @@ namespace smartview
 	{
 		blockT<BYTE> Version;
 		blockT<BYTE> Flag;
-		blockStringA DLLFileName;
+		std::shared_ptr<blockStringA> DLLFileName = emptySA();
 		bool bIsExchange{};
 		blockT<ULONG> WrappedFlags;
 		blockT<GUID> WrappedProviderUID;
 		blockT<ULONG> WrappedType;
-		blockStringA ServerShortname;
-		blockStringA MailboxDN;
+		std::shared_ptr<blockStringA> ServerShortname = emptySA();
+		std::shared_ptr<blockStringA> MailboxDN = emptySA();
 		blockT<ULONG> MagicVersion;
 		MDB_STORE_EID_V2 v2;
 		MDB_STORE_EID_V3 v3;
-		blockStringA v2DN;
+		std::shared_ptr<blockStringA> v2DN = emptySA();
 		std::shared_ptr<blockStringW> v2FQDN = emptySW();
 		std::shared_ptr<blockStringW> v3SmtpAddress = emptySW();
 		blockBytes v2Reserved; // 2 bytes
@@ -104,9 +104,9 @@ namespace smartview
 		} Unicode;
 		struct ANSI
 		{
-			blockStringA DisplayName;
-			blockStringA AddressType;
-			blockStringA EmailAddress;
+			std::shared_ptr<blockStringA> DisplayName = emptySA();
+			std::shared_ptr<blockStringA> AddressType = emptySA();
+			std::shared_ptr<blockStringA> EmailAddress = emptySA();
 		} ANSI;
 	};
 
@@ -114,7 +114,7 @@ namespace smartview
 	{
 		blockT<DWORD> Version;
 		blockT<DWORD> Type;
-		blockStringA X500DN;
+		std::shared_ptr<blockStringA> X500DN = emptySA();
 	};
 
 	class EntryIdStruct;

@@ -21,7 +21,7 @@ namespace smartview
 	{
 		blockT<BYTE> cchLength;
 		blockT<WORD> cchExtendedLength;
-		blockStringA szCharacters;
+		std::shared_ptr<blockStringA> szCharacters = emptySA();
 
 		void parse(std::shared_ptr<binaryParser>& parser);
 		_Check_return_ block& toBlock(_In_ const std::wstring& szFieldName);

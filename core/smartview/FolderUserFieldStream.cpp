@@ -13,7 +13,7 @@ namespace smartview
 
 		if (FieldNameLength && FieldNameLength < _MaxEntriesSmall)
 		{
-			FieldName.parse(parser, FieldNameLength);
+			FieldName = blockStringA::parse(parser, FieldNameLength);
 		}
 
 		Common.parse(parser);
@@ -96,7 +96,7 @@ namespace smartview
 					L"FieldNameLength = 0x%1!08X! = %1!d!\r\n",
 					fieldDefinition->FieldNameLength.getData());
 				fieldBlock->addChild(
-					fieldDefinition->FieldName, L"FieldName = %1!hs!\r\n", fieldDefinition->FieldName.c_str());
+					fieldDefinition->FieldName, L"FieldName = %1!hs!\r\n", fieldDefinition->FieldName->c_str());
 
 				auto szGUID = guid::GUIDToString(fieldDefinition->Common.PropSetGuid);
 				fieldBlock->addChild(fieldDefinition->Common.PropSetGuid, L"PropSetGuid = %1!ws!\r\n", szGUID.c_str());

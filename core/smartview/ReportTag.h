@@ -27,6 +27,6 @@ namespace smartview
 		blockT<ULONG> m_cbMessageSearchKey;
 		blockBytes m_lpMessageSearchKey;
 		blockT<ULONG> m_cchAnsiText;
-		blockStringA m_lpszAnsiText;
+		std::shared_ptr<blockStringA> m_lpszAnsiText = emptySA();
 	};
 } // namespace smartview

@@ -19,13 +19,13 @@ namespace smartview
 		blockT<WORD> OverrideFlags;
 		blockT<WORD> SubjectLength;
 		blockT<WORD> SubjectLength2;
-		blockStringA Subject;
+		std::shared_ptr<blockStringA> Subject = emptySA();
 		blockT<DWORD> MeetingType;
 		blockT<DWORD> ReminderDelta;
 		blockT<DWORD> ReminderSet;
 		blockT<WORD> LocationLength;
 		blockT<WORD> LocationLength2;
-		blockStringA Location;
+		std::shared_ptr<blockStringA> Location = emptySA();
 		blockT<DWORD> BusyStatus;
 		blockT<DWORD> Attachment;
 		blockT<DWORD> SubType;

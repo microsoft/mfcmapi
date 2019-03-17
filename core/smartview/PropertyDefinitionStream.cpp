@@ -16,7 +16,8 @@ namespace smartview
 			cchExtendedLength.parse<WORD>(parser);
 		}
 
-		szCharacters.parse(parser, cchExtendedLength ? cchExtendedLength.getData() : cchLength.getData());
+		szCharacters =
+			blockStringA::parse(parser, cchExtendedLength ? cchExtendedLength.getData() : cchLength.getData());
 	}
 
 	void PackedUnicodeString::parse(std::shared_ptr<binaryParser>& parser)
@@ -120,10 +121,10 @@ namespace smartview
 			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength.getData());
 		}
 
-		if (szCharacters.length())
+		if (szCharacters->length())
 		{
 			data.addHeader(L" Characters = ");
-			data.addChild(szCharacters, strings::stringTowstring(szCharacters));
+			data.addChild(szCharacters, szCharacters->toWstring());
 		}
 
 		data.terminateBlock();

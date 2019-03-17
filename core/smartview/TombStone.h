@@ -13,7 +13,7 @@ namespace smartview
 		blockT<DWORD> GlobalObjectIdSize;
 		GlobalObjectId GlobalObjectId;
 		blockT<WORD> UsernameSize;
-		blockStringA szUsername;
+		std::shared_ptr<blockStringA> szUsername = emptySA();
 
 		TombstoneRecord(std::shared_ptr<binaryParser> parser);
 	};

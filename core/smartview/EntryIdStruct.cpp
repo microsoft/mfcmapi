@@ -80,16 +80,16 @@ namespace smartview
 				}
 				else
 				{
-					m_OneOffRecipientObject.ANSI.DisplayName.parse(m_Parser);
-					m_OneOffRecipientObject.ANSI.AddressType.parse(m_Parser);
-					m_OneOffRecipientObject.ANSI.EmailAddress.parse(m_Parser);
+					m_OneOffRecipientObject.ANSI.DisplayName = blockStringA::parse(m_Parser);
+					m_OneOffRecipientObject.ANSI.AddressType = blockStringA::parse(m_Parser);
+					m_OneOffRecipientObject.ANSI.EmailAddress = blockStringA::parse(m_Parser);
 				}
 				break;
 				// Address Book Recipient
 			case eidtAddressBook:
 				m_AddressBookObject.Version.parse<DWORD>(m_Parser);
 				m_AddressBookObject.Type.parse<DWORD>(m_Parser);
-				m_AddressBookObject.X500DN.parse(m_Parser);
+				m_AddressBookObject.X500DN = blockStringA::parse(m_Parser);
 				break;
 				// Contact Address Book / Personal Distribution List (PDL)
 			case eidtContact:
@@ -133,15 +133,15 @@ namespace smartview
 			case eidtMessageDatabase:
 				m_MessageDatabaseObject.Version.parse<BYTE>(m_Parser);
 				m_MessageDatabaseObject.Flag.parse<BYTE>(m_Parser);
-				m_MessageDatabaseObject.DLLFileName.parse(m_Parser);
+				m_MessageDatabaseObject.DLLFileName = blockStringA::parse(m_Parser);
 				m_MessageDatabaseObject.bIsExchange = false;
 
 				// We only know how to parse emsmdb.dll's wrapped entry IDs
-				if (!m_MessageDatabaseObject.DLLFileName.empty() &&
+				if (!m_MessageDatabaseObject.DLLFileName->empty() &&
 					CSTR_EQUAL == CompareStringA(
 									  LOCALE_INVARIANT,
 									  NORM_IGNORECASE,
-									  m_MessageDatabaseObject.DLLFileName.c_str(),
+									  m_MessageDatabaseObject.DLLFileName->c_str(),
 									  -1,
 									  "emsmdb.dll", // STRING_OK
 									  -1))
@@ -153,7 +153,7 @@ namespace smartview
 					m_MessageDatabaseObject.WrappedFlags.parse<DWORD>(m_Parser);
 					m_MessageDatabaseObject.WrappedProviderUID.parse<GUID>(m_Parser);
 					m_MessageDatabaseObject.WrappedType.parse<DWORD>(m_Parser);
-					m_MessageDatabaseObject.ServerShortname.parse(m_Parser);
+					m_MessageDatabaseObject.ServerShortname = blockStringA::parse(m_Parser);
 
 					// Test if we have a magic value. Some PF EIDs also have a mailbox DN and we need to accomodate them
 					if (m_MessageDatabaseObject.WrappedType & OPENSTORE_PUBLIC)
@@ -174,7 +174,7 @@ namespace smartview
 						m_MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V2_MAGIC &&
 							m_MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V3_MAGIC)
 					{
-						m_MessageDatabaseObject.MailboxDN.parse(m_Parser);
+						m_MessageDatabaseObject.MailboxDN = blockStringA::parse(m_Parser);
 					}
 
 					// Check again for a magic value
@@ -194,7 +194,7 @@ namespace smartview
 							m_MessageDatabaseObject.v2.ulOffsetFQDN.parse<DWORD>(m_Parser);
 							if (m_MessageDatabaseObject.v2.ulOffsetDN)
 							{
-								m_MessageDatabaseObject.v2DN.parse(m_Parser);
+								m_MessageDatabaseObject.v2DN = blockStringA::parse(m_Parser);
 							}
 
 							if (m_MessageDatabaseObject.v2.ulOffsetFQDN)
@@ -371,15 +371,15 @@ namespace smartview
 				addChild(
 					m_OneOffRecipientObject.ANSI.DisplayName,
 					L"szDisplayName = %1!hs!\r\n",
-					m_OneOffRecipientObject.ANSI.DisplayName.c_str());
+					m_OneOffRecipientObject.ANSI.DisplayName->c_str());
 				addChild(
 					m_OneOffRecipientObject.ANSI.AddressType,
 					L"szAddressType = %1!hs!\r\n",
-					m_OneOffRecipientObject.ANSI.AddressType.c_str());
+					m_OneOffRecipientObject.ANSI.AddressType->c_str());
 				addChild(
 					m_OneOffRecipientObject.ANSI.EmailAddress,
 					L"szEmailAddress = %1!hs!",
-					m_OneOffRecipientObject.ANSI.EmailAddress.c_str());
+					m_OneOffRecipientObject.ANSI.EmailAddress->c_str());
 			}
 		}
 		else if (eidtAddressBook == m_ObjectType)
@@ -397,7 +397,7 @@ namespace smartview
 				L"Type = 0x%1!08X! = %2!ws!\r\n",
 				m_AddressBookObject.Type.getData(),
 				szType.c_str());
-			addChild(m_AddressBookObject.X500DN, L"X500DN = %1!hs!", m_AddressBookObject.X500DN.c_str());
+			addChild(m_AddressBookObject.X500DN, L"X500DN = %1!hs!", m_AddressBookObject.X500DN->c_str());
 		}
 		// Contact Address Book / Personal Distribution List (PDL)
 		else if (eidtContact == m_ObjectType)
@@ -476,7 +476,7 @@ namespace smartview
 			addChild(
 				m_MessageDatabaseObject.DLLFileName,
 				L"DLLFileName = %1!hs!",
-				m_MessageDatabaseObject.DLLFileName.c_str());
+				m_MessageDatabaseObject.DLLFileName->c_str());
 			if (m_MessageDatabaseObject.bIsExchange)
 			{
 				terminateBlock();
@@ -499,11 +499,11 @@ namespace smartview
 				addChild(
 					m_MessageDatabaseObject.ServerShortname,
 					L"ServerShortname = %1!hs!\r\n",
-					m_MessageDatabaseObject.ServerShortname.c_str());
+					m_MessageDatabaseObject.ServerShortname->c_str());
 				addChild(
 					m_MessageDatabaseObject.MailboxDN,
 					L"MailboxDN = %1!hs!",
-					m_MessageDatabaseObject.MailboxDN.c_str());
+					m_MessageDatabaseObject.MailboxDN->c_str());
 			}
 
 			switch (m_MessageDatabaseObject.MagicVersion)
@@ -535,7 +535,7 @@ namespace smartview
 					m_MessageDatabaseObject.v2.ulOffsetFQDN,
 					L"OffsetFQDN = 0x%1!08X!\r\n",
 					m_MessageDatabaseObject.v2.ulOffsetFQDN.getData());
-				addChild(m_MessageDatabaseObject.v2DN, L"DN = %1!hs!\r\n", m_MessageDatabaseObject.v2DN.c_str());
+				addChild(m_MessageDatabaseObject.v2DN, L"DN = %1!hs!\r\n", m_MessageDatabaseObject.v2DN->c_str());
 				addChild(m_MessageDatabaseObject.v2FQDN, L"FQDN = %1!ws!\r\n", m_MessageDatabaseObject.v2FQDN->c_str());
 
 				addHeader(L"Reserved Bytes = ");

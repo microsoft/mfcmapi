@@ -38,8 +38,8 @@ namespace smartview
 	struct CountedStringA
 	{
 		blockT<DWORD> cb;
-		blockStringA str;
-		size_t getSize() const { return cb.getSize() + str.getSize(); }
+		std::shared_ptr<blockStringA> str = emptySA();
+		size_t getSize() const { return cb.getSize() + str->getSize(); }
 		size_t getOffset() const { return cb.getOffset(); }
 	};
 
@@ -152,7 +152,7 @@ namespace smartview
 				offset = Value.ft.getOffset();
 				break;
 			case PT_STRING8:
-				prop.Value.lpszA = const_cast<LPSTR>(Value.lpszA.str.c_str());
+				prop.Value.lpszA = const_cast<LPSTR>(Value.lpszA.str->c_str());
 				size = Value.lpszA.getSize();
 				offset = Value.lpszA.getOffset();
 				break;

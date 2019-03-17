@@ -32,7 +32,7 @@ namespace smartview
 		m_lpMessageSearchKey.parse(m_Parser, m_cbMessageSearchKey, _MaxEID);
 
 		m_cchAnsiText.parse<DWORD>(m_Parser);
-		m_lpszAnsiText.parse(m_Parser, m_cchAnsiText);
+		m_lpszAnsiText = blockStringA::parse(m_Parser, m_cchAnsiText);
 	}
 
 	void ReportTag::addEID(const std::wstring& label, const blockT<ULONG>& cb, blockBytes& eid)
@@ -65,7 +65,7 @@ namespace smartview
 		{
 			terminateBlock();
 			addChild(m_cchAnsiText, L"cchAnsiText = 0x%1!08X!\r\n", m_cchAnsiText.getData());
-			addChild(m_lpszAnsiText, L"AnsiText = %1!hs!", m_lpszAnsiText.c_str());
+			addChild(m_lpszAnsiText, L"AnsiText = %1!hs!", m_lpszAnsiText->c_str());
 		}
 	}
 } // namespace smartview

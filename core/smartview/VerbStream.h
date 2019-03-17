@@ -10,13 +10,13 @@ namespace smartview
 	{
 		blockT<DWORD> VerbType;
 		blockT<BYTE> DisplayNameCount;
-		blockStringA DisplayName;
+		std::shared_ptr<blockStringA> DisplayName = emptySA();
 		blockT<BYTE> MsgClsNameCount;
-		blockStringA MsgClsName;
+		std::shared_ptr<blockStringA> MsgClsName = emptySA();
 		blockT<BYTE> Internal1StringCount;
-		blockStringA Internal1String;
+		std::shared_ptr<blockStringA> Internal1String = emptySA();
 		blockT<BYTE> DisplayNameCountRepeat;
-		blockStringA DisplayNameRepeat;
+		std::shared_ptr<blockStringA> DisplayNameRepeat = emptySA();
 		blockT<DWORD> Internal2;
 		blockT<BYTE> Internal3;
 		blockT<DWORD> fUseUSHeaders;

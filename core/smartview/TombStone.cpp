@@ -11,7 +11,7 @@ namespace smartview
 		GlobalObjectIdSize.parse<DWORD>(parser);
 		GlobalObjectId.parse(parser, GlobalObjectIdSize, false);
 		UsernameSize.parse<WORD>(parser);
-		szUsername.parse(parser, UsernameSize);
+		szUsername = blockStringA::parse(parser, UsernameSize);
 	}
 
 	void TombStone::Parse()
@@ -32,7 +32,7 @@ namespace smartview
 			(void) m_Parser->advance(sizeof DWORD);
 			const auto& len1 = blockT<DWORD>(m_Parser);
 			m_Parser->advance(len1);
-			const auto& len2= blockT<WORD>(m_Parser);
+			const auto& len2 = blockT<WORD>(m_Parser);
 			m_Parser->advance(len2);
 			m_ActualRecordsCount++;
 		}
@@ -83,7 +83,7 @@ namespace smartview
 			terminateBlock();
 
 			addChild(record->UsernameSize, L"UsernameSize= 0x%1!04X!\r\n", record->UsernameSize.getData());
-			addChild(record->szUsername, L"szUsername = %1!hs!", record->szUsername.c_str());
+			addChild(record->szUsername, L"szUsername = %1!hs!", record->szUsername->c_str());
 		}
 	}
 } // namespace smartview

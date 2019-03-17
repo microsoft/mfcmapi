@@ -101,7 +101,6 @@ wszFormulaLength = 0x0000 = 0
 Field 8
 FieldType = 0x00000000 = ftNull
 FieldNameLength = 0x00000000 = 0
-FieldName = 
 PropSetGuid = {00000000-0000-0000-0000-000000000000}
 fcapm = 0x00000000 = 0x0
 dwString = 0x00000000

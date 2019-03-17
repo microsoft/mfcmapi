@@ -144,8 +144,8 @@ namespace smartview
 		case PT_STRING8:
 			if (doRuleProcessing)
 			{
-				Value.lpszA.str.parse(parser);
-				Value.lpszA.cb.setData(static_cast<DWORD>(Value.lpszA.str.length()));
+				Value.lpszA.str = blockStringA::parse(parser);
+				Value.lpszA.cb.setData(static_cast<DWORD>(Value.lpszA.str->length()));
 			}
 			else
 			{
@@ -159,7 +159,7 @@ namespace smartview
 					Value.lpszA.cb.parse<WORD>(parser);
 				}
 
-				Value.lpszA.str.parse(parser, Value.lpszA.cb);
+				Value.lpszA.str = blockStringA::parse(parser, Value.lpszA.cb);
 			}
 
 			break;

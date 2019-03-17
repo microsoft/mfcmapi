@@ -66,7 +66,6 @@ ExceptionInfo[2].MeetingType: 0x00000001 = asfMeeting
 ExceptionInfo[2].ReminderSet: 0x00000000
 ExceptionInfo[2].LocationLength: 0x0001 = 1
 ExceptionInfo[2].LocationLength2: 0x0000 = 0
-ExceptionInfo[2].Location: ""
 ExceptionInfo[3].StartDateTime: 0x0CD5E484 = 03:00:00.000 PM 6/10/2010
 ExceptionInfo[3].EndDateTime: 0x0CD5E4C0 = 04:00:00.000 PM 6/10/2010
 ExceptionInfo[3].OriginalStartDate: 0x0CD5E484 = 03:00:00.000 PM 6/10/2010
