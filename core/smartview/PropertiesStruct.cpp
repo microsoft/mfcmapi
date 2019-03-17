@@ -9,7 +9,7 @@ namespace smartview
 	{
 		cb.parse<DWORD>(parser);
 		// Note that we're not placing a restriction on how large a multivalued binary property we can parse. May need to revisit this.
-		lpb.parse(parser, cb);
+		lpb = blockBytes::parse(parser, cb);
 	}
 
 	void PropertiesStruct::init(std::shared_ptr<binaryParser> parser, DWORD cValues, bool bRuleCondition)
@@ -179,7 +179,7 @@ namespace smartview
 			}
 
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
-			Value.bin.lpb.parse(parser, Value.bin.cb);
+			Value.bin.lpb = blockBytes::parse(parser, Value.bin.cb);
 			break;
 		case PT_UNICODE:
 			if (doRuleProcessing)

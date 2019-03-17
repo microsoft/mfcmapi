@@ -10,17 +10,17 @@ namespace smartview
 		blockBytes() = default;
 		blockBytes(const blockBytes&) = delete;
 		blockBytes& operator=(const blockBytes&) = delete;
+
 		void setData(const std::vector<BYTE>& data) { _data = data; }
+
+		// Mimic std::vector<BYTE>
 		std::vector<BYTE> getData() const { return _data; }
 		operator const std::vector<BYTE>&() const { return _data; }
 		size_t size() const noexcept { return _data.size(); }
 		bool empty() const noexcept { return _data.empty(); }
 		const BYTE* data() const noexcept { return _data.data(); }
-		BYTE operator[](const size_t _Pos) { return _data[_Pos]; }
 
-		blockBytes(std::shared_ptr<binaryParser>& parser) { parse(parser); }
-		void parse(std::shared_ptr<binaryParser>& parser) { parse(parser, parser->RemainingBytes()); }
-		void parse(std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
+		blockBytes(std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
 		{
 			// TODO: Should we track when the returned byte length is less than requested?
 			setOffset(parser->GetCurrentOffset());
@@ -37,6 +37,19 @@ namespace smartview
 			setSize(size() * sizeof(BYTE));
 		}
 
+		blockBytes(std::shared_ptr<binaryParser>& parser) : blockBytes(parser, parser->RemainingBytes()) {}
+
+		static std::shared_ptr<blockBytes> parse(std::shared_ptr<binaryParser>& parser)
+		{
+			return std::make_shared<blockBytes>(parser, parser->RemainingBytes());
+		}
+
+		static std::shared_ptr<blockBytes>
+		parse(std::shared_ptr<binaryParser> parser, size_t cbBytes, size_t cbMaxBytes = -1)
+		{
+			return std::make_shared<blockBytes>(parser, cbBytes, cbMaxBytes);
+		}
+
 		std::wstring toTextString(bool bMultiLine) const
 		{
 			return strings::StripCharacter(strings::BinToTextStringW(_data, bMultiLine), L'\0');
@@ -46,4 +59,6 @@ namespace smartview
 		std::wstring toStringInternal() const override { return strings::BinToHexString(_data, true); }
 		std::vector<BYTE> _data;
 	};
+
+	inline std::shared_ptr<blockBytes> emptyBB() { return std::make_shared<blockBytes>(); }
 } // namespace smartview

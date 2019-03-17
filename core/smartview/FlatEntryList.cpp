@@ -16,7 +16,7 @@ namespace smartview
 		const auto dwPAD = 3 - (dwSize + 3) % 4;
 		if (dwPAD > 0)
 		{
-			padding.parse(parser, dwPAD);
+			padding = blockBytes::parse(parser, dwPAD);
 		}
 	}
 
@@ -57,11 +57,11 @@ namespace smartview
 				addChild(entry->lpEntryID.getBlock());
 			}
 
-			if (!entry->padding.empty())
+			if (!entry->padding->empty())
 			{
 				terminateBlock();
 				addHeader(L"Entry[%1!d!] Padding:\r\n", iFlatEntryList);
-				addChild(entry->padding, strings::BinToHexString(entry->padding, true));
+				if (entry->padding) addChild(entry->padding, strings::BinToHexString(*entry->padding, true));
 			}
 
 			iFlatEntryList++;

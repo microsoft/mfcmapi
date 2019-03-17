@@ -20,7 +20,7 @@ namespace smartview
 
 	void NickNameCache::Parse()
 	{
-		m_Metadata1.parse(m_Parser, 4);
+		m_Metadata1 = blockBytes::parse(m_Parser, 4);
 		m_ulMajorVersion.parse<DWORD>(m_Parser);
 		m_ulMinorVersion.parse<DWORD>(m_Parser);
 		m_cRowCount.parse<DWORD>(m_Parser);
@@ -38,8 +38,8 @@ namespace smartview
 		}
 
 		m_cbEI.parse<DWORD>(m_Parser);
-		m_lpbEI.parse(m_Parser, m_cbEI, _MaxBytes);
-		m_Metadata2.parse(m_Parser, 8);
+		m_lpbEI = blockBytes::parse(m_Parser, m_cbEI, _MaxBytes);
+		m_Metadata2 = blockBytes::parse(m_Parser, 8);
 	}
 
 	void NickNameCache::ParseBlocks()

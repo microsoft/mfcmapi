@@ -12,7 +12,7 @@ namespace smartview
 		wReserved.parse<WORD>(parser);
 		wTZRuleFlags.parse<WORD>(parser);
 		wYear.parse<WORD>(parser);
-		X.parse(parser, 14);
+		X = blockBytes::parse(parser, 14);
 		lBias.parse<DWORD>(parser);
 		lStandardBias.parse<DWORD>(parser);
 		lDaylightBias.parse<DWORD>(parser);

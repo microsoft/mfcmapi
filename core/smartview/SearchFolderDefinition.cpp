@@ -38,7 +38,7 @@ namespace smartview
 		}
 
 		m_SkipLen1.parse<DWORD>(m_Parser);
-		m_SkipBytes1.parse(m_Parser, m_SkipLen1, _MaxBytes);
+		m_SkipBytes1 = blockBytes::parse(m_Parser, m_SkipLen1, _MaxBytes);
 
 		m_DeepSearch.parse<DWORD>(m_Parser);
 
@@ -79,7 +79,7 @@ namespace smartview
 		}
 
 		m_SkipLen2.parse<DWORD>(m_Parser);
-		m_SkipBytes2.parse(m_Parser, m_SkipLen2, _MaxBytes);
+		m_SkipBytes2 = blockBytes::parse(m_Parser, m_SkipLen2, _MaxBytes);
 
 		if (SFST_MRES & m_Flags)
 		{
@@ -94,14 +94,14 @@ namespace smartview
 			// is part of this bucket. We leave DWORD space for the final skip block, which should be empty
 			if (cbRemainingBytes > sizeof DWORD)
 			{
-				m_AdvancedSearchBytes.parse(m_Parser, cbRemainingBytes - sizeof DWORD);
+				m_AdvancedSearchBytes = blockBytes::parse(m_Parser, cbRemainingBytes - sizeof DWORD);
 			}
 		}
 
 		m_SkipLen3.parse<DWORD>(m_Parser);
 		if (m_SkipLen3)
 		{
-			m_SkipBytes3.parse(m_Parser, m_SkipLen3, _MaxBytes);
+			m_SkipBytes3 = blockBytes::parse(m_Parser, m_SkipLen3, _MaxBytes);
 		}
 	}
 
@@ -212,9 +212,9 @@ namespace smartview
 		if (SFST_FILTERSTREAM & m_Flags)
 		{
 			terminateBlock();
-			addChild(m_AdvancedSearchBytes, L"AdvancedSearchLen = 0x%1!08X!", m_AdvancedSearchBytes.size());
+			addHeader(L"AdvancedSearchLen = 0x%1!08X!", m_AdvancedSearchBytes->size());
 
-			if (!m_AdvancedSearchBytes.empty())
+			if (!m_AdvancedSearchBytes->empty())
 			{
 				terminateBlock();
 				addHeader(L"AdvancedSearchBytes = ");

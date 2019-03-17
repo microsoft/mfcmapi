@@ -45,7 +45,7 @@ namespace smartview
 				bBadData = true;
 			break;
 		default:
-			lpUnknownData.parse(parser, Cb, _MaxBytes);
+			lpUnknownData = blockBytes::parse(parser, Cb, _MaxBytes);
 			break;
 		}
 	}
@@ -129,7 +129,7 @@ namespace smartview
 					break;
 				}
 
-				if (extendedFlag->lpUnknownData.size())
+				if (extendedFlag->lpUnknownData->size())
 				{
 					terminateBlock();
 					addHeader(L"\tUnknown Data = ");

@@ -10,7 +10,7 @@ namespace smartview
 		blockT<BYTE> XidSize;
 		blockT<GUID> NamespaceGuid;
 		DWORD cbLocalId{};
-		blockBytes LocalID;
+		std::shared_ptr<blockBytes> LocalID = emptyBB();
 
 		SizedXID(std::shared_ptr<binaryParser>& parser);
 	};

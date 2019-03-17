@@ -18,7 +18,7 @@ namespace smartview
 
 	void GlobalObjectId::Parse()
 	{
-		m_Id.parse(m_Parser, 16);
+		m_Id = blockBytes::parse(m_Parser, 16);
 
 		const auto& b1 = blockT<BYTE>(m_Parser);
 		const auto& b2 = blockT<BYTE>(m_Parser);
@@ -34,7 +34,7 @@ namespace smartview
 		m_CreationTime.parse<FILETIME>(m_Parser);
 		m_X.parse<LARGE_INTEGER>(m_Parser);
 		m_dwSize.parse<DWORD>(m_Parser);
-		m_lpData.parse(m_Parser, m_dwSize, _MaxBytes);
+		m_lpData = blockBytes::parse(m_Parser, m_dwSize, _MaxBytes);
 	}
 
 	void GlobalObjectId::ParseBlocks()
@@ -42,7 +42,7 @@ namespace smartview
 		setRoot(L"Global Object ID:\r\n");
 		addHeader(L"Byte Array ID = ");
 
-		auto id = m_Id.getData();
+		auto id = m_Id->getData();
 		addChild(m_Id);
 
 		if (equal(id.begin(), id.end(), s_rgbSPlus))
@@ -77,7 +77,7 @@ namespace smartview
 		addChild(m_X, L"X: 0x%1!08X!:0x%2!08X!\r\n", m_X.getData().HighPart, m_X.getData().LowPart);
 		addChild(m_dwSize, L"Size: 0x%1!02X! = %1!d!\r\n", m_dwSize.getData());
 
-		if (m_lpData.size())
+		if (m_lpData->size())
 		{
 			addHeader(L"Data = ");
 			addChild(m_lpData);

@@ -12,7 +12,7 @@ namespace smartview
 		if (wElementID != PersistElement::ELEMENT_SENTINEL)
 		{
 			// Since this is a word, the size will never be too large
-			lpbElementData.parse(parser, wElementDataSize);
+			lpbElementData = blockBytes::parse(parser, wElementDataSize);
 		}
 	}
 
@@ -86,7 +86,7 @@ namespace smartview
 		// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
 		if (parser->GetCurrentOffset() < cbRecordSize)
 		{
-			JunkData.parse(parser, cbRecordSize - parser->GetCurrentOffset());
+			JunkData = blockBytes::parse(parser, cbRecordSize - parser->GetCurrentOffset());
 		}
 	}
 
@@ -139,10 +139,10 @@ namespace smartview
 					}
 				}
 
-				if (!persistData->JunkData.empty())
+				if (!persistData->JunkData->empty())
 				{
 					element->terminateBlock();
-					element->addHeader(L"Unparsed data size = 0x%1!08X!\r\n", persistData->JunkData.size());
+					element->addHeader(L"Unparsed data size = 0x%1!08X!\r\n", persistData->JunkData->size());
 					element->addChild(persistData->JunkData);
 				}
 

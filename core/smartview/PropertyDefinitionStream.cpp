@@ -41,7 +41,7 @@ namespace smartview
 		}
 		else
 		{
-			lpbContent.parse(parser, dwSize, _MaxBytes);
+			lpbContent = blockBytes::parse(parser, dwSize, _MaxBytes);
 		}
 	}
 
@@ -240,7 +240,7 @@ namespace smartview
 						skipBlock->terminateBlock();
 						skipBlock->addChild(sb->lpbContentText.toBlock(L"\tFieldName"));
 					}
-					else if (!sb->lpbContent.empty())
+					else if (!sb->lpbContent->empty())
 					{
 						skipBlock->terminateBlock();
 						skipBlock->addHeader(L"\t\tContent = ");

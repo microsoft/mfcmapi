@@ -10,6 +10,6 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockBytes m_SIDbin;
+		std::shared_ptr<blockBytes> m_SIDbin = emptyBB();
 	};
 } // namespace smartview

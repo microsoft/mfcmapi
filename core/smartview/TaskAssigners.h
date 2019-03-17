@@ -12,10 +12,10 @@ namespace smartview
 	{
 		blockT<DWORD> cbAssigner{};
 		blockT<ULONG> cbEntryID{};
-		blockBytes lpEntryID;
+		std::shared_ptr<blockBytes> lpEntryID = emptyBB();
 		std::shared_ptr<blockStringA> szDisplayName = emptySA();
 		std::shared_ptr<blockStringW> wzDisplayName = emptySW();
-		blockBytes JunkData;
+		std::shared_ptr<blockBytes> JunkData = emptyBB();
 
 		TaskAssigner(std::shared_ptr<binaryParser>& parser);
 	};

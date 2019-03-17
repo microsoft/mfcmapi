@@ -10,7 +10,7 @@ namespace smartview
 		static const WORD ELEMENT_SENTINEL = 0;
 		blockT<WORD> wElementID;
 		blockT<WORD> wElementDataSize;
-		blockBytes lpbElementData;
+		std::shared_ptr<blockBytes> lpbElementData = emptyBB();
 
 		PersistElement(std::shared_ptr<binaryParser> parser);
 	};
@@ -22,7 +22,7 @@ namespace smartview
 		blockT<WORD> wDataElementsSize;
 		std::vector<std::shared_ptr<PersistElement>> ppeDataElement;
 
-		blockBytes JunkData;
+		std::shared_ptr<blockBytes> JunkData = emptyBB();
 
 		PersistData(std::shared_ptr<binaryParser> parser);
 	};

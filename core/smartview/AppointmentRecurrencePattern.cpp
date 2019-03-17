@@ -76,12 +76,13 @@ namespace smartview
 			ChangeHighlight.ChangeHighlightValue.parse<DWORD>(parser);
 			if (ChangeHighlight.ChangeHighlightSize > sizeof(DWORD))
 			{
-				ChangeHighlight.Reserved.parse(parser, ChangeHighlight.ChangeHighlightSize - sizeof(DWORD), _MaxBytes);
+				ChangeHighlight.Reserved =
+					blockBytes::parse(parser, ChangeHighlight.ChangeHighlightSize - sizeof(DWORD), _MaxBytes);
 			}
 		}
 
 		ReservedBlockEE1Size.parse<DWORD>(parser);
-		ReservedBlockEE1.parse(parser, ReservedBlockEE1Size, _MaxBytes);
+		ReservedBlockEE1 = blockBytes::parse(parser, ReservedBlockEE1Size, _MaxBytes);
 
 		if (flags & ARO_SUBJECT || flags & ARO_LOCATION)
 		{
@@ -111,7 +112,7 @@ namespace smartview
 		if (flags & ARO_SUBJECT || flags & ARO_LOCATION)
 		{
 			ReservedBlockEE2Size.parse<DWORD>(parser);
-			ReservedBlockEE2.parse(parser, ReservedBlockEE2Size, _MaxBytes);
+			ReservedBlockEE2 = blockBytes::parse(parser, ReservedBlockEE2Size, _MaxBytes);
 		}
 	}
 
@@ -136,7 +137,7 @@ namespace smartview
 		}
 
 		m_ReservedBlock1Size.parse<DWORD>(m_Parser);
-		m_ReservedBlock1.parse(m_Parser, m_ReservedBlock1Size, _MaxBytes);
+		m_ReservedBlock1 = blockBytes::parse(m_Parser, m_ReservedBlock1Size, _MaxBytes);
 
 		if (m_ExceptionCount && m_ExceptionCount == m_RecurrencePattern.m_ModifiedInstanceCount &&
 			m_ExceptionCount < _MaxEntriesSmall && !m_ExceptionInfo.empty())
@@ -149,7 +150,7 @@ namespace smartview
 		}
 
 		m_ReservedBlock2Size.parse<DWORD>(m_Parser);
-		m_ReservedBlock2.parse(m_Parser, m_ReservedBlock2Size, _MaxBytes);
+		m_ReservedBlock2 = blockBytes::parse(m_Parser, m_ReservedBlock2Size, _MaxBytes);
 	}
 
 	void AppointmentRecurrencePattern::ParseBlocks()
@@ -359,7 +360,7 @@ namespace smartview
 					L"ExtendedException[%1!d!].ReservedBlockEE1Size: 0x%2!08X!\r\n",
 					i,
 					ee->ReservedBlockEE1Size.getData());
-				if (!ee->ReservedBlockEE1.empty())
+				if (!ee->ReservedBlockEE1->empty())
 				{
 					exception->addChild(ee->ReservedBlockEE1);
 				}

@@ -20,7 +20,7 @@ namespace smartview
 		blockT<WORD> wReserved;
 		blockT<WORD> wTZRuleFlags;
 		blockT<WORD> wYear;
-		blockBytes X; // 14 bytes
+		std::shared_ptr<blockBytes> X = emptyBB(); // 14 bytes
 		blockT<DWORD> lBias; // offset from GMT
 		blockT<DWORD> lStandardBias; // offset from bias during standard time
 		blockT<DWORD> lDaylightBias; // offset from bias during daylight time

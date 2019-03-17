@@ -7,7 +7,7 @@ namespace smartview
 {
 	void ReportTag::Parse()
 	{
-		m_Cookie.parse(m_Parser, 9);
+		m_Cookie = blockBytes::parse(m_Parser, 9);
 
 		// Version is big endian, so we have to read individual bytes
 		const auto& hiWord = blockT<WORD>(m_Parser);
@@ -17,25 +17,25 @@ namespace smartview
 		m_Version.setData(hiWord << 16 | loWord);
 
 		m_cbStoreEntryID.parse<DWORD>(m_Parser);
-		m_lpStoreEntryID.parse(m_Parser, m_cbStoreEntryID, _MaxEID);
+		m_lpStoreEntryID = blockBytes::parse(m_Parser, m_cbStoreEntryID, _MaxEID);
 
 		m_cbFolderEntryID.parse<DWORD>(m_Parser);
-		m_lpFolderEntryID.parse(m_Parser, m_cbFolderEntryID, _MaxEID);
+		m_lpFolderEntryID = blockBytes::parse(m_Parser, m_cbFolderEntryID, _MaxEID);
 
 		m_cbMessageEntryID.parse<DWORD>(m_Parser);
-		m_lpMessageEntryID.parse(m_Parser, m_cbMessageEntryID, _MaxEID);
+		m_lpMessageEntryID = blockBytes::parse(m_Parser, m_cbMessageEntryID, _MaxEID);
 
 		m_cbSearchFolderEntryID.parse<DWORD>(m_Parser);
-		m_lpSearchFolderEntryID.parse(m_Parser, m_cbSearchFolderEntryID, _MaxEID);
+		m_lpSearchFolderEntryID = blockBytes::parse(m_Parser, m_cbSearchFolderEntryID, _MaxEID);
 
 		m_cbMessageSearchKey.parse<DWORD>(m_Parser);
-		m_lpMessageSearchKey.parse(m_Parser, m_cbMessageSearchKey, _MaxEID);
+		m_lpMessageSearchKey = blockBytes::parse(m_Parser, m_cbMessageSearchKey, _MaxEID);
 
 		m_cchAnsiText.parse<DWORD>(m_Parser);
 		m_lpszAnsiText = blockStringA::parse(m_Parser, m_cchAnsiText);
 	}
 
-	void ReportTag::addEID(const std::wstring& label, const blockT<ULONG>& cb, blockBytes& eid)
+	void ReportTag::addEID(const std::wstring& label, const blockT<ULONG>& cb, std::shared_ptr<blockBytes>& eid)
 	{
 		if (cb)
 		{

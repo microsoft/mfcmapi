@@ -11,7 +11,7 @@ namespace smartview
 		cbLocalId = XidSize - sizeof(GUID);
 		if (parser->RemainingBytes() >= cbLocalId)
 		{
-			LocalID.parse(parser, cbLocalId);
+			LocalID = blockBytes::parse(parser, cbLocalId);
 		}
 	}
 

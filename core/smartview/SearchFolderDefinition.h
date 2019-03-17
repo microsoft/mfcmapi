@@ -31,7 +31,7 @@ namespace smartview
 		blockT<WORD> m_TextSearchLengthExtended;
 		std::shared_ptr<blockStringW> m_TextSearch = emptySW();
 		blockT<DWORD> m_SkipLen1;
-		blockBytes m_SkipBytes1;
+		std::shared_ptr<blockBytes> m_SkipBytes1 = emptyBB();
 		blockT<DWORD> m_DeepSearch;
 		blockT<BYTE> m_FolderList1Length;
 		blockT<WORD> m_FolderList1LengthExtended;
@@ -41,10 +41,10 @@ namespace smartview
 		blockT<DWORD> m_AddressCount; // SFST_BINARY
 		std::vector<std::shared_ptr<AddressListEntryStruct>> m_Addresses; // SFST_BINARY
 		blockT<DWORD> m_SkipLen2;
-		blockBytes m_SkipBytes2;
+		std::shared_ptr<blockBytes> m_SkipBytes2 = emptyBB();
 		std::shared_ptr<RestrictionStruct> m_Restriction; // SFST_MRES
-		blockBytes m_AdvancedSearchBytes; // SFST_FILTERSTREAM
+		std::shared_ptr<blockBytes> m_AdvancedSearchBytes = emptyBB(); // SFST_FILTERSTREAM
 		blockT<DWORD> m_SkipLen3;
-		blockBytes m_SkipBytes3;
+		std::shared_ptr<blockBytes> m_SkipBytes3 = emptyBB();
 	};
 } // namespace smartview

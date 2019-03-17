@@ -12,20 +12,20 @@ namespace smartview
 	private:
 		void Parse() override;
 		void ParseBlocks() override;
-		void addEID(const std::wstring& label, const blockT<ULONG>& cb, blockBytes& eid);
+		void addEID(const std::wstring& label, const blockT<ULONG>& cb, std::shared_ptr<blockBytes>& eid);
 
-		blockBytes m_Cookie; // 8 characters + NULL terminator
+		std::shared_ptr<blockBytes> m_Cookie = emptyBB(); // 8 characters + NULL terminator
 		blockT<DWORD> m_Version;
 		blockT<ULONG> m_cbStoreEntryID;
-		blockBytes m_lpStoreEntryID;
+		std::shared_ptr<blockBytes> m_lpStoreEntryID = emptyBB();
 		blockT<ULONG> m_cbFolderEntryID;
-		blockBytes m_lpFolderEntryID;
+		std::shared_ptr<blockBytes> m_lpFolderEntryID = emptyBB();
 		blockT<ULONG> m_cbMessageEntryID;
-		blockBytes m_lpMessageEntryID;
+		std::shared_ptr<blockBytes> m_lpMessageEntryID = emptyBB();
 		blockT<ULONG> m_cbSearchFolderEntryID;
-		blockBytes m_lpSearchFolderEntryID;
+		std::shared_ptr<blockBytes> m_lpSearchFolderEntryID = emptyBB();
 		blockT<ULONG> m_cbMessageSearchKey;
-		blockBytes m_lpMessageSearchKey;
+		std::shared_ptr<blockBytes> m_lpMessageSearchKey = emptyBB();
 		blockT<ULONG> m_cchAnsiText;
 		std::shared_ptr<blockStringA> m_lpszAnsiText = emptySA();
 	};

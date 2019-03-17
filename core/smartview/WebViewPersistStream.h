@@ -10,9 +10,9 @@ namespace smartview
 		blockT<DWORD> dwVersion;
 		blockT<DWORD> dwType;
 		blockT<DWORD> dwFlags;
-		blockBytes dwUnused; // 7 DWORDs
+		std::shared_ptr<blockBytes> dwUnused = emptyBB(); // 7 DWORDs
 		blockT<DWORD> cbData;
-		blockBytes lpData;
+		std::shared_ptr<blockBytes> lpData = emptyBB();
 
 		WebViewPersist(std::shared_ptr<binaryParser>& parser);
 	};

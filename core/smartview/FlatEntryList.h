@@ -11,7 +11,7 @@ namespace smartview
 		blockT<DWORD> dwSize;
 		EntryIdStruct lpEntryID;
 
-		blockBytes padding;
+		std::shared_ptr<blockBytes> padding = emptyBB();
 
 		FlatEntryID(std::shared_ptr<binaryParser> parser);
 	};

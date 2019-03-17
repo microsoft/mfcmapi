@@ -21,9 +21,9 @@ namespace smartview
 	struct SBinaryBlock
 	{
 		blockT<ULONG> cb;
-		blockBytes lpb;
-		size_t getSize() const { return cb.getSize() + lpb.getSize(); }
-		size_t getOffset() const { return cb.getOffset() ? cb.getOffset() : lpb.getOffset(); }
+		std::shared_ptr<blockBytes> lpb = emptyBB();
+		size_t getSize() const { return cb.getSize() + lpb->getSize(); }
+		size_t getOffset() const { return cb.getOffset() ? cb.getOffset() : lpb->getOffset(); }
 
 		SBinaryBlock(std::shared_ptr<binaryParser> parser);
 		SBinaryBlock(){};
@@ -158,7 +158,7 @@ namespace smartview
 				break;
 			case PT_BINARY:
 				prop.Value.bin.cb = Value.bin.cb;
-				prop.Value.bin.lpb = const_cast<LPBYTE>(Value.bin.lpb.data());
+				prop.Value.bin.lpb = const_cast<LPBYTE>(Value.bin.lpb->data());
 				size = Value.bin.getSize();
 				offset = Value.bin.getOffset();
 				break;

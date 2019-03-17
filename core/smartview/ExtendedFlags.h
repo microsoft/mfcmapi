@@ -16,7 +16,7 @@ namespace smartview
 			blockT<DWORD> SearchFolderTag;
 			blockT<DWORD> ToDoFolderVersion;
 		} Data;
-		blockBytes lpUnknownData;
+		std::shared_ptr<blockBytes> lpUnknownData = emptyBB();
 		bool bBadData{};
 
 		ExtendedFlag(std::shared_ptr<binaryParser> parser);

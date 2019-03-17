@@ -13,7 +13,7 @@ namespace smartview
 		if (m_Parser->RemainingBytes() < 4) return;
 		m_abFlags0.parse<byte>(m_Parser);
 		m_abFlags1.parse<byte>(m_Parser);
-		m_abFlags23.parse(m_Parser, 2);
+		m_abFlags23 = blockBytes::parse(m_Parser, 2);
 		m_ProviderUID.parse<GUID>(m_Parser);
 
 		// Ephemeral entry ID:
@@ -202,7 +202,7 @@ namespace smartview
 								m_MessageDatabaseObject.v2FQDN = blockStringW::parse(m_Parser);
 							}
 
-							m_MessageDatabaseObject.v2Reserved.parse(m_Parser, 2);
+							m_MessageDatabaseObject.v2Reserved = blockBytes::parse(m_Parser, 2);
 						}
 						break;
 					case MDB_STORE_EID_V3_MAGIC:
@@ -217,7 +217,7 @@ namespace smartview
 								m_MessageDatabaseObject.v3SmtpAddress = blockStringW::parse(m_Parser);
 							}
 
-							m_MessageDatabaseObject.v2Reserved.parse(m_Parser, 2);
+							m_MessageDatabaseObject.v2Reserved = blockBytes::parse(m_Parser, 2);
 						}
 						break;
 					}
@@ -227,19 +227,19 @@ namespace smartview
 			case eidtFolder:
 				m_FolderOrMessage.Type.parse<WORD>(m_Parser);
 				m_FolderOrMessage.FolderObject.DatabaseGUID.parse<GUID>(m_Parser);
-				m_FolderOrMessage.FolderObject.GlobalCounter.parse(m_Parser, 6);
-				m_FolderOrMessage.FolderObject.Pad.parse(m_Parser, 2);
+				m_FolderOrMessage.FolderObject.GlobalCounter = blockBytes::parse(m_Parser, 6);
+				m_FolderOrMessage.FolderObject.Pad = blockBytes::parse(m_Parser, 2);
 				break;
 				// Exchange message store message
 			case eidtMessage:
 				m_FolderOrMessage.Type.parse<WORD>(m_Parser);
 				m_FolderOrMessage.MessageObject.FolderDatabaseGUID.parse<GUID>(m_Parser);
-				m_FolderOrMessage.MessageObject.FolderGlobalCounter.parse(m_Parser, 6);
-				m_FolderOrMessage.MessageObject.Pad1.parse(m_Parser, 2);
+				m_FolderOrMessage.MessageObject.FolderGlobalCounter = blockBytes::parse(m_Parser, 6);
+				m_FolderOrMessage.MessageObject.Pad1 = blockBytes::parse(m_Parser, 2);
 
 				m_FolderOrMessage.MessageObject.MessageDatabaseGUID.parse<GUID>(m_Parser);
-				m_FolderOrMessage.MessageObject.MessageGlobalCounter.parse(m_Parser, 6);
-				m_FolderOrMessage.MessageObject.Pad2.parse(m_Parser, 2);
+				m_FolderOrMessage.MessageObject.MessageGlobalCounter = blockBytes::parse(m_Parser, 6);
+				m_FolderOrMessage.MessageObject.Pad2 = blockBytes::parse(m_Parser, 2);
 				break;
 			}
 		}
@@ -284,15 +284,15 @@ namespace smartview
 			break;
 		}
 
-		if (m_abFlags23.empty()) return;
-		if (0 == (m_abFlags0 | m_abFlags1 | m_abFlags23[0] | m_abFlags23[1]))
+		if (m_abFlags23->empty()) return;
+		if (0 == (m_abFlags0 | m_abFlags1 | m_abFlags23->data()[0] | m_abFlags23->data()[1]))
 		{
 			auto tempBlock = std::make_shared<block>();
 			tempBlock->setOffset(m_abFlags0.getOffset());
 			tempBlock->setSize(4);
 			addChild(tempBlock, L"abFlags = 0x00000000\r\n");
 		}
-		else if (0 == (m_abFlags1 | m_abFlags23[0] | m_abFlags23[1]))
+		else if (0 == (m_abFlags1 | m_abFlags23->data()[0] | m_abFlags23->data()[1]))
 		{
 			addChild(
 				m_abFlags0,
@@ -316,7 +316,7 @@ namespace smartview
 				L"abFlags[1] = 0x%1!02X!= %2!ws!\r\n",
 				m_abFlags1.getData(),
 				flags::InterpretFlags(flagEntryId1, m_abFlags1).c_str());
-			addChild(m_abFlags23, L"abFlags[2..3] = 0x%1!02X!%2!02X!\r\n", m_abFlags23[0], m_abFlags23[1]);
+			addChild(m_abFlags23, L"abFlags[2..3] = 0x%1!02X!%2!02X!\r\n", m_abFlags23->data()[0], m_abFlags23->data()[1]);
 		}
 
 		addChild(m_ProviderUID, L"Provider GUID = %1!ws!", guid::GUIDToStringAndName(m_ProviderUID).c_str());

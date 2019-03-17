@@ -13,6 +13,6 @@ namespace smartview
 
 		blockT<GUID> m_NamespaceGuid;
 		size_t m_cbLocalId{};
-		blockBytes m_LocalID;
+		std::shared_ptr<blockBytes> m_LocalID = emptyBB();
 	};
 } // namespace smartview

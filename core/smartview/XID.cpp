@@ -10,13 +10,13 @@ namespace smartview
 	{
 		m_NamespaceGuid.parse<GUID>(m_Parser);
 		m_cbLocalId = m_Parser->RemainingBytes();
-		m_LocalID.parse(m_Parser, m_cbLocalId, m_cbLocalId);
+		m_LocalID = blockBytes::parse(m_Parser, m_cbLocalId, m_cbLocalId);
 	}
 
 	void XID::ParseBlocks()
 	{
 		setRoot(L"XID:\r\n");
 		addChild(m_NamespaceGuid, L"NamespaceGuid = %1!ws!\r\n", guid::GUIDToString(m_NamespaceGuid.getData()).c_str());
-		addChild(m_LocalID, L"LocalId = %1!ws!", strings::BinToHexString(m_LocalID, true).c_str());
+		if (m_LocalID) addChild(m_LocalID, L"LocalId = %1!ws!", strings::BinToHexString(*m_LocalID, true).c_str());
 	}
 } // namespace smartview

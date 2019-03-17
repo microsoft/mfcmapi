@@ -30,7 +30,7 @@ namespace smartview
 	struct SkipBlock
 	{
 		blockT<DWORD> dwSize;
-		blockBytes lpbContent;
+		std::shared_ptr<blockBytes> lpbContent = emptyBB();
 		PackedUnicodeString lpbContentText;
 
 		SkipBlock(std::shared_ptr<binaryParser>& parser, DWORD iSkip);

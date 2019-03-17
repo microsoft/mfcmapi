@@ -17,6 +17,6 @@ namespace smartview
 
 		LPMAPIPROP m_lpMAPIProp{};
 		bool m_bFB{};
-		blockBytes m_SDbin;
+		std::shared_ptr<blockBytes> m_SDbin = emptyBB();
 	};
 } // namespace smartview

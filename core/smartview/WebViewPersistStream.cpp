@@ -11,9 +11,9 @@ namespace smartview
 		dwVersion.parse<DWORD>(parser);
 		dwType.parse<DWORD>(parser);
 		dwFlags.parse<DWORD>(parser);
-		dwUnused.parse(parser, 7 * sizeof(DWORD));
+		dwUnused = blockBytes::parse(parser, 7 * sizeof(DWORD));
 		cbData.parse<DWORD>(parser);
-		lpData.parse(parser, cbData, _MaxBytes);
+		lpData = blockBytes::parse(parser, cbData, _MaxBytes);
 	}
 
 	void WebViewPersistStream::Parse()
@@ -85,7 +85,7 @@ namespace smartview
 			case WEBVIEWURL:
 			{
 				addHeader(L"wzURL = ");
-				addChild(view->lpData, view->lpData.toTextString(false));
+				addChild(view->lpData, view->lpData->toTextString(false));
 				break;
 			}
 			default:

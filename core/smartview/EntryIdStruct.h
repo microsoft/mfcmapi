@@ -46,18 +46,18 @@ namespace smartview
 	struct FolderObject
 	{
 		blockT<GUID> DatabaseGUID;
-		blockBytes GlobalCounter; // 6 bytes
-		blockBytes Pad; // 2 bytes
+		std::shared_ptr<blockBytes> GlobalCounter = emptyBB(); // 6 bytes
+		std::shared_ptr<blockBytes> Pad = emptyBB(); // 2 bytes
 	};
 
 	struct MessageObject
 	{
 		blockT<GUID> FolderDatabaseGUID;
-		blockBytes FolderGlobalCounter; // 6 bytes
-		blockBytes Pad1; // 2 bytes
+		std::shared_ptr<blockBytes> FolderGlobalCounter = emptyBB(); // 6 bytes
+		std::shared_ptr<blockBytes> Pad1 = emptyBB(); // 2 bytes
 		blockT<GUID> MessageDatabaseGUID;
-		blockBytes MessageGlobalCounter; // 6 bytes
-		blockBytes Pad2; // 2 bytes
+		std::shared_ptr<blockBytes> MessageGlobalCounter = emptyBB(); // 6 bytes
+		std::shared_ptr<blockBytes> Pad2 = emptyBB(); // 2 bytes
 	};
 
 	struct FolderOrMessage
@@ -84,7 +84,7 @@ namespace smartview
 		std::shared_ptr<blockStringA> v2DN = emptySA();
 		std::shared_ptr<blockStringW> v2FQDN = emptySW();
 		std::shared_ptr<blockStringW> v3SmtpAddress = emptySW();
-		blockBytes v2Reserved; // 2 bytes
+		std::shared_ptr<blockBytes> v2Reserved = emptyBB(); // 2 bytes
 	};
 
 	struct EphemeralObject
@@ -154,7 +154,7 @@ namespace smartview
 
 		blockT<byte> m_abFlags0;
 		blockT<byte> m_abFlags1;
-		blockBytes m_abFlags23; // 2 bytes
+		std::shared_ptr<blockBytes> m_abFlags23 = emptyBB(); // 2 bytes
 		blockT<GUID> m_ProviderUID;
 		EIDStructType m_ObjectType = eidtUnknown; // My own addition to simplify parsing
 		FolderOrMessage m_FolderOrMessage;
