@@ -64,6 +64,13 @@ namespace smartview
 			if (child->isSet()) addChild(child, child->toStringInternal());
 		}
 
+		void addChild(block& child, const std::wstring& _text)
+		{
+			if (!child.isSet()) return;
+			child.text = _text;
+			children.push_back(std::make_shared<block>(child));
+		}
+
 		void addChild(std::shared_ptr<block> child, const std::wstring& _text)
 		{
 			if (!child->isSet()) return;
