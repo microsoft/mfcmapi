@@ -4,7 +4,7 @@
 
 namespace smartview
 {
-	template <class T> class blockT : public block
+	template <typename T, typename V = T> class blockT : public block
 	{
 	public:
 		blockT() = default;
@@ -12,6 +12,7 @@ namespace smartview
 		blockT& operator=(const blockT&) = delete;
 		blockT(std::shared_ptr<binaryParser>& parser) { parse<T>(parser); }
 
+		// Mimic type T
 		void setData(const T& _data) { data = _data; }
 		T getData() const { return data; }
 		operator T&() { return data; }
@@ -25,7 +26,7 @@ namespace smartview
 		}
 
 		// Parse as type U, but store into type T
-		template <class U> void parse(std::shared_ptr<binaryParser>& parser)
+		template <typename U> void parse(std::shared_ptr<binaryParser>& parser)
 		{
 			// TODO: Consider what a failure block really looks like
 			if (!parser->CheckRemainingBytes(sizeof U)) return;
@@ -37,7 +38,17 @@ namespace smartview
 			parser->advance(sizeof U);
 		}
 
+		// Parse as type V, but store into type T
+		static std::shared_ptr<blockT<T>> parse(std::shared_ptr<binaryParser>& parser)
+		{
+			auto ret = std::make_shared<blockT<T>>();
+			ret->parse<V>(parser);
+			return ret;
+		}
+
 	private:
 		T data{};
 	};
+
+	template <typename T> std::shared_ptr<blockT<T>> emptyT() { return std::make_shared<blockT<T>>(); }
 } // namespace smartview

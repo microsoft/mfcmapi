@@ -8,8 +8,8 @@ namespace smartview
 	struct PersistElement
 	{
 		static const WORD ELEMENT_SENTINEL = 0;
-		blockT<WORD> wElementID;
-		blockT<WORD> wElementDataSize;
+		std::shared_ptr<blockT<WORD>> wElementID = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> wElementDataSize = emptyT<WORD>();
 		std::shared_ptr<blockBytes> lpbElementData = emptyBB();
 
 		PersistElement(std::shared_ptr<binaryParser> parser);
@@ -18,8 +18,8 @@ namespace smartview
 	struct PersistData
 	{
 		static const WORD PERISIST_SENTINEL = 0;
-		blockT<WORD> wPersistID;
-		blockT<WORD> wDataElementsSize;
+		std::shared_ptr<blockT<WORD>> wPersistID = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> wDataElementsSize = emptyT<WORD>();
 		std::vector<std::shared_ptr<PersistElement>> ppeDataElement;
 
 		std::shared_ptr<blockBytes> JunkData = emptyBB();

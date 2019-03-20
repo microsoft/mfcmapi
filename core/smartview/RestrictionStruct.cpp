@@ -20,14 +20,14 @@ namespace smartview
 	{
 		if (m_bRuleCondition)
 		{
-			rt.parse<BYTE>(m_Parser);
+			rt = blockT<DWORD, BYTE>::parse(m_Parser);
 		}
 		else
 		{
-			rt.parse<DWORD>(m_Parser);
+			rt = blockT<DWORD>::parse(m_Parser);
 		}
 
-		switch (rt)
+		switch (*rt)
 		{
 		case RES_AND:
 			if (!m_bRuleCondition || m_bExtendedCount)
@@ -203,21 +203,21 @@ namespace smartview
 		std::wstring szPropNum;
 
 		auto i = 0;
-		switch (rt)
+		switch (*rt)
 		{
 		case RES_COMPAREPROPS:
-			rt.addChild(
+			rt->addChild(
 				resCompareProps.relop,
 				L"%1!ws!lpRes->res.resCompareProps.relop = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
 				flags::InterpretFlags(flagRelop, resCompareProps.relop).c_str(),
 				resCompareProps.relop.getData());
-			rt.addChild(
+			rt->addChild(
 				resCompareProps.ulPropTag1,
 				L"%1!ws!lpRes->res.resCompareProps.ulPropTag1 = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(resCompareProps.ulPropTag1, nullptr, false, true).c_str());
-			rt.addChild(
+			rt->addChild(
 				resCompareProps.ulPropTag2,
 				L"%1!ws!lpRes->res.resCompareProps.ulPropTag2 = %2!ws!\r\n",
 				szTabs.c_str(),
@@ -233,7 +233,7 @@ namespace smartview
 				resAnd.cRes.addChild(resBlock);
 			}
 
-			rt.addChild(
+			rt->addChild(
 				resAnd.cRes, L"%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!\r\n", szTabs.c_str(), resAnd.cRes.getData());
 			break;
 		case RES_OR:
@@ -246,12 +246,12 @@ namespace smartview
 				resOr.cRes.addChild(resBlock);
 			}
 
-			rt.addChild(
+			rt->addChild(
 				resOr.cRes, L"%1!ws!lpRes->res.resOr.cRes = 0x%2!08X!\r\n", szTabs.c_str(), resOr.cRes.getData());
 			break;
 		case RES_NOT:
 		{
-			rt.addChild(
+			rt->addChild(
 				resNot.ulReserved,
 				L"%1!ws!lpRes->res.resNot.ulReserved = 0x%2!08X!\r\n",
 				szTabs.c_str(),
@@ -266,13 +266,13 @@ namespace smartview
 				notRoot->addChild(resNot.lpRes->getBlock());
 			}
 
-			rt.addChild(notRoot);
+			rt->addChild(notRoot);
 		}
 
 		break;
 		case RES_COUNT:
 		{
-			rt.addChild(
+			rt->addChild(
 				resCount.ulCount,
 				L"%1!ws!lpRes->res.resCount.ulCount = 0x%2!08X!\r\n",
 				szTabs.c_str(),
@@ -287,20 +287,20 @@ namespace smartview
 				countRoot->addChild(resCount.lpRes->getBlock());
 			}
 
-			rt.addChild(countRoot);
+			rt->addChild(countRoot);
 		}
 
 		break;
 		case RES_CONTENT:
 		{
-			rt.addChild(
+			rt->addChild(
 				resContent.ulFuzzyLevel,
 				L"%1!ws!lpRes->res.resContent.ulFuzzyLevel = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
 				flags::InterpretFlags(flagFuzzyLevel, resContent.ulFuzzyLevel).c_str(),
 				resContent.ulFuzzyLevel.getData());
 
-			rt.addChild(
+			rt->addChild(
 				resContent.ulPropTag,
 				L"%1!ws!lpRes->res.resContent.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
@@ -324,13 +324,13 @@ namespace smartview
 					L"%1!ws!\tAlt: %2!ws!\r\n",
 					szTabs.c_str(),
 					resContent.lpProp.Props()[0]->AltPropBlock()->c_str());
-				rt.addChild(propBlock);
+				rt->addChild(propBlock);
 			}
 		}
 		break;
 		case RES_PROPERTY:
 		{
-			rt.addChild(
+			rt->addChild(
 				resProperty.relop,
 				L"%1!ws!lpRes->res.resProperty.relop = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
@@ -361,7 +361,7 @@ namespace smartview
 				}
 			}
 
-			rt.addChild(
+			rt->addChild(
 				resProperty.ulPropTag,
 				L"%1!ws!lpRes->res.resProperty.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
@@ -370,13 +370,13 @@ namespace smartview
 
 		break;
 		case RES_BITMASK:
-			rt.addChild(
+			rt->addChild(
 				resBitMask.relBMR,
 				L"%1!ws!lpRes->res.resBitMask.relBMR = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
 				flags::InterpretFlags(flagBitmask, resBitMask.relBMR).c_str(),
 				resBitMask.relBMR.getData());
-			rt.addChild(
+			rt->addChild(
 				resBitMask.ulMask,
 				L"%1!ws!lpRes->res.resBitMask.ulMask = 0x%2!08X!",
 				szTabs.c_str(),
@@ -384,43 +384,43 @@ namespace smartview
 			szPropNum = InterpretNumberAsStringProp(resBitMask.ulMask, resBitMask.ulPropTag);
 			if (!szPropNum.empty())
 			{
-				rt.addChild(resBitMask.ulMask, L": %1!ws!", szPropNum.c_str());
+				rt->addChild(resBitMask.ulMask, L": %1!ws!", szPropNum.c_str());
 			}
 
-			rt.terminateBlock();
-			rt.addChild(
+			rt->terminateBlock();
+			rt->addChild(
 				resBitMask.ulPropTag,
 				L"%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(resBitMask.ulPropTag, nullptr, false, true).c_str());
 			break;
 		case RES_SIZE:
-			rt.addChild(
+			rt->addChild(
 				resSize.relop,
 				L"%1!ws!lpRes->res.resSize.relop = %2!ws! = 0x%3!08X!\r\n",
 				szTabs.c_str(),
 				flags::InterpretFlags(flagRelop, resSize.relop).c_str(),
 				resSize.relop.getData());
-			rt.addChild(
+			rt->addChild(
 				resSize.cb, L"%1!ws!lpRes->res.resSize.cb = 0x%2!08X!\r\n", szTabs.c_str(), resSize.cb.getData());
-			rt.addChild(
+			rt->addChild(
 				resSize.ulPropTag,
 				L"%1!ws!lpRes->res.resSize.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(resSize.ulPropTag, nullptr, false, true).c_str());
 			break;
 		case RES_EXIST:
-			rt.addChild(
+			rt->addChild(
 				resExist.ulPropTag,
 				L"%1!ws!lpRes->res.resExist.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(resExist.ulPropTag, nullptr, false, true).c_str());
-			rt.addChild(
+			rt->addChild(
 				resExist.ulReserved1,
 				L"%1!ws!lpRes->res.resExist.ulReserved1 = 0x%2!08X!\r\n",
 				szTabs.c_str(),
 				resExist.ulReserved1.getData());
-			rt.addChild(
+			rt->addChild(
 				resExist.ulReserved2,
 				L"%1!ws!lpRes->res.resExist.ulReserved2 = 0x%2!08X!\r\n",
 				szTabs.c_str(),
@@ -436,7 +436,7 @@ namespace smartview
 				resSub.ulSubObject.addChild(resSub.lpRes->getBlock());
 			}
 
-			rt.addChild(
+			rt->addChild(
 				resSub.ulSubObject,
 				L"%1!ws!lpRes->res.resSub.ulSubObject = %2!ws!\r\n",
 				szTabs.c_str(),
@@ -466,17 +466,17 @@ namespace smartview
 				i++;
 			}
 
-			rt.addChild(
+			rt->addChild(
 				resComment.cValues,
 				L"%1!ws!lpRes->res.resComment.cValues = 0x%2!08X!\r\n",
 				szTabs.c_str(),
 				resComment.cValues.getData());
 
-			rt.addHeader(L"%1!ws!lpRes->res.resComment.lpRes\r\n", szTabs.c_str());
+			rt->addHeader(L"%1!ws!lpRes->res.resComment.lpRes\r\n", szTabs.c_str());
 			if (resComment.lpRes)
 			{
 				resComment.lpRes->parseBlocks(ulTabLevel + 1);
-				rt.addChild(resComment.lpRes->getBlock());
+				rt->addChild(resComment.lpRes->getBlock());
 			}
 		}
 
@@ -502,17 +502,17 @@ namespace smartview
 				i++;
 			}
 
-			rt.addChild(
+			rt->addChild(
 				resAnnotation.cValues,
 				L"%1!ws!lpRes->res.resAnnotation.cValues = 0x%2!08X!\r\n",
 				szTabs.c_str(),
 				resAnnotation.cValues.getData());
 
-			rt.addHeader(L"%1!ws!lpRes->res.resAnnotation.lpRes\r\n", szTabs.c_str());
+			rt->addHeader(L"%1!ws!lpRes->res.resAnnotation.lpRes\r\n", szTabs.c_str());
 			if (resAnnotation.lpRes)
 			{
 				resAnnotation.lpRes->parseBlocks(ulTabLevel + 1);
-				rt.addChild(resAnnotation.lpRes->getBlock());
+				rt->addChild(resAnnotation.lpRes->getBlock());
 			}
 
 			break;
@@ -522,7 +522,7 @@ namespace smartview
 			rt,
 			L"%1!ws!lpRes->rt = 0x%2!X! = %3!ws!\r\n",
 			szTabs.c_str(),
-			rt.getData(),
-			flags::InterpretFlags(flagRestrictionType, rt).c_str());
+			rt->getData(),
+			flags::InterpretFlags(flagRestrictionType, *rt).c_str());
 	} // namespace smartview
 } // namespace smartview

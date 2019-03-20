@@ -108,7 +108,6 @@ namespace smartview
 		}
 
 	private:
-
 		void Parse() override { parse(0); }
 		void parse(ULONG ulDepth);
 		void ParseBlocks() override
@@ -118,7 +117,7 @@ namespace smartview
 		};
 		void parseBlocks(ULONG ulTabLevel);
 
-		blockT<DWORD> rt; /* Restriction type */
+		std::shared_ptr<blockT<DWORD>> rt = emptyT<DWORD>(); /* Restriction type */
 		SComparePropsRestrictionStruct resCompareProps;
 		SAndRestrictionStruct resAnd;
 		SOrRestrictionStruct resOr;

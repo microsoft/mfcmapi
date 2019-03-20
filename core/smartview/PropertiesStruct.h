@@ -66,7 +66,7 @@ namespace smartview
 	struct PVBlock
 	{
 		blockT<WORD> i; /* case PT_I2 */
-		blockT<LONG> l; /* case PT_LONG */
+		std::shared_ptr<blockT<LONG>> l = emptyT<LONG>(); /* case PT_LONG */
 		blockT<WORD> b; /* case PT_BOOLEAN */
 		blockT<float> flt; /* case PT_R4 */
 		blockT<double> dbl; /* case PT_DOUBLE */
@@ -122,9 +122,9 @@ namespace smartview
 				offset = Value.i.getOffset();
 				break;
 			case PT_LONG:
-				prop.Value.l = Value.l;
-				size = Value.l.getSize();
-				offset = Value.l.getOffset();
+				prop.Value.l = *Value.l;
+				size = Value.l->getSize();
+				offset = Value.l->getOffset();
 				break;
 			case PT_R4:
 				prop.Value.flt = Value.flt;
@@ -204,7 +204,7 @@ namespace smartview
 			switch (PROP_TYPE(ulPropTag))
 			{
 			case PT_LONG:
-				return InterpretNumberAsString(Value.l, ulPropTag, 0, nullptr, nullptr, false);
+				return InterpretNumberAsString(*Value.l, ulPropTag, 0, nullptr, nullptr, false);
 			case PT_I2:
 				return InterpretNumberAsString(Value.i, ulPropTag, 0, nullptr, nullptr, false);
 			case PT_I8:

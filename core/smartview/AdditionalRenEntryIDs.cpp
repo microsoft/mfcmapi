@@ -7,12 +7,12 @@ namespace smartview
 {
 	PersistElement::PersistElement(std::shared_ptr<binaryParser> parser)
 	{
-		wElementID.parse<WORD>(parser);
-		wElementDataSize.parse<WORD>(parser);
+		wElementID = blockT<WORD>::parse(parser);
+		wElementDataSize = blockT<WORD>::parse(parser);
 		if (wElementID != PersistElement::ELEMENT_SENTINEL)
 		{
 			// Since this is a word, the size will never be too large
-			lpbElementData = blockBytes::parse(parser, wElementDataSize);
+			lpbElementData = blockBytes::parse(parser, wElementDataSize->getData());
 		}
 	}
 
@@ -22,12 +22,12 @@ namespace smartview
 		// Run through the parser once to count the number of PersistData structs
 		while (m_Parser->RemainingBytes() >= 2 * sizeof(WORD))
 		{
-			const auto& wPersistID = blockT<WORD>(m_Parser);
-			const auto& wDataElementSize = blockT<WORD>(m_Parser);
+			const auto& wPersistID = blockT<WORD>::parse(m_Parser);
+			const auto& wDataElementSize = blockT<WORD>::parse(m_Parser);
 			// Must have at least wDataElementSize bytes left to be a valid data element
-			if (m_Parser->RemainingBytes() < wDataElementSize) break;
+			if (m_Parser->RemainingBytes() < wDataElementSize->getData()) break;
 
-			m_Parser->advance(wDataElementSize);
+			m_Parser->advance(wDataElementSize->getData());
 			wPersistDataCount++;
 			if (wPersistID == PersistData::PERISIST_SENTINEL) break;
 		}
@@ -48,23 +48,24 @@ namespace smartview
 	PersistData::PersistData(std::shared_ptr<binaryParser> parser)
 	{
 		WORD wDataElementCount = 0;
-		wPersistID.parse<WORD>(parser);
-		wDataElementsSize.parse<WORD>(parser);
+		wPersistID = blockT<WORD>::parse(parser);
+		wDataElementsSize = blockT<WORD>::parse(parser);
 
-		if (wPersistID != PERISIST_SENTINEL && parser->RemainingBytes() >= wDataElementsSize)
+		if (wPersistID != PERISIST_SENTINEL && parser->RemainingBytes() >= wDataElementsSize->getData())
 		{
 			// Build a new parser to preread and count our elements
 			// This new parser will only contain as much space as suggested in wDataElementsSize
-			auto DataElementParser = std::make_shared<binaryParser>(wDataElementsSize, parser->GetCurrentAddress());
+			auto DataElementParser =
+				std::make_shared<binaryParser>(wDataElementsSize->getData(), parser->GetCurrentAddress());
 			for (;;)
 			{
 				if (DataElementParser->RemainingBytes() < 2 * sizeof(WORD)) break;
-				const auto& wElementID = blockT<WORD>(DataElementParser);
-				const auto& wElementDataSize = blockT<WORD>(DataElementParser);
+				const auto& wElementID = blockT<WORD>::parse(DataElementParser);
+				const auto& wElementDataSize = blockT<WORD>::parse(DataElementParser);
 				// Must have at least wElementDataSize bytes left to be a valid element data
-				if (DataElementParser->RemainingBytes() < wElementDataSize) break;
+				if (DataElementParser->RemainingBytes() < wElementDataSize->getData()) break;
 
-				DataElementParser->advance(wElementDataSize);
+				DataElementParser->advance(wElementDataSize->getData());
 				wDataElementCount++;
 				if (wElementID == PersistElement::ELEMENT_SENTINEL) break;
 			}
@@ -81,7 +82,7 @@ namespace smartview
 
 		// We'll trust wDataElementsSize to dictate our record size.
 		// Count the 2 WORD size header fields too.
-		const auto cbRecordSize = wDataElementsSize + sizeof(WORD) * 2;
+		const auto cbRecordSize = wDataElementsSize->getData() + sizeof(WORD) * 2;
 
 		// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
 		if (parser->GetCurrentOffset() < cbRecordSize)
@@ -107,12 +108,12 @@ namespace smartview
 				element->addChild(
 					persistData->wPersistID,
 					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
-					persistData->wPersistID.getData(),
-					flags::InterpretFlags(flagPersistID, persistData->wPersistID).c_str());
+					persistData->wPersistID->getData(),
+					flags::InterpretFlags(flagPersistID, persistData->wPersistID->getData()).c_str());
 				element->addChild(
 					persistData->wDataElementsSize,
 					L"DataElementsSize = 0x%1!04X!",
-					persistData->wDataElementsSize.getData());
+					persistData->wDataElementsSize->getData());
 
 				if (!persistData->ppeDataElement.empty())
 				{
@@ -125,13 +126,13 @@ namespace smartview
 						element->addChild(
 							dataElement->wElementID,
 							L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
-							dataElement->wElementID.getData(),
-							flags::InterpretFlags(flagElementID, dataElement->wElementID).c_str());
+							dataElement->wElementID->getData(),
+							flags::InterpretFlags(flagElementID, dataElement->wElementID->getData()).c_str());
 
 						element->addChild(
 							dataElement->wElementDataSize,
 							L"\tElementDataSize = 0x%1!04X!\r\n",
-							dataElement->wElementDataSize.getData());
+							dataElement->wElementDataSize->getData());
 
 						element->addHeader(L"\tElementData = ");
 						element->addChild(dataElement->lpbElementData);

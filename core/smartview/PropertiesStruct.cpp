@@ -107,7 +107,7 @@ namespace smartview
 			if (doNickname) parser->advance(sizeof DWORD);
 			break;
 		case PT_LONG:
-			Value.l.parse<DWORD>(parser);
+			Value.l = blockT<LONG, DWORD>::parse(parser);
 			if (doNickname) parser->advance(sizeof DWORD);
 			break;
 		case PT_ERROR:

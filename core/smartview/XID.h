@@ -11,8 +11,7 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockT<GUID> m_NamespaceGuid;
-		size_t m_cbLocalId{};
+		std::shared_ptr<blockT<GUID>> m_NamespaceGuid = emptyT<GUID>();
 		std::shared_ptr<blockBytes> m_LocalID = emptyBB();
 	};
 } // namespace smartview
