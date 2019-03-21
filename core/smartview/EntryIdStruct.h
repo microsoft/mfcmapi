@@ -25,60 +25,63 @@ namespace smartview
 	struct MDB_STORE_EID_V2
 	{
 		static const size_t size = sizeof(ULONG) * 5;
-		blockT<ULONG> ulMagic; // MDB_STORE_EID_V2_MAGIC
-		blockT<ULONG> ulSize; // size of this struct plus the size of szServerDN and wszServerFQDN
-		blockT<ULONG> ulVersion; // MDB_STORE_EID_V2_VERSION
-		blockT<ULONG> ulOffsetDN; // offset past the beginning of the MDB_STORE_EID_V2 struct where szServerDN starts
-		blockT<ULONG>
-			ulOffsetFQDN; // offset past the beginning of the MDB_STORE_EID_V2 struct where wszServerFQDN starts
+		std::shared_ptr<blockT<ULONG>> ulMagic = emptyT<ULONG>(); // MDB_STORE_EID_V2_MAGIC
+		std::shared_ptr<blockT<ULONG>> ulSize =
+			emptyT<ULONG>(); // size of this struct plus the size of szServerDN and wszServerFQDN
+		std::shared_ptr<blockT<ULONG>> ulVersion = emptyT<ULONG>(); // MDB_STORE_EID_V2_VERSION
+		std::shared_ptr<blockT<ULONG>> ulOffsetDN =
+			emptyT<ULONG>(); // offset past the beginning of the MDB_STORE_EID_V2 struct where szServerDN starts
+		std::shared_ptr<blockT<ULONG>> ulOffsetFQDN =
+			emptyT<ULONG>(); // offset past the beginning of the MDB_STORE_EID_V2 struct where wszServerFQDN starts
 	};
 
 	struct MDB_STORE_EID_V3
 	{
 		static const size_t size = sizeof(ULONG) * 4;
-		blockT<ULONG> ulMagic; // MDB_STORE_EID_V3_MAGIC
-		blockT<ULONG> ulSize; // size of this struct plus the size of szServerSmtpAddress
-		blockT<ULONG> ulVersion; // MDB_STORE_EID_V3_VERSION
-		blockT<ULONG>
-			ulOffsetSmtpAddress; // offset past the beginning of the MDB_STORE_EID_V3 struct where szSmtpAddress starts
+		std::shared_ptr<blockT<ULONG>> ulMagic = emptyT<ULONG>(); // MDB_STORE_EID_V3_MAGIC
+		std::shared_ptr<blockT<ULONG>> ulSize =
+			emptyT<ULONG>(); // size of this struct plus the size of szServerSmtpAddress
+		std::shared_ptr<blockT<ULONG>> ulVersion = emptyT<ULONG>(); // MDB_STORE_EID_V3_VERSION
+		std::shared_ptr<blockT<ULONG>> ulOffsetSmtpAddress =
+			emptyT<ULONG>(); // offset past the beginning of the MDB_STORE_EID_V3 struct where szSmtpAddress starts
 	};
 
 	struct FolderObject
 	{
-		blockT<GUID> DatabaseGUID;
+		std::shared_ptr<blockT<GUID>> DatabaseGUID = emptyT<GUID>();
 		std::shared_ptr<blockBytes> GlobalCounter = emptyBB(); // 6 bytes
 		std::shared_ptr<blockBytes> Pad = emptyBB(); // 2 bytes
 	};
 
 	struct MessageObject
 	{
-		blockT<GUID> FolderDatabaseGUID;
+		std::shared_ptr<blockT<GUID>> FolderDatabaseGUID = emptyT<GUID>();
 		std::shared_ptr<blockBytes> FolderGlobalCounter = emptyBB(); // 6 bytes
 		std::shared_ptr<blockBytes> Pad1 = emptyBB(); // 2 bytes
-		blockT<GUID> MessageDatabaseGUID;
+		std::shared_ptr<blockT<GUID>> MessageDatabaseGUID = emptyT<GUID>();
 		std::shared_ptr<blockBytes> MessageGlobalCounter = emptyBB(); // 6 bytes
 		std::shared_ptr<blockBytes> Pad2 = emptyBB(); // 2 bytes
 	};
 
 	struct FolderOrMessage
 	{
-		blockT<WORD> Type;
+		std::shared_ptr<blockT<WORD>> Type = emptyT<WORD>();
 		FolderObject FolderObject;
 		MessageObject MessageObject;
 	};
 
 	struct MessageDatabaseObject
 	{
-		blockT<BYTE> Version;
-		blockT<BYTE> Flag;
+		std::shared_ptr<blockT<BYTE>> Version = emptyT<BYTE>();
+		std::shared_ptr<blockT<BYTE>> Flag = emptyT<BYTE>();
 		std::shared_ptr<blockStringA> DLLFileName = emptySA();
 		bool bIsExchange{};
-		blockT<ULONG> WrappedFlags;
-		blockT<GUID> WrappedProviderUID;
-		blockT<ULONG> WrappedType;
+		std::shared_ptr<blockT<ULONG>> WrappedFlags = emptyT<ULONG>();
+		std::shared_ptr<blockT<GUID>> WrappedProviderUID = emptyT<GUID>();
+		std::shared_ptr<blockT<ULONG>> WrappedType = emptyT<ULONG>();
 		std::shared_ptr<blockStringA> ServerShortname = emptySA();
 		std::shared_ptr<blockStringA> MailboxDN = emptySA();
-		blockT<ULONG> MagicVersion;
+		std::shared_ptr<blockT<ULONG>> MagicVersion = emptyT<ULONG>();
 		MDB_STORE_EID_V2 v2;
 		MDB_STORE_EID_V3 v3;
 		std::shared_ptr<blockStringA> v2DN = emptySA();
@@ -89,13 +92,13 @@ namespace smartview
 
 	struct EphemeralObject
 	{
-		blockT<ULONG> Version;
-		blockT<ULONG> Type;
+		std::shared_ptr<blockT<ULONG>> Version = emptyT<ULONG>();
+		std::shared_ptr<blockT<ULONG>> Type = emptyT<ULONG>();
 	};
 
 	struct OneOffRecipientObject
 	{
-		blockT<DWORD> Bitmask;
+		std::shared_ptr<blockT<DWORD>> Bitmask = emptyT<DWORD>();
 		struct Unicode
 		{
 			std::shared_ptr<blockStringW> DisplayName = emptySW();
@@ -112,8 +115,8 @@ namespace smartview
 
 	struct AddressBookObject
 	{
-		blockT<DWORD> Version;
-		blockT<DWORD> Type;
+		std::shared_ptr<blockT<DWORD>> Version = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> Type = emptyT<DWORD>();
 		std::shared_ptr<blockStringA> X500DN = emptySA();
 	};
 
@@ -121,17 +124,17 @@ namespace smartview
 
 	struct ContactAddressBookObject
 	{
-		blockT<DWORD> Version;
-		blockT<DWORD> Type;
-		blockT<DWORD> Index; // CONTAB_USER, CONTAB_DISTLIST only
-		blockT<DWORD> EntryIDCount; // CONTAB_USER, CONTAB_DISTLIST only
-		blockT<GUID> muidID; // CONTAB_CONTAINER only
+		std::shared_ptr<blockT<DWORD>> Version = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> Type = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> Index = emptyT<DWORD>(); // CONTAB_USER, CONTAB_DISTLIST only
+		std::shared_ptr<blockT<DWORD>> EntryIDCount = emptyT<DWORD>(); // CONTAB_USER, CONTAB_DISTLIST only
+		std::shared_ptr<blockT<GUID>> muidID = emptyT<GUID>(); // CONTAB_CONTAINER only
 		std::shared_ptr<EntryIdStruct> lpEntryID;
 	};
 
 	struct WAB
 	{
-		blockT<BYTE> Type;
+		std::shared_ptr<blockT<BYTE>> Type = emptyT<BYTE>();
 		std::shared_ptr<EntryIdStruct> lpEntryID;
 	};
 
@@ -152,10 +155,10 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockT<byte> m_abFlags0;
-		blockT<byte> m_abFlags1;
+		std::shared_ptr<blockT<byte>> m_abFlags0 = emptyT<byte>();
+		std::shared_ptr<blockT<byte>> m_abFlags1 = emptyT<byte>();
 		std::shared_ptr<blockBytes> m_abFlags23 = emptyBB(); // 2 bytes
-		blockT<GUID> m_ProviderUID;
+		std::shared_ptr<blockT<GUID>> m_ProviderUID = emptyT<GUID>();
 		EIDStructType m_ObjectType = eidtUnknown; // My own addition to simplify parsing
 		FolderOrMessage m_FolderOrMessage;
 		MessageDatabaseObject m_MessageDatabaseObject;
