@@ -25,9 +25,9 @@ namespace smartview
 			const auto& wPersistID = blockT<WORD>::parse(m_Parser);
 			const auto& wDataElementSize = blockT<WORD>::parse(m_Parser);
 			// Must have at least wDataElementSize bytes left to be a valid data element
-			if (m_Parser->RemainingBytes() < wDataElementSize->getData()) break;
+			if (m_Parser->RemainingBytes() < *wDataElementSize) break;
 
-			m_Parser->advance(wDataElementSize->getData());
+			m_Parser->advance(*wDataElementSize);
 			wPersistDataCount++;
 			if (wPersistID == PersistData::PERISIST_SENTINEL) break;
 		}
@@ -51,21 +51,20 @@ namespace smartview
 		wPersistID = blockT<WORD>::parse(parser);
 		wDataElementsSize = blockT<WORD>::parse(parser);
 
-		if (wPersistID != PERISIST_SENTINEL && parser->RemainingBytes() >= wDataElementsSize->getData())
+		if (wPersistID != PERISIST_SENTINEL && parser->RemainingBytes() >= *wDataElementsSize)
 		{
 			// Build a new parser to preread and count our elements
 			// This new parser will only contain as much space as suggested in wDataElementsSize
-			auto DataElementParser =
-				std::make_shared<binaryParser>(wDataElementsSize->getData(), parser->GetCurrentAddress());
+			auto DataElementParser = std::make_shared<binaryParser>(*wDataElementsSize, parser->GetCurrentAddress());
 			for (;;)
 			{
 				if (DataElementParser->RemainingBytes() < 2 * sizeof(WORD)) break;
 				const auto& wElementID = blockT<WORD>::parse(DataElementParser);
 				const auto& wElementDataSize = blockT<WORD>::parse(DataElementParser);
 				// Must have at least wElementDataSize bytes left to be a valid element data
-				if (DataElementParser->RemainingBytes() < wElementDataSize->getData()) break;
+				if (DataElementParser->RemainingBytes() < *wElementDataSize) break;
 
-				DataElementParser->advance(wElementDataSize->getData());
+				DataElementParser->advance(*wElementDataSize);
 				wDataElementCount++;
 				if (wElementID == PersistElement::ELEMENT_SENTINEL) break;
 			}
@@ -82,7 +81,7 @@ namespace smartview
 
 		// We'll trust wDataElementsSize to dictate our record size.
 		// Count the 2 WORD size header fields too.
-		const auto cbRecordSize = wDataElementsSize->getData() + sizeof(WORD) * 2;
+		const auto cbRecordSize = *wDataElementsSize + sizeof(WORD) * 2;
 
 		// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
 		if (parser->GetCurrentOffset() < cbRecordSize)
@@ -104,6 +103,8 @@ namespace smartview
 				terminateBlock();
 				addBlankLine();
 				auto element = std::make_shared<block>();
+				addChild(element);
+
 				element->setText(L"Persist Element %1!d!:\r\n", iPersistElement);
 				element->addChild(
 					persistData->wPersistID,
@@ -147,7 +148,6 @@ namespace smartview
 					element->addChild(persistData->JunkData);
 				}
 
-				addChild(element);
 				iPersistElement++;
 			}
 		}
