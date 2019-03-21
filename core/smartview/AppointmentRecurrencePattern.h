@@ -13,31 +13,31 @@ namespace smartview
 	//   This structure specifies an exception
 	struct ExceptionInfo
 	{
-		blockT<DWORD> StartDateTime;
-		blockT<DWORD> EndDateTime;
-		blockT<DWORD> OriginalStartDate;
-		blockT<WORD> OverrideFlags;
-		blockT<WORD> SubjectLength;
-		blockT<WORD> SubjectLength2;
+		std::shared_ptr<blockT<DWORD>> StartDateTime = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> EndDateTime = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> OriginalStartDate = emptyT<DWORD>();
+		std::shared_ptr<blockT<WORD>> OverrideFlags = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> SubjectLength = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> SubjectLength2 = emptyT<WORD>();
 		std::shared_ptr<blockStringA> Subject = emptySA();
-		blockT<DWORD> MeetingType;
-		blockT<DWORD> ReminderDelta;
-		blockT<DWORD> ReminderSet;
-		blockT<WORD> LocationLength;
-		blockT<WORD> LocationLength2;
+		std::shared_ptr<blockT<DWORD>> MeetingType = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ReminderDelta = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ReminderSet = emptyT<DWORD>();
+		std::shared_ptr<blockT<WORD>> LocationLength = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> LocationLength2 = emptyT<WORD>();
 		std::shared_ptr<blockStringA> Location = emptySA();
-		blockT<DWORD> BusyStatus;
-		blockT<DWORD> Attachment;
-		blockT<DWORD> SubType;
-		blockT<DWORD> AppointmentColor;
+		std::shared_ptr<blockT<DWORD>> BusyStatus = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> Attachment = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> SubType = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> AppointmentColor = emptyT<DWORD>();
 
 		ExceptionInfo(std::shared_ptr<binaryParser>& parser);
 	};
 
 	struct ChangeHighlight
 	{
-		blockT<DWORD> ChangeHighlightSize;
-		blockT<DWORD> ChangeHighlightValue;
+		std::shared_ptr<blockT<DWORD>> ChangeHighlightSize = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ChangeHighlightValue = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> Reserved = emptyBB();
 	};
 
@@ -47,16 +47,16 @@ namespace smartview
 	struct ExtendedException
 	{
 		ChangeHighlight ChangeHighlight;
-		blockT<DWORD> ReservedBlockEE1Size;
+		std::shared_ptr<blockT<DWORD>> ReservedBlockEE1Size = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> ReservedBlockEE1 = emptyBB();
-		blockT<DWORD> StartDateTime;
-		blockT<DWORD> EndDateTime;
-		blockT<DWORD> OriginalStartDate;
-		blockT<WORD> WideCharSubjectLength;
+		std::shared_ptr<blockT<DWORD>> StartDateTime = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> EndDateTime = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> OriginalStartDate = emptyT<DWORD>();
+		std::shared_ptr<blockT<WORD>> WideCharSubjectLength = emptyT<WORD>();
 		std::shared_ptr<blockStringW> WideCharSubject = emptySW();
-		blockT<WORD> WideCharLocationLength;
+		std::shared_ptr<blockT<WORD>> WideCharLocationLength = emptyT<WORD>();
 		std::shared_ptr<blockStringW> WideCharLocation = emptySW();
-		blockT<DWORD> ReservedBlockEE2Size;
+		std::shared_ptr<blockT<DWORD>> ReservedBlockEE2Size = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> ReservedBlockEE2 = emptyBB();
 
 		ExtendedException(std::shared_ptr<binaryParser>& parser, DWORD writerVersion2, WORD flags);
@@ -73,16 +73,16 @@ namespace smartview
 		void ParseBlocks() override;
 
 		RecurrencePattern m_RecurrencePattern;
-		blockT<DWORD> m_ReaderVersion2;
-		blockT<DWORD> m_WriterVersion2;
-		blockT<DWORD> m_StartTimeOffset;
-		blockT<DWORD> m_EndTimeOffset;
-		blockT<WORD> m_ExceptionCount;
+		std::shared_ptr<blockT<DWORD>> m_ReaderVersion2 = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_WriterVersion2 = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_StartTimeOffset = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_EndTimeOffset = emptyT<DWORD>();
+		std::shared_ptr<blockT<WORD>> m_ExceptionCount = emptyT<WORD>();
 		std::vector<std::shared_ptr<ExceptionInfo>> m_ExceptionInfo;
-		blockT<DWORD> m_ReservedBlock1Size;
+		std::shared_ptr<blockT<DWORD>> m_ReservedBlock1Size = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> m_ReservedBlock1 = emptyBB();
 		std::vector<std::shared_ptr<ExtendedException>> m_ExtendedException;
-		blockT<DWORD> m_ReservedBlock2Size;
+		std::shared_ptr<blockT<DWORD>> m_ReservedBlock2Size = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> m_ReservedBlock2 = emptyBB();
 	};
 } // namespace smartview
