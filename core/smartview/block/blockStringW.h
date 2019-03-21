@@ -39,12 +39,12 @@ namespace smartview
 			}
 		}
 
-		blockStringW(const std::wstring& _data, size_t _offset, size_t _size)
+		blockStringW(const std::wstring& _data, size_t _size, size_t _offset)
 		{
 			set = true;
 			data = _data;
-			setOffset(_offset);
 			setSize(_size);
+			setOffset(_offset);
 		}
 
 		static std::shared_ptr<blockStringW> parse(std::shared_ptr<binaryParser> parser, size_t cchChar = -1)
