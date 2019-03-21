@@ -11,32 +11,32 @@ namespace smartview
 		const auto& r2 = blockT<BYTE>(parser);
 		const auto& r3 = blockT<BYTE>(parser);
 		const auto& r4 = blockT<BYTE>(parser);
-		TimeDelta.setOffset(r1.getOffset());
-		TimeDelta.setSize(r1.getSize() + r2.getSize() + r3.getSize() + r4.getSize());
-		TimeDelta.setData(r1 << 24 | r2 << 16 | r3 << 8 | r4);
+		TimeDelta->setOffset(r1.getOffset());
+		TimeDelta->setSize(r1.getSize() + r2.getSize() + r3.getSize() + r4.getSize());
+		TimeDelta->setData(r1 << 24 | r2 << 16 | r3 << 8 | r4);
 
-		DeltaCode.setOffset(TimeDelta.getOffset());
-		DeltaCode.setSize(TimeDelta.getSize());
-		DeltaCode.setData(false);
-		if (TimeDelta & 0x80000000)
+		DeltaCode->setOffset(TimeDelta->getOffset());
+		DeltaCode->setSize(TimeDelta->getSize());
+		DeltaCode->setData(false);
+		if (*TimeDelta & 0x80000000)
 		{
-			TimeDelta.setData(TimeDelta & ~0x80000000);
-			DeltaCode.setData(true);
+			TimeDelta->setData(*TimeDelta & ~0x80000000);
+			DeltaCode->setData(true);
 		}
 
 		const auto& r5 = blockT<BYTE>(parser);
-		Random.setOffset(r5.getOffset());
-		Random.setSize(r5.getSize());
-		Random.setData(static_cast<BYTE>(r5 >> 4));
+		Random->setOffset(r5.getOffset());
+		Random->setSize(r5.getSize());
+		Random->setData(static_cast<BYTE>(r5 >> 4));
 
-		Level.setOffset(r5.getOffset());
-		Level.setSize(r5.getSize());
-		Level.setData(static_cast<BYTE>(r5 & 0xf));
+		Level->setOffset(r5.getOffset());
+		Level->setSize(r5.getSize());
+		Level->setData(static_cast<BYTE>(r5 & 0xf));
 	}
 
 	void ConversationIndex::Parse()
 	{
-		m_UnnamedByte.parse<BYTE>(m_Parser);
+		m_UnnamedByte = blockT<BYTE>::parse(m_Parser);
 		const auto& h1 = blockT<BYTE>(m_Parser);
 		const auto& h2 = blockT<BYTE>(m_Parser);
 		const auto& h3 = blockT<BYTE>(m_Parser);
@@ -50,9 +50,9 @@ namespace smartview
 		const auto& l2 = blockT<BYTE>(m_Parser);
 		ft.dwLowDateTime = l1 << 24 | l2 << 16;
 
-		m_ftCurrent.setOffset(h1.getOffset());
-		m_ftCurrent.setSize(h1.getSize() + h2.getSize() + h3.getSize() + l1.getSize() + l2.getSize());
-		m_ftCurrent.setData(ft);
+		m_ftCurrent->setOffset(h1.getOffset());
+		m_ftCurrent->setSize(h1.getSize() + h2.getSize() + h3.getSize() + l1.getSize() + l2.getSize());
+		m_ftCurrent->setData(ft);
 
 		auto guid = GUID{};
 		const auto& g1 = blockT<BYTE>(m_Parser);
@@ -78,20 +78,20 @@ namespace smartview
 			size += d.getSize();
 		}
 
-		m_guid.setOffset(g1.getOffset());
-		m_guid.setSize(size);
-		m_guid.setData(guid);
-
+		m_guid->setOffset(g1.getOffset());
+		m_guid->setSize(size);
+		m_guid->setData(guid);
+		auto ulResponseLevels = ULONG{};
 		if (m_Parser->RemainingBytes() > 0)
 		{
-			m_ulResponseLevels =
+			ulResponseLevels =
 				static_cast<ULONG>(m_Parser->RemainingBytes()) / 5; // Response levels consume 5 bytes each
 		}
 
-		if (m_ulResponseLevels && m_ulResponseLevels < _MaxEntriesSmall)
+		if (ulResponseLevels && ulResponseLevels < _MaxEntriesSmall)
 		{
-			m_lpResponseLevels.reserve(m_ulResponseLevels);
-			for (ULONG i = 0; i < m_ulResponseLevels; i++)
+			m_lpResponseLevels.reserve(ulResponseLevels);
+			for (ULONG i = 0; i < ulResponseLevels; i++)
 			{
 				m_lpResponseLevels.emplace_back(std::make_shared<ResponseLevel>(m_Parser));
 			}
@@ -104,15 +104,15 @@ namespace smartview
 
 		std::wstring PropString;
 		std::wstring AltPropString;
-		strings::FileTimeToString(m_ftCurrent, PropString, AltPropString);
-		addChild(m_UnnamedByte, L"Unnamed byte = 0x%1!02X! = %1!d!\r\n", m_UnnamedByte.getData());
+		strings::FileTimeToString(*m_ftCurrent, PropString, AltPropString);
+		addChild(m_UnnamedByte, L"Unnamed byte = 0x%1!02X! = %1!d!\r\n", m_UnnamedByte->getData());
 		addChild(
 			m_ftCurrent,
 			L"Current FILETIME: (Low = 0x%1!08X!, High = 0x%2!08X!) = %3!ws!\r\n",
-			m_ftCurrent.getData().dwLowDateTime,
-			m_ftCurrent.getData().dwHighDateTime,
+			m_ftCurrent->getData().dwLowDateTime,
+			m_ftCurrent->getData().dwHighDateTime,
 			PropString.c_str());
-		addChild(m_guid, L"GUID = %1!ws!", guid::GUIDToString(m_guid).c_str());
+		addChild(m_guid, L"GUID = %1!ws!", guid::GUIDToString(*m_guid).c_str());
 
 		if (!m_lpResponseLevels.empty())
 		{
@@ -124,22 +124,23 @@ namespace smartview
 					responseLevel->DeltaCode,
 					L"ResponseLevel[%1!d!].DeltaCode = %2!d!\r\n",
 					i,
-					responseLevel->DeltaCode.getData());
+					responseLevel->DeltaCode->getData());
 				addChild(
 					responseLevel->TimeDelta,
 					L"ResponseLevel[%1!d!].TimeDelta = 0x%2!08X! = %2!d!\r\n",
 					i,
-					responseLevel->TimeDelta.getData());
+					responseLevel->TimeDelta->getData());
 				addChild(
 					responseLevel->Random,
 					L"ResponseLevel[%1!d!].Random = 0x%2!02X! = %2!d!\r\n",
 					i,
-					responseLevel->Random.getData());
+					responseLevel->Random->getData());
 				addChild(
 					responseLevel->Level,
 					L"ResponseLevel[%1!d!].ResponseLevel = 0x%2!02X! = %2!d!",
 					i,
-					responseLevel->Level.getData());
+					responseLevel->Level->getData());
+
 				i++;
 			}
 		}

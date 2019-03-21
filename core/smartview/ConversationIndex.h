@@ -7,10 +7,10 @@ namespace smartview
 	// [MS-OXOMSG].pdf
 	struct ResponseLevel
 	{
-		blockT<bool> DeltaCode;
-		blockT<DWORD> TimeDelta;
-		blockT<BYTE> Random;
-		blockT<BYTE> Level;
+		std::shared_ptr<blockT<bool>> DeltaCode = emptyT<bool>();
+		std::shared_ptr<blockT<DWORD>> TimeDelta = emptyT<DWORD>();
+		std::shared_ptr<blockT<BYTE>> Random = emptyT<BYTE>();
+		std::shared_ptr<blockT<BYTE>> Level = emptyT<BYTE>();
 
 		ResponseLevel(std::shared_ptr<binaryParser> parser);
 	};
@@ -21,10 +21,9 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockT<BYTE> m_UnnamedByte;
-		blockT<FILETIME> m_ftCurrent;
-		blockT<GUID> m_guid;
-		ULONG m_ulResponseLevels = 0;
+		std::shared_ptr<blockT<BYTE>> m_UnnamedByte = emptyT<BYTE>();
+		std::shared_ptr<blockT<FILETIME>> m_ftCurrent = emptyT<FILETIME>();
+		std::shared_ptr<blockT<GUID>> m_guid = emptyT<GUID>();
 		std::vector<std::shared_ptr<ResponseLevel>> m_lpResponseLevels;
 	};
 } // namespace smartview
