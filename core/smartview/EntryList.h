@@ -6,8 +6,8 @@ namespace smartview
 {
 	struct EntryListEntryStruct
 	{
-		blockT<DWORD> EntryLength;
-		blockT<DWORD> EntryLengthPad;
+		std::shared_ptr<blockT<DWORD>> EntryLength = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> EntryLengthPad = emptyT<DWORD>();
 		EntryIdStruct EntryId;
 
 		EntryListEntryStruct(std::shared_ptr<binaryParser> parser);
@@ -19,8 +19,8 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockT<DWORD> m_EntryCount;
-		blockT<DWORD> m_Pad;
+		std::shared_ptr<blockT<DWORD>> m_EntryCount = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_Pad = emptyT<DWORD>();
 
 		std::vector<std::shared_ptr<EntryListEntryStruct>> m_Entry;
 	};
