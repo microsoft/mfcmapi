@@ -7,14 +7,14 @@ namespace smartview
 {
 	struct ExtendedFlag
 	{
-		blockT<BYTE> Id;
-		blockT<BYTE> Cb;
+		std::shared_ptr<blockT<BYTE>> Id = emptyT<BYTE>();
+		std::shared_ptr<blockT<BYTE>> Cb = emptyT<BYTE>();
 		struct
 		{
-			blockT<DWORD> ExtendedFlags;
-			blockT<GUID> SearchFolderID;
-			blockT<DWORD> SearchFolderTag;
-			blockT<DWORD> ToDoFolderVersion;
+			std::shared_ptr<blockT<DWORD>> ExtendedFlags = emptyT<DWORD>();
+			std::shared_ptr<blockT<GUID>> SearchFolderID = emptyT<GUID>();
+			std::shared_ptr<blockT<DWORD>> SearchFolderTag = emptyT<DWORD>();
+			std::shared_ptr<blockT<DWORD>> ToDoFolderVersion = emptyT<DWORD>();
 		} Data;
 		std::shared_ptr<blockBytes> lpUnknownData = emptyBB();
 		bool bBadData{};

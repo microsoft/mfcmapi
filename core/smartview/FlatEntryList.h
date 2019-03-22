@@ -8,7 +8,7 @@ namespace smartview
 {
 	struct FlatEntryID
 	{
-		blockT<DWORD> dwSize;
+		std::shared_ptr<blockT<DWORD>> dwSize = emptyT<DWORD>();
 		EntryIdStruct lpEntryID;
 
 		std::shared_ptr<blockBytes> padding = emptyBB();
@@ -22,8 +22,8 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockT<DWORD> m_cEntries;
-		blockT<DWORD> m_cbEntries;
+		std::shared_ptr<blockT<DWORD>> m_cEntries = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_cbEntries = emptyT<DWORD>();
 		std::vector<std::shared_ptr<FlatEntryID>> m_pEntryIDs;
 	};
 } // namespace smartview
