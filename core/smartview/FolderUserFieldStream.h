@@ -8,13 +8,13 @@ namespace smartview
 {
 	struct FolderFieldDefinitionCommon
 	{
-		blockT<GUID> PropSetGuid;
-		blockT<DWORD> fcapm;
-		blockT<DWORD> dwString;
-		blockT<DWORD> dwBitmap;
-		blockT<DWORD> dwDisplay;
-		blockT<DWORD> iFmt;
-		blockT<WORD> wszFormulaLength;
+		std::shared_ptr<blockT<GUID>> PropSetGuid = emptyT<GUID>();
+		std::shared_ptr<blockT<DWORD>> fcapm = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> dwString = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> dwBitmap = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> dwDisplay = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> iFmt = emptyT<DWORD>();
+		std::shared_ptr<blockT<WORD>> wszFormulaLength = emptyT<WORD>();
 		std::shared_ptr<blockStringW> wszFormula = emptySW();
 
 		void parse(std::shared_ptr<binaryParser>& parser);
@@ -22,8 +22,8 @@ namespace smartview
 
 	struct FolderFieldDefinitionA
 	{
-		blockT<DWORD> FieldType;
-		blockT<WORD> FieldNameLength;
+		std::shared_ptr<blockT<DWORD>> FieldType = emptyT<DWORD>();
+		std::shared_ptr<blockT<WORD>> FieldNameLength = emptyT<WORD>();
 		std::shared_ptr<blockStringA> FieldName = emptySA();
 		FolderFieldDefinitionCommon Common;
 
@@ -32,8 +32,8 @@ namespace smartview
 
 	struct FolderFieldDefinitionW
 	{
-		blockT<DWORD> FieldType;
-		blockT<WORD> FieldNameLength;
+		std::shared_ptr<blockT<DWORD>> FieldType = emptyT<DWORD>();
+		std::shared_ptr<blockT<WORD>> FieldNameLength = emptyT<WORD>();
 		std::shared_ptr<blockStringW> FieldName = emptySW();
 		FolderFieldDefinitionCommon Common;
 
@@ -46,9 +46,9 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockT<DWORD> m_FolderUserFieldsAnsiCount;
+		std::shared_ptr<blockT<DWORD>> m_FolderUserFieldsAnsiCount = emptyT<DWORD>();
 		std::vector<std::shared_ptr<FolderFieldDefinitionA>> m_FieldDefinitionsA;
-		blockT<DWORD> m_FolderUserFieldsUnicodeCount;
+		std::shared_ptr<blockT<DWORD>> m_FolderUserFieldsUnicodeCount = emptyT<DWORD>();
 		std::vector<std::shared_ptr<FolderFieldDefinitionW>> m_FieldDefinitionsW;
 	};
 } // namespace smartview
