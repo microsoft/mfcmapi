@@ -5,14 +5,14 @@ namespace smartview
 {
 	SRowStruct::SRowStruct(std::shared_ptr<binaryParser> parser)
 	{
-		cValues.parse<DWORD>(parser);
+		cValues = blockT<DWORD>::parse(parser);
 
-		if (cValues)
+		if (*cValues)
 		{
-			if (cValues < _MaxEntriesSmall)
+			if (*cValues < _MaxEntriesSmall)
 			{
 				lpProps.EnableNickNameParsing();
-				lpProps.SetMaxEntries(cValues);
+				lpProps.SetMaxEntries(*cValues);
 				lpProps.parse(parser, false);
 			}
 		}
@@ -21,24 +21,24 @@ namespace smartview
 	void NickNameCache::Parse()
 	{
 		m_Metadata1 = blockBytes::parse(m_Parser, 4);
-		m_ulMajorVersion.parse<DWORD>(m_Parser);
-		m_ulMinorVersion.parse<DWORD>(m_Parser);
-		m_cRowCount.parse<DWORD>(m_Parser);
+		m_ulMajorVersion = blockT<DWORD>::parse(m_Parser);
+		m_ulMinorVersion = blockT<DWORD>::parse(m_Parser);
+		m_cRowCount = blockT<DWORD>::parse(m_Parser);
 
-		if (m_cRowCount)
+		if (*m_cRowCount)
 		{
-			if (m_cRowCount < _MaxEntriesEnormous)
+			if (*m_cRowCount < _MaxEntriesEnormous)
 			{
-				m_lpRows.reserve(m_cRowCount);
-				for (DWORD i = 0; i < m_cRowCount; i++)
+				m_lpRows.reserve(*m_cRowCount);
+				for (auto i = 0; i < *m_cRowCount; i++)
 				{
 					m_lpRows.emplace_back(std::make_shared<SRowStruct>(m_Parser));
 				}
 			}
 		}
 
-		m_cbEI.parse<DWORD>(m_Parser);
-		m_lpbEI = blockBytes::parse(m_Parser, m_cbEI, _MaxBytes);
+		m_cbEI = blockT<DWORD>::parse(m_Parser);
+		m_lpbEI = blockBytes::parse(m_Parser, *m_cbEI, _MaxBytes);
 		m_Metadata2 = blockBytes::parse(m_Parser, 8);
 	}
 
@@ -49,9 +49,9 @@ namespace smartview
 		addChild(m_Metadata1);
 		terminateBlock();
 
-		addChild(m_ulMajorVersion, L"Major Version = %1!d!\r\n", m_ulMajorVersion.getData());
-		addChild(m_ulMinorVersion, L"Minor Version = %1!d!\r\n", m_ulMinorVersion.getData());
-		addChild(m_cRowCount, L"Row Count = %1!d!", m_cRowCount.getData());
+		addChild(m_ulMajorVersion, L"Major Version = %1!d!\r\n", m_ulMajorVersion->getData());
+		addChild(m_ulMinorVersion, L"Minor Version = %1!d!\r\n", m_ulMinorVersion->getData());
+		addChild(m_cRowCount, L"Row Count = %1!d!", m_cRowCount->getData());
 
 		if (!m_lpRows.empty())
 		{
@@ -60,10 +60,12 @@ namespace smartview
 			{
 				terminateBlock();
 				if (i > 0) addBlankLine();
-				addHeader(L"Row %1!d!\r\n", i++);
-				addChild(row->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", row->cValues.getData());
+				addHeader(L"Row %1!d!\r\n", i);
+				addChild(row->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", row->cValues->getData());
 
 				addChild(row->lpProps.getBlock());
+
+				i++;
 			}
 		}
 

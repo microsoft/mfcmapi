@@ -12,12 +12,12 @@ namespace smartview
 		void ParseBlocks() override;
 
 		std::shared_ptr<blockBytes> m_Id = emptyBB(); // 16 bytes
-		blockT<WORD> m_Year;
-		blockT<BYTE> m_Month;
-		blockT<BYTE> m_Day;
-		blockT<FILETIME> m_CreationTime;
-		blockT<LARGE_INTEGER> m_X;
-		blockT<DWORD> m_dwSize;
+		std::shared_ptr<blockT<WORD>> m_Year = emptyT<WORD>();
+		std::shared_ptr<blockT<BYTE>> m_Month = emptyT<BYTE>();
+		std::shared_ptr<blockT<BYTE>> m_Day = emptyT<BYTE>();
+		std::shared_ptr<blockT<FILETIME>> m_CreationTime = emptyT<FILETIME>();
+		std::shared_ptr<blockT<LARGE_INTEGER>> m_X = emptyT<LARGE_INTEGER>();
+		std::shared_ptr<blockT<DWORD>> m_dwSize = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> m_lpData = emptyBB();
 	};
 } // namespace smartview

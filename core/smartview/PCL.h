@@ -7,9 +7,8 @@ namespace smartview
 {
 	struct SizedXID
 	{
-		blockT<BYTE> XidSize;
-		blockT<GUID> NamespaceGuid;
-		DWORD cbLocalId{};
+		std::shared_ptr<blockT<BYTE>> XidSize = emptyT<BYTE>();
+		std::shared_ptr<blockT<GUID>> NamespaceGuid = emptyT<GUID>();
 		std::shared_ptr<blockBytes> LocalID = emptyBB();
 
 		SizedXID(std::shared_ptr<binaryParser>& parser);
@@ -21,7 +20,6 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		DWORD m_cXID{};
 		std::vector<std::shared_ptr<SizedXID>> m_lpXID;
 	};
 } // namespace smartview
