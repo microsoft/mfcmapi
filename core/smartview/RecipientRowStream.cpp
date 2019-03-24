@@ -6,14 +6,14 @@ namespace smartview
 {
 	ADRENTRYStruct::ADRENTRYStruct(std::shared_ptr<binaryParser> parser)
 	{
-		cValues.parse<DWORD>(parser);
-		ulReserved1.parse<DWORD>(parser);
+		cValues = blockT<DWORD>::parse(parser);
+		ulReserved1 = blockT<DWORD>::parse(parser);
 
-		if (cValues)
+		if (*cValues)
 		{
-			if (cValues < _MaxEntriesSmall)
+			if (*cValues < _MaxEntriesSmall)
 			{
-				rgPropVals.SetMaxEntries(cValues);
+				rgPropVals.SetMaxEntries(*cValues);
 				rgPropVals.SmartViewParser::parse(parser, false);
 			}
 		}
@@ -21,15 +21,15 @@ namespace smartview
 
 	void RecipientRowStream::Parse()
 	{
-		m_cVersion.parse<DWORD>(m_Parser);
-		m_cRowCount.parse<DWORD>(m_Parser);
+		m_cVersion = blockT<DWORD>::parse(m_Parser);
+		m_cRowCount = blockT<DWORD>::parse(m_Parser);
 
-		if (m_cRowCount)
+		if (*m_cRowCount)
 		{
-			if (m_cRowCount < _MaxEntriesSmall)
+			if (*m_cRowCount < _MaxEntriesSmall)
 			{
-				m_lpAdrEntry.reserve(m_cRowCount);
-				for (DWORD i = 0; i < m_cRowCount; i++)
+				m_lpAdrEntry.reserve(*m_cRowCount);
+				for (DWORD i = 0; i < *m_cRowCount; i++)
 				{
 					m_lpAdrEntry.emplace_back(std::make_shared<ADRENTRYStruct>(m_Parser));
 				}
@@ -40,8 +40,8 @@ namespace smartview
 	void RecipientRowStream::ParseBlocks()
 	{
 		setRoot(L"Recipient Row Stream\r\n");
-		addChild(m_cVersion, L"cVersion = %1!d!\r\n", m_cVersion.getData());
-		addChild(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount.getData());
+		addChild(m_cVersion, L"cVersion = %1!d!\r\n", m_cVersion->getData());
+		addChild(m_cRowCount, L"cRowCount = %1!d!\r\n", m_cRowCount->getData());
 		if (!m_lpAdrEntry.empty())
 		{
 			addBlankLine();
@@ -49,10 +49,12 @@ namespace smartview
 			for (const auto& entry : m_lpAdrEntry)
 			{
 				terminateBlock();
-				addHeader(L"Row %1!d!\r\n", i++);
-				addChild(entry->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", entry->cValues.getData());
-				addChild(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!\r\n", entry->ulReserved1.getData());
+				addHeader(L"Row %1!d!\r\n", i);
+				addChild(entry->cValues, L"cValues = 0x%1!08X! = %1!d!\r\n", entry->cValues->getData());
+				addChild(entry->ulReserved1, L"ulReserved1 = 0x%1!08X! = %1!d!\r\n", entry->ulReserved1->getData());
 				addChild(entry->rgPropVals.getBlock());
+
+				i++;
 			}
 		}
 	}
