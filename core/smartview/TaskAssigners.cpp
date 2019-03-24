@@ -5,11 +5,11 @@ namespace smartview
 {
 	TaskAssigner::TaskAssigner(std::shared_ptr<binaryParser>& parser)
 	{
-		cbAssigner.parse<DWORD>(parser);
-		const auto ulSize = min(cbAssigner, (ULONG) parser->RemainingBytes());
+		cbAssigner = blockT<DWORD>::parse(parser);
+		const auto ulSize = min(*cbAssigner, (ULONG) parser->RemainingBytes());
 		parser->setCap(ulSize);
-		cbEntryID.parse<DWORD>(parser);
-		lpEntryID = blockBytes::parse(parser, cbEntryID, _MaxEID);
+		cbEntryID = blockT<ULONG>::parse(parser);
+		lpEntryID = blockBytes::parse(parser, *cbEntryID, _MaxEID);
 		szDisplayName = blockStringA::parse(parser);
 		wzDisplayName = blockStringW::parse(parser);
 		JunkData = blockBytes::parse(parser);
@@ -18,12 +18,12 @@ namespace smartview
 
 	void TaskAssigners::Parse()
 	{
-		m_cAssigners.parse<DWORD>(m_Parser);
+		m_cAssigners = blockT<DWORD>::parse(m_Parser);
 
-		if (m_cAssigners && m_cAssigners < _MaxEntriesSmall)
+		if (*m_cAssigners && *m_cAssigners < _MaxEntriesSmall)
 		{
-			m_lpTaskAssigners.reserve(m_cAssigners);
-			for (DWORD i = 0; i < m_cAssigners; i++)
+			m_lpTaskAssigners.reserve(*m_cAssigners);
+			for (DWORD i = 0; i < *m_cAssigners; i++)
 			{
 				m_lpTaskAssigners.emplace_back(std::make_shared<TaskAssigner>(m_Parser));
 			}
@@ -33,14 +33,14 @@ namespace smartview
 	void TaskAssigners::ParseBlocks()
 	{
 		setRoot(L"Task Assigners: \r\n");
-		addChild(m_cAssigners, L"cAssigners = 0x%1!08X! = %1!d!", m_cAssigners.getData());
+		addChild(m_cAssigners, L"cAssigners = 0x%1!08X! = %1!d!", m_cAssigners->getData());
 
 		auto i = 0;
 		for (const auto& ta : m_lpTaskAssigners)
 		{
 			terminateBlock();
 			addHeader(L"Task Assigner[%1!d!]\r\n", i);
-			addChild(ta->cbEntryID, L"\tcbEntryID = 0x%1!08X! = %1!d!\r\n", ta->cbEntryID.getData());
+			addChild(ta->cbEntryID, L"\tcbEntryID = 0x%1!08X! = %1!d!\r\n", ta->cbEntryID->getData());
 			addHeader(L"\tlpEntryID = ");
 
 			if (!ta->lpEntryID->empty())
