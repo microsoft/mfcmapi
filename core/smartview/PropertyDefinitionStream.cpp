@@ -10,48 +10,48 @@ namespace smartview
 {
 	void PackedAnsiString::parse(std::shared_ptr<binaryParser>& parser)
 	{
-		cchLength.parse<BYTE>(parser);
-		if (0xFF == cchLength)
+		cchLength = blockT<BYTE>::parse(parser);
+		if (*cchLength == 0xFF)
 		{
-			cchExtendedLength.parse<WORD>(parser);
+			cchExtendedLength = blockT<WORD>::parse(parser);
 		}
 
 		szCharacters =
-			blockStringA::parse(parser, cchExtendedLength ? cchExtendedLength.getData() : cchLength.getData());
+			blockStringA::parse(parser, *cchExtendedLength ? cchExtendedLength->getData() : cchLength->getData());
 	}
 
 	void PackedUnicodeString::parse(std::shared_ptr<binaryParser>& parser)
 	{
-		cchLength.parse<BYTE>(parser);
-		if (0xFF == cchLength)
+		cchLength = blockT<BYTE>::parse(parser);
+		if (*cchLength == 0xFF)
 		{
-			cchExtendedLength.parse<WORD>(parser);
+			cchExtendedLength = blockT<WORD>::parse(parser);
 		}
 
 		szCharacters =
-			blockStringW::parse(parser, cchExtendedLength ? cchExtendedLength.getData() : cchLength.getData());
+			blockStringW::parse(parser, *cchExtendedLength ? cchExtendedLength->getData() : cchLength->getData());
 	}
 
 	SkipBlock::SkipBlock(std::shared_ptr<binaryParser>& parser, DWORD iSkip)
 	{
-		dwSize.parse<DWORD>(parser);
+		dwSize = blockT<DWORD>::parse(parser);
 		if (iSkip == 0)
 		{
 			lpbContentText.parse(parser);
 		}
 		else
 		{
-			lpbContent = blockBytes::parse(parser, dwSize, _MaxBytes);
+			lpbContent = blockBytes::parse(parser, *dwSize, _MaxBytes);
 		}
 	}
 
 	FieldDefinition::FieldDefinition(std::shared_ptr<binaryParser>& parser, WORD version)
 	{
-		dwFlags.parse<DWORD>(parser);
-		wVT.parse<WORD>(parser);
-		dwDispid.parse<DWORD>(parser);
-		wNmidNameLength.parse<WORD>(parser);
-		szNmidName = blockStringW::parse(parser, wNmidNameLength);
+		dwFlags = blockT<DWORD>::parse(parser);
+		wVT = blockT<WORD>::parse(parser);
+		dwDispid = blockT<DWORD>::parse(parser);
+		wNmidNameLength = blockT<WORD>::parse(parser);
+		szNmidName = blockStringW::parse(parser, *wNmidNameLength);
 
 		pasNameANSI.parse(parser);
 		pasFormulaANSI.parse(parser);
@@ -61,7 +61,7 @@ namespace smartview
 
 		if (version == PropDefV2)
 		{
-			dwInternalType.parse<DWORD>(parser);
+			dwInternalType = blockT<DWORD>::parse(parser);
 
 			// Have to count how many skip blocks are here.
 			// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
@@ -79,13 +79,12 @@ namespace smartview
 
 			parser->SetCurrentOffset(stBookmark); // We're done with our first pass, restore the bookmark
 
-			dwSkipBlockCount = skipBlockCount;
-			if (dwSkipBlockCount && dwSkipBlockCount < _MaxEntriesSmall)
+			if (skipBlockCount && skipBlockCount < _MaxEntriesSmall)
 			{
-				psbSkipBlocks.reserve(dwSkipBlockCount);
-				for (DWORD iSkip = 0; iSkip < dwSkipBlockCount; iSkip++)
+				psbSkipBlocks.reserve(skipBlockCount);
+				for (DWORD i = 0; i < skipBlockCount; i++)
 				{
-					psbSkipBlocks.emplace_back(std::make_shared<SkipBlock>(parser, iSkip));
+					psbSkipBlocks.emplace_back(std::make_shared<SkipBlock>(parser, i));
 				}
 			}
 		}
@@ -93,122 +92,123 @@ namespace smartview
 
 	void PropertyDefinitionStream::Parse()
 	{
-		m_wVersion.parse<WORD>(m_Parser);
-		m_dwFieldDefinitionCount.parse<DWORD>(m_Parser);
-		if (m_dwFieldDefinitionCount)
+		m_wVersion = blockT<WORD>::parse(m_Parser);
+		m_dwFieldDefinitionCount = blockT<DWORD>::parse(m_Parser);
+		if (*m_dwFieldDefinitionCount)
 		{
-			if (m_dwFieldDefinitionCount < _MaxEntriesLarge)
+			if (*m_dwFieldDefinitionCount < _MaxEntriesLarge)
 			{
-				for (DWORD iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
+				for (DWORD i = 0; i < *m_dwFieldDefinitionCount; i++)
 				{
-					m_pfdFieldDefinitions.emplace_back(std::make_shared<FieldDefinition>(m_Parser, m_wVersion));
+					m_pfdFieldDefinitions.emplace_back(std::make_shared<FieldDefinition>(m_Parser, *m_wVersion));
 				}
 			}
 		}
 	}
 
-	_Check_return_ block& PackedAnsiString::toBlock(_In_ const std::wstring& szFieldName)
+	std::shared_ptr<block> PackedAnsiString::toBlock(_In_ const std::wstring& szFieldName)
 	{
 		auto& data = cchLength;
 
-		if (0xFF == cchLength)
+		if (*cchLength == 0xFF)
 		{
-			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength.getData());
-			data.setSize(cchLength.getSize() + cchExtendedLength.getSize());
+			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength->getData());
+			data->setSize(cchLength->getSize() + cchExtendedLength->getSize());
 		}
 		else
 		{
-			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength.getData());
+			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength->getData());
 		}
 
 		if (szCharacters->length())
 		{
-			data.addHeader(L" Characters = ");
-			data.addChild(szCharacters, szCharacters->toWstring());
+			data->addHeader(L" Characters = ");
+			data->addChild(szCharacters, szCharacters->toWstring());
 		}
 
-		data.terminateBlock();
+		data->terminateBlock();
 		return data;
 	}
 
-	_Check_return_ block& PackedUnicodeString::toBlock(_In_ const std::wstring& szFieldName)
+	std::shared_ptr<block> PackedUnicodeString::toBlock(_In_ const std::wstring& szFieldName)
 	{
 		auto& data = cchLength;
 
-		if (0xFF == cchLength)
+		if (*cchLength == 0xFF)
 		{
-			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength.getData());
-			data.setSize(cchLength.getSize() + cchExtendedLength.getSize());
+			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength->getData());
+			data->setSize(cchLength->getSize() + cchExtendedLength->getSize());
 		}
 		else
 		{
-			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength.getData());
+			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength->getData());
 		}
 
 		if (szCharacters->length())
 		{
-			data.addHeader(L" Characters = ");
-			data.addChild(szCharacters, szCharacters->c_str());
+			data->addHeader(L" Characters = ");
+			data->addChild(szCharacters, szCharacters->c_str());
 		}
 
-		data.terminateBlock();
+		data->terminateBlock();
 		return data;
 	}
 
 	void PropertyDefinitionStream::ParseBlocks()
 	{
 		setRoot(L"Property Definition Stream\r\n");
-		auto szVersion = flags::InterpretFlags(flagPropDefVersion, m_wVersion);
-		addChild(m_wVersion, L"Version = 0x%1!04X! = %2!ws!\r\n", m_wVersion.getData(), szVersion.c_str());
-		addChild(m_dwFieldDefinitionCount, L"FieldDefinitionCount = 0x%1!08X!", m_dwFieldDefinitionCount.getData());
+		auto szVersion = flags::InterpretFlags(flagPropDefVersion, *m_wVersion);
+		addChild(m_wVersion, L"Version = 0x%1!04X! = %2!ws!\r\n", m_wVersion->getData(), szVersion.c_str());
+		addChild(m_dwFieldDefinitionCount, L"FieldDefinitionCount = 0x%1!08X!", m_dwFieldDefinitionCount->getData());
 
-		auto iDef = 0;
+		auto i = 0;
 		for (const auto& def : m_pfdFieldDefinitions)
 		{
 			terminateBlock();
 			auto fieldDef = std::make_shared<block>();
-			fieldDef->setText(L"Definition: %1!d!\r\n", iDef);
+			addChild(fieldDef);
+			fieldDef->setText(L"Definition: %1!d!\r\n", i);
 
-			auto szFlags = flags::InterpretFlags(flagPDOFlag, def->dwFlags);
+			auto szFlags = flags::InterpretFlags(flagPDOFlag, *def->dwFlags);
 			fieldDef->addChild(
-				def->dwFlags, L"\tFlags = 0x%1!08X! = %2!ws!\r\n", def->dwFlags.getData(), szFlags.c_str());
-			auto szVarEnum = flags::InterpretFlags(flagVarEnum, def->wVT);
-			fieldDef->addChild(def->wVT, L"\tVT = 0x%1!04X! = %2!ws!\r\n", def->wVT.getData(), szVarEnum.c_str());
-			fieldDef->addChild(def->dwDispid, L"\tDispID = 0x%1!08X!", def->dwDispid.getData());
+				def->dwFlags, L"\tFlags = 0x%1!08X! = %2!ws!\r\n", def->dwFlags->getData(), szFlags.c_str());
+			auto szVarEnum = flags::InterpretFlags(flagVarEnum, *def->wVT);
+			fieldDef->addChild(def->wVT, L"\tVT = 0x%1!04X! = %2!ws!\r\n", def->wVT->getData(), szVarEnum.c_str());
+			fieldDef->addChild(def->dwDispid, L"\tDispID = 0x%1!08X!", def->dwDispid->getData());
 
-			if (def->dwDispid)
+			if (*def->dwDispid)
 			{
-				if (def->dwDispid < 0x8000)
+				if (*def->dwDispid < 0x8000)
 				{
-					auto propTagNames = proptags::PropTagToPropName(def->dwDispid, false);
+					auto propTagNames = proptags::PropTagToPropName(*def->dwDispid, false);
 					if (!propTagNames.bestGuess.empty())
 					{
-						fieldDef->addChild(def->dwDispid, L" = %1!ws!", propTagNames.bestGuess.c_str());
+						def->dwDispid->addHeader(L" = %1!ws!", propTagNames.bestGuess.c_str());
 					}
 
 					if (!propTagNames.otherMatches.empty())
 					{
-						fieldDef->addChild(def->dwDispid, L": (%1!ws!)", propTagNames.otherMatches.c_str());
+						def->dwDispid->addHeader(L": (%1!ws!)", propTagNames.otherMatches.c_str());
 					}
 				}
 				else
 				{
 					std::wstring szDispidName;
-					MAPINAMEID mnid = {};
+					auto mnid = MAPINAMEID{};
 					mnid.lpguid = nullptr;
 					mnid.ulKind = MNID_ID;
-					mnid.Kind.lID = def->dwDispid;
+					mnid.Kind.lID = *def->dwDispid;
 					szDispidName = strings::join(cache::NameIDToPropNames(&mnid), L", ");
 					if (!szDispidName.empty())
 					{
-						fieldDef->addChild(def->dwDispid, L" = %1!ws!", szDispidName.c_str());
+						def->dwDispid->addHeader(L" = %1!ws!", szDispidName.c_str());
 					}
 				}
 			}
 
 			fieldDef->terminateBlock();
 			fieldDef->addChild(
-				def->wNmidNameLength, L"\tNmidNameLength = 0x%1!04X!\r\n", def->wNmidNameLength.getData());
+				def->wNmidNameLength, L"\tNmidNameLength = 0x%1!04X!\r\n", def->wNmidNameLength->getData());
 			fieldDef->addChild(def->szNmidName, L"\tNmidName = %1!ws!\r\n", def->szNmidName->c_str());
 
 			fieldDef->addChild(def->pasNameANSI.toBlock(L"NameAnsi"));
@@ -217,25 +217,26 @@ namespace smartview
 			fieldDef->addChild(def->pasValidationTextANSI.toBlock(L"ValidationTextANSI"));
 			fieldDef->addChild(def->pasErrorANSI.toBlock(L"ErrorANSI"));
 
-			if (m_wVersion == PropDefV2)
+			if (*m_wVersion == PropDefV2)
 			{
-				szFlags = flags::InterpretFlags(flagInternalType, def->dwInternalType);
+				szFlags = flags::InterpretFlags(flagInternalType, *def->dwInternalType);
 				fieldDef->addChild(
 					def->dwInternalType,
 					L"\tInternalType = 0x%1!08X! = %2!ws!\r\n",
-					def->dwInternalType.getData(),
+					def->dwInternalType->getData(),
 					szFlags.c_str());
-				fieldDef->addHeader(L"\tSkipBlockCount = %1!d!", def->dwSkipBlockCount);
+				fieldDef->addHeader(L"\tSkipBlockCount = %1!d!", def->psbSkipBlocks.size());
 
-				auto iSkip = 0;
+				auto i = 0;
 				for (const auto& sb : def->psbSkipBlocks)
 				{
 					fieldDef->terminateBlock();
 					auto skipBlock = std::make_shared<block>();
-					skipBlock->setText(L"\tSkipBlock: %1!d!\r\n", iSkip);
-					skipBlock->addChild(sb->dwSize, L"\t\tSize = 0x%1!08X!", sb->dwSize.getData());
+					fieldDef->addChild(skipBlock);
+					skipBlock->setText(L"\tSkipBlock: %1!d!\r\n", i);
+					skipBlock->addChild(sb->dwSize, L"\t\tSize = 0x%1!08X!", sb->dwSize->getData());
 
-					if (0 == iSkip)
+					if (i == 0)
 					{
 						skipBlock->terminateBlock();
 						skipBlock->addChild(sb->lpbContentText.toBlock(L"\tFieldName"));
@@ -247,13 +248,11 @@ namespace smartview
 						skipBlock->addChild(sb->lpbContent);
 					}
 
-					fieldDef->addChild(skipBlock);
-					iSkip++;
+					i++;
 				}
 			}
 
-			addChild(fieldDef);
-			iDef++;
+			i++;
 		}
 	}
 } // namespace smartview

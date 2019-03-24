@@ -9,27 +9,27 @@ namespace smartview
 {
 	struct PackedUnicodeString
 	{
-		blockT<BYTE> cchLength;
-		blockT<WORD> cchExtendedLength;
+		std::shared_ptr<blockT<BYTE>> cchLength = emptyT<BYTE>();
+		std::shared_ptr<blockT<WORD>> cchExtendedLength = emptyT<WORD>();
 		std::shared_ptr<blockStringW> szCharacters = emptySW();
 
 		void parse(std::shared_ptr<binaryParser>& parser);
-		_Check_return_ block& toBlock(_In_ const std::wstring& szFieldName);
+		std::shared_ptr<block> toBlock(_In_ const std::wstring& szFieldName);
 	};
 
 	struct PackedAnsiString
 	{
-		blockT<BYTE> cchLength;
-		blockT<WORD> cchExtendedLength;
+		std::shared_ptr<blockT<BYTE>> cchLength = emptyT<BYTE>();
+		std::shared_ptr<blockT<WORD>> cchExtendedLength = emptyT<WORD>();
 		std::shared_ptr<blockStringA> szCharacters = emptySA();
 
 		void parse(std::shared_ptr<binaryParser>& parser);
-		_Check_return_ block& toBlock(_In_ const std::wstring& szFieldName);
+		std::shared_ptr<block> toBlock(_In_ const std::wstring& szFieldName);
 	};
 
 	struct SkipBlock
 	{
-		blockT<DWORD> dwSize;
+		std::shared_ptr<blockT<DWORD>> dwSize = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> lpbContent = emptyBB();
 		PackedUnicodeString lpbContentText;
 
@@ -38,18 +38,17 @@ namespace smartview
 
 	struct FieldDefinition
 	{
-		blockT<DWORD> dwFlags;
-		blockT<WORD> wVT;
-		blockT<DWORD> dwDispid;
-		blockT<WORD> wNmidNameLength;
+		std::shared_ptr<blockT<DWORD>> dwFlags = emptyT<DWORD>();
+		std::shared_ptr<blockT<WORD>> wVT = emptyT<WORD>();
+		std::shared_ptr<blockT<DWORD>> dwDispid = emptyT<DWORD>();
+		std::shared_ptr<blockT<WORD>> wNmidNameLength = emptyT<WORD>();
 		std::shared_ptr<blockStringW> szNmidName = emptySW();
 		PackedAnsiString pasNameANSI;
 		PackedAnsiString pasFormulaANSI;
 		PackedAnsiString pasValidationRuleANSI;
 		PackedAnsiString pasValidationTextANSI;
 		PackedAnsiString pasErrorANSI;
-		blockT<DWORD> dwInternalType;
-		DWORD dwSkipBlockCount{};
+		std::shared_ptr<blockT<DWORD>> dwInternalType = emptyT<DWORD>();
 		std::vector<std::shared_ptr<SkipBlock>> psbSkipBlocks;
 
 		FieldDefinition(std::shared_ptr<binaryParser>& parser, WORD version);
@@ -61,8 +60,8 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockT<WORD> m_wVersion;
-		blockT<DWORD> m_dwFieldDefinitionCount;
+		std::shared_ptr<blockT<WORD>> m_wVersion = emptyT<WORD>();
+		std::shared_ptr<blockT<DWORD>> m_dwFieldDefinitionCount = emptyT<DWORD>();
 		std::vector<std::shared_ptr<FieldDefinition>> m_pfdFieldDefinitions;
 	};
 } // namespace smartview
