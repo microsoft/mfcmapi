@@ -117,7 +117,7 @@ namespace smartview
 		addChild(m_NumericSearch, L"Numeric Search = 0x%1!08X!\r\n", m_NumericSearch->getData());
 		addChild(m_TextSearchLength, L"Text Search Length = 0x%1!02X!", m_TextSearchLength->getData());
 
-		if (m_TextSearchLength)
+		if (*m_TextSearchLength)
 		{
 			terminateBlock();
 			addChild(
@@ -134,7 +134,7 @@ namespace smartview
 		terminateBlock();
 		addChild(m_SkipLen1, L"SkipLen1 = 0x%1!08X!", m_SkipLen1->getData());
 
-		if (m_SkipLen1)
+		if (*m_SkipLen1)
 		{
 			terminateBlock();
 			addHeader(L"SkipBytes1 = ");
@@ -146,7 +146,7 @@ namespace smartview
 		addChild(m_DeepSearch, L"Deep Search = 0x%1!08X!\r\n", m_DeepSearch->getData());
 		addChild(m_FolderList1Length, L"Folder List 1 Length = 0x%1!02X!", m_FolderList1Length->getData());
 
-		if (m_FolderList1Length)
+		if (*m_FolderList1Length)
 		{
 			terminateBlock();
 			addChild(
@@ -164,7 +164,7 @@ namespace smartview
 		terminateBlock();
 		addChild(m_FolderList2Length, L"Folder List 2 Length = 0x%1!08X!", m_FolderList2Length->getData());
 
-		if (m_FolderList2Length)
+		if (*m_FolderList2Length)
 		{
 			terminateBlock();
 			addHeader(L"FolderList2 = \r\n");
@@ -196,7 +196,7 @@ namespace smartview
 		terminateBlock();
 		addChild(m_SkipLen2, L"SkipLen2 = 0x%1!08X!", m_SkipLen2->getData());
 
-		if (m_SkipLen2)
+		if (*m_SkipLen2)
 		{
 			terminateBlock();
 			addHeader(L"SkipBytes2 = ");
@@ -225,7 +225,7 @@ namespace smartview
 		terminateBlock();
 		addChild(m_SkipLen3, L"SkipLen3 = 0x%1!08X!", m_SkipLen3->getData());
 
-		if (m_SkipLen3)
+		if (*m_SkipLen3)
 		{
 			terminateBlock();
 			addHeader(L"SkipBytes3 = ");
