@@ -9,87 +9,87 @@ namespace smartview
 
 	struct SAndRestrictionStruct
 	{
-		blockT<DWORD> cRes;
+		std::shared_ptr<blockT<DWORD>> cRes = emptyT<DWORD>();
 		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
 	};
 
 	struct SOrRestrictionStruct
 	{
-		blockT<DWORD> cRes;
+		std::shared_ptr<blockT<DWORD>> cRes = emptyT<DWORD>();
 		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
 	};
 
 	struct SNotRestrictionStruct
 	{
-		blockT<DWORD> ulReserved;
+		std::shared_ptr<blockT<DWORD>> ulReserved = emptyT<DWORD>();
 		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
 	struct SContentRestrictionStruct
 	{
-		blockT<DWORD> ulFuzzyLevel;
-		blockT<DWORD> ulPropTag;
+		std::shared_ptr<blockT<DWORD>> ulFuzzyLevel = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
 		PropertiesStruct lpProp;
 	};
 
 	struct SBitMaskRestrictionStruct
 	{
-		blockT<DWORD> relBMR;
-		blockT<DWORD> ulPropTag;
-		blockT<DWORD> ulMask;
+		std::shared_ptr<blockT<DWORD>> relBMR = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulMask = emptyT<DWORD>();
 	};
 
 	struct SPropertyRestrictionStruct
 	{
-		blockT<DWORD> relop;
-		blockT<DWORD> ulPropTag;
+		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
 		PropertiesStruct lpProp;
 	};
 
 	struct SComparePropsRestrictionStruct
 	{
-		blockT<DWORD> relop;
-		blockT<DWORD> ulPropTag1;
-		blockT<DWORD> ulPropTag2;
+		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag1 = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag2 = emptyT<DWORD>();
 	};
 
 	struct SSizeRestrictionStruct
 	{
-		blockT<DWORD> relop;
-		blockT<DWORD> ulPropTag;
-		blockT<DWORD> cb;
+		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 	};
 
 	struct SExistRestrictionStruct
 	{
-		blockT<DWORD> ulReserved1;
-		blockT<DWORD> ulPropTag;
-		blockT<DWORD> ulReserved2;
+		std::shared_ptr<blockT<DWORD>> ulReserved1 = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulReserved2 = emptyT<DWORD>();
 	};
 
 	struct SSubRestrictionStruct
 	{
-		blockT<DWORD> ulSubObject;
+		std::shared_ptr<blockT<DWORD>> ulSubObject = emptyT<DWORD>();
 		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
 	struct SCommentRestrictionStruct
 	{
-		blockT<DWORD> cValues; /* # of properties in lpProp */
+		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>(); /* # of properties in lpProp */
 		std::shared_ptr<RestrictionStruct> lpRes;
 		PropertiesStruct lpProp;
 	};
 
 	struct SAnnotationRestrictionStruct
 	{
-		blockT<DWORD> cValues; /* # of properties in lpProp */
+		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>(); /* # of properties in lpProp */
 		std::shared_ptr<RestrictionStruct> lpRes;
 		PropertiesStruct lpProp;
 	};
 
 	struct SCountRestrictionStruct
 	{
-		blockT<DWORD> ulCount;
+		std::shared_ptr<blockT<DWORD>> ulCount = emptyT<DWORD>();
 		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
