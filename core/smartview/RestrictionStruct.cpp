@@ -84,7 +84,7 @@ namespace smartview
 		case RES_CONTENT:
 			resContent.ulFuzzyLevel.parse<DWORD>(m_Parser);
 			resContent.ulPropTag.parse<DWORD>(m_Parser);
-			resContent.lpProp.init(m_Parser, 1, m_bRuleCondition);
+			resContent.lpProp.parse(m_Parser, 1, m_bRuleCondition);
 			break;
 		case RES_PROPERTY:
 			if (m_bRuleCondition)
@@ -93,7 +93,7 @@ namespace smartview
 				resProperty.relop.parse<DWORD>(m_Parser);
 
 			resProperty.ulPropTag.parse<DWORD>(m_Parser);
-			resProperty.lpProp.init(m_Parser, 1, m_bRuleCondition);
+			resProperty.lpProp.parse(m_Parser, 1, m_bRuleCondition);
 			break;
 		case RES_COMPAREPROPS:
 			if (m_bRuleCondition)
@@ -140,7 +140,7 @@ namespace smartview
 			else
 				resComment.cValues.parse<DWORD>(m_Parser);
 
-			resComment.lpProp.init(m_Parser, resComment.cValues, m_bRuleCondition);
+			resComment.lpProp.parse(m_Parser, resComment.cValues, m_bRuleCondition);
 
 			// Check if a restriction is present
 			const auto& resExists = blockT<BYTE>(m_Parser);
@@ -159,7 +159,7 @@ namespace smartview
 			else
 				resAnnotation.cValues.parse<DWORD>(m_Parser);
 
-			resAnnotation.lpProp.init(m_Parser, resAnnotation.cValues, m_bRuleCondition);
+			resAnnotation.lpProp.parse(m_Parser, resAnnotation.cValues, m_bRuleCondition);
 
 			// Check if a restriction is present
 			const auto& resExists = blockT<BYTE>(m_Parser);
@@ -313,7 +313,7 @@ namespace smartview
 					resContent.lpProp.Props()[0]->ulPropTag,
 					L"%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
-					proptags::TagToString(resContent.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
+					proptags::TagToString(*resContent.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
 				propBlock->addChild(
 					resContent.lpProp.Props()[0]->PropBlock(),
 					L"%1!ws!lpRes->res.resContent.lpProp->Value = %2!ws!\r\n",
@@ -342,7 +342,7 @@ namespace smartview
 					resProperty.lpProp.Props()[0]->ulPropTag,
 					L"%1!ws!lpRes->res.resProperty.lpProp->ulPropTag = %2!ws!\r\n",
 					szTabs.c_str(),
-					proptags::TagToString(resProperty.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
+					proptags::TagToString(*resProperty.lpProp.Props()[0]->ulPropTag, nullptr, false, true).c_str());
 				resProperty.ulPropTag.addChild(
 					resProperty.lpProp.Props()[0]->PropBlock(),
 					L"%1!ws!lpRes->res.resProperty.lpProp->Value = %2!ws!\r\n",
@@ -448,18 +448,18 @@ namespace smartview
 		{
 			for (const auto& prop : resComment.lpProp.Props())
 			{
-				prop->ulPropTag.setText(
+				prop->ulPropTag->setText(
 					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
-					proptags::TagToString(prop->ulPropTag, nullptr, false, true).c_str());
-				prop->ulPropTag.addChild(
+					proptags::TagToString(*prop->ulPropTag, nullptr, false, true).c_str());
+				prop->ulPropTag->addChild(
 					prop->PropBlock(),
 					L"%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
 					prop->PropBlock()->c_str());
-				prop->ulPropTag.addChild(
+				prop->ulPropTag->addChild(
 					prop->AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop->AltPropBlock()->c_str());
 
 				resComment.cValues.addChild(prop->ulPropTag);
@@ -484,18 +484,18 @@ namespace smartview
 		case RES_ANNOTATION:
 			for (const auto& prop : resAnnotation.lpProp.Props())
 			{
-				prop->ulPropTag.setText(
+				prop->ulPropTag->setText(
 					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
-					proptags::TagToString(prop->ulPropTag, nullptr, false, true).c_str());
-				prop->ulPropTag.addChild(
+					proptags::TagToString(*prop->ulPropTag, nullptr, false, true).c_str());
+				prop->ulPropTag->addChild(
 					prop->PropBlock(),
 					L"%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %3!ws!\r\n",
 					szTabs.c_str(),
 					i,
 					prop->PropBlock()->c_str());
-				prop->ulPropTag.addChild(
+				prop->ulPropTag->addChild(
 					prop->AltPropBlock(), L"%1!ws!\tAlt: %2!ws!\r\n", szTabs.c_str(), prop->AltPropBlock()->c_str());
 
 				resAnnotation.cValues.addChild(prop->ulPropTag);

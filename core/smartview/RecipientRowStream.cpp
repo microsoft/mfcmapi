@@ -14,7 +14,7 @@ namespace smartview
 			if (cValues < _MaxEntriesSmall)
 			{
 				rgPropVals.SetMaxEntries(cValues);
-				rgPropVals.parse(parser, false);
+				rgPropVals.SmartViewParser::parse(parser, false);
 			}
 		}
 	}

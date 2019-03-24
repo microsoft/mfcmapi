@@ -14,7 +14,7 @@ namespace smartview
 		if (PropertyCount)
 		{
 			Props.SetMaxEntries(PropertyCount);
-			Props.parse(parser, false);
+			Props.SmartViewParser::parse(parser, false);
 		}
 	}
 

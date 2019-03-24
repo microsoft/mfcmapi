@@ -13,7 +13,7 @@ namespace smartview
 			{
 				lpProps.EnableNickNameParsing();
 				lpProps.SetMaxEntries(*cValues);
-				lpProps.parse(parser, false);
+				lpProps.SmartViewParser::parse(parser, false);
 			}
 		}
 	} // namespace smartview
