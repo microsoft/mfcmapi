@@ -127,7 +127,7 @@ namespace smartview
 		m_EndTimeOffset = blockT<DWORD>::parse(m_Parser);
 		m_ExceptionCount = blockT<WORD>::parse(m_Parser);
 
-		if (*m_ExceptionCount && *m_ExceptionCount == m_RecurrencePattern.m_ModifiedInstanceCount &&
+		if (*m_ExceptionCount && *m_ExceptionCount == *m_RecurrencePattern.m_ModifiedInstanceCount &&
 			*m_ExceptionCount < _MaxEntriesSmall)
 		{
 			m_ExceptionInfo.reserve(*m_ExceptionCount);
@@ -140,7 +140,7 @@ namespace smartview
 		m_ReservedBlock1Size = blockT<DWORD>::parse(m_Parser);
 		m_ReservedBlock1 = blockBytes::parse(m_Parser, *m_ReservedBlock1Size, _MaxBytes);
 
-		if (*m_ExceptionCount && *m_ExceptionCount == m_RecurrencePattern.m_ModifiedInstanceCount &&
+		if (*m_ExceptionCount && *m_ExceptionCount == *m_RecurrencePattern.m_ModifiedInstanceCount &&
 			*m_ExceptionCount < _MaxEntriesSmall && !m_ExceptionInfo.empty())
 		{
 			for (WORD i = 0; i < *m_ExceptionCount; i++)
