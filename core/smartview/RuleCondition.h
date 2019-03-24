@@ -21,10 +21,10 @@ namespace smartview
 	//
 	struct PropertyName
 	{
-		blockT<BYTE> Kind{};
-		blockT<GUID> Guid{};
-		blockT<DWORD> LID{};
-		blockT<BYTE> NameSize{};
+		std::shared_ptr<blockT<BYTE>> Kind = emptyT<BYTE>();
+		std::shared_ptr<blockT<GUID>> Guid = emptyT<GUID>();
+		std::shared_ptr<blockT<DWORD>> LID = emptyT<DWORD>();
+		std::shared_ptr<blockT<BYTE>> NameSize = emptyT<BYTE>();
 		std::shared_ptr<blockStringW> Name = emptySW();
 
 		PropertyName(std::shared_ptr<binaryParser>& parser);
@@ -37,9 +37,9 @@ namespace smartview
 	//
 	struct NamedPropertyInformation
 	{
-		blockT<WORD> NoOfNamedProps{};
+		std::shared_ptr<blockT<WORD>> NoOfNamedProps = emptyT<WORD>();
 		std::vector<std::shared_ptr<blockT<WORD>>> PropId;
-		blockT<DWORD> NamedPropertiesSize{};
+		std::shared_ptr<blockT<DWORD>> NamedPropertiesSize = emptyT<DWORD>();
 		std::vector<std::shared_ptr<PropertyName>> PropertyName;
 	};
 
