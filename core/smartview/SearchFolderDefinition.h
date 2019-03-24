@@ -11,8 +11,8 @@ namespace smartview
 {
 	struct AddressListEntryStruct
 	{
-		blockT<DWORD> PropertyCount;
-		blockT<DWORD> Pad;
+		std::shared_ptr<blockT<DWORD>> PropertyCount = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> Pad = emptyT<DWORD>();
 		PropertiesStruct Props;
 
 		AddressListEntryStruct(std::shared_ptr<binaryParser> parser);
@@ -24,27 +24,27 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockT<DWORD> m_Version;
-		blockT<DWORD> m_Flags;
-		blockT<DWORD> m_NumericSearch;
-		blockT<BYTE> m_TextSearchLength;
-		blockT<WORD> m_TextSearchLengthExtended;
+		std::shared_ptr<blockT<DWORD>> m_Version = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_Flags = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_NumericSearch = emptyT<DWORD>();
+		std::shared_ptr<blockT<BYTE>> m_TextSearchLength = emptyT<BYTE>();
+		std::shared_ptr<blockT<WORD>> m_TextSearchLengthExtended = emptyT<WORD>();
 		std::shared_ptr<blockStringW> m_TextSearch = emptySW();
-		blockT<DWORD> m_SkipLen1;
+		std::shared_ptr<blockT<DWORD>> m_SkipLen1 = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> m_SkipBytes1 = emptyBB();
-		blockT<DWORD> m_DeepSearch;
-		blockT<BYTE> m_FolderList1Length;
-		blockT<WORD> m_FolderList1LengthExtended;
+		std::shared_ptr<blockT<DWORD>> m_DeepSearch = emptyT<DWORD>();
+		std::shared_ptr<blockT<BYTE>> m_FolderList1Length = emptyT<BYTE>();
+		std::shared_ptr<blockT<WORD>> m_FolderList1LengthExtended = emptyT<WORD>();
 		std::shared_ptr<blockStringW> m_FolderList1 = emptySW();
-		blockT<DWORD> m_FolderList2Length;
+		std::shared_ptr<blockT<DWORD>> m_FolderList2Length = emptyT<DWORD>();
 		EntryList m_FolderList2;
-		blockT<DWORD> m_AddressCount; // SFST_BINARY
+		std::shared_ptr<blockT<DWORD>> m_AddressCount = emptyT<DWORD>(); // SFST_BINARY
 		std::vector<std::shared_ptr<AddressListEntryStruct>> m_Addresses; // SFST_BINARY
-		blockT<DWORD> m_SkipLen2;
+		std::shared_ptr<blockT<DWORD>> m_SkipLen2 = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> m_SkipBytes2 = emptyBB();
 		std::shared_ptr<RestrictionStruct> m_Restriction; // SFST_MRES
 		std::shared_ptr<blockBytes> m_AdvancedSearchBytes = emptyBB(); // SFST_FILTERSTREAM
-		blockT<DWORD> m_SkipLen3;
+		std::shared_ptr<blockT<DWORD>> m_SkipLen3 = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> m_SkipBytes3 = emptyBB();
 	};
 } // namespace smartview

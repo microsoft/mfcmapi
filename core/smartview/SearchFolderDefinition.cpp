@@ -9,27 +9,27 @@ namespace smartview
 {
 	AddressListEntryStruct::AddressListEntryStruct(std::shared_ptr<binaryParser> parser)
 	{
-		PropertyCount.parse<DWORD>(parser);
-		Pad.parse<DWORD>(parser);
-		if (PropertyCount)
+		PropertyCount = blockT<DWORD>::parse(parser);
+		Pad = blockT<DWORD>::parse(parser);
+		if (*PropertyCount)
 		{
-			Props.SetMaxEntries(PropertyCount);
+			Props.SetMaxEntries(*PropertyCount);
 			Props.SmartViewParser::parse(parser, false);
 		}
 	}
 
 	void SearchFolderDefinition::Parse()
 	{
-		m_Version.parse<DWORD>(m_Parser);
-		m_Flags.parse<DWORD>(m_Parser);
-		m_NumericSearch.parse<DWORD>(m_Parser);
+		m_Version = blockT<DWORD>::parse(m_Parser);
+		m_Flags = blockT<DWORD>::parse(m_Parser);
+		m_NumericSearch = blockT<DWORD>::parse(m_Parser);
 
-		m_TextSearchLength.parse<BYTE>(m_Parser);
-		size_t cchTextSearch = m_TextSearchLength;
-		if (255 == m_TextSearchLength)
+		m_TextSearchLength = blockT<BYTE>::parse(m_Parser);
+		size_t cchTextSearch = *m_TextSearchLength;
+		if (*m_TextSearchLength == 255)
 		{
-			m_TextSearchLengthExtended.parse<WORD>(m_Parser);
-			cchTextSearch = m_TextSearchLengthExtended;
+			m_TextSearchLengthExtended = blockT<WORD>::parse(m_Parser);
+			cchTextSearch = *m_TextSearchLengthExtended;
 		}
 
 		if (cchTextSearch)
@@ -37,17 +37,17 @@ namespace smartview
 			m_TextSearch = blockStringW::parse(m_Parser, cchTextSearch);
 		}
 
-		m_SkipLen1.parse<DWORD>(m_Parser);
-		m_SkipBytes1 = blockBytes::parse(m_Parser, m_SkipLen1, _MaxBytes);
+		m_SkipLen1 = blockT<DWORD>::parse(m_Parser);
+		m_SkipBytes1 = blockBytes::parse(m_Parser, *m_SkipLen1, _MaxBytes);
 
-		m_DeepSearch.parse<DWORD>(m_Parser);
+		m_DeepSearch = blockT<DWORD>::parse(m_Parser);
 
-		m_FolderList1Length.parse<BYTE>(m_Parser);
-		size_t cchFolderList1 = m_FolderList1Length;
-		if (255 == m_FolderList1Length)
+		m_FolderList1Length = blockT<BYTE>::parse(m_Parser);
+		size_t cchFolderList1 = *m_FolderList1Length;
+		if (*m_FolderList1Length == 255)
 		{
-			m_FolderList1LengthExtended.parse<WORD>(m_Parser);
-			cchFolderList1 = m_FolderList1LengthExtended;
+			m_FolderList1LengthExtended = blockT<WORD>::parse(m_Parser);
+			cchFolderList1 = *m_FolderList1LengthExtended;
 		}
 
 		if (cchFolderList1)
@@ -55,22 +55,22 @@ namespace smartview
 			m_FolderList1 = blockStringW::parse(m_Parser, cchFolderList1);
 		}
 
-		m_FolderList2Length.parse<DWORD>(m_Parser);
+		m_FolderList2Length = blockT<DWORD>::parse(m_Parser);
 
 		if (m_FolderList2Length)
 		{
-			m_FolderList2.parse(m_Parser, m_FolderList2Length, true);
+			m_FolderList2.parse(m_Parser, *m_FolderList2Length, true);
 		}
 
-		if (SFST_BINARY & m_Flags)
+		if (*m_Flags & SFST_BINARY)
 		{
-			m_AddressCount.parse<DWORD>(m_Parser);
-			if (m_AddressCount)
+			m_AddressCount = blockT<DWORD>::parse(m_Parser);
+			if (*m_AddressCount)
 			{
-				if (m_AddressCount < _MaxEntriesSmall)
+				if (*m_AddressCount < _MaxEntriesSmall)
 				{
-					m_Addresses.reserve(m_AddressCount);
-					for (DWORD i = 0; i < m_AddressCount; i++)
+					m_Addresses.reserve(*m_AddressCount);
+					for (DWORD i = 0; i < *m_AddressCount; i++)
 					{
 						m_Addresses.emplace_back(std::make_shared<AddressListEntryStruct>(m_Parser));
 					}
@@ -78,16 +78,16 @@ namespace smartview
 			}
 		}
 
-		m_SkipLen2.parse<DWORD>(m_Parser);
-		m_SkipBytes2 = blockBytes::parse(m_Parser, m_SkipLen2, _MaxBytes);
+		m_SkipLen2 = blockT<DWORD>::parse(m_Parser);
+		m_SkipBytes2 = blockBytes::parse(m_Parser, *m_SkipLen2, _MaxBytes);
 
-		if (SFST_MRES & m_Flags)
+		if (*m_Flags & SFST_MRES)
 		{
 			m_Restriction = std::make_shared<RestrictionStruct>(false, true);
 			m_Restriction->SmartViewParser::parse(m_Parser, false);
 		}
 
-		if (SFST_FILTERSTREAM & m_Flags)
+		if (*m_Flags & SFST_FILTERSTREAM)
 		{
 			const auto cbRemainingBytes = m_Parser->RemainingBytes();
 			// Since the format for SFST_FILTERSTREAM isn't documented, just assume that everything remaining
@@ -98,24 +98,24 @@ namespace smartview
 			}
 		}
 
-		m_SkipLen3.parse<DWORD>(m_Parser);
+		m_SkipLen3 = blockT<DWORD>::parse(m_Parser);
 		if (m_SkipLen3)
 		{
-			m_SkipBytes3 = blockBytes::parse(m_Parser, m_SkipLen3, _MaxBytes);
+			m_SkipBytes3 = blockBytes::parse(m_Parser, *m_SkipLen3, _MaxBytes);
 		}
 	}
 
 	void SearchFolderDefinition::ParseBlocks()
 	{
 		setRoot(L"Search Folder Definition:\r\n");
-		addChild(m_Version, L"Version = 0x%1!08X!\r\n", m_Version.getData());
+		addChild(m_Version, L"Version = 0x%1!08X!\r\n", m_Version->getData());
 		addChild(
 			m_Flags,
 			L"Flags = 0x%1!08X! = %2!ws!\r\n",
-			m_Flags.getData(),
-			InterpretNumberAsStringProp(m_Flags, PR_WB_SF_STORAGE_TYPE).c_str());
-		addChild(m_NumericSearch, L"Numeric Search = 0x%1!08X!\r\n", m_NumericSearch.getData());
-		addChild(m_TextSearchLength, L"Text Search Length = 0x%1!02X!", m_TextSearchLength.getData());
+			m_Flags->getData(),
+			InterpretNumberAsStringProp(*m_Flags, PR_WB_SF_STORAGE_TYPE).c_str());
+		addChild(m_NumericSearch, L"Numeric Search = 0x%1!08X!\r\n", m_NumericSearch->getData());
+		addChild(m_TextSearchLength, L"Text Search Length = 0x%1!02X!", m_TextSearchLength->getData());
 
 		if (m_TextSearchLength)
 		{
@@ -123,7 +123,7 @@ namespace smartview
 			addChild(
 				m_TextSearchLengthExtended,
 				L"Text Search Length Extended = 0x%1!04X!\r\n",
-				m_TextSearchLengthExtended.getData());
+				m_TextSearchLengthExtended->getData());
 			addHeader(L"Text Search = ");
 			if (!m_TextSearch->empty())
 			{
@@ -132,7 +132,7 @@ namespace smartview
 		}
 
 		terminateBlock();
-		addChild(m_SkipLen1, L"SkipLen1 = 0x%1!08X!", m_SkipLen1.getData());
+		addChild(m_SkipLen1, L"SkipLen1 = 0x%1!08X!", m_SkipLen1->getData());
 
 		if (m_SkipLen1)
 		{
@@ -143,8 +143,8 @@ namespace smartview
 		}
 
 		terminateBlock();
-		addChild(m_DeepSearch, L"Deep Search = 0x%1!08X!\r\n", m_DeepSearch.getData());
-		addChild(m_FolderList1Length, L"Folder List 1 Length = 0x%1!02X!", m_FolderList1Length.getData());
+		addChild(m_DeepSearch, L"Deep Search = 0x%1!08X!\r\n", m_DeepSearch->getData());
+		addChild(m_FolderList1Length, L"Folder List 1 Length = 0x%1!02X!", m_FolderList1Length->getData());
 
 		if (m_FolderList1Length)
 		{
@@ -152,7 +152,7 @@ namespace smartview
 			addChild(
 				m_FolderList1LengthExtended,
 				L"Folder List 1 Length Extended = 0x%1!04X!\r\n",
-				m_FolderList1LengthExtended.getData());
+				m_FolderList1LengthExtended->getData());
 			addHeader(L"Folder List 1 = ");
 
 			if (!m_FolderList1->empty())
@@ -162,7 +162,7 @@ namespace smartview
 		}
 
 		terminateBlock();
-		addChild(m_FolderList2Length, L"Folder List 2 Length = 0x%1!08X!", m_FolderList2Length.getData());
+		addChild(m_FolderList2Length, L"Folder List 2 Length = 0x%1!08X!", m_FolderList2Length->getData());
 
 		if (m_FolderList2Length)
 		{
@@ -171,10 +171,10 @@ namespace smartview
 			addChild(m_FolderList2.getBlock());
 		}
 
-		if (SFST_BINARY & m_Flags)
+		if (*m_Flags & SFST_BINARY)
 		{
 			terminateBlock();
-			addChild(m_AddressCount, L"AddressCount = 0x%1!08X!", m_AddressCount.getData());
+			addChild(m_AddressCount, L"AddressCount = 0x%1!08X!", m_AddressCount->getData());
 
 			auto i = DWORD{};
 			for (const auto& address : m_Addresses)
@@ -184,8 +184,8 @@ namespace smartview
 					address->PropertyCount,
 					L"Addresses[%1!d!].PropertyCount = 0x%2!08X!\r\n",
 					i,
-					address->PropertyCount.getData());
-				addChild(address->Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!\r\n", i, address->Pad.getData());
+					address->PropertyCount->getData());
+				addChild(address->Pad, L"Addresses[%1!d!].Pad = 0x%2!08X!\r\n", i, address->Pad->getData());
 
 				addHeader(L"Properties[%1!d!]:\r\n", i);
 				addChild(address->Props.getBlock());
@@ -194,7 +194,7 @@ namespace smartview
 		}
 
 		terminateBlock();
-		addChild(m_SkipLen2, L"SkipLen2 = 0x%1!08X!", m_SkipLen2.getData());
+		addChild(m_SkipLen2, L"SkipLen2 = 0x%1!08X!", m_SkipLen2->getData());
 
 		if (m_SkipLen2)
 		{
@@ -209,7 +209,7 @@ namespace smartview
 			addChild(m_Restriction->getBlock());
 		}
 
-		if (SFST_FILTERSTREAM & m_Flags)
+		if (*m_Flags & SFST_FILTERSTREAM)
 		{
 			terminateBlock();
 			addHeader(L"AdvancedSearchLen = 0x%1!08X!", m_AdvancedSearchBytes->size());
@@ -223,7 +223,7 @@ namespace smartview
 		}
 
 		terminateBlock();
-		addChild(m_SkipLen3, L"SkipLen3 = 0x%1!08X!", m_SkipLen3.getData());
+		addChild(m_SkipLen3, L"SkipLen3 = 0x%1!08X!", m_SkipLen3->getData());
 
 		if (m_SkipLen3)
 		{
