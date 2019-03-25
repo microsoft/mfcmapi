@@ -8,11 +8,11 @@ namespace smartview
 {
 	struct TombstoneRecord
 	{
-		blockT<DWORD> StartTime;
-		blockT<DWORD> EndTime;
-		blockT<DWORD> GlobalObjectIdSize;
+		std::shared_ptr<blockT<DWORD>> StartTime = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> EndTime = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> GlobalObjectIdSize = emptyT<DWORD>();
 		GlobalObjectId GlobalObjectId;
-		blockT<WORD> UsernameSize;
+		std::shared_ptr<blockT<WORD>> UsernameSize = emptyT<WORD>();
 		std::shared_ptr<blockStringA> szUsername = emptySA();
 
 		TombstoneRecord(std::shared_ptr<binaryParser> parser);
@@ -24,12 +24,12 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockT<DWORD> m_Identifier;
-		blockT<DWORD> m_HeaderSize;
-		blockT<DWORD> m_Version;
-		blockT<DWORD> m_RecordsCount;
-		DWORD m_ActualRecordsCount{}; // computed based on state, not read value
-		blockT<DWORD> m_RecordsSize;
+		std::shared_ptr<blockT<DWORD>> m_Identifier = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_HeaderSize = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_Version = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_RecordsCount = emptyT<DWORD>();
+//		DWORD m_ActualRecordsCount{}; // computed based on state, not read value
+		std::shared_ptr<blockT<DWORD>> m_RecordsSize = emptyT<DWORD>();
 		std::vector<std::shared_ptr<TombstoneRecord>> m_lpRecords;
 	};
 } // namespace smartview
