@@ -38,7 +38,7 @@ namespace smartview
 		if (*m_FolderUserFieldsAnsiCount && *m_FolderUserFieldsAnsiCount < _MaxEntriesSmall)
 		{
 			m_FieldDefinitionsA.reserve(*m_FolderUserFieldsAnsiCount);
-			for (auto i = 0; i < *m_FolderUserFieldsAnsiCount; i++)
+			for (DWORD i = 0; i < *m_FolderUserFieldsAnsiCount; i++)
 			{
 				if (m_Parser->empty()) continue;
 				m_FieldDefinitionsA.emplace_back(std::make_shared<FolderFieldDefinitionA>(m_Parser));
@@ -49,7 +49,7 @@ namespace smartview
 		if (*m_FolderUserFieldsUnicodeCount && *m_FolderUserFieldsUnicodeCount < _MaxEntriesSmall)
 		{
 			m_FieldDefinitionsW.reserve(*m_FolderUserFieldsUnicodeCount);
-			for (auto i = 0; i < *m_FolderUserFieldsUnicodeCount; i++)
+			for (DWORD i = 0; i < *m_FolderUserFieldsUnicodeCount; i++)
 			{
 				if (m_Parser->empty()) continue;
 				m_FieldDefinitionsW.emplace_back(std::make_shared<FolderFieldDefinitionW>(m_Parser));

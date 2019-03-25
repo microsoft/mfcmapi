@@ -19,7 +19,7 @@ namespace smartview
 			if (*m_EntryCount < _MaxEntriesLarge)
 			{
 				m_Entry.reserve(*m_EntryCount);
-				for (auto i = 0; i < *m_EntryCount; i++)
+				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
 					m_Entry.emplace_back(std::make_shared<EntryListEntryStruct>(m_Parser));
 				}

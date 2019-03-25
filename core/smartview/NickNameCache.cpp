@@ -30,7 +30,7 @@ namespace smartview
 			if (*m_cRowCount < _MaxEntriesEnormous)
 			{
 				m_lpRows.reserve(*m_cRowCount);
-				for (auto i = 0; i < *m_cRowCount; i++)
+				for (DWORD i = 0; i < *m_cRowCount; i++)
 				{
 					m_lpRows.emplace_back(std::make_shared<SRowStruct>(m_Parser));
 				}

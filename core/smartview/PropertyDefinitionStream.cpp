@@ -161,13 +161,13 @@ namespace smartview
 		addChild(m_wVersion, L"Version = 0x%1!04X! = %2!ws!\r\n", m_wVersion->getData(), szVersion.c_str());
 		addChild(m_dwFieldDefinitionCount, L"FieldDefinitionCount = 0x%1!08X!", m_dwFieldDefinitionCount->getData());
 
-		auto i = 0;
+		auto iDef = 0;
 		for (const auto& def : m_pfdFieldDefinitions)
 		{
 			terminateBlock();
 			auto fieldDef = std::make_shared<block>();
 			addChild(fieldDef);
-			fieldDef->setText(L"Definition: %1!d!\r\n", i);
+			fieldDef->setText(L"Definition: %1!d!\r\n", iDef);
 
 			auto szFlags = flags::InterpretFlags(flagPDOFlag, *def->dwFlags);
 			fieldDef->addChild(
@@ -227,16 +227,16 @@ namespace smartview
 					szFlags.c_str());
 				fieldDef->addHeader(L"\tSkipBlockCount = %1!d!", def->psbSkipBlocks.size());
 
-				auto i = 0;
+				auto iSkipBlock = 0;
 				for (const auto& sb : def->psbSkipBlocks)
 				{
 					fieldDef->terminateBlock();
 					auto skipBlock = std::make_shared<block>();
 					fieldDef->addChild(skipBlock);
-					skipBlock->setText(L"\tSkipBlock: %1!d!\r\n", i);
+					skipBlock->setText(L"\tSkipBlock: %1!d!\r\n", iSkipBlock);
 					skipBlock->addChild(sb->dwSize, L"\t\tSize = 0x%1!08X!", sb->dwSize->getData());
 
-					if (i == 0)
+					if (iSkipBlock == 0)
 					{
 						skipBlock->terminateBlock();
 						skipBlock->addChild(sb->lpbContentText.toBlock(L"\tFieldName"));
@@ -248,11 +248,11 @@ namespace smartview
 						skipBlock->addChild(sb->lpbContent);
 					}
 
-					i++;
+					iSkipBlock++;
 				}
 			}
 
-			i++;
+			iDef++;
 		}
 	}
 } // namespace smartview

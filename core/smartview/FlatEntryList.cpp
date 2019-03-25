@@ -30,7 +30,7 @@ namespace smartview
 		if (*m_cEntries && *m_cEntries < _MaxEntriesLarge)
 		{
 			m_pEntryIDs.reserve(*m_cEntries);
-			for (auto i = 0; i < *m_cEntries; i++)
+			for (DWORD i = 0; i < *m_cEntries; i++)
 			{
 				m_pEntryIDs.emplace_back(std::make_shared<FlatEntryID>(m_Parser));
 			}
