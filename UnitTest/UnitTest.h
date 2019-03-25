@@ -27,7 +27,7 @@ namespace Microsoft
 
 namespace unittest
 {
-	static const bool parse_all = false;
+	static const bool parse_all = true;
 	static const bool assert_on_failure = true;
 	static const bool limit_output = true;
 	static const bool ignore_trailing_whitespace = false;
