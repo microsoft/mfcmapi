@@ -71,16 +71,11 @@ namespace smartview
 		}
 
 		void addChild(std::shared_ptr<block> _block, const std::wstring& text) { data->addChild(_block, text); }
-		template <typename... Args> void addChild(block& _block, const std::wstring& text, const Args... args)
-		{
-			data->addChild(_block, text, args...);
-		}
 		template <typename... Args>
 		void addChild(std::shared_ptr<block> _block, const std::wstring& text, const Args... args)
 		{
 			data->addChild(_block, text, args...);
 		}
-		void addChild(block& child) { data->addChild(child); }
 		void addChild(std::shared_ptr<block> child) { data->addChild(child); }
 		void terminateBlock() { data->terminateBlock(); }
 		void addBlankLine() { data->addBlankLine(); }

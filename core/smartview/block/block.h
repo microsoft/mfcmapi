@@ -8,6 +8,7 @@ namespace smartview
 	public:
 		block() = default;
 		explicit block(std::wstring _text) : text(std::move(_text)) {}
+		block(const block&) = delete;
 		block& operator=(const block&) = delete;
 
 		virtual bool isSet() const { return true; }
@@ -54,21 +55,9 @@ namespace smartview
 		}
 
 		// Add a block as a child
-		void addChild(block& child)
-		{
-			if (child.isSet()) addChild(child, child.toStringInternal());
-		}
-
 		void addChild(std::shared_ptr<block> child)
 		{
 			if (child->isSet()) addChild(child, child->toStringInternal());
-		}
-
-		void addChild(block& child, const std::wstring& _text)
-		{
-			if (!child.isSet()) return;
-			child.text = _text;
-			children.push_back(std::make_shared<block>(child));
 		}
 
 		void addChild(std::shared_ptr<block> child, const std::wstring& _text)
@@ -76,11 +65,6 @@ namespace smartview
 			if (!child->isSet()) return;
 			child->text = _text;
 			children.push_back(child);
-		}
-
-		template <typename... Args> void addChild(block& child, const std::wstring& _text, Args... args)
-		{
-			if (child.isSet()) addChild(child, strings::formatmessage(_text.c_str(), args...));
 		}
 
 		template <typename... Args> void addChild(std::shared_ptr<block> child, const std::wstring& _text, Args... args)

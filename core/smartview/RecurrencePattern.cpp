@@ -145,7 +145,7 @@ namespace smartview
 			for (const auto& date : m_DeletedInstanceDates)
 			{
 				m_DeletedInstanceCount->addChild(
-					*date,
+					date,
 					L"DeletedInstanceDates[%1!d!]: 0x%2!08X! = %3!ws!\r\n",
 					i,
 					date->getData(),
@@ -165,7 +165,7 @@ namespace smartview
 			for (const auto& date : m_ModifiedInstanceDates)
 			{
 				addChild(
-					*date,
+					date,
 					L"ModifiedInstanceDates[%1!d!]: 0x%2!08X! = %3!ws!\r\n",
 					i,
 					date->getData(),

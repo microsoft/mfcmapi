@@ -66,8 +66,11 @@ namespace smartview
 			{
 				terminateBlock();
 				addHeader(L"Named Prop 0x%1!04X!\r\n", i);
-				const auto& id = m_NamedPropertyInformation.PropId[i];
-				addChild(*id, L"\tPropID = 0x%1!04X!\r\n", id->getData());
+
+				addChild(
+					m_NamedPropertyInformation.PropId[i],
+					L"\tPropID = 0x%1!04X!\r\n",
+					m_NamedPropertyInformation.PropId[i]->getData());
 
 				addChild(
 					m_NamedPropertyInformation.PropertyName[i]->Kind,
