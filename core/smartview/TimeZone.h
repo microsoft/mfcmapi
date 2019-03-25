@@ -6,14 +6,14 @@ namespace smartview
 {
 	struct SYSTEMTIMEBlock
 	{
-		blockT<WORD> wYear;
-		blockT<WORD> wMonth;
-		blockT<WORD> wDayOfWeek;
-		blockT<WORD> wDay;
-		blockT<WORD> wHour;
-		blockT<WORD> wMinute;
-		blockT<WORD> wSecond;
-		blockT<WORD> wMilliseconds;
+		std::shared_ptr<blockT<WORD>> wYear = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> wMonth = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> wDayOfWeek = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> wDay = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> wHour = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> wMinute = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> wSecond = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> wMilliseconds = emptyT<WORD>();
 	};
 
 	// TimeZone
@@ -29,12 +29,12 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockT<DWORD> m_lBias; // offset from GMT
-		blockT<DWORD> m_lStandardBias; // offset from bias during standard time
-		blockT<DWORD> m_lDaylightBias; // offset from bias during daylight time
-		blockT<WORD> m_wStandardYear;
+		std::shared_ptr<blockT<DWORD>> m_lBias = emptyT<DWORD>(); // offset from GMT
+		std::shared_ptr<blockT<DWORD>> m_lStandardBias = emptyT<DWORD>(); // offset from bias during standard time
+		std::shared_ptr<blockT<DWORD>> m_lDaylightBias = emptyT<DWORD>(); // offset from bias during daylight time
+		std::shared_ptr<blockT<WORD>> m_wStandardYear = emptyT<WORD>();
 		SYSTEMTIMEBlock m_stStandardDate; // time to switch to standard time
-		blockT<WORD> m_wDaylightDate;
+		std::shared_ptr<blockT<WORD>> m_wDaylightDate = emptyT<WORD>();
 		SYSTEMTIMEBlock m_stDaylightDate; // time to switch to daylight time
 	};
 } // namespace smartview

@@ -15,15 +15,15 @@ namespace smartview
 	//
 	struct TZRule
 	{
-		blockT<BYTE> bMajorVersion;
-		blockT<BYTE> bMinorVersion;
-		blockT<WORD> wReserved;
-		blockT<WORD> wTZRuleFlags;
-		blockT<WORD> wYear;
+		std::shared_ptr<blockT<BYTE>> bMajorVersion = emptyT<BYTE>();
+		std::shared_ptr<blockT<BYTE>> bMinorVersion = emptyT<BYTE>();
+		std::shared_ptr<blockT<WORD>> wReserved = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> wTZRuleFlags = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> wYear = emptyT<WORD>();
 		std::shared_ptr<blockBytes> X = emptyBB(); // 14 bytes
-		blockT<DWORD> lBias; // offset from GMT
-		blockT<DWORD> lStandardBias; // offset from bias during standard time
-		blockT<DWORD> lDaylightBias; // offset from bias during daylight time
+		std::shared_ptr<blockT<DWORD>> lBias = emptyT<DWORD>(); // offset from GMT
+		std::shared_ptr<blockT<DWORD>> lStandardBias = emptyT<DWORD>(); // offset from bias during standard time
+		std::shared_ptr<blockT<DWORD>> lDaylightBias = emptyT<DWORD>(); // offset from bias during daylight time
 		SYSTEMTIMEBlock stStandardDate; // time to switch to standard time
 		SYSTEMTIMEBlock stDaylightDate; // time to switch to daylight time
 
@@ -40,13 +40,13 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockT<BYTE> m_bMajorVersion;
-		blockT<BYTE> m_bMinorVersion;
-		blockT<WORD> m_cbHeader;
-		blockT<WORD> m_wReserved;
-		blockT<WORD> m_cchKeyName;
+		std::shared_ptr<blockT<BYTE>> m_bMajorVersion = emptyT<BYTE>();
+		std::shared_ptr<blockT<BYTE>> m_bMinorVersion = emptyT<BYTE>();
+		std::shared_ptr<blockT<WORD>> m_cbHeader = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> m_wReserved = emptyT<WORD>();
+		std::shared_ptr<blockT<WORD>> m_cchKeyName = emptyT<WORD>();
 		std::shared_ptr<blockStringW> m_szKeyName = emptySW();
-		blockT<WORD> m_cRules;
+		std::shared_ptr<blockT<WORD>> m_cRules = emptyT<WORD>();
 		std::vector<std::shared_ptr<TZRule>> m_lpTZRule;
 	};
 } // namespace smartview
