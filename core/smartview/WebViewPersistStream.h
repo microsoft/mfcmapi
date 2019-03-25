@@ -7,11 +7,11 @@ namespace smartview
 {
 	struct WebViewPersist
 	{
-		blockT<DWORD> dwVersion;
-		blockT<DWORD> dwType;
-		blockT<DWORD> dwFlags;
+		std::shared_ptr<blockT<DWORD>> dwVersion = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> dwType = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> dwFlags = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> dwUnused = emptyBB(); // 7 DWORDs
-		blockT<DWORD> cbData;
+		std::shared_ptr<blockT<DWORD>> cbData = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> lpData = emptyBB();
 
 		WebViewPersist(std::shared_ptr<binaryParser>& parser);
@@ -23,7 +23,6 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		DWORD m_cWebViews{};
 		std::vector<std::shared_ptr<WebViewPersist>> m_lpWebViews;
 	};
 } // namespace smartview

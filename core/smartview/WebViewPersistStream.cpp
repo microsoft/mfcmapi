@@ -8,16 +8,18 @@ namespace smartview
 {
 	WebViewPersist::WebViewPersist(std::shared_ptr<binaryParser>& parser)
 	{
-		dwVersion.parse<DWORD>(parser);
-		dwType.parse<DWORD>(parser);
-		dwFlags.parse<DWORD>(parser);
+		dwVersion = blockT<DWORD>::parse(parser);
+		dwType = blockT<DWORD>::parse(parser);
+		dwFlags = blockT<DWORD>::parse(parser);
 		dwUnused = blockBytes::parse(parser, 7 * sizeof(DWORD));
-		cbData.parse<DWORD>(parser);
-		lpData = blockBytes::parse(parser, cbData, _MaxBytes);
+		cbData = blockT<DWORD>::parse(parser);
+		lpData = blockBytes::parse(parser, *cbData, _MaxBytes);
 	}
 
 	void WebViewPersistStream::Parse()
 	{
+		auto cWebViews = 0;
+
 		// Run through the parser once to count the number of web view structs
 		for (;;)
 		{
@@ -30,17 +32,16 @@ namespace smartview
 			if (m_Parser->RemainingBytes() < cbData) break;
 
 			m_Parser->advance(cbData);
-			m_cWebViews++;
+			cWebViews++;
 		}
 
 		// Now we parse for real
 		m_Parser->rewind();
 
-		const auto cWebViews = m_cWebViews;
 		if (cWebViews && cWebViews < _MaxEntriesSmall)
 		{
 			m_lpWebViews.reserve(cWebViews);
-			for (ULONG i = 0; i < cWebViews; i++)
+			for (auto i = 0; i < cWebViews; i++)
 			{
 				m_lpWebViews.emplace_back(std::make_shared<WebViewPersist>(m_Parser));
 			}
@@ -50,7 +51,7 @@ namespace smartview
 	void WebViewPersistStream::ParseBlocks()
 	{
 		setRoot(L"Web View Persistence Object Stream\r\n");
-		addHeader(L"cWebViews = %1!d!", m_cWebViews);
+		addHeader(L"cWebViews = %1!d!", m_lpWebViews.size());
 		auto i = 0;
 		for (const auto& view : m_lpWebViews)
 		{
@@ -61,26 +62,26 @@ namespace smartview
 			addChild(
 				view->dwVersion,
 				L"dwVersion = 0x%1!08X! = %2!ws!\r\n",
-				view->dwVersion.getData(),
-				flags::InterpretFlags(flagWebViewVersion, view->dwVersion).c_str());
+				view->dwVersion->getData(),
+				flags::InterpretFlags(flagWebViewVersion, *view->dwVersion).c_str());
 			addChild(
 				view->dwType,
 				L"dwType = 0x%1!08X! = %2!ws!\r\n",
-				view->dwType.getData(),
-				flags::InterpretFlags(flagWebViewType, view->dwType).c_str());
+				view->dwType->getData(),
+				flags::InterpretFlags(flagWebViewType, *view->dwType).c_str());
 			addChild(
 				view->dwFlags,
 				L"dwFlags = 0x%1!08X! = %2!ws!\r\n",
-				view->dwFlags.getData(),
-				flags::InterpretFlags(flagWebViewFlags, view->dwFlags).c_str());
+				view->dwFlags->getData(),
+				flags::InterpretFlags(flagWebViewFlags, *view->dwFlags).c_str());
 			addHeader(L"dwUnused = ");
 
 			addChild(view->dwUnused);
 
 			terminateBlock();
-			addChild(view->cbData, L"cbData = 0x%1!08X!\r\n", view->cbData.getData());
+			addChild(view->cbData, L"cbData = 0x%1!08X!\r\n", view->cbData->getData());
 
-			switch (view->dwType)
+			switch (*view->dwType)
 			{
 			case WEBVIEWURL:
 			{
