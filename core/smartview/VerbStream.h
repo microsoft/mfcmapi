@@ -8,32 +8,32 @@ namespace smartview
 {
 	struct VerbData
 	{
-		blockT<DWORD> VerbType;
-		blockT<BYTE> DisplayNameCount;
+		std::shared_ptr<blockT<DWORD>> VerbType = emptyT<DWORD>();
+		std::shared_ptr<blockT<BYTE>> DisplayNameCount = emptyT<BYTE>();
 		std::shared_ptr<blockStringA> DisplayName = emptySA();
-		blockT<BYTE> MsgClsNameCount;
+		std::shared_ptr<blockT<BYTE>> MsgClsNameCount = emptyT<BYTE>();
 		std::shared_ptr<blockStringA> MsgClsName = emptySA();
-		blockT<BYTE> Internal1StringCount;
+		std::shared_ptr<blockT<BYTE>> Internal1StringCount = emptyT<BYTE>();
 		std::shared_ptr<blockStringA> Internal1String = emptySA();
-		blockT<BYTE> DisplayNameCountRepeat;
+		std::shared_ptr<blockT<BYTE>> DisplayNameCountRepeat = emptyT<BYTE>();
 		std::shared_ptr<blockStringA> DisplayNameRepeat = emptySA();
-		blockT<DWORD> Internal2;
-		blockT<BYTE> Internal3;
-		blockT<DWORD> fUseUSHeaders;
-		blockT<DWORD> Internal4;
-		blockT<DWORD> SendBehavior;
-		blockT<DWORD> Internal5;
-		blockT<DWORD> ID;
-		blockT<DWORD> Internal6;
+		std::shared_ptr<blockT<DWORD>> Internal2 = emptyT<DWORD>();
+		std::shared_ptr<blockT<BYTE>> Internal3 = emptyT<BYTE>();
+		std::shared_ptr<blockT<DWORD>> fUseUSHeaders = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> Internal4 = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> SendBehavior = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> Internal5 = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ID = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> Internal6 = emptyT<DWORD>();
 
 		VerbData(std::shared_ptr<binaryParser>& parser);
 	};
 
 	struct VerbExtraData
 	{
-		blockT<BYTE> DisplayNameCount;
+		std::shared_ptr<blockT<BYTE>> DisplayNameCount = emptyT<BYTE>();
 		std::shared_ptr<blockStringW> DisplayName = emptySW();
-		blockT<BYTE> DisplayNameCountRepeat;
+		std::shared_ptr<blockT<BYTE>> DisplayNameCountRepeat = emptyT<BYTE>();
 		std::shared_ptr<blockStringW> DisplayNameRepeat = emptySW();
 
 		VerbExtraData(std::shared_ptr<binaryParser>& parser);
@@ -45,10 +45,10 @@ namespace smartview
 		void Parse() override;
 		void ParseBlocks() override;
 
-		blockT<WORD> m_Version;
-		blockT<DWORD> m_Count;
+		std::shared_ptr<blockT<WORD>> m_Version = emptyT<WORD>();
+		std::shared_ptr<blockT<DWORD>> m_Count = emptyT<DWORD>();
 		std::vector<std::shared_ptr<VerbData>> m_lpVerbData;
-		blockT<WORD> m_Version2;
+		std::shared_ptr<blockT<WORD>> m_Version2;
 		std::vector<std::shared_ptr<VerbExtraData>> m_lpVerbExtraData;
 	};
 } // namespace smartview
