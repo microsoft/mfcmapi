@@ -59,11 +59,11 @@ namespace smartview
 			// Must have at least 2 bytes left to have another flag
 			if (m_Parser->RemainingBytes() < 2) break;
 			m_Parser->advance(sizeof BYTE);
-			const auto& cbData = blockT<BYTE>(m_Parser);
+			const auto cbData = blockT<BYTE>::parse(m_Parser);
 			// Must have at least cbData bytes left to be a valid flag
-			if (m_Parser->RemainingBytes() < cbData) break;
+			if (m_Parser->RemainingBytes() < *cbData) break;
 
-			m_Parser->advance(cbData);
+			m_Parser->advance(*cbData);
 			ulNumFlags++;
 		}
 

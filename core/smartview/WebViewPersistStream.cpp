@@ -26,12 +26,12 @@ namespace smartview
 			// Must have at least 2 bytes left to have another struct
 			if (m_Parser->RemainingBytes() < sizeof(DWORD) * 11) break;
 			m_Parser->advance(sizeof(DWORD) * 10);
-			const auto& cbData = blockT<DWORD>(m_Parser);
+			const auto cbData = blockT<DWORD>::parse(m_Parser);
 
 			// Must have at least cbData bytes left to be a valid flag
-			if (m_Parser->RemainingBytes() < cbData) break;
+			if (m_Parser->RemainingBytes() < *cbData) break;
 
-			m_Parser->advance(cbData);
+			m_Parser->advance(*cbData);
 			cWebViews++;
 		}
 

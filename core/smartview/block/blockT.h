@@ -10,7 +10,6 @@ namespace smartview
 		blockT() = default;
 		blockT(const blockT&) = delete;
 		blockT& operator=(const blockT&) = delete;
-		blockT(const std::shared_ptr<binaryParser>& parser) { parse<T>(parser); }
 
 		// Mimic type T
 		void setData(const T& _data) { data = _data; }
@@ -40,6 +39,7 @@ namespace smartview
 		}
 
 	private:
+		blockT(const std::shared_ptr<binaryParser>& parser) { parse<T>(parser); }
 		T data{};
 	};
 

@@ -47,7 +47,7 @@ namespace smartview
 			m_DeletedInstanceDates.reserve(*m_DeletedInstanceCount);
 			for (DWORD i = 0; i < *m_DeletedInstanceCount; i++)
 			{
-				m_DeletedInstanceDates.emplace_back(std::make_shared<blockT<DWORD>>(m_Parser));
+				m_DeletedInstanceDates.emplace_back(blockT<DWORD>::parse(m_Parser));
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace smartview
 			m_ModifiedInstanceDates.reserve(*m_ModifiedInstanceCount);
 			for (DWORD i = 0; i < *m_ModifiedInstanceCount; i++)
 			{
-				m_ModifiedInstanceDates.emplace_back(std::make_shared<blockT<DWORD>>(m_Parser));
+				m_ModifiedInstanceDates.emplace_back(blockT<DWORD>::parse(m_Parser));
 			}
 		}
 

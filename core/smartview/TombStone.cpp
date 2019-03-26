@@ -31,10 +31,10 @@ namespace smartview
 			if (m_Parser->RemainingBytes() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
 			(void) m_Parser->advance(sizeof DWORD);
 			(void) m_Parser->advance(sizeof DWORD);
-			const auto& len1 = blockT<DWORD>(m_Parser);
-			m_Parser->advance(len1);
-			const auto& len2 = blockT<WORD>(m_Parser);
-			m_Parser->advance(len2);
+			const auto len1 = blockT<DWORD>::parse(m_Parser);
+			m_Parser->advance(*len1);
+			const auto len2 = blockT<WORD>::parse(m_Parser);
+			m_Parser->advance(*len2);
 			actualRecordsCount++;
 		}
 

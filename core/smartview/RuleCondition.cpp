@@ -30,7 +30,7 @@ namespace smartview
 			m_NamedPropertyInformation.PropId.reserve(*m_NamedPropertyInformation.NoOfNamedProps);
 			for (auto i = 0; i < *m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
-				m_NamedPropertyInformation.PropId.push_back(std::make_shared<blockT<WORD>>(m_Parser));
+				m_NamedPropertyInformation.PropId.push_back(blockT<WORD>::parse(m_Parser));
 			}
 
 			m_NamedPropertyInformation.NamedPropertiesSize = blockT<DWORD>::parse(m_Parser);

@@ -22,10 +22,10 @@ namespace smartview
 		// Must have at least 1 byte left to have another XID
 		while (m_Parser->RemainingBytes() > sizeof(BYTE))
 		{
-			const auto& XidSize = blockT<BYTE>(m_Parser);
-			if (m_Parser->RemainingBytes() >= XidSize)
+			const auto XidSize = blockT<BYTE>::parse(m_Parser);
+			if (m_Parser->RemainingBytes() >= *XidSize)
 			{
-				m_Parser->advance(XidSize);
+				m_Parser->advance(*XidSize);
 			}
 
 			cXID++;

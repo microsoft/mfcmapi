@@ -72,9 +72,9 @@ namespace smartview
 			for (;;)
 			{
 				skipBlockCount++;
-				const auto& dwBlock = blockT<DWORD>(parser);
-				if (dwBlock == 0) break; // we hit the last, zero byte block, or the end of the buffer
-				parser->advance(dwBlock);
+				const auto dwBlock = blockT<DWORD>::parse(parser);
+				if (*dwBlock == 0) break; // we hit the last, zero byte block, or the end of the buffer
+				parser->advance(*dwBlock);
 			}
 
 			parser->SetCurrentOffset(stBookmark); // We're done with our first pass, restore the bookmark

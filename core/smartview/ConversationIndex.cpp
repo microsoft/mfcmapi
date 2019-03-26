@@ -7,13 +7,13 @@ namespace smartview
 {
 	ResponseLevel::ResponseLevel(const std::shared_ptr<binaryParser>& parser)
 	{
-		const auto& r1 = blockT<BYTE>(parser);
-		const auto& r2 = blockT<BYTE>(parser);
-		const auto& r3 = blockT<BYTE>(parser);
-		const auto& r4 = blockT<BYTE>(parser);
-		TimeDelta->setOffset(r1.getOffset());
-		TimeDelta->setSize(r1.getSize() + r2.getSize() + r3.getSize() + r4.getSize());
-		TimeDelta->setData(r1 << 24 | r2 << 16 | r3 << 8 | r4);
+		const auto r1 = blockT<BYTE>::parse(parser);
+		const auto r2 = blockT<BYTE>::parse(parser);
+		const auto r3 = blockT<BYTE>::parse(parser);
+		const auto r4 = blockT<BYTE>::parse(parser);
+		TimeDelta->setOffset(r1->getOffset());
+		TimeDelta->setSize(r1->getSize() + r2->getSize() + r3->getSize() + r4->getSize());
+		TimeDelta->setData(*r1 << 24 | *r2 << 16 | *r3 << 8 | *r4);
 
 		DeltaCode->setOffset(TimeDelta->getOffset());
 		DeltaCode->setSize(TimeDelta->getSize());
@@ -24,61 +24,61 @@ namespace smartview
 			DeltaCode->setData(true);
 		}
 
-		const auto& r5 = blockT<BYTE>(parser);
-		Random->setOffset(r5.getOffset());
-		Random->setSize(r5.getSize());
-		Random->setData(static_cast<BYTE>(r5 >> 4));
+		const auto r5 = blockT<BYTE>::parse(parser);
+		Random->setOffset(r5->getOffset());
+		Random->setSize(r5->getSize());
+		Random->setData(static_cast<BYTE>(*r5 >> 4));
 
-		Level->setOffset(r5.getOffset());
-		Level->setSize(r5.getSize());
-		Level->setData(static_cast<BYTE>(r5 & 0xf));
+		Level->setOffset(r5->getOffset());
+		Level->setSize(r5->getSize());
+		Level->setData(static_cast<BYTE>(*r5 & 0xf));
 	}
 
 	void ConversationIndex::Parse()
 	{
 		m_UnnamedByte = blockT<BYTE>::parse(m_Parser);
-		const auto& h1 = blockT<BYTE>(m_Parser);
-		const auto& h2 = blockT<BYTE>(m_Parser);
-		const auto& h3 = blockT<BYTE>(m_Parser);
+		const auto h1 = blockT<BYTE>::parse(m_Parser);
+		const auto h2 = blockT<BYTE>::parse(m_Parser);
+		const auto h3 = blockT<BYTE>::parse(m_Parser);
 
 		// Encoding of the file time drops the high byte, which is always 1
 		// So we add it back to get a time which makes more sense
 		auto ft = FILETIME{};
-		ft.dwHighDateTime = 1 << 24 | h1 << 16 | h2 << 8 | h3;
+		ft.dwHighDateTime = 1 << 24 | *h1 << 16 | *h2 << 8 | *h3;
 
-		const auto& l1 = blockT<BYTE>(m_Parser);
-		const auto& l2 = blockT<BYTE>(m_Parser);
-		ft.dwLowDateTime = l1 << 24 | l2 << 16;
+		const auto l1 = blockT<BYTE>::parse(m_Parser);
+		const auto l2 = blockT<BYTE>::parse(m_Parser);
+		ft.dwLowDateTime = *l1 << 24 | *l2 << 16;
 
-		m_ftCurrent->setOffset(h1.getOffset());
-		m_ftCurrent->setSize(h1.getSize() + h2.getSize() + h3.getSize() + l1.getSize() + l2.getSize());
+		m_ftCurrent->setOffset(h1->getOffset());
+		m_ftCurrent->setSize(h1->getSize() + h2->getSize() + h3->getSize() + l1->getSize() + l2->getSize());
 		m_ftCurrent->setData(ft);
 
 		auto guid = GUID{};
-		const auto& g1 = blockT<BYTE>(m_Parser);
-		const auto& g2 = blockT<BYTE>(m_Parser);
-		const auto& g3 = blockT<BYTE>(m_Parser);
-		const auto& g4 = blockT<BYTE>(m_Parser);
-		guid.Data1 = g1 << 24 | g2 << 16 | g3 << 8 | g4;
+		const auto g1 = blockT<BYTE>::parse(m_Parser);
+		const auto g2 = blockT<BYTE>::parse(m_Parser);
+		const auto g3 = blockT<BYTE>::parse(m_Parser);
+		const auto g4 = blockT<BYTE>::parse(m_Parser);
+		guid.Data1 = *g1 << 24 | *g2 << 16 | *g3 << 8 | *g4;
 
-		const auto& g5 = blockT<BYTE>(m_Parser);
-		const auto& g6 = blockT<BYTE>(m_Parser);
-		guid.Data2 = static_cast<unsigned short>(g5 << 8 | g6);
+		const auto g5 = blockT<BYTE>::parse(m_Parser);
+		const auto g6 = blockT<BYTE>::parse(m_Parser);
+		guid.Data2 = static_cast<unsigned short>(*g5 << 8 | *g6);
 
-		const auto& g7 = blockT<BYTE>(m_Parser);
-		const auto& g8 = blockT<BYTE>(m_Parser);
-		guid.Data3 = static_cast<unsigned short>(g7 << 8 | g8);
+		const auto g7 = blockT<BYTE>::parse(m_Parser);
+		const auto g8 = blockT<BYTE>::parse(m_Parser);
+		guid.Data3 = static_cast<unsigned short>(*g7 << 8 | *g8);
 
-		auto size = g1.getSize() + g2.getSize() + g3.getSize() + g4.getSize() + g5.getSize() + g6.getSize() +
-					g7.getSize() + g8.getSize();
+		auto size = g1->getSize() + g2->getSize() + g3->getSize() + g4->getSize() + g5->getSize() + g6->getSize() +
+					g7->getSize() + g8->getSize();
 		for (auto& i : guid.Data4)
 		{
-			const auto& d = blockT<BYTE>(m_Parser);
-			i = d;
-			size += d.getSize();
+			const auto d = blockT<BYTE>::parse(m_Parser);
+			i = *d;
+			size += d->getSize();
 		}
 
-		m_guid->setOffset(g1.getOffset());
+		m_guid->setOffset(g1->getOffset());
 		m_guid->setSize(size);
 		m_guid->setData(guid);
 		auto ulResponseLevels = ULONG{};

@@ -143,8 +143,8 @@ namespace smartview
 			resComment.lpProp.parse(m_Parser, *resComment.cValues, m_bRuleCondition);
 
 			// Check if a restriction is present
-			const auto& resExists = blockT<BYTE>(m_Parser);
-			if (resExists && ulDepth < _MaxDepth && m_Parser->RemainingBytes())
+			const auto resExists = blockT<BYTE>::parse(m_Parser);
+			if (*resExists && ulDepth < _MaxDepth && m_Parser->RemainingBytes())
 			{
 				resComment.lpRes =
 					std::make_shared<RestrictionStruct>(m_Parser, ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
@@ -162,8 +162,8 @@ namespace smartview
 			resAnnotation.lpProp.parse(m_Parser, *resAnnotation.cValues, m_bRuleCondition);
 
 			// Check if a restriction is present
-			const auto& resExists = blockT<BYTE>(m_Parser);
-			if (resExists && ulDepth < _MaxDepth && m_Parser->RemainingBytes())
+			const auto& resExists = blockT<BYTE>::parse(m_Parser);
+			if (*resExists && ulDepth < _MaxDepth && m_Parser->RemainingBytes())
 			{
 				resAnnotation.lpRes =
 					std::make_shared<RestrictionStruct>(m_Parser, ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
