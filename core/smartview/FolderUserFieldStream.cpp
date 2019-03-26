@@ -6,7 +6,7 @@
 
 namespace smartview
 {
-	FolderFieldDefinitionA ::FolderFieldDefinitionA(std::shared_ptr<binaryParser>& parser)
+	FolderFieldDefinitionA ::FolderFieldDefinitionA(const std::shared_ptr<binaryParser>& parser)
 	{
 		FieldType = blockT<DWORD>::parse(parser);
 		FieldNameLength = blockT<WORD>::parse(parser);
@@ -19,7 +19,7 @@ namespace smartview
 		Common.parse(parser);
 	}
 
-	FolderFieldDefinitionW ::FolderFieldDefinitionW(std::shared_ptr<binaryParser>& parser)
+	FolderFieldDefinitionW ::FolderFieldDefinitionW(const std::shared_ptr<binaryParser>& parser)
 	{
 		FieldType = blockT<DWORD>::parse(parser);
 		FieldNameLength = blockT<WORD>::parse(parser);
@@ -57,7 +57,7 @@ namespace smartview
 		}
 	}
 
-	void FolderFieldDefinitionCommon::parse(std::shared_ptr<binaryParser>& parser)
+	void FolderFieldDefinitionCommon::parse(const std::shared_ptr<binaryParser>& parser)
 	{
 		PropSetGuid = blockT<GUID>::parse(parser);
 		fcapm = blockT<DWORD>::parse(parser);

@@ -15,7 +15,7 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> UsernameSize = emptyT<WORD>();
 		std::shared_ptr<blockStringA> szUsername = emptySA();
 
-		TombstoneRecord(std::shared_ptr<binaryParser> parser);
+		TombstoneRecord(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class TombStone : public SmartViewParser

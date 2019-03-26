@@ -3,7 +3,7 @@
 
 namespace smartview
 {
-	SRowStruct::SRowStruct(std::shared_ptr<binaryParser> parser)
+	SRowStruct::SRowStruct(const std::shared_ptr<binaryParser>& parser)
 	{
 		cValues = blockT<DWORD>::parse(parser);
 

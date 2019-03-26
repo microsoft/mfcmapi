@@ -5,7 +5,7 @@
 
 namespace smartview
 {
-	ResponseLevel::ResponseLevel(std::shared_ptr<binaryParser> parser)
+	ResponseLevel::ResponseLevel(const std::shared_ptr<binaryParser>& parser)
 	{
 		const auto& r1 = blockT<BYTE>(parser);
 		const auto& r2 = blockT<BYTE>(parser);

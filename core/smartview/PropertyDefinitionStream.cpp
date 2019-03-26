@@ -8,7 +8,7 @@
 
 namespace smartview
 {
-	void PackedAnsiString::parse(std::shared_ptr<binaryParser>& parser)
+	void PackedAnsiString::parse(const std::shared_ptr<binaryParser>& parser)
 	{
 		cchLength = blockT<BYTE>::parse(parser);
 		if (*cchLength == 0xFF)
@@ -20,7 +20,7 @@ namespace smartview
 			blockStringA::parse(parser, *cchExtendedLength ? cchExtendedLength->getData() : cchLength->getData());
 	}
 
-	void PackedUnicodeString::parse(std::shared_ptr<binaryParser>& parser)
+	void PackedUnicodeString::parse(const std::shared_ptr<binaryParser>& parser)
 	{
 		cchLength = blockT<BYTE>::parse(parser);
 		if (*cchLength == 0xFF)
@@ -32,7 +32,7 @@ namespace smartview
 			blockStringW::parse(parser, *cchExtendedLength ? cchExtendedLength->getData() : cchLength->getData());
 	}
 
-	SkipBlock::SkipBlock(std::shared_ptr<binaryParser>& parser, DWORD iSkip)
+	SkipBlock::SkipBlock(const std::shared_ptr<binaryParser>& parser, DWORD iSkip)
 	{
 		dwSize = blockT<DWORD>::parse(parser);
 		if (iSkip == 0)
@@ -45,7 +45,7 @@ namespace smartview
 		}
 	}
 
-	FieldDefinition::FieldDefinition(std::shared_ptr<binaryParser>& parser, WORD version)
+	FieldDefinition::FieldDefinition(const std::shared_ptr<binaryParser>& parser, WORD version)
 	{
 		dwFlags = blockT<DWORD>::parse(parser);
 		wVT = blockT<WORD>::parse(parser);

@@ -31,7 +31,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> SubType = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> AppointmentColor = emptyT<DWORD>();
 
-		ExceptionInfo(std::shared_ptr<binaryParser>& parser);
+		ExceptionInfo(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	struct ChangeHighlight
@@ -59,7 +59,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> ReservedBlockEE2Size = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> ReservedBlockEE2 = emptyBB();
 
-		ExtendedException(std::shared_ptr<binaryParser>& parser, DWORD writerVersion2, WORD flags);
+		ExtendedException(const std::shared_ptr<binaryParser>& parser, DWORD writerVersion2, WORD flags);
 	};
 
 	// AppointmentRecurrencePattern

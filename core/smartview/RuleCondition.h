@@ -27,7 +27,7 @@ namespace smartview
 		std::shared_ptr<blockT<BYTE>> NameSize = emptyT<BYTE>();
 		std::shared_ptr<blockStringW> Name = emptySW();
 
-		PropertyName(std::shared_ptr<binaryParser>& parser);
+		PropertyName(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	// [MS-OXORULE] 2.2.4.2 NamedPropertyInformation Structure

@@ -6,7 +6,7 @@
 
 namespace smartview
 {
-	WebViewPersist::WebViewPersist(std::shared_ptr<binaryParser>& parser)
+	WebViewPersist::WebViewPersist(const std::shared_ptr<binaryParser>& parser)
 	{
 		dwVersion = blockT<DWORD>::parse(parser);
 		dwType = blockT<DWORD>::parse(parser);

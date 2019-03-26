@@ -11,7 +11,7 @@ namespace smartview
 		std::shared_ptr<blockT<GUID>> NamespaceGuid = emptyT<GUID>();
 		std::shared_ptr<blockBytes> LocalID = emptyBB();
 
-		SizedXID(std::shared_ptr<binaryParser>& parser);
+		SizedXID(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class PCL : public SmartViewParser

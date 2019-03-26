@@ -31,9 +31,9 @@ namespace smartview
 			m_bEnableJunk = true;
 		}
 
-		void parse(std::shared_ptr<binaryParser> binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
+		void parse(const std::shared_ptr<binaryParser>& binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
 
-		void parse(std::shared_ptr<binaryParser> binaryParser, size_t cbBin, bool bEnableJunk)
+		void parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool bEnableJunk)
 		{
 			m_Parser = binaryParser;
 			m_Parser->setCap(cbBin);

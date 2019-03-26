@@ -17,7 +17,7 @@ namespace smartview
 		std::shared_ptr<blockStringW> wzDisplayName = emptySW();
 		std::shared_ptr<blockBytes> JunkData = emptyBB();
 
-		TaskAssigner(std::shared_ptr<binaryParser>& parser);
+		TaskAssigner(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class TaskAssigners : public SmartViewParser

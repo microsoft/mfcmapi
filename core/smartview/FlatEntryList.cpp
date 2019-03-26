@@ -4,7 +4,7 @@
 
 namespace smartview
 {
-	FlatEntryID::FlatEntryID(std::shared_ptr<binaryParser> parser)
+	FlatEntryID::FlatEntryID(const std::shared_ptr<binaryParser>& parser)
 	{
 		// Size here will be the length of the serialized entry ID
 		// We'll have to round it up to a multiple of 4 to read off padding

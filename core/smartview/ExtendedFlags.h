@@ -19,7 +19,7 @@ namespace smartview
 		std::shared_ptr<blockBytes> lpUnknownData = emptyBB();
 		bool bBadData{};
 
-		ExtendedFlag(std::shared_ptr<binaryParser> parser);
+		ExtendedFlag(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class ExtendedFlags : public SmartViewParser

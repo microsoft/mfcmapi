@@ -5,14 +5,14 @@
 
 namespace smartview
 {
-	SBinaryBlock::SBinaryBlock(std::shared_ptr<binaryParser> parser)
+	SBinaryBlock::SBinaryBlock(const std::shared_ptr<binaryParser>& parser)
 	{
 		cb = blockT<DWORD>::parse(parser);
 		// Note that we're not placing a restriction on how large a multivalued binary property we can parse. May need to revisit this.
 		lpb = blockBytes::parse(parser, *cb);
 	}
 
-	void PropertiesStruct::parse(std::shared_ptr<binaryParser> parser, DWORD cValues, bool bRuleCondition)
+	void PropertiesStruct::parse(const std::shared_ptr<binaryParser>& parser, DWORD cValues, bool bRuleCondition)
 	{
 		SetMaxEntries(cValues);
 		if (bRuleCondition) EnableRuleConditionParsing();
@@ -85,7 +85,7 @@ namespace smartview
 		}
 	}
 
-	SPropValueStruct::SPropValueStruct(std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
+	SPropValueStruct::SPropValueStruct(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
 	{
 		const auto ulCurrOffset = parser->GetCurrentOffset();
 

@@ -5,7 +5,7 @@
 
 namespace smartview
 {
-	PersistElement::PersistElement(std::shared_ptr<binaryParser> parser)
+	PersistElement::PersistElement(const std::shared_ptr<binaryParser>& parser)
 	{
 		wElementID = blockT<WORD>::parse(parser);
 		wElementDataSize = blockT<WORD>::parse(parser);
@@ -45,7 +45,7 @@ namespace smartview
 		}
 	}
 
-	PersistData::PersistData(std::shared_ptr<binaryParser> parser)
+	PersistData::PersistData(const std::shared_ptr<binaryParser>& parser)
 	{
 		WORD wDataElementCount = 0;
 		wPersistID = blockT<WORD>::parse(parser);

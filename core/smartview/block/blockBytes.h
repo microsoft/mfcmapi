@@ -20,7 +20,7 @@ namespace smartview
 		bool empty() const noexcept { return _data.empty(); }
 		const BYTE* data() const noexcept { return _data.data(); }
 
-		blockBytes(std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
+		blockBytes(const std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
 		{
 			// TODO: Should we track when the returned byte length is less than requested?
 			setOffset(parser->GetCurrentOffset());
@@ -37,15 +37,15 @@ namespace smartview
 			setSize(size() * sizeof(BYTE));
 		}
 
-		blockBytes(std::shared_ptr<binaryParser>& parser) : blockBytes(parser, parser->RemainingBytes()) {}
+		blockBytes(const std::shared_ptr<binaryParser>& parser) : blockBytes(parser, parser->RemainingBytes()) {}
 
-		static std::shared_ptr<blockBytes> parse(std::shared_ptr<binaryParser>& parser)
+		static std::shared_ptr<blockBytes> parse(const std::shared_ptr<binaryParser>& parser)
 		{
 			return std::make_shared<blockBytes>(parser, parser->RemainingBytes());
 		}
 
 		static std::shared_ptr<blockBytes>
-		parse(std::shared_ptr<binaryParser> parser, size_t cbBytes, size_t cbMaxBytes = -1)
+		parse(const std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
 		{
 			return std::make_shared<blockBytes>(parser, cbBytes, cbMaxBytes);
 		}

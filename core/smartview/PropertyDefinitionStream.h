@@ -13,7 +13,7 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> cchExtendedLength = emptyT<WORD>();
 		std::shared_ptr<blockStringW> szCharacters = emptySW();
 
-		void parse(std::shared_ptr<binaryParser>& parser);
+		void parse(const std::shared_ptr<binaryParser>& parser);
 		std::shared_ptr<block> toBlock(_In_ const std::wstring& szFieldName);
 	};
 
@@ -23,7 +23,7 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> cchExtendedLength = emptyT<WORD>();
 		std::shared_ptr<blockStringA> szCharacters = emptySA();
 
-		void parse(std::shared_ptr<binaryParser>& parser);
+		void parse(const std::shared_ptr<binaryParser>& parser);
 		std::shared_ptr<block> toBlock(_In_ const std::wstring& szFieldName);
 	};
 
@@ -33,7 +33,7 @@ namespace smartview
 		std::shared_ptr<blockBytes> lpbContent = emptyBB();
 		PackedUnicodeString lpbContentText;
 
-		SkipBlock(std::shared_ptr<binaryParser>& parser, DWORD iSkip);
+		SkipBlock(const std::shared_ptr<binaryParser>& parser, DWORD iSkip);
 	};
 
 	struct FieldDefinition
@@ -51,7 +51,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> dwInternalType = emptyT<DWORD>();
 		std::vector<std::shared_ptr<SkipBlock>> psbSkipBlocks;
 
-		FieldDefinition(std::shared_ptr<binaryParser>& parser, WORD version);
+		FieldDefinition(const std::shared_ptr<binaryParser>& parser, WORD version);
 	};
 
 	class PropertyDefinitionStream : public SmartViewParser

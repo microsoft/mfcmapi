@@ -27,7 +27,7 @@ namespace smartview
 		SYSTEMTIMEBlock stStandardDate; // time to switch to standard time
 		SYSTEMTIMEBlock stDaylightDate; // time to switch to daylight time
 
-		TZRule(std::shared_ptr<binaryParser>& parser);
+		TZRule(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	// TimeZoneDefinition

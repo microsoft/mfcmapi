@@ -6,7 +6,7 @@
 
 namespace smartview
 {
-	ExtendedFlag::ExtendedFlag(std::shared_ptr<binaryParser> parser)
+	ExtendedFlag::ExtendedFlag(const std::shared_ptr<binaryParser>& parser)
 	{
 		Id = blockT<BYTE>::parse(parser);
 		Cb = blockT<BYTE>::parse(parser);

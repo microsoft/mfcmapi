@@ -11,7 +11,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>();
 		PropertiesStruct rgPropVals;
 
-		ADRENTRYStruct(std::shared_ptr<binaryParser> parser);
+		ADRENTRYStruct(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class RecipientRowStream : public SmartViewParser

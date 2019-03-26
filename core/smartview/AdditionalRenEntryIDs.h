@@ -12,7 +12,7 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> wElementDataSize = emptyT<WORD>();
 		std::shared_ptr<blockBytes> lpbElementData = emptyBB();
 
-		PersistElement(std::shared_ptr<binaryParser> parser);
+		PersistElement(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	struct PersistData
@@ -24,7 +24,7 @@ namespace smartview
 
 		std::shared_ptr<blockBytes> JunkData = emptyBB();
 
-		PersistData(std::shared_ptr<binaryParser> parser);
+		PersistData(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class AdditionalRenEntryIDs : public SmartViewParser

@@ -4,7 +4,7 @@
 
 namespace smartview
 {
-	TombstoneRecord::TombstoneRecord(std::shared_ptr<binaryParser> parser)
+	TombstoneRecord::TombstoneRecord(const std::shared_ptr<binaryParser>& parser)
 	{
 		StartTime = blockT<DWORD>::parse(parser);
 		EndTime = blockT<DWORD>::parse(parser);

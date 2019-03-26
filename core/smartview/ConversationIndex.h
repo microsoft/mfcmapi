@@ -12,7 +12,7 @@ namespace smartview
 		std::shared_ptr<blockT<BYTE>> Random = emptyT<BYTE>();
 		std::shared_ptr<blockT<BYTE>> Level = emptyT<BYTE>();
 
-		ResponseLevel(std::shared_ptr<binaryParser> parser);
+		ResponseLevel(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class ConversationIndex : public SmartViewParser

@@ -5,7 +5,7 @@
 
 namespace smartview
 {
-	VerbData::VerbData(std::shared_ptr<binaryParser>& parser)
+	VerbData::VerbData(const std::shared_ptr<binaryParser>& parser)
 	{
 		VerbType = blockT<DWORD>::parse(parser);
 		DisplayNameCount = blockT<BYTE>::parse(parser);
@@ -26,7 +26,7 @@ namespace smartview
 		Internal6 = blockT<DWORD>::parse(parser);
 	}
 
-	VerbExtraData::VerbExtraData(std::shared_ptr<binaryParser>& parser)
+	VerbExtraData::VerbExtraData(const std::shared_ptr<binaryParser>& parser)
 	{
 		DisplayNameCount = blockT<BYTE>::parse(parser);
 		DisplayName = blockStringW::parse(parser, *DisplayNameCount);

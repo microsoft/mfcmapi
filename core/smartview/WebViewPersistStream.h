@@ -14,7 +14,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> cbData = emptyT<DWORD>();
 		std::shared_ptr<blockBytes> lpData = emptyBB();
 
-		WebViewPersist(std::shared_ptr<binaryParser>& parser);
+		WebViewPersist(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class WebViewPersistStream : public SmartViewParser

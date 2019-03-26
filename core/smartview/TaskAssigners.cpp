@@ -3,7 +3,7 @@
 
 namespace smartview
 {
-	TaskAssigner::TaskAssigner(std::shared_ptr<binaryParser>& parser)
+	TaskAssigner::TaskAssigner(const std::shared_ptr<binaryParser>& parser)
 	{
 		cbAssigner = blockT<DWORD>::parse(parser);
 		const auto ulSize = min(*cbAssigner, (ULONG) parser->RemainingBytes());

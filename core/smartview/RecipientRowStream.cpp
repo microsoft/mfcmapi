@@ -4,7 +4,7 @@
 
 namespace smartview
 {
-	ADRENTRYStruct::ADRENTRYStruct(std::shared_ptr<binaryParser> parser)
+	ADRENTRYStruct::ADRENTRYStruct(const std::shared_ptr<binaryParser>& parser)
 	{
 		cValues = blockT<DWORD>::parse(parser);
 		ulReserved1 = blockT<DWORD>::parse(parser);

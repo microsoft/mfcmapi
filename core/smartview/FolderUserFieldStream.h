@@ -17,7 +17,7 @@ namespace smartview
 		std::shared_ptr<blockT<WORD>> wszFormulaLength = emptyT<WORD>();
 		std::shared_ptr<blockStringW> wszFormula = emptySW();
 
-		void parse(std::shared_ptr<binaryParser>& parser);
+		void parse(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	struct FolderFieldDefinitionA
@@ -27,7 +27,7 @@ namespace smartview
 		std::shared_ptr<blockStringA> FieldName = emptySA();
 		FolderFieldDefinitionCommon Common;
 
-		FolderFieldDefinitionA(std::shared_ptr<binaryParser>& parser);
+		FolderFieldDefinitionA(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	struct FolderFieldDefinitionW
@@ -37,7 +37,7 @@ namespace smartview
 		std::shared_ptr<blockStringW> FieldName = emptySW();
 		FolderFieldDefinitionCommon Common;
 
-		FolderFieldDefinitionW(std::shared_ptr<binaryParser>& parser);
+		FolderFieldDefinitionW(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class FolderUserFieldStream : public SmartViewParser

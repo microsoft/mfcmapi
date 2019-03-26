@@ -7,7 +7,7 @@
 
 namespace smartview
 {
-	AddressListEntryStruct::AddressListEntryStruct(std::shared_ptr<binaryParser> parser)
+	AddressListEntryStruct::AddressListEntryStruct(const std::shared_ptr<binaryParser>& parser)
 	{
 		PropertyCount = blockT<DWORD>::parse(parser);
 		Pad = blockT<DWORD>::parse(parser);

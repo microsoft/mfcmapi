@@ -38,7 +38,7 @@ namespace smartview
 		void setSource(ULONG _source)
 		{
 			source = _source;
-			for (auto& child : children)
+			for (const auto& child : children)
 			{
 				child->setSource(_source);
 			}
@@ -94,12 +94,10 @@ namespace smartview
 
 		bool hasData() const { return !text.empty() || !children.empty(); }
 
-	protected:
+	private:
 		size_t offset{};
 		size_t cb{};
 		ULONG source{};
-
-	private:
 		virtual std::wstring toStringInternal() const { return text; }
 		std::wstring text;
 		std::vector<std::shared_ptr<block>> children;

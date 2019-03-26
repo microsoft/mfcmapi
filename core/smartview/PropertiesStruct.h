@@ -25,7 +25,7 @@ namespace smartview
 		size_t getSize() const { return cb->getSize() + lpb->getSize(); }
 		size_t getOffset() const { return cb->getOffset() ? cb->getOffset() : lpb->getOffset(); }
 
-		SBinaryBlock(std::shared_ptr<binaryParser> parser);
+		SBinaryBlock(const std::shared_ptr<binaryParser>& parser);
 		SBinaryBlock(){};
 	};
 
@@ -214,7 +214,7 @@ namespace smartview
 			return strings::emptystring;
 		}
 
-		SPropValueStruct(std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing);
+		SPropValueStruct(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing);
 
 		// Any data we need to cache for getData can live here
 	private:
@@ -228,7 +228,7 @@ namespace smartview
 	class PropertiesStruct : public SmartViewParser
 	{
 	public:
-		void parse(std::shared_ptr<binaryParser> parser, DWORD cValues, bool bRuleCondition);
+		void parse(const std::shared_ptr<binaryParser>& parser, DWORD cValues, bool bRuleCondition);
 		void SetMaxEntries(DWORD maxEntries) { m_MaxEntries = maxEntries; }
 		void EnableNickNameParsing() { m_NickName = true; }
 		void EnableRuleConditionParsing() { m_RuleCondition = true; }

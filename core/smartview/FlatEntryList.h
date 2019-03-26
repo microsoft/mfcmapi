@@ -13,7 +13,7 @@ namespace smartview
 
 		std::shared_ptr<blockBytes> padding = emptyBB();
 
-		FlatEntryID(std::shared_ptr<binaryParser> parser);
+		FlatEntryID(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class FlatEntryList : public SmartViewParser

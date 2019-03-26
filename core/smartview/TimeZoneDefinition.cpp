@@ -5,7 +5,7 @@
 
 namespace smartview
 {
-	TZRule::TZRule(std::shared_ptr<binaryParser>& parser)
+	TZRule::TZRule(const std::shared_ptr<binaryParser>& parser)
 	{
 		bMajorVersion = blockT<BYTE>::parse(parser);
 		bMinorVersion = blockT<BYTE>::parse(parser);

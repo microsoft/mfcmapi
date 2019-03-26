@@ -4,7 +4,7 @@
 
 namespace smartview
 {
-	SizedXID::SizedXID(std::shared_ptr<binaryParser>& parser)
+	SizedXID::SizedXID(const std::shared_ptr<binaryParser>& parser)
 	{
 		XidSize = blockT<BYTE>::parse(parser);
 		NamespaceGuid = blockT<GUID>::parse(parser);

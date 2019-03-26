@@ -26,7 +26,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> ID = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> Internal6 = emptyT<DWORD>();
 
-		VerbData(std::shared_ptr<binaryParser>& parser);
+		VerbData(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	struct VerbExtraData
@@ -36,7 +36,7 @@ namespace smartview
 		std::shared_ptr<blockT<BYTE>> DisplayNameCountRepeat = emptyT<BYTE>();
 		std::shared_ptr<blockStringW> DisplayNameRepeat = emptySW();
 
-		VerbExtraData(std::shared_ptr<binaryParser>& parser);
+		VerbExtraData(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class VerbStream : public SmartViewParser

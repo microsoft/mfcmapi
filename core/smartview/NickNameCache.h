@@ -11,7 +11,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>();
 		PropertiesStruct lpProps;
 
-		SRowStruct(std::shared_ptr<binaryParser> parser);
+		SRowStruct(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class NickNameCache : public SmartViewParser

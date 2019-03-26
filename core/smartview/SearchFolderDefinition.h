@@ -15,7 +15,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> Pad = emptyT<DWORD>();
 		PropertiesStruct Props;
 
-		AddressListEntryStruct(std::shared_ptr<binaryParser> parser);
+		AddressListEntryStruct(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class SearchFolderDefinition : public SmartViewParser

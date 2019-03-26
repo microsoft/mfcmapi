@@ -5,7 +5,7 @@
 
 namespace smartview
 {
-	PropertyName::PropertyName(std::shared_ptr<binaryParser>& parser)
+	PropertyName::PropertyName(const std::shared_ptr<binaryParser>& parser)
 	{
 		Kind = blockT<BYTE>::parse(parser);
 		Guid = blockT<GUID>::parse(parser);

@@ -10,7 +10,7 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> EntryLengthPad = emptyT<DWORD>();
 		EntryIdStruct EntryId;
 
-		EntryListEntryStruct(std::shared_ptr<binaryParser> parser);
+		EntryListEntryStruct(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	class EntryList : public SmartViewParser

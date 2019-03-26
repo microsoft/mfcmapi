@@ -7,7 +7,7 @@
 
 namespace smartview
 {
-	ExceptionInfo::ExceptionInfo(std::shared_ptr<binaryParser>& parser)
+	ExceptionInfo::ExceptionInfo(const std::shared_ptr<binaryParser>& parser)
 	{
 		StartDateTime = blockT<DWORD>::parse(parser);
 		EndDateTime = blockT<DWORD>::parse(parser);
@@ -69,7 +69,7 @@ namespace smartview
 		}
 	}
 
-	ExtendedException::ExtendedException(std::shared_ptr<binaryParser>& parser, DWORD writerVersion2, WORD flags)
+	ExtendedException::ExtendedException(const std::shared_ptr<binaryParser>& parser, DWORD writerVersion2, WORD flags)
 	{
 		if (writerVersion2 >= 0x0003009)
 		{

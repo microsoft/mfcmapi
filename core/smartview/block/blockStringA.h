@@ -19,7 +19,7 @@ namespace smartview
 		_NODISCARD bool empty() const noexcept { return data.empty(); }
 		std::wstring toWstring() const noexcept { return strings::stringTowstring(data); }
 
-		blockStringA(std::shared_ptr<binaryParser> parser, size_t cchChar = -1)
+		blockStringA(const std::shared_ptr<binaryParser>& parser, size_t cchChar = -1)
 		{
 			set = true;
 			if (cchChar == static_cast<size_t>(-1))
@@ -48,7 +48,7 @@ namespace smartview
 			setOffset(_offset);
 		}
 
-		static std::shared_ptr<blockStringA> parse(std::shared_ptr<binaryParser> parser, size_t cchChar = -1)
+		static std::shared_ptr<blockStringA> parse(const std::shared_ptr<binaryParser>& parser, size_t cchChar = -1)
 		{
 			return std::make_shared<blockStringA>(parser, cchChar);
 		}
