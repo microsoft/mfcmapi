@@ -12,7 +12,7 @@ namespace smartview
 		lpEntryID = blockBytes::parse(parser, *cbEntryID, _MaxEID);
 		szDisplayName = blockStringA::parse(parser);
 		wzDisplayName = blockStringW::parse(parser);
-		JunkData = blockBytes::parse(parser);
+		JunkData = blockBytes::parse(parser, parser->RemainingBytes());
 		parser->clearCap();
 	}
 

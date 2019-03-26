@@ -38,11 +38,6 @@ namespace smartview
 		bool empty() const noexcept { return _data.empty(); }
 		const BYTE* data() const noexcept { return _data.data(); }
 
-		static std::shared_ptr<blockBytes> parse(const std::shared_ptr<binaryParser>& parser)
-		{
-			return std::make_shared<blockBytes>(parser, parser->RemainingBytes());
-		}
-
 		static std::shared_ptr<blockBytes>
 		parse(const std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
 		{
