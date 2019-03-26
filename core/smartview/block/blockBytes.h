@@ -10,16 +10,8 @@ namespace smartview
 		blockBytes() = default;
 		blockBytes(const blockBytes&) = delete;
 		blockBytes& operator=(const blockBytes&) = delete;
-
-		void setData(const std::vector<BYTE>& data) { _data = data; }
-
-		// Mimic std::vector<BYTE>
-		std::vector<BYTE> getData() const { return _data; }
-		operator const std::vector<BYTE>&() const { return _data; }
-		size_t size() const noexcept { return _data.size(); }
-		bool empty() const noexcept { return _data.empty(); }
-		const BYTE* data() const noexcept { return _data.data(); }
-
+		// Construct blockBytes directly from a parser, optionally supplying cbBytes and cbMaxBytes
+		blockBytes(const std::shared_ptr<binaryParser>& parser) : blockBytes(parser, parser->RemainingBytes()) {}
 		blockBytes(const std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
 		{
 			// TODO: Should we track when the returned byte length is less than requested?
@@ -37,7 +29,14 @@ namespace smartview
 			setSize(size() * sizeof(BYTE));
 		}
 
-		blockBytes(const std::shared_ptr<binaryParser>& parser) : blockBytes(parser, parser->RemainingBytes()) {}
+		void setData(const std::vector<BYTE>& data) { _data = data; }
+
+		// Mimic std::vector<BYTE>
+		std::vector<BYTE> getData() const { return _data; }
+		operator const std::vector<BYTE>&() const { return _data; }
+		size_t size() const noexcept { return _data.size(); }
+		bool empty() const noexcept { return _data.empty(); }
+		const BYTE* data() const noexcept { return _data.data(); }
 
 		static std::shared_ptr<blockBytes> parse(const std::shared_ptr<binaryParser>& parser)
 		{
@@ -57,6 +56,7 @@ namespace smartview
 
 	private:
 		std::wstring toStringInternal() const override { return strings::BinToHexString(_data, true); }
+		// TODO: Would it be better to hold the parser and size/offset data and build this as needed?
 		std::vector<BYTE> _data;
 	};
 
