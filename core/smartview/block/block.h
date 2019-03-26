@@ -75,13 +75,13 @@ namespace smartview
 
 		void terminateBlock()
 		{
-			if (children.size() >= 1)
+			if (children.empty())
 			{
-				children.back()->terminateBlock();
+				text = strings::ensureCRLF(text);
 			}
 			else
 			{
-				text = strings::ensureCRLF(text);
+				children.back()->terminateBlock();
 			}
 		}
 
