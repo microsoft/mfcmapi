@@ -44,7 +44,7 @@ namespace smartview
 
 		std::wstring toString();
 
-		std::shared_ptr<block> getBlock() { return data; }
+		std::shared_ptr<block>& getBlock() { return data; }
 		bool hasData() const { return data->hasData(); }
 
 	protected:
@@ -70,13 +70,13 @@ namespace smartview
 			data->addHeader(text, args...);
 		}
 
-		void addChild(std::shared_ptr<block> _block, const std::wstring& text) { data->addChild(_block, text); }
+		void addChild(const std::shared_ptr<block>& _block, const std::wstring& text) { data->addChild(_block, text); }
 		template <typename... Args>
-		void addChild(std::shared_ptr<block> _block, const std::wstring& text, const Args... args)
+		void addChild(const std::shared_ptr<block>& _block, const std::wstring& text, const Args... args)
 		{
 			data->addChild(_block, text, args...);
 		}
-		void addChild(std::shared_ptr<block> child) { data->addChild(child); }
+		void addChild(const std::shared_ptr<block>& child) { data->addChild(child); }
 		void terminateBlock() { data->terminateBlock(); }
 		void addBlankLine() { data->addBlankLine(); }
 
