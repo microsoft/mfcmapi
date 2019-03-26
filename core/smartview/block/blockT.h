@@ -18,13 +18,6 @@ namespace smartview
 		operator T&() { return data; }
 		operator T() const { return data; }
 
-		template <class U> operator blockT<U>() const
-		{
-			auto _data = blockT<U>(block(*this));
-			_data.setData(data);
-			return _data;
-		}
-
 		// Parse as type U, but store into type T
 		template <typename U> void parse(const std::shared_ptr<binaryParser>& parser)
 		{
