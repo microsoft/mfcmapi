@@ -41,6 +41,7 @@ namespace smartview
 		}
 
 	private:
+		// Construct directly from a parser
 		blockT(const std::shared_ptr<binaryParser>& parser) { parse<T>(parser); }
 		T data{};
 	};
