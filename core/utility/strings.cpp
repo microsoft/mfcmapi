@@ -553,11 +553,15 @@ namespace strings
 
 	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim)
 	{
+		if (elems.empty()) return emptystring;
+
 		std::wstringstream ss;
-		for (size_t i = 0; i < elems.size(); ++i)
+		auto iter = elems.begin();
+		while (true)
 		{
-			if (i != 0) ss << delim;
-			ss << elems[i];
+			ss << *iter;
+			if (++iter == elems.end()) break;
+			ss << delim;
 		}
 
 		return ss.str();
