@@ -13,7 +13,7 @@ namespace smartview
 
 		if (this->hasData() && m_bEnableJunk && m_Parser->RemainingBytes())
 		{
-			auto junkData = std::make_shared<blockBytes>(m_Parser);
+			auto junkData = std::make_shared<blockBytes>(m_Parser, m_Parser->RemainingBytes());
 			terminateBlock();
 			addHeader(L"Unparsed data size = 0x%1!08X!\r\n", junkData->size());
 			addChild(junkData);

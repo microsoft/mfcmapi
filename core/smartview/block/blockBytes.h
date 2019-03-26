@@ -11,7 +11,6 @@ namespace smartview
 		blockBytes(const blockBytes&) = delete;
 		blockBytes& operator=(const blockBytes&) = delete;
 		// Construct blockBytes directly from a parser, optionally supplying cbBytes and cbMaxBytes
-		blockBytes(const std::shared_ptr<binaryParser>& parser) : blockBytes(parser, parser->RemainingBytes()) {}
 		blockBytes(const std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
 		{
 			// TODO: Should we track when the returned byte length is less than requested?
