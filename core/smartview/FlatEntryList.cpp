@@ -61,7 +61,7 @@ namespace smartview
 			{
 				terminateBlock();
 				addHeader(L"Entry[%1!d!] Padding:\r\n", i);
-				if (entry->padding) addChild(entry->padding, strings::BinToHexString(*entry->padding, true));
+				if (entry->padding) addChild(entry->padding, entry->padding->toHexString(true));
 			}
 
 			i++;
