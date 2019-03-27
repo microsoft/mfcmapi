@@ -19,16 +19,14 @@ namespace smartview
 			if (cbBytes && parser->checkSize(cbBytes) &&
 				(cbMaxBytes == static_cast<size_t>(-1) || cbBytes <= cbMaxBytes))
 			{
-				setData(std::vector<BYTE>{const_cast<LPBYTE>(parser->getAddress()),
-										  const_cast<LPBYTE>(parser->getAddress() + cbBytes)});
+				_data = std::vector<BYTE>{const_cast<LPBYTE>(parser->getAddress()),
+										  const_cast<LPBYTE>(parser->getAddress() + cbBytes)};
 				parser->advance(cbBytes);
 			}
 
 			// Important that we set our size after getting data, because we may not have gotten the requested byte length
 			setSize(size() * sizeof(BYTE));
 		}
-
-		void setData(const std::vector<BYTE>& data) { _data = data; }
 
 		// Mimic std::vector<BYTE>
 		std::vector<BYTE> getData() const { return _data; }
