@@ -24,17 +24,15 @@ namespace smartview
 			set = true;
 			if (cchChar == static_cast<size_t>(-1))
 			{
-				cchChar = strnlen_s(
-							  reinterpret_cast<LPCSTR>(parser->GetCurrentAddress()),
-							  (parser->RemainingBytes()) / sizeof CHAR) +
-						  1;
+				cchChar =
+					strnlen_s(reinterpret_cast<LPCSTR>(parser->getAddress()), (parser->getSize()) / sizeof CHAR) + 1;
 			}
 
-			if (cchChar && parser->CheckRemainingBytes(sizeof CHAR * cchChar))
+			if (cchChar && parser->checkSize(sizeof CHAR * cchChar))
 			{
-				setOffset(parser->GetCurrentOffset());
+				setOffset(parser->getOffset());
 				data = strings::RemoveInvalidCharactersA(
-					std::string(reinterpret_cast<LPCSTR>(parser->GetCurrentAddress()), cchChar));
+					std::string(reinterpret_cast<LPCSTR>(parser->getAddress()), cchChar));
 				setSize(sizeof CHAR * cchChar);
 				parser->advance(sizeof CHAR * cchChar);
 			}

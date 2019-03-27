@@ -9,7 +9,7 @@ namespace smartview
 		XidSize = blockT<BYTE>::parse(parser);
 		NamespaceGuid = blockT<GUID>::parse(parser);
 		auto cbLocalId = *XidSize - sizeof(GUID);
-		if (parser->RemainingBytes() >= cbLocalId)
+		if (parser->getSize() >= cbLocalId)
 		{
 			LocalID = blockBytes::parse(parser, cbLocalId);
 		}
@@ -20,10 +20,10 @@ namespace smartview
 		auto cXID = 0;
 		// Run through the parser once to count the number of flag structs
 		// Must have at least 1 byte left to have another XID
-		while (m_Parser->RemainingBytes() > sizeof(BYTE))
+		while (m_Parser->getSize() > sizeof(BYTE))
 		{
 			const auto XidSize = blockT<BYTE>::parse(m_Parser);
-			if (m_Parser->RemainingBytes() >= *XidSize)
+			if (m_Parser->getSize() >= *XidSize)
 			{
 				m_Parser->advance(*XidSize);
 			}

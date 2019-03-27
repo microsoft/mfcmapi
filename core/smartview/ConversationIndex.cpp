@@ -82,10 +82,9 @@ namespace smartview
 		m_guid->setSize(size);
 		m_guid->setData(guid);
 		auto ulResponseLevels = ULONG{};
-		if (m_Parser->RemainingBytes() > 0)
+		if (m_Parser->getSize() > 0)
 		{
-			ulResponseLevels =
-				static_cast<ULONG>(m_Parser->RemainingBytes()) / 5; // Response levels consume 5 bytes each
+			ulResponseLevels = static_cast<ULONG>(m_Parser->getSize()) / 5; // Response levels consume 5 bytes each
 		}
 
 		if (ulResponseLevels && ulResponseLevels < _MaxEntriesSmall)

@@ -20,12 +20,12 @@ namespace smartview
 	{
 		WORD wPersistDataCount = 0;
 		// Run through the parser once to count the number of PersistData structs
-		while (m_Parser->RemainingBytes() >= 2 * sizeof(WORD))
+		while (m_Parser->getSize() >= 2 * sizeof(WORD))
 		{
 			const auto& wPersistID = blockT<WORD>::parse(m_Parser);
 			const auto& wDataElementSize = blockT<WORD>::parse(m_Parser);
 			// Must have at least wDataElementSize bytes left to be a valid data element
-			if (m_Parser->RemainingBytes() < *wDataElementSize) break;
+			if (m_Parser->getSize() < *wDataElementSize) break;
 
 			m_Parser->advance(*wDataElementSize);
 			wPersistDataCount++;
@@ -51,18 +51,18 @@ namespace smartview
 		wPersistID = blockT<WORD>::parse(parser);
 		wDataElementsSize = blockT<WORD>::parse(parser);
 
-		if (wPersistID != PERISIST_SENTINEL && parser->RemainingBytes() >= *wDataElementsSize)
+		if (wPersistID != PERISIST_SENTINEL && parser->getSize() >= *wDataElementsSize)
 		{
 			// Build a new parser to preread and count our elements
 			// This new parser will only contain as much space as suggested in wDataElementsSize
-			auto DataElementParser = std::make_shared<binaryParser>(*wDataElementsSize, parser->GetCurrentAddress());
+			auto DataElementParser = std::make_shared<binaryParser>(*wDataElementsSize, parser->getAddress());
 			for (;;)
 			{
-				if (DataElementParser->RemainingBytes() < 2 * sizeof(WORD)) break;
+				if (DataElementParser->getSize() < 2 * sizeof(WORD)) break;
 				const auto& wElementID = blockT<WORD>::parse(DataElementParser);
 				const auto& wElementDataSize = blockT<WORD>::parse(DataElementParser);
 				// Must have at least wElementDataSize bytes left to be a valid element data
-				if (DataElementParser->RemainingBytes() < *wElementDataSize) break;
+				if (DataElementParser->getSize() < *wElementDataSize) break;
 
 				DataElementParser->advance(*wElementDataSize);
 				wDataElementCount++;
@@ -84,9 +84,9 @@ namespace smartview
 		const auto cbRecordSize = *wDataElementsSize + sizeof(WORD) * 2;
 
 		// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
-		if (parser->GetCurrentOffset() < cbRecordSize)
+		if (parser->getOffset() < cbRecordSize)
 		{
-			JunkData = blockBytes::parse(parser, cbRecordSize - parser->GetCurrentOffset());
+			JunkData = blockBytes::parse(parser, cbRecordSize - parser->getOffset());
 		}
 	}
 

@@ -65,7 +65,7 @@ namespace smartview
 
 			// Have to count how many skip blocks are here.
 			// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
-			const auto stBookmark = parser->GetCurrentOffset();
+			const auto stBookmark = parser->getOffset();
 
 			DWORD skipBlockCount = 0;
 
@@ -77,7 +77,7 @@ namespace smartview
 				parser->advance(*dwBlock);
 			}
 
-			parser->SetCurrentOffset(stBookmark); // We're done with our first pass, restore the bookmark
+			parser->setOffset(stBookmark); // We're done with our first pass, restore the bookmark
 
 			if (skipBlockCount && skipBlockCount < _MaxEntriesSmall)
 			{

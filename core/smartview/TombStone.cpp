@@ -23,12 +23,12 @@ namespace smartview
 		m_RecordsSize = blockT<DWORD>::parse(m_Parser);
 
 		// Run through the parser once to count the number of flag structs
-		const auto ulFlagOffset = m_Parser->GetCurrentOffset();
+		const auto ulFlagOffset = m_Parser->getOffset();
 		auto actualRecordsCount = 0;
 		for (;;)
 		{
 			// Must have at least 2 bytes left to have another flag
-			if (m_Parser->RemainingBytes() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
+			if (m_Parser->getSize() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
 			(void) m_Parser->advance(sizeof DWORD);
 			(void) m_Parser->advance(sizeof DWORD);
 			const auto len1 = blockT<DWORD>::parse(m_Parser);
@@ -39,7 +39,7 @@ namespace smartview
 		}
 
 		// Now we parse for real
-		m_Parser->SetCurrentOffset(ulFlagOffset);
+		m_Parser->setOffset(ulFlagOffset);
 
 		if (actualRecordsCount && actualRecordsCount < _MaxEntriesSmall)
 		{

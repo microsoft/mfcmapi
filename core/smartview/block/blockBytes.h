@@ -14,13 +14,13 @@ namespace smartview
 		blockBytes(const std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
 		{
 			// TODO: Should we track when the returned byte length is less than requested?
-			setOffset(parser->GetCurrentOffset());
+			setOffset(parser->getOffset());
 
-			if (cbBytes && parser->CheckRemainingBytes(cbBytes) &&
+			if (cbBytes && parser->checkSize(cbBytes) &&
 				(cbMaxBytes == static_cast<size_t>(-1) || cbBytes <= cbMaxBytes))
 			{
-				setData(std::vector<BYTE>{const_cast<LPBYTE>(parser->GetCurrentAddress()),
-										  const_cast<LPBYTE>(parser->GetCurrentAddress() + cbBytes)});
+				setData(std::vector<BYTE>{const_cast<LPBYTE>(parser->getAddress()),
+										  const_cast<LPBYTE>(parser->getAddress() + cbBytes)});
 				parser->advance(cbBytes);
 			}
 

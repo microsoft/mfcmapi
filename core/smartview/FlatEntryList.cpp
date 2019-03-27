@@ -9,7 +9,7 @@ namespace smartview
 		// Size here will be the length of the serialized entry ID
 		// We'll have to round it up to a multiple of 4 to read off padding
 		dwSize = blockT<DWORD>::parse(parser);
-		const auto ulSize = min(*dwSize, parser->RemainingBytes());
+		const auto ulSize = min(*dwSize, parser->getSize());
 
 		lpEntryID.parse(parser, ulSize, true);
 

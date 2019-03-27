@@ -10,7 +10,7 @@ namespace smartview
 	void EntryIdStruct::Parse()
 	{
 		m_ObjectType = eidtUnknown;
-		if (m_Parser->RemainingBytes() < 4) return;
+		if (m_Parser->getSize() < 4) return;
 		m_abFlags0 = blockT<byte>::parse(m_Parser);
 		m_abFlags1 = blockT<byte>::parse(m_Parser);
 		m_abFlags23 = blockBytes::parse(m_Parser, 2);
@@ -48,7 +48,7 @@ namespace smartview
 		// We can recognize Exchange message store folder and message entry IDs by their size
 		else
 		{
-			const auto ulRemainingBytes = m_Parser->RemainingBytes();
+			const auto ulRemainingBytes = m_Parser->getSize();
 
 			if (sizeof(WORD) + sizeof(GUID) + 6 * sizeof(BYTE) + 2 * sizeof(BYTE) == ulRemainingBytes)
 			{
@@ -108,7 +108,7 @@ namespace smartview
 				}
 
 				// Read the wrapped entry ID from the remaining data
-				auto cbRemainingBytes = m_Parser->RemainingBytes();
+				auto cbRemainingBytes = m_Parser->getSize();
 
 				// If we already got a size, use it, else we just read the rest of the structure
 				if (m_ContactAddressBookObject.EntryIDCount != 0 &&
@@ -147,7 +147,7 @@ namespace smartview
 									  -1))
 				{
 					m_MessageDatabaseObject.bIsExchange = true;
-					auto cbRead = m_Parser->GetCurrentOffset();
+					auto cbRead = m_Parser->getOffset();
 					// Advance to the next multiple of 4
 					m_Parser->advance(3 - (cbRead + 3) % 4);
 					m_MessageDatabaseObject.WrappedFlags = blockT<DWORD>::parse(m_Parser);
@@ -158,9 +158,9 @@ namespace smartview
 					// Test if we have a magic value. Some PF EIDs also have a mailbox DN and we need to accomodate them
 					if (*m_MessageDatabaseObject.WrappedType & OPENSTORE_PUBLIC)
 					{
-						cbRead = m_Parser->GetCurrentOffset();
+						cbRead = m_Parser->getOffset();
 						m_MessageDatabaseObject.MagicVersion = blockT<DWORD>::parse(m_Parser);
-						m_Parser->SetCurrentOffset(cbRead);
+						m_Parser->setOffset(cbRead);
 					}
 					else
 					{
@@ -178,14 +178,14 @@ namespace smartview
 					}
 
 					// Check again for a magic value
-					cbRead = m_Parser->GetCurrentOffset();
+					cbRead = m_Parser->getOffset();
 					m_MessageDatabaseObject.MagicVersion = blockT<DWORD>::parse(m_Parser);
-					m_Parser->SetCurrentOffset(cbRead);
+					m_Parser->setOffset(cbRead);
 
 					switch (*m_MessageDatabaseObject.MagicVersion)
 					{
 					case MDB_STORE_EID_V2_MAGIC:
-						if (m_Parser->RemainingBytes() >= MDB_STORE_EID_V2::size + sizeof(WCHAR))
+						if (m_Parser->getSize() >= MDB_STORE_EID_V2::size + sizeof(WCHAR))
 						{
 							m_MessageDatabaseObject.v2.ulMagic = blockT<DWORD>::parse(m_Parser);
 							m_MessageDatabaseObject.v2.ulSize = blockT<DWORD>::parse(m_Parser);
@@ -206,7 +206,7 @@ namespace smartview
 						}
 						break;
 					case MDB_STORE_EID_V3_MAGIC:
-						if (m_Parser->RemainingBytes() >= MDB_STORE_EID_V3::size + sizeof(WCHAR))
+						if (m_Parser->getSize() >= MDB_STORE_EID_V3::size + sizeof(WCHAR))
 						{
 							m_MessageDatabaseObject.v3.ulMagic = blockT<DWORD>::parse(m_Parser);
 							m_MessageDatabaseObject.v3.ulSize = blockT<DWORD>::parse(m_Parser);

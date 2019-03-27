@@ -37,7 +37,7 @@ namespace smartview
 		{
 			if (dwPropCount >= m_MaxEntries) break;
 			m_Props.emplace_back(std::make_shared<SPropValueStruct>(m_Parser, m_NickName, m_RuleCondition));
-			if (!m_Parser->RemainingBytes()) break;
+			if (!m_Parser->getSize()) break;
 			dwPropCount++;
 		}
 	}
@@ -85,9 +85,12 @@ namespace smartview
 		}
 	}
 
-	SPropValueStruct::SPropValueStruct(const std::shared_ptr<binaryParser>& parser, bool doNickname, bool doRuleProcessing)
+	SPropValueStruct::SPropValueStruct(
+		const std::shared_ptr<binaryParser>& parser,
+		bool doNickname,
+		bool doRuleProcessing)
 	{
-		const auto ulCurrOffset = parser->GetCurrentOffset();
+		const auto ulCurrOffset = parser->getOffset();
 
 		PropType = blockT<WORD>::parse(parser);
 		PropID = blockT<WORD>::parse(parser);

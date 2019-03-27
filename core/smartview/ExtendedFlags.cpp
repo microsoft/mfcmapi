@@ -12,7 +12,7 @@ namespace smartview
 		Cb = blockT<BYTE>::parse(parser);
 
 		// If the structure says there's more bytes than remaining buffer, we're done parsing.
-		if (parser->RemainingBytes() < *Cb)
+		if (parser->getSize() < *Cb)
 		{
 			bBadData = true;
 			return;
@@ -57,11 +57,11 @@ namespace smartview
 		for (;;)
 		{
 			// Must have at least 2 bytes left to have another flag
-			if (m_Parser->RemainingBytes() < 2) break;
+			if (m_Parser->getSize() < 2) break;
 			m_Parser->advance(sizeof BYTE);
 			const auto cbData = blockT<BYTE>::parse(m_Parser);
 			// Must have at least cbData bytes left to be a valid flag
-			if (m_Parser->RemainingBytes() < *cbData) break;
+			if (m_Parser->getSize() < *cbData) break;
 
 			m_Parser->advance(*cbData);
 			ulNumFlags++;

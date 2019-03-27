@@ -44,7 +44,7 @@ namespace smartview
 				resAnd.lpRes.reserve(*resAnd.cRes);
 				for (ULONG i = 0; i < *resAnd.cRes; i++)
 				{
-					if (!m_Parser->RemainingBytes()) break;
+					if (!m_Parser->getSize()) break;
 					resAnd.lpRes.emplace_back(
 						std::make_shared<RestrictionStruct>(m_Parser, ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
 				}
@@ -68,14 +68,14 @@ namespace smartview
 				resOr.lpRes.reserve(*resOr.cRes);
 				for (ULONG i = 0; i < *resOr.cRes; i++)
 				{
-					if (!m_Parser->RemainingBytes()) break;
+					if (!m_Parser->getSize()) break;
 					resOr.lpRes.emplace_back(
 						std::make_shared<RestrictionStruct>(m_Parser, ulDepth + 1, m_bRuleCondition, m_bExtendedCount));
 				}
 			}
 			break;
 		case RES_NOT:
-			if (ulDepth < _MaxDepth && m_Parser->RemainingBytes())
+			if (ulDepth < _MaxDepth && m_Parser->getSize())
 			{
 				resNot.lpRes =
 					std::make_shared<RestrictionStruct>(m_Parser, ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
@@ -127,7 +127,7 @@ namespace smartview
 			break;
 		case RES_SUBRESTRICTION:
 			resSub.ulSubObject = blockT<DWORD>::parse(m_Parser);
-			if (ulDepth < _MaxDepth && m_Parser->RemainingBytes())
+			if (ulDepth < _MaxDepth && m_Parser->getSize())
 			{
 				resSub.lpRes =
 					std::make_shared<RestrictionStruct>(m_Parser, ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
@@ -144,7 +144,7 @@ namespace smartview
 
 			// Check if a restriction is present
 			const auto resExists = blockT<BYTE>::parse(m_Parser);
-			if (*resExists && ulDepth < _MaxDepth && m_Parser->RemainingBytes())
+			if (*resExists && ulDepth < _MaxDepth && m_Parser->getSize())
 			{
 				resComment.lpRes =
 					std::make_shared<RestrictionStruct>(m_Parser, ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
@@ -163,7 +163,7 @@ namespace smartview
 
 			// Check if a restriction is present
 			const auto& resExists = blockT<BYTE>::parse(m_Parser);
-			if (*resExists && ulDepth < _MaxDepth && m_Parser->RemainingBytes())
+			if (*resExists && ulDepth < _MaxDepth && m_Parser->getSize())
 			{
 				resAnnotation.lpRes =
 					std::make_shared<RestrictionStruct>(m_Parser, ulDepth + 1, m_bRuleCondition, m_bExtendedCount);
@@ -173,7 +173,7 @@ namespace smartview
 		break;
 		case RES_COUNT:
 			resCount.ulCount = blockT<DWORD>::parse(m_Parser);
-			if (ulDepth < _MaxDepth && m_Parser->RemainingBytes())
+			if (ulDepth < _MaxDepth && m_Parser->getSize())
 			{
 				resCount.lpRes =
 					std::make_shared<RestrictionStruct>(m_Parser, ulDepth + 1, m_bRuleCondition, m_bExtendedCount);

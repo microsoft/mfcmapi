@@ -89,7 +89,7 @@ namespace smartview
 
 		if (*m_Flags & SFST_FILTERSTREAM)
 		{
-			const auto cbRemainingBytes = m_Parser->RemainingBytes();
+			const auto cbRemainingBytes = m_Parser->getSize();
 			// Since the format for SFST_FILTERSTREAM isn't documented, just assume that everything remaining
 			// is part of this bucket. We leave DWORD space for the final skip block, which should be empty
 			if (cbRemainingBytes > sizeof DWORD)

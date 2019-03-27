@@ -6,13 +6,13 @@ namespace smartview
 	TaskAssigner::TaskAssigner(const std::shared_ptr<binaryParser>& parser)
 	{
 		cbAssigner = blockT<DWORD>::parse(parser);
-		const auto ulSize = min(*cbAssigner, (ULONG) parser->RemainingBytes());
+		const auto ulSize = min(*cbAssigner, (ULONG) parser->getSize());
 		parser->setCap(ulSize);
 		cbEntryID = blockT<ULONG>::parse(parser);
 		lpEntryID = blockBytes::parse(parser, *cbEntryID, _MaxEID);
 		szDisplayName = blockStringA::parse(parser);
 		wzDisplayName = blockStringW::parse(parser);
-		JunkData = blockBytes::parse(parser, parser->RemainingBytes());
+		JunkData = blockBytes::parse(parser, parser->getSize());
 		parser->clearCap();
 	}
 

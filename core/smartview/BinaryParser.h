@@ -19,9 +19,9 @@ namespace smartview
 		bool empty() const { return m_Offset == m_Size; }
 		void advance(size_t cbAdvance) { m_Offset += cbAdvance; }
 		void rewind() { m_Offset = 0; }
-		size_t GetCurrentOffset() const { return m_Offset; }
-		const BYTE* GetCurrentAddress() const { return m_Bin.data() + m_Offset; }
-		void SetCurrentOffset(size_t stOffset) { m_Offset = stOffset; }
+		size_t getOffset() const { return m_Offset; }
+		void setOffset(size_t stOffset) { m_Offset = stOffset; }
+		const BYTE* getAddress() const { return m_Bin.data() + m_Offset; }
 		void setCap(size_t cap)
 		{
 			m_Sizes.push(m_Size);
@@ -46,8 +46,8 @@ namespace smartview
 		// If we're before the end of the buffer, return the count of remaining bytes
 		// If we're at or past the end of the buffer, return 0
 		// If we're before the beginning of the buffer, return 0
-		size_t RemainingBytes() const { return m_Offset > m_Size ? 0 : m_Size - m_Offset; }
-		bool CheckRemainingBytes(size_t cbBytes) const { return cbBytes <= RemainingBytes(); }
+		size_t getSize() const { return m_Offset > m_Size ? 0 : m_Size - m_Offset; }
+		bool checkSize(size_t cbBytes) const { return cbBytes <= getSize(); }
 
 	private:
 		std::vector<BYTE> m_Bin;

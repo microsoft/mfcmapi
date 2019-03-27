@@ -22,11 +22,11 @@ namespace smartview
 		{
 			static const size_t sizeU = sizeof SOURCE_U;
 			// TODO: Consider what a failure block really looks like
-			if (!parser->CheckRemainingBytes(sizeU)) return;
+			if (!parser->checkSize(sizeU)) return;
 
-			setOffset(parser->GetCurrentOffset());
+			setOffset(parser->getOffset());
 			// TODO: Can we remove this cast?
-			setData(*reinterpret_cast<const SOURCE_U*>(parser->GetCurrentAddress()));
+			setData(*reinterpret_cast<const SOURCE_U*>(parser->getAddress()));
 			setSize(sizeU);
 			parser->advance(sizeU);
 		}
