@@ -5,13 +5,13 @@
 
 namespace smartview
 {
-	void SmartViewParser::EnsureParsed()
+	void SmartViewParser::ensureParsed()
 	{
-		if (m_bParsed || m_Parser->empty()) return;
+		if (parsed || m_Parser->empty()) return;
 		Parse();
 		ParseBlocks();
 
-		if (this->hasData() && m_bEnableJunk && m_Parser->getSize())
+		if (this->hasData() && enableJunk && m_Parser->getSize())
 		{
 			auto junkData = std::make_shared<blockBytes>(m_Parser, m_Parser->getSize());
 			terminateBlock();
@@ -19,13 +19,13 @@ namespace smartview
 			addChild(junkData);
 		}
 
-		m_bParsed = true;
+		parsed = true;
 	}
 
 	std::wstring SmartViewParser::toString()
 	{
 		if (m_Parser->empty()) return L"";
-		EnsureParsed();
+		ensureParsed();
 
 		auto szParsedString = strings::trimWhitespace(data->toString());
 

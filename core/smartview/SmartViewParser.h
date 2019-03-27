@@ -23,22 +23,22 @@ namespace smartview
 		SmartViewParser(const SmartViewParser&) = delete;
 		SmartViewParser& operator=(const SmartViewParser&) = delete;
 
-		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
+		void init(size_t cb, _In_count_(cb) const BYTE* _bin)
 		{
-			m_Parser = std::make_shared<binaryParser>(cbBin, lpBin);
-			m_bParsed = false;
+			m_Parser = std::make_shared<binaryParser>(cb, _bin);
+			parsed = false;
 			data = std::make_shared<block>();
-			m_bEnableJunk = true;
+			enableJunk = true;
 		}
 
 		void parse(const std::shared_ptr<binaryParser>& binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
 
-		void parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool bEnableJunk)
+		void parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool _enableJunk)
 		{
 			m_Parser = binaryParser;
 			m_Parser->setCap(cbBin);
-			m_bEnableJunk = bEnableJunk;
-			EnsureParsed();
+			enableJunk = _enableJunk;
+			ensureParsed();
 			m_Parser->clearCap();
 		}
 
@@ -81,12 +81,12 @@ namespace smartview
 		void addBlankLine() { data->addBlankLine(); }
 
 	private:
-		void EnsureParsed();
+		void ensureParsed();
 		virtual void Parse() = 0;
 		virtual void ParseBlocks() = 0;
 
 		std::shared_ptr<block> data = std::make_shared<block>();
-		bool m_bEnableJunk{true};
-		bool m_bParsed{false};
+		bool enableJunk{true};
+		bool parsed{false};
 	};
 } // namespace smartview
