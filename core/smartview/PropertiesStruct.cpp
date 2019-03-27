@@ -19,7 +19,7 @@ namespace smartview
 		smartViewParser::parse(parser, false);
 	}
 
-	void PropertiesStruct::Parse()
+	void PropertiesStruct::parse()
 	{
 		// For consistancy with previous parsings, we'll refuse to parse if asked to parse more than _MaxEntriesSmall
 		// However, we may want to reconsider this choice.
@@ -42,7 +42,7 @@ namespace smartview
 		}
 	}
 
-	void PropertiesStruct::ParseBlocks()
+	void PropertiesStruct::parseBlocks()
 	{
 		auto i = 0;
 		for (const auto& prop : m_Props)

@@ -10,8 +10,8 @@ namespace smartview
 	class ReportTag : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 		void
 		addEID(const std::wstring& label, const std::shared_ptr<blockT<ULONG>>& cb, std::shared_ptr<blockBytes>& eid);
 

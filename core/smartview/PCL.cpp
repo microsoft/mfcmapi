@@ -15,7 +15,7 @@ namespace smartview
 		}
 	}
 
-	void PCL::Parse()
+	void PCL::parse()
 	{
 		auto cXID = 0;
 		// Run through the parser once to count the number of flag structs
@@ -44,7 +44,7 @@ namespace smartview
 		}
 	}
 
-	void PCL::ParseBlocks()
+	void PCL::parseBlocks()
 	{
 		setRoot(L"Predecessor Change List:\r\n");
 		addHeader(L"Count = %1!d!", m_lpXID.size());

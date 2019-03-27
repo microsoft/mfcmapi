@@ -22,7 +22,7 @@ namespace smartview
 
 	void RuleCondition::Init(bool bExtended) { m_bExtended = bExtended; }
 
-	void RuleCondition::Parse()
+	void RuleCondition::parse()
 	{
 		m_NamedPropertyInformation.NoOfNamedProps = blockT<WORD>::parse(m_Parser);
 		if (*m_NamedPropertyInformation.NoOfNamedProps && *m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
@@ -46,7 +46,7 @@ namespace smartview
 		m_lpRes->smartViewParser::parse(m_Parser, false);
 	}
 
-	void RuleCondition::ParseBlocks()
+	void RuleCondition::parseBlocks()
 	{
 		setRoot(m_bExtended ? L"Extended Rule Condition\r\n" : L"Rule Condition\r\n");
 

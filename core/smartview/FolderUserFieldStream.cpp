@@ -32,7 +32,7 @@ namespace smartview
 		Common.parse(parser);
 	}
 
-	void FolderUserFieldStream::Parse()
+	void FolderUserFieldStream::parse()
 	{
 		m_FolderUserFieldsAnsiCount = blockT<DWORD>::parse(m_Parser);
 		if (*m_FolderUserFieldsAnsiCount && *m_FolderUserFieldsAnsiCount < _MaxEntriesSmall)
@@ -72,7 +72,7 @@ namespace smartview
 		}
 	}
 
-	void FolderUserFieldStream::ParseBlocks()
+	void FolderUserFieldStream::parseBlocks()
 	{
 		setRoot(L"Folder User Field Stream\r\n");
 		addChild(

@@ -11,7 +11,7 @@ namespace smartview
 		dwSize = blockT<DWORD>::parse(parser);
 		const auto ulSize = min(*dwSize, parser->getSize());
 
-		lpEntryID.parse(parser, ulSize, true);
+		lpEntryID.smartViewParser::parse(parser, ulSize, true);
 
 		const auto dwPAD = 3 - (*dwSize + 3) % 4;
 		if (dwPAD > 0)
@@ -20,7 +20,7 @@ namespace smartview
 		}
 	}
 
-	void FlatEntryList::Parse()
+	void FlatEntryList::parse()
 	{
 		m_cEntries = blockT<DWORD>::parse(m_Parser);
 
@@ -37,7 +37,7 @@ namespace smartview
 		}
 	}
 
-	void FlatEntryList::ParseBlocks()
+	void FlatEntryList::parseBlocks()
 	{
 		setRoot(L"Flat Entry List\r\n");
 		addChild(m_cEntries, L"cEntries = %1!d!\r\n", m_cEntries->getData());

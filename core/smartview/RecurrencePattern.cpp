@@ -6,7 +6,7 @@
 
 namespace smartview
 {
-	void RecurrencePattern::Parse()
+	void RecurrencePattern::parse()
 	{
 		m_ReaderVersion = blockT<WORD>::parse(m_Parser);
 		m_WriterVersion = blockT<WORD>::parse(m_Parser);
@@ -67,7 +67,7 @@ namespace smartview
 		m_EndDate = blockT<DWORD>::parse(m_Parser);
 	}
 
-	void RecurrencePattern::ParseBlocks()
+	void RecurrencePattern::parseBlocks()
 	{
 		setRoot(L"Recurrence Pattern: \r\n");
 		addChild(m_ReaderVersion, L"ReaderVersion: 0x%1!04X!\r\n", m_ReaderVersion->getData());

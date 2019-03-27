@@ -108,9 +108,9 @@ namespace smartview
 		}
 
 	private:
-		void Parse() override { parse(0); }
+		void parse() override { parse(0); }
 		void parse(ULONG ulDepth);
-		void ParseBlocks() override
+		void parseBlocks() override
 		{
 			setRoot(L"Restriction:\r\n");
 			parseBlocks(0);

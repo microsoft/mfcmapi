@@ -20,9 +20,9 @@ namespace smartview
 		m_bFB = bFB;
 	}
 
-	void SDBin::Parse() { m_SDbin = blockBytes::parse(m_Parser, m_Parser->getSize()); }
+	void SDBin::parse() { m_SDbin = blockBytes::parse(m_Parser, m_Parser->getSize()); }
 
-	void SDBin::ParseBlocks()
+	void SDBin::parseBlocks()
 	{
 		auto acetype = sid::acetypeMessage;
 		switch (mapi::GetMAPIObjectType(m_lpMAPIProp))

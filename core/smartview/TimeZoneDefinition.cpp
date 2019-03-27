@@ -34,7 +34,7 @@ namespace smartview
 		stDaylightDate.wMilliseconds = blockT<WORD>::parse(parser);
 	}
 
-	void TimeZoneDefinition::Parse()
+	void TimeZoneDefinition::parse()
 	{
 		m_bMajorVersion = blockT<BYTE>::parse(m_Parser);
 		m_bMinorVersion = blockT<BYTE>::parse(m_Parser);
@@ -54,7 +54,7 @@ namespace smartview
 		}
 	}
 
-	void TimeZoneDefinition::ParseBlocks()
+	void TimeZoneDefinition::parseBlocks()
 	{
 		setRoot(L"Time Zone Definition: \r\n");
 		addChild(m_bMajorVersion, L"bMajorVersion = 0x%1!02X! (%1!d!)\r\n", m_bMajorVersion->getData());

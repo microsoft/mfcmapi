@@ -50,7 +50,7 @@ namespace smartview
 		}
 	}
 
-	void ExtendedFlags::Parse()
+	void ExtendedFlags::parse()
 	{
 		ULONG ulNumFlags{};
 		// Run through the parser once to count the number of flag structs
@@ -82,7 +82,7 @@ namespace smartview
 		}
 	}
 
-	void ExtendedFlags::ParseBlocks()
+	void ExtendedFlags::parseBlocks()
 	{
 		setRoot(L"Extended Flags:\r\n");
 		addHeader(L"Number of flags = %1!d!", m_pefExtendedFlags.size());

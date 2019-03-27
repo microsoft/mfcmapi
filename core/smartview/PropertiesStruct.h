@@ -235,8 +235,8 @@ namespace smartview
 		_Check_return_ std::vector<std::shared_ptr<SPropValueStruct>>& Props() { return m_Props; }
 
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		bool m_NickName{};
 		bool m_RuleCondition{};

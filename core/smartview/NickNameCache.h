@@ -17,8 +17,8 @@ namespace smartview
 	class NickNameCache : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockBytes> m_Metadata1 = emptyBB(); // 4 bytes
 		std::shared_ptr<blockT<DWORD>> m_ulMajorVersion = emptyT<DWORD>();

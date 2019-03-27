@@ -37,8 +37,8 @@ namespace smartview
 	class TimeZoneDefinition : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockT<BYTE>> m_bMajorVersion = emptyT<BYTE>();
 		std::shared_ptr<blockT<BYTE>> m_bMinorVersion = emptyT<BYTE>();

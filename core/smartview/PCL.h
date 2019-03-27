@@ -17,8 +17,8 @@ namespace smartview
 	class PCL : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::vector<std::shared_ptr<SizedXID>> m_lpXID;
 	};

@@ -26,8 +26,8 @@ namespace smartview
 	class TimeZone : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockT<DWORD>> m_lBias = emptyT<DWORD>(); // offset from GMT
 		std::shared_ptr<blockT<DWORD>> m_lStandardBias = emptyT<DWORD>(); // offset from bias during standard time

@@ -144,16 +144,16 @@ namespace smartview
 		EntryIdStruct() = default;
 		EntryIdStruct(const std::shared_ptr<binaryParser>& binaryParser, bool bEnableJunk)
 		{
-			parse(binaryParser, 0, bEnableJunk);
+			smartViewParser::parse(binaryParser, 0, bEnableJunk);
 		}
 		EntryIdStruct(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool bEnableJunk)
 		{
-			parse(binaryParser, cbBin, bEnableJunk);
+			smartViewParser::parse(binaryParser, cbBin, bEnableJunk);
 		}
 
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockT<byte>> m_abFlags0 = emptyT<byte>();
 		std::shared_ptr<blockT<byte>> m_abFlags1 = emptyT<byte>();

@@ -16,7 +16,7 @@ namespace smartview
 		}
 	}
 
-	void AdditionalRenEntryIDs::Parse()
+	void AdditionalRenEntryIDs::parse()
 	{
 		WORD wPersistDataCount = 0;
 		// Run through the parser once to count the number of PersistData structs
@@ -90,7 +90,7 @@ namespace smartview
 		}
 	}
 
-	void AdditionalRenEntryIDs::ParseBlocks()
+	void AdditionalRenEntryIDs::parseBlocks()
 	{
 		setRoot(L"Additional Ren Entry IDs\r\n");
 		addHeader(L"PersistDataCount = %1!d!", m_ppdPersistData.size());

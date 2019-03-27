@@ -23,8 +23,8 @@ namespace smartview
 	class TaskAssigners : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockT<DWORD>> m_cAssigners = emptyT<DWORD>();
 		std::vector<std::shared_ptr<TaskAssigner>> m_lpTaskAssigners;

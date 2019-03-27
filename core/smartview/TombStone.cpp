@@ -9,12 +9,12 @@ namespace smartview
 		StartTime = blockT<DWORD>::parse(parser);
 		EndTime = blockT<DWORD>::parse(parser);
 		GlobalObjectIdSize = blockT<DWORD>::parse(parser);
-		GlobalObjectId.parse(parser, *GlobalObjectIdSize, false);
+		GlobalObjectId.smartViewParser::parse(parser, *GlobalObjectIdSize, false);
 		UsernameSize = blockT<WORD>::parse(parser);
 		szUsername = blockStringA::parse(parser, *UsernameSize);
 	}
 
-	void TombStone::Parse()
+	void TombStone::parse()
 	{
 		m_Identifier = blockT<DWORD>::parse(m_Parser);
 		m_HeaderSize = blockT<DWORD>::parse(m_Parser);
@@ -51,7 +51,7 @@ namespace smartview
 		}
 	}
 
-	void TombStone::ParseBlocks()
+	void TombStone::parseBlocks()
 	{
 		setRoot(L"Tombstone:\r\n");
 		addChild(m_Identifier, L"Identifier = 0x%1!08X!\r\n", m_Identifier->getData());

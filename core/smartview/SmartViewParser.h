@@ -79,8 +79,8 @@ namespace smartview
 
 	private:
 		void ensureParsed();
-		virtual void Parse() = 0;
-		virtual void ParseBlocks() = 0;
+		virtual void parse() = 0;
+		virtual void parseBlocks() = 0;
 
 		std::shared_ptr<block> data = std::make_shared<block>();
 		bool enableJunk{true};

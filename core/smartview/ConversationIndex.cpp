@@ -34,7 +34,7 @@ namespace smartview
 		Level->setData(static_cast<BYTE>(*r5 & 0xf));
 	}
 
-	void ConversationIndex::Parse()
+	void ConversationIndex::parse()
 	{
 		m_UnnamedByte = blockT<BYTE>::parse(m_Parser);
 		const auto h1 = blockT<BYTE>::parse(m_Parser);
@@ -97,7 +97,7 @@ namespace smartview
 		}
 	}
 
-	void ConversationIndex::ParseBlocks()
+	void ConversationIndex::parseBlocks()
 	{
 		setRoot(L"Conversation Index: \r\n");
 

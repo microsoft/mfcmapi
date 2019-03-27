@@ -18,8 +18,8 @@ namespace smartview
 	class ConversationIndex : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockT<BYTE>> m_UnnamedByte = emptyT<BYTE>();
 		std::shared_ptr<blockT<FILETIME>> m_ftCurrent = emptyT<FILETIME>();

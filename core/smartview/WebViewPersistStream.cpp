@@ -16,7 +16,7 @@ namespace smartview
 		lpData = blockBytes::parse(parser, *cbData, _MaxBytes);
 	}
 
-	void WebViewPersistStream::Parse()
+	void WebViewPersistStream::parse()
 	{
 		auto cWebViews = 0;
 
@@ -48,7 +48,7 @@ namespace smartview
 		}
 	}
 
-	void WebViewPersistStream::ParseBlocks()
+	void WebViewPersistStream::parseBlocks()
 	{
 		setRoot(L"Web View Persistence Object Stream\r\n");
 		addHeader(L"cWebViews = %1!d!", m_lpWebViews.size());

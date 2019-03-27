@@ -69,8 +69,8 @@ namespace smartview
 	class AppointmentRecurrencePattern : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		RecurrencePattern m_RecurrencePattern;
 		std::shared_ptr<blockT<DWORD>> m_ReaderVersion2 = emptyT<DWORD>();

@@ -16,7 +16,7 @@ namespace smartview
 	};
 	// clang-format on
 
-	void GlobalObjectId::Parse()
+	void GlobalObjectId::parse()
 	{
 		m_Id = blockBytes::parse(m_Parser, 16);
 
@@ -37,7 +37,7 @@ namespace smartview
 		m_lpData = blockBytes::parse(m_Parser, *m_dwSize, _MaxBytes);
 	}
 
-	void GlobalObjectId::ParseBlocks()
+	void GlobalObjectId::parseBlocks()
 	{
 		setRoot(L"Global Object ID:\r\n");
 		addHeader(L"Byte Array ID = ");

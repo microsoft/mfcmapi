@@ -57,8 +57,8 @@ namespace smartview
 	class PropertyDefinitionStream : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockT<WORD>> m_wVersion = emptyT<WORD>();
 		std::shared_ptr<blockT<DWORD>> m_dwFieldDefinitionCount = emptyT<DWORD>();

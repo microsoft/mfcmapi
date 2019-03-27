@@ -12,8 +12,8 @@ namespace smartview
 		void Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
 
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		LPMAPIPROP m_lpMAPIProp{};
 		bool m_bFB{};

@@ -19,8 +19,8 @@ namespace smartview
 	class FlatEntryList : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockT<DWORD>> m_cEntries = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_cbEntries = emptyT<DWORD>();

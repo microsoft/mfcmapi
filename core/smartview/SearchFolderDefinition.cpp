@@ -18,7 +18,7 @@ namespace smartview
 		}
 	}
 
-	void SearchFolderDefinition::Parse()
+	void SearchFolderDefinition::parse()
 	{
 		m_Version = blockT<DWORD>::parse(m_Parser);
 		m_Flags = blockT<DWORD>::parse(m_Parser);
@@ -59,7 +59,7 @@ namespace smartview
 
 		if (m_FolderList2Length)
 		{
-			m_FolderList2.parse(m_Parser, *m_FolderList2Length, true);
+			m_FolderList2.smartViewParser::parse(m_Parser, *m_FolderList2Length, true);
 		}
 
 		if (*m_Flags & SFST_BINARY)
@@ -105,7 +105,7 @@ namespace smartview
 		}
 	}
 
-	void SearchFolderDefinition::ParseBlocks()
+	void SearchFolderDefinition::parseBlocks()
 	{
 		setRoot(L"Search Folder Definition:\r\n");
 		addChild(m_Version, L"Version = 0x%1!08X!\r\n", m_Version->getData());

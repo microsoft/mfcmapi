@@ -16,8 +16,8 @@ namespace smartview
 	class EntryList : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockT<DWORD>> m_EntryCount = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_Pad = emptyT<DWORD>();

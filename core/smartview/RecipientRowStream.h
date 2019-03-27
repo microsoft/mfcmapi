@@ -17,8 +17,8 @@ namespace smartview
 	class RecipientRowStream : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockT<DWORD>> m_cVersion = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_cRowCount = emptyT<DWORD>();

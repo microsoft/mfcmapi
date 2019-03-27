@@ -34,7 +34,7 @@ namespace smartview
 		DisplayNameRepeat = blockStringW::parse(parser, *DisplayNameCountRepeat);
 	}
 
-	void VerbStream::Parse()
+	void VerbStream::parse()
 	{
 		m_Version = blockT<WORD>::parse(m_Parser);
 		m_Count = blockT<DWORD>::parse(m_Parser);
@@ -60,7 +60,7 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ void VerbStream::ParseBlocks()
+	_Check_return_ void VerbStream::parseBlocks()
 	{
 		setRoot(L"Verb Stream\r\n");
 		addChild(m_Version, L"Version = 0x%1!04X!\r\n", m_Version->getData());

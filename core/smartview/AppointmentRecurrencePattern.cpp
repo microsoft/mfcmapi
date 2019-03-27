@@ -117,9 +117,9 @@ namespace smartview
 		}
 	}
 
-	void AppointmentRecurrencePattern::Parse()
+	void AppointmentRecurrencePattern::parse()
 	{
-		m_RecurrencePattern.parse(m_Parser, false);
+		m_RecurrencePattern.smartViewParser::parse(m_Parser, false);
 
 		m_ReaderVersion2 = blockT<DWORD>::parse(m_Parser);
 		m_WriterVersion2 = blockT<DWORD>::parse(m_Parser);
@@ -154,7 +154,7 @@ namespace smartview
 		m_ReservedBlock2 = blockBytes::parse(m_Parser, *m_ReservedBlock2Size, _MaxBytes);
 	}
 
-	void AppointmentRecurrencePattern::ParseBlocks()
+	void AppointmentRecurrencePattern::parseBlocks()
 	{
 		setRoot(m_RecurrencePattern.getBlock());
 		terminateBlock();

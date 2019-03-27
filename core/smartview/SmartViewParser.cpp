@@ -8,8 +8,8 @@ namespace smartview
 	void smartViewParser::ensureParsed()
 	{
 		if (parsed || m_Parser->empty()) return;
-		Parse();
-		ParseBlocks();
+		parse();
+		parseBlocks();
 
 		if (this->hasData() && enableJunk && m_Parser->getSize())
 		{

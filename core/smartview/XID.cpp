@@ -6,14 +6,14 @@
 
 namespace smartview
 {
-	void XID::Parse()
+	void XID::parse()
 	{
 		m_NamespaceGuid = blockT<GUID>::parse(m_Parser);
 		auto cbLocalId = m_Parser->getSize();
 		m_LocalID = blockBytes::parse(m_Parser, cbLocalId, cbLocalId);
 	}
 
-	void XID::ParseBlocks()
+	void XID::parseBlocks()
 	{
 		setRoot(L"XID:\r\n");
 		addChild(

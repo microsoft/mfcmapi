@@ -21,8 +21,8 @@ namespace smartview
 	class SearchFolderDefinition : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockT<DWORD>> m_Version = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_Flags = emptyT<DWORD>();

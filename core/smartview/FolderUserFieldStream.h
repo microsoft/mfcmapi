@@ -43,8 +43,8 @@ namespace smartview
 	class FolderUserFieldStream : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockT<DWORD>> m_FolderUserFieldsAnsiCount = emptyT<DWORD>();
 		std::vector<std::shared_ptr<FolderFieldDefinitionA>> m_FieldDefinitionsA;

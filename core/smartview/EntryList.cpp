@@ -9,7 +9,7 @@ namespace smartview
 		EntryLengthPad = blockT<DWORD>::parse(parser);
 	}
 
-	void EntryList::Parse()
+	void EntryList::parse()
 	{
 		m_EntryCount = blockT<DWORD>::parse(m_Parser);
 		m_Pad = blockT<DWORD>::parse(m_Parser);
@@ -26,13 +26,13 @@ namespace smartview
 
 				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
-					m_Entry[i]->EntryId.parse(m_Parser, *m_Entry[i]->EntryLength, true);
+					m_Entry[i]->EntryId.smartViewParser::parse(m_Parser, *m_Entry[i]->EntryLength, true);
 				}
 			}
 		}
 	}
 
-	void EntryList::ParseBlocks()
+	void EntryList::parseBlocks()
 	{
 		setRoot(m_EntryCount, L"EntryCount = 0x%1!08X!\r\n", m_EntryCount->getData());
 		addChild(m_Pad, L"Pad = 0x%1!08X!", m_Pad->getData());

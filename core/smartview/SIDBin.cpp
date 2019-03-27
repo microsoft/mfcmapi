@@ -5,9 +5,9 @@
 
 namespace smartview
 {
-	void SIDBin::Parse() { m_SIDbin = blockBytes::parse(m_Parser, m_Parser->getSize()); }
+	void SIDBin::parse() { m_SIDbin = blockBytes::parse(m_Parser, m_Parser->getSize()); }
 
-	void SIDBin::ParseBlocks()
+	void SIDBin::parseBlocks()
 	{
 		if (m_SIDbin)
 		{

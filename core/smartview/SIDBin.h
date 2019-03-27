@@ -7,8 +7,8 @@ namespace smartview
 	class SIDBin : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockBytes> m_SIDbin = emptyBB();
 	};

@@ -19,7 +19,7 @@ namespace smartview
 		}
 	}
 
-	void RecipientRowStream::Parse()
+	void RecipientRowStream::parse()
 	{
 		m_cVersion = blockT<DWORD>::parse(m_Parser);
 		m_cRowCount = blockT<DWORD>::parse(m_Parser);
@@ -37,7 +37,7 @@ namespace smartview
 		}
 	}
 
-	void RecipientRowStream::ParseBlocks()
+	void RecipientRowStream::parseBlocks()
 	{
 		setRoot(L"Recipient Row Stream\r\n");
 		addChild(m_cVersion, L"cVersion = %1!d!\r\n", m_cVersion->getData());

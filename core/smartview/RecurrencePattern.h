@@ -26,8 +26,8 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> m_ModifiedInstanceCount;
 
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		std::shared_ptr<blockT<WORD>> m_ReaderVersion = emptyT<WORD>();
 		std::shared_ptr<blockT<WORD>> m_WriterVersion = emptyT<WORD>();

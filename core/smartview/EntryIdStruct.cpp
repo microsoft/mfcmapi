@@ -7,7 +7,7 @@
 
 namespace smartview
 {
-	void EntryIdStruct::Parse()
+	void EntryIdStruct::parse()
 	{
 		m_ObjectType = eidtUnknown;
 		if (m_Parser->getSize() < 4) return;
@@ -248,7 +248,7 @@ namespace smartview
 		if (eidtUnknown == m_ObjectType && *m_abFlags0 & MAPI_SHORTTERM) m_ObjectType = eidtShortTerm;
 	}
 
-	void EntryIdStruct::ParseBlocks()
+	void EntryIdStruct::parseBlocks()
 	{
 		switch (m_ObjectType)
 		{

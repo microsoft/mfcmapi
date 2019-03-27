@@ -16,7 +16,7 @@ namespace smartview
 		parser->clearCap();
 	}
 
-	void TaskAssigners::Parse()
+	void TaskAssigners::parse()
 	{
 		m_cAssigners = blockT<DWORD>::parse(m_Parser);
 
@@ -30,7 +30,7 @@ namespace smartview
 		}
 	}
 
-	void TaskAssigners::ParseBlocks()
+	void TaskAssigners::parseBlocks()
 	{
 		setRoot(L"Task Assigners: \r\n");
 		addChild(m_cAssigners, L"cAssigners = 0x%1!08X! = %1!d!", m_cAssigners->getData());

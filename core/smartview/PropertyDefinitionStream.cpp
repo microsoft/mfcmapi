@@ -90,7 +90,7 @@ namespace smartview
 		}
 	}
 
-	void PropertyDefinitionStream::Parse()
+	void PropertyDefinitionStream::parse()
 	{
 		m_wVersion = blockT<WORD>::parse(m_Parser);
 		m_dwFieldDefinitionCount = blockT<DWORD>::parse(m_Parser);
@@ -154,7 +154,7 @@ namespace smartview
 		return data;
 	}
 
-	void PropertyDefinitionStream::ParseBlocks()
+	void PropertyDefinitionStream::parseBlocks()
 	{
 		setRoot(L"Property Definition Stream\r\n");
 		auto szVersion = flags::InterpretFlags(flagPropDefVersion, *m_wVersion);

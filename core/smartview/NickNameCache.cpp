@@ -18,7 +18,7 @@ namespace smartview
 		}
 	} // namespace smartview
 
-	void NickNameCache::Parse()
+	void NickNameCache::parse()
 	{
 		m_Metadata1 = blockBytes::parse(m_Parser, 4);
 		m_ulMajorVersion = blockT<DWORD>::parse(m_Parser);
@@ -42,7 +42,7 @@ namespace smartview
 		m_Metadata2 = blockBytes::parse(m_Parser, 8);
 	}
 
-	void NickNameCache::ParseBlocks()
+	void NickNameCache::parseBlocks()
 	{
 		setRoot(L"Nickname Cache\r\n");
 		addHeader(L"Metadata1 = ");

@@ -49,8 +49,8 @@ namespace smartview
 		void Init(bool bExtended);
 
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		NamedPropertyInformation m_NamedPropertyInformation;
 		std::shared_ptr<RestrictionStruct> m_lpRes;
