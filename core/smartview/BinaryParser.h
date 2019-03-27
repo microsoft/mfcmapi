@@ -8,51 +8,52 @@ namespace smartview
 	{
 	public:
 		binaryParser() = default;
-		binaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
+		binaryParser(size_t cb, _In_count_(cbBin) const BYTE* _bin)
 		{
-			m_Bin = lpBin && cbBin ? std::vector<BYTE>(lpBin, lpBin + cbBin) : std::vector<BYTE>{};
-			m_Size = m_Bin.size();
+			bin = _bin && cb ? std::vector<BYTE>(_bin, _bin + cb) : std::vector<BYTE>{};
+			size = bin.size();
 		}
 		binaryParser(const binaryParser&) = delete;
 		binaryParser& operator=(const binaryParser&) = delete;
 
-		bool empty() const { return m_Offset == m_Size; }
-		void advance(size_t cbAdvance) { m_Offset += cbAdvance; }
-		void rewind() { m_Offset = 0; }
-		size_t getOffset() const { return m_Offset; }
-		void setOffset(size_t stOffset) { m_Offset = stOffset; }
-		const BYTE* getAddress() const { return m_Bin.data() + m_Offset; }
+		bool empty() const { return offset == size; }
+		void advance(size_t cb) { offset += cb; }
+		void rewind() { offset = 0; }
+		size_t getOffset() const { return offset; }
+		void setOffset(size_t _offset) { offset = _offset; }
+		const BYTE* getAddress() const { return bin.data() + offset; }
 		void setCap(size_t cap)
 		{
-			m_Sizes.push(m_Size);
-			if (cap != 0 && m_Offset + cap < m_Size)
+			sizes.push(size);
+			if (cap != 0 && offset + cap < size)
 			{
-				m_Size = m_Offset + cap;
+				size = offset + cap;
 			}
 		}
+
 		void clearCap()
 		{
-			if (m_Sizes.empty())
+			if (sizes.empty())
 			{
-				m_Size = m_Bin.size();
+				size = bin.size();
 			}
 			else
 			{
-				m_Size = m_Sizes.top();
-				m_Sizes.pop();
+				size = sizes.top();
+				sizes.pop();
 			}
 		}
 
 		// If we're before the end of the buffer, return the count of remaining bytes
 		// If we're at or past the end of the buffer, return 0
 		// If we're before the beginning of the buffer, return 0
-		size_t getSize() const { return m_Offset > m_Size ? 0 : m_Size - m_Offset; }
-		bool checkSize(size_t cbBytes) const { return cbBytes <= getSize(); }
+		size_t getSize() const { return offset > size ? 0 : size - offset; }
+		bool checkSize(size_t cb) const { return cb <= getSize(); }
 
 	private:
-		std::vector<BYTE> m_Bin;
-		size_t m_Offset{};
-		size_t m_Size{}; // When uncapped, this is m_Bin.size(). When capped, this is our artificial capped size.
-		std::stack<size_t> m_Sizes;
+		std::vector<BYTE> bin;
+		size_t offset{};
+		size_t size{}; // When uncapped, this is bin.size(). When capped, this is our artificial capped size.
+		std::stack<size_t> sizes;
 	};
 } // namespace smartview
