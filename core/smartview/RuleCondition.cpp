@@ -43,7 +43,7 @@ namespace smartview
 		}
 
 		m_lpRes = std::make_shared<RestrictionStruct>(true, m_bExtended);
-		m_lpRes->SmartViewParser::parse(m_Parser, false);
+		m_lpRes->smartViewParser::parse(m_Parser, false);
 	}
 
 	void RuleCondition::ParseBlocks()

@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
 
@@ -17,7 +17,7 @@ namespace smartview
 		WebViewPersist(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class WebViewPersistStream : public SmartViewParser
+	class WebViewPersistStream : public smartViewParser
 	{
 	private:
 		void Parse() override;

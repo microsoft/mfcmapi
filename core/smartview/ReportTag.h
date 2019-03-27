@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
@@ -7,7 +7,7 @@
 namespace smartview
 {
 	// [MS-OXOMSG].pdf
-	class ReportTag : public SmartViewParser
+	class ReportTag : public smartViewParser
 	{
 	private:
 		void Parse() override;

@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/EntryIdStruct.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
@@ -16,7 +16,7 @@ namespace smartview
 		FlatEntryID(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class FlatEntryList : public SmartViewParser
+	class FlatEntryList : public smartViewParser
 	{
 	private:
 		void Parse() override;

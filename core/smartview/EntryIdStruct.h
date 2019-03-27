@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockBytes.h>
@@ -138,7 +138,7 @@ namespace smartview
 		std::shared_ptr<EntryIdStruct> lpEntryID;
 	};
 
-	class EntryIdStruct : public SmartViewParser
+	class EntryIdStruct : public smartViewParser
 	{
 	public:
 		EntryIdStruct() = default;

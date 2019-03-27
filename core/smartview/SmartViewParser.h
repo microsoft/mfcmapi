@@ -12,16 +12,13 @@
 
 namespace smartview
 {
-	class SmartViewParser;
-	typedef SmartViewParser FAR* LPSMARTVIEWPARSER;
-
-	class SmartViewParser
+	class smartViewParser
 	{
 	public:
-		SmartViewParser() = default;
-		virtual ~SmartViewParser() = default;
-		SmartViewParser(const SmartViewParser&) = delete;
-		SmartViewParser& operator=(const SmartViewParser&) = delete;
+		smartViewParser() = default;
+		virtual ~smartViewParser() = default;
+		smartViewParser(const smartViewParser&) = delete;
+		smartViewParser& operator=(const smartViewParser&) = delete;
 
 		void init(size_t cb, _In_count_(cb) const BYTE* _bin)
 		{

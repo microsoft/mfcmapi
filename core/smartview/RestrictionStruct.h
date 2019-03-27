@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/PropertiesStruct.h>
 #include <core/smartview/block/blockT.h>
 
@@ -93,7 +93,7 @@ namespace smartview
 		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
-	class RestrictionStruct : public SmartViewParser
+	class RestrictionStruct : public smartViewParser
 	{
 	public:
 		RestrictionStruct(bool bRuleCondition, bool bExtendedCount)

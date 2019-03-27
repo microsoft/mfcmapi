@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/SmartView.h>
 #include <core/property/parseProperty.h>
 #include <core/smartview/block/blockStringA.h>
@@ -225,7 +225,7 @@ namespace smartview
 		bool propStringsGenerated{};
 	};
 
-	class PropertiesStruct : public SmartViewParser
+	class PropertiesStruct : public smartViewParser
 	{
 	public:
 		void parse(const std::shared_ptr<binaryParser>& parser, DWORD cValues, bool bRuleCondition);

@@ -1,10 +1,10 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {
-	class SDBin : public SmartViewParser
+	class SDBin : public smartViewParser
 	{
 	public:
 		~SDBin();

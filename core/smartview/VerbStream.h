@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockT.h>
@@ -39,7 +39,7 @@ namespace smartview
 		VerbExtraData(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class VerbStream : public SmartViewParser
+	class VerbStream : public smartViewParser
 	{
 	private:
 		void Parse() override;

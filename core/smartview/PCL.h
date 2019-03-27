@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
 
@@ -14,7 +14,7 @@ namespace smartview
 		SizedXID(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class PCL : public SmartViewParser
+	class PCL : public smartViewParser
 	{
 	private:
 		void Parse() override;

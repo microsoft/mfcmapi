@@ -201,9 +201,6 @@
     <ClInclude Include="smartview\SmartView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="smartview\SmartViewParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="smartview\TaskAssigners.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -259,6 +256,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utility\cli.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartview\smartViewParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -398,9 +398,6 @@
     <ClCompile Include="smartview\SmartView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="smartview\SmartViewParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="smartview\TaskAssigners.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -453,6 +450,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utility\cli.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartview\smartViewParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

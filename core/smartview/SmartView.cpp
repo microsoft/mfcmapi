@@ -11,7 +11,7 @@
 #include <core/mapi/mapiFunctions.h>
 #include <core/utility/error.h>
 
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/PCL.h>
 #include <core/smartview/TombStone.h>
 #include <core/smartview/VerbStream.h>
@@ -48,7 +48,7 @@ namespace smartview
 	_Check_return_ std::wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);
 	// End: Functions to parse PT_LONG/PT-I2 properties
 
-	LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
+	smartViewParser* GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
 		switch (iStructType)
 		{

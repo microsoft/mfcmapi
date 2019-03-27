@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/RestrictionStruct.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockT.h>
@@ -43,7 +43,7 @@ namespace smartview
 		std::vector<std::shared_ptr<PropertyName>> PropertyName;
 	};
 
-	class RuleCondition : public SmartViewParser
+	class RuleCondition : public smartViewParser
 	{
 	public:
 		void Init(bool bExtended);

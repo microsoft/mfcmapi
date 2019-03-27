@@ -14,7 +14,7 @@ namespace smartview
 		if (*PropertyCount)
 		{
 			Props.SetMaxEntries(*PropertyCount);
-			Props.SmartViewParser::parse(parser, false);
+			Props.smartViewParser::parse(parser, false);
 		}
 	}
 
@@ -84,7 +84,7 @@ namespace smartview
 		if (*m_Flags & SFST_MRES)
 		{
 			m_Restriction = std::make_shared<RestrictionStruct>(false, true);
-			m_Restriction->SmartViewParser::parse(m_Parser, false);
+			m_Restriction->smartViewParser::parse(m_Parser, false);
 		}
 
 		if (*m_Flags & SFST_FILTERSTREAM)

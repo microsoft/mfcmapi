@@ -1,11 +1,11 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/block/blockBytes.h>
 #include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
-	class GlobalObjectId : public SmartViewParser
+	class GlobalObjectId : public smartViewParser
 	{
 	private:
 		void Parse() override;

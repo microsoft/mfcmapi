@@ -1,5 +1,5 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/block/blockStringA.h>
 #include <core/smartview/block/blockStringW.h>
 #include <core/smartview/block/blockBytes.h>
@@ -54,7 +54,7 @@ namespace smartview
 		FieldDefinition(const std::shared_ptr<binaryParser>& parser, WORD version);
 	};
 
-	class PropertyDefinitionStream : public SmartViewParser
+	class PropertyDefinitionStream : public smartViewParser
 	{
 	private:
 		void Parse() override;
