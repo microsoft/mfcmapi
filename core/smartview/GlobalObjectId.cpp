@@ -42,10 +42,9 @@ namespace smartview
 		setRoot(L"Global Object ID:\r\n");
 		addHeader(L"Byte Array ID = ");
 
-		auto id = m_Id->getData();
 		addChild(m_Id);
 
-		if (equal(id.begin(), id.end(), s_rgbSPlus))
+		if (m_Id->equal(sizeof s_rgbSPlus, s_rgbSPlus))
 		{
 			addHeader(L" = s_rgbSPlus\r\n");
 		}

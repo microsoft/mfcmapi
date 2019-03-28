@@ -48,6 +48,12 @@ namespace smartview
 
 		std::wstring toHexString(bool bMultiLine) const { return strings::BinToHexString(_data, bMultiLine); }
 
+		bool equal(size_t _cb, const BYTE* _bin) const
+		{
+			if (_cb != _data.size()) return false;
+			return memcmp(_data.data(), _bin, _cb) == 0;
+		}
+
 	private:
 		std::wstring toStringInternal() const override { return toHexString(true); }
 		// TODO: Would it be better to hold the parser and size/offset data and build this as needed?
