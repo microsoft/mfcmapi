@@ -29,7 +29,6 @@ namespace smartview
 		}
 
 		// Mimic std::vector<BYTE>
-		std::vector<BYTE> getData() const { return _data; }
 		operator const std::vector<BYTE>&() const { return _data; }
 		size_t size() const noexcept { return _data.size(); }
 		bool empty() const noexcept { return _data.empty(); }
