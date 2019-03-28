@@ -39,7 +39,10 @@ namespace smartview
 			m_lpXID.reserve(cXID);
 			for (auto i = 0; i < cXID; i++)
 			{
+				auto oldSize = m_Parser->getSize();
 				m_lpXID.emplace_back(std::make_shared<SizedXID>(m_Parser));
+				auto newSize = m_Parser->getSize();
+				if (newSize == 0 || newSize == oldSize) break;
 			}
 		}
 	}
