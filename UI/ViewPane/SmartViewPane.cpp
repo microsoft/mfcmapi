@@ -173,6 +173,9 @@ namespace viewpane
 		m_bins = myBins;
 		if (!m_bInitialized) return;
 
+		// Clear the visual tree before we recompute treeData so we have nothing pointing to data in treeData
+		if (m_TreePane) m_TreePane->m_Tree.Refresh();
+
 		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
 		auto szSmartViewArray = std::vector<std::wstring>{};
 		treeData = std::make_shared<smartview::block>();
@@ -211,19 +214,11 @@ namespace viewpane
 			delete svp;
 		}
 
-		RefreshTree();
+		AddChildren(nullptr, treeData);
 
 		auto szSmartView = strings::join(szSmartViewArray, L"\r\n");
 		m_bHasData = !szSmartView.empty();
 		SetStringW(szSmartView);
-	}
-
-	void SmartViewPane::RefreshTree()
-	{
-		if (!m_TreePane) return;
-		m_TreePane->m_Tree.Refresh();
-
-		AddChildren(nullptr, treeData);
 	}
 
 	void SmartViewPane::AddChildren(HTREEITEM parent, const std::shared_ptr<smartview::block>& data)
@@ -238,7 +233,10 @@ namespace viewpane
 		}
 		else
 		{
-			root = m_TreePane->m_Tree.AddChildNode(data->getText(), parent, reinterpret_cast<LPARAM>(data.get()), nullptr);
+			// This loans pointers to our blocks to the visual tree without refcounting.
+			// Care must be taken to ensure we never release treeData without first clearing the UI.
+			root =
+				m_TreePane->m_Tree.AddChildNode(data->getText(), parent, reinterpret_cast<LPARAM>(data.get()), nullptr);
 		}
 
 		for (const auto& item : data->getChildren())

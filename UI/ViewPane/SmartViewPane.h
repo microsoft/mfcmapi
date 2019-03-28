@@ -23,7 +23,6 @@ namespace viewpane
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetFixedHeight() override;
 		int GetLines() override;
-		void RefreshTree();
 		void AddChildren(HTREEITEM parent, const std::shared_ptr<smartview::block>& data);
 		void ItemSelected(HTREEITEM hItem);
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/, _In_ HTREEITEM hItemCurHover) const;
