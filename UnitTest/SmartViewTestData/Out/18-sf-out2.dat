@@ -3,12 +3,10 @@ Version = 0x00001004
 Flags = 0x00000052 = SFST_TEXT | SFST_FILTERSTREAM | SFST_FOLDERLIST
 Numeric Search = 0x00000000
 Text Search Length = 0x09
-Text Search Length Extended = 0x0000
 Text Search = All Items
 SkipLen1 = 0x00000000
 Deep Search = 0x00000001
 Folder List 1 Length = 0x0F
-Folder List 1 Length Extended = 0x0000
 Folder List 1 = Mr That Guyzzzz
 Folder List 2 Length = 0x0000003E
 FolderList2 = 

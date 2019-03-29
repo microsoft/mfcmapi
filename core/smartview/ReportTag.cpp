@@ -12,9 +12,8 @@ namespace smartview
 		// Version is big endian, so we have to read individual bytes
 		const auto hiWord = blockT<WORD>::parse(m_Parser);
 		const auto loWord = blockT<WORD>::parse(m_Parser);
-		m_Version->setOffset(hiWord->getOffset());
-		m_Version->setSize(hiWord->getSize() + loWord->getSize());
-		m_Version->setData(*hiWord << 16 | *loWord);
+		m_Version =
+			blockT<DWORD>::create(*hiWord << 16 | *loWord, hiWord->getSize() + loWord->getSize(), hiWord->getOffset());
 
 		m_cbStoreEntryID = blockT<DWORD>::parse(m_Parser);
 		m_lpStoreEntryID = blockBytes::parse(m_Parser, *m_cbStoreEntryID, _MaxEID);

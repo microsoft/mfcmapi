@@ -21,7 +21,6 @@ namespace smartview
 
 	struct SNotRestrictionStruct
 	{
-		std::shared_ptr<blockT<DWORD>> ulReserved = emptyT<DWORD>();
 		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
@@ -62,9 +61,7 @@ namespace smartview
 
 	struct SExistRestrictionStruct
 	{
-		std::shared_ptr<blockT<DWORD>> ulReserved1 = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
-		std::shared_ptr<blockT<DWORD>> ulReserved2 = emptyT<DWORD>();
 	};
 
 	struct SSubRestrictionStruct

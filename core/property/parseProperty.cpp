@@ -335,9 +335,8 @@ namespace property
 			resString.push_back(RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1));
 			break;
 		case RES_COUNT:
-			// RES_COUNT and RES_NOT look the same, so we use the resNot member here
-			resString.push_back(strings::formatmessage(IDS_RESCOUNT, szTabs.c_str(), lpRes->res.resNot.ulReserved));
-			resString.push_back(RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1));
+			resString.push_back(strings::formatmessage(IDS_RESCOUNT, szTabs.c_str(), lpRes->res.resCount.ulCount));
+			resString.push_back(RestrictionToString(lpRes->res.resCount.lpRes, lpObj, ulTabLevel + 1));
 			break;
 		case RES_CONTENT:
 			szFlags = flags::InterpretFlags(flagFuzzyLevel, lpRes->res.resContent.ulFuzzyLevel);

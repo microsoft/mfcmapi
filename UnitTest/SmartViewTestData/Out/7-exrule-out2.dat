@@ -28,8 +28,6 @@ lpRes->res.resAnd.lpRes[0x00000000]
 				lpRes->res.resAnd.lpRes[0x00000000]
 					lpRes->rt = 0x8 = RES_EXIST
 					lpRes->res.resExist.ulPropTag = 0x40760003 (PT_LONG): PR_CONTENT_FILTER_SCL: (PidTagContentFilterSpamConfidenceLevel, ptagContentFilterSCL)
-					lpRes->res.resExist.ulReserved1 = 0x00000000
-					lpRes->res.resExist.ulReserved2 = 0x00000000
 				lpRes->res.resAnd.lpRes[0x00000001]
 					lpRes->rt = 0x4 = RES_PROPERTY
 					lpRes->res.resProperty.relop = RELOP_GT = 0x00000002
@@ -42,7 +40,6 @@ lpRes->res.resAnd.lpRes[0x00000000]
 				lpRes->res.resOr.cRes = 0x00000000
 		lpRes->res.resAnd.lpRes[0x00000001]
 			lpRes->rt = 0x2 = RES_NOT
-			lpRes->res.resNot.ulReserved = 0x00000000
 			lpRes->res.resNot.lpRes
 				lpRes->rt = 0x1 = RES_OR
 				lpRes->res.resOr.cRes = 0x00000002
@@ -57,7 +54,6 @@ lpRes->res.resAnd.lpRes[0x00000000]
 						lpRes->res.resOr.cRes = 0x00000000
 lpRes->res.resAnd.lpRes[0x00000001]
 	lpRes->rt = 0x2 = RES_NOT
-	lpRes->res.resNot.ulReserved = 0x00000000
 	lpRes->res.resNot.lpRes
 		lpRes->rt = 0x1 = RES_OR
 		lpRes->res.resOr.cRes = 0x00000003

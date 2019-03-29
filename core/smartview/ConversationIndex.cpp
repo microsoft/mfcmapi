@@ -11,13 +11,13 @@ namespace smartview
 		const auto r2 = blockT<BYTE>::parse(parser);
 		const auto r3 = blockT<BYTE>::parse(parser);
 		const auto r4 = blockT<BYTE>::parse(parser);
-		TimeDelta->setOffset(r1->getOffset());
-		TimeDelta->setSize(r1->getSize() + r2->getSize() + r3->getSize() + r4->getSize());
-		TimeDelta->setData(*r1 << 24 | *r2 << 16 | *r3 << 8 | *r4);
 
-		DeltaCode->setOffset(TimeDelta->getOffset());
-		DeltaCode->setSize(TimeDelta->getSize());
-		DeltaCode->setData(false);
+		TimeDelta = blockT<DWORD>::create(
+			static_cast<DWORD>(*r1 << 24 | *r2 << 16 | *r3 << 8 | *r4),
+			r1->getSize() + r2->getSize() + r3->getSize() + r4->getSize(),
+			r1->getOffset());
+
+		DeltaCode = blockT<bool>::create(false, TimeDelta->getSize(), TimeDelta->getOffset());
 		if (*TimeDelta & 0x80000000)
 		{
 			TimeDelta->setData(*TimeDelta & ~0x80000000);
@@ -25,13 +25,8 @@ namespace smartview
 		}
 
 		const auto r5 = blockT<BYTE>::parse(parser);
-		Random->setOffset(r5->getOffset());
-		Random->setSize(r5->getSize());
-		Random->setData(static_cast<BYTE>(*r5 >> 4));
-
-		Level->setOffset(r5->getOffset());
-		Level->setSize(r5->getSize());
-		Level->setData(static_cast<BYTE>(*r5 & 0xf));
+		Random = blockT<BYTE>::create(static_cast<BYTE>(*r5 >> 4), r5->getSize(), r5->getOffset());
+		Level = blockT<BYTE>::create(static_cast<BYTE>(*r5 & 0xf), r5->getSize(), r5->getOffset());
 	}
 
 	void ConversationIndex::parse()
@@ -50,9 +45,8 @@ namespace smartview
 		const auto l2 = blockT<BYTE>::parse(m_Parser);
 		ft.dwLowDateTime = *l1 << 24 | *l2 << 16;
 
-		m_ftCurrent->setOffset(h1->getOffset());
-		m_ftCurrent->setSize(h1->getSize() + h2->getSize() + h3->getSize() + l1->getSize() + l2->getSize());
-		m_ftCurrent->setData(ft);
+		m_ftCurrent = blockT<FILETIME>::create(
+			ft, h1->getSize() + h2->getSize() + h3->getSize() + l1->getSize() + l2->getSize(), h1->getOffset());
 
 		auto guid = GUID{};
 		const auto g1 = blockT<BYTE>::parse(m_Parser);
@@ -78,9 +72,7 @@ namespace smartview
 			size += d->getSize();
 		}
 
-		m_guid->setOffset(g1->getOffset());
-		m_guid->setSize(size);
-		m_guid->setData(guid);
+		m_guid = blockT<GUID>::create(guid, size, g1->getOffset());
 		auto ulResponseLevels = ULONG{};
 		if (m_Parser->getSize() > 0)
 		{

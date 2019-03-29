@@ -266,12 +266,6 @@ namespace smartview
 		break;
 		case RES_NOT:
 		{
-			rt->addChild(
-				resNot.ulReserved,
-				L"%1!ws!lpRes->res.resNot.ulReserved = 0x%2!08X!\r\n",
-				szTabs.c_str(),
-				resNot.ulReserved->getData());
-
 			auto notRoot = std::make_shared<block>();
 			notRoot->setText(L"%1!ws!lpRes->res.resNot.lpRes\r\n", szTabs.c_str());
 			rt->addChild(notRoot);
@@ -429,16 +423,6 @@ namespace smartview
 				L"%1!ws!lpRes->res.resExist.ulPropTag = %2!ws!\r\n",
 				szTabs.c_str(),
 				proptags::TagToString(*resExist.ulPropTag, nullptr, false, true).c_str());
-			rt->addChild(
-				resExist.ulReserved1,
-				L"%1!ws!lpRes->res.resExist.ulReserved1 = 0x%2!08X!\r\n",
-				szTabs.c_str(),
-				resExist.ulReserved1->getData());
-			rt->addChild(
-				resExist.ulReserved2,
-				L"%1!ws!lpRes->res.resExist.ulReserved2 = 0x%2!08X!\r\n",
-				szTabs.c_str(),
-				resExist.ulReserved2->getData());
 			break;
 		case RES_SUBRESTRICTION:
 		{

@@ -97,9 +97,8 @@ namespace smartview
 		PropType = blockT<WORD>::parse(parser);
 		PropID = blockT<WORD>::parse(parser);
 
-		ulPropTag->setData(PROP_TAG(*PropType, *PropID));
-		ulPropTag->setSize(PropType->getSize() + PropID->getSize());
-		ulPropTag->setOffset(PropType->getOffset());
+		ulPropTag = blockT<ULONG>::create(
+			PROP_TAG(*PropType, *PropID), PropType->getSize() + PropID->getSize(), PropType->getOffset());
 		dwAlignPad = 0;
 
 		if (doNickname) (void) parser->advance(sizeof DWORD); // reserved

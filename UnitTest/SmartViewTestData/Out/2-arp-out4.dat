@@ -939,325 +939,244 @@ ReservedBlock1Size: 0x00000000
 ExtendedException[0].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[0].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[0].ReservedBlockEE1Size: 0x00000000
-ExtendedException[0].ReservedBlockEE2Size: 0x00000000
 ExtendedException[1].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[1].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[1].ReservedBlockEE1Size: 0x00000000
-ExtendedException[1].ReservedBlockEE2Size: 0x00000000
 ExtendedException[2].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[2].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[2].ReservedBlockEE1Size: 0x00000000
-ExtendedException[2].ReservedBlockEE2Size: 0x00000000
 ExtendedException[3].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[3].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[3].ReservedBlockEE1Size: 0x00000000
-ExtendedException[3].ReservedBlockEE2Size: 0x00000000
 ExtendedException[4].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[4].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[4].ReservedBlockEE1Size: 0x00000000
-ExtendedException[4].ReservedBlockEE2Size: 0x00000000
 ExtendedException[5].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[5].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[5].ReservedBlockEE1Size: 0x00000000
-ExtendedException[5].ReservedBlockEE2Size: 0x00000000
 ExtendedException[6].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[6].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[6].ReservedBlockEE1Size: 0x00000000
-ExtendedException[6].ReservedBlockEE2Size: 0x00000000
 ExtendedException[7].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[7].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[7].ReservedBlockEE1Size: 0x00000000
-ExtendedException[7].ReservedBlockEE2Size: 0x00000000
 ExtendedException[8].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[8].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[8].ReservedBlockEE1Size: 0x00000000
-ExtendedException[8].ReservedBlockEE2Size: 0x00000000
 ExtendedException[9].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[9].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[9].ReservedBlockEE1Size: 0x00000000
-ExtendedException[9].ReservedBlockEE2Size: 0x00000000
 ExtendedException[10].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[10].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[10].ReservedBlockEE1Size: 0x00000000
-ExtendedException[10].ReservedBlockEE2Size: 0x00000000
 ExtendedException[11].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[11].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[11].ReservedBlockEE1Size: 0x00000000
-ExtendedException[11].ReservedBlockEE2Size: 0x00000000
 ExtendedException[12].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[12].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[12].ReservedBlockEE1Size: 0x00000000
-ExtendedException[12].ReservedBlockEE2Size: 0x00000000
 ExtendedException[13].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[13].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[13].ReservedBlockEE1Size: 0x00000000
-ExtendedException[13].ReservedBlockEE2Size: 0x00000000
 ExtendedException[14].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[14].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[14].ReservedBlockEE1Size: 0x00000000
-ExtendedException[14].ReservedBlockEE2Size: 0x00000000
 ExtendedException[15].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[15].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[15].ReservedBlockEE1Size: 0x00000000
-ExtendedException[15].ReservedBlockEE2Size: 0x00000000
 ExtendedException[16].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[16].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[16].ReservedBlockEE1Size: 0x00000000
-ExtendedException[16].ReservedBlockEE2Size: 0x00000000
 ExtendedException[17].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[17].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[17].ReservedBlockEE1Size: 0x00000000
-ExtendedException[17].ReservedBlockEE2Size: 0x00000000
 ExtendedException[18].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[18].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[18].ReservedBlockEE1Size: 0x00000000
-ExtendedException[18].ReservedBlockEE2Size: 0x00000000
 ExtendedException[19].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[19].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[19].ReservedBlockEE1Size: 0x00000000
-ExtendedException[19].ReservedBlockEE2Size: 0x00000000
 ExtendedException[20].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[20].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[20].ReservedBlockEE1Size: 0x00000000
-ExtendedException[20].ReservedBlockEE2Size: 0x00000000
 ExtendedException[21].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[21].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[21].ReservedBlockEE1Size: 0x00000000
-ExtendedException[21].ReservedBlockEE2Size: 0x00000000
 ExtendedException[22].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[22].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[22].ReservedBlockEE1Size: 0x00000000
-ExtendedException[22].ReservedBlockEE2Size: 0x00000000
 ExtendedException[23].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[23].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[23].ReservedBlockEE1Size: 0x00000000
-ExtendedException[23].ReservedBlockEE2Size: 0x00000000
 ExtendedException[24].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[24].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[24].ReservedBlockEE1Size: 0x00000000
-ExtendedException[24].ReservedBlockEE2Size: 0x00000000
 ExtendedException[25].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[25].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[25].ReservedBlockEE1Size: 0x00000000
-ExtendedException[25].ReservedBlockEE2Size: 0x00000000
 ExtendedException[26].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[26].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[26].ReservedBlockEE1Size: 0x00000000
-ExtendedException[26].ReservedBlockEE2Size: 0x00000000
 ExtendedException[27].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[27].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[27].ReservedBlockEE1Size: 0x00000000
-ExtendedException[27].ReservedBlockEE2Size: 0x00000000
 ExtendedException[28].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[28].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[28].ReservedBlockEE1Size: 0x00000000
-ExtendedException[28].ReservedBlockEE2Size: 0x00000000
 ExtendedException[29].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[29].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[29].ReservedBlockEE1Size: 0x00000000
-ExtendedException[29].ReservedBlockEE2Size: 0x00000000
 ExtendedException[30].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[30].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[30].ReservedBlockEE1Size: 0x00000000
-ExtendedException[30].ReservedBlockEE2Size: 0x00000000
 ExtendedException[31].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[31].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[31].ReservedBlockEE1Size: 0x00000000
-ExtendedException[31].ReservedBlockEE2Size: 0x00000000
 ExtendedException[32].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[32].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[32].ReservedBlockEE1Size: 0x00000000
-ExtendedException[32].ReservedBlockEE2Size: 0x00000000
 ExtendedException[33].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[33].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[33].ReservedBlockEE1Size: 0x00000000
-ExtendedException[33].ReservedBlockEE2Size: 0x00000000
 ExtendedException[34].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[34].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[34].ReservedBlockEE1Size: 0x00000000
-ExtendedException[34].ReservedBlockEE2Size: 0x00000000
 ExtendedException[35].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[35].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[35].ReservedBlockEE1Size: 0x00000000
-ExtendedException[35].ReservedBlockEE2Size: 0x00000000
 ExtendedException[36].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[36].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[36].ReservedBlockEE1Size: 0x00000000
-ExtendedException[36].ReservedBlockEE2Size: 0x00000000
 ExtendedException[37].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[37].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[37].ReservedBlockEE1Size: 0x00000000
-ExtendedException[37].ReservedBlockEE2Size: 0x00000000
 ExtendedException[38].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[38].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[38].ReservedBlockEE1Size: 0x00000000
-ExtendedException[38].ReservedBlockEE2Size: 0x00000000
 ExtendedException[39].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[39].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[39].ReservedBlockEE1Size: 0x00000000
-ExtendedException[39].ReservedBlockEE2Size: 0x00000000
 ExtendedException[40].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[40].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[40].ReservedBlockEE1Size: 0x00000000
-ExtendedException[40].ReservedBlockEE2Size: 0x00000000
 ExtendedException[41].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[41].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[41].ReservedBlockEE1Size: 0x00000000
-ExtendedException[41].ReservedBlockEE2Size: 0x00000000
 ExtendedException[42].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[42].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[42].ReservedBlockEE1Size: 0x00000000
-ExtendedException[42].ReservedBlockEE2Size: 0x00000000
 ExtendedException[43].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[43].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[43].ReservedBlockEE1Size: 0x00000000
-ExtendedException[43].ReservedBlockEE2Size: 0x00000000
 ExtendedException[44].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[44].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[44].ReservedBlockEE1Size: 0x00000000
-ExtendedException[44].ReservedBlockEE2Size: 0x00000000
 ExtendedException[45].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[45].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[45].ReservedBlockEE1Size: 0x00000000
-ExtendedException[45].ReservedBlockEE2Size: 0x00000000
 ExtendedException[46].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[46].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[46].ReservedBlockEE1Size: 0x00000000
-ExtendedException[46].ReservedBlockEE2Size: 0x00000000
 ExtendedException[47].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[47].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[47].ReservedBlockEE1Size: 0x00000000
-ExtendedException[47].ReservedBlockEE2Size: 0x00000000
 ExtendedException[48].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[48].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[48].ReservedBlockEE1Size: 0x00000000
-ExtendedException[48].ReservedBlockEE2Size: 0x00000000
 ExtendedException[49].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[49].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[49].ReservedBlockEE1Size: 0x00000000
-ExtendedException[49].ReservedBlockEE2Size: 0x00000000
 ExtendedException[50].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[50].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[50].ReservedBlockEE1Size: 0x00000000
-ExtendedException[50].ReservedBlockEE2Size: 0x00000000
 ExtendedException[51].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[51].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[51].ReservedBlockEE1Size: 0x00000000
-ExtendedException[51].ReservedBlockEE2Size: 0x00000000
 ExtendedException[52].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[52].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[52].ReservedBlockEE1Size: 0x00000000
-ExtendedException[52].ReservedBlockEE2Size: 0x00000000
 ExtendedException[53].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[53].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[53].ReservedBlockEE1Size: 0x00000000
-ExtendedException[53].ReservedBlockEE2Size: 0x00000000
 ExtendedException[54].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[54].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[54].ReservedBlockEE1Size: 0x00000000
-ExtendedException[54].ReservedBlockEE2Size: 0x00000000
 ExtendedException[55].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[55].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[55].ReservedBlockEE1Size: 0x00000000
-ExtendedException[55].ReservedBlockEE2Size: 0x00000000
 ExtendedException[56].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[56].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[56].ReservedBlockEE1Size: 0x00000000
-ExtendedException[56].ReservedBlockEE2Size: 0x00000000
 ExtendedException[57].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[57].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[57].ReservedBlockEE1Size: 0x00000000
-ExtendedException[57].ReservedBlockEE2Size: 0x00000000
 ExtendedException[58].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[58].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[58].ReservedBlockEE1Size: 0x00000000
-ExtendedException[58].ReservedBlockEE2Size: 0x00000000
 ExtendedException[59].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[59].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[59].ReservedBlockEE1Size: 0x00000000
-ExtendedException[59].ReservedBlockEE2Size: 0x00000000
 ExtendedException[60].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[60].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[60].ReservedBlockEE1Size: 0x00000000
-ExtendedException[60].ReservedBlockEE2Size: 0x00000000
 ExtendedException[61].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[61].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[61].ReservedBlockEE1Size: 0x00000000
-ExtendedException[61].ReservedBlockEE2Size: 0x00000000
 ExtendedException[62].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[62].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[62].ReservedBlockEE1Size: 0x00000000
-ExtendedException[62].ReservedBlockEE2Size: 0x00000000
 ExtendedException[63].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[63].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[63].ReservedBlockEE1Size: 0x00000000
-ExtendedException[63].ReservedBlockEE2Size: 0x00000000
 ExtendedException[64].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[64].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[64].ReservedBlockEE1Size: 0x00000000
-ExtendedException[64].ReservedBlockEE2Size: 0x00000000
 ExtendedException[65].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[65].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[65].ReservedBlockEE1Size: 0x00000000
-ExtendedException[65].ReservedBlockEE2Size: 0x00000000
 ExtendedException[66].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[66].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[66].ReservedBlockEE1Size: 0x00000000
-ExtendedException[66].ReservedBlockEE2Size: 0x00000000
 ExtendedException[67].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[67].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[67].ReservedBlockEE1Size: 0x00000000
-ExtendedException[67].ReservedBlockEE2Size: 0x00000000
 ExtendedException[68].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[68].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[68].ReservedBlockEE1Size: 0x00000000
-ExtendedException[68].ReservedBlockEE2Size: 0x00000000
 ExtendedException[69].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[69].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[69].ReservedBlockEE1Size: 0x00000000
-ExtendedException[69].ReservedBlockEE2Size: 0x00000000
 ExtendedException[70].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[70].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[70].ReservedBlockEE1Size: 0x00000000
-ExtendedException[70].ReservedBlockEE2Size: 0x00000000
 ExtendedException[71].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[71].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[71].ReservedBlockEE1Size: 0x00000000
-ExtendedException[71].ReservedBlockEE2Size: 0x00000000
 ExtendedException[72].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[72].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[72].ReservedBlockEE1Size: 0x00000000
-ExtendedException[72].ReservedBlockEE2Size: 0x00000000
 ExtendedException[73].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[73].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[73].ReservedBlockEE1Size: 0x00000000
-ExtendedException[73].ReservedBlockEE2Size: 0x00000000
 ExtendedException[74].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[74].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[74].ReservedBlockEE1Size: 0x00000000
-ExtendedException[74].ReservedBlockEE2Size: 0x00000000
 ExtendedException[75].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[75].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[75].ReservedBlockEE1Size: 0x00000000
-ExtendedException[75].ReservedBlockEE2Size: 0x00000000
 ExtendedException[76].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[76].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[76].ReservedBlockEE1Size: 0x00000000
-ExtendedException[76].ReservedBlockEE2Size: 0x00000000
 ExtendedException[77].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[77].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[77].ReservedBlockEE1Size: 0x00000000
-ExtendedException[77].ReservedBlockEE2Size: 0x00000000
 ExtendedException[78].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[78].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[78].ReservedBlockEE1Size: 0x00000000
-ExtendedException[78].ReservedBlockEE2Size: 0x00000000
 ExtendedException[79].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[79].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[79].ReservedBlockEE1Size: 0x00000000
-ExtendedException[79].ReservedBlockEE2Size: 0x00000000
 ExtendedException[80].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[80].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[80].ReservedBlockEE1Size: 0x00000000
-ExtendedException[80].ReservedBlockEE2Size: 0x00000000
 ReservedBlock2Size: 0x00000000

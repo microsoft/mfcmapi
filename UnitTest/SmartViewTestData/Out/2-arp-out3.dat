@@ -109,9 +109,7 @@ ExtendedException[2].ReservedBlockEE2Size: 0x00000000
 ExtendedException[3].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[3].ChangeHighlight.ChangeHighlightValue: 0x00000080 = BIT_CH_BODY
 ExtendedException[3].ReservedBlockEE1Size: 0x00000000
-ExtendedException[3].ReservedBlockEE2Size: 0x00000000
 ExtendedException[4].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[4].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[4].ReservedBlockEE1Size: 0x00000000
-ExtendedException[4].ReservedBlockEE2Size: 0x00000000
 ReservedBlock2Size: 0x00000000

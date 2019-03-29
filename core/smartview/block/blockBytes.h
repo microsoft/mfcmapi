@@ -13,6 +13,8 @@ namespace smartview
 		// Construct blockBytes directly from a parser, optionally supplying cbBytes and cbMaxBytes
 		blockBytes(const std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
 		{
+			set = true;
+
 			// TODO: Should we track when the returned byte length is less than requested?
 			setOffset(parser->getOffset());
 
@@ -27,6 +29,8 @@ namespace smartview
 			// Important that we set our size after getting data, because we may not have gotten the requested byte length
 			setSize(size() * sizeof(BYTE));
 		}
+
+		virtual bool isSet() const { return set; }
 
 		// Mimic std::vector<BYTE>
 		operator const std::vector<BYTE>&() const { return _data; }
@@ -57,6 +61,7 @@ namespace smartview
 		std::wstring toStringInternal() const override { return toHexString(true); }
 		// TODO: Would it be better to hold the parser and size/offset data and build this as needed?
 		std::vector<BYTE> _data;
+		bool set{false};
 	};
 
 	inline std::shared_ptr<blockBytes> emptyBB() { return std::make_shared<blockBytes>(); }
