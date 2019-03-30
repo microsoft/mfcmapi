@@ -45,9 +45,7 @@ namespace smartview
 	void NickNameCache::parseBlocks()
 	{
 		setRoot(L"Nickname Cache\r\n");
-		addHeader(L"Metadata1 = ");
-		addChild(m_Metadata1);
-		terminateBlock();
+		addLabledChild(L"Metadata1 = ", m_Metadata1);
 
 		addChild(m_ulMajorVersion, L"Major Version = %1!d!\r\n", m_ulMajorVersion->getData());
 		addChild(m_ulMinorVersion, L"Minor Version = %1!d!\r\n", m_ulMinorVersion->getData());
@@ -71,11 +69,9 @@ namespace smartview
 
 		terminateBlock();
 		addBlankLine();
-		addHeader(L"Extra Info = ");
-		addChild(m_lpbEI);
-		terminateBlock();
 
-		addHeader(L"Metadata 2 = ");
-		addChild(m_Metadata2);
+		addLabledChild(L"Extra Info = ", m_lpbEI);
+
+		addLabledChild(L"Metadata 2 = ", m_Metadata2);
 	}
 } // namespace smartview

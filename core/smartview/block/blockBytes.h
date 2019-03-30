@@ -13,21 +13,21 @@ namespace smartview
 		// Construct blockBytes directly from a parser, optionally supplying cbBytes and cbMaxBytes
 		blockBytes(const std::shared_ptr<binaryParser>& parser, size_t cbBytes, size_t cbMaxBytes = -1)
 		{
-			set = true;
-
-			// TODO: Should we track when the returned byte length is less than requested?
-			setOffset(parser->getOffset());
-
 			if (cbBytes && parser->checkSize(cbBytes) &&
 				(cbMaxBytes == static_cast<size_t>(-1) || cbBytes <= cbMaxBytes))
 			{
+				// TODO: Should we track when the returned byte length is less than requested?
+				setOffset(parser->getOffset());
+
 				_data = std::vector<BYTE>{const_cast<LPBYTE>(parser->getAddress()),
 										  const_cast<LPBYTE>(parser->getAddress() + cbBytes)};
 				parser->advance(cbBytes);
-			}
 
-			// Important that we set our size after getting data, because we may not have gotten the requested byte length
-			setSize(size() * sizeof(BYTE));
+				// Important that we set our size after getting data, because we may not have gotten the requested byte length
+				setSize(size() * sizeof(BYTE));
+
+				set = true;
+			}
 		}
 
 		virtual bool isSet() const { return set; }

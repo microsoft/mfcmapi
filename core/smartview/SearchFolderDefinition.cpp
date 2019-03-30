@@ -196,12 +196,7 @@ namespace smartview
 		terminateBlock();
 		addChild(m_SkipLen2, L"SkipLen2 = 0x%1!08X!", m_SkipLen2->getData());
 
-		if (*m_SkipLen2)
-		{
-			terminateBlock();
-			addHeader(L"SkipBytes2 = ");
-			addChild(m_SkipBytes2);
-		}
+		addLabledChild(L"SkipBytes2 = ", m_SkipBytes2);
 
 		if (m_Restriction && m_Restriction->hasData())
 		{
@@ -217,19 +212,13 @@ namespace smartview
 			if (!m_AdvancedSearchBytes->empty())
 			{
 				terminateBlock();
-				addHeader(L"AdvancedSearchBytes = ");
-				addChild(m_AdvancedSearchBytes);
+				addLabledChild(L"AdvancedSearchBytes = ", m_AdvancedSearchBytes);
 			}
 		}
 
 		terminateBlock();
 		addChild(m_SkipLen3, L"SkipLen3 = 0x%1!08X!", m_SkipLen3->getData());
 
-		if (*m_SkipLen3)
-		{
-			terminateBlock();
-			addHeader(L"SkipBytes3 = ");
-			addChild(m_SkipBytes3);
-		}
+		addLabledChild(L"SkipBytes3 = ", m_SkipBytes3);
 	}
 } // namespace smartview

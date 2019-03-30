@@ -44,8 +44,7 @@ namespace smartview
 			addHeader(L"EntryId[%1!d!]:\r\n", i);
 			addChild(entry->EntryLength, L"EntryLength = 0x%1!08X!\r\n", entry->EntryLength->getData());
 			addChild(entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", entry->EntryLengthPad->getData());
-			addHeader(L"Entry Id = ");
-			addChild(entry->EntryId.getBlock());
+			addLabledChild(L"Entry Id = ", entry->EntryId.getBlock());
 
 			i++;
 		}

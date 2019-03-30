@@ -40,7 +40,6 @@ namespace smartview
 	{
 		setRoot(L"Global Object ID:\r\n");
 		addHeader(L"Byte Array ID = ");
-
 		addChild(m_Id);
 
 		if (m_Id->equal(sizeof s_rgbSPlus, s_rgbSPlus))
@@ -77,8 +76,7 @@ namespace smartview
 
 		if (m_lpData->size())
 		{
-			addHeader(L"Data = ");
-			addChild(m_lpData);
+			addLabledChild(L"Data = ", m_lpData);
 		}
 	}
 } // namespace smartview
