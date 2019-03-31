@@ -124,11 +124,7 @@ namespace smartview
 				m_TextSearchLengthExtended,
 				L"Text Search Length Extended = 0x%1!04X!\r\n",
 				m_TextSearchLengthExtended->getData());
-			addHeader(L"Text Search = ");
-			if (!m_TextSearch->empty())
-			{
-				addChild(m_TextSearch, m_TextSearch->c_str());
-			}
+			addLabledChild(L"Text Search = ", m_TextSearch);
 		}
 
 		terminateBlock();
@@ -137,9 +133,7 @@ namespace smartview
 		if (*m_SkipLen1)
 		{
 			terminateBlock();
-			addHeader(L"SkipBytes1 = ");
-
-			addChild(m_SkipBytes1);
+			addLabledChild(L"SkipBytes1 = ", m_SkipBytes1);
 		}
 
 		terminateBlock();
@@ -153,12 +147,7 @@ namespace smartview
 				m_FolderList1LengthExtended,
 				L"Folder List 1 Length Extended = 0x%1!04X!\r\n",
 				m_FolderList1LengthExtended->getData());
-			addHeader(L"Folder List 1 = ");
-
-			if (!m_FolderList1->empty())
-			{
-				addChild(m_FolderList1, m_FolderList1->c_str());
-			}
+			addLabledChild(L"Folder List 1 = ", m_FolderList1);
 		}
 
 		terminateBlock();

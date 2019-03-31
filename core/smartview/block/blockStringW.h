@@ -51,6 +51,7 @@ namespace smartview
 		}
 
 	private:
+		std::wstring toStringInternal() const override { return data; }
 		std::wstring data;
 		bool set{false};
 	};
