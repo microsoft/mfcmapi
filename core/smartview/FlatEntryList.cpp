@@ -48,8 +48,11 @@ namespace smartview
 		{
 			terminateBlock();
 			addBlankLine();
-			addHeader(L"Entry[%1!d!] ", i);
-			addChild(entry->dwSize, L"Size = 0x%1!08X!", entry->dwSize->getData());
+			if (entry->dwSize->isSet())
+			{
+				addHeader(L"Entry[%1!d!] ", i);
+				addChild(entry->dwSize, L"Size = 0x%1!08X!", entry->dwSize->getData());
+			}
 
 			if (entry->lpEntryID.hasData())
 			{

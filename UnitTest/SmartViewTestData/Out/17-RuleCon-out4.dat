@@ -13106,7 +13106,5 @@ lpRes->res.resAnd.lpRes[0x00000000]
 																									lpRes->res.resAnd.cRes = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000039]
 																									lpRes->rt = 0x0 = RES_AND
-																									lpRes->res.resAnd.cRes = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x0000003A]
 																									lpRes->rt = 0x0 = RES_AND
-																									lpRes->res.resAnd.cRes = 0x00000000

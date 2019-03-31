@@ -29,7 +29,6 @@ namespace smartview
 		// Fill out object of type T, reading from type SOURCE_U
 		template <typename SOURCE_U> void parse(const std::shared_ptr<binaryParser>& parser)
 		{
-			set = true;
 			static const size_t sizeU = sizeof SOURCE_U;
 			// TODO: Consider what a failure block really looks like
 			if (!parser->checkSize(sizeU)) return;
@@ -39,6 +38,8 @@ namespace smartview
 			setData(*reinterpret_cast<const SOURCE_U*>(parser->getAddress()));
 			setSize(sizeU);
 			parser->advance(sizeU);
+
+			set = true;
 		}
 
 		// Build and return object of type T, reading from type SOURCE_T
