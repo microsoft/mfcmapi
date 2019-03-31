@@ -6,7 +6,6 @@ Definition: 0
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000E1B = PR_HASATTACH: (PidTagHasAttachments, ptagHasAttach)
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000A Characters = Attachment
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -24,7 +23,6 @@ Definition: 1
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0009 Characters = AudioConf
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -42,7 +40,6 @@ Definition: 2
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000E03 = PR_DISPLAY_CC: (PR_DISPLAY_CC_A, PR_DISPLAY_CC_W, PidTagDisplayCc, ptagDisplayCc)
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0002 Characters = Cc
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -78,7 +75,6 @@ Definition: 4
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000D Characters = ExistsOnStore
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -96,7 +92,6 @@ Definition: 5
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0008 Characters = JoinInfo
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -114,7 +109,6 @@ Definition: 6
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0016 Characters = LiveMeetingAttendeeKey
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -132,7 +126,6 @@ Definition: 7
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0015 Characters = LiveMeetingInviteGuid
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -150,7 +143,6 @@ Definition: 8
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0013 Characters = LiveMeetingLanguage
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -168,7 +160,6 @@ Definition: 9
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000F Characters = LiveMeetingName
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -186,7 +177,6 @@ Definition: 10
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001C Characters = LiveMeetingServerAssignedMID
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -204,7 +194,6 @@ Definition: 11
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000D Characters = LMAllowCallMe
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -222,7 +211,6 @@ Definition: 12
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000B Characters = LMAllowChat
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -240,7 +228,6 @@ Definition: 13
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0010 Characters = LMAllowSendEmail
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -258,7 +245,6 @@ Definition: 14
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000F Characters = LMAppShareLevel
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -276,7 +262,6 @@ Definition: 15
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0011 Characters = LMAppShareRequest
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -294,7 +279,6 @@ Definition: 16
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0012 Characters = LMAppSharingColors
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -312,7 +296,6 @@ Definition: 17
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001C Characters = LMAttendeeAuthenticationType
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -330,7 +313,6 @@ Definition: 18
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000E Characters = LMAttendeeGUID
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -348,7 +330,6 @@ Definition: 19
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0014 Characters = LMAttendeeListBackup
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -366,7 +347,6 @@ Definition: 20
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0010 Characters = LMAudioBroadcast
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -384,7 +364,6 @@ Definition: 21
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001D Characters = LMAudioConferencingLeaderCode
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -402,7 +381,6 @@ Definition: 22
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0022 Characters = LMAudioConferencingParticipantCode
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -420,7 +398,6 @@ Definition: 23
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001B Characters = LMAudioConferencingProvider
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -438,7 +415,6 @@ Definition: 24
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000F Characters = LMAudioEmbedded
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -456,7 +432,6 @@ Definition: 25
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000D Characters = LMBillingCode
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -474,7 +449,6 @@ Definition: 26
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0017 Characters = LMContentExpirationTime
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -492,7 +466,6 @@ Definition: 27
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001B Characters = LMContentExpirationTimeType
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -510,7 +483,6 @@ Definition: 28
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0010 Characters = LMContentExpires
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -528,7 +500,6 @@ Definition: 29
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0012 Characters = LMDialingKeysPart1
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -546,7 +517,6 @@ Definition: 30
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0012 Characters = LMDialingKeysPart2
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -564,7 +534,6 @@ Definition: 31
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001B Characters = LMEarlyAttendeeEntryAllowed
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -582,7 +551,6 @@ Definition: 32
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0011 Characters = LMEnableAudioVOIP
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -600,7 +568,6 @@ Definition: 33
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000D Characters = LMEnableLobby
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -618,7 +585,6 @@ Definition: 34
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0012 Characters = LMEnableLobbyEmail
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -636,7 +602,6 @@ Definition: 35
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0021 Characters = LMEnablePersonalRecordingAttendee
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -654,7 +619,6 @@ Definition: 36
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0022 Characters = LMEnablePersonalRecordingPresenter
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -672,7 +636,6 @@ Definition: 37
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001B Characters = LMEnableRecordingExpiration
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -690,7 +653,6 @@ Definition: 38
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0016 Characters = LMExtendedRegistration
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -708,7 +670,6 @@ Definition: 39
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001E Characters = LMIsServerGeneratedAudienceKey
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -726,7 +687,6 @@ Definition: 40
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001F Characters = LMIsServerGeneratedPresenterKey
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -744,7 +704,6 @@ Definition: 41
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000E Characters = LMLobbyMessage
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -762,7 +721,6 @@ Definition: 42
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000D Characters = LMMeetingSize
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -780,7 +738,6 @@ Definition: 43
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0010 Characters = LMMeetingVersion
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -816,7 +773,6 @@ Definition: 45
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001D Characters = LMPresenterAuthenticationType
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -834,7 +790,6 @@ Definition: 46
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000F Characters = LMPresenterGUID
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -852,7 +807,6 @@ Definition: 47
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000E Characters = LMPresenterKey
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -870,7 +824,6 @@ Definition: 48
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000F Characters = LMPresenterList
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -888,7 +841,6 @@ Definition: 49
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0015 Characters = LMPresenterListBackup
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -906,7 +858,6 @@ Definition: 50
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0011 Characters = LMPrintToPDFLevel
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -924,7 +875,6 @@ Definition: 51
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000B Characters = LMQAFeature
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -942,7 +892,6 @@ Definition: 52
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0019 Characters = LMRecordingCreationAccess
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -960,7 +909,6 @@ Definition: 53
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0017 Characters = LMRecordingEntryControl
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -978,7 +926,6 @@ Definition: 54
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001F Characters = LMRecordingExpirationTimeAmount
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -996,7 +943,6 @@ Definition: 55
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001D Characters = LMRecordingExpirationTimeType
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1014,7 +960,6 @@ Definition: 56
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001B Characters = LMSeatingChartDefaultOption
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1032,7 +977,6 @@ Definition: 57
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0015 Characters = LMSeatingChartFeature
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1050,7 +994,6 @@ Definition: 58
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0014 Characters = LMSeatingChartLabel1
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1068,7 +1011,6 @@ Definition: 59
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0014 Characters = LMSeatingChartLabel2
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1086,7 +1028,6 @@ Definition: 60
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0014 Characters = LMSeatingChartLabel3
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1104,7 +1045,6 @@ Definition: 61
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0014 Characters = LMSeatingChartLabel4
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1122,7 +1062,6 @@ Definition: 62
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0014 Characters = LMSeatingChartLabel5
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1140,7 +1079,6 @@ Definition: 63
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000A Characters = LMSentinel
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1158,7 +1096,6 @@ Definition: 64
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0019 Characters = LMShowAudioTollFreeNumber
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1176,7 +1113,6 @@ Definition: 65
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0015 Characters = LMShowAudioTollNumber
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1194,7 +1130,6 @@ Definition: 66
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0016 Characters = LMShowEndSessionButton
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1212,7 +1147,6 @@ Definition: 67
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000B Characters = LMSignature
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1230,7 +1164,6 @@ Definition: 68
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0022 Characters = LMStreamingMediaAttendeePaneHeight
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1248,7 +1181,6 @@ Definition: 69
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001F Characters = LMStreamingMediaAttendeePaneURL
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1266,7 +1198,6 @@ Definition: 70
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0021 Characters = LMStreamingMediaCustomPaneFeature
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1284,7 +1215,6 @@ Definition: 71
 	VT = 0x0005 = VT_R8
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0023 Characters = LMStreamingMediaPresenterPaneHeight
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1302,7 +1232,6 @@ Definition: 72
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x001C Characters = LMStreamingMediaPresenterURL
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1320,7 +1249,6 @@ Definition: 73
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000E Characters = LMTollAreaCode
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1338,7 +1266,6 @@ Definition: 74
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0012 Characters = LMTollFreeAreaCode
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1356,7 +1283,6 @@ Definition: 75
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0015 Characters = LMTollFreeLocalNumber
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1374,7 +1300,6 @@ Definition: 76
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0010 Characters = LMTollFreeRegion
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1392,7 +1317,6 @@ Definition: 77
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0011 Characters = LMTollLocalNumber
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1410,7 +1334,6 @@ Definition: 78
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000C Characters = LMTollRegion
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1428,7 +1351,6 @@ Definition: 79
 	VT = 0x000B = VT_BOOL
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x000B Characters = LMXPIsChild
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1446,7 +1368,6 @@ Definition: 80
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0013 Characters = LMXPSendAccountName
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1464,7 +1385,6 @@ Definition: 81
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000000
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0014 Characters = LMXPSendAccountStamp
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1482,7 +1402,6 @@ Definition: 82
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000E04 = PR_DISPLAY_TO: (PR_DISPLAY_TO_A, PR_DISPLAY_TO_W, PidTagDisplayTo, ptagDisplayTo)
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0012 Characters = Required Attendees
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000
@@ -1500,7 +1419,6 @@ Definition: 83
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000E04 = PR_DISPLAY_TO: (PR_DISPLAY_TO_A, PR_DISPLAY_TO_W, PidTagDisplayTo, ptagDisplayTo)
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0002 Characters = To
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x0000

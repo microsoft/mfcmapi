@@ -20,7 +20,6 @@ namespace smartview
 
 		blockStringW(const std::shared_ptr<binaryParser>& parser, size_t cchChar = -1)
 		{
-			set = true;
 			if (cchChar == static_cast<size_t>(-1))
 			{
 				cchChar =
@@ -34,6 +33,7 @@ namespace smartview
 					std::wstring(reinterpret_cast<LPCWSTR>(parser->getAddress()), cchChar));
 				setSize(sizeof WCHAR * cchChar);
 				parser->advance(sizeof WCHAR * cchChar);
+				set = true;
 			}
 		}
 

@@ -21,7 +21,6 @@ namespace smartview
 
 		blockStringA(const std::shared_ptr<binaryParser>& parser, size_t cchChar = -1)
 		{
-			set = true;
 			if (cchChar == static_cast<size_t>(-1))
 			{
 				cchChar =
@@ -35,6 +34,7 @@ namespace smartview
 					std::string(reinterpret_cast<LPCSTR>(parser->getAddress()), cchChar));
 				setSize(sizeof CHAR * cchChar);
 				parser->advance(sizeof CHAR * cchChar);
+				set = true;
 			}
 		}
 
