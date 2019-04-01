@@ -122,20 +122,22 @@ namespace smartview
 					for (const auto& dataElement : persistData->ppeDataElement)
 					{
 						element->terminateBlock();
-						element->addHeader(L"DataElement: %1!d!\r\n", iDataElement);
+						auto de =
+							std::make_shared<block>(strings::formatmessage(L"DataElement: %1!d!\r\n", iDataElement));
+						element->addChild(de);
 
-						element->addChild(
+						de->addChild(
 							dataElement->wElementID,
 							L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
 							dataElement->wElementID->getData(),
 							flags::InterpretFlags(flagElementID, dataElement->wElementID->getData()).c_str());
 
-						element->addChild(
+						de->addChild(
 							dataElement->wElementDataSize,
 							L"\tElementDataSize = 0x%1!04X!\r\n",
 							dataElement->wElementDataSize->getData());
 
-						element->addLabledChild(L"\tElementData = ", dataElement->lpbElementData);
+						de->addLabledChild(L"\tElementData = ", dataElement->lpbElementData);
 						iDataElement++;
 					}
 				}

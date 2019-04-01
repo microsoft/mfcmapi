@@ -75,8 +75,17 @@ namespace smartview
 			}
 
 			propBlock->terminateBlock();
-			propBlock->addChild(prop->PropBlock(), L"PropString = %1!ws! ", prop->PropBlock()->c_str());
-			propBlock->addChild(prop->AltPropBlock(), L"AltPropString = %1!ws!", prop->AltPropBlock()->c_str());
+			auto propString = prop->PropBlock();
+			if (!propString->empty())
+			{
+				propBlock->addChild(propString, L"PropString = %1!ws!", propString->c_str());
+			}
+
+			auto altPropBlock = prop->AltPropBlock();
+			if (!altPropBlock->empty())
+			{
+				propBlock->addChild(altPropBlock, L" AltPropString = %1!ws!", altPropBlock->c_str());
+			}
 
 			auto szSmartView = prop->SmartViewBlock();
 			if (!szSmartView->empty())

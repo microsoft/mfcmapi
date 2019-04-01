@@ -58,13 +58,14 @@ namespace smartview
 			for (const auto& xid : m_lpXID)
 			{
 				terminateBlock();
-				addHeader(L"XID[%1!d!]:\r\n", i);
-				addChild(xid->XidSize, L"XidSize = 0x%1!08X! = %1!d!\r\n", xid->XidSize->getData());
-				addChild(
+				auto xidBlock = std::make_shared<block>(strings::formatmessage(L"XID[%1!d!]:\r\n", i));
+				addChild(xidBlock);
+				xidBlock->addChild(xid->XidSize, L"XidSize = 0x%1!08X! = %1!d!\r\n", xid->XidSize->getData());
+				xidBlock->addChild(
 					xid->NamespaceGuid,
 					L"NamespaceGuid = %1!ws!\r\n",
 					guid::GUIDToString(xid->NamespaceGuid->getData()).c_str());
-				addLabledChild(L"LocalId = ", xid->LocalID);
+				xidBlock->addLabledChild(L"LocalId = ", xid->LocalID);
 
 				i++;
 			}

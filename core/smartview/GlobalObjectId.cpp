@@ -39,16 +39,20 @@ namespace smartview
 	void GlobalObjectId::parseBlocks()
 	{
 		setRoot(L"Global Object ID:\r\n");
-		addHeader(L"Byte Array ID = ");
-		addChild(m_Id);
+		if (m_Id->isSet())
+		{
+			auto id = std::make_shared<block>(L"Byte Array ID = ");
+			addChild(id);
+			id->addChild(m_Id);
 
-		if (m_Id->equal(sizeof s_rgbSPlus, s_rgbSPlus))
-		{
-			addHeader(L" = s_rgbSPlus\r\n");
-		}
-		else
-		{
-			addHeader(L" = Unknown GUID\r\n");
+			if (m_Id->equal(sizeof s_rgbSPlus, s_rgbSPlus))
+			{
+				m_Id->addHeader(L" = s_rgbSPlus\r\n");
+			}
+			else
+			{
+				m_Id->addHeader(L" = Unknown GUID\r\n");
+			}
 		}
 
 		addChild(m_Year, L"Year: 0x%1!04X! = %1!d!\r\n", m_Year->getData());
