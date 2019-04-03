@@ -153,7 +153,7 @@ namespace smartview
 		terminateBlock();
 		addChild(m_FolderList2Length, L"Folder List 2 Length = 0x%1!08X!", m_FolderList2Length->getData());
 
-		if (*m_FolderList2Length)
+		if (m_FolderList2.hasData())
 		{
 			terminateBlock();
 			addHeader(L"FolderList2 = \r\n");
