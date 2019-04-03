@@ -1,6 +1,7 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/PropertiesStruct.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
@@ -8,98 +9,95 @@ namespace smartview
 
 	struct SAndRestrictionStruct
 	{
-		blockT<DWORD> cRes;
+		std::shared_ptr<blockT<DWORD>> cRes = emptyT<DWORD>();
 		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
 	};
 
 	struct SOrRestrictionStruct
 	{
-		blockT<DWORD> cRes;
+		std::shared_ptr<blockT<DWORD>> cRes = emptyT<DWORD>();
 		std::vector<std::shared_ptr<RestrictionStruct>> lpRes;
 	};
 
 	struct SNotRestrictionStruct
 	{
-		blockT<DWORD> ulReserved;
 		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
 	struct SContentRestrictionStruct
 	{
-		blockT<DWORD> ulFuzzyLevel;
-		blockT<DWORD> ulPropTag;
+		std::shared_ptr<blockT<DWORD>> ulFuzzyLevel = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
 		PropertiesStruct lpProp;
 	};
 
 	struct SBitMaskRestrictionStruct
 	{
-		blockT<DWORD> relBMR;
-		blockT<DWORD> ulPropTag;
-		blockT<DWORD> ulMask;
+		std::shared_ptr<blockT<DWORD>> relBMR = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulMask = emptyT<DWORD>();
 	};
 
 	struct SPropertyRestrictionStruct
 	{
-		blockT<DWORD> relop;
-		blockT<DWORD> ulPropTag;
+		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
 		PropertiesStruct lpProp;
 	};
 
 	struct SComparePropsRestrictionStruct
 	{
-		blockT<DWORD> relop;
-		blockT<DWORD> ulPropTag1;
-		blockT<DWORD> ulPropTag2;
+		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag1 = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag2 = emptyT<DWORD>();
 	};
 
 	struct SSizeRestrictionStruct
 	{
-		blockT<DWORD> relop;
-		blockT<DWORD> ulPropTag;
-		blockT<DWORD> cb;
+		std::shared_ptr<blockT<DWORD>> relop = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> cb = emptyT<DWORD>();
 	};
 
 	struct SExistRestrictionStruct
 	{
-		blockT<DWORD> ulReserved1;
-		blockT<DWORD> ulPropTag;
-		blockT<DWORD> ulReserved2;
+		std::shared_ptr<blockT<DWORD>> ulPropTag = emptyT<DWORD>();
 	};
 
 	struct SSubRestrictionStruct
 	{
-		blockT<DWORD> ulSubObject;
+		std::shared_ptr<blockT<DWORD>> ulSubObject = emptyT<DWORD>();
 		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
 	struct SCommentRestrictionStruct
 	{
-		blockT<DWORD> cValues; /* # of properties in lpProp */
+		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>(); /* # of properties in lpProp */
 		std::shared_ptr<RestrictionStruct> lpRes;
 		PropertiesStruct lpProp;
 	};
 
 	struct SAnnotationRestrictionStruct
 	{
-		blockT<DWORD> cValues; /* # of properties in lpProp */
+		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>(); /* # of properties in lpProp */
 		std::shared_ptr<RestrictionStruct> lpRes;
 		PropertiesStruct lpProp;
 	};
 
 	struct SCountRestrictionStruct
 	{
-		blockT<DWORD> ulCount;
+		std::shared_ptr<blockT<DWORD>> ulCount = emptyT<DWORD>();
 		std::shared_ptr<RestrictionStruct> lpRes;
 	};
 
-	class RestrictionStruct : public SmartViewParser
+	class RestrictionStruct : public smartViewParser
 	{
 	public:
 		RestrictionStruct(bool bRuleCondition, bool bExtendedCount)
 			: m_bRuleCondition(bRuleCondition), m_bExtendedCount(bExtendedCount)
 		{
 		}
-		RestrictionStruct(std::shared_ptr<binaryParser> parser, ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
+		RestrictionStruct(const std::shared_ptr<binaryParser>& parser, ULONG ulDepth, bool bRuleCondition, bool bExtendedCount)
 			: m_bRuleCondition(bRuleCondition), m_bExtendedCount(bExtendedCount)
 		{
 			m_Parser = parser;
@@ -107,17 +105,16 @@ namespace smartview
 		}
 
 	private:
-
-		void Parse() override { parse(0); }
+		void parse() override { parse(0); }
 		void parse(ULONG ulDepth);
-		void ParseBlocks() override
+		void parseBlocks() override
 		{
 			setRoot(L"Restriction:\r\n");
 			parseBlocks(0);
 		};
 		void parseBlocks(ULONG ulTabLevel);
 
-		blockT<DWORD> rt; /* Restriction type */
+		std::shared_ptr<blockT<DWORD>> rt = emptyT<DWORD>(); /* Restriction type */
 		SComparePropsRestrictionStruct resCompareProps;
 		SAndRestrictionStruct resAnd;
 		SOrRestrictionStruct resOr;

@@ -60,7 +60,6 @@ Definition: 3
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00008534 = PidLidMileage, dispidMileage
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0007 Characters = Mileage
 	FormulaANSI: Length = 0x0000
 	ValidationRuleANSI: Length = 0x000C Characters = "milsdgdssr"
@@ -114,7 +113,6 @@ Definition: 6
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000037 = PR_SUBJECT: (PR_SUBJECT_A, PR_SUBJECT_W, PidTagSubject, ptagSubject)
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0007 Characters = Subject
 	FormulaANSI: Length = 0x000D Characters = "SGzdxhfgkuy"
 	ValidationRuleANSI: Length = 0x0000
@@ -132,7 +130,6 @@ Definition: 7
 	VT = 0x0008 = VT_BSTR
 	DispID = 0x00000E04 = PR_DISPLAY_TO: (PR_DISPLAY_TO_A, PR_DISPLAY_TO_W, PidTagDisplayTo, ptagDisplayTo)
 	NmidNameLength = 0x0000
-	NmidName = 
 	NameAnsi: Length = 0x0002 Characters = To
 	FormulaANSI: Length = 0x0008 Characters = "sdgsdg"
 	ValidationRuleANSI: Length = 0x0007 Characters = "dsafg"

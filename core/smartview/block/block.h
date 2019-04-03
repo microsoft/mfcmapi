@@ -7,12 +7,16 @@ namespace smartview
 	{
 	public:
 		block() = default;
+		explicit block(std::wstring _text) : text(std::move(_text)) {}
+		block(const block&) = delete;
+		block& operator=(const block&) = delete;
 
+		virtual bool isSet() const { return true; }
 		const std::wstring& getText() const { return text; }
-		const std::vector<block>& getChildren() const { return children; }
+		const std::vector<std::shared_ptr<block>>& getChildren() const { return children; }
 		bool isHeader() const { return cb == 0 && offset == 0; }
 
-		virtual std::wstring ToString() const
+		virtual std::wstring toString() const
 		{
 			std::vector<std::wstring> items;
 			items.reserve(children.size() + 1);
@@ -20,7 +24,7 @@ namespace smartview
 
 			for (const auto& item : children)
 			{
-				items.emplace_back(item.ToString());
+				items.emplace_back(item->toString());
 			}
 
 			return strings::join(items, strings::emptystring);
@@ -34,14 +38,15 @@ namespace smartview
 		void setSource(ULONG _source)
 		{
 			source = _source;
-			for (auto& child : children)
+			for (const auto& child : children)
 			{
-				child.setSource(_source);
+				child->setSource(_source);
 			}
 		}
+
 		template <typename... Args> void addHeader(const std::wstring& _text, Args... args)
 		{
-			children.emplace_back(block(strings::formatmessage(_text.c_str(), args...)));
+			children.emplace_back(std::make_shared<block>(strings::formatmessage(_text.c_str(), args...)));
 		}
 
 		template <typename... Args> void setText(const std::wstring& _text, Args... args)
@@ -49,66 +54,64 @@ namespace smartview
 			text = strings::formatmessage(_text.c_str(), args...);
 		}
 
-		void addBlock(const block& child, const std::wstring& _text)
-		{
-			auto block = child;
-			block.text = _text;
-			children.push_back(block);
-		}
-
-		template <typename... Args> void addBlock(const block& child, const std::wstring& _text, Args... args)
-		{
-			auto block = child;
-			block.text = strings::formatmessage(_text.c_str(), args...);
-			children.push_back(block);
-		}
-
 		// Add a block as a child
-		void addBlock(const block& child)
+		void addChild(const std::shared_ptr<block>& child)
 		{
-			auto block = child;
-			block.text = child.ToStringInternal();
-			children.push_back(block);
+			if (child->isSet()) addChild(child, child->toStringInternal());
 		}
 
-		// Copy a block into this block with text
-		template <typename... Args> void setBlock(const block& _data, const std::wstring& _text, Args... args)
+		void addChild(const std::shared_ptr<block>& child, const std::wstring& _text)
 		{
-			text = strings::formatmessage(_text.c_str(), args...);
-			children = _data.children;
+			if (!child->isSet()) return;
+			child->text = _text;
+			children.push_back(child);
+		}
+
+		template <typename... Args>
+		void addChild(const std::shared_ptr<block>& child, const std::wstring& _text, Args... args)
+		{
+			if (child->isSet()) addChild(child, strings::formatmessage(_text.c_str(), args...));
+		}
+
+		void addLabledChild(const std::wstring& _text, const std::shared_ptr<block>& _block)
+		{
+			if (_block->isSet())
+			{
+				auto node = std::make_shared<block>(_text);
+				node->addChild(_block);
+				addChild(node);
+				terminateBlock();
+			}
 		}
 
 		void terminateBlock()
 		{
-			if (children.size() >= 1)
+			if (children.empty())
 			{
-				children.back().terminateBlock();
+				text = strings::ensureCRLF(text);
 			}
 			else
 			{
-				text = strings::ensureCRLF(text);
+				children.back()->terminateBlock();
 			}
 		}
 
 		void addBlankLine()
 		{
-			auto child = block();
-			child.blank = true;
-			children.emplace_back(child);
+			auto child = std::make_shared<block>();
+			child->blank = true;
+			children.push_back(child);
 		}
 
 		bool hasData() const { return !text.empty() || !children.empty(); }
 
-	protected:
+	private:
 		size_t offset{};
 		size_t cb{};
 		ULONG source{};
-
-	private:
-		explicit block(std::wstring _text) : text(std::move(_text)) {}
-		virtual std::wstring ToStringInternal() const { return text; }
+		virtual std::wstring toStringInternal() const { return text; }
 		std::wstring text;
-		std::vector<block> children;
+		std::vector<std::shared_ptr<block>> children;
 		bool blank{false};
 	};
 } // namespace smartview

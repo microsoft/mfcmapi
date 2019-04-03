@@ -4,67 +4,70 @@
 
 namespace smartview
 {
-	FlatEntryID::FlatEntryID(std::shared_ptr<binaryParser> parser)
+	FlatEntryID::FlatEntryID(const std::shared_ptr<binaryParser>& parser)
 	{
 		// Size here will be the length of the serialized entry ID
 		// We'll have to round it up to a multiple of 4 to read off padding
-		dwSize = parser->Get<DWORD>();
-		const auto ulSize = min(dwSize, parser->RemainingBytes());
+		dwSize = blockT<DWORD>::parse(parser);
+		const auto ulSize = min(*dwSize, parser->getSize());
 
-		lpEntryID.parse(parser, ulSize, true);
+		lpEntryID.smartViewParser::parse(parser, ulSize, true);
 
-		const auto dwPAD = 3 - (dwSize + 3) % 4;
+		const auto dwPAD = 3 - (*dwSize + 3) % 4;
 		if (dwPAD > 0)
 		{
-			padding = parser->GetBYTES(dwPAD);
+			padding = blockBytes::parse(parser, dwPAD);
 		}
 	}
 
-	void FlatEntryList::Parse()
+	void FlatEntryList::parse()
 	{
-		m_cEntries = m_Parser->Get<DWORD>();
+		m_cEntries = blockT<DWORD>::parse(m_Parser);
 
 		// We read and report this, but ultimately, it's not used.
-		m_cbEntries = m_Parser->Get<DWORD>();
+		m_cbEntries = blockT<DWORD>::parse(m_Parser);
 
-		if (m_cEntries && m_cEntries < _MaxEntriesLarge)
+		if (*m_cEntries && *m_cEntries < _MaxEntriesLarge)
 		{
-			m_pEntryIDs.reserve(m_cEntries);
-			for (DWORD iFlatEntryList = 0; iFlatEntryList < m_cEntries; iFlatEntryList++)
+			m_pEntryIDs.reserve(*m_cEntries);
+			for (DWORD i = 0; i < *m_cEntries; i++)
 			{
 				m_pEntryIDs.emplace_back(std::make_shared<FlatEntryID>(m_Parser));
 			}
 		}
 	}
 
-	void FlatEntryList::ParseBlocks()
+	void FlatEntryList::parseBlocks()
 	{
 		setRoot(L"Flat Entry List\r\n");
-		addBlock(m_cEntries, L"cEntries = %1!d!\r\n", m_cEntries.getData());
-		addBlock(m_cbEntries, L"cbEntries = 0x%1!08X!", m_cbEntries.getData());
+		addChild(m_cEntries, L"cEntries = %1!d!\r\n", m_cEntries->getData());
+		addChild(m_cbEntries, L"cbEntries = 0x%1!08X!", m_cbEntries->getData());
 
-		auto iFlatEntryList = DWORD{};
+		auto i = DWORD{};
 		for (const auto& entry : m_pEntryIDs)
 		{
 			terminateBlock();
 			addBlankLine();
-			addHeader(L"Entry[%1!d!] ", iFlatEntryList);
-			addBlock(entry->dwSize, L"Size = 0x%1!08X!", entry->dwSize.getData());
+			if (entry->dwSize->isSet())
+			{
+				addHeader(L"Entry[%1!d!] ", i);
+				addChild(entry->dwSize, L"Size = 0x%1!08X!", entry->dwSize->getData());
+			}
 
 			if (entry->lpEntryID.hasData())
 			{
 				terminateBlock();
-				addBlock(entry->lpEntryID.getBlock());
+				addChild(entry->lpEntryID.getBlock());
 			}
 
-			if (!entry->padding.empty())
+			if (!entry->padding->empty())
 			{
 				terminateBlock();
-				addHeader(L"Entry[%1!d!] Padding:\r\n", iFlatEntryList);
-				addBlock(entry->padding, strings::BinToHexString(entry->padding, true));
+				addHeader(L"Entry[%1!d!] Padding:\r\n", i);
+				if (entry->padding) addChild(entry->padding, entry->padding->toHexString(true));
 			}
 
-			iFlatEntryList++;
+			i++;
 		}
 	}
 } // namespace smartview

@@ -5,194 +5,189 @@
 
 namespace smartview
 {
-	void TimeZoneDefinition::Parse()
+	TZRule::TZRule(const std::shared_ptr<binaryParser>& parser)
 	{
-		m_bMajorVersion = m_Parser->Get<BYTE>();
-		m_bMinorVersion = m_Parser->Get<BYTE>();
-		m_cbHeader = m_Parser->Get<WORD>();
-		m_wReserved = m_Parser->Get<WORD>();
-		m_cchKeyName = m_Parser->Get<WORD>();
-		m_szKeyName = m_Parser->GetStringW(m_cchKeyName);
-		m_cRules = m_Parser->Get<WORD>();
+		bMajorVersion = blockT<BYTE>::parse(parser);
+		bMinorVersion = blockT<BYTE>::parse(parser);
+		wReserved = blockT<WORD>::parse(parser);
+		wTZRuleFlags = blockT<WORD>::parse(parser);
+		wYear = blockT<WORD>::parse(parser);
+		X = blockBytes::parse(parser, 14);
+		lBias = blockT<DWORD>::parse(parser);
+		lStandardBias = blockT<DWORD>::parse(parser);
+		lDaylightBias = blockT<DWORD>::parse(parser);
+		stStandardDate.wYear = blockT<WORD>::parse(parser);
+		stStandardDate.wMonth = blockT<WORD>::parse(parser);
+		stStandardDate.wDayOfWeek = blockT<WORD>::parse(parser);
+		stStandardDate.wDay = blockT<WORD>::parse(parser);
+		stStandardDate.wHour = blockT<WORD>::parse(parser);
+		stStandardDate.wMinute = blockT<WORD>::parse(parser);
+		stStandardDate.wSecond = blockT<WORD>::parse(parser);
+		stStandardDate.wMilliseconds = blockT<WORD>::parse(parser);
+		stDaylightDate.wYear = blockT<WORD>::parse(parser);
+		stDaylightDate.wMonth = blockT<WORD>::parse(parser);
+		stDaylightDate.wDayOfWeek = blockT<WORD>::parse(parser);
+		stDaylightDate.wDay = blockT<WORD>::parse(parser);
+		stDaylightDate.wHour = blockT<WORD>::parse(parser);
+		stDaylightDate.wMinute = blockT<WORD>::parse(parser);
+		stDaylightDate.wSecond = blockT<WORD>::parse(parser);
+		stDaylightDate.wMilliseconds = blockT<WORD>::parse(parser);
+	}
 
-		if (m_cRules && m_cRules < _MaxEntriesSmall)
+	void TimeZoneDefinition::parse()
+	{
+		m_bMajorVersion = blockT<BYTE>::parse(m_Parser);
+		m_bMinorVersion = blockT<BYTE>::parse(m_Parser);
+		m_cbHeader = blockT<WORD>::parse(m_Parser);
+		m_wReserved = blockT<WORD>::parse(m_Parser);
+		m_cchKeyName = blockT<WORD>::parse(m_Parser);
+		m_szKeyName = blockStringW::parse(m_Parser, *m_cchKeyName);
+		m_cRules = blockT<WORD>::parse(m_Parser);
+
+		if (*m_cRules && *m_cRules < _MaxEntriesSmall)
 		{
-			m_lpTZRule.reserve(m_cRules);
-			for (ULONG i = 0; i < m_cRules; i++)
+			m_lpTZRule.reserve(*m_cRules);
+			for (WORD i = 0; i < *m_cRules; i++)
 			{
-				TZRule tzRule;
-				tzRule.bMajorVersion = m_Parser->Get<BYTE>();
-				tzRule.bMinorVersion = m_Parser->Get<BYTE>();
-				tzRule.wReserved = m_Parser->Get<WORD>();
-				tzRule.wTZRuleFlags = m_Parser->Get<WORD>();
-				tzRule.wYear = m_Parser->Get<WORD>();
-				tzRule.X = m_Parser->GetBYTES(14);
-				tzRule.lBias = m_Parser->Get<DWORD>();
-				tzRule.lStandardBias = m_Parser->Get<DWORD>();
-				tzRule.lDaylightBias = m_Parser->Get<DWORD>();
-				tzRule.stStandardDate.wYear = m_Parser->Get<WORD>();
-				tzRule.stStandardDate.wMonth = m_Parser->Get<WORD>();
-				tzRule.stStandardDate.wDayOfWeek = m_Parser->Get<WORD>();
-				tzRule.stStandardDate.wDay = m_Parser->Get<WORD>();
-				tzRule.stStandardDate.wHour = m_Parser->Get<WORD>();
-				tzRule.stStandardDate.wMinute = m_Parser->Get<WORD>();
-				tzRule.stStandardDate.wSecond = m_Parser->Get<WORD>();
-				tzRule.stStandardDate.wMilliseconds = m_Parser->Get<WORD>();
-				tzRule.stDaylightDate.wYear = m_Parser->Get<WORD>();
-				tzRule.stDaylightDate.wMonth = m_Parser->Get<WORD>();
-				tzRule.stDaylightDate.wDayOfWeek = m_Parser->Get<WORD>();
-				tzRule.stDaylightDate.wDay = m_Parser->Get<WORD>();
-				tzRule.stDaylightDate.wHour = m_Parser->Get<WORD>();
-				tzRule.stDaylightDate.wMinute = m_Parser->Get<WORD>();
-				tzRule.stDaylightDate.wSecond = m_Parser->Get<WORD>();
-				tzRule.stDaylightDate.wMilliseconds = m_Parser->Get<WORD>();
-				m_lpTZRule.push_back(tzRule);
+				m_lpTZRule.emplace_back(std::make_shared<TZRule>(m_Parser));
 			}
 		}
 	}
 
-	void TimeZoneDefinition::ParseBlocks()
+	void TimeZoneDefinition::parseBlocks()
 	{
 		setRoot(L"Time Zone Definition: \r\n");
-		addBlock(m_bMajorVersion, L"bMajorVersion = 0x%1!02X! (%1!d!)\r\n", m_bMajorVersion.getData());
-		addBlock(m_bMinorVersion, L"bMinorVersion = 0x%1!02X! (%1!d!)\r\n", m_bMinorVersion.getData());
-		addBlock(m_cbHeader, L"cbHeader = 0x%1!04X! (%1!d!)\r\n", m_cbHeader.getData());
-		addBlock(m_wReserved, L"wReserved = 0x%1!04X! (%1!d!)\r\n", m_wReserved.getData());
-		addBlock(m_cchKeyName, L"cchKeyName = 0x%1!04X! (%1!d!)\r\n", m_cchKeyName.getData());
-		addBlock(m_szKeyName, L"szKeyName = %1!ws!\r\n", m_szKeyName.c_str());
-		addBlock(m_cRules, L"cRules = 0x%1!04X! (%1!d!)", m_cRules.getData());
+		addChild(m_bMajorVersion, L"bMajorVersion = 0x%1!02X! (%1!d!)\r\n", m_bMajorVersion->getData());
+		addChild(m_bMinorVersion, L"bMinorVersion = 0x%1!02X! (%1!d!)\r\n", m_bMinorVersion->getData());
+		addChild(m_cbHeader, L"cbHeader = 0x%1!04X! (%1!d!)\r\n", m_cbHeader->getData());
+		addChild(m_wReserved, L"wReserved = 0x%1!04X! (%1!d!)\r\n", m_wReserved->getData());
+		addChild(m_cchKeyName, L"cchKeyName = 0x%1!04X! (%1!d!)\r\n", m_cchKeyName->getData());
+		addChild(m_szKeyName, L"szKeyName = %1!ws!\r\n", m_szKeyName->c_str());
+		addChild(m_cRules, L"cRules = 0x%1!04X! (%1!d!)", m_cRules->getData());
 
-		for (WORD i = 0; i < m_lpTZRule.size(); i++)
+		auto i = 0;
+		for (const auto& rule : m_lpTZRule)
 		{
 			terminateBlock();
 			addBlankLine();
-			addBlock(
-				m_lpTZRule[i].bMajorVersion,
+			addChild(
+				rule->bMajorVersion,
 				L"TZRule[0x%1!X!].bMajorVersion = 0x%2!02X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].bMajorVersion.getData());
-			addBlock(
-				m_lpTZRule[i].bMinorVersion,
+				rule->bMajorVersion->getData());
+			addChild(
+				rule->bMinorVersion,
 				L"TZRule[0x%1!X!].bMinorVersion = 0x%2!02X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].bMinorVersion.getData());
-			addBlock(
-				m_lpTZRule[i].wReserved,
-				L"TZRule[0x%1!X!].wReserved = 0x%2!04X! (%2!d!)\r\n",
-				i,
-				m_lpTZRule[i].wReserved.getData());
-			addBlock(
-				m_lpTZRule[i].wTZRuleFlags,
+				rule->bMinorVersion->getData());
+			addChild(
+				rule->wReserved, L"TZRule[0x%1!X!].wReserved = 0x%2!04X! (%2!d!)\r\n", i, rule->wReserved->getData());
+			addChild(
+				rule->wTZRuleFlags,
 				L"TZRule[0x%1!X!].wTZRuleFlags = 0x%2!04X! = %3!ws!\r\n",
 				i,
-				m_lpTZRule[i].wTZRuleFlags.getData(),
-				flags::InterpretFlags(flagTZRule, m_lpTZRule[i].wTZRuleFlags).c_str());
-			addBlock(
-				m_lpTZRule[i].wYear,
-				L"TZRule[0x%1!X!].wYear = 0x%2!04X! (%2!d!)\r\n",
-				i,
-				m_lpTZRule[i].wYear.getData());
+				rule->wTZRuleFlags->getData(),
+				flags::InterpretFlags(flagTZRule, *rule->wTZRuleFlags).c_str());
+			addChild(rule->wYear, L"TZRule[0x%1!X!].wYear = 0x%2!04X! (%2!d!)\r\n", i, rule->wYear->getData());
 			addHeader(L"TZRule[0x%1!X!].X = ", i);
-			addBlock(m_lpTZRule[i].X);
+			addChild(rule->X);
 
 			terminateBlock();
-			addBlock(
-				m_lpTZRule[i].lBias,
-				L"TZRule[0x%1!X!].lBias = 0x%2!08X! (%2!d!)\r\n",
-				i,
-				m_lpTZRule[i].lBias.getData());
-			addBlock(
-				m_lpTZRule[i].lStandardBias,
+			addChild(rule->lBias, L"TZRule[0x%1!X!].lBias = 0x%2!08X! (%2!d!)\r\n", i, rule->lBias->getData());
+			addChild(
+				rule->lStandardBias,
 				L"TZRule[0x%1!X!].lStandardBias = 0x%2!08X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].lStandardBias.getData());
-			addBlock(
-				m_lpTZRule[i].lDaylightBias,
+				rule->lStandardBias->getData());
+			addChild(
+				rule->lDaylightBias,
 				L"TZRule[0x%1!X!].lDaylightBias = 0x%2!08X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].lDaylightBias.getData());
+				rule->lDaylightBias->getData());
 			addBlankLine();
-			addBlock(
-				m_lpTZRule[i].stStandardDate.wYear,
+			addChild(
+				rule->stStandardDate.wYear,
 				L"TZRule[0x%1!X!].stStandardDate.wYear = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stStandardDate.wYear.getData());
-			addBlock(
-				m_lpTZRule[i].stStandardDate.wMonth,
+				rule->stStandardDate.wYear->getData());
+			addChild(
+				rule->stStandardDate.wMonth,
 				L"TZRule[0x%1!X!].stStandardDate.wMonth = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stStandardDate.wMonth.getData());
-			addBlock(
-				m_lpTZRule[i].stStandardDate.wDayOfWeek,
+				rule->stStandardDate.wMonth->getData());
+			addChild(
+				rule->stStandardDate.wDayOfWeek,
 				L"TZRule[0x%1!X!].stStandardDate.wDayOfWeek = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stStandardDate.wDayOfWeek.getData());
-			addBlock(
-				m_lpTZRule[i].stStandardDate.wDay,
+				rule->stStandardDate.wDayOfWeek->getData());
+			addChild(
+				rule->stStandardDate.wDay,
 				L"TZRule[0x%1!X!].stStandardDate.wDay = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stStandardDate.wDay.getData());
-			addBlock(
-				m_lpTZRule[i].stStandardDate.wHour,
+				rule->stStandardDate.wDay->getData());
+			addChild(
+				rule->stStandardDate.wHour,
 				L"TZRule[0x%1!X!].stStandardDate.wHour = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stStandardDate.wHour.getData());
-			addBlock(
-				m_lpTZRule[i].stStandardDate.wMinute,
+				rule->stStandardDate.wHour->getData());
+			addChild(
+				rule->stStandardDate.wMinute,
 				L"TZRule[0x%1!X!].stStandardDate.wMinute = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stStandardDate.wMinute.getData());
-			addBlock(
-				m_lpTZRule[i].stStandardDate.wSecond,
+				rule->stStandardDate.wMinute->getData());
+			addChild(
+				rule->stStandardDate.wSecond,
 				L"TZRule[0x%1!X!].stStandardDate.wSecond = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stStandardDate.wSecond.getData());
-			addBlock(
-				m_lpTZRule[i].stStandardDate.wMilliseconds,
+				rule->stStandardDate.wSecond->getData());
+			addChild(
+				rule->stStandardDate.wMilliseconds,
 				L"TZRule[0x%1!X!].stStandardDate.wMilliseconds = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stStandardDate.wMilliseconds.getData());
+				rule->stStandardDate.wMilliseconds->getData());
 			addBlankLine();
-			addBlock(
-				m_lpTZRule[i].stDaylightDate.wYear,
+			addChild(
+				rule->stDaylightDate.wYear,
 				L"TZRule[0x%1!X!].stDaylightDate.wYear = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stDaylightDate.wYear.getData());
-			addBlock(
-				m_lpTZRule[i].stDaylightDate.wMonth,
+				rule->stDaylightDate.wYear->getData());
+			addChild(
+				rule->stDaylightDate.wMonth,
 				L"TZRule[0x%1!X!].stDaylightDate.wMonth = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stDaylightDate.wMonth.getData());
-			addBlock(
-				m_lpTZRule[i].stDaylightDate.wDayOfWeek,
+				rule->stDaylightDate.wMonth->getData());
+			addChild(
+				rule->stDaylightDate.wDayOfWeek,
 				L"TZRule[0x%1!X!].stDaylightDate.wDayOfWeek = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stDaylightDate.wDayOfWeek.getData());
-			addBlock(
-				m_lpTZRule[i].stDaylightDate.wDay,
+				rule->stDaylightDate.wDayOfWeek->getData());
+			addChild(
+				rule->stDaylightDate.wDay,
 				L"TZRule[0x%1!X!].stDaylightDate.wDay = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stDaylightDate.wDay.getData());
-			addBlock(
-				m_lpTZRule[i].stDaylightDate.wHour,
+				rule->stDaylightDate.wDay->getData());
+			addChild(
+				rule->stDaylightDate.wHour,
 				L"TZRule[0x%1!X!].stDaylightDate.wHour = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stDaylightDate.wHour.getData());
-			addBlock(
-				m_lpTZRule[i].stDaylightDate.wMinute,
+				rule->stDaylightDate.wHour->getData());
+			addChild(
+				rule->stDaylightDate.wMinute,
 				L"TZRule[0x%1!X!].stDaylightDate.wMinute = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stDaylightDate.wMinute.getData());
-			addBlock(
-				m_lpTZRule[i].stDaylightDate.wSecond,
+				rule->stDaylightDate.wMinute->getData());
+			addChild(
+				rule->stDaylightDate.wSecond,
 				L"TZRule[0x%1!X!].stDaylightDate.wSecond = 0x%2!X! (%2!d!)\r\n",
 				i,
-				m_lpTZRule[i].stDaylightDate.wSecond.getData());
-			addBlock(
-				m_lpTZRule[i].stDaylightDate.wMilliseconds,
+				rule->stDaylightDate.wSecond->getData());
+			addChild(
+				rule->stDaylightDate.wMilliseconds,
 				L"TZRule[0x%1!X!].stDaylightDate.wMilliseconds = 0x%2!X! (%2!d!)",
 				i,
-				m_lpTZRule[i].stDaylightDate.wMilliseconds.getData());
+				rule->stDaylightDate.wMilliseconds->getData());
+
+			i++;
 		}
 	}
 } // namespace smartview

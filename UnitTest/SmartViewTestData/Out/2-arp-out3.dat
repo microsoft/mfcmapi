@@ -66,7 +66,6 @@ ExceptionInfo[2].MeetingType: 0x00000001 = asfMeeting
 ExceptionInfo[2].ReminderSet: 0x00000000
 ExceptionInfo[2].LocationLength: 0x0001 = 1
 ExceptionInfo[2].LocationLength2: 0x0000 = 0
-ExceptionInfo[2].Location: ""
 ExceptionInfo[3].StartDateTime: 0x0CD5E484 = 03:00:00.000 PM 6/10/2010
 ExceptionInfo[3].EndDateTime: 0x0CD5E4C0 = 04:00:00.000 PM 6/10/2010
 ExceptionInfo[3].OriginalStartDate: 0x0CD5E484 = 03:00:00.000 PM 6/10/2010
@@ -106,14 +105,11 @@ ExtendedException[2].StartDateTime: 0x0CD59024 = 03:00:00.000 PM 5/26/2010
 ExtendedException[2].EndDateTime: 0x0CD59060 = 04:00:00.000 PM 5/26/2010
 ExtendedException[2].OriginalStartDate: 0x0CD595C4 = 03:00:00.000 PM 5/27/2010
 ExtendedException[2].WideCharLocationLength: 0x00000000 = 0
-ExtendedException[2].WideCharLocation: ""
 ExtendedException[2].ReservedBlockEE2Size: 0x00000000
 ExtendedException[3].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[3].ChangeHighlight.ChangeHighlightValue: 0x00000080 = BIT_CH_BODY
 ExtendedException[3].ReservedBlockEE1Size: 0x00000000
-ExtendedException[3].ReservedBlockEE2Size: 0x00000000
 ExtendedException[4].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[4].ChangeHighlight.ChangeHighlightValue: 0x00000000 = 0x0
 ExtendedException[4].ReservedBlockEE1Size: 0x00000000
-ExtendedException[4].ReservedBlockEE2Size: 0x00000000
 ReservedBlock2Size: 0x00000000

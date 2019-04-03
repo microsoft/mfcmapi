@@ -1,14 +1,15 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {
-	class SIDBin : public SmartViewParser
+	class SIDBin : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
-		blockBytes m_SIDbin;
+		std::shared_ptr<blockBytes> m_SIDbin = emptyBB();
 	};
 } // namespace smartview

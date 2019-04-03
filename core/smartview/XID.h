@@ -1,16 +1,17 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/blockBytes.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
-	class XID : public SmartViewParser
+	class XID : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
-		blockT<GUID> m_NamespaceGuid;
-		size_t m_cbLocalId{};
-		blockBytes m_LocalID;
+		std::shared_ptr<blockT<GUID>> m_NamespaceGuid = emptyT<GUID>();
+		std::shared_ptr<blockBytes> m_LocalID = emptyBB();
 	};
 } // namespace smartview

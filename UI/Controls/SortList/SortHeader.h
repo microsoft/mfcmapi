@@ -7,9 +7,9 @@ namespace controls
 	{
 		struct HeaderData
 		{
-			ULONG ulTagArrayRow;
-			ULONG ulPropTag;
-			bool bIsAB;
+			ULONG ulTagArrayRow{};
+			ULONG ulPropTag{};
+			bool bIsAB{};
 			std::wstring szTipString;
 		};
 		typedef HeaderData* LPHEADERDATA;
@@ -35,5 +35,5 @@ namespace controls
 
 			DECLARE_MESSAGE_MAP()
 		};
-	}
-}
+	} // namespace sortlistctrl
+} // namespace controls

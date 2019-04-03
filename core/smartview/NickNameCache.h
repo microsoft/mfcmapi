@@ -1,30 +1,32 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/PropertiesStruct.h>
+#include <core/smartview/block/blockBytes.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
 	struct SRowStruct
 	{
-		blockT<DWORD> cValues;
+		std::shared_ptr<blockT<DWORD>> cValues = emptyT<DWORD>();
 		PropertiesStruct lpProps;
 
-		SRowStruct(std::shared_ptr<binaryParser> parser);
+		SRowStruct(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class NickNameCache : public SmartViewParser
+	class NickNameCache : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
-		blockBytes m_Metadata1; // 4 bytes
-		blockT<DWORD> m_ulMajorVersion;
-		blockT<DWORD> m_ulMinorVersion;
-		blockT<DWORD> m_cRowCount;
+		std::shared_ptr<blockBytes> m_Metadata1 = emptyBB(); // 4 bytes
+		std::shared_ptr<blockT<DWORD>> m_ulMajorVersion = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_ulMinorVersion = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_cRowCount = emptyT<DWORD>();
 		std::vector<std::shared_ptr<SRowStruct>> m_lpRows;
-		blockT<DWORD> m_cbEI;
-		blockBytes m_lpbEI;
-		blockBytes m_Metadata2; // 8 bytes
+		std::shared_ptr<blockT<DWORD>> m_cbEI = emptyT<DWORD>();
+		std::shared_ptr<blockBytes> m_lpbEI = emptyBB();
+		std::shared_ptr<blockBytes> m_Metadata2 = emptyBB(); // 8 bytes
 	};
 } // namespace smartview

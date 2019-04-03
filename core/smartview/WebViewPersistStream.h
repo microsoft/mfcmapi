@@ -1,25 +1,28 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/blockBytes.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
 	struct WebViewPersist
 	{
-		blockT<DWORD> dwVersion;
-		blockT<DWORD> dwType;
-		blockT<DWORD> dwFlags;
-		blockBytes dwUnused; // 7 DWORDs
-		blockT<DWORD> cbData;
-		blockBytes lpData;
+		std::shared_ptr<blockT<DWORD>> dwVersion = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> dwType = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> dwFlags = emptyT<DWORD>();
+		std::shared_ptr<blockBytes> dwUnused = emptyBB(); // 7 DWORDs
+		std::shared_ptr<blockT<DWORD>> cbData = emptyT<DWORD>();
+		std::shared_ptr<blockBytes> lpData = emptyBB();
+
+		WebViewPersist(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class WebViewPersistStream : public SmartViewParser
+	class WebViewPersistStream : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
-		DWORD m_cWebViews{};
-		std::vector<WebViewPersist> m_lpWebViews;
+		std::vector<std::shared_ptr<WebViewPersist>> m_lpWebViews;
 	};
 } // namespace smartview

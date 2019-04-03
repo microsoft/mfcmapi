@@ -68,7 +68,6 @@ MsgClsName = "IPM.Post"
 Internal1StringCount = 0x04
 Internal1String = "Post"
 DisplayNameCountRepeat = 0x00
-DisplayNameRepeat = ""
 Internal2 = 0x00000005
 Internal3 = 0x00000000
 fUseUSHeaders = 0x00
@@ -102,4 +101,3 @@ VerbExtraData[3]
 DisplayNameCount = 0x0F
 DisplayName = "Reply to Folder"
 DisplayNameCountRepeat = 0x00
-DisplayNameRepeat = ""

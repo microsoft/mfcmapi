@@ -36,5 +36,4 @@ ReservedBlock1Size: 0x00000000
 ExtendedException[0].ChangeHighlight.ChangeHighlightSize: 0x00000004
 ExtendedException[0].ChangeHighlight.ChangeHighlightValue: 0x00000180 = BIT_CH_BODY | BIT_CH_CUSTOM
 ExtendedException[0].ReservedBlockEE1Size: 0x00000000
-ExtendedException[0].ReservedBlockEE2Size: 0x00000000
 ReservedBlock2Size: 0x00000000

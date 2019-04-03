@@ -12,7 +12,6 @@ dwBitmap = 0xFDCC0202
 dwDisplay = 0x00040001
 iFmt = 0x00000001
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 1
 FieldType = 0x0000000C = ftFloat
@@ -25,7 +24,6 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000002
 iFmt = 0x00000002
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 2
 FieldType = 0x0000000E = ftCurrency
@@ -38,7 +36,6 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000001
 iFmt = 0x00000001
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 3
 FieldType = 0x0000000C = ftFloat
@@ -51,7 +48,6 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000005
 iFmt = 0x00000005
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 4
 FieldType = 0x0000000C = ftFloat
@@ -64,7 +60,6 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000002
 iFmt = 0x00000002
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 5
 FieldType = 0x00000001 = ftString
@@ -77,7 +72,6 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000000
 iFmt = 0x00000000
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 6
 FieldType = 0x00000012 = ftCalc
@@ -103,12 +97,10 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000002
 iFmt = 0x00000002
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 8
 FieldType = 0x00000000 = ftNull
 FieldNameLength = 0x00000000 = 0
-FieldName = 
 PropSetGuid = {00000000-0000-0000-0000-000000000000}
 fcapm = 0x00000000 = 0x0
 dwString = 0x00000000
@@ -116,7 +108,6 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000000
 iFmt = 0x00000000
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 FolderUserFieldUnicode.FieldDefinitionCount = 9
 
@@ -131,7 +122,6 @@ dwBitmap = 0xFDCC0202
 dwDisplay = 0x00040001
 iFmt = 0x00000001
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 1
 FieldType = 0x0000000C = ftFloat
@@ -144,7 +134,6 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000002
 iFmt = 0x00000002
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 2
 FieldType = 0x0000000E = ftCurrency
@@ -157,7 +146,6 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000001
 iFmt = 0x00000001
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 3
 FieldType = 0x0000000C = ftFloat
@@ -170,7 +158,6 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000005
 iFmt = 0x00000005
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 4
 FieldType = 0x0000000C = ftFloat
@@ -183,7 +170,6 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000002
 iFmt = 0x00000002
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 5
 FieldType = 0x00000001 = ftString
@@ -196,7 +182,6 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000000
 iFmt = 0x00000000
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 6
 FieldType = 0x00000012 = ftCalc
@@ -222,12 +207,10 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000002
 iFmt = 0x00000002
 wszFormulaLength = 0x0000 = 0
-wszFormula = 
 
 Field 8
 FieldType = 0x00000000 = ftNull
 FieldNameLength = 0x00000000 = 0
-FieldName = 
 PropSetGuid = {00000000-0000-0000-0000-000000000000}
 fcapm = 0x00000000 = 0x0
 dwString = 0x00000000
@@ -235,4 +218,3 @@ dwBitmap = 0x00000000
 dwDisplay = 0x00000000
 iFmt = 0x00000000
 wszFormulaLength = 0x0000 = 0
-wszFormula =

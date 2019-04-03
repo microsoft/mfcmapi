@@ -8,255 +8,249 @@
 
 namespace smartview
 {
-	PackedAnsiString ReadPackedAnsiString(std::shared_ptr<binaryParser> parser)
+	void PackedAnsiString::parse(const std::shared_ptr<binaryParser>& parser)
 	{
-		PackedAnsiString packedAnsiString;
-		packedAnsiString.cchLength = parser->Get<BYTE>();
-		if (0xFF == packedAnsiString.cchLength)
+		cchLength = blockT<BYTE>::parse(parser);
+		if (*cchLength == 0xFF)
 		{
-			packedAnsiString.cchExtendedLength = parser->Get<WORD>();
+			cchExtendedLength = blockT<WORD>::parse(parser);
 		}
 
-		packedAnsiString.szCharacters = parser->GetStringA(
-			packedAnsiString.cchExtendedLength ? packedAnsiString.cchExtendedLength.getData()
-											   : packedAnsiString.cchLength.getData());
-
-		return packedAnsiString;
+		szCharacters =
+			blockStringA::parse(parser, *cchExtendedLength ? cchExtendedLength->getData() : cchLength->getData());
 	}
 
-	PackedUnicodeString ReadPackedUnicodeString(std::shared_ptr<binaryParser> parser)
+	void PackedUnicodeString::parse(const std::shared_ptr<binaryParser>& parser)
 	{
-		PackedUnicodeString packedUnicodeString;
-		packedUnicodeString.cchLength = parser->Get<BYTE>();
-		if (0xFF == packedUnicodeString.cchLength)
+		cchLength = blockT<BYTE>::parse(parser);
+		if (*cchLength == 0xFF)
 		{
-			packedUnicodeString.cchExtendedLength = parser->Get<WORD>();
+			cchExtendedLength = blockT<WORD>::parse(parser);
 		}
 
-		packedUnicodeString.szCharacters = parser->GetStringW(
-			packedUnicodeString.cchExtendedLength ? packedUnicodeString.cchExtendedLength.getData()
-												  : packedUnicodeString.cchLength.getData());
-
-		return packedUnicodeString;
+		szCharacters =
+			blockStringW::parse(parser, *cchExtendedLength ? cchExtendedLength->getData() : cchLength->getData());
 	}
 
-	void PropertyDefinitionStream::Parse()
+	SkipBlock::SkipBlock(const std::shared_ptr<binaryParser>& parser, DWORD iSkip)
 	{
-		m_wVersion = m_Parser->Get<WORD>();
-		m_dwFieldDefinitionCount = m_Parser->Get<DWORD>();
-		if (m_dwFieldDefinitionCount)
+		dwSize = blockT<DWORD>::parse(parser);
+		if (iSkip == 0)
 		{
-			if (m_dwFieldDefinitionCount < _MaxEntriesLarge)
+			lpbContentText.parse(parser);
+		}
+		else
+		{
+			lpbContent = blockBytes::parse(parser, *dwSize, _MaxBytes);
+		}
+	}
+
+	FieldDefinition::FieldDefinition(const std::shared_ptr<binaryParser>& parser, WORD version)
+	{
+		dwFlags = blockT<DWORD>::parse(parser);
+		wVT = blockT<WORD>::parse(parser);
+		dwDispid = blockT<DWORD>::parse(parser);
+		wNmidNameLength = blockT<WORD>::parse(parser);
+		szNmidName = blockStringW::parse(parser, *wNmidNameLength);
+
+		pasNameANSI.parse(parser);
+		pasFormulaANSI.parse(parser);
+		pasValidationRuleANSI.parse(parser);
+		pasValidationTextANSI.parse(parser);
+		pasErrorANSI.parse(parser);
+
+		if (version == PropDefV2)
+		{
+			dwInternalType = blockT<DWORD>::parse(parser);
+
+			// Have to count how many skip blocks are here.
+			// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
+			const auto stBookmark = parser->getOffset();
+
+			DWORD skipBlockCount = 0;
+
+			for (;;)
 			{
-				for (DWORD iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
+				skipBlockCount++;
+				const auto dwBlock = blockT<DWORD>::parse(parser);
+				if (*dwBlock == 0) break; // we hit the last, zero byte block, or the end of the buffer
+				parser->advance(*dwBlock);
+			}
+
+			parser->setOffset(stBookmark); // We're done with our first pass, restore the bookmark
+
+			if (skipBlockCount && skipBlockCount < _MaxEntriesSmall)
+			{
+				psbSkipBlocks.reserve(skipBlockCount);
+				for (DWORD i = 0; i < skipBlockCount; i++)
 				{
-					FieldDefinition fieldDefinition;
-					fieldDefinition.dwFlags = m_Parser->Get<DWORD>();
-					fieldDefinition.wVT = m_Parser->Get<WORD>();
-					fieldDefinition.dwDispid = m_Parser->Get<DWORD>();
-					fieldDefinition.wNmidNameLength = m_Parser->Get<WORD>();
-					fieldDefinition.szNmidName = m_Parser->GetStringW(fieldDefinition.wNmidNameLength);
-
-					fieldDefinition.pasNameANSI = ReadPackedAnsiString(m_Parser);
-					fieldDefinition.pasFormulaANSI = ReadPackedAnsiString(m_Parser);
-					fieldDefinition.pasValidationRuleANSI = ReadPackedAnsiString(m_Parser);
-					fieldDefinition.pasValidationTextANSI = ReadPackedAnsiString(m_Parser);
-					fieldDefinition.pasErrorANSI = ReadPackedAnsiString(m_Parser);
-
-					if (PropDefV2 == m_wVersion)
-					{
-						fieldDefinition.dwInternalType = m_Parser->Get<DWORD>();
-
-						// Have to count how many skip blocks are here.
-						// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
-						const auto stBookmark = m_Parser->GetCurrentOffset();
-
-						DWORD dwSkipBlockCount = 0;
-
-						for (;;)
-						{
-							dwSkipBlockCount++;
-							const auto dwBlock = m_Parser->Get<DWORD>();
-							if (!dwBlock) break; // we hit the last, zero byte block, or the end of the buffer
-							m_Parser->advance(dwBlock);
-						}
-
-						m_Parser->SetCurrentOffset(stBookmark); // We're done with our first pass, restore the bookmark
-
-						fieldDefinition.dwSkipBlockCount = dwSkipBlockCount;
-						if (fieldDefinition.dwSkipBlockCount && fieldDefinition.dwSkipBlockCount < _MaxEntriesSmall)
-						{
-							fieldDefinition.psbSkipBlocks.reserve(fieldDefinition.dwSkipBlockCount);
-							for (DWORD iSkip = 0; iSkip < fieldDefinition.dwSkipBlockCount; iSkip++)
-							{
-								SkipBlock skipBlock;
-								skipBlock.dwSize = m_Parser->Get<DWORD>();
-								if (iSkip == 0)
-								{
-									skipBlock.lpbContentText = ReadPackedUnicodeString(m_Parser);
-								}
-								else
-								{
-									skipBlock.lpbContent = m_Parser->GetBYTES(skipBlock.dwSize, _MaxBytes);
-								}
-
-								fieldDefinition.psbSkipBlocks.push_back(skipBlock);
-							}
-						}
-					}
-
-					m_pfdFieldDefinitions.push_back(fieldDefinition);
+					psbSkipBlocks.emplace_back(std::make_shared<SkipBlock>(parser, i));
 				}
 			}
 		}
 	}
 
-	_Check_return_ block
-	PackedAnsiStringToBlock(_In_ const std::wstring& szFieldName, _In_ const PackedAnsiString& pasString)
+	void PropertyDefinitionStream::parse()
 	{
-		auto data = pasString.cchLength;
-
-		if (0xFF == pasString.cchLength)
+		m_wVersion = blockT<WORD>::parse(m_Parser);
+		m_dwFieldDefinitionCount = blockT<DWORD>::parse(m_Parser);
+		if (*m_dwFieldDefinitionCount)
 		{
-			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pasString.cchExtendedLength.getData());
-			data.setSize(pasString.cchLength.getSize() + pasString.cchExtendedLength.getSize());
+			if (*m_dwFieldDefinitionCount < _MaxEntriesLarge)
+			{
+				for (DWORD i = 0; i < *m_dwFieldDefinitionCount; i++)
+				{
+					m_pfdFieldDefinitions.emplace_back(std::make_shared<FieldDefinition>(m_Parser, *m_wVersion));
+				}
+			}
+		}
+	}
+
+	std::shared_ptr<block> PackedAnsiString::toBlock(_In_ const std::wstring& szFieldName)
+	{
+		auto& data = cchLength;
+
+		if (*cchLength == 0xFF)
+		{
+			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength->getData());
+			data->setSize(cchLength->getSize() + cchExtendedLength->getSize());
 		}
 		else
 		{
-			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pasString.cchLength.getData());
+			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength->getData());
 		}
 
-		if (pasString.szCharacters.length())
+		if (szCharacters->length())
 		{
-			data.addHeader(L" Characters = ");
-			data.addBlock(pasString.szCharacters, strings::stringTowstring(pasString.szCharacters));
+			data->addHeader(L" Characters = ");
+			data->addChild(szCharacters, szCharacters->toWstring());
 		}
 
-		data.terminateBlock();
+		data->terminateBlock();
 		return data;
 	}
 
-	_Check_return_ block
-	PackedUnicodeStringToBlock(_In_ const std::wstring& szFieldName, _In_ const PackedUnicodeString& pusString)
+	std::shared_ptr<block> PackedUnicodeString::toBlock(_In_ const std::wstring& szFieldName)
 	{
-		auto data = pusString.cchLength;
+		auto& data = cchLength;
 
-		if (0xFF == pusString.cchLength)
+		if (*cchLength == 0xFF)
 		{
-			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pusString.cchExtendedLength.getData());
-			data.setSize(pusString.cchLength.getSize() + pusString.cchExtendedLength.getSize());
+			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchExtendedLength->getData());
+			data->setSize(cchLength->getSize() + cchExtendedLength->getSize());
 		}
 		else
 		{
-			data.setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), pusString.cchLength.getData());
+			data->setText(L"\t%1!ws!: Length = 0x%2!04X!", szFieldName.c_str(), cchLength->getData());
 		}
 
-		if (pusString.szCharacters.length())
+		if (szCharacters->length())
 		{
-			data.addHeader(L" Characters = ");
-			data.addBlock(pusString.szCharacters, pusString.szCharacters);
+			data->addHeader(L" Characters = ");
+			data->addChild(szCharacters, szCharacters->c_str());
 		}
 
-		data.terminateBlock();
+		data->terminateBlock();
 		return data;
 	}
 
-	void PropertyDefinitionStream::ParseBlocks()
+	void PropertyDefinitionStream::parseBlocks()
 	{
 		setRoot(L"Property Definition Stream\r\n");
-		auto szVersion = flags::InterpretFlags(flagPropDefVersion, m_wVersion);
-		addBlock(m_wVersion, L"Version = 0x%1!04X! = %2!ws!\r\n", m_wVersion.getData(), szVersion.c_str());
-		addBlock(m_dwFieldDefinitionCount, L"FieldDefinitionCount = 0x%1!08X!", m_dwFieldDefinitionCount.getData());
+		auto szVersion = flags::InterpretFlags(flagPropDefVersion, *m_wVersion);
+		addChild(m_wVersion, L"Version = 0x%1!04X! = %2!ws!\r\n", m_wVersion->getData(), szVersion.c_str());
+		addChild(m_dwFieldDefinitionCount, L"FieldDefinitionCount = 0x%1!08X!", m_dwFieldDefinitionCount->getData());
 
-		auto iDef = DWORD{};
+		auto iDef = 0;
 		for (const auto& def : m_pfdFieldDefinitions)
 		{
 			terminateBlock();
-			auto fieldDef = block{};
-			fieldDef.setText(L"Definition: %1!d!\r\n", iDef);
+			auto fieldDef = std::make_shared<block>();
+			addChild(fieldDef);
+			fieldDef->setText(L"Definition: %1!d!\r\n", iDef);
 
-			auto szFlags = flags::InterpretFlags(flagPDOFlag, def.dwFlags);
-			fieldDef.addBlock(def.dwFlags, L"\tFlags = 0x%1!08X! = %2!ws!\r\n", def.dwFlags.getData(), szFlags.c_str());
-			auto szVarEnum = flags::InterpretFlags(flagVarEnum, def.wVT);
-			fieldDef.addBlock(def.wVT, L"\tVT = 0x%1!04X! = %2!ws!\r\n", def.wVT.getData(), szVarEnum.c_str());
-			fieldDef.addBlock(def.dwDispid, L"\tDispID = 0x%1!08X!", def.dwDispid.getData());
+			auto szFlags = flags::InterpretFlags(flagPDOFlag, *def->dwFlags);
+			fieldDef->addChild(
+				def->dwFlags, L"\tFlags = 0x%1!08X! = %2!ws!\r\n", def->dwFlags->getData(), szFlags.c_str());
+			auto szVarEnum = flags::InterpretFlags(flagVarEnum, *def->wVT);
+			fieldDef->addChild(def->wVT, L"\tVT = 0x%1!04X! = %2!ws!\r\n", def->wVT->getData(), szVarEnum.c_str());
+			fieldDef->addChild(def->dwDispid, L"\tDispID = 0x%1!08X!", def->dwDispid->getData());
 
-			if (def.dwDispid)
+			if (*def->dwDispid)
 			{
-				if (def.dwDispid < 0x8000)
+				if (*def->dwDispid < 0x8000)
 				{
-					auto propTagNames = proptags::PropTagToPropName(def.dwDispid, false);
+					auto propTagNames = proptags::PropTagToPropName(*def->dwDispid, false);
 					if (!propTagNames.bestGuess.empty())
 					{
-						fieldDef.addBlock(def.dwDispid, L" = %1!ws!", propTagNames.bestGuess.c_str());
+						def->dwDispid->addHeader(L" = %1!ws!", propTagNames.bestGuess.c_str());
 					}
 
 					if (!propTagNames.otherMatches.empty())
 					{
-						fieldDef.addBlock(def.dwDispid, L": (%1!ws!)", propTagNames.otherMatches.c_str());
+						def->dwDispid->addHeader(L": (%1!ws!)", propTagNames.otherMatches.c_str());
 					}
 				}
 				else
 				{
 					std::wstring szDispidName;
-					MAPINAMEID mnid = {};
+					auto mnid = MAPINAMEID{};
 					mnid.lpguid = nullptr;
 					mnid.ulKind = MNID_ID;
-					mnid.Kind.lID = def.dwDispid;
+					mnid.Kind.lID = *def->dwDispid;
 					szDispidName = strings::join(cache::NameIDToPropNames(&mnid), L", ");
 					if (!szDispidName.empty())
 					{
-						fieldDef.addBlock(def.dwDispid, L" = %1!ws!", szDispidName.c_str());
+						def->dwDispid->addHeader(L" = %1!ws!", szDispidName.c_str());
 					}
 				}
 			}
 
-			fieldDef.terminateBlock();
-			fieldDef.addBlock(def.wNmidNameLength, L"\tNmidNameLength = 0x%1!04X!\r\n", def.wNmidNameLength.getData());
-			fieldDef.addBlock(def.szNmidName, L"\tNmidName = %1!ws!\r\n", def.szNmidName.c_str());
+			fieldDef->terminateBlock();
+			fieldDef->addChild(
+				def->wNmidNameLength, L"\tNmidNameLength = 0x%1!04X!\r\n", def->wNmidNameLength->getData());
+			fieldDef->addChild(def->szNmidName, L"\tNmidName = %1!ws!\r\n", def->szNmidName->c_str());
 
-			fieldDef.addBlock(PackedAnsiStringToBlock(L"NameAnsi", def.pasNameANSI));
-			fieldDef.addBlock(PackedAnsiStringToBlock(L"FormulaANSI", def.pasFormulaANSI));
-			fieldDef.addBlock(PackedAnsiStringToBlock(L"ValidationRuleANSI", def.pasValidationRuleANSI));
-			fieldDef.addBlock(PackedAnsiStringToBlock(L"ValidationTextANSI", def.pasValidationTextANSI));
-			fieldDef.addBlock(PackedAnsiStringToBlock(L"ErrorANSI", def.pasErrorANSI));
+			fieldDef->addChild(def->pasNameANSI.toBlock(L"NameAnsi"));
+			fieldDef->addChild(def->pasFormulaANSI.toBlock(L"FormulaANSI"));
+			fieldDef->addChild(def->pasValidationRuleANSI.toBlock(L"ValidationRuleANSI"));
+			fieldDef->addChild(def->pasValidationTextANSI.toBlock(L"ValidationTextANSI"));
+			fieldDef->addChild(def->pasErrorANSI.toBlock(L"ErrorANSI"));
 
-			if (PropDefV2 == m_wVersion)
+			if (*m_wVersion == PropDefV2)
 			{
-				szFlags = flags::InterpretFlags(flagInternalType, def.dwInternalType);
-				fieldDef.addBlock(
-					def.dwInternalType,
+				szFlags = flags::InterpretFlags(flagInternalType, *def->dwInternalType);
+				fieldDef->addChild(
+					def->dwInternalType,
 					L"\tInternalType = 0x%1!08X! = %2!ws!\r\n",
-					def.dwInternalType.getData(),
+					def->dwInternalType->getData(),
 					szFlags.c_str());
-				fieldDef.addHeader(L"\tSkipBlockCount = %1!d!", def.dwSkipBlockCount);
+				fieldDef->addHeader(L"\tSkipBlockCount = %1!d!", def->psbSkipBlocks.size());
 
-				auto iSkip = DWORD{};
-				for (const auto& sb : def.psbSkipBlocks)
+				auto iSkipBlock = 0;
+				for (const auto& sb : def->psbSkipBlocks)
 				{
-					fieldDef.terminateBlock();
-					auto skipBlock = block{};
-					skipBlock.setText(L"\tSkipBlock: %1!d!\r\n", iSkip);
-					skipBlock.addBlock(sb.dwSize, L"\t\tSize = 0x%1!08X!", sb.dwSize.getData());
+					fieldDef->terminateBlock();
+					auto skipBlock = std::make_shared<block>();
+					fieldDef->addChild(skipBlock);
+					skipBlock->setText(L"\tSkipBlock: %1!d!\r\n", iSkipBlock);
+					skipBlock->addChild(sb->dwSize, L"\t\tSize = 0x%1!08X!", sb->dwSize->getData());
 
-					if (0 == iSkip)
+					if (iSkipBlock == 0)
 					{
-						skipBlock.terminateBlock();
-						skipBlock.addBlock(PackedUnicodeStringToBlock(L"\tFieldName", sb.lpbContentText));
+						skipBlock->terminateBlock();
+						skipBlock->addChild(sb->lpbContentText.toBlock(L"\tFieldName"));
 					}
-					else if (!sb.lpbContent.empty())
+					else if (!sb->lpbContent->empty())
 					{
-						skipBlock.terminateBlock();
-						skipBlock.addHeader(L"\t\tContent = ");
-						skipBlock.addBlock(sb.lpbContent);
+						skipBlock->terminateBlock();
+						skipBlock->addLabledChild(L"\t\tContent = ", sb->lpbContent);
 					}
 
-					fieldDef.addBlock(skipBlock);
-					iSkip++;
+					iSkipBlock++;
 				}
 			}
 
-			addBlock(fieldDef);
 			iDef++;
 		}
 	}

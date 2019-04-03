@@ -1,12 +1,12 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 
 // Forward declarations
 enum __ParsingTypeEnum;
 
 namespace smartview
 {
-	LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp);
+	smartViewParser* GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp);
 	_Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(
 		_In_opt_ const _SPropValue* lpProp, // required property value
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object

@@ -1,5 +1,6 @@
 #pragma once
 #include <core/smartview/binaryParser.h>
+#include <core/smartview/block/block.h>
 
 #define _MaxBytes 0xFFFF
 #define _MaxDepth 25
@@ -11,40 +12,37 @@
 
 namespace smartview
 {
-	class SmartViewParser;
-	typedef SmartViewParser FAR* LPSMARTVIEWPARSER;
-
-	class SmartViewParser
+	class smartViewParser
 	{
 	public:
-		SmartViewParser() = default;
-		virtual ~SmartViewParser() = default;
-		SmartViewParser(const SmartViewParser&) = delete;
-		SmartViewParser& operator=(const SmartViewParser&) = delete;
+		smartViewParser() = default;
+		virtual ~smartViewParser() = default;
+		smartViewParser(const smartViewParser&) = delete;
+		smartViewParser& operator=(const smartViewParser&) = delete;
 
-		void init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
+		void init(size_t cb, _In_count_(cb) const BYTE* _bin)
 		{
-			m_Parser = std::make_shared<binaryParser>(cbBin, lpBin);
-			m_bParsed = false;
-			data = {};
-			m_bEnableJunk = true;
+			m_Parser = std::make_shared<binaryParser>(cb, _bin);
+			parsed = false;
+			data = std::make_shared<block>();
+			enableJunk = true;
 		}
 
-		void parse(std::shared_ptr<binaryParser> binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
+		void parse(const std::shared_ptr<binaryParser>& binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
 
-		void parse(std::shared_ptr<binaryParser> binaryParser, size_t cbBin, bool bEnableJunk)
+		void parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool _enableJunk)
 		{
 			m_Parser = binaryParser;
 			m_Parser->setCap(cbBin);
-			m_bEnableJunk = bEnableJunk;
-			EnsureParsed();
+			enableJunk = _enableJunk;
+			ensureParsed();
 			m_Parser->clearCap();
 		}
 
-		_Check_return_ std::wstring ToString();
+		std::wstring toString();
 
-		const block& getBlock() const { return data; }
-		bool hasData() const { return data.hasData(); }
+		std::shared_ptr<block>& getBlock() { return data; }
+		bool hasData() const { return data->hasData(); }
 
 	protected:
 		std::shared_ptr<binaryParser> m_Parser;
@@ -52,38 +50,44 @@ namespace smartview
 		// Nu style parsing data
 		template <typename... Args> void setRoot(const std::wstring& text, const Args... args)
 		{
-			data.setText(text, args...);
+			data->setText(text, args...);
 		}
 
-		void setRoot(const block& _data) { data = _data; }
+		void setRoot(const std::shared_ptr<block>& _data) { data = _data; }
 
-		template <typename... Args> void setRoot(const block& _data, const std::wstring& text, const Args... args)
+		template <typename... Args>
+		void setRoot(const std::shared_ptr<block>& _data, const std::wstring& text, const Args... args)
 		{
 			data = _data;
-			data.setText(text, args...);
+			data->setText(text, args...);
 		}
 
 		template <typename... Args> void addHeader(const std::wstring& text, const Args... args)
 		{
-			data.addHeader(text, args...);
+			data->addHeader(text, args...);
 		}
 
-		void addBlock(const block& _block, const std::wstring& text) { data.addBlock(_block, text); }
-		template <typename... Args> void addBlock(const block& _block, const std::wstring& text, const Args... args)
+		void addChild(const std::shared_ptr<block>& _block, const std::wstring& text) { data->addChild(_block, text); }
+		template <typename... Args>
+		void addChild(const std::shared_ptr<block>& _block, const std::wstring& text, const Args... args)
 		{
-			data.addBlock(_block, text, args...);
+			data->addChild(_block, text, args...);
 		}
-		void addBlock(const block& child) { data.addBlock(child); }
-		void terminateBlock() { data.terminateBlock(); }
-		void addBlankLine() { data.addBlankLine(); }
+		void addLabledChild(const std::wstring& _text, const std::shared_ptr<block>& _block)
+		{
+			data->addLabledChild(_text, _block);
+		}
+		void addChild(const std::shared_ptr<block>& child) { data->addChild(child); }
+		void terminateBlock() { data->terminateBlock(); }
+		void addBlankLine() { data->addBlankLine(); }
 
 	private:
-		void EnsureParsed();
-		virtual void Parse() = 0;
-		virtual void ParseBlocks() = 0;
+		void ensureParsed();
+		virtual void parse() = 0;
+		virtual void parseBlocks() = 0;
 
-		block data;
-		bool m_bEnableJunk{true};
-		bool m_bParsed{false};
+		std::shared_ptr<block> data = std::make_shared<block>();
+		bool enableJunk{true};
+		bool parsed{false};
 	};
 } // namespace smartview

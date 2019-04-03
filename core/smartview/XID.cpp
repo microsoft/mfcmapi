@@ -2,20 +2,22 @@
 #include <core/smartview/XID.h>
 #include <core/interpret/guid.h>
 #include <core/utility/strings.h>
+#include <core/smartview/block/blockBytes.h>
 
 namespace smartview
 {
-	void XID::Parse()
+	void XID::parse()
 	{
-		m_NamespaceGuid = m_Parser->Get<GUID>();
-		m_cbLocalId = m_Parser->RemainingBytes();
-		m_LocalID = m_Parser->GetBYTES(m_cbLocalId, m_cbLocalId);
+		m_NamespaceGuid = blockT<GUID>::parse(m_Parser);
+		auto cbLocalId = m_Parser->getSize();
+		m_LocalID = blockBytes::parse(m_Parser, cbLocalId, cbLocalId);
 	}
 
-	void XID::ParseBlocks()
+	void XID::parseBlocks()
 	{
 		setRoot(L"XID:\r\n");
-		addBlock(m_NamespaceGuid, L"NamespaceGuid = %1!ws!\r\n", guid::GUIDToString(m_NamespaceGuid.getData()).c_str());
-		addBlock(m_LocalID, L"LocalId = %1!ws!", strings::BinToHexString(m_LocalID, true).c_str());
+		addChild(
+			m_NamespaceGuid, L"NamespaceGuid = %1!ws!\r\n", guid::GUIDToString(m_NamespaceGuid->getData()).c_str());
+		if (m_LocalID) addChild(m_LocalID, L"LocalId = %1!ws!", m_LocalID->toHexString(true).c_str());
 	}
 } // namespace smartview

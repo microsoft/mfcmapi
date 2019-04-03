@@ -15,5 +15,4 @@ Version = 0x00000001 = MDB_STORE_EID_V2_VERSION
 OffsetDN = 0x00000014
 OffsetFQDN = 0x00000093
 DN = /o=org/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Configuration/cn=Servers/cn=SERVER/cn=Microsoft Private MDB
-FQDN = 
-Reserved Bytes = cb: 0 lpb: NULL
+FQDN =

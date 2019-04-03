@@ -6,89 +6,93 @@
 
 namespace smartview
 {
-	void WebViewPersistStream::Parse()
+	WebViewPersist::WebViewPersist(const std::shared_ptr<binaryParser>& parser)
 	{
+		dwVersion = blockT<DWORD>::parse(parser);
+		dwType = blockT<DWORD>::parse(parser);
+		dwFlags = blockT<DWORD>::parse(parser);
+		dwUnused = blockBytes::parse(parser, 7 * sizeof(DWORD));
+		cbData = blockT<DWORD>::parse(parser);
+		lpData = blockBytes::parse(parser, *cbData, _MaxBytes);
+	}
+
+	void WebViewPersistStream::parse()
+	{
+		auto cWebViews = 0;
+
 		// Run through the parser once to count the number of web view structs
 		for (;;)
 		{
 			// Must have at least 2 bytes left to have another struct
-			if (m_Parser->RemainingBytes() < sizeof(DWORD) * 11) break;
+			if (m_Parser->getSize() < sizeof(DWORD) * 11) break;
 			m_Parser->advance(sizeof(DWORD) * 10);
-			const auto cbData = m_Parser->Get<DWORD>();
+			const auto cbData = blockT<DWORD>::parse(m_Parser);
 
 			// Must have at least cbData bytes left to be a valid flag
-			if (m_Parser->RemainingBytes() < cbData) break;
+			if (m_Parser->getSize() < *cbData) break;
 
-			m_Parser->advance(cbData);
-			m_cWebViews++;
+			m_Parser->advance(*cbData);
+			cWebViews++;
 		}
 
 		// Now we parse for real
 		m_Parser->rewind();
 
-		const auto cWebViews = m_cWebViews;
 		if (cWebViews && cWebViews < _MaxEntriesSmall)
 		{
 			m_lpWebViews.reserve(cWebViews);
-			for (ULONG i = 0; i < cWebViews; i++)
+			for (auto i = 0; i < cWebViews; i++)
 			{
-				WebViewPersist webViewPersist;
-				webViewPersist.dwVersion = m_Parser->Get<DWORD>();
-				webViewPersist.dwType = m_Parser->Get<DWORD>();
-				webViewPersist.dwFlags = m_Parser->Get<DWORD>();
-				webViewPersist.dwUnused = m_Parser->GetBYTES(7 * sizeof(DWORD));
-				webViewPersist.cbData = m_Parser->Get<DWORD>();
-				webViewPersist.lpData = m_Parser->GetBYTES(webViewPersist.cbData, _MaxBytes);
-				m_lpWebViews.push_back(webViewPersist);
+				m_lpWebViews.emplace_back(std::make_shared<WebViewPersist>(m_Parser));
 			}
 		}
 	}
 
-	void WebViewPersistStream::ParseBlocks()
+	void WebViewPersistStream::parseBlocks()
 	{
 		setRoot(L"Web View Persistence Object Stream\r\n");
-		addHeader(L"cWebViews = %1!d!", m_cWebViews);
-		for (ULONG i = 0; i < m_lpWebViews.size(); i++)
+		addHeader(L"cWebViews = %1!d!", m_lpWebViews.size());
+		auto i = 0;
+		for (const auto& view : m_lpWebViews)
 		{
 			terminateBlock();
 			addBlankLine();
 
 			addHeader(L"Web View %1!d!\r\n", i);
-			addBlock(
-				m_lpWebViews[i].dwVersion,
+			addChild(
+				view->dwVersion,
 				L"dwVersion = 0x%1!08X! = %2!ws!\r\n",
-				m_lpWebViews[i].dwVersion.getData(),
-				flags::InterpretFlags(flagWebViewVersion, m_lpWebViews[i].dwVersion).c_str());
-			addBlock(
-				m_lpWebViews[i].dwType,
+				view->dwVersion->getData(),
+				flags::InterpretFlags(flagWebViewVersion, *view->dwVersion).c_str());
+			addChild(
+				view->dwType,
 				L"dwType = 0x%1!08X! = %2!ws!\r\n",
-				m_lpWebViews[i].dwType.getData(),
-				flags::InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType).c_str());
-			addBlock(
-				m_lpWebViews[i].dwFlags,
+				view->dwType->getData(),
+				flags::InterpretFlags(flagWebViewType, *view->dwType).c_str());
+			addChild(
+				view->dwFlags,
 				L"dwFlags = 0x%1!08X! = %2!ws!\r\n",
-				m_lpWebViews[i].dwFlags.getData(),
-				flags::InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags).c_str());
-			addHeader(L"dwUnused = ");
-
-			addBlock(m_lpWebViews[i].dwUnused);
+				view->dwFlags->getData(),
+				flags::InterpretFlags(flagWebViewFlags, *view->dwFlags).c_str());
+			addLabledChild(L"dwUnused = ", view->dwUnused);
 
 			terminateBlock();
-			addBlock(m_lpWebViews[i].cbData, L"cbData = 0x%1!08X!\r\n", m_lpWebViews[i].cbData.getData());
+			addChild(view->cbData, L"cbData = 0x%1!08X!\r\n", view->cbData->getData());
 
-			switch (m_lpWebViews[i].dwType)
+			switch (*view->dwType)
 			{
 			case WEBVIEWURL:
 			{
 				addHeader(L"wzURL = ");
-				addBlock(m_lpWebViews[i].lpData, strings::BinToTextStringW(m_lpWebViews[i].lpData, false));
+				addChild(view->lpData, view->lpData->toTextString(false));
 				break;
 			}
 			default:
-				addHeader(L"lpData = ");
-				addBlock(m_lpWebViews[i].lpData);
+				addLabledChild(L"lpData = ", view->lpData);
 				break;
 			}
+
+			i++;
 		}
 	}
 } // namespace smartview

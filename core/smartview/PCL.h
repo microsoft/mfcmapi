@@ -1,24 +1,25 @@
 #pragma once
-#include <winnt.h>
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/blockBytes.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
 	struct SizedXID
 	{
-		blockT<BYTE> XidSize;
-		blockT<GUID> NamespaceGuid;
-		DWORD cbLocalId{};
-		blockBytes LocalID;
+		std::shared_ptr<blockT<BYTE>> XidSize = emptyT<BYTE>();
+		std::shared_ptr<blockT<GUID>> NamespaceGuid = emptyT<GUID>();
+		std::shared_ptr<blockBytes> LocalID = emptyBB();
+
+		SizedXID(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class PCL : public SmartViewParser
+	class PCL : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
-		DWORD m_cXID{};
-		std::vector<SizedXID> m_lpXID;
+		std::vector<std::shared_ptr<SizedXID>> m_lpXID;
 	};
 } // namespace smartview

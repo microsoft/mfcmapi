@@ -24,6 +24,4 @@ SkipLen2 = 0x00000000
 Restriction:
 lpRes->rt = 0x8 = RES_EXIST
 lpRes->res.resExist.ulPropTag = 0x8010101F (PT_MV_UNICODE)
-lpRes->res.resExist.ulReserved1 = 0x00000000
-lpRes->res.resExist.ulReserved2 = 0x00000000
 SkipLen3 = 0x00000000

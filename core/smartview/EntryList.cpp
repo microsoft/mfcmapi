@@ -3,49 +3,50 @@
 
 namespace smartview
 {
-	EntryListEntryStruct::EntryListEntryStruct(std::shared_ptr<binaryParser> parser)
+	EntryListEntryStruct::EntryListEntryStruct(const std::shared_ptr<binaryParser>& parser)
 	{
-		EntryLength = parser->Get<DWORD>();
-		EntryLengthPad = parser->Get<DWORD>();
+		EntryLength = blockT<DWORD>::parse(parser);
+		EntryLengthPad = blockT<DWORD>::parse(parser);
 	}
 
-	void EntryList::Parse()
+	void EntryList::parse()
 	{
-		m_EntryCount = m_Parser->Get<DWORD>();
-		m_Pad = m_Parser->Get<DWORD>();
+		m_EntryCount = blockT<DWORD>::parse(m_Parser);
+		m_Pad = blockT<DWORD>::parse(m_Parser);
 
-		if (m_EntryCount)
+		if (*m_EntryCount)
 		{
-			if (m_EntryCount < _MaxEntriesLarge)
+			if (*m_EntryCount < _MaxEntriesLarge)
 			{
-				m_Entry.reserve(m_EntryCount);
-				for (DWORD i = 0; i < m_EntryCount; i++)
+				m_Entry.reserve(*m_EntryCount);
+				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
 					m_Entry.emplace_back(std::make_shared<EntryListEntryStruct>(m_Parser));
 				}
 
-				for (DWORD i = 0; i < m_EntryCount; i++)
+				for (DWORD i = 0; i < *m_EntryCount; i++)
 				{
-					m_Entry[i]->EntryId.parse(m_Parser, m_Entry[i]->EntryLength, true);
+					m_Entry[i]->EntryId.smartViewParser::parse(m_Parser, *m_Entry[i]->EntryLength, true);
 				}
 			}
 		}
 	}
 
-	void EntryList::ParseBlocks()
+	void EntryList::parseBlocks()
 	{
-		setRoot(m_EntryCount, L"EntryCount = 0x%1!08X!\r\n", m_EntryCount.getData());
-		addBlock(m_Pad, L"Pad = 0x%1!08X!", m_Pad.getData());
+		setRoot(m_EntryCount, L"EntryCount = 0x%1!08X!\r\n", m_EntryCount->getData());
+		addChild(m_Pad, L"Pad = 0x%1!08X!", m_Pad->getData());
 
-		auto i = DWORD{};
+		auto i = 0;
 		for (const auto& entry : m_Entry)
 		{
 			terminateBlock();
-			addHeader(L"EntryId[%1!d!]:\r\n", i++);
-			addBlock(entry->EntryLength, L"EntryLength = 0x%1!08X!\r\n", entry->EntryLength.getData());
-			addBlock(entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", entry->EntryLengthPad.getData());
-			addHeader(L"Entry Id = ");
-			addBlock(entry->EntryId.getBlock());
+			addHeader(L"EntryId[%1!d!]:\r\n", i);
+			addChild(entry->EntryLength, L"EntryLength = 0x%1!08X!\r\n", entry->EntryLength->getData());
+			addChild(entry->EntryLengthPad, L"EntryLengthPad = 0x%1!08X!\r\n", entry->EntryLengthPad->getData());
+			addLabledChild(L"Entry Id = ", entry->EntryId.getBlock());
+
+			i++;
 		}
 	}
 } // namespace smartview

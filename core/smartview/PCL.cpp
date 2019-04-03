@@ -4,47 +4,53 @@
 
 namespace smartview
 {
-	void PCL::Parse()
+	SizedXID::SizedXID(const std::shared_ptr<binaryParser>& parser)
 	{
+		XidSize = blockT<BYTE>::parse(parser);
+		NamespaceGuid = blockT<GUID>::parse(parser);
+		auto cbLocalId = *XidSize - sizeof(GUID);
+		if (parser->getSize() >= cbLocalId)
+		{
+			LocalID = blockBytes::parse(parser, cbLocalId);
+		}
+	}
+
+	void PCL::parse()
+	{
+		auto cXID = 0;
 		// Run through the parser once to count the number of flag structs
 		// Must have at least 1 byte left to have another XID
-		while (m_Parser->RemainingBytes() > sizeof(BYTE))
+		while (m_Parser->getSize() > sizeof(BYTE))
 		{
-			const auto XidSize = m_Parser->Get<BYTE>();
-			if (m_Parser->RemainingBytes() >= XidSize)
+			const auto XidSize = blockT<BYTE>::parse(m_Parser);
+			if (m_Parser->getSize() >= *XidSize)
 			{
-				m_Parser->advance(XidSize);
+				m_Parser->advance(*XidSize);
 			}
 
-			m_cXID++;
+			cXID++;
 		}
 
 		// Now we parse for real
 		m_Parser->rewind();
 
-		if (m_cXID && m_cXID < _MaxEntriesSmall)
+		if (cXID && cXID < _MaxEntriesSmall)
 		{
-			m_lpXID.reserve(m_cXID);
-			for (DWORD i = 0; i < m_cXID; i++)
+			m_lpXID.reserve(cXID);
+			for (auto i = 0; i < cXID; i++)
 			{
-				SizedXID sizedXID;
-				sizedXID.XidSize = m_Parser->Get<BYTE>();
-				sizedXID.NamespaceGuid = m_Parser->Get<GUID>();
-				sizedXID.cbLocalId = sizedXID.XidSize - sizeof(GUID);
-				if (m_Parser->RemainingBytes() >= sizedXID.cbLocalId)
-				{
-					sizedXID.LocalID = m_Parser->GetBYTES(sizedXID.cbLocalId);
-				}
-
-				m_lpXID.push_back(sizedXID);
+				auto oldSize = m_Parser->getSize();
+				m_lpXID.emplace_back(std::make_shared<SizedXID>(m_Parser));
+				auto newSize = m_Parser->getSize();
+				if (newSize == 0 || newSize == oldSize) break;
 			}
 		}
 	}
 
-	void PCL::ParseBlocks()
+	void PCL::parseBlocks()
 	{
 		setRoot(L"Predecessor Change List:\r\n");
-		addHeader(L"Count = %1!d!", m_cXID);
+		addHeader(L"Count = %1!d!", m_lpXID.size());
 
 		if (!m_lpXID.empty())
 		{
@@ -52,14 +58,16 @@ namespace smartview
 			for (const auto& xid : m_lpXID)
 			{
 				terminateBlock();
-				addHeader(L"XID[%1!d!]:\r\n", i++);
-				addBlock(xid.XidSize, L"XidSize = 0x%1!08X! = %1!d!\r\n", xid.XidSize.getData());
-				addBlock(
-					xid.NamespaceGuid,
+				auto xidBlock = std::make_shared<block>(strings::formatmessage(L"XID[%1!d!]:\r\n", i));
+				addChild(xidBlock);
+				xidBlock->addChild(xid->XidSize, L"XidSize = 0x%1!08X! = %1!d!\r\n", xid->XidSize->getData());
+				xidBlock->addChild(
+					xid->NamespaceGuid,
 					L"NamespaceGuid = %1!ws!\r\n",
-					guid::GUIDToString(xid.NamespaceGuid.getData()).c_str());
-				addHeader(L"LocalId = ");
-				addBlock(xid.LocalID);
+					guid::GUIDToString(xid->NamespaceGuid->getData()).c_str());
+				xidBlock->addLabledChild(L"LocalId = ", xid->LocalID);
+
+				i++;
 			}
 		}
 	}

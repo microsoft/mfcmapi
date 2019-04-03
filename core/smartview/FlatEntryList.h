@@ -1,27 +1,29 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/EntryIdStruct.h>
+#include <core/smartview/block/blockBytes.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
 	struct FlatEntryID
 	{
-		blockT<DWORD> dwSize;
+		std::shared_ptr<blockT<DWORD>> dwSize = emptyT<DWORD>();
 		EntryIdStruct lpEntryID;
 
-		blockBytes padding;
+		std::shared_ptr<blockBytes> padding = emptyBB();
 
-		FlatEntryID(std::shared_ptr<binaryParser> parser);
+		FlatEntryID(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class FlatEntryList : public SmartViewParser
+	class FlatEntryList : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
-		blockT<DWORD> m_cEntries;
-		blockT<DWORD> m_cbEntries;
+		std::shared_ptr<blockT<DWORD>> m_cEntries = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_cbEntries = emptyT<DWORD>();
 		std::vector<std::shared_ptr<FlatEntryID>> m_pEntryIDs;
 	};
 } // namespace smartview

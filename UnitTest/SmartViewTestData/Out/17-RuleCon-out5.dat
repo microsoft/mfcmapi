@@ -996,8 +996,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x0000001F]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000020]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x00000021]
@@ -1368,8 +1366,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x0000002B]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x0000002C]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x0000002D]
@@ -1725,8 +1721,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x00000015]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000016]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x00000017]
@@ -2177,8 +2171,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x0000003D]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x0000003E]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x0000003F]
@@ -2637,8 +2629,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x0000003D]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x0000003E]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x0000003F]
@@ -2999,8 +2989,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x00000027]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000028]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x00000029]
@@ -3374,8 +3362,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x0000002B]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x0000002C]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x0000002D]
@@ -3840,8 +3826,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x0000003F]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000040]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x00000041]
@@ -4215,8 +4199,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x0000002B]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x0000002C]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x0000002D]
@@ -4666,8 +4648,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x0000003B]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x0000003C]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x0000003D]
@@ -5132,8 +5112,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x0000003F]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000040]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x00000041]
@@ -5597,8 +5575,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																							lpRes->res.resAnd.lpRes[0x00000003]
 																								lpRes->rt = 0x8 = RES_EXIST
 																								lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																								lpRes->res.resExist.ulReserved1 = 0x00000000
-																								lpRes->res.resExist.ulReserved2 = 0x00000000
 																							lpRes->res.resAnd.lpRes[0x00000004]
 																								lpRes->rt = 0x82 = 0x82
 																							lpRes->res.resAnd.lpRes[0x00000005]
@@ -5969,8 +5945,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x0000001B]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x0000001C]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x0000001D]
@@ -6336,8 +6310,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x00000053]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000054]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x00000055]
@@ -6782,8 +6754,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x00000039]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x0000003A]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x0000003B]
@@ -7154,8 +7124,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x0000002D]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x0000002E]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x0000002F]
@@ -7518,8 +7486,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																								lpRes->res.resAnd.lpRes[0x00000027]
 																									lpRes->rt = 0x8 = RES_EXIST
 																									lpRes->res.resExist.ulPropTag = 0xE12F2B00 (0x0b00 | MV_INSTANCE)
-																									lpRes->res.resExist.ulReserved1 = 0x00000000
-																									lpRes->res.resExist.ulReserved2 = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000028]
 																									lpRes->rt = 0x82 = 0x82
 																								lpRes->res.resAnd.lpRes[0x00000029]
@@ -7807,7 +7773,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resAnd.cRes = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000008]
 																									lpRes->rt = 0x2 = RES_NOT
-																									lpRes->res.resNot.ulReserved = 0x00000000
 																									lpRes->res.resNot.lpRes
 																								lpRes->res.resAnd.lpRes[0x00000009]
 																									lpRes->rt = 0x0 = RES_AND
@@ -7876,7 +7841,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resAnd.cRes = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000022]
 																									lpRes->rt = 0x2 = RES_NOT
-																									lpRes->res.resNot.ulReserved = 0x00000000
 																									lpRes->res.resNot.lpRes
 																								lpRes->res.resAnd.lpRes[0x00000023]
 																									lpRes->rt = 0x0 = RES_AND
@@ -7926,7 +7890,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resAnd.cRes = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000036]
 																									lpRes->rt = 0x2 = RES_NOT
-																									lpRes->res.resNot.ulReserved = 0x00000000
 																									lpRes->res.resNot.lpRes
 																								lpRes->res.resAnd.lpRes[0x00000037]
 																									lpRes->rt = 0x0 = RES_AND
@@ -7977,7 +7940,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resAnd.cRes = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x0000004B]
 																									lpRes->rt = 0x2 = RES_NOT
-																									lpRes->res.resNot.ulReserved = 0x00000000
 																									lpRes->res.resNot.lpRes
 																								lpRes->res.resAnd.lpRes[0x0000004C]
 																									lpRes->rt = 0x0 = RES_AND
@@ -8028,7 +7990,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resAnd.cRes = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000060]
 																									lpRes->rt = 0x2 = RES_NOT
-																									lpRes->res.resNot.ulReserved = 0x00000000
 																									lpRes->res.resNot.lpRes
 																							lpRes->res.resAnd.lpRes[0x0000002A]
 																								lpRes->rt = 0x0 = RES_AND
@@ -8124,7 +8085,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resAnd.cRes = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->rt = 0x2 = RES_NOT
-																									lpRes->res.resNot.ulReserved = 0x00000000
 																									lpRes->res.resNot.lpRes
 																								lpRes->res.resAnd.lpRes[0x00000002]
 																									lpRes->rt = 0x0 = RES_AND
@@ -8346,14 +8306,12 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resAnd.cRes = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x0000005B]
 																									lpRes->rt = 0x2 = RES_NOT
-																									lpRes->res.resNot.ulReserved = 0x00000000
 																									lpRes->res.resNot.lpRes
 																								lpRes->res.resAnd.lpRes[0x0000005C]
 																									lpRes->rt = 0x1 = RES_OR
 																									lpRes->res.resOr.cRes = 0x00000E09
 																								lpRes->res.resAnd.lpRes[0x0000005D]
 																									lpRes->rt = 0x2 = RES_NOT
-																									lpRes->res.resNot.ulReserved = 0x00000000
 																									lpRes->res.resNot.lpRes
 																								lpRes->res.resAnd.lpRes[0x0000005E]
 																									lpRes->rt = 0x1 = RES_OR
@@ -8723,7 +8681,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resAnd.cRes = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x000000F2]
 																									lpRes->rt = 0x2 = RES_NOT
-																									lpRes->res.resNot.ulReserved = 0x00000000
 																									lpRes->res.resNot.lpRes
 																								lpRes->res.resAnd.lpRes[0x000000F3]
 																									lpRes->rt = 0x0 = RES_AND
@@ -12040,7 +11997,6 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resAnd.cRes = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x0000002E]
 																									lpRes->rt = 0x2 = RES_NOT
-																									lpRes->res.resNot.ulReserved = 0x00000000
 																									lpRes->res.resNot.lpRes
 																								lpRes->res.resAnd.lpRes[0x0000002F]
 																									lpRes->rt = 0x0 = RES_AND
@@ -16334,7 +16290,5 @@ lpRes->res.resAnd.lpRes[0x00000001]
 																									lpRes->res.resAnd.cRes = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000063]
 																									lpRes->rt = 0x0 = RES_AND
-																									lpRes->res.resAnd.cRes = 0x00000000
 																								lpRes->res.resAnd.lpRes[0x00000064]
 																									lpRes->rt = 0x0 = RES_AND
-																									lpRes->res.resAnd.cRes = 0x00000000

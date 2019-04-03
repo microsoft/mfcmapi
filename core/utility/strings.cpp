@@ -290,9 +290,10 @@ namespace strings
 
 	std::wstring trimWhitespace(const std::wstring& szString)
 	{
-		const auto first = szString.find_first_not_of(L" \r\n\t");
+		static const auto whitespace = {L'\0', L' ', L'\r', L'\n', L'\t'};
+		const auto first = szString.find_first_not_of(whitespace);
 		if (first == std::string::npos) return emptystring;
-		const auto last = szString.find_last_not_of(L" \r\n\t");
+		const auto last = szString.find_last_not_of(whitespace);
 		return szString.substr(first, last - first + 1);
 	}
 
@@ -552,11 +553,15 @@ namespace strings
 
 	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim)
 	{
+		if (elems.empty()) return emptystring;
+
 		std::wstringstream ss;
-		for (size_t i = 0; i < elems.size(); ++i)
+		auto iter = elems.begin();
+		while (true)
 		{
-			if (i != 0) ss << delim;
-			ss << elems[i];
+			ss << *iter;
+			if (++iter == elems.end()) break;
+			ss << delim;
 		}
 
 		return ss.str();

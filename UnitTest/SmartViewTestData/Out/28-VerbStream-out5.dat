@@ -68,7 +68,6 @@ MsgClsName = "IPM.Post"
 Internal1StringCount = 0x04
 Internal1String = "Post"
 DisplayNameCountRepeat = 0x00
-DisplayNameRepeat = ""
 Internal2 = 0x00000005
 Internal3 = 0x00000000
 fUseUSHeaders = 0x00
@@ -85,7 +84,6 @@ DisplayName = "Yes"
 MsgClsNameCount = 0x08
 MsgClsName = "IPM.Note"
 Internal1StringCount = 0x00
-Internal1String = ""
 DisplayNameCountRepeat = 0x03
 DisplayNameRepeat = "Yes"
 Internal2 = 0x00000000
@@ -104,7 +102,6 @@ DisplayName = "No"
 MsgClsNameCount = 0x08
 MsgClsName = "IPM.Note"
 Internal1StringCount = 0x00
-Internal1String = ""
 DisplayNameCountRepeat = 0x02
 DisplayNameRepeat = "No"
 Internal2 = 0x00000000
@@ -140,7 +137,6 @@ VerbExtraData[3]
 DisplayNameCount = 0x0F
 DisplayName = "Reply to Folder"
 DisplayNameCountRepeat = 0x00
-DisplayNameRepeat = ""
 
 VerbExtraData[4]
 DisplayNameCount = 0x03

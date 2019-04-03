@@ -5,20 +5,31 @@
 
 namespace smartview
 {
-	void AdditionalRenEntryIDs::Parse()
+	PersistElement::PersistElement(const std::shared_ptr<binaryParser>& parser)
+	{
+		wElementID = blockT<WORD>::parse(parser);
+		wElementDataSize = blockT<WORD>::parse(parser);
+		if (wElementID != PersistElement::ELEMENT_SENTINEL)
+		{
+			// Since this is a word, the size will never be too large
+			lpbElementData = blockBytes::parse(parser, wElementDataSize->getData());
+		}
+	}
+
+	void AdditionalRenEntryIDs::parse()
 	{
 		WORD wPersistDataCount = 0;
 		// Run through the parser once to count the number of PersistData structs
-		while (m_Parser->RemainingBytes() >= 2 * sizeof(WORD))
+		while (m_Parser->getSize() >= 2 * sizeof(WORD))
 		{
-			const auto wPersistID = m_Parser->Get<WORD>();
-			const auto wDataElementSize = m_Parser->Get<WORD>();
+			const auto& wPersistID = blockT<WORD>::parse(m_Parser);
+			const auto& wDataElementSize = blockT<WORD>::parse(m_Parser);
 			// Must have at least wDataElementSize bytes left to be a valid data element
-			if (m_Parser->RemainingBytes() < wDataElementSize) break;
+			if (m_Parser->getSize() < *wDataElementSize) break;
 
-			m_Parser->advance(wDataElementSize);
+			m_Parser->advance(*wDataElementSize);
 			wPersistDataCount++;
-			if (wPersistID == PERISIST_SENTINEL) break;
+			if (wPersistID == PersistData::PERISIST_SENTINEL) break;
 		}
 
 		// Now we parse for real
@@ -29,121 +40,115 @@ namespace smartview
 			m_ppdPersistData.reserve(wPersistDataCount);
 			for (WORD iPersistElement = 0; iPersistElement < wPersistDataCount; iPersistElement++)
 			{
-				m_ppdPersistData.push_back(BinToPersistData());
+				m_ppdPersistData.emplace_back(std::make_shared<PersistData>(m_Parser));
 			}
 		}
 	}
 
-	PersistData AdditionalRenEntryIDs::BinToPersistData()
+	PersistData::PersistData(const std::shared_ptr<binaryParser>& parser)
 	{
-		PersistData persistData;
 		WORD wDataElementCount = 0;
-		persistData.wPersistID = m_Parser->Get<WORD>();
-		persistData.wDataElementsSize = m_Parser->Get<WORD>();
+		wPersistID = blockT<WORD>::parse(parser);
+		wDataElementsSize = blockT<WORD>::parse(parser);
 
-		if (persistData.wPersistID != PERISIST_SENTINEL && m_Parser->RemainingBytes() >= persistData.wDataElementsSize)
+		if (wPersistID != PERISIST_SENTINEL && parser->getSize() >= *wDataElementsSize)
 		{
-			// Build a new m_Parser to preread and count our elements
-			// This new m_Parser will only contain as much space as suggested in wDataElementsSize
-			binaryParser DataElementParser(persistData.wDataElementsSize, m_Parser->GetCurrentAddress());
+			// Build a new parser to preread and count our elements
+			// This new parser will only contain as much space as suggested in wDataElementsSize
+			auto DataElementParser = std::make_shared<binaryParser>(*wDataElementsSize, parser->getAddress());
 			for (;;)
 			{
-				if (DataElementParser.RemainingBytes() < 2 * sizeof(WORD)) break;
-				const auto wElementID = DataElementParser.Get<WORD>();
-				const auto wElementDataSize = DataElementParser.Get<WORD>();
+				if (DataElementParser->getSize() < 2 * sizeof(WORD)) break;
+				const auto& wElementID = blockT<WORD>::parse(DataElementParser);
+				const auto& wElementDataSize = blockT<WORD>::parse(DataElementParser);
 				// Must have at least wElementDataSize bytes left to be a valid element data
-				if (DataElementParser.RemainingBytes() < wElementDataSize) break;
+				if (DataElementParser->getSize() < *wElementDataSize) break;
 
-				DataElementParser.advance(wElementDataSize);
+				DataElementParser->advance(*wElementDataSize);
 				wDataElementCount++;
-				if (wElementID == ELEMENT_SENTINEL) break;
+				if (wElementID == PersistElement::ELEMENT_SENTINEL) break;
 			}
 		}
 
 		if (wDataElementCount && wDataElementCount < _MaxEntriesSmall)
 		{
-			persistData.ppeDataElement.reserve(wDataElementCount);
+			ppeDataElement.reserve(wDataElementCount);
 			for (WORD iDataElement = 0; iDataElement < wDataElementCount; iDataElement++)
 			{
-				PersistElement persistElement;
-				persistElement.wElementID = m_Parser->Get<WORD>();
-				persistElement.wElementDataSize = m_Parser->Get<WORD>();
-				if (persistElement.wElementID == ELEMENT_SENTINEL) break;
-				// Since this is a word, the size will never be too large
-				persistElement.lpbElementData = m_Parser->GetBYTES(persistElement.wElementDataSize);
-
-				persistData.ppeDataElement.push_back(persistElement);
+				ppeDataElement.emplace_back(std::make_shared<PersistElement>(parser));
 			}
 		}
 
 		// We'll trust wDataElementsSize to dictate our record size.
 		// Count the 2 WORD size header fields too.
-		const auto cbRecordSize = persistData.wDataElementsSize + sizeof(WORD) * 2;
+		const auto cbRecordSize = *wDataElementsSize + sizeof(WORD) * 2;
 
 		// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
-		if (m_Parser->GetCurrentOffset() < cbRecordSize)
+		if (parser->getOffset() < cbRecordSize)
 		{
-			persistData.JunkData = m_Parser->GetBYTES(cbRecordSize - m_Parser->GetCurrentOffset());
+			JunkData = blockBytes::parse(parser, cbRecordSize - parser->getOffset());
 		}
-
-		return persistData;
 	}
 
-	void AdditionalRenEntryIDs::ParseBlocks()
+	void AdditionalRenEntryIDs::parseBlocks()
 	{
 		setRoot(L"Additional Ren Entry IDs\r\n");
 		addHeader(L"PersistDataCount = %1!d!", m_ppdPersistData.size());
 
 		if (!m_ppdPersistData.empty())
 		{
-			auto iPersistElement = WORD{};
-			for (const auto& data : m_ppdPersistData)
+			auto iPersistElement = 0;
+			for (const auto& persistData : m_ppdPersistData)
 			{
 				terminateBlock();
 				addBlankLine();
-				auto element = block{};
-				element.setText(L"Persist Element %1!d!:\r\n", iPersistElement);
-				element.addBlock(
-					data.wPersistID,
+				auto element = std::make_shared<block>();
+				addChild(element);
+
+				element->setText(L"Persist Element %1!d!:\r\n", iPersistElement);
+				element->addChild(
+					persistData->wPersistID,
 					L"PersistID = 0x%1!04X! = %2!ws!\r\n",
-					data.wPersistID.getData(),
-					flags::InterpretFlags(flagPersistID, data.wPersistID).c_str());
-				element.addBlock(
-					data.wDataElementsSize, L"DataElementsSize = 0x%1!04X!", data.wDataElementsSize.getData());
+					persistData->wPersistID->getData(),
+					flags::InterpretFlags(flagPersistID, persistData->wPersistID->getData()).c_str());
+				element->addChild(
+					persistData->wDataElementsSize,
+					L"DataElementsSize = 0x%1!04X!",
+					persistData->wDataElementsSize->getData());
 
-				if (!data.ppeDataElement.empty())
+				if (!persistData->ppeDataElement.empty())
 				{
-					auto iDataElement = WORD{};
-					for (auto& dataElement : data.ppeDataElement)
+					auto iDataElement = 0;
+					for (const auto& dataElement : persistData->ppeDataElement)
 					{
-						element.terminateBlock();
-						element.addHeader(L"DataElement: %1!d!\r\n", iDataElement);
+						element->terminateBlock();
+						auto de =
+							std::make_shared<block>(strings::formatmessage(L"DataElement: %1!d!\r\n", iDataElement));
+						element->addChild(de);
 
-						element.addBlock(
-							dataElement.wElementID,
+						de->addChild(
+							dataElement->wElementID,
 							L"\tElementID = 0x%1!04X! = %2!ws!\r\n",
-							dataElement.wElementID.getData(),
-							flags::InterpretFlags(flagElementID, dataElement.wElementID).c_str());
+							dataElement->wElementID->getData(),
+							flags::InterpretFlags(flagElementID, dataElement->wElementID->getData()).c_str());
 
-						element.addBlock(
-							dataElement.wElementDataSize,
+						de->addChild(
+							dataElement->wElementDataSize,
 							L"\tElementDataSize = 0x%1!04X!\r\n",
-							dataElement.wElementDataSize.getData());
+							dataElement->wElementDataSize->getData());
 
-						element.addHeader(L"\tElementData = ");
-						element.addBlock(dataElement.lpbElementData);
+						de->addLabledChild(L"\tElementData = ", dataElement->lpbElementData);
 						iDataElement++;
 					}
 				}
 
-				if (!data.JunkData.empty())
+				if (!persistData->JunkData->empty())
 				{
-					element.terminateBlock();
-					element.addHeader(L"Unparsed data size = 0x%1!08X!\r\n", data.JunkData.size());
-					element.addBlock(data.JunkData);
+					element->terminateBlock();
+					element->addHeader(L"Unparsed data size = 0x%1!08X!\r\n", persistData->JunkData->size());
+					element->addChild(persistData->JunkData);
 				}
 
-				addBlock(element);
 				iPersistElement++;
 			}
 		}

@@ -173,9 +173,12 @@ namespace viewpane
 		m_bins = myBins;
 		if (!m_bInitialized) return;
 
+		// Clear the visual tree before we recompute treeData so we have nothing pointing to data in treeData
+		if (m_TreePane) m_TreePane->m_Tree.Refresh();
+
 		const auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
 		auto szSmartViewArray = std::vector<std::wstring>{};
-		treeData = smartview::block{};
+		treeData = std::make_shared<smartview::block>();
 		auto svp = smartview::GetSmartViewParser(iStructType, nullptr);
 		auto source = 0;
 		for (auto& bin : m_bins)
@@ -184,16 +187,16 @@ namespace viewpane
 			if (svp)
 			{
 				svp->init(bin.size(), bin.data());
-				parsedData = svp->ToString();
+				parsedData = svp->toString();
 				auto node = svp->getBlock();
-				node.setSource(source++);
+				node->setSource(source++);
 				if (m_bins.size() == 1)
 				{
 					treeData = node;
 				}
 				else
 				{
-					treeData.addBlock(node);
+					treeData->addChild(node);
 				}
 			}
 
@@ -211,37 +214,32 @@ namespace viewpane
 			delete svp;
 		}
 
-		RefreshTree();
+		AddChildren(nullptr, treeData);
 
 		auto szSmartView = strings::join(szSmartViewArray, L"\r\n");
 		m_bHasData = !szSmartView.empty();
 		SetStringW(szSmartView);
 	}
 
-	void SmartViewPane::RefreshTree()
+	void SmartViewPane::AddChildren(HTREEITEM parent, const std::shared_ptr<smartview::block>& data)
 	{
-		if (!m_TreePane) return;
-		m_TreePane->m_Tree.Refresh();
-
-		AddChildren(nullptr, treeData);
-	}
-
-	void SmartViewPane::AddChildren(HTREEITEM parent, const smartview::block& data)
-	{
-		if (!m_TreePane) return;
+		if (!m_TreePane || !data) return;
 
 		auto root = HTREEITEM{};
 		// If the node is a header with no text, mrege the children up one level
-		if (data.isHeader() && data.getText().empty())
+		if (data->isHeader() && data->getText().empty())
 		{
 			root = parent;
 		}
 		else
 		{
-			root = m_TreePane->m_Tree.AddChildNode(data.getText(), parent, reinterpret_cast<LPARAM>(&data), nullptr);
+			// This loans pointers to our blocks to the visual tree without refcounting.
+			// Care must be taken to ensure we never release treeData without first clearing the UI.
+			root =
+				m_TreePane->m_Tree.AddChildNode(data->getText(), parent, reinterpret_cast<LPARAM>(data.get()), nullptr);
 		}
 
-		for (const auto& item : data.getChildren())
+		for (const auto& item : data->getChildren())
 		{
 			AddChildren(root, item);
 		}
@@ -267,7 +265,7 @@ namespace viewpane
 		{
 			if (registry::hexDialogDiag)
 			{
-				SetStringW(lpData->ToString());
+				SetStringW(lpData->toString());
 			}
 
 			if (OnItemSelected)

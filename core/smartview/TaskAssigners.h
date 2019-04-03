@@ -1,26 +1,32 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/blockStringA.h>
+#include <core/smartview/block/blockStringW.h>
+#include <core/smartview/block/blockBytes.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
 	// [MS-OXOTASK].pdf
 	struct TaskAssigner
 	{
-		blockT<DWORD> cbAssigner{};
-		blockT<ULONG> cbEntryID{};
-		blockBytes lpEntryID;
-		blockStringA szDisplayName;
-		blockStringW wzDisplayName;
-		blockBytes JunkData;
+		std::shared_ptr<blockT<DWORD>> cbAssigner = emptyT<DWORD>();
+		std::shared_ptr<blockT<ULONG>> cbEntryID = emptyT<ULONG>();
+		std::shared_ptr<blockBytes> lpEntryID = emptyBB();
+		std::shared_ptr<blockStringA> szDisplayName = emptySA();
+		std::shared_ptr<blockStringW> wzDisplayName = emptySW();
+		std::shared_ptr<blockBytes> JunkData = emptyBB();
+
+		TaskAssigner(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class TaskAssigners : public SmartViewParser
+	class TaskAssigners : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
-		blockT<DWORD> m_cAssigners;
-		std::vector<TaskAssigner> m_lpTaskAssigners;
+		std::shared_ptr<blockT<DWORD>> m_cAssigners = emptyT<DWORD>();
+		std::vector<std::shared_ptr<TaskAssigner>> m_lpTaskAssigners;
 	};
 } // namespace smartview

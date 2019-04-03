@@ -1,33 +1,35 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
+#include <core/smartview/block/blockStringA.h>
 #include <core/smartview/GlobalObjectId.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
 	struct TombstoneRecord
 	{
-		blockT<DWORD> StartTime;
-		blockT<DWORD> EndTime;
-		blockT<DWORD> GlobalObjectIdSize;
+		std::shared_ptr<blockT<DWORD>> StartTime = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> EndTime = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> GlobalObjectIdSize = emptyT<DWORD>();
 		GlobalObjectId GlobalObjectId;
-		blockT<WORD> UsernameSize;
-		blockStringA szUsername;
+		std::shared_ptr<blockT<WORD>> UsernameSize = emptyT<WORD>();
+		std::shared_ptr<blockStringA> szUsername = emptySA();
 
-		TombstoneRecord(std::shared_ptr<binaryParser> parser);
+		TombstoneRecord(const std::shared_ptr<binaryParser>& parser);
 	};
 
-	class TombStone : public SmartViewParser
+	class TombStone : public smartViewParser
 	{
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
-		blockT<DWORD> m_Identifier;
-		blockT<DWORD> m_HeaderSize;
-		blockT<DWORD> m_Version;
-		blockT<DWORD> m_RecordsCount;
-		DWORD m_ActualRecordsCount{}; // computed based on state, not read value
-		blockT<DWORD> m_RecordsSize;
+		std::shared_ptr<blockT<DWORD>> m_Identifier = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_HeaderSize = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_Version = emptyT<DWORD>();
+		std::shared_ptr<blockT<DWORD>> m_RecordsCount = emptyT<DWORD>();
+//		DWORD m_ActualRecordsCount{}; // computed based on state, not read value
+		std::shared_ptr<blockT<DWORD>> m_RecordsSize = emptyT<DWORD>();
 		std::vector<std::shared_ptr<TombstoneRecord>> m_lpRecords;
 	};
 } // namespace smartview

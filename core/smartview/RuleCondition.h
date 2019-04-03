@@ -1,6 +1,8 @@
 #pragma once
-#include <core/smartview/SmartViewParser.h>
+#include <core/smartview/smartViewParser.h>
 #include <core/smartview/RestrictionStruct.h>
+#include <core/smartview/block/blockStringW.h>
+#include <core/smartview/block/blockT.h>
 
 namespace smartview
 {
@@ -19,11 +21,13 @@ namespace smartview
 	//
 	struct PropertyName
 	{
-		blockT<BYTE> Kind{};
-		blockT<GUID> Guid{};
-		blockT<DWORD> LID{};
-		blockT<BYTE> NameSize{};
-		blockStringW Name;
+		std::shared_ptr<blockT<BYTE>> Kind = emptyT<BYTE>();
+		std::shared_ptr<blockT<GUID>> Guid = emptyT<GUID>();
+		std::shared_ptr<blockT<DWORD>> LID = emptyT<DWORD>();
+		std::shared_ptr<blockT<BYTE>> NameSize = emptyT<BYTE>();
+		std::shared_ptr<blockStringW> Name = emptySW();
+
+		PropertyName(const std::shared_ptr<binaryParser>& parser);
 	};
 
 	// [MS-OXORULE] 2.2.4.2 NamedPropertyInformation Structure
@@ -33,20 +37,20 @@ namespace smartview
 	//
 	struct NamedPropertyInformation
 	{
-		blockT<WORD> NoOfNamedProps{};
-		std::vector<blockT<WORD>> PropId;
-		blockT<DWORD> NamedPropertiesSize{};
-		std::vector<PropertyName> PropertyName;
+		std::shared_ptr<blockT<WORD>> NoOfNamedProps = emptyT<WORD>();
+		std::vector<std::shared_ptr<blockT<WORD>>> PropId;
+		std::shared_ptr<blockT<DWORD>> NamedPropertiesSize = emptyT<DWORD>();
+		std::vector<std::shared_ptr<PropertyName>> PropertyName;
 	};
 
-	class RuleCondition : public SmartViewParser
+	class RuleCondition : public smartViewParser
 	{
 	public:
 		void Init(bool bExtended);
 
 	private:
-		void Parse() override;
-		void ParseBlocks() override;
+		void parse() override;
+		void parseBlocks() override;
 
 		NamedPropertyInformation m_NamedPropertyInformation;
 		std::shared_ptr<RestrictionStruct> m_lpRes;

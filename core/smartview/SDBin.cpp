@@ -20,9 +20,9 @@ namespace smartview
 		m_bFB = bFB;
 	}
 
-	void SDBin::Parse() { m_SDbin = m_Parser->GetBYTES(m_Parser->RemainingBytes()); }
+	void SDBin::parse() { m_SDbin = blockBytes::parse(m_Parser, m_Parser->getSize()); }
 
-	void SDBin::ParseBlocks()
+	void SDBin::parseBlocks()
 	{
 		auto acetype = sid::acetypeMessage;
 		switch (mapi::GetMAPIObjectType(m_lpMAPIProp))
@@ -37,17 +37,20 @@ namespace smartview
 
 		if (m_bFB) acetype = sid::acetypeFreeBusy;
 
-		const auto sd = SDToString(m_SDbin, acetype);
+		if (m_SDbin)
+		{
+			// TODO: more accurately break this parsing into blocks with proper offsets
+			const auto sd = SDToString(*m_SDbin, acetype);
+			setRoot(L"Security Descriptor:\r\n");
+			addHeader(L"Security Info: ");
+			addChild(m_SDbin, sd.info);
 
-		setRoot(L"Security Descriptor:\r\n");
-		addHeader(L"Security Info: ");
-		addBlock(m_SDbin, sd.info);
-
-		terminateBlock();
-		const auto sdVersion = SECURITY_DESCRIPTOR_VERSION(m_SDbin.data());
-		auto szFlags = flags::InterpretFlags(flagSecurityVersion, sdVersion);
-		addBlock(m_SDbin, L"Security Version: 0x%1!04X! = %2!ws!\r\n", sdVersion, szFlags.c_str());
-		addHeader(L"Descriptor:\r\n");
-		addBlock(m_SDbin, sd.dacl);
+			terminateBlock();
+			const auto sdVersion = SECURITY_DESCRIPTOR_VERSION(m_SDbin->data());
+			auto szFlags = flags::InterpretFlags(flagSecurityVersion, sdVersion);
+			addHeader(L"Security Version: 0x%1!04X! = %2!ws!\r\n", sdVersion, szFlags.c_str());
+			addHeader(L"Descriptor:\r\n");
+			addHeader(sd.dacl);
+		}
 	}
 } // namespace smartview
