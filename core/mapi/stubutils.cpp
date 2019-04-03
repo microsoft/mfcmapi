@@ -8,7 +8,6 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>
-#include <stdlib.h>
 
 namespace mapistub
 {
