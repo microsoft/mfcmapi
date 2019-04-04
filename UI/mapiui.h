@@ -15,7 +15,7 @@ namespace ui
 		_Check_return_ HRESULT GetConversionToEMLOptions(
 			_In_ CWnd* pParentWnd,
 			_Out_ CCSFLAGS* lpConvertFlags,
-			_Out_ const ENCODINGTYPE* lpet,
+			_Out_ ENCODINGTYPE* lpet,
 			_Out_ MIMESAVETYPE* lpmst,
 			_Out_ ULONG* lpulWrapLines,
 			_Out_ bool* pDoAdrBook);

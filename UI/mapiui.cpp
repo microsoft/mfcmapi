@@ -268,7 +268,7 @@ namespace ui
 		_Check_return_ HRESULT GetConversionToEMLOptions(
 			_In_ CWnd* pParentWnd,
 			_Out_ CCSFLAGS* lpConvertFlags,
-			_Out_ const ENCODINGTYPE* lpet,
+			_Out_ ENCODINGTYPE* lpet,
 			_Out_ MIMESAVETYPE* lpmst,
 			_Out_ ULONG* lpulWrapLines,
 			_Out_ bool* pDoAdrBook)
@@ -294,7 +294,7 @@ namespace ui
 			if (!MyData.DisplayDialog()) return MAPI_E_USER_CANCEL;
 
 			*lpConvertFlags = static_cast<CCSFLAGS>(MyData.GetHex(0));
-			*lpulWrapLines = MyData.GetCheck(1) ? static_cast<ENCODINGTYPE>(MyData.GetDecimal(2)) : IET_UNKNOWN;
+			*lpet = MyData.GetCheck(1) ? static_cast<ENCODINGTYPE>(MyData.GetDecimal(2)) : IET_UNKNOWN;
 			*lpmst = MyData.GetCheck(3) ? static_cast<MIMESAVETYPE>(MyData.GetHex(4)) : USE_DEFAULT_SAVETYPE;
 			*lpulWrapLines = MyData.GetCheck(5) ? MyData.GetDecimal(6) : USE_DEFAULT_WRAPPING;
 			*pDoAdrBook = MyData.GetCheck(7);
