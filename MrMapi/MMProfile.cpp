@@ -19,10 +19,10 @@ namespace output
 			PR_DISPLAY_NAME_A,
 		};
 
-		EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));
 		if (!lpProfAdmin) return;
 
-		EC_MAPI(lpProfAdmin->GetProfileTable(
+		EC_MAPI_S(lpProfAdmin->GetProfileTable(
 			0, // fMapiUnicode is not supported
 			&lpProfTable));
 
@@ -30,7 +30,7 @@ namespace output
 		{
 			LPSRowSet lpRows = nullptr;
 
-			EC_MAPI(HrQueryAllRows(lpProfTable, LPSPropTagArray(&rgPropTag), NULL, NULL, 0, &lpRows));
+			EC_MAPI_S(HrQueryAllRows(lpProfTable, LPSPropTagArray(&rgPropTag), NULL, NULL, 0, &lpRows));
 
 			if (lpRows)
 			{

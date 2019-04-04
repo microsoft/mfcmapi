@@ -12,7 +12,7 @@ void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
 	if (lpFolder)
 	{
 		// Open the table in an IExchangeModifyTable interface
-		WC_MAPI(lpFolder->OpenProperty(
+		WC_MAPI_S(lpFolder->OpenProperty(
 			ulPropTag,
 			const_cast<LPGUID>(&IID_IExchangeModifyTable),
 			0,
@@ -20,7 +20,7 @@ void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
 			reinterpret_cast<LPUNKNOWN*>(&lpExchTbl)));
 		if (lpExchTbl)
 		{
-			WC_MAPI(lpExchTbl->GetTable(NULL, &lpTbl));
+			WC_MAPI_S(lpExchTbl->GetTable(NULL, &lpTbl));
 		}
 		if (lpTbl)
 		{
