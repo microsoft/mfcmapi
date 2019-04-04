@@ -687,7 +687,7 @@ namespace mapi
 	}
 
 	// Gets entry IDs of the messages in the source folder and copies to destination using a single call to CopyMessage
-	_Check_return_ void CopyMessagesBatch(
+	void CopyMessagesBatch(
 		_In_ LPMAPIFOLDER lpSrcFolder,
 		_In_ LPMAPIFOLDER lpDestFolder,
 		bool bCopyAssociatedContents,
@@ -753,7 +753,7 @@ namespace mapi
 
 	// Copies message from source folder to destination using multiple calls to CopyMessage
 	// Gets entry IDs of the messages in the source folder and copies to destination using a single call to CopyMessage
-	_Check_return_ void CopyMessagesIterate(
+	void CopyMessagesIterate(
 		_In_ LPMAPIFOLDER lpSrcFolder,
 		_In_ LPMAPIFOLDER lpDestFolder,
 		bool bCopyAssociatedContents,
@@ -801,7 +801,7 @@ namespace mapi
 	// May not behave correctly if lpSrcFolder == lpDestFolder
 	// We can check that the pointers aren't equal, but they could be different
 	// and still refer to the same folder.
-	_Check_return_ void CopyFolderContents(
+	void CopyFolderContents(
 		_In_ LPMAPIFOLDER lpSrcFolder,
 		_In_ LPMAPIFOLDER lpDestFolder,
 		bool bCopyAssociatedContents,

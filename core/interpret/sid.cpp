@@ -13,11 +13,14 @@ namespace sid
 		return !domain.empty() ? domain : strings::formatmessage(IDS_NODOMAIN);
 	}
 
-	std::wstring SidAccount::getName() const { return !name.empty() ? name : strings::formatmessage(IDS_NONAME); }
+	_Check_return_ std::wstring SidAccount::getName() const
+	{
+		return !name.empty() ? name : strings::formatmessage(IDS_NONAME);
+	}
 
 	// [MS-DTYP] 2.4.2.2 SID--Packet Representation
 	// https://msdn.microsoft.com/en-us/library/gg465313.aspx
-	std::wstring GetTextualSid(_In_ PSID pSid)
+	_Check_return_ std::wstring GetTextualSid(_In_ PSID pSid)
 	{
 		// Validate the binary SID.
 		if (!IsValidSid(pSid)) return {};
