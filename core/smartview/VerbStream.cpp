@@ -60,7 +60,7 @@ namespace smartview
 		}
 	}
 
-	_Check_return_ void VerbStream::parseBlocks()
+	void VerbStream::parseBlocks()
 	{
 		setRoot(L"Verb Stream\r\n");
 		addChild(m_Version, L"Version = 0x%1!04X!\r\n", m_Version->getData());

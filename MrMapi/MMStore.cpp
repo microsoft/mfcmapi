@@ -172,7 +172,7 @@ void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 	sTag.cValues = 1;
 	sTag.aulPropTag[0] = ulPropTag;
 
-	WC_H_GETPROPS(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
+	WC_H_GETPROPS_S(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
 
 	output::outputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
@@ -247,7 +247,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 
 	wprintf(output::g_szXMLHeader.c_str());
 	wprintf(L"<storetable>\n");
-	WC_MAPI(lpMAPISession->GetMsgStoresTable(0, &lpStoreTable));
+	WC_MAPI_S(lpMAPISession->GetMsgStoresTable(0, &lpStoreTable));
 
 	if (lpStoreTable)
 	{
@@ -260,7 +260,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 			sTags = &sTag;
 		}
 
-		WC_MAPI(lpStoreTable->SetColumns(sTags, TBL_ASYNC));
+		hRes = WC_MAPI(lpStoreTable->SetColumns(sTags, TBL_ASYNC));
 
 		if (SUCCEEDED(hRes))
 		{
@@ -269,10 +269,9 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 			if (!FAILED(hRes))
 				for (;;)
 				{
-					hRes = S_OK;
 					if (lpRows) FreeProws(lpRows);
 					lpRows = nullptr;
-					WC_MAPI(lpStoreTable->QueryRows(10, NULL, &lpRows));
+					hRes = WC_MAPI(lpStoreTable->QueryRows(10, NULL, &lpRows));
 					if (FAILED(hRes) || !lpRows || !lpRows->cRows) break;
 
 					for (ULONG i = 0; i < lpRows->cRows; i++)

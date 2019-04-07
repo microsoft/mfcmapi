@@ -110,7 +110,7 @@ void DoMAPIMIME(_In_ LPMAPISESSION lpMAPISession)
 	LPADRBOOK lpAdrBook = nullptr;
 	if (cli::switchAddressBook.isSet() && lpMAPISession)
 	{
-		WC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, AB_NO_DIALOG, &lpAdrBook));
+		hRes = WC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, AB_NO_DIALOG, &lpAdrBook));
 		if (FAILED(hRes)) printf("OpenAddressBook returned an error: 0x%08lx\n", hRes);
 	}
 
