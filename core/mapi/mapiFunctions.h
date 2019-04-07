@@ -191,7 +191,7 @@ namespace mapi
 		_In_ LPMAPIPROP lpTargetPropObj,
 		ULONG ulSourceTag,
 		ULONG ulTargetTag);
-	_Check_return_ void CopyFolderContents(
+	void CopyFolderContents(
 		_In_ LPMAPIFOLDER lpSrcFolder,
 		_In_ LPMAPIFOLDER lpDestFolder,
 		bool bCopyAssociatedContents,
