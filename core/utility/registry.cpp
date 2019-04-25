@@ -21,7 +21,7 @@ namespace registry
 	boolRegKey debugToFile{L"DebugToFile", false, false, IDS_REGKEY_DEBUG_TO_FILE};
 	wstringRegKey debugFileName{L"DebugFileName", L"c:\\mfcmapi.log", false, IDS_REGKEY_DEBUG_FILE_NAME};
 	boolRegKey getPropNamesOnAllProps{L"GetPropNamesOnAllProps", false, true, IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS};
-	boolRegKey parseNamedProps{L"ParseNamedProps", false, true, IDS_REGKEY_PARSED_NAMED_PROPS};
+	boolRegKey parseNamedProps{L"ParseNamedProps", true, true, IDS_REGKEY_PARSED_NAMED_PROPS};
 	dwordRegKey throttleLevel{L"ThrottleLevel", regoptStringDec, 0, false, IDS_REGKEY_THROTTLE_LEVEL};
 	boolRegKey hierExpandNotifications{L"HierExpandNotifications", true, false, IDS_REGKEY_HIER_EXPAND_NOTIFS};
 	boolRegKey hierRootNotifs{L"HierRootNotifs", false, false, IDS_REGKEY_HIER_ROOT_NOTIFS};
