@@ -18,5 +18,5 @@ namespace controls
 			std::wstring m_lpszW;
 			std::vector<BYTE> m_lpBin;
 		};
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls

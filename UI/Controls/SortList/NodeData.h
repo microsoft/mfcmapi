@@ -8,7 +8,7 @@ namespace mapi
 	{
 		class CAdviseSink;
 	}
-}
+} // namespace mapi
 
 namespace controls
 {
@@ -31,5 +31,5 @@ namespace controls
 			ULONG_PTR m_ulAdviseConnection;
 			LONG m_cSubfolders; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
 		};
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls

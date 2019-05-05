@@ -51,5 +51,5 @@ namespace controls
 
 			if (m_lpHierarchyTable) m_lpHierarchyTable->Release();
 		}
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls

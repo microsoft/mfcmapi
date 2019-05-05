@@ -16,5 +16,5 @@ namespace controls
 
 			m_NewBin = {0};
 		}
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls

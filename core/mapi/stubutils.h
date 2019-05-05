@@ -15,4 +15,4 @@ namespace mapistub
 	std::wstring GetOutlookPath(_In_ const std::wstring& szCategory, _Out_opt_ bool* lpb64);
 	std::wstring GetInstalledOutlookMAPI(int iOutlook);
 	std::wstring GetMAPISystemDir();
-}
+} // namespace mapistub

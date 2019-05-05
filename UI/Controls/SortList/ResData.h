@@ -12,5 +12,5 @@ namespace controls
 			const _SRestriction* m_lpOldRes; // not allocated - just a pointer
 			LPSRestriction m_lpNewRes; // Owned by an alloc parent - do not free
 		};
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls

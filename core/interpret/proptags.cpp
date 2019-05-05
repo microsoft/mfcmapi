@@ -255,7 +255,7 @@ namespace proptags
 		}
 	}
 
-		// Strictly does a lookup in the array. Does not convert otherwise
+	// Strictly does a lookup in the array. Does not convert otherwise
 	_Check_return_ ULONG LookupPropName(_In_ const std::wstring& lpszPropName)
 	{
 		auto trimName = strings::trim(lpszPropName);

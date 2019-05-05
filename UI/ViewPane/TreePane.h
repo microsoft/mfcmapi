@@ -19,6 +19,5 @@ namespace viewpane
 		void CommitUIValues() override{};
 		int GetFixedHeight() override;
 		int GetLines() override { return m_bCollapsed ? 0 : 4; }
-
 	};
 } // namespace viewpane

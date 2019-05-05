@@ -145,4 +145,4 @@ namespace ui
 
 		return S_OK;
 	}
-}
+} // namespace ui

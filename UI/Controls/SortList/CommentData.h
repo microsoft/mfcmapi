@@ -12,5 +12,5 @@ namespace controls
 			const _SPropValue* m_lpOldProp; // not allocated - just a pointer
 			LPSPropValue m_lpNewProp; // Owned by an alloc parent - do not free
 		};
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls

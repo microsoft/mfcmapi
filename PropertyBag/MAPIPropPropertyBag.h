@@ -34,4 +34,4 @@ namespace propertybag
 		LPMAPIPROP m_lpProp;
 		bool m_bGetPropsSucceeded;
 	};
-}
+} // namespace propertybag

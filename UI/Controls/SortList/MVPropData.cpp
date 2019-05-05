@@ -95,5 +95,5 @@ namespace controls
 				break;
 			}
 		}
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls

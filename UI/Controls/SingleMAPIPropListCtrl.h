@@ -91,5 +91,5 @@ namespace controls
 
 			DECLARE_MESSAGE_MAP()
 		};
-	}
-}
+	} // namespace sortlistctrl
+} // namespace controls

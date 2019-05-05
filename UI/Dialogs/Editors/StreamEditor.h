@@ -57,5 +57,5 @@ namespace dialog
 			ULONG m_ulEditorType;
 			HRESULT m_StreamError;
 		};
-	}
-}
+	} // namespace editor
+} // namespace dialog

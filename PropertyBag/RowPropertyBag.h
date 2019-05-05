@@ -36,4 +36,4 @@ namespace propertybag
 		LPSPropValue m_lpProps;
 		bool m_bRowModified;
 	};
-}
+} // namespace propertybag

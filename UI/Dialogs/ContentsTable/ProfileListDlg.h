@@ -45,4 +45,4 @@ namespace dialog
 
 		DECLARE_MESSAGE_MAP()
 	};
-}
+} // namespace dialog

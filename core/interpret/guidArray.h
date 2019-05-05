@@ -83,4 +83,4 @@ namespace guid
 		GUID_ENTRY(WAB_GUID)
 		// clang-format on
 	};
-}
+} // namespace guid

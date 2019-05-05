@@ -20,4 +20,4 @@ namespace dialog
 		CRichEditCtrl m_HelpText;
 		CButton m_DisplayAboutCheck;
 	};
-}
+} // namespace dialog

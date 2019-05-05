@@ -22,5 +22,5 @@ namespace controls
 			ULONG m_ulRowID; // for recipients
 			ULONG m_ulRowType; // PR_ROW_TYPE
 		};
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls

@@ -7,5 +7,5 @@ namespace dialog
 	{
 		void DisplayDbgView(_In_ ui::CParentWnd* pParentWnd);
 		void OutputToDbgView(const std::wstring& szMsg);
-	}
-}
+	} // namespace editor
+} // namespace dialog

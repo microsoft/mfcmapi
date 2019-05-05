@@ -44,4 +44,4 @@ namespace propertybag
 		virtual _Check_return_ HRESULT SetProp(LPSPropValue lpProp) = 0;
 		virtual _Check_return_ HRESULT DeleteProp(ULONG ulPropTag) = 0;
 	};
-}
+} // namespace propertybag

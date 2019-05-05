@@ -209,4 +209,4 @@ namespace dialog
 
 		ui::addinui::InvokeAddInMenu(lpParams);
 	}
-}
+} // namespace dialog

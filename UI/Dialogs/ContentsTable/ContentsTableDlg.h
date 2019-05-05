@@ -9,7 +9,7 @@ namespace controls
 	{
 		class CContentsTableListCtrl;
 	}
-}
+} // namespace controls
 
 namespace dialog
 {
@@ -84,4 +84,4 @@ namespace dialog
 
 		DECLARE_MESSAGE_MAP()
 	};
-}
+} // namespace dialog
