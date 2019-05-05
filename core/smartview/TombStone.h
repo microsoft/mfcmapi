@@ -28,7 +28,6 @@ namespace smartview
 		std::shared_ptr<blockT<DWORD>> m_HeaderSize = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_Version = emptyT<DWORD>();
 		std::shared_ptr<blockT<DWORD>> m_RecordsCount = emptyT<DWORD>();
-//		DWORD m_ActualRecordsCount{}; // computed based on state, not read value
 		std::shared_ptr<blockT<DWORD>> m_RecordsSize = emptyT<DWORD>();
 		std::vector<std::shared_ptr<TombstoneRecord>> m_lpRecords;
 	};

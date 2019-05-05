@@ -10,5 +10,5 @@ namespace controls
 			m_lpOldRes = lpOldRes;
 			m_lpNewRes = nullptr;
 		}
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls

@@ -33,5 +33,5 @@ namespace dialog
 			ULONG m_ulPropTag;
 			ULONG m_ulFuzzyLevel;
 		};
-	}
-}
+	} // namespace editor
+} // namespace dialog

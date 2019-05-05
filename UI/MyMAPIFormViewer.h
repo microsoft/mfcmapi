@@ -7,7 +7,7 @@ namespace controls
 	{
 		class CContentsTableListCtrl;
 	}
-}
+} // namespace controls
 
 namespace mapi
 {
@@ -94,5 +94,5 @@ namespace mapi
 			LPMAPIFORMADVISESINK m_lpMapiFormAdviseSink;
 			LPPERSISTMESSAGE m_lpPersistMessage;
 		};
-	}
-}
+	} // namespace mapiui
+} // namespace mapi

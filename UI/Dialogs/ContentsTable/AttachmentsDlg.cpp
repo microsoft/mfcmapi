@@ -255,8 +255,7 @@ namespace dialog
 					EC_MAPI_S(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
 					if (lpAttDst)
 					{
-						auto lpProgress =
-							mapi::mapiui::GetMAPIProgress(L"IAttach::CopyTo", m_hWnd); // STRING_OK
+						auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IAttach::CopyTo", m_hWnd); // STRING_OK
 
 						// Copy from source to destination
 						EC_MAPI_S(lpAttSrc->CopyTo(

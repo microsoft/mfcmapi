@@ -21,4 +21,4 @@ namespace ui
 		void Begin(_Inout_ HDC& hdc, _In_ const RECT& prcPaint);
 		void End(_Inout_ HDC& hdc);
 	};
-}
+} // namespace ui

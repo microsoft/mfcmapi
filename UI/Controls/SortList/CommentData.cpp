@@ -10,5 +10,5 @@ namespace controls
 			m_lpOldProp = lpOldProp;
 			m_lpNewProp = nullptr;
 		}
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls

@@ -48,7 +48,7 @@ namespace controls
 		int GetSplitWidth() const { return m_iSplitWidth; }
 
 		// Callbacks
-		std::function<int()> PaneOneMinSpanCallback= nullptr;
+		std::function<int()> PaneOneMinSpanCallback = nullptr;
 		std::function<int()> PaneTwoMinSpanCallback = nullptr;
 
 	private:

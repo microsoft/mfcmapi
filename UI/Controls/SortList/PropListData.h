@@ -11,5 +11,5 @@ namespace controls
 			PropListData(_In_ ULONG ulPropTag);
 			ULONG m_ulPropTag;
 		};
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls

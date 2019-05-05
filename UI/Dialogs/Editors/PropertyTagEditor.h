@@ -37,5 +37,5 @@ namespace dialog
 			bool m_bIsAB;
 			LPMAPIPROP m_lpMAPIProp;
 		};
-	}
-}
+	} // namespace editor
+} // namespace dialog

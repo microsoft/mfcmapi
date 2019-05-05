@@ -242,4 +242,4 @@ namespace error
 	};
 
 	ULONG g_ulErrorArray = _countof(g_ErrorArray);
-}
+} // namespace error

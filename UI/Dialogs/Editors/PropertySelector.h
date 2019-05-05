@@ -24,5 +24,5 @@ namespace dialog
 			bool m_bIncludeABProps;
 			LPMAPIPROP m_lpMAPIProp;
 		};
-	}
-}
+	} // namespace editor
+} // namespace dialog

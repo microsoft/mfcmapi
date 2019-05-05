@@ -68,4 +68,4 @@ namespace dialog
 		LPMDB m_lpMDB;
 		DECLARE_MESSAGE_MAP()
 	};
-}
+} // namespace dialog
