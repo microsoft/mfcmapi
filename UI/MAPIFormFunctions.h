@@ -7,7 +7,7 @@ namespace controls
 	{
 		class CContentsTableListCtrl;
 	}
-}
+} // namespace controls
 
 namespace mapi
 {
@@ -36,5 +36,5 @@ namespace mapi
 			_In_ LPMESSAGE lpMessage,
 			LONG lVerb,
 			_In_opt_ LPCRECT lpRect);
-	}
-}
+	} // namespace mapiui
+} // namespace mapi

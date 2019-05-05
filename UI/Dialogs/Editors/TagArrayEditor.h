@@ -39,5 +39,5 @@ namespace dialog
 			LPMAPIPROP m_lpMAPIProp;
 			ULONG m_ulSetColumnsFlags;
 		};
-	}
-}
+	} // namespace editor
+} // namespace dialog

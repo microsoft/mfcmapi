@@ -29,4 +29,4 @@ namespace dialog
 
 		std::wstring m_lpszServerName;
 	};
-}
+} // namespace dialog

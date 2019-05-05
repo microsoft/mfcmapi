@@ -8,4 +8,4 @@ namespace dialog
 	{
 		void OnQSCheckSpecialFolders(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd);
 	}
-}
+} // namespace dialog

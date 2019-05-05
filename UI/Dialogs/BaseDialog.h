@@ -11,7 +11,7 @@ namespace controls
 	{
 		class CSingleMAPIPropListCtrl;
 	}
-}
+} // namespace controls
 
 namespace cache
 {
@@ -24,7 +24,7 @@ namespace mapi
 	{
 		class CAdviseSink;
 	}
-}
+} // namespace mapi
 
 // Macros to assist in OnInitMenu
 #define CHECK(state) ((state) ? MF_CHECKED : MF_UNCHECKED)
@@ -129,4 +129,4 @@ namespace dialog
 
 		DECLARE_MESSAGE_MAP()
 	};
-}
+} // namespace dialog

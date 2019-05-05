@@ -29,4 +29,4 @@ namespace ui
 		HWND m_hWndParent;
 		LONG m_cRef;
 	};
-}
+} // namespace ui

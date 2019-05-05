@@ -287,5 +287,5 @@ namespace mapi
 			MAPIFreeBuffer(lpspvaShow);
 			return hRes;
 		}
-	}
-}
+	} // namespace mapiui
+} // namespace mapi

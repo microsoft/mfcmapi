@@ -245,8 +245,7 @@ namespace dialog
 
 			if (MyData.DisplayDialog())
 			{
-				auto lpProgress =
-					mapi::mapiui::GetMAPIProgress(L"IABContainer::CopyEntries", m_hWnd); // STRING_OK
+				auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IABContainer::CopyEntries", m_hWnd); // STRING_OK
 
 				EC_MAPI_S(m_lpAbCont->CopyEntries(
 					lpEIDs, lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL, lpProgress, MyData.GetHex(0)));

@@ -84,4 +84,4 @@ namespace ui
 		m_hdcPaint = nullptr;
 		ZeroMemory(&m_rcPaint, sizeof m_rcPaint);
 	}
-}
+} // namespace ui

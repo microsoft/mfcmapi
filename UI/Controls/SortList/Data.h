@@ -9,5 +9,5 @@ namespace controls
 		public:
 			virtual ~IData() {}
 		};
-	}
-}
+	} // namespace sortlistdata
+} // namespace controls

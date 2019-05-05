@@ -15,4 +15,4 @@ namespace ui
 	private:
 		BOOL InitInstance() override;
 	};
-}
+} // namespace ui

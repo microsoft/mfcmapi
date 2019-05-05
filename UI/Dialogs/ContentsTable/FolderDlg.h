@@ -75,4 +75,4 @@ namespace dialog
 
 		LPMAPIFOLDER m_lpFolder;
 	};
-}
+} // namespace dialog

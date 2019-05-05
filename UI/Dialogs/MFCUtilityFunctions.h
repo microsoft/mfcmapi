@@ -47,4 +47,4 @@ namespace dialog
 		_In_ cache::CMapiObjects* lpMapiObjects,
 		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
 		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo);
-}
+} // namespace dialog

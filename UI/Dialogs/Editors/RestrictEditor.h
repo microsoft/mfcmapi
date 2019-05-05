@@ -72,5 +72,5 @@ namespace dialog
 
 			ULONG m_ulNewSearchFlags;
 		};
-	}
-}
+	} // namespace editor
+} // namespace dialog

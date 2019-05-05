@@ -44,5 +44,5 @@ namespace mapi
 			sid::eAceType m_acetype;
 			std::wstring m_wszObject;
 		};
-	}
-}
+	} // namespace mapiui
+} // namespace mapi
