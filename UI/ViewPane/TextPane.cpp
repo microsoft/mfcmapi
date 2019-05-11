@@ -180,20 +180,29 @@ namespace viewpane
 			curY += m_iSmallHeightMargin;
 		}
 
-		const auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
-		WC_B_S(m_EditBox.ShowWindow(cmdShow));
 		// Layout our label
 		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 
-		auto editHeight = height - (curY - y) - m_iSmallHeightMargin;
-		if (labelHeight)
+		if (m_bCollapsed)
 		{
-			curY += labelHeight + m_iSmallHeightMargin;
-			editHeight -= labelHeight + m_iSmallHeightMargin;
-		}
+			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
 
-		EC_B_S(
-			::DeferWindowPos(hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, width, editHeight, SWP_NOZORDER));
+			EC_B_S(::DeferWindowPos(hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, 0, 0, SWP_NOZORDER));
+		}
+		else
+		{
+			auto editHeight = height - (curY - y) - m_iSmallHeightMargin;
+			if (labelHeight)
+			{
+				curY += labelHeight + m_iSmallHeightMargin;
+				editHeight -= labelHeight + m_iSmallHeightMargin;
+			}
+
+			WC_B_S(m_EditBox.ShowWindow(SW_SHOW));
+
+			EC_B_S(::DeferWindowPos(
+				hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, width, editHeight, SWP_NOZORDER));
+		}
 	}
 
 	void TextPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
