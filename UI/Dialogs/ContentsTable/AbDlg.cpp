@@ -94,7 +94,6 @@ namespace dialog
 			const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
 			if (lpEIDs && lpEIDs->cValues && lpEIDs->lpbin)
 			{
-
 				for (ULONG i = 0; i < lpEIDs->cValues; i++)
 				{
 					auto ulUIParam = reinterpret_cast<ULONG_PTR>(static_cast<void*>(m_hWnd));
