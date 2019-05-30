@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <Msi.h>
 #include <winreg.h>
+// deletethis
 
 // Included for MFCMAPI tracing
 #include <core/utility/import.h>
