@@ -94,7 +94,14 @@ namespace viewpane
 		// Layout our label
 		ViewPane::DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 
-		if (!m_bCollapsed)
+		if (m_bCollapsed)
+		{
+			WC_B_S(m_Count.ShowWindow(SW_HIDE));
+			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
+
+			EC_B_S(::DeferWindowPos(hWinPosInfo, m_EditBox.GetSafeHwnd(), nullptr, x, curY, 0, 0, SWP_NOZORDER));
+		}
+		else
 		{
 			WC_B_S(m_Count.ShowWindow(SW_SHOW));
 			WC_B_S(m_EditBox.ShowWindow(SW_SHOW));
@@ -121,11 +128,6 @@ namespace viewpane
 				width,
 				height - (curY - y) - m_iSmallHeightMargin,
 				SWP_NOZORDER));
-		}
-		else
-		{
-			WC_B_S(m_Count.ShowWindow(SW_HIDE));
-			WC_B_S(m_EditBox.ShowWindow(SW_HIDE));
 		}
 	}
 
