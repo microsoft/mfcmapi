@@ -52,6 +52,7 @@ namespace dialog
 	ON_COMMAND(ID_OPENCONTACT, OnOpenContact)
 	ON_COMMAND(ID_OPENMANAGER, OnOpenManager)
 	ON_COMMAND(ID_OPENOWNER, OnOpenOwner)
+	ON_COMMAND(ID_SEARCHFORNAME, OnCreatePropertyStringRestriction)
 	END_MESSAGE_MAP()
 
 	void CAbDlg::CreateDialogAndMenu(UINT nIDMenuResource)
