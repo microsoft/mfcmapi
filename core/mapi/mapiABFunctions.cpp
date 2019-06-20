@@ -209,7 +209,7 @@ namespace mapi
 
 					if (!szString.empty())
 					{
-						lpspvSubject->Value.lpszW = const_cast<LPWSTR>(szString.c_str());
+						lpspvSubject->Value.lpszW = CopyStringW(szString.c_str(), lpAllocationParent);
 					}
 				}
 
