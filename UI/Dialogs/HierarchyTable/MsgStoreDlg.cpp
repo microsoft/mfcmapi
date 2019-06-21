@@ -70,7 +70,7 @@ namespace dialog
 			}
 		}
 
-		CreateDialogAndMenu(IDR_MENU_MESSAGESTORE);
+		CreateDialogAndMenu(IDR_MENU_MESSAGESTORE, IDR_MENU_HIERARCHY_TABLE);
 	}
 
 	CMsgStoreDlg::~CMsgStoreDlg()

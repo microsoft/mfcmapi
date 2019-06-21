@@ -25,14 +25,15 @@ namespace dialog
 
 	protected:
 		// Overrides from base class
-		void CreateDialogAndMenu(UINT nIDMenuResource);
+		void CreateDialogAndMenu(const UINT nIDMenuResource, const UINT uiClassMenuResource);
 		void OnInitMenu(_In_ CMenu* pMenu) override;
 		// Get the current root container - does not addref
 		LPMAPICONTAINER GetRootContainer() const { return m_lpContainer; }
 		void SetRootContainer(LPUNKNOWN container);
 
-		controls::CHierarchyTableTreeCtrl m_lpHierarchyTableTreeCtrl;
-		ULONG m_ulDisplayFlags;
+		controls::CHierarchyTableTreeCtrl m_lpHierarchyTableTreeCtrl{};
+		ULONG m_ulDisplayFlags{};
+		LPMAPICONTAINER m_lpContainer{};
 
 	private:
 		virtual void HandleAddInMenuSingle(
@@ -52,8 +53,6 @@ namespace dialog
 		void OnEditSearchCriteria();
 
 		UINT m_nIDContextMenu;
-
-		LPMAPICONTAINER m_lpContainer;
 
 		DECLARE_MESSAGE_MAP()
 	};
