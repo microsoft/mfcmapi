@@ -537,7 +537,7 @@ namespace controls
 		unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 		{
 			ULONG ulTotal = 0;
-			ULONG ulThrottleLevel = 0;
+			ULONG ulThrottleLevel = registry::throttleLevel;
 			LPSRowSet pRows = nullptr;
 			ULONG iCurListBoxRow = 0;
 			const auto lpThreadInfo = static_cast<ThreadLoadTableInfo*>(lpParam);
@@ -549,7 +549,7 @@ namespace controls
 
 			const auto hWndHost = lpThreadInfo->hWndHost;
 
-			// required on da new thread before we do any MAPI work
+			// Required on the new thread before we do any MAPI work
 			auto hRes = EC_MAPI(MAPIInitialize(nullptr));
 
 			(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
@@ -569,8 +569,6 @@ namespace controls
 
 				output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"ulTotal = 0x%X\n", ulTotal);
 
-				ulThrottleLevel = registry::throttleLevel;
-
 				if (ulTotal)
 				{
 					dialog::CBaseDialog::UpdateStatus(
@@ -586,7 +584,6 @@ namespace controls
 					BREAKONABORT;
 					dialog::CBaseDialog::UpdateStatus(
 						hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
-					hRes = S_OK;
 					if (pRows) FreeProws(pRows);
 					pRows = nullptr;
 					if (mfcmapiFINDROW_RESTRICTION == lpListCtrl->GetRestrictionType() && lpRes)
@@ -597,15 +594,9 @@ namespace controls
 						CHECKABORT(
 							hRes = WC_MAPI(
 								lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL)));
+						if (FAILED(hRes)) break;
 
-						if (hRes != MAPI_E_NOT_FOUND) // MAPI_E_NOT_FOUND signals we didn't find any more rows.
-						{
-							CHECKABORT(hRes = EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows)));
-						}
-						else
-						{
-							break;
-						}
+						CHECKABORT(hRes = EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows)));
 					}
 					else
 					{
@@ -619,7 +610,6 @@ namespace controls
 						CHECKABORT(
 							hRes = EC_MAPI(lpContentsTable->QueryRows(
 								ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP, NULL, &pRows)));
-						if (FAILED(hRes)) break;
 					}
 
 					if (FAILED(hRes) || !pRows || !pRows->cRows) break;
@@ -629,7 +619,6 @@ namespace controls
 
 					for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
 					{
-						hRes = S_OK;
 						BREAKONABORT; // This check is cheap enough not to be a perf concern anymore
 						if (ulTotal)
 						{
@@ -646,11 +635,11 @@ namespace controls
 							L"Asking to add %p to %u\n",
 							&pRows->aRow[iCurPropRow],
 							iCurListBoxRow);
-						(void) ::SendMessage(
+						hRes = WC_H(static_cast<HRESULT>(::SendMessage(
 							lpListCtrl->m_hWnd,
 							WM_MFCMAPI_THREADADDITEM,
 							iCurListBoxRow,
-							reinterpret_cast<LPARAM>(&pRows->aRow[iCurPropRow]));
+							reinterpret_cast<LPARAM>(&pRows->aRow[iCurPropRow]))));
 						if (FAILED(hRes)) continue;
 						iCurListBoxRow++;
 					}
