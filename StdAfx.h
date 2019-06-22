@@ -22,6 +22,7 @@
 #include <cassert>
 #include <stack>
 #include <deque>
+#include <thread>
 
 // Speed up our string conversions for output
 #ifdef MRMAPI

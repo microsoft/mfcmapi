@@ -44,10 +44,6 @@ namespace controls
 
 			Create(pCreateParent, LVS_NOCOLUMNHEADER, IDC_LIST_CTRL, true);
 
-			m_bAbortLoad = false; // no need to synchronize this - the thread hasn't started yet
-			m_bInLoadOp = false;
-			m_LoadThreadHandle = nullptr;
-
 			// We borrow our parent's Mapi objects
 			m_lpMapiObjects = lpMapiObjects;
 			if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
@@ -74,8 +70,6 @@ namespace controls
 		CContentsTableListCtrl::~CContentsTableListCtrl()
 		{
 			TRACE_DESTRUCTOR(CLASS);
-
-			if (m_LoadThreadHandle) CloseHandle(m_LoadThreadHandle);
 
 			NotificationOff();
 
@@ -512,15 +506,7 @@ namespace controls
 			return hRes;
 		}
 
-		struct ThreadLoadTableInfo
-		{
-			HWND hWndHost;
-			CContentsTableListCtrl* lpListCtrl;
-			LPMAPITABLE lpContentsTable;
-			LONG volatile* lpbAbort;
-		};
-
-#define bABORTSET (*lpThreadInfo->lpbAbort) // This is safe
+#define bABORTSET (*lpbAbort) // This is safe
 #define BREAKONABORT \
 	if (bABORTSET) break;
 #define CHECKABORT(__fn) \
@@ -534,20 +520,17 @@ namespace controls
 		// This way, control functions only happen on the main thread
 		// ::SendMessage will be handled on main thread, but block until the call returns.
 		// This is the ideal behavior for this worker thread.
-		unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
+		void ThreadFuncLoadTable(
+			const HWND hWndHost,
+			CContentsTableListCtrl* lpListCtrl,
+			LPMAPITABLE lpContentsTable,
+			LONG volatile* lpbAbort)
 		{
 			ULONG ulTotal = 0;
 			ULONG ulThrottleLevel = registry::throttleLevel;
 			LPSRowSet pRows = nullptr;
 			ULONG iCurListBoxRow = 0;
-			const auto lpThreadInfo = static_cast<ThreadLoadTableInfo*>(lpParam);
-			if (!lpThreadInfo || !lpThreadInfo->lpbAbort) return 0;
-
-			auto lpListCtrl = lpThreadInfo->lpListCtrl;
-			auto lpContentsTable = lpThreadInfo->lpContentsTable;
-			if (!lpListCtrl || !lpContentsTable) return 0;
-
-			const auto hWndHost = lpThreadInfo->hWndHost;
+			if (!lpbAbort || !lpListCtrl || !lpContentsTable) return;
 
 			// Required on the new thread before we do any MAPI work
 			auto hRes = EC_MAPI(MAPIInitialize(nullptr));
@@ -666,8 +649,6 @@ namespace controls
 			output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"added %u items\n", iCurListBoxRow);
 			output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Releasing pointers.\n");
 
-			lpListCtrl->ClearLoading();
-
 			// Bunch of cleanup
 			if (pRows) FreeProws(pRows);
 			if (lpContentsTable) lpContentsTable->Release();
@@ -676,9 +657,7 @@ namespace controls
 
 			MAPIUninitialize();
 
-			delete lpThreadInfo;
-
-			return 0;
+			lpListCtrl->ClearLoading();
 		}
 
 		_Check_return_ bool CContentsTableListCtrl::IsLoading() const { return m_bInLoadOp; }
@@ -688,80 +667,47 @@ namespace controls
 		void CContentsTableListCtrl::LoadContentsTableIntoView()
 		{
 			if (m_bInLoadOp || !m_lpHostDlg) return;
-
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-
 			output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"\n");
+
+			// Ensure we're not currently loading
+			OnCancelTableLoad();
 
 			EC_B_S(DeleteAllItems());
 
-			// whack the old thread handle if we still have it
-			if (m_LoadThreadHandle) CloseHandle(m_LoadThreadHandle);
-			m_LoadThreadHandle = nullptr;
-
 			if (!m_lpContentsTable) return;
+
 			m_bInLoadOp = true;
 			// Do not call return after this point!
 
-			auto lpThreadInfo = new ThreadLoadTableInfo;
+			this->AddRef();
+			m_lpContentsTable->AddRef();
 
-			if (lpThreadInfo)
-			{
-				lpThreadInfo->hWndHost = m_lpHostDlg->m_hWnd;
-				lpThreadInfo->lpbAbort = &m_bAbortLoad;
-				m_bAbortLoad = false; // no need to synchronize this - the thread hasn't started yet
+			output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Creating load thread.\n");
 
-				lpThreadInfo->lpListCtrl = this;
-				this->AddRef();
+			std::thread loadThread =
+				std::thread(ThreadFuncLoadTable, m_lpHostDlg->m_hWnd, this, m_lpContentsTable, &m_bAbortLoad);
 
-				lpThreadInfo->lpContentsTable = m_lpContentsTable;
-				m_lpContentsTable->AddRef();
-
-				output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Creating load thread.\n");
-
-				const auto hThread = EC_D(
-					HANDLE,
-					reinterpret_cast<HANDLE>(
-						_beginthreadex(nullptr, 0, ThreadFuncLoadTable, lpThreadInfo, 0, nullptr)));
-				if (hThread == nullptr || hThread == reinterpret_cast<HANDLE>(-1))
-				{
-					output::DebugPrintEx(
-						DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Load thread creation failed.\n");
-					if (lpThreadInfo->lpContentsTable) lpThreadInfo->lpContentsTable->Release();
-					if (lpThreadInfo->lpListCtrl) lpThreadInfo->lpListCtrl->Release();
-					delete lpThreadInfo;
-				}
-				else
-				{
-					output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Load thread created.\n");
-					m_LoadThreadHandle = hThread;
-				}
-			}
+			m_LoadThreadHandle.swap(loadThread);
 		}
 
 		void CContentsTableListCtrl::OnCancelTableLoad()
 		{
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"OnCancelTableLoad", L"Setting abort flag and waiting for thread to discover it\n");
+			InterlockedExchange(&m_bAbortLoad, true);
+
 			// Wait here until the thread we spun off has shut down
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-			DWORD dwRet = 0;
 			auto bVKF5Hit = false;
 
 			// See if the thread is still active
-			while (m_LoadThreadHandle) // this won't change, but if it's NULL, we just skip the loop
+			// Read all of the messages in this next loop, removing each message as we read it.
+			// If we don't do this, the thread never stops
+			auto msg = MSG{};
+			while (m_bInLoadOp)
 			{
-				MSG msg;
-
-				InterlockedExchange(&m_bAbortLoad, true);
-
-				// Wait for the thread to shutdown/signal, or messages posted to our queue
-				dwRet = MsgWaitForMultipleObjects(1, &m_LoadThreadHandle, false, INFINITE, QS_ALLINPUT);
-				if (dwRet == WAIT_OBJECT_0 + 0) break;
-
-				// Read all of the messages in this next loop, removing each message as we read it.
-				// If we don't do this, the thread never stops
-				while (PeekMessage(&msg, m_hWnd, 0, 0, PM_REMOVE))
+				if (PeekMessage(&msg, m_hWnd, 0, 0, PM_REMOVE))
 				{
 					if (msg.message == WM_KEYDOWN && msg.wParam == VK_F5)
 					{
@@ -775,18 +721,19 @@ namespace controls
 				}
 			}
 
+			// Finish out the thread
+			if (m_LoadThreadHandle.joinable()) m_LoadThreadHandle.join();
+
 			output::DebugPrintEx(DBGGeneric, CLASS, L"OnCancelTableLoad", L"Load thread has shut down.\n");
 
-			if (m_LoadThreadHandle) CloseHandle(m_LoadThreadHandle);
-			m_LoadThreadHandle = nullptr;
-			m_bAbortLoad = false;
+			InterlockedExchange(&m_bAbortLoad, false);
 
 			if (bVKF5Hit) // If we ditched a refresh message, repost it now
 			{
 				output::DebugPrintEx(DBGGeneric, CLASS, L"OnCancelTableLoad", L"Posting skipped refresh message\n");
 				PostMessage(WM_KEYDOWN, VK_F5, 0);
 			}
-		}
+		} // namespace sortlistctrl
 
 		void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 		{

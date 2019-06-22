@@ -97,8 +97,8 @@ namespace controls
 			_Check_return_ LRESULT msgOnThreadAddItem(WPARAM wParam, LPARAM lParam);
 
 			ULONG m_ulDisplayFlags;
-			LONG volatile m_bAbortLoad;
-			HANDLE m_LoadThreadHandle;
+			LONG volatile m_bAbortLoad{false};
+			std::thread m_LoadThreadHandle;
 			dialog::CContentsTableDlg* m_lpHostDlg;
 			cache::CMapiObjects* m_lpMapiObjects;
 			std::vector<columns::TagNames> m_lpDefaultDisplayColumns;
@@ -107,8 +107,8 @@ namespace controls
 			ULONG_PTR m_ulAdviseConnection;
 			ULONG m_ulDisplayNameColumn;
 			UINT m_nIDContextMenu;
-			bool m_bIsAB;
-			bool m_bInLoadOp;
+			bool m_bIsAB{false};
+			bool m_bInLoadOp{false};
 			const _SRestriction* m_lpRes;
 			ULONG m_ulContainerType;
 			mapi::mapiui::CAdviseSink* m_lpAdviseSink;
