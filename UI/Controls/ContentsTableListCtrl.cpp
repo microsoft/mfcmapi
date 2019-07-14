@@ -502,7 +502,6 @@ namespace controls
 	{ \
 		__fn; \
 	}
-#define NUMROWSPERLOOP 255
 
 		// Idea here is to do our MAPI work here on this thread, then send messages (SendMessage) back to the control to add the data to the view
 		// This way, control functions only happen on the main thread
@@ -576,11 +575,13 @@ namespace controls
 							CLASS,
 							L"ThreadFuncLoadTable",
 							L"Calling QueryRows. Asking for 0x%X rows.\n",
-							ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP);
+							ulThrottleLevel ? ulThrottleLevel : CContentsTableListCtrl::NUMROWSPERLOOP);
 						// Pull back a sizable block of rows to add to the list box
 						CHECKABORT(
 							hRes = EC_MAPI(lpContentsTable->QueryRows(
-								ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP, NULL, &pRows)));
+								ulThrottleLevel ? ulThrottleLevel : CContentsTableListCtrl::NUMROWSPERLOOP,
+								NULL,
+								&pRows)));
 					}
 
 					if (FAILED(hRes) || !pRows || !pRows->cRows) break;

@@ -28,6 +28,8 @@ namespace controls
 		class CContentsTableListCtrl : public CSortListCtrl
 		{
 		public:
+			const static ULONG NUMROWSPERLOOP{255};
+
 			CContentsTableListCtrl(
 				_In_ CWnd* pCreateParent,
 				_In_ cache::CMapiObjects* lpMapiObjects,
