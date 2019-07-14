@@ -570,18 +570,15 @@ namespace controls
 					}
 					else
 					{
+						auto rowCount = ulThrottleLevel ? ulThrottleLevel : CContentsTableListCtrl::NUMROWSPERLOOP;
 						output::DebugPrintEx(
 							DBGGeneric,
 							CLASS,
 							L"ThreadFuncLoadTable",
 							L"Calling QueryRows. Asking for 0x%X rows.\n",
-							ulThrottleLevel ? ulThrottleLevel : CContentsTableListCtrl::NUMROWSPERLOOP);
+							rowCount);
 						// Pull back a sizable block of rows to add to the list box
-						CHECKABORT(
-							hRes = EC_MAPI(lpContentsTable->QueryRows(
-								ulThrottleLevel ? ulThrottleLevel : CContentsTableListCtrl::NUMROWSPERLOOP,
-								NULL,
-								&pRows)));
+						CHECKABORT(hRes = EC_MAPI(lpContentsTable->QueryRows(rowCount, NULL, &pRows)));
 					}
 
 					if (FAILED(hRes) || !pRows || !pRows->cRows) break;
