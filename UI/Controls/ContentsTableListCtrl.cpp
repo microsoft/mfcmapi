@@ -494,11 +494,6 @@ namespace controls
 		}
 
 #define bABORTSET (*lpbAbort) // This is safe
-#define CHECKABORT(__fn) \
-	if (!bABORTSET) \
-	{ \
-		__fn; \
-	}
 
 		// Idea here is to do our MAPI work here on this thread, then send messages (SendMessage) back to the control to add the data to the view
 		// This way, control functions only happen on the main thread
@@ -510,6 +505,13 @@ namespace controls
 			LPMAPITABLE lpContentsTable,
 			LONG volatile* lpbAbort)
 		{
+			const auto checkAbort = [&](std::function<void(void)> fn) {
+				if (!bABORTSET)
+				{
+					fn();
+				}
+			};
+
 			ULONG ulTotal = 0;
 			ULONG ulThrottleLevel = registry::throttleLevel;
 			LPSRowSet pRows = nullptr;
@@ -525,7 +527,7 @@ namespace controls
 				hWndHost, STATUSDATA1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
 
 			// potentially lengthy op - check abort before and after
-			CHECKABORT(WC_H_S(lpListCtrl->ApplyRestriction()));
+			checkAbort([&] { WC_H_S(lpListCtrl->ApplyRestriction()); });
 
 			if (!bABORTSET) // only check abort once for this group of ops
 			{
@@ -560,12 +562,13 @@ namespace controls
 						output::DebugPrintEx(DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
 						output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
 
-						CHECKABORT(
+						checkAbort([&] {
 							hRes = WC_MAPI(
-								lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL)));
+								lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL));
+						});
 						if (FAILED(hRes)) break;
 
-						CHECKABORT(hRes = EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows)));
+						checkAbort([&] { hRes = EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows)); });
 					}
 					else
 					{
@@ -577,7 +580,7 @@ namespace controls
 							L"Calling QueryRows. Asking for 0x%X rows.\n",
 							rowCount);
 						// Pull back a sizable block of rows to add to the list box
-						CHECKABORT(hRes = EC_MAPI(lpContentsTable->QueryRows(rowCount, NULL, &pRows)));
+						checkAbort([&] { hRes = EC_MAPI(lpContentsTable->QueryRows(rowCount, NULL, &pRows)); });
 					}
 
 					if (FAILED(hRes) || !pRows || !pRows->cRows) break;
@@ -644,7 +647,7 @@ namespace controls
 			MAPIUninitialize();
 
 			lpListCtrl->ClearLoading();
-		}
+		} // namespace sortlistctrl
 
 		_Check_return_ bool CContentsTableListCtrl::IsLoading() const { return m_bInLoadOp; }
 
