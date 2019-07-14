@@ -722,7 +722,7 @@ namespace controls
 				output::DebugPrintEx(DBGGeneric, CLASS, L"OnCancelTableLoad", L"Posting skipped refresh message\n");
 				PostMessage(WM_KEYDOWN, VK_F5, 0);
 			}
-		} // namespace sortlistctrl
+		}
 
 		void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 		{
