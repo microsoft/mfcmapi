@@ -372,7 +372,7 @@ namespace controls
 			if (lpMyHeader)
 			{
 				hdItem.mask = HDI_LPARAM;
-				auto lpHeaderData = new HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
+				auto lpHeaderData = new (std::nothrow) HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
 				if (lpHeaderData)
 				{
 					lpHeaderData->ulTagArrayRow = ulCurTagArrayRow;
@@ -1246,7 +1246,7 @@ namespace controls
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"NotificationOn", L"registering table notification on %p\n", m_lpContentsTable);
 
-			m_lpAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
+			m_lpAdviseSink = new (std::nothrow) mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
 
 			if (m_lpAdviseSink)
 			{
