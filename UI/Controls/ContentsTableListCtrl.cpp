@@ -495,8 +495,6 @@ namespace controls
 		}
 
 #define bABORTSET (*lpbAbort) // This is safe
-#define BREAKONABORT \
-	if (bABORTSET) break;
 #define CHECKABORT(__fn) \
 	if (!bABORTSET) \
 	{ \
@@ -547,16 +545,18 @@ namespace controls
 			}
 
 			const auto lpRes = lpListCtrl->GetRestriction();
+			const auto resType = lpListCtrl->GetRestrictionType();
 			// get rows and add them to the list
 			if (!FAILED(hRes))
-				for (;;)
+			{
+				while (true)
 				{
-					BREAKONABORT;
+					if (bABORTSET) break;
 					dialog::CBaseDialog::UpdateStatus(
 						hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
 					if (pRows) FreeProws(pRows);
 					pRows = nullptr;
-					if (mfcmapiFINDROW_RESTRICTION == lpListCtrl->GetRestrictionType() && lpRes)
+					if (mfcmapiFINDROW_RESTRICTION == resType && lpRes)
 					{
 						output::DebugPrintEx(DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
 						output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
@@ -588,7 +588,7 @@ namespace controls
 
 					for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
 					{
-						BREAKONABORT; // This check is cheap enough not to be a perf concern anymore
+						if (bABORTSET) break; // This check is cheap enough not to be a perf concern anymore
 						if (ulTotal)
 						{
 							dialog::CBaseDialog::UpdateStatus(
@@ -620,6 +620,7 @@ namespace controls
 					if (ulThrottleLevel && iCurListBoxRow >= ulThrottleLevel)
 						break; // Only render ulThrottleLevel rows if throttle is on
 				}
+			}
 
 			if (bABORTSET)
 			{
