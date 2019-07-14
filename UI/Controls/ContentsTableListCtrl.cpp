@@ -29,8 +29,6 @@ namespace controls
 	{
 		static std::wstring CLASS = L"CContentsTableListCtrl";
 
-#define NODISPLAYNAME 0xffffffff
-
 		CContentsTableListCtrl::CContentsTableListCtrl(
 			_In_ CWnd* pCreateParent,
 			_In_ cache::CMapiObjects* lpMapiObjects,
@@ -53,16 +51,6 @@ namespace controls
 
 			m_sptDefaultDisplayColumnTags = sptDefaultDisplayColumnTags;
 			m_lpDefaultDisplayColumns = lpDefaultDisplayColumns;
-			m_ulDisplayFlags = dfNormal;
-			m_ulDisplayNameColumn = NODISPLAYNAME;
-
-			m_ulHeaderColumns = 0;
-			m_RestrictionType = mfcmapiNO_RESTRICTION;
-			m_lpRes = nullptr;
-			m_lpContentsTable = nullptr;
-			m_ulContainerType = NULL;
-			m_ulAdviseConnection = 0;
-			m_lpAdviseSink = nullptr;
 			m_nIDContextMenu = nIDContextMenu;
 			m_bIsAB = bIsAB;
 		}

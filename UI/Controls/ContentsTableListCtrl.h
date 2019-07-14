@@ -72,6 +72,8 @@ namespace controls
 			void GetStatus();
 
 		private:
+			const static ULONG NODISPLAYNAME{0xffffffff};
+
 			// Overrides from base class
 			LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 			void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
@@ -96,25 +98,25 @@ namespace controls
 			_Check_return_ LRESULT msgOnRefreshTable(WPARAM wParam, LPARAM lParam);
 			_Check_return_ LRESULT msgOnThreadAddItem(WPARAM wParam, LPARAM lParam);
 
-			ULONG m_ulDisplayFlags;
+			ULONG m_ulDisplayFlags{dfNormal};
 			LONG volatile m_bAbortLoad{false};
 			std::thread m_LoadThreadHandle;
-			dialog::CContentsTableDlg* m_lpHostDlg;
-			cache::CMapiObjects* m_lpMapiObjects;
+			dialog::CContentsTableDlg* m_lpHostDlg{nullptr};
+			cache::CMapiObjects* m_lpMapiObjects{nullptr};
 			std::vector<columns::TagNames> m_lpDefaultDisplayColumns;
-			LPSPropTagArray m_sptDefaultDisplayColumnTags;
-			ULONG m_ulHeaderColumns;
-			ULONG_PTR m_ulAdviseConnection;
-			ULONG m_ulDisplayNameColumn;
-			UINT m_nIDContextMenu;
+			LPSPropTagArray m_sptDefaultDisplayColumnTags{nullptr};
+			ULONG m_ulHeaderColumns{0};
+			ULONG_PTR m_ulAdviseConnection{0};
+			ULONG m_ulDisplayNameColumn{NODISPLAYNAME};
+			UINT m_nIDContextMenu{0};
 			bool m_bIsAB{false};
 			bool m_bInLoadOp{false};
-			const _SRestriction* m_lpRes;
-			ULONG m_ulContainerType;
-			mapi::mapiui::CAdviseSink* m_lpAdviseSink;
-			LPMAPITABLE m_lpContentsTable;
+			const _SRestriction* m_lpRes{nullptr};
+			ULONG m_ulContainerType{NULL};
+			mapi::mapiui::CAdviseSink* m_lpAdviseSink{nullptr};
+			LPMAPITABLE m_lpContentsTable{nullptr};
 
-			__mfcmapiRestrictionTypeEnum m_RestrictionType;
+			__mfcmapiRestrictionTypeEnum m_RestrictionType{mfcmapiNO_RESTRICTION};
 
 			DECLARE_MESSAGE_MAP()
 		};
