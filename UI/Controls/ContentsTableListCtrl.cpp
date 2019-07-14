@@ -8,7 +8,6 @@
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/smartview/SmartView.h>
-#include <process.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
