@@ -268,11 +268,11 @@ namespace controls
 
 		_Check_return_ sortlistdata::SortListData* CSortListCtrl::InsertRow(int iRow, const std::wstring& szText) const
 		{
-			return InsertRow(iRow, szText, 0, 0);
+			return InsertRow(iRow, szText, 0, slIconDefault);
 		}
 
 		_Check_return_ sortlistdata::SortListData*
-		CSortListCtrl::InsertRow(int iRow, const std::wstring& szText, int iIndent, int iImage) const
+		CSortListCtrl::InsertRow(int iRow, const std::wstring& szText, int iIndent, __SortListIconNames iImage) const
 		{
 			auto lpData = new sortlistdata::SortListData();
 

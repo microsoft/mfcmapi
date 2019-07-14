@@ -784,8 +784,19 @@ namespace controls
 			}
 		}
 
-#define NUMOBJTYPES 12
-		static LONG _ObjTypeIcons[NUMOBJTYPES][2] = {
+		ULONG GetDepth(_In_ LPSRow lpsRowData)
+		{
+			if (!lpsRowData) return 0;
+
+			auto ulDepth = 0;
+			const auto lpDepth = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_DEPTH);
+			if (lpDepth && PR_DEPTH == lpDepth->ulPropTag) ulDepth = lpDepth->Value.l;
+			if (ulDepth > 5) ulDepth = 5; // Just in case
+
+			return ulDepth;
+		}
+
+		static TypeIcon _ObjTypeIcons[] = {
 			{MAPI_STORE, slIconMAPI_STORE},
 			{MAPI_ADDRBOOK, slIconMAPI_ADDRBOOK},
 			{MAPI_FOLDER, slIconMAPI_FOLDER},
@@ -800,17 +811,11 @@ namespace controls
 			{MAPI_FORMINFO, slIconMAPI_FORMINFO},
 		};
 
-		void GetDepthAndImage(_In_ LPSRow lpsRowData, _In_ ULONG* lpulDepth, _In_ ULONG* lpulImage)
+		__SortListIconNames GetImage(_In_ LPSRow lpsRowData)
 		{
-			if (lpulDepth) *lpulDepth = 0;
-			if (lpulImage) *lpulImage = slIconDefault;
-			if (!lpsRowData) return;
+			if (!lpsRowData) return slIconDefault;
 
-			ULONG ulDepth = NULL;
-			ULONG ulImage = slIconDefault;
-			const auto lpDepth = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_DEPTH);
-			if (lpDepth && PR_DEPTH == lpDepth->ulPropTag) ulDepth = lpDepth->Value.l;
-			if (ulDepth > 5) ulDepth = 5; // Just in case
+			__SortListIconNames ulImage = slIconDefault;
 
 			const auto lpRowType = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_ROW_TYPE);
 			if (lpRowType && PR_ROW_TYPE == lpRowType->ulPropTag)
@@ -836,9 +841,9 @@ namespace controls
 				{
 					for (auto& _ObjTypeIcon : _ObjTypeIcons)
 					{
-						if (_ObjTypeIcon[0] == lpObjType->Value.l)
+						if (_ObjTypeIcon.objType == lpObjType->Value.ul)
 						{
-							ulImage = _ObjTypeIcon[1];
+							ulImage = _ObjTypeIcon.image;
 							break;
 						}
 					}
@@ -860,8 +865,7 @@ namespace controls
 				}
 			}
 
-			if (lpulDepth) *lpulDepth = ulDepth;
-			if (lpulImage) *lpulImage = ulImage;
+			return ulImage;
 		}
 
 		void CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists)
@@ -876,9 +880,8 @@ namespace controls
 			}
 			else
 			{
-				ULONG ulDepth = NULL;
-				ULONG ulImage = slIconDefault;
-				GetDepthAndImage(lpsRowData, &ulDepth, &ulImage);
+				auto ulDepth = GetDepth(lpsRowData);
+				auto ulImage = GetImage(lpsRowData);
 
 				lpData = InsertRow(iRow, L"TempRefreshItem", ulDepth, ulImage); // STRING_OK
 			}
