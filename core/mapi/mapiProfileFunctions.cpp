@@ -294,19 +294,27 @@ namespace mapi
 
 			if (lpszPSTPath.empty() || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-			SPropValue PropVal[2];
-			PropVal[0].ulPropTag = CHANGE_PROP_TYPE(PR_PST_PATH, PT_UNICODE);
-			PropVal[0].Value.lpszW = const_cast<LPWSTR>(lpszPSTPath.c_str());
-			PropVal[1].ulPropTag = PR_PST_PW_SZ_OLD;
-			PropVal[1].Value.lpszA = const_cast<LPSTR>(lpszPassword.c_str());
-
 			if (bUnicodePST)
 			{
+				SPropValue PropVal[3];
+				PropVal[0].ulPropTag = CHANGE_PROP_TYPE(PR_PST_PATH, PT_UNICODE);
+				PropVal[0].Value.lpszW = const_cast<LPWSTR>(lpszPSTPath.c_str());
+				PropVal[1].ulPropTag = PR_PST_CONFIG_FLAGS;
+				PropVal[1].Value.ul = PST_CONFIG_UNICODE;
+				PropVal[2].ulPropTag = PR_PST_PW_SZ_OLD;
+				PropVal[2].Value.lpszA = const_cast<LPSTR>(lpszPassword.c_str());
+
 				hRes = EC_H(HrAddServiceToProfile(
-					"MSUPST MS", ulUIParam, NULL, bPasswordSet ? 2 : 1, PropVal, lpszProfileName)); // STRING_OK
+					"MSUPST MS", ulUIParam, NULL, bPasswordSet ? 3 : 2, PropVal, lpszProfileName)); // STRING_OK
 			}
 			else
 			{
+				SPropValue PropVal[2];
+				PropVal[0].ulPropTag = CHANGE_PROP_TYPE(PR_PST_PATH, PT_UNICODE);
+				PropVal[0].Value.lpszW = const_cast<LPWSTR>(lpszPSTPath.c_str());
+				PropVal[1].ulPropTag = PR_PST_PW_SZ_OLD;
+				PropVal[1].Value.lpszA = const_cast<LPSTR>(lpszPassword.c_str());
+
 				hRes = EC_H(HrAddServiceToProfile(
 					"MSPST MS", ulUIParam, NULL, bPasswordSet ? 2 : 1, PropVal, lpszProfileName)); // STRING_OK
 			}
