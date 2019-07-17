@@ -6,6 +6,7 @@
 #include <UI/addinui.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <UI/UIFunctions.h>
 
 namespace dialog
 {
@@ -36,7 +37,15 @@ namespace dialog
 			}
 		}
 
-		CreateDialogAndMenu(IDR_MENU_ABCONT);
+		CreateDialogAndMenu(IDR_MENU_ABCONT, IDR_MENU_AB_HIERARCHY_TABLE);
+		if (m_lpHierarchyTableTreeCtrl)
+		{
+			// Override our menu callback
+			m_lpHierarchyTableTreeCtrl.HandleContextMenuCallback = [&](auto x, auto y) {
+				ui::DisplayContextMenu(IDR_MENU_ABCONT_POPUP, IDR_MENU_AB_HIERARCHY_TABLE, m_hWnd, x, y);
+			};
+			;
+		}
 	}
 
 	CAbContDlg::~CAbContDlg() { TRACE_DESTRUCTOR(CLASS); }

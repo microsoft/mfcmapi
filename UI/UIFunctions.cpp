@@ -229,12 +229,12 @@ namespace ui
 		{
 			auto menuiteminfo = MENUITEMINFOW{};
 			WCHAR szMenu[128] = {0};
-			menuiteminfo.cbSize = sizeof(MENUITEMINFOW);
+			menuiteminfo.cbSize = sizeof menuiteminfo;
 			menuiteminfo.fMask = MIIM_STRING | MIIM_SUBMENU | MIIM_FTYPE;
 			menuiteminfo.cch = _countof(szMenu);
 			menuiteminfo.dwTypeData = szMenu;
 
-			GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo);
+			EC_B_S(::GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo));
 			const auto bOwnerDrawn = (menuiteminfo.fType & MF_OWNERDRAW) != 0;
 			if (!bOwnerDrawn)
 			{
@@ -245,7 +245,7 @@ namespace ui
 					menuiteminfo.fMask = MIIM_DATA | MIIM_FTYPE;
 					menuiteminfo.fType |= MF_OWNERDRAW;
 					menuiteminfo.dwItemData = reinterpret_cast<ULONG_PTR>(lpMenuEntry);
-					SetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo);
+					EC_B_S(::SetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo));
 				}
 			}
 
@@ -269,13 +269,22 @@ namespace ui
 		const auto hMenu = GetMenu(hWnd);
 		if (!hMenu) return;
 
-		auto MenuInfo = MENUITEMINFOW{};
+		auto menuiteminfo = MENUITEMINFOW{};
+		menuiteminfo.cbSize = sizeof menuiteminfo;
+		menuiteminfo.fMask = MIIM_DATA | MIIM_FTYPE;
 
-		MenuInfo.cbSize = sizeof MenuInfo;
-		MenuInfo.fMask = MIIM_STRING;
-		MenuInfo.dwTypeData = LPWSTR(szNewString.c_str());
+		EC_B_S(::GetMenuItemInfoW(hMenu, uiMenuTag, false, &menuiteminfo));
+		auto lpMenuEntry = CreateMenuEntry(szNewString);
+		if (lpMenuEntry)
+		{
+			// Clean up old owner draw string data if it exists
+			DeleteMenuEntry(reinterpret_cast<LPMENUENTRY>(menuiteminfo.dwItemData));
 
-		EC_B_S(SetMenuItemInfoW(hMenu, uiMenuTag, false, &MenuInfo));
+			menuiteminfo.fMask = MIIM_DATA | MIIM_FTYPE;
+			menuiteminfo.fType |= MF_OWNERDRAW;
+			menuiteminfo.dwItemData = reinterpret_cast<ULONG_PTR>(lpMenuEntry);
+			EC_B_S(::SetMenuItemInfoW(hMenu, uiMenuTag, false, &menuiteminfo));
+		}
 	}
 
 	void MergeMenu(_In_ HMENU hMenuDestination, _In_ HMENU hMenuAdd)

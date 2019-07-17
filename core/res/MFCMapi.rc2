@@ -272,6 +272,7 @@ ID_SAVEFOLDERCONTENTSASTEXTFILES				"Save properties of folder and messages in f
 ID_SAVEMESSAGETOFILE							"Save message to a file"
 ID_SAVEPROPERTIES								"Save all properties displayed in current view to XML file."
 ID_SAVETOFILE									"Save attachment to file."
+ID_SEARCHFORNAME								"Search for an entry by name"
 ID_SELECTFORM									"Display Select Form dialog"
 ID_SELECTFORMCONTAINER							"Display Select Form Container dialog"
 ID_SENDBULKMAIL									"Send messages with custom subject and recipient"

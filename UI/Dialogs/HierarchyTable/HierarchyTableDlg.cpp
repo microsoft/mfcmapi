@@ -215,10 +215,10 @@ namespace dialog
 		return bRet;
 	}
 
-	void CHierarchyTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
+	void CHierarchyTableDlg::CreateDialogAndMenu(const UINT nIDMenuResource, const UINT uiClassMenuResource)
 	{
 		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
-		CBaseDialog::CreateDialogAndMenu(nIDMenuResource, IDR_MENU_HIERARCHY_TABLE, IDS_HIERARCHYTABLE);
+		CBaseDialog::CreateDialogAndMenu(nIDMenuResource, uiClassMenuResource, IDS_HIERARCHYTABLE);
 
 		if (m_lpHierarchyTableTreeCtrl)
 		{
