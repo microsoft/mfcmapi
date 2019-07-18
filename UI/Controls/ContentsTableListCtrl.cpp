@@ -497,18 +497,9 @@ namespace controls
 		// This way, control functions only happen on the main thread
 		// ::SendMessage will be handled on main thread, but block until the call returns.
 		// This is the ideal behavior for this worker thread.
-		void ThreadFuncLoadTable(
-			const HWND hWndHost,
-			CContentsTableListCtrl* lpListCtrl,
-			LPMAPITABLE lpContentsTable)
+		void ThreadFuncLoadTable(const HWND hWndHost, CContentsTableListCtrl* lpListCtrl, LPMAPITABLE lpContentsTable)
 		{
 			const auto bAbortSet = [lpListCtrl]() { return lpListCtrl ? lpListCtrl->bAbortLoad() : true; };
-			const auto checkAbort = [&](std::function<void(void)> fn) {
-				if (!bAbortSet())
-				{
-					fn();
-				}
-			};
 
 			ULONG ulTotal = 0;
 			ULONG ulThrottleLevel = registry::throttleLevel;
@@ -525,7 +516,10 @@ namespace controls
 				hWndHost, STATUSDATA1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
 
 			// potentially lengthy op - check abort before and after
-			checkAbort([&] { WC_H_S(lpListCtrl->ApplyRestriction()); });
+			if (!bAbortSet())
+			{
+				WC_H_S(lpListCtrl->ApplyRestriction());
+			}
 
 			if (!bAbortSet()) // only check abort once for this group of ops
 			{
@@ -560,13 +554,13 @@ namespace controls
 						output::DebugPrintEx(DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
 						output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
 
-						checkAbort([&] {
-							hRes = WC_MAPI(
-								lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL));
-						});
+						if (bAbortSet()) break;
+						hRes = WC_MAPI(
+							lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL));
 						if (FAILED(hRes)) break;
 
-						checkAbort([&] { hRes = EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows)); });
+						if (bAbortSet()) break;
+						hRes = EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows));
 					}
 					else
 					{
@@ -578,7 +572,8 @@ namespace controls
 							L"Calling QueryRows. Asking for 0x%X rows.\n",
 							rowCount);
 						// Pull back a sizable block of rows to add to the list box
-						checkAbort([&] { hRes = EC_MAPI(lpContentsTable->QueryRows(rowCount, NULL, &pRows)); });
+						if (bAbortSet()) break;
+						hRes = EC_MAPI(lpContentsTable->QueryRows(rowCount, NULL, &pRows));
 					}
 
 					if (FAILED(hRes) || !pRows || !pRows->cRows) break;
@@ -588,7 +583,7 @@ namespace controls
 
 					for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
 					{
-						if (bAbortSet()) break; // This check is cheap enough not to be a perf concern anymore
+						if (bAbortSet()) break;
 						if (ulTotal)
 						{
 							dialog::CBaseDialog::UpdateStatus(
@@ -645,7 +640,7 @@ namespace controls
 			MAPIUninitialize();
 
 			lpListCtrl->ClearLoading();
-		} // namespace sortlistctrl
+		}
 
 		_Check_return_ bool CContentsTableListCtrl::IsLoading() const { return m_bInLoadOp; }
 
@@ -672,8 +667,7 @@ namespace controls
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Creating load thread.\n");
 
-			std::thread loadThread =
-				std::thread(ThreadFuncLoadTable, m_lpHostDlg->m_hWnd, this, m_lpContentsTable);
+			std::thread loadThread = std::thread(ThreadFuncLoadTable, m_lpHostDlg->m_hWnd, this, m_lpContentsTable);
 
 			m_LoadThreadHandle.swap(loadThread);
 		}
