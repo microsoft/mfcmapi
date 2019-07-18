@@ -493,8 +493,6 @@ namespace controls
 			return hRes;
 		}
 
-#define bABORTSET (*lpbAbort) // This is safe
-
 		// Idea here is to do our MAPI work here on this thread, then send messages (SendMessage) back to the control to add the data to the view
 		// This way, control functions only happen on the main thread
 		// ::SendMessage will be handled on main thread, but block until the call returns.
@@ -505,8 +503,9 @@ namespace controls
 			LPMAPITABLE lpContentsTable,
 			LONG volatile* lpbAbort)
 		{
+			const auto bAbortSet = [lpbAbort]() { return *lpbAbort != 0; };
 			const auto checkAbort = [&](std::function<void(void)> fn) {
-				if (!bABORTSET)
+				if (!bAbortSet())
 				{
 					fn();
 				}
@@ -529,7 +528,7 @@ namespace controls
 			// potentially lengthy op - check abort before and after
 			checkAbort([&] { WC_H_S(lpListCtrl->ApplyRestriction()); });
 
-			if (!bABORTSET) // only check abort once for this group of ops
+			if (!bAbortSet()) // only check abort once for this group of ops
 			{
 				// go to the first row
 				EC_MAPI_S(lpContentsTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
@@ -552,7 +551,7 @@ namespace controls
 			{
 				while (true)
 				{
-					if (bABORTSET) break;
+					if (bAbortSet()) break;
 					dialog::CBaseDialog::UpdateStatus(
 						hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
 					if (pRows) FreeProws(pRows);
@@ -590,7 +589,7 @@ namespace controls
 
 					for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
 					{
-						if (bABORTSET) break; // This check is cheap enough not to be a perf concern anymore
+						if (bAbortSet()) break; // This check is cheap enough not to be a perf concern anymore
 						if (ulTotal)
 						{
 							dialog::CBaseDialog::UpdateStatus(
@@ -624,7 +623,7 @@ namespace controls
 				}
 			}
 
-			if (bABORTSET)
+			if (bAbortSet())
 			{
 				dialog::CBaseDialog::UpdateStatus(
 					hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_TABLELOADCANCELLED));
