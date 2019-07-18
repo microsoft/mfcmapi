@@ -670,20 +670,20 @@ namespace controls
 
 		void CContentsTableListCtrl::OnCancelTableLoad()
 		{
+			// Signal the abort
+			// This is the only function which ever sets this flag.
 			output::DebugPrintEx(
 				DBGGeneric, CLASS, L"OnCancelTableLoad", L"Setting abort flag and waiting for thread to discover it\n");
 			InterlockedExchange(&m_bAbortLoad, true);
 
-			// Wait here until the thread we spun off has shut down
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 			auto bVKF5Hit = false;
 
-			// See if the thread is still active
-			// Read all of the messages in this next loop, removing each message as we read it.
-			// If we don't do this, the thread never stops
-			auto msg = MSG{};
+			// Pump messages until the thread signals we're out of the load op (which is the last thing we do on the thread).
+			// Don't pmp F5. Just remember those and we'll send them up later.
 			while (m_bInLoadOp)
 			{
+				auto msg = MSG{};
 				if (PeekMessage(&msg, m_hWnd, 0, 0, PM_REMOVE))
 				{
 					if (msg.message == WM_KEYDOWN && msg.wParam == VK_F5)
@@ -698,11 +698,12 @@ namespace controls
 				}
 			}
 
-			// Finish out the thread
+			// Now wait for the thread to actually shut down.
 			if (m_LoadThreadHandle.joinable()) m_LoadThreadHandle.join();
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"OnCancelTableLoad", L"Load thread has shut down.\n");
 
+			// Finally, reset the abort so we're ready to load again (if needed)
 			InterlockedExchange(&m_bAbortLoad, false);
 
 			if (bVKF5Hit) // If we ditched a refresh message, repost it now
