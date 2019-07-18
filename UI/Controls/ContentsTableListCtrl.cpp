@@ -499,8 +499,6 @@ namespace controls
 		// This is the ideal behavior for this worker thread.
 		void ThreadFuncLoadTable(const HWND hWndHost, CContentsTableListCtrl* lpListCtrl, LPMAPITABLE lpContentsTable)
 		{
-			const auto bAbortSet = [lpListCtrl]() { return lpListCtrl ? lpListCtrl->bAbortLoad() : true; };
-
 			ULONG ulTotal = 0;
 			ULONG ulThrottleLevel = registry::throttleLevel;
 			LPSRowSet pRows = nullptr;
@@ -516,12 +514,12 @@ namespace controls
 				hWndHost, STATUSDATA1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
 
 			// potentially lengthy op - check abort before and after
-			if (!bAbortSet())
+			if (!lpListCtrl->bAbortLoad())
 			{
 				WC_H_S(lpListCtrl->ApplyRestriction());
 			}
 
-			if (!bAbortSet()) // only check abort once for this group of ops
+			if (!lpListCtrl->bAbortLoad()) // only check abort once for this group of ops
 			{
 				// go to the first row
 				EC_MAPI_S(lpContentsTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
@@ -544,7 +542,7 @@ namespace controls
 			{
 				while (true)
 				{
-					if (bAbortSet()) break;
+					if (lpListCtrl->bAbortLoad()) break;
 					dialog::CBaseDialog::UpdateStatus(
 						hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
 					if (pRows) FreeProws(pRows);
@@ -554,12 +552,12 @@ namespace controls
 						output::DebugPrintEx(DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
 						output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
 
-						if (bAbortSet()) break;
+						if (lpListCtrl->bAbortLoad()) break;
 						hRes = WC_MAPI(
 							lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL));
 						if (FAILED(hRes)) break;
 
-						if (bAbortSet()) break;
+						if (lpListCtrl->bAbortLoad()) break;
 						hRes = EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows));
 					}
 					else
@@ -572,7 +570,7 @@ namespace controls
 							L"Calling QueryRows. Asking for 0x%X rows.\n",
 							rowCount);
 						// Pull back a sizable block of rows to add to the list box
-						if (bAbortSet()) break;
+						if (lpListCtrl->bAbortLoad()) break;
 						hRes = EC_MAPI(lpContentsTable->QueryRows(rowCount, NULL, &pRows));
 					}
 
@@ -583,7 +581,7 @@ namespace controls
 
 					for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
 					{
-						if (bAbortSet()) break;
+						if (lpListCtrl->bAbortLoad()) break;
 						if (ulTotal)
 						{
 							dialog::CBaseDialog::UpdateStatus(
@@ -617,7 +615,7 @@ namespace controls
 				}
 			}
 
-			if (bAbortSet())
+			if (lpListCtrl->bAbortLoad())
 			{
 				dialog::CBaseDialog::UpdateStatus(
 					hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_TABLELOADCANCELLED));
