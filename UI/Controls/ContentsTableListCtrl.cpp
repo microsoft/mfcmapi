@@ -499,14 +499,16 @@ namespace controls
 		// This is the ideal behavior for this worker thread.
 		void ThreadFuncLoadTable(const HWND hWndHost, CContentsTableListCtrl* lpListCtrl, LPMAPITABLE lpContentsTable)
 		{
+			if (!lpListCtrl || !lpContentsTable || FAILED(EC_MAPI(MAPIInitialize(nullptr))))
+			{
+				lpListCtrl->ClearLoading();
+				return;
+			}
+
 			ULONG ulTotal = 0;
 			ULONG ulThrottleLevel = registry::throttleLevel;
 			LPSRowSet pRows = nullptr;
 			ULONG iCurListBoxRow = 0;
-			if (!lpListCtrl || !lpContentsTable) return;
-
-			// Required on the new thread before we do any MAPI work
-			auto hRes = EC_MAPI(MAPIInitialize(nullptr));
 
 			(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
 			auto szCount = std::to_wstring(lpListCtrl->GetItemCount());
@@ -538,81 +540,77 @@ namespace controls
 			const auto lpRes = lpListCtrl->GetRestriction();
 			const auto resType = lpListCtrl->GetRestrictionType();
 			// get rows and add them to the list
-			if (!FAILED(hRes))
+			while (true)
 			{
-				while (true)
+				if (lpListCtrl->bAbortLoad()) break;
+				auto hRes = S_OK;
+				dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
+				if (pRows) FreeProws(pRows);
+				pRows = nullptr;
+				if (mfcmapiFINDROW_RESTRICTION == resType && lpRes)
+				{
+					output::DebugPrintEx(DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
+					output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
+
+					if (lpListCtrl->bAbortLoad()) break;
+					hRes = WC_MAPI(lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL));
+					if (FAILED(hRes)) break;
+
+					if (lpListCtrl->bAbortLoad()) break;
+					hRes = EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows));
+				}
+				else
+				{
+					auto rowCount = ulThrottleLevel ? ulThrottleLevel : CContentsTableListCtrl::NUMROWSPERLOOP;
+					output::DebugPrintEx(
+						DBGGeneric,
+						CLASS,
+						L"ThreadFuncLoadTable",
+						L"Calling QueryRows. Asking for 0x%X rows.\n",
+						rowCount);
+					// Pull back a sizable block of rows to add to the list box
+					if (lpListCtrl->bAbortLoad()) break;
+					hRes = EC_MAPI(lpContentsTable->QueryRows(rowCount, NULL, &pRows));
+				}
+
+				if (FAILED(hRes) || !pRows || !pRows->cRows) break;
+
+				output::DebugPrintEx(
+					DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Got this many rows: 0x%X\n", pRows->cRows);
+
+				for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
 				{
 					if (lpListCtrl->bAbortLoad()) break;
-					dialog::CBaseDialog::UpdateStatus(
-						hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
-					if (pRows) FreeProws(pRows);
-					pRows = nullptr;
-					if (mfcmapiFINDROW_RESTRICTION == resType && lpRes)
+					if (ulTotal)
 					{
-						output::DebugPrintEx(DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
-						output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
-
-						if (lpListCtrl->bAbortLoad()) break;
-						hRes = WC_MAPI(
-							lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL));
-						if (FAILED(hRes)) break;
-
-						if (lpListCtrl->bAbortLoad()) break;
-						hRes = EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows));
+						dialog::CBaseDialog::UpdateStatus(
+							hWndHost,
+							STATUSDATA2,
+							strings::formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
 					}
-					else
-					{
-						auto rowCount = ulThrottleLevel ? ulThrottleLevel : CContentsTableListCtrl::NUMROWSPERLOOP;
-						output::DebugPrintEx(
-							DBGGeneric,
-							CLASS,
-							L"ThreadFuncLoadTable",
-							L"Calling QueryRows. Asking for 0x%X rows.\n",
-							rowCount);
-						// Pull back a sizable block of rows to add to the list box
-						if (lpListCtrl->bAbortLoad()) break;
-						hRes = EC_MAPI(lpContentsTable->QueryRows(rowCount, NULL, &pRows));
-					}
-
-					if (FAILED(hRes) || !pRows || !pRows->cRows) break;
 
 					output::DebugPrintEx(
-						DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Got this many rows: 0x%X\n", pRows->cRows);
-
-					for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
-					{
-						if (lpListCtrl->bAbortLoad()) break;
-						if (ulTotal)
-						{
-							dialog::CBaseDialog::UpdateStatus(
-								hWndHost,
-								STATUSDATA2,
-								strings::formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
-						}
-
-						output::DebugPrintEx(
-							DBGGeneric,
-							CLASS,
-							L"ThreadFuncLoadTable",
-							L"Asking to add %p to %u\n",
-							&pRows->aRow[iCurPropRow],
-							iCurListBoxRow);
-						hRes = WC_H(static_cast<HRESULT>(::SendMessage(
-							lpListCtrl->m_hWnd,
-							WM_MFCMAPI_THREADADDITEM,
-							iCurListBoxRow,
-							reinterpret_cast<LPARAM>(&pRows->aRow[iCurPropRow]))));
-						if (FAILED(hRes)) continue;
-						iCurListBoxRow++;
-					}
-
-					// Note - we're saving the rows off, so we don't FreeProws this...we just MAPIFreeBuffer the array
-					MAPIFreeBuffer(pRows);
-					pRows = nullptr;
-
-					if (ulThrottleLevel && iCurListBoxRow >= ulThrottleLevel)
-						break; // Only render ulThrottleLevel rows if throttle is on
+						DBGGeneric,
+						CLASS,
+						L"ThreadFuncLoadTable",
+						L"Asking to add %p to %u\n",
+						&pRows->aRow[iCurPropRow],
+						iCurListBoxRow);
+					hRes = WC_H(static_cast<HRESULT>(::SendMessage(
+						lpListCtrl->m_hWnd,
+						WM_MFCMAPI_THREADADDITEM,
+						iCurListBoxRow,
+						reinterpret_cast<LPARAM>(&pRows->aRow[iCurPropRow]))));
+					if (FAILED(hRes)) continue;
+					iCurListBoxRow++;
 				}
+
+				// Note - we're saving the rows off, so we don't FreeProws this...we just MAPIFreeBuffer the array
+				MAPIFreeBuffer(pRows);
+				pRows = nullptr;
+
+				if (ulThrottleLevel && iCurListBoxRow >= ulThrottleLevel)
+					break; // Only render ulThrottleLevel rows if throttle is on
 			}
 
 			if (lpListCtrl->bAbortLoad())
