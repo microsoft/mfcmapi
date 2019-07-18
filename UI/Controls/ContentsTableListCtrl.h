@@ -72,6 +72,7 @@ namespace controls
 			_Check_return_ bool IsContentsTableSet() const;
 			void DoSetColumns(bool bAddExtras, bool bDisplayEditor);
 			void GetStatus();
+			bool bAbortLoad() { return m_bAbortLoad != 0; }
 
 		private:
 			const static ULONG NODISPLAYNAME{0xffffffff};

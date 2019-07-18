@@ -500,10 +500,9 @@ namespace controls
 		void ThreadFuncLoadTable(
 			const HWND hWndHost,
 			CContentsTableListCtrl* lpListCtrl,
-			LPMAPITABLE lpContentsTable,
-			LONG volatile* lpbAbort)
+			LPMAPITABLE lpContentsTable)
 		{
-			const auto bAbortSet = [lpbAbort]() { return *lpbAbort != 0; };
+			const auto bAbortSet = [lpListCtrl]() { return lpListCtrl ? lpListCtrl->bAbortLoad() : true; };
 			const auto checkAbort = [&](std::function<void(void)> fn) {
 				if (!bAbortSet())
 				{
@@ -515,7 +514,7 @@ namespace controls
 			ULONG ulThrottleLevel = registry::throttleLevel;
 			LPSRowSet pRows = nullptr;
 			ULONG iCurListBoxRow = 0;
-			if (!lpbAbort || !lpListCtrl || !lpContentsTable) return;
+			if (!lpListCtrl || !lpContentsTable) return;
 
 			// Required on the new thread before we do any MAPI work
 			auto hRes = EC_MAPI(MAPIInitialize(nullptr));
@@ -674,7 +673,7 @@ namespace controls
 			output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Creating load thread.\n");
 
 			std::thread loadThread =
-				std::thread(ThreadFuncLoadTable, m_lpHostDlg->m_hWnd, this, m_lpContentsTable, &m_bAbortLoad);
+				std::thread(ThreadFuncLoadTable, m_lpHostDlg->m_hWnd, this, m_lpContentsTable);
 
 			m_LoadThreadHandle.swap(loadThread);
 		}
