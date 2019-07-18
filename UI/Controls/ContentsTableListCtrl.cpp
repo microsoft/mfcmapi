@@ -501,6 +501,8 @@ namespace controls
 		{
 			if (!lpListCtrl || !lpContentsTable || FAILED(EC_MAPI(MAPIInitialize(nullptr))))
 			{
+				if (lpContentsTable) lpContentsTable->Release();
+				if (lpListCtrl) lpListCtrl->Release();
 				lpListCtrl->ClearLoading();
 				return;
 			}
@@ -658,6 +660,8 @@ namespace controls
 			m_bInLoadOp = true;
 			// Do not call return after this point!
 
+			// Addref the objects we're passing to the thread
+			// ThreadFuncLoadTable should release them before exiting
 			this->AddRef();
 			m_lpContentsTable->AddRef();
 
