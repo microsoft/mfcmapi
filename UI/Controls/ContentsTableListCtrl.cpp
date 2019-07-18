@@ -663,7 +663,7 @@ namespace controls
 
 			output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Creating load thread.\n");
 
-			std::thread loadThread = std::thread(ThreadFuncLoadTable, m_lpHostDlg->m_hWnd, this, m_lpContentsTable);
+			auto loadThread = std::thread(ThreadFuncLoadTable, m_lpHostDlg->m_hWnd, this, m_lpContentsTable);
 
 			m_LoadThreadHandle.swap(loadThread);
 		}
