@@ -605,7 +605,7 @@ namespace controls
 						reinterpret_cast<LPARAM>(&pRows->aRow[iCurPropRow]))));
 					if (FAILED(hRes)) continue;
 
-					// we've handed this row off to the control, so wipe it from the array.
+					// We've handed this row off to the control, so wipe it from the array.
 					pRows->aRow[iCurPropRow].cValues = 0;
 					pRows->aRow[iCurPropRow].lpProps = nullptr;
 					iCurListBoxRow++;
