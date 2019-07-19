@@ -613,8 +613,7 @@ namespace controls
 			}
 		}
 
-#define NUMPROPTYPES 31
-		static ULONG _PropTypeIcons[NUMPROPTYPES][2] = {
+		static TypeIcon _PropTypeIcons[] = {
 			{PT_UNSPECIFIED, slIconUNSPECIFIED},
 			{PT_NULL, slIconNULL},
 			{PT_I2, slIconI2},
@@ -656,20 +655,20 @@ namespace controls
 			_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 			_In_ LPSPropValue lpsPropToAdd)
 		{
-			ULONG ulImage = slIconDefault;
+			auto image = slIconDefault;
 			if (lpsPropToAdd)
 			{
 				for (auto& _PropTypeIcon : _PropTypeIcons)
 				{
-					if (_PropTypeIcon[0] == PROP_TYPE(lpsPropToAdd->ulPropTag))
+					if (_PropTypeIcon.objType == PROP_TYPE(lpsPropToAdd->ulPropTag))
 					{
-						ulImage = _PropTypeIcon[1];
+						image = _PropTypeIcon.image;
 						break;
 					}
 				}
 			}
 
-			auto lpData = InsertRow(iRow, L"", 0, ulImage);
+			auto lpData = InsertRow(iRow, L"", 0, image);
 			// Data used to refer to specific property tags. See GetSelectedPropTag.
 			if (lpData)
 			{
