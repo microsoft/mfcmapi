@@ -509,6 +509,7 @@ namespace controls
 
 			ULONG ulTotal = 0;
 			ULONG ulThrottleLevel = registry::throttleLevel;
+			const auto rowCount = ulThrottleLevel ? ulThrottleLevel : CContentsTableListCtrl::NUMROWSPERLOOP;
 			LPSRowSet pRows = nullptr;
 			ULONG iCurListBoxRow = 0;
 
@@ -563,7 +564,6 @@ namespace controls
 				}
 				else
 				{
-					auto rowCount = ulThrottleLevel ? ulThrottleLevel : CContentsTableListCtrl::NUMROWSPERLOOP;
 					output::DebugPrintEx(
 						DBGGeneric,
 						CLASS,
