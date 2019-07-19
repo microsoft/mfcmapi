@@ -59,7 +59,7 @@ namespace error
 	_Check_return_ HRESULT
 	CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction);
 
-	// Flag parsing array - used by GetPropFlags
+	// Flag parsing array - used by ErrorNameFromErrorCode
 	struct ERROR_ARRAY_ENTRY
 	{
 		ULONG ulErrorName;
@@ -74,13 +74,12 @@ namespace error
 	std::wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error);
 } // namespace error
 
-#define CheckHResFn(hRes, hrIgnore, bDisplayDialog, szFunction, uidErrorMsg, szFile, iLine) \
-	error::LogFunctionCall(hRes, hrIgnore, bDisplayDialog, false, false, uidErrorMsg, szFunction, szFile, iLine)
-
 // Macros for debug output
-#define CHECKHRES(hRes) (CheckHResFn(hRes, NULL, true, "", NULL, __FILE__, __LINE__))
-#define CHECKHRESMSG(hRes, uidErrorMsg) (CheckHResFn(hRes, NULL, true, nullptr, uidErrorMsg, __FILE__, __LINE__))
-#define WARNHRESMSG(hRes, uidErrorMsg) (CheckHResFn(hRes, NULL, false, nullptr, uidErrorMsg, __FILE__, __LINE__))
+#define CHECKHRES(hRes) (error::LogFunctionCall((hRes), NULL, true, false, false, NULL, nullptr, __FILE__, __LINE__))
+#define CHECKHRESMSG(hRes, uidErrorMsg) \
+	(error::LogFunctionCall((hRes), NULL, true, false, false, (uidErrorMsg), nullptr, __FILE__, __LINE__))
+#define WARNHRESMSG(hRes, uidErrorMsg) \
+	(error::LogFunctionCall((hRes), NULL, false, false, false, (uidErrorMsg), nullptr, __FILE__, __LINE__))
 
 // Execute a function, log and return the HRESULT
 // Will display dialog on error
