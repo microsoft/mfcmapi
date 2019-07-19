@@ -59,7 +59,7 @@ namespace error
 	_Check_return_ HRESULT
 	CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction);
 
-	// Flag parsing array - used by GetPropFlags
+	// Flag parsing array - used by ErrorNameFromErrorCode
 	struct ERROR_ARRAY_ENTRY
 	{
 		ULONG ulErrorName;
