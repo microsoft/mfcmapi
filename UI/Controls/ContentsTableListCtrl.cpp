@@ -604,11 +604,15 @@ namespace controls
 						iCurListBoxRow,
 						reinterpret_cast<LPARAM>(&pRows->aRow[iCurPropRow]))));
 					if (FAILED(hRes)) continue;
+
+					// we've handed this row off to the control, so wipe it from the array.
+					pRows->aRow[iCurPropRow].cValues = 0;
+					pRows->aRow[iCurPropRow].lpProps = nullptr;
 					iCurListBoxRow++;
 				}
 
-				// Note - we're saving the rows off, so we don't FreeProws this...we just MAPIFreeBuffer the array
-				MAPIFreeBuffer(pRows);
+				// We've removed some or all rows from the array. FreeProws will free the rest, as well as the parent array.
+				FreeProws(pRows);
 				pRows = nullptr;
 
 				if (ulThrottleLevel && iCurListBoxRow >= ulThrottleLevel)
