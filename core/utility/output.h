@@ -51,8 +51,8 @@ namespace output
 	void CloseDebugFile();
 	void SetDebugOutputToFile(bool bDoOutput);
 
-#define fIsSet(ulTag) (registry::debugTag & (ulTag))
-#define fIsSetv(ulTag) (((ulTag) != DBGNoDebug) && (registry::debugTag & (ulTag)))
+	inline bool fIsSet(output::DBGLEVEL ulTag) { return registry::debugTag & ulTag; }
+	inline bool fIsSetv(output::DBGLEVEL ulTag) { return (ulTag != DBGNoDebug) && (registry::debugTag & ulTag); }
 
 #define CHKPARAM assert(output::DBGNoDebug != ulDbgLvl || fFile)
 
@@ -87,7 +87,12 @@ namespace output
 #define DebugPrint(ulDbgLvl, szMsg, ...) DebugPrint((wprintf(szMsg, __VA_ARGS__), ulDbgLvl), szMsg, __VA_ARGS__)
 #endif
 
-	void __cdecl DebugPrintEx(output::DBGLEVEL ulDbgLvl, std::wstring& szClass, const std::wstring& szFunc, LPCWSTR szMsg, ...);
+	void __cdecl DebugPrintEx(
+		output::DBGLEVEL ulDbgLvl,
+		std::wstring& szClass,
+		const std::wstring& szFunc,
+		LPCWSTR szMsg,
+		...);
 #ifdef CHECKFORMATPARAMS
 #undef DebugPrintEx
 #define DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, ...) \
@@ -102,9 +107,11 @@ namespace output
 	output::DebugPrintEx(output::DBGConDes, (__class), (__class), L"(this = %p) - Destructor\n", this);
 
 #define TRACE_ADDREF(__class, __count) \
-	output::DebugPrintEx(output::DBGRefCount, (__class), L"AddRef", L"(this = %p) m_cRef increased to %d.\n", this, (__count));
+	output::DebugPrintEx( \
+		output::DBGRefCount, (__class), L"AddRef", L"(this = %p) m_cRef increased to %d.\n", this, (__count));
 #define TRACE_RELEASE(__class, __count) \
-	output::DebugPrintEx(output::DBGRefCount, (__class), L"Release", L"(this = %p) m_cRef decreased to %d.\n", this, (__count));
+	output::DebugPrintEx( \
+		output::DBGRefCount, (__class), L"Release", L"(this = %p) m_cRef decreased to %d.\n", this, (__count));
 #else
 #define TRACE_CONSTRUCTOR(__class)
 #define TRACE_DESTRUCTOR(__class)
