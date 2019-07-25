@@ -74,7 +74,7 @@ namespace dialog
 
 			if (GetHex(registry::debugTag.uiOptionsPrompt) != registry::debugTag)
 			{
-				output::SetDebugLevel((output::DBGLEVEL) GetHex(registry::debugTag.uiOptionsPrompt));
+				registry::debugTag = GetHex(registry::debugTag.uiOptionsPrompt);
 				output::outputVersion(output::DBGVersionBanner, nullptr);
 			}
 

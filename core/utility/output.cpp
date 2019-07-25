@@ -36,10 +36,6 @@ namespace output
 		g_fDebugFile = nullptr;
 	}
 
-	_Check_return_ DBGLEVEL GetDebugLevel() {return static_cast<output::DBGLEVEL>(static_cast<ULONG>(registry::debugTag)); }
-
-	void SetDebugLevel(output::DBGLEVEL ulDbgLvl) { registry::debugTag = ulDbgLvl; }
-
 	// We've got our 'new' value here and also a debug output file name
 	// gonna set the new value
 	// gonna ensure our debug output file is open if we need it, closed if we don't

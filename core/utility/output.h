@@ -49,8 +49,6 @@ namespace output
 
 	void OpenDebugFile();
 	void CloseDebugFile();
-	_Check_return_ DBGLEVEL GetDebugLevel();
-	void SetDebugLevel(DBGLEVEL ulDbgLvl);
 	void SetDebugOutputToFile(bool bDoOutput);
 
 #define fIsSet(ulTag) (registry::debugTag & (ulTag))

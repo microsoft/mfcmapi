@@ -3,6 +3,7 @@
 #include <UI/Dialogs/Editors/DbgView.h>
 #include <UI/ParentWnd.h>
 #include <core/utility/output.h>
+#include <core/utility/registry.h>
 
 namespace dialog
 {
@@ -62,7 +63,7 @@ namespace dialog
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 			AddPane(viewpane::TextPane::CreateSingleLinePane(DBGVIEW_TAGS, IDS_REGKEY_DEBUG_TAG, false));
-			SetHex(DBGVIEW_TAGS, output::GetDebugLevel());
+			SetHex(DBGVIEW_TAGS, registry::debugTag);
 			AddPane(viewpane::CheckPane::Create(DBGVIEW_PAUSE, IDS_PAUSE, false, false));
 			AddPane(viewpane::TextPane::CreateMultiLinePane(DBGVIEW_VIEW, NULL, true));
 			m_bPaused = false;
@@ -91,8 +92,7 @@ namespace dialog
 			{
 			case DBGVIEW_TAGS:
 			{
-				const auto ulTag = static_cast<output::DBGLEVEL>(GetHex(DBGVIEW_TAGS));
-				output::SetDebugLevel(ulTag);
+				registry::debugTag = GetHex(DBGVIEW_TAGS);
 				return true;
 			}
 			case DBGVIEW_PAUSE:
