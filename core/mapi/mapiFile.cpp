@@ -18,7 +18,7 @@ namespace file
 	{
 		if (!lppStorage) return MAPI_E_INVALID_PARAMETER;
 		output::DebugPrint(
-			DBGGeneric,
+			output::DBGGeneric,
 			L"MyStgOpenStorage: Opening \"%ws\", bBestAccess == %ws\n",
 			szMessageFile.c_str(),
 			bBestAccess ? L"True" : L"False");
@@ -245,7 +245,7 @@ namespace file
 		if (szPathName.length() >= MAXMSGPATH) return MAPI_E_INVALID_PARAMETER;
 
 		output::DebugPrint(
-			DBGGeneric, L"SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n", szPathName.c_str());
+			output::DBGGeneric, L"SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n", szPathName.c_str());
 
 		LPMAPITABLE lpFolderContents = nullptr;
 		auto hRes =
@@ -300,7 +300,8 @@ namespace file
 			STATSTG StatInfo = {};
 			pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME);
 
-			output::DebugPrint(DBGStream, L"WriteStreamToFile: Writing cb = %llu bytes\n", StatInfo.cbSize.QuadPart);
+			output::DebugPrint(
+				output::DBGStream, L"WriteStreamToFile: Writing cb = %llu bytes\n", StatInfo.cbSize.QuadPart);
 
 			hRes = EC_MAPI(pStrmSrc->CopyTo(pStrmDest, StatInfo.cbSize, nullptr, nullptr));
 
@@ -321,7 +322,7 @@ namespace file
 		LPSTREAM pStrmSrc = nullptr;
 
 		if (!lpMessage || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
-		output::DebugPrint(DBGGeneric, L"SaveToEML: Saving message to \"%ws\"\n", szFileName.c_str());
+		output::DebugPrint(output::DBGGeneric, L"SaveToEML: Saving message to \"%ws\"\n", szFileName.c_str());
 
 		// Open the property of the attachment
 		// containing the file data
@@ -335,7 +336,7 @@ namespace file
 		{
 			if (hRes == MAPI_E_NOT_FOUND)
 			{
-				output::DebugPrint(DBGGeneric, L"No internet content found\n");
+				output::DebugPrint(output::DBGGeneric, L"No internet content found\n");
 			}
 		}
 		else
@@ -462,10 +463,10 @@ namespace file
 
 		LPMESSAGE lpMessage = nullptr;
 
-		output::DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szPathName.c_str());
+		output::DebugPrint(output::DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szPathName.c_str());
 
-		output::DebugPrint(DBGGeneric, L"Source Message =\n");
-		output::outputBinary(DBGGeneric, nullptr, entryID.Value.bin);
+		output::DebugPrint(output::DBGGeneric, L"Source Message =\n");
+		output::outputBinary(output::DBGGeneric, nullptr, entryID.Value.bin);
 
 		auto lpMapiContainer = mapi::safe_cast<LPMAPICONTAINER>(lpFolder);
 		if (lpMapiContainer)
@@ -485,11 +486,11 @@ namespace file
 			auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szPathName, recordKey); // STRING_OK
 			if (!szFileName.empty())
 			{
-				output::DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
+				output::DebugPrint(output::DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
 				hRes = EC_H(SaveToMSG(lpMessage, szFileName, bUnicode, hWnd, false));
 
-				output::DebugPrint(DBGGeneric, L"Message Saved\n");
+				output::DebugPrint(output::DBGGeneric, L"Message Saved\n");
 			}
 		}
 
@@ -504,7 +505,7 @@ namespace file
 	{
 		if (!lpMessage || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-		output::DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szFileName.c_str());
+		output::DebugPrint(output::DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szFileName.c_str());
 
 		LPSTORAGE pStorage = nullptr;
 		LPMESSAGE pIMsg = nullptr;
@@ -564,7 +565,7 @@ namespace file
 																						  {PR_URL_COMP_NAME}};
 
 		if (!lpMessage || !lpAdrBook || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
-		output::DebugPrint(DBGGeneric, L"SaveToTNEF: Saving message to \"%ws\"\n", szFileName.c_str());
+		output::DebugPrint(output::DBGGeneric, L"SaveToTNEF: Saving message to \"%ws\"\n", szFileName.c_str());
 
 		LPSTREAM lpStream = nullptr;
 		LPITNEF lpTNEF = nullptr;
@@ -732,7 +733,8 @@ namespace file
 	{
 		if (!lpAttach || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-		output::DebugPrint(DBGGeneric, L"WriteEmbeddedMSGToFile: Saving attachment to \"%ws\"\n", szFileName.c_str());
+		output::DebugPrint(
+			output::DBGGeneric, L"WriteEmbeddedMSGToFile: Saving attachment to \"%ws\"\n", szFileName.c_str());
 
 		LPMESSAGE lpAttachMsg = nullptr;
 		auto hRes = EC_MAPI(lpAttach->OpenProperty(
@@ -769,7 +771,7 @@ namespace file
 		{
 			if (hRes == MAPI_E_NOT_FOUND)
 			{
-				output::DebugPrint(DBGGeneric, L"No attachments found. Maybe the attachment was a message?\n");
+				output::DebugPrint(output::DBGGeneric, L"No attachments found. Maybe the attachment was a message?\n");
 			}
 			else
 				CHECKHRES(hRes);

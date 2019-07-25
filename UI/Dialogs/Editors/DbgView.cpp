@@ -91,7 +91,7 @@ namespace dialog
 			{
 			case DBGVIEW_TAGS:
 			{
-				const auto ulTag = GetHex(DBGVIEW_TAGS);
+				const auto ulTag = static_cast<output::DBGLEVEL>(GetHex(DBGVIEW_TAGS));
 				output::SetDebugLevel(ulTag);
 				return true;
 			}

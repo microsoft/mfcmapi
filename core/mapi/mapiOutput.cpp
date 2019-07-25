@@ -18,7 +18,7 @@
 
 namespace output
 {
-	void outputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin)
+	void outputBinary(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin)
 	{
 		CHKPARAM;
 		EARLYABORT;
@@ -28,7 +28,7 @@ namespace output
 		Output(ulDbgLvl, fFile, false, L"\n");
 	}
 
-	void outputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList)
+	void outputEntryList(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList)
 	{
 		CHKPARAM;
 		EARLYABORT;
@@ -48,7 +48,7 @@ namespace output
 		Outputf(ulDbgLvl, fFile, true, L"End dumping entry list.\n");
 	}
 
-	void outputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray)
+	void outputFormPropArray(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray)
 	{
 		Outputf(ulDbgLvl, fFile, true, L"\t0x%X Properties:\n", lpMAPIFormPropArray->cProps);
 		for (ULONG i = 0; i < lpMAPIFormPropArray->cProps; i++)
@@ -111,7 +111,7 @@ namespace output
 		}
 	}
 
-	void outputNamedPropID(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPINAMEID lpName)
+	void outputNamedPropID(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPINAMEID lpName)
 	{
 		CHKPARAM;
 		EARLYABORT;
@@ -141,7 +141,7 @@ namespace output
 		Output(ulDbgLvl, fFile, false, L"\n");
 	}
 
-	void outputPropTagArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagArray lpTagsToDump)
+	void outputPropTagArray(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagArray lpTagsToDump)
 	{
 		CHKPARAM;
 		EARLYABORT;
@@ -167,7 +167,7 @@ namespace output
 		Output(ulDbgLvl, fFile, true, L"\tEnd Prop Tag List\n");
 	}
 
-	void outputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO lpMAPIFormInfo)
+	void outputFormInfo(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO lpMAPIFormInfo)
 	{
 		CHKPARAM;
 		EARLYABORT;
@@ -236,7 +236,7 @@ namespace output
 		}
 	}
 
-	void outputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPITable)
+	void outputTable(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPITable)
 	{
 		CHKPARAM;
 		EARLYABORT;
@@ -271,7 +271,7 @@ namespace output
 	}
 
 	void outputNotifications(
-		ULONG ulDbgLvl,
+		DBGLEVEL ulDbgLvl,
 		_In_opt_ FILE* fFile,
 		ULONG cNotify,
 		_In_count_(cNotify) LPNOTIFICATION lpNotifications,
@@ -505,7 +505,7 @@ namespace output
 	}
 
 	void outputProperty(
-		ULONG ulDbgLvl,
+		DBGLEVEL ulDbgLvl,
 		_In_opt_ FILE* fFile,
 		_In_ LPSPropValue lpProp,
 		_In_opt_ LPMAPIPROP lpObj,
@@ -595,7 +595,7 @@ namespace output
 	}
 
 	void outputProperties(
-		ULONG ulDbgLvl,
+		DBGLEVEL ulDbgLvl,
 		_In_opt_ FILE* fFile,
 		ULONG cProps,
 		_In_count_(cProps) LPSPropValue lpProps,
@@ -644,7 +644,7 @@ namespace output
 		MAPIFreeBuffer(lpSortedProps);
 	}
 
-	void outputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const _SRow* lpSRow, _In_opt_ LPMAPIPROP lpObj)
+	void outputSRow(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ const _SRow* lpSRow, _In_opt_ LPMAPIPROP lpObj)
 	{
 		CHKPARAM;
 		EARLYABORT;
@@ -664,7 +664,7 @@ namespace output
 		outputProperties(ulDbgLvl, fFile, lpSRow->cValues, lpSRow->lpProps, lpObj, false);
 	}
 
-	void outputSRowSet(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSet, _In_opt_ LPMAPIPROP lpObj)
+	void outputSRowSet(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSet, _In_opt_ LPMAPIPROP lpObj)
 	{
 		CHKPARAM;
 		EARLYABORT;
@@ -685,7 +685,7 @@ namespace output
 	}
 
 	void outputRestriction(
-		ULONG ulDbgLvl,
+		DBGLEVEL ulDbgLvl,
 		_In_opt_ FILE* fFile,
 		_In_opt_ const _SRestriction* lpRes,
 		_In_opt_ LPMAPIPROP lpObj)

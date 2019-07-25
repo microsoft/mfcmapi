@@ -81,13 +81,13 @@ namespace proptags
 			namePropNames.guid.c_str(),
 			namePropNames.dasl.c_str());
 
-		if (fIsSet(DBGTest))
+		if (fIsSet(output::DBGTest))
 		{
 			static size_t cchMaxBuff = 0;
 			auto cchBuff = szRet.length();
 			cchMaxBuff = max(cchBuff, cchMaxBuff);
 			output::DebugPrint(
-				DBGTest,
+				output::DBGTest,
 				L"TagToString parsing 0x%08X returned %u chars - max %u\n",
 				ulPropTag,
 				static_cast<UINT>(cchBuff),

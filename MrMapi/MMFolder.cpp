@@ -15,7 +15,7 @@ LPSBinary MAPIFindFolderW(
 	_In_ LPMAPIFOLDER lpFolder, // pointer to folder
 	_In_ const std::wstring& lpszName) // name of child folder to find
 {
-	output::DebugPrint(DBGGeneric, L"MAPIFindFolderW: Locating folder \"%ws\"\n", lpszName.c_str());
+	output::DebugPrint(output::DBGGeneric, L"MAPIFindFolderW: Locating folder \"%ws\"\n", lpszName.c_str());
 	LPMAPITABLE lpTable = nullptr;
 	LPSRowSet lpRow = nullptr;
 	LPSPropValue lpRowProp = nullptr;
@@ -66,7 +66,7 @@ LPSBinary MAPIFindFolderW(
 // Converts // to /
 std::wstring unescape(_In_ std::wstring lpsz)
 {
-	output::DebugPrint(DBGGeneric, L"unescape: working on path \"%ws\"\n", lpsz.c_str());
+	output::DebugPrint(output::DBGGeneric, L"unescape: working on path \"%ws\"\n", lpsz.c_str());
 
 	size_t index = 0;
 	while (index != std::string::npos)
@@ -139,7 +139,8 @@ static LPSBinary LookupRootFolderW(
 	_In_ LPMDB lpMDB, // pointer to open message store
 	_In_ const std::wstring& lpszRootFolder) // root folder name only (no separators)
 {
-	output::DebugPrint(DBGGeneric, L"LookupRootFolderW: Locating root folder \"%ws\"\n", lpszRootFolder.c_str());
+	output::DebugPrint(
+		output::DBGGeneric, L"LookupRootFolderW: Locating root folder \"%ws\"\n", lpszRootFolder.c_str());
 
 	if (!lpMDB) return {};
 	// Implicitly recognize no root folder as THE root folder
@@ -193,7 +194,7 @@ LPSBinary MAPIFindFolderExW(
 	_In_ LPMDB lpMDB, // Open message store
 	_In_ const std::wstring& lpszFolderPath) // folder path
 {
-	output::DebugPrint(DBGGeneric, L"MAPIFindFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
+	output::DebugPrint(output::DBGGeneric, L"MAPIFindFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
 	if (!lpMDB) return {};
 
 	LPMAPIFOLDER lpRootFolder = nullptr;
@@ -255,7 +256,7 @@ LPMAPIFOLDER MAPIOpenFolderExW(
 	_In_ LPMDB lpMDB, // Open message store
 	_In_ const std::wstring& lpszFolderPath) // folder path
 {
-	output::DebugPrint(DBGGeneric, L"MAPIOpenFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
+	output::DebugPrint(output::DBGGeneric, L"MAPIOpenFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
 	ULONG ulObjType = 0;
 
 	auto eid = MAPIFindFolderExW(lpMDB, lpszFolderPath);
@@ -286,7 +287,7 @@ void DumpHierarchyTable(
 	if (0 == ulDepth)
 	{
 		output::DebugPrint(
-			DBGGeneric,
+			output::DBGGeneric,
 			L"DumpHierarchyTable: Outputting hierarchy table for folder %ws from profile %ws \n",
 			lpszFolder.c_str(),
 			lpszProfile.c_str());
@@ -393,7 +394,7 @@ ULONGLONG ComputeSingleFolderSize(_In_ LPMAPIFOLDER lpFolder)
 		lpTable->Release();
 		lpTable = nullptr;
 	}
-	output::DebugPrint(DBGGeneric, L"Content size = %I64u\n", ullThisFolderSize);
+	output::DebugPrint(output::DBGGeneric, L"Content size = %I64u\n", ullThisFolderSize);
 
 	WC_MAPI_S(lpFolder->GetContentsTable(MAPI_ASSOCIATED, &lpTable));
 	if (lpTable)
@@ -415,7 +416,7 @@ ULONGLONG ComputeSingleFolderSize(_In_ LPMAPIFOLDER lpFolder)
 		lpTable = nullptr;
 	}
 
-	output::DebugPrint(DBGGeneric, L"Total size = %I64u\n", ullThisFolderSize);
+	output::DebugPrint(output::DBGGeneric, L"Total size = %I64u\n", ullThisFolderSize);
 
 	return ullThisFolderSize;
 }
@@ -424,7 +425,7 @@ ULONGLONG
 ComputeFolderSize(_In_ const std::wstring& lpszProfile, _In_ LPMAPIFOLDER lpFolder, _In_ const std::wstring& lpszFolder)
 {
 	output::DebugPrint(
-		DBGGeneric,
+		output::DBGGeneric,
 		L"ComputeFolderSize: Calculating size (including subfolders) for folder %ws from profile %ws \n",
 		lpszFolder.c_str(),
 		lpszProfile.c_str());
@@ -519,7 +520,7 @@ void DumpSearchState(
 	_In_ const std::wstring& lpszFolder)
 {
 	output::DebugPrint(
-		DBGGeneric,
+		output::DBGGeneric,
 		L"DumpSearchState: Outputting search state for folder %ws from profile %ws \n",
 		lpszFolder.c_str(),
 		lpszProfile.c_str());
@@ -545,10 +546,10 @@ void DumpSearchState(
 			printf("Search state %ws == 0x%08X\n", szFlags.c_str(), ulSearchState);
 			printf("\n");
 			printf("Search Scope:\n");
-			output::outputEntryList(DBGNoDebug, stdout, lpEntryList);
+			output::outputEntryList(output::DBGNoDebug, stdout, lpEntryList);
 			printf("\n");
 			printf("Search Criteria:\n");
-			output::outputRestriction(DBGNoDebug, stdout, lpRes, nullptr);
+			output::outputRestriction(output::DBGNoDebug, stdout, lpRes, nullptr);
 		}
 
 		MAPIFreeBuffer(lpRes);

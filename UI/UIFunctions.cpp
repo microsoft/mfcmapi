@@ -261,7 +261,7 @@ namespace ui
 		auto szNewString = strings::loadstring(uidNewString);
 
 		output::DebugPrint(
-			DBGMenu,
+			output::DBGMenu,
 			L"UpdateMenuString: Changing menu item 0x%X on window %p to \"%ws\"\n",
 			uiMenuTag,
 			hWnd,
@@ -612,7 +612,7 @@ namespace ui
 		const bool bBold,
 		_In_ const UINT format)
 	{
-		output::DebugPrint(DBGDraw, L"Draw %d, \"%ws\"\n", rc.right - rc.left, lpchText.c_str());
+		output::DebugPrint(output::DBGDraw, L"Draw %d, \"%ws\"\n", rc.right - rc.left, lpchText.c_str());
 		const auto hfontOld = SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
 		const auto crText = SetTextColor(hdc, color);
 		SetBkMode(hdc, TRANSPARENT);
@@ -1407,7 +1407,8 @@ namespace ui
 			SelectObject(hdc, hfontOld);
 			ReleaseDC(nullptr, hdc);
 
-			output::DebugPrint(DBGDraw, L"Measure %d, \"%ws\"\n", lpMeasureItemStruct->itemWidth, szText.c_str());
+			output::DebugPrint(
+				output::DBGDraw, L"Measure %d, \"%ws\"\n", lpMeasureItemStruct->itemWidth, szText.c_str());
 		}
 	}
 
@@ -1441,7 +1442,7 @@ namespace ui
 		const auto bDisabled = (lpDrawItemStruct->itemState & (ODS_GRAYED | ODS_DISABLED)) != 0;
 
 		output::DebugPrint(
-			DBGDraw,
+			output::DBGDraw,
 			L"DrawMenu %d, \"%ws\"\n",
 			lpDrawItemStruct->rcItem.right - lpDrawItemStruct->rcItem.left,
 			lpMenuEntry->m_pName.c_str());
@@ -1499,7 +1500,10 @@ namespace ui
 				rcText.left += GetSystemMetrics(SM_CXEDGE);
 
 			output::DebugPrint(
-				DBGDraw, L"DrawMenu text %d, \"%ws\"\n", rcText.right - rcText.left, lpMenuEntry->m_pName.c_str());
+				output::DBGDraw,
+				L"DrawMenu text %d, \"%ws\"\n",
+				rcText.right - rcText.left,
+				lpMenuEntry->m_pName.c_str());
 
 			DrawSegoeTextW(hdc, lpMenuEntry->m_pName, MyGetSysColor(cFore), rcText, false, uiTextFlags);
 

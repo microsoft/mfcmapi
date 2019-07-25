@@ -68,7 +68,7 @@ namespace mapi
 			if (m_szFolderPathRoot.length() >= MAXMSGPATH)
 			{
 				output::DebugPrint(
-					DBGGeneric,
+					output::DBGGeneric,
 					L"InitFolderPathRoot: \"%ws\" length (%d) greater than max length (%d)\n",
 					m_szFolderPathRoot.c_str(),
 					m_szFolderPathRoot.length(),
@@ -125,7 +125,7 @@ namespace mapi
 			}
 			output::OutputToFile(m_fMailboxTable, L"\">\n");
 
-			output::outputSRow(DBGNoDebug, m_fMailboxTable, lpSRow, lpMDB);
+			output::outputSRow(output::DBGNoDebug, m_fMailboxTable, lpSRow, lpMDB);
 
 			// build a path for our store's folder output:
 			if (strings::CheckStringProp(lpEmailAddress, PT_TSTRING) &&
@@ -190,7 +190,7 @@ namespace mapi
 				output::OutputToFile(m_fFolderProps, L"<properties listtype=\"summary\">\n");
 
 				output::outputProperties(
-					DBGNoDebug, m_fFolderProps, cValues, lpAllProps, m_lpFolder, m_bRetryStreamProps);
+					output::DBGNoDebug, m_fFolderProps, cValues, lpAllProps, m_lpFolder, m_bRetryStreamProps);
 
 				output::OutputToFile(m_fFolderProps, L"</properties>\n");
 
@@ -205,7 +205,7 @@ namespace mapi
 			if (m_bOutputList) return;
 			if (!m_fFolderProps || !lpSRow) return;
 			output::OutputToFile(m_fFolderProps, L"<row>\n");
-			output::outputSRow(DBGNoDebug, m_fFolderProps, lpSRow, m_lpMDB);
+			output::outputSRow(output::DBGNoDebug, m_fFolderProps, lpSRow, m_lpMDB);
 			output::OutputToFile(m_fFolderProps, L"</row>\n");
 		}
 
@@ -310,7 +310,7 @@ namespace mapi
 
 			output::OutputToFilef(m_fFolderContents, L"<message num=\"0x%08X\">\n", ulCurRow);
 
-			output::outputSRow(DBGNoDebug, m_fFolderContents, lpSRow, m_lpFolder);
+			output::outputSRow(output::DBGNoDebug, m_fFolderContents, lpSRow, m_lpFolder);
 
 			output::OutputToFile(m_fFolderContents, L"</message>\n");
 			return true;
@@ -397,9 +397,9 @@ namespace mapi
 					output::OutputToFile(fMessageProps, L">\n");
 					if (lpOutputStream)
 					{
-						output::OutputCDataOpen(DBGNoDebug, fMessageProps);
-						output::outputStream(DBGNoDebug, fMessageProps, lpOutputStream);
-						output::OutputCDataClose(DBGNoDebug, fMessageProps);
+						output::OutputCDataOpen(output::DBGNoDebug, fMessageProps);
+						output::outputStream(output::DBGNoDebug, fMessageProps, lpOutputStream);
+						output::OutputCDataClose(output::DBGNoDebug, fMessageProps);
 					}
 				}
 
@@ -493,7 +493,9 @@ namespace mapi
 			if (!lpMsgData->szFilePath.empty())
 			{
 				output::DebugPrint(
-					DBGGeneric, L"OutputMessagePropertiesToFile: Saving to \"%ws\"\n", lpMsgData->szFilePath.c_str());
+					output::DBGGeneric,
+					L"OutputMessagePropertiesToFile: Saving to \"%ws\"\n",
+					lpMsgData->szFilePath.c_str());
 				lpMsgData->fMessageProps = output::MyOpenFile(lpMsgData->szFilePath, true);
 
 				if (lpMsgData->fMessageProps)
@@ -523,7 +525,7 @@ namespace mapi
 							if (lpTemp)
 							{
 								output::outputProperty(
-									DBGNoDebug, lpMsgData->fMessageProps, lpTemp, lpMessage, bRetryStreamProps);
+									output::DBGNoDebug, lpMsgData->fMessageProps, lpTemp, lpMessage, bRetryStreamProps);
 							}
 						}
 
@@ -556,7 +558,12 @@ namespace mapi
 						output::OutputToFile(lpMsgData->fMessageProps, L"<properties listtype=\"FullPropList\">\n");
 
 						output::outputProperties(
-							DBGNoDebug, lpMsgData->fMessageProps, cValues, lpAllProps, lpMessage, bRetryStreamProps);
+							output::DBGNoDebug,
+							lpMsgData->fMessageProps,
+							cValues,
+							lpAllProps,
+							lpMessage,
+							bRetryStreamProps);
 
 						output::OutputToFile(lpMsgData->fMessageProps, L"</properties>\n");
 					}
@@ -579,7 +586,8 @@ namespace mapi
 
 			if (!lpMessage || szFolderPath.empty()) return;
 
-			output::DebugPrint(DBGGeneric, L"OutputMessageMSG: Saving message to \"%ws\"\n", szFolderPath.c_str());
+			output::DebugPrint(
+				output::DBGGeneric, L"OutputMessageMSG: Saving message to \"%ws\"\n", szFolderPath.c_str());
 
 			std::wstring szSubj;
 
@@ -604,7 +612,7 @@ namespace mapi
 			auto szFileName = file::BuildFileNameAndPath(L".msg", szSubj, szFolderPath, lpRecordKey); // STRING_OK
 			if (!szFileName.empty())
 			{
-				output::DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
+				output::DebugPrint(output::DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
 				WC_H_S(file::SaveToMSG(lpMessage, szFileName, fMapiUnicode != 0, nullptr, false));
 			}
@@ -653,7 +661,7 @@ namespace mapi
 
 			output::OutputToFilef(lpMsgData->fMessageProps, L"<recipient num=\"0x%08X\">\n", ulCurRow);
 
-			output::outputSRow(DBGNoDebug, lpMsgData->fMessageProps, lpSRow, lpMessage);
+			output::outputSRow(output::DBGNoDebug, lpMsgData->fMessageProps, lpSRow, lpMessage);
 
 			output::OutputToFile(lpMsgData->fMessageProps, L"</recipient>\n");
 		}
@@ -707,7 +715,7 @@ namespace mapi
 			output::OutputToFile(lpMsgData->fMessageProps, L"\">\n");
 
 			output::OutputToFile(lpMsgData->fMessageProps, L"\t<tableprops>\n");
-			output::outputSRow(DBGNoDebug, lpMsgData->fMessageProps, lpSRow, lpMessage);
+			output::outputSRow(output::DBGNoDebug, lpMsgData->fMessageProps, lpSRow, lpMessage);
 
 			output::OutputToFile(lpMsgData->fMessageProps, L"\t</tableprops>\n");
 
@@ -721,7 +729,12 @@ namespace mapi
 				{
 					output::OutputToFile(lpMsgData->fMessageProps, L"\t<getprops>\n");
 					output::outputProperties(
-						DBGNoDebug, lpMsgData->fMessageProps, ulAllProps, lpAllProps, lpAttach, m_bRetryStreamProps);
+						output::DBGNoDebug,
+						lpMsgData->fMessageProps,
+						ulAllProps,
+						lpAllProps,
+						lpAttach,
+						m_bRetryStreamProps);
 					output::OutputToFile(lpMsgData->fMessageProps, L"\t</getprops>\n");
 				}
 

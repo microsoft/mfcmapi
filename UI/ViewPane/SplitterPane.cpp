@@ -163,7 +163,7 @@ namespace viewpane
 		_In_ const int height)
 	{
 		output::DebugPrint(
-			DBGDraw, L"SplitterPane::DeferWindowPos x:%d y:%d width:%d height: %d\n", x, y, width, height);
+			output::DBGDraw, L"SplitterPane::DeferWindowPos x:%d y:%d width:%d height: %d\n", x, y, width, height);
 
 		auto curY = y;
 		const auto labelHeight = GetLabelHeight();

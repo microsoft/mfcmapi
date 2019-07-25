@@ -67,7 +67,8 @@ namespace dialog
 
 	_Check_return_ bool CFolderDlg::HandleMenu(WORD wMenuSelect)
 	{
-		output::DebugPrint(DBGMenu, L"CFolderDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
+		output::DebugPrint(
+			output::DBGMenu, L"CFolderDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 		switch (wMenuSelect)
 		{
 		case ID_DISPLAYACLTABLE:
@@ -430,7 +431,7 @@ namespace dialog
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
@@ -446,7 +447,7 @@ namespace dialog
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandlePaste", L"\n");
 		if (!m_lpFolder) return false;
 
 		editor::CEditor MyData(this, IDS_COPYMESSAGE, IDS_COPYMESSAGEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -1194,7 +1195,7 @@ namespace dialog
 			if (lpMessage)
 			{
 				output::DebugPrint(
-					DBGGeneric,
+					output::DBGGeneric,
 					L"Calling RemoveOneOff on %p, %wsremoving property definition stream\n",
 					lpMessage,
 					MyData.GetCheck(0) ? L"" : L"not ");
@@ -1236,9 +1237,9 @@ namespace dialog
 				if (lpMessage)
 				{
 					output::DebugPrint(
-						DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", lpMessage, MyData.GetHex(0));
+						output::DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", lpMessage, MyData.GetHex(0));
 					hRes = EC_MAPI(RTFSync(lpMessage, MyData.GetHex(0), &bMessageUpdated));
-					output::DebugPrint(DBGGeneric, L"RTFSync returned %d\n", bMessageUpdated);
+					output::DebugPrint(output::DBGGeneric, L"RTFSync returned %d\n", bMessageUpdated);
 
 					if (SUCCEEDED(hRes))
 					{
@@ -1329,7 +1330,7 @@ namespace dialog
 	{
 		auto hRes = S_OK;
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnSaveMessageToFile", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnSaveMessageToFile", L"\n");
 
 		editor::CEditor MyData(
 			this, IDS_SAVEMESSAGETOFILE, IDS_SAVEMESSAGETOFILEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -1399,7 +1400,7 @@ namespace dialog
 			if (lpMessage)
 			{
 				auto filename = file::BuildFileName(szDotExt, dir, lpMessage);
-				output::DebugPrint(DBGGeneric, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
+				output::DebugPrint(output::DBGGeneric, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
 
 				if (bPrompt)
 				{
@@ -1619,7 +1620,7 @@ namespace dialog
 
 		if (!m_lpContentsTableListCtrl) return;
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnSetReadFlag", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnSetReadFlag", L"\n");
 
 		editor::CEditor MyFlags(
 			this, IDS_SETREADFLAG, IDS_SETREADFLAGPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -1673,7 +1674,7 @@ namespace dialog
 		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnGetMessageOptions", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnGetMessageOptions", L"\n");
 
 		editor::CEditor MyAddress(
 			this, IDS_MESSAGEOPTIONS, IDS_ADDRESSTYPEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -1817,8 +1818,8 @@ namespace dialog
 					}
 				}
 
-				output::DebugPrintEx(DBGGeneric, CLASS, L"OnCreateMessageRestriction", L"built restriction:\n");
-				output::outputRestriction(DBGGeneric, nullptr, lpRes, lpMAPIProp);
+				output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnCreateMessageRestriction", L"built restriction:\n");
+				output::outputRestriction(output::DBGGeneric, nullptr, lpRes, lpMAPIProp);
 
 				m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
@@ -1837,7 +1838,7 @@ namespace dialog
 
 		if (!lpData || !lpData->Contents() || !m_lpFolder) return MAPI_E_INVALID_PARAMETER;
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnGetMessageStatus", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnGetMessageStatus", L"\n");
 
 		ULONG ulMessageStatus = NULL;
 
@@ -1874,7 +1875,7 @@ namespace dialog
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_STATUSINHEX, false));
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_MASKINHEX, false));
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnSetMessageStatus", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnSetMessageStatus", L"\n");
 
 		if (MyData.DisplayDialog())
 		{
@@ -1913,7 +1914,7 @@ namespace dialog
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
@@ -1936,7 +1937,7 @@ namespace dialog
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 		if (!m_lpMapiObjects || !lpData || !lpData->Contents()) return MAPI_E_INVALID_PARAMETER;
