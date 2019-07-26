@@ -798,43 +798,43 @@ namespace strings
 	{
 		if (ulPropType != PT_STRING8 && ulPropType != PT_UNICODE)
 		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: Called with invalid ulPropType of 0x%X\n", ulPropType);
+			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: Called with invalid ulPropType of 0x%X\n", ulPropType);
 			return false;
 		}
 
 		if (!lpProp)
 		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp is NULL\n");
+			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp is NULL\n");
 			return false;
 		}
 
 		if (PROP_TYPE(lpProp->ulPropTag) == PT_ERROR)
 		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is of type PT_ERROR\n");
+			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is of type PT_ERROR\n");
 			return false;
 		}
 
 		if (ulPropType != PROP_TYPE(lpProp->ulPropTag))
 		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is not of type 0x%X\n", ulPropType);
+			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is not of type 0x%X\n", ulPropType);
 			return false;
 		}
 
 		if (lpProp->Value.LPSZ == nullptr)
 		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.LPSZ is NULL\n");
+			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->Value.LPSZ is NULL\n");
 			return false;
 		}
 
 		if (ulPropType == PT_STRING8 && lpProp->Value.lpszA[0] == NULL)
 		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.lpszA[0] is NULL\n");
+			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->Value.lpszA[0] is NULL\n");
 			return false;
 		}
 
 		if (ulPropType == PT_UNICODE && lpProp->Value.lpszW[0] == NULL)
 		{
-			output::DebugPrint(DBGGeneric, L"CheckStringProp: lpProp->Value.lpszW[0] is NULL\n");
+			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->Value.lpszW[0] is NULL\n");
 			return false;
 		}
 

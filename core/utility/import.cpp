@@ -82,16 +82,17 @@ namespace import
 	// Exists to allow some logging
 	_Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName)
 	{
-		output::DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - loading \"%ws\"\n", lpszLibFileName.c_str());
+		output::DebugPrint(output::DBGLoadLibrary, L"MyLoadLibraryW - loading \"%ws\"\n", lpszLibFileName.c_str());
 		const auto hMod = WC_D(HMODULE, LoadLibraryW(lpszLibFileName.c_str()));
 		if (hMod)
 		{
 			output::DebugPrint(
-				DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" loaded at %p\n", lpszLibFileName.c_str(), hMod);
+				output::DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" loaded at %p\n", lpszLibFileName.c_str(), hMod);
 		}
 		else
 		{
-			output::DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" failed to load\n", lpszLibFileName.c_str());
+			output::DebugPrint(
+				output::DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" failed to load\n", lpszLibFileName.c_str());
 		}
 
 		return hMod;
@@ -120,7 +121,7 @@ namespace import
 		static auto szSystemDir = std::wstring();
 		static auto bSystemDirLoaded = false;
 
-		output::DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
+		output::DebugPrint(output::DBGLoadLibrary, L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
 
 		if (!bSystemDirLoaded)
 		{
@@ -129,7 +130,7 @@ namespace import
 		}
 
 		const auto szDLLPath = szSystemDir + L"\\" + szDLLName;
-		output::DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
+		output::DebugPrint(output::DBGLoadLibrary, L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
 		return MyLoadLibraryW(szDLLPath);
 	}
 
@@ -137,7 +138,7 @@ namespace import
 	{
 		HMODULE hModRet = nullptr;
 
-		output::DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading \"%ws\"\n", szDLLName.c_str());
+		output::DebugPrint(output::DBGLoadLibrary, L"LoadFromOLMAPIDir - loading \"%ws\"\n", szDLLName.c_str());
 
 		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
 		{
@@ -162,7 +163,7 @@ namespace import
 					auto szFullPath = std::wstring(szDrive) + std::wstring(szMAPIPath) + szDLLName;
 
 					output::DebugPrint(
-						DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
+						output::DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
 					hModRet = WC_D(HMODULE, MyLoadLibraryW(szFullPath));
 				}
 			}
@@ -197,7 +198,7 @@ namespace import
 	{
 		std::wstring lpszClient = L"Default";
 		if (!szClient.empty()) lpszClient = szClient;
-		output::DebugPrint(DBGLoadLibrary, L"Enter GetMailKey(%ws)\n", lpszClient.c_str());
+		output::DebugPrint(output::DBGLoadLibrary, L"Enter GetMailKey(%ws)\n", lpszClient.c_str());
 
 		// If szClient is empty, we need to read the name of the default MAPI client
 		if (szClient.empty())
@@ -216,7 +217,7 @@ namespace import
 				if (!lpszReg.empty())
 				{
 					lpszClient = lpszReg;
-					output::DebugPrint(DBGLoadLibrary, L"Default MAPI = %ws\n", lpszClient.c_str());
+					output::DebugPrint(output::DBGLoadLibrary, L"Default MAPI = %ws\n", lpszClient.c_str());
 				}
 
 				EC_W32_S(RegCloseKey(hDefaultMailKey));
@@ -242,26 +243,26 @@ namespace import
 		_In_ std::wstring& lpszAppLCID,
 		_In_ std::wstring& lpszOfficeLCID)
 	{
-		output::DebugPrint(DBGLoadLibrary, L"GetMapiMsiIds(%ws)\n", szClient.c_str());
+		output::DebugPrint(output::DBGLoadLibrary, L"GetMapiMsiIds(%ws)\n", szClient.c_str());
 
 		const auto hKey = GetMailKey(szClient);
 		if (hKey)
 		{
 			lpszComponentID = registry::ReadStringFromRegistry(hKey, L"MSIComponentID"); // STRING_OK
 			output::DebugPrint(
-				DBGLoadLibrary,
+				output::DBGLoadLibrary,
 				L"MSIComponentID = %ws\n",
 				!lpszComponentID.empty() ? lpszComponentID.c_str() : L"<not found>");
 
 			lpszAppLCID = registry::ReadStringFromRegistry(hKey, L"MSIApplicationLCID"); // STRING_OK
 			output::DebugPrint(
-				DBGLoadLibrary,
+				output::DBGLoadLibrary,
 				L"MSIApplicationLCID = %ws\n",
 				!lpszAppLCID.empty() ? lpszAppLCID.c_str() : L"<not found>");
 
 			lpszOfficeLCID = registry::ReadStringFromRegistry(hKey, L"MSIOfficeLCID"); // STRING_OK
 			output::DebugPrint(
-				DBGLoadLibrary,
+				output::DBGLoadLibrary,
 				L"MSIOfficeLCID = %ws\n",
 				!lpszOfficeLCID.empty() ? lpszOfficeLCID.c_str() : L"<not found>");
 

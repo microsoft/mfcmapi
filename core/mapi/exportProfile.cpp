@@ -35,7 +35,7 @@ namespace output
 			OutputToFilef(
 				fProfile, L"<properties listtype=\"profilesection\" profilesection=\"%ws\">\n", szBin.c_str());
 
-			outputProperties(DBGNoDebug, fProfile, cValues, lpAllProps, nullptr, false);
+			outputProperties(output::DBGNoDebug, fProfile, cValues, lpAllProps, nullptr, false);
 
 			OutputToFile(fProfile, L"</properties>\n");
 
@@ -47,10 +47,10 @@ namespace output
 	{
 		if (!fProfile || !lpRow) return;
 
-		Outputf(DBGNoDebug, fProfile, true, L"<provider index = \"0x%08X\">\n", iRow);
+		Outputf(output::DBGNoDebug, fProfile, true, L"<provider index = \"0x%08X\">\n", iRow);
 
 		OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
-		outputSRow(DBGNoDebug, fProfile, lpRow, nullptr);
+		outputSRow(output::DBGNoDebug, fProfile, lpRow, nullptr);
 		OutputToFile(fProfile, L"</properties>\n");
 
 		auto lpProviderUID = PpropFindProp(lpRow->lpProps, lpRow->cValues, PR_PROVIDER_UID);
@@ -72,10 +72,10 @@ namespace output
 	{
 		if (!fProfile || !lpRow) return;
 
-		Outputf(DBGNoDebug, fProfile, true, L"<service index = \"0x%08X\">\n", iRow);
+		Outputf(output::DBGNoDebug, fProfile, true, L"<service index = \"0x%08X\">\n", iRow);
 
 		OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
-		outputSRow(DBGNoDebug, fProfile, lpRow, nullptr);
+		outputSRow(output::DBGNoDebug, fProfile, lpRow, nullptr);
 		OutputToFile(fProfile, L"</properties>\n");
 
 		auto lpServiceUID = PpropFindProp(lpRow->lpProps, lpRow->cValues, PR_SERVICE_UID);
@@ -140,7 +140,7 @@ namespace output
 			DBGGeneric, L"ExportProfile: Saving profile \"%hs\" to \"%ws\"\n", szProfile.c_str(), szFileName.c_str());
 		if (!szProfileSection.empty())
 		{
-			DebugPrint(DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection.c_str());
+			DebugPrint(output::DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection.c_str());
 		}
 
 		LPPROFADMIN lpProfAdmin = nullptr;
@@ -152,7 +152,7 @@ namespace output
 		}
 
 		output::OutputToFile(fProfile, output::g_szXMLHeader);
-		Outputf(DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile.c_str());
+		Outputf(output::DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile.c_str());
 
 		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));
 		if (lpProfAdmin)

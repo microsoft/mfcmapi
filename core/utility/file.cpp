@@ -71,13 +71,13 @@ namespace file
 		_In_ const std::wstring& szRootPath,
 		_In_opt_ const _SBinary* lpBin)
 	{
-		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath ext = \"%ws\"\n", szExt.c_str());
-		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath subj = \"%ws\"\n", szSubj.c_str());
-		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath rootPath = \"%ws\"\n", szRootPath.c_str());
+		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath ext = \"%ws\"\n", szExt.c_str());
+		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath subj = \"%ws\"\n", szSubj.c_str());
+		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath rootPath = \"%ws\"\n", szRootPath.c_str());
 
 		// Set up the path portion of the output.
 		auto cleanRoot = ShortenPath(szRootPath);
-		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath cleanRoot = \"%ws\"\n", cleanRoot.c_str());
+		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath cleanRoot = \"%ws\"\n", cleanRoot.c_str());
 
 		// If we don't have enough space for even the shortest filename, give up.
 		if (cleanRoot.length() >= MAXMSGPATH) return strings::emptystring;
@@ -97,7 +97,7 @@ namespace file
 			cleanSubj = L"UnknownSubject"; // STRING_OK
 		}
 
-		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath cleanSubj = \"%ws\"\n", cleanSubj.c_str());
+		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath cleanSubj = \"%ws\"\n", cleanSubj.c_str());
 
 		std::wstring szBin;
 		if (lpBin && lpBin->cb)
@@ -108,7 +108,7 @@ namespace file
 		if (cleanSubj.length() + szBin.length() <= maxFile)
 		{
 			auto szFile = cleanRoot + cleanSubj + szBin + szExt;
-			output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szFile.c_str());
+			output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szFile.c_str());
 			return szFile;
 		}
 
@@ -116,24 +116,24 @@ namespace file
 		// Compute a shorter subject length that should fit.
 		const auto maxSubj = maxFile - min(MAXBIN, szBin.length()) - 1;
 		auto szFile = cleanSubj.substr(0, maxSubj) + szBin.substr(0, MAXBIN);
-		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
-		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
+		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
+		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
 
 		if (szFile.length() >= maxFile)
 		{
 			szFile = cleanSubj.substr(0, MAXSUBJTIGHT) + szBin.substr(0, MAXBIN);
-			output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
-			output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
+			output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
+			output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
 		}
 
 		if (szFile.length() >= maxFile)
 		{
-			output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath failed to build a string\n");
+			output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath failed to build a string\n");
 			return strings::emptystring;
 		}
 
 		auto szOut = cleanRoot + szFile + szExt;
-		output::DebugPrint(DBGGeneric, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szOut.c_str());
+		output::DebugPrint(output::DBGGeneric, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szOut.c_str());
 		return szOut;
 	}
 

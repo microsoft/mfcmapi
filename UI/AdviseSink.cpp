@@ -54,7 +54,7 @@ namespace mapi
 
 		STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify, LPNOTIFICATION lpNotifications)
 		{
-			output::outputNotifications(DBGNotify, nullptr, cNotify, lpNotifications, m_lpAdviseTarget);
+			output::outputNotifications(output::DBGNotify, nullptr, cNotify, lpNotifications, m_lpAdviseTarget);
 
 			if (!m_hWndParent) return 0;
 
