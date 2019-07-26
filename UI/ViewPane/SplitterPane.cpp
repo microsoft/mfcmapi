@@ -15,13 +15,17 @@ namespace viewpane
 	SplitterPane* SplitterPane::CreateHorizontalPane(const int paneID, const UINT uidLabel)
 	{
 		const auto pane = new (std::nothrow) SplitterPane();
-		pane->SetLabel(uidLabel);
-		if (uidLabel)
+		if (pane)
 		{
-			pane->m_bCollapsible = true;
+			pane->SetLabel(uidLabel);
+			if (uidLabel)
+			{
+				pane->m_bCollapsible = true;
+			}
+
+			pane->m_paneID = paneID;
 		}
 
-		pane->m_paneID = paneID;
 		return pane;
 	}
 

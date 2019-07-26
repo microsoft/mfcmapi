@@ -1290,8 +1290,16 @@ namespace controls
 
 					// need to merge the data we got back from the CRestrictEditor with our current prop set
 					// so that we can free lpModRes
-					SPropValue ResProp = {0};
-					ResProp.ulPropTag = lpEditProp->ulPropTag;
+					SPropValue ResProp = {};
+					if (lpEditProp)
+					{
+						ResProp.ulPropTag = lpEditProp->ulPropTag;
+					}
+					else
+					{
+						ResProp.ulPropTag = ulPropTag;
+					}
+
 					ResProp.Value.lpszA = reinterpret_cast<LPSTR>(lpModRes);
 
 					auto hRes = EC_H(m_lpPropBag->SetProp(&ResProp));
