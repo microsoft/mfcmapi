@@ -81,8 +81,6 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 
 		for (const auto& path : paths)
 		{
-			strings::wstringToLower(path);
-
 			if (strings::wstringToLower(path).find(strings::wstringToLower(lpszVersion)) != std::wstring::npos)
 			{
 				szPath = path;
