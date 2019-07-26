@@ -57,7 +57,7 @@ namespace dialog
 
 	void CAbDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	{
-		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
+		output::DebugPrintEx(output::DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
 		ui::UpdateMenuString(m_hWnd, ID_CREATEPROPERTYSTRINGRESTRICTION, IDS_ABRESMENU);
@@ -84,7 +84,8 @@ namespace dialog
 
 	void CAbDlg::OnDisplayDetails()
 	{
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnDisplayDetails", L"displaying Address Book entry details\n");
+		output::DebugPrintEx(
+			output::DBGGeneric, CLASS, L"OnDisplayDetails", L"displaying Address Book entry details\n");
 
 		if (!m_lpMapiObjects) return;
 		auto lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
@@ -203,7 +204,7 @@ namespace dialog
 			this, IDS_DELETEABENTRY, IDS_DELETEABENTRYPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		if (!Query.DisplayDialog()) return;
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteSelectedItem", L"deleting address Book entries\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnDeleteSelectedItem", L"deleting address Book entries\n");
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
@@ -215,7 +216,7 @@ namespace dialog
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		const auto lpEIDs = m_lpContentsTableListCtrl->GetSelectedItemEIDs();
@@ -230,7 +231,7 @@ namespace dialog
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"pasting address Book entries\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandlePaste", L"pasting address Book entries\n");
 		if (!m_lpAbCont) return false;
 
 		const auto lpEIDs = cache::CGlobalCache::getInstance().GetABEntriesToCopy();

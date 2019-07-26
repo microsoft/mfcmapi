@@ -21,17 +21,17 @@ namespace error
 		_In_z_ LPCSTR szFile,
 		int iLine)
 	{
-		if (fIsSet(DBGMAPIFunctions) && bMAPICall)
+		if (fIsSet(output::DBGMAPIFunctions) && bMAPICall)
 		{
 			const auto szFunctionString = strings::formatmessage(IDS_FUNCTION, szFile, iLine, szFunction);
 
-			output::Output(DBGMAPIFunctions, nullptr, true, szFunctionString);
-			output::Output(DBGMAPIFunctions, nullptr, false, L"\n");
+			output::Output(output::DBGMAPIFunctions, nullptr, true, szFunctionString);
+			output::Output(output::DBGMAPIFunctions, nullptr, false, L"\n");
 		}
 
 		// Check if we have no work to do
 		if (hRes == S_OK || hRes == hrIgnore) return;
-		if (!fIsSet(DBGHRes)) return;
+		if (!fIsSet(output::DBGHRes)) return;
 
 		// Get our error message if we have one
 		auto szErrorMsg =
@@ -46,8 +46,8 @@ namespace error
 			szFile,
 			iLine);
 
-		output::Output(DBGHRes, nullptr, true, strings::StripCarriage(szErrString));
-		output::Output(DBGHRes, nullptr, false, L"\n");
+		output::Output(output::DBGHRes, nullptr, true, strings::StripCarriage(szErrString));
+		output::Output(output::DBGHRes, nullptr, false, L"\n");
 
 		if (bShowDialog && displayError)
 		{
@@ -76,8 +76,8 @@ namespace error
 
 		const auto szCombo = szErrorBegin + strings::formatmessage(IDS_INFILEONLINE, szFile, iLine);
 
-		output::Output(DBGHRes, nullptr, true, szCombo);
-		output::Output(DBGHRes, nullptr, false, L"\n");
+		output::Output(output::DBGHRes, nullptr, true, szCombo);
+		output::Output(output::DBGHRes, nullptr, false, L"\n");
 
 		if (displayError)
 		{

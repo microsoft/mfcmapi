@@ -145,12 +145,12 @@ namespace controls
 			tvItem.mask = TVIF_PARAM;
 			if (TreeView_GetItem(hWnd, &tvItem) && tvItem.lParam)
 			{
-				output::DebugPrintEx(DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, replacing data\n", hItem);
+				output::DebugPrintEx(output::DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, replacing data\n", hItem);
 				if (FreeNodeDataCallback) FreeNodeDataCallback(tvItem.lParam);
 			}
 			else
 			{
-				output::DebugPrintEx(DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, first data\n", hItem);
+				output::DebugPrintEx(output::DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, first data\n", hItem);
 			}
 
 			tvItem.lParam = lpData;
@@ -185,7 +185,7 @@ namespace controls
 		const std::function<void(HTREEITEM hItem)>& callback) const
 	{
 		output::DebugPrintEx(
-			DBGHierarchy,
+			output::DBGHierarchy,
 			CLASS,
 			L"AddNode",
 			L"Adding Node \"%ws\" under node %p, callback = %ws\n",
@@ -292,7 +292,7 @@ namespace controls
 		if (pNMTreeView)
 		{
 			output::DebugPrintEx(
-				DBGHierarchy,
+				output::DBGHierarchy,
 				CLASS,
 				L"OnItemExpanding",
 				L"Expanding item %p \"%ws\" action = 0x%08X state = 0x%08X\n",
@@ -347,7 +347,7 @@ namespace controls
 
 	void StyleTreeCtrl::OnKeyDown(const UINT nChar, const UINT nRepCnt, const UINT nFlags)
 	{
-		output::DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
+		output::DebugPrintEx(output::DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
 
 		const auto bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
 		const auto bShiftPressed = GetKeyState(VK_SHIFT) < 0;
@@ -369,7 +369,7 @@ namespace controls
 		if (pNMTreeView)
 		{
 			output::DebugPrintEx(
-				DBGHierarchy,
+				output::DBGHierarchy,
 				CLASS,
 				L"OnDeleteItem",
 				L"Deleting item %p \"%ws\"\n",
@@ -387,7 +387,11 @@ namespace controls
 				if (!(hPrev || hNext))
 				{
 					output::DebugPrintEx(
-						DBGHierarchy, CLASS, L"OnDeleteItem", L"%p has no siblings\n", pNMTreeView->itemOld.hItem);
+						output::DBGHierarchy,
+						CLASS,
+						L"OnDeleteItem",
+						L"%p has no siblings\n",
+						pNMTreeView->itemOld.hItem);
 					const auto hParent = TreeView_GetParent(m_hWnd, pNMTreeView->itemOld.hItem);
 					TreeView_SetItemState(m_hWnd, hParent, 0, TVIS_EXPANDED | TVIS_EXPANDEDONCE);
 					auto tvItem = TVITEM{};

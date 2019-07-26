@@ -73,7 +73,7 @@ namespace propertybag
 			if (hRes == MAPI_E_CALL_FAILED)
 			{
 				// Some stores, like public folders, don't support properties on the root folder
-				output::DebugPrint(DBGGeneric, L"Failed to get call GetProps on this object!\n");
+				output::DebugPrint(output::DBGGeneric, L"Failed to get call GetProps on this object!\n");
 			}
 			else if (FAILED(hRes)) // only report errors, not warnings
 			{

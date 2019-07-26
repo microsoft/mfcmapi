@@ -32,7 +32,7 @@ namespace mapi
 				hRes =
 					EC_MAPI(HrQueryAllRows(lpProviderTable, LPSPropTagArray(&pTagUID), nullptr, nullptr, 0, &lpRowSet));
 
-				if (lpRowSet) output::outputSRowSet(DBGGeneric, nullptr, lpRowSet, nullptr);
+				if (lpRowSet) output::outputSRowSet(output::DBGGeneric, nullptr, lpRowSet, nullptr);
 
 				if (lpRowSet && lpRowSet->cRows >= 1)
 				{
@@ -153,7 +153,10 @@ namespace mapi
 			if (lpszServiceName.empty() || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			output::DebugPrint(
-				DBGGeneric, L"HrAddServiceToProfile(%hs,%hs)\n", lpszServiceName.c_str(), lpszProfileName.c_str());
+				output::DBGGeneric,
+				L"HrAddServiceToProfile(%hs,%hs)\n",
+				lpszServiceName.c_str(),
+				lpszProfileName.c_str());
 
 			LPPROFADMIN lpProfAdmin = nullptr;
 			// Connect to Profile Admin interface.
@@ -209,7 +212,7 @@ namespace mapi
 					{
 						// Look for a provider without our dummy prop
 						const auto lpRowSet = HrFindUnmarkedProvider(lpServiceAdmin);
-						if (lpRowSet) output::outputSRowSet(DBGGeneric, nullptr, lpRowSet, nullptr);
+						if (lpRowSet) output::outputSRowSet(output::DBGGeneric, nullptr, lpRowSet, nullptr);
 
 						// should only have one unmarked row
 						if (lpRowSet && lpRowSet->cRows == 1)
@@ -252,7 +255,7 @@ namespace mapi
 			_In_ const std::string& lpszProfileName)
 		{
 			output::DebugPrint(
-				DBGGeneric,
+				output::DBGGeneric,
 				L"HrAddExchangeToProfile(%hs,%hs,%hs)\n",
 				lpszServerName.c_str(),
 				lpszMailboxName.c_str(),
@@ -284,7 +287,7 @@ namespace mapi
 			auto hRes = S_OK;
 
 			output::DebugPrint(
-				DBGGeneric,
+				output::DBGGeneric,
 				L"HrAddPSTToProfile(0x%X,%ws,%hs,0x%X,%hs)\n",
 				bUnicodePST,
 				lpszPSTPath.c_str(),
@@ -327,7 +330,7 @@ namespace mapi
 		{
 			LPPROFADMIN lpProfAdmin = nullptr;
 
-			output::DebugPrint(DBGGeneric, L"HrCreateProfile(%hs)\n", lpszProfileName.c_str());
+			output::DebugPrint(output::DBGGeneric, L"HrCreateProfile(%hs)\n", lpszProfileName.c_str());
 
 			if (lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
@@ -358,7 +361,7 @@ namespace mapi
 		{
 			LPPROFADMIN lpProfAdmin = nullptr;
 
-			output::DebugPrint(DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName.c_str());
+			output::DebugPrint(output::DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName.c_str());
 			if (lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -380,7 +383,7 @@ namespace mapi
 		{
 			LPPROFADMIN lpProfAdmin = nullptr;
 
-			output::DebugPrint(DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName.c_str());
+			output::DebugPrint(output::DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName.c_str());
 			if (lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -406,7 +409,7 @@ namespace mapi
 
 			static const SizedSPropTagArray(1, rgPropTag) = {1, {PR_DISPLAY_NAME_A}};
 
-			output::DebugPrint(DBGGeneric, L"HrMAPIProfileExists()\n");
+			output::DebugPrint(output::DBGGeneric, L"HrMAPIProfileExists()\n");
 			if (!lpProfAdmin || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			// Get a table of existing profiles
@@ -477,7 +480,7 @@ namespace mapi
 			LPPROFADMIN lpProfAdmin = nullptr;
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
 
-			output::DebugPrint(DBGGeneric, L"GetProfileServiceVersion(%hs)\n", lpszProfileName.c_str());
+			output::DebugPrint(output::DBGGeneric, L"GetProfileServiceVersion(%hs)\n", lpszProfileName.c_str());
 
 			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
@@ -513,9 +516,9 @@ namespace mapi
 						PR_PROFILE_SERVER_FULL_VERSION == lpServerFullVersion->ulPropTag &&
 						sizeof(EXCHANGE_STORE_VERSION_NUM) == lpServerFullVersion->Value.bin.cb)
 					{
-						output::DebugPrint(DBGGeneric, L"PR_PROFILE_SERVER_FULL_VERSION = ");
-						output::outputBinary(DBGGeneric, nullptr, lpServerFullVersion->Value.bin);
-						output::DebugPrint(DBGGeneric, L"\n");
+						output::DebugPrint(output::DBGGeneric, L"PR_PROFILE_SERVER_FULL_VERSION = ");
+						output::outputBinary(output::DBGGeneric, nullptr, lpServerFullVersion->Value.bin);
+						output::DebugPrint(output::DBGGeneric, L"\n");
 
 						memcpy(lpStoreVersion, lpServerFullVersion->Value.bin.lpb, sizeof(EXCHANGE_STORE_VERSION_NUM));
 						*lpbFoundServerFullVersion = true;
@@ -544,7 +547,10 @@ namespace mapi
 			LPPROFADMIN lpProfAdmin = nullptr;
 
 			output::DebugPrint(
-				DBGGeneric, L"HrCopyProfile(%hs, %hs)\n", lpszOldProfileName.c_str(), lpszNewProfileName.c_str());
+				output::DBGGeneric,
+				L"HrCopyProfile(%hs, %hs)\n",
+				lpszOldProfileName.c_str(),
+				lpszNewProfileName.c_str());
 			if (lpszOldProfileName.empty() || lpszNewProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -566,9 +572,9 @@ namespace mapi
 		{
 			if (!lpServiceUID || !lpServiceAdmin) return nullptr;
 
-			output::DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
-			output::outputBinary(DBGOpenItemProp, nullptr, *lpServiceUID);
-			output::DebugPrint(DBGOpenItemProp, L"\n");
+			output::DebugPrint(output::DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
+			output::outputBinary(output::DBGOpenItemProp, nullptr, *lpServiceUID);
+			output::DebugPrint(output::DBGOpenItemProp, L"\n");
 
 			LPPROFSECT lpProfSect = nullptr;
 			// First, we try the normal way of opening the profile section:
@@ -613,9 +619,9 @@ namespace mapi
 		{
 			if (!lpProviderUID || !lpProviderAdmin) return nullptr;
 
-			output::DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
-			output::outputBinary(DBGOpenItemProp, nullptr, *lpProviderUID);
-			output::DebugPrint(DBGOpenItemProp, L"\n");
+			output::DebugPrint(output::DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
+			output::outputBinary(output::DBGOpenItemProp, nullptr, *lpProviderUID);
+			output::DebugPrint(output::DBGOpenItemProp, L"\n");
 
 			LPPROFSECT lpProfSect = nullptr;
 			WC_MAPI_S(lpProviderAdmin->OpenProfileSection(

@@ -58,6 +58,12 @@ namespace controls
 			slIconMAPI_FORMINFO,
 		};
 
+		struct TypeIcon
+		{
+			ULONG objType{};
+			__SortListIconNames image{};
+		};
+
 		class CSortListCtrl : public CListCtrl
 		{
 		public:
@@ -82,7 +88,7 @@ namespace controls
 		protected:
 			void MySetRedraw(bool bRedraw);
 			_Check_return_ sortlistdata::SortListData*
-			InsertRow(int iRow, const std::wstring& szText, int iIndent, int iImage) const;
+			InsertRow(int iRow, const std::wstring& szText, int iIndent, __SortListIconNames iImage) const;
 			void FakeClickColumn(int iColumn, bool bSortUp);
 
 			// protected since derived classes need to call the base implementation

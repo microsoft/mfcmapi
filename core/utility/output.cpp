@@ -36,10 +36,6 @@ namespace output
 		g_fDebugFile = nullptr;
 	}
 
-	_Check_return_ ULONG GetDebugLevel() { return registry::debugTag; }
-
-	void SetDebugLevel(ULONG ulDbgLvl) { registry::debugTag = ulDbgLvl; }
-
 	// We've got our 'new' value here and also a debug output file name
 	// gonna set the new value
 	// gonna ensure our debug output file is open if we need it, closed if we don't
@@ -59,10 +55,22 @@ namespace output
 		if (bDoOutput && !bOldDoOutput)
 		{
 			auto appName = file::GetModuleFileName(nullptr);
-			DebugPrint(DBGGeneric, L"%ws: Debug printing to file enabled.\n", appName.c_str());
+			DebugPrint(output::DBGGeneric, L"%ws: Debug printing to file enabled.\n", appName.c_str());
 
-			outputVersion(DBGVersionBanner, nullptr);
+			outputVersion(output::DBGVersionBanner, nullptr);
 		}
+	}
+
+	bool fIsSet(output::DBGLEVEL ulTag) { return registry::debugTag & ulTag; }
+	bool fIsSetv(output::DBGLEVEL ulTag) { return (ulTag != DBGNoDebug) && (registry::debugTag & ulTag); }
+
+	bool earlyExit(output::DBGLEVEL ulDbgLvl, bool fFile)
+	{
+		assert(output::DBGNoDebug != ulDbgLvl || fFile);
+
+		// quick check to see if we have anything to print - so we can avoid executing the call
+		if (!fFile && !registry::debugToFile && !fIsSetv(ulDbgLvl)) return true;
+		return false;
 	}
 
 	_Check_return_ FILE* MyOpenFile(const std::wstring& szFileName, bool bNewFile)
@@ -116,7 +124,7 @@ namespace output
 		}
 	}
 
-	void OutputThreadTime(ULONG ulDbgLvl)
+	void OutputThreadTime(output::DBGLEVEL ulDbgLvl)
 	{
 		// Compute current time and thread for a time stamp
 		std::wstring szThreadTime;
@@ -153,10 +161,9 @@ namespace output
 	}
 
 	// The root of all debug output - call no debug output functions besides OutputDebugString from here!
-	void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const std::wstring& szMsg)
+	void Output(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const std::wstring& szMsg)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (szMsg.empty()) return; // nothing to print? Cool!
 
 		// print to debug output
@@ -192,10 +199,9 @@ namespace output
 		}
 	}
 
-	void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, LPCWSTR szMsg, ...)
+	void __cdecl Outputf(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, LPCWSTR szMsg, ...)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		va_list argList = nullptr;
 		va_start(argList, szMsg);
@@ -211,17 +217,17 @@ namespace output
 		va_start(argList, szMsg);
 		if (argList)
 		{
-			Output(DBGNoDebug, fFile, true, strings::formatV(szMsg, argList));
+			Output(output::DBGNoDebug, fFile, true, strings::formatV(szMsg, argList));
 		}
 		else
 		{
-			Output(DBGNoDebug, fFile, true, szMsg);
+			Output(output::DBGNoDebug, fFile, true, szMsg);
 		}
 
 		va_end(argList);
 	}
 
-	void __cdecl DebugPrint(ULONG ulDbgLvl, LPCWSTR szMsg, ...)
+	void __cdecl DebugPrint(output::DBGLEVEL ulDbgLvl, LPCWSTR szMsg, ...)
 	{
 		if (!fIsSetv(ulDbgLvl) && !registry::debugToFile) return;
 
@@ -239,7 +245,12 @@ namespace output
 		va_end(argList);
 	}
 
-	void __cdecl DebugPrintEx(ULONG ulDbgLvl, std::wstring& szClass, const std::wstring& szFunc, LPCWSTR szMsg, ...)
+	void __cdecl DebugPrintEx(
+		output::DBGLEVEL ulDbgLvl,
+		std::wstring& szClass,
+		const std::wstring& szFunc,
+		LPCWSTR szMsg,
+		...)
 	{
 		if (!fIsSetv(ulDbgLvl) && !registry::debugToFile) return;
 
@@ -258,20 +269,18 @@ namespace output
 		va_end(argList);
 	}
 
-	void OutputIndent(ULONG ulDbgLvl, _In_opt_ FILE* fFile, int iIndent)
+	void OutputIndent(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, int iIndent)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		for (auto i = 0; i < iIndent; i++)
 			Output(ulDbgLvl, fFile, false, L"\t");
 	}
 
 #define MAXBYTES 4096
-	void outputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
+	void outputStream(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		if (!lpStream)
 		{
@@ -303,10 +312,9 @@ namespace output
 			} while (ulNumBytes > 0);
 	}
 
-	void outputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
+	void outputVersion(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		// Get version information from the application.
 		const auto szFullPath = file::GetModuleFileName(nullptr);
@@ -324,20 +332,22 @@ namespace output
 		}
 	}
 
-	void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile) { Output(ulDbgLvl, fFile, false, L"<![CDATA["); }
+	void OutputCDataOpen(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile)
+	{
+		Output(ulDbgLvl, fFile, false, L"<![CDATA[");
+	}
 
-	void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile) { Output(ulDbgLvl, fFile, false, L"]]>"); }
+	void OutputCDataClose(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile) { Output(ulDbgLvl, fFile, false, L"]]>"); }
 
 	void OutputXMLValue(
-		ULONG ulDbgLvl,
+		DBGLEVEL ulDbgLvl,
 		_In_opt_ FILE* fFile,
 		UINT uidTag,
 		const std::wstring& szValue,
 		bool bWrapCData,
 		int iIndent)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (szValue.empty() || !uidTag) return;
 
 		if (!szValue[0]) return;

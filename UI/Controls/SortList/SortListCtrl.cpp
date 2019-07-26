@@ -268,11 +268,11 @@ namespace controls
 
 		_Check_return_ sortlistdata::SortListData* CSortListCtrl::InsertRow(int iRow, const std::wstring& szText) const
 		{
-			return InsertRow(iRow, szText, 0, 0);
+			return InsertRow(iRow, szText, 0, slIconDefault);
 		}
 
 		_Check_return_ sortlistdata::SortListData*
-		CSortListCtrl::InsertRow(int iRow, const std::wstring& szText, int iIndent, int iImage) const
+		CSortListCtrl::InsertRow(int iRow, const std::wstring& szText, int iIndent, __SortListIconNames iImage) const
 		{
 			auto lpData = new sortlistdata::SortListData();
 
@@ -580,7 +580,7 @@ namespace controls
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"AutoSizeColumns", L"Sizing columns\n");
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"AutoSizeColumns", L"Sizing columns\n");
 			const auto lpMyHeader = GetHeaderCtrl();
 			if (lpMyHeader)
 			{
@@ -598,7 +598,7 @@ namespace controls
 		{
 			HDITEM hdItem = {0};
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"DeleteAllColumns", L"Deleting existing columns\n");
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"DeleteAllColumns", L"Deleting existing columns\n");
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 			const auto lpMyHeader = GetHeaderCtrl();
@@ -674,7 +674,7 @@ namespace controls
 		// if asked to select the item after the last item - will select the last item.
 		void CSortListCtrl::SetSelectedItem(int iItem)
 		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"SetSelectedItem", L"selecting iItem = %d\n", iItem);
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"SetSelectedItem", L"selecting iItem = %d\n", iItem);
 			const auto bSet = SetItemState(iItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
 
 			if (bSet)

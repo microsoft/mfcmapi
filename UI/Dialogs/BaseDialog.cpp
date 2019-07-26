@@ -84,7 +84,7 @@ namespace dialog
 	{
 		const auto lCount = InterlockedIncrement(&m_cRef);
 		TRACE_ADDREF(CLASS, lCount);
-		output::DebugPrint(DBGRefCount, L"CBaseDialog::AddRef(\"%ws\")\n", m_szTitle.c_str());
+		output::DebugPrint(output::DBGRefCount, L"CBaseDialog::AddRef(\"%ws\")\n", m_szTitle.c_str());
 		return lCount;
 	}
 
@@ -92,7 +92,7 @@ namespace dialog
 	{
 		const auto lCount = InterlockedDecrement(&m_cRef);
 		TRACE_RELEASE(CLASS, lCount);
-		output::DebugPrint(DBGRefCount, L"CBaseDialog::Release(\"%ws\")\n", m_szTitle.c_str());
+		output::DebugPrint(output::DBGRefCount, L"CBaseDialog::Release(\"%ws\")\n", m_szTitle.c_str());
 		if (!lCount) delete this;
 		return lCount;
 	}
@@ -170,7 +170,7 @@ namespace dialog
 		const UINT uiClassMenuResource,
 		const UINT uidClassMenuTitle)
 	{
-		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
+		output::DebugPrintEx(output::DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 
 		m_lpszTemplateName = MAKEINTRESOURCE(IDD_BLANK_DIALOG);
 
@@ -218,7 +218,8 @@ namespace dialog
 
 	_Check_return_ bool CBaseDialog::HandleMenu(const WORD wMenuSelect)
 	{
-		output::DebugPrint(DBGMenu, L"CBaseDialog::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
+		output::DebugPrint(
+			output::DBGMenu, L"CBaseDialog::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 		switch (wMenuSelect)
 		{
 		case ID_HEXEDITOR:
@@ -306,7 +307,7 @@ namespace dialog
 	CBaseDialog::HandleKeyDown(const UINT nChar, const bool bShift, const bool bCtrl, const bool bMenu)
 	{
 		output::DebugPrintEx(
-			DBGMenu,
+			output::DBGMenu,
 			CLASS,
 			L"HandleKeyDown",
 			L"nChar = 0x%0X, bShift = 0x%X, bCtrl = 0x%X, bMenu = 0x%X\n",
@@ -384,7 +385,7 @@ namespace dialog
 			OnEscHit();
 			return true;
 		case VK_RETURN:
-			output::DebugPrint(DBGMenu, L"CBaseDialog::HandleKeyDown posting ID_DISPLAYSELECTEDITEM\n");
+			output::DebugPrint(output::DBGMenu, L"CBaseDialog::HandleKeyDown posting ID_DISPLAYSELECTEDITEM\n");
 			PostMessage(WM_COMMAND, ID_DISPLAYSELECTEDITEM, NULL);
 			return true;
 		}
@@ -407,7 +408,7 @@ namespace dialog
 		Release();
 	}
 
-	void CBaseDialog::OnEscHit() { output::DebugPrintEx(DBGGeneric, CLASS, L"OnEscHit", L"Not implemented\n"); }
+	void CBaseDialog::OnEscHit() { output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnEscHit", L"Not implemented\n"); }
 
 	void CBaseDialog::OnOptions()
 	{
@@ -437,11 +438,11 @@ namespace dialog
 		if (pMain) pMain->OnOpenMessageStoreTable();
 	}
 
-	void CBaseDialog::HandleCopy() { output::DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n"); }
+	void CBaseDialog::HandleCopy() { output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandleCopy", L"\n"); }
 
 	_Check_return_ bool CBaseDialog::HandlePaste()
 	{
-		output::DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandlePaste", L"\n");
 		const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 
 		if (m_lpPropDisplay && ulStatus & BUFFER_PROPTAG && ulStatus & BUFFER_SOURCEPROPOBJ)
@@ -457,19 +458,20 @@ namespace dialog
 
 	void CBaseDialog::OnDeleteSelectedItem()
 	{
-		output::DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L" Not Implemented\n");
+		output::DebugPrintEx(output::DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L" Not Implemented\n");
 	}
 
 	void CBaseDialog::OnRefreshView()
 	{
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L" Not Implemented\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnRefreshView", L" Not Implemented\n");
 	}
 
 	void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		_In_opt_ controls::sortlistdata::SortListData* lpListData) const
 	{
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnUpdateSingleMAPIPropListCtrl", L"Setting item %p\n", lpMAPIProp);
+		output::DebugPrintEx(
+			output::DBGGeneric, CLASS, L"OnUpdateSingleMAPIPropListCtrl", L"Setting item %p\n", lpMAPIProp);
 
 		if (m_lpPropDisplay)
 		{
@@ -761,7 +763,7 @@ namespace dialog
 			{
 				auto szFlags = smartview::InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 				output::DebugPrint(
-					DBGGeneric,
+					output::DBGGeneric,
 					L"OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n",
 					lpUnk,
 					ulObjType,
@@ -1015,7 +1017,8 @@ namespace dialog
 
 	_Check_return_ bool CBaseDialog::HandleAddInMenu(const WORD wMenuSelect)
 	{
-		output::DebugPrintEx(DBGAddInPlumbing, CLASS, L"HandleAddInMenu", L"wMenuSelect = 0x%08X\n", wMenuSelect);
+		output::DebugPrintEx(
+			output::DBGAddInPlumbing, CLASS, L"HandleAddInMenu", L"wMenuSelect = 0x%08X\n", wMenuSelect);
 		return false;
 	}
 

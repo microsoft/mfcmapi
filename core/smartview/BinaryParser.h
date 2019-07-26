@@ -8,7 +8,7 @@ namespace smartview
 	{
 	public:
 		binaryParser() = default;
-		binaryParser(size_t cb, _In_count_(cbBin) const BYTE* _bin)
+		binaryParser(size_t cb, _In_count_(cb) const BYTE* _bin)
 		{
 			bin = _bin && cb ? std::vector<BYTE>(_bin, _bin + cb) : std::vector<BYTE>{};
 			size = bin.size();

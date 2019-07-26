@@ -73,7 +73,7 @@ namespace dialog
 	_Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 	{
 		output::DebugPrint(
-			DBGMenu, L"CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
+			output::DBGMenu, L"CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 		switch (wMenuSelect)
 		{
 		case ID_APPLYFINDROW:
@@ -139,7 +139,7 @@ namespace dialog
 
 	void CContentsTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	{
-		output::DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
+		output::DebugPrintEx(output::DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CBaseDialog::CreateDialogAndMenu(nIDMenuResource, IDR_MENU_TABLE, IDS_TABLEMENU);
 
 		if (m_lpContentsTableListCtrl && m_lpContentsTable)
@@ -220,7 +220,7 @@ namespace dialog
 
 	void CContentsTableDlg::OnCancel()
 	{
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnCancel", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnCancel", L"\n");
 		// get rid of the window before we start our cleanup
 		ShowWindow(SW_HIDE);
 
@@ -233,7 +233,7 @@ namespace dialog
 
 	void CContentsTableDlg::OnEscHit()
 	{
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnEscHit", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnEscHit", L"\n");
 		if (m_lpContentsTableListCtrl)
 		{
 			m_lpContentsTableListCtrl->OnCancelTableLoad();
@@ -267,7 +267,7 @@ namespace dialog
 	void CContentsTableDlg::OnRefreshView()
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-		output::DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
 		m_lpContentsTableListCtrl->RefreshTable();
 	}
@@ -371,7 +371,7 @@ namespace dialog
 			this);
 		if (!szFileName.empty())
 		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"OnOutputTable", L"saving to %ws\n", szFileName.c_str());
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnOutputTable", L"saving to %ws\n", szFileName.c_str());
 			m_lpContentsTableListCtrl->OnOutputTable(szFileName);
 		}
 	}
@@ -492,7 +492,7 @@ namespace dialog
 	_Check_return_ LPMAPIPROP CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
 	{
 		if (!m_lpContentsTableListCtrl) return nullptr;
-		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(output::DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		if (-1 == iSelectedItem)
 		{
@@ -620,7 +620,7 @@ namespace dialog
 	// Returns true if we reset columns, false otherwise
 	_Check_return_ LRESULT CContentsTableDlg::msgOnResetColumns(WPARAM /*wParam*/, LPARAM /*lParam*/)
 	{
-		output::DebugPrintEx(DBGGeneric, CLASS, L"msgOnResetColumns", L"Received message reset columns\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"msgOnResetColumns", L"Received message reset columns\n");
 
 		if (m_lpContentsTableListCtrl)
 		{

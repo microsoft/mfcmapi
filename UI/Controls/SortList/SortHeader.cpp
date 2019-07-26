@@ -25,7 +25,7 @@ namespace controls
 
 			if (!SubclassWindow(pHeader->GetSafeHwnd()))
 			{
-				output::DebugPrint(DBGCreateDialog, L"CSortHeader::Init Unable to subclass existing header!\n");
+				output::DebugPrint(output::DBGCreateDialog, L"CSortHeader::Init Unable to subclass existing header!\n");
 				return false;
 			}
 			m_hwndParent = hwndParent;

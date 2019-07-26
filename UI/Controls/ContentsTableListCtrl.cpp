@@ -8,7 +8,6 @@
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <core/mapi/extraPropTags.h>
 #include <core/smartview/SmartView.h>
-#include <process.h>
 #include <UI/Controls/SortList/ContentsData.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
@@ -29,8 +28,6 @@ namespace controls
 	{
 		static std::wstring CLASS = L"CContentsTableListCtrl";
 
-#define NODISPLAYNAME 0xffffffff
-
 		CContentsTableListCtrl::CContentsTableListCtrl(
 			_In_ CWnd* pCreateParent,
 			_In_ cache::CMapiObjects* lpMapiObjects,
@@ -44,10 +41,6 @@ namespace controls
 
 			Create(pCreateParent, LVS_NOCOLUMNHEADER, IDC_LIST_CTRL, true);
 
-			m_bAbortLoad = false; // no need to synchronize this - the thread hasn't started yet
-			m_bInLoadOp = false;
-			m_LoadThreadHandle = nullptr;
-
 			// We borrow our parent's Mapi objects
 			m_lpMapiObjects = lpMapiObjects;
 			if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
@@ -57,16 +50,6 @@ namespace controls
 
 			m_sptDefaultDisplayColumnTags = sptDefaultDisplayColumnTags;
 			m_lpDefaultDisplayColumns = lpDefaultDisplayColumns;
-			m_ulDisplayFlags = dfNormal;
-			m_ulDisplayNameColumn = NODISPLAYNAME;
-
-			m_ulHeaderColumns = 0;
-			m_RestrictionType = mfcmapiNO_RESTRICTION;
-			m_lpRes = nullptr;
-			m_lpContentsTable = nullptr;
-			m_ulContainerType = NULL;
-			m_ulAdviseConnection = 0;
-			m_lpAdviseSink = nullptr;
 			m_nIDContextMenu = nIDContextMenu;
 			m_bIsAB = bIsAB;
 		}
@@ -74,8 +57,6 @@ namespace controls
 		CContentsTableListCtrl::~CContentsTableListCtrl()
 		{
 			TRACE_DESTRUCTOR(CLASS);
-
-			if (m_LoadThreadHandle) CloseHandle(m_LoadThreadHandle);
 
 			NotificationOff();
 
@@ -167,9 +148,14 @@ namespace controls
 			m_ulContainerType = ulContainerType;
 
 			output::DebugPrintEx(
-				DBGGeneric, CLASS, L"SetContentsTable", L"replacing %p with %p\n", m_lpContentsTable, lpContentsTable);
+				output::DBGGeneric,
+				CLASS,
+				L"SetContentsTable",
+				L"replacing %p with %p\n",
+				m_lpContentsTable,
+				lpContentsTable);
 			output::DebugPrintEx(
-				DBGGeneric, CLASS, L"SetContentsTable", L"New container type: 0x%X\n", m_ulContainerType);
+				output::DBGGeneric, CLASS, L"SetContentsTable", L"New container type: 0x%X\n", m_ulContainerType);
 			// Clean up the old contents table and grab the new one
 			if (m_lpContentsTable)
 			{
@@ -245,7 +231,8 @@ namespace controls
 				}
 			}
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"SetColumns", L"calculating and inserting column headers\n");
+			output::DebugPrintEx(
+				output::DBGGeneric, CLASS, L"SetColumns", L"calculating and inserting column headers\n");
 			MySetRedraw(false);
 
 			// Delete all of the old column headers
@@ -255,14 +242,14 @@ namespace controls
 
 			AutoSizeColumns(true);
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"SetColumns", L"Done inserting column headers\n");
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"SetColumns", L"Done inserting column headers\n");
 
 			MySetRedraw(true);
 		}
 
 		void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor)
 		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"DoSetColumns", L"bDisplayEditor = %d\n", bDisplayEditor);
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"DoSetColumns", L"bDisplayEditor = %d\n", bDisplayEditor);
 
 			if (!IsContentsTableSet())
 			{
@@ -391,7 +378,7 @@ namespace controls
 			if (lpMyHeader)
 			{
 				hdItem.mask = HDI_LPARAM;
-				auto lpHeaderData = new HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
+				auto lpHeaderData = new (std::nothrow) HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
 				if (lpHeaderData)
 				{
 					lpHeaderData->ulTagArrayRow = ulCurTagArrayRow;
@@ -416,7 +403,7 @@ namespace controls
 			ULONG ulCurHeaderCol = 0;
 			if (registry::doColumnNames)
 			{
-				output::DebugPrintEx(DBGGeneric, CLASS, L"AddColumns", L"Adding named columns\n");
+				output::DebugPrintEx(output::DBGGeneric, CLASS, L"AddColumns", L"Adding named columns\n");
 				// If we have named columns, put them up front
 
 				// Walk through the list of default display columns and add them to our header list
@@ -441,7 +428,7 @@ namespace controls
 				}
 			}
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"AddColumns", L"Adding unnamed columns\n");
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"AddColumns", L"Adding unnamed columns\n");
 			// Now, walk through the current tag table and add each unstruck column to our list
 			for (ULONG ulCurTableCol = 0; ulCurTableCol < lpCurColTagArray->cValues; ulCurTableCol++)
 			{
@@ -463,7 +450,7 @@ namespace controls
 				error::ErrDialog(__FILE__, __LINE__, IDS_EDTOOMANYCOLUMNS);
 			}
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"AddColumns", L"Done adding columns\n");
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"AddColumns", L"Done adding columns\n");
 		}
 
 		void CContentsTableListCtrl::SetRestriction(_In_opt_ const _SRestriction* lpRes)
@@ -490,16 +477,16 @@ namespace controls
 
 			auto hRes = S_OK;
 			output::DebugPrintEx(
-				DBGGeneric, CLASS, L"ApplyRestriction", L"m_RestrictionType = 0x%X\n", m_RestrictionType);
+				output::DBGGeneric, CLASS, L"ApplyRestriction", L"m_RestrictionType = 0x%X\n", m_RestrictionType);
 			// Apply our restrictions
 			if (mfcmapiNORMAL_RESTRICTION == m_RestrictionType)
 			{
-				output::DebugPrintEx(DBGGeneric, CLASS, L"ApplyRestriction", L"applying restriction:\n");
+				output::DebugPrintEx(output::DBGGeneric, CLASS, L"ApplyRestriction", L"applying restriction:\n");
 
 				if (m_lpMapiObjects)
 				{
 					const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-					output::outputRestriction(DBGGeneric, nullptr, m_lpRes, lpMDB);
+					output::outputRestriction(output::DBGGeneric, nullptr, m_lpRes, lpMDB);
 				}
 
 				hRes = EC_MAPI(m_lpContentsTable->Restrict(const_cast<LPSRestriction>(m_lpRes), TBL_BATCH));
@@ -512,45 +499,25 @@ namespace controls
 			return hRes;
 		}
 
-		struct ThreadLoadTableInfo
-		{
-			HWND hWndHost;
-			CContentsTableListCtrl* lpListCtrl;
-			LPMAPITABLE lpContentsTable;
-			LONG volatile* lpbAbort;
-		};
-
-#define bABORTSET (*lpThreadInfo->lpbAbort) // This is safe
-#define BREAKONABORT \
-	if (bABORTSET) break;
-#define CHECKABORT(__fn) \
-	if (!bABORTSET) \
-	{ \
-		__fn; \
-	}
-#define NUMROWSPERLOOP 255
-
 		// Idea here is to do our MAPI work here on this thread, then send messages (SendMessage) back to the control to add the data to the view
 		// This way, control functions only happen on the main thread
 		// ::SendMessage will be handled on main thread, but block until the call returns.
 		// This is the ideal behavior for this worker thread.
-		unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
+		void ThreadFuncLoadTable(const HWND hWndHost, CContentsTableListCtrl* lpListCtrl, LPMAPITABLE lpContentsTable)
 		{
+			if (!lpListCtrl || !lpContentsTable || FAILED(EC_MAPI(MAPIInitialize(nullptr))))
+			{
+				if (lpContentsTable) lpContentsTable->Release();
+				if (lpListCtrl) lpListCtrl->Release();
+				lpListCtrl->ClearLoading();
+				return;
+			}
+
 			ULONG ulTotal = 0;
 			ULONG ulThrottleLevel = registry::throttleLevel;
+			const auto rowCount = ulThrottleLevel ? ulThrottleLevel : CContentsTableListCtrl::NUMROWSPERLOOP;
 			LPSRowSet pRows = nullptr;
 			ULONG iCurListBoxRow = 0;
-			const auto lpThreadInfo = static_cast<ThreadLoadTableInfo*>(lpParam);
-			if (!lpThreadInfo || !lpThreadInfo->lpbAbort) return 0;
-
-			auto lpListCtrl = lpThreadInfo->lpListCtrl;
-			auto lpContentsTable = lpThreadInfo->lpContentsTable;
-			if (!lpListCtrl || !lpContentsTable) return 0;
-
-			const auto hWndHost = lpThreadInfo->hWndHost;
-
-			// Required on the new thread before we do any MAPI work
-			auto hRes = EC_MAPI(MAPIInitialize(nullptr));
 
 			(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
 			auto szCount = std::to_wstring(lpListCtrl->GetItemCount());
@@ -558,16 +525,19 @@ namespace controls
 				hWndHost, STATUSDATA1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
 
 			// potentially lengthy op - check abort before and after
-			CHECKABORT(WC_H_S(lpListCtrl->ApplyRestriction()));
+			if (!lpListCtrl->bAbortLoad())
+			{
+				WC_H_S(lpListCtrl->ApplyRestriction());
+			}
 
-			if (!bABORTSET) // only check abort once for this group of ops
+			if (!lpListCtrl->bAbortLoad()) // only check abort once for this group of ops
 			{
 				// go to the first row
 				EC_MAPI_S(lpContentsTable->SeekRow(BOOKMARK_BEGINNING, 0, nullptr));
 
 				EC_MAPI_S(lpContentsTable->GetRowCount(NULL, &ulTotal));
 
-				output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"ulTotal = 0x%X\n", ulTotal);
+				output::DebugPrintEx(output::DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"ulTotal = 0x%X\n", ulTotal);
 
 				if (ulTotal)
 				{
@@ -577,82 +547,86 @@ namespace controls
 			}
 
 			const auto lpRes = lpListCtrl->GetRestriction();
+			const auto resType = lpListCtrl->GetRestrictionType();
 			// get rows and add them to the list
-			if (!FAILED(hRes))
-				for (;;)
+			while (true)
+			{
+				if (lpListCtrl->bAbortLoad()) break;
+				auto hRes = S_OK;
+				dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
+				if (pRows) FreeProws(pRows);
+				pRows = nullptr;
+				if (mfcmapiFINDROW_RESTRICTION == resType && lpRes)
 				{
-					BREAKONABORT;
-					dialog::CBaseDialog::UpdateStatus(
-						hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
-					if (pRows) FreeProws(pRows);
-					pRows = nullptr;
-					if (mfcmapiFINDROW_RESTRICTION == lpListCtrl->GetRestrictionType() && lpRes)
-					{
-						output::DebugPrintEx(DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
-						output::outputRestriction(DBGGeneric, nullptr, lpRes, nullptr);
-
-						CHECKABORT(
-							hRes = WC_MAPI(
-								lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL)));
-						if (FAILED(hRes)) break;
-
-						CHECKABORT(hRes = EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows)));
-					}
-					else
-					{
-						output::DebugPrintEx(
-							DBGGeneric,
-							CLASS,
-							L"ThreadFuncLoadTable",
-							L"Calling QueryRows. Asking for 0x%X rows.\n",
-							ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP);
-						// Pull back a sizable block of rows to add to the list box
-						CHECKABORT(
-							hRes = EC_MAPI(lpContentsTable->QueryRows(
-								ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP, NULL, &pRows)));
-					}
-
-					if (FAILED(hRes) || !pRows || !pRows->cRows) break;
-
 					output::DebugPrintEx(
-						DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Got this many rows: 0x%X\n", pRows->cRows);
+						output::DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
+					output::outputRestriction(output::DBGGeneric, nullptr, lpRes, nullptr);
 
-					for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
-					{
-						BREAKONABORT; // This check is cheap enough not to be a perf concern anymore
-						if (ulTotal)
-						{
-							dialog::CBaseDialog::UpdateStatus(
-								hWndHost,
-								STATUSDATA2,
-								strings::formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
-						}
+					if (lpListCtrl->bAbortLoad()) break;
+					hRes = WC_MAPI(lpContentsTable->FindRow(const_cast<LPSRestriction>(lpRes), BOOKMARK_CURRENT, NULL));
+					if (FAILED(hRes)) break;
 
-						output::DebugPrintEx(
-							DBGGeneric,
-							CLASS,
-							L"ThreadFuncLoadTable",
-							L"Asking to add %p to %u\n",
-							&pRows->aRow[iCurPropRow],
-							iCurListBoxRow);
-						hRes = WC_H(static_cast<HRESULT>(::SendMessage(
-							lpListCtrl->m_hWnd,
-							WM_MFCMAPI_THREADADDITEM,
-							iCurListBoxRow,
-							reinterpret_cast<LPARAM>(&pRows->aRow[iCurPropRow]))));
-						if (FAILED(hRes)) continue;
-						iCurListBoxRow++;
-					}
-
-					// Note - we're saving the rows off, so we don't FreeProws this...we just MAPIFreeBuffer the array
-					MAPIFreeBuffer(pRows);
-					pRows = nullptr;
-
-					if (ulThrottleLevel && iCurListBoxRow >= ulThrottleLevel)
-						break; // Only render ulThrottleLevel rows if throttle is on
+					if (lpListCtrl->bAbortLoad()) break;
+					hRes = EC_MAPI(lpContentsTable->QueryRows(1, NULL, &pRows));
+				}
+				else
+				{
+					output::DebugPrintEx(
+						output::DBGGeneric,
+						CLASS,
+						L"ThreadFuncLoadTable",
+						L"Calling QueryRows. Asking for 0x%X rows.\n",
+						rowCount);
+					// Pull back a sizable block of rows to add to the list box
+					if (lpListCtrl->bAbortLoad()) break;
+					hRes = EC_MAPI(lpContentsTable->QueryRows(rowCount, NULL, &pRows));
 				}
 
-			if (bABORTSET)
+				if (FAILED(hRes) || !pRows || !pRows->cRows) break;
+
+				output::DebugPrintEx(
+					output::DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Got this many rows: 0x%X\n", pRows->cRows);
+
+				for (ULONG iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
+				{
+					if (lpListCtrl->bAbortLoad()) break;
+					if (ulTotal)
+					{
+						dialog::CBaseDialog::UpdateStatus(
+							hWndHost,
+							STATUSDATA2,
+							strings::formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
+					}
+
+					output::DebugPrintEx(
+						output::DBGGeneric,
+						CLASS,
+						L"ThreadFuncLoadTable",
+						L"Asking to add %p to %u\n",
+						&pRows->aRow[iCurPropRow],
+						iCurListBoxRow);
+					hRes = WC_H(static_cast<HRESULT>(::SendMessage(
+						lpListCtrl->m_hWnd,
+						WM_MFCMAPI_THREADADDITEM,
+						iCurListBoxRow,
+						reinterpret_cast<LPARAM>(&pRows->aRow[iCurPropRow]))));
+					if (FAILED(hRes)) continue;
+
+					// We've handed this row off to the control, so wipe it from the array.
+					pRows->aRow[iCurPropRow].cValues = 0;
+					pRows->aRow[iCurPropRow].lpProps = nullptr;
+					iCurListBoxRow++;
+				}
+
+				// We've removed some or all rows from the array. FreeProws will free the rest, as well as the parent array.
+				FreeProws(pRows);
+				pRows = nullptr;
+
+				if (ulThrottleLevel && iCurListBoxRow >= ulThrottleLevel)
+					break; // Only render ulThrottleLevel rows if throttle is on
+			}
+
+			if (lpListCtrl->bAbortLoad())
 			{
 				dialog::CBaseDialog::UpdateStatus(
 					hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_TABLELOADCANCELLED));
@@ -663,22 +637,19 @@ namespace controls
 			}
 
 			dialog::CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, strings::emptystring);
-			output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"added %u items\n", iCurListBoxRow);
-			output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Releasing pointers.\n");
-
-			lpListCtrl->ClearLoading();
+			output::DebugPrintEx(
+				output::DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"added %u items\n", iCurListBoxRow);
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Releasing pointers.\n");
 
 			// Bunch of cleanup
 			if (pRows) FreeProws(pRows);
 			if (lpContentsTable) lpContentsTable->Release();
 			if (lpListCtrl) lpListCtrl->Release();
-			output::DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Pointers released.\n");
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Pointers released.\n");
 
 			MAPIUninitialize();
 
-			delete lpThreadInfo;
-
-			return 0;
+			lpListCtrl->ClearLoading();
 		}
 
 		_Check_return_ bool CContentsTableListCtrl::IsLoading() const { return m_bInLoadOp; }
@@ -688,84 +659,56 @@ namespace controls
 		void CContentsTableListCtrl::LoadContentsTableIntoView()
 		{
 			if (m_bInLoadOp || !m_lpHostDlg) return;
-
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"\n");
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"\n");
+			// Ensure we're not currently loading
+			OnCancelTableLoad();
 
 			EC_B_S(DeleteAllItems());
 
-			// whack the old thread handle if we still have it
-			if (m_LoadThreadHandle) CloseHandle(m_LoadThreadHandle);
-			m_LoadThreadHandle = nullptr;
-
 			if (!m_lpContentsTable) return;
+
 			m_bInLoadOp = true;
 			// Do not call return after this point!
 
-			auto lpThreadInfo = new ThreadLoadTableInfo;
+			// Addref the objects we're passing to the thread
+			// ThreadFuncLoadTable should release them before exiting
+			this->AddRef();
+			m_lpContentsTable->AddRef();
 
-			if (lpThreadInfo)
-			{
-				lpThreadInfo->hWndHost = m_lpHostDlg->m_hWnd;
-				lpThreadInfo->lpbAbort = &m_bAbortLoad;
-				m_bAbortLoad = false; // no need to synchronize this - the thread hasn't started yet
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Creating load thread.\n");
 
-				lpThreadInfo->lpListCtrl = this;
-				this->AddRef();
+			auto loadThread = std::thread(ThreadFuncLoadTable, m_lpHostDlg->m_hWnd, this, m_lpContentsTable);
 
-				lpThreadInfo->lpContentsTable = m_lpContentsTable;
-				m_lpContentsTable->AddRef();
-
-				output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Creating load thread.\n");
-
-				const auto hThread = EC_D(
-					HANDLE,
-					reinterpret_cast<HANDLE>(
-						_beginthreadex(nullptr, 0, ThreadFuncLoadTable, lpThreadInfo, 0, nullptr)));
-				if (hThread == nullptr || hThread == reinterpret_cast<HANDLE>(-1))
-				{
-					output::DebugPrintEx(
-						DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Load thread creation failed.\n");
-					if (lpThreadInfo->lpContentsTable) lpThreadInfo->lpContentsTable->Release();
-					if (lpThreadInfo->lpListCtrl) lpThreadInfo->lpListCtrl->Release();
-					delete lpThreadInfo;
-				}
-				else
-				{
-					output::DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Load thread created.\n");
-					m_LoadThreadHandle = hThread;
-				}
-			}
+			m_LoadThreadHandle.swap(loadThread);
 		}
 
 		void CContentsTableListCtrl::OnCancelTableLoad()
 		{
+			// Signal the abort
+			// This is the only function which ever sets this flag.
 			output::DebugPrintEx(
-				DBGGeneric, CLASS, L"OnCancelTableLoad", L"Setting abort flag and waiting for thread to discover it\n");
-			// Wait here until the thread we spun off has shut down
+				output::DBGGeneric,
+				CLASS,
+				L"OnCancelTableLoad",
+				L"Setting abort flag and waiting for thread to discover it\n");
+			InterlockedExchange(&m_bAbortLoad, true);
+
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-			DWORD dwRet = 0;
 			auto bVKF5Hit = false;
 
-			// See if the thread is still active
-			while (m_LoadThreadHandle) // this won't change, but if it's NULL, we just skip the loop
+			// Pump messages until the thread signals we're out of the load op (which is the last thing we do on the thread).
+			// Don't pmp F5. Just remember those and we'll send them up later.
+			while (m_bInLoadOp)
 			{
-				MSG msg;
-
-				InterlockedExchange(&m_bAbortLoad, true);
-
-				// Wait for the thread to shutdown/signal, or messages posted to our queue
-				dwRet = MsgWaitForMultipleObjects(1, &m_LoadThreadHandle, false, INFINITE, QS_ALLINPUT);
-				if (dwRet == WAIT_OBJECT_0 + 0) break;
-
-				// Read all of the messages in this next loop, removing each message as we read it.
-				// If we don't do this, the thread never stops
-				while (PeekMessage(&msg, m_hWnd, 0, 0, PM_REMOVE))
+				auto msg = MSG{};
+				if (PeekMessage(&msg, m_hWnd, 0, 0, PM_REMOVE))
 				{
 					if (msg.message == WM_KEYDOWN && msg.wParam == VK_F5)
 					{
-						output::DebugPrintEx(DBGGeneric, CLASS, L"OnCancelTableLoad", L"Ditching refresh (F5)\n");
+						output::DebugPrintEx(
+							output::DBGGeneric, CLASS, L"OnCancelTableLoad", L"Ditching refresh (F5)\n");
 						bVKF5Hit = true;
 					}
 					else
@@ -775,15 +718,18 @@ namespace controls
 				}
 			}
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"OnCancelTableLoad", L"Load thread has shut down.\n");
+			// Now wait for the thread to actually shut down.
+			if (m_LoadThreadHandle.joinable()) m_LoadThreadHandle.join();
 
-			if (m_LoadThreadHandle) CloseHandle(m_LoadThreadHandle);
-			m_LoadThreadHandle = nullptr;
-			m_bAbortLoad = false;
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnCancelTableLoad", L"Load thread has shut down.\n");
+
+			// Finally, reset the abort so we're ready to load again (if needed)
+			InterlockedExchange(&m_bAbortLoad, false);
 
 			if (bVKF5Hit) // If we ditched a refresh message, repost it now
 			{
-				output::DebugPrintEx(DBGGeneric, CLASS, L"OnCancelTableLoad", L"Posting skipped refresh message\n");
+				output::DebugPrintEx(
+					output::DBGGeneric, CLASS, L"OnCancelTableLoad", L"Posting skipped refresh message\n");
 				PostMessage(WM_KEYDOWN, VK_F5, 0);
 			}
 		}
@@ -848,8 +794,19 @@ namespace controls
 			}
 		}
 
-#define NUMOBJTYPES 12
-		static LONG _ObjTypeIcons[NUMOBJTYPES][2] = {
+		ULONG GetDepth(_In_ LPSRow lpsRowData)
+		{
+			if (!lpsRowData) return 0;
+
+			auto ulDepth = 0;
+			const auto lpDepth = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_DEPTH);
+			if (lpDepth && PR_DEPTH == lpDepth->ulPropTag) ulDepth = lpDepth->Value.l;
+			if (ulDepth > 5) ulDepth = 5; // Just in case
+
+			return ulDepth;
+		}
+
+		static TypeIcon _ObjTypeIcons[] = {
 			{MAPI_STORE, slIconMAPI_STORE},
 			{MAPI_ADDRBOOK, slIconMAPI_ADDRBOOK},
 			{MAPI_FOLDER, slIconMAPI_FOLDER},
@@ -864,17 +821,11 @@ namespace controls
 			{MAPI_FORMINFO, slIconMAPI_FORMINFO},
 		};
 
-		void GetDepthAndImage(_In_ LPSRow lpsRowData, _In_ ULONG* lpulDepth, _In_ ULONG* lpulImage)
+		__SortListIconNames GetImage(_In_ LPSRow lpsRowData)
 		{
-			if (lpulDepth) *lpulDepth = 0;
-			if (lpulImage) *lpulImage = slIconDefault;
-			if (!lpsRowData) return;
+			if (!lpsRowData) return slIconDefault;
 
-			ULONG ulDepth = NULL;
-			ULONG ulImage = slIconDefault;
-			const auto lpDepth = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_DEPTH);
-			if (lpDepth && PR_DEPTH == lpDepth->ulPropTag) ulDepth = lpDepth->Value.l;
-			if (ulDepth > 5) ulDepth = 5; // Just in case
+			__SortListIconNames ulImage = slIconDefault;
 
 			const auto lpRowType = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_ROW_TYPE);
 			if (lpRowType && PR_ROW_TYPE == lpRowType->ulPropTag)
@@ -900,9 +851,9 @@ namespace controls
 				{
 					for (auto& _ObjTypeIcon : _ObjTypeIcons)
 					{
-						if (_ObjTypeIcon[0] == lpObjType->Value.l)
+						if (_ObjTypeIcon.objType == lpObjType->Value.ul)
 						{
-							ulImage = _ObjTypeIcon[1];
+							ulImage = _ObjTypeIcon.image;
 							break;
 						}
 					}
@@ -924,15 +875,14 @@ namespace controls
 				}
 			}
 
-			if (lpulDepth) *lpulDepth = ulDepth;
-			if (lpulImage) *lpulImage = ulImage;
+			return ulImage;
 		}
 
 		void CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists)
 		{
 			sortlistdata::SortListData* lpData = nullptr;
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"RefreshItem", L"item %d\n", iRow);
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"RefreshItem", L"item %d\n", iRow);
 
 			if (bItemExists)
 			{
@@ -940,9 +890,8 @@ namespace controls
 			}
 			else
 			{
-				ULONG ulDepth = NULL;
-				ULONG ulImage = slIconDefault;
-				GetDepthAndImage(lpsRowData, &ulDepth, &ulImage);
+				auto ulDepth = GetDepth(lpsRowData);
+				auto ulImage = GetImage(lpsRowData);
 
 				lpData = InsertRow(iRow, L"TempRefreshItem", ulDepth, ulImage); // STRING_OK
 			}
@@ -960,7 +909,7 @@ namespace controls
 		// Crack open the given SPropValue and render it to the given row in the list.
 		void CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd)
 		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"AddItemToListBox", L"item %d\n", iRow);
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"AddItemToListBox", L"item %d\n", iRow);
 
 			RefreshItem(iRow, lpsRowToAdd, false);
 
@@ -969,7 +918,7 @@ namespace controls
 
 		void CContentsTableListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		{
-			output::DebugPrintEx(DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
+			output::DebugPrintEx(output::DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
 
 			if (!m_lpHostDlg) return;
 			const auto bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
@@ -1050,7 +999,7 @@ namespace controls
 				if (iItem != -1)
 				{
 					iItems.push_back(iItem);
-					output::DebugPrintEx(DBGGeneric, CLASS, L"GetSelectedItemNums", L"iItem: 0x%X\n", iItem);
+					output::DebugPrintEx(output::DBGGeneric, CLASS, L"GetSelectedItemNums", L"iItem: 0x%X\n", iItem);
 				}
 			} while (iItem != -1);
 
@@ -1098,11 +1047,11 @@ namespace controls
 				iItem = -1;
 			}
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"GetNextSelectedItemNum", L"iItem before = 0x%X\n", iItem);
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"GetNextSelectedItemNum", L"iItem before = 0x%X\n", iItem);
 
 			iItem = GetNextItem(iItem, LVNI_SELECTED);
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"GetNextSelectedItemNum", L"iItem after = 0x%X\n", iItem);
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"GetNextSelectedItemNum", L"iItem after = 0x%X\n", iItem);
 
 			if (iCurItem) *iCurItem = iItem;
 
@@ -1136,7 +1085,7 @@ namespace controls
 			if (!m_lpMapiObjects || -1 == iItem) return nullptr;
 
 			output::DebugPrintEx(
-				DBGGeneric,
+				output::DBGGeneric,
 				CLASS,
 				L"DefaultOpenItemProp",
 				L"iItem = %d, bModify = %d, m_ulContainerType = 0x%X\n",
@@ -1150,8 +1099,8 @@ namespace controls
 			const auto lpEID = lpListData->Contents()->m_lpEntryID;
 			if (!lpEID || lpEID->cb == 0) return nullptr;
 
-			output::DebugPrint(DBGGeneric, L"Item being opened:\n");
-			output::outputBinary(DBGGeneric, nullptr, *lpEID);
+			output::DebugPrint(output::DBGGeneric, L"Item being opened:\n");
+			output::outputBinary(output::DBGGeneric, nullptr, *lpEID);
 
 			// Find the highlighted item EID
 			LPMAPIPROP lpMAPIProp = nullptr;
@@ -1213,20 +1162,21 @@ namespace controls
 
 			if (!lpMAPIProp && mfcmapiREQUEST_MODIFY == bModify)
 			{
-				output::DebugPrint(DBGGeneric, L"\tOpenEntry failed. Will try again without MAPI_MODIFY\n");
+				output::DebugPrint(output::DBGGeneric, L"\tOpenEntry failed. Will try again without MAPI_MODIFY\n");
 				// We got access denied when we passed MAPI_MODIFY
 				// Let's try again without it.
 				lpMAPIProp = DefaultOpenItemProp(iItem, mfcmapiDO_NOT_REQUEST_MODIFY);
 			}
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"DefaultOpenItemProp", L"returning lpMAPIProp = %p\n", lpMAPIProp);
+			output::DebugPrintEx(
+				output::DBGGeneric, CLASS, L"DefaultOpenItemProp", L"returning lpMAPIProp = %p\n", lpMAPIProp);
 
 			return lpMAPIProp;
 		}
 
 		void CContentsTableListCtrl::SelectAll()
 		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"SelectAll", L"\n");
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"SelectAll", L"\n");
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 			MySetRedraw(false);
 			for (auto iIndex = 0; iIndex < GetItemCount(); iIndex++)
@@ -1308,9 +1258,13 @@ namespace controls
 			if (m_lpAdviseSink || !m_lpContentsTable) return;
 
 			output::DebugPrintEx(
-				DBGGeneric, CLASS, L"NotificationOn", L"registering table notification on %p\n", m_lpContentsTable);
+				output::DBGGeneric,
+				CLASS,
+				L"NotificationOn",
+				L"registering table notification on %p\n",
+				m_lpContentsTable);
 
-			m_lpAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
+			m_lpAdviseSink = new (std::nothrow) mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
 
 			if (m_lpAdviseSink)
 			{
@@ -1320,7 +1274,7 @@ namespace controls
 				{
 					if (m_lpAdviseSink) m_lpAdviseSink->Release();
 					m_lpAdviseSink = nullptr;
-					output::DebugPrint(DBGGeneric, L"This table doesn't support notifications\n");
+					output::DebugPrint(output::DBGGeneric, L"This table doesn't support notifications\n");
 				}
 				else if (hRes == S_OK)
 				{
@@ -1334,7 +1288,7 @@ namespace controls
 			}
 
 			output::DebugPrintEx(
-				DBGGeneric,
+				output::DBGGeneric,
 				CLASS,
 				L"NotificationOn",
 				L"Table notification results (Sink:%p, ulConnection:0x%X) on %p\n",
@@ -1349,7 +1303,7 @@ namespace controls
 		{
 			if (!m_lpAdviseSink) return;
 			output::DebugPrintEx(
-				DBGGeneric,
+				output::DBGGeneric,
 				CLASS,
 				L"NotificationOff",
 				L"clearing table notification (Sink:%p, ulConnection:0x%X) on %p\n",
@@ -1369,11 +1323,12 @@ namespace controls
 			if (!m_lpHostDlg) return;
 			if (m_bInLoadOp)
 			{
-				output::DebugPrintEx(DBGGeneric, CLASS, L"RefreshTable", L"called during table load - ditching call\n");
+				output::DebugPrintEx(
+					output::DBGGeneric, CLASS, L"RefreshTable", L"called during table load - ditching call\n");
 				return;
 			}
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"RefreshTable", L"\n");
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"RefreshTable", L"\n");
 
 			LoadContentsTableIntoView();
 
@@ -1500,7 +1455,7 @@ namespace controls
 			const auto fTable = output::MyOpenFile(szFileName, true);
 			if (fTable)
 			{
-				output::outputTable(DBGNoDebug, fTable, m_lpContentsTable);
+				output::outputTable(output::DBGNoDebug, fTable, m_lpContentsTable);
 				output::CloseFile(fTable);
 			}
 		}
@@ -1520,7 +1475,12 @@ namespace controls
 			if (!lpsRow) return MAPI_E_INVALID_PARAMETER;
 
 			output::DebugPrintEx(
-				DBGGeneric, CLASS, L"msgOnThreadAddItem", L"Received message to add %p to row %d\n", lpsRow, iNewRow);
+				output::DBGGeneric,
+				CLASS,
+				L"msgOnThreadAddItem",
+				L"Received message to add %p to row %d\n",
+				lpsRow,
+				iNewRow);
 			AddItemToListBox(iNewRow, lpsRow);
 
 			return S_OK;
@@ -1554,7 +1514,7 @@ namespace controls
 				EC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
 
 			output::DebugPrintEx(
-				DBGGeneric, CLASS, L"msgOnAddItem", L"Received message to add row to row %d\n", iNewRow);
+				output::DBGGeneric, CLASS, L"msgOnAddItem", L"Received message to add row to row %d\n", iNewRow);
 			AddItemToListBox(iNewRow, &NewRow);
 
 			return hRes;
@@ -1570,7 +1530,7 @@ namespace controls
 			const auto iItem = FindRow(&tab->propIndex.Value.bin);
 
 			output::DebugPrintEx(
-				DBGGeneric, CLASS, L"msgOnDeleteItem", L"Received message to delete item 0x%d\n", iItem);
+				output::DBGGeneric, CLASS, L"msgOnDeleteItem", L"Received message to delete item 0x%d\n", iItem);
 
 			if (iItem == -1) return S_OK;
 
@@ -1601,7 +1561,7 @@ namespace controls
 			if (-1 != iItem)
 			{
 				output::DebugPrintEx(
-					DBGGeneric,
+					output::DBGGeneric,
 					CLASS,
 					L"msgOnModifyItem",
 					L"Received message to modify row %d with %p\n",
@@ -1624,7 +1584,7 @@ namespace controls
 		// WM_MFCMAPI_REFRESHTABLE
 		_Check_return_ LRESULT CContentsTableListCtrl::msgOnRefreshTable(WPARAM /*wParam*/, LPARAM /*lParam*/)
 		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"msgOnRefreshTable", L"Received message refresh table\n");
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"msgOnRefreshTable", L"Received message refresh table\n");
 			RefreshTable();
 
 			return S_OK;
@@ -1634,7 +1594,7 @@ namespace controls
 		// return -1 if item not found
 		_Check_return_ int CContentsTableListCtrl::FindRow(_In_ LPSBinary lpInstance) const
 		{
-			output::DebugPrintEx(DBGGeneric, CLASS, L"msgOnGetIndex", L"Getting index for %p\n", lpInstance);
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"msgOnGetIndex", L"Getting index for %p\n", lpInstance);
 
 			if (!lpInstance) return -1;
 
@@ -1649,14 +1609,15 @@ namespace controls
 					{
 						if (!memcmp(lpCurInstance->lpb, lpInstance->lpb, lpInstance->cb))
 						{
-							output::DebugPrintEx(DBGGeneric, CLASS, L"msgOnGetIndex", L"Matched at 0x%08X\n", iItem);
+							output::DebugPrintEx(
+								output::DBGGeneric, CLASS, L"msgOnGetIndex", L"Matched at 0x%08X\n", iItem);
 							return iItem;
 						}
 					}
 				}
 			}
 
-			output::DebugPrintEx(DBGGeneric, CLASS, L"msgOnGetIndex", L"No match found: 0x%08X\n", iItem);
+			output::DebugPrintEx(output::DBGGeneric, CLASS, L"msgOnGetIndex", L"No match found: 0x%08X\n", iItem);
 			return -1;
 		}
 	} // namespace sortlistctrl
