@@ -20,8 +20,7 @@ namespace output
 {
 	void outputBinary(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		Output(ulDbgLvl, fFile, false, strings::BinToHexString(&bin, true));
 
@@ -30,8 +29,7 @@ namespace output
 
 	void outputEntryList(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (!lpEntryList) return;
 
 		Outputf(ulDbgLvl, fFile, true, L"Dumping %u entry IDs.\n", lpEntryList->cValues);
@@ -113,8 +111,7 @@ namespace output
 
 	void outputNamedPropID(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPINAMEID lpName)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		if (!lpName) return;
 
@@ -143,8 +140,7 @@ namespace output
 
 	void outputPropTagArray(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagArray lpTagsToDump)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (!lpTagsToDump) return;
 
 		Outputf(
@@ -169,8 +165,7 @@ namespace output
 
 	void outputFormInfo(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO lpMAPIFormInfo)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (!lpMAPIFormInfo) return;
 
 		LPSPropValue lpPropVals = nullptr;
@@ -238,8 +233,7 @@ namespace output
 
 	void outputTable(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPITable)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (!lpMAPITable) return;
 
 		LPSRowSet lpRows = nullptr;
@@ -277,8 +271,7 @@ namespace output
 		_In_count_(cNotify) LPNOTIFICATION lpNotifications,
 		_In_opt_ LPMAPIPROP lpObj)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (!lpNotifications) return;
 
 		Outputf(ulDbgLvl, fFile, true, L"Dumping %u notifications.\n", cNotify);
@@ -511,8 +504,7 @@ namespace output
 		_In_opt_ LPMAPIPROP lpObj,
 		bool bRetryStreamProps)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		if (!lpProp) return;
 
@@ -602,8 +594,7 @@ namespace output
 		_In_opt_ LPMAPIPROP lpObj,
 		bool bRetryStreamProps)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		if (cProps && !lpProps)
 		{
@@ -646,8 +637,7 @@ namespace output
 
 	void outputSRow(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ const _SRow* lpSRow, _In_opt_ LPMAPIPROP lpObj)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		if (!lpSRow)
 		{
@@ -666,8 +656,7 @@ namespace output
 
 	void outputSRowSet(DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSet, _In_opt_ LPMAPIPROP lpObj)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		if (!lpRowSet)
 		{
@@ -690,8 +679,7 @@ namespace output
 		_In_opt_ const _SRestriction* lpRes,
 		_In_opt_ LPMAPIPROP lpObj)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		if (!lpRes)
 		{

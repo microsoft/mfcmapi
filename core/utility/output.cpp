@@ -61,6 +61,18 @@ namespace output
 		}
 	}
 
+	bool fIsSet(output::DBGLEVEL ulTag) { return registry::debugTag & ulTag; }
+	bool fIsSetv(output::DBGLEVEL ulTag) { return (ulTag != DBGNoDebug) && (registry::debugTag & ulTag); }
+
+	bool earlyExit(output::DBGLEVEL ulDbgLvl, bool fFile)
+	{
+		assert(output::DBGNoDebug != ulDbgLvl || fFile);
+
+		// quick check to see if we have anything to print - so we can avoid executing the call
+		if (!fFile && !registry::debugToFile && !fIsSetv(ulDbgLvl)) return true;
+		return false;
+	}
+
 	_Check_return_ FILE* MyOpenFile(const std::wstring& szFileName, bool bNewFile)
 	{
 		auto mode = L"a+"; // STRING_OK
@@ -151,8 +163,7 @@ namespace output
 	// The root of all debug output - call no debug output functions besides OutputDebugString from here!
 	void Output(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const std::wstring& szMsg)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (szMsg.empty()) return; // nothing to print? Cool!
 
 		// print to debug output
@@ -190,8 +201,7 @@ namespace output
 
 	void __cdecl Outputf(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, LPCWSTR szMsg, ...)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		va_list argList = nullptr;
 		va_start(argList, szMsg);
@@ -235,7 +245,12 @@ namespace output
 		va_end(argList);
 	}
 
-	void __cdecl DebugPrintEx(output::DBGLEVEL ulDbgLvl, std::wstring& szClass, const std::wstring& szFunc, LPCWSTR szMsg, ...)
+	void __cdecl DebugPrintEx(
+		output::DBGLEVEL ulDbgLvl,
+		std::wstring& szClass,
+		const std::wstring& szFunc,
+		LPCWSTR szMsg,
+		...)
 	{
 		if (!fIsSetv(ulDbgLvl) && !registry::debugToFile) return;
 
@@ -256,8 +271,7 @@ namespace output
 
 	void OutputIndent(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, int iIndent)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		for (auto i = 0; i < iIndent; i++)
 			Output(ulDbgLvl, fFile, false, L"\t");
@@ -266,8 +280,7 @@ namespace output
 #define MAXBYTES 4096
 	void outputStream(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		if (!lpStream)
 		{
@@ -301,8 +314,7 @@ namespace output
 
 	void outputVersion(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 
 		// Get version information from the application.
 		const auto szFullPath = file::GetModuleFileName(nullptr);
@@ -320,7 +332,10 @@ namespace output
 		}
 	}
 
-	void OutputCDataOpen(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile) { Output(ulDbgLvl, fFile, false, L"<![CDATA["); }
+	void OutputCDataOpen(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile)
+	{
+		Output(ulDbgLvl, fFile, false, L"<![CDATA[");
+	}
 
 	void OutputCDataClose(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile) { Output(ulDbgLvl, fFile, false, L"]]>"); }
 
@@ -332,8 +347,7 @@ namespace output
 		bool bWrapCData,
 		int iIndent)
 	{
-		CHKPARAM;
-		EARLYABORT;
+		if (earlyExit(ulDbgLvl, fFile)) return;
 		if (szValue.empty() || !uidTag) return;
 
 		if (!szValue[0]) return;

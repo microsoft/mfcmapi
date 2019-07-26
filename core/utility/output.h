@@ -51,16 +51,9 @@ namespace output
 	void CloseDebugFile();
 	void SetDebugOutputToFile(bool bDoOutput);
 
-	inline bool fIsSet(output::DBGLEVEL ulTag) { return registry::debugTag & ulTag; }
-	inline bool fIsSetv(output::DBGLEVEL ulTag) { return (ulTag != DBGNoDebug) && (registry::debugTag & ulTag); }
-
-#define CHKPARAM assert(output::DBGNoDebug != ulDbgLvl || fFile)
-
-	// quick check to see if we have anything to print - so we can avoid executing the call
-#define EARLYABORT \
-	{ \
-		if (!fFile && !registry::debugToFile && !fIsSetv(ulDbgLvl)) return; \
-	}
+	bool fIsSet(output::DBGLEVEL ulTag);
+	bool fIsSetv(output::DBGLEVEL ulTag);
+	bool earlyExit(output::DBGLEVEL ulDbgLvl, bool fFile);
 
 	_Check_return_ FILE* MyOpenFile(const std::wstring& szFileName, bool bNewFile);
 	_Check_return_ FILE* MyOpenFileMode(const std::wstring& szFileName, const wchar_t* mode);
