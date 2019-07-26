@@ -71,7 +71,7 @@ namespace version
 	{
 		if (!import::pfnFindPackagesByPackageFamily)
 		{
-			output::DebugPrint(DBGGeneric, L"LookupFamilyName: FindPackagesByPackageFamily not found\n");
+			output::DebugPrint(output::DBGGeneric, L"LookupFamilyName: FindPackagesByPackageFamily not found\n");
 			return L"";
 		}
 
@@ -82,13 +82,13 @@ namespace version
 			import::pfnFindPackagesByPackageFamily(familyName, filter, &count, nullptr, &length, nullptr, nullptr);
 		if (rc == ERROR_SUCCESS)
 		{
-			output::DebugPrint(DBGGeneric, L"LookupFamilyName: No packages found\n");
+			output::DebugPrint(output::DBGGeneric, L"LookupFamilyName: No packages found\n");
 			return L"";
 		}
 
 		if (rc != ERROR_INSUFFICIENT_BUFFER)
 		{
-			output::DebugPrint(DBGGeneric, L"LookupFamilyName: Error %ld in FindPackagesByPackageFamily\n", rc);
+			output::DebugPrint(output::DBGGeneric, L"LookupFamilyName: Error %ld in FindPackagesByPackageFamily\n", rc);
 			return L"";
 		}
 
@@ -102,7 +102,7 @@ namespace version
 			if (rc != ERROR_SUCCESS)
 			{
 				output::DebugPrint(
-					DBGGeneric, L"LookupFamilyName: Error %d looking up Full Names from Family Names\n", rc);
+					output::DBGGeneric, L"LookupFamilyName: Error %d looking up Full Names from Family Names\n", rc);
 			}
 		}
 
@@ -126,13 +126,13 @@ namespace version
 		auto rc = import::pfnPackageIdFromFullName(fullname, 0, &length, nullptr);
 		if (rc == ERROR_SUCCESS)
 		{
-			output::DebugPrint(DBGGeneric, L"GetPackageId: Package not found\n");
+			output::DebugPrint(output::DBGGeneric, L"GetPackageId: Package not found\n");
 			return strings::emptystring;
 		}
 
 		if (rc != ERROR_INSUFFICIENT_BUFFER)
 		{
-			output::DebugPrint(DBGGeneric, L"GetPackageId: Error %ld in PackageIdFromFullName\n", rc);
+			output::DebugPrint(output::DBGGeneric, L"GetPackageId: Error %ld in PackageIdFromFullName\n", rc);
 			return strings::emptystring;
 		}
 
@@ -143,7 +143,8 @@ namespace version
 			rc = import::pfnPackageIdFromFullName(fullname, 0, &length, reinterpret_cast<BYTE*>(package_id));
 			if (rc != ERROR_SUCCESS)
 			{
-				output::DebugPrint(DBGGeneric, L"PackageIdFromFullName: Error %d looking up ID from full name\n", rc);
+				output::DebugPrint(
+					output::DBGGeneric, L"PackageIdFromFullName: Error %d looking up ID from full name\n", rc);
 			}
 			else
 			{

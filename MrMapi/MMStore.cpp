@@ -174,7 +174,7 @@ void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 
 	WC_H_GETPROPS_S(lpMAPIProp->GetProps(&sTag, fMapiUnicode, &cValues, &lpAllProps));
 
-	output::outputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
+	output::outputProperties(output::DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
 	MAPIFreeBuffer(lpAllProps);
 }
@@ -211,7 +211,7 @@ void PrintObjectProperties(const std::wstring& szObjType, _In_ LPMAPIPROP lpMAPI
 	{
 		wprintf(L"<properties>\n");
 
-		output::outputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
+		output::outputProperties(output::DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
 		wprintf(L"</properties>\n");
 
@@ -286,7 +286,12 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 						else
 						{
 							output::outputProperties(
-								DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
+								output::DBGNoDebug,
+								stdout,
+								lpRows->aRow[i].cValues,
+								lpRows->aRow[i].lpProps,
+								nullptr,
+								false);
 						}
 
 						wprintf(L"</properties>\n");

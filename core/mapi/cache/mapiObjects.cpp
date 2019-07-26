@@ -13,7 +13,7 @@ namespace cache
 	CMapiObjects::CMapiObjects(_In_opt_ CMapiObjects* OldMapiObjects)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		output::DebugPrintEx(DBGConDes, CLASS, CLASS, L"OldMapiObjects = %p\n", OldMapiObjects);
+		output::DebugPrintEx(output::DBGConDes, CLASS, CLASS, L"OldMapiObjects = %p\n", OldMapiObjects);
 		m_cRef = 1;
 
 		m_lpAddrBook = nullptr;
@@ -59,7 +59,7 @@ namespace cache
 
 	void CMapiObjects::MAPILogonEx(_In_ HWND hwnd, _In_opt_z_ LPTSTR szProfileName, ULONG ulFlags)
 	{
-		output::DebugPrint(DBGGeneric, L"Logging on with MAPILogonEx, ulFlags = 0x%X\n", ulFlags);
+		output::DebugPrint(output::DBGGeneric, L"Logging on with MAPILogonEx, ulFlags = 0x%X\n", ulFlags);
 
 		CGlobalCache::getInstance().MAPIInitialize(NULL);
 		if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
@@ -70,12 +70,12 @@ namespace cache
 		EC_H_CANCEL_S(
 			::MAPILogonEx(reinterpret_cast<ULONG_PTR>(hwnd), szProfileName, nullptr, ulFlags, &m_lpMAPISession));
 
-		output::DebugPrint(DBGGeneric, L"\tm_lpMAPISession set to %p\n", m_lpMAPISession);
+		output::DebugPrint(output::DBGGeneric, L"\tm_lpMAPISession set to %p\n", m_lpMAPISession);
 	}
 
 	void CMapiObjects::Logoff(_In_ HWND hwnd, ULONG ulFlags)
 	{
-		output::DebugPrint(DBGGeneric, L"Logging off of %p, ulFlags = 0x%08X\n", m_lpMAPISession, ulFlags);
+		output::DebugPrint(output::DBGGeneric, L"Logging off of %p, ulFlags = 0x%08X\n", m_lpMAPISession, ulFlags);
 
 		if (m_lpMAPISession)
 		{
@@ -98,7 +98,7 @@ namespace cache
 
 	void CMapiObjects::SetMDB(_In_opt_ LPMDB lpMDB)
 	{
-		output::DebugPrintEx(DBGGeneric, CLASS, L"SetMDB", L"replacing %p with %p\n", m_lpMDB, lpMDB);
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"SetMDB", L"replacing %p with %p\n", m_lpMDB, lpMDB);
 		if (m_lpMDB) m_lpMDB->Release();
 		m_lpMDB = lpMDB;
 		if (m_lpMDB) m_lpMDB->AddRef();
@@ -108,7 +108,7 @@ namespace cache
 
 	void CMapiObjects::SetAddrBook(_In_opt_ LPADRBOOK lpAddrBook)
 	{
-		output::DebugPrintEx(DBGGeneric, CLASS, L"SetAddrBook", L"replacing %p with %p\n", m_lpAddrBook, lpAddrBook);
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"SetAddrBook", L"replacing %p with %p\n", m_lpAddrBook, lpAddrBook);
 		if (m_lpAddrBook) m_lpAddrBook->Release();
 		m_lpAddrBook = lpAddrBook;
 		if (m_lpAddrBook) m_lpAddrBook->AddRef();

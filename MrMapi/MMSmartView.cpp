@@ -62,7 +62,7 @@ void DoSmartView()
 				{
 					if (fOut)
 					{
-						output::Output(DBGNoDebug, fOut, false, szString);
+						output::Output(output::DBGNoDebug, fOut, false, szString);
 					}
 					else
 					{

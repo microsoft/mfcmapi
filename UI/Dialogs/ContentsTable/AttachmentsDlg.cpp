@@ -155,7 +155,7 @@ namespace dialog
 	_Check_return_ LPMAPIPROP CAttachmentsDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
 	{
 		if (!m_lpContentsTableListCtrl) return nullptr;
-		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(output::DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		// Find the highlighted item AttachNum
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
@@ -201,7 +201,7 @@ namespace dialog
 		if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		const ULONG ulNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
@@ -227,7 +227,7 @@ namespace dialog
 		if (CBaseDialog::HandlePaste()) return true;
 
 		if (!m_lpContentsTableListCtrl || !m_lpMessage) return false;
-		output::DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
+		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandlePaste", L"\n");
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -315,7 +315,11 @@ namespace dialog
 		for (const auto& attachnum : attachnums)
 		{
 			output::DebugPrintEx(
-				DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting attachment 0x%08X\n", attachnum);
+				output::DBGDeleteSelectedItem,
+				CLASS,
+				L"OnDeleteSelectedItem",
+				L"Deleting attachment 0x%08X\n",
+				attachnum);
 			auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMessage::DeleteAttach", m_hWnd); // STRING_OK
 			EC_MAPI_S(m_lpMessage->DeleteAttach(
 				attachnum,

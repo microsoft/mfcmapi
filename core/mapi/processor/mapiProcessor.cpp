@@ -333,7 +333,7 @@ namespace mapi
 
 			if (SUCCEEDED(hRes) && lpContentsTable && m_lpResFolderContents)
 			{
-				output::outputRestriction(DBGGeneric, nullptr, m_lpResFolderContents, nullptr);
+				output::outputRestriction(output::DBGGeneric, nullptr, m_lpResFolderContents, nullptr);
 				WC_MAPI_S(lpContentsTable->Restrict(m_lpResFolderContents, TBL_BATCH));
 			}
 

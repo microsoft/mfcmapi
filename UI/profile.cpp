@@ -28,7 +28,8 @@ namespace ui
 			const ULONG cchProfName = _countof(szProfName);
 			LPCSTR szServices[] = {szServiceNameToAdd.c_str(), nullptr};
 
-			output::DebugPrint(DBGGeneric, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
+			output::DebugPrint(
+				output::DBGGeneric, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
 
 			// Call LaunchWizard to add the service.
 			const auto hRes = WC_MAPI(LaunchWizard(hParentWnd, ulFlags, szServices, cchProfName, szProfName));
@@ -41,7 +42,8 @@ namespace ui
 
 			if (SUCCEEDED(hRes))
 			{
-				output::DebugPrint(DBGGeneric, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", szProfName);
+				output::DebugPrint(
+					output::DBGGeneric, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", szProfName);
 			}
 
 			return strings::LPCSTRToWstring(szProfName);
@@ -49,7 +51,7 @@ namespace ui
 
 		void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 		{
-			output::DebugPrint(DBGGeneric, L"DisplayMAPISVCPath()\n");
+			output::DebugPrint(output::DBGGeneric, L"DisplayMAPISVCPath()\n");
 
 			dialog::editor::CEditor MyData(pParentWnd, IDS_MAPISVCTITLE, IDS_MAPISVCTEXT, CEDITOR_BUTTON_OK);
 			MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FILEPATH, true));
@@ -247,7 +249,7 @@ namespace ui
 		{
 			auto hRes = S_OK;
 
-			output::DebugPrint(DBGGeneric, L"HrSetProfileParameters()\n");
+			output::DebugPrint(output::DBGGeneric, L"HrSetProfileParameters()\n");
 
 			if (!lpServicesIni) return MAPI_E_INVALID_PARAMETER;
 
@@ -259,7 +261,7 @@ namespace ui
 			}
 			else
 			{
-				output::DebugPrint(DBGGeneric, L"Writing to this file: \"%ws\"\n", szServicesIni.c_str());
+				output::DebugPrint(output::DBGGeneric, L"Writing to this file: \"%ws\"\n", szServicesIni.c_str());
 
 				// Loop through and add items to MAPISVC.INF
 				auto n = 0;
@@ -279,7 +281,7 @@ namespace ui
 
 					// Write the item to MAPISVC.INF
 					output::DebugPrint(
-						DBGGeneric,
+						output::DBGGeneric,
 						L"\tWriting: \"%ws\"::\"%ws\"::\"%ws\"\n",
 						lpServicesIni[n].lpszSection,
 						lpszProp.c_str(),

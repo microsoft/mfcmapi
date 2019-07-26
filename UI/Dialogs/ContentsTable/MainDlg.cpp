@@ -120,7 +120,7 @@ namespace dialog
 
 	void CMainDlg::AddLoadMAPIMenus() const
 	{
-		output::DebugPrint(DBGLoadMAPI, L"AddLoadMAPIMenus - Extending menus\n");
+		output::DebugPrint(output::DBGLoadMAPI, L"AddLoadMAPIMenus - Extending menus\n");
 
 		// Find the submenu with ID_LOADMAPI on it
 		const auto hAddInMenu = ui::LocateSubmenu(::GetMenu(m_hWnd), ID_LOADMAPI);
@@ -134,7 +134,7 @@ namespace dialog
 			{
 				if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
 
-				output::DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
+				output::DebugPrint(output::DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
 				const auto lpMenu = ui::CreateMenuEntry(szPath);
 
 				EC_B_S(
@@ -142,13 +142,13 @@ namespace dialog
 			}
 		}
 
-		output::DebugPrint(DBGLoadMAPI, L"Done extending menus\n");
+		output::DebugPrint(output::DBGLoadMAPI, L"Done extending menus\n");
 	}
 
 	bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect) const
 	{
 		if (wMenuSelect < ID_LOADMAPIMENUMIN || wMenuSelect > ID_LOADMAPIMENUMAX) return false;
-		output::DebugPrint(DBGLoadMAPI, L"InvokeLoadMAPIMenu - got menu item %u\n", wMenuSelect);
+		output::DebugPrint(output::DBGLoadMAPI, L"InvokeLoadMAPIMenu - got menu item %u\n", wMenuSelect);
 
 		MENUITEMINFOW subMenu = {0};
 		subMenu.cbSize = sizeof(MENUITEMINFO);
@@ -158,7 +158,7 @@ namespace dialog
 		if (subMenu.dwItemData)
 		{
 			const auto lme = reinterpret_cast<ui::LPMENUENTRY>(subMenu.dwItemData);
-			output::DebugPrint(DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName.c_str());
+			output::DebugPrint(output::DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName.c_str());
 			const auto hMAPI = EC_D(HMODULE, import::MyLoadLibraryW(lme->m_pName));
 			mapistub::SetMAPIHandle(hMAPI);
 		}
@@ -168,7 +168,8 @@ namespace dialog
 
 	_Check_return_ bool CMainDlg::HandleMenu(WORD wMenuSelect)
 	{
-		output::DebugPrint(DBGMenu, L"CMainDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
+		output::DebugPrint(
+			output::DBGMenu, L"CMainDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 		if (HandleQuickStart(wMenuSelect, this, m_hWnd)) return true;
 		if (InvokeLoadMAPIMenu(wMenuSelect)) return true;
 
@@ -364,7 +365,7 @@ namespace dialog
 	_Check_return_ LPMAPIPROP CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
 	{
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return nullptr;
-		output::DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(output::DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return nullptr;
@@ -782,7 +783,7 @@ namespace dialog
 		}
 		else
 		{
-			output::DebugPrint(DBGGeneric, L"MAPILogonEx call cancelled.\n");
+			output::DebugPrint(output::DBGGeneric, L"MAPILogonEx call cancelled.\n");
 		}
 	}
 
@@ -930,7 +931,7 @@ namespace dialog
 
 	void CMainDlg::OnDisplayMAPIPath()
 	{
-		output::DebugPrint(DBGGeneric, L"OnDisplayMAPIPath()\n");
+		output::DebugPrint(output::DBGGeneric, L"OnDisplayMAPIPath()\n");
 		const auto hMAPI = mapistub::GetMAPIHandle();
 
 		editor::CEditor MyData(this, IDS_MAPIPATHTITLE, NULL, CEDITOR_BUTTON_OK);
@@ -1024,7 +1025,7 @@ namespace dialog
 			&lpOptions));
 		if (lpOptions)
 		{
-			output::outputProperties(DBGGeneric, nullptr, cValues, lpOptions, nullptr, false);
+			output::outputProperties(output::DBGGeneric, nullptr, cValues, lpOptions, nullptr, false);
 
 			editor::CEditor MyResult(this, IDS_QUERYDEFMSGOPT, IDS_RESULTOFCALLPROMPT, CEDITOR_BUTTON_OK);
 			MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_COUNTOPTIONS, true));
@@ -1078,7 +1079,7 @@ namespace dialog
 
 		if (lpOptions)
 		{
-			output::outputProperties(DBGGeneric, nullptr, cValues, lpOptions, nullptr, false);
+			output::outputProperties(output::DBGGeneric, nullptr, cValues, lpOptions, nullptr, false);
 
 			editor::CEditor MyResult(this, IDS_QUERYDEFRECIPOPT, IDS_RESULTOFCALLPROMPT, CEDITOR_BUTTON_OK);
 			MyResult.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_COUNTOPTIONS, true));
@@ -1498,11 +1499,11 @@ namespace dialog
 						lpMAPISession, reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb), &emsmdbUID));
 					if (SUCCEEDED(hRes))
 					{
-						if (fIsSet(DBGGeneric))
+						if (fIsSet(output::DBGGeneric))
 						{
 							auto szGUID = guid::GUIDToString(reinterpret_cast<LPCGUID>(&emsmdbUID));
 							output::DebugPrint(
-								DBGGeneric,
+								output::DBGGeneric,
 								L"CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %ws\n",
 								szGUID.c_str());
 						}
@@ -1536,14 +1537,15 @@ namespace dialog
 					}
 
 					output::DebugPrint(
-						DBGGeneric,
+						output::DBGGeneric,
 						L"CMainDlg::OnComputeGivenStoreHash, fPrivateExchangeStore = %d\n",
 						fPrivateExchangeStore);
 					output::DebugPrint(
-						DBGGeneric,
+						output::DBGGeneric,
 						L"CMainDlg::OnComputeGivenStoreHash, fPublicExchangeStore = %d\n",
 						fPublicExchangeStore);
-					output::DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fCached = %d\n", fCached);
+					output::DebugPrint(
+						output::DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fCached = %d\n", fCached);
 
 					if (fCached)
 					{
@@ -1559,7 +1561,7 @@ namespace dialog
 							{
 								wzPath = lpPathPropW->Value.lpszW;
 								output::DebugPrint(
-									DBGGeneric,
+									output::DBGGeneric,
 									L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_W = %ws\n",
 									wzPath);
 							}
@@ -1567,7 +1569,7 @@ namespace dialog
 							{
 								szPath = lpPathPropA->Value.lpszA;
 								output::DebugPrint(
-									DBGGeneric,
+									output::DBGGeneric,
 									L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_A = %hs\n",
 									szPath);
 							}
@@ -1605,10 +1607,12 @@ namespace dialog
 				}
 
 				output::DebugPrint(
-					DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n", dwEIDHash);
+					output::DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n", dwEIDHash);
 				if (dwSigHash)
 					output::DebugPrint(
-						DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n", dwSigHash);
+						output::DBGGeneric,
+						L"CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n",
+						dwSigHash);
 
 				editor::CEditor Result(this, IDS_STOREHASH, NULL, CEDITOR_BUTTON_OK);
 				Result.SetPromptPostFix(szHash);

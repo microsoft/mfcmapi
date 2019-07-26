@@ -77,17 +77,17 @@ namespace addin
 
 	void LoadSingleAddIn(_In_ _AddIn& addIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoadAddIn)
 	{
-		output::DebugPrint(DBGAddInPlumbing, L"Loading AddIn\n");
+		output::DebugPrint(output::DBGAddInPlumbing, L"Loading AddIn\n");
 		if (!pfnLoadAddIn) return;
 		addIn.hMod = hMod;
 		pfnLoadAddIn(&addIn.szName);
 		if (addIn.szName)
 		{
-			output::DebugPrint(DBGAddInPlumbing, L"Loading \"%ws\"\n", addIn.szName);
+			output::DebugPrint(output::DBGAddInPlumbing, L"Loading \"%ws\"\n", addIn.szName);
 		}
 
 		const auto ulVersion = GetAddinVersion(hMod);
-		output::DebugPrint(DBGAddInPlumbing, L"AddIn version = %u\n", ulVersion);
+		output::DebugPrint(output::DBGAddInPlumbing, L"AddIn version = %u\n", ulVersion);
 
 		const auto pfnGetMenus = GetFunction<LPGETMENUS>(hMod, szGetMenus);
 		if (pfnGetMenus)
@@ -95,7 +95,7 @@ namespace addin
 			pfnGetMenus(&addIn.ulMenu, &addIn.lpMenu);
 			if (!addIn.ulMenu || !addIn.lpMenu)
 			{
-				output::DebugPrint(DBGAddInPlumbing, L"AddIn returned invalid menus\n");
+				output::DebugPrint(output::DBGAddInPlumbing, L"AddIn returned invalid menus\n");
 				addIn.ulMenu = NULL;
 				addIn.lpMenu = nullptr;
 			}
@@ -106,12 +106,12 @@ namespace addin
 					// Save off our add-in struct
 					addIn.lpMenu[ulMenu].lpAddIn = &addIn;
 					if (addIn.lpMenu[ulMenu].szMenu)
-						output::DebugPrint(DBGAddInPlumbing, L"Menu: %ws\n", addIn.lpMenu[ulMenu].szMenu);
+						output::DebugPrint(output::DBGAddInPlumbing, L"Menu: %ws\n", addIn.lpMenu[ulMenu].szMenu);
 					if (addIn.lpMenu[ulMenu].szHelp)
-						output::DebugPrint(DBGAddInPlumbing, L"Help: %ws\n", addIn.lpMenu[ulMenu].szHelp);
-					output::DebugPrint(DBGAddInPlumbing, L"ID: 0x%08X\n", addIn.lpMenu[ulMenu].ulID);
-					output::DebugPrint(DBGAddInPlumbing, L"Context: 0x%08X\n", addIn.lpMenu[ulMenu].ulContext);
-					output::DebugPrint(DBGAddInPlumbing, L"Flags: 0x%08X\n", addIn.lpMenu[ulMenu].ulFlags);
+						output::DebugPrint(output::DBGAddInPlumbing, L"Help: %ws\n", addIn.lpMenu[ulMenu].szHelp);
+					output::DebugPrint(output::DBGAddInPlumbing, L"ID: 0x%08X\n", addIn.lpMenu[ulMenu].ulID);
+					output::DebugPrint(output::DBGAddInPlumbing, L"Context: 0x%08X\n", addIn.lpMenu[ulMenu].ulContext);
+					output::DebugPrint(output::DBGAddInPlumbing, L"Flags: 0x%08X\n", addIn.lpMenu[ulMenu].ulFlags);
 				}
 			}
 		}
@@ -169,7 +169,7 @@ namespace addin
 			pfnGetSmartViewParserTypeArray(&addIn.ulSmartViewParserTypes, &addIn.lpSmartViewParserTypes);
 		}
 
-		output::DebugPrint(DBGAddInPlumbing, L"Done loading AddIn\n");
+		output::DebugPrint(output::DBGAddInPlumbing, L"Done loading AddIn\n");
 	}
 
 	class CFileList final
@@ -249,12 +249,12 @@ namespace addin
 
 	void LoadAddIns()
 	{
-		output::DebugPrint(DBGAddInPlumbing, L"Loading AddIns\n");
+		output::DebugPrint(output::DBGAddInPlumbing, L"Loading AddIns\n");
 		// First, we look at each DLL in the current dir and see if it exports 'LoadAddIn'
 
 		if (!registry::loadAddIns)
 		{
-			output::DebugPrint(DBGAddInPlumbing, L"Bypassing add-in loading\n");
+			output::DebugPrint(output::DBGAddInPlumbing, L"Bypassing add-in loading\n");
 		}
 		else
 		{
@@ -269,22 +269,23 @@ namespace addin
 
 			if (!szDir.empty())
 			{
-				output::DebugPrint(DBGAddInPlumbing, L"Current dir = \"%ws\"\n", szDir.c_str());
+				output::DebugPrint(output::DBGAddInPlumbing, L"Current dir = \"%ws\"\n", szDir.c_str());
 				const auto szSpec = szDir + L"\\*.dll"; // STRING_OK
-				output::DebugPrint(DBGAddInPlumbing, L"File spec = \"%ws\"\n", szSpec.c_str());
+				output::DebugPrint(output::DBGAddInPlumbing, L"File spec = \"%ws\"\n", szSpec.c_str());
 
 				WIN32_FIND_DATAW FindFileData = {};
 				const auto hFind = FindFirstFileW(szSpec.c_str(), &FindFileData);
 
 				if (hFind == INVALID_HANDLE_VALUE)
 				{
-					output::DebugPrint(DBGAddInPlumbing, L"Invalid file handle. Error is %u.\n", GetLastError());
+					output::DebugPrint(
+						output::DBGAddInPlumbing, L"Invalid file handle. Error is %u.\n", GetLastError());
 				}
 				else
 				{
 					for (;;)
 					{
-						output::DebugPrint(DBGAddInPlumbing, L"Examining \"%ws\"\n", FindFileData.cFileName);
+						output::DebugPrint(output::DBGAddInPlumbing, L"Examining \"%ws\"\n", FindFileData.cFileName);
 						HMODULE hMod = nullptr;
 
 						// If we know the Add-in is good, just load it.
@@ -327,11 +328,11 @@ namespace addin
 
 						if (hMod)
 						{
-							output::DebugPrint(DBGAddInPlumbing, L"Opened module\n");
+							output::DebugPrint(output::DBGAddInPlumbing, L"Opened module\n");
 							const auto pfnLoadAddIn = GetFunction<LPLOADADDIN>(hMod, szLoadAddIn);
 							if (pfnLoadAddIn && GetAddinVersion(hMod) == MFCMAPI_HEADER_CURRENT_VERSION)
 							{
-								output::DebugPrint(DBGAddInPlumbing, L"Found an add-in\n");
+								output::DebugPrint(output::DBGAddInPlumbing, L"Found an add-in\n");
 								g_lpMyAddins.emplace_back();
 								LoadSingleAddIn(g_lpMyAddins.back(), hMod, pfnLoadAddIn);
 							}
@@ -350,23 +351,23 @@ namespace addin
 					FindClose(hFind);
 					if (dwRet != ERROR_NO_MORE_FILES)
 					{
-						output::DebugPrint(DBGAddInPlumbing, L"FindNextFile error. Error is %u.\n", dwRet);
+						output::DebugPrint(output::DBGAddInPlumbing, L"FindNextFile error. Error is %u.\n", dwRet);
 					}
 				}
 			}
 		}
 
 		MergeAddInArrays();
-		output::DebugPrint(DBGAddInPlumbing, L"Done loading AddIns\n");
+		output::DebugPrint(output::DBGAddInPlumbing, L"Done loading AddIns\n");
 	}
 
 	void UnloadAddIns()
 	{
-		output::DebugPrint(DBGAddInPlumbing, L"Unloading AddIns\n");
+		output::DebugPrint(output::DBGAddInPlumbing, L"Unloading AddIns\n");
 
 		for (const auto& addIn : g_lpMyAddins)
 		{
-			output::DebugPrint(DBGAddInPlumbing, L"Freeing add-in\n");
+			output::DebugPrint(output::DBGAddInPlumbing, L"Freeing add-in\n");
 			if (addIn.bLegacyPropTags)
 			{
 				delete[] addIn.lpPropTags;
@@ -376,7 +377,7 @@ namespace addin
 			{
 				if (addIn.szName)
 				{
-					output::DebugPrint(DBGAddInPlumbing, L"Unloading \"%ws\"\n", addIn.szName);
+					output::DebugPrint(output::DBGAddInPlumbing, L"Unloading \"%ws\"\n", addIn.szName);
 				}
 
 				const auto pfnUnLoadAddIn = GetFunction<LPUNLOADADDIN>(addIn.hMod, szUnloadAddIn);
@@ -386,7 +387,7 @@ namespace addin
 			}
 		}
 
-		output::DebugPrint(DBGAddInPlumbing, L"Done unloading AddIns\n");
+		output::DebugPrint(output::DBGAddInPlumbing, L"Done unloading AddIns\n");
 	}
 
 	// Compare type arrays.
@@ -561,7 +562,7 @@ namespace addin
 	// Assumes built in arrays are already sorted!
 	void MergeAddInArrays()
 	{
-		output::DebugPrint(DBGAddInPlumbing, L"Loading default arrays\n");
+		output::DebugPrint(output::DBGAddInPlumbing, L"Loading default arrays\n");
 		PropTagArray = std::vector<NAME_ARRAY_ENTRY_V2>(std::begin(g_PropTagArray), std::end(g_PropTagArray));
 		PropTypeArray = std::vector<NAME_ARRAY_ENTRY>(std::begin(g_PropTypeArray), std::end(g_PropTypeArray));
 		PropGuidArray =
@@ -573,31 +574,34 @@ namespace addin
 		SmartViewParserTypeArray = std::vector<NAME_ARRAY_ENTRY>(
 			std::begin(smartview::g_SmartViewParserTypeArray), std::end(smartview::g_SmartViewParserTypeArray));
 
-		output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop tags.\n", PropTagArray.size());
-		output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop types.\n", PropTypeArray.size());
-		output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in guids.\n", PropGuidArray.size());
-		output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in named ids.\n", NameIDArray.size());
-		output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in flags.\n", FlagArray.size());
+		output::DebugPrint(output::DBGAddInPlumbing, L"Found 0x%08X built in prop tags.\n", PropTagArray.size());
+		output::DebugPrint(output::DBGAddInPlumbing, L"Found 0x%08X built in prop types.\n", PropTypeArray.size());
+		output::DebugPrint(output::DBGAddInPlumbing, L"Found 0x%08X built in guids.\n", PropGuidArray.size());
+		output::DebugPrint(output::DBGAddInPlumbing, L"Found 0x%08X built in named ids.\n", NameIDArray.size());
+		output::DebugPrint(output::DBGAddInPlumbing, L"Found 0x%08X built in flags.\n", FlagArray.size());
 		output::DebugPrint(
-			DBGAddInPlumbing, L"Found 0x%08X built in Smart View parsers.\n", SmartViewParserArray.size());
+			output::DBGAddInPlumbing, L"Found 0x%08X built in Smart View parsers.\n", SmartViewParserArray.size());
 		output::DebugPrint(
-			DBGAddInPlumbing, L"Found 0x%08X built in Smart View parser types.\n", SmartViewParserTypeArray.size());
+			output::DBGAddInPlumbing,
+			L"Found 0x%08X built in Smart View parser types.\n",
+			SmartViewParserTypeArray.size());
 
 		// No add-in == nothing to merge
 		if (g_lpMyAddins.empty()) return;
 
-		output::DebugPrint(DBGAddInPlumbing, L"Merging Add-In arrays\n");
+		output::DebugPrint(output::DBGAddInPlumbing, L"Merging Add-In arrays\n");
 		for (const auto& addIn : g_lpMyAddins)
 		{
-			output::DebugPrint(DBGAddInPlumbing, L"Looking at %ws\n", addIn.szName);
-			output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X prop tags.\n", addIn.ulPropTags);
-			output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X prop types.\n", addIn.ulPropTypes);
-			output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X guids.\n", addIn.ulPropGuids);
-			output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X named ids.\n", addIn.ulNameIDs);
-			output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X flags.\n", addIn.ulPropFlags);
-			output::DebugPrint(DBGAddInPlumbing, L"Found 0x%08X Smart View parsers.\n", addIn.ulSmartViewParsers);
+			output::DebugPrint(output::DBGAddInPlumbing, L"Looking at %ws\n", addIn.szName);
+			output::DebugPrint(output::DBGAddInPlumbing, L"Found 0x%08X prop tags.\n", addIn.ulPropTags);
+			output::DebugPrint(output::DBGAddInPlumbing, L"Found 0x%08X prop types.\n", addIn.ulPropTypes);
+			output::DebugPrint(output::DBGAddInPlumbing, L"Found 0x%08X guids.\n", addIn.ulPropGuids);
+			output::DebugPrint(output::DBGAddInPlumbing, L"Found 0x%08X named ids.\n", addIn.ulNameIDs);
+			output::DebugPrint(output::DBGAddInPlumbing, L"Found 0x%08X flags.\n", addIn.ulPropFlags);
 			output::DebugPrint(
-				DBGAddInPlumbing, L"Found 0x%08X Smart View parser types.\n", addIn.ulSmartViewParserTypes);
+				output::DBGAddInPlumbing, L"Found 0x%08X Smart View parsers.\n", addIn.ulSmartViewParsers);
+			output::DebugPrint(
+				output::DBGAddInPlumbing, L"Found 0x%08X Smart View parser types.\n", addIn.ulSmartViewParserTypes);
 		}
 
 		// Second pass - merge our arrays to the hardcoded arrays
@@ -667,27 +671,30 @@ namespace addin
 			}
 		}
 
-		output::DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X prop tags.\n", PropTagArray.size());
-		output::DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X prop types.\n", PropTypeArray.size());
-		output::DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X guids.\n", PropGuidArray.size());
-		output::DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X flags.\n", FlagArray.size());
-		output::DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X Smart View parsers.\n", SmartViewParserArray.size());
+		output::DebugPrint(output::DBGAddInPlumbing, L"After merge, 0x%08X prop tags.\n", PropTagArray.size());
+		output::DebugPrint(output::DBGAddInPlumbing, L"After merge, 0x%08X prop types.\n", PropTypeArray.size());
+		output::DebugPrint(output::DBGAddInPlumbing, L"After merge, 0x%08X guids.\n", PropGuidArray.size());
+		output::DebugPrint(output::DBGAddInPlumbing, L"After merge, 0x%08X flags.\n", FlagArray.size());
 		output::DebugPrint(
-			DBGAddInPlumbing, L"After merge, 0x%08X Smart View parser types.\n", SmartViewParserTypeArray.size());
+			output::DBGAddInPlumbing, L"After merge, 0x%08X Smart View parsers.\n", SmartViewParserArray.size());
+		output::DebugPrint(
+			output::DBGAddInPlumbing,
+			L"After merge, 0x%08X Smart View parser types.\n",
+			SmartViewParserTypeArray.size());
 
-		output::DebugPrint(DBGAddInPlumbing, L"Done merging add-in arrays\n");
+		output::DebugPrint(output::DBGAddInPlumbing, L"Done merging add-in arrays\n");
 	}
 
 	__declspec(dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...)
 	{
-		if (!fIsSet(DBGAddIn)) return;
+		if (!fIsSet(output::DBGAddIn)) return;
 
 		auto argList = va_list{};
 		va_start(argList, szMsg);
 		const auto szAddInLogString = strings::formatV(szMsg, argList);
 		va_end(argList);
 
-		output::Output(DBGAddIn, nullptr, bPrintThreadTime, szAddInLogString);
+		output::Output(output::DBGAddIn, nullptr, bPrintThreadTime, szAddInLogString);
 	}
 
 	__declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool bForce)
