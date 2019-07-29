@@ -1670,7 +1670,7 @@ namespace mapi
 					pRows = nullptr;
 					hRes = EC_MAPI(lpAttachTable->QueryRows(1, NULL, &pRows));
 					if (FAILED(hRes)) break;
-					if (pRows && (!pRows || pRows->cRows)) break;
+					if (!pRows || !pRows->cRows) break;
 
 					if (ATTACH_EMBEDDED_MSG == pRows->aRow->lpProps[atPR_ATTACH_METHOD].Value.l)
 					{
@@ -1725,7 +1725,7 @@ namespace mapi
 						MAPIFreeBuffer(lpsMessageTags);
 						lpsMessageTags = nullptr;
 						hRes = EC_MAPI(lpAttachMsg->GetPropList(0, &lpsMessageTags));
-						if (FAILED(hRes) || !!lpsMessageTags) continue;
+						if (FAILED(hRes) || !lpsMessageTags) continue;
 
 						output::DebugPrint(output::DBGGeneric, L"Copying properties to new message.\n");
 						if (SUCCEEDED(hRes))
