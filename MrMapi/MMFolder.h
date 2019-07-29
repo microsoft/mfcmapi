@@ -1,11 +1,11 @@
 #pragma once
 // Folder related utilities for MrMAPI
 
-void DoChildFolders(_In_ LPMAPIFOLDER lpFolder);
-void DoFolderProps(LPMAPIFOLDER lpFolder);
-void DoFolderSize(_In_ LPMAPIFOLDER lpFolder);
-void DoSearchState(_In_ LPMAPIFOLDER lpFolder);
+void DoChildFolders(_In_opt_ LPMAPIFOLDER lpFolder);
+void DoFolderProps(_In_opt_ LPMAPIFOLDER lpFolder);
+void DoFolderSize(_In_opt_ LPMAPIFOLDER lpFolder);
+void DoSearchState(_In_opt_ LPMAPIFOLDER lpFolder);
 
 LPMAPIFOLDER MAPIOpenFolderExW(
-	_In_ LPMDB lpMdb, // Open message store
+	_In_opt_ LPMDB lpMdb, // Open message store
 	_In_ const std::wstring& lpszFolderPath); // folder path

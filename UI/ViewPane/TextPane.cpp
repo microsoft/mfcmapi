@@ -215,26 +215,30 @@ namespace viewpane
 			CRect(0, 0, 0, 0),
 			pParent,
 			m_nID));
-		ui::SubclassEdit(m_EditBox.m_hWnd, pParent ? pParent->m_hWnd : nullptr, m_bReadOnly);
-		SendMessage(m_EditBox.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 
-		m_bInitialized = true; // We can now call SetEditBoxText
-
-		// Set maximum text size
-		// Use -1 to allow for VERY LARGE strings
-		(void) ::SendMessage(m_EditBox.m_hWnd, EM_EXLIMITTEXT, static_cast<WPARAM>(0), static_cast<LPARAM>(-1));
-
-		SetEditBoxText();
-
-		m_EditBox.SetEventMask(ENM_CHANGE);
-
-		// Clear the modify bits so we can detect changes later
-		m_EditBox.SetModify(false);
-
-		// Remove the awful autoselect of the edit control that scrolls to the end of multiline text
-		if (m_bMultiline)
+		if (m_EditBox.m_hWnd)
 		{
-			::PostMessage(m_EditBox.m_hWnd, EM_SETSEL, static_cast<WPARAM>(0), static_cast<LPARAM>(0));
+			ui::SubclassEdit(m_EditBox.m_hWnd, pParent ? pParent->m_hWnd : nullptr, m_bReadOnly);
+			SendMessage(m_EditBox.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
+
+			m_bInitialized = true; // We can now call SetEditBoxText
+
+			// Set maximum text size
+			// Use -1 to allow for VERY LARGE strings
+			(void) ::SendMessage(m_EditBox.m_hWnd, EM_EXLIMITTEXT, static_cast<WPARAM>(0), static_cast<LPARAM>(-1));
+
+			SetEditBoxText();
+
+			m_EditBox.SetEventMask(ENM_CHANGE);
+
+			// Clear the modify bits so we can detect changes later
+			m_EditBox.SetModify(false);
+
+			// Remove the awful autoselect of the edit control that scrolls to the end of multiline text
+			if (m_bMultiline)
+			{
+				::PostMessage(m_EditBox.m_hWnd, EM_SETSEL, static_cast<WPARAM>(0), static_cast<LPARAM>(0));
+			}
 		}
 	}
 

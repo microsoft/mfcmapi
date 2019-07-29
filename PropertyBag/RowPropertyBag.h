@@ -32,8 +32,8 @@ namespace propertybag
 	private:
 		controls::sortlistdata::SortListData* m_lpListData;
 
-		ULONG m_cValues;
-		LPSPropValue m_lpProps;
-		bool m_bRowModified;
+		ULONG m_cValues{};
+		LPSPropValue m_lpProps{};
+		bool m_bRowModified{};
 	};
 } // namespace propertybag

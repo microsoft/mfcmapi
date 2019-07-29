@@ -242,7 +242,7 @@ namespace mapiprocessor
 
 	void DumpFidMid(
 		_In_ const std::wstring& lpszProfile,
-		_In_ LPMDB lpMDB,
+		_In_opt_ LPMDB lpMDB,
 		_In_ const std::wstring& lpszFid,
 		_In_ const std::wstring& lpszMid,
 		bool bMid)
@@ -283,7 +283,7 @@ namespace mapiprocessor
 	}
 } // namespace mapiprocessor
 
-void DoFidMid(_In_ LPMDB lpMDB)
+void DoFidMid(_In_opt_ LPMDB lpMDB)
 {
 	mapiprocessor::DumpFidMid(
 		cli::switchProfile[0], lpMDB, cli::switchFid[0], cli::switchMid[0], cli::switchMid.isSet());

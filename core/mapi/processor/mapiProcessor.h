@@ -84,17 +84,17 @@ namespace mapi
 				_Deref_out_opt_ LPVOID* lpData);
 			virtual bool BeginRecipientWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
 			virtual void DoMessagePerRecipientWork(
-				_In_ LPMESSAGE lpMessage,
-				_In_ LPVOID lpData,
-				_In_ const _SRow* lpSRow,
+				_In_opt_ LPMESSAGE lpMessage,
+				_In_opt_ LPVOID lpData,
+				_In_opt_ const _SRow* lpSRow,
 				ULONG ulCurRow);
-			virtual void EndRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+			virtual void EndRecipientWork(_In_opt_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
 			virtual bool BeginAttachmentWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
 			virtual void DoMessagePerAttachmentWork(
-				_In_ LPMESSAGE lpMessage,
-				_In_ LPVOID lpData,
-				_In_ const _SRow* lpSRow,
-				_In_ LPATTACH lpAttach,
+				_In_opt_ LPMESSAGE lpMessage,
+				_In_opt_ LPVOID lpData,
+				_In_opt_ const _SRow* lpSRow,
+				_In_opt_ LPATTACH lpAttach,
 				ULONG ulCurRow);
 			virtual void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
 			virtual void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);

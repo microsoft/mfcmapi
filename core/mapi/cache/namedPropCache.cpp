@@ -265,8 +265,9 @@ namespace cache
 		_In_count_(cbSig) LPBYTE lpSig,
 		_In_ LPSPropTagArray* lppPropTags,
 		_Out_ ULONG* lpcPropNames,
-		_Out_ _Deref_post_cap_(*lpcPropNames) LPMAPINAMEID** lpppPropNames)
+		_Out_ _Deref_post_opt_cap_(*lpcPropNames) LPMAPINAMEID** lpppPropNames)
 	{
+		if (lpppPropNames) *lpppPropNames = {};
 		if (!lpMAPIProp || !lppPropTags || !*lppPropTags || !cbSig || !lpSig) return MAPI_E_INVALID_PARAMETER;
 
 		// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done

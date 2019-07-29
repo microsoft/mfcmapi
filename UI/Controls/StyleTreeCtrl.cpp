@@ -159,7 +159,7 @@ namespace controls
 		}
 	}
 
-	void StyleTreeCtrl::OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
+	void StyleTreeCtrl::OnSelChanged(_In_opt_ NMHDR* pNMHDR, _In_opt_ LRESULT* pResult)
 	{
 		const auto pNMTV = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 

@@ -2013,6 +2013,7 @@ namespace mapi
 		_Deref_out_ LPSTREAM* lpUncompressedRTFStream,
 		_Out_opt_ ULONG* pulStreamFlags)
 	{
+		if (pulStreamFlags) *pulStreamFlags = {};
 		if (!lpCompressedRTFStream || !lpUncompressedRTFStream) return MAPI_E_INVALID_PARAMETER;
 		auto hRes = S_OK;
 
@@ -2203,6 +2204,7 @@ namespace mapi
 	HRESULT
 	HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess, _In_ const MAPIUID* puidService, _Out_opt_ MAPIUID* pEmsmdbUID)
 	{
+		if (pEmsmdbUID) *pEmsmdbUID = {};
 		if (!puidService) return MAPI_E_INVALID_PARAMETER;
 
 		SRestriction mres = {};

@@ -399,7 +399,7 @@ namespace strings
 	}
 
 	// Converts binary data to a string, assuming source string was unicode
-	std::wstring BinToTextStringW(_In_ const SBinary* lpBin, bool bMultiLine)
+	std::wstring BinToTextStringW(_In_opt_ const SBinary* lpBin, bool bMultiLine)
 	{
 		if (!lpBin || !lpBin->cb || lpBin->cb % sizeof WCHAR || !lpBin->lpb) return L"";
 
@@ -414,7 +414,7 @@ namespace strings
 	}
 
 	// Converts binary data to a string, assuming source string was single byte
-	std::wstring BinToTextString(_In_ const SBinary* lpBin, bool bMultiLine)
+	std::wstring BinToTextString(_In_opt_ const SBinary* lpBin, bool bMultiLine)
 	{
 		if (!lpBin || !lpBin->cb || !lpBin->lpb) return L"";
 

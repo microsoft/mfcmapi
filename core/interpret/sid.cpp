@@ -20,10 +20,10 @@ namespace sid
 
 	// [MS-DTYP] 2.4.2.2 SID--Packet Representation
 	// https://msdn.microsoft.com/en-us/library/gg465313.aspx
-	_Check_return_ std::wstring GetTextualSid(_In_ PSID pSid)
+	_Check_return_ std::wstring GetTextualSid(_In_opt_ PSID pSid)
 	{
 		// Validate the binary SID.
-		if (!IsValidSid(pSid)) return {};
+		if (!pSid || !IsValidSid(pSid)) return {};
 
 		// Get the identifier authority value from the SID.
 		const auto psia = GetSidIdentifierAuthority(pSid);
@@ -61,9 +61,12 @@ namespace sid
 		{
 			for (DWORD dwCounter = 0; dwCounter < *lpSubAuthoritiesCount; dwCounter++)
 			{
-				TextualSid += strings::format(
-					L"-%lu", // STRING_OK
-					*GetSidSubAuthority(pSid, dwCounter));
+				if (pSid)
+				{
+					TextualSid += strings::format(
+						L"-%lu", // STRING_OK
+						*GetSidSubAuthority(pSid, dwCounter));
+				}
 			}
 		}
 
@@ -125,7 +128,7 @@ namespace sid
 		return LookupAccountSid(static_cast<PSID>(buf.data()));
 	}
 
-	std::wstring ACEToString(_In_ void* pACE, eAceType acetype)
+	std::wstring ACEToString(_In_opt_ void* pACE, eAceType acetype)
 	{
 		std::vector<std::wstring> aceString;
 		ACCESS_MASK Mask = 0;

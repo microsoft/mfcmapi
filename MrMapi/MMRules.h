@@ -1,4 +1,4 @@
 #pragma once
 // Rule table dumping for MrMAPI
 
-void DoRules(_In_ LPMAPIFOLDER lpFolder);
+void DoRules(_In_opt_ LPMAPIFOLDER lpFolder);

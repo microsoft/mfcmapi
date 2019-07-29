@@ -123,21 +123,21 @@ namespace controls
 			m_lpData = new MVPropData(lpProp);
 		}
 
-		void SortListData::InitializeRes(_In_ const _SRestriction* lpOldRes)
+		void SortListData::InitializeRes(_In_opt_ const _SRestriction* lpOldRes)
 		{
 			Clean();
 			bItemFullyLoaded = true;
 			m_lpData = new ResData(lpOldRes);
 		}
 
-		void SortListData::InitializeComment(_In_ const _SPropValue* lpOldProp)
+		void SortListData::InitializeComment(_In_opt_ const _SPropValue* lpOldProp)
 		{
 			Clean();
 			bItemFullyLoaded = true;
 			m_lpData = new CommentData(lpOldProp);
 		}
 
-		void SortListData::InitializeBinary(_In_ LPSBinary lpOldBin)
+		void SortListData::InitializeBinary(_In_opt_ LPSBinary lpOldBin)
 		{
 			Clean();
 			m_lpData = new BinaryData(lpOldBin);

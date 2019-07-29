@@ -12,7 +12,7 @@
 
 // Search folder for entry ID of child folder by name.
 LPSBinary MAPIFindFolderW(
-	_In_ LPMAPIFOLDER lpFolder, // pointer to folder
+	_In_opt_ LPMAPIFOLDER lpFolder, // pointer to folder
 	_In_ const std::wstring& lpszName) // name of child folder to find
 {
 	output::DebugPrint(output::DBGGeneric, L"MAPIFindFolderW: Locating folder \"%ws\"\n", lpszName.c_str());
@@ -191,7 +191,7 @@ static LPSBinary LookupRootFolderW(
 // Finds an arbitrarily nested folder in the indicated store given its
 // path name.
 LPSBinary MAPIFindFolderExW(
-	_In_ LPMDB lpMDB, // Open message store
+	_In_opt_ LPMDB lpMDB, // Open message store
 	_In_ const std::wstring& lpszFolderPath) // folder path
 {
 	output::DebugPrint(output::DBGGeneric, L"MAPIFindFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
@@ -253,7 +253,7 @@ LPSBinary MAPIFindFolderExW(
 // Opens an arbitrarily nested folder in the indicated store given its
 // path name.
 LPMAPIFOLDER MAPIOpenFolderExW(
-	_In_ LPMDB lpMDB, // Open message store
+	_In_opt_ LPMDB lpMDB, // Open message store
 	_In_ const std::wstring& lpszFolderPath) // folder path
 {
 	output::DebugPrint(output::DBGGeneric, L"MAPIOpenFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
@@ -280,7 +280,7 @@ LPMAPIFOLDER MAPIOpenFolderExW(
 
 void DumpHierarchyTable(
 	_In_ const std::wstring& lpszProfile,
-	_In_ LPMAPIFOLDER lpFolder,
+	_In_opt_ LPMAPIFOLDER lpFolder,
 	_In_ const std::wstring& lpszFolder,
 	_In_ ULONG ulDepth)
 {
@@ -422,7 +422,7 @@ ULONGLONG ComputeSingleFolderSize(_In_ LPMAPIFOLDER lpFolder)
 }
 
 ULONGLONG
-ComputeFolderSize(_In_ const std::wstring& lpszProfile, _In_ LPMAPIFOLDER lpFolder, _In_ const std::wstring& lpszFolder)
+ComputeFolderSize(_In_ const std::wstring& lpszProfile, _In_opt_ LPMAPIFOLDER lpFolder, _In_ const std::wstring& lpszFolder)
 {
 	output::DebugPrint(
 		output::DBGGeneric,
@@ -516,7 +516,7 @@ ComputeFolderSize(_In_ const std::wstring& lpszProfile, _In_ LPMAPIFOLDER lpFold
 
 void DumpSearchState(
 	_In_ const std::wstring& lpszProfile,
-	_In_ LPMAPIFOLDER lpFolder,
+	_In_opt_ LPMAPIFOLDER lpFolder,
 	_In_ const std::wstring& lpszFolder)
 {
 	output::DebugPrint(
@@ -557,7 +557,7 @@ void DumpSearchState(
 	}
 }
 
-void DoFolderProps(LPMAPIFOLDER lpFolder)
+void DoFolderProps(_In_opt_ LPMAPIFOLDER lpFolder)
 {
 	if (lpFolder)
 	{
@@ -565,7 +565,7 @@ void DoFolderProps(LPMAPIFOLDER lpFolder)
 	}
 }
 
-void DoFolderSize(_In_ LPMAPIFOLDER lpFolder)
+void DoFolderSize(_In_opt_ LPMAPIFOLDER lpFolder)
 {
 	const LONGLONG ullSize = ComputeFolderSize(cli::switchProfile[0], lpFolder, cli::switchFolder[0]);
 	printf("Folder size (including subfolders)\n");
@@ -574,12 +574,12 @@ void DoFolderSize(_In_ LPMAPIFOLDER lpFolder)
 	printf("MB: %I64d\n", ullSize / (1024 * 1024));
 }
 
-void DoChildFolders(_In_ LPMAPIFOLDER lpFolder)
+void DoChildFolders(_In_opt_ LPMAPIFOLDER lpFolder)
 {
 	DumpHierarchyTable(cli::switchProfile[0], lpFolder, cli::switchFolder[0], 0);
 }
 
-void DoSearchState(_In_ LPMAPIFOLDER lpFolder)
+void DoSearchState(_In_opt_ LPMAPIFOLDER lpFolder)
 {
 	DumpSearchState(cli::switchProfile[0], lpFolder, cli::switchFolder[0]);
 }

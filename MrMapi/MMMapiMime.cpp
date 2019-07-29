@@ -6,7 +6,7 @@
 #include <core/interpret/flags.h>
 #include <core/mapi/extraPropTags.h>
 
-void DoMAPIMIME(_In_ LPMAPISESSION lpMAPISession)
+void DoMAPIMIME(_In_opt_ LPMAPISESSION lpMAPISession)
 {
 	const auto input = cli::switchInput[0];
 	const auto output = cli::switchOutput[0];

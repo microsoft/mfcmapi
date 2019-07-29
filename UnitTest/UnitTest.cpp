@@ -97,7 +97,9 @@ namespace unittest
 	std::wstring loadfile(const HMODULE handle, const int name)
 	{
 		const auto rc = ::FindResource(handle, MAKEINTRESOURCE(name), MAKEINTRESOURCE(TEXTFILE));
+		if (!rc) return strings::emptystring;
 		const auto rcData = LoadResource(handle, rc);
+		if (!rcData) return strings::emptystring;
 		const auto cb = SizeofResource(handle, rc);
 		const auto bytes = LockResource(rcData);
 		const auto data = static_cast<const BYTE*>(bytes);

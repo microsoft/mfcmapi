@@ -5,7 +5,7 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		ResData::ResData(_In_ const _SRestriction* lpOldRes)
+		ResData::ResData(_In_opt_ const _SRestriction* lpOldRes)
 		{
 			m_lpOldRes = lpOldRes;
 			m_lpNewRes = nullptr;
