@@ -147,6 +147,11 @@ namespace file
 		if (lpStream)
 		{
 			LPITNEF lpTNEF = nullptr;
+#pragma warning(push)
+#pragma warning(disable : 28159) // GetTickCount is OK for what we're doing
+			static auto wKeyVal = static_cast<WORD>(GetTickCount() + 1);
+#pragma warning(pop)
+
 			hRes = EC_H(OpenTnefStreamEx(
 				nullptr,
 				lpStream,
@@ -154,7 +159,7 @@ namespace file
 					"winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
 				TNEF_DECODE,
 				lpMessage,
-				static_cast<WORD>(GetTickCount() + 1),
+				wKeyVal,
 				lpAdrBook,
 				&lpTNEF));
 
@@ -570,7 +575,10 @@ namespace file
 		LPSTREAM lpStream = nullptr;
 		LPITNEF lpTNEF = nullptr;
 
-		static auto dwKey = static_cast<WORD>(GetTickCount());
+#pragma warning(push)
+#pragma warning(disable : 28159) // GetTickCount is OK for what we're doing
+		static auto wKeyVal = static_cast<WORD>(GetTickCount() + 1);
+#pragma warning(pop)
 
 		// Get a Stream interface on the input TNEF file
 		auto hRes = EC_H(file::MyOpenStreamOnFile(
@@ -586,7 +594,7 @@ namespace file
 					"winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
 				TNEF_ENCODE,
 				lpMessage,
-				dwKey,
+				wKeyVal,
 				lpAdrBook,
 				&lpTNEF));
 
@@ -614,7 +622,7 @@ namespace file
 				if (SUCCEEDED(hRes))
 				{
 					LPSTnefProblemArray lpError = nullptr;
-					hRes = EC_MAPI(lpTNEF->Finish(0, &dwKey, &lpError));
+					hRes = EC_MAPI(lpTNEF->Finish(0, &wKeyVal, &lpError));
 					EC_TNEFERR(lpError);
 					MAPIFreeBuffer(lpError);
 				}
