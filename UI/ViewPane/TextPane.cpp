@@ -100,7 +100,7 @@ namespace viewpane
 
 		output::DebugPrint(output::DBGStream, L"EditStreamReadCallBack: cb = %d\n", cb);
 
-		const auto cbTemp = cb / 2;
+		const ULONG cbTemp = cb / 2;
 		ULONG cbTempRead = 0;
 		const auto pbTempBuff = new (std::nothrow) BYTE[cbTemp];
 
@@ -111,10 +111,11 @@ namespace viewpane
 
 			memset(pbBuff, 0, cbTempRead * 2);
 			ULONG iBinPos = 0;
-			for (ULONG i = 0; i < cbTempRead; i++)
+			for (ULONG i = 0; i < cbTempRead && i < cbTemp; i++)
 			{
-				const auto bLow = static_cast<BYTE>(pbTempBuff[i] & 0xf);
-				const auto bHigh = static_cast<BYTE>(pbTempBuff[i] >> 4 & 0xf);
+				const auto ch = pbTempBuff[i];
+				const auto bLow = static_cast<BYTE>(ch & 0xf);
+				const auto bHigh = static_cast<BYTE>(ch >> 4 & 0xf);
 				const auto szLow = static_cast<CHAR>(bLow <= 0x9 ? '0' + bLow : 'A' + bLow - 0xa);
 				const auto szHigh = static_cast<CHAR>(bHigh <= 0x9 ? '0' + bHigh : 'A' + bHigh - 0xa);
 
