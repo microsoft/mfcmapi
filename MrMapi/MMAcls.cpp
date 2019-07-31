@@ -4,7 +4,7 @@
 #include <core/mapi/mapiOutput.h>
 #include <core/utility/output.h>
 
-void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
+void DumpExchangeTable(_In_ ULONG ulPropTag, _In_opt_ LPMAPIFOLDER lpFolder)
 {
 	LPEXCHANGEMODIFYTABLE lpExchTbl = nullptr;
 	LPMAPITABLE lpTbl = nullptr;
@@ -33,4 +33,4 @@ void DumpExchangeTable(_In_ ULONG ulPropTag, _In_ LPMAPIFOLDER lpFolder)
 	if (lpExchTbl) lpExchTbl->Release();
 }
 
-void DoAcls(_In_ LPMAPIFOLDER lpFolder) { DumpExchangeTable(PR_ACL_TABLE, lpFolder); }
+void DoAcls(_In_opt_ LPMAPIFOLDER lpFolder) { DumpExchangeTable(PR_ACL_TABLE, lpFolder); }

@@ -571,9 +571,9 @@ namespace mapi
 			_In_opt_ const _SBinary* lpFolderEID,
 			_In_ const std::wstring& szFolderOffsetPath)
 		{
-			FolderNode newNode;
+			FolderNode newNode{};
 			newNode.szFolderOffsetPath = szFolderOffsetPath;
-			newNode.lpFolderEID = CopySBinary(lpFolderEID);
+			newNode.lpFolderEID = lpFolderEID ? CopySBinary(lpFolderEID) : nullptr;
 
 			m_List.push_back(newNode);
 		}
@@ -668,14 +668,14 @@ namespace mapi
 		}
 
 		void mapiProcessor::DoMessagePerRecipientWork(
-			_In_ LPMESSAGE /*lpMessage*/,
-			_In_ LPVOID /*lpData*/,
-			_In_ const _SRow* /*lpSRow*/,
+			_In_opt_ LPMESSAGE /*lpMessage*/,
+			_In_opt_ LPVOID /*lpData*/,
+			_In_opt_ const _SRow* /*lpSRow*/,
 			ULONG /*ulCurRow*/)
 		{
 		}
 
-		void mapiProcessor::EndRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/) {}
+		void mapiProcessor::EndRecipientWork(_In_opt_ LPMESSAGE /*lpMessage*/, _In_opt_ LPVOID /*lpData*/) {}
 
 		bool mapiProcessor::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ LPVOID /*lpData*/)
 		{
@@ -683,10 +683,10 @@ namespace mapi
 		}
 
 		void mapiProcessor::DoMessagePerAttachmentWork(
-			_In_ LPMESSAGE /*lpMessage*/,
-			_In_ LPVOID /*lpData*/,
-			_In_ const _SRow* /*lpSRow*/,
-			_In_ LPATTACH /*lpAttach*/,
+			_In_opt_ LPMESSAGE /*lpMessage*/,
+			_In_opt_ LPVOID /*lpData*/,
+			_In_opt_ const _SRow* /*lpSRow*/,
+			_In_opt_ LPATTACH /*lpAttach*/,
 			ULONG /*ulCurRow*/)
 		{
 		}

@@ -52,6 +52,8 @@ HRESULT HrMAPIOpenStoreAndFolder(
 	_Out_opt_ LPMDB* lppMDB,
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder)
 {
+	if (lppMDB) *lppMDB = {};
+	if (lppFolder) *lppFolder = {};
 	auto hRes = S_OK;
 	LPMDB lpMDB = nullptr;
 	LPMAPIFOLDER lpFolder = nullptr;

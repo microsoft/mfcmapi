@@ -118,7 +118,10 @@ namespace controls
 		}
 
 		BEGIN_MESSAGE_MAP(CSingleMAPIPropListCtrl, CSortListCtrl)
+#pragma warning(push)
+#pragma warning(disable : 26454)
 		ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
+#pragma warning(pop)
 		ON_WM_KEYDOWN()
 		ON_WM_CONTEXTMENU()
 		ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERLIST, msgOnSaveColumnOrder)

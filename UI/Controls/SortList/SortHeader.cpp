@@ -16,7 +16,10 @@ namespace controls
 
 		BEGIN_MESSAGE_MAP(CSortHeader, CHeaderCtrl)
 		ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERHEADER, msgOnSaveColumnOrder)
+#pragma warning(push)
+#pragma warning(disable : 26454)
 		ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
+#pragma warning(pop)
 		END_MESSAGE_MAP()
 
 		_Check_return_ bool CSortHeader::Init(_In_ CHeaderCtrl* pHeader, _In_ HWND hwndParent)

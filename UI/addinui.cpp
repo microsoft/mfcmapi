@@ -28,8 +28,9 @@ namespace ui
 		}
 
 		_Check_return_ __declspec(dllexport) HRESULT
-			__cdecl ComplexDialog(_In_ LPADDINDIALOG lpDialog, _Out_ LPADDINDIALOGRESULT* lppDialogResult)
+			__cdecl ComplexDialog(_In_ LPADDINDIALOG lpDialog, _Out_opt_ LPADDINDIALOGRESULT* lppDialogResult)
 		{
+			if (lppDialogResult) *lppDialogResult = nullptr;
 			if (!lpDialog) return MAPI_E_INVALID_PARAMETER;
 			// Reject any flags except CEDITOR_BUTTON_OK and CEDITOR_BUTTON_CANCEL
 			if (lpDialog->ulButtonFlags & ~(CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)) return MAPI_E_INVALID_PARAMETER;

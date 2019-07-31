@@ -5,7 +5,7 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		CommentData::CommentData(_In_ const _SPropValue* lpOldProp)
+		CommentData::CommentData(_In_opt_ const _SPropValue* lpOldProp)
 		{
 			m_lpOldProp = lpOldProp;
 			m_lpNewProp = nullptr;

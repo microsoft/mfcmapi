@@ -54,7 +54,7 @@ void PrintReceiveFolderTable(_In_ LPMDB lpMDB)
 	}
 }
 
-void DoReceiveFolder(_In_ LPMDB lpMDB)
+void DoReceiveFolder(_In_opt_ LPMDB lpMDB)
 {
 	if (lpMDB)
 	{

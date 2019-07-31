@@ -41,7 +41,7 @@ namespace property
 
 		TEST_METHOD(Test_parsing)
 		{
-			Parsing(L"empty", true, Attributes{});
+			unittest::AreEqualEx(std::wstring(L"empty"), Parsing(L"empty", true, Attributes{}).toString());
 			unittest::AreEqualEx(std::wstring(L""), Parsing(L"", true, Attributes{}).toXML(IDS_COLVALUE, 0));
 
 			unittest::AreEqualEx(std::wstring(L"test"), Parsing(L"test", true, Attributes{}).toString());

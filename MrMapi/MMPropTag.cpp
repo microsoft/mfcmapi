@@ -395,7 +395,7 @@ void PrintDispIDFromNum(_In_ ULONG ulDispID)
 	}
 }
 
-void PrintDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
+void PrintDispIDFromName(_In_opt_z_ LPCWSTR lpszDispIDName)
 {
 	if (!lpszDispIDName) return;
 

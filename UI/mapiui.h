@@ -14,18 +14,18 @@ namespace ui
 
 		_Check_return_ HRESULT GetConversionToEMLOptions(
 			_In_ CWnd* pParentWnd,
-			_Out_ CCSFLAGS* lpConvertFlags,
-			_Out_ ENCODINGTYPE* lpet,
-			_Out_ MIMESAVETYPE* lpmst,
-			_Out_ ULONG* lpulWrapLines,
-			_Out_ bool* pDoAdrBook);
+			_Out_opt_ CCSFLAGS* lpConvertFlags,
+			_Out_opt_ ENCODINGTYPE* lpet,
+			_Out_opt_ MIMESAVETYPE* lpmst,
+			_Out_opt_ ULONG* lpulWrapLines,
+			_Out_opt_ bool* pDoAdrBook);
 		_Check_return_ HRESULT GetConversionFromEMLOptions(
 			_In_ CWnd* pParentWnd,
-			_Out_ CCSFLAGS* lpConvertFlags,
-			_Out_ bool* pDoAdrBook,
-			_Out_ bool* pDoApply,
-			_Out_ HCHARSET* phCharSet,
-			_Out_ CSETAPPLYTYPE* pcSetApplyType,
+			_Out_opt_ CCSFLAGS* lpConvertFlags,
+			_Out_opt_ bool* pDoAdrBook,
+			_Out_opt_ bool* pDoApply,
+			_Out_opt_ HCHARSET* phCharSet,
+			_Out_opt_ CSETAPPLYTYPE* pcSetApplyType,
 			_Out_opt_ bool* pbUnicode);
 
 		void displayError(const std::wstring& errString);
