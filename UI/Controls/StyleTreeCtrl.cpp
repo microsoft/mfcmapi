@@ -22,6 +22,8 @@ namespace controls
 	}
 
 	BEGIN_MESSAGE_MAP(StyleTreeCtrl, CTreeCtrl)
+#pragma warning(push)
+#pragma warning(disable : 26454)
 	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
 	ON_NOTIFY_REFLECT(NM_RCLICK, OnRightClick)
 	ON_NOTIFY_REFLECT(TVN_GETDISPINFO, OnGetDispInfo)
@@ -30,6 +32,7 @@ namespace controls
 	ON_NOTIFY_REFLECT(TVN_ENDLABELEDIT, OnEndLabelEdit)
 	ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteItem)
 	ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
+#pragma warning(pop)
 	END_MESSAGE_MAP()
 
 	LRESULT StyleTreeCtrl::WindowProc(const UINT message, const WPARAM wParam, const LPARAM lParam)
