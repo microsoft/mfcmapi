@@ -8,7 +8,7 @@ namespace controls
 		class BinaryData : public IData
 		{
 		public:
-			BinaryData(_In_ LPSBinary lpOldBin);
+			BinaryData(_In_opt_ LPSBinary lpOldBin);
 
 			SBinary m_OldBin{}; // not allocated - just a pointer
 			SBinary m_NewBin{}; // MAPIAllocateMore from m_lpNewEntryList

@@ -221,7 +221,7 @@ namespace mapi
 				WC_MAPI_S(HrGetOneProp(pGlobalProfSect, PR_PROFILE_HOME_SERVER, &lpServerName));
 			}
 
-			if (strings::CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
+			if (lpServerName && strings::CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
 			{
 				serverName = lpServerName->Value.lpszA;
 			}

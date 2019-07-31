@@ -267,12 +267,17 @@ namespace ui
 
 		_Check_return_ HRESULT GetConversionToEMLOptions(
 			_In_ CWnd* pParentWnd,
-			_Out_ CCSFLAGS* lpConvertFlags,
-			_Out_ ENCODINGTYPE* lpet,
-			_Out_ MIMESAVETYPE* lpmst,
-			_Out_ ULONG* lpulWrapLines,
-			_Out_ bool* pDoAdrBook)
+			_Out_opt_ CCSFLAGS* lpConvertFlags,
+			_Out_opt_ ENCODINGTYPE* lpet,
+			_Out_opt_ MIMESAVETYPE* lpmst,
+			_Out_opt_ ULONG* lpulWrapLines,
+			_Out_opt_ bool* pDoAdrBook)
 		{
+			if (lpConvertFlags) *lpConvertFlags = {};
+			if (lpet) *lpet = {};
+			if (lpmst) *lpmst = {};
+			if (lpulWrapLines) *lpulWrapLines = {};
+			if (pDoAdrBook) *pDoAdrBook = {};
 			if (!lpConvertFlags || !lpet || !lpmst || !lpulWrapLines || !pDoAdrBook) return MAPI_E_INVALID_PARAMETER;
 
 			dialog::editor::CEditor MyData(
@@ -304,13 +309,19 @@ namespace ui
 
 		_Check_return_ HRESULT GetConversionFromEMLOptions(
 			_In_ CWnd* pParentWnd,
-			_Out_ CCSFLAGS* lpConvertFlags,
-			_Out_ bool* pDoAdrBook,
-			_Out_ bool* pDoApply,
-			_Out_ HCHARSET* phCharSet,
-			_Out_ CSETAPPLYTYPE* pcSetApplyType,
+			_Out_opt_ CCSFLAGS* lpConvertFlags,
+			_Out_opt_ bool* pDoAdrBook,
+			_Out_opt_ bool* pDoApply,
+			_Out_opt_ HCHARSET* phCharSet,
+			_Out_opt_ CSETAPPLYTYPE* pcSetApplyType,
 			_Out_opt_ bool* pbUnicode)
 		{
+			if (lpConvertFlags) *lpConvertFlags = {};
+			if (pDoAdrBook) *pDoAdrBook = {};
+			if (pDoApply) *pDoApply = {};
+			if (phCharSet) *phCharSet = {};
+			if (pcSetApplyType) *pcSetApplyType = {};
+			if (pbUnicode) *pbUnicode = {};
 			if (!lpConvertFlags || !pDoAdrBook || !pDoApply || !phCharSet || !pcSetApplyType)
 				return MAPI_E_INVALID_PARAMETER;
 			auto hRes = S_OK;

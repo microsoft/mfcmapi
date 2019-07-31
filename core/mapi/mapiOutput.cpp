@@ -590,7 +590,7 @@ namespace output
 		DBGLEVEL ulDbgLvl,
 		_In_opt_ FILE* fFile,
 		ULONG cProps,
-		_In_count_(cProps) LPSPropValue lpProps,
+		_In_opt_count_(cProps) LPSPropValue lpProps,
 		_In_opt_ LPMAPIPROP lpObj,
 		bool bRetryStreamProps)
 	{

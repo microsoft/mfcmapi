@@ -123,7 +123,7 @@ namespace ui
 		LPARAM lParam,
 		UINT_PTR uIdSubclass,
 		DWORD_PTR /*dwRefData*/);
-	void SubclassEdit(_In_ HWND hWnd, _In_ HWND hWndParent, bool bReadOnly);
+	void SubclassEdit(_In_ HWND hWnd, _In_opt_ HWND hWndParent, bool bReadOnly);
 
 	// List
 	void CustomDrawList(_In_ LPNMLVCUSTOMDRAW lvcd, _In_ LRESULT* pResult, DWORD_PTR iItemCurHover);

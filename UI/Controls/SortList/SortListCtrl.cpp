@@ -49,9 +49,12 @@ namespace controls
 		ON_WM_KEYDOWN()
 		ON_WM_GETDLGCODE()
 		ON_WM_DRAWITEM()
+#pragma warning(push)
+#pragma warning(disable : 26454)
 		ON_NOTIFY_REFLECT(LVN_DELETEALLITEMS, OnDeleteAllItems)
 		ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnDeleteItem)
 		ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
+#pragma warning(pop)
 		END_MESSAGE_MAP()
 
 		void CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages)

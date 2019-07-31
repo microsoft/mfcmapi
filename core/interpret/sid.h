@@ -29,7 +29,7 @@ namespace sid
 		std::wstring info;
 	};
 
-	_Check_return_ std::wstring GetTextualSid(_In_ PSID pSid);
+	_Check_return_ std::wstring GetTextualSid(_In_opt_ PSID pSid);
 	_Check_return_ std::wstring GetTextualSid(std::vector<BYTE> buf);
 	_Check_return_ SidAccount LookupAccountSid(PSID SidStart);
 	_Check_return_ SidAccount LookupAccountSid(std::vector<BYTE> buf);

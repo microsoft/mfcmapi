@@ -67,7 +67,10 @@ namespace controls
 		}
 
 		BEGIN_MESSAGE_MAP(CContentsTableListCtrl, CSortListCtrl)
+#pragma warning(push)
+#pragma warning(disable : 26454)
 		ON_NOTIFY_REFLECT(LVN_ITEMCHANGED, OnItemChanged)
+#pragma warning(pop)
 		ON_WM_KEYDOWN()
 		ON_WM_CONTEXTMENU()
 		ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)

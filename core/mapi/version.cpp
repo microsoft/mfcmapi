@@ -107,7 +107,7 @@ namespace version
 		}
 
 		std::wstring builds;
-		if (count)
+		if (count && fullNames)
 		{
 			// We just take the first one.
 			builds = fullNames[0];

@@ -746,7 +746,7 @@ namespace ui
 		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 	}
 
-	void SubclassEdit(_In_ HWND hWnd, _In_ HWND hWndParent, const bool bReadOnly)
+	void SubclassEdit(_In_ HWND hWnd, _In_opt_ HWND hWndParent, const bool bReadOnly)
 	{
 		SetWindowSubclass(hWnd, DrawEditProc, 0, 0);
 

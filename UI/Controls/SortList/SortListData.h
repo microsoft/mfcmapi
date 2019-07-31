@@ -30,9 +30,9 @@ namespace controls
 			void InitializePropList(_In_ ULONG ulPropTag);
 			void InitializeMV(_In_ const _SPropValue* lpProp, ULONG iProp);
 			void InitializeMV(_In_opt_ const _SPropValue* lpProp);
-			void InitializeRes(_In_ const _SRestriction* lpOldRes);
-			void InitializeComment(_In_ const _SPropValue* lpOldProp);
-			void InitializeBinary(_In_ LPSBinary lpOldBin);
+			void InitializeRes(_In_opt_ const _SRestriction* lpOldRes);
+			void InitializeComment(_In_opt_ const _SPropValue* lpOldProp);
+			void InitializeBinary(_In_opt_ LPSBinary lpOldBin);
 
 			ContentsData* Contents() const;
 			NodeData* Node() const;

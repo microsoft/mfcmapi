@@ -5,7 +5,7 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		BinaryData::BinaryData(_In_ LPSBinary lpOldBin)
+		BinaryData::BinaryData(_In_opt_ LPSBinary lpOldBin)
 		{
 			m_OldBin = {0};
 			if (lpOldBin)

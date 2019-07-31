@@ -5,7 +5,7 @@
 
 namespace sid
 {
-	std::wstring ACEToString(_In_ void* pACE, eAceType acetype);
+	std::wstring ACEToString(_In_opt_ void* pACE, eAceType acetype);
 }
 
 namespace sidtest

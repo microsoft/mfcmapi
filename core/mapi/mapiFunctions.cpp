@@ -1670,7 +1670,7 @@ namespace mapi
 					pRows = nullptr;
 					hRes = EC_MAPI(lpAttachTable->QueryRows(1, NULL, &pRows));
 					if (FAILED(hRes)) break;
-					if (pRows && (!pRows || pRows->cRows)) break;
+					if (!pRows || !pRows->cRows) break;
 
 					if (ATTACH_EMBEDDED_MSG == pRows->aRow->lpProps[atPR_ATTACH_METHOD].Value.l)
 					{
@@ -1725,7 +1725,7 @@ namespace mapi
 						MAPIFreeBuffer(lpsMessageTags);
 						lpsMessageTags = nullptr;
 						hRes = EC_MAPI(lpAttachMsg->GetPropList(0, &lpsMessageTags));
-						if (FAILED(hRes) || !!lpsMessageTags) continue;
+						if (FAILED(hRes) || !lpsMessageTags) continue;
 
 						output::DebugPrint(output::DBGGeneric, L"Copying properties to new message.\n");
 						if (SUCCEEDED(hRes))
@@ -2013,6 +2013,7 @@ namespace mapi
 		_Deref_out_ LPSTREAM* lpUncompressedRTFStream,
 		_Out_opt_ ULONG* pulStreamFlags)
 	{
+		if (pulStreamFlags) *pulStreamFlags = {};
 		if (!lpCompressedRTFStream || !lpUncompressedRTFStream) return MAPI_E_INVALID_PARAMETER;
 		auto hRes = S_OK;
 
@@ -2203,6 +2204,7 @@ namespace mapi
 	HRESULT
 	HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess, _In_ const MAPIUID* puidService, _Out_opt_ MAPIUID* pEmsmdbUID)
 	{
+		if (pEmsmdbUID) *pEmsmdbUID = {};
 		if (!puidService) return MAPI_E_INVALID_PARAMETER;
 
 		SRestriction mres = {};
