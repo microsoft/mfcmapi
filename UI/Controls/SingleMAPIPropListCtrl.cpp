@@ -816,24 +816,20 @@ namespace controls
 
 		std::wstring binPropToXML(UINT uidTag, const std::wstring str, int iIndent)
 		{
-			std::wstringstream szXML;
-			const auto szTag = strings::loadstring(uidTag);
 			auto toks = strings::tokenize(str);
-
-			szXML << strings::indent(iIndent) + L"<" + szTag;
-
-			if (toks.count(L"cb"))
+			if (toks.count(L"lpb"))
 			{
-				szXML << L" cb=\"" + toks[L"cb"] + L"\" ";
+				auto attr = property::Attributes();
+				if (toks.count(L"cb"))
+				{
+					attr.AddAttribute(L"cb", toks[L"cb"]);
+				}
+
+				auto parsing = property::Parsing(toks[L"lpb"], true, attr);
+				return parsing.toXML(uidTag, iIndent);
 			}
 
-			szXML << L">";
-
-			szXML << strings::ScrubStringForXML(toks[L"lpb"]);
-
-			szXML << L"</" + szTag + L">\n";
-
-			return szXML.str();
+			return strings::emptystring;
 		}
 
 		void CSingleMAPIPropListCtrl::SavePropsToXML()
