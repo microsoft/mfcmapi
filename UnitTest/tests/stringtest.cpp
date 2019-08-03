@@ -488,5 +488,51 @@ namespace stringtest
 			str2.Value.lpszA = "test";
 			Assert::AreEqual(true, strings::CheckStringProp(&str2, PT_STRING8));
 		}
+
+		TEST_METHOD(Test_tokenize)
+		{
+			{
+				auto str1 = std::wstring(L"cb: 123 lpb: ab45");
+				auto tok1 = strings::tokenize(str1);
+				Assert::AreEqual(std::wstring(L"123"), tok1[L"cb"]);
+				Assert::AreEqual(std::wstring(L"ab45"), tok1[L"lpb"]);
+			}
+
+			{
+				auto str1 = std::wstring(L"cb123 lpb: ab45");
+				auto tok1 = strings::tokenize(str1);
+				Assert::AreEqual(std::wstring(L""), tok1[L"cb123"]);
+				Assert::AreEqual(std::wstring(L""), tok1[L"cb"]);
+				Assert::AreEqual(std::wstring(L"ab45"), tok1[L"lpb"]);
+			}
+
+			{
+				auto str1 = std::wstring(L"nothing here");
+				auto tok1 = strings::tokenize(str1);
+				Assert::AreEqual(std::wstring(L""), tok1[L"cb"]);
+				Assert::AreEqual(std::wstring(L""), tok1[L"lpb"]);
+			}
+
+			{
+				auto str1 = std::wstring(L"cb:");
+				auto tok1 = strings::tokenize(str1);
+				Assert::AreEqual(std::wstring(L""), tok1[L"cb"]);
+				Assert::AreEqual(std::wstring(L""), tok1[L"lpb"]);
+			}
+
+			{
+				auto str1 = std::wstring(L"cb: lpb:");
+				auto tok1 = strings::tokenize(str1);
+				Assert::AreEqual(std::wstring(L""), tok1[L"cb"]);
+				Assert::AreEqual(std::wstring(L""), tok1[L"lpb"]);
+			}
+
+			{
+				auto str1 = std::wstring(L"cb: 123:45 lpb: ab");
+				auto tok1 = strings::tokenize(str1);
+				Assert::AreEqual(std::wstring(L"123:45"), tok1[L"cb"]);
+				Assert::AreEqual(std::wstring(L"ab"), tok1[L"lpb"]);
+			}
+		}
 	};
 } // namespace stringtest

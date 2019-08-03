@@ -814,6 +814,28 @@ namespace controls
 			return hRes;
 		}
 
+		std::wstring binPropToXML(UINT uidTag, const std::wstring str, int iIndent)
+		{
+			std::wstringstream szXML;
+			const auto szTag = strings::loadstring(uidTag);
+			auto toks = strings::tokenize(str);
+
+			szXML << strings::indent(iIndent) + L"<" + szTag;
+
+			if (toks.count(L"cb"))
+			{
+				szXML << L" cb=\"" + toks[L"cb"] + L"\" ";
+			}
+
+			szXML << L">";
+
+			szXML << strings::ScrubStringForXML(toks[L"lpb"]);
+
+			szXML << L"</" + szTag + L">\n";
+
+			return szXML.str();
+		}
+
 		void CSingleMAPIPropListCtrl::SavePropsToXML()
 		{
 			auto szFileName = file::CFileDialogExW::SaveAs(
@@ -856,7 +878,6 @@ namespace controls
 						}
 						else
 						{
-							//pcPROPNAMEDNAME
 							output::OutputXMLValueToFile(
 								fProps, columns::PropXMLNames[columns::pcPROPBESTGUESS].uidName, szNameName, false, 2);
 						}
@@ -880,17 +901,23 @@ namespace controls
 						{
 						case PT_STRING8:
 						case PT_UNICODE:
+						{
 							output::OutputXMLValueToFile(
 								fProps, columns::PropXMLNames[columns::pcPROPVAL].uidName, szVal, true, 2);
-							output::OutputXMLValueToFile(
-								fProps, columns::PropXMLNames[columns::pcPROPVALALT].uidName, szAltVal, false, 2);
-							break;
+							const auto binXML =
+								binPropToXML(columns::PropXMLNames[columns::pcPROPVALALT].uidName, szAltVal, 2);
+							output::Output(output::DBGNoDebug, fProps, false, binXML);
+						}
+						break;
 						case PT_BINARY:
-							output::OutputXMLValueToFile(
-								fProps, columns::PropXMLNames[columns::pcPROPVAL].uidName, szVal, false, 2);
+						{
+							const auto binXML =
+								binPropToXML(columns::PropXMLNames[columns::pcPROPVAL].uidName, szVal, 2);
+							output::Output(output::DBGNoDebug, fProps, false, binXML);
 							output::OutputXMLValueToFile(
 								fProps, columns::PropXMLNames[columns::pcPROPVALALT].uidName, szAltVal, true, 2);
-							break;
+						}
+						break;
 						default:
 							output::OutputXMLValueToFile(
 								fProps, columns::PropXMLNames[columns::pcPROPVAL].uidName, szVal, false, 2);
