@@ -10,11 +10,12 @@ namespace propertybag
 		RowPropertyBag(controls::sortlistdata::SortListData* lpListData);
 		virtual ~RowPropertyBag();
 
-		ULONG GetFlags() override;
-		propBagType GetType() override;
-		bool IsEqual(LPMAPIPROPERTYBAG lpPropBag) override;
+		ULONG GetFlags() const override;
+		propBagType GetType() const { return pbRow; }
+		bool IsEqual(LPMAPIPROPERTYBAG lpPropBag) const override;
 
-		_Check_return_ LPMAPIPROP GetMAPIProp() override;
+		// Returns the underlying MAPI prop object, if one exists. Does NOT ref count it.
+		_Check_return_ LPMAPIPROP GetMAPIProp() const { return nullptr; }
 
 		_Check_return_ HRESULT Commit() override;
 		_Check_return_ HRESULT GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) override;

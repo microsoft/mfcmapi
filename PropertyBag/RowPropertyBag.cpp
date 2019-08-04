@@ -17,16 +17,14 @@ namespace propertybag
 
 	RowPropertyBag::~RowPropertyBag() = default;
 
-	ULONG RowPropertyBag::GetFlags()
+	ULONG RowPropertyBag::GetFlags() const
 	{
 		ULONG ulFlags = pbNone;
 		if (m_bRowModified) ulFlags |= pbModified;
 		return ulFlags;
 	}
 
-	propBagType RowPropertyBag::GetType() { return pbRow; }
-
-	bool RowPropertyBag::IsEqual(LPMAPIPROPERTYBAG lpPropBag)
+	bool RowPropertyBag::IsEqual(LPMAPIPROPERTYBAG lpPropBag) const
 	{
 		if (!lpPropBag) return false;
 		if (GetType() != lpPropBag->GetType()) return false;
@@ -42,9 +40,6 @@ namespace propertybag
 
 		return false;
 	}
-
-	// Returns the underlying MAPI prop object, if one exists. Does NOT ref count it.
-	_Check_return_ LPMAPIPROP RowPropertyBag::GetMAPIProp() { return nullptr; }
 
 	_Check_return_ HRESULT RowPropertyBag::Commit() { return E_NOTIMPL; }
 

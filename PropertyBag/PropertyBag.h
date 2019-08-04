@@ -24,11 +24,11 @@ namespace propertybag
 	public:
 		virtual ~IMAPIPropertyBag() = default;
 
-		virtual ULONG GetFlags() = 0;
-		virtual propBagType GetType() = 0;
-		virtual bool IsEqual(LPMAPIPROPERTYBAG lpPropBag) = 0;
+		virtual ULONG GetFlags() const = 0;
+		virtual propBagType GetType() const = 0;
+		virtual bool IsEqual(LPMAPIPROPERTYBAG lpPropBag) const = 0;
 
-		virtual _Check_return_ LPMAPIPROP GetMAPIProp() = 0;
+		virtual _Check_return_ LPMAPIPROP GetMAPIProp() const = 0;
 
 		// TODO: Should Commit take flags?
 		virtual _Check_return_ HRESULT Commit() = 0;

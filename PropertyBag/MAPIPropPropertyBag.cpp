@@ -20,16 +20,14 @@ namespace propertybag
 		if (m_lpProp) m_lpProp->Release();
 	}
 
-	ULONG MAPIPropPropertyBag::GetFlags()
+	ULONG MAPIPropPropertyBag::GetFlags() const
 	{
 		ULONG ulFlags = pbNone;
 		if (m_bGetPropsSucceeded) ulFlags |= pbBackedByGetProps;
 		return ulFlags;
 	}
 
-	propBagType MAPIPropPropertyBag::GetType() { return pbMAPIProp; }
-
-	bool MAPIPropPropertyBag::IsEqual(LPMAPIPROPERTYBAG lpPropBag)
+	bool MAPIPropPropertyBag::IsEqual(LPMAPIPROPERTYBAG lpPropBag) const
 	{
 		if (!lpPropBag) return false;
 		if (GetType() != lpPropBag->GetType()) return false;
@@ -44,9 +42,6 @@ namespace propertybag
 
 		return false;
 	}
-
-	// Returns the underlying MAPI prop object, if one exists. Does NOT ref count it.
-	_Check_return_ LPMAPIPROP MAPIPropPropertyBag::GetMAPIProp() { return m_lpProp; }
 
 	_Check_return_ HRESULT MAPIPropPropertyBag::Commit()
 	{
