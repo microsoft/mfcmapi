@@ -52,8 +52,6 @@ namespace controls
 
 			Create(pCreateParent, LVS_SINGLESEL, IDC_LIST_CTRL, true);
 
-			m_bHaveEverDisplayedSomething = false;
-
 			// We borrow our parent's Mapi objects
 			m_lpMapiObjects = lpMapiObjects;
 			if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
@@ -102,10 +100,7 @@ namespace controls
 
 			AutoSizeColumns(false);
 
-			m_sptExtraProps = nullptr;
-
 			m_bIsAB = bIsAB;
-			m_lpPropBag = nullptr;
 		}
 
 		CSingleMAPIPropListCtrl::~CSingleMAPIPropListCtrl()

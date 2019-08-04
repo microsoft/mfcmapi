@@ -79,15 +79,15 @@ namespace controls
 			// Custom messages
 			_Check_return_ LRESULT msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
 
-			dialog::CBaseDialog* m_lpHostDlg;
-			bool m_bHaveEverDisplayedSomething;
-			bool m_bIsAB;
-			cache::CMapiObjects* m_lpMapiObjects;
+			dialog::CBaseDialog* m_lpHostDlg{};
+			bool m_bHaveEverDisplayedSomething{};
+			bool m_bIsAB{};
+			cache::CMapiObjects* m_lpMapiObjects{};
 
 			propertybag::LPMAPIPROPERTYBAG m_lpPropBag;
 
 			// Used to store prop tags added through AddPropsToExtraProps
-			LPSPropTagArray m_sptExtraProps;
+			LPSPropTagArray m_sptExtraProps{};
 
 			DECLARE_MESSAGE_MAP()
 		};
