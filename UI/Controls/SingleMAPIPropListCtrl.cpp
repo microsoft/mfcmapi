@@ -867,15 +867,10 @@ namespace controls
 						output::OutputToFilef(
 							fProps, L"\t<property tag = \"%ws\" type = \"%ws\" >\n", szTag.c_str(), szType.c_str());
 
-						if (szNameName.empty())
+						if (szNameName.empty() && !strings::beginsWith(szBestGuess, L"0x"))
 						{
 							output::OutputXMLValueToFile(
 								fProps, columns::PropXMLNames[columns::pcPROPBESTGUESS].uidName, szBestGuess, false, 2);
-						}
-						else
-						{
-							output::OutputXMLValueToFile(
-								fProps, columns::PropXMLNames[columns::pcPROPBESTGUESS].uidName, szNameName, false, 2);
 						}
 
 						output::OutputXMLValueToFile(
@@ -883,6 +878,9 @@ namespace controls
 
 						output::OutputXMLValueToFile(
 							fProps, columns::PropXMLNames[columns::pcPROPNAMEDGUID].uidName, szNameGuid, false, 2);
+
+						output::OutputXMLValueToFile(
+							fProps, columns::PropXMLNames[columns::pcPROPNAMEDNAME].uidName, szNameName, false, 2);
 
 						const auto lpListData = reinterpret_cast<sortlistdata::SortListData*>(GetItemData(iRow));
 						auto ulPropType = PT_NULL;
