@@ -832,6 +832,27 @@ namespace controls
 			return strings::emptystring;
 		}
 
+		// Parse this for XML:
+		// Err: 0x00040380=MAPI_W_ERRORS_RETURNED
+		std::wstring errPropToXML(UINT uidTag, const std::wstring str, int iIndent)
+		{
+			auto toks = strings::tokenize(str);
+			if (toks.count(L"Err"))
+			{
+				auto err = strings::split(toks[L"Err"], L'=');
+				if (err.size() == 2)
+				{
+					auto attr = property::Attributes();
+					attr.AddAttribute(L"err", err[0]);
+
+					auto parsing = property::Parsing(err[1], true, attr);
+					return parsing.toXML(uidTag, iIndent);
+				}
+			}
+
+			return strings::emptystring;
+		}
+
 		void CSingleMAPIPropListCtrl::SavePropsToXML()
 		{
 			auto szFileName = file::CFileDialogExW::SaveAs(
@@ -910,6 +931,13 @@ namespace controls
 							output::Output(output::DBGNoDebug, fProps, false, binXML);
 							output::OutputXMLValueToFile(
 								fProps, columns::PropXMLNames[columns::pcPROPVALALT].uidName, szAltVal, true, 2);
+						}
+						break;
+						case PT_ERROR:
+						{
+							const auto errXML =
+								errPropToXML(columns::PropXMLNames[columns::pcPROPVAL].uidName, szVal, 2);
+							output::Output(output::DBGNoDebug, fProps, false, errXML);
 						}
 						break;
 						default:
