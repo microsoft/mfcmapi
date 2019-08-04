@@ -94,11 +94,11 @@ namespace property
 				std::wstring(L"\t<Value mv=\"true\" count=\"2\" >\n"
 							 L"\t\t<row>\n"
 							 L"\t\t\t<Value>test</Value>\n"
-							 L"\t\t\t<AltValue>test</AltValue>\n"
+							 L"\t\t\t<AltValue><![CDATA[alttest]]></AltValue>\n"
 							 L"\t\t</row>\n"
 							 L"\t\t<row>\n"
 							 L"\t\t\t<Value>test</Value>\n"
-							 L"\t\t\t<AltValue>test</AltValue>\n"
+							 L"\t\t\t<AltValue><![CDATA[alttest]]></AltValue>\n"
 							 L"\t\t</row>\n"
 							 L"\t</Value>\n"),
 				prop.toXML(1));

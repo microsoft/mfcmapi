@@ -798,7 +798,8 @@ namespace strings
 	{
 		if (ulPropType != PT_STRING8 && ulPropType != PT_UNICODE)
 		{
-			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: Called with invalid ulPropType of 0x%X\n", ulPropType);
+			output::DebugPrint(
+				output::DBGGeneric, L"CheckStringProp: Called with invalid ulPropType of 0x%X\n", ulPropType);
 			return false;
 		}
 
@@ -816,7 +817,8 @@ namespace strings
 
 		if (ulPropType != PROP_TYPE(lpProp->ulPropTag))
 		{
-			output::DebugPrint(output::DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is not of type 0x%X\n", ulPropType);
+			output::DebugPrint(
+				output::DBGGeneric, L"CheckStringProp: lpProp->ulPropTag is not of type 0x%X\n", ulPropType);
 			return false;
 		}
 
@@ -841,4 +843,38 @@ namespace strings
 		return true;
 	}
 
+	std::map<std::wstring, std::wstring> tokenize(const std::wstring str)
+	{
+		auto ret = std::map<std::wstring, std::wstring>();
+		// Start with: a: b c: d
+		const auto tokens = strings::split(str, L' ');
+		// Now we have a:, b, c:, d
+		// Look for a token that ends in :
+		// Then pair that with the next token and add to the return
+		std::wstring label;
+		for (const auto token : tokens)
+		{
+			if (label.empty())
+			{
+				if (token.back() == L':')
+				{
+					label = token.substr(0, token.size() - 1);
+				}
+			}
+			else
+			{
+				if (token.back() != L':')
+				{
+					ret[label] = token;
+					label.clear();
+				}
+				else
+				{
+					label.clear();
+				}
+			}
+		}
+
+		return ret;
+	}
 } // namespace strings
