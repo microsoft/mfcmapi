@@ -929,7 +929,7 @@ namespace controls
 						output::OutputToFile(fProps, L"\t</property>\n");
 					}
 
-					output::OutputToFile(fProps, L"</propertypane>");
+					output::OutputToFile(fProps, L"</properties>");
 					output::CloseFile(fProps);
 				}
 			}
