@@ -12,7 +12,6 @@ namespace propertybag
 		m_lpListData = lpListData;
 		m_lpProp = lpProp;
 		if (m_lpProp) m_lpProp->AddRef();
-		m_bGetPropsSucceeded = false;
 	}
 
 	MAPIPropPropertyBag::~MAPIPropPropertyBag()

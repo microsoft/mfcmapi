@@ -31,8 +31,8 @@ namespace propertybag
 		_Check_return_ HRESULT DeleteProp(ULONG ulPropTag) override;
 
 	private:
-		controls::sortlistdata::SortListData* m_lpListData;
-		LPMAPIPROP m_lpProp;
-		bool m_bGetPropsSucceeded;
+		controls::sortlistdata::SortListData* m_lpListData{};
+		LPMAPIPROP m_lpProp{};
+		bool m_bGetPropsSucceeded{};
 	};
 } // namespace propertybag

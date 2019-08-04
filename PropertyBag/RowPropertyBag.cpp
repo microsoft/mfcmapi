@@ -15,8 +15,6 @@ namespace propertybag
 		}
 	}
 
-	RowPropertyBag::~RowPropertyBag() = default;
-
 	ULONG RowPropertyBag::GetFlags() const
 	{
 		ULONG ulFlags = pbNone;
@@ -40,8 +38,6 @@ namespace propertybag
 
 		return false;
 	}
-
-	_Check_return_ HRESULT RowPropertyBag::Commit() { return E_NOTIMPL; }
 
 	_Check_return_ HRESULT RowPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
 	{
@@ -70,18 +66,6 @@ namespace propertybag
 
 		*lppProp = PpropFindProp(m_lpProps, m_cValues, ulPropTag);
 		return S_OK;
-	}
-
-	void RowPropertyBag::FreeBuffer(LPSPropValue /*lpProp*/)
-	{
-		// None of our GetProps allocate anything, so nothing to do here
-		return;
-	}
-
-	// TODO: This is for paste, something we don't yet support for rows
-	_Check_return_ HRESULT RowPropertyBag::SetProps(ULONG /*cValues*/, LPSPropValue /*lpPropArray*/)
-	{
-		return E_NOTIMPL;
 	}
 
 	// Concatenate two property arrays without duplicates
@@ -214,7 +198,4 @@ namespace propertybag
 		}
 		return hRes;
 	}
-
-	//TODO: Not supported yet
-	_Check_return_ HRESULT RowPropertyBag::DeleteProp(ULONG /*ulPropTag*/) { return E_NOTIMPL; };
 } // namespace propertybag
