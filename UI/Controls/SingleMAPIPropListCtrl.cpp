@@ -854,7 +854,7 @@ namespace controls
 					const auto iItemCount = GetItemCount();
 
 					output::OutputToFile(fProps, output::g_szXMLHeader);
-					output::OutputToFile(fProps, L"<propertypane>\n");
+					output::OutputToFile(fProps, L"<properties listtype=\"propertypane\">\n");
 					for (auto iRow = 0; iRow < iItemCount; iRow++)
 					{
 						const auto szTag = GetItemText(iRow, columns::pcPROPTAG);
