@@ -361,7 +361,7 @@ namespace output
 			OutputCDataOpen(ulDbgLvl, fFile);
 		}
 
-		Output(ulDbgLvl, fFile, false, strings::StripCarriage(szValue));
+		Output(ulDbgLvl, fFile, false, strings::ScrubStringForXML(szValue));
 
 		if (bWrapCData)
 		{
