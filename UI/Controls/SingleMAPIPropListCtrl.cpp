@@ -52,8 +52,6 @@ namespace controls
 
 			Create(pCreateParent, LVS_SINGLESEL, IDC_LIST_CTRL, true);
 
-			m_bHaveEverDisplayedSomething = false;
-
 			// We borrow our parent's Mapi objects
 			m_lpMapiObjects = lpMapiObjects;
 			if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
@@ -102,10 +100,7 @@ namespace controls
 
 			AutoSizeColumns(false);
 
-			m_sptExtraProps = nullptr;
-
 			m_bIsAB = bIsAB;
-			m_lpPropBag = nullptr;
 		}
 
 		CSingleMAPIPropListCtrl::~CSingleMAPIPropListCtrl()
@@ -728,7 +723,7 @@ namespace controls
 				false); // Built from lpProp & lpMAPIProp
 			if (!szSmartView.empty()) SetItemText(iRow, columns::pcPROPSMARTVIEW, szSmartView);
 			if (!namePropNames.name.empty()) SetItemText(iRow, columns::pcPROPNAMEDNAME, namePropNames.name);
-			if (!namePropNames.guid.empty()) SetItemText(iRow, columns::pcPROPNAMEDIID, namePropNames.guid);
+			if (!namePropNames.guid.empty()) SetItemText(iRow, columns::pcPROPNAMEDGUID, namePropNames.guid);
 		}
 
 		_Check_return_ HRESULT
@@ -814,6 +809,45 @@ namespace controls
 			return hRes;
 		}
 
+		std::wstring binPropToXML(UINT uidTag, const std::wstring str, int iIndent)
+		{
+			auto toks = strings::tokenize(str);
+			if (toks.count(L"lpb"))
+			{
+				auto attr = property::Attributes();
+				if (toks.count(L"cb"))
+				{
+					attr.AddAttribute(L"cb", toks[L"cb"]);
+				}
+
+				auto parsing = property::Parsing(toks[L"lpb"], true, attr);
+				return parsing.toXML(uidTag, iIndent);
+			}
+
+			return strings::emptystring;
+		}
+
+		// Parse this for XML:
+		// Err: 0x00040380=MAPI_W_ERRORS_RETURNED
+		std::wstring errPropToXML(UINT uidTag, const std::wstring str, int iIndent)
+		{
+			auto toks = strings::tokenize(str);
+			if (toks.count(L"Err"))
+			{
+				auto err = strings::split(toks[L"Err"], L'=');
+				if (err.size() == 2)
+				{
+					auto attr = property::Attributes();
+					attr.AddAttribute(L"err", err[0]);
+
+					auto parsing = property::Parsing(err[1], true, attr);
+					return parsing.toXML(uidTag, iIndent);
+				}
+			}
+
+			return strings::emptystring;
+		}
+
 		void CSingleMAPIPropListCtrl::SavePropsToXML()
 		{
 			auto szFileName = file::CFileDialogExW::SaveAs(
@@ -836,29 +870,33 @@ namespace controls
 					const auto iItemCount = GetItemCount();
 
 					output::OutputToFile(fProps, output::g_szXMLHeader);
-					output::OutputToFile(fProps, L"<propertypane>\n");
+					output::OutputToFile(fProps, L"<properties listtype=\"propertypane\">\n");
 					for (auto iRow = 0; iRow < iItemCount; iRow++)
 					{
-						auto szTemp1 = GetItemText(iRow, columns::pcPROPTAG);
-						auto szTemp2 = GetItemText(iRow, columns::pcPROPTYPE);
+						const auto szTag = GetItemText(iRow, columns::pcPROPTAG);
+						const auto szType = GetItemText(iRow, columns::pcPROPTYPE);
+						const auto szBestGuess = GetItemText(iRow, columns::pcPROPBESTGUESS);
+						const auto szOther = GetItemText(iRow, columns::pcPROPOTHERNAMES);
+						const auto szNameGuid = GetItemText(iRow, columns::pcPROPNAMEDGUID);
+						const auto szNameName = GetItemText(iRow, columns::pcPROPNAMEDNAME);
+
 						output::OutputToFilef(
-							fProps, L"\t<property tag = \"%ws\" type = \"%ws\">\n", szTemp1.c_str(), szTemp2.c_str());
+							fProps, L"\t<property tag = \"%ws\" type = \"%ws\" >\n", szTag.c_str(), szType.c_str());
 
-						szTemp1 = GetItemText(iRow, columns::pcPROPBESTGUESS);
-						output::OutputXMLValueToFile(
-							fProps, columns::PropXMLNames[columns::pcPROPBESTGUESS].uidName, szTemp1, false, 2);
+						if (szNameName.empty() && !strings::beginsWith(szBestGuess, L"0x"))
+						{
+							output::OutputXMLValueToFile(
+								fProps, columns::PropXMLNames[columns::pcPROPBESTGUESS].uidName, szBestGuess, false, 2);
+						}
 
-						szTemp1 = GetItemText(iRow, columns::pcPROPOTHERNAMES);
 						output::OutputXMLValueToFile(
-							fProps, columns::PropXMLNames[columns::pcPROPOTHERNAMES].uidName, szTemp1, false, 2);
+							fProps, columns::PropXMLNames[columns::pcPROPOTHERNAMES].uidName, szOther, false, 2);
 
-						szTemp1 = GetItemText(iRow, columns::pcPROPNAMEDIID);
 						output::OutputXMLValueToFile(
-							fProps, columns::PropXMLNames[columns::pcPROPNAMEDIID].uidName, szTemp1, false, 2);
+							fProps, columns::PropXMLNames[columns::pcPROPNAMEDGUID].uidName, szNameGuid, false, 2);
 
-						szTemp1 = GetItemText(iRow, columns::pcPROPNAMEDNAME);
 						output::OutputXMLValueToFile(
-							fProps, columns::PropXMLNames[columns::pcPROPNAMEDNAME].uidName, szTemp1, false, 2);
+							fProps, columns::PropXMLNames[columns::pcPROPNAMEDNAME].uidName, szNameName, false, 2);
 
 						const auto lpListData = reinterpret_cast<sortlistdata::SortListData*>(GetItemData(iRow));
 						auto ulPropType = PT_NULL;
@@ -867,39 +905,52 @@ namespace controls
 							ulPropType = PROP_TYPE(lpListData->Prop()->m_ulPropTag);
 						}
 
-						szTemp1 = GetItemText(iRow, columns::pcPROPVAL);
-						szTemp2 = GetItemText(iRow, columns::pcPROPVALALT);
+						const auto szVal = GetItemText(iRow, columns::pcPROPVAL);
+						const auto szAltVal = GetItemText(iRow, columns::pcPROPVALALT);
 						switch (ulPropType)
 						{
 						case PT_STRING8:
 						case PT_UNICODE:
+						{
 							output::OutputXMLValueToFile(
-								fProps, columns::PropXMLNames[columns::pcPROPVAL].uidName, szTemp1, true, 2);
-							output::OutputXMLValueToFile(
-								fProps, columns::PropXMLNames[columns::pcPROPVALALT].uidName, szTemp2, false, 2);
-							break;
+								fProps, columns::PropXMLNames[columns::pcPROPVAL].uidName, szVal, true, 2);
+							const auto binXML =
+								binPropToXML(columns::PropXMLNames[columns::pcPROPVALALT].uidName, szAltVal, 2);
+							output::Output(output::DBGNoDebug, fProps, false, binXML);
+						}
+						break;
 						case PT_BINARY:
+						{
+							const auto binXML =
+								binPropToXML(columns::PropXMLNames[columns::pcPROPVAL].uidName, szVal, 2);
+							output::Output(output::DBGNoDebug, fProps, false, binXML);
 							output::OutputXMLValueToFile(
-								fProps, columns::PropXMLNames[columns::pcPROPVAL].uidName, szTemp1, false, 2);
-							output::OutputXMLValueToFile(
-								fProps, columns::PropXMLNames[columns::pcPROPVALALT].uidName, szTemp2, true, 2);
-							break;
+								fProps, columns::PropXMLNames[columns::pcPROPVALALT].uidName, szAltVal, true, 2);
+						}
+						break;
+						case PT_ERROR:
+						{
+							const auto errXML =
+								errPropToXML(columns::PropXMLNames[columns::pcPROPVAL].uidName, szVal, 2);
+							output::Output(output::DBGNoDebug, fProps, false, errXML);
+						}
+						break;
 						default:
 							output::OutputXMLValueToFile(
-								fProps, columns::PropXMLNames[columns::pcPROPVAL].uidName, szTemp1, false, 2);
+								fProps, columns::PropXMLNames[columns::pcPROPVAL].uidName, szVal, false, 2);
 							output::OutputXMLValueToFile(
-								fProps, columns::PropXMLNames[columns::pcPROPVALALT].uidName, szTemp2, false, 2);
+								fProps, columns::PropXMLNames[columns::pcPROPVALALT].uidName, szAltVal, false, 2);
 							break;
 						}
 
-						szTemp1 = GetItemText(iRow, columns::pcPROPSMARTVIEW);
+						const auto szSmartView = GetItemText(iRow, columns::pcPROPSMARTVIEW);
 						output::OutputXMLValueToFile(
-							fProps, columns::PropXMLNames[columns::pcPROPSMARTVIEW].uidName, szTemp1, true, 2);
+							fProps, columns::PropXMLNames[columns::pcPROPSMARTVIEW].uidName, szSmartView, true, 2);
 
 						output::OutputToFile(fProps, L"\t</property>\n");
 					}
 
-					output::OutputToFile(fProps, L"</propertypane>");
+					output::OutputToFile(fProps, L"</properties>");
 					output::CloseFile(fProps);
 				}
 			}
