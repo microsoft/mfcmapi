@@ -27,12 +27,12 @@ namespace propertybag
 		return ulFlags;
 	}
 
-	bool MAPIPropPropertyBag::IsEqual(LPMAPIPROPERTYBAG lpPropBag) const
+	bool MAPIPropPropertyBag::IsEqual(const IMAPIPropertyBag* lpPropBag) const
 	{
 		if (!lpPropBag) return false;
 		if (GetType() != lpPropBag->GetType()) return false;
 
-		const auto lpOther = static_cast<MAPIPropPropertyBag*>(lpPropBag);
+		const auto lpOther = static_cast<const MAPIPropPropertyBag*>(lpPropBag);
 		if (lpOther)
 		{
 			if (m_lpListData != lpOther->m_lpListData) return false;

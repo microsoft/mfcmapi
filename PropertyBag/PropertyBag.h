@@ -26,7 +26,7 @@ namespace propertybag
 
 		virtual ULONG GetFlags() const = 0;
 		virtual propBagType GetType() const = 0;
-		virtual bool IsEqual(LPMAPIPROPERTYBAG lpPropBag) const = 0;
+		virtual bool IsEqual(const IMAPIPropertyBag* lpPropBag) const = 0;
 
 		virtual _Check_return_ LPMAPIPROP GetMAPIProp() const = 0;
 
