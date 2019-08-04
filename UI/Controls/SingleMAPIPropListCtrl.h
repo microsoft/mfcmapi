@@ -84,7 +84,7 @@ namespace controls
 			bool m_bIsAB{};
 			cache::CMapiObjects* m_lpMapiObjects{};
 
-			propertybag::LPMAPIPROPERTYBAG m_lpPropBag;
+			propertybag::LPMAPIPROPERTYBAG m_lpPropBag{};
 
 			// Used to store prop tags added through AddPropsToExtraProps
 			LPSPropTagArray m_sptExtraProps{};
