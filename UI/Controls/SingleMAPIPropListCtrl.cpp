@@ -865,7 +865,7 @@ namespace controls
 						const auto szNameName = GetItemText(iRow, columns::pcPROPNAMEDNAME);
 
 						output::OutputToFilef(
-							fProps, L"\t<property tag = \"%ws\" type = \"%ws\">\n", szTag.c_str(), szType.c_str());
+							fProps, L"\t<property tag = \"%ws\" type = \"%ws\" >\n", szTag.c_str(), szType.c_str());
 
 						if (szNameName.empty())
 						{
