@@ -558,7 +558,7 @@ namespace output
 			OutputXMLValue(
 				ulDbgLvl,
 				fFile,
-				columns::PropXMLNames[columns::pcPROPNAMEDIID].uidName,
+				columns::PropXMLNames[columns::pcPROPNAMEDGUID].uidName,
 				namePropNames.guid,
 				false,
 				iIndent);

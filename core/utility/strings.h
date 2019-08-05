@@ -84,4 +84,7 @@ namespace strings
 	std::wstring ensureCRLF(const std::wstring& str);
 
 	_Check_return_ bool CheckStringProp(_In_opt_ const _SPropValue* lpProp, ULONG ulPropType);
+
+	// Tokenize strings of the form "a: b c: d" into a map where a->b, c->d, etc
+	std::map<std::wstring, std::wstring> tokenize(const std::wstring str);
 } // namespace strings
