@@ -61,7 +61,7 @@ namespace dialog
 		m_ulAddInContext = ulAddInContext;
 		m_ulAddInMenuItems = NULL;
 
-		m_lpMapiObjects = new cache::CMapiObjects(lpMapiObjects);
+		m_lpMapiObjects = new (std::nothrow) cache::CMapiObjects(lpMapiObjects);
 	}
 
 	CBaseDialog::~CBaseDialog()
@@ -152,7 +152,7 @@ namespace dialog
 
 		SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
-		m_lpFakeSplitter = new controls::CFakeSplitter();
+		m_lpFakeSplitter = new (std::nothrow) controls::CFakeSplitter();
 		if (m_lpFakeSplitter)
 		{
 			m_lpFakeSplitter->Init(m_hWnd);
@@ -434,7 +434,7 @@ namespace dialog
 
 	void CBaseDialog::OnOpenMainWindow()
 	{
-		auto pMain = new CMainDlg(m_lpParent, m_lpMapiObjects);
+		auto pMain = new (std::nothrow) CMainDlg(m_lpParent, m_lpMapiObjects);
 		if (pMain) pMain->OnOpenMessageStoreTable();
 	}
 
@@ -923,7 +923,7 @@ namespace dialog
 			auto hRes = WC_H(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
 			// don't actually care if the returning lpEntryID is NULL - Advise can work with that
 
-			m_lpBaseAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
+			m_lpBaseAdviseSink = new (std::nothrow) mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
 
 			if (m_lpBaseAdviseSink)
 			{

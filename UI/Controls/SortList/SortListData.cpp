@@ -60,7 +60,7 @@ namespace controls
 			if (!lpsRowData) return;
 			lpSourceProps = lpsRowData->lpProps;
 			cSourceProps = lpsRowData->cValues;
-			m_lpData = new ContentsData(lpsRowData);
+			m_lpData = new (std::nothrow) ContentsData(lpsRowData);
 		}
 
 		void SortListData::InitializeNode(
@@ -74,7 +74,7 @@ namespace controls
 			Clean();
 			cSourceProps = cProps;
 			lpSourceProps = lpProps;
-			m_lpData = new NodeData(lpEntryID, lpInstanceKey, bSubfolders, ulContainerFlags);
+			m_lpData = new (std::nothrow) NodeData(lpEntryID, lpInstanceKey, bSubfolders, ulContainerFlags);
 		}
 
 		void SortListData::InitializeNode(_In_ LPSRow lpsRow)
@@ -108,39 +108,39 @@ namespace controls
 		{
 			Clean();
 			bItemFullyLoaded = true;
-			m_lpData = new PropListData(ulPropTag);
+			m_lpData = new (std::nothrow) PropListData(ulPropTag);
 		}
 
 		void SortListData::InitializeMV(_In_ const _SPropValue* lpProp, ULONG iProp)
 		{
 			Clean();
-			m_lpData = new MVPropData(lpProp, iProp);
+			m_lpData = new (std::nothrow) MVPropData(lpProp, iProp);
 		}
 
 		void SortListData::InitializeMV(_In_opt_ const _SPropValue* lpProp)
 		{
 			Clean();
-			m_lpData = new MVPropData(lpProp);
+			m_lpData = new (std::nothrow) MVPropData(lpProp);
 		}
 
 		void SortListData::InitializeRes(_In_opt_ const _SRestriction* lpOldRes)
 		{
 			Clean();
 			bItemFullyLoaded = true;
-			m_lpData = new ResData(lpOldRes);
+			m_lpData = new (std::nothrow) ResData(lpOldRes);
 		}
 
 		void SortListData::InitializeComment(_In_opt_ const _SPropValue* lpOldProp)
 		{
 			Clean();
 			bItemFullyLoaded = true;
-			m_lpData = new CommentData(lpOldProp);
+			m_lpData = new (std::nothrow) CommentData(lpOldProp);
 		}
 
 		void SortListData::InitializeBinary(_In_opt_ LPSBinary lpOldBin)
 		{
 			Clean();
-			m_lpData = new BinaryData(lpOldBin);
+			m_lpData = new (std::nothrow) BinaryData(lpOldBin);
 		}
 	} // namespace sortlistdata
 } // namespace controls

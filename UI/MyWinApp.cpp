@@ -54,7 +54,7 @@ namespace ui
 
 		// Create a parent window that all objects get a pointer to, ensuring we don't
 		// quit this thread until all objects have freed themselves.
-		auto pWnd = new CParentWnd();
+		auto pWnd = new (std::nothrow) CParentWnd();
 		if (pWnd)
 		{
 			m_pMainWnd = static_cast<CWnd*>(pWnd);

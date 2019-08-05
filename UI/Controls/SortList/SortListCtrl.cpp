@@ -277,7 +277,7 @@ namespace controls
 		_Check_return_ sortlistdata::SortListData*
 		CSortListCtrl::InsertRow(int iRow, const std::wstring& szText, int iIndent, __SortListIconNames iImage) const
 		{
-			auto lpData = new sortlistdata::SortListData();
+			auto lpData = new (std::nothrow) sortlistdata::SortListData();
 
 			LVITEMW lvItem = {0};
 			lvItem.iItem = iRow;

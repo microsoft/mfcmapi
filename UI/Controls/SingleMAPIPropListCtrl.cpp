@@ -749,11 +749,11 @@ namespace controls
 			propertybag::LPMAPIPROPERTYBAG lpNewPropBag = nullptr;
 			if (lpMAPIProp)
 			{
-				lpNewPropBag = new propertybag::MAPIPropPropertyBag(lpMAPIProp, lpListData);
+				lpNewPropBag = new (std::nothrow) propertybag::MAPIPropPropertyBag(lpMAPIProp, lpListData);
 			}
 			else if (lpListData)
 			{
-				lpNewPropBag = new propertybag::RowPropertyBag(lpListData);
+				lpNewPropBag = new (std::nothrow) propertybag::RowPropertyBag(lpListData);
 			}
 
 			return SetDataSource(lpNewPropBag, bIsAB);

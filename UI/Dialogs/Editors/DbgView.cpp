@@ -32,7 +32,7 @@ namespace dialog
 		// Displays the debug viewer - only one may exist at a time
 		void DisplayDbgView(_In_ ui::CParentWnd* pParentWnd)
 		{
-			if (!g_DgbView) g_DgbView = new CDbgView(pParentWnd);
+			if (!g_DgbView) g_DgbView = new (std::nothrow) CDbgView(pParentWnd);
 		}
 
 		void OutputToDbgView(const std::wstring& szMsg)

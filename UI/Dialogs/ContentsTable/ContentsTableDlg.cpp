@@ -94,7 +94,7 @@ namespace dialog
 	{
 		const auto bRet = CBaseDialog::OnInitDialog();
 
-		m_lpContentsTableListCtrl = new controls::sortlistctrl::CContentsTableListCtrl(
+		m_lpContentsTableListCtrl = new (std::nothrow) controls::sortlistctrl::CContentsTableListCtrl(
 			m_lpFakeSplitter,
 			m_lpMapiObjects,
 			m_sptDefaultDisplayColumnTags,
