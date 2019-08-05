@@ -152,7 +152,7 @@ namespace dialog
 
 		SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
-		m_lpFakeSplitter = new (std::nothrow) controls::CFakeSplitter();
+		m_lpFakeSplitter = new controls::CFakeSplitter();
 		if (m_lpFakeSplitter)
 		{
 			m_lpFakeSplitter->Init(m_hWnd);
@@ -434,7 +434,7 @@ namespace dialog
 
 	void CBaseDialog::OnOpenMainWindow()
 	{
-		auto pMain = new (std::nothrow) CMainDlg(m_lpParent, m_lpMapiObjects);
+		auto pMain = new CMainDlg(m_lpParent, m_lpMapiObjects);
 		if (pMain) pMain->OnOpenMessageStoreTable();
 	}
 
