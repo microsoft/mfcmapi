@@ -181,7 +181,7 @@ namespace file
 			if (dwVerInfoSize)
 			{
 				// If we were able to get the information, process it.
-				const auto pbData = new BYTE[dwVerInfoSize];
+				const auto pbData = new (std::nothrow) BYTE[dwVerInfoSize];
 				if (pbData == nullptr) return {};
 
 				auto hRes =

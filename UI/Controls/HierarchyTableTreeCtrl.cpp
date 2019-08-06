@@ -196,7 +196,7 @@ namespace controls
 			szName = strings::loadstring(IDS_ROOTCONTAINER);
 		}
 
-		auto lpData = new sortlistdata::SortListData();
+		auto lpData = new (std::nothrow) sortlistdata::SortListData();
 		if (lpData)
 		{
 			lpData->InitializeNode(
@@ -234,7 +234,7 @@ namespace controls
 
 		output::DebugPrintEx(output::DBGHierarchy, CLASS, L"AddNode", L"Adding to %p: %ws\n", hParent, szName.c_str());
 
-		auto lpData = new sortlistdata::SortListData();
+		auto lpData = new (std::nothrow) sortlistdata::SortListData();
 		if (lpData)
 		{
 			lpData->InitializeNode(lpsRow);

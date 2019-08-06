@@ -141,7 +141,7 @@ namespace mapistub
 			output::DebugPrint(output::DBGLoadMAPI, L"RegQueryWszExpand: rgchValue = %ws\n", rgchValue);
 			if (dwType == REG_EXPAND_SZ)
 			{
-				const auto szPath = new WCHAR[MAX_PATH];
+				const auto szPath = new (std::nothrow) WCHAR[MAX_PATH];
 				// Expand the strings
 				const auto cch = ExpandEnvironmentStringsW(rgchValue, szPath, MAX_PATH);
 				if (0 != cch && cch < MAX_PATH)

@@ -14,7 +14,7 @@ namespace ui
 	{
 		if (registry::useIMAPIProgress)
 		{
-			const auto pProgress = new CMAPIProgress(lpszContext, hWnd);
+			const auto pProgress = new (std::nothrow) CMAPIProgress(lpszContext, hWnd);
 
 			return static_cast<LPMAPIPROGRESS>(pProgress);
 		}
