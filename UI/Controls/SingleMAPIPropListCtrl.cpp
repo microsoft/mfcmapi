@@ -83,7 +83,7 @@ namespace controls
 						order[i] = registry::propertyColumnOrder[i] - L'a';
 					}
 
-					if (SetColumnOrderArray(order.size(), const_cast<int*>(order.data())))
+					if (SetColumnOrderArray(static_cast<int>(order.size()), const_cast<int*>(order.data())))
 					{
 						bSetCols = true;
 					}
