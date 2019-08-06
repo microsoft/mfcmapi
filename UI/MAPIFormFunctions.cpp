@@ -61,7 +61,7 @@ namespace mapi
 						&lpMessage));
 					if (lpMessage)
 					{
-						auto lpMAPIFormViewer = new CMyMAPIFormViewer(
+						auto lpMAPIFormViewer = new (std::nothrow) CMyMAPIFormViewer(
 							hwndParent, lpMDB, lpMAPISession, lpFolder, lpMessage, lpContentsTableListCtrl, iItem);
 
 						if (lpMAPIFormViewer)
@@ -146,7 +146,7 @@ namespace mapi
 					0,
 					&ulMessageStatus));
 
-				auto lpMAPIFormViewer = new CMyMAPIFormViewer(
+				auto lpMAPIFormViewer = new (std::nothrow) CMyMAPIFormViewer(
 					hwndParent, lpMDB, lpMAPISession, lpSourceFolder, lpMessage, lpContentsTableListCtrl, iItem);
 
 				if (lpMAPIFormViewer)

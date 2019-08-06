@@ -32,7 +32,7 @@ namespace cache
 				dst.lpguid = mapi::allocate<LPGUID>(sizeof(GUID), lpMAPIParent);
 			}
 			else
-				dst.lpguid = new GUID;
+				dst.lpguid = new (std::nothrow) GUID;
 
 			if (dst.lpguid)
 			{
@@ -107,7 +107,7 @@ namespace cache
 
 		if (cbSig && lpSig)
 		{
-			this->lpSig = new BYTE[cbSig];
+			this->lpSig = new (std::nothrow) BYTE[cbSig];
 			if (this->lpSig)
 			{
 				memcpy(this->lpSig, lpSig, cbSig);

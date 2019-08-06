@@ -129,7 +129,7 @@ namespace guid
 
 		if (lpGUID)
 		{
-			lpGuidRet = new GUID;
+			lpGuidRet = new (std::nothrow) GUID;
 			if (lpGuidRet)
 			{
 				memcpy(lpGuidRet, lpGUID, sizeof(GUID));

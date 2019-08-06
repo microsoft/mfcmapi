@@ -23,8 +23,8 @@ namespace version
 
 			if (!lpszTempPath.empty())
 			{
-				const auto lpszTempVer = new WCHAR[MAX_PATH];
-				const auto lpszTempLang = new WCHAR[MAX_PATH];
+				const auto lpszTempVer = new (std::nothrow) WCHAR[MAX_PATH];
+				const auto lpszTempLang = new (std::nothrow) WCHAR[MAX_PATH];
 				if (lpszTempVer && lpszTempLang)
 				{
 					DWORD dwValueBuf = MAX_PATH;

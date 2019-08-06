@@ -73,25 +73,20 @@ namespace controls
 			{
 				auto bSetCols = false;
 				const auto nColumnCount = lpMyHeader->GetItemCount();
-				const auto cchOrder = registry::propertyColumnOrder.length();
+				const auto cchOrder = registry::propertyColumnOrder.length() - 1;
 				if (nColumnCount == static_cast<int>(cchOrder))
 				{
-					const auto pnOrder = new (std::nothrow) int[nColumnCount];
+					auto order = std::vector<int>(nColumnCount);
 
-					if (pnOrder)
+					for (auto i = 0; i < nColumnCount; i++)
 					{
-						for (auto i = 0; i < nColumnCount; i++)
-						{
-							pnOrder[i] = registry::propertyColumnOrder[i] - L'a';
-						}
-
-						if (SetColumnOrderArray(nColumnCount, pnOrder))
-						{
-							bSetCols = true;
-						}
+						order[i] = registry::propertyColumnOrder[i] - L'a';
 					}
 
-					delete[] pnOrder;
+					if (SetColumnOrderArray(static_cast<int>(order.size()), const_cast<int*>(order.data())))
+					{
+						bSetCols = true;
+					}
 				}
 
 				// If we didn't like the reg key, clear it so we don't see it again
@@ -749,11 +744,11 @@ namespace controls
 			propertybag::LPMAPIPROPERTYBAG lpNewPropBag = nullptr;
 			if (lpMAPIProp)
 			{
-				lpNewPropBag = new propertybag::MAPIPropPropertyBag(lpMAPIProp, lpListData);
+				lpNewPropBag = new (std::nothrow) propertybag::MAPIPropPropertyBag(lpMAPIProp, lpListData);
 			}
 			else if (lpListData)
 			{
-				lpNewPropBag = new propertybag::RowPropertyBag(lpListData);
+				lpNewPropBag = new (std::nothrow) propertybag::RowPropertyBag(lpListData);
 			}
 
 			return SetDataSource(lpNewPropBag, bIsAB);
