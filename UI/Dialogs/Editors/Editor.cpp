@@ -562,7 +562,7 @@ namespace dialog
 				const auto len = lpPrompt->LineLength(lpPrompt->LineIndex(i));
 				if (len)
 				{
-					const auto szLine = new TCHAR[len + 1];
+					const auto szLine = new (std::nothrow) TCHAR[len + 1];
 					memset(szLine, 0, len + 1);
 
 					(void) lpPrompt->GetLine(i, szLine, len);

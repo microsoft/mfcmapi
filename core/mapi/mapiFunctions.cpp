@@ -274,7 +274,7 @@ namespace mapi
 
 		const auto cbDecodedBuffer = cbBuffer / 2;
 		// Allocate memory for lpDecoded
-		const auto lpDecoded = new BYTE[cbDecodedBuffer];
+		const auto lpDecoded = new (std::nothrow) BYTE[cbDecodedBuffer];
 		if (!lpDecoded) return strings::emptystring;
 
 		// Subtract kwBaseOffset from every character and place result in lpDecoded

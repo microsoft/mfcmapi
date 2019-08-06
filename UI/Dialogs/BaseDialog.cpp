@@ -61,7 +61,7 @@ namespace dialog
 		m_ulAddInContext = ulAddInContext;
 		m_ulAddInMenuItems = NULL;
 
-		m_lpMapiObjects = new cache::CMapiObjects(lpMapiObjects);
+		m_lpMapiObjects = new (std::nothrow) cache::CMapiObjects(lpMapiObjects);
 	}
 
 	CBaseDialog::~CBaseDialog()
@@ -923,7 +923,7 @@ namespace dialog
 			auto hRes = WC_H(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
 			// don't actually care if the returning lpEntryID is NULL - Advise can work with that
 
-			m_lpBaseAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
+			m_lpBaseAdviseSink = new (std::nothrow) mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
 
 			if (m_lpBaseAdviseSink)
 			{

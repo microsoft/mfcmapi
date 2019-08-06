@@ -147,7 +147,7 @@ namespace file
 		LPWSTR szBigBuff = nullptr;
 		if (dwFlags & OFN_ALLOWMULTISELECT)
 		{
-			szBigBuff = new WCHAR[CCHBIGBUFF];
+			szBigBuff = new (std::nothrow) WCHAR[CCHBIGBUFF];
 			if (szBigBuff)
 			{
 				szBigBuff[0] = 0; // NULL terminate

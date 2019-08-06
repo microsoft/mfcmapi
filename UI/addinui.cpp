@@ -108,11 +108,12 @@ namespace ui
 				// Put together results if needed
 				if (lppDialogResult && lpDialog->ulNumControls && lpDialog->lpDialogControls)
 				{
-					const auto lpResults = new _AddInDialogResult;
+					const auto lpResults = new (std::nothrow) _AddInDialogResult;
 					if (lpResults)
 					{
 						lpResults->ulNumControls = lpDialog->ulNumControls;
-						lpResults->lpDialogControlResults = new _AddInDialogControlResult[lpDialog->ulNumControls];
+						lpResults->lpDialogControlResults =
+							new (std::nothrow) _AddInDialogControlResult[lpDialog->ulNumControls];
 						if (lpResults->lpDialogControlResults)
 						{
 							ZeroMemory(

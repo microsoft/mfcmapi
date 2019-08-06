@@ -180,7 +180,7 @@ namespace viewpane
 	_Check_return_ std::wstring DropDownPane::GetDropStringUseControl() const
 	{
 		const auto len = m_DropDown.GetWindowTextLength() + 1;
-		const auto buffer = new WCHAR[len];
+		const auto buffer = new (std::nothrow) WCHAR[len];
 		memset(buffer, 0, sizeof(WCHAR) * len);
 		GetWindowTextW(m_DropDown.m_hWnd, buffer, len);
 		std::wstring szOut = buffer;
