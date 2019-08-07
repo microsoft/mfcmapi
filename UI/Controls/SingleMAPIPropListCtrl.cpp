@@ -757,7 +757,7 @@ namespace controls
 		// Most calls to this will come through CBaseDialog::OnUpdateSingleMAPIPropListCtrl, which will preserve the current bIsAB
 		// Exceptions will be where we need to set a specific bIsAB
 		_Check_return_ HRESULT
-		CSingleMAPIPropListCtrl::SetDataSource(std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag, bool bIsAB)
+		CSingleMAPIPropListCtrl::SetDataSource(const std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag, bool bIsAB)
 		{
 			output::DebugPrintEx(output::DBGGeneric, CLASS, L"SetDataSource", L"setting new data source\n");
 
