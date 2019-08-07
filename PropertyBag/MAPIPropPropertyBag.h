@@ -12,7 +12,7 @@ namespace propertybag
 
 		ULONG GetFlags() const override;
 		propBagType GetType() const { return pbMAPIProp; }
-		bool IsEqual(const IMAPIPropertyBag* lpPropBag) const override;
+		bool IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const override;
 
 		// Returns the underlying MAPI prop object, if one exists. Does NOT ref count it.
 		_Check_return_ LPMAPIPROP GetMAPIProp() const { return m_lpProp; }

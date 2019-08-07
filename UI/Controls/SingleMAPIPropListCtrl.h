@@ -29,7 +29,7 @@ namespace controls
 			// Initialization
 			_Check_return_ HRESULT
 			SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ sortlistdata::SortListData* lpListData, bool bIsAB);
-			_Check_return_ HRESULT SetDataSource(_In_opt_ propertybag::LPMAPIPROPERTYBAG lpPropBag, bool bIsAB);
+			_Check_return_ HRESULT SetDataSource(std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag, bool bIsAB);
 			_Check_return_ HRESULT RefreshMAPIPropList();
 
 			// Selected item accessors
@@ -84,7 +84,7 @@ namespace controls
 			bool m_bIsAB{};
 			cache::CMapiObjects* m_lpMapiObjects{};
 
-			propertybag::LPMAPIPROPERTYBAG m_lpPropBag{};
+			std::shared_ptr<propertybag::IMAPIPropertyBag> m_lpPropBag{};
 
 			// Used to store prop tags added through AddPropsToExtraProps
 			LPSPropTagArray m_sptExtraProps{};

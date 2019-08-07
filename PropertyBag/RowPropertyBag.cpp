@@ -22,12 +22,12 @@ namespace propertybag
 		return ulFlags;
 	}
 
-	bool RowPropertyBag::IsEqual(const IMAPIPropertyBag* lpPropBag) const
+	bool RowPropertyBag::IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
 	{
 		if (!lpPropBag) return false;
 		if (GetType() != lpPropBag->GetType()) return false;
 
-		const auto lpOther = static_cast<const RowPropertyBag*>(lpPropBag);
+		const auto lpOther = std::dynamic_pointer_cast<RowPropertyBag>(lpPropBag);
 		if (lpOther)
 		{
 			if (m_lpListData != lpOther->m_lpListData) return false;

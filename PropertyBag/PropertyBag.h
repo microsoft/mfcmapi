@@ -15,9 +15,6 @@ namespace propertybag
 		pbRow,
 	};
 
-	class IMAPIPropertyBag;
-	typedef IMAPIPropertyBag FAR* LPMAPIPROPERTYBAG;
-
 	// TODO - Annotate for sal
 	class IMAPIPropertyBag
 	{
@@ -26,7 +23,7 @@ namespace propertybag
 
 		virtual ULONG GetFlags() const = 0;
 		virtual propBagType GetType() const = 0;
-		virtual bool IsEqual(const IMAPIPropertyBag* lpPropBag) const = 0;
+		virtual bool IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const = 0;
 
 		virtual _Check_return_ LPMAPIPROP GetMAPIProp() const = 0;
 

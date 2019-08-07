@@ -102,7 +102,6 @@ namespace controls
 		{
 			TRACE_DESTRUCTOR(CLASS);
 			if (m_sptExtraProps) MAPIFreeBuffer(m_sptExtraProps);
-			delete m_lpPropBag;
 			if (m_lpMapiObjects) m_lpMapiObjects->Release();
 			if (m_lpHostDlg) m_lpHostDlg->Release();
 		}
@@ -741,35 +740,33 @@ namespace controls
 		{
 			output::DebugPrintEx(output::DBGGeneric, CLASS, L"SetDataSource", L"setting new data source\n");
 
-			propertybag::LPMAPIPROPERTYBAG lpNewPropBag = nullptr;
 			if (lpMAPIProp)
 			{
-				lpNewPropBag = new (std::nothrow) propertybag::MAPIPropPropertyBag(lpMAPIProp, lpListData);
+				return SetDataSource(std::make_shared<propertybag::MAPIPropPropertyBag>(lpMAPIProp, lpListData), bIsAB);
 			}
 			else if (lpListData)
 			{
-				lpNewPropBag = new (std::nothrow) propertybag::RowPropertyBag(lpListData);
+				return SetDataSource(std::make_shared<propertybag::RowPropertyBag>(lpListData), bIsAB);
 			}
 
-			return SetDataSource(lpNewPropBag, bIsAB);
+			return SetDataSource(nullptr, bIsAB);
 		}
+
 		// Clear the current property list from the control.
 		// Load a new list from the IMAPIProp or lpSourceProps object passed in
 		// Most calls to this will come through CBaseDialog::OnUpdateSingleMAPIPropListCtrl, which will preserve the current bIsAB
 		// Exceptions will be where we need to set a specific bIsAB
 		_Check_return_ HRESULT
-		CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ propertybag::LPMAPIPROPERTYBAG lpPropBag, bool bIsAB)
+		CSingleMAPIPropListCtrl::SetDataSource(std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag, bool bIsAB)
 		{
 			output::DebugPrintEx(output::DBGGeneric, CLASS, L"SetDataSource", L"setting new data source\n");
 
 			// if nothing to do...do nothing
 			if (lpPropBag && lpPropBag->IsEqual(m_lpPropBag))
 			{
-				delete lpPropBag;
 				return S_OK;
 			}
 
-			delete m_lpPropBag;
 			m_lpPropBag = lpPropBag;
 			m_bIsAB = bIsAB;
 
