@@ -5,10 +5,10 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		class PropListData : public IData
+		class propListData : public IData
 		{
 		public:
-			PropListData(_In_ ULONG ulPropTag);
+			propListData(_In_ ULONG ulPropTag);
 			ULONG m_ulPropTag;
 		};
 	} // namespace sortlistdata

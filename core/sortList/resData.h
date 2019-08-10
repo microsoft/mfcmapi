@@ -5,10 +5,10 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		class ResData : public IData
+		class resData : public IData
 		{
 		public:
-			ResData(_In_opt_ const _SRestriction* lpOldRes);
+			resData(_In_opt_ const _SRestriction* lpOldRes);
 			const _SRestriction* m_lpOldRes; // not allocated - just a pointer
 			LPSRestriction m_lpNewRes; // Owned by an alloc parent - do not free
 		};

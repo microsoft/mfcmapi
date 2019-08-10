@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/PropertySelector.h>
 #include <core/utility/strings.h>
-#include <UI/Controls/SortList/PropListData.h>
+#include <core/sortList/propListData.h>
 #include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
 #include <core/utility/output.h>

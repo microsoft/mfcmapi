@@ -581,6 +581,8 @@
     <ClInclude Include="sortList\contentsData.h" />
     <ClInclude Include="sortList\data.h" />
     <ClInclude Include="sortList\mvPropData.h" />
+    <ClInclude Include="sortList\propListData.h" />
+    <ClInclude Include="sortList\resData.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="utility\cli.h" />
     <ClInclude Include="utility\error.h" />
@@ -651,6 +653,8 @@
     <ClCompile Include="sortList\commentData.cpp" />
     <ClCompile Include="sortList\contentsData.cpp" />
     <ClCompile Include="sortList\mvPropData.cpp" />
+    <ClCompile Include="sortList\propListData.cpp" />
+    <ClCompile Include="sortList\resData.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Create</PrecompiledHeader>

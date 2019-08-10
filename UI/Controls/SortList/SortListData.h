@@ -7,9 +7,9 @@ namespace controls
 	{
 		class contentsData;
 		class NodeData;
-		class PropListData;
+		class propListData;
 		class mvPropData;
-		class ResData;
+		class resData;
 		class commentData;
 		class binaryData;
 
@@ -37,9 +37,9 @@ namespace controls
 
 			contentsData* Contents() const;
 			NodeData* Node() const;
-			PropListData* Prop() const;
+			propListData* Prop() const;
 			mvPropData* MV() const;
-			ResData* Res() const;
+			resData* Res() const;
 			commentData* Comment() const;
 			binaryData* Binary() const;
 

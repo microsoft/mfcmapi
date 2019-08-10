@@ -2,9 +2,9 @@
 #include <UI/Controls/SortList/SortListData.h>
 #include <core/sortList/contentsData.h>
 #include <UI/Controls/SortList/NodeData.h>
-#include <UI/Controls/SortList/PropListData.h>
+#include <core/sortList/propListData.h>
 #include <core/sortList/mvPropData.h>
-#include <UI/Controls/SortList/ResData.h>
+#include <core/sortList/resData.h>
 #include <core/sortList/commentData.h>
 #include <core/sortList/binaryData.h>
 #include <core/utility/strings.h>
@@ -37,11 +37,11 @@ namespace controls
 
 		NodeData* SortListData::Node() const { return reinterpret_cast<NodeData*>(m_lpData); }
 
-		PropListData* SortListData::Prop() const { return reinterpret_cast<PropListData*>(m_lpData); }
+		propListData* SortListData::Prop() const { return reinterpret_cast<propListData*>(m_lpData); }
 
 		mvPropData* SortListData::MV() const { return reinterpret_cast<mvPropData*>(m_lpData); }
 
-		ResData* SortListData::Res() const { return reinterpret_cast<ResData*>(m_lpData); }
+		resData* SortListData::Res() const { return reinterpret_cast<resData*>(m_lpData); }
 
 		commentData* SortListData::Comment() const { return reinterpret_cast<commentData*>(m_lpData); }
 
@@ -108,7 +108,7 @@ namespace controls
 		{
 			Clean();
 			bItemFullyLoaded = true;
-			m_lpData = new (std::nothrow) PropListData(ulPropTag);
+			m_lpData = new (std::nothrow) propListData(ulPropTag);
 		}
 
 		void SortListData::InitializeMV(_In_ const _SPropValue* lpProp, ULONG iProp)
@@ -127,7 +127,7 @@ namespace controls
 		{
 			Clean();
 			bItemFullyLoaded = true;
-			m_lpData = new (std::nothrow) ResData(lpOldRes);
+			m_lpData = new (std::nothrow) resData(lpOldRes);
 		}
 
 		void SortListData::InitializeComment(_In_opt_ const _SPropValue* lpOldProp)
