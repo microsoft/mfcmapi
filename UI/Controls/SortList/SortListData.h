@@ -10,7 +10,7 @@ namespace controls
 		class PropListData;
 		class MVPropData;
 		class ResData;
-		class CommentData;
+		class commentData;
 		class binaryData;
 
 		class SortListData
@@ -40,7 +40,7 @@ namespace controls
 			PropListData* Prop() const;
 			MVPropData* MV() const;
 			ResData* Res() const;
-			CommentData* Comment() const;
+			commentData* Comment() const;
 			binaryData* Binary() const;
 
 			const std::wstring& getSortText() const noexcept { return sortText; }

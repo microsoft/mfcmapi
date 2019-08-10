@@ -5,7 +5,7 @@
 #include <UI/Controls/SortList/PropListData.h>
 #include <UI/Controls/SortList/MVPropData.h>
 #include <UI/Controls/SortList/ResData.h>
-#include <UI/Controls/SortList/CommentData.h>
+#include <core/sortList/commentData.h>
 #include <core/sortList/binaryData.h>
 #include <core/utility/strings.h>
 
@@ -43,7 +43,7 @@ namespace controls
 
 		ResData* SortListData::Res() const { return reinterpret_cast<ResData*>(m_lpData); }
 
-		CommentData* SortListData::Comment() const { return reinterpret_cast<CommentData*>(m_lpData); }
+		commentData* SortListData::Comment() const { return reinterpret_cast<commentData*>(m_lpData); }
 
 		binaryData* SortListData::Binary() const { return reinterpret_cast<binaryData*>(m_lpData); }
 
@@ -134,7 +134,7 @@ namespace controls
 		{
 			Clean();
 			bItemFullyLoaded = true;
-			m_lpData = new (std::nothrow) CommentData(lpOldProp);
+			m_lpData = new (std::nothrow) commentData(lpOldProp);
 		}
 
 		void SortListData::InitializeBinary(_In_opt_ LPSBinary lpOldBin)

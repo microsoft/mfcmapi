@@ -267,6 +267,9 @@
     <ClInclude Include="sortList\binaryData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sortList\commentData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -462,6 +465,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sortList\binaryData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sortList\commentData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

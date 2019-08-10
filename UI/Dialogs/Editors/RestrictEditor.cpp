@@ -4,7 +4,7 @@
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/extraPropTags.h>
 #include <UI/Controls/SortList/ResData.h>
-#include <UI/Controls/SortList/CommentData.h>
+#include <core/sortList/commentData.h>
 #include <core/sortList/binaryData.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
