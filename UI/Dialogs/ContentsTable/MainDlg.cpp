@@ -19,7 +19,7 @@
 #include <core/mapi/mapiMime.h>
 #include <UI/QuickStart.h>
 #include <UI/UIFunctions.h>
-#include <UI/Controls/SortList/ContentsData.h>
+#include <core/sortList/contentsData.h>
 #include <core/mapi/cache/globalCache.h>
 #include <core/mapi/stubutils.h>
 #include <UI/mapiui.h>

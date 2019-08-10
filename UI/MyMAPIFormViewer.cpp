@@ -7,7 +7,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <core/interpret/guid.h>
 #include <UI/MyWinApp.h>
-#include <UI/Controls/SortList/ContentsData.h>
+#include <core/sortList/contentsData.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>

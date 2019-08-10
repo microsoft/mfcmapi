@@ -5,7 +5,7 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		class ContentsData;
+		class contentsData;
 		class NodeData;
 		class PropListData;
 		class MVPropData;
@@ -35,7 +35,7 @@ namespace controls
 			void InitializeComment(_In_opt_ const _SPropValue* lpOldProp);
 			void InitializeBinary(_In_opt_ LPSBinary lpOldBin);
 
-			ContentsData* Contents() const;
+			contentsData* Contents() const;
 			NodeData* Node() const;
 			PropListData* Prop() const;
 			MVPropData* MV() const;

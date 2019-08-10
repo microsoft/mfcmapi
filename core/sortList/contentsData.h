@@ -5,11 +5,11 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		class ContentsData : public IData
+		class contentsData : public IData
 		{
 		public:
-			ContentsData(_In_ LPSRow lpsRowData);
-			~ContentsData();
+			contentsData(_In_ LPSRow lpsRowData);
+			~contentsData();
 			LPSBinary m_lpEntryID; // Allocated with MAPIAllocateBuffer
 			LPSBinary m_lpLongtermID; // Allocated with MAPIAllocateBuffer
 			LPSBinary m_lpInstanceKey; // Allocated with MAPIAllocateBuffer

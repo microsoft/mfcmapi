@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/SortListData.h>
-#include <UI/Controls/SortList/ContentsData.h>
+#include <core/sortList/contentsData.h>
 #include <UI/Controls/SortList/NodeData.h>
 #include <UI/Controls/SortList/PropListData.h>
 #include <UI/Controls/SortList/MVPropData.h>
@@ -33,7 +33,7 @@ namespace controls
 			clearSortValues();
 		}
 
-		ContentsData* SortListData::Contents() const { return reinterpret_cast<ContentsData*>(m_lpData); }
+		contentsData* SortListData::Contents() const { return reinterpret_cast<contentsData*>(m_lpData); }
 
 		NodeData* SortListData::Node() const { return reinterpret_cast<NodeData*>(m_lpData); }
 
@@ -60,7 +60,7 @@ namespace controls
 			if (!lpsRowData) return;
 			lpSourceProps = lpsRowData->lpProps;
 			cSourceProps = lpsRowData->cValues;
-			m_lpData = new (std::nothrow) ContentsData(lpsRowData);
+			m_lpData = new (std::nothrow) contentsData(lpsRowData);
 		}
 
 		void SortListData::InitializeNode(

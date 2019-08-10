@@ -1,5 +1,5 @@
-#include <StdAfx.h>
-#include <UI/Controls/SortList/ContentsData.h>
+#include <core/stdafx.h>
+#include <core/sortList/contentsData.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
@@ -8,7 +8,7 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		ContentsData::ContentsData(_In_ LPSRow lpsRowData)
+		contentsData::contentsData(_In_ LPSRow lpsRowData)
 		{
 			m_lpEntryID = nullptr;
 			m_lpLongtermID = nullptr;
@@ -108,7 +108,7 @@ namespace controls
 			}
 		}
 
-		ContentsData::~ContentsData()
+		contentsData::~contentsData()
 		{
 			MAPIFreeBuffer(m_lpInstanceKey);
 			MAPIFreeBuffer(m_lpEntryID);

@@ -12,7 +12,7 @@
 #include <core/mapi/cache/globalCache.h>
 #include <core/mapi/exportProfile.h>
 #include <UI/Controls/SortList/SortListData.h>
-#include <UI/Controls/SortList/ContentsData.h>
+#include <core/sortList/contentsData.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 

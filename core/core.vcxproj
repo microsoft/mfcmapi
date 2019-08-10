@@ -578,6 +578,7 @@
     <ClInclude Include="smartview\XID.h" />
     <ClInclude Include="sortList\binaryData.h" />
     <ClInclude Include="sortList\commentData.h" />
+    <ClInclude Include="sortList\contentsData.h" />
     <ClInclude Include="sortList\data.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="utility\cli.h" />
@@ -647,6 +648,7 @@
     <ClCompile Include="smartview\XID.cpp" />
     <ClCompile Include="sortList\binaryData.cpp" />
     <ClCompile Include="sortList\commentData.cpp" />
+    <ClCompile Include="sortList\contentsData.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Create</PrecompiledHeader>

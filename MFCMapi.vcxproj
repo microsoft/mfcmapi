@@ -562,7 +562,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="UI\AdviseSink.h" />
-    <ClInclude Include="UI\Controls\SortList\ContentsData.h" />
     <ClInclude Include="UI\Controls\SortList\MVPropData.h" />
     <ClInclude Include="UI\Controls\SortList\NodeData.h" />
     <ClInclude Include="UI\Controls\SortList\PropListData.h" />
@@ -648,7 +647,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\CMAPIProgress.cpp" />
     <ClCompile Include="propertyBag\MAPIPropPropertyBag.cpp" />
     <ClCompile Include="UI\addinui.cpp" />
-    <ClCompile Include="UI\Controls\SortList\ContentsData.cpp" />
     <ClCompile Include="UI\Controls\SortList\MVPropData.cpp" />
     <ClCompile Include="UI\Controls\SortList\NodeData.cpp" />
     <ClCompile Include="UI\Controls\SortList\PropListData.cpp" />
