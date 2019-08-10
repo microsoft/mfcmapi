@@ -16,7 +16,6 @@ namespace controls
 		class SortListData
 		{
 		public:
-			SortListData();
 			~SortListData();
 			void Clean();
 			void InitializeContents(_In_ LPSRow lpsRowData);
@@ -53,14 +52,14 @@ namespace controls
 				sortValue = {};
 			}
 
-			ULONG cSourceProps;
+			ULONG cSourceProps{};
 			LPSPropValue
-				lpSourceProps; // Stolen from lpsRowData in SortListData::InitializeContents - free with MAPIFreeBuffer
-			bool bItemFullyLoaded;
+				lpSourceProps{}; // Stolen from lpsRowData in SortListData::InitializeContents - free with MAPIFreeBuffer
+			bool bItemFullyLoaded{};
 
 		private:
-			IData* m_lpData;
-			std::wstring sortText;
+			IData* m_lpData{};
+			std::wstring sortText{};
 			ULARGE_INTEGER sortValue{};
 		};
 	} // namespace sortlistdata

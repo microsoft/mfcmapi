@@ -13,11 +13,6 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		SortListData::SortListData()
-			: cSourceProps(0), lpSourceProps(nullptr), bItemFullyLoaded(false), m_lpData(nullptr)
-		{
-		}
-
 		SortListData::~SortListData() { Clean(); }
 
 		void SortListData::Clean()
