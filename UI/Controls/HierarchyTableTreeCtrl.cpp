@@ -256,18 +256,18 @@ namespace controls
 				L"Advise sink for \"%ws\" = %p\n",
 				strings::LPCTSTRToWstring(GetItemText(hItem)).c_str(),
 				hItem);
-			lpData->Node()->m_lpAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, hItem);
+			auto lpAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, hItem);
 
-			if (lpData->Node()->m_lpAdviseSink)
+			if (lpAdviseSink)
 			{
 				const auto hRes = WC_MAPI(lpData->Node()->m_lpHierarchyTable->Advise(
 					fnevTableModified,
-					static_cast<IMAPIAdviseSink*>(lpData->Node()->m_lpAdviseSink),
+					static_cast<IMAPIAdviseSink*>(lpAdviseSink),
 					&lpData->Node()->m_ulAdviseConnection));
 				if (hRes == MAPI_E_NO_SUPPORT) // Some tables don't support this!
 				{
-					if (lpData->Node()->m_lpAdviseSink) lpData->Node()->m_lpAdviseSink->Release();
-					lpData->Node()->m_lpAdviseSink = nullptr;
+					lpAdviseSink->Release();
+					lpAdviseSink = nullptr;
 					output::DebugPrint(output::DBGNotify, L"This table doesn't support notifications\n");
 				}
 				else if (hRes == S_OK)
@@ -275,7 +275,7 @@ namespace controls
 					const auto lpMDB = m_lpMapiObjects->GetMDB(); // Do not release
 					if (lpMDB)
 					{
-						lpData->Node()->m_lpAdviseSink->SetAdviseTarget(lpMDB);
+						lpAdviseSink->SetAdviseTarget(lpMDB);
 						mapi::ForceRop(lpMDB);
 					}
 				}
@@ -285,8 +285,10 @@ namespace controls
 					CLASS,
 					L"GetHierarchyTable",
 					L"Advise sink %p, ulAdviseConnection = 0x%08X\n",
-					lpData->Node()->m_lpAdviseSink,
+					lpAdviseSink,
 					static_cast<int>(lpData->Node()->m_ulAdviseConnection));
+
+				lpData->Node()->m_lpAdviseSink = lpAdviseSink;
 			}
 		}
 	}
