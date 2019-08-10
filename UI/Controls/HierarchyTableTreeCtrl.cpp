@@ -133,6 +133,14 @@ namespace controls
 		auto* lpNodeData = reinterpret_cast<sortlistdata::SortListData*>(lpData);
 		if (lpNodeData && lpNodeData->Node() && lpNodeData->Node()->m_lpAdviseSink)
 		{
+			// unadvise before releasing our sink
+			if (lpNodeData->Node()->m_lpAdviseSink && lpNodeData->Node()->m_lpHierarchyTable)
+			{
+				lpNodeData->Node()->m_lpHierarchyTable->Unadvise(lpNodeData->Node()->m_ulAdviseConnection);
+				lpNodeData->Node()->m_lpAdviseSink->Release();
+				lpNodeData->Node()->m_lpAdviseSink = nullptr;
+			}
+
 			output::DebugPrintEx(
 				output::DBGHierarchy,
 				CLASS,
