@@ -1,5 +1,6 @@
 #pragma once
-#include <UI/Controls/SortList/Data.h>
+#include <core/sortList/data.h>
+
 namespace controls
 {
 	namespace sortlistdata
@@ -10,7 +11,7 @@ namespace controls
 		class MVPropData;
 		class ResData;
 		class CommentData;
-		class BinaryData;
+		class binaryData;
 
 		class SortListData
 		{
@@ -40,7 +41,7 @@ namespace controls
 			MVPropData* MV() const;
 			ResData* Res() const;
 			CommentData* Comment() const;
-			BinaryData* Binary() const;
+			binaryData* Binary() const;
 
 			const std::wstring& getSortText() const noexcept { return sortText; }
 			void setSortText(const std::wstring& _sortText);

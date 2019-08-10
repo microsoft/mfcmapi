@@ -70,6 +70,18 @@
     <ClInclude Include="UI\CMAPIProgress.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
+    <ClInclude Include="UI\Controls\SortList\CommentData.h" />
+    <ClInclude Include="UI\Controls\SortList\ContentsData.h" />
+    <ClInclude Include="UI\Controls\SortList\MVPropData.h" />
+    <ClInclude Include="UI\Controls\SortList\NodeData.h" />
+    <ClInclude Include="UI\Controls\SortList\PropListData.h" />
+    <ClInclude Include="UI\Controls\SortList\ResData.h" />
+    <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
+    <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
+    <ClInclude Include="UI\Controls\SortList\SortListData.h" />
+    <ClInclude Include="propertyBag\APIPropPropertyBag.h" />
+    <ClInclude Include="propertyBag\ropertyBag.h" />
+    <ClInclude Include="propertyBag\owPropertyBag.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -101,26 +113,44 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PropertyBag\MAPIPropPropertyBag.cpp">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClCompile>
-    <ClInclude Include="PropertyBag\MAPIPropPropertyBag.h">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClInclude>
-    <ClInclude Include="PropertyBag\PropertyBag.h">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClInclude>
-    <ClCompile Include="PropertyBag\RowPropertyBag.cpp">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClCompile>
-    <ClInclude Include="PropertyBag\RowPropertyBag.h">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClInclude>
     <ClCompile Include="UI\AdviseSink.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="UI\CMAPIProgress.cpp">
       <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\CommentData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\ContentsData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\MVPropData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\NodeData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\PropListData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\ResData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\SortHeader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\SortListData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="propertyBag\APIPropPropertyBag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="propertyBag\owPropertyBag.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,71 +233,6 @@
     </ClCompile>
     <ClInclude Include="UI\Controls\SingleMAPIPropListCtrl.h">
       <Filter>Source Files\UI\Controls</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="UI\Controls\SortList\BinaryData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\BinaryData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\CommentData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\CommentData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\ContentsData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\ContentsData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\Data.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\MVPropData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\MVPropData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\NodeData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\NodeData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\PropListData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\ResData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\ResData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\SortHeader.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\SortHeader.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\SortListCtrl.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\SortListData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\SortListData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\PropListData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

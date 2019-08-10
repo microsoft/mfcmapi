@@ -6,7 +6,7 @@
 #include <UI/Controls/SortList/MVPropData.h>
 #include <UI/Controls/SortList/ResData.h>
 #include <UI/Controls/SortList/CommentData.h>
-#include <UI/Controls/SortList/BinaryData.h>
+#include <core/sortList/binaryData.h>
 #include <core/utility/strings.h>
 
 namespace controls
@@ -45,7 +45,7 @@ namespace controls
 
 		CommentData* SortListData::Comment() const { return reinterpret_cast<CommentData*>(m_lpData); }
 
-		BinaryData* SortListData::Binary() const { return reinterpret_cast<BinaryData*>(m_lpData); }
+		binaryData* SortListData::Binary() const { return reinterpret_cast<binaryData*>(m_lpData); }
 
 		void SortListData::setSortText(const std::wstring& _sortText) { sortText = strings::wstringToLower(_sortText); }
 
@@ -140,7 +140,7 @@ namespace controls
 		void SortListData::InitializeBinary(_In_opt_ LPSBinary lpOldBin)
 		{
 			Clean();
-			m_lpData = new (std::nothrow) BinaryData(lpOldBin);
+			m_lpData = new (std::nothrow) binaryData(lpOldBin);
 		}
 	} // namespace sortlistdata
 } // namespace controls

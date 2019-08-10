@@ -1,11 +1,11 @@
-﻿#include <StdAfx.h>
-#include <UI/Controls/SortList/BinaryData.h>
+﻿#include <core/stdafx.h>
+#include <core/sortList/binaryData.h>
 
 namespace controls
 {
 	namespace sortlistdata
 	{
-		BinaryData::BinaryData(_In_opt_ LPSBinary lpOldBin)
+		binaryData::binaryData(_In_opt_ LPSBinary lpOldBin)
 		{
 			m_OldBin = {0};
 			if (lpOldBin)

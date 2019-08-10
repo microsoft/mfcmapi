@@ -576,6 +576,8 @@
     <ClInclude Include="smartview\VerbStream.h" />
     <ClInclude Include="smartview\WebViewPersistStream.h" />
     <ClInclude Include="smartview\XID.h" />
+    <ClInclude Include="sortList\binaryData.h" />
+    <ClInclude Include="sortList\data.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="utility\cli.h" />
     <ClInclude Include="utility\error.h" />
@@ -642,6 +644,7 @@
     <ClCompile Include="smartview\VerbStream.cpp" />
     <ClCompile Include="smartview\WebViewPersistStream.cpp" />
     <ClCompile Include="smartview\XID.cpp" />
+    <ClCompile Include="sortList\binaryData.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Create</PrecompiledHeader>

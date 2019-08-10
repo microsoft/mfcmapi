@@ -1,14 +1,14 @@
 ﻿#pragma once
-#include <UI/Controls/SortList/Data.h>
+#include <core/sortList/data.h>
 
 namespace controls
 {
 	namespace sortlistdata
 	{
-		class BinaryData : public IData
+		class binaryData : public IData
 		{
 		public:
-			BinaryData(_In_opt_ LPSBinary lpOldBin);
+			binaryData(_In_opt_ LPSBinary lpOldBin);
 
 			SBinary m_OldBin{}; // not allocated - just a pointer
 			SBinary m_NewBin{}; // MAPIAllocateMore from m_lpNewEntryList
