@@ -7,7 +7,7 @@
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <core/mapi/mapiProfileFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <core/sortList/contentsData.h>
+#include <core/sortlistdata/contentsData.h>
 #include <UI/addinui.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>

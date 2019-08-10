@@ -8,7 +8,7 @@
 #include <core/mapi/columnTags.h>
 #include <core/mapi/mapiProgress.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
-#include <core/sortList/contentsData.h>
+#include <core/sortlistdata/contentsData.h>
 #include <core/mapi/cache/globalCache.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>

@@ -3,7 +3,7 @@
 #include <core/interpret/guid.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/smartview/SmartView.h>
-#include <core/sortList/mvPropData.h>
+#include <core/sortlistdata/mvPropData.h>
 #include <UI/ViewPane/CountedTextPane.h>
 #include <UI/Dialogs/Editors/MultiValuePropertyEditor.h>
 #include <core/mapi/mapiMemory.h>

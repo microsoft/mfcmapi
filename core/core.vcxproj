@@ -576,13 +576,13 @@
     <ClInclude Include="smartview\VerbStream.h" />
     <ClInclude Include="smartview\WebViewPersistStream.h" />
     <ClInclude Include="smartview\XID.h" />
-    <ClInclude Include="sortList\binaryData.h" />
-    <ClInclude Include="sortList\commentData.h" />
-    <ClInclude Include="sortList\contentsData.h" />
-    <ClInclude Include="sortList\data.h" />
-    <ClInclude Include="sortList\mvPropData.h" />
-    <ClInclude Include="sortList\propListData.h" />
-    <ClInclude Include="sortList\resData.h" />
+    <ClInclude Include="sortlistdata\binaryData.h" />
+    <ClInclude Include="sortlistdata\commentData.h" />
+    <ClInclude Include="sortlistdata\contentsData.h" />
+    <ClInclude Include="sortlistdata\data.h" />
+    <ClInclude Include="sortlistdata\mvPropData.h" />
+    <ClInclude Include="sortlistdata\propListData.h" />
+    <ClInclude Include="sortlistdata\resData.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="utility\cli.h" />
     <ClInclude Include="utility\error.h" />
@@ -649,12 +649,12 @@
     <ClCompile Include="smartview\VerbStream.cpp" />
     <ClCompile Include="smartview\WebViewPersistStream.cpp" />
     <ClCompile Include="smartview\XID.cpp" />
-    <ClCompile Include="sortList\binaryData.cpp" />
-    <ClCompile Include="sortList\commentData.cpp" />
-    <ClCompile Include="sortList\contentsData.cpp" />
-    <ClCompile Include="sortList\mvPropData.cpp" />
-    <ClCompile Include="sortList\propListData.cpp" />
-    <ClCompile Include="sortList\resData.cpp" />
+    <ClCompile Include="sortlistdata\binaryData.cpp" />
+    <ClCompile Include="sortlistdata\commentData.cpp" />
+    <ClCompile Include="sortlistdata\contentsData.cpp" />
+    <ClCompile Include="sortlistdata\mvPropData.cpp" />
+    <ClCompile Include="sortlistdata\propListData.cpp" />
+    <ClCompile Include="sortlistdata\resData.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Create</PrecompiledHeader>

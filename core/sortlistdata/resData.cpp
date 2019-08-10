@@ -1,5 +1,5 @@
 ﻿#include <core/stdafx.h>
-#include <core/sortList/resData.h>
+#include <core/sortlistdata/resData.h>
 
 namespace controls
 {

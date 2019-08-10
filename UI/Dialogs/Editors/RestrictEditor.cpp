@@ -3,9 +3,9 @@
 #include <UI/Dialogs/Editors/PropertyEditor.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/extraPropTags.h>
-#include <core/sortList/resData.h>
-#include <core/sortList/commentData.h>
-#include <core/sortList/binaryData.h>
+#include <core/sortlistdata/resData.h>
+#include <core/sortlistdata/commentData.h>
+#include <core/sortlistdata/binaryData.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

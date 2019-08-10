@@ -1,12 +1,12 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/SortListData.h>
-#include <core/sortList/contentsData.h>
+#include <core/sortlistdata/contentsData.h>
 #include <UI/Controls/SortList/NodeData.h>
-#include <core/sortList/propListData.h>
-#include <core/sortList/mvPropData.h>
-#include <core/sortList/resData.h>
-#include <core/sortList/commentData.h>
-#include <core/sortList/binaryData.h>
+#include <core/sortlistdata/propListData.h>
+#include <core/sortlistdata/mvPropData.h>
+#include <core/sortlistdata/resData.h>
+#include <core/sortlistdata/commentData.h>
+#include <core/sortlistdata/binaryData.h>
 #include <core/utility/strings.h>
 
 namespace controls
