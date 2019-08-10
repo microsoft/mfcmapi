@@ -8,7 +8,7 @@ namespace controls
 		class contentsData;
 		class NodeData;
 		class PropListData;
-		class MVPropData;
+		class mvPropData;
 		class ResData;
 		class commentData;
 		class binaryData;
@@ -38,7 +38,7 @@ namespace controls
 			contentsData* Contents() const;
 			NodeData* Node() const;
 			PropListData* Prop() const;
-			MVPropData* MV() const;
+			mvPropData* MV() const;
 			ResData* Res() const;
 			commentData* Comment() const;
 			binaryData* Binary() const;

@@ -3,7 +3,7 @@
 #include <core/sortList/contentsData.h>
 #include <UI/Controls/SortList/NodeData.h>
 #include <UI/Controls/SortList/PropListData.h>
-#include <UI/Controls/SortList/MVPropData.h>
+#include <core/sortList/mvPropData.h>
 #include <UI/Controls/SortList/ResData.h>
 #include <core/sortList/commentData.h>
 #include <core/sortList/binaryData.h>
@@ -39,7 +39,7 @@ namespace controls
 
 		PropListData* SortListData::Prop() const { return reinterpret_cast<PropListData*>(m_lpData); }
 
-		MVPropData* SortListData::MV() const { return reinterpret_cast<MVPropData*>(m_lpData); }
+		mvPropData* SortListData::MV() const { return reinterpret_cast<mvPropData*>(m_lpData); }
 
 		ResData* SortListData::Res() const { return reinterpret_cast<ResData*>(m_lpData); }
 
@@ -114,13 +114,13 @@ namespace controls
 		void SortListData::InitializeMV(_In_ const _SPropValue* lpProp, ULONG iProp)
 		{
 			Clean();
-			m_lpData = new (std::nothrow) MVPropData(lpProp, iProp);
+			m_lpData = new (std::nothrow) mvPropData(lpProp, iProp);
 		}
 
 		void SortListData::InitializeMV(_In_opt_ const _SPropValue* lpProp)
 		{
 			Clean();
-			m_lpData = new (std::nothrow) MVPropData(lpProp);
+			m_lpData = new (std::nothrow) mvPropData(lpProp);
 		}
 
 		void SortListData::InitializeRes(_In_opt_ const _SRestriction* lpOldRes)

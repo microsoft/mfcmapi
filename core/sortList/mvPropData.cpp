@@ -1,11 +1,11 @@
-﻿#include <StdAfx.h>
-#include <UI/Controls/SortList/MVPropData.h>
+﻿#include <core/stdafx.h>
+#include <core/sortList/mvPropData.h>
 
 namespace controls
 {
 	namespace sortlistdata
 	{
-		MVPropData::MVPropData(_In_opt_ const _SPropValue* lpProp, ULONG iProp)
+		mvPropData::mvPropData(_In_opt_ const _SPropValue* lpProp, ULONG iProp)
 		{
 			m_val = {0};
 			if (!lpProp) return;
@@ -62,7 +62,7 @@ namespace controls
 			}
 		}
 
-		MVPropData::MVPropData(_In_opt_ const _SPropValue* lpProp)
+		mvPropData::mvPropData(_In_opt_ const _SPropValue* lpProp)
 		{
 			m_val = {0};
 			if (!lpProp) return;
