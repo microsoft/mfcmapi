@@ -34,14 +34,19 @@ namespace controls
 		// Assumes the structure is either an existing structure or a new one which has been memset to 0
 		// If it's an existing structure - we need to free up some memory
 		// SORTLIST_CONTENTS
-		void SortListData::InitializeContents(_In_ LPSRow lpsRowData)
+		void InitContents(sortlistdata::SortListData* data, LPSRow lpsRowData)
 		{
-			Clean();
-
-			if (!lpsRowData) return;
-			lpSourceProps = lpsRowData->lpProps;
-			cSourceProps = lpsRowData->cValues;
-			m_lpData = new (std::nothrow) contentsData(lpsRowData);
+			if (lpsRowData)
+			{
+				data->Init(
+					new (std::nothrow) controls::sortlistdata::contentsData(lpsRowData),
+					lpsRowData->cValues,
+					lpsRowData->lpProps);
+			}
+			else
+			{
+				data->Init(nullptr, 0, nullptr);
+			}
 		}
 
 		void SortListData::InitializeNode(

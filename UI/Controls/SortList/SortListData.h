@@ -5,20 +5,19 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		class contentsData;
-		class NodeData;
-		class propListData;
-		class mvPropData;
-		class resData;
-		class commentData;
-		class binaryData;
-
 		class SortListData
 		{
 		public:
 			~SortListData();
 			void Clean();
-			void InitializeContents(_In_ LPSRow lpsRowData);
+			void Init(IData* lpData, ULONG cValues, LPSPropValue lpProps)
+			{
+				Clean();
+				lpSourceProps = lpProps;
+				cSourceProps = cValues;
+				m_lpData = lpData;
+			}
+
 			void InitializeNode(
 				ULONG cProps,
 				_In_opt_ LPSPropValue lpProps,
@@ -56,5 +55,7 @@ namespace controls
 			std::wstring sortText{};
 			ULARGE_INTEGER sortValue{};
 		};
+
+		void InitContents(SortListData* lpData, LPSRow lpsRowData);
 	} // namespace sortlistdata
 } // namespace controls
