@@ -126,7 +126,12 @@ namespace dialog
 					auto sProp = SPropValue{};
 					sProp.ulPropTag =
 						CHANGE_PROP_TYPE(m_lpsInputValue->ulPropTag, PROP_TYPE(m_lpsInputValue->ulPropTag) & ~MV_FLAG);
-					sProp.Value = lpData->MV()->m_val;
+					const auto mvprop = lpData->cast<controls::sortlistdata::mvPropData>();
+					if (mvprop)
+					{
+						sProp.Value = mvprop->m_val;
+					}
+
 					UpdateListRow(&sProp, iMVCount);
 
 					lpData->bItemFullyLoaded = true;
@@ -230,55 +235,59 @@ namespace dialog
 				{
 					const auto lpData = GetListRowData(0, iMVCount);
 
-					if (lpData && lpData->MV())
+					if (lpData)
 					{
-						switch (PROP_TYPE(m_lpsOutputValue->ulPropTag))
+						const auto mvprop = lpData->cast<controls::sortlistdata::mvPropData>();
+						if (mvprop)
 						{
-						case PT_MV_I2:
-							m_lpsOutputValue->Value.MVi.lpi[iMVCount] = lpData->MV()->m_val.i;
-							break;
-						case PT_MV_LONG:
-							m_lpsOutputValue->Value.MVl.lpl[iMVCount] = lpData->MV()->m_val.l;
-							break;
-						case PT_MV_DOUBLE:
-							m_lpsOutputValue->Value.MVdbl.lpdbl[iMVCount] = lpData->MV()->m_val.dbl;
-							break;
-						case PT_MV_CURRENCY:
-							m_lpsOutputValue->Value.MVcur.lpcur[iMVCount] = lpData->MV()->m_val.cur;
-							break;
-						case PT_MV_APPTIME:
-							m_lpsOutputValue->Value.MVat.lpat[iMVCount] = lpData->MV()->m_val.at;
-							break;
-						case PT_MV_SYSTIME:
-							m_lpsOutputValue->Value.MVft.lpft[iMVCount] = lpData->MV()->m_val.ft;
-							break;
-						case PT_MV_I8:
-							m_lpsOutputValue->Value.MVli.lpli[iMVCount] = lpData->MV()->m_val.li;
-							break;
-						case PT_MV_R4:
-							m_lpsOutputValue->Value.MVflt.lpflt[iMVCount] = lpData->MV()->m_val.flt;
-							break;
-						case PT_MV_STRING8:
-							m_lpsOutputValue->Value.MVszA.lppszA[iMVCount] =
-								mapi::CopyStringA(lpData->MV()->m_val.lpszA, m_lpAllocParent);
-							break;
-						case PT_MV_UNICODE:
-							m_lpsOutputValue->Value.MVszW.lppszW[iMVCount] =
-								mapi::CopyStringW(lpData->MV()->m_val.lpszW, m_lpAllocParent);
-							break;
-						case PT_MV_BINARY:
-							m_lpsOutputValue->Value.MVbin.lpbin[iMVCount] =
-								mapi::CopySBinary(lpData->MV()->m_val.bin, m_lpAllocParent);
-							break;
-						case PT_MV_CLSID:
-							if (lpData->MV()->m_val.lpguid)
+							switch (PROP_TYPE(m_lpsOutputValue->ulPropTag))
 							{
-								m_lpsOutputValue->Value.MVguid.lpguid[iMVCount] = *lpData->MV()->m_val.lpguid;
-							}
+							case PT_MV_I2:
+								m_lpsOutputValue->Value.MVi.lpi[iMVCount] = mvprop->m_val.i;
+								break;
+							case PT_MV_LONG:
+								m_lpsOutputValue->Value.MVl.lpl[iMVCount] = mvprop->m_val.l;
+								break;
+							case PT_MV_DOUBLE:
+								m_lpsOutputValue->Value.MVdbl.lpdbl[iMVCount] = mvprop->m_val.dbl;
+								break;
+							case PT_MV_CURRENCY:
+								m_lpsOutputValue->Value.MVcur.lpcur[iMVCount] = mvprop->m_val.cur;
+								break;
+							case PT_MV_APPTIME:
+								m_lpsOutputValue->Value.MVat.lpat[iMVCount] = mvprop->m_val.at;
+								break;
+							case PT_MV_SYSTIME:
+								m_lpsOutputValue->Value.MVft.lpft[iMVCount] = mvprop->m_val.ft;
+								break;
+							case PT_MV_I8:
+								m_lpsOutputValue->Value.MVli.lpli[iMVCount] = mvprop->m_val.li;
+								break;
+							case PT_MV_R4:
+								m_lpsOutputValue->Value.MVflt.lpflt[iMVCount] = mvprop->m_val.flt;
+								break;
+							case PT_MV_STRING8:
+								m_lpsOutputValue->Value.MVszA.lppszA[iMVCount] =
+									mapi::CopyStringA(mvprop->m_val.lpszA, m_lpAllocParent);
+								break;
+							case PT_MV_UNICODE:
+								m_lpsOutputValue->Value.MVszW.lppszW[iMVCount] =
+									mapi::CopyStringW(mvprop->m_val.lpszW, m_lpAllocParent);
+								break;
+							case PT_MV_BINARY:
+								m_lpsOutputValue->Value.MVbin.lpbin[iMVCount] =
+									mapi::CopySBinary(mvprop->m_val.bin, m_lpAllocParent);
+								break;
+							case PT_MV_CLSID:
+								if (mvprop->m_val.lpguid)
+								{
+									m_lpsOutputValue->Value.MVguid.lpguid[iMVCount] = *mvprop->m_val.lpguid;
+								}
 
-							break;
-						default:
-							break;
+								break;
+							default:
+								break;
+							}
 						}
 					}
 				}
@@ -316,15 +325,18 @@ namespace dialog
 			_In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData) return false;
-			if (!lpData->MV())
+			const auto mvprop = lpData->cast<controls::sortlistdata::mvPropData>();
+			if (!mvprop)
 			{
 				lpData->InitializeMV(nullptr);
 			}
 
+			if (!mvprop) return false;
+
 			SPropValue tmpPropVal = {};
 			// Strip off MV_FLAG since we're displaying only a row
 			tmpPropVal.ulPropTag = m_ulPropTag & ~MV_FLAG;
-			tmpPropVal.Value = lpData->MV()->m_val;
+			tmpPropVal.Value = mvprop->m_val;
 
 			LPSPropValue lpNewValue = nullptr;
 			const auto hRes = WC_H(DisplayPropertyEditor(
@@ -381,8 +393,8 @@ namespace dialog
 			for (auto i = ULONG{}; i < ulNumVals; i++)
 			{
 				const auto lpData = GetListRowData(0, i);
-				const auto mv = lpData->MV();
-				ret.push_back(mv ? mv->m_val.l : LONG{});
+				const auto mvprop = lpData->cast<controls::sortlistdata::mvPropData>();
+				ret.push_back(mvprop ? mvprop->m_val.l : LONG{});
 			}
 
 			return ret;
@@ -397,8 +409,8 @@ namespace dialog
 			for (auto i = ULONG{}; i < ulNumVals; i++)
 			{
 				const auto lpData = GetListRowData(0, i);
-				const auto mv = lpData->MV();
-				const auto bin = mv ? mv->m_val.bin : SBinary{};
+				const auto mvprop = lpData->cast<controls::sortlistdata::mvPropData>();
+				const auto bin = mvprop ? mvprop->m_val.bin : SBinary{};
 				ret.push_back(std::vector<BYTE>(bin.lpb, bin.lpb + bin.cb));
 			}
 
