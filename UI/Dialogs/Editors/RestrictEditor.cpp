@@ -1390,21 +1390,25 @@ namespace dialog
 		{
 			if (!lpData) return false;
 
-			if (!lpData->Binary())
+			auto binary = lpData->cast<controls::sortlistdata::binaryData>();
+			if (!binary)
 			{
 				lpData->InitializeBinary(nullptr);
+				binary = lpData->cast<controls::sortlistdata::binaryData>();
 			}
+
+			if (!binary) return false;
 
 			CEditor BinEdit(this, IDS_EIDEDITOR, IDS_EIDEDITORPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 			auto lpSourcebin = LPSBinary{};
-			if (lpData->Binary()->m_OldBin.lpb)
+			if (binary->m_OldBin.lpb)
 			{
-				lpSourcebin = &lpData->Binary()->m_OldBin;
+				lpSourcebin = &binary->m_OldBin;
 			}
 			else
 			{
-				lpSourcebin = &lpData->Binary()->m_NewBin;
+				lpSourcebin = &binary->m_NewBin;
 			}
 
 			BinEdit.AddPane(viewpane::TextPane::CreateSingleLinePane(
@@ -1413,14 +1417,14 @@ namespace dialog
 			if (BinEdit.DisplayDialog())
 			{
 				auto bin = strings::HexStringToBin(BinEdit.GetStringW(0));
-				lpData->Binary()->m_NewBin.lpb = mapi::ByteVectorToMAPI(bin, m_lpNewEntryList);
-				if (lpData->Binary()->m_NewBin.lpb)
+				binary->m_NewBin.lpb = mapi::ByteVectorToMAPI(bin, m_lpNewEntryList);
+				if (binary->m_NewBin.lpb)
 				{
-					lpData->Binary()->m_NewBin.cb = static_cast<ULONG>(bin.size());
-					const auto szTmp = std::to_wstring(lpData->Binary()->m_NewBin.cb);
+					binary->m_NewBin.cb = static_cast<ULONG>(bin.size());
+					const auto szTmp = std::to_wstring(binary->m_NewBin.cb);
 					SetListString(ulListNum, iItem, 1, szTmp);
-					SetListString(ulListNum, iItem, 2, strings::BinToHexString(&lpData->Binary()->m_NewBin, false));
-					SetListString(ulListNum, iItem, 3, strings::BinToTextString(&lpData->Binary()->m_NewBin, true));
+					SetListString(ulListNum, iItem, 2, strings::BinToHexString(&binary->m_NewBin, false));
+					SetListString(ulListNum, iItem, 3, strings::BinToTextString(&binary->m_NewBin, true));
 					return true;
 				}
 			}
@@ -1442,25 +1446,29 @@ namespace dialog
 				for (ULONG paneID = 0; paneID < m_lpNewEntryList->cValues; paneID++)
 				{
 					const auto lpData = GetListRowData(LISTNUM, paneID);
-					if (lpData && lpData->Binary())
+					if (lpData)
 					{
-						if (lpData->Binary()->m_NewBin.lpb)
+						const auto binary = lpData->cast<controls::sortlistdata::binaryData>();
+						if (binary)
 						{
-							m_lpNewEntryList->lpbin[paneID].cb = lpData->Binary()->m_NewBin.cb;
-							m_lpNewEntryList->lpbin[paneID].lpb = lpData->Binary()->m_NewBin.lpb;
-							// clean out the source
-							lpData->Binary()->m_OldBin.lpb = nullptr;
-						}
-						else
-						{
-							m_lpNewEntryList->lpbin[paneID].cb = lpData->Binary()->m_OldBin.cb;
-							m_lpNewEntryList->lpbin[paneID].lpb =
-								mapi::allocate<LPBYTE>(m_lpNewEntryList->lpbin[paneID].cb, m_lpNewEntryList);
+							if (binary->m_NewBin.lpb)
+							{
+								m_lpNewEntryList->lpbin[paneID].cb = binary->m_NewBin.cb;
+								m_lpNewEntryList->lpbin[paneID].lpb = binary->m_NewBin.lpb;
+								// clean out the source
+								binary->m_OldBin.lpb = nullptr;
+							}
+							else
+							{
+								m_lpNewEntryList->lpbin[paneID].cb = binary->m_OldBin.cb;
+								m_lpNewEntryList->lpbin[paneID].lpb =
+									mapi::allocate<LPBYTE>(m_lpNewEntryList->lpbin[paneID].cb, m_lpNewEntryList);
 
-							memcpy(
-								m_lpNewEntryList->lpbin[paneID].lpb,
-								lpData->Binary()->m_OldBin.lpb,
-								m_lpNewEntryList->lpbin[paneID].cb);
+								memcpy(
+									m_lpNewEntryList->lpbin[paneID].lpb,
+									binary->m_OldBin.lpb,
+									m_lpNewEntryList->lpbin[paneID].cb);
+							}
 						}
 					}
 				}
