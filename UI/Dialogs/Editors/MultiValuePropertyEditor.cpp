@@ -121,7 +121,7 @@ namespace dialog
 
 				if (lpData)
 				{
-					lpData->InitializeMV(m_lpsInputValue, iMVCount);
+					InitMV(lpData, m_lpsInputValue, iMVCount);
 
 					auto sProp = SPropValue{};
 					sProp.ulPropTag =
@@ -327,7 +327,7 @@ namespace dialog
 			if (!lpData) return false;
 			if (!lpData->cast<controls::sortlistdata::mvPropData>())
 			{
-				lpData->InitializeMV(nullptr);
+				InitMV(lpData, nullptr);
 			}
 
 			const auto mvprop = lpData->cast<controls::sortlistdata::mvPropData>();
@@ -353,7 +353,7 @@ namespace dialog
 
 			if (hRes == S_OK && lpNewValue)
 			{
-				lpData->InitializeMV(lpNewValue);
+				InitMV(lpData, lpNewValue);
 
 				// update the UI
 				UpdateListRow(lpNewValue, iItem);

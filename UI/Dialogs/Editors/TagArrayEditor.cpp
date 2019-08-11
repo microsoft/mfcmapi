@@ -86,7 +86,7 @@ namespace dialog
 			if (!lpData) return false;
 			if (!lpData->cast<controls::sortlistdata::propListData>())
 			{
-				lpData->InitializePropList(0);
+				InitPropList(lpData, 0);
 			}
 
 			const auto prop = lpData->cast<controls::sortlistdata::propListData>();
@@ -150,7 +150,7 @@ namespace dialog
 					auto lpData = InsertListRow(ulListNum, iTagCount, std::to_wstring(iTagCount));
 					if (lpData)
 					{
-						lpData->InitializePropList(ulPropTag);
+						InitPropList(lpData, ulPropTag);
 					}
 
 					const auto namePropNames =

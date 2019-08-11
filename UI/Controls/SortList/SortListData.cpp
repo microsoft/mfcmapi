@@ -95,43 +95,40 @@ namespace controls
 				lpContainerFlags ? lpContainerFlags->Value.ul : MAPI_E_NOT_FOUND);
 		}
 
-		void SortListData::InitializePropList(_In_ ULONG ulPropTag)
+		void InitPropList(SortListData* data, _In_ ULONG ulPropTag)
 		{
-			Clean();
-			bItemFullyLoaded = true;
-			m_lpData = new (std::nothrow) propListData(ulPropTag);
+			if (!data) return;
+			data->Init(new (std::nothrow) propListData(ulPropTag), true);
 		}
 
-		void SortListData::InitializeMV(_In_ const _SPropValue* lpProp, ULONG iProp)
+		void InitMV(SortListData* data, _In_ const _SPropValue* lpProp, ULONG iProp)
 		{
-			Clean();
-			m_lpData = new (std::nothrow) mvPropData(lpProp, iProp);
+			if (!data) return;
+			data->Init(new (std::nothrow) mvPropData(lpProp, iProp));
 		}
 
-		void SortListData::InitializeMV(_In_opt_ const _SPropValue* lpProp)
+		void InitMV(SortListData* data, _In_opt_ const _SPropValue* lpProp)
 		{
-			Clean();
-			m_lpData = new (std::nothrow) mvPropData(lpProp);
+			if (!data) return;
+			data->Init(new (std::nothrow) mvPropData(lpProp));
 		}
 
-		void SortListData::InitializeRes(_In_opt_ const _SRestriction* lpOldRes)
+		void InitRes(SortListData* data, _In_opt_ const _SRestriction* lpOldRes)
 		{
-			Clean();
-			bItemFullyLoaded = true;
-			m_lpData = new (std::nothrow) resData(lpOldRes);
+			if (!data) return;
+			data->Init(new (std::nothrow) resData(lpOldRes), true);
 		}
 
-		void SortListData::InitializeComment(_In_opt_ const _SPropValue* lpOldProp)
+		void InitComment(SortListData* data, _In_opt_ const _SPropValue* lpOldProp)
 		{
-			Clean();
-			bItemFullyLoaded = true;
-			m_lpData = new (std::nothrow) commentData(lpOldProp);
+			if (!data) return;
+			data->Init(new (std::nothrow) commentData(lpOldProp), true);
 		}
 
-		void SortListData::InitializeBinary(_In_opt_ LPSBinary lpOldBin)
+		void InitBinary(SortListData* data, _In_opt_ LPSBinary lpOldBin)
 		{
-			Clean();
-			m_lpData = new (std::nothrow) binaryData(lpOldBin);
+			if (!data) return;
+			data->Init(new (std::nothrow) binaryData(lpOldBin));
 		}
 	} // namespace sortlistdata
 } // namespace controls

@@ -51,7 +51,7 @@ namespace dialog
 
 				if (lpData)
 				{
-					lpData->InitializePropList(PropTagArray[i].ulValue);
+					InitPropList(lpData, PropTagArray[i].ulValue);
 				}
 
 				SetListString(0, ulCurRow, 1, strings::format(L"0x%08X", PropTagArray[i].ulValue)); // STRING_OK

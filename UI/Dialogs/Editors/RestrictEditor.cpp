@@ -516,7 +516,7 @@ namespace dialog
 					auto lpData = InsertListRow(ulListNum, paneID, std::to_wstring(paneID));
 					if (lpData)
 					{
-						lpData->InitializeRes(&lpRes->res.resAnd.lpRes[paneID]);
+						InitRes(lpData, &lpRes->res.resAnd.lpRes[paneID]);
 						SetListString(
 							ulListNum,
 							paneID,
@@ -533,7 +533,7 @@ namespace dialog
 					auto lpData = InsertListRow(ulListNum, paneID, std::to_wstring(paneID));
 					if (lpData)
 					{
-						lpData->InitializeRes(&lpRes->res.resOr.lpRes[paneID]);
+						InitRes(lpData, &lpRes->res.resOr.lpRes[paneID]);
 						SetListString(
 							ulListNum,
 							paneID,
@@ -552,7 +552,7 @@ namespace dialog
 			if (!lpData) return false;
 			if (!lpData->cast<controls::sortlistdata::resData>())
 			{
-				lpData->InitializeRes(nullptr);
+				InitRes(lpData, nullptr);
 			}
 
 			const auto res = lpData->cast<controls::sortlistdata::resData>();
@@ -721,7 +721,7 @@ namespace dialog
 				auto lpData = InsertListRow(ulListNum, paneID, std::to_wstring(paneID));
 				if (lpData)
 				{
-					lpData->InitializeComment(&lpProps[paneID]);
+					InitComment(lpData, &lpProps[paneID]);
 					SetListString(
 						ulListNum, paneID, 1, proptags::TagToString(lpProps[paneID].ulPropTag, nullptr, false, true));
 					property::parseProperty(&lpProps[paneID], &szProp, &szAltProp);
@@ -753,7 +753,7 @@ namespace dialog
 			if (!lpData) return false;
 			if (!lpData->cast<controls::sortlistdata::commentData>())
 			{
-				lpData->InitializeComment(nullptr);
+				InitComment(lpData, nullptr);
 			}
 
 			const auto comment = lpData->cast<controls::sortlistdata::commentData>();
@@ -1353,7 +1353,7 @@ namespace dialog
 					auto lpData = InsertListRow(ulListNum, iRow, std::to_wstring(iRow));
 					if (lpData)
 					{
-						lpData->InitializeBinary(&lpEntryList->lpbin[iRow]);
+						InitBinary(lpData, &lpEntryList->lpbin[iRow]);
 					}
 
 					SetListString(ulListNum, iRow, 1, std::to_wstring(lpEntryList->lpbin[iRow].cb));
@@ -1392,7 +1392,7 @@ namespace dialog
 
 			if (!lpData->cast<controls::sortlistdata::binaryData>())
 			{
-				lpData->InitializeBinary(nullptr);
+				InitBinary(lpData, nullptr);
 			}
 
 			const auto binary = lpData->cast<controls::sortlistdata::binaryData>();
