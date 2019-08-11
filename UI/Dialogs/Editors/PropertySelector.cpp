@@ -68,9 +68,13 @@ namespace dialog
 		void CPropertySelector::OnOK()
 		{
 			const auto lpListData = GetSelectedListRowData(0);
-			if (lpListData && lpListData->Prop())
+			if (lpListData)
 			{
-				m_ulPropTag = lpListData->Prop()->m_ulPropTag;
+				const auto prop = lpListData->cast<controls::sortlistdata::propListData>();
+				if (prop)
+				{
+					m_ulPropTag = prop->m_ulPropTag;
+				}
 			}
 
 			CEditor::OnOK();

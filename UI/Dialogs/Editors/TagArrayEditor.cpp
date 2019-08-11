@@ -84,12 +84,15 @@ namespace dialog
 		CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData) return false;
-			if (!lpData->Prop())
+			const auto prop = lpData->cast<controls::sortlistdata::propListData>();
+			if (!prop)
 			{
 				lpData->InitializePropList(0);
 			}
 
-			const auto ulOrigPropTag = lpData->Prop()->m_ulPropTag;
+			if (!prop) return false;
+
+			const auto ulOrigPropTag = prop->m_ulPropTag;
 
 			CPropertyTagEditor MyPropertyTag(
 				NULL, // title
@@ -104,7 +107,7 @@ namespace dialog
 
 			if (ulNewPropTag != ulOrigPropTag)
 			{
-				lpData->Prop()->m_ulPropTag = ulNewPropTag;
+				prop->m_ulPropTag = ulNewPropTag;
 
 				const auto namePropNames =
 					cache::NameIDToStrings(ulNewPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
@@ -121,6 +124,7 @@ namespace dialog
 				ResizeList(ulListNum, false);
 				return true;
 			}
+
 			return false;
 		}
 
@@ -180,8 +184,14 @@ namespace dialog
 				for (ULONG iTagCount = 0; iTagCount < m_lpOutputTagArray->cValues; iTagCount++)
 				{
 					const auto lpData = GetListRowData(ulListNum, iTagCount);
-					if (lpData && lpData->Prop())
-						m_lpOutputTagArray->aulPropTag[iTagCount] = lpData->Prop()->m_ulPropTag;
+					if (lpData)
+					{
+						const auto prop = lpData->cast<controls::sortlistdata::propListData>();
+						if (prop)
+						{
+							m_lpOutputTagArray->aulPropTag[iTagCount] = prop->m_ulPropTag;
+						}
+					}
 				}
 			}
 		}

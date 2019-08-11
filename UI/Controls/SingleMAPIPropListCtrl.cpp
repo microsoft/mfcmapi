@@ -303,9 +303,13 @@ namespace controls
 			if (-1 != iItem)
 			{
 				const auto lpListData = reinterpret_cast<sortlistdata::SortListData*>(GetItemData(iItem));
-				if (lpListData && lpListData->Prop() && lpPropTag)
+				if (lpListData)
 				{
-					*lpPropTag = lpListData->Prop()->m_ulPropTag;
+					const auto prop = lpListData->cast<controls::sortlistdata::propListData>();
+					if (prop && lpPropTag)
+					{
+						*lpPropTag = prop->m_ulPropTag;
+					}
 				}
 			}
 
@@ -756,8 +760,9 @@ namespace controls
 		// Load a new list from the IMAPIProp or lpSourceProps object passed in
 		// Most calls to this will come through CBaseDialog::OnUpdateSingleMAPIPropListCtrl, which will preserve the current bIsAB
 		// Exceptions will be where we need to set a specific bIsAB
-		_Check_return_ HRESULT
-		CSingleMAPIPropListCtrl::SetDataSource(const std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag, bool bIsAB)
+		_Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(
+			const std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag,
+			bool bIsAB)
 		{
 			output::DebugPrintEx(output::DBGGeneric, CLASS, L"SetDataSource", L"setting new data source\n");
 
@@ -892,9 +897,14 @@ namespace controls
 
 						const auto lpListData = reinterpret_cast<sortlistdata::SortListData*>(GetItemData(iRow));
 						auto ulPropType = PT_NULL;
-						if (lpListData && lpListData->Prop())
+
+						if (lpListData)
 						{
-							ulPropType = PROP_TYPE(lpListData->Prop()->m_ulPropTag);
+							const auto prop = lpListData->cast<controls::sortlistdata::propListData>();
+							if (prop)
+							{
+								ulPropType = PROP_TYPE(prop->m_ulPropTag);
+							}
 						}
 
 						const auto szVal = GetItemText(iRow, columns::pcPROPVAL);

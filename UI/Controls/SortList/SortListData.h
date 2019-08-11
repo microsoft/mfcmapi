@@ -36,7 +36,6 @@ namespace controls
 
 			template <typename T> T* cast() { return reinterpret_cast<T*>(m_lpData); }
 			NodeData* Node() const { return reinterpret_cast<NodeData*>(m_lpData); }
-			propListData* Prop() const { return reinterpret_cast<propListData*>(m_lpData); }
 			mvPropData* MV() const { return reinterpret_cast<mvPropData*>(m_lpData); }
 			resData* Res() const { return reinterpret_cast<resData*>(m_lpData); }
 			commentData* Comment() const { return reinterpret_cast<commentData*>(m_lpData); }
