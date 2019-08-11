@@ -325,12 +325,12 @@ namespace dialog
 			_In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData) return false;
-			const auto mvprop = lpData->cast<controls::sortlistdata::mvPropData>();
-			if (!mvprop)
+			if (!lpData->cast<controls::sortlistdata::mvPropData>())
 			{
 				lpData->InitializeMV(nullptr);
 			}
 
+			const auto mvprop = lpData->cast<controls::sortlistdata::mvPropData>();
 			if (!mvprop) return false;
 
 			SPropValue tmpPropVal = {};

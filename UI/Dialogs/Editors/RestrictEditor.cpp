@@ -550,12 +550,12 @@ namespace dialog
 		CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData) return false;
-			const auto res = lpData->cast<controls::sortlistdata::resData>();
-			if (!res)
+			if (!lpData->cast<controls::sortlistdata::resData>())
 			{
 				lpData->InitializeRes(nullptr);
 			}
 
+			const auto res = lpData->cast<controls::sortlistdata::resData>();
 			if (!res) return false;
 
 			const auto lpSourceRes = res->m_lpNewRes ? res->m_lpNewRes : res->m_lpOldRes;
@@ -751,12 +751,12 @@ namespace dialog
 		{
 			if (!m_lpAllocParent) return false;
 			if (!lpData) return false;
-			const auto comment = lpData->cast<controls::sortlistdata::commentData>();
-			if (!comment)
+			if (!lpData->cast<controls::sortlistdata::commentData>())
 			{
 				lpData->InitializeComment(nullptr);
 			}
 
+			const auto comment = lpData->cast<controls::sortlistdata::commentData>();
 			if (!comment) return false;
 
 			auto lpSourceProp = comment->m_lpNewProp ? comment->m_lpNewProp : comment->m_lpOldProp;
@@ -1390,13 +1390,12 @@ namespace dialog
 		{
 			if (!lpData) return false;
 
-			auto binary = lpData->cast<controls::sortlistdata::binaryData>();
-			if (!binary)
+			if (!lpData->cast<controls::sortlistdata::binaryData>())
 			{
 				lpData->InitializeBinary(nullptr);
-				binary = lpData->cast<controls::sortlistdata::binaryData>();
 			}
 
+			const auto binary = lpData->cast<controls::sortlistdata::binaryData>();
 			if (!binary) return false;
 
 			CEditor BinEdit(this, IDS_EIDEDITOR, IDS_EIDEDITORPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);

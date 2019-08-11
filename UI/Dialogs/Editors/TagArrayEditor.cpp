@@ -84,12 +84,12 @@ namespace dialog
 		CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData) return false;
-			const auto prop = lpData->cast<controls::sortlistdata::propListData>();
-			if (!prop)
+			if (!lpData->cast<controls::sortlistdata::propListData>())
 			{
 				lpData->InitializePropList(0);
 			}
 
+			const auto prop = lpData->cast<controls::sortlistdata::propListData>();
 			if (!prop) return false;
 
 			const auto ulOrigPropTag = prop->m_ulPropTag;
