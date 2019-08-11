@@ -323,7 +323,7 @@ namespace dialog
 		_Check_return_ bool CMultiValuePropertyEditor::DoListEdit(
 			ULONG /*ulListNum*/,
 			int iItem,
-			_In_ controls::sortlistdata::SortListData* lpData)
+			_In_ controls::sortlistdata::sortListData* lpData)
 		{
 			if (!lpData) return false;
 			if (!lpData->cast<controls::sortlistdata::mvPropData>())

@@ -86,7 +86,7 @@ namespace dialog
 		_Check_return_ bool CPropertySelector::DoListEdit(
 			ULONG /*ulListNum*/,
 			int /*iItem*/,
-			_In_ controls::sortlistdata::SortListData* /*lpData*/)
+			_In_ controls::sortlistdata::sortListData* /*lpData*/)
 		{
 			OnOK();
 			return false;
@@ -94,7 +94,7 @@ namespace dialog
 
 		_Check_return_ ULONG CPropertySelector::GetPropertyTag() const { return m_ulPropTag; }
 
-		_Check_return_ controls::sortlistdata::SortListData* CPropertySelector::GetSelectedListRowData(ULONG id) const
+		_Check_return_ controls::sortlistdata::sortListData* CPropertySelector::GetSelectedListRowData(ULONG id) const
 		{
 			const auto lpPane = static_cast<viewpane::ListPane*>(GetPane(id));
 			if (lpPane)

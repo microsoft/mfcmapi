@@ -82,7 +82,7 @@ namespace dialog
 		}
 
 		_Check_return_ bool
-		CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
+		CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData)
 		{
 			if (!lpData) return false;
 			if (!lpData->cast<controls::sortlistdata::propListData>())

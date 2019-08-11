@@ -468,7 +468,7 @@ namespace dialog
 
 	void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(
 		_In_opt_ LPMAPIPROP lpMAPIProp,
-		_In_opt_ controls::sortlistdata::SortListData* lpListData) const
+		_In_opt_ controls::sortlistdata::sortListData* lpListData) const
 	{
 		output::DebugPrintEx(
 			output::DBGGeneric, CLASS, L"OnUpdateSingleMAPIPropListCtrl", L"Setting item %p\n", lpMAPIProp);

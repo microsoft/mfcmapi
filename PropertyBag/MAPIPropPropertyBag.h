@@ -1,13 +1,13 @@
 #pragma once
 #include <PropertyBag/PropertyBag.h>
-#include <UI/Controls/SortList/SortListData.h>
+#include <core/sortlistdata/sortListData.h>
 
 namespace propertybag
 {
 	class MAPIPropPropertyBag : public IMAPIPropertyBag
 	{
 	public:
-		MAPIPropPropertyBag(LPMAPIPROP lpProp, controls::sortlistdata::SortListData* lpListData);
+		MAPIPropPropertyBag(LPMAPIPROP lpProp, controls::sortlistdata::sortListData* lpListData);
 		virtual ~MAPIPropPropertyBag();
 
 		ULONG GetFlags() const override;
@@ -31,7 +31,7 @@ namespace propertybag
 		_Check_return_ HRESULT DeleteProp(ULONG ulPropTag) override;
 
 	private:
-		controls::sortlistdata::SortListData* m_lpListData{};
+		controls::sortlistdata::sortListData* m_lpListData{};
 		LPMAPIPROP m_lpProp{};
 		bool m_bGetPropsSucceeded{};
 	};

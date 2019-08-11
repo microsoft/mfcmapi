@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Controls/SortList/inits.h>
-#include <UI/Controls/SortList/SortListData.h>
+#include <core/sortlistdata/sortListData.h>
 #include <core/sortlistdata/contentsData.h>
 #include <UI/Controls/SortList/NodeData.h>
 #include <core/sortlistdata/propListData.h>
@@ -13,11 +13,11 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		// Sets data from the LPSRow into the SortListData structure
+		// Sets data from the LPSRow into the sortListData structure
 		// Assumes the structure is either an existing structure or a new one which has been memset to 0
 		// If it's an existing structure - we need to free up some memory
 		// SORTLIST_CONTENTS
-		void InitContents(SortListData* data, _In_ LPSRow lpsRowData)
+		void InitContents(sortListData* data, _In_ LPSRow lpsRowData)
 		{
 			if (!data) return;
 
@@ -32,7 +32,7 @@ namespace controls
 		}
 
 		void InitNode(
-			SortListData* data,
+			sortListData* data,
 			ULONG cProps,
 			_In_opt_ LPSPropValue lpProps,
 			_In_opt_ LPSBinary lpEntryID,
@@ -45,7 +45,7 @@ namespace controls
 				new (std::nothrow) NodeData(lpEntryID, lpInstanceKey, bSubfolders, ulContainerFlags), cProps, lpProps);
 		}
 
-		void InitNode(SortListData* data, _In_ LPSRow lpsRow)
+		void InitNode(sortListData* data, _In_ LPSRow lpsRow)
 		{
 			if (!data) return;
 
@@ -78,37 +78,37 @@ namespace controls
 				lpContainerFlags ? lpContainerFlags->Value.ul : MAPI_E_NOT_FOUND);
 		}
 
-		void InitPropList(SortListData* data, _In_ ULONG ulPropTag)
+		void InitPropList(sortListData* data, _In_ ULONG ulPropTag)
 		{
 			if (!data) return;
 			data->Init(new (std::nothrow) propListData(ulPropTag), true);
 		}
 
-		void InitMV(SortListData* data, _In_ const _SPropValue* lpProp, ULONG iProp)
+		void InitMV(sortListData* data, _In_ const _SPropValue* lpProp, ULONG iProp)
 		{
 			if (!data) return;
 			data->Init(new (std::nothrow) mvPropData(lpProp, iProp));
 		}
 
-		void InitMV(SortListData* data, _In_opt_ const _SPropValue* lpProp)
+		void InitMV(sortListData* data, _In_opt_ const _SPropValue* lpProp)
 		{
 			if (!data) return;
 			data->Init(new (std::nothrow) mvPropData(lpProp));
 		}
 
-		void InitRes(SortListData* data, _In_opt_ const _SRestriction* lpOldRes)
+		void InitRes(sortListData* data, _In_opt_ const _SRestriction* lpOldRes)
 		{
 			if (!data) return;
 			data->Init(new (std::nothrow) resData(lpOldRes), true);
 		}
 
-		void InitComment(SortListData* data, _In_opt_ const _SPropValue* lpOldProp)
+		void InitComment(sortListData* data, _In_opt_ const _SPropValue* lpOldProp)
 		{
 			if (!data) return;
 			data->Init(new (std::nothrow) commentData(lpOldProp), true);
 		}
 
-		void InitBinary(SortListData* data, _In_opt_ LPSBinary lpOldBin)
+		void InitBinary(sortListData* data, _In_opt_ LPSBinary lpOldBin)
 		{
 			if (!data) return;
 			data->Init(new (std::nothrow) binaryData(lpOldBin));

@@ -451,7 +451,7 @@ namespace dialog
 			_Check_return_ LPSRestriction DetachModifiedSRestrictionArray();
 			_Check_return_ ULONG GetResCount() const;
 			_Check_return_ bool
-			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
+			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData) override;
 
 		private:
 			BOOL OnInitDialog() override;
@@ -548,7 +548,7 @@ namespace dialog
 		}
 
 		_Check_return_ bool
-		CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
+		CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData)
 		{
 			if (!lpData) return false;
 			if (!lpData->cast<controls::sortlistdata::resData>())
@@ -620,7 +620,7 @@ namespace dialog
 			_Check_return_ LPSPropValue DetachModifiedSPropValue();
 			_Check_return_ ULONG GetSPropValueCount() const;
 			_Check_return_ bool
-			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
+			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData) override;
 
 		private:
 			void OnEditAction1() override;
@@ -748,7 +748,7 @@ namespace dialog
 		}
 
 		_Check_return_ bool
-		CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
+		CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData)
 		{
 			if (!m_lpAllocParent) return false;
 			if (!lpData) return false;
@@ -1387,7 +1387,7 @@ namespace dialog
 		}
 
 		_Check_return_ bool
-		CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
+		CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData)
 		{
 			if (!lpData) return false;
 

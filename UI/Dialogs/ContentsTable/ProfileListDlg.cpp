@@ -11,7 +11,7 @@
 #include <UI/Dialogs/ContentsTable/MsgServiceTableDlg.h>
 #include <core/mapi/cache/globalCache.h>
 #include <core/mapi/exportProfile.h>
-#include <UI/Controls/SortList/SortListData.h>
+#include <core/sortlistdata/sortListData.h>
 #include <core/sortlistdata/contentsData.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>

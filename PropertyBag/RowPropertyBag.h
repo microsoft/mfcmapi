@@ -1,13 +1,13 @@
 #pragma once
 #include <PropertyBag/PropertyBag.h>
-#include <UI/Controls/SortList/SortListData.h>
+#include <core/sortlistdata/sortListData.h>
 
 namespace propertybag
 {
 	class RowPropertyBag : public IMAPIPropertyBag
 	{
 	public:
-		RowPropertyBag(controls::sortlistdata::SortListData* lpListData);
+		RowPropertyBag(controls::sortlistdata::sortListData* lpListData);
 		virtual ~RowPropertyBag() = default;
 
 		ULONG GetFlags() const override;
@@ -34,7 +34,7 @@ namespace propertybag
 		_Check_return_ HRESULT DeleteProp(ULONG) override { return E_NOTIMPL; };
 
 	private:
-		controls::sortlistdata::SortListData* m_lpListData{};
+		controls::sortlistdata::sortListData* m_lpListData{};
 
 		ULONG m_cValues{};
 		LPSPropValue m_lpProps{};

@@ -1,13 +1,13 @@
 #include <StdAfx.h>
 #include <PropertyBag/MAPIPropPropertyBag.h>
-#include <UI/Controls/SortList/SortListData.h>
+#include <core/sortlistdata/sortListData.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 
 namespace propertybag
 {
-	MAPIPropPropertyBag::MAPIPropPropertyBag(LPMAPIPROP lpProp, controls::sortlistdata::SortListData* lpListData)
+	MAPIPropPropertyBag::MAPIPropPropertyBag(LPMAPIPROP lpProp, controls::sortlistdata::sortListData* lpListData)
 	{
 		m_lpListData = lpListData;
 		m_lpProp = lpProp;

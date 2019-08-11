@@ -263,21 +263,21 @@ namespace controls
 
 			if (pNMV)
 			{
-				const auto lpData = reinterpret_cast<sortlistdata::SortListData*>(GetItemData(pNMV->iItem));
+				const auto lpData = reinterpret_cast<sortlistdata::sortListData*>(GetItemData(pNMV->iItem));
 				delete lpData;
 			}
 			*pResult = 0;
 		}
 
-		_Check_return_ sortlistdata::SortListData* CSortListCtrl::InsertRow(int iRow, const std::wstring& szText) const
+		_Check_return_ sortlistdata::sortListData* CSortListCtrl::InsertRow(int iRow, const std::wstring& szText) const
 		{
 			return InsertRow(iRow, szText, 0, slIconDefault);
 		}
 
-		_Check_return_ sortlistdata::SortListData*
+		_Check_return_ sortlistdata::sortListData*
 		CSortListCtrl::InsertRow(int iRow, const std::wstring& szText, int iIndent, __SortListIconNames iImage) const
 		{
-			auto lpData = new (std::nothrow) sortlistdata::SortListData();
+			auto lpData = new (std::nothrow) sortlistdata::sortListData();
 
 			LVITEMW lvItem = {0};
 			lvItem.iItem = iRow;
@@ -337,8 +337,8 @@ namespace controls
 			if (!lParamSort) return sortEqual;
 			auto iRet = 0;
 			const auto lpSortInfo = reinterpret_cast<SortInfo*>(lParamSort);
-			auto lpData1 = reinterpret_cast<sortlistdata::SortListData*>(lParam1);
-			auto lpData2 = reinterpret_cast<sortlistdata::SortListData*>(lParam2);
+			auto lpData1 = reinterpret_cast<sortlistdata::sortListData*>(lParam1);
+			auto lpData2 = reinterpret_cast<sortlistdata::sortListData*>(lParam2);
 
 			if (!lpData1 && !lpData2) return sortEqual; // item which don't exist must be equal
 			if (!lpData1) return sort2First; // sort null items to the end - this makes lParam2>lParam1
@@ -461,7 +461,7 @@ namespace controls
 					lvi.lParam = 0;
 					szText[0] = NULL;
 					::SendMessage(m_hWnd, LVM_GETITEMW, static_cast<WPARAM>(0), reinterpret_cast<LPARAM>(&lvi));
-					auto lpData = reinterpret_cast<sortlistdata::SortListData*>(lvi.lParam);
+					auto lpData = reinterpret_cast<sortlistdata::sortListData*>(lvi.lParam);
 					if (lpData)
 					{
 						lpData->clearSortValues();
@@ -480,7 +480,7 @@ namespace controls
 				sortinfo.sortstyle = SORTSTYLE_NUMERIC;
 				for (auto i = 0; i < GetItemCount(); i++)
 				{
-					auto lpData = reinterpret_cast<sortlistdata::SortListData*>(GetItemData(i));
+					auto lpData = reinterpret_cast<sortlistdata::sortListData*>(GetItemData(i));
 					if (lpData)
 					{
 						lpData->clearSortValues();
@@ -502,7 +502,7 @@ namespace controls
 					lvi.lParam = 0;
 					szText[0] = NULL;
 					::SendMessage(m_hWnd, LVM_GETITEMW, static_cast<WPARAM>(0), reinterpret_cast<LPARAM>(&lvi));
-					auto lpData = reinterpret_cast<sortlistdata::SortListData*>(lvi.lParam);
+					auto lpData = reinterpret_cast<sortlistdata::sortListData*>(lvi.lParam);
 					if (lpData)
 					{
 						// Remove the lpb prefix
@@ -526,7 +526,7 @@ namespace controls
 					lvi.lParam = 0;
 					szText[0] = NULL;
 					::SendMessage(m_hWnd, LVM_GETITEMW, static_cast<WPARAM>(0), reinterpret_cast<LPARAM>(&lvi));
-					auto lpData = reinterpret_cast<sortlistdata::SortListData*>(lvi.lParam);
+					auto lpData = reinterpret_cast<sortlistdata::sortListData*>(lvi.lParam);
 					if (lpData)
 					{
 						lpData->clearSortValues();

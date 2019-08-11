@@ -1,6 +1,6 @@
 #pragma once
 #include <UI/enums.h>
-#include <UI/Controls/SortList/SortListData.h>
+#include <core/sortlistdata/sortListData.h>
 #include <UI/Controls/StyleTreeCtrl.h>
 
 namespace cache
@@ -32,8 +32,8 @@ namespace controls
 		// Selected item accessors
 		_Check_return_ LPMAPICONTAINER GetSelectedContainer(__mfcmapiModifyEnum bModify) const;
 		_Check_return_ LPSBinary GetSelectedItemEID() const;
-		_Check_return_ sortlistdata::SortListData* GetSelectedItemData() const;
-		_Check_return_ sortlistdata::SortListData* GetSortListData(HTREEITEM iItem) const;
+		_Check_return_ sortlistdata::sortListData* GetSelectedItemData() const;
+		_Check_return_ sortlistdata::sortListData* GetSortListData(HTREEITEM iItem) const;
 
 	private:
 		// Overrides from base class
@@ -55,7 +55,7 @@ namespace controls
 
 		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
 		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify) const;
-		void Advise(HTREEITEM hItem, sortlistdata::SortListData* lpData) const;
+		void Advise(HTREEITEM hItem, sortlistdata::sortListData* lpData) const;
 		_Check_return_ LPMAPITABLE
 		GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bRegNotifs) const;
 

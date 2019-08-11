@@ -28,7 +28,7 @@ namespace controls
 
 			// Initialization
 			_Check_return_ HRESULT
-			SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ sortlistdata::SortListData* lpListData, bool bIsAB);
+			SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ sortlistdata::sortListData* lpListData, bool bIsAB);
 			_Check_return_ HRESULT SetDataSource(const std::shared_ptr<propertybag::IMAPIPropertyBag> lpPropBag, bool bIsAB);
 			_Check_return_ HRESULT RefreshMAPIPropList();
 

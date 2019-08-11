@@ -131,7 +131,7 @@ namespace controls
 
 	void CHierarchyTableTreeCtrl::FreeNodeData(const LPARAM lpData) const
 	{
-		auto* lpNodeData = reinterpret_cast<sortlistdata::SortListData*>(lpData);
+		auto* lpNodeData = reinterpret_cast<sortlistdata::sortListData*>(lpData);
 
 		if (lpNodeData)
 		{
@@ -156,7 +156,7 @@ namespace controls
 			}
 		}
 
-		delete reinterpret_cast<sortlistdata::SortListData*>(lpNodeData);
+		delete reinterpret_cast<sortlistdata::sortListData*>(lpNodeData);
 	}
 
 	void CHierarchyTableTreeCtrl::OnItemAdded(HTREEITEM hItem) const
@@ -210,7 +210,7 @@ namespace controls
 			szName = strings::loadstring(IDS_ROOTCONTAINER);
 		}
 
-		auto lpData = new (std::nothrow) sortlistdata::SortListData();
+		auto lpData = new (std::nothrow) sortlistdata::sortListData();
 		if (lpData)
 		{
 			InitNode(
@@ -249,7 +249,7 @@ namespace controls
 
 		output::DebugPrintEx(output::DBGHierarchy, CLASS, L"AddNode", L"Adding to %p: %ws\n", hParent, szName.c_str());
 
-		auto lpData = new (std::nothrow) sortlistdata::SortListData();
+		auto lpData = new (std::nothrow) sortlistdata::sortListData();
 		if (lpData)
 		{
 			InitNode(lpData, lpsRow);
@@ -258,7 +258,7 @@ namespace controls
 		}
 	}
 
-	void CHierarchyTableTreeCtrl::Advise(HTREEITEM hItem, sortlistdata::SortListData* lpData) const
+	void CHierarchyTableTreeCtrl::Advise(HTREEITEM hItem, sortlistdata::sortListData* lpData) const
 	{
 		// Set up our advise sink
 		if (lpData)
@@ -403,7 +403,7 @@ namespace controls
 			return true;
 		}
 
-		const auto lpData = reinterpret_cast<sortlistdata::SortListData*>(hItem);
+		const auto lpData = reinterpret_cast<sortlistdata::sortListData*>(hItem);
 
 		if (lpData)
 		{
@@ -588,7 +588,7 @@ namespace controls
 		ui::DisplayContextMenu(m_nIDContextMenu, IDR_MENU_HIERARCHY_TABLE, m_lpHostDlg->m_hWnd, x, y);
 	}
 
-	_Check_return_ sortlistdata::SortListData* CHierarchyTableTreeCtrl::GetSelectedItemData() const
+	_Check_return_ sortlistdata::sortListData* CHierarchyTableTreeCtrl::GetSelectedItemData() const
 	{
 		// Find the highlighted item
 		const auto Item = GetSelectedItem();
@@ -600,9 +600,9 @@ namespace controls
 		return nullptr;
 	}
 
-	_Check_return_ sortlistdata::SortListData* CHierarchyTableTreeCtrl::GetSortListData(HTREEITEM iItem) const
+	_Check_return_ sortlistdata::sortListData* CHierarchyTableTreeCtrl::GetSortListData(HTREEITEM iItem) const
 	{
-		return reinterpret_cast<sortlistdata::SortListData*>(GetItemData(iItem));
+		return reinterpret_cast<sortlistdata::sortListData*>(GetItemData(iItem));
 	}
 
 	_Check_return_ LPSBinary CHierarchyTableTreeCtrl::GetSelectedItemEID() const
@@ -767,7 +767,7 @@ namespace controls
 
 	void CHierarchyTableTreeCtrl::OnLastChildDeleted(const LPARAM lpData)
 	{
-		const auto lpNodeData = reinterpret_cast<sortlistdata::SortListData*>(lpData);
+		const auto lpNodeData = reinterpret_cast<sortlistdata::sortListData*>(lpData);
 		if (lpNodeData)
 		{
 			const auto node = lpNodeData->cast<controls::sortlistdata::NodeData>();
@@ -798,7 +798,7 @@ namespace controls
 		const int iState = GetItemState(hParent, NULL);
 		if (iState & TVIS_EXPANDEDONCE)
 		{
-			// We make this copy here and pass it in to AddNode, where it is grabbed by SortListData::InitializeContents to be part of the item data
+			// We make this copy here and pass it in to AddNode, where it is grabbed by sortListData::InitializeContents to be part of the item data
 			// The mem will be freed when the item data is cleaned up - do not free here
 			auto NewRow = SRow{};
 			NewRow.cValues = tab->row.cValues;
@@ -814,7 +814,7 @@ namespace controls
 			tvItem.mask = TVIF_PARAM;
 			if (TreeView_GetItem(m_hWnd, &tvItem) && tvItem.lParam)
 			{
-				const auto lpData = reinterpret_cast<sortlistdata::SortListData*>(tvItem.lParam);
+				const auto lpData = reinterpret_cast<sortlistdata::sortListData*>(tvItem.lParam);
 				if (lpData)
 				{
 					const auto node = lpData->cast<controls::sortlistdata::NodeData>();
@@ -898,7 +898,7 @@ namespace controls
 			NewRow.cValues = tab->row.cValues;
 			NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 			hRes = WC_MAPI(ScDupPropset(tab->row.cValues, tab->row.lpProps, MAPIAllocateBuffer, &NewRow.lpProps));
-			auto lpData = new sortlistdata::SortListData();
+			auto lpData = new sortlistdata::sortListData();
 			if (lpData)
 			{
 				InitNode(lpData, &NewRow);
@@ -1035,7 +1035,7 @@ namespace controls
 				tvi.mask = TVIF_PARAM;
 				tvi.hItem = hItem;
 				TreeView_GetItem(lvcd->nmcd.hdr.hwndFrom, &tvi);
-				const auto lpData = reinterpret_cast<sortlistdata::SortListData*>(tvi.lParam);
+				const auto lpData = reinterpret_cast<sortlistdata::sortListData*>(tvi.lParam);
 				if (lpData)
 				{
 					const auto node = lpData->cast<controls::sortlistdata::NodeData>();

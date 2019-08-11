@@ -13,12 +13,12 @@ namespace dialog
 
 			_Check_return_ ULONG GetPropertyTag() const;
 			_Check_return_ bool
-			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData) override;
+			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData) override;
 
 		private:
 			BOOL OnInitDialog() override;
 			void OnOK() override;
-			_Check_return_ controls::sortlistdata::SortListData* GetSelectedListRowData(ULONG id) const;
+			_Check_return_ controls::sortlistdata::sortListData* GetSelectedListRowData(ULONG id) const;
 
 			ULONG m_ulPropTag;
 			bool m_bIncludeABProps;

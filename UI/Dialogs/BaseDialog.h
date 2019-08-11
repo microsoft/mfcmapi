@@ -1,7 +1,7 @@
 #pragma once
 #include <UI/Dialogs/Dialog.h>
 #include <UI/enums.h>
-#include <UI/Controls/SortList/SortListData.h>
+#include <core/sortlistdata/sortListData.h>
 #include <core/addin/mfcmapi.h>
 
 namespace controls
@@ -45,7 +45,7 @@ namespace dialog
 
 		void OnUpdateSingleMAPIPropListCtrl(
 			_In_opt_ LPMAPIPROP lpMAPIProp,
-			_In_opt_ controls::sortlistdata::SortListData* lpListData) const;
+			_In_opt_ controls::sortlistdata::sortListData* lpListData) const;
 		_Check_return_ bool HandleKeyDown(UINT nChar, bool bShift, bool bCtrl, bool bMenu);
 
 		void UpdateTitleBarText(_In_ const std::wstring& szMsg) const;

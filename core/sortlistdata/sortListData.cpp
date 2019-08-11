@@ -1,14 +1,14 @@
-#include <StdAfx.h>
-#include <UI/Controls/SortList/SortListData.h>
+#include <core/stdafx.h>
+#include <core/sortlistdata/sortListData.h>
 #include <core/utility/strings.h>
 
 namespace controls
 {
 	namespace sortlistdata
 	{
-		SortListData::~SortListData() { Clean(); }
+		sortListData::~sortListData() { Clean(); }
 
-		void SortListData::Clean()
+		void sortListData::Clean()
 		{
 			delete m_lpData;
 			m_lpData = nullptr;
@@ -20,7 +20,5 @@ namespace controls
 			bItemFullyLoaded = false;
 			clearSortValues();
 		}
-
-		void SortListData::setSortText(const std::wstring& _sortText) { sortText = strings::wstringToLower(_sortText); }
 	} // namespace sortlistdata
 } // namespace controls

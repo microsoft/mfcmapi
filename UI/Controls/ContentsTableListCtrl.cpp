@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <UI/Controls/SortList/SortListData.h>
+#include <core/sortlistdata/sortListData.h>
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/UIFunctions.h>
@@ -884,7 +884,7 @@ namespace controls
 
 		void CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists)
 		{
-			sortlistdata::SortListData* lpData = nullptr;
+			sortlistdata::sortListData* lpData = nullptr;
 
 			output::DebugPrintEx(output::DBGGeneric, CLASS, L"RefreshItem", L"item %d\n", iRow);
 
@@ -1014,10 +1014,10 @@ namespace controls
 			return iItems;
 		}
 
-		_Check_return_ std::vector<sortlistdata::SortListData*> CContentsTableListCtrl::GetSelectedItemData() const
+		_Check_return_ std::vector<sortlistdata::sortListData*> CContentsTableListCtrl::GetSelectedItemData() const
 		{
 			auto iItem = -1;
-			std::vector<sortlistdata::SortListData*> items;
+			std::vector<sortlistdata::sortListData*> items;
 			do
 			{
 				iItem = GetNextItem(iItem, LVNI_SELECTED);
@@ -1030,7 +1030,7 @@ namespace controls
 			return items;
 		}
 
-		_Check_return_ sortlistdata::SortListData* CContentsTableListCtrl::GetFirstSelectedItemData() const
+		_Check_return_ sortlistdata::sortListData* CContentsTableListCtrl::GetFirstSelectedItemData() const
 		{
 			const auto iItem = GetNextItem(-1, LVNI_SELECTED);
 			if (-1 == iItem) return nullptr;
@@ -1066,9 +1066,9 @@ namespace controls
 			return iItem;
 		}
 
-		_Check_return_ sortlistdata::SortListData* CContentsTableListCtrl::GetSortListData(int iItem) const
+		_Check_return_ sortlistdata::sortListData* CContentsTableListCtrl::GetSortListData(int iItem) const
 		{
-			return reinterpret_cast<sortlistdata::SortListData*>(GetItemData(iItem));
+			return reinterpret_cast<sortlistdata::sortListData*>(GetItemData(iItem));
 		}
 
 		// Pass iCurItem as -1 to get the primary selected item.
@@ -1214,7 +1214,7 @@ namespace controls
 			if (pNMListView->uNewState & LVIS_FOCUSED && m_lpHostDlg)
 			{
 				LPMAPIPROP lpMAPIProp = nullptr;
-				sortlistdata::SortListData* lpData = nullptr;
+				sortlistdata::sortListData* lpData = nullptr;
 				std::wstring szTitle;
 				if (1 == GetSelectedCount())
 				{
@@ -1514,7 +1514,7 @@ namespace controls
 				iNewRow = FindRow(&tab->propPrior.Value.bin) + 1;
 			}
 
-			// We make this copy here and pass it in to AddItemToListBox, where it is grabbed by SortListData::InitializeContents to be part of the item data
+			// We make this copy here and pass it in to AddItemToListBox, where it is grabbed by sortListData::InitializeContents to be part of the item data
 			// The mem will be freed when the item data is cleaned up - do not free here
 			SRow NewRow = {};
 			NewRow.cValues = tab->row.cValues;
@@ -1577,7 +1577,7 @@ namespace controls
 					iItem,
 					&tab->row);
 
-				// We make this copy here and pass it in to RefreshItem, where it is grabbed by SortListData::InitializeContents to be part of the item data
+				// We make this copy here and pass it in to RefreshItem, where it is grabbed by sortListData::InitializeContents to be part of the item data
 				// The mem will be freed when the item data is cleaned up - do not free here
 				SRow NewRow = {};
 				NewRow.cValues = tab->row.cValues;

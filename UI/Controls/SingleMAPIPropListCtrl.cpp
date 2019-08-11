@@ -303,7 +303,7 @@ namespace controls
 
 			if (-1 != iItem)
 			{
-				const auto lpListData = reinterpret_cast<sortlistdata::SortListData*>(GetItemData(iItem));
+				const auto lpListData = reinterpret_cast<sortlistdata::sortListData*>(GetItemData(iItem));
 				if (lpListData)
 				{
 					const auto prop = lpListData->cast<controls::sortlistdata::propListData>();
@@ -740,7 +740,7 @@ namespace controls
 
 		_Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(
 			_In_opt_ LPMAPIPROP lpMAPIProp,
-			_In_opt_ sortlistdata::SortListData* lpListData,
+			_In_opt_ sortlistdata::sortListData* lpListData,
 			bool bIsAB)
 		{
 			output::DebugPrintEx(output::DBGGeneric, CLASS, L"SetDataSource", L"setting new data source\n");
@@ -896,7 +896,7 @@ namespace controls
 						output::OutputXMLValueToFile(
 							fProps, columns::PropXMLNames[columns::pcPROPNAMEDNAME].uidName, szNameName, false, 2);
 
-						const auto lpListData = reinterpret_cast<sortlistdata::SortListData*>(GetItemData(iRow));
+						const auto lpListData = reinterpret_cast<sortlistdata::sortListData*>(GetItemData(iRow));
 						auto ulPropType = PT_NULL;
 
 						if (lpListData)
