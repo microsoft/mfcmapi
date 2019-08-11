@@ -18,14 +18,6 @@ namespace controls
 				m_lpData = lpData;
 			}
 
-			void InitializeNode(
-				ULONG cProps,
-				_In_opt_ LPSPropValue lpProps,
-				_In_opt_ LPSBinary lpEntryID,
-				_In_opt_ LPSBinary lpInstanceKey,
-				ULONG bSubfolders,
-				ULONG ulContainerFlags);
-			void InitializeNode(_In_ LPSRow lpsRow);
 			void InitializePropList(_In_ ULONG ulPropTag);
 			void InitializeMV(_In_ const _SPropValue* lpProp, ULONG iProp);
 			void InitializeMV(_In_opt_ const _SPropValue* lpProp);
@@ -56,6 +48,15 @@ namespace controls
 			ULARGE_INTEGER sortValue{};
 		};
 
-		void InitContents(SortListData* lpData, LPSRow lpsRowData);
+		void InitContents(SortListData* lpData, _In_ LPSRow lpsRowData);
+		void InitNode(
+			SortListData* lpData,
+			ULONG cProps,
+			_In_opt_ LPSPropValue lpProps,
+			_In_opt_ LPSBinary lpEntryID,
+			_In_opt_ LPSBinary lpInstanceKey,
+			ULONG bSubfolders,
+			ULONG ulContainerFlags);
+		void InitNode(SortListData* lpData, _In_ LPSRow lpsRow);
 	} // namespace sortlistdata
 } // namespace controls

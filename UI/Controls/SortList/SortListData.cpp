@@ -34,22 +34,22 @@ namespace controls
 		// Assumes the structure is either an existing structure or a new one which has been memset to 0
 		// If it's an existing structure - we need to free up some memory
 		// SORTLIST_CONTENTS
-		void InitContents(sortlistdata::SortListData* data, LPSRow lpsRowData)
+		void InitContents(SortListData* data, _In_ LPSRow lpsRowData)
 		{
+			if (!data) return;
+
 			if (lpsRowData)
 			{
-				data->Init(
-					new (std::nothrow) controls::sortlistdata::contentsData(lpsRowData),
-					lpsRowData->cValues,
-					lpsRowData->lpProps);
+				data->Init(new (std::nothrow) contentsData(lpsRowData), lpsRowData->cValues, lpsRowData->lpProps);
 			}
 			else
 			{
-				data->Init(nullptr, 0, nullptr);
+				data->Clean();
 			}
 		}
 
-		void SortListData::InitializeNode(
+		void InitNode(
+			SortListData* data,
 			ULONG cProps,
 			_In_opt_ LPSPropValue lpProps,
 			_In_opt_ LPSBinary lpEntryID,
@@ -57,16 +57,20 @@ namespace controls
 			ULONG bSubfolders,
 			ULONG ulContainerFlags)
 		{
-			Clean();
-			cSourceProps = cProps;
-			lpSourceProps = lpProps;
-			m_lpData = new (std::nothrow) NodeData(lpEntryID, lpInstanceKey, bSubfolders, ulContainerFlags);
+			if (!data) return;
+			data->Init(
+				new (std::nothrow) NodeData(lpEntryID, lpInstanceKey, bSubfolders, ulContainerFlags), cProps, lpProps);
 		}
 
-		void SortListData::InitializeNode(_In_ LPSRow lpsRow)
+		void InitNode(SortListData* data, _In_ LPSRow lpsRow)
 		{
-			Clean();
-			if (!lpsRow) return;
+			if (!data) return;
+
+			if (!lpsRow)
+			{
+				data->Clean();
+				return;
+			}
 
 			LPSBinary lpEIDBin = nullptr; // don't free
 			LPSBinary lpInstanceBin = nullptr; // don't free
@@ -81,7 +85,8 @@ namespace controls
 
 			const auto lpContainerFlags = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_CONTAINER_FLAGS);
 
-			InitializeNode(
+			InitNode(
+				data,
 				lpsRow->cValues,
 				lpsRow->lpProps, // pass on props to be archived in node
 				lpEIDBin,
