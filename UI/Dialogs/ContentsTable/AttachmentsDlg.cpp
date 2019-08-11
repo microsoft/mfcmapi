@@ -99,13 +99,17 @@ namespace dialog
 		if (!m_lpAttach) return;
 
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
-		if (lpListData && lpListData->Contents() && ATTACH_EMBEDDED_MSG == lpListData->Contents()->m_ulAttachMethod)
+		if (lpListData)
 		{
-			auto lpMessage = OpenEmbeddedMessage();
-			if (lpMessage)
+			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			if (contents && ATTACH_EMBEDDED_MSG == contents->m_ulAttachMethod)
 			{
-				WC_H_S(DisplayObject(lpMessage, MAPI_MESSAGE, otDefault, this));
-				lpMessage->Release();
+				auto lpMessage = OpenEmbeddedMessage();
+				if (lpMessage)
+				{
+					WC_H_S(DisplayObject(lpMessage, MAPI_MESSAGE, otDefault, this));
+					lpMessage->Release();
+				}
 			}
 		}
 	}
@@ -160,36 +164,40 @@ namespace dialog
 		// Find the highlighted item AttachNum
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 
-		if (lpListData && lpListData->Contents())
+		if (lpListData)
 		{
-			const auto ulAttachNum = lpListData->Contents()->m_ulAttachNum;
-			const auto ulAttachMethod = lpListData->Contents()->m_ulAttachMethod;
-
-			// Check for matching cached attachment to avoid reopen
-			if (ulAttachNum != m_ulAttachNum || !m_lpAttach)
+			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			if (contents)
 			{
-				if (m_lpAttach) m_lpAttach->Release();
-				m_lpAttach = OpenAttach(ulAttachNum);
-				m_ulAttachNum = static_cast<ULONG>(-1);
-				if (m_lpAttach)
+				const auto ulAttachNum = contents->m_ulAttachNum;
+				const auto ulAttachMethod = contents->m_ulAttachMethod;
+
+				// Check for matching cached attachment to avoid reopen
+				if (ulAttachNum != m_ulAttachNum || !m_lpAttach)
 				{
-					m_ulAttachNum = ulAttachNum;
+					if (m_lpAttach) m_lpAttach->Release();
+					m_lpAttach = OpenAttach(ulAttachNum);
+					m_ulAttachNum = static_cast<ULONG>(-1);
+					if (m_lpAttach)
+					{
+						m_ulAttachNum = ulAttachNum;
+					}
 				}
-			}
 
-			if (m_lpAttach && m_bDisplayAttachAsEmbeddedMessage && ATTACH_EMBEDDED_MSG == ulAttachMethod)
-			{
-				// Reopening an embedded message can fail
-				// The view might be holding the embedded message we're trying to open, so we clear
-				// it from the view to allow us to reopen it.
-				// TODO: Consider caching our embedded message so this isn't necessary
-				OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
-				return OpenEmbeddedMessage();
-			}
-			else
-			{
-				if (m_lpAttach) m_lpAttach->AddRef();
-				return m_lpAttach;
+				if (m_lpAttach && m_bDisplayAttachAsEmbeddedMessage && ATTACH_EMBEDDED_MSG == ulAttachMethod)
+				{
+					// Reopening an embedded message can fail
+					// The view might be holding the embedded message we're trying to open, so we clear
+					// it from the view to allow us to reopen it.
+					// TODO: Consider caching our embedded message so this isn't necessary
+					OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
+					return OpenEmbeddedMessage();
+				}
+				else
+				{
+					if (m_lpAttach) m_lpAttach->AddRef();
+					return m_lpAttach;
+				}
 			}
 		}
 
@@ -212,9 +220,13 @@ namespace dialog
 			auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 			for (const auto& lpListData : items)
 			{
-				if (lpListData && lpListData->Contents())
+				if (lpListData)
 				{
-					lpAttNumList.push_back(lpListData->Contents()->m_ulAttachNum);
+					const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+					if (contents)
+					{
+						lpAttNumList.push_back(contents->m_ulAttachNum);
+					}
 				}
 			}
 
@@ -306,9 +318,13 @@ namespace dialog
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 		for (const auto& lpListData : items)
 		{
-			if (lpListData && lpListData->Contents())
+			if (lpListData)
 			{
-				attachnums.push_back(lpListData->Contents()->m_ulAttachNum);
+				const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+				if (contents)
+				{
+					attachnums.push_back(contents->m_ulAttachNum);
+				}
 			}
 		}
 
@@ -368,19 +384,23 @@ namespace dialog
 				hRes = S_OK;
 			}
 
-			if (lpListData && lpListData->Contents())
+			if (lpListData)
 			{
-				const auto ulAttachNum = lpListData->Contents()->m_ulAttachNum;
-
-				EC_MAPI_S(
-					m_lpMessage->OpenAttach(ulAttachNum, NULL, MAPI_BEST_ACCESS, static_cast<LPATTACH*>(&lpAttach)));
-
-				if (lpAttach)
+				const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+				if (contents)
 				{
-					hRes = WC_H(ui::mapiui::WriteAttachmentToFile(lpAttach, m_hWnd));
+					const auto ulAttachNum = contents->m_ulAttachNum;
 
-					lpAttach->Release();
-					lpAttach = nullptr;
+					EC_MAPI_S(m_lpMessage->OpenAttach(
+						ulAttachNum, NULL, MAPI_BEST_ACCESS, static_cast<LPATTACH*>(&lpAttach)));
+
+					if (lpAttach)
+					{
+						hRes = WC_H(ui::mapiui::WriteAttachmentToFile(lpAttach, m_hWnd));
+
+						lpAttach->Release();
+						lpAttach = nullptr;
+					}
 				}
 			}
 		}

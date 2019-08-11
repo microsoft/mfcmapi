@@ -89,23 +89,27 @@ namespace dialog
 			auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 			for (const auto& lpListData : items)
 			{
-				if (lpListData && lpListData->Contents())
+				if (lpListData)
 				{
-					if (!lpListData->Contents()->m_szDN.empty())
+					const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+					if (contents)
 					{
-						auto lpNewMDB = mapi::store::OpenOtherUsersMailbox(
-							lpMAPISession,
-							lpSourceMDB,
-							strings::wstringTostring(m_lpszServerName),
-							strings::wstringTostring(lpListData->Contents()->m_szDN),
-							strings::emptystring,
-							ulFlags,
-							false);
-						if (lpNewMDB)
+						if (!contents->m_szDN.empty())
 						{
-							EC_H_S(DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, otStore, this));
-							lpNewMDB->Release();
-							lpNewMDB = nullptr;
+							auto lpNewMDB = mapi::store::OpenOtherUsersMailbox(
+								lpMAPISession,
+								lpSourceMDB,
+								strings::wstringTostring(m_lpszServerName),
+								strings::wstringTostring(contents->m_szDN),
+								strings::emptystring,
+								ulFlags,
+								false);
+							if (lpNewMDB)
+							{
+								EC_H_S(DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, otStore, this));
+								lpNewMDB->Release();
+								lpNewMDB = nullptr;
+							}
 						}
 					}
 				}

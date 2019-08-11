@@ -971,17 +971,21 @@ namespace controls
 						if (-1 != iSelectedItem)
 						{
 							const auto lpData = GetSortListData(iSelectedItem);
-							if (lpData && lpData->Contents() && lpData->Contents()->m_lpEntryID)
+							if (lpData)
 							{
-								lpTempList->lpbin[iArrayPos].cb = lpData->Contents()->m_lpEntryID->cb;
-								lpTempList->lpbin[iArrayPos].lpb =
-									mapi::allocate<LPBYTE>(lpData->Contents()->m_lpEntryID->cb, lpTempList);
-								if (lpTempList->lpbin[iArrayPos].lpb)
+								const auto contents = lpData->cast<sortlistdata::contentsData>();
+								if (contents && contents->m_lpEntryID)
 								{
-									CopyMemory(
-										lpTempList->lpbin[iArrayPos].lpb,
-										lpData->Contents()->m_lpEntryID->lpb,
-										lpData->Contents()->m_lpEntryID->cb);
+									lpTempList->lpbin[iArrayPos].cb = contents->m_lpEntryID->cb;
+									lpTempList->lpbin[iArrayPos].lpb =
+										mapi::allocate<LPBYTE>(contents->m_lpEntryID->cb, lpTempList);
+									if (lpTempList->lpbin[iArrayPos].lpb)
+									{
+										CopyMemory(
+											lpTempList->lpbin[iArrayPos].lpb,
+											contents->m_lpEntryID->lpb,
+											contents->m_lpEntryID->cb);
+									}
 								}
 							}
 						}
@@ -1097,9 +1101,12 @@ namespace controls
 				m_ulContainerType);
 
 			const auto lpListData = GetSortListData(iItem);
-			if (!lpListData || !lpListData->Contents()) return nullptr;
+			if (!lpListData) return nullptr;
 
-			const auto lpEID = lpListData->Contents()->m_lpEntryID;
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
+			if (!contents) return nullptr;
+
+			const auto lpEID = contents->m_lpEntryID;
 			if (!lpEID || lpEID->cb == 0) return nullptr;
 
 			output::DebugPrint(output::DBGGeneric, L"Item being opened:\n");
@@ -1356,8 +1363,9 @@ namespace controls
 			const auto lpData = GetSortListData(iItem);
 
 			// No lpData or wrong type of row - no work done
-			if (!lpData || !lpData->Contents() || lpData->Contents()->m_ulRowType == TBL_LEAF_ROW ||
-				lpData->Contents()->m_ulRowType == TBL_EMPTY_CATEGORY)
+			if (!lpData) return S_FALSE;
+			const auto contents = lpData->cast<sortlistdata::contentsData>();
+			if (!contents || contents->m_ulRowType == TBL_LEAF_ROW || contents->m_ulRowType == TBL_EMPTY_CATEGORY)
 				return S_FALSE;
 
 			auto bDidWork = false;
@@ -1365,20 +1373,20 @@ namespace controls
 			lvItem.iItem = iItem;
 			lvItem.iSubItem = 0;
 			lvItem.mask = LVIF_IMAGE;
-			switch (lpData->Contents()->m_ulRowType)
+			switch (contents->m_ulRowType)
 			{
 			default:
 				break;
 			case TBL_COLLAPSED_CATEGORY:
 			{
-				if (lpData->Contents()->m_lpInstanceKey)
+				if (contents->m_lpInstanceKey)
 				{
 					LPSRowSet lpRowSet = nullptr;
 					ULONG ulRowsAdded = 0;
 
 					hRes = EC_MAPI(m_lpContentsTable->ExpandRow(
-						lpData->Contents()->m_lpInstanceKey->cb,
-						lpData->Contents()->m_lpInstanceKey->lpb,
+						contents->m_lpInstanceKey->cb,
+						contents->m_lpInstanceKey->lpb,
 						256,
 						NULL,
 						&lpRowSet,
@@ -1396,7 +1404,7 @@ namespace controls
 					}
 
 					FreeProws(lpRowSet);
-					lpData->Contents()->m_ulRowType = TBL_EXPANDED_CATEGORY;
+					contents->m_ulRowType = TBL_EXPANDED_CATEGORY;
 					lvItem.iImage = slIconNodeExpanded;
 					bDidWork = true;
 				}
@@ -1404,15 +1412,12 @@ namespace controls
 
 			break;
 			case TBL_EXPANDED_CATEGORY:
-				if (lpData->Contents()->m_lpInstanceKey)
+				if (contents->m_lpInstanceKey)
 				{
 					ULONG ulRowsRemoved = 0;
 
 					hRes = EC_MAPI(m_lpContentsTable->CollapseRow(
-						lpData->Contents()->m_lpInstanceKey->cb,
-						lpData->Contents()->m_lpInstanceKey->lpb,
-						NULL,
-						&ulRowsRemoved));
+						contents->m_lpInstanceKey->cb, contents->m_lpInstanceKey->lpb, NULL, &ulRowsRemoved));
 					if (hRes == S_OK && ulRowsRemoved)
 					{
 						for (int i = iItem + ulRowsRemoved; i > iItem; i--)
@@ -1424,7 +1429,7 @@ namespace controls
 						}
 					}
 
-					lpData->Contents()->m_ulRowType = TBL_COLLAPSED_CATEGORY;
+					contents->m_ulRowType = TBL_COLLAPSED_CATEGORY;
 					lvItem.iImage = slIconNodeCollapsed;
 					bDidWork = true;
 				}
@@ -1440,7 +1445,7 @@ namespace controls
 				const auto lpProp = PpropFindProp(lpData->lpSourceProps, lpData->cSourceProps, PR_ROW_TYPE);
 				if (lpProp && PR_ROW_TYPE == lpProp->ulPropTag)
 				{
-					lpProp->Value.l = lpData->Contents()->m_ulRowType;
+					lpProp->Value.l = contents->m_ulRowType;
 				}
 
 				SRow sRowData = {};
@@ -1605,16 +1610,20 @@ namespace controls
 			for (iItem = 0; iItem < GetItemCount(); iItem++)
 			{
 				const auto lpListData = GetSortListData(iItem);
-				if (lpListData && lpListData->Contents())
+				if (lpListData)
 				{
-					const auto lpCurInstance = lpListData->Contents()->m_lpInstanceKey;
-					if (lpCurInstance)
+					const auto contents = lpListData->cast<sortlistdata::contentsData>();
+					if (contents)
 					{
-						if (!memcmp(lpCurInstance->lpb, lpInstance->lpb, lpInstance->cb))
+						const auto lpCurInstance = contents->m_lpInstanceKey;
+						if (lpCurInstance)
 						{
-							output::DebugPrintEx(
-								output::DBGGeneric, CLASS, L"msgOnGetIndex", L"Matched at 0x%08X\n", iItem);
-							return iItem;
+							if (!memcmp(lpCurInstance->lpb, lpInstance->lpb, lpInstance->cb))
+							{
+								output::DebugPrintEx(
+									output::DBGGeneric, CLASS, L"msgOnGetIndex", L"Matched at 0x%08X\n", iItem);
+								return iItem;
+							}
 						}
 					}
 				}

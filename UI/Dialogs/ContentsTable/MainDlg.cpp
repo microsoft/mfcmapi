@@ -372,16 +372,21 @@ namespace dialog
 
 		LPMDB lpMDB = nullptr;
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
-		if (lpListData && lpListData->Contents())
-		{
-			const auto lpEntryID = lpListData->Contents()->m_lpEntryID;
-			if (lpEntryID)
-			{
-				ULONG ulFlags = NULL;
-				if (mfcmapiREQUEST_MODIFY == bModify) ulFlags |= MDB_WRITE;
 
-				lpMDB = mapi::store::CallOpenMsgStore(
-					lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpEntryID, ulFlags);
+		if (lpListData)
+		{
+			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			if (contents)
+			{
+				const auto lpEntryID = contents->m_lpEntryID;
+				if (lpEntryID)
+				{
+					ULONG ulFlags = NULL;
+					if (mfcmapiREQUEST_MODIFY == bModify) ulFlags |= MDB_WRITE;
+
+					lpMDB = mapi::store::CallOpenMsgStore(
+						lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpEntryID, ulFlags);
+				}
 			}
 		}
 
@@ -638,19 +643,23 @@ namespace dialog
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 		for (const auto& lpListData : items)
 		{
-			if (lpListData && lpListData->Contents())
+			if (lpListData)
 			{
-				const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
-				if (lpItemEID)
+				const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+				if (contents)
 				{
-					auto lpMDB = mapi::store::CallOpenMsgStore(
-						lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpItemEID, MDB_WRITE | MDB_ONLINE);
-
-					if (lpMDB)
+					const auto lpItemEID = contents->m_lpEntryID;
+					if (lpItemEID)
 					{
-						EC_H_S(DisplayObject(lpMDB, NULL, otStoreDeletedItems, this));
+						auto lpMDB = mapi::store::CallOpenMsgStore(
+							lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpItemEID, MDB_WRITE | MDB_ONLINE);
 
-						lpMDB->Release();
+						if (lpMDB)
+						{
+							EC_H_S(DisplayObject(lpMDB, NULL, otStoreDeletedItems, this));
+
+							lpMDB->Release();
+						}
 					}
 				}
 			}
@@ -667,27 +676,31 @@ namespace dialog
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 		for (const auto& lpListData : items)
 		{
-			if (lpListData && lpListData->Contents())
+			if (lpListData)
 			{
-				const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
-				if (lpItemEID)
+				const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+				if (contents)
 				{
-					auto lpMDB = mapi::store::CallOpenMsgStore(
-						lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpItemEID, MDB_WRITE);
-					if (lpMDB)
+					const auto lpItemEID = contents->m_lpEntryID;
+					if (lpItemEID)
 					{
-						auto szDir = file::GetDirectoryPath(m_hWnd);
-						if (!szDir.empty())
+						auto lpMDB = mapi::store::CallOpenMsgStore(
+							lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpItemEID, MDB_WRITE);
+						if (lpMDB)
 						{
-							CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+							auto szDir = file::GetDirectoryPath(m_hWnd);
+							if (!szDir.empty())
+							{
+								CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-							mapi::processor::dumpStore MyDumpStore;
-							MyDumpStore.InitFolderPathRoot(szDir);
-							MyDumpStore.InitMDB(lpMDB);
-							MyDumpStore.ProcessStore();
+								mapi::processor::dumpStore MyDumpStore;
+								MyDumpStore.InitFolderPathRoot(szDir);
+								MyDumpStore.InitMDB(lpMDB);
+								MyDumpStore.ProcessStore();
+							}
+
+							lpMDB->Release();
 						}
-
-						lpMDB->Release();
 					}
 				}
 			}
@@ -1166,20 +1179,24 @@ namespace dialog
 		if (!lpMAPISession) return;
 
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
-		if (lpListData && lpListData->Contents())
+		if (lpListData)
 		{
-			const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
-			if (lpItemEID)
+			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			if (contents)
 			{
-				editor::CEditor MyData(
-					this, IDS_SETDEFSTORE, IDS_SETDEFSTOREPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-				MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLAGS, false));
-				MyData.SetHex(0, MAPI_DEFAULT_STORE);
-
-				if (MyData.DisplayDialog())
+				const auto lpItemEID = contents->m_lpEntryID;
+				if (lpItemEID)
 				{
-					EC_MAPI_S(lpMAPISession->SetDefaultStore(
-						MyData.GetHex(0), lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
+					editor::CEditor MyData(
+						this, IDS_SETDEFSTORE, IDS_SETDEFSTOREPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+					MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FLAGS, false));
+					MyData.SetHex(0, MAPI_DEFAULT_STORE);
+
+					if (MyData.DisplayDialog())
+					{
+						EC_MAPI_S(lpMAPISession->SetDefaultStore(
+							MyData.GetHex(0), lpItemEID->cb, reinterpret_cast<LPENTRYID>(lpItemEID->lpb)));
+					}
 				}
 			}
 		}
@@ -1460,169 +1477,174 @@ namespace dialog
 		if (!lpMAPISession) return;
 
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
-		if (lpListData && lpListData->Contents())
+		if (lpListData)
 		{
-			const auto lpItemEID = lpListData->Contents()->m_lpEntryID;
-
-			if (lpItemEID)
+			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			if (contents)
 			{
-				LPSBinary lpServiceUID = nullptr;
-				LPSBinary lpProviderUID = nullptr;
-				auto lpProp = PpropFindProp(lpListData->lpSourceProps, lpListData->cSourceProps, PR_SERVICE_UID);
-				if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) lpServiceUID = &lpProp->Value.bin;
-				lpProp = PpropFindProp(lpListData->lpSourceProps, lpListData->cSourceProps, PR_MDB_PROVIDER);
-				if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) lpProviderUID = &lpProp->Value.bin;
+				const auto lpItemEID = contents->m_lpEntryID;
 
-				MAPIUID emsmdbUID = {0};
-				LPPROFSECT lpProfSect = nullptr;
-				auto fPublicExchangeStore = false;
-				auto fPrivateExchangeStore = false;
-				if (lpProviderUID)
+				if (lpItemEID)
 				{
-					fPublicExchangeStore = mapi::FExchangePublicStore(reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb));
-					fPrivateExchangeStore =
-						mapi::FExchangePrivateStore(reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb));
-				}
+					LPSBinary lpServiceUID = nullptr;
+					LPSBinary lpProviderUID = nullptr;
+					auto lpProp = PpropFindProp(lpListData->lpSourceProps, lpListData->cSourceProps, PR_SERVICE_UID);
+					if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) lpServiceUID = &lpProp->Value.bin;
+					lpProp = PpropFindProp(lpListData->lpSourceProps, lpListData->cSourceProps, PR_MDB_PROVIDER);
+					if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) lpProviderUID = &lpProp->Value.bin;
 
-				auto fCached = false;
-				LPSPropValue lpConfigProp = nullptr;
-				LPSPropValue lpPathPropA = nullptr;
-				LPSPropValue lpPathPropW = nullptr;
-				LPSPropValue lpMappingSig = nullptr;
-				LPSTR szPath = nullptr; // do not free
-				LPWSTR wzPath = nullptr; // do not free
-
-				// Get profile section
-				if (lpServiceUID)
-				{
-					hRes = WC_H(mapi::HrEmsmdbUIDFromStore(
-						lpMAPISession, reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb), &emsmdbUID));
-					if (SUCCEEDED(hRes))
+					MAPIUID emsmdbUID = {0};
+					LPPROFSECT lpProfSect = nullptr;
+					auto fPublicExchangeStore = false;
+					auto fPrivateExchangeStore = false;
+					if (lpProviderUID)
 					{
-						if (fIsSet(output::DBGGeneric))
-						{
-							auto szGUID = guid::GUIDToString(reinterpret_cast<LPCGUID>(&emsmdbUID));
-							output::DebugPrint(
-								output::DBGGeneric,
-								L"CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %ws\n",
-								szGUID.c_str());
-						}
-
-						hRes = WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, nullptr, 0, &lpProfSect));
-					}
-				}
-
-				if (!lpServiceUID || FAILED(hRes))
-				{
-					// For Outlook 2003/2007, HrEmsmdbUIDFromStore may not succeed,
-					// so use pbGlobalProfileSectionGuid instead
-					WC_MAPI_S(lpMAPISession->OpenProfileSection(
-						LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &lpProfSect));
-				}
-
-				if (lpProfSect)
-				{
-					WC_MAPI_S(HrGetOneProp(lpProfSect, PR_PROFILE_CONFIG_FLAGS, &lpConfigProp));
-					if (lpConfigProp && PROP_TYPE(lpConfigProp->ulPropTag) != PT_ERROR)
-					{
-						if (fPrivateExchangeStore)
-						{
-							fCached = (lpConfigProp->Value.l & CONFIG_OST_CACHE_PRIVATE) != 0;
-						}
-
-						if (fPublicExchangeStore)
-						{
-							fCached = (lpConfigProp->Value.l & CONFIG_OST_CACHE_PUBLIC) == CONFIG_OST_CACHE_PUBLIC;
-						}
+						fPublicExchangeStore =
+							mapi::FExchangePublicStore(reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb));
+						fPrivateExchangeStore =
+							mapi::FExchangePrivateStore(reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb));
 					}
 
-					output::DebugPrint(
-						output::DBGGeneric,
-						L"CMainDlg::OnComputeGivenStoreHash, fPrivateExchangeStore = %d\n",
-						fPrivateExchangeStore);
-					output::DebugPrint(
-						output::DBGGeneric,
-						L"CMainDlg::OnComputeGivenStoreHash, fPublicExchangeStore = %d\n",
-						fPublicExchangeStore);
-					output::DebugPrint(
-						output::DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fCached = %d\n", fCached);
+					auto fCached = false;
+					LPSPropValue lpConfigProp = nullptr;
+					LPSPropValue lpPathPropA = nullptr;
+					LPSPropValue lpPathPropW = nullptr;
+					LPSPropValue lpMappingSig = nullptr;
+					LPSTR szPath = nullptr; // do not free
+					LPWSTR wzPath = nullptr; // do not free
 
-					if (fCached)
+					// Get profile section
+					if (lpServiceUID)
 					{
-						hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_W, &lpPathPropW));
-						if (FAILED(hRes))
-						{
-							hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_A, &lpPathPropA));
-						}
-
+						hRes = WC_H(mapi::HrEmsmdbUIDFromStore(
+							lpMAPISession, reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb), &emsmdbUID));
 						if (SUCCEEDED(hRes))
 						{
-							if (lpPathPropW && lpPathPropW->Value.lpszW)
+							if (fIsSet(output::DBGGeneric))
 							{
-								wzPath = lpPathPropW->Value.lpszW;
+								auto szGUID = guid::GUIDToString(reinterpret_cast<LPCGUID>(&emsmdbUID));
 								output::DebugPrint(
 									output::DBGGeneric,
-									L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_W = %ws\n",
-									wzPath);
+									L"CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %ws\n",
+									szGUID.c_str());
 							}
-							else if (lpPathPropA && lpPathPropA->Value.lpszA)
-							{
-								szPath = lpPathPropA->Value.lpszA;
-								output::DebugPrint(
-									output::DBGGeneric,
-									L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_A = %hs\n",
-									szPath);
-							}
-						}
-						// If this is an Exchange store with an OST path, it's an OST, so we get the mapping signature
-						if ((fPrivateExchangeStore || fPublicExchangeStore) && (wzPath || szPath))
-						{
-							WC_MAPI_S(HrGetOneProp(lpProfSect, PR_MAPPING_SIGNATURE, &lpMappingSig));
+
+							hRes = WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, nullptr, 0, &lpProfSect));
 						}
 					}
-				}
 
-				DWORD dwSigHash = NULL;
-				if (lpMappingSig && PT_BINARY == PROP_TYPE(lpMappingSig->ulPropTag))
-				{
-					dwSigHash = mapi::ComputeStoreHash(
-						lpMappingSig->Value.bin.cb,
-						lpMappingSig->Value.bin.lpb,
-						nullptr,
-						nullptr,
-						fPublicExchangeStore);
-				}
+					if (!lpServiceUID || FAILED(hRes))
+					{
+						// For Outlook 2003/2007, HrEmsmdbUIDFromStore may not succeed,
+						// so use pbGlobalProfileSectionGuid instead
+						WC_MAPI_S(lpMAPISession->OpenProfileSection(
+							LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &lpProfSect));
+					}
 
-				const auto dwEIDHash =
-					mapi::ComputeStoreHash(lpItemEID->cb, lpItemEID->lpb, szPath, wzPath, fPublicExchangeStore);
+					if (lpProfSect)
+					{
+						WC_MAPI_S(HrGetOneProp(lpProfSect, PR_PROFILE_CONFIG_FLAGS, &lpConfigProp));
+						if (lpConfigProp && PROP_TYPE(lpConfigProp->ulPropTag) != PT_ERROR)
+						{
+							if (fPrivateExchangeStore)
+							{
+								fCached = (lpConfigProp->Value.l & CONFIG_OST_CACHE_PRIVATE) != 0;
+							}
 
-				std::wstring szHash;
-				if (dwSigHash)
-				{
-					szHash = strings::formatmessage(IDS_STOREHASHDOUBLEVAL, dwEIDHash, dwSigHash);
-				}
-				else
-				{
-					szHash = strings::formatmessage(IDS_STOREHASHVAL, dwEIDHash);
-				}
+							if (fPublicExchangeStore)
+							{
+								fCached = (lpConfigProp->Value.l & CONFIG_OST_CACHE_PUBLIC) == CONFIG_OST_CACHE_PUBLIC;
+							}
+						}
 
-				output::DebugPrint(
-					output::DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n", dwEIDHash);
-				if (dwSigHash)
+						output::DebugPrint(
+							output::DBGGeneric,
+							L"CMainDlg::OnComputeGivenStoreHash, fPrivateExchangeStore = %d\n",
+							fPrivateExchangeStore);
+						output::DebugPrint(
+							output::DBGGeneric,
+							L"CMainDlg::OnComputeGivenStoreHash, fPublicExchangeStore = %d\n",
+							fPublicExchangeStore);
+						output::DebugPrint(
+							output::DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fCached = %d\n", fCached);
+
+						if (fCached)
+						{
+							hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_W, &lpPathPropW));
+							if (FAILED(hRes))
+							{
+								hRes = WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_A, &lpPathPropA));
+							}
+
+							if (SUCCEEDED(hRes))
+							{
+								if (lpPathPropW && lpPathPropW->Value.lpszW)
+								{
+									wzPath = lpPathPropW->Value.lpszW;
+									output::DebugPrint(
+										output::DBGGeneric,
+										L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_W = %ws\n",
+										wzPath);
+								}
+								else if (lpPathPropA && lpPathPropA->Value.lpszA)
+								{
+									szPath = lpPathPropA->Value.lpszA;
+									output::DebugPrint(
+										output::DBGGeneric,
+										L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_A = %hs\n",
+										szPath);
+								}
+							}
+							// If this is an Exchange store with an OST path, it's an OST, so we get the mapping signature
+							if ((fPrivateExchangeStore || fPublicExchangeStore) && (wzPath || szPath))
+							{
+								WC_MAPI_S(HrGetOneProp(lpProfSect, PR_MAPPING_SIGNATURE, &lpMappingSig));
+							}
+						}
+					}
+
+					DWORD dwSigHash = NULL;
+					if (lpMappingSig && PT_BINARY == PROP_TYPE(lpMappingSig->ulPropTag))
+					{
+						dwSigHash = mapi::ComputeStoreHash(
+							lpMappingSig->Value.bin.cb,
+							lpMappingSig->Value.bin.lpb,
+							nullptr,
+							nullptr,
+							fPublicExchangeStore);
+					}
+
+					const auto dwEIDHash =
+						mapi::ComputeStoreHash(lpItemEID->cb, lpItemEID->lpb, szPath, wzPath, fPublicExchangeStore);
+
+					std::wstring szHash;
+					if (dwSigHash)
+					{
+						szHash = strings::formatmessage(IDS_STOREHASHDOUBLEVAL, dwEIDHash, dwSigHash);
+					}
+					else
+					{
+						szHash = strings::formatmessage(IDS_STOREHASHVAL, dwEIDHash);
+					}
+
 					output::DebugPrint(
-						output::DBGGeneric,
-						L"CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n",
-						dwSigHash);
+						output::DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n", dwEIDHash);
+					if (dwSigHash)
+						output::DebugPrint(
+							output::DBGGeneric,
+							L"CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n",
+							dwSigHash);
 
-				editor::CEditor Result(this, IDS_STOREHASH, NULL, CEDITOR_BUTTON_OK);
-				Result.SetPromptPostFix(szHash);
-				(void) Result.DisplayDialog();
+					editor::CEditor Result(this, IDS_STOREHASH, NULL, CEDITOR_BUTTON_OK);
+					Result.SetPromptPostFix(szHash);
+					(void) Result.DisplayDialog();
 
-				MAPIFreeBuffer(lpMappingSig);
-				MAPIFreeBuffer(lpPathPropA);
-				MAPIFreeBuffer(lpPathPropW);
-				MAPIFreeBuffer(lpConfigProp);
-				if (lpProfSect) lpProfSect->Release();
+					MAPIFreeBuffer(lpMappingSig);
+					MAPIFreeBuffer(lpPathPropA);
+					MAPIFreeBuffer(lpPathPropW);
+					MAPIFreeBuffer(lpConfigProp);
+					if (lpProfSect) lpProfSect->Release();
+				}
 			}
 		}
 	}

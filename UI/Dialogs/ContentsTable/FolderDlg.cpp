@@ -694,32 +694,36 @@ namespace dialog
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
-		if (lpListData && lpListData->Contents())
+
+		if (lpListData)
 		{
-			const auto lpMessageEID = lpListData->Contents()->m_lpLongtermID;
-
-			if (lpMessageEID)
+			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			if (contents)
 			{
-				LPMAPIPROP lpMAPIProp = nullptr;
-
-				const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-				if (lpMDB)
+				const auto lpMessageEID = contents->m_lpLongtermID;
+				if (lpMessageEID)
 				{
-					lpMAPIProp = mapi::CallOpenEntry<LPMAPIPROP>(
-						lpMDB,
-						nullptr,
-						nullptr,
-						nullptr,
-						lpMessageEID->cb,
-						reinterpret_cast<LPENTRYID>(lpMessageEID->lpb),
-						nullptr,
-						MAPI_BEST_ACCESS,
-						nullptr);
+					LPMAPIPROP lpMAPIProp = nullptr;
+
+					const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+					if (lpMDB)
+					{
+						lpMAPIProp = mapi::CallOpenEntry<LPMAPIPROP>(
+							lpMDB,
+							nullptr,
+							nullptr,
+							nullptr,
+							lpMessageEID->cb,
+							reinterpret_cast<LPENTRYID>(lpMessageEID->lpb),
+							nullptr,
+							MAPI_BEST_ACCESS,
+							nullptr);
+					}
+
+					OnUpdateSingleMAPIPropListCtrl(lpMAPIProp, nullptr);
+
+					if (lpMAPIProp) lpMAPIProp->Release();
 				}
-
-				OnUpdateSingleMAPIPropListCtrl(lpMAPIProp, nullptr);
-
-				if (lpMAPIProp) lpMAPIProp->Release();
 			}
 		}
 	}
@@ -1146,11 +1150,14 @@ namespace dialog
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		if (!lpData || !lpData->Contents() || !m_lpFolder) return MAPI_E_INVALID_PARAMETER;
+		if (!lpData) return MAPI_E_INVALID_PARAMETER;
 
-		if (lpData->Contents()->m_lpEntryID)
+		const auto contents = lpData->cast<controls::sortlistdata::contentsData>();
+		if (!contents || !m_lpFolder) return MAPI_E_INVALID_PARAMETER;
+
+		if (contents->m_lpEntryID)
 		{
-			hRes = EC_H(mapi::ResendSingleMessage(m_lpFolder, lpData->Contents()->m_lpEntryID, m_hWnd));
+			hRes = EC_H(mapi::ResendSingleMessage(m_lpFolder, contents->m_lpEntryID, m_hWnd));
 		}
 
 		return hRes;
@@ -1836,14 +1843,16 @@ namespace dialog
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		if (!lpData || !lpData->Contents() || !m_lpFolder) return MAPI_E_INVALID_PARAMETER;
+		if (!lpData) return MAPI_E_INVALID_PARAMETER;
+
+		const auto contents = lpData->cast<controls::sortlistdata::contentsData>();
+		if (!contents || !m_lpFolder) return MAPI_E_INVALID_PARAMETER;
 
 		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnGetMessageStatus", L"\n");
 
 		ULONG ulMessageStatus = NULL;
 
-		const auto lpMessageEID = lpData->Contents()->m_lpEntryID;
-
+		const auto lpMessageEID = contents->m_lpEntryID;
 		if (lpMessageEID)
 		{
 			const auto hRes = EC_MAPI(m_lpFolder->GetMessageStatus(
@@ -1884,20 +1893,25 @@ namespace dialog
 			{
 				hRes = S_OK;
 				const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iItem);
-				if (lpListData && lpListData->Contents())
+
+				if (lpListData)
 				{
-					const auto lpMessageEID = lpListData->Contents()->m_lpEntryID;
-
-					if (lpMessageEID)
+					const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+					if (contents)
 					{
-						ULONG ulOldStatus = NULL;
+						const auto lpMessageEID = contents->m_lpEntryID;
 
-						hRes = EC_MAPI(m_lpFolder->SetMessageStatus(
-							lpMessageEID->cb,
-							reinterpret_cast<LPENTRYID>(lpMessageEID->lpb),
-							MyData.GetHex(0),
-							MyData.GetHex(1),
-							&ulOldStatus));
+						if (lpMessageEID)
+						{
+							ULONG ulOldStatus = NULL;
+
+							hRes = EC_MAPI(m_lpFolder->SetMessageStatus(
+								lpMessageEID->cb,
+								reinterpret_cast<LPENTRYID>(lpMessageEID->lpb),
+								MyData.GetHex(0),
+								MyData.GetHex(1),
+								&ulOldStatus));
+						}
 					}
 				}
 
@@ -1940,12 +1954,12 @@ namespace dialog
 		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
-		if (!m_lpMapiObjects || !lpData || !lpData->Contents()) return MAPI_E_INVALID_PARAMETER;
+		if (!m_lpMapiObjects || !lpData) return MAPI_E_INVALID_PARAMETER;
+		const auto contents = lpData->cast<controls::sortlistdata::contentsData>();
+		if (!contents) return MAPI_E_INVALID_PARAMETER;
 
 		auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-
-		const auto lpMessageEID = lpData->Contents()->m_lpEntryID;
-
+		const auto lpMessageEID = contents->m_lpEntryID;
 		if (lpMDB && lpMessageEID)
 		{
 			hRes = EC_MAPI(lpMDB->AbortSubmit(lpMessageEID->cb, reinterpret_cast<LPENTRYID>(lpMessageEID->lpb), NULL));

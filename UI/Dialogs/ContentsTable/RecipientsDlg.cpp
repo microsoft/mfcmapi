@@ -124,13 +124,17 @@ namespace dialog
 						lpProp->dwAlignPad = 0;
 						// Find the highlighted item AttachNum
 						const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
-						if (lpListData && lpListData->Contents())
+						if (lpListData)
 						{
-							lpProp->Value.l = lpListData->Contents()->m_ulRowID;
-						}
-						else
-						{
-							lpProp->Value.l = 0;
+							const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+							if (contents)
+							{
+								lpProp->Value.l = contents->m_ulRowID;
+							}
+							else
+							{
+								lpProp->Value.l = 0;
+							}
 						}
 
 						output::DebugPrintEx(

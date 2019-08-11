@@ -61,12 +61,16 @@ namespace dialog
 
 		LPPROFSECT lpProfSect = nullptr;
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
-		if (lpListData && lpListData->Contents())
+		if (lpListData)
 		{
-			const auto lpProviderUID = lpListData->Contents()->m_lpProviderUID;
-			if (lpProviderUID)
+			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			if (contents)
 			{
-				lpProfSect = mapi::profile::OpenProfileSection(m_lpProviderAdmin, lpProviderUID);
+				const auto lpProviderUID = contents->m_lpProviderUID;
+				if (lpProviderUID)
+				{
+					lpProfSect = mapi::profile::OpenProfileSection(m_lpProviderAdmin, lpProviderUID);
+				}
 			}
 		}
 

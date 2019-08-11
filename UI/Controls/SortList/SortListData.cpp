@@ -28,20 +28,6 @@ namespace controls
 			clearSortValues();
 		}
 
-		contentsData* SortListData::Contents() const { return reinterpret_cast<contentsData*>(m_lpData); }
-
-		NodeData* SortListData::Node() const { return reinterpret_cast<NodeData*>(m_lpData); }
-
-		propListData* SortListData::Prop() const { return reinterpret_cast<propListData*>(m_lpData); }
-
-		mvPropData* SortListData::MV() const { return reinterpret_cast<mvPropData*>(m_lpData); }
-
-		resData* SortListData::Res() const { return reinterpret_cast<resData*>(m_lpData); }
-
-		commentData* SortListData::Comment() const { return reinterpret_cast<commentData*>(m_lpData); }
-
-		binaryData* SortListData::Binary() const { return reinterpret_cast<binaryData*>(m_lpData); }
-
 		void SortListData::setSortText(const std::wstring& _sortText) { sortText = strings::wstringToLower(_sortText); }
 
 		// Sets data from the LPSRow into the SortListData structure

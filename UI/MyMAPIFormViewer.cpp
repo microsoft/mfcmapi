@@ -703,27 +703,31 @@ namespace mapi
 			else
 			{
 				const auto lpData = m_lpContentsTableListCtrl->GetSortListData(*piNewItem);
-				if (lpData && lpData->Contents())
+				if (lpData)
 				{
-					const auto lpEID = lpData->Contents()->m_lpEntryID;
-					if (lpEID)
+					const auto contents = lpData->cast<controls::sortlistdata::contentsData>();
+					if (contents)
 					{
-						*ppMessage = mapi::CallOpenEntry<LPMESSAGE>(
-							m_lpMDB,
-							nullptr,
-							nullptr,
-							nullptr,
-							lpEID->cb,
-							reinterpret_cast<LPENTRYID>(lpEID->lpb),
-							nullptr,
-							MAPI_BEST_ACCESS,
-							nullptr);
-
-						if (SUCCEEDED(hRes))
+						const auto lpEID = contents->m_lpEntryID;
+						if (lpEID)
 						{
+							*ppMessage = mapi::CallOpenEntry<LPMESSAGE>(
+								m_lpMDB,
+								nullptr,
+								nullptr,
+								nullptr,
+								lpEID->cb,
+								reinterpret_cast<LPENTRYID>(lpEID->lpb),
+								nullptr,
+								MAPI_BEST_ACCESS,
+								nullptr);
 
-							hRes = EC_MAPI(m_lpFolder->GetMessageStatus(
-								lpEID->cb, reinterpret_cast<LPENTRYID>(lpEID->lpb), 0, pulStatus));
+							if (SUCCEEDED(hRes))
+							{
+
+								hRes = EC_MAPI(m_lpFolder->GetMessageStatus(
+									lpEID->cb, reinterpret_cast<LPENTRYID>(lpEID->lpb), 0, pulStatus));
+							}
 						}
 					}
 				}
