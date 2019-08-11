@@ -35,7 +35,6 @@ namespace controls
 			void InitializeBinary(_In_opt_ LPSBinary lpOldBin);
 
 			template <typename T> T* cast() { return reinterpret_cast<T*>(m_lpData); }
-			NodeData* Node() const { return reinterpret_cast<NodeData*>(m_lpData); }
 
 			const std::wstring& getSortText() const noexcept { return sortText; }
 			void setSortText(const std::wstring& _sortText);
