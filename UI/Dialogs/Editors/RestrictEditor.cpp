@@ -550,21 +550,22 @@ namespace dialog
 		CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
 		{
 			if (!lpData) return false;
-			if (!lpData->Res())
+			const auto res = lpData->cast<controls::sortlistdata::resData>();
+			if (!res)
 			{
 				lpData->InitializeRes(nullptr);
 			}
 
-			if (!lpData->Res()) return false;
+			if (!res) return false;
 
-			const auto lpSourceRes = lpData->Res()->m_lpNewRes ? lpData->Res()->m_lpNewRes : lpData->Res()->m_lpOldRes;
+			const auto lpSourceRes = res->m_lpNewRes ? res->m_lpNewRes : res->m_lpOldRes;
 
 			CRestrictEditor MyResEditor(this, m_lpAllocParent,
 										lpSourceRes); // pass source res into editor
 			if (!MyResEditor.DisplayDialog()) return false;
 			// Since lpData->data.Res.lpNewRes was owned by an m_lpAllocParent, we don't free it directly
-			lpData->Res()->m_lpNewRes = MyResEditor.DetachModifiedSRestriction();
-			SetListString(ulListNum, iItem, 1, property::RestrictionToString(lpData->Res()->m_lpNewRes, nullptr));
+			res->m_lpNewRes = MyResEditor.DetachModifiedSRestriction();
+			SetListString(ulListNum, iItem, 1, property::RestrictionToString(res->m_lpNewRes, nullptr));
 			return true;
 		}
 
@@ -582,20 +583,25 @@ namespace dialog
 				for (ULONG paneID = 0; paneID < ulNewResCount; paneID++)
 				{
 					const auto lpData = GetListRowData(0, paneID);
-					if (lpData && lpData->Res())
+					if (lpData)
 					{
-						if (lpData->Res()->m_lpNewRes)
+						const auto res = lpData->cast<controls::sortlistdata::resData>();
+						if (res)
 						{
-							memcpy(&lpNewResArray[paneID], lpData->Res()->m_lpNewRes, sizeof(SRestriction));
-							memset(lpData->Res()->m_lpNewRes, 0, sizeof(SRestriction));
-						}
-						else
-						{
-							EC_H_S(mapi::HrCopyRestrictionArray(
-								lpData->Res()->m_lpOldRes, m_lpAllocParent, 1, &lpNewResArray[paneID]));
+							if (res->m_lpNewRes)
+							{
+								memcpy(&lpNewResArray[paneID], res->m_lpNewRes, sizeof(SRestriction));
+								memset(res->m_lpNewRes, 0, sizeof(SRestriction));
+							}
+							else
+							{
+								EC_H_S(mapi::HrCopyRestrictionArray(
+									res->m_lpOldRes, m_lpAllocParent, 1, &lpNewResArray[paneID]));
+							}
 						}
 					}
 				}
+
 				m_ulNewResCount = ulNewResCount;
 				m_lpNewResArray = lpNewResArray;
 			}
@@ -745,15 +751,15 @@ namespace dialog
 		{
 			if (!m_lpAllocParent) return false;
 			if (!lpData) return false;
-			if (!lpData->Res())
+			const auto comment = lpData->cast<controls::sortlistdata::commentData>();
+			if (!comment)
 			{
 				lpData->InitializeComment(nullptr);
 			}
 
-			if (!lpData->Comment()) return false;
+			if (!comment) return false;
 
-			auto lpSourceProp =
-				lpData->Comment()->m_lpNewProp ? lpData->Comment()->m_lpNewProp : lpData->Comment()->m_lpOldProp;
+			auto lpSourceProp = comment->m_lpNewProp ? comment->m_lpNewProp : comment->m_lpOldProp;
 
 			auto sProp = SPropValue{};
 
@@ -778,19 +784,16 @@ namespace dialog
 				NULL,
 				false,
 				lpSourceProp,
-				&lpData->Comment()->m_lpNewProp));
+				&comment->m_lpNewProp));
 
 			// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-			if (hRes == S_OK && lpData->Comment()->m_lpNewProp)
+			if (hRes == S_OK && comment->m_lpNewProp)
 			{
 				std::wstring szTmp;
 				std::wstring szAltTmp;
 				SetListString(
-					ulListNum,
-					iItem,
-					1,
-					proptags::TagToString(lpData->Comment()->m_lpNewProp->ulPropTag, nullptr, false, true));
-				property::parseProperty(lpData->Comment()->m_lpNewProp, &szTmp, &szAltTmp);
+					ulListNum, iItem, 1, proptags::TagToString(comment->m_lpNewProp->ulPropTag, nullptr, false, true));
+				property::parseProperty(comment->m_lpNewProp, &szTmp, &szAltTmp);
 				SetListString(ulListNum, iItem, 2, szTmp);
 				SetListString(ulListNum, iItem, 3, szAltTmp);
 				return true;
