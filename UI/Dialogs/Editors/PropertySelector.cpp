@@ -6,6 +6,7 @@
 #include <core/addin/mfcmapi.h>
 #include <core/utility/output.h>
 #include <core/interpret/proptype.h>
+#include <UI/Controls/SortList/inits.h>
 
 namespace dialog
 {
