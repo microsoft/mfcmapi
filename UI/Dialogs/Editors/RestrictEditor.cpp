@@ -817,26 +817,31 @@ namespace dialog
 					for (ULONG paneID = 0; paneID < ulNewCommentProp; paneID++)
 					{
 						const auto lpData = GetListRowData(0, paneID);
-						if (lpData && lpData->Comment())
+						if (lpData)
 						{
-							if (lpData->Comment()->m_lpNewProp)
+							const auto comment = lpData->cast<controls::sortlistdata::commentData>();
+							if (comment)
 							{
-								EC_H_S(mapi::MyPropCopyMore(
-									&lpNewCommentProp[paneID],
-									lpData->Comment()->m_lpNewProp,
-									MAPIAllocateMore,
-									m_lpAllocParent));
-							}
-							else
-							{
-								EC_H_S(mapi::MyPropCopyMore(
-									&lpNewCommentProp[paneID],
-									lpData->Comment()->m_lpOldProp,
-									MAPIAllocateMore,
-									m_lpAllocParent));
+								if (comment->m_lpNewProp)
+								{
+									EC_H_S(mapi::MyPropCopyMore(
+										&lpNewCommentProp[paneID],
+										comment->m_lpNewProp,
+										MAPIAllocateMore,
+										m_lpAllocParent));
+								}
+								else
+								{
+									EC_H_S(mapi::MyPropCopyMore(
+										&lpNewCommentProp[paneID],
+										comment->m_lpOldProp,
+										MAPIAllocateMore,
+										m_lpAllocParent));
+								}
 							}
 						}
 					}
+
 					m_ulNewCommentProp = ulNewCommentProp;
 					m_lpNewCommentProp = lpNewCommentProp;
 				}
