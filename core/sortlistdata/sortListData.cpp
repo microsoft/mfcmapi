@@ -20,5 +20,7 @@ namespace controls
 			bItemFullyLoaded = false;
 			clearSortValues();
 		}
+
+		void sortListData::setSortText(const std::wstring& _sortText) { sortText = strings::wstringToLower(_sortText); }
 	} // namespace sortlistdata
 } // namespace controls
