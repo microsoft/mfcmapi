@@ -1,12 +1,12 @@
-#include <StdAfx.h>
-#include <UI/Controls/SortList/NodeData.h>
+#include <core/stdafx.h>
+#include <core/sortlistdata/nodeData.h>
 #include <core/mapi/mapiFunctions.h>
 
 namespace controls
 {
 	namespace sortlistdata
 	{
-		NodeData::NodeData(
+		nodeData::nodeData(
 			_In_opt_ LPSBinary lpEntryID,
 			_In_opt_ LPSBinary lpInstanceKey,
 			ULONG bSubfolders,
@@ -33,7 +33,7 @@ namespace controls
 			}
 		}
 
-		NodeData::~NodeData()
+		nodeData::~nodeData()
 		{
 			MAPIFreeBuffer(m_lpInstanceKey);
 			MAPIFreeBuffer(m_lpEntryID);

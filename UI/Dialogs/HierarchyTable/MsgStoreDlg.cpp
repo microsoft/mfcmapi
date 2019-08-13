@@ -8,7 +8,7 @@
 #include <UI/Dialogs/Editors/Editor.h>
 #include <core/utility/file.h>
 #include <core/mapi/mapiProgress.h>
-#include <UI/Controls/SortList/NodeData.h>
+#include <core/sortlistdata/nodeData.h>
 #include <core/mapi/cache/globalCache.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
@@ -740,7 +740,7 @@ namespace dialog
 			const auto lpData = m_lpHierarchyTableTreeCtrl.GetSortListData(hItem);
 			if (lpData)
 			{
-				const auto node = lpData->cast<controls::sortlistdata::NodeData>();
+				const auto node = lpData->cast<controls::sortlistdata::nodeData>();
 				if (node)
 				{
 					lpItemEID = node->m_lpEntryID;

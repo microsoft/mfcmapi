@@ -582,6 +582,7 @@
     <ClInclude Include="sortlistdata\contentsData.h" />
     <ClInclude Include="sortlistdata\data.h" />
     <ClInclude Include="sortlistdata\mvPropData.h" />
+    <ClInclude Include="sortlistdata\nodeData.h" />
     <ClInclude Include="sortlistdata\propListData.h" />
     <ClInclude Include="sortlistdata\resData.h" />
     <ClInclude Include="sortlistdata\sortListData.h" />
@@ -656,6 +657,7 @@
     <ClCompile Include="sortlistdata\commentData.cpp" />
     <ClCompile Include="sortlistdata\contentsData.cpp" />
     <ClCompile Include="sortlistdata\mvPropData.cpp" />
+    <ClCompile Include="sortlistdata\nodeData.cpp" />
     <ClCompile Include="sortlistdata\propListData.cpp" />
     <ClCompile Include="sortlistdata\resData.cpp" />
     <ClCompile Include="sortlistdata\sortListData.cpp" />

@@ -11,15 +11,15 @@ namespace controls
 {
 	namespace sortlistdata
 	{
-		class NodeData : public IData
+		class nodeData : public IData
 		{
 		public:
-			NodeData(
+			nodeData(
 				_In_opt_ LPSBinary lpEntryID,
 				_In_opt_ LPSBinary lpInstanceKey,
 				ULONG bSubfolders,
 				ULONG ulContainerFlags);
-			~NodeData();
+			~nodeData();
 
 			LPSBinary m_lpEntryID{}; // Allocated with MAPIAllocateBuffer
 			LPSBinary m_lpInstanceKey{}; // Allocated with MAPIAllocateBuffer

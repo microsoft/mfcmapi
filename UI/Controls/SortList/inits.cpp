@@ -2,7 +2,7 @@
 #include <UI/Controls/SortList/inits.h>
 #include <core/sortlistdata/sortListData.h>
 #include <core/sortlistdata/contentsData.h>
-#include <UI/Controls/SortList/NodeData.h>
+#include <core/sortlistdata/nodeData.h>
 #include <core/sortlistdata/propListData.h>
 #include <core/sortlistdata/mvPropData.h>
 #include <core/sortlistdata/resData.h>
@@ -42,7 +42,7 @@ namespace controls
 		{
 			if (!data) return;
 			data->Init(
-				new (std::nothrow) NodeData(lpEntryID, lpInstanceKey, bSubfolders, ulContainerFlags), cProps, lpProps);
+				new (std::nothrow) nodeData(lpEntryID, lpInstanceKey, bSubfolders, ulContainerFlags), cProps, lpProps);
 		}
 
 		void InitNode(sortListData* data, _In_ LPSRow lpsRow)
