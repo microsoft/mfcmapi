@@ -8,15 +8,15 @@ namespace mapi
 {
 	namespace mapiui
 	{
+		std::function<void(HWND hWndParent, HTREEITEM hTreeParent, ULONG cNotify, LPNOTIFICATION lpNotifications)>
+			onNotifyCallback;
+
 		static std::wstring CLASS = L"CAdviseSink";
 
 		CAdviseSink::CAdviseSink(_In_ HWND hWndParent, _In_opt_ HTREEITEM hTreeParent)
+			: m_hWndParent(hWndParent), m_hTreeParent(hTreeParent)
 		{
 			TRACE_CONSTRUCTOR(CLASS);
-			m_cRef = 1;
-			m_hWndParent = hWndParent;
-			m_hTreeParent = hTreeParent;
-			m_lpAdviseTarget = nullptr;
 		}
 
 		CAdviseSink::~CAdviseSink()
@@ -56,7 +56,11 @@ namespace mapi
 		STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify, LPNOTIFICATION lpNotifications)
 		{
 			output::outputNotifications(output::DBGNotify, nullptr, cNotify, lpNotifications, m_lpAdviseTarget);
-			mapi::mapiui::OnNotify(m_hWndParent, m_hTreeParent, cNotify, lpNotifications);
+			if (onNotifyCallback)
+			{
+				onNotifyCallback(m_hWndParent, m_hTreeParent, cNotify, lpNotifications);
+			}
+
 			return S_OK;
 		}
 

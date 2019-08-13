@@ -1,15 +1,18 @@
 #pragma once
 
-// TODO: Consider rewriting this with callbacks and avoid the windows message passing
 namespace mapi
 {
 	namespace mapiui
 	{
+		extern std::function<
+			void(HWND hWndParent, HTREEITEM hTreeParent, ULONG cNotify, LPNOTIFICATION lpNotifications)>
+			onNotifyCallback;
+
 		class CAdviseSink : public IMAPIAdviseSink
 		{
 		public:
 			CAdviseSink(_In_ HWND hWndParent, _In_opt_ HTREEITEM hTreeParent);
-			virtual ~CAdviseSink();
+			~CAdviseSink();
 
 			STDMETHODIMP QueryInterface(REFIID riid, LPVOID* ppvObj) override;
 			STDMETHODIMP_(ULONG) AddRef() override;
@@ -19,10 +22,10 @@ namespace mapi
 			void SetAdviseTarget(LPMAPIPROP lpProp);
 
 		private:
-			LONG m_cRef;
-			HWND m_hWndParent;
-			HTREEITEM m_hTreeParent;
-			LPMAPIPROP m_lpAdviseTarget; // Used only for named prop lookups in debug logging.
+			LONG m_cRef{1};
+			const HWND m_hWndParent{};
+			const HTREEITEM m_hTreeParent{};
+			LPMAPIPROP m_lpAdviseTarget{}; // Used only for named prop lookups in debug logging.
 		};
 	} // namespace mapiui
 } // namespace mapi
