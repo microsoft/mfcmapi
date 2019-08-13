@@ -4,7 +4,7 @@
 #include <UI/Dialogs/HierarchyTable/HierarchyTableDlg.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/UIFunctions.h>
-#include <UI/AdviseSink.h>
+#include <core/mapi/adviseSink.h>
 #include <UI/Controls/SortList/NodeData.h>
 #include <core/utility/registry.h>
 #include <core/utility/strings.h>
@@ -274,7 +274,7 @@ namespace controls
 					L"Advise sink for \"%ws\" = %p\n",
 					strings::LPCTSTRToWstring(GetItemText(hItem)).c_str(),
 					hItem);
-				auto lpAdviseSink = new mapi::mapiui::CAdviseSink(m_hWnd, hItem);
+				auto lpAdviseSink = new mapi::CAdviseSink(m_hWnd, hItem);
 
 				if (lpAdviseSink)
 				{

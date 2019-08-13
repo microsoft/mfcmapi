@@ -515,6 +515,7 @@
     <ClInclude Include="interpret\propTypeArray.h" />
     <ClInclude Include="interpret\sid.h" />
     <ClInclude Include="interpret\smartViewParsers.h" />
+    <ClInclude Include="mapi\adviseSink.h" />
     <ClInclude Include="mapi\cache\globalCache.h" />
     <ClInclude Include="mapi\cache\mapiObjects.h" />
     <ClInclude Include="mapi\cache\namedPropCache.h" />
@@ -600,6 +601,7 @@
     <ClCompile Include="interpret\proptags.cpp" />
     <ClCompile Include="interpret\proptype.cpp" />
     <ClCompile Include="interpret\sid.cpp" />
+    <ClCompile Include="mapi\adviseSink.cpp" />
     <ClCompile Include="mapi\cache\globalCache.cpp" />
     <ClCompile Include="mapi\cache\mapiObjects.cpp" />
     <ClCompile Include="mapi\cache\namedPropCache.cpp" />

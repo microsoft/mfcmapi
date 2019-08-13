@@ -285,6 +285,9 @@
     <ClInclude Include="sortlistdata\sortListData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mapi\adviseSink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -498,6 +501,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sortlistdata\sortListData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\adviseSink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

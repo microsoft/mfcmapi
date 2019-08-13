@@ -21,7 +21,7 @@
 #include <core/interpret/flags.h>
 #include <core/mapi/mapiFunctions.h>
 #include <UI/OnNotify.h>
-#include <UI/AdviseSink.h>
+#include <core/mapi/adviseSink.h>
 
 namespace ui
 {
@@ -38,7 +38,7 @@ namespace ui
 			};
 			output::outputToDbgView = [](auto _1) { OutputToDbgView(_1); };
 			mapi::store::promptServerName = []() { return PromptServerName(); };
-			mapi::mapiui::onNotifyCallback = [](auto _1, auto _2, auto _3, auto _4) {
+			mapi::onNotifyCallback = [](auto _1, auto _2, auto _3, auto _4) {
 				mapi::mapiui::OnNotify(_1, _2, _3, _4);
 			};
 		}

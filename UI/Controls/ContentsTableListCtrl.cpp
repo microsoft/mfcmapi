@@ -3,7 +3,7 @@
 #include <UI/Controls/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/UIFunctions.h>
-#include <UI/AdviseSink.h>
+#include <core/mapi/adviseSink.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <core/mapi/extraPropTags.h>
@@ -1275,7 +1275,7 @@ namespace controls
 				L"registering table notification on %p\n",
 				m_lpContentsTable);
 
-			m_lpAdviseSink = new (std::nothrow) mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
+			m_lpAdviseSink = new (std::nothrow) mapi::CAdviseSink(m_hWnd, nullptr);
 
 			if (m_lpAdviseSink)
 			{
