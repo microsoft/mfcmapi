@@ -599,6 +599,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\ContentsTable\MailboxTableDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MainDlg.h" />
     <ClInclude Include="UI\profile.h" />
+    <ClInclude Include="UI\OnNotify.h" />
     <ClInclude Include="UI\ViewPane\TreePane.h" />
     <ClInclude Include="UI\MAPIFormFunctions.h" />
     <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h" />
@@ -653,6 +654,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="propertyBag\RowPropertyBag.cpp" />
+    <ClCompile Include="UI\OnNotify.cpp" />
     <ClCompile Include="UI\ViewPane\TreePane.cpp" />
     <ClCompile Include="UI\MAPIFormFunctions.cpp" />
     <ClCompile Include="UI\Controls\StyleTreeCtrl.cpp" />
