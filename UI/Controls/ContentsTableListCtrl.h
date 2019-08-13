@@ -15,7 +15,7 @@ namespace dialog
 
 namespace mapi
 {
-	class CAdviseSink;
+	class adviseSink;
 } // namespace mapi
 
 namespace controls
@@ -113,7 +113,7 @@ namespace controls
 			bool m_bInLoadOp{false};
 			const _SRestriction* m_lpRes{nullptr};
 			ULONG m_ulContainerType{NULL};
-			mapi::CAdviseSink* m_lpAdviseSink{nullptr};
+			mapi::adviseSink* m_lpAdviseSink{nullptr};
 			LPMAPITABLE m_lpContentsTable{nullptr};
 
 			__mfcmapiRestrictionTypeEnum m_RestrictionType{mfcmapiNO_RESTRICTION};

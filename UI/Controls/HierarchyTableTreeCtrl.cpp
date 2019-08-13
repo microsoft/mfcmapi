@@ -274,7 +274,7 @@ namespace controls
 					L"Advise sink for \"%ws\" = %p\n",
 					strings::LPCTSTRToWstring(GetItemText(hItem)).c_str(),
 					hItem);
-				auto lpAdviseSink = new mapi::CAdviseSink(m_hWnd, hItem);
+				auto lpAdviseSink = new mapi::adviseSink(m_hWnd, hItem);
 
 				if (lpAdviseSink)
 				{

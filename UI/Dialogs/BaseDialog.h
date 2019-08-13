@@ -20,7 +20,7 @@ namespace cache
 
 namespace mapi
 {
-	class CAdviseSink;
+	class adviseSink;
 } // namespace mapi
 
 // Macros to assist in OnInitMenu
@@ -120,7 +120,7 @@ namespace dialog
 		int m_StatusWidth[STATUSBARNUMPANES]{};
 		bool m_bDisplayingMenuText;
 		std::wstring m_szMenuDisplacedText;
-		mapi::CAdviseSink* m_lpBaseAdviseSink;
+		mapi::adviseSink* m_lpBaseAdviseSink;
 		ULONG_PTR m_ulBaseAdviseConnection;
 		ULONG m_ulBaseAdviseObjectType;
 

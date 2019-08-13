@@ -5,11 +5,11 @@ namespace mapi
 	extern std::function<void(HWND hWndParent, HTREEITEM hTreeParent, ULONG cNotify, LPNOTIFICATION lpNotifications)>
 		onNotifyCallback;
 
-	class CAdviseSink : public IMAPIAdviseSink
+	class adviseSink : public IMAPIAdviseSink
 	{
 	public:
-		CAdviseSink(_In_ HWND hWndParent, _In_opt_ HTREEITEM hTreeParent);
-		~CAdviseSink();
+		adviseSink(_In_ HWND hWndParent, _In_opt_ HTREEITEM hTreeParent);
+		~adviseSink();
 
 		STDMETHODIMP QueryInterface(REFIID riid, LPVOID* ppvObj) override;
 		STDMETHODIMP_(ULONG) AddRef() override;

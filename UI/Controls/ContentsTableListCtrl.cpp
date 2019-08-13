@@ -1275,7 +1275,7 @@ namespace controls
 				L"registering table notification on %p\n",
 				m_lpContentsTable);
 
-			m_lpAdviseSink = new (std::nothrow) mapi::CAdviseSink(m_hWnd, nullptr);
+			m_lpAdviseSink = new (std::nothrow) mapi::adviseSink(m_hWnd, nullptr);
 
 			if (m_lpAdviseSink)
 			{

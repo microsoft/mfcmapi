@@ -923,7 +923,7 @@ namespace dialog
 			auto hRes = WC_H(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
 			// don't actually care if the returning lpEntryID is NULL - Advise can work with that
 
-			m_lpBaseAdviseSink = new (std::nothrow) mapi::CAdviseSink(m_hWnd, nullptr);
+			m_lpBaseAdviseSink = new (std::nothrow) mapi::adviseSink(m_hWnd, nullptr);
 
 			if (m_lpBaseAdviseSink)
 			{
