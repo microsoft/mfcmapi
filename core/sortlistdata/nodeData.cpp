@@ -17,7 +17,7 @@ namespace sortlistdata
 		if (!data) return;
 
 		data->init(
-			new (std::nothrow) nodeData(lpEntryID, lpInstanceKey, bSubfolders, ulContainerFlags), cProps, lpProps);
+			std::make_shared<nodeData>(lpEntryID, lpInstanceKey, bSubfolders, ulContainerFlags), cProps, lpProps);
 	}
 
 	void nodeData::init(sortListData* data, _In_ LPSRow lpsRow)

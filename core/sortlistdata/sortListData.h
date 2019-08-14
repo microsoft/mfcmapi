@@ -6,24 +6,24 @@ namespace sortlistdata
 	class sortListData
 	{
 	public:
-		void init(IData* lpData, ULONG cValues, LPSPropValue lpProps)
+		void init(std::shared_ptr<IData> _lpData, ULONG cValues, LPSPropValue lpProps)
 		{
 			clean();
 			lpSourceProps = lpProps;
 			cSourceProps = cValues;
-			m_lpData = lpData;
+			lpData = _lpData;
 		}
 
-		void init(IData* lpData, bool _bItemFullyLoaded = false)
+		void init(std::shared_ptr<IData> _lpData, bool _bItemFullyLoaded = false)
 		{
 			clean();
 			bItemFullyLoaded = _bItemFullyLoaded;
-			m_lpData = lpData;
+			lpData = _lpData;
 		}
 		~sortListData();
 		void clean();
 
-		template <typename T> T* cast() { return reinterpret_cast<T*>(m_lpData); }
+		template <typename T> std::shared_ptr<T> cast() { return std::dynamic_pointer_cast<T>(lpData); }
 
 		const std::wstring& getSortText() const noexcept { return sortText; }
 		void setSortText(const std::wstring& _sortText);
@@ -41,7 +41,7 @@ namespace sortlistdata
 		bool bItemFullyLoaded{};
 
 	private:
-		IData* m_lpData{};
+		std::shared_ptr<IData> lpData{};
 		std::wstring sortText{};
 		ULARGE_INTEGER sortValue{};
 	};

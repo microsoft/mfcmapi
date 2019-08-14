@@ -9,6 +9,8 @@ namespace sortlistdata
 	{
 	public:
 		static void init(sortListData* lpData, _In_ LPSRow lpsRowData);
+
+		contentsData(_In_ LPSRow lpsRowData);
 		~contentsData();
 
 		LPSBinary m_lpEntryID{}; // Allocated with MAPIAllocateBuffer
@@ -22,8 +24,5 @@ namespace sortlistdata
 		ULONG m_ulAttachMethod{};
 		ULONG m_ulRowID{}; // for recipients
 		ULONG m_ulRowType{}; // PR_ROW_TYPE
-
-	private:
-		contentsData(_In_ LPSRow lpsRowData);
 	};
 } // namespace sortlistdata

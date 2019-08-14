@@ -8,7 +8,7 @@ namespace sortlistdata
 	{
 		if (!data) return;
 
-		data->init(new (std::nothrow) propListData(ulPropTag), true);
+		data->init(std::make_shared<propListData>(ulPropTag), true);
 	}
 
 	propListData::propListData(_In_ ULONG ulPropTag) : m_ulPropTag(ulPropTag) {}

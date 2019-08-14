@@ -8,8 +8,7 @@ namespace sortlistdata
 
 	void sortListData::clean()
 	{
-		delete m_lpData;
-		m_lpData = nullptr;
+		lpData = nullptr;
 
 		MAPIFreeBuffer(lpSourceProps);
 		lpSourceProps = nullptr;

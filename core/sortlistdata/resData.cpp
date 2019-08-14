@@ -8,7 +8,7 @@ namespace sortlistdata
 	{
 		if (!data) return;
 
-		data->init(new (std::nothrow) resData(lpOldRes), true);
+		data->init(std::make_shared<resData>(lpOldRes), true);
 	}
 
 	resData::resData(_In_opt_ const _SRestriction* lpOldRes) : m_lpOldRes(lpOldRes) {}

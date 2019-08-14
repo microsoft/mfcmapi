@@ -11,12 +11,12 @@ namespace sortlistdata
 		static void init(sortListData* data, _In_ const _SPropValue* lpProp, ULONG iProp);
 		static void init(sortListData* data, _In_opt_ const _SPropValue* lpProp);
 
-		_PV m_val{};
-
-	private:
 		mvPropData(_In_opt_ const _SPropValue* lpProp, ULONG iProp);
 		mvPropData(_In_opt_ const _SPropValue* lpProp);
 
+		_PV m_val{};
+
+	private:
 		std::string m_lpszA{};
 		std::wstring m_lpszW{};
 		std::vector<BYTE> m_lpBin{};

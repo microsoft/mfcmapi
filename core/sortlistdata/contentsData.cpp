@@ -17,7 +17,7 @@ namespace sortlistdata
 
 		if (lpsRowData)
 		{
-			data->init(new (std::nothrow) contentsData(lpsRowData), lpsRowData->cValues, lpsRowData->lpProps);
+			data->init(std::make_shared<contentsData>(lpsRowData), lpsRowData->cValues, lpsRowData->lpProps);
 		}
 		else
 		{
