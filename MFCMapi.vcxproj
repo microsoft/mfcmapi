@@ -561,7 +561,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="UI\Controls\SortList\inits.h" />
     <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
     <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
     <ClInclude Include="UI\enums.h" />
@@ -642,7 +641,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\CMAPIProgress.cpp" />
     <ClCompile Include="propertyBag\MAPIPropPropertyBag.cpp" />
     <ClCompile Include="UI\addinui.cpp" />
-    <ClCompile Include="UI\Controls\SortList\inits.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortHeader.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp" />
     <ClCompile Include="UI\profile.cpp" />

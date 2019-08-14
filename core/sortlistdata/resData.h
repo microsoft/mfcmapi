@@ -3,6 +3,10 @@
 
 namespace sortlistdata
 {
+	class sortListData;
+
+	void InitRes(sortListData* data, _In_opt_ const _SRestriction* lpOldRes);
+
 	class resData : public IData
 	{
 	public:

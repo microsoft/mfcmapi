@@ -72,7 +72,6 @@
     <ClInclude Include="propertyBag\MAPIPropPropertyBag.h" />
     <ClInclude Include="propertyBag\PropertyBag.h" />
     <ClInclude Include="propertyBag\RowPropertyBag.h" />
-    <ClInclude Include="UI\Controls\SortList\inits.h" />
     <ClInclude Include="UI\OnNotify.h" />
   </ItemGroup>
   <ItemGroup>
@@ -118,9 +117,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="propertyBag\RowPropertyBag.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\inits.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UI\OnNotify.cpp">

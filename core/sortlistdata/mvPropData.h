@@ -4,6 +4,11 @@
 
 namespace sortlistdata
 {
+	class sortListData;
+
+	void InitMV(sortListData* data, _In_ const _SPropValue* lpProp, ULONG iProp);
+	void InitMV(sortListData* data, _In_opt_ const _SPropValue* lpProp);
+
 	class mvPropData : public IData
 	{
 	public:

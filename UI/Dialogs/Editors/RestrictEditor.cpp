@@ -13,7 +13,6 @@
 #include <core/interpret/proptags.h>
 #include <core/addin/mfcmapi.h>
 #include <core/property/parseProperty.h>
-#include <UI/Controls/SortList/inits.h>
 
 namespace dialog
 {

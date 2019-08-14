@@ -3,6 +3,10 @@
 
 namespace sortlistdata
 {
+	class sortListData;
+
+	void InitComment(sortListData* data, _In_opt_ const _SPropValue* lpOldProp);
+
 	class commentData : public IData
 	{
 	public:

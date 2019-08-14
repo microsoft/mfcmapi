@@ -3,6 +3,10 @@
 
 namespace sortlistdata
 {
+	class sortListData;
+
+	void InitPropList(sortListData* data, _In_ ULONG ulPropTag);
+
 	class propListData : public IData
 	{
 	public:

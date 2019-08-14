@@ -3,9 +3,28 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
+#include <core/sortlistdata/sortListData.h>
 
 namespace sortlistdata
 {
+	// Sets data from the LPSRow into the sortListData structure
+	// Assumes the structure is either an existing structure or a new one which has been memset to 0
+	// If it's an existing structure - we need to free up some memory
+	// SORTLIST_CONTENTS
+	void InitContents(sortListData* data, _In_ LPSRow lpsRowData)
+	{
+		if (!data) return;
+
+		if (lpsRowData)
+		{
+			data->Init(new (std::nothrow) contentsData(lpsRowData), lpsRowData->cValues, lpsRowData->lpProps);
+		}
+		else
+		{
+			data->Clean();
+		}
+	}
+
 	contentsData::contentsData(_In_ LPSRow lpsRowData)
 	{
 		m_lpEntryID = nullptr;

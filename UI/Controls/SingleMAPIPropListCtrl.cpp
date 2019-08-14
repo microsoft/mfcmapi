@@ -32,7 +32,6 @@
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/property/parseProperty.h>
-#include <UI/Controls/SortList/inits.h>
 
 namespace controls
 {

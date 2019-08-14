@@ -3,6 +3,10 @@
 
 namespace sortlistdata
 {
+	class sortListData;
+
+	void InitContents(sortListData* lpData, _In_ LPSRow lpsRowData);
+
 	class contentsData : public IData
 	{
 	public:

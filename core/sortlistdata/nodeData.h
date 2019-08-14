@@ -1,6 +1,5 @@
 #pragma once
 #include <core/sortlistdata/data.h>
-#include <core/sortlistdata/sortListData.h>
 
 namespace mapi
 {
@@ -9,6 +8,18 @@ namespace mapi
 
 namespace sortlistdata
 {
+	class sortListData;
+
+	void InitNode(
+		sortListData* lpData,
+		ULONG cProps,
+		_In_opt_ LPSPropValue lpProps,
+		_In_opt_ LPSBinary lpEntryID,
+		_In_opt_ LPSBinary lpInstanceKey,
+		ULONG bSubfolders,
+		ULONG ulContainerFlags);
+	void InitNode(sortListData* lpData, _In_ LPSRow lpsRow);
+
 	class nodeData : public IData
 	{
 	public:

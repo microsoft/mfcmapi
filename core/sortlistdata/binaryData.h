@@ -3,6 +3,10 @@
 
 namespace sortlistdata
 {
+	class sortListData;
+
+	void InitBinary(sortListData* data, _In_opt_ LPSBinary lpOldBin);
+
 	class binaryData : public IData
 	{
 	public:
