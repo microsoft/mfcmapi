@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <MAPIDefS.h>
 #include <core/sortlistdata/data.h>
 
 namespace sortlistdata
@@ -17,8 +16,8 @@ namespace sortlistdata
 		_PV m_val{};
 
 	private:
-		std::string m_lpszA;
-		std::wstring m_lpszW;
-		std::vector<BYTE> m_lpBin;
+		std::string m_lpszA{};
+		std::wstring m_lpszW{};
+		std::vector<BYTE> m_lpBin{};
 	};
 } // namespace sortlistdata

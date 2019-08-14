@@ -27,16 +27,6 @@ namespace sortlistdata
 
 	contentsData::contentsData(_In_ LPSRow lpsRowData)
 	{
-		m_lpEntryID = nullptr;
-		m_lpLongtermID = nullptr;
-		m_lpInstanceKey = nullptr;
-		m_lpServiceUID = nullptr;
-		m_lpProviderUID = nullptr;
-		m_ulAttachNum = 0;
-		m_ulAttachMethod = 0;
-		m_ulRowID = 0;
-		m_ulRowType = 0;
-
 		if (!lpsRowData) return;
 
 		// Save the instance key into lpData

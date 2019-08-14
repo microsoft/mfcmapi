@@ -10,9 +10,5 @@ namespace sortlistdata
 		data->Init(new (std::nothrow) resData(lpOldRes), true);
 	}
 
-	resData::resData(_In_opt_ const _SRestriction* lpOldRes)
-	{
-		m_lpOldRes = lpOldRes;
-		m_lpNewRes = nullptr;
-	}
+	resData::resData(_In_opt_ const _SRestriction* lpOldRes) : m_lpOldRes(lpOldRes) {}
 } // namespace sortlistdata

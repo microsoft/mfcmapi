@@ -11,6 +11,6 @@ namespace sortlistdata
 	{
 	public:
 		propListData(_In_ ULONG ulPropTag);
-		ULONG m_ulPropTag;
+		ULONG m_ulPropTag{};
 	};
 } // namespace sortlistdata

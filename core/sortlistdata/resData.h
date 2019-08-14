@@ -11,7 +11,7 @@ namespace sortlistdata
 	{
 	public:
 		resData(_In_opt_ const _SRestriction* lpOldRes);
-		const _SRestriction* m_lpOldRes; // not allocated - just a pointer
-		LPSRestriction m_lpNewRes; // Owned by an alloc parent - do not free
+		const _SRestriction* m_lpOldRes{}; // not allocated - just a pointer
+		LPSRestriction m_lpNewRes{}; // Owned by an alloc parent - do not free
 	};
 } // namespace sortlistdata

@@ -10,5 +10,5 @@ namespace sortlistdata
 		data->Init(new (std::nothrow) propListData(ulPropTag), true);
 	}
 
-	propListData::propListData(_In_ ULONG ulPropTag) { m_ulPropTag = ulPropTag; }
+	propListData::propListData(_In_ ULONG ulPropTag) : m_ulPropTag(ulPropTag) {}
 } // namespace sortlistdata

@@ -18,7 +18,6 @@ namespace sortlistdata
 
 	mvPropData::mvPropData(_In_opt_ const _SPropValue* lpProp, ULONG iProp)
 	{
-		m_val = {0};
 		if (!lpProp) return;
 
 		switch (PROP_TYPE(lpProp->ulPropTag))
@@ -75,7 +74,6 @@ namespace sortlistdata
 
 	mvPropData::mvPropData(_In_opt_ const _SPropValue* lpProp)
 	{
-		m_val = {0};
 		if (!lpProp) return;
 
 		// This handles most cases by default - cases needing a buffer copied are handled below
