@@ -6,22 +6,22 @@ namespace sortlistdata
 	class sortListData
 	{
 	public:
-		~sortListData();
-		void Clean();
-		void Init(IData* lpData, ULONG cValues, LPSPropValue lpProps)
+		void init(IData* lpData, ULONG cValues, LPSPropValue lpProps)
 		{
-			Clean();
+			clean();
 			lpSourceProps = lpProps;
 			cSourceProps = cValues;
 			m_lpData = lpData;
 		}
 
-		void Init(IData* lpData, bool _bItemFullyLoaded = false)
+		void init(IData* lpData, bool _bItemFullyLoaded = false)
 		{
-			Clean();
+			clean();
 			bItemFullyLoaded = _bItemFullyLoaded;
 			m_lpData = lpData;
 		}
+		~sortListData();
+		void clean();
 
 		template <typename T> T* cast() { return reinterpret_cast<T*>(m_lpData); }
 

@@ -17,11 +17,11 @@ namespace sortlistdata
 
 		if (lpsRowData)
 		{
-			data->Init(new (std::nothrow) contentsData(lpsRowData), lpsRowData->cValues, lpsRowData->lpProps);
+			data->init(new (std::nothrow) contentsData(lpsRowData), lpsRowData->cValues, lpsRowData->lpProps);
 		}
 		else
 		{
-			data->Clean();
+			data->clean();
 		}
 	}
 

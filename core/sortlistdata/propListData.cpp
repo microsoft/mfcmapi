@@ -7,7 +7,8 @@ namespace sortlistdata
 	void propListData::init(sortListData* data, _In_ ULONG ulPropTag)
 	{
 		if (!data) return;
-		data->Init(new (std::nothrow) propListData(ulPropTag), true);
+
+		data->init(new (std::nothrow) propListData(ulPropTag), true);
 	}
 
 	propListData::propListData(_In_ ULONG ulPropTag) : m_ulPropTag(ulPropTag) {}

@@ -15,7 +15,8 @@ namespace sortlistdata
 		ULONG ulContainerFlags)
 	{
 		if (!data) return;
-		data->Init(
+
+		data->init(
 			new (std::nothrow) nodeData(lpEntryID, lpInstanceKey, bSubfolders, ulContainerFlags), cProps, lpProps);
 	}
 
@@ -25,7 +26,7 @@ namespace sortlistdata
 
 		if (!lpsRow)
 		{
-			data->Clean();
+			data->clean();
 			return;
 		}
 

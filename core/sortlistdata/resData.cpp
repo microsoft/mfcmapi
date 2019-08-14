@@ -7,7 +7,8 @@ namespace sortlistdata
 	void resData::init(sortListData* data, _In_opt_ const _SRestriction* lpOldRes)
 	{
 		if (!data) return;
-		data->Init(new (std::nothrow) resData(lpOldRes), true);
+
+		data->init(new (std::nothrow) resData(lpOldRes), true);
 	}
 
 	resData::resData(_In_opt_ const _SRestriction* lpOldRes) : m_lpOldRes(lpOldRes) {}

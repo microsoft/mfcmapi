@@ -4,9 +4,9 @@
 
 namespace sortlistdata
 {
-	sortListData::~sortListData() { Clean(); }
+	sortListData::~sortListData() { clean(); }
 
-	void sortListData::Clean()
+	void sortListData::clean()
 	{
 		delete m_lpData;
 		m_lpData = nullptr;
