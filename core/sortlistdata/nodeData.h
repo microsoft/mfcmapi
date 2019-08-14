@@ -10,24 +10,18 @@ namespace sortlistdata
 {
 	class sortListData;
 
-	void InitNode(
-		sortListData* lpData,
-		ULONG cProps,
-		_In_opt_ LPSPropValue lpProps,
-		_In_opt_ LPSBinary lpEntryID,
-		_In_opt_ LPSBinary lpInstanceKey,
-		ULONG bSubfolders,
-		ULONG ulContainerFlags);
-	void InitNode(sortListData* lpData, _In_ LPSRow lpsRow);
-
 	class nodeData : public IData
 	{
 	public:
-		nodeData(
+		static void init(
+			sortListData* lpData,
+			ULONG cProps,
+			_In_opt_ LPSPropValue lpProps,
 			_In_opt_ LPSBinary lpEntryID,
 			_In_opt_ LPSBinary lpInstanceKey,
 			ULONG bSubfolders,
 			ULONG ulContainerFlags);
+		static void init(sortListData* lpData, _In_ LPSRow lpsRow);
 		~nodeData();
 
 		LPSBinary m_lpEntryID{}; // Allocated with MAPIAllocateBuffer
@@ -36,5 +30,12 @@ namespace sortlistdata
 		mapi::adviseSink* m_lpAdviseSink{}; // Object - free with Release
 		ULONG_PTR m_ulAdviseConnection{};
 		LONG m_cSubfolders{-1}; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
+
+	private:
+		nodeData(
+			_In_opt_ LPSBinary lpEntryID,
+			_In_opt_ LPSBinary lpInstanceKey,
+			ULONG bSubfolders,
+			ULONG ulContainerFlags);
 	};
 } // namespace sortlistdata

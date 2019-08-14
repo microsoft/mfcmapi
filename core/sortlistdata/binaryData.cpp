@@ -4,7 +4,7 @@
 
 namespace sortlistdata
 {
-	void InitBinary(sortListData* data, _In_opt_ LPSBinary lpOldBin)
+	void binaryData::init(sortListData* data, _In_opt_ LPSBinary lpOldBin)
 	{
 		if (!data) return;
 		data->Init(new (std::nothrow) binaryData(lpOldBin));

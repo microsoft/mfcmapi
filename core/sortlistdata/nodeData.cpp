@@ -5,7 +5,7 @@
 
 namespace sortlistdata
 {
-	void InitNode(
+	void nodeData::init(
 		sortListData* data,
 		ULONG cProps,
 		_In_opt_ LPSPropValue lpProps,
@@ -19,7 +19,7 @@ namespace sortlistdata
 			new (std::nothrow) nodeData(lpEntryID, lpInstanceKey, bSubfolders, ulContainerFlags), cProps, lpProps);
 	}
 
-	void InitNode(sortListData* data, _In_ LPSRow lpsRow)
+	void nodeData::init(sortListData* data, _In_ LPSRow lpsRow)
 	{
 		if (!data) return;
 
@@ -42,7 +42,7 @@ namespace sortlistdata
 
 		const auto lpContainerFlags = PpropFindProp(lpsRow->lpProps, lpsRow->cValues, PR_CONTAINER_FLAGS);
 
-		InitNode(
+		sortlistdata::nodeData::init(
 			data,
 			lpsRow->cValues,
 			lpsRow->lpProps, // pass on props to be archived in node

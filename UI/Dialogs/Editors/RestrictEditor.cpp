@@ -516,7 +516,7 @@ namespace dialog
 					auto lpData = InsertListRow(ulListNum, paneID, std::to_wstring(paneID));
 					if (lpData)
 					{
-						InitRes(lpData, &lpRes->res.resAnd.lpRes[paneID]);
+						sortlistdata::resData::init(lpData, &lpRes->res.resAnd.lpRes[paneID]);
 						SetListString(
 							ulListNum,
 							paneID,
@@ -533,7 +533,7 @@ namespace dialog
 					auto lpData = InsertListRow(ulListNum, paneID, std::to_wstring(paneID));
 					if (lpData)
 					{
-						InitRes(lpData, &lpRes->res.resOr.lpRes[paneID]);
+						sortlistdata::resData::init(lpData, &lpRes->res.resOr.lpRes[paneID]);
 						SetListString(
 							ulListNum,
 							paneID,
@@ -552,7 +552,7 @@ namespace dialog
 			if (!lpData) return false;
 			if (!lpData->cast<sortlistdata::resData>())
 			{
-				InitRes(lpData, nullptr);
+				sortlistdata::resData::init(lpData, nullptr);
 			}
 
 			const auto res = lpData->cast<sortlistdata::resData>();
@@ -721,7 +721,7 @@ namespace dialog
 				auto lpData = InsertListRow(ulListNum, paneID, std::to_wstring(paneID));
 				if (lpData)
 				{
-					InitComment(lpData, &lpProps[paneID]);
+					sortlistdata::commentData::init(lpData, &lpProps[paneID]);
 					SetListString(
 						ulListNum, paneID, 1, proptags::TagToString(lpProps[paneID].ulPropTag, nullptr, false, true));
 					property::parseProperty(&lpProps[paneID], &szProp, &szAltProp);
@@ -753,7 +753,7 @@ namespace dialog
 			if (!lpData) return false;
 			if (!lpData->cast<sortlistdata::commentData>())
 			{
-				InitComment(lpData, nullptr);
+				sortlistdata::commentData::init(lpData, nullptr);
 			}
 
 			const auto comment = lpData->cast<sortlistdata::commentData>();
@@ -1353,7 +1353,7 @@ namespace dialog
 					auto lpData = InsertListRow(ulListNum, iRow, std::to_wstring(iRow));
 					if (lpData)
 					{
-						InitBinary(lpData, &lpEntryList->lpbin[iRow]);
+						sortlistdata::binaryData::init(lpData, &lpEntryList->lpbin[iRow]);
 					}
 
 					SetListString(ulListNum, iRow, 1, std::to_wstring(lpEntryList->lpbin[iRow].cb));
@@ -1392,7 +1392,7 @@ namespace dialog
 
 			if (!lpData->cast<sortlistdata::binaryData>())
 			{
-				InitBinary(lpData, nullptr);
+				sortlistdata::binaryData::init(lpData, nullptr);
 			}
 
 			const auto binary = lpData->cast<sortlistdata::binaryData>();

@@ -5,13 +5,12 @@ namespace sortlistdata
 {
 	class sortListData;
 
-	void InitContents(sortListData* lpData, _In_ LPSRow lpsRowData);
-
 	class contentsData : public IData
 	{
 	public:
-		contentsData(_In_ LPSRow lpsRowData);
+		static void init(sortListData* lpData, _In_ LPSRow lpsRowData);
 		~contentsData();
+
 		LPSBinary m_lpEntryID{}; // Allocated with MAPIAllocateBuffer
 		LPSBinary m_lpLongtermID{}; // Allocated with MAPIAllocateBuffer
 		LPSBinary m_lpInstanceKey{}; // Allocated with MAPIAllocateBuffer
@@ -23,5 +22,8 @@ namespace sortlistdata
 		ULONG m_ulAttachMethod{};
 		ULONG m_ulRowID{}; // for recipients
 		ULONG m_ulRowType{}; // PR_ROW_TYPE
+
+	private:
+		contentsData(_In_ LPSRow lpsRowData);
 	};
 } // namespace sortlistdata

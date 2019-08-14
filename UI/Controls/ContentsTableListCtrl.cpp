@@ -901,7 +901,7 @@ namespace controls
 
 			if (lpData)
 			{
-				sortlistdata::InitContents(lpData, lpsRowData);
+				sortlistdata::contentsData::init(lpData, lpsRowData);
 
 				SetRowStrings(iRow, lpsRowData);
 				// Do this last so that our row can't get sorted before we're done!

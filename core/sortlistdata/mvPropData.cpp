@@ -4,13 +4,13 @@
 
 namespace sortlistdata
 {
-	void InitMV(sortListData* data, _In_ const _SPropValue* lpProp, ULONG iProp)
+	void mvPropData::init(sortListData* data, _In_ const _SPropValue* lpProp, ULONG iProp)
 	{
 		if (!data) return;
 		data->Init(new (std::nothrow) mvPropData(lpProp, iProp));
 	}
 
-	void InitMV(sortListData* data, _In_opt_ const _SPropValue* lpProp)
+	void mvPropData::init(sortListData* data, _In_opt_ const _SPropValue* lpProp)
 	{
 		if (!data) return;
 		data->Init(new (std::nothrow) mvPropData(lpProp));

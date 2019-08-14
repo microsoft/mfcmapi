@@ -11,7 +11,7 @@ namespace sortlistdata
 	// Assumes the structure is either an existing structure or a new one which has been memset to 0
 	// If it's an existing structure - we need to free up some memory
 	// SORTLIST_CONTENTS
-	void InitContents(sortListData* data, _In_ LPSRow lpsRowData)
+	void contentsData::init(sortListData* data, _In_ LPSRow lpsRowData)
 	{
 		if (!data) return;
 

@@ -4,7 +4,7 @@
 
 namespace sortlistdata
 {
-	void InitComment(sortListData* data, _In_opt_ const _SPropValue* lpOldProp)
+	void commentData::init(sortListData* data, _In_opt_ const _SPropValue* lpOldProp)
 	{
 		if (!data) return;
 		data->Init(new (std::nothrow) commentData(lpOldProp), true);

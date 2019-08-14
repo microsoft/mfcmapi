@@ -212,7 +212,7 @@ namespace controls
 		auto lpData = new (std::nothrow) sortlistdata::sortListData();
 		if (lpData)
 		{
-			InitNode(
+			sortlistdata::nodeData::init(
 				lpData,
 				cVals,
 				lpProps, // Pass our lpProps to be archived
@@ -251,7 +251,7 @@ namespace controls
 		auto lpData = new (std::nothrow) sortlistdata::sortListData();
 		if (lpData)
 		{
-			InitNode(lpData, lpsRow);
+			sortlistdata::nodeData::init(lpData, lpsRow);
 
 			(void) AddChildNode(szName, hParent, reinterpret_cast<LPARAM>(lpData), callback);
 		}
@@ -900,7 +900,7 @@ namespace controls
 			auto lpData = new sortlistdata::sortListData();
 			if (lpData)
 			{
-				InitNode(lpData, &NewRow);
+				sortlistdata::nodeData::init(lpData, &NewRow);
 				SetNodeData(m_hWnd, hModifyItem, reinterpret_cast<LPARAM>(lpData));
 			}
 

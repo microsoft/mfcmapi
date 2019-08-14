@@ -5,12 +5,14 @@ namespace sortlistdata
 {
 	class sortListData;
 
-	void InitPropList(sortListData* data, _In_ ULONG ulPropTag);
-
 	class propListData : public IData
 	{
 	public:
-		propListData(_In_ ULONG ulPropTag);
+		static void init(sortListData* data, _In_ ULONG ulPropTag);
+
 		ULONG m_ulPropTag{};
+
+	private:
+		propListData(_In_ ULONG ulPropTag);
 	};
 } // namespace sortlistdata

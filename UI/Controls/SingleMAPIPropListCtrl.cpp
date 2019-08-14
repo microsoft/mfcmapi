@@ -674,7 +674,7 @@ namespace controls
 			// Data used to refer to specific property tags. See GetSelectedPropTag.
 			if (lpData)
 			{
-				InitPropList(lpData, ulPropTag);
+				sortlistdata::propListData::init(lpData, ulPropTag);
 			}
 
 			const auto PropTag = strings::format(L"0x%08X", ulPropTag);
