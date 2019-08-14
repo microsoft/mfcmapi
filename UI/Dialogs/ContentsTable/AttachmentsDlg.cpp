@@ -101,7 +101,7 @@ namespace dialog
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 		if (lpListData)
 		{
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents && ATTACH_EMBEDDED_MSG == contents->m_ulAttachMethod)
 			{
 				auto lpMessage = OpenEmbeddedMessage();
@@ -166,7 +166,7 @@ namespace dialog
 
 		if (lpListData)
 		{
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
 				const auto ulAttachNum = contents->m_ulAttachNum;
@@ -222,7 +222,7 @@ namespace dialog
 			{
 				if (lpListData)
 				{
-					const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+					const auto contents = lpListData->cast<sortlistdata::contentsData>();
 					if (contents)
 					{
 						lpAttNumList.push_back(contents->m_ulAttachNum);
@@ -320,7 +320,7 @@ namespace dialog
 		{
 			if (lpListData)
 			{
-				const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
 					attachnums.push_back(contents->m_ulAttachNum);
@@ -386,7 +386,7 @@ namespace dialog
 
 			if (lpListData)
 			{
-				const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
 					const auto ulAttachNum = contents->m_ulAttachNum;

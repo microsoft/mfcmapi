@@ -127,7 +127,7 @@ namespace dialog
 					auto sProp = SPropValue{};
 					sProp.ulPropTag =
 						CHANGE_PROP_TYPE(m_lpsInputValue->ulPropTag, PROP_TYPE(m_lpsInputValue->ulPropTag) & ~MV_FLAG);
-					const auto mvprop = lpData->cast<controls::sortlistdata::mvPropData>();
+					const auto mvprop = lpData->cast<sortlistdata::mvPropData>();
 					if (mvprop)
 					{
 						sProp.Value = mvprop->m_val;
@@ -238,7 +238,7 @@ namespace dialog
 
 					if (lpData)
 					{
-						const auto mvprop = lpData->cast<controls::sortlistdata::mvPropData>();
+						const auto mvprop = lpData->cast<sortlistdata::mvPropData>();
 						if (mvprop)
 						{
 							switch (PROP_TYPE(m_lpsOutputValue->ulPropTag))
@@ -320,18 +320,16 @@ namespace dialog
 			return m_lpRet;
 		}
 
-		_Check_return_ bool CMultiValuePropertyEditor::DoListEdit(
-			ULONG /*ulListNum*/,
-			int iItem,
-			_In_ controls::sortlistdata::sortListData* lpData)
+		_Check_return_ bool
+		CMultiValuePropertyEditor::DoListEdit(ULONG /*ulListNum*/, int iItem, _In_ sortlistdata::sortListData* lpData)
 		{
 			if (!lpData) return false;
-			if (!lpData->cast<controls::sortlistdata::mvPropData>())
+			if (!lpData->cast<sortlistdata::mvPropData>())
 			{
 				InitMV(lpData, nullptr);
 			}
 
-			const auto mvprop = lpData->cast<controls::sortlistdata::mvPropData>();
+			const auto mvprop = lpData->cast<sortlistdata::mvPropData>();
 			if (!mvprop) return false;
 
 			SPropValue tmpPropVal = {};
@@ -394,7 +392,7 @@ namespace dialog
 			for (auto i = ULONG{}; i < ulNumVals; i++)
 			{
 				const auto lpData = GetListRowData(0, i);
-				const auto mvprop = lpData->cast<controls::sortlistdata::mvPropData>();
+				const auto mvprop = lpData->cast<sortlistdata::mvPropData>();
 				ret.push_back(mvprop ? mvprop->m_val.l : LONG{});
 			}
 
@@ -410,7 +408,7 @@ namespace dialog
 			for (auto i = ULONG{}; i < ulNumVals; i++)
 			{
 				const auto lpData = GetListRowData(0, i);
-				const auto mvprop = lpData->cast<controls::sortlistdata::mvPropData>();
+				const auto mvprop = lpData->cast<sortlistdata::mvPropData>();
 				const auto bin = mvprop ? mvprop->m_val.bin : SBinary{};
 				ret.push_back(std::vector<BYTE>(bin.lpb, bin.lpb + bin.cb));
 			}

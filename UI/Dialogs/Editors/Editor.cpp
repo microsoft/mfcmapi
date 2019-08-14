@@ -1101,7 +1101,7 @@ namespace dialog
 			}
 		}
 
-		_Check_return_ controls::sortlistdata::sortListData*
+		_Check_return_ sortlistdata::sortListData*
 		CEditor::InsertListRow(ULONG id, int iRow, const std::wstring& szText) const
 		{
 			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
@@ -1175,7 +1175,7 @@ namespace dialog
 			return 0;
 		}
 
-		_Check_return_ controls::sortlistdata::sortListData* CEditor::GetListRowData(ULONG id, int iRow) const
+		_Check_return_ sortlistdata::sortListData* CEditor::GetListRowData(ULONG id, int iRow) const
 		{
 			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
 			if (pane)

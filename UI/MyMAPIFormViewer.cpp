@@ -705,7 +705,7 @@ namespace mapi
 				const auto lpData = m_lpContentsTableListCtrl->GetSortListData(*piNewItem);
 				if (lpData)
 				{
-					const auto contents = lpData->cast<controls::sortlistdata::contentsData>();
+					const auto contents = lpData->cast<sortlistdata::contentsData>();
 					if (contents)
 					{
 						const auto lpEID = contents->m_lpEntryID;

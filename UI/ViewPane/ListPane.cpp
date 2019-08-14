@@ -210,7 +210,7 @@ namespace viewpane
 		m_List.SetItemText(iListRow, iListCol, szListString);
 	}
 
-	_Check_return_ controls::sortlistdata::sortListData* ListPane::InsertRow(int iRow, const std::wstring& szText) const
+	_Check_return_ sortlistdata::sortListData* ListPane::InsertRow(int iRow, const std::wstring& szText) const
 	{
 		return m_List.InsertRow(iRow, szText);
 	}
@@ -233,12 +233,12 @@ namespace viewpane
 
 	_Check_return_ ULONG ListPane::GetItemCount() const { return m_List.GetItemCount(); }
 
-	_Check_return_ controls::sortlistdata::sortListData* ListPane::GetItemData(int iRow) const
+	_Check_return_ sortlistdata::sortListData* ListPane::GetItemData(int iRow) const
 	{
-		return reinterpret_cast<controls::sortlistdata::sortListData*>(m_List.GetItemData(iRow));
+		return reinterpret_cast<sortlistdata::sortListData*>(m_List.GetItemData(iRow));
 	}
 
-	_Check_return_ controls::sortlistdata::sortListData* ListPane::GetSelectedListRowData() const
+	_Check_return_ sortlistdata::sortListData* ListPane::GetSelectedListRowData() const
 	{
 		const auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 

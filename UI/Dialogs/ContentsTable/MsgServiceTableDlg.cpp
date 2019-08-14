@@ -135,7 +135,7 @@ namespace dialog
 		{
 			if (lpListData)
 			{
-				const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
 					const auto lpServiceUID = contents->m_lpServiceUID;
@@ -179,7 +179,7 @@ namespace dialog
 		{
 			if (lpListData)
 			{
-				const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
 					const auto lpServiceUID = contents->m_lpServiceUID;
@@ -207,7 +207,7 @@ namespace dialog
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 		if (lpListData)
 		{
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
 				const auto lpServiceUID = contents->m_lpServiceUID;
@@ -261,7 +261,7 @@ namespace dialog
 		{
 			// Find the highlighted item AttachNum
 			if (!lpListData) break;
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (!contents) break;
 
 			output::DebugPrintEx(

@@ -5,7 +5,7 @@
 
 namespace viewpane
 {
-	typedef std::function<bool(ULONG, int, controls::sortlistdata::sortListData*)> DoListEditCallback;
+	typedef std::function<bool(ULONG, int, sortlistdata::sortListData*)> DoListEditCallback;
 
 	class ListPane : public ViewPane
 	{
@@ -21,12 +21,12 @@ namespace viewpane
 
 		ULONG HandleChange(UINT nID) override;
 		void SetListString(ULONG iListRow, ULONG iListCol, const std::wstring& szListString);
-		_Check_return_ controls::sortlistdata::sortListData* InsertRow(int iRow, const std::wstring& szText) const;
+		_Check_return_ sortlistdata::sortListData* InsertRow(int iRow, const std::wstring& szText) const;
 		void ClearList();
 		void ResizeList(bool bSort);
 		_Check_return_ ULONG GetItemCount() const;
-		_Check_return_ controls::sortlistdata::sortListData* GetItemData(int iRow) const;
-		_Check_return_ controls::sortlistdata::sortListData* GetSelectedListRowData() const;
+		_Check_return_ sortlistdata::sortListData* GetItemData(int iRow) const;
+		_Check_return_ sortlistdata::sortListData* GetSelectedListRowData() const;
 		void InsertColumn(int nCol, UINT uidText);
 		void SetColumnType(int nCol, ULONG ulPropType) const;
 		_Check_return_ bool OnEditListEntry();

@@ -63,7 +63,7 @@ namespace dialog
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 		if (lpListData)
 		{
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
 				const auto lpProviderUID = contents->m_lpProviderUID;

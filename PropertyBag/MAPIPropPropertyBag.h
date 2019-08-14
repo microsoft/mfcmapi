@@ -7,7 +7,7 @@ namespace propertybag
 	class MAPIPropPropertyBag : public IMAPIPropertyBag
 	{
 	public:
-		MAPIPropPropertyBag(LPMAPIPROP lpProp, controls::sortlistdata::sortListData* lpListData);
+		MAPIPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData);
 		virtual ~MAPIPropPropertyBag();
 
 		ULONG GetFlags() const override;
@@ -31,7 +31,7 @@ namespace propertybag
 		_Check_return_ HRESULT DeleteProp(ULONG ulPropTag) override;
 
 	private:
-		controls::sortlistdata::sortListData* m_lpListData{};
+		sortlistdata::sortListData* m_lpListData{};
 		LPMAPIPROP m_lpProp{};
 		bool m_bGetPropsSucceeded{};
 	};

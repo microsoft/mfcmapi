@@ -5,7 +5,7 @@
 
 namespace propertybag
 {
-	RowPropertyBag::RowPropertyBag(controls::sortlistdata::sortListData* lpListData)
+	RowPropertyBag::RowPropertyBag(sortlistdata::sortListData* lpListData)
 	{
 		m_lpListData = lpListData;
 		if (lpListData)

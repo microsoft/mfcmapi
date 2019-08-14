@@ -375,7 +375,7 @@ namespace dialog
 
 		if (lpListData)
 		{
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
 				const auto lpEntryID = contents->m_lpEntryID;
@@ -645,7 +645,7 @@ namespace dialog
 		{
 			if (lpListData)
 			{
-				const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
 					const auto lpItemEID = contents->m_lpEntryID;
@@ -678,7 +678,7 @@ namespace dialog
 		{
 			if (lpListData)
 			{
-				const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (contents)
 				{
 					const auto lpItemEID = contents->m_lpEntryID;
@@ -1181,7 +1181,7 @@ namespace dialog
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 		if (lpListData)
 		{
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
 				const auto lpItemEID = contents->m_lpEntryID;
@@ -1479,7 +1479,7 @@ namespace dialog
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 		if (lpListData)
 		{
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
 				const auto lpItemEID = contents->m_lpEntryID;

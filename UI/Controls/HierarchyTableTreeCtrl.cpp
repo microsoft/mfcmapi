@@ -135,7 +135,7 @@ namespace controls
 
 		if (lpNodeData)
 		{
-			const auto node = lpNodeData->cast<controls::sortlistdata::nodeData>();
+			const auto node = lpNodeData->cast<sortlistdata::nodeData>();
 			if (node && node->m_lpAdviseSink)
 			{
 				// unadvise before releasing our sink
@@ -263,7 +263,7 @@ namespace controls
 		// Set up our advise sink
 		if (lpData)
 		{
-			const auto node = lpData->cast<controls::sortlistdata::nodeData>();
+			const auto node = lpData->cast<sortlistdata::nodeData>();
 			if (node->m_lpHierarchyTable && !node->m_lpAdviseSink &&
 				(registry::hierRootNotifs || GetRootItem() != hItem))
 			{
@@ -318,7 +318,7 @@ namespace controls
 		const auto lpData = GetSortListData(hItem);
 
 		if (!lpData) return nullptr;
-		const auto node = lpData->cast<controls::sortlistdata::nodeData>();
+		const auto node = lpData->cast<sortlistdata::nodeData>();
 		if (!node) return nullptr;
 
 		if (!node->m_lpHierarchyTable)
@@ -407,7 +407,7 @@ namespace controls
 
 		if (lpData)
 		{
-			const auto node = lpData->cast<controls::sortlistdata::nodeData>();
+			const auto node = lpData->cast<sortlistdata::nodeData>();
 			if (node)
 			{
 				if (node->m_cSubfolders >= 0)
@@ -616,7 +616,7 @@ namespace controls
 			const auto lpData = GetSortListData(Item);
 			if (lpData)
 			{
-				const auto node = lpData->cast<controls::sortlistdata::nodeData>();
+				const auto node = lpData->cast<sortlistdata::nodeData>();
 				if (node)
 				{
 					return node->m_lpEntryID;
@@ -660,7 +660,7 @@ namespace controls
 			return nullptr;
 		}
 
-		const auto node = lpData->cast<controls::sortlistdata::nodeData>();
+		const auto node = lpData->cast<sortlistdata::nodeData>();
 		if (!node)
 		{
 			// We didn't get an entryID, so log it and get out of here
@@ -770,7 +770,7 @@ namespace controls
 		const auto lpNodeData = reinterpret_cast<sortlistdata::sortListData*>(lpData);
 		if (lpNodeData)
 		{
-			const auto node = lpNodeData->cast<controls::sortlistdata::nodeData>();
+			const auto node = lpNodeData->cast<sortlistdata::nodeData>();
 			if (node)
 			{
 				node->m_cSubfolders = 0;
@@ -817,7 +817,7 @@ namespace controls
 				const auto lpData = reinterpret_cast<sortlistdata::sortListData*>(tvItem.lParam);
 				if (lpData)
 				{
-					const auto node = lpData->cast<controls::sortlistdata::nodeData>();
+					const auto node = lpData->cast<sortlistdata::nodeData>();
 					if (node)
 					{
 						node->m_cSubfolders = 1;
@@ -947,7 +947,7 @@ namespace controls
 
 			if (lpData)
 			{
-				const auto node = lpData->cast<controls::sortlistdata::nodeData>();
+				const auto node = lpData->cast<sortlistdata::nodeData>();
 				if (node)
 				{
 					if (node->m_lpHierarchyTable)
@@ -988,7 +988,7 @@ namespace controls
 
 			if (lpListData)
 			{
-				const auto node = lpListData->cast<controls::sortlistdata::nodeData>();
+				const auto node = lpListData->cast<sortlistdata::nodeData>();
 				if (node)
 				{
 					const auto lpCurInstance = node->m_lpInstanceKey;
@@ -1038,7 +1038,7 @@ namespace controls
 				const auto lpData = reinterpret_cast<sortlistdata::sortListData*>(tvi.lParam);
 				if (lpData)
 				{
-					const auto node = lpData->cast<controls::sortlistdata::nodeData>();
+					const auto node = lpData->cast<sortlistdata::nodeData>();
 					if (node && node->m_lpAdviseSink)
 					{
 						auto rect = RECT{};

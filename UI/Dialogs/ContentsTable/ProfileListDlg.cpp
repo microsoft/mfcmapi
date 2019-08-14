@@ -129,7 +129,7 @@ namespace dialog
 		for (const auto& lpListData : items)
 		{
 			if (!lpListData) break;
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (!contents) break;
 
 			if (!contents->m_szProfileDisplayName.empty())
@@ -182,7 +182,7 @@ namespace dialog
 			for (const auto& lpListData : items)
 			{
 				if (!lpListData) break;
-				const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (!contents) break;
 
 				output::DebugPrintEx(
@@ -216,7 +216,7 @@ namespace dialog
 			for (const auto& lpListData : items)
 			{
 				if (!lpListData) break;
-				const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+				const auto contents = lpListData->cast<sortlistdata::contentsData>();
 				if (!contents) break;
 
 				editor::CEditor MyFile(this, IDS_PSTPATH, IDS_PSTPATHPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -275,7 +275,7 @@ namespace dialog
 		for (const auto& lpListData : items)
 		{
 			if (!lpListData) break;
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (!contents) break;
 
 			output::DebugPrintEx(
@@ -330,7 +330,7 @@ namespace dialog
 		{
 			// Find the highlighted item AttachNum
 			if (!lpListData) break;
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (!contents) break;
 
 			output::DebugPrintEx(
@@ -357,7 +357,7 @@ namespace dialog
 		{
 			// Find the highlighted item AttachNum
 			if (!lpListData) break;
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (!contents) break;
 
 			output::DebugPrintEx(
@@ -438,7 +438,7 @@ namespace dialog
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 		if (lpListData)
 		{
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
 				output::DebugPrintEx(
@@ -481,7 +481,7 @@ namespace dialog
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 		if (lpListData)
 		{
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
 				cache::CGlobalCache::getInstance().SetProfileToCopy(contents->m_szProfileDisplayName);
@@ -527,7 +527,7 @@ namespace dialog
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 		if (lpListData)
 		{
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
 				const auto szProfileName = strings::stringTowstring(contents->m_szProfileDisplayName);

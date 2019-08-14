@@ -7,7 +7,7 @@
 
 namespace propertybag
 {
-	MAPIPropPropertyBag::MAPIPropPropertyBag(LPMAPIPROP lpProp, controls::sortlistdata::sortListData* lpListData)
+	MAPIPropPropertyBag::MAPIPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData)
 	{
 		m_lpListData = lpListData;
 		m_lpProp = lpProp;

@@ -139,7 +139,7 @@ namespace dialog
 		return CContentsTableDlg::HandleMenu(wMenuSelect);
 	}
 
-	typedef HRESULT (CFolderDlg::*LPSIMPLEMULTI)(int iItem, controls::sortlistdata::sortListData* lpData);
+	typedef HRESULT (CFolderDlg::*LPSIMPLEMULTI)(int iItem, sortlistdata::sortListData* lpData);
 
 	_Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 	{
@@ -409,7 +409,7 @@ namespace dialog
 	}
 
 	_Check_return_ HRESULT
-	CFolderDlg::OnAttachmentProperties(int iItem, _In_ controls::sortlistdata::sortListData* /*lpData*/)
+	CFolderDlg::OnAttachmentProperties(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -697,7 +697,7 @@ namespace dialog
 
 		if (lpListData)
 		{
-			const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
 			if (contents)
 			{
 				const auto lpMessageEID = contents->m_lpLongtermID;
@@ -1020,7 +1020,7 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ controls::sortlistdata::sortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
@@ -1055,7 +1055,7 @@ namespace dialog
 		return hRes;
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ controls::sortlistdata::sortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
@@ -1145,14 +1145,14 @@ namespace dialog
 	}
 
 	_Check_return_ HRESULT
-	CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ controls::sortlistdata::sortListData* lpData)
+	CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ sortlistdata::sortListData* lpData)
 	{
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!lpData) return MAPI_E_INVALID_PARAMETER;
 
-		const auto contents = lpData->cast<controls::sortlistdata::contentsData>();
+		const auto contents = lpData->cast<sortlistdata::contentsData>();
 		if (!contents || !m_lpFolder) return MAPI_E_INVALID_PARAMETER;
 
 		if (contents->m_lpEntryID)
@@ -1164,7 +1164,7 @@ namespace dialog
 	}
 
 	_Check_return_ HRESULT
-	CFolderDlg::OnRecipientProperties(int iItem, _In_ controls::sortlistdata::sortListData* /*lpData*/)
+	CFolderDlg::OnRecipientProperties(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -1267,7 +1267,7 @@ namespace dialog
 	}
 
 	_Check_return_ HRESULT
-	CFolderDlg::OnSaveAttachments(int iItem, _In_ controls::sortlistdata::sortListData* /*lpData*/)
+	CFolderDlg::OnSaveAttachments(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -1839,13 +1839,13 @@ namespace dialog
 	}
 
 	_Check_return_ HRESULT
-	CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ controls::sortlistdata::sortListData* lpData)
+	CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ sortlistdata::sortListData* lpData)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (!lpData) return MAPI_E_INVALID_PARAMETER;
 
-		const auto contents = lpData->cast<controls::sortlistdata::contentsData>();
+		const auto contents = lpData->cast<sortlistdata::contentsData>();
 		if (!contents || !m_lpFolder) return MAPI_E_INVALID_PARAMETER;
 
 		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnGetMessageStatus", L"\n");
@@ -1896,7 +1896,7 @@ namespace dialog
 
 				if (lpListData)
 				{
-					const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+					const auto contents = lpListData->cast<sortlistdata::contentsData>();
 					if (contents)
 					{
 						const auto lpMessageEID = contents->m_lpEntryID;
@@ -1924,7 +1924,7 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ controls::sortlistdata::sortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -1946,7 +1946,7 @@ namespace dialog
 		return hRes;
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ controls::sortlistdata::sortListData* lpData)
+	_Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ sortlistdata::sortListData* lpData)
 	{
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -1955,7 +1955,7 @@ namespace dialog
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 		if (!m_lpMapiObjects || !lpData) return MAPI_E_INVALID_PARAMETER;
-		const auto contents = lpData->cast<controls::sortlistdata::contentsData>();
+		const auto contents = lpData->cast<sortlistdata::contentsData>();
 		if (!contents) return MAPI_E_INVALID_PARAMETER;
 
 		auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release

@@ -71,7 +71,7 @@ namespace dialog
 			const auto lpListData = GetSelectedListRowData(0);
 			if (lpListData)
 			{
-				const auto prop = lpListData->cast<controls::sortlistdata::propListData>();
+				const auto prop = lpListData->cast<sortlistdata::propListData>();
 				if (prop)
 				{
 					m_ulPropTag = prop->m_ulPropTag;
@@ -83,10 +83,8 @@ namespace dialog
 
 		// We're not actually editing the list here - just overriding this to allow double-click
 		// So it's OK to return false
-		_Check_return_ bool CPropertySelector::DoListEdit(
-			ULONG /*ulListNum*/,
-			int /*iItem*/,
-			_In_ controls::sortlistdata::sortListData* /*lpData*/)
+		_Check_return_ bool
+		CPropertySelector::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ sortlistdata::sortListData* /*lpData*/)
 		{
 			OnOK();
 			return false;
@@ -94,7 +92,7 @@ namespace dialog
 
 		_Check_return_ ULONG CPropertySelector::GetPropertyTag() const { return m_ulPropTag; }
 
-		_Check_return_ controls::sortlistdata::sortListData* CPropertySelector::GetSelectedListRowData(ULONG id) const
+		_Check_return_ sortlistdata::sortListData* CPropertySelector::GetSelectedListRowData(ULONG id) const
 		{
 			const auto lpPane = static_cast<viewpane::ListPane*>(GetPane(id));
 			if (lpPane)

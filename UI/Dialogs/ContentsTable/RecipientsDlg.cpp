@@ -126,7 +126,7 @@ namespace dialog
 						const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 						if (lpListData)
 						{
-							const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+							const auto contents = lpListData->cast<sortlistdata::contentsData>();
 							if (contents)
 							{
 								lpProp->Value.l = contents->m_ulRowID;

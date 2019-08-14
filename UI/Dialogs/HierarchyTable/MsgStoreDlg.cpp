@@ -740,7 +740,7 @@ namespace dialog
 			const auto lpData = m_lpHierarchyTableTreeCtrl.GetSortListData(hItem);
 			if (lpData)
 			{
-				const auto node = lpData->cast<controls::sortlistdata::nodeData>();
+				const auto node = lpData->cast<sortlistdata::nodeData>();
 				if (node)
 				{
 					lpItemEID = node->m_lpEntryID;

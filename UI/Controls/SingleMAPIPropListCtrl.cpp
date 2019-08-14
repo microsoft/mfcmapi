@@ -306,7 +306,7 @@ namespace controls
 				const auto lpListData = reinterpret_cast<sortlistdata::sortListData*>(GetItemData(iItem));
 				if (lpListData)
 				{
-					const auto prop = lpListData->cast<controls::sortlistdata::propListData>();
+					const auto prop = lpListData->cast<sortlistdata::propListData>();
 					if (prop && lpPropTag)
 					{
 						*lpPropTag = prop->m_ulPropTag;
@@ -901,7 +901,7 @@ namespace controls
 
 						if (lpListData)
 						{
-							const auto prop = lpListData->cast<controls::sortlistdata::propListData>();
+							const auto prop = lpListData->cast<sortlistdata::propListData>();
 							if (prop)
 							{
 								ulPropType = PROP_TYPE(prop->m_ulPropTag);

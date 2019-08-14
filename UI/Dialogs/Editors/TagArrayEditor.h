@@ -20,7 +20,7 @@ namespace dialog
 
 			_Check_return_ LPSPropTagArray DetachModifiedTagArray();
 			_Check_return_ bool
-			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData) override;
+			DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData) override;
 
 		private:
 			BOOL OnInitDialog() override;

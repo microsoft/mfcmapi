@@ -22,7 +22,7 @@ namespace dialog
 			// Get values after we've done the DisplayDialog
 			_Check_return_ LPSPropValue DetachModifiedSPropValue();
 			_Check_return_ bool
-			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData) override;
+			DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData) override;
 
 		private:
 			BOOL OnInitDialog() override;

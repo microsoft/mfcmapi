@@ -91,7 +91,7 @@ namespace dialog
 			{
 				if (lpListData)
 				{
-					const auto contents = lpListData->cast<controls::sortlistdata::contentsData>();
+					const auto contents = lpListData->cast<sortlistdata::contentsData>();
 					if (contents)
 					{
 						if (!contents->m_szDN.empty())

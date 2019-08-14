@@ -451,7 +451,7 @@ namespace dialog
 			_Check_return_ LPSRestriction DetachModifiedSRestrictionArray();
 			_Check_return_ ULONG GetResCount() const;
 			_Check_return_ bool
-			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData) override;
+			DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData) override;
 
 		private:
 			BOOL OnInitDialog() override;
@@ -548,15 +548,15 @@ namespace dialog
 		}
 
 		_Check_return_ bool
-		CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData)
+		CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData)
 		{
 			if (!lpData) return false;
-			if (!lpData->cast<controls::sortlistdata::resData>())
+			if (!lpData->cast<sortlistdata::resData>())
 			{
 				InitRes(lpData, nullptr);
 			}
 
-			const auto res = lpData->cast<controls::sortlistdata::resData>();
+			const auto res = lpData->cast<sortlistdata::resData>();
 			if (!res) return false;
 
 			const auto lpSourceRes = res->m_lpNewRes ? res->m_lpNewRes : res->m_lpOldRes;
@@ -586,7 +586,7 @@ namespace dialog
 					const auto lpData = GetListRowData(0, paneID);
 					if (lpData)
 					{
-						const auto res = lpData->cast<controls::sortlistdata::resData>();
+						const auto res = lpData->cast<sortlistdata::resData>();
 						if (res)
 						{
 							if (res->m_lpNewRes)
@@ -620,7 +620,7 @@ namespace dialog
 			_Check_return_ LPSPropValue DetachModifiedSPropValue();
 			_Check_return_ ULONG GetSPropValueCount() const;
 			_Check_return_ bool
-			DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData) override;
+			DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData) override;
 
 		private:
 			void OnEditAction1() override;
@@ -748,16 +748,16 @@ namespace dialog
 		}
 
 		_Check_return_ bool
-		CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData)
+		CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData)
 		{
 			if (!m_lpAllocParent) return false;
 			if (!lpData) return false;
-			if (!lpData->cast<controls::sortlistdata::commentData>())
+			if (!lpData->cast<sortlistdata::commentData>())
 			{
 				InitComment(lpData, nullptr);
 			}
 
-			const auto comment = lpData->cast<controls::sortlistdata::commentData>();
+			const auto comment = lpData->cast<sortlistdata::commentData>();
 			if (!comment) return false;
 
 			auto lpSourceProp = comment->m_lpNewProp ? comment->m_lpNewProp : comment->m_lpOldProp;
@@ -820,7 +820,7 @@ namespace dialog
 						const auto lpData = GetListRowData(0, paneID);
 						if (lpData)
 						{
-							const auto comment = lpData->cast<controls::sortlistdata::commentData>();
+							const auto comment = lpData->cast<sortlistdata::commentData>();
 							if (comment)
 							{
 								if (comment->m_lpNewProp)
@@ -1387,16 +1387,16 @@ namespace dialog
 		}
 
 		_Check_return_ bool
-		CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::sortListData* lpData)
+		CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData)
 		{
 			if (!lpData) return false;
 
-			if (!lpData->cast<controls::sortlistdata::binaryData>())
+			if (!lpData->cast<sortlistdata::binaryData>())
 			{
 				InitBinary(lpData, nullptr);
 			}
 
-			const auto binary = lpData->cast<controls::sortlistdata::binaryData>();
+			const auto binary = lpData->cast<sortlistdata::binaryData>();
 			if (!binary) return false;
 
 			CEditor BinEdit(this, IDS_EIDEDITOR, IDS_EIDEDITORPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -1448,7 +1448,7 @@ namespace dialog
 					const auto lpData = GetListRowData(LISTNUM, paneID);
 					if (lpData)
 					{
-						const auto binary = lpData->cast<controls::sortlistdata::binaryData>();
+						const auto binary = lpData->cast<sortlistdata::binaryData>();
 						if (binary)
 						{
 							if (binary->m_NewBin.lpb)

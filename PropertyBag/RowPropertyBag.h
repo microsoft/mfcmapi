@@ -7,7 +7,7 @@ namespace propertybag
 	class RowPropertyBag : public IMAPIPropertyBag
 	{
 	public:
-		RowPropertyBag(controls::sortlistdata::sortListData* lpListData);
+		RowPropertyBag(sortlistdata::sortListData* lpListData);
 		virtual ~RowPropertyBag() = default;
 
 		ULONG GetFlags() const override;
@@ -34,7 +34,7 @@ namespace propertybag
 		_Check_return_ HRESULT DeleteProp(ULONG) override { return E_NOTIMPL; };
 
 	private:
-		controls::sortlistdata::sortListData* m_lpListData{};
+		sortlistdata::sortListData* m_lpListData{};
 
 		ULONG m_cValues{};
 		LPSPropValue m_lpProps{};
