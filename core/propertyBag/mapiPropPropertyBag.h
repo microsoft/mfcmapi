@@ -4,11 +4,11 @@
 
 namespace propertybag
 {
-	class MAPIPropPropertyBag : public IMAPIPropertyBag
+	class mapiPropPropertyBag : public IMAPIPropertyBag
 	{
 	public:
-		MAPIPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData);
-		virtual ~MAPIPropPropertyBag();
+		mapiPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData);
+		virtual ~mapiPropPropertyBag();
 
 		ULONG GetFlags() const override;
 		propBagType GetType() const { return pbMAPIProp; }

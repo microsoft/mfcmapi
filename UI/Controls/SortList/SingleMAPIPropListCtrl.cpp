@@ -746,11 +746,11 @@ namespace controls
 
 			if (lpMAPIProp)
 			{
-				return SetDataSource(std::make_shared<propertybag::MAPIPropPropertyBag>(lpMAPIProp, lpListData), bIsAB);
+				return SetDataSource(std::make_shared<propertybag::mapiPropPropertyBag>(lpMAPIProp, lpListData), bIsAB);
 			}
 			else if (lpListData)
 			{
-				return SetDataSource(std::make_shared<propertybag::RowPropertyBag>(lpListData), bIsAB);
+				return SetDataSource(std::make_shared<propertybag::rowPropertyBag>(lpListData), bIsAB);
 			}
 
 			return SetDataSource(nullptr, bIsAB);

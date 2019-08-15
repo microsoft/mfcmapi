@@ -8,31 +8,31 @@
 
 namespace propertybag
 {
-	MAPIPropPropertyBag::MAPIPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData)
+	mapiPropPropertyBag::mapiPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData)
 	{
 		m_lpListData = lpListData;
 		m_lpProp = lpProp;
 		if (m_lpProp) m_lpProp->AddRef();
 	}
 
-	MAPIPropPropertyBag::~MAPIPropPropertyBag()
+	mapiPropPropertyBag::~mapiPropPropertyBag()
 	{
 		if (m_lpProp) m_lpProp->Release();
 	}
 
-	ULONG MAPIPropPropertyBag::GetFlags() const
+	ULONG mapiPropPropertyBag::GetFlags() const
 	{
 		ULONG ulFlags = pbNone;
 		if (m_bGetPropsSucceeded) ulFlags |= pbBackedByGetProps;
 		return ulFlags;
 	}
 
-	bool MAPIPropPropertyBag::IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
+	bool mapiPropPropertyBag::IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
 	{
 		if (!lpPropBag) return false;
 		if (GetType() != lpPropBag->GetType()) return false;
 
-		const auto lpOther = std::dynamic_pointer_cast<MAPIPropPropertyBag>(lpPropBag);
+		const auto lpOther = std::dynamic_pointer_cast<mapiPropPropertyBag>(lpPropBag);
 		if (lpOther)
 		{
 			if (m_lpListData != lpOther->m_lpListData) return false;
@@ -43,14 +43,14 @@ namespace propertybag
 		return false;
 	}
 
-	_Check_return_ HRESULT MAPIPropPropertyBag::Commit()
+	_Check_return_ HRESULT mapiPropPropertyBag::Commit()
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
 		return WC_H(m_lpProp->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 
-	_Check_return_ HRESULT MAPIPropPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
+	_Check_return_ HRESULT mapiPropPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 		auto hRes = S_OK;
@@ -88,7 +88,7 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT MAPIPropPropertyBag::GetProps(
+	_Check_return_ HRESULT mapiPropPropertyBag::GetProps(
 		LPSPropTagArray lpPropTagArray,
 		ULONG ulFlags,
 		ULONG FAR* lpcValues,
@@ -99,7 +99,7 @@ namespace propertybag
 		return WC_H(m_lpProp->GetProps(lpPropTagArray, ulFlags, lpcValues, lppPropArray));
 	}
 
-	_Check_return_ HRESULT MAPIPropPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
+	_Check_return_ HRESULT mapiPropPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
@@ -121,7 +121,7 @@ namespace propertybag
 		return hRes;
 	}
 
-	void MAPIPropPropertyBag::FreeBuffer(LPSPropValue lpProp)
+	void mapiPropPropertyBag::FreeBuffer(LPSPropValue lpProp)
 	{
 		// m_lpListData->lpSourceProps is the only data we might hand out that we didn't allocate
 		// Don't delete it!!!
@@ -130,7 +130,7 @@ namespace propertybag
 		if (lpProp) MAPIFreeBuffer(lpProp);
 	}
 
-	_Check_return_ HRESULT MAPIPropPropertyBag::SetProps(ULONG cValues, LPSPropValue lpPropArray)
+	_Check_return_ HRESULT mapiPropPropertyBag::SetProps(ULONG cValues, LPSPropValue lpPropArray)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
@@ -141,14 +141,14 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT MAPIPropPropertyBag::SetProp(LPSPropValue lpProp)
+	_Check_return_ HRESULT mapiPropPropertyBag::SetProp(LPSPropValue lpProp)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 
 		return WC_H(HrSetOneProp(m_lpProp, lpProp));
 	}
 
-	_Check_return_ HRESULT MAPIPropPropertyBag::DeleteProp(ULONG ulPropTag)
+	_Check_return_ HRESULT mapiPropPropertyBag::DeleteProp(ULONG ulPropTag)
 	{
 		if (nullptr == m_lpProp) return S_OK;
 

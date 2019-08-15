@@ -4,11 +4,11 @@
 
 namespace propertybag
 {
-	class RowPropertyBag : public IMAPIPropertyBag
+	class rowPropertyBag : public IMAPIPropertyBag
 	{
 	public:
-		RowPropertyBag(sortlistdata::sortListData* lpListData);
-		virtual ~RowPropertyBag() = default;
+		rowPropertyBag(sortlistdata::sortListData* lpListData);
+		virtual ~rowPropertyBag() = default;
 
 		ULONG GetFlags() const override;
 		propBagType GetType() const override { return pbRow; }
@@ -26,7 +26,7 @@ namespace propertybag
 			LPSPropValue FAR* lppPropArray) override;
 		_Check_return_ HRESULT GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp) override;
 		// None of our GetProps allocate anything, so nothing to do here
-		void RowPropertyBag::FreeBuffer(LPSPropValue) override { return; }
+		void rowPropertyBag::FreeBuffer(LPSPropValue) override { return; }
 		// TODO: This is for paste, something we don't yet support for rows
 		_Check_return_ HRESULT SetProps(ULONG, LPSPropValue) override { return E_NOTIMPL; }
 		_Check_return_ HRESULT SetProp(LPSPropValue lpProp) override;

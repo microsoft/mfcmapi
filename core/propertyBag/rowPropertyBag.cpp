@@ -5,7 +5,7 @@
 
 namespace propertybag
 {
-	RowPropertyBag::RowPropertyBag(sortlistdata::sortListData* lpListData)
+	rowPropertyBag::rowPropertyBag(sortlistdata::sortListData* lpListData)
 	{
 		m_lpListData = lpListData;
 		if (lpListData)
@@ -15,19 +15,19 @@ namespace propertybag
 		}
 	}
 
-	ULONG RowPropertyBag::GetFlags() const
+	ULONG rowPropertyBag::GetFlags() const
 	{
 		ULONG ulFlags = pbNone;
 		if (m_bRowModified) ulFlags |= pbModified;
 		return ulFlags;
 	}
 
-	bool RowPropertyBag::IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
+	bool rowPropertyBag::IsEqual(const std::shared_ptr<IMAPIPropertyBag> lpPropBag) const
 	{
 		if (!lpPropBag) return false;
 		if (GetType() != lpPropBag->GetType()) return false;
 
-		const auto lpOther = std::dynamic_pointer_cast<RowPropertyBag>(lpPropBag);
+		const auto lpOther = std::dynamic_pointer_cast<rowPropertyBag>(lpPropBag);
 		if (lpOther)
 		{
 			if (m_lpListData != lpOther->m_lpListData) return false;
@@ -39,7 +39,7 @@ namespace propertybag
 		return false;
 	}
 
-	_Check_return_ HRESULT RowPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
+	_Check_return_ HRESULT rowPropertyBag::GetAllProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
 	{
 		if (!lpcValues || !lppPropArray) return MAPI_E_INVALID_PARAMETER;
 
@@ -49,7 +49,7 @@ namespace propertybag
 		return S_OK;
 	}
 
-	_Check_return_ HRESULT RowPropertyBag::GetProps(
+	_Check_return_ HRESULT rowPropertyBag::GetProps(
 		LPSPropTagArray /*lpPropTagArray*/,
 		ULONG /*ulFlags*/,
 		ULONG FAR* /*lpcValues*/,
@@ -60,7 +60,7 @@ namespace propertybag
 		return E_NOTIMPL;
 	}
 
-	_Check_return_ HRESULT RowPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
+	_Check_return_ HRESULT rowPropertyBag::GetProp(ULONG ulPropTag, LPSPropValue FAR* lppProp)
 	{
 		if (!lppProp) return MAPI_E_INVALID_PARAMETER;
 
@@ -180,7 +180,7 @@ namespace propertybag
 		return hRes;
 	}
 
-	_Check_return_ HRESULT RowPropertyBag::SetProp(LPSPropValue lpProp)
+	_Check_return_ HRESULT rowPropertyBag::SetProp(LPSPropValue lpProp)
 	{
 		ULONG ulNewArray = NULL;
 		LPSPropValue lpNewArray = nullptr;
