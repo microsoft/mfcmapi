@@ -10,9 +10,9 @@
 #include <core/mapi/mapiProgress.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/smartview/SmartView.h>
-#include <PropertyBag/PropertyBag.h>
-#include <PropertyBag/MAPIPropPropertyBag.h>
-#include <PropertyBag/RowPropertyBag.h>
+#include <core/PropertyBag/PropertyBag.h>
+#include <core/PropertyBag/MAPIPropPropertyBag.h>
+#include <core/PropertyBag/RowPropertyBag.h>
 #include <core/utility/strings.h>
 #include <core/sortlistdata/propListData.h>
 #include <core/mapi/cache/globalCache.h>

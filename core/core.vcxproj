@@ -537,6 +537,9 @@
     <ClInclude Include="mapi\stubutils.h" />
     <ClInclude Include="addin\mfcmapi.h" />
     <ClInclude Include="mapi\version.h" />
+    <ClInclude Include="propertyBag\mapiPropPropertyBag.h" />
+    <ClInclude Include="propertyBag\propertyBag.h" />
+    <ClInclude Include="propertyBag\rowPropertyBag.h" />
     <ClInclude Include="property\attributes.h" />
     <ClInclude Include="property\parseProperty.h" />
     <ClInclude Include="property\property.h" />
@@ -620,6 +623,8 @@
     <ClCompile Include="mapi\processor\mapiProcessor.cpp" />
     <ClCompile Include="mapi\stubutils.cpp" />
     <ClCompile Include="mapi\version.cpp" />
+    <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp" />
+    <ClCompile Include="propertyBag\rowPropertyBag.cpp" />
     <ClCompile Include="property\attributes.cpp" />
     <ClCompile Include="property\parseProperty.cpp" />
     <ClCompile Include="property\property.cpp" />

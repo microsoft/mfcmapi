@@ -291,6 +291,15 @@
     <ClInclude Include="sortlistdata\nodeData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="propertyBag\propertyBag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="propertyBag\rowPropertyBag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="propertyBag\mapiPropPropertyBag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -510,6 +519,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sortlistdata\nodeData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="propertyBag\rowPropertyBag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

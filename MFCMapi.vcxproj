@@ -565,9 +565,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
     <ClInclude Include="UI\enums.h" />
     <ClInclude Include="UI\CMAPIProgress.h" />
-    <ClInclude Include="propertyBag\MAPIPropPropertyBag.h" />
-    <ClInclude Include="propertyBag\PropertyBag.h" />
-    <ClInclude Include="propertyBag\RowPropertyBag.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="UI\addinui.h" />
     <ClInclude Include="UI\Controls\StyleTree\StyleTreeCtrl.h" />
@@ -639,7 +636,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UI\CMAPIProgress.cpp" />
-    <ClCompile Include="propertyBag\MAPIPropPropertyBag.cpp" />
     <ClCompile Include="UI\addinui.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortHeader.cpp" />
     <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp" />
@@ -647,7 +643,6 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\ParentWnd.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="propertyBag\RowPropertyBag.cpp" />
     <ClCompile Include="UI\OnNotify.cpp" />
     <ClCompile Include="UI\ViewPane\TreePane.cpp" />
     <ClCompile Include="UI\MAPIFormFunctions.cpp" />
