@@ -1,7 +1,7 @@
 // Displays the list of services in a profile
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/MsgServiceTableDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>

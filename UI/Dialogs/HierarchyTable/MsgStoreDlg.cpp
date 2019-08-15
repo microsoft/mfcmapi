@@ -1,9 +1,9 @@
 // Displays the hierarchy tree of folders in a message store
 #include <StdAfx.h>
 #include <UI/Dialogs/HierarchyTable/MsgStoreDlg.h>
-#include <UI/Controls/HierarchyTableTreeCtrl.h>
+#include <UI/Controls/StyleTree/HierarchyTableTreeCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
-#include <UI/Controls/SingleMAPIPropListCtrl.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <core/utility/file.h>

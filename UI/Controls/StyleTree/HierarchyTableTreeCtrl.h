@@ -1,7 +1,7 @@
 #pragma once
 #include <UI/enums.h>
 #include <core/sortlistdata/sortListData.h>
-#include <UI/Controls/StyleTreeCtrl.h>
+#include <UI/Controls/StyleTree/StyleTreeCtrl.h>
 
 namespace cache
 {

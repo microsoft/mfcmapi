@@ -1,10 +1,10 @@
 // Displays the recipient table for a message
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/RecipientsDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>
-#include <UI/Controls/SingleMAPIPropListCtrl.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <core/sortlistdata/contentsData.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/output.h>

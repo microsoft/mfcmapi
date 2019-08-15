@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/MailboxTableDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiStoreFunctions.h>

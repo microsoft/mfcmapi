@@ -3,7 +3,7 @@
 #include <StdAfx.h>
 #include <UI/MyMAPIFormViewer.h>
 #include <UI/MAPIFormFunctions.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <core/interpret/guid.h>
 #include <UI/MyWinApp.h>

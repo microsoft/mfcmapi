@@ -1,5 +1,5 @@
 #include <StdAfx.h>
-#include <UI/Controls/HierarchyTableTreeCtrl.h>
+#include <UI/Controls/StyleTree/HierarchyTableTreeCtrl.h>
 #include <UI/Dialogs/BaseDialog.h>
 #include <UI/Dialogs/HierarchyTable/HierarchyTableDlg.h>
 #include <core/mapi/cache/mapiObjects.h>

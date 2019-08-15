@@ -1,8 +1,8 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/MainDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
-#include <UI/Controls/SingleMAPIPropListCtrl.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <core/mapi/mapiStoreFunctions.h>
 #include <UI/profile.h>
 #include <core/mapi/columnTags.h>

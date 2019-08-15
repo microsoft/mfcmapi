@@ -2,7 +2,7 @@
 
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/AttachmentsDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <UI/FileDialogEx.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>

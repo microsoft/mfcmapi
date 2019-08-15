@@ -1,6 +1,6 @@
 #include <StdAfx.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <core/sortlistdata/sortListData.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/UIFunctions.h>
 #include <core/mapi/adviseSink.h>
