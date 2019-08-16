@@ -1,13 +1,13 @@
 // Displays the list of providers in a message service in a profile
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ProviderTableDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <core/mapi/mapiProfileFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <UI/Controls/SortList/ContentsData.h>
+#include <core/sortlistdata/contentsData.h>
 #include <UI/addinui.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
@@ -61,12 +61,16 @@ namespace dialog
 
 		LPPROFSECT lpProfSect = nullptr;
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
-		if (lpListData && lpListData->Contents())
+		if (lpListData)
 		{
-			const auto lpProviderUID = lpListData->Contents()->m_lpProviderUID;
-			if (lpProviderUID)
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
+			if (contents)
 			{
-				lpProfSect = mapi::profile::OpenProfileSection(m_lpProviderAdmin, lpProviderUID);
+				const auto lpProviderUID = contents->m_lpProviderUID;
+				if (lpProviderUID)
+				{
+					lpProfSect = mapi::profile::OpenProfileSection(m_lpProviderAdmin, lpProviderUID);
+				}
 			}
 		}
 

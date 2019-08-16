@@ -561,15 +561,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="UI\AdviseSink.h" />
+    <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
+    <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
     <ClInclude Include="UI\enums.h" />
     <ClInclude Include="UI\CMAPIProgress.h" />
-    <ClInclude Include="PropertyBag\MAPIPropPropertyBag.h" />
-    <ClInclude Include="PropertyBag\PropertyBag.h" />
-    <ClInclude Include="PropertyBag\RowPropertyBag.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="UI\addinui.h" />
-    <ClInclude Include="UI\Controls\StyleTreeCtrl.h" />
+    <ClInclude Include="UI\Controls\StyleTree\StyleTreeCtrl.h" />
     <ClInclude Include="UI\Dialogs\HierarchyTable\ABContDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\ABDlg.h" />
     <ClInclude Include="UI\Dialogs\AboutDlg.h" />
@@ -581,7 +579,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\BaseDialog.h" />
     <ClInclude Include="UI\DoubleBuffer.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\ContentsTableDlg.h" />
-    <ClInclude Include="UI\Controls\ContentsTableListCtrl.h" />
+    <ClInclude Include="UI\Controls\SortList\ContentsTableListCtrl.h" />
     <ClInclude Include="UI\Dialogs\Editors\DbgView.h" />
     <ClInclude Include="UI\Dialogs\Dialog.h" />
     <ClInclude Include="UI\Dialogs\Editors\Editor.h" />
@@ -591,25 +589,17 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\ContentsTable\FormContainerDlg.h" />
     <ClInclude Include="UI\Dialogs\Editors\HexEditor.h" />
     <ClInclude Include="UI\Dialogs\HierarchyTable\HierarchyTableDlg.h" />
-    <ClInclude Include="UI\Controls\HierarchyTableTreeCtrl.h" />
+    <ClInclude Include="UI\Controls\StyleTree\HierarchyTableTreeCtrl.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MailboxTableDlg.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\MainDlg.h" />
     <ClInclude Include="UI\profile.h" />
+    <ClInclude Include="UI\OnNotify.h" />
     <ClInclude Include="UI\ViewPane\TreePane.h" />
     <ClInclude Include="UI\MAPIFormFunctions.h" />
     <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h" />
     <ClInclude Include="UI\Dialogs\Editors\QSSpecialFolders.h" />
     <ClInclude Include="UI\RichEditOleCallback.h" />
     <ClInclude Include="UI\Dialogs\SingleRecipientDialog.h" />
-    <ClInclude Include="UI\Controls\SortList\BinaryData.h" />
-    <ClInclude Include="UI\Controls\SortList\CommentData.h" />
-    <ClInclude Include="UI\Controls\SortList\ContentsData.h" />
-    <ClInclude Include="UI\Controls\SortList\Data.h" />
-    <ClInclude Include="UI\Controls\SortList\MVPropData.h" />
-    <ClInclude Include="UI\Controls\SortList\NodeData.h" />
-    <ClInclude Include="UI\Controls\SortList\PropListData.h" />
-    <ClInclude Include="UI\Controls\SortList\ResData.h" />
-    <ClInclude Include="UI\Controls\SortList\SortListData.h" />
     <ClInclude Include="UI\ViewPane\CheckPane.h" />
     <ClInclude Include="UI\ViewPane\CountedTextPane.h" />
     <ClInclude Include="UI\ViewPane\DropDownPane.h" />
@@ -635,9 +625,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\Editors\RestrictEditor.h" />
     <ClInclude Include="UI\Dialogs\ContentsTable\RulesDlg.h" />
     <ClInclude Include="UI\Dialogs\SingleMessageDialog.h" />
-    <ClInclude Include="UI\Controls\SingleMAPIPropListCtrl.h" />
-    <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
-    <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
+    <ClInclude Include="UI\Controls\SortList\SingleMAPIPropListCtrl.h" />
     <ClInclude Include="UI\Dialogs\Editors\StreamEditor.h" />
     <ClInclude Include="UI\Dialogs\Editors\TagArrayEditor.h" />
     <ClInclude Include="UI\UIFunctions.h" />
@@ -647,18 +635,18 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <None Include=".clang-format" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="UI\AdviseSink.cpp" />
     <ClCompile Include="UI\CMAPIProgress.cpp" />
-    <ClCompile Include="PropertyBag\MAPIPropPropertyBag.cpp" />
     <ClCompile Include="UI\addinui.cpp" />
+    <ClCompile Include="UI\Controls\SortList\SortHeader.cpp" />
+    <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp" />
     <ClCompile Include="UI\profile.cpp" />
     <ClCompile Include="UI\ParentWnd.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PropertyBag\RowPropertyBag.cpp" />
+    <ClCompile Include="UI\OnNotify.cpp" />
     <ClCompile Include="UI\ViewPane\TreePane.cpp" />
     <ClCompile Include="UI\MAPIFormFunctions.cpp" />
-    <ClCompile Include="UI\Controls\StyleTreeCtrl.cpp" />
+    <ClCompile Include="UI\Controls\StyleTree\StyleTreeCtrl.cpp" />
     <ClCompile Include="UI\Dialogs\HierarchyTable\ABContDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\AbDlg.cpp" />
     <ClCompile Include="UI\Dialogs\AboutDlg.cpp" />
@@ -670,7 +658,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\Dialogs\BaseDialog.cpp" />
     <ClCompile Include="UI\DoubleBuffer.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\ContentsTableDlg.cpp" />
-    <ClCompile Include="UI\Controls\ContentsTableListCtrl.cpp" />
+    <ClCompile Include="UI\Controls\SortList\ContentsTableListCtrl.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\DbgView.cpp" />
     <ClCompile Include="UI\Dialogs\Dialog.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\Editor.cpp" />
@@ -680,7 +668,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\Dialogs\ContentsTable\FormContainerDlg.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\HexEditor.cpp" />
     <ClCompile Include="UI\Dialogs\HierarchyTable\HierarchyTableDlg.cpp" />
-    <ClCompile Include="UI\Controls\HierarchyTableTreeCtrl.cpp" />
+    <ClCompile Include="UI\Controls\StyleTree\HierarchyTableTreeCtrl.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\MailboxTableDlg.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\MainDlg.cpp" />
     <ClCompile Include="UI\Dialogs\MFCUtilityFunctions.cpp" />
@@ -701,19 +689,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="UI\Dialogs\Editors\RestrictEditor.cpp" />
     <ClCompile Include="UI\RichEditOleCallback.cpp" />
     <ClCompile Include="UI\Dialogs\ContentsTable\RulesDlg.cpp" />
-    <ClCompile Include="UI\Controls\SingleMAPIPropListCtrl.cpp" />
+    <ClCompile Include="UI\Controls\SortList\SingleMAPIPropListCtrl.cpp" />
     <ClCompile Include="UI\Dialogs\SingleMessageDialog.cpp" />
     <ClCompile Include="UI\Dialogs\SingleRecipientDialog.cpp" />
-    <ClCompile Include="UI\Controls\SortList\BinaryData.cpp" />
-    <ClCompile Include="UI\Controls\SortList\CommentData.cpp" />
-    <ClCompile Include="UI\Controls\SortList\ContentsData.cpp" />
-    <ClCompile Include="UI\Controls\SortList\MVPropData.cpp" />
-    <ClCompile Include="UI\Controls\SortList\NodeData.cpp" />
-    <ClCompile Include="UI\Controls\SortList\PropListData.cpp" />
-    <ClCompile Include="UI\Controls\SortList\ResData.cpp" />
-    <ClCompile Include="UI\Controls\SortList\SortHeader.cpp" />
-    <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp" />
-    <ClCompile Include="UI\Controls\SortList\SortListData.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\StreamEditor.cpp" />
     <ClCompile Include="UI\Dialogs\Editors\TagArrayEditor.cpp" />
     <ClCompile Include="UI\UIFunctions.cpp" />

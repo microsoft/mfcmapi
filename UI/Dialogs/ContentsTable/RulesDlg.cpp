@@ -1,10 +1,10 @@
 // Displays the rules table for a folder
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/RulesDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>
-#include <UI/Controls/SingleMAPIPropListCtrl.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>

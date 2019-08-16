@@ -1,14 +1,14 @@
 // Displays the list of services in a profile
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/MsgServiceTableDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/ContentsTable/ProviderTableDlg.h>
 #include <core/mapi/mapiProfileFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <UI/Controls/SortList/ContentsData.h>
+#include <core/sortlistdata/contentsData.h>
 #include <UI/addinui.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
@@ -133,31 +133,35 @@ namespace dialog
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 		for (const auto& lpListData : items)
 		{
-			if (lpListData && lpListData->Contents())
+			if (lpListData)
 			{
-				const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
-				if (lpServiceUID)
+				const auto contents = lpListData->cast<sortlistdata::contentsData>();
+				if (contents)
 				{
-					EC_MAPI_S(m_lpServiceAdmin->AdminProviders(
-						reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
-						0, // fMapiUnicode is not supported
-						&lpProviderAdmin));
-
-					if (lpProviderAdmin)
+					const auto lpServiceUID = contents->m_lpServiceUID;
+					if (lpServiceUID)
 					{
-						EC_MAPI_S(lpProviderAdmin->GetProviderTable(
+						EC_MAPI_S(m_lpServiceAdmin->AdminProviders(
+							reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
 							0, // fMapiUnicode is not supported
-							&lpProviderTable));
+							&lpProviderAdmin));
 
-						if (lpProviderTable)
+						if (lpProviderAdmin)
 						{
-							new CProviderTableDlg(m_lpParent, m_lpMapiObjects, lpProviderTable, lpProviderAdmin);
-							lpProviderTable->Release();
-							lpProviderTable = nullptr;
-						}
+							EC_MAPI_S(lpProviderAdmin->GetProviderTable(
+								0, // fMapiUnicode is not supported
+								&lpProviderTable));
 
-						lpProviderAdmin->Release();
-						lpProviderAdmin = nullptr;
+							if (lpProviderTable)
+							{
+								new CProviderTableDlg(m_lpParent, m_lpMapiObjects, lpProviderTable, lpProviderAdmin);
+								lpProviderTable->Release();
+								lpProviderTable = nullptr;
+							}
+
+							lpProviderAdmin->Release();
+							lpProviderAdmin = nullptr;
+						}
 					}
 				}
 			}
@@ -173,17 +177,21 @@ namespace dialog
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 		for (const auto& lpListData : items)
 		{
-			if (lpListData && lpListData->Contents())
+			if (lpListData)
 			{
-				const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
-				if (lpServiceUID)
+				const auto contents = lpListData->cast<sortlistdata::contentsData>();
+				if (contents)
 				{
-					EC_H_CANCEL_S(m_lpServiceAdmin->ConfigureMsgService(
-						reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
-						reinterpret_cast<ULONG_PTR>(m_hWnd),
-						SERVICE_UI_ALWAYS,
-						0,
-						nullptr));
+					const auto lpServiceUID = contents->m_lpServiceUID;
+					if (lpServiceUID)
+					{
+						EC_H_CANCEL_S(m_lpServiceAdmin->ConfigureMsgService(
+							reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
+							reinterpret_cast<ULONG_PTR>(m_hWnd),
+							SERVICE_UI_ALWAYS,
+							0,
+							nullptr));
+					}
 				}
 			}
 		}
@@ -197,12 +205,16 @@ namespace dialog
 
 		LPPROFSECT lpProfSect = nullptr;
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
-		if (lpListData && lpListData->Contents())
+		if (lpListData)
 		{
-			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
-			if (lpServiceUID)
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
+			if (contents)
 			{
-				lpProfSect = mapi::profile::OpenProfileSection(m_lpServiceAdmin, lpServiceUID);
+				const auto lpServiceUID = contents->m_lpServiceUID;
+				if (lpServiceUID)
+				{
+					lpProfSect = mapi::profile::OpenProfileSection(m_lpServiceAdmin, lpServiceUID);
+				}
 			}
 		}
 
@@ -248,16 +260,18 @@ namespace dialog
 		for (const auto& lpListData : items)
 		{
 			// Find the highlighted item AttachNum
-			if (!lpListData || !lpListData->Contents()) break;
+			if (!lpListData) break;
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
+			if (!contents) break;
 
 			output::DebugPrintEx(
 				output::DBGDeleteSelectedItem,
 				CLASS,
 				L"OnDeleteSelectedItem",
 				L"Deleting service from \"%hs\"\n",
-				lpListData->Contents()->m_szProfileDisplayName.c_str());
+				contents->m_szProfileDisplayName.c_str());
 
-			const auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
+			const auto lpServiceUID = contents->m_lpServiceUID;
 			if (lpServiceUID)
 			{
 				WC_MAPI_S(m_lpServiceAdmin->DeleteMsgService(reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb)));

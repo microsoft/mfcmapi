@@ -515,6 +515,7 @@
     <ClInclude Include="interpret\propTypeArray.h" />
     <ClInclude Include="interpret\sid.h" />
     <ClInclude Include="interpret\smartViewParsers.h" />
+    <ClInclude Include="mapi\adviseSink.h" />
     <ClInclude Include="mapi\cache\globalCache.h" />
     <ClInclude Include="mapi\cache\mapiObjects.h" />
     <ClInclude Include="mapi\cache\namedPropCache.h" />
@@ -536,6 +537,9 @@
     <ClInclude Include="mapi\stubutils.h" />
     <ClInclude Include="addin\mfcmapi.h" />
     <ClInclude Include="mapi\version.h" />
+    <ClInclude Include="propertyBag\mapiPropPropertyBag.h" />
+    <ClInclude Include="propertyBag\propertyBag.h" />
+    <ClInclude Include="propertyBag\rowPropertyBag.h" />
     <ClInclude Include="property\attributes.h" />
     <ClInclude Include="property\parseProperty.h" />
     <ClInclude Include="property\property.h" />
@@ -576,6 +580,15 @@
     <ClInclude Include="smartview\VerbStream.h" />
     <ClInclude Include="smartview\WebViewPersistStream.h" />
     <ClInclude Include="smartview\XID.h" />
+    <ClInclude Include="sortlistdata\binaryData.h" />
+    <ClInclude Include="sortlistdata\commentData.h" />
+    <ClInclude Include="sortlistdata\contentsData.h" />
+    <ClInclude Include="sortlistdata\data.h" />
+    <ClInclude Include="sortlistdata\mvPropData.h" />
+    <ClInclude Include="sortlistdata\nodeData.h" />
+    <ClInclude Include="sortlistdata\propListData.h" />
+    <ClInclude Include="sortlistdata\resData.h" />
+    <ClInclude Include="sortlistdata\sortListData.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="utility\cli.h" />
     <ClInclude Include="utility\error.h" />
@@ -592,6 +605,7 @@
     <ClCompile Include="interpret\proptags.cpp" />
     <ClCompile Include="interpret\proptype.cpp" />
     <ClCompile Include="interpret\sid.cpp" />
+    <ClCompile Include="mapi\adviseSink.cpp" />
     <ClCompile Include="mapi\cache\globalCache.cpp" />
     <ClCompile Include="mapi\cache\mapiObjects.cpp" />
     <ClCompile Include="mapi\cache\namedPropCache.cpp" />
@@ -609,6 +623,8 @@
     <ClCompile Include="mapi\processor\mapiProcessor.cpp" />
     <ClCompile Include="mapi\stubutils.cpp" />
     <ClCompile Include="mapi\version.cpp" />
+    <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp" />
+    <ClCompile Include="propertyBag\rowPropertyBag.cpp" />
     <ClCompile Include="property\attributes.cpp" />
     <ClCompile Include="property\parseProperty.cpp" />
     <ClCompile Include="property\property.cpp" />
@@ -642,6 +658,14 @@
     <ClCompile Include="smartview\VerbStream.cpp" />
     <ClCompile Include="smartview\WebViewPersistStream.cpp" />
     <ClCompile Include="smartview\XID.cpp" />
+    <ClCompile Include="sortlistdata\binaryData.cpp" />
+    <ClCompile Include="sortlistdata\commentData.cpp" />
+    <ClCompile Include="sortlistdata\contentsData.cpp" />
+    <ClCompile Include="sortlistdata\mvPropData.cpp" />
+    <ClCompile Include="sortlistdata\nodeData.cpp" />
+    <ClCompile Include="sortlistdata\propListData.cpp" />
+    <ClCompile Include="sortlistdata\resData.cpp" />
+    <ClCompile Include="sortlistdata\sortListData.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Create</PrecompiledHeader>

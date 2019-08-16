@@ -1,11 +1,11 @@
 // Displays the recipient table for a message
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/RecipientsDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>
-#include <UI/Controls/SingleMAPIPropListCtrl.h>
-#include <UI/Controls/SortList/ContentsData.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
+#include <core/sortlistdata/contentsData.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/output.h>
 #include <core/mapi/mapiFunctions.h>
@@ -124,13 +124,17 @@ namespace dialog
 						lpProp->dwAlignPad = 0;
 						// Find the highlighted item AttachNum
 						const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
-						if (lpListData && lpListData->Contents())
+						if (lpListData)
 						{
-							lpProp->Value.l = lpListData->Contents()->m_ulRowID;
-						}
-						else
-						{
-							lpProp->Value.l = 0;
+							const auto contents = lpListData->cast<sortlistdata::contentsData>();
+							if (contents)
+							{
+								lpProp->Value.l = contents->m_ulRowID;
+							}
+							else
+							{
+								lpProp->Value.l = 0;
+							}
 						}
 
 						output::DebugPrintEx(

@@ -2,11 +2,11 @@
 
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/AclDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/columnTags.h>
-#include <UI/Controls/SingleMAPIPropListCtrl.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <core/interpret/flags.h>
 #include <core/mapi/mapiMemory.h>
 #include <UI/addinui.h>

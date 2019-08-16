@@ -1,11 +1,11 @@
 // Displays the contents of a folder
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/mapiStoreFunctions.h>
 #include <core/mapi/mapiABFunctions.h>
-#include <UI/Controls/SingleMAPIPropListCtrl.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <core/mapi/columnTags.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
@@ -18,7 +18,7 @@
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
 #include <core/mapi/mapiProgress.h>
 #include <core/mapi/mapiMime.h>
-#include <UI/Controls/SortList/ContentsData.h>
+#include <core/sortlistdata/contentsData.h>
 #include <core/mapi/cache/globalCache.h>
 #include <core/mapi/mapiMemory.h>
 #include <UI/mapiui.h>
@@ -139,7 +139,7 @@ namespace dialog
 		return CContentsTableDlg::HandleMenu(wMenuSelect);
 	}
 
-	typedef HRESULT (CFolderDlg::*LPSIMPLEMULTI)(int iItem, controls::sortlistdata::SortListData* lpData);
+	typedef HRESULT (CFolderDlg::*LPSIMPLEMULTI)(int iItem, sortlistdata::sortListData* lpData);
 
 	_Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 	{
@@ -409,7 +409,7 @@ namespace dialog
 	}
 
 	_Check_return_ HRESULT
-	CFolderDlg::OnAttachmentProperties(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
+	CFolderDlg::OnAttachmentProperties(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -694,32 +694,36 @@ namespace dialog
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
 		const auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
-		if (lpListData && lpListData->Contents())
+
+		if (lpListData)
 		{
-			const auto lpMessageEID = lpListData->Contents()->m_lpLongtermID;
-
-			if (lpMessageEID)
+			const auto contents = lpListData->cast<sortlistdata::contentsData>();
+			if (contents)
 			{
-				LPMAPIPROP lpMAPIProp = nullptr;
-
-				const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-				if (lpMDB)
+				const auto lpMessageEID = contents->m_lpLongtermID;
+				if (lpMessageEID)
 				{
-					lpMAPIProp = mapi::CallOpenEntry<LPMAPIPROP>(
-						lpMDB,
-						nullptr,
-						nullptr,
-						nullptr,
-						lpMessageEID->cb,
-						reinterpret_cast<LPENTRYID>(lpMessageEID->lpb),
-						nullptr,
-						MAPI_BEST_ACCESS,
-						nullptr);
+					LPMAPIPROP lpMAPIProp = nullptr;
+
+					const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+					if (lpMDB)
+					{
+						lpMAPIProp = mapi::CallOpenEntry<LPMAPIPROP>(
+							lpMDB,
+							nullptr,
+							nullptr,
+							nullptr,
+							lpMessageEID->cb,
+							reinterpret_cast<LPENTRYID>(lpMessageEID->lpb),
+							nullptr,
+							MAPI_BEST_ACCESS,
+							nullptr);
+					}
+
+					OnUpdateSingleMAPIPropListCtrl(lpMAPIProp, nullptr);
+
+					if (lpMAPIProp) lpMAPIProp->Release();
 				}
-
-				OnUpdateSingleMAPIPropListCtrl(lpMAPIProp, nullptr);
-
-				if (lpMAPIProp) lpMAPIProp->Release();
 			}
 		}
 	}
@@ -1016,7 +1020,7 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
@@ -1051,7 +1055,7 @@ namespace dialog
 		return hRes;
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		auto hRes = S_OK;
 		LPMESSAGE lpMessage = nullptr;
@@ -1141,23 +1145,26 @@ namespace dialog
 	}
 
 	_Check_return_ HRESULT
-	CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ controls::sortlistdata::SortListData* lpData)
+	CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ sortlistdata::sortListData* lpData)
 	{
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		if (!lpData || !lpData->Contents() || !m_lpFolder) return MAPI_E_INVALID_PARAMETER;
+		if (!lpData) return MAPI_E_INVALID_PARAMETER;
 
-		if (lpData->Contents()->m_lpEntryID)
+		const auto contents = lpData->cast<sortlistdata::contentsData>();
+		if (!contents || !m_lpFolder) return MAPI_E_INVALID_PARAMETER;
+
+		if (contents->m_lpEntryID)
 		{
-			hRes = EC_H(mapi::ResendSingleMessage(m_lpFolder, lpData->Contents()->m_lpEntryID, m_hWnd));
+			hRes = EC_H(mapi::ResendSingleMessage(m_lpFolder, contents->m_lpEntryID, m_hWnd));
 		}
 
 		return hRes;
 	}
 
 	_Check_return_ HRESULT
-	CFolderDlg::OnRecipientProperties(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
+	CFolderDlg::OnRecipientProperties(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -1260,7 +1267,7 @@ namespace dialog
 	}
 
 	_Check_return_ HRESULT
-	CFolderDlg::OnSaveAttachments(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
+	CFolderDlg::OnSaveAttachments(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -1832,18 +1839,20 @@ namespace dialog
 	}
 
 	_Check_return_ HRESULT
-	CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ controls::sortlistdata::SortListData* lpData)
+	CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ sortlistdata::sortListData* lpData)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		if (!lpData || !lpData->Contents() || !m_lpFolder) return MAPI_E_INVALID_PARAMETER;
+		if (!lpData) return MAPI_E_INVALID_PARAMETER;
+
+		const auto contents = lpData->cast<sortlistdata::contentsData>();
+		if (!contents || !m_lpFolder) return MAPI_E_INVALID_PARAMETER;
 
 		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnGetMessageStatus", L"\n");
 
 		ULONG ulMessageStatus = NULL;
 
-		const auto lpMessageEID = lpData->Contents()->m_lpEntryID;
-
+		const auto lpMessageEID = contents->m_lpEntryID;
 		if (lpMessageEID)
 		{
 			const auto hRes = EC_MAPI(m_lpFolder->GetMessageStatus(
@@ -1884,20 +1893,25 @@ namespace dialog
 			{
 				hRes = S_OK;
 				const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iItem);
-				if (lpListData && lpListData->Contents())
+
+				if (lpListData)
 				{
-					const auto lpMessageEID = lpListData->Contents()->m_lpEntryID;
-
-					if (lpMessageEID)
+					const auto contents = lpListData->cast<sortlistdata::contentsData>();
+					if (contents)
 					{
-						ULONG ulOldStatus = NULL;
+						const auto lpMessageEID = contents->m_lpEntryID;
 
-						hRes = EC_MAPI(m_lpFolder->SetMessageStatus(
-							lpMessageEID->cb,
-							reinterpret_cast<LPENTRYID>(lpMessageEID->lpb),
-							MyData.GetHex(0),
-							MyData.GetHex(1),
-							&ulOldStatus));
+						if (lpMessageEID)
+						{
+							ULONG ulOldStatus = NULL;
+
+							hRes = EC_MAPI(m_lpFolder->SetMessageStatus(
+								lpMessageEID->cb,
+								reinterpret_cast<LPENTRYID>(lpMessageEID->lpb),
+								MyData.GetHex(0),
+								MyData.GetHex(1),
+								&ulOldStatus));
+						}
 					}
 				}
 
@@ -1910,7 +1924,7 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ controls::sortlistdata::SortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -1932,7 +1946,7 @@ namespace dialog
 		return hRes;
 	}
 
-	_Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ controls::sortlistdata::SortListData* lpData)
+	_Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ sortlistdata::sortListData* lpData)
 	{
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -1940,12 +1954,12 @@ namespace dialog
 		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
-		if (!m_lpMapiObjects || !lpData || !lpData->Contents()) return MAPI_E_INVALID_PARAMETER;
+		if (!m_lpMapiObjects || !lpData) return MAPI_E_INVALID_PARAMETER;
+		const auto contents = lpData->cast<sortlistdata::contentsData>();
+		if (!contents) return MAPI_E_INVALID_PARAMETER;
 
 		auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-
-		const auto lpMessageEID = lpData->Contents()->m_lpEntryID;
-
+		const auto lpMessageEID = contents->m_lpEntryID;
 		if (lpMDB && lpMessageEID)
 		{
 			hRes = EC_MAPI(lpMDB->AbortSubmit(lpMessageEID->cb, reinterpret_cast<LPENTRYID>(lpMessageEID->lpb), NULL));

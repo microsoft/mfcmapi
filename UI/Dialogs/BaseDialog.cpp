@@ -3,13 +3,13 @@
 #include <UI/FakeSplitter.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/ParentWnd.h>
-#include <UI/Controls/SingleMAPIPropListCtrl.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/HexEditor.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/UIFunctions.h>
 #include <UI/Dialogs/AboutDlg.h>
-#include <UI/AdviseSink.h>
+#include <core/mapi/adviseSink.h>
 #include <core/mapi/extraPropTags.h>
 #include <Msi.h>
 #include <core/smartview/SmartView.h>
@@ -468,7 +468,7 @@ namespace dialog
 
 	void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(
 		_In_opt_ LPMAPIPROP lpMAPIProp,
-		_In_opt_ controls::sortlistdata::SortListData* lpListData) const
+		_In_opt_ sortlistdata::sortListData* lpListData) const
 	{
 		output::DebugPrintEx(
 			output::DBGGeneric, CLASS, L"OnUpdateSingleMAPIPropListCtrl", L"Setting item %p\n", lpMAPIProp);
@@ -923,7 +923,7 @@ namespace dialog
 			auto hRes = WC_H(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
 			// don't actually care if the returning lpEntryID is NULL - Advise can work with that
 
-			m_lpBaseAdviseSink = new (std::nothrow) mapi::mapiui::CAdviseSink(m_hWnd, nullptr);
+			m_lpBaseAdviseSink = new (std::nothrow) mapi::adviseSink(m_hWnd, nullptr);
 
 			if (m_lpBaseAdviseSink)
 			{

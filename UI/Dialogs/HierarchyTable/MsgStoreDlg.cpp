@@ -1,14 +1,14 @@
 // Displays the hierarchy tree of folders in a message store
 #include <StdAfx.h>
 #include <UI/Dialogs/HierarchyTable/MsgStoreDlg.h>
-#include <UI/Controls/HierarchyTableTreeCtrl.h>
+#include <UI/Controls/StyleTree/HierarchyTableTreeCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
-#include <UI/Controls/SingleMAPIPropListCtrl.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <core/utility/file.h>
 #include <core/mapi/mapiProgress.h>
-#include <UI/Controls/SortList/NodeData.h>
+#include <core/sortlistdata/nodeData.h>
 #include <core/mapi/cache/globalCache.h>
 #include <UI/Dialogs/ContentsTable/FormContainerDlg.h>
 #include <UI/Dialogs/ContentsTable/FolderDlg.h>
@@ -738,7 +738,14 @@ namespace dialog
 		if (hItem)
 		{
 			const auto lpData = m_lpHierarchyTableTreeCtrl.GetSortListData(hItem);
-			if (lpData && lpData->Node()) lpItemEID = lpData->Node()->m_lpEntryID;
+			if (lpData)
+			{
+				const auto node = lpData->cast<sortlistdata::nodeData>();
+				if (node)
+				{
+					lpItemEID = node->m_lpEntryID;
+				}
+			}
 		}
 
 		if (!lpItemEID) return;
