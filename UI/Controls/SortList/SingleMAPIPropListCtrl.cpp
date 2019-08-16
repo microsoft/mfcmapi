@@ -1273,13 +1273,12 @@ namespace controls
 			}
 		}
 
-		// Display the selected property as a security dscriptor using a property sheet
+		// Display the selected property as a security descriptor using a property sheet
 		void CSingleMAPIPropListCtrl::OnDisplayPropertyAsSecurityDescriptorPropSheet() const
 		{
-			ULONG ulPropTag = NULL;
-
 			if (!m_lpPropBag || !import::pfnEditSecurity) return;
 
+			ULONG ulPropTag = NULL;
 			GetSelectedPropTag(&ulPropTag);
 			if (!ulPropTag) return;
 
@@ -1290,14 +1289,9 @@ namespace controls
 				L"interpreting 0x%X as Security Descriptor\n",
 				ulPropTag);
 
-			auto MySecInfo = new (std::nothrow) mapi::mapiui::CMySecInfo(m_lpPropBag->GetMAPIProp(), ulPropTag);
+			const auto mySecInfo = std::make_shared<mapi::mapiui::CMySecInfo>(m_lpPropBag->GetMAPIProp(), ulPropTag);
 
-			if (MySecInfo)
-			{
-				EC_B_S(import::pfnEditSecurity(m_hWnd, MySecInfo));
-
-				MySecInfo->Release();
-			}
+			EC_B_S(import::pfnEditSecurity(m_hWnd, mySecInfo.get()));
 		}
 
 		void CSingleMAPIPropListCtrl::OnEditProp()
