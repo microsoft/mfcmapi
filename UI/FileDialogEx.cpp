@@ -145,7 +145,7 @@ namespace file
 		auto ofn = OPENFILENAMEEXW{};
 		ofn.lStructSize = sizeof(OPENFILENAMEEXW);
 		ofn.lpstrFile = const_cast<wchar_t*>(szFileName.c_str());
-		ofn.nMaxFile = szFileName.length();
+		ofn.nMaxFile = static_cast<DWORD>(szFileName.length());
 
 		ofn.lpstrDefExt = lpszDefExt.c_str();
 		ofn.Flags = dwFlags | OFN_ENABLEHOOK | OFN_EXPLORER;
