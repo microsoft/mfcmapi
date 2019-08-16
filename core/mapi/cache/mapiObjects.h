@@ -6,7 +6,7 @@ namespace cache
 	class CMapiObjects
 	{
 	public:
-		CMapiObjects(_In_opt_ _In_opt_ std::shared_ptr<CMapiObjects> OldMapiObjects);
+		CMapiObjects(_In_opt_ std::shared_ptr<CMapiObjects> OldMapiObjects);
 		virtual ~CMapiObjects();
 
 		_Check_return_ LPADRBOOK GetAddrBook(bool bForceOpen);
