@@ -180,9 +180,8 @@ namespace viewpane
 	_Check_return_ std::wstring DropDownPane::GetDropStringUseControl() const
 	{
 		const auto len = m_DropDown.GetWindowTextLength() + 1;
-		auto out = std::wstring{};
-		out.resize(len);
-		GetWindowTextW(m_DropDown.m_hWnd, const_cast<LPWSTR>(out.data()), len);
+		auto out = std::wstring(len,'\0');
+		GetWindowTextW(m_DropDown.m_hWnd, const_cast<LPWSTR>(out.c_str()), len);
 		return out;
 	}
 
