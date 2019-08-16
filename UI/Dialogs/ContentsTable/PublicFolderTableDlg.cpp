@@ -14,7 +14,7 @@ namespace dialog
 
 	CPublicFolderTableDlg::CPublicFolderTableDlg(
 		_In_ ui::CParentWnd* pParentWnd,
-		_In_ cache::CMapiObjects* lpMapiObjects,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ const std::wstring& lpszServerName,
 		_In_ LPMAPITABLE lpMAPITable)
 		: CContentsTableDlg(

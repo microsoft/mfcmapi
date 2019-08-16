@@ -29,7 +29,7 @@ namespace controls
 
 			CContentsTableListCtrl(
 				_In_ CWnd* pCreateParent,
-				_In_ cache::CMapiObjects* lpMapiObjects,
+				_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 				_In_ LPSPropTagArray sptExtraColumnTags,
 				_In_ const std::vector<columns::TagNames>& lpExtraDisplayColumns,
 				UINT nIDContextMenu,
@@ -99,22 +99,22 @@ namespace controls
 			_Check_return_ LRESULT msgOnThreadAddItem(WPARAM wParam, LPARAM lParam);
 
 			ULONG m_ulDisplayFlags{dfNormal};
-			LONG volatile m_bAbortLoad{false};
-			std::thread m_LoadThreadHandle;
-			dialog::CContentsTableDlg* m_lpHostDlg{nullptr};
-			cache::CMapiObjects* m_lpMapiObjects{nullptr};
-			std::vector<columns::TagNames> m_lpDefaultDisplayColumns;
-			LPSPropTagArray m_sptDefaultDisplayColumnTags{nullptr};
-			ULONG m_ulHeaderColumns{0};
-			ULONG_PTR m_ulAdviseConnection{0};
+			LONG volatile m_bAbortLoad{};
+			std::thread m_LoadThreadHandle{};
+			dialog::CContentsTableDlg* m_lpHostDlg{};
+			std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
+			std::vector<columns::TagNames> m_lpDefaultDisplayColumns{};
+			LPSPropTagArray m_sptDefaultDisplayColumnTags{};
+			ULONG m_ulHeaderColumns{};
+			ULONG_PTR m_ulAdviseConnection{};
 			ULONG m_ulDisplayNameColumn{NODISPLAYNAME};
-			UINT m_nIDContextMenu{0};
-			bool m_bIsAB{false};
-			bool m_bInLoadOp{false};
-			const _SRestriction* m_lpRes{nullptr};
-			ULONG m_ulContainerType{NULL};
-			mapi::adviseSink* m_lpAdviseSink{nullptr};
-			LPMAPITABLE m_lpContentsTable{nullptr};
+			UINT m_nIDContextMenu{};
+			bool m_bIsAB{};
+			bool m_bInLoadOp{};
+			const _SRestriction* m_lpRes{};
+			ULONG m_ulContainerType{};
+			mapi::adviseSink* m_lpAdviseSink{};
+			LPMAPITABLE m_lpContentsTable{};
 
 			__mfcmapiRestrictionTypeEnum m_RestrictionType{mfcmapiNO_RESTRICTION};
 

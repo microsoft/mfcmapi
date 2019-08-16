@@ -28,7 +28,7 @@ namespace dialog
 
 	CMsgStoreDlg::CMsgStoreDlg(
 		_In_ ui::CParentWnd* pParentWnd,
-		_In_ cache::CMapiObjects* lpMapiObjects,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPMAPIPROP lpMDB,
 		_In_opt_ LPMAPIPROP lpRootFolder,
 		ULONG ulDisplayFlags)

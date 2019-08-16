@@ -23,7 +23,7 @@ namespace controls
 		// Initialization
 		void Create(
 			_In_ CWnd* pCreateParent,
-			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_ dialog::CHierarchyTableDlg* lpHostDlg,
 			ULONG ulDisplayFlags,
 			UINT nIDContextMenu);
@@ -69,11 +69,11 @@ namespace controls
 		_Check_return_ LRESULT msgOnModifyItem(WPARAM wParam, LPARAM lParam);
 		_Check_return_ LRESULT msgOnRefreshTable(WPARAM wParam, LPARAM lParam);
 
-		dialog::CHierarchyTableDlg* m_lpHostDlg{nullptr};
-		cache::CMapiObjects* m_lpMapiObjects{nullptr};
-		LPMAPICONTAINER m_lpContainer{nullptr};
-		ULONG m_ulContainerType{NULL};
+		dialog::CHierarchyTableDlg* m_lpHostDlg{};
+		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
+		LPMAPICONTAINER m_lpContainer{};
+		ULONG m_ulContainerType{};
 		ULONG m_ulDisplayFlags{dfNormal};
-		UINT m_nIDContextMenu{0};
+		UINT m_nIDContextMenu{};
 	};
 } // namespace controls

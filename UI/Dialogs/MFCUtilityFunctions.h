@@ -36,15 +36,15 @@ namespace dialog
 
 	_Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev);
 
-	void DisplayMailboxTable(_In_ ui::CParentWnd* lpParent, _In_ cache::CMapiObjects* lpMapiObjects);
-	void DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ cache::CMapiObjects* lpMapiObjects);
+	void DisplayMailboxTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
+	void DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
 	void ResolveMessageClass(
-		_In_ cache::CMapiObjects* lpMapiObjects,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
 		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo);
 	void SelectForm(
 		_In_ HWND hWnd,
-		_In_ cache::CMapiObjects* lpMapiObjects,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
 		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo);
 } // namespace dialog

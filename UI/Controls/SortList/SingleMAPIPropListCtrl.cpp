@@ -45,18 +45,15 @@ namespace controls
 		CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 			_In_ CWnd* pCreateParent,
 			_In_ dialog::CBaseDialog* lpHostDlg,
-			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			bool bIsAB)
+			: m_lpMapiObjects(lpMapiObjects), m_lpHostDlg(lpHostDlg), m_bIsAB(bIsAB)
+
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 
 			Create(pCreateParent, LVS_SINGLESEL, IDC_LIST_CTRL, true);
 
-			// We borrow our parent's Mapi objects
-			m_lpMapiObjects = lpMapiObjects;
-			if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
-
-			m_lpHostDlg = lpHostDlg;
 			if (m_lpHostDlg) m_lpHostDlg->AddRef();
 
 			for (ULONG i = 0; i < columns::PropColumns.size(); i++)
@@ -94,15 +91,12 @@ namespace controls
 			}
 
 			AutoSizeColumns(false);
-
-			m_bIsAB = bIsAB;
 		}
 
 		CSingleMAPIPropListCtrl::~CSingleMAPIPropListCtrl()
 		{
 			TRACE_DESTRUCTOR(CLASS);
 			if (m_sptExtraProps) MAPIFreeBuffer(m_sptExtraProps);
-			if (m_lpMapiObjects) m_lpMapiObjects->Release();
 			if (m_lpHostDlg) m_lpHostDlg->Release();
 		}
 

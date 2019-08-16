@@ -25,7 +25,7 @@ namespace dialog
 			HEXED_SMARTVIEW
 		};
 
-		CHexEditor::CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects)
+		CHexEditor::CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 			: CEditor(
 				  pParentWnd,
 				  IDS_HEXEDITOR,
@@ -37,7 +37,6 @@ namespace dialog
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 			m_lpMapiObjects = lpMapiObjects;
-			if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
 
 			auto splitter = viewpane::SplitterPane::CreateHorizontalPane(HEXED_TEXT, IDS_TEXTANSIUNICODE);
 			AddPane(splitter);
@@ -51,13 +50,6 @@ namespace dialog
 			AddPane(smartViewPane);
 
 			DisplayParentedDialog(pParentWnd, 1000);
-		}
-
-		CHexEditor::~CHexEditor()
-		{
-			TRACE_DESTRUCTOR(CLASS);
-
-			if (m_lpMapiObjects) m_lpMapiObjects->Release();
 		}
 
 		void CHexEditor::OnOK()

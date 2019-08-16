@@ -11,8 +11,7 @@ namespace dialog
 		class CHexEditor : public CEditor
 		{
 		public:
-			CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects);
-			virtual ~CHexEditor();
+			CHexEditor(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects);
 
 		private:
 			_Check_return_ ULONG HandleChange(UINT nID) override;
@@ -25,7 +24,7 @@ namespace dialog
 			void OnCancel() override;
 			void SetHex(_In_opt_count_(cb) LPBYTE lpb, size_t cb) const;
 
-			cache::CMapiObjects* m_lpMapiObjects;
+			std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 		};
 	} // namespace editor
 } // namespace dialog
