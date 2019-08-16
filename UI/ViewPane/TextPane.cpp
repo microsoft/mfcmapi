@@ -102,33 +102,27 @@ namespace viewpane
 
 		const ULONG cbTemp = cb / 2;
 		ULONG cbTempRead = 0;
-		const auto pbTempBuff = new (std::nothrow) BYTE[cbTemp];
+		auto pbTempBuff = std::vector<BYTE>(cbTemp);
 
-		if (pbTempBuff)
+		EC_MAPI_S(stmData->Read(pbTempBuff.data(), cbTemp, &cbTempRead));
+		output::DebugPrint(output::DBGStream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
+
+		ULONG iBinPos = 0;
+		for (ULONG i = 0; i < cbTempRead && i < cbTemp; i++)
 		{
-			EC_MAPI_S(stmData->Read(pbTempBuff, cbTemp, &cbTempRead));
-			output::DebugPrint(output::DBGStream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
+			const auto ch = pbTempBuff[i];
+			const auto bLow = static_cast<BYTE>(ch & 0xf);
+			const auto bHigh = static_cast<BYTE>(ch >> 4 & 0xf);
+			const auto szLow = static_cast<CHAR>(bLow <= 0x9 ? '0' + bLow : 'A' + bLow - 0xa);
+			const auto szHigh = static_cast<CHAR>(bHigh <= 0x9 ? '0' + bHigh : 'A' + bHigh - 0xa);
 
-			memset(pbBuff, 0, cbTempRead * 2);
-			ULONG iBinPos = 0;
-			for (ULONG i = 0; i < cbTempRead && i < cbTemp; i++)
-			{
-				const auto ch = pbTempBuff[i];
-				const auto bLow = static_cast<BYTE>(ch & 0xf);
-				const auto bHigh = static_cast<BYTE>(ch >> 4 & 0xf);
-				const auto szLow = static_cast<CHAR>(bLow <= 0x9 ? '0' + bLow : 'A' + bLow - 0xa);
-				const auto szHigh = static_cast<CHAR>(bHigh <= 0x9 ? '0' + bHigh : 'A' + bHigh - 0xa);
+			pbBuff[iBinPos] = szHigh;
+			pbBuff[iBinPos + 1] = szLow;
 
-				pbBuff[iBinPos] = szHigh;
-				pbBuff[iBinPos + 1] = szLow;
-
-				iBinPos += 2;
-			}
-
-			*pcb = cbTempRead * 2;
-
-			delete[] pbTempBuff;
+			iBinPos += 2;
 		}
+
+		*pcb = cbTempRead * 2;
 
 		return 0;
 	}
