@@ -562,7 +562,7 @@ namespace dialog
 				const auto len = lpPrompt->LineLength(lpPrompt->LineIndex(i));
 				if (len)
 				{
-					const auto szLine = new TCHAR[len + 1];
+					const auto szLine = new (std::nothrow) TCHAR[len + 1];
 					memset(szLine, 0, len + 1);
 
 					(void) lpPrompt->GetLine(i, szLine, len);
@@ -1101,7 +1101,7 @@ namespace dialog
 			}
 		}
 
-		_Check_return_ controls::sortlistdata::SortListData*
+		_Check_return_ sortlistdata::sortListData*
 		CEditor::InsertListRow(ULONG id, int iRow, const std::wstring& szText) const
 		{
 			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
@@ -1175,7 +1175,7 @@ namespace dialog
 			return 0;
 		}
 
-		_Check_return_ controls::sortlistdata::SortListData* CEditor::GetListRowData(ULONG id, int iRow) const
+		_Check_return_ sortlistdata::sortListData* CEditor::GetListRowData(ULONG id, int iRow) const
 		{
 			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
 			if (pane)

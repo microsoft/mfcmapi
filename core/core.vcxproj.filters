@@ -261,6 +261,45 @@
     <ClInclude Include="smartview\smartViewParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sortlistdata\binaryData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sortlistdata\commentData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sortlistdata\contentsData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sortlistdata\data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sortlistdata\mvPropData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sortlistdata\propListData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sortlistdata\resData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sortlistdata\sortListData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mapi\adviseSink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sortlistdata\nodeData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="propertyBag\propertyBag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="propertyBag\rowPropertyBag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="propertyBag\mapiPropPropertyBag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utility\strings.cpp">
@@ -453,6 +492,39 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="smartview\smartViewParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sortlistdata\binaryData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sortlistdata\commentData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sortlistdata\contentsData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sortlistdata\mvPropData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sortlistdata\propListData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sortlistdata\resData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sortlistdata\sortListData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mapi\adviseSink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sortlistdata\nodeData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="propertyBag\rowPropertyBag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

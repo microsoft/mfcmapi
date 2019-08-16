@@ -106,7 +106,7 @@ namespace property
 
 			szXML << tagopen(szValue + m_attributes.toXML(), iIndent) + L"\n";
 
-			for (auto i = 0; i < m_MainParsing.size() && i < m_AltParsing.size(); i++)
+			for (auto i = size_t{}; i < m_MainParsing.size() && i < m_AltParsing.size(); i++)
 			{
 				const auto parsing = m_MainParsing[i];
 				const auto altparsing = m_AltParsing[i];

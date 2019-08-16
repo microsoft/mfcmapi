@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/SingleMessageDialog.h>
-#include <UI/Controls/SingleMAPIPropListCtrl.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/StreamEditor.h>

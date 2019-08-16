@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/TagArrayEditor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <UI/Controls/SortList/PropListData.h>
+#include <core/sortlistdata/propListData.h>
 #include <core/mapi/cache/namedPropCache.h>
 #include <core/mapi/mapiMemory.h>
 #include <core/utility/strings.h>
@@ -81,15 +81,18 @@ namespace dialog
 		}
 
 		_Check_return_ bool
-		CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ controls::sortlistdata::SortListData* lpData)
+		CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ sortlistdata::sortListData* lpData)
 		{
 			if (!lpData) return false;
-			if (!lpData->Prop())
+			if (!lpData->cast<sortlistdata::propListData>())
 			{
-				lpData->InitializePropList(0);
+				sortlistdata::propListData::init(lpData, 0);
 			}
 
-			const auto ulOrigPropTag = lpData->Prop()->m_ulPropTag;
+			const auto prop = lpData->cast<sortlistdata::propListData>();
+			if (!prop) return false;
+
+			const auto ulOrigPropTag = prop->m_ulPropTag;
 
 			CPropertyTagEditor MyPropertyTag(
 				NULL, // title
@@ -104,7 +107,7 @@ namespace dialog
 
 			if (ulNewPropTag != ulOrigPropTag)
 			{
-				lpData->Prop()->m_ulPropTag = ulNewPropTag;
+				prop->m_ulPropTag = ulNewPropTag;
 
 				const auto namePropNames =
 					cache::NameIDToStrings(ulNewPropTag, m_lpMAPIProp, nullptr, nullptr, m_bIsAB);
@@ -121,6 +124,7 @@ namespace dialog
 				ResizeList(ulListNum, false);
 				return true;
 			}
+
 			return false;
 		}
 
@@ -146,7 +150,7 @@ namespace dialog
 					auto lpData = InsertListRow(ulListNum, iTagCount, std::to_wstring(iTagCount));
 					if (lpData)
 					{
-						lpData->InitializePropList(ulPropTag);
+						sortlistdata::propListData::init(lpData, ulPropTag);
 					}
 
 					const auto namePropNames =
@@ -180,8 +184,14 @@ namespace dialog
 				for (ULONG iTagCount = 0; iTagCount < m_lpOutputTagArray->cValues; iTagCount++)
 				{
 					const auto lpData = GetListRowData(ulListNum, iTagCount);
-					if (lpData && lpData->Prop())
-						m_lpOutputTagArray->aulPropTag[iTagCount] = lpData->Prop()->m_ulPropTag;
+					if (lpData)
+					{
+						const auto prop = lpData->cast<sortlistdata::propListData>();
+						if (prop)
+						{
+							m_lpOutputTagArray->aulPropTag[iTagCount] = prop->m_ulPropTag;
+						}
+					}
 				}
 			}
 		}

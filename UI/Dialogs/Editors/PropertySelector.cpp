@@ -1,7 +1,7 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/Editors/PropertySelector.h>
 #include <core/utility/strings.h>
-#include <UI/Controls/SortList/PropListData.h>
+#include <core/sortlistdata/propListData.h>
 #include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
 #include <core/utility/output.h>
@@ -51,7 +51,7 @@ namespace dialog
 
 				if (lpData)
 				{
-					lpData->InitializePropList(PropTagArray[i].ulValue);
+					sortlistdata::propListData::init(lpData, PropTagArray[i].ulValue);
 				}
 
 				SetListString(0, ulCurRow, 1, strings::format(L"0x%08X", PropTagArray[i].ulValue)); // STRING_OK
@@ -68,9 +68,13 @@ namespace dialog
 		void CPropertySelector::OnOK()
 		{
 			const auto lpListData = GetSelectedListRowData(0);
-			if (lpListData && lpListData->Prop())
+			if (lpListData)
 			{
-				m_ulPropTag = lpListData->Prop()->m_ulPropTag;
+				const auto prop = lpListData->cast<sortlistdata::propListData>();
+				if (prop)
+				{
+					m_ulPropTag = prop->m_ulPropTag;
+				}
 			}
 
 			CEditor::OnOK();
@@ -78,10 +82,8 @@ namespace dialog
 
 		// We're not actually editing the list here - just overriding this to allow double-click
 		// So it's OK to return false
-		_Check_return_ bool CPropertySelector::DoListEdit(
-			ULONG /*ulListNum*/,
-			int /*iItem*/,
-			_In_ controls::sortlistdata::SortListData* /*lpData*/)
+		_Check_return_ bool
+		CPropertySelector::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ sortlistdata::sortListData* /*lpData*/)
 		{
 			OnOK();
 			return false;
@@ -89,7 +91,7 @@ namespace dialog
 
 		_Check_return_ ULONG CPropertySelector::GetPropertyTag() const { return m_ulPropTag; }
 
-		_Check_return_ controls::sortlistdata::SortListData* CPropertySelector::GetSelectedListRowData(ULONG id) const
+		_Check_return_ sortlistdata::sortListData* CPropertySelector::GetSelectedListRowData(ULONG id) const
 		{
 			const auto lpPane = static_cast<viewpane::ListPane*>(GetPane(id));
 			if (lpPane)

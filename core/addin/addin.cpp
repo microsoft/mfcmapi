@@ -59,7 +59,7 @@ namespace addin
 			pfnGetPropTags(lpulPropTags, &lpPropTags);
 			if (lpPropTags && *lpulPropTags)
 			{
-				const auto lpPropTagsV2 = new NAME_ARRAY_ENTRY_V2[*lpulPropTags];
+				const auto lpPropTagsV2 = new (std::nothrow) NAME_ARRAY_ENTRY_V2[*lpulPropTags];
 				if (lpPropTagsV2)
 				{
 					for (ULONG i = 0; i < *lpulPropTags; i++)
