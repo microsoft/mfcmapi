@@ -147,27 +147,22 @@ namespace controls
 
 			if (lpMyHeader)
 			{
-				const ULONG nColumnCount = lpMyHeader->GetItemCount();
-				if (nColumnCount && nColumnCount <= MAX_SORT_COLS)
+				const auto columnCount = lpMyHeader->GetItemCount();
+				if (columnCount && columnCount <= MAX_SORT_COLS)
 				{
-					const auto pnOrder = new (std::nothrow) int[nColumnCount];
+					auto columns = std::vector<int>(columnCount);
 
-					if (pnOrder)
+					registry::propertyColumnOrder.clear();
+					EC_B_S(GetColumnOrderArray(columns.data(), columnCount));
+					for (const auto column : columns)
 					{
-						registry::propertyColumnOrder.clear();
-						EC_B_S(GetColumnOrderArray(pnOrder, nColumnCount));
-						for (ULONG i = 0; i < nColumnCount; i++)
-						{
-							registry::propertyColumnOrder.push_back(static_cast<wchar_t>(L'a' + pnOrder[i]));
-						}
+						registry::propertyColumnOrder.push_back(static_cast<wchar_t>(L'a' + column));
 					}
-
-					delete[] pnOrder;
 				}
 			}
 
 			return S_OK;
-		}
+		} // namespace sortlistctrl
 
 		void CSingleMAPIPropListCtrl::InitMenu(_In_ CMenu* pMenu) const
 		{
