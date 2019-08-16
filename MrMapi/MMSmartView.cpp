@@ -38,39 +38,33 @@ void DoSmartView()
 			const auto iDesc = _fileno(fIn);
 			const auto iLength = _filelength(iDesc);
 
-			const auto lpbIn = new (std::nothrow) BYTE[iLength + 1]; // +1 for NULL
-			if (lpbIn)
+			auto inBytes = std::vector<BYTE>(iLength + 1); // +1 for NULL
+			fread(inBytes.data(), sizeof(BYTE), iLength, fIn);
+			auto sBin = SBinary{};
+			auto bin = std::vector<BYTE>{};
+			if (cli::switchBinary.isSet())
 			{
-				memset(lpbIn, 0, sizeof(BYTE) * (iLength + 1));
-				fread(lpbIn, sizeof(BYTE), iLength, fIn);
-				SBinary Bin = {0};
-				std::vector<BYTE> bin;
-				if (cli::switchBinary.isSet())
+				sBin.cb = iLength;
+				sBin.lpb = inBytes.data();
+			}
+			else
+			{
+				bin = strings::HexStringToBin(strings::LPCSTRToWstring(reinterpret_cast<LPCSTR>(inBytes.data())));
+				sBin.cb = static_cast<ULONG>(bin.size());
+				sBin.lpb = bin.data();
+			}
+
+			auto szString = smartview::InterpretBinaryAsString(sBin, ulStructType, nullptr);
+			if (!szString.empty())
+			{
+				if (fOut)
 				{
-					Bin.cb = iLength;
-					Bin.lpb = lpbIn;
+					output::Output(output::DBGNoDebug, fOut, false, szString);
 				}
 				else
 				{
-					bin = strings::HexStringToBin(strings::LPCSTRToWstring(reinterpret_cast<LPCSTR>(lpbIn)));
-					Bin.cb = static_cast<ULONG>(bin.size());
-					Bin.lpb = bin.data();
+					wprintf(L"%ws\n", strings::StripCarriage(szString).c_str());
 				}
-
-				auto szString = smartview::InterpretBinaryAsString(Bin, ulStructType, nullptr);
-				if (!szString.empty())
-				{
-					if (fOut)
-					{
-						output::Output(output::DBGNoDebug, fOut, false, szString);
-					}
-					else
-					{
-						wprintf(L"%ws\n", strings::StripCarriage(szString).c_str());
-					}
-				}
-
-				delete[] lpbIn;
 			}
 		}
 

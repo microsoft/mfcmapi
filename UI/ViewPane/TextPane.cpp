@@ -102,15 +102,16 @@ namespace viewpane
 
 		const ULONG cbTemp = cb / 2;
 		ULONG cbTempRead = 0;
-		auto pbTempBuff = std::vector<BYTE>(cbTemp);
+		auto buffer = std::vector<BYTE>(cbTemp);
 
-		EC_MAPI_S(stmData->Read(pbTempBuff.data(), cbTemp, &cbTempRead));
+		EC_MAPI_S(stmData->Read(buffer.data(), cbTemp, &cbTempRead));
 		output::DebugPrint(output::DBGStream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
 
+		memset(pbBuff, 0, cbTempRead * 2);
 		ULONG iBinPos = 0;
 		for (ULONG i = 0; i < cbTempRead && i < cbTemp; i++)
 		{
-			const auto ch = pbTempBuff[i];
+			const auto ch = buffer[i];
 			const auto bLow = static_cast<BYTE>(ch & 0xf);
 			const auto bHigh = static_cast<BYTE>(ch >> 4 & 0xf);
 			const auto szLow = static_cast<CHAR>(bLow <= 0x9 ? '0' + bLow : 'A' + bLow - 0xa);

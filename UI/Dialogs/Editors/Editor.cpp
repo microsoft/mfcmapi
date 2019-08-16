@@ -562,12 +562,11 @@ namespace dialog
 				const auto len = lpPrompt->LineLength(lpPrompt->LineIndex(i));
 				if (len)
 				{
-					auto szLine = std::basic_string<TCHAR>();
-					szLine.resize(len + 1);
+					auto szLine = std::basic_string<TCHAR>(len + 1, '\0');
 
-					(void) lpPrompt->GetLine(i, const_cast<TCHAR*>(szLine.data()), len);
+					(void) lpPrompt->GetLine(i, const_cast<TCHAR*>(szLine.c_str()), len);
 
-					int iWidth = LOWORD(::GetTabbedTextExtent(hdc, szLine.data(), len, 0, nullptr));
+					int iWidth = LOWORD(::GetTabbedTextExtent(hdc, szLine.c_str(), len, 0, nullptr));
 					cx = max(cx, iWidth);
 				}
 			}
