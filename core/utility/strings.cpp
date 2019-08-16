@@ -126,7 +126,7 @@ namespace strings
 		return ret;
 	}
 
-	tstring wstringTotstring(const std::wstring& src)
+	std::basic_string<TCHAR> wstringTotstring(const std::wstring& src)
 	{
 #ifdef _UNICODE
 		return src;

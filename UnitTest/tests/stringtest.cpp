@@ -52,7 +52,7 @@ namespace stringtest
 		{
 			const auto lpctstr = _T("Hello World");
 			const auto lpcstr = "Hello World";
-			const auto tstr = strings::tstring(lpctstr);
+			const auto tstr = std::basic_string<TCHAR>(lpctstr);
 			const auto wstr = std::wstring(L"Hello World");
 			const auto str = std::string(lpcstr);
 			const auto wstrLower = std::wstring(L"hello world");
