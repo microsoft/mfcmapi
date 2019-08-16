@@ -180,12 +180,10 @@ namespace viewpane
 	_Check_return_ std::wstring DropDownPane::GetDropStringUseControl() const
 	{
 		const auto len = m_DropDown.GetWindowTextLength() + 1;
-		const auto buffer = new (std::nothrow) WCHAR[len];
-		memset(buffer, 0, sizeof(WCHAR) * len);
-		GetWindowTextW(m_DropDown.m_hWnd, buffer, len);
-		std::wstring szOut = buffer;
-		delete[] buffer;
-		return szOut;
+		auto out = std::wstring{};
+		out.resize(len);
+		GetWindowTextW(m_DropDown.m_hWnd, const_cast<LPWSTR>(out.data()), len);
+		return out;
 	}
 
 	// This should work whether the editor is active/displayed or not
