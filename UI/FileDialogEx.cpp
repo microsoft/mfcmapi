@@ -135,33 +135,21 @@ namespace file
 		_In_ const std::wstring& lpszFilter,
 		_In_opt_ CWnd* pParentWnd)
 	{
-		WCHAR szFileName[_MAX_PATH]; // contains full path name after return
-
-		// initialize structure
-		OPENFILENAMEEXW ofn;
-		memset(&ofn, 0, sizeof(OPENFILENAMEEXW));
-		ofn.lStructSize = sizeof(OPENFILENAMEEXW);
-		ofn.lpstrFile = szFileName;
-		ofn.nMaxFile = _countof(szFileName);
-
-		LPWSTR szBigBuff = nullptr;
+		auto szFileName = std::wstring(_MAX_PATH, '\0'); // contains full path name after return
 		if (dwFlags & OFN_ALLOWMULTISELECT)
 		{
-			szBigBuff = new (std::nothrow) WCHAR[CCHBIGBUFF];
-			if (szBigBuff)
-			{
-				szBigBuff[0] = 0; // NULL terminate
-				ofn.lpstrFile = szBigBuff;
-				ofn.nMaxFile = CCHBIGBUFF;
-			}
+			szFileName.resize(CCHBIGBUFF);
 		}
+
+		// initialize structure
+		auto ofn = OPENFILENAMEEXW{};
+		ofn.lStructSize = sizeof(OPENFILENAMEEXW);
+		ofn.lpstrFile = const_cast<wchar_t*>(szFileName.c_str());
+		ofn.nMaxFile = szFileName.length();
 
 		ofn.lpstrDefExt = lpszDefExt.c_str();
 		ofn.Flags = dwFlags | OFN_ENABLEHOOK | OFN_EXPLORER;
 		ofn.hwndOwner = pParentWnd ? pParentWnd->m_hWnd : nullptr;
-
-		// zero out the file buffer for consistent parsing later
-		memset(ofn.lpstrFile, 0, ofn.nMaxFile);
 
 		// setup initial file name
 		if (!lpszFileName.empty()) wcsncpy_s(ofn.lpstrFile, ofn.nMaxFile, lpszFileName.c_str(), _TRUNCATE);
@@ -185,7 +173,6 @@ namespace file
 			m_paths = UnpackFileNames(ofn);
 		}
 
-		delete[] szBigBuff;
 		return bResult ? bResult : IDCANCEL;
 	}
 
