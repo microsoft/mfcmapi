@@ -84,17 +84,12 @@ namespace cache
 	}
 
 	NamedPropCacheEntry::NamedPropCacheEntry(
-		ULONG cbSig,
-		_In_opt_count_(cbSig) LPBYTE lpSig,
+		ULONG _cbSig,
+		_In_opt_count_(_cbSig) LPBYTE lpSig,
 		LPMAPINAMEID lpPropName,
-		ULONG ulPropID)
+		ULONG _ulPropID)
+		: ulPropID(_ulPropID), cbSig(_cbSig)
 	{
-		this->ulPropID = ulPropID;
-		this->cbSig = cbSig;
-		this->lpmniName = nullptr;
-		this->lpSig = nullptr;
-		this->bStringsCached = false;
-
 		if (lpPropName)
 		{
 			lpmniName = new (std::nothrow) MAPINAMEID;
@@ -132,7 +127,7 @@ namespace cache
 	}
 
 	// Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
-	_Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID)
+	_Check_return_ NamedPropCacheEntry* FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID)
 	{
 		const auto entry =
 			find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry& namedPropCacheEntry) {
@@ -147,7 +142,7 @@ namespace cache
 	}
 
 	// Given a signature, guid, kind, and value, finds the named prop mapping in the cache
-	_Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(
+	_Check_return_ NamedPropCacheEntry* FindCacheEntry(
 		ULONG cbSig,
 		_In_count_(cbSig) LPBYTE lpSig,
 		_In_ LPGUID lpguid,
@@ -174,7 +169,7 @@ namespace cache
 	}
 
 	// Given a tag, guid, kind, and value, finds the named prop mapping in the cache
-	_Check_return_ LPNAMEDPROPCACHEENTRY
+	_Check_return_ NamedPropCacheEntry*
 	FindCacheEntry(ULONG ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
 	{
 		const auto entry =
@@ -597,7 +592,7 @@ namespace cache
 		// Can't generate strings without a MAPINAMEID structure
 		if (!lpNameID) return namePropNames;
 
-		LPNAMEDPROPCACHEENTRY lpNamedPropCacheEntry = nullptr;
+		NamedPropCacheEntry* lpNamedPropCacheEntry = nullptr;
 
 		// If we're using the cache, look up the answer there and return
 		if (fCacheNamedProps())

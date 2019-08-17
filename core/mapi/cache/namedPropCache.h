@@ -16,10 +16,10 @@ namespace cache
 	{
 	public:
 		NamedPropCacheEntry::NamedPropCacheEntry(
-			ULONG cbSig,
-			_In_opt_count_(cbSig) LPBYTE lpSig,
+			ULONG _cbSig,
+			_In_opt_count_(_cbSig) LPBYTE lpSig,
 			LPMAPINAMEID lpPropName,
-			ULONG ulPropID);
+			ULONG _ulPropID);
 
 		// Disables making copies of NamedPropCacheEntry
 		NamedPropCacheEntry(const NamedPropCacheEntry&) = delete;
@@ -27,18 +27,17 @@ namespace cache
 
 		~NamedPropCacheEntry();
 
-		ULONG ulPropID; // MAPI ID (ala PROP_ID) for a named property
-		LPMAPINAMEID lpmniName; // guid, kind, value
-		ULONG cbSig; // Size and...
-		LPBYTE lpSig; // Value of PR_MAPPING_SIGNATURE
-		bool bStringsCached; // We have cached strings
-		NamePropNames namePropNames;
+		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
+		LPMAPINAMEID lpmniName{}; // guid, kind, value
+		ULONG cbSig{}; // Size and...
+		LPBYTE lpSig{}; // Value of PR_MAPPING_SIGNATURE
+		bool bStringsCached{}; // We have cached strings
+		NamePropNames namePropNames{};
 	};
-	typedef NamedPropCacheEntry* LPNAMEDPROPCACHEENTRY;
 
 	void UninitializeNamedPropCache();
 
-	_Check_return_ LPNAMEDPROPCACHEENTRY
+	_Check_return_ NamedPropCacheEntry*
 	FindCacheEntry(ULONG ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName);
 
 	_Check_return_ HRESULT GetNamesFromIDs(
