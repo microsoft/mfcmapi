@@ -27,7 +27,7 @@ namespace cache
 		~NamedPropCacheEntry();
 
 		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
-		LPMAPINAMEID lpmniName{}; // guid, kind, value
+		MAPINAMEID mapiNameId{}; // guid, kind, value
 		std::vector<BYTE> sig{}; // Value of PR_MAPPING_SIGNATURE
 		bool bStringsCached{}; // We have cached strings
 		NamePropNames namePropNames{};
@@ -114,12 +114,7 @@ namespace cache
 	{
 		if (lpPropName)
 		{
-			lpmniName = new (std::nothrow) MAPINAMEID;
-
-			if (lpmniName)
-			{
-				CopyCacheData(*lpPropName, *lpmniName, nullptr);
-			}
+			CopyCacheData(*lpPropName, mapiNameId, nullptr);
 		}
 
 		if (_cbSig && lpSig)
@@ -130,15 +125,10 @@ namespace cache
 
 	NamedPropCacheEntry::~NamedPropCacheEntry()
 	{
-		if (lpmniName)
+		delete mapiNameId.lpguid;
+		if (MNID_STRING == mapiNameId.ulKind)
 		{
-			delete lpmniName->lpguid;
-			if (MNID_STRING == lpmniName->ulKind)
-			{
-				delete[] lpmniName->Kind.lpwstrName;
-			}
-
-			delete lpmniName;
+			delete[] mapiNameId.Kind.lpwstrName;
 		}
 	}
 
@@ -173,13 +163,11 @@ namespace cache
 			begin(g_lpNamedPropCache),
 			end(g_lpNamedPropCache),
 			[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) {
-				if (!namedPropCacheEntry->lpmniName) return false;
-				if (namedPropCacheEntry->lpmniName->ulKind != ulKind) return false;
-				if (MNID_ID == ulKind && namedPropCacheEntry->lpmniName->Kind.lID != lID) return false;
-				if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry->lpmniName->Kind.lpwstrName, lpwstrName))
+				if (namedPropCacheEntry->mapiNameId.ulKind != ulKind) return false;
+				if (MNID_ID == ulKind && namedPropCacheEntry->mapiNameId.Kind.lID != lID) return false;
+				if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry->mapiNameId.Kind.lpwstrName, lpwstrName))
 					return false;
-				;
-				if (0 != memcmp(namedPropCacheEntry->lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
+				if (0 != memcmp(namedPropCacheEntry->mapiNameId.lpguid, lpguid, sizeof(GUID))) return false;
 				if (cbSig != namedPropCacheEntry->sig.size()) return false;
 				if (cbSig && memcmp(lpSig, namedPropCacheEntry->sig.data(), cbSig) != 0) return false;
 
@@ -198,12 +186,11 @@ namespace cache
 			end(g_lpNamedPropCache),
 			[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) {
 				if (namedPropCacheEntry->ulPropID != ulPropID) return false;
-				if (!namedPropCacheEntry->lpmniName) return false;
-				if (namedPropCacheEntry->lpmniName->ulKind != ulKind) return false;
-				if (MNID_ID == ulKind && namedPropCacheEntry->lpmniName->Kind.lID != lID) return false;
-				if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry->lpmniName->Kind.lpwstrName, lpwstrName))
+				if (namedPropCacheEntry->mapiNameId.ulKind != ulKind) return false;
+				if (MNID_ID == ulKind && namedPropCacheEntry->mapiNameId.Kind.lID != lID) return false;
+				if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry->mapiNameId.Kind.lpwstrName, lpwstrName))
 					return false;
-				if (0 != memcmp(namedPropCacheEntry->lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
+				if (0 != memcmp(namedPropCacheEntry->mapiNameId.lpguid, lpguid, sizeof(GUID))) return false;
 
 				return true;
 			});
@@ -310,7 +297,7 @@ namespace cache
 				if (lpEntry)
 				{
 					// We have a hit - copy the data over
-					lppNameIDs[ulTarget] = lpEntry->lpmniName;
+					lppNameIDs[ulTarget] = &lpEntry->mapiNameId;
 
 					// Got a hit, decrement the miss counter
 					ulMisses--;
