@@ -11,6 +11,29 @@
 
 namespace cache
 {
+	class NamedPropCacheEntry
+	{
+	public:
+		NamedPropCacheEntry::NamedPropCacheEntry(
+			ULONG _cbSig,
+			_In_opt_count_(_cbSig) LPBYTE lpSig,
+			LPMAPINAMEID lpPropName,
+			ULONG _ulPropID);
+
+		// Disables making copies of NamedPropCacheEntry
+		NamedPropCacheEntry(const NamedPropCacheEntry&) = delete;
+		NamedPropCacheEntry& operator=(const NamedPropCacheEntry&) = delete;
+
+		~NamedPropCacheEntry();
+
+		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
+		LPMAPINAMEID lpmniName{}; // guid, kind, value
+		ULONG cbSig{}; // Size and...
+		LPBYTE lpSig{}; // Value of PR_MAPPING_SIGNATURE
+		bool bStringsCached{}; // We have cached strings
+		NamePropNames namePropNames{};
+	};
+
 	// We keep a list of named prop cache entries
 	std::list<std::shared_ptr<NamedPropCacheEntry>> g_lpNamedPropCache;
 
