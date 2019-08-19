@@ -399,7 +399,7 @@ namespace cache
 
 		*lpcPropNames = 0;
 		// Check if we're bypassing the cache:
-		if (!fCacheNamedProps() ||
+		if (!registry::cacheNamedProps ||
 			// Assume an array was passed - none of my calling code passes a NULL tag array
 			!lppPropTags || !*lppPropTags ||
 			// None of my code uses these flags, but bypass the cache if we see them
@@ -558,7 +558,7 @@ namespace cache
 
 		auto propTags = LPSPropTagArray{};
 		// Check if we're bypassing the cache:
-		if (!fCacheNamedProps() ||
+		if (!registry::cacheNamedProps ||
 			// If no names were passed, we have to bypass the cache
 			// Should we cache results?
 			!cPropNames || !lppPropNames || !*lppPropNames)
@@ -591,8 +591,6 @@ namespace cache
 		return propTags;
 	}
 
-	_Check_return_ inline bool fCacheNamedProps() { return registry::cacheNamedProps; }
-
 	// TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
 	// We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
 	NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
@@ -605,7 +603,7 @@ namespace cache
 		auto lpNamedPropCacheEntry = std::shared_ptr<NamedPropCacheEntry>{};
 
 		// If we're using the cache, look up the answer there and return
-		if (fCacheNamedProps())
+		if (registry::cacheNamedProps)
 		{
 			lpNamedPropCacheEntry = FindCacheEntry(
 				PROP_ID(ulPropTag), lpNameID->lpguid, lpNameID->ulKind, lpNameID->Kind.lID, lpNameID->Kind.lpwstrName);

@@ -35,8 +35,6 @@ namespace cache
 		_In_opt_count_(cPropNames) LPMAPINAMEID* lppPropNames,
 		ULONG ulFlags);
 
-	_Check_return_ inline bool fCacheNamedProps();
-
 	NamePropNames NameIDToStrings(
 		ULONG ulPropTag, // optional 'original' prop tag
 		_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
