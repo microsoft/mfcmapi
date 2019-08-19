@@ -28,8 +28,7 @@ namespace cache
 
 		ULONG ulPropID{}; // MAPI ID (ala PROP_ID) for a named property
 		LPMAPINAMEID lpmniName{}; // guid, kind, value
-		ULONG cbSig{}; // Size and...
-		LPBYTE lpSig{}; // Value of PR_MAPPING_SIGNATURE
+		std::vector<BYTE> sig{}; // Value of PR_MAPPING_SIGNATURE
 		bool bStringsCached{}; // We have cached strings
 		NamePropNames namePropNames{};
 	};
@@ -111,7 +110,7 @@ namespace cache
 		_In_opt_count_(_cbSig) LPBYTE lpSig,
 		LPMAPINAMEID lpPropName,
 		ULONG _ulPropID)
-		: ulPropID(_ulPropID), cbSig(_cbSig)
+		: ulPropID(_ulPropID)
 	{
 		if (lpPropName)
 		{
@@ -123,13 +122,9 @@ namespace cache
 			}
 		}
 
-		if (cbSig && lpSig)
+		if (_cbSig && lpSig)
 		{
-			this->lpSig = new (std::nothrow) BYTE[cbSig];
-			if (this->lpSig)
-			{
-				memcpy(this->lpSig, lpSig, cbSig);
-			}
+			sig.assign(lpSig, lpSig + _cbSig);
 		}
 	}
 
@@ -145,8 +140,6 @@ namespace cache
 
 			delete lpmniName;
 		}
-
-		delete[] lpSig;
 	}
 
 	// Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
@@ -158,8 +151,8 @@ namespace cache
 			end(g_lpNamedPropCache),
 			[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) {
 				if (namedPropCacheEntry->ulPropID != ulPropID) return false;
-				if (namedPropCacheEntry->cbSig != cbSig) return false;
-				if (cbSig && memcmp(lpSig, namedPropCacheEntry->lpSig, cbSig) != 0) return false;
+				if (namedPropCacheEntry->sig.size() != cbSig) return false;
+				if (cbSig && memcmp(lpSig, namedPropCacheEntry->sig.data(), cbSig) != 0) return false;
 
 				return true;
 			});
@@ -187,8 +180,8 @@ namespace cache
 					return false;
 				;
 				if (0 != memcmp(namedPropCacheEntry->lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
-				if (cbSig != namedPropCacheEntry->cbSig) return false;
-				if (cbSig && memcmp(lpSig, namedPropCacheEntry->lpSig, cbSig) != 0) return false;
+				if (cbSig != namedPropCacheEntry->sig.size()) return false;
+				if (cbSig && memcmp(lpSig, namedPropCacheEntry->sig.data(), cbSig) != 0) return false;
 
 				return true;
 			});
