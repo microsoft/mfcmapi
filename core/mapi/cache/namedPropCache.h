@@ -37,9 +37,6 @@ namespace cache
 
 	void UninitializeNamedPropCache();
 
-	_Check_return_ NamedPropCacheEntry*
-	FindCacheEntry(ULONG ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName);
-
 	_Check_return_ HRESULT GetNamesFromIDs(
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_ LPSPropTagArray* lppPropTags,

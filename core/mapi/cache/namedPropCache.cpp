@@ -12,7 +12,7 @@
 namespace cache
 {
 	// We keep a list of named prop cache entries
-	std::list<NamedPropCacheEntry> g_lpNamedPropCache;
+	std::list<std::shared_ptr<NamedPropCacheEntry>> g_lpNamedPropCache;
 
 	void UninitializeNamedPropCache() { g_lpNamedPropCache.clear(); }
 
@@ -127,22 +127,25 @@ namespace cache
 	}
 
 	// Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
-	_Check_return_ NamedPropCacheEntry* FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID)
+	_Check_return_ std::shared_ptr<NamedPropCacheEntry>
+	FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID)
 	{
-		const auto entry =
-			find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry& namedPropCacheEntry) {
-				if (namedPropCacheEntry.ulPropID != ulPropID) return false;
-				if (namedPropCacheEntry.cbSig != cbSig) return false;
-				if (cbSig && memcmp(lpSig, namedPropCacheEntry.lpSig, cbSig) != 0) return false;
+		const auto entry = find_if(
+			begin(g_lpNamedPropCache),
+			end(g_lpNamedPropCache),
+			[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) {
+				if (namedPropCacheEntry->ulPropID != ulPropID) return false;
+				if (namedPropCacheEntry->cbSig != cbSig) return false;
+				if (cbSig && memcmp(lpSig, namedPropCacheEntry->lpSig, cbSig) != 0) return false;
 
 				return true;
 			});
 
-		return entry != end(g_lpNamedPropCache) ? &*entry : nullptr;
+		return entry != end(g_lpNamedPropCache) ? *entry : nullptr;
 	}
 
 	// Given a signature, guid, kind, and value, finds the named prop mapping in the cache
-	_Check_return_ NamedPropCacheEntry* FindCacheEntry(
+	_Check_return_ std::shared_ptr<NamedPropCacheEntry> FindCacheEntry(
 		ULONG cbSig,
 		_In_count_(cbSig) LPBYTE lpSig,
 		_In_ LPGUID lpguid,
@@ -150,42 +153,46 @@ namespace cache
 		LONG lID,
 		_In_z_ LPWSTR lpwstrName)
 	{
-		const auto entry =
-			find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry& namedPropCacheEntry) {
-				if (!namedPropCacheEntry.lpmniName) return false;
-				if (namedPropCacheEntry.lpmniName->ulKind != ulKind) return false;
-				if (MNID_ID == ulKind && namedPropCacheEntry.lpmniName->Kind.lID != lID) return false;
-				if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry.lpmniName->Kind.lpwstrName, lpwstrName))
+		const auto entry = find_if(
+			begin(g_lpNamedPropCache),
+			end(g_lpNamedPropCache),
+			[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) {
+				if (!namedPropCacheEntry->lpmniName) return false;
+				if (namedPropCacheEntry->lpmniName->ulKind != ulKind) return false;
+				if (MNID_ID == ulKind && namedPropCacheEntry->lpmniName->Kind.lID != lID) return false;
+				if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry->lpmniName->Kind.lpwstrName, lpwstrName))
 					return false;
 				;
-				if (0 != memcmp(namedPropCacheEntry.lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
-				if (cbSig != namedPropCacheEntry.cbSig) return false;
-				if (cbSig && memcmp(lpSig, namedPropCacheEntry.lpSig, cbSig) != 0) return false;
+				if (0 != memcmp(namedPropCacheEntry->lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
+				if (cbSig != namedPropCacheEntry->cbSig) return false;
+				if (cbSig && memcmp(lpSig, namedPropCacheEntry->lpSig, cbSig) != 0) return false;
 
 				return true;
 			});
 
-		return entry != end(g_lpNamedPropCache) ? &*entry : nullptr;
+		return entry != end(g_lpNamedPropCache) ? *entry : nullptr;
 	}
 
 	// Given a tag, guid, kind, and value, finds the named prop mapping in the cache
-	_Check_return_ NamedPropCacheEntry*
+	_Check_return_ std::shared_ptr<NamedPropCacheEntry>
 	FindCacheEntry(ULONG ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
 	{
-		const auto entry =
-			find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry& namedPropCacheEntry) {
-				if (namedPropCacheEntry.ulPropID != ulPropID) return false;
-				if (!namedPropCacheEntry.lpmniName) return false;
-				if (namedPropCacheEntry.lpmniName->ulKind != ulKind) return false;
-				if (MNID_ID == ulKind && namedPropCacheEntry.lpmniName->Kind.lID != lID) return false;
-				if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry.lpmniName->Kind.lpwstrName, lpwstrName))
+		const auto entry = find_if(
+			begin(g_lpNamedPropCache),
+			end(g_lpNamedPropCache),
+			[&](std::shared_ptr<NamedPropCacheEntry>& namedPropCacheEntry) {
+				if (namedPropCacheEntry->ulPropID != ulPropID) return false;
+				if (!namedPropCacheEntry->lpmniName) return false;
+				if (namedPropCacheEntry->lpmniName->ulKind != ulKind) return false;
+				if (MNID_ID == ulKind && namedPropCacheEntry->lpmniName->Kind.lID != lID) return false;
+				if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry->lpmniName->Kind.lpwstrName, lpwstrName))
 					return false;
-				if (0 != memcmp(namedPropCacheEntry.lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
+				if (0 != memcmp(namedPropCacheEntry->lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
 
 				return true;
 			});
 
-		return entry != end(g_lpNamedPropCache) ? &*entry : nullptr;
+		return entry != end(g_lpNamedPropCache) ? *entry : nullptr;
 	}
 
 	void AddMapping(
@@ -215,8 +222,8 @@ namespace cache
 					}
 				}
 
-				g_lpNamedPropCache.emplace_back(
-					cbSig, lpSig, lppPropNames[ulSource], PROP_ID(lpTag->aulPropTag[ulSource]));
+				g_lpNamedPropCache.emplace_back(std::make_shared<NamedPropCacheEntry>(
+					cbSig, lpSig, lppPropNames[ulSource], PROP_ID(lpTag->aulPropTag[ulSource])));
 			}
 		}
 	}
@@ -592,7 +599,7 @@ namespace cache
 		// Can't generate strings without a MAPINAMEID structure
 		if (!lpNameID) return namePropNames;
 
-		NamedPropCacheEntry* lpNamedPropCacheEntry = nullptr;
+		auto lpNamedPropCacheEntry = std::shared_ptr<NamedPropCacheEntry>{};
 
 		// If we're using the cache, look up the answer there and return
 		if (fCacheNamedProps())
