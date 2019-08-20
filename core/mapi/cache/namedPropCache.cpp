@@ -36,8 +36,6 @@ namespace cache
 	// We keep a list of named prop cache entries
 	std::list<std::shared_ptr<NamedPropCacheEntry>> g_lpNamedPropCache;
 
-	void UninitializeNamedPropCache() { g_lpNamedPropCache.clear(); }
-
 	// Go through all the details of copying allocated data to or from a cache entry
 	void CopyCacheData(
 		const MAPINAMEID& src,

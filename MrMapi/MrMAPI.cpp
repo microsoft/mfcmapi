@@ -300,8 +300,6 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 		}
 	}
 
-	cache::UninitializeNamedPropCache();
-
 	if (bMAPIInit)
 	{
 		if (lpFolder) lpFolder->Release();

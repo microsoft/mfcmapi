@@ -83,7 +83,6 @@ namespace ui
 		UninitializeGDI();
 		addin::UnloadAddIns();
 		if (m_hwinEventHook) UnhookWinEvent(m_hwinEventHook);
-		cache::UninitializeNamedPropCache();
 		registry::WriteToRegistry();
 		output::CloseDebugFile();
 		// Since we're killing what m_pMainWnd points to here, we need to clear it
