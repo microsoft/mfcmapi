@@ -766,7 +766,6 @@ namespace cache
 		return namePropNames;
 	}
 
-#define ulNoMatch 0xffffffff
 	// Returns string built from NameIDArray
 	std::vector<std::wstring> NameIDToPropNames(_In_ const MAPINAMEID* lpNameID)
 	{

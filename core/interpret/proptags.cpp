@@ -10,7 +10,6 @@
 
 namespace proptags
 {
-#define ulNoMatch 0xffffffff
 	static WCHAR szPropSeparator[] = L", "; // STRING_OK
 	std::unordered_map<ULONG64, PropTagNames> g_PropNames;
 
@@ -189,7 +188,7 @@ namespace proptags
 		ULONG ulLowerBound = 0;
 		auto ulUpperBound = static_cast<ULONG>(MyArray.size() - 1); // size-1 is the last entry
 		auto ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
-		ULONG ulFirstMatch = ulNoMatch;
+		ULONG ulFirstMatch = cache::ulNoMatch;
 		const auto ulMaskedTarget = ulTarget & PROP_TAG_MASK;
 
 		// Short circuit property IDs with the high bit set if bIsAB wasn't passed
@@ -228,7 +227,7 @@ namespace proptags
 		}
 
 		// Check that we got a match
-		if (ulNoMatch != ulFirstMatch)
+		if (cache::ulNoMatch != ulFirstMatch)
 		{
 			// Scan backwards to find the first partial match
 			while (ulFirstMatch > 0 && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulFirstMatch - 1].ulValue))
