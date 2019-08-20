@@ -48,90 +48,90 @@ namespace smartview
 	_Check_return_ std::wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);
 	// End: Functions to parse PT_LONG/PT-I2 properties
 
-	smartViewParser* GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
+	std::shared_ptr<smartViewParser> GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 	{
 		switch (iStructType)
 		{
 		case IDS_STNOPARSING:
 			return nullptr;
 		case IDS_STTOMBSTONE:
-			return new TombStone();
+			return std::make_shared<TombStone>();
 		case IDS_STPCL:
-			return new PCL();
+			return std::make_shared<PCL>();
 		case IDS_STVERBSTREAM:
-			return new VerbStream();
+			return std::make_shared<VerbStream>();
 		case IDS_STNICKNAMECACHE:
-			return new NickNameCache();
+			return std::make_shared<NickNameCache>();
 		case IDS_STFOLDERUSERFIELDS:
-			return new FolderUserFieldStream();
+			return std::make_shared<FolderUserFieldStream>();
 		case IDS_STRECIPIENTROWSTREAM:
-			return new RecipientRowStream();
+			return std::make_shared<RecipientRowStream>();
 		case IDS_STWEBVIEWPERSISTSTREAM:
-			return new WebViewPersistStream();
+			return std::make_shared<WebViewPersistStream>();
 		case IDS_STFLATENTRYLIST:
-			return new FlatEntryList();
+			return std::make_shared<FlatEntryList>();
 		case IDS_STADDITIONALRENENTRYIDSEX:
-			return new AdditionalRenEntryIDs();
+			return std::make_shared<AdditionalRenEntryIDs>();
 		case IDS_STPROPERTYDEFINITIONSTREAM:
-			return new PropertyDefinitionStream();
+			return std::make_shared<PropertyDefinitionStream>();
 		case IDS_STSEARCHFOLDERDEFINITION:
-			return new SearchFolderDefinition();
+			return std::make_shared<SearchFolderDefinition>();
 		case IDS_STENTRYLIST:
-			return new EntryList();
+			return std::make_shared<EntryList>();
 		case IDS_STRULECONDITION:
 		{
-			auto parser = new (std::nothrow) RuleCondition();
+			auto parser = std::make_shared<RuleCondition>();
 			if (parser) parser->Init(false);
 			return parser;
 		}
 		case IDS_STEXTENDEDRULECONDITION:
 		{
-			auto parser = new (std::nothrow) RuleCondition();
+			auto parser = std::make_shared<RuleCondition>();
 			if (parser) parser->Init(true);
 			return parser;
 		}
 		case IDS_STRESTRICTION:
 		{
-			return new (std::nothrow) RestrictionStruct(false, true);
+			return std::make_shared<RestrictionStruct>(false, true);
 		}
 		case IDS_STPROPERTIES:
-			return new PropertiesStruct();
+			return std::make_shared<PropertiesStruct>();
 		case IDS_STENTRYID:
-			return new EntryIdStruct();
+			return std::make_shared<EntryIdStruct>();
 		case IDS_STGLOBALOBJECTID:
-			return new GlobalObjectId();
+			return std::make_shared<GlobalObjectId>();
 		case IDS_STTASKASSIGNERS:
-			return new TaskAssigners();
+			return std::make_shared<TaskAssigners>();
 		case IDS_STCONVERSATIONINDEX:
-			return new ConversationIndex();
+			return std::make_shared<ConversationIndex>();
 		case IDS_STREPORTTAG:
-			return new ReportTag();
+			return std::make_shared<ReportTag>();
 		case IDS_STTIMEZONEDEFINITION:
-			return new TimeZoneDefinition();
+			return std::make_shared<TimeZoneDefinition>();
 		case IDS_STTIMEZONE:
-			return new TimeZone();
+			return std::make_shared<TimeZone>();
 		case IDS_STEXTENDEDFOLDERFLAGS:
-			return new ExtendedFlags();
+			return std::make_shared<ExtendedFlags>();
 		case IDS_STAPPOINTMENTRECURRENCEPATTERN:
-			return new AppointmentRecurrencePattern();
+			return std::make_shared<AppointmentRecurrencePattern>();
 		case IDS_STRECURRENCEPATTERN:
-			return new RecurrencePattern();
+			return std::make_shared<RecurrencePattern>();
 		case IDS_STSID:
-			return new SIDBin();
+			return std::make_shared<SIDBin>();
 		case IDS_STSECURITYDESCRIPTOR:
 		{
-			auto parser = new (std::nothrow) SDBin();
+			auto parser = std::make_shared<SDBin>();
 			if (parser) parser->Init(lpMAPIProp, false);
 			return parser;
 		}
 		case IDS_STFBSECURITYDESCRIPTOR:
 		{
-			auto parser = new (std::nothrow) SDBin();
+			auto parser = std::make_shared<SDBin>();
 			if (parser) parser->Init(lpMAPIProp, true);
 			return parser;
 		}
 		case IDS_STXID:
-			return new XID();
+			return std::make_shared<XID>();
 		}
 
 		return nullptr;
@@ -539,9 +539,7 @@ namespace smartview
 		if (svp)
 		{
 			svp->init(myBin.cb, myBin.lpb);
-			szResultString = svp->toString();
-			delete svp;
-			return szResultString;
+			return svp->toString();
 		}
 
 		// These parsers have some special casing

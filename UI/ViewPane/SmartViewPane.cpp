@@ -209,11 +209,6 @@ namespace viewpane
 			szSmartViewArray.push_back(parsedData);
 		}
 
-		if (svp)
-		{
-			delete svp;
-		}
-
 		AddChildren(nullptr, treeData);
 
 		auto szSmartView = strings::join(szSmartViewArray, L"\r\n");
