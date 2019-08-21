@@ -4,7 +4,7 @@
 
 namespace viewpane
 {
-	SplitterPane* SplitterPane::CreateVerticalPane(const int paneID, const UINT uidLabel)
+	std::shared_ptr<SplitterPane> SplitterPane::CreateVerticalPane(const int paneID, const UINT uidLabel)
 	{
 		const auto pane = CreateHorizontalPane(paneID, uidLabel);
 		pane->m_bVertical = true;
@@ -12,9 +12,9 @@ namespace viewpane
 		return pane;
 	}
 
-	SplitterPane* SplitterPane::CreateHorizontalPane(const int paneID, const UINT uidLabel)
+	std::shared_ptr<SplitterPane> SplitterPane::CreateHorizontalPane(const int paneID, const UINT uidLabel)
 	{
-		const auto pane = new (std::nothrow) SplitterPane();
+		const auto pane = std::make_shared<SplitterPane>();
 		if (pane)
 		{
 			pane->SetLabel(uidLabel);
@@ -134,14 +134,14 @@ namespace viewpane
 	{
 		ViewPane::Initialize(pParent, hdc);
 
-		m_lpSplitter = new controls::CFakeSplitter();
+		m_lpSplitter = std::make_shared<controls::CFakeSplitter>();
 
 		if (m_lpSplitter)
 		{
 			m_lpSplitter->Init(pParent->GetSafeHwnd());
 			m_lpSplitter->SetSplitType(m_bVertical ? controls::SplitVertical : controls::SplitHorizontal);
-			m_PaneOne->Initialize(m_lpSplitter, hdc);
-			m_PaneTwo->Initialize(m_lpSplitter, hdc);
+			m_PaneOne->Initialize(m_lpSplitter.get(), hdc);
+			m_PaneTwo->Initialize(m_lpSplitter.get(), hdc);
 			m_lpSplitter->SetPaneOne(m_PaneOne);
 			m_lpSplitter->SetPaneTwo(m_PaneTwo);
 			if (m_bVertical)

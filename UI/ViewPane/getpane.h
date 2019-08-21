@@ -5,9 +5,9 @@
 namespace viewpane
 {
 	// Return a pane with a matching paneID.
-	template <class T> ViewPane* GetPaneByID(T* pane, const int id)
+	template <class T> std::shared_ptr<ViewPane> GetPaneByID(const std::shared_ptr<T> pane, const int id)
 	{
-		auto splitter = dynamic_cast<SplitterPane*>(pane);
+		auto splitter = std::dynamic_pointer_cast<SplitterPane>(pane);
 		if (splitter)
 		{
 			if (splitter->GetID() == id) return pane;
@@ -27,9 +27,9 @@ namespace viewpane
 	}
 
 	// Return a pane with a matching nID.
-	template <class T> ViewPane* GetPaneByNID(T* pane, const UINT id)
+	template <class T> std::shared_ptr<ViewPane> GetPaneByNID(const std::shared_ptr<T> pane, const UINT id)
 	{
-		auto splitter = dynamic_cast<SplitterPane*>(pane);
+		auto splitter = std::dynamic_pointer_cast<SplitterPane>(pane);
 		if (splitter)
 		{
 			if (splitter->GetNID() == id) return pane;

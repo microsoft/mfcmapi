@@ -111,7 +111,7 @@ namespace dialog
 		// Clear
 		void CDbgView::OnEditAction1()
 		{
-			auto lpPane = static_cast<viewpane::TextPane*>(GetPane(DBGVIEW_VIEW));
+			auto lpPane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(DBGVIEW_VIEW));
 			if (lpPane)
 			{
 				return lpPane->Clear();
@@ -125,7 +125,7 @@ namespace dialog
 		{
 			if (m_bPaused) return;
 
-			auto lpPane = static_cast<viewpane::TextPane*>(GetPane(DBGVIEW_VIEW));
+			auto lpPane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(DBGVIEW_VIEW));
 			if (lpPane)
 			{
 				lpPane->AppendString(szMsg);

@@ -156,13 +156,13 @@ namespace dialog
 			if (HEXED_SMARTVIEW != paneID)
 			{
 				// length of base64 encoded string
-				auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(HEXED_BASE64));
+				auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(HEXED_BASE64));
 				if (lpPane)
 				{
 					lpPane->SetCount(cchEncodeStr);
 				}
 
-				lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(HEXED_HEX));
+				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(HEXED_HEX));
 				if (lpPane)
 				{
 					lpPane->SetCount(cb);
@@ -181,7 +181,7 @@ namespace dialog
 		void CHexEditor::UpdateParser() const
 		{
 			// Find out how to interpret the data
-			auto lpPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(HEXED_SMARTVIEW));
+			auto lpPane = std::dynamic_pointer_cast<viewpane::SmartViewPane>(GetPane(HEXED_SMARTVIEW));
 			if (lpPane)
 			{
 				lpPane->Parse(GetBinary(HEXED_HEX));
@@ -203,7 +203,7 @@ namespace dialog
 
 				if (lpStream)
 				{
-					auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(HEXED_HEX));
+					auto lpPane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(HEXED_HEX));
 					if (lpPane)
 					{
 						lpPane->ClearHighlight();
@@ -235,7 +235,7 @@ namespace dialog
 
 				if (lpStream)
 				{
-					const auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(HEXED_HEX));
+					const auto lpPane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(HEXED_HEX));
 					if (lpPane)
 					{
 						lpPane->GetBinaryStream(lpStream);

@@ -8,12 +8,12 @@ namespace viewpane
 {
 	static std::wstring CLASS = L"TextPane";
 
-	TextPane* TextPane::CreateMultiLinePane(const int paneID, const UINT uidLabel, const bool bReadOnly)
+	std::shared_ptr<TextPane> TextPane::CreateMultiLinePane(const int paneID, const UINT uidLabel, const bool bReadOnly)
 	{
 		return CreateSingleLinePane(paneID, uidLabel, bReadOnly, true);
 	}
 
-	TextPane* TextPane::CreateMultiLinePane(
+	std::shared_ptr<TextPane> TextPane::CreateMultiLinePane(
 		const int paneID,
 		const UINT uidLabel,
 		_In_ const std::wstring& szVal,
@@ -22,60 +22,62 @@ namespace viewpane
 		return CreateSingleLinePane(paneID, uidLabel, szVal, bReadOnly, true);
 	}
 
-	TextPane*
+	std::shared_ptr<TextPane>
 	TextPane::CreateSingleLinePane(const int paneID, const UINT uidLabel, const bool bReadOnly, const bool bMultiLine)
 	{
-		auto lpPane = new (std::nothrow) TextPane();
-		if (lpPane)
+		auto pane = std::make_shared<TextPane>();
+		if (pane)
 		{
-			lpPane->m_bMultiline = bMultiLine;
-			lpPane->SetLabel(uidLabel);
-			lpPane->ViewPane::SetReadOnly(bReadOnly);
-			lpPane->m_paneID = paneID;
+			pane->m_bMultiline = bMultiLine;
+			pane->SetLabel(uidLabel);
+			pane->ViewPane::SetReadOnly(bReadOnly);
+			pane->m_paneID = paneID;
 		}
 
-		return lpPane;
+		return pane;
 	}
 
-	TextPane* TextPane::CreateSingleLinePane(
+	std::shared_ptr<TextPane> TextPane::CreateSingleLinePane(
 		const int paneID,
 		const UINT uidLabel,
 		_In_ const std::wstring& szVal,
 		const bool bReadOnly,
 		const bool bMultiLine)
 	{
-		auto lpPane = new (std::nothrow) TextPane();
-		if (lpPane)
+		auto pane = std::make_shared<TextPane>();
+
+		if (pane)
 		{
-			lpPane->m_bMultiline = bMultiLine;
-			lpPane->SetLabel(uidLabel);
-			lpPane->ViewPane::SetReadOnly(bReadOnly);
-			lpPane->SetStringW(szVal);
-			lpPane->m_paneID = paneID;
+			pane->m_bMultiline = bMultiLine;
+			pane->SetLabel(uidLabel);
+			pane->ViewPane::SetReadOnly(bReadOnly);
+			pane->SetStringW(szVal);
+			pane->m_paneID = paneID;
 		}
 
-		return lpPane;
+		return pane;
 	}
 
-	TextPane*
+	std::shared_ptr<TextPane>
 	TextPane::CreateSingleLinePaneID(const int paneID, const UINT uidLabel, const UINT uidVal, const bool bReadOnly)
 	{
-		auto lpPane = new (std::nothrow) TextPane();
+		auto pane = std::make_shared<TextPane>();
 
-		if (lpPane && uidVal)
+		if (pane && uidVal)
 		{
-			lpPane->SetLabel(uidLabel);
-			lpPane->ViewPane::SetReadOnly(bReadOnly);
-			lpPane->SetStringW(strings::loadstring(uidVal));
-			lpPane->m_paneID = paneID;
+			pane->SetLabel(uidLabel);
+			pane->ViewPane::SetReadOnly(bReadOnly);
+			pane->SetStringW(strings::loadstring(uidVal));
+			pane->m_paneID = paneID;
 		}
 
-		return lpPane;
+		return pane;
 	}
 
-	TextPane* TextPane::CreateCollapsibleTextPane(const int paneID, const UINT uidLabel, const bool bReadOnly)
+	std::shared_ptr<TextPane>
+	TextPane::CreateCollapsibleTextPane(const int paneID, const UINT uidLabel, const bool bReadOnly)
 	{
-		auto pane = new (std::nothrow) TextPane();
+		auto pane = std::make_shared<TextPane>();
 		if (pane)
 		{
 			pane->SetMultiline();

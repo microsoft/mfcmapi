@@ -244,7 +244,7 @@ namespace dialog
 
 				if (lpsProp)
 				{
-					auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(MyResults.GetPane(1));
+					auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(MyResults.GetPane(1));
 					if (lpPane) lpPane->SetCount(lpsProp->Value.bin.cb);
 					MyResults.SetBinary(1, lpsProp->Value.bin.lpb, lpsProp->Value.bin.cb);
 				}
@@ -429,7 +429,7 @@ namespace dialog
 			MyResults.AddPane(viewpane::CountedTextPane::Create(0, IDS_HEX, true, IDS_CB));
 			MyResults.AddPane(viewpane::TextPane::CreateCollapsibleTextPane(1, IDS_ANSISTRING, true));
 
-			auto lpPane = dynamic_cast<viewpane::CountedTextPane*>(MyResults.GetPane(0));
+			auto lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(MyResults.GetPane(0));
 			if (lpPane) lpPane->SetCount(lpThumbnail->Value.bin.cb);
 			MyResults.SetBinary(0, lpThumbnail->Value.bin.lpb, lpThumbnail->Value.bin.cb);
 

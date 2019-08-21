@@ -7,7 +7,7 @@ namespace viewpane
 	class TreePane : public ViewPane
 	{
 	public:
-		static TreePane* Create(int paneID, UINT uidLabel, bool bReadOnly);
+		static std::shared_ptr<TreePane> Create(int paneID, UINT uidLabel, bool bReadOnly);
 
 		std::function<void(controls::StyleTreeCtrl& tree)> InitializeCallback = nullptr;
 

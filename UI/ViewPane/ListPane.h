@@ -10,9 +10,9 @@ namespace viewpane
 	class ListPane : public ViewPane
 	{
 	public:
-		static ListPane*
+		static std::shared_ptr<ListPane>
 		Create(int paneID, UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback);
-		static ListPane* CreateCollapsibleListPane(
+		static std::shared_ptr<ListPane> CreateCollapsibleListPane(
 			int paneID,
 			UINT uidLabel,
 			bool bAllowSort,

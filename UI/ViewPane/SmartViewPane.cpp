@@ -17,9 +17,9 @@ namespace viewpane
 		SV_TEXT
 	};
 
-	SmartViewPane* SmartViewPane::Create(const int paneID, const UINT uidLabel)
+	std::shared_ptr<SmartViewPane> SmartViewPane::Create(const int paneID, const UINT uidLabel)
 	{
-		auto pane = new (std::nothrow) SmartViewPane();
+		auto pane = std::make_shared<SmartViewPane>();
 		if (pane)
 		{
 			pane->SetLabel(uidLabel);
@@ -30,6 +30,8 @@ namespace viewpane
 
 		return pane;
 	}
+
+	SmartViewPane::SmartViewPane() { m_Splitter = std::make_shared<SplitterPane>(); }
 
 	void SmartViewPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)
 	{
@@ -46,9 +48,9 @@ namespace viewpane
 		m_TreePane->m_Tree.ItemSelectedCallback = [&](auto _1) { return ItemSelected(_1); };
 		m_TreePane->m_Tree.OnCustomDrawCallback = [&](auto _1, auto _2, auto _3) { return OnCustomDraw(_1, _2, _3); };
 
-		m_Splitter.SetPaneOne(m_TreePane);
-		m_Splitter.SetPaneTwo(TextPane::CreateMultiLinePane(SV_TEXT, 0, true));
-		m_Splitter.Initialize(pParent, hdc);
+		m_Splitter->SetPaneOne(m_TreePane);
+		m_Splitter->SetPaneTwo(TextPane::CreateMultiLinePane(SV_TEXT, 0, true));
+		m_Splitter->Initialize(pParent, hdc);
 
 		m_bInitialized = true;
 		Parse(m_bins);
@@ -67,7 +69,7 @@ namespace viewpane
 		if (m_bDoDropDown && !m_bCollapsed)
 		{
 			iHeight += m_iEditHeight; // Height of the dropdown
-			iHeight += m_Splitter.GetFixedHeight();
+			iHeight += m_Splitter->GetFixedHeight();
 		}
 
 		return iHeight;
@@ -77,7 +79,7 @@ namespace viewpane
 	{
 		if (!m_bCollapsed && m_bHasData)
 		{
-			return m_Splitter.GetLines();
+			return m_Splitter->GetLines();
 		}
 
 		return 0;
@@ -116,11 +118,11 @@ namespace viewpane
 				curY += m_iEditHeight;
 			}
 
-			m_Splitter.DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
+			m_Splitter->DeferWindowPos(hWinPosInfo, x, curY, width, height - (curY - y));
 		}
 
 		WC_B_S(m_DropDown.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
-		m_Splitter.ShowWindow(m_bCollapsed || !m_bHasData ? SW_HIDE : SW_SHOW);
+		m_Splitter->ShowWindow(m_bCollapsed || !m_bHasData ? SW_HIDE : SW_SHOW);
 	}
 
 	void SmartViewPane::SetMargins(
@@ -132,7 +134,7 @@ namespace viewpane
 		const int iButtonHeight, // Height of buttons below the control
 		const int iEditHeight) // height of an edit control
 	{
-		m_Splitter.SetMargins(
+		m_Splitter->SetMargins(
 			iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
 		ViewPane::SetMargins(
 			iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
@@ -149,7 +151,7 @@ namespace viewpane
 			m_bHasData = false;
 		}
 
-		auto lpPane = dynamic_cast<TextPane*>(GetPaneByID(&m_Splitter, SV_TEXT));
+		auto lpPane = std::dynamic_pointer_cast<TextPane>(GetPaneByID(m_Splitter, SV_TEXT));
 
 		if (lpPane)
 		{
@@ -249,7 +251,7 @@ namespace viewpane
 
 	void SmartViewPane::ItemSelected(HTREEITEM hItem)
 	{
-		const auto pane = dynamic_cast<TreePane*>(GetPaneByID(&m_Splitter, SV_TREE));
+		const auto pane = std::dynamic_pointer_cast<TreePane>(GetPaneByID(m_Splitter, SV_TREE));
 		if (!pane) return;
 
 		auto tvi = TVITEM{};

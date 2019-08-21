@@ -8,14 +8,14 @@
 
 namespace viewpane
 {
-	DropDownPane* DropDownPane::Create(
+	std::shared_ptr<DropDownPane> DropDownPane::Create(
 		const int paneID,
 		const UINT uidLabel,
 		const ULONG ulDropList,
 		_In_opt_count_(ulDropList) UINT* lpuidDropList,
 		const bool bReadOnly)
 	{
-		auto pane = new (std::nothrow) DropDownPane();
+		auto pane = std::make_shared<DropDownPane>();
 		if (pane)
 		{
 			if (lpuidDropList)
@@ -34,9 +34,9 @@ namespace viewpane
 		return pane;
 	}
 
-	DropDownPane* DropDownPane::CreateGuid(const int paneID, const UINT uidLabel, const bool bReadOnly)
+	std::shared_ptr<DropDownPane> DropDownPane::CreateGuid(const int paneID, const UINT uidLabel, const bool bReadOnly)
 	{
-		auto pane = new (std::nothrow) DropDownPane();
+		auto pane = std::make_shared<DropDownPane>();
 		if (pane)
 		{
 			for (ULONG iDropNum = 0; iDropNum < PropGuidArray.size(); iDropNum++)
@@ -180,7 +180,7 @@ namespace viewpane
 	_Check_return_ std::wstring DropDownPane::GetDropStringUseControl() const
 	{
 		const auto len = m_DropDown.GetWindowTextLength() + 1;
-		auto out = std::wstring(len,'\0');
+		auto out = std::wstring(len, '\0');
 		GetWindowTextW(m_DropDown.m_hWnd, const_cast<LPWSTR>(out.c_str()), len);
 		return out;
 	}

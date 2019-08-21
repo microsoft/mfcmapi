@@ -41,13 +41,12 @@ namespace dialog
 				UINT uidActionButtonText1,
 				UINT uidActionButtonText2,
 				UINT uidActionButtonText3);
-			virtual ~CEditor();
 
 			_Check_return_ bool DisplayDialog();
 
 			// These functions can be used to set up a data editing dialog
 			void SetPromptPostFix(_In_ const std::wstring& szMsg);
-			void AddPane(viewpane::ViewPane* lpPane);
+			void AddPane(std::shared_ptr<viewpane::ViewPane> lpPane);
 			void SetStringA(ULONG id, const std::string& szMsg) const;
 			void SetStringW(ULONG id, const std::wstring& szMsg) const;
 			void SetStringf(ULONG id, LPCWSTR szMsg, ...) const;
@@ -67,29 +66,29 @@ namespace dialog
 			}
 			void ClearHighlight(ULONG id) const
 			{
-				auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
-				if (lpPane)
+				auto pane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(id));
+				if (pane)
 				{
-					lpPane->ClearHighlight();
+					pane->ClearHighlight();
 				}
 			}
 
 			void HighlightHex(ULONG id, smartview::block* lpData) const
 			{
-				auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
-				if (lpPane)
+				auto pane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(id));
+				if (pane)
 				{
-					lpPane->ClearHighlight();
+					pane->ClearHighlight();
 					if (!lpData) return;
-					const auto hex = lpPane->GetStringW();
-					lpPane->AddHighlight(viewpane::Range{
+					const auto hex = pane->GetStringW();
+					pane->AddHighlight(viewpane::Range{
 						strings::OffsetToFilteredOffset(hex, lpData->getOffset() * 2),
 						strings::OffsetToFilteredOffset(hex, (lpData->getOffset() + lpData->getSize()) * 2)});
 				}
 			}
 
 			// Get values after we've done the DisplayDialog
-			viewpane::ViewPane* GetPane(ULONG id) const;
+			std::shared_ptr<viewpane::ViewPane> GetPane(int id) const;
 			std::wstring GetStringW(ULONG id) const;
 			_Check_return_ ULONG GetHex(ULONG id) const;
 			_Check_return_ ULONG GetDecimal(ULONG id) const;
@@ -160,7 +159,6 @@ namespace dialog
 				UINT uidActionButtonText2,
 				UINT uidActionButtonText3);
 
-			void DeletePanes();
 			_Check_return_ SIZE ComputeWorkArea(SIZE sScreen);
 			void OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI)
 			{
@@ -214,7 +212,7 @@ namespace dialog
 			UINT m_uidActionButtonText3{};
 
 			// Panes are held in the order in which they render on screen
-			std::vector<viewpane::ViewPane*> m_Panes{};
+			std::vector<std::shared_ptr<viewpane::ViewPane>> m_Panes{};
 
 			bool m_bEnableScroll{};
 			CWnd m_ScrollWindow;

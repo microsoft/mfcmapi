@@ -5,9 +5,9 @@
 
 namespace viewpane
 {
-	TreePane* TreePane::Create(int paneID, UINT uidLabel, bool bReadOnly)
+	std::shared_ptr<TreePane> TreePane::Create(int paneID, UINT uidLabel, bool bReadOnly)
 	{
-		auto pane = new (std::nothrow) TreePane();
+		auto pane = std::make_shared<TreePane>();
 		if (pane)
 		{
 			if (uidLabel)
