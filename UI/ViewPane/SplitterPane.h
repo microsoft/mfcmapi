@@ -10,7 +10,9 @@ namespace viewpane
 		static SplitterPane* CreateHorizontalPane(int paneID, UINT uidLabel);
 		static SplitterPane* CreateVerticalPane(int paneID, UINT uidLabel);
 		~SplitterPane() { delete m_lpSplitter; }
+		ViewPane* GetPaneOne() { return m_PaneOne; }
 		void SetPaneOne(ViewPane* paneOne) { m_PaneOne = paneOne; }
+		ViewPane* GetPaneTwo() { return m_PaneTwo; }
 		void SetPaneTwo(ViewPane* paneTwo) { m_PaneTwo = paneTwo; }
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
@@ -27,41 +29,6 @@ namespace viewpane
 		void ShowWindow(const int nCmdShow)
 		{
 			if (m_lpSplitter) m_lpSplitter->ShowWindow(nCmdShow);
-		}
-
-		// Return a pane with a matching paneID.
-		ViewPane* GetPaneByID(const int id) override
-		{
-			if (m_paneID == id) return this;
-			if (m_PaneOne)
-			{
-				const auto pane = m_PaneOne->GetPaneByID(id);
-				if (pane) return pane;
-			}
-
-			if (m_PaneTwo)
-			{
-				return m_PaneTwo->GetPaneByID(id);
-			}
-
-			return nullptr;
-		}
-		// Return a pane with a matching nID.
-		ViewPane* GetPaneByNID(const UINT nID) override
-		{
-			if (m_nID == nID) return this;
-			if (m_PaneOne)
-			{
-				const auto pane = m_PaneOne->GetPaneByNID(nID);
-				if (pane) return pane;
-			}
-
-			if (m_PaneTwo)
-			{
-				return m_PaneTwo->GetPaneByNID(nID);
-			}
-
-			return nullptr;
 		}
 
 	private:

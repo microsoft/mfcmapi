@@ -7,6 +7,7 @@
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
 #include <core/interpret/proptags.h>
+#include <UI/ViewPane/getpane.h>
 
 extern ui::CMyWinApp theApp;
 
@@ -980,7 +981,7 @@ namespace dialog
 			{
 				if (pane)
 				{
-					const auto match = pane->GetPaneByID(id);
+					const auto match = viewpane::GetPaneByID(pane, id);
 					if (match) return match;
 				}
 			}
@@ -1286,7 +1287,7 @@ namespace dialog
 				if (pane)
 				{
 					// Either the pane matches by nID, or can return a subpane which matches by nID.
-					const auto match = pane->GetPaneByNID(nID);
+					const auto match = viewpane::GetPaneByNID(pane, nID);
 					if (match)
 					{
 						return match->GetID();

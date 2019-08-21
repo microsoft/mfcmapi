@@ -7,6 +7,7 @@
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>
 #include <core/addin/mfcmapi.h>
+#include <UI/ViewPane/getpane.h>
 
 namespace viewpane
 {
@@ -148,7 +149,7 @@ namespace viewpane
 			m_bHasData = false;
 		}
 
-		auto lpPane = dynamic_cast<TextPane*>(m_Splitter.GetPaneByID(SV_TEXT));
+		auto lpPane = dynamic_cast<TextPane*>(GetPaneByID(&m_Splitter, SV_TEXT));
 
 		if (lpPane)
 		{
@@ -248,7 +249,7 @@ namespace viewpane
 
 	void SmartViewPane::ItemSelected(HTREEITEM hItem)
 	{
-		const auto pane = dynamic_cast<TreePane*>(m_Splitter.GetPaneByID(SV_TREE));
+		const auto pane = dynamic_cast<TreePane*>(GetPaneByID(&m_Splitter, SV_TREE));
 		if (!pane) return;
 
 		auto tvi = TVITEM{};
