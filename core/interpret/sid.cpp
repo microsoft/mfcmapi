@@ -100,10 +100,8 @@ namespace sid
 			}
 		}
 
-		auto sidNameBuf = std::vector<wchar_t>();
-		sidNameBuf.resize(cchSidName);
-		auto sidDomainBuf = std::vector<wchar_t>();
-		sidDomainBuf.resize(cchSidDomain);
+		auto sidNameBuf = std::vector<wchar_t>(cchSidName);
+		auto sidDomainBuf = std::vector<wchar_t>(cchSidDomain);
 		WC_B_S(LookupAccountSidW(
 			nullptr,
 			SidStart,

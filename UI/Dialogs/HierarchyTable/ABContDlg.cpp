@@ -12,7 +12,7 @@ namespace dialog
 {
 	static std::wstring CLASS = L"CAbContDlg";
 
-	CAbContDlg::CAbContDlg(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects)
+	CAbContDlg::CAbContDlg(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 		: CHierarchyTableDlg(
 			  pParentWnd,
 			  lpMapiObjects,

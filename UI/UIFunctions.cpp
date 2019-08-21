@@ -1551,11 +1551,9 @@ namespace ui
 	std::wstring GetLBText(HWND hwnd, const int nIndex)
 	{
 		const auto len = ComboBox_GetLBTextLen(hwnd, nIndex) + 1;
-		const auto buffer = new (std::nothrow) TCHAR[len];
-		memset(buffer, 0, sizeof(TCHAR) * len);
-		ComboBox_GetLBText(hwnd, nIndex, buffer);
-		auto szOut = strings::LPCTSTRToWstring(buffer);
-		delete[] buffer;
+		auto buffer = std::basic_string<TCHAR>(len,'\0');
+		ComboBox_GetLBText(hwnd, nIndex, const_cast<TCHAR*>(buffer.c_str()));
+		auto szOut = strings::LPCTSTRToWstring(buffer.c_str());
 		return szOut;
 	}
 

@@ -34,7 +34,10 @@ namespace dialog
 	class CBaseDialog : public CMyDialog
 	{
 	public:
-		CBaseDialog(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects, ULONG ulAddInContext);
+		CBaseDialog(
+			_In_ ui::CParentWnd* pParentWnd,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
+			ULONG ulAddInContext);
 		virtual ~CBaseDialog();
 
 		STDMETHODIMP_(ULONG) AddRef();
@@ -58,7 +61,7 @@ namespace dialog
 			std::wstring& szParam3);
 		void OnOpenEntryID(_In_opt_ LPSBinary lpBin);
 		_Check_return_ ui::CParentWnd* GetParentWnd() const;
-		_Check_return_ cache::CMapiObjects* GetMapiObjects() const;
+		_Check_return_ std::shared_ptr<cache::CMapiObjects> GetMapiObjects() const;
 
 		static void UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const std::wstring& status);
 
@@ -72,14 +75,14 @@ namespace dialog
 		BOOL OnInitDialog() override;
 		virtual void OnInitMenu(_In_opt_ CMenu* pMenu);
 
-		ULONG m_ulAddInContext;
-		ULONG m_ulAddInMenuItems;
-		bool m_bIsAB;
-		controls::sortlistctrl::CSingleMAPIPropListCtrl* m_lpPropDisplay;
-		controls::CFakeSplitter* m_lpFakeSplitter;
-		std::wstring m_szTitle;
-		cache::CMapiObjects* m_lpMapiObjects;
-		ui::CParentWnd* m_lpParent;
+		ULONG m_ulAddInContext{};
+		ULONG m_ulAddInMenuItems{};
+		bool m_bIsAB{};
+		controls::sortlistctrl::CSingleMAPIPropListCtrl* m_lpPropDisplay{};
+		controls::CFakeSplitter* m_lpFakeSplitter{};
+		std::wstring m_szTitle{};
+		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
+		ui::CParentWnd* m_lpParent{};
 
 	private:
 		_Check_return_ virtual bool HandleAddInMenu(WORD wMenuSelect);
@@ -114,15 +117,15 @@ namespace dialog
 		_Check_return_ LRESULT msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam);
 		_Check_return_ LRESULT msgOnClearSingleMAPIPropList(WPARAM wParam, LPARAM lParam);
 
-		LONG m_cRef;
+		LONG m_cRef{1};
 		HICON m_hIcon{};
 		std::wstring m_StatusMessages[STATUSBARNUMPANES];
 		int m_StatusWidth[STATUSBARNUMPANES]{};
-		bool m_bDisplayingMenuText;
-		std::wstring m_szMenuDisplacedText;
-		mapi::adviseSink* m_lpBaseAdviseSink;
-		ULONG_PTR m_ulBaseAdviseConnection;
-		ULONG m_ulBaseAdviseObjectType;
+		bool m_bDisplayingMenuText{};
+		std::wstring m_szMenuDisplacedText{};
+		mapi::adviseSink* m_lpBaseAdviseSink{};
+		ULONG_PTR m_ulBaseAdviseConnection{};
+		ULONG m_ulBaseAdviseObjectType{};
 
 		DECLARE_MESSAGE_MAP()
 	};

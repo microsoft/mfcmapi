@@ -30,28 +30,21 @@ namespace controls
 
 		CContentsTableListCtrl::CContentsTableListCtrl(
 			_In_ CWnd* pCreateParent,
-			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_ LPSPropTagArray sptDefaultDisplayColumnTags,
 			_In_ const std::vector<columns::TagNames>& lpDefaultDisplayColumns,
 			UINT nIDContextMenu,
 			bool bIsAB,
 			_In_ dialog::CContentsTableDlg* lpHostDlg)
+			: m_lpMapiObjects(lpMapiObjects), m_lpHostDlg(lpHostDlg),
+			  m_sptDefaultDisplayColumnTags(sptDefaultDisplayColumnTags),
+			  m_lpDefaultDisplayColumns(lpDefaultDisplayColumns), m_nIDContextMenu(nIDContextMenu), m_bIsAB(bIsAB)
+
 		{
 			TRACE_CONSTRUCTOR(CLASS);
-
-			Create(pCreateParent, LVS_NOCOLUMNHEADER, IDC_LIST_CTRL, true);
-
-			// We borrow our parent's Mapi objects
-			m_lpMapiObjects = lpMapiObjects;
-			if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
-
-			m_lpHostDlg = lpHostDlg;
 			if (m_lpHostDlg) m_lpHostDlg->AddRef();
 
-			m_sptDefaultDisplayColumnTags = sptDefaultDisplayColumnTags;
-			m_lpDefaultDisplayColumns = lpDefaultDisplayColumns;
-			m_nIDContextMenu = nIDContextMenu;
-			m_bIsAB = bIsAB;
+			Create(pCreateParent, LVS_NOCOLUMNHEADER, IDC_LIST_CTRL, true);
 		}
 
 		CContentsTableListCtrl::~CContentsTableListCtrl()
@@ -62,7 +55,6 @@ namespace controls
 
 			if (m_lpRes) MAPIFreeBuffer(const_cast<LPSRestriction>(m_lpRes));
 			if (m_lpContentsTable) m_lpContentsTable->Release();
-			if (m_lpMapiObjects) m_lpMapiObjects->Release();
 			if (m_lpHostDlg) m_lpHostDlg->Release();
 		}
 

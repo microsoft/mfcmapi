@@ -13,7 +13,7 @@ namespace dialog
 	public:
 		CFormContainerDlg(
 			_In_ ui::CParentWnd* pParentWnd,
-			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_ LPMAPIFORMCONTAINER lpFormContainer);
 		virtual ~CFormContainerDlg();
 

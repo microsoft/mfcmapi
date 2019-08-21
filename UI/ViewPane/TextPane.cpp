@@ -102,33 +102,28 @@ namespace viewpane
 
 		const ULONG cbTemp = cb / 2;
 		ULONG cbTempRead = 0;
-		const auto pbTempBuff = new (std::nothrow) BYTE[cbTemp];
+		auto buffer = std::vector<BYTE>(cbTemp);
 
-		if (pbTempBuff)
+		EC_MAPI_S(stmData->Read(buffer.data(), cbTemp, &cbTempRead));
+		output::DebugPrint(output::DBGStream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
+
+		memset(pbBuff, 0, cbTempRead * 2);
+		ULONG iBinPos = 0;
+		for (ULONG i = 0; i < cbTempRead && i < cbTemp; i++)
 		{
-			EC_MAPI_S(stmData->Read(pbTempBuff, cbTemp, &cbTempRead));
-			output::DebugPrint(output::DBGStream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
+			const auto ch = buffer[i];
+			const auto bLow = static_cast<BYTE>(ch & 0xf);
+			const auto bHigh = static_cast<BYTE>(ch >> 4 & 0xf);
+			const auto szLow = static_cast<CHAR>(bLow <= 0x9 ? '0' + bLow : 'A' + bLow - 0xa);
+			const auto szHigh = static_cast<CHAR>(bHigh <= 0x9 ? '0' + bHigh : 'A' + bHigh - 0xa);
 
-			memset(pbBuff, 0, cbTempRead * 2);
-			ULONG iBinPos = 0;
-			for (ULONG i = 0; i < cbTempRead && i < cbTemp; i++)
-			{
-				const auto ch = pbTempBuff[i];
-				const auto bLow = static_cast<BYTE>(ch & 0xf);
-				const auto bHigh = static_cast<BYTE>(ch >> 4 & 0xf);
-				const auto szLow = static_cast<CHAR>(bLow <= 0x9 ? '0' + bLow : 'A' + bLow - 0xa);
-				const auto szHigh = static_cast<CHAR>(bHigh <= 0x9 ? '0' + bHigh : 'A' + bHigh - 0xa);
+			pbBuff[iBinPos] = szHigh;
+			pbBuff[iBinPos + 1] = szLow;
 
-				pbBuff[iBinPos] = szHigh;
-				pbBuff[iBinPos + 1] = szLow;
-
-				iBinPos += 2;
-			}
-
-			*pcb = cbTempRead * 2;
-
-			delete[] pbTempBuff;
+			iBinPos += 2;
 		}
+
+		*pcb = cbTempRead * 2;
 
 		return 0;
 	}
@@ -350,7 +345,6 @@ namespace viewpane
 
 	std::wstring TextPane::GetUIValue() const
 	{
-		std::wstring value;
 		auto getTextLength = GETTEXTLENGTHEX{GTL_PRECISE | GTL_NUMCHARS, 1200}; // 1200 for Unicode
 
 		auto lResult = ::SendMessage(
@@ -367,42 +361,38 @@ namespace viewpane
 			// Allocate a buffer large enough for either kind of string, along with a null terminator
 			const auto cchTextWithNULL = cchText + 1;
 			const auto cbBuffer = cchTextWithNULL * sizeof(WCHAR);
-			auto buffer = new (std::nothrow) BYTE[cbBuffer];
-			if (buffer)
-			{
-				GETTEXTEX getText = {};
-				getText.cb = DWORD(cbBuffer);
-				getText.flags = GT_DEFAULT;
-				getText.codepage = 1200;
+			auto buffer = std::vector<BYTE>(cbBuffer);
 
-				auto cchW = ::SendMessage(
+			auto getText = GETTEXTEX{};
+			getText.cb = static_cast<DWORD>(cbBuffer);
+			getText.flags = GT_DEFAULT;
+			getText.codepage = 1200;
+
+			auto cchW = ::SendMessage(
+				m_EditBox.m_hWnd,
+				EM_GETTEXTEX,
+				reinterpret_cast<WPARAM>(&getText),
+				reinterpret_cast<LPARAM>(buffer.data()));
+			if (cchW != 0)
+			{
+				return std::wstring(reinterpret_cast<LPWSTR>(buffer.data()), cchText);
+			}
+			else
+			{
+				// Didn't get a string from EM_GETTEXTEX, fall back to WM_GETTEXT
+				cchW = ::SendMessage(
 					m_EditBox.m_hWnd,
-					EM_GETTEXTEX,
-					reinterpret_cast<WPARAM>(&getText),
-					reinterpret_cast<LPARAM>(buffer));
+					WM_GETTEXT,
+					static_cast<WPARAM>(cchTextWithNULL),
+					reinterpret_cast<LPARAM>(buffer.data()));
 				if (cchW != 0)
 				{
-					value = std::wstring(LPWSTR(buffer), cchText);
-				}
-				else
-				{
-					// Didn't get a string from EM_GETTEXTEX, fall back to WM_GETTEXT
-					cchW = ::SendMessage(
-						m_EditBox.m_hWnd,
-						WM_GETTEXT,
-						static_cast<WPARAM>(cchTextWithNULL),
-						reinterpret_cast<LPARAM>(buffer));
-					if (cchW != 0)
-					{
-						value = strings::stringTowstring(std::string(LPSTR(buffer), cchText));
-					}
+					return strings::stringTowstring(std::string(reinterpret_cast<LPSTR>(buffer.data()), cchText));
 				}
 			}
-
-			delete[] buffer;
 		}
 
-		return value;
+		return strings::emptystring;
 	}
 
 	// Gets string from edit box and places it in m_lpszW

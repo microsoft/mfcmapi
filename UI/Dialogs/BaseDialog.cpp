@@ -33,25 +33,15 @@ namespace dialog
 
 	CBaseDialog::CBaseDialog(
 		_In_ ui::CParentWnd* pParentWnd,
-		_In_ cache::CMapiObjects* lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
 		const ULONG ulAddInContext)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
 		m_szTitle = strings::loadstring(IDS_BASEDIALOG);
-		m_bDisplayingMenuText = false;
-
-		m_lpBaseAdviseSink = nullptr;
-		m_ulBaseAdviseConnection = NULL;
-		m_ulBaseAdviseObjectType = NULL;
-
-		m_bIsAB = false;
 
 		// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 		m_hIcon = EC_D(HICON, AfxGetApp()->LoadIcon(IDR_MAINFRAME));
 
-		m_cRef = 1;
-		m_lpPropDisplay = nullptr;
-		m_lpFakeSplitter = nullptr;
 		// Let the parent know we have a status bar so we can draw our border correctly
 		SetStatusHeight(GetSystemMetrics(SM_CXSIZEFRAME) + ui::GetTextHeight(::GetDesktopWindow()));
 
@@ -59,9 +49,8 @@ namespace dialog
 		if (m_lpParent) m_lpParent->AddRef();
 
 		m_ulAddInContext = ulAddInContext;
-		m_ulAddInMenuItems = NULL;
 
-		m_lpMapiObjects = new (std::nothrow) cache::CMapiObjects(lpMapiObjects);
+		m_lpMapiObjects = std::make_shared<cache::CMapiObjects>(lpMapiObjects);
 	}
 
 	CBaseDialog::~CBaseDialog()
@@ -76,7 +65,6 @@ namespace dialog
 
 		CWnd::DestroyWindow();
 		OnNotificationsOff();
-		if (m_lpMapiObjects) m_lpMapiObjects->Release();
 		if (m_lpParent) m_lpParent->Release();
 	}
 
@@ -1024,5 +1012,5 @@ namespace dialog
 
 	_Check_return_ ui::CParentWnd* CBaseDialog::GetParentWnd() const { return m_lpParent; }
 
-	_Check_return_ cache::CMapiObjects* CBaseDialog::GetMapiObjects() const { return m_lpMapiObjects; }
+	_Check_return_ std::shared_ptr<cache::CMapiObjects> CBaseDialog::GetMapiObjects() const { return m_lpMapiObjects; }
 } // namespace dialog

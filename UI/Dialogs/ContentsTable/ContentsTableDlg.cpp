@@ -24,7 +24,7 @@ namespace dialog
 
 	CContentsTableDlg::CContentsTableDlg(
 		_In_ ui::CParentWnd* pParentWnd,
-		_In_ cache::CMapiObjects* lpMapiObjects,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		UINT uidTitle,
 		__mfcmapiCreateDialogEnum bCreateDialog,
 		_In_opt_ LPMAPIPROP lpContainer,

@@ -45,18 +45,15 @@ namespace controls
 		CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 			_In_ CWnd* pCreateParent,
 			_In_ dialog::CBaseDialog* lpHostDlg,
-			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			bool bIsAB)
+			: m_lpMapiObjects(lpMapiObjects), m_lpHostDlg(lpHostDlg), m_bIsAB(bIsAB)
+
 		{
 			TRACE_CONSTRUCTOR(CLASS);
 
 			Create(pCreateParent, LVS_SINGLESEL, IDC_LIST_CTRL, true);
 
-			// We borrow our parent's Mapi objects
-			m_lpMapiObjects = lpMapiObjects;
-			if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
-
-			m_lpHostDlg = lpHostDlg;
 			if (m_lpHostDlg) m_lpHostDlg->AddRef();
 
 			for (ULONG i = 0; i < columns::PropColumns.size(); i++)
@@ -94,15 +91,12 @@ namespace controls
 			}
 
 			AutoSizeColumns(false);
-
-			m_bIsAB = bIsAB;
 		}
 
 		CSingleMAPIPropListCtrl::~CSingleMAPIPropListCtrl()
 		{
 			TRACE_DESTRUCTOR(CLASS);
 			if (m_sptExtraProps) MAPIFreeBuffer(m_sptExtraProps);
-			if (m_lpMapiObjects) m_lpMapiObjects->Release();
 			if (m_lpHostDlg) m_lpHostDlg->Release();
 		}
 
@@ -147,27 +141,22 @@ namespace controls
 
 			if (lpMyHeader)
 			{
-				const ULONG nColumnCount = lpMyHeader->GetItemCount();
-				if (nColumnCount && nColumnCount <= MAX_SORT_COLS)
+				const auto columnCount = lpMyHeader->GetItemCount();
+				if (columnCount && columnCount <= MAX_SORT_COLS)
 				{
-					const auto pnOrder = new (std::nothrow) int[nColumnCount];
+					auto columns = std::vector<int>(columnCount);
 
-					if (pnOrder)
+					registry::propertyColumnOrder.clear();
+					EC_B_S(GetColumnOrderArray(columns.data(), columnCount));
+					for (const auto column : columns)
 					{
-						registry::propertyColumnOrder.clear();
-						EC_B_S(GetColumnOrderArray(pnOrder, nColumnCount));
-						for (ULONG i = 0; i < nColumnCount; i++)
-						{
-							registry::propertyColumnOrder.push_back(static_cast<wchar_t>(L'a' + pnOrder[i]));
-						}
+						registry::propertyColumnOrder.push_back(static_cast<wchar_t>(L'a' + column));
 					}
-
-					delete[] pnOrder;
 				}
 			}
 
 			return S_OK;
-		}
+		} // namespace sortlistctrl
 
 		void CSingleMAPIPropListCtrl::InitMenu(_In_ CMenu* pMenu) const
 		{
@@ -1278,13 +1267,12 @@ namespace controls
 			}
 		}
 
-		// Display the selected property as a security dscriptor using a property sheet
+		// Display the selected property as a security descriptor using a property sheet
 		void CSingleMAPIPropListCtrl::OnDisplayPropertyAsSecurityDescriptorPropSheet() const
 		{
-			ULONG ulPropTag = NULL;
-
 			if (!m_lpPropBag || !import::pfnEditSecurity) return;
 
+			ULONG ulPropTag = NULL;
 			GetSelectedPropTag(&ulPropTag);
 			if (!ulPropTag) return;
 
@@ -1295,14 +1283,9 @@ namespace controls
 				L"interpreting 0x%X as Security Descriptor\n",
 				ulPropTag);
 
-			auto MySecInfo = new (std::nothrow) mapi::mapiui::CMySecInfo(m_lpPropBag->GetMAPIProp(), ulPropTag);
+			const auto mySecInfo = std::make_shared<mapi::mapiui::CMySecInfo>(m_lpPropBag->GetMAPIProp(), ulPropTag);
 
-			if (MySecInfo)
-			{
-				EC_B_S(import::pfnEditSecurity(m_hWnd, MySecInfo));
-
-				MySecInfo->Release();
-			}
+			EC_B_S(import::pfnEditSecurity(m_hWnd, mySecInfo.get()));
 		}
 
 		void CSingleMAPIPropListCtrl::OnEditProp()

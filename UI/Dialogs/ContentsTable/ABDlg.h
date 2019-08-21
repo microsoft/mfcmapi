@@ -6,7 +6,7 @@ namespace dialog
 	class CAbDlg : public CContentsTableDlg
 	{
 	public:
-		CAbDlg(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects, _In_ LPMAPIPROP lpAbCont);
+		CAbDlg(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, _In_ LPMAPIPROP lpAbCont);
 		virtual ~CAbDlg();
 
 	private:
@@ -28,7 +28,7 @@ namespace dialog
 		void OnOpenManager();
 		void OnOpenOwner();
 
-		LPABCONT m_lpAbCont;
+		LPABCONT m_lpAbCont{};
 
 		DECLARE_MESSAGE_MAP()
 	};

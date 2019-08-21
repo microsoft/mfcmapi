@@ -94,33 +94,23 @@ namespace registry
 		output::DebugPrint(output::DBGGeneric, L"ReadDWORDFromRegistry(%ws)\n", szValue.c_str());
 
 		// Get its size
-		DWORD cb = NULL;
+		DWORD cb{};
 		DWORD dwKeyType{};
 		auto hRes = WC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, nullptr, &cb));
 
-		LPBYTE szBuf{};
 		if (hRes == S_OK && cb && dwKeyType == REG_DWORD)
 		{
-			szBuf = new (std::nothrow) BYTE[cb];
-			if (szBuf)
+			auto szBuf = std::vector<BYTE>(cb);
+
+			// Get the current value
+			hRes = EC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, szBuf.data(), &cb));
+			if (hRes == S_OK && dwKeyType == REG_DWORD)
 			{
-				// Get the current value
-				hRes = EC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, szBuf, &cb));
+				return *reinterpret_cast<DWORD*>(szBuf.data());
 			}
 		}
-		else
-		{
-			hRes = MAPI_E_INVALID_PARAMETER;
-		}
 
-		auto ret = dwDefaultVal;
-		if (hRes == S_OK && dwKeyType == REG_DWORD && szBuf)
-		{
-			ret = *reinterpret_cast<DWORD*>(szBuf);
-		}
-
-		delete[] szBuf;
-		return ret;
+		return dwDefaultVal;
 	}
 
 	// If the value is not set in the registry, return the default value
@@ -135,29 +125,24 @@ namespace registry
 		DWORD dwKeyType{};
 		auto hRes = WC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, nullptr, &cb));
 
-		LPBYTE szBuf{};
 		if (hRes == S_OK && cb && !(cb % 2) && dwKeyType == REG_SZ)
 		{
-			szBuf = new (std::nothrow) BYTE[cb];
-			if (szBuf)
+			auto szBuf = std::wstring(cb / 2, '\0');
+			// Get the current value
+			hRes = EC_W32(RegQueryValueExW(
+				hKey,
+				szValue.c_str(),
+				nullptr,
+				&dwKeyType,
+				reinterpret_cast<LPBYTE>(const_cast<wchar_t*>(szBuf.data())),
+				&cb));
+			if (hRes == S_OK && cb && !(cb % 2) && dwKeyType == REG_SZ)
 			{
-				// Get the current value
-				hRes = EC_W32(RegQueryValueExW(hKey, szValue.c_str(), nullptr, &dwKeyType, szBuf, &cb));
+				return szBuf;
 			}
 		}
-		else
-		{
-			hRes = MAPI_E_INVALID_PARAMETER;
-		}
 
-		auto ret = szDefault;
-		if (hRes == S_OK && cb && !(cb % 2) && dwKeyType == REG_SZ && szBuf)
-		{
-			ret = std::wstring(LPWSTR(szBuf), cb / sizeof WCHAR);
-		}
-
-		delete[] szBuf;
-		return ret;
+		return szDefault;
 	}
 
 	void ReadFromRegistry()

@@ -19,7 +19,7 @@ namespace dialog
 {
 	static std::wstring CLASS = L"CAbDlg";
 
-	CAbDlg::CAbDlg(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects, _In_ LPMAPIPROP lpAbCont)
+	CAbDlg::CAbDlg(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects, _In_ LPMAPIPROP lpAbCont)
 		: CContentsTableDlg(
 			  pParentWnd,
 			  lpMapiObjects,

@@ -8,7 +8,7 @@ namespace dialog
 	public:
 		CAttachmentsDlg(
 			_In_ ui::CParentWnd* pParentWnd,
-			_In_ cache::CMapiObjects* lpMapiObjects,
+			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 			_In_ LPMAPITABLE lpMAPITable,
 			_In_ LPMAPIPROP lpMessage);
 		virtual ~CAttachmentsDlg();

@@ -53,8 +53,6 @@ namespace cli
 	extern option switchSearchState;
 	extern std::vector<option*> g_options;
 
-#define ulNoMatch 0xffffffff
-
 	enum CmdMode
 	{
 		cmdmodePropTag = cmdmodeFirstMode,

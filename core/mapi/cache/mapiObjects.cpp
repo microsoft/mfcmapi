@@ -10,26 +10,21 @@ namespace cache
 {
 	static std::wstring CLASS = L"CMapiObjects";
 	// Pass an existing CMapiObjects to make a copy, pass NULL to create a new one from scratch
-	CMapiObjects::CMapiObjects(_In_opt_ CMapiObjects* OldMapiObjects)
+	CMapiObjects::CMapiObjects(_In_opt_ std::shared_ptr<CMapiObjects> oldMapiObjects)
 	{
 		TRACE_CONSTRUCTOR(CLASS);
-		output::DebugPrintEx(output::DBGConDes, CLASS, CLASS, L"OldMapiObjects = %p\n", OldMapiObjects);
-		m_cRef = 1;
-
-		m_lpAddrBook = nullptr;
-		m_lpMDB = nullptr;
-		m_lpMAPISession = nullptr;
+		output::DebugPrintEx(output::DBGConDes, CLASS, CLASS, L"OldMapiObjects = %p\n", &oldMapiObjects);
 
 		// If we were passed a valid object, make copies of its interfaces.
-		if (OldMapiObjects)
+		if (oldMapiObjects)
 		{
-			m_lpMAPISession = OldMapiObjects->m_lpMAPISession;
+			m_lpMAPISession = oldMapiObjects->m_lpMAPISession;
 			if (m_lpMAPISession) m_lpMAPISession->AddRef();
 
-			m_lpMDB = OldMapiObjects->m_lpMDB;
+			m_lpMDB = oldMapiObjects->m_lpMDB;
 			if (m_lpMDB) m_lpMDB->AddRef();
 
-			m_lpAddrBook = OldMapiObjects->m_lpAddrBook;
+			m_lpAddrBook = oldMapiObjects->m_lpAddrBook;
 			if (m_lpAddrBook) m_lpAddrBook->AddRef();
 		}
 	}
@@ -40,21 +35,6 @@ namespace cache
 		if (m_lpAddrBook) m_lpAddrBook->Release();
 		if (m_lpMDB) m_lpMDB->Release();
 		if (m_lpMAPISession) m_lpMAPISession->Release();
-	}
-
-	STDMETHODIMP_(ULONG) CMapiObjects::AddRef()
-	{
-		const auto lCount = InterlockedIncrement(&m_cRef);
-		TRACE_ADDREF(CLASS, lCount);
-		return lCount;
-	}
-
-	STDMETHODIMP_(ULONG) CMapiObjects::Release()
-	{
-		const auto lCount = InterlockedDecrement(&m_cRef);
-		TRACE_RELEASE(CLASS, lCount);
-		if (!lCount) delete this;
-		return lCount;
 	}
 
 	void CMapiObjects::MAPILogonEx(_In_ HWND hwnd, _In_opt_z_ LPTSTR szProfileName, ULONG ulFlags)
@@ -108,7 +88,8 @@ namespace cache
 
 	void CMapiObjects::SetAddrBook(_In_opt_ LPADRBOOK lpAddrBook)
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"SetAddrBook", L"replacing %p with %p\n", m_lpAddrBook, lpAddrBook);
+		output::DebugPrintEx(
+			output::DBGGeneric, CLASS, L"SetAddrBook", L"replacing %p with %p\n", m_lpAddrBook, lpAddrBook);
 		if (m_lpAddrBook) m_lpAddrBook->Release();
 		m_lpAddrBook = lpAddrBook;
 		if (m_lpAddrBook) m_lpAddrBook->AddRef();

@@ -6,11 +6,8 @@ namespace cache
 	class CMapiObjects
 	{
 	public:
-		CMapiObjects(_In_opt_ CMapiObjects* OldMapiObjects);
+		CMapiObjects(_In_opt_ std::shared_ptr<CMapiObjects> OldMapiObjects);
 		virtual ~CMapiObjects();
-
-		STDMETHODIMP_(ULONG) AddRef();
-		STDMETHODIMP_(ULONG) Release();
 
 		_Check_return_ LPADRBOOK GetAddrBook(bool bForceOpen);
 		_Check_return_ LPMDB GetMDB() const;
@@ -23,9 +20,8 @@ namespace cache
 		void Logoff(_In_ HWND hwnd, ULONG ulFlags);
 
 	private:
-		LONG m_cRef;
-		LPMDB m_lpMDB;
-		LPMAPISESSION m_lpMAPISession;
-		LPADRBOOK m_lpAddrBook;
+		LPMDB m_lpMDB{};
+		LPMAPISESSION m_lpMAPISession{};
+		LPADRBOOK m_lpAddrBook{};
 	};
 } // namespace cache
