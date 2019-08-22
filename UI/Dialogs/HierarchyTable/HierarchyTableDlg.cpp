@@ -18,7 +18,7 @@ namespace dialog
 
 	CHierarchyTableDlg::CHierarchyTableDlg(
 		_In_ ui::CParentWnd* pParentWnd,
-		_In_ cache::CMapiObjects* lpMapiObjects,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		UINT uidTitle,
 		_In_opt_ LPMAPIPROP lpRootContainer,
 		ULONG nIDContextMenu,

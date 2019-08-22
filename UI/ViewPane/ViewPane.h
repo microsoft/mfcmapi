@@ -32,11 +32,8 @@ namespace viewpane
 			int iEditHeight); // Height of an edit control
 		void SetAddInLabel(const std::wstring& szLabel);
 		virtual void UpdateButtons();
-		ULONG GetID() const { return m_paneID; }
-		// Return a pane with a matching paneID. Can be overriden to allow container panes to return subpanes.
-		virtual ViewPane* GetPaneByID(int id) { return m_paneID == id ? this : nullptr; }
-		// Return a pane with a matching nID. Can be overriden to allow container panes to return subpanes.
-		virtual ViewPane* GetPaneByNID(UINT nID) { return nID == m_nID ? this : nullptr; }
+		int GetID() const { return m_paneID; }
+		UINT GetNID() const { return m_nID; }
 
 	protected:
 		// Returns the height of our label, accounting for an expand/collapse button
@@ -48,24 +45,24 @@ namespace viewpane
 			return 0;
 		}
 		int m_paneID{-1}; // ID of the view pane in the view - used for callbacks and layout
-		bool m_bInitialized{false};
+		bool m_bInitialized{};
 		bool m_bReadOnly{true};
 		std::wstring m_szLabel; // Text to push into UI in Initialize
-		int m_iLabelWidth{0}; // The width of the label
+		int m_iLabelWidth{}; // The width of the label
 		CEdit m_Label;
-		UINT m_nID{0}; // NID for matching change notifications back to controls. Also used for Create calls.
-		HWND m_hWndParent{nullptr};
-		bool m_bCollapsible{false};
-		bool m_bCollapsed{false};
+		UINT m_nID{}; // NID for matching change notifications back to controls. Also used for Create calls.
+		HWND m_hWndParent{};
+		bool m_bCollapsible{};
+		bool m_bCollapsed{};
 		CButton m_CollapseButton;
 
 		// Margins
-		int m_iMargin{0};
-		int m_iSideMargin{0};
-		int m_iLabelHeight{0}; // Height of the label
-		int m_iSmallHeightMargin{0};
-		int m_iLargeHeightMargin{0};
-		int m_iButtonHeight{0}; // Height of buttons below the control
-		int m_iEditHeight{0}; // Height of an edit control
+		int m_iMargin{};
+		int m_iSideMargin{};
+		int m_iLabelHeight{}; // Height of the label
+		int m_iSmallHeightMargin{};
+		int m_iLargeHeightMargin{};
+		int m_iButtonHeight{}; // Height of buttons below the control
+		int m_iEditHeight{}; // Height of an edit control
 	};
 } // namespace viewpane

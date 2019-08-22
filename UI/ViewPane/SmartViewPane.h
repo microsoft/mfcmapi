@@ -11,8 +11,9 @@ namespace viewpane
 	class SmartViewPane : public DropDownPane
 	{
 	public:
-		static SmartViewPane* Create(int paneID, UINT uidLabel);
+		static std::shared_ptr<SmartViewPane> Create(int paneID, UINT uidLabel);
 
+		SmartViewPane(); 
 		void SetParser(__ParsingTypeEnum iParser);
 		void Parse(const std::vector<BYTE>& myBin) { Parse(std::vector<std::vector<BYTE>>{myBin}); }
 		void Parse(const std::vector<std::vector<BYTE>>& myBins);
@@ -39,8 +40,8 @@ namespace viewpane
 
 		std::vector<std::vector<BYTE>> m_bins;
 		std::shared_ptr<smartview::block> treeData = std::make_shared<smartview::block>();
-		SplitterPane m_Splitter;
-		TreePane* m_TreePane{nullptr};
+		std::shared_ptr<SplitterPane> m_Splitter;
+		std::shared_ptr<TreePane> m_TreePane;
 		bool m_bHasData{false};
 		bool m_bDoDropDown{true};
 	};

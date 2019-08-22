@@ -17,8 +17,6 @@ namespace controls
 	CFakeSplitter::~CFakeSplitter()
 	{
 		TRACE_DESTRUCTOR(CLASS);
-		delete m_ViewPaneOne;
-		delete m_ViewPaneTwo;
 		(void) DestroyCursor(m_hSplitCursorH);
 		(void) DestroyCursor(m_hSplitCursorV);
 		CWnd::DestroyWindow();

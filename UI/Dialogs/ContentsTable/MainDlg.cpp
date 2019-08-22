@@ -40,7 +40,7 @@ namespace dialog
 {
 	static std::wstring CLASS = L"CMainDlg";
 
-	CMainDlg::CMainDlg(_In_ ui::CParentWnd* pParentWnd, _In_ cache::CMapiObjects* lpMapiObjects)
+	CMainDlg::CMainDlg(_In_ ui::CParentWnd* pParentWnd, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 		: CContentsTableDlg(
 			  pParentWnd,
 			  lpMapiObjects,

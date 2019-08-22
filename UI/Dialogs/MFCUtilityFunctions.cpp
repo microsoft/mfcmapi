@@ -390,7 +390,7 @@ namespace dialog
 		return false;
 	}
 
-	void DisplayMailboxTable(_In_ ui::CParentWnd* lpParent, _In_ cache::CMapiObjects* lpMapiObjects)
+	void DisplayMailboxTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 	{
 		if (!lpParent || !lpMapiObjects) return;
 		LPMDB lpPrivateMDB = nullptr;
@@ -507,7 +507,7 @@ namespace dialog
 		if (lpPrivateMDB) lpPrivateMDB->Release();
 	}
 
-	void DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ cache::CMapiObjects* lpMapiObjects)
+	void DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 	{
 		if (!lpParent || !lpMapiObjects) return;
 		LPMDB lpPrivateMDB = nullptr;
@@ -630,7 +630,7 @@ namespace dialog
 	}
 
 	void ResolveMessageClass(
-		_In_ cache::CMapiObjects* lpMapiObjects,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
 		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
 	{
@@ -679,7 +679,7 @@ namespace dialog
 
 	void SelectForm(
 		_In_ HWND hWnd,
-		_In_ cache::CMapiObjects* lpMapiObjects,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_opt_ LPMAPIFOLDER lpMAPIFolder,
 		_Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
 	{

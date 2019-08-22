@@ -22,7 +22,7 @@ namespace controls
 			CSingleMAPIPropListCtrl(
 				_In_ CWnd* pCreateParent,
 				_In_ dialog::CBaseDialog* lpHostDlg,
-				_In_ cache::CMapiObjects* lpMapiObjects,
+				_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 				bool bIsAB);
 			virtual ~CSingleMAPIPropListCtrl();
 
@@ -82,7 +82,7 @@ namespace controls
 			dialog::CBaseDialog* m_lpHostDlg{};
 			bool m_bHaveEverDisplayedSomething{};
 			bool m_bIsAB{};
-			cache::CMapiObjects* m_lpMapiObjects{};
+			std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 
 			std::shared_ptr<propertybag::IMAPIPropertyBag> m_lpPropBag{};
 

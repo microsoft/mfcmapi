@@ -52,20 +52,16 @@ namespace controls
 		CWnd::DestroyWindow();
 
 		if (m_lpContainer) m_lpContainer->Release();
-		if (m_lpMapiObjects) m_lpMapiObjects->Release();
 	}
 
 	void CHierarchyTableTreeCtrl::Create(
 		_In_ CWnd* pCreateParent,
-		_In_ cache::CMapiObjects* lpMapiObjects,
+		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
 		_In_ dialog::CHierarchyTableDlg* lpHostDlg,
 		const ULONG ulDisplayFlags,
 		const UINT nIDContextMenu)
 	{
-		// We borrow our parent's Mapi objects
 		m_lpMapiObjects = lpMapiObjects;
-		if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
-
 		m_lpHostDlg = lpHostDlg;
 		m_ulDisplayFlags = ulDisplayFlags;
 		m_nIDContextMenu = nIDContextMenu;

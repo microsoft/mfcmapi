@@ -45,7 +45,7 @@ namespace dialog
 
 			// initialize our dropdowns here
 			auto ulDropNum = 0;
-			auto lpFuzzyPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(FUZZYLEVEL));
+			auto lpFuzzyPane = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(FUZZYLEVEL));
 			if (lpFuzzyPane)
 			{
 				for (const auto fuzzyLevel : FuzzyLevels)
@@ -136,7 +136,7 @@ namespace dialog
 
 		_Check_return_ ULONG CSearchEditor::GetSelectedFuzzyLevel() const
 		{
-			const auto lpFuzzyPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(FUZZYLEVEL));
+			const auto lpFuzzyPane = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(FUZZYLEVEL));
 			if (lpFuzzyPane)
 			{
 				const auto ulFuzzySelection = lpFuzzyPane->GetDropDownSelection();

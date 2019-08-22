@@ -12,17 +12,17 @@ namespace viewpane
 	class TextPane : public ViewPane
 	{
 	public:
-		static TextPane* CreateMultiLinePane(int paneID, UINT uidLabel, bool bReadOnly);
-		static TextPane* CreateMultiLinePane(int paneID, UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly);
-		static TextPane* CreateSingleLinePane(int paneID, UINT uidLabel, bool bReadOnly, bool bMultiLine = false);
-		static TextPane* CreateSingleLinePane(
+		static std::shared_ptr<TextPane> CreateMultiLinePane(int paneID, UINT uidLabel, bool bReadOnly);
+		static std::shared_ptr<TextPane> CreateMultiLinePane(int paneID, UINT uidLabel, _In_ const std::wstring& szVal, bool bReadOnly);
+		static std::shared_ptr<TextPane> CreateSingleLinePane(int paneID, UINT uidLabel, bool bReadOnly, bool bMultiLine = false);
+		static std::shared_ptr<TextPane> CreateSingleLinePane(
 			int paneID,
 			UINT uidLabel,
 			_In_ const std::wstring& szVal,
 			bool bReadOnly,
 			bool bMultiLine = false);
-		static TextPane* CreateSingleLinePaneID(int paneID, UINT uidLabel, UINT uidVal, bool bReadOnly);
-		static TextPane* CreateCollapsibleTextPane(int paneID, UINT uidLabel, bool bReadOnly);
+		static std::shared_ptr<TextPane> CreateSingleLinePaneID(int paneID, UINT uidLabel, UINT uidVal, bool bReadOnly);
+		static std::shared_ptr<TextPane> CreateCollapsibleTextPane(int paneID, UINT uidLabel, bool bReadOnly);
 
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;

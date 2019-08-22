@@ -93,7 +93,7 @@ namespace dialog
 
 		_Check_return_ sortlistdata::sortListData* CPropertySelector::GetSelectedListRowData(ULONG id) const
 		{
-			const auto lpPane = static_cast<viewpane::ListPane*>(GetPane(id));
+			const auto lpPane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(id));
 			if (lpPane)
 			{
 				return lpPane->GetSelectedListRowData();

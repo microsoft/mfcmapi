@@ -7,6 +7,7 @@
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
 #include <core/interpret/proptags.h>
+#include <UI/ViewPane/getpane.h>
 
 extern ui::CMyWinApp theApp;
 
@@ -116,12 +117,6 @@ namespace dialog
 			}
 		}
 
-		CEditor::~CEditor()
-		{
-			TRACE_DESTRUCTOR(CLASS);
-			DeletePanes();
-		}
-
 		BEGIN_MESSAGE_MAP(CEditor, CMyDialog)
 		ON_WM_SIZE()
 		ON_WM_GETMINMAXINFO()
@@ -145,7 +140,7 @@ namespace dialog
 				{
 				case NM_DBLCLK:
 				case NM_RETURN:
-					auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(m_listID));
+					auto pane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(m_listID));
 					if (pane)
 					{
 						(void) pane->HandleChange(IDD_LISTEDIT);
@@ -496,7 +491,7 @@ namespace dialog
 		// This should work whether the editor is active/displayed or not
 		GUID CEditor::GetSelectedGUID(ULONG id, bool bByteSwapped) const
 		{
-			const auto pane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
+			const auto pane = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetSelectedGUID(bByteSwapped);
@@ -562,13 +557,11 @@ namespace dialog
 				const auto len = lpPrompt->LineLength(lpPrompt->LineIndex(i));
 				if (len)
 				{
-					const auto szLine = new (std::nothrow) TCHAR[len + 1];
-					memset(szLine, 0, len + 1);
+					auto szLine = std::basic_string<TCHAR>(len + 1, '\0');
 
-					(void) lpPrompt->GetLine(i, szLine, len);
+					(void) lpPrompt->GetLine(i, const_cast<TCHAR*>(szLine.c_str()), len);
 
-					int iWidth = LOWORD(::GetTabbedTextExtent(hdc, szLine, len, 0, nullptr));
-					delete[] szLine;
+					int iWidth = LOWORD(::GetTabbedTextExtent(hdc, szLine.c_str(), len, 0, nullptr));
 					cx = max(cx, iWidth);
 				}
 			}
@@ -958,17 +951,7 @@ namespace dialog
 			EC_B_S(EndDeferWindowPos(hdwp));
 		}
 
-		void CEditor::DeletePanes()
-		{
-			for (const auto& pane : m_Panes)
-			{
-				delete[] pane;
-			}
-
-			m_Panes.clear();
-		}
-
-		void CEditor::AddPane(viewpane::ViewPane* lpPane)
+		void CEditor::AddPane(std::shared_ptr<viewpane::ViewPane> lpPane)
 		{
 			if (!lpPane) return;
 			m_Panes.push_back(lpPane);
@@ -976,13 +959,13 @@ namespace dialog
 
 		// Returns the first pane with a matching id.
 		// Container panes may return a sub pane.
-		viewpane::ViewPane* CEditor::GetPane(ULONG id) const
+		std::shared_ptr<viewpane::ViewPane> CEditor::GetPane(int id) const
 		{
 			for (const auto& pane : m_Panes)
 			{
 				if (pane)
 				{
-					const auto match = pane->GetPaneByID(id);
+					const auto match = viewpane::GetPaneByID(pane, id);
 					if (match) return match;
 				}
 			}
@@ -999,7 +982,7 @@ namespace dialog
 		// Sets string
 		void CEditor::SetStringA(ULONG id, const std::string& szMsg) const
 		{
-			auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
+			auto pane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(id));
 			if (pane)
 			{
 				pane->SetStringW(strings::stringTowstring(szMsg));
@@ -1009,7 +992,7 @@ namespace dialog
 		// Sets string
 		void CEditor::SetStringW(ULONG id, const std::wstring& szMsg) const
 		{
-			auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
+			auto pane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(id));
 			if (pane)
 			{
 				pane->SetStringW(szMsg);
@@ -1052,7 +1035,7 @@ namespace dialog
 		// Updates pane using SetBinary
 		void CEditor::SetBinary(ULONG id, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
 		{
-			auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
+			auto pane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(id));
 			if (pane)
 			{
 				pane->SetBinary(lpb, cb);
@@ -1094,7 +1077,7 @@ namespace dialog
 
 		void CEditor::SetListString(ULONG id, ULONG iListRow, ULONG iListCol, const std::wstring& szListString) const
 		{
-			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
+			auto pane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(id));
 			if (pane)
 			{
 				pane->SetListString(iListRow, iListCol, szListString);
@@ -1104,7 +1087,7 @@ namespace dialog
 		_Check_return_ sortlistdata::sortListData*
 		CEditor::InsertListRow(ULONG id, int iRow, const std::wstring& szText) const
 		{
-			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
+			const auto pane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(id));
 			if (pane)
 			{
 				return pane->InsertRow(iRow, szText);
@@ -1115,7 +1098,7 @@ namespace dialog
 
 		void CEditor::ClearList(ULONG id) const
 		{
-			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
+			auto pane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(id));
 			if (pane)
 			{
 				pane->ClearList();
@@ -1124,7 +1107,7 @@ namespace dialog
 
 		void CEditor::ResizeList(ULONG id, bool bSort) const
 		{
-			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
+			auto pane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(id));
 			if (pane)
 			{
 				pane->ResizeList(bSort);
@@ -1133,7 +1116,7 @@ namespace dialog
 
 		std::wstring CEditor::GetStringW(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
+			const auto pane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetStringW();
@@ -1144,7 +1127,7 @@ namespace dialog
 
 		_Check_return_ std::string CEditor::GetStringA(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
+			const auto pane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(id));
 			if (pane)
 			{
 				return strings::wstringTostring(pane->GetStringW());
@@ -1155,7 +1138,7 @@ namespace dialog
 
 		_Check_return_ ULONG CEditor::GetHex(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
+			const auto pane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(id));
 			if (pane)
 			{
 				return strings::wstringToUlong(pane->GetStringW(), 16);
@@ -1166,7 +1149,7 @@ namespace dialog
 
 		_Check_return_ ULONG CEditor::GetListCount(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
+			const auto pane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetItemCount();
@@ -1177,7 +1160,7 @@ namespace dialog
 
 		_Check_return_ sortlistdata::sortListData* CEditor::GetListRowData(ULONG id, int iRow) const
 		{
-			const auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
+			const auto pane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetItemData(iRow);
@@ -1194,7 +1177,7 @@ namespace dialog
 
 		_Check_return_ ULONG CEditor::GetPropTag(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
+			const auto pane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(id));
 			if (pane)
 			{
 
@@ -1215,7 +1198,7 @@ namespace dialog
 
 		_Check_return_ ULONG CEditor::GetDecimal(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
+			const auto pane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(id));
 			if (pane)
 			{
 				return strings::wstringToUlong(pane->GetStringW(), 10);
@@ -1226,7 +1209,7 @@ namespace dialog
 
 		_Check_return_ bool CEditor::GetCheck(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::CheckPane*>(GetPane(id));
+			const auto pane = std::dynamic_pointer_cast<viewpane::CheckPane>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetCheck();
@@ -1237,7 +1220,7 @@ namespace dialog
 
 		_Check_return_ int CEditor::GetDropDown(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
+			const auto pane = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetDropDown();
@@ -1248,7 +1231,7 @@ namespace dialog
 
 		_Check_return_ DWORD_PTR CEditor::GetDropDownValue(ULONG id) const
 		{
-			const auto pane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
+			const auto pane = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(id));
 			if (pane)
 			{
 				return pane->GetDropDownValue();
@@ -1259,7 +1242,7 @@ namespace dialog
 
 		void CEditor::InsertColumn(ULONG id, int nCol, UINT uidText) const
 		{
-			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
+			auto pane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(id));
 			if (pane)
 			{
 				pane->InsertColumn(nCol, uidText);
@@ -1268,7 +1251,7 @@ namespace dialog
 
 		void CEditor::InsertColumn(ULONG id, int nCol, UINT uidText, ULONG ulPropType) const
 		{
-			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
+			auto pane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(id));
 			if (pane)
 			{
 				pane->InsertColumn(nCol, uidText);
@@ -1288,7 +1271,7 @@ namespace dialog
 				if (pane)
 				{
 					// Either the pane matches by nID, or can return a subpane which matches by nID.
-					const auto match = pane->GetPaneByNID(nID);
+					const auto match = viewpane::GetPaneByNID(pane, nID);
 					if (match)
 					{
 						return match->GetID();
@@ -1320,7 +1303,7 @@ namespace dialog
 
 		_Check_return_ bool CEditor::OnEditListEntry(ULONG id) const
 		{
-			auto pane = dynamic_cast<viewpane::ListPane*>(GetPane(id));
+			auto pane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(id));
 			if (pane)
 			{
 				return pane->OnEditListEntry();

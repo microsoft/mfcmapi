@@ -58,12 +58,7 @@ namespace ui
 		if (pWnd)
 		{
 			m_pMainWnd = static_cast<CWnd*>(pWnd);
-			auto MyObjects = new (std::nothrow) cache::CMapiObjects(nullptr);
-			if (MyObjects)
-			{
-				new dialog::CMainDlg(pWnd, MyObjects);
-				MyObjects->Release();
-			}
+			new dialog::CMainDlg(pWnd, std::make_shared<cache::CMapiObjects>(nullptr));
 			pWnd->Release();
 		}
 

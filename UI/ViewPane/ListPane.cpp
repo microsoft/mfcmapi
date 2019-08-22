@@ -9,14 +9,15 @@ namespace viewpane
 {
 	static std::wstring CLASS = L"ListPane";
 
-	ListPane* ListPane::Create(
+	std::shared_ptr<ListPane> ListPane::Create(
 		const int paneID,
 		const UINT uidLabel,
 		const bool bAllowSort,
 		const bool bReadOnly,
 		DoListEditCallback callback)
 	{
-		auto pane = new (std::nothrow) ListPane();
+		auto pane = std::make_shared<ListPane>();
+
 		if (pane)
 		{
 			pane->Setup(bAllowSort, std::move(callback));
@@ -28,14 +29,15 @@ namespace viewpane
 		return pane;
 	}
 
-	ListPane* ListPane::CreateCollapsibleListPane(
+	std::shared_ptr<ListPane> ListPane::CreateCollapsibleListPane(
 		const int paneID,
 		const UINT uidLabel,
 		const bool bAllowSort,
 		const bool bReadOnly,
 		DoListEditCallback callback)
 	{
-		auto pane = new (std::nothrow) ListPane();
+		auto pane = std::make_shared<ListPane>();
+
 		if (pane)
 		{
 			pane->Setup(bAllowSort, std::move(callback));

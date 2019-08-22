@@ -181,11 +181,10 @@ namespace file
 			if (dwVerInfoSize)
 			{
 				// If we were able to get the information, process it.
-				const auto pbData = new (std::nothrow) BYTE[dwVerInfoSize];
-				if (pbData == nullptr) return {};
+				const auto pbData = std::vector<BYTE>(dwVerInfoSize);
 
-				auto hRes =
-					EC_B(::GetFileVersionInfoW(szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(pbData)));
+				auto hRes = EC_B(::GetFileVersionInfoW(
+					szFullPath.c_str(), NULL, dwVerInfoSize, static_cast<void*>(const_cast<BYTE*>(pbData.data()))));
 
 				if (SUCCEEDED(hRes))
 				{
@@ -193,13 +192,13 @@ namespace file
 					{
 						WORD wLanguage;
 						WORD wCodePage;
-					}* lpTranslate = {nullptr};
+					}* lpTranslate = {};
 
 					UINT cbTranslate = 0;
 
 					// Read the list of languages and code pages.
 					hRes = EC_B(VerQueryValueW(
-						pbData,
+						static_cast<const void*>(pbData.data()),
 						L"\\VarFileInfo\\Translation", // STRING_OK
 						reinterpret_cast<LPVOID*>(&lpTranslate),
 						&cbTranslate));
@@ -224,7 +223,7 @@ namespace file
 								auto szQueryString = szSubBlock + szVerString;
 
 								hRes = EC_B(VerQueryValueW(
-									static_cast<void*>(pbData),
+									static_cast<const void*>(pbData.data()),
 									szQueryString.c_str(),
 									reinterpret_cast<void**>(&lpszVer),
 									&cchVer));
@@ -237,8 +236,6 @@ namespace file
 						}
 					}
 				}
-
-				delete[] pbData;
 			}
 		}
 

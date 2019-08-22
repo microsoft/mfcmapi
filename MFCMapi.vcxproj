@@ -595,6 +595,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="UI\Dialogs\ContentsTable\MainDlg.h" />
     <ClInclude Include="UI\profile.h" />
     <ClInclude Include="UI\OnNotify.h" />
+    <ClInclude Include="UI\ViewPane\getpane.h" />
     <ClInclude Include="UI\ViewPane\TreePane.h" />
     <ClInclude Include="UI\MAPIFormFunctions.h" />
     <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h" />

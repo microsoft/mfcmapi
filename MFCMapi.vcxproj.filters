@@ -79,6 +79,7 @@
     <ClInclude Include="UI\Controls\StyleTree\StyleTreeCtrl.h">
       <Filter>Source Files\UI\Controls</Filter>
     </ClInclude>
+    <ClInclude Include="UI\ViewPane\getpane.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">

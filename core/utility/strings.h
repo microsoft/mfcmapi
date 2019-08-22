@@ -6,12 +6,6 @@ namespace strings
 	// Do NOT check in with this macro enabled!
 	//#define CHECKFORMATPARAMS
 
-#ifdef _UNICODE
-	typedef std::wstring tstring;
-#else
-	typedef std::string tstring;
-#endif
-
 	extern std::wstring emptystring;
 	void setTestInstance(HINSTANCE hInstance);
 	std::wstring loadstring(DWORD dwID);
@@ -26,7 +20,7 @@ namespace strings
 	std::wstring formatmessagesys(DWORD dwID);
 	std::wstring formatmessage(DWORD dwID, ...);
 	std::wstring formatmessage(LPCWSTR szMsg, ...);
-	tstring wstringTotstring(const std::wstring& src);
+	std::basic_string<TCHAR> wstringTotstring(const std::wstring& src);
 	std::string wstringTostring(const std::wstring& src);
 	std::wstring stringTowstring(const std::string& src);
 	std::wstring LPCTSTRToWstring(LPCTSTR src);

@@ -5,9 +5,10 @@
 
 namespace viewpane
 {
-	CheckPane* CheckPane::Create(const int paneID, const UINT uidLabel, const bool bVal, const bool bReadOnly)
+	std::shared_ptr<CheckPane>
+	CheckPane::Create(const int paneID, const UINT uidLabel, const bool bVal, const bool bReadOnly)
 	{
-		auto pane = new (std::nothrow) CheckPane();
+		auto pane = std::make_shared<CheckPane>();
 		if (pane)
 		{
 			pane->m_bCheckValue = bVal;

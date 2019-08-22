@@ -26,7 +26,7 @@ namespace controls
 		void Init(HWND hWnd);
 		void SetPaneOne(HWND paneOne);
 		void SetPaneTwo(HWND paneTwo);
-		void SetPaneOne(viewpane::ViewPane* paneOne)
+		void SetPaneOne(std::shared_ptr<viewpane::ViewPane> paneOne)
 		{
 			m_ViewPaneOne = paneOne;
 			if (m_ViewPaneOne)
@@ -39,7 +39,7 @@ namespace controls
 			}
 		}
 
-		void SetPaneTwo(viewpane::ViewPane* paneTwo) { m_ViewPaneTwo = paneTwo; }
+		void SetPaneTwo(std::shared_ptr<viewpane::ViewPane> paneTwo) { m_ViewPaneTwo = paneTwo; }
 
 		void SetPercent(FLOAT iNewPercent);
 		void SetSplitType(SplitType stSplitType);
@@ -67,8 +67,8 @@ namespace controls
 		HWND m_PaneOne{};
 		HWND m_PaneTwo{};
 		HWND m_hwndParent{};
-		viewpane::ViewPane* m_ViewPaneOne{};
-		viewpane::ViewPane* m_ViewPaneTwo{};
+		std::shared_ptr<viewpane::ViewPane> m_ViewPaneOne{};
+		std::shared_ptr<viewpane::ViewPane> m_ViewPaneTwo{};
 		int m_iSplitWidth{};
 		int m_iSplitPos{1};
 		SplitType m_SplitType{SplitHorizontal};
