@@ -41,7 +41,7 @@ namespace viewpane
 		std::vector<std::vector<BYTE>> m_bins;
 		std::shared_ptr<smartview::block> treeData = std::make_shared<smartview::block>();
 		std::shared_ptr<SplitterPane> m_Splitter;
-		std::shared_ptr<TreePane> m_TreePane{nullptr};
+		std::shared_ptr<TreePane> m_TreePane;
 		bool m_bHasData{false};
 		bool m_bDoDropDown{true};
 	};
