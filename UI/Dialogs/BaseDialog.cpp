@@ -140,15 +140,11 @@ namespace dialog
 
 		SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
-		m_lpFakeSplitter = new controls::CFakeSplitter();
-		if (m_lpFakeSplitter)
-		{
-			m_lpFakeSplitter->Init(m_hWnd);
-			m_lpPropDisplay =
-				new controls::sortlistctrl::CSingleMAPIPropListCtrl(m_lpFakeSplitter, this, m_lpMapiObjects, m_bIsAB);
+		m_lpFakeSplitter.Init(m_hWnd);
+		m_lpPropDisplay =
+			new controls::sortlistctrl::CSingleMAPIPropListCtrl(&m_lpFakeSplitter, this, m_lpMapiObjects, m_bIsAB);
 
-			if (m_lpPropDisplay) m_lpFakeSplitter->SetPaneTwo(m_lpPropDisplay->GetSafeHwnd());
-		}
+		if (m_lpPropDisplay) m_lpFakeSplitter.SetPaneTwo(m_lpPropDisplay->GetSafeHwnd());
 
 		return false;
 	}
@@ -391,8 +387,6 @@ namespace dialog
 		ShowWindow(SW_HIDE);
 		if (m_lpPropDisplay) m_lpPropDisplay->Release();
 		m_lpPropDisplay = nullptr;
-		delete m_lpFakeSplitter;
-		m_lpFakeSplitter = nullptr;
 		Release();
 	}
 
@@ -552,9 +546,9 @@ namespace dialog
 			// Tell the status bar it needs repainting
 			::InvalidateRect(m_hWnd, &rcStatus, false);
 
-			if (m_lpFakeSplitter && m_lpFakeSplitter->m_hWnd)
+			if (m_lpFakeSplitter && m_lpFakeSplitter.m_hWnd)
 			{
-				DeferWindowPos(hdwp, m_lpFakeSplitter->m_hWnd, nullptr, 0, 0, cx, iNewCY, SWP_NOZORDER);
+				DeferWindowPos(hdwp, m_lpFakeSplitter.m_hWnd, nullptr, 0, 0, cx, iNewCY, SWP_NOZORDER);
 			}
 
 			WC_B_S(EndDeferWindowPos(hdwp));
