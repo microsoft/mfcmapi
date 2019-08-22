@@ -693,22 +693,12 @@ namespace dialog
 		if (!MyEID.DisplayDialog()) return;
 
 		// Get the entry ID as a binary
-		LPENTRYID lpEnteredEntryID = nullptr;
-		LPENTRYID lpEntryID = nullptr;
-		size_t cbBin = NULL;
-		EC_H_S(MyEID.GetEntryID(0, MyEID.GetCheck(7), &cbBin, &lpEnteredEntryID));
+		const auto bin = MyEID.GetBinary(0, MyEID.GetCheck(7));
+		auto sBin = SBinary{static_cast<ULONG>(bin.size()), const_cast<BYTE*>(bin.data())};
 
-		if (MyEID.GetCheck(9) && lpEnteredEntryID)
+		if (MyEID.GetCheck(9))
 		{
-			(void) mapi::UnwrapContactEntryID(
-				static_cast<ULONG>(cbBin),
-				reinterpret_cast<LPBYTE>(lpEnteredEntryID),
-				reinterpret_cast<ULONG*>(&cbBin),
-				reinterpret_cast<LPBYTE*>(&lpEntryID));
-		}
-		else
-		{
-			lpEntryID = lpEnteredEntryID;
+			(void) mapi::UnwrapContactEntryID(sBin.cb, sBin.lpb, &sBin.cb, &sBin.lpb);
 		}
 
 		if (MyEID.GetCheck(8) && lpAB) // Do IAddrBook->Details here
@@ -719,8 +709,8 @@ namespace dialog
 				&ulUIParam,
 				nullptr,
 				nullptr,
-				static_cast<ULONG>(cbBin),
-				lpEntryID,
+				sBin.cb,
+				reinterpret_cast<LPENTRYID>(sBin.lpb),
 				nullptr,
 				nullptr,
 				nullptr,
@@ -734,8 +724,8 @@ namespace dialog
 				MyEID.GetCheck(2) ? lpAB : nullptr,
 				nullptr,
 				MyEID.GetCheck(3) ? lpMAPISession : nullptr,
-				static_cast<ULONG>(cbBin),
-				lpEntryID,
+				sBin.cb,
+				reinterpret_cast<LPENTRYID>(sBin.lpb),
 				nullptr,
 				(MyEID.GetCheck(4) ? MAPI_MODIFY : MAPI_BEST_ACCESS) | (MyEID.GetCheck(5) ? MAPI_NO_CACHE : 0) |
 					(MyEID.GetCheck(6) ? MAPI_CACHE_ONLY : 0),
@@ -761,8 +751,6 @@ namespace dialog
 				lpUnk->Release();
 			}
 		}
-
-		delete[] lpEnteredEntryID;
 	}
 
 	void CBaseDialog::OnCompareEntryIDs()
