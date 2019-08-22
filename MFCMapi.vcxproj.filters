@@ -43,9 +43,6 @@
     <ClInclude Include="UI\Dialogs\MFCUtilityFunctions.h">
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Controls\StyleTreeCtrl.h">
-      <Filter>Source Files\UI\Controls</Filter>
-    </ClInclude>
     <ClInclude Include="UI\ViewPane\TreePane.h">
       <Filter>Source Files\UI\ViewPane</Filter>
     </ClInclude>
@@ -64,11 +61,23 @@
     <ClInclude Include="UI\enums.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\AdviseSink.h">
-      <Filter>Source Files\UI</Filter>
-    </ClInclude>
     <ClInclude Include="UI\CMAPIProgress.h">
       <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
+    <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
+    <ClInclude Include="UI\OnNotify.h" />
+    <ClInclude Include="UI\Controls\SortList\ContentsTableListCtrl.h">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\SortList\SingleMAPIPropListCtrl.h">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\StyleTree\HierarchyTableTreeCtrl.h">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\StyleTree\StyleTreeCtrl.h">
+      <Filter>Source Files\UI\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -80,9 +89,6 @@
     </ClCompile>
     <ClCompile Include="UI\Dialogs\MFCUtilityFunctions.cpp">
       <Filter>Source Files\UI\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\StyleTreeCtrl.cpp">
-      <Filter>Source Files\UI\Controls</Filter>
     </ClCompile>
     <ClCompile Include="UI\ViewPane\TreePane.cpp">
       <Filter>Source Files\UI\ViewPane</Filter>
@@ -101,26 +107,29 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PropertyBag\MAPIPropPropertyBag.cpp">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClCompile>
-    <ClInclude Include="PropertyBag\MAPIPropPropertyBag.h">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClInclude>
-    <ClInclude Include="PropertyBag\PropertyBag.h">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClInclude>
-    <ClCompile Include="PropertyBag\RowPropertyBag.cpp">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClCompile>
-    <ClInclude Include="PropertyBag\RowPropertyBag.h">
-      <Filter>Source Files\PropertyBag</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\AdviseSink.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
     <ClCompile Include="UI\CMAPIProgress.cpp">
       <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\SortHeader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\OnNotify.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\ContentsTableListCtrl.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\SingleMAPIPropListCtrl.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\StyleTree\HierarchyTableTreeCtrl.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\StyleTree\StyleTreeCtrl.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -183,91 +192,6 @@
     </ClCompile>
     <ClInclude Include="UI\UIFunctions.h">
       <Filter>Source Files\UI</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="UI\Controls\ContentsTableListCtrl.cpp">
-      <Filter>Source Files\UI\Controls</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\ContentsTableListCtrl.h">
-      <Filter>Source Files\UI\Controls</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\HierarchyTableTreeCtrl.cpp">
-      <Filter>Source Files\UI\Controls</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\HierarchyTableTreeCtrl.h">
-      <Filter>Source Files\UI\Controls</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SingleMAPIPropListCtrl.cpp">
-      <Filter>Source Files\UI\Controls</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SingleMAPIPropListCtrl.h">
-      <Filter>Source Files\UI\Controls</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="UI\Controls\SortList\BinaryData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\BinaryData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\CommentData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\CommentData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\ContentsData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\ContentsData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\Data.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\MVPropData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\MVPropData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\NodeData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\NodeData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\PropListData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\ResData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\ResData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\SortHeader.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\SortHeader.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\SortListCtrl.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\SortListData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClInclude>
-    <ClCompile Include="UI\Controls\SortList\SortListData.cpp">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
-    </ClCompile>
-    <ClInclude Include="UI\Controls\SortList\PropListData.h">
-      <Filter>Source Files\UI\Controls\SortList</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

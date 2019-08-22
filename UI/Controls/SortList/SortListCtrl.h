@@ -1,6 +1,6 @@
 #pragma once
 #include <UI/Controls/SortList/SortHeader.h>
-#include <UI/Controls/SortList/SortListData.h>
+#include <core/sortlistdata/sortListData.h>
 
 namespace controls
 {
@@ -79,7 +79,7 @@ namespace controls
 			void DeleteAllColumns(bool bShutdown = false);
 			void SetSelectedItem(int iItem);
 			void SortClickedColumn();
-			_Check_return_ sortlistdata::SortListData* InsertRow(int iRow, const std::wstring& szText) const;
+			_Check_return_ sortlistdata::sortListData* InsertRow(int iRow, const std::wstring& szText) const;
 			void SetItemText(int nItem, int nSubItem, const std::wstring& lpszText);
 			std::wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 			void AllowEscapeClose();
@@ -87,7 +87,7 @@ namespace controls
 
 		protected:
 			void MySetRedraw(bool bRedraw);
-			_Check_return_ sortlistdata::SortListData*
+			_Check_return_ sortlistdata::sortListData*
 			InsertRow(int iRow, const std::wstring& szText, int iIndent, __SortListIconNames iImage) const;
 			void FakeClickColumn(int iColumn, bool bSortUp);
 

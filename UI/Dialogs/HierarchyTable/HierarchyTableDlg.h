@@ -1,6 +1,6 @@
 #pragma once
 #include <UI/Dialogs/BaseDialog.h>
-#include <UI/Controls/HierarchyTableTreeCtrl.h>
+#include <UI/Controls/StyleTree/HierarchyTableTreeCtrl.h>
 
 class CParentWnd;
 

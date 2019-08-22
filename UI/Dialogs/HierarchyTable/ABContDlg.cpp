@@ -1,7 +1,7 @@
 // Displays the hierarchy tree of address books
 #include <StdAfx.h>
 #include <UI/Dialogs/HierarchyTable/ABContDlg.h>
-#include <UI/Controls/HierarchyTableTreeCtrl.h>
+#include <UI/Controls/StyleTree/HierarchyTableTreeCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/addinui.h>
 #include <core/utility/output.h>

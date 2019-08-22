@@ -1,6 +1,6 @@
 #pragma once
 #include <UI/ViewPane/ViewPane.h>
-#include <UI/Controls/StyleTreeCtrl.h>
+#include <UI/Controls/StyleTree/StyleTreeCtrl.h>
 
 namespace viewpane
 {

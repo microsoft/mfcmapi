@@ -1,9 +1,9 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/ContentsTableDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <UI/FakeSplitter.h>
 #include <UI/FileDialogEx.h>
-#include <UI/Controls/SingleMAPIPropListCtrl.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>

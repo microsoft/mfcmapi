@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/PublicFolderTableDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/columnTags.h>
 #include <UI/UIFunctions.h>

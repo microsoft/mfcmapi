@@ -82,7 +82,7 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(LPVOID lpBuffer);
 
 // Custom messages - used to ensure actions occur on the right threads.
 
-// Used by CAdviseSink:
+// Used by OnNotify:
 #define WM_MFCMAPI_ADDITEM (WM_APP + 1)
 #define WM_MFCMAPI_DELETEITEM (WM_APP + 2)
 #define WM_MFCMAPI_MODIFYITEM (WM_APP + 3)

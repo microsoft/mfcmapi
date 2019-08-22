@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/SingleRecipientDialog.h>
-#include <UI/Controls/SingleMAPIPropListCtrl.h>
+#include <UI/Controls/SortList/SingleMAPIPropListCtrl.h>
 #include <UI/Dialogs/MFCUtilityFunctions.h>
 #include <core/utility/strings.h>
 #include <core/mapi/mapiFunctions.h>

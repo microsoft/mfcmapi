@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 #include <UI/Dialogs/ContentsTable/MailboxTableDlg.h>
-#include <UI/Controls/ContentsTableListCtrl.h>
+#include <UI/Controls/SortList/ContentsTableListCtrl.h>
 #include <core/mapi/cache/mapiObjects.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/mapi/mapiStoreFunctions.h>
@@ -9,7 +9,7 @@
 #include <UI/UIFunctions.h>
 #include <UI/Dialogs/Editors/Editor.h>
 #include <UI/Dialogs/Editors/PropertyTagEditor.h>
-#include <UI/Controls/SortList/ContentsData.h>
+#include <core/sortlistdata/contentsData.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/interpret/flags.h>
@@ -89,23 +89,27 @@ namespace dialog
 			auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 			for (const auto& lpListData : items)
 			{
-				if (lpListData && lpListData->Contents())
+				if (lpListData)
 				{
-					if (!lpListData->Contents()->m_szDN.empty())
+					const auto contents = lpListData->cast<sortlistdata::contentsData>();
+					if (contents)
 					{
-						auto lpNewMDB = mapi::store::OpenOtherUsersMailbox(
-							lpMAPISession,
-							lpSourceMDB,
-							strings::wstringTostring(m_lpszServerName),
-							strings::wstringTostring(lpListData->Contents()->m_szDN),
-							strings::emptystring,
-							ulFlags,
-							false);
-						if (lpNewMDB)
+						if (!contents->m_szDN.empty())
 						{
-							EC_H_S(DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, otStore, this));
-							lpNewMDB->Release();
-							lpNewMDB = nullptr;
+							auto lpNewMDB = mapi::store::OpenOtherUsersMailbox(
+								lpMAPISession,
+								lpSourceMDB,
+								strings::wstringTostring(m_lpszServerName),
+								strings::wstringTostring(contents->m_szDN),
+								strings::emptystring,
+								ulFlags,
+								false);
+							if (lpNewMDB)
+							{
+								EC_H_S(DisplayObject(static_cast<LPMAPIPROP>(lpNewMDB), NULL, otStore, this));
+								lpNewMDB->Release();
+								lpNewMDB = nullptr;
+							}
 						}
 					}
 				}
