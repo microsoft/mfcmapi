@@ -291,25 +291,25 @@ namespace mapistub
 		auto pwzProvider = pwzProviderOverride;
 		if (hMailKey && pwzProvider.empty())
 		{
-			const auto rgchMailClient = new (std::nothrow) WCHAR[MAX_PATH];
-			if (rgchMailClient)
+			const auto rgchMailClient = std::wstring(MAX_PATH, '\0');
+			// Get Outlook application path registry value
+			DWORD dwSize = MAX_PATH;
+			DWORD dwType = 0;
+			hRes = WC_W32(RegQueryValueExW(
+				hMailKey,
+				nullptr,
+				nullptr,
+				&dwType,
+				reinterpret_cast<LPBYTE>(const_cast<wchar_t*>(rgchMailClient.c_str())),
+				&dwSize));
+			if (SUCCEEDED(hRes))
 			{
-				// Get Outlook application path registry value
-				DWORD dwSize = MAX_PATH;
-				DWORD dwType = 0;
-				hRes = WC_W32(RegQueryValueExW(
-					hMailKey, nullptr, nullptr, &dwType, reinterpret_cast<LPBYTE>(rgchMailClient), &dwSize));
-				if (SUCCEEDED(hRes))
-				{
-					defaultClient = rgchMailClient;
-					output::DebugPrint(
-						output::DBGLoadMAPI,
-						L"GetHKeyMapiClient: HKLM\\%ws = %ws\n",
-						WszKeyNameMailClient,
-						defaultClient.c_str());
-				}
-
-				delete[] rgchMailClient;
+				defaultClient = rgchMailClient;
+				output::DebugPrint(
+					output::DBGLoadMAPI,
+					L"GetHKeyMapiClient: HKLM\\%ws = %ws\n",
+					WszKeyNameMailClient,
+					defaultClient.c_str());
 			}
 		}
 
@@ -367,33 +367,28 @@ namespace mapistub
 		if (SUCCEEDED(hRes))
 		{
 			dwValueBuf += 1;
-			const auto lpszTempPath = new (std::nothrow) WCHAR[dwValueBuf];
+			const auto lpszTempPath = std::wstring(dwValueBuf, '\0');
 
-			if (lpszTempPath != nullptr)
+			hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
+				szCategory.c_str(),
+				L"outlook.x64.exe", // STRING_OK
+				static_cast<DWORD>(INSTALLMODE_DEFAULT),
+				const_cast<wchar_t*>(lpszTempPath.c_str()),
+				&dwValueBuf));
+			if (FAILED(hRes))
 			{
 				hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
 					szCategory.c_str(),
-					L"outlook.x64.exe", // STRING_OK
+					L"outlook.exe", // STRING_OK
 					static_cast<DWORD>(INSTALLMODE_DEFAULT),
-					lpszTempPath,
+					const_cast<wchar_t*>(lpszTempPath.c_str()),
 					&dwValueBuf));
-				if (FAILED(hRes))
-				{
-					hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
-						szCategory.c_str(),
-						L"outlook.exe", // STRING_OK
-						static_cast<DWORD>(INSTALLMODE_DEFAULT),
-						lpszTempPath,
-						&dwValueBuf));
-				}
+			}
 
-				if (SUCCEEDED(hRes))
-				{
-					path = lpszTempPath;
-					output::DebugPrint(output::DBGLoadMAPI, L"Exit GetOutlookPath: Path = %ws\n", path.c_str());
-				}
-
-				delete[] lpszTempPath;
+			if (SUCCEEDED(hRes))
+			{
+				path = lpszTempPath;
+				output::DebugPrint(output::DBGLoadMAPI, L"Exit GetOutlookPath: Path = %ws\n", path.c_str());
 			}
 		}
 
