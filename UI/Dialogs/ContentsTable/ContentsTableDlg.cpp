@@ -95,7 +95,7 @@ namespace dialog
 		const auto bRet = CBaseDialog::OnInitDialog();
 
 		m_lpContentsTableListCtrl = new controls::sortlistctrl::CContentsTableListCtrl(
-			m_lpFakeSplitter,
+			&m_lpFakeSplitter,
 			m_lpMapiObjects,
 			m_sptDefaultDisplayColumnTags,
 			m_lpDefaultDisplayColumns,
@@ -103,11 +103,11 @@ namespace dialog
 			m_bIsAB,
 			this);
 
-		if (m_lpContentsTableListCtrl && m_lpFakeSplitter)
+		if (m_lpContentsTableListCtrl)
 		{
-			m_lpFakeSplitter->SetPaneOne(m_lpContentsTableListCtrl->GetSafeHwnd());
-			m_lpFakeSplitter->SetPercent(static_cast<FLOAT>(0.40));
-			m_lpFakeSplitter->SetSplitType(controls::SplitVertical);
+			m_lpFakeSplitter.SetPaneOne(m_lpContentsTableListCtrl->GetSafeHwnd());
+			m_lpFakeSplitter.SetPercent(static_cast<FLOAT>(0.40));
+			m_lpFakeSplitter.SetSplitType(controls::SplitVertical);
 		}
 
 		if (m_lpContainer)

@@ -238,15 +238,7 @@ namespace viewpane
 			szText = m_lpszSelectionString;
 		}
 
-		const auto lpGUID = guid::GUIDNameToGUID(szText, bByteSwapped);
-		if (lpGUID)
-		{
-			const auto guid = *lpGUID;
-			delete[] lpGUID;
-			return guid;
-		}
-
-		return {0};
+		return guid::GUIDNameToGUID(szText, bByteSwapped);
 	}
 
 	void DropDownPane::SetDropDownSelection(_In_ const std::wstring& szText)

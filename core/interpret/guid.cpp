@@ -102,41 +102,18 @@ namespace guid
 		return szGUID + strings::loadstring(IDS_UNKNOWNGUID);
 	}
 
-	LPCGUID GUIDNameToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped)
+	GUID GUIDNameToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped)
 	{
-		LPGUID lpGuidRet = nullptr;
-		LPCGUID lpGUID = nullptr;
-		GUID guid = {};
-
 		// Try the GUID like PS_* first
 		for (const auto& propGuid : PropGuidArray)
 		{
 			if (0 == lstrcmpiW(szGUID.c_str(), propGuid.lpszName))
 			{
-				lpGUID = propGuid.lpGuid;
-				break;
+				return *propGuid.lpGuid;
 			}
 		}
 
-		if (!lpGUID) // no match - try it like a guid {}
-		{
-			guid = guid::StringToGUID(szGUID, bByteSwapped);
-			if (guid != GUID_NULL)
-			{
-				lpGUID = &guid;
-			}
-		}
-
-		if (lpGUID)
-		{
-			lpGuidRet = new (std::nothrow) GUID;
-			if (lpGuidRet)
-			{
-				memcpy(lpGuidRet, lpGUID, sizeof(GUID));
-			}
-		}
-
-		return lpGuidRet;
+		return guid::StringToGUID(szGUID, bByteSwapped);
 	}
 
 	_Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID) { return StringToGUID(szGUID, false); }

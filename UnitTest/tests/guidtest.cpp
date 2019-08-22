@@ -58,10 +58,10 @@ namespace guidtest
 
 		TEST_METHOD(Test_GUIDNameToGUID)
 		{
-			Assert::AreEqual(GUID_NULL, *guid::GUIDNameToGUID(L"GUID_NULL", false));
+			Assert::AreEqual(GUID_NULL, guid::GUIDNameToGUID(L"GUID_NULL", false));
 			Assert::AreEqual(
-				guid::IID_CAPONE_PROF, *guid::GUIDNameToGUID(L"{00020D0A-0000-0000-C000-000000000046}", false));
-			Assert::AreEqual(guid::IID_CAPONE_PROF, *guid::GUIDNameToGUID(L"IID_CAPONE_PROF", false));
+				guid::IID_CAPONE_PROF, guid::GUIDNameToGUID(L"{00020D0A-0000-0000-C000-000000000046}", false));
+			Assert::AreEqual(guid::IID_CAPONE_PROF, guid::GUIDNameToGUID(L"IID_CAPONE_PROF", false));
 		}
 	};
 } // namespace guidtest
