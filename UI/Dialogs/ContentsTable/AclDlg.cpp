@@ -138,21 +138,17 @@ namespace dialog
 			lpNewItem->aEntries[0].rgPropVals = mapi::allocate<LPSPropValue>(2 * sizeof(SPropValue), lpNewItem);
 			if (lpNewItem->aEntries[0].rgPropVals)
 			{
-				LPENTRYID lpEntryID = nullptr;
-				size_t cbBin = 0;
-				EC_H_S(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
+				const auto bin = MyData.GetBinary(0, false);
 
 				lpNewItem->aEntries[0].rgPropVals[0].ulPropTag = PR_MEMBER_ENTRYID;
-				lpNewItem->aEntries[0].rgPropVals[0].Value.bin.cb = static_cast<ULONG>(cbBin);
-				lpNewItem->aEntries[0].rgPropVals[0].Value.bin.lpb = reinterpret_cast<LPBYTE>(lpEntryID);
+				lpNewItem->aEntries[0].rgPropVals[0].Value.bin.cb = static_cast<ULONG>(bin.size());
+				lpNewItem->aEntries[0].rgPropVals[0].Value.bin.lpb = reinterpret_cast<LPBYTE>(const_cast<BYTE*>(bin.data()));
 				lpNewItem->aEntries[0].rgPropVals[1].ulPropTag = PR_MEMBER_RIGHTS;
 				lpNewItem->aEntries[0].rgPropVals[1].Value.ul = MyData.GetHex(1);
 
 				const auto hRes = EC_MAPI(m_lpExchTbl->ModifyTable(m_ulTableFlags, lpNewItem));
 				MAPIFreeBuffer(lpNewItem);
 				if (hRes == S_OK) OnRefreshView();
-
-				delete[] lpEntryID;
 			}
 		}
 	}
