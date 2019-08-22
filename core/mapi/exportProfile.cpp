@@ -164,19 +164,14 @@ namespace output
 			{
 				if (!szProfileSection.empty())
 				{
-					const auto lpGuid = guid::GUIDNameToGUID(szProfileSection, bByteSwapped);
-					if (lpGuid)
+					const auto guid = guid::GUIDNameToGUID(szProfileSection, bByteSwapped);
+					auto sBin = SBinary{sizeof(GUID), LPBYTE(&guid)};
+
+					auto lpSect = mapi::profile::OpenProfileSection(lpServiceAdmin, &sBin);
+					if (lpSect)
 					{
-						auto sBin = SBinary{sizeof(GUID), LPBYTE(lpGuid)};
-
-						auto lpSect = mapi::profile::OpenProfileSection(lpServiceAdmin, &sBin);
-						if (lpSect)
-						{
-							ExportProfileSection(fProfile, lpSect, &sBin);
-							lpSect->Release();
-						}
-
-						delete[] lpGuid;
+						ExportProfileSection(fProfile, lpSect, &sBin);
+						lpSect->Release();
 					}
 				}
 				else
