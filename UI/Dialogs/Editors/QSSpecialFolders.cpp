@@ -203,7 +203,7 @@ namespace dialog
 			MyResults.AddPane(viewpane::TextPane::CreateMultiLinePane(0, NULL, true));
 
 			std::wstring szTmp;
-			const auto listPane = dynamic_cast<viewpane::ListPane*>(GetPane(ulListNum));
+			const auto listPane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(ulListNum));
 			if (listPane)
 			{
 				// We skip the first column, which is just the index

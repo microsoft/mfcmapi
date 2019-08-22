@@ -5,21 +5,21 @@
 
 namespace viewpane
 {
-	CountedTextPane*
+	std::shared_ptr<CountedTextPane>
 	CountedTextPane::Create(const int paneID, const UINT uidLabel, const bool bReadOnly, const UINT uidCountLabel)
 	{
-		auto lpPane = new (std::nothrow) CountedTextPane();
-		if (lpPane)
+		auto pane = std::make_shared<CountedTextPane>();
+		if (pane)
 		{
-			lpPane->m_szCountLabel = strings::loadstring(uidCountLabel);
-			lpPane->SetMultiline();
-			lpPane->SetLabel(uidLabel);
-			lpPane->ViewPane::SetReadOnly(bReadOnly);
-			lpPane->m_bCollapsible = true;
-			lpPane->m_paneID = paneID;
+			pane->m_szCountLabel = strings::loadstring(uidCountLabel);
+			pane->SetMultiline();
+			pane->SetLabel(uidLabel);
+			pane->ViewPane::SetReadOnly(bReadOnly);
+			pane->m_bCollapsible = true;
+			pane->m_paneID = paneID;
 		}
 
-		return lpPane;
+		return pane;
 	}
 
 	void CountedTextPane::Initialize(_In_ CWnd* pParent, _In_ HDC hdc)

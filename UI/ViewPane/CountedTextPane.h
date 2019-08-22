@@ -6,7 +6,8 @@ namespace viewpane
 	class CountedTextPane : public TextPane
 	{
 	public:
-		static CountedTextPane* CountedTextPane::Create(int paneID, UINT uidLabel, bool bReadOnly, UINT uidCountLabel);
+		static std::shared_ptr<CountedTextPane>
+		CountedTextPane::Create(int paneID, UINT uidLabel, bool bReadOnly, UINT uidCountLabel);
 		void SetCount(size_t iCount);
 
 	private:

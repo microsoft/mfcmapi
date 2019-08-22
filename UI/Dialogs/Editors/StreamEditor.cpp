@@ -185,7 +185,7 @@ namespace dialog
 			if (m_bDoSmartView)
 			{
 				// Load initial smart view here
-				auto lpSmartView = dynamic_cast<viewpane::SmartViewPane*>(GetPane(m_iSmartViewBox));
+				auto lpSmartView = std::dynamic_pointer_cast<viewpane::SmartViewPane>(GetPane(m_iSmartViewBox));
 				if (lpSmartView)
 				{
 					SPropValue sProp = {};
@@ -365,7 +365,7 @@ namespace dialog
 
 			if (m_lpStream)
 			{
-				auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(m_iBinBox));
+				auto lpPane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(m_iBinBox));
 				if (lpPane)
 				{
 					return lpPane->SetBinaryStream(m_lpStream);
@@ -423,7 +423,7 @@ namespace dialog
 
 			if (paneID == static_cast<ULONG>(-1)) return static_cast<ULONG>(-1);
 
-			auto lpBinPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(m_iBinBox));
+			auto lpBinPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(m_iBinBox));
 			if (m_iTextBox == paneID && lpBinPane)
 			{
 				ClearHighlight(m_iBinBox);
@@ -472,7 +472,7 @@ namespace dialog
 
 			if (m_bDoSmartView)
 			{
-				auto lpSmartView = dynamic_cast<viewpane::SmartViewPane*>(GetPane(m_iSmartViewBox));
+				auto lpSmartView = std::dynamic_pointer_cast<viewpane::SmartViewPane>(GetPane(m_iSmartViewBox));
 				if (lpSmartView)
 				{
 					lpSmartView->Parse(GetBinary(m_iBinBox));
@@ -492,7 +492,7 @@ namespace dialog
 
 		void CStreamEditor::SetEditReadOnly(ULONG id) const
 		{
-			auto lpPane = dynamic_cast<viewpane::TextPane*>(GetPane(id));
+			auto lpPane = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(id));
 			if (lpPane)
 			{
 				lpPane->SetReadOnly();

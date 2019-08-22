@@ -162,7 +162,7 @@ namespace dialog
 		{
 			std::wstring szTemp1;
 			std::wstring szTemp2;
-			viewpane::CountedTextPane* lpPane = nullptr;
+			std::shared_ptr<viewpane::CountedTextPane> lpPane;
 			size_t cbStr = 0;
 			std::wstring szGuid;
 
@@ -219,7 +219,7 @@ namespace dialog
 					auto lpszA = std::string(m_lpsInputValue->Value.lpszA);
 					SetStringA(0, lpszA);
 
-					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(1));
+					lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
 					if (lpPane)
 					{
 						cbStr = lpszA.length() * sizeof(CHAR);
@@ -228,7 +228,7 @@ namespace dialog
 						lpPane->SetCount(cbStr);
 					}
 
-					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
+					lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
 					if (lpPane) lpPane->SetCount(cbStr);
 				}
 
@@ -241,7 +241,7 @@ namespace dialog
 					auto lpszW = std::wstring(m_lpsInputValue->Value.lpszW);
 					SetStringW(0, lpszW);
 
-					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(1));
+					lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
 					if (lpPane)
 					{
 						cbStr = lpszW.length() * sizeof(WCHAR);
@@ -250,7 +250,7 @@ namespace dialog
 						lpPane->SetCount(cbStr);
 					}
 
-					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
+					lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
 					if (lpPane) lpPane->SetCount(lpszW.length());
 				}
 
@@ -351,7 +351,7 @@ namespace dialog
 							1, std::string(LPCSTR(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb));
 					}
 
-					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(1));
+					lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
 					if (lpPane) lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
 				}
 
@@ -604,7 +604,7 @@ namespace dialog
 			std::string lpszA;
 			std::wstring lpszW;
 
-			viewpane::CountedTextPane* lpPane = nullptr;
+			std::shared_ptr<viewpane::CountedTextPane> lpPane = nullptr;
 
 			// If we get here, something changed - set the dirty flag
 			m_bDirty = true;
@@ -719,13 +719,13 @@ namespace dialog
 				sProp.Value.bin.lpb = bin.data();
 				sProp.Value.bin.cb = static_cast<ULONG>(bin.size());
 
-				lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
+				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
 				if (lpPane) lpPane->SetCount(sProp.Value.bin.cb);
 
-				lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(1));
+				lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
 				if (lpPane) lpPane->SetCount(sProp.Value.bin.cb);
 
-				auto smartViewPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(2));
+				auto smartViewPane = std::dynamic_pointer_cast<viewpane::SmartViewPane>(GetPane(2));
 				if (smartViewPane)
 				{
 					smartViewPane->Parse(bin);
@@ -739,7 +739,7 @@ namespace dialog
 					size_t cbStr = 0;
 					lpszA = GetStringA(0);
 
-					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(1));
+					lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
 					if (lpPane)
 					{
 						cbStr = lpszA.length() * sizeof(CHAR);
@@ -750,7 +750,7 @@ namespace dialog
 						lpPane->SetCount(cbStr);
 					}
 
-					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
+					lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
 					if (lpPane) lpPane->SetCount(cbStr);
 				}
 				else if (paneID == 1)
@@ -759,10 +759,10 @@ namespace dialog
 
 					SetStringA(0, std::string(LPCSTR(bin.data()), bin.size()));
 
-					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
+					lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
 					if (lpPane) lpPane->SetCount(bin.size());
 
-					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(1));
+					lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
 					if (lpPane) lpPane->SetCount(bin.size());
 				}
 
@@ -772,7 +772,7 @@ namespace dialog
 				{
 					lpszW = GetStringW(0);
 
-					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(1));
+					lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
 					if (lpPane)
 					{
 						const auto cbStr = lpszW.length() * sizeof(WCHAR);
@@ -783,12 +783,12 @@ namespace dialog
 						lpPane->SetCount(cbStr);
 					}
 
-					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
+					lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
 					if (lpPane) lpPane->SetCount(lpszW.length());
 				}
 				else if (paneID == 1)
 				{
-					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(0));
+					lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(0));
 					bin = GetBinary(1);
 					if (!(bin.size() % sizeof(WCHAR)))
 					{
@@ -801,7 +801,7 @@ namespace dialog
 						if (lpPane) lpPane->SetCount(0);
 					}
 
-					lpPane = dynamic_cast<viewpane::CountedTextPane*>(GetPane(1));
+					lpPane = std::dynamic_pointer_cast<viewpane::CountedTextPane>(GetPane(1));
 					if (lpPane) lpPane->SetCount(bin.size());
 				}
 

@@ -347,7 +347,7 @@ namespace dialog
 
 		void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_ const std::wstring& szText) const
 		{
-			auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(i));
+			auto lpPane = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(i));
 			if (lpPane)
 			{
 				return lpPane->SetDropDownSelection(szText);
@@ -356,7 +356,7 @@ namespace dialog
 
 		_Check_return_ std::wstring CPropertyTagEditor::GetDropStringUseControl(ULONG id) const
 		{
-			const auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
+			const auto lpPane = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(id));
 			if (lpPane)
 			{
 				return lpPane->GetDropStringUseControl();
@@ -367,7 +367,7 @@ namespace dialog
 
 		_Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG id) const
 		{
-			const auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
+			const auto lpPane = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(id));
 			if (lpPane)
 			{
 				return lpPane->GetDropDownSelection();
@@ -378,7 +378,7 @@ namespace dialog
 
 		void CPropertyTagEditor::InsertDropString(ULONG id, int iRow, _In_ const std::wstring& szText) const
 		{
-			auto lpPane = dynamic_cast<viewpane::DropDownPane*>(GetPane(id));
+			auto lpPane = std::dynamic_pointer_cast<viewpane::DropDownPane>(GetPane(id));
 			if (lpPane)
 			{
 				lpPane->InsertDropString(szText, iRow);

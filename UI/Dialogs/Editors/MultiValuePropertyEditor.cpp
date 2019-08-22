@@ -62,7 +62,7 @@ namespace dialog
 
 			if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
 			{
-				auto smartViewPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
+				auto smartViewPane = std::dynamic_pointer_cast<viewpane::SmartViewPane>(GetPane(1));
 				if (smartViewPane)
 				{
 					smartViewPane->SetParser(smartview::FindSmartViewParserForProp(
@@ -421,7 +421,7 @@ namespace dialog
 			{
 			case PT_MV_LONG:
 			{
-				auto smartViewPaneText = dynamic_cast<viewpane::TextPane*>(GetPane(1));
+				auto smartViewPaneText = std::dynamic_pointer_cast<viewpane::TextPane>(GetPane(1));
 				if (smartViewPaneText)
 				{
 					const auto rows = GetLongArray();
@@ -435,7 +435,7 @@ namespace dialog
 			break;
 			case PT_MV_BINARY:
 			{
-				auto smartViewPane = dynamic_cast<viewpane::SmartViewPane*>(GetPane(1));
+				auto smartViewPane = std::dynamic_pointer_cast<viewpane::SmartViewPane>(GetPane(1));
 				if (smartViewPane)
 				{
 					smartViewPane->Parse(GetBinaryArray());
@@ -452,7 +452,7 @@ namespace dialog
 
 			// We check against the list pane first so we can track if it handled the change,
 			// because if it did, we're going to recalculate smart view.
-			auto lpPane = dynamic_cast<viewpane::ListPane*>(GetPane(0));
+			auto lpPane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(0));
 			if (lpPane)
 			{
 				paneID = lpPane->HandleChange(nID);

@@ -7,11 +7,12 @@ namespace viewpane
 	class SplitterPane : public ViewPane
 	{
 	public:
-		static SplitterPane* CreateHorizontalPane(int paneID, UINT uidLabel);
-		static SplitterPane* CreateVerticalPane(int paneID, UINT uidLabel);
-		~SplitterPane() { delete m_lpSplitter; }
-		void SetPaneOne(ViewPane* paneOne) { m_PaneOne = paneOne; }
-		void SetPaneTwo(ViewPane* paneTwo) { m_PaneTwo = paneTwo; }
+		static std::shared_ptr<SplitterPane> CreateHorizontalPane(int paneID, UINT uidLabel);
+		static std::shared_ptr<SplitterPane> CreateVerticalPane(int paneID, UINT uidLabel);
+		std::shared_ptr<ViewPane> GetPaneOne() { return m_PaneOne; }
+		void SetPaneOne(std::shared_ptr<ViewPane> paneOne) { m_PaneOne = paneOne; }
+		std::shared_ptr<ViewPane> GetPaneTwo() { return m_PaneTwo; }
+		void SetPaneTwo(std::shared_ptr<ViewPane> paneTwo) { m_PaneTwo = paneTwo; }
 		void Initialize(_In_ CWnd* pParent, _In_ HDC hdc) override;
 		void DeferWindowPos(_In_ HDWP hWinPosInfo, _In_ int x, _In_ int y, _In_ int width, _In_ int height) override;
 		int GetFixedHeight() override;
@@ -29,49 +30,14 @@ namespace viewpane
 			if (m_lpSplitter) m_lpSplitter->ShowWindow(nCmdShow);
 		}
 
-		// Return a pane with a matching paneID.
-		ViewPane* GetPaneByID(const int id) override
-		{
-			if (m_paneID == id) return this;
-			if (m_PaneOne)
-			{
-				const auto pane = m_PaneOne->GetPaneByID(id);
-				if (pane) return pane;
-			}
-
-			if (m_PaneTwo)
-			{
-				return m_PaneTwo->GetPaneByID(id);
-			}
-
-			return nullptr;
-		}
-		// Return a pane with a matching nID.
-		ViewPane* GetPaneByNID(const UINT nID) override
-		{
-			if (m_nID == nID) return this;
-			if (m_PaneOne)
-			{
-				const auto pane = m_PaneOne->GetPaneByNID(nID);
-				if (pane) return pane;
-			}
-
-			if (m_PaneTwo)
-			{
-				return m_PaneTwo->GetPaneByNID(nID);
-			}
-
-			return nullptr;
-		}
-
 	private:
 		void CommitUIValues() override {}
 		int GetMinWidth() override;
 		ULONG HandleChange(UINT nID) override;
 
-		controls::CFakeSplitter* m_lpSplitter{};
-		ViewPane* m_PaneOne{};
-		ViewPane* m_PaneTwo{};
+		std::shared_ptr<controls::CFakeSplitter> m_lpSplitter{};
+		std::shared_ptr<ViewPane> m_PaneOne{};
+		std::shared_ptr<ViewPane> m_PaneTwo{};
 		bool m_bVertical{};
 	};
 } // namespace viewpane
