@@ -98,6 +98,19 @@ namespace dialog
 			_Check_return_ DWORD_PTR GetDropDownValue(ULONG id) const;
 			_Check_return_ HRESULT
 			GetEntryID(ULONG id, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID) const;
+			// Returns a binary buffer which is represented by the hex string
+			_Check_return_ std::vector<BYTE> GetBinary(ULONG id, bool bIsBase64 = false) const
+			{
+				if (bIsBase64) // entry was BASE64 encoded
+				{
+					return strings::Base64Decode(GetStringW(id));
+				}
+				else // Entry was hexized string
+				{
+					return strings::HexStringToBin(GetStringW(id));
+				}
+			}
+
 			GUID GetSelectedGUID(ULONG id, bool bByteSwapped) const;
 
 			// AddIn functions
@@ -124,8 +137,6 @@ namespace dialog
 			void SetListID(ULONG id) { m_listID = id; }
 
 			// Functions used by derived classes during handle change events
-			// Returns a binary buffer which is represented by the hex string
-			std::vector<BYTE> GetBinary(ULONG id) const { return strings::HexStringToBin(GetStringW(id)); }
 			_Check_return_ std::string GetStringA(ULONG id) const;
 			_Check_return_ ULONG GetListCount(ULONG id) const;
 			_Check_return_ sortlistdata::sortListData* GetListRowData(ULONG id, int iRow) const;
