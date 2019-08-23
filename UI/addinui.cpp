@@ -138,13 +138,12 @@ namespace ui
 									break;
 								}
 								case ADDIN_CTRL_EDIT_BINARY:
-									// GetEntryID does just what we want - abuse it
-									hRes = WC_H(MyComplexDialog.GetEntryID(
-										i,
-										false,
-										&lpResults->lpDialogControlResults[i].cbBin,
-										reinterpret_cast<LPENTRYID*>(&lpResults->lpDialogControlResults[i].lpBin)));
-									break;
+								{
+									const auto bin = MyComplexDialog.GetBinary(i);
+									lpResults->lpDialogControlResults[i].cbBin = bin.size();
+									lpResults->lpDialogControlResults[i].lpBin = strings::ByteVectorToLPBYTE(bin);
+								}
+								break;
 								case ADDIN_CTRL_EDIT_NUM_DECIMAL:
 									lpResults->lpDialogControlResults[i].ulVal = MyComplexDialog.GetDecimal(i);
 									break;

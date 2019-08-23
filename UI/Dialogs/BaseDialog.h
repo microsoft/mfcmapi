@@ -3,6 +3,7 @@
 #include <UI/enums.h>
 #include <core/sortlistdata/sortListData.h>
 #include <core/addin/mfcmapi.h>
+#include <UI/FakeSplitter.h>
 
 namespace controls
 {
@@ -79,7 +80,7 @@ namespace dialog
 		ULONG m_ulAddInMenuItems{};
 		bool m_bIsAB{};
 		controls::sortlistctrl::CSingleMAPIPropListCtrl* m_lpPropDisplay{};
-		controls::CFakeSplitter* m_lpFakeSplitter{};
+		controls::CFakeSplitter m_lpFakeSplitter{};
 		std::wstring m_szTitle{};
 		std::shared_ptr<cache::CMapiObjects> m_lpMapiObjects{};
 		ui::CParentWnd* m_lpParent{};

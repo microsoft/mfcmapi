@@ -23,23 +23,21 @@ namespace version
 
 			if (!lpszTempPath.empty())
 			{
-				const auto lpszTempVer = new (std::nothrow) WCHAR[MAX_PATH];
-				const auto lpszTempLang = new (std::nothrow) WCHAR[MAX_PATH];
-				if (lpszTempVer && lpszTempLang)
+				const auto lpszTempVer = std::wstring(MAX_PATH, '\0');
+				const auto lpszTempLang = std::wstring(MAX_PATH, '\0');
+				DWORD dwValueBuf = MAX_PATH;
+				const auto hRes = WC_W32(import::pfnMsiGetFileVersion(
+					lpszTempPath.c_str(),
+					const_cast<wchar_t*>(lpszTempVer.c_str()),
+					&dwValueBuf,
+					const_cast<wchar_t*>(lpszTempLang.c_str()),
+					&dwValueBuf));
+				if (SUCCEEDED(hRes))
 				{
-					DWORD dwValueBuf = MAX_PATH;
-					const auto hRes = WC_W32(import::pfnMsiGetFileVersion(
-						lpszTempPath.c_str(), lpszTempVer, &dwValueBuf, lpszTempLang, &dwValueBuf));
-					if (SUCCEEDED(hRes))
-					{
-						szOut = strings::formatmessage(
-							IDS_OUTLOOKVERSIONSTRING, lpszTempPath.c_str(), lpszTempVer, lpszTempLang);
-						szOut += strings::formatmessage(b64 ? IDS_TRUE : IDS_FALSE);
-						szOut += L"\n"; // STRING_OK
-					}
-
-					delete[] lpszTempLang;
-					delete[] lpszTempVer;
+					szOut = strings::formatmessage(
+						IDS_OUTLOOKVERSIONSTRING, lpszTempPath.c_str(), lpszTempVer.c_str(), lpszTempLang.c_str());
+					szOut += strings::formatmessage(b64 ? IDS_TRUE : IDS_FALSE);
+					szOut += L"\n"; // STRING_OK
 				}
 			}
 		}
