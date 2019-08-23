@@ -96,8 +96,6 @@ namespace dialog
 			_Check_return_ bool GetCheck(ULONG id) const;
 			_Check_return_ int GetDropDown(ULONG id) const;
 			_Check_return_ DWORD_PTR GetDropDownValue(ULONG id) const;
-			_Check_return_ HRESULT
-			GetEntryID(ULONG id, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID) const;
 			// Returns a binary buffer which is represented by the hex string
 			_Check_return_ std::vector<BYTE> GetBinary(ULONG id, bool bIsBase64 = false) const
 			{
