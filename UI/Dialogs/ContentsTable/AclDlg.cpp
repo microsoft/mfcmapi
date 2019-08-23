@@ -141,8 +141,8 @@ namespace dialog
 				const auto bin = MyData.GetBinary(0, false);
 
 				lpNewItem->aEntries[0].rgPropVals[0].ulPropTag = PR_MEMBER_ENTRYID;
-				lpNewItem->aEntries[0].rgPropVals[0].Value.bin.cb = static_cast<ULONG>(bin.size());
-				lpNewItem->aEntries[0].rgPropVals[0].Value.bin.lpb = reinterpret_cast<LPBYTE>(const_cast<BYTE*>(bin.data()));
+				lpNewItem->aEntries[0].rgPropVals[0].Value.bin =
+					SBinary{static_cast<ULONG>(bin.size()), const_cast<BYTE*>(bin.data())};
 				lpNewItem->aEntries[0].rgPropVals[1].ulPropTag = PR_MEMBER_RIGHTS;
 				lpNewItem->aEntries[0].rgPropVals[1].Value.ul = MyData.GetHex(1);
 
