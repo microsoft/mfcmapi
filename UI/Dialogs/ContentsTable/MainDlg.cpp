@@ -474,12 +474,11 @@ namespace dialog
 		if (!MyEID.DisplayDialog()) return;
 
 		// Get the entry ID as a binary
-		SBinary sBin = {0};
-		EC_H_S(MyEID.GetEntryID(
-			0, MyEID.GetCheck(2), reinterpret_cast<size_t*>(&sBin.cb), reinterpret_cast<LPENTRYID*>(&sBin.lpb)));
+		const auto bin = MyEID.GetBinary(0, MyEID.GetCheck(2));
 
-		if (sBin.lpb)
+		if (!bin.empty())
 		{
+			auto sBin = SBinary{static_cast<ULONG>(bin.size()), const_cast<BYTE*>(bin.data())};
 			auto lpMDB = mapi::store::CallOpenMsgStore(
 				lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), &sBin, MyEID.GetHex(1));
 
@@ -507,8 +506,6 @@ namespace dialog
 				}
 			}
 		}
-
-		delete[] sBin.lpb;
 	}
 
 	void CMainDlg::OnOpenPublicFolders()

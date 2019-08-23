@@ -693,22 +693,12 @@ namespace dialog
 		if (!MyEID.DisplayDialog()) return;
 
 		// Get the entry ID as a binary
-		LPENTRYID lpEnteredEntryID = nullptr;
-		LPENTRYID lpEntryID = nullptr;
-		size_t cbBin = NULL;
-		EC_H_S(MyEID.GetEntryID(0, MyEID.GetCheck(7), &cbBin, &lpEnteredEntryID));
+		const auto bin = MyEID.GetBinary(0, MyEID.GetCheck(7));
+		auto sBin = SBinary{static_cast<ULONG>(bin.size()), const_cast<BYTE*>(bin.data())};
 
-		if (MyEID.GetCheck(9) && lpEnteredEntryID)
+		if (MyEID.GetCheck(9))
 		{
-			(void) mapi::UnwrapContactEntryID(
-				static_cast<ULONG>(cbBin),
-				reinterpret_cast<LPBYTE>(lpEnteredEntryID),
-				reinterpret_cast<ULONG*>(&cbBin),
-				reinterpret_cast<LPBYTE*>(&lpEntryID));
-		}
-		else
-		{
-			lpEntryID = lpEnteredEntryID;
+			(void) mapi::UnwrapContactEntryID(sBin.cb, sBin.lpb, &sBin.cb, &sBin.lpb);
 		}
 
 		if (MyEID.GetCheck(8) && lpAB) // Do IAddrBook->Details here
@@ -719,8 +709,8 @@ namespace dialog
 				&ulUIParam,
 				nullptr,
 				nullptr,
-				static_cast<ULONG>(cbBin),
-				lpEntryID,
+				sBin.cb,
+				reinterpret_cast<LPENTRYID>(sBin.lpb),
 				nullptr,
 				nullptr,
 				nullptr,
@@ -734,8 +724,8 @@ namespace dialog
 				MyEID.GetCheck(2) ? lpAB : nullptr,
 				nullptr,
 				MyEID.GetCheck(3) ? lpMAPISession : nullptr,
-				static_cast<ULONG>(cbBin),
-				lpEntryID,
+				sBin.cb,
+				reinterpret_cast<LPENTRYID>(sBin.lpb),
 				nullptr,
 				(MyEID.GetCheck(4) ? MAPI_MODIFY : MAPI_BEST_ACCESS) | (MyEID.GetCheck(5) ? MAPI_NO_CACHE : 0) |
 					(MyEID.GetCheck(6) ? MAPI_CACHE_ONLY : 0),
@@ -761,8 +751,6 @@ namespace dialog
 				lpUnk->Release();
 			}
 		}
-
-		delete[] lpEnteredEntryID;
 	}
 
 	void CBaseDialog::OnCompareEntryIDs()
@@ -795,36 +783,43 @@ namespace dialog
 		}
 
 		// Get the entry IDs as a binary
-		LPENTRYID lpEntryID1 = nullptr;
-		size_t cbBin1 = NULL;
-		LPENTRYID lpEntryID2 = nullptr;
-		size_t cbBin2 = NULL;
+		const auto bin1 = MyEIDs.GetBinary(0, MyEIDs.GetCheck(3));
+		auto sBin1 = SBinary{static_cast<ULONG>(bin1.size()), const_cast<BYTE*>(bin1.data())};
 
-		auto hRes = EC_H(MyEIDs.GetEntryID(0, MyEIDs.GetCheck(3), &cbBin1, &lpEntryID1));
+		const auto bin2 = MyEIDs.GetBinary(1, MyEIDs.GetCheck(3));
+		auto sBin2 = SBinary{static_cast<ULONG>(bin2.size()), const_cast<BYTE*>(bin2.data())};
 
-		if (SUCCEEDED(hRes))
-		{
-			hRes = EC_H(MyEIDs.GetEntryID(1, MyEIDs.GetCheck(3), &cbBin2, &lpEntryID2));
-		}
-
+		auto hRes = S_OK;
 		ULONG ulResult = NULL;
-		if (SUCCEEDED(hRes))
+		switch (MyEIDs.GetDropDown(2))
 		{
-			switch (MyEIDs.GetDropDown(2))
-			{
-			case 0: // Message Store
-				hRes = EC_MAPI(lpMDB->CompareEntryIDs(
-					static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
-				break;
-			case 1: // Session
-				hRes = EC_MAPI(lpMAPISession->CompareEntryIDs(
-					static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
-				break;
-			case 2: // Address Book
-				hRes = EC_MAPI(lpAB->CompareEntryIDs(
-					static_cast<ULONG>(cbBin1), lpEntryID1, static_cast<ULONG>(cbBin2), lpEntryID2, NULL, &ulResult));
-				break;
-			}
+		case 0: // Message Store
+			hRes = EC_MAPI(lpMDB->CompareEntryIDs(
+				sBin1.cb,
+				reinterpret_cast<LPENTRYID>(sBin1.lpb),
+				sBin2.cb,
+				reinterpret_cast<LPENTRYID>(sBin2.lpb),
+				NULL,
+				&ulResult));
+			break;
+		case 1: // Session
+			hRes = EC_MAPI(lpMAPISession->CompareEntryIDs(
+				sBin1.cb,
+				reinterpret_cast<LPENTRYID>(sBin1.lpb),
+				sBin2.cb,
+				reinterpret_cast<LPENTRYID>(sBin2.lpb),
+				NULL,
+				&ulResult));
+			break;
+		case 2: // Address Book
+			hRes = EC_MAPI(lpAB->CompareEntryIDs(
+				sBin1.cb,
+				reinterpret_cast<LPENTRYID>(sBin1.lpb),
+				sBin2.cb,
+				reinterpret_cast<LPENTRYID>(sBin2.lpb),
+				NULL,
+				&ulResult));
+			break;
 		}
 
 		if (SUCCEEDED(hRes))
@@ -836,9 +831,6 @@ namespace dialog
 			Result.SetPromptPostFix(szRet);
 			(void) Result.DisplayDialog();
 		}
-
-		delete[] lpEntryID2;
-		delete[] lpEntryID1;
 	}
 
 	void CBaseDialog::OnComputeStoreHash()
@@ -854,23 +846,16 @@ namespace dialog
 		if (!MyStoreEID.DisplayDialog()) return;
 
 		// Get the entry ID as a binary
-		LPENTRYID lpEntryID = nullptr;
-		size_t cbBin = NULL;
-		EC_H_S(MyStoreEID.GetEntryID(0, MyStoreEID.GetCheck(1), &cbBin, &lpEntryID));
+		const auto bin = MyStoreEID.GetBinary(0, MyStoreEID.GetCheck(1));
+		auto sBin = SBinary{static_cast<ULONG>(bin.size()), const_cast<BYTE*>(bin.data())};
 
 		const auto dwHash = mapi::ComputeStoreHash(
-			static_cast<ULONG>(cbBin),
-			reinterpret_cast<LPBYTE>(lpEntryID),
-			nullptr,
-			MyStoreEID.GetStringW(2).c_str(),
-			MyStoreEID.GetCheck(3));
+			sBin.cb, sBin.lpb, nullptr, MyStoreEID.GetStringW(2).c_str(), MyStoreEID.GetCheck(3));
 		const auto szHash = strings::formatmessage(IDS_STOREHASHVAL, dwHash);
 
 		editor::CEditor Result(this, IDS_STOREHASH, NULL, CEDITOR_BUTTON_OK);
 		Result.SetPromptPostFix(szHash);
 		(void) Result.DisplayDialog();
-
-		delete[] lpEntryID;
 	}
 
 	void CBaseDialog::OnNotificationsOn()
@@ -900,21 +885,21 @@ namespace dialog
 				return;
 			}
 
-			LPENTRYID lpEntryID = nullptr;
-			size_t cbBin = NULL;
-			auto hRes = WC_H(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
+			const auto bin = MyData.GetBinary(0, false);
+			auto sBin = SBinary{static_cast<ULONG>(bin.size()), const_cast<BYTE*>(bin.data())};
 			// don't actually care if the returning lpEntryID is NULL - Advise can work with that
 
 			m_lpBaseAdviseSink = new (std::nothrow) mapi::adviseSink(m_hWnd, nullptr);
 
+			auto hRes = S_OK;
 			if (m_lpBaseAdviseSink)
 			{
 				switch (MyData.GetDropDown(2))
 				{
 				case 0:
 					hRes = EC_MAPI(lpMDB->Advise(
-						static_cast<ULONG>(cbBin),
-						lpEntryID,
+						sBin.cb,
+						reinterpret_cast<LPENTRYID>(sBin.lpb),
 						MyData.GetHex(1),
 						static_cast<IMAPIAdviseSink*>(m_lpBaseAdviseSink),
 						&m_ulBaseAdviseConnection));
@@ -923,8 +908,8 @@ namespace dialog
 					break;
 				case 1:
 					hRes = EC_MAPI(lpMAPISession->Advise(
-						static_cast<ULONG>(cbBin),
-						lpEntryID,
+						sBin.cb,
+						reinterpret_cast<LPENTRYID>(sBin.lpb),
 						MyData.GetHex(1),
 						static_cast<IMAPIAdviseSink*>(m_lpBaseAdviseSink),
 						&m_ulBaseAdviseConnection));
@@ -932,8 +917,8 @@ namespace dialog
 					break;
 				case 2:
 					hRes = EC_MAPI(lpAB->Advise(
-						static_cast<ULONG>(cbBin),
-						lpEntryID,
+						sBin.cb,
+						reinterpret_cast<LPENTRYID>(sBin.lpb),
 						MyData.GetHex(1),
 						static_cast<IMAPIAdviseSink*>(m_lpBaseAdviseSink),
 						&m_ulBaseAdviseConnection));
@@ -957,8 +942,6 @@ namespace dialog
 					m_ulBaseAdviseConnection = NULL;
 				}
 			}
-
-			delete[] lpEntryID;
 		}
 	}
 

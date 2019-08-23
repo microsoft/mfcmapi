@@ -1042,39 +1042,6 @@ namespace dialog
 			}
 		}
 
-		// Converts string in a text(edit) pane into an entry ID
-		// Can base64 decode if needed
-		// entryID is allocated with new, free with delete[]
-		_Check_return_ HRESULT
-		CEditor::GetEntryID(ULONG id, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID) const
-		{
-			if (!lpcbBin || !lppEID) return MAPI_E_INVALID_PARAMETER;
-
-			*lpcbBin = NULL;
-			*lppEID = nullptr;
-
-			const auto hRes = S_OK;
-			auto szString = GetStringW(id);
-
-			if (!szString.empty())
-			{
-				std::vector<BYTE> bin;
-				if (bIsBase64) // entry was BASE64 encoded
-				{
-					bin = strings::Base64Decode(szString);
-				}
-				else // Entry was hexized string
-				{
-					bin = strings::HexStringToBin(szString);
-				}
-
-				*lppEID = reinterpret_cast<LPENTRYID>(strings::ByteVectorToLPBYTE(bin));
-				*lpcbBin = bin.size();
-			}
-
-			return hRes;
-		}
-
 		void CEditor::SetListString(ULONG id, ULONG iListRow, ULONG iListCol, const std::wstring& szListString) const
 		{
 			auto pane = std::dynamic_pointer_cast<viewpane::ListPane>(GetPane(id));
