@@ -1,4 +1,4 @@
-#include <core/stdafx.h>
+#define _WINSOCKAPI_
 #include <Windows.h>
 
 #include <MAPI.h>
@@ -42,7 +42,7 @@ struct RTF_WCSRETINFO;
 #define LINKAGE_EXTERN_C extern "C"
 #define LINKAGE_NO_EXTERN_C /* */
 
-// Forward declares from MapiStubUtil.cpp
+// Forward declares from stubUtil.cpp
 namespace mapistub
 {
 	HMODULE GetMAPIHandle();
