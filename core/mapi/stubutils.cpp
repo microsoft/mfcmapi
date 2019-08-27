@@ -1,5 +1,5 @@
 #include <core/stdafx.h>
-#include <Windows.h>
+#include <mapistub/library/mapiStubUtils.h>
 #include <Msi.h>
 #include <winreg.h>
 
@@ -12,8 +12,6 @@
 
 namespace mapistub
 {
-	extern volatile ULONG g_ulDllSequenceNum;
-
 	/*
 	 * MAPI Stub Utilities
 	 *

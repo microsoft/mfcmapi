@@ -44,6 +44,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="library\mapiStubLibrary.cpp" />
+    <ClCompile Include="library\mapiStubUtils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="library\mapiStubUtils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

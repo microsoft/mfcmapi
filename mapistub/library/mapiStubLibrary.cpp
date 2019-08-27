@@ -1,5 +1,6 @@
 #define _WINSOCKAPI_
 #include <Windows.h>
+#include <mapistub/library/mapiStubUtils.h>
 
 #include <MAPI.h>
 #include <MAPIForm.h>
@@ -41,17 +42,6 @@ struct RTF_WCSRETINFO;
 
 #define LINKAGE_EXTERN_C extern "C"
 #define LINKAGE_NO_EXTERN_C /* */
-
-// Forward declares from stubUtil.cpp
-namespace mapistub
-{
-	HMODULE GetMAPIHandle();
-	HMODULE GetPrivateMAPI();
-	void UnloadPrivateMAPI();
-	// Sequence number which is incremented every time we set our MAPI handle which will
-	// cause a re-fetch of all stored function pointers
-	volatile ULONG g_ulDllSequenceNum = 1;
-} // namespace mapistub
 
 #define DEFINE_STUB_FUNCTION_V0(_linkage, _modifiers, _name, _lookup) \
 \
