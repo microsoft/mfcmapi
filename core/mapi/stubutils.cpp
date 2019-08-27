@@ -60,10 +60,7 @@ namespace mapistub
 	// Whether or not we should ignore the registry and load MAPI from the system directory
 	static bool s_fForceSystemMAPI = false;
 
-	static volatile HMODULE g_hinstMAPI = nullptr;
 	HMODULE g_hModPstPrx32 = nullptr;
-
-	HMODULE GetMAPIHandle() { return g_hinstMAPI; }
 
 	void SetMAPIHandle(HMODULE hinstMAPI)
 	{
