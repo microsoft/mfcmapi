@@ -28,6 +28,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core", "core\core.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mapistub", "mapistub\mapistub.vcxproj", "{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exampleMapiConsoleApp", "exampleMapiConsoleApp\exampleMapiConsoleApp.vcxproj", "{0E30B8F5-4480-4130-BC46-BABA613B983F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Unicode|Win32 = Debug Unicode|Win32
@@ -142,6 +144,26 @@ Global
 		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Release|Win32.Build.0 = Release|Win32
 		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Release|x64.ActiveCfg = Release|x64
 		{ACD4DD9F-0FB8-42C8-BC1C-25A5A29CB40C}.Release|x64.Build.0 = Release|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Debug Unicode|Win32.Build.0 = Debug|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Debug Unicode|x64.ActiveCfg = Debug|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Debug Unicode|x64.Build.0 = Debug|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Debug|Win32.Build.0 = Debug|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Debug|x64.ActiveCfg = Debug|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Debug|x64.Build.0 = Debug|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast|Win32.ActiveCfg = Release|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast|Win32.Build.0 = Release|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast|x64.ActiveCfg = Release|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Prefast|x64.Build.0 = Release|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Release Unicode|Win32.ActiveCfg = Release|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Release Unicode|Win32.Build.0 = Release|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Release Unicode|x64.ActiveCfg = Release|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Release Unicode|x64.Build.0 = Release|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Release|Win32.ActiveCfg = Release|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Release|Win32.Build.0 = Release|Win32
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Release|x64.ActiveCfg = Release|x64
+		{0E30B8F5-4480-4130-BC46-BABA613B983F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
