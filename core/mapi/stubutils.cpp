@@ -12,6 +12,8 @@
 
 namespace mapistub
 {
+	extern volatile ULONG g_ulDllSequenceNum;
+
 	/*
 	 * MAPI Stub Utilities
 	 *
@@ -52,10 +54,6 @@ namespace mapistub
 	static const WCHAR WszMapiStub[] = L"mapistub.dll";
 
 	static const CHAR SzFGetComponentPath[] = "FGetComponentPath";
-
-	// Sequence number which is incremented every time we set our MAPI handle which will
-	// cause a re-fetch of all stored function pointers
-	volatile ULONG g_ulDllSequenceNum = 1;
 
 	// Whether or not we should ignore the system MAPI registration and always try to find
 	// Outlook and its MAPI DLLs

@@ -48,7 +48,9 @@ namespace mapistub
 	HMODULE GetMAPIHandle();
 	HMODULE GetPrivateMAPI();
 	void UnloadPrivateMAPI();
-	extern volatile ULONG g_ulDllSequenceNum;
+	// Sequence number which is incremented every time we set our MAPI handle which will
+	// cause a re-fetch of all stored function pointers
+	volatile ULONG g_ulDllSequenceNum = 1;
 } // namespace mapistub
 
 #define DEFINE_STUB_FUNCTION_V0(_linkage, _modifiers, _name, _lookup) \
