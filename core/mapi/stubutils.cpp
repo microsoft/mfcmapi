@@ -250,17 +250,21 @@ namespace mapistub
 	std::wstring GetMAPISystemDir()
 	{
 		DebugPrint(L"Enter GetMAPISystemDir\n");
-		auto buf = std::vector<wchar_t>();
+		auto path = std::wstring();
 		auto copied = DWORD();
 		do
 		{
-			buf.resize(buf.size() + MAX_PATH);
-			copied = EC_D(DWORD, ::GetSystemDirectoryW(&buf[0], static_cast<DWORD>(buf.size())));
-		} while (copied >= buf.size());
+			path.resize(path.size() + MAX_PATH);
+			copied = ::GetSystemDirectoryW(&path[0], static_cast<DWORD>(path.size()));
+			if (!copied)
+			{
+				const auto dwErr = GetLastError();
+				DebugPrint(L"GetMAPISystemDir: GetSystemDirectoryW failed with %x", dwErr);
+			}
+		} while (copied >= path.size());
 
-		buf.resize(copied);
+		path.resize(copied);
 
-		const auto path = std::wstring(buf.begin(), buf.end());
 		const auto szDLLPath = path + L"\\" + std::wstring(WszMapi32);
 
 		DebugPrint(L"Exit GetMAPISystemDir: found %ws\n", szDLLPath.c_str());
