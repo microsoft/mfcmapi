@@ -6,13 +6,17 @@
 #include <core/utility/import.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
-#include <core/utility/error.h>
 
 namespace mapistub
 {
 	void initStubCallbacks()
 	{
 		mapistub::debugPrintCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadMAPI, _1, _2); };
+	}
+
+	template <class T> void LogError(LPWSTR function, T error)
+	{
+		if (error) DebugPrint(L"%ws failed with 0x%08X", function, error);
 	}
 
 	/*
@@ -259,7 +263,7 @@ namespace mapistub
 			if (!copied)
 			{
 				const auto dwErr = GetLastError();
-				DebugPrint(L"GetMAPISystemDir: GetSystemDirectoryW failed with %x", dwErr);
+				DebugPrint(L"GetMAPISystemDir: GetSystemDirectoryW failed with 0x%08X\n", dwErr);
 			}
 		} while (copied >= path.size());
 
@@ -277,8 +281,9 @@ namespace mapistub
 		HKEY hMailKey = nullptr;
 
 		// Open HKLM\Software\Clients\Mail
-		auto hRes = WC_W32(RegOpenKeyExW(HKEY_LOCAL_MACHINE, WszKeyNameMailClient, 0, KEY_READ, &hMailKey));
-		if (FAILED(hRes))
+		auto status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, WszKeyNameMailClient, 0, KEY_READ, &hMailKey);
+		LogError(L"GetHKeyMapiClient: RegOpenKeyExW(HKLM)", status);
+		if (status != ERROR_SUCCESS)
 		{
 			hMailKey = nullptr;
 		}
@@ -292,14 +297,15 @@ namespace mapistub
 			// Get Outlook application path registry value
 			DWORD dwSize = MAX_PATH;
 			DWORD dwType = 0;
-			hRes = WC_W32(RegQueryValueExW(
+			status = RegQueryValueExW(
 				hMailKey,
 				nullptr,
 				nullptr,
 				&dwType,
 				reinterpret_cast<LPBYTE>(const_cast<wchar_t*>(rgchMailClient.c_str())),
-				&dwSize));
-			if (SUCCEEDED(hRes))
+				&dwSize);
+			LogError(L"GetHKeyMapiClient: RegQueryValueExW(hMailKey)", status);
+			if (status == ERROR_SUCCESS)
 			{
 				defaultClient = rgchMailClient;
 				DebugPrint(L"GetHKeyMapiClient: HKLM\\%ws = %ws\n", WszKeyNameMailClient, defaultClient.c_str());
@@ -312,8 +318,9 @@ namespace mapistub
 		if (hMailKey && !pwzProvider.empty())
 		{
 			DebugPrint(L"GetHKeyMapiClient: pwzProvider = %ws\n", pwzProvider.c_str());
-			hRes = WC_W32(RegOpenKeyExW(hMailKey, pwzProvider.c_str(), 0, KEY_READ, &hkeyMapiClient));
-			if (FAILED(hRes))
+			status = RegOpenKeyExW(hMailKey, pwzProvider.c_str(), 0, KEY_READ, &hkeyMapiClient);
+			LogError(L"GetHKeyMapiClient: RegOpenKeyExW", status);
+			if (status != ERROR_SUCCESS)
 			{
 				hkeyMapiClient = nullptr;
 			}
@@ -334,48 +341,52 @@ namespace mapistub
 
 		if (lpb64) *lpb64 = false;
 
-		auto hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
+		auto errNo = import::pfnMsiProvideQualifiedComponent(
 			szCategory.c_str(),
 			L"outlook.x64.exe", // STRING_OK
 			static_cast<DWORD>(INSTALLMODE_DEFAULT),
 			nullptr,
-			&dwValueBuf));
-		if (SUCCEEDED(hRes))
+			&dwValueBuf);
+		LogError(L"GetOutlookPath: MsiProvideQualifiedComponent(x64)", errNo);
+		if (errNo == ERROR_SUCCESS)
 		{
 			if (lpb64) *lpb64 = true;
 		}
 		else
 		{
-			hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
+			errNo = import::pfnMsiProvideQualifiedComponent(
 				szCategory.c_str(),
 				L"outlook.exe", // STRING_OK
 				static_cast<DWORD>(INSTALLMODE_DEFAULT),
 				nullptr,
-				&dwValueBuf));
+				&dwValueBuf);
+			LogError(L"GetOutlookPath: MsiProvideQualifiedComponent(x86)", errNo);
 		}
 
-		if (SUCCEEDED(hRes))
+		if (errNo == ERROR_SUCCESS)
 		{
 			dwValueBuf += 1;
 			const auto lpszTempPath = std::wstring(dwValueBuf, '\0');
 
-			hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
+			errNo = import::pfnMsiProvideQualifiedComponent(
 				szCategory.c_str(),
 				L"outlook.x64.exe", // STRING_OK
 				static_cast<DWORD>(INSTALLMODE_DEFAULT),
 				const_cast<wchar_t*>(lpszTempPath.c_str()),
-				&dwValueBuf));
-			if (FAILED(hRes))
+				&dwValueBuf);
+			LogError(L"GetOutlookPath: MsiProvideQualifiedComponent(x64)", errNo);
+			if (errNo != ERROR_SUCCESS)
 			{
-				hRes = WC_W32(import::pfnMsiProvideQualifiedComponent(
+				errNo = import::pfnMsiProvideQualifiedComponent(
 					szCategory.c_str(),
 					L"outlook.exe", // STRING_OK
 					static_cast<DWORD>(INSTALLMODE_DEFAULT),
 					const_cast<wchar_t*>(lpszTempPath.c_str()),
-					&dwValueBuf));
+					&dwValueBuf);
+				LogError(L"GetOutlookPath: MsiProvideQualifiedComponent(x86)", errNo);
 			}
 
-			if (SUCCEEDED(hRes))
+			if (errNo == ERROR_SUCCESS)
 			{
 				path = lpszTempPath;
 				DebugPrint(L"Exit GetOutlookPath: Path = %ws\n", path.c_str());
@@ -411,10 +422,11 @@ namespace mapistub
 		{
 			WCHAR szDrive[_MAX_DRIVE] = {0};
 			WCHAR szOutlookPath[MAX_PATH] = {0};
-			const auto hRes = WC_W32(_wsplitpath_s(
-				lpszTempPath.c_str(), szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, nullptr, NULL, nullptr, NULL));
+			const auto errNo = _wsplitpath_s(
+				lpszTempPath.c_str(), szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, nullptr, NULL, nullptr, NULL);
+			LogError(L"GetOutlookPath: _wsplitpath_s", errNo);
 
-			if (SUCCEEDED(hRes))
+			if (errNo == ERROR_SUCCESS)
 			{
 				auto szPath = std::wstring(szDrive) + std::wstring(szOutlookPath) + WszOlMAPI32DLL;
 
