@@ -100,18 +100,17 @@ namespace import
 
 	// Loads szModule at the handle given by lphModule, then looks for szEntryPoint.
 	// Will not load a module or entry point twice
-	void LoadProc(const std::wstring& szModule, HMODULE* lphModule, LPCSTR szEntryPoint, FARPROC* lpfn)
+	template <class T> void LoadProc(_In_ const std::wstring& szModule, HMODULE& hModule, LPCSTR szEntryPoint, T& lpfn)
 	{
-		if (!szEntryPoint || !lpfn || !lphModule) return;
-		if (*lpfn) return;
-		if (!*lphModule && !szModule.empty())
+		if (!szEntryPoint) return;
+		if (!hModule && !szModule.empty())
 		{
-			*lphModule = LoadFromSystemDir(szModule);
+			hModule = LoadFromSystemDir(szModule);
 		}
 
-		if (!*lphModule) return;
+		if (!hModule) return;
 
-		*lpfn = WC_D(FARPROC, GetProcAddress(*lphModule, szEntryPoint));
+		lpfn = reinterpret_cast<T>(WC_D(FARPROC, GetProcAddress(hModule, szEntryPoint)));
 	}
 
 	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
@@ -177,18 +176,18 @@ namespace import
 	void ImportProcs()
 	{
 		// clang-format off
-		LoadProc(L"aclui.dll", &hModAclui, "EditSecurity", reinterpret_cast<FARPROC*>(&pfnEditSecurity)); // STRING_OK;
-		LoadProc(L"ole32.dll", &hModOle32, "StgCreateStorageEx", reinterpret_cast<FARPROC*>(&pfnStgCreateStorageEx)); // STRING_OK;
-		LoadProc(L"uxtheme.dll", &hModUxTheme, "OpenThemeData", reinterpret_cast<FARPROC*>(&pfnOpenThemeData)); // STRING_OK;
-		LoadProc(L"uxtheme.dll", &hModUxTheme, "CloseThemeData", reinterpret_cast<FARPROC*>(&pfnCloseThemeData)); // STRING_OK;
-		LoadProc(L"uxtheme.dll", &hModUxTheme, "GetThemeMargins", reinterpret_cast<FARPROC*>(&pfnGetThemeMargins)); // STRING_OK;
-		LoadProc(L"uxtheme.dll", &hModUxTheme, "SetWindowTheme", reinterpret_cast<FARPROC*>(&pfnSetWindowTheme)); // STRING_OK;
-		LoadProc(L"uxtheme.dll", &hModUxTheme, "GetThemeSysSize", reinterpret_cast<FARPROC*>(&pfnGetThemeSysSize)); // STRING_OK;
-		LoadProc(L"msi.dll", &hModMSI, "MsiGetFileVersionW", reinterpret_cast<FARPROC*>(&pfnMsiGetFileVersion)); // STRING_OK;
-		LoadProc(L"msi.dll", &hModMSI, "MsiProvideQualifiedComponentW", reinterpret_cast<FARPROC*>(&pfnMsiProvideQualifiedComponent)); // STRING_OK;
-		LoadProc(L"shell32.dll", &hModShell32, "SHGetPropertyStoreForWindow", reinterpret_cast<FARPROC*>(&pfnSHGetPropertyStoreForWindow)); // STRING_OK;
-		LoadProc(L"kernel32.dll", &hModKernel32, "FindPackagesByPackageFamily", reinterpret_cast<FARPROC*>(&pfnFindPackagesByPackageFamily)); // STRING_OK;
-		LoadProc(L"kernel32.dll", &hModKernel32, "PackageIdFromFullName", reinterpret_cast<FARPROC*>(&pfnPackageIdFromFullName)); // STRING_OK;
+		LoadProc(L"aclui.dll", hModAclui, "EditSecurity", pfnEditSecurity); // STRING_OK;
+		LoadProc(L"ole32.dll", hModOle32, "StgCreateStorageEx", pfnStgCreateStorageEx); // STRING_OK;
+		LoadProc(L"uxtheme.dll", hModUxTheme, "OpenThemeData", pfnOpenThemeData); // STRING_OK;
+		LoadProc(L"uxtheme.dll", hModUxTheme, "CloseThemeData", pfnCloseThemeData); // STRING_OK;
+		LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeMargins", pfnGetThemeMargins); // STRING_OK;
+		LoadProc(L"uxtheme.dll", hModUxTheme, "SetWindowTheme", pfnSetWindowTheme); // STRING_OK;
+		LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeSysSize", pfnGetThemeSysSize); // STRING_OK;
+		LoadProc(L"msi.dll", hModMSI, "MsiGetFileVersionW", pfnMsiGetFileVersion); // STRING_OK;
+		LoadProc(L"msi.dll", hModMSI, "MsiProvideQualifiedComponentW", pfnMsiProvideQualifiedComponent); // STRING_OK;
+		LoadProc(L"shell32.dll", hModShell32, "SHGetPropertyStoreForWindow", pfnSHGetPropertyStoreForWindow); // STRING_OK;
+		LoadProc(L"kernel32.dll", hModKernel32, "FindPackagesByPackageFamily", pfnFindPackagesByPackageFamily); // STRING_OK;
+		LoadProc(L"kernel32.dll", hModKernel32, "PackageIdFromFullName", pfnPackageIdFromFullName); // STRING_OK;
 		// clang-format on
 	}
 
@@ -310,11 +309,8 @@ namespace import
 	{
 		if (!pfnHeapSetInformation)
 		{
-			LoadProc(
-				L"kernel32.dll",
-				&hModKernel32,
-				"HeapSetInformation",
-				reinterpret_cast<FARPROC*>(&pfnHeapSetInformation)); // STRING_OK;
+			LoadProc(L"kernel32.dll", hModKernel32, "HeapSetInformation",
+					 pfnHeapSetInformation); // STRING_OK;
 		}
 
 		if (pfnHeapSetInformation)
@@ -327,69 +323,21 @@ namespace import
 		{
 			LoadProc(
 				L"inetcomm.dll",
-				&hModInetComm,
+				hModInetComm,
 				"MimeOleGetCodePageCharset",
-				reinterpret_cast<FARPROC*>(&pfnMimeOleGetCodePageCharset)); // STRING_OK;
+				pfnMimeOleGetCodePageCharset); // STRING_OK;
 		}
 
 		if (pfnMimeOleGetCodePageCharset) return pfnMimeOleGetCodePageCharset(cpiCodePage, ctCsetType, phCharset);
 		return MAPI_E_CALL_FAILED;
 	}
 
-	STDAPI_(UINT)
-	MsiProvideComponentW(
-		LPCWSTR szProduct,
-		LPCWSTR szFeature,
-		LPCWSTR szComponent,
-		DWORD dwInstallMode,
-		LPWSTR lpPathBuf,
-		LPDWORD pcchPathBuf)
-	{
-		if (!pfnMsiProvideComponentW)
-		{
-			LoadProc(
-				L"msi.dll",
-				&hModMSI,
-				"MimeOleGetCodePageCharset",
-				reinterpret_cast<FARPROC*>(&pfnMsiProvideComponentW)); // STRING_OK;
-		}
-
-		if (pfnMsiProvideComponentW)
-			return pfnMsiProvideComponentW(szProduct, szFeature, szComponent, dwInstallMode, lpPathBuf, pcchPathBuf);
-		return ERROR_NOT_SUPPORTED;
-	}
-
-	STDAPI_(UINT)
-	MsiProvideQualifiedComponentW(
-		LPCWSTR szCategory,
-		LPCWSTR szQualifier,
-		DWORD dwInstallMode,
-		LPWSTR lpPathBuf,
-		LPDWORD pcchPathBuf)
-	{
-		if (!pfnMsiProvideQualifiedComponentW)
-		{
-			LoadProc(
-				L"msi.dll",
-				&hModMSI,
-				"MsiProvideQualifiedComponentW",
-				reinterpret_cast<FARPROC*>(&pfnMsiProvideQualifiedComponentW)); // STRING_OK;
-		}
-
-		if (pfnMsiProvideQualifiedComponentW)
-			return pfnMsiProvideQualifiedComponentW(szCategory, szQualifier, dwInstallMode, lpPathBuf, pcchPathBuf);
-		return ERROR_NOT_SUPPORTED;
-	}
-
 	BOOL WINAPI MyGetModuleHandleExW(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE* phModule)
 	{
 		if (!pfnGetModuleHandleExW)
 		{
-			LoadProc(
-				L"kernel32.dll",
-				&hModKernel32,
-				"GetModuleHandleExW",
-				reinterpret_cast<FARPROC*>(&pfnGetModuleHandleExW)); // STRING_OK;
+			LoadProc(L"kernel32.dll", hModKernel32, "GetModuleHandleExW",
+					 pfnGetModuleHandleExW); // STRING_OK;
 		}
 
 		if (pfnGetModuleHandleExW) return pfnGetModuleHandleExW(dwFlags, lpModuleName, phModule);
