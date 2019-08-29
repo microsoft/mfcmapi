@@ -133,46 +133,6 @@ namespace import
 		return MyLoadLibraryW(szDLLPath);
 	}
 
-	_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring& szDLLName)
-	{
-		HMODULE hModRet = nullptr;
-
-		output::DebugPrint(output::DBGLoadLibrary, L"LoadFromOLMAPIDir - loading \"%ws\"\n", szDLLName.c_str());
-
-		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
-		{
-			auto szOutlookMAPIPath = mapistub::GetInstalledOutlookMAPI(i);
-			if (!szOutlookMAPIPath.empty())
-			{
-				WCHAR szDrive[_MAX_DRIVE] = {0};
-				WCHAR szMAPIPath[MAX_PATH] = {0};
-				const auto hRes = WC_W32(_wsplitpath_s(
-					szOutlookMAPIPath.c_str(),
-					szDrive,
-					_MAX_DRIVE,
-					szMAPIPath,
-					MAX_PATH,
-					nullptr,
-					NULL,
-					nullptr,
-					NULL));
-
-				if (SUCCEEDED(hRes))
-				{
-					auto szFullPath = std::wstring(szDrive) + std::wstring(szMAPIPath) + szDLLName;
-
-					output::DebugPrint(
-						output::DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
-					hModRet = WC_D(HMODULE, MyLoadLibraryW(szFullPath));
-				}
-			}
-
-			if (hModRet) break;
-		}
-
-		return hModRet;
-	}
-
 	void ImportProcs()
 	{
 		// clang-format off

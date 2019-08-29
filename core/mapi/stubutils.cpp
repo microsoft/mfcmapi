@@ -1,6 +1,7 @@
 #include <core/stdafx.h>
 #include <mapistub/library/mapiStubUtils.h>
 #include <Msi.h>
+#include <core/mapi/stubutils.h>
 
 // Included for MFCMAPI tracing
 #include <core/utility/import.h>
@@ -16,6 +17,39 @@ namespace mapistub
 	template <class T> void LogError(LPWSTR function, T error)
 	{
 		if (error) DebugPrint(L"%ws failed with 0x%08X", function, error);
+	}
+
+	_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring& szDLLName)
+	{
+		HMODULE hModRet = nullptr;
+
+		output::DebugPrint(output::DBGLoadLibrary, L"LoadFromOLMAPIDir - loading \"%ws\"\n", szDLLName.c_str());
+
+		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
+		{
+			auto szOutlookMAPIPath = mapistub::GetInstalledOutlookMAPI(i);
+			if (!szOutlookMAPIPath.empty())
+			{
+				WCHAR szDrive[_MAX_DRIVE] = {0};
+				WCHAR szMAPIPath[MAX_PATH] = {0};
+				const auto errNo = _wsplitpath_s(
+					szOutlookMAPIPath.c_str(), szDrive, _MAX_DRIVE, szMAPIPath, MAX_PATH, nullptr, NULL, nullptr, NULL);
+				LogError(L"LoadFromOLMAPIDir: _wsplitpath_s", errNo);
+
+				if (errNo == ERROR_SUCCESS)
+				{
+					auto szFullPath = std::wstring(szDrive) + std::wstring(szMAPIPath) + szDLLName;
+
+					output::DebugPrint(
+						output::DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
+					hModRet = import::MyLoadLibraryW(szFullPath);
+				}
+			}
+
+			if (hModRet) break;
+		}
+
+		return hModRet;
 	}
 
 	/*
@@ -91,7 +125,7 @@ namespace mapistub
 			// Preload pstprx32 to prevent crash when using autodiscover to build a new profile
 			if (!g_hModPstPrx32)
 			{
-				g_hModPstPrx32 = import::LoadFromOLMAPIDir(L"pstprx32.dll"); // STRING_OK
+				g_hModPstPrx32 = LoadFromOLMAPIDir(L"pstprx32.dll"); // STRING_OK
 			}
 
 			// Code Analysis gives us a C28112 error when we use InterlockedCompareExchangePointer, so we instead exchange, check and exchange back
