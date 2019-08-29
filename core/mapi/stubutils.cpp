@@ -4,7 +4,6 @@
 
 // Included for MFCMAPI tracing
 #include <core/utility/import.h>
-#include <core/utility/strings.h>
 #include <core/utility/output.h>
 
 namespace mapistub
@@ -190,13 +189,12 @@ namespace mapistub
 				CHAR lpszPath[MAX_PATH] = {0};
 				const ULONG cchPath = _countof(lpszPath);
 
+				auto szComponentA = std::string(szComponent.begin(), szComponent.end());
+				auto szQualifierA = std::string(szQualifier.begin(), szQualifier.end());
 				fReturn = pFGetCompPath(
-					strings::wstringTostring(szComponent).c_str(),
-					const_cast<LPSTR>(strings::wstringTostring(szQualifier).c_str()),
-					lpszPath,
-					cchPath,
-					fInstall);
-				if (fReturn) path = strings::LPCSTRToWstring(lpszPath);
+					szComponentA.c_str(), const_cast<LPSTR>(szQualifierA.c_str()), lpszPath, cchPath, fInstall);
+				auto pathA = std::string(lpszPath);
+				if (fReturn) path = std::wstring(pathA.begin(), pathA.end());
 				DebugPrint(L"GetComponentPath: path = %ws\n", path.c_str());
 			}
 
