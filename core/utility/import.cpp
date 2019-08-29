@@ -98,7 +98,7 @@ namespace import
 		return hMod;
 	}
 
-	// Loads szModule at the handle given by lphModule, then looks for szEntryPoint.
+	// Loads szModule at the handle given by hModule, then looks for szEntryPoint.
 	// Will not load a module or entry point twice
 	template <class T> void LoadProc(_In_ const std::wstring& szModule, HMODULE& hModule, LPCSTR szEntryPoint, T& lpfn)
 	{
