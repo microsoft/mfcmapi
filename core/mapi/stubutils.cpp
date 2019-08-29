@@ -42,7 +42,7 @@ namespace mapistub
 
 					output::DebugPrint(
 						output::DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
-					hModRet = import::MyLoadLibraryW(szFullPath);
+					hModRet = LoadLibraryW(szFullPath.c_str());
 				}
 			}
 
@@ -210,8 +210,8 @@ namespace mapistub
 
 		typedef bool(STDAPICALLTYPE * FGetComponentPathType)(LPCSTR, LPSTR, LPSTR, DWORD, bool);
 
-		auto hMapiStub = import::MyLoadLibraryW(WszMapi32);
-		if (!hMapiStub) hMapiStub = import::MyLoadLibraryW(WszMapiStub);
+		auto hMapiStub = LoadLibraryW(WszMapi32);
+		if (!hMapiStub) hMapiStub = LoadLibraryW(WszMapiStub);
 
 		if (hMapiStub)
 		{
@@ -535,7 +535,7 @@ namespace mapistub
 		for (const auto& szPath : paths)
 		{
 			DebugPrint(L"Trying %ws\n", szPath.c_str());
-			hinstMapi = import::MyLoadLibraryW(szPath);
+			hinstMapi = LoadLibraryW(szPath.c_str());
 			if (hinstMapi) break;
 		}
 
