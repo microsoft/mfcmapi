@@ -10,6 +10,7 @@ namespace mapistub
 	// Sequence number which is incremented every time we set our MAPI handle which will
 	// cause a re-fetch of all stored function pointers
 	volatile ULONG g_ulDllSequenceNum = 1;
+	volatile HMODULE g_hinstMAPI = nullptr;
 
 	HMODULE GetMAPIHandle() { return g_hinstMAPI; }
 } // namespace mapistub

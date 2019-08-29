@@ -4,7 +4,7 @@
 namespace mapistub
 {
 	extern volatile ULONG g_ulDllSequenceNum;
-	static volatile HMODULE g_hinstMAPI = nullptr;
+	extern volatile HMODULE g_hinstMAPI;
 	HMODULE GetMAPIHandle();
 	HMODULE GetPrivateMAPI();
 } // namespace mapistub
