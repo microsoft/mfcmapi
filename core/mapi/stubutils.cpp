@@ -214,7 +214,7 @@ namespace mapistub
 	std::wstring GetMailClientFromMSIData(HKEY hkeyMapiClient)
 	{
 		DebugPrint(L"Enter GetMailClientFromMSIData\n");
-		if (!hkeyMapiClient) return strings::emptystring;
+		if (!hkeyMapiClient) return L"";
 		WCHAR rgchMSIComponentID[MAX_PATH] = {0};
 		WCHAR rgchMSIApplicationLCID[MAX_PATH] = {0};
 		DWORD dwType = 0;
@@ -414,7 +414,7 @@ namespace mapistub
 	{
 		DebugPrint(L"Enter GetInstalledOutlookMAPI(%d)\n", iOutlook);
 
-		if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return strings::emptystring;
+		if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return L"";
 
 		auto lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[iOutlook], nullptr);
 
@@ -436,7 +436,7 @@ namespace mapistub
 		}
 
 		DebugPrint(L"Exit GetInstalledOutlookMAPI: found nothing\n");
-		return strings::emptystring;
+		return L"";
 	}
 
 	std::vector<std::wstring> GetInstalledOutlookMAPI()
@@ -470,7 +470,7 @@ namespace mapistub
 		if (s_fForceOutlookMAPI)
 			hkeyMapiClient = GetHKeyMapiClient(WszOutlookMapiClientName);
 		else
-			hkeyMapiClient = GetHKeyMapiClient(strings::emptystring);
+			hkeyMapiClient = GetHKeyMapiClient(L"");
 
 		szPath = RegQueryWszExpand(hkeyMapiClient, WszValueNameDllPathEx);
 		if (!szPath.empty()) paths.push_back(szPath);
