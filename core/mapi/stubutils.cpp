@@ -10,6 +10,11 @@
 
 namespace mapistub
 {
+	void initStubCallbacks()
+	{
+		mapistub::debugPrintCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadMAPI, _1, _2); };
+	}
+
 	/*
 	 * MAPI Stub Utilities
 	 *
@@ -62,7 +67,7 @@ namespace mapistub
 
 	void SetMAPIHandle(HMODULE hinstMAPI)
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"Enter SetMAPIHandle: hinstMAPI = %p\n", hinstMAPI);
+		DebugPrint(L"Enter SetMAPIHandle: hinstMAPI = %p\n", hinstMAPI);
 		const HMODULE hinstNULL = nullptr;
 		HMODULE hinstToFree = nullptr;
 
@@ -107,7 +112,7 @@ namespace mapistub
 			FreeLibrary(hinstToFree);
 		}
 
-		output::DebugPrint(output::DBGLoadMAPI, L"Exit SetMAPIHandle\n");
+		DebugPrint(L"Exit SetMAPIHandle\n");
 	}
 
 	/*
@@ -116,8 +121,7 @@ namespace mapistub
 	 */
 	std::wstring RegQueryWszExpand(HKEY hKey, const std::wstring& lpValueName)
 	{
-		output::DebugPrint(
-			output::DBGLoadMAPI, L"Enter RegQueryWszExpand: hKey = %p, lpValueName = %ws\n", hKey, lpValueName.c_str());
+		DebugPrint(L"Enter RegQueryWszExpand: hKey = %p, lpValueName = %ws\n", hKey, lpValueName.c_str());
 		DWORD dwType = 0;
 
 		std::wstring ret;
@@ -129,7 +133,7 @@ namespace mapistub
 
 		if (dwErr == ERROR_SUCCESS)
 		{
-			output::DebugPrint(output::DBGLoadMAPI, L"RegQueryWszExpand: rgchValue = %ws\n", rgchValue);
+			DebugPrint(L"RegQueryWszExpand: rgchValue = %ws\n", rgchValue);
 			if (dwType == REG_EXPAND_SZ)
 			{
 				const auto szPath = std::wstring(MAX_PATH, '\0');
@@ -138,8 +142,7 @@ namespace mapistub
 					ExpandEnvironmentStringsW(rgchValue, const_cast<wchar_t*>(szPath.c_str()), szPath.length());
 				if (0 != cch && cch < MAX_PATH)
 				{
-					output::DebugPrint(
-						output::DBGLoadMAPI, L"RegQueryWszExpand: rgchValue(expanded) = %ws\n", szPath.c_str());
+					DebugPrint(L"RegQueryWszExpand: rgchValue(expanded) = %ws\n", szPath.c_str());
 					ret = szPath;
 				}
 			}
@@ -149,7 +152,7 @@ namespace mapistub
 			}
 		}
 
-		output::DebugPrint(output::DBGLoadMAPI, L"Exit RegQueryWszExpand: dwErr = 0x%08X\n", dwErr);
+		DebugPrint(L"Exit RegQueryWszExpand: dwErr = 0x%08X\n", dwErr);
 		return ret;
 	}
 
@@ -160,8 +163,7 @@ namespace mapistub
 	 */
 	std::wstring GetComponentPath(const std::wstring& szComponent, const std::wstring& szQualifier, bool fInstall)
 	{
-		output::DebugPrint(
-			output::DBGLoadMAPI,
+		DebugPrint(
 			L"Enter GetComponentPath: szComponent = %ws, szQualifier = %ws, fInstall = 0x%08X\n",
 			szComponent.c_str(),
 			szQualifier.c_str(),
@@ -191,13 +193,13 @@ namespace mapistub
 					cchPath,
 					fInstall);
 				if (fReturn) path = strings::LPCSTRToWstring(lpszPath);
-				output::DebugPrint(output::DBGLoadMAPI, L"GetComponentPath: path = %ws\n", path.c_str());
+				DebugPrint(L"GetComponentPath: path = %ws\n", path.c_str());
 			}
 
 			FreeLibrary(hMapiStub);
 		}
 
-		output::DebugPrint(output::DBGLoadMAPI, L"Exit GetComponentPath: fReturn = 0x%08X\n", fReturn);
+		DebugPrint(L"Exit GetComponentPath: fReturn = 0x%08X\n", fReturn);
 		return path;
 	}
 
@@ -207,7 +209,7 @@ namespace mapistub
 	 */
 	std::wstring GetMailClientFromMSIData(HKEY hkeyMapiClient)
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"Enter GetMailClientFromMSIData\n");
+		DebugPrint(L"Enter GetMailClientFromMSIData\n");
 		if (!hkeyMapiClient) return strings::emptystring;
 		WCHAR rgchMSIComponentID[MAX_PATH] = {0};
 		WCHAR rgchMSIApplicationLCID[MAX_PATH] = {0};
@@ -237,7 +239,7 @@ namespace mapistub
 			szPath = GetComponentPath(componentID, applicationID, false);
 		}
 
-		output::DebugPrint(output::DBGLoadMAPI, L"Exit GetMailClientFromMSIData: szPath = %ws\n", szPath.c_str());
+		DebugPrint(L"Exit GetMailClientFromMSIData: szPath = %ws\n", szPath.c_str());
 		return szPath;
 	}
 
@@ -247,7 +249,7 @@ namespace mapistub
 	*/
 	std::wstring GetMAPISystemDir()
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"Enter GetMAPISystemDir\n");
+		DebugPrint(L"Enter GetMAPISystemDir\n");
 		auto buf = std::vector<wchar_t>();
 		auto copied = DWORD();
 		do
@@ -261,13 +263,13 @@ namespace mapistub
 		const auto path = std::wstring(buf.begin(), buf.end());
 		const auto szDLLPath = path + L"\\" + std::wstring(WszMapi32);
 
-		output::DebugPrint(output::DBGLoadMAPI, L"Exit GetMAPISystemDir: found %ws\n", szDLLPath.c_str());
+		DebugPrint(L"Exit GetMAPISystemDir: found %ws\n", szDLLPath.c_str());
 		return szDLLPath;
 	}
 
 	HKEY GetHKeyMapiClient(const std::wstring& pwzProviderOverride)
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"Enter GetHKeyMapiClient (%ws)\n", pwzProviderOverride.c_str());
+		DebugPrint(L"Enter GetHKeyMapiClient (%ws)\n", pwzProviderOverride.c_str());
 		HKEY hMailKey = nullptr;
 
 		// Open HKLM\Software\Clients\Mail
@@ -296,11 +298,7 @@ namespace mapistub
 			if (SUCCEEDED(hRes))
 			{
 				defaultClient = rgchMailClient;
-				output::DebugPrint(
-					output::DBGLoadMAPI,
-					L"GetHKeyMapiClient: HKLM\\%ws = %ws\n",
-					WszKeyNameMailClient,
-					defaultClient.c_str());
+				DebugPrint(L"GetHKeyMapiClient: HKLM\\%ws = %ws\n", WszKeyNameMailClient, defaultClient.c_str());
 			}
 		}
 
@@ -309,7 +307,7 @@ namespace mapistub
 		HKEY hkeyMapiClient = nullptr;
 		if (hMailKey && !pwzProvider.empty())
 		{
-			output::DebugPrint(output::DBGLoadMAPI, L"GetHKeyMapiClient: pwzProvider = %ws\n", pwzProvider.c_str());
+			DebugPrint(L"GetHKeyMapiClient: pwzProvider = %ws\n", pwzProvider.c_str());
 			hRes = WC_W32(RegOpenKeyExW(hMailKey, pwzProvider.c_str(), 0, KEY_READ, &hkeyMapiClient));
 			if (FAILED(hRes))
 			{
@@ -317,10 +315,7 @@ namespace mapistub
 			}
 		}
 
-		output::DebugPrint(
-			output::DBGLoadMAPI,
-			L"Exit GetHKeyMapiClient.hkeyMapiClient found (%ws)\n",
-			hkeyMapiClient ? L"true" : L"false");
+		DebugPrint(L"Exit GetHKeyMapiClient.hkeyMapiClient found (%ws)\n", hkeyMapiClient ? L"true" : L"false");
 
 		if (hMailKey) RegCloseKey(hMailKey);
 		return hkeyMapiClient;
@@ -329,7 +324,7 @@ namespace mapistub
 	// Looks up Outlook's path given its qualified component guid
 	std::wstring GetOutlookPath(_In_ const std::wstring& szCategory, _Out_opt_ bool* lpb64)
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"Enter GetOutlookPath: szCategory = %ws\n", szCategory.c_str());
+		DebugPrint(L"Enter GetOutlookPath: szCategory = %ws\n", szCategory.c_str());
 		DWORD dwValueBuf = 0;
 		std::wstring path;
 
@@ -379,13 +374,13 @@ namespace mapistub
 			if (SUCCEEDED(hRes))
 			{
 				path = lpszTempPath;
-				output::DebugPrint(output::DBGLoadMAPI, L"Exit GetOutlookPath: Path = %ws\n", path.c_str());
+				DebugPrint(L"Exit GetOutlookPath: Path = %ws\n", path.c_str());
 			}
 		}
 
 		if (path.empty())
 		{
-			output::DebugPrint(output::DBGLoadMAPI, L"Exit GetOutlookPath: nothing found\n");
+			DebugPrint(L"Exit GetOutlookPath: nothing found\n");
 		}
 
 		return path;
@@ -402,7 +397,7 @@ namespace mapistub
 
 	std::wstring GetInstalledOutlookMAPI(int iOutlook)
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"Enter GetInstalledOutlookMAPI(%d)\n", iOutlook);
+		DebugPrint(L"Enter GetInstalledOutlookMAPI(%d)\n", iOutlook);
 
 		if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return strings::emptystring;
 
@@ -419,18 +414,18 @@ namespace mapistub
 			{
 				auto szPath = std::wstring(szDrive) + std::wstring(szOutlookPath) + WszOlMAPI32DLL;
 
-				output::DebugPrint(output::DBGLoadMAPI, L"GetInstalledOutlookMAPI: found %ws\n", szPath.c_str());
+				DebugPrint(L"GetInstalledOutlookMAPI: found %ws\n", szPath.c_str());
 				return szPath;
 			}
 		}
 
-		output::DebugPrint(output::DBGLoadMAPI, L"Exit GetInstalledOutlookMAPI: found nothing\n");
+		DebugPrint(L"Exit GetInstalledOutlookMAPI: found nothing\n");
 		return strings::emptystring;
 	}
 
 	std::vector<std::wstring> GetInstalledOutlookMAPI()
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"Enter GetInstalledOutlookMAPI\n");
+		DebugPrint(L"Enter GetInstalledOutlookMAPI\n");
 		auto paths = std::vector<std::wstring>();
 		if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return paths;
 
@@ -440,7 +435,7 @@ namespace mapistub
 			if (!szPath.empty()) paths.push_back(szPath);
 		}
 
-		output::DebugPrint(output::DBGLoadMAPI, L"Exit GetInstalledOutlookMAPI: found nothing\n");
+		DebugPrint(L"Exit GetInstalledOutlookMAPI: found %d paths\n", paths.size());
 		return paths;
 	}
 
@@ -485,18 +480,18 @@ namespace mapistub
 
 	HMODULE GetDefaultMapiHandle()
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"Enter GetDefaultMapiHandle\n");
+		DebugPrint(L"Enter GetDefaultMapiHandle\n");
 		HMODULE hinstMapi = nullptr;
 
 		auto paths = GetMAPIPaths();
 		for (const auto& szPath : paths)
 		{
-			output::DebugPrint(output::DBGLoadMAPI, L"Trying %ws\n", szPath.c_str());
+			DebugPrint(L"Trying %ws\n", szPath.c_str());
 			hinstMapi = import::MyLoadLibraryW(szPath);
 			if (hinstMapi) break;
 		}
 
-		output::DebugPrint(output::DBGLoadMAPI, L"Exit GetDefaultMapiHandle: hinstMapi = %p\n", hinstMapi);
+		DebugPrint(L"Exit GetDefaultMapiHandle: hinstMapi = %p\n", hinstMapi);
 		return hinstMapi;
 	}
 
@@ -506,40 +501,40 @@ namespace mapistub
 	 ------------------------------------------------------------------------------*/
 	HMODULE AttachToMAPIDll(const WCHAR* wzMapiDll)
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"Enter AttachToMAPIDll: wzMapiDll = %ws\n", wzMapiDll);
+		DebugPrint(L"Enter AttachToMAPIDll: wzMapiDll = %ws\n", wzMapiDll);
 		HMODULE hinstPrivateMAPI = nullptr;
 		import::MyGetModuleHandleExW(0UL, wzMapiDll, &hinstPrivateMAPI);
-		output::DebugPrint(output::DBGLoadMAPI, L"Exit AttachToMAPIDll: hinstPrivateMAPI = %p\n", hinstPrivateMAPI);
+		DebugPrint(L"Exit AttachToMAPIDll: hinstPrivateMAPI = %p\n", hinstPrivateMAPI);
 		return hinstPrivateMAPI;
 	}
 
 	void UnloadPrivateMAPI()
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"Enter UnloadPrivateMAPI\n");
+		DebugPrint(L"Enter UnloadPrivateMAPI\n");
 		const auto hinstPrivateMAPI = GetMAPIHandle();
 		if (nullptr != hinstPrivateMAPI)
 		{
 			SetMAPIHandle(nullptr);
 		}
 
-		output::DebugPrint(output::DBGLoadMAPI, L"Exit UnloadPrivateMAPI\n");
+		DebugPrint(L"Exit UnloadPrivateMAPI\n");
 	}
 
 	void ForceOutlookMAPI(bool fForce)
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"ForceOutlookMAPI: fForce = 0x%08X\n", fForce);
+		DebugPrint(L"ForceOutlookMAPI: fForce = 0x%08X\n", fForce);
 		s_fForceOutlookMAPI = fForce;
 	}
 
 	void ForceSystemMAPI(bool fForce)
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"ForceSystemMAPI: fForce = 0x%08X\n", fForce);
+		DebugPrint(L"ForceSystemMAPI: fForce = 0x%08X\n", fForce);
 		s_fForceSystemMAPI = fForce;
 	}
 
 	HMODULE GetPrivateMAPI()
 	{
-		output::DebugPrint(output::DBGLoadMAPI, L"Enter GetPrivateMAPI\n");
+		DebugPrint(L"Enter GetPrivateMAPI\n");
 		auto hinstPrivateMAPI = GetMAPIHandle();
 
 		if (nullptr == hinstPrivateMAPI)
@@ -569,11 +564,11 @@ namespace mapistub
 			// Reason - if for any reason there is an instance already loaded, SetMAPIHandle()
 			// will free the new one and reuse the old one
 			// So we fetch the instance from the global again
-			output::DebugPrint(output::DBGLoadMAPI, L"Exit GetPrivateMAPI: Returning GetMAPIHandle()\n");
+			DebugPrint(L"Exit GetPrivateMAPI: Returning GetMAPIHandle()\n");
 			return GetMAPIHandle();
 		}
 
-		output::DebugPrint(output::DBGLoadMAPI, L"Exit GetPrivateMAPI, hinstPrivateMAPI = %p\n", hinstPrivateMAPI);
+		DebugPrint(L"Exit GetPrivateMAPI, hinstPrivateMAPI = %p\n", hinstPrivateMAPI);
 		return hinstPrivateMAPI;
 	}
 } // namespace mapistub

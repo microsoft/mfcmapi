@@ -1,9 +1,4 @@
 #include <mapistub/library/mapiStubUtils.h>
-//#include <Windows.h>
-//#include <Msi.h>
-//#include <winreg.h>
-//
-//#include <stdlib.h>
 
 namespace mapistub
 {
@@ -13,4 +8,17 @@ namespace mapistub
 	volatile HMODULE g_hinstMAPI = nullptr;
 
 	HMODULE GetMAPIHandle() { return g_hinstMAPI; }
+
+	std::function<void(LPCWSTR szMsg, va_list argList)> debugPrintCallback;
+
+	void __cdecl DebugPrint(LPCWSTR szMsg, ...)
+	{
+		if (debugPrintCallback)
+		{
+			va_list argList = nullptr;
+			va_start(argList, szMsg);
+			debugPrintCallback(szMsg, argList);
+			va_end(argList);
+		}
+	}
 } // namespace mapistub

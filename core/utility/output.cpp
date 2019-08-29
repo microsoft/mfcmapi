@@ -233,6 +233,14 @@ namespace output
 
 		va_list argList = nullptr;
 		va_start(argList, szMsg);
+		DebugPrint(ulDbgLvl, szMsg, argList);
+		va_end(argList);
+	}
+
+	void __cdecl DebugPrint(output::DBGLEVEL ulDbgLvl, LPCWSTR szMsg, va_list argList)
+	{
+		if (!fIsSetv(ulDbgLvl) && !registry::debugToFile) return;
+
 		if (argList)
 		{
 			Output(ulDbgLvl, nullptr, true, strings::formatV(szMsg, argList));
@@ -241,8 +249,6 @@ namespace output
 		{
 			Output(ulDbgLvl, nullptr, true, szMsg);
 		}
-
-		va_end(argList);
 	}
 
 	void __cdecl DebugPrintEx(

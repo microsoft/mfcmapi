@@ -79,6 +79,7 @@ namespace output
 #undef DebugPrint
 #define DebugPrint(ulDbgLvl, szMsg, ...) DebugPrint((wprintf(szMsg, __VA_ARGS__), ulDbgLvl), szMsg, __VA_ARGS__)
 #endif
+	void __cdecl DebugPrint(output::DBGLEVEL ulDbgLvl, LPCWSTR szMsg, va_list argList);
 
 	void __cdecl DebugPrintEx(
 		output::DBGLEVEL ulDbgLvl,
