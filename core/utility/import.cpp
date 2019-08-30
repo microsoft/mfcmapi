@@ -27,9 +27,6 @@ namespace import
 		SIZE_T HeapInformationLength);
 	typedef HEAPSETINFORMATION* LPHEAPSETINFORMATION;
 
-	typedef bool(WINAPI GETMODULEHANDLEEXW)(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE* phModule);
-	typedef GETMODULEHANDLEEXW* LPGETMODULEHANDLEEXW;
-
 	typedef HRESULT(STDMETHODCALLTYPE MIMEOLEGETCODEPAGECHARSET)(
 		CODEPAGEID cpiCodePage,
 		CHARSETTYPE ctCsetType,
@@ -75,7 +72,6 @@ namespace import
 
 	// From kernel32.dll
 	LPHEAPSETINFORMATION pfnHeapSetInformation = nullptr;
-	LPGETMODULEHANDLEEXW pfnGetModuleHandleExW = nullptr;
 	LPFINDPACKAGESBYPACKAGEFAMILY pfnFindPackagesByPackageFamily = nullptr;
 	LPPACKAGEIDFROMFULLNAME pfnPackageIdFromFullName = nullptr;
 
@@ -96,21 +92,6 @@ namespace import
 		}
 
 		return hMod;
-	}
-
-	// Loads szModule at the handle given by hModule, then looks for szEntryPoint.
-	// Will not load a module or entry point twice
-	template <class T> void LoadProc(_In_ const std::wstring& szModule, HMODULE& hModule, LPCSTR szEntryPoint, T& lpfn)
-	{
-		if (!szEntryPoint) return;
-		if (!hModule && !szModule.empty())
-		{
-			hModule = LoadFromSystemDir(szModule);
-		}
-
-		if (!hModule) return;
-
-		lpfn = reinterpret_cast<T>(WC_D(FARPROC, GetProcAddress(hModule, szEntryPoint)));
 	}
 
 	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
@@ -290,18 +271,5 @@ namespace import
 
 		if (pfnMimeOleGetCodePageCharset) return pfnMimeOleGetCodePageCharset(cpiCodePage, ctCsetType, phCharset);
 		return MAPI_E_CALL_FAILED;
-	}
-
-	BOOL WINAPI MyGetModuleHandleExW(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE* phModule)
-	{
-		if (!pfnGetModuleHandleExW)
-		{
-			LoadProc(L"kernel32.dll", hModKernel32, "GetModuleHandleExW",
-					 pfnGetModuleHandleExW); // STRING_OK;
-		}
-
-		if (pfnGetModuleHandleExW) return pfnGetModuleHandleExW(dwFlags, lpModuleName, phModule);
-		*phModule = GetModuleHandleW(lpModuleName);
-		return *phModule != nullptr;
 	}
 } // namespace import

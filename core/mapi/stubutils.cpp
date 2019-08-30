@@ -9,6 +9,12 @@
 
 namespace mapistub
 {
+	// From kernel32.dll
+	HMODULE hModKernel32 = nullptr;
+	typedef bool(WINAPI GETMODULEHANDLEEXW)(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE* phModule);
+	typedef GETMODULEHANDLEEXW* LPGETMODULEHANDLEEXW;
+	LPGETMODULEHANDLEEXW pfnGetModuleHandleExW = nullptr;
+
 	void initStubCallbacks()
 	{
 		mapistub::debugPrintCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadMAPI, _1, _2); };
@@ -50,6 +56,19 @@ namespace mapistub
 		}
 
 		return hModRet;
+	}
+
+	BOOL WINAPI MyGetModuleHandleExW(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE* phModule)
+	{
+		if (!pfnGetModuleHandleExW)
+		{
+			import::LoadProc(L"kernel32.dll", hModKernel32, "GetModuleHandleExW",
+					 pfnGetModuleHandleExW); // STRING_OK;
+		}
+
+		if (pfnGetModuleHandleExW) return pfnGetModuleHandleExW(dwFlags, lpModuleName, phModule);
+		*phModule = GetModuleHandleW(lpModuleName);
+		return *phModule != nullptr;
 	}
 
 	/*
@@ -551,7 +570,7 @@ namespace mapistub
 	{
 		DebugPrint(L"Enter AttachToMAPIDll: wzMapiDll = %ws\n", wzMapiDll);
 		HMODULE hinstPrivateMAPI = nullptr;
-		import::MyGetModuleHandleExW(0UL, wzMapiDll, &hinstPrivateMAPI);
+		MyGetModuleHandleExW(0UL, wzMapiDll, &hinstPrivateMAPI);
 		DebugPrint(L"Exit AttachToMAPIDll: hinstPrivateMAPI = %p\n", hinstPrivateMAPI);
 		return hinstPrivateMAPI;
 	}
