@@ -8,6 +8,7 @@
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
+#include <mapistub/library/mapiStubUtils.h>
 
 extern ui::CMyWinApp theApp;
 
@@ -50,10 +51,10 @@ namespace ui
 		output::OpenDebugFile();
 		output::outputVersion(output::DBGVersionBanner, nullptr);
 		// Force the system riched20 so we don't load office's version.
-		(void) import::LoadFromSystemDir(L"riched20.dll"); // STRING_OK
+		(void) mapistub::LoadFromSystemDir(L"riched20.dll"); // STRING_OK
 		// Second part is to load rundll32.exe
 		// Don't plan on unloading this, so don't care about the return value
-		(void) import::LoadFromSystemDir(L"rundll32.exe"); // STRING_OK
+		(void) mapistub::LoadFromSystemDir(L"rundll32.exe"); // STRING_OK
 
 		// Load DLLS and get functions from them
 		import::ImportProcs();

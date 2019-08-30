@@ -62,7 +62,7 @@ namespace mapistub
 	{
 		if (!pfnGetModuleHandleExW)
 		{
-			import::LoadProc(L"kernel32.dll", hModKernel32, "GetModuleHandleExW",
+			LoadProc(L"kernel32.dll", hModKernel32, "GetModuleHandleExW",
 					 pfnGetModuleHandleExW); // STRING_OK;
 		}
 
@@ -296,34 +296,6 @@ namespace mapistub
 
 		DebugPrint(L"Exit GetMailClientFromMSIData: szPath = %ws\n", szPath.c_str());
 		return szPath;
-	}
-
-	/*
-	* GetMAPISystemDir
-	* Fall back for loading System32\Mapi32.dll if all else fails
-	*/
-	std::wstring GetMAPISystemDir()
-	{
-		DebugPrint(L"Enter GetMAPISystemDir\n");
-		auto path = std::wstring();
-		auto copied = DWORD();
-		do
-		{
-			path.resize(path.size() + MAX_PATH);
-			copied = ::GetSystemDirectoryW(&path[0], static_cast<DWORD>(path.size()));
-			if (!copied)
-			{
-				const auto dwErr = GetLastError();
-				DebugPrint(L"GetMAPISystemDir: GetSystemDirectoryW failed with 0x%08X\n", dwErr);
-			}
-		} while (copied >= path.size());
-
-		path.resize(copied);
-
-		const auto szDLLPath = path + L"\\" + std::wstring(WszMapi32);
-
-		DebugPrint(L"Exit GetMAPISystemDir: found %ws\n", szDLLPath.c_str());
-		return szDLLPath;
 	}
 
 	HKEY GetHKeyMapiClient(const std::wstring& pwzProviderOverride)
@@ -637,5 +609,53 @@ namespace mapistub
 
 		DebugPrint(L"Exit GetPrivateMAPI, hinstPrivateMAPI = %p\n", hinstPrivateMAPI);
 		return hinstPrivateMAPI;
+	}
+
+	/*
+	* GetMAPISystemDir
+	* Fall back for loading System32\Mapi32.dll if all else fails
+	*/
+	std::wstring GetMAPISystemDir() { return GetSystemDirectory() + L"\\" + std::wstring(WszMapi32); }
+
+	std::wstring GetSystemDirectory()
+	{
+		DebugPrint(L"Enter GetSystemDirectory\n");
+		auto path = std::wstring();
+		auto copied = DWORD();
+		do
+		{
+			path.resize(path.size() + MAX_PATH);
+			copied = ::GetSystemDirectoryW(&path[0], static_cast<UINT>(path.size()));
+			if (!copied)
+			{
+				const auto dwErr = GetLastError();
+				DebugPrint(L"GetSystemDirectory: GetSystemDirectoryW failed with 0x%08X\n", dwErr);
+			}
+		} while (copied >= path.size());
+
+		path.resize(copied);
+
+		DebugPrint(L"Exit GetSystemDirectory: found %ws\n", path.c_str());
+		return path;
+	}
+
+	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
+	{
+		if (szDLLName.empty()) return nullptr;
+
+		static auto szSystemDir = std::wstring();
+		static auto bSystemDirLoaded = false;
+
+		output::DebugPrint(output::DBGLoadLibrary, L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
+
+		if (!bSystemDirLoaded)
+		{
+			szSystemDir = GetSystemDirectory();
+			bSystemDirLoaded = true;
+		}
+
+		const auto szDLLPath = szSystemDir + L"\\" + szDLLName;
+		output::DebugPrint(output::DBGLoadLibrary, L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
+		return LoadLibraryW(szDLLPath.c_str());
 	}
 } // namespace mapistub

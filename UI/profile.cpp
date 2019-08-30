@@ -8,6 +8,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
+#include <core/mapi/stubutils.h>
 
 namespace ui
 {
@@ -233,7 +234,7 @@ namespace ui
 			else
 			{
 				// Fall back on System32
-				szMAPIDir = file::GetSystemDirectory();
+				szMAPIDir = mapistub::GetSystemDirectory();
 			}
 
 			if (!szMAPIDir.empty())

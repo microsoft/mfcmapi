@@ -6,6 +6,7 @@
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>
+#include <mapistub/library/mapiStubUtils.h>
 
 namespace import
 {
@@ -94,41 +95,21 @@ namespace import
 		return hMod;
 	}
 
-	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
-	{
-		if (szDLLName.empty()) return nullptr;
-
-		static auto szSystemDir = std::wstring();
-		static auto bSystemDirLoaded = false;
-
-		output::DebugPrint(output::DBGLoadLibrary, L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
-
-		if (!bSystemDirLoaded)
-		{
-			szSystemDir = file::GetSystemDirectory();
-			bSystemDirLoaded = true;
-		}
-
-		const auto szDLLPath = szSystemDir + L"\\" + szDLLName;
-		output::DebugPrint(output::DBGLoadLibrary, L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
-		return MyLoadLibraryW(szDLLPath);
-	}
-
 	void ImportProcs()
 	{
 		// clang-format off
-		LoadProc(L"aclui.dll", hModAclui, "EditSecurity", pfnEditSecurity); // STRING_OK;
-		LoadProc(L"ole32.dll", hModOle32, "StgCreateStorageEx", pfnStgCreateStorageEx); // STRING_OK;
-		LoadProc(L"uxtheme.dll", hModUxTheme, "OpenThemeData", pfnOpenThemeData); // STRING_OK;
-		LoadProc(L"uxtheme.dll", hModUxTheme, "CloseThemeData", pfnCloseThemeData); // STRING_OK;
-		LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeMargins", pfnGetThemeMargins); // STRING_OK;
-		LoadProc(L"uxtheme.dll", hModUxTheme, "SetWindowTheme", pfnSetWindowTheme); // STRING_OK;
-		LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeSysSize", pfnGetThemeSysSize); // STRING_OK;
-		LoadProc(L"msi.dll", hModMSI, "MsiGetFileVersionW", pfnMsiGetFileVersion); // STRING_OK;
-		LoadProc(L"msi.dll", hModMSI, "MsiProvideQualifiedComponentW", pfnMsiProvideQualifiedComponent); // STRING_OK;
-		LoadProc(L"shell32.dll", hModShell32, "SHGetPropertyStoreForWindow", pfnSHGetPropertyStoreForWindow); // STRING_OK;
-		LoadProc(L"kernel32.dll", hModKernel32, "FindPackagesByPackageFamily", pfnFindPackagesByPackageFamily); // STRING_OK;
-		LoadProc(L"kernel32.dll", hModKernel32, "PackageIdFromFullName", pfnPackageIdFromFullName); // STRING_OK;
+		mapistub::LoadProc(L"aclui.dll", hModAclui, "EditSecurity", pfnEditSecurity); // STRING_OK;
+		mapistub::LoadProc(L"ole32.dll", hModOle32, "StgCreateStorageEx", pfnStgCreateStorageEx); // STRING_OK;
+		mapistub::LoadProc(L"uxtheme.dll", hModUxTheme, "OpenThemeData", pfnOpenThemeData); // STRING_OK;
+		mapistub::LoadProc(L"uxtheme.dll", hModUxTheme, "CloseThemeData", pfnCloseThemeData); // STRING_OK;
+		mapistub::LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeMargins", pfnGetThemeMargins); // STRING_OK;
+		mapistub::LoadProc(L"uxtheme.dll", hModUxTheme, "SetWindowTheme", pfnSetWindowTheme); // STRING_OK;
+		mapistub::LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeSysSize", pfnGetThemeSysSize); // STRING_OK;
+		mapistub::LoadProc(L"msi.dll", hModMSI, "MsiGetFileVersionW", pfnMsiGetFileVersion); // STRING_OK;
+		mapistub::LoadProc(L"msi.dll", hModMSI, "MsiProvideQualifiedComponentW", pfnMsiProvideQualifiedComponent); // STRING_OK;
+		mapistub::LoadProc(L"shell32.dll", hModShell32, "SHGetPropertyStoreForWindow", pfnSHGetPropertyStoreForWindow); // STRING_OK;
+		mapistub::LoadProc(L"kernel32.dll", hModKernel32, "FindPackagesByPackageFamily", pfnFindPackagesByPackageFamily); // STRING_OK;
+		mapistub::LoadProc(L"kernel32.dll", hModKernel32, "PackageIdFromFullName", pfnPackageIdFromFullName); // STRING_OK;
 		// clang-format on
 	}
 
@@ -250,8 +231,11 @@ namespace import
 	{
 		if (!pfnHeapSetInformation)
 		{
-			LoadProc(L"kernel32.dll", hModKernel32, "HeapSetInformation",
-					 pfnHeapSetInformation); // STRING_OK;
+			mapistub::LoadProc(
+				L"kernel32.dll",
+				hModKernel32,
+				"HeapSetInformation",
+				pfnHeapSetInformation); // STRING_OK;
 		}
 
 		if (pfnHeapSetInformation)
@@ -262,7 +246,7 @@ namespace import
 	{
 		if (!pfnMimeOleGetCodePageCharset)
 		{
-			LoadProc(
+			mapistub::LoadProc(
 				L"inetcomm.dll",
 				hModInetComm,
 				"MimeOleGetCodePageCharset",
