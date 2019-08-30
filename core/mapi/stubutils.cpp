@@ -4,7 +4,6 @@
 #include <core/mapi/stubutils.h>
 
 // Included for MFCMAPI tracing
-#include <core/utility/import.h>
 #include <core/utility/output.h>
 
 namespace mapistub
@@ -12,8 +11,49 @@ namespace mapistub
 	// From kernel32.dll
 	HMODULE hModKernel32 = nullptr;
 	typedef bool(WINAPI GETMODULEHANDLEEXW)(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE* phModule);
-	typedef GETMODULEHANDLEEXW* LPGETMODULEHANDLEEXW;
-	LPGETMODULEHANDLEEXW pfnGetModuleHandleExW = nullptr;
+	GETMODULEHANDLEEXW* pfnGetModuleHandleExW = nullptr;
+	BOOL WINAPI MyGetModuleHandleExW(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE* phModule)
+	{
+		if (!pfnGetModuleHandleExW)
+		{
+			LoadProc(L"kernel32.dll", hModKernel32, "GetModuleHandleExW",
+					 pfnGetModuleHandleExW); // STRING_OK;
+		}
+
+		if (pfnGetModuleHandleExW) return pfnGetModuleHandleExW(dwFlags, lpModuleName, phModule);
+		*phModule = GetModuleHandleW(lpModuleName);
+		return *phModule != nullptr;
+	}
+
+	// From MSI.dll
+	HMODULE hModMSI = nullptr;
+	typedef HRESULT(STDMETHODCALLTYPE MSIPROVIDEQUALIFIEDCOMPONENT)(
+		LPCWSTR szCategory,
+		LPCWSTR szQualifier,
+		DWORD dwInstallMode,
+		LPWSTR lpPathBuf,
+		LPDWORD pcchPathBuf);
+	MSIPROVIDEQUALIFIEDCOMPONENT* pfnMsiProvideQualifiedComponent = nullptr;
+	HRESULT MyMsiProvideQualifiedComponent(
+		LPCWSTR szCategory,
+		LPCWSTR szQualifier,
+		DWORD dwInstallMode,
+		LPWSTR lpPathBuf,
+		LPDWORD pcchPathBuf)
+	{
+		if (!pfnMsiProvideQualifiedComponent)
+		{
+			LoadProc(
+				L"msi.dll",
+				hModMSI,
+				"MsiProvideQualifiedComponentW",
+				pfnMsiProvideQualifiedComponent); // STRING_OK;
+		}
+
+		if (pfnMsiProvideQualifiedComponent)
+			return pfnMsiProvideQualifiedComponent(szCategory, szQualifier, dwInstallMode, lpPathBuf, pcchPathBuf);
+		return MAPI_E_CALL_FAILED;
+	}
 
 	void initStubCallbacks()
 	{
@@ -56,19 +96,6 @@ namespace mapistub
 		}
 
 		return hModRet;
-	}
-
-	BOOL WINAPI MyGetModuleHandleExW(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE* phModule)
-	{
-		if (!pfnGetModuleHandleExW)
-		{
-			LoadProc(L"kernel32.dll", hModKernel32, "GetModuleHandleExW",
-					 pfnGetModuleHandleExW); // STRING_OK;
-		}
-
-		if (pfnGetModuleHandleExW) return pfnGetModuleHandleExW(dwFlags, lpModuleName, phModule);
-		*phModule = GetModuleHandleW(lpModuleName);
-		return *phModule != nullptr;
 	}
 
 	/*
@@ -364,52 +391,52 @@ namespace mapistub
 
 		if (lpb64) *lpb64 = false;
 
-		auto errNo = import::pfnMsiProvideQualifiedComponent(
+		auto hRes = MyMsiProvideQualifiedComponent(
 			szCategory.c_str(),
 			L"outlook.x64.exe", // STRING_OK
 			static_cast<DWORD>(INSTALLMODE_DEFAULT),
 			nullptr,
 			&dwValueBuf);
-		LogError(L"GetOutlookPath: MsiProvideQualifiedComponent(x64)", errNo);
-		if (errNo == ERROR_SUCCESS)
+		LogError(L"GetOutlookPath: MsiProvideQualifiedComponent(x64)", hRes);
+		if (SUCCEEDED(hRes))
 		{
 			if (lpb64) *lpb64 = true;
 		}
 		else
 		{
-			errNo = import::pfnMsiProvideQualifiedComponent(
+			hRes = MyMsiProvideQualifiedComponent(
 				szCategory.c_str(),
 				L"outlook.exe", // STRING_OK
 				static_cast<DWORD>(INSTALLMODE_DEFAULT),
 				nullptr,
 				&dwValueBuf);
-			LogError(L"GetOutlookPath: MsiProvideQualifiedComponent(x86)", errNo);
+			LogError(L"GetOutlookPath: MsiProvideQualifiedComponent(x86)", hRes);
 		}
 
-		if (errNo == ERROR_SUCCESS)
+		if (SUCCEEDED(hRes))
 		{
 			dwValueBuf += 1;
 			const auto lpszTempPath = std::wstring(dwValueBuf, '\0');
 
-			errNo = import::pfnMsiProvideQualifiedComponent(
+			hRes = MyMsiProvideQualifiedComponent(
 				szCategory.c_str(),
 				L"outlook.x64.exe", // STRING_OK
 				static_cast<DWORD>(INSTALLMODE_DEFAULT),
 				const_cast<wchar_t*>(lpszTempPath.c_str()),
 				&dwValueBuf);
-			LogError(L"GetOutlookPath: MsiProvideQualifiedComponent(x64)", errNo);
-			if (errNo != ERROR_SUCCESS)
+			LogError(L"GetOutlookPath: MsiProvideQualifiedComponent(x64)", hRes);
+			if (FAILED(hRes))
 			{
-				errNo = import::pfnMsiProvideQualifiedComponent(
+				hRes = MyMsiProvideQualifiedComponent(
 					szCategory.c_str(),
 					L"outlook.exe", // STRING_OK
 					static_cast<DWORD>(INSTALLMODE_DEFAULT),
 					const_cast<wchar_t*>(lpszTempPath.c_str()),
 					&dwValueBuf);
-				LogError(L"GetOutlookPath: MsiProvideQualifiedComponent(x86)", errNo);
+				LogError(L"GetOutlookPath: MsiProvideQualifiedComponent(x86)", hRes);
 			}
 
-			if (errNo == ERROR_SUCCESS)
+			if (SUCCEEDED(hRes))
 			{
 				path = lpszTempPath;
 				DebugPrint(L"Exit GetOutlookPath: Path = %ws\n", path.c_str());
@@ -436,8 +463,6 @@ namespace mapistub
 	std::wstring GetInstalledOutlookMAPI(int iOutlook)
 	{
 		DebugPrint(L"Enter GetInstalledOutlookMAPI(%d)\n", iOutlook);
-
-		if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return L"";
 
 		auto lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[iOutlook], nullptr);
 
@@ -466,7 +491,6 @@ namespace mapistub
 	{
 		DebugPrint(L"Enter GetInstalledOutlookMAPI\n");
 		auto paths = std::vector<std::wstring>();
-		if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return paths;
 
 		for (auto iCurrentOutlook = oqcOfficeBegin; iCurrentOutlook < oqcOfficeEnd; iCurrentOutlook++)
 		{

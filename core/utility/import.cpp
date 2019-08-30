@@ -34,23 +34,6 @@ namespace import
 		LPHCHARSET phCharset);
 	typedef MIMEOLEGETCODEPAGECHARSET* LPMIMEOLEGETCODEPAGECHARSET;
 
-	typedef UINT(WINAPI MSIPROVIDECOMPONENTW)(
-		LPCWSTR szProduct,
-		LPCWSTR szFeature,
-		LPCWSTR szComponent,
-		DWORD dwInstallMode,
-		LPWSTR lpPathBuf,
-		LPDWORD pcchPathBuf);
-	typedef MSIPROVIDECOMPONENTW FAR* LPMSIPROVIDECOMPONENTW;
-
-	typedef UINT(WINAPI MSIPROVIDEQUALIFIEDCOMPONENTW)(
-		LPCWSTR szCategory,
-		LPCWSTR szQualifier,
-		DWORD dwInstallMode,
-		LPWSTR lpPathBuf,
-		LPDWORD pcchPathBuf);
-	typedef MSIPROVIDEQUALIFIEDCOMPONENTW FAR* LPMSIPROVIDEQUALIFIEDCOMPONENTW;
-
 	LPEDITSECURITY pfnEditSecurity = nullptr;
 
 	LPSTGCREATESTORAGEEX pfnStgCreateStorageEx = nullptr;
@@ -66,10 +49,7 @@ namespace import
 	LPMIMEOLEGETCODEPAGECHARSET pfnMimeOleGetCodePageCharset = nullptr;
 
 	// From MSI.dll
-	LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent = nullptr;
 	LPMSIGETFILEVERSION pfnMsiGetFileVersion = nullptr;
-	LPMSIPROVIDECOMPONENTW pfnMsiProvideComponentW = nullptr;
-	LPMSIPROVIDEQUALIFIEDCOMPONENTW pfnMsiProvideQualifiedComponentW = nullptr;
 
 	// From kernel32.dll
 	LPHEAPSETINFORMATION pfnHeapSetInformation = nullptr;
@@ -106,7 +86,6 @@ namespace import
 		mapistub::LoadProc(L"uxtheme.dll", hModUxTheme, "SetWindowTheme", pfnSetWindowTheme); // STRING_OK;
 		mapistub::LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeSysSize", pfnGetThemeSysSize); // STRING_OK;
 		mapistub::LoadProc(L"msi.dll", hModMSI, "MsiGetFileVersionW", pfnMsiGetFileVersion); // STRING_OK;
-		mapistub::LoadProc(L"msi.dll", hModMSI, "MsiProvideQualifiedComponentW", pfnMsiProvideQualifiedComponent); // STRING_OK;
 		mapistub::LoadProc(L"shell32.dll", hModShell32, "SHGetPropertyStoreForWindow", pfnSHGetPropertyStoreForWindow); // STRING_OK;
 		mapistub::LoadProc(L"kernel32.dll", hModKernel32, "FindPackagesByPackageFamily", pfnFindPackagesByPackageFamily); // STRING_OK;
 		mapistub::LoadProc(L"kernel32.dll", hModKernel32, "PackageIdFromFullName", pfnPackageIdFromFullName); // STRING_OK;

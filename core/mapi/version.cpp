@@ -12,8 +12,6 @@ namespace version
 {
 	std::wstring GetMSIVersion()
 	{
-		if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return strings::emptystring;
-
 		std::wstring szOut;
 
 		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
