@@ -11,6 +11,7 @@ namespace mapistub
 	void initStubCallbacks()
 	{
 		mapistub::logLoadMapiCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadMAPI, _1, _2); };
+		mapistub::logLoadLibraryCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadLibrary, _1, _2); };
 	}
 
 	template <class T> void LogError(LPWSTR function, T error)
@@ -69,7 +70,7 @@ namespace mapistub
 	{
 		HMODULE hModRet = nullptr;
 
-		output::DebugPrint(output::DBGLoadLibrary, L"LoadFromOLMAPIDir - loading \"%ws\"\n", szDLLName.c_str());
+		logLoadLibrary(L"LoadFromOLMAPIDir - loading \"%ws\"\n", szDLLName.c_str());
 
 		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
 		{
@@ -86,8 +87,7 @@ namespace mapistub
 				{
 					auto szFullPath = std::wstring(szDrive) + std::wstring(szMAPIPath) + szDLLName;
 
-					output::DebugPrint(
-						output::DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
+					logLoadLibrary(L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
 					hModRet = LoadLibraryW(szFullPath.c_str());
 				}
 			}
@@ -670,7 +670,7 @@ namespace mapistub
 		static auto szSystemDir = std::wstring();
 		static auto bSystemDirLoaded = false;
 
-		output::DebugPrint(output::DBGLoadLibrary, L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
+		logLoadLibrary(L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
 
 		if (!bSystemDirLoaded)
 		{
@@ -679,7 +679,7 @@ namespace mapistub
 		}
 
 		const auto szDLLPath = szSystemDir + L"\\" + szDLLName;
-		output::DebugPrint(output::DBGLoadLibrary, L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
+		logLoadLibrary(L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
 		return LoadLibraryW(szDLLPath.c_str());
 	}
 } // namespace mapistub

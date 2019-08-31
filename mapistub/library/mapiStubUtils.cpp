@@ -10,6 +10,7 @@ namespace mapistub
 	HMODULE GetMAPIHandle() { return g_hinstMAPI; }
 
 	std::function<void(LPCWSTR szMsg, va_list argList)> logLoadMapiCallback;
+	std::function<void(LPCWSTR szMsg, va_list argList)> logLoadLibraryCallback;
 
 	void __cdecl logLoadMapi(LPCWSTR szMsg, ...)
 	{
@@ -18,6 +19,17 @@ namespace mapistub
 			va_list argList = nullptr;
 			va_start(argList, szMsg);
 			logLoadMapiCallback(szMsg, argList);
+			va_end(argList);
+		}
+	}
+
+	void __cdecl logLoadLibrary(LPCWSTR szMsg, ...)
+	{
+		if (logLoadLibraryCallback)
+		{
+			va_list argList = nullptr;
+			va_start(argList, szMsg);
+			logLoadLibraryCallback(szMsg, argList);
 			va_end(argList);
 		}
 	}
