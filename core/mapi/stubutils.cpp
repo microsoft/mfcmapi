@@ -8,6 +8,16 @@
 
 namespace mapistub
 {
+	void initStubCallbacks()
+	{
+		mapistub::debugPrintCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadMAPI, _1, _2); };
+	}
+
+	template <class T> void LogError(LPWSTR function, T error)
+	{
+		if (error) DebugPrint(L"%ws failed with 0x%08X", function, error);
+	}
+
 	// From kernel32.dll
 	HMODULE hModKernel32 = nullptr;
 	typedef bool(WINAPI GETMODULEHANDLEEXW)(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE* phModule);
@@ -53,16 +63,6 @@ namespace mapistub
 		if (pfnMsiProvideQualifiedComponent)
 			return pfnMsiProvideQualifiedComponent(szCategory, szQualifier, dwInstallMode, lpPathBuf, pcchPathBuf);
 		return MAPI_E_CALL_FAILED;
-	}
-
-	void initStubCallbacks()
-	{
-		mapistub::debugPrintCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadMAPI, _1, _2); };
-	}
-
-	template <class T> void LogError(LPWSTR function, T error)
-	{
-		if (error) DebugPrint(L"%ws failed with 0x%08X", function, error);
 	}
 
 	_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring& szDLLName)
