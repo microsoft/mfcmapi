@@ -1,7 +1,7 @@
 #include <core/stdafx.h>
 #include <core/mapi/version.h>
 #include <core/utility/import.h>
-#include <core/mapi/stubutils.h>
+#include <mapistub/library/mapiStubUtils.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>

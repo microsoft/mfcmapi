@@ -8,7 +8,7 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
-#include <core/mapi/stubutils.h>
+#include <mapistub/library/mapiStubUtils.h>
 
 namespace ui
 {

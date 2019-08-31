@@ -22,7 +22,7 @@
 #include <core/mapi/mapiFunctions.h>
 #include <UI/OnNotify.h>
 #include <core/mapi/adviseSink.h>
-#include <core/mapi/stubUtils.h>
+#include <mapistub/library/mapiStubUtils.h>
 
 namespace ui
 {
