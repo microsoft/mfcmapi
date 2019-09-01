@@ -75,7 +75,7 @@ namespace mapistub
 	const int oqcOfficeEnd = oqcOffice11Debug;
 
 	std::wstring GetInstalledOutlookMAPI(int iOutlook);
-}
+} // namespace mapistub
 
 namespace import
 {
@@ -329,8 +329,8 @@ namespace mapistub
 			{
 				const auto szPath = std::wstring(MAX_PATH, '\0');
 				// Expand the strings
-				const auto cch =
-					ExpandEnvironmentStringsW(rgchValue, const_cast<wchar_t*>(szPath.c_str()), szPath.length());
+				const auto cch = ExpandEnvironmentStringsW(
+					rgchValue, const_cast<wchar_t*>(szPath.c_str()), static_cast<DWORD>(szPath.length()));
 				if (0 != cch && cch < MAX_PATH)
 				{
 					output::logLoadMapi(L"RegQueryWszExpand: rgchValue(expanded) = %ws\n", szPath.c_str());
