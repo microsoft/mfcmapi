@@ -49,6 +49,37 @@ namespace import
 		return LoadLibraryW(szDLLPath.c_str());
 	}
 
+	_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring& szDLLName)
+	{
+		HMODULE hModRet = nullptr;
+
+		mapistub::logLoadLibrary(L"LoadFromOLMAPIDir - loading \"%ws\"\n", szDLLName.c_str());
+
+		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
+		{
+			auto szOutlookMAPIPath = mapistub::GetInstalledOutlookMAPI(i);
+			if (!szOutlookMAPIPath.empty())
+			{
+				WCHAR szDrive[_MAX_DRIVE] = {0};
+				WCHAR szMAPIPath[MAX_PATH] = {0};
+				const auto errNo = _wsplitpath_s(
+					szOutlookMAPIPath.c_str(), szDrive, _MAX_DRIVE, szMAPIPath, MAX_PATH, nullptr, NULL, nullptr, NULL);
+				mapistub::LogError(L"LoadFromOLMAPIDir: _wsplitpath_s", errNo);
+
+				if (errNo == ERROR_SUCCESS)
+				{
+					auto szFullPath = std::wstring(szDrive) + std::wstring(szMAPIPath) + szDLLName;
+
+					mapistub::logLoadLibrary(L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
+					hModRet = LoadLibraryW(szFullPath.c_str());
+				}
+			}
+
+			if (hModRet) break;
+		}
+
+		return hModRet;
+	}
 } // namespace import
 
 namespace mapistub
@@ -83,11 +114,6 @@ namespace mapistub
 			logLoadLibraryCallback(szMsg, argList);
 			va_end(argList);
 		}
-	}
-
-	template <class T> void LogError(LPWSTR function, T error)
-	{
-		if (error) logLoadMapi(L"%ws failed with 0x%08X", function, error);
 	}
 
 	// From kernel32.dll
@@ -135,38 +161,6 @@ namespace mapistub
 		if (pfnMsiProvideQualifiedComponent)
 			return pfnMsiProvideQualifiedComponent(szCategory, szQualifier, dwInstallMode, lpPathBuf, pcchPathBuf);
 		return MAPI_E_CALL_FAILED;
-	}
-
-	_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring& szDLLName)
-	{
-		HMODULE hModRet = nullptr;
-
-		logLoadLibrary(L"LoadFromOLMAPIDir - loading \"%ws\"\n", szDLLName.c_str());
-
-		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
-		{
-			auto szOutlookMAPIPath = mapistub::GetInstalledOutlookMAPI(i);
-			if (!szOutlookMAPIPath.empty())
-			{
-				WCHAR szDrive[_MAX_DRIVE] = {0};
-				WCHAR szMAPIPath[MAX_PATH] = {0};
-				const auto errNo = _wsplitpath_s(
-					szOutlookMAPIPath.c_str(), szDrive, _MAX_DRIVE, szMAPIPath, MAX_PATH, nullptr, NULL, nullptr, NULL);
-				LogError(L"LoadFromOLMAPIDir: _wsplitpath_s", errNo);
-
-				if (errNo == ERROR_SUCCESS)
-				{
-					auto szFullPath = std::wstring(szDrive) + std::wstring(szMAPIPath) + szDLLName;
-
-					logLoadLibrary(L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
-					hModRet = LoadLibraryW(szFullPath.c_str());
-				}
-			}
-
-			if (hModRet) break;
-		}
-
-		return hModRet;
 	}
 
 	/*
@@ -242,7 +236,7 @@ namespace mapistub
 			// Preload pstprx32 to prevent crash when using autodiscover to build a new profile
 			if (!g_hModPstPrx32)
 			{
-				g_hModPstPrx32 = LoadFromOLMAPIDir(L"pstprx32.dll"); // STRING_OK
+				g_hModPstPrx32 = import::LoadFromOLMAPIDir(L"pstprx32.dll"); // STRING_OK
 			}
 
 			// Code Analysis gives us a C28112 error when we use InterlockedCompareExchangePointer, so we instead exchange, check and exchange back

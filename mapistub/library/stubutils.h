@@ -39,6 +39,10 @@ namespace mapistub
 
 	void __cdecl logLoadMapi(LPCWSTR szMsg, ...);
 	void __cdecl logLoadLibrary(LPCWSTR szMsg, ...);
+	template <class T> void LogError(LPWSTR function, T error)
+	{
+		if (error) logLoadMapi(L"%ws failed with 0x%08X", function, error);
+	}
 
 	extern volatile ULONG g_ulDllSequenceNum;
 	extern volatile HMODULE g_hinstMAPI;
