@@ -396,6 +396,12 @@ namespace mapistub
 		return szPath;
 	}
 
+	/*
+	* GetMAPISystemDir
+	* Fall back for loading System32\Mapi32.dll if all else fails
+	*/
+	std::wstring GetMAPISystemDir() { return file::GetSystemDirectory() + L"\\" + std::wstring(WszMapi32); }
+
 	HKEY GetHKeyMapiClient(const std::wstring& pwzProviderOverride)
 	{
 		logLoadMapi(L"Enter GetHKeyMapiClient (%ws)\n", pwzProviderOverride.c_str());
@@ -705,10 +711,4 @@ namespace mapistub
 		logLoadMapi(L"Exit GetPrivateMAPI, hinstPrivateMAPI = %p\n", hinstPrivateMAPI);
 		return hinstPrivateMAPI;
 	}
-
-	/*
-	* GetMAPISystemDir
-	* Fall back for loading System32\Mapi32.dll if all else fails
-	*/
-	std::wstring GetMAPISystemDir() { return file::GetSystemDirectory() + L"\\" + std::wstring(WszMapi32); }
 } // namespace mapistub
