@@ -47,10 +47,11 @@ namespace mapistub
 	void SetMAPIHandle(HMODULE hinstMAPI);
 	HMODULE GetPrivateMAPI();
 	std::wstring GetComponentPath(const std::wstring& szComponent, const std::wstring& szQualifier, bool fInstall);
-	extern WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH];
+	extern std::vector<std::wstring> g_pszOutlookQualifiedComponents;
 	std::vector<std::wstring> GetMAPIPaths();
 	// Looks up Outlook's path given its qualified component guid
 	std::wstring GetOutlookPath(_In_ const std::wstring& szCategory, _Out_opt_ bool* lpb64);
 	std::wstring GetInstalledOutlookMAPI(int iOutlook);
+	std::wstring GetInstalledOutlookMAPI(const std::wstring component);
 	std::wstring GetMAPISystemDir();
 } // namespace mapistub

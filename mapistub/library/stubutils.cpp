@@ -73,8 +73,17 @@ namespace mapistub
 	const int oqcOffice11 = oqcOfficeBegin + 4;
 	const int oqcOffice11Debug = oqcOfficeBegin + 5;
 	const int oqcOfficeEnd = oqcOffice11Debug;
+	std::vector<std::wstring> g_pszOutlookQualifiedComponents = {
+		L"{5812C571-53F0-4467-BEFA-0A4F47A9437C}", // O16_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{E83B4360-C208-4325-9504-0D23003A74A5}", // O15_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}", // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{24AAE126-0911-478F-A019-07B875EB9996}", // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		L"{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (debug) // STRING_OK
+	};
 
 	std::wstring GetInstalledOutlookMAPI(int iOutlook);
+	std::wstring GetInstalledOutlookMAPI(const std::wstring component);
 } // namespace mapistub
 
 namespace import
@@ -124,9 +133,9 @@ namespace import
 
 		output::logLoadLibrary(L"LoadFromOLMAPIDir - loading \"%ws\"\n", szDLLName.c_str());
 
-		for (auto i = mapistub::oqcOfficeBegin; i < mapistub::oqcOfficeEnd; i++)
+		for (const auto component : mapistub::g_pszOutlookQualifiedComponents)
 		{
-			auto szOutlookMAPIPath = mapistub::GetInstalledOutlookMAPI(i);
+			auto szOutlookMAPIPath = mapistub::GetInstalledOutlookMAPI(component);
 			if (!szOutlookMAPIPath.empty())
 			{
 				WCHAR szDrive[_MAX_DRIVE] = {0};
@@ -567,20 +576,27 @@ namespace mapistub
 		return path;
 	}
 
-	WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH] = {
-		L"{5812C571-53F0-4467-BEFA-0A4F47A9437C}", // O16_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		L"{E83B4360-C208-4325-9504-0D23003A74A5}", // O15_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		L"{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}", // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		L"{24AAE126-0911-478F-A019-07B875EB9996}", // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		L"{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		L"{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (debug) // STRING_OK
-	};
-
 	std::wstring GetInstalledOutlookMAPI(int iOutlook)
 	{
 		output::logLoadMapi(L"Enter GetInstalledOutlookMAPI(%d)\n", iOutlook);
 
-		auto lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[iOutlook], nullptr);
+		auto szPath = GetInstalledOutlookMAPI(g_pszOutlookQualifiedComponents[iOutlook]);
+
+		if (!szPath.empty())
+		{
+			output::logLoadMapi(L"GetInstalledOutlookMAPI: found %ws\n", szPath.c_str());
+			return szPath;
+		}
+
+		output::logLoadMapi(L"Exit GetInstalledOutlookMAPI: found nothing\n");
+		return L"";
+	}
+
+	std::wstring GetInstalledOutlookMAPI(const std::wstring component)
+	{
+		output::logLoadMapi(L"Enter GetInstalledOutlookMAPI(%s)\n", component.c_str());
+
+		auto lpszTempPath = GetOutlookPath(component, nullptr);
 
 		if (!lpszTempPath.empty())
 		{
