@@ -48,8 +48,6 @@ namespace output
 namespace mapistub
 {
 	extern volatile ULONG g_ulDllSequenceNum;
-	HMODULE GetMAPIHandle();
-	HMODULE GetPrivateMAPI();
 
 	// Keep this in sync with g_pszOutlookQualifiedComponents
 #define oqcOfficeBegin 0
@@ -62,6 +60,7 @@ namespace mapistub
 #define oqcOfficeEnd oqcOffice11Debug
 
 	HMODULE GetMAPIHandle();
+	HMODULE GetPrivateMAPI();
 	void UnloadPrivateMAPI();
 	void ForceOutlookMAPI(bool fForce);
 	void ForceSystemMAPI(bool fForce);
