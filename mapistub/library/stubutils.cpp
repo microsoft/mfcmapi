@@ -64,6 +64,16 @@ namespace file
 
 namespace mapistub
 {
+	// Keep this in sync with g_pszOutlookQualifiedComponents
+	const int oqcOfficeBegin = 0;
+	const int oqcOffice16 = oqcOfficeBegin + 0;
+	const int oqcOffice15 = oqcOfficeBegin + 1;
+	const int oqcOffice14 = oqcOfficeBegin + 2;
+	const int oqcOffice12 = oqcOfficeBegin + 3;
+	const int oqcOffice11 = oqcOfficeBegin + 4;
+	const int oqcOffice11Debug = oqcOfficeBegin + 5;
+	const int oqcOfficeEnd = oqcOffice11Debug;
+
 	std::wstring GetInstalledOutlookMAPI(int iOutlook);
 }
 
