@@ -27,7 +27,7 @@ namespace import
 		lpfn = reinterpret_cast<T>(GetProcAddress(hModule, szEntryPoint));
 		if (!lpfn)
 		{
-			mapistub::logLoadLibrary(L"LoadProc: failed to load \"%ws\" from \"%ws\"\n", szEntryPoint, szModule.c_str());
+			output::logLoadLibrary(L"LoadProc: failed to load \"%ws\" from \"%ws\"\n", szEntryPoint, szModule.c_str());
 		}
 	}
 } // namespace import
@@ -48,7 +48,6 @@ namespace output
 namespace mapistub
 {
 	extern volatile ULONG g_ulDllSequenceNum;
-	extern volatile HMODULE g_hinstMAPI;
 	HMODULE GetMAPIHandle();
 	HMODULE GetPrivateMAPI();
 

@@ -159,13 +159,6 @@ namespace output
 
 namespace mapistub
 {
-	// Sequence number which is incremented every time we set our MAPI handle which will
-	// cause a re-fetch of all stored function pointers
-	volatile ULONG g_ulDllSequenceNum = 1;
-	volatile HMODULE g_hinstMAPI = nullptr;
-
-	HMODULE GetMAPIHandle() { return g_hinstMAPI; }
-
 	/*
 	 * MAPI Stub Utilities
 	 *
@@ -207,6 +200,10 @@ namespace mapistub
 
 	static const CHAR SzFGetComponentPath[] = "FGetComponentPath";
 
+	// Sequence number which is incremented every time we set our MAPI handle which will
+	// cause a re-fetch of all stored function pointers
+	volatile ULONG g_ulDllSequenceNum = 1;
+
 	// Whether or not we should ignore the system MAPI registration and always try to find
 	// Outlook and its MAPI DLLs
 	static bool s_fForceOutlookMAPI = false;
@@ -214,7 +211,10 @@ namespace mapistub
 	// Whether or not we should ignore the registry and load MAPI from the system directory
 	static bool s_fForceSystemMAPI = false;
 
+	static volatile HMODULE g_hinstMAPI = nullptr;
 	HMODULE g_hModPstPrx32 = nullptr;
+
+	HMODULE GetMAPIHandle() { return g_hinstMAPI; }
 
 	void SetMAPIHandle(HMODULE hinstMAPI)
 	{

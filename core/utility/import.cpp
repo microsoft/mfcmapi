@@ -13,9 +13,11 @@ namespace import
 	HMODULE hModOle32 = nullptr;
 	HMODULE hModUxTheme = nullptr;
 	HMODULE hModInetComm = nullptr;
-	HMODULE hModMSI = nullptr;
-	HMODULE hModKernel32 = nullptr;
 	HMODULE hModShell32 = nullptr;
+
+	// Lives over in stubutils.cpp
+	extern HMODULE hModMSI;
+	extern HMODULE hModKernel32;
 
 	typedef HTHEME(STDMETHODCALLTYPE CLOSETHEMEDATA)(HTHEME hTheme);
 	typedef CLOSETHEMEDATA* LPCLOSETHEMEDATA;
