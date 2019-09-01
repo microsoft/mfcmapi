@@ -1,6 +1,5 @@
 #define _WINSOCKAPI_
 #include <Windows.h>
-#include <mapistub/library/stubutils.h>
 
 #include <MAPI.h>
 #include <MAPIForm.h>
@@ -42,6 +41,15 @@ struct RTF_WCSRETINFO;
 
 #define LINKAGE_EXTERN_C extern "C"
 #define LINKAGE_NO_EXTERN_C /* */
+
+// Forward declares from stubutils.cpp
+namespace mapistub
+{
+	HMODULE GetMAPIHandle();
+	HMODULE GetPrivateMAPI();
+	void UnloadPrivateMAPI();
+	extern volatile ULONG g_ulDllSequenceNum;
+} // namespace mapistub
 
 #define DEFINE_STUB_FUNCTION_V0(_linkage, _modifiers, _name, _lookup) \
 \
