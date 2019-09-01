@@ -1,4 +1,3 @@
-#include <mapistub/library/stubutils.h>
 #include <functional>
 #include <vector>
 #include <MAPIX.h>
@@ -64,15 +63,6 @@ namespace file
 
 namespace mapistub
 {
-	// Keep this in sync with g_pszOutlookQualifiedComponents
-	const int oqcOfficeBegin = 0;
-	const int oqcOffice16 = oqcOfficeBegin + 0;
-	const int oqcOffice15 = oqcOfficeBegin + 1;
-	const int oqcOffice14 = oqcOfficeBegin + 2;
-	const int oqcOffice12 = oqcOfficeBegin + 3;
-	const int oqcOffice11 = oqcOfficeBegin + 4;
-	const int oqcOffice11Debug = oqcOfficeBegin + 5;
-	const int oqcOfficeEnd = oqcOffice11Debug;
 	std::vector<std::wstring> g_pszOutlookQualifiedComponents = {
 		L"{5812C571-53F0-4467-BEFA-0A4F47A9437C}", // O16_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
 		L"{E83B4360-C208-4325-9504-0D23003A74A5}", // O15_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
@@ -624,9 +614,9 @@ namespace mapistub
 		output::logLoadMapi(L"Enter GetInstalledOutlookMAPI\n");
 		auto paths = std::vector<std::wstring>();
 
-		for (auto iCurrentOutlook = oqcOfficeBegin; iCurrentOutlook < oqcOfficeEnd; iCurrentOutlook++)
+		for (const auto compontent : g_pszOutlookQualifiedComponents)
 		{
-			auto szPath = GetInstalledOutlookMAPI(iCurrentOutlook);
+			auto szPath = GetInstalledOutlookMAPI(compontent);
 			if (!szPath.empty()) paths.push_back(szPath);
 		}
 
