@@ -80,41 +80,6 @@ namespace import
 
 		return hModRet;
 	}
-} // namespace import
-
-namespace mapistub
-{
-	// Sequence number which is incremented every time we set our MAPI handle which will
-	// cause a re-fetch of all stored function pointers
-	volatile ULONG g_ulDllSequenceNum = 1;
-	volatile HMODULE g_hinstMAPI = nullptr;
-
-	HMODULE GetMAPIHandle() { return g_hinstMAPI; }
-
-	std::function<void(LPCWSTR szMsg, va_list argList)> logLoadMapiCallback;
-	std::function<void(LPCWSTR szMsg, va_list argList)> logLoadLibraryCallback;
-
-	void __cdecl logLoadMapi(LPCWSTR szMsg, ...)
-	{
-		if (logLoadMapiCallback)
-		{
-			va_list argList = nullptr;
-			va_start(argList, szMsg);
-			logLoadMapiCallback(szMsg, argList);
-			va_end(argList);
-		}
-	}
-
-	void __cdecl logLoadLibrary(LPCWSTR szMsg, ...)
-	{
-		if (logLoadLibraryCallback)
-		{
-			va_list argList = nullptr;
-			va_start(argList, szMsg);
-			logLoadLibraryCallback(szMsg, argList);
-			va_end(argList);
-		}
-	}
 
 	// From kernel32.dll
 	HMODULE hModKernel32 = nullptr;
@@ -161,6 +126,41 @@ namespace mapistub
 		if (pfnMsiProvideQualifiedComponent)
 			return pfnMsiProvideQualifiedComponent(szCategory, szQualifier, dwInstallMode, lpPathBuf, pcchPathBuf);
 		return MAPI_E_CALL_FAILED;
+	}
+} // namespace import
+
+namespace mapistub
+{
+	// Sequence number which is incremented every time we set our MAPI handle which will
+	// cause a re-fetch of all stored function pointers
+	volatile ULONG g_ulDllSequenceNum = 1;
+	volatile HMODULE g_hinstMAPI = nullptr;
+
+	HMODULE GetMAPIHandle() { return g_hinstMAPI; }
+
+	std::function<void(LPCWSTR szMsg, va_list argList)> logLoadMapiCallback;
+	std::function<void(LPCWSTR szMsg, va_list argList)> logLoadLibraryCallback;
+
+	void __cdecl logLoadMapi(LPCWSTR szMsg, ...)
+	{
+		if (logLoadMapiCallback)
+		{
+			va_list argList = nullptr;
+			va_start(argList, szMsg);
+			logLoadMapiCallback(szMsg, argList);
+			va_end(argList);
+		}
+	}
+
+	void __cdecl logLoadLibrary(LPCWSTR szMsg, ...)
+	{
+		if (logLoadLibraryCallback)
+		{
+			va_list argList = nullptr;
+			va_start(argList, szMsg);
+			logLoadLibraryCallback(szMsg, argList);
+			va_end(argList);
+		}
 	}
 
 	/*
@@ -462,7 +462,7 @@ namespace mapistub
 
 		if (lpb64) *lpb64 = false;
 
-		auto hRes = MyMsiProvideQualifiedComponent(
+		auto hRes = import::MyMsiProvideQualifiedComponent(
 			szCategory.c_str(),
 			L"outlook.x64.exe", // STRING_OK
 			static_cast<DWORD>(INSTALLMODE_DEFAULT),
@@ -475,7 +475,7 @@ namespace mapistub
 		}
 		else
 		{
-			hRes = MyMsiProvideQualifiedComponent(
+			hRes = import::MyMsiProvideQualifiedComponent(
 				szCategory.c_str(),
 				L"outlook.exe", // STRING_OK
 				static_cast<DWORD>(INSTALLMODE_DEFAULT),
@@ -489,7 +489,7 @@ namespace mapistub
 			dwValueBuf += 1;
 			const auto lpszTempPath = std::wstring(dwValueBuf, '\0');
 
-			hRes = MyMsiProvideQualifiedComponent(
+			hRes = import::MyMsiProvideQualifiedComponent(
 				szCategory.c_str(),
 				L"outlook.x64.exe", // STRING_OK
 				static_cast<DWORD>(INSTALLMODE_DEFAULT),
@@ -498,7 +498,7 @@ namespace mapistub
 			LogError(L"GetOutlookPath: MsiProvideQualifiedComponent(x64)", hRes);
 			if (FAILED(hRes))
 			{
-				hRes = MyMsiProvideQualifiedComponent(
+				hRes = import::MyMsiProvideQualifiedComponent(
 					szCategory.c_str(),
 					L"outlook.exe", // STRING_OK
 					static_cast<DWORD>(INSTALLMODE_DEFAULT),
@@ -637,7 +637,7 @@ namespace mapistub
 	{
 		logLoadMapi(L"Enter AttachToMAPIDll: wzMapiDll = %ws\n", wzMapiDll);
 		HMODULE hinstPrivateMAPI = nullptr;
-		MyGetModuleHandleExW(0UL, wzMapiDll, &hinstPrivateMAPI);
+		import::MyGetModuleHandleExW(0UL, wzMapiDll, &hinstPrivateMAPI);
 		logLoadMapi(L"Exit AttachToMAPIDll: hinstPrivateMAPI = %p\n", hinstPrivateMAPI);
 		return hinstPrivateMAPI;
 	}
