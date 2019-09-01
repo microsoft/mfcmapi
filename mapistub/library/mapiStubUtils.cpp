@@ -25,7 +25,7 @@ namespace file
 		mapistub::logLoadMapi(L"Exit GetSystemDirectory: found %ws\n", path.c_str());
 		return path;
 	}
-}
+} // namespace file
 
 namespace import
 {
@@ -49,7 +49,7 @@ namespace import
 		return LoadLibraryW(szDLLPath.c_str());
 	}
 
-}
+} // namespace import
 
 namespace mapistub
 {
@@ -98,8 +98,8 @@ namespace mapistub
 	{
 		if (!pfnGetModuleHandleExW)
 		{
-			LoadProc(L"kernel32.dll", hModKernel32, "GetModuleHandleExW",
-					 pfnGetModuleHandleExW); // STRING_OK;
+			import::LoadProc(L"kernel32.dll", hModKernel32, "GetModuleHandleExW",
+							 pfnGetModuleHandleExW); // STRING_OK;
 		}
 
 		if (pfnGetModuleHandleExW) return pfnGetModuleHandleExW(dwFlags, lpModuleName, phModule);
@@ -125,7 +125,7 @@ namespace mapistub
 	{
 		if (!pfnMsiProvideQualifiedComponent)
 		{
-			LoadProc(
+			import::LoadProc(
 				L"msi.dll",
 				hModMSI,
 				"MsiProvideQualifiedComponentW",

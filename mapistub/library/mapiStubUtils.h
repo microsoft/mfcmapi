@@ -11,7 +11,26 @@ namespace file
 namespace import
 {
 	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName);
-}
+
+	// Loads szModule at the handle given by hModule, then looks for szEntryPoint.
+	// Will not load a module or entry point twice
+	template <class T> void LoadProc(_In_ const std::wstring& szModule, HMODULE& hModule, LPCSTR szEntryPoint, T& lpfn)
+	{
+		if (!szEntryPoint) return;
+		if (!hModule && !szModule.empty())
+		{
+			hModule = import::LoadFromSystemDir(szModule);
+		}
+
+		if (!hModule) return;
+
+		lpfn = reinterpret_cast<T>(GetProcAddress(hModule, szEntryPoint));
+		if (!lpfn)
+		{
+			mapistub::logLoadLibrary(L"LoadProc: failed to load \"%ws\" from \"%ws\"\n", szEntryPoint, szModule.c_str());
+		}
+	}
+} // namespace import
 
 namespace mapistub
 {
@@ -35,25 +54,6 @@ namespace mapistub
 #define oqcOffice11 (oqcOfficeBegin + 4)
 #define oqcOffice11Debug (oqcOfficeBegin + 5)
 #define oqcOfficeEnd oqcOffice11Debug
-
-	// Loads szModule at the handle given by hModule, then looks for szEntryPoint.
-	// Will not load a module or entry point twice
-	template <class T> void LoadProc(_In_ const std::wstring& szModule, HMODULE& hModule, LPCSTR szEntryPoint, T& lpfn)
-	{
-		if (!szEntryPoint) return;
-		if (!hModule && !szModule.empty())
-		{
-			hModule = import::LoadFromSystemDir(szModule);
-		}
-
-		if (!hModule) return;
-
-		lpfn = reinterpret_cast<T>(GetProcAddress(hModule, szEntryPoint));
-		if (!lpfn)
-		{
-			logLoadLibrary(L"LoadProc: failed to load \"%ws\" from \"%ws\"\n", szEntryPoint, szModule.c_str());
-		}
-	}
 
 	HMODULE GetMAPIHandle();
 	void UnloadPrivateMAPI();

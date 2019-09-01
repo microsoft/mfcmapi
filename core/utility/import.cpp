@@ -77,17 +77,17 @@ namespace import
 	void ImportProcs()
 	{
 		// clang-format off
-		mapistub::LoadProc(L"aclui.dll", hModAclui, "EditSecurity", pfnEditSecurity); // STRING_OK;
-		mapistub::LoadProc(L"ole32.dll", hModOle32, "StgCreateStorageEx", pfnStgCreateStorageEx); // STRING_OK;
-		mapistub::LoadProc(L"uxtheme.dll", hModUxTheme, "OpenThemeData", pfnOpenThemeData); // STRING_OK;
-		mapistub::LoadProc(L"uxtheme.dll", hModUxTheme, "CloseThemeData", pfnCloseThemeData); // STRING_OK;
-		mapistub::LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeMargins", pfnGetThemeMargins); // STRING_OK;
-		mapistub::LoadProc(L"uxtheme.dll", hModUxTheme, "SetWindowTheme", pfnSetWindowTheme); // STRING_OK;
-		mapistub::LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeSysSize", pfnGetThemeSysSize); // STRING_OK;
-		mapistub::LoadProc(L"msi.dll", hModMSI, "MsiGetFileVersionW", pfnMsiGetFileVersion); // STRING_OK;
-		mapistub::LoadProc(L"shell32.dll", hModShell32, "SHGetPropertyStoreForWindow", pfnSHGetPropertyStoreForWindow); // STRING_OK;
-		mapistub::LoadProc(L"kernel32.dll", hModKernel32, "FindPackagesByPackageFamily", pfnFindPackagesByPackageFamily); // STRING_OK;
-		mapistub::LoadProc(L"kernel32.dll", hModKernel32, "PackageIdFromFullName", pfnPackageIdFromFullName); // STRING_OK;
+		LoadProc(L"aclui.dll", hModAclui, "EditSecurity", pfnEditSecurity); // STRING_OK;
+		LoadProc(L"ole32.dll", hModOle32, "StgCreateStorageEx", pfnStgCreateStorageEx); // STRING_OK;
+		LoadProc(L"uxtheme.dll", hModUxTheme, "OpenThemeData", pfnOpenThemeData); // STRING_OK;
+		LoadProc(L"uxtheme.dll", hModUxTheme, "CloseThemeData", pfnCloseThemeData); // STRING_OK;
+		LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeMargins", pfnGetThemeMargins); // STRING_OK;
+		LoadProc(L"uxtheme.dll", hModUxTheme, "SetWindowTheme", pfnSetWindowTheme); // STRING_OK;
+		LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeSysSize", pfnGetThemeSysSize); // STRING_OK;
+		LoadProc(L"msi.dll", hModMSI, "MsiGetFileVersionW", pfnMsiGetFileVersion); // STRING_OK;
+		LoadProc(L"shell32.dll", hModShell32, "SHGetPropertyStoreForWindow", pfnSHGetPropertyStoreForWindow); // STRING_OK;
+		LoadProc(L"kernel32.dll", hModKernel32, "FindPackagesByPackageFamily", pfnFindPackagesByPackageFamily); // STRING_OK;
+		LoadProc(L"kernel32.dll", hModKernel32, "PackageIdFromFullName", pfnPackageIdFromFullName); // STRING_OK;
 		// clang-format on
 	}
 
@@ -209,11 +209,8 @@ namespace import
 	{
 		if (!pfnHeapSetInformation)
 		{
-			mapistub::LoadProc(
-				L"kernel32.dll",
-				hModKernel32,
-				"HeapSetInformation",
-				pfnHeapSetInformation); // STRING_OK;
+			LoadProc(L"kernel32.dll", hModKernel32, "HeapSetInformation",
+					 pfnHeapSetInformation); // STRING_OK;
 		}
 
 		if (pfnHeapSetInformation)
@@ -224,7 +221,7 @@ namespace import
 	{
 		if (!pfnMimeOleGetCodePageCharset)
 		{
-			mapistub::LoadProc(
+			LoadProc(
 				L"inetcomm.dll",
 				hModInetComm,
 				"MimeOleGetCodePageCharset",
