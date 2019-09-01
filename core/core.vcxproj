@@ -550,7 +550,6 @@
     <ClInclude Include="mapi\mapiStoreFunctions.h" />
     <ClInclude Include="mapi\processor\dumpStore.h" />
     <ClInclude Include="mapi\processor\mapiProcessor.h" />
-    <ClInclude Include="mapi\stubutils.h" />
     <ClInclude Include="addin\mfcmapi.h" />
     <ClInclude Include="mapi\version.h" />
     <ClInclude Include="propertyBag\mapiPropPropertyBag.h" />

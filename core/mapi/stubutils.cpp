@@ -1,8 +1,5 @@
 #include <core/stdafx.h>
 #include <mapistub/library/mapiStubUtils.h>
-#include <core/mapi/stubutils.h>
-
-// Included for MFCMAPI tracing
 #include <core/utility/output.h>
 
 namespace mapistub

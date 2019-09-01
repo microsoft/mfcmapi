@@ -1,12 +1,11 @@
 #include <core/stdafx.h>
 #include <core/utility/import.h>
-#include <core/mapi/stubutils.h>
+#include <mapistub/library/mapiStubUtils.h>
 #include <core/utility/strings.h>
 #include <core/utility/file.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>
-#include <mapistub/library/mapiStubUtils.h>
 
 namespace import
 {
