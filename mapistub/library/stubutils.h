@@ -32,7 +32,7 @@ namespace import
 	}
 } // namespace import
 
-namespace mapistub
+namespace output
 {
 	extern std::function<void(LPCWSTR szMsg, va_list argList)> logLoadMapiCallback;
 	extern std::function<void(LPCWSTR szMsg, va_list argList)> logLoadLibraryCallback;
@@ -43,7 +43,10 @@ namespace mapistub
 	{
 		if (error) logLoadMapi(L"%ws failed with 0x%08X", function, error);
 	}
+}
 
+namespace mapistub
+{
 	extern volatile ULONG g_ulDllSequenceNum;
 	extern volatile HMODULE g_hinstMAPI;
 	HMODULE GetMAPIHandle();
