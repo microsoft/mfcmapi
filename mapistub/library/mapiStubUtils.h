@@ -3,6 +3,11 @@
 #include <functional>
 #include <vector>
 
+namespace import
+{
+	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName);
+}
+
 namespace mapistub
 {
 	extern std::function<void(LPCWSTR szMsg, va_list argList)> logLoadMapiCallback;
@@ -27,7 +32,6 @@ namespace mapistub
 #define oqcOfficeEnd oqcOffice11Debug
 
 	std::wstring GetSystemDirectory();
-	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName);
 	// Loads szModule at the handle given by hModule, then looks for szEntryPoint.
 	// Will not load a module or entry point twice
 	template <class T> void LoadProc(_In_ const std::wstring& szModule, HMODULE& hModule, LPCSTR szEntryPoint, T& lpfn)
@@ -35,7 +39,7 @@ namespace mapistub
 		if (!szEntryPoint) return;
 		if (!hModule && !szModule.empty())
 		{
-			hModule = LoadFromSystemDir(szModule);
+			hModule = import::LoadFromSystemDir(szModule);
 		}
 
 		if (!hModule) return;

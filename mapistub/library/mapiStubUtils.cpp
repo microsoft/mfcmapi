@@ -2,6 +2,30 @@
 #include <MAPIX.h>
 #include <Msi.h>
 
+namespace import
+{
+	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
+	{
+		if (szDLLName.empty()) return nullptr;
+
+		static auto szSystemDir = std::wstring();
+		static auto bSystemDirLoaded = false;
+
+		logLoadLibrary(L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
+
+		if (!bSystemDirLoaded)
+		{
+			szSystemDir = GetSystemDirectory();
+			bSystemDirLoaded = true;
+		}
+
+		const auto szDLLPath = szSystemDir + L"\\" + szDLLName;
+		logLoadLibrary(L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
+		return LoadLibraryW(szDLLPath.c_str());
+	}
+
+}
+
 namespace mapistub
 {
 	// Sequence number which is incremented every time we set our MAPI handle which will
@@ -683,25 +707,5 @@ namespace mapistub
 
 		logLoadMapi(L"Exit GetSystemDirectory: found %ws\n", path.c_str());
 		return path;
-	}
-
-	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
-	{
-		if (szDLLName.empty()) return nullptr;
-
-		static auto szSystemDir = std::wstring();
-		static auto bSystemDirLoaded = false;
-
-		logLoadLibrary(L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
-
-		if (!bSystemDirLoaded)
-		{
-			szSystemDir = GetSystemDirectory();
-			bSystemDirLoaded = true;
-		}
-
-		const auto szDLLPath = szSystemDir + L"\\" + szDLLName;
-		logLoadLibrary(L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
-		return LoadLibraryW(szDLLPath.c_str());
 	}
 } // namespace mapistub
