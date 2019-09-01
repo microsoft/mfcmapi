@@ -114,7 +114,7 @@ namespace import
 
 		output::logLoadLibrary(L"LoadFromOLMAPIDir - loading \"%ws\"\n", szDLLName.c_str());
 
-		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
+		for (auto i = mapistub::oqcOfficeBegin; i < mapistub::oqcOfficeEnd; i++)
 		{
 			auto szOutlookMAPIPath = mapistub::GetInstalledOutlookMAPI(i);
 			if (!szOutlookMAPIPath.empty())

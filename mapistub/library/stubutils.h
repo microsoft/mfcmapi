@@ -34,14 +34,14 @@ namespace mapistub
 	extern volatile ULONG g_ulDllSequenceNum;
 
 	// Keep this in sync with g_pszOutlookQualifiedComponents
-#define oqcOfficeBegin 0
-#define oqcOffice16 (oqcOfficeBegin + 0)
-#define oqcOffice15 (oqcOfficeBegin + 1)
-#define oqcOffice14 (oqcOfficeBegin + 2)
-#define oqcOffice12 (oqcOfficeBegin + 3)
-#define oqcOffice11 (oqcOfficeBegin + 4)
-#define oqcOffice11Debug (oqcOfficeBegin + 5)
-#define oqcOfficeEnd oqcOffice11Debug
+	const int oqcOfficeBegin = 0;
+	const int oqcOffice16 = oqcOfficeBegin + 0;
+	const int oqcOffice15 = oqcOfficeBegin + 1;
+	const int oqcOffice14 = oqcOfficeBegin + 2;
+	const int oqcOffice12 = oqcOfficeBegin + 3;
+	const int oqcOffice11 = oqcOfficeBegin + 4;
+	const int oqcOffice11Debug = oqcOfficeBegin + 5;
+	const int oqcOfficeEnd = oqcOffice11Debug;
 
 	HMODULE GetMAPIHandle();
 	void UnloadPrivateMAPI();

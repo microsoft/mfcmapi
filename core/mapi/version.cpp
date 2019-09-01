@@ -14,7 +14,7 @@ namespace version
 	{
 		std::wstring szOut;
 
-		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
+		for (auto i = mapistub::oqcOfficeBegin; i < mapistub::oqcOfficeEnd; i++)
 		{
 			auto b64 = false;
 			auto lpszTempPath = mapistub::GetOutlookPath(mapistub::g_pszOutlookQualifiedComponents[i], &b64);
