@@ -65,7 +65,6 @@ namespace mapistub
 	void ForceOutlookMAPI(bool fForce);
 	void ForceSystemMAPI(bool fForce);
 	void SetMAPIHandle(HMODULE hinstMAPI);
-	HMODULE GetPrivateMAPI();
 	std::wstring GetComponentPath(const std::wstring& szComponent, const std::wstring& szQualifier, bool fInstall);
 	extern WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH];
 	std::vector<std::wstring> GetMAPIPaths();
