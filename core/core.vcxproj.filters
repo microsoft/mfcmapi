@@ -320,9 +320,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mapi\stubutils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="utility\import.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

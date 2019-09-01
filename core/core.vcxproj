@@ -635,7 +635,6 @@
     <ClCompile Include="mapi\mapiStoreFunctions.cpp" />
     <ClCompile Include="mapi\processor\dumpStore.cpp" />
     <ClCompile Include="mapi\processor\mapiProcessor.cpp" />
-    <ClCompile Include="mapi\stubutils.cpp" />
     <ClCompile Include="mapi\version.cpp" />
     <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp" />
     <ClCompile Include="propertyBag\rowPropertyBag.cpp" />

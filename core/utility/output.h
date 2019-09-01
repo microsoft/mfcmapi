@@ -129,4 +129,6 @@ namespace output
 
 #define OutputXMLValueToFile(fFile, uidTag, szValue, bWrapCData, iIndent) \
 	OutputXMLValue(output::DBGNoDebug, fFile, uidTag, szValue, bWrapCData, iIndent)
+
+	void initStubCallbacks();
 } // namespace output

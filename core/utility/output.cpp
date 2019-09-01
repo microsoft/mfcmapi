@@ -4,6 +4,7 @@
 #include <core/utility/file.h>
 #include <core/utility/registry.h>
 #include <core/utility/error.h>
+#include <mapistub/library/mapiStubUtils.h>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
@@ -375,5 +376,11 @@ namespace output
 		}
 
 		Outputf(ulDbgLvl, fFile, false, L"</%ws>\n", szTag.c_str());
+	}
+
+	void initStubCallbacks()
+	{
+		mapistub::logLoadMapiCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadMAPI, _1, _2); };
+		mapistub::logLoadLibraryCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadLibrary, _1, _2); };
 	}
 } // namespace output

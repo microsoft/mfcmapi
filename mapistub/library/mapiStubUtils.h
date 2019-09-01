@@ -55,7 +55,6 @@ namespace mapistub
 		}
 	}
 
-	void initStubCallbacks();
 	HMODULE GetMAPIHandle();
 	void UnloadPrivateMAPI();
 	void ForceOutlookMAPI(bool fForce);

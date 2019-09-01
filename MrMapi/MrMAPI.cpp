@@ -137,7 +137,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	registry::parseNamedProps = true;
 	registry::cacheNamedProps = true;
 	registry::debugTag = 0;
-	mapistub::initStubCallbacks();
+	output::initStubCallbacks();
 
 	SetDllDirectory(_T(""));
 	import::MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
