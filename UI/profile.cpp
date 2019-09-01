@@ -4,11 +4,10 @@
 #include <UI/profile.h>
 #include <core/utility/import.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <core/utility/file.h>
+#include <mapistub/library/mapiStubUtils.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
-#include <mapistub/library/mapiStubUtils.h>
 
 namespace ui
 {
@@ -234,7 +233,7 @@ namespace ui
 			else
 			{
 				// Fall back on System32
-				szMAPIDir = mapistub::GetSystemDirectory();
+				szMAPIDir = file::GetSystemDirectory();
 			}
 
 			if (!szMAPIDir.empty())

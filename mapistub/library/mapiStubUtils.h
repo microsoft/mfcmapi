@@ -3,6 +3,11 @@
 #include <functional>
 #include <vector>
 
+namespace file
+{
+	std::wstring GetSystemDirectory();
+}
+
 namespace import
 {
 	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName);
@@ -31,7 +36,6 @@ namespace mapistub
 #define oqcOffice11Debug (oqcOfficeBegin + 5)
 #define oqcOfficeEnd oqcOffice11Debug
 
-	std::wstring GetSystemDirectory();
 	// Loads szModule at the handle given by hModule, then looks for szEntryPoint.
 	// Will not load a module or entry point twice
 	template <class T> void LoadProc(_In_ const std::wstring& szModule, HMODULE& hModule, LPCSTR szEntryPoint, T& lpfn)

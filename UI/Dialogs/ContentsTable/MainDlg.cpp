@@ -914,7 +914,7 @@ namespace dialog
 	{
 		editor::CEditor MyData(this, IDS_LOADMAPI, IDS_LOADMAPIPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		const auto szDLLPath = mapistub::GetSystemDirectory();
+		const auto szDLLPath = file::GetSystemDirectory();
 		if (!szDLLPath.empty())
 		{
 			const auto szFullPath = szDLLPath + L"\\mapi32.dll";

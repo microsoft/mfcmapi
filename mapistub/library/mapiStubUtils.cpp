@@ -2,6 +2,31 @@
 #include <MAPIX.h>
 #include <Msi.h>
 
+namespace file
+{
+	std::wstring GetSystemDirectory()
+	{
+		mapistub::logLoadMapi(L"Enter GetSystemDirectory\n");
+		auto path = std::wstring();
+		auto copied = DWORD();
+		do
+		{
+			path.resize(path.size() + MAX_PATH);
+			copied = ::GetSystemDirectoryW(&path[0], static_cast<UINT>(path.size()));
+			if (!copied)
+			{
+				const auto dwErr = GetLastError();
+				mapistub::logLoadMapi(L"GetSystemDirectory: GetSystemDirectoryW failed with 0x%08X\n", dwErr);
+			}
+		} while (copied >= path.size());
+
+		path.resize(copied);
+
+		mapistub::logLoadMapi(L"Exit GetSystemDirectory: found %ws\n", path.c_str());
+		return path;
+	}
+}
+
 namespace import
 {
 	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
@@ -11,16 +36,16 @@ namespace import
 		static auto szSystemDir = std::wstring();
 		static auto bSystemDirLoaded = false;
 
-		logLoadLibrary(L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
+		mapistub::logLoadLibrary(L"LoadFromSystemDir - loading \"%ws\"\n", szDLLName.c_str());
 
 		if (!bSystemDirLoaded)
 		{
-			szSystemDir = GetSystemDirectory();
+			szSystemDir = file::GetSystemDirectory();
 			bSystemDirLoaded = true;
 		}
 
 		const auto szDLLPath = szSystemDir + L"\\" + szDLLName;
-		logLoadLibrary(L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
+		mapistub::logLoadLibrary(L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
 		return LoadLibraryW(szDLLPath.c_str());
 	}
 
@@ -685,27 +710,5 @@ namespace mapistub
 	* GetMAPISystemDir
 	* Fall back for loading System32\Mapi32.dll if all else fails
 	*/
-	std::wstring GetMAPISystemDir() { return GetSystemDirectory() + L"\\" + std::wstring(WszMapi32); }
-
-	std::wstring GetSystemDirectory()
-	{
-		logLoadMapi(L"Enter GetSystemDirectory\n");
-		auto path = std::wstring();
-		auto copied = DWORD();
-		do
-		{
-			path.resize(path.size() + MAX_PATH);
-			copied = ::GetSystemDirectoryW(&path[0], static_cast<UINT>(path.size()));
-			if (!copied)
-			{
-				const auto dwErr = GetLastError();
-				logLoadMapi(L"GetSystemDirectory: GetSystemDirectoryW failed with 0x%08X\n", dwErr);
-			}
-		} while (copied >= path.size());
-
-		path.resize(copied);
-
-		logLoadMapi(L"Exit GetSystemDirectory: found %ws\n", path.c_str());
-		return path;
-	}
+	std::wstring GetMAPISystemDir() { return file::GetSystemDirectory() + L"\\" + std::wstring(WszMapi32); }
 } // namespace mapistub
