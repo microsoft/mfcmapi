@@ -69,25 +69,6 @@ namespace mapistub
 
 namespace import
 {
-	// Loads szModule at the handle given by hModule, then looks for szEntryPoint.
-	// Will not load a module or entry point twice
-	void LoadProc(_In_ const std::wstring& szModule, HMODULE& hModule, LPCSTR szEntryPoint, FARPROC& lpfn)
-	{
-		if (!szEntryPoint) return;
-		if (!hModule && !szModule.empty())
-		{
-			hModule = import::LoadFromSystemDir(szModule);
-		}
-
-		if (!hModule) return;
-
-		lpfn = GetProcAddress(hModule, szEntryPoint);
-		if (!lpfn)
-		{
-			output::logLoadLibrary(L"LoadProc: failed to load \"%ws\" from \"%ws\"\n", szEntryPoint, szModule.c_str());
-		}
-	}
-
 	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
 	{
 		if (szDLLName.empty()) return nullptr;
@@ -106,6 +87,25 @@ namespace import
 		const auto szDLLPath = szSystemDir + L"\\" + szDLLName;
 		output::logLoadLibrary(L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
 		return LoadLibraryW(szDLLPath.c_str());
+	}
+
+	// Loads szModule at the handle given by hModule, then looks for szEntryPoint.
+	// Will not load a module or entry point twice
+	void LoadProc(_In_ const std::wstring& szModule, HMODULE& hModule, LPCSTR szEntryPoint, FARPROC& lpfn)
+	{
+		if (!szEntryPoint) return;
+		if (!hModule && !szModule.empty())
+		{
+			hModule = import::LoadFromSystemDir(szModule);
+		}
+
+		if (!hModule) return;
+
+		lpfn = GetProcAddress(hModule, szEntryPoint);
+		if (!lpfn)
+		{
+			output::logLoadLibrary(L"LoadProc: failed to load \"%ws\" from \"%ws\"\n", szEntryPoint, szModule.c_str());
+		}
 	}
 
 	_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring& szDLLName)
