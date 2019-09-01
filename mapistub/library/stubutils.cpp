@@ -4,6 +4,39 @@
 #include <MAPIX.h>
 #include <Msi.h>
 
+namespace output
+{
+	std::function<void(LPCWSTR szMsg, va_list argList)> logLoadMapiCallback;
+	std::function<void(LPCWSTR szMsg, va_list argList)> logLoadLibraryCallback;
+
+	void __cdecl logLoadMapi(LPCWSTR szMsg, ...)
+	{
+		if (logLoadMapiCallback)
+		{
+			va_list argList = nullptr;
+			va_start(argList, szMsg);
+			logLoadMapiCallback(szMsg, argList);
+			va_end(argList);
+		}
+	}
+
+	void __cdecl logLoadLibrary(LPCWSTR szMsg, ...)
+	{
+		if (logLoadLibraryCallback)
+		{
+			va_list argList = nullptr;
+			va_start(argList, szMsg);
+			logLoadLibraryCallback(szMsg, argList);
+			va_end(argList);
+		}
+	}
+
+	template <class T> void LogError(LPWSTR function, T error)
+	{
+		if (error) logLoadMapi(L"%ws failed with 0x%08X", function, error);
+	}
+} // namespace output
+
 namespace file
 {
 	std::wstring GetSystemDirectory()
@@ -29,8 +62,32 @@ namespace file
 	}
 } // namespace file
 
+namespace mapistub
+{
+	std::wstring GetInstalledOutlookMAPI(int iOutlook);
+}
+
 namespace import
 {
+	// Loads szModule at the handle given by hModule, then looks for szEntryPoint.
+	// Will not load a module or entry point twice
+	void LoadProc(_In_ const std::wstring& szModule, HMODULE& hModule, LPCSTR szEntryPoint, FARPROC& lpfn)
+	{
+		if (!szEntryPoint) return;
+		if (!hModule && !szModule.empty())
+		{
+			hModule = import::LoadFromSystemDir(szModule);
+		}
+
+		if (!hModule) return;
+
+		lpfn = GetProcAddress(hModule, szEntryPoint);
+		if (!lpfn)
+		{
+			output::logLoadLibrary(L"LoadProc: failed to load \"%ws\" from \"%ws\"\n", szEntryPoint, szModule.c_str());
+		}
+	}
+
 	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
 	{
 		if (szDLLName.empty()) return nullptr;
@@ -91,8 +148,9 @@ namespace import
 	{
 		if (!pfnGetModuleHandleExW)
 		{
-			import::LoadProc(L"kernel32.dll", hModKernel32, "GetModuleHandleExW",
-							 pfnGetModuleHandleExW); // STRING_OK;
+			FARPROC lpfnFP = {};
+			import::LoadProc(L"kernel32.dll", hModKernel32, "GetModuleHandleExW", lpfnFP); // STRING_OK;
+			pfnGetModuleHandleExW = reinterpret_cast<GETMODULEHANDLEEXW*>(lpfnFP);
 		}
 
 		if (pfnGetModuleHandleExW) return pfnGetModuleHandleExW(dwFlags, lpModuleName, phModule);
@@ -118,11 +176,9 @@ namespace import
 	{
 		if (!pfnMsiProvideQualifiedComponent)
 		{
-			import::LoadProc(
-				L"msi.dll",
-				hModMSI,
-				"MsiProvideQualifiedComponentW",
-				pfnMsiProvideQualifiedComponent); // STRING_OK;
+			FARPROC lpfnFP = {};
+			import::LoadProc(L"msi.dll", hModMSI, "MsiProvideQualifiedComponentW", lpfnFP); // STRING_OK;
+			pfnMsiProvideQualifiedComponent = reinterpret_cast<MSIPROVIDEQUALIFIEDCOMPONENT*>(lpfnFP);
 		}
 
 		if (pfnMsiProvideQualifiedComponent)
@@ -130,34 +186,6 @@ namespace import
 		return MAPI_E_CALL_FAILED;
 	}
 } // namespace import
-
-namespace output
-{
-	std::function<void(LPCWSTR szMsg, va_list argList)> logLoadMapiCallback;
-	std::function<void(LPCWSTR szMsg, va_list argList)> logLoadLibraryCallback;
-
-	void __cdecl logLoadMapi(LPCWSTR szMsg, ...)
-	{
-		if (logLoadMapiCallback)
-		{
-			va_list argList = nullptr;
-			va_start(argList, szMsg);
-			logLoadMapiCallback(szMsg, argList);
-			va_end(argList);
-		}
-	}
-
-	void __cdecl logLoadLibrary(LPCWSTR szMsg, ...)
-	{
-		if (logLoadLibraryCallback)
-		{
-			va_list argList = nullptr;
-			va_start(argList, szMsg);
-			logLoadLibraryCallback(szMsg, argList);
-			va_end(argList);
-		}
-	}
-} // namespace output
 
 namespace mapistub
 {

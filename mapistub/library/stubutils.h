@@ -3,6 +3,12 @@
 #include <functional>
 #include <vector>
 
+namespace output
+{
+	extern std::function<void(LPCWSTR szMsg, va_list argList)> logLoadMapiCallback;
+	extern std::function<void(LPCWSTR szMsg, va_list argList)> logLoadLibraryCallback;
+} // namespace output
+
 namespace file
 {
 	std::wstring GetSystemDirectory();
@@ -14,36 +20,14 @@ namespace import
 
 	// Loads szModule at the handle given by hModule, then looks for szEntryPoint.
 	// Will not load a module or entry point twice
+	void LoadProc(_In_ const std::wstring& szModule, HMODULE& hModule, LPCSTR szEntryPoint, FARPROC& lpfn);
 	template <class T> void LoadProc(_In_ const std::wstring& szModule, HMODULE& hModule, LPCSTR szEntryPoint, T& lpfn)
 	{
-		if (!szEntryPoint) return;
-		if (!hModule && !szModule.empty())
-		{
-			hModule = import::LoadFromSystemDir(szModule);
-		}
-
-		if (!hModule) return;
-
-		lpfn = reinterpret_cast<T>(GetProcAddress(hModule, szEntryPoint));
-		if (!lpfn)
-		{
-			output::logLoadLibrary(L"LoadProc: failed to load \"%ws\" from \"%ws\"\n", szEntryPoint, szModule.c_str());
-		}
+		FARPROC lpfnFP = {};
+		LoadProc(szModule, hModule, szEntryPoint, lpfnFP);
+		lpfn = reinterpret_cast<T>(lpfnFP);
 	}
 } // namespace import
-
-namespace output
-{
-	extern std::function<void(LPCWSTR szMsg, va_list argList)> logLoadMapiCallback;
-	extern std::function<void(LPCWSTR szMsg, va_list argList)> logLoadLibraryCallback;
-
-	void __cdecl logLoadMapi(LPCWSTR szMsg, ...);
-	void __cdecl logLoadLibrary(LPCWSTR szMsg, ...);
-	template <class T> void LogError(LPWSTR function, T error)
-	{
-		if (error) logLoadMapi(L"%ws failed with 0x%08X", function, error);
-	}
-}
 
 namespace mapistub
 {
