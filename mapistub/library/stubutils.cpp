@@ -1,4 +1,6 @@
 #include <mapistub/library/stubutils.h>
+#include <functional>
+#include <vector>
 #include <MAPIX.h>
 #include <Msi.h>
 
