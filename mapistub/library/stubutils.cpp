@@ -1,4 +1,4 @@
-#include <mapistub/library/mapiStubUtils.h>
+#include <mapistub/library/stubutils.h>
 #include <MAPIX.h>
 #include <Msi.h>
 

@@ -21,7 +21,7 @@
 #include <UI/UIFunctions.h>
 #include <core/sortlistdata/contentsData.h>
 #include <core/mapi/cache/globalCache.h>
-#include <mapistub/library/mapiStubUtils.h>
+#include <mapistub/library/stubutils.h>
 #include <UI/mapiui.h>
 #include <UI/addinui.h>
 #include <core/utility/registry.h>

@@ -4,7 +4,7 @@
 #include <UI/profile.h>
 #include <core/utility/import.h>
 #include <UI/Dialogs/Editors/Editor.h>
-#include <mapistub/library/mapiStubUtils.h>
+#include <mapistub/library/stubutils.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>

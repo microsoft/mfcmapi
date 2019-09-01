@@ -18,12 +18,12 @@
     <ClCompile Include="library\mapiStubLibrary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="library\mapiStubUtils.cpp">
+    <ClCompile Include="library\stubutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="library\mapiStubUtils.h">
+    <ClInclude Include="library\stubutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,7 +4,7 @@
 #include <core/utility/file.h>
 #include <core/utility/registry.h>
 #include <core/utility/error.h>
-#include <mapistub/library/mapiStubUtils.h>
+#include <mapistub/library/stubutils.h>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf

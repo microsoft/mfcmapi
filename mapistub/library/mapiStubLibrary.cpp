@@ -1,6 +1,6 @@
 #define _WINSOCKAPI_
 #include <Windows.h>
-#include <mapistub/library/mapiStubUtils.h>
+#include <mapistub/library/stubutils.h>
 
 #include <MAPI.h>
 #include <MAPIForm.h>
