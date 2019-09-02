@@ -18,7 +18,7 @@
 	"    http://www.microsoft.com/downloads/en/details.aspx?FamilyID=f8d01fc8-f7b5-4228-baa3-817488a66db1&displaylang=en")
 #pragma message("and follow the instructions to install the Outlook 2010 MAPI headers")
 #pragma message("Then go to Tools\\Options\\Projects and Solutions\\VC++ Directories and ensure the headers include")
-#pragma message("directory preceeds the Visual Studio include directories.")
+#pragma message("directory precedes the Visual Studio include directories.")
 #pragma message(" ")
 #error Outlook 2010 MAPI headers or higher must be installed
 #endif
