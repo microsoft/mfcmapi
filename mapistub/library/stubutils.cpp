@@ -46,7 +46,7 @@ namespace file
 		do
 		{
 			path.resize(path.size() + MAX_PATH);
-			copied = ::GetSystemDirectoryW(&path[0], static_cast<UINT>(path.size()));
+			copied = ::GetSystemDirectoryW(const_cast<LPWSTR>(path.data()), UINT(path.size()));
 			if (!copied)
 			{
 				const auto dwErr = GetLastError();
@@ -253,12 +253,11 @@ namespace mapistub
 	static volatile HMODULE g_hinstMAPI = nullptr;
 	HMODULE g_hModPstPrx32 = nullptr;
 
-	HMODULE GetMAPIHandle() { return g_hinstMAPI; }
+	HMODULE GetMAPIHandle() noexcept { return g_hinstMAPI; }
 
 	void SetMAPIHandle(HMODULE hinstMAPI)
 	{
 		output::logLoadMapi(L"Enter SetMAPIHandle: hinstMAPI = %p\n", hinstMAPI);
-		const HMODULE hinstNULL = nullptr;
 		HMODULE hinstToFree = nullptr;
 
 		if (hinstMAPI == nullptr)
@@ -270,8 +269,8 @@ namespace mapistub
 				g_hModPstPrx32 = nullptr;
 			}
 
-			hinstToFree = static_cast<HMODULE>(InterlockedExchangePointer(
-				const_cast<PVOID*>(reinterpret_cast<PVOID volatile*>(&g_hinstMAPI)), static_cast<PVOID>(hinstNULL)));
+			hinstToFree = static_cast<HMODULE>(
+				InterlockedExchangePointer(reinterpret_cast<PVOID volatile*>(&g_hinstMAPI), nullptr));
 		}
 		else
 		{
@@ -283,12 +282,12 @@ namespace mapistub
 
 			// Code Analysis gives us a C28112 error when we use InterlockedCompareExchangePointer, so we instead exchange, check and exchange back
 			//hinstPrev = (HMODULE)InterlockedCompareExchangePointer(reinterpret_cast<volatile PVOID*>(&g_hinstMAPI), hinstMAPI, hinstNULL);
-			const auto hinstPrev = static_cast<HMODULE>(InterlockedExchangePointer(
-				const_cast<PVOID*>(reinterpret_cast<PVOID volatile*>(&g_hinstMAPI)), static_cast<PVOID>(hinstMAPI)));
+			const auto hinstPrev =
+				InterlockedExchangePointer(reinterpret_cast<PVOID volatile*>(&g_hinstMAPI), hinstMAPI);
 			if (nullptr != hinstPrev)
 			{
 				(void) InterlockedExchangePointer(
-					const_cast<PVOID*>(reinterpret_cast<PVOID volatile*>(&g_hinstMAPI)), static_cast<PVOID>(hinstPrev));
+					reinterpret_cast<PVOID volatile*>(&g_hinstMAPI), static_cast<PVOID>(hinstPrev));
 				hinstToFree = hinstMAPI;
 			}
 
@@ -598,7 +597,7 @@ namespace mapistub
 
 			if (errNo == ERROR_SUCCESS)
 			{
-				auto szPath = std::wstring(szDrive) + std::wstring(szOutlookPath) + WszOlMAPI32DLL;
+				const auto szPath = std::wstring(szDrive) + std::wstring(szOutlookPath) + WszOlMAPI32DLL;
 
 				output::logLoadMapi(L"GetInstalledOutlookMAPI: found %ws\n", szPath.c_str());
 				return szPath;
@@ -696,8 +695,7 @@ namespace mapistub
 	void UnloadPrivateMAPI()
 	{
 		output::logLoadMapi(L"Enter UnloadPrivateMAPI\n");
-		const auto hinstPrivateMAPI = GetMAPIHandle();
-		if (nullptr != hinstPrivateMAPI)
+		if (GetMAPIHandle() != nullptr)
 		{
 			SetMAPIHandle(nullptr);
 		}

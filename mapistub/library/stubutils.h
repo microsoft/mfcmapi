@@ -42,7 +42,7 @@ namespace mapistub
 		oqcOffice11Debug = 5
 	};
 
-	HMODULE GetMAPIHandle();
+	HMODULE GetMAPIHandle() noexcept;
 	void UnloadPrivateMAPI();
 	void ForceOutlookMAPI(bool fForce);
 	void ForceSystemMAPI(bool fForce);
