@@ -1,5 +1,4 @@
 #pragma once
-#include <Windows.h>
 #include <functional>
 #include <vector>
 
@@ -12,7 +11,7 @@ namespace output
 namespace file
 {
 	std::wstring GetSystemDirectory();
-}
+} // namespace file
 
 namespace import
 {
