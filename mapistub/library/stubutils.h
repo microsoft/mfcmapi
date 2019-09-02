@@ -55,6 +55,5 @@ namespace mapistub
 	// Looks up Outlook's path given its qualified component guid
 	std::wstring GetOutlookPath(_In_ const std::wstring& szCategory, _Out_opt_ bool* lpb64);
 	std::wstring GetInstalledOutlookMAPI(int iOutlook);
-	std::wstring GetInstalledOutlookMAPI(const std::wstring component);
 	std::wstring GetMAPISystemDir();
 } // namespace mapistub
