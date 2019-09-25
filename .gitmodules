@@ -1,0 +1,4 @@
+[submodule "mapistub"]
+	path = mapistub
+	url = https://github.com/stephenegriffin/MAPIStubLibrary.git
+	branch = sub
