@@ -225,7 +225,7 @@ namespace viewpane
 
 		auto root = HTREEITEM{};
 		// If the node is a header with no text, merge the children up one level
-		if (data->isHeader() && data->getText().empty())
+		if (data->getText().empty())
 		{
 			root = parent;
 		}

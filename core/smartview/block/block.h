@@ -78,6 +78,8 @@ namespace smartview
 			if (_block->isSet())
 			{
 				auto node = std::make_shared<block>(_text);
+				node->setOffset(_block->getOffset());
+				node->setSize(_block->getSize());
 				node->addChild(_block);
 				addChild(node);
 				terminateBlock();
