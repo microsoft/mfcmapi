@@ -224,7 +224,7 @@ namespace viewpane
 		if (!m_TreePane || !data) return;
 
 		auto root = HTREEITEM{};
-		// If the node is a header with no text, mrege the children up one level
+		// If the node is a header with no text, merge the children up one level
 		if (data->isHeader() && data->getText().empty())
 		{
 			root = parent;

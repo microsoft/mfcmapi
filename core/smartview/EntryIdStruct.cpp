@@ -117,12 +117,8 @@ namespace smartview
 					cbRemainingBytes = *m_ContactAddressBookObject.EntryIDCount;
 				}
 
-				auto offset = m_Parser->getOffset();
 				m_ContactAddressBookObject.lpEntryID =
 					std::make_shared<EntryIdStruct>(m_Parser, cbRemainingBytes, false);
-				m_ContactAddressBookObject.lpEntryID->getBlock()->setOffset(offset);
-				auto endPos = m_Parser->getOffset();
-				m_ContactAddressBookObject.lpEntryID->getBlock()->setSize(endPos - offset);
 			}
 			break;
 			case eidtWAB:
@@ -130,11 +126,7 @@ namespace smartview
 				m_ObjectType = eidtWAB;
 
 				m_WAB.Type = blockT<byte>::parse(m_Parser);
-				auto offset = m_Parser->getOffset();
 				m_WAB.lpEntryID = std::make_shared<EntryIdStruct>(m_Parser, false);
-				m_WAB.lpEntryID->getBlock()->setOffset(offset);
-				auto endPos = m_Parser->getOffset();
-				m_WAB.lpEntryID->getBlock()->setSize(endPos - offset);
 			}
 			break;
 			// message store objects
