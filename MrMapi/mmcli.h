@@ -74,6 +74,7 @@ namespace cli
 		cmdmodeProfile,
 		cmdmodeReceiveFolder,
 		cmdmodeSearchState,
+		cmdmodeNamedProps,
 	};
 
 	enum OPTIONFLAGS
