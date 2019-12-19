@@ -8,6 +8,8 @@ namespace smartview
 	void smartViewParser::ensureParsed()
 	{
 		if (parsed || m_Parser->empty()) return;
+		auto startOffset = m_Parser->getOffset();
+
 		parse();
 		parseBlocks();
 
@@ -18,6 +20,12 @@ namespace smartview
 			addHeader(L"Unparsed data size = 0x%1!08X!\r\n", junkData->size());
 			addChild(junkData);
 		}
+
+		auto endOffset = m_Parser->getOffset();
+
+		// Ensure our block is tagged with offset and size so all top level blocks get proper highlighting
+		data->setOffset(startOffset);
+		data->setSize(endOffset - startOffset);
 
 		parsed = true;
 	}
