@@ -11,7 +11,6 @@ namespace Microsoft
 	{
 		namespace CppUnitTestFramework
 		{
-			template <> inline std::wstring ToString<__int64>(const __int64& q) { RETURN_WIDE_STRING(q); }
 			template <> inline std::wstring ToString<std::vector<BYTE>>(const std::vector<BYTE>& q)
 			{
 				RETURN_WIDE_STRING(q.data());
