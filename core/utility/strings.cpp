@@ -130,7 +130,15 @@ namespace strings
 	}
 
 	// This function should be used as little as possible as for many strings this conversion does not make sense
-	std::string wstringTostring(const std::wstring& src) { return std::string(src.begin(), src.end()); }
+	std::string wstringTostring(const std::wstring& src)
+	{
+		std::string dst;
+		dst.reserve(src.length());
+		std::transform(src.begin(), src.end(), std::back_inserter(dst), [](wchar_t c) -> char { return (char) c; });
+		return dst;
+
+		// return std::string(src.begin(), src.end());
+	}
 
 	std::wstring stringTowstring(const std::string& src)
 	{
