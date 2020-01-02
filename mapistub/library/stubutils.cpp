@@ -1,5 +1,6 @@
 #include <functional>
 #include <vector>
+#include <string>
 #include <MAPIX.h>
 #include <Msi.h>
 
