@@ -119,6 +119,7 @@ namespace strings
 		return ret;
 	}
 
+	// This function should be used as little as possible as for many strings this conversion does not make sense
 	std::basic_string<TCHAR> wstringTotstring(const std::wstring& src)
 	{
 #ifdef _UNICODE
@@ -128,6 +129,7 @@ namespace strings
 #endif
 	}
 
+	// This function should be used as little as possible as for many strings this conversion does not make sense
 	std::string wstringTostring(const std::wstring& src) { return std::string(src.begin(), src.end()); }
 
 	std::wstring stringTowstring(const std::string& src)

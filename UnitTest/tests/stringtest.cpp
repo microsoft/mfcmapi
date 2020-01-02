@@ -70,6 +70,10 @@ namespace stringtest
 			Assert::AreEqual(std::wstring(L""), strings::LPCSTRToWstring(nullptr));
 			Assert::AreEqual(L"test", strings::wstringToLPCWSTR(L"test"));
 			Assert::AreEqual(L"", strings::wstringToLPCWSTR(L""));
+
+			Assert::AreEqual(std::string("test"), strings::wstringTostring(std::wstring(L"test")));
+			Assert::AreEqual(std::string("test\r\nstring"), strings::wstringTostring(std::wstring(L"test\r\nstring")));
+			Assert::AreEqual(std::string("abcÿþðdef"), strings::wstringTostring(std::wstring(L"abcÿþðdef")));
 		}
 
 		TEST_METHOD(Test_wstringToUlong)
