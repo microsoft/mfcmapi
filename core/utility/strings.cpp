@@ -134,10 +134,8 @@ namespace strings
 	{
 		std::string dst;
 		dst.reserve(src.length());
-		std::transform(src.begin(), src.end(), std::back_inserter(dst), [](wchar_t c) -> char { return (char) c; });
+		std::transform(src.begin(), src.end(), std::back_inserter(dst), [](auto c) { return static_cast<char>(c); });
 		return dst;
-
-		// return std::string(src.begin(), src.end());
 	}
 
 	std::wstring stringTowstring(const std::string& src)
