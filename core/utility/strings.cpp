@@ -119,6 +119,7 @@ namespace strings
 		return ret;
 	}
 
+	// This function should be used as little as possible as for many strings this conversion does not make sense
 	std::basic_string<TCHAR> wstringTotstring(const std::wstring& src)
 	{
 #ifdef _UNICODE
@@ -128,17 +129,21 @@ namespace strings
 #endif
 	}
 
-	std::string wstringTostring(const std::wstring& src) { return std::string(src.begin(), src.end()); }
+	// This function should be used as little as possible as for many strings this conversion does not make sense
+	std::string wstringTostring(const std::wstring& src)
+	{
+		std::string dst;
+		dst.reserve(src.length());
+		std::transform(src.begin(), src.end(), std::back_inserter(dst), [](auto c) { return static_cast<char>(c); });
+		return dst;
+	}
 
 	std::wstring stringTowstring(const std::string& src)
 	{
 		std::wstring dst;
 		dst.reserve(src.length());
-		for (auto ch : src)
-		{
-			dst.push_back(ch & 255);
-		}
-
+		std::transform(
+			src.begin(), src.end(), std::back_inserter(dst), [](auto c) { return static_cast<wchar_t>(c & 255); });
 		return dst;
 	}
 
@@ -157,7 +162,7 @@ namespace strings
 	{
 		if (!src) return L"";
 		std::string ansi = src;
-		return std::wstring(ansi.begin(), ansi.end());
+		return {ansi.begin(), ansi.end()};
 	}
 
 	// Converts wstring to LPCWSTR allocated with new
