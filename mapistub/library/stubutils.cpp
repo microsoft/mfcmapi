@@ -1,6 +1,7 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <algorithm>
 #include <MAPIX.h>
 #include <Msi.h>
 
@@ -359,6 +360,14 @@ namespace mapistub
 		return ret;
 	}
 
+	std::string wstringTostring(const std::wstring& src)
+	{
+		std::string dst;
+		dst.reserve(src.length());
+		std::transform(src.begin(), src.end(), std::back_inserter(dst), [](auto c) { return static_cast<char>(c); });
+		return dst;
+	}
+
 	/*
 	 * GetComponentPath
 	 * Wrapper around mapi32.dll->FGetComponentPath which maps an MSI component ID to
@@ -389,12 +398,12 @@ namespace mapistub
 				CHAR lpszPath[MAX_PATH] = {0};
 				const ULONG cchPath = _countof(lpszPath);
 
-				auto szComponentA = std::string(szComponent.begin(), szComponent.end());
-				auto szQualifierA = std::string(szQualifier.begin(), szQualifier.end());
+				auto szComponentA = wstringTostring(szComponent);
+				auto szQualifierA = wstringTostring(szQualifier);
 				fReturn = pFGetCompPath(
 					szComponentA.c_str(), const_cast<LPSTR>(szQualifierA.c_str()), lpszPath, cchPath, fInstall);
 				auto pathA = std::string(lpszPath);
-				if (fReturn) path = std::wstring(pathA.begin(), pathA.end());
+				if (fReturn) path = {pathA.begin(), pathA.end()};
 				output::logLoadMapi(L"GetComponentPath: path = %ws\n", path.c_str());
 			}
 
