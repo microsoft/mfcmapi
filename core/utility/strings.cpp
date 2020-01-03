@@ -142,11 +142,8 @@ namespace strings
 	{
 		std::wstring dst;
 		dst.reserve(src.length());
-		for (auto ch : src)
-		{
-			dst.push_back(ch & 255);
-		}
-
+		std::transform(
+			src.begin(), src.end(), std::back_inserter(dst), [](auto c) { return static_cast<wchar_t>(c & 255); });
 		return dst;
 	}
 
@@ -165,7 +162,7 @@ namespace strings
 	{
 		if (!src) return L"";
 		std::string ansi = src;
-		return std::wstring(ansi.begin(), ansi.end());
+		return {ansi.begin(), ansi.end()};
 	}
 
 	// Converts wstring to LPCWSTR allocated with new
