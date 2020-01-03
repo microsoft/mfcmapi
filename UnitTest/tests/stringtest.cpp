@@ -50,30 +50,37 @@ namespace stringtest
 
 		TEST_METHOD(Test_stringConverters)
 		{
-			const auto lpctstr = _T("Hello World");
-			const auto lpcstr = "Hello World";
-			const auto tstr = std::basic_string<TCHAR>(lpctstr);
-			const auto wstr = std::wstring(L"Hello World");
-			const auto str = std::string(lpcstr);
-			const auto wstrLower = std::wstring(L"hello world");
-
-			Assert::AreEqual(tstr, strings::wstringTotstring(wstr));
-			Assert::AreEqual(str, strings::wstringTostring(wstr));
-			Assert::AreEqual(wstr, strings::stringTowstring(str));
-			Assert::AreEqual(wstr, strings::LPCTSTRToWstring(lpctstr));
-			Assert::AreEqual(wstr, strings::LPCSTRToWstring(lpcstr));
-			Assert::AreEqual(wstrLower, strings::wstringToLower(wstr));
 			Assert::AreEqual(
-				std::wstring(L"abc\xDC\xA7\x40\xC8\xC0\x42"), strings::stringTowstring("abc\xDC\xA7\x40\xC8\xC0\x42"));
+				std::basic_string<TCHAR>(_T("Hello World")), strings::wstringTotstring(std::wstring(L"Hello World")));
 
 			Assert::AreEqual(std::wstring(L""), strings::LPCTSTRToWstring(nullptr));
+			Assert::AreEqual(std::wstring(L"Hello World"), strings::LPCTSTRToWstring(_T("Hello World")));
+
 			Assert::AreEqual(std::wstring(L""), strings::LPCSTRToWstring(nullptr));
+			Assert::AreEqual(std::wstring(L"Hello World"), strings::LPCSTRToWstring("Hello World"));
+
+			Assert::AreEqual(std::wstring(L"hello world"), strings::wstringToLower(std::wstring(L"Hello World")));
+
 			Assert::AreEqual(L"test", strings::wstringToLPCWSTR(L"test"));
 			Assert::AreEqual(L"", strings::wstringToLPCWSTR(L""));
 
+			Assert::AreEqual(std::wstring(L"test"), strings::stringTowstring(std::string("test")));
+			Assert::AreEqual(std::wstring(L"test"), strings::stringTowstring("test"));
+			Assert::AreEqual(std::wstring(L"test\r\nstring"), strings::stringTowstring(std::string("test\r\nstring")));
+			Assert::AreEqual(std::wstring(L"abcÿþðdef"), strings::stringTowstring(std::string("abcÿþðdef")));
+			Assert::AreEqual(std::wstring(L"te\0st"), strings::stringTowstring(std::string("te\0st")));
+			Assert::AreEqual(std::wstring(L""), strings::stringTowstring(""));
+			Assert::AreEqual(
+				std::wstring(L"abc\xDC\xA7\x40\xC8\xC0\x42"), strings::stringTowstring("abc\xDC\xA7\x40\xC8\xC0\x42"));
+
 			Assert::AreEqual(std::string("test"), strings::wstringTostring(std::wstring(L"test")));
+			Assert::AreEqual(std::string("test"), strings::wstringTostring(L"test"));
 			Assert::AreEqual(std::string("test\r\nstring"), strings::wstringTostring(std::wstring(L"test\r\nstring")));
 			Assert::AreEqual(std::string("abcÿþðdef"), strings::wstringTostring(std::wstring(L"abcÿþðdef")));
+			Assert::AreEqual(std::string("te\0st"), strings::wstringTostring(std::wstring(L"te\0st")));
+			Assert::AreEqual(std::string(""), strings::wstringTostring(L""));
+			Assert::AreEqual(
+				std::string("abc\xDC\xA7\x40\xC8\xC0\x42"), strings::wstringTostring(L"abc\xDC\xA7\x40\xC8\xC0\x42"));
 		}
 
 		TEST_METHOD(Test_wstringToUlong)
