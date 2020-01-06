@@ -277,7 +277,7 @@ namespace dialog
 	void CMyDialog::SetTitle(_In_ const std::wstring& szTitle) const
 	{
 		// Set the title bar directly using DefWindowProcW to avoid converting Unicode
-		DefWindowProcW(m_hWnd, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(szTitle.c_str()));
+		::DefWindowProcW(m_hWnd, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(szTitle.c_str()));
 		ui::DrawWindowFrame(m_hWnd, true, GetStatusHeight());
 	}
 

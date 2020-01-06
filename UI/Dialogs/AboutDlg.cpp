@@ -86,7 +86,7 @@ namespace dialog
 		m_HelpText.SetFont(GetFont());
 
 		auto szHelpText = strings::formatmessage(IDS_HELPTEXT, szProductName.c_str());
-		SetWindowTextW(m_HelpText.m_hWnd, szHelpText.c_str());
+		::SetWindowTextW(m_HelpText.m_hWnd, szHelpText.c_str());
 
 		auto rcCheck = rcHelpText;
 		rcCheck.top = rcHelpText.bottom + iMargin;
@@ -100,7 +100,7 @@ namespace dialog
 			IDD_DISPLAYABOUT));
 		m_DisplayAboutCheck.SetCheck(registry::displayAboutDialog ? BST_CHECKED : BST_UNCHECKED);
 		auto szDisplayAboutCheck = strings::loadstring(IDS_DISPLAYABOUTCHECK);
-		SetWindowTextW(m_DisplayAboutCheck.m_hWnd, szDisplayAboutCheck.c_str());
+		::SetWindowTextW(m_DisplayAboutCheck.m_hWnd, szDisplayAboutCheck.c_str());
 
 		auto fileVersionInfo = file::GetFileVersionInfo(nullptr);
 
@@ -112,7 +112,7 @@ namespace dialog
 
 			if (uiRet != 0)
 			{
-				SetDlgItemTextW(m_hWnd, i, fileVersionInfo[szResult].c_str());
+				::SetDlgItemTextW(m_hWnd, i, fileVersionInfo[szResult].c_str());
 			}
 		}
 

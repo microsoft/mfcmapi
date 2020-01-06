@@ -46,7 +46,7 @@ namespace viewpane
 
 		EC_B_S(m_Label.Create(
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, iCurIDLabel));
-		SetWindowTextW(m_Label.m_hWnd, m_szLabel.c_str());
+		::SetWindowTextW(m_Label.m_hWnd, m_szLabel.c_str());
 		ui::SubclassLabel(m_Label.m_hWnd);
 
 		if (m_bCollapsible)

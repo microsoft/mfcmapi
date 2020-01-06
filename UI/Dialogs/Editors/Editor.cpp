@@ -338,7 +338,7 @@ namespace dialog
 					CRect(0, 0, 0, 0),
 					this,
 					IDC_PROMPT));
-				SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
+				::SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
 
 				ui::SubclassLabel(m_Prompt.m_hWnd);
 			}
