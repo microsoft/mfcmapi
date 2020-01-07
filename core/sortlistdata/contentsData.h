@@ -19,7 +19,7 @@ namespace sortlistdata
 		LPSBinary m_lpServiceUID{}; // Allocated with MAPIAllocateBuffer
 		LPSBinary m_lpProviderUID{}; // Allocated with MAPIAllocateBuffer
 		std::wstring m_szDN{};
-		std::string m_szProfileDisplayName{};
+		std::wstring m_szProfileDisplayName{};
 		ULONG m_ulAttachNum{};
 		ULONG m_ulAttachMethod{};
 		ULONG m_ulRowID{}; // for recipients

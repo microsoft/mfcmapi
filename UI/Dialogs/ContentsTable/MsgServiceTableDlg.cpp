@@ -20,7 +20,7 @@ namespace dialog
 	CMsgServiceTableDlg::CMsgServiceTableDlg(
 		_In_ ui::CParentWnd* pParentWnd,
 		_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-		_In_ const std::string& szProfileName)
+		_In_ const std::wstring& szProfileName)
 		: CContentsTableDlg(
 			  pParentWnd,
 			  lpMapiObjects,
@@ -97,8 +97,8 @@ namespace dialog
 		if (lpProfAdmin)
 		{
 			EC_MAPI_S(lpProfAdmin->AdminServices(
-				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(m_szProfileName.c_str())),
-				reinterpret_cast<LPTSTR>(""),
+				LPTSTR(strings::wstringTostring(m_szProfileName).c_str()),
+				LPTSTR(""),
 				NULL,
 				MAPI_DIALOG,
 				&m_lpServiceAdmin));

@@ -1264,8 +1264,7 @@ namespace dialog
 
 		if (MyData.DisplayDialog())
 		{
-			auto szProfName = ui::profile::LaunchProfileWizard(
-				m_hWnd, MyData.GetHex(0), strings::wstringTostring(MyData.GetStringW(1)));
+			auto szProfName = ui::profile::LaunchProfileWizard(m_hWnd, MyData.GetHex(0), MyData.GetStringW(1));
 		}
 	}
 

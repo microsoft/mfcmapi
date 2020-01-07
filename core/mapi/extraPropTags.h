@@ -1189,3 +1189,11 @@ struct INDEX_SEARCH_PUSHER_PROCESS
 #ifndef AB_UNICODEUI
 #define AB_UNICODEUI ((ULONG) 0x00000040)
 #endif
+
+// This declaration is missing from the MAPI headers
+STDAPI STDAPICALLTYPE LaunchWizard(
+	HWND hParentWnd,
+	ULONG ulFlags,
+	LPCSTR* lppszServiceNameToAdd,
+	ULONG cchBufferMax,
+	_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);

@@ -18,7 +18,7 @@ namespace dialog
 		CMsgServiceTableDlg(
 			_In_ ui::CParentWnd* pParentWnd,
 			_In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects,
-			_In_ const std::string& szProfileName);
+			_In_ const std::wstring& szProfileName);
 		virtual ~CMsgServiceTableDlg();
 
 	private:
@@ -38,7 +38,7 @@ namespace dialog
 		void OnOpenProfileSection();
 
 		LPSERVICEADMIN m_lpServiceAdmin;
-		std::string m_szProfileName;
+		std::wstring m_szProfileName;
 
 		DECLARE_MESSAGE_MAP()
 	};
