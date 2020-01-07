@@ -72,8 +72,8 @@ namespace mapi
 			auto lpManageStore1 = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpManageStore1)
 			{
-				auto szServerDNA = strings::wstringTostring(szServerDN);
-				WC_MAPI_S(lpManageStore1->GetMailboxTable(LPSTR(szServerDNA.c_str()), &lpMailboxTable, ulFlags));
+				WC_MAPI_S(lpManageStore1->GetMailboxTable(
+					LPSTR(strings::wstringTostring(szServerDN).c_str()), &lpMailboxTable, ulFlags));
 
 				lpManageStore1->Release();
 			}
@@ -90,9 +90,8 @@ namespace mapi
 			auto lpManageStore3 = mapi::safe_cast<LPEXCHANGEMANAGESTORE3>(lpMDB);
 			if (lpManageStore3)
 			{
-				auto szServerDNA = strings::wstringTostring(szServerDN);
 				WC_MAPI_S(lpManageStore3->GetMailboxTableOffset(
-					LPSTR(szServerDNA.c_str()), &lpMailboxTable, ulFlags, ulOffset));
+					LPSTR(strings::wstringTostring(szServerDN).c_str()), &lpMailboxTable, ulFlags, ulOffset));
 
 				lpManageStore3->Release();
 			}
@@ -113,9 +112,12 @@ namespace mapi
 			auto lpManageStore5 = mapi::safe_cast<LPEXCHANGEMANAGESTORE5>(lpMDB);
 			if (lpManageStore5)
 			{
-				auto szServerDNA = strings::wstringTostring(szServerDN);
 				EC_MAPI_S(lpManageStore5->GetMailboxTableEx(
-					LPSTR(szServerDNA.c_str()), lpGuidMDB, &lpMailboxTable, ulFlags, ulOffset));
+					LPSTR(strings::wstringTostring(szServerDN).c_str()),
+					lpGuidMDB,
+					&lpMailboxTable,
+					ulFlags,
+					ulOffset));
 
 				lpManageStore5->Release();
 			}
@@ -155,8 +157,8 @@ namespace mapi
 			auto lpManageStore1 = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpManageStore1)
 			{
-				auto szServerDNA = strings::wstringTostring(szServerDN);
-				EC_MAPI_S(lpManageStore1->GetPublicFolderTable(LPSTR(szServerDNA.c_str()), &lpPFTable, ulFlags));
+				EC_MAPI_S(lpManageStore1->GetPublicFolderTable(
+					LPSTR(strings::wstringTostring(szServerDN).c_str()), &lpPFTable, ulFlags));
 
 				lpManageStore1->Release();
 			}
@@ -173,9 +175,8 @@ namespace mapi
 			auto lpManageStore4 = mapi::safe_cast<LPEXCHANGEMANAGESTORE4>(lpMDB);
 			if (lpManageStore4)
 			{
-				auto szServerDNA = strings::wstringTostring(szServerDN);
 				EC_MAPI_S(lpManageStore4->GetPublicFolderTableOffset(
-					LPSTR(szServerDNA.c_str()), &lpPFTable, ulFlags, ulOffset));
+					LPSTR(strings::wstringTostring(szServerDN).c_str()), &lpPFTable, ulFlags, ulOffset));
 				lpManageStore4->Release();
 			}
 
@@ -195,9 +196,8 @@ namespace mapi
 			auto lpManageStore5 = mapi::safe_cast<LPEXCHANGEMANAGESTORE5>(lpMDB);
 			if (lpManageStore5)
 			{
-				auto szServerDNA = strings::wstringTostring(szServerDN);
 				EC_MAPI_S(lpManageStore5->GetPublicFolderTableEx(
-					LPSTR(szServerDNA.c_str()), lpGuidMDB, &lpPFTable, ulFlags, ulOffset));
+					LPSTR(strings::wstringTostring(szServerDN).c_str()), lpGuidMDB, &lpPFTable, ulFlags, ulOffset));
 
 				lpManageStore5->Release();
 			}
@@ -268,11 +268,9 @@ namespace mapi
 					lpszMailboxDN.c_str(),
 					ulFlags);
 
-				auto lpszMsgStoreDNA = strings::wstringTostring(lpszMsgStoreDN);
-				auto lpszMailboxDNA = strings::wstringTostring(lpszMailboxDN);
 				EC_MAPI_S(lpXManageStore->CreateStoreEntryID(
-					LPSTR(lpszMsgStoreDNA.c_str()),
-					lpszMailboxDNA.empty() ? nullptr : LPSTR(lpszMailboxDNA.c_str()),
+					LPSTR(strings::wstringTostring(lpszMsgStoreDN).c_str()),
+					lpszMailboxDN.empty() ? nullptr : LPSTR(strings::wstringTostring(lpszMailboxDN).c_str()),
 					ulFlags,
 					&eid.cb,
 					reinterpret_cast<LPENTRYID*>(&eid.lpb)));
