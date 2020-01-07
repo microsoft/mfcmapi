@@ -45,6 +45,7 @@ namespace controls
 		// Removes any existing node data and replaces it with lpData
 		void SetNodeData(HWND hWnd, HTREEITEM hItem, LPARAM lpData) const;
 		void OnSelChanged(_In_opt_ NMHDR* pNMHDR, _In_opt_ LRESULT* pResult);
+		std::wstring GetItemTextW(HTREEITEM hItem) const { return strings::LPCTSTRToWstring(GetItemText(hItem)); }
 
 		bool m_bSortNodes{false};
 		bool m_bShuttingDown{false};

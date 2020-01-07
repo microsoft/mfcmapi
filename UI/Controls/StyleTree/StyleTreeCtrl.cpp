@@ -300,7 +300,7 @@ namespace controls
 				L"OnItemExpanding",
 				L"Expanding item %p \"%ws\" action = 0x%08X state = 0x%08X\n",
 				pNMTreeView->itemNew.hItem,
-				strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str(),
+				GetItemTextW(pNMTreeView->itemOld.hItem).c_str(),
 				pNMTreeView->action,
 				pNMTreeView->itemNew.state);
 			if (pNMTreeView->action & TVE_EXPAND)
@@ -377,7 +377,7 @@ namespace controls
 				L"OnDeleteItem",
 				L"Deleting item %p \"%ws\"\n",
 				pNMTreeView->itemOld.hItem,
-				strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str());
+				GetItemTextW(pNMTreeView->itemOld.hItem).c_str());
 
 			if (FreeNodeDataCallback) FreeNodeDataCallback(pNMTreeView->itemOld.lParam);
 
