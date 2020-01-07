@@ -14,7 +14,7 @@ namespace mapi
 {
 	namespace store
 	{
-		std::function<std::string()> promptServerName;
+		std::function<std::wstring()> promptServerName;
 
 		_Check_return_ LPMDB
 		CallOpenMsgStore(_In_ LPMAPISESSION lpSession, _In_ ULONG_PTR ulUIParam, _In_ LPSBinary lpEID, ULONG ulFlags)
@@ -58,13 +58,13 @@ namespace mapi
 		}
 
 		// Build a server DN.
-		std::string BuildServerDN(const std::string& szServerName, const std::string& szPost)
+		std::wstring BuildServerDN(const std::wstring& szServerName, const std::wstring& szPost)
 		{
-			static std::string szPre = "/cn=Configuration/cn=Servers/cn="; // STRING_OK
+			static std::wstring szPre = L"/cn=Configuration/cn=Servers/cn="; // STRING_OK
 			return szPre + szServerName + szPost;
 		}
 
-		_Check_return_ LPMAPITABLE GetMailboxTable1(_In_ LPMDB lpMDB, const std::string& szServerDN, ULONG ulFlags)
+		_Check_return_ LPMAPITABLE GetMailboxTable1(_In_ LPMDB lpMDB, const std::wstring& szServerDN, ULONG ulFlags)
 		{
 			if (!lpMDB || szServerDN.empty()) return nullptr;
 
@@ -72,7 +72,8 @@ namespace mapi
 			auto lpManageStore1 = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpManageStore1)
 			{
-				WC_MAPI_S(lpManageStore1->GetMailboxTable(LPSTR(szServerDN.c_str()), &lpMailboxTable, ulFlags));
+				auto szServerDNA = strings::wstringTostring(szServerDN);
+				WC_MAPI_S(lpManageStore1->GetMailboxTable(LPSTR(szServerDNA.c_str()), &lpMailboxTable, ulFlags));
 
 				lpManageStore1->Release();
 			}
@@ -81,7 +82,7 @@ namespace mapi
 		}
 
 		_Check_return_ LPMAPITABLE
-		GetMailboxTable3(_In_ LPMDB lpMDB, const std::string& szServerDN, ULONG ulOffset, ULONG ulFlags)
+		GetMailboxTable3(_In_ LPMDB lpMDB, const std::wstring& szServerDN, ULONG ulOffset, ULONG ulFlags)
 		{
 			if (!lpMDB || szServerDN.empty()) return nullptr;
 
@@ -89,8 +90,9 @@ namespace mapi
 			auto lpManageStore3 = mapi::safe_cast<LPEXCHANGEMANAGESTORE3>(lpMDB);
 			if (lpManageStore3)
 			{
+				auto szServerDNA = strings::wstringTostring(szServerDN);
 				WC_MAPI_S(lpManageStore3->GetMailboxTableOffset(
-					LPSTR(szServerDN.c_str()), &lpMailboxTable, ulFlags, ulOffset));
+					LPSTR(szServerDNA.c_str()), &lpMailboxTable, ulFlags, ulOffset));
 
 				lpManageStore3->Release();
 			}
@@ -100,7 +102,7 @@ namespace mapi
 
 		_Check_return_ LPMAPITABLE GetMailboxTable5(
 			_In_ LPMDB lpMDB,
-			const std::string& szServerDN,
+			const std::wstring& szServerDN,
 			ULONG ulOffset,
 			ULONG ulFlags,
 			_In_opt_ LPGUID lpGuidMDB)
@@ -111,8 +113,9 @@ namespace mapi
 			auto lpManageStore5 = mapi::safe_cast<LPEXCHANGEMANAGESTORE5>(lpMDB);
 			if (lpManageStore5)
 			{
+				auto szServerDNA = strings::wstringTostring(szServerDN);
 				EC_MAPI_S(lpManageStore5->GetMailboxTableEx(
-					LPSTR(szServerDN.c_str()), lpGuidMDB, &lpMailboxTable, ulFlags, ulOffset));
+					LPSTR(szServerDNA.c_str()), lpGuidMDB, &lpMailboxTable, ulFlags, ulOffset));
 
 				lpManageStore5->Release();
 			}
@@ -123,13 +126,13 @@ namespace mapi
 		// lpMDB needs to be an Exchange MDB - OpenMessageStoreGUID(pbExchangeProviderPrimaryUserGuid) can get one if there's one to be had
 		// Use GetServerName to get the default server
 		// Will try IID_IExchangeManageStore3 first and fail back to IID_IExchangeManageStore
-		_Check_return_ LPMAPITABLE GetMailboxTable(_In_ LPMDB lpMDB, const std::string& szServerName, ULONG ulOffset)
+		_Check_return_ LPMAPITABLE GetMailboxTable(_In_ LPMDB lpMDB, const std::wstring& szServerName, ULONG ulOffset)
 		{
 			if (!lpMDB || !StoreSupportsManageStore(lpMDB)) return nullptr;
 
 			LPMAPITABLE lpMailboxTable = nullptr;
 
-			auto szServerDN = BuildServerDN(szServerName, "");
+			auto szServerDN = BuildServerDN(szServerName, L"");
 			if (!szServerDN.empty())
 			{
 				lpMailboxTable = GetMailboxTable3(lpMDB, szServerDN, ulOffset, fMapiUnicode);
@@ -143,7 +146,8 @@ namespace mapi
 			return lpMailboxTable;
 		}
 
-		_Check_return_ LPMAPITABLE GetPublicFolderTable1(_In_ LPMDB lpMDB, const std::string& szServerDN, ULONG ulFlags)
+		_Check_return_ LPMAPITABLE
+		GetPublicFolderTable1(_In_ LPMDB lpMDB, const std::wstring& szServerDN, ULONG ulFlags)
 		{
 			if (!lpMDB || szServerDN.empty()) return nullptr;
 
@@ -151,7 +155,8 @@ namespace mapi
 			auto lpManageStore1 = mapi::safe_cast<LPEXCHANGEMANAGESTORE>(lpMDB);
 			if (lpManageStore1)
 			{
-				EC_MAPI_S(lpManageStore1->GetPublicFolderTable(LPSTR(szServerDN.c_str()), &lpPFTable, ulFlags));
+				auto szServerDNA = strings::wstringTostring(szServerDN);
+				EC_MAPI_S(lpManageStore1->GetPublicFolderTable(LPSTR(szServerDNA.c_str()), &lpPFTable, ulFlags));
 
 				lpManageStore1->Release();
 			}
@@ -160,7 +165,7 @@ namespace mapi
 		}
 
 		_Check_return_ LPMAPITABLE
-		GetPublicFolderTable4(_In_ LPMDB lpMDB, const std::string& szServerDN, ULONG ulOffset, ULONG ulFlags)
+		GetPublicFolderTable4(_In_ LPMDB lpMDB, const std::wstring& szServerDN, ULONG ulOffset, ULONG ulFlags)
 		{
 			if (!lpMDB || szServerDN.empty()) return nullptr;
 
@@ -168,8 +173,9 @@ namespace mapi
 			auto lpManageStore4 = mapi::safe_cast<LPEXCHANGEMANAGESTORE4>(lpMDB);
 			if (lpManageStore4)
 			{
+				auto szServerDNA = strings::wstringTostring(szServerDN);
 				EC_MAPI_S(lpManageStore4->GetPublicFolderTableOffset(
-					LPSTR(szServerDN.c_str()), &lpPFTable, ulFlags, ulOffset));
+					LPSTR(szServerDNA.c_str()), &lpPFTable, ulFlags, ulOffset));
 				lpManageStore4->Release();
 			}
 
@@ -178,7 +184,7 @@ namespace mapi
 
 		_Check_return_ LPMAPITABLE GetPublicFolderTable5(
 			_In_ LPMDB lpMDB,
-			const std::string& szServerDN,
+			const std::wstring& szServerDN,
 			ULONG ulOffset,
 			ULONG ulFlags,
 			_In_opt_ LPGUID lpGuidMDB)
@@ -189,8 +195,9 @@ namespace mapi
 			auto lpManageStore5 = mapi::safe_cast<LPEXCHANGEMANAGESTORE5>(lpMDB);
 			if (lpManageStore5)
 			{
+				auto szServerDNA = strings::wstringTostring(szServerDN);
 				EC_MAPI_S(lpManageStore5->GetPublicFolderTableEx(
-					LPSTR(szServerDN.c_str()), lpGuidMDB, &lpPFTable, ulFlags, ulOffset));
+					LPSTR(szServerDNA.c_str()), lpGuidMDB, &lpPFTable, ulFlags, ulOffset));
 
 				lpManageStore5->Release();
 			}
@@ -199,14 +206,14 @@ namespace mapi
 		}
 
 		// Get server name from the profile
-		std::string GetServerName(_In_ LPMAPISESSION lpSession)
+		std::wstring GetServerName(_In_ LPMAPISESSION lpSession)
 		{
 			LPSERVICEADMIN pSvcAdmin = nullptr;
 			LPPROFSECT pGlobalProfSect = nullptr;
 			LPSPropValue lpServerName = nullptr;
-			std::string serverName;
+			std::wstring serverName;
 
-			if (!lpSession) return "";
+			if (!lpSession) return L"";
 
 			auto hRes = EC_MAPI(lpSession->AdminServices(0, &pSvcAdmin));
 
@@ -223,7 +230,7 @@ namespace mapi
 
 			if (lpServerName && strings::CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
 			{
-				serverName = lpServerName->Value.lpszA;
+				serverName = strings::LPCSTRToWstring(lpServerName->Value.lpszA);
 			}
 			else if (promptServerName)
 			{
@@ -238,8 +245,8 @@ namespace mapi
 
 		_Check_return_ SBinary CreateStoreEntryID(
 			_In_ LPMDB lpMDB, // open message store
-			const std::string& lpszMsgStoreDN, // desired message store DN
-			const std::string& lpszMailboxDN, // desired mailbox DN or NULL
+			const std::wstring& lpszMsgStoreDN, // desired message store DN
+			const std::wstring& lpszMailboxDN, // desired mailbox DN or NULL
 			ULONG ulFlags) // desired flags for CreateStoreEntryID
 		{
 			if (!lpMDB || lpszMsgStoreDN.empty() || !StoreSupportsManageStore(lpMDB))
@@ -256,14 +263,16 @@ namespace mapi
 			{
 				output::DebugPrint(
 					output::DBGGeneric,
-					L"CreateStoreEntryID: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", Flags = \"0x%X\"\n",
+					L"CreateStoreEntryID: Creating EntryID. StoreDN = \"%ws\", MailboxDN = \"%ws\", Flags = \"0x%X\"\n",
 					lpszMsgStoreDN.c_str(),
 					lpszMailboxDN.c_str(),
 					ulFlags);
 
+				auto lpszMsgStoreDNA = strings::wstringTostring(lpszMsgStoreDN);
+				auto lpszMailboxDNA = strings::wstringTostring(lpszMailboxDN);
 				EC_MAPI_S(lpXManageStore->CreateStoreEntryID(
-					LPSTR(lpszMsgStoreDN.c_str()),
-					lpszMailboxDN.empty() ? nullptr : LPSTR(lpszMailboxDN.c_str()),
+					LPSTR(lpszMsgStoreDNA.c_str()),
+					lpszMailboxDNA.empty() ? nullptr : LPSTR(lpszMailboxDNA.c_str()),
 					ulFlags,
 					&eid.cb,
 					reinterpret_cast<LPENTRYID*>(&eid.lpb)));
@@ -276,8 +285,8 @@ namespace mapi
 
 		_Check_return_ SBinary CreateStoreEntryID2(
 			_In_ LPMDB lpMDB, // open message store
-			const std::string& lpszMsgStoreDN, // desired message store DN
-			const std::string& lpszMailboxDN, // desired mailbox DN or NULL
+			const std::wstring& lpszMsgStoreDN, // desired message store DN
+			const std::wstring& lpszMailboxDN, // desired mailbox DN or NULL
 			const std::wstring& smtpAddress,
 			ULONG ulFlags) // desired flags for CreateStoreEntryID
 		{
@@ -295,7 +304,7 @@ namespace mapi
 			{
 				output::DebugPrint(
 					output::DBGGeneric,
-					L"CreateStoreEntryID2: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", SmtpAddress = "
+					L"CreateStoreEntryID2: Creating EntryID. StoreDN = \"%ws\", MailboxDN = \"%ws\", SmtpAddress = "
 					L"\"%ws\", Flags = \"0x%X\"\n",
 					lpszMsgStoreDN.c_str(),
 					lpszMailboxDN.c_str(),
@@ -303,10 +312,12 @@ namespace mapi
 					ulFlags);
 				SPropValue sProps[4] = {};
 				sProps[0].ulPropTag = PR_PROFILE_MAILBOX;
-				sProps[0].Value.lpszA = LPSTR(lpszMailboxDN.c_str());
+				auto lpszMailboxDNA = strings::wstringTostring(lpszMailboxDN);
+				sProps[0].Value.lpszA = LPSTR(lpszMailboxDNA.c_str());
 
 				sProps[1].ulPropTag = PR_PROFILE_MDB_DN;
-				sProps[1].Value.lpszA = LPSTR(lpszMsgStoreDN.c_str());
+				auto lpszMsgStoreDNA = strings::wstringTostring(lpszMsgStoreDN);
+				sProps[1].Value.lpszA = LPSTR(lpszMsgStoreDNA.c_str());
 
 				sProps[2].ulPropTag = PR_FORCE_USE_ENTRYID_SERVER;
 				sProps[2].Value.b = true;
@@ -329,8 +340,8 @@ namespace mapi
 
 		_Check_return_ SBinary CreateStoreEntryID(
 			_In_ LPMDB lpMDB, // open message store
-			const std::string& lpszMsgStoreDN, // desired message store DN
-			const std::string& lpszMailboxDN, // desired mailbox DN or NULL
+			const std::wstring& lpszMsgStoreDN, // desired message store DN
+			const std::wstring& lpszMailboxDN, // desired mailbox DN or NULL
 			const std::wstring& smtpAddress,
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
 			bool bForceServer) // Use CreateStoreEntryID2
@@ -376,8 +387,8 @@ namespace mapi
 		_Check_return_ LPMDB MailboxLogon(
 			_In_ LPMAPISESSION lpMAPISession, // MAPI session handle
 			_In_ LPMDB lpMDB, // open message store
-			const std::string& lpszMsgStoreDN, // desired message store DN
-			const std::string& lpszMailboxDN, // desired mailbox DN or NULL
+			const std::wstring& lpszMsgStoreDN, // desired message store DN
+			const std::wstring& lpszMailboxDN, // desired mailbox DN or NULL
 			const std::wstring& smtpAddress,
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
 			bool bForceServer) // Use CreateStoreEntryID2
@@ -459,8 +470,8 @@ namespace mapi
 		_Check_return_ LPMDB OpenOtherUsersMailbox(
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_ LPMDB lpMDB,
-			const std::string& szServerName,
-			const std::string& szMailboxDN,
+			const std::wstring& szServerName,
+			const std::wstring& szMailboxDN,
 			const std::wstring& smtpAddress,
 			ULONG ulFlags, // desired flags for CreateStoreEntryID
 			bool bForceServer) // Use CreateStoreEntryID2
@@ -469,15 +480,15 @@ namespace mapi
 
 			output::DebugPrint(
 				output::DBGGeneric,
-				L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%hs\", Mailbox = "
-				L"\"%hs\", SmtpAddress = \"%ws\"\n",
+				L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%ws\", Mailbox = "
+				L"\"%ws\", SmtpAddress = \"%ws\"\n",
 				lpMAPISession,
 				lpMDB,
 				szServerName.c_str(),
 				szMailboxDN.c_str(),
 				smtpAddress.c_str());
 
-			std::string serverName;
+			std::wstring serverName;
 			if (szServerName.empty())
 			{
 				// If we weren't given a server name, get one from the profile
@@ -492,12 +503,12 @@ namespace mapi
 			if (!serverName.empty())
 			{
 				auto szServerDN = BuildServerDN(serverName,
-												"/cn=Microsoft Private MDB"); // STRING_OK
+												L"/cn=Microsoft Private MDB"); // STRING_OK
 
 				if (!szServerDN.empty())
 				{
 					output::DebugPrint(
-						output::DBGGeneric, L"Calling MailboxLogon with Server DN = \"%hs\"\n", szServerDN.c_str());
+						output::DBGGeneric, L"Calling MailboxLogon with Server DN = \"%ws\"\n", szServerDN.c_str());
 					lpOtherUserMDB =
 						MailboxLogon(lpMAPISession, lpMDB, szServerDN, szMailboxDN, smtpAddress, ulFlags, bForceServer);
 				}
@@ -565,7 +576,7 @@ namespace mapi
 
 		_Check_return_ LPMDB OpenPublicMessageStore(
 			_In_ LPMAPISESSION lpMAPISession,
-			const std::string& szServerName,
+			const std::wstring& szServerName,
 			ULONG ulFlags) // Flags for CreateStoreEntryID
 		{
 			if (!lpMAPISession) return nullptr;
@@ -586,10 +597,10 @@ namespace mapi
 				if (server.empty())
 				{
 					EC_MAPI_S(HrGetOneProp(
-						lpPublicMDBNonAdmin, CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_STRING8), &lpServerName));
-					if (strings::CheckStringProp(lpServerName, PT_STRING8))
+						lpPublicMDBNonAdmin, CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_UNICODE), &lpServerName));
+					if (strings::CheckStringProp(lpServerName, PT_UNICODE))
 					{
-						server = lpServerName->Value.lpszA;
+						server = lpServerName->Value.lpszW;
 					}
 
 					MAPIFreeBuffer(lpServerName);
@@ -598,11 +609,11 @@ namespace mapi
 				if (!server.empty())
 				{
 					auto szServerDN = BuildServerDN(server,
-													"/cn=Microsoft Public MDB"); // STRING_OK
+													L"/cn=Microsoft Public MDB"); // STRING_OK
 					if (!szServerDN.empty())
 					{
 						lpPublicMDB = MailboxLogon(
-							lpMAPISession, lpPublicMDBNonAdmin, szServerDN, "", strings::emptystring, ulFlags, false);
+							lpMAPISession, lpPublicMDBNonAdmin, szServerDN, L"", strings::emptystring, ulFlags, false);
 					}
 				}
 			}

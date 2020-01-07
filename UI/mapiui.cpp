@@ -38,9 +38,7 @@ namespace ui
 			};
 			output::outputToDbgView = [](auto _1) { OutputToDbgView(_1); };
 			mapi::store::promptServerName = []() { return PromptServerName(); };
-			mapi::onNotifyCallback = [](auto _1, auto _2, auto _3, auto _4) {
-				mapi::mapiui::OnNotify(_1, _2, _3, _4);
-			};
+			mapi::onNotifyCallback = [](auto _1, auto _2, auto _3, auto _4) { mapi::mapiui::OnNotify(_1, _2, _3, _4); };
 		}
 
 		// Takes a tag array (and optional MAPIProp) and displays UI prompting to build an exclusion array
@@ -212,8 +210,7 @@ namespace ui
 				case ATTACH_BY_VALUE:
 				case ATTACH_BY_REFERENCE:
 				case ATTACH_BY_REF_RESOLVE:
-				case ATTACH_BY_REF_ONLY:
-				{
+				case ATTACH_BY_REF_ONLY: {
 					output::DebugPrint(
 						output::DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
 
@@ -245,8 +242,7 @@ namespace ui
 						}
 					}
 					break;
-				case ATTACH_OLE:
-				{
+				case ATTACH_OLE: {
 					output::DebugPrint(
 						output::DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
 					auto file = file::CFileDialogExW::SaveAs(
@@ -486,7 +482,7 @@ namespace ui
 		_Check_return_ LPMDB OpenMailboxWithPrompt(
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_ LPMDB lpMDB,
-			const std::string& szServerName,
+			const std::wstring& szServerName,
 			const std::wstring& szMailboxDN,
 			ULONG ulFlags) // desired flags for CreateStoreEntryID
 		{
@@ -495,8 +491,7 @@ namespace ui
 			dialog::editor::CEditor MyPrompt(
 				nullptr, IDS_OPENOTHERUSER, IDS_OPENWITHFLAGSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyPrompt.SetPromptPostFix(flags::AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(
-				0, IDS_SERVERNAME, strings::stringTowstring(szServerName), false));
+			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_SERVERNAME, szServerName, false));
 			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(1, IDS_USERDN, szMailboxDN, false));
 			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_USER_SMTP_ADDRESS, false));
 			MyPrompt.AddPane(viewpane::TextPane::CreateSingleLinePane(3, IDS_CREATESTORENTRYIDFLAGS, false));
@@ -507,8 +502,8 @@ namespace ui
 			return mapi::store::OpenOtherUsersMailbox(
 				lpMAPISession,
 				lpMDB,
-				strings::wstringTostring(MyPrompt.GetStringW(0)),
-				strings::wstringTostring(MyPrompt.GetStringW(1)),
+				MyPrompt.GetStringW(0),
+				MyPrompt.GetStringW(1),
 				MyPrompt.GetStringW(2),
 				MyPrompt.GetHex(3),
 				MyPrompt.GetCheck(4));
@@ -551,7 +546,7 @@ namespace ui
 			return lpOtherUserMDB;
 		}
 
-		std::string PromptServerName()
+		std::wstring PromptServerName()
 		{
 			// prompt the user to enter a server name
 			dialog::editor::CEditor MyData(
@@ -560,10 +555,10 @@ namespace ui
 
 			if (MyData.DisplayDialog())
 			{
-				return strings::wstringTostring(MyData.GetStringW(0));
+				return MyData.GetStringW(0);
 			}
 
-			return std::string{};
+			return std::wstring{};
 		};
 
 	} // namespace mapiui
