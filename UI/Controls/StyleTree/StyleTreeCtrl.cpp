@@ -48,8 +48,7 @@ namespace controls
 		case WM_KEYDOWN:
 			OnKeyDown(static_cast<UINT>(wParam), LOWORD(lParam), HIWORD(lParam));
 			return 0;
-		case WM_MOUSEMOVE:
-		{
+		case WM_MOUSEMOVE: {
 			const auto hItemCurHover = m_hItemCurHover;
 			auto tvHitTestInfo = TVHITTESTINFO{};
 			tvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
@@ -178,6 +177,11 @@ namespace controls
 		}
 
 		if (pResult) *pResult = 0;
+	}
+
+	std::wstring StyleTreeCtrl::GetItemTextW(HTREEITEM hItem) const
+	{
+		return strings::LPCTSTRToWstring(GetItemText(hItem));
 	}
 
 	HTREEITEM
