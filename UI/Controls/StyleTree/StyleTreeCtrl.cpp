@@ -48,8 +48,7 @@ namespace controls
 		case WM_KEYDOWN:
 			OnKeyDown(static_cast<UINT>(wParam), LOWORD(lParam), HIWORD(lParam));
 			return 0;
-		case WM_MOUSEMOVE:
-		{
+		case WM_MOUSEMOVE: {
 			const auto hItemCurHover = m_hItemCurHover;
 			auto tvHitTestInfo = TVHITTESTINFO{};
 			tvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
@@ -180,6 +179,11 @@ namespace controls
 		if (pResult) *pResult = 0;
 	}
 
+	std::wstring StyleTreeCtrl::GetItemTextW(HTREEITEM hItem) const
+	{
+		return strings::LPCTSTRToWstring(GetItemText(hItem));
+	}
+
 	HTREEITEM
 	StyleTreeCtrl::AddChildNode(
 		_In_ const std::wstring& szName,
@@ -300,7 +304,7 @@ namespace controls
 				L"OnItemExpanding",
 				L"Expanding item %p \"%ws\" action = 0x%08X state = 0x%08X\n",
 				pNMTreeView->itemNew.hItem,
-				strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str(),
+				GetItemTextW(pNMTreeView->itemOld.hItem).c_str(),
 				pNMTreeView->action,
 				pNMTreeView->itemNew.state);
 			if (pNMTreeView->action & TVE_EXPAND)
@@ -377,7 +381,7 @@ namespace controls
 				L"OnDeleteItem",
 				L"Deleting item %p \"%ws\"\n",
 				pNMTreeView->itemOld.hItem,
-				strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str());
+				GetItemTextW(pNMTreeView->itemOld.hItem).c_str());
 
 			if (FreeNodeDataCallback) FreeNodeDataCallback(pNMTreeView->itemOld.lParam);
 

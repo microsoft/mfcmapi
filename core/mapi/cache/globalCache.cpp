@@ -140,9 +140,9 @@ namespace cache
 
 	_Check_return_ std::vector<ULONG> CGlobalCache::GetAttachmentsToCopy() const { return m_attachmentsToCopy; }
 
-	void CGlobalCache::SetProfileToCopy(_In_ const std::string& szProfileName) { m_szProfileToCopy = szProfileName; }
+	void CGlobalCache::SetProfileToCopy(_In_ const std::wstring& szProfileName) { m_szProfileToCopy = szProfileName; }
 
-	_Check_return_ std::string CGlobalCache::GetProfileToCopy() const { return m_szProfileToCopy; }
+	_Check_return_ std::wstring CGlobalCache::GetProfileToCopy() const { return m_szProfileToCopy; }
 
 	_Check_return_ ULONG CGlobalCache::GetBufferStatus() const
 	{

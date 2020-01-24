@@ -58,8 +58,7 @@ namespace dialog
 		switch (ulObjType)
 		{
 			// #define MAPI_STORE ((ULONG) 0x00000001) /* Message Store */
-		case MAPI_STORE:
-		{
+		case MAPI_STORE: {
 			lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
 			auto lpTempMDB = mapi::safe_cast<LPMDB>(lpUnk);
 
@@ -77,8 +76,7 @@ namespace dialog
 			break;
 		}
 		// #define MAPI_FOLDER ((ULONG) 0x00000003) /* Folder */
-		case MAPI_FOLDER:
-		{
+		case MAPI_FOLDER: {
 			// There are two ways to display a folder...either the contents table or the hierarchy table.
 			if (otHierarchy == tType)
 			{
@@ -168,8 +166,7 @@ namespace dialog
 
 		switch (tType)
 		{
-		case otStatus:
-		{
+		case otStatus: {
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
 				lpParentWnd,
@@ -184,8 +181,7 @@ namespace dialog
 				MENU_CONTEXT_STATUS_TABLE);
 			break;
 		}
-		case otReceive:
-		{
+		case otReceive: {
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
 				lpParentWnd,
@@ -200,8 +196,7 @@ namespace dialog
 				MENU_CONTEXT_RECIEVE_FOLDER_TABLE);
 			break;
 		}
-		case otHierarchy:
-		{
+		case otHierarchy: {
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
 				lpParentWnd,
@@ -217,8 +212,7 @@ namespace dialog
 			break;
 		}
 		default:
-		case otDefault:
-		{
+		case otDefault: {
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			if (otDefault != tType) error::ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
 			new CContentsTableDlg(
@@ -255,8 +249,7 @@ namespace dialog
 			hRes = S_OK;
 			switch (PROP_ID(ulPropTag))
 			{
-			case PROP_ID(PR_MESSAGE_ATTACHMENTS):
-			{
+			case PROP_ID(PR_MESSAGE_ATTACHMENTS): {
 				auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 				if (lpMessage)
 				{
@@ -265,8 +258,7 @@ namespace dialog
 				}
 				break;
 			}
-			case PROP_ID(PR_MESSAGE_RECIPIENTS):
-			{
+			case PROP_ID(PR_MESSAGE_RECIPIENTS): {
 				auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 				if (lpMessage)
 				{
@@ -328,8 +320,7 @@ namespace dialog
 			case otRules:
 				new CRulesDlg(lpParentWnd, lpMapiObjects, lpExchTbl);
 				break;
-			case otACL:
-			{
+			case otACL: {
 				editor::CEditor MyData(
 					lpHostDlg, IDS_ACLTABLE, IDS_ACLTABLEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
@@ -408,7 +399,7 @@ namespace dialog
 		if (lpMDB && mapi::store::StoreSupportsManageStore(lpMDB))
 		{
 			LPMAPITABLE lpMailboxTable = nullptr;
-			const auto szServerName = strings::stringTowstring(mapi::store::GetServerName(lpMAPISession));
+			const auto szServerName = mapi::store::GetServerName(lpMAPISession);
 
 			editor::CEditor MyData(
 				static_cast<CWnd*>(lpParent),
@@ -431,7 +422,7 @@ namespace dialog
 				}
 				else
 				{
-					auto szServerDN = mapi::store::BuildServerDN(strings::wstringTostring(MyData.GetStringW(0)), "");
+					auto szServerDN = mapi::store::BuildServerDN(MyData.GetStringW(0), L"");
 					if (!szServerDN.empty())
 					{
 						LPMDB lpOldMDB = nullptr;
@@ -454,8 +445,7 @@ namespace dialog
 							lpMailboxTable =
 								mapi::store::GetMailboxTable3(lpMDB, szServerDN, MyData.GetHex(1), fMapiUnicode);
 							break;
-						case 2:
-						{
+						case 2: {
 							GUID MyGUID = {0};
 							auto bHaveGUID = false;
 
@@ -507,7 +497,8 @@ namespace dialog
 		if (lpPrivateMDB) lpPrivateMDB->Release();
 	}
 
-	void DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
+	void
+	DisplayPublicFolderTable(_In_ ui::CParentWnd* lpParent, _In_ std::shared_ptr<cache::CMapiObjects> lpMapiObjects)
 	{
 		if (!lpParent || !lpMapiObjects) return;
 		LPMDB lpPrivateMDB = nullptr;
@@ -525,7 +516,7 @@ namespace dialog
 		if (lpMDB && mapi::store::StoreSupportsManageStore(lpMDB))
 		{
 			LPMAPITABLE lpPFTable = nullptr;
-			const auto szServerName = strings::stringTowstring(mapi::store::GetServerName(lpMAPISession));
+			const auto szServerName = mapi::store::GetServerName(lpMAPISession);
 
 			editor::CEditor MyData(
 				reinterpret_cast<CWnd*>(lpParent),
@@ -549,7 +540,7 @@ namespace dialog
 				}
 				else
 				{
-					auto szServerDN = mapi::store::BuildServerDN(strings::wstringTostring(MyData.GetStringW(0)), "");
+					auto szServerDN = mapi::store::BuildServerDN(MyData.GetStringW(0), L"");
 					if (!szServerDN.empty())
 					{
 						LPMDB lpOldMDB = nullptr;
@@ -573,8 +564,7 @@ namespace dialog
 							lpPFTable = mapi::store::GetPublicFolderTable4(
 								lpMDB, szServerDN, MyData.GetHex(1), MyData.GetHex(2) | fMapiUnicode);
 							break;
-						case 2:
-						{
+						case 2: {
 							GUID MyGUID = {0};
 							auto bHaveGUID = false;
 

@@ -129,7 +129,7 @@ namespace output
 	}
 
 	void ExportProfile(
-		_In_ const std::string& szProfile,
+		_In_ const std::wstring& szProfile,
 		_In_ const std::wstring& szProfileSection,
 		bool bByteSwapped,
 		const std::wstring& szFileName)
@@ -137,7 +137,7 @@ namespace output
 		if (szProfile.empty()) return;
 
 		DebugPrint(
-			DBGGeneric, L"ExportProfile: Saving profile \"%hs\" to \"%ws\"\n", szProfile.c_str(), szFileName.c_str());
+			DBGGeneric, L"ExportProfile: Saving profile \"%ws\" to \"%ws\"\n", szProfile.c_str(), szFileName.c_str());
 		if (!szProfileSection.empty())
 		{
 			DebugPrint(output::DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection.c_str());
@@ -152,14 +152,14 @@ namespace output
 		}
 
 		output::OutputToFile(fProfile, output::g_szXMLHeader);
-		Outputf(output::DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile.c_str());
+		Outputf(output::DBGNoDebug, fProfile, true, L"<profile profilename= \"%ws\">\n", szProfile.c_str());
 
 		EC_MAPI_S(MAPIAdminProfiles(0, &lpProfAdmin));
 		if (lpProfAdmin)
 		{
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
 			EC_MAPI_S(
-				lpProfAdmin->AdminServices(LPTSTR(szProfile.c_str()), LPTSTR(""), NULL, MAPI_DIALOG, &lpServiceAdmin));
+				lpProfAdmin->AdminServices(LPTSTR(strings::wstringTostring(szProfile).c_str()), LPTSTR(""), NULL, MAPI_DIALOG, &lpServiceAdmin));
 			if (lpServiceAdmin)
 			{
 				if (!szProfileSection.empty())

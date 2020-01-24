@@ -99,8 +99,8 @@ namespace dialog
 							auto lpNewMDB = mapi::store::OpenOtherUsersMailbox(
 								lpMAPISession,
 								lpSourceMDB,
-								strings::wstringTostring(m_lpszServerName),
-								strings::wstringTostring(contents->m_szDN),
+								m_lpszServerName,
+								contents->m_szDN,
 								strings::emptystring,
 								ulFlags,
 								false);

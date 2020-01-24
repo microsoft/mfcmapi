@@ -8,25 +8,19 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/addin/mfcmapi.h>
+#include <core/mapi/extraPropTags.h>
 
 namespace ui
 {
 	namespace profile
 	{
-		// This declaration is missing from the MAPI headers
-		STDAPI STDAPICALLTYPE LaunchWizard(
-			HWND hParentWnd,
-			ULONG ulFlags,
-			LPCSTR* lppszServiceNameToAdd,
-			ULONG cchBufferMax,
-			_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);
-
 		std::wstring
-		LaunchProfileWizard(_In_ HWND hParentWnd, ULONG ulFlags, _In_ const std::string& szServiceNameToAdd)
+		LaunchProfileWizard(_In_ HWND hParentWnd, ULONG ulFlags, _In_ const std::wstring& szServiceNameToAdd)
 		{
 			CHAR szProfName[80] = {0};
 			const ULONG cchProfName = _countof(szProfName);
-			LPCSTR szServices[] = {szServiceNameToAdd.c_str(), nullptr};
+			const auto szServiceNameToAddA = strings::wstringTostring(szServiceNameToAdd);
+			LPCSTR szServices[] = {szServiceNameToAddA.c_str(), nullptr};
 
 			output::DebugPrint(
 				output::DBGGeneric, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");

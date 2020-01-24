@@ -143,18 +143,18 @@ namespace mapi
 		}
 
 		_Check_return_ HRESULT HrAddServiceToProfile(
-			_In_ const std::string& lpszServiceName, // Service Name
+			_In_ const std::wstring& lpszServiceName, // Service Name
 			_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
 			ULONG ulFlags, // Flags for CreateMsgService
 			ULONG cPropVals, // Count of properties for ConfigureMsgService
 			_In_opt_ LPSPropValue lpPropVals, // Properties for ConfigureMsgService
-			_In_ const std::string& lpszProfileName) // profile name
+			_In_ const std::wstring& lpszProfileName) // profile name
 		{
 			if (lpszServiceName.empty() || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			output::DebugPrint(
 				output::DBGGeneric,
-				L"HrAddServiceToProfile(%hs,%hs)\n",
+				L"HrAddServiceToProfile(%ws, %ws)\n",
 				lpszServiceName.c_str(),
 				lpszProfileName.c_str());
 
@@ -165,12 +165,9 @@ namespace mapi
 
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
 			hRes = EC_MAPI(lpProfAdmin->AdminServices(
-				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
-				LPTSTR(""),
-				0,
-				0,
-				&lpServiceAdmin));
+				LPTSTR(strings::wstringTostring(lpszProfileName).c_str()), LPTSTR(""), 0, 0, &lpServiceAdmin));
 
+			auto lpszServiceNameA = strings::wstringTostring(lpszServiceName);
 			if (lpServiceAdmin)
 			{
 				MAPIUID uidService = {0};
@@ -182,8 +179,8 @@ namespace mapi
 					hRes = EC_H_MSG(
 						IDS_CREATEMSGSERVICEFAILED,
 						lpServiceAdmin2->CreateMsgServiceEx(
-							reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
-							reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
+							LPTSTR(lpszServiceNameA.c_str()),
+							LPTSTR(lpszServiceNameA.c_str()),
 							ulUIParam,
 							ulFlags,
 							&uidService));
@@ -202,8 +199,8 @@ namespace mapi
 						hRes = EC_H_MSG(
 							IDS_CREATEMSGSERVICEFAILED,
 							lpServiceAdmin->CreateMsgService(
-								reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
-								reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
+								LPTSTR(lpszServiceNameA.c_str()),
+								LPTSTR(lpszServiceNameA.c_str()),
 								ulUIParam,
 								ulFlags));
 					}
@@ -250,13 +247,13 @@ namespace mapi
 
 		_Check_return_ HRESULT HrAddExchangeToProfile(
 			_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
-			_In_ const std::string& lpszServerName,
-			_In_ const std::string& lpszMailboxName,
-			_In_ const std::string& lpszProfileName)
+			_In_ const std::wstring& lpszServerName,
+			_In_ const std::wstring& lpszMailboxName,
+			_In_ const std::wstring& lpszProfileName)
 		{
 			output::DebugPrint(
 				output::DBGGeneric,
-				L"HrAddExchangeToProfile(%hs,%hs,%hs)\n",
+				L"HrAddExchangeToProfile(%ws, %ws, %ws)\n",
 				lpszServerName.c_str(),
 				lpszMailboxName.c_str(),
 				lpszProfileName.c_str());
@@ -267,11 +264,13 @@ namespace mapi
 #define NUMEXCHANGEPROPS 2
 			SPropValue PropVal[NUMEXCHANGEPROPS];
 			PropVal[0].ulPropTag = PR_PROFILE_UNRESOLVED_SERVER;
-			PropVal[0].Value.lpszA = const_cast<LPSTR>(lpszServerName.c_str());
+			auto lpszServerNameA = strings::wstringTostring(lpszServerName);
+			PropVal[0].Value.lpszA = const_cast<LPSTR>(lpszServerNameA.c_str());
 			PropVal[1].ulPropTag = PR_PROFILE_UNRESOLVED_NAME;
-			PropVal[1].Value.lpszA = const_cast<LPSTR>(lpszMailboxName.c_str());
+			auto lpszMailboxNameA = strings::wstringTostring(lpszMailboxName);
+			PropVal[1].Value.lpszA = const_cast<LPSTR>(lpszMailboxNameA.c_str());
 			const auto hRes = EC_H(HrAddServiceToProfile(
-				"MSEMS", ulUIParam, NULL, NUMEXCHANGEPROPS, PropVal, lpszProfileName)); // STRING_OK
+				L"MSEMS", ulUIParam, NULL, NUMEXCHANGEPROPS, PropVal, lpszProfileName)); // STRING_OK
 
 			return hRes;
 		}
@@ -280,15 +279,15 @@ namespace mapi
 			_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
 			bool bUnicodePST,
 			_In_ const std::wstring& lpszPSTPath, // PST name
-			_In_ const std::string& lpszProfileName, // profile name
+			_In_ const std::wstring& lpszProfileName, // profile name
 			bool bPasswordSet, // whether or not to include a password
-			_In_ const std::string& lpszPassword) // password to include
+			_In_ const std::wstring& lpszPassword) // password to include
 		{
 			auto hRes = S_OK;
 
 			output::DebugPrint(
 				output::DBGGeneric,
-				L"HrAddPSTToProfile(0x%X,%ws,%hs,0x%X,%hs)\n",
+				L"HrAddPSTToProfile(0x%X, %ws, %ws, 0x%X, %ws)\n",
 				bUnicodePST,
 				lpszPSTPath.c_str(),
 				lpszProfileName.c_str(),
@@ -297,6 +296,7 @@ namespace mapi
 
 			if (lpszPSTPath.empty() || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
+			auto lpszPasswordA = strings::wstringTostring(lpszPassword);
 			if (bUnicodePST)
 			{
 				SPropValue PropVal[3];
@@ -305,10 +305,10 @@ namespace mapi
 				PropVal[1].ulPropTag = PR_PST_CONFIG_FLAGS;
 				PropVal[1].Value.ul = PST_CONFIG_UNICODE;
 				PropVal[2].ulPropTag = PR_PST_PW_SZ_OLD;
-				PropVal[2].Value.lpszA = const_cast<LPSTR>(lpszPassword.c_str());
+				PropVal[2].Value.lpszA = const_cast<LPSTR>(lpszPasswordA.c_str());
 
 				hRes = EC_H(HrAddServiceToProfile(
-					"MSUPST MS", ulUIParam, NULL, bPasswordSet ? 3 : 2, PropVal, lpszProfileName)); // STRING_OK
+					L"MSUPST MS", ulUIParam, NULL, bPasswordSet ? 3 : 2, PropVal, lpszProfileName)); // STRING_OK
 			}
 			else
 			{
@@ -316,21 +316,21 @@ namespace mapi
 				PropVal[0].ulPropTag = CHANGE_PROP_TYPE(PR_PST_PATH, PT_UNICODE);
 				PropVal[0].Value.lpszW = const_cast<LPWSTR>(lpszPSTPath.c_str());
 				PropVal[1].ulPropTag = PR_PST_PW_SZ_OLD;
-				PropVal[1].Value.lpszA = const_cast<LPSTR>(lpszPassword.c_str());
+				PropVal[1].Value.lpszA = const_cast<LPSTR>(lpszPasswordA.c_str());
 
 				hRes = EC_H(HrAddServiceToProfile(
-					"MSPST MS", ulUIParam, NULL, bPasswordSet ? 2 : 1, PropVal, lpszProfileName)); // STRING_OK
+					L"MSPST MS", ulUIParam, NULL, bPasswordSet ? 2 : 1, PropVal, lpszProfileName)); // STRING_OK
 			}
 
 			return hRes;
 		}
 
 		// Creates an empty profile.
-		_Check_return_ HRESULT HrCreateProfile(_In_ const std::string& lpszProfileName) // profile name
+		_Check_return_ HRESULT HrCreateProfile(_In_ const std::wstring& lpszProfileName) // profile name
 		{
 			LPPROFADMIN lpProfAdmin = nullptr;
 
-			output::DebugPrint(output::DBGGeneric, L"HrCreateProfile(%hs)\n", lpszProfileName.c_str());
+			output::DebugPrint(output::DBGGeneric, L"HrCreateProfile(%ws)\n", lpszProfileName.c_str());
 
 			if (lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
@@ -340,7 +340,7 @@ namespace mapi
 
 			// Create the profile
 			hRes = WC_MAPI(lpProfAdmin->CreateProfile(
-				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
+				LPTSTR(strings::wstringTostring(lpszProfileName).c_str()),
 				nullptr,
 				0,
 				NULL)); // fMapiUnicode is not supported!
@@ -357,18 +357,17 @@ namespace mapi
 		}
 
 		// Removes a profile.
-		_Check_return_ HRESULT HrRemoveProfile(_In_ const std::string& lpszProfileName)
+		_Check_return_ HRESULT HrRemoveProfile(_In_ const std::wstring& lpszProfileName)
 		{
 			LPPROFADMIN lpProfAdmin = nullptr;
 
-			output::DebugPrint(output::DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName.c_str());
+			output::DebugPrint(output::DBGGeneric, L"HrRemoveProfile(%ws)\n", lpszProfileName.c_str());
 			if (lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
 
-			hRes = EC_MAPI(
-				lpProfAdmin->DeleteProfile(reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())), 0));
+			hRes = EC_MAPI(lpProfAdmin->DeleteProfile(LPTSTR(strings::wstringTostring(lpszProfileName).c_str()), 0));
 
 			lpProfAdmin->Release();
 
@@ -379,18 +378,18 @@ namespace mapi
 		}
 
 		// Set a profile as default.
-		_Check_return_ HRESULT HrSetDefaultProfile(_In_ const std::string& lpszProfileName)
+		_Check_return_ HRESULT HrSetDefaultProfile(_In_ const std::wstring& lpszProfileName)
 		{
 			LPPROFADMIN lpProfAdmin = nullptr;
 
-			output::DebugPrint(output::DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName.c_str());
+			output::DebugPrint(output::DBGGeneric, L"HrRemoveProfile(%ws)\n", lpszProfileName.c_str());
 			if (lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
 
-			hRes = EC_MAPI(lpProfAdmin->SetDefaultProfile(
-				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())), 0));
+			hRes =
+				EC_MAPI(lpProfAdmin->SetDefaultProfile(LPTSTR(strings::wstringTostring(lpszProfileName).c_str()), 0));
 
 			lpProfAdmin->Release();
 
@@ -402,7 +401,7 @@ namespace mapi
 
 		// Checks for an existing profile.
 		_Check_return_ HRESULT
-		HrMAPIProfileExists(_In_ LPPROFADMIN lpProfAdmin, _In_ const std::string& lpszProfileName)
+		HrMAPIProfileExists(_In_ LPPROFADMIN lpProfAdmin, _In_ const std::wstring& lpszProfileName)
 		{
 			LPMAPITABLE lpTable = nullptr;
 			LPSRowSet lpRows = nullptr;
@@ -432,6 +431,7 @@ namespace mapi
 
 					if (SUCCEEDED(hRes))
 					{
+						auto lpszProfileNameA = strings::wstringTostring(lpszProfileName);
 						for (ULONG i = 0; i < lpRows->cRows; i++)
 						{
 							const auto lpProp = lpRows->aRow[i].lpProps;
@@ -443,7 +443,7 @@ namespace mapi
 									NORM_IGNORECASE,
 									lpProp[0].Value.lpszA,
 									-1,
-									lpszProfileName.c_str(),
+									lpszProfileNameA.c_str(),
 									-1));
 
 							if (ulComp == CSTR_EQUAL)
@@ -463,7 +463,7 @@ namespace mapi
 		}
 
 		_Check_return_ HRESULT GetProfileServiceVersion(
-			_In_ const std::string& lpszProfileName,
+			_In_ const std::wstring& lpszProfileName,
 			_Out_ ULONG* lpulServerVersion,
 			_Out_ EXCHANGE_STORE_VERSION_NUM* lpStoreVersion,
 			_Out_ bool* lpbFoundServerVersion,
@@ -480,17 +480,13 @@ namespace mapi
 			LPPROFADMIN lpProfAdmin = nullptr;
 			LPSERVICEADMIN lpServiceAdmin = nullptr;
 
-			output::DebugPrint(output::DBGGeneric, L"GetProfileServiceVersion(%hs)\n", lpszProfileName.c_str());
+			output::DebugPrint(output::DBGGeneric, L"GetProfileServiceVersion(%ws)\n", lpszProfileName.c_str());
 
 			auto hRes = EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 			if (!lpProfAdmin) return hRes;
 
 			hRes = EC_MAPI(lpProfAdmin->AdminServices(
-				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
-				LPTSTR(""),
-				0,
-				0,
-				&lpServiceAdmin));
+				LPTSTR(strings::wstringTostring(lpszProfileName).c_str()), LPTSTR(""), 0, 0, &lpServiceAdmin));
 
 			if (lpServiceAdmin)
 			{
@@ -542,13 +538,13 @@ namespace mapi
 
 		// Copies a profile.
 		_Check_return_ HRESULT
-		HrCopyProfile(_In_ const std::string& lpszOldProfileName, _In_ const std::string& lpszNewProfileName)
+		HrCopyProfile(_In_ const std::wstring& lpszOldProfileName, _In_ const std::wstring& lpszNewProfileName)
 		{
 			LPPROFADMIN lpProfAdmin = nullptr;
 
 			output::DebugPrint(
 				output::DBGGeneric,
-				L"HrCopyProfile(%hs, %hs)\n",
+				L"HrCopyProfile(%ws, %ws)\n",
 				lpszOldProfileName.c_str(),
 				lpszNewProfileName.c_str());
 			if (lpszOldProfileName.empty() || lpszNewProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
@@ -557,9 +553,9 @@ namespace mapi
 			if (!lpProfAdmin) return hRes;
 
 			hRes = EC_MAPI(lpProfAdmin->CopyProfile(
-				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszOldProfileName.c_str())),
+				LPTSTR(strings::wstringTostring(lpszOldProfileName).c_str()),
 				nullptr,
-				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszNewProfileName.c_str())),
+				LPTSTR(strings::wstringTostring(lpszNewProfileName).c_str()),
 				NULL,
 				NULL));
 
