@@ -41,14 +41,6 @@ typedef SETWINDOWTHEME* LPSETWINDOWTHEME;
 typedef int(STDMETHODCALLTYPE GETTHEMESYSSIZE)(HTHEME hTheme, int iSizeID);
 typedef GETTHEMESYSSIZE* LPGETTHEMESYSSIZE;
 
-typedef HRESULT(STDMETHODCALLTYPE MSIPROVIDEQUALIFIEDCOMPONENT)(
-	LPCWSTR szCategory,
-	LPCWSTR szQualifier,
-	DWORD dwInstallMode,
-	LPWSTR lpPathBuf,
-	LPDWORD pcchPathBuf);
-typedef MSIPROVIDEQUALIFIEDCOMPONENT* LPMSIPROVIDEQUALIFIEDCOMPONENT;
-
 typedef HRESULT(STDMETHODCALLTYPE MSIGETFILEVERSION)(
 	LPCWSTR szFilePath,
 	LPWSTR lpVersionBuf,
@@ -83,30 +75,16 @@ namespace import
 	extern LPGETTHEMEMARGINS pfnGetThemeMargins;
 	extern LPSETWINDOWTHEME pfnSetWindowTheme;
 	extern LPGETTHEMESYSSIZE pfnGetThemeSysSize;
-	extern LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent;
 	extern LPMSIGETFILEVERSION pfnMsiGetFileVersion;
 	extern LPSHGETPROPERTYSTOREFORWINDOW pfnSHGetPropertyStoreForWindow;
 	extern LPFINDPACKAGESBYPACKAGEFAMILY pfnFindPackagesByPackageFamily;
 	extern LPPACKAGEIDFROMFULLNAME pfnPackageIdFromFullName;
-
-	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName);
-	_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const std::wstring& szDLLName);
 
 	_Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName);
 
 	void ImportProcs();
 
 	std::wstring GetMAPIPath(const std::wstring& szClient);
-
-// Keep this in sync with g_pszOutlookQualifiedComponents
-#define oqcOfficeBegin 0
-#define oqcOffice16 (oqcOfficeBegin + 0)
-#define oqcOffice15 (oqcOfficeBegin + 1)
-#define oqcOffice14 (oqcOfficeBegin + 2)
-#define oqcOffice12 (oqcOfficeBegin + 3)
-#define oqcOffice11 (oqcOfficeBegin + 4)
-#define oqcOffice11Debug (oqcOfficeBegin + 5)
-#define oqcOfficeEnd oqcOffice11Debug
 
 	void WINAPI MyHeapSetInformation(
 		_In_opt_ HANDLE HeapHandle,
@@ -115,6 +93,4 @@ namespace import
 		_In_ SIZE_T HeapInformationLength);
 
 	HRESULT WINAPI MyMimeOleGetCodePageCharset(CODEPAGEID cpiCodePage, CHARSETTYPE ctCsetType, LPHCHARSET phCharset);
-
-	BOOL WINAPI MyGetModuleHandleExW(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE* phModule);
 } // namespace import

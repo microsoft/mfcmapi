@@ -18,7 +18,7 @@
 #include <core/utility/import.h>
 #include <core/mapi/mapiStoreFunctions.h>
 #include <core/mapi/cache/namedPropCache.h>
-#include <core/mapi/stubutils.h>
+#include <mapistub/library/stubutils.h>
 #include <core/addin/addin.h>
 #include <core/utility/registry.h>
 #include <core/utility/output.h>
@@ -97,19 +97,19 @@ bool LoadMAPIVersion(const std::wstring& lpszVersion)
 			szPath = mapistub::GetMAPISystemDir();
 			break;
 		case 11: // Outlook 2003 (11)
-			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice11);
+			szPath = mapistub::GetInstalledOutlookMAPI(mapistub::oqcOffice11);
 			break;
 		case 12: // Outlook 2007 (12)
-			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice12);
+			szPath = mapistub::GetInstalledOutlookMAPI(mapistub::oqcOffice12);
 			break;
 		case 14: // Outlook 2010 (14)
-			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice14);
+			szPath = mapistub::GetInstalledOutlookMAPI(mapistub::oqcOffice14);
 			break;
 		case 15: // Outlook 2013 (15)
-			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice15);
+			szPath = mapistub::GetInstalledOutlookMAPI(mapistub::oqcOffice15);
 			break;
 		case 16: // Outlook 2016 (16)
-			szPath = mapistub::GetInstalledOutlookMAPI(oqcOffice16);
+			szPath = mapistub::GetInstalledOutlookMAPI(mapistub::oqcOffice16);
 			break;
 		}
 	}
@@ -137,6 +137,7 @@ void main(_In_ int argc, _In_count_(argc) char* argv[])
 	registry::parseNamedProps = true;
 	registry::cacheNamedProps = true;
 	registry::debugTag = 0;
+	output::initStubCallbacks();
 
 	SetDllDirectory(_T(""));
 	import::MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);

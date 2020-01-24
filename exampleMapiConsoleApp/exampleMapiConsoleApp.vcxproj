@@ -44,91 +44,81 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{D2390ABA-E7B0-476D-BB38-089FEAB5357D}</ProjectGuid>
+    <ProjectGuid>{0E30B8F5-4480-4130-BC46-BABA613B983F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>core</RootNamespace>
+    <RootNamespace>exampleMapiConsoleApp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -168,79 +158,78 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)obj\$(Platform)\core\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\</IncludePath>
     <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)obj\$(Platform)\core\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\</IncludePath>
     <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)obj\$(Platform)\core\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\</IncludePath>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)obj\$(Platform)\core\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\</IncludePath>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)obj\$(Platform)\core\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\</IncludePath>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)obj\$(Platform)\core\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\</IncludePath>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)obj\$(Platform)\core\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\</IncludePath>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)obj\$(Platform)\core\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\</IncludePath>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)obj\$(Platform)\core\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\</IncludePath>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Platform)\core\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)obj\$(Platform)\core\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Platform)\exampleMapiConsoleApp\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\</IncludePath>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -251,10 +240,11 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
-      <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -269,7 +259,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -279,10 +268,11 @@
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
-      <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -297,7 +287,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -309,11 +298,11 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <EnablePREfast>true</EnablePREfast>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -328,7 +317,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -338,10 +326,11 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
-      <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
@@ -355,7 +344,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -365,16 +353,16 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
-      <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)obj\$(Platform)\mapistub\$(Configuration);</AdditionalLibraryDirectories>
     </Lib>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -382,7 +370,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -392,10 +379,11 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
-      <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
@@ -408,7 +396,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -418,10 +405,12 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
-      <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
@@ -434,7 +423,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -442,13 +430,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
-      <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -462,7 +452,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -472,10 +461,11 @@
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
-      <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -489,7 +479,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -500,12 +489,13 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
+      <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeaderFile>core/stdafx.h</PrecompiledHeaderFile>
       <EnablePREfast>true</EnablePREfast>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -518,201 +508,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="addin\addin.h" />
-    <ClInclude Include="interpret\errorArray.h" />
-    <ClInclude Include="interpret\flagArray.h" />
-    <ClInclude Include="interpret\flags.h" />
-    <ClInclude Include="interpret\genTagArray.h" />
-    <ClInclude Include="interpret\guidArray.h" />
-    <ClInclude Include="interpret\guid.h" />
-    <ClInclude Include="interpret\nameIDArray.h" />
-    <ClInclude Include="interpret\proptags.h" />
-    <ClInclude Include="interpret\proptype.h" />
-    <ClInclude Include="interpret\propTypeArray.h" />
-    <ClInclude Include="interpret\sid.h" />
-    <ClInclude Include="interpret\smartViewParsers.h" />
-    <ClInclude Include="mapi\adviseSink.h" />
-    <ClInclude Include="mapi\cache\globalCache.h" />
-    <ClInclude Include="mapi\cache\mapiObjects.h" />
-    <ClInclude Include="mapi\cache\namedPropCache.h" />
-    <ClInclude Include="mapi\columnTags.h" />
-    <ClInclude Include="mapi\exportProfile.h" />
-    <ClInclude Include="mapi\extraPropTags.h" />
-    <ClInclude Include="mapi\interfaces.h" />
-    <ClInclude Include="mapi\mapiABFunctions.h" />
-    <ClInclude Include="mapi\mapiFile.h" />
-    <ClInclude Include="mapi\mapiFunctions.h" />
-    <ClInclude Include="mapi\mapiMemory.h" />
-    <ClInclude Include="mapi\mapiMime.h" />
-    <ClInclude Include="mapi\mapiOutput.h" />
-    <ClInclude Include="mapi\mapiProfileFunctions.h" />
-    <ClInclude Include="mapi\mapiProgress.h" />
-    <ClInclude Include="mapi\mapiStoreFunctions.h" />
-    <ClInclude Include="mapi\processor\dumpStore.h" />
-    <ClInclude Include="mapi\processor\mapiProcessor.h" />
-    <ClInclude Include="addin\mfcmapi.h" />
-    <ClInclude Include="mapi\version.h" />
-    <ClInclude Include="propertyBag\mapiPropPropertyBag.h" />
-    <ClInclude Include="propertyBag\propertyBag.h" />
-    <ClInclude Include="propertyBag\rowPropertyBag.h" />
-    <ClInclude Include="property\attributes.h" />
-    <ClInclude Include="property\parseProperty.h" />
-    <ClInclude Include="property\property.h" />
-    <ClInclude Include="res\Resource.h" />
-    <ClInclude Include="smartview\AdditionalRenEntryIDs.h" />
-    <ClInclude Include="smartview\AppointmentRecurrencePattern.h" />
-    <ClInclude Include="smartview\binaryParser.h" />
-    <ClInclude Include="smartview\block\block.h" />
-    <ClInclude Include="smartview\block\blockBytes.h" />
-    <ClInclude Include="smartview\block\blockStringA.h" />
-    <ClInclude Include="smartview\block\blockStringW.h" />
-    <ClInclude Include="smartview\block\blockT.h" />
-    <ClInclude Include="smartview\ConversationIndex.h" />
-    <ClInclude Include="smartview\EntryIdStruct.h" />
-    <ClInclude Include="smartview\EntryList.h" />
-    <ClInclude Include="smartview\ExtendedFlags.h" />
-    <ClInclude Include="smartview\FlatEntryList.h" />
-    <ClInclude Include="smartview\FolderUserFieldStream.h" />
-    <ClInclude Include="smartview\GlobalObjectId.h" />
-    <ClInclude Include="smartview\NickNameCache.h" />
-    <ClInclude Include="smartview\PCL.h" />
-    <ClInclude Include="smartview\PropertiesStruct.h" />
-    <ClInclude Include="smartview\PropertyDefinitionStream.h" />
-    <ClInclude Include="smartview\RecipientRowStream.h" />
-    <ClInclude Include="smartview\RecurrencePattern.h" />
-    <ClInclude Include="smartview\ReportTag.h" />
-    <ClInclude Include="smartview\RestrictionStruct.h" />
-    <ClInclude Include="smartview\RuleCondition.h" />
-    <ClInclude Include="smartview\SDBin.h" />
-    <ClInclude Include="smartview\SearchFolderDefinition.h" />
-    <ClInclude Include="smartview\SIDBin.h" />
-    <ClInclude Include="smartview\SmartView.h" />
-    <ClInclude Include="smartview\smartViewParser.h" />
-    <ClInclude Include="smartview\TaskAssigners.h" />
-    <ClInclude Include="smartview\TimeZone.h" />
-    <ClInclude Include="smartview\TimeZoneDefinition.h" />
-    <ClInclude Include="smartview\TombStone.h" />
-    <ClInclude Include="smartview\VerbStream.h" />
-    <ClInclude Include="smartview\WebViewPersistStream.h" />
-    <ClInclude Include="smartview\XID.h" />
-    <ClInclude Include="sortlistdata\binaryData.h" />
-    <ClInclude Include="sortlistdata\commentData.h" />
-    <ClInclude Include="sortlistdata\contentsData.h" />
-    <ClInclude Include="sortlistdata\data.h" />
-    <ClInclude Include="sortlistdata\mvPropData.h" />
-    <ClInclude Include="sortlistdata\nodeData.h" />
-    <ClInclude Include="sortlistdata\propListData.h" />
-    <ClInclude Include="sortlistdata\resData.h" />
-    <ClInclude Include="sortlistdata\sortListData.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="utility\cli.h" />
-    <ClInclude Include="utility\error.h" />
-    <ClInclude Include="utility\file.h" />
-    <ClInclude Include="utility\import.h" />
-    <ClInclude Include="utility\output.h" />
-    <ClInclude Include="utility\registry.h" />
-    <ClInclude Include="utility\strings.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="addin\addin.cpp" />
-    <ClCompile Include="interpret\flags.cpp" />
-    <ClCompile Include="interpret\guid.cpp" />
-    <ClCompile Include="interpret\proptags.cpp" />
-    <ClCompile Include="interpret\proptype.cpp" />
-    <ClCompile Include="interpret\sid.cpp" />
-    <ClCompile Include="mapi\adviseSink.cpp" />
-    <ClCompile Include="mapi\cache\globalCache.cpp" />
-    <ClCompile Include="mapi\cache\mapiObjects.cpp" />
-    <ClCompile Include="mapi\cache\namedPropCache.cpp" />
-    <ClCompile Include="mapi\exportProfile.cpp" />
-    <ClCompile Include="mapi\mapiABFunctions.cpp" />
-    <ClCompile Include="mapi\mapiFile.cpp" />
-    <ClCompile Include="mapi\mapiFunctions.cpp" />
-    <ClCompile Include="mapi\mapiMime.cpp" />
-    <ClCompile Include="mapi\mapiOutput.cpp" />
-    <ClCompile Include="mapi\mapiProfileFunctions.cpp" />
-    <ClCompile Include="mapi\mapiProgress.cpp" />
-    <ClCompile Include="mapi\mapiStoreFunctions.cpp" />
-    <ClCompile Include="mapi\processor\dumpStore.cpp" />
-    <ClCompile Include="mapi\processor\mapiProcessor.cpp" />
-    <ClCompile Include="mapi\version.cpp" />
-    <ClCompile Include="propertyBag\mapiPropPropertyBag.cpp" />
-    <ClCompile Include="propertyBag\rowPropertyBag.cpp" />
-    <ClCompile Include="property\attributes.cpp" />
-    <ClCompile Include="property\parseProperty.cpp" />
-    <ClCompile Include="property\property.cpp" />
-    <ClCompile Include="smartview\AdditionalRenEntryIDs.cpp" />
-    <ClCompile Include="smartview\AppointmentRecurrencePattern.cpp" />
-    <ClCompile Include="smartview\ConversationIndex.cpp" />
-    <ClCompile Include="smartview\EntryIdStruct.cpp" />
-    <ClCompile Include="smartview\EntryList.cpp" />
-    <ClCompile Include="smartview\ExtendedFlags.cpp" />
-    <ClCompile Include="smartview\FlatEntryList.cpp" />
-    <ClCompile Include="smartview\FolderUserFieldStream.cpp" />
-    <ClCompile Include="smartview\GlobalObjectId.cpp" />
-    <ClCompile Include="smartview\NickNameCache.cpp" />
-    <ClCompile Include="smartview\PCL.cpp" />
-    <ClCompile Include="smartview\PropertiesStruct.cpp" />
-    <ClCompile Include="smartview\PropertyDefinitionStream.cpp" />
-    <ClCompile Include="smartview\RecipientRowStream.cpp" />
-    <ClCompile Include="smartview\RecurrencePattern.cpp" />
-    <ClCompile Include="smartview\ReportTag.cpp" />
-    <ClCompile Include="smartview\RestrictionStruct.cpp" />
-    <ClCompile Include="smartview\RuleCondition.cpp" />
-    <ClCompile Include="smartview\SDBin.cpp" />
-    <ClCompile Include="smartview\SearchFolderDefinition.cpp" />
-    <ClCompile Include="smartview\SIDBin.cpp" />
-    <ClCompile Include="smartview\SmartView.cpp" />
-    <ClCompile Include="smartview\smartViewParser.cpp" />
-    <ClCompile Include="smartview\TaskAssigners.cpp" />
-    <ClCompile Include="smartview\TimeZone.cpp" />
-    <ClCompile Include="smartview\TimeZoneDefinition.cpp" />
-    <ClCompile Include="smartview\TombStone.cpp" />
-    <ClCompile Include="smartview\VerbStream.cpp" />
-    <ClCompile Include="smartview\WebViewPersistStream.cpp" />
-    <ClCompile Include="smartview\XID.cpp" />
-    <ClCompile Include="sortlistdata\binaryData.cpp" />
-    <ClCompile Include="sortlistdata\commentData.cpp" />
-    <ClCompile Include="sortlistdata\contentsData.cpp" />
-    <ClCompile Include="sortlistdata\mvPropData.cpp" />
-    <ClCompile Include="sortlistdata\nodeData.cpp" />
-    <ClCompile Include="sortlistdata\propListData.cpp" />
-    <ClCompile Include="sortlistdata\resData.cpp" />
-    <ClCompile Include="sortlistdata\sortListData.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="utility\cli.cpp" />
-    <ClCompile Include="utility\error.cpp" />
-    <ClCompile Include="utility\file.cpp" />
-    <ClCompile Include="utility\import.cpp" />
-    <ClCompile Include="utility\output.cpp" />
-    <ClCompile Include="utility\registry.cpp" />
-    <ClCompile Include="utility\strings.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\MFCMapi.rc2" />
-    <None Include="res\splith.cur" />
-    <None Include="res\splitv.cur" />
-    <Image Include="res\bldver.rc" />
-    <ResourceCompile Include="res\MFCMapi.rc" />
-    <Image Include="res\advise.bmp" />
-    <Image Include="res\icons.bmp" />
-    <Image Include="res\MFCMapi.ico" />
-    <Image Include="res\MFCMAPI64x64_logo.bmp" />
-    <Image Include="res\close.bmp" />
-    <Image Include="res\maximize.bmp" />
-    <Image Include="res\minimize.bmp" />
-    <Image Include="res\restore.bmp" />
+    <ClCompile Include="exampleMapiConsoleApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\mapistub\mapistub.vcxproj">

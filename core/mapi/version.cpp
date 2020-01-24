@@ -1,7 +1,7 @@
 #include <core/stdafx.h>
 #include <core/mapi/version.h>
 #include <core/utility/import.h>
-#include <core/mapi/stubutils.h>
+#include <mapistub/library/stubutils.h>
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>
@@ -12,14 +12,12 @@ namespace version
 {
 	std::wstring GetMSIVersion()
 	{
-		if (!import::pfnMsiProvideQualifiedComponent || !import::pfnMsiGetFileVersion) return strings::emptystring;
-
 		std::wstring szOut;
 
-		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
+		for (const auto component : mapistub::g_pszOutlookQualifiedComponents)
 		{
 			auto b64 = false;
-			auto lpszTempPath = mapistub::GetOutlookPath(mapistub::g_pszOutlookQualifiedComponents[i], &b64);
+			auto lpszTempPath = mapistub::GetOutlookPath(component, &b64);
 
 			if (!lpszTempPath.empty())
 			{

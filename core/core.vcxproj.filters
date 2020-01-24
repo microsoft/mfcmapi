@@ -63,9 +63,6 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mapi\stubutils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="interpret\smartViewParsers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -321,12 +318,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mapi\mapiStubLibrary.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mapi\stubutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utility\import.cpp">

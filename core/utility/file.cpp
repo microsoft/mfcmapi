@@ -154,23 +154,6 @@ namespace file
 		return path;
 	}
 
-	std::wstring GetSystemDirectory()
-	{
-		auto buf = std::vector<wchar_t>();
-		auto copied = DWORD();
-		do
-		{
-			buf.resize(buf.size() + MAX_PATH);
-			copied = EC_D(DWORD, ::GetSystemDirectoryW(&buf[0], static_cast<UINT>(buf.size())));
-		} while (copied >= buf.size());
-
-		buf.resize(copied);
-
-		const auto path = std::wstring(buf.begin(), buf.end());
-
-		return path;
-	}
-
 	std::map<std::wstring, std::wstring> GetFileVersionInfo(_In_opt_ HMODULE hModule)
 	{
 		auto versionStrings = std::map<std::wstring, std::wstring>();

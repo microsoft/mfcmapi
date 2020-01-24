@@ -4,6 +4,7 @@
 #include <core/utility/file.h>
 #include <core/utility/registry.h>
 #include <core/utility/error.h>
+#include <mapistub/library/stubutils.h>
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
@@ -233,6 +234,14 @@ namespace output
 
 		va_list argList = nullptr;
 		va_start(argList, szMsg);
+		DebugPrint(ulDbgLvl, szMsg, argList);
+		va_end(argList);
+	}
+
+	void __cdecl DebugPrint(output::DBGLEVEL ulDbgLvl, LPCWSTR szMsg, va_list argList)
+	{
+		if (!fIsSetv(ulDbgLvl) && !registry::debugToFile) return;
+
 		if (argList)
 		{
 			Output(ulDbgLvl, nullptr, true, strings::formatV(szMsg, argList));
@@ -241,8 +250,6 @@ namespace output
 		{
 			Output(ulDbgLvl, nullptr, true, szMsg);
 		}
-
-		va_end(argList);
 	}
 
 	void __cdecl DebugPrintEx(
@@ -369,5 +376,11 @@ namespace output
 		}
 
 		Outputf(ulDbgLvl, fFile, false, L"</%ws>\n", szTag.c_str());
+	}
+
+	void initStubCallbacks()
+	{
+		logLoadMapiCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadMAPI, _1, _2); };
+		logLoadLibraryCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadLibrary, _1, _2); };
 	}
 } // namespace output

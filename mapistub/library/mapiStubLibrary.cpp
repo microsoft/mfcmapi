@@ -1,4 +1,4 @@
-#include <core/stdafx.h>
+#define _WINSOCKAPI_
 #include <Windows.h>
 
 #include <MAPI.h>
@@ -8,7 +8,6 @@
 #include <MAPISPI.h>
 #include <IMessage.h>
 #include <TNEF.h>
-#include <abhelp.h>
 
 // Check that we have the Outlook 2010 MAPI headers or higher
 // We do this by checking for the presence of a macro not present in the older headers
@@ -19,7 +18,7 @@
 	"    http://www.microsoft.com/downloads/en/details.aspx?FamilyID=f8d01fc8-f7b5-4228-baa3-817488a66db1&displaylang=en")
 #pragma message("and follow the instructions to install the Outlook 2010 MAPI headers")
 #pragma message("Then go to Tools\\Options\\Projects and Solutions\\VC++ Directories and ensure the headers include")
-#pragma message("directory preceeds the Visual Studio include directories.")
+#pragma message("directory precedes the Visual Studio include directories.")
 #pragma message(" ")
 #error Outlook 2010 MAPI headers or higher must be installed
 #endif
@@ -42,7 +41,7 @@ struct RTF_WCSRETINFO;
 #define LINKAGE_EXTERN_C extern "C"
 #define LINKAGE_NO_EXTERN_C /* */
 
-// Forward declares from MapiStubUtil.cpp
+// Forward declares from stubutils.cpp
 namespace mapistub
 {
 	HMODULE GetMAPIHandle();
