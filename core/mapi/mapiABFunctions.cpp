@@ -8,6 +8,7 @@
 #include <core/mapi/mapiOutput.h>
 #include <core/mapi/mapiFunctions.h>
 #include <core/utility/error.h>
+#include <core/mapi/extraPropTags.h>
 
 namespace mapi
 {
@@ -527,10 +528,13 @@ namespace mapi
 
 			if (!lpAdrBook || !hwnd) return nullptr;
 
-			auto szTitle = strings::wstringTostring(strings::loadstring(IDS_SELECTMAILBOX));
+			auto szTitle = strings::wstringTotstring(strings::loadstring(IDS_SELECTMAILBOX));
 
 			ADRPARM AdrParm = {};
 			AdrParm.ulFlags = DIALOG_MODAL | ADDRESS_ONE | AB_SELECTONLY | AB_RESOLVE;
+			#ifdef _UNICODE
+			AdrParm.ulFlags |= AB_UNICODEUI;
+			#endif
 			AdrParm.lpszCaption = LPTSTR(szTitle.c_str());
 
 			LPMAILUSER lpMailUser = nullptr;

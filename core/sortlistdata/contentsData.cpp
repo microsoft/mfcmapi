@@ -102,8 +102,8 @@ namespace sortlistdata
 			PR_DISPLAY_NAME_A); // We pull this property for profiles, which do not support Unicode
 		if (strings::CheckStringProp(lpProp, PT_STRING8))
 		{
-			m_szProfileDisplayName = lpProp->Value.lpszA;
-			output::DebugPrint(output::DBGGeneric, L"\tPR_DISPLAY_NAME_A = %hs\n", m_szProfileDisplayName.c_str());
+			m_szProfileDisplayName = strings::LPCSTRToWstring(lpProp->Value.lpszA);
+			output::DebugPrint(output::DBGGeneric, L"\tPR_DISPLAY_NAME_A = %ws\n", m_szProfileDisplayName.c_str());
 		}
 
 		// Save the e-mail address (if it exists on the object) into lpData

@@ -34,11 +34,11 @@ namespace ui
 		_Check_return_ LPMDB OpenMailboxWithPrompt(
 			_In_ LPMAPISESSION lpMAPISession,
 			_In_ LPMDB lpMDB,
-			const std::string& szServerName,
+			const std::wstring& szServerName,
 			const std::wstring& szMailboxDN,
 			ULONG ulFlags); // desired flags for CreateStoreEntryID
 		_Check_return_ LPMDB OpenOtherUsersMailboxFromGal(_In_ LPMAPISESSION lpMAPISession, _In_ LPADRBOOK lpAddrBook);
 
-		std::string PromptServerName();
+		std::wstring PromptServerName();
 	} // namespace mapiui
 } // namespace ui
