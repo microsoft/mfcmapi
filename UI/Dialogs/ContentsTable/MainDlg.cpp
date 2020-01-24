@@ -431,12 +431,18 @@ namespace dialog
 					nullptr, nullptr, nullptr, lpMAPISession, cbEntryID, lpEntryID, nullptr, NULL, nullptr);
 				if (lpIdentity)
 				{
-					EC_MAPI_S(HrGetOneProp(lpIdentity, PR_EMAIL_ADDRESS_A, &lpMailboxName));
+					EC_MAPI_S(HrGetOneProp(lpIdentity, PR_EMAIL_ADDRESS_W, &lpMailboxName));
 
-					if (strings::CheckStringProp(lpMailboxName, PT_STRING8))
+					if (strings::CheckStringProp(lpMailboxName, PT_UNICODE))
 					{
 						auto lpAdminMDB = mapi::store::OpenOtherUsersMailbox(
-							lpMAPISession, lpMDB, "", lpMailboxName->Value.lpszA, strings::emptystring, ulFlags, false);
+							lpMAPISession,
+							lpMDB,
+							L"",
+							lpMailboxName->Value.lpszW,
+							strings::emptystring,
+							ulFlags,
+							false);
 						if (lpAdminMDB)
 						{
 							EC_H_S(DisplayObject(lpAdminMDB, NULL, otStore, this));
@@ -522,7 +528,7 @@ namespace dialog
 		MyPrompt.SetHex(0, NULL);
 		if (!MyPrompt.DisplayDialog()) return;
 
-		auto lpMDB = mapi::store::OpenPublicMessageStore(lpMAPISession, "", MyPrompt.GetHex(0));
+		auto lpMDB = mapi::store::OpenPublicMessageStore(lpMAPISession, L"", MyPrompt.GetHex(0));
 		if (lpMDB)
 		{
 			EC_H_S(DisplayObject(lpMDB, NULL, otStore, this));
@@ -546,8 +552,7 @@ namespace dialog
 		MyPrompt.SetHex(1, OPENSTORE_PUBLIC);
 		if (!MyPrompt.DisplayDialog()) return;
 
-		auto lpMDB = mapi::store::OpenPublicMessageStore(
-			lpMAPISession, strings::wstringTostring(MyPrompt.GetStringW(0)), MyPrompt.GetHex(1));
+		auto lpMDB = mapi::store::OpenPublicMessageStore(lpMAPISession, MyPrompt.GetStringW(0), MyPrompt.GetHex(1));
 		if (lpMDB)
 		{
 			EC_H_S(DisplayObject(lpMDB, NULL, otStore, this));
@@ -711,7 +716,7 @@ namespace dialog
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		const auto szServerName = strings::stringTowstring(mapi::store::GetServerName(lpMAPISession));
+		const auto szServerName = mapi::store::GetServerName(lpMAPISession);
 
 		editor::CEditor MyData(
 			this, IDS_DUMPSERVERPRIVATESTORE, IDS_SERVERNAMEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -1259,8 +1264,7 @@ namespace dialog
 
 		if (MyData.DisplayDialog())
 		{
-			auto szProfName = ui::profile::LaunchProfileWizard(
-				m_hWnd, MyData.GetHex(0), strings::wstringTostring(MyData.GetStringW(1)));
+			auto szProfName = ui::profile::LaunchProfileWizard(m_hWnd, MyData.GetHex(0), MyData.GetStringW(1));
 		}
 	}
 

@@ -267,7 +267,7 @@ namespace controls
 					CLASS,
 					L"GetHierarchyTable",
 					L"Advise sink for \"%ws\" = %p\n",
-					strings::LPCTSTRToWstring(GetItemText(hItem)).c_str(),
+					GetItemTextW(hItem).c_str(),
 					hItem);
 				auto lpAdviseSink = new mapi::adviseSink(m_hWnd, hItem);
 
@@ -787,7 +787,7 @@ namespace controls
 			L"msgOnAddItem",
 			L"Received message add item under: %p =\"%ws\"\n",
 			hParent,
-			strings::LPCTSTRToWstring(GetItemText(hParent)).c_str());
+			GetItemTextW(hParent).c_str());
 
 		// Only need to add the node if we're expanded
 		const int iState = GetItemState(hParent, NULL);
@@ -842,7 +842,7 @@ namespace controls
 				L"msgOnDeleteItem",
 				L"Received message delete item: %p =\"%ws\"\n",
 				hItemToDelete,
-				strings::LPCTSTRToWstring(GetItemText(hItemToDelete)).c_str());
+				GetItemTextW(hItemToDelete).c_str());
 			hRes = EC_B(DeleteItem(hItemToDelete));
 		}
 
@@ -867,7 +867,7 @@ namespace controls
 				L"msgOnModifyItem",
 				L"Received message modify item: %p =\"%ws\"\n",
 				hModifyItem,
-				strings::LPCTSTRToWstring(GetItemText(hModifyItem)).c_str());
+				GetItemTextW(hModifyItem).c_str());
 
 			const auto lpName = PpropFindProp(tab->row.lpProps, tab->row.cValues, PR_DISPLAY_NAME_W);
 
@@ -924,7 +924,7 @@ namespace controls
 			L"msgOnRefreshTable",
 			L"Received message refresh table: %p =\"%ws\"\n",
 			hRefreshItem,
-			strings::LPCTSTRToWstring(GetItemText(hRefreshItem)).c_str());
+			GetItemTextW(hRefreshItem).c_str());
 
 		const int iState = GetItemState(hRefreshItem, NULL);
 		if (iState & TVIS_EXPANDED)
@@ -973,7 +973,7 @@ namespace controls
 			L"FindNode",
 			L"Looking for child of: %p =\"%ws\"\n",
 			hParent,
-			strings::LPCTSTRToWstring(GetItemText(hParent)).c_str());
+			GetItemTextW(hParent).c_str());
 
 		auto hCurrent = GetNextItem(hParent, TVGN_CHILD);
 
@@ -997,7 +997,7 @@ namespace controls
 								L"FindNode",
 								L"Matched at %p =\"%ws\"\n",
 								hCurrent,
-								strings::LPCTSTRToWstring(GetItemText(hCurrent)).c_str());
+								GetItemTextW(hCurrent).c_str());
 							return hCurrent;
 						}
 					}

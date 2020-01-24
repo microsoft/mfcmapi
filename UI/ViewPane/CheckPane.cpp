@@ -48,7 +48,7 @@ namespace viewpane
 			pParent,
 			m_nID));
 		m_Check.SetCheck(m_bCheckValue);
-		SetWindowTextW(m_Check.m_hWnd, m_szLabel.c_str());
+		::SetWindowTextW(m_Check.m_hWnd, m_szLabel.c_str());
 
 		m_bInitialized = true;
 	}

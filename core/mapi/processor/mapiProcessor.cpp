@@ -88,7 +88,7 @@ namespace mapi
 			if (lpPrimaryMDB && store::StoreSupportsManageStore(lpPrimaryMDB)) do
 				{
 					auto lpMailBoxTable =
-						store::GetMailboxTable(lpPrimaryMDB, strings::wstringTostring(szExchangeServerName), ulOffset);
+						store::GetMailboxTable(lpPrimaryMDB, szExchangeServerName, ulOffset);
 					if (lpMailBoxTable)
 					{
 						auto hRes = WC_MAPI(lpMailBoxTable->SetColumns(&columns::sptMBXCols.tags, NULL));
@@ -128,8 +128,8 @@ namespace mapi
 								m_lpMDB = store::OpenOtherUsersMailbox(
 									m_lpSession,
 									lpPrimaryMDB,
-									strings::wstringTostring(szExchangeServerName),
-									strings::wstringTostring(strings::LPCTSTRToWstring(lpEmailAddress->Value.LPSZ)),
+									szExchangeServerName,
+									strings::LPCTSTRToWstring(lpEmailAddress->Value.LPSZ),
 									strings::emptystring,
 									OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
 									false);
