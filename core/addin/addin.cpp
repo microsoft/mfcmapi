@@ -2,7 +2,7 @@
 #include <core/addin/addin.h>
 #include <core/addin/mfcmapi.h>
 #include <core/utility/import.h>
-#include <mapistub/library/stubutils.h>
+#include <packages/mapistub.2020.1.25/mapistub/library/stubutils.h>
 #include <core/utility/strings.h>
 #include <core/utility/file.h>
 #include <core/utility/registry.h>
