@@ -94,10 +94,10 @@ namespace import
 		LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeMargins", pfnGetThemeMargins); // STRING_OK;
 		LoadProc(L"uxtheme.dll", hModUxTheme, "SetWindowTheme", pfnSetWindowTheme); // STRING_OK;
 		LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeSysSize", pfnGetThemeSysSize); // STRING_OK;
-		LoadProc(L"msi.dll", mapistub::GetHModMSI(), "MsiGetFileVersionW", pfnMsiGetFileVersion); // STRING_OK;
+		LoadProc(L"msi.dll", mapistub::hModMSI, "MsiGetFileVersionW", pfnMsiGetFileVersion); // STRING_OK;
 		LoadProc(L"shell32.dll", hModShell32, "SHGetPropertyStoreForWindow", pfnSHGetPropertyStoreForWindow); // STRING_OK;
-		LoadProc(L"kernel32.dll", mapistub::GetHModKernel32(), "FindPackagesByPackageFamily", pfnFindPackagesByPackageFamily); // STRING_OK;
-		LoadProc(L"kernel32.dll", mapistub::GetHModKernel32(), "PackageIdFromFullName", pfnPackageIdFromFullName); // STRING_OK;
+		LoadProc(L"kernel32.dll", mapistub::hModKernel32, "FindPackagesByPackageFamily", pfnFindPackagesByPackageFamily); // STRING_OK;
+		LoadProc(L"kernel32.dll", mapistub::hModKernel32, "PackageIdFromFullName", pfnPackageIdFromFullName); // STRING_OK;
 		// clang-format on
 	}
 
@@ -221,7 +221,7 @@ namespace import
 		{
 			LoadProc(
 				L"kernel32.dll",
-				mapistub::GetHModKernel32(),
+				mapistub::hModKernel32,
 				"HeapSetInformation",
 				pfnHeapSetInformation); // STRING_OK;
 		}
