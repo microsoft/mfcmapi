@@ -80,6 +80,7 @@ namespace import
 	extern LPFINDPACKAGESBYPACKAGEFAMILY pfnFindPackagesByPackageFamily;
 	extern LPPACKAGEIDFROMFULLNAME pfnPackageIdFromFullName;
 
+	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName);
 	_Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName);
 
 	void ImportProcs();

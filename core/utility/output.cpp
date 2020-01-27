@@ -380,7 +380,7 @@ namespace output
 
 	void initStubCallbacks()
 	{
-		logLoadMapiCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadMAPI, _1, _2); };
-		logLoadLibraryCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadLibrary, _1, _2); };
+		mapistub::logLoadMapiCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadMAPI, _1, _2); };
+		mapistub::logLoadLibraryCallback = [](auto _1, auto _2) { output::DebugPrint(output::DBGLoadLibrary, _1, _2); };
 	}
 } // namespace output
