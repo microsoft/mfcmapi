@@ -3,10 +3,13 @@
 #include <core/utility/strings.h>
 #include <core/utility/output.h>
 #include <core/utility/error.h>
+#include <mapistub/library/stubutils.h>
 #include <ShlObj.h>
 
 namespace file
 {
+	std::wstring GetSystemDirectory() { return mapistub::GetSystemDirectory(); }
+
 	std::wstring ShortenPath(const std::wstring& path)
 	{
 		if (!path.empty())

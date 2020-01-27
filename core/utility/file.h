@@ -2,6 +2,7 @@
 
 namespace file
 {
+	std::wstring GetSystemDirectory();
 	std::wstring ShortenPath(const std::wstring& path);
 	std::wstring GetDirectoryPath(HWND hWnd);
 
