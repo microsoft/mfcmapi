@@ -15,10 +15,6 @@ namespace import
 	HMODULE hModInetComm = nullptr;
 	HMODULE hModShell32 = nullptr;
 
-	// Lives over in stubutils.cpp
-	extern HMODULE hModMSI;
-	extern HMODULE hModKernel32;
-
 	typedef HTHEME(STDMETHODCALLTYPE CLOSETHEMEDATA)(HTHEME hTheme);
 	typedef CLOSETHEMEDATA* LPCLOSETHEMEDATA;
 
@@ -57,6 +53,11 @@ namespace import
 	LPFINDPACKAGESBYPACKAGEFAMILY pfnFindPackagesByPackageFamily = nullptr;
 	LPPACKAGEIDFROMFULLNAME pfnPackageIdFromFullName = nullptr;
 
+	_Check_return_ HMODULE LoadFromSystemDir(_In_ const std::wstring& szDLLName)
+	{
+		return mapistub::LoadFromSystemDir(szDLLName);
+	}
+
 	// Exists to allow some logging
 	_Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName)
 	{
@@ -76,6 +77,13 @@ namespace import
 		return hMod;
 	}
 
+	template <class T> void LoadProc(_In_ const std::wstring& szModule, HMODULE& hModule, LPCSTR szEntryPoint, T& lpfn)
+	{
+		FARPROC lpfnFP = {};
+		mapistub::LoadProc(szModule, hModule, szEntryPoint, lpfnFP);
+		lpfn = reinterpret_cast<T>(lpfnFP);
+	}
+
 	void ImportProcs()
 	{
 		// clang-format off
@@ -86,10 +94,10 @@ namespace import
 		LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeMargins", pfnGetThemeMargins); // STRING_OK;
 		LoadProc(L"uxtheme.dll", hModUxTheme, "SetWindowTheme", pfnSetWindowTheme); // STRING_OK;
 		LoadProc(L"uxtheme.dll", hModUxTheme, "GetThemeSysSize", pfnGetThemeSysSize); // STRING_OK;
-		LoadProc(L"msi.dll", hModMSI, "MsiGetFileVersionW", pfnMsiGetFileVersion); // STRING_OK;
+		LoadProc(L"msi.dll", mapistub::GetHModMSI(), "MsiGetFileVersionW", pfnMsiGetFileVersion); // STRING_OK;
 		LoadProc(L"shell32.dll", hModShell32, "SHGetPropertyStoreForWindow", pfnSHGetPropertyStoreForWindow); // STRING_OK;
-		LoadProc(L"kernel32.dll", hModKernel32, "FindPackagesByPackageFamily", pfnFindPackagesByPackageFamily); // STRING_OK;
-		LoadProc(L"kernel32.dll", hModKernel32, "PackageIdFromFullName", pfnPackageIdFromFullName); // STRING_OK;
+		LoadProc(L"kernel32.dll", mapistub::GetHModKernel32(), "FindPackagesByPackageFamily", pfnFindPackagesByPackageFamily); // STRING_OK;
+		LoadProc(L"kernel32.dll", mapistub::GetHModKernel32(), "PackageIdFromFullName", pfnPackageIdFromFullName); // STRING_OK;
 		// clang-format on
 	}
 
@@ -211,8 +219,11 @@ namespace import
 	{
 		if (!pfnHeapSetInformation)
 		{
-			LoadProc(L"kernel32.dll", hModKernel32, "HeapSetInformation",
-					 pfnHeapSetInformation); // STRING_OK;
+			LoadProc(
+				L"kernel32.dll",
+				mapistub::GetHModKernel32(),
+				"HeapSetInformation",
+				pfnHeapSetInformation); // STRING_OK;
 		}
 
 		if (pfnHeapSetInformation)
