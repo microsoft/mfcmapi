@@ -17,6 +17,8 @@ namespace error
 #define OPT_INOUT (OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE)
 namespace cli
 {
+#pragma warning(push)
+#pragma warning(disable : 5054) // warning C5054: operator '|': deprecated between enumerations of different types
 	option switchSearch{L"Search", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchDecimal{L"Number", cmdmodeUnknown, 0, 0, OPT_NOOPT};
 	option switchFolder{L"Folder", cmdmodeUnknown, 1, 1, OPT_INITALL | OPT_NEEDFOLDER};
@@ -67,6 +69,7 @@ namespace cli
 
 	// If we want to add aliases for any switches, add them here
 	option switchHelpAlias{L"Help", cmdmodeHelpFull, 0, 0, OPT_INITMFC};
+#pragma warning(pop)
 
 	std::vector<option*> g_options = {
 		&switchHelp,
@@ -521,7 +524,10 @@ namespace cli
 		if (cmdmodeUnknown == options.mode && options.flags & OPT_PROFILE)
 		{
 			options.mode = cmdmodeProfile;
+#pragma warning(push)
+#pragma warning(disable : 5054) // warning C5054: operator '|': deprecated between enumerations of different types
 			options.flags |= OPT_NEEDMAPIINIT | OPT_INITMFC;
+#pragma warning(pop)
 		}
 
 		// If we didn't get a mode set, assume we're in prop tag mode
