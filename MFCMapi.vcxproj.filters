@@ -64,9 +64,6 @@
     <ClInclude Include="UI\CMAPIProgress.h">
       <Filter>Source Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\SortHeader.h" />
-    <ClInclude Include="UI\Controls\SortList\SortListCtrl.h" />
-    <ClInclude Include="UI\OnNotify.h" />
     <ClInclude Include="UI\Controls\SortList\ContentsTableListCtrl.h">
       <Filter>Source Files\UI\Controls</Filter>
     </ClInclude>
@@ -79,7 +76,18 @@
     <ClInclude Include="UI\Controls\StyleTree\StyleTreeCtrl.h">
       <Filter>Source Files\UI\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="UI\ViewPane\getpane.h" />
+    <ClInclude Include="UI\ViewPane\getpane.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\OnNotify.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\SortList\SortHeader.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\SortList\SortListCtrl.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
@@ -111,15 +119,6 @@
     <ClCompile Include="UI\CMAPIProgress.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\SortHeader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\OnNotify.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="UI\Controls\SortList\ContentsTableListCtrl.cpp">
       <Filter>Source Files\UI\Controls</Filter>
     </ClCompile>
@@ -131,6 +130,15 @@
     </ClCompile>
     <ClCompile Include="UI\Controls\StyleTree\StyleTreeCtrl.cpp">
       <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\SortHeader.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\OnNotify.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
