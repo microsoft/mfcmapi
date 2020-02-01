@@ -17,7 +17,7 @@ namespace controls
 namespace cache
 {
 	class CMapiObjects;
-}
+} // namespace cache
 
 namespace mapi
 {
