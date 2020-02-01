@@ -5,14 +5,10 @@
 #include <core/addin/mfcmapi.h>
 #include <UI/FakeSplitter.h>
 
-namespace controls
+namespace controls::sortlistctrl
 {
-	class CFakeSplitter;
-	namespace sortlistctrl
-	{
-		class CSingleMAPIPropListCtrl;
-	}
-} // namespace controls
+	class CSingleMAPIPropListCtrl;
+} // namespace controls::sortlistctrl
 
 namespace cache
 {

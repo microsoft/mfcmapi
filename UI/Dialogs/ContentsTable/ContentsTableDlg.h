@@ -3,13 +3,10 @@
 #include <core/mapi/columnTags.h>
 #include <core/addin/mfcmapi.h>
 
-namespace controls
+namespace controls::sortlistctrl
 {
-	namespace sortlistctrl
-	{
-		class CContentsTableListCtrl;
-	}
-} // namespace controls
+	class CContentsTableListCtrl;
+} // namespace controls::sortlistctrl
 
 namespace dialog
 {
