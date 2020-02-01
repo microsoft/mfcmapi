@@ -83,7 +83,7 @@ namespace proptags
 		if (fIsSet(output::DBGTest))
 		{
 			static size_t cchMaxBuff = 0;
-			auto cchBuff = szRet.length();
+			const auto cchBuff = szRet.length();
 			cchMaxBuff = max(cchBuff, cchMaxBuff);
 			output::DebugPrint(
 				output::DBGTest,

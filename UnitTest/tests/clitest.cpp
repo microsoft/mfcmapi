@@ -147,7 +147,7 @@ namespace clitest
 			auto args = _args;
 			cli::OPTIONS options{};
 
-			auto result = option.scanArgs(args, options, g_options);
+			const auto result = option.scanArgs(args, options, g_options);
 
 			if (targetResult == result)
 			{

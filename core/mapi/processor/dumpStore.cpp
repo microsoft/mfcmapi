@@ -513,7 +513,7 @@ namespace mapi::processor
 						 PR_INTERNET_CPID},
 					};
 
-					for (auto column : sptCols.aulPropTag)
+					for (const auto column : sptCols.aulPropTag)
 					{
 						const auto lpTemp = PpropFindProp(lpAllProps, cValues, column);
 						if (lpTemp)

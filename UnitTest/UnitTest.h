@@ -20,10 +20,10 @@ namespace Microsoft::VisualStudio::CppUnitTestFramework
 
 namespace unittest
 {
-	static const bool parse_all = true;
-	static const bool assert_on_failure = true;
-	static const bool limit_output = true;
-	static const bool ignore_trailing_whitespace = false;
+	static constexpr bool parse_all = true;
+	static constexpr bool assert_on_failure = true;
+	static constexpr bool limit_output = true;
+	static constexpr bool ignore_trailing_whitespace = false;
 
 	void init();
 

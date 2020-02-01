@@ -55,5 +55,5 @@
 
 namespace cache
 {
-	const ULONG ulNoMatch = 0xffffffff;
+	constexpr ULONG ulNoMatch = 0xffffffff;
 }
