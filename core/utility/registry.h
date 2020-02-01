@@ -33,6 +33,7 @@ namespace registry
 		bool bRefresh;
 		UINT uiOptionsPrompt;
 
+		__RegKey() = default;
 		__RegKey(const __RegKey&) = delete;
 		__RegKey& operator=(__RegKey const&) = delete;
 		__RegKey(__RegKey&&) = delete;
