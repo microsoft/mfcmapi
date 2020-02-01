@@ -153,7 +153,7 @@ namespace proptags
 	}
 
 	// Compare tag sort order.
-	bool CompareTagsSortOrder(int a1, int a2)
+	bool CompareTagsSortOrder(int a1, int a2) noexcept
 	{
 		const auto lpTag1 = &PropTagArray[a1];
 		const auto lpTag2 = &PropTagArray[a2];

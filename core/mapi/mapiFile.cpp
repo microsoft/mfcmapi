@@ -365,7 +365,7 @@ namespace file
 		_In_ STGOPTIONS* pStgOptions,
 		_Pre_null_ void* reserved,
 		_In_ REFIID riid,
-		_Out_ void** ppObjectOpen)
+		_Out_ void** ppObjectOpen) noexcept
 	{
 		if (pName.empty()) return MAPI_E_INVALID_PARAMETER;
 

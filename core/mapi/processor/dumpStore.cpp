@@ -36,7 +36,7 @@ namespace mapi::processor
 		}
 	}
 
-	dumpStore::dumpStore()
+	dumpStore::dumpStore() noexcept
 	{
 		m_fFolderProps = nullptr;
 		m_fFolderContents = nullptr;
@@ -79,13 +79,13 @@ namespace mapi::processor
 		m_szMailboxTablePathRoot = szMailboxTablePathRoot;
 	}
 
-	void dumpStore::EnableMSG() { m_bOutputMSG = true; }
+	void dumpStore::EnableMSG() noexcept { m_bOutputMSG = true; }
 
-	void dumpStore::EnableList() { m_bOutputList = true; }
+	void dumpStore::EnableList() noexcept { m_bOutputList = true; }
 
-	void dumpStore::DisableStreamRetry() { m_bRetryStreamProps = false; }
+	void dumpStore::DisableStreamRetry() noexcept { m_bRetryStreamProps = false; }
 
-	void dumpStore::DisableEmbeddedAttachments() { m_bOutputAttachments = false; }
+	void dumpStore::DisableEmbeddedAttachments() noexcept { m_bOutputAttachments = false; }
 
 	void dumpStore::BeginMailboxTableWork(_In_ const std::wstring& szExchangeServerName)
 	{
@@ -150,9 +150,9 @@ namespace mapi::processor
 		m_fMailboxTable = nullptr;
 	}
 
-	void dumpStore::BeginStoreWork() {}
+	void dumpStore::BeginStoreWork() noexcept {}
 
-	void dumpStore::EndStoreWork() {}
+	void dumpStore::EndStoreWork() noexcept {}
 
 	void dumpStore::BeginFolderWork()
 	{

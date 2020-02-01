@@ -56,9 +56,9 @@ namespace registry
 			uiOptionsPrompt = _uiOptionsPrompt;
 		}
 
-		operator bool() const { return ulCurDWORD != 0; }
+		operator bool() const noexcept { return ulCurDWORD != 0; }
 
-		boolRegKey& operator=(const bool val)
+		boolRegKey& operator=(const bool val) noexcept
 		{
 			ulCurDWORD = val;
 			return *this;
@@ -85,15 +85,15 @@ namespace registry
 			uiOptionsPrompt = _uiOptionsPrompt;
 		}
 
-		operator DWORD() const { return ulCurDWORD; }
+		operator DWORD() const noexcept { return ulCurDWORD; }
 
-		dwordRegKey& operator=(const DWORD val)
+		dwordRegKey& operator=(const DWORD val) noexcept
 		{
 			ulCurDWORD = val;
 			return *this;
 		}
 
-		dwordRegKey& operator|=(const DWORD val)
+		dwordRegKey& operator|=(const DWORD val) noexcept
 		{
 			ulCurDWORD |= val;
 			return *this;

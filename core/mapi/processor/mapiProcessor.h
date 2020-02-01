@@ -21,12 +21,12 @@ namespace mapi::processor
 	class mapiProcessor
 	{
 	public:
-		mapiProcessor();
+		mapiProcessor() noexcept;
 		virtual ~mapiProcessor();
 
 		// Initialization
-		void InitSession(_In_ LPMAPISESSION lpSession);
-		void InitMDB(_In_ LPMDB lpMDB);
+		void InitSession(_In_ LPMAPISESSION lpSession) noexcept;
+		void InitMDB(_In_ LPMDB lpMDB) noexcept;
 		void InitFolder(_In_ LPMAPIFOLDER lpFolder);
 		void InitFolderContentsRestriction(_In_opt_ LPSRestriction lpRes);
 		void InitMaxOutput(_In_ ULONG ulCount);

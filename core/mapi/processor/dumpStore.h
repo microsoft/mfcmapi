@@ -23,16 +23,16 @@ namespace mapi::processor
 	class dumpStore : public mapiProcessor
 	{
 	public:
-		dumpStore();
+		dumpStore() noexcept;
 		virtual ~dumpStore();
 
 		void InitMessagePath(_In_ const std::wstring& szMessageFileName);
 		void InitFolderPathRoot(_In_ const std::wstring& szFolderPathRoot);
 		void InitMailboxTablePathRoot(_In_ const std::wstring& szMailboxTablePathRoot);
-		void EnableMSG();
-		void EnableList();
-		void DisableStreamRetry();
-		void DisableEmbeddedAttachments();
+		void EnableMSG() noexcept;
+		void EnableList() noexcept;
+		void DisableStreamRetry() noexcept;
+		void DisableEmbeddedAttachments() noexcept;
 
 	private:
 		// Worker functions (dump messages, scan for something, etc)
@@ -40,8 +40,8 @@ namespace mapi::processor
 		void DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const _SRow* lpSRow, ULONG ulCurRow) override;
 		void EndMailboxTableWork() override;
 
-		void BeginStoreWork() override;
-		void EndStoreWork() override;
+		void BeginStoreWork() noexcept override;
+		void EndStoreWork() noexcept override;
 
 		void BeginFolderWork() override;
 		void DoFolderPerHierarchyTableRowWork(_In_ const _SRow* lpSRow) override;

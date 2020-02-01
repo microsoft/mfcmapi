@@ -10,7 +10,7 @@
 
 namespace mapi::processor
 {
-	mapiProcessor::mapiProcessor()
+	mapiProcessor::mapiProcessor() noexcept
 	{
 		m_lpSession = nullptr;
 		m_lpMDB = nullptr;
@@ -30,14 +30,14 @@ namespace mapi::processor
 
 	// --------------------------------------------------------------------------------- //
 
-	void mapiProcessor::InitSession(_In_ LPMAPISESSION lpSession)
+	void mapiProcessor::InitSession(_In_ LPMAPISESSION lpSession) noexcept
 	{
 		if (m_lpSession) m_lpSession->Release();
 		m_lpSession = lpSession;
 		if (m_lpSession) m_lpSession->AddRef();
 	}
 
-	void mapiProcessor::InitMDB(_In_ LPMDB lpMDB)
+	void mapiProcessor::InitMDB(_In_ LPMDB lpMDB) noexcept
 	{
 		if (m_lpMDB) m_lpMDB->Release();
 		m_lpMDB = lpMDB;

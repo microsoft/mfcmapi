@@ -391,7 +391,7 @@ namespace addin
 	}
 
 	// Compare type arrays.
-	int _cdecl CompareTypes(_In_ const void* a1, _In_ const void* a2)
+	int _cdecl CompareTypes(_In_ const void* a1, _In_ const void* a2) noexcept
 	{
 		const auto lpType1 = LPNAME_ARRAY_ENTRY(a1);
 		const auto lpType2 = LPNAME_ARRAY_ENTRY(a2);
@@ -406,7 +406,7 @@ namespace addin
 	}
 
 	// Compare tag arrays. Pay no attention to sort order - we'll sort on sort order during output.
-	int _cdecl CompareTags(_In_ const void* a1, _In_ const void* a2)
+	int _cdecl CompareTags(_In_ const void* a1, _In_ const void* a2) noexcept
 	{
 		const auto lpTag1 = LPNAME_ARRAY_ENTRY_V2(a1);
 		const auto lpTag2 = LPNAME_ARRAY_ENTRY_V2(a2);
@@ -420,7 +420,7 @@ namespace addin
 		return -1;
 	}
 
-	int _cdecl CompareNameID(_In_ const void* a1, _In_ const void* a2)
+	int _cdecl CompareNameID(_In_ const void* a1, _In_ const void* a2) noexcept
 	{
 		const auto lpID1 = LPNAMEID_ARRAY_ENTRY(a1);
 		const auto lpID2 = LPNAMEID_ARRAY_ENTRY(a2);
@@ -436,7 +436,7 @@ namespace addin
 		return -1;
 	}
 
-	int _cdecl CompareSmartViewParser(_In_ const void* a1, _In_ const void* a2)
+	int _cdecl CompareSmartViewParser(_In_ const void* a1, _In_ const void* a2) noexcept
 	{
 		const auto lpParser1 = LPSMARTVIEW_PARSER_ARRAY_ENTRY(a1);
 		const auto lpParser2 = LPSMARTVIEW_PARSER_ARRAY_ENTRY(a2);
@@ -485,7 +485,7 @@ namespace addin
 	// Flags are difficult to sort since we need to have a stable sort
 	// Records with the same key must appear in the output in the same order as the input
 	// qsort doesn't guarantee this, so we do it manually with an insertion sort
-	void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ ULONG ulFlags)
+	void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ ULONG ulFlags) noexcept
 	{
 		for (ULONG i = 1; i < ulFlags; i++)
 		{
