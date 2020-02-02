@@ -141,7 +141,7 @@ namespace smartview
 		ULONG ulPropTag,
 		ULONG ulPropNameID,
 		_In_opt_z_ LPCWSTR lpszPropNameString,
-		_In_opt_ LPCGUID lpguidNamedProp)
+		_In_opt_ LPCGUID lpguidNamedProp) noexcept
 	{
 		const auto ulPropID = PROP_ID(ulPropTag);
 
@@ -603,9 +603,9 @@ namespace smartview
 		BYTE globcnt[cbGlobcnt];
 	};
 
-	_Check_return_ WORD WGetReplId(ID id) { return id.replid; }
+	_Check_return_ WORD WGetReplId(ID id) noexcept { return id.replid; }
 
-	_Check_return_ ULONGLONG UllGetIdGlobcnt(ID id)
+	_Check_return_ ULONGLONG UllGetIdGlobcnt(ID id) noexcept
 	{
 		ULONGLONG ul = 0;
 		for (const auto i : id.globcnt)

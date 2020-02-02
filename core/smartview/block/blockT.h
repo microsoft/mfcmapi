@@ -23,8 +23,8 @@ namespace smartview
 		// Mimic type T
 		void setData(const T& _data) { data = _data; }
 		T getData() const { return data; }
-		operator T&() { return data; }
-		operator T() const { return data; }
+		operator T&() noexcept { return data; }
+		operator T() const noexcept { return data; }
 
 		// Fill out object of type T, reading from type SOURCE_U
 		template <typename SOURCE_U> void parse(const std::shared_ptr<binaryParser>& parser)
