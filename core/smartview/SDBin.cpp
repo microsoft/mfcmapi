@@ -24,18 +24,18 @@ namespace smartview
 
 	void SDBin::parseBlocks()
 	{
-		auto acetype = sid::acetypeMessage;
+		auto acetype = sid::aceType::Message;
 		switch (mapi::GetMAPIObjectType(m_lpMAPIProp))
 		{
 		case MAPI_STORE:
 		case MAPI_ADDRBOOK:
 		case MAPI_FOLDER:
 		case MAPI_ABCONT:
-			acetype = sid::acetypeContainer;
+			acetype = sid::aceType::Container;
 			break;
 		}
 
-		if (m_bFB) acetype = sid::acetypeFreeBusy;
+		if (m_bFB) acetype = sid::aceType::FreeBusy;
 
 		if (m_SDbin)
 		{

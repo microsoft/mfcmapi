@@ -37,7 +37,7 @@ namespace mapi::mapiui
 		ULONG m_ulPropTag;
 		LPBYTE m_lpHeader;
 		ULONG m_cbHeader;
-		sid::eAceType m_acetype;
+		sid::aceType m_acetype;
 		std::wstring m_wszObject;
 	};
 } // namespace mapi::mapiui

@@ -57,7 +57,7 @@ namespace mapi::mapiui
 		m_cRef = 1;
 		m_ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_BINARY); // An SD must be in a binary prop
 		m_lpMAPIProp = lpMAPIProp;
-		m_acetype = sid::acetypeMessage;
+		m_acetype = sid::aceType::Message;
 		m_cbHeader = 0;
 		m_lpHeader = nullptr;
 
@@ -71,12 +71,12 @@ namespace mapi::mapiui
 			case MAPI_ADDRBOOK:
 			case MAPI_FOLDER:
 			case MAPI_ABCONT:
-				m_acetype = sid::acetypeContainer;
+				m_acetype = sid::aceType::Container;
 				break;
 			}
 		}
 
-		if (PR_FREEBUSY_NT_SECURITY_DESCRIPTOR == m_ulPropTag) m_acetype = sid::acetypeFreeBusy;
+		if (PR_FREEBUSY_NT_SECURITY_DESCRIPTOR == m_ulPropTag) m_acetype = sid::aceType::FreeBusy;
 
 		m_wszObject = strings::loadstring(IDS_OBJECT);
 	}
@@ -142,12 +142,13 @@ namespace mapi::mapiui
 
 		if (bAllowEdits)
 		{
-			pObjectInfo->dwFlags =
-				SI_EDIT_PERMS | SI_EDIT_OWNER | SI_ADVANCED | (sid::acetypeContainer == m_acetype ? SI_CONTAINER : 0);
+			pObjectInfo->dwFlags = SI_EDIT_PERMS | SI_EDIT_OWNER | SI_ADVANCED |
+								   (sid::aceType::Container == m_acetype ? SI_CONTAINER : 0);
 		}
 		else
 		{
-			pObjectInfo->dwFlags = SI_READONLY | SI_ADVANCED | (sid::acetypeContainer == m_acetype ? SI_CONTAINER : 0);
+			pObjectInfo->dwFlags =
+				SI_READONLY | SI_ADVANCED | (sid::aceType::Container == m_acetype ? SI_CONTAINER : 0);
 		}
 
 		pObjectInfo->pszObjectName = LPWSTR(m_wszObject.c_str()); // Object being edited
@@ -266,15 +267,15 @@ namespace mapi::mapiui
 
 		switch (m_acetype)
 		{
-		case sid::acetypeContainer:
+		case sid::aceType::Container:
 			*ppAccess = siExchangeAccessesFolder;
 			*pcAccesses = _countof(siExchangeAccessesFolder);
 			break;
-		case sid::acetypeMessage:
+		case sid::aceType::Message:
 			*ppAccess = siExchangeAccessesMessage;
 			*pcAccesses = _countof(siExchangeAccessesMessage);
 			break;
-		case sid::acetypeFreeBusy:
+		case sid::aceType::FreeBusy:
 			*ppAccess = siExchangeAccessesFreeBusy;
 			*pcAccesses = _countof(siExchangeAccessesFreeBusy);
 			break;
@@ -290,13 +291,13 @@ namespace mapi::mapiui
 
 		switch (m_acetype)
 		{
-		case sid::acetypeContainer:
+		case sid::aceType::Container:
 			MapGenericMask(pMask, &gmFolders);
 			break;
-		case sid::acetypeMessage:
+		case sid::aceType::Message:
 			MapGenericMask(pMask, &gmMessages);
 			break;
-		case sid::acetypeFreeBusy:
+		case sid::aceType::FreeBusy:
 			// No generic for freebusy
 			break;
 		};

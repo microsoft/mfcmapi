@@ -126,7 +126,7 @@ namespace sid
 		return LookupAccountSid(static_cast<PSID>(buf.data()));
 	}
 
-	std::wstring ACEToString(_In_opt_ void* pACE, eAceType acetype)
+	std::wstring ACEToString(_In_opt_ void* pACE, aceType acetype)
 	{
 		std::vector<std::wstring> aceString;
 		ACCESS_MASK Mask = 0;
@@ -177,13 +177,13 @@ namespace sid
 
 		switch (acetype)
 		{
-		case acetypeContainer:
+		case aceType::Container:
 			szAceMask = flags::InterpretFlags(flagACEMaskContainer, Mask);
 			break;
-		case acetypeMessage:
+		case aceType::Message:
 			szAceMask = flags::InterpretFlags(flagACEMaskNonContainer, Mask);
 			break;
-		case acetypeFreeBusy:
+		case aceType::FreeBusy:
 			szAceMask = flags::InterpretFlags(flagACEMaskFreeBusy, Mask);
 			break;
 		};
@@ -217,7 +217,7 @@ namespace sid
 		return strings::join(aceString, L"\r\n");
 	}
 
-	_Check_return_ SecurityDescriptor SDToString(const std::vector<BYTE>& buf, eAceType acetype)
+	_Check_return_ SecurityDescriptor SDToString(const std::vector<BYTE>& buf, aceType acetype)
 	{
 		if (buf.empty()) return {};
 
