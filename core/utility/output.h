@@ -51,13 +51,13 @@ namespace output
 	void CloseDebugFile();
 	void SetDebugOutputToFile(bool bDoOutput);
 
-	bool fIsSet(output::DBGLEVEL ulTag);
-	bool fIsSetv(output::DBGLEVEL ulTag);
+	bool fIsSet(output::DBGLEVEL ulTag) noexcept;
+	bool fIsSetv(output::DBGLEVEL ulTag) noexcept;
 	bool earlyExit(output::DBGLEVEL ulDbgLvl, bool fFile);
 
 	_Check_return_ FILE* MyOpenFile(const std::wstring& szFileName, bool bNewFile);
 	_Check_return_ FILE* MyOpenFileMode(const std::wstring& szFileName, const wchar_t* mode);
-	void CloseFile(_In_opt_ FILE* fFile);
+	void CloseFile(_In_opt_ FILE* fFile) noexcept;
 
 	void Output(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const std::wstring& szMsg);
 	void __cdecl Outputf(output::DBGLEVEL ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, LPCWSTR szMsg, ...);

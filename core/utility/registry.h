@@ -131,7 +131,10 @@ namespace registry
 		_NODISCARD bool empty() const noexcept { return szCurSTRING.empty(); }
 		void clear() noexcept { szCurSTRING.clear(); }
 		void push_back(const wchar_t _Ch) { szCurSTRING.push_back(_Ch); }
-		_NODISCARD std::wstring::reference operator[](const std::wstring::size_type _Off) { return szCurSTRING[_Off]; }
+		_NODISCARD std::wstring::reference operator[](const std::wstring::size_type _Off) noexcept
+		{
+			return szCurSTRING[_Off];
+		}
 	};
 
 	extern std::vector<__RegKey*> RegKeys;

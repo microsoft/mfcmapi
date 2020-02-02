@@ -100,7 +100,7 @@ namespace cli
 	// If the mode isn't set (is cmdmodeUnknown/0), then we can set it to any mode
 	// If the mode IS set (non cmdmodeUnknown/0), then we can only set it to the same mode
 	// IE trying to change the mode from anything but unset will fail
-	bool bSetMode(_In_ int& pMode, _In_ int targetMode)
+	bool bSetMode(_In_ int& pMode, _In_ int targetMode) noexcept
 	{
 		if (cmdmodeUnknown == pMode || targetMode == pMode)
 		{

@@ -7,7 +7,7 @@ namespace strings
 	//#define CHECKFORMATPARAMS
 
 	extern std::wstring emptystring;
-	void setTestInstance(HINSTANCE hInstance);
+	void setTestInstance(HINSTANCE hInstance) noexcept;
 	std::wstring loadstring(DWORD dwID);
 	std::wstring formatV(LPCWSTR szMsg, va_list argList);
 	std::wstring format(LPCWSTR szMsg, ...);
@@ -29,7 +29,7 @@ namespace strings
 	std::wstring wstringToLower(const std::wstring& src);
 	bool
 	tryWstringToUlong(ULONG& out, const std::wstring& src, int radix, bool rejectInvalidCharacters = true) noexcept;
-	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters = true);
+	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters = true) noexcept;
 	long wstringToLong(const std::wstring& src, int radix) noexcept;
 	double wstringToDouble(const std::wstring& src) noexcept;
 	__int64 wstringToInt64(const std::wstring& src) noexcept;

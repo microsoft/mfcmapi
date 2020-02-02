@@ -184,8 +184,10 @@ namespace smartview
 		return NULL;
 	}
 
-	_Check_return_ __ParsingTypeEnum
-	FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp)
+	_Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(
+		const ULONG ulPropTag,
+		const ULONG ulPropNameID,
+		_In_opt_ const LPCGUID lpguidNamedProp) noexcept
 	{
 		const auto ulIndex = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, nullptr, lpguidNamedProp);
 		const auto bMV = (PROP_TYPE(ulPropTag) & MV_FLAG) == MV_FLAG;

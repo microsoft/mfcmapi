@@ -28,7 +28,10 @@ namespace smartview
 			enableJunk = true;
 		}
 
-		virtual void parse(const std::shared_ptr<binaryParser>& binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
+		virtual void parse(const std::shared_ptr<binaryParser>& binaryParser, bool bDoJunk)
+		{
+			parse(binaryParser, 0, bDoJunk);
+		}
 
 		void parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool _enableJunk)
 		{
@@ -41,7 +44,7 @@ namespace smartview
 
 		std::wstring toString();
 
-		std::shared_ptr<block>& getBlock() { return data; }
+		std::shared_ptr<block>& getBlock() noexcept { return data; }
 		bool hasData() const { return data->hasData(); }
 
 	protected:
@@ -53,7 +56,7 @@ namespace smartview
 			data->setText(text, args...);
 		}
 
-		void setRoot(const std::shared_ptr<block>& _data) { data = _data; }
+		void setRoot(const std::shared_ptr<block>& _data) noexcept { data = _data; }
 
 		template <typename... Args>
 		void setRoot(const std::shared_ptr<block>& _data, const std::wstring& text, const Args... args)

@@ -62,8 +62,8 @@ namespace output
 		}
 	}
 
-	bool fIsSet(output::DBGLEVEL ulTag) { return registry::debugTag & ulTag; }
-	bool fIsSetv(output::DBGLEVEL ulTag) { return (ulTag != DBGNoDebug) && (registry::debugTag & ulTag); }
+	bool fIsSet(output::DBGLEVEL ulTag) noexcept { return registry::debugTag & ulTag; }
+	bool fIsSetv(output::DBGLEVEL ulTag) noexcept { return (ulTag != DBGNoDebug) && (registry::debugTag & ulTag); }
 
 	bool earlyExit(output::DBGLEVEL ulDbgLvl, bool fFile)
 	{
@@ -111,7 +111,7 @@ namespace output
 		return nullptr;
 	}
 
-	void CloseFile(_In_opt_ FILE* fFile)
+	void CloseFile(_In_opt_ FILE* fFile) noexcept
 	{
 		if (fFile) fclose(fFile);
 	}

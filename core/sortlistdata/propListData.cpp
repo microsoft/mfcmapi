@@ -11,5 +11,5 @@ namespace sortlistdata
 		data->init(std::make_shared<propListData>(ulPropTag), true);
 	}
 
-	propListData::propListData(_In_ ULONG ulPropTag) : m_ulPropTag(ulPropTag) {}
+	propListData::propListData(_In_ ULONG ulPropTag) noexcept : m_ulPropTag(ulPropTag) {}
 } // namespace sortlistdata

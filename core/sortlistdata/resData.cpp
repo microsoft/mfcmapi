@@ -11,5 +11,5 @@ namespace sortlistdata
 		data->init(std::make_shared<resData>(lpOldRes), true);
 	}
 
-	resData::resData(_In_opt_ const _SRestriction* lpOldRes) : m_lpOldRes(lpOldRes) {}
+	resData::resData(_In_opt_ const _SRestriction* lpOldRes) noexcept : m_lpOldRes(lpOldRes) {}
 } // namespace sortlistdata

@@ -41,7 +41,7 @@ namespace strings
 	// This will try to load the string from the executable, which is fine for MFCMAPI and MrMAPI
 	// In our unit tests, we must load strings from UnitTest.dll, so we use setTestInstance
 	// to populate an appropriate HINSTANCE
-	void setTestInstance(HINSTANCE hInstance) { g_testInstance = hInstance; }
+	void setTestInstance(HINSTANCE hInstance) noexcept { g_testInstance = hInstance; }
 
 	std::wstring loadstring(DWORD dwID)
 	{
@@ -211,7 +211,7 @@ namespace strings
 	}
 
 	// Converts a std::wstring to a ulong. Will return 0 if string is empty or contains non-numeric data.
-	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters)
+	ULONG wstringToUlong(const std::wstring& src, int radix, bool rejectInvalidCharacters) noexcept
 	{
 		ULONG ulArg{};
 		if (tryWstringToUlong(ulArg, src, radix, rejectInvalidCharacters))
@@ -367,7 +367,7 @@ namespace strings
 		std::replace_if(
 			szBin.begin(),
 			szBin.end(),
-			[bMultiLine](const char& chr) { return InvalidCharacter(0xFF & chr, bMultiLine); },
+			[bMultiLine](const char& chr) noexcept { return InvalidCharacter(0xFF & chr, bMultiLine); },
 			'.');
 
 		if (nullTerminated) szBin.back() = '\0';
@@ -382,7 +382,7 @@ namespace strings
 		std::replace_if(
 			szBin.begin(),
 			szBin.end(),
-			[bMultiLine](const WCHAR& chr) { return InvalidCharacter(chr, bMultiLine); },
+			[bMultiLine](const WCHAR& chr) noexcept { return InvalidCharacter(chr, bMultiLine); },
 			L'.');
 
 		if (nullTerminated) szBin.back() = L'\0';

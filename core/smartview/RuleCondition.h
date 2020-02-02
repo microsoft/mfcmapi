@@ -46,7 +46,7 @@ namespace smartview
 	class RuleCondition : public smartViewParser
 	{
 	public:
-		void Init(bool bExtended);
+		void Init(bool bExtended) noexcept;
 
 	private:
 		void parse() override;

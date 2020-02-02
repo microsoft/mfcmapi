@@ -12,7 +12,7 @@ namespace smartview
 		if (m_lpMAPIProp) m_lpMAPIProp->Release();
 	}
 
-	void SDBin::Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB)
+	void SDBin::Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB) noexcept
 	{
 		if (m_lpMAPIProp) m_lpMAPIProp->Release();
 		m_lpMAPIProp = lpMAPIProp;
