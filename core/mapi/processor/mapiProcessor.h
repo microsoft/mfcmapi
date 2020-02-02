@@ -28,9 +28,9 @@ namespace mapi::processor
 		void InitSession(_In_ LPMAPISESSION lpSession) noexcept;
 		void InitMDB(_In_ LPMDB lpMDB) noexcept;
 		void InitFolder(_In_ LPMAPIFOLDER lpFolder);
-		void InitFolderContentsRestriction(_In_opt_ LPSRestriction lpRes);
-		void InitMaxOutput(_In_ ULONG ulCount);
-		void InitSortOrder(_In_ const _SSortOrderSet* lpSort);
+		void InitFolderContentsRestriction(_In_opt_ LPSRestriction lpRes) noexcept;
+		void InitMaxOutput(_In_ ULONG ulCount) noexcept;
+		void InitSortOrder(_In_ const _SSortOrderSet* lpSort) noexcept;
 
 		// Processing functions
 		void ProcessMailboxTable(_In_ const std::wstring& szExchangeServerName);
@@ -50,14 +50,14 @@ namespace mapi::processor
 		virtual void DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const _SRow* lpSRow, ULONG ulCurRow);
 		virtual void EndMailboxTableWork();
 
-		virtual void BeginStoreWork();
-		virtual void EndStoreWork();
+		virtual void BeginStoreWork() noexcept;
+		virtual void EndStoreWork() noexcept;
 
 		virtual bool ContinueProcessingFolders();
 		virtual bool ShouldProcessContentsTable();
-		virtual void BeginProcessFoldersWork();
-		virtual void DoProcessFoldersPerFolderWork();
-		virtual void EndProcessFoldersWork();
+		virtual void BeginProcessFoldersWork() noexcept;
+		virtual void DoProcessFoldersPerFolderWork() noexcept;
+		virtual void EndProcessFoldersWork() noexcept;
 
 		virtual void BeginFolderWork();
 		virtual void DoFolderPerHierarchyTableRowWork(_In_ const _SRow* lpSRow);

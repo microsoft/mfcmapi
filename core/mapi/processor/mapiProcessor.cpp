@@ -52,16 +52,16 @@ namespace mapi::processor
 		m_szFolderOffset = L"\\"; // STRING_OK
 	}
 
-	void mapiProcessor::InitFolderContentsRestriction(_In_opt_ LPSRestriction lpRes)
+	void mapiProcessor::InitFolderContentsRestriction(_In_opt_ LPSRestriction lpRes) noexcept
 	{
 		// If we ever need to hold this past the scope of the caller we'll need to copy the restriction.
 		// For now, just grab a pointer.
 		m_lpResFolderContents = lpRes;
 	}
 
-	void mapiProcessor::InitMaxOutput(_In_ ULONG ulCount) { m_ulCount = ulCount; }
+	void mapiProcessor::InitMaxOutput(_In_ ULONG ulCount) noexcept { m_ulCount = ulCount; }
 
-	void mapiProcessor::InitSortOrder(_In_ const _SSortOrderSet* lpSort)
+	void mapiProcessor::InitSortOrder(_In_ const _SSortOrderSet* lpSort) noexcept
 	{
 		// If we ever need to hold this past the scope of the caller we'll need to copy the sort order.
 		// For now, just grab a pointer.
@@ -622,15 +622,15 @@ namespace mapi::processor
 
 	void mapiProcessor::EndMailboxTableWork() {}
 
-	void mapiProcessor::BeginStoreWork() {}
+	void mapiProcessor::BeginStoreWork() noexcept {}
 
-	void mapiProcessor::EndStoreWork() {}
+	void mapiProcessor::EndStoreWork() noexcept {}
 
-	void mapiProcessor::BeginProcessFoldersWork() {}
+	void mapiProcessor::BeginProcessFoldersWork() noexcept {}
 
-	void mapiProcessor::DoProcessFoldersPerFolderWork() {}
+	void mapiProcessor::DoProcessFoldersPerFolderWork() noexcept {}
 
-	void mapiProcessor::EndProcessFoldersWork() {}
+	void mapiProcessor::EndProcessFoldersWork() noexcept {}
 
 	void mapiProcessor::BeginFolderWork() {}
 
