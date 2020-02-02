@@ -30,7 +30,7 @@ namespace smartview
 			}
 		}
 
-		virtual bool isSet() const { return set; }
+		virtual bool isSet() const override { return set; }
 
 		// Mimic std::vector<BYTE>
 		operator const std::vector<BYTE>&() const { return _data; }

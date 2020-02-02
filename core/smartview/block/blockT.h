@@ -18,7 +18,7 @@ namespace smartview
 			setOffset(_offset);
 		}
 
-		virtual bool isSet() const { return set; }
+		virtual bool isSet() const override { return set; }
 
 		// Mimic type T
 		void setData(const T& _data) { data = _data; }

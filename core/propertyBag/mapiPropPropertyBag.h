@@ -8,7 +8,7 @@ namespace propertybag
 	{
 	public:
 		mapiPropPropertyBag(LPMAPIPROP lpProp, sortlistdata::sortListData* lpListData);
-		virtual ~mapiPropPropertyBag();
+		~mapiPropPropertyBag();
 
 		ULONG GetFlags() const override;
 		propBagType GetType() const { return pbMAPIProp; }

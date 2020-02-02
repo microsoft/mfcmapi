@@ -24,7 +24,7 @@ namespace mapi::processor
 	{
 	public:
 		dumpStore() noexcept;
-		virtual ~dumpStore();
+		~dumpStore();
 
 		void InitMessagePath(_In_ const std::wstring& szMessageFileName);
 		void InitFolderPathRoot(_In_ const std::wstring& szFolderPathRoot);
