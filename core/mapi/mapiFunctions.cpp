@@ -2237,7 +2237,7 @@ namespace mapi
 					mres.res.resProperty.lpProp = &mval;
 					mval.ulPropTag = PR_SERVICE_UID;
 					mval.Value.bin.cb = sizeof *puidService;
-					mval.Value.bin.lpb = LPBYTE(puidService);
+					mval.Value.bin.lpb = reinterpret_cast<LPBYTE>(const_cast<MAPIUID*>(puidService));
 
 					hRes = EC_MAPI(spmtab->Restrict(&mres, 0));
 				}

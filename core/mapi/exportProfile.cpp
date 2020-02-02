@@ -165,7 +165,7 @@ namespace output
 				if (!szProfileSection.empty())
 				{
 					const auto guid = guid::GUIDNameToGUID(szProfileSection, bByteSwapped);
-					auto sBin = SBinary{sizeof(GUID), LPBYTE(&guid)};
+					auto sBin = SBinary{sizeof(GUID), reinterpret_cast<LPBYTE>(const_cast<GUID*>(&guid))};
 
 					auto lpSect = mapi::profile::OpenProfileSection(lpServiceAdmin, &sBin);
 					if (lpSect)

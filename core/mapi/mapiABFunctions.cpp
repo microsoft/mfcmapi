@@ -530,7 +530,7 @@ namespace mapi::ab
 #ifdef _UNICODE
 		AdrParm.ulFlags |= AB_UNICODEUI;
 #endif
-		AdrParm.lpszCaption = LPTSTR(szTitle.c_str());
+		AdrParm.lpszCaption = reinterpret_cast<LPTSTR>(const_cast<LPSTR>(szTitle.c_str()));
 
 		LPMAILUSER lpMailUser = nullptr;
 		LPADRLIST lpAdrList = nullptr;

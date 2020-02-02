@@ -71,7 +71,7 @@ namespace strings
 		if (dw)
 		{
 			auto ret = std::wstring(buffer);
-			(void) LocalFree(buffer);
+			static_cast<void>(LocalFree(buffer));
 			return ret;
 		}
 
@@ -92,7 +92,7 @@ namespace strings
 		if (dw)
 		{
 			auto ret = std::wstring(buffer);
-			(void) LocalFree(buffer);
+			static_cast<void>(LocalFree(buffer));
 			return ret;
 		}
 

@@ -72,7 +72,7 @@ namespace cache
 				// lpSrcName is LPWSTR which means it's ALWAYS unicode
 				// But some folks get it wrong and stuff ANSI data in there
 				// So we check the string length both ways to make our best guess
-				const auto cchShortLen = strnlen_s(LPCSTR(src.Kind.lpwstrName), RSIZE_MAX);
+				const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(src.Kind.lpwstrName), RSIZE_MAX);
 				const auto cchWideLen = wcsnlen_s(src.Kind.lpwstrName, RSIZE_MAX);
 				auto cbName = size_t();
 
@@ -93,7 +93,7 @@ namespace cache
 					dst.Kind.lpwstrName = mapi::allocate<LPWSTR>(static_cast<ULONG>(cbName), lpMAPIParent);
 				}
 				else
-					dst.Kind.lpwstrName = LPWSTR(new BYTE[cbName]);
+					dst.Kind.lpwstrName = reinterpret_cast<LPWSTR>(new (std::nothrow) BYTE[cbName]);
 
 				if (dst.Kind.lpwstrName)
 				{
@@ -672,7 +672,7 @@ namespace cache
 			// lpwstrName is LPWSTR which means it's ALWAYS unicode
 			// But some folks get it wrong and stuff ANSI data in there
 			// So we check the string length both ways to make our best guess
-			const auto cchShortLen = strnlen_s(LPCSTR(lpNameID->Kind.lpwstrName), RSIZE_MAX);
+			const auto cchShortLen = strnlen_s(reinterpret_cast<LPCSTR>(lpNameID->Kind.lpwstrName), RSIZE_MAX);
 			const auto cchWideLen = wcsnlen_s(lpNameID->Kind.lpwstrName, RSIZE_MAX);
 
 			if (cchShortLen < cchWideLen)

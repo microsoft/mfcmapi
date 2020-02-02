@@ -153,7 +153,7 @@ namespace cli
 				{
 					// Trick switchUnswitched into scanning this path as an argument.
 					auto args0 = std::deque<std::wstring>{arg0};
-					(void) switchUnswitched.scanArgs(args0, options, optionsArray);
+					static_cast<void>(switchUnswitched.scanArgs(args0, options, optionsArray));
 				}
 
 				continue;

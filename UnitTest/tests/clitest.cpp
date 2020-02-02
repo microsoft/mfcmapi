@@ -65,7 +65,7 @@ namespace clitest
 			auto noarg = std::vector<LPCSTR>{"app.exe"};
 			Assert::AreEqual({}, cli::GetCommandLine(int(noarg.size()), noarg.data()));
 			auto argv = std::vector<LPCSTR>{"app.exe", "-arg1", "-arg2"};
-			Assert::AreEqual({L"-arg1", L"-arg2"}, cli::GetCommandLine(int(argv.size()), argv.data()));
+			Assert::AreEqual({L"-arg1", L"-arg2"}, cli::GetCommandLine(static_cast<int>(argv.size()), argv.data()));
 		}
 
 		TEST_METHOD(Test_GetOption)

@@ -304,11 +304,11 @@ namespace mapi::store
 			SPropValue sProps[4] = {};
 			sProps[0].ulPropTag = PR_PROFILE_MAILBOX;
 			auto lpszMailboxDNA = strings::wstringTostring(lpszMailboxDN);
-			sProps[0].Value.lpszA = LPSTR(lpszMailboxDNA.c_str());
+			sProps[0].Value.lpszA = const_cast<LPSTR>(lpszMailboxDNA.c_str());
 
 			sProps[1].ulPropTag = PR_PROFILE_MDB_DN;
 			auto lpszMsgStoreDNA = strings::wstringTostring(lpszMsgStoreDN);
-			sProps[1].Value.lpszA = LPSTR(lpszMsgStoreDNA.c_str());
+			sProps[1].Value.lpszA = const_cast<LPSTR>(lpszMsgStoreDNA.c_str());
 
 			sProps[2].ulPropTag = PR_FORCE_USE_ENTRYID_SERVER;
 			sProps[2].Value.b = true;
