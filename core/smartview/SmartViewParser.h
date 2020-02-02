@@ -28,7 +28,7 @@ namespace smartview
 			enableJunk = true;
 		}
 
-		void parse(const std::shared_ptr<binaryParser>& binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
+		virtual void parse(const std::shared_ptr<binaryParser>& binaryParser, bool bDoJunk) { parse(binaryParser, 0, bDoJunk); }
 
 		void parse(const std::shared_ptr<binaryParser>& binaryParser, size_t cbBin, bool _enableJunk)
 		{
