@@ -10,7 +10,7 @@ namespace smartview
 		blockStringA(const blockStringA&) = delete;
 		blockStringA& operator=(const blockStringA&) = delete;
 
-		virtual bool isSet() const override { return set; }
+		bool isSet() const noexcept override { return set; }
 
 		// Mimic std::string
 		operator const std::string&() const { return data; }

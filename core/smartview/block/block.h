@@ -11,7 +11,7 @@ namespace smartview
 		block(const block&) = delete;
 		block& operator=(const block&) = delete;
 
-		virtual bool isSet() const { return true; }
+		virtual bool isSet() const noexcept { return true; }
 		const std::wstring& getText() const { return text; }
 		const std::vector<std::shared_ptr<block>>& getChildren() const { return children; }
 		bool isHeader() const { return cb == 0 && offset == 0; }
