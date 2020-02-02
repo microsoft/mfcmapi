@@ -166,7 +166,7 @@ namespace strings
 	}
 
 	// Converts wstring to LPCWSTR allocated with new
-	LPCWSTR wstringToLPCWSTR(const std::wstring& src)
+	LPCWSTR wstringToLPCWSTR(const std::wstring& src) noexcept
 	{
 		const auto cch = src.length() + 1;
 		const auto cb = cch * sizeof WCHAR;
@@ -188,7 +188,7 @@ namespace strings
 		return dst;
 	}
 
-	bool tryWstringToUlong(ULONG& out, const std::wstring& src, int radix, bool rejectInvalidCharacters)
+	bool tryWstringToUlong(ULONG& out, const std::wstring& src, int radix, bool rejectInvalidCharacters) noexcept
 	{
 		// Default our out to 0 for failures
 		out = 0;
@@ -223,7 +223,7 @@ namespace strings
 	}
 
 	// Converts a std::wstring to a long. Will return 0 if string is empty or contains non-numeric data.
-	long wstringToLong(const std::wstring& src, int radix)
+	long wstringToLong(const std::wstring& src, int radix) noexcept
 	{
 		if (src.empty()) return 0;
 
@@ -240,7 +240,7 @@ namespace strings
 	}
 
 	// Converts a std::wstring to a double. Will return 0 if string is empty or contains non-numeric data.
-	double wstringToDouble(const std::wstring& src)
+	double wstringToDouble(const std::wstring& src) noexcept
 	{
 		if (src.empty()) return 0;
 
@@ -256,7 +256,7 @@ namespace strings
 		return dArg;
 	}
 
-	__int64 wstringToInt64(const std::wstring& src)
+	__int64 wstringToInt64(const std::wstring& src) noexcept
 	{
 		if (src.empty()) return 0;
 
@@ -338,7 +338,7 @@ namespace strings
 	std::wstring indent(int iIndent) { return std::wstring(iIndent, L'\t'); }
 
 	// Find valid printable Unicode characters
-	bool InvalidCharacter(ULONG chr, bool bMultiLine)
+	bool InvalidCharacter(ULONG chr, bool bMultiLine) noexcept
 	{
 		// Remove range of control characters
 		if (chr >= 0x80 && chr <= 0x9F) return true;
@@ -522,7 +522,7 @@ namespace strings
 	}
 
 	// Converts vector<BYTE> to LPBYTE allocated with new
-	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin)
+	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin) noexcept
 	{
 		if (bin.empty()) return nullptr;
 
