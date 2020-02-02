@@ -1315,7 +1315,7 @@ namespace mapi
 		if (!lpMAPISession || !pwszFileName || !pfBlocked) return MAPI_E_INVALID_PARAMETER;
 
 		auto hRes = S_OK;
-		auto bBlocked = BOOL(false);
+		auto bBlocked = BOOL{false};
 		auto lpAttachSec = mapi::safe_cast<IAttachmentSecurity*>(lpMAPISession);
 		if (lpAttachSec)
 		{
