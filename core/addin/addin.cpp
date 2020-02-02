@@ -199,7 +199,7 @@ namespace addin
 			if (!lpszReg.empty())
 			{
 				LPWSTR szContext = nullptr;
-				auto szDLL = wcstok_s(LPWSTR(lpszReg.c_str()), SEPARATOR, &szContext);
+				auto szDLL = wcstok_s(const_cast<LPWSTR>(lpszReg.c_str()), SEPARATOR, &szContext);
 				while (szDLL)
 				{
 					AddToList(szDLL);
