@@ -132,7 +132,7 @@ namespace cache
 
 	// Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
 	_Check_return_ std::shared_ptr<NamedPropCacheEntry>
-	FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID)
+	FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID) noexcept
 	{
 		const auto entry = find_if(
 			begin(g_lpNamedPropCache),

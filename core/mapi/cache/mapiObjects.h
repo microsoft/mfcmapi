@@ -10,8 +10,8 @@ namespace cache
 		virtual ~CMapiObjects();
 
 		_Check_return_ LPADRBOOK GetAddrBook(bool bForceOpen);
-		_Check_return_ LPMDB GetMDB() const;
-		_Check_return_ LPMAPISESSION GetSession() const;
+		_Check_return_ LPMDB GetMDB() const noexcept;
+		_Check_return_ LPMAPISESSION GetSession() const noexcept;
 		_Check_return_ LPMAPISESSION LogonGetSession(_In_ HWND hWnd);
 
 		void SetAddrBook(_In_opt_ LPADRBOOK lpAddrBook);

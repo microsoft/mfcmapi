@@ -65,7 +65,7 @@ namespace cache
 		}
 	}
 
-	_Check_return_ LPMAPISESSION CMapiObjects::GetSession() const { return m_lpMAPISession; }
+	_Check_return_ LPMAPISESSION CMapiObjects::GetSession() const noexcept { return m_lpMAPISession; }
 
 	_Check_return_ LPMAPISESSION CMapiObjects::LogonGetSession(_In_ HWND hWnd)
 	{
@@ -84,7 +84,7 @@ namespace cache
 		if (m_lpMDB) m_lpMDB->AddRef();
 	}
 
-	_Check_return_ LPMDB CMapiObjects::GetMDB() const { return m_lpMDB; }
+	_Check_return_ LPMDB CMapiObjects::GetMDB() const noexcept { return m_lpMDB; }
 
 	void CMapiObjects::SetAddrBook(_In_opt_ LPADRBOOK lpAddrBook)
 	{

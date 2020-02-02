@@ -61,7 +61,7 @@ namespace mapi
 		return S_OK;
 	}
 
-	void adviseSink::SetAdviseTarget(LPMAPIPROP lpProp)
+	void adviseSink::SetAdviseTarget(LPMAPIPROP lpProp) noexcept
 	{
 		if (m_lpAdviseTarget) m_lpAdviseTarget->Release();
 		m_lpAdviseTarget = lpProp;
