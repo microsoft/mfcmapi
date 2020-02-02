@@ -254,7 +254,7 @@ namespace output
 
 	void __cdecl DebugPrintEx(
 		output::DBGLEVEL ulDbgLvl,
-		std::wstring& szClass,
+		const std::wstring& szClass,
 		const std::wstring& szFunc,
 		LPCWSTR szMsg,
 		...)

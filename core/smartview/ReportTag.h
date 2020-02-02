@@ -13,7 +13,7 @@ namespace smartview
 		void parse() override;
 		void parseBlocks() override;
 		void
-		addEID(const std::wstring& label, const std::shared_ptr<blockT<ULONG>>& cb, std::shared_ptr<blockBytes>& eid);
+		addEID(const std::wstring& label, const std::shared_ptr<blockT<ULONG>>& cb, const std::shared_ptr<blockBytes>& eid);
 
 		std::shared_ptr<blockBytes> m_Cookie = emptyBB(); // 8 characters + NULL terminator
 		std::shared_ptr<blockT<DWORD>> m_Version = emptyT<DWORD>();
