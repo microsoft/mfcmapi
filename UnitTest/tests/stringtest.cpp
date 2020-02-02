@@ -151,13 +151,13 @@ namespace stringtest
 
 		TEST_METHOD(Test_wstringToInt64)
 		{
-			Assert::AreEqual(__int64(1234), strings::wstringToInt64(L"1234"));
-			Assert::AreEqual(__int64(-1), strings::wstringToInt64(L"-1"));
+			Assert::AreEqual(__int64{1234}, strings::wstringToInt64(L"1234"));
+			Assert::AreEqual(__int64{-1}, strings::wstringToInt64(L"-1"));
 			Assert::AreEqual(INT64_MAX - 1, strings::wstringToInt64(L"9223372036854775806"));
 			Assert::AreEqual(INT64_MAX, strings::wstringToInt64(L"9223372036854775807"));
 			Assert::AreEqual(INT64_MAX, strings::wstringToInt64(L"9223372036854775808"));
-			Assert::AreEqual(__int64(0), strings::wstringToInt64(L"0"));
-			Assert::AreEqual(__int64(0), strings::wstringToInt64(L""));
+			Assert::AreEqual(__int64{0}, strings::wstringToInt64(L"0"));
+			Assert::AreEqual(__int64{0}, strings::wstringToInt64(L""));
 		}
 
 		TEST_METHOD(Test_StripCharacter)
