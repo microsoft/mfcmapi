@@ -9,7 +9,7 @@ namespace smartview
 	void XID::parse()
 	{
 		m_NamespaceGuid = blockT<GUID>::parse(m_Parser);
-		auto cbLocalId = m_Parser->getSize();
+		const auto cbLocalId = m_Parser->getSize();
 		m_LocalID = blockBytes::parse(m_Parser, cbLocalId, cbLocalId);
 	}
 

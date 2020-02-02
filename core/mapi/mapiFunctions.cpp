@@ -953,10 +953,10 @@ namespace mapi
 	{
 		LPSTREAM lpStmSource = nullptr;
 		LPSTREAM lpStmTarget = nullptr;
-		LARGE_INTEGER li;
-		ULARGE_INTEGER uli;
-		ULARGE_INTEGER ulBytesRead;
-		ULARGE_INTEGER ulBytesWritten;
+		LARGE_INTEGER li = {};
+		ULARGE_INTEGER uli = {};
+		ULARGE_INTEGER ulBytesRead = {};
+		ULARGE_INTEGER ulBytesWritten = {};
 
 		if (!lpSourcePropObj || !lpTargetPropObj || !ulSourceTag || !ulTargetTag) return MAPI_E_INVALID_PARAMETER;
 		if (PROP_TYPE(ulSourceTag) != PROP_TYPE(ulTargetTag)) return MAPI_E_INVALID_PARAMETER;
@@ -1233,7 +1233,7 @@ namespace mapi
 	_Check_return_ LPMAPIFOLDER GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB)
 	{
 		if (!lpChildFolder) return nullptr;
-		ULONG cProps;
+		ULONG cProps = {};
 		LPSPropValue lpProps = nullptr;
 		LPMAPIFOLDER lpParentFolder = nullptr;
 
@@ -1443,8 +1443,8 @@ namespace mapi
 		output::DebugPrint(output::DBGNamedProp, L"RemoveOneOff - removing one off named properties.\n");
 
 		auto hRes = S_OK;
-		MAPINAMEID rgnmid[ulNumOneOffIDs];
-		LPMAPINAMEID rgpnmid[ulNumOneOffIDs];
+		MAPINAMEID rgnmid[ulNumOneOffIDs] = {};
+		LPMAPINAMEID rgpnmid[ulNumOneOffIDs] = {};
 
 		for (ULONG i = 0; i < ulNumOneOffIDs; i++)
 		{

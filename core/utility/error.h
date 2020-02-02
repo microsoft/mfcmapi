@@ -249,7 +249,7 @@ namespace error
 // Will display dialog on error
 #define EC_D(_TYPE, fnx) \
 	[&]() -> _TYPE { \
-		auto __ret = (fnx); \
+		const auto __ret = (fnx); \
 		if (!__ret) \
 		{ \
 			(void) error::CheckWin32Error(true, __FILE__, __LINE__, #fnx); \

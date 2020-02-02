@@ -415,7 +415,7 @@ namespace mapi::store
 		LPMAPITABLE pStoresTbl = nullptr;
 		LPSRowSet pRow = nullptr;
 		static SRestriction sres;
-		SPropValue spv;
+		SPropValue spv = {};
 
 		enum
 		{

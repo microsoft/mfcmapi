@@ -608,7 +608,7 @@ namespace smartview
 	_Check_return_ ULONGLONG UllGetIdGlobcnt(ID id)
 	{
 		ULONGLONG ul = 0;
-		for (auto i : id.globcnt)
+		for (const auto i : id.globcnt)
 		{
 			ul <<= 8;
 			ul += i;

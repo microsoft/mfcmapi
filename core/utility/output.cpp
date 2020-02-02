@@ -298,7 +298,7 @@ namespace output
 		const auto li = LARGE_INTEGER{};
 		const auto hRes = WC_H_MSG(IDS_STREAMSEEKFAILED, lpStream->Seek(li, STREAM_SEEK_SET, nullptr));
 
-		BYTE bBuf[MAXBYTES + 2]; // Allocate some extra for NULL terminators - 2 for Unicode
+		BYTE bBuf[MAXBYTES + 2] = {}; // Allocate some extra for NULL terminators - 2 for Unicode
 		ULONG ulNumBytes = 0;
 		if (hRes == S_OK) do
 			{

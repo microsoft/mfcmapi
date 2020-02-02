@@ -8,7 +8,7 @@ namespace strings
 
 	std::wstring formatV(LPCWSTR szMsg, va_list argList)
 	{
-		auto len = _vscwprintf(szMsg, argList);
+		const auto len = _vscwprintf(szMsg, argList);
 		if (0 != len)
 		{
 			auto buffer = std::wstring(len + 1, '\0'); // Include extra since _vsnwprintf_s writes a null terminator

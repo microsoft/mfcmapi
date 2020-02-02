@@ -8,7 +8,7 @@ namespace smartview
 	void smartViewParser::ensureParsed()
 	{
 		if (parsed || m_Parser->empty()) return;
-		auto startOffset = m_Parser->getOffset();
+		const auto startOffset = m_Parser->getOffset();
 
 		parse();
 		parseBlocks();
@@ -21,7 +21,7 @@ namespace smartview
 			addChild(junkData);
 		}
 
-		auto endOffset = m_Parser->getOffset();
+		const auto endOffset = m_Parser->getOffset();
 
 		// Ensure our block is tagged with offset and size so all top level blocks get proper highlighting
 		data->setOffset(startOffset);
@@ -38,7 +38,8 @@ namespace smartview
 		auto parsedString = strings::trimWhitespace(data->toString());
 
 		// If we built a string with embedded nulls in it, replace them with dots.
-		std::replace_if(parsedString.begin(), parsedString.end(), [](const WCHAR& chr) { return chr == L'\0'; }, L'.');
+		std::replace_if(
+			parsedString.begin(), parsedString.end(), [](const WCHAR& chr) { return chr == L'\0'; }, L'.');
 
 		return parsedString;
 	}
