@@ -100,14 +100,14 @@ namespace viewpane
 
 		*pcb = 0;
 
-		output::DebugPrint(output::DBGStream, L"EditStreamReadCallBack: cb = %d\n", cb);
+		output::DebugPrint(output::dbgLevel::Stream, L"EditStreamReadCallBack: cb = %d\n", cb);
 
 		const ULONG cbTemp = cb / 2;
 		ULONG cbTempRead = 0;
 		auto buffer = std::vector<BYTE>(cbTemp);
 
 		EC_MAPI_S(stmData->Read(buffer.data(), cbTemp, &cbTempRead));
-		output::DebugPrint(output::DBGStream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
+		output::DebugPrint(output::dbgLevel::Stream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
 
 		memset(pbBuff, 0, cbTempRead * 2);
 		ULONG iBinPos = 0;
@@ -286,7 +286,7 @@ namespace viewpane
 		// read the 'text stream' into control
 		const auto lBytesRead = m_EditBox.StreamIn(SF_TEXT | SF_UNICODE, es);
 		output::DebugPrintEx(
-			output::DBGStream, CLASS, L"SetEditBoxText", L"read %d bytes from the stream\n", lBytesRead);
+			output::dbgLevel::Stream, CLASS, L"SetEditBoxText", L"read %d bytes from the stream\n", lBytesRead);
 
 		// Clear the modify bit so this stream appears untouched
 		m_EditBox.SetModify(false);
@@ -415,7 +415,7 @@ namespace viewpane
 		// read the 'text' stream into control
 		const auto lBytesRead = m_EditBox.StreamIn(uFormat, es);
 		output::DebugPrintEx(
-			output::DBGStream, CLASS, L"InitEditFromStream", L"read %d bytes from the stream\n", lBytesRead);
+			output::dbgLevel::Stream, CLASS, L"InitEditFromStream", L"read %d bytes from the stream\n", lBytesRead);
 
 		// Clear the modify bit so this stream appears untouched
 		m_EditBox.SetModify(false);
@@ -430,7 +430,7 @@ namespace viewpane
 			ULONG cbWritten = 0;
 			const auto hRes = EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 			output::DebugPrintEx(
-				output::DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
+				output::dbgLevel::Stream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
 
 			if (SUCCEEDED(hRes))
 			{

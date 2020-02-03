@@ -61,17 +61,21 @@ namespace import
 	// Exists to allow some logging
 	_Check_return_ HMODULE MyLoadLibraryW(_In_ const std::wstring& lpszLibFileName)
 	{
-		output::DebugPrint(output::DBGLoadLibrary, L"MyLoadLibraryW - loading \"%ws\"\n", lpszLibFileName.c_str());
+		output::DebugPrint(
+			output::dbgLevel::LoadLibrary, L"MyLoadLibraryW - loading \"%ws\"\n", lpszLibFileName.c_str());
 		const auto hMod = WC_D(HMODULE, LoadLibraryW(lpszLibFileName.c_str()));
 		if (hMod)
 		{
 			output::DebugPrint(
-				output::DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" loaded at %p\n", lpszLibFileName.c_str(), hMod);
+				output::dbgLevel::LoadLibrary,
+				L"MyLoadLibraryW - \"%ws\" loaded at %p\n",
+				lpszLibFileName.c_str(),
+				hMod);
 		}
 		else
 		{
 			output::DebugPrint(
-				output::DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" failed to load\n", lpszLibFileName.c_str());
+				output::dbgLevel::LoadLibrary, L"MyLoadLibraryW - \"%ws\" failed to load\n", lpszLibFileName.c_str());
 		}
 
 		return hMod;
@@ -107,7 +111,7 @@ namespace import
 	{
 		std::wstring lpszClient = L"Default";
 		if (!szClient.empty()) lpszClient = szClient;
-		output::DebugPrint(output::DBGLoadLibrary, L"Enter GetMailKey(%ws)\n", lpszClient.c_str());
+		output::DebugPrint(output::dbgLevel::LoadLibrary, L"Enter GetMailKey(%ws)\n", lpszClient.c_str());
 
 		// If szClient is empty, we need to read the name of the default MAPI client
 		if (szClient.empty())
@@ -126,7 +130,7 @@ namespace import
 				if (!lpszReg.empty())
 				{
 					lpszClient = lpszReg;
-					output::DebugPrint(output::DBGLoadLibrary, L"Default MAPI = %ws\n", lpszClient.c_str());
+					output::DebugPrint(output::dbgLevel::LoadLibrary, L"Default MAPI = %ws\n", lpszClient.c_str());
 				}
 
 				EC_W32_S(RegCloseKey(hDefaultMailKey));
@@ -152,26 +156,26 @@ namespace import
 		_In_ std::wstring& lpszAppLCID,
 		_In_ std::wstring& lpszOfficeLCID)
 	{
-		output::DebugPrint(output::DBGLoadLibrary, L"GetMapiMsiIds(%ws)\n", szClient.c_str());
+		output::DebugPrint(output::dbgLevel::LoadLibrary, L"GetMapiMsiIds(%ws)\n", szClient.c_str());
 
 		const auto hKey = GetMailKey(szClient);
 		if (hKey)
 		{
 			lpszComponentID = registry::ReadStringFromRegistry(hKey, L"MSIComponentID"); // STRING_OK
 			output::DebugPrint(
-				output::DBGLoadLibrary,
+				output::dbgLevel::LoadLibrary,
 				L"MSIComponentID = %ws\n",
 				!lpszComponentID.empty() ? lpszComponentID.c_str() : L"<not found>");
 
 			lpszAppLCID = registry::ReadStringFromRegistry(hKey, L"MSIApplicationLCID"); // STRING_OK
 			output::DebugPrint(
-				output::DBGLoadLibrary,
+				output::dbgLevel::LoadLibrary,
 				L"MSIApplicationLCID = %ws\n",
 				!lpszAppLCID.empty() ? lpszAppLCID.c_str() : L"<not found>");
 
 			lpszOfficeLCID = registry::ReadStringFromRegistry(hKey, L"MSIOfficeLCID"); // STRING_OK
 			output::DebugPrint(
-				output::DBGLoadLibrary,
+				output::dbgLevel::LoadLibrary,
 				L"MSIOfficeLCID = %ws\n",
 				!lpszOfficeLCID.empty() ? lpszOfficeLCID.c_str() : L"<not found>");
 

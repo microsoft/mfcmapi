@@ -100,9 +100,9 @@ namespace dialog
 			if (m_lpMessage)
 			{
 				output::DebugPrint(
-					output::DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", m_lpMessage, MyData.GetHex(0));
+					output::dbgLevel::Generic, L"Calling RTFSync on %p with flags 0x%X\n", m_lpMessage, MyData.GetHex(0));
 				hRes = EC_MAPI(RTFSync(m_lpMessage, MyData.GetHex(0), &bMessageUpdated));
-				output::DebugPrint(output::DBGGeneric, L"RTFSync returned %d\n", bMessageUpdated);
+				output::DebugPrint(output::dbgLevel::Generic, L"RTFSync returned %d\n", bMessageUpdated);
 
 				if (SUCCEEDED(hRes))
 				{
@@ -120,7 +120,7 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			output::DebugPrint(output::DBGGeneric, L"Editing body on %p\n", m_lpMessage);
+			output::DebugPrint(output::dbgLevel::Generic, L"Editing body on %p\n", m_lpMessage);
 
 			editor::CStreamEditor MyEditor(
 				this,
@@ -149,7 +149,7 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			output::DebugPrint(output::DBGGeneric, L"Testing HTML on %p\n", m_lpMessage);
+			output::DebugPrint(output::dbgLevel::Generic, L"Testing HTML on %p\n", m_lpMessage);
 
 			editor::CStreamEditor MyEditor(
 				this,
@@ -178,7 +178,7 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			output::DebugPrint(output::DBGGeneric, L"Testing body on %p\n", m_lpMessage);
+			output::DebugPrint(output::dbgLevel::Generic, L"Testing body on %p\n", m_lpMessage);
 
 			editor::CStreamEditor MyEditor(
 				this,
@@ -207,7 +207,7 @@ namespace dialog
 
 		if (m_lpMessage)
 		{
-			output::DebugPrint(output::DBGGeneric, L"Saving changes on %p\n", m_lpMessage);
+			output::DebugPrint(output::dbgLevel::Generic, L"Saving changes on %p\n", m_lpMessage);
 
 			EC_MAPI_S(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 

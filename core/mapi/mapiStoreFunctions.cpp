@@ -24,7 +24,7 @@ namespace mapi::store
 			ulFlags |= MDB_ONLINE;
 		}
 
-		output::DebugPrint(output::DBGOpenItemProp, L"CallOpenMsgStore ulFlags = 0x%X\n", ulFlags);
+		output::DebugPrint(output::dbgLevel::OpenItemProp, L"CallOpenMsgStore ulFlags = 0x%X\n", ulFlags);
 
 		LPMDB lpMDB = nullptr;
 		auto ignore = (ulFlags & MDB_ONLINE) ? MAPI_E_UNKNOWN_FLAGS : S_OK;
@@ -41,7 +41,8 @@ namespace mapi::store
 		{
 			// Perhaps this store doesn't know the MDB_ONLINE flag - remove and retry
 			ulFlags = ulFlags & ~MDB_ONLINE;
-			output::DebugPrint(output::DBGOpenItemProp, L"CallOpenMsgStore 2nd attempt ulFlags = 0x%X\n", ulFlags);
+			output::DebugPrint(
+				output::dbgLevel::OpenItemProp, L"CallOpenMsgStore 2nd attempt ulFlags = 0x%X\n", ulFlags);
 
 			EC_H_S(lpSession->OpenMsgStore(
 				ulUIParam,
@@ -244,9 +245,9 @@ namespace mapi::store
 	{
 		if (!lpMDB || lpszMsgStoreDN.empty() || !StoreSupportsManageStore(lpMDB))
 		{
-			if (!lpMDB) output::DebugPrint(output::DBGGeneric, L"CreateStoreEntryID: MDB was NULL\n");
+			if (!lpMDB) output::DebugPrint(output::dbgLevel::Generic, L"CreateStoreEntryID: MDB was NULL\n");
 			if (lpszMsgStoreDN.empty())
-				output::DebugPrint(output::DBGGeneric, L"CreateStoreEntryID: lpszMsgStoreDN was missing\n");
+				output::DebugPrint(output::dbgLevel::Generic, L"CreateStoreEntryID: lpszMsgStoreDN was missing\n");
 			return {};
 		}
 
@@ -255,7 +256,7 @@ namespace mapi::store
 		if (lpXManageStore)
 		{
 			output::DebugPrint(
-				output::DBGGeneric,
+				output::dbgLevel::Generic,
 				L"CreateStoreEntryID: Creating EntryID. StoreDN = \"%ws\", MailboxDN = \"%ws\", Flags = \"0x%X\"\n",
 				lpszMsgStoreDN.c_str(),
 				lpszMailboxDN.c_str(),
@@ -283,9 +284,9 @@ namespace mapi::store
 	{
 		if (!lpMDB || lpszMsgStoreDN.empty() || !StoreSupportsManageStoreEx(lpMDB))
 		{
-			if (!lpMDB) output::DebugPrint(output::DBGGeneric, L"CreateStoreEntryID2: MDB was NULL\n");
+			if (!lpMDB) output::DebugPrint(output::dbgLevel::Generic, L"CreateStoreEntryID2: MDB was NULL\n");
 			if (lpszMsgStoreDN.empty())
-				output::DebugPrint(output::DBGGeneric, L"CreateStoreEntryID2: lpszMsgStoreDN was missing\n");
+				output::DebugPrint(output::dbgLevel::Generic, L"CreateStoreEntryID2: lpszMsgStoreDN was missing\n");
 			return {};
 		}
 
@@ -294,7 +295,7 @@ namespace mapi::store
 		if (lpXManageStoreEx)
 		{
 			output::DebugPrint(
-				output::DBGGeneric,
+				output::dbgLevel::Generic,
 				L"CreateStoreEntryID2: Creating EntryID. StoreDN = \"%ws\", MailboxDN = \"%ws\", SmtpAddress = "
 				L"\"%ws\", Flags = \"0x%X\"\n",
 				lpszMsgStoreDN.c_str(),
@@ -386,7 +387,7 @@ namespace mapi::store
 	{
 		if (!lpMAPISession)
 		{
-			output::DebugPrint(output::DBGGeneric, L"MailboxLogon: Session was NULL\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"MailboxLogon: Session was NULL\n");
 			return nullptr;
 		}
 
@@ -470,7 +471,7 @@ namespace mapi::store
 		if (!lpMAPISession || !lpMDB || szMailboxDN.empty() || !StoreSupportsManageStore(lpMDB)) return nullptr;
 
 		output::DebugPrint(
-			output::DBGGeneric,
+			output::dbgLevel::Generic,
 			L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%ws\", Mailbox = "
 			L"\"%ws\", SmtpAddress = \"%ws\"\n",
 			lpMAPISession,
@@ -499,7 +500,7 @@ namespace mapi::store
 			if (!szServerDN.empty())
 			{
 				output::DebugPrint(
-					output::DBGGeneric, L"Calling MailboxLogon with Server DN = \"%ws\"\n", szServerDN.c_str());
+					output::dbgLevel::Generic, L"Calling MailboxLogon with Server DN = \"%ws\"\n", szServerDN.c_str());
 				lpOtherUserMDB =
 					MailboxLogon(lpMAPISession, lpMDB, szServerDN, szMailboxDN, smtpAddress, ulFlags, bForceServer);
 			}

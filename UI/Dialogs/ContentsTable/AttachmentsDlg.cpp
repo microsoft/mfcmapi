@@ -159,7 +159,8 @@ namespace dialog
 	_Check_return_ LPMAPIPROP CAttachmentsDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
 	{
 		if (!m_lpContentsTableListCtrl) return nullptr;
-		output::DebugPrintEx(output::DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(
+			output::dbgLevel::OpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		// Find the highlighted item AttachNum
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
@@ -209,7 +210,7 @@ namespace dialog
 		if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandleCopy", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		const ULONG ulNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
@@ -239,7 +240,7 @@ namespace dialog
 		if (CBaseDialog::HandlePaste()) return true;
 
 		if (!m_lpContentsTableListCtrl || !m_lpMessage) return false;
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandlePaste", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"HandlePaste", L"\n");
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -331,7 +332,7 @@ namespace dialog
 		for (const auto& attachnum : attachnums)
 		{
 			output::DebugPrintEx(
-				output::DBGDeleteSelectedItem,
+				output::dbgLevel::DeleteSelectedItem,
 				CLASS,
 				L"OnDeleteSelectedItem",
 				L"Deleting attachment 0x%08X\n",

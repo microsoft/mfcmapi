@@ -16,22 +16,22 @@ void DumpContentsTable(
 	_In_opt_ LPSRestriction lpRes)
 {
 	output::DebugPrint(
-		output::DBGGeneric,
+		output::dbgLevel::Generic,
 		L"DumpContentsTable: Outputting folder %ws from profile %ws to %ws\n",
 		lpszFolder,
 		lpszProfile,
 		lpszDir);
 	if (cli::switchContents.isSet())
-		output::DebugPrint(output::DBGGeneric, L"DumpContentsTable: Outputting Contents\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Outputting Contents\n");
 	if (cli::switchAssociatedContents.isSet())
-		output::DebugPrint(output::DBGGeneric, L"DumpContentsTable: Outputting Associated Contents\n");
-	if (cli::switchMSG.isSet()) output::DebugPrint(output::DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Outputting Associated Contents\n");
+	if (cli::switchMSG.isSet()) output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Outputting as MSG\n");
 	if (cli::switchMoreProperties.isSet())
-		output::DebugPrint(output::DBGGeneric, L"DumpContentsTable: Will retry stream properties\n");
-	if (cli::switchSkip.isSet()) output::DebugPrint(output::DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
-	if (cli::switchList.isSet()) output::DebugPrint(output::DBGGeneric, L"DumpContentsTable: List only mode\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Will retry stream properties\n");
+	if (cli::switchSkip.isSet()) output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Will skip attachments\n");
+	if (cli::switchList.isSet()) output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: List only mode\n");
 	if (ulCount)
-		output::DebugPrint(output::DBGGeneric, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
+		output::DebugPrint(output::dbgLevel::Generic, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
 
 	if (lpFolder)
 	{
@@ -137,7 +137,7 @@ void DoContents(LPMDB lpMDB, LPMAPIFOLDER lpFolder)
 		sResTop.res.resAnd.cRes = i;
 		sResTop.res.resAnd.lpRes = &sResMiddle[0];
 		lpRes = &sResTop;
-		output::outputRestriction(output::DBGGeneric, nullptr, lpRes, nullptr);
+		output::outputRestriction(output::dbgLevel::Generic, nullptr, lpRes, nullptr);
 	}
 
 	DumpContentsTable(

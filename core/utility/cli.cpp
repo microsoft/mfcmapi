@@ -177,25 +177,25 @@ namespace cli
 
 	void PrintArgs(_In_ const OPTIONS& ProgOpts, const std::vector<option*>& optionsArray)
 	{
-		output::DebugPrint(output::DBGGeneric, L"Mode = %d\n", ProgOpts.mode);
-		output::DebugPrint(output::DBGGeneric, L"options = 0x%08X\n", ProgOpts.flags);
+		output::DebugPrint(output::dbgLevel::Generic, L"Mode = %d\n", ProgOpts.mode);
+		output::DebugPrint(output::dbgLevel::Generic, L"options = 0x%08X\n", ProgOpts.flags);
 		if (!cli::switchUnswitched.empty())
-			output::DebugPrint(output::DBGGeneric, L"lpszUnswitchedOption = %ws\n", cli::switchUnswitched[0].c_str());
+			output::DebugPrint(output::dbgLevel::Generic, L"lpszUnswitchedOption = %ws\n", cli::switchUnswitched[0].c_str());
 
 		for (const auto& option : optionsArray)
 		{
 			if (option->isSet())
 			{
-				output::DebugPrint(output::DBGGeneric, L"Switch: %ws\n", option->name());
+				output::DebugPrint(output::dbgLevel::Generic, L"Switch: %ws\n", option->name());
 			}
 			else if (!option->empty())
 			{
-				output::DebugPrint(output::DBGGeneric, L"Switch: %ws (not set but has args)\n", option->name());
+				output::DebugPrint(output::dbgLevel::Generic, L"Switch: %ws (not set but has args)\n", option->name());
 			}
 
 			for (UINT i = 0; i < option->size(); i++)
 			{
-				output::DebugPrint(output::DBGGeneric, L"  arg[%d] = %ws\n", i, option->at(i).c_str());
+				output::DebugPrint(output::dbgLevel::Generic, L"  arg[%d] = %ws\n", i, option->at(i).c_str());
 			}
 		}
 	}

@@ -19,7 +19,7 @@ namespace ui::profile
 		const auto szServiceNameToAddA = strings::wstringTostring(szServiceNameToAdd);
 		LPCSTR szServices[] = {szServiceNameToAddA.c_str(), nullptr};
 
-		output::DebugPrint(output::DBGGeneric, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
 
 		// Call LaunchWizard to add the service.
 		const auto hRes = WC_MAPI(LaunchWizard(hParentWnd, ulFlags, szServices, cchProfName, szProfName));
@@ -32,7 +32,7 @@ namespace ui::profile
 
 		if (SUCCEEDED(hRes))
 		{
-			output::DebugPrint(output::DBGGeneric, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", szProfName);
+			output::DebugPrint(output::dbgLevel::Generic, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", szProfName);
 		}
 
 		return strings::LPCSTRToWstring(szProfName);
@@ -40,7 +40,7 @@ namespace ui::profile
 
 	void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 	{
-		output::DebugPrint(output::DBGGeneric, L"DisplayMAPISVCPath()\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"DisplayMAPISVCPath()\n");
 
 		dialog::editor::CEditor MyData(pParentWnd, IDS_MAPISVCTITLE, IDS_MAPISVCTEXT, CEDITOR_BUTTON_OK);
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(0, IDS_FILEPATH, true));
@@ -238,7 +238,7 @@ namespace ui::profile
 	{
 		auto hRes = S_OK;
 
-		output::DebugPrint(output::DBGGeneric, L"HrSetProfileParameters()\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"HrSetProfileParameters()\n");
 
 		if (!lpServicesIni) return MAPI_E_INVALID_PARAMETER;
 
@@ -250,7 +250,7 @@ namespace ui::profile
 		}
 		else
 		{
-			output::DebugPrint(output::DBGGeneric, L"Writing to this file: \"%ws\"\n", szServicesIni.c_str());
+			output::DebugPrint(output::dbgLevel::Generic, L"Writing to this file: \"%ws\"\n", szServicesIni.c_str());
 
 			// Loop through and add items to MAPISVC.INF
 			auto n = 0;
@@ -270,7 +270,7 @@ namespace ui::profile
 
 				// Write the item to MAPISVC.INF
 				output::DebugPrint(
-					output::DBGGeneric,
+					output::dbgLevel::Generic,
 					L"\tWriting: \"%ws\"::\"%ws\"::\"%ws\"\n",
 					lpServicesIni[n].lpszSection,
 					lpszProp.c_str(),

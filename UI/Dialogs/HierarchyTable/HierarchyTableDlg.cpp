@@ -155,7 +155,7 @@ namespace dialog
 		if (lpMAPIFolder)
 		{
 			output::DebugPrintEx(
-				output::DBGGeneric,
+				output::dbgLevel::Generic,
 				CLASS,
 				L"OnEditSearchCriteria",
 				L"Calling GetSearchCriteria on %p.\n",
@@ -169,7 +169,7 @@ namespace dialog
 				WC_MAPI(lpMAPIFolder->GetSearchCriteria(fMapiUnicode, &lpRes, &lpEntryList, &ulSearchState));
 			if (hRes == MAPI_E_NOT_INITIALIZED)
 			{
-				output::DebugPrint(output::DBGGeneric, L"No search criteria has been set on this folder.\n");
+				output::DebugPrint(output::dbgLevel::Generic, L"No search criteria has been set on this folder.\n");
 			}
 			else
 				CHECKHRESMSG(hRes, IDS_GETSEARCHCRITERIAFAILED);
@@ -221,7 +221,8 @@ namespace dialog
 
 	void CHierarchyTableDlg::CreateDialogAndMenu(const UINT nIDMenuResource, const UINT uiClassMenuResource)
 	{
-		output::DebugPrintEx(output::DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
+		output::DebugPrintEx(
+			output::dbgLevel::CreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 		CBaseDialog::CreateDialogAndMenu(nIDMenuResource, uiClassMenuResource, IDS_HIERARCHYTABLE);
 
 		if (m_lpHierarchyTableTreeCtrl)
@@ -232,7 +233,7 @@ namespace dialog
 
 	void CHierarchyTableDlg::OnRefreshView()
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnRefreshView", L"\n");
 		if (m_lpHierarchyTableTreeCtrl) m_lpHierarchyTableTreeCtrl.Refresh();
 	}
 

@@ -14,9 +14,9 @@ namespace registry
 	// 4 - If the setting should show in options, ensure it has a unique options prompt value
 	// Note: Accessor objects can be used in code as their underlying type, though some care may be needed with casting
 #ifdef _DEBUG
-	dwordRegKey debugTag{L"DebugTag", regoptStringHex, output::DBGAll, false, IDS_REGKEY_DEBUG_TAG};
+	dwordRegKey debugTag{L"DebugTag", regoptStringHex, static_cast<DWORD>(output::dbgLevel::All), false, IDS_REGKEY_DEBUG_TAG};
 #else
-	dwordRegKey debugTag{L"DebugTag", regoptStringHex, output::DBGNoDebug, false, IDS_REGKEY_DEBUG_TAG};
+	dwordRegKey debugTag{L"DebugTag", regoptStringHex, output::dbgLevel::NoDebug, false, IDS_REGKEY_DEBUG_TAG};
 #endif
 	boolRegKey debugToFile{L"DebugToFile", false, false, IDS_REGKEY_DEBUG_TO_FILE};
 	wstringRegKey debugFileName{L"DebugFileName", L"c:\\mfcmapi.log", false, IDS_REGKEY_DEBUG_FILE_NAME};
@@ -91,7 +91,7 @@ namespace registry
 	DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const DWORD dwDefaultVal)
 	{
 		if (szValue.empty()) return dwDefaultVal;
-		output::DebugPrint(output::DBGGeneric, L"ReadDWORDFromRegistry(%ws)\n", szValue.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"ReadDWORDFromRegistry(%ws)\n", szValue.c_str());
 
 		// Get its size
 		DWORD cb{};
@@ -118,7 +118,7 @@ namespace registry
 	ReadStringFromRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValue, _In_ const std::wstring& szDefault)
 	{
 		if (szValue.empty()) return szDefault;
-		output::DebugPrint(output::DBGGeneric, L"ReadStringFromRegistry(%ws)\n", szValue.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"ReadStringFromRegistry(%ws)\n", szValue.c_str());
 
 		// Get its size
 		DWORD cb{};
@@ -170,7 +170,7 @@ namespace registry
 			EC_W32_S(RegCloseKey(hRootKey));
 		}
 
-		output::outputVersion(output::DBGVersionBanner, nullptr);
+		output::outputVersion(output::dbgLevel::VersionBanner, nullptr);
 	}
 
 	void WriteDWORDToRegistry(_In_ HKEY hKey, _In_ const std::wstring& szValueName, DWORD dwValue)

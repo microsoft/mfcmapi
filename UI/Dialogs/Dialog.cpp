@@ -77,7 +77,7 @@ namespace dialog
 	LRESULT CheckButtons(HWND hWnd, POINT pt)
 	{
 		auto ret = HTNOWHERE;
-		output::DebugPrint(output::DBGUI, L"CheckButtons: pt = %d %d", pt.x, pt.y);
+		output::DebugPrint(output::dbgLevel::UI, L"CheckButtons: pt = %d %d", pt.x, pt.y);
 
 		// Get the screen coordinates of our window
 		auto rcWindow = RECT{};
@@ -87,28 +87,28 @@ namespace dialog
 		// GetCaptionRects coordinates are now compatible
 		pt.x -= rcWindow.left;
 		pt.y -= rcWindow.top;
-		output::Outputf(output::DBGUI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
+		output::Outputf(output::dbgLevel::UI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
 
 		auto rcCloseIcon = RECT{};
 		auto rcMaxIcon = RECT{};
 		auto rcMinIcon = RECT{};
 		ui::GetCaptionRects(hWnd, nullptr, nullptr, &rcCloseIcon, &rcMaxIcon, &rcMinIcon, nullptr);
 		output::DebugPrint(
-			output::DBGUI,
+			output::dbgLevel::UI,
 			L"rcMinIcon: %d %d %d %d\n",
 			rcMinIcon.left,
 			rcMinIcon.top,
 			rcMinIcon.right,
 			rcMinIcon.bottom);
 		output::DebugPrint(
-			output::DBGUI,
+			output::dbgLevel::UI,
 			L"rcMaxIcon: %d %d %d %d\n",
 			rcMaxIcon.left,
 			rcMaxIcon.top,
 			rcMaxIcon.right,
 			rcMaxIcon.bottom);
 		output::DebugPrint(
-			output::DBGUI,
+			output::dbgLevel::UI,
 			L"rcCloseIcon: %d %d %d %d\n",
 			rcCloseIcon.left,
 			rcCloseIcon.top,
@@ -118,7 +118,7 @@ namespace dialog
 		if (PtInRect(&rcMaxIcon, pt)) ret = HTMAXBUTTON;
 		if (PtInRect(&rcMinIcon, pt)) ret = HTMINBUTTON;
 
-		output::DebugPrint(output::DBGUI, L"CheckButtons result: %ws\r\n", FormatHT(ret).c_str());
+		output::DebugPrint(output::dbgLevel::UI, L"CheckButtons result: %ws\r\n", FormatHT(ret).c_str());
 
 		return ret;
 	}
@@ -129,7 +129,7 @@ namespace dialog
 	{
 		// These are screen coordinates of the mouse pointer
 		const POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
-		output::DebugPrint(output::DBGUI, L"WM_NCHITTEST: pt = %d %d\r\n", pt.x, pt.y);
+		output::DebugPrint(output::dbgLevel::UI, L"WM_NCHITTEST: pt = %d %d\r\n", pt.x, pt.y);
 
 		auto ht = CDialog::WindowProc(WM_NCHITTEST, wParam, lParam);
 		if (ht == HTCAPTION || ht == HTCLOSE || ht == HTMAXBUTTON || ht == HTMINBUTTON)
@@ -141,7 +141,7 @@ namespace dialog
 		}
 
 		ui::DrawSystemButtons(m_hWnd, nullptr, ht, true);
-		output::DebugPrint(output::DBGUI, L"%ws\r\n", FormatHT(ht).c_str());
+		output::DebugPrint(output::dbgLevel::UI, L"%ws\r\n", FormatHT(ht).c_str());
 		return ht;
 	}
 
@@ -150,12 +150,12 @@ namespace dialog
 	{
 		// These are client coordinates - we need to translate them to screen coordinates
 		POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
-		output::DebugPrint(output::DBGUI, L"NCHitTestMouse: pt = %d %d", pt.x, pt.y);
+		output::DebugPrint(output::dbgLevel::UI, L"NCHitTestMouse: pt = %d %d", pt.x, pt.y);
 		(void) MapWindowPoints(hWnd, nullptr, &pt, 1); // Map our client point to the screen
-		output::Outputf(output::DBGUI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
+		output::Outputf(output::dbgLevel::UI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
 
 		const auto ht = CheckButtons(hWnd, pt);
-		output::DebugPrint(output::DBGUI, L"%ws\r\n", FormatHT(ht).c_str());
+		output::DebugPrint(output::dbgLevel::UI, L"%ws\r\n", FormatHT(ht).c_str());
 		return ht;
 	}
 
@@ -171,13 +171,13 @@ namespace dialog
 				switch (msg.message)
 				{
 				case WM_LBUTTONUP:
-					output::DebugPrint(output::DBGUI, L"WM_LBUTTONUP\n");
+					output::DebugPrint(output::dbgLevel::UI, L"WM_LBUTTONUP\n");
 					ui::DrawSystemButtons(hWnd, nullptr, HTNOWHERE, false);
 					ReleaseCapture();
 					return NCHitTestMouse(hWnd, msg.lParam) == iHitTest;
 
 				case WM_MOUSEMOVE:
-					output::DebugPrint(output::DBGUI, L"WM_MOUSEMOVE\n");
+					output::DebugPrint(output::dbgLevel::UI, L"WM_MOUSEMOVE\n");
 					ui::DrawSystemButtons(hWnd, nullptr, iHitTest, NCHitTestMouse(hWnd, msg.lParam) != iHitTest);
 
 					break;

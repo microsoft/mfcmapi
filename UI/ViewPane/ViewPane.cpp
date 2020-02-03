@@ -26,7 +26,7 @@ namespace viewpane
 		}
 
 		output::DebugPrint(
-			output::DBGDraw,
+			output::dbgLevel::Draw,
 			L"ViewPane::DeferWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
 			x,
 			width,
@@ -65,7 +65,7 @@ namespace viewpane
 		const auto sizeText = ui::GetTextExtentPoint32(hdc, m_szLabel);
 		m_iLabelWidth = sizeText.cx;
 		output::DebugPrint(
-			output::DBGDraw, L"ViewPane::Initialize m_iLabelWidth:%d \"%ws\"\n", m_iLabelWidth, m_szLabel.c_str());
+			output::dbgLevel::Draw, L"ViewPane::Initialize m_iLabelWidth:%d \"%ws\"\n", m_iLabelWidth, m_szLabel.c_str());
 	}
 
 	ULONG ViewPane::HandleChange(UINT nID)

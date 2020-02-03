@@ -24,8 +24,8 @@ void DumpExchangeTable(_In_ ULONG ulPropTag, _In_opt_ LPMAPIFOLDER lpFolder)
 		}
 		if (lpTbl)
 		{
-			registry::debugTag |= output::DBGGeneric;
-			output::outputTable(output::DBGGeneric, nullptr, lpTbl);
+			registry::debugTag |= static_cast<DWORD>(output::dbgLevel::Generic);
+			output::outputTable(output::dbgLevel::Generic, nullptr, lpTbl);
 		}
 	}
 

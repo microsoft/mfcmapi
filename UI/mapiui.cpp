@@ -166,7 +166,7 @@ namespace ui::mapiui
 		static const SizedSPropTagArray(NUM_COLS, sptaAttachProps) = {
 			NUM_COLS, {PR_ATTACH_METHOD, PR_ATTACH_LONG_FILENAME_W, PR_ATTACH_FILENAME_W, PR_DISPLAY_NAME_W}};
 
-		output::DebugPrint(output::DBGGeneric, L"WriteAttachmentToFile: Saving attachment.\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"WriteAttachmentToFile: Saving attachment.\n");
 
 		LPSPropValue lpProps = nullptr;
 		ULONG ulProps = 0;
@@ -206,7 +206,7 @@ namespace ui::mapiui
 			case ATTACH_BY_REF_ONLY:
 			{
 				output::DebugPrint(
-					output::DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
+					output::dbgLevel::Generic, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
 
 				auto file = file::CFileDialogExW::SaveAs(
 					L"txt", // STRING_OK
@@ -223,7 +223,9 @@ namespace ui::mapiui
 				// Get File Name
 				{
 					output::DebugPrint(
-						output::DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
+						output::dbgLevel::Generic,
+						L"WriteAttachmentToFile: Prompting with \"%ws\"\n",
+						szFileName.c_str());
 					auto file = file::CFileDialogExW::SaveAs(
 						L"msg", // STRING_OK
 						szFileName,
@@ -238,7 +240,7 @@ namespace ui::mapiui
 			case ATTACH_OLE:
 			{
 				output::DebugPrint(
-					output::DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
+					output::dbgLevel::Generic, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
 				auto file = file::CFileDialogExW::SaveAs(
 					strings::emptystring,
 					szFileName,
@@ -366,7 +368,8 @@ namespace ui::mapiui
 	// Returns number of menu items added
 	_Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 	{
-		output::DebugPrint(output::DBGAddInPlumbing, L"Extending menus, ulAddInContext = 0x%08X\n", ulAddInContext);
+		output::DebugPrint(
+			output::dbgLevel::AddInPlumbing, L"Extending menus, ulAddInContext = 0x%08X\n", ulAddInContext);
 		HMENU hAddInMenu = nullptr;
 
 		UINT uidCurMenu = ID_ADDINMENU;
@@ -378,13 +381,13 @@ namespace ui::mapiui
 
 		for (const auto& addIn : g_lpMyAddins)
 		{
-			output::DebugPrint(output::DBGAddInPlumbing, L"Examining add-in for menus\n");
+			output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Examining add-in for menus\n");
 			if (addIn.hMod)
 			{
 				auto hRes = S_OK;
 				if (addIn.szName)
 				{
-					output::DebugPrint(output::DBGAddInPlumbing, L"Examining \"%ws\"\n", addIn.szName);
+					output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Examining \"%ws\"\n", addIn.szName);
 				}
 
 				for (ULONG ulMenu = 0; ulMenu < addIn.ulMenu && SUCCEEDED(hRes); ulMenu++)
@@ -394,12 +397,12 @@ namespace ui::mapiui
 					{
 						// Invalid combo of flags - don't add the menu
 						output::DebugPrint(
-							output::DBGAddInPlumbing,
+							output::dbgLevel::AddInPlumbing,
 							L"Invalid flags on menu \"%ws\" in add-in \"%ws\"\n",
 							addIn.lpMenu[ulMenu].szMenu,
 							addIn.szName);
 						output::DebugPrint(
-							output::DBGAddInPlumbing,
+							output::dbgLevel::AddInPlumbing,
 							L"MENU_FLAGS_SINGLESELECT and MENU_FLAGS_MULTISELECT cannot be combined\n");
 						continue;
 					}
@@ -441,7 +444,7 @@ namespace ui::mapiui
 			}
 		}
 
-		output::DebugPrint(output::DBGAddInPlumbing, L"Done extending menus\n");
+		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Done extending menus\n");
 		return uidCurMenu - ID_ADDINMENU;
 	}
 

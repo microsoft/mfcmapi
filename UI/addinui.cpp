@@ -186,7 +186,8 @@ namespace ui::addinui
 	// Returns number of menu items added
 	_Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 	{
-		output::DebugPrint(output::DBGAddInPlumbing, L"Extending menus, ulAddInContext = 0x%08X\n", ulAddInContext);
+		output::DebugPrint(
+			output::dbgLevel::AddInPlumbing, L"Extending menus, ulAddInContext = 0x%08X\n", ulAddInContext);
 		HMENU hAddInMenu = nullptr;
 
 		UINT uidCurMenu = ID_ADDINMENU;
@@ -198,13 +199,13 @@ namespace ui::addinui
 
 		for (const auto& addIn : g_lpMyAddins)
 		{
-			output::DebugPrint(output::DBGAddInPlumbing, L"Examining add-in for menus\n");
+			output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Examining add-in for menus\n");
 			if (addIn.hMod)
 			{
 				auto hRes = S_OK;
 				if (addIn.szName)
 				{
-					output::DebugPrint(output::DBGAddInPlumbing, L"Examining \"%ws\"\n", addIn.szName);
+					output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Examining \"%ws\"\n", addIn.szName);
 				}
 
 				for (ULONG ulMenu = 0; ulMenu < addIn.ulMenu && SUCCEEDED(hRes); ulMenu++)
@@ -214,12 +215,12 @@ namespace ui::addinui
 					{
 						// Invalid combo of flags - don't add the menu
 						output::DebugPrint(
-							output::DBGAddInPlumbing,
+							output::dbgLevel::AddInPlumbing,
 							L"Invalid flags on menu \"%ws\" in add-in \"%ws\"\n",
 							addIn.lpMenu[ulMenu].szMenu,
 							addIn.szName);
 						output::DebugPrint(
-							output::DBGAddInPlumbing,
+							output::dbgLevel::AddInPlumbing,
 							L"MENU_FLAGS_SINGLESELECT and MENU_FLAGS_MULTISELECT cannot be combined\n");
 						continue;
 					}
@@ -261,7 +262,7 @@ namespace ui::addinui
 			}
 		}
 
-		output::DebugPrint(output::DBGAddInPlumbing, L"Done extending menus\n");
+		output::DebugPrint(output::dbgLevel::AddInPlumbing, L"Done extending menus\n");
 		return uidCurMenu - ID_ADDINMENU;
 	}
 
@@ -301,7 +302,7 @@ namespace ui::addinui
 
 		if (!lpParams->lpAddInMenu->lpAddIn->pfnCallMenu)
 		{
-			output::DebugPrint(output::DBGAddInPlumbing, L"InvokeAddInMenu: CallMenu not found\n");
+			output::DebugPrint(output::dbgLevel::AddInPlumbing, L"InvokeAddInMenu: CallMenu not found\n");
 			return;
 		}
 

@@ -59,7 +59,7 @@ void DoSmartView()
 			{
 				if (fOut)
 				{
-					output::Output(output::DBGNoDebug, fOut, false, szString);
+					output::Output(output::dbgLevel::NoDebug, fOut, false, szString);
 				}
 				else
 				{

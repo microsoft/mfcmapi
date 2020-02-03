@@ -125,7 +125,7 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMySecInfo::GetObjectInformation(const PSI_OBJECT_INFO pObjectInfo)
 	{
-		output::DebugPrint(output::DBGGeneric, L"CMySecInfo::GetObjectInformation\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"CMySecInfo::GetObjectInformation\n");
 
 		HKEY hRootKey = nullptr;
 		WC_W32_S(RegOpenKeyExW(HKEY_CURRENT_USER, registry::RKEY_ROOT, NULL, KEY_READ, &hRootKey));
@@ -161,7 +161,7 @@ namespace mapi::mapiui
 		PSECURITY_DESCRIPTOR* ppSecurityDescriptor,
 		BOOL /*fDefault*/)
 	{
-		output::DebugPrint(output::DBGGeneric, L"CMySecInfo::GetSecurity\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"CMySecInfo::GetSecurity\n");
 
 		*ppSecurityDescriptor = nullptr;
 
@@ -204,7 +204,7 @@ namespace mapi::mapiui
 
 				// Dump our SD
 				auto sd = SDToString(std::vector<BYTE>(lpSDBuffer, lpSDBuffer + cbSBBuffer), m_acetype);
-				output::DebugPrint(output::DBGGeneric, L"sdInfo: %ws\nszDACL: %ws\n", sd.info.c_str(), sd.dacl.c_str());
+				output::DebugPrint(output::dbgLevel::Generic, L"sdInfo: %ws\nszDACL: %ws\n", sd.info.c_str(), sd.dacl.c_str());
 			}
 		}
 
@@ -221,7 +221,7 @@ namespace mapi::mapiui
 	STDMETHODIMP
 	CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*/, PSECURITY_DESCRIPTOR pSecurityDescriptor)
 	{
-		output::DebugPrint(output::DBGGeneric, L"CMySecInfo::SetSecurity\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"CMySecInfo::SetSecurity\n");
 		LPBYTE lpBlob = nullptr;
 
 		if (!m_lpHeader || !pSecurityDescriptor || !m_lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
@@ -263,7 +263,7 @@ namespace mapi::mapiui
 		ULONG* pcAccesses,
 		ULONG* piDefaultAccess)
 	{
-		output::DebugPrint(output::DBGGeneric, L"CMySecInfo::GetAccessRights\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"CMySecInfo::GetAccessRights\n");
 
 		switch (m_acetype)
 		{
@@ -287,7 +287,7 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMySecInfo::MapGeneric(const GUID* /*pguidObjectType*/, UCHAR* /*pAceFlags*/, ACCESS_MASK* pMask)
 	{
-		output::DebugPrint(output::DBGGeneric, L"CMySecInfo::MapGeneric\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"CMySecInfo::MapGeneric\n");
 
 		switch (m_acetype)
 		{
@@ -306,26 +306,26 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMySecInfo::GetInheritTypes(PSI_INHERIT_TYPE* /*ppInheritTypes*/, ULONG* /*pcInheritTypes*/)
 	{
-		output::DebugPrint(output::DBGGeneric, L"CMySecInfo::GetInheritTypes\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"CMySecInfo::GetInheritTypes\n");
 		return E_NOTIMPL;
 	}
 
 	STDMETHODIMP CMySecInfo::PropertySheetPageCallback(HWND /*hwnd*/, const UINT uMsg, const SI_PAGE_TYPE uPage)
 	{
 		output::DebugPrint(
-			output::DBGGeneric, L"CMySecInfo::PropertySheetPageCallback, uMsg = 0x%X, uPage = 0x%X\n", uMsg, uPage);
+			output::dbgLevel::Generic, L"CMySecInfo::PropertySheetPageCallback, uMsg = 0x%X, uPage = 0x%X\n", uMsg, uPage);
 		return S_OK;
 	}
 
 	STDMETHODIMP_(BOOL) CMySecInfo::IsDaclCanonical(PACL /*pDacl*/)
 	{
-		output::DebugPrint(output::DBGGeneric, L"CMySecInfo::IsDaclCanonical - always returns true.\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"CMySecInfo::IsDaclCanonical - always returns true.\n");
 		return true;
 	}
 
 	STDMETHODIMP CMySecInfo::LookupSids(ULONG /*cSids*/, PSID* /*rgpSids*/, LPDATAOBJECT* /*ppdo*/)
 	{
-		output::DebugPrint(output::DBGGeneric, L"CMySecInfo::LookupSids\n");
+		output::DebugPrint(output::dbgLevel::Generic, L"CMySecInfo::LookupSids\n");
 		return E_NOTIMPL;
 	}
 } // namespace mapi::mapiui

@@ -261,7 +261,7 @@ namespace ui
 		auto szNewString = strings::loadstring(uidNewString);
 
 		output::DebugPrint(
-			output::DBGMenu,
+			output::dbgLevel::Menu,
 			L"UpdateMenuString: Changing menu item 0x%X on window %p to \"%ws\"\n",
 			uiMenuTag,
 			hWnd,
@@ -612,7 +612,7 @@ namespace ui
 		const bool bBold,
 		_In_ const UINT format)
 	{
-		output::DebugPrint(output::DBGDraw, L"Draw %d, \"%ws\"\n", rc.right - rc.left, lpchText.c_str());
+		output::DebugPrint(output::dbgLevel::Draw, L"Draw %d, \"%ws\"\n", rc.right - rc.left, lpchText.c_str());
 		const auto hfontOld = SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
 		const auto crText = SetTextColor(hdc, color);
 		SetBkMode(hdc, TRANSPARENT);
@@ -1408,7 +1408,7 @@ namespace ui
 			ReleaseDC(nullptr, hdc);
 
 			output::DebugPrint(
-				output::DBGDraw, L"Measure %d, \"%ws\"\n", lpMeasureItemStruct->itemWidth, szText.c_str());
+				output::dbgLevel::Draw, L"Measure %d, \"%ws\"\n", lpMeasureItemStruct->itemWidth, szText.c_str());
 		}
 	}
 
@@ -1442,7 +1442,7 @@ namespace ui
 		const auto bDisabled = (lpDrawItemStruct->itemState & (ODS_GRAYED | ODS_DISABLED)) != 0;
 
 		output::DebugPrint(
-			output::DBGDraw,
+			output::dbgLevel::Draw,
 			L"DrawMenu %d, \"%ws\"\n",
 			lpDrawItemStruct->rcItem.right - lpDrawItemStruct->rcItem.left,
 			lpMenuEntry->m_pName.c_str());
@@ -1500,7 +1500,7 @@ namespace ui
 				rcText.left += GetSystemMetrics(SM_CXEDGE);
 
 			output::DebugPrint(
-				output::DBGDraw,
+				output::dbgLevel::Draw,
 				L"DrawMenu text %d, \"%ws\"\n",
 				rcText.right - rcText.left,
 				lpMenuEntry->m_pName.c_str());
@@ -1551,7 +1551,7 @@ namespace ui
 	std::wstring GetLBText(HWND hwnd, const int nIndex)
 	{
 		const auto len = ComboBox_GetLBTextLen(hwnd, nIndex) + 1;
-		auto buffer = std::basic_string<TCHAR>(len,'\0');
+		auto buffer = std::basic_string<TCHAR>(len, '\0');
 		ComboBox_GetLBText(hwnd, nIndex, const_cast<TCHAR*>(buffer.c_str()));
 		auto szOut = strings::LPCTSTRToWstring(buffer.c_str());
 		return szOut;

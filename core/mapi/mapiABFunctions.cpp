@@ -183,7 +183,8 @@ namespace mapi::ab
 	{
 		if (PROP_TYPE(ulPropTag) != PT_UNICODE)
 		{
-			output::DebugPrint(output::DBGGeneric, L"Failed to create restriction - property was not PT_UNICODE\n");
+			output::DebugPrint(
+				output::dbgLevel::Generic, L"Failed to create restriction - property was not PT_UNICODE\n");
 			return nullptr;
 		}
 
@@ -212,8 +213,8 @@ namespace mapi::ab
 				}
 			}
 
-			output::DebugPrint(output::DBGGeneric, L"CreateANRRestriction built restriction:\n");
-			output::outputRestriction(output::DBGGeneric, nullptr, lpRes, nullptr);
+			output::DebugPrint(output::dbgLevel::Generic, L"CreateANRRestriction built restriction:\n");
+			output::outputRestriction(output::dbgLevel::Generic, nullptr, lpRes, nullptr);
 		}
 
 		return lpRes;
@@ -283,7 +284,7 @@ namespace mapi::ab
 		if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 		if (PROP_TYPE(PropTagToCompare) != PT_UNICODE) return MAPI_E_INVALID_PARAMETER;
 
-		output::DebugPrint(output::DBGGeneric, L"ManualResolve: Asked to resolve \"%ws\"\n", szName.c_str());
+		output::DebugPrint(output::dbgLevel::Generic, L"ManualResolve: Asked to resolve \"%ws\"\n", szName.c_str());
 
 		auto hRes = EC_MAPI(lpMAPISession->OpenAddressBook(NULL, nullptr, NULL, &lpAdrBook));
 
@@ -310,9 +311,9 @@ namespace mapi::ab
 					// From this point forward, consider any error an error with the current address book container, so just continue and try the next one.
 					if (PR_ENTRYID == lpABRow->aRow->lpProps[abcPR_ENTRYID].ulPropTag)
 					{
-						output::DebugPrint(output::DBGGeneric, L"ManualResolve: Searching this container\n");
+						output::DebugPrint(output::dbgLevel::Generic, L"ManualResolve: Searching this container\n");
 						output::outputBinary(
-							output::DBGGeneric, nullptr, lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin);
+							output::dbgLevel::Generic, nullptr, lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin);
 
 						if (lpABContainer) lpABContainer->Release();
 						lpABContainer = mapi::CallOpenEntry<LPABCONT>(
@@ -327,7 +328,8 @@ namespace mapi::ab
 							&ulObjType);
 						if (!lpABContainer) continue;
 
-						output::DebugPrint(output::DBGGeneric, L"ManualResolve: Object opened as 0x%X\n", ulObjType);
+						output::DebugPrint(
+							output::dbgLevel::Generic, L"ManualResolve: Object opened as 0x%X\n", ulObjType);
 
 						if (lpABContainer && ulObjType == MAPI_ABCONT)
 						{
@@ -337,7 +339,8 @@ namespace mapi::ab
 							if (!pTable)
 							{
 								output::DebugPrint(
-									output::DBGGeneric, L"ManualResolve: Container did not support contents table\n");
+									output::dbgLevel::Generic,
+									L"ManualResolve: Container did not support contents table\n");
 								continue;
 							}
 
@@ -455,7 +458,8 @@ namespace mapi::ab
 		if (!pTable || szName.empty()) return MAPI_E_INVALID_PARAMETER;
 		if (PROP_TYPE(PropTagToCompare) != PT_UNICODE) return MAPI_E_INVALID_PARAMETER;
 
-		output::DebugPrint(output::DBGGeneric, L"SearchContentsTableForName: Looking for \"%ws\"\n", szName.c_str());
+		output::DebugPrint(
+			output::dbgLevel::Generic, L"SearchContentsTableForName: Looking for \"%ws\"\n", szName.c_str());
 
 		auto hRes = EC_MAPI(pTable->SetColumns(LPSPropTagArray(&abCols), TBL_BATCH));
 		if (SUCCEEDED(hRes))
@@ -489,13 +493,13 @@ namespace mapi::ab
 					strings::CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_UNICODE))
 				{
 					output::DebugPrint(
-						output::DBGGeneric,
+						output::dbgLevel::Generic,
 						L"SearchContentsTableForName: found \"%ws\"\n",
 						pRows->aRow->lpProps[abPropTagToCompare].Value.lpszW);
 					if (szName == pRows->aRow->lpProps[abPropTagToCompare].Value.lpszW)
 					{
 						output::DebugPrint(
-							output::DBGGeneric, L"SearchContentsTableForName: This is an exact match!\n");
+							output::dbgLevel::Generic, L"SearchContentsTableForName: This is an exact match!\n");
 						// We found a match! Return it!
 						hRes =
 							EC_MAPI(ScDupPropset(abNUM_COLS, pRows->aRow->lpProps, MAPIAllocateBuffer, lppPropsFound));
@@ -507,7 +511,7 @@ namespace mapi::ab
 
 		if (!*lppPropsFound)
 		{
-			output::DebugPrint(output::DBGGeneric, L"SearchContentsTableForName: No exact match found.\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"SearchContentsTableForName: No exact match found.\n");
 		}
 
 		if (pRows) FreeProws(pRows);

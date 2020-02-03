@@ -74,7 +74,7 @@ namespace ui
 	_Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal)
 	{
 		output::DebugPrintEx(
-			output::DBGGeneric,
+			output::dbgLevel::Generic,
 			CLASS,
 			L"Progress",
 			L"(%ws) - ulValue = %u, ulCount = %u, ulTotal = %u\n",
@@ -164,7 +164,7 @@ namespace ui
 		}
 
 		output::DebugPrintEx(
-			output::DBGGeneric,
+			output::dbgLevel::Generic,
 			CLASS,
 			L"SetLimits",
 			L"(%ws) - Passed Values: lpulMin = %ws, lpulMax = %ws, lpulFlags = %ws\n",
@@ -187,7 +187,7 @@ namespace ui
 	void CMAPIProgress::OutputState(const std::wstring& lpszFunction) const
 	{
 		output::DebugPrint(
-			output::DBGGeneric,
+			output::dbgLevel::Generic,
 			L"%ws::%ws(%ws) - Current Values: Min = %u, Max = %u, Flags = %u\n",
 			CLASS.c_str(),
 			lpszFunction.c_str(),

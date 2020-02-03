@@ -83,7 +83,7 @@ namespace mapiprocessor
 	void CFindFidMid::BeginFolderWork()
 	{
 		output::DebugPrint(
-			output::DBGGeneric, L"CFindFidMid::BeginFolderWork: m_szFolderOffset %ws\n", m_szFolderOffset.c_str());
+			output::dbgLevel::Generic, L"CFindFidMid::BeginFolderWork: m_szFolderOffset %ws\n", m_szFolderOffset.c_str());
 		m_fFIDMatch = false;
 		m_fFIDExactMatch = false;
 		m_fFIDPrinted = false;
@@ -103,7 +103,7 @@ namespace mapiprocessor
 
 		WC_H_GETPROPS_S(m_lpFolder->GetProps(LPSPropTagArray(&sptaFolderProps), NULL, &ulProps, &lpProps));
 		output::DebugPrint(
-			output::DBGGeneric,
+			output::dbgLevel::Generic,
 			L"CFindFidMid::DoFolderPerHierarchyTableRowWork: m_szFolderOffset %ws\n",
 			m_szFolderOffset.c_str());
 
@@ -119,7 +119,7 @@ namespace mapiprocessor
 		{
 			m_szCurrentFid = smartview::FidMidToSzString(lpProps[ePidTagFolderId].Value.li.QuadPart, false);
 			output::DebugPrint(
-				output::DBGGeneric,
+				output::dbgLevel::Generic,
 				L"CFindFidMid::DoFolderPerHierarchyTableRowWork: Found FID %ws for %ws\n",
 				m_szCurrentFid.c_str(),
 				lpszDisplayName);
@@ -128,7 +128,7 @@ namespace mapiprocessor
 		{
 			// Nothing left to do if we can't find a fid.
 			output::DebugPrint(
-				output::DBGGeneric,
+				output::dbgLevel::Generic,
 				L"CFindFidMid::DoFolderPerHierarchyTableRowWork: No FID found for %ws\n",
 				lpszDisplayName);
 			return;
@@ -152,7 +152,7 @@ namespace mapiprocessor
 		if (m_fFIDMatch)
 		{
 			output::DebugPrint(
-				output::DBGGeneric,
+				output::dbgLevel::Generic,
 				L"CFindFidMid::DoFolderPerHierarchyTableRowWork: Matched FID %ws\n",
 				m_szFid.c_str());
 			// Print out the folder
@@ -196,12 +196,12 @@ namespace mapiprocessor
 		{
 			lpszThisMid = smartview::FidMidToSzString(lpPropMid->Value.li.QuadPart, false);
 			output::DebugPrint(
-				output::DBGGeneric, L"CFindFidMid::DoContentsTablePerRowWork: Found MID %ws\n", lpszThisMid.c_str());
+				output::dbgLevel::Generic, L"CFindFidMid::DoContentsTablePerRowWork: Found MID %ws\n", lpszThisMid.c_str());
 		}
 		else
 		{
 			// Nothing left to do if we can't find a mid
-			output::DebugPrint(output::DBGGeneric, L"CFindFidMid::DoContentsTablePerRowWork: No MID found\n");
+			output::DebugPrint(output::dbgLevel::Generic, L"CFindFidMid::DoContentsTablePerRowWork: No MID found\n");
 			return false;
 		}
 
@@ -229,7 +229,7 @@ namespace mapiprocessor
 
 			PrintMessage(lpszThisMid, m_fAssociated, lpszSubject, lpszClass);
 			output::DebugPrint(
-				output::DBGGeneric,
+				output::dbgLevel::Generic,
 				L"EnumMessages::ProcessRow: Matched MID %ws, \"%ws\", \"%ws\"\n",
 				lpszThisMid.c_str(),
 				lpszSubject.c_str(),
@@ -252,7 +252,7 @@ namespace mapiprocessor
 		registry::forceMDBOnline = true;
 
 		output::DebugPrint(
-			output::DBGGeneric,
+			output::dbgLevel::Generic,
 			L"DumpFidMid: Outputting from profile %ws. FID: %ws, MID: %ws\n",
 			lpszProfile.c_str(),
 			lpszFid.c_str(),

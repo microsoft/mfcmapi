@@ -210,13 +210,13 @@ namespace cache
 		{
 			if (lppPropNames[ulSource])
 			{
-				if (fIsSet(output::DBGNamedPropCacheMisses) && lppPropNames[ulSource]->ulKind == MNID_ID)
+				if (fIsSet(output::dbgLevel::NamedPropCacheMisses) && lppPropNames[ulSource]->ulKind == MNID_ID)
 				{
 					auto names = NameIDToPropNames(lppPropNames[ulSource]);
 					if (names.empty())
 					{
 						output::DebugPrint(
-							output::DBGNamedPropCacheMisses,
+							output::dbgLevel::NamedPropCacheMisses,
 							L"AddMapping: Caching unknown property 0x%08X %ws\n",
 							lppPropNames[ulSource]->Kind.lID,
 							guid::GUIDToStringAndName(lppPropNames[ulSource]->lpguid).c_str());
@@ -615,24 +615,24 @@ namespace cache
 			if (!lpNamedPropCacheEntry)
 			{
 				output::DebugPrint(
-					output::DBGNamedProp,
+					output::dbgLevel::NamedProp,
 					L"NameIDToStrings: Failed to find cache entry for ulPropTag = 0x%08X\n",
 					ulPropTag);
 				return namePropNames;
 			}
 		}
 
-		output::DebugPrint(output::DBGNamedProp, L"Parsing named property\n");
-		output::DebugPrint(output::DBGNamedProp, L"ulPropTag = 0x%08x\n", ulPropTag);
+		output::DebugPrint(output::dbgLevel::NamedProp, L"Parsing named property\n");
+		output::DebugPrint(output::dbgLevel::NamedProp, L"ulPropTag = 0x%08x\n", ulPropTag);
 		namePropNames.guid = guid::GUIDToStringAndName(lpNameID->lpguid);
-		output::DebugPrint(output::DBGNamedProp, L"lpNameID->lpguid = %ws\n", namePropNames.guid.c_str());
+		output::DebugPrint(output::dbgLevel::NamedProp, L"lpNameID->lpguid = %ws\n", namePropNames.guid.c_str());
 
 		auto szDASLGuid = guid::GUIDToString(lpNameID->lpguid);
 
 		if (lpNameID->ulKind == MNID_ID)
 		{
 			output::DebugPrint(
-				output::DBGNamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
+				output::dbgLevel::NamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
 			auto pidlids = NameIDToPropNames(lpNameID);
 
 			if (!pidlids.empty())
@@ -679,7 +679,7 @@ namespace cache
 			{
 				// this is the *proper* case
 				output::DebugPrint(
-					output::DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%ws\"\n", lpNameID->Kind.lpwstrName);
+					output::dbgLevel::NamedProp, L"lpNameID->Kind.lpwstrName = \"%ws\"\n", lpNameID->Kind.lpwstrName);
 				namePropNames.name = lpNameID->Kind.lpwstrName;
 
 				namePropNames.dasl = strings::format(
@@ -691,11 +691,11 @@ namespace cache
 			{
 				// this is the case where ANSI data was shoved into a unicode string.
 				output::DebugPrint(
-					output::DBGNamedProp,
+					output::dbgLevel::NamedProp,
 					L"Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of "
 					L"this named property\n");
 				output::DebugPrint(
-					output::DBGNamedProp,
+					output::dbgLevel::NamedProp,
 					L"lpNameID->Kind.lpwstrName = \"%hs\"\n",
 					reinterpret_cast<LPCSTR>(lpNameID->Kind.lpwstrName));
 

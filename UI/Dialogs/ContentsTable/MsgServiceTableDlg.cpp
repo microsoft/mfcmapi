@@ -76,7 +76,7 @@ namespace dialog
 	// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 	void CMsgServiceTableDlg::OnRefreshView()
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnRefreshView", L"\n");
 
 		// Make sure we've got something to work with
 		if (m_szProfileName.empty() || !m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
@@ -201,7 +201,8 @@ namespace dialog
 	{
 		if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl) return nullptr;
 
-		output::DebugPrintEx(output::DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
+		output::DebugPrintEx(
+			output::dbgLevel::OpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 		LPPROFSECT lpProfSect = nullptr;
 		const auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
@@ -265,7 +266,7 @@ namespace dialog
 			if (!contents) break;
 
 			output::DebugPrintEx(
-				output::DBGDeleteSelectedItem,
+				output::dbgLevel::DeleteSelectedItem,
 				CLASS,
 				L"OnDeleteSelectedItem",
 				L"Deleting service from \"%hs\"\n",

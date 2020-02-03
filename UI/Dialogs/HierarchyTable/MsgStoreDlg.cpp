@@ -307,7 +307,7 @@ namespace dialog
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnCopyItems", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnCopyItems", L"\n");
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		auto lpMAPISourceFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
@@ -326,7 +326,7 @@ namespace dialog
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandlePaste", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"HandlePaste", L"\n");
 		if (!m_lpHierarchyTableTreeCtrl) return false;
 
 		const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
@@ -362,7 +362,7 @@ namespace dialog
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnPasteMessages", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnPasteMessages", L"\n");
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		// Get the source Messages
@@ -415,7 +415,7 @@ namespace dialog
 		};
 		static const SizedSPropTagArray(NUM_COLS, sptaSrcFolder) = {NUM_COLS, {PR_DISPLAY_NAME_W, PR_ENTRYID}};
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnPasteFolder", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnPasteFolder", L"\n");
 
 		// Get the source folder
 		auto lpMAPISourceFolder = cache::CGlobalCache::getInstance().GetFolderToCopy();
@@ -425,9 +425,9 @@ namespace dialog
 
 		if (lpMAPISourceFolder && lpMAPIDestFolder)
 		{
-			output::DebugPrint(output::DBGGeneric, L"Folder Source Object = %p\n", lpMAPISourceFolder);
-			output::DebugPrint(output::DBGGeneric, L"Folder Source Object Parent = %p\n", lpSrcParentFolder);
-			output::DebugPrint(output::DBGGeneric, L"Folder Destination Object = %p\n", lpMAPIDestFolder);
+			output::DebugPrint(output::dbgLevel::Generic, L"Folder Source Object = %p\n", lpMAPISourceFolder);
+			output::DebugPrint(output::dbgLevel::Generic, L"Folder Source Object Parent = %p\n", lpSrcParentFolder);
+			output::DebugPrint(output::dbgLevel::Generic, L"Folder Destination Object = %p\n", lpMAPIDestFolder);
 
 			editor::CEditor MyData(
 				this, IDS_PASTEFOLDER, IDS_PASTEFOLDERNEWNAMEPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -444,7 +444,7 @@ namespace dialog
 				if (strings::CheckStringProp(&lpProps[NAME], PT_UNICODE))
 				{
 					output::DebugPrint(
-						output::DBGGeneric, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
+						output::dbgLevel::Generic, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
 					MyData.SetStringW(0, lpProps[NAME].Value.lpszW);
 				}
 			}
@@ -492,7 +492,7 @@ namespace dialog
 
 	void CMsgStoreDlg::OnPasteFolderContents()
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnPasteFolderContents", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnPasteFolderContents", L"\n");
 
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
@@ -503,8 +503,8 @@ namespace dialog
 
 		if (lpMAPISourceFolder && lpMAPIDestFolder)
 		{
-			output::DebugPrint(output::DBGGeneric, L"Folder Source Object = %p\n", lpMAPISourceFolder);
-			output::DebugPrint(output::DBGGeneric, L"Folder Destination Object = %p\n", lpMAPIDestFolder);
+			output::DebugPrint(output::dbgLevel::Generic, L"Folder Source Object = %p\n", lpMAPISourceFolder);
+			output::DebugPrint(output::dbgLevel::Generic, L"Folder Destination Object = %p\n", lpMAPIDestFolder);
 
 			editor::CEditor MyData(
 				this, IDS_COPYFOLDERCONTENTS, IDS_PICKOPTIONSPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -531,7 +531,7 @@ namespace dialog
 
 	void CMsgStoreDlg::OnPasteRules()
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnPasteRules", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnPasteRules", L"\n");
 
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
@@ -542,8 +542,8 @@ namespace dialog
 
 		if (lpMAPISourceFolder && lpMAPIDestFolder)
 		{
-			output::DebugPrint(output::DBGGeneric, L"Folder Source Object = %p\n", lpMAPISourceFolder);
-			output::DebugPrint(output::DBGGeneric, L"Folder Destination Object = %p\n", lpMAPIDestFolder);
+			output::DebugPrint(output::dbgLevel::Generic, L"Folder Source Object = %p\n", lpMAPISourceFolder);
+			output::DebugPrint(output::dbgLevel::Generic, L"Folder Destination Object = %p\n", lpMAPIDestFolder);
 
 			editor::CEditor MyData(
 				this, IDS_COPYFOLDERRULES, IDS_COPYFOLDERRULESPROMPT, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
@@ -709,7 +709,7 @@ namespace dialog
 					if (lpProgress) ulFlags |= FOLDER_DIALOG;
 
 					output::DebugPrintEx(
-						output::DBGGeneric,
+						output::dbgLevel::Generic,
 						CLASS,
 						L"OnEmptyFolder",
 						L"Calling EmptyFolder on %p, ulFlags = 0x%08X.\n",
@@ -781,12 +781,12 @@ namespace dialog
 					auto ulFlags = DEL_FOLDERS | DEL_MESSAGES | (bHardDelete ? DELETE_HARD_DELETE : 0);
 
 					output::DebugPrintEx(
-						output::DBGDeleteSelectedItem,
+						output::dbgLevel::DeleteSelectedItem,
 						CLASS,
 						L"OnDeleteSelectedItem",
 						L"Calling DeleteFolder on folder. ulFlags = 0x%08X.\n",
 						ulFlags);
-					output::outputBinary(output::DBGGeneric, nullptr, *lpItemEID);
+					output::outputBinary(output::dbgLevel::Generic, nullptr, *lpItemEID);
 
 					auto lpProgress = mapi::mapiui::GetMAPIProgress(L"IMAPIFolder::DeleteFolder", m_hWnd); // STRING_OK
 
@@ -819,7 +819,7 @@ namespace dialog
 	{
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnSaveFolderContentsAsMSG", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnSaveFolderContentsAsMSG", L"\n");
 
 		// Find the highlighted item
 		auto lpMAPIFolder = GetSelectedFolder(mfcmapiDO_NOT_REQUEST_MODIFY);
@@ -987,7 +987,7 @@ namespace dialog
 				if (strings::CheckStringProp(&lpProps[NAME], PT_UNICODE))
 				{
 					output::DebugPrint(
-						output::DBGGeneric, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
+						output::dbgLevel::Generic, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
 					MyData.SetStringW(0, lpProps[NAME].Value.lpszW);
 				}
 			}
@@ -997,7 +997,7 @@ namespace dialog
 				// Restore the folder up under m_lpContainer
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				output::DebugPrint(output::DBGGeneric, L"Restoring %p to %p as \n", lpSrcFolder, GetRootContainer());
+				output::DebugPrint(output::dbgLevel::Generic, L"Restoring %p to %p as \n", lpSrcFolder, GetRootContainer());
 
 				if (!lpSrcParentFolder) lpSrcParentFolder = mapi::safe_cast<LPMAPIFOLDER>(GetRootContainer());
 
@@ -1054,7 +1054,7 @@ namespace dialog
 			const auto ulFlags =
 				(MyData.GetCheck(0) ? MAPI_FORCE_CREATE : 0) | (MyData.GetCheck(1) ? MAPI_FULL_IPM_TREE : 0);
 
-			output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnValidateIPMSubtree", L"ulFlags = 0x%08X\n", ulFlags);
+			output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnValidateIPMSubtree", L"ulFlags = 0x%08X\n", ulFlags);
 
 			EC_MAPI_S(HrValidateIPMSubtree(m_lpMDB, ulFlags, &ulValues, &lpProps, &lpErr));
 			EC_MAPIERR(fMapiUnicode, lpErr);
@@ -1063,12 +1063,12 @@ namespace dialog
 			if (ulValues > 0 && lpProps)
 			{
 				output::DebugPrintEx(
-					output::DBGGeneric,
+					output::dbgLevel::Generic,
 					CLASS,
 					L"OnValidateIPMSubtree",
 					L"HrValidateIPMSubtree returned 0x%08X properties:\n",
 					ulValues);
-				output::outputProperties(output::DBGGeneric, nullptr, ulValues, lpProps, m_lpMDB, false);
+				output::outputProperties(output::dbgLevel::Generic, nullptr, ulValues, lpProps, m_lpMDB, false);
 			}
 
 			MAPIFreeBuffer(lpProps);

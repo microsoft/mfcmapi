@@ -389,7 +389,7 @@ namespace error
 		{ \
 			const std::wstring szProbArray = error::ProblemArrayToString(*(problemarray)); \
 			error::ErrDialog(__FILE__, __LINE__, IDS_EDPROBLEMARRAY, szProbArray.c_str()); \
-			output::DebugPrint(output::DBGGeneric, L"Problem array:\n%ws\n", szProbArray.c_str()); \
+			output::DebugPrint(output::dbgLevel::Generic, L"Problem array:\n%ws\n", szProbArray.c_str()); \
 		} \
 	}
 
@@ -398,7 +398,7 @@ namespace error
 		if (problemarray) \
 		{ \
 			const std::wstring szProbArray = error::ProblemArrayToString(*(problemarray)); \
-			output::DebugPrint(output::DBGGeneric, L"Problem array:\n%ws\n", szProbArray.c_str()); \
+			output::DebugPrint(output::dbgLevel::Generic, L"Problem array:\n%ws\n", szProbArray.c_str()); \
 		} \
 	}
 
@@ -408,7 +408,7 @@ namespace error
 		{ \
 			const std::wstring szErr = error::MAPIErrToString((__ulflags), *(__lperr)); \
 			error::ErrDialog(__FILE__, __LINE__, IDS_EDMAPIERROR, szErr.c_str()); \
-			output::DebugPrint(output::DBGGeneric, L"LPMAPIERROR:\n%ws\n", szErr.c_str()); \
+			output::DebugPrint(output::dbgLevel::Generic, L"LPMAPIERROR:\n%ws\n", szErr.c_str()); \
 		} \
 	}
 
@@ -418,6 +418,6 @@ namespace error
 		{ \
 			const std::wstring szProbArray = error::TnefProblemArrayToString(*(problemarray)); \
 			error::ErrDialog(__FILE__, __LINE__, IDS_EDTNEFPROBLEMARRAY, szProbArray.c_str()); \
-			output::DebugPrint(output::DBGGeneric, L"TNEF Problem array:\n%ws\n", szProbArray.c_str()); \
+			output::DebugPrint(output::dbgLevel::Generic, L"TNEF Problem array:\n%ws\n", szProbArray.c_str()); \
 		} \
 	}

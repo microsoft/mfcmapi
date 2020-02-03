@@ -96,7 +96,7 @@ namespace dialog
 		if (!m_lpContentsTableListCtrl) return;
 
 		if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnRefreshView", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnRefreshView", L"\n");
 
 		// Wipe out current references to the profile table so the refresh will work
 		// If we don't do this, we get the old table back again.
@@ -185,7 +185,7 @@ namespace dialog
 				if (!contents) break;
 
 				output::DebugPrintEx(
-					output::DBGGeneric,
+					output::dbgLevel::Generic,
 					CLASS,
 					L"OnAddExchangeToProfile", // STRING_OK
 					L"Adding Server \"%ws\" and Mailbox \"%ws\" to profile \"%ws\"\n", // STRING_OK
@@ -230,7 +230,7 @@ namespace dialog
 					auto szPwd = MyFile.GetStringW(2);
 
 					output::DebugPrintEx(
-						output::DBGGeneric,
+						output::dbgLevel::Generic,
 						CLASS,
 						L"AddPSTToProfile",
 						L"Adding PST \"%ws\" to profile \"%ws\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = "
@@ -278,7 +278,7 @@ namespace dialog
 			if (!contents) break;
 
 			output::DebugPrintEx(
-				output::DBGGeneric,
+				output::dbgLevel::Generic,
 				CLASS,
 				L"OnAddServiceToProfile",
 				L"Adding service \"%ws\" to profile \"%ws\"\n",
@@ -306,7 +306,7 @@ namespace dialog
 		auto szProfile = MyData.GetStringW(0);
 
 		output::DebugPrintEx(
-			output::DBGGeneric,
+			output::dbgLevel::Generic,
 			CLASS,
 			L"OnCreateProfile", // STRING_OK
 			L"Creating profile \"%ws\"\n", // STRING_OK
@@ -333,7 +333,7 @@ namespace dialog
 			if (!contents) break;
 
 			output::DebugPrintEx(
-				output::DBGDeleteSelectedItem,
+				output::dbgLevel::DeleteSelectedItem,
 				CLASS,
 				L"OnDeleteSelectedItem",
 				L"Deleting profile \"%ws\"\n",
@@ -360,7 +360,7 @@ namespace dialog
 			if (!contents) break;
 
 			output::DebugPrintEx(
-				output::DBGDeleteSelectedItem,
+				output::dbgLevel::DeleteSelectedItem,
 				CLASS,
 				L"OnGetProfileServiceVersion",
 				L"Getting profile service version for \"%ws\"\n",
@@ -390,7 +390,8 @@ namespace dialog
 			if (bFoundServerVersion)
 			{
 				MyData.SetStringf(0, L"%u = 0x%X", ulServerVersion, ulServerVersion); // STRING_OK
-				output::DebugPrint(output::DBGGeneric, L"PR_PROFILE_SERVER_VERSION == 0x%08X\n", ulServerVersion);
+				output::DebugPrint(
+					output::dbgLevel::Generic, L"PR_PROFILE_SERVER_VERSION == 0x%08X\n", ulServerVersion);
 			}
 			else
 			{
@@ -399,13 +400,13 @@ namespace dialog
 
 			if (bFoundServerFullVersion)
 			{
-				output::DebugPrint(output::DBGGeneric, L"PR_PROFILE_SERVER_FULL_VERSION = \n");
+				output::DebugPrint(output::dbgLevel::Generic, L"PR_PROFILE_SERVER_FULL_VERSION = \n");
 				MyData.SetStringf(1, L"%u = 0x%X", storeVersion.wMajorVersion, storeVersion.wMajorVersion); // STRING_OK
 				MyData.SetStringf(2, L"%u = 0x%X", storeVersion.wMinorVersion, storeVersion.wMinorVersion); // STRING_OK
 				MyData.SetStringf(3, L"%u = 0x%X", storeVersion.wBuild, storeVersion.wBuild); // STRING_OK
 				MyData.SetStringf(4, L"%u = 0x%X", storeVersion.wMinorBuild, storeVersion.wMinorBuild); // STRING_OK
 				output::DebugPrint(
-					output::DBGGeneric,
+					output::dbgLevel::Generic,
 					L"\twMajorVersion 0x%04X\n" // STRING_OK
 					L"\twMinorVersion 0x%04X\n" // STRING_OK
 					L"\twBuild 0x%04X\n" // STRING_OK
@@ -441,7 +442,7 @@ namespace dialog
 			if (contents)
 			{
 				output::DebugPrintEx(
-					output::DBGGeneric,
+					output::dbgLevel::Generic,
 					CLASS,
 					L"OnSetDefaultProfile",
 					L"Setting profile \"%ws\" as default\n",
@@ -473,7 +474,7 @@ namespace dialog
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandleCopy", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"HandleCopy", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		// Find the highlighted profile
@@ -494,7 +495,7 @@ namespace dialog
 
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"HandlePaste", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"HandlePaste", L"\n");
 
 		const auto szOldProfile = cache::CGlobalCache::getInstance().GetProfileToCopy();
 
@@ -518,7 +519,7 @@ namespace dialog
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"OnExportProfile", L"\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnExportProfile", L"\n");
 		if (!m_lpContentsTableListCtrl) return;
 
 		// Find the highlighted profile

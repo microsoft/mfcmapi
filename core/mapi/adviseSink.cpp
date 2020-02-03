@@ -52,7 +52,7 @@ namespace mapi
 
 	STDMETHODIMP_(ULONG) adviseSink::OnNotify(ULONG cNotify, LPNOTIFICATION lpNotifications)
 	{
-		output::outputNotifications(output::DBGNotify, nullptr, cNotify, lpNotifications, m_lpAdviseTarget);
+		output::outputNotifications(output::dbgLevel::Notify, nullptr, cNotify, lpNotifications, m_lpAdviseTarget);
 		if (onNotifyCallback)
 		{
 			onNotifyCallback(m_hWndParent, m_hTreeParent, cNotify, lpNotifications);

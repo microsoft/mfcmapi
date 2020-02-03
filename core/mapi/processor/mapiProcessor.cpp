@@ -329,7 +329,7 @@ namespace mapi::processor
 
 		if (SUCCEEDED(hRes) && lpContentsTable && m_lpResFolderContents)
 		{
-			output::outputRestriction(output::DBGGeneric, nullptr, m_lpResFolderContents, nullptr);
+			output::outputRestriction(output::dbgLevel::Generic, nullptr, m_lpResFolderContents, nullptr);
 			WC_MAPI_S(lpContentsTable->Restrict(m_lpResFolderContents, TBL_BATCH));
 		}
 

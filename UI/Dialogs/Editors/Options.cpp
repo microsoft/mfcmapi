@@ -31,7 +31,8 @@ namespace dialog::editor
 		TRACE_CONSTRUCTOR(CLASS);
 		EnableScroll();
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"COptions(", L"Building option sheet - adding fields\n");
+		output::DebugPrintEx(
+			output::dbgLevel::Generic, CLASS, L"COptions(", L"Building option sheet - adding fields\n");
 
 		for (auto& regKey : registry::RegKeys)
 		{
@@ -72,7 +73,7 @@ namespace dialog::editor
 		if (GetHex(registry::debugTag.uiOptionsPrompt) != registry::debugTag)
 		{
 			registry::debugTag = GetHex(registry::debugTag.uiOptionsPrompt);
-			output::outputVersion(output::DBGVersionBanner, nullptr);
+			output::outputVersion(output::dbgLevel::VersionBanner, nullptr);
 		}
 
 		output::SetDebugOutputToFile(GetCheck(registry::debugToFile.uiOptionsPrompt));

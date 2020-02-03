@@ -61,7 +61,7 @@ namespace mapi::mapiui
 		if (!m_hwndParent)
 		{
 			error::ErrDialog(__FILE__, __LINE__, IDS_EDFORMVIEWERNULLPARENT);
-			output::DebugPrint(output::DBGFormViewer, L"Form Viewer created with a NULL parent!\n");
+			output::DebugPrint(output::dbgLevel::FormViewer, L"Form Viewer created with a NULL parent!\n");
 		}
 	}
 
@@ -73,7 +73,7 @@ namespace mapi::mapiui
 
 	void CMyMAPIFormViewer::ReleaseObjects()
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"ReleaseObjects", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"ReleaseObjects", L"\n");
 		ShutdownPersist();
 		if (m_lpMessage) m_lpMessage->Release();
 		if (m_lpFolder) m_lpFolder->Release();
@@ -91,14 +91,14 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::QueryInterface(REFIID riid, LPVOID* ppvObj)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"QueryInterface", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"QueryInterface", L"\n");
 		auto szGuid = guid::GUIDToStringAndName(const_cast<LPGUID>(&riid));
-		output::DebugPrint(output::DBGFormViewer, L"GUID Requested: %ws\n", szGuid.c_str());
+		output::DebugPrint(output::dbgLevel::FormViewer, L"GUID Requested: %ws\n", szGuid.c_str());
 
 		*ppvObj = nullptr;
 		if (riid == IID_IMAPIMessageSite)
 		{
-			output::DebugPrint(output::DBGFormViewer, L"Requested IID_IMAPIMessageSite\n");
+			output::DebugPrint(output::dbgLevel::FormViewer, L"Requested IID_IMAPIMessageSite\n");
 			*ppvObj = static_cast<IMAPIMessageSite*>(this);
 			AddRef();
 			return S_OK;
@@ -106,7 +106,7 @@ namespace mapi::mapiui
 
 		if (riid == IID_IMAPIViewContext)
 		{
-			output::DebugPrint(output::DBGFormViewer, L"Requested IID_IMAPIViewContext\n");
+			output::DebugPrint(output::dbgLevel::FormViewer, L"Requested IID_IMAPIViewContext\n");
 			*ppvObj = static_cast<IMAPIViewContext*>(this);
 			AddRef();
 			return S_OK;
@@ -114,7 +114,7 @@ namespace mapi::mapiui
 
 		if (riid == IID_IMAPIViewAdviseSink)
 		{
-			output::DebugPrint(output::DBGFormViewer, L"Requested IID_IMAPIViewAdviseSink\n");
+			output::DebugPrint(output::dbgLevel::FormViewer, L"Requested IID_IMAPIViewAdviseSink\n");
 			*ppvObj = static_cast<IMAPIViewAdviseSink*>(this);
 			AddRef();
 			return S_OK;
@@ -122,13 +122,13 @@ namespace mapi::mapiui
 
 		if (riid == IID_IUnknown)
 		{
-			output::DebugPrint(output::DBGFormViewer, L"Requested IID_IUnknown\n");
+			output::DebugPrint(output::dbgLevel::FormViewer, L"Requested IID_IUnknown\n");
 			*ppvObj = static_cast<LPUNKNOWN>(static_cast<IMAPIMessageSite*>(this));
 			AddRef();
 			return S_OK;
 		}
 
-		output::DebugPrint(output::DBGFormViewer, L"Unknown interface requested\n");
+		output::DebugPrint(output::dbgLevel::FormViewer, L"Unknown interface requested\n");
 		return E_NOINTERFACE;
 	}
 
@@ -149,7 +149,7 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::GetSession(LPMAPISESSION* ppSession)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"GetSession", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"GetSession", L"\n");
 		if (ppSession) *ppSession = m_lpMAPISession;
 		if (ppSession && *ppSession)
 		{
@@ -162,7 +162,7 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::GetStore(LPMDB* ppStore)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"GetStore", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"GetStore", L"\n");
 		if (ppStore) *ppStore = m_lpMDB;
 		if (ppStore && *ppStore)
 		{
@@ -175,7 +175,7 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::GetFolder(LPMAPIFOLDER* ppFolder)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"GetFolder", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"GetFolder", L"\n");
 		if (ppFolder) *ppFolder = m_lpFolder;
 		if (ppFolder && *ppFolder)
 		{
@@ -188,7 +188,7 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::GetMessage(LPMESSAGE* ppmsg)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"GetMessage", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"GetMessage", L"\n");
 		if (ppmsg) *ppmsg = m_lpMessage;
 		if (ppmsg && *ppmsg)
 		{
@@ -201,7 +201,7 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::GetFormManager(LPMAPIFORMMGR* ppFormMgr)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"GetFormManager", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"GetFormManager", L"\n");
 		const auto hRes = EC_MAPI(MAPIOpenFormMgr(m_lpMAPISession, ppFormMgr));
 		return hRes;
 	}
@@ -215,7 +215,7 @@ namespace mapi::mapiui
 		LPMAPIVIEWCONTEXT* ppViewContext)
 	{
 		output::DebugPrintEx(
-			output::DBGFormViewer,
+			output::dbgLevel::FormViewer,
 			CLASS,
 			L"NewMessage",
 			L"fComposeInFolder = 0x%X pFolderFocus = %p, pPersistMessage = %p\n",
@@ -264,7 +264,7 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::CopyMessage(LPMAPIFOLDER /*pFolderDestination*/)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"CopyMessage", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"CopyMessage", L"\n");
 		return MAPI_E_NO_SUPPORT;
 	}
 
@@ -273,19 +273,19 @@ namespace mapi::mapiui
 		LPMAPIVIEWCONTEXT /*pViewContext*/,
 		LPCRECT /*prcPosRect*/)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"MoveMessage", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"MoveMessage", L"\n");
 		return MAPI_E_NO_SUPPORT;
 	}
 
 	STDMETHODIMP CMyMAPIFormViewer::DeleteMessage(LPMAPIVIEWCONTEXT /*pViewContext*/, LPCRECT /*prcPosRect*/)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"DeleteMessage", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"DeleteMessage", L"\n");
 		return MAPI_E_NO_SUPPORT;
 	}
 
 	STDMETHODIMP CMyMAPIFormViewer::SaveMessage()
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"SaveMessage", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"SaveMessage", L"\n");
 
 		if (!m_lpPersistMessage || !m_lpMessage) return MAPI_E_INVALID_PARAMETER;
 
@@ -319,7 +319,7 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::SubmitMessage(ULONG ulFlags)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"SubmitMessage", L"ulFlags = 0x%08X\n", ulFlags);
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"SubmitMessage", L"ulFlags = 0x%08X\n", ulFlags);
 		if (!m_lpPersistMessage || !m_lpMessage) return MAPI_E_INVALID_PARAMETER;
 
 		auto hRes = EC_MAPI(m_lpPersistMessage->Save(m_lpMessage, true));
@@ -352,7 +352,7 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::GetSiteStatus(LPULONG lpulStatus)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"GetSiteStatus", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"GetSiteStatus", L"\n");
 		*lpulStatus = VCSTATUS_NEW_MESSAGE;
 		if (m_lpPersistMessage)
 		{
@@ -365,27 +365,32 @@ namespace mapi::mapiui
 	STDMETHODIMP CMyMAPIFormViewer::GetLastError(HRESULT hResult, ULONG ulFlags, LPMAPIERROR* /*lppMAPIError*/)
 	{
 		output::DebugPrintEx(
-			output::DBGFormViewer, CLASS, L"GetLastError", L"hResult = 0x%08X, ulFlags = 0x%08X\n", hResult, ulFlags);
+			output::dbgLevel::FormViewer,
+			CLASS,
+			L"GetLastError",
+			L"hResult = 0x%08X, ulFlags = 0x%08X\n",
+			hResult,
+			ulFlags);
 		return MAPI_E_NO_SUPPORT;
 	}
 
 	// Assuming we've advised on this form, we need to Unadvise it now, or it will never unload
 	STDMETHODIMP CMyMAPIFormViewer::OnShutdown()
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"OnShutdown", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"OnShutdown", L"\n");
 		return MAPI_E_NO_SUPPORT;
 	}
 
 	STDMETHODIMP CMyMAPIFormViewer::OnNewMessage()
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"OnNewMessage", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"OnNewMessage", L"\n");
 		return MAPI_E_NO_SUPPORT;
 	}
 
 	STDMETHODIMP CMyMAPIFormViewer::OnPrint(ULONG dwPageNumber, HRESULT hrStatus)
 	{
 		output::DebugPrintEx(
-			output::DBGFormViewer,
+			output::dbgLevel::FormViewer,
 			CLASS,
 			L"OnPrint",
 			L"Page Number %u\nStatus: 0x%08X\n", // STRING_OK
@@ -396,20 +401,20 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::OnSubmitted()
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"OnSubmitted", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"OnSubmitted", L"\n");
 		return MAPI_E_NO_SUPPORT;
 	}
 
 	STDMETHODIMP CMyMAPIFormViewer::OnSaved()
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"OnSaved", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"OnSaved", L"\n");
 		return MAPI_E_NO_SUPPORT;
 	}
 
 	// Only call this when we really plan on shutting down
 	void CMyMAPIFormViewer::ShutdownPersist()
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"ShutdownPersist", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"ShutdownPersist", L"\n");
 
 		if (m_lpPersistMessage)
 		{
@@ -425,7 +430,7 @@ namespace mapi::mapiui
 	_Check_return_ HRESULT
 	CMyMAPIFormViewer::SetPersist(_In_opt_ LPMAPIFORM lpForm, _In_opt_ LPPERSISTMESSAGE lpPersist)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"SetPersist", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"SetPersist", L"\n");
 		ShutdownPersist();
 
 		static const SizedSPropTagArray(1, sptaFlags) = {1, {PR_MESSAGE_FLAGS}};
@@ -440,11 +445,11 @@ namespace mapi::mapiui
 		{
 			// Message is in compose mode - caching the IPersistMessage might hose Outlook
 			// However, if we don't cache the IPersistMessage, we can't support SaveMessage or SubmitMessage
-			output::DebugPrint(output::DBGFormViewer, L"Not caching the persist\n");
+			output::DebugPrint(output::dbgLevel::FormViewer, L"Not caching the persist\n");
 			return S_OK;
 		}
 
-		output::DebugPrint(output::DBGFormViewer, L"Caching the persist\n");
+		output::DebugPrint(output::dbgLevel::FormViewer, L"Caching the persist\n");
 
 		// Doing this part (saving the persist) will leak Winword in compose mode - which is why we make the above check
 		// trouble is - compose mode is when we need the persist, for SaveMessage and SubmitMessage
@@ -498,7 +503,7 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::SetAdviseSink(LPMAPIFORMADVISESINK pmvns)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"SetAdviseSink", L"pmvns = %p\n", pmvns);
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"SetAdviseSink", L"pmvns = %p\n", pmvns);
 		if (m_lpMapiFormAdviseSink) m_lpMapiFormAdviseSink->Release();
 		if (pmvns)
 		{
@@ -515,7 +520,7 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir, LPCRECT lpRect)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"ActivateNext", L"ulDir = 0x%X\n", ulDir);
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"ActivateNext", L"ulDir = 0x%X\n", ulDir);
 
 		enum
 		{
@@ -547,7 +552,7 @@ namespace mapi::mapiui
 				if (m_lpMapiFormAdviseSink)
 				{
 					output::DebugPrint(
-						output::DBGFormViewer,
+						output::dbgLevel::FormViewer,
 						L"Calling OnActivateNext: szClass = %hs, ulStatus = 0x%X, ulFlags = 0x%X\n",
 						lpspvaShow[ePR_MESSAGE_CLASS_A].Value.lpszA,
 						ulMessageStatus,
@@ -569,7 +574,10 @@ namespace mapi::mapiui
 					if (lpNewPersistMessage)
 					{
 						output::DebugPrintEx(
-							output::DBGFormViewer, CLASS, L"ActivateNext", L"Got new persist from OnActivateNext\n");
+							output::dbgLevel::FormViewer,
+							CLASS,
+							L"ActivateNext",
+							L"Got new persist from OnActivateNext\n");
 
 						EC_H_S(OpenMessageNonModal(
 							m_hwndParent,
@@ -591,7 +599,10 @@ namespace mapi::mapiui
 				else if (hRes == S_FALSE)
 				{
 					output::DebugPrintEx(
-						output::DBGFormViewer, CLASS, L"ActivateNext", L"Didn't get new persist from OnActivateNext\n");
+						output::dbgLevel::FormViewer,
+						CLASS,
+						L"ActivateNext",
+						L"Didn't get new persist from OnActivateNext\n");
 					// we're going to return S_FALSE, which will shut us down, so we can spin a whole new site
 					// we don't need to clean up this site since the shutdown will do it for us
 					// BTW - it might be more efficient to in-line this code and eliminate a GetProps call
@@ -621,13 +632,13 @@ namespace mapi::mapiui
 
 	STDMETHODIMP CMyMAPIFormViewer::GetPrintSetup(ULONG ulFlags, LPFORMPRINTSETUP* /*lppFormPrintSetup*/)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"GetPrintSetup", L"ulFlags = 0x%08X\n", ulFlags);
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"GetPrintSetup", L"ulFlags = 0x%08X\n", ulFlags);
 		return MAPI_E_NO_SUPPORT;
 	}
 
 	STDMETHODIMP CMyMAPIFormViewer::GetSaveStream(ULONG* /*pulFlags*/, ULONG* /*pulFormat*/, LPSTREAM* /*ppstm*/)
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"GetSaveStream", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"GetSaveStream", L"\n");
 		return MAPI_E_NO_SUPPORT;
 	}
 
@@ -635,7 +646,7 @@ namespace mapi::mapiui
 	{
 		const auto hRes = S_OK;
 
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"GetViewStatus", L"\n");
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"GetViewStatus", L"\n");
 		*lpulStatus = NULL;
 		*lpulStatus |= VCSTATUS_INTERACTIVE;
 
@@ -652,7 +663,7 @@ namespace mapi::mapiui
 			}
 		}
 
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"GetViewStatus", L"Returning 0x%X\n", *lpulStatus);
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"GetViewStatus", L"Returning 0x%X\n", *lpulStatus);
 		return hRes;
 	}
 
@@ -662,7 +673,7 @@ namespace mapi::mapiui
 		_Out_ ULONG* pulStatus,
 		_Deref_out_opt_ LPMESSAGE* ppMessage) const
 	{
-		output::DebugPrintEx(output::DBGFormViewer, CLASS, L"GetNextMessage", L"ulDir = 0x%X\n", ulDir);
+		output::DebugPrintEx(output::dbgLevel::FormViewer, CLASS, L"GetNextMessage", L"ulDir = 0x%X\n", ulDir);
 		auto hRes = S_OK;
 
 		*piNewItem = NULL;

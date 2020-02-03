@@ -580,7 +580,7 @@ namespace controls::sortlistctrl
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"AutoSizeColumns", L"Sizing columns\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"AutoSizeColumns", L"Sizing columns\n");
 		const auto lpMyHeader = GetHeaderCtrl();
 		if (lpMyHeader)
 		{
@@ -598,7 +598,7 @@ namespace controls::sortlistctrl
 	{
 		HDITEM hdItem = {0};
 
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"DeleteAllColumns", L"Deleting existing columns\n");
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"DeleteAllColumns", L"Deleting existing columns\n");
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		const auto lpMyHeader = GetHeaderCtrl();
@@ -672,7 +672,7 @@ namespace controls::sortlistctrl
 	// if asked to select the item after the last item - will select the last item.
 	void CSortListCtrl::SetSelectedItem(int iItem)
 	{
-		output::DebugPrintEx(output::DBGGeneric, CLASS, L"SetSelectedItem", L"selecting iItem = %d\n", iItem);
+		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"SetSelectedItem", L"selecting iItem = %d\n", iItem);
 		const auto bSet = SetItemState(iItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
 
 		if (bSet)

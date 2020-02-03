@@ -221,7 +221,7 @@ namespace dialog::editor
 		auto ulRTFFlags = m_ulRTFFlags;
 
 		output::DebugPrintEx(
-			output::DBGStream,
+			output::dbgLevel::Stream,
 			CLASS,
 			L"OpenPropertyStream",
 			L"opening property 0x%X (= %ws) from %p, bWrite = 0x%X\n",
@@ -272,7 +272,7 @@ namespace dialog::editor
 				if (ulPropTag != m_ulPropTag)
 				{
 					output::DebugPrintEx(
-						output::DBGStream,
+						output::dbgLevel::Stream,
 						CLASS,
 						L"OpenPropertyStream",
 						L"Retrying as 0x%X (= %ws)\n",
@@ -326,7 +326,7 @@ namespace dialog::editor
 		if (!m_lpMAPIProp) return;
 
 		output::DebugPrintEx(
-			output::DBGStream,
+			output::dbgLevel::Stream,
 			CLASS,
 			L"ReadTextStreamFromProperty",
 			L"opening property 0x%X (= %ws) from %p\n",
@@ -382,7 +382,8 @@ namespace dialog::editor
 			auto bin = GetBinary(m_iBinBox);
 
 			const auto hRes = EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
-			output::DebugPrintEx(output::DBGStream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
+			output::DebugPrintEx(
+				output::dbgLevel::Stream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
 
 			if (SUCCEEDED(hRes))
 			{
@@ -391,7 +392,8 @@ namespace dialog::editor
 
 			if (m_bDisableSave)
 			{
-				output::DebugPrintEx(output::DBGStream, CLASS, L"WriteTextStreamToProperty", L"Save was disabled.\n");
+				output::DebugPrintEx(
+					output::dbgLevel::Stream, CLASS, L"WriteTextStreamToProperty", L"Save was disabled.\n");
 			}
 			else
 			{
@@ -399,8 +401,9 @@ namespace dialog::editor
 			}
 		}
 
-		output::DebugPrintEx(output::DBGStream, CLASS, L"WriteTextStreamToProperty", L"Wrote out this stream:\n");
-		output::outputStream(output::DBGStream, nullptr, m_lpStream);
+		output::DebugPrintEx(
+			output::dbgLevel::Stream, CLASS, L"WriteTextStreamToProperty", L"Wrote out this stream:\n");
+		output::outputStream(output::dbgLevel::Stream, nullptr, m_lpStream);
 	}
 
 	_Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)

@@ -147,12 +147,12 @@ namespace controls
 			tvItem.mask = TVIF_PARAM;
 			if (TreeView_GetItem(hWnd, &tvItem) && tvItem.lParam)
 			{
-				output::DebugPrintEx(output::DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, replacing data\n", hItem);
+				output::DebugPrintEx(output::dbgLevel::Hierarchy, CLASS, L"SetNodeData", L"Node %p, replacing data\n", hItem);
 				if (FreeNodeDataCallback) FreeNodeDataCallback(tvItem.lParam);
 			}
 			else
 			{
-				output::DebugPrintEx(output::DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, first data\n", hItem);
+				output::DebugPrintEx(output::dbgLevel::Hierarchy, CLASS, L"SetNodeData", L"Node %p, first data\n", hItem);
 			}
 
 			tvItem.lParam = lpData;
@@ -192,7 +192,7 @@ namespace controls
 		const std::function<void(HTREEITEM hItem)>& callback) const
 	{
 		output::DebugPrintEx(
-			output::DBGHierarchy,
+			output::dbgLevel::Hierarchy,
 			CLASS,
 			L"AddNode",
 			L"Adding Node \"%ws\" under node %p, callback = %ws\n",
@@ -299,7 +299,7 @@ namespace controls
 		if (pNMTreeView)
 		{
 			output::DebugPrintEx(
-				output::DBGHierarchy,
+				output::dbgLevel::Hierarchy,
 				CLASS,
 				L"OnItemExpanding",
 				L"Expanding item %p \"%ws\" action = 0x%08X state = 0x%08X\n",
@@ -354,7 +354,7 @@ namespace controls
 
 	void StyleTreeCtrl::OnKeyDown(const UINT nChar, const UINT nRepCnt, const UINT nFlags)
 	{
-		output::DebugPrintEx(output::DBGMenu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
+		output::DebugPrintEx(output::dbgLevel::Menu, CLASS, L"OnKeyDown", L"0x%X\n", nChar);
 
 		const auto bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
 		const auto bShiftPressed = GetKeyState(VK_SHIFT) < 0;
@@ -376,7 +376,7 @@ namespace controls
 		if (pNMTreeView)
 		{
 			output::DebugPrintEx(
-				output::DBGHierarchy,
+				output::dbgLevel::Hierarchy,
 				CLASS,
 				L"OnDeleteItem",
 				L"Deleting item %p \"%ws\"\n",
@@ -394,7 +394,7 @@ namespace controls
 				if (!(hPrev || hNext))
 				{
 					output::DebugPrintEx(
-						output::DBGHierarchy,
+						output::dbgLevel::Hierarchy,
 						CLASS,
 						L"OnDeleteItem",
 						L"%p has no siblings\n",
