@@ -6,32 +6,32 @@ namespace registry
 {
 	static const wchar_t* RKEY_ROOT = L"SOFTWARE\\Microsoft\\MFCMAPI";
 
-	enum __REGKEYTYPES
+	enum class regKeyType
 	{
-		regDWORD,
-		regSTRING
+		dword,
+		string
 	};
 
-	enum __REGOPTIONTYPE
+	enum class regOptionType
 	{
-		regoptCheck,
-		regoptString,
-		regoptStringHex,
-		regoptStringDec
+		check,
+		string,
+		stringHex,
+		stringDec
 	};
 
 	class __RegKey
 	{
 	public:
 		std::wstring szKeyName;
-		__REGKEYTYPES ulRegKeyType;
-		__REGOPTIONTYPE ulRegOptType;
-		DWORD ulDefDWORD;
-		DWORD ulCurDWORD;
+		regKeyType ulRegKeyType{};
+		regOptionType ulRegOptType{};
+		DWORD ulDefDWORD{};
+		DWORD ulCurDWORD{};
 		std::wstring szDefSTRING;
 		std::wstring szCurSTRING;
-		bool bRefresh;
-		UINT uiOptionsPrompt;
+		bool bRefresh{};
+		UINT uiOptionsPrompt{};
 
 		__RegKey() = default;
 		__RegKey(const __RegKey&) = delete;
@@ -48,8 +48,8 @@ namespace registry
 			: __RegKey{}
 		{
 			szKeyName = _szKeyName;
-			ulRegKeyType = regDWORD;
-			ulRegOptType = regoptCheck;
+			ulRegKeyType = regKeyType::dword;
+			ulRegOptType = regOptionType::check;
 			ulDefDWORD = _default;
 			ulCurDWORD = _default;
 			bRefresh = _refresh;
@@ -70,14 +70,14 @@ namespace registry
 	public:
 		dwordRegKey(
 			const std::wstring& _szKeyName,
-			const __REGOPTIONTYPE _ulRegOptType,
+			const regOptionType _ulRegOptType,
 			const DWORD _default,
 			const bool _refresh,
 			const int _uiOptionsPrompt)
 			: __RegKey{}
 		{
 			szKeyName = _szKeyName;
-			ulRegKeyType = regDWORD;
+			ulRegKeyType = regKeyType::dword;
 			ulRegOptType = _ulRegOptType;
 			ulDefDWORD = _default;
 			ulCurDWORD = _default;
@@ -111,8 +111,8 @@ namespace registry
 			: __RegKey{}
 		{
 			szKeyName = _szKeyName;
-			ulRegKeyType = regSTRING;
-			ulRegOptType = regoptString;
+			ulRegKeyType = regKeyType::string;
+			ulRegOptType = regOptionType::string;
 			szDefSTRING = _default;
 			szCurSTRING = _default;
 			bRefresh = _refresh;

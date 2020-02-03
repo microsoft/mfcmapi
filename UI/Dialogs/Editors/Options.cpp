@@ -38,23 +38,23 @@ namespace dialog::editor
 		{
 			if (!regKey || !regKey->uiOptionsPrompt) continue;
 
-			if (registry::regoptCheck == regKey->ulRegOptType)
+			if (registry::regOptionType::check == regKey->ulRegOptType)
 			{
 				AddPane(viewpane::CheckPane::Create(
 					regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, 0 != regKey->ulCurDWORD, false));
 			}
-			else if (registry::regoptString == regKey->ulRegOptType)
+			else if (registry::regOptionType::string == regKey->ulRegOptType)
 			{
 				AddPane(viewpane::TextPane::CreateSingleLinePane(
 					regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, regKey->szCurSTRING, false));
 			}
-			else if (registry::regoptStringHex == regKey->ulRegOptType)
+			else if (registry::regOptionType::stringHex == regKey->ulRegOptType)
 			{
 				AddPane(
 					viewpane::TextPane::CreateSingleLinePane(regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
 				SetHex(regKey->uiOptionsPrompt, regKey->ulCurDWORD);
 			}
-			else if (registry::regoptStringDec == regKey->ulRegOptType)
+			else if (registry::regOptionType::stringDec == regKey->ulRegOptType)
 			{
 				AddPane(
 					viewpane::TextPane::CreateSingleLinePane(regKey->uiOptionsPrompt, regKey->uiOptionsPrompt, false));
@@ -83,7 +83,7 @@ namespace dialog::editor
 		{
 			if (!regKey || !regKey->uiOptionsPrompt) continue;
 
-			if (registry::regoptCheck == regKey->ulRegOptType)
+			if (registry::regOptionType::check == regKey->ulRegOptType)
 			{
 				if (regKey->bRefresh && regKey->ulCurDWORD != static_cast<ULONG>(GetCheck(regKey->uiOptionsPrompt)))
 				{
@@ -92,11 +92,11 @@ namespace dialog::editor
 
 				regKey->ulCurDWORD = GetCheck(regKey->uiOptionsPrompt);
 			}
-			else if (registry::regoptStringHex == regKey->ulRegOptType)
+			else if (registry::regOptionType::stringHex == regKey->ulRegOptType)
 			{
 				regKey->ulCurDWORD = GetHex(regKey->uiOptionsPrompt);
 			}
-			else if (registry::regoptStringDec == regKey->ulRegOptType)
+			else if (registry::regOptionType::stringDec == regKey->ulRegOptType)
 			{
 				regKey->ulCurDWORD = GetDecimal(regKey->uiOptionsPrompt);
 			}
