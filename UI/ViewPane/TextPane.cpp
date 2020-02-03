@@ -333,7 +333,7 @@ namespace viewpane
 
 	void TextPane::SetReadOnly()
 	{
-		m_EditBox.SetBackgroundColor(false, MyGetSysColor(ui::cBackgroundReadOnly));
+		m_EditBox.SetBackgroundColor(false, MyGetSysColor(ui::uiColor::cBackgroundReadOnly));
 		m_EditBox.SetReadOnly();
 	}
 
@@ -468,8 +468,8 @@ namespace viewpane
 			auto charrange = CHARRANGE{static_cast<LONG>(range.start), static_cast<LONG>(range.end)};
 			::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&charrange));
 
-			charformat.crTextColor = MyGetSysColor(ui::cTextHighlight);
-			charformat.crBackColor = MyGetSysColor(ui::cTextHighlightBackground);
+			charformat.crTextColor = MyGetSysColor(ui::uiColor::cTextHighlight);
+			charformat.crBackColor = MyGetSysColor(ui::uiColor::cTextHighlightBackground);
 			::SendMessage(
 				m_EditBox.GetSafeHwnd(), EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&charformat));
 		}

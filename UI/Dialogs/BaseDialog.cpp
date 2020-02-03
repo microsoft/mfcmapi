@@ -192,7 +192,7 @@ namespace dialog
 		auto mi = MENUINFO{};
 		mi.cbSize = sizeof(MENUINFO);
 		mi.fMask = MIM_BACKGROUND;
-		mi.hbrBack = GetSysBrush(ui::cBackground);
+		mi.hbrBack = GetSysBrush(ui::uiColor::cBackground);
 		SetMenuInfo(hMenu, &mi);
 
 		ui::ConvertMenuOwnerDraw(hMenu, true);

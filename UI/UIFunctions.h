@@ -5,7 +5,7 @@
 
 namespace ui
 {
-	enum uiColor
+	enum class uiColor
 	{
 		cBackground,
 		cBackgroundReadOnly,
@@ -32,7 +32,7 @@ namespace ui
 		cUIEnd
 	};
 
-	enum uiPen
+	enum class uiPen
 	{
 		cSolidPen,
 		cSolidGreyPen,
@@ -40,7 +40,7 @@ namespace ui
 		cPenEnd
 	};
 
-	enum uiBitmap
+	enum class uiBitmap
 	{
 		cNotify,
 		cClose,
@@ -50,14 +50,14 @@ namespace ui
 		cBitmapEnd
 	};
 
-	enum uiButtonStyle
+	enum class uiButtonStyle
 	{
 		bsUnstyled,
 		bsUpArrow,
 		bsDownArrow
 	};
 
-	enum uiLabelStyle
+	enum class uiLabelStyle
 	{
 		lsUnstyled,
 		lsPaneHeaderLabel,

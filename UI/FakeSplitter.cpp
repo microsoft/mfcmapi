@@ -33,7 +33,7 @@ namespace controls
 			wc.style = 0; // not passing CS_VREDRAW | CS_HREDRAW fixes flicker
 			wc.lpszClassName = _T("FakeSplitter"); // STRING_OK
 			wc.lpfnWndProc = ::DefWindowProc;
-			wc.hbrBackground = GetSysBrush(ui::cBackground); // helps spot flashing
+			wc.hbrBackground = GetSysBrush(ui::uiColor::cBackground); // helps spot flashing
 
 			RegisterClassEx(&wc);
 		}
@@ -355,7 +355,7 @@ namespace controls
 			db.Begin(hdc, rcWin);
 
 			auto rcSplitter = rcWin;
-			FillRect(hdc, &rcSplitter, GetSysBrush(ui::cBackground));
+			FillRect(hdc, &rcSplitter, GetSysBrush(ui::uiColor::cBackground));
 
 			POINT pts[2]; // 0 is left top, 1 is right bottom
 			if (SplitHorizontal == m_SplitType)
@@ -374,7 +374,7 @@ namespace controls
 			}
 
 			// Draw the splitter bar
-			const auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? ui::cSolidPen : ui::cDashedPen));
+			const auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? ui::uiPen::cSolidPen : ui::uiPen::cDashedPen));
 			MoveToEx(hdc, pts[0].x, pts[0].y, nullptr);
 			LineTo(hdc, pts[1].x, pts[1].y);
 			(void) SelectObject(hdc, hpenOld);

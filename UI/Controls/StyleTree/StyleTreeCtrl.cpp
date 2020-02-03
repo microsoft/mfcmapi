@@ -16,8 +16,8 @@ namespace controls
 					 WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | WS_VISIBLE;
 		if (!bReadOnly) style |= TVS_EDITLABELS;
 		CTreeCtrl::Create(style, CRect(0, 0, 0, 0), pCreateParent, IDC_FOLDER_TREE);
-		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::cBackground));
-		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::cText));
+		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::cBackground));
+		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::cText));
 		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 	}
 
@@ -48,7 +48,8 @@ namespace controls
 		case WM_KEYDOWN:
 			OnKeyDown(static_cast<UINT>(wParam), LOWORD(lParam), HIWORD(lParam));
 			return 0;
-		case WM_MOUSEMOVE: {
+		case WM_MOUSEMOVE:
+		{
 			const auto hItemCurHover = m_hItemCurHover;
 			auto tvHitTestInfo = TVHITTESTINFO{};
 			tvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
@@ -147,12 +148,14 @@ namespace controls
 			tvItem.mask = TVIF_PARAM;
 			if (TreeView_GetItem(hWnd, &tvItem) && tvItem.lParam)
 			{
-				output::DebugPrintEx(output::dbgLevel::Hierarchy, CLASS, L"SetNodeData", L"Node %p, replacing data\n", hItem);
+				output::DebugPrintEx(
+					output::dbgLevel::Hierarchy, CLASS, L"SetNodeData", L"Node %p, replacing data\n", hItem);
 				if (FreeNodeDataCallback) FreeNodeDataCallback(tvItem.lParam);
 			}
 			else
 			{
-				output::DebugPrintEx(output::dbgLevel::Hierarchy, CLASS, L"SetNodeData", L"Node %p, first data\n", hItem);
+				output::DebugPrintEx(
+					output::dbgLevel::Hierarchy, CLASS, L"SetNodeData", L"Node %p, first data\n", hItem);
 			}
 
 			tvItem.lParam = lpData;

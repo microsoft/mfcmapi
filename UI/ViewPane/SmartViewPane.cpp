@@ -307,7 +307,7 @@ namespace viewpane
 					ui::DrawSegoeTextW(
 						lvcd->nmcd.hdc,
 						blockString,
-						MyGetSysColor(ui::cGlow),
+						MyGetSysColor(ui::uiColor::cGlow),
 						rect,
 						false,
 						DT_SINGLELINE | DT_VCENTER | DT_CENTER);

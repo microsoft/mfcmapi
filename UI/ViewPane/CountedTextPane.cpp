@@ -28,7 +28,7 @@ namespace viewpane
 			WS_CHILD | WS_CLIPSIBLINGS | ES_READONLY | WS_VISIBLE, CRect(0, 0, 0, 0), pParent, IDD_COUNTLABEL));
 		::SetWindowTextW(m_Count.m_hWnd, m_szCountLabel.c_str());
 		ui::SubclassLabel(m_Count.m_hWnd);
-		StyleLabel(m_Count.m_hWnd, ui::lsPaneHeaderText);
+		StyleLabel(m_Count.m_hWnd, ui::uiLabelStyle::lsPaneHeaderText);
 
 		TextPane::Initialize(pParent, hdc);
 	}
