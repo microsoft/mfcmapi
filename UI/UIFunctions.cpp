@@ -23,25 +23,25 @@ namespace ui
 
 #define BORDER_VISIBLEWIDTH 2
 
-	enum myColor
+	enum class myColor
 	{
-		cWhite,
-		cLightGrey,
-		cGrey,
-		cDarkGrey,
-		cBlack,
-		cCyan,
-		cMagenta,
-		cBlue,
-		cMedBlue,
-		cPaleBlue,
-		cPink,
-		cLavender,
-		cColorEnd
+		White,
+		LightGrey,
+		Grey,
+		DarkGrey,
+		Black,
+		Cyan,
+		Magenta,
+		Blue,
+		MedBlue,
+		PaleBlue,
+		Pink,
+		Lavender,
+		ColorEnd
 	};
 
 	// Keep in sync with enum myColor
-	COLORREF g_Colors[cColorEnd] = {
+	COLORREF g_Colors[static_cast<int>(myColor::ColorEnd)] = {
 		RGB(0xFF, 0xFF, 0xFF), // cWhite
 		RGB(0xD3, 0xD3, 0xD3), // cLightGrey
 		RGB(0xAD, 0xAC, 0xAE), // cGrey
@@ -61,28 +61,28 @@ namespace ui
 	// Keep in sync with enum uiColor
 	// We can swap in cCyan for various entries to test coverage
 	myColor g_FixedColors[static_cast<int>(uiColor::UIEnd)] = {
-		cWhite, // cBackground
-		cLightGrey, // cBackgroundReadOnly
-		cBlue, // cGlow
-		cPaleBlue, // cGlowBackground
-		cBlack, // cGlowText
-		cBlack, // cFrameSelected
-		cGrey, // cFrameUnselected
-		cMedBlue, // cSelectedBackground
-		cGrey, // cArrow
-		cBlack, // cText
-		cGrey, // cTextDisabled
-		cBlack, // cTextReadOnly
-		cMagenta, // cBitmapTransBack
-		cCyan, // cBitmapTransFore
-		cBlue, // cStatus
-		cWhite, // cStatusText
-		cPaleBlue, // cPaneHeaderBackground,
-		cBlack, // cPaneHeaderText,
-		cMedBlue, // cTextHighlightBackground,
-		cBlack, // cTextHighlight,
-		cPink, // cTestPink,
-		cLavender, // cTestLavender,
+		myColor::White, // cBackground
+		myColor::LightGrey, // cBackgroundReadOnly
+		myColor::Blue, // cGlow
+		myColor::PaleBlue, // cGlowBackground
+		myColor::Black, // cGlowText
+		myColor::Black, // cFrameSelected
+		myColor::Grey, // cFrameUnselected
+		myColor::MedBlue, // cSelectedBackground
+		myColor::Grey, // cArrow
+		myColor::Black, // cText
+		myColor::Grey, // cTextDisabled
+		myColor::Black, // cTextReadOnly
+		myColor::Magenta, // cBitmapTransBack
+		myColor::Cyan, // cBitmapTransFore
+		myColor::Blue, // cStatus
+		myColor::White, // cStatusText
+		myColor::PaleBlue, // cPaneHeaderBackground,
+		myColor::Black, // cPaneHeaderText,
+		myColor::MedBlue, // cTextHighlightBackground,
+		myColor::Black, // cTextHighlight,
+		myColor::Pink, // cTestPink,
+		myColor::Lavender, // cTestLavender,
 	};
 
 	// Mapping of UI elements to system colors
@@ -116,7 +116,7 @@ namespace ui
 		IDB_RESTORE, // cRestore,
 	};
 
-	HBRUSH g_FixedBrushes[cColorEnd] = {};
+	HBRUSH g_FixedBrushes[static_cast<int>(myColor::ColorEnd)] = {};
 	HBRUSH g_SysBrushes[static_cast<int>(uiColor::UIEnd)] = {};
 	HPEN g_Pens[static_cast<int>(uiPen::PenEnd)] = {};
 	HBITMAP g_Bitmaps[static_cast<int>(uiBitmap::BitmapEnd)] = {};
@@ -505,7 +505,7 @@ namespace ui
 		}
 
 		// No system brush for this color, cache and return a solid brush of the requested color
-		const auto mc = g_FixedColors[static_cast<int>(uc)];
+		const auto mc = static_cast<int>(g_FixedColors[static_cast<int>(uc)]);
 		if (g_FixedBrushes[mc]) return g_FixedBrushes[mc];
 		g_FixedBrushes[mc] = CreateSolidBrush(g_Colors[mc]);
 		return g_FixedBrushes[mc];
@@ -518,7 +518,7 @@ namespace ui
 		if (iSysColor) return GetSysColor(iSysColor);
 
 		// No system color listed in g_SysColors, return a hard coded color
-		const auto mc = g_FixedColors[static_cast<int>(uc)];
+		const auto mc = static_cast<int>(g_FixedColors[static_cast<int>(uc)]);
 		return g_Colors[mc];
 	}
 
