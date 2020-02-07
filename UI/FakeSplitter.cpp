@@ -374,7 +374,7 @@ namespace controls
 			}
 
 			// Draw the splitter bar
-			const auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? ui::uiPen::cSolidPen : ui::uiPen::cDashedPen));
+			const auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? ui::uiPen::SolidPen : ui::uiPen::DashedPen));
 			MoveToEx(hdc, pts[0].x, pts[0].y, nullptr);
 			LineTo(hdc, pts[1].x, pts[1].y);
 			(void) SelectObject(hdc, hpenOld);

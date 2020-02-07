@@ -34,34 +34,34 @@ namespace ui
 
 	enum class uiPen
 	{
-		cSolidPen,
-		cSolidGreyPen,
-		cDashedPen,
-		cPenEnd
+		SolidPen,
+		SolidGreyPen,
+		DashedPen,
+		PenEnd
 	};
 
 	enum class uiBitmap
 	{
-		cNotify,
-		cClose,
-		cMinimize,
-		cMaximize,
-		cRestore,
-		cBitmapEnd
+		Notify,
+		Close,
+		Minimize,
+		Maximize,
+		Restore,
+		BitmapEnd
 	};
 
 	enum class uiButtonStyle
 	{
-		bsUnstyled,
-		bsUpArrow,
-		bsDownArrow
+		Unstyled,
+		UpArrow,
+		DownArrow
 	};
 
 	enum class uiLabelStyle
 	{
-		lsUnstyled,
-		lsPaneHeaderLabel,
-		lsPaneHeaderText,
+		Unstyled,
+		PaneHeaderLabel,
+		PaneHeaderText,
 	};
 
 	void InitializeGDI() noexcept;

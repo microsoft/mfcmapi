@@ -108,7 +108,7 @@ namespace ui
 
 	// Mapping of bitmap resources to constants
 	// NULL entries will get the fixed mapping from g_FixedColors
-	int g_BitmapResources[static_cast<int>(uiBitmap::cBitmapEnd)] = {
+	int g_BitmapResources[static_cast<int>(uiBitmap::BitmapEnd)] = {
 		IDB_ADVISE, // cNotify,
 		IDB_CLOSE, // cClose,
 		IDB_MINIMIZE, // cMinimize,
@@ -118,8 +118,8 @@ namespace ui
 
 	HBRUSH g_FixedBrushes[cColorEnd] = {};
 	HBRUSH g_SysBrushes[static_cast<int>(uiColor::UIEnd)] = {};
-	HPEN g_Pens[static_cast<int>(uiPen::cPenEnd)] = {};
-	HBITMAP g_Bitmaps[static_cast<int>(uiBitmap::cBitmapEnd)] = {};
+	HPEN g_Pens[static_cast<int>(uiPen::PenEnd)] = {};
+	HBITMAP g_Bitmaps[static_cast<int>(uiBitmap::BitmapEnd)] = {};
 
 	void InitializeGDI() noexcept {}
 
@@ -530,25 +530,24 @@ namespace ui
 
 		switch (up)
 		{
-		case uiPen::cSolidPen:
+		case uiPen::SolidPen:
 		{
 			lbr.lbColor = MyGetSysColor(uiColor::FrameSelected);
-			g_Pens[static_cast<int>(uiPen::cSolidPen)] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, nullptr);
-			return g_Pens[static_cast<int>(uiPen::cSolidPen)];
+			g_Pens[static_cast<int>(uiPen::SolidPen)] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, nullptr);
+			return g_Pens[static_cast<int>(uiPen::SolidPen)];
 		}
-		case uiPen::cSolidGreyPen:
+		case uiPen::SolidGreyPen:
 		{
 			lbr.lbColor = MyGetSysColor(uiColor::FrameUnselected);
-			g_Pens[static_cast<int>(uiPen::cSolidGreyPen)] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, nullptr);
-			return g_Pens[static_cast<int>(uiPen::cSolidGreyPen)];
+			g_Pens[static_cast<int>(uiPen::SolidGreyPen)] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, nullptr);
+			return g_Pens[static_cast<int>(uiPen::SolidGreyPen)];
 		}
-		case uiPen::cDashedPen:
+		case uiPen::DashedPen:
 		{
 			lbr.lbColor = MyGetSysColor(uiColor::FrameSelected);
 			DWORD rgStyle[2] = {1, 3};
-			g_Pens[static_cast<int>(uiPen::cDashedPen)] =
-				ExtCreatePen(PS_GEOMETRIC | PS_USERSTYLE, 1, &lbr, 2, rgStyle);
-			return g_Pens[static_cast<int>(uiPen::cDashedPen)];
+			g_Pens[static_cast<int>(uiPen::DashedPen)] = ExtCreatePen(PS_GEOMETRIC | PS_USERSTYLE, 1, &lbr, 2, rgStyle);
+			return g_Pens[static_cast<int>(uiPen::DashedPen)];
 		}
 		default:
 			break;
@@ -1228,7 +1227,7 @@ namespace ui
 			DT_END_ELLIPSIS | DT_SINGLELINE | DT_VCENTER);
 
 		// Draw a line under for some visual separation
-		const auto hpenOld = SelectObject(hdc, GetPen(uiPen::cSolidGreyPen));
+		const auto hpenOld = SelectObject(hdc, GetPen(uiPen::SolidGreyPen));
 		MoveToEx(hdc, rcHeader.left, rcHeader.bottom - 1, nullptr);
 		LineTo(hdc, rcHeader.right, rcHeader.bottom - 1);
 		(void) SelectObject(hdc, hpenOld);
@@ -1328,7 +1327,7 @@ namespace ui
 		const auto bsStyle = static_cast<uiButtonStyle>(reinterpret_cast<intptr_t>(::GetProp(hWnd, BUTTON_STYLE)));
 		switch (bsStyle)
 		{
-		case uiButtonStyle::bsUnstyled:
+		case uiButtonStyle::Unstyled:
 		{
 			WCHAR szButton[255] = {0};
 			GetWindowTextW(hWnd, szButton, _countof(szButton));
@@ -1353,10 +1352,10 @@ namespace ui
 				DT_SINGLELINE | DT_VCENTER | DT_CENTER);
 		}
 		break;
-		case uiButtonStyle::bsUpArrow:
+		case uiButtonStyle::UpArrow:
 			DrawTriangle(hWnd, hDC, rc, true, true);
 			break;
-		case uiButtonStyle::bsDownArrow:
+		case uiButtonStyle::DownArrow:
 			DrawTriangle(hWnd, hDC, rc, true, false);
 			break;
 		}
@@ -1504,7 +1503,7 @@ namespace ui
 		{
 			InflateRect(&rcText, -3, 0);
 			const auto lMid = (rcText.bottom + rcText.top) / 2;
-			const auto hpenOld = SelectObject(hdc, GetPen(uiPen::cSolidGreyPen));
+			const auto hpenOld = SelectObject(hdc, GetPen(uiPen::SolidGreyPen));
 			MoveToEx(hdc, rcText.left, lMid, nullptr);
 			LineTo(hdc, rcText.right, lMid);
 			(void) SelectObject(hdc, hpenOld);
@@ -1783,21 +1782,21 @@ namespace ui
 		const auto htMax = HTMAXBUTTON == iHitTest;
 		const auto htMin = HTMINBUTTON == iHitTest;
 
-		DrawBitmap(hdc, rcCloseIcon, uiBitmap::cClose, htClose, htClose && !bHover ? 2 : 0);
+		DrawBitmap(hdc, rcCloseIcon, uiBitmap::Close, htClose, htClose && !bHover ? 2 : 0);
 
 		if (bMaxBox)
 		{
 			DrawBitmap(
 				hdc,
 				rcMaxIcon,
-				IsZoomed(hWnd) ? uiBitmap::cRestore : uiBitmap::cMaximize,
+				IsZoomed(hWnd) ? uiBitmap::Restore : uiBitmap::Maximize,
 				htMax,
 				htMax && !bHover ? 2 : 0);
 		}
 
 		if (bMinBox)
 		{
-			DrawBitmap(hdc, rcMinIcon, uiBitmap::cMinimize, htMin, htMin && !bHover ? 2 : 0);
+			DrawBitmap(hdc, rcMinIcon, uiBitmap::Minimize, htMin, htMin && !bHover ? 2 : 0);
 		}
 
 		if (hdcLocal) ReleaseDC(hWnd, hdcLocal);
@@ -1901,7 +1900,7 @@ namespace ui
 				SRCCOPY);
 
 			// Draw a line under the menu from gutter to gutter
-			const auto hpenOld = SelectObject(hdc, GetPen(uiPen::cSolidGreyPen));
+			const auto hpenOld = SelectObject(hdc, GetPen(uiPen::SolidGreyPen));
 			MoveToEx(hdc, rcMenuGutterLeft.right, rcClient.top - 1, nullptr);
 			LineTo(hdc, rcMenuGutterRight.left, rcClient.top - 1);
 			(void) SelectObject(hdc, hpenOld);
@@ -1970,12 +1969,7 @@ namespace ui
 			const WCHAR szTitle[256] = {};
 			DefWindowProcW(hWnd, WM_GETTEXT, static_cast<WPARAM>(_countof(szTitle)), reinterpret_cast<LPARAM>(szTitle));
 			DrawSegoeTextW(
-				hdc,
-				szTitle,
-				MyGetSysColor(uiColor::Text),
-				rcCaptionText,
-				false,
-				DT_LEFT | DT_SINGLELINE | DT_VCENTER);
+				hdc, szTitle, MyGetSysColor(uiColor::Text), rcCaptionText, false, DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 
 			// Finally, we paint our border glow if we're not maximized
 			if (!IsZoomed(hWnd))
@@ -2014,7 +2008,7 @@ namespace ui
 			auto uiText = uiColor::Text;
 			auto uiBackground = uiColor::Background;
 
-			if (lsStyle == uiLabelStyle::lsPaneHeaderLabel || lsStyle == uiLabelStyle::lsPaneHeaderText)
+			if (lsStyle == uiLabelStyle::PaneHeaderLabel || lsStyle == uiLabelStyle::PaneHeaderText)
 			{
 				uiText = uiColor::PaneHeaderText;
 				uiBackground = uiColor::PaneHeaderBackground;
@@ -2097,7 +2091,7 @@ namespace ui
 			return true;
 		case WM_NCHITTEST:
 			if (static_cast<uiLabelStyle>(reinterpret_cast<intptr_t>(::GetProp(hWnd, LABEL_STYLE))) ==
-				uiLabelStyle::lsPaneHeaderLabel)
+				uiLabelStyle::PaneHeaderLabel)
 			{
 				return HTTRANSPARENT;
 			}

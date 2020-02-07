@@ -1046,7 +1046,7 @@ namespace controls
 						TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
 						rect.left = rect.right;
 						rect.right += rect.bottom - rect.top;
-						DrawBitmap(lvcd->nmcd.hdc, rect, ui::uiBitmap::cNotify, hItem == hItemCurHover);
+						DrawBitmap(lvcd->nmcd.hdc, rect, ui::uiBitmap::Notify, hItem == hItemCurHover);
 					}
 				}
 			}

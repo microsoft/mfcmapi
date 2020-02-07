@@ -20,7 +20,7 @@ namespace viewpane
 		if (m_bCollapsible)
 		{
 			StyleButton(
-				m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::bsUpArrow : ui::uiButtonStyle::bsDownArrow);
+				m_CollapseButton.m_hWnd, m_bCollapsed ? ui::uiButtonStyle::UpArrow : ui::uiButtonStyle::DownArrow);
 			::DeferWindowPos(
 				hWinPosInfo, m_CollapseButton.GetSafeHwnd(), nullptr, curX, y, width, labelHeight, SWP_NOZORDER);
 			curX += m_iButtonHeight;
@@ -52,7 +52,7 @@ namespace viewpane
 
 		if (m_bCollapsible)
 		{
-			StyleLabel(m_Label.m_hWnd, ui::uiLabelStyle::lsPaneHeaderLabel);
+			StyleLabel(m_Label.m_hWnd, ui::uiLabelStyle::PaneHeaderLabel);
 
 			// Assign a nID to the collapse button that is IDD_COLLAPSE more than the control's nID
 			EC_B_S(m_CollapseButton.Create(
