@@ -16,8 +16,8 @@ namespace controls
 					 WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS | WS_VISIBLE;
 		if (!bReadOnly) style |= TVS_EDITLABELS;
 		CTreeCtrl::Create(style, CRect(0, 0, 0, 0), pCreateParent, IDC_FOLDER_TREE);
-		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::cBackground));
-		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::cText));
+		TreeView_SetBkColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::Background));
+		TreeView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::Text));
 		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 	}
 

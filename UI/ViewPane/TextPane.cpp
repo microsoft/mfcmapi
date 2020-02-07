@@ -333,7 +333,7 @@ namespace viewpane
 
 	void TextPane::SetReadOnly()
 	{
-		m_EditBox.SetBackgroundColor(false, MyGetSysColor(ui::uiColor::cBackgroundReadOnly));
+		m_EditBox.SetBackgroundColor(false, MyGetSysColor(ui::uiColor::BackgroundReadOnly));
 		m_EditBox.SetReadOnly();
 	}
 
@@ -430,7 +430,11 @@ namespace viewpane
 			ULONG cbWritten = 0;
 			const auto hRes = EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 			output::DebugPrintEx(
-				output::dbgLevel::Stream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
+				output::dbgLevel::Stream,
+				CLASS,
+				L"WriteToBinaryStream",
+				L"wrote 0x%X bytes to the stream\n",
+				cbWritten);
 
 			if (SUCCEEDED(hRes))
 			{
@@ -468,8 +472,8 @@ namespace viewpane
 			auto charrange = CHARRANGE{static_cast<LONG>(range.start), static_cast<LONG>(range.end)};
 			::SendMessage(m_EditBox.GetSafeHwnd(), EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&charrange));
 
-			charformat.crTextColor = MyGetSysColor(ui::uiColor::cTextHighlight);
-			charformat.crBackColor = MyGetSysColor(ui::uiColor::cTextHighlightBackground);
+			charformat.crTextColor = MyGetSysColor(ui::uiColor::TextHighlight);
+			charformat.crBackColor = MyGetSysColor(ui::uiColor::TextHighlightBackground);
 			::SendMessage(
 				m_EditBox.GetSafeHwnd(), EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&charformat));
 		}

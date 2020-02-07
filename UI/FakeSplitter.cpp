@@ -33,7 +33,7 @@ namespace controls
 			wc.style = 0; // not passing CS_VREDRAW | CS_HREDRAW fixes flicker
 			wc.lpszClassName = _T("FakeSplitter"); // STRING_OK
 			wc.lpfnWndProc = ::DefWindowProc;
-			wc.hbrBackground = GetSysBrush(ui::uiColor::cBackground); // helps spot flashing
+			wc.hbrBackground = GetSysBrush(ui::uiColor::Background); // helps spot flashing
 
 			RegisterClassEx(&wc);
 		}
@@ -355,7 +355,7 @@ namespace controls
 			db.Begin(hdc, rcWin);
 
 			auto rcSplitter = rcWin;
-			FillRect(hdc, &rcSplitter, GetSysBrush(ui::uiColor::cBackground));
+			FillRect(hdc, &rcSplitter, GetSysBrush(ui::uiColor::Background));
 
 			POINT pts[2]; // 0 is left top, 1 is right bottom
 			if (SplitHorizontal == m_SplitType)

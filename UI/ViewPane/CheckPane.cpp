@@ -94,19 +94,19 @@ namespace viewpane
 		rcCheck.top = (rc.bottom - rc.top - lCheck) / 2;
 		rcCheck.bottom = rcCheck.top + lCheck;
 
-		FillRect(hDC, &rc, GetSysBrush(ui::uiColor::cBackground));
+		FillRect(hDC, &rc, GetSysBrush(ui::uiColor::Background));
 		FrameRect(
 			hDC,
 			&rcCheck,
 			GetSysBrush(
-				bDisabled ? ui::uiColor::cFrameUnselected
-						  : bGlow || bFocused ? ui::uiColor::cGlow : ui::uiColor::cFrameSelected));
+				bDisabled ? ui::uiColor::FrameUnselected
+						  : bGlow || bFocused ? ui::uiColor::Glow : ui::uiColor::FrameSelected));
 		if (bChecked)
 		{
 			auto rcFill = rcCheck;
 			const auto deflate = lEdge;
 			InflateRect(&rcFill, -deflate, -deflate);
-			FillRect(hDC, &rcFill, GetSysBrush(ui::uiColor::cGlow));
+			FillRect(hDC, &rcFill, GetSysBrush(ui::uiColor::Glow));
 		}
 
 		auto rcLabel = rc;
@@ -128,7 +128,7 @@ namespace viewpane
 		ui::DrawSegoeTextW(
 			hDC,
 			szButton,
-			bDisabled ? MyGetSysColor(ui::uiColor::cTextDisabled) : MyGetSysColor(ui::uiColor::cText),
+			bDisabled ? MyGetSysColor(ui::uiColor::TextDisabled) : MyGetSysColor(ui::uiColor::Text),
 			rcLabel,
 			false,
 			DT_SINGLELINE | DT_VCENTER);

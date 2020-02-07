@@ -63,9 +63,9 @@ namespace controls::sortlistctrl
 			CRect(0, 0, 0, 0), // size doesn't matter
 			pCreateParent,
 			nID));
-		ListView_SetBkColor(m_hWnd, MyGetSysColor(ui::uiColor::cBackground));
-		ListView_SetTextBkColor(m_hWnd, MyGetSysColor(ui::uiColor::cBackground));
-		ListView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::cText));
+		ListView_SetBkColor(m_hWnd, MyGetSysColor(ui::uiColor::Background));
+		ListView_SetTextBkColor(m_hWnd, MyGetSysColor(ui::uiColor::Background));
+		ListView_SetTextColor(m_hWnd, ui::MyGetSysColor(ui::uiColor::Text));
 		::SendMessageA(m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(ui::GetSegoeFont()), false);
 
 		SetExtendedStyle(
@@ -89,7 +89,7 @@ namespace controls::sortlistctrl
 			// So double the denominator to compensate before scaling the bitmap
 			scale.denominator *= 2;
 			const auto hBitmapScaled = ScaleBitmap(hBitmap, scale);
-			m_ImageList.Add(CBitmap::FromHandle(hBitmapScaled), MyGetSysColor(ui::uiColor::cBitmapTransBack));
+			m_ImageList.Add(CBitmap::FromHandle(hBitmapScaled), MyGetSysColor(ui::uiColor::BitmapTransBack));
 
 			SetImageList(&m_ImageList, LVSIL_SMALL);
 			if (hBitmapScaled) DeleteObject(hBitmapScaled);

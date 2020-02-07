@@ -60,7 +60,7 @@ namespace ui
 	// Will be overridden by system colors when specified in g_SysColors
 	// Keep in sync with enum uiColor
 	// We can swap in cCyan for various entries to test coverage
-	myColor g_FixedColors[static_cast<int>(uiColor::cUIEnd)] = {
+	myColor g_FixedColors[static_cast<int>(uiColor::UIEnd)] = {
 		cWhite, // cBackground
 		cLightGrey, // cBackgroundReadOnly
 		cBlue, // cGlow
@@ -87,7 +87,7 @@ namespace ui
 
 	// Mapping of UI elements to system colors
 	// NULL entries will get the fixed mapping from g_FixedColors
-	int g_SysColors[static_cast<int>(uiColor::cUIEnd)] = {
+	int g_SysColors[static_cast<int>(uiColor::UIEnd)] = {
 		COLOR_WINDOW, // cBackground
 		NULL, // cBackgroundReadOnly
 		NULL, // cGlow
@@ -117,7 +117,7 @@ namespace ui
 	};
 
 	HBRUSH g_FixedBrushes[cColorEnd] = {};
-	HBRUSH g_SysBrushes[static_cast<int>(uiColor::cUIEnd)] = {};
+	HBRUSH g_SysBrushes[static_cast<int>(uiColor::UIEnd)] = {};
 	HPEN g_Pens[static_cast<int>(uiPen::cPenEnd)] = {};
 	HBITMAP g_Bitmaps[static_cast<int>(uiBitmap::cBitmapEnd)] = {};
 
@@ -532,19 +532,19 @@ namespace ui
 		{
 		case uiPen::cSolidPen:
 		{
-			lbr.lbColor = MyGetSysColor(uiColor::cFrameSelected);
+			lbr.lbColor = MyGetSysColor(uiColor::FrameSelected);
 			g_Pens[static_cast<int>(uiPen::cSolidPen)] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, nullptr);
 			return g_Pens[static_cast<int>(uiPen::cSolidPen)];
 		}
 		case uiPen::cSolidGreyPen:
 		{
-			lbr.lbColor = MyGetSysColor(uiColor::cFrameUnselected);
+			lbr.lbColor = MyGetSysColor(uiColor::FrameUnselected);
 			g_Pens[static_cast<int>(uiPen::cSolidGreyPen)] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, nullptr);
 			return g_Pens[static_cast<int>(uiPen::cSolidGreyPen)];
 		}
 		case uiPen::cDashedPen:
 		{
-			lbr.lbColor = MyGetSysColor(uiColor::cFrameSelected);
+			lbr.lbColor = MyGetSysColor(uiColor::FrameSelected);
 			DWORD rgStyle[2] = {1, 3};
 			g_Pens[static_cast<int>(uiPen::cDashedPen)] =
 				ExtCreatePen(PS_GEOMETRIC | PS_USERSTYLE, 1, &lbr, 2, rgStyle);
@@ -639,7 +639,7 @@ namespace ui
 		ZeroMemory(&cf, sizeof cf);
 		cf.cbSize = sizeof cf;
 		cf.dwMask = CFM_COLOR | CFM_FACE | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
-		cf.crTextColor = MyGetSysColor(bReadOnly ? uiColor::cTextReadOnly : uiColor::cText);
+		cf.crTextColor = MyGetSysColor(bReadOnly ? uiColor::TextReadOnly : uiColor::Text);
 		_tcscpy_s(cf.szFaceName, _countof(cf.szFaceName), SEGOE);
 		(void) ::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf));
 	}
@@ -725,7 +725,7 @@ namespace ui
 				auto rc = RECT{};
 				GetWindowRect(hWnd, &rc);
 				OffsetRect(&rc, -rc.left, -rc.top);
-				FrameRect(hdc, &rc, GetSysBrush(uiColor::cFrameSelected));
+				FrameRect(hdc, &rc, GetSysBrush(uiColor::FrameSelected));
 				ReleaseDC(hWnd, hdc);
 			}
 
@@ -761,7 +761,7 @@ namespace ui
 				hWnd,
 				EM_SETBKGNDCOLOR,
 				static_cast<WPARAM>(0),
-				static_cast<LPARAM>(MyGetSysColor(uiColor::cBackgroundReadOnly)));
+				static_cast<LPARAM>(MyGetSysColor(uiColor::BackgroundReadOnly)));
 			(void) ::SendMessage(hWnd, EM_SETREADONLY, true, 0L);
 		}
 		else
@@ -770,7 +770,7 @@ namespace ui
 				hWnd,
 				EM_SETBKGNDCOLOR,
 				static_cast<WPARAM>(0),
-				static_cast<LPARAM>(MyGetSysColor(uiColor::cBackground)));
+				static_cast<LPARAM>(MyGetSysColor(uiColor::Background)));
 		}
 
 		ClearEditFormatting(hWnd, bReadOnly);
@@ -844,13 +844,13 @@ namespace ui
 			// Turn on listview hover highlight
 			if (bSelected)
 			{
-				lvcd->clrText = MyGetSysColor(uiColor::cGlowText);
-				lvcd->clrTextBk = MyGetSysColor(uiColor::cSelectedBackground);
+				lvcd->clrText = MyGetSysColor(uiColor::GlowText);
+				lvcd->clrTextBk = MyGetSysColor(uiColor::SelectedBackground);
 			}
 			else if (iItemCurHover == iItem)
 			{
-				lvcd->clrText = MyGetSysColor(uiColor::cGlowText);
-				lvcd->clrTextBk = MyGetSysColor(uiColor::cGlowBackground);
+				lvcd->clrText = MyGetSysColor(uiColor::GlowText);
+				lvcd->clrTextBk = MyGetSysColor(uiColor::GlowBackground);
 			}
 
 			*pResult = CDRF_NEWFONT;
@@ -969,7 +969,7 @@ namespace ui
 		// hdcForeReplace: Create a bitmap compatible with hdc, select it, fill with cFrameSelected, copy from hdcBitmap, with cBitmapTransFore transparent
 		const auto hdcForeReplace = CreateCompatibleDC(hdc);
 		CopyBitmap(
-			hdcBitmap, hdcForeReplace, bm.bmWidth, bm.bmHeight, uiColor::cBitmapTransFore, uiColor::cFrameSelected);
+			hdcBitmap, hdcForeReplace, bm.bmWidth, bm.bmHeight, uiColor::BitmapTransFore, uiColor::FrameSelected);
 
 		// hdcBackReplace: Create a bitmap compatible with hdc, select it, fill with cBackground, copy from hdcForeReplace, with cBitmapTransBack transparent
 		const auto hdcBackReplace = CreateCompatibleDC(hdc);
@@ -978,8 +978,8 @@ namespace ui
 			hdcBackReplace,
 			bm.bmWidth,
 			bm.bmHeight,
-			uiColor::cBitmapTransBack,
-			bHover ? uiColor::cGlowBackground : uiColor::cBackground);
+			uiColor::BitmapTransBack,
+			bHover ? uiColor::GlowBackground : uiColor::Background);
 
 		const auto hdcShift = CreateCompatibleDC(hdc);
 		ShiftBitmap(
@@ -988,7 +988,7 @@ namespace ui
 			bm.bmWidth,
 			bm.bmHeight,
 			offset,
-			bHover ? uiColor::cGlowBackground : uiColor::cBackground);
+			bHover ? uiColor::GlowBackground : uiColor::Background);
 
 		// In case the original bitmap dimensions doesn't match our target dimension, we stretch it to fit
 		// We can get better results if the original bitmap happens to match.
@@ -1022,8 +1022,8 @@ namespace ui
 
 			if (hItem)
 			{
-				lvcd->clrTextBk = MyGetSysColor(uiColor::cBackground);
-				lvcd->clrText = MyGetSysColor(uiColor::cText);
+				lvcd->clrTextBk = MyGetSysColor(uiColor::Background);
+				lvcd->clrText = MyGetSysColor(uiColor::Text);
 				const int iState = TreeView_GetItemState(lvcd->nmcd.hdr.hwndFrom, hItem, TVIS_SELECTED);
 				TreeView_SetItemState(
 					lvcd->nmcd.hdr.hwndFrom, hItem, iState & TVIS_SELECTED ? TVIS_BOLD : NULL, TVIS_BOLD);
@@ -1033,8 +1033,8 @@ namespace ui
 
 			if (hItem == hItemCurHover)
 			{
-				lvcd->clrText = MyGetSysColor(uiColor::cGlowText);
-				lvcd->clrTextBk = MyGetSysColor(uiColor::cGlowBackground);
+				lvcd->clrText = MyGetSysColor(uiColor::GlowText);
+				lvcd->clrTextBk = MyGetSysColor(uiColor::GlowBackground);
 				*pResult |= CDRF_NEWFONT;
 			}
 
@@ -1082,7 +1082,7 @@ namespace ui
 			// We erase everything to the left of the label
 			rcButton.right = rcButton.left;
 			rcButton.left = 0;
-			FillRect(hdc, &rcButton, GetSysBrush(bHover ? uiColor::cGlowBackground : uiColor::cBackground));
+			FillRect(hdc, &rcButton, GetSysBrush(bHover ? uiColor::GlowBackground : uiColor::Background));
 
 			// Now we focus on a box 15 pixels wide to the left of the label
 			rcButton.left = rcButton.right - 15;
@@ -1125,13 +1125,13 @@ namespace ui
 			uiColor cFill;
 			if (bGlow)
 			{
-				cEdge = uiColor::cGlow;
-				cFill = uiColor::cGlow;
+				cEdge = uiColor::Glow;
+				cFill = uiColor::Glow;
 			}
 			else
 			{
-				cEdge = bExpanded ? uiColor::cFrameSelected : uiColor::cArrow;
-				cFill = bExpanded ? uiColor::cFrameSelected : uiColor::cBackground;
+				cEdge = bExpanded ? uiColor::FrameSelected : uiColor::Arrow;
+				cFill = bExpanded ? uiColor::FrameSelected : uiColor::Background;
 			}
 
 			DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(cEdge), GetSysBrush(cFill));
@@ -1145,7 +1145,7 @@ namespace ui
 		CDoubleBuffer db;
 		db.Begin(hdc, rc);
 
-		FillRect(hdc, &rc, GetSysBrush(bButton ? uiColor::cPaneHeaderBackground : uiColor::cBackground));
+		FillRect(hdc, &rc, GetSysBrush(bButton ? uiColor::PaneHeaderBackground : uiColor::Background));
 
 		POINT tri[3] = {};
 		auto lCenter = LONG{};
@@ -1181,8 +1181,8 @@ namespace ui
 			tri[2].y = lTop;
 		}
 
-		auto uiArrow = uiColor::cArrow;
-		if (bButton) uiArrow = uiColor::cPaneHeaderText;
+		auto uiArrow = uiColor::Arrow;
+		if (bButton) uiArrow = uiColor::PaneHeaderText;
 		DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(uiArrow), GetSysBrush(uiArrow));
 
 		db.End(hdc);
@@ -1210,7 +1210,7 @@ namespace ui
 		db.Begin(hdc, rc);
 
 		auto rcHeader = rc;
-		FillRect(hdc, &rcHeader, GetSysBrush(uiColor::cBackground));
+		FillRect(hdc, &rcHeader, GetSysBrush(uiColor::Background));
 
 		if (bSorted)
 		{
@@ -1222,7 +1222,7 @@ namespace ui
 		DrawSegoeTextW(
 			hdc,
 			hdItem.pszText,
-			MyGetSysColor(uiColor::cText),
+			MyGetSysColor(uiColor::Text),
 			rcText,
 			false,
 			DT_END_ELLIPSIS | DT_SINGLELINE | DT_VCENTER);
@@ -1238,7 +1238,7 @@ namespace ui
 		InflateRect(&rcHeader, 0, -1);
 		rcHeader.left = rcHeader.right - 2;
 		rcHeader.bottom -= 1;
-		FrameRect(hdc, &rcHeader, GetSysBrush(uiColor::cFrameUnselected));
+		FrameRect(hdc, &rcHeader, GetSysBrush(uiColor::FrameUnselected));
 
 		db.End(hdc);
 	}
@@ -1281,7 +1281,7 @@ namespace ui
 			// If we have visible non occupied header, paint it
 			if (rc.left < rc.right)
 			{
-				FillRect(lvcd->hdc, &rc, GetSysBrush(uiColor::cBackground));
+				FillRect(lvcd->hdc, &rc, GetSysBrush(uiColor::Background));
 			}
 
 			*pResult = CDRF_DODEFAULT;
@@ -1310,7 +1310,7 @@ namespace ui
 		}
 		else
 		{
-			FillRect(hdc, &rcTracker, GetSysBrush(uiColor::cFrameSelected));
+			FillRect(hdc, &rcTracker, GetSysBrush(uiColor::FrameSelected));
 		}
 
 		ReleaseDC(hWndList, hdc);
@@ -1323,7 +1323,7 @@ namespace ui
 
 	void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, const UINT itemState)
 	{
-		FillRect(hDC, &rc, GetSysBrush(uiColor::cBackground));
+		FillRect(hDC, &rc, GetSysBrush(uiColor::Background));
 
 		const auto bsStyle = static_cast<uiButtonStyle>(reinterpret_cast<intptr_t>(::GetProp(hWnd, BUTTON_STYLE)));
 		switch (bsStyle)
@@ -1341,13 +1341,13 @@ namespace ui
 			FrameRect(
 				hDC,
 				&rc,
-				bFocused || bGlow || bPushed ? GetSysBrush(uiColor::cFrameSelected)
-											 : GetSysBrush(uiColor::cFrameUnselected));
+				bFocused || bGlow || bPushed ? GetSysBrush(uiColor::FrameSelected)
+											 : GetSysBrush(uiColor::FrameUnselected));
 
 			DrawSegoeTextW(
 				hDC,
 				szButton,
-				bPushed || bDisabled ? MyGetSysColor(uiColor::cTextDisabled) : MyGetSysColor(uiColor::cText),
+				bPushed || bDisabled ? MyGetSysColor(uiColor::TextDisabled) : MyGetSysColor(uiColor::Text),
 				rc,
 				false,
 				DT_SINGLELINE | DT_VCENTER | DT_CENTER);
@@ -1481,22 +1481,22 @@ namespace ui
 			auto rectGutter = rcText;
 			rcText.left += GetSystemMetrics(SM_CXMENUCHECK);
 			rectGutter.right = rcText.left;
-			FillRect(hdc, &rectGutter, GetSysBrush(uiColor::cBackgroundReadOnly));
+			FillRect(hdc, &rectGutter, GetSysBrush(uiColor::BackgroundReadOnly));
 		}
 
-		auto cBack = uiColor::cBackground;
-		auto cFore = uiColor::cText;
+		auto cBack = uiColor::Background;
+		auto cFore = uiColor::Text;
 
 		if (bHot)
 		{
-			cBack = uiColor::cSelectedBackground;
-			cFore = uiColor::cGlowText;
+			cBack = uiColor::SelectedBackground;
+			cFore = uiColor::GlowText;
 			FillRect(hdc, &rcItem, GetSysBrush(cBack));
 		}
 
 		if (!bHot || bDisabled)
 		{
-			if (bDisabled) cFore = uiColor::cTextDisabled;
+			if (bDisabled) cFore = uiColor::TextDisabled;
 			FillRect(hdc, &rcText, GetSysBrush(cBack));
 		}
 
@@ -1551,7 +1551,7 @@ namespace ui
 					0,
 					nWidth,
 					nHeight,
-					MyGetSysColor(uiColor::cBackground));
+					MyGetSysColor(uiColor::Background));
 
 #ifdef SKIPBUFFER
 				auto frameRect = rcItem;
@@ -1585,12 +1585,12 @@ namespace ui
 		// Get and display the text for the list item.
 		const auto szText = GetLBText(lpDrawItemStruct->hwndItem, lpDrawItemStruct->itemID);
 		const auto bHot = 0 != (lpDrawItemStruct->itemState & (ODS_FOCUS | ODS_SELECTED));
-		auto cBack = uiColor::cBackground;
-		auto cFore = uiColor::cText;
+		auto cBack = uiColor::Background;
+		auto cFore = uiColor::Text;
 		if (bHot)
 		{
-			cBack = uiColor::cGlowBackground;
-			cFore = uiColor::cGlowText;
+			cBack = uiColor::GlowBackground;
+			cFore = uiColor::GlowText;
 		}
 
 		FillRect(lpDrawItemStruct->hDC, &lpDrawItemStruct->rcItem, GetSysBrush(cBack));
@@ -1647,11 +1647,11 @@ namespace ui
 
 		auto rcGrad = rcStatus;
 		auto rcText = rcGrad;
-		const auto crFore = MyGetSysColor(uiColor::cStatusText);
+		const auto crFore = MyGetSysColor(uiColor::StatusText);
 
 		// We start painting a little lower to allow our gradiants to line up
 		rcGrad.bottom += GetSystemMetrics(SM_CYSIZEFRAME) - BORDER_VISIBLEWIDTH;
-		GradientFillRect(ps.hdc, rcGrad, uiColor::cStatus);
+		GradientFillRect(ps.hdc, rcGrad, uiColor::Status);
 
 		rcText.left = rcText.right - iStatusData2;
 		DrawSegoeTextW(ps.hdc, szStatusData2, crFore, rcText, true, DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
@@ -1907,7 +1907,7 @@ namespace ui
 			(void) SelectObject(hdc, hpenOld);
 
 			// White out the caption
-			FillRect(hdc, &rcFullCaption, GetSysBrush(uiColor::cBackground));
+			FillRect(hdc, &rcFullCaption, GetSysBrush(uiColor::Background));
 
 			DrawSystemButtons(hWnd, hdc, HTNOWHERE, false);
 
@@ -1930,17 +1930,17 @@ namespace ui
 					rcIcon.right - rcIcon.left,
 					rcIcon.bottom - rcIcon.top,
 					NULL,
-					GetSysBrush(uiColor::cBackground),
+					GetSysBrush(uiColor::Background),
 					DI_NORMAL);
 
 				DestroyIcon(hIcon);
 			}
 
 			// Fill in our gutters
-			FillRect(hdc, &rcMenuGutterLeft, GetSysBrush(uiColor::cBackground));
-			FillRect(hdc, &rcMenuGutterRight, GetSysBrush(uiColor::cBackground));
-			FillRect(hdc, &rcWindowGutterLeft, GetSysBrush(uiColor::cBackground));
-			FillRect(hdc, &rcWindowGutterRight, GetSysBrush(uiColor::cBackground));
+			FillRect(hdc, &rcMenuGutterLeft, GetSysBrush(uiColor::Background));
+			FillRect(hdc, &rcMenuGutterRight, GetSysBrush(uiColor::Background));
+			FillRect(hdc, &rcWindowGutterLeft, GetSysBrush(uiColor::Background));
+			FillRect(hdc, &rcWindowGutterRight, GetSysBrush(uiColor::Background));
 
 			if (iStatusHeight)
 			{
@@ -1954,7 +1954,7 @@ namespace ui
 				rcFullStatus.bottom = rcWindow.bottom - BORDER_VISIBLEWIDTH;
 
 				ExcludeClipRect(hdc, rcStatus.left, rcStatus.top, rcStatus.right, rcStatus.bottom);
-				GradientFillRect(hdc, rcFullStatus, uiColor::cStatus);
+				GradientFillRect(hdc, rcFullStatus, uiColor::Status);
 			}
 			else
 			{
@@ -1964,7 +1964,7 @@ namespace ui
 				rcBottomGutter.right = rcWindow.right - BORDER_VISIBLEWIDTH;
 				rcBottomGutter.bottom = rcWindow.bottom - BORDER_VISIBLEWIDTH;
 
-				FillRect(hdc, &rcBottomGutter, GetSysBrush(uiColor::cBackground));
+				FillRect(hdc, &rcBottomGutter, GetSysBrush(uiColor::Background));
 			}
 
 			const WCHAR szTitle[256] = {};
@@ -1972,7 +1972,7 @@ namespace ui
 			DrawSegoeTextW(
 				hdc,
 				szTitle,
-				MyGetSysColor(uiColor::cText),
+				MyGetSysColor(uiColor::Text),
 				rcCaptionText,
 				false,
 				DT_LEFT | DT_SINGLELINE | DT_VCENTER);
@@ -1983,7 +1983,7 @@ namespace ui
 				auto rcInnerFrame = rcWindow;
 				InflateRect(&rcInnerFrame, -BORDER_VISIBLEWIDTH, -BORDER_VISIBLEWIDTH);
 				ExcludeClipRect(hdc, rcInnerFrame.left, rcInnerFrame.top, rcInnerFrame.right, rcInnerFrame.bottom);
-				FillRect(hdc, &rcWindow, GetSysBrush(bActive ? uiColor::cGlow : uiColor::cFrameUnselected));
+				FillRect(hdc, &rcWindow, GetSysBrush(bActive ? uiColor::Glow : uiColor::FrameUnselected));
 			}
 
 			db.End(hdc);
@@ -2011,13 +2011,13 @@ namespace ui
 		{
 			const auto lsStyle = static_cast<uiLabelStyle>(
 				reinterpret_cast<intptr_t>(::GetProp(reinterpret_cast<HWND>(lParam), LABEL_STYLE)));
-			auto uiText = uiColor::cText;
-			auto uiBackground = uiColor::cBackground;
+			auto uiText = uiColor::Text;
+			auto uiBackground = uiColor::Background;
 
 			if (lsStyle == uiLabelStyle::lsPaneHeaderLabel || lsStyle == uiLabelStyle::lsPaneHeaderText)
 			{
-				uiText = uiColor::cPaneHeaderText;
-				uiBackground = uiColor::cPaneHeaderBackground;
+				uiText = uiColor::PaneHeaderText;
+				uiBackground = uiColor::PaneHeaderBackground;
 			}
 
 			const auto hdc = reinterpret_cast<HDC>(wParam);
@@ -2063,12 +2063,12 @@ namespace ui
 			db.Begin(hdc, rcWin);
 
 			auto rcText = rcWin;
-			FillRect(hdc, &rcText, GetSysBrush(uiColor::cBackground));
+			FillRect(hdc, &rcText, GetSysBrush(uiColor::Background));
 
 			DrawSegoeTextW(
 				hdc,
 				strings::loadstring(uIDText),
-				MyGetSysColor(uiColor::cTextDisabled),
+				MyGetSysColor(uiColor::TextDisabled),
 				rcText,
 				true,
 				DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOCLIP | DT_END_ELLIPSIS | DT_NOPREFIX);
