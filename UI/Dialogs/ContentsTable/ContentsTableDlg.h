@@ -26,7 +26,7 @@ namespace dialog
 			ULONG ulAddInContext);
 		virtual ~CContentsTableDlg();
 
-		_Check_return_ virtual LPMAPIPROP OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify);
+		_Check_return_ virtual LPMAPIPROP OpenItemProp(int iSelectedItem, modifyType bModify);
 
 	protected:
 		// Overrides from base class

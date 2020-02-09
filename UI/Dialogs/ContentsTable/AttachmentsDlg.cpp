@@ -156,7 +156,7 @@ namespace dialog
 		return lpMessage;
 	}
 
-	_Check_return_ LPMAPIPROP CAttachmentsDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
+	_Check_return_ LPMAPIPROP CAttachmentsDlg::OpenItemProp(int iSelectedItem, modifyType /*bModify*/)
 	{
 		if (!m_lpContentsTableListCtrl) return nullptr;
 		output::DebugPrintEx(

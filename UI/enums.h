@@ -1,9 +1,9 @@
 #pragma once
 
-enum __mfcmapiModifyEnum
+enum class modifyType
 {
-	mfcmapiREQUEST_MODIFY,
-	mfcmapiDO_NOT_REQUEST_MODIFY
+	REQUEST_MODIFY,
+	DO_NOT_REQUEST_MODIFY
 };
 
 enum __mfcmapiCreateDialogEnum

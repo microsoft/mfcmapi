@@ -1063,7 +1063,7 @@ namespace controls::sortlistctrl
 	// Stop calling when iCurItem = -1 and/or lppProp is NULL
 	// If iCurItem is NULL, just returns the focused item
 	_Check_return_ LPMAPIPROP
-	CContentsTableListCtrl::OpenNextSelectedItemProp(_Inout_opt_ int* iCurItem, __mfcmapiModifyEnum bModify) const
+	CContentsTableListCtrl::OpenNextSelectedItemProp(_Inout_opt_ int* iCurItem, modifyType bModify) const
 	{
 		const auto iItem = GetNextSelectedItemNum(iCurItem);
 		if (-1 != iItem)
@@ -1074,7 +1074,7 @@ namespace controls::sortlistctrl
 		return nullptr;
 	}
 
-	_Check_return_ LPMAPIPROP CContentsTableListCtrl::DefaultOpenItemProp(int iItem, __mfcmapiModifyEnum bModify) const
+	_Check_return_ LPMAPIPROP CContentsTableListCtrl::DefaultOpenItemProp(int iItem, modifyType bModify) const
 	{
 		if (!m_lpMapiObjects || -1 == iItem) return nullptr;
 
@@ -1113,7 +1113,7 @@ namespace controls::sortlistctrl
 				nullptr,
 				lpEID,
 				nullptr,
-				bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
+				bModify == modifyType::REQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
 				nullptr);
 		}
 
@@ -1135,7 +1135,7 @@ namespace controls::sortlistctrl
 				nullptr,
 				lpEID,
 				lpInterface,
-				bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
+				bModify == modifyType::REQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
 				nullptr);
 		}
 
@@ -1150,19 +1150,19 @@ namespace controls::sortlistctrl
 				lpMAPISession, // use session
 				lpEID,
 				nullptr,
-				bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
+				bModify == modifyType::REQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
 				nullptr);
 		}
 
 		break;
 		}
 
-		if (!lpMAPIProp && mfcmapiREQUEST_MODIFY == bModify)
+		if (!lpMAPIProp && modifyType::REQUEST_MODIFY == bModify)
 		{
 			output::DebugPrint(output::dbgLevel::Generic, L"\tOpenEntry failed. Will try again without MAPI_MODIFY\n");
 			// We got access denied when we passed MAPI_MODIFY
 			// Let's try again without it.
-			lpMAPIProp = DefaultOpenItemProp(iItem, mfcmapiDO_NOT_REQUEST_MODIFY);
+			lpMAPIProp = DefaultOpenItemProp(iItem, modifyType::DO_NOT_REQUEST_MODIFY);
 		}
 
 		output::DebugPrintEx(
@@ -1214,7 +1214,7 @@ namespace controls::sortlistctrl
 					lpProps = lpData->lpSourceProps;
 				}
 
-				lpMAPIProp = m_lpHostDlg->OpenItemProp(pNMListView->iItem, mfcmapiREQUEST_MODIFY);
+				lpMAPIProp = m_lpHostDlg->OpenItemProp(pNMListView->iItem, modifyType::REQUEST_MODIFY);
 
 				szTitle = strings::loadstring(IDS_DISPLAYNAMENOTFOUND);
 

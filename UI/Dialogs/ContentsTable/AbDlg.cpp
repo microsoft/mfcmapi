@@ -161,7 +161,7 @@ namespace dialog
 
 		do
 		{
-			auto lpMailUser = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMailUser = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, modifyType::REQUEST_MODIFY);
 
 			if (lpMailUser)
 			{
@@ -185,7 +185,7 @@ namespace dialog
 
 		do
 		{
-			auto lpMailUser = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMailUser = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, modifyType::REQUEST_MODIFY);
 
 			if (lpMailUser)
 			{

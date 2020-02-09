@@ -37,7 +37,8 @@ namespace SmartViewTest
 
 				if (data.parseAll)
 				{
-					for (ULONG iStruct = IDS_STNOPARSING; iStruct < IDS_STEND; iStruct++)
+					for (ULONG iStruct = __ParsingTypeEnum::IDS_STNOPARSING; iStruct < __ParsingTypeEnum::IDS_STEND;
+						 iStruct++)
 					{
 						const auto structType = static_cast<__ParsingTypeEnum>(iStruct);
 						try

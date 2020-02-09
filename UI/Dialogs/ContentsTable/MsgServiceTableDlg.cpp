@@ -197,7 +197,7 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ LPMAPIPROP CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
+	_Check_return_ LPMAPIPROP CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, modifyType /*bModify*/)
 	{
 		if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl) return nullptr;
 

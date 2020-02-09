@@ -54,7 +54,7 @@ namespace dialog
 	ON_COMMAND(ID_OPENPROFILESECTION, OnOpenProfileSection)
 	END_MESSAGE_MAP()
 
-	_Check_return_ LPMAPIPROP CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
+	_Check_return_ LPMAPIPROP CProviderTableDlg::OpenItemProp(int iSelectedItem, modifyType /*bModify*/)
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpProviderAdmin) return nullptr;
 		output::DebugPrintEx(

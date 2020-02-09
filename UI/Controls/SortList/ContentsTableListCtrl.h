@@ -41,14 +41,13 @@ namespace controls::sortlistctrl
 		// Selected item accessors
 		_Check_return_ LPENTRYLIST GetSelectedItemEIDs() const;
 		_Check_return_ sortlistdata::sortListData* GetSortListData(int iItem) const;
-		_Check_return_ LPMAPIPROP
-		OpenNextSelectedItemProp(_Inout_opt_ int* iCurItem, __mfcmapiModifyEnum bModify) const;
+		_Check_return_ LPMAPIPROP OpenNextSelectedItemProp(_Inout_opt_ int* iCurItem, modifyType bModify) const;
 		_Check_return_ std::vector<int> GetSelectedItemNums() const;
 		_Check_return_ std::vector<sortlistdata::sortListData*> GetSelectedItemData() const;
 		_Check_return_ sortlistdata::sortListData* GetFirstSelectedItemData() const;
 
 		_Check_return_ HRESULT ApplyRestriction() const;
-		_Check_return_ LPMAPIPROP DefaultOpenItemProp(int iItem, __mfcmapiModifyEnum bModify) const;
+		_Check_return_ LPMAPIPROP DefaultOpenItemProp(int iItem, modifyType bModify) const;
 		void NotificationOff();
 		void NotificationOn();
 		void RefreshTable();

@@ -145,7 +145,7 @@ namespace dialog
 		m_lpContentsTableListCtrl->AutoSizeColumns(false);
 	}
 
-	_Check_return_ LPMAPIPROP CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/)
+	_Check_return_ LPMAPIPROP CFormContainerDlg::OpenItemProp(int iSelectedItem, modifyType /*bModify*/)
 	{
 		if (!m_lpContentsTableListCtrl || !m_lpFormContainer) return nullptr;
 		output::DebugPrintEx(

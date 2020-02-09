@@ -326,7 +326,7 @@ namespace controls
 			}
 			else
 			{
-				lpMAPIContainer = GetContainer(hItem, mfcmapiDO_NOT_REQUEST_MODIFY);
+				lpMAPIContainer = GetContainer(hItem, modifyType::DO_NOT_REQUEST_MODIFY);
 			}
 
 			if (lpMAPIContainer)
@@ -444,7 +444,7 @@ namespace controls
 		if (!m_lpHostDlg) return;
 
 		// Have to request modify or this object is read only in the single prop control.
-		auto lpMAPIContainer = GetContainer(hItem, mfcmapiREQUEST_MODIFY);
+		auto lpMAPIContainer = GetContainer(hItem, modifyType::REQUEST_MODIFY);
 
 		// Make sure we've gotten the hierarchy table for this node
 		(void) GetHierarchyTable(hItem, lpMAPIContainer, registry::hierExpandNotifications);
@@ -543,7 +543,7 @@ namespace controls
 
 	void CHierarchyTableTreeCtrl::OnLabelEdit(HTREEITEM hItem, LPTSTR szText)
 	{
-		auto lpMAPIContainer = GetContainer(hItem, mfcmapiREQUEST_MODIFY);
+		auto lpMAPIContainer = GetContainer(hItem, modifyType::REQUEST_MODIFY);
 		if (!lpMAPIContainer) return;
 
 		SPropValue sDisplayName;
@@ -625,14 +625,12 @@ namespace controls
 		return nullptr;
 	}
 
-	_Check_return_ LPMAPICONTAINER
-	CHierarchyTableTreeCtrl::GetSelectedContainer(const __mfcmapiModifyEnum bModify) const
+	_Check_return_ LPMAPICONTAINER CHierarchyTableTreeCtrl::GetSelectedContainer(const modifyType bModify) const
 	{
 		return GetContainer(GetSelectedItem(), bModify);
 	}
 
-	_Check_return_ LPMAPICONTAINER
-	CHierarchyTableTreeCtrl::GetContainer(HTREEITEM Item, const __mfcmapiModifyEnum bModify) const
+	_Check_return_ LPMAPICONTAINER CHierarchyTableTreeCtrl::GetContainer(HTREEITEM Item, const modifyType bModify) const
 	{
 		if (!Item) return nullptr;
 
@@ -667,7 +665,7 @@ namespace controls
 			return nullptr;
 		}
 
-		auto ulFlags = mfcmapiREQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL;
+		auto ulFlags = modifyType::REQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL;
 
 		auto lpCurBin = node->m_lpEntryID;
 		if (!lpCurBin) lpCurBin = &NullBin;
@@ -704,7 +702,7 @@ namespace controls
 				const auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
 				{
-					ulFlags = (mfcmapiREQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL) |
+					ulFlags = (modifyType::REQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL) |
 							  (m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES | MAPI_NO_CACHE : NULL);
 
 					lpContainer = mapi::CallOpenEntry<LPMAPICONTAINER>(
@@ -738,13 +736,13 @@ namespace controls
 		}
 
 		// If we failed because write access was denied, try again if acceptable
-		if (!lpContainer && FAILED(hRes) && mfcmapiREQUEST_MODIFY == bModify)
+		if (!lpContainer && FAILED(hRes) && modifyType::REQUEST_MODIFY == bModify)
 		{
 			output::DebugPrint(
 				output::dbgLevel::Generic, L"\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n", hRes);
 			// We failed to open the item with MAPI_MODIFY.
 			// Let's try to open it with NULL
-			lpContainer = GetContainer(Item, mfcmapiDO_NOT_REQUEST_MODIFY);
+			lpContainer = GetContainer(Item, modifyType::DO_NOT_REQUEST_MODIFY);
 		}
 
 		// Ok - we're just out of luck

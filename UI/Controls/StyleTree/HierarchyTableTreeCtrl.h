@@ -30,7 +30,7 @@ namespace controls
 		void LoadHierarchyTable(_In_ LPMAPICONTAINER lpMAPIContainer);
 
 		// Selected item accessors
-		_Check_return_ LPMAPICONTAINER GetSelectedContainer(__mfcmapiModifyEnum bModify) const;
+		_Check_return_ LPMAPICONTAINER GetSelectedContainer(modifyType bModify) const;
 		_Check_return_ LPSBinary GetSelectedItemEID() const;
 		_Check_return_ sortlistdata::sortListData* GetSelectedItemData() const;
 		_Check_return_ sortlistdata::sortListData* GetSortListData(HTREEITEM iItem) const;
@@ -54,7 +54,7 @@ namespace controls
 		void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, _In_ HTREEITEM hItemCurHover);
 
 		_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
-		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify) const;
+		_Check_return_ LPMAPICONTAINER GetContainer(HTREEITEM Item, modifyType bModify) const;
 		void Advise(HTREEITEM hItem, sortlistdata::sortListData* lpData) const;
 		_Check_return_ LPMAPITABLE
 		GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bRegNotifs) const;

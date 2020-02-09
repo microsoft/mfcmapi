@@ -25,7 +25,7 @@ namespace dialog
 		void CreateDialogAndMenu(UINT nIDMenuResource) override;
 		void OnCreatePropertyStringRestriction() override;
 		void OnDisplayItem() override;
-		_Check_return_ LPMAPIPROP OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify) override;
+		_Check_return_ LPMAPIPROP OpenItemProp(int iSelectedItem, modifyType bModify) override;
 
 		std::wstring m_lpszServerName;
 	};

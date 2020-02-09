@@ -245,7 +245,7 @@ namespace dialog
 
 		do
 		{
-			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, modifyType::REQUEST_MODIFY);
 
 			if (lpMAPIProp)
 			{
@@ -378,7 +378,7 @@ namespace dialog
 		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 		while (iItem != -1)
 		{
-			auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 			if (lpMessage)
 			{
 				if (count <= 1)
@@ -408,15 +408,14 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT
-	CFolderDlg::OnAttachmentProperties(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnAttachmentProperties(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
 		auto hRes = S_OK;
-		auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+		auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 		if (lpMessage)
 		{
 			hRes = EC_H(OpenAttachmentsFromMessage(lpMessage));
@@ -587,7 +586,7 @@ namespace dialog
 
 		while (-1 != iItem)
 		{
-			auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 			if (lpMessage)
 			{
 				EC_H_S(file::DeleteAttachments(lpMessage, MyData.GetStringW(0), m_hWnd));
@@ -844,7 +843,7 @@ namespace dialog
 		if (!MyData.DisplayDialog()) return;
 		do
 		{
-			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, modifyType::REQUEST_MODIFY);
 			auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 
 			if (lpMessage)
@@ -1040,7 +1039,7 @@ namespace dialog
 			hRes = WC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
 			if (lpFormMgr)
 			{
-				lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+				lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 				if (lpMessage)
 				{
 					hRes = EC_H(mapi::mapiui::OpenMessageModal(m_lpFolder, lpMAPISession, lpMDB, lpMessage));
@@ -1076,7 +1075,7 @@ namespace dialog
 
 			if (lpFormMgr)
 			{
-				lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+				lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 				if (lpMessage)
 				{
 					hRes = WC_H(mapi::mapiui::OpenMessageNonModal(
@@ -1124,7 +1123,7 @@ namespace dialog
 			const auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 			if (iItem != -1)
 			{
-				auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+				auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 				if (lpMessage)
 				{
 					EC_H_S(mapi::mapiui::OpenMessageNonModal(
@@ -1144,8 +1143,7 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT
-	CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ sortlistdata::sortListData* lpData)
+	_Check_return_ HRESULT CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ sortlistdata::sortListData* lpData)
 	{
 		auto hRes = S_OK;
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -1163,15 +1161,14 @@ namespace dialog
 		return hRes;
 	}
 
-	_Check_return_ HRESULT
-	CFolderDlg::OnRecipientProperties(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnRecipientProperties(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
 		auto hRes = S_OK;
-		auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+		auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 		if (lpMessage)
 		{
 			hRes = EC_H(OpenRecipientsFromMessage(lpMessage));
@@ -1198,7 +1195,7 @@ namespace dialog
 		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 		while (iItem != -1)
 		{
-			auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 			if (lpMessage)
 			{
 				output::DebugPrint(
@@ -1240,11 +1237,14 @@ namespace dialog
 			auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 			while (iItem != -1)
 			{
-				auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+				auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 				if (lpMessage)
 				{
 					output::DebugPrint(
-						output::dbgLevel::Generic, L"Calling RTFSync on %p with flags 0x%X\n", lpMessage, MyData.GetHex(0));
+						output::dbgLevel::Generic,
+						L"Calling RTFSync on %p with flags 0x%X\n",
+						lpMessage,
+						MyData.GetHex(0));
 					hRes = EC_MAPI(RTFSync(lpMessage, MyData.GetHex(0), &bMessageUpdated));
 					output::DebugPrint(output::dbgLevel::Generic, L"RTFSync returned %d\n", bMessageUpdated);
 
@@ -1266,15 +1266,14 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT
-	CFolderDlg::OnSaveAttachments(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
+	_Check_return_ HRESULT CFolderDlg::OnSaveAttachments(int iItem, _In_ sortlistdata::sortListData* /*lpData*/)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
 		auto hRes = S_OK;
-		auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+		auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 		if (lpMessage)
 		{
 			enum
@@ -1403,11 +1402,12 @@ namespace dialog
 		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 		while (-1 != iItem)
 		{
-			auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 			if (lpMessage)
 			{
 				auto filename = file::BuildFileName(szDotExt, dir, lpMessage);
-				output::DebugPrint(output::dbgLevel::Generic, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
+				output::DebugPrint(
+					output::dbgLevel::Generic, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
 
 				if (bPrompt)
 				{
@@ -1641,7 +1641,7 @@ namespace dialog
 
 		if (iNumSelected == 1)
 		{
-			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, mfcmapiREQUEST_MODIFY);
+			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, modifyType::REQUEST_MODIFY);
 			auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMAPIProp);
 
 			if (lpMessage)
@@ -1692,7 +1692,7 @@ namespace dialog
 		auto iItem = m_lpContentsTableListCtrl->GetNextItem(-1, LVNI_SELECTED);
 		while (iItem != -1)
 		{
-			auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 			if (lpMessage)
 			{
 				hRes = EC_MAPI(lpMAPISession->MessageOptions(
@@ -1730,7 +1730,7 @@ namespace dialog
 		static const SizedSPropTagArray(frNUMCOLS, sptFRCols) = {
 			frNUMCOLS, {PR_SUBJECT, PR_CLIENT_SUBMIT_TIME, PR_MESSAGE_DELIVERY_TIME}};
 
-		auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, mfcmapiREQUEST_MODIFY);
+		auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(nullptr, modifyType::REQUEST_MODIFY);
 
 		if (lpMAPIProp)
 		{
@@ -1825,7 +1825,8 @@ namespace dialog
 					}
 				}
 
-				output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnCreateMessageRestriction", L"built restriction:\n");
+				output::DebugPrintEx(
+					output::dbgLevel::Generic, CLASS, L"OnCreateMessageRestriction", L"built restriction:\n");
 				output::outputRestriction(output::dbgLevel::Generic, nullptr, lpRes, lpMAPIProp);
 
 				m_lpContentsTableListCtrl->SetRestriction(lpRes);
@@ -1838,8 +1839,7 @@ namespace dialog
 		}
 	}
 
-	_Check_return_ HRESULT
-	CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ sortlistdata::sortListData* lpData)
+	_Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ sortlistdata::sortListData* lpData)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -1933,7 +1933,7 @@ namespace dialog
 		if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
 		auto hRes = S_OK;
-		auto lpMessage = OpenMessage(iItem, mfcmapiREQUEST_MODIFY);
+		auto lpMessage = OpenMessage(iItem, modifyType::REQUEST_MODIFY);
 		if (lpMessage)
 		{
 			// Get subject line of message to copy.
@@ -2010,7 +2010,7 @@ namespace dialog
 		}
 	}
 
-	LPMESSAGE CFolderDlg::OpenMessage(int iSelectedItem, __mfcmapiModifyEnum bModify)
+	LPMESSAGE CFolderDlg::OpenMessage(int iSelectedItem, modifyType bModify)
 	{
 		auto lpMapiProp = OpenItemProp(iSelectedItem, bModify);
 		const auto lpMessage = mapi::safe_cast<LPMESSAGE>(lpMapiProp);

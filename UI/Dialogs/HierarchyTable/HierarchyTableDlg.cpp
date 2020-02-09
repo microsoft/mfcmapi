@@ -97,7 +97,7 @@ namespace dialog
 
 	void CHierarchyTableDlg::OnDisplayItem()
 	{
-		auto lpMAPIContainer = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIContainer = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(modifyType::REQUEST_MODIFY);
 		if (!lpMAPIContainer)
 		{
 			WARNHRESMSG(MAPI_E_NOT_FOUND, IDS_NOITEMSELECTED);
@@ -115,7 +115,7 @@ namespace dialog
 
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpContainer = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpContainer = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(modifyType::REQUEST_MODIFY);
 
 		if (lpContainer)
 		{
@@ -147,7 +147,7 @@ namespace dialog
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		// Find the highlighted item
-		auto container = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto container = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(modifyType::REQUEST_MODIFY);
 		if (!container) return;
 		auto lpMAPIFolder = mapi::safe_cast<LPMAPIFOLDER>(container);
 		container->Release();
@@ -251,7 +251,7 @@ namespace dialog
 		const auto ulFlags = lpAddInMenu->ulFlags;
 
 		const auto fRequestModify =
-			ulFlags & MENU_FLAGS_REQUESTMODIFY ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
+			ulFlags & MENU_FLAGS_REQUESTMODIFY ? modifyType::REQUEST_MODIFY : modifyType::DO_NOT_REQUEST_MODIFY;
 
 		// Get the stuff we need for any case
 		_AddInMenuParams MyAddInMenuParams = {nullptr};

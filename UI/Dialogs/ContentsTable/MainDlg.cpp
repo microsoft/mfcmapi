@@ -362,7 +362,7 @@ namespace dialog
 		OnOpenMessageStoreTable();
 	}
 
-	_Check_return_ LPMAPIPROP CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
+	_Check_return_ LPMAPIPROP CMainDlg::OpenItemProp(int iSelectedItem, modifyType bModify)
 	{
 		if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return nullptr;
 		output::DebugPrintEx(
@@ -383,7 +383,7 @@ namespace dialog
 				if (lpEntryID)
 				{
 					ULONG ulFlags = NULL;
-					if (mfcmapiREQUEST_MODIFY == bModify) ulFlags |= MDB_WRITE;
+					if (modifyType::REQUEST_MODIFY == bModify) ulFlags |= MDB_WRITE;
 
 					lpMDB = mapi::store::CallOpenMsgStore(
 						lpMAPISession, reinterpret_cast<ULONG_PTR>(m_hWnd), lpEntryID, ulFlags);

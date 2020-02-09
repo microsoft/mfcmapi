@@ -68,7 +68,7 @@ namespace dialog
 	ON_COMMAND(ID_MODIFYSELECTEDITEM, OnModifySelectedItem)
 	END_MESSAGE_MAP()
 
-	_Check_return_ LPMAPIPROP CAclDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/)
+	_Check_return_ LPMAPIPROP CAclDlg::OpenItemProp(int /*iSelectedItem*/, modifyType /*bModify*/)
 	{
 		// Don't do anything because we don't want to override the properties that we have
 		return nullptr;

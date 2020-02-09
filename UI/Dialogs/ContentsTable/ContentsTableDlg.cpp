@@ -257,7 +257,7 @@ namespace dialog
 
 		do
 		{
-			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, mfcmapiREQUEST_MODIFY);
+			auto lpMAPIProp = m_lpContentsTableListCtrl->OpenNextSelectedItemProp(&iItem, modifyType::REQUEST_MODIFY);
 
 			if (lpMAPIProp)
 			{
@@ -494,7 +494,7 @@ namespace dialog
 
 	// Since the strategy for opening the selected property may vary depending on the table we're displaying,
 	// this virtual function allows us to override the default method with the method used by the table we've written a special class for.
-	_Check_return_ LPMAPIPROP CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
+	_Check_return_ LPMAPIPROP CContentsTableDlg::OpenItemProp(int iSelectedItem, modifyType bModify)
 	{
 		if (!m_lpContentsTableListCtrl) return nullptr;
 		output::DebugPrintEx(
@@ -536,7 +536,7 @@ namespace dialog
 		const auto ulFlags = lpAddInMenu->ulFlags;
 
 		const auto fRequestModify =
-			(ulFlags & MENU_FLAGS_REQUESTMODIFY) ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
+			(ulFlags & MENU_FLAGS_REQUESTMODIFY) ? modifyType::REQUEST_MODIFY : modifyType::DO_NOT_REQUEST_MODIFY;
 
 		// Get the stuff we need for any case
 		_AddInMenuParams MyAddInMenuParams = {nullptr};

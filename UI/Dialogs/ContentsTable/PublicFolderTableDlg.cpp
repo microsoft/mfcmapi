@@ -47,8 +47,7 @@ namespace dialog
 
 	void CPublicFolderTableDlg::OnDisplayItem() {}
 
-	_Check_return_ LPMAPIPROP
-	CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/)
+	_Check_return_ LPMAPIPROP CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, modifyType /*bModify*/)
 	{
 		return nullptr;
 	}

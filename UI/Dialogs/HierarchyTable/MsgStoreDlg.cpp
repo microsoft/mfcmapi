@@ -154,7 +154,7 @@ namespace dialog
 	}
 
 	// Gets the selected folder with a single addref
-	LPMAPIFOLDER CMsgStoreDlg::GetSelectedFolder(__mfcmapiModifyEnum bModify) const
+	LPMAPIFOLDER CMsgStoreDlg::GetSelectedFolder(modifyType bModify) const
 	{
 		if (!m_lpHierarchyTableTreeCtrl) return nullptr;
 		auto container = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(bModify);
@@ -219,7 +219,7 @@ namespace dialog
 	{
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
@@ -232,7 +232,7 @@ namespace dialog
 	{
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl || !m_lpPropDisplay) return;
 
-		auto lpMAPIFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolder = GetSelectedFolder(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
@@ -254,7 +254,7 @@ namespace dialog
 
 		if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl || !m_lpPropDisplay) return;
 
-		auto lpMAPIFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolder = GetSelectedFolder(modifyType::REQUEST_MODIFY);
 		if (lpMAPIFolder)
 		{
 			SelectForm(m_hWnd, m_lpMapiObjects, lpMAPIFolder, &lpMAPIFormInfo);
@@ -278,7 +278,7 @@ namespace dialog
 		const auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		if (!lpMAPISession) return;
 
-		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
@@ -310,7 +310,7 @@ namespace dialog
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnCopyItems", L"\n");
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpMAPISourceFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
+		auto lpMAPISourceFolder = GetSelectedFolder(modifyType::REQUEST_MODIFY);
 
 		auto lpSrcParentFolder = mapi::GetParentFolder(lpMAPISourceFolder, m_lpMDB);
 
@@ -332,7 +332,7 @@ namespace dialog
 		const auto ulStatus = cache::CGlobalCache::getInstance().GetBufferStatus();
 
 		// Get the destination Folder
-		auto lpMAPIDestFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIDestFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPIDestFolder && ulStatus & BUFFER_MESSAGES && ulStatus & BUFFER_PARENTFOLDER)
 		{
@@ -369,7 +369,7 @@ namespace dialog
 		const auto lpEIDs = cache::CGlobalCache::getInstance().GetMessagesToCopy();
 		auto lpMAPISourceFolder = cache::CGlobalCache::getInstance().GetSourceParentFolder();
 		// Get the destination Folder
-		auto lpMAPIDestFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIDestFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPIDestFolder && lpMAPISourceFolder && lpEIDs)
 		{
@@ -421,7 +421,7 @@ namespace dialog
 		auto lpMAPISourceFolder = cache::CGlobalCache::getInstance().GetFolderToCopy();
 		auto lpSrcParentFolder = cache::CGlobalCache::getInstance().GetSourceParentFolder();
 		// Get the Destination Folder
-		auto lpMAPIDestFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIDestFolder = GetSelectedFolder(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPISourceFolder && lpMAPIDestFolder)
 		{
@@ -499,7 +499,7 @@ namespace dialog
 		// Get the Source Folder
 		auto lpMAPISourceFolder = cache::CGlobalCache::getInstance().GetFolderToCopy();
 		// Get the Destination Folder
-		auto lpMAPIDestFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIDestFolder = GetSelectedFolder(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPISourceFolder && lpMAPIDestFolder)
 		{
@@ -538,7 +538,7 @@ namespace dialog
 		// Get the Source Folder
 		auto lpMAPISourceFolder = cache::CGlobalCache::getInstance().GetFolderToCopy();
 		// Get the Destination Folder
-		auto lpMAPIDestFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIDestFolder = GetSelectedFolder(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPISourceFolder && lpMAPIDestFolder)
 		{
@@ -576,7 +576,7 @@ namespace dialog
 		MyData.AddPane(viewpane::TextPane::CreateSingleLinePane(2, IDS_FOLDERCOMMENT, szFolderComment, false));
 		MyData.AddPane(viewpane::CheckPane::Create(3, IDS_PASSOPENIFEXISTS, false, false));
 
-		auto lpMAPIFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolder = GetSelectedFolder(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
@@ -601,7 +601,7 @@ namespace dialog
 	{
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
@@ -615,7 +615,7 @@ namespace dialog
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		// Find the highlighted item
-		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
@@ -662,7 +662,7 @@ namespace dialog
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		// Must open the folder with MODIFY permissions if I'm going to restore the folder!
-		auto lpFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+		auto lpFolder = m_lpHierarchyTableTreeCtrl.GetSelectedContainer(modifyType::REQUEST_MODIFY);
 
 		if (lpFolder)
 		{
@@ -683,7 +683,7 @@ namespace dialog
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		// Find the highlighted item
-		auto lpMAPIFolderToEmpty = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolderToEmpty = GetSelectedFolder(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPIFolderToEmpty)
 		{
@@ -751,7 +751,7 @@ namespace dialog
 		if (!lpItemEID) return;
 		if (!m_lpMDB) return;
 
-		auto lpFolderToDelete = GetSelectedFolder(mfcmapiDO_NOT_REQUEST_MODIFY);
+		auto lpFolderToDelete = GetSelectedFolder(modifyType::DO_NOT_REQUEST_MODIFY);
 		if (lpFolderToDelete)
 		{
 			auto lpParentFolder = mapi::GetParentFolder(lpFolderToDelete, m_lpMDB);
@@ -822,7 +822,7 @@ namespace dialog
 		output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnSaveFolderContentsAsMSG", L"\n");
 
 		// Find the highlighted item
-		auto lpMAPIFolder = GetSelectedFolder(mfcmapiDO_NOT_REQUEST_MODIFY);
+		auto lpMAPIFolder = GetSelectedFolder(modifyType::DO_NOT_REQUEST_MODIFY);
 		if (!lpMAPIFolder) return;
 
 		editor::CEditor MyData(
@@ -848,7 +848,7 @@ namespace dialog
 	{
 		if (!m_lpMDB || !m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpFolder = GetSelectedFolder(mfcmapiDO_NOT_REQUEST_MODIFY);
+		auto lpFolder = GetSelectedFolder(modifyType::DO_NOT_REQUEST_MODIFY);
 
 		if (lpFolder)
 		{
@@ -873,7 +873,7 @@ namespace dialog
 	{
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
-		auto lpFolder = GetSelectedFolder(mfcmapiDO_NOT_REQUEST_MODIFY);
+		auto lpFolder = GetSelectedFolder(modifyType::DO_NOT_REQUEST_MODIFY);
 
 		if (lpFolder)
 		{
@@ -921,7 +921,7 @@ namespace dialog
 		if (!m_lpHierarchyTableTreeCtrl) return;
 
 		// Find the highlighted item
-		auto lpMAPIFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolder = GetSelectedFolder(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
@@ -939,7 +939,7 @@ namespace dialog
 		if (!m_lpMDB || !m_lpHierarchyTableTreeCtrl) return;
 
 		// Find the highlighted item
-		auto lpMAPIFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
+		auto lpMAPIFolder = GetSelectedFolder(modifyType::REQUEST_MODIFY);
 
 		if (lpMAPIFolder)
 		{
@@ -964,7 +964,7 @@ namespace dialog
 		};
 		static const SizedSPropTagArray(NUM_COLS, sptaSrcFolder) = {NUM_COLS, {PR_DISPLAY_NAME_W, PR_ENTRYID}};
 
-		auto lpSrcFolder = GetSelectedFolder(mfcmapiREQUEST_MODIFY);
+		auto lpSrcFolder = GetSelectedFolder(modifyType::REQUEST_MODIFY);
 
 		if (lpSrcFolder)
 		{
@@ -997,7 +997,8 @@ namespace dialog
 				// Restore the folder up under m_lpContainer
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-				output::DebugPrint(output::dbgLevel::Generic, L"Restoring %p to %p as \n", lpSrcFolder, GetRootContainer());
+				output::DebugPrint(
+					output::dbgLevel::Generic, L"Restoring %p to %p as \n", lpSrcFolder, GetRootContainer());
 
 				if (!lpSrcParentFolder) lpSrcParentFolder = mapi::safe_cast<LPMAPIFOLDER>(GetRootContainer());
 
@@ -1054,7 +1055,8 @@ namespace dialog
 			const auto ulFlags =
 				(MyData.GetCheck(0) ? MAPI_FORCE_CREATE : 0) | (MyData.GetCheck(1) ? MAPI_FULL_IPM_TREE : 0);
 
-			output::DebugPrintEx(output::dbgLevel::Generic, CLASS, L"OnValidateIPMSubtree", L"ulFlags = 0x%08X\n", ulFlags);
+			output::DebugPrintEx(
+				output::dbgLevel::Generic, CLASS, L"OnValidateIPMSubtree", L"ulFlags = 0x%08X\n", ulFlags);
 
 			EC_MAPI_S(HrValidateIPMSubtree(m_lpMDB, ulFlags, &ulValues, &lpProps, &lpErr));
 			EC_MAPIERR(fMapiUnicode, lpErr);

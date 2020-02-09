@@ -78,7 +78,7 @@ namespace dialog
 		CContentsTableDlg::OnInitMenu(pMenu);
 	}
 
-	_Check_return_ LPMAPIPROP CRecipientsDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify)
+	_Check_return_ LPMAPIPROP CRecipientsDlg::OpenItemProp(int iSelectedItem, modifyType bModify)
 	{
 		if (!m_lpContentsTableListCtrl) return nullptr;
 		output::DebugPrintEx(
